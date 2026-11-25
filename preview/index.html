@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SunoOS — podgląd makiety</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #111; }
+  .frame { position: fixed; inset: 0; width: 100%; height: 100%; border: 0; }
+  .fallback { position: fixed; inset: auto 0 0 0; padding: 8px 16px; color: #eee;
+              font: 13px/1.5 system-ui, sans-serif; background: #000; text-align: center; }
+  .fallback a { color: #9ecbff; }
+  @media (min-width: 700px) { .fallback { display: none; } }
+</style>
+</head>
+<body>
+  <iframe class="frame"
+    src="https://simplyluma.com/simframe/mockups/luma-next-73.html?desktop=1&amp;app=none&amp;showcase=1&amp;zoom=0.7950"
+    title="SunoOS mockup preview"></iframe>
+  <p class="fallback">
+    Osadzony podgląd nie działa? Otwórz makietę bezpośrednio:
+    <a href="https://simplyluma.com/simframe/mockups/luma-next-73.html?desktop=1&amp;app=none&amp;showcase=1&amp;zoom=0.7950">simframe/mockups/luma-next-73.html</a>
+    — albo uruchom <code>python3 tools/fetch_upstream.py</code> i użyj lokalnej kopii <code>simframe/</code>.
+  </p>
+</body>
+</html>
