@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="en">
+<head><style>html{zoom:0.795}</style>
+<script>/* phone and desktop views: nothing shows until their shell has drawn (no flash of the bare page) */
+(function () { var q = new URLSearchParams(location.search); if (q.get('phone') || q.get('desktop')) document.documentElement.dataset.desktop = '1'; })();</script>
+<script>/* every view (desktop, phone, one app or the bare page) stays covered until it is drawn, so the windows behind it never flash;
+   markReady() lifts the cover and sets <html data-ready>, which the Design Center's pictures wait for. 6 s at most. */
+{ document.documentElement.classList.add('booting'); setTimeout(function () { document.documentElement.classList.remove('booting'); }, 6000); }</script>
+<style>html.booting body { opacity: 0 !important; } body { transition: opacity .2s; }</style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Luma Next, take sixty-nine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="../fonts/figtree/figtree.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&family=Spline+Sans+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;0,7..72,600;1,7..72,400&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="luma-73.css">
+<!-- Depot (24 Oct 2026): the app lives in apps/depot/ (catalogue, world, module) and is handed the shared parts below (see renderDepot) -->
+<link rel="stylesheet" href="apps/depot/depot.css"><link rel="stylesheet" href="apps/depot/depot-b.css"><link rel="stylesheet" href="apps/depot/depot-c.css"><link rel="stylesheet" href="apps/depot/depot-d.css">
+<script src="apps/depot/catalogue.js"></script><script src="apps/depot/world.js"></script>
+<script src="apps/depot/depot.js"></script><script src="apps/depot/depot-b.js"></script><script src="apps/depot/depot-c.js"></script><script src="apps/depot/depot-d.js"></script>
+<link rel="stylesheet" href="apps/ari/models.css"><script src="apps/ari/models.js"></script>
+<!-- Huddle, follow the games you care about (25 Oct 2026): apps/huddle/, handed the shared parts below (see renderHuddle) -->
+<link rel="stylesheet" href="apps/huddle/huddle.css"><script src="apps/huddle/data.js"></script><script src="apps/huddle/huddle.js"></script>
+<!-- Diskord, a Discord client (mockup, 22 Oct 2026): apps/discord/, handed the shared parts below (see renderDiscord) -->
+<link rel="stylesheet" href="apps/discord/discord.css">
+<script src="apps/discord/data.js"></script>
+<script src="apps/discord/discord.js"></script>
+<!-- D-Ink (digital ink): the e-paper appearance, a switch beside Dark and Light (?ink=mono|colour; mockups/dink.css) -->
+<link rel="stylesheet" href="dink.css"><link rel="stylesheet" href="dink-apps.css">
+</head>
+<body data-mode="dark">
+
+<div class="review" role="toolbar" aria-label="Review">
+  <strong>Luma</strong><small>take seventy-three · LumaUI · Playground</small><span class="sp"></span>
+  <button class="rbtn" type="button" id="phone">Phone</button>
+  <div class="rseg" role="group" aria-label="Appearance"><button type="button" data-set-mode="dark">Dark</button><button type="button" data-set-mode="light">Light</button></div>
+  <div class="rseg" role="group" aria-label="D-Ink" title="D-Ink: the e-paper appearance"><button type="button" data-set-ink="">Ink off</button><button type="button" data-set-ink="mono">Mono</button><button type="button" data-set-ink="colour">Colour</button></div>
+  <button class="rbtn" type="button" id="allapps">All apps</button><button class="rbtn" type="button" id="reset">Reset</button><a class="rbtn" href="studio.html" target="_top" style="display:grid;place-items:center;text-decoration:none">Versions</a>
+</div>
+
+<div class="desk" id="desk">
+  <section class="win iwin lightframe" id="w-filer" data-app="filer" aria-label="Filer">
+    <header class="tbar" data-drag><img src="../icons/luma-v4-files.svg" alt=""><b>Filer</b><span class="chev" data-icon="chevron-down"></span></header>
+    <div class="ibody"><nav class="rail" id="f-rail"></nav>
+    <main class="main isle" id="f-main"><header class="ttl" id="f-ttl" data-drag></header><div class="scroll" id="f-body"></div><div class="fbar" id="f-bar"></div></main>
+    <aside class="fdock ldp" id="f-dock" aria-label="Information" hidden></aside></div>
+    <i class="grip" data-resize></i>
+  </section>
+
+  <section class="win iwin lightframe" id="w-photos" data-app="photos" aria-label="Photos">
+    <header class="tbar" data-drag><img src="../icons/luma-v4-photos.svg" alt=""><b>Photos</b><span class="chev" data-icon="chevron-down"></span></header>
+    <div class="ibody"><nav class="pside" id="p-rail"></nav>
+    <main class="main isle" id="p-main"><header class="ttl" id="p-ttl" data-drag></header><div class="flo pview" id="p-view"></div><div class="scroll pbody" id="p-body"></div><div class="fbar" id="p-bar"></div></main>
+    <aside class="ldp" id="p-det" aria-label="Information" hidden></aside></div>
+    <i class="grip" data-resize></i>
+  </section>
+
+  <section class="win iwin lightframe vwin" id="w-viola" data-app="viola" aria-label="Viola">
+    <header class="tbar vtbar" id="v-top" data-drag></header>
+    <div class="ibody"><nav class="vside" id="v-side"></nav>
+      <main class="main isle vpage" id="v-main"><i class="load" id="v-load"></i><div class="scroll" id="v-web"></div><div class="fbar vnav tucks" id="v-nav"></div></main><button class="fnub" id="v-nub" type="button" aria-label="Show page controls"><svg viewBox="0 0 100 20" aria-hidden="true"><path class="fill" d="M0,20 L0,18 C6,18 8,16 8,12 L8,8 Q8,2 14,2 L86,2 Q92,2 92,8 L92,12 C92,16 94,18 100,18 L100,20 Z"/><path class="edge" d="M0,18 C6,18 8,16 8,12 L8,8 Q8,2 14,2 L86,2 Q92,2 92,8 L92,12 C92,16 94,18 100,18"/><path class="lip" d="M9.5,8.5 Q9.5,3.5 14,3.5 L86,3.5 Q90.5,3.5 90.5,8.5"/></svg><span class="chev" data-icon="chevron-up"></span></button></div>
+    <i class="grip" data-resize></i>
+  </section>
+
+  <section class="win iwin lightframe suwin wrwin" id="w-write" data-app="write" aria-label="Write">
+    <header class="tbar sutop" id="d-top" data-drag></header>
+    <div class="ibody"><main class="main isle wrdesk" id="d-main">
+      <div class="wrscroll" id="d-desk"><div class="sheet" id="d-sheet"><div id="wr-doc" contenteditable="true" spellcheck="true"></div></div></div>
+      <aside class="supanel l" id="d-out"></aside><aside class="supanel r" id="d-insp"></aside>
+      <button class="supill wrstat" id="d-stat" type="button" data-wstat data-lmenu></button><button class="supill wrzoom" id="d-zoom" type="button" data-wzoom data-lmenu></button>
+      <div class="fbar wrbar" id="d-bar"></div><div class="selbar" id="d-sel"></div>
+    </main></div>
+    <i class="grip" data-resize></i>
+  </section>
+
+  <section class="win iwin lightframe twin" id="w-tide" data-app="tide" aria-label="Tide">
+    <header class="tbar ttbar" id="t-top" data-drag></header>
+    <div class="ibody tbodyrow">
+      <main class="main isle tmain" id="t-main"><i class="twash"></i><div class="flo tflo" id="t-float"></div><div class="scroll" id="t-body"></div><div class="now" id="t-now" hidden></div></main><aside class="ldp tpane" id="t-pane" aria-label="Sources" hidden></aside><div class="deck" id="t-bot"></div></div>
+    <i class="grip" data-resize></i>
+  </section>
+
+  <section class="win iwin lightframe mwin" id="w-messages" data-app="messages" aria-label="Messages">
+    <header class="tbar" id="m-top" data-drag></header>
+    <div class="ibody"><nav class="msidebar" id="m-side"></nav>
+      <main class="main isle" id="m-main"><i class="mlight" id="m-light"></i><i class="mwash"></i><header class="mtop" id="m-head" data-drag></header><div class="scroll" id="m-body"></div><div class="lac" id="m-comp" hidden></div><div class="selbar" id="m-sel"></div></main>
+      <div class="mbar" id="m-bar"><div class="mcin"></div></div><aside class="ldp" id="m-det" aria-label="Details" hidden></aside></div>
+    <i class="grip" data-resize></i>
+  </section>
+
+  <section class="win iwin lightframe nwin" id="w-notes" data-app="notes" aria-label="Notes">
+    <header class="tbar" id="n-top" data-drag></header>
+    <div class="ibody"><nav class="nside" id="n-side"></nav>
+      <main class="main isle" id="n-main"><i class="nwash"></i><div class="flo nfloat" id="n-float"></div>
+        <div class="scroll" id="n-scroll"><article class="npad"><div class="nmeta" id="n-meta"></div><button class="npic" type="button" id="n-pic" data-nmark="page" aria-label="Page icon"></button><h1 id="n-title" contenteditable="true" spellcheck="true" data-ph="Title"></h1><div id="n-doc" contenteditable="true" spellcheck="true"></div><div class="nkids" id="n-kids"></div></article></div>
+        <div class="fbar nbar" id="n-bar"></div><div class="selbar" id="n-sel"></div></main></div>
+    <i class="grip" data-resize></i>
+  </section>
+
+  <section class="win iwin lightframe cwin" id="w-contacts" data-app="contacts" aria-label="Contacts">
+    <header class="tbar" id="c-top" data-drag></header>
+    <div class="ibody"><nav class="cside" id="c-side"></nav>
+      <main class="main isle" id="c-main"><i class="mlight" id="c-light"></i><i class="mwash"></i><div class="flo nfloat" id="c-float"></div>
+        <div class="scroll" id="c-scroll"><div class="cpad" id="c-body"></div></div><div class="fbar cbar" id="c-bar"></div></main></div>
+    <i class="grip" data-resize></i>
+  </section>
+
+  <section class="win iwin lightframe tmwin" id="w-term" data-app="term" aria-label="Terminal">
+    <header class="tbar tmbar" id="tm-top" data-drag></header>
+    <div class="ibody"><div class="tpanes" id="tm-panes"></div><div class="fbar tmcmd" id="tm-bar"></div></div>
+    <i class="grip" data-resize></i>
+  </section>
+
+  <section class="win iwin lightframe calwin" id="w-calendar" data-app="calendar" aria-label="Calendar">
+    <header class="tbar" id="cal-top" data-drag></header>
+    <div class="ibody"><main class="main isle" id="cal-main"><i class="calwash"></i><div class="flo calhead" id="cal-head"></div><div class="flo calcals lcorner" id="cal-cals"></div>
+      <div class="scroll" id="cal-body"></div><div class="fbar calbar" id="cal-bar"></div><div class="lac calac" id="cal-draft" hidden></div></main><aside class="ldp" id="cal-det" aria-label="Day" hidden></aside></div>
+    <i class="grip" data-resize></i>
+  </section>
+
+  <section class="win iwin lightframe dpwin" id="w-depot" data-app="depot" aria-label="Depot">
+    <header class="tbar" id="dp-top" data-drag></header>
+    <div class="ibody"><nav class="dpside" id="dp-side"></nav><main class="main isle" id="dp-main"><button class="flo dpback" id="dp-back" type="button" aria-label="Back" hidden></button><div class="scroll" id="dp-body"></div><div class="fbar dpbar" id="dp-bar" hidden></div></main></div>
+    <i class="grip" data-resize></i>
+  </section>
+
+  <section class="win iwin lightframe hdwin" id="w-huddle" data-app="huddle" aria-label="Huddle">
+    <header class="tbar" id="hd-top" data-drag></header>
+    <div class="ibody"></div>
+    <i class="grip" data-resize></i>
+  </section>
+  <section class="win iwin lightframe dcwin" id="w-discord" data-app="discord" aria-label="Diskord">
+    <header class="tbar" id="dc-top" data-drag></header>
+    <div class="ibody"><nav class="dcside" id="dc-side" aria-label="Servers and channels"></nav><main class="main isle" id="dc-main"><i class="mwash"></i><header id="dc-head"></header><div class="scroll" id="dc-body"></div><div class="fbar dcbar phnofit" id="dc-bar" role="toolbar" aria-label="Diskord"></div></main><aside class="ldp" id="dc-mem" aria-label="Members" hidden></aside></div>
+    <i class="grip" data-resize></i>
+  </section>
+
+  <section class="win iwin lightframe wxwin wxB" id="w-weather" data-app="weather" aria-label="Weather">
+    <header class="tbar" id="wx-top" data-drag></header>
+    <div class="ibody"><nav class="wxside" id="wx-side"></nav><main class="main isle" id="wb-main"><i class="wxsky" id="wx-sky"></i><div class="wbtabs" id="wb-tabs" hidden></div><div class="scroll" id="wb-body"></div></main></div>
+    <i class="grip" data-resize></i>
+  </section>
+  <section class="win iwin lightframe ckwin ckB" id="w-clock" data-app="clock" aria-label="Clock">
+    <header class="tbar" id="ck-top" data-drag></header>
+    <div class="ibody"><nav class="ckside" id="ck-side" hidden></nav><main class="main isle" id="cb-main"><i class="ckwash" id="ck-wash"></i><div class="scroll" id="cb-body"></div><div class="fbar cbbar" id="cb-bar"></div></main></div>
+    <i class="grip" data-resize></i>
+  </section>
+
+  <section class="win iwin lightframe crwin" id="w-charlie" data-app="charlie" aria-label="Charlie">
+    <header class="tbar" id="cr-top" data-drag></header>
+    <div class="ibody"><nav class="crnav" id="cr-nav"></nav><div class="isle crside crlisle" id="cr-side"></div>
+      <main class="main isle" id="cr-main"><header class="crhead" id="cr-head"></header><div class="scroll" id="cr-body"></div><div class="fbar crbar" id="cr-bar"></div><div class="cr2c lac" id="cr-comp" hidden></div><div class="selbar" id="cr-sel"></div></main><aside class="ldp" id="cr-det" aria-label="Details" hidden></aside></div>
+    <i class="grip" data-resize></i>
+  </section>
+
+  <section class="win iwin lightframe mnwin" id="w-monitor" data-app="monitor" aria-label="Monitor">
+    <header class="tbar" id="mn-top" data-drag></header>
+    <div class="ibody"><nav class="mnside" id="mn-side"></nav>
+      <main class="main isle" id="mn-main"><div class="scroll" id="mn-body"></div><div class="fbar mnbar" id="mn-bar"></div></main></div>
+    <i class="grip" data-resize></i>
+  </section>
+
+  <section class="win iwin lightframe lfwin" id="w-leaf" data-app="leaf" aria-label="Leaf">
+    <header class="tbar" id="lf-top" data-drag></header>
+    <div class="ibody"><nav class="lfside" id="lf-side"></nav>
+      <main class="main isle" id="lf-main"><div class="lflib" id="lf-lib"></div>
+        <div class="lfread" id="lf-read" hidden><div class="lfstage" id="lf-stage"><i class="lfgut"></i><div class="lfvp" id="lf-vp"><div class="lftext" id="lf-text"></div></div>
+          <div class="lfrh" id="lf-rh"></div><div class="lfpn" id="lf-pn"></div><i class="lfrib" id="lf-rib"></i>
+          <button class="lfturn prev" type="button" data-lfturn="-1" aria-label="Previous page"></button><button class="lfturn next" type="button" data-lfturn="1" aria-label="Next page"></button>
+          <div class="lfprog" id="lf-prog"></div></div><aside class="lfdraw" id="lf-draw"></aside></div>
+        <div class="fbar lfbar tucks" id="lf-bar"></div><div class="selbar lfsel" id="lf-sel"></div></main></div>
+    <i class="grip" data-resize></i>
+  </section>
+
+  <section class="win iwin lightframe vwwin" id="w-viewer" data-app="viewer" aria-label="Viewer">
+    <header class="tbar" id="vw-top" data-drag></header>
+    <div class="ibody"><nav class="vwside" id="vw-side"></nav>
+      <main class="main isle" id="vw-main"><div class="vwstage" id="vw-stage"></div><div class="vwpal" id="vw-pal"></div><div class="vwadj" id="vw-adj"></div><div class="fbar vwbar" id="vw-bar"></div></main>
+      <aside class="ldp" id="vw-info" aria-label="Information" hidden></aside></div>
+    <i class="grip" data-resize></i>
+  </section>
+
+  <section class="win iwin lightframe vlwin vlt" id="w-valet" data-app="valet" aria-label="Valet">
+    <header class="tbar" id="vl-top" data-drag></header>
+    <div class="ibody"><main class="main isle" id="vl-main"><div class="scroll" id="vl-body"></div></main></div>
+    <i class="grip" data-resize></i>
+  </section>
+
+  <section class="win iwin lightframe mewin" id="w-memos" data-app="memos" aria-label="Memos">
+    <header class="tbar" id="me-top" data-drag></header>
+    <div class="ibody"><nav class="meside" id="me-side"></nav>
+      <main class="main isle" id="me-main"><div class="scroll" id="me-body"></div><div class="flo lcorner" id="me-corner" hidden></div><div class="fbar mebar" id="me-bar"></div></main></div>
+    <i class="grip" data-resize></i>
+  </section>
+
+  <section class="win iwin lightframe tkwin" id="w-tasks" data-app="tasks" aria-label="Tasks">
+    <header class="tbar" id="tk-top" data-drag></header>
+    <div class="ibody"><nav class="tkside" id="tk-side"></nav>
+      <main class="main isle" id="tk-main"><div class="scroll" id="tk-body"></div><div class="fbar tkbar" id="tk-bar"></div></main>
+      <aside class="ldp tkdet" id="tk-det" aria-label="Task" hidden></aside></div>
+    <i class="grip" data-resize></i>
+  </section>
+
+  <section class="win iwin lightframe dskwin" id="w-disks" data-app="disks" aria-label="Disks">
+    <header class="tbar" id="dsk-top" data-drag></header>
+    <div class="ibody"><nav class="dskside" id="dsk-side"></nav>
+      <main class="main isle" id="dsk-main"><div class="scroll" id="dsk-body"></div><div class="dsksheet" id="dsk-sheet"></div><div class="fbar" id="dsk-bar"></div></main></div>
+    <i class="grip" data-resize></i>
+  </section>
+
+  <section class="win iwin lightframe cmwin" id="w-camera" data-app="camera" aria-label="Camera">
+    <header class="tbar" id="cm-top" data-drag></header>
+    <div class="ibody"><main class="main isle" id="cm-main"><div class="cmbody" id="cm-body"></div></main></div>
+    <i class="grip" data-resize></i>
+  </section>
+
+  <section class="win iwin lightframe mpwin" id="w-maps" data-app="maps" aria-label="Maps">
+    <header class="tbar" id="mp-top" data-drag></header>
+    <div class="ibody"><nav class="mpside" id="mp-side"></nav>
+      <main class="main isle" id="mp-main"><div class="mpmap" id="mp-map"></div><div class="flo lcorner mpcorner" id="mp-corner"></div><div class="mpcard off" id="mp-card"></div><div class="fbar" id="mp-bar"></div></main></div>
+    <i class="grip" data-resize></i>
+  </section>
+
+  <section class="win iwin lightframe pnwin" id="w-phone" data-app="phone" aria-label="Phone">
+    <header class="tbar" id="pn-top" data-drag></header>
+    <div class="ibody"><nav class="pnside" id="pn-side"></nav>
+      <main class="main isle" id="pn-main"><div class="pnbody" id="pn-body"></div><div class="fbar" id="pn-bar"></div></main></div>
+    <i class="grip" data-resize></i>
+  </section>
+
+  <section class="win iwin lightframe fpwin" id="w-picker" data-app="picker" aria-label="File picker">
+    <header class="tbar" id="fp-top" data-drag></header>
+    <div class="ibody"><nav class="pside fpside" id="fp-side"></nav>
+      <main class="main isle" id="fp-main"><div class="fpbody" id="fp-body"></div><div class="fbar" id="fp-bar"></div></main></div>
+    <i class="grip" data-resize></i>
+  </section>
+
+  <section class="win iwin lightframe mdwin" id="w-modal" data-app="modal" aria-label="Modals">
+    <header class="tbar" id="md-top" data-drag></header>
+    <div class="ibody"><main class="main isle" id="md-main"><div class="scroll" id="md-body"></div><div class="fbar" id="md-bar"></div></main></div>
+    <i class="mdscrim" id="md-scrim"></i><div class="mdsheet" id="md-sheet"></div><i class="mdsysscrim" id="md-sysscrim"></i>
+    <i class="grip" data-resize></i>
+  </section>
+
+  <section class="win iwin lightframe cawin" id="w-calc" data-app="calc" aria-label="Calculator">
+    <header class="tbar" id="ca-top" data-drag></header>
+    <div class="cabody" id="ca-body"></div>
+  </section>
+
+  <section class="win iwin lightframe tswin" id="w-tipsplit" data-app="tipsplit" aria-label="Tip Split">
+    <header class="tbar" id="ts-top" data-drag></header>
+    <div class="tsbody" id="ts-body"></div>
+  </section>
+
+  <section class="win iwin lightframe ariwin" id="w-ari" data-app="ari" aria-label="Ari">
+    <header class="tbar" id="ari-top" data-drag></header>
+    <div class="ibody"><nav class="pside ariside" id="ari-side"></nav>
+      <main class="main isle" id="ari-main"><div class="scroll" id="ari-body"></div><div class="fbar" id="ari-bar"></div></main></div>
+    <i class="ariscrim" id="ari-scrim"></i><div class="mdsheet" id="ari-sheet" role="dialog"></div>
+    <i class="grip" data-resize></i>
+  </section>
+
+  <section class="win iwin lightframe suwin cvwin" id="w-canvas" data-app="canvas" aria-label="Canvas">
+    <header class="tbar sutop" id="cv-top" data-drag></header>
+    <div class="ibody"><main class="main isle suwork" id="cv-work" data-tool="move">
+      <div class="cvspace" id="cv-space"></div><div class="cvover" id="cv-over"></div>
+      <aside class="supanel l" id="cv-left"></aside><aside class="supanel r" id="cv-right"></aside>
+      <button class="supill wrzoom" id="cv-zoompill" type="button" data-cvzoom title="Zoom" aria-haspopup="menu"></button><div class="fbar sutools" id="cv-bar"></div></main></div>
+    <i class="grip" data-resize></i>
+  </section>
+
+  <section class="win iwin lightframe suwin grwin" id="w-grid" data-app="grid" aria-label="Grid">
+    <header class="tbar sutop" id="gr-top" data-drag></header>
+    <div class="ibody"><main class="main isle grwork" id="gr-work">
+      <div class="grscroll" id="gr-scroll"><div class="grcontent"><div class="grgrid" id="gr-grid"></div><div class="grobjs" id="gr-objs"></div><div class="grsel" id="gr-sel"></div></div></div>
+      <div class="grlip" id="gr-lip"></div>
+      <aside class="supanel l" id="gr-left"></aside><aside class="supanel r min" id="gr-right"></aside>
+      <div class="fbar sutools grbar" id="gr-bar"></div></main></div>
+    <i class="grip" data-resize></i>
+  </section>
+
+  <section class="win iwin lightframe suwin stwin" id="w-stage" data-app="stage" aria-label="Stage">
+    <header class="tbar sutop" id="st-top" data-drag></header>
+    <div class="ibody"><main class="main isle suwork" id="st-work" data-tool="move">
+      <div class="stslide" id="st-slide"></div><div class="cvover" id="st-over"></div>
+      <aside class="supanel l" id="st-left"></aside><aside class="supanel r min" id="st-right"></aside><aside class="supanel stnotes" id="st-notes"></aside>
+      <div class="fbar sutools" id="st-bar"></div></main></div>
+    <i class="grip" data-resize></i>
+  </section>
+
+  <section class="win iwin lightframe suwin sewin" id="w-session" data-app="session" aria-label="Session">
+    <header class="tbar sutop" id="se-top" data-drag></header>
+    <div class="ibody"><aside class="isle selibdock" id="se-lib"></aside><main class="main isle sework" id="se-work">
+      <div class="sectx" id="se-ctx"><b>Late light</b><span>7 tracks · D minor</span></div><div class="searr"><div class="seheads" id="se-heads"></div><div class="selanes" id="se-lanes"></div></div>
+      <aside class="supanel r" id="se-right"></aside>
+      <div class="seeditor" id="se-editor"></div><div class="semixer" id="se-mixer"></div>
+      <div class="fbar sutools setransport" id="se-bar"></div></main></div>
+    <i class="grip" data-resize></i>
+  </section>
+
+  <section class="win iwin lightframe suwin drwin" id="w-darkroom" data-app="darkroom" aria-label="Focus">
+    <header class="tbar sutop" id="dr-top" data-drag></header>
+    <div class="ibody"><main class="main isle drwork" id="dr-work">
+      <div class="drbody" id="dr-body"></div>
+      <aside class="supanel l" id="dr-left"></aside><aside class="supanel r" id="dr-right"></aside>
+      <div class="fbar sutools" id="dr-bar"></div></main><aside class="ldp" id="dr-info" aria-label="Information" hidden></aside></div>
+    <i class="grip" data-resize></i>
+  </section>
+
+  <section class="win iwin lightframe ytwin" id="w-youtube" data-app="youtube" aria-label="YouTube">
+    <header class="tbar" id="yt-top" data-drag></header>
+    <div class="ibody"><nav class="ytside" id="yt-side"></nav>
+      <main class="main isle ytmain" id="yt-main"><i class="ytwash"></i><div class="scroll" id="yt-body"></div><div class="fbar ytbar" id="yt-bar"></div></main></div>
+    <i class="grip" data-resize></i>
+  </section>
+
+  <section class="win iwin lightframe suwin rlwin" id="w-reel" data-app="reel" aria-label="Reel">
+    <header class="tbar sutop" id="rl-top" data-drag></header>
+    <div class="ibody"><aside class="isle rllibdock" id="rl-lib"></aside><main class="main isle rlwork" id="rl-work">
+      <div class="rlstage" id="rl-stage"><button class="supill rllibb" id="rl-libb" type="button" data-rllib title="Media, titles, transitions, effects, LUTs and sound · Y"></button>
+        <div class="rlplayer" id="rl-player"><div class="rlpic" id="rl-pic"></div><div class="rlctl" id="rl-ctl"></div></div></div>
+      <div class="rltimeline"><header class="rltlh" id="rl-tlh"></header><div class="rllanes" id="rl-lanes" data-tool="select"></div></div>
+      </main><aside class="isle rlinspdock" id="rl-insp"></aside></div>
+    <i class="rlscrim" id="rl-scrim"></i><div class="mdsheet" id="rl-sheet" role="dialog"></div>
+    <i class="grip" data-resize></i>
+  </section>
+
+  <section class="win iwin lightframe cfwin" id="w-settings" data-app="settings" aria-label="Settings">
+    <header class="tbar" id="cf-top" data-drag></header>
+    <div class="ibody"><nav class="cfside" id="cf-side"><div class="scr" id="cf-nav"></div><div class="shead sfoot lfoot"><label class="srch cfq"><input id="cf-q" type="search" placeholder="Search settings" aria-label="Search settings" autocomplete="off" spellcheck="false"></label></div></nav>
+      <main class="main isle" id="cf-main"><i class="cfwash"></i><div class="scroll" id="cf-body"></div><div class="lac cflac" id="cf-sheet" hidden></div><div class="fbar" id="cf-bar" hidden></div></main></div>
+    <i class="grip" data-resize></i>
+  </section>
+
+  <section class="win iwin lightframe pgwin" id="w-playground" data-app="playground" aria-label="Playground">
+    <header class="tbar" id="pg-top" data-drag></header>
+    <div class="ibody"><nav class="pside pgside" id="pg-side" aria-label="Projects and goals"></nav>
+      <main class="main isle" id="pg-main"><div class="scroll" id="pg-body" data-phsc="1"></div><div class="fbar phnofit pgcomp" id="pg-bar"></div></main>
+      <aside class="isle pgstage" id="pg-stage" aria-label="Stage"></aside>
+      <section class="isle pgpage" id="pg-page" aria-label="Page"></section></div>
+    <i class="pgstscrim" data-pgstx></i><i class="pgscrim" id="pg-scrim"></i><div class="mdsheet pgsheet" id="pg-sheet" role="dialog" aria-modal="true" aria-label="Playground"></div>
+    <i class="grip" data-resize></i>
+  </section>
+
+  <section class="win iwin lightframe luiwin" id="w-lumaui" data-app="lumaui" aria-label="LumaUI">
+    <header class="tbar" id="lui-top" data-drag></header>
+    <div class="ibody"><nav class="luinav" id="lui-nav" aria-label="Components"></nav>
+      <main class="main isle" id="lui-main"><div class="scroll" id="lui-body"></div></main></div>
+    <i class="grip" data-resize></i>
+  </section>
+
+  <nav class="shelf" aria-label="Shelf">
+    <div class="l"><button class="sb" type="button" aria-label="Apps" data-icon="grid-2x2"></button><button class="sb q" type="button" id="s-q"></button></div>
+    <div class="apps">
+      <button class="dk" type="button" data-app="filer" aria-label="Filer"><img src="../icons/luma-v4-files.svg" alt=""><i class="run"></i></button>
+      <button class="dk" type="button" data-app="photos" aria-label="Photos"><img src="../icons/luma-v4-photos.svg" alt=""><i class="run"></i></button>
+      <button class="dk" type="button" data-app="viola" aria-label="Viola"><img src="../icons/luma-v4-browser.svg" alt=""><i class="run"></i></button>
+      <button class="dk" type="button" data-app="write" aria-label="Write"><img src="../icons/luma-v4-documents.svg" alt=""><i class="run"></i></button>
+      <button class="dk" type="button" data-app="tide" aria-label="Tide"><img src="../icons/luma-v4-music.svg" alt=""><i class="run"></i></button><button class="dk" type="button" data-app="youtube" aria-label="YouTube"><img src="../icons/luma-v4-youtube.svg" alt=""><i class="run"></i></button><button class="dk" type="button" data-app="huddle" aria-label="Huddle"><img src="../icons/luma-v4-huddle.svg" alt=""><i class="run"></i></button><button class="dk" type="button" data-app="discord" aria-label="Diskord"><img src="../icons/luma-v4-diskord.svg" alt=""><i class="run"></i></button>
+      <button class="dk" type="button" data-app="messages" aria-label="Messages"><img src="../icons/luma-v4-messages.svg" alt=""><i class="run"></i></button>
+      <button class="dk" type="button" data-app="notes" aria-label="Notes"><img src="../icons/luma-v4-notes.svg" alt=""><i class="run"></i></button>
+      <button class="dk" type="button" data-app="contacts" aria-label="Contacts"><img src="../icons/luma-v4-contacts.svg" alt=""><i class="run"></i></button>
+      <button class="dk" type="button" data-app="term" aria-label="Terminal"><img src="../icons/luma-v4-terminal.svg" alt=""><i class="run"></i></button>
+      <button class="dk" type="button" data-app="calendar" aria-label="Calendar"><img src="../icons/luma-v4-calendar.svg" alt=""><i class="run"></i></button>
+      <button class="dk" type="button" data-app="depot" aria-label="Depot"><img src="../icons/luma-v4-app-store.svg" alt=""><i class="run"></i></button>
+      <button class="dk" type="button" data-app="weather" aria-label="Weather"><img src="../icons/luma-v4-weather.svg" alt=""><i class="run"></i></button>
+      <button class="dk" type="button" data-app="clock" aria-label="Clock"><img src="../icons/luma-v4-clock.svg" alt=""><i class="run"></i></button>
+      <button class="dk" type="button" data-app="charlie" aria-label="Charlie"><img src="../icons/luma-v4-mail.svg" alt=""><i class="run"></i></button>
+      <button class="dk" type="button" data-app="monitor" aria-label="Monitor"><img src="../icons/luma-v4-monitor.svg" alt=""><i class="run"></i></button>
+      <button class="dk" type="button" data-app="leaf" aria-label="Leaf"><img src="../icons/luma-v4-leaf.svg" alt=""><i class="run"></i></button>
+      <button class="dk" type="button" data-app="viewer" aria-label="Viewer"><img src="../icons/luma-v4-viewer.svg" alt=""><i class="run"></i></button>
+      <button class="dk" type="button" data-app="valet" aria-label="Valet"><img src="../icons/luma-v4-valet.svg" alt=""><i class="run"></i></button>
+      <button class="dk" type="button" data-app="settings" aria-label="Settings"><img src="../icons/luma-v4-settings.svg" alt=""><i class="run"></i></button>
+      <button class="dk" type="button" data-app="memos" aria-label="Memos"><img src="../icons/luma-v4-memo.svg" alt=""><i class="run"></i></button>
+      <button class="dk" type="button" data-app="tasks" aria-label="Tasks"><img src="../icons/luma-v4-tasks.svg" alt=""><i class="run"></i></button>
+      <button class="dk" type="button" data-app="disks" aria-label="Disks"><img src="../icons/luma-v4-disks.svg" alt=""><i class="run"></i></button>
+      <button class="dk" type="button" data-app="camera" aria-label="Camera"><img src="../icons/luma-v4-camera.svg" alt=""><i class="run"></i></button>
+      <button class="dk" type="button" data-app="maps" aria-label="Maps"><img src="../icons/luma-v4-maps.svg" alt=""><i class="run"></i></button>
+      <button class="dk" type="button" data-app="phone" aria-label="Phone"><img src="../icons/luma-v4-phone.svg" alt=""><i class="run"></i></button>
+      <button class="dk" type="button" data-app="calc" aria-label="Calculator"><img src="../icons/luma-v4-calculator.svg" alt=""><i class="run"></i></button>
+      <button class="dk" type="button" data-app="tipsplit" aria-label="Tip Split"><img src="../icons/luma-v4-tipsplit.svg" alt=""><i class="run"></i></button>
+      <button class="dk" type="button" data-app="ari" aria-label="Ari"><img src="../icons/luma-v4-ari.svg" alt=""><i class="run"></i></button>
+      <button class="dk" type="button" data-app="playground" aria-label="Playground"><img src="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%2282%2082%20860%20860%22%20width%3D%221024%22%20height%3D%221024%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22pgc-pl%22%20x1%3D%220.2%22%20y1%3D%220%22%20x2%3D%220.8%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffd768%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23f2932a%22%2F%3E%3C%2FlinearGradient%3E%3CradialGradient%20id%3D%22pgc-plh%22%20cx%3D%220.26%22%20cy%3D%220.12%22%20r%3D%220.8%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23fff%22%20stop-opacity%3D%220.32%22%2F%3E%3Cstop%20offset%3D%220.55%22%20stop-color%3D%22%23fff%22%20stop-opacity%3D%220.06%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23fff%22%20stop-opacity%3D%220%22%2F%3E%3C%2FradialGradient%3E%3ClinearGradient%20id%3D%22pgc-rim%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23fff%22%20stop-opacity%3D%220.5%22%2F%3E%3Cstop%20offset%3D%220.1%22%20stop-color%3D%22%23fff%22%20stop-opacity%3D%220%22%2F%3E%3Cstop%20offset%3D%220.86%22%20stop-color%3D%22%236b3300%22%20stop-opacity%3D%220%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%236b3300%22%20stop-opacity%3D%220.35%22%2F%3E%3C%2FlinearGradient%3E%3CclipPath%20id%3D%22pgc-clip%22%3E%3Crect%20x%3D%2282%22%20y%3D%2282%22%20width%3D%22860%22%20height%3D%22860%22%20rx%3D%22202%22%2F%3E%3C%2FclipPath%3E%3Cfilter%20id%3D%22pgc-amb%22%20x%3D%22-50%25%22%20y%3D%22-50%25%22%20width%3D%22200%25%22%20height%3D%22200%25%22%3E%3CfeGaussianBlur%20stdDeviation%3D%2256%22%2F%3E%3C%2Ffilter%3E%3Cfilter%20id%3D%22pgc-sh%22%20x%3D%22-50%25%22%20y%3D%22-50%25%22%20width%3D%22200%25%22%20height%3D%22200%25%22%3E%3CfeGaussianBlur%20stdDeviation%3D%2224%22%2F%3E%3C%2Ffilter%3E%3Cfilter%20id%3D%22pgc-hsoft%22%20x%3D%22-50%25%22%20y%3D%22-50%25%22%20width%3D%22200%25%22%20height%3D%22200%25%22%3E%3CfeGaussianBlur%20stdDeviation%3D%222.5%22%2F%3E%3C%2Ffilter%3E%3Cmask%20id%3D%22pgc-hl%22%20maskUnits%3D%22userSpaceOnUse%22%20x%3D%220%22%20y%3D%220%22%20width%3D%221024%22%20height%3D%221024%22%3E%3Crect%20fill%3D%22%23fff%22%20stroke%3D%22%23fff%22%20stroke-width%3D%222%22%20x%3D%22214%22%20y%3D%22484%22%20width%3D%22300%22%20height%3D%22282%22%20rx%3D%2256%22%2F%3E%3Crect%20fill%3D%22%23fff%22%20stroke%3D%22%23fff%22%20stroke-width%3D%222%22%20x%3D%22298%22%20y%3D%22302%22%20width%3D%22178%22%20height%3D%22178%22%20rx%3D%2240%22%20transform%3D%22rotate%28-12%20387%20391%29%22%2F%3E%3Ccircle%20fill%3D%22%23fff%22%20stroke%3D%22%23fff%22%20stroke-width%3D%222%22%20cx%3D%22702%22%20cy%3D%22660%22%20r%3D%22106%22%2F%3E%3Cpath%20fill%3D%22%23fff%22%20stroke%3D%22%23fff%22%20d%3D%22M634%20530%20L770%20530%20L702%20410%20Z%22%20stroke-width%3D%2252%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cg%20transform%3D%22translate%2810%2012%29%22%3E%3Crect%20fill%3D%22%23000%22%20stroke%3D%22%23000%22%20stroke-width%3D%222%22%20x%3D%22214%22%20y%3D%22484%22%20width%3D%22300%22%20height%3D%22282%22%20rx%3D%2256%22%2F%3E%3Crect%20fill%3D%22%23000%22%20stroke%3D%22%23000%22%20stroke-width%3D%222%22%20x%3D%22298%22%20y%3D%22302%22%20width%3D%22178%22%20height%3D%22178%22%20rx%3D%2240%22%20transform%3D%22rotate%28-12%20387%20391%29%22%2F%3E%3Ccircle%20fill%3D%22%23000%22%20stroke%3D%22%23000%22%20stroke-width%3D%222%22%20cx%3D%22702%22%20cy%3D%22660%22%20r%3D%22106%22%2F%3E%3Cpath%20fill%3D%22%23000%22%20stroke%3D%22%23000%22%20d%3D%22M634%20530%20L770%20530%20L702%20410%20Z%22%20stroke-width%3D%2252%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fg%3E%3C%2Fmask%3E%3Cmask%20id%3D%22pgc-lo%22%20maskUnits%3D%22userSpaceOnUse%22%20x%3D%220%22%20y%3D%220%22%20width%3D%221024%22%20height%3D%221024%22%3E%3Crect%20fill%3D%22%23fff%22%20stroke%3D%22%23fff%22%20stroke-width%3D%222%22%20x%3D%22214%22%20y%3D%22484%22%20width%3D%22300%22%20height%3D%22282%22%20rx%3D%2256%22%2F%3E%3Crect%20fill%3D%22%23fff%22%20stroke%3D%22%23fff%22%20stroke-width%3D%222%22%20x%3D%22298%22%20y%3D%22302%22%20width%3D%22178%22%20height%3D%22178%22%20rx%3D%2240%22%20transform%3D%22rotate%28-12%20387%20391%29%22%2F%3E%3Ccircle%20fill%3D%22%23fff%22%20stroke%3D%22%23fff%22%20stroke-width%3D%222%22%20cx%3D%22702%22%20cy%3D%22660%22%20r%3D%22106%22%2F%3E%3Cpath%20fill%3D%22%23fff%22%20stroke%3D%22%23fff%22%20d%3D%22M634%20530%20L770%20530%20L702%20410%20Z%22%20stroke-width%3D%2252%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cg%20transform%3D%22translate%28-10%20-12%29%22%3E%3Crect%20fill%3D%22%23000%22%20stroke%3D%22%23000%22%20stroke-width%3D%222%22%20x%3D%22214%22%20y%3D%22484%22%20width%3D%22300%22%20height%3D%22282%22%20rx%3D%2256%22%2F%3E%3Crect%20fill%3D%22%23000%22%20stroke%3D%22%23000%22%20stroke-width%3D%222%22%20x%3D%22298%22%20y%3D%22302%22%20width%3D%22178%22%20height%3D%22178%22%20rx%3D%2240%22%20transform%3D%22rotate%28-12%20387%20391%29%22%2F%3E%3Ccircle%20fill%3D%22%23000%22%20stroke%3D%22%23000%22%20stroke-width%3D%222%22%20cx%3D%22702%22%20cy%3D%22660%22%20r%3D%22106%22%2F%3E%3Cpath%20fill%3D%22%23000%22%20stroke%3D%22%23000%22%20d%3D%22M634%20530%20L770%20530%20L702%20410%20Z%22%20stroke-width%3D%2252%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fg%3E%3C%2Fmask%3E%3ClinearGradient%20id%3D%22pgc-body%22%20x1%3D%220.1%22%20y1%3D%220.05%22%20x2%3D%220.9%22%20y2%3D%220.95%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23ffffff%22%2F%3E%3Cstop%20offset%3D%220.6%22%20stop-color%3D%22%23fff8ee%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23f6e6cf%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Cg%20id%3D%22plate%22%3E%3Crect%20x%3D%2282%22%20y%3D%2282%22%20width%3D%22860%22%20height%3D%22860%22%20rx%3D%22202%22%20fill%3D%22url%28%23pgc-pl%29%22%2F%3E%3Crect%20x%3D%2282%22%20y%3D%2282%22%20width%3D%22860%22%20height%3D%22860%22%20rx%3D%22202%22%20fill%3D%22url%28%23pgc-plh%29%22%2F%3E%3C%2Fg%3E%3Cg%20clip-path%3D%22url%28%23pgc-clip%29%22%3E%3Cellipse%20cx%3D%22520%22%20cy%3D%22760%22%20rx%3D%22320%22%20ry%3D%22140%22%20fill%3D%22%237a3a00%22%20opacity%3D%220.18%22%20filter%3D%22url%28%23pgc-amb%29%22%2F%3E%3C%2Fg%3E%3Cg%20opacity%3D%220.42%22%20filter%3D%22url%28%23pgc-sh%29%22%3E%3Cg%20transform%3D%22translate%2814%2030%29%22%3E%3Crect%20fill%3D%22%237a3a00%22%20stroke%3D%22%237a3a00%22%20stroke-width%3D%222%22%20x%3D%22214%22%20y%3D%22484%22%20width%3D%22300%22%20height%3D%22282%22%20rx%3D%2256%22%2F%3E%3Crect%20fill%3D%22%237a3a00%22%20stroke%3D%22%237a3a00%22%20stroke-width%3D%222%22%20x%3D%22298%22%20y%3D%22302%22%20width%3D%22178%22%20height%3D%22178%22%20rx%3D%2240%22%20transform%3D%22rotate%28-12%20387%20391%29%22%2F%3E%3Ccircle%20fill%3D%22%237a3a00%22%20stroke%3D%22%237a3a00%22%20stroke-width%3D%222%22%20cx%3D%22702%22%20cy%3D%22660%22%20r%3D%22106%22%2F%3E%3Cpath%20fill%3D%22%237a3a00%22%20stroke%3D%22%237a3a00%22%20d%3D%22M634%20530%20L770%20530%20L702%20410%20Z%22%20stroke-width%3D%2252%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3Cg%20id%3D%22object-main%22%3E%3Cg%20transform%3D%22translate%280%2016%29%22%3E%3Crect%20fill%3D%22%23e3b77e%22%20stroke%3D%22%23e3b77e%22%20stroke-width%3D%222%22%20x%3D%22214%22%20y%3D%22484%22%20width%3D%22300%22%20height%3D%22282%22%20rx%3D%2256%22%2F%3E%3Crect%20fill%3D%22%23e3b77e%22%20stroke%3D%22%23e3b77e%22%20stroke-width%3D%222%22%20x%3D%22298%22%20y%3D%22302%22%20width%3D%22178%22%20height%3D%22178%22%20rx%3D%2240%22%20transform%3D%22rotate%28-12%20387%20391%29%22%2F%3E%3Ccircle%20fill%3D%22%23e3b77e%22%20stroke%3D%22%23e3b77e%22%20stroke-width%3D%222%22%20cx%3D%22702%22%20cy%3D%22660%22%20r%3D%22106%22%2F%3E%3Cpath%20fill%3D%22%23e3b77e%22%20stroke%3D%22%23e3b77e%22%20d%3D%22M634%20530%20L770%20530%20L702%20410%20Z%22%20stroke-width%3D%2252%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fg%3E%3Crect%20fill%3D%22url%28%23pgc-body%29%22%20stroke%3D%22url%28%23pgc-body%29%22%20stroke-width%3D%222%22%20x%3D%22214%22%20y%3D%22484%22%20width%3D%22300%22%20height%3D%22282%22%20rx%3D%2256%22%2F%3E%3Crect%20fill%3D%22url%28%23pgc-body%29%22%20stroke%3D%22url%28%23pgc-body%29%22%20stroke-width%3D%222%22%20x%3D%22298%22%20y%3D%22302%22%20width%3D%22178%22%20height%3D%22178%22%20rx%3D%2240%22%20transform%3D%22rotate%28-12%20387%20391%29%22%2F%3E%3Ccircle%20fill%3D%22url%28%23pgc-body%29%22%20stroke%3D%22url%28%23pgc-body%29%22%20stroke-width%3D%222%22%20cx%3D%22702%22%20cy%3D%22660%22%20r%3D%22106%22%2F%3E%3Cpath%20fill%3D%22url%28%23pgc-body%29%22%20stroke%3D%22url%28%23pgc-body%29%22%20d%3D%22M634%20530%20L770%20530%20L702%20410%20Z%22%20stroke-width%3D%2252%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cg%20filter%3D%22url%28%23pgc-hsoft%29%22%3E%3Crect%20x%3D%220%22%20y%3D%220%22%20width%3D%221024%22%20height%3D%221024%22%20fill%3D%22%23b0763a%22%20opacity%3D%220.28%22%20mask%3D%22url%28%23pgc-lo%29%22%2F%3E%3Crect%20x%3D%220%22%20y%3D%220%22%20width%3D%221024%22%20height%3D%221024%22%20fill%3D%22%23fff%22%20opacity%3D%221%22%20mask%3D%22url%28%23pgc-hl%29%22%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3Cg%20clip-path%3D%22url%28%23pgc-clip%29%22%3E%3Crect%20x%3D%2282%22%20y%3D%2282%22%20width%3D%22860%22%20height%3D%22860%22%20rx%3D%22202%22%20fill%3D%22none%22%20stroke%3D%22url%28%23pgc-rim%29%22%20stroke-width%3D%228%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E" alt=""><i class="run"></i></button>
+      <button class="dk" type="button" data-app="canvas" aria-label="Canvas"><img src="../icons/luma-v4-designer.svg" alt=""><i class="run"></i></button>
+      <button class="dk" type="button" data-app="grid" aria-label="Grid"><img src="../icons/luma-v4-spreadsheets.svg" alt=""><i class="run"></i></button>
+      <button class="dk" type="button" data-app="stage" aria-label="Stage"><img src="../icons/luma-v4-presentations.svg" alt=""><i class="run"></i></button>
+      <button class="dk" type="button" data-app="session" aria-label="Session"><img src="../icons/luma-v4-daw.svg" alt=""><i class="run"></i></button>
+      <button class="dk" type="button" data-app="darkroom" aria-label="Focus"><img src="../icons/luma-v4-photo-editor.svg" alt=""><i class="run"></i></button>
+      <button class="dk" type="button" data-app="reel" aria-label="Reel"><img src="../icons/luma-v4-video-editor.svg" alt=""><i class="run"></i></button>
+    </div>
+    <div class="r"><button class="sb" type="button" id="s-stat"></button></div>
+  </nav>
+</div>
+
+<script>
+/* ?showcase=1, the website's "Try it yourself": only apps Luma really ships (Nick, 2 Nov 2026). The mockup-only apps
+   (YouTube, Huddle, Diskord, Tip Split and the unbuilt creative suite) leave the shelf, so no launcher, dock, home
+   screen or drawer lists them, and Huddle's followed games leave the island and Now. */
+if (new URLSearchParams(location.search).has('showcase')) {
+  ['youtube', 'huddle', 'discord', 'tipsplit', 'canvas', 'grid', 'stage', 'session', 'reel'].forEach(a => document.querySelector(`.shelf .dk[data-app="${a}"]`)?.remove());
+  delete window.LumaHuddle;
+}
+</script>
+<script src="luma-73.js"></script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092" integrity="sha512-UKNk8GbxkABxKcXYuLkO16EleLGUkcvJWtpSNmExE0Too3ZaFAxTscNWEc1OdAv5/BikHawapSCaiD2XCmp+Bw==" data-cf-beacon='{"version":"2024.11.0","token":"ae2a58e4dba74a88bc8c0e0d79125456","r":1,"spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
