@@ -11,10 +11,17 @@ pozyskujemy bezpośrednio z serwisu. Szczegóły i pełna lista plików:
 
 ## Szybki start
 
-1. **Podgląd od razu (bez pobierania):** otwórz
-   [`preview/index.html`](https://htmlpreview.github.io/?https://github.com/KimoSterz/SunoOS_2.0/blob/main/preview/index.html)
-   albo po prostu [makietę na simplyluma.com](https://simplyluma.com/simframe/mockups/luma-next-73.html?desktop=1&app=none&showcase=1&zoom=0.7950) —
-   `preview/index.html` osadza ją w iframe.
+1. **Podgląd na żywo (bez pobierania):**
+
+   - gotowy link: [podgląd SunoOS](https://htmlpreview.github.io/?https://github.com/KimoSterz/SunoOS_2.0/blob/main/preview/index.html)
+   - albo wprost makieta Luma: <https://simplyluma.com/simframe/mockups/luma-next-73.html?desktop=1&app=none&showcase=1&zoom=0.7950>
+
+   `preview/index.html` osadza makietę w iframe (serwis Luma na to pozwala —
+   nie wysyła `X-Frame-Options`).
+
+   Jeśli chcesz stały adres pod własną domeną GitHuba, włącz GitHub Pages:
+   *Settings → Pages → Branch: `main`, folder: `/preview`* — podgląd pojawi się
+   wtedy pod `https://kimosterz.github.io/SunoOS_2.0/`.
 
 2. **Pełna, lokalna kopia kodu makiety (zalecane do dalszej pracy):**
 
@@ -47,3 +54,4 @@ docs/inventory.md   pełny inwentarz plików makiety + adnotacje
 - [ ] Uruchomić `tools/fetch_upstream.py` i sprawdzić sumy SHA-256 (gdy tylko dostęp z sieci jest wygodniejszy niż przy tworzeniu repo).
 - [ ] Po powrocie `github.com/SimplyLuma/luma` — porównać `simframe/` z źródłami upstream i skopiować licencję.
 - [ ] Przebrandowanie na SunoOS (nazwa, kolory, ikony) — po zmerchowaniu plików w `simframe/`.
+- [ ] Włączyć GitHub Pages (folder `/preview`) dla stałego adresu podglądu.
