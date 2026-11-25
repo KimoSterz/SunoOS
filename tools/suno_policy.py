@@ -1,12 +1,17 @@
 #!/usr/bin/env python3
-"""Content policy for the vendored Luma mockup (simframe/).
+"""Content policy for the vendored Luma mockup (simframe/), SunoOS fork.
 
-Removes the third-party apps the SunoOS system does not carry, wherever
-they appear as DATA (Depot catalogue, launch pad, status tray, update and
-history feeds, phone Depot shelves, job filters). It also trims the icon
-bundle and prunes icon files no longer referenced. Logic, rendering,
-animations and layout are untouched. Idempotent: running twice changes
-nothing. Applied automatically by tools/fetch_upstream.py after downloads.
+Rules:
+- Depot (the store) keeps its FULL catalogue, third-party apps included —
+  they are an option to install, nothing more. catalogue.js is untouched.
+- The running system has NO third-party apps installed: empty device
+  install lists, no pending updates, no update history beyond Luma, no
+  dock/launch-pad entries (XAPPS) and an empty background tray.
+- File names are rebranded luma... -> Suno... (refs, bundle keys); upstream
+  URLs stay untouched.
+- The icon bundle and icon files are pruned to what is still referenced.
+Logic, rendering, animations and layout are untouched. Idempotent. Applied
+automatically by tools/fetch_upstream.py after downloads.
 """
 
 import io
@@ -15,11 +20,22 @@ import os
 import re
 import sys
 
-ACTIVE_X = {'spotify', 'discord', 'obsidian', 'zoom', 'steam'}
-TRAY_DEAD = {'nextcloud', 'bitwarden', 'signal'}
-PHONE_DEAD = {'blender', 'gimp', 'audacity', 'signal', 'libre', 'vlc',
-              'kodi', 'obs', 'heroic', 'moonlight', 'supertux'}
+# Ids of third-party (non-Luma) apps, as used in mockup data.
+XP_IDS = {'spotify', 'discord-x', 'discord', 'obsidian', 'zoom', 'steam'}
+TRAY_IDS = {'discord', 'steam', 'nextcloud', 'bitwarden', 'signal'}
+# Rows/units that only exist for (now uninstalled) third-party apps.
+XP_ROW_IDS = XP_IDS | {'blender', 'gimp', 'audacity', 'signal', 'libre',
+                       'vlc', 'kodi', 'obs', 'heroic', 'moonlight',
+                       'supertux', 'nextcloud', 'bitwarden', 'firefox',
+                       'telegram', 'thunderbird', 'kdenlive', 'godot'}
 ICON_KEEP_PREFIX = ('Suno-v4-', 'Suno-ink-', '_cap-', 'brand-')
+
+REF_RENAMES = [('luma-next-73.html', 'Suno-next-73.html'),
+               ('luma-73', 'Suno-73'),
+               ('luma-v4-', 'Suno-v4-'),
+               ('luma-ink-', 'Suno-ink-'),
+               ('luma-favicon', 'Suno-favicon'),
+               ('social-luma', 'social-suno')]
 
 
 def read(path):
@@ -37,218 +53,8 @@ def diff_write(path, s):
     return False
 
 
-def referenced_blob(root):
-    corpus = []
-    for base, dirs, files in os.walk(root):
-        dirs[:] = [d for d in dirs if d != 'icons']
-        for f in files:
-            if f.endswith(('.json', '.css', '.js', '.html')):
-                corpus.append(os.path.join(base, f))
-    return '\n'.join(read(f) for f in corpus)
-
-
-def stem_used(stem, blob):
-    if stem in blob:
-        return True
-    if re.search(r'[\'"/]%s\.' % re.escape(stem), blob):
-        return True
-    parts = stem.split('-')
-    while len(parts) > 1:
-        parts.pop()
-        if '-'.join(parts) in blob:
-            return True
-    return False
-
-
-DEAD_IDS = {'blender', 'gimp', 'inkscape', 'krita', 'kdenlive', 'audacity',
-            'obs', 'vlc', 'kodi', 'signal', 'telegram', 'thunderbird',
-            'libreoffice', 'libre', 'vscodium', 'godot', 'nextcloud',
-            'bitwarden', 'firefox', 'heroic', 'moonlight', 'supertux',
-            'qbittorrent'}
-
-
-def drop_dead_ids(s):
-    return re.sub(r"'(?:%s)'(,\s*)?" % '|'.join(DEAD_IDS), '', s)
-
-
-def clean_catalogue(root):
-    p = os.path.join(root, 'apps', 'depot', 'catalogue.js')
-    s = read(p)
-
-    lines = s.split('\n')
-    out, i = [], 0
-    while i < len(lines):
-        if lines[i].lstrip().startswith("X('"):
-            j, depth, started = i, 0, False
-            while j < len(lines):
-                depth += lines[j].count('(') - lines[j].count(')')
-                started = started or '(' in lines[j]
-                if started and depth <= 0:
-                    break
-                j += 1
-            block = '\n'.join(lines[i:j + 1])
-            if 'inst: 1' not in block:
-                i = j + 1
-                continue
-            out.extend(lines[i:j + 1])
-            i = j + 1
-            continue
-        out.append(lines[i])
-        i += 1
-    s = '\n'.join(out)
-
-    s = drop_dead_ids(s)
-    s = re.sub(r",\s*,", ',', s)
-    s = re.sub(r"\[\s*,", '[', s)
-    s = re.sub(r",\s*\]", ']', s)
-    diff_write(p, s)
-
-
-def clean_world(root):
-    p = os.path.join(root, 'apps', 'depot', 'world.js')
-    s = read(p)
-
-    def keep_ids(m):
-        ids = [x.strip() for x in m.group(2).split(',') if x.strip()]
-        ids = [x for x in ids if x.strip("'") in ACTIVE_X]
-        return "%s: [%s]%s" % (m.group(1), ', '.join(ids), m.group(3))
-    s = re.sub(r'^(\s*(?:xps|x1|fp6|tv|home)): \[([^\]]*)\](,?)$', keep_ids, s, flags=re.M)
-
-    def keep_pending(m):
-        block = m.group(0)
-        for entry in re.findall(r'\{ app: \'([^\']+)\'[^}]*?\},\n', block):
-            if entry not in ACTIVE_X:
-                block = re.sub(r"\{ app: '%s'[^}]*?\},\n" % entry, '', block)
-        return block
-    s = re.sub(r'D\.pending = \[(.*?)\];', keep_pending, s, count=1, flags=re.S)
-
-    def keep_done(m):
-        rows = re.findall(r'\[[^\[\]]+\]', m.group(1))
-        kept = []
-        for r in rows:
-            mm = re.match(r"\['([^']+)'", r)
-            if mm and (mm.group(1) == 'luma' or mm.group(1) in ACTIVE_X):
-                kept.append(r)
-        return 'D.done = [' + ', '.join(kept) + '];'
-    s = re.sub(r'D\.done = \[(.*?)\];', keep_done, s, count=1, flags=re.S)
-
-    def keep_matched(m):
-        ids = [x.strip() for x in m.group(1).split(',') if x.strip()]
-        ids = [x for x in ids if x.strip("'") in ACTIVE_X]
-        return 'D.matched = [%s];' % ', '.join(ids)
-    s = re.sub(r"D\.matched = \[([^\]]*)\];", keep_matched, s, count=1)
-
-    s = s.replace("['app', 'krita'], ", '').replace("['app', 'godot'], ", '')
-    diff_write(p, s)
-
-
-def clean_shell(root):
-    p = os.path.join(root, 'desktop', 'shell.js')
-    s = read(p)
-
-    def keep_xapps(m):
-        kept = []
-        for t in re.findall(r'\[[^\[\]]+\]', m.group(1)):
-            mm = re.match(r"\['([^']+)'", t)
-            if mm and (mm.group(1) in ACTIVE_X or mm.group(1) == 'discord-x'):
-                kept.append(t)
-        return 'const XAPPS = [' + ', '.join(kept) + '];'
-    s = re.sub(r'const XAPPS = \[(.*?)\];', keep_xapps, s, count=1, flags=re.S)
-
-    lines = s.split('\n')
-    out = []
-    for ln in lines:
-        mm = re.match(r"\s*\{ id: '([^']+)'", ln)
-        if mm and mm.group(1) in TRAY_DEAD:
-            continue
-        out.append(ln)
-    diff_write(p, '\n'.join(out))
-
-
-def clean_depot_b(root):
-    p = os.path.join(root, 'apps', 'depot', 'depot-b.js')
-    s = read(p)
-    dead = {'audacity', 'vlc', 'kodi', 'signal', 'telegram', 'thunderbird',
-            'kdenlive', 'bitwarden'}
-    for x in sorted(dead, key=len, reverse=True):
-        s = re.sub(", '%s'" % x, '', s)
-        s = re.sub(r"\['%s', " % x, '[', s)
-    s = re.sub(r",\s*,", ',', s)
-    s = re.sub(r"\[\s*,", '[', s)
-    s = re.sub(r",\s*\]", ']', s)
-    diff_write(p, s)
-
-
-def clean_luma73(root):
-    p = os.path.join(root, 'Suno-73.js')
-    s = read(p)
-
-    lines = s.split('\n')
-    out = []
-    for ln in lines:
-        mm = re.match(r"\s*da\('([^']+)'", ln)
-        if mm and mm.group(1) in PHONE_DEAD:
-            continue
-        out.append(ln)
-    s = '\n'.join(out)
-
-    s = s.replace(
-        "['blender', 'obsidian', 'spotify', 'signal', 'vlc', 'steam', 'gimp', 'discord', 'libre']",
-        "['obsidian', 'spotify', 'discord', 'steam']")
-    s = drop_dead_ids(s)
-    s = re.sub(r",\s*,", ',', s)
-    s = re.sub(r"\[\s*,", '[', s)
-    s = re.sub(r",\s*\]", ']', s)
-    diff_write(p, s)
-
-
-def trim_bundle(root):
-    p = os.path.join(root, 'icons', '_bundle.json')
-    if not os.path.exists(p):
-        return 0
-    try:
-        bundle = json.loads(read(p))
-    except Exception as e:
-        print('trim_bundle: %s' % e, file=sys.stderr)
-        return 0
-    blob = referenced_blob(root)
-    kept = {k: v for k, v in bundle.items()
-            if k.startswith(ICON_KEEP_PREFIX) or stem_used(k, blob)}
-    raw = json.dumps(kept, separators=(',', ':'))
-    diff_write(p, raw)
-    return len(bundle) - len(kept)
-
-
-def clean_icons(root):
-    ico = os.path.join(root, 'icons')
-    if not os.path.isdir(ico):
-        return []
-    blob = referenced_blob(root)
-    removed = []
-    for f in sorted(os.listdir(ico)):
-        if not f.endswith('.svg'):
-            continue
-        stem = f[:-4]
-        if stem.startswith(ICON_KEEP_PREFIX):
-            continue
-        if stem_used(stem, blob):
-            continue
-        os.remove(os.path.join(ico, f))
-        removed.append(f)
-    return removed
-
-
-REF_RENAMES = [('luma-next-73.html', 'Suno-next-73.html'),
-               ('luma-73', 'Suno-73'),
-               ('luma-v4-', 'Suno-v4-'),
-               ('luma-ink-', 'Suno-ink-'),
-               ('luma-favicon', 'Suno-favicon'),
-               ('social-luma', 'social-suno')]
-
-
 def rename_refs(root):
-    """Upstream pliki nazywa pliki `luma…`; w repo są to `Suno…`. Zamienia
-    odwołania do plików w treści makiety (nie URLs upstream i nie branding)."""
+    """Our files are named `Suno…`; rewrite references (not upstream URLs)."""
     n = 0
     for base, dirs, files in os.walk(root):
         for f in files:
@@ -287,26 +93,169 @@ def rename_bundle_keys(simframe):
     return False
 
 
-def clean_runs(root):
-    """Tabela D.runs (gdzie aplikacja działa) — usuwa wpisy martwych aplikacji."""
-    p = os.path.join(root, 'apps', 'depot', 'world.js')
-    s = read(p)
-    m = re.search(r'(  tide: ALL,.*?\n)\};', s, re.S)
-    if not m:
+def targets(root, entry, sections_dir):
+    """Entry file, or—after the split—the section files that replace it."""
+    p = os.path.join(root, entry)
+    if os.path.exists(p) and 'SunoOS: this file is split' not in read(p)[:200]:
+        return [p]
+    d = os.path.join(root, sections_dir)
+    if os.path.isdir(d):
+        return sorted(os.path.join(d, f) for f in os.listdir(d)
+                      if f.endswith('.js'))
+    return [p] if os.path.exists(p) else []
+
+
+def strip_installed(ln):
+    ln = re.sub(r',\s*inst: 1\b,?', '', ln)
+    ln = re.sub(r",\s*upd: '[^']*'", '', ln)
+    return ln
+
+
+def clean_catalogue_installed(root):
+    p = os.path.join(root, 'apps', 'depot', 'catalogue.js')
+    if not os.path.exists(p):
         return
-    ent = re.findall(r'([A-Za-z][\w-]*):\s*(ALL|MOB|PC|\[[^\]]*\])', m.group(1))
-    parts = ['%s: %s' % (k, v) for k, v in ent if k not in DEAD_IDS]
-    lines, cur = [], ''
-    for it in parts:
-        if cur and len(cur) + len(it) + 2 > 118:
-            lines.append('  ' + cur)
-            cur = it
-        else:
-            cur = (cur + ', ' + it) if cur else it
-    if cur:
-        lines.append('  ' + cur)
-    blk = ',\n'.join(lines) + ',\n'
-    diff_write(p, s[:m.start(1)] + blk + s[m.end(1):])
+    s = read(p)
+    lines = s.split('\n')
+    out, inblock, hit = [], False, False
+    for ln in lines:
+        mm = re.match(r"\s*X\('([^']+)'", ln)
+        if mm:
+            inblock, hit = True, mm.group(1) in XP_IDS
+        if inblock and hit:
+            ln = strip_installed(ln)
+        if inblock and depth_closed(ln):
+            inblock = False
+        out.append(ln)
+    diff_write(p, '\n'.join(out))
+
+
+def depth_closed(ln):
+    return ln.count('(') - ln.count(')') <= 0 and ('{' in ln or '}' in ln or ')' in ln)
+
+
+def clean_world(root):
+    """Nothing third-party is installed, pending, matched or in the history."""
+    p = os.path.join(root, 'apps', 'depot', 'world.js')
+    if not os.path.exists(p):
+        return
+    s = read(p)
+    s = re.sub(r'(?m)^(\s*(?:xps|x1|fp6|tv|home)): \[[^\]]*\](,?)$',
+               r'\1: []\2', s)
+    s = re.sub(r'D\.pending = \[.*?\];', 'D.pending = [];', s, flags=re.S)
+    s = re.sub(r'D\.matched = \[[^\]]*\];', 'D.matched = [];', s, count=1)
+
+    def keep_done(m):
+        rows = re.findall(r'\[[^\[\]]+\]', m.group(1))
+        kept = [r for r in rows
+                if not re.match(r"\s*\['([^']+)'", r)
+                or re.match(r"\s*\['([^']+)'", r).group(1) == 'luma']
+        return 'D.done = [' + ', '.join(kept) + '];'
+    s = re.sub(r'D\.done = \[(.*?)\];', keep_done, s, count=1, flags=re.S)
+    diff_write(p, s)
+
+
+def clean_shell(root):
+    """Dock/launch pad: Luma apps only (XAPPS = []); empty background tray."""
+    for p in targets(root, os.path.join('desktop', 'shell.js'),
+                     os.path.join('desktop', 'shell', 'sections')):
+        s = read(p)
+        s = re.sub(r'const XAPPS = \[.*?\];', 'const XAPPS = [];', s,
+                   count=1, flags=re.S)
+        out = []
+        for ln in s.split('\n'):
+            mm = re.match(r"\s*\{ id: '([^']+)'", ln)
+            if mm and mm.group(1) in TRAY_IDS:
+                continue
+            out.append(ln)
+        diff_write(p, '\n'.join(out))
+
+
+def clean_phone_depot(root):
+    """Phone Depot: catalogue rows stay (store), but nothing is installed;
+    update-history rows for uninstalled apps are dropped (unguarded lookups)."""
+    files = targets(root, 'Suno-73.js', os.path.join('Suno-73', 'sections'))
+    for p in files:
+        s = read(p)
+        lines = s.split('\n')
+        out = []
+        for ln in lines:
+            mm = re.match(r"\s*da\('([^']+)'", ln)
+            if mm and mm.group(1) in XP_IDS:
+                ln = strip_installed(ln)
+                ln = re.sub(r'\s*,\s*upd:\s*\'[^\']+\',', ',', ln)
+            out.append(ln)
+        s = '\n'.join(out)
+
+        def keep_rows(m):
+            kept = []
+            for r in re.findall(r'\[[^\[\]]+\]', m.group(2)):
+                mm = re.match(r"\s*\['([^']+)'", r)
+                if not (mm and mm.group(1) in XP_ROW_IDS):
+                    kept.append(r)
+            return m.group(1) + '[' + ', '.join(kept) + ']'
+        s = re.sub(r'(</header><div class="drows">\$\{)(\[\[.*?\]\])',
+                   keep_rows, s, count=1, flags=re.S)
+        diff_write(p, s)
+
+
+def referenced_blob(root):
+    corpus = []
+    for base, dirs, files in os.walk(root):
+        dirs[:] = [d for d in dirs if d != 'icons']
+        for f in files:
+            if f.endswith(('.json', '.css', '.js', '.html')):
+                corpus.append(os.path.join(base, f))
+    return '\n'.join(read(f) for f in corpus)
+
+
+def stem_used(stem, blob):
+    if stem in blob:
+        return True
+    if re.search(r'[\\"/]%s\.' % re.escape(stem), blob):
+        return True
+    parts = stem.split('-')
+    while len(parts) > 1:
+        parts.pop()
+        if '-'.join(parts) in blob:
+            return True
+    return False
+
+
+def trim_bundle(simframe):
+    p = os.path.join(simframe, 'icons', '_bundle.json')
+    if not os.path.exists(p):
+        return 0
+    try:
+        bundle = json.loads(read(p))
+    except Exception as e:
+        print('trim_bundle: %s' % e, file=sys.stderr)
+        return 0
+    blob = referenced_blob(os.path.join(simframe))
+    kept = {k: v for k, v in bundle.items()
+            if k.startswith(ICON_KEEP_PREFIX) or stem_used(k, blob)}
+    raw = json.dumps(kept, separators=(',', ':'))
+    diff_write(p, raw)
+    return len(bundle) - len(kept)
+
+
+def clean_icons(simframe):
+    ico = os.path.join(simframe, 'icons')
+    if not os.path.isdir(ico):
+        return []
+    blob = referenced_blob(simframe)
+    removed = []
+    for f in sorted(os.listdir(ico)):
+        if not f.endswith('.svg'):
+            continue
+        stem = f[:-4]
+        if stem.startswith(ICON_KEEP_PREFIX):
+            continue
+        if stem_used(stem, blob):
+            continue
+        os.remove(os.path.join(ico, f))
+        removed.append(f)
+    return removed
 
 
 def clean(root):
@@ -314,12 +263,10 @@ def clean(root):
     mock = os.path.join(root, 'mockups')
     rename_refs(mock)
     rename_bundle_keys(simframe)
-    clean_catalogue(mock)
+    clean_catalogue_installed(mock)
     clean_world(mock)
-    clean_runs(mock)
     clean_shell(mock)
-    clean_depot_b(mock)
-    clean_luma73(mock)
+    clean_phone_depot(mock)
     n = trim_bundle(simframe)
     n += len(clean_icons(simframe))
     return n

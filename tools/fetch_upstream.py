@@ -86,7 +86,11 @@ APP_ICONS = [
 
 # Ikony aplik z paska makiety (Luma utrzymuje je pod mockups/apps/depot/marks/).
 # Sygnaturem sa linki z tresci shell.js; brak pliku = pomijamy z ostrzezeniem.
-DEPOT_MARKS = ["discord", "nextcloud", "bitwarden", "signal", "steam"]
+DEPOT_MARKS = ["audacity", "bitwarden", "blender", "discord", "firefoxbrowser",
+               "gimp", "godotengine", "inkscape", "kdenlive", "kodi", "krita",
+               "libreoffice", "nextcloud", "obsidian", "obsstudio", "signal",
+               "spotify", "steam", "telegram", "thunderbird", "vlcmediaplayer",
+               "vscodium", "zoom"]
 
 
 def fetch(url):

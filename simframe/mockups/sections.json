@@ -3,8 +3,8 @@
     "entry": "Suno-73.js",
     "sections": "Suno-73/sections",
     "count": 14,
-    "bytes": 1729449,
-    "sha": "a5be86cfece92543"
+    "bytes": 1730693,
+    "sha": "45c6777fd24c2f84"
   },
   "Suno-73.css": {
     "entry": "Suno-73.css",
@@ -17,8 +17,8 @@
     "entry": "desktop/shell.js",
     "sections": "desktop/shell/sections",
     "count": 2,
-    "bytes": 103796,
-    "sha": "467de5038cd5f122"
+    "bytes": 103182,
+    "sha": "e3381a9a2775b92c"
   },
   "desktop/shell.css": {
     "entry": "desktop/shell.css",

@@ -152,8 +152,6 @@
   const PADV = SVAR === 'line' ? 7 : 11;   /* the padding round the shelf's contents; the shelf's height is the icon plus twice this */
   const MK = U('apps/depot/marks/');
   const TRAY = [
-    { id: 'discord', n: 'Discord', bg: '#5865F2', st: 'attn', badge: 2, line: '2 mentions in #launch', menu: [['open', 'Open Discord', 'app-window'], ['mute', 'Mute for an hour', 'bell-off'], ['quit', 'Quit Discord', 'x']] },
-    { id: 'steam', n: 'Steam', bg: '#1B2838', st: 'idle', line: 'Your games are up to date', menu: [['open', 'Open Steam', 'app-window'], ['quit', 'Quit Steam', 'x']] },
   ];
   let TCUR = '';
   const tApp = id => TRAY.find(a => a.id === id);
@@ -283,7 +281,7 @@
     const days = [...new Set(list.map(f => f.day || 'Earlier'))];
     return head + `<div class="fdays">${days.map(d => `<h6>${d}</h6>${list.filter(f => (f.day || 'Earlier') === d).map(f => row(f)).join('')}`).join('')}</div>` + foot; }
   /* apps from elsewhere, drawn with their official marks on their own colour (the same faces as Depot's) */
-  const XAPPS = [['discord-x', 'Discord', 'discord', '#5865F2'], ['zoom', 'Zoom', 'zoom', '#0B5CFF'], ['steam', 'Steam', 'steam', '#1B2838'], ['spotify', 'Spotify', 'spotify', '#1DB954'], ['obsidian', 'Obsidian', 'obsidian', '#7C3AED']];
+  const XAPPS = [];
   const padApps = () => [...ALL().filter(id => id !== 'discord').map(id => ({ id, n: LNAME(id), ic: `<span class="ic" style="background-image:url(${LICON(id)})"></span>` })),
     ...XAPPS.map(([id, n, m, bg]) => ({ id: 'x:' + id, n, ic: `<span class="ic xic" style="--c:${bg};--m:url('${MK}${m}.svg')"></span>` }))].sort((a, b) => a.n.localeCompare(b.n));
   /* pages of seven by four; search shows every match on one page */
@@ -423,3 +421,9 @@
   function placeLip() { const top = ROWS.top; let t = 0;
     if (!top.hidden && S.attach !== 'free' && !S.tuck && ($('.slot.c', top).children.length || S.align !== 'spread')) t = (S.attach === 'prot' ? 0 : INS) + S.size + 2 * PADV;
     nl.style.setProperty('--nt', t + 'px'); nl.classList.toggle('right', S.notif === 'right'); }
+  function dismiss(id) { NQ = NQ.filter(n => n.id !== +id); if (NS === 'tray') openTray(); else rest(); }
+
+  /* ── Popovers ──────────────────────────────────────────────────────────── */
+  const pop = $('#pop'); let popKind = '', popAnchor = null;
+  const rel = el => { const s = scr.getBoundingClientRect(), k = s.width / W, r = el.getBoundingClientRect(); return { x: (r.left - s.left) / k, y: (r.top - s.top) / k, w: r.width / k, h: r.height / k }; };
+  function edgeOf(el) { const row = el.closest('.row'); if (row) return ['bottom', 'top', 'left', 'right'].find(e => row.classList.contains('e-' + e)); return rel(el).y > H / 2 ? 'bottom' : 'top'; }

@@ -552,7 +552,7 @@
   document.addEventListener('selectionchange', () => { clearTimeout(RT.t); RT.t = setTimeout(() => { const s = getSelection();
     RT.eds.forEach(([e, b, h]) => { const ed = $(e), bar = $(b); if (!bar) return; if (!ed || !s.rangeCount || s.isCollapsed || !ed.contains(s.anchorNode) || !s.toString().trim()) { lBubble.hide(bar); return; }
       lBubble(bar, $(h), s.getRangeAt(0).getBoundingClientRect(), rtBtn('bold', 'Bold', 'bold') + rtBtn('italic', 'Italic', 'italic') + rtBtn('highlight', 'Highlight', 'highlighter') + rtBtn('link', 'Link', 'link') + `<span class="vr"></span><button class="ib" type="button" data-rtmore title="More formatting" aria-label="More formatting">${ic('ellipsis')}</button>`); }); }, 200); });
-  document.addEventListener('scroll', e => { if (!e.target.closest?.('.selbar')) RT.eds.forEach(([ b]) => lBubble.hide($(b))); }, true);
+  document.addEventListener('scroll', e => { if (!e.target.closest?.('.selbar')) RT.eds.forEach(([, b]) => lBubble.hide($(b))); }, true);
   document.addEventListener('mousedown', e => { if (e.target.closest?.('[data-rtfmt], [data-rtmore]')) e.preventDefault(); }, true);
   document.addEventListener('click', e => { const m = e.target.closest?.('[data-rtmore]'), b = e.target.closest?.('[data-rtfmt]'); if (!m && !b) return; e.stopPropagation(); e.preventDefault();
     if (m) { lMenu(m, `<h6>Format</h6>${[['underline', 'Underline', 'underline'], ['strikeThrough', 'Strikethrough', 'strikethrough'], ['insertUnorderedList', 'Bulleted list', 'list'], ['insertOrderedList', 'Numbered list', 'list-ordered'], ['removeFormat', 'Plain text', 'type']].map(([k, n, i]) => crMi(`data-rtfmt="${k}"`, i, n)).join('')}`); return; }

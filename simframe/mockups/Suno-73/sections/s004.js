@@ -32,10 +32,21 @@
   da('weather', 'Weather', 'The sky, at a glance', 'tools', { luma: 1, icon: 'weather', inst: 1, size: '6 MB' });
   da('vault', 'Vault', 'Passwords and passkeys, synced privately', 'tools', { luma: 1, icon: 'vault', size: '15 MB', rating: 4.9 });
   // Third party (monograms)
-  da('obsidian', 'Obsidian', 'Markdown notes that link together', 'work', { mono: ['Ob', 285], size: '231 MB', rating: 4.7, inst: 1, pk: 'flatpak' });
-  da('spotify', 'Spotify', 'Online music streaming', 'media', { mono: ['Sp', 145], size: '180 MB', rating: 4.4, inst: 1, pk: 'flatpak' });
-  da('steam', 'Steam', 'Your games library', 'play', { mono: ['St', 225], size: '4 MB', rating: 4.6, reviews: 5120, inst: 1, pk: 'layered' });
-  da('discord', 'Discord', 'Talk, play, hang out', 'work', { mono: ['Di', 265], size: '92 MB', rating: 4.3, inst: 1, upd: '1.0.160', pk: 'deb' });
+  da('blender', 'Blender', 'Free and open 3D creation', 'create', { mono: ['Bl', 30], size: '477 MB', rating: 4.8, reviews: 2890 });
+  da('gimp', 'GIMP', 'High-end image editing', 'create', { mono: ['Gi', 45], size: '100 MB', rating: 4.3 });
+  da('audacity', 'Audacity', 'Record and edit audio', 'create', { mono: ['Au', 260], size: '24 MB', rating: 4.5 });
+  da('obsidian', 'Obsidian', 'Markdown notes that link together', 'work', { mono: ['Ob', 285], size: '231 MB', rating: 4.7, pk: 'flatpak' });
+  da('signal', 'Signal', 'Private messenger', 'work', { mono: ['Si', 235], size: '165 MB', rating: 4.6 });
+  da('libre', 'LibreOffice', 'The office suite, free forever', 'work', { mono: ['Lo', 150], size: '327 MB', rating: 4.2 });
+  da('spotify', 'Spotify', 'Online music streaming', 'media', { mono: ['Sp', 145], size: '180 MB', rating: 4.4, pk: 'flatpak' });
+  da('vlc', 'VLC', 'Plays everything', 'media', { mono: ['Vl', 55], size: '53 MB', rating: 4.7 });
+  da('kodi', 'Kodi', 'Your media centre', 'media', { mono: ['Ko', 205], size: '96 MB', rating: 4.5 });
+  da('obs', 'OBS Studio', 'Record and stream', 'media', { mono: ['Ob', 0, 1], size: '199 MB', rating: 4.6 });
+  da('steam', 'Steam', 'Your games library', 'play', { mono: ['St', 225], size: '4 MB', rating: 4.6, reviews: 5120, pk: 'layered' });
+  da('heroic', 'Heroic', 'Epic and GOG games', 'play', { mono: ['He', 250], size: '326 MB', rating: 4.5 });
+  da('moonlight', 'Moonlight', 'Stream games from your PC', 'play', { mono: ['Mo', 180], size: '8 MB', rating: 4.6 });
+  da('supertux', 'SuperTux', 'A classic side-scroller', 'play', { mono: ['Su', 95], size: '160 MB', rating: 4.4 });
+  da('discord', 'Discord', 'Talk, play, hang out', 'work', { mono: ['Di', 265], size: '92 MB', rating: 4.3, pk: 'deb' });
   const app = id => DA.find(a => a.id === id);
   /* How each app is installed, which decides how it comes off (#35): part of Luma (can't be removed), a Luma app or a Flatpak, a universal
      .deb or .rpm (ADR-050), or a package layered onto the system (removed at the next restart) */
@@ -60,18 +71,18 @@
   const dNarrow = () => ($('#w-depot .ibody')?.clientWidth || 999) < 560;
   function discoverPhone() { const t = app('tide'), st = (k, h, kick, title, ids) => `<section class="dfc story" data-dcat="${k}" role="button" tabindex="0" style="--sh2:${h}"><div class="dfct"><span class="kick">${kick}</span><h3>${title}</h3></div><div class="dfcst">${ids.map(i => dIcon(app(i), 44)).join('')}</div></section>`;
     return `<header class="dph2"><h1>Discover</h1><p>Apps for Luma, checked and signed</p></header>
-      <div class="dfeat">${`<section class="dfc" data-dapp="tide" role="button" tabindex="0" style="--hh:95"><img class="dfcbg" src="depot/tide-dark.png" alt=""><div class="dfct"><span class="kick">Editor’s choice</span><h3>Your music, from everywhere you keep it.</h3></div><div class="dfcapp">${dIcon(t, 40)}<span><b>Tide</b><small>Music · ${stars(t.rating)} ${t.rating}</small></span>${dBtn(t)}</div></section>`}${st('create', 25, 'Start a studio', 'Make music on Luma', ['sessions', 'tide'])}${st('play', 225, 'Game night', 'Your games already work here', ['steam'])}</div>
+      <div class="dfeat">${`<section class="dfc" data-dapp="tide" role="button" tabindex="0" style="--hh:95"><img class="dfcbg" src="depot/tide-dark.png" alt=""><div class="dfct"><span class="kick">Editor’s choice</span><h3>Your music, from everywhere you keep it.</h3></div><div class="dfcapp">${dIcon(t, 40)}<span><b>Tide</b><small>Music · ${stars(t.rating)} ${t.rating}</small></span>${dBtn(t)}</div></section>`}${st('create', 25, 'Start a studio', 'Make music on Luma', ['sessions', 'audacity', 'tide'])}${st('play', 225, 'Game night', 'Your games already work here', ['steam', 'heroic', 'moonlight'])}</div>
       <section class="dshelf"><header><h2>Made for Luma</h2><button class="dmore" type="button" data-dcat="luma">See all</button></header><div class="dicons">${DA.filter(a => a.luma).slice(0, 10).map(a => `<div class="dic" data-dapp="${a.id}" role="button" tabindex="0">${dIcon(a, 64)}<b>${esc(a.n)}</b><span>${esc(DCAT[a.cat]?.[0] || '')}</span></div>`).join('')}</div></section>
-      <section class="dshelf"><header><h2>Popular on Luma</h2></header><div class="dlist2">${['obsidian', 'spotify', 'discord', 'steam'].map(app).map((a, i) => `<div class="dli2" data-dapp="${a.id}" role="button" tabindex="0"><em>${i + 1}</em>${dIcon(a, 52)}<span class="dptx"><b>${esc(a.n)}</b><span>${esc(a.t)}</span></span>${dBtn(a)}</div>`).join('')}</div></section>
+      <section class="dshelf"><header><h2>Popular on Luma</h2></header><div class="dlist2">${['blender', 'obsidian', 'spotify', 'signal', 'vlc', 'steam', 'gimp', 'discord', 'libre'].map(app).map((a, i) => `<div class="dli2" data-dapp="${a.id}" role="button" tabindex="0"><em>${i + 1}</em>${dIcon(a, 52)}<span class="dptx"><b>${esc(a.n)}</b><span>${esc(a.t)}</span></span>${dBtn(a)}</div>`).join('')}</div></section>
       <section class="dshelf"><header><h2>Categories</h2></header><div class="dcatl">${Object.entries(DCAT).map(([k, [n, sub, h]]) => `<button class="dcl" type="button" data-dcat="${k}" style="--ch2:${h}"><i class="dcli">${ic(DCATIC[k])}</i><span><b>${n}</b><small>${sub}</small></span>${ic('chevron-right')}</button>`).join('')}</div></section>`; }
   function discover() { if (dNarrow()) return discoverPhone(); const hero = app('tide');
     return `<section class="dhero" data-dapp="tide" role="button" tabindex="0" style="--hh:95"><img class="dhbg" src="${PH}life-hero-studio.webp" alt=""><div class="dhtx"><span class="kick">Made for Luma · Editor’s choice</span><h1>Your music,<br>from everywhere<br>you keep it.</h1><p>Tide plays the files on this computer and your own music server, lit by whatever you’re listening to.</p>
         <div class="dhacts">${dBtn(hero, true)}<span class="dmeta">${stars(hero.rating)} ${hero.rating}</span></div></div><img class="dhshot" src="depot/tide-dark.png" alt=""></section>
       ${shelf('Made for Luma', 'Free, private, and they work together', DA.filter(a => a.luma).slice(0, 10), 'tiles', 'data-dcat="luma"')}
       <div class="dstories">
-        <section class="dstory" style="--sh2:25" data-dcat="create" role="button" tabindex="0"><span class="kick">Start a studio</span><h3>Make music on Luma</h3><p>Record in Sessions, clean up in Audacity, and master anywhere. No subscriptions.</p><div class="dstack">${['sessions', 'tide'].map(i => dIcon(app(i), 52)).join('')}</div></section>
-        <section class="dstory" style="--sh2:225" data-dcat="play" role="button" tabindex="0"><span class="kick">Game night</span><h3>Your games already work here</h3><p>Steam, Epic and GOG libraries run as they are. Stream the rest from your PC.</p><div class="dstack">${['steam'].map(i => dIcon(app(i), 52)).join('')}</div></section></div>
-      ${shelf('Popular on Luma', 'What people install first', ['obsidian', 'spotify', 'discord', 'steam'].map(app))}
+        <section class="dstory" style="--sh2:25" data-dcat="create" role="button" tabindex="0"><span class="kick">Start a studio</span><h3>Make music on Luma</h3><p>Record in Sessions, clean up in Audacity, and master anywhere. No subscriptions.</p><div class="dstack">${['sessions', 'audacity', 'tide'].map(i => dIcon(app(i), 52)).join('')}</div></section>
+        <section class="dstory" style="--sh2:225" data-dcat="play" role="button" tabindex="0"><span class="kick">Game night</span><h3>Your games already work here</h3><p>Steam, Epic and GOG libraries run as they are. Stream the rest from your PC.</p><div class="dstack">${['steam', 'heroic', 'moonlight'].map(i => dIcon(app(i), 52)).join('')}</div></section></div>
+      ${shelf('Popular on Luma', 'What people install first', ['blender', 'obsidian', 'spotify', 'signal', 'vlc', 'steam', 'gimp', 'discord', 'libre'].map(app))}
       <section class="dshelf"><header><h2>Categories</h2></header><div class="dcatl">${Object.entries(DCAT).map(([k, [n, s, h]]) => `<button class="dcl" type="button" data-dcat="${k}" style="--ch2:${h}"><i class="dcli">${ic(DCATIC[k])}</i><span><b>${n}</b><small>${s}</small></span>${lCount(DA.filter(a => a.cat === k).length)}</button>`).join('')}</div></section>`; }
   function catPage(k) { if (k === 'luma') return `<header class="dph" style="--ch2:25"><img class="dphic" src="${FAV}" alt=""><span><h1>Made for Luma</h1><p>Free, private, and they work together · ${DA.filter(a => a.luma).length} apps</p></span></header>${shelf('', '', DA.filter(a => a.luma))}`;
     const [n, s, h] = DCAT[k], l = DA.filter(a => a.cat === k);
@@ -104,7 +115,7 @@
           : `<div class="dhacts"><button class="dget big key" type="button" data-dtodo="Restarting into Luma 1.0 nightly 0922…">Restart now</button><span class="dinst">${ic('check')}Ready. Restart whenever you like.</span></div>`}
         ${DS2.news ? `<div class="dsnotes">${[['Feature', 'sparkles', 'Adjustable scroll speed', 'Set how fast mice and touchpads scroll, in Settings › Mouse and touchpad.'], ['Improvement', 'folder', 'Filer’s tray remembers', 'What you were carrying is still there after a restart.'], ['Improvement', 'music-2', 'Tide fades between tracks', 'Choose how long in Tide’s settings, or turn it off.'], ['Improvement', 'zap', 'Faster wake from sleep', 'Opening the lid gets you back to work about a second sooner.'], ['Fix', 'wrench', '11 fixes', 'For things you told us about, from Calendar to Quick Options.'], ['Security', 'shield-check', '2 security fixes', 'Both in system libraries. Nothing you need to do.']].map(([k, i, t, d]) => `<div class="dsnote dsk-${k.toLowerCase()}"><i>${ic(i)}</i><span><em>${k}</em><b>${t}</b><small>${d}</small></span></div>`).join('')}</div><button class="dfull" type="button" data-dtodo="The full notes open in Viola">Read the full release notes${ic('chevron-right')}</button>` : ''}</section>
       ${u.length ? `<section class="dshelf"><header><h2>Apps</h2><span>${u.length} update${u.length > 1 ? 's' : ''}</span><button class="dget key dupall" type="button" data-dupall>Update all</button></header><div class="dupds">${u.map(a => `<div class="dupd" data-dapp="${a.id}" role="button" tabindex="0">${dIcon(a, 48)}<span class="dptx"><b>${esc(a.n)}</b><span>1.0.159 → ${a.upd} · ${a.size}</span><em>Faster start-up and a fix for screen sharing</em></span>${dBtn(a)}</div>`).join('')}</div></section>` : `<section class="dshelf"><header><h2>Apps</h2></header><p class="dallup">${ic('check')}Every app is up to date</p></section>`}
-      <section class="dshelf"><header><h2>Recently updated</h2></header><div class="drows">${[['discord', '1.0.158 → 1.0.159', 'Yesterday'], ['obsidian', '1.7.4 → 1.7.5', 'Sep 18'], ['spotify', '1.2.47 → 1.2.48', 'Sep 18']].map(([i, v, w]) => `<div class="drow quiet">${dIcon(app(i), 36)}<span class="dptx"><b>${app(i).n}</b><span>Updated automatically · ${v} · ${w}</span></span><button class="dget" type="button" data-dtodo="Went back to the previous version of ${app(i).n}">Go back</button></div>`).join('')}</div></section>
+      <section class="dshelf"><header><h2>Recently updated</h2></header><div class="drows">${[].map(([i, v, w]) => `<div class="drow quiet">${dIcon(app(i), 36)}<span class="dptx"><b>${app(i).n}</b><span>Updated automatically · ${v} · ${w}</span></span><button class="dget" type="button" data-dtodo="Went back to the previous version of ${app(i).n}">Go back</button></div>`).join('')}</div></section>
       <section class="dshelf"><header><h2>This computer</h2></header><dl class="facts dwell">${[['Running', 'Luma 1.0 · nightly September 16'], ['Channel', 'Nightly'], ['Updates from', 'dl.simplyluma.com'], ['Signature', `${ic('shield-check')}Verified`], ['Last checked', '6 hours ago']].map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('')}</dl></section>`; }
   function results() { const q = DS2.q.toLowerCase(), l = DA.filter(a => (a.n + ' ' + a.t + ' ' + DCAT[a.cat][0]).toLowerCase().includes(q));
     return `<header class="dph"><span><h1>${l.length ? `${l.length} result${l.length > 1 ? 's' : ''}` : 'No results'}</h1><p>for “${esc(DS2.q)}”</p></span></header>${l.length ? shelf('', '', l) : `<p class="dempty">Try a different word, or browse a category.</p>`}`; }
@@ -641,15 +652,3 @@
     const top = crNarrow() ? (() => { const o = crOthers(t), brand = crIsBrand(t), first = t.msgs[0], n = t.msgs.length, one = brand || o.length === 1, k1 = brand ? first.from : o[0];
       return `<div class="crtop2"><h1>${esc(t.subj)}</h1><button class="crsc" type="button" data-crpx="info" title="Details">${one ? crAv(k1, 44) : `<span class="crstk">${o.slice(0, 3).map(k => crAv(k, 36)).join('')}</span>`}
         <span class="crsct"><b>${esc(one ? crWho(k1).n : o.map(crFirst).join(', ') + ' and you')}</b><small>${esc(one ? crMail(k1) : `${o.length + 1} people`)}</small></span>
-        <span class="crscr"><time>${esc((crLast(t).day || 'Today').replace(/,.*/, ''))}</time><small>${n} message${n > 1 ? 's' : ''}</small></span></button></div>`; })() : '';
-    b.innerHTML = `<div class="crpad${crIsBrand(t) ? ' brand' : ''}">${top}${html}</div>`;
-    crArm(); crPadFit(); }
-  // the thread always ends above whatever is floating at the bottom
-  function crPadFit() { const p = $('#cr-body .crpad'), c = $('#cr-comp'); if (p) p.style.paddingBottom = (c && !c.hidden ? c.offsetHeight + 44 : 150) + 'px'; }
-  function crArm() { $$('#cr-body iframe[data-crif]').forEach(f => { const fit = () => { try { f.style.height = f.contentDocument.documentElement.scrollHeight + 'px'; } catch (e) {} }; f.addEventListener('load', fit); fit(); });
-    const d = $('#cr-draft .crdraft'); if (d) { d.addEventListener('input', () => { CR.draft.html = d.innerHTML; }); } }
-  const crBottom = (smooth) => { const b = $('#cr-body'); b.scrollTo({ top: b.scrollHeight, behavior: smooth ? 'smooth' : 'auto' }); };
-
-  /* The bar: first control says what it's working on. */
-  function crBar() { const bar = $('#cr-bar'), t = crT(CR.open); let h = '';
-    crComp(); if (CR.draft) { bar.classList.remove('comp'); bar.hidden = true; return; }

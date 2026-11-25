@@ -19,8 +19,8 @@
   let K = null, W = null, RO = null, lastMode = '';
   const D = () => window.DEPOT_DATA;
   const PK = { system: 'Part of Luma', luma: 'Luma app', flatpak: 'Flatpak', deb: 'Universal .deb', rpm: 'Universal .rpm', layered: 'Layered package' };
-  const JOBS = [['listen', 'Listen', 'headphones', ['media'], ['tide', 'spotify', 'session']], ['watch', 'Watch', 'clapperboard', ['media'], ['youtube', 'reel', 'photos']], ['play', 'Play', 'gamepad-2', ['play'], []],
-    ['work', 'Work', 'briefcase', ['work'], []], ['create', 'Create', 'palette', ['create'], []], ['talk', 'Talk', 'message-circle', [], ['messages', 'discord', 'zoom', 'charlie']], ['yours', 'Make it yours', 'wand-sparkles', [], []]];
+  const JOBS = [['listen', 'Listen', 'headphones', ['media'], ['tide', 'spotify', 'audacity', 'session']], ['watch', 'Watch', 'clapperboard', ['media'], ['youtube', 'vlc', 'kodi', 'reel', 'photos']], ['play', 'Play', 'gamepad-2', ['play'], []],
+    ['work', 'Work', 'briefcase', ['work'], []], ['create', 'Create', 'palette', ['create'], []], ['talk', 'Talk', 'message-circle', [], ['messages', 'signal', 'telegram', 'discord', 'zoom', 'charlie', 'thunderbird']], ['yours', 'Make it yours', 'wand-sparkles', [], []]];
 
   const q$ = s => W && W.querySelector(s);
   const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));

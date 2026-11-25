@@ -1,3 +1,15 @@
+        <span class="crscr"><time>${esc((crLast(t).day || 'Today').replace(/,.*/, ''))}</time><small>${n} message${n > 1 ? 's' : ''}</small></span></button></div>`; })() : '';
+    b.innerHTML = `<div class="crpad${crIsBrand(t) ? ' brand' : ''}">${top}${html}</div>`;
+    crArm(); crPadFit(); }
+  // the thread always ends above whatever is floating at the bottom
+  function crPadFit() { const p = $('#cr-body .crpad'), c = $('#cr-comp'); if (p) p.style.paddingBottom = (c && !c.hidden ? c.offsetHeight + 44 : 150) + 'px'; }
+  function crArm() { $$('#cr-body iframe[data-crif]').forEach(f => { const fit = () => { try { f.style.height = f.contentDocument.documentElement.scrollHeight + 'px'; } catch (e) {} }; f.addEventListener('load', fit); fit(); });
+    const d = $('#cr-draft .crdraft'); if (d) { d.addEventListener('input', () => { CR.draft.html = d.innerHTML; }); } }
+  const crBottom = (smooth) => { const b = $('#cr-body'); b.scrollTo({ top: b.scrollHeight, behavior: smooth ? 'smooth' : 'auto' }); };
+
+  /* The bar: first control says what it's working on. */
+  function crBar() { const bar = $('#cr-bar'), t = crT(CR.open); let h = '';
+    crComp(); if (CR.draft) { bar.classList.remove('comp'); bar.hidden = true; return; }
     if ((crNarrow() || phTab()) && t && t.msgs.length && CR.open !== 'new' && !CR.tsel) return crBarPhone(bar, t);
     bar.classList.remove('phnofit', 'crphbar', 'phgrow', 'cr2row');
     if (false) { const d = CR.draft;
@@ -668,9 +680,3 @@
     const [W, H] = vwNat(f), c = VW.crop[f.id], vw = c ? c.w : W, vh = c ? c.h : H, sw = st.clientWidth - (vwNarrow() ? 0 : 120), sh = st.clientHeight - (vwNarrow() ? (VW.mode === 'view' ? 260 : 330) : VW.mode === 'markup' ? 220 : 150);
     VW.fit = Math.min(sw / vw, sh / vh, 1.5); const z = VW.zoom || VW.fit, rot = (VW.rot[f.id] || 0) + ((VW.adj[f.id] || {}).str || 0), fl = VW.flip[f.id] ? -1 : 1, dim = Math.abs(rot % 180) === 90;
     st.innerHTML = `<div class="vwdoc${VW.cropping ? ' cropping' : ''}" id="vw-doc" style="--z:${z};width:${vw}px;height:${vh}px;transform:translate(calc(-50% + ${VW.pan[0]}px), calc(-50% + ${VW.pan[1]}px)) scale(${z * (dim ? Math.min(vw / vh, vh / vw) : 1)}) rotate(${rot}deg) scaleX(${fl})">
-      <div class="vwclip" style="width:${vw}px;height:${vh}px"><img id="vw-img" src="${f.src}" alt="" style="width:${W}px;height:${H}px;left:${c ? -c.x : 0}px;top:${c ? -c.y : 0}px;filter:${vwFilter(f.id)}" draggable="false"></div>
-      <svg class="vwann" id="vw-ann" viewBox="${c ? `${c.x} ${c.y} ${c.w} ${c.h}` : `0 0 ${W} ${H}`}" preserveAspectRatio="none"></svg>
-      ${VW.live && f.text ? `<div class="vwlive" style="width:${W}px;height:${H}px;left:${c ? -c.x : 0}px;top:${c ? -c.y : 0}px">${f.text.map(l => `<span class="${l.k ? 'dd ' + l.k : ''}" style="left:${l.x}px;top:${l.y}px;width:${l.w}px;height:${l.h}px;font-size:${l.h * .92}px" ${l.k ? `data-vwdd="${l.k}"` : ''}>${esc(l.t)}</span>`).join('')}</div>` : ''}
-      ${VW.cropping ? vwCropUI(f) : ''}</div>
-      ${VW.pick ? `<div class="vwloupe" id="vw-loupe" hidden><i class="lp"></i><span></span></div>` : ''}`;
-    $('#vw-zoom') && ($('#vw-zoom').textContent = Math.round(z * 100) + '%'); vwAnnDraw(); }

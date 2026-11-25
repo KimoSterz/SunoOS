@@ -1,3 +1,10 @@
+      ns.push({ s, l: .25, p, v: .85 }); seEditor(); seArr(); return; }
+    if (ruler && !reg) { const a = $('#se-lanes').getBoundingClientRect(); SE.pos = Math.max(1, (e.clientX - a.left) / seBars() + 1); seLCD(); SE.drag = { k: 'scrub' }; return; }
+    if (rs) { const [t, r] = seRegion(rs.dataset.seresize); SE.drag = { k: 'len', r, x0: e.clientX, l0: r.l }; e.stopPropagation(); return; }
+    if (reg) { const [t, r] = seRegion(reg.dataset.sereg); SE.sel = { t: t.id, r: r.id }; SE.drag = { k: 'reg', r, t, x0: e.clientX, s0: r.s }; seSelPaint(); sePanels(); return; }
+    if (lane) { SE.sel = { t: lane.dataset.selane, r: null }; seSelPaint(); sePanels(); } }
+  // Selection repaints classes in place: redrawing here would remove the element under the pointer and the click (and double-click) would never arrive
+  function seSelPaint() { $$('#se-heads .sehead').forEach(h => h.classList.toggle('on', h.dataset.setrack === SE.sel.t)); $$('#se-lanes .selane').forEach(l => l.classList.toggle('on', l.dataset.selane === SE.sel.t)); $$('#se-lanes .sereg').forEach(g => g.classList.toggle('on', g.dataset.sereg === SE.sel.r)); }
   function seFader(e) { const D = SE.drag, g = D.el.getBoundingClientRect(), f = Math.max(0, Math.min(1, (g.bottom - e.clientY) / g.height)); D.t.vol = Math.round(f * 66 - 60); if (D.t.id !== 'main') seT(D.t.id).vol = D.t.vol; const cap = D.el.querySelector('.sefcap'); cap.style.bottom = f * 100 + '%'; const em = D.el.closest('.sestrip2').querySelector('em'); em.textContent = `${D.t.vol > 0 ? '+' : ''}${D.t.vol} dB`; }
   function sePtrMove(e) { const D = SE.drag; if (!D) return;
     if (D.k === 'fader') { seFader(e); return; } if (D.k === 'scrub') { const a = $('#se-lanes').getBoundingClientRect(); SE.pos = Math.max(1, Math.min(49, (e.clientX - a.left) / seBars() + 1)); seLCD(); return; }
@@ -318,7 +325,7 @@
     else if (T === 'colour') body = sec('Color wheels', `<div class="rlwheels">${rlWheel('sh', 'Shadows', c.wheel.sh)}${rlWheel('mid', 'Midtones', c.wheel.mid)}${rlWheel('hi', 'Highlights', c.wheel.hi)}</div>`)
       + sec('Light', `<div class="drsls">${sl('exp', 'Exposure', c.adj.exp)}${sl('con', 'Contrast', c.adj.con)}${sl('hi', 'Highlights', c.adj.hi)}${sl('sh', 'Shadows', c.adj.sh)}${sl('wh', 'Whites', c.adj.wh)}${sl('bl', 'Blacks', c.adj.bl)}</div>`)
       + sec('Color', `<div class="drsls">${sl('temp', 'Temperature', c.adj.temp)}${sl('tint', 'Tint', c.adj.tint)}${sl('sat', 'Saturation', c.adj.sat)}${sl('vib', 'Vibrance', c.adj.vib)}</div>`)
-      + sec('Curves', `<div class="rlcurves">${Object.entries(RLCURVE).map(([k, [n, , d]]) => `<button type="button" class="${c.curve === k ? 'on' : ''}" data-rlcurve="${k}" title="${n}"><svg viewBox="-4 -4 108 68"><path d="${d}"/></svg><span>${n}</span></button>`).join('')}</div>`)
+      + sec('Curves', `<div class="rlcurves">${Object.entries(RLCURVE).map(([k, [n, , , d]]) => `<button type="button" class="${c.curve === k ? 'on' : ''}" data-rlcurve="${k}" title="${n}"><svg viewBox="-4 -4 108 68"><path d="${d}"/></svg><span>${n}</span></button>`).join('')}</div>`)
       + sec('LUT', `<button class="suselect" type="button" data-rllutpick>${RLLUT[c.lut][0]}${ic('chevron-down')}</button>${c.lut !== 'none' ? `<div class="drsls">${sl('lutAmt', 'Strength', c.lutAmt, 0, 100, '%')}</div>` : ''}`);
     else if (T === 'audio') body = sec('Level', `<div class="drsls">${sl('vol', 'Volume', c.vol, -60, 6, ' dB')}${sl('pan', 'Pan', c.pan, -50, 50)}${audio ? `${sl('fin', 'Fade in', c.fin || 0, 0, 30, '')}${sl('fout', 'Fade out', c.fout || 0, 0, 30, '')}` : ''}</div>`)
       + sec('Clean up', `<button class="rlcheck${c.nr ? ' on' : ''}" type="button" data-rlnr><i>${ic('check')}</i>Remove background noise</button><button class="rlcheck${c.hum ? ' on' : ''}" type="button" data-rlhum><i>${ic('check')}</i>Remove hum</button>`)
@@ -422,7 +429,7 @@
       <div class="mdact"><span></span><button class="bt fill" type="button" data-rlexx>Cancel</button><button class="bt key" type="button" data-rlexgo>Export</button></div>`;
     w.classList.add('rlon'); s.className = 'mdsheet rlsheet'; void s.offsetWidth; s.classList.add('show'); }
   function rlExporting() { let p = 0; const bar = $('#rl-tlinfo'); const iv = setInterval(() => { p = Math.min(100, p + 4 + Math.random() * 6); bar.innerHTML = `<b>Exporting</b><span class="rlprog"><i style="width:${p}%"></i></span><span>${Math.round(p)}%</span>`; if (p >= 100) { clearInterval(iv); rlTLH(); rlToast(`Saved “Launch film.${RL.exp === 'audio' ? 'wav' : RL.exp === 'master' ? 'mov' : 'mp4'}” to Videos`); } }, 140); }
-  function renderReel() { rlAll2().forEach(c => c.img && !c.img.endsWith('/.webp') && rlWarm(c.img)); RLMEDIA.forEach(([ f]) => rlWarm(PH + f + '.webp')); $('#rl-top').innerHTML = `<img src="${A}video-editor.svg" alt=""><b>Launch film</b><span class="sumeta">Reel · Saved</span><span class="sutopr">${av('NF', 26)}<button class="bt sm fill" type="button" data-share>${ic('share-2')}Share</button><button class="bt sm key stplay" type="button" data-rlexport>${ic('share')}Export</button><button class="ib" type="button" data-lmenu data-docmore title="More" aria-label="More">${ic('ellipsis')}</button></span>`;
+  function renderReel() { rlAll2().forEach(c => c.img && !c.img.endsWith('/.webp') && rlWarm(c.img)); RLMEDIA.forEach(([, f]) => rlWarm(PH + f + '.webp')); $('#rl-top').innerHTML = `<img src="${A}video-editor.svg" alt=""><b>Launch film</b><span class="sumeta">Reel · Saved</span><span class="sutopr">${av('NF', 26)}<button class="bt sm fill" type="button" data-share>${ic('share-2')}Share</button><button class="bt sm key stplay" type="button" data-rlexport>${ic('share')}Export</button><button class="ib" type="button" data-lmenu data-docmore title="More" aria-label="More">${ic('ellipsis')}</button></span>`;
     $('#rl-libb').innerHTML = `${ic('layers')}<span>Browser</span>`;
     const w = $('#w-reel'); w.addEventListener('pointerdown', rlPtr); addEventListener('pointermove', rlMove); addEventListener('pointerup', rlUp);
     $('#rl-lanes').addEventListener('pointerleave', () => { if (RL.skim != null) { RL.skim = null; rlPaint(); rlHead(); } });
@@ -679,10 +686,3 @@
      For what can't come back; things you can undo use lToast with Undo instead. */
   function lConfirm(win, o) { lConfirm.close(true); if (!win) return; lConfirm.o = o; lConfirm.ret = document.activeElement;
     win.insertAdjacentHTML('beforeend', `<div class="lcscrim" id="lc-scrim"></div><div class="lconf" id="lc" role="alertdialog" aria-modal="true" aria-labelledby="lc-t" aria-describedby="lc-d"><span class="lcico">${ic(o.icon || 'trash-2')}</span><h2 id="lc-t">${esc(o.title)}</h2><p id="lc-d">${esc(o.body)}</p>${o.option ? `<button class="lcopt" type="button" role="checkbox" aria-checked="false" data-lui-copt><i>${ic('check')}</i>${esc(o.option)}</button>` : ''}<div class="lcacts2"><button class="bt fill" type="button" data-lui-cno>Cancel</button><button class="bt danger" type="button" data-lui-cok>${esc(o.action || 'Delete')}</button></div></div>`);
-    requestAnimationFrame(() => { $('#lc-scrim')?.classList.add('on'); $('#lc')?.classList.add('on'); $('#lc [data-lui-cno]')?.focus(); }); }
-  lConfirm.close = quiet => { $('#lc-scrim')?.remove(); $('#lc')?.remove(); const r = lConfirm.ret; lConfirm.ret = null; if (!quiet && r?.isConnected) r.focus?.(); };
-  document.addEventListener('keydown', e => { const d = $('#lc'); if (!d) return;
-    if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); lConfirm.close(); return; }
-    if (e.key === 'Tab') { const f = [...d.querySelectorAll('button')], i = f.indexOf(document.activeElement); e.preventDefault(); f[(i + (e.shiftKey ? -1 : 1) + f.length) % f.length].focus(); } }, true);
-
-  /* LumaUI: Category pill. lCat('media'): the category's own colour from the shared map (--cat-*). */

@@ -1,3 +1,13 @@
+
+  function cfGo(id) { if (id === '~disks') { cfOpenApp('disks'); return; } CFV.pg = id; CFV.joinNet = null; CFV.keyEdit = null; if (CFV.q) { CFV.q = ''; $('#cf-q').value = ''; } $('#cf-pop')?.remove(); cfAll(); if (id === 'bluetooth') cfScan(); }
+  function cfOpenApp(a) { const w = $('#w-' + a); if (w) { w.hidden = false; w.classList.remove('min'); focusWin(w); } cfToast(`Opening ${cfName(a)}`); }
+
+  function settingsClick(e, hit) { const q = s => hit(s);
+    if (q('button[disabled]')) return true;
+    if (!q('#cf-pop') && !q('[data-cfpk],[data-cfact="addsrc"]')) $('#cf-pop')?.remove();
+    if (CFV.keyEdit && !q('[data-cfkey]')) { CFV.keyEdit = null; cfMain(); }
+    const p = q('[data-cfp]'); if (p) { cfGo(p.dataset.cfp); return true; }
+    const s = q('[data-cfsw]'); if (s) { const k = s.dataset.cfsw; cfS(k, !cfG(k)); cfFx(k); cfAll(); return true; }
     const st = q('[data-cfset]'); if (st) { const [k, v] = st.dataset.cfset.split('|'); cfS(k, v); $('#cf-pop')?.remove(); cfFx(k); cfAll(); return true; }
     const pkb = q('[data-cfpk]'); if (pkb) { const k = pkb.dataset.cfpk, cur = String(cfG(k)); if ($('#cf-pop')?.dataset.k === k) { $('#cf-pop').remove(); return true; }
       cfPop(pkb, cfOP(CFV.pk[k] || []).map(([v, n]) => `<button class="crmi${String(v) === cur ? ' on' : ''}" type="button" data-cfset="${k}|${v}"><span>${esc(n)}</span>${String(v) === cur ? ic('check') : ''}</button>`).join('')); $('#cf-pop').dataset.k = k; return true; }
@@ -649,10 +659,3 @@
       <section class="pgsec" id="pgb-history"><h2>History</h2><p>Everything that happened, with restore points. Going back covers the code and the data.</p>
         <div class="pgfilt">${[['all', 'Everything'], ['release', 'Releases'], ['decision', 'Decisions'], ['agent', 'Agent work'], ['review', 'Reviews'], ['undo', 'Undone']].map(([k2, n]) => `<button type="button" class="${PGX.hist === k2 ? 'on' : ''}" data-pghf="${k2}">${n}</button>`).join('')}</div>
         <div class="pgbox"><div class="pgrows">${(kiln ? hist : [['agent', 'Just now', `Ari created ${p.n}`, p.path]]).map(([k2, when, t, s, rp]) => `<div class="pgrow"><i>${ic({ agent: 'sparkles', decision: 'hand', release: 'radio', review: 'eye', undo: 'undo-2' }[k2] || 'history')}</i><b>${esc(t)}</b><small>${esc(when)}${s ? ' · ' + esc(s) : ''}</small><span class="pgend">${rp && rp < pgRp() ? `<button class="bt sm fill" type="button" data-pgrestore="${rp}">${pic('restore')}Go back to this</button>` : rp ? '<em>Live now</em>' : ''}</span></div>`).join('') || `<div class="pgrow"><i>${ic('history')}</i><b>Nothing here yet</b></div>`}</div></div></section>
-      <section class="pgsec" id="pgb-code"><h2>Code</h2><p>You never need it, but it’s always one step away.</p><button class="pgcodebtn" type="button" data-pgcode="">${ic('terminal')}<span><b>Open the files, the changes and the terminal</b><small>${esc(p.path)}</small></span>${ic('arrow-right')}</button></section>
-      </article></div>`; }
-  const pgRp = () => 14 + Object.keys(PG.rel).filter(k => PG.rel[k]).length;
-
-  /* ── The code, one step down: files, the change as a diff, and a terminal on the Dev server ── */
-  const PGSRC = {
-    'AGENTS.md': () => pgAgentsMd('Kiln', '~/Documents/Playground Projects/Kiln'),

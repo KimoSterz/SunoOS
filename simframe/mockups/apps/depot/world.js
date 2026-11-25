@@ -25,24 +25,25 @@ D.devices = [
 /* Where each app runs. Anything not listed runs on desktop and tablet. */
 const ALL = ['desktop', 'tablet', 'phone', 'tv', 'home'], PC = ['desktop', 'tablet'], MOB = ['desktop', 'tablet', 'phone'];
 D.runs = {
-  tide: ALL, photos: ['desktop', 'tablet', 'phone', 'tv'], youtube: ['desktop', 'tablet', 'phone', 'tv'], weather: ALL,
-  clock: ALL, calendar: ['desktop', 'tablet', 'phone', 'home'], messages: MOB, notes: MOB, contacts: MOB, charlie: MOB,
-  filer: MOB, viola: MOB, maps: MOB, camera: ['tablet', 'phone'], memos: MOB,
-  tasks: ['desktop', 'tablet', 'phone', 'home'], leaf: MOB, viewer: MOB, ari: ALL, calc: MOB, tipsplit: MOB, vault: MOB,
-  write: MOB, grid: PC, stage: ['desktop', 'tablet', 'tv'], term: PC, canvas: PC, session: PC, darkroom: PC, reel: PC,
-  disks: ['desktop'], monitor: ['desktop'], valet: MOB, spotify: ALL, steam: ['desktop', 'tv'], discord: MOB,
-  obsidian: MOB, zoom: MOB,
+  tide: ALL, photos: ['desktop', 'tablet', 'phone', 'tv'], youtube: ['desktop', 'tablet', 'phone', 'tv'], weather: ALL, clock: ALL,
+  calendar: ['desktop', 'tablet', 'phone', 'home'], messages: MOB, notes: MOB, contacts: MOB, charlie: MOB, filer: MOB, viola: MOB,
+  maps: MOB, camera: ['tablet', 'phone'], memos: MOB, tasks: ['desktop', 'tablet', 'phone', 'home'], leaf: MOB, viewer: MOB, ari: ALL,
+  calc: MOB, tipsplit: MOB, vault: MOB, write: MOB, grid: PC, stage: ['desktop', 'tablet', 'tv'], term: PC, canvas: PC, session: PC,
+  darkroom: PC, reel: PC, disks: ['desktop'], monitor: ['desktop'], valet: MOB,
+  spotify: ALL, vlc: ['desktop', 'tablet', 'phone', 'tv'], kodi: ['desktop', 'tv'], steam: ['desktop', 'tv'], moonlight: ['desktop', 'tablet', 'phone', 'tv'],
+  signal: MOB, telegram: MOB, discord: MOB, bitwarden: MOB, nextcloud: MOB, obsidian: MOB, firefox: MOB, zoom: MOB,
+  blender: ['desktop'], obs: ['desktop'], kdenlive: ['desktop'], audacity: ['desktop'], godot: ['desktop'], vscodium: ['desktop'], nvtop: ['desktop'],
 };
 /* What is already installed where (Luma Connect knows). Luma's own apps are on every device they run on. */
 D.installed = {
-  xps: ['spotify', 'obsidian', 'discord', 'steam'],
-  x1: ['spotify', 'obsidian'],
-  fp6: ['spotify', 'discord'],
-  tv: ['spotify'],
-  home: ['spotify'],
+  xps: [],
+  x1: [],
+  fp6: [],
+  tv: [],
+  home: [],
 };
 /* Matched: an app kept on every device it runs on, now and when a device joins. */
-D.matched = ['spotify'];
+D.matched = [];
 
 /* Trust: one seal per item. Luma made it; a verified developer whose build Luma reviewed; or the community,
    signed but not reviewed. Every kind runs in its own space; what it can reach is always listed. */
@@ -87,7 +88,7 @@ D.today = [
   { kind: 'tweak', kick: 'Tweak of the week', tweak: 'battery-care', blurb: 'Laptops that live on a charger wear their battery out fastest. Battery Care holds it at 80% until you unplug.' },
   { kind: 'switch', kick: 'Coming from Windows or a Mac', title: 'Type the name you know' },
   { kind: 'screen', kick: 'For the living room', title: 'Made for your TV', form: 'tv' },
-  { kind: 'row', kick: 'Fresh this week', title: 'New and updated', items: [['look', 'studio-night'], ['tweak', 'hot-corners'], ['look', 'pebble'], ['tweak', 'lock-now'], ['app', 'obsidian']] },
+  { kind: 'row', kick: 'Fresh this week', title: 'New and updated', items: [['app', 'krita'], ['look', 'studio-night'], ['tweak', 'hot-corners'], ['app', 'godot'], ['look', 'pebble'], ['tweak', 'lock-now'], ['app', 'obsidian']] },
   { kind: 'screen', kick: 'In the kitchen', title: 'Glanceable, from across the room', form: 'home' },
 ];
 
@@ -99,12 +100,8 @@ D.mine = [
 ];
 
 /* Updates waiting, per device (Luma Connect). Each app update lists what changed in the release notes' words. */
-D.pending = [
-  { app: 'discord', devs: ['xps', 'fp6'], from: '1.0.158', to: '1.0.159', size: '96 MB', notes: ['Voice rooms reconnect faster after sleep', 'Fixes a crash when sharing a screen'] },
-  { app: 'obsidian', devs: ['xps', 'x1'], from: '1.7.4', to: '1.7.5', size: '84 MB', notes: ['Canvas cards snap to a grid', 'Search finds text inside PDFs'] },
-  { app: 'spotify', devs: ['xps', 'x1', 'fp6', 'tv', 'home'], from: '1.2.47', to: '1.2.48', size: '38 MB', notes: ['Smart shuffle on every device'] },
-  ];
+D.pending = [];
 /* Done recently, newest first: [app or 'luma', what, when, device]. Luma itself can always go back one version. */
-D.done = [['luma', 'Luma 1.0 · nightly October 16', 'Oct 16', 'All devices'], ['steam', 'Client update', 'Oct 12', 'XPS 14']];
+D.done = [['luma', 'Luma 1.0 · nightly October 16', 'Oct 16', 'All devices']];
 D.auto = { apps: true, luma: 'overnight', matched: true };
 })();

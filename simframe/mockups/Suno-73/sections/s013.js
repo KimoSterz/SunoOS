@@ -1,3 +1,10 @@
+      <section class="pgsec" id="pgb-code"><h2>Code</h2><p>You never need it, but it’s always one step away.</p><button class="pgcodebtn" type="button" data-pgcode="">${ic('terminal')}<span><b>Open the files, the changes and the terminal</b><small>${esc(p.path)}</small></span>${ic('arrow-right')}</button></section>
+      </article></div>`; }
+  const pgRp = () => 14 + Object.keys(PG.rel).filter(k => PG.rel[k]).length;
+
+  /* ── The code, one step down: files, the change as a diff, and a terminal on the Dev server ── */
+  const PGSRC = {
+    'AGENTS.md': () => pgAgentsMd('Kiln', '~/Documents/Playground Projects/Kiln'),
     'CLAUDE.md': () => '@AGENTS.md\n',
     '.mcp.json': () => '{\n  "mcpServers": {\n    "playground": {\n      "command": "playgroundd",\n      "args": ["mcp", "--project", "."]\n    }\n  }\n}\n',
     '.playground/project.toml': () => 'name = "Kiln"\nhome = "dev-server"\n\n[[places]]\nname = "Dev server"\nrole = "development"\nhost = "203.0.113.7"\n\n[[places]]\nname = "Production"\nrole = "production"\nhost = "kiln.studio"\n\n[members]\nnick = "owner"\npriya = "builder"\nsam = "reviewer"\n',
@@ -105,9 +112,9 @@
     PG.wl.phase = 'review'; PGX.busy[key] = false; pgHist(['agent', 'Today, just now', `${PGAG[PG.ag.waitlist]?.n || 'Ari'} built the waitlist offer`, '6 of 6 checks passed on Stage']); pgSave(); pgAll(); }
 
   /* anything you type: a question gets an answer, a small change gets made and proved, a big one becomes its own goal */
-  const pgTitle = s => { let t = s.trim().replace(/^(hey|hi|ok|okay)[!\s]+/i, '').replace(/^(can|could|would) you (please )?/i, '').replace(/^(please|let'?s|i want to|i'd like to|we should|we need to)\s+/i, '').replace(/[.!?]+$/, '');
+  const pgTitle = s => { let t = s.trim().replace(/^(hey|hi|ok|okay)[,!\s]+/i, '').replace(/^(can|could|would) you (please )?/i, '').replace(/^(please|let'?s|i want to|i'd like to|we should|we need to)\s+/i, '').replace(/[.!?]+$/, '');
     t = t.charAt(0).toUpperCase() + t.slice(1); if (t.length > 64) t = t.slice(0, 64).replace(/\s+\S*$/, '') + '…'; return t || 'New goal'; };
-  const pgSentence = s => { const t = s.trim().replace(/^(hey|hi|ok|okay)[!\s]+/i, '').replace(/^(can|could|would) you (please )?/i, '').replace(/^(please|let'?s|i want to|i'd like to|we should|we need to)\s+/i, '').replace(/[.!?]+$/, ''); return t.charAt(0).toUpperCase() + t.slice(1); };
+  const pgSentence = s => { const t = s.trim().replace(/^(hey|hi|ok|okay)[,!\s]+/i, '').replace(/^(can|could|would) you (please )?/i, '').replace(/^(please|let'?s|i want to|i'd like to|we should|we need to)\s+/i, '').replace(/[.!?]+$/, ''); return t.charAt(0).toUpperCase() + t.slice(1); };
   function pgAnswer(g, s) { const kiln = PG.proj === 'kiln';
     if (/cost|much|price|spend|money|credit/.test(s)) return [g.id === 'waitlist' ? 'So far this goal has used $0.31 of Ari credits. Finishing it should take about $0.25 more.' : 'This goal has used very little so far, a few cents of Ari credits. I’ll show a cost card before anything bigger starts.'];
     if (/how long|when will|how soon|time/.test(s)) return [g.id === 'waitlist' && PG.wl.phase === 'decide' ? 'About ten minutes of work once you’ve decided. I’ll show proof when it’s done.' : 'Not long. I’ll show each step as it happens, and proof at the end.'];
@@ -157,7 +164,7 @@
       pgPush(key, { k: 'say', id: 'gf-a2', ag: 'ari', dur: '0.8 s', t: ['Gift a class works on Stage. Payments are in test mode there, so try it as much as you like.'] }); pgPush(key, { k: 'review', id: 'gf-rev', gid: 'gifts' }); PG.gifts = 'done'; PGX.busy[key] = false; pgSave(); pgAll(); return; }
     const it = pgFind(key, id); if (!it) return; it.st = 'started'; g.phase = 'work'; PGX.busy[key] = true; pgSave(); pgAll();
     await pgRunStep(key, { k: 'step', id: pgId(), title: `Working on ${g.t.toLowerCase()}`, doneT: `Done: ${g.t.toLowerCase()}`, files: [pgF('src/routes/+page.svelte', 12, 3), pgF('src/lib/ClassCard.svelte', 6, 1), pgF('tests/new.test.ts', 22, 0, 'A')], subs: ['Reading the plan and the project notes', 'Making the change', 'Trying it on Stage', 'Running the checks'] }, 7000, .18);
-    await pgChecks(key, { k: 'proof', id: pgId(), at: 'Checked just now', scr: PG.proj === 'kiln' ? {} : null, pv: PG.proj === 'kiln' ? null : PG.proj, checks: it.stories.flatMap(([ c]) => c).map(c => [c, 'wait', null]) });
+    await pgChecks(key, { k: 'proof', id: pgId(), at: 'Checked just now', scr: PG.proj === 'kiln' ? {} : null, pv: PG.proj === 'kiln' ? null : PG.proj, checks: it.stories.flatMap(([, c]) => c).map(c => [c, 'wait', null]) });
     pgPush(key, { k: 'say', id: pgId(), ag: 'ari', dur: '0.6 s', t: [PG.proj === 'kiln' ? 'Every check passes on Stage. It’s ready for you to review.' : 'Every check passes on Stage. It’s on this computer, ready when you want to share it.'] }); if (PG.proj === 'kiln') pgPush(key, { k: 'review', id: pgId(), gid: g.id }); g.phase = PG.proj === 'kiln' ? 'review' : 'done'; PGX.busy[key] = false; pgSave(); pgAll(); }
 
   /* switching agent mid-goal: the next one gets a brief you can edit, and the thread carries on */
@@ -414,7 +421,8 @@
     ['film', 'field', 'Film photography for absolute beginners', YLP + 'students.webp', '50% 40%', 1562, '760K views', '2 months ago', 120, 0],
     ['wall', 'grain', 'The wall: a two-year time-lapse', YLP + 'scene-laptop-skate.webp', '50% 50%', 298, '1.4M views', '4 months ago', 10, 0],
     ['desk', 'ari', 'Writing by hand again, after ten years of typing', PH + 'life-hero-writing.webp', '50% 45%', 694, '118K views', '1 week ago', 50, 0],
-    ['field', 'north', 'A desk in the middle of a field', PH + 'life-footer.webp', '50% 55%', 402, '233K views', '2 days ago', 110, 0]].map(([id, ch, t, img, pos, d, views, ago, h, w]) => ({ id, ch, t, img, pos, d, views, ago, h, w }));
+    ['field', 'north', 'A desk in the middle of a field', PH + 'life-footer.webp', '50% 55%', 402, '233K views', '2 days ago', 110, 0],
+  ].map(([id, ch, t, img, pos, d, views, ago, h, w]) => ({ id, ch, t, img, pos, d, views, ago, h, w }));
   const YSHORT = [['Three ways to hold a camera still', 'take-back', '2.1M', 'field', PH], ['Folding a week of laundry in 40 s', 'cut-phone-laundromat', '890K', 'kitchen', YLP], ['Walking a city with no plan', 'hero-move', '4.4M', 'north', YLP],
     ['Street portraits, asking first', 'ari-street', '1.3M', 'field', YLP], ['Mixing a colour from memory', 'creatives', '610K', 'ari', YLP], ['A building that looks back', 'mobile-plaza', '305K', 'north', YLP]];
   const YCHAP = { shore: [[0, 'Before light'], [102, 'The drive north'], [250, 'First light'], [475, 'One lens, why'], [740, 'The cove'], [990, 'Packing up']],
@@ -614,7 +622,7 @@
     if (hit('[data-ytstop]')) { ytSetPlaying(false); YT.started = false; ytBar(); return true; }
     if (hit('[data-ytstep]')) { const v = yv(YT.cur); YT.t = Math.max(0, Math.min(v.d, YT.t + +hit('[data-ytstep]').dataset.ytstep)); ytTick(); return true; }
     if (hit('[data-ytjump]')) { YT.t = +hit('[data-ytjump]').dataset.ytjump; ytSetPlaying(true); ytTick(); $('#yt-body').scrollTo({ top: 0, behavior: 'smooth' }); return true; }
-    if (hit('[data-ytseek]')) { const [ t] = ytSeekAt(e, hit('[data-ytseek]')); YT.t = t; ytTick(); return true; }
+    if (hit('[data-ytseek]')) { const [, t] = ytSeekAt(e, hit('[data-ytseek]')); YT.t = t; ytTick(); return true; }
     if (hit('[data-ytnext]')) { const v = yv(YT.cur), n = YT.queue.shift() || YV.filter(x => x.d)[(YV.filter(x => x.d).indexOf(v) + 1) % YV.filter(x => x.d).length].id; ytPlay(n); return true; }
     if (hit('[data-ytcc]')) { YT.cc = !YT.cc; ytMain(true); return true; }
     if (hit('[data-yttheater]')) { YT.theater = !YT.theater; ytMain(true); return true; }
@@ -709,6 +717,3 @@
     return (y < m ? 'n' : y > r.height - m ? 's' : '') + (x < m ? 'w' : x > r.width - m ? 'e' : ''); };
   const CUR = { n: 'ns', s: 'ns', e: 'ew', w: 'ew', ne: 'nesw', sw: 'nesw', nw: 'nwse', se: 'nwse' }, cur = k => { const c = k ? 'dtcur-' + CUR[k] : ''; if (c === cur.c) return; if (cur.c) document.documentElement.classList.remove(cur.c); if (c) document.documentElement.classList.add(c); cur.c = c; };
   desk.addEventListener('pointerdown', e => { const w = e.target.closest('.win'); if (!w) return; focusWin(w); const ed = edgeAt(w, e);
-    if (ed || e.target.closest('[data-resize]')) drag = { w, mode: 'size', ed: ed || 'se', x: e.clientX, y: e.clientY, ox: w.offsetLeft, oy: w.offsetTop, ow: w.offsetWidth, oh: w.offsetHeight, nx: w.offsetLeft, ny: w.offsetTop, nw: w.offsetWidth, nh: w.offsetHeight };
-    else if (e.target.closest('[data-drag]') && !e.target.closest('button,input,label,a,textarea,.tbar > b,.tbar > .chev')) drag = { w, mode: 'move', x: e.clientX, y: e.clientY, ox: w.offsetLeft, oy: w.offsetTop, nx: w.offsetLeft, ny: w.offsetTop, b: bounds() };
-    else return; w.classList.add('drag'); w.setPointerCapture(e.pointerId); e.preventDefault(); });

@@ -1,3 +1,4 @@
+      <div class="dskparts" role="listbox" aria-label="Volumes">${lTHead.grid([['', ''], ['', 'Volume'], ['', 'Size'], ['', 'Format'], ['', 'Mounted at']], null, '', 'dskph')}${segs.map(s => `<button class="dskpr${DSS.vol === s.i ? ' on' : ''}" type="button" role="option" aria-selected="${DSS.vol === s.i}" data-dskv="${s.i}"><i class="dsksw${s.free ? ' free' : ''}" style="background:${DSKC[s.c] || ''}"></i><b>${esc(s.n)}</b><span>${dskSize(s.size)}</span><span>${s.free ? '' : (s.luks ? 'LUKS · ' : '') + s.fs}</span><span class="mono">${s.free ? '' : s.locked ? 'Locked' : s.mount || 'Not mounted'}</span></button>`).join('')}</div>
       <div class="dskused"><span>${dskSize(used)} used of ${dskSize(d.size)}</span>${segs.some(s => s.free) ? `<span>${dskSize(segs.find(s => s.free).size)} unallocated</span>` : ''}</div>
       ${v.free ? `<section class="dskcard"><div class="dskvh"><i class="dsksw free"></i><h2>Free space</h2></div><dl class="dskdl"><div><dt>Size</dt><dd>${dskSize(v.size)}</dd></div><div><dt>After</dt><dd>${esc(segs[v.i - 1]?.n || 'Start of drive')}</dd></div><div><dt>Device</dt><dd class="mono">${d.dev}</dd></div></dl></section>`
         : `<section class="dskcard"><div class="dskvh"><i class="dsksw" style="background:${DSKC[v.c]}"></i><h2>${esc(v.n)}</h2>${v.sys ? `<span class="dsktag" title="Luma is running from this volume">${ic('lock')}System</span>` : ''}${v.luks ? `<span class="dsktag">${ic(v.locked ? 'lock' : 'lock-open')}${v.locked ? 'Locked' : 'Unlocked'}</span>` : ''}</div>
@@ -277,8 +278,8 @@
     s += `<rect class="mpark" x="880" y="1020" width="160" height="110" rx="14"/><rect class="mpark" x="620" y="330" width="120" height="160" rx="14"/><circle class="mpark" cx="1260" cy="330" r="60"/>`;
     for (let x = 440; x < 2300; x += 70) s += `<path class="mst" d="M${x},-200 L${x + 40},1500"/>`;
     for (let y = -200; y < 1500; y += 62) s += `<path class="mst" d="M300,${y} L2300,${y - 70}"/>`;
-    [[760, 'M760,1200 L760,200'], [980, 'M980,1200 L980,100'], [1180, 'M1180,1200 L1180,0'], [1440, 'M1440,1100 L1440,-100']].forEach(([ d]) => s += `<path class="mart" d="${d}"/>`);
-    [[820, 'M400,820 L1900,820'], [640, 'M500,640 L1400,640'], [500, 'M600,500 L2200,500'], [1000, 'M500,1000 L2000,1000']].forEach(([ d]) => s += `<path class="mart" d="${d}"/>`);
+    [[760, 'M760,1200 L760,200'], [980, 'M980,1200 L980,100'], [1180, 'M1180,1200 L1180,0'], [1440, 'M1440,1100 L1440,-100']].forEach(([, d]) => s += `<path class="mart" d="${d}"/>`);
+    [[820, 'M400,820 L1900,820'], [640, 'M500,640 L1400,640'], [500, 'M600,500 L2200,500'], [1000, 'M500,1000 L2000,1000']].forEach(([, d]) => s += `<path class="mart" d="${d}"/>`);
     s += `<path class="mfwy" d="M300,1180 C700,1120 900,1160 1200,1080 C1500,1000 1700,1020 2300,940"/><path class="mfwy" d="M1900,-200 C1860,200 1880,500 1960,900 C2020,1200 2000,1400 2020,1600"/>`;
     s += `<path class="mrail" d="M420,1130 C800,1090 1100,1120 1400,1060"/>`;
     [['UPTOWN', 1260, 420], ['OLD OAKLAND', 700, 700], ['CHINATOWN', 900, 940], ['JACK LONDON', 820, 1120], ['LAKESIDE', 1600, 960], ['ADAMS POINT', 1700, 420]].forEach(([n, x, y]) => s += `<text class="mhood" x="${x}" y="${y}">${n}</text>`);
@@ -655,7 +656,3 @@
     rename: { t: 'Rename', field: 'Launch notes.md', key: ['Rename', 'Renamed'], cancel: 1 },
     replace: { t: 'Replace “Luma launch deck.pdf”?', p: 'Downloads already has a file with this name, changed today at 10:02.', left: ['Keep both', 'Saved as “Luma launch deck 2.pdf”'], key: ['Replace', 'Replaced'], cancel: 1 },
     report: { t: 'Report @drift.bot?', p: 'Luma sees the last 5 messages from this account. They don’t see that you reported them.', choices: ['Spam', 'Pretending to be someone', 'Harassment', 'Something else'], key: ['Report', 'Reported. Thanks', 'danger'], cancel: 1, extra: ['Also block @drift.bot', true] },
-    alert: { sys: true, icon: 'rotate-cw', t: 'Restart to finish updating', p: 'Luma 1.0.3 is installed. Open apps come back where you left them.', left: ['Tonight at 2:00', 'Restarting tonight at 2:00'], key: ['Restart now', 'Restarting'], cancel: 0, cancelLabel: 'Later' }
-  };
-  /* Reversible things just happen and offer Undo; what can't come back asks through the LumaUI destructive dialog (audit #24) */
-  const MDLIST = [['bar', 'Undo', 'Delete 3 items'], ['save', 'Sheet', 'Save before closing'], ['rename', 'Sheet', 'Rename'], ['replace', 'Sheet', 'Replace a file'], ['report', 'Sheet', 'Report'], ['purge', 'Dialog', 'Delete for good'], ['alert', 'System', 'Restart to update']];

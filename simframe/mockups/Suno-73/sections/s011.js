@@ -1,3 +1,10 @@
+    requestAnimationFrame(() => { $('#lc-scrim')?.classList.add('on'); $('#lc')?.classList.add('on'); $('#lc [data-lui-cno]')?.focus(); }); }
+  lConfirm.close = quiet => { $('#lc-scrim')?.remove(); $('#lc')?.remove(); const r = lConfirm.ret; lConfirm.ret = null; if (!quiet && r?.isConnected) r.focus?.(); };
+  document.addEventListener('keydown', e => { const d = $('#lc'); if (!d) return;
+    if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); lConfirm.close(); return; }
+    if (e.key === 'Tab') { const f = [...d.querySelectorAll('button')], i = f.indexOf(document.activeElement); e.preventDefault(); f[(i + (e.shiftKey ? -1 : 1) + f.length) % f.length].focus(); } }, true);
+
+  /* LumaUI: Category pill. lCat('media'): the category's own colour from the shared map (--cat-*). */
   const LCAT = { create: 'Create', work: 'Work', media: 'Media', play: 'Play', tools: 'Tools' };
   const lCat = k => `<span class="lcat" data-cat="${k}">${esc(LCAT[k] || k)}</span>`;
 
@@ -651,13 +658,3 @@
     if (['edge', 'spread', 'joined', 'float'].includes(k)) CF.preset = CFPRE.find(p => Object.entries(p[2]).every(([a, b]) => CF[a] === b) && !['split', 'free'].includes(p[0]))?.[0] || 'custom';
   }
   function cfScan() { CFV.near = 0; clearTimeout(cfScan.t); const next = () => { if (CFV.pg !== 'bluetooth' || !CF.bt || CFV.near >= CFNEAR.length) return; CFV.near++; if (!CFV.q) cfMain(); cfScan.t = setTimeout(next, 2200); }; cfScan.t = setTimeout(next, 1400); }
-
-  function cfGo(id) { if (id === '~disks') { cfOpenApp('disks'); return; } CFV.pg = id; CFV.joinNet = null; CFV.keyEdit = null; if (CFV.q) { CFV.q = ''; $('#cf-q').value = ''; } $('#cf-pop')?.remove(); cfAll(); if (id === 'bluetooth') cfScan(); }
-  function cfOpenApp(a) { const w = $('#w-' + a); if (w) { w.hidden = false; w.classList.remove('min'); focusWin(w); } cfToast(`Opening ${cfName(a)}`); }
-
-  function settingsClick(e, hit) { const q = s => hit(s);
-    if (q('button[disabled]')) return true;
-    if (!q('#cf-pop') && !q('[data-cfpk],[data-cfact="addsrc"]')) $('#cf-pop')?.remove();
-    if (CFV.keyEdit && !q('[data-cfkey]')) { CFV.keyEdit = null; cfMain(); }
-    const p = q('[data-cfp]'); if (p) { cfGo(p.dataset.cfp); return true; }
-    const s = q('[data-cfsw]'); if (s) { const k = s.dataset.cfsw; cfS(k, !cfG(k)); cfFx(k); cfAll(); return true; }

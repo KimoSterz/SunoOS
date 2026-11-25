@@ -1,3 +1,6 @@
+    if (ed || e.target.closest('[data-resize]')) drag = { w, mode: 'size', ed: ed || 'se', x: e.clientX, y: e.clientY, ox: w.offsetLeft, oy: w.offsetTop, ow: w.offsetWidth, oh: w.offsetHeight, nx: w.offsetLeft, ny: w.offsetTop, nw: w.offsetWidth, nh: w.offsetHeight };
+    else if (e.target.closest('[data-drag]') && !e.target.closest('button,input,label,a,textarea,.tbar > b,.tbar > .chev')) drag = { w, mode: 'move', x: e.clientX, y: e.clientY, ox: w.offsetLeft, oy: w.offsetTop, nx: w.offsetLeft, ny: w.offsetTop, b: bounds() };
+    else return; w.classList.add('drag'); w.setPointerCapture(e.pointerId); e.preventDefault(); });
   desk.addEventListener('pointermove', e => { if (!drag) { if (document.documentElement.dataset.desktop === '1') { const w = e.target.closest('.win'); cur(w && !e.buttons ? edgeAt(w, e) : ''); } return; }
     const d = drag, dx = e.clientX - d.x, dy = e.clientY - d.y;
     if (d.mode === 'move') { d.nx = Math.max(-d.w.offsetWidth + 160, Math.min(d.b.w - 160, d.ox + dx)); d.ny = Math.max(0, Math.min(d.b.h - d.b.dock - 60, d.oy + dy)); if (typeof dtHint === 'function' && document.documentElement.dataset.desktop === '1') dtHint(e); }

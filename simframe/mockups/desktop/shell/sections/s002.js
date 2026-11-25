@@ -1,9 +1,3 @@
-  function dismiss(id) { NQ = NQ.filter(n => n.id !== +id); if (NS === 'tray') openTray(); else rest(); }
-
-  /* ── Popovers ──────────────────────────────────────────────────────────── */
-  const pop = $('#pop'); let popKind = '', popAnchor = null;
-  const rel = el => { const s = scr.getBoundingClientRect(), k = s.width / W, r = el.getBoundingClientRect(); return { x: (r.left - s.left) / k, y: (r.top - s.top) / k, w: r.width / k, h: r.height / k }; };
-  function edgeOf(el) { const row = el.closest('.row'); if (row) return ['bottom', 'top', 'left', 'right'].find(e => row.classList.contains('e-' + e)); return rel(el).y > H / 2 ? 'bottom' : 'top'; }
   /* Quick Options state */
   const QD = { exp: 'desktop', out: 'buds', vol: 48, bri: 72, outOpen: false, netOpen: false, more: false, night: false, air: false, loc: true, cast: false, hot: false, net: 'north', netBusy: '', scanning: false, scanned: false, found: [], P: {}, fresh: '' };
   const QDEV = [{ id: 'buds', n: 'Fable Buds', k: 'headphones', st: 'on', bat: 82 }, { id: 'keys', n: 'Studio Keys', k: 'keyboard', st: 'on', bat: 64 }, { id: 'mouse', n: 'Arc Mouse', k: 'mouse', st: 'off' }];

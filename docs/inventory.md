@@ -18,7 +18,7 @@ Snapshot w Wayback Machine: `20261027144840` (https://web.archive.org/web/202610
 | `fonts/figtree/figtree.css` + 4 × `.woff2` | ~88 KB | Systemowa czcionka Figtree (SIL OFL) |
 | `social-suno/photos/*.webp` | 15 × ~100–400 KB | Zdjęcia używane przez makiety (tła „life-*”, okładka `pet-sounds.webp`) |
 | `wallpapers/prism.png` | ~2.3 MB | Tapeta biurka |
-| `mockups/apps/depot/marks/<app>.svg` | ~1–2 KB | Znaki aplikacji z trayu systemowego (Discord, Steam — reszta odfiltrowana) |
+| `mockups/apps/depot/marks/<app>.svg` | 23 × ~1–2 KB | Logotypy kafelków sklepu Depot — pełny katalog (Luma + third-party jako oferta instalacji) |
 | `mockups/desktop/dink-shell.css` | ~7,5 KB | Styl trybu „ink” dok– (dowany dynamicznie przez `shell.js`) |
 
 Pełne adresy wynikają ze wzoru: `https://simplyluma.com/simframe/<ścieżka>`.
@@ -28,10 +28,12 @@ Pełne adresy wynikają ze wzoru: `https://simplyluma.com/simframe/<ścieżka>`.
 `simframe/` nie jest już 1:1 kopią serwisu — po vendorowaniu stosowane są dwa kroki (oba automatycznie w
 `tools/fetch_upstream.py`, oraz ręcznie przez `python3 tools/suno_policy.py` / `python3 tools/split_sections.py`):
 
-1. **`tools/suno_policy.py`** — usuwa dane nieaktywnych aplikacji trzecich (system instaluje wyłącznie
-   Spotify, Discord, Obsidian, Zoom i Steam): katalog Depot (`catalogue.js`), urządzenia/aktualizacje/historia
-   (`world.js`), launchpad i tray (`desktop/shell.js`), listy prac i „popularnych”, wiersze telefonu w `Suno-73.js`
-   oraz ikony (`_bundle.json` + pliki SVG). Samo wykonywanie, animacje i wygląd są nietknięte.
+1. **`tools/suno_policy.py`** — uruchomiony system zawiera wyłącznie aplikacje Luma, a Depot zachowuje PEŁNY katalog
+   (aplikacje trzecie = oferty do zainstalowania): z bloków `X(…)` w `catalogue.js` zdejmowane są flagi `inst: 1` /
+   `upd: '…'`, listy zainstalowanych/dostarczanych/dopasowanych i historia aktualizacji (`world.js`) są puste,
+   launchpad (`XAPPS = []`) i tray (`desktop/shell.js`) są puste, wiersze telefonu w `Suno-73.js` tracą flagi
+   instalacji, wiersze historii aktualizacji z usuniętych aplikacji są usuwane, a ikony (`_bundle.json` + pliki SVG)
+   są przycinane do tego, co nadal jest referencjonowane. Samo wykonywanie, animacje i wygląd są nietknięte.
 2. **`tools/split_sections.py`** — dzieli monolity na sekcje (edycja w małych plikach, bez zmiany zachowania):
 
 | Plik wejściowy (loader/manifest) | Sekcje | Liczba |

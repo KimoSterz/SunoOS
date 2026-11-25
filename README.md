@@ -49,12 +49,15 @@ docs/inventory.md   pełny inwentarz plików makiety + adnotacje
 
 ## Nasze zmiany względem Luma
 
-- **Filtr nieaktywnych aplikacji** (`tools/suno_policy.py`): z danych makiety usunięte zostały programy trzecie, których
-  SunoOS nie instaluje (m.in. Inkscape, Audacity, Blender, GIMP, Krita, Kdenlive, VLC, Kodi, OBS, Signal, Telegram,
-  Thunderbird, LibreOffice, VSCodium, Godot, Nextcloud, Bitwarden, Firefox, Heroic, Moonlight, SuperTux) — z katalogu
-  Depot, list urządzeń i aktualizacji (`world.js`), launchpada i trayu (`shell.js`), list popularnych (telefon) oraz
-  z wiązki ikon `_bundle.json` i plików ikon. W systemie pozostają Spotify, Discord, Obsidian, Zoom i Steam.
-  Logika, animacje i wygląd okien/docka pozostały nietknięte — zmienione są wyłącznie dane.
+- **Filtr aplikacji trzecich** (`tools/suno_policy.py`): uruchomiony system zawiera wyłącznie aplikacje Luma —
+  żadna aplikacja trzecia (Inkscape, Audacity, Blender, GIMP, Krita, Kdenlive, VLC, Kodi, OBS, Signal, Telegram,
+  Thunderbird, LibreOffice, VSCodium, Godot, Nextcloud, Bitwarden, Firefox, Heroic, Moonlight, SuperTux,
+  Spotify, Discord, Obsidian, Zoom, Steam) nie jest zainstalowana: launchpad („all apps”) i tray są puste,
+  listy urządzeń/aktualizacji/historii w `world.js` są puste, a wiersze telefonu nie mają flag instalacji.
+  **Depot zachowuje pełny katalog** — aplikacje trzecie są tam ofertami do zainstalowania (z logotypami
+  w `apps/depot/marks/`), więc same bloki `X(…)` w `catalogue.js` pozostają, pozbawione jedynie flag
+  `inst: 1` / `upd: '…'`. Logika, animacje i wygląd okien/docka pozostały nietknięte — zmienione są
+  wyłącznie dane.
 - **Podział na sekcje** (`tools/split_sections.py`): monolity `Suno-73.js` (~1,7 MB), `Suno-73.css` (~1,1 MB),
   `desktop/shell.js` i `desktop/shell.css` rozbite na małe, po kolei składane sekcje w katalogach `Suno-73/sections/`
   i `desktop/shell/sections/`. Każda sekcja to bajt-dokładny wycinek oryginału (sha256 sklejenia równa się sha256

@@ -1,3 +1,9 @@
+      if (q('#cv-bar [data-cvpinsp]')) { CV.px = ''; cvBarPhone(); return true; }
+      const tb = q('[data-cvtab]'); if (tb && q('#cv-bar')) { CV.tab = tb.dataset.cvtab; cvBarPhone(); return true; }
+      if (q('[data-cvsel]') && q('#cv-bar')) { setTimeout(() => { CV.px = ''; cvBarPhone(); }); } if (q('[data-cvdo="del"]')) CV.px = ''; }
+    if (q('#cv-work') && !q('.supanel, .fbar, .wrzoom')) return true;   // the work area handles its own pointer
+    if (!q('#cv-pop')) $('#cv-pop')?.remove();
+    const tl = q('[data-cvtool]'); if (tl) { const k = tl.dataset.cvtool; if (k === 'shape') { cvPop(tl, [['rect', 'square', 'Rectangle', 'R'], ['ellipse', 'circle', 'Ellipse', 'O'], ['line', 'minus', 'Line', 'L']].map(([k2, i, n, s]) => `<button class="crmi${CV.tool === k2 ? ' on' : ''}" type="button" data-cvtool="${k2}">${ic(i)}<span>${n}</span><kbd class="sukbd">${s}</kbd></button>`).join(''), true); return true; } $('#cv-pop')?.remove(); if (CV.pen) cvPenEnd(false); CV.tool = k; cvTools(); return true; }
     const sl = q('[data-cvsel]'); if (sl && !q('[data-cvopen],[data-cveye]')) { const id = sl.dataset.cvsel; CV.sel = e.shiftKey ? (CV.sel.includes(id) ? CV.sel.filter(i => i !== id) : [...CV.sel, id]) : [id]; cvDraw(); cvPanels(); return true; }
     const op = q('[data-cvopen]'); if (op) { const id = op.dataset.cvopen; CV.open[id] = !(CV.open[id] ?? true); cvLeft(); return true; }
     const ey = q('[data-cveye]'); if (ey) { const n = cvG(ey.dataset.cveye); n.hidden = !n.hidden; cvAll(); return true; }
@@ -127,7 +133,7 @@
   function grShow(v, type) { if (v === null) return ''; if (typeof v === 'string' && v[0] === '#') return `<span class="grerr">${v}</span>`;
     if (type === 'check') return `<i class="grck${v === 'TRUE' ? ' on' : ''}">${v === 'TRUE' ? ic('check') : ''}</i>`;
     if (type === 'tag' && typeof v === 'string' && GRCATS[v] !== undefined) return `<span class="grtag" style="--h:${GRCATS[v]}">${esc(v)}</span>`;
-    if (type === 'date' && /^\d{4}-\d\d-\d\d$/.test(v)) { const [ m, d] = v.split('-'); return `${GRMONTH[+m - 1]} ${+d}`; }
+    if (type === 'date' && /^\d{4}-\d\d-\d\d$/.test(v)) { const [, m, d] = v.split('-'); return `${GRMONTH[+m - 1]} ${+d}`; }
     if (typeof v === 'number') return type === 'currency' ? (v < 0 ? '−$' : '$') + Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : type === 'percent' ? (v * 100).toFixed(1) + '%' : (Math.round(v * 1e6) / 1e6).toLocaleString('en-US');
     return esc(String(v)); }
   const grRange = () => { const { a, b } = GR.sel; return { r1: Math.min(a[0], b[0]), r2: Math.max(a[0], b[0]), c1: Math.min(a[1], b[1]), c2: Math.max(a[1], b[1]) }; };
@@ -677,10 +683,3 @@
     if (fader) { const t = seT(fader.dataset.sefader) || { id: 'main', vol: 0 }; SE.drag = { k: 'fader', t, el: fader }; seFader(e); return; }
     if (grid) { const note = e.target.closest('[data-senote]'), [t, r] = seRegion(SE.editor), ns = seNotes(r, t); if (note) { ns.splice(+note.dataset.senote, 1); seEditor(); seArr(); return; }
       const g = grid.getBoundingClientRect(), bars = +grid.dataset.bars, hi = +grid.dataset.hi, rows = hi - +grid.dataset.lo, s = Math.floor((e.clientX - g.left) / g.width * bars * 4) / 4, p = hi - 1 - Math.floor((e.clientY - g.top) / g.height * rows);
-      ns.push({ s, l: .25, p, v: .85 }); seEditor(); seArr(); return; }
-    if (ruler && !reg) { const a = $('#se-lanes').getBoundingClientRect(); SE.pos = Math.max(1, (e.clientX - a.left) / seBars() + 1); seLCD(); SE.drag = { k: 'scrub' }; return; }
-    if (rs) { const [t, r] = seRegion(rs.dataset.seresize); SE.drag = { k: 'len', r, x0: e.clientX, l0: r.l }; e.stopPropagation(); return; }
-    if (reg) { const [t, r] = seRegion(reg.dataset.sereg); SE.sel = { t: t.id, r: r.id }; SE.drag = { k: 'reg', r, t, x0: e.clientX, s0: r.s }; seSelPaint(); sePanels(); return; }
-    if (lane) { SE.sel = { t: lane.dataset.selane, r: null }; seSelPaint(); sePanels(); } }
-  // Selection repaints classes in place: redrawing here would remove the element under the pointer and the click (and double-click) would never arrive
-  function seSelPaint() { $$('#se-heads .sehead').forEach(h => h.classList.toggle('on', h.dataset.setrack === SE.sel.t)); $$('#se-lanes .selane').forEach(l => l.classList.toggle('on', l.dataset.selane === SE.sel.t)); $$('#se-lanes .sereg').forEach(g => g.classList.toggle('on', g.dataset.sereg === SE.sel.r)); }
