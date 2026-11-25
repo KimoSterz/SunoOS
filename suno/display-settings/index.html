@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="pl" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SunoOS — Ustawienia ekranu</title>
+<link rel="stylesheet" href="../../simframe/fonts/figtree/figtree.css">
+<style>
+  :root {
+    --bg: #17181c;
+    --card: #26272d;
+    --card-2: #2f3038;
+    --line: #3a3b44;
+    --text: #f2f3f7;
+    --muted: #9a9ba6;
+    --accent: #6ea8ff;
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; display: grid; place-items: center;
+    background: radial-gradient(120% 120% at 20% 0%, #201c2e 0%, var(--bg) 55%);
+    font-family: Figtree, system-ui, -apple-system, sans-serif;
+    color: var(--text);
+  }
+  .panel {
+    width: min(660px, 94vw);
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    padding: 22px 22px 26px;
+    box-shadow: 0 30px 60px rgba(0,0,0,.45);
+  }
+  h1 { font-size: 17px; font-weight: 700; margin: 4px 4px 16px; letter-spacing: .2px; }
+  .card {
+    background: var(--card-2); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 14px 16px 12px; margin-bottom: 12px;
+  }
+  .row-head { display: flex; align-items: baseline; gap: 10px; }
+  .row-head b { font-size: 14px; font-weight: 600; }
+  .row-head .val { margin-left: auto; font-size: 12.5px; color: var(--muted);
+    font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .row-head .val b { color: var(--text); font-weight: 600; }
+
+  .slider-wrap { position: relative; padding: 8px 2px 34px; }
+  input[type="range"] {
+    -webkit-appearance: none; appearance: none;
+    width: 100%; height: 14px; border-radius: 999px; outline: none;
+    background: var(--track, #444);
+    cursor: ew-resize;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 24px; height: 24px; border-radius: 50%;
+    background: #fff; border: 2px solid rgba(0,0,0,.25);
+    box-shadow: 0 2px 6px rgba(0,0,0,.5), inset 0 0 0 2px var(--tint, #fff);
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: #fff; border: 2px solid rgba(0,0,0,.25);
+    box-shadow: 0 2px 6px rgba(0,0,0,.5), inset 0 0 0 2px var(--tint, #fff);
+  }
+  input[type="range"]:disabled { opacity: .45; cursor: default; }
+
+  .ticks { position: absolute; left: 2px; right: 2px; top: 24px; height: 34px; }
+  .tick { position: absolute; transform: translateX(-50%); text-align: center; width: 0; }
+  .tick i {
+    display: block; width: 9px; height: 9px; border-radius: 50%;
+    margin: 0 auto 3px; border: 1px solid rgba(0,0,0,.35);
+  }
+  .tick em {
+    display: block; font-style: normal; font-size: 9.5px; line-height: 1;
+    color: var(--muted); white-space: nowrap;
+    transform: translateX(-50%); position: relative; left: 50%;
+    font-variant-numeric: tabular-nums;
+  }
+  .tick.hi em { color: var(--text); font-weight: 600; }
+
+  .preview {
+    margin-top: 2px; border-radius: var(--radius); overflow: hidden;
+    border: 1px solid var(--line); position: relative; height: 150px;
+    background:
+      radial-gradient(90% 140% at 15% 10%, #7f5cff 0%, transparent 60%),
+      radial-gradient(110% 150% at 85% 15%, #ff5c9e 0%, transparent 55%),
+      radial-gradient(120% 160% at 50% 110%, #3ec7ff 0%, transparent 60%),
+      #101018;
+  }
+  .preview .tint { position: absolute; inset: 0; background: var(--tint, #fff);
+    opacity: var(--tint-op, .12); mix-blend-mode: overlay; transition: opacity .15s; }
+  .preview .chrome {
+    position: absolute; left: 10%; right: 10%; bottom: 12px; height: 34px;
+    border-radius: 12px; background: rgba(20,21,26,.75);
+    border: 1px solid rgba(255,255,255,.14); backdrop-filter: blur(6px);
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .preview .chrome span { width: 14px; height: 14px; border-radius: 50%;
+    background: rgba(255,255,255,.25); }
+  .preview .chrome span:nth-child(3) { background: rgba(255,255,255,.75); }
+
+  .note { font-size: 11.5px; color: var(--muted); margin: 2px 6px 0; }
+</style>
+</head>
+<body>
+  <section class="panel">
+    <h1>Ekran</h1>
+
+    <div class="card" id="card-kelvin">
+      <div class="row-head">
+        <b>Kolor ekranu</b>
+        <span class="val"><b id="k-val">6500</b> K · <span id="k-name">Neutralna</span></span>
+      </div>
+      <div class="slider-wrap">
+        <input type="range" id="kelvin" min="2000" max="9500" step="500" value="6500" aria-label="Temperatura barwowa ekranu">
+        <div class="ticks" id="ticks" aria-hidden="true"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="row-head"><b>Jasność</b><span class="val"><b id="b-val">80</b>%</span></div>
+      <div class="slider-wrap" style="padding-bottom:14px;">
+        <input type="range" id="bright" min="10" max="100" step="1" value="80" aria-label="Jasność ekranu">
+      </div>
+    </div>
+
+    <div class="preview" id="prev">
+      <div class="tint" id="tint"></div>
+      <div class="chrome"><span></span><span></span><span></span></div>
+    </div>
+    <p class="note">Podgląd obrazu z zastosowaną barwą. Przystanki co 500 K; 6500 K to wartość domyślna.</p>
+  </section>
+
+<script>
+(() => {
+  'use strict';
+  const MIN = 2000, MAX = 9500, STEP = 500;
+  const NAMES = {
+    2000: 'Płomień', 2500: 'Świeca', 3000: 'Żarówka', 3500: 'Ciepła',
+    4000: 'Godzina przejściowa', 4500: 'Zmierzch', 5000: 'Jaskrawa',
+    5500: 'Południe', 6000: 'Zachmurzenie', 6500: 'Neutralna',
+    7000: 'Lekko chłodna', 7500: 'Chłodna', 8000: 'Zimna',
+    8500: 'Silnie chłodna', 9000: 'Cień', 9500: 'Błękitna'
+  };
+  const HI = 6500;
+
+  const kelvinToRgb = k => {
+    const t = k / 100;
+    let r, g, b;
+    if (t <= 66) {
+      r = 255;
+      g = 99.4708025861 * Math.log(t) - 161.1195681661;
+      b = t <= 19 ? 0 : 138.5177312231 * Math.log(t - 10) - 305.0447927307;
+    } else {
+      r = 329.698727446 * Math.pow(t - 60, -0.1332047592);
+      g = 288.1221695283 * Math.pow(t - 60, -0.0755148492);
+      b = 255;
+    }
+    const cl = v => Math.max(0, Math.min(255, Math.round(v)));
+    return [cl(r), cl(g), cl(b)];
+  };
+  const rgbCss = rgb => `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`;
+
+  const slider = document.getElementById('kelvin');
+  const bright = document.getElementById('bright');
+  const kVal = document.getElementById('k-val');
+  const kName = document.getElementById('k-name');
+  const bVal = document.getElementById('b-val');
+  const tint = document.getElementById('tint');
+  const ticks = document.getElementById('ticks');
+
+  const trackGradient = () => {
+    const stops = [];
+    for (let k = MIN; k <= MAX; k += STEP) {
+      const p = ((k - MIN) / (MAX - MIN)) * 100;
+      stops.push(`${rgbCss(kelvinToRgb(k))} ${p.toFixed(2)}%`);
+    }
+    return `linear-gradient(90deg, ${stops.join(', ')})`;
+  };
+  slider.style.setProperty('--track', trackGradient());
+
+  for (let k = MIN; k <= MAX; k += STEP) {
+    const t = document.createElement('span');
+    t.className = 'tick' + (k === HI ? ' hi' : '');
+    t.style.left = (((k - MIN) / (MAX - MIN)) * 100) + '%';
+    t.innerHTML = `<i style="background:${rgbCss(kelvinToRgb(k))}"></i><em>${k}</em>`;
+    ticks.appendChild(t);
+  }
+
+  const render = () => {
+    const k = Number(slider.value), rgb = kelvinToRgb(k), css = rgbCss(rgb);
+    const off = k - 6500;
+    const op = 0.12 + 0.16 * Math.min(1, Math.abs(off) / 3000);
+    kVal.textContent = k;
+    kName.textContent = NAMES[k] || '';
+    slider.style.setProperty('--tint', css);
+    tint.style.setProperty('--tint', css);
+    tint.style.setProperty('--tint-op', off === 0 ? 0.06 : op);
+    slider.setAttribute('aria-valuetext', `${k} kelwin, ${NAMES[k] || ''}`);
+  };
+  const renderBright = () => {
+    bVal.textContent = bright.value;
+    document.getElementById('prev').style.filter = `brightness(${0.55 + (bright.value / 100) * 0.45})`;
+  };
+  slider.addEventListener('input', render);
+  bright.addEventListener('input', renderBright);
+  render();
+  renderBright();
+})();
+</script>
+</body>
+</html>

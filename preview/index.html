@@ -11,9 +11,15 @@
               font: 13px/1.5 system-ui, sans-serif; background: #000; text-align: center; }
   .fallback a { color: #9ecbff; }
   @media (min-width: 700px) { .fallback { display: none; } }
+  .module { position: fixed; top: 10px; right: 12px; z-index: 2; }
+  .module a { display: inline-block; padding: 6px 12px; border-radius: 999px;
+              background: rgba(0,0,0,.55); color: #eee; text-decoration: none;
+              font: 12px/1.4 system-ui, sans-serif; border: 1px solid rgba(255,255,255,.18); }
+  .module a:hover { background: rgba(0,0,0,.75); }
 </style>
 </head>
 <body>
+  <p class="module"><a href="../suno/display-settings/index.html">⚙ Ustawienia ekranu (SunoOS)</a></p>
   <iframe class="frame"
     src="https://simplyluma.com/simframe/mockups/luma-next-73.html?desktop=1&amp;app=none&amp;showcase=1&amp;zoom=0.7950"
     title="SunoOS mockup preview"></iframe>

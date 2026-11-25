@@ -37,6 +37,7 @@ pozyskujemy bezpośrednio z serwisu. Szczegóły i pełna lista plików:
 
 ```
 preview/            podgląd makiety przez iframe (działa od razu)
+suno/display-settings/  nasz moduł „Ustawienia ekranu" SunoOS
 tools/              narzędzia (fetch_upstream.py)
 simframe/           kod makiety Luma — ładowany przez tools/fetch_upstream.py
 docs/inventory.md   pełny inwentarz plików makiety + adnotacje
@@ -48,6 +49,14 @@ docs/inventory.md   pełny inwentarz plików makiety + adnotacje
 - Pełny opis i adresy wszystkich plików makiety (desktopowa makieta to `simframe/mockups/luma-next-73.html`, powłoka to `simframe/mockups/desktop/shell.js` + `shell.css`).
 - Skrypt uzupełniający resztę plików.
 
+## Nasze zmiany względem Luma
+
+- **Ustawienia ekranu** (`suno/display-settings/`): jeden suwak „Kolor ekranu” z
+  wizualną reprezentacją barw (temperatura barwowa bez osobnego suwaka) i
+  przystankami co 500 K (2000–9500 K, wartość domyślna 6500 K), plus podgląd
+  wybarwienia ekranu na żywo. Docelowo podmienia panel ekranowy w makiecie `simframe/` po
+  jej pobraniu przez `tools/fetch_upstream.py`.
+
 ## Dalsza praca / status
 
 - **Creative Collection (Write, Grid, Stage, Reel, Sessions, Focus, Canvas) jest celowo wykluczona** — na tym etapie nie jest konieczna i może w ogóle nie trafić do SunoOS (bez ikon i bez plików w vendoringu).
@@ -55,3 +64,4 @@ docs/inventory.md   pełny inwentarz plików makiety + adnotacje
 - [ ] Po powrocie `github.com/SimplyLuma/luma` — porównać `simframe/` z źródłami upstream i skopiować licencję.
 - [ ] Przebrandowanie na SunoOS (nazwa, kolory, ikony) — po zmerchowaniu plików w `simframe/`.
 - [ ] Włączyć GitHub Pages (folder `/preview`) dla stałego adresu podglądu.
+- [ ] Podmienić panel „Ustawień ekranu” w makiecie `simframe/mockups/luma-next-73.html` na nasz moduł `suno/display-settings/` (po pierwszym vendoringu).
