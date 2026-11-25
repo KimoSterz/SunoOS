@@ -61,7 +61,7 @@ docs/inventory.md   pełny inwentarz plików makiety + adnotacje
 ## Dalsza praca / status
 
 - **Creative Collection (Write, Grid, Stage, Reel, Sessions, Focus, Canvas) jest celowo wykluczona** — na tym etapie nie jest konieczna i może w ogóle nie trafić do SunoOS (bez ikon i bez plików w vendoringu).
-- [ ] Uruchomić `tools/fetch_upstream.py` i sprawdzić sumy SHA-256 (gdy tylko dostęp z sieci jest wygodniejszy niż przy tworzeniu repo).
+- [x] Pliki upstream są vendorowane automatycznie przez workflow „Vendor upstream mockup” (`.github/workflows/vendor-upstream.yml`) — jeżli jeszcze ich nie ma, wystarczy dowolny push do `main` lub ręczne uruchomienie workflow.
 - [ ] Po powrocie `github.com/SimplyLuma/luma` — porównać `simframe/` z źródłami upstream i skopiować licencję.
 - [ ] Przebrandowanie na SunoOS (nazwa, kolory, ikony) — po zmerchowaniu plików w `simframe/`.
 - [ ] Włączyć GitHub Pages (folder `/preview`) dla stałego adresu podglądu.
