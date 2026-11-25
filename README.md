@@ -37,7 +37,8 @@ pozyskujemy bezpośrednio z serwisu. Szczegóły i pełna lista plików:
 
 ```
 preview/            podgląd makiety przez iframe (działa od razu)
-suno/display-settings/  nasza podstrona „Ustawienia › Ekran › Night Light" SunoOS
+suno/settings/       okno Ustawienia SunoOS (komponenty: js/state, js/rows, js/panels, js/app)
+suno/components/     komponenty wielokrotnego użycia (night-slider: suwak barwy z wytłoczonymi przystankami)
 tools/              narzędzia (fetch_upstream.py)
 simframe/           kod makiety Luma — ładowany przez tools/fetch_upstream.py
 docs/inventory.md   pełny inwentarz plików makiety + adnotacje
@@ -51,12 +52,18 @@ docs/inventory.md   pełny inwentarz plików makiety + adnotacje
 
 ## Nasze zmiany względem Luma
 
-- **Ustawienia › Ekran › Night Light** (`suno/display-settings/`): podstrona ustawień
-  z jednym suwakiem barwy w stylu Night Shift (cienki zaokrąglony tor z gradientem,
-  białe okrągłe gałki, bez podziałek na torze). Zakres 2000–8000 K, wartość domyślna
-  5000 K, przystanki co 1000 K jako delikatne wytłoczone kreski pod suwakiem (z etykietami
-  K i nazwami barw), podgląd wybarwienia ekranu na żywo. Docelowo podmienia panel ekranowy
-  w makiecie `simframe/` po jej pobraniu przez `tools/fetch_upstream.py`.
+- **Okno Ustawienia w komponentach** (`suno/settings/`): własna, rozpętana na czysto aplikacja Ustawienia
+  zapisana w małych plikach — `js/state.js` (stan + localStorage + subskrypcje), `js/rows.js`
+  (kompozycja wierszy: przełączniki, segmenty, listy, radio, przyciski), `js/panels.js`
+  (rejestr paneli: Displays i Night Light; reszta sekcji to na razie zaślepki (placeholdery)),
+  `js/app.js` (router paneli, pasek boczny, nawigacja okruszkowa).
+- **Night Light jest podstroną Ustawień, nie osobnym oknem**: Ustawienia › Displays › Night Light
+  (dokładnie jak w makiecie Luma, którą odtworzyliśmy: wiersz „Night Light — Warmer colours at
+  night, easier on the eyes” w panelu Displays). Suwak barwy w zakresie 2000–8000 K co 1000 K:
+  wspólny komponent `suno/components/night-slider/` (cieńki tor z gradientem, wąska biała gałka,
+  wytłoczone kreski przystanków z podpisami obróconymi o 90°), harmonogram „sunset → sunrise”
+  lub godziny manualne + pasek dobowy jak upstream, przycisk „Turn off until tomorrow”.
+- Stan ustawień przeżywa odświeżenie strony (localStorage, klucz `suno-settings-v1`).
 
 ## Dalsza praca / status
 
@@ -65,4 +72,4 @@ docs/inventory.md   pełny inwentarz plików makiety + adnotacje
 - [ ] Po powrocie `github.com/SimplyLuma/luma` — porównać `simframe/` z źródłami upstream i skopiować licencję.
 - [ ] Przebrandowanie na SunoOS (nazwa, kolory, ikony) — po zmerchowaniu plików w `simframe/`.
 - [ ] Włączyć GitHub Pages (folder `/preview`) dla stałego adresu podglądu.
-- [ ] Podmienić podstronę „Ustawienia › Ekran › Night Light” w makiecie `simframe/mockups/luma-next-73.html` na nasz moduł `suno/display-settings/` (po pierwszym vendoringu).
+- [ ] Wpiąć nasze panele (`suno/settings/`) w okno `w-settings` makietę `simframe/` (podmiana treści paneli `displays`/`nightlight` w rejestrze CF w `luma-73.js`).
