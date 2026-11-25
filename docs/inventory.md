@@ -13,7 +13,7 @@ Snapshot w Wayback Machine: `20261027144840` (https://web.archive.org/web/202610
 | `mockups/desktop/shell.css` | — | Styl powłoki (wczytywany przez shadow DOM z `shell.js`) |
 | `mockups/assets/luma-favicon.svg` | 1.5 KB | Favicon makiet |
 | `icons/_bundle.json` | ~47 KB | Wszystkie glify (Lucide + znaki systemowe) w jednym JSON, klucz = nazwa pliku |
-| `icons/luma-v4-*.svg` | 34 × ~2–3 KB | Ikony aplikacji Luma v4 (Filer, Tide, Viola, Messages, Charlie, Notes, Write, Photos, Calendar, Term, Depot, Settings itd.) |
+| `icons/luma-v4-*.svg` | 27 × ~2–3 KB | Ikony aplikacji Luma v4 (Filer, Tide, Viola, Messages, Charlie, Notes, Photos, Calendar, Term, Depot, Settings itd.). Bez ikon Creative Collection |
 | `fonts/figtree/figtree.css` + 4 × `.woff2` | ~88 KB | Systemowa czcionka Figtree (SIL OFL) |
 | `social-luma/photos/*.webp` | 15 × ~100–400 KB | Zdjęcia używane przez makiety (tła „life-*”, okładka `pet-sounds.webp`) |
 | `wallpapers/prism.png` | ~2.3 MB | Tapeta biurka |

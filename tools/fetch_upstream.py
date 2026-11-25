@@ -49,12 +49,14 @@ PHOTOS = [
 
 APP_ICONS = [
     "app-store", "ari", "browser", "calculator", "calendar", "camera", "clock",
-    "contacts", "daw", "designer", "disks", "documents", "files", "leaf",
+    "contacts", "disks", "files", "leaf",
     "mail", "maps", "memo", "messages", "monitor", "music", "notes", "phone",
-    "photo-editor", "photos", "presentations", "settings", "spreadsheets",
-    "tasks", "terminal", "tipsplit", "valet", "video-editor", "viewer",
-    "weather",
+    "photos", "settings",
+    "tasks", "terminal", "tipsplit", "valet", "viewer", "weather",
 ]
+
+# Pominięte celowo (Creative Collection — na razie poza zakresem SunoOS):
+# daw, designer, documents, photo-editor, presentations, spreadsheets, video-editor
 
 # Ikony aplik z paska makiety (Luma utrzymuje je pod mockups/apps/depot/marks/).
 # Sygnaturem sa linki z tresci shell.js; brak pliku = pomijamy z ostrzezeniem.
@@ -113,13 +115,15 @@ def main():
         except Exception as e:
             print(f"POMINIETO (opcjonalne) {rel}: {e}", file=sys.stderr)
 
-    # Spakietowane gify Lucide z _bundle.json -> pojedyncze pliki icons/<name>.svg,
-    # tak jak oczekuje shell.js (icons/<name>.svg).
+    # Tworzenie ikon z _bundle.json pomija nazwy z pominiętych aplikacji.
+    SKIP = {"daw", "designer", "documents", "photo-editor", "presentations", "spreadsheets", "video-editor"}
     bundle_path = os.path.join(ROOT, "icons", "_bundle.json")
     if os.path.exists(bundle_path):
         with open(bundle_path, encoding="utf-8") as f:
             bundle = json.load(f)
         for name, svg in bundle.items():
+            if name in SKIP:
+                continue
             rel = f"icons/{name}.svg"
             if os.path.exists(os.path.join(ROOT, rel)):
                 continue
