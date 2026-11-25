@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SunoOS — Ustawienia ekranu</title>
+<title>SunoOS — Ustawienia › Ekran › Night Light</title>
 <link rel="stylesheet" href="../../simframe/fonts/figtree/figtree.css">
 <style>
   :root {
@@ -13,7 +13,6 @@
     --line: #3a3b44;
     --text: #f2f3f7;
     --muted: #9a9ba6;
-    --accent: #6ea8ff;
     --radius: 14px;
   }
   * { box-sizing: border-box; }
@@ -28,13 +27,24 @@
     background: var(--card);
     border: 1px solid var(--line);
     border-radius: 22px;
-    padding: 22px 22px 26px;
+    padding: 18px 22px 26px;
     box-shadow: 0 30px 60px rgba(0,0,0,.45);
   }
-  h1 { font-size: 17px; font-weight: 700; margin: 4px 4px 16px; letter-spacing: .2px; }
+  .crumbs { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); margin: 2px 2px 14px; }
+  .crumbs .back {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 22px; height: 22px; border-radius: 7px; text-decoration: none;
+    color: var(--text); background: var(--card-2); border: 1px solid var(--line);
+  }
+  .crumbs .back:hover { background: #35363f; }
+  .crumbs b { color: var(--text); font-weight: 600; }
+  .crumbs .sep { opacity: .5; }
+  h1 { font-size: 17px; font-weight: 700; margin: 2px 4px 2px; letter-spacing: .2px; }
+  .sub { font-size: 12.5px; color: var(--muted); margin: 0 4px 16px; }
+
   .card {
     background: var(--card-2); border: 1px solid var(--line);
-    border-radius: var(--radius); padding: 14px 16px 12px; margin-bottom: 12px;
+    border-radius: var(--radius); padding: 14px 16px 10px; margin-bottom: 12px;
   }
   .row-head { display: flex; align-items: baseline; gap: 10px; }
   .row-head b { font-size: 14px; font-weight: 600; }
@@ -42,39 +52,44 @@
     font-variant-numeric: tabular-nums; white-space: nowrap; }
   .row-head .val b { color: var(--text); font-weight: 600; }
 
-  .slider-wrap { position: relative; padding: 8px 2px 34px; }
+  .slider-wrap { position: relative; padding: 10px 2px 44px; }
   input[type="range"] {
     -webkit-appearance: none; appearance: none;
-    width: 100%; height: 14px; border-radius: 999px; outline: none;
-    background: var(--track, #444);
+    width: 100%; height: 6px; border-radius: 999px; outline: none; margin: 0;
+    background: linear-gradient(90deg, #57a6ff 0%, #7db4ff 35%, #ffcf8a 70%, #ffab40 100%);
     cursor: ew-resize;
   }
   input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none; appearance: none;
-    width: 24px; height: 24px; border-radius: 50%;
-    background: #fff; border: 2px solid rgba(0,0,0,.25);
-    box-shadow: 0 2px 6px rgba(0,0,0,.5), inset 0 0 0 2px var(--tint, #fff);
+    width: 22px; height: 22px; border-radius: 50%;
+    background: #fff; border: 1px solid rgba(0,0,0,.18);
+    box-shadow: 0 2px 6px rgba(0,0,0,.45);
+    cursor: ew-resize;
   }
   input[type="range"]::-moz-range-thumb {
     width: 22px; height: 22px; border-radius: 50%;
-    background: #fff; border: 2px solid rgba(0,0,0,.25);
-    box-shadow: 0 2px 6px rgba(0,0,0,.5), inset 0 0 0 2px var(--tint, #fff);
+    background: #fff; border: 1px solid rgba(0,0,0,.18);
+    box-shadow: 0 2px 6px rgba(0,0,0,.45);
+    cursor: ew-resize;
   }
   input[type="range"]:disabled { opacity: .45; cursor: default; }
 
-  .ticks { position: absolute; left: 2px; right: 2px; top: 24px; height: 34px; }
-  .tick { position: absolute; transform: translateX(-50%); text-align: center; width: 0; }
-  .tick i {
-    display: block; width: 9px; height: 9px; border-radius: 50%;
-    margin: 0 auto 3px; border: 1px solid rgba(0,0,0,.35);
+  .grooves { position: absolute; left: 2px; right: 2px; top: 16px; height: 30px; }
+  .groove { position: absolute; transform: translateX(-50%); text-align: center; }
+  .groove i {
+    display: block; width: 3px; height: 9px; border-radius: 2px;
+    background: #17181d;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.65), 0 1px 0 0 rgba(255,255,255,.09);
+    margin: 0 auto;
   }
-  .tick em {
+  .groove em {
     display: block; font-style: normal; font-size: 9.5px; line-height: 1;
-    color: var(--muted); white-space: nowrap;
+    color: var(--muted); white-space: nowrap; margin-top: 4px;
     transform: translateX(-50%); position: relative; left: 50%;
     font-variant-numeric: tabular-nums;
   }
-  .tick.hi em { color: var(--text); font-weight: 600; }
+  .groove.on em { color: var(--text); font-weight: 600; }
+  .groove.on i { box-shadow: inset 0 1px 1px rgba(0,0,0,.65), 0 1px 0 0 rgba(255,255,255,.18); }
 
   .preview {
     margin-top: 2px; border-radius: var(--radius); overflow: hidden;
@@ -97,28 +112,28 @@
     background: rgba(255,255,255,.25); }
   .preview .chrome span:nth-child(3) { background: rgba(255,255,255,.75); }
 
-  .note { font-size: 11.5px; color: var(--muted); margin: 2px 6px 0; }
+  .note { font-size: 11.5px; color: var(--muted); margin: 10px 6px 0; }
 </style>
 </head>
 <body>
   <section class="panel">
-    <h1>Ekran</h1>
+    <nav class="crumbs">
+      <a class="back" href="#" title="Ustawienia" aria-label="Powrót do Ustawień">‹</a>
+      <span>Ustawienia</span><span class="sep">›</span>
+      <span>Ekran</span><span class="sep">›</span>
+      <b>Night Light</b>
+    </nav>
+    <h1>Night Light</h1>
+    <p class="sub">Od zachodu do wschodu słońca kontroluje barwę Twojego ekranu.</p>
 
     <div class="card" id="card-kelvin">
       <div class="row-head">
         <b>Kolor ekranu</b>
-        <span class="val"><b id="k-val">6500</b> K · <span id="k-name">Neutralna</span></span>
+        <span class="val"><b id="k-val">5000</b> K · <span id="k-name">Światło dzienne</span></span>
       </div>
       <div class="slider-wrap">
-        <input type="range" id="kelvin" min="2000" max="9500" step="500" value="6500" aria-label="Temperatura barwowa ekranu">
-        <div class="ticks" id="ticks" aria-hidden="true"></div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="row-head"><b>Jasność</b><span class="val"><b id="b-val">80</b>%</span></div>
-      <div class="slider-wrap" style="padding-bottom:14px;">
-        <input type="range" id="bright" min="10" max="100" step="1" value="80" aria-label="Jasność ekranu">
+        <input type="range" id="kelvin" min="2000" max="8000" step="1000" value="5000" aria-label="Temperatura barwowa ekranu">
+        <div class="grooves" id="grooves" aria-hidden="true"></div>
       </div>
     </div>
 
@@ -126,21 +141,17 @@
       <div class="tint" id="tint"></div>
       <div class="chrome"><span></span><span></span><span></span></div>
     </div>
-    <p class="note">Podgląd obrazu z zastosowaną barwą. Przystanki co 500 K; 6500 K to wartość domyślna.</p>
+    <p class="note">Podgląd obrazu z zastosowaną barwą. Przystanki co 1000 K, od 2000 do 8000 K.</p>
   </section>
 
 <script>
 (() => {
   'use strict';
-  const MIN = 2000, MAX = 9500, STEP = 500;
+  const MIN = 2000, MAX = 8000, STEP = 1000, DEF = 5000;
   const NAMES = {
-    2000: 'Płomień', 2500: 'Świeca', 3000: 'Żarówka', 3500: 'Ciepła',
-    4000: 'Godzina przejściowa', 4500: 'Zmierzch', 5000: 'Jaskrawa',
-    5500: 'Południe', 6000: 'Zachmurzenie', 6500: 'Neutralna',
-    7000: 'Lekko chłodna', 7500: 'Chłodna', 8000: 'Zimna',
-    8500: 'Silnie chłodna', 9000: 'Cień', 9500: 'Błękitna'
+    2000: 'Świeca', 3000: 'Żarówka', 4000: 'Ciepła', 5000: 'Światło dzienne',
+    6000: 'Zachmurzenie', 7000: 'Chłodna', 8000: 'Zimna'
   };
-  const HI = 6500;
 
   const kelvinToRgb = k => {
     const t = k / 100;
@@ -160,50 +171,33 @@
   const rgbCss = rgb => `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`;
 
   const slider = document.getElementById('kelvin');
-  const bright = document.getElementById('bright');
   const kVal = document.getElementById('k-val');
   const kName = document.getElementById('k-name');
-  const bVal = document.getElementById('b-val');
   const tint = document.getElementById('tint');
-  const ticks = document.getElementById('ticks');
-
-  const trackGradient = () => {
-    const stops = [];
-    for (let k = MIN; k <= MAX; k += STEP) {
-      const p = ((k - MIN) / (MAX - MIN)) * 100;
-      stops.push(`${rgbCss(kelvinToRgb(k))} ${p.toFixed(2)}%`);
-    }
-    return `linear-gradient(90deg, ${stops.join(', ')})`;
-  };
-  slider.style.setProperty('--track', trackGradient());
+  const grooves = document.getElementById('grooves');
 
   for (let k = MIN; k <= MAX; k += STEP) {
-    const t = document.createElement('span');
-    t.className = 'tick' + (k === HI ? ' hi' : '');
-    t.style.left = (((k - MIN) / (MAX - MIN)) * 100) + '%';
-    t.innerHTML = `<i style="background:${rgbCss(kelvinToRgb(k))}"></i><em>${k}</em>`;
-    ticks.appendChild(t);
+    const g = document.createElement('span');
+    g.className = 'groove' + (k === DEF ? ' on' : '');
+    g.style.left = (((k - MIN) / (MAX - MIN)) * 100) + '%';
+    g.innerHTML = `<i></i><em>${k}</em>`;
+    grooves.appendChild(g);
   }
 
   const render = () => {
-    const k = Number(slider.value), rgb = kelvinToRgb(k), css = rgbCss(rgb);
-    const off = k - 6500;
-    const op = 0.12 + 0.16 * Math.min(1, Math.abs(off) / 3000);
+    const k = Number(slider.value), css = rgbCss(kelvinToRgb(k));
+    const off = Math.abs(k - DEF) / 1000;
     kVal.textContent = k;
     kName.textContent = NAMES[k] || '';
-    slider.style.setProperty('--tint', css);
     tint.style.setProperty('--tint', css);
-    tint.style.setProperty('--tint-op', off === 0 ? 0.06 : op);
+    tint.style.setProperty('--tint-op', k === DEF ? 0.06 : 0.12 + 0.05 * off);
     slider.setAttribute('aria-valuetext', `${k} kelwin, ${NAMES[k] || ''}`);
-  };
-  const renderBright = () => {
-    bVal.textContent = bright.value;
-    document.getElementById('prev').style.filter = `brightness(${0.55 + (bright.value / 100) * 0.45})`;
+    [...grooves.children].forEach((g, i) => {
+      g.classList.toggle('on', MIN + i * STEP === k);
+    });
   };
   slider.addEventListener('input', render);
-  bright.addEventListener('input', renderBright);
   render();
-  renderBright();
 })();
 </script>
 </body>
