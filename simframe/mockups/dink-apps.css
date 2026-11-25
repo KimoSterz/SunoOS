@@ -1,0 +1,274 @@
+/* D-Ink, app by app. mockups/dink.css holds the system (weights, fill, paper, the phone's two weights); this file
+   holds what one app needs so that its own parts read in that system. Same scope, same rules: an object is 2px,
+   a row is a 1px rule, nothing inside an object draws a line, the chosen thing is the fill, nothing fades. */
+
+/* Mail: a sender with no photo is a lettered tile, drawn like an initials face */
+html[data-ink] #desk .win.phone .crstk > i.crbrand { background: var(--dink-sheet) !important; color: var(--dink-ink) !important; box-shadow: inset 0 0 0 2px var(--dink-ink), 0 0 0 2px var(--dink-sheet) !important; }
+html[data-ink] #desk .win.phone .crrow.on .crstk > i.crbrand { box-shadow: inset 0 0 0 2px var(--dink-sheet), 0 0 0 2px var(--dink-ink) !important; background: var(--dink-ink) !important; color: var(--dink-sheet) !important; }
+
+/* Calendar: today is the fill; a time is type, not a box; the calendars in the header are rings in a chain */
+html[data-ink] #desk .win .pmd.today.on > b { background: var(--dink-ink) !important; color: var(--dink-sheet) !important; }
+html[data-ink] #desk .win.phone .pev .pt { box-shadow: none !important; border: 0 !important; background: transparent !important; padding-left: 0 !important; text-align: left !important; }
+html[data-ink] #desk .win.phone .pev .pt :is(b, small, span) { color: var(--dink-ink) !important; }
+html[data-ink] #desk .win.phone .pev .pt :is(small, span:last-child) { color: var(--dink-ink-2) !important; }
+html[data-ink] #desk .win.phone .ccal i.round { background: var(--dink-sheet) !important; border: 2px solid var(--dink-ink) !important; box-sizing: border-box !important; width: 11px !important; height: 11px !important; box-shadow: 0 0 0 1.5px var(--dink-sheet) !important; }
+html[data-ink] #desk .win.phone .ccal i.round:first-child { background: var(--dink-ink) !important; }
+
+/* Messages: a link preview is the bubble's content, so the bubble is its only line; the quote and the muted
+   name stay full strength */
+html[data-ink] #desk .win .bub .mlink { box-shadow: none !important; background: transparent !important; border-top: 1px solid var(--dink-ink) !important; border-radius: 0 !important; }
+html[data-ink] #desk .win :is(.rq > span, .l1 > b) { opacity: 1 !important; }
+
+/* Contacts: the index is second ink */
+html[data-ink] #desk .win .lazidx b { color: var(--dink-ink-2) !important; }
+
+/* Phone: the call key is the fill */
+html[data-ink] #desk .win .pnbig.voice { background: var(--dink-ink) !important; color: var(--dink-sheet) !important; box-shadow: none !important; }
+html[data-ink] #desk .win .pnbig.voice :is(svg, i) { color: var(--dink-sheet) !important; }
+
+/* ── Lists are rules. A note, a suggestion, a settings group: rows divided by a 1px rule, never a stack of boxes ── */
+html[data-ink] #desk .win.phone :is(.nrow2, .tkrow.sug) { box-shadow: none !important; background: transparent !important; border-radius: 0 !important; border-bottom: 1px solid var(--dink-ink) !important; }
+html[data-ink] #desk .win.phone .nrow2.on { background: var(--dink-ink) !important; color: var(--dink-sheet) !important; }
+html[data-ink] #desk .win.phone .nrow2.on * { color: var(--dink-sheet) !important; }
+html[data-ink] #desk .win.phone :is(.cfcard, .cfhero) :is(.cfrow, .cfbig) { box-shadow: none !important; }
+html[data-ink] #desk .win.phone .cfrow + .cfrow { border-top: 1px solid var(--dink-ink) !important; }
+
+/* ── A card's one action is the fill; its other keys are bare ── */
+html[data-ink] #desk .win.phone :is(.cfhero, .cfrow, .dskcard, .tkrow, .ariask, .dn-hero) :is(.bt.fill, .bt.sm.fill, .dn-get) { background: var(--dink-ink) !important; color: var(--dink-sheet) !important; box-shadow: none !important; }
+html[data-ink] #desk .win.phone :is(.cfhero, .cfrow, .dskcard, .tkrow, .ariask, .dn-hero) :is(.bt.fill, .bt.sm.fill, .dn-get) * { color: var(--dink-sheet) !important; }
+html[data-ink] #desk .win.phone .ariask .bt.sm:not(.fill) { box-shadow: none !important; background: transparent !important; text-decoration: underline; text-underline-offset: 3px; }
+
+/* ── Photos ── */
+html[data-ink] #desk .win .fav svg { filter: none !important; }
+html[data-ink] #desk .win .meta i.d { background: var(--dink-ink) !important; }
+
+/* ── Tide: a cover is a picture and carries no line ── */
+html[data-ink] #desk .win.phone :is(.tmhit, .hero) .cv { box-shadow: none !important; }
+
+/* ── Weather: the sky goes; it is a page of type. Every figure is ink, the advisory is the one card that is
+   framed, and its heading is the fill ── */
+html[data-ink] #desk #w-weather.phone :is(b, span, p, h6, em, small, div, button, time) { color: var(--dink-ink) !important; opacity: 1 !important; }
+html[data-ink] #desk #w-weather.phone :is(.wxnh, h6, .wxc2, small) { color: var(--dink-ink-2) !important; }
+html[data-ink] #desk #w-weather.phone svg, html[data-ink] #desk #w-weather.phone .g { opacity: 1 !important; color: var(--dink-ink) !important; }
+html[data-ink] #desk #w-weather.phone :is(.wxcard2, .wxnext) { background: transparent !important; box-shadow: none !important; border-top: 1px solid var(--dink-ink) !important; border-radius: 0 !important; }
+html[data-ink] #desk #w-weather.phone .wxalert { background: transparent !important; box-shadow: var(--dink-E) !important; }
+html[data-ink] #desk #w-weather.phone .wxalert :is(b, span, p) { color: var(--dink-ink) !important; }
+html[data-ink] #desk #w-weather.phone .wxhrow { -webkit-mask-image: none !important; mask-image: none !important; }
+html[data-ink] #desk #w-weather.phone .wxbell em { background: var(--dink-ink) !important; color: var(--dink-sheet) !important; }
+
+/* ── Clock: the add tile is a key, 2px ── */
+html[data-ink] #desk .win .ckcity.add { box-shadow: var(--dink-E) !important; border: 0 !important; }
+
+/* ── Notes ── */
+html[data-ink] #desk .win :is(.lmk .dot, .peer i) { background: var(--dink-ink) !important; }
+html[data-ink] #desk .win .peer b { background: var(--dink-ink) !important; color: var(--dink-sheet) !important; }
+
+/* ── Tasks: the day's plan is the one primary thing on the page, so it is the fill; late and suggested are type ── */
+html[data-ink] #desk .win .tkplanb { background: var(--dink-ink) !important; background-image: none !important; color: var(--dink-sheet) !important; box-shadow: none !important; }
+html[data-ink] #desk .win .tkplanb * { color: var(--dink-sheet) !important; opacity: 1 !important; }
+html[data-ink] #desk .win .tkplanb .tkpli { background: transparent !important; box-shadow: inset 0 0 0 2px var(--dink-sheet) !important; }
+html[data-ink] #desk .win :is(.tkgrp.late h6, .tkm.late) { color: var(--dink-ink) !important; font-weight: 700 !important; }
+html[data-ink] #desk .win .tkgrp.sug h6 { color: var(--dink-ink-2) !important; }
+html[data-ink] #desk .win .tkck { box-shadow: var(--dink-E) !important; border: 0 !important; }
+
+/* ── Settings ── */
+html[data-ink] #desk .win .cfsig i.on { background: var(--dink-ink) !important; }
+html[data-ink] #desk .win .cfsw.big.on { background: var(--dink-ink) !important; box-shadow: none !important; }
+html[data-ink] #desk .win.phone .cfwash { display: none !important; }
+
+/* ── Camera: the viewfinder is the picture; around it is paper. Keys are glyphs, the mode and zoom chosen are
+   the fill, the shutter is a 2px ring around a solid disc ── */
+html[data-ink] #desk #w-camera :is(.main.isle, .cmphone, .cmframe, .cmbody) { background: var(--dink-sheet) !important; }
+html[data-ink] #desk #w-camera :is(.cmt2, .cmfmt2, .cmflip2, .cmlast2, .cmzoom2 button) { background: transparent !important; color: var(--dink-ink) !important; box-shadow: none !important; }
+html[data-ink] #desk #w-camera :is(.cmt2, .cmfmt2, .cmflip2, .cmlast2) :is(svg, small, i) { color: var(--dink-ink) !important; background: transparent !important; }
+html[data-ink] #desk #w-camera .cmzoom2 { background: var(--dink-sheet) !important; box-shadow: var(--dink-E) !important; }
+html[data-ink] #desk #w-camera :is(.cmzoom2 button.on, .cmmodes2 button.on) { background: var(--dink-ink) !important; color: var(--dink-sheet) !important; border-radius: 99px; }
+html[data-ink] #desk #w-camera .cmmodes2 button { color: var(--dink-ink) !important; }
+html[data-ink] #desk #w-camera .cmmodes2 button.on { padding: 4px 10px !important; }
+html[data-ink] #desk #w-camera .cmshutter2 { box-shadow: var(--dink-E) !important; border: 0 !important; background: var(--dink-sheet) !important; }
+html[data-ink] #desk #w-camera .cmshutter2 > i { background: var(--dink-ink) !important; }
+html[data-ink] #desk #w-camera .sb, html[data-ink] #desk #w-camera .cmtop2 { color: var(--dink-ink) !important; }
+
+/* ── Depot: the editor's pick is a card of type on paper; Get is its fill ── */
+html[data-ink] #desk .win .dn-hero { background: transparent !important; background-image: none !important; box-shadow: var(--dink-E) !important; }
+html[data-ink] #desk .win .dn-hero :is(h2, p, .dn-kick, b, span) { color: var(--dink-ink) !important; }
+html[data-ink] #desk .win .dn-hero :is(p, .dn-kick) { color: var(--dink-ink-2) !important; }
+html[data-ink] #desk .win .dn-hero .dn-hacts { background: transparent !important; box-shadow: none !important; border-top: 1px solid var(--dink-ink) !important; border-radius: 0 !important; }
+html[data-ink] #desk .win .dn-hero .dn-gp { box-shadow: var(--dink-E) !important; border: 0 !important; filter: none !important; }
+html[data-ink] #desk .win .dn-stars { color: var(--dink-ink) !important; -webkit-text-fill-color: var(--dink-ink) !important; background: none !important; }
+
+/* ── YouTube: the hero is a photograph and draws no line; its words sit on a band of ink at its foot ── */
+html[data-ink] #desk .win .ythero { box-shadow: none !important; background: var(--dink-ink) !important; }
+html[data-ink] #desk .win .ythero :is(h2, .by, .mt, .pr, span, b) { color: var(--dink-sheet) !important; }
+html[data-ink] #desk .win .ythero .bt { background: var(--dink-sheet) !important; color: var(--dink-ink) !important; box-shadow: none !important; }
+html[data-ink] #desk .win .ythero .bt * { color: var(--dink-ink) !important; }
+html[data-ink] #desk .win .ythero .lprog { box-shadow: inset 0 0 0 1px var(--dink-sheet) !important; } html[data-ink] #desk .win .ythero .lprog i { background: var(--dink-sheet) !important; }
+html[data-ink] #desk .win .ytchips button.on { background: var(--dink-ink) !important; background-image: none !important; color: var(--dink-sheet) !important; box-shadow: none !important; }
+html[data-ink] #desk .win .ytth { background: transparent !important; }
+
+/* ── Diskord: banner and faces are pictures; who is talking takes a 2px ring ── */
+html[data-ink] #desk .win :is(.dc-banner .dc-bimg, .dc-fc) { box-shadow: none !important; }
+html[data-ink] #desk .win .dc-fc.talk { box-shadow: 0 0 0 2px var(--dink-ink) !important; }
+html[data-ink] #desk .win .dc-banner { box-shadow: none !important; }
+html[data-ink] #desk .win .dc-bch { background: var(--dink-ink) !important; color: var(--dink-sheet) !important; }
+html[data-ink] #desk .win .dc-gi.lumai { background: var(--dink-sheet) !important; }
+
+/* ── Memos: the player is one card; its keys are bare ── */
+html[data-ink] #desk .win .medeck { background: transparent !important; box-shadow: var(--dink-E) !important; }
+html[data-ink] #desk .win .medeck :is(.ib, .bt, .mespd) { box-shadow: none !important; background: transparent !important; }
+html[data-ink] #desk .win .medeck * { color: var(--dink-ink) !important; }
+
+/* ── Leaf: a cover is art and keeps its print; it casts nothing, and nothing glows ── */
+html[data-ink] #desk .win .lfcov { box-shadow: none !important; filter: none !important; }
+html[data-ink] #desk .win .lfglow { display: none !important; }
+html[data-ink] #desk .win .lfcf :is(.fan, .lfmk, .fr) { opacity: 1 !important; }
+html[data-ink] #desk .win .lfpr i { background: var(--dink-ink) !important; }
+
+/* ── Write: the desk is paper and so is the page; the document is ink ── */
+html[data-ink] #desk #w-write :is(.main.isle.wrdesk, .sheet) { background: var(--dink-sheet) !important; }
+html[data-ink] #desk #w-write .tbar.sutop { background: var(--dink-sheet) !important; background-image: none !important; }
+html[data-ink] #desk #w-write .sheet :is(h1, h2, h3, p, blockquote, li, mark) { color: var(--dink-ink) !important; }
+html[data-ink] #desk #w-write .sheet .subtitle { color: var(--dink-ink-2) !important; }
+html[data-ink] #desk #w-write .sheet mark.cm { background: transparent !important; text-decoration: underline 2px; text-underline-offset: 3px; }
+html[data-ink] #desk #w-write .wrcb em { background: var(--dink-ink) !important; color: var(--dink-sheet) !important; }
+html[data-ink] #desk #w-write .wravs2 .av, html[data-ink] #desk #w-write .av img { box-shadow: 0 0 0 2px var(--dink-sheet) !important; }
+
+/* ── Viola: the page is the site's own; the browser around it is ink ── */
+html[data-ink] #desk .win .vdot { background: var(--dink-ink) !important; }
+html[data-ink] #desk .win .vnav :is(.vaddr2, .vtc) { box-shadow: none !important; }
+html[data-ink] #desk .win .vnav .vtc { box-shadow: inset 0 0 0 1.5px var(--dink-ink) !important; }
+
+/* ── Calculator: digits are 2px keys, operators the same key in bold, equals the fill ── */
+html[data-ink] #desk .win .cak { background: transparent !important; background-image: none !important; box-shadow: var(--dink-E) !important; }
+html[data-ink] #desk .win .cak span { color: var(--dink-ink) !important; }
+html[data-ink] #desk .win .cak.caop span { font-weight: 700 !important; }
+html[data-ink] #desk .win .cak.caeq { background: var(--dink-ink) !important; box-shadow: none !important; } html[data-ink] #desk .win .cak.caeq span { color: var(--dink-sheet) !important; }
+html[data-ink] #desk .win .catape { -webkit-mask-image: none !important; mask-image: none !important; }
+
+/* ── Monitor ── */
+html[data-ink] #desk .win .mnrow img { box-shadow: none !important; }
+html[data-ink] #desk .win :is(.mnmeter i, .mnrow span > i) { background: var(--dink-ink) !important; }
+
+/* ── Disks: the map is a strip of cells divided by rules; the chosen partition is the fill ── */
+html[data-ink] #desk .win .dskmap .dskseg { background: transparent !important; box-shadow: none !important; border-left: 1px solid var(--dink-ink) !important; }
+html[data-ink] #desk .win .dskmap .dskseg:first-child { border-left: 0 !important; }
+html[data-ink] #desk .win .dskmap { box-shadow: var(--dink-E) !important; overflow: hidden; }
+html[data-ink] #desk .win .dskmap .dskseg.on { background: var(--dink-ink) !important; } html[data-ink] #desk .win .dskmap .dskseg.on * { color: var(--dink-sheet) !important; }
+html[data-ink] #desk .win .dskmap .dskseg .u { background: transparent !important; box-shadow: inset 0 -100px 0 0 rgba(14,16,19,.0) !important; }
+html[data-ink] #desk .win :is(.dskbar i) { background: var(--dink-ink) !important; }
+html[data-ink] #desk .win .dskhp.ok { background: transparent !important; color: var(--dink-ink) !important; box-shadow: var(--dink-E) !important; }
+html[data-ink] #desk .win .dsklink { color: var(--dink-ink) !important; text-decoration: underline; }
+
+/* ── Terminal: the accessory keys are cells of one strip, divided by rules ── */
+html[data-ink] #desk .win .tmkeys button + button { border-left: 1px solid var(--dink-ink) !important; border-radius: 0 !important; }
+html[data-ink] #desk .win .tm-u { color: var(--dink-ink) !important; font-weight: 700; }
+html[data-ink="mono"] #desk .win .lfsw i { background: var(--dink-ink) !important; }
+
+/* ── Viewer: paper around the picture ── */
+html[data-ink] #desk #w-viewer .main.isle { background: var(--dink-sheet) !important; }
+html[data-ink] #desk .win .vwdoc { box-shadow: var(--dink-E) !important; }
+html[data-ink] #desk .win .vwth { box-shadow: none !important; }
+
+/* ── The creative suite (Stage, Canvas, Session, Reel, Grid, Darkroom): the work area is paper. What the
+   person made (a slide, a frame, a photo, a clip's picture) keeps its own print as content does ── */
+html[data-ink] #desk .win .main.isle.suwork, html[data-ink] #desk .win .main.isle.rlwork { background: var(--dink-sheet) !important; }
+html[data-ink] #desk .win :is(.stslide, .cv-frame, .rlplayer) { box-shadow: var(--dink-E) !important; }
+html[data-ink] #desk .win .stth.on .stmini { box-shadow: 0 0 0 2px var(--dink-ink) !important; }
+html[data-ink] #desk .win .stth em { color: var(--dink-ink) !important; }
+html[data-ink] #desk .win .cvbox em { background: var(--dink-ink) !important; color: var(--dink-sheet) !important; }
+html[data-ink] #desk .win .cvbox .cvh { background: var(--dink-sheet) !important; box-shadow: inset 0 0 0 2px var(--dink-ink) !important; }
+/* Grid: tags are type; the header is paper with a rule */
+html[data-ink] #desk .win .grtag { background: transparent !important; color: var(--dink-ink-2) !important; box-shadow: none !important; font-weight: 600; }
+html[data-ink] #desk .win .grc.hd { background: var(--dink-sheet) !important; }
+html[data-ink] #desk .win .grch i { opacity: 1 !important; }
+/* Session: a region is a 2px box with its name on an ink band; the lanes are paper */
+html[data-ink] #desk .win .setracks { background: none !important; }
+html[data-ink] #desk .win .sereg { background: transparent !important; box-shadow: var(--dink-E) !important; }
+html[data-ink] #desk .win .sereg > b { background: var(--dink-ink) !important; color: var(--dink-sheet) !important; }
+html[data-ink] #desk .win .sereg :is(i, span:not(b)) { background-color: var(--dink-ink) !important; }
+html[data-ink] #desk .win .seic { background: transparent !important; }
+html[data-ink] #desk .win .sesec { background: transparent !important; color: var(--dink-ink) !important; }
+html[data-ink] #desk .win .serec i { background: var(--dink-ink) !important; }
+/* Reel: clips keep their pictures; a clip's name is ink on paper, sound is a 2px box, a title the fill */
+html[data-ink] #desk .win .rlclip.video { background: var(--dink-sheet) !important; box-shadow: var(--dink-E) !important; }
+html[data-ink] #desk .win .rlclip.video > b { background: var(--dink-sheet) !important; color: var(--dink-ink) !important; }
+html[data-ink] #desk .win .rlclip.video .rlstrip { opacity: 1 !important; }
+html[data-ink] #desk .win .rlclip.audio { background: transparent !important; box-shadow: var(--dink-E) !important; }
+html[data-ink] #desk .win .rlclip.audio > b { color: var(--dink-ink) !important; background: transparent !important; }
+html[data-ink] #desk .win .rlclip.title { background: var(--dink-ink) !important; background-image: none !important; }
+html[data-ink] #desk .win .rlclip.title * { color: var(--dink-sheet) !important; opacity: 1 !important; }
+html[data-ink] #desk .win :is(.rlhead, .rllink, .rlfxdot) { background: var(--dink-ink) !important; }
+html[data-ink] #desk .win .rlpic { background: var(--dink-sheet) !important; }
+html[data-ink] #desk .win .rlplayer :is(.ib, .selcd) { box-shadow: none !important; }
+/* Darkroom: a reject keeps its picture and is marked, not faded; labels and badges are ink */
+html[data-ink] #desk .win .drtile.rej .drthumb { opacity: 1 !important; }
+html[data-ink] #desk .win .dredited { background: var(--dink-ink) !important; color: var(--dink-sheet) !important; }
+html[data-ink="mono"] #desk .win .drlab { background: var(--dink-ink) !important; }
+
+/* ── Ari: what I asked is the fill, as in Messages; Ari's ask is one card with rules inside ── */
+html[data-ink] #desk .win .arime p { background: var(--dink-ink) !important; background-image: none !important; color: var(--dink-sheet) !important; box-shadow: none !important; }
+html[data-ink] #desk .win .arich.ask .ariask { box-shadow: none !important; border-top: 1px solid var(--dink-ink) !important; border-radius: 0 !important; }
+html[data-ink] #desk .win :is(.aristate.ask, .arst.ask) { color: var(--dink-ink) !important; font-weight: 700; }
+html[data-ink] #desk .win .argl.av { box-shadow: none !important; }
+
+/* ── A phone list has no selection: the row the desktop had chosen is just a row here ── */
+html[data-ink] #desk .win.phone :is(.crrow, .crow, .nrow2, .merow, .crrow2).on { background: transparent !important; color: var(--dink-ink) !important; -webkit-text-fill-color: currentColor !important; }
+html[data-ink] #desk .win.phone :is(.crrow, .crow, .nrow2, .merow, .crrow2).on :is(b, span, small, em, i, time, svg.i, .l1, .l2, .tm, .pv) { color: inherit !important; -webkit-text-fill-color: var(--dink-ink) !important; }
+html[data-ink] #desk .win.phone :is(.crrow, .crow, .nrow2, .merow, .crrow2).on :is(small, .l2, .pv, .tm, time) { -webkit-text-fill-color: var(--dink-ink-2) !important; }
+
+/* ── Tide: the tracks are a list: rules, not a stack of boxes; the cover in the mini player is a picture ── */
+html[data-ink] #desk .win.phone .tr { box-shadow: none !important; border-radius: 0 !important; border-bottom: 1px solid var(--dink-ink) !important; background: transparent !important; }
+
+/* ── Weather glyphs are drawn, not painted: ink outlines on paper, the way the app icons are ── */
+html[data-ink] #desk .win svg.wgl :is(path, circle, ellipse, rect) { fill: var(--dink-sheet) !important; stroke: var(--dink-ink) !important; stroke-width: 1.8px !important; }
+html[data-ink] #desk .win svg.wgl g, html[data-ink] #desk .win svg.wgl g * { stroke: var(--dink-ink) !important; fill: none !important; }
+html[data-ink] #desk #w-weather .wxni { color: var(--dink-ink) !important; }
+html[data-ink] #desk #w-weather .wxnarr { background: var(--dink-ink) !important; }
+
+/* ── Maps on paper: land is the sheet, streets are rules, arterials and freeways heavier lines, water and parks
+   outlined; names are second ink ── */
+html[data-ink] #desk .mpwin, html[data-ink] #desk .mpwin .mpmap { --m-land: var(--dink-sheet); --m-water: var(--dink-paper); --m-park: var(--dink-sheet); --m-st: var(--dink-ink); --m-art: var(--dink-ink);
+  --m-fwy: var(--dink-ink); --m-rail: var(--dink-ink); --m-text: var(--dink-ink-2); --m-hood: var(--dink-ink-3); background: var(--dink-sheet) !important; }
+html[data-ink] #desk .mpwin .mst { stroke-width: 1 !important; opacity: 1 !important; }
+html[data-ink] #desk .mpwin .mart { stroke-width: 3 !important; }
+html[data-ink] #desk .mpwin .mfwy { stroke-width: 6 !important; }
+html[data-ink] #desk .mpwin .mrail { stroke-width: 1.5 !important; stroke-dasharray: 6 4 !important; }
+html[data-ink] #desk .mpwin :is(.mwater, .mpark) { stroke: var(--dink-ink) !important; stroke-width: 1 !important; }
+html[data-ink] #desk .mpwin .mpark { stroke-dasharray: 3 3 !important; }
+html[data-ink] #desk .mpwin .mpmap svg { filter: none !important; }
+
+/* ── Monitor: the history is two ink lines, one solid and one dashed, over nothing; a core's load is ink ── */
+html[data-ink] #desk .win .mnch :is(.a1, .a2):not(.ln) { fill: none !important; }
+html[data-ink] #desk .win .mnch .ln { stroke: var(--dink-ink) !important; stroke-width: 2px !important; }
+html[data-ink] #desk .win .mnch .a2.ln { stroke-dasharray: 4 3 !important; }
+html[data-ink] #desk .win .mncores span > i { background: var(--dink-ink) !important; }
+
+/* ── Leaf: the reading card closes with a straight rule ── */
+html[data-ink] #desk .win .lfhero { border-radius: 0 !important; }
+
+/* ── YouTube: the keys on the hero are paper with ink type ── */
+html[data-ink] #desk .win .ythero .bt { -webkit-text-fill-color: var(--dink-ink) !important; }
+
+/* ── Glyphs that kept their pigment: Session's track icons, Ari's steps ── */
+html[data-ink] #desk .win :is(.seic, .seic svg, .argl, .argl svg, .arst) { color: var(--dink-ink) !important; stroke: currentColor; }
+html[data-ink] #desk .win .arst.ok { color: var(--dink-ink) !important; }
+
+/* ── Darkroom: the chosen picture takes the 2px ring ── */
+html[data-ink] #desk .win .drtile { outline: 0 !important; box-shadow: none !important; }
+html[data-ink] #desk .win .drtile.on .drthumb { box-shadow: none !important; outline: 2px solid var(--dink-ink) !important; outline-offset: 2px; }
+
+/* ── Counts keep their knockout inside a phone row ── */
+html[data-ink] #desk .win.phone :is(.crrow, .crow, .nrow2, .merow).on .l1 em.lcount, html[data-ink] #desk .win.phone :is(.crrow, .crow, .nrow2, .merow).on em.lcount { color: var(--dink-sheet) !important; -webkit-text-fill-color: var(--dink-sheet) !important; }
+
+/* ── Small drawings that kept their pigment: Memos' and Session's waveforms and notes, the page lock, the
+   reject mark, a task's flag and suggestion glyphs ── */
+html[data-ink] #desk .win :is(.memini, .semidi) rect, html[data-ink] #desk .win :is(.memini, .semidi) { fill: var(--dink-ink) !important; }
+html[data-ink] #desk .win :is(.lock, .drrejx, .tkfl, .tkrow.sug) > svg, html[data-ink] #desk .win :is(.lock, .drrejx, .tkfl) svg { color: var(--dink-ink) !important; }
+html[data-ink] #desk .win .tkrow.sug > svg { color: var(--dink-ink-2) !important; }
+html[data-ink] #desk .win .peer i { opacity: 1 !important; }
+html[data-ink] #desk .win .cfside .scr { -webkit-mask-image: none !important; mask-image: none !important; }
+
+/* ── Terminal: the pane's glow goes ── */
+html[data-ink] #desk .win .tpane::before { background: none !important; }
+html[data-ink] #desk .win .lfa { background: var(--dink-ink) !important; }
+html[data-ink] #desk .win .rd svg { color: var(--dink-ink-2) !important; }

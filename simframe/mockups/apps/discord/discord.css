@@ -1,0 +1,254 @@
+/* Diskord, a Discord client for Luma (mockup, 22 Oct 2026; take two). Shared parts come from the simulator (.si, .srch,
+   .snew, .sfoot, .flo, .ib, .bt, .fbar, .misl, .fsha/.fvt, .ldp, .av); everything here is prefixed dc-. dc-ph means the
+   room is under 560 (a phone, or a narrow window). --ch is the current server's hue; it washes the island. */
+#w-discord { --dc-rl: 0.78; --dc-red: oklch(0.63 0.2 25); --dc-gold: oklch(0.8 0.14 80); --dc-link: oklch(0.8 0.1 250); --dc-ring: var(--win); }
+[data-mode="light"] #w-discord { --dc-link: oklch(0.5 0.15 255); --dc-rl: 0.5; }
+#w-discord .ibody { display: flex; position: relative; }
+#w-discord #dc-main { position: relative; flex: 1; min-width: 0; display: flex; flex-direction: column; }
+#w-discord #dc-body { flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; scrollbar-width: none; }
+/* the last lines fade under the composer, so it reads as resting on the conversation, not cutting it */
+#w-discord:not(.dc-roomon):not(.dc-cuon):not(.dc-list) #dc-body { -webkit-mask: linear-gradient(#000 calc(100% - 96px), transparent calc(100% - 18px)); mask: linear-gradient(#000 calc(100% - 96px), transparent calc(100% - 18px)); }
+
+/* ── the sidebar: the rail | the place ── */
+.dcside { width: 336px; flex: none; display: flex; min-height: 0; padding: 0 10px 10px 4px; }
+.dc-rail { width: 60px; flex: none; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 2px 0 6px; overflow-y: auto; scrollbar-width: none; }
+.dc-vdiv { width: 1px; flex: none; margin: 2px 10px 0 4px; background: var(--hair); }
+.dc-rb { position: relative; width: 56px; height: 48px; flex: none; display: grid; place-items: center; }
+.dc-rb::before { content: ""; position: absolute; left: -4px; top: 50%; width: 4px; height: 0; border-radius: 0 3px 3px 0; background: var(--ink); translate: 0 -50%; transition: height .2s var(--ease); }
+.dc-rb.un::before { height: 8px; } .dc-rb:hover::before { height: 20px; } .dc-rb.on::before { height: 36px; }
+.dc-gi { width: var(--sz, 44px); height: var(--sz, 44px); flex: none; display: grid; place-items: center; border-radius: calc(var(--sz, 44px) * .3); background-size: cover; background-position: center; color: #fff; font-style: normal; font-weight: 700; font-size: 15px;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.1), 0 1px 3px rgba(0,0,0,.25); transition: transform .15s var(--ease); }
+.dc-rb:hover .dc-gi { transform: translateY(-1px); } .dc-rb:active .dc-gi { transform: scale(.96); }
+.dc-gi.lumai { background: oklch(0.24 0.03 40); } .dc-gi.lumai img { width: 58%; height: 58%; }
+.dc-homei { background: none; box-shadow: none; } .dc-homei img { width: 100%; height: 100%; }
+.dc-addi { background: var(--fill-1); color: var(--ink-3); box-shadow: none; } .dc-addi svg.i { width: 20px; height: 20px; } .dc-rb.add:hover .dc-addi { color: var(--ink); background: var(--fill-2); }
+.dc-rsep { width: 28px; height: 1px; flex: none; margin: 2px 0; background: var(--hair); }
+.dc-badge { position: absolute; right: 2px; bottom: 0; min-width: 18px; height: 18px; padding: 0 5px; display: grid; place-items: center; border-radius: 9px; background: var(--dc-red); color: #fff; font-style: normal; font-size: 11px; font-weight: 750; box-shadow: 0 0 0 3px var(--win); }
+.dc-col { flex: 1; min-width: 0; display: flex; flex-direction: column; min-height: 0; }
+
+/* the server's banner: its photo, its name, who's around */
+.dc-banner { position: relative; flex: none; height: 108px; margin: 2px 0 4px; padding: 12px; display: flex; align-items: flex-end; gap: 8px; border-radius: 16px; overflow: hidden; color: #fff; text-align: left;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.08), 0 1px 2px rgba(0,0,0,.25); }
+.dc-bimg { position: absolute; inset: 0; background-size: cover; background-position: center; transition: transform .5s var(--ease); } .dc-banner:hover .dc-bimg { transform: scale(1.04); }
+.dc-bimg.lum { display: grid; place-items: center; background: radial-gradient(120% 120% at 25% 10%, oklch(0.62 0.17 48), oklch(0.32 0.09 32)); } .dc-bimg.lum img { width: 44px; margin-bottom: 22px; opacity: .95; }
+.dc-banner::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0) 28%, rgba(0,0,0,.66)); }
+.dc-btx { position: relative; z-index: 1; flex: 1; min-width: 0; display: grid; gap: 2px; } .dc-btx b { font-size: 17px; font-weight: 750; letter-spacing: -.02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 1px 8px rgba(0,0,0,.4); }
+.dc-btx small { display: flex; align-items: center; gap: 6px; font-size: 12px; opacity: .88; } .dc-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--good); flex: none; }
+.dc-bch { position: relative; z-index: 1; width: 28px; height: 28px; flex: none; display: grid; place-items: center; border-radius: 9px; background: rgba(255,255,255,.16); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); font-style: normal; } .dc-bch svg.i { width: 16px; height: 16px; }
+.dc-hhead { flex: none; display: grid; gap: 2px; padding: 6px 10px 6px; } .dc-hhead b { font-size: 20px; font-weight: 750; letter-spacing: -.02em; color: var(--ink); } .dc-hhead small { font-size: 12.5px; color: var(--ink-3); }
+
+.dc-chs { flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: none; display: grid; align-content: start; gap: 1px; padding-bottom: 4px; }
+.dc-sh { margin: 14px 10px 6px; font-size: 11.5px; font-weight: 600; color: var(--ink-3); } .dc-sh:first-child { margin-top: 8px; }
+.dc-ch { position: relative; height: 34px; gap: 9px; } .dc-ch svg.i { width: 17px; height: 17px; }
+.dc-ch.un .lab { color: var(--ink); font-weight: 650; } .dc-ch.un::before { content: ""; position: absolute; left: -9px; width: 4px; height: 8px; border-radius: 0 3px 3px 0; background: var(--ink); }
+.dc-ch.muted { opacity: .45; } .dc-cuh svg.i { color: oklch(0.72 0.15 275) !important; }
+.dc-none { padding: 16px 10px; font-size: 13px; color: var(--ink-3); } .dc-none.big { padding: 80px 20px; text-align: center; font-size: 15px; }
+
+/* rooms: who's inside, who's talking */
+.dc-rooms { display: grid; gap: 6px; }
+.dc-room { display: grid; gap: 9px; padding: 10px 12px 11px; border-radius: 14px; background: var(--fill-1); color: var(--ink); text-align: left; transition: background .15s; } .dc-room:hover { background: var(--fill-2); }
+.dc-room.in { background: oklch(0.72 0.15 150 / .12); box-shadow: inset 0 0 0 1px oklch(0.72 0.15 150 / .32); }
+.dc-rh { display: flex; align-items: center; gap: 7px; min-width: 0; } .dc-rh svg.i { width: 16px; height: 16px; color: var(--ink-3); flex: none; } .dc-rh b { font-size: 13.5px; font-weight: 650; }
+.dc-rh small { margin-left: auto; font-size: 11.5px; color: var(--ink-3); white-space: nowrap; } .dc-room.in .dc-rh small, .dc-room.in .dc-rh svg.i { color: var(--good); }
+.dc-room.empty { display: flex; align-items: center; gap: 8px; height: 38px; padding: 0 12px; background: none; color: var(--ink-2); font-size: 13.5px; } .dc-room.empty b { font-weight: 500; } .dc-room.empty:hover { background: var(--fill-1); }
+.dc-room.empty svg.i { width: 16px; height: 16px; color: var(--ink-3); } .dc-room.empty small { margin-left: auto; font-size: 11.5px; color: var(--ink-4); }
+.dc-faces { display: flex; align-items: center; } .dc-fc { position: relative; display: inline-grid; flex: none; border-radius: 50%; box-shadow: 0 0 0 2px var(--dc-ring); transition: box-shadow .25s; }
+.dc-fc + .dc-fc { margin-left: -7px; } .dc-fc.talk { z-index: 1; box-shadow: 0 0 0 2px var(--dc-ring), 0 0 0 4px var(--good); }
+.dc-live { flex: none; font-style: normal; font-size: 9.5px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; padding: 2px 5px; border-radius: 5px; background: var(--dc-red); color: #fff; }
+.dc-dm { height: 52px; gap: 10px; } .dc-dm .lab { display: grid; line-height: 1.25; } .dc-dm .lab b { font-weight: 550; color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; }
+.dc-dm .lab small { font-size: 12px; color: var(--ink-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .dc-dm.un .lab b { color: var(--ink); font-weight: 650; }
+.dc-gav { position: relative; display: inline-flex; flex: none; } .dc-gav .av + .av { margin-left: -10px; box-shadow: 0 0 0 2px var(--win); } .dc-gav.big .av + .av { margin-left: -14px; }
+.dc-face { position: relative; display: inline-grid; flex: none; }
+.dc-st { position: absolute; right: -2px; bottom: -2px; width: calc(var(--sz) * .34); height: calc(var(--sz) * .34); min-width: 10px; min-height: 10px; border-radius: 50%; background: var(--good); box-shadow: 0 0 0 2.5px var(--win); }
+.dc-st.idle { background: oklch(0.8 0.15 85); } .dc-st.dnd { background: var(--dc-red); } .dc-st.off { background: var(--ink-4); }
+.dc-avi { background-size: 58%; background-position: center; background-repeat: no-repeat; background-color: oklch(0.24 0.03 40); }
+
+/* you're in a room: it stays one tap away, just above search */
+.dc-vcard { flex: none; display: flex; align-items: center; gap: 2px; margin-top: 8px; padding: 6px; border-radius: 16px; background: oklch(0.72 0.15 150 / .1); box-shadow: inset 0 0 0 1px oklch(0.72 0.15 150 / .28); }
+.dc-vwho { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; padding: 2px 6px 2px 4px; border-radius: 10px; text-align: left; color: var(--ink); } .dc-vwho:hover { background: var(--fill-1); }
+.dc-vwho > span:last-child { display: grid; min-width: 0; line-height: 1.2; } .dc-vwho b { font-size: 13px; color: var(--good); } .dc-vwho small { font-size: 11.5px; color: var(--ink-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dc-vcard .ib { width: 32px; height: 32px; border-radius: 10px; } .dc-vcard .ib svg.i { width: 17px; height: 17px; }
+#w-discord .ib.red { color: var(--dc-red); } #w-discord .ib.lit.red { background: oklch(0.63 0.2 25 / .16); } .dc-leave { color: var(--dc-red) !important; }
+
+/* ── the header: one row, part of the conversation ── */
+#dc-head { flex: none; position: relative; z-index: 6; }
+.dc-hdr { display: flex; align-items: center; gap: 12px; height: 64px; padding: 0 12px 0 16px; box-shadow: inset 0 -1px 0 var(--hair); }
+.dc-htile { width: 38px; height: 38px; flex: none; display: grid; place-items: center; border-radius: 12px; background: oklch(0.55 0.13 var(--th, var(--ch)) / .32); color: var(--ink); font-style: normal; } .dc-htile svg.i { width: 19px; height: 19px; }
+.dc-htx { flex: 1; min-width: 0; display: grid; line-height: 1.3; } .dc-htx b { font-size: 15.5px; font-weight: 700; letter-spacing: -.01em; color: var(--ink); }
+.dc-htx small { font-size: 12.5px; color: var(--ink-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dc-hacts { flex: none; display: flex; align-items: center; gap: 4px; } .dc-hacts .ib { width: 36px; height: 36px; border-radius: 11px; } .dc-hacts .ib svg.i { width: 18px; height: 18px; } .dc-hacts .ib.lit { color: var(--acc-ink); }
+.dc-who { display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px 0 7px; margin-right: 2px; border-radius: 12px; background: var(--fill-1); color: var(--ink-2); --dc-ring: var(--isle-solid, #26262b); }
+.dc-who:hover { background: var(--fill-2); } .dc-who.on { background: var(--fill-2); color: var(--ink); } .dc-who > span:last-child { font-size: 12.5px; font-weight: 650; white-space: nowrap; }
+
+/* ── the conversation ── */
+.dc-thr { min-height: 100%; display: flex; flex-direction: column; justify-content: flex-end; padding: 8px 14px 108px 6px; }
+.dc-intro { display: grid; justify-items: start; gap: 6px; padding: 32px 10px 12px 16px; }
+.dc-introi { width: 64px; height: 64px; display: grid; place-items: center; margin-bottom: 4px; border-radius: 20px; background: oklch(0.55 0.12 var(--ch) / .3); color: var(--ink); } .dc-introi svg.i { width: 30px; height: 30px; }
+.dc-intro b { font-size: 26px; font-weight: 750; letter-spacing: -.025em; color: var(--ink); } .dc-intro > span:last-child { font-size: 14px; color: var(--ink-3); }
+.dc-day { display: flex; align-items: center; gap: 10px; margin: 18px 10px 4px 16px; font-size: 11.5px; font-weight: 650; color: var(--ink-3); }
+.dc-day::before, .dc-day::after { content: ""; flex: 1; height: 1px; background: var(--hair); }
+.dc-new { position: relative; height: 1px; margin: 16px 8px 4px 16px; background: var(--dc-red); }
+.dc-new span { position: absolute; right: 0; top: -8px; padding: 1px 6px; border-radius: 5px; background: var(--dc-red); color: #fff; font-size: 10px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; }
+.dc-m { position: relative; display: grid; grid-template-columns: 60px minmax(0, 1fr); padding: 2px 10px 2px 0; border-radius: 12px; transition: background .2s; }
+.dc-m.head { margin-top: 12px; padding-top: 4px; } .dc-m:hover { background: var(--fill-1); }
+.dc-m.at { background: oklch(0.8 0.14 80 / .07); box-shadow: inset 2px 0 0 var(--dc-gold); } .dc-m.at:hover { background: oklch(0.8 0.14 80 / .11); }
+.dc-m.sel { background: var(--fill-2); } .dc-m.flash { background: oklch(0.7 0.13 var(--ch) / .22); }
+.dc-m.fresh { animation: dcin .32s var(--ease) both; } @keyframes dcin { from { opacity: 0; transform: translateY(8px); } }
+.dc-ma { grid-column: 1; display: flex; justify-content: center; padding-top: 2px; } .dc-m:has(.dc-ref) .dc-ma { grid-row: 2; }
+.dc-mt2 { grid-column: 1; padding-top: 4px; text-align: center; font-size: 10.5px; color: var(--ink-4); opacity: 0; } .dc-m:hover .dc-mt2 { opacity: 1; }
+.dc-mc { grid-column: 2; min-width: 0; }
+.dc-ref { grid-column: 2; grid-row: 1; position: relative; display: flex; align-items: center; gap: 6px; min-width: 0; margin: 0 0 3px; font-size: 12.5px; color: var(--ink-3); text-align: left; }
+.dc-ref::before { content: ""; position: absolute; left: -36px; top: 8px; width: 28px; height: 11px; border-left: 2px solid var(--fill-3); border-top: 2px solid var(--fill-3); border-top-left-radius: 8px; }
+.dc-ref b { flex: none; font-weight: 650; color: var(--ink-2); } .dc-ref > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; } .dc-ref:hover > span { color: var(--ink); }
+.dc-mh { display: flex; align-items: baseline; gap: 8px; min-width: 0; } .dc-mh b { font-size: 14.5px; font-weight: 650; color: var(--ink); white-space: nowrap; } .dc-mh time { font-size: 11.5px; color: var(--ink-3); white-space: nowrap; }
+.dc-bot { align-self: center; font-style: normal; font-size: 10px; font-weight: 750; padding: 1px 5px; border-radius: 5px; background: oklch(0.6 0.16 275); color: #fff; }
+.dc-mt { font-size: 14.5px; line-height: 1.45; color: var(--ink); overflow-wrap: anywhere; }
+.dc-at { padding: 0 3px; border-radius: 5px; font-weight: 600; background: oklch(0.6 0.15 275 / .22); color: oklch(0.86 0.07 275); }
+.dc-at.me { background: oklch(0.8 0.14 80 / .2); color: var(--dc-gold); } .dc-at.ch svg.i { width: 12px; height: 12px; vertical-align: -1px; margin-right: 1px; }
+[data-mode="light"] .dc-at { color: oklch(0.45 0.16 275); background: oklch(0.6 0.15 275 / .14); } [data-mode="light"] .dc-at.me { color: oklch(0.5 0.13 70); }
+.dc-code { margin: 6px 0 2px; max-width: 580px; padding: 10px 12px; border-radius: 12px; background: var(--well); box-shadow: var(--well-edge); font: 12.5px/1.6 ui-monospace, "SF Mono", Menlo, monospace; color: var(--ink-2); white-space: pre; overflow-x: auto; scrollbar-width: none; }
+.dc-code.sm { margin: 4px 0 0; padding: 6px 8px; font-size: 11.5px; }
+.dc-img { display: block; margin: 6px 0 2px; padding: 0; max-width: min(420px, 100%); border-radius: 14px; overflow: hidden; } .dc-img img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; }
+.dc-embed { display: block; width: 100%; max-width: 440px; margin: 6px 0 2px; padding: 0; border-radius: 16px; overflow: hidden; background: var(--fill-1); box-shadow: inset 0 0 0 1px var(--hair); text-align: left; color: var(--ink); }
+.dc-embed:hover { background: var(--fill-2); }
+.dc-eimg { display: grid; place-items: center; aspect-ratio: 16 / 9; background-size: cover; background-position: center; }
+.dc-eplay { width: 52px; height: 52px; display: grid; place-items: center; border-radius: 50%; background: rgba(0,0,0,.45); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); color: #fff; box-shadow: inset 0 0 0 1px rgba(255,255,255,.2); } .dc-eplay svg.i { width: 22px; height: 22px; margin-left: 2px; }
+.dc-etx { display: grid; gap: 3px; padding: 10px 14px 12px; } .dc-etx small { font-size: 11.5px; color: var(--ink-3); } .dc-etx b { font-size: 14px; font-weight: 650; } .dc-etx > span { font-size: 13px; color: var(--ink-2); line-height: 1.4; }
+.dc-file { display: flex; align-items: center; gap: 10px; margin: 6px 0 2px; max-width: 360px; padding: 8px 6px 8px 10px; border-radius: 14px; background: var(--fill-1); }
+.dc-file > i { width: 36px; height: 36px; flex: none; display: grid; place-items: center; border-radius: 10px; background: oklch(0.6 0.12 var(--ch) / .28); color: var(--ink); } .dc-file > i svg.i { width: 18px; height: 18px; }
+.dc-file > span { flex: 1; min-width: 0; display: grid; } .dc-file b { font-size: 13.5px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .dc-file small { font-size: 12px; color: var(--ink-3); }
+.dc-thread { display: flex; align-items: center; gap: 10px; width: 100%; max-width: 460px; margin: 8px 0 2px; padding: 8px 10px 8px 9px; border-radius: 14px; background: var(--fill-1); color: var(--ink); text-align: left; --dc-ring: var(--isle-solid, #2a2a30); }
+.dc-thread:hover { background: var(--fill-2); } .dc-thread > span:not(.dc-faces) { flex: 1; min-width: 0; display: grid; line-height: 1.3; } .dc-thread b { font-size: 13.5px; font-weight: 650; }
+.dc-thread small { font-size: 12px; color: var(--ink-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .dc-thread > svg.i { width: 15px; height: 15px; color: var(--ink-3); flex: none; }
+.dc-rx { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.dc-rx button { display: flex; align-items: center; gap: 5px; height: 26px; padding: 0 8px; border-radius: 10px; background: var(--fill-1); box-shadow: inset 0 0 0 1px var(--hair); font-size: 14px; }
+.dc-rx button b { font-size: 12px; font-weight: 650; color: var(--ink-2); } .dc-rx button:hover { background: var(--fill-2); }
+.dc-rx button.me { background: oklch(0.6 0.15 var(--ch) / .2); box-shadow: inset 0 0 0 1px oklch(0.7 0.14 var(--ch) / .55); } .dc-rx button.me b { color: var(--ink); }
+.dc-rx .dc-rxadd { padding: 0 6px; opacity: 0; transition: opacity .15s; } .dc-m:hover .dc-rxadd { opacity: 1; } .dc-rxadd svg.i { width: 15px; height: 15px; color: var(--ink-3); }
+.dc-hov { position: absolute; right: 14px; top: -16px; z-index: 4; display: none; align-items: center; padding: 3px; border-radius: 12px; }
+.dc-m:hover .dc-hov { display: flex; } .dc-hov > button { width: 30px; height: 28px; display: grid; place-items: center; border-radius: 8px; font-size: 15px; } .dc-hov > button:hover { background: var(--fill-1); } .dc-hov .ib svg.i { width: 16px; height: 16px; }
+.dc-sys { display: flex; align-items: center; gap: 10px; margin-top: 10px; padding: 6px 10px 6px 22px; font-size: 13px; color: var(--ink-2); } .dc-sys > svg.i { width: 16px; height: 16px; color: var(--good); flex: none; } .dc-sys time { font-size: 11px; color: var(--ink-3); }
+.dc-typing { display: flex; align-items: center; gap: 6px; margin: 10px 0 0 60px; font-size: 12.5px; color: var(--ink-3); } .dc-typing b { color: var(--ink-2); font-weight: 650; }
+.dc-pop { display: grid; grid-template-columns: repeat(6, 36px); gap: 2px; padding: 2px; } .dc-pop button { height: 36px; border-radius: 9px; font-size: 20px; } .dc-pop button:hover { background: var(--fill-1); }
+
+/* ── the composer: one surface; it grows in place for a reply, emoji, or something to add ── */
+#w-discord #dc-bar { left: 50%; right: auto; transform: translateX(-50%); width: min(820px, calc(100% - 40px)); max-width: none; bottom: 18px; flex-direction: column; align-items: stretch; gap: 2px; padding: 6px; border-radius: 26px; white-space: normal; transition: border-radius .2s var(--ease); }
+#w-discord #dc-bar.dc-grown { border-radius: 22px; }
+.dc-brow { display: flex; align-items: center; gap: 2px; min-width: 0; min-height: 40px; }
+.dc-text { flex: 1; min-width: 0; height: 40px; padding: 0 8px; border: 0; outline: 0; background: none; font: inherit; font-size: 15px; color: var(--ink); } .dc-text::placeholder { color: var(--ink-3); }
+#dc-bar .dc-brow > .ib { width: 40px; height: 40px; border-radius: 20px; color: var(--ink-2); } #dc-bar .dc-brow > .ib svg.i { width: 20px; height: 20px; } #dc-bar .ib:hover { background: var(--fill-1); color: var(--ink); }
+#dc-bar .ib.on { background: var(--fill-2); color: var(--ink); }
+.dc-send { width: 0; height: 40px; flex: none; display: grid; place-items: center; overflow: hidden; border-radius: 20px; background: var(--primary); color: var(--primary-ink); opacity: 0; transform: scale(.6); transition: width .2s var(--ease), opacity .18s, transform .2s var(--ease), margin .2s; }
+.dc-send svg.i { width: 19px; height: 19px; flex: none; } .dc-has .dc-send { width: 40px; margin-left: 4px; opacity: 1; transform: none; } .dc-send:hover { filter: brightness(1.1); }
+.dc-ctx { display: flex; align-items: center; gap: 8px; min-width: 0; margin: 0 4px 2px; padding: 4px 0 8px 6px; box-shadow: inset 0 -1px 0 var(--hair); font-size: 12.5px; color: var(--ink-3); }
+.dc-ctx > span:not(.dc-face) { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .dc-ctx b { color: var(--ink); } .dc-ctx .ib { width: 28px; height: 28px; border-radius: 9px; } .dc-ctx .ib svg.i { width: 15px; height: 15px; }
+.dc-grow { padding: 4px 4px 6px; animation: morph .26s var(--ease) both; }
+.dc-emo { display: grid; grid-template-columns: repeat(auto-fill, minmax(42px, 1fr)); gap: 2px; } .dc-emo button { height: 42px; border-radius: 12px; font-size: 22px; } .dc-emo button:hover { background: var(--fill-1); }
+.dc-grow.fsha { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; } .dc-grow .fvt { height: 68px; }
+.dc-hair { height: 1px; margin: 2px 8px; background: var(--hair); }
+
+/* ── Catch up ── */
+.dc-cu { max-width: 980px; margin: 0 auto; padding: 22px 28px 48px; }
+.dc-cuhead { display: grid; gap: 4px; margin-bottom: 4px; } .dc-cuhead b { font-size: 30px; font-weight: 750; letter-spacing: -.03em; color: var(--ink); } .dc-cuhead span { font-size: 14px; color: var(--ink-3); }
+.dc-cush { display: flex; align-items: center; margin: 24px 2px 10px; font-size: 12.5px; font-weight: 650; color: var(--ink-3); }
+.dc-cux { margin-left: auto; padding: 4px 8px; border-radius: 8px; font-size: 12.5px; font-weight: 600; color: var(--ink-2); } .dc-cux:hover { background: var(--fill-1); color: var(--ink); }
+.dc-lcrow { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+.dc-lc { position: relative; min-height: 164px; display: flex; flex-direction: column; justify-content: space-between; gap: 14px; padding: 16px; border-radius: 20px; overflow: hidden; color: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.25), inset 0 0 0 1px rgba(255,255,255,.08); }
+.dc-lci { position: absolute; inset: 0; background-size: cover; background-position: center; background-color: oklch(0.4 0.1 var(--gh)); } .dc-lc::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.2), rgba(0,0,0,.68)); }
+.dc-lch { position: relative; z-index: 1; display: grid; justify-items: start; gap: 2px; } .dc-lch .dc-live { margin-bottom: 6px; } .dc-lch b { font-size: 18px; font-weight: 750; letter-spacing: -.02em; } .dc-lch small { font-size: 12.5px; opacity: .85; }
+.dc-lcf { position: relative; z-index: 1; display: flex; align-items: center; gap: 10px; padding-right: 80px; --dc-ring: rgba(0,0,0,.55); } .dc-lcs { font-size: 12.5px; opacity: .9; }
+.dc-join { position: absolute; right: 16px; bottom: 16px; z-index: 1; height: 36px; padding: 0 18px !important; border-radius: 12px; font-weight: 650; }
+.dc-cms { display: grid; gap: 8px; }
+.dc-cm { display: grid; gap: 9px; padding: 12px 14px 13px; border-radius: 16px; background: var(--fill-1); color: var(--ink); text-align: left; box-shadow: inset 3px 0 0 oklch(0.7 0.13 var(--gh)); } .dc-cm:hover { background: var(--fill-2); }
+.dc-cmh { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--ink-3); } .dc-cmh .dc-gi { border-radius: 6px; box-shadow: none; } .dc-cmh b { font-weight: 600; color: var(--ink-2); } .dc-cmh time { margin-left: auto; }
+.dc-cmb { display: flex; align-items: flex-start; gap: 10px; } .dc-cmb > span:not(.dc-face) { flex: 1; min-width: 0; display: grid; gap: 2px; } .dc-cmb > span b { font-size: 14px; font-weight: 650; } .dc-cmt { font-size: 14px; line-height: 1.4; }
+.dc-cmi { width: 72px; height: 52px; flex: none; border-radius: 10px; background-size: cover; background-position: center; }
+.dc-uns { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; }
+.dc-un { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 14px; background: var(--fill-1); color: var(--ink); text-align: left; } .dc-un:hover { background: var(--fill-2); }
+.dc-un > span { flex: 1; min-width: 0; display: grid; line-height: 1.3; } .dc-un b { font-size: 13.5px; font-weight: 650; } .dc-un small { font-size: 12px; color: var(--ink-3); } .dc-un .dc-gi { border-radius: 9px; }
+
+/* ── a room: the stream as a screen, everyone else as faces that glow when they talk ── */
+.dc-roomv { position: relative; min-height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 30px; padding: 32px 28px 124px; overflow: hidden; color: #fff; isolation: isolate; }
+.dc-rbg { position: absolute; inset: -80px; z-index: -2; background-size: cover; background-position: center; background-color: oklch(0.35 0.08 var(--vh)); filter: blur(70px) saturate(1.5); opacity: .55; }
+.dc-roomv::before { content: ""; position: absolute; inset: 0; z-index: -1; background: radial-gradient(70% 60% at 50% 45%, rgba(0,0,0,.08), rgba(0,0,0,.5)); }
+.dc-screen { position: relative; width: min(100%, 760px); aspect-ratio: 16 / 9; border-radius: 22px; overflow: hidden; box-shadow: 0 30px 70px -24px rgba(0,0,0,.7), inset 0 0 0 1px rgba(255,255,255,.1); }
+.dc-scr { position: absolute; inset: 0; background-size: cover; background-position: center; }
+.dc-scr.mine { display: grid; place-content: center; justify-items: center; gap: 10px; background: oklch(0.28 0.04 var(--vh)); color: rgba(255,255,255,.8); font-style: normal; font-size: 14px; } .dc-scr.mine svg.i { width: 32px; height: 32px; }
+.dc-scap { position: absolute; left: 12px; bottom: 12px; display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 12px 0 6px; border-radius: 10px; background: rgba(0,0,0,.45); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); font-size: 13px; font-weight: 600; }
+.dc-rps { display: flex; flex-wrap: wrap; justify-content: center; gap: 30px 40px; max-width: 860px; } .dc-rps.under { gap: 18px 28px; }
+.dc-rp { display: grid; justify-items: center; gap: 10px; color: #fff; } .dc-rp b { font-size: 14px; font-weight: 600; text-shadow: 0 1px 6px rgba(0,0,0,.4); }
+.dc-rpf { position: relative; display: grid; border-radius: 50%; box-shadow: 0 10px 30px rgba(0,0,0,.35); transition: box-shadow .3s; }
+.dc-rp.talk .dc-rpf { box-shadow: 0 0 0 3px var(--good), 0 0 0 9px oklch(0.72 0.15 150 / .22), 0 0 44px oklch(0.72 0.15 150 / .5); animation: dcpulse 1.3s ease-in-out infinite; }
+@keyframes dcpulse { 50% { box-shadow: 0 0 0 3px var(--good), 0 0 0 14px oklch(0.72 0.15 150 / .1), 0 0 56px oklch(0.72 0.15 150 / .35); } }
+.dc-rpm { position: absolute; right: 0; bottom: 0; width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; background: var(--dc-red); color: #fff; box-shadow: 0 0 0 3px rgba(0,0,0,.35); font-style: normal; } .dc-rpm svg.i { width: 14px; height: 14px; }
+.dc-cam { background-size: cover; background-position: 50% 35%; }
+#w-discord #dc-bar.dc-vbar { width: auto; flex-direction: row; align-items: center; gap: 6px; padding: 7px; border-radius: 30px; }
+.dc-vbar .ib { width: 48px; height: 48px; border-radius: 24px; background: var(--fill-1); } .dc-vbar .ib svg.i { width: 20px; height: 20px; } .dc-vbar .ib.lit:not(.red) { background: var(--fill-3); color: var(--ink); }
+.dc-leaveb { height: 48px; padding: 0 20px 0 16px !important; margin-left: 4px; border-radius: 24px; background: var(--dc-red) !important; color: #fff !important; font-weight: 650; } .dc-leaveb:hover { filter: brightness(1.1); } .dc-leaveb svg.i { width: 18px; height: 18px; }
+
+/* ── details: Members, Threads, Pins ── */
+#w-discord #dc-mem { --ldp-w: 276px; }
+.dc-pnh { flex: none; display: flex; align-items: center; gap: 6px; height: 64px; padding: 0 8px 0 12px; box-shadow: inset 0 -1px 0 var(--hair); }
+.dc-tabs { flex: 1; display: flex; padding: 3px; border-radius: 12px; background: var(--well); box-shadow: var(--well-edge); }
+.dc-tabs button { flex: 1; height: 30px; border-radius: 9px; font-size: 12.5px; font-weight: 600; color: var(--ink-3); } .dc-tabs button:hover { color: var(--ink-2); }
+.dc-tabs button.on { background: var(--raised); color: var(--ink); box-shadow: inset 0 1px 0 var(--hi), 0 1px 2px rgba(0,0,0,.2); }
+.dc-pnh > .ib { width: 32px; height: 32px; border-radius: 10px; } .dc-pnh > .ib svg.i { width: 16px; height: 16px; }
+.dc-mems { flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: none; display: grid; align-content: start; gap: 1px; padding: 6px 8px 14px; }
+.dc-role { margin: 12px 8px 4px; font-size: 11.5px; font-weight: 650; color: var(--ink-3); } .dc-role:first-child { margin-top: 6px; } .dc-role em { font-style: normal; margin-left: 2px; } .dc-role.sm { margin: 10px 4px 4px; }
+.dc-mr { width: 100%; display: flex; align-items: center; gap: 10px; padding: 5px 8px; border-radius: 10px; text-align: left; color: var(--ink); } .dc-mr:hover { background: var(--fill-1); }
+.dc-mr > span:last-child { display: grid; min-width: 0; line-height: 1.25; } .dc-mr b { display: flex; align-items: center; gap: 6px; font-size: 13.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dc-mr small { font-size: 11.5px; color: var(--ink-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .dc-mr.off { opacity: .45; }
+.dc-tc, .dc-pc { width: 100%; display: grid; gap: 4px; margin-bottom: 6px; padding: 10px 12px; border-radius: 14px; background: var(--fill-1); color: var(--ink); text-align: left; --dc-ring: var(--isle-solid, #2a2a30); }
+.dc-tc:hover, .dc-pc:hover { background: var(--fill-2); } .dc-tc b { font-size: 13.5px; font-weight: 650; } .dc-tc small { font-size: 12px; color: var(--ink-3); }
+.dc-tcl { display: flex; align-items: center; gap: 8px; margin-top: 4px; font-size: 12.5px; color: var(--ink-2); min-width: 0; } .dc-tcl > span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dc-pch { display: flex; align-items: center; gap: 7px; font-size: 12.5px; } .dc-pch b { font-weight: 650; } .dc-pch time { margin-left: auto; color: var(--ink-3); font-size: 11.5px; }
+.dc-pct { font-size: 13.5px; line-height: 1.4; } .dc-pce { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--dc-link); min-width: 0; } .dc-pce > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dc-pce i { width: 56px; height: 32px; flex: none; border-radius: 7px; background-size: cover; background-position: center; }
+#w-discord.dc-memover #dc-mem { position: absolute; right: 16px; top: 8px; bottom: 16px; z-index: 30; margin: 0; border-radius: 16px; box-shadow: var(--sh-float); }
+
+/* ── phone: list, then the page ── */
+#w-discord.dc-ph .dcside, #w-discord.dc-ph #dc-mem { display: none !important; }
+#w-discord.dc-ph .ibody { padding-left: 0; } #w-discord.dc-ph #dc-main { margin: 0; border-radius: 0; }
+#w-discord.dc-ph #dc-head { position: absolute; top: 8px; left: 12px; right: 12px; display: flex; pointer-events: none; } #w-discord.dc-ph #dc-head > * { pointer-events: auto; }
+.dc-phlist { display: flex; gap: 6px; min-height: 100%; padding: 8px 14px 150px 2px; } .dc-phlist .dc-rail { overflow: visible; padding-top: 0; }
+.dc-phlist .dc-col { position: relative; } .dc-phlist .dc-col::before { content: ""; position: absolute; left: -4px; top: 2px; bottom: 0; width: 1px; background: var(--hair); }
+.dc-phlist .dc-col > * { margin-left: 6px; } .dc-phlist .dc-banner { height: 128px; border-radius: 20px; } .dc-phlist .dc-btx b { font-size: 21px; }
+.dc-phlist .dc-chs { overflow: visible; } .dc-phlist .dc-ch { height: 44px; font-size: 15.5px; border-radius: 12px; } .dc-phlist .dc-ch svg.i { width: 19px; height: 19px; }
+.dc-phlist .dc-room { padding: 12px 14px 13px; border-radius: 18px; } .dc-phlist .dc-rh b { font-size: 15px; } .dc-phlist .dc-room.empty { height: 44px; font-size: 15px; }
+.dc-phlist .dc-dm { height: 62px; border-radius: 14px; } .dc-phlist .dc-dm .lab b { font-size: 15.5px; } .dc-phlist .dc-dm .lab small { font-size: 13px; }
+.dc-phlist .dc-hhead { padding: 2px 6px 6px; } .dc-phlist .dc-hhead b { font-size: 28px; } .dc-phlist .dc-sh { font-size: 12.5px; margin-top: 18px; }
+.dc-isl { max-width: 100%; } .dc-iic { display: grid; place-items: center; flex: none; color: var(--ink-3); font-style: normal; } .dc-iic svg.i { width: 18px; height: 18px; } .dc-iic .dc-htile { width: 30px; height: 30px; border-radius: 10px; } .dc-iic .dc-htile svg.i { width: 16px; height: 16px; }
+.dc-isl .misli b { max-width: 190px; } .dc-ivoice { color: var(--good) !important; }
+.dc-islp .dc-topic { margin: 2px 4px; font-size: 13.5px; line-height: 1.4; color: var(--ink-2); } .dc-ilist { display: grid; gap: 1px; } .dc-islp .fsha.mislt { grid-template-columns: repeat(4, 1fr); } .dc-islp .fvt { height: 66px; padding: 10px; gap: 6px; font-size: 12.5px; }
+.dc-thr.ph { padding: 68px 4px 156px 0; } .dc-thr.ph .dc-m { grid-template-columns: 52px minmax(0, 1fr); } .dc-thr.ph .dc-m:hover { background: none; } .dc-thr.ph .dc-m.at { background: oklch(0.8 0.14 80 / .07); } .dc-thr.ph .dc-m.sel { background: var(--fill-2); }
+.dc-thr.ph .dc-ref::before { left: -32px; width: 24px; } .dc-thr.ph .dc-typing { margin-left: 52px; } .dc-thr.ph .dc-mt { font-size: 15.5px; } .dc-thr.ph .dc-rx .dc-rxadd { opacity: 1; }
+.dc-thr.ph .dc-intro { padding-left: 12px; } .dc-thr.ph .dc-day, .dc-thr.ph .dc-new { margin-left: 12px; }
+#w-discord.dc-ph:not(.dc-roomon):not(.dc-list) #dc-body { -webkit-mask: linear-gradient(#000 calc(100% - 150px), transparent calc(100% - 40px)); mask: linear-gradient(#000 calc(100% - 150px), transparent calc(100% - 40px)); }
+#w-discord #dc-bar.dc-phbar { left: 12px; right: 12px; width: auto; transform: none; bottom: 12px; border-radius: 26px; padding: 6px; gap: 2px; }
+.dc-phbar .dc-text { height: 46px; padding: 0 10px; font-size: 16px; }
+#dc-bar.dc-phbar .dc-brow.acts { gap: 4px; } #dc-bar.dc-phbar .dc-brow.acts > .ib { width: 48px; height: 48px; border-radius: 20px; background: var(--fill-1); } #dc-bar.dc-phbar .ib svg.i { width: 20px; height: 20px; }
+.dc-phbar .dc-brow.acts .sp { flex: 1; } .dc-phbar .dc-send { height: 48px; border-radius: 20px; } .dc-phbar.dc-has .dc-send { width: 56px; }
+.dc-phbar .dc-grow.fsha { grid-template-columns: repeat(2, 1fr); } .dc-phbar .dc-emo { grid-template-columns: repeat(6, 1fr); } .dc-phbar .dc-emo button { height: 48px; font-size: 24px; }
+.dc-listbar .dc-brow { gap: 6px; } .dc-listbar .srch { flex: 1; width: auto; height: 48px; border-radius: 20px; } .dc-listbar .dc-sq { width: 48px; height: 48px; padding: 0 !important; display: grid !important; place-items: center; border-radius: 20px; }
+.dc-vcard.ph { margin: 0 0 6px; padding: 4px 4px 8px; border-radius: 0; background: none; box-shadow: inset 0 -1px 0 var(--hair); } .dc-vcard.ph .ib { width: 44px; height: 44px; border-radius: 18px; background: var(--fill-1); }
+.dc-selbar .dc-reacts { display: grid; grid-template-columns: repeat(6, 1fr); gap: 2px; } .dc-selbar .dc-reacts button { height: 52px; border-radius: 18px; font-size: 26px; } .dc-selbar .dc-reacts button.on { background: var(--fill-2); }
+.dc-selbar .dc-tiles2 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 4px; } .dc-selbar .fvt { height: 64px; padding: 10px 12px; gap: 6px; } .dc-selbar .fvt.red { color: var(--dc-red); }
+#w-discord.dc-ph #dc-bar.dc-vbar { left: 50%; right: auto; transform: translateX(-50%); width: auto; bottom: 12px; } .dc-ph .dc-leaveb span { display: none; } .dc-ph .dc-leaveb { padding: 0 16px !important; }
+.dc-roomv.ph { justify-content: flex-start; gap: 22px; padding: 84px 16px 150px; } .dc-roomv.ph .dc-rps { gap: 22px 26px; } .dc-roomv.ph .dc-screen { border-radius: 18px; }
+.dc-cu.ph { padding: 70px 14px 60px; } .dc-cu.ph .dc-cuhead b { font-size: 26px; } .dc-cu.ph .dc-lcrow, .dc-cu.ph .dc-uns { grid-template-columns: 1fr; }
+/* the simulator's phone: content stops under the clock and above the home bar */
+html[data-phone] #w-discord.phone .dc-phlist { padding-top: 52px; }
+html[data-phone] #w-discord.phone.dc-ph #dc-head { top: 52px; }
+html[data-phone] #w-discord.phone .dc-thr.ph { padding-top: 112px; }
+html[data-phone] #w-discord.phone .dc-roomv.ph { padding-top: 124px; }
+html[data-phone] #w-discord.phone .dc-cu.ph { padding-top: 112px; }
+html[data-phone] #w-discord.phone #dc-bar.dc-phbar, html[data-phone] #w-discord.phone.dc-ph #dc-bar.dc-vbar { bottom: 34px; }
+
+/* fixes after the first look (take two) */
+#w-discord #dc-bar[hidden] { display: none !important; }
+#w-discord .fbar .srch { width: auto; padding: 0 14px; } #w-discord .fbar .srch input { display: block !important; flex: 1; font-size: 15px; }
+#w-discord #dc-bar .dc-leaveb { background: var(--dc-red) !important; color: #fff !important; }
+/* the stream fits the room's height, so the faces and the controls always have their room */
+#w-discord.dc-roomon #dc-body { container-type: size; }
+.dc-screen { width: min(100%, 760px, calc((100cqh - 330px) * 16 / 9)); min-width: 220px; }
+.dc-roomv.ph { justify-content: center; } .dc-roomv.ph .dc-screen { width: min(100%, calc((100cqh - 380px) * 16 / 9)); }

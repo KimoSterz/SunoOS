@@ -1,0 +1,146 @@
+/* Depot B (24 Oct 2026): one page, your devices. See apps/depot/depot-b.js. Only applies with ?depot=b (.dbwin). */
+.dbwin .ibody { display: flex; }
+.dbwin .db-main { position: relative; flex: 1; min-width: 0; overflow: hidden; }
+.dbwin #db-body { position: absolute; inset: 0; overflow-y: auto; scrollbar-width: thin; padding: 22px 32px 130px; }
+.dbwin .db-page { max-width: 1080px; margin: 0 auto; }
+.dbwin :is(h1, h2, h3, p) { margin: 0; } .dbwin small { color: var(--ink-2); } .dbwin .i { width: 18px; height: 18px; flex: none; }
+
+/* faces (the same family as Depot A's) */
+.db-face { flex: none; display: grid; place-items: center; width: 56px; height: 56px; border-radius: 14px; background: center/cover no-repeat; overflow: hidden; }
+.db-face.xs { width: 24px; height: 24px; border-radius: 7px; } .db-face.sm { width: 42px; height: 42px; border-radius: 11px; } .db-face.md { width: 64px; height: 64px; border-radius: 16px; } .db-face.lg { width: 72px; height: 72px; border-radius: 18px; }
+.db-face.mark { background: var(--mk); } .db-face.mark img { width: 58%; height: 58%; }
+.db-face.mono { background: oklch(0.55 0.1 var(--h)); color: #fff; font: 750 17px var(--font); }
+.db-face.glyph { background: linear-gradient(160deg, oklch(0.72 0.13 var(--h)), oklch(0.5 0.13 calc(var(--h) + 30))); color: #fff; box-shadow: inset 0 1px 0 rgba(255,255,255,.25); } .db-face.glyph .i { width: 50%; height: 50%; }
+.db-face.sw { grid-template-columns: 1fr 1fr; gap: 3px; padding: 6px; background: var(--fill-2); } .db-face.sw b { width: 100%; height: 100%; border-radius: 30%; }
+.db-face.ink { background: #fbfaf6; color: #0e1013; box-shadow: inset 0 0 0 2px #0e1013; font: 700 20px var(--font); }
+.db-runs { display: inline-flex; gap: 4px; color: var(--ink-3); } .db-runs .i { width: 13px; height: 13px; }
+.db-on { flex: none; padding: 2px 8px; border-radius: 8px; background: oklch(0.6 0.13 150 / .18); color: oklch(0.8 0.11 150); font: 650 11px/16px var(--font); font-style: normal; }
+
+/* the row of devices */
+.db-devs { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(150px, 1fr); gap: 10px; overflow-x: auto; scrollbar-width: none; padding: 2px 2px 6px; }
+.db-dev { display: flex; flex-direction: column; align-items: flex-start; gap: 18px; min-height: 118px; padding: 14px; border-radius: 20px; text-align: left; background: var(--fill-1); box-shadow: inset 0 0 0 1px var(--hair); transition: background .15s, box-shadow .15s, transform .15s; }
+.db-dev:hover { background: var(--fill-2); }
+.db-dev.on { background: var(--card, var(--raised)); box-shadow: inset 0 0 0 2px oklch(0.68 0.13 250), 0 10px 26px -14px rgba(0,0,0,.6); }
+.db-dic { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; background: var(--fill-2); } .db-dic .i { width: 21px; height: 21px; }
+.db-dev.on .db-dic { background: oklch(0.62 0.13 250 / .25); color: oklch(0.85 0.09 250); }
+.db-dev > span { display: grid; gap: 2px; } .db-dev b { font: 700 15px var(--font); } .db-dev small { font-size: 12px; } .db-dev small em { font-style: normal; font-weight: 650; color: oklch(0.78 0.11 250); }
+.db-dev.all { background: none; box-shadow: inset 0 0 0 1.5px var(--hair); } .db-dev.all.on { box-shadow: inset 0 0 0 2px oklch(0.68 0.13 250); background: var(--card, var(--raised)); }
+
+/* search and the jobs */
+.db-find { margin: 22px 0 6px; }
+.db-q { display: flex; align-items: center; gap: 12px; height: 56px; padding: 0 20px; border-radius: 18px; background: var(--card, var(--raised)); box-shadow: inset 0 0 0 1px var(--hair), 0 8px 24px -16px rgba(0,0,0,.6); color: var(--ink-2); }
+.db-q .i { width: 21px; height: 21px; } .db-q input { flex: 1; min-width: 0; border: 0; outline: 0; background: none; color: var(--ink); font: 500 17px var(--font); } .db-q input::placeholder { color: var(--ink-3); }
+.db-q:focus-within { box-shadow: inset 0 0 0 2px oklch(0.68 0.13 250); }
+.db-jobs { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.db-jobs button { display: inline-flex; align-items: center; gap: 7px; height: 36px; padding: 0 14px; border-radius: 18px; font: 600 13.5px var(--font); color: var(--ink-2); box-shadow: inset 0 0 0 1px var(--hair); }
+.db-jobs button .i { width: 16px; height: 16px; } .db-jobs button:hover { color: var(--ink); background: var(--fill-1); }
+.db-jobs button.on { background: var(--ink); color: var(--isle, var(--win)); box-shadow: none; }
+
+/* sections */
+.db-sec { margin-top: 34px; } .db-sec > header { display: flex; align-items: flex-end; gap: 12px; margin-bottom: 14px; } .db-sec > header > span { flex: 1; display: grid; gap: 3px; }
+.db-sec h3, .db-res h3, .db-names h3 { font: 720 21px/1.15 var(--font); letter-spacing: -.01em; } .db-sec > header small { font-size: 13px; }
+.db-empty { padding: 18px 0; color: var(--ink-2); font-size: 14px; }
+.db-link { font: 600 13px var(--font); color: var(--acc, oklch(0.72 0.12 250)); }
+
+/* updates for this device */
+.db-ups { margin-top: 22px; padding: 8px; border-radius: 22px; background: linear-gradient(115deg, oklch(0.45 0.11 250 / .32), var(--card, var(--raised)) 60%); box-shadow: inset 0 0 0 1px var(--hair); }
+.db-ups > header { display: flex; align-items: center; gap: 14px; padding: 10px 10px 12px; }
+.db-ups > header > i { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 14px; background: oklch(0.62 0.13 250 / .25); color: oklch(0.85 0.09 250); }
+.db-ups > header > span { flex: 1; display: grid; gap: 2px; min-width: 0; } .db-ups b { font: 700 15.5px var(--font); } .db-ups > header small { font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.db-uplist { display: grid; gap: 2px; }
+.db-uprow { display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px; border-radius: 14px; text-align: left; } button.db-uprow:hover { background: var(--fill-1); }
+.db-uprow > span { flex: 1; min-width: 0; display: grid; gap: 1px; } .db-uprow b { font: 650 14px var(--font); } .db-uprow b small { font-weight: 500; } .db-uprow > span > small { font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.db-uprow em { font: 600 12px var(--font); font-style: normal; color: var(--ink-3); } .db-uprow.sys em { color: oklch(0.8 0.09 290); }
+.db-uprow em.st-live { color: oklch(0.78 0.12 150); } .db-uprow em.st-changes { color: oklch(0.8 0.12 60); } .db-uprow em.st-review { color: oklch(0.78 0.1 250); }
+
+/* on this device */
+.db-shelf { display: grid; grid-auto-flow: column; grid-auto-columns: 82px; gap: 6px; overflow-x: auto; scrollbar-width: none; padding-bottom: 4px; }
+.db-mini { display: grid; justify-items: center; gap: 7px; padding: 6px 0; border-radius: 14px; } .db-mini:hover { background: var(--fill-1); }
+.db-mini .db-face { width: 54px; height: 54px; border-radius: 14px; box-shadow: 0 6px 14px -8px rgba(0,0,0,.55); } .db-mini small { font: 600 12px var(--font); max-width: 78px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* picks: drawn for the kind of screen */
+.db-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+.db-tile { position: relative; display: grid; justify-items: start; gap: 4px; padding: 18px; border-radius: 20px; text-align: left; background: var(--card, var(--raised)); box-shadow: inset 0 0 0 1px var(--hair); }
+.db-tile:hover { box-shadow: inset 0 0 0 1px var(--ink-3); } .db-tile .db-face { margin-bottom: 10px; box-shadow: 0 8px 18px -10px rgba(0,0,0,.6); }
+.db-tile b { font: 680 15px var(--font); } .db-tile small { font-size: 12.5px; line-height: 1.4; } .db-tile .db-on { position: absolute; top: 14px; right: 14px; }
+.db-rows { display: grid; gap: 2px; }
+.db-row { display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px 12px; border-radius: 14px; text-align: left; } .db-row:hover { background: var(--fill-1); }
+.db-row > span { flex: 1; min-width: 0; display: grid; } .db-row b { font: 650 14px var(--font); } .db-row > span small { font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.db-posters { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+.db-poster { position: relative; aspect-ratio: 16 / 9; border-radius: 18px; overflow: hidden; text-align: left; background: #000; box-shadow: 0 14px 30px -18px rgba(0,0,0,.8); }
+.db-poster img { width: 100%; height: 100%; object-fit: cover; opacity: .8; } .db-pbg { position: absolute; inset: 0; background: linear-gradient(150deg, oklch(0.42 0.1 var(--h)), oklch(0.18 0.05 calc(var(--h) + 40))); }
+.db-poster > span { position: absolute; left: 0; right: 0; bottom: 0; display: flex; align-items: center; gap: 10px; padding: 14px; background: linear-gradient(180deg, transparent, rgba(0,0,0,.75)); color: #fff; } .db-poster b { flex: 1; font: 700 15px var(--font); }
+.db-glance { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
+.db-glance .db-tile { justify-items: center; text-align: center; padding: 22px 14px; background: linear-gradient(160deg, oklch(0.88 0.04 70 / .12), var(--card, var(--raised))); }
+/* Looks */
+.db-looks { display: grid; grid-auto-flow: column; grid-auto-columns: 220px; gap: 12px; overflow-x: auto; scrollbar-width: none; padding-bottom: 6px; }
+.db-look { position: relative; display: grid; gap: 8px; text-align: left; } .db-lpic { display: grid; place-items: center; aspect-ratio: 16 / 10; border-radius: 16px; background: center/cover; box-shadow: inset 0 0 0 1px var(--hair); }
+.db-lpic.none { background: linear-gradient(150deg, oklch(0.42 0.08 var(--h)), oklch(0.24 0.05 calc(var(--h) + 50))); }
+.db-look > span { display: grid; padding: 0 4px; } .db-look b { font: 650 14px var(--font); } .db-look small { font-size: 12px; } .db-look .db-on { position: absolute; top: 10px; right: 10px; }
+.db-names { margin-top: 34px; padding: 22px; border-radius: 22px; background: var(--fill-1); } .db-names > div { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.db-names button { height: 36px; padding: 0 14px; border-radius: 12px; background: var(--card, var(--raised)); box-shadow: inset 0 0 0 1px var(--hair); font: 600 13.5px var(--font); }
+.db-make { display: flex; align-items: center; gap: 14px; width: 100%; margin-top: 16px; padding: 16px 18px; border-radius: 20px; text-align: left; box-shadow: inset 0 0 0 1.5px var(--hair); }
+.db-make > i { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 13px; background: var(--fill-1); } .db-make > span { flex: 1; display: grid; } .db-make b { font: 650 14.5px var(--font); } .db-make small { font-size: 12.5px; }
+/* All devices: the library */
+.db-board { display: grid; gap: 2px; padding: 6px; border-radius: 20px; background: var(--card, var(--raised)); box-shadow: inset 0 0 0 1px var(--hair); }
+.db-brow { display: flex; align-items: center; gap: 12px; width: 100%; padding: 9px 12px; border-radius: 12px; text-align: left; } .db-brow:hover { background: var(--fill-1); }
+.db-brow > b { flex: 1; font: 600 14px var(--font); } .db-brow em { display: inline-flex; align-items: center; gap: 5px; font: 600 11.5px var(--font); font-style: normal; color: oklch(0.78 0.1 250); } .db-brow em .i { width: 13px; height: 13px; }
+.db-bdevs { display: flex; gap: 6px; } .db-bdevs i { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 9px; } .db-bdevs .i { width: 15px; height: 15px; }
+.db-bdevs i.has { background: oklch(0.6 0.13 150 / .2); color: oklch(0.82 0.11 150); } .db-bdevs i.up { background: oklch(0.62 0.13 250 / .25); color: oklch(0.85 0.09 250); }
+.db-bdevs i.can { color: var(--ink-3); box-shadow: inset 0 0 0 1px var(--hair); } .db-bdevs i.no { color: var(--ink-3); opacity: .3; }
+/* results */
+.db-res { margin-top: 24px; } .db-res > header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 10px; } .db-res > header small { flex: 1; font-size: 13px; }
+.db-other { margin-top: 14px; } .db-other summary { cursor: pointer; font: 600 13px var(--font); color: var(--ink-2); padding: 8px 12px; }
+.db-other .db-row { opacity: .6; }
+
+/* ── the bar: a few keys, or the thing you tapped, grown in place ── */
+.dbwin .db-bar { bottom: 16px; transition: width .3s cubic-bezier(.3,1.1,.4,1), border-radius .3s; }
+.dbwin .db-bar .db-act.bar { display: inline-flex; align-items: center; gap: 7px; height: 36px; padding: 0 14px; border-radius: 12px; font: 650 13px var(--font); background: var(--fill-1); color: var(--ink); }
+.dbwin .db-bar .db-act.bar .i { width: 16px; height: 16px; } .dbwin .db-bar .db-act.bar.key { background: var(--key); color: var(--key-ink); box-shadow: var(--key-edge, 0 1px 2px rgba(0,0,0,.25)); }
+.dbwin .db-bar .db-act.bar[disabled] { opacity: .5; }
+.db-act { flex: none; display: inline-grid; place-items: center; height: 32px; padding: 0 14px; border-radius: 16px; background: var(--key); color: var(--key-ink); box-shadow: var(--key-edge, 0 1px 2px rgba(0,0,0,.25)); font: 700 12.5px var(--font); white-space: nowrap; }
+.db-scrim { position: absolute; inset: 0; z-index: 19; background: rgba(0,0,0,.32); }
+.dbwin .db-bar.grown { width: min(560px, calc(100% - 24px)); max-height: calc(100% - 40px); padding: 0; border-radius: 26px; display: block; overflow: hidden; white-space: normal; z-index: 21; }
+.dbwin .db-bar.grown.more { width: min(760px, calc(100% - 24px)); height: calc(100% - 40px); }
+.db-gx { display: flex; flex-direction: column; max-height: inherit; height: 100%; }
+.db-gx > header { display: flex; align-items: flex-start; gap: 14px; padding: 18px 16px 12px 18px; } .db-gx > header > span { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.db-gx > header b { font: 720 18px var(--font); } .db-gx > header small { font-size: 12.5px; } .db-gx > header p { margin-top: 6px; font-size: 14px; color: var(--ink-2); line-height: 1.4; }
+.db-gx > footer { display: flex; align-items: center; gap: 6px; padding: 10px 10px 10px; margin-top: auto; border-top: 1px solid var(--hair); } .db-gx > footer .key { margin-left: auto; }
+.db-gx .db-uplist { overflow-y: auto; padding: 0 8px 8px; }
+.db-where { padding: 4px 18px 14px; } .db-where > small { font: 650 11.5px var(--font); letter-spacing: .05em; text-transform: uppercase; color: var(--ink-3); }
+.db-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.db-chip { display: inline-flex; align-items: center; gap: 7px; height: 36px; padding: 0 12px; border-radius: 12px; font: 600 13px var(--font); color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--hair); }
+.db-chip .i { width: 15px; height: 15px; } .db-chip.pick { background: oklch(0.62 0.14 250); color: #fff; box-shadow: none; }
+.db-chip.has { background: var(--fill-1); color: var(--ink-2); box-shadow: none; } .db-chip.has .i:last-child { color: oklch(0.78 0.12 150); } .db-chip.no { opacity: .38; }
+.db-keep { display: flex; align-items: center; gap: 10px; width: 100%; margin-top: 10px; padding: 10px 12px; border-radius: 12px; background: var(--fill-1); text-align: left; font: 600 13px var(--font); } .db-keep > span { flex: 1; } .db-keep > .i { color: oklch(0.75 0.12 250); }
+.db-more { flex: 1; min-height: 0; overflow-y: auto; padding: 0 18px 12px; } .db-more p { font-size: 14px; line-height: 1.55; color: var(--ink-2); margin: 10px 0; }
+.db-shots { display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; } .db-shots img { height: 220px; border-radius: 12px; box-shadow: inset 0 0 0 1px var(--hair); }
+.db-lbig { display: block; aspect-ratio: 16 / 7; border-radius: 16px; background: center/cover; }
+.db-chg { display: flex; gap: 8px; align-items: flex-start; } .db-chg .i { margin-top: 3px; color: oklch(0.75 0.12 150); }
+.db-reach { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; margin-top: 12px; } .db-reach > span { display: grid; grid-template-columns: auto 1fr; column-gap: 10px; padding: 10px 12px; border-radius: 12px; background: var(--fill-1); }
+.db-reach > span .i { grid-row: span 2; margin-top: 2px; } .db-reach b { font: 650 13px var(--font); } .db-reach small { font-size: 12px; }
+.db-notes { margin: 0; padding: 0 18px 12px; list-style: none; display: grid; gap: 10px; overflow-y: auto; } .db-notes li { display: grid; grid-template-columns: 96px 1fr; column-gap: 10px; } .db-notes li small { grid-column: 2; font-size: 12.5px; line-height: 1.4; } .db-notes b { font: 650 13.5px var(--font); }
+.db-notes.plain { list-style: disc; padding-left: 36px; } .db-notes.plain li { display: list-item; font-size: 14px; color: var(--ink-2); }
+.db-nt { grid-row: span 2; align-self: start; justify-self: start; padding: 2px 8px; border-radius: 7px; font: 700 10.5px/16px var(--font); background: var(--fill-1); color: var(--ink-2); }
+.db-nt.t-feature { background: oklch(0.6 0.13 250 / .2); color: oklch(0.8 0.1 250); } .db-nt.t-improvement { background: oklch(0.6 0.12 150 / .2); color: oklch(0.8 0.1 150); } .db-nt.t-fix { background: oklch(0.65 0.12 70 / .2); color: oklch(0.82 0.1 70); } .db-nt.t-security { background: oklch(0.6 0.15 25 / .2); color: oklch(0.8 0.12 25); }
+.db-fine { display: flex; align-items: center; gap: 8px; padding: 0 18px 12px; font-size: 12.5px; color: var(--ink-3); } .db-fine .i { width: 14px; height: 14px; }
+.db-kinds { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 0 16px 10px; } .db-kinds button { display: grid; justify-items: center; gap: 8px; padding: 16px 8px; border-radius: 16px; background: var(--fill-1); font: 650 13px var(--font); } .db-kinds .i { width: 22px; height: 22px; }
+
+/* the screen you're shopping for colours the page a little */
+.dbwin[data-db-form="tv"] .db-main { background: linear-gradient(180deg, oklch(0.18 0.02 265), var(--isle, var(--win)) 420px); }
+.dbwin[data-db-form="home"] .db-main { background: linear-gradient(180deg, oklch(0.35 0.05 60 / .35), var(--isle, var(--win)) 420px); }
+.dbwin[data-db-form="phone"] .db-main { background: linear-gradient(180deg, oklch(0.35 0.06 200 / .25), var(--isle, var(--win)) 420px); }
+
+/* compact (a phone) */
+.dbwin.db-compact #db-body { padding: 4px 16px 120px; }
+.dbwin.db-compact .db-devs { grid-auto-columns: 132px; } .dbwin.db-compact .db-dev { min-height: 104px; gap: 12px; padding: 12px; border-radius: 18px; }
+.dbwin.db-compact .db-q { height: 50px; border-radius: 16px; } .dbwin.db-compact .db-q input { font-size: 16px; }
+.dbwin.db-compact .db-jobs { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin-right: -16px; padding-right: 16px; } .dbwin.db-compact .db-jobs button { flex: none; }
+.dbwin.db-compact .db-tiles, .dbwin.db-compact .db-posters { grid-template-columns: 1fr 1fr; gap: 8px; } .dbwin.db-compact .db-tile { padding: 14px; } .dbwin.db-compact .db-tile .db-face.lg { width: 56px; height: 56px; }
+.dbwin.db-compact .db-looks { grid-auto-columns: 170px; }
+.dbwin.db-compact .db-bar { left: 12px !important; right: 12px !important; width: auto !important; transform: none !important; translate: none !important; bottom: var(--phbot, 16px); }
+.dbwin.db-compact .db-bar.grown, .dbwin.db-compact .db-bar.grown.more { left: 8px !important; right: 8px !important; bottom: 8px; border-radius: 28px; }
+.dbwin.db-compact .db-bar.grown.more { height: calc(100% - 60px); }
+.dbwin.db-compact .db-notes li { grid-template-columns: 1fr; } .dbwin.db-compact .db-nt { grid-row: auto; margin-bottom: 3px; }
+.dbwin.db-compact .db-bdevs { gap: 3px; } .dbwin.db-compact .db-bdevs i { width: 24px; height: 24px; } .dbwin.db-compact .db-brow em { display: none; }
+.dbwin.db-compact .db-ups > header { flex-wrap: wrap; } .dbwin.db-compact .db-ups > header .db-act { margin-left: 58px; }
+html[data-phone] #w-depot.phone.dbwin .db-bar:not(#_) { bottom: var(--phbot, 34px) !important; }

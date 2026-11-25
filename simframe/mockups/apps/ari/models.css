@@ -1,0 +1,114 @@
+/* Ari's models, third pass (29 Oct 2026). See apps/ari/models.js. Only applies with ?ari=b (.arxwin). */
+.arxwin :where(.arx h1, .arx h2, .arx h3, .arx p) { margin: 0; } .arx small { color: var(--ink-3); } .arx .i { width: 18px; height: 18px; flex: none; }
+.arx { max-width: 920px; margin: 0 auto; padding: 30px 40px 130px; }
+#w-ari:not(.arxwin) #arx-corner { display: none; }
+.arx-corner { position: absolute; top: 16px; right: 16px; z-index: 12; } .arx-corner[hidden] { display: none; }
+.arx-views { height: 40px; padding: 4px; border-radius: 14px; background: var(--float); box-shadow: var(--sh-float), inset 0 1px 0 var(--hi); -webkit-backdrop-filter: blur(24px) saturate(1.7); backdrop-filter: blur(24px) saturate(1.7); }
+.arx-views .ind { top: 4px; bottom: 4px; border-radius: 10px; } .arx-views button { height: 32px; border-radius: 10px; font-weight: 600; padding: 0 14px; }
+.arx-hd { display: grid; gap: 6px; padding: 0 220px 24px 0; } .arx-hd h1 { font: 780 32px/1.08 var(--font); letter-spacing: -.025em; } .arx-hd p { font-size: 15px; line-height: 1.45; color: var(--ink-2); }
+.arx-back { display: inline-flex; align-items: center; gap: 4px; height: 32px; margin: -8px 0 14px -8px; padding: 0 12px 0 6px; border-radius: 10px; font: 600 13px var(--font); color: var(--ink-2); } .arx-back:hover { background: var(--fill-1); color: var(--ink); }
+.arx-sec { margin-top: 30px; } .arx-sec > h2 { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; margin-bottom: 12px; font: 720 18px var(--font); letter-spacing: -.01em; } .arx-sec > h2 small { font: 500 13px var(--font); }
+.arx-card { display: grid; padding: 4px 0; border-radius: 18px; background: var(--card); box-shadow: inset 0 0 0 1px var(--hair), 0 1px 2px rgba(0,0,0,.08); }
+.arx-row { display: flex; align-items: center; gap: 14px; width: 100%; min-height: 64px; padding: 10px 16px; text-align: left; } .arx-card > * + * { box-shadow: inset 0 1px 0 var(--hair); }
+.arx-row.loc { cursor: pointer; } .arx-row.loc:hover, .arx-row.arx-add:hover { background: var(--fill-1); } .arx-card > :first-child { border-radius: 18px 18px 0 0; } .arx-card > :last-child { border-radius: 0 0 18px 18px; }
+.arx-rt { flex: 1; min-width: 0; display: grid; gap: 2px; } .arx-rt b { font: 650 14px var(--font); } .arx-rt small { font-size: 12.5px; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .arx-rt em { font: 500 11.5px var(--font); font-style: normal; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.arx-row .arlogo, .arx-row .arimono { border-radius: 11px; flex: none; }
+.arx-state { flex: none; display: inline-flex; align-items: center; gap: 6px; font: 600 12px var(--font); color: var(--ink-3); } .arx-state i { width: 7px; height: 7px; border-radius: 50%; background: var(--good); } .arx-state.ok { color: var(--good); }
+.arx-plus { width: 40px; height: 40px; flex: none; display: grid; place-items: center; border-radius: 11px; background: var(--fill-1); color: var(--ink-2); }
+.arx-jic { width: 40px; height: 40px; flex: none; display: grid; place-items: center; border-radius: 11px; background: var(--fill-1); color: var(--ink-2); }
+.arx-more { display: flex; align-items: center; gap: 14px; width: 100%; margin-top: 10px; padding: 14px 16px; border-radius: 18px; text-align: left; box-shadow: inset 0 0 0 1.5px var(--hair); } .arx-more:hover { background: var(--fill-1); }
+.arx-more > .i:first-child { width: 40px; height: 40px; padding: 11px; border-radius: 11px; background: var(--fill-1); box-sizing: border-box; } .arx-more span { flex: 1; display: grid; } .arx-more b { font: 650 14px var(--font); } .arx-more small { font-size: 12.5px; }
+.arx-prog { display: block; height: 6px; margin: 4px 0 2px; border-radius: 3px; background: var(--well); box-shadow: var(--well-edge); overflow: hidden; } .arx-prog i { display: block; height: 100%; border-radius: 3px; background: oklch(0.66 0.15 250); transition: width .4s linear; }
+.arx-prog.paused i { background: var(--ink-4); } .arx-prog.sm { width: 120px; margin: 0; }
+/* Get models */
+.arx-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
+.arx-chips button { display: inline-flex; align-items: center; gap: 7px; height: 34px; padding: 0 13px; border-radius: 11px; font: 600 13px var(--font); color: var(--ink-2); background: var(--well); box-shadow: var(--well-edge); } .arx-chips .i { width: 15px; height: 15px; }
+.arx-chips button.on { color: var(--ink); background: var(--raised); box-shadow: inset 0 1px 0 var(--hi), 0 1px 3px rgba(0,0,0,.2); }
+.arx-rec { position: relative; display: flex; align-items: center; gap: 22px; margin-bottom: 18px; padding: 24px; border-radius: 22px; cursor: pointer; overflow: hidden; isolation: isolate;
+  background: linear-gradient(120deg, oklch(0.5 0.13 265 / .38), var(--card) 65%); box-shadow: inset 0 0 0 1px var(--hair), 0 16px 34px -24px rgba(0,0,0,.6); }
+.arx-rec .arimono, .arx-rec .arlogo { border-radius: 16px; flex: none; } .arx-rec > span { flex: 1; display: grid; gap: 4px; } .arx-rec small { font: 650 12px var(--font); letter-spacing: .04em; text-transform: uppercase; color: oklch(0.72 0.12 265); }
+.arx-rec h2 { font: 760 24px var(--font); letter-spacing: -.02em; } .arx-rec p { font-size: 14px; line-height: 1.45; color: var(--ink-2); max-width: 520px; }
+.arx-fams { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+.arx-fam { display: grid; align-content: start; gap: 12px; padding: 18px; border-radius: 20px; cursor: pointer; background: var(--card); box-shadow: inset 0 0 0 1px var(--hair), 0 1px 2px rgba(0,0,0,.08); transition: transform .15s var(--ease), box-shadow .15s; }
+.arx-fam:hover { transform: translateY(-2px); box-shadow: inset 0 0 0 1px var(--hair), 0 14px 28px -18px rgba(0,0,0,.6); }
+.arx-fam header { display: flex; align-items: center; gap: 12px; } .arx-fam header .arimono, .arx-fam header .arlogo { border-radius: 13px; flex: none; } .arx-fam header span { display: grid; gap: 1px; } .arx-fam header b { font: 700 16px var(--font); } .arx-fam header small { font-size: 12.5px; }
+.arx-fam > p { font-size: 13.5px; line-height: 1.45; color: var(--ink-2); min-height: 39px; }
+/* a model's page */
+.arx-mh { display: flex; align-items: center; gap: 24px; padding-bottom: 6px; } .arx-mh .arimono, .arx-mh .arlogo { border-radius: 22px; flex: none; box-shadow: 0 16px 32px -16px rgba(0,0,0,.6); }
+.arx-mh > span { display: grid; gap: 4px; } .arx-mh small { font: 650 12px var(--font); letter-spacing: .04em; text-transform: uppercase; } .arx-mh h1 { font: 790 34px/1.06 var(--font); letter-spacing: -.026em; } .arx-mh p { font-size: 15px; color: var(--ink-2); }
+.arx-det { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 4px 0; border-radius: 18px; background: var(--card); box-shadow: inset 0 0 0 1px var(--hair); }
+.arx-det > div { display: flex; gap: 14px; padding: 14px 18px; } .arx-det > div:nth-child(n+3) { box-shadow: inset 0 1px 0 var(--hair); } .arx-det .i { margin-top: 2px; color: var(--ink-3); } .arx-det span { display: grid; gap: 2px; } .arx-det small { font: 600 11.5px var(--font); letter-spacing: .02em; } .arx-det b { font: 550 13.5px/1.4 var(--font); }
+.arx-none { padding: 30px 0; font-size: 14px; color: var(--ink-2); } .arx-link { font: 600 14px var(--font); color: var(--acc-ink); }
+
+/* ── the bar, and what it grows into ── */
+#w-ari .arxbar { gap: 4px; padding: 4px; transition: width .3s cubic-bezier(.3,1.1,.4,1), border-radius .3s; } #w-ari .arxbar[hidden] { display: none; }
+.arx-key, .arx-well { display: inline-flex; align-items: center; justify-content: center; gap: 7px; height: 36px; padding: 0 16px; border-radius: 12px; font: 600 13px var(--font); white-space: nowrap; flex: none; }
+.arx-key { background: var(--key); color: var(--key-ink); box-shadow: var(--key-edge, inset 0 1px 0 rgba(255,255,255,.5), 0 1px 2px rgba(0,0,0,.3)); } .arx-key.danger { background: oklch(0.58 0.19 25); color: #fff; box-shadow: inset 0 1px 0 rgba(255,255,255,.2), 0 1px 2px rgba(0,0,0,.3); }
+.arx-well { background: var(--well); color: var(--ink); box-shadow: var(--well-edge); font-weight: 500; } .arx-well.sm { height: 32px; padding: 0 12px; border-radius: 10px; } .arx-key .i, .arx-well .i { width: 16px; height: 16px; }
+.arx-said { display: inline-flex; align-items: center; gap: 10px; height: 36px; padding: 0 12px; font: 500 13px var(--font); color: var(--ink-2); } .arx-said .i { width: 16px; height: 16px; }
+#w-ari .arx-q { display: flex; align-items: center; gap: 8px; width: 300px; height: 36px; padding: 0 12px; border-radius: 12px; background: var(--well); box-shadow: var(--well-edge); color: var(--ink-3); } #w-ari .arx-q .i { width: 16px; height: 16px; } #w-ari .arx-q input { flex: 1; min-width: 0; border: 0; outline: 0; background: none; color: var(--ink); font: 500 13px var(--font); } #w-ari .arx-q input::placeholder { color: var(--ink-3); }
+#w-ari .arxbar.grown { width: min(600px, calc(100% - 24px)); padding: 0; border-radius: 24px; display: block; white-space: normal; z-index: 21; }
+#w-ari.arxgrown #ari-main::after { content: ""; position: absolute; inset: 0; z-index: 19; background: rgba(0,0,0,.3); border-radius: inherit; }
+.arx-gx > header { display: flex; align-items: center; gap: 12px; padding: 16px 12px 10px 16px; } .arx-gx > header .arimono, .arx-gx > header .arlogo { border-radius: 10px; flex: none; } .arx-gx > header > span { flex: 1; min-width: 0; display: grid; gap: 1px; } .arx-gx > header b { font: 700 16px var(--font); } .arx-gx > header small { font-size: 12.5px; color: var(--ink-3); }
+.arx-gl { margin: 4px 16px 8px; font: 650 11.5px var(--font); letter-spacing: .04em; text-transform: uppercase; color: var(--ink-3); } .arx-gl.plain { text-transform: none; letter-spacing: 0; font: 500 13.5px var(--font); color: var(--ink-2); }
+.arx-gjobs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; padding: 0 12px 8px; }
+.arx-gjobs button { position: relative; display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 14px; text-align: left; background: var(--well); box-shadow: var(--well-edge); } .arx-gjobs button > .i { color: var(--ink-2); }
+.arx-gjobs button span { flex: 1; min-width: 0; display: grid; } .arx-gjobs b { font: 650 13.5px var(--font); } .arx-gjobs small { font-size: 12px; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.arx-gjobs .arx-tick { position: static; width: 22px; height: 22px; background: var(--fill-2); color: var(--ink-3); box-shadow: none; }
+.arx-gjobs button.on { background: var(--raised); box-shadow: inset 0 1px 0 var(--hi), 0 2px 6px rgba(0,0,0,.22); } .arx-gjobs button.on .arx-tick { background: oklch(0.62 0.15 250); color: #fff; }
+.arx-swap { display: grid; gap: 6px; padding: 0 12px 8px; } .arx-swap > div { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 14px; background: var(--well); box-shadow: var(--well-edge); } .arx-swap .i { color: var(--ink-2); } .arx-swap span { display: grid; } .arx-swap b { font: 650 13.5px var(--font); } .arx-swap small { font-size: 12.5px; color: var(--ink-2); }
+.arx-gx > footer { display: flex; align-items: center; gap: 6px; padding: 10px; margin-top: 4px; box-shadow: inset 0 1px 0 var(--hair); }
+.arx-gfine { flex: 1; min-width: 0; display: flex; align-items: center; gap: 7px; padding-left: 6px; font-size: 12px; color: var(--ink-3); } .arx-gfine .i { width: 14px; height: 14px; }
+.arx-menu { min-width: 280px; } .arx-menu h6 { margin: 6px 10px 6px; font: 650 11.5px var(--font); color: var(--ink-3); } .arx-menu .crmi > span { display: grid; flex: 1; } .arx-msub { font-size: 11.5px; color: var(--ink-3); }
+
+/* ── narrow windows and phones ── */
+.arxph .arx { padding: 60px 16px 140px; } html[data-phone] .arxph .arx { padding-top: 8px; }
+.arxph .arx-corner { top: calc(var(--phsafe, 100px) - 52px); } .arxph .arx-hd { padding-right: 0; }
+.arxph .arx-hd h1 { font-size: 30px; }
+.arxph .arx-rec { flex-direction: column; align-items: flex-start; } .arxph .arx-rec .arx-key { width: 100%; height: 44px; }
+.arxph .arx-chips { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin-right: -16px; padding-right: 16px; } .arxph .arx-chips button { flex: none; } .arxph .arx-chips .arx-fits { margin-left: 0; }
+.arxph .arx-mh { flex-direction: column; align-items: flex-start; gap: 14px; } .arxph .arx-mh h1 { font-size: 28px; }
+.arxph .arx-row.loc em { white-space: normal; }
+#w-ari .arxphbar { left: 12px !important; right: 12px !important; width: auto !important; transform: none !important; translate: none !important; justify-content: flex-end; flex-wrap: nowrap !important; }
+#w-ari .arxphbar :is(.arx-key, .arx-well) { height: 44px; border-radius: 14px; } #w-ari .arxphbar > .arx-key { flex: 1; } #w-ari .arxphbar .ib { width: 44px; height: 44px; border-radius: 14px; }
+#w-ari .arxphbar .arx-q { flex: 1; width: auto; height: 44px; border-radius: 14px; } #w-ari .arxphbar .arx-q input { font-size: 16px; }
+#w-ari .arxphbar.grown { left: 8px !important; right: 8px !important; border-radius: 28px; } #w-ari .arxphbar .arx-gjobs { grid-template-columns: 1fr; } #w-ari .arxphbar .arx-gfine { display: none; } #w-ari .arxphbar .arx-gx > footer :is(.arx-key, .arx-well) { flex: 1; }
+html[data-phone] #w-ari.phone .arxphbar:not(#_) { bottom: var(--phbot, 34px) !important; }
+html[data-form="tablet"] #w-ari .arx { padding-top: 24px; }
+
+/* ── third pass ── */
+.arx-sec > h2 small { margin-left: auto; }
+.arx-size { flex: none; font: 500 12.5px var(--font); color: var(--ink-3); }
+.arx-row.arx-use { min-height: 76px; } .arx-row.arx-use .arx-rt b { font-size: 15.5px; } .arx-row.arx-use .arlogo, .arx-row.arx-use .arimono { border-radius: 12px; }
+.arx-row.arx-job .arx-jic, .arx-row.arx-upd .arx-jic { width: 44px; height: 32px; background: none; } .arx-row .ib { flex: none; width: 32px; height: 32px; border-radius: 10px; color: var(--ink-3); } .arx-row .ib:hover { background: var(--fill-1); color: var(--ink); }
+.arx-cust { display: flex; align-items: center; gap: 14px; min-height: 48px; padding: 0 16px; font: 600 13px var(--font); color: var(--ink-2); } .arx-cust > .i { width: 44px; height: 16px; color: var(--ink-3); } .arx-cust:hover { background: var(--fill-1); color: var(--ink); }
+.arx-state { gap: 5px; } .arx-state .i { width: 14px; height: 14px; stroke-width: 2.4; }
+.arx-upd .arx-rt b { font-weight: 600; }
+/* ChatGPT, offered first */
+.arx-gpt { display: flex; align-items: center; gap: 18px; margin-bottom: 10px; padding: 20px; border-radius: 20px; background: var(--card); box-shadow: inset 0 0 0 1px var(--hair), 0 1px 2px rgba(0,0,0,.08); }
+.arx-gpt .arlogo { flex: none; border-radius: 15px; } .arx-gpt > span { flex: 1; min-width: 0; display: grid; gap: 4px; } .arx-gpt b { font: 720 17px var(--font); letter-spacing: -.01em; } .arx-gpt small { font-size: 13.5px; line-height: 1.4; color: var(--ink-2); }
+.arx-gpt .arx-key { height: 40px; padding: 0 18px; border-radius: 13px; } .arx-key.busy { opacity: .8; } .arx-key .arispin { width: 14px; height: 14px; }
+/* Get models: one plain line on how it runs here */
+.arx-fam > footer { display: flex; align-items: center; gap: 10px; margin-top: 2px; } .arx-fam > footer em { margin-left: auto; font: 500 12px var(--font); font-style: normal; color: var(--ink-3); }
+.arx-fit { display: inline-flex; align-items: center; gap: 7px; font: 600 12.5px var(--font); color: var(--ink-2); } .arx-fit > i { width: 8px; height: 8px; border-radius: 50%; background: var(--ink-4); } .arx-fit .i { width: 15px; height: 15px; }
+.arx-fit.f-good > i { background: oklch(0.7 0.15 150); } .arx-fit.f-ok > i { background: oklch(0.78 0.14 75); } .arx-fit.f-no { color: var(--ink-3); } .arx-fit.have .i { color: var(--good); } .arx-fit.dl .i { color: oklch(0.7 0.13 250); }
+.arx-link { display: block; margin: 16px auto 0; padding: 8px 12px; border-radius: 10px; } .arx-link:hover { background: var(--fill-1); } .arx-say .arx-link { display: inline; margin: 0; padding: 0; font-size: inherit; }
+/* a model's page */
+.arx-ladder { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; }
+.arx-rung { display: grid; justify-items: start; gap: 2px; padding: 14px 16px; border-radius: 16px; text-align: left; background: var(--card); box-shadow: inset 0 0 0 1px var(--hair); }
+.arx-rung:hover { background: var(--fill-1); } .arx-rung b { font: 760 20px var(--font); letter-spacing: -.01em; } .arx-rung small { font: 500 12.5px var(--font); color: var(--ink-3); }
+.arx-rung em { display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; font: 600 12px var(--font); font-style: normal; color: var(--ink-2); } .arx-rung em::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--ink-4); }
+.arx-rung.f-good em::before { background: oklch(0.7 0.15 150); } .arx-rung.f-ok em::before { background: oklch(0.78 0.14 75); } .arx-rung.f-no { opacity: .62; } .arx-rung.have em::before { background: var(--good); }
+.arx-rung.on { background: var(--raised); box-shadow: inset 0 0 0 2px var(--ink), 0 8px 20px -12px rgba(0,0,0,.6); opacity: 1; }
+.arx-say { display: flex; align-items: flex-start; gap: 12px; margin-top: 18px; padding: 14px 16px; border-radius: 16px; font-size: 14px; line-height: 1.45; color: var(--ink); background: var(--well); box-shadow: var(--well-edge); }
+.arx-say > .i { margin-top: 1px; color: var(--ink-3); } .arx-say.f-good > .i, .arx-say.f-have > .i { color: var(--good); } .arx-say.f-ok > .i { color: oklch(0.78 0.14 75); } .arx-say.f-no > .i { color: oklch(0.68 0.17 25); } .arx-say.f-dl > .i { color: oklch(0.7 0.13 250); }
+.arx-can { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; }
+.arx-can span { display: grid; grid-template-columns: auto 1fr; column-gap: 12px; row-gap: 1px; padding: 14px 16px; border-radius: 16px; background: var(--card); box-shadow: inset 0 0 0 1px var(--hair); }
+.arx-can .i { grid-row: span 2; margin-top: 1px; color: var(--ink-2); } .arx-can b { font: 650 14px var(--font); } .arx-can small { font-size: 12.5px; color: var(--ink-3); }
+.arx-menu .crmi .arlogo, .arx-menu .crmi .arimono { flex: none; border-radius: 6px; }
+.arxph .arx-gpt { flex-wrap: wrap; } .arxph .arx-gpt .arx-key { width: 100%; height: 44px; } .arxph .arx-size { display: none; }
+.arx-row .arx-well.sm { background: var(--fill-1); box-shadow: none; font-weight: 600; } .arx-row .arx-well.sm:hover { background: var(--fill-2); }
+.arx-tick { width: 22px; height: 22px; flex: none; display: grid; place-items: center; border-radius: 50%; } .arx-tick .i { width: 13px; height: 13px; stroke-width: 2.4; }
+.arx-gx > footer > span:first-child { flex: 1; }
+.arx-det span { align-content: start; }
+.arxph .arx-det { grid-template-columns: 1fr; } .arxph .arx-det > div:nth-child(2) { box-shadow: inset 0 1px 0 var(--hair); }

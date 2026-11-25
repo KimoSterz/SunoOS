@@ -1,0 +1,218 @@
+/* ══════════════════════════════════════════════════════════════════════════
+   D-Ink — digital ink, on the simulator (luma-next-73.html).
+
+   The appearance from archive/fable-design-center/dink.css, carried onto the
+   current shell: a reflective, outline-first look that sits beside Light and
+   Dark rather than inside them. It is a switch (?ink=mono or ?ink=colour, the
+   D-Ink segment in the review bar), and while it is on it overrides whichever
+   mode the windows are wearing. Everything is scoped to html[data-ink], so
+   turning it off restores the OS exactly as it was.
+
+   THE WEIGHT SYSTEM. Three line weights and no others; the weight says what
+   kind of thing you are looking at:
+     FRAME  3px   the outer boundary of a floating object: a window, the dock,
+                  a menu, a toast. The heaviest line on screen, one per object.
+     EDGE   2px   the boundary of something inside a frame: a pane, a bar, a
+                  key, a field, a tile, a chip.
+     RULE   1px   a divider between rows inside a list. Never a box.
+   And one fill: solid ink, paper knocked out of it, reserved for the single
+   selected or primary thing in view. Nothing else is filled, tinted, shaded
+   or shadowed; on a reflective panel there is no light to spend.
+
+   The desktop shell and the phone shell draw in their own shadow roots and
+   carry the same rules in desktop/dink-shell.css and desktop/dink-phone.css.
+   Icons: the v4 set redrawn as ink line drawings (icons/luma-ink-*.svg, from
+   mockups/ink-icons.py); the simulator swaps them in while D-Ink is on.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+html[data-ink] {
+  --dink-paper: #eeece6;   /* the desk itself */
+  --dink-sheet: #fbfaf6;   /* a window, a menu, a card */
+  --dink-ink: #0e1013;     /* text, glyphs and every line */
+  --dink-ink-2: #3a4046;   /* secondary text, still fully legible */
+  --dink-ink-3: #6f767d;   /* disabled, and nothing else */
+  --dink-frame: 3px; --dink-edge: 2px; --dink-rule: 1px; --dink-grain: .055;
+  --dink-E: inset 0 0 0 var(--dink-edge) var(--dink-ink);
+  --dink-F: inset 0 0 0 var(--dink-frame) var(--dink-ink);
+  color-scheme: light;
+}
+
+/* ── 1 · One sweep removes colour from the whole shell. Mono is a true monochrome panel; Colour is the
+   desaturated four-pigment look colour e-paper actually produces. ── */
+html[data-ink="mono"] body { filter: grayscale(1) contrast(1.05); }
+html[data-ink="colour"] body { filter: saturate(.38) contrast(1.03); }
+
+/* ── 2 · Paper. The wallpaper is a picture, so it goes; what it leaves is the sheet everything is printed on. ── */
+html[data-ink] .desk { background: var(--dink-paper) !important; background-image: none !important; }
+html[data-ink] .desk::before { content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: var(--dink-grain); mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E"); }
+html[data-ink] .desk.phoning::after { background: rgba(14,16,19,.58) !important; }
+
+/* ── 3 · Tokens. Every window, whatever mode it was wearing, becomes paper and ink. Fill and hover tokens empty
+   out because state is carried by line weight from here on, not by tint; the edge tokens become ink. ── */
+html[data-ink] .win, html[data-ink] .win .isle, html[data-ink] .win .isle :is(.fbar, .flo, .pop, .crpop), html[data-ink] .crpop, html[data-ink] .ltoast, html[data-ink] .win .ldp, html[data-ink] .win.lightframe, html[data-ink] .win.darkframe,
+html[data-ink] body[data-mat] .iwin, html[data-ink] body[data-mat] .iwin .isle, html[data-ink] body[data-mat] .iwin .isle :is(.fbar, .flo, .pop, .crpop) {
+  --win: var(--dink-sheet); --isle: var(--dink-sheet); --side: var(--dink-sheet); --float: var(--dink-sheet); --float-solid: var(--dink-sheet); --pop: var(--dink-sheet); --card: var(--dink-sheet);
+  --bar: var(--dink-sheet); --m-bar: var(--dink-sheet); --m-pop: var(--dink-sheet); --raised: transparent; --well: transparent; --chip: transparent;
+  --ink: var(--dink-ink); --ink-2: var(--dink-ink-2); --ink-3: var(--dink-ink-2); --ink-4: var(--dink-ink-3); --hair: var(--dink-ink); --hi: transparent; --rim: transparent;
+  --fill-1: transparent; --fill-2: transparent; --fill-3: transparent; --tint: transparent; --tint-soft: transparent; --wash: transparent; --acc-soft: transparent; --read: var(--dink-ink);
+  --primary: var(--dink-ink); --primary-ink: var(--dink-sheet); --acc-ink: var(--dink-ink); --acc2: var(--dink-ink); --good: var(--dink-ink); --love: var(--dink-ink); --fav: var(--dink-ink);
+  --sh-win: none; --sh-float: none; --sh: none; --sh2: none; --blur-win: none; --blur-bar: none; --blur-pop: none;
+  --isle-out: var(--dink-E); --isle-in: none; --well-edge: var(--dink-E); --chip-edge: var(--dink-E); --bar-edge: var(--dink-E); --soft-key: transparent; --soft-key-hi: transparent; --soft-key-ink: var(--dink-ink);
+  --gl-sh: none; --gl-ish: none; --off: 1;
+  color: var(--dink-ink); }
+html[data-ink] .win { background: var(--dink-sheet) !important; color: var(--dink-ink) !important; }
+
+/* ── 4 · Nothing is shaded, blurred or translucent. Depth is stroke, so nothing casts one. ── */
+html[data-ink] .desk *, html[data-ink] .crpop, html[data-ink] .ltoast { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; text-shadow: none !important; }
+html[data-ink] :is(.win, .crpop, .ltoast, .win .isle, .win .fbar, .win .flo, .win .ldp, .win .lac) { box-shadow: none; background-image: none !important; }
+html[data-ink] .win :is(.mwash, .mlight, .nwash, .calwash, .wxsky, .ckwash, .dn-wash) { display: none !important; }   /* colour washes lit by content: there is no light here */
+html[data-ink] .win .isle::after { box-shadow: var(--dink-E) !important; }
+html[data-ink] .win :focus-visible { outline: var(--dink-edge) solid var(--dink-ink) !important; outline-offset: 2px !important; }
+
+/* ── 5 · FRAME · floating objects. A window's frame is an overlay above every child, so the title bar
+   cannot paint over it; it follows the window's own corner. The dock lane, menus and toasts take theirs. ── */
+html[data-ink] .win::after { content: "" !important; position: absolute !important; inset: 0 !important; z-index: 2147483000 !important; pointer-events: none !important;
+  border: var(--dink-frame) solid var(--dink-ink) !important; border-radius: inherit !important; box-sizing: border-box !important; background: none !important; }
+html[data-phone] html[data-ink] .win.phone::after, html[data-ink][data-phone] .win.phone::after { display: none !important; }   /* on a phone the bezel is the frame */
+html[data-ink] .win > .tbar { background: var(--dink-sheet) !important; box-shadow: none !important; }
+html[data-ink] :is(.crpop, #lmenu) { background: var(--dink-sheet) !important; color: var(--dink-ink) !important; box-shadow: var(--dink-F) !important; animation: none !important; }
+html[data-ink] .ltoast { background: var(--dink-sheet) !important; color: var(--dink-ink) !important; box-shadow: var(--dink-F) !important; }
+html[data-ink] .ltoast :is(b, span, small) { color: var(--dink-ink) !important; }
+html[data-ink] .shelf { background: var(--dink-sheet) !important; color: var(--dink-ink) !important; box-shadow: var(--dink-F) !important; }
+html[data-ink] .shelf .dk:hover { background: transparent !important; box-shadow: var(--dink-E); }
+html[data-ink] .shelf .dk .run { background: var(--dink-ink) !important; }
+html[data-ink] .shelf .dk img { filter: none !important; box-shadow: none !important; }
+
+/* ── 6 · EDGE · everything that lives inside a frame. Panes carry it through --isle-out; bars, pills and
+   keys name themselves. A text action, a list row or a tab is not a key and keeps no line. ── */
+html[data-ink] .win :is(.fbar, .flo, .lac, .selbar, .mbar, .misl, .cmbar4, .dnbar, .nfloat) { background: var(--dink-sheet) !important; box-shadow: var(--dink-E) !important; }
+html[data-ink] .win :is(.ib, .bt, .snew, .srch, .chip, .seg, .wctl, .fvt, .key, .mkey, .ckkey, .cackey, .sidetabs, .lcount, .dn-get, .fexr2, .vwkey) { background: transparent !important; background-image: none !important; color: var(--dink-ink) !important; box-shadow: var(--dink-E) !important; }
+html[data-ink] .win :is(.ib, .bt):hover { background: transparent !important; }
+html[data-ink] .win .srch input { color: var(--dink-ink) !important; } html[data-ink] .win .srch input::placeholder { color: var(--dink-ink-3) !important; }
+html[data-ink] .win .wctl { border-radius: 99px !important; overflow: hidden; gap: 0 !important; padding: 0 !important; }
+html[data-ink] .win .wctl button { background: transparent !important; color: var(--dink-ink) !important; border-radius: 0 !important; box-shadow: none !important; }
+html[data-ink] .win .wctl button + button { box-shadow: inset var(--dink-rule) 0 0 0 var(--dink-ink) !important; }
+html[data-ink] .win .wctl button:hover { background: var(--dink-ink) !important; color: var(--dink-sheet) !important; }
+html[data-ink] .win .seg { padding: 0 !important; gap: 0 !important; } html[data-ink] .win .seg .ind { display: none !important; }
+html[data-ink] .win .seg button { background: transparent !important; box-shadow: none !important; color: var(--dink-ink-2) !important; border-radius: 0 !important; }
+html[data-ink] .win .seg button + button { box-shadow: inset var(--dink-rule) 0 0 0 var(--dink-ink) !important; }
+html[data-ink] .win :is(.lmini, .lfc, .lcard, .wdg, .wh, .wev, .wwx, .dc-room, .dc-lc, .dc-cm, .dc-un, .dn-card, .dn-tile, .cal-ev, .mlink, .dc-embed, .dc-file, .dc-thread) { background: transparent !important; background-image: none !important; color: var(--dink-ink) !important; box-shadow: var(--dink-E) !important; }
+html[data-ink] .win :is(.av, .gav .av, .dc-gi, .fav, .appic) { box-shadow: var(--dink-E) !important; }
+html[data-ink] .win :is(.bub, .dc-m) { background: transparent !important; }
+html[data-ink] .win .msg.theirs .bub { background: transparent !important; color: var(--dink-ink) !important; box-shadow: var(--dink-E) !important; }
+html[data-ink] .win .msg.mine .bub { background: var(--dink-ink) !important; color: var(--dink-sheet) !important; box-shadow: none !important; }
+html[data-ink] .win .msg.mine .bub * { color: var(--dink-sheet) !important; }
+
+/* ── 7 · FILL · the one selected thing: solid ink with paper knocked out of it. Everything else that is
+   merely "on" gains weight at its edge. ── */
+html[data-ink] .win :is(.si.on, .ri.on, .crow.on, .crrow.on, .trow.on, .ctr.on, .merow.on, .dc-ch.on, .dc-dm.on, .cfrow.on, .nrow.on, .tab.on, .lfsi.on, .wxpl.on, .vwrow.on, .seg button.on, .sidetabs button.on, .bt.pri, .bt.key, .fvt.on, .dn-get.key, .dc-send, .b.pri, .ib.on, .ib.lit, .ib.loved, .ib.faved, .dc-tabs button.on, .mreact2 button.on, .dc-reacts button.on, .nav span.on) {
+  background: var(--dink-ink) !important; color: var(--dink-sheet) !important; -webkit-text-fill-color: var(--dink-sheet) !important; box-shadow: none !important; border-color: transparent !important; filter: none !important; }
+html[data-ink] .win :is(.si.on, .ri.on, .crow.on, .crrow.on, .trow.on, .ctr.on, .merow.on, .dc-ch.on, .dc-dm.on, .cfrow.on, .nrow.on, .tab.on, .lfsi.on, .wxpl.on, .vwrow.on, .seg button.on, .sidetabs button.on, .bt.pri, .bt.key, .fvt.on, .dn-get.key, .ib.on, .ib.lit, .ib.loved, .ib.faved, .dc-tabs button.on) :is(b, span, small, em, i, time, svg.i, .lab, .cap, .tm, .pv, .l1, .l2) { color: var(--dink-sheet) !important; -webkit-text-fill-color: var(--dink-sheet) !important; opacity: 1 !important; }
+html[data-ink] .win :is(.si.on, .ri.on, .crow.on) :is(.av, .ico, .gav) { box-shadow: inset 0 0 0 var(--dink-edge) var(--dink-sheet) !important; }
+html[data-ink] .win :is(.si, .ri, .crow, .crrow, .trow, .ctr, .merow, .bt, .ib, .fvt):hover:not(.on):not(.pri) { background: transparent !important; }
+html[data-ink] .win :is(button, [role=button])[disabled] { opacity: 1 !important; color: var(--dink-ink-3) !important; }
+
+/* ── 8 · RULE · dividers inside a list. A row is a line beneath, never a box; the selected row is the fill. ── */
+html[data-ink] .win :is(.si, .ri, .crow, .crrow, .trow, .ctr, .merow, .dc-ch, .dc-dm, .cfrow, .nrow, .lfsi, .vwrow, .dc-mr, .res, .fexr2) { border-radius: 0 !important; }
+html[data-ink] .win :is(.pside, .msidebar, .nside, .cside, .dpside, .vside, .ytside, .wxside, .lfside, .vwside, .cfside, .meside, .dc-col, .dc-mems, .dc-ilist, .nlist2, .crlist) :is(.si, .ri, .crow, .crrow, .trow, .ctr, .merow, .dc-ch, .dc-dm, .cfrow, .nrow, .lfsi, .vwrow, .dc-mr) { border-bottom: var(--dink-rule) solid var(--dink-ink) !important; }
+html[data-ink] .win :is(.pside, .msidebar, .nside, .cside, .dpside, .vside, .ytside, .wxside, .lfside, .vwside, .cfside, .meside, .dc-col, .dc-mems, .dc-ilist, .nlist2, .crlist) :is(.si, .ri, .crow, .crrow, .trow, .ctr, .merow, .dc-ch, .dc-dm, .cfrow, .nrow, .lfsi, .vwrow, .dc-mr):last-child { border-bottom: 0 !important; }
+html[data-ink] .win :is(.sh, .dc-sh, .dc-role, .fexh, .dpsh, .lab) { color: var(--dink-ink) !important; opacity: 1 !important; }
+html[data-ink] .win :is(hr, .crsep, .rsep, .dc-hair, .dc-vdiv, .dc-rsep, .dc-bsep) { background: var(--dink-ink) !important; border-color: var(--dink-ink) !important; opacity: 1 !important; }
+html[data-ink] .win .shead.sfoot { border-top-color: var(--dink-ink) !important; }
+
+/* ── 9 · Text is ink, or it is nothing. Secondary text keeps its size and takes the second ink; disabled takes the
+   third. Nothing fades. ── */
+html[data-ink] .win :is(small, .t4, .sub, .cap, .tm, .pv, time, .dc-mt2, .dc-mh time, .mtime, .rcpt) { color: var(--dink-ink-2) !important; opacity: 1 !important; }
+html[data-ink] .win :is(.mname, .dc-mh b, .dc-at, .dc-link, .dc-embed b, .dc-thread > span, .dc-tcl) { color: var(--dink-ink) !important; background: transparent !important; }
+html[data-ink] .win .dc-at { box-shadow: inset 0 0 0 var(--dink-rule) var(--dink-ink); border-radius: 4px; }
+html[data-ink] .win .dc-at.me { background: var(--dink-ink) !important; color: var(--dink-sheet) !important; box-shadow: none; }
+html[data-ink] .win :is(.dc-badge, .lcount, .dbadge, .dc-live, .dc-bot, .dc-new span) { background: var(--dink-ink) !important; color: var(--dink-sheet) !important; box-shadow: none !important; }
+html[data-ink] .win :is(.dc-st, .onl, .ond, .dc-dot) { background: var(--dink-ink) !important; box-shadow: 0 0 0 2.5px var(--dink-sheet) !important; }
+
+/* ── 10 · Photographs still exist; e-paper just renders them harder. Glyph masks are never images. ── */
+html[data-ink] :is(img, video, canvas):not(.shelf img):not(.tbar img):not(.appic) { filter: contrast(1.24) brightness(1.02); }
+html[data-ink] .win :is(.mph, .dc-img, .dc-eimg, .dc-cmi, .dc-lci, .dc-bimg, .thumb, .pt, .alb, .dn-shot, .lmini img) { box-shadow: var(--dink-E) !important; }
+
+/* ── 11 · Meters, waves and progress are drawn in ink; their tracks take a rule. ── */
+html[data-ink] .win :is(.wave i, .prog i, .tr i, .pg i, .dc-pg i, .dn-pg i, .lprog i, .fillb) { background: var(--dink-ink) !important; }
+html[data-ink] .win :is(.wave, .tr, .pg, .prog, .lprog) { background: transparent !important; box-shadow: inset 0 0 0 var(--dink-rule) var(--dink-ink) !important; }
+
+/* ── 12 · Scrollbars and selection ── */
+html[data-ink] .win * { scrollbar-color: var(--dink-ink) transparent !important; }
+html[data-ink] ::selection { background: var(--dink-ink); color: var(--dink-sheet); }
+
+
+/* ── 13 · Nothing nests a box in a box. A control that lives on a framed bar is a key of that bar: it keeps
+   its glyph and loses its line; the bar's dividers carry the separation, drawn as a visible rule. ── */
+html[data-ink] .win :is(.fbar, .flo, .lac, .selbar, .mbar, .misl, .cmbar4, .dnbar, .nfloat) :is(.ib, .srch, .seg, .chip, .snew, .bt:not(.pri):not(.key), .lcount) { box-shadow: none !important; }
+html[data-ink] .win :is(.fbar, .flo, .lac, .selbar, .mbar, .misl, .cmbar4, .dnbar, .nfloat) .seg button + button { box-shadow: none !important; }
+html[data-ink] .win .vr { display: block !important; width: 1px !important; height: 22px !important; background: var(--dink-ink) !important; opacity: 1 !important; }
+html[data-ink] .win :is(.fbar, .flo) .who .th { box-shadow: var(--dink-E) !important; background: transparent !important; }
+
+/* ── 14 · Filer. Folders and pages are drawn, not painted: an outline in ink on the sheet, the dog-ear a
+   second line; a drive's meter is a ruled track with an ink fill. ── */
+html[data-ink] .win svg.folder { filter: none !important; }
+html[data-ink] .win svg.folder :is(path, rect) { fill: var(--dink-sheet) !important; stroke: var(--dink-ink) !important; stroke-width: 2 !important; }
+html[data-ink] .win svg.folder rect + rect, html[data-ink] .win svg.folder rect ~ path { display: none !important; }
+html[data-ink] .win .paper-ic { background: var(--dink-sheet) !important; box-shadow: var(--dink-E) !important; }
+html[data-ink] .win .paper-ic::before { background: var(--dink-sheet) !important; box-shadow: inset 2px -2px 0 0 var(--dink-ink) !important; border-radius: 0 0 0 3px !important; width: 12px !important; height: 12px !important; }
+html[data-ink] .win .paper-ic .lines i { background: var(--dink-ink-2) !important; }
+html[data-ink] .win .paper-ic .ext { color: var(--dink-ink) !important; }
+html[data-ink] .win .paper-ic img { border-radius: 0 !important; }
+html[data-ink] .win .shot { box-shadow: var(--dink-E) !important; }
+html[data-ink] .win .ri .cap { background: transparent !important; box-shadow: inset 0 0 0 1px var(--dink-ink) !important; height: 5px !important; border-radius: 3px !important; }
+html[data-ink] .win .ri .cap i { background: var(--dink-ink) !important; }
+html[data-ink] .win .ri.on .cap { box-shadow: inset 0 0 0 1px var(--dink-sheet) !important; } html[data-ink] .win .ri.on .cap i { background: var(--dink-sheet) !important; }
+
+/* ── 15 · Messages. A bubble that holds a photo or a file is that thing: the photo or the card carries the
+   edge and the bubble draws none, so no line runs doubled. A field on a framed bar is the bar's own text. A
+   scroller's top is a clean cut, not a fade. ── */
+html[data-ink] .win .msg:is(.k-photo, .k-file, .k-link) .bub, html[data-ink] .win .msg.theirs:is(.k-photo, .k-file, .k-link) .bub { box-shadow: none !important; background: transparent !important; padding: 0 !important; }
+html[data-ink] .win .bub .lfc { box-shadow: var(--dink-E) !important; }
+html[data-ink] .win :is(.mbar, .fbar, .flo, .selbar, .misl) .mfield { box-shadow: none !important; background: transparent !important; }
+html[data-ink] .win .mfield textarea::placeholder { color: var(--dink-ink-2) !important; opacity: 1 !important; }
+html[data-ink] .win .is-scrolled { -webkit-mask-image: none !important; mask-image: none !important; }
+html[data-ink] .win .bub .wave { box-shadow: none !important; }
+html[data-ink] .win .bub .rq { background: transparent !important; box-shadow: inset 2px 0 0 currentColor !important; }
+html[data-ink] .win .msg.mine .bub .rq { color: var(--dink-sheet) !important; }
+
+/* ── 16 · The tablet shelf runs edge to edge: the screen is its frame, so it keeps only the line along its
+   top. Its search is a field and takes an edge, never a grey well. ── */
+html[data-ink] .shelf { box-shadow: inset 0 3px 0 0 var(--dink-ink) !important; }
+html[data-ink] .shelf .sb.q { background: transparent !important; box-shadow: var(--dink-E) !important; color: var(--dink-ink) !important; }
+html[data-ink] .shelf .sb.q :is(span, small, kbd, em) { color: var(--dink-ink-2) !important; }
+
+/* ══ 17 · THE PHONE. The bezel is the frame, so a phone has two weights and no third: OBJECT 2px around a thing
+   that stands on the page by itself (a bar, a card, a key, a lone field), RULE 1px between rows. Inside an
+   object nothing draws a line of its own: what separates its parts is a rule, what is chosen is the fill.
+   Photographs carry no line at all, they are their own edge. Scoped through #desk so it outranks every app's
+   own phone styles without a race. ══ */
+html[data-ink] #desk .win.phone { --dink-frame: 2px; --well-edge: none; --chip-edge: none; }
+/* bars: one pill, 2px; every key, field and group on it is bare; the primary key is the fill */
+html[data-ink] #desk .win.phone :is(.fbar, .flo, .lac, .selbar, .mbar, .misl, .cmbar4, .dnbar, .nfloat) { box-shadow: var(--dink-E) !important; background: var(--dink-sheet) !important; }
+html[data-ink] #desk .win.phone :is(.fbar, .flo, .lac, .selbar, .mbar, .misl, .cmbar4, .dnbar, .nfloat, .sutopr, .lfoot) :not(.av):not(.gav) { box-shadow: none !important; }
+html[data-ink] #desk .win.phone :is(.sutopr, .lfoot) { box-shadow: var(--dink-E) !important; background: var(--dink-sheet) !important; }
+html[data-ink] #desk .win.phone :is(.fbar, .flo) :is(.srch, .mfield, .seg) { background: transparent !important; }
+html[data-ink] #desk .win.phone .sidetabs { box-shadow: none !important; border: 0 !important; background: transparent !important; }
+/* the photographs and the faces: no ring; a face with no photo is its initials, drawn in ink inside a 2px circle */
+html[data-ink] #desk .win.phone :is(.av, .fav, .face, .cv, .mph, .thumb, .shot, .alb, .art) { filter: none; }
+html[data-ink] #desk .win.phone .av.face, html[data-ink] #desk .win.phone .av:has(img) { box-shadow: none !important; }
+html[data-ink] #desk .win.phone .av:not(.face):not(:has(img)) { background: var(--dink-sheet) !important; color: var(--dink-ink) !important; box-shadow: var(--dink-E) !important; }
+html[data-ink] #desk .win.phone :is(.on, .sel, .cur) > .av:not(.face):not(:has(img)) { background: var(--dink-ink) !important; color: var(--dink-sheet) !important; box-shadow: inset 0 0 0 2px var(--dink-sheet) !important; }
+/* a stack of faces overlaps with a paper knockout, never a line */
+html[data-ink] #desk .win.phone :is(.gav, .crstk, .nfaces, .crmav, .stk, .faces) > :is(.av, i) { box-shadow: 0 0 0 2px var(--dink-sheet) !important; }
+/* nothing fades: what was faint by opacity is the third ink, at full strength */
+html[data-ink] #desk .win.phone :is(.past, .out, .no, .dim, .muted, .done) { opacity: 1 !important; }
+html[data-ink] #desk .win.phone :is(.out, .no, .dim) { color: var(--dink-ink-3) !important; }
+html[data-ink] #desk .win.phone :is(.scroll, .lsafe, .tgl) { -webkit-mask-image: none !important; mask-image: none !important; }
+html[data-ink] #desk .win :is(.ytwash, .twash, .cfwash, .calwash, .ckwash, .mwash, .nwash) { display: none !important; }
+/* counts and badges are the fill */
+html[data-ink] #desk .win.phone :is(.badge, .pnbadge, .crunn, .lcount, .dbadge, .cnt, .nbadge) { background: var(--dink-ink) !important; color: var(--dink-sheet) !important; box-shadow: 0 0 0 2px var(--dink-sheet) !important; }
+/* a colour mark (a calendar, a tag, a dot) is ink on a mono panel; colour e-paper keeps its pigment */
+html[data-ink="mono"] #desk .win.phone :is(.pdots i, .pbar, .ccal i.round, .crdot, .tkdot, .fdot, .vdot, .lfmk, .dsksw, .rlfxdot, .onl2 i) { background: var(--dink-ink) !important; box-shadow: none !important; }
+/* the page stops where the bar's lane begins: below a floating bar is paper, not the list running on */
+html[data-ink] #desk .win.phone::after { display: block !important; content: "" !important; inset: auto 0 0 0 !important; height: 32px !important; border: 0 !important; border-radius: 0 !important; background: var(--dink-sheet) !important; z-index: 19 !important; }
+/* a key inside a card is that card's one action, so it is the fill */
+html[data-ink] #desk .win.phone :is(.lfc, .card, .ccard) .bt.sm.fill { background: var(--dink-ink) !important; color: var(--dink-sheet) !important; box-shadow: none !important; }
+html[data-ink] #desk .win.phone :is(.lfc, .card, .ccard) .bt.sm.fill :is(span, b, svg, i) { color: var(--dink-sheet) !important; }
