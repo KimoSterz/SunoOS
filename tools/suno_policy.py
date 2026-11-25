@@ -287,6 +287,28 @@ def rename_bundle_keys(simframe):
     return False
 
 
+def clean_runs(root):
+    """Tabela D.runs (gdzie aplikacja działa) — usuwa wpisy martwych aplikacji."""
+    p = os.path.join(root, 'apps', 'depot', 'world.js')
+    s = read(p)
+    m = re.search(r'(  tide: ALL,.*?\n)\};', s, re.S)
+    if not m:
+        return
+    ent = re.findall(r'([A-Za-z][\w-]*):\s*(ALL|MOB|PC|\[[^\]]*\])', m.group(1))
+    parts = ['%s: %s' % (k, v) for k, v in ent if k not in DEAD_IDS]
+    lines, cur = [], ''
+    for it in parts:
+        if cur and len(cur) + len(it) + 2 > 118:
+            lines.append('  ' + cur)
+            cur = it
+        else:
+            cur = (cur + ', ' + it) if cur else it
+    if cur:
+        lines.append('  ' + cur)
+    blk = ',\n'.join(lines) + ',\n'
+    diff_write(p, s[:m.start(1)] + blk + s[m.end(1):])
+
+
 def clean(root):
     simframe = root
     mock = os.path.join(root, 'mockups')
@@ -294,6 +316,7 @@ def clean(root):
     rename_bundle_keys(simframe)
     clean_catalogue(mock)
     clean_world(mock)
+    clean_runs(mock)
     clean_shell(mock)
     clean_depot_b(mock)
     clean_luma73(mock)

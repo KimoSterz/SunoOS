@@ -11,17 +11,16 @@ pozyskujemy bezpośrednio z serwisu. Szczegóły i pełna lista plików:
 
 ## Szybki start
 
-1. **Podgląd na żywo (bez pobierania):**
+1. **Podgląd na żywo (nasza, oczyszczona kopia):**
 
-   - gotowy link: [podgląd SunoOS](https://htmlpreview.github.io/?https://github.com/KimoSterz/SunoOS_2.0/blob/main/preview/index.html)
-   - albo wprost makieta Luma: <https://simplyluma.com/simframe/mockups/Suno-next-73.html?desktop=1&app=none&showcase=1&zoom=0.7950>
-
-   `preview/index.html` osadza makietę w iframe (serwis Luma na to pozwala —
-   nie wysyła `X-Frame-Options`).
-
-   Jeśli chcesz stały adres pod własną domeną GitHuba, włącz GitHub Pages:
-   *Settings → Pages → Branch: `main`, folder: `/preview`* — podgląd pojawi się
-   wtedy pod `https://kimosterz.github.io/SunoOS_2.0/`.
+   - <https://kimosterz.github.io/SunoOS_2.0/> — wymaga włączonego GitHub Pages:
+     *Settings → Pages → Branch: `main`, folder: `/preview`* (jednorazowo, ręcznie).
+   - Uwaga: podgląd przez htmlpreview (`preview/index.html`) bez włączonego Pages pokazuje
+     pasek awaryjny, a linki do **upstream (`simplyluma.com`) zawsze pokazują oryginalnego,
+     NIEOCZYSZCZONEGO Lumę** (z Inkscape/Audacity itd. w „all apps") — to nie nasza kopia.
+   - Lokalnie, bez Pages: `python3 tools/fetch_upstream.py`, potem
+     `python3 -m http.server -d simframe` i otwórz
+     `http://localhost:8000/mockups/Suno-next-73.html?desktop=1&app=none&showcase=1&zoom=0.7950`.
 
 2. **Pełna, lokalna kopia kodu makiety (zalecane do dalszej pracy):**
 

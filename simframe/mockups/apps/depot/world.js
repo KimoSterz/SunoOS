@@ -25,14 +25,13 @@ D.devices = [
 /* Where each app runs. Anything not listed runs on desktop and tablet. */
 const ALL = ['desktop', 'tablet', 'phone', 'tv', 'home'], PC = ['desktop', 'tablet'], MOB = ['desktop', 'tablet', 'phone'];
 D.runs = {
-  tide: ALL, photos: ['desktop', 'tablet', 'phone', 'tv'], youtube: ['desktop', 'tablet', 'phone', 'tv'], weather: ALL, clock: ALL,
-  calendar: ['desktop', 'tablet', 'phone', 'home'], messages: MOB, notes: MOB, contacts: MOB, charlie: MOB, filer: MOB, viola: MOB,
-  maps: MOB, camera: ['tablet', 'phone'], memos: MOB, tasks: ['desktop', 'tablet', 'phone', 'home'], leaf: MOB, viewer: MOB, ari: ALL,
-  calc: MOB, tipsplit: MOB, vault: MOB, write: MOB, grid: PC, stage: ['desktop', 'tablet', 'tv'], term: PC, canvas: PC, session: PC,
-  darkroom: PC, reel: PC, disks: ['desktop'], monitor: ['desktop'], valet: MOB,
-  spotify: ALL, vlc: ['desktop', 'tablet', 'phone', 'tv'], kodi: ['desktop', 'tv'], steam: ['desktop', 'tv'], moonlight: ['desktop', 'tablet', 'phone', 'tv'],
-  signal: MOB, telegram: MOB, discord: MOB, bitwarden: MOB, nextcloud: MOB, obsidian: MOB, firefox: MOB, zoom: MOB,
-  blender: ['desktop'], obs: ['desktop'], kdenlive: ['desktop'], audacity: ['desktop'], godot: ['desktop'], vscodium: ['desktop'], nvtop: ['desktop'],
+  tide: ALL, photos: ['desktop', 'tablet', 'phone', 'tv'], youtube: ['desktop', 'tablet', 'phone', 'tv'], weather: ALL,
+  clock: ALL, calendar: ['desktop', 'tablet', 'phone', 'home'], messages: MOB, notes: MOB, contacts: MOB, charlie: MOB,
+  filer: MOB, viola: MOB, maps: MOB, camera: ['tablet', 'phone'], memos: MOB,
+  tasks: ['desktop', 'tablet', 'phone', 'home'], leaf: MOB, viewer: MOB, ari: ALL, calc: MOB, tipsplit: MOB, vault: MOB,
+  write: MOB, grid: PC, stage: ['desktop', 'tablet', 'tv'], term: PC, canvas: PC, session: PC, darkroom: PC, reel: PC,
+  disks: ['desktop'], monitor: ['desktop'], valet: MOB, spotify: ALL, steam: ['desktop', 'tv'], discord: MOB,
+  obsidian: MOB, zoom: MOB,
 };
 /* What is already installed where (Luma Connect knows). Luma's own apps are on every device they run on. */
 D.installed = {
