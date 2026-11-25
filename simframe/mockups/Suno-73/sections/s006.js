@@ -618,7 +618,7 @@
     if (q('[data-tkdel]')) { const i = TKT.findIndex(t => t.id === TK.sel), t = TKT.splice(i, 1)[0]; $('#tk-pop')?.remove(); TK.sel = TKT.find(x => tkIn(x, TK.view) && !x.done)?.id || null; tkAll(); tkToast(`Deleted: ${t.t}`, () => { TKT.splice(i, 0, t); TK.sel = t.id; tkAll(); }); return true; }
     return false; }
   function tkComment() { const i = $('[data-tkcomment]'), t = tkTask(TK.sel); if (!i?.value.trim()) return; t.act.push(['me', 'c', i.value.trim(), 'Just now']); tkDetail(); tkMain(); const s = $('#tk-det .scr'); s.scrollTop = s.scrollHeight; }
-  function renderTasks() { $('#tk-top').innerHTML = `<img src="../icons/luma-v4-tasks.svg" alt=""><b>Tasks</b><span class="chev">${ic('chevron-down')}</span>`; tkAll(); }
+  function renderTasks() { $('#tk-top').innerHTML = `<img src="../icons/Suno-v4-tasks.svg" alt=""><b>Tasks</b><span class="chev">${ic('chevron-down')}</span>`; tkAll(); }
   document.addEventListener('input', e => { if (e.target.matches?.('[data-tkq]')) { TK.q = e.target.value; tkMain(); return; }
     if (e.target.matches?.('[data-tkadd]')) { TK.draft = e.target.value; const o = tkParse(e.target.value), c = $('#tk-chips'); if (!c) return;
       c.innerHTML = [o.due != null ? `<i>${ic('calendar')}${tkDay(o.due)}${o.time ? ', ' + o.time : ''}</i>` : o.time ? `<i>${ic('clock')}${o.time}</i>` : '', o.pri ? `<i style="color:${TKPRI[o.pri][1]}">${ic('flag')}${TKPRI[o.pri][0]}</i>` : '', o.l ? `<i><b class="tkdot" style="--h:${tkL(o.l).h}"></b>${tkL(o.l).n}</i>` : '', o.who ? `<i>${tkAv(o.who[0], 16)}${tkName(o.who[0])}</i>` : ''].join(''); }

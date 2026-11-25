@@ -56,7 +56,7 @@
 
   function face(it, cls = '') {
     if (it.kind === 'app') { const a = it.a;
-      if (a.icon) { const src = `${K.A}${a.icon}.svg`; return `<i class="db-face ${cls}" style="background-image:url(${document.documentElement.dataset.ink ? src.replace('luma-v4-', 'luma-ink-') : src})"></i>`; }
+      if (a.icon) { const src = `${K.A}${a.icon}.svg`; return `<i class="db-face ${cls}" style="background-image:url(${document.documentElement.dataset.ink ? src.replace('Suno-v4-', 'Suno-ink-') : src})"></i>`; }
       if (a.mark) return `<i class="db-face mark ${cls}" style="--mk:${a.mark.bg}"><img src="apps/depot/marks/${a.mark.file}.svg" alt=""></i>`;
       return `<i class="db-face mono ${cls}" style="--h:${it.hue}">${esc(a.name.slice(0, 2))}</i>`; }
     if (it.kind === 'look') { const x = it.x;

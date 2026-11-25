@@ -342,9 +342,9 @@
   }
   const S = { mode: ['dark', 'light'].includes(QS.get('mode')) ? QS.get('mode') : QS.get('desktop') ? store.get('deskmode', 'dark') : store.get('mode', 'dark'),   /* ?mode=light, for links from the Design Center */ mat: store.get('mat', 'solid') === 'frost' ? 'frost' : 'solid',
     ink: ['mono', 'colour'].includes(QS.get('ink')) ? QS.get('ink') : '' };   /* D-Ink: ?ink=mono|colour, or the review bar's switch; never remembered */
-  /* D-Ink swaps every v4 app icon for its ink line drawing while it is on (icons/luma-ink-*), including ones apps draw later. */
+  /* D-Ink swaps every v4 app icon for its ink line drawing while it is on (icons/Suno-ink-*), including ones apps draw later. */
   let inkMO = null;
-  const inkSwap = root => (root.matches?.('img') ? [root] : [...root.querySelectorAll?.('img[src*="luma-v4-"], img[src*="luma-ink-"]') || []]).forEach(im => { const s = im.getAttribute('src'), t = S.ink ? s.replace('luma-v4-', 'luma-ink-') : s.replace('luma-ink-', 'luma-v4-'); if (t !== s) im.setAttribute('src', t); });
+  const inkSwap = root => (root.matches?.('img') ? [root] : [...root.querySelectorAll?.('img[src*="Suno-v4-"], img[src*="Suno-ink-"]') || []]).forEach(im => { const s = im.getAttribute('src'), t = S.ink ? s.replace('Suno-v4-', 'Suno-ink-') : s.replace('Suno-ink-', 'Suno-v4-'); if (t !== s) im.setAttribute('src', t); });
   function inkApply() { if (S.ink) document.documentElement.dataset.ink = S.ink; else delete document.documentElement.dataset.ink; inkSwap(document.body);
     if (!inkMO) { inkMO = new MutationObserver(ms => { if (!S.ink) return; ms.forEach(m => m.addedNodes.forEach(n => { if (n.nodeType === 1) inkSwap(n); })); }); inkMO.observe(document.body, { childList: true, subtree: true }); }
     $$('[data-set-ink]').forEach(b => b.classList.toggle('on', b.dataset.setInk === S.ink)); window.lumaShell?.ink?.(S.ink); window.lumaPhone?.ink?.(S.ink); }

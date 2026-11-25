@@ -28,7 +28,7 @@
     panel: 'members', panelOn: true, isl: false, reply: null, grow: null, sel: null, q: '', typing: null, speak: 'TH', bell: {}, draft: '' };
   let K = null, W = null, RO = null, lastShape = '', speakT = 0;
   const D = () => window.DISCORD_DATA;
-  const PHOTO = '../social-luma/photos/';
+  const PHOTO = '../social-suno/photos/';
 
   /* ── small parts ── */
   const q$ = s => W && W.querySelector(s);

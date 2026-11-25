@@ -378,7 +378,7 @@
      A YouTube client: browse (Home, Subscriptions, a channel, search), keep (Watch later,
      History, Liked, playlists) and watch. One player state for the whole app, so a video
      keeps playing in the bar while you browse. */
-  const YLP = '../social-luma/launch/photos/';
+  const YLP = '../social-suno/launch/photos/';
   const YCH = {
     field: { n: 'Field Notes', h: '@fieldnotes', av: [PH + 'life-ari-street.webp', '55% 16%'], subs: '1.24M', ban: [PH + 'life-suite-bg-darkroom.webp', '50% 45%'], about: 'Photography on foot and on film. A new walk every other Sunday.', v: 1 },
     sess: { n: 'Studio Sessions', h: '@studiosessions', av: [YLP + 'studio-suite.webp', '42% 22%'], subs: '612K', ban: [PH + 'life-suite-bg-sessions.webp', '50% 40%'], about: 'Live music from small rooms. No overdubs, no second takes.', v: 1 },
@@ -389,7 +389,7 @@
     kitchen: { n: 'Small Kitchen', h: '@smallkitchen', av: [YLP + 'tablet-cafe.webp', '50% 40%'], subs: '97K', ban: [PH + 'life-hero-home.webp', '50% 50%'], about: 'Weeknight cooking for two, and bread on Sundays.' },
     coop: { n: 'Couch Co-op', h: '@couchcoop', av: [YLP + 'gamers-evening.webp', '55% 30%'], subs: '431K', ban: [YLP + 'gamers-evening.webp', '50% 40%'], about: 'Games to play with the people on your sofa.' },
     build: { n: 'The Long Build', h: '@thelongbuild', av: [YLP + 'creatives-painter.webp', '50% 25%'], subs: '176K', ban: [YLP + 'scene-tablet-print.webp', '50% 50%'], about: 'Workshops, studios and the people who keep them.' },
-    luma: { n: 'Luma', h: '@simplyluma', logo: '../social-luma/brand/luma-logo-light.svg', subs: '48.2K', ban: [YLP + 'hero-field.webp', '50% 50%'], about: 'A better computer. Free and open source.', v: 1 },
+    luma: { n: 'Luma', h: '@simplyluma', logo: '../social-suno/brand/luma-logo-light.svg', subs: '48.2K', ban: [YLP + 'hero-field.webp', '50% 50%'], about: 'A better computer. Free and open source.', v: 1 },
   };
   /* id, channel, title, picture, position, length (s), views, when, hue, watched (0..1) */
   const YV = [

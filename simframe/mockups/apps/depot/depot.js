@@ -62,7 +62,7 @@
   /* faces */
   function face(it, cls = '') {
     if (it.kind === 'app') { const a = it.a;
-      if (a.icon) { const src = `${K.A}${a.icon}.svg`; return `<i class="dq-face ${cls}" style="background-image:url(${document.documentElement.dataset.ink ? src.replace('luma-v4-', 'luma-ink-') : src})"></i>`; }
+      if (a.icon) { const src = `${K.A}${a.icon}.svg`; return `<i class="dq-face ${cls}" style="background-image:url(${document.documentElement.dataset.ink ? src.replace('Suno-v4-', 'Suno-ink-') : src})"></i>`; }
       if (a.mark) return `<i class="dq-face mark ${cls}" style="--mk:${a.mark.bg}"><img src="apps/depot/marks/${a.mark.file}.svg" alt=""></i>`;
       return `<i class="dq-face mono ${cls}" style="--h:${it.hue}">${esc(a.name.slice(0, 2))}</i>`; }
     if (it.kind === 'look') { const x = it.x;
@@ -160,7 +160,7 @@
 
   /* Made for Luma: one family, presented as one thing */
   function suite() { const its = D().apps.filter(a => a.dev === 'Luma' && a.pk !== 'system').map(a => item('app', a.id)).filter(runsHere).slice(0, 16);
-    return `<section class="dq-suite"><div class="dq-suitx"><img src="assets/luma-favicon.svg" alt=""><h2>Made for Luma</h2><p>Free, private, and they work together: what you start on one device is waiting on the next.</p><span>${its.length} apps · all free</span></div>
+    return `<section class="dq-suite"><div class="dq-suitx"><img src="assets/Suno-favicon.svg" alt=""><h2>Made for Luma</h2><p>Free, private, and they work together: what you start on one device is waiting on the next.</p><span>${its.length} apps · all free</span></div>
       <div class="dq-suitg">${its.map(it => `<button type="button" class="dq-sapp" data-dq-item="app:${it.id}">${face(it)}<small>${esc(it.name)}</small></button>`).join('')}</div></section>`; }
 
   function today() { const t = D().today;

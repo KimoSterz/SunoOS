@@ -330,10 +330,10 @@
 
 /* v4 icons carry their own squircle, rim and light. The tile adds no second corner, ring or highlight on top
    (two radii that never quite agree), and the shadow follows the artwork's own edge. */
-.dapp .ic[style*="luma-v4-"] { border-radius: 0; corner-shape: round; box-shadow: none !important; filter: drop-shadow(0 .5px 0 rgba(0,0,0,.2)) drop-shadow(0 3px 3px rgba(0,0,0,.26)); }
-.dapp .ic[style*="luma-v4-"]::after { display: none; }
-.dapp:hover .ic[style*="luma-v4-"] { filter: drop-shadow(0 .5px 0 rgba(0,0,0,.2)) drop-shadow(0 3px 3px rgba(0,0,0,.26)) brightness(1.06); }
-.dapp:active .ic[style*="luma-v4-"] { filter: drop-shadow(0 .5px 0 rgba(0,0,0,.2)) drop-shadow(0 3px 3px rgba(0,0,0,.26)) brightness(.9); }
+.dapp .ic[style*="Suno-v4-"] { border-radius: 0; corner-shape: round; box-shadow: none !important; filter: drop-shadow(0 .5px 0 rgba(0,0,0,.2)) drop-shadow(0 3px 3px rgba(0,0,0,.26)); }
+.dapp .ic[style*="Suno-v4-"]::after { display: none; }
+.dapp:hover .ic[style*="Suno-v4-"] { filter: drop-shadow(0 .5px 0 rgba(0,0,0,.2)) drop-shadow(0 3px 3px rgba(0,0,0,.26)) brightness(1.06); }
+.dapp:active .ic[style*="Suno-v4-"] { filter: drop-shadow(0 .5px 0 rgba(0,0,0,.2)) drop-shadow(0 3px 3px rgba(0,0,0,.26)) brightness(.9); }
 
 /* Quick Options foot: the Experience picker on the left (Desktop ⌄), Settings, Lock and Power on the right, under a full-width rule */
 .k-qs .q2f { justify-content: flex-start; gap: 4px; padding-top: 12px; margin-top: 4px; box-shadow: inset 0 1px 0 var(--line); } .k-qs .q2f::before { display: none; } .k-qs .q2f .sp { display: block; flex: 1; }

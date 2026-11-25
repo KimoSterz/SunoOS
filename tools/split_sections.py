@@ -6,8 +6,8 @@ file, the entry files reassemble the exact same text (join == original,
 verified by sha256 before anything is written), CSS is re-imported in the
 same order via @import, and no HTML or markup changes at all.
 
-- luma-73.js        -> tiny loader + luma-73/sections/sNNN.js
-- luma-73.css       -> @import manifest + luma-73/sections/sNNN.css
+- Suno-73.js        -> tiny loader + Suno-73/sections/sNNN.js
+- Suno-73.css       -> @import manifest + Suno-73/sections/sNNN.css
 - desktop/shell.js  -> tiny loader + desktop/shell/sections/sNNN.js
 - desktop/shell.css -> @import manifest + desktop/shell/sections/sNNN.css
 
@@ -23,8 +23,8 @@ import re
 import sys
 
 TARGETS = [
-    ('luma-73.js', 128000),
-    ('luma-73.css', 128000),
+    ('Suno-73.js', 128000),
+    ('Suno-73.css', 128000),
     ('desktop/shell.js', 60000),
     ('desktop/shell.css', 60000),
 ]

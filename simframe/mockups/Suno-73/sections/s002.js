@@ -423,7 +423,7 @@
      lists them (as Charlie's lists mail accounts); Add account opens the details pane on the networks, then the network's own page:
      what it does, the honest caveat, and its one way in. Google Messages signs in like Messages for web; the phone stays the sender. */
   const MNETS = [['gm', 'Google Messages', 'Texts and RCS from your Android phone'], ['wa', 'WhatsApp', 'Link Luma as one of your devices'], ['sg', 'Signal', 'Link Luma as one of your devices'], ['tg', 'Telegram', 'Unofficial client · a code or your number']];
-  const mNet = (k, lg) => `<span class="mnet ${k}${lg ? ' lg' : ''}">${k === 'gm' ? '<img src="apps/marks/google-messages.svg" alt="">' : k === 'wa' ? '<img src="../social-luma/apps/whatsapp.svg" alt="">' : k === 'luma' ? `<img src="${FAV}" alt="">` : k === 'sms' ? ic('smartphone') : ''}</span>`;
+  const mNet = (k, lg) => `<span class="mnet ${k}${lg ? ' lg' : ''}">${k === 'gm' ? '<img src="apps/marks/google-messages.svg" alt="">' : k === 'wa' ? '<img src="../social-suno/apps/whatsapp.svg" alt="">' : k === 'luma' ? `<img src="${FAV}" alt="">` : k === 'sms' ? ic('smartphone') : ''}</span>`;
   Object.assign(PPL, { MC: { n: 'Maya Chen', u: null, phone: '+1 (415) 555-0187', h: 300 }, BO: { n: 'Ben Ortiz', u: null, phone: '+1 (510) 555-0119', h: 195 }, GR: { n: 'Grace Lee', u: null, phone: '+1 (628) 555-0164', h: 25 } });
   const GCONVOS = [
     { id: 'g-maya', dm: 'MC', gm: true, unread: 2, msgs: [m('MC', 'Can you send me the photos from Saturday?', { day: 'Today', at: '11:24 AM' }), m('MC', 'The ones from the lake especially 🙏', { at: '11:24 AM' })] },

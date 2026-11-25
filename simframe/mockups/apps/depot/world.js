@@ -83,7 +83,7 @@ D.tweaks = [
 
 /* Today: Luma's editors, one story each, in this order. */
 D.today = [
-  { kind: 'everywhere', kick: 'One library, every screen', title: 'Tide follows you from desk to sofa', blurb: 'Start an album at your desk, keep it going on your phone, finish it on the TV. One library, no subscriptions.', app: 'tide', art: '../social-luma/photos/pet-sounds.webp', hue: 25 },
+  { kind: 'everywhere', kick: 'One library, every screen', title: 'Tide follows you from desk to sofa', blurb: 'Start an album at your desk, keep it going on your phone, finish it on the TV. One library, no subscriptions.', app: 'tide', art: '../social-suno/photos/pet-sounds.webp', hue: 25 },
   { kind: 'look', kick: 'Look of the week', look: 'ember' },
   { kind: 'tweak', kick: 'Tweak of the week', tweak: 'battery-care', blurb: 'Laptops that live on a charger wear their battery out fastest. Battery Care holds it at 80% until you unplug.' },
   { kind: 'switch', kick: 'Coming from Windows or a Mac', title: 'Type the name you know' },

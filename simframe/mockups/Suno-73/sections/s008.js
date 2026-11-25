@@ -181,7 +181,7 @@
     $('#ts-ppl').innerHTML = Array.from({ length: Math.min(TS.n, 16) }, (_, i) => `<i style="animation-delay:${i * 18}ms"></i>`).join('');
     $$('#ts-body [data-tstip]').forEach(b => b.classList.toggle('on', +b.dataset.tstip === TS.tip)); placeInd($('#ts-body .seg'));
     $('#ts-body [data-tsp="-1"]').disabled = TS.n <= 1; $('#ts-body [data-tsp="1"]').disabled = TS.n >= 20; }
-  function renderTip() { $('#ts-top').innerHTML = `<span class="tstitle"><img src="../icons/luma-v4-tipsplit.svg" alt=""><b>Tip Split</b></span>`;
+  function renderTip() { $('#ts-top').innerHTML = `<span class="tstitle"><img src="../icons/Suno-v4-tipsplit.svg" alt=""><b>Tip Split</b></span>`;
     $('#ts-body').innerHTML = `<div class="isle tsdisp"><small id="ts-who">Each person pays</small><b class="tseach" id="ts-each"></b>
         <p class="tsline"><span>Tip <b id="ts-tip"></b></span><span>Total <b id="ts-total"></b></span></p><span class="tsppl" id="ts-ppl" aria-hidden="true"></span></div>
       <label class="tsrow"><span>Bill</span><span class="tsin">$<input id="ts-bill" inputmode="decimal" autocomplete="off" spellcheck="false" value="${TS.bill.toFixed(2)}" aria-label="Bill"></span></label>

@@ -9,7 +9,7 @@ Tworzy/pelni katalog `simframe/` i zapisuje wszystkie pliki makiety
 (HTML makiety desktop/tablet/phone, shell.js, shell.css, ikony, fonty,
 tapeta, zdjęcia), wypisując SHA-256 każdego pobranego pliku.
 
-Uwaga: ogromny plik luma-next-73.html (~0.7 MB, makieta "Try it yourself"
+Uwaga: ogromny plik Suno-next-73.html (~0.7 MB, makieta "Try it yourself"
 ze strony glownej) jest pobierany z parametrami podgladu showcase.
 """
 
@@ -22,13 +22,15 @@ import urllib.request
 BASE = "https://simplyluma.com/simframe"
 ROOT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "simframe")
 
-SHOWCASE_URL = BASE + "/mockups/luma-next-73.html?desktop=1&app=none&showcase=1&zoom=0.7950"
+# Upstream serwuje pliki pod nazwami `luma…`; w repo zapisujemy je pod nazwami `Suno…`.
+LUMA_HTML = "luma-next-73.html"
+SHOWCASE_URL = BASE + "/mockups/" + LUMA_HTML + "?desktop=1&app=none&showcase=1&zoom=0.7950"
 
 # (url, sciezka_docelowa_wzgedem_simframe/)
 FILES = [
-    (SHOWCASE_URL, "mockups/luma-next-73.html"),
-    (BASE + "/mockups/luma-73.js", "mockups/luma-73.js"),
-    (BASE + "/mockups/luma-73.css", "mockups/luma-73.css"),
+    (SHOWCASE_URL, "mockups/Suno-next-73.html"),
+    (BASE + "/mockups/luma-73.js", "mockups/Suno-73.js"),
+    (BASE + "/mockups/luma-73.css", "mockups/Suno-73.css"),
     (BASE + "/mockups/dink.css", "mockups/dink.css"),
     (BASE + "/mockups/dink-apps.css", "mockups/dink-apps.css"),
     (BASE + "/mockups/studio.html", "mockups/studio.html"),
@@ -53,7 +55,7 @@ FILES = [
     (BASE + "/mockups/apps/discord/discord.js", "mockups/apps/discord/discord.js"),
     (BASE + "/mockups/apps/discord/data.js", "mockups/apps/discord/data.js"),
     (BASE + "/mockups/apps/discord/discord.css", "mockups/apps/discord/discord.css"),
-    (BASE + "/mockups/assets/luma-favicon.svg", "mockups/assets/luma-favicon.svg"),
+    (BASE + "/mockups/assets/luma-favicon.svg", "mockups/assets/Suno-favicon.svg"),
     (BASE + "/icons/_bundle.json", "icons/_bundle.json"),
     (BASE + "/fonts/figtree/figtree.css", "fonts/figtree/figtree.css"),
     (BASE + "/fonts/figtree/figtree-latin.woff2", "fonts/figtree/figtree-latin.woff2"),
@@ -103,29 +105,44 @@ def save(rel, data):
     return sha
 
 
+def rename_bundle_data(raw):
+    d = json.loads(raw.decode("utf-8"))
+    out = {}
+    for k, v in d.items():
+        if k.startswith("luma-v4-"):
+            k = "Suno-v4-" + k[len("luma-v4-"):]
+        elif k.startswith("luma-ink-"):
+            k = "Suno-ink-" + k[len("luma-ink-"):]
+        out[k] = v
+    return json.dumps(out, separators=(",", ":")).encode("utf-8")
+
+
 def main():
     ok, missing = 0, []
     for url, rel in FILES:
         try:
-            save(rel, fetch(url))
+            data = fetch(url)
+            if rel.endswith("_bundle.json"):
+                data = rename_bundle_data(data)
+            save(rel, data)
             ok += 1
         except Exception as e:
             print(f"POMINIETO {url}: {e}", file=sys.stderr)
             missing.append(rel)
 
     for name in PHOTOS:
-        rel = f"social-luma/photos/{name}.webp"
+        rel = f"social-suno/photos/{name}.webp"
         try:
-            save(rel, fetch(BASE + "/" + rel))
+            save(rel, fetch(BASE + "/social-luma/photos/" + name + ".webp"))
             ok += 1
         except Exception as e:
             print(f"POMINIETO {rel}: {e}", file=sys.stderr)
             missing.append(rel)
 
     for name in APP_ICONS:
-        rel = f"icons/luma-v4-{name}.svg"
+        rel = f"icons/Suno-v4-{name}.svg"
         try:
-            save(rel, fetch(BASE + "/" + rel))
+            save(rel, fetch(BASE + "/icons/luma-v4-" + name + ".svg"))
             ok += 1
         except Exception as e:
             print(f"POMINIETO {rel}: {e}", file=sys.stderr)
@@ -155,11 +172,11 @@ def main():
             ok += 1
 
     # Polityka zawartosci SunoOS: odfiltruj nieaktywne aplikacje i ikony,
-    # potem podziel monolity na sekcje (luma_policy + split_sections).
+    # potem podziel monolity na sekcje (suno_policy + split_sections).
     try:
-        import luma_policy
+        import suno_policy
         import split_sections
-        pruned = luma_policy.clean(ROOT)
+        pruned = suno_policy.clean(ROOT)
         res = split_sections.split(os.path.join(ROOT, "mockups"))
         with open(os.path.join(ROOT, "mockups", "sections.json"), "w", encoding="utf-8") as f:
             json.dump(res, f, indent=2)

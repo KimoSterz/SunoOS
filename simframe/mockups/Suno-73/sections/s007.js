@@ -113,7 +113,7 @@
     if (q('[data-dskdelgo]')) { dskRun(`Deleting ${s.n}`, 900, () => { d.vols.splice(DSS.vol, 1); DSS.vol = Math.max(0, DSS.vol - 1); dskToast('Deleted. The space is free'); }); return true; }
     if (q('[data-dskoff]')) { $('#dsk-pop')?.remove(); const i = DSK.indexOf(d); DSK.splice(i, 1); DSS.cur = DSK[0].id; DSS.vol = 2; DSS.bench = null; DSS.test = null; dskAll(); dskToast(`${d.n} ${d.kind === 'iso' ? 'detached' : 'is powered off'}`); return true; }
     return false; }
-  function renderDisks() { $('#dsk-top').innerHTML = `<img src="../icons/luma-v4-disks.svg" alt=""><b>Disks</b><span class="chev">${ic('chevron-down')}</span>`; dskAll(); }
+  function renderDisks() { $('#dsk-top').innerHTML = `<img src="../icons/Suno-v4-disks.svg" alt=""><b>Disks</b><span class="chev">${ic('chevron-down')}</span>`; dskAll(); }
   document.addEventListener('input', e => { if (e.target.matches?.('[data-dsktyped]')) { DSS.f.typed = e.target.value; const d = dskD(), s = dskSegs(d)[DSS.vol], want = DSS.sheet === 'disk' ? d.n : s.n; $('[data-dskgo]').disabled = e.target.value !== want; }
     if (e.target.matches?.('[data-dskname]') && DSS.f) DSS.f.name = e.target.value;
     if (e.target.matches?.('[data-dsksize]')) { DSS.f.size = +e.target.value; e.target.previousElementSibling.querySelector('em').textContent = `${dskSize(DSS.f.size)} of ${dskSize(dskSegs(dskD())[DSS.vol].size)}`; }
@@ -545,7 +545,7 @@
   FPFS.recent = { n: 'Recent', items: [['documents', 2], ['desktop', 0], ['pictures', 1], ['downloads', 2], ['launch', 0], ['downloads', 3], ['documents', 4]].map(([f, i]) => ({ ...FPFS[f].items[i], where: FPFS[f].n })) };
   const FPS = { // who is asking, and for what
     'write-open': { app: 'Write', icon: A + 'documents.svg', ask: 'Open a document', mode: 'open', start: 'recent', filter: 'docs' },
-    'photos-add': { app: 'Photos', icon: '../icons/luma-v4-photos.svg', ask: 'Add photos', mode: 'open', start: 'pictures', filter: 'images' },
+    'photos-add': { app: 'Photos', icon: '../icons/Suno-v4-photos.svg', ask: 'Add photos', mode: 'open', start: 'pictures', filter: 'images' },
     'viewer-open': { app: 'Viewer', icon: A + 'viewer.svg', ask: 'Open an image', mode: 'open', start: 'pictures', filter: 'images' },
     'tide-folder': { app: 'Tide', icon: A + 'music.svg', ask: 'Add a music folder', mode: 'folder', start: 'music' },
     'browser-save': { app: 'Browser', icon: A + 'browser.svg', ask: 'Save download', mode: 'save', start: 'downloads', name: 'Luma launch deck.pdf', fmts: ['PDF'] },

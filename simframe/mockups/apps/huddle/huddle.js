@@ -230,6 +230,6 @@
   function compact(cls) { const F = followed(); if (!F.length) return ''; const old = asOf();
     return F.slice(0, 3).map(g => { const s = status(g); return `<span class="hd-mini ${cls || ''} k-${s.k}${old && ['live', 'delay'].includes(g.st) ? ' old' : ''}">${badge(g.away, 'xs')}<b class="${leads(g, 'away') ? 'lead' : ''}">${scored(g) ? g.as : g.away}</b><i>${scored(g) ? '–' : '@'}</i><b class="${leads(g, 'home') ? 'lead' : ''}">${scored(g) ? g.hs : g.home}</b>${badge(g.home, 'xs')}<small>${esc(s.k === 'live' || s.k === 'delay' ? s.when : s.pill)}</small></span>`; }).join(''); }
   function nowTile() { if (!ST.follow) loadFollow(); const F = followed(); if (!F.length) return '';
-    return `<div class="lt hd-lt" data-open="huddle"><span class="pic hd-pic"><img src="${(K && K.A) || '../icons/luma-v4-'}huddle.svg" alt=""></span><span class="tx hd-ltx">${compact('inow')}</span></div>`; }
+    return `<div class="lt hd-lt" data-open="huddle"><span class="pic hd-pic"><img src="${(K && K.A) || '../icons/Suno-v4-'}huddle.svg" alt=""></span><span class="tx hd-ltx">${compact('inow')}</span></div>`; }
   window.LumaHuddle = { render, click, state: ST, followed, status, badge, teams: TEAMS, fresh, freshLine, compact, nowTile, toggle, open: id => { go(id || 'following'); } };
 })();

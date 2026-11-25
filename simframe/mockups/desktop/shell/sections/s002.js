@@ -273,7 +273,7 @@
     dnd(v) { S.dnd = !!v; renderStatus(); if (NS === 'has' || NS === 'idle') rest(); refreshPop(); },
     notify(n) { notify(n); },
     /* D-Ink: the shelf in ink (desktop/dink-shell.css); the dock redraws so it picks up the ink icons */
-    ink(v) { v = v || ''; if ((S.ink || '') === v) return; S.ink = v; IC = U(v ? '../icons/luma-ink-' : '../icons/luma-v4-'); if (v) scr.dataset.ink = v; else delete scr.dataset.ink; if (v && !ROOT.querySelector('#dinkcss')) { const l = document.createElement('link'); l.id = 'dinkcss'; l.rel = 'stylesheet'; l.href = 'desktop/dink-shell.css'; ROOT.prepend(l); } renderDock(); renderStatus(); try { refreshPop(); } catch (e) {} },
+    ink(v) { v = v || ''; if ((S.ink || '') === v) return; S.ink = v; IC = U(v ? '../icons/Suno-ink-' : '../icons/Suno-v4-'); if (v) scr.dataset.ink = v; else delete scr.dataset.ink; if (v && !ROOT.querySelector('#dinkcss')) { const l = document.createElement('link'); l.id = 'dinkcss'; l.rel = 'stylesheet'; l.href = 'desktop/dink-shell.css'; ROOT.prepend(l); } renderDock(); renderStatus(); try { refreshPop(); } catch (e) {} },
     state: S, tick() { tickClock(); renderStatus(); }, tray: () => openTray(), notify: n => notify(n) };   // state/tick: for Studio checks
   if (document.documentElement.dataset.ink) window.lumaShell.ink(document.documentElement.dataset.ink);
   L.ready();

@@ -67,7 +67,7 @@
 
   function face(it, cls = '') {
     if (it.kind === 'app') { const a = it.a;
-      if (a.icon) { const src = `${K.A}${a.icon}.svg`; return `<i class="dpd-face ${cls}" style="background-image:url(${document.documentElement.dataset.ink ? src.replace('luma-v4-', 'luma-ink-') : src})"></i>`; }
+      if (a.icon) { const src = `${K.A}${a.icon}.svg`; return `<i class="dpd-face ${cls}" style="background-image:url(${document.documentElement.dataset.ink ? src.replace('Suno-v4-', 'Suno-ink-') : src})"></i>`; }
       if (a.mark) return `<i class="dpd-face mark ${cls}" style="--mk:${a.mark.bg}"><img src="apps/depot/marks/${a.mark.file}.svg" alt=""></i>`;
       return `<i class="dpd-face mono ${cls}" style="--h:${it.hue}">${esc(a.name.slice(0, 2))}</i>`; }
     if (it.kind === 'look') { const x = it.x;
@@ -114,7 +114,7 @@
     el.innerHTML = `<div class="scr">${si('discover', 'Discover', 'compass')}${si('updates', 'Updates', 'refresh-cw', n ? K.lCount(n, true) : '')}${si('luma', 'Your Luma', 'layers')}
       <div class="sh dpsh dpd-libh"><span>${dv ? `On ${esc(dv.name)}` : 'Everything you have'}</span><button class="ib" type="button" data-dpd-libmenu aria-label="Show what's on one device" title="Show what's on one device">${ic(dv ? formOf(dv.form).icon : 'monitor-smartphone')}</button></div>
       ${A.map(lrow).join('') || `<p class="dpd-sempty">Nothing added on ${esc(dv?.name || 'it')} yet</p>`}
-      ${AL.length ? `<button class="si dpd-lib dpd-lumarow" type="button" data-dpd-lumaapps aria-expanded="${!!ST.lumaOpen}"><img src="assets/luma-favicon.svg" alt=""><span class="lab">Luma's apps</span><em>${AL.length}</em>${ic(ST.lumaOpen ? 'chevron-down' : 'chevron-right')}</button>${ST.lumaOpen ? AL.map(lrow).join('') : ''}` : ''}
+      ${AL.length ? `<button class="si dpd-lib dpd-lumarow" type="button" data-dpd-lumaapps aria-expanded="${!!ST.lumaOpen}"><img src="assets/Suno-favicon.svg" alt=""><span class="lab">Luma's apps</span><em>${AL.length}</em>${ic(ST.lumaOpen ? 'chevron-down' : 'chevron-right')}</button>${ST.lumaOpen ? AL.map(lrow).join('') : ''}` : ''}
       ${LT.length ? `<div class="sh">Looks and Tweaks</div>${LT.map(lrow).join('')}` : ''}
       <div class="sh">Made by you</div>${ST.mine.map((s, i) => `<button class="si dpd-lib${ST.page === 'sub' && ST.sub === i && !ST.item ? ' on' : ''}" type="button" data-dpd-sub="${i}">${glyph(s.icon, s.hue, 'xs')}<span class="lab">${esc(s.name)}</span><i class="dpd-st st-${s.state}" title="${{ review: 'In review', checks: 'Checking', live: 'In Depot', changes: 'Needs changes' }[s.state]}"></i></button>`).join('')}</div>
       <div class="shead sfoot dpfoot"><label class="srch">${ic('search')}<input id="dpd-q" type="search" placeholder="Search Depot" aria-label="Search Depot" value="${esc(ST.q)}" autocomplete="off" spellcheck="false"></label><button class="dpd-newsq" type="button" data-dpd-newmenu aria-label="Send something new" title="Send something new">${ic('square-pen')}</button></div>`;

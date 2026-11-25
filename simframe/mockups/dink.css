@@ -1,5 +1,5 @@
 /* ══════════════════════════════════════════════════════════════════════════
-   D-Ink — digital ink, on the simulator (luma-next-73.html).
+   D-Ink — digital ink, on the simulator (Suno-next-73.html).
 
    The appearance from archive/fable-design-center/dink.css, carried onto the
    current shell: a reflective, outline-first look that sits beside Light and
@@ -21,7 +21,7 @@
 
    The desktop shell and the phone shell draw in their own shadow roots and
    carry the same rules in desktop/dink-shell.css and desktop/dink-phone.css.
-   Icons: the v4 set redrawn as ink line drawings (icons/luma-ink-*.svg, from
+   Icons: the v4 set redrawn as ink line drawings (icons/Suno-ink-*.svg, from
    mockups/ink-icons.py); the simulator swaps them in while D-Ink is on.
    ══════════════════════════════════════════════════════════════════════════ */
 

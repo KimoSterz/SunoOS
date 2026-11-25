@@ -1,30 +1,30 @@
 {
-  "luma-73.js": {
-    "entry": "luma-73.js",
-    "sections": "luma-73/sections",
+  "Suno-73.js": {
+    "entry": "Suno-73.js",
+    "sections": "Suno-73/sections",
     "count": 14,
     "bytes": 1729449,
-    "sha": "9ad10b41d070c3bc"
+    "sha": "a5be86cfece92543"
   },
-  "luma-73.css": {
-    "entry": "luma-73.css",
-    "sections": "luma-73/sections",
+  "Suno-73.css": {
+    "entry": "Suno-73.css",
+    "sections": "Suno-73/sections",
     "count": 10,
     "bytes": 1155941,
-    "sha": "a9619ff146bbb103"
+    "sha": "5bac269a7921db10"
   },
   "desktop/shell.js": {
     "entry": "desktop/shell.js",
     "sections": "desktop/shell/sections",
     "count": 2,
     "bytes": 103796,
-    "sha": "6faeb511c00be700"
+    "sha": "467de5038cd5f122"
   },
   "desktop/shell.css": {
     "entry": "desktop/shell.css",
     "sections": "desktop/shell/sections",
     "count": 3,
     "bytes": 161260,
-    "sha": "aa2414860ffd3791"
+    "sha": "7726b6d3b3d1e136"
   }
 }

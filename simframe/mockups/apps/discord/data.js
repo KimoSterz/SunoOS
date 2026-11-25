@@ -2,7 +2,7 @@
    People with a key in the simulator's PPL (PR, NF, SK, TH, AR, JK, CL, me) keep their faces; the rest are drawn
    from their initials. Times are the simulator's day. */
 (() => {
-  const P = '../social-luma/photos/';
+  const P = '../social-suno/photos/';
   let id = 1;
   const m = (from, t, x = {}) => ({ id: id++, from, t, at: x.at || '9:41 PM', ...x });
 
@@ -12,7 +12,7 @@
     RB: { n: 'Rosa Bell', u: 'rosab', h: 15 },
     KO: { n: 'Kofi Owusu', u: 'kofi', h: 130 },
     OW: { n: 'Owlbot', u: 'owlbot', h: 265, bot: true },
-    LB: { n: 'Luma', u: 'luma', h: 25, bot: true, img: 'assets/luma-favicon.svg' },
+    LB: { n: 'Luma', u: 'luma', h: 25, bot: true, img: 'assets/Suno-favicon.svg' },
     EM: { n: 'Emma Lindqvist', u: 'emma.l', h: 300 },
     WS: { n: 'Wes Ortega', u: 'wes', h: 75 },
   };
@@ -70,7 +70,7 @@
       ],
       members: ['DV', 'EM', 'me', 'WS', 'AR'] },
 
-    { id: 'luma', n: 'Luma', h: 28, icon: 'assets/luma-favicon.svg', last: 'announcements', mentions: 0, unreadDot: true,
+    { id: 'luma', n: 'Luma', h: 28, icon: 'assets/Suno-favicon.svg', last: 'announcements', mentions: 0, unreadDot: true,
       roles: [['Luma team', 'LB', 'oklch(0.78 0.14 45)'], ['Members', null, null]], roleOf: { LB: 'Luma team', NF: 'Luma team' },
       cats: [
         { n: 'Start here', chs: [

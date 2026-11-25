@@ -19,7 +19,7 @@ ACTIVE_X = {'spotify', 'discord', 'obsidian', 'zoom', 'steam'}
 TRAY_DEAD = {'nextcloud', 'bitwarden', 'signal'}
 PHONE_DEAD = {'blender', 'gimp', 'audacity', 'signal', 'libre', 'vlc',
               'kodi', 'obs', 'heroic', 'moonlight', 'supertux'}
-ICON_KEEP_PREFIX = ('luma-v4-', 'luma-ink-', '_cap-', 'brand-')
+ICON_KEEP_PREFIX = ('Suno-v4-', 'Suno-ink-', '_cap-', 'brand-')
 
 
 def read(path):
@@ -180,7 +180,7 @@ def clean_depot_b(root):
 
 
 def clean_luma73(root):
-    p = os.path.join(root, 'luma-73.js')
+    p = os.path.join(root, 'Suno-73.js')
     s = read(p)
 
     lines = s.split('\n')
@@ -238,15 +238,67 @@ def clean_icons(root):
     return removed
 
 
+REF_RENAMES = [('luma-next-73.html', 'Suno-next-73.html'),
+               ('luma-73', 'Suno-73'),
+               ('luma-v4-', 'Suno-v4-'),
+               ('luma-ink-', 'Suno-ink-'),
+               ('luma-favicon', 'Suno-favicon'),
+               ('social-luma', 'social-suno')]
+
+
+def rename_refs(root):
+    """Upstream pliki nazywa pliki `luma…`; w repo są to `Suno…`. Zamienia
+    odwołania do plików w treści makiety (nie URLs upstream i nie branding)."""
+    n = 0
+    for base, dirs, files in os.walk(root):
+        for f in files:
+            if not f.endswith(('.js', '.css', '.html', '.json')):
+                continue
+            p = os.path.join(base, f)
+            s = read(p)
+            t = s
+            for a, b in REF_RENAMES:
+                t = t.replace(a, b)
+            if t != s:
+                write(p, t)
+                n += 1
+    return n
+
+
+def rename_bundle_keys(simframe):
+    p = os.path.join(simframe, 'icons', '_bundle.json')
+    if not os.path.exists(p):
+        return False
+    try:
+        bundle = json.loads(read(p))
+    except Exception:
+        return False
+    out = {}
+    for k, v in bundle.items():
+        if k.startswith('luma-v4-'):
+            k = 'Suno-v4-' + k[len('luma-v4-'):]
+        elif k.startswith('luma-ink-'):
+            k = 'Suno-ink-' + k[len('luma-ink-'):]
+        out[k] = v
+    raw = json.dumps(out, separators=(',', ':'))
+    if raw != read(p):
+        diff_write(p, raw)
+        return True
+    return False
+
+
 def clean(root):
-    root = os.path.join(root, 'mockups')
-    clean_catalogue(root)
-    clean_world(root)
-    clean_shell(root)
-    clean_depot_b(root)
-    clean_luma73(root)
-    n = trim_bundle(os.path.dirname(root))
-    n += len(clean_icons(os.path.dirname(root)))
+    simframe = root
+    mock = os.path.join(root, 'mockups')
+    rename_refs(mock)
+    rename_bundle_keys(simframe)
+    clean_catalogue(mock)
+    clean_world(mock)
+    clean_shell(mock)
+    clean_depot_b(mock)
+    clean_luma73(mock)
+    n = trim_bundle(simframe)
+    n += len(clean_icons(simframe))
     return n
 
 

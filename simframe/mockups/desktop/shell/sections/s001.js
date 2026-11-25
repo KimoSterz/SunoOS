@@ -17,8 +17,8 @@
   const L = window.lumaDesk;   // the bridge to Luma's windows and Settings
   const esc = t => String(t ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const scr = $('#scr'), INS = 14, WG = 10; let W = desk.clientWidth, H = desk.clientHeight;
-  const U = p => new URL(p, location.href).href, GL = U('../icons/'), PH = U('../social-luma/photos/');   // absolute: the shell's stylesheet lives in desktop/
-  let IC = U('../icons/luma-v4-');   // D-Ink swaps it for the line drawings
+  const U = p => new URL(p, location.href).href, GL = U('../icons/'), PH = U('../social-suno/photos/');   // absolute: the shell's stylesheet lives in desktop/
+  let IC = U('../icons/Suno-v4-');   // D-Ink swaps it for the line drawings
   const store = { get(k, d) { try { const v = localStorage.getItem('lshell-' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } }, set(k, v) { try { localStorage.setItem('lshell-' + k, JSON.stringify(v)); } catch (e) {} } };
 
   /* Glyphs: Lucide from ../icons, plus the few it lacks. */
@@ -234,7 +234,7 @@
        sheet   a panel: grid or list, subfolders open in place (grid steps in, list unfolds)
        days    a tall list grouped by day (Today, Yesterday, Earlier), subfolders unfold in place */
   const QP = new URLSearchParams(location.search), FSTY = QP.get('fl') || 'stack', FOPEN = QP.get('fo') || 'shelf', FOLDON = SVAR === 'panel' || SVAR === 'line' || QP.has('fl') || QP.has('fo');
-  const LAUNCH = `<button class="dapp dlaunch" type="button" data-act="pad" data-tip="All apps"><span class="ic" style="background-image:url(${U('assets/luma-favicon.svg')})"></span></button><span class="dsep"></span>`;
+  const LAUNCH = `<button class="dapp dlaunch" type="button" data-act="pad" data-tip="All apps"><span class="ic" style="background-image:url(${U('assets/Suno-favicon.svg')})"></span></button><span class="dsep"></span>`;
   const P0 = n => PH + n + '.webp';
   const FOLDERS = [
     { id: 'dl', n: 'Downloads', g: 'download', h: 250, fresh: 3, files: [

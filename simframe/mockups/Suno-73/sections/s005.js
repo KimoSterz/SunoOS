@@ -602,7 +602,7 @@
     const pg = q('#lf-prog'); if (pg) { const r = pg.getBoundingClientRect(); lfGo(Math.round((e.clientX - r.left) / r.width * (LF.spreads - 1))); return true; }
     if (q('#lf-stage') && LF.drawer) { LF.drawer = ''; lfDrawer(); return true; }
     return false; }
-  function renderLeaf() { $('#lf-top').innerHTML = `${NAVBTN}<img src="../icons/luma-v4-leaf.svg" alt=""><b>Leaf</b><span class="chev">${ic('chevron-down')}</span>`; lfSide(); lfLib(); lfBar();
+  function renderLeaf() { $('#lf-top').innerHTML = `${NAVBTN}<img src="../icons/Suno-v4-leaf.svg" alt=""><b>Leaf</b><span class="chev">${ic('chevron-down')}</span>`; lfSide(); lfLib(); lfBar();
     const w = $('#w-leaf'); w.addEventListener('pointermove', () => { if (LF.view === 'read') lfWake(); });
     new ResizeObserver(() => lfLayout()).observe($('#lf-stage'));
     $('#lf-stage').addEventListener('wheel', e => { if (Math.abs(e.deltaX) + Math.abs(e.deltaY) < 30 || LF.wheel) return; LF.wheel = true; setTimeout(() => LF.wheel = false, 450); lfGo(LF.spread + ((e.deltaY || e.deltaX) > 0 ? 1 : -1)); }, { passive: true });
