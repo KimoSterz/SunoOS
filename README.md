@@ -3,7 +3,7 @@
 SunoOS to robocza nazwa naszej kopii rozbudowanej makiety systemu operacyjnego
 Luma — interaktywnego podglądu „Try it yourself” ze strony
 [simplyluma.com](https://simplyluma.com/) (desktop, tablet i phone w przeglądarce).
-
+Sam projekt nie ma charakteru komercyjnego i jest prowadzony jedynie w celach edukacyjnych i treningowych
 Luma jest open source, ale GitHub producenta był w chwili kopiowania
 niedostępny („Our GitHub is temporarily unavailable…”), dlatego kod
 pozyskujemy bezpośrednio z serwisu. Szczegóły i pełna lista plików:
