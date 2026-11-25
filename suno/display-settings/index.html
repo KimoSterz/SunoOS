@@ -52,7 +52,7 @@
     font-variant-numeric: tabular-nums; white-space: nowrap; }
   .row-head .val b { color: var(--text); font-weight: 600; }
 
-  .slider-wrap { position: relative; padding: 10px 2px 74px; }
+  .slider-wrap { position: relative; padding: 10px 2px 50px; }
   input[type="range"] {
     -webkit-appearance: none; appearance: none;
     width: 100%; height: 6px; border-radius: 999px; outline: none; margin: 0;
@@ -74,25 +74,26 @@
   }
   input[type="range"]:disabled { opacity: .45; cursor: default; }
 
-  .grooves { position: absolute; left: 2px; right: 2px; top: 16px; height: 58px; }
+  .grooves { position: absolute; left: 2px; right: 2px; top: 17px; height: 24px; }
   .groove {
-    position: absolute; transform: translateX(-50%);
-    display: flex; flex-direction: column; align-items: center;
+    position: absolute; transform: translateX(-1px);
+    display: flex; flex-direction: row; align-items: flex-start; gap: 3px;
   }
+  .groove.flip { flex-direction: row-reverse; transform: translateX(calc(-100% + 1px)); }
   .groove i {
-    display: block; width: 1.5px; height: 7px; border-radius: 1px;
-    background: #101116;
-    box-shadow: inset 0 1px 1px rgba(0,0,0,.6), 0 1px 0 0 rgba(255,255,255,.08);
+    display: block; width: 2px; height: 20px; border-radius: 1px;
+    background: #17181d;
+    box-shadow: inset 0 0 1px rgba(0,0,0,.55), 0 1px 0 0 rgba(255,255,255,.08);
   }
   .groove em {
-    display: block; font-style: normal; font-weight: 400; font-size: 9px; line-height: 1;
-    letter-spacing: .3px; font-variant-numeric: tabular-nums;
-    color: #191a20; text-shadow: 0 1px 0 rgba(255,255,255,.08);
+    display: block; font-style: normal; font-weight: 500; font-size: 9px; line-height: 1;
+    letter-spacing: .4px; font-variant-numeric: tabular-nums;
+    color: #6a6b75; text-shadow: 0 1px 0 rgba(255,255,255,.07);
     writing-mode: vertical-rl; transform: rotate(180deg);
-    height: 30px; margin-top: 5px; white-space: nowrap;
+    height: 20px; white-space: nowrap;
   }
-  .groove.on i { box-shadow: inset 0 1px 1px rgba(0,0,0,.6), 0 1px 0 0 rgba(255,255,255,.2); }
-  .groove.on em { color: #212229; text-shadow: 0 1px 0 rgba(255,255,255,.14); }
+  .groove.on i { box-shadow: inset 0 0 1px rgba(0,0,0,.55), 0 1px 0 0 rgba(255,255,255,.2); }
+  .groove.on em { color: #95969f; text-shadow: 0 1px 0 rgba(255,255,255,.1); }
 
   .preview {
     margin-top: 2px; border-radius: var(--radius); overflow: hidden;
@@ -181,7 +182,7 @@
 
   for (let k = MIN; k <= MAX; k += STEP) {
     const g = document.createElement('span');
-    g.className = 'groove' + (k === DEF ? ' on' : '');
+    g.className = 'groove' + (k === DEF ? ' on' : '') + (k === MAX ? ' flip' : '');
     g.style.left = (((k - MIN) / (MAX - MIN)) * 100) + '%';
     g.innerHTML = `<i></i><em>${k}</em>`;
     grooves.appendChild(g);
