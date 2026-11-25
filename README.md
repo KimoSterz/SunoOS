@@ -37,7 +37,6 @@ pozyskujemy bezpośrednio z serwisu. Szczegóły i pełna lista plików:
 
 ```
 preview/            podgląd makiety przez iframe (działa od razu)
-suno/display-settings/  nasza podstrona „Ustawienia › Ekran › Night Light" SunoOS
 tools/              narzędzia (fetch_upstream.py)
 simframe/           kod makiety Luma — ładowany przez tools/fetch_upstream.py
 docs/inventory.md   pełny inwentarz plików makiety + adnotacje
@@ -51,12 +50,8 @@ docs/inventory.md   pełny inwentarz plików makiety + adnotacje
 
 ## Nasze zmiany względem Luma
 
-- **Ustawienia › Ekran › Night Light** (`suno/display-settings/`): podstrona ustawień
-  z jednym suwakiem barwy w stylu Night Shift (cienki zaokrąglony tor z gradientem,
-  białe okrągłe gałki, bez podziałek na torze). Zakres 2000–8000 K, wartość domyślna
-  5000 K, przystanki co 1000 K jako delikatne wytłoczone kreski pod suwakiem (z etykietami
-  K i nazwami barw), podgląd wybarwienia ekranu na żywo. Docelowo podmienia panel ekranowy
-  w makiecie `simframe/` po jej pobraniu przez `tools/fetch_upstream.py`.
+- Na razie żadnych — `simframe/` to wierna kopia upstreamu; własne modyfikacje SunoOS będziemy wprowadzać po ich zaakceptowaniu.
+
 
 ## Dalsza praca / status
 
@@ -65,4 +60,3 @@ docs/inventory.md   pełny inwentarz plików makiety + adnotacje
 - [ ] Po powrocie `github.com/SimplyLuma/luma` — porównać `simframe/` z źródłami upstream i skopiować licencję.
 - [ ] Przebrandowanie na SunoOS (nazwa, kolory, ikony) — po zmerchowaniu plików w `simframe/`.
 - [ ] Włączyć GitHub Pages (folder `/preview`) dla stałego adresu podglądu.
-- [ ] Podmienić podstronę „Ustawienia › Ekran › Night Light” w makiecie `simframe/mockups/luma-next-73.html` na nasz moduł `suno/display-settings/` (po pierwszym vendoringu).
