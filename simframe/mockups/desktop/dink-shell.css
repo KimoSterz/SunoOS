@@ -1,0 +1,61 @@
+/* D-Ink for the desktop shell (desktop/shell.js, its own shadow root): the islands of the shelf, the lip and
+   its cards, Quick Options and the tips. The same weight system as mockups/dink.css: a FRAME around each
+   floating object, an EDGE on what lives inside it, RULES between rows, one FILL for the selected thing.
+   Scoped to .screen[data-ink]; the shell sets it from the simulator's switch. */
+.screen[data-ink] { --dink-paper: #eeece6; --dink-sheet: #fbfaf6; --dink-ink: #0e1013; --dink-ink-2: #3a4046; --dink-ink-3: #6f767d;
+  --dink-E: inset 0 0 0 2px var(--dink-ink); --dink-F: inset 0 0 0 3px var(--dink-ink); color-scheme: light; }
+.screen[data-ink] * { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; text-shadow: none !important; }
+.screen[data-ink] :is(.island, .pop, .ncard, .tip, .tl, .tlip, .status, .dock) { background: var(--dink-sheet) !important; background-image: none !important; color: var(--dink-ink) !important; box-shadow: var(--dink-F) !important; filter: none !important; }
+.screen[data-ink] .island .island, .screen[data-ink] .dock .dock, .screen[data-ink] .island .cmp { background: transparent !important; box-shadow: none !important; }
+.screen[data-ink] :is(.q, .srch, .k-cal, .k-call, .k-qs, .k-wx, .tile, .lctl button, .mctl button, .nacts button, .nreply, .sl, .eq, .pill, .sg button, .lev) { background: transparent !important; background-image: none !important; color: var(--dink-ink) !important; box-shadow: var(--dink-E) !important; }
+.screen[data-ink] :is(.q.on, .tog.on, .q[aria-pressed="true"], .sg button.on, .nacts button.main, .q.main) { background: var(--dink-ink) !important; color: var(--dink-sheet) !important; box-shadow: none !important; }
+/* the app in front keeps its drawing and gains weight at its edge; the running mark is ink */
+.screen[data-ink] .dapp.focus .ic { box-shadow: var(--dink-F) !important; background-color: transparent !important; }
+.screen[data-ink] :is(.q.on, .tog.on, .q[aria-pressed="true"], .sg button.on, .nacts button.main, .q.main) :is(b, span, small, i, .g) { color: var(--dink-sheet) !important; background-color: var(--dink-sheet) !important; }
+.screen[data-ink] :is(.q.on, .tog.on, .q.main) :is(b, span, small) { background-color: transparent !important; }
+.screen[data-ink] .g { background-color: var(--dink-ink) !important; }
+.screen[data-ink] :is(b, span, small, em, time, .clk, .clk2, .nt, .nm, .lcopy b) { color: var(--dink-ink) !important; opacity: 1 !important; }
+.screen[data-ink] :is(small, .lcopy small, .wxdays span, .evs small) { color: var(--dink-ink-2) !important; }
+.screen[data-ink] .dapp .ic, .screen[data-ink] .art { box-shadow: none !important; filter: none !important; border-radius: 12px; }
+.screen[data-ink] .dapp.run::after, .screen[data-ink] .dapp .badge, .screen[data-ink] .evbadge, .screen[data-ink] .mring, .screen[data-ink] .ring { background: var(--dink-ink) !important; color: var(--dink-sheet) !important; box-shadow: none !important; }
+.screen[data-ink] .dsep { background: var(--dink-ink) !important; }
+.screen[data-ink] :is(.lprog i, .fillb, .scrub i, .recwave i, .lev i) { background: var(--dink-ink) !important; }
+.screen[data-ink] :is(.lprog, .scrub, .sl) { box-shadow: inset 0 0 0 1px var(--dink-ink) !important; background: transparent !important; }
+.screen[data-ink] :is(.row, .nrow, .crow, .evs > *) + :is(.row, .nrow, .crow, .evs > *) { border-top: 1px solid var(--dink-ink) !important; }
+.screen[data-ink] :is(img, video, canvas):not(.ic) { filter: contrast(1.24) brightness(1.02); }
+.screen[data-ink] .art, .screen[data-ink] .th { box-shadow: var(--dink-E) !important; }
+/* the lip: idle it is a grabber, solid ink; open it is a sheet with a frame, and its glow goes */
+.screen[data-ink] .nl { background: transparent !important; box-shadow: none !important; }
+.screen[data-ink] .nl::before, .screen[data-ink] .nl::after, .screen[data-ink] .nl .glow, .screen[data-ink] .glow { display: none !important; }
+.screen[data-ink] .nl .clip { background: var(--dink-sheet) !important; box-shadow: var(--dink-F) !important; backdrop-filter: none !important; }
+.screen[data-ink] .nl.idle .clip { background: var(--dink-ink) !important; box-shadow: none !important; opacity: 1 !important; }
+.screen[data-ink] .nl :is(.pill, .stack, .inner) { background: transparent !important; box-shadow: none !important; }
+/* the shell's own tokens become paper and ink, so nothing it draws from them stays faint, tinted or shaded
+   (#scr outranks the theme blocks in shell.css, which loads after this sheet) */
+#scr[data-ink] { --bg: var(--dink-paper); --ink: var(--dink-ink); --ink-2: var(--dink-ink-2); --ink-3: var(--dink-ink-3); --line: var(--dink-ink);
+  --hover: transparent; --press: transparent; --rimc: transparent; --hi: transparent; --elev: none; --blur: none; --pop: var(--dink-sheet); --card: var(--dink-sheet);
+  --well: transparent; --well-edge: none; --chip: transparent; --chip-edge: none; --red: var(--dink-ink); --green: var(--dink-ink); --acc: var(--dink-ink);
+  --acc-fill: var(--dink-ink); --tip: var(--dink-ink); --tip-ink: var(--dink-sheet); --fill: var(--dink-ink); --amber: var(--dink-ink); --priv: var(--dink-ink); }
+/* the slots are lanes: the shelf stays invisible */
+.screen[data-ink] .slot, .screen[data-ink] .row { background: transparent !important; box-shadow: none !important; }
+/* the tray: the clip is the one frame, its cards are rows inside it */
+.screen[data-ink] .nl .ncard { background: transparent !important; box-shadow: none !important; border-radius: 0 !important; }
+.screen[data-ink] .nl .ncard + .ncard { border-top: 1px solid var(--dink-ink) !important; }
+.screen[data-ink] .ncard p { color: var(--dink-ink) !important; opacity: 1 !important; }
+.screen[data-ink] .ncard .x { background: transparent !important; color: var(--dink-ink) !important; box-shadow: var(--dink-E) !important; }
+.screen[data-ink] .nreply input { color: var(--dink-ink) !important; background: transparent !important; }
+.screen[data-ink] .nreply input::placeholder { color: var(--dink-ink-2) !important; opacity: 1 !important; }
+.screen[data-ink] .nreply button { background: var(--dink-ink) !important; color: var(--dink-sheet) !important; box-shadow: none !important; }
+.screen[data-ink] .nreply button .g { background-color: var(--dink-sheet) !important; }
+.screen[data-ink] :is(.nt, .nt.face, .art, .mini) { box-shadow: none !important; filter: none !important; }
+.screen[data-ink] .nt.face { box-shadow: var(--dink-E) !important; }
+.screen[data-ink] .nt .mini { background-color: var(--dink-sheet) !important; box-shadow: 0 0 0 2px var(--dink-sheet), inset 0 0 0 1.5px var(--dink-ink) !important; }
+.screen[data-ink] :is(.clk2 b, .clk2 small, .clk2 em) { color: var(--dink-ink) !important; opacity: 1 !important; }
+.screen[data-ink] .status .g, .screen[data-ink] .vr { background-color: var(--dink-ink) !important; opacity: 1 !important; }
+/* a live island is one object: its hit area and its keys draw no box of their own; the main key is the fill */
+#scr[data-ink] .lhit { box-shadow: none !important; background: transparent !important; }
+#scr[data-ink] .live .lctl .q { background: transparent !important; box-shadow: none !important; color: var(--dink-ink) !important; }
+#scr[data-ink] .live .lctl .q .g { background-color: var(--dink-ink) !important; }
+#scr[data-ink] .live .lctl .q.main { background: var(--dink-ink) !important; border-radius: 50% !important; }
+#scr[data-ink] .live .lctl .q.main .g { background-color: var(--dink-sheet) !important; }
+#scr[data-ink] .live .art { box-shadow: var(--dink-E) !important; }

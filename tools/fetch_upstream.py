@@ -34,6 +34,7 @@ FILES = [
     (BASE + "/mockups/studio.html", "mockups/studio.html"),
     (BASE + "/mockups/desktop/shell.js", "mockups/desktop/shell.js"),
     (BASE + "/mockups/desktop/shell.css", "mockups/desktop/shell.css"),
+    (BASE + "/mockups/desktop/dink-shell.css", "mockups/desktop/dink-shell.css"),
     (BASE + "/mockups/apps/depot/catalogue.js", "mockups/apps/depot/catalogue.js"),
     (BASE + "/mockups/apps/depot/world.js", "mockups/apps/depot/world.js"),
     (BASE + "/mockups/apps/depot/depot.js", "mockups/apps/depot/depot.js"),
@@ -152,6 +153,22 @@ def main():
                 continue
             save(rel, svg.encode("utf-8"))
             ok += 1
+
+    # Polityka zawartosci SunoOS: odfiltruj nieaktywne aplikacje i ikony,
+    # potem podziel monolity na sekcje (luma_policy + split_sections).
+    try:
+        import luma_policy
+        import split_sections
+        pruned = luma_policy.clean(ROOT)
+        res = split_sections.split(os.path.join(ROOT, "mockups"))
+        with open(os.path.join(ROOT, "mockups", "sections.json"), "w", encoding="utf-8") as f:
+            json.dump(res, f, indent=2)
+            f.write("\n")
+        print(f"\nPolityka SunoOS: wyczyszczono simframe (ikony: {pruned}); sekcje: "
+              + ", ".join(f"{k}={v['count']}" for k, v in sorted(res.items())))
+    except Exception as e:
+        print(f"UWAGA: postprocessing simframe nie powiodl sie ({e})", file=sys.stderr)
+        raise
 
     print(f"\nGotowe: {ok} plikow w simframe/. Braki (do uzupelnienia recznie): {missing or 'brak'}")
 

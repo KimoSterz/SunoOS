@@ -1,0 +1,883 @@
+.now[hidden] { display: none; } .now .bg { position: absolute; inset: -80px; z-index: -2; background-size: cover; background-position: center; filter: blur(70px) saturate(1.5); }
+.now::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(10,10,12,.3), rgba(10,10,12,.6)); }
+.now .close { position: absolute; left: 14px; top: 12px; width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; color: #fff; background: rgba(255,255,255,.12); } .now .close:hover { background: rgba(255,255,255,.2); }
+.now .stage { display: flex; flex-direction: column; justify-content: center; min-height: 0; padding-left: 12px; } .now .big { display: block; width: min(100%, 50vh, 420px); } .now .big .cv { border-radius: 14px; box-shadow: 0 40px 80px -30px rgba(0,0,0,.7); }
+.now h2 { margin: 26px 0 4px; font-size: 32px; font-weight: 700; letter-spacing: -.035em; } .now .who { font-size: 16px; color: rgba(255,255,255,.72); }
+.now .side2 { display: flex; flex-direction: column; min-height: 0; }
+.now .tabs2 { --fill-1: rgba(255,255,255,.1); --raised: rgba(255,255,255,.92); --ink: #111; --ink-3: rgba(255,255,255,.7); --hi: transparent; align-self: flex-start; }
+.now .tabs2 button.on { color: #111; } .now .list2 { flex: 1; min-height: 0; overflow-y: auto; margin-top: 16px; scrollbar-width: none; padding: 0 8px; }
+.now .qi:hover { background: rgba(255,255,255,.08); } .now .qi .tx span, .now .qi em { color: rgba(255,255,255,.6); } .now .qi.cur { background: rgba(255,255,255,.12); } .now .qi.cur .tx b { color: #fff; } .now .qlab { color: rgba(255,255,255,.55); }
+.now .about p { margin: 0 0 12px; font: 400 16px/1.6 var(--read); color: rgba(255,255,255,.88); } .now .about dl { display: grid; grid-template-columns: auto 1fr; gap: 8px 16px; margin: 18px 0 0; font-size: 13px; } .now .about dt { color: rgba(255,255,255,.55); } .now .about dd { margin: 0; }
+
+/* ══ One window, any width ═════════════════════════════════════════════════ */
+@container win (max-width: 1100px) { .wout { display: none; } }
+@container win (max-width: 900px) { .tside { width: 72px; padding: 16px 8px 10px; align-items: center; } .tside .srch, .tside .sh, .tbrand span, .tside .si .lab, .tstatus .tx { display: none; } .tside .si { width: 44px; justify-content: center; padding: 0; } .tstatus { padding: 10px; }
+  .vside { width: 64px; padding: 12px 8px; align-items: center; } .vside .pins, .wsbtn, .grph, .vside .tab .lab, .vside .tab .snd, .vside .tab .x, .playing .tx, .playing .ib { display: none !important; } .vside .tab, .vside .grp .tab { width: 44px; padding: 0; justify-content: center; } .vbrand img { margin: 0; } .playing { justify-content: center; } }
+@container win (max-width: 720px) {
+  .rail, .tside, .vside, .wcm { display: none; }
+  .win.navopen .rail { display: flex; position: absolute; z-index: 35; left: 8px; top: 8px; bottom: 8px; border-radius: 16px; box-shadow: var(--sh-float); }
+  .navbtn { display: grid !important; } .ttl { display: flex; align-items: flex-start; gap: 8px; padding: 16px 16px 10px 12px; } .ttl .navbtn { margin-top: -3px; }
+  .fbar .wide { display: none; } .fbar .srch { width: 36px; padding: 0 10px; } .fbar .srch input { display: none; }
+  .sheet { width: 100% !important; min-height: auto; padding: 36px 24px; zoom: 1 !important; } .wcols { min-width: 0; padding: 12px 12px 110px; } .wtop { padding-right: 12px; } .wtop .wide { display: none; }
+  .vtop { padding-right: 12px; } .vtop .wide { display: none; } .vpage { margin-left: 8px; }
+  .player { grid-template-columns: minmax(0, 1fr) auto; } .player .outp, .ctrl .scrub, .ctrl .wide { display: none; }
+  .hero { flex-direction: column; align-items: flex-start; gap: 18px; padding: 56px 20px 20px; } .hero > .cv { width: 62%; } .hero h2 { font-size: 34px; }
+  .now { grid-template-columns: 1fr; padding: 60px 22px 22px; } .now .side2 { display: none; } .feat2 { grid-template-columns: 1fr; } .tl { padding: 0 8px 20px; } .pagepad, .row2 { padding-left: 16px; padding-right: 16px; }
+  .pbody { padding: 0 12px 96px; } .pgrid { grid-template-columns: repeat(3, 1fr); } .fgrid { grid-template-columns: repeat(3, 1fr); padding: 2px 8px 96px; } .panel { display: none; }
+}
+
+/* ══ v68 consistency pass ═══════════════════════════════════════════════════════════
+   Everything below is the shared baseline that every app now follows. */
+/* Scrolling: no visible scrollbars inside windows, anywhere. Trackpads and wheels still scroll. */
+.win *, .stpres * { scrollbar-width: none; } .win *::-webkit-scrollbar, .stpres *::-webkit-scrollbar { display: none; }
+
+/* Floating bars: 44 high (36 controls on 4 padding), 12px corners on everything inside, 16px above the edge they float over.
+   Groups are separated by space, not lines. */
+.win .fbar:not(.aricomp) { bottom: 16px; gap: 4px; padding: 4px; border-radius: 16px; background: var(--bar); box-shadow: var(--bar-edge); }
+.win .fbar .vr { display: block; width: 6px; height: 1px; margin: 0; background: none; }
+.win .fbar .ib, .win .fbar .bt { height: 36px; border-radius: 12px; } .win .fbar .ib { width: 36px; }
+.win .fbar .bt.fill { background: transparent; box-shadow: none; } .win .fbar .bt.fill:hover { background: var(--fill-1); }
+/* A picker in a bar (text style, format, filter) is a well with a small chevron, like a closed dropdown */
+.win .fbar .bt:is(.stylebtn, .nstyle, .fpchip, .grfmt) { gap: 8px; justify-content: space-between; padding: 0 10px 0 12px; background: var(--well); box-shadow: var(--well-edge); color: var(--ink); font-weight: 500; }
+.win .fbar .bt:is(.stylebtn, .nstyle, .fpchip, .grfmt):hover { background: var(--well); color: var(--ink); filter: brightness(1.12); } .win .fbar :is(.stylebtn, .nstyle, .fpchip, .grfmt) svg.i { width: 13px; height: 13px; color: var(--ink-3); }
+.win .fbar .bt.key[disabled] { opacity: .45; filter: none; }
+/* Wells are where you type, or pick one of several */
+.win .srch, .win .fbar .seg { height: 36px; border-radius: 12px; background: var(--well); box-shadow: var(--well-edge); color: var(--ink-3); }
+.win .srch:hover { background: var(--well); color: var(--ink-2); } .win .srch:focus-within { box-shadow: var(--well-edge), 0 0 0 2px var(--acc-ink); }
+.win .seg { background: var(--well); box-shadow: var(--well-edge); } .win .seg .ind { background: var(--chip); box-shadow: var(--chip-edge); }
+/* The key: the one thing this screen is for */
+.win .bt.key, .win .bt.pri { background: var(--key); color: var(--key-ink); box-shadow: var(--key-edge); font-weight: 600; }
+.win .bt.key:hover, .win .bt.pri:hover { background: var(--key); filter: brightness(1.04); }
+/* The bar's first word: a raised chip saying what it's working on */
+.win .fbar :is(.ctxc, .fpreq, .who):not(.merec) { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px 0 10px; border-radius: 12px; background: var(--chip); box-shadow: var(--chip-edge); color: var(--ink); font-weight: 600; white-space: nowrap; }
+.win .fbar .who { padding-left: 4px; } .win .fbar .who .th { width: 28px; height: 28px; border-radius: 8px; } .win .fbar .who span { font-weight: 500; }
+.win .fbar .grctx { font: 600 13px var(--font); } .win .fbar :is(.ctxc, .fpreq) > svg.i { width: 15px; height: 15px; color: var(--ink-3); flex: none; } .win .fbar .ctxc em { font-style: normal; font-weight: 500; color: var(--ink-3); }
+/* Filer: selection is the same raised chip as everywhere; Information docks beside the files; a column view */
+#w-filer .tile.on { background: var(--chip); box-shadow: var(--chip-edge); } #w-filer .flist tr.on td { background: var(--chip); }
+.fdock { width: 0; flex: none; overflow: hidden; margin: 12px 0; border-radius: 16px; background: var(--well); box-shadow: var(--well-edge); opacity: 0; display: flex; flex-direction: column; transition: width .3s var(--ease), margin .3s var(--ease), opacity .2s; }
+#w-filer.finfo .fdock { width: 272px; margin: 0 8px 8px 0; opacity: 1; }
+
+/* The sidebar head, everywhere: a real search field, and New as a raised square beside it. Other things to create use the + on their section header. */
+.shead { display: flex; align-items: center; gap: 6px; padding: 2px 0 6px; }
+/* ...at the foot of the sidebar, like the filter drawers: a hairline above, then search and New */
+.shead.sfoot { flex: none; margin: 8px 0 0; padding: 8px 0 0; }
+.shead .srch { flex: 1; width: auto; min-width: 0; height: 34px; border-radius: 11px; }
+.shead .srch .fqx { margin-right: -4px; }
+.snew { width: 34px; height: 34px; flex: none; display: grid; place-items: center; border-radius: 11px; background: var(--chip); box-shadow: var(--chip-edge); color: var(--ink); } .snew:hover { filter: brightness(1.08); } .snew svg.i { width: 16px; height: 16px; }
+/* An item's on/off state (Pin, Star) lights its icon; no plate behind it */
+.nfloat .ib.lit { color: var(--acc-ink); background: none; box-shadow: none; } .nfloat .ib.lit svg.i { fill: currentColor; fill-opacity: .25; }
+
+/* Contacts: a file shared with them is the LumaUI file card, full width in Together */
+.ctog .lfc.tgfile { width: 100%; max-width: none; margin-top: 4px; }
+/* Contacts: my card in its own inset; a hairline beside each letter; Together as tall as Contact; one kind of action button */
+.cmecard { margin: 2px 0 6px; padding: 4px; border-radius: 14px; background: var(--well); box-shadow: var(--well-edge); } .cmecard .ctrow.me { margin: 0; } .cmecard .ctrow > svg.i { width: 15px; height: 15px; margin-left: auto; color: var(--ink-4); }
+.cside .sh { display: flex; align-items: center; gap: 10px; } .cside .sh::after { content: ""; flex: 1; height: 1px; background: var(--hair); }
+.cgrid { align-items: start; } .ctog { display: flex; flex-direction: column; min-height: 0; }
+/* Contacts (v70): side by side, Together takes the row height the Contact card sets (contain: size keeps its own list from
+   sizing the row) and scrolls inside; it is never shorter than 200. Stacked, it's as tall as what it holds. */
+.cgrid > .ctog { align-self: stretch; contain: size; min-height: 200px; } @container win (max-width: 900px) { .cgrid > .ctog { contain: none; min-height: 0; } .ctog .tgl { max-height: 320px; } }
+.chero > .lcacts { width: 100%; max-width: 376px; margin: 22px auto 0; } .cwin .pop .mi.danger, .cwin .pop .mi.danger svg.i { color: var(--lui-danger); } #c-float .bt > span { white-space: nowrap; } .win.phone #c-float .bt[data-share] > span, .win.phone #c-float .bt[data-cmycode] > span { display: none; } .win.phone #c-float .bt[data-share], .win.phone #c-float .bt[data-cmycode] { width: 36px; padding: 0; justify-content: center; } .ctog .tgl { flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: none; mask-image: linear-gradient(180deg, #000 calc(100% - 24px), transparent); padding-bottom: 12px; }
+.cwin .mi.danger:hover svg.i, .nwin .mi.danger:hover svg.i { color: oklch(0.72 0.17 25); }
+.caddpop .cnone { margin: 6px 10px 2px; font-size: 12px; color: var(--ink-3); letter-spacing: .01em; } .caddpop .end.bt.fill { background: var(--chip); box-shadow: var(--chip-edge); }
+
+/* Messages, lock-in pass */
+.macts .ib.lit { color: var(--acc-ink); } .macts .ib.lit svg.i { fill: currentColor; fill-opacity: .25; }
+.mwin .pop hr { height: 1px; margin: 6px 8px; border: 0; background: var(--hair); }
+.confirmpop { width: 280px; } .confirmpop .mpp { margin: 2px 10px 12px; font-size: 12.5px; line-height: 1.45; color: var(--ink-2); } .confirmpop .mpa { display: flex; justify-content: flex-end; gap: 6px; padding: 0 6px 6px; } .confirmpop .bt { height: 32px; border-radius: 10px; } .mwin .bt.danger { background: oklch(0.58 0.18 25); color: #fff; font-weight: 600; }
+.qbar .qrep { width: 30px; height: 30px; display: grid; place-items: center; border-radius: 9px; color: var(--ink-2); } .qbar .qrep:hover { transform: none; background: var(--fill-2); color: var(--ink); } .qbar .qrep svg.i { width: 15px; height: 15px; }
+.pinm { flex: none; } .ctx .l2 .pv { flex: 1; min-width: 0; }
+/* Switches are round: a pill of a track and a round knob (24 Sep) */
+.cwin .sw, .cksw, .cfsw, .cfsw.big { border-radius: 999px; corner-shape: round; } .cwin .sw::after, .cksw::after, .cfsw::after, .cfsw.big::after { border-radius: 50%; corner-shape: round; }
+/* Anything that scrolls fades at its top edge once it has scrolled, so content slips under headers instead of being cut */
+.win .is-scrolled { -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 22px); mask-image: linear-gradient(180deg, transparent 0, #000 22px); }
+
+/* Photos, lock-in pass */
+#w-photos .pgrid { grid-template-columns: repeat(auto-fill, minmax(var(--pcs, 168px), 1fr)); } #w-photos .pgrid.big { grid-template-columns: repeat(auto-fill, minmax(calc(var(--pcs, 168px) * 1.55), 1fr)); }
+/* A day group's corners come from its tiles (pCorners, #8): outside corners round, inside corners square */
+#w-photos .pgrid { border-radius: 0; overflow: visible; } #w-photos .pgrid > .pc { border-radius: 0; }
+#w-photos .pc[data-r~="tl"] { border-top-left-radius: 12px; } #w-photos .pc[data-r~="tr"] { border-top-right-radius: 12px; } #w-photos .pc[data-r~="br"] { border-bottom-right-radius: 12px; } #w-photos .pc[data-r~="bl"] { border-bottom-left-radius: 12px; }
+#p-corner .ib.faved svg.i { color: oklch(0.66 0.2 15); fill: currentColor; } #p-det .pdockt { margin: 0 0 10px; } :is(#p-corner, #vw-corner)[hidden] { display: none !important; } #w-photos.phone .viewer { padding-top: 132px; } #w-photos.phone .viewer .vt { top: 74px; left: 24px; }
+#w-photos.viewing .fbar { --ink: #f3f3f2; --ink-2: rgba(255,255,255,.82); --ink-3: rgba(255,255,255,.62); } .pside .si em.lcount { margin-left: auto; font-size: 11px; color: var(--ink-2); }
+.psize { display: flex; align-items: center; gap: 8px; padding: 0 8px; color: var(--ink-3); } .psize svg.i { width: 15px; height: 15px; } .psize input { width: 112px; }
+.viewer { padding: 88px 32px 96px; } .viewer .vt { left: 32px; top: 24px; } .viewer .vt span { display: block; margin-top: 3px; }
+.viewer img { border-radius: 12px; box-shadow: 0 24px 60px -16px rgba(0,0,0,.75), 0 0 0 1px rgba(255,255,255,.06); transition: filter .12s, transform .35s var(--spring); }
+@supports (corner-shape: superellipse(1.6)) { .viewer img { corner-shape: superellipse(1.6); } }
+.fbar .pback { gap: 4px; padding: 0 12px 0 8px; font-weight: 600; } .fbar .pback svg.i { width: 16px; height: 16px; }
+.pager { display: flex; align-items: center; height: 36px; padding: 0 2px; border-radius: 12px; background: var(--well); box-shadow: var(--well-edge); } .pager .ib { width: 32px; height: 32px; border-radius: 10px; } .pager .count { min-width: 64px; text-align: center; font-weight: 500; font-variant-numeric: tabular-nums; color: var(--ink-2); }
+.iwin.viewing .pager { background: rgba(0,0,0,.35); box-shadow: inset 0 1px 2px rgba(0,0,0,.5), inset 0 0 0 1px rgba(255,255,255,.05); }
+.pbk { display: inline-block; width: 7px; height: 7px; margin-right: 6px; border-radius: 50%; corner-shape: round; background: var(--good); box-shadow: 0 0 6px var(--good); vertical-align: 1px; }
+/* Docked side panels: a full-width hairline under the header frames what's below */
+.vwinfo .vwih { flex: none; margin: 0 -12px 12px; padding: 0 8px 0 16px; border-bottom: 1px solid var(--hair); } .fdockh { border-bottom: 1px solid var(--hair); } .fdock .scr { padding-top: 14px; }
+/* Photos edit panel */
+/* Photos' editor is the bar grown (LumaUI action center): the photo keeps the room above it */
+.lac.ped { width: min(640px, calc(100% - 48px)); } .ped .lach .seg { height: 32px; } .ped .lach .seg button { height: 26px; padding: 0 12px; font-size: 12.5px; } .ped .lach .sp { flex: 1; }
+.ped .lach .lacmode { font-weight: 600; } .ped .lach .bt.sm { gap: 6px; } .ped .lach .bt.sm svg.i { width: 14px; height: 14px; }
+.pedb { padding: 14px 16px 10px; } .pedgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 20px; } .ped .ppre { grid-template-columns: repeat(6, 1fr); }
+.ped .lacft .bt { height: 36px; padding: 0 16px; border-radius: 12px; } .ped .lacft .bt:not(.key) { background: var(--fill-2); } .ped .lacft .bt:not(.key):hover { background: var(--fill-3); } .ped .lacft .bt[disabled] { opacity: .45; }
+#p-bar[hidden] { display: none !important; } #w-photos .viewer.editing { padding-bottom: 290px; } #w-photos.phone .viewer.editing { padding-bottom: 360px; }
+.win.phone .ped .pedgrid { grid-template-columns: 1fr; } .win.phone .ped .ppre { grid-template-columns: repeat(3, 1fr); } .win.phone .ped .lach { flex-wrap: wrap; height: auto; padding: 8px; gap: 8px; } .win.phone .ped .lach .seg { order: 3; width: 100%; } .win.phone .ped .lach .seg button { flex: 1; }
+.ppre { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; } .ppre button { display: grid; gap: 5px; padding: 3px; border-radius: 11px; font-size: 11.5px; color: var(--ink-2); letter-spacing: .01em; } .ppre button:hover { background: var(--fill-1); } .ppre button.on { background: var(--chip); box-shadow: var(--chip-edge); color: var(--ink); }
+.ppre img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; }
+.pedsl { display: grid; gap: 2px; margin-bottom: 8px; } .pedsl span { display: flex; justify-content: space-between; font-size: 12.5px; } .pedsl b { font-weight: 500; } .pedsl em { font-style: normal; color: var(--ink-3); font-variant-numeric: tabular-nums; } .pedsl input { width: 100%; }
+.pcrop { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; } .pcrop .bt { justify-content: center; height: 34px; padding: 0 6px; font-size: 12.5px; }
+/* Import and New album panels */
+#lmenu .pimp { width: 300px; padding: 4px 6px 8px; } #lmenu h6 { margin: 4px 4px 8px; }
+.pimpdev { display: flex; align-items: center; gap: 10px; padding: 0 4px; } .pimpdev svg.i { width: 20px; height: 20px; color: var(--ink-2); } .pimpdev span { display: grid; } .pimpdev b { font-size: 13px; } .pimpdev small { font-size: 11.5px; color: var(--ink-3); letter-spacing: .01em; }
+.pimps { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; margin: 10px 0; } .pimps img, .pimps span { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 7px; } .pimps span { display: grid; place-items: center; background: var(--fill-2); font-size: 12px; font-weight: 600; color: var(--ink-2); letter-spacing: .01em; }
+#lmenu .pimp .bt.pri, #lmenu .pnewal .bt.pri { width: 100%; justify-content: center; height: 34px; border-radius: 11px; background: var(--key); color: var(--key-ink); box-shadow: var(--key-edge); font-weight: 600; }
+#lmenu .pnewal { width: 240px; display: grid; gap: 8px; padding: 4px 6px 6px; } #lmenu .pnewal h6 { margin: 2px 2px 0; } #lmenu .pnewal input { height: 34px; padding: 0 11px; border: 0; outline: 0; border-radius: 10px; background: var(--well); box-shadow: var(--well-edge); color: var(--ink); font: 13px var(--font); }
+#lmenu .crmi[disabled] { opacity: .45; }
+
+/* Tide, lock-in pass: the deck in three parts (what's playing · the transport · where it plays), search as an icon that opens */
+.deck { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 16px; height: 92px; }
+.deck .dmid { display: block; } .dtx .dtl { display: flex; align-items: center; gap: 2px; min-width: 0; } .dtx .dtl b { min-width: 0; }
+.deck .dlove { width: 28px; height: 28px; flex: none; color: var(--ink-3); } .deck .dlove svg.i { width: 15px; height: 15px; } .deck .dlove.loved { color: var(--love); } .deck .dlove.loved svg.i { fill: currentColor; }
+.dctlw { position: relative; z-index: 1; display: grid; justify-items: center; gap: 2px; } .dctlw .dctl { gap: 6px; } .deck .pp { width: 44px; height: 44px; }
+.dctlw .scrub { width: 100%; min-width: 300px; margin-top: 0; display: flex; align-items: center; gap: 10px; font-size: 11px; color: var(--ink-3); font-variant-numeric: tabular-nums; letter-spacing: .01em; } .dctlw .scrub .rng { flex: 1; }
+.deck .dend { justify-self: end; padding-left: 0; box-shadow: none; }
+.twin .panel.tq { top: 68px; }   /* below the corner pill, never over it */
+.tflo .tsbtn { width: 36px; height: 36px; border-radius: 12px; color: var(--ink-2); } .tflo .tsbtn:hover { color: var(--ink); }
+.tflo .tsrch { animation: tsopen .22s var(--ease); } @keyframes tsopen { from { opacity: 0; transform: translateX(8px); } } .tflo .tsrch .fqx { margin-right: -4px; }
+/* Tide, audit pass (25 Sep, #14–#16): the back chevron joins the title row as the LumaUI navigation trail (no band above it);
+   Sources and Up next are the LumaUI details pane beside the room; the deck's words use the standard text hierarchy. */
+.twin .ibody { display: flex; } .twin .tpane { margin-left: 8px; }
+.twin .tmain .ttl.tttl { padding: 24px 300px 12px 28px; }
+.twin .hero .kick .lnt { margin-top: -6px; }
+.tflo .tsbtn { position: relative; } .tflo .tsbtn.on { background: var(--chip); box-shadow: var(--chip-edge); color: var(--ink); }
+.tflo .tsbtn .stat { position: absolute; top: 7px; right: 7px; width: 7px; height: 7px; box-shadow: 0 0 0 2px var(--bar-solid, var(--float-solid)); }
+.tsrci { position: relative; width: 32px; height: 32px; flex: none; display: grid; place-items: center; border-radius: 10px; background: var(--fill-1); box-shadow: inset 0 0 0 1px var(--hair); color: var(--ink-2); } .tsrci > svg.i { width: 16px; height: 16px; }
+.tsrci .stat { position: absolute; right: -3px; bottom: -3px; width: 9px; height: 9px; box-shadow: 0 0 0 2px var(--isle); } .tsrci .stat:not(.ok):not(.busy):not(.bad) { display: none; }
+.tsrci.lg { width: 56px; height: 56px; border-radius: 16px; } .tsrci.lg > svg.i { width: 24px; height: 24px; } .tsrci.lg .stat { width: 12px; height: 12px; }
+.tpane .ldpb > .lnt { margin: -4px 0 10px; } .tpane .lstks + .lstks { margin-top: 8px; }
+.tsrchead { display: flex; align-items: center; gap: 10px; margin: 4px 0 2px; } .tsrchead > span:last-child { display: grid; gap: 1px; } .tsrchead b { font-size: 13px; font-weight: 600; } .tsrchead small { font: var(--t-caption); letter-spacing: .01em; color: var(--ink-3); }
+.tsrcgo { display: flex; justify-content: flex-end; margin-top: 16px; } .tsrcgo .bt.key { height: 36px; padding: 0 18px; border-radius: 12px; background: var(--key); color: var(--key-ink); box-shadow: var(--key-edge); font-weight: 600; }
+.tpane .qlab { margin: 14px 0 4px; font: var(--t-label); letter-spacing: .01em; color: var(--ink-3); } .tpane .ldplab + .tqlist .qi.cur { background: var(--fill-1); }
+.songs .tr.th.lthgrid, .songs .tr.th.lthgrid:hover { height: 30px; margin-bottom: 6px; background: var(--fill-1); } .songs .tr.th.lthgrid > button:nth-child(2) { margin-left: 0; }
+/* the deck: song title = primary, medium; artist and album = secondary links; the times = secondary, tabular */
+.deck .dtx b { font: var(--t-title-2); font-weight: 500; letter-spacing: -.01em; color: var(--ink); }
+.deck .dtx > span:not(.dtl), .deck .dtx > span:not(.dtl) button { color: var(--ink-2); } .deck .dtx > span:not(.dtl) button:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+.deck .dctlw .scrub { color: var(--ink-2); }
+@container win (max-width: 720px) { .twin .tmain .ttl.tttl { padding: 74px 20px 8px; } .deck { grid-template-columns: minmax(0, 1fr) auto; gap: 8px; } .deck .dctlw .scrub, .deck .dctl .ib.wide, .deck .dlove { display: none; } .twin .deck { padding-right: 14px; } }
+/* On a phone the album hero starts below the corner pill, as the list pages do (the pill never sits on the cover) */
+@container win (max-width: 720px) { .twin .tmain .hero { padding-top: 76px; } }
+
+/* Terminal, lock-in pass */
+.tmtabsw { display: flex; align-items: center; gap: 4px; margin-left: auto; margin-right: 8px; } .tmtabsw .ib { width: 32px; height: 32px; border-radius: 10px; color: var(--ink-3); } .tmtabsw .ib:hover { color: var(--ink); } .tmtabsw .vr { width: 1px; height: 18px; margin: 0 4px; background: var(--hair); }
+.tmtabs { display: flex; gap: 2px; padding: 3px; border-radius: 12px; background: var(--well); box-shadow: var(--well-edge); max-width: 520px; overflow-x: auto; scrollbar-width: none; }
+.tmtabs button { position: relative; flex: none; display: flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px; border-radius: 9px; font-size: 12.5px; font-weight: 500; color: var(--ink-3); } .tmtabs button:hover { color: var(--ink); }
+.tmtabs button.on { background: var(--chip); box-shadow: var(--chip-edge); color: var(--ink); } .tmtabs svg.i { width: 14px; height: 14px; }
+.tmtabs .tx { display: grid; place-items: center; width: 16px; height: 16px; margin-right: -4px; border-radius: 5px; opacity: 0; } .tmtabs button:hover .tx, .tmtabs button.on .tx { opacity: .6; } .tmtabs .tx:hover { opacity: 1; background: var(--fill-2); } .tmtabs .tx svg.i { width: 11px; height: 11px; }
+.tmwin .tfield { flex: 1; } .tmwin .tfield:focus-within { box-shadow: var(--well-edge); } .tmwin .tpre b { color: var(--ink-3); font-weight: 500; }
+.lf { gap: 26px; } .lfa { flex: none; white-space: pre; line-height: 1; font-size: calc(var(--tfs, 13.5px) * .92); color: oklch(0.72 0.17 45); background: linear-gradient(180deg, oklch(0.8 0.15 60), oklch(0.62 0.2 32)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; margin-top: 3px; }
+@container win (max-width: 720px) { .lfa { display: none; } .tmtabs { max-width: 240px; } }
+
+/* Calendar, lock-in pass */
+.cjpop2 { width: 316px; padding: 8px; z-index: 60; }
+/* the month picker: one surface. The year steps at the top, the twelve months sit below a hairline */
+.cj3h { display: flex; align-items: center; gap: 2px; padding: 0 0 8px; margin: 0 -8px; padding-left: 4px; padding-right: 8px; border-bottom: 1px solid var(--hair); }
+.cj3h .ib { width: 30px; height: 30px; border-radius: 9px; color: var(--ink-2); } .cj3h .ib svg.i { width: 16px; height: 16px; }
+.cj3h b { min-width: 52px; text-align: center; font-size: 15px; font-weight: 650; font-variant-numeric: tabular-nums; } .cj3h b.cjn { color: var(--acc-ink); }
+.cj3h .bt { margin-left: auto; height: 28px; padding: 0 12px; border-radius: 9px; font-size: 12px; font-weight: 600; letter-spacing: .01em; }
+.cj3m { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding-top: 8px; }
+.cj3m button { height: 50px; display: grid; place-content: center; justify-items: center; gap: 1px; border-radius: 12px; color: var(--ink-2); } .cj3m button:hover { background: var(--fill-1); color: var(--ink); }
+.cj3m b { font-size: 13.5px; font-weight: 550; } .cj3m em { font-style: normal; font-size: 11px; color: var(--ink-4); min-height: 13px; font-variant-numeric: tabular-nums; letter-spacing: .01em; }
+.cj3m button.cjn:not(.on) b { color: var(--acc-ink); font-weight: 650; }
+.cj3m button.on { background: var(--chip); box-shadow: var(--chip-edge); color: var(--ink); } .cj3m button.on b { font-weight: 650; } .cj3m button.on em { color: var(--ink-3); }
+/* Month view fits the window: only the weeks it needs, rows share the height, cells clip rather than scroll */
+.calwin #cal-body:has(> .cmonth) { padding-bottom: 80px; }
+.cmonth { height: 100%; min-height: 560px; display: flex; flex-direction: column; } .cmonth .cmg { flex: 1; min-height: 0; grid-template-rows: repeat(var(--wk, 6), minmax(84px, 1fr)); }
+.cmonth .cmd { min-height: 0; overflow: hidden; } .cmonth .cmd > * { flex: none; } .cmonth .cmd [hidden] { display: none; } .cmonth .cmd em { margin-top: auto; }
+.cjrow { display: flex; gap: 2px; padding: 4px; border-radius: 12px; background: var(--well); box-shadow: var(--well-edge); overflow-x: auto; scrollbar-width: none; mask-image: linear-gradient(90deg, transparent, #000 18px, #000 calc(100% - 18px), transparent); }
+.cjrow + .cjrow { margin-top: 8px; } .cjrow button { flex: none; border-radius: 9px; color: var(--ink-2); font-weight: 500; } .cjrow button:hover { background: var(--fill-1); color: var(--ink); }
+.cjrow button.on { background: var(--chip); box-shadow: var(--chip-edge); color: var(--ink); font-weight: 650; } .cjrow button.cjn:not(.on) { color: var(--acc-ink); }
+.cjyrs button { height: 32px; padding: 0 14px; font-variant-numeric: tabular-nums; }
+.cjmos button { width: 62px; height: 50px; display: grid; place-content: center; gap: 2px; } .cjmos b { font-weight: inherit; } .cjmos em { font-style: normal; font-size: 10.5px; color: var(--ink-4); min-height: 13px; font-variant-numeric: tabular-nums; letter-spacing: .01em; }
+.cjfoot { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; padding: 0 2px; font-size: 12px; color: var(--ink-3); letter-spacing: .01em; }
+/* event panel: a header, then the event and its actions, hairlines between parts, and an answer in its own colour */
+.cevacts { display: flex; align-items: center; gap: 6px; margin: 12px 0 14px; padding-bottom: 14px; border-bottom: 1px solid var(--hair); } .cevacts .bt { height: 30px; border-radius: 10px; } .cevacts .bt svg.i { width: 14px; height: 14px; } .cevacts .ib { width: 30px; height: 30px; margin-left: auto; }
+.cmsgall { display: flex; align-items: center; gap: 6px; margin: 4px 0 8px; font-size: 12px; color: var(--ink-3); letter-spacing: .01em; } .cmsgall span { margin-right: auto; } .cmsgall .bt { height: 28px; gap: 6px; padding: 0 10px 0 6px; border-radius: 9px; } .cmsgall img { width: 18px; height: 18px; }
+.dfoot.crsvp { flex-direction: column; align-items: stretch; gap: 8px; } .crsvp .seg { width: 100%; display: flex; } .crsvp .seg button { flex: 1; white-space: nowrap; padding: 0 6px; }
+.crsvp .seg button::before { content: ""; display: inline-block; width: 6px; height: 6px; margin-right: 6px; border-radius: 50%; corner-shape: round; background: currentColor; opacity: 0; vertical-align: 1px; }
+.crsvp.is-yes .seg button.on { color: oklch(0.8 0.14 150); } .crsvp.is-maybe .seg button.on { color: oklch(0.82 0.13 80); } .crsvp.is-no .seg button.on { color: oklch(0.72 0.16 25); } .crsvp .seg button.on::before { opacity: 1; }
+[data-mode="light"] .crsvp.is-yes .seg button.on { color: oklch(0.5 0.14 150); } [data-mode="light"] .crsvp.is-maybe .seg button.on { color: oklch(0.55 0.13 70); } [data-mode="light"] .crsvp.is-no .seg button.on { color: oklch(0.55 0.18 25); }
+/* the new-event composer, risen from the bar */
+.cdcard { position: absolute; left: 50%; bottom: 76px; z-index: 21; width: min(480px, calc(100% - 32px)); transform: translateX(-50%); padding: 14px 14px 10px 20px; border-radius: 18px; background: var(--float-solid, var(--pop)); box-shadow: var(--sh-float), inset 0 0 0 1px var(--hair); animation: cdrise .26s var(--spring); overflow: hidden; }
+@keyframes cdrise { from { opacity: 0; transform: translate(-50%, 10px); } }
+.cdbar { position: absolute; left: 0; top: 0; bottom: 0; width: 5px; background: oklch(0.7 0.13 var(--eh)); }
+.cdname { width: 100%; height: 34px; border: 0; outline: 0; background: none; color: var(--ink); font: 650 17px var(--font); letter-spacing: -.01em; } .cdname::placeholder { color: var(--ink-4); }
+.cdrow { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; min-height: 38px; border-top: 1px solid var(--hair); } .cdrow > svg.i { width: 15px; height: 15px; margin-right: 4px; color: var(--ink-3); }
+.cdrow input { flex: 1; min-width: 120px; height: 32px; border: 0; outline: 0; background: none; color: var(--ink); font: 13px var(--font); } .cdrow input::placeholder { color: var(--ink-4); }
+.cdchip { height: 28px; padding: 0 10px; border-radius: 9px; background: var(--well); box-shadow: var(--well-edge); font-size: 12.5px; font-weight: 500; font-variant-numeric: tabular-nums; } .cdchip:hover { color: var(--ink); filter: brightness(1.08); }
+.cdto { font-size: 12px; color: var(--ink-4); letter-spacing: .01em; } .cdrow em { margin-left: auto; font-style: normal; font-size: 12px; color: var(--ink-3); letter-spacing: .01em; }
+.cdp { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 4px 0 4px; border-radius: 999px; background: var(--chip); box-shadow: var(--chip-edge); font-size: 12.5px; font-weight: 500; } .cdp button { width: 18px; height: 18px; display: grid; place-items: center; border-radius: 50%; color: var(--ink-3); } .cdp button:hover { background: var(--fill-2); } .cdp button svg.i { width: 11px; height: 11px; }
+.cdsug { display: grid; gap: 2px; margin: 2px 0 4px 24px; padding: 4px; border-radius: 12px; background: var(--raised); box-shadow: var(--chip-edge); } .cdsug button { display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 8px; border-radius: 9px; text-align: left; } .cdsug button:hover, .cdsug button.first { background: var(--fill-1); }
+.cdpop { width: 180px; max-height: 260px; overflow-y: auto; scrollbar-width: none; }
+/* Calendar (v70): the day panel is the LumaUI details pane, open by default (its main view); the event editor is the bar grown (LumaUI action center) */
+.calwin .fbar[hidden] { display: none; } .calcals.lcorner { gap: 4px; } .calcals .ccal { flex: none; } #cal-cals .ib { width: 36px; height: 36px; border-radius: 12px; } #cal-cals .ib.on { background: var(--fill-2); color: var(--ink); }
+.win.phone #cal-cals .ccal span, .win.phone #cal-cals .lmodes button span { display: none; } .win.phone #cal-cals .lmodes button { padding: 0 9px; } .win.phone .cfree2 b { opacity: 1; }
+#cal-det .ldph .calback { margin-left: -6px; } #cal-det .ldph b { flex: 1; }
+.calday { display: grid; gap: 3px; padding: 2px 0 12px; } .calday b { font: var(--t-title-2); font-size: 16px; } .calday small { font: var(--t-caption); letter-spacing: .01em; color: var(--ink-3); }
+.calnone { margin: 2px 0 6px; font-size: 13px; color: var(--ink-3); }
+.calevh { position: relative; display: grid; gap: 2px; padding: 2px 0 14px 14px; } .calevh > i { position: absolute; left: 0; top: 3px; bottom: 16px; width: 4px; border-radius: 2px; background: oklch(0.72 0.13 var(--eh)); }
+.calevh b { margin-bottom: 4px; font: var(--t-title-2); font-size: 17px; } .calevh small { font-size: 12.5px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+#cal-det .cevacts { margin: 0 0 2px; padding-bottom: 14px; } #cal-det .lmini.place { width: 100%; } #cal-det .wide3 { width: 100%; justify-content: center; margin-top: 12px; }
+.calrsvp { display: flex; width: 100%; } .calrsvp button { flex: 1; padding: 0 6px; white-space: nowrap; }
+.calcal { display: inline-flex; align-items: center; gap: 7px; } #cal-det .cnote2 { margin: 0; font-size: 13px; line-height: 1.5; color: var(--ink-2); }
+.calac { --eh: 250; } .calacb { padding: 8px 16px 6px; } .calacb .cdname { height: 36px; } .calacb .cdsug { margin-left: 0; } .calac .lach .lacmode svg.i { color: oklch(0.72 0.13 var(--eh)); }
+.calacb .cdrow .sp { flex: 1; } .calacb .cdrow > svg.i + .cdchip .cdot { margin-right: 6px; } .calacb .cdchip { display: inline-flex; align-items: center; } .calacb .cdchip svg.i { width: 13px; height: 13px; margin-left: 4px; color: var(--ink-3); }
+.cfresh { animation: cfresh 1.6s ease-out 2; } @keyframes cfresh { 0%, 100% { box-shadow: none; } 30% { box-shadow: 0 0 0 2px oklch(0.72 0.13 var(--eh, 250)); } }
+/* Buttons, one standard (24 Sep): key = the one job; fill = secondary, a grey you can see in both modes; plain = tertiary */
+[data-mode] .win .bt.fill, [data-mode] .win .dfoot .bt.fill, [data-mode] .win .pacts .bt.fill { background: var(--fill-2); box-shadow: none; color: var(--ink); } [data-mode] .win .bt.fill:hover, [data-mode] .win .dfoot .bt.fill:hover, [data-mode] .win .pacts .bt.fill:hover { background: var(--fill-3); }
+/* Filer search results */
+.fresults { margin: 0 16px 96px; } .fresg + .fresg { margin-top: 10px; }
+.fresg h6 { display: flex; gap: 8px; margin: 6px 12px 6px; padding-bottom: 8px; border-bottom: 1px solid var(--hair); font-size: 11.5px; font-weight: 600; color: var(--ink-3); letter-spacing: .01em; } .fresg h6 span { color: var(--ink-4); font-weight: 500; }
+.fres { display: grid; grid-template-columns: 32px minmax(0, 1fr) 120px 130px; align-items: center; gap: 12px; width: 100%; padding: 8px 12px; border-radius: 10px; text-align: left; } .fres:hover { background: var(--fill-1); } .fres.on { background: var(--chip); box-shadow: var(--chip-edge); }
+.fres .mini { width: 32px; height: 32px; display: grid; place-items: center; } .fres .mini img { width: 32px; height: 32px; border-radius: 7px; object-fit: cover; } .fres .mini svg.folder { width: 30px; height: 24px; filter: none; } .fres .mini svg.i { width: 20px; height: 20px; color: var(--ink-3); }
+.frt { min-width: 0; display: grid; gap: 2px; } .frt b { font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .frt em { font-style: normal; font-size: 12px; color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; letter-spacing: .01em; } .frt small { font-size: 11.5px; color: var(--ink-3); letter-spacing: .01em; }
+.fres .dim { font-size: 12px; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: .01em; }
+.fres mark { background: oklch(0.72 0.12 var(--acc) / .3); color: var(--ink); border-radius: 3px; padding: 0 1px; }
+.fmore { display: inline-flex; align-items: center; gap: 4px; margin: 10px 12px; font-size: 12.5px; font-weight: 600; color: var(--acc-ink); } .fmore svg.i { width: 14px; height: 14px; }
+.fnone { display: grid; justify-items: center; gap: 12px; padding: 90px 0; color: var(--ink-3); } .fnone b { color: var(--ink-2); font-weight: 600; } .fnone button { height: 32px; padding: 0 12px; border-radius: 10px; background: var(--fill-1); font-weight: 500; color: var(--ink); } .fnone button:hover { background: var(--fill-2); }
+#w-filer .ttl .fscope { margin-top: 12px; width: max-content; }
+.fqx { width: 22px; height: 22px; margin-right: -5px; flex: none; border-radius: 6px; display: grid; place-items: center; color: var(--ink-3); } .fqx:hover { background: var(--fill-2); color: var(--ink); } .fqx svg.i { width: 13px; height: 13px; } .srch:has(input:placeholder-shown) .fqx { display: none; }
+/* Filer on the same frame as every app: the title bar names the app, the places sit on the lighter frame, the files in an
+   inset island, and Information docks as an island beside them */
+#w-filer .rail { background: transparent; padding-top: 6px; }
+#w-filer .fdock { margin: 0; background: var(--isle); box-shadow: var(--isle-out); border-radius: 12px; position: relative; }
+#w-filer .ttl { padding: 22px 28px 10px; }
+.fdockh { display: flex; align-items: center; justify-content: space-between; height: 48px; padding: 0 8px 0 16px; flex: none; } .fdockh b { font-size: 14px; font-weight: 650; } .fdockh .ib { width: 30px; height: 30px; color: var(--ink-3); }
+.fdock .scr { flex: 1; min-height: 0; overflow-y: auto; padding: 0 16px 16px; } .fdock .pv { height: 150px; display: grid; place-items: center; border-radius: 12px; background: var(--fill-1); overflow: hidden; }
+.fdock .pv > img { width: 100%; height: 100%; object-fit: cover; } .fdock .pv svg.folder { width: 90px; } .fdock .pv .paper-ic { transform: scale(1.2); }
+.fdock h3 { margin: 14px 0 0; font-size: 15px; font-weight: 650; word-break: break-word; } .fdock h6 { margin: 16px 0 8px; font-size: 11.5px; font-weight: 600; color: var(--ink-3); letter-spacing: .01em; }
+.fdl { margin: 10px 0 0; display: grid; } .fdl div { display: flex; justify-content: space-between; gap: 12px; padding: 7px 0; font-size: 12.5px; border-top: 1px solid var(--hair); } .fdl div:first-child { border-top: 0; } .fdl dt { color: var(--ink-3); } .fdl dd { margin: 0; font-weight: 550; text-align: right; }
+.fdock .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.fcols { display: flex; height: calc(100% - 4px); margin: 0 16px; overflow-x: auto; padding-bottom: 84px; }
+.fcol { width: 224px; flex: none; padding: 2px 8px; overflow-y: auto; border-right: 1px solid var(--hair); } .fcol:last-child { border-right: 0; }
+.fcrow { display: flex; align-items: center; gap: 10px; width: 100%; height: 34px; padding: 0 8px; border-radius: 10px; text-align: left; font-size: 13px; color: var(--ink-2); } .fcrow:hover { background: var(--fill-1); }
+.fcrow .mini { width: 20px; height: 20px; flex: none; display: grid; place-items: center; color: var(--ink-3); } .fcrow .mini svg.folder { width: 20px; height: 16px; } .fcrow .mini svg.i { width: 16px; height: 16px; }
+.fcrow .lab { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .fcrow > svg.i { width: 13px; height: 13px; color: var(--ink-4); }
+.fcrow.on { background: var(--chip); box-shadow: var(--chip-edge); color: var(--ink); } .fcrow.trail { background: var(--fill-1); color: var(--ink); }
+.fcnone { margin: 10px; font-size: 12.5px; color: var(--ink-4); }
+/* Columns (audit #3): a comfortable width each, so a wide window shows more of the path and none stretches; a phone shows one at a time */
+#w-filer .fcol { width: auto; flex: 0 0 224px; } #w-filer .fcols { scroll-behavior: smooth; } .fcrow .mini > img { width: 18px; height: 18px; border-radius: 4px; object-fit: cover; }
+#w-filer.phone .fcols { margin: 0 8px; scroll-snap-type: x mandatory; } #w-filer.phone .fcol { flex: 0 0 100%; max-width: none; border-right: 0; scroll-snap-align: start; }
+/* The selection chip is the file card at bar size: the file's own face (#13) */
+.win .fbar .who .th { overflow: hidden; } .fbar .who .th > img { width: 20px; height: 20px; object-fit: contain; } .fbar .who .th.img > img { width: 100%; height: 100%; object-fit: cover; }
+.fbar .who .th svg.folder { width: 22px; height: 18px; } .fbar .who b.lmid { max-width: 220px; } #w-filer.phone .fbar .who b { display: none !important; }
+.fcprev { width: 260px; display: grid; align-content: start; gap: 4px; padding: 8px 16px; } .fcprev .pv { height: 160px; margin-bottom: 8px; display: grid; place-items: center; border-radius: 12px; background: var(--fill-1); overflow: hidden; } .fcprev .pv > img { width: 100%; height: 100%; object-fit: cover; }
+.fcprev b { font-size: 14px; font-weight: 650; word-break: break-word; } .fcprev span { font-size: 12px; color: var(--ink-3); letter-spacing: .01em; }
+/* Photos: Information docks beside the photo, the same component as Viewer's */
+.pdockt { margin: 2px 0 0; font-size: 15px; font-weight: 650; }
+/* Tide: sections and search float top right in the island */
+.tflo { position: absolute; top: 16px; right: 16px; z-index: 14; display: flex; align-items: center; gap: 4px; padding: 4px; }
+.tflo .ttabs { margin: 0; } .tflo .tsrch { width: 180px; }
+/* Corner pills and folded panels are made of the same stuff as the bottom bar; panels and popovers are glass */
+.win .flo, .win .supill { background: var(--bar); box-shadow: var(--bar-edge); border-radius: 16px; }
+.win .flo { padding: 4px; gap: 4px; } .win .flo .ib, .win .flo .bt { height: 36px; border-radius: 12px; } .win .flo .ib { width: 36px; }
+/* Session: a real ruler band (sections, then bar numbers, then the loop), a header over the tracks, and the library as an island */
+.sewin .seheads { padding-top: 0; } .sehh { display: grid; align-content: center; height: 52px; padding: 0 8px 0 14px; } .sehh b { font-size: 13.5px; font-weight: 650; } .sehh span { font-size: 11.5px; color: var(--ink-3); letter-spacing: .01em; }
+.sewin .seruler { height: 52px; } .sewin .sesec { top: 6px; height: 20px; line-height: 20px; }
+.sewin .seruler em { bottom: 8px; height: 12px; line-height: 12px; } .sewin .seloop { top: auto; bottom: 1px; height: 4px; }
+.sewin .sehead-line { top: 30px; }
+.sewin .selibdock { width: 0; flex: none; margin: 0 8px 8px 0; padding: 0; opacity: 0; overflow: hidden; display: flex; flex-direction: column; transition: width .3s var(--ease), padding .3s var(--ease), opacity .2s; }
+.sewin.libopen .selibdock { width: 260px; padding: 4px 12px 12px; opacity: 1; } .sewin:not(.libopen) .selibdock { margin-right: 0; }
+.sewin .selibdock .scr { flex: 1; min-height: 0; overflow-y: auto; margin: 0 -6px; padding: 0 6px; } .selibsub { margin: -8px 0 10px; font-size: 12px; color: var(--ink-3); letter-spacing: .01em; } .sewin .selq { margin: 0 0 8px; width: auto; }
+.sewin .isle.sework { margin-left: 0; } .sewin .ibody { padding-left: 8px; }
+.sewin .selitem.on { background: var(--chip); box-shadow: var(--chip-edge); }
+.seslider input, .drsl input { accent-color: auto; }
+/* When an inspector is open it floats over the right of the lanes; leave room so the arrangement can be scrolled clear of it */
+.sewin .selanes { overflow-x: auto; } .sewin .setracks, .sewin .seruler { width: calc(48 * var(--ppb, 22px) + 16px); }
+.sewin:has(.supanel.r:not(.min):not(.gone)) .selanes { padding-right: 300px; }
+/* Favorites: a heart (--love) for media you love, a star (--fav) for things you mark to come back to. Lit icon, no plate behind it. */
+.win .fbar .ib.on:has(svg.i) :is([data-mefav], [data-pfav]) { }
+.mewin .fbar .ib[data-mefav].on, .crwin [data-crflag].on, .nfloat .ib.faved { background: transparent; box-shadow: none; }
+/* Messages: the list starts below the floating pills and fades out as it passes under them */
+.mwin #m-body { padding-top: 72px; -webkit-mask: linear-gradient(transparent 52px, #000 104px); mask: linear-gradient(transparent 52px, #000 104px); }
+.mfile .bt.sm { background: var(--fill-2); box-shadow: none; color: var(--ink); } .mfile .bt.sm:hover { background: var(--fill-3); }
+.msg.k-file .bub, .mine.k-file .bub { padding: 0; background: none; box-shadow: none; } .msg.k-file.sel .bub .lfc { box-shadow: var(--chip-edge), 0 0 0 2px var(--acc-ink); }
+/* Messages (v70): cards from the owning apps, the selected message's bar, the composer that grows into the editor, the LumaUI details pane */
+.msg:is(.k-place, .k-event, .k-song, .k-contact) .bub { padding: 0; background: none; box-shadow: none; } .msg:is(.k-place, .k-event, .k-song, .k-contact).sel .bub .lmini { box-shadow: var(--chip-edge), 0 0 0 2px var(--acc-ink); }
+.mt.rich p, .mt.rich ul { margin: 0; } .mt.rich ul { padding-left: 18px; } .mt.rich a { color: inherit; text-decoration: underline; }
+.mbar[hidden] { display: none; } .mwin .mbar.acting { width: auto; white-space: nowrap; } .mwin .mbar.acting .mcin { gap: 4px; }
+.mbar .msubj { display: inline-flex; align-items: center; gap: 8px; min-width: 0; max-width: 240px; height: 36px; padding: 0 3px 0 6px; margin-right: 2px; border-radius: 12px; background: var(--chip); box-shadow: var(--chip-edge); font-size: 13px; }
+.mbar .msubj > span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .mbar .msubj > svg.i { width: 15px; height: 15px; flex: none; color: var(--ink-3); }
+.mbar .msubj .msubth { width: 26px; height: 26px; flex: none; border-radius: 7px; object-fit: cover; } .mbar .msubj .av { flex: none; }
+.mwin .mbar .msubj .ib { width: 28px; height: 28px; flex: none; border-radius: 9px; color: var(--ink-3); } .mbar .msubj .ib:hover { color: var(--ink); background: var(--fill-1); }
+.mbar .lacctx { padding: 0 0 2px 10px; } .mbar .lacctx .ib { width: 28px; height: 28px; flex: none; border-radius: 9px; color: var(--ink-3); } .mbar .lacctx .ib svg.i { width: 14px; height: 14px; }
+.win.phone .mbar.acting .bt > span, .mwin .mbar.acting.tight .bt > span { display: none; } .win.phone .mbar.acting .msubj { flex: 1; max-width: none; }
+#m-comp .lacctx { padding: 0 16px 2px; } #m-sel, #cr-sel, #n-sel { z-index: 40; }
+#m-det .ldpph + .lfc { margin-top: 8px; } #m-det .ldpacts .ib[aria-pressed="true"] { color: var(--acc-ink); } .ldpwho[disabled] { cursor: default; opacity: 1; }
+#m-det .ldpkv dd.num { font-variant-numeric: tabular-nums; letter-spacing: .02em; }
+/* Messages accounts: each network wears its own app mark on a tile; the network's page is its mark, what it does, the honest caveat, one sign-in */
+.mnet { flex: none; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 9px; background: var(--well); box-shadow: var(--well-edge); color: var(--ink-2); overflow: hidden; } .mnet svg.i { width: 17px; height: 17px; }
+.mnet img { width: 20px; height: 20px; } .mnet.lg { width: 64px; height: 64px; border-radius: 18px; } .mnet.lg img { width: 40px; height: 40px; } .mnet.lg svg.i { width: 30px; height: 30px; }
+.mnet.gm { background: #fff; box-shadow: inset 0 0 0 1px oklch(0 0 0 / .06); } .mnet.wa { background: none; box-shadow: none; } .mnet.wa img { width: 100%; height: 100%; }
+.mnet.sg, .mnet.tg { background: #3a76f0; } .mnet.tg { background: #26a5e4; } .mnet.sg::before, .mnet.tg::before { content: ""; width: 58%; height: 58%; background: #fff; -webkit-mask: var(--m) center/contain no-repeat; mask: var(--m) center/contain no-repeat; }
+.mnet.sg { --m: url("apps/depot/marks/signal.svg"); } .mnet.tg { --m: url("apps/depot/marks/telegram.svg"); } .mnet.sms { background: oklch(0.62 0.12 150); color: #fff; } .mnet.luma img { width: 22px; height: 22px; }
+.crmi > span.mnet { flex: none; display: grid; width: 20px; height: 20px; border-radius: 6px; box-shadow: none; } .crmi .mnet img { width: 14px; height: 14px; } .crmi .mnet svg.i { width: 12px; height: 12px; color: inherit; } .crmi .mnet.wa img { width: 100%; height: 100%; }
+#m-det .mnetd { margin: 0 0 12px; font: var(--t-body); color: var(--ink-2); text-align: center; text-wrap: pretty; }
+#m-det .mnetw { display: flex; gap: 10px; padding: 10px 12px; border-radius: 12px; background: var(--well); box-shadow: var(--well-edge); font: var(--t-caption); letter-spacing: .01em; color: var(--ink-2); text-wrap: pretty; } #m-det .mnetw svg.i { flex: none; width: 15px; height: 15px; margin-top: 1px; color: oklch(0.78 0.13 75); }
+#m-det .mnetgo { display: grid; gap: 10px; margin-top: 16px; } #m-det .mnetgo .bt { justify-self: stretch; justify-content: center; height: 40px; }
+#m-det .mnetwait { display: grid; justify-items: center; gap: 12px; padding: 4px 8px 0; text-align: center; font: var(--t-body); color: var(--ink-2); text-wrap: pretty; } #m-det .mnetwait .tspin { width: 22px; height: 22px; border-width: 2.5px; border-top-color: var(--acc-ink, oklch(0.75 0.12 250)); }
+#m-det .ldphero .mnetok { display: inline-flex; align-items: center; gap: 6px; margin-top: 4px; font: 600 12px var(--font); color: oklch(0.78 0.13 150); } #m-det .ldphero .mnetok svg.i { width: 14px; height: 14px; }
+.crow .tm .rcs { font-weight: 600; letter-spacing: .02em; }
+/* Tasks: priority is a picker, so it's a well; the flag is lit when set, not plated; suggestion buttons are plain secondary buttons */
+.tkpri { display: inline-flex !important; flex-wrap: nowrap; width: max-content; padding: 3px; border-radius: 11px; background: var(--well); box-shadow: var(--well-edge); } .tkpri button { height: 26px; border-radius: 8px; }
+.tkpri button.on { background: var(--chip) !important; box-shadow: var(--chip-edge); color: var(--ink) !important; } .tkpri button.on[data-tkpri="3"] { color: oklch(0.72 0.17 30) !important; }
+.tkdh .ib { background: transparent; box-shadow: none; color: var(--ink-3); } .tkdh .ib:hover { background: var(--fill-1); } .tkdh .ib.on { background: transparent; } .tkdh .ib.on svg.i { fill: currentColor; }
+.tkrow.sug .bt.sm.fill { background: var(--fill-1); box-shadow: none; }
+/* Charlie: composing is an action like any other, not a second key competing with the bar; Unread is a toggle; the flag lights, it isn't plated */
+.crsh { display: flex; gap: 6px; align-items: center; } .crsh .srch { flex: 1; width: auto; } .crnewib { color: var(--ink-2); }
+.crchip:not(.on) { background: transparent; box-shadow: none; color: var(--ink-3); } .crchip:not(.on):hover { background: var(--fill-1); color: var(--ink); }
+.crright .ib.on.flag { background: transparent; box-shadow: none; color: var(--fav); } .crright .ib.on.flag svg.i { fill: currentColor; }
+/* Weather: places are one choice among several, so they sit in a well; everything floats top right as one pill */
+.wbtabs { position: absolute; top: 16px; left: 16px; right: auto; z-index: 14; gap: 4px; padding: 4px; border-radius: 16px; background: var(--bar); box-shadow: var(--bar-edge); backdrop-filter: blur(24px) saturate(1.6); -webkit-backdrop-filter: blur(24px) saturate(1.6); }
+.wbtabs .sp { display: none; } .wbtplaces { display: flex; gap: 2px; padding: 3px; border-radius: 12px; background: var(--well); box-shadow: var(--well-edge); }
+.wbtplaces .wbt { height: 30px; border-radius: 9px; padding: 0 11px 0 8px; } .wbtabs .ib { width: 36px; height: 36px; border-radius: 12px; }
+#wb-body .wbpad { padding-top: 92px; }
+/* Document title bars: Share is a quiet button, like Write's; only Present is a key */
+.sutopr .bt.sm.fill { background: transparent; box-shadow: none; height: 32px; padding: 0 10px; font-size: 13px; } .sutopr .bt.sm.fill:hover { background: var(--fill-1); }
+/* Ari v68: the trace is a quiet list, not a poster */
+.arich { padding: 12px 14px 10px; border-radius: 16px; background: var(--fill-1); box-shadow: inset 0 0 0 1px var(--hair); }
+.arich > header { display: flex; align-items: center; gap: 8px; min-height: 22px; } .arich > header b { font-size: 13px; font-weight: 600; } .arich > header time { margin-left: 0; font-size: 12px; color: var(--ink-3); letter-spacing: .01em; }
+.argap { flex: 1; } .aristate { padding: 0; background: none !important; font-size: 12px; font-weight: 500; letter-spacing: .01em; } .aristate.done, .aristate.undone { color: var(--ink-3); }
+.arlnk { font-size: 12px; font-weight: 500; color: var(--ink-3); padding: 2px 6px; border-radius: 6px; letter-spacing: .01em; } .arlnk:hover { color: var(--ink); background: var(--fill-1); }
+.arsteps { position: relative; margin: 8px 0 0; padding: 0; list-style: none; display: grid; }
+.arsteps::before { content: ""; position: absolute; left: 11px; top: 14px; bottom: 14px; width: 1.5px; background: var(--hair); }
+.arstep { position: relative; display: flex; align-items: center; gap: 10px; min-height: 32px; font-size: 13px; }
+.arstep.run { animation: arin .35s var(--ease) both; } .arstep.wait { opacity: .45; } .arstep.undone .arsl { text-decoration: line-through; color: var(--ink-4); }
+.argl { position: relative; z-index: 1; width: 24px; height: 24px; flex: none; border-radius: 7px; display: grid; place-items: center; color: #fff; background: linear-gradient(160deg, oklch(0.64 0.12 var(--h)), oklch(0.48 0.12 var(--h))); box-shadow: 0 0 0 2.5px var(--isle); }
+.argl svg.i { width: 13px; height: 13px; } .argl.av { background: none; border-radius: 50%; } .argl.av .av { box-shadow: none; } .argl.img { background: center/cover; }
+.argl.date { background: #fff; color: #1a1a1c; } .argl.date b { font-size: 10.5px; font-weight: 650; letter-spacing: .01em; } .argl.date::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 5px; border-radius: 7px 7px 0 0; background: oklch(0.62 0.19 25); }
+.arsl { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--ink-2); } .arv { color: var(--ink-3); } .arsl b { font-weight: 600; color: var(--ink); } .arsl small { margin-left: 8px; font-size: 12px; color: var(--ink-4); letter-spacing: .01em; }
+.arst { flex: none; font-style: normal; font-size: 11.5px; font-weight: 600; letter-spacing: .01em; } .arst.ok { display: grid; color: var(--good); } .arst.ok svg.i { width: 14px; height: 14px; stroke-width: 2.5; } .arst.ask { color: oklch(0.8 0.14 75); } [data-mode="light"] .arst.ask { color: oklch(0.55 0.14 65); } .arst.un { color: var(--ink-4); }
+.arst .arispin { width: 11px; height: 11px; color: oklch(0.75 0.1 var(--acc)); }
+.ariask { margin: 6px 0 2px 34px; padding: 10px 12px 8px; border-radius: 12px; background: var(--isle); box-shadow: inset 0 0 0 1px var(--hair); }
+.ardraft { margin: 0; display: grid; gap: 2px; font-size: 13px; line-height: 1.45; } .ardraft b { font-weight: 600; } .ardraft span { color: var(--ink-3); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.ariaskact { display: flex; align-items: center; gap: 6px; margin-top: 8px; } .ariaskact > span { flex: 1; } .ariaskact .bt.sm { height: 30px; padding: 0 12px; border-radius: 9px; font-size: 12.5px; }
+.ariaskact .bt.sm.quiet { color: var(--ink-3); padding: 0 8px; margin-left: -8px; } .ariaskact .bt.sm:not(.key):not(.quiet) { background: var(--fill-1); }
+/* lock-in: what Ari did reads like a receipt. A raised card, a hairline under its title, plain glyphs in their colour, room between steps */
+.arich { padding: 0; border-radius: 18px; background: var(--chip); box-shadow: var(--chip-edge); overflow: hidden; }
+.arich > header { min-height: 46px; padding: 0 16px; gap: 10px; border-bottom: 1px solid var(--hair); } .arich > header b { font-size: 13.5px; }
+.arich > header .argap { flex: 1; } .arich > header time { font-size: 12px; color: var(--ink-3); letter-spacing: .01em; }
+.aristate { padding: 0; background: none !important; font-size: 12px; font-weight: 600; letter-spacing: .01em; } .aristate.done { color: var(--ink-3); }
+.arsteps { margin: 0; padding: 6px 8px 8px; } .arsteps::before { display: none; }
+.arstep { min-height: 38px; gap: 12px; padding: 0 8px; border-radius: 10px; font-size: 13px; }
+.argl { width: 22px; height: 22px; border-radius: 0; background: none; box-shadow: none; color: oklch(0.78 0.1 var(--h)); } [data-mode="light"] .argl { color: oklch(0.55 0.13 var(--h)); } .argl svg.i { width: 17px; height: 17px; }
+.argl.av, .argl.img { box-shadow: none; } .argl.img { border-radius: 6px; } .argl.av .av { width: 22px; height: 22px; }
+.arsl small { margin-left: 10px; font-size: 12px; color: var(--ink-3); letter-spacing: .01em; }
+.ariwhere { display: inline-flex; align-items: center; gap: 5px; } .ariwhere svg.i { width: 13px; height: 13px; } .ariside .lfoot { margin-top: auto; } .arinone { margin: 10px; font-size: 12.5px; color: var(--ink-3); }
+.arst.ok { color: var(--ink-4); } .arst.ok svg.i { width: 14px; height: 14px; stroke-width: 2.2; }
+.ariask { margin: 2px 16px 14px 50px; padding: 12px 14px 10px; border-radius: 14px; background: var(--well); box-shadow: var(--well-edge); }
+@container win (max-width: 560px) { .ariask { margin: 2px 12px 12px; } .ariaskact { flex-wrap: wrap; } .ariaskact > span { flex-basis: 0; } .ariaskact .bt.key { margin-left: auto; } }   /* phone: the draft spans the card and its buttons wrap, never clip */
+.arich.compact, .ariact .arich.compact { padding: 0 !important; } .arich.compact > header { min-height: 44px; padding: 0 16px; }
+/* Activity: room to breathe, times on the left in 24-hour */
+.ariday h6 { margin: 32px 0 12px; } .ariact { grid-template-columns: 60px minmax(0, 1fr); gap: 12px; margin-bottom: 20px; } .ariact > time { padding-top: 14px; font-size: 13px; color: var(--ink-2); }
+.arilnk { margin: 8px 0 0 16px; }
+/* the model picker in the sidebar */
+.arimsel { width: 100%; gap: 9px; margin-top: 6px; padding: 0 10px; height: 40px; border-radius: 12px; background: var(--well); box-shadow: var(--well-edge); color: var(--ink); font-weight: 600; font-size: 12.5px; }
+.arimsel:hover { background: var(--well); filter: brightness(1.1); color: var(--ink); } .arimsel .tx { flex: 1; } .arimsel > svg.i { width: 14px; height: 14px; color: var(--ink-3); flex: none; }
+.arisay.chain { margin-top: -4px; } .arich.compact .arstep { min-height: 34px; }
+/* The answer's signature is small print, and bigger models are a quiet offer */
+.arifoot .bt.sm { background: none !important; color: var(--ink-3); padding: 0 6px; } .arifoot .bt.sm:hover { color: var(--ink); background: var(--fill-1) !important; }
+.aradd-ic { width: 28px; height: 28px; flex: none; border-radius: 9px; display: grid; place-items: center; color: var(--ink-3); box-shadow: inset 0 0 0 1.5px var(--hair); } .aradd-ic svg.i { width: 14px; height: 14px; } .aradd b { color: var(--ink-2); }
+.ariwin .fbar.aricomp .arimodel { width: 40px; height: 40px; padding: 0; justify-content: center; background: transparent; color: var(--ink-3); font-weight: 500; font-size: 12.5px; } .ariwin .fbar.aricomp .arimodel:hover { background: var(--fill-1); color: var(--ink); }
+.ariwin .fbar.aricomp .arimodel > svg.i { width: 17px; height: 17px; color: currentColor; } .ariwin .fbar.aricomp .arimodel.cloud { color: oklch(0.78 0.1 var(--acc)); }
+.mdsheet.apsheet { width: 460px; padding: 18px 18px 16px; } .apvh { display: flex; align-items: center; gap: 10px; } .apvh h2 { flex: 1; margin: 0; } .apvh .ib { width: 30px; height: 30px; color: var(--ink-3); } .apvh .ib:first-child { margin-left: -6px; }
+.apsub { margin: 6px 0 14px !important; } .aplist { display: grid; gap: 2px; } .aprov { display: flex; align-items: center; gap: 12px; padding: 8px 10px 8px 8px; border-radius: 12px; text-align: left; } .aprov:hover { background: var(--fill-1); }
+.aprov span { flex: 1; min-width: 0; display: grid; } .aprov b { font-size: 13.5px; font-weight: 600; } .aprov small { font-size: 12px; color: var(--ink-3); letter-spacing: .01em; } .aprov > svg.i { width: 15px; height: 15px; color: var(--ink-4); } .aprov[disabled] { opacity: 1; cursor: default; } .aprov[disabled]:hover { background: none; }
+.apon { font-style: normal; font-size: 11.5px; font-weight: 600; color: var(--good); letter-spacing: .01em; } .apown { width: 36px; height: 36px; border-radius: 11px; display: grid; place-items: center; color: var(--ink-2); box-shadow: inset 0 0 0 1.5px var(--hair); } .apown svg.i { width: 17px; height: 17px; }
+.apfld { display: grid; gap: 6px; margin-top: 16px; } .apfld span { font-size: 12px; font-weight: 600; color: var(--ink-3); letter-spacing: .01em; } .apfld input { height: 40px; padding: 0 12px; border: 0; outline: 0; border-radius: 12px; background: var(--well); box-shadow: var(--well-edge); color: var(--ink); font: 500 13.5px var(--mono, ui-monospace, monospace); }
+.apfld input:focus { box-shadow: var(--well-edge), 0 0 0 2px var(--acc-ink); } .aphint { margin: 8px 0 0 !important; font-size: 12px !important; color: var(--ink-3) !important; letter-spacing: .01em; } .aphint b { color: var(--ink-2); font-weight: 600; }
+.aptest { display: flex; align-items: center; gap: 7px; min-height: 22px; margin-top: 10px; font-size: 12.5px; font-weight: 500; color: var(--ink-3); } .aptest svg.i { width: 14px; height: 14px; } .aptest.ok { color: var(--good); } .aptest.bad { color: oklch(0.7 0.16 25); } .aptest .arispin { width: 12px; height: 12px; }
+.aph { margin: 12px 0 6px; font-size: 12px; font-weight: 600; color: var(--ink-3); letter-spacing: .01em; } .apmods { display: grid; gap: 2px; } .apmod { display: flex; align-items: center; gap: 10px; padding: 7px 8px; border-radius: 10px; text-align: left; } .apmod:hover { background: var(--fill-1); }
+.apck { width: 18px; height: 18px; border-radius: 6px; display: grid; place-items: center; box-shadow: inset 0 0 0 1.5px var(--ink-4); color: transparent; } .apck svg.i { width: 12px; height: 12px; stroke-width: 3; } .apmod.on .apck { background: var(--acc-ink, oklch(0.7 0.13 250)); box-shadow: none; color: #fff; }
+.apmod span { display: grid; } .apmod b { font-size: 13px; font-weight: 600; } .apmod small { font-size: 11.5px; color: var(--ink-3); letter-spacing: .01em; }
+.arlogo { flex: none; border-radius: 30%; overflow: hidden; box-shadow: 0 0 0 .5px rgba(0,0,0,.25), 0 1px 2px rgba(0,0,0,.25); } @supports (corner-shape: squircle) { .arlogo { corner-shape: squircle; border-radius: 42%; } }
+[data-mode="light"] .arlogo { box-shadow: 0 0 0 .5px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.12); }
+/* Memos: a plain hairline divides the waveform from the controls. The playhead stays inside the waveform; marks are small dots above it. */
+.medeck .mewave > i.merail { position: absolute; left: 0; right: 0; top: auto; bottom: -13px; height: 1px; min-width: 0; flex: none; border-radius: 0; background: color-mix(in srgb, var(--ink) 9%, transparent); pointer-events: none; }
+.medeck .mehead { top: 0; bottom: 0; width: 1.5px; margin-left: -.75px; background: color-mix(in srgb, var(--ink) 80%, transparent); }
+.medeck .memark { top: -10px; bottom: auto; width: 5px; height: 5px; margin-left: -2.5px; box-shadow: none; opacity: .9; } .medeck .memark span { bottom: 10px; }
+/* Filters sit at the foot of the sidebar, like the drawers the list rests on */
+.sidetabs { flex: none; margin: 8px 0 0 !important; padding-top: 8px; border-top: 1px solid var(--hair); } .sidetabs .seg { width: 100%; } .sidetabs .seg button { flex: 1; }
+.cthd { font-size: 14px; font-weight: 650; padding-left: 8px; } .crtabs { margin: 8px 10px 10px !important; }
+.sidetabs .seg button { padding: 0 6px; font-size: 12.5px; }
+/* One slider: a recessed track, the chosen part lit, a small key for a thumb. Two-sided values light from the middle. */
+.win input[type="range"]:not(.rng) { -webkit-appearance: none; appearance: none; height: 16px; margin: 0; background: transparent; cursor: pointer; --a: 0%; --b: 50%; --tint: oklch(0.76 0.11 var(--acc)); }
+.win input[type="range"]:not(.rng)::-webkit-slider-runnable-track { height: 5px; border-radius: 3px; background: linear-gradient(90deg, var(--well) var(--a), var(--tint) var(--a) var(--b), var(--well) var(--b)); box-shadow: inset 0 0 0 1px rgba(0,0,0,.35), inset 0 1px 1px rgba(0,0,0,.3); }
+[data-mode="light"] .win input[type="range"]:not(.rng)::-webkit-slider-runnable-track { box-shadow: inset 0 0 0 1px rgba(0,0,0,.1), inset 0 1px 1px rgba(0,0,0,.06); }
+[data-mode="light"] .win input[type="range"]:not(.rng) { --tint: oklch(0.6 0.14 var(--acc)); }
+.win input[type="range"]:not(.rng)::-webkit-slider-thumb { -webkit-appearance: none; width: 13px; height: 13px; margin-top: -4px; border-radius: 50%; background: var(--key); box-shadow: var(--key-edge); }
+
+/* ══ Materials: Solid and Frost (mockups/materials.html) ═══════════════════════
+   Two materials, set on the body beside the mode (data-mat).
+     Solid  opaque and neutral, never see-through (Nick, 25 Sep). Dark: a charcoal frame. Light: one light cool grey for the
+            frame and the dock; hard white is kept for the content island, tabs and selected items. The island, the action bar and menus stay solid. Light has real depth:
+            a cool grey frame, a white island set into it, wells really inset, chips really raised.
+     Frost  the dock's smoked glass on every frame, sidebar, action bar and menu, and on the dock, in both modes.
+            Dark and Light change only the content island (Nick, 25 Sep).
+   The frame's material is its own token (--frame), so every app's own --win and --isle choices still hold elsewhere. */
+.iwin { background: var(--frame, var(--win)); -webkit-backdrop-filter: var(--blur-win, none); backdrop-filter: var(--blur-win, none); }
+body[data-mat] .win :is(.fbar:not(.aricomp), .flo, .supill) { background: var(--m-bar, var(--bar)); -webkit-backdrop-filter: var(--blur-bar, blur(24px) saturate(1.7)); backdrop-filter: var(--blur-bar, blur(24px) saturate(1.7)); }
+body[data-mat] .iwin :is(.pop, .crpop) { background: var(--m-pop, var(--pop)); -webkit-backdrop-filter: var(--blur-pop, none); backdrop-filter: var(--blur-pop, none); }
+/* bars that float over photos and video keep their own dark smoke */
+body[data-mat] .win :is(.iwin.viewing .fbar, .cmwin .fbar, .pnwin .fbar), body[data-mat] .iwin.viewing .fbar { --m-bar: initial; }
+body[data-mat="solid"][data-mode="dark"] .iwin {
+  --frame: linear-gradient(180deg, #232428, #1c1d20); --blur-win: none; --win: #202124; --isle: #25282d;
+  --isle-out: 0 0 0 1px rgba(255,255,255,.03); --isle-in: inset 0 0 0 1px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.04), inset 0 3px 8px -2px rgba(0,0,0,.4);
+  --bar: #2e3137; --pop: #2e3137; --float-solid: #2e3137;
+  --bar-edge: inset 0 1px 0 rgba(255,255,255,.07), inset 0 0 0 1px rgba(255,255,255,.05), 0 0 0 1px rgba(0,0,0,.5), 0 12px 32px -8px rgba(0,0,0,.6), 0 2px 6px rgba(0,0,0,.3);
+  --rim: inset 0 1px 0 rgba(255,255,255,.06); --sh-win: 0 0 0 1px rgba(0,0,0,.5), 0 2px 6px rgba(0,0,0,.35), 0 0 44px rgba(0,0,0,.4), 0 12px 28px -6px rgba(0,0,0,.5), 0 40px 90px -18px rgba(0,0,0,.75); }
+body[data-mat="solid"][data-mode="light"] .iwin {
+  --frame: #eceef1; --blur-win: none; --win: #eceef1; --isle: #fff;
+  --isle-out: 0 1px 0 rgba(255,255,255,.75); --isle-in: inset 0 0 0 1px rgba(20,22,26,.1), inset 0 2px 5px -2px rgba(20,22,26,.1);
+  --well: rgba(20,22,26,.075); --well-edge: inset 0 1px 2px rgba(20,22,26,.16), inset 0 0 0 1px rgba(20,22,26,.06), 0 1px 0 rgba(255,255,255,.8);
+  --chip: #fff; --chip-edge: inset 0 1px 0 #fff, 0 0 0 1px rgba(20,22,26,.11), 0 1px 2px rgba(20,22,26,.14), 0 3px 8px -3px rgba(20,22,26,.14);
+  --bar: #fbfbfc; --pop: #fbfbfc; --float-solid: #fff; --m-bar: linear-gradient(180deg, #fff, #f7f8fa); --m-pop: linear-gradient(180deg, #fff, #f8f9fa);
+  --bar-edge: inset 0 1px 0 #fff, 0 0 0 1px rgba(20,22,26,.12), 0 12px 32px -8px rgba(20,22,26,.22), 0 2px 6px rgba(20,22,26,.08);
+  --rim: inset 0 1px 0 rgba(255,255,255,.9); --sh-win: 0 0 0 1px rgba(20,22,26,.16), 0 2px 6px rgba(20,22,26,.16), 0 0 44px rgba(20,22,26,.24), 0 20px 50px -6px rgba(20,22,26,.36), 0 50px 110px -10px rgba(20,22,26,.42); }
+body[data-mat="frost"] .iwin {
+  --frame: radial-gradient(120% 50% at 50% 0%, rgba(255,255,255,.07), transparent 60%), linear-gradient(180deg, rgba(40,40,46,.74), rgba(22,22,26,.82)); --blur-win: blur(40px) saturate(1.6); --win: #26262b;
+  --bar: rgba(40,40,46,.74); --m-bar: radial-gradient(120% 50% at 50% 0%, rgba(255,255,255,.07), transparent 60%), linear-gradient(180deg, rgba(48,48,54,.62), rgba(28,28,32,.74)); --blur-bar: blur(40px) saturate(1.6);
+  --pop: rgba(42,42,47,.86); --m-pop: linear-gradient(180deg, rgba(50,50,56,.8), rgba(32,32,36,.86)); --blur-pop: blur(40px) saturate(1.6); --float: rgba(42,42,47,.8); --float-solid: #2c2c31;
+  --bar-edge: inset 0 1px 0 rgba(255,255,255,.2), inset 0 0 0 1px rgba(255,255,255,.09), 0 0 0 1px rgba(0,0,0,.35), 0 12px 32px -8px rgba(0,0,0,.6);
+  --rim: inset 0 1px 0 rgba(255,255,255,.22), inset 0 0 0 1px rgba(255,255,255,.1); --sh-win: 0 0 0 1px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.35), 0 0 44px rgba(0,0,0,.4), 0 12px 28px -6px rgba(0,0,0,.5), 0 40px 90px -18px rgba(0,0,0,.75); }
+body[data-mat="frost"][data-mode="dark"] .iwin { --isle: rgba(20,21,25,.86); --isle-out: 0 0 0 0 transparent; --isle-in: inset 0 0 0 1px rgba(255,255,255,.06), inset 0 1px 0 rgba(255,255,255,.05); }
+/* Frost Light is a pale frost with dark ink: the same glass, lit from the other side */
+/* Frost Light: the same smoked frame, dock, bars and menus as Frost Dark; only the content island turns light */
+body[data-mat="frost"][data-mode="light"] .iwin { --isle: rgba(250,250,251,.95); --isle-out: 0 0 0 1px rgba(0,0,0,.25); --isle-in: inset 0 0 0 1px rgba(255,255,255,.35); }
+/* ink on the frost is darker than on paper, so labels and icons hold over a bright wallpaper; the island keeps its own */
+body[data-mat="frost"][data-mode="light"] .iwin .isle { --ink: oklch(0.2 0.008 265); --ink-2: oklch(0.38 0.008 265); --ink-3: oklch(0.54 0.008 265); --ink-4: oklch(0.68 0.006 265); }
+/* Ink on dark surfaces is Luma's off-white, never pure white (Nick, 25 Sep). Solid Dark keeps the theme's own greys;
+   on Frost's glass the greys step up a little for legibility, still in the off-white family. */
+body[data-mat="frost"][data-mode="dark"] .iwin, body[data-mat="frost"][data-mode="dark"] .iwin .isle :is(.fbar, .flo, .pop, .crpop), body[data-mat="frost"][data-mode="light"] .iwin, body[data-mat="frost"][data-mode="light"] .iwin .isle :is(.fbar, .flo, .pop, .crpop) { --ink: oklch(0.965 0.003 265); --ink-2: rgba(242,243,246,.9); --ink-3: rgba(242,243,246,.78); --ink-4: rgba(242,243,246,.62); color: var(--ink); }
+body[data-mat][data-mode="dark"] .iwin .isle { --ink: oklch(0.965 0.003 265); --ink-2: oklch(0.82 0.005 265); --ink-3: oklch(0.65 0.006 265); --ink-4: oklch(0.5 0.006 265); }
+/* Inactive on glass: a grey fixed for a dark surface vanishes on frost over a bright wallpaper. On glass an inactive control
+   is the surface's own ink, dimmed by a strength the material sets (--off), so it always reads as "there, but not now". */
+body[data-mat="frost"][data-mode="dark"] .iwin { --off: .4; } body[data-mat="frost"][data-mode="light"] .iwin { --off: .4; }
+body[data-mat="frost"] .iwin :is(.ib, .bt, .cact, .crmi)[disabled], body[data-mat="frost"] .iwin #dsk-bar .bt.lk { color: var(--ink) !important; opacity: var(--off) !important; }
+/* Legibility on glass: whatever sits on the frost (not the island) gets a soft shadow under text and icons, one step of
+   extra weight, and the glass itself is a little denser, so a loud wallpaper never eats a label. */
+body[data-mat="frost"][data-mode="dark"] .iwin { --gl-sh: 0 1px 1px rgba(0,0,0,.4); --gl-ish: drop-shadow(0 1px 1px rgba(0,0,0,.35)); }
+body[data-mat="frost"][data-mode="light"] .iwin { --gl-sh: 0 1px 1px rgba(0,0,0,.4); --gl-ish: drop-shadow(0 1px 1px rgba(0,0,0,.35)); }
+body[data-mat="frost"] .iwin :not(.isle, .isle *), body[data-mat="frost"] .iwin .isle :is(.fbar, .flo) * { text-shadow: var(--gl-sh); }
+body[data-mat="frost"] .iwin svg.i:not(.isle *), body[data-mat="frost"] .iwin .isle :is(.fbar, .flo) svg.i { filter: var(--gl-ish); }
+body[data-mat="frost"] .iwin :is(.rail .lab, .si, .sh, .tbar b):not(.isle *) { font-weight: 600; }
+body[data-mat="frost"][data-mode="dark"] .iwin { --ink-3: rgba(242,243,246,.84); --ink-4: rgba(242,243,246,.68); }
+body[data-mat="frost"][data-mode="light"] .iwin { --ink-3: rgba(242,243,246,.84); --ink-4: rgba(242,243,246,.68); }
+/* Light frames (Solid and Frost): the frame's text and icons are crisp near-black, never mid-grey. Grey on a pale
+   frame reads as faded. The island keeps its own greys. */
+body[data-mode="light"][data-mat="solid"] .iwin { --ink: oklch(0.15 0.008 265); --ink-2: oklch(0.2 0.008 265); --ink-3: oklch(0.3 0.008 265); --ink-4: oklch(0.42 0.008 265); }
+body[data-mode="light"][data-mat] .iwin .isle { --ink: oklch(0.2 0.008 265); --ink-2: oklch(0.38 0.008 265); --ink-3: oklch(0.54 0.008 265); --ink-4: oklch(0.68 0.006 265); }
+body[data-mode="light"][data-mat="solid"] .iwin .isle :is(.fbar, .flo, .pop, .crpop) { --ink-2: oklch(0.22 0.008 265); --ink-3: oklch(0.34 0.008 265); }
+body[data-mat="solid"][data-mode="light"] .iwin :is(.rail .lab, .si, .sh, .tbar b):not(.isle *) { font-weight: 600; }
+body[data-mat] .iwin .isle { text-shadow: none; color: var(--ink); }
+/* On the frost the selection is white, not the accent: an accent icon on smoked glass reads as a stray colour */
+body[data-mat="frost"] .iwin :is(.ri.on, .si.on) svg.i:not(.isle *) { color: var(--ink); }
+/* The selection on the frost is a raised glass chip: lit top edge, dark rim, a small drop, in both modes */
+body[data-mat="frost"] .iwin :is(.si.on, .ri.on):not(.isle *) { background: linear-gradient(180deg, rgba(255,255,255,.2), rgba(255,255,255,.12)) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.22), inset 0 0 0 1px rgba(255,255,255,.06), 0 0 0 1px rgba(0,0,0,.28), 0 1px 3px rgba(0,0,0,.3), 0 4px 10px -4px rgba(0,0,0,.35) !important; }
+/* Inside glass, the kit is glass too: wells are a translucent dark inset, chips a translucent lit lift, so a bar or the
+   sidebar never carries opaque blocks on the frost. Applies to the frame and to bars and menus over the island. */
+body[data-mat="frost"] .iwin :is(.fbar, .flo, .pop, .crpop), body[data-mat="frost"][data-mode] .iwin .isle :is(.fbar, .flo, .pop, .crpop), body[data-mat="frost"] .iwin > :not(.isle), body[data-mat="frost"] .iwin > .ibody > :not(.isle) {
+  --well: rgba(0,0,0,.22); --well-edge: inset 0 1px 2px rgba(0,0,0,.3), inset 0 0 0 1px rgba(255,255,255,.05), 0 1px 0 rgba(255,255,255,.07);
+  --chip: rgba(255,255,255,.16); --chip-edge: inset 0 1px 0 rgba(255,255,255,.2), 0 0 0 1px rgba(0,0,0,.25), 0 1px 2px rgba(0,0,0,.25);
+  --fill-1: rgba(255,255,255,.08); --fill-2: rgba(255,255,255,.14); --hair: rgba(255,255,255,.12);
+  --raised: rgba(255,255,255,.12); --card: rgba(255,255,255,.08); --float-solid: rgba(44,44,50,.94); }
+/* Keys and other lit controls are their own light surface: the frame's dark shadow never touches their ink or glyphs
+   (dark shadow on dark ink just blurs it). One list, every key-like control in the kit. */
+body[data-mat] .iwin :is(.bt.key, .bt.pri, .pp, .mkey, .meplay, .merecb, .seplay, .pnplay, .pnbig.voice, .send.go, .crsend.go, .lsplit, .dget.key, .cact.key, .crnew, .tkcomp .ib, .pnc.on, .sut.on, .vwpal .ib.on, .cak.caeq, .badge, .dbadge), body[data-mat] .iwin :is(.bt.key, .bt.pri, .pp, .mkey, .meplay, .merecb, .seplay, .pnplay, .pnbig.voice, .send.go, .crsend.go, .lsplit, .dget.key, .cact.key, .crnew, .tkcomp .ib, .pnc.on, .sut.on, .vwpal .ib.on, .cak.caeq, .badge, .dbadge) * { text-shadow: none !important; }
+body[data-mat] .iwin :is(.bt.key, .bt.pri, .pp, .mkey, .meplay, .merecb, .seplay, .pnplay, .pnbig.voice, .send.go, .crsend.go, .lsplit, .dget.key, .cact.key, .crnew, .tkcomp .ib, .pnc.on, .sut.on, .vwpal .ib.on, .cak.caeq, .badge, .dbadge) svg.i, body[data-mat] .iwin svg.i:is(.bt.key, .bt.pri, .pp, .mkey, .meplay, .merecb, .seplay, .pnplay, .pnbig.voice, .send.go, .crsend.go, .lsplit, .dget.key, .cact.key, .crnew, .tkcomp .ib, .pnc.on, .sut.on, .vwpal .ib.on, .cak.caeq, .badge, .dbadge) { filter: none !important; }
+/* Soft transport (Nick, 25 Sep): round play/pause keys are never loud white. The same soft grey family as the shelf,
+   one step brighter than the wells beside them, so the page stays calm. Rectangular actions keep the key. */
+[data-mode="dark"] .win, [data-mat="frost"] .iwin { --soft-key: rgba(255,255,255,.17); --soft-key-hi: rgba(255,255,255,.24); --soft-key-ink: #fff; }
+[data-mode="light"] .win { --soft-key: rgba(20,22,26,.09); --soft-key-hi: rgba(20,22,26,.14); --soft-key-ink: #1d1f23; }
+[data-mat="frost"][data-mode="light"] .iwin .isle { --soft-key: rgba(20,22,26,.09); --soft-key-hi: rgba(20,22,26,.14); --soft-key-ink: #1d1f23; }
+[data-mat="frost"][data-mode="light"] .iwin .isle :is(.fbar, .flo) { --soft-key: rgba(255,255,255,.17); --soft-key-hi: rgba(255,255,255,.24); --soft-key-ink: #fff; }
+body .win :is(.pp, .twin .pp, .deck .pp, .mkey, .meplay, .mewin .fbar .meplay, .pnplay, .seplay) { background: var(--soft-key) !important; color: var(--soft-key-ink) !important; box-shadow: none !important; }
+body .win :is(.pp, .mkey, .meplay, .pnplay, .seplay):hover { background: var(--soft-key-hi) !important; }
+body[data-mode="dark"][data-mat] .iwin.tmwin { --isle: oklch(0.185 0.006 265); }
+/* ══ LumaUI components (v70, from the Studio audit of 25 Sep) ═══════════════════════════════════
+   The shared parts every app uses. One implementation each, light and dark, keyboard and phone.
+   Each part is its own block labelled "LumaUI: <component>" so per-app branches merge cleanly.
+   The LumaUI window (?app=lumaui) shows every part with its states; the JS helpers sit beside lFile. */
+
+/* LumaUI: Tokens (danger ink, category hues, sky cards) */
+[data-mode="dark"] .win { --lui-danger: oklch(0.7 0.17 25); }
+[data-mode="light"] .win { --lui-danger: oklch(0.55 0.19 25); }
+:root { --cat-create: 25; --cat-work: 250; --cat-media: 330; --cat-play: 150; --cat-tools: 200;
+  --card-sky: oklch(0.2 0.035 255 / .42); --card-sky-edge: inset 0 0 0 1px rgba(255,255,255,.12), inset 0 1px 0 rgba(255,255,255,.1); --card-sky-ink-2: rgba(255,255,255,.9); }
+
+/* LumaUI: Type scale
+   Figtree only; five roles plus the small label, each with one size, weight and tracking. Numbers that change are tabular.
+   No one-off weights, sizes or letter-spacing: use these. */
+:root { --t-display: 600 72px/1 var(--font); --t-title-1: 650 24px/1.15 var(--font); --t-title-2: 650 15px/1.3 var(--font); --t-body: 400 13px/1.45 var(--font);
+  --t-caption: 500 11.5px/1.35 var(--font); --t-label: 600 11.5px/1.3 var(--font); --t-numeric: 500 30px/1.1 var(--font); }
+.t-display { font: var(--t-display); letter-spacing: -.035em; font-variant-numeric: tabular-nums; }
+.t-title-1 { font: var(--t-title-1); letter-spacing: -.024em; }
+.t-title-2 { font: var(--t-title-2); letter-spacing: -.01em; }
+.t-body { font: var(--t-body); letter-spacing: -.006em; }
+.t-caption { font: var(--t-caption); letter-spacing: .01em; color: var(--ink-3); }
+.t-label { font: var(--t-label); letter-spacing: .01em; color: var(--ink-3); }
+.t-numeric { font: var(--t-numeric); letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+:is(.t-display, .t-numeric) small { margin-left: .12em; font-size: .4em; font-weight: 500; letter-spacing: 0; color: var(--ink-3); }   /* seconds, AM/PM, units */
+
+/* LumaUI: Count badge
+   A small pill with tabular numbers: neutral for totals, .acc for unread or needs attention. Never 0. */
+:is(em, i, span, b).lcount { display: inline-grid; place-items: center; flex: none; min-width: 20px; height: 18px; padding: 0 6px; border-radius: 9px; corner-shape: round;
+  font: 650 11px/1 var(--font); font-style: normal; font-variant-numeric: tabular-nums; letter-spacing: .01em; background: var(--fill-2); color: var(--ink-2); }
+:is(em, i, span, b).lcount.acc { background: oklch(0.52 0.15 var(--acc)); color: #fff; }
+.seg .lcount { margin-left: 6px; } .seg button:not(.on) .lcount.acc { background: oklch(0.52 0.15 var(--acc)); }
+
+/* LumaUI: Details pane
+   One pane for Details and Information in every app: recessed into the frame like the island (same top, 8 from the edges),
+   a header with a hairline under it and a close button, one scrolling body. Key/value facts get hairlines; lists of people
+   or things get none, but every row highlights across its full width. Closed by default, opened by Info, closes itself
+   when its subject goes away (data-main keeps a pane that is the app's main view, like Calendar's day). On a phone it is a drawer. */
+.ldp { --ldp-w: 288px; position: relative; flex: none; width: var(--ldp-w); min-height: 0; display: flex; flex-direction: column; margin: 0 8px 8px 0; overflow: hidden;
+  border-radius: 12px; background: var(--isle); box-shadow: var(--isle-out); color: var(--ink); }
+.ldp::after { content: ""; position: absolute; inset: 0; z-index: 3; border-radius: inherit; pointer-events: none; box-shadow: var(--isle-in); }
+.ldp[hidden] { display: none; } .ldp.enter { animation: ldpin .3s var(--ease); } @keyframes ldpin { from { opacity: 0; transform: translateX(14px); } }
+#w-filer .fdock.ldp { width: var(--ldp-w); margin: 0 8px 8px 0; opacity: 1; }
+.ldph { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 8px; height: 48px; padding: 0 8px 0 16px; border-bottom: 1px solid var(--hair); }
+.ldph b { font: var(--t-title-2); font-size: 14px; letter-spacing: -.01em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ldph .ib { width: 30px; height: 30px; border-radius: 9px; color: var(--ink-3); } .ldph .ib:hover { color: var(--ink); } .ldph .ib svg.i { width: 16px; height: 16px; }
+.ldpb { flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: none; padding: 14px 16px 16px; } .ldpb::-webkit-scrollbar { display: none; }
+.ldplab { display: flex; align-items: center; gap: 8px; margin: 20px 0 6px; font: var(--t-label); letter-spacing: .01em; color: var(--ink-3); } .ldpb > .ldplab:first-child { margin-top: 2px; }
+.ldplab > button { margin-left: auto; height: 24px; padding: 0 8px; border-radius: 7px; font-size: 12px; font-weight: 600; color: var(--acc-ink); } .ldplab > button:hover { background: var(--fill-1); }
+.ldpkv { margin: 0; display: grid; } .ldpkv > div { display: flex; justify-content: space-between; gap: 12px; padding: 7px 0; font-size: 12.5px; border-top: 1px solid var(--hair); } .ldpkv > div:first-child { border-top: 0; }
+.ldpkv dt { flex: none; color: var(--ink-3); } .ldpkv dd { min-width: 0; margin: 0; font-weight: 550; text-align: right; overflow-wrap: anywhere; }
+.ldphero { display: grid; justify-items: center; gap: 3px; padding: 6px 0 14px; text-align: center; } .ldphero b { margin-top: 8px; font: var(--t-title-2); font-size: 16px; } .ldphero small { font: var(--t-caption); color: var(--ink-3); letter-spacing: .01em; }
+.ldplist { display: grid; margin: 0 -8px; }
+.ldprow { position: relative; display: flex; align-items: center; gap: 2px; min-height: 44px; padding: 0 4px 0 0; border-radius: 10px; transition: background .12s; }
+.ldprow:hover, .ldprow:focus-within { background: var(--fill-1); }
+.ldpwho { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; padding: 6px 8px; border-radius: 10px; text-align: left; } .ldpwho:focus-visible { outline-offset: -2px; }
+.ldpwho > span { min-width: 0; display: grid; } .ldpwho b { font-size: 13px; font-weight: 550; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ldpwho small { font: var(--t-caption); letter-spacing: .01em; color: var(--ink-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ldpacts { display: flex; flex: none; opacity: 0; transition: opacity .15s; } .ldprow:hover .ldpacts, .ldprow:focus-within .ldpacts { opacity: 1; }
+.ldpacts .ib { width: 28px; height: 28px; border-radius: 8px; color: var(--ink-3); } .ldpacts .ib:hover { color: var(--ink); background: var(--fill-2); } .ldpacts .ib svg.i { width: 15px; height: 15px; }
+@media (hover: none) { .ldpacts { opacity: 1; } } .win.phone .ldpacts { opacity: 1; }
+.ldpb .lfc { width: 100%; } :is(.ldpb, .dbody) > .lstks { margin-top: 20px; }
+/* On a phone the pane is a drawer: full width from the bottom edge, with a handle */
+.win.phone .ldp { position: absolute; z-index: 45; left: 0; right: 0; bottom: 0; width: auto; max-height: 78%; margin: 0; border-radius: 28px 28px 0 0; padding-top: 14px;
+  background: var(--float-solid); box-shadow: var(--sh-float); animation: ldpup .32s var(--spring); }
+#w-filer.phone .fdock.ldp { position: absolute; width: auto; margin: 0; }   /* Filer's older #id rules outrank the class; keep the drawer */
+.win.phone .ldp::after { display: none; } .win.phone .ldp::before { content: ""; position: absolute; top: 7px; left: 50%; width: 36px; height: 5px; margin-left: -18px; border-radius: 3px; background: var(--fill-3); }
+@keyframes ldpup { from { transform: translateY(40px); opacity: 0; } }
+
+/* LumaUI: Details pane item
+   A thing in a details-pane list (an event, a thread): its mark, a title, one quiet line, an optional trail; the same row, hover and type
+   as the people rows. lDPItem({ lead, n, sub, attr, style, trail }). */
+.ldpitem { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 44px; padding: 6px 8px; border-radius: 10px; text-align: left; transition: background .12s; } .ldpitem:hover, .ldpitem:focus-visible, .ldpitem.on { background: var(--fill-1); } .ldpitem:focus-visible { outline-offset: -2px; }
+.ldpitem > svg.i { width: 16px; height: 16px; flex: none; color: var(--ink-3); } .ldpitem > span:not(.nfaces) { flex: 1; min-width: 0; display: grid; } .ldpitem b { font-size: 13px; font-weight: 550; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .ldpitem small { font: var(--t-caption); letter-spacing: .01em; color: var(--ink-3); font-variant-numeric: tabular-nums; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* LumaUI: Details pane photos
+   A conversation's or thread's photos: three square thumbnails a row under "Photos and files", never one giant image. <div class="ldpph"> of <img>. */
+.ldpph { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; border-radius: 10px; overflow: hidden; } .ldpph img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; }
+
+/* LumaUI: Add row
+   "Add people", "Add source", "Add account": a list row, not a framed button. The + sits in the avatar column, the label lines up with the names. */
+.laddrow { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 44px; padding: 6px 8px; border-radius: 10px; text-align: left; color: var(--ink-2); transition: background .12s; }
+.laddrow:hover { background: var(--fill-1); color: var(--ink); } .laddrow:focus-visible { outline-offset: -2px; }
+.laddi { width: 32px; height: 32px; flex: none; display: grid; place-items: center; border-radius: 50%; corner-shape: round; background: var(--fill-1); box-shadow: inset 0 0 0 1px var(--hair); color: var(--ink-2); } .laddi svg.i { width: 15px; height: 15px; }
+.laddrow b { font-size: 13px; font-weight: 550; }
+.laddrow kbd { margin-left: auto; font: 500 11px var(--font); color: var(--ink-4); letter-spacing: .01em; } .win.phone .laddrow kbd { display: none; }   /* a shortcut, shown the menus' way (none on a phone) */
+
+/* LumaUI: Stacked button
+   Icon on top, label below, on the raised chip (the Contacts action look). Always in equal pairs or trios; .sm for tight panes;
+   .danger for destructive (red ink, still confirmed); hover lifts, press sinks, focus rings, disabled fades. */
+.lstks { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 8px; }
+.lstk { min-width: 0; height: 64px; display: grid; justify-items: center; align-content: center; gap: 5px; padding: 0 6px; border-radius: 16px; font: 500 12px/1.2 var(--font); letter-spacing: .01em;
+  color: var(--ink); background: var(--chip); box-shadow: var(--chip-edge); transition: transform .15s var(--spring), filter .12s; }
+.lstk > span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .lstk svg.i { width: 19px; height: 19px; }
+.lstk:hover { transform: translateY(-1px); filter: brightness(1.07); } [data-mode="light"] .lstk:hover { filter: brightness(.98); } .lstk:active { transform: scale(.97); filter: brightness(.95); }
+.lstk:focus-visible { outline: 2px solid var(--acc-ink); outline-offset: 2px; } .lstk[disabled] { opacity: .35; pointer-events: none; }
+.lstk.danger { color: var(--lui-danger); }
+.lstks.sm .lstk { height: 56px; gap: 4px; padding: 0 2px; border-radius: 14px; font-size: 11.5px; } .lstks.sm .lstk svg.i { width: 17px; height: 17px; }
+/* LumaUI: Contact actions (Contacts owns them: Message, Call, Video, Email, in that order) */
+.lcacts { max-width: 376px; }
+
+/* LumaUI: Selection bubble (.selbar, from Write)
+   Floats 10 above the selection, centred and kept inside its host; flips below near the top edge. Arrows move inside it, Esc hides it. */
+.selbar.below { animation: morph .14s var(--ease); } .selbar .ib:focus-visible, .selbar .bt:focus-visible { outline-offset: -2px; }
+.win.phone .selbar .wrsel { display: none; }
+
+/* LumaUI: Action center
+   The floating bar is where you act, and it grows in place: the bar (.fbar), double height (.fbar.lac2: a context line over the bar),
+   the full editor (.lac: Charlie's reply, ported exactly), or split in two (.lacsplit). It caps at the island and its text scrolls.
+   Esc collapses it back to the bar and keeps what you typed. On a phone it spans the width from the bottom edge. */
+.fbar.lac2 { flex-direction: column; align-items: stretch; gap: 2px; width: min(700px, calc(100% - 48px)); white-space: normal; }
+.lacrow { display: flex; align-items: center; gap: 4px; min-width: 0; }
+.lacctx { display: flex; align-items: center; gap: 8px; min-width: 0; padding: 4px 6px 4px 10px; font: var(--t-caption); font-size: 12px; color: var(--ink-2); letter-spacing: .01em; }
+.lacctx > svg.i { width: 13px; height: 13px; color: oklch(0.72 0.11 var(--acc)); flex: none; } .lacctx span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .lacctx b { color: var(--ink); font-weight: 600; }
+.lacfield { flex: 1; min-width: 0; height: 36px; padding: 0 12px; border-radius: 12px; background: var(--well); box-shadow: var(--well-edge); color: var(--ink-3); text-align: left; font-size: 13.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: text; } .lacfield:hover { color: var(--ink-2); }
+.lac { position: absolute; left: 50%; bottom: 20px; z-index: 30; width: min(720px, calc(100% - 48px)); max-height: calc(100% - 40px); transform: translateX(-50%); display: flex; flex-direction: column;
+  border-radius: 20px; background: var(--pop, var(--float-solid)); box-shadow: var(--sh-float), inset 0 0 0 1px var(--hair); transition: left .3s var(--ease); }
+.lac[hidden] { display: none; } .lac.enter { animation: lacup .32s var(--spring); } @keyframes lacup { from { opacity: 0; transform: translate(-50%, 16px) scale(.98); } }
+.lach { flex: none; display: flex; align-items: center; gap: 10px; height: 48px; padding: 0 8px; border-bottom: 1px solid var(--hair); }
+.lach .lacmode { display: inline-flex; align-items: center; gap: 7px; height: 32px; padding: 0 10px 0 9px; border-radius: 10px; background: var(--chip); box-shadow: var(--chip-edge); font-size: 12.5px; font-weight: 600; flex: none; }
+.lach .lacmode svg.i { width: 14px; height: 14px; color: var(--acc-ink); } .lach > span { flex: 1; min-width: 0; font-size: 12.5px; color: var(--ink-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .lach > span b { color: var(--ink-2); font-weight: 600; }
+.lacf { flex: none; display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border-bottom: 1px solid var(--hair); }
+.lacf label { width: 56px; flex: none; font-size: 12.5px; color: var(--ink-3); } .lacf input { flex: 1; min-width: 60px; height: 32px; border: 0; outline: 0; background: none; color: var(--ink); font: 13.5px var(--font); } .lacf input::placeholder { color: var(--ink-3); }
+.lactools { flex: none; display: flex; align-items: center; gap: 2px; padding: 6px 8px 2px; } .lactools .ib { width: 32px; height: 32px; border-radius: 9px; color: var(--ink-2); } .lactools .ib:hover { background: var(--fill-1); color: var(--ink); } .lactools .ib svg.i { width: 16px; height: 16px; }
+.lactools .vr { width: 1px; height: 18px; margin: 0 4px; background: var(--hair); } .lac .sp { flex: 1; }
+.laced { flex: 1 1 auto; min-height: 132px; max-height: 40vh; overflow-y: auto; scrollbar-width: none; padding: 8px 16px 14px; outline: none; font-size: 14px; line-height: 1.55; overflow-wrap: anywhere; }
+.laced:empty::before { content: attr(data-ph); color: var(--ink-3); pointer-events: none; }
+.lacft { flex: none; display: flex; align-items: center; gap: 10px; padding: 8px; border-top: 1px solid var(--hair); } .lacft .ib { width: 36px; height: 36px; border-radius: 12px; color: var(--ink-3); }
+.lacft small { font-size: 11.5px; color: var(--ink-4); letter-spacing: .01em; } .lacft .bt.key { height: 36px; gap: 7px; padding: 0 16px; border-radius: 12px; background: var(--key); color: var(--key-ink); box-shadow: var(--key-edge); font-weight: 600; } .lacft .bt.key svg.i { width: 15px; height: 15px; }
+.lacsplit { position: absolute; left: 50%; bottom: 16px; z-index: 20; display: flex; align-items: flex-end; gap: 8px; max-width: calc(100% - 24px); transform: translateX(-50%); }
+.lacsplit > .fbar { position: relative; left: auto; bottom: auto; transform: none; max-width: none; }
+.win.phone .lac { left: 0; right: 0; bottom: 0; width: auto; max-height: calc(100% - 60px); transform: none; border-radius: 22px 22px 0 0; } .win.phone .lac.enter { animation: none; }
+.win.phone .fbar.lac2 { width: calc(100% - 16px); } .win.phone .lacsplit { left: 8px; right: 8px; transform: none; flex-direction: column; align-items: stretch; } .win.phone .lacsplit > .fbar { width: 100%; justify-content: center; }
+
+/* LumaUI: Placement (top right = modes and the thing itself; bottom bar = what you do right now)
+   .lcorner is the top-right pill: the mode switch, then Open in, Share, Edit, Info and ···. Modes are .lmodes: icon plus label;
+   on a narrow window only the current mode keeps its label. */
+.win .flo.lcorner { position: absolute; top: 16px; right: 16px; z-index: 26; display: flex; align-items: center; }
+.lcorner .seg { height: 36px; background: var(--well); box-shadow: var(--well-edge); border-radius: 12px; } .lcorner .seg .ind { border-radius: 9px; background: var(--chip); box-shadow: var(--chip-edge); } .lcorner .seg button { height: 30px; border-radius: 9px; }
+.lmodes button svg.i { width: 15px; height: 15px; }
+@container win (max-width: 820px) { .lmodes button:not(.on) span { display: none; } .lmodes button:not(.on) { padding: 0 9px; } }
+/* Viewer (reference): the markup tools rise above the bar they belong to, so the top right stays the corner's */
+#vw-pal.vwpal { top: auto; bottom: 76px; transform: translate(-50%, 12px); } #vw-pal.vwpal.on { transform: translate(-50%, 0); }
+
+/* LumaUI: Open in
+   The Open button wears the default app's own icon ("Open in Stage"); the Open in menu lists the apps that can open the file,
+   best Luma app first, the default marked, then Other app. */
+.lappi { width: 18px; height: 18px; flex: none; border-radius: 5px; } .crmi .lappi { width: 20px; height: 20px; }
+.lopenb .lappi { margin-left: -2px; } .lfc .lopenb { gap: 6px; padding-left: 8px; } .lfc .lopenb .lappi { width: 16px; height: 16px; border-radius: 4px; }
+/* LumaUI: Menu drawer. Every shared menu (lMenu: Open in, the sidebar-foot filter, ···, style and zoom menus) is the usual popover on a
+   computer and a bottom drawer on a phone: full width, a grab handle, rows sized for a thumb, the window dimmed behind it */
+.win.phone :is(#lmenu, .crpop.ldrawer) { left: 0 !important; right: 0; top: auto !important; bottom: 0; width: auto; min-width: 0; max-height: 72%; overflow-y: auto; padding: 26px 10px 16px; border-radius: 28px 28px 0 0; box-shadow: 0 0 0 100vmax oklch(0 0 0 / .32), var(--sh-float); animation: ldrawer .26s var(--ease); }
+.win.phone :is(#lmenu, .crpop.ldrawer)::before { content: ""; position: absolute; top: 9px; left: 50%; width: 36px; height: 5px; margin-left: -18px; border-radius: 3px; background: var(--fill-3); }
+.win.phone :is(#lmenu, .crpop.ldrawer) .crmi { min-height: 46px; } .win.phone :is(#lmenu, .crpop.ldrawer) h6 { margin: 0 16px 6px; }
+@keyframes ldrawer { from { transform: translateY(48px); opacity: 0; } }
+.lopenmenu { min-width: 232px; } .lopenmenu .crmi > small { margin-left: auto; font-size: 11px; color: var(--ink-3); letter-spacing: .01em; }
+
+/* LumaUI: Sidebar toggle
+   lSideBtn(win) in the title bar, just after the app's name: Lucide panel-left, F9; pressed while the sidebar shows. Each app says what
+   "closed" means (Viola keeps a strip of tab icons; the others give the room to the content). On a phone it opens the sidebar as a drawer. */
+.tbar .lsidebtn { width: 30px; height: 30px; flex: none; border-radius: 9px; color: var(--ink-3); } .tbar .lsidebtn:hover { color: var(--ink); background: var(--fill-1); } .tbar .lsidebtn svg.i { width: 16px; height: 16px; }
+.tbar .lsidebtn[aria-pressed="false"] { color: var(--ink-2); } .win.phone:has(.navbtn, .navback) .tbar .lsidebtn { display: none !important; }
+/* LumaUI: Message bubble
+   Messages owns the look and every thread uses it (Messages, Charlie): theirs is the raised chip, yours the accent gradient (--mbub) in white;
+   18 round, 6 where one sender's run joins; 9/13/10 padding; 14/1.45 text. Use the tokens, never a local radius or size. */
+:root { --lbub-r: 18px; --lbub-join: 6px; --lbub-pad: 9px 13px 10px; --lbub-text: 400 14px/1.45 var(--font); }
+:where([data-mode="dark"]) :where(.win) { --mbub: linear-gradient(180deg, oklch(0.52 0.12 var(--acc)), oklch(0.46 0.12 var(--acc))); --mbub-ink: #fff; --mbub-edge: inset 0 1px 0 oklch(1 0 0 / .18), 0 0 0 1px rgba(0,0,0,.35), 0 1px 2px rgba(0,0,0,.3); }
+:where([data-mode="light"]) :where(.win) { --mbub: linear-gradient(180deg, oklch(0.6 0.13 var(--acc)), oklch(0.54 0.13 var(--acc))); --mbub-ink: #fff; --mbub-edge: inset 0 1px 0 oklch(1 0 0 / .25), 0 0 0 1px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.12); }
+
+/* LumaUI: File card (lFile)
+   The file's face (never bigger than its 44 square), a middle-truncated name that keeps the extension, size · kind, one Open. */
+.lfc .lfth > img { max-width: 44px; max-height: 44px; } .lfc { max-width: 100%; }
+.lmid { display: flex !important; min-width: 0; } .lmid > span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .lmid > span + span { flex: none; white-space: pre; }
+.lfc .lfbad { color: var(--lui-danger); } .lfc .lfwarn { color: oklch(0.72 0.14 70); } [data-mode="light"] .lfc .lfwarn { color: oklch(0.55 0.14 60); }
+
+/* LumaUI: Destructive dialog
+   Centred on the asking window, which dims under its title bar: icon on top, the question as the title, one line of consequence,
+   Cancel and the red action as two equal buttons. Cancel has focus (Enter never deletes by accident); Esc cancels. A drawer on a phone. */
+.lcscrim { position: absolute; left: 0; right: 0; top: 46px; bottom: 0; z-index: 60; background: rgba(0,0,0,.26); backdrop-filter: blur(3px) saturate(.9); -webkit-backdrop-filter: blur(3px) saturate(.9); opacity: 0; transition: opacity .2s var(--ease); }
+[data-mode="light"] .lcscrim { background: rgba(20,20,30,.12); } .lcscrim.on { opacity: 1; }
+.lconf { position: absolute; left: 50%; top: 50%; z-index: 61; width: 340px; max-width: calc(100% - 32px); padding: 24px 20px 20px; border-radius: 20px; text-align: center; color: var(--ink);
+  background: var(--pop, var(--float-solid)); box-shadow: var(--sh-float), inset 0 1px 0 var(--hi), 0 0 0 1px var(--hair); opacity: 0; transform: translate(-50%, -46%) scale(.96); transition: opacity .16s ease, transform .36s var(--spring); }
+.lconf.on { opacity: 1; transform: translate(-50%, -50%); } .lconf.nudge { animation: lcnudge .3s var(--ease); } @keyframes lcnudge { 30% { margin-left: -6px; } 70% { margin-left: 6px; } }
+.lcico { width: 52px; height: 52px; margin: 0 auto 14px; display: grid; place-items: center; border-radius: 16px; background: var(--chip); box-shadow: var(--chip-edge); color: var(--lui-danger); } .lcico svg.i { width: 24px; height: 24px; }
+.lconf h2 { margin: 0; font: var(--t-title-2); font-size: 16px; line-height: 1.35; letter-spacing: -.01em; } .lconf p { margin: 6px 0 0; font-size: 13.5px; line-height: 1.5; color: var(--ink-2); }
+.lcopt { display: inline-flex; align-items: center; gap: 9px; height: 32px; margin-top: 12px; padding: 0 10px 0 8px; border-radius: 10px; font-size: 13px; color: var(--ink-2); } .lcopt:hover { background: var(--fill-1); }
+.lcopt i { width: 16px; height: 16px; display: grid; place-items: center; border-radius: 5px; box-shadow: inset 0 0 0 1.5px var(--ink-3); } .lcopt i svg.i { width: 11px; height: 11px; stroke-width: 3; opacity: 0; }
+.lcopt[aria-checked="true"] i { background: oklch(0.6 0.13 var(--acc)); box-shadow: none; color: #fff; } .lcopt[aria-checked="true"] i svg.i { opacity: 1; }
+.lcacts2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 20px; } .lcacts2 .bt { justify-content: center; height: 36px; border-radius: 12px; font-weight: 600; }
+.lconf .bt.fill { background: var(--fill-2); } .lconf .bt.fill:hover { background: var(--fill-3); }
+.lconf .bt.danger { background: linear-gradient(180deg, oklch(0.64 0.19 25), oklch(0.56 0.19 25)); color: #fff; box-shadow: inset 0 1px 0 rgba(255,255,255,.2), 0 0 0 1px rgba(0,0,0,.25), 0 1px 2px rgba(0,0,0,.3); } .lconf .bt.danger:hover { filter: brightness(1.08); }
+.lconf .bt:focus-visible { outline: 2px solid oklch(0.72 0.12 var(--acc) / .7); outline-offset: 2px; }
+.win.phone .lconf { top: auto; bottom: 0; left: 0; width: auto; max-width: none; right: 0; padding: 30px 20px 26px; border-radius: 28px 28px 0 0; transform: translateY(30px); }
+.win.phone .lconf.on { transform: none; } .win.phone .lconf::before { content: ""; position: absolute; top: 8px; left: 50%; width: 36px; height: 5px; margin-left: -18px; border-radius: 3px; background: var(--fill-3); }
+.win.phone .lcacts2 { grid-template-columns: 1fr; } .win.phone .lcacts2 .bt { height: 44px; } .win.phone .lcacts2 .danger { order: -1; }
+
+/* LumaUI: Toast (.ftoast.ltoast, via lToast)
+   One place: centred on the visible content, just above the bottom bar. A plain past-tense line, the icon for what happened, Undo when it can be undone. */
+.win > .ltoast { z-index: 60; } .ftoast[data-kind="map-pin"] > svg.i, .ftoast[data-kind="navigation"] > svg.i { color: var(--acc-ink); } .ftoast[data-kind="heart"] > svg.i { color: var(--love); fill: currentColor; }
+.ftoast:is([data-kind="copy"], [data-kind="trash-2"], [data-kind="bell"], [data-kind="download"], [data-kind="archive"], [data-kind="log-out"]) > svg.i { color: var(--ink-2); }
+.win.phone > .ltoast { max-width: calc(100% - 24px); }
+
+/* LumaUI: Category pill
+   Depot's categories carry their colour everywhere a category shows: one map (--cat-*), light and dark, AA text. */
+:is(span, em, b).lcat { --ch: 250; display: inline-flex; align-items: center; flex: none; min-height: 0; overflow: visible; height: 22px; padding: 0 9px; border-radius: 11px; corner-shape: round; font: 600 11.5px/1 var(--font); font-style: normal; letter-spacing: .01em; white-space: nowrap;
+  background: oklch(0.93 0.045 var(--ch)); color: oklch(0.42 0.12 var(--ch)); }
+[data-mode="dark"] .lcat { background: oklch(0.34 0.065 var(--ch)); color: oklch(0.88 0.07 var(--ch)); }
+.lcat[data-cat="create"] { --ch: var(--cat-create); } .lcat[data-cat="work"] { --ch: var(--cat-work); } .lcat[data-cat="media"] { --ch: var(--cat-media); } .lcat[data-cat="play"] { --ch: var(--cat-play); } .lcat[data-cat="tools"] { --ch: var(--cat-tools); }
+.dcard > .lcat { position: absolute; top: 14px; right: 14px; }
+
+/* LumaUI: Table header
+   A subtle recessed bar across the columns. Each heading is a button: click or Enter sorts, again reverses; the active column
+   shows its arrow and aria-sort says so. Rows start 6 below it. */
+.lthead th { height: 30px; padding: 0; border: 0; background: var(--fill-1); text-align: left; font-weight: inherit; }
+.lthead th:first-child { border-radius: 10px 0 0 10px; } .lthead th:last-child { border-radius: 0 10px 10px 0; }
+.lthead th > button { display: flex; align-items: center; gap: 4px; width: 100%; height: 30px; padding: 0 12px; border-radius: inherit; font: var(--t-label); letter-spacing: .01em; color: var(--ink-3); white-space: nowrap; }
+.lthead th > button:hover, .lthead th:not([aria-sort="none"]) > button { color: var(--ink); } .lthead th > button svg.i { width: 12px; height: 12px; stroke-width: 2.2; } .lthead th > button:focus-visible { outline-offset: -2px; }
+.lthead + tbody tr:first-child td { border-top: 6px solid transparent; background-clip: padding-box; }
+
+/* LumaUI: Selection
+   One selection look: the raised chip. In a path (column view) the steps before the active column keep the same shape as a quieter trail. */
+.lsel, #w-filer :is(.tile.on, .fcrow.on) { background: var(--chip); box-shadow: var(--chip-edge); color: var(--ink); }
+.ltrail, #w-filer .fcrow.trail { background: var(--fill-2); box-shadow: none; color: var(--ink); }
+
+/* LumaUI: Sidebar foot
+   Search at the foot of the sidebar (above a hairline), then a filter picker (lit when a filter is on; its menu opens upward)
+   or the raised New square. A filtered list names its filter at the top, with Show all. */
+.lfoot { position: relative; } .lfilt.on { color: var(--acc-ink); box-shadow: var(--chip-edge), inset 0 0 0 1.5px color-mix(in oklch, var(--acc-ink) 50%, transparent); }
+.lfhead { display: flex; align-items: center; gap: 8px; margin: 2px 2px 6px 8px; font: var(--t-label); letter-spacing: .01em; color: var(--ink-2); } .lfhead span { flex: 1; }
+.lfhead button { height: 24px; padding: 0 8px; border-radius: 7px; font-size: 12px; font-weight: 600; color: var(--acc-ink); } .lfhead button:hover { background: var(--fill-1); }
+
+/* LumaUI: Place search
+   The field at the sidebar foot is the whole flow: resolved places open above it as you type, Enter or a click adds the top or
+   chosen one, and no match says so in the list. */
+.lsug { position: absolute; left: 0; right: 0; bottom: calc(100% + 6px); z-index: 30; display: grid; gap: 1px; padding: 4px; border-radius: 14px; background: var(--pop, var(--float-solid)); box-shadow: var(--sh-float), inset 0 0 0 1px var(--hair); animation: crpop .16s var(--ease); }
+.lsug[hidden] { display: none; }
+.lsugi { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 42px; padding: 4px 10px; border-radius: 10px; text-align: left; } .lsugi:hover, .lsugi.on { background: var(--fill-1); }
+.lsugi > svg.i { width: 16px; height: 16px; flex: none; color: var(--ink-3); } .lsugi span { flex: 1; min-width: 0; display: grid; } .lsugi b { font-size: 13px; font-weight: 550; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lsugi small { font: var(--t-caption); letter-spacing: .01em; color: var(--ink-3); } .lsugi kbd { font: 500 11px var(--font); color: var(--ink-4); letter-spacing: .01em; }
+.lsugnone { margin: 8px 10px; font-size: 12.5px; color: var(--ink-3); }
+
+/* LumaUI: Account card
+   The person at the top of a sidebar sits in its own subtle frame, a section gap above the list; it opens the account page. */
+.lacct { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 10px 10px 10px; margin: 0 0 14px; border-radius: 14px; background: var(--fill-1); box-shadow: inset 0 0 0 1px var(--hair); text-align: left; }
+.lacct:hover { background: var(--fill-2); } .lacct.on { background: var(--chip); box-shadow: var(--chip-edge); } .lacct > span { flex: 1; min-width: 0; } .lacct > svg.i:last-child { width: 15px; height: 15px; color: var(--ink-4); }
+
+/* LumaUI: Cards on content-lit backgrounds
+   On a light sky or photo, a card sits darker than what's behind it (a deep blue-black frost at 42%: the least that passes AA for
+   90% white on the brightest sky, measured) so white text passes AA;
+   secondary text in it is 90% white. Where colour means nothing, use a plain .lcard. */
+.lskycard { background: var(--card-sky); backdrop-filter: blur(22px) saturate(1.2); -webkit-backdrop-filter: blur(22px) saturate(1.2); box-shadow: var(--card-sky-edge); color: #fff; }
+.lskycard :is(p, h6, small) { color: var(--card-sky-ink-2); }
+.lcard { border-radius: 16px; background: var(--card, var(--raised)); box-shadow: var(--chip-edge); color: var(--ink); }
+
+/* LumaUI: Mini cards (owning-app parity)
+   When an app shows something another app owns, it shows that app's own card: a person (Contacts), an event (Calendar),
+   a song (Tide), a place (Maps). Files use the file card. Same size family as the file card. */
+.lmini { display: flex; align-items: center; gap: 11px; width: 300px; max-width: 100%; min-height: 60px; padding: 8px 10px 8px 8px; border-radius: 16px; background: var(--chip); box-shadow: var(--chip-edge); color: var(--ink); text-align: left; }
+.lmini > span:not(.lmth) { flex: 1; min-width: 0; display: grid; gap: 2px; } .lmini b { font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lmini small { font: var(--t-caption); letter-spacing: .01em; color: var(--ink-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.lmini .bt.sm { height: 28px; padding: 0 12px; flex: none; border-radius: 9px; background: var(--fill-2); font-size: 12px; font-weight: 600; } .lmini .bt.sm:hover { background: var(--fill-3); }
+.lmth { position: relative; width: 44px; height: 44px; flex: none; display: grid; place-items: center; }
+.lmini.person { flex-wrap: wrap; width: 320px; padding: 12px; } .lmini.person .lcacts { flex: 1 0 100%; margin-top: 4px; }
+.lmini .onluma { display: inline-flex; align-items: center; gap: 5px; } .lmini .onluma i { width: 6px; height: 6px; border-radius: 50%; corner-shape: round; background: var(--good); }
+.lmini.event .lmth { width: 44px; border-radius: 10px; align-content: center; gap: 0; background: oklch(0.36 0.07 var(--eh) / .75); box-shadow: inset 3px 0 0 oklch(0.72 0.13 var(--eh)); }
+[data-mode="light"] .lmini.event .lmth { background: oklch(0.92 0.05 var(--eh)); box-shadow: inset 3px 0 0 oklch(0.6 0.14 var(--eh)); }
+.lmini.event .lmth em { font-style: normal; font-size: 10px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--ink-2); line-height: 1; } .lmini.event .lmth strong { font-size: 17px; font-weight: 650; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.lmini.song .lmth img { width: 44px; height: 44px; border-radius: 8px; object-fit: cover; box-shadow: 0 1px 3px rgba(0,0,0,.25); }
+.lmini.song .lmplay { width: 32px; height: 32px; flex: none; display: grid; place-items: center; border-radius: 50%; corner-shape: round; background: var(--fill-2); } .lmini.song .lmplay:hover { background: var(--fill-3); } .lmini.song .lmplay svg.i { width: 15px; height: 15px; fill: currentColor; }
+.lmini.place .lmth i { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%; corner-shape: round; color: #fff; background: oklch(0.58 0.17 30); box-shadow: 0 0 0 2px #fff, 0 2px 6px rgba(0,0,0,.3); } .lmini.place .lmth svg.i { width: 17px; height: 17px; }
+
+/* LumaUI: Navigation trail (G3, 25 Sep)
+   Where you came from sits inline with where you are: "‹ Albums · 12 albums". The chevron is part of the trail, never a framed button on a row of its own. */
+.lnt { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.lnt h1 { margin: 0; min-width: 0; font: var(--t-title-1); letter-spacing: -.024em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lntb { flex: none; display: inline-flex; align-items: center; gap: 2px; height: 28px; margin-left: -6px; padding: 0 9px 0 3px; border-radius: 9px; font: var(--t-label); letter-spacing: .01em; color: var(--ink-2); }
+.lntb:hover { background: var(--fill-1); color: var(--ink); } .lntb svg.i { width: 16px; height: 16px; } .lntb:focus-visible { outline-offset: -2px; }
+.lntb.ico { width: 30px; height: 30px; margin: 0 -4px 0 -8px; padding: 0; justify-content: center; color: var(--ink-3); } .lntb.ico svg.i { width: 20px; height: 20px; }
+.lntm { display: flex; align-items: center; gap: 0 7px; min-width: 0; font: var(--t-caption); font-size: 12.5px; letter-spacing: .01em; color: var(--ink-3); white-space: nowrap; overflow: hidden; }
+.lnt i.d { width: 3px; height: 3px; flex: none; border-radius: 50%; corner-shape: round; background: var(--ink-4); } .lntm button:hover { color: var(--ink); }
+/* LumaUI: Field (G3)
+   A label above a recessed well (the search well); the accent ring on focus; a caption hint below. */
+.lfld { display: grid; gap: 6px; margin-top: 14px; } .lfld > span { font: var(--t-label); letter-spacing: .01em; color: var(--ink-3); }
+.lfld input { width: 100%; height: 38px; padding: 0 12px; border: 0; outline: 0; border-radius: 12px; background: var(--well); box-shadow: var(--well-edge); color: var(--ink); font: var(--t-body); font-size: 13.5px; }
+.lfld input::placeholder { color: var(--ink-3); } .lfld input:focus { box-shadow: var(--well-edge), 0 0 0 2px var(--acc-ink); }
+.lfhint { margin: 8px 0 0; font: var(--t-caption); letter-spacing: .01em; color: var(--ink-3); }
+/* LumaUI: Table header on grid rows
+   The same recessed, sortable bar as lTHead, for lists laid out as grid or flex rows (Tide's songs, Monitor, Disks, the file picker):
+   lTHead.grid(cols, { k, dir }, 'data-x', cls). Each heading that sorts is a button with aria-sort and the arrow on the active one;
+   a column without a key is a plain label; .d right-aligns a heading. One part (G1's .lthgrid and G3's lTHead.grid merged). */
+.lthgrid { min-height: 30px; align-items: center; border-radius: 10px; background: var(--fill-1); font: var(--t-label); letter-spacing: .01em; color: var(--ink-3); }
+.lthgrid > button { display: inline-flex; align-items: center; gap: 4px; height: 30px; padding: 0; border-radius: 8px; font: inherit; letter-spacing: inherit; color: inherit; white-space: nowrap; background: none !important; box-shadow: none !important; }
+.lthgrid > button:hover, .lthgrid > button:not([aria-sort="none"]) { color: var(--ink); } .lthgrid svg.i { width: 12px; height: 12px; stroke-width: 2.2; } .lthgrid > button:focus-visible { outline-offset: 2px; }
+.lthgrid > .d { justify-self: end; justify-content: flex-end; text-align: right; }
+/* LumaUI: Status dot (G3). .stat is connected or fine (green); .busy is working (accent, breathing); .bad needs you (red), and always says why in words beside it. */
+.stat.busy { background: oklch(0.7 0.13 var(--acc)); box-shadow: 0 0 0 3px oklch(0.7 0.13 var(--acc) / .2); animation: lstatp 1.4s ease-in-out infinite; } @keyframes lstatp { 50% { opacity: .4; } } [data-mode="light"] .stat.busy { background: oklch(0.58 0.14 var(--acc)); }
+.stat.bad { background: var(--lui-danger, oklch(0.62 0.19 25)); box-shadow: 0 0 0 3px color-mix(in oklch, var(--lui-danger, red) 22%, transparent); }
+
+/* LumaUI: the reference sheet (the LumaUI window) */
+.luiwin .ibody { position: relative; }
+.luinav { width: 212px; flex: none; display: flex; flex-direction: column; gap: 1px; padding: 4px 10px 12px; overflow-y: auto; scrollbar-width: none; }
+.luinav h6 { margin: 10px 10px 6px; font: var(--t-label); letter-spacing: .01em; color: var(--ink-3); }
+.luinav button { display: flex; align-items: center; gap: 10px; width: 100%; height: 32px; padding: 0 10px; border-radius: 10px; text-align: left; color: var(--ink-2); font-weight: 500; flex: none; } .luinav button:hover { background: var(--fill-1); color: var(--ink); }
+.luinav button.on { background: var(--chip); box-shadow: var(--chip-edge); color: var(--ink); } .luinav button span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.luipad { max-width: 880px; margin: 0 auto; padding: 28px 32px 120px; }
+.luipad > header h1 { margin: 0; font: var(--t-title-1); letter-spacing: -.024em; } .luipad > header p { margin: 6px 0 0; color: var(--ink-3); }
+.luisec { padding: 30px 0 4px; } .luisec + .luisec { margin-top: 26px; border-top: 1px solid var(--hair); }
+.luisec h2 { margin: 0; font: var(--t-title-2); letter-spacing: -.01em; } .luisec > p { margin: 4px 0 14px; max-width: 640px; color: var(--ink-2); }
+.luisec > p code, .luinote code { white-space: nowrap; font: 500 12px ui-monospace, "SF Mono", Menlo, monospace; padding: 1px 5px; border-radius: 5px; background: var(--fill-1); color: var(--ink); }
+.luistage { position: relative; display: flex; flex-wrap: wrap; align-items: flex-start; gap: 12px; padding: 20px; border-radius: 16px; background: var(--fill-1); box-shadow: inset 0 0 0 1px var(--hair); }
+.luistage + .luistage { margin-top: 10px; } .luistage.col { flex-direction: column; } .luistage.dark { background: var(--well); box-shadow: var(--well-edge); }
+.luinote { margin: 8px 2px 0; font: var(--t-caption); letter-spacing: .01em; color: var(--ink-3); }
+.luirow { display: flex; align-items: center; gap: 10px; width: 260px; height: 34px; padding: 0 10px; border-radius: 10px; color: var(--ink-2); } .luirow svg.i { width: 16px; height: 16px; } .luirow span { flex: 1; font-weight: 500; }
+.luirow.on { background: var(--chip); box-shadow: var(--chip-edge); color: var(--ink); }
+.luiframe { position: relative; display: flex; width: 100%; height: 520px; padding: 8px 0 0 8px; border-radius: 16px; overflow: hidden; background: var(--win); box-shadow: inset 0 0 0 1px var(--hair); container: luiframe / inline-size; }
+.luiframe > .isle { position: relative; flex: 1; min-width: 0; margin: 0 8px 8px 0; }
+.luiframe .luicontent { position: absolute; inset: 0; padding: 22px 24px; color: var(--ink-3); }
+.luiframe .luicontent b { display: block; font: var(--t-title-1); letter-spacing: -.024em; color: var(--ink); }
+.luisky { position: relative; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; width: 100%; padding: 18px; border-radius: 16px; overflow: hidden; }
+.luisky.d { background: linear-gradient(180deg, oklch(0.5 0.12 250), oklch(0.66 0.1 232) 55%, oklch(0.72 0.07 225)); } .luisky.g { background: linear-gradient(180deg, oklch(0.36 0.08 275), oklch(0.58 0.12 330) 50%, oklch(0.74 0.13 45)); }
+.luisky .lskycard { padding: 12px 14px 14px; border-radius: 18px; } .luisky h6 { margin: 0 0 8px; font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
+.luisky p { margin: 4px 0 0; font-size: 12.5px; }
+.luitype > div { display: flex; align-items: baseline; gap: 16px; width: 100%; } .luitype > div + div { margin-top: 10px; } .luitype code { width: 110px; flex: none; font: var(--t-caption); letter-spacing: .01em; color: var(--ink-3); }
+.luiside { position: relative; display: flex; flex-direction: column; width: 260px; height: 330px; padding: 10px; border-radius: 16px; background: var(--win); box-shadow: inset 0 0 0 1px var(--hair); }
+.luiside .scr { flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: none; }
+.luiside .shead.sfoot { margin-top: auto; }
+.luitable { width: 100%; border-collapse: separate; border-spacing: 0; } .luitable td { height: 36px; padding: 0 12px; white-space: nowrap; } .luitable td:first-child { width: 100%; font-weight: 500; } .luitable td.dim { color: var(--ink-3); }
+.luitable tr td:first-child { border-radius: 10px 0 0 10px; } .luitable tr td:last-child { border-radius: 0 10px 10px 0; } .luitable tbody tr:hover td { background: var(--fill-1); } .luitable tr.on td { background: var(--chip); }
+.luicols { display: flex; gap: 0; } .luicols > div { width: 180px; display: grid; gap: 2px; padding: 2px 8px; border-right: 1px solid var(--hair); } .luicols > div:last-child { border-right: 0; }
+.luicols button { display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 10px; border-radius: 10px; text-align: left; color: var(--ink-2); } .luicols button svg.i { width: 14px; height: 14px; margin-left: auto; color: var(--ink-3); }
+.luied { width: 100%; max-width: 560px; margin: 0; padding: 26px 28px 30px; border-radius: 14px; background: var(--isle); box-shadow: var(--isle-out); font: 15px/1.7 var(--read); color: var(--ink); outline: none; }
+.luiicons { display: flex; gap: 20px; } .luiicons span { display: grid; justify-items: center; gap: 6px; font: var(--t-caption); color: var(--ink-3); letter-spacing: .01em; } .luiicons svg.i { width: 22px; height: 22px; color: var(--ink); }
+.luisidef { flex-direction: column; height: 280px; padding: 0; } .luisidef .tbar { padding: 0 14px; } .luisidef .tbar img { width: 22px; height: 22px; } .luisidef .tbar b { font-weight: 600; }
+.luisidef > div:not(.tbar) { flex: 1; min-height: 0; display: flex; padding-left: 8px; } .luisidef .luisb { width: 176px; flex: none; display: grid; align-content: start; gap: 1px; padding: 0 8px 0 0; overflow: hidden; transition: width .28s var(--ease), padding .28s var(--ease), opacity .2s; }
+.luisidef .luisb .luirow { width: 100%; } .luisidef > div:not(.tbar) > .isle { position: relative; flex: 1; min-width: 0; margin: 0 8px 8px 0; } .luisidef.off .luisb { width: 0; padding: 0; opacity: 0; }
+.luimsgs { width: 100%; max-width: 460px; }
+.luigrid { width: 100%; } .luigrid .lthgrid, .luigr { display: grid; grid-template-columns: 32px minmax(0, 1.3fr) minmax(0, 1fr) 56px; gap: 8px; padding: 0 12px; } .luigrid .lthgrid { margin-bottom: 6px; }
+.luigr { height: 38px; align-items: center; border-radius: 10px; } .luigr:hover { background: var(--fill-1); } .luigr > span { color: var(--ink-3); font-variant-numeric: tabular-nums; } .luigr b { font-weight: 500; } .luigr .d { text-align: right; }
+@container win (max-width: 720px) { .luinav { display: none; } .luipad { padding: 22px 16px 100px; } .luiframe { height: 560px; } }
+
+/* ── One gutter on a phone: 16px from each side for the top row's buttons, full-width bars and page content ── */
+html[data-phone] .win.phone { --phg: 16px; }
+html[data-phone] .win.phone :is(.fbar.phgrow, .fbar:has(> label.srch.keep), #f-bar, .pphbar, .nphbar, .pnphbar, .tphbar, .dpphbar) { width: calc(100% - 32px) !important; }
+html[data-phone] .win.phone :is(.cphbar, .fbar.phtabs) { left: 16px !important; right: 16px !important; }
+html[data-phone] .win.phone #t-bot.tmini { left: 32px !important; right: 32px; }
+html[data-phone] .win.phone > .phback, html[data-phone] .win.phone .pnlback { left: 16px; }
+@container win (max-width: 559px) {
+  :is(.crpad, .pmonth, .cfpage, .cbpad, .mepad, .dpad, .npad, .pagepad, .mthread, .fresults) { padding-left: 16px !important; padding-right: 16px !important; }
+  .ttl { padding-left: 16px !important; padding-right: 16px !important; }
+  .fgrid { padding-left: 8px !important; padding-right: 8px !important; }   /* tiles carry 8px of their own */
+}
+html[data-phone] .win.phone.phstack.navopen :is(.msidebar, .crside, .cside, .cfside) { padding-left: 8px !important; padding-right: 8px !important; }
+html[data-phone] .win.phone.phstack.navopen :is(.msidebar, .crside, .cside, .cfside)::before { padding-left: 8px !important; }
+html[data-phone] .win.phone.phstack.navopen .crside .crlist { padding-inline: 4px; }   /* row edges on the 16px gutter, level with search */
+
+
+/* Phone: favorites sit in an inset well, so they read as a shelf apart from the list; Contacts is the real address book, lettered */
+.pnfavs { padding: 8px 6px 6px; border-radius: 22px; background: var(--well); box-shadow: var(--well-edge); } .pnfavs[hidden] { display: none !important; }
+.pnfavs h6 { grid-column: 1 / -1; margin: 0; padding: 2px 8px 2px; font-size: 11.5px; font-weight: 650; color: var(--ink-3); letter-spacing: .02em; }
+.pnlet { position: sticky; top: 0; z-index: 1; padding: 12px 8px 4px; font-size: 12px; font-weight: 700; color: var(--ink-3); background: var(--win); }
+.pnrow time { text-align: right; line-height: 1.55; } .pncount { margin: 10px 0 0; padding: 8px; text-align: center; font-size: 12px; color: var(--ink-3); }
+.pnwin.pnlistview .pnside .pnfavs { margin: 6px 0 10px; }
+html[data-phone] .pnwin.pnlistview .pnside { padding-left: 16px; padding-right: 16px; } html[data-phone] .pnwin.pnlistview .pnside::before { padding-left: 0; }
+html[data-phone] .pnwin.pnlistview .pnside .pnlist { margin: 0 -8px; }   /* rows' text on the gutter's inner line, like the title */
+
+/* Photos on a phone: one bar (collections, zoom, search, add; or the open photo's actions), filmstrip to scrub, photo edge to edge */
+#w-photos.pnarrow :is(#p-ttl .navbtn, .tbar .lsidebtn) { display: none !important; }
+#w-photos.pnarrow .pphbar { display: flex; gap: 6px; } #w-photos:not(.viewing) .pphbar > .ib { flex: none !important; }
+.pphbar .pzs { flex: 1; display: flex; gap: 2px; min-width: 0; }
+.pphbar .pzs .bt { flex: 1 1 0; min-width: 0; justify-content: center; padding: 0 2px; font-size: 14px; font-weight: 600; color: var(--ink-2); }
+.pphbar .pzs .bt.on { background: var(--chip); box-shadow: var(--chip-edge); color: var(--ink); }
+#w-photos.viewing .pphbar > :is(.ib, .bt) { flex: 1 1 0; } #w-photos.viewing .pphbar > .pped { flex: 1.5 1 0; justify-content: center; }
+html[data-phone] .win.phone .pphbar .bt.pped { width: auto !important; padding: 0 14px !important; gap: 8px !important; font-size: 15px !important; font-weight: 650; }
+.pphbar .ib.faved svg.i { color: oklch(0.66 0.2 15); fill: currentColor; }
+.ppx .fexh { display: flex; align-items: center; } .ppnew { display: inline-flex; align-items: center; gap: 4px; margin-left: auto; height: 28px; padding: 0 10px; border-radius: 10px; font-size: 12.5px; font-weight: 600; color: var(--ink-2); } .ppnew svg.i { width: 14px; height: 14px; }
+.ppx .fsha { margin-bottom: 6px; } .ppx .fsha .fvt.on { background: var(--chip); box-shadow: var(--chip-edge); color: var(--ink); }
+.ppth { flex: none; width: 36px; height: 36px; border-radius: 10px; object-fit: cover; } .ppth.ic { display: grid; place-items: center; background: var(--well); box-shadow: var(--well-edge); color: var(--ink-2); } .ppth.big { width: 56px; height: 56px; border-radius: 12px; }
+.ppx .fexr2 { height: 52px; padding: 0 8px; } .ppx .fexr2.on { background: var(--chip); box-shadow: var(--chip-edge); } .ppx .fexr2 > small, .pphbar .fexr2 > small { margin-left: auto; font-size: 12.5px; color: var(--ink-3); }
+.pphbar .fexr2 > span > small { display: block; font-size: 12px; color: var(--ink-3); }
+.ppx .ppmk { width: 100%; justify-content: center; margin-top: 8px; } .ppx .cfield { width: 100%; }
+#w-photos.pnarrow .viewer { padding: 170px 0 168px !important; background: #000; }
+#w-photos.pnarrow .viewer img { width: 100%; max-height: 100%; border-radius: 0; box-shadow: none; }
+#w-photos.pnarrow .viewer .vt { top: 106px !important; left: 16px !important; right: 16px; transition: opacity .2s; }
+.pstrip { position: absolute; left: 0; right: 0; bottom: 104px; z-index: 13; display: flex; align-items: center; gap: 2px; height: 48px; padding: 0 calc(50% - 20px); overflow-x: auto; scrollbar-width: none; transition: opacity .2s; }
+.pstrip button { flex: none; width: 30px; height: 40px; padding: 0; overflow: hidden; border-radius: 4px; opacity: .72; transition: width .2s var(--ease), opacity .2s; }

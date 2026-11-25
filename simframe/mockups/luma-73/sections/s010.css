@@ -1,0 +1,16 @@
+/* Notes: the list's bar under the list; the page's island (the folder, who's here) stays top left; its bar under the page */
+html[data-form="tablet"] #w-notes.phone .nlbar:not(#_):not(#_):not(#_):not(#_) { left: 12px !important; right: 12px !important; bottom: 34px !important; translate: none !important; transform: none !important; width: auto !important; max-width: none !important; flex-wrap: wrap !important; }
+html[data-form="tablet"] #w-notes.phone .nisl { left: 12px !important; right: auto !important; top: 12px !important; }
+html[data-form="tablet"] #w-notes.phone #n-float { top: 12px; }
+/* Charlie: the thread's island at the top of the page, the mailboxes as rows */
+html[data-form="tablet"] #w-charlie.phone #cr-head { top: 12px !important; }
+html[data-form="tablet"][data-o="landscape"] #w-charlie.phone .crnav .crnew { height: 44px; border-radius: 14px; font-size: 15px; }
+html[data-form="tablet"] #w-charlie.phone .crside.crlisle { background: none !important; }
+html[data-form="tablet"] #w-charlie #cr-side:has(.crlbar) .crtabs { display: none !important; }   /* the bar holds All and Unread */
+html[data-form="tablet"] #w-charlie.phone .crisl { margin-left: 0 !important; }   /* the thread's island is the page's title: top left */
+html[data-form="tablet"] #w-charlie.phone #cr-body { padding-top: 72px !important; }
+/* portrait: the mailboxes live behind the list's island, as on the phone (phone.js stackStart draws it) */
+html[data-form="tablet"][data-o="portrait"] #w-charlie.phone > .phboxbtn { display: flex; position: absolute; left: 12px; top: 52px; z-index: 48; align-items: stretch; height: 48px; padding: 0; gap: 0; max-width: calc(var(--tlist) - 24px); border-radius: 16px; color: var(--ink); background: var(--bar); box-shadow: var(--bar-edge); -webkit-backdrop-filter: blur(24px) saturate(1.7); backdrop-filter: blur(24px) saturate(1.7); overflow: hidden; }
+html[data-form="tablet"][data-o="portrait"] #w-charlie.phone > .ibody > .crside:not(#_):not(#_):not(#_) { padding-top: 112px !important; }   /* the rows start under the island */
+/* a selected row shows beside its page, on a tablet as on the fold; the phone's list is alone and marks nothing */
+html:is([data-form="tablet"], [data-form="fold"]) #w-charlie.phone #cr-side .crrow.on, html:is([data-form="tablet"], [data-form="fold"]) #w-messages.phone .msidebar .crow.on, html:is([data-form="tablet"], [data-form="fold"]) #w-notes.phone .nrow2.on { background: var(--chip) !important; box-shadow: var(--chip-edge) !important; }

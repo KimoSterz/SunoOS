@@ -1,11 +1,10 @@
 name: Vendor upstream mockup
 
+# Ręcznie, na żądanie: from-scratch pobranie simplyluma.com/simframe,
+# filtr nieaktywnych aplikacji (tools/luma_policy.py) i podział na sekcje
+# (tools/split_sections.py). Automatyczny trigger wyłączono, bo simframe/
+# jest już forkiem SunoOS — ręczne edycje w sekcjach byłyby nadpisywane.
 on:
-  push:
-    branches: [main]
-    paths-ignore:
-      - "simframe/**"
-      - ".github/**"
   workflow_dispatch:
 
 permissions:

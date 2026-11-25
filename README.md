@@ -50,13 +50,27 @@ docs/inventory.md   pełny inwentarz plików makiety + adnotacje
 
 ## Nasze zmiany względem Luma
 
-- Na razie żadnych — `simframe/` to wierna kopia upstreamu; własne modyfikacje SunoOS będziemy wprowadzać po ich zaakceptowaniu.
+- **Filtr nieaktywnych aplikacji** (`tools/luma_policy.py`): z danych makiety usunięte zostały programy trzecie, których
+  SunoOS nie instaluje (m.in. Inkscape, Audacity, Blender, GIMP, Krita, Kdenlive, VLC, Kodi, OBS, Signal, Telegram,
+  Thunderbird, LibreOffice, VSCodium, Godot, Nextcloud, Bitwarden, Firefox, Heroic, Moonlight, SuperTux) — z katalogu
+  Depot, list urządzeń i aktualizacji (`world.js`), launchpada i trayu (`shell.js`), list popularnych (telefon) oraz
+  z wiązki ikon `_bundle.json` i plików ikon. W systemie pozostają Spotify, Discord, Obsidian, Zoom i Steam.
+  Logika, animacje i wygląd okien/docka pozostały nietknięte — zmienione są wyłącznie dane.
+- **Podział na sekcje** (`tools/split_sections.py`): monolity `luma-73.js` (~1,7 MB), `luma-73.css` (~1,1 MB),
+  `desktop/shell.js` i `desktop/shell.css` rozbite na małe, po kolei składane sekcje w katalogach `luma-73/sections/`
+  i `desktop/shell/sections/`. Każda sekcja to bajt-dokładny wycinek oryginału (sha256 sklejenia równa się sha256
+  oryginału — weryfikowane przy każdym podziale), a pliki wejściowe to cieniutki loader (JS) albo manifest `@import`
+  (CSS), więc zachowanie, kolejność kaskady ani sposób podpinania w HTML się nie zmieniają. Edytujemy **sekcje**,
+  nie pliki wejściowe. Manifest podziału: `simframe/mockups/sections.json`.
 
 
 ## Dalsza praca / status
 
 - **Creative Collection (Write, Grid, Stage, Reel, Sessions, Focus, Canvas) jest celowo wykluczona** — na tym etapie nie jest konieczna i może w ogóle nie trafić do SunoOS (bez ikon i bez plików w vendoringu).
-- [x] Pliki upstream są vendorowane automatycznie przez workflow „Vendor upstream mockup” (`.github/workflows/vendor-upstream.yml`) — jeżli jeszcze ich nie ma, wystarczy dowolny push do `main` lub ręczne uruchomienie workflow.
+- [x] Pliki upstream są vendorowane przez workflow „Vendor upstream mockup” (`.github/workflows/vendor-upstream.yml`)
+  — uruchamiany **tylko ręcznie** (Actions → Workflow dispatch), bo `simframe/` jest już forkiem SunoOS i automat
+  nadpisałby ręczne edycje w sekcjach. Workflow sam stosuje filtr `luma_policy.py` i podział `split_sections.py`,
+  więc po odświeżeniu stan simframe/ jest identyczny.
 - [ ] Po powrocie `github.com/SimplyLuma/luma` — porównać `simframe/` z źródłami upstream i skopiować licencję.
 - [ ] Przebrandowanie na SunoOS (nazwa, kolory, ikony) — po zmerchowaniu plików w `simframe/`.
 - [ ] Włączyć GitHub Pages (folder `/preview`) dla stałego adresu podglądu.

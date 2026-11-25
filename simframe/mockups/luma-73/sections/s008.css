@@ -1,0 +1,821 @@
+.nfold2 .fexr2 em { margin-left: auto; font-style: normal; font-size: 12.5px; color: var(--ink-3); } .nfold2 .fexr2.on { background: var(--chip); box-shadow: var(--chip-edge); } .nfold2 .fdot { width: 9px; height: 9px; }
+
+/* Memos: a memo on a phone. The deck spans the gutter, the transport grows to thumb size and sits centred under the wave,
+   with the time and speed on their own line; the transcript is the page, the spoken words lighting as it plays. */
+@container win (max-width: 559px) {
+  .mewin .medeck { margin: 18px 0 0; padding: 18px 14px 16px; border-radius: 24px; }
+  .mewin .medctl { grid-template-columns: 1fr auto; grid-template-areas: "tr tr" "tm sp"; row-gap: 14px; margin-top: 18px; }
+  .mewin .medctl .metrans { grid-area: tr; justify-content: center; gap: 28px; } .mewin .medctl .metime { grid-area: tm; } .mewin .medctl .mespd { grid-area: sp; }
+  .mewin .metrans .ib { width: 52px; height: 52px; } .mewin .metrans .ib svg.i { width: 24px; height: 24px; } .mewin .meplay { width: 68px; height: 68px; } .mewin .meplay svg.i { width: 28px; height: 28px; }
+  .mewin .metx { margin-top: 22px; font-size: 17px; line-height: 1.55; } .mewin .metx span.said { color: var(--ink); } .mewin .metx span:not(.said) { color: var(--ink-3); }
+  .mewin .mehd h1 { font-size: 26px; }
+}
+
+
+/* Weather: what's next */
+.wxnext { display: flex; align-items: center; gap: 4px; padding: 12px 10px; border-radius: 22px; background: rgba(255,255,255,.08); box-shadow: inset 0 0 0 1px rgba(255,255,255,.08); }
+.wxnext > div { flex: 1; display: grid; justify-items: center; gap: 3px; text-align: center; } .wxnh { font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; opacity: .65; } .wxnext b { font-size: 13.5px; } .wxnext small { font-size: 12px; opacity: .7; }
+.wxni { display: grid; place-items: center; width: 26px; height: 26px; color: #ffc93d; } .wxni svg.i { width: 22px; height: 22px; } .wxnarr { width: 18px; height: 1.5px; flex: none; background: rgba(255,255,255,.25); }
+
+/* phone polish: no focus rings on fields in the bar (the well is the field), no keyboard hints where there's no keyboard */
+html[data-phone] .win.phone :is(.fbar, .lac, .fexp) :is(label.srch, .cfield, .mfield, .tkbadd, .cadd, .tphq, .dppq):focus-within { outline: none !important; box-shadow: var(--well-edge) !important; }
+html[data-phone] .win.phone :is(.fbar, .lac, .fexp) input:focus-visible, html[data-phone] .win.phone :is(.fbar, .lac, .fexp) textarea:focus-visible { outline: none !important; }
+html[data-phone] .win.phone :is(.lacft small, kbd, .cakbd, .tkey) { display: none !important; }
+
+/* Photos: Memories */
+.pmem { margin: 0 0 18px; } .pmem h2 { margin: 0 0 10px; font-size: 20px; font-weight: 700; }
+.pmemrow { display: flex; gap: 10px; margin: 0; padding: 0 0 4px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
+.pmemc { position: relative; flex: 0 0 72%; height: 190px; scroll-snap-align: start; border-radius: 22px; overflow: hidden; text-align: left; color: #fff; } .pmemc img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.pmemc::after { content: ""; position: absolute; inset: 0; background: linear-gradient(transparent 40%, rgba(0,0,0,.7)); } .pmemc span { position: absolute; left: 14px; right: 14px; bottom: 12px; z-index: 1; display: grid; } .pmemc b { font-size: 18px; font-weight: 750; letter-spacing: -.01em; } .pmemc small { font-size: 12.5px; opacity: .85; }
+.pmemp { position: absolute; inset: 0; z-index: 95; background: #000; animation: tkpin .3s var(--ease); } .pmemi { position: absolute; inset: 0; overflow: hidden; }
+.pmemi img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transform: scale(1.02); transition: opacity .8s ease, transform 3.6s linear; } .pmemi img.on { opacity: 1; transform: scale(1.1); }
+.pmembar { position: absolute; left: 16px; right: 16px; top: 50px; display: flex; gap: 4px; z-index: 2; } .pmembar i { flex: 1; height: 3px; border-radius: 2px; background: rgba(255,255,255,.3); overflow: hidden; } .pmembar u { display: block; height: 100%; width: 0; background: #fff; } .pmembar i.done u { width: 100%; } .pmembar i.now u { width: 100%; transition: width 3.2s linear; }
+.pmemtap { position: absolute; top: 90px; bottom: 120px; z-index: 1; width: 40%; } .pmemtap.l { left: 0; } .pmemtap.r { right: 0; }
+.pmemt { position: absolute; left: 20px; right: 20px; bottom: 60px; z-index: 2; display: grid; color: #fff; text-shadow: 0 2px 12px rgba(0,0,0,.6); } .pmemt b { font-size: 30px; font-weight: 800; letter-spacing: -.02em; } .pmemt small { font-size: 14px; opacity: .85; }
+.pmemx { position: absolute; right: 12px; top: 62px; z-index: 3; color: #fff; background: rgba(0,0,0,.35); border-radius: 50%; }
+
+/* LumaUI rule: text entry is the bottom-most thing in the bar. In a grown panel, its field sits last, right above the row
+   (suggestions and choices above it, closest to the thumb's reach first); in a two-row bar, the field row is the bottom one. */
+html[data-phone] .win.phone .fexp > .cfield { order: 99; } html[data-phone] .win.phone .fexp > .cfield ~ .ppmk { order: 100; }
+html[data-phone] .win.phone .fexp.mnewp > .fexh, html[data-phone] .win.phone .fexp.caddp > .fexh { order: -1; }
+
+/* Messages: a run from one person is one block (mShape sets the corners) */
+.mwin .mshaped { border-radius: var(--rtl) var(--rtr) var(--rbr) var(--rbl) !important; transition: border-radius .15s; }
+.mwin .k-photo .bub.mshaped .mph { border-radius: max(4px, calc(var(--rtl) - 3px)) max(4px, calc(var(--rtr) - 3px)) max(4px, calc(var(--rbr) - 3px)) max(4px, calc(var(--rbl) - 3px)); }
+.mwin .msg:not(.first) { margin-top: 2px; }
+
+/* LumaUI safe area: the measured padding (lSafe) is the only bottom padding in a phone scroller */
+html[data-phone] .win.phone .lsafec { padding-bottom: 0 !important; margin-bottom: 0 !important; }
+
+/* second-pass fixes */
+html[data-phone] #w-notes.phone #n-bar.nphbar { padding: 6px !important; } html[data-phone] #w-notes.phone .nphbar .nfr { display: grid !important; grid-template-columns: repeat(5, 1fr); justify-items: center; } .nphbar .nfr .vr { display: none; }
+html[data-phone] .win.phone #t-body::after { display: none !important; }   /* Tide's old spacer; the safe-area rule owns the end of the page */
+html[data-phone] .win.phone .fbar > :is(label.srch, .ib, .bt) { margin-left: 0 !important; margin-right: 0 !important; }
+/* Camera zoom: every stop the same size, the current one only lit (yellow, with ×); the glass is the over-media bar material
+   (the same as the viewer's and the call's bars), not a one-off frost */
+.cmzoom2 { gap: 4px !important; padding: 4px !important; border-radius: 24px !important; background: rgba(38,38,42,.78) !important; box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 0 0 1px rgba(0,0,0,.6), 0 12px 32px -8px rgba(0,0,0,.6) !important; backdrop-filter: blur(24px) saturate(1.7) !important; -webkit-backdrop-filter: blur(24px) saturate(1.7) !important; }
+.cmzoom2 button, .cmzoom2 button.on { width: 38px !important; height: 38px !important; margin: 0 !important; font-size: 12.5px !important; background: none !important; border-radius: 50%; }
+.cmzoom2 button.on { background: rgba(255,255,255,.12) !important; color: oklch(0.88 0.15 90) !important; }
+.pnctrl2.v { background: rgba(38,38,42,.78) !important; box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 0 0 1px rgba(0,0,0,.6), 0 12px 32px -8px rgba(0,0,0,.6); }
+
+.vtcp { contain: layout paint; } .vtcstart { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 14px; background: var(--isle); } .vtcstart img { width: 44px; height: 44px; } .vtcstart i { display: flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px; border-radius: 10px; background: var(--well); box-shadow: var(--well-edge); font-style: normal; font-size: 10.5px; color: var(--ink-3); } .vtcstart i svg.i { width: 11px; height: 11px; }
+/* Filer and Notes: no sidebar toggle in the desktop title bar (F9 still toggles; on a phone the button still opens the drawer) */
+.win:not(.phone):is(#w-filer, #w-notes) > .tbar .lsidebtn { display: none; }
+/* Filer: Back sits beside the folder's name, on the title's line, not above it */
+#f-ttl:has(> .navback) { display: flex; align-items: flex-start; gap: 2px; margin-left: -10px; }
+#f-ttl > .navback { flex: none; margin-top: -6px; }
+/* Ari, phone and desktop: a messaging thread like Messages. Your words in the accent bubble on the right, Ari's in the chip
+   bubble on the left, no avatar (it is a one-to-one thread). What Ari did is a full-width card whose lines wrap, never clip. */
+.ariwin .arime p { background: linear-gradient(180deg, oklch(0.52 0.12 var(--acc)), oklch(0.46 0.12 var(--acc))) !important; color: #fff !important; border-radius: 20px 20px 6px 20px; box-shadow: inset 0 1px 0 oklch(1 0 0 / .18), 0 0 0 1px rgba(0,0,0,.35), 0 1px 2px rgba(0,0,0,.3); }
+[data-mode="light"] .ariwin .arime p { background: linear-gradient(180deg, oklch(0.6 0.13 var(--acc)), oklch(0.54 0.13 var(--acc))) !important; box-shadow: inset 0 1px 0 oklch(1 0 0 / .25), 0 0 0 1px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.12); }
+.ariwin .arisay { grid-template-columns: minmax(0, 1fr) !important; } .ariwin .arisay > .arimark, .ariwin .arisay.chain > span:first-child { display: none; }
+.ariwin .arisay:not(.chain) > div { justify-self: start; max-width: min(88%, 680px); padding: 10px 15px 11px; border-radius: 20px 20px 20px 6px; background: var(--chip); box-shadow: var(--chip-edge); }
+.ariwin .arisay:not(.chain) > div > p { line-height: 1.5; } .ariwin .arisay .arifoot { margin-top: 8px; padding-top: 6px; box-shadow: inset 0 1px 0 var(--hair); }
+.ariwin .arisay.chain > .arich { min-width: 0; max-width: 100%; }
+.ariwin .arich > header { flex-wrap: wrap; row-gap: 2px; padding: 11px 16px 10px; } .ariwin .arich > header > b { flex: 1 1 100%; min-width: 0; line-height: 1.35; } .ariwin .aristate { white-space: nowrap; }
+.ariwin .arsl { white-space: normal; overflow: visible; line-height: 1.4; padding: 7px 0; } .ariwin .arsl small { display: block; margin: 1px 0 0; }
+.ariwin .arstep { align-items: center; } .ariwin .ardraft span { display: block; -webkit-line-clamp: unset; overflow: visible; }
+.ariin .emo { flex: none; width: 36px; height: 36px; margin: 2px; border-radius: 10px; }
+.ariwin .fbar.aricomp .ariin textarea { min-height: 40px; padding: 10px 12px; } .ariwin .fbar.aricomp .arisend { width: 40px; height: 40px; }   /* one 40px row: model, field, send */
+/* the title island (lNavTtl): ☰ and the name in one island */
+.navbtn.hasttl { width: auto !important; max-width: min(320px, calc(100% - 24px)); height: 48px !important; display: flex !important; align-items: stretch; justify-content: flex-start; gap: 0; padding: 0 !important; text-align: left; }
+.navbtn.hasttl > svg { align-self: center; width: 20px !important; height: 20px !important; margin: 0 13px 0 14px; }
+.navbtn.hasttl .lnt { align-content: center; padding: 0 18px 0 14px; box-shadow: inset 1px 0 0 var(--hair); }   /* ☰ gets its own square; a full-height hairline divides it from the title */
+html[data-phone] .win.phone .navbtn.hasttl { top: 6px !important; }   /* every title island's top sits at 52, like Charlie's and Calendar's */ .navbtn.hasttl > svg { flex: none; } .navbtn.hasttl .lnt { display: grid; min-width: 0; line-height: 1.2; } .navbtn.hasttl .lnt b { font-size: 15px; font-weight: 650; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .navbtn.hasttl .lnt small { font-size: 12px; font-weight: 500; color: var(--ink-3); white-space: nowrap; }
+html[data-phone] #w-ari.phone .ariphbar .arihome { width: 48px; height: 48px; border-radius: 20px; } html[data-phone] #w-ari.phone .ariphbar .arihome.on { background: var(--chip); box-shadow: var(--chip-edge); }
+html[data-phone] #w-ari.phone .ariphbar .mfield .emo { width: 40px; height: 40px; margin: 4px; }
+.aripick2 .arirowp small, .arimpop .arirowp small { white-space: normal; overflow: visible; line-height: 1.35; }   /* a model's description wraps; it is never cut off */
+/* Calendar: an event reads top-down by importance. The title leads (22px), when it is sits under it; four real action tiles;
+   your answer; then the facts grouped in one card, the place full width, the people. Space separates sections, not hairlines. */
+.calev { display: grid; gap: 0; } .calev > .ldplab, .calev > h6 { margin-top: 22px !important; }
+.calev .calevh { padding: 2px 0 18px 16px; gap: 3px; } .calev .calevh > i { width: 4px; bottom: 20px; }
+.calev .calevh b { margin-bottom: 4px; font-size: 22px; font-weight: 700; letter-spacing: -.02em; line-height: 1.2; } .calev .calevh small { font-size: 14px; color: var(--ink-2); } .calev .calevh small + small { color: var(--ink-3); }
+.cevtiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.cevtiles > button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; height: 64px; border-radius: 16px; background: var(--chip); box-shadow: var(--chip-edge); color: var(--ink); font-size: 12.5px; font-weight: 600; }
+.cevtiles > button:hover { filter: brightness(1.08); } .cevtiles > button svg.i { width: 20px; height: 20px; } .cevtiles > button.danger { color: oklch(0.7 0.17 25); } [data-mode="light"] .cevtiles > button.danger { color: oklch(0.55 0.2 25); }
+.calev .bt.key.wide3 { margin-top: 10px; }
+.win .calev .calrsvp { height: 44px; border-radius: 14px !important; } .win .calev .calrsvp .ind { top: 3px; bottom: 3px; border-radius: 11px !important; } .calev .calrsvp button { font-size: 14px; font-weight: 600; }
+.calev .ldpkv { margin: 0; padding: 0 16px; border-radius: 16px; background: var(--chip); box-shadow: var(--chip-edge); } .calev .ldpkv > div { min-height: 48px; padding: 0 !important; display: flex !important; align-items: center; justify-content: space-between; } .calev .ldpkv > div + div { box-shadow: inset 0 1px 0 var(--hair); } .calev .ldpkv dt { color: var(--ink-2); } .calev .ldpkv dd { font-weight: 600; }
+.calev .lmini.place { width: 100%; max-width: none; box-sizing: border-box; }
+/* Calendar's month picker: the year as a title with its arrows grouped, months as tiles, busyness as dots instead of "25 events" */
+.cjpop2 { width: 340px; padding: 10px !important; border-radius: 22px !important; }
+.cj3h { margin: 0 0 4px !important; padding: 0 0 0 6px !important; border-bottom: 0 !important; gap: 4px !important; }
+.cj3h b { order: -1; min-width: 0 !important; margin-right: auto; font-size: 20px !important; font-weight: 700 !important; letter-spacing: -.02em; text-align: left !important; color: var(--ink) !important; }
+.cj3h .ib { width: 36px !important; height: 36px !important; border-radius: 12px !important; background: var(--fill-1); color: var(--ink) !important; }
+.cj3h .bt { order: -1; margin: 0 4px 0 0 !important; height: 36px !important; padding: 0 14px !important; border-radius: 12px !important; font-size: 13px !important; }
+.cj3h b + .bt { order: 0; }
+.cj3m { gap: 6px !important; padding-top: 8px !important; }
+.cj3m button { height: 62px !important; gap: 7px !important; border-radius: 14px !important; background: var(--fill-1); color: var(--ink) !important; }
+.cj3m button.past { background: none; color: var(--ink-3) !important; } .cj3m button.past em i.f { background: var(--ink-4); }
+.cj3m b { font-size: 15px !important; font-weight: 600 !important; }
+.cj3m em { display: flex; gap: 3px; min-height: 0 !important; } .cj3m em i { width: 5px; height: 5px; border-radius: 50%; background: var(--fill-2, rgba(255,255,255,.12)); } .cj3m em i.f { background: oklch(0.75 0.12 var(--acc)); }
+.cj3m button.cjn:not(.on) { box-shadow: inset 0 0 0 1.5px oklch(0.7 0.13 var(--acc)); } .cj3m button.cjn b { color: var(--ink) !important; }
+.cj3m button.on { background: var(--chip) !important; box-shadow: var(--chip-edge), 0 0 0 2px oklch(0.7 0.13 var(--acc)) !important; }
+/* Calendar on a phone: the head is one title island (like Ari's): month and year, then the calendars' dots past a full-height hairline */
+#w-calendar.calnarrow .calhead.flo { left: 12px !important; top: 10px !important; height: 48px !important; flex-direction: row !important; align-items: stretch !important; padding: 0 !important; border-radius: 16px; background: var(--bar) !important; box-shadow: var(--bar-edge) !important; -webkit-backdrop-filter: blur(24px) saturate(1.7) !important; backdrop-filter: blur(24px) saturate(1.7) !important; overflow: hidden; }
+.calnarrow .chead.phead { height: 48px !important; align-items: center !important; gap: 7px !important; padding: 0 12px 0 16px !important; border-radius: 0 !important; }
+.calnarrow .chead.phead b { font-size: 19px !important; font-weight: 700 !important; letter-spacing: -.02em !important; }
+.calnarrow .chead.phead > span { font-size: 15px !important; }
+.calnarrow .calhead .ccal { height: 48px; padding: 0 16px 0 14px; gap: 4px; border-radius: 0; box-shadow: inset 1px 0 0 var(--hair); } .calnarrow .calhead .ccal i { width: 9px; height: 9px; box-shadow: 0 0 0 2px var(--bar); }
+.calnarrow .calhead .chead:hover, .calnarrow .calhead .ccal:hover { background: var(--fill-1); }
+#w-calendar.calnarrow #cal-cals:empty { display: none !important; }
+/* Calendar on a phone: an open event or day has no header row in the panel; Back and Close live in the bar's own row */
+#cal-bar .caldet2 .ldph { display: none !important; } #cal-bar .caldet2 > :first-child, #cal-bar .caldet2 .ldpb { padding-top: 6px; }
+.calnav { display: flex; align-items: center; gap: 6px; height: 48px; padding: 0 16px 0 10px; border-radius: 20px; color: var(--ink); } .calnav:hover { background: var(--fill-1); } .calnav b { font-size: 15px; font-weight: 650; } .calnav svg.i { width: 20px; height: 20px; }
+.calnav.lbl { padding-left: 16px; } #cal-bar .calx { width: 48px; height: 48px; border-radius: 20px; }
+/* Calendar alignment pass (30 Sep) */
+.ctrack .hr, .cnow { font-style: normal; }   /* hour lines are <i>; their labels must not inherit italic */
+.cwt span { margin-top: -8px; line-height: 16px; }   /* 3-day/week hour labels centre on their line (the inline top overrode the -8px) */
+.pmd b, .cwh b, .caltd b, .cmd > b, .cmd .cmn { font-variant-numeric: proportional-nums; }   /* day numbers centre optically; tabular 1 sat off-centre */
+.calnarrow .cnow b { left: auto !important; right: calc(100% + 2px); width: auto !important; white-space: nowrap; padding: 2px 5px; top: -11px !important; border-radius: 6px; background: var(--isle); z-index: 3; }   /* now time on one line, masking the hour label it crosses */
+#w-calendar.calnarrow .cweek .cwh { top: 0 !important; padding-top: 66px !important; margin-top: -66px !important; }   /* the day header pins right under the title island, no gap for events to show through */
+html[data-phone] .calwin .ccalpop .mi { height: 48px; padding: 0 12px; gap: 12px; border-radius: 16px; font-size: 15px; } html[data-phone] .calwin .ccalpop h6 { margin: 6px 12px 4px; font-size: 12px; }   /* the calendars list uses the bar-panel row (48px) like every other phone panel */
+html[data-phone] .calwin .ccalpop .cchk { width: 20px; height: 20px; border-radius: 6px; } html[data-phone] .calwin .ccalpop .lcount { margin-left: auto; }
+html[data-phone] .calwin .calac .lach { padding-left: 16px; padding-right: 16px; }   /* the draft's "New event" row lines up with its title and fields */
+/* Camera polish (30 Sep): one control size on the top row, toggles as a lit glyph (not a yellow fill), solid panels */
+.cmph .cmtop2 .cmfmt2 { height: 44px; min-width: 60px; padding: 0 14px; border-radius: 22px; background: rgba(255,255,255,.08); font-size: 14px; font-weight: 650; }
+.cmph .cmt2.on { background: rgba(255,255,255,.18) !important; color: oklch(0.88 0.15 90) !important; }   /* on = the camera's yellow glyph on a brighter disc, like flash on iOS/Android */
+.cmphone .cmpop { background: oklch(0.22 0.006 265) !important; }   /* opaque: the shutter must not show through a panel */
+.cmphone .cmtag { left: 50% !important; top: 14px !important; transform: translateX(-50%) !important; height: 32px; border-radius: 16px; background: rgba(38,38,42,.78); -webkit-backdrop-filter: blur(24px) saturate(1.7); backdrop-filter: blur(24px) saturate(1.7); }   /* the mode tag centres on the frame's top edge (left:12px plus the centring transform pushed it off-screen) */
+#w-camera.cmph .ltoast { top: 96px !important; bottom: auto !important; }   /* Camera has no action bar: toasts sit under the top row, never over the shutter */
+/* Charlie on a phone (30 Sep) */
+/* the thread's title island: Back, then the people and the subject; it replaces the big subject line and the sender card */
+html[data-phone] #w-charlie.phone > .phback, html[data-phone] #w-charlie.phone .crtop2 { display: none !important; }
+html[data-phone] #w-charlie.phone #cr-head { position: absolute !important; left: 12px !important; right: 12px !important; top: 52px !important; height: 48px !important; margin: 0 !important; padding: 0 !important; transform: none !important; translate: none !important; z-index: 30; display: block !important; }
+.crisl { display: flex; width: max-content; max-width: 100%; height: 48px; border-radius: 16px; background: var(--bar); box-shadow: var(--bar-edge); -webkit-backdrop-filter: blur(24px) saturate(1.7); backdrop-filter: blur(24px) saturate(1.7); overflow: hidden; }
+.crislb { flex: none; width: 48px; display: grid; place-items: center; color: var(--ink); } .crislb svg.i { width: 20px; height: 20px; }
+.crisli { min-width: 0; display: flex; align-items: center; gap: 10px; padding: 0 16px 0 12px; text-align: left; box-shadow: inset 1px 0 0 var(--hair); color: var(--ink); }
+.crislb:hover, .crisli:hover { background: var(--fill-1); }
+.crisli > span:last-child { min-width: 0; display: grid; line-height: 1.2; } .crisli b { font-size: 15px; font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .crisli small { font-size: 12px; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.crisli .crstk { display: flex; flex: none; } .crisli .crstk > * + * { margin-left: -10px; } .crisli .crstk > * { box-shadow: 0 0 0 2px var(--bar); }
+html[data-phone] #w-charlie.phone #cr-body .crpad { padding-top: 4px !important; }
+/* messages read like Messages: the avatar sits beside the bottom of the bubble, the name above it, bubbles at Messages' width */
+html[data-phone] #w-charlie.phone .crmsg .crcol { grid-template-columns: 30px minmax(0, 1fr) !important; column-gap: 8px !important; row-gap: 4px !important; }
+html[data-phone] #w-charlie.phone .crmsg .crmav { grid-column: 1; grid-row: 2 / span 2; align-self: end; } html[data-phone] #w-charlie.phone .crmsg .crmav .av { width: 30px !important; height: 30px !important; }
+html[data-phone] #w-charlie.phone .crmsg .crmeta { grid-column: 2; grid-row: 1; padding-left: 4px; }
+html[data-phone] #w-charlie.phone .crmsg .crbub { grid-column: 2; grid-row: 2; justify-self: start; max-width: 100%; }
+html[data-phone] #w-charlie.phone .crmsg .crfiles { grid-column: 2; grid-row: 3; }
+html[data-phone] #w-charlie.phone .crmsg .crcol > :not(.crmav):not(.crmeta):not(.crbub):not(.crfiles) { grid-column: 2; }
+html[data-phone] #w-charlie#w-charlie.phone .crmsg.in .crcol { max-width: 84% !important; }   /* received: never full width, like Messages; files and photos stay inside the same column */
+html[data-phone] #w-charlie#w-charlie.phone .crmsg.in .crcol > :is(.crfiles, .crimgs) { max-width: 100%; min-width: 0; }
+/* the mailboxes drawer starts under the title island (the v71b drawer rule), square to the left and bottom edges */
+html[data-phone] #w-charlie.phone.phboxes > .phboxbtn { z-index: 50 !important; }
+/* the Reply switcher reads like Calendar's view switcher (icon, label, chevron, one line); who it goes to is already in the field below */
+html[data-phone] #w-charlie.phone .crwho2 { gap: 10px; padding: 0 14px; } html[data-phone] #w-charlie.phone .crwho2 small { display: none; }
+html[data-phone] #w-charlie.phone .crwho2 b { font-size: 15px; } html[data-phone] #w-charlie.phone .crwho2 > svg.i:first-child { width: 19px; height: 19px; }
+html[data-phone] #w-charlie.phone .crwho2[aria-expanded="true"] { background: var(--fill-1); }
+/* a grown panel's Back header has a hairline under it, as every panel header does */
+.fexp > .fexr2.fback:first-child { margin-bottom: 4px; border-radius: 16px 16px 0 0; box-shadow: inset 0 -1px 0 var(--hair); }
+/* Charlie's list: the title is the title island (☰ | mailbox and account), like Ari's and Calendar's */
+html[data-phone] #w-charlie.phone.phstack.navopen > .phboxbtn { height: 48px !important; padding: 0 !important; gap: 0 !important; align-items: stretch !important; border-radius: 16px !important; background: var(--bar) !important; box-shadow: var(--bar-edge) !important; -webkit-backdrop-filter: blur(24px) saturate(1.7); backdrop-filter: blur(24px) saturate(1.7); overflow: hidden; max-width: calc(100% - 24px); }
+html[data-phone] #w-charlie.phone > .phboxbtn .phbi { width: 48px; display: grid; place-items: center; flex: none; } html[data-phone] #w-charlie.phone > .phboxbtn .phbi svg.i { width: 20px !important; height: 20px !important; margin: 0 !important; color: var(--ink) !important; order: 0 !important; }
+html[data-phone] #w-charlie.phone > .phboxbtn .phbt { display: grid; align-content: center; min-width: 0; padding: 0 18px 0 14px; box-shadow: inset 1px 0 0 var(--hair); text-align: left; line-height: 1.2; }
+html[data-phone] #w-charlie.phone > .phboxbtn .phbt b { font-size: 15px !important; font-weight: 650 !important; letter-spacing: 0 !important; white-space: nowrap; } html[data-phone] #w-charlie.phone > .phboxbtn .phbt small { align-self: auto !important; margin: 0 !important; font-size: 12px !important; font-weight: 500 !important; color: var(--ink-3) !important; }
+/* Charlie: the title island grows into the mailboxes. One glass: the island's row stays as the header (☰ → ✕, a hairline under it),
+   the list continues below in the same material, as the action bar grows into its panels. */
+html[data-phone] #w-charlie#w-charlie.phone.phboxes > .phboxbtn { width: min(320px, calc(100% - 24px)) !important; max-width: none !important; background: var(--bar) !important; box-shadow: inset 0 -1px 0 var(--hair), inset 0 1px 0 rgba(255,255,255,.07), inset 1px 0 0 rgba(255,255,255,.05), inset -1px 0 0 rgba(255,255,255,.05) !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; border-radius: 16px 16px 0 0 !important; }
+html[data-phone] #w-charlie#w-charlie.phone.phboxes .crnav { top: 52px !important; left: 12px !important; bottom: auto !important; width: min(320px, calc(100% - 24px)) !important; max-height: calc(100% - 52px - 128px); overflow-y: auto; padding: 56px 6px 6px !important; border-radius: 16px !important; background: var(--bar) !important; box-shadow: var(--bar-edge), 0 0 0 100vmax rgba(0,0,0,.38) !important; -webkit-backdrop-filter: blur(24px) saturate(1.7); backdrop-filter: blur(24px) saturate(1.7); animation: islgrow .32s cubic-bezier(.3,1.1,.4,1) backwards !important; transform-origin: top left; }
+@keyframes islgrow { from { clip-path: inset(0 45% calc(100% - 48px) 0 round 16px); } to { clip-path: inset(0 0 0 0 round 16px); } }
+html[data-phone] #w-charlie#w-charlie.phone.phboxes .crnav .crni { min-height: 48px; border-radius: 12px; }
+/* LumaUI title island, open: the island grows into the sidebar. Its header row is solid (the bar colour) so the list scrolls cleanly under it. One glass from the island down; its row stays as the header
+   (☰ becomes ✕, a hairline under it); the places continue below. Applies to any app whose ☰ carries a title (lNavTtl). */
+html[data-phone] .win.phone.navopen:has(.navbtn.hasttl) .navbtn.hasttl { width: min(320px, calc(100% - 24px)) !important; max-width: none !important; background: var(--bar) !important; box-shadow: inset 0 -1px 0 var(--hair), inset 0 1px 0 rgba(255,255,255,.07), inset 1px 0 0 rgba(255,255,255,.05), inset -1px 0 0 rgba(255,255,255,.05) !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; border-radius: 16px 16px 0 0 !important; z-index: 60; position: relative; }
+html[data-phone] .win.phone.navopen:has(.navbtn.hasttl) .navbtn.hasttl > svg { visibility: hidden; }
+html[data-phone] .win.phone.navopen:has(.navbtn.hasttl) .navbtn.hasttl::before { content: ""; position: absolute; left: 14px; top: 14px; width: 20px; height: 20px; background: currentColor; -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round'%3E%3Cpath d='M6 6l12 12M18 6 6 18'/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round'%3E%3Cpath d='M6 6l12 12M18 6 6 18'/%3E%3C/svg%3E") center / contain no-repeat; }
+html[data-phone] .win.phone.navopen:has(.navbtn.hasttl) .pside { position: absolute !important; z-index: 55 !important; top: 52px !important; left: 12px !important; right: auto !important; bottom: auto !important; width: min(320px, calc(100% - 24px)) !important; height: auto !important; max-height: calc(100% - 52px - 128px) !important; overflow-y: auto; padding: 56px 6px 6px !important; border-radius: 16px !important; background: var(--bar) !important; box-shadow: var(--bar-edge), 0 0 0 100vmax rgba(0,0,0,.38) !important; -webkit-backdrop-filter: blur(24px) saturate(1.7); backdrop-filter: blur(24px) saturate(1.7); animation: islgrow .32s cubic-bezier(.3,1.1,.4,1) backwards !important; }
+html[data-phone] .win.phone.navopen:has(.navbtn.hasttl) .pside .lfoot { margin-top: 8px !important; }
+html[data-phone] .win.phone.navopen:has(.navbtn.hasttl) > .tbar:has(.navbtn.hasttl) { z-index: 60 !important; }   /* the island's row sits on top of the panel it grew */
+/* the grown island lifts off the page; once its list scrolls, the header row casts a shadow over it, like any sticky header */
+html[data-phone] #w-charlie#w-charlie.phone.phboxes .crnav, html[data-phone] .win.phone.navopen:has(.navbtn.hasttl) .pside { box-shadow: var(--bar-edge), 0 32px 80px -10px rgba(0,0,0,.85), 0 12px 28px rgba(0,0,0,.5), 0 0 0 100vmax rgba(0,0,0,.24) !important; }   /* a lighter dim so the panel's own shadow reads, as the closed island's does */
+html[data-phone] #w-charlie#w-charlie.phone.phboxes.islscrolled > .phboxbtn, html[data-phone] .win.phone.navopen.islscrolled:has(.navbtn.hasttl) .navbtn.hasttl { box-shadow: inset 0 -1px 0 var(--hair), inset 0 1px 0 rgba(255,255,255,.07), inset 1px 0 0 rgba(255,255,255,.05), inset -1px 0 0 rgba(255,255,255,.05), 0 8px 16px -6px rgba(0,0,0,.55) !important; }
+html[data-phone] body[data-mode="light"] #w-charlie#w-charlie.phone.phboxes.islscrolled > .phboxbtn, html[data-phone] body[data-mode="light"] .win.phone.navopen.islscrolled:has(.navbtn.hasttl) .navbtn.hasttl { box-shadow: inset 0 -1px 0 var(--hair), 0 8px 16px -6px rgba(0,0,0,.18) !important; }
+/* Charlie's thread island grows into the details: who's in the thread and its facts. Information lives up here; the action bar keeps the actions */
+.crisl.open { flex-direction: column; width: min(360px, 100%); height: auto; box-shadow: var(--bar-edge), 0 32px 80px -10px rgba(0,0,0,.85), 0 12px 28px rgba(0,0,0,.5), 0 0 0 100vmax rgba(0,0,0,.24); animation: islgrow .32s cubic-bezier(.3,1.1,.4,1) backwards; }
+.crisl { flex-direction: row; } .crislr { display: flex; height: 48px; flex: none; } .crisl.open .crislr { box-shadow: inset 0 -1px 0 var(--hair); } .crisl.open .crisli { flex: 1; }
+.crislp { display: grid; gap: 4px; padding: 8px 10px 12px; max-height: 60vh; overflow-y: auto; }
+.crislp .crprow { padding: 6px 4px; } .crislp dl { margin-top: 6px; }
+/* Clock pass (30 Sep): World has a real Add city; cities move by dragging; Edit shows handles and remove; quick timers as an even grid */
+.ckcity .ckrm, .ckcity .ckgrip { display: none; }
+.ckcity.lcard { touch-action: pan-y; user-select: none; -webkit-user-select: none; cursor: grab; }
+.ckcity .ckrm { position: absolute; top: 8px; right: 8px; z-index: 2; width: 28px; height: 28px; place-items: center; border-radius: 50%; background: var(--fill-2, rgba(255,255,255,.14)); color: var(--ink); } .ckcity .ckrm svg.i { width: 15px; height: 15px; }
+.win:not(.phone) .ckcity.lcard:hover .ckrm { display: grid; } .win:not(.phone) .ckcity.lcard:hover .ckch > span { visibility: hidden; }
+.ckcity.editing .ckrm { display: grid; } .ckcity.editing .ckch > span { visibility: hidden; }
+.ckcity.editing .ckgrip { display: grid; position: absolute; right: 10px; bottom: 12px; color: var(--ink-3); touch-action: none; } .ckcity.editing .ckgrip svg.i { width: 18px; height: 18px; }
+.ckcity.dragging { z-index: 20; cursor: grabbing; box-shadow: var(--chip-edge), 0 20px 40px -10px rgba(0,0,0,.6) !important; scale: 1.03; transition: scale .15s; }
+html[data-phone] #w-clock.phone .ckpre { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; } html[data-phone] #w-clock.phone .ckpre button { height: 48px; border-radius: 14px; font-size: 14px; justify-content: center; text-align: center; padding: 0; }
+/* Clock: Add city turns the bar into the search. Matches grow above, the field is the bottom row with Cancel beside it */
+#cb-bar.ckfindbar { width: min(400px, calc(100% - 24px)) !important; display: flex !important; flex-direction: column !important; align-items: stretch !important; gap: 6px; } #cb-bar.ckfindbar > .fexp { width: auto !important; max-width: none !important; order: 0; }
+.ckfrow { display: flex; align-items: center; gap: 6px; width: 100%; } #cb-bar .ckfrow .srch { flex: 1 1 auto !important; width: auto !important; min-width: 0; margin: 0 !important; display: flex !important; height: 44px; padding: 0 14px !important; } #cb-bar .ckfrow .srch input { display: block !important; flex: 1; min-width: 0; width: auto !important; }
+html[data-phone] #cb-bar .ckfrow .srch { height: 48px; border-radius: 20px; } html[data-phone] #cb-bar .ckfrow .bt { height: 48px; border-radius: 20px; padding: 0 18px; }
+.ckfindp .ckfsug { display: grid; gap: 2px; } .ckfindp .lsugi { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 48px; padding: 0 12px; border-radius: 14px; text-align: left; color: var(--ink); } .ckfindp .lsugi.on, .ckfindp .lsugi:hover { background: var(--fill-1); }
+.ckfindp .lsugi svg.i { width: 18px; height: 18px; color: var(--ink-3); flex: none; } .ckfindp .lsugi span { display: grid; flex: 1; min-width: 0; } .ckfindp .lsugi b { font-size: 14.5px; font-weight: 600; } .ckfindp .lsugi small { font-size: 12px; color: var(--ink-3); } .ckfindp .lsugi kbd { font-size: 11px; color: var(--ink-3); }
+html[data-phone] #w-clock#w-clock.phone #cb-bar.cktabbar { display: flex !important; flex-direction: row !important; align-items: center !important; gap: 4px; left: 50% !important; right: auto !important; width: max-content !important; max-width: calc(100% - 32px) !important; transform: translateX(-50%) !important; }   /* as wide as its buttons */
+html[data-phone] #cb-bar.cktabbar .sp { flex: none !important; width: 1px !important; height: 28px; margin: 0 6px; background: var(--hair); }   /* tabs | actions */
+html[data-phone] #w-clock#w-clock.phone #cb-bar.cktabbar > .ckk { width: 56px !important; min-width: 0 !important; height: 48px; padding: 0 !important; border-radius: 20px; justify-content: center; }
+html[data-phone] #cb-bar.cktabbar .cktab { position: relative; } html[data-phone] #cb-bar.cktabbar .cktab.on { background: var(--chip); box-shadow: var(--chip-edge); color: var(--ink); } html[data-phone] #cb-bar.cktabbar .cktab.on svg.i { color: oklch(0.8 0.11 var(--acc)); }
+html[data-phone] #cb-bar.cktabbar .cktab em { position: absolute; top: 3px; right: 3px; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 8px; background: var(--fill-2, rgba(255,255,255,.18)); color: var(--ink); font-size: 10.5px; font-style: normal; line-height: 16px; }
+html[data-phone] #cb-bar.cktabbar .cktab .ckrun { position: absolute; top: 7px; right: 7px; width: 7px; height: 7px; border-radius: 50%; background: oklch(0.72 0.17 145); }
+
+.ckcity.add { min-height: 118px; } .ckcity.add svg.i { width: 26px; height: 26px; }
+/* A–Z index, best practice (iOS Contacts, Android): it has its own lane at the right edge; the list's rows stop short of it, so nothing runs under the letters */
+html[data-phone] .win.phone .lazgut { padding-right: 26px !important; } html[data-phone] #w-phone.phone:has(> .lazidx) .pnfavs { margin-right: 26px !important; }   /* Phone's favorites sit above the list, outside the scroller: same lane */ html[data-phone] .win.phone .lazidx { right: 3px; width: 20px; }
+/* Depot polish (30 Sep) */
+/* Made for Luma: each app is a small card with room inside it (the card and the icon shared .dic) */
+.dicons > .dic { width: 84px; padding: 10px 6px 10px; border-radius: 18px; background: var(--fill-1); box-shadow: inset 0 0 0 1px var(--hair); } .dicons > .dic > b { margin-top: 8px; }
+/* the dropdown's tiles: the label's line box no longer adds space under it, so the content is centred */
+.fvt > span { line-height: 1.15; }
+/* category pill and stars sit on one line, centred */
+.dptx em { display: inline-flex; align-items: center; gap: 6px; } .dptx em .lcat { margin: 0 !important; }
+/* the section dropdown carries the update count now the bar's Updates button is gone */
+#dp-phbar .dpsec2 .tbadge.dpsecb { position: static !important; inset: auto !important; transform: none !important; margin: 0 0 0 2px; }
+/* phone app page: back is the floating back island; the header sits on the page (no dark band), facts in one raised card; the bar is the app's */
+html[data-phone] #w-depot.phone .dbk { position: absolute; left: 12px; top: 52px; z-index: 30; margin: 0; height: 48px; padding: 0; gap: 0; border-radius: 16px; background: var(--bar); box-shadow: var(--bar-edge); -webkit-backdrop-filter: blur(24px) saturate(1.7); backdrop-filter: blur(24px) saturate(1.7); color: var(--ink); font-size: 15px; font-weight: 650; overflow: hidden; align-items: stretch !important; }
+html[data-phone] #w-depot.phone .dbk .dbki { width: 48px; display: grid; place-items: center; } html[data-phone] #w-depot.phone .dbk .dbki svg.i { width: 20px; height: 20px; } html[data-phone] #w-depot.phone .dbk > span { display: grid; align-content: center; padding: 0 18px 0 14px; box-shadow: inset 1px 0 0 var(--hair); }
+html[data-phone] #w-depot.phone .dpad:has(> .dbk) { padding-top: 76px !important; }   /* the header starts 20px under the island */
+html[data-phone] #w-depot.phone .dapp { background: none !important; box-shadow: none !important; margin: 0 !important; padding: 0 !important; overflow: visible; } html[data-phone] #w-depot.phone .dapp .dappbg { display: none; } html[data-phone] #w-depot.phone .dapp::after { display: none; }
+html[data-phone] #w-depot.phone .dapph { display: flex !important; align-items: center; gap: 16px; padding: 0 !important; } html[data-phone] #w-depot.phone .dapph > .dic { width: 88px !important; height: 88px !important; border-radius: 22px; flex: none; }
+html[data-phone] #w-depot.phone .dapptx h1 { margin: 0 0 4px; font-size: 24px; font-weight: 700; letter-spacing: -.02em; color: var(--ink); text-shadow: none; } html[data-phone] #w-depot.phone .dapptx p { margin: 6px 0 0; font-size: 14px; color: var(--ink-2); }
+html[data-phone] #w-depot.phone .dapptx .dmk { font-size: 13px; color: var(--ink-3); display: flex; align-items: center; gap: 6px; } html[data-phone] #w-depot.phone .dhacts { display: none !important; }
+html[data-phone] #w-depot.phone .dfacts { display: grid !important; grid-template-columns: repeat(4, 1fr); margin: 20px 0 0 !important; padding: 12px 4px !important; border-radius: 18px; background: var(--well); box-shadow: var(--well-edge) !important; }   /* facts are read-only: inset, like other info */
+html[data-phone] #w-depot.phone .dfacts > div { display: grid; justify-items: center; align-content: center; gap: 2px; min-width: 0; padding: 0 4px; text-align: center; } html[data-phone] #w-depot.phone .dfacts > div + div { box-shadow: inset 1px 0 0 var(--hair); }
+html[data-phone] #w-depot.phone .dfacts b { font-size: 15px; font-weight: 700; color: var(--ink); text-shadow: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; } html[data-phone] #w-depot.phone .dfacts span { font-size: 11.5px; color: var(--ink-3); }
+html[data-phone] #w-depot.phone .dfacts .dstars { font-size: 9px; }
+html[data-phone] #w-depot.phone .dshots3 { margin-top: 18px; }
+/* the app's bar: who it is on the left, then Share, ⋯ and the one primary */
+html[data-phone] #dp-phbar.dpappbar { display: flex; align-items: center; gap: 6px; } .dpappid { display: flex; align-items: center; gap: 10px; min-width: 0; padding-left: 6px; } .dpappid > .dic { flex: none; border-radius: 9px; }
+.dpappid > span { display: grid; min-width: 0; line-height: 1.2; } .dpappid b { font-size: 14.5px; font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .dpappid small { font-size: 12px; color: var(--ink-3); }
+html[data-phone] #dp-phbar.dpappbar .dget { width: auto !important; min-width: 80px; height: 48px; padding: 0 22px !important; border-radius: 20px; font-size: 15px !important; font-weight: 650; }
+/* Disks pass (30 Sep): even 16px between cards; the bar's rows each have one subject (the drive; the selected volume) */
+html[data-phone] #w-disks.phone .dskcard { margin-top: 16px !important; } html[data-phone] #w-disks.phone .dsktwo { gap: 16px !important; margin-top: 16px; } html[data-phone] #w-disks.phone .dsktwo > .dskcard { margin-top: 0 !important; }
+.dskvchip { display: flex; align-items: center; gap: 8px; min-width: 0; padding: 0 10px 0 12px; font-size: 15px; } .dskvchip i { flex: none; width: 10px; height: 10px; border-radius: 3px; background: var(--c); } .dskvchip i.free { box-shadow: inset 0 0 0 1.5px var(--ink-3); }
+.dskvchip b { font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .dskvchip svg.i { flex: none; width: 14px; height: 14px; color: var(--ink-3); }
+html[data-phone] #w-disks.phone .dskr2 { display: flex; align-items: center; gap: 4px; } html[data-phone] #w-disks.phone .dskr2 .sp { flex: 1; }
+.dsksysn { display: flex; gap: 10px; margin: 4px 6px 6px; padding: 10px 12px; border-radius: 14px; background: var(--well); box-shadow: var(--well-edge); font-size: 13px; line-height: 1.45; color: var(--ink-2); } .dsksysn svg.i { flex: none; width: 15px; height: 15px; margin-top: 2px; color: var(--ink-3); }
+html[data-phone] #w-disks.phone .dskparts .dskpr { row-gap: 3px !important; padding: 10px 12px !important; }   /* a volume's two lines read as one item */
+html[data-phone] #dsk-bar .dskdrv .crmi { min-height: 48px; height: auto; padding: 0 10px; gap: 12px; border-radius: 16px; font-size: 15px; } html[data-phone] #dsk-bar .dskdrv .crmi svg.i { width: 18px; height: 18px; }   /* drive actions match the drive rows above them */
+/* Disks on a phone (v3): the drive is a title island top left (grows into the drives and the drive's actions); the bar is the selected volume's actions only */
+html[data-phone] #w-disks.phone .dskhd h1 { display: none; } html[data-phone] #w-disks.phone .dskpad { padding-top: 76px !important; }
+.dskislp .fexr2 { display: flex; align-items: center; gap: 12px; padding: 0 10px; text-align: left; } .dskislp .fexr2 > svg.i { flex: none; width: 20px; height: 20px; } .dskislp .fexr2 > span { display: grid; flex: 1; min-width: 0; line-height: 1.25; }
+.dskislp .fexr2 small { display: block; font-size: 12px; color: var(--ink-3); } .dskislp .fexr2 em { font-style: normal; font-size: 13px; color: var(--ink-3); } .dskislp .fexr2.on { background: var(--chip); box-shadow: var(--chip-edge); } .dskislp .fexr2 .dskwarn { width: 8px; height: 8px; border-radius: 50%; background: oklch(0.78 0.15 70); }
+.dskisl { display: none; } html[data-phone] #w-disks.phone .dskisl { display: block; position: absolute; left: 12px; top: 52px; z-index: 40; width: max-content; max-width: calc(100% - 24px); border-radius: 16px; background: var(--bar); box-shadow: var(--bar-edge); -webkit-backdrop-filter: blur(24px) saturate(1.7); backdrop-filter: blur(24px) saturate(1.7); overflow: hidden; }
+.dskislr { display: flex; align-items: stretch; height: 48px; width: 100%; color: var(--ink); text-align: left; } .dskislr > .dskisli { width: 48px; display: grid; place-items: center; flex: none; } .dskislr > .dskisli svg.i { width: 20px; height: 20px; }
+.dskislr > span { display: grid; align-content: center; min-width: 0; flex: 1; padding: 0 6px 0 14px; box-shadow: inset 1px 0 0 var(--hair); line-height: 1.2; } .dskislr b { font-size: 15px; font-weight: 650; } .dskislr small { font-size: 12px; color: var(--ink-3); white-space: nowrap; }
+.dskislr > svg.i:last-child { align-self: center; width: 16px; height: 16px; margin: 0 14px 0 4px; color: var(--ink-3); }
+html[data-phone] #w-disks.phone .dskisl.open { width: min(340px, calc(100% - 24px)); box-shadow: var(--bar-edge), 0 32px 80px -10px rgba(0,0,0,.85), 0 12px 28px rgba(0,0,0,.5), 0 0 0 100vmax rgba(0,0,0,.24); animation: islgrow .32s cubic-bezier(.3,1.1,.4,1) backwards; }
+.dskisl.open .dskislr { box-shadow: inset 0 -1px 0 var(--hair); } .dskisl.open .dskislr > svg.i:last-child { transform: rotate(180deg); }
+.dskislp { display: grid; gap: 2px; padding: 6px; max-height: calc(100vh - 52px - 48px - 140px); overflow-y: auto; } .dskislp .crmi, .dskislp .fexr2 { min-height: 48px; border-radius: 12px; font-size: 15px; } .dskislp .crmi { padding: 0 10px; gap: 12px; } .dskislp .crmi svg.i { width: 18px; height: 18px; }
+html[data-phone] #w-disks#w-disks.phone #dsk-bar { left: 50% !important; right: auto !important; width: max-content !important; max-width: calc(100% - 32px) !important; transform: translateX(-50%) !important; }
+html[data-phone] #w-disks#w-disks.phone #dsk-bar.phgrow { width: calc(100% - 24px) !important; }
+html[data-phone] #w-disks.phone .dskr2 { display: flex; align-items: center; gap: 4px; } html[data-phone] #w-disks.phone .dskk { width: 56px !important; height: 48px; padding: 0 !important; border-radius: 20px; justify-content: center; }
+/* Filer on a phone: the title island (‹ or ☰ | the folder, its parent and count); tap the name for Places */
+html[data-phone] #w-filer.phone #f-ttl { display: block !important; padding: 8px 12px 10px !important; margin: 0 !important; }   /* the header itself starts at 44, so the island lands at 52 like every title island */
+.fisl { display: flex; width: max-content; max-width: 100%; height: 48px; border-radius: 16px; background: var(--bar); box-shadow: var(--bar-edge); -webkit-backdrop-filter: blur(24px) saturate(1.7); backdrop-filter: blur(24px) saturate(1.7); overflow: hidden; }
+.fislb { flex: none; width: 48px; display: grid; place-items: center; color: var(--ink); } .fislb svg { width: 20px; height: 20px; }
+.fisli { display: grid; align-content: center; min-width: 0; padding: 0 18px 0 14px; box-shadow: inset 1px 0 0 var(--hair); text-align: left; color: var(--ink); line-height: 1.2; }
+.fisli b { font-size: 15px; font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .fisli small { font-size: 12px; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fislb:hover, .fisli:hover { background: var(--fill-1); }
+html[data-phone] #w-filer.phone:has(.fisl) > .tbar .lsidebtn { display: none !important; }   /* the island's ☰ replaces the title bar's */
+/* Filer: the title island grows into Places (as Charlie's mailboxes): one glass, its row the header (✕, hairline), the places below */
+html[data-phone] #w-filer#w-filer.phone.navopen .fisl { position: relative; z-index: 61; width: min(320px, calc(100vw - 24px)); border-radius: 16px 16px 0 0; box-shadow: inset 0 -1px 0 var(--hair); background: var(--bar); }
+html[data-phone] #w-filer#w-filer.phone.navopen .fisl .fislb > svg { visibility: hidden; } html[data-phone] #w-filer#w-filer.phone.navopen .fisl .fislb { position: relative; }
+html[data-phone] #w-filer#w-filer.phone.navopen .fisl .fislb::before { content: ""; position: absolute; inset: 0; background: currentColor; -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round'%3E%3Cpath d='M6 6l12 12M18 6 6 18'/%3E%3C/svg%3E") center / 20px no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round'%3E%3Cpath d='M6 6l12 12M18 6 6 18'/%3E%3C/svg%3E") center / 20px no-repeat; }
+html[data-phone] #w-filer#w-filer.phone.navopen .rail { position: absolute !important; z-index: 60 !important; top: 52px !important; left: 12px !important; right: auto !important; bottom: auto !important; width: min(320px, calc(100% - 24px)) !important; height: auto !important; max-height: calc(100% - 52px - 128px) !important; overflow-y: auto; padding: 54px 6px 6px !important; border-radius: 16px !important; background: var(--bar) !important; box-shadow: var(--bar-edge), 0 32px 80px -10px rgba(0,0,0,.85), 0 12px 28px rgba(0,0,0,.5), 0 0 0 100vmax rgba(0,0,0,.24) !important; -webkit-backdrop-filter: blur(24px) saturate(1.7); backdrop-filter: blur(24px) saturate(1.7); animation: islgrow .32s cubic-bezier(.3,1.1,.4,1) backwards !important; }
+/* Maps polish (30 Sep) */
+html[data-phone] #w-maps.phone .mpphbar:has(> .srch) > .ib { flex: none !important; width: 48px !important; }   /* the search field fills its row */
+.mpsrch2 .mpmesh { flex: none; width: 44px; height: 44px; border-radius: 14px; } .mpsrch2 .mpmesh.on { color: oklch(0.78 0.13 var(--acc)); }
+.mpcard2.dir .mpdh [data-mpdirx] { flex: none; width: 40px; height: 40px; border-radius: 14px; }
+html[data-phone] #w-maps.phone .mpphbar .mpeta { padding: 0 10px 0 12px; gap: 1px; } .mpphbar .mpeta b { display: flex; align-items: baseline; gap: 8px; font-size: 18px; font-weight: 700; color: var(--ink) !important; } .mpphbar .mpeta b em { font-style: normal; font-size: 12px; font-weight: 600; color: oklch(0.75 0.15 150); }
+.mpphbar .mpeta span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* Memos on a phone: a title island top left; the recording status in the bar is an inset well */
+html[data-phone] #w-memos.phone:has(#me-isl) > .phback, html[data-phone] #w-memos.phone:has(#me-isl) .mehd { display: none !important; }
+.meisl { display: none; } html[data-phone] #w-memos.phone .meisl { display: flex; position: absolute; left: 12px; top: 52px !important; translate: none !important; margin: 0 !important; z-index: 40; height: 48px; max-width: calc(100% - 24px); border-radius: 16px; background: var(--bar); box-shadow: var(--bar-edge); -webkit-backdrop-filter: blur(24px) saturate(1.7); backdrop-filter: blur(24px) saturate(1.7); overflow: hidden; }
+.meislb { flex: none; width: 48px; display: grid; place-items: center; color: var(--ink); } .meislb svg.i { width: 20px; height: 20px; } .meislb:hover { background: var(--fill-1); }
+.meisli { display: flex; align-items: center; gap: 10px; min-width: 0; padding: 0 18px 0 14px; box-shadow: inset 1px 0 0 var(--hair); } .meisli > span { display: grid; min-width: 0; line-height: 1.2; } .meisli b { font-size: 15px; font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .meisli small { font-size: 12px; color: var(--ink-3); white-space: nowrap; }
+.meisli .medot { flex: none; } .meisli .medot.paused { animation: none; opacity: .5; }
+html[data-phone] #w-memos.phone:has(#me-isl) .mepad { padding-top: 20px !important; }   /* the body already starts under the island */ html[data-phone] #w-memos.phone:has(#me-isl) .mepad > :first-child:not(.mehd), html[data-phone] #w-memos.phone:has(#me-isl) .mepad > .mehd + * { margin-top: 0 !important; }
+html[data-phone] #w-memos.phone .merec2 { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; height: 48px; padding: 0 16px; border-radius: 20px; background: var(--well); box-shadow: var(--well-edge); } html[data-phone] #w-memos#w-memos.phone .mephbar:has(.merec2) .medone2 { flex: none !important; width: auto !important; padding: 0 24px !important; } html[data-phone] #w-memos.phone .mephbar:has(.merec2) > .ib { flex: none !important; width: 48px !important; } html[data-phone] #w-memos.phone .merec2 b { font-size: 15px; } html[data-phone] #w-memos.phone .merec2 em { margin-left: auto; font-style: normal; font-variant-numeric: tabular-nums; color: var(--ink-2); }
+/* Messages on a phone: the title island (‹ | who · Call · Video); it grows into the conversation's info and options. The bar is the composer */
+html[data-phone] #w-messages.phone #m-head { position: absolute !important; left: 12px !important; right: 12px !important; top: 52px !important; height: auto !important; margin: 0 !important; padding: 0 !important; transform: none !important; translate: none !important; background: none !important; box-shadow: none !important; z-index: 40; display: block !important; pointer-events: none; }
+.misl { pointer-events: auto; display: flex; flex-direction: column; width: max-content; max-width: 100%; border-radius: 16px; background: var(--bar); box-shadow: var(--bar-edge); -webkit-backdrop-filter: blur(24px) saturate(1.7); backdrop-filter: blur(24px) saturate(1.7); overflow: hidden; }
+.mislr { display: flex; align-items: stretch; height: 48px; } .mislb { flex: none; width: 48px; display: grid; place-items: center; color: var(--ink); } .mislb svg.i { width: 20px; height: 20px; }
+.misli { display: flex; align-items: center; gap: 10px; min-width: 0; padding: 0 12px; box-shadow: inset 1px 0 0 var(--hair); color: var(--ink); text-align: left; } .misli > span:last-child { display: grid; min-width: 0; line-height: 1.2; }
+.misli b { font-size: 15px; font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px; } .misli small { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--ink-3); white-space: nowrap; }
+.mislr > .ib, html[data-phone] #w-messages.phone .mislr > .ib { display: grid !important; place-items: center; flex: none; width: 44px; height: 48px; border-radius: 0; } .mislr > .ib:first-of-type { box-shadow: inset 1px 0 0 var(--hair); } .mislb:hover, .misli:hover, .mislr > .ib:hover { background: var(--fill-1); }
+.misl.open { width: 100%; box-shadow: var(--bar-edge), 0 32px 80px -10px rgba(0,0,0,.85), 0 12px 28px rgba(0,0,0,.5), 0 0 0 100vmax rgba(0,0,0,.24); animation: islgrow .32s cubic-bezier(.3,1.1,.4,1) backwards; } .misl.open .mislr { box-shadow: inset 0 -1px 0 var(--hair); } .misl.open .misli { flex: 1; }
+.mislp { display: grid; gap: 4px; padding: 10px; max-height: calc(100vh - 52px - 48px - 150px); overflow-y: auto; } .mislp .mi2h { padding: 4px 4px 8px; } .mislm { display: grid; gap: 2px; padding: 4px 0; box-shadow: inset 0 -1px 0 var(--hair), inset 0 1px 0 var(--hair); margin: 2px 0 6px; }
+.mislm .fexr2 { min-height: 48px; border-radius: 12px; } .mislp dl { margin: 4px 4px 8px; } .mislp .fexh { margin: 4px 4px 6px; }
+html[data-phone] #w-messages.phone #m-body .mthread, html[data-phone] #w-messages.phone #m-body > :first-child { padding-top: 108px !important; }
+/* the grown Messages island, audited: tiles, people, inset facts, an even photo grid */
+.mislp { gap: 10px !important; padding: 12px !important; } .mislp .fexh { display: flex; align-items: center; gap: 6px; margin: 4px 4px -2px !important; font-size: 12px; font-weight: 650; color: var(--ink-3); } .mislp .fexh em { font-style: normal; padding: 0 6px; border-radius: 8px; background: var(--fill-1); font-size: 11px; }
+.mislt { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; } .mislt.c3 { grid-template-columns: repeat(3, 1fr); } .mislt .fvt { height: 64px; border-radius: 16px; background: var(--chip); box-shadow: var(--chip-edge); color: var(--ink); } .mislt .fvt.on svg.i { color: oklch(0.8 0.11 var(--acc)); }
+.mislpp { display: grid; gap: 2px; } .mislpr { display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 0 6px; border-radius: 12px; text-align: left; color: var(--ink); } .mislpr:hover:not(:disabled) { background: var(--fill-1); } .mislpr > span { display: grid; line-height: 1.25; } .mislpr b { font-size: 14.5px; font-weight: 600; } .mislpr small { font-size: 12px; color: var(--ink-3); } .mislpr:disabled { opacity: 1; cursor: default; }
+.mislkv { margin: 0 !important; padding: 0 14px; border-radius: 16px; background: var(--well); box-shadow: var(--well-edge); } .mislkv > div { display: flex; align-items: center; justify-content: space-between; min-height: 44px; font-size: 13.5px; } .mislkv > div + div { box-shadow: inset 0 1px 0 var(--hair); } .mislkv dt { color: var(--ink-2); } .mislkv dd { margin: 0; font-weight: 600; } .mislkv .num { font-variant-numeric: tabular-nums; letter-spacing: .02em; }
+.mislph { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; } .mislph img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 10px; }
+/* Notes on a phone: the title island (‹ | the note, its folder and who's here); it grows into sharing and the note's options. The bar is for writing */
+html[data-phone] #w-notes.phone:has(#n-isl) > .phback, html[data-phone] #w-notes.phone:has(#n-isl) #n-float { display: none !important; } html[data-phone] #w-notes.phone:has(#n-isl) #n-main h1 { margin-top: 14px !important; line-height: 1.15 !important; }   /* the title's text starts 20px under the island */ html[data-phone] #w-notes.phone:has(#n-isl) #n-meta { display: none !important; }   /* the title starts 20px under the island */
+.nisl { display: none; } html[data-phone] #w-notes.phone .nisl { display: flex; flex-direction: column; position: absolute; left: 12px; top: 52px !important; translate: none !important; margin: 0 !important; z-index: 40; width: max-content; max-width: calc(100% - 24px); border-radius: 16px; background: var(--bar); box-shadow: var(--bar-edge); -webkit-backdrop-filter: blur(24px) saturate(1.7); backdrop-filter: blur(24px) saturate(1.7); overflow: hidden; }
+.nislr { display: flex; height: 48px; } .nislb { flex: none; width: 48px; display: grid; place-items: center; color: var(--ink); } .nislb svg.i { width: 20px; height: 20px; }
+.nisli { display: flex; align-items: center; gap: 12px; min-width: 0; padding: 0 16px 0 14px; box-shadow: inset 1px 0 0 var(--hair); text-align: left; color: var(--ink); } .nisli > span { display: grid; min-width: 0; line-height: 1.2; }
+.nisli b { font-size: 15px; font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .nisli small { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--ink-3); white-space: nowrap; } .nislb:hover, .nisli:hover { background: var(--fill-1); }
+html[data-phone] #w-notes.phone .nisl.open { width: calc(100% - 24px); box-shadow: var(--bar-edge), 0 32px 80px -10px rgba(0,0,0,.85), 0 12px 28px rgba(0,0,0,.5), 0 0 0 100vmax rgba(0,0,0,.24); animation: islgrow .32s cubic-bezier(.3,1.1,.4,1) backwards; } .nisl.open .nislr { box-shadow: inset 0 -1px 0 var(--hair); } .nisl.open .nisli { flex: 1; }
+.nislp { display: grid; gap: 8px; padding: 12px; max-height: calc(100vh - 52px - 48px - 150px); overflow-y: auto; } .nislp .fexh { margin: 0 4px; font-size: 12px; font-weight: 650; color: var(--ink-3); } .nislp .nsr { display: flex; align-items: center; gap: 12px; padding: 4px; } .nislp .nsr > span { display: grid; } .nislp .nsr b { font-size: 14.5px; font-weight: 600; } .nislp .nsr small { font-size: 12px; color: var(--ink-3); }
+.nislt { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; } .nislt .fvt { height: 64px; border-radius: 16px; background: var(--chip); box-shadow: var(--chip-edge); color: var(--ink); } .nislt .fvt.on svg.i { color: oklch(0.8 0.11 var(--acc)); }
+.nislp .fexr2 { min-height: 48px; border-radius: 12px; }
+
+html[data-phone] #w-notes#w-notes.phone #n-bar.nphbar { left: 50% !important; right: auto !important; width: max-content !important; transform: translateX(-50%) !important; gap: 4px; } html[data-phone] #w-notes#w-notes.phone #n-bar.nphbar.phgrow { width: calc(100% - 24px) !important; }
+html[data-phone] #w-notes.phone #n-bar .nbsep { width: 1px; height: 28px; margin: 0 6px; background: var(--hair); align-self: center; flex: none; } html[data-phone] #w-notes.phone #n-bar > .ib { flex: none !important; width: 48px !important; }
+/* Notes' grown island, refined: tiles, then people as rows with one Add row, then Export and Delete set apart */
+.nislp { gap: 10px !important; } .nislp .fexh { display: flex; align-items: center; gap: 6px; margin: 4px 4px -2px !important; } .nislp .fexh em { font-style: normal; padding: 0 6px; border-radius: 8px; background: var(--fill-1); font-size: 11px; }
+.nislpp { display: grid; gap: 2px; } .nislpr { display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 0 6px; border-radius: 12px; text-align: left; color: var(--ink); } .nislpr > span { display: grid; line-height: 1.25; } .nislpr b { font-size: 14.5px; font-weight: 600; } .nislpr small { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--ink-3); }
+.nislpr.add:hover { background: var(--fill-1); } .nisladd { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; background: var(--fill-1); box-shadow: inset 0 0 0 1px var(--hair); } .nisladd svg.i { width: 17px; height: 17px; }
+.nislfoot { display: grid; gap: 2px; padding-top: 6px; box-shadow: inset 0 1px 0 var(--hair); } .nislfoot .fexr2 { min-height: 48px; border-radius: 12px; }
+html[data-phone] #w-notes#w-notes.phone #n-bar.nphbar { padding: 6px !important; } html[data-phone] #w-notes#w-notes.phone #n-bar .nbsep { flex: none !important; width: 1px !important; background: var(--hair) !important; }   /* no chin; the divider stays a hairline when the bar grows */
+html[data-phone] #w-notes#w-notes.phone #n-bar.phgrow { justify-content: flex-start !important; column-gap: 4px !important; } html[data-phone] #w-notes#w-notes.phone #n-bar.phgrow > .ib { flex: none !important; width: 48px !important; } html[data-phone] #w-notes#w-notes.phone #n-bar.phgrow .nnewb { margin-left: auto; }
+/* Photos viewer on a phone: Back and the photo's title are one island; the separate title text goes */
+#w-photos.pnarrow .viewer .vt { display: none !important; }
+.pisl { position: absolute; left: 12px; top: 52px; z-index: 30; display: flex; height: 48px; max-width: calc(100% - 24px); padding: 0 !important; border-radius: 16px; background: var(--bar) !important; box-shadow: var(--bar-edge) !important; -webkit-backdrop-filter: blur(24px) saturate(1.7); backdrop-filter: blur(24px) saturate(1.7); overflow: hidden; }
+.pislb { flex: none; width: 48px; display: grid; place-items: center; color: var(--ink); } .pislb svg.i { width: 20px; height: 20px; } .pislb:hover { background: var(--fill-1); }
+.pisli { display: grid; align-content: center; min-width: 0; padding: 0 18px 0 14px; box-shadow: inset 1px 0 0 var(--hair); line-height: 1.2; } .pisli b { font-size: 15px; font-weight: 650; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .pisli small { font-size: 12px; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* Settings on a phone (1 Oct audit) */
+html[data-phone] #w-settings.phone:has(#cf-isl) > .phback, html[data-phone] #w-settings.phone:has(#cf-isl) .cfback, html[data-phone] #w-settings.phone:has(#cf-isl) .cfhd > div { display: none !important; }
+html[data-phone] #w-settings.phone:has(#cf-isl) .cfhd:not(:has(.cfhda)) { display: none !important; } html[data-phone] #w-settings.phone:has(#cf-isl) .cfpage { padding-top: 16px !important; } html[data-phone] #w-settings.phone:has(#cf-isl) .cfpage > :is(.cfhero, .cfgrp, .cfhd):first-of-type { margin-top: 0 !important; }
+.cfisl { display: none; } html[data-phone] #w-settings.phone .cfisl { display: flex; position: absolute; left: 12px; top: 52px !important; translate: none !important; margin: 0 !important; z-index: 40; height: 48px; max-width: calc(100% - 24px); border-radius: 16px; background: var(--bar); box-shadow: var(--bar-edge); -webkit-backdrop-filter: blur(24px) saturate(1.7); backdrop-filter: blur(24px) saturate(1.7); overflow: hidden; }
+.cfislb { flex: none; width: 48px; display: grid; place-items: center; color: var(--ink); } .cfislb svg.i { width: 20px; height: 20px; } .cfislb:hover { background: var(--fill-1); }
+.cfisli { display: grid; align-content: center; min-width: 0; padding: 0 18px 0 14px; box-shadow: inset 1px 0 0 var(--hair); line-height: 1.2; } .cfisli b { font-size: 15px; font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .cfisli small { font-size: 12px; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* the account card is a card, not a selection: no raised "on" state or fade in the list */
+html[data-phone] #w-settings.phone .cfme, html[data-phone] #w-settings.phone .cfme.on { background: var(--well) !important; box-shadow: var(--well-edge) !important; padding: 10px 12px !important; border-radius: 16px !important; }
+/* Appearance: the two style previews fit side by side */
+html[data-phone] #w-settings.phone .cfstyles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; } html[data-phone] #w-settings.phone .cfstyle { min-width: 0; padding: 6px 6px 8px; } html[data-phone] #w-settings.phone .cfmini { width: 100%; height: auto; aspect-ratio: 210 / 128; }
+html[data-phone] #w-settings.phone .cfmini .w { left: 12px; right: 12px; top: 10px; bottom: 18px; }
+html[data-phone] #w-settings.phone .cfrow.sg { flex-wrap: wrap; row-gap: 10px; } html[data-phone] #w-settings.phone .cfrow.sg > .cft { flex: 1 1 100%; } html[data-phone] #w-settings.phone .cfrow.sg > .cfc { flex: 1 1 100%; } html[data-phone] #w-settings.phone .cfrow.sg > .cfc .seg { display: flex; width: 100%; } html[data-phone] #w-settings.phone .cfrow.sg > .cfc .seg button { flex: 1; }   /* a segmented choice drops under its label instead of squeezing it */
+/* Tasks detail (1 Oct): grouped, not run-on. The properties are one inset card with hairline rows; sections get room; steps and comments sit in their own cards */
+.tkprops { margin: 14px 0 6px !important; padding: 0 14px !important; border-radius: 16px; background: var(--well); box-shadow: var(--well-edge); display: grid; }
+.tkprops > div { display: flex !important; align-items: center; gap: 12px; min-height: 52px; padding: 6px 0 !important; } .tkprops > div + div { box-shadow: inset 0 1px 0 var(--hair); }
+.tkprops dt { flex: none; width: 92px; display: flex; align-items: center; gap: 8px; color: var(--ink-2) !important; font-size: 13.5px !important; } .tkprops dt svg.i { width: 16px; height: 16px; color: var(--ink-3); }
+.tkprops dd { flex: 1; min-width: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 0; } .tkprops .tksharedw { flex-basis: 100%; font-size: 12px; color: var(--ink-3); display: flex; align-items: center; gap: 5px; } .tkprops .tksharedw svg.i { width: 13px; height: 13px; }
+.tkdh { align-items: center !important; } .tkdh h2 { line-height: 1.25; }
+#tk-det .ldplab, .tkdet2 .ldplab, .tkdet .ldplab { margin-top: 22px !important; }
+.tksubs { padding: 4px; border-radius: 16px; background: var(--well); box-shadow: var(--well-edge); } .tksubadd { min-height: 44px; padding: 0 10px; }
+.tkact { padding: 10px 12px; border-radius: 16px; background: var(--well); box-shadow: var(--well-edge); display: grid; gap: 10px; } .tkev time, .tkcom time { margin-left: auto; color: var(--ink-3); }
+.tkcomp { margin-top: 12px; }
+.tkprops > div:has(.tkpri) { flex-wrap: wrap; row-gap: 8px; padding: 12px 0 !important; } .tkprops dd.tkpri { flex: 1 1 100%; display: flex !important; flex-wrap: nowrap !important; } .tkprops dd.tkpri button { flex: 1; }   /* priority is one row of four under its label */
+/* Tide on a phone (1 Oct): standard gutters. The page uses 16px sides like every app; the bar's mini player and row fill the bar edge to edge */
+html[data-phone] #w-tide.phone #t-body .tl { padding: 0 12px 10px !important; } html[data-phone] #w-tide.phone #t-body .tr { padding: 0 4px !important; }
+html[data-phone] #w-tide.phone #t-body :is(.tdeck, .thero, .tah, .alhead) { padding-left: 16px !important; padding-right: 16px !important; }
+html[data-phone] #w-tide#w-tide.phone #t-phbar { display: flex !important; flex-direction: column !important; align-items: stretch !important; }
+html[data-phone] #w-tide#w-tide.phone #t-phbar .tpmini { width: auto !important; margin: 0 !important; align-self: stretch; } html[data-phone] #w-tide.phone #t-phbar .tpmini .tmhit { flex: 1; min-width: 0; }
+html[data-phone] #w-tide#w-tide.phone #t-phbar .tprow { display: flex !important; align-items: center; justify-content: space-between !important; width: auto !important; align-self: stretch; } html[data-phone] #w-tide.phone #t-phbar .tprow > :first-child { margin-right: auto; }
+/* Valet (1 Oct): the facts and the signature are one inset card (read-only information), less to scan */
+.vlwin .vlp-facts { margin-top: 18px; padding: 12px 4px 10px; border-radius: 16px 16px 0 0; background: var(--well); box-shadow: inset 0 1px 0 rgba(0,0,0,.25), inset 1px 0 0 rgba(255,255,255,.03), inset -1px 0 0 rgba(255,255,255,.03); }
+.vlwin .vlp-facts > div:last-child { box-shadow: none; }
+.vlwin .vlp-sig { margin: 0 0 4px !important; padding: 10px 14px 12px; border-radius: 0 0 16px 16px; background: var(--well); box-shadow: inset 0 1px 0 var(--hair), inset 0 -1px 0 rgba(255,255,255,.04); }
+.vlwin .vlp-sig .mono { flex-basis: 100%; margin-left: 22px; font-size: 12px; color: var(--ink-3); font-weight: 400; }
+/* ══════════════════════════════════════════════════════════════════════════════════════════════
+   LUMA ON A PHONE: the mobile layer (v71)
+   Three tiers, one app:  Regular (window wider than 900) · Compact (560 to 900: sidebars fold into drawers,
+   inspectors into sheets) · Phone (the .phone window, or any window under 560: thumb-sized chrome).
+   Content changes key on the window's width (@container win), so a desktop window narrowed down becomes the
+   phone app; chrome changes key on .phone (no title bar, status and home bars, the fat action bar).
+   ══════════════════════════════════════════════════════════════════════════════════════════════ */
+
+/* ── The action bar as a search field (desktop/phone.js barSearch): everything else steps aside ── */
+html[data-phone] .win.phone .fbar.phsearch { width: calc(100% - 24px); max-width: none; }
+html[data-phone] .win.phone .fbar.phsearch > :not(.srch, .phsx) { display: none !important; }
+html[data-phone] .win.phone .fbar.phsearch > .srch { display: flex !important; flex: 1; width: auto !important; max-width: none !important; height: 48px; padding: 0 14px; gap: 10px; border-radius: 20px; font-size: 16px; }
+html[data-phone] .win.phone .fbar.phsearch > .srch input { display: block !important; flex: 1; min-width: 0; width: auto !important; font-size: 16px; }
+html[data-phone] .win.phone .fbar.phsearch > .phsx { flex: none; }
+
+/* ── LumaUI, narrow (any window under 560): the page header stacks ─────────────────────────────────
+   The title gets the whole width, larger, and its meta runs on the line below, so neither truncates. */
+@container win (max-width: 560px) {
+  .lnt { flex-wrap: wrap; row-gap: 3px; } .lnt h1 { font-size: 30px; font-weight: 750; letter-spacing: -.03em; flex: 1 1 auto; }
+  .lnt > .lntm { flex-basis: 100%; white-space: normal; flex-wrap: wrap; row-gap: 2px; font-size: 13px; } .lnt > .lntm > i.d:first-child { display: none; }
+}
+
+/* ── Tablet (a .phone window 600 wide or more): the app's own layout, clear of the clock ─────────────
+   Sidebars stay beside the content (no drawers); their tops start below the status bar like the content does. */
+html[data-phone] .win.phone:not(.navopen) :is(.rail, .pside, .vside, .nside, .dpside, .vwside, .cfside, .wxside, .lfside, .msidebar, .cside, .crside, .crnav, .tside, .dskside, .mnside, .pnside, .tkside, .meside, .mpside, .ytside, .ckside) { padding-top: 50px !important; }
+
+/* ── List-first apps on a phone (desktop/phone.js stackStart): the list is the screen ─────────────────
+   Messages, Charlie, Contacts and Settings open on their list, full screen, in the app's own ground. Picking an item
+   pushes its page in from the right; the back button (top left, a glass pill like the rest of the top row) returns. */
+html[data-phone] .win.phone.phstack.navopen :is(.msidebar, .crside, .cside, .cfside) {
+  position: absolute !important; inset: 0 !important; z-index: 46 !important; width: 100% !important; max-width: none !important; height: auto !important; margin: 0 !important;
+  display: flex !important; flex-direction: column; padding: 56px 12px 40px !important; border-radius: 0 !important; box-shadow: none !important; opacity: 1 !important; transform: none !important;
+  background: var(--win, var(--pop)) !important; animation: none; }
+html[data-phone] .win.phone.phstack.navopen .crside.crlisle { background: var(--win, var(--pop)) !important; }
+.phback { position: absolute; left: 12px; top: 50px; z-index: 47; width: 44px; height: 44px; display: grid; place-items: center; border-radius: 16px; color: var(--ink); background: var(--bar); box-shadow: var(--bar-edge); -webkit-backdrop-filter: blur(24px) saturate(1.7); backdrop-filter: blur(24px) saturate(1.7); }
+.phback svg.i { width: 20px; height: 20px; }
+.win:not(.phone) > .phback, .win.phone.navopen > .phback { display: none; }
+html[data-phone] .win.phone.phstack > .tbar .lsidebtn, html[data-phone] .win.phone.phstack .phnav { display: none !important; }
+/* each list carries its large title, as the first thing on the screen */
+html[data-phone] .win.phone.phstack.navopen :is(.msidebar, .crside, .cside, .cfside)::before { display: block; flex: none; padding: 4px 6px 12px; font-size: 32px; font-weight: 750; letter-spacing: -.03em; line-height: 1.1; color: var(--ink); }
+html[data-phone] #w-messages.phone.phstack.navopen .msidebar::before { content: "Messages"; }
+html[data-phone] #w-charlie.phone.phstack.navopen .crside::before { content: ""; height: 46px; padding: 0; }
+html[data-phone] #w-contacts.phone.phstack.navopen .cside::before { content: "Contacts"; }
+html[data-phone] #w-settings.phone.phstack.navopen .cfside::before { content: "Settings"; }
+html[data-phone] .win.phone.phstack.navopen :is(.msidebar, .crside, .cside, .cfside) .srch { display: flex !important; flex-direction: row; align-items: center; gap: 10px; height: 44px; padding: 0 14px; border-radius: 16px; }
+html[data-phone] .win.phone.phstack.navopen :is(.msidebar, .crside, .cside, .cfside) .srch input { flex: 1; min-width: 0; font-size: 16px; }
+/* the pushed page slides in from the right */
+html[data-phone] .win.phone.phpush :is(.isle, main.main) { animation: phpush .36s cubic-bezier(.3,1,.4,1) both; }
+@keyframes phpush { from { translate: 26% 0; opacity: .4; } }
+/* Charlie's thread head makes room for the back button */
+
+/* list rows on a phone: thumb-tall */
+html[data-phone] .win.phone.phstack.navopen :is(.crrow, .crow, .ctrow) { min-height: 64px; }
+html[data-phone] .win.phone.phstack.navopen :is(.cfside) .si { min-height: 48px; font-size: 15.5px; }
+
+/* ── Calendar, narrow (under 560; the window carries .calnarrow) ─────────────────────────────────
+   Month: a compact month of dots, then the chosen day: what's in it, what's free, a way to add to it. The head is the
+   month in large type; the calendars sit top right as their dots; the bar is Today, the views and a key to add. */
+/* (the phone head is now a title island; its material is set in the Calendar island block) */
+.calnarrow .calbar .seg button:nth-child(4) { display: flex; }
+.calnarrow .cflow { padding-top: 74px; } .calnarrow .cday:first-child .cdh > b, .calnarrow .cday.today .cdh > b { }
+   /* the older narrow rule hid Month; on a phone it is the view */
+.calnarrow .chead.phead { display: flex; align-items: baseline; gap: 8px; height: 46px; padding: 0 10px; border-radius: 14px; }
+.calnarrow .chead.phead b { font-size: 30px; font-weight: 750; letter-spacing: -.035em; line-height: 1; }
+.calnarrow .chead.phead > span { font-size: 17px; font-weight: 500; color: var(--ink-3); line-height: 1; }
+.calnarrow .chead.phead > svg.i { width: 16px; height: 16px; color: var(--ink-3); align-self: center; }
+.calnarrow .calcals.flo { right: 12px; top: 12px; padding: 0; }
+.calnarrow .calcals .ccal { height: 44px; padding: 0 14px; gap: 4px; border-radius: 16px; }
+.calnarrow .calcals .ccal i { width: 9px; height: 9px; }
+.pmonth { padding: 70px 14px 150px; }
+.pmh { display: grid; grid-template-columns: repeat(7, 1fr); padding-bottom: 6px; } .pmh span { text-align: center; font-size: 12px; font-weight: 600; color: var(--ink-3); }
+.pmg { display: grid; grid-template-columns: repeat(7, 1fr); row-gap: 2px; touch-action: pan-y; }
+.pmd { height: 52px; display: flex; flex-direction: column; align-items: center; gap: 3px; padding-top: 4px; border-radius: 14px; }
+.pmd b { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%; corner-shape: round; font-size: 17px; font-weight: 500; font-variant-numeric: tabular-nums; transition: background .15s, color .15s; }
+.pmd.out { opacity: .3; } .pmd.past:not(.today) b { color: var(--ink-2); }
+.pmd.today b { color: oklch(0.78 0.13 var(--acc)); font-weight: 700; }
+.pmd.on b { background: oklch(0.62 0.15 var(--acc)); color: #fff; font-weight: 650; }
+[data-mode="light"] .pmd.today:not(.on) b { color: oklch(0.52 0.16 var(--acc)); }
+.pdots { display: flex; gap: 3px; height: 5px; } .pdots i { width: 5px; height: 5px; border-radius: 50%; corner-shape: round; background: oklch(0.72 0.13 var(--eh)); }
+.pday { margin-top: 16px; padding-top: 18px; border-top: 1px solid var(--hair); }
+.pday header { display: flex; align-items: baseline; gap: 8px; padding: 0 4px; } .pday header b { font-size: 21px; font-weight: 700; letter-spacing: -.02em; } .pday header span { font-size: 14px; color: var(--ink-3); }
+.psum { margin: 3px 4px 14px; font-size: 13px; color: var(--ink-3); letter-spacing: .01em; }
+.pevs { display: grid; gap: 8px; }
+.pev { display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 10px 14px 10px 10px; border-radius: 18px; background: var(--fill-1); text-align: left; transition: background .15s; }
+.pev:active, .pev.on { background: var(--chip); box-shadow: var(--chip-edge); } .pev.past { opacity: .55; }
+.pev .pt { width: 60px; flex: none; display: grid; text-align: right; } .pev .pt b { font-size: 13px; font-weight: 650; font-variant-numeric: tabular-nums; } .pev .pt small { font-size: 12px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.pev .pbar { width: 4px; align-self: stretch; flex: none; border-radius: 2px; background: oklch(0.7 0.14 var(--eh)); }
+.pev .px { flex: 1; min-width: 0; display: grid; gap: 2px; } .pev .px b { font-size: 15.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pev .px small { display: flex; align-items: center; gap: 5px; font-size: 12.5px; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .pev .px small svg.i { width: 13px; height: 13px; flex: none; }
+.pday h6 { margin: 20px 4px 8px; font-size: 12.5px; font-weight: 600; color: var(--ink-3); letter-spacing: .01em; }
+.pfree { display: grid; gap: 6px; } .pfree .cfree2 { min-height: 50px; border-radius: 16px; }
+.padd { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 52px; margin-top: 14px; padding: 0 16px; border-radius: 16px; color: var(--ink-2); font-size: 15px; box-shadow: inset 0 0 0 1px var(--hair); } .padd svg.i { width: 18px; height: 18px; }
+.cweek.c3 .cwh, .cweek.c3 .cwb { grid-template-columns: 44px repeat(3, minmax(0, 1fr)); }
+.calnarrow .calbar { width: auto; gap: 4px; } .calnarrow .calbar .ctoday { flex: none; padding: 0 14px; }
+.calnarrow .calbar.calcomp { width: calc(100% - 24px); } .calnarrow .calbar.calcomp .cadd { flex: 1; min-width: 0; } .calnarrow .calbar.calcomp input { font-size: 16px; }
+
+/* the photo viewer's title sits below the action row on a phone, not beside it */
+html[data-phone] .win.phone .viewer .vt { top: 110px !important; left: 20px !important; right: 20px; }
+
+/* ── Stage and Canvas, narrow ── */
+.ststrip { position: absolute; left: 0; right: 0; z-index: 5; }
+.ststrip .stsh { display: flex; align-items: baseline; gap: 8px; width: 100%; padding: 0 18px 10px; text-align: left; } .ststrip .stsh svg.i { width: 16px; height: 16px; margin-left: auto; align-self: center; color: var(--ink-3); } .ststrip .stsh b { font-size: 17px; font-weight: 700; } .ststrip .stsh span { font-size: 13px; color: var(--ink-3); }
+.ststrip .strow { display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; padding: 4px 16px 8px; scroll-snap-type: x proximity; }
+.ststrip .stth { position: relative; flex: none; display: block; width: auto; scroll-snap-align: center; border-radius: 10px; padding: 0; } .ststrip .stth .stmini { display: block; overflow: hidden; border-radius: 9px; box-shadow: 0 0 0 1px var(--hair); }
+.ststrip .stth.on .stmini { box-shadow: 0 0 0 2.5px oklch(0.7 0.14 var(--acc)); } .ststrip .stth em { position: absolute; left: 6px; bottom: 5px; font-style: normal; font-size: 10.5px; font-weight: 700; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,.6); }
+.ststrip .stadd { flex: none; width: 58px; align-self: stretch; display: grid; place-items: center; border-radius: 10px; color: var(--ink-3); box-shadow: inset 0 0 0 1px var(--hair); }
+.ststrip .stpn { margin: 14px 16px 0; padding: 14px 16px; border-radius: 16px; background: var(--fill-1); } .ststrip .stpn b { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--ink-3); } .ststrip .stpn b svg.i { width: 14px; height: 14px; } .ststrip .stpn p { margin: 6px 0 0; font-size: 15px; line-height: 1.45; }
+@container win (max-width: 559px) { #st-left, #st-notes, #st-right.min { display: none !important; } }   /* the strip holds the slides and notes */
+
+/* ── Session, narrow: tracks as an icon column, as mobile music apps do, so the arrangement gets the width.
+   The song's name moves up into the top row as a context chip. ── */
+@container win (max-width: 559px) {
+  .sewin .searr { grid-template-columns: 62px minmax(0, 1fr) !important; }
+  .sewin .sehead { grid-template-columns: 4px 1fr !important; grid-template-rows: auto auto; row-gap: 2px; column-gap: 0 !important; padding: 0 4px 0 0 !important; justify-items: center; }
+  .sewin .sehead > .sestrip { grid-row: 1 / span 2; align-self: stretch; }
+  .sewin .sehead > .seic { grid-column: 2; }
+  .sewin .sehead > .sename { grid-column: 2; display: block !important; max-width: 54px; text-align: center; } .sewin .sehead > .sename b { display: block; font-size: 10px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .sewin .sehead > .sename small { display: none; }
+  .sewin .sehead > :nth-child(n+4):not(.sename) { display: none !important; }
+  .sewin .sehh { visibility: hidden; }
+}
+html[data-phone] #w-session.phone .sectx { position: absolute; left: 12px; top: 50px; z-index: 46; height: 44px; display: flex; flex-direction: column; justify-content: center; padding: 0 14px; border-radius: 16px; background: var(--bar); box-shadow: var(--bar-edge); -webkit-backdrop-filter: blur(24px); backdrop-filter: blur(24px); }
+html[data-phone] #w-session.phone .sectx b { font-size: 13.5px; font-weight: 650; } html[data-phone] #w-session.phone .sectx span { font-size: 11.5px; color: var(--ink-3); }
+.win:not(.phone) .sectx { display: none; }
+
+/* ── Photos' view island, top right ── */
+.pview { position: absolute; right: 16px; top: 16px; z-index: 12; display: flex; align-items: center; gap: 8px; padding: 4px; }
+.pview[hidden] { display: none; } .pview .psize { display: flex; align-items: center; gap: 6px; padding: 0 8px 0 4px; } .pview .psize input { width: 90px; } .pview .psize svg.i { width: 15px; height: 15px; color: var(--ink-3); }
+@container win (max-width: 720px) { .pview .psize { display: none; } }
+html[data-phone] .win.phone .pview { right: 12px; top: 4px; padding: 3px; border-radius: 16px; } html[data-phone] .win.phone .pview .seg { height: 38px; } html[data-phone] .win.phone .pview .seg button { height: 32px; padding: 0 10px; font-size: 13px; }
+
+/* ── The phone action bar, one shape family ────────────────────────────────────────────────────────
+   Every control in the bar is the same 48px button with the same 20px corner. A switch inside the bar is not a
+   second frame: it is a run of those buttons, the chosen one raised. Collapsed search is one of those buttons too. */
+html[data-phone] .win.phone .fbar:not(.phtabs) > .seg { height: 48px; padding: 0; gap: 2px; background: none !important; box-shadow: none !important; border-radius: 0; }
+html[data-phone] .win.phone .fbar:not(.phtabs) > .seg > .ind { display: none !important; }
+html[data-phone] .win.phone .fbar:not(.phtabs) > .seg > button { height: 48px; min-width: 48px; border-radius: 20px; }
+html[data-phone] .win.phone .fbar:not(.phtabs) > .seg > button.on { background: var(--chip); box-shadow: var(--chip-edge); color: var(--ink); }
+html[data-phone] .win.phone .fbar:not(.phsearch) > label.srch:not(.tphq):not(.dppq):not(.keep) { width: 48px !important; min-width: 48px; height: 48px; padding: 0 !important; justify-content: center; border-radius: 20px; background: none; box-shadow: none; }
+html[data-phone] .win.phone .fbar:not(.phsearch) > label.srch:not(.tphq):not(.dppq):not(.keep) > svg.i { width: 20px; height: 20px; }
+html[data-phone] .win.phone .fbar:not(.phsearch) > label.srch:not(.tphq):not(.dppq):not(.keep) > :not(svg) { display: none; }
+/* the window's frame margin goes on a phone: the app is the screen */
+html[data-phone] .win.phone > .ibody { padding: 0 !important; gap: 0 !important; }
+html[data-phone] .win.phone .tpane.isle, html[data-phone] .win.phone #tm-panes { inset: 0 !important; left: 0 !important; right: 0 !important; margin: 0 !important; border-radius: 0 !important; }
+
+/* ── Phone, narrow: the list page ── */
+.pnwin.pnlistview .pnside { display: flex !important; position: absolute; inset: 0; z-index: 20; width: auto; padding: 56px 12px 110px; background: var(--win); }
+.pnwin.pnlistview #pn-main { position: absolute; inset: 0; z-index: 21; background: none !important; box-shadow: none !important; pointer-events: none; } .pnwin.pnlistview #pn-main > * { visibility: hidden; } .pnwin.pnlistview #pn-main > .fbar { visibility: visible; pointer-events: auto; }
+.pnwin.pnlistview .pnside::before { display: block; padding: 0 6px 10px; font-size: 32px; font-weight: 750; letter-spacing: -.03em; color: var(--ink); }
+.pnwin.pnlistview[data-pnview="recents"] .pnside::before { content: "Recents"; } .pnwin.pnlistview[data-pnview="contacts"] .pnside::before { content: "Contacts"; } .pnwin.pnlistview[data-pnview="vm"] .pnside::before { content: "Voicemail"; }
+.pnwin.pnlistview .pnside::before { order: -2; }
+.pnwin.pnlistview .pnside .pnlist .pnrow { min-height: 64px; } .pnwin.pnlistview .pnside .pnfoot { order: -1; margin-bottom: 8px; } .pnwin.pnlistview .pnside .pnq { height: 44px; border-radius: 16px; } .pnwin.pnlistview .pnside .pnq input { font-size: 16px; }
+.pnwin.pnlistview .pnside .pnfavs { order: -1; } .pnwin.pnlistview .pnrow.on { background: none; box-shadow: none; }
+.pnlback { position: absolute; left: 12px; top: 50px; z-index: 30; display: flex; align-items: center; gap: 2px; height: 44px; padding: 0 14px 0 8px; border-radius: 16px; font-size: 14px; font-weight: 600; }
+.pnlback svg.i { width: 20px; height: 20px; }
+html[data-phone] .pnwin.phone:has(.pnlback) .pnbody { padding-top: 100px; }
+
+/* ── Charlie, narrow: a mail thread as a phone reads one ──────────────────────────────────────────
+   Top row: back and the thread's actions. Below it, the subject as the page title (who's in it underneath).
+   Messages run the full width: the sender's avatar sits small beside their name, not in a column of its own.
+   The reply bar is one line: reply-to-all as an icon, then the field, then attach. */
+@container win (max-width: 559px) {
+  .crwin .crhead { position: relative; flex-wrap: wrap; padding: 0 16px 6px !important; pointer-events: auto; }
+  html[data-phone] .crwin.phone .crhead { margin-top: calc(50px - var(--phsafe, 100px)); }   /* the actions share the back button's row */
+  .crwin .crhead > .crright { order: 1; margin-left: auto; }
+  .crwin .crhead > .crsubj { order: 2; flex-basis: 100%; height: auto; margin-top: 14px; padding: 0; background: none !important; box-shadow: none !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; text-align: left; gap: 10px; }
+  .crwin .crhead > .crsubj b { font-size: 22px; font-weight: 700; letter-spacing: -.02em; line-height: 1.2; white-space: normal !important; overflow: visible; max-width: none !important; }
+  .crwin .crhead > .crsubj small { font-size: 13px; } .crwin .crhead > .crsubj > svg.i { display: none; }
+  .crwin .crhead > .crsubj .crstk { display: none; }
+  #cr-main:has(> .crhead) { display: flex; flex-direction: column; } #cr-main > .scroll { flex: 1; min-height: 0; }
+  .crwin .crpad { padding: 6px 14px 150px !important; }
+  .crwin .crmsg { display: block; margin: 18px 0; }
+  .crwin .crmsg .crcol { display: grid; grid-template-columns: 26px minmax(0, 1fr); column-gap: 8px; row-gap: 6px; max-width: none !important; width: 100%; justify-items: stretch !important; }
+  .crwin .crmsg .crwho { display: none; }
+  .crwin .crmsg .crmeta { grid-column: 2; align-self: center; padding-left: 0 !important; margin-left: 0 !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .crwin .crmsg .crmeta::before { content: ""; }
+  .crwin .crmsg .crcol > :not(.crmeta, .crmav) { grid-column: 1 / -1; }
+  .crwin .crmsg.out .crcol > .crbub { margin-left: 36px; } .crwin .crmsg.in .crcol > .crbub { margin-right: 20px; }
+  .crwin .crmsg .crfiles { display: grid; gap: 6px; } .crwin .crmsg .crfiles .lfc { width: 100%; }
+  .crwin .crmsg .crmav { display: block; grid-column: 1; grid-row: 1; width: 26px; height: 26px; }
+  .crwin .crmsg.out .crmeta { grid-column: 1 / -1; justify-self: end; }
+}
+.crmav { display: none; }
+
+/* ── Charlie: the list title opens the mailboxes (all inboxes, each account's folders, labels) as a drawer ── */
+.phboxbtn { display: none; }
+html[data-phone] #w-charlie.phone.phstack.navopen > .phboxbtn { display: flex; position: absolute; left: 12px; top: 52px; z-index: 48; align-items: center; gap: 6px; height: 46px; padding: 0 10px 0 6px; border-radius: 14px; color: var(--ink); }
+html[data-phone] #w-charlie.phone > .phboxbtn small { align-self: flex-end; margin: 0 2px 7px; font-size: 14px; font-weight: 600; color: var(--ink-3); order: 2; } html[data-phone] #w-charlie.phone > .phboxbtn svg.i { order: 3; } html[data-phone] #w-charlie.phone > .phboxbtn b { font-size: 32px; font-weight: 750; letter-spacing: -.03em; } html[data-phone] #w-charlie.phone > .phboxbtn svg.i { width: 22px; height: 22px; color: var(--ink-3); margin-top: 4px; }
+html[data-phone] #w-charlie.phone.phboxes .crnav { display: flex !important; position: absolute !important; z-index: 49 !important; inset: 0 auto 0 0 !important; width: min(320px, calc(100% - 52px)) !important; padding: 54px 12px 38px !important; border-radius: 0 34px 34px 0; background: var(--pop) !important; box-shadow: 0 0 0 100vmax rgba(0,0,0,.44), 18px 0 50px -18px rgba(0,0,0,.55); animation: phdrawer .38s cubic-bezier(.3,1.1,.4,1) both; }
+html[data-phone] #w-charlie.phone.phboxes .crnav .crni { min-height: 44px; font-size: 15px; border-radius: 14px; }
+
+/* ── The drawer, v71b: it comes out of the bottom-left corner, below the header ──────────────────────
+   Square to the screen's left and bottom edges, one rounded corner at top right, starting under the top row so the
+   app's header stays in view above it. */
+html[data-phone] .win.phone.navopen :is(.rail, .pside, .vside, .nside, .dpside, .vwside, .cfside, .wxside, .lfside, .msidebar):not(.phstack *) {
+  top: 64px !important; bottom: 0 !important; padding: 16px 12px 40px !important; border-radius: 0 30px 0 0 !important;
+  box-shadow: 0 0 0 100vmax rgba(0,0,0,.4), 14px -6px 40px -16px rgba(0,0,0,.55), inset -1px 0 0 var(--hair), inset 0 1px 0 var(--hair) !important;
+  animation: phdrawer2 .34s cubic-bezier(.3,1.05,.4,1) both !important; }
+@keyframes phdrawer2 { from { translate: -100% 0; } }
+@supports (corner-shape: squircle) { html[data-phone] .win.phone.navopen :is(.rail, .pside, .vside, .nside, .dpside, .vwside, .cfside, .wxside, .lfside, .msidebar) { corner-shape: round !important; } }
+
+html[data-phone] #w-charlie.phone.phboxes .crnav:not(*) { top: 108px !important;   /* superseded: the island grows into the mailboxes (see 'the title island grows') */ bottom: 0 !important; border-radius: 0 30px 0 0 !important; padding-top: 18px !important; }
+
+/* ── The phone bar's buttons: one look. Plain at rest (grey ink), no fills except the one primary; a switch or a
+   toggled button is the raised chip. ── */
+html[data-phone] .win.phone .fbar > .bt:not(.pri):not(.key):not(.ctxc) { background: none !important; box-shadow: none !important; color: var(--ink-2); }
+html[data-phone] .win.phone .fbar .ib { color: var(--ink-2); } html[data-phone] .win.phone .fbar .ib.on { background: var(--chip); box-shadow: var(--chip-edge); color: var(--ink); }
+/* a search field that stays a field (.keep): it takes the bar's spare width */
+html[data-phone] .win.phone .fbar > label.srch.keep { flex: 1; min-width: 0; width: auto !important; height: 48px; padding: 0 14px !important; gap: 10px; justify-content: flex-start; border-radius: 20px; background: var(--well) !important; box-shadow: var(--well-edge) !important; }
+html[data-phone] .win.phone .fbar > label.srch.keep > * { display: revert !important; } html[data-phone] .win.phone .fbar > label.srch.keep input { flex: 1; min-width: 0; font-size: 16px; } html[data-phone] .win.phone .fbar > label.srch.keep .fqx:not(:has(+ *)) { display: none; }
+html[data-phone] .win.phone .fbar:has(> label.srch.keep) { width: calc(100% - 24px); max-width: none; }
+/* the bar grown (⋯): its options open above the bar's own row, inside the same glass */
+html[data-phone] .win.phone .fbar.phgrow { flex-wrap: wrap; border-radius: 26px; padding: 6px; width: calc(100% - 24px) !important; max-width: none; }
+/* a grown selection bar keeps its actions spread across the width, ✕ at the end */
+html[data-phone] .win.phone .fbar.phgrow:not(:has(> label.srch)) > .ib, html[data-phone] .win.phone #f-bar:not(:has(> label.srch)) > .ib { flex: 1; } html[data-phone] .win.phone #f-bar { width: calc(100% - 24px) !important; max-width: none; }
+.fexp { flex-basis: 100%; display: grid; gap: 8px; padding: 8px 4px 12px; margin-bottom: 6px; box-shadow: inset 0 -1px 0 var(--hair); }
+.fexh { padding: 0 4px; font-size: 12px; font-weight: 650; letter-spacing: .02em; color: var(--ink-3); } .fexh:not(:first-child) { margin-top: 6px; }
+.fexv { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.fvt { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; height: 76px; padding: 12px 14px; border-radius: 18px; background: var(--well); box-shadow: var(--well-edge); color: var(--ink-2); font-size: 14px; font-weight: 600; text-align: left; }
+.fvt svg.i { width: 22px; height: 22px; } .fvt.on { background: var(--chip); box-shadow: var(--chip-edge); color: var(--ink); } .fvt.on svg.i { color: var(--acc-ink, oklch(0.78 0.12 var(--acc))); }
+.fexs { display: flex; flex-wrap: wrap; gap: 6px; }
+.fsch { display: flex; align-items: center; gap: 4px; height: 38px; padding: 0 14px; border-radius: 14px; background: var(--well); box-shadow: var(--well-edge); font-size: 13.5px; font-weight: 600; color: var(--ink-2); } .fsch svg.i { width: 14px; height: 14px; }
+.fsch.on { background: var(--chip); box-shadow: var(--chip-edge); color: var(--ink); }
+.fscope2 { flex-basis: 100%; display: flex; gap: 6px; padding: 6px 6px 8px; } .fscope2 .fsch svg.i { width: 15px; height: 15px; margin-right: 2px; }
+.fexq { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px; }
+.fexa { display: flex; align-items: center; justify-content: center; gap: 8px; height: 48px; padding: 0 10px; border-radius: 16px; font-size: 14px; font-weight: 600; color: var(--ink); background: var(--well); box-shadow: var(--well-edge); } .fexa svg.i { width: 18px; height: 18px; color: var(--ink-2); } .fexa:active { background: var(--fill-2); }
+/* New folder: a real button (the bar's primary), full width */
+.fexp .fnew { display: flex; justify-content: center; gap: 8px; width: 100%; height: 48px; margin-top: 6px; border-radius: 18px; font-size: 14.5px; font-weight: 650; }
+.fexp .fnew svg.i { width: 18px; height: 18px; }
+/* ⋯ on a selection: the item's other actions as rows, trash last and red */
+.fmore2 { gap: 2px; } .fexr2 { display: flex; align-items: center; gap: 12px; height: 48px; padding: 0 10px; border-radius: 16px; font-size: 15px; color: var(--ink); text-align: left; }
+.fexr2 > span { flex: 1; } .fexr2 svg.i { width: 19px; height: 19px; color: var(--ink-2); } .fexr2:active { background: var(--fill-1); } .fexr2.red, .fexr2.red svg.i { color: oklch(0.68 0.19 25); }
+/* details on a selection: the file at the top, then its facts */
+.finfo2 { gap: 12px; } .fih { display: flex; align-items: center; gap: 12px; padding: 0 4px; } .fih > span:last-child { display: grid; min-width: 0; } .fih b { font-size: 15px; font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .fih small { font-size: 12.5px; color: var(--ink-3); }
+.fhth { width: 44px; height: 44px; flex: none; display: grid; place-items: center; border-radius: 10px; overflow: hidden; background: var(--fill-1); } .fhth img { width: 100%; height: 100%; object-fit: cover; } .fhth svg { max-width: 30px; max-height: 30px; }
+.finfo2 dl { display: grid; grid-template-columns: auto 1fr; gap: 8px 16px; margin: 0; padding: 0 4px; font-size: 13.5px; } .finfo2 dt { color: var(--ink-3); } .finfo2 dd { margin: 0; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* moving: the held file sits in its own row above the bar's row */
+.fhold { flex-basis: 100%; display: flex; align-items: center; gap: 12px; padding: 4px 4px 10px 6px; margin-bottom: 6px; box-shadow: inset 0 -1px 0 var(--hair); }
+.fhtx { flex: 1; min-width: 0; display: grid; } .fhtx small { font-size: 11.5px; font-weight: 650; letter-spacing: .03em; color: oklch(0.75 0.12 var(--acc)); text-transform: uppercase; } .fhtx b { font-size: 15px; font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fhwhere { flex: 1; min-width: 0; padding: 0 10px; font-size: 14px; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .fhwhere b { color: var(--ink); font-weight: 600; }
+html[data-phone] .win.phone .fbar .bt.fhere { width: auto !important; padding: 0 18px !important; gap: 8px !important; font-size: 14.5px !important; } .fbar .bt.fhere[disabled] { opacity: .4; }
+/* ── How far a bar grows: one standard ──────────────────────────────────────────────────────────
+   A bar is as wide as its buttons need. When it grows (details, ⋯, share, a context menu, moving, the view panel),
+   it takes the standard panel width instead: on a phone the full width less 12px a side; in a window, 380px, or
+   the window less 24px if that's smaller. The bar's own row then spreads to that width, so a two-button bar that
+   opens Details becomes a proper panel, never a two-icon-wide column. */
+.win:not(.phone) .fbar.phgrow { width: min(380px, calc(100% - 24px)) !important; }
+/* the bar's own row never breaks under a grown panel: its buttons share the width */
+html[data-phone] .win.phone #f-bar > .ib { min-width: 0; flex: 1 1 0; }
+html[data-phone] .win.phone #f-bar:has(> label.srch) > .ib { flex: none; min-width: 48px; }
+/* moving */
+.fhrow { flex-basis: 100%; display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 0 0 10px; }
+.fhrow .fhwhere { flex: 1; min-width: 0; padding: 0; display: grid; font-size: 14px; color: var(--ink-3); white-space: normal; }
+.fhrow .fhwhere small { font-size: 11.5px; color: var(--ink-3); } .fhrow .fhwhere b { display: flex; align-items: center; gap: 6px; font-size: 15px; color: var(--ink); font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .fhrow .fhwhere b svg.i { width: 17px; height: 17px; flex: none; color: var(--ink-2); }
+html[data-phone] .win.phone .fbar .fhrow .bt.fhere { flex: none; height: 48px; padding: 0 20px !important; font-size: 15px !important; }
+/* share */
+.fshp { display: flex; justify-content: space-between; padding: 2px 2px 8px; } .fshp button { display: grid; justify-items: center; gap: 6px; font-size: 12px; color: var(--ink-2); }
+.fsha { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; } .fsha .fvt { height: 72px; align-items: center; justify-content: center; gap: 7px; padding: 0 4px; font-size: 12px; text-align: center; } .fsha .fvt svg.i { width: 20px; height: 20px; }
+.fexp { min-width: 0; max-width: 100%; white-space: normal; } .fexp * { min-width: 0; }
+.cconfb .bt { width: 100% !important; }
+.fexp .cfield input { border: 0 !important; outline: none !important; background: none !important; box-shadow: none !important; color: var(--ink); padding: 0; }
+html[data-phone] .win.phone .cphbar .bt.ccancel { background: var(--well) !important; box-shadow: var(--well-edge) !important; color: var(--ink) !important; justify-content: center; }
+html[data-phone] .win.phone .cphbar .bt.cdone { justify-content: center; }
+/* buttons inside a grown panel keep their words */
+html[data-phone] .win.phone .fbar .fexp .bt { width: auto !important; min-width: 0; padding: 0 16px !important; gap: 8px !important; font-size: 14.5px !important; justify-content: center; }
+/* ── Contacts on a phone ── */
+html[data-phone] .win.phone .cphbar > .ib { flex: none !important; width: 48px; min-width: 48px; } html[data-phone] .win.phone .cphbar > .bt.cedit { flex: 1 1 auto; }
+.cphbar { position: absolute; left: 12px; right: 12px; bottom: 34px; z-index: 48; display: flex; align-items: center; gap: 2px; }
+html[data-phone] .win.phone .cphbar { width: auto !important; max-width: none; transform: none !important; }
+.cwin.cphone #c-float, .cwin.cphone #c-bar, .cwin.cphone .cside .sfoot, .cwin.cphone .cside .shead:has(.srch) { display: none !important; }
+.cwin.cphone .cside .scr { padding-bottom: 110px !important; } .cwin.cphone #c-scroll { padding-bottom: 110px; }
+.cphbar .bt.cedit { flex: 1; justify-content: center; gap: 8px; height: 48px; border-radius: 20px; font-size: 15px; }
+html[data-phone] .win.phone .cphbar .bt.cedit { width: auto !important; font-size: 15px !important; padding: 0 16px !important; gap: 8px !important; }
+html[data-phone] .win.phone .cphbar .bt.ccancel, html[data-phone] .win.phone .cphbar .bt.cdone { flex: 1; width: auto !important; font-size: 15px !important; padding: 0 16px !important; }
+.cphbar .cfavb.on { color: oklch(0.82 0.15 85) !important; background: none !important; box-shadow: none !important; } .cphbar .cfavb.on svg.i { fill: currentColor; }
+.cphbar .fexr2.on { background: var(--fill-1); } .cphbar .fexr2 .fcnt { font-style: normal; font-size: 12.5px; color: var(--ink-3); } .cphbar .fexr2 > svg.i:last-child { color: var(--acc-ink, var(--ink)); }
+.cphbar .fexr2 small { font-size: 12.5px; color: var(--ink-3); margin-left: 4px; }
+.fexp .cfield { display: flex; align-items: center; gap: 10px; height: 48px; padding: 0 14px; border-radius: 16px; background: var(--well); box-shadow: var(--well-edge); } .fexp .cfield input { flex: 1; min-width: 0; font-size: 16px; } .fexp .cfield svg.i { width: 18px; height: 18px; color: var(--ink-3); }
+html[data-phone] .win.phone .fbar .fexp.caddp .bt.cnewb { display: flex; width: 100% !important; } .caddp .cnewb { display: flex; height: 50px; border-radius: 18px; font-size: 15px; font-weight: 650; } .caddp .cnewb span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.caddp .cnone { margin: 4px 6px; font-size: 13px; color: var(--ink-3); } .fsha.c2 { grid-template-columns: 1fr 1fr; margin-top: 4px; }
+.ccodep { justify-items: center; text-align: center; padding: 14px 8px !important; } .ccodep .qr { width: 150px; height: 150px; } .ccodep b { font-size: 18px; } .ccodep span { font-size: 13px; color: var(--ink-3); } .ccodep .bt { margin-top: 6px; }
+.cconf { padding: 10px 8px 14px !important; } .cconf b { font-size: 16px; } .cconf p { margin: 0; font-size: 13.5px; line-height: 1.45; color: var(--ink-2); } .cconfb { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 4px; }
+.cconfb .bt { height: 46px; justify-content: center; border-radius: 16px; font-size: 14.5px; } .cconfb .bt.danger { background: oklch(0.6 0.19 25); color: #fff; }
+.fexr2 .lappi { width: 24px; height: 24px; flex: none; } .fexr2 .fdef { font-size: 12px; color: var(--ink-3); } .fexr2.fback { font-weight: 650; color: var(--ink-2); } .fexr2.fback svg.i { color: var(--ink-2); }
+/* the button after a search field keeps a clear gap from it */
+html[data-phone] .win.phone .fbar > label.srch.keep + * { margin-left: 6px; }
+/* Filer's list on a phone: name and size, nothing that runs off the side */
+@container win (max-width: 559px) { .flist thead { display: none; } .flist td:not(.n):not(:last-child) { display: none; } .flist td { height: 54px; } .flist td.n { font-size: 15px; } .flist td:last-child { color: var(--ink-3); font-size: 13px; text-align: right; padding-left: 4px; } .flist { table-layout: fixed; width: calc(100% - 24px); margin: 0 12px 110px; } .flist td.n { width: auto !important; } .flist td:last-child { width: 82px; } .flist td.n span > :last-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; } }
+html[data-phone] .win.phone .fbar > label.srch.keep:has(input:placeholder-shown) .fqx { display: none !important; }
+/* An app's sidebar button, on a phone: the places button, top left, drawn as ☰ like everywhere else */
+html[data-phone] .win.phone > .tbar > .lsidebtn { order: -1; margin-left: 0 !important; margin-right: auto !important; }
+html[data-phone] .win.phone > .tbar > .lsidebtn > svg.i { display: none; }
+html[data-phone] .win.phone > .tbar > .lsidebtn::before { content: ""; width: 20px; height: 20px; background: currentColor; -webkit-mask: url(../icons/menu.svg) center/contain no-repeat; mask: url(../icons/menu.svg) center/contain no-repeat; }
+html[data-phone] .win.phone > .tbar > .lsidebtn { display: grid; place-items: center; color: var(--ink); }
+/* Filer's search results on a phone: icon, name, where it lives, one row each; the scope lives in the bar */
+@container win (max-width: 559px) {
+  .fres { grid-template-columns: 36px minmax(0, 1fr) auto !important; gap: 12px; min-height: 60px; padding: 8px 12px !important; }
+  .fres > .dim:nth-last-child(2) { display: none; } .fres > .dim:last-child { font-size: 12px; }
+  .frt small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .frt b { font-size: 15px; }
+  .fresults { padding: 0 6px; } .fresg h6 { padding: 0 12px; }
+  #f-ttl .fscope { display: none !important; }
+  .flist td:last-child { width: 118px !important; overflow: hidden; text-overflow: ellipsis; }
+}
+/* Back in the header: the same button as places, in the same place */
+.ttl .navback { display: grid; place-items: center; width: 40px; height: 40px; margin-top: -3px; border-radius: 14px; color: var(--ink); } .ttl .navback:hover { background: var(--fill-1); } .ttl .navback svg.i { width: 22px; height: 22px; }
+
+/* ── Phone, narrow: one search bar, glyph tabs, the keypad centred ── */
+html[data-phone] .win.phone .pnphbar { width: calc(100% - 24px) !important; max-width: none; }
+.pnphbar .pntb { position: relative; flex: none; } .pnphbar .pntb.on { color: var(--acc-ink, var(--ink)) !important; }
+.pnphbar .pnbadge { position: absolute; top: 5px; right: 4px; min-width: 17px; height: 17px; padding: 0 4px; border-radius: 9px; background: oklch(0.6 0.2 25); color: #fff; font: 700 10px/17px inherit; font-style: normal; text-align: center; }
+.pnres { gap: 4px !important; max-height: 60vh; overflow-y: auto; }
+.pnqr { display: flex; align-items: center; gap: 8px; min-height: 58px; padding: 4px 2px 4px 6px; border-radius: 16px; } .pnqr:hover { background: var(--fill-1); }
+.pnqp { flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; text-align: left; } .pnqr > span:not(.pnqa) { flex: 1; min-width: 0; display: grid; } .pnqp > span { min-width: 0; display: grid; }
+.pnqr b { font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .pnqr small { font-size: 12.5px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.pnqr mark { background: none; color: var(--acc-ink, var(--ink)); font-weight: 700; }
+.pnqa { display: flex; gap: 2px; flex: none; } html[data-phone] .win.phone .pnqa .ib { width: 42px !important; min-width: 42px; height: 42px; border-radius: 50%; corner-shape: round; background: var(--well); }
+html[data-phone] .win.phone .pnqa .ib.pnqcall { background: oklch(0.62 0.16 150) !important; color: #fff !important; }
+.pnnone { margin: 8px; font-size: 13.5px; color: var(--ink-3); }
+.pnwin.pnlistview .pnside .pnfoot { display: none !important; }
+@container win (max-width: 559px) {
+  #pn-body:has(> .pnpad) { display: flex; flex-direction: column; justify-content: center; min-height: 100%; }
+  .pnpad { padding: 20px 20px 120px !important; }
+  .pndisp { height: 60px; font-size: 40px; } .pnmatch { min-height: 26px; }
+  .pnkeys { grid-template-columns: repeat(3, 80px) !important; gap: 16px 26px !important; }
+  .pnkeys button { width: 80px !important; height: 80px !important; }
+  .pnkeys button.pnsym svg.i { width: 26px; height: 26px; stroke-width: 1.8; }
+  .pnkeys button > small:empty { display: none; }
+  .pnkeys button:has(> small:empty) b { transform: translateY(0); }
+  .pnpadact { grid-template-columns: repeat(3, 80px) !important; gap: 0 26px !important; }
+}
+/* the call key is green on every phone */
+body[data-mat] .iwin .pnpadact .pnbig.voice, .pnpadact .pnbig.voice { background: oklch(0.63 0.17 150) !important; color: #fff !important; box-shadow: 0 8px 20px -8px oklch(0.55 0.17 150 / .7) !important; }
+body[data-mat] .iwin .pnpadact .pnbig.voice svg.i { color: #fff !important; }
+.pnpadact .pndel[disabled] { visibility: hidden; }
+
+/* ── Notes on a phone ── */
+@container win (max-width: 559px) { .nwin #n-float > :not(.npeople) { display: none !important; } .nwin #n-float:not(:has(.npeople)) { display: none !important; } .nwin #n-float { padding: 3px 12px 3px 3px; } }
+html[data-phone] .win.phone .nphbar { width: auto !important; }
+html[data-phone] .win.phone .nphbar.phgrow { width: calc(100% - 32px) !important; flex-wrap: wrap !important; display: flex !important; } .nphbar .fexp { flex: 0 0 100% !important; width: 100%; }
+@container win (max-width: 559px) { .nwin .npad { padding-top: 6px !important; } }
+.nphbar .naa { font-size: 17px; font-weight: 700; letter-spacing: -.02em; font-family: Georgia, serif; }
+html[data-phone] .win.phone .nphbar .bt.nnewb { width: 48px !important; padding: 0 !important; margin-left: 4px; }
+.nfmt { gap: 10px !important; } .nfs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; } .nfs .fsch { justify-content: center; height: 44px; }
+.nfs .nfs-h2 { font-size: 17px; font-weight: 750; } .nfs .nfs-blockquote { font-style: italic; }
+.nfr { display: flex; justify-content: space-between; } .nfr .vr { align-self: center; height: 22px; }
+.nshp { gap: 8px !important; } .nsr { display: flex; align-items: center; gap: 12px; padding: 2px 4px; } .nsr span { display: grid; } .nsr b { font-size: 14.5px; } .nsr small { font-size: 12.5px; color: var(--ink-3); }
+.nshadd i { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 50%; corner-shape: round; background: var(--well); box-shadow: var(--well-edge); } .nshadd i svg.i { width: 20px; height: 20px; }
+.fexr2 .fdot { width: 10px; height: 10px; flex: none; background: oklch(0.7 0.13 var(--nh)); }
+
+/* ── Tab bars (desktop/phone.js tabBar): a bar that only switches places becomes the app's tab bar ── */
+html[data-phone] .win.phone .fbar.phtabs { left: 12px !important; right: 12px !important; width: auto !important; max-width: none; transform: none !important; padding: 4px; }
+html[data-phone] .win.phone .fbar.phtabs > .seg { flex: 1; display: flex; height: 56px; padding: 0; background: none; box-shadow: none; }
+html[data-phone] .win.phone .fbar.phtabs > .seg > .ind { display: none; }
+html[data-phone] .win.phone .fbar.phtabs > .seg > button { position: relative; flex: 1; height: 56px; min-width: 0; padding: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; border-radius: 20px; font-size: 10.5px !important; font-weight: 600; color: var(--ink-3); background: none; box-shadow: none; }
+html[data-phone] .win.phone .fbar.phtabs > .seg > button > svg.i { width: 22px; height: 22px; }
+html[data-phone] .win.phone .fbar.phtabs > .seg > button > span { display: block !important; }
+html[data-phone] .win.phone .fbar.phtabs > .seg > button.on { color: var(--acc-ink, var(--ink)); background: var(--fill-1); }
+html[data-phone] .win.phone .fbar.phtabs > .seg > button .lcount { position: absolute; top: 4px; left: calc(50% + 6px); }
+
+/* ── Depot, narrow: the tab bar (shares Tide's tab look) ── */
+.dpphbar { left: 50%; bottom: 16px; transform: translateX(-50%); width: calc(100% - 24px); display: flex; justify-content: space-between; padding: 4px; gap: 0; z-index: 22; }
+.dpphbar .ttab { position: relative; flex: 1; min-width: 0; height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; border-radius: 20px; color: var(--ink-3); font-size: 10.5px; font-weight: 600; letter-spacing: .01em; }
+.dpphbar .ttab svg.i { width: 22px; height: 22px; } .dpphbar .ttab.on { color: var(--acc-ink, var(--ink)); background: var(--fill-1); }
+.dpphbar .tbadge { position: absolute; top: 4px; left: calc(50% + 6px); min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: oklch(0.6 0.2 25); color: #fff; font: 700 10.5px/18px inherit; font-style: normal; text-align: center; }
+.dpphbar.dpsearching { gap: 4px; } .dpphbar .dppq { flex: 1; display: flex !important; align-items: center; height: 48px; padding: 0 14px; gap: 10px; border-radius: 20px; background: var(--well); box-shadow: var(--well-edge); } .dpphbar .dppq input { display: block !important; flex: 1; min-width: 0; font-size: 16px; color: var(--ink); }
+.dpnarrow #dp-body { padding-bottom: 110px; }
+@container win (max-width: 560px) { .dshelf > header { display: grid !important; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "t m" "s s"; align-items: baseline; row-gap: 2px; }
+  .dshelf > header h2 { grid-area: t; white-space: nowrap; } .dshelf > header > span { grid-area: s; } .dshelf > header .dmore { grid-area: m; white-space: nowrap; } } .dpnarrow .dpfoot { display: none; }
+html[data-phone] .win.phone.dpnarrow > .tbar .lsidebtn, html[data-phone] .win.phone.dpnarrow .phnav { display: none !important; }
+
+/* ── Tide, narrow (.tnarrow): a phone music app ────────────────────────────────────────────────────
+   The library is the tab bar at the thumb; what's playing floats above it as a mini player; Now Playing is full screen. */
+.tnarrow #t-float { display: none; }
+.tphbar { left: 50%; bottom: 16px; transform: translateX(-50%); width: calc(100% - 24px); display: flex; justify-content: space-between; padding: 4px; gap: 0; z-index: 23; }
+.tphbar .ttab { flex: 1; min-width: 0; height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; border-radius: 20px; color: var(--ink-3); font-size: 10.5px; font-weight: 600; letter-spacing: .01em; transition: color .15s, background .15s; }
+.tphbar .ttab svg.i { width: 22px; height: 22px; } .tphbar .ttab.on { color: oklch(0.8 0.12 var(--ah, 250)); background: var(--fill-1); }
+[data-mode="light"] .tphbar .ttab.on { color: oklch(0.48 0.14 var(--ah, 250)); }
+.tphbar.tsearching { gap: 4px; } .tphbar .tphq { flex: 1; height: 48px; padding: 0 14px; gap: 10px; border-radius: 20px; background: var(--well); box-shadow: var(--well-edge); } .tphbar .tphq input { display: block !important; flex: 1; min-width: 0; width: auto !important; font-size: 16px; color: var(--ink); }
+html[data-phone] .win.phone .tphbar { height: auto; } html[data-phone] .win.phone .tphbar .ttab { height: 52px; min-width: 0; }
+/* the mini player: the deck, folded into one floating glass row above the tabs */
+/* it peeks up from behind the tab bar: inset from the bar's sides, square at the foot, which sits under the bar */
+#t-bot.tmini { left: 28px !important; right: 28px; width: auto !important; bottom: 80px; transform: none; height: 82px; padding: 0 8px 18px 6px; display: flex; align-items: center; gap: 2px; border-radius: 22px 22px 0 0; z-index: 21;
+  background: color-mix(in oklch, oklch(0.3 0.05 var(--ah, 250)) 82%, transparent); box-shadow: var(--bar-edge), 0 14px 30px -12px rgba(0,0,0,.6); -webkit-backdrop-filter: blur(28px) saturate(1.6); backdrop-filter: blur(28px) saturate(1.6); overflow: hidden; }
+[data-mode="light"] #t-bot.tmini { background: color-mix(in oklch, oklch(0.96 0.03 var(--ah, 250)) 86%, transparent); }
+#t-bot.tmini .dkshape { display: none; }
+#t-bot.tmini .tmhit { flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; height: 56px; padding: 0 6px; border-radius: 16px; text-align: left; }
+#t-bot.tmini .tmhit .cv { width: 48px; height: 48px; flex: none; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 12px -4px rgba(0,0,0,.5); } #t-bot.tmini .tmhit .cv img { width: 100%; height: 100%; object-fit: cover; }
+#t-bot.tmini .tmt { min-width: 0; display: grid; } #t-bot.tmini .tmt b { font-size: 14.5px; font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } #t-bot.tmini .tmt span { font-size: 12.5px; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#t-bot.tmini .ib { width: 46px; height: 46px; border-radius: 16px; } #t-bot.tmini .ib svg.i { width: 22px; height: 22px; } #t-bot.tmini .tmpp svg.i { width: 24px; height: 24px; }
+#t-bot.tmini .tmprog { position: absolute; left: 18px; right: 18px; bottom: 18px; height: 2px; border-radius: 1px; background: var(--fill-2); } #t-bot.tmini .tmprog::after { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: var(--p); border-radius: inherit; background: var(--ink-2); }
+#t-bot.tmini.nowing { opacity: 0; pointer-events: none; }
+.tnarrow #t-body { padding-bottom: 170px; }
+.tnarrow .tmain .ttl.tttl { padding: 62px 20px 10px !important; } .tnarrow .tttl h1, .tnarrow .tttl .ltitle, .tnarrow .tttl b:first-child { font-size: 30px !important; letter-spacing: -.03em; }
+.tnarrow .agrid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 18px 14px !important; } .tnarrow .artgrid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+.tnarrow .feat2 { grid-template-columns: 1fr !important; }
+
+.tnarrow .songs .tr { display: grid !important; grid-template-columns: 34px minmax(0, 1fr) 40px 40px; grid-template-areas: "n t lk d" "n al lk d"; align-items: center; row-gap: 1px; height: auto !important; min-height: 60px; padding: 8px 6px 8px 0 !important; }
+.tnarrow .songs .tr .n { grid-area: n; } .tnarrow .songs .tr .t { grid-area: t; font-size: 15px; } .tnarrow .songs .tr .al { grid-area: al; font-size: 12.5px; color: var(--ink-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tnarrow .songs .tr .lk { grid-area: lk; } .tnarrow .songs .tr .d { grid-area: d; text-align: right; }
+.tnarrow .songs .tr.th { display: none !important; }
+.tnarrow .tl .tr { min-height: 52px; } .tnarrow .tl .tr .t { font-size: 15px; } .tnarrow .pagepad { padding: 0 16px !important; }
+/* the album, centered: the sleeve large, then the name, then play and shuffle side by side */
+.tnarrow .hero { flex-direction: column; align-items: center; text-align: center; gap: 18px; padding: 96px 24px 8px; }
+.tnarrow .hero > .cv { width: min(248px, 64vw); height: auto; aspect-ratio: 1; }
+.tnarrow .hero > div { display: flex; flex-direction: column; align-items: center; } .tnarrow .hero h2 { font-size: 26px; margin: 2px 0 0; } .tnarrow .hero .kick { margin-bottom: 4px; }
+.tnarrow .hero .acts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 340px; margin-top: 16px; }
+.tnarrow .hero .acts .bt { height: 46px; justify-content: center; border-radius: 16px; font-size: 15px; } .tnarrow .hero .acts .ib { display: none; }
+/* Now Playing, full screen */
+.now.tnowph { position: absolute; inset: 0; z-index: 40; display: flex; flex-direction: column; padding: 52px 24px 44px; gap: 0; color: #fff; overflow: hidden; }
+.now.tnowph .bg { inset: -80px; filter: blur(60px) saturate(1.6) brightness(.8); }
+.tnh { display: flex; align-items: center; gap: 8px; height: 48px; } .tnh > span { flex: 1; display: grid; text-align: center; } .tnh small { font-size: 11.5px; color: rgba(255,255,255,.65); letter-spacing: .02em; } .tnh b { font-size: 13.5px; font-weight: 650; }
+.tnh .ib, .tnfoot .ib, .tnctl .ib { color: #fff; width: 46px; height: 46px; border-radius: 16px; } .tnh .ib:hover, .tnfoot .ib:hover { background: rgba(255,255,255,.12); } .tnh .ib svg.i, .tnfoot .ib svg.i { width: 22px; height: 22px; }
+.tnart { flex: 1; min-height: 0; display: grid; place-items: center; padding: 20px 0; } .tnart .cv { width: min(100%, 360px); height: auto; aspect-ratio: 1; border-radius: 14px; box-shadow: 0 30px 60px -20px rgba(0,0,0,.7); overflow: hidden; } .tnart .cv img { width: 100%; height: 100%; object-fit: cover; }
+.tnt { display: flex; align-items: center; gap: 10px; } .tnt > span { flex: 1; min-width: 0; display: grid; } .tnt b { font-size: 22px; font-weight: 700; letter-spacing: -.02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .tnt span button { text-align: left; font-size: 17px; color: rgba(255,255,255,.72); }
+.tnt .ib { color: #fff; width: 46px; height: 46px; border-radius: 50%; corner-shape: round; background: rgba(255,255,255,.14); } .tnt .ib.loved svg.i { fill: currentColor; color: oklch(0.7 0.2 15); }
+.tnscrub { margin-top: 18px; } .tnscrub .rng { width: 100%; --tr: rgba(255,255,255,.25); } .tnscrub span { display: flex; justify-content: space-between; margin-top: 4px; font-size: 12px; color: rgba(255,255,255,.65); font-variant-numeric: tabular-nums; } .tnscrub em { font-style: normal; }
+.tnctl { display: flex; align-items: center; justify-content: space-between; margin: 14px -6px 0; } .tnctl .ib { width: 48px; height: 48px; } .tnctl .ib svg.i { width: 22px; height: 22px; } .tnctl .ib.tnskip { width: 60px; height: 60px; } .tnctl .ib.tnskip svg.i { width: 32px; height: 32px; fill: currentColor; } .tnctl .ib.on { color: oklch(0.85 0.12 var(--ah, 250)); background: rgba(255,255,255,.12); }
+.now.tnowph .tnpp { width: 78px; height: 78px; flex: none; display: grid; place-items: center; border-radius: 50%; corner-shape: round; background: #fff; color: #111; box-shadow: 0 10px 26px -8px rgba(0,0,0,.5); } .tnpp svg.i { width: 32px; height: 32px; fill: currentColor; }
+.tnvol { display: flex; align-items: center; gap: 12px; margin-top: 18px; color: rgba(255,255,255,.7); } .tnvol svg.i { width: 18px; height: 18px; flex: none; } .tnvol .rng { flex: 1; }
+.tnfoot { display: flex; align-items: center; justify-content: space-between; margin-top: 16px; } .tnfoot .ib.on { background: rgba(255,255,255,.18); }
+.tndev { display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 14px; border-radius: 14px; font-size: 13.5px; font-weight: 600; color: #fff; background: rgba(255,255,255,.12); } .tndev svg.i { width: 17px; height: 17px; }
+.tnq { flex: 1; min-height: 0; display: flex; flex-direction: column; padding-top: 12px; } .tnqh { display: flex; align-items: center; gap: 14px; } .tnqh .cv { width: 64px; height: 64px; flex: none; border-radius: 10px; overflow: hidden; } .tnqh .cv img { width: 100%; height: 100%; object-fit: cover; }
+.tnqh > span { display: grid; min-width: 0; } .tnqh b { font-size: 17px; font-weight: 700; } .tnqh span span { font-size: 14px; color: rgba(255,255,255,.7); }
+.tnq .qlab { margin: 20px 0 6px; font-size: 13px; font-weight: 650; color: rgba(255,255,255,.7); } .tnql { flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: none; margin: 0 -8px; }
+.tnql .qi { color: #fff; } .tnql .qi .tx span, .tnql .qi em { color: rgba(255,255,255,.6); } .tnql .qi .cv { width: 44px; height: 44px; }
+
+/* ── The drawer: every app's sidebar, one way ──────────────────────────────────────────────────
+   Full height from the left edge, clear of the clock and the home bar, rounded on its open side, solid, over a
+   dimmed app. It slides in. Each app keeps its own contents; only the surface is shared. */
+html[data-phone] .win.phone.navopen :is(.rail, .pside, .vside, .nside, .dpside, .vwside, .cfside, .wxside, .lfside, .msidebar) {
+  position: absolute !important; z-index: 46 !important; inset: 0 auto 0 0 !important; width: min(328px, calc(100% - 52px)) !important; max-width: none !important; height: auto !important;
+  margin: 0 !important; padding: 54px 12px 38px !important; opacity: 1 !important; transform: none !important;
+  display: flex !important; flex-direction: column; align-items: stretch !important; gap: 0;
+  border-radius: 0 34px 34px 0 !important; background: var(--pop) !important;
+  box-shadow: 0 0 0 100vmax rgba(0,0,0,.44), 18px 0 50px -18px rgba(0,0,0,.55), inset -1px 0 0 var(--hair) !important;
+  animation: phdrawer .38s cubic-bezier(.3,1.1,.4,1) both; }
+@keyframes phdrawer { from { translate: -104% 0; } }
+@supports (corner-shape: squircle) { html[data-phone] .win.phone.navopen :is(.rail, .pside, .vside, .nside, .dpside, .vwside, .cfside, .wxside, .lfside, .msidebar) { corner-shape: squircle; border-radius: 0 44px 44px 0 !important; } }
+/* Filer's icon rail opens as rows: icon, then name, then the drive's fill where there is one */
+html[data-phone] #w-filer.phone.navopen .rail { gap: 2px; }
+html[data-phone] #w-filer.phone.navopen .rail .ri { width: 100%; flex-direction: row; flex-wrap: wrap; justify-content: flex-start; gap: 0 12px; min-height: 48px; padding: 0 12px; font-size: 15px; font-weight: 500; text-align: left; border-radius: 14px; }
+html[data-phone] #w-filer.phone.navopen .rail .ri .ico { width: 24px; } html[data-phone] #w-filer.phone.navopen .rail .ri svg.i { width: 20px; height: 20px; }
+html[data-phone] #w-filer.phone.navopen .rail .ri .lab { max-width: none; flex: 1; }
+html[data-phone] #w-filer.phone.navopen .rail .ri .cap { width: 64px; margin: 0; }
+html[data-phone] #w-filer.phone.navopen .rail .rsep { width: auto; margin: 10px 12px; }
+/* rows in a drawer are thumb rows: 44 tall, 15px names; the search at its foot is 42 tall with 16px type, so
+   typing into it never zooms the page */
+html[data-phone] .win.phone.navopen :is(.pside, .vside, .nside, .dpside, .vwside, .cfside, .wxside, .lfside, .msidebar) :is(.si, .lfsi, .trow, .vside .tab) { min-height: 44px; height: auto; padding-top: 0; padding-bottom: 0; font-size: 15px; border-radius: 14px; }
+html[data-phone] .win.phone.navopen :is(.pside, .vside, .nside, .dpside, .vwside, .cfside, .wxside, .lfside, .msidebar) :is(.si, .lfsi) svg.i { width: 19px; height: 19px; }
+html[data-phone] .win.phone.navopen :is(.pside, .vside, .nside, .dpside, .vwside, .cfside, .wxside, .lfside, .msidebar) .sh { font-size: 12.5px; margin-top: 18px; }
