@@ -13,8 +13,8 @@ pozyskujemy bezpośrednio z serwisu. Szczegóły i pełna lista plików:
 
 1. **Podgląd na żywo (nasza, oczyszczona kopia):**
 
-   - <https://kimosterz.github.io/SunoOS_2.0/> — wymaga włączonego GitHub Pages:
-     *Settings → Pages → Branch: `main`, folder: `/preview`* (jednorazowo, ręcznie).
+   - <https://kimosterz.github.io/SunoOS_2.0/preview/> (root serwisu przekierowuje tam sam) — wymaga włączonego GitHub Pages:
+     *Settings → Pages → Branch: `main`, folder: `/ (root)` (podgląd pod `…/SunoOS_2.0/preview/`)* (jednorazowo, ręcznie).
    - Uwaga: podgląd przez htmlpreview (`preview/index.html`) bez włączonego Pages pokazuje
      pasek awaryjny, a linki do **upstream (`simplyluma.com`) zawsze pokazują oryginalnego,
      NIEOCZYSZCZONEGO Lumę** (z Inkscape/Audacity itd. w „all apps") — to nie nasza kopia.
