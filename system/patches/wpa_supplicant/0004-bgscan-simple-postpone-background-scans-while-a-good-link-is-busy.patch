@@ -1,0 +1,147 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Project Luma <maintainers@projectluma.org>
+Date: Sun, 22 Nov 2026 23:30:00 +0000
+Subject: [PATCH] bgscan simple: Postpone background scans while a good link is
+ busy
+
+A background scan takes the radio off channel for several seconds on a
+full scan, which delays and drops traffic: a video call stutters, a live
+stream stalls. With the roaming policy, a link that is above the bgscan
+signal threshold and carrying traffic is not left anyway, so the scan
+only costs the user.
+
+When the long-interval timer fires, the signal is at or above the
+threshold and the link is busy, check again after the short interval
+instead of scanning. A link below the threshold (the short interval, or
+the long interval after the short-scan budget is used up) is still
+scanned on time, so recovery from a weakening link is unchanged.
+
+While the station is on 2.4 GHz and the BSS table has a 5 GHz or 6 GHz
+BSS of the same SSID, cap the long interval at 300 seconds, so a station
+that had to fall back to 2.4 GHz finds the higher band again within
+minutes of it becoming usable; the roaming rules decide whether it is.
+
+Applies on top of "Roaming: keep a usable link and roam only for a clear
+gain", which adds wpas_link_busy().
+---
+ wpa_supplicant/bgscan_simple.c | 58 ++++++++++++++++++++++++++++++----
+ 1 file changed, 52 insertions(+), 6 deletions(-)
+
+diff --git a/wpa_supplicant/bgscan_simple.c b/wpa_supplicant/bgscan_simple.c
+index a90cf86..63ba720 100644
+--- a/wpa_supplicant/bgscan_simple.c
++++ b/wpa_supplicant/bgscan_simple.c
+@@ -38,6 +38,32 @@ struct bgscan_simple_data {
+ static void bgscan_simple_timeout(void *eloop_ctx, void *timeout_ctx);
+ 
+ 
++/*
++ * While connected on 2.4 GHz to an ESS that also has a 5 GHz or 6 GHz BSS, use
++ * at most this long interval, so the station moves back to the higher band
++ * soon after it becomes usable again (roaming decides whether it is).
++ */
++#define BGSCAN_SIMPLE_UPGRADE_INTERVAL 300
++
++static int bgscan_simple_interval(struct bgscan_simple_data *data)
++{
++	struct wpa_supplicant *wpa_s = data->wpa_s;
++	struct wpa_bss *bss;
++
++	if (data->scan_interval != data->long_interval ||
++	    data->long_interval <= BGSCAN_SIMPLE_UPGRADE_INTERVAL ||
++	    !wpa_s->current_bss || wpa_s->current_bss->freq > 4000)
++		return data->scan_interval;
++	dl_list_for_each(bss, &wpa_s->bss, struct wpa_bss, list) {
++		if (bss->freq > 4000 &&
++		    bss->ssid_len == data->ssid->ssid_len &&
++		    os_memcmp(bss->ssid, data->ssid->ssid, bss->ssid_len) == 0)
++			return BGSCAN_SIMPLE_UPGRADE_INTERVAL;
++	}
++	return data->scan_interval;
++}
++
++
+ static bool bgscan_simple_btm_query(struct wpa_supplicant *wpa_s,
+ 				    struct bgscan_simple_data *data)
+ {
+@@ -68,7 +94,7 @@ static bool bgscan_simple_btm_query(struct wpa_supplicant *wpa_s,
+ 
+ 	/* Start a new timeout for the next one. We don't have scan callback to
+ 	 * otherwise trigger future progress when using BTM path. */
+-	eloop_register_timeout(data->scan_interval, 0,
++	eloop_register_timeout(bgscan_simple_interval(data), 0,
+ 			       bgscan_simple_timeout, data, NULL);
+ 	return true;
+ }
+@@ -79,6 +105,26 @@ static void bgscan_simple_timeout(void *eloop_ctx, void *timeout_ctx)
+ 	struct bgscan_simple_data *data = eloop_ctx;
+ 	struct wpa_supplicant *wpa_s = data->wpa_s;
+ 	struct wpa_driver_scan_params params;
++	struct wpa_signal_info si;
++
++	/*
++	 * A background scan takes the radio off channel for a few seconds,
++	 * which delays and drops traffic, and a link that is above the signal
++	 * threshold and carrying traffic is not left anyway. Check again
++	 * after the short interval. A weak link is still scanned on time.
++	 */
++	if (data->signal_threshold &&
++	    data->scan_interval == data->long_interval &&
++	    wpa_drv_signal_poll(wpa_s, &si) == 0 &&
++	    si.data.signal != -WPA_INVALID_NOISE &&
++	    si.data.signal >= data->signal_threshold &&
++	    wpas_link_busy(wpa_s)) {
++		wpa_printf(MSG_DEBUG,
++			   "bgscan simple: Signal is good and the link is busy - postpone background scan");
++		eloop_register_timeout(data->short_interval, 0,
++				       bgscan_simple_timeout, data, NULL);
++		return;
++	}
+ 
+ 	if (bgscan_simple_btm_query(wpa_s, data))
+ 		goto scan_ok;
+@@ -98,7 +144,7 @@ static void bgscan_simple_timeout(void *eloop_ctx, void *timeout_ctx)
+ 	wpa_printf(MSG_DEBUG, "bgscan simple: Request a background scan");
+ 	if (wpa_supplicant_trigger_scan(wpa_s, &params, true, false)) {
+ 		wpa_printf(MSG_DEBUG, "bgscan simple: Failed to trigger scan");
+-		eloop_register_timeout(data->scan_interval, 0,
++		eloop_register_timeout(bgscan_simple_interval(data), 0,
+ 				       bgscan_simple_timeout, data, NULL);
+ 	} else {
+ 	scan_ok:
+@@ -198,7 +244,7 @@ static void * bgscan_simple_init(struct wpa_supplicant *wpa_s,
+ 	}
+ 	wpa_printf(MSG_DEBUG, "bgscan simple: Init scan interval: %d",
+ 		   data->scan_interval);
+-	eloop_register_timeout(data->scan_interval, 0, bgscan_simple_timeout,
++	eloop_register_timeout(bgscan_simple_interval(data), 0, bgscan_simple_timeout,
+ 			       data, NULL);
+ 
+ 	/*
+@@ -233,7 +279,7 @@ static int bgscan_simple_notify_scan(void *priv,
+ 	wpa_printf(MSG_DEBUG, "bgscan simple: scan result notification");
+ 
+ 	eloop_cancel_timeout(bgscan_simple_timeout, data, NULL);
+-	eloop_register_timeout(data->scan_interval, 0, bgscan_simple_timeout,
++	eloop_register_timeout(bgscan_simple_interval(data), 0, bgscan_simple_timeout,
+ 			       data, NULL);
+ 
+ 	/*
+@@ -293,7 +339,7 @@ static void bgscan_simple_notify_signal_change(void *priv, int above,
+ 			 */
+ 			eloop_cancel_timeout(bgscan_simple_timeout, data,
+ 					     NULL);
+-			eloop_register_timeout(data->scan_interval, 0,
++			eloop_register_timeout(bgscan_simple_interval(data), 0,
+ 					       bgscan_simple_timeout, data,
+ 					       NULL);
+ 		}
+@@ -302,7 +348,7 @@ static void bgscan_simple_notify_signal_change(void *priv, int above,
+ 			   "interval");
+ 		data->scan_interval = data->long_interval;
+ 		eloop_cancel_timeout(bgscan_simple_timeout, data, NULL);
+-		eloop_register_timeout(data->scan_interval, 0,
++		eloop_register_timeout(bgscan_simple_interval(data), 0,
+ 				       bgscan_simple_timeout, data, NULL);
+ 	} else if (!above) {
+ 		/*

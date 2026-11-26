@@ -1,0 +1,301 @@
+release	name	label	alt	note
+ubuntu-24.04	nautilus	application		file manager window
+ubuntu-24.04	plasma-welcome	application		welcome window
+ubuntu-24.04	im-config	application	device-add-on	window to choose input method
+ubuntu-24.04	ristretto	application		image viewer
+ubuntu-24.04	polkit-kde-agent-1	system-module	device-add-on	session auth agent for polkit
+ubuntu-24.04	ibus	device-add-on	system-module	input method framework
+ubuntu-24.04	swell-foop	application		game
+ubuntu-24.04	gnome-remote-desktop	system-module	application	remote desktop daemon
+ubuntu-24.04	drkonqi	system-module	application	crash/coredump handler
+ubuntu-24.04	btop	console-application		terminal monitor
+ubuntu-24.04	xarchiver	application		archive GUI
+ubuntu-24.04	gnome-weather	application		weather app
+ubuntu-24.04	gnome-logs	application		journal viewer
+ubuntu-24.04	plasma-discover	system-tool	application	package manager GUI
+ubuntu-24.04	gnome-mines	application		game
+ubuntu-24.04	gimp	application		image editor
+ubuntu-24.04	network-manager-gnome	application	system-tool	nm-applet and connection editor
+ubuntu-24.04	gnome-chess	application		game
+ubuntu-24.04	gnome-sudoku	application		game
+ubuntu-24.04	mc	console-application		terminal file manager
+ubuntu-24.04	emacs-common	application	workspace	editor with GUI, developer tool
+ubuntu-24.04	gnome-color-manager	application		colour profile viewer
+ubuntu-24.04	docker.io	system-module		container engine daemon
+ubuntu-24.04	modemmanager	system-module		root daemon, udev rules
+ubuntu-24.04	binfmt-support	system-module		boot-time binfmt service
+ubuntu-24.04	colord	system-module		system colour daemon
+ubuntu-24.04	ksystemstats	system-module	device-add-on	monitoring daemon service
+ubuntu-24.04	dmeventd	system-module		device mapper daemon
+ubuntu-24.04	libvirt-daemon-system	system-module		libvirt daemon units
+ubuntu-24.04	nginx-common	system-module		web server config and units
+ubuntu-24.04	network-manager	system-module		network daemon
+ubuntu-24.04	gvfs-backends	device-add-on	system-module	file manager backends
+ubuntu-24.04	wireplumber	system-module	device-add-on	audio session service
+ubuntu-24.04	kactivitymanagerd	system-module	device-add-on	session service daemon
+ubuntu-24.04	screen	console-application		terminal multiplexer
+ubuntu-24.04	switcheroo-control	system-module		GPU switching D-Bus daemon
+ubuntu-24.04	libccid	system-module	device-request	smart card reader driver plus udev rule
+ubuntu-24.04	libmtp-common	device-request		udev data only
+ubuntu-24.04	media-player-info	device-request		udev hwdb data only
+ubuntu-24.04	libsane-hpaio	device-add-on	device-request	scanner backend plugin
+ubuntu-24.04	mutter-common	system-module	workspace	window manager data with udev rule
+ubuntu-24.04	libgphoto2-6t64	workspace	device-request	camera library
+ubuntu-24.04	firmware-ath9k-htc	system-module		firmware
+ubuntu-24.04	amd64-microcode	system-module		CPU microcode
+ubuntu-24.04	libnss-mdns	system-module		NSS module
+ubuntu-24.04	libpam-cap	system-module		PAM module
+ubuntu-24.04	libpam-fprintd	system-module		PAM module
+ubuntu-24.04	dkms	system-tool	system-module	builds kernel modules, root
+ubuntu-24.04	libnss-nis	system-module		NSS module
+ubuntu-24.04	libpam-kwallet5	system-module		PAM module
+ubuntu-24.04	nfs-kernel-server	system-module		kernel NFS server daemons
+ubuntu-24.04	libcurl4-openssl-dev	workspace		dev headers
+ubuntu-24.04	firmware-sof-signed	system-module		firmware
+ubuntu-24.04	gdm3	system-module		display manager, login
+ubuntu-24.04	apt-config-icons-large	system-module	device-add-on	apt config snippet
+ubuntu-24.04	gnome-themes-extra-data	device-add-on		GTK theme
+ubuntu-24.04	kdenetwork-filesharing	device-add-on	system-module	file manager sharing plugin
+ubuntu-24.04	libhunspell-1.7-0	workspace		library
+ubuntu-24.04	texlive-fonts-recommended	workspace	device-add-on	TeX fonts for TeX
+ubuntu-24.04	fonts-quicksand	device-add-on		font
+ubuntu-24.04	gedit-common	application	workspace	data for text editor
+ubuntu-24.04	fonts-noto-ui-extra	device-add-on		fonts
+ubuntu-24.04	plasma-disks	system-tool	device-add-on	SMART monitor, raw disks
+ubuntu-24.04	nautilus-extension-gnome-terminal	device-add-on		file manager extension
+ubuntu-24.04	gparted-common	system-tool		partition editor data
+ubuntu-24.04	layer-shell-qt	workspace	device-add-on	Qt plugin library
+ubuntu-24.04	gstreamer1.0-libcamera	device-add-on	workspace	GStreamer plugin
+ubuntu-24.04	fonts-dejavu-mono	device-add-on		font
+ubuntu-24.04	thunar-media-tags-plugin	device-add-on		file manager plugin
+ubuntu-24.04	libgstreamer1.0-0	workspace		library
+ubuntu-24.04	akonadi-server	workspace	system-module	PIM storage backend
+ubuntu-24.04	xfce4-power-manager-data	application	system-module	data for power manager
+ubuntu-24.04	fonts-noto-color-emoji	device-add-on		font
+ubuntu-24.04	fonts-crosextra-carlito	device-add-on		font
+ubuntu-24.04	libxrandr-dev	workspace		dev headers
+ubuntu-24.04	libtasn1-6-dev	workspace		dev headers
+ubuntu-24.04	libcap-dev	workspace		dev headers
+ubuntu-24.04	libxss-dev	workspace		dev headers
+ubuntu-24.04	make	workspace		build tool
+ubuntu-24.04	libgcc-10-dev	workspace		dev files
+ubuntu-24.04	libgcc-14-dev	workspace		dev files
+ubuntu-24.04	libwebp-dev	workspace		dev headers
+ubuntu-24.04	libnsl-dev	workspace		dev headers
+ubuntu-24.04	libxft-dev	workspace		dev headers
+ubuntu-24.04	libblkid-dev	workspace		dev headers
+ubuntu-24.04	libgmp-dev	workspace		dev headers
+ubuntu-24.04	libz3-dev	workspace		dev headers
+ubuntu-24.04	libxcursor-dev	workspace		dev headers
+ubuntu-24.04	node-babel7	workspace		JS compiler
+ubuntu-24.04	libparams-util-perl	workspace		Perl module
+ubuntu-24.04	node-js-yaml	workspace		node module
+ubuntu-24.04	liblist-moreutils-perl	workspace		Perl module
+ubuntu-24.04	librepository-java	workspace		Java library
+ubuntu-24.04	libjcommon-java	workspace		Java library
+ubuntu-24.04	node-util-deprecate	workspace		node module
+ubuntu-24.04	python3-json-pointer	workspace		Python module
+ubuntu-24.04	node-mime-types	workspace		node module
+ubuntu-24.04	python3-typing-extensions	workspace		Python module
+ubuntu-24.04	node-v8flags	workspace		node module
+ubuntu-24.04	libcommons-lang3-java	workspace		Java library
+ubuntu-24.04	php-xml	workspace		PHP module
+ubuntu-24.04	node-path-dirname	workspace		node module
+ubuntu-24.04	pv	console-application	workspace	pipe meter
+ubuntu-24.04	vim	console-application	workspace	terminal editor
+ubuntu-24.04	pkgconf-bin	workspace		build helper
+ubuntu-24.04	libjxr-tools	workspace	console-application	image codec CLI tools
+ubuntu-24.04	isc-dhcp-client	system-tool	system-module	root network client
+ubuntu-24.04	avahi-utils	workspace	console-application	CLI utilities
+ubuntu-24.04	libqmi-utils	system-tool	workspace	modem raw device access
+ubuntu-24.04	flex	workspace		lexer generator
+ubuntu-24.04	libgpod-common	workspace	device-request	iPod tools with udev rule
+ubuntu-24.04	apt-file	console-application	system-tool	apt file search
+ubuntu-24.04	cpp-x86-64-linux-gnu	workspace		compiler part
+ubuntu-24.04	install-info	workspace		doc tooling
+ubuntu-24.04	ldap-utils	workspace	console-application	CLI toolbox
+ubuntu-24.04	aptitude-common	system-tool	console-application	package manager data
+ubuntu-24.04	jq	workspace	console-application	JSON tool
+ubuntu-24.04	mariadb-client	workspace	console-application	DB client tools
+ubuntu-24.04	xfce4-places-plugin	device-add-on		panel plugin
+ubuntu-24.04	lzop	workspace	console-application	compressor
+ubuntu-24.04	webpack	workspace		JS bundler
+ubuntu-24.04	graphviz	workspace		graph tools
+ubuntu-24.04	parted	system-tool		partition editor
+ubuntu-24.04	cmake	workspace		build system
+ubuntu-24.04	kpackagetool5	workspace		dev CLI
+ubuntu-24.04	desktop-file-utils	workspace		dev CLI
+ubuntu-24.04	whois	console-application	workspace	whois client
+ubuntu-24.04	x11-session-utils	workspace	console-application	X session tools
+ubuntu-24.04	gnome-menus	workspace	device-add-on	menu library and data
+ubuntu-24.04	ipset	system-tool		kernel IP sets, root
+ubuntu-24.04	ethtool	system-tool	workspace	NIC settings, root
+ubuntu-24.04	libgsf-bin	workspace		library tools
+ubuntu-24.04	libevdocument3-4t64	workspace		library
+ubuntu-24.04	libteamdctl0	workspace		library
+ubuntu-24.04	libarpack2t64	workspace		library
+ubuntu-24.04	libpoppler-glib8t64	workspace		library
+ubuntu-24.04	libxcb-icccm4	workspace		library
+ubuntu-24.04	remmina-plugin-secret	device-add-on	application	plugin for an app
+ubuntu-24.04	libwxgtk3.2-1t64	workspace		library
+ubuntu-24.04	libgnome-desktop-3-20t64	workspace		library
+ubuntu-24.04	libjxr0t64	workspace		library
+ubuntu-24.04	librygel-core-2.8-0	workspace		library
+ubuntu-24.04	libxapian30	workspace		library
+ubuntu-24.04	libqt5webenginewidgets5	workspace		library
+ubuntu-24.04	node-is-stream	workspace		node module
+ubuntu-24.04	libsoup-3.0-common	workspace		library data
+ubuntu-24.04	libgweather-4-0t64	workspace		library
+ubuntu-24.04	libgoa-1.0-common	workspace		library data
+ubuntu-24.04	task-brazilian-portuguese	device-add-on	workspace	language metapackage
+ubuntu-24.04	vlc-l10n	workspace	device-add-on	translations for an app
+fedora-45	kid3-qt	application		tag editor
+fedora-45	hash-o-matic	application		checksum GUI
+fedora-45	sylpheed	application		email client
+fedora-45	screenie-composer	application		screenshot composer
+fedora-45	kxkb2locale1	system-module	application	applies keyboard config to locale1
+fedora-45	gtk3-devel	workspace		dev headers
+fedora-45	audex	application		ripper
+fedora-45	cutecom	application		serial terminal GUI
+fedora-45	papers-previewer	application	device-add-on	previewer window
+fedora-45	kf6-kwallet	device-add-on	system-module	secret service provider
+fedora-45	pcp-gui	application		charts GUI
+fedora-45	gnome-mines	application		game
+fedora-45	gajim	application		chat client
+fedora-45	konqueror	application		browser
+fedora-45	jedit	application		editor
+fedora-45	kf6-knewstuff	workspace	application	framework
+fedora-45	eom	application		image viewer
+fedora-45	kanagram	application		game
+fedora-45	kjots	application		notes
+fedora-45	libsvm-svm-toy-qt	application		demo GUI
+fedora-45	neovim-qt	application		editor GUI
+fedora-45	xmedcon	application		image GUI
+fedora-45	openiked	system-module		IKE daemon
+fedora-45	trace-cmd	system-tool	workspace	ftrace, root
+fedora-45	gap-pkg-scscp	workspace	system-module	GAP package with unit
+fedora-45	edac-ctl	system-module		loads EDAC driver
+fedora-45	tog-pegasus	system-module		WBEM server
+fedora-45	salt-syndic	system-module		salt daemon
+fedora-45	e2scrub	system-tool	system-module	filesystem check service
+fedora-45	libvirt-daemon-driver-interface	system-module		libvirt daemon driver
+fedora-45	lemonldap-ng-portal	system-module	workspace	auth portal service
+fedora-45	dlm	system-module		cluster lock daemon
+fedora-45	gnome-ponytail-daemon	workspace	system-module	testing bridge
+fedora-45	bitlbee	system-module		IRC gateway daemon
+fedora-45	darkhttpd	system-module		web server
+fedora-45	targetd	system-module		storage service
+fedora-45	infinipath-psm	workspace	device-request	library with udev rule
+fedora-45	xr-hardware	device-request		udev rules only
+fedora-45	mISDN	workspace	system-module	ISDN userspace with udev
+fedora-45	libmtp	workspace	device-request	library with udev rule
+fedora-45	libnfc	workspace	device-request	library with udev rule
+fedora-45	libcamera	workspace	device-add-on	library
+fedora-45	stellarium-data	application	workspace	data for app
+fedora-45	rust-openssl-macros+default-devel	workspace		crate
+fedora-45	libcap	workspace		library plus tools
+fedora-45	cockpit-ostree	system-tool	system-module	cockpit system UI
+fedora-45	pam_cifscreds	system-module		PAM module
+fedora-45	nss_db	system-module		NSS module
+fedora-45	rust-tiny_http+ssl-openssl-devel	workspace		crate
+fedora-45	python3-types-pyopenssl	workspace		typing stubs
+fedora-45	rust-hickory-resolver0.24+dnssec-devel	workspace		crate
+fedora-45	libcgroup-pam	system-module		PAM module
+fedora-45	rust-secret-service+rt-async-io-crypto-openssl-devel	workspace		crate
+fedora-45	wireless-regdb	system-module	device-add-on	regulatory data for kernel
+fedora-45	gtk3	workspace		toolkit library
+fedora-45	google-noto-serif-hentaigana-fonts	device-add-on		font
+fedora-45	google-noto-sans-vf-fonts	device-add-on		font
+fedora-45	libreoffice-dict-en-US	device-add-on		dictionary
+fedora-45	mingw64-qt5-qtsensors	workspace		cross library
+fedora-45	rc-tools	system-tool	workspace	IR devices, root
+fedora-45	hunspell-wa	device-add-on		dictionary
+fedora-45	senamirmir-wookianos-fonts	device-add-on		font
+fedora-45	google-noto-sans-ethiopic-vf-fonts	device-add-on		font
+fedora-45	google-noto-sans-phoenician-fonts	device-add-on		font
+fedora-45	qt6-qtwebengine-devel	workspace		dev headers
+fedora-45	libreoffice-dict-en-ZA	device-add-on		dictionary
+fedora-45	rust-zbus-devel	workspace		crate
+fedora-45	hunspell-mr	device-add-on		dictionary
+fedora-45	gst-editing-services	workspace	device-add-on	library
+fedora-45	gfs-neohellenic-math-fonts	device-add-on		font
+fedora-45	aspell-hr	device-add-on		dictionary
+fedora-45	google-noto-sans-newa-fonts	device-add-on		font
+fedora-45	google-noto-sans-bengali-ui-fonts	device-add-on		font
+fedora-45	qca-qt5-ossl	workspace	device-add-on	Qt crypto plugin
+fedora-45	rust-tikv-jemalloc-sys+default-devel	workspace		crate
+fedora-45	rust-pulldown-cmark0.11+getopts-devel	workspace		crate
+fedora-45	rust-env-lock+default-devel	workspace		crate
+fedora-45	rust-pkcs8_0.10-devel	workspace		crate
+fedora-45	rust-faccess-devel	workspace		crate
+fedora-45	rust-lexical-parse-integer+compact-devel	workspace		crate
+fedora-45	stratagus-devel	workspace		dev headers
+fedora-45	rust-p521+arithmetic-devel	workspace		crate
+fedora-45	rust-audiopus_sys+default-devel	workspace		crate
+fedora-45	libqrcodegen-devel	workspace		dev headers
+fedora-45	rust-clap_complete+unstable-dynamic-devel	workspace		crate
+fedora-45	unbound-devel	workspace		dev headers
+fedora-45	rust-sqlx-mysql+default-devel	workspace		crate
+fedora-45	rust-prost-types+default-devel	workspace		crate
+fedora-45	perl-CPAN-Changes	workspace		Perl module
+fedora-45	perl-Time-y2038	workspace		Perl module
+fedora-45	python3-httpx-socks+asyncio	workspace		Python module
+fedora-45	python3-virtualenv-clone	workspace		Python dev tool
+fedora-45	python3-openshadinglanguage	workspace		Python bindings
+fedora-45	perl-CPAN-Mini	workspace		Perl module
+fedora-45	perl-Business-ISBN	workspace		Perl module
+fedora-45	python3-sphinx-argparse-cli	workspace		Python module
+fedora-45	perl-Throwable	workspace		Perl module
+fedora-45	gcovr	workspace		coverage tool
+fedora-45	perl-Devel-StackTrace-Extract	workspace		Perl module
+fedora-45	perl-DBIx-QueryLog	workspace		Perl module
+fedora-45	rubygem-rttool	workspace		Ruby gem
+fedora-45	python3-deepdiff+cli	workspace		Python module
+fedora-45	fence-agents-vmware-soap	system-tool	workspace	cluster fencing agent
+fedora-45	gimgtools	workspace	console-application	CLI tools
+fedora-45	ceph-test	workspace	system-tool	test tools
+fedora-45	act	workspace		code generator
+fedora-45	cswrap	workspace		compiler wrapper
+fedora-45	nodejs-npm	workspace		package manager for dev
+fedora-45	texlive-mathspic	workspace	console-application	TeX filter
+fedora-45	qemu-sanity-check-nodeps	workspace	console-application	kernel check script
+fedora-45	createrepo_c	workspace		repo tooling
+fedora-45	rigsync	console-application	workspace	ham radio sync
+fedora-45	ghc9.4-compiler	workspace		compiler
+fedora-45	termcolours	console-application	workspace	terminal colours
+fedora-45	protobuf-compiler	workspace		compiler
+fedora-45	janet	workspace	console-application	language runtime
+fedora-45	xpa	workspace		messaging CLI
+fedora-45	mediainfo	console-application	workspace	media info CLI
+fedora-45	rtla	system-tool		kernel tracing, root
+fedora-45	texlive-pdfcrop	workspace		TeX tool
+fedora-45	iptraf-ng	system-tool	console-application	packet monitor, raw sockets
+fedora-45	jasper	workspace		codec library tools
+fedora-45	dogtag-jss-tools	workspace		CLI tools
+fedora-45	ocaml-ocp-indent	workspace		dev tool
+fedora-45	s3fs-fuse	system-module	system-tool	mount helper
+fedora-45	sameboy-thumbnailer	device-add-on		thumbnailer
+fedora-45	libtypec-utils	system-tool	workspace	USB-C raw device tools
+fedora-45	unixcw	console-application	workspace	Morse curses programs
+fedora-45	hdf	workspace		scientific library tools
+fedora-45	moarvm	workspace		language VM
+fedora-45	scoutfish	workspace	console-application	chess engine CLI
+fedora-45	xdpyinfo	workspace	console-application	X info tool
+fedora-45	sil-ezra-fonts-all	device-add-on		fonts
+fedora-45	langpacks-fonts-pt	device-add-on		fonts metapackage
+fedora-45	langpacks-fonts-nb	device-add-on		fonts metapackage
+fedora-45	bicon-legacyfonts	device-add-on		fonts
+fedora-45	adf-gillius-fonts-all	device-add-on		fonts
+fedora-45	langpacks-fonts-nqo	device-add-on		fonts metapackage
+fedora-45	langpacks-fonts-sr	device-add-on		fonts metapackage
+fedora-45	bitmap-opentype-fonts-all	device-add-on		fonts
+fedora-45	rust-cpio+default-devel	workspace		crate
+fedora-45	rust-redis+pin-project-lite-devel	workspace		crate
+fedora-45	rust-ixdtf-devel	workspace		crate
+fedora-45	rust-cookie+hkdf-devel	workspace		crate
+fedora-45	perl-SQL-Abstract-Limit	workspace		Perl module
+fedora-45	kturtle	application		educational app
+fedora-45	modulemd-tools	workspace		dev tools
+fedora-45	golang-github-zeebo-assert-devel	workspace		Go module
+fedora-45	rust-rav1e+ivf-devel	workspace		crate
+fedora-45	sdcv	console-application		dictionary CLI

@@ -1,0 +1,27 @@
+[Application]
+name=org.projectluma.Contacts
+runtime=org.projectluma.Platform/x86_64/44
+sdk=org.projectluma.Sdk/x86_64/44
+command=prairie-contacts
+
+[Context]
+shared=ipc;network;
+sockets=fallback-x11;wayland;
+devices=dri;
+
+[Session Bus Policy]
+org.gnome.evolution.dataserver.AddressBook10=talk
+org.project_luma.ShellState1=talk
+org.gnome.evolution.dataserver.Sources5=talk
+org.projectluma.ApplicationDirectory1=talk
+org.projectluma.AppData1=talk
+org.projectluma.Connect1=talk
+
+[Environment]
+LUMA_CONTACTS_STYLE_PATH=/app/share/prairie-core/contacts.css
+
+[X-Luma]
+min-host-core=97
+app-data-schema=contacts-v1
+min-host-installer=64
+min-host-continuity=63

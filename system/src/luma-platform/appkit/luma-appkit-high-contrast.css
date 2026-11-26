@@ -1,0 +1,16 @@
+/* SPDX-License-Identifier: Apache-2.0 */
+
+@import url("luma-appkit.css");
+@import url("luma-appkit-high-contrast-tokens.css");
+
+/* LumaUI: high contrast gives the pills an edge instead of a tint. */
+label.lumaui-count, label.lumaui-category { box-shadow: inset 0 0 0 1px @luma_ink; }
+
+/* LumaUI: Content-lit header. High contrast draws neither the light nor the wash. */
+.lumaui-lit-header .lumaui-lit-picture { opacity: 0; }
+box.lumaui-lit-wash { background-image: none; }
+/* Mixer strips: an outline, no tint; a key that is on is outlined too, not only coloured. */
+lumaui-mixer-strip { background: none; box-shadow: inset 0 0 0 1px @luma_ink; }
+lumaui-mixer-strip button.lumaui-mixer-key:checked { box-shadow: inset 0 0 0 2px @luma_ink; }
+/* Segmented audio meters: unlit segments stay readable against any surface. */
+box.lumaui-audio-meter.segmented > .lumaui-meter-track { color: alpha(@luma_ink, .32); }

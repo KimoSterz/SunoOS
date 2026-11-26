@@ -1,0 +1,67 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Project Luma <engineering@projectluma.org>
+Date: Mon, 23 Nov 2026 09:00:00 -0600
+Subject: [PATCH] Banner lead icon: the app icon's file, 1:1
+
+A banner's lead icon was drawn at its plate's scale (0389): the plate
+filled the 34 px slot and the glyph was drawn larger than the file draws
+it. The banner designs draw the icon's whole canvas at the slot's size:
+plate, margin and ambient shadow as in the file.
+
+Message.setDrawsIconCanvas(true), set on every lip card, draws an icon
+that has a plate at its CSS size with no plate scale and no tile mask;
+an icon without a plate keeps the drawn plate behind it.
+---
+diff --git a/js/ui/lumaNotificationBeacon.js b/js/ui/lumaNotificationBeacon.js
+index af42f49..a75560e 100644
+--- a/js/ui/lumaNotificationBeacon.js
++++ b/js/ui/lumaNotificationBeacon.js
+@@ -270,6 +270,7 @@ export const NotificationLip = GObject.registerClass(class NotificationLip exten
+         card.add_style_class_name('notification-banner');
+         card.add_style_class_name('luma-lip-card');
+         card.useCardLayout();
++        card.setDrawsIconCanvas(true);
+         card.setInlineReplyVisible?.(!tray);
+         if (locked) {
+             card._header.closeButton.hide();
+diff --git a/js/ui/messageList.js b/js/ui/messageList.js
+index 5d06212..0ce8970 100644
+--- a/js/ui/messageList.js
++++ b/js/ui/messageList.js
+@@ -15,7 +15,7 @@ import * as Mpris from './mpris.js';
+ 
+ import * as Util from '../misc/util.js';
+ import {formatTime, formatTimeSpan} from '../misc/dateUtils.js';
+-import {LumaIconMask, clearAppIconPlate, syncAppIconPlate} from './iconMask.js';
++import {LumaIconMask, appIconPlateScale, clearAppIconPlate, syncAppIconPlate} from './iconMask.js';
+ import {logErrorUnlessCancelled} from '../misc/errorUtils.js';
+ 
+ const MAX_NOTIFICATION_BUTTONS = 3;
+@@ -870,15 +870,25 @@ export const Message = GObject.registerClass({
+             ? 'luma-notification-tile-art' : 'luma-notification-tile-glyph');
+         this._tile.add_style_class_name(glyph
+             ? 'luma-notification-tile-glyph' : 'luma-notification-tile-art');
+-        this._tileArt.get_effect('luma-tile-mask')?.set_enabled(!glyph);
++        this._tileCanvas = this._drawsIconCanvas && !glyph && !showImage &&
++            appIconPlateScale(sourceIcon.gicon) !== null;
++        this._tileArt.get_effect('luma-tile-mask')?.set_enabled(!glyph && !this._tileCanvas);
+         this._syncTilePlate();
+     }
+ 
++    // A heads-up banner draws an app icon as its file draws it: the whole
++    // canvas at the tile's size, plate, margin and ambient shadow, with no
++    // plate scale and no mask, as every banner design does.
++    setDrawsIconCanvas(canvas) {
++        this._drawsIconCanvas = canvas;
++        this._syncTile();
++    }
++
+     // An app's art fills the tile with its plate; a glyph keeps its CSS size
+     // on the tile's own fill.
+     _syncTilePlate() {
+         const sourceIcon = this._header.sourceIcon;
+-        if (this._tileGlyph || this._tileShowsImage)
++        if (this._tileGlyph || this._tileShowsImage || this._tileCanvas)
+             clearAppIconPlate(sourceIcon, this._tileArt);
+         else
+             syncAppIconPlate(sourceIcon, this._tileArt);

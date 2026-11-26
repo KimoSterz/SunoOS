@@ -1,0 +1,186 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Project Luma <engineering@projectluma.org>
+Date: Wed, 25 Nov 2026 04:00:00 -0600
+Subject: [PATCH] window: Expose the client's own fullscreen request
+
+A shell that places every window fullscreen (Luma's Tablet and Mobile
+presentations) cannot tell an application that asks for fullscreen
+itself, a game or a video player: the request finds the window
+fullscreen already and meta_window_make_fullscreen() returns without a
+change, so nothing reaches the shell.
+
+MetaWindow:client-fullscreen (meta_window_get_client_fullscreen()) is
+what the client last asked: TRUE after xdg_toplevel.set_fullscreen or an
+X11 _NET_WM_STATE_FULLSCREEN add (or a toggle Mutter takes as entering
+fullscreen, or the state set before map), FALSE after
+xdg_toplevel.unset_fullscreen or a remove, whatever the window's state.
+Fullscreen the compositor or the shell sets leaves it alone.
+
+---
+diff --git a/src/core/window-private.h b/src/core/window-private.h
+index 4da9f5d..505b340 100644
+--- a/src/core/window-private.h
++++ b/src/core/window-private.h
+@@ -314,6 +314,12 @@ struct _MetaWindow
+   gboolean hidden_from_capture;
+   gboolean capture_hidden;
+ 
++  /* Luma: whether the client itself asked for fullscreen (xdg_toplevel
++   * set_fullscreen/unset_fullscreen, _NET_WM_STATE_FULLSCREEN), whatever the
++   * window's state. Fullscreen the compositor or the shell chose leaves it
++   * alone. */
++  gboolean client_fullscreen;
++
+   MetaLogicalMonitorId *preferred_logical_monitor;
+ 
+   /* Area to cover when in fullscreen mode.  If _NET_WM_FULLSCREEN_MONITORS has
+@@ -699,6 +705,8 @@ void        meta_window_restore_tile       (MetaWindow        *window,
+ void        meta_window_queue_auto_maximize (MetaWindow       *window);
+ 
+ void        meta_window_make_fullscreen_internal (MetaWindow    *window);
++void        meta_window_set_client_fullscreen (MetaWindow *window,
++                                               gboolean    fullscreen);
+ void        meta_window_update_fullscreen_monitors (MetaWindow         *window,
+                                                     MetaLogicalMonitor *top,
+                                                     MetaLogicalMonitor *bottom,
+diff --git a/src/core/window.c b/src/core/window.c
+index ccd4800..02cfcb8 100644
+--- a/src/core/window.c
++++ b/src/core/window.c
+@@ -234,6 +234,7 @@ enum
+   PROP_A11Y_DBUS_NAME,
+   PROP_A11Y_OBJECT_PATH,
+   PROP_HIDDEN_FROM_CAPTURE,
++  PROP_CLIENT_FULLSCREEN,
+ 
+   PROP_LAST,
+ };
+@@ -512,6 +513,9 @@ meta_window_get_property (GObject         *object,
+     case PROP_HIDDEN_FROM_CAPTURE:
+       g_value_set_boolean (value, window->capture_hidden);
+       break;
++    case PROP_CLIENT_FULLSCREEN:
++      g_value_set_boolean (value, window->client_fullscreen);
++      break;
+     case PROP_DISPLAY:
+       g_value_set_object (value, window->display);
+       break;
+@@ -696,6 +700,21 @@ meta_window_class_init (MetaWindowClass *klass)
+                           G_PARAM_READABLE | G_PARAM_EXPLICIT_NOTIFY |
+                           G_PARAM_STATIC_STRINGS);
+ 
++  /**
++   * MetaWindow:client-fullscreen:
++   *
++   * Whether the client itself asked for the window to be fullscreen, and
++   * has not asked to leave it since. The window may be fullscreen for other
++   * reasons, such as a shell that places every window fullscreen; this
++   * tells a request from the application (a game, a video player) from
++   * those.
++   */
++  obj_props[PROP_CLIENT_FULLSCREEN] =
++    g_param_spec_boolean ("client-fullscreen", NULL, NULL,
++                          FALSE,
++                          G_PARAM_READABLE | G_PARAM_EXPLICIT_NOTIFY |
++                          G_PARAM_STATIC_STRINGS);
++
+   obj_props[PROP_DISPLAY] =
+     g_param_spec_object ("display", NULL, NULL,
+                          META_TYPE_DISPLAY,
+@@ -7770,6 +7789,36 @@ meta_window_is_hidden_from_capture (MetaWindow *window)
+   return window->capture_hidden;
+ }
+ 
++/* Called for the client's own requests only, before they are acted on. */
++void
++meta_window_set_client_fullscreen (MetaWindow *window,
++                                   gboolean    fullscreen)
++{
++  fullscreen = !!fullscreen;
++  if (window->client_fullscreen == fullscreen)
++    return;
++
++  window->client_fullscreen = fullscreen;
++  g_object_notify_by_pspec (G_OBJECT (window),
++                            obj_props[PROP_CLIENT_FULLSCREEN]);
++}
++
++/**
++ * meta_window_get_client_fullscreen:
++ * @window: a #MetaWindow
++ *
++ * Returns: %TRUE if the client asked for @window to be fullscreen and has
++ *   not asked to leave fullscreen since, whether or not @window is
++ *   fullscreen now
++ */
++gboolean
++meta_window_get_client_fullscreen (MetaWindow *window)
++{
++  g_return_val_if_fail (META_IS_WINDOW (window), FALSE);
++
++  return window->client_fullscreen;
++}
++
+ void
+ meta_window_set_transient_for (MetaWindow *window,
+                                MetaWindow *parent)
+diff --git a/src/meta/window.h b/src/meta/window.h
+index b93308a..386943c 100644
+--- a/src/meta/window.h
++++ b/src/meta/window.h
+@@ -336,6 +336,9 @@ void        meta_window_set_hidden_from_capture (MetaWindow *window,
+ META_EXPORT
+ gboolean    meta_window_is_hidden_from_capture  (MetaWindow *window);
+ 
++META_EXPORT
++gboolean    meta_window_get_client_fullscreen   (MetaWindow *window);
++
+ META_EXPORT
+ void        meta_window_delete             (MetaWindow  *window,
+                                             guint32      timestamp);
+diff --git a/src/wayland/meta-wayland-xdg-shell.c b/src/wayland/meta-wayland-xdg-shell.c
+index 77f9e7c..1301861 100644
+--- a/src/wayland/meta-wayland-xdg-shell.c
++++ b/src/wayland/meta-wayland-xdg-shell.c
+@@ -521,6 +521,7 @@ xdg_toplevel_set_fullscreen (struct wl_client   *client,
+         }
+     }
+ 
++  meta_window_set_client_fullscreen (window, TRUE);
+   meta_window_make_fullscreen (window);
+ }
+ 
+@@ -535,6 +536,7 @@ xdg_toplevel_unset_fullscreen (struct wl_client   *client,
+   if (!window)
+     return;
+ 
++  meta_window_set_client_fullscreen (window, FALSE);
+   meta_window_unmake_fullscreen (window);
+ }
+ 
+diff --git a/src/x11/window-props.c b/src/x11/window-props.c
+index 34632fe..3af50cd 100644
+--- a/src/x11/window-props.c
++++ b/src/x11/window-props.c
+@@ -834,6 +834,7 @@ reload_net_wm_state (MetaWindow    *window,
+       else if (value->v.atom_list.atoms[i] == x11_display->atom__NET_WM_STATE_FULLSCREEN)
+         {
+           meta_window_config_set_is_fullscreen (window->config, TRUE);
++          meta_window_set_client_fullscreen (window, TRUE);
+           g_object_notify (G_OBJECT (window), "fullscreen");
+         }
+       else if (value->v.atom_list.atoms[i] == x11_display->atom__NET_WM_STATE_ABOVE)
+diff --git a/src/x11/window-x11.c b/src/x11/window-x11.c
+index f7d05b8..1c47196 100644
+--- a/src/x11/window-x11.c
++++ b/src/x11/window-x11.c
+@@ -3331,6 +3331,9 @@ meta_window_x11_client_message (MetaWindow *window,
+           make_fullscreen = (action == _NET_WM_STATE_ADD ||
+                              (action == _NET_WM_STATE_TOGGLE &&
+                               !meta_window_is_fullscreen (window)));
++          meta_window_set_client_fullscreen (window,
++                                             make_fullscreen &&
++                                             window->has_fullscreen_func);
+           if (make_fullscreen && window->has_fullscreen_func)
+             meta_window_make_fullscreen (window);
+           else

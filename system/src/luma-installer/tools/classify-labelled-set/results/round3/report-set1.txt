@@ -1,0 +1,102 @@
+Labelled set: 300 requests (fedora 150, ubuntu 150); 0 names missing from the release; 0 unlabelled.
+Agreement: 265/300 = 88.33% (fedora 137/150, ubuntu 128/150). Gate: >= 98 %.
+Counting the labeller's alternative kind too: 281/300 = 93.67%.
+Applications classified as system modules or system tools: 0 (gate: 0).
+Non-system packages silently classified as system modules or system tools: 0 (gate: 0).
+Packages with a launcher put in a workspace or device add-on: 0 (gate: 0).
+Read from the package file (not only indices): 300/300.
+Choices (the person picks): 40; agreeing (label among the candidates): 34.
+Agreement with ADR-052's literal rules (the ADR column where a label disputes them): 265/300 = 88.33%.
+Rows where the label differs from ADR-052's literal rules: 0; the classifier follows the label in 0.
+
+Label distribution: workspace 147, system-module 44, device-add-on 39, application 37, system-tool 18, console-application 12, device-request 3
+Disagreements by (label -> classifier): console-application->workspace 9, system-tool->workspace 4, console-application->choice 3, device-add-on->workspace 3, system-module->workspace 3, system-tool->system-module 3, device-add-on->application 2, system-tool->application 2, device-add-on->choice 2, system-module->application 1, system-module->choice 1, device-request->workspace 1, application->workspace 1
+
+Disagreements:
+  ubuntu:ibus: label device-add-on, classifier application [label note: input method framework]
+      - launcher org.freedesktop.IBus.Setup.desktop runs a program from the package (ibus)
+      - its commands (ibus) start in its sandbox
+  ubuntu:drkonqi: label system-module, classifier application [label note: crash/coredump handler]
+      - dependency daemon stays inert; the host's is used: a D-Bus system service: /usr/share/dbus-1/system.d/org.kde.kf5auth.conf (libkf5auth-data)
+      - launcher org.kde.drkonqi.coredump.gui.desktop runs a program from the package (drkonqi)
+      - a service named like the package: drkonqi-coredump-processor@.service (drkonqi)
+  ubuntu:btop: label console-application, classifier workspace [label note: terminal monitor]
+      - launcher btop.desktop opens a terminal: a console program
+      - a typed package command: the workspace
+  ubuntu:plasma-discover: label system-tool, classifier application [label note: package manager GUI]
+      - dependency daemon stays inert; the host's is used: a D-Bus system service: /usr/share/dbus-1/system.d/org.kde.kf5auth.conf (libkf5auth-data)
+      - launcher org.kde.discover.desktop runs a program from the package (plasma-discover)
+      - its commands (plasma-discover) start in its sandbox
+  ubuntu:mc: label console-application, classifier choice (system-tool|workspace) [label note: terminal file manager]
+      - launcher mc.desktop opens a terminal: a console program
+      - privileged helper /usr/lib/mc/cons.saver (setuid/setgid) is not offered; the rest works (mc)
+      - administration commands (mc, linking libext2fs2t64); whether they need real root is not known: the person chooses
+  ubuntu:ksystemstats: label system-module, classifier choice (system-tool|workspace) [label note: monitoring daemon service]
+      - dependency daemon stays inert; the host's is used: a D-Bus system service: /usr/share/dbus-1/system.d/org.kde.kf5auth.conf (libkf5auth-data)
+      - administration commands (kstatsviewer, linking libnl-3-200); whether they need real root is not known: the person chooses
+  ubuntu:gvfs-backends: label device-add-on, classifier workspace [label note: file manager backends]
+      - loads into the host's own service (/usr/lib/gvfs/gvfs-afc-volume-monitor); the image carries it, so this copy serves the workspace's applications
+      - a typed package command: the workspace
+  ubuntu:wireplumber: label system-module, classifier workspace [label note: audio session service]
+      - a typed package command: the workspace
+  ubuntu:screen: label console-application, classifier choice (workspace|system-module) [label note: terminal multiplexer]
+      - a service named like the package: screen-cleanup (screen)
+      - system parts beside what a person uses directly: the person chooses
+  ubuntu:media-player-info: label device-request, classifier workspace [label note: udev hwdb data only]
+      - udev rules become a device request (/usr/lib/udev/rules.d/40-usb-media-players.rules)
+      - a typed package command: the workspace
+  ubuntu:mutter-common: label system-module, classifier workspace [label note: window manager data with udev rule]
+      - data for the desktop component mutter: it goes with the desktop
+  ubuntu:dkms: label system-tool, classifier system-module [label note: builds kernel modules, root]
+      - maintenance or boot-image hook /etc/kernel/postinst.d/dkms stays inert (dkms)
+      - kernel settings: /etc/modprobe.d/dkms.conf (dkms)
+  ubuntu:plasma-disks: label system-tool, classifier system-module [label note: SMART monitor, raw disks]
+      - dependency daemon stays inert; the host's is used: a D-Bus system service: /usr/share/dbus-1/system.d/org.kde.kf5auth.conf (libkf5auth-data)
+      - a desktop component (/usr/lib/x86_64-linux-gnu/qt5/plugins/kf5/kded/smart.so): it changes the desktop for everyone
+  ubuntu:gparted-common: label system-tool, classifier application [label note: partition editor data]
+      - data or plugins for the application gparted: added to that application's tree
+  ubuntu:xfce4-power-manager-data: label application, classifier workspace [label note: data for power manager]
+      - a typed package command: the workspace
+  ubuntu:pv: label console-application, classifier workspace [label note: pipe meter]
+      - a typed package command: the workspace
+  ubuntu:vim: label console-application, classifier workspace [label note: terminal editor]
+      - launcher vim.desktop opens a terminal: a console program
+      - a typed package command: the workspace
+  ubuntu:apt-file: label console-application, classifier choice (system-tool|workspace) [label note: apt file search]
+      - administration commands (apt-file, linking libapt-pkg-perl); whether they need real root is not known: the person chooses
+  ubuntu:aptitude-common: label system-tool, classifier workspace [label note: package manager data]
+      - a typed package command: the workspace
+  ubuntu:whois: label console-application, classifier workspace [label note: whois client]
+      - a typed package command: the workspace
+  ubuntu:remmina-plugin-secret: label device-add-on, classifier application [label note: plugin for an app]
+      - data or plugins for the application remmina: added to that application's tree
+  ubuntu:task-brazilian-portuguese: label device-add-on, classifier choice (workspace|system-tool) [label note: language metapackage]
+      - meta-package: no files of its own; members classified one by one (2)
+      - administration commands (tasksel) beside no sbin location: the person chooses
+  fedora:kf6-kwallet: label device-add-on, classifier choice (application|workspace) [label note: secret service provider]
+      - a window opened from another program (org.kde.ksecretd.desktop, hidden from the menu): the person chooses
+  fedora:trace-cmd: label system-tool, classifier system-module [label note: ftrace, root]
+      - system service trace-cmd.service (trace-cmd)
+  fedora:cockpit-ostree: label system-tool, classifier workspace [label note: cockpit system UI]
+      - a typed package command: the workspace
+  fedora:nss_db: label system-module, classifier workspace [label note: NSS module]
+      - a typed package command: the workspace
+  fedora:rc-tools: label system-tool, classifier workspace [label note: IR devices, root]
+      - udev rules become a device request (/usr/lib/udev/rules.d/70-infrared.rules)
+      - a typed package command: the workspace
+  fedora:aspell-hr: label device-add-on, classifier workspace [label note: dictionary]
+      - a typed package command: the workspace
+  fedora:rigsync: label console-application, classifier workspace [label note: ham radio sync]
+      - a typed package command: the workspace
+  fedora:termcolours: label console-application, classifier workspace [label note: terminal colours]
+      - a typed package command: the workspace
+  fedora:mediainfo: label console-application, classifier workspace [label note: media info CLI]
+      - a typed package command: the workspace
+  fedora:libtypec-utils: label system-tool, classifier workspace [label note: USB-C raw device tools]
+      - a typed package command: the workspace
+  fedora:unixcw: label console-application, classifier workspace [label note: Morse curses programs]
+      - a typed package command: the workspace
+  fedora:bicon-legacyfonts: label device-add-on, classifier workspace [label note: fonts]
+      - a typed package command: the workspace
+  fedora:sdcv: label console-application, classifier workspace [label note: dictionary CLI]
+      - a typed package command: the workspace

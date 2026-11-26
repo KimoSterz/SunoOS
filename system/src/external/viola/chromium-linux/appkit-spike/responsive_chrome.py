@@ -1,0 +1,738 @@
+# SPDX-License-Identifier: GPL-3.0-only
+"""Width-based browser chrome; Chromium remains the owner of every tab and command."""
+from dataclasses import dataclass
+import json
+from urllib.parse import quote
+from urllib.parse import urlsplit
+from gi.repository import Gdk, Gio, GLib, Gtk
+from luma_appkit import ActionCenter, BarAction, BarSearch
+from luma_appkit.action_center import register_item
+from luma_appkit.bar_share import ShareSheet, ShareSubject, ShareTarget
+from luma_appkit.bar_panel import PanelRow, panel_list
+from native_footer import NativeFooter
+from native_signin import SignInPanel, is_signin
+from native_extension_prompt import ExtensionPromptPanel, is_extension_prompt
+from native_extensions import NativeExtensions, extension_rows, rows_signature
+from native_address_focus import AddressEdit
+
+
+class DownloadPanelFooter(NativeFooter):
+    def open_notice(self, item):
+        self.host.submit(lambda: self.host.services.send('overlay', 'download:open',
+                                                       {'id': item['downloadId']}))
+
+
+@dataclass
+class BrowserAddress:
+    widget: Gtk.Widget
+
+
+def address_control(item, size):
+    # The browser owns its composite address field; LumaUI owns the bar.
+    widget = item.widget
+    if widget.get_parent() is not None:
+        raise ValueError('Address is still parented')
+    widget.set_visible(True)
+    widget.set_valign(Gtk.Align.CENTER)
+    widget.bar_flexible = True
+    widget.bar_phone_wide = True
+    return widget
+
+
+register_item(BrowserAddress, address_control)
+
+
+@dataclass
+class ExtensionBarItem:
+    widget: Gtk.Widget
+
+
+def extension_control(item, size):
+    # A pinned extension's own icon; LumaUI owns its place in the bar.
+    return item.widget
+
+
+register_item(ExtensionBarItem, extension_control)
+
+
+# Below these widths a browser window folds its sidebar away (compact) and
+# then becomes the phone composition.
+COMPACT_WIDTH = 900
+PHONE_WIDTH = 560
+
+
+class ResponsiveChrome:
+    def __init__(self, host):
+        self.host = host
+        if not host.mini:
+            # The fold is a width rule of its own, not an Adw breakpoint the
+            # kit sees, so declare it: a desktop window then opens unfolded,
+            # with its sidebar and the sidebar's media preview showing.
+            host.declare_narrow_width(COMPACT_WIDTH)
+        self.phone = False
+        self.compact = False
+        self.query_generation = 0
+        self.query_timer = None
+        self.search = None
+        self.signature = None
+        self.panel = None
+        self.bar_hidden = False
+        self.scroll_distance = 0
+        self.scroll_direction = 0
+        self.signin = None
+        self.signin_answered = None
+        self.extensions = host.extensions = NativeExtensions(host)
+        self.center = ActionCenter().attach(host.page_layers)
+        self.center.set_name('viola-page-bar')
+        self.center.bar.add_css_class('viola-page-bar-motion')
+        # A notch in the window's bottom frame: the tab, flanked by inverted
+        # corners that join it to the frame edge without an outline.
+        notch = Gtk.Box(valign=Gtk.Align.END)
+        for part, child in (('start', None), ('tab', Gtk.Image(icon_name='pan-up-symbolic')),
+                            ('end', None)):
+            piece = Gtk.Box(valign=Gtk.Align.END if part != 'tab' else Gtk.Align.FILL)
+            piece.add_css_class('viola-bar-handle-' + part)
+            if child:
+                piece.set_halign(Gtk.Align.FILL)
+                child.set_hexpand(True)
+                piece.append(child)
+            notch.append(piece)
+        self.bar_handle = Gtk.Button(halign=Gtk.Align.CENTER, valign=Gtk.Align.END,
+                                     child=notch, visible=False)
+        self.bar_handle.add_css_class('viola-bar-handle')
+        self.bar_handle.connect('clicked', self.toggle_bar)
+        host.page_layers.add_overlay(self.bar_handle)
+        host.page_layers.set_measure_overlay(self.bar_handle, False)
+        host.toolbar.remove(host.toggle)
+        clamp = host.address_field.get_parent()
+        host.toolbar.remove(clamp)
+        clamp.set_child(None)
+        host.address.set_width_chars(8 if host.mini else 36)
+        host.address.set_max_width_chars(20 if host.mini else 36)
+        host.address_field.set_sensitive(False)
+        host.address_field.set_size_request(100 if host.mini else 180, 36)
+        host.toolbar.set_visible(False)
+        host.new_tab = host.sidebar.new_tab_row
+        self.tv = None
+        if not host.mini:
+            from native_tv import TvChrome
+            self.tv = TvChrome(self)
+            if hasattr(self.center, 'tv_open'):   # a LumaUI with the TV bar on demand
+                self.center.connect('notify::tv-demand', lambda *_a: self.tv_changed())
+        self.render(force=True)
+        host.add_tick_callback(self.allocated)
+        # The bar folds a grown panel on Esc in its capture phase; on the
+        # window, before it, Esc cancels a sign-in instead of setting it aside.
+        signin_keys = Gtk.EventControllerKey(propagation_phase=Gtk.PropagationPhase.CAPTURE)
+        signin_keys.connect('key-pressed', self.signin_key)
+        host.add_controller(signin_keys)
+
+    def on_tv(self):
+        return self.tv is not None and self.tv.active
+
+    def tv_changed(self):
+        """TV posture began or ended: the page is the whole screen, and the bar is on demand."""
+        tv = self.on_tv()
+        layout = self.host.sidebar_layout
+        layout.hide_peek()
+        self.host.toggle.set_visible(not tv and not self.phone)
+        layout.fixed.set_visible(not tv and not self.compact and not layout.collapsed)
+        layout.handle.set_visible(not tv and not self.compact and not layout.collapsed)
+        layout.edge.set_visible(not tv and not self.compact and layout.collapsed)
+        self.bar_hidden = False
+        self.center.bar.remove_css_class('viola-bar-tucked')
+        self.center.bar.set_visible(True)
+        finding = self.finding()
+        if finding:
+            self.host.find.view.hold()
+        self.center.close_search()
+        self.center.fold()
+        self.panel = None
+        self.render(force=True)
+        if finding:
+            self.host.find.view.rebuilt()
+        self.update_bar_handle()
+        # The page is Viola's own TV presentation, the whole screen: LumaUI's TV frame
+        # (the title and clock strip) leaves a window showing a TV stage alone.
+        from luma_appkit import tv_frame
+        (self.host.page_layers.add_css_class if tv else self.host.page_layers.remove_css_class)('lumaui-tv-stage')
+        tv_frame.schedule(self.host)
+        if tv:
+            focus = self.host.get_focus()
+            if focus is None or isinstance(focus, Gtk.Editable):
+                self.host.page.grab_focus()   # the remote starts on the page; no keyboard until asked
+
+    def allocated(self, *_):
+        if self.finding():
+            self.host.find.view.fit()
+        if self.host.mini:
+            # Keep the same retained bar/editor. Optional navigation and
+            # downloads remain in the browser menu when the popup is narrow.
+            dense = 0 < self.host.get_width() < 600
+            for widget in (self.host.forward, self.host.reload, self.download_anchor):
+                widget.set_visible(not dense)
+            return GLib.SOURCE_CONTINUE
+        phone = not self.host.mini and not self.on_tv() and 0 < self.host.get_width() < PHONE_WIDTH
+        compact = not self.host.mini and 0 < self.host.get_width() < COMPACT_WIDTH
+        if phone != self.phone or compact != self.compact:
+            focused = self.host.get_focus()
+            edit = self.capture_address_edit()
+            self.reveal_bar()
+            self.phone = self.host.phone = phone
+            self.compact = compact
+            self.host.address_suggestions.close()
+            if getattr(self, 'share_sheet', None):
+                self.share_sheet.close()
+            layout = self.host.sidebar_layout
+            layout.hide_peek()
+            self.host.toolbar.set_visible(False)
+            self.host.toggle.set_visible(not phone)
+            if self.host.phone_device:
+                self.host.title_bar.set_visible(not phone)
+            self.host.set_phone_bleed(phone)
+            tv = self.on_tv()
+            layout.fixed.set_visible(not tv and not compact and not layout.collapsed)
+            layout.handle.set_visible(not tv and not compact and not layout.collapsed)
+            layout.edge.set_visible(not tv and not compact and layout.collapsed)
+            self.query_generation += 1
+            finding = self.finding()
+            if finding:
+                # The row is rebuilt for the new layout; find stays open.
+                self.host.find.view.hold()
+            self.center.close_search()
+            self.center.fold()
+            self.panel = None
+            self.render(force=True)
+            if finding:
+                self.host.find.view.rebuilt()
+            elif edit is not None:
+                self.restore_address_edit(edit)
+            elif focused is not None and not focused.get_mapped():
+                self.host.page.grab_focus()
+        return GLib.SOURCE_CONTINUE
+
+    def finding(self):
+        find = getattr(self.host, 'find', None)
+        return bool(find and find.active)
+
+    def capture_address_edit(self):
+        if self.finding():
+            return None
+        if self.center.searching:
+            field = self.host.get_focus()
+            if isinstance(field, Gtk.Editable) and field.is_ancestor(self.center.entry_row):
+                return AddressEdit.capture(field, self.host.new_tab_pending)
+        elif self.host.address_focused():
+            return AddressEdit.capture(self.host.address, self.host.new_tab_pending)
+        return None
+
+    def restore_address_edit(self, edit):
+        if self.phone:
+            self.search.set_text(edit.text)
+            self.center.open_search(self.search)
+            search = self.search
+            def restore():
+                if self.phone and self.search is search and self.center.searching:
+                    field = self.host.get_focus()
+                    if isinstance(field, Gtk.Editable) and field.is_ancestor(self.center.entry_row):
+                        edit.restore(field)
+                        self.host.new_tab_pending = edit.new_tab_pending
+                return GLib.SOURCE_REMOVE
+            # ActionCenter assigns its live editor focus in the preceding idle.
+            GLib.idle_add(restore)
+        else:
+            # Address focus normally starts a fresh edit from the active URL.
+            # Layout restoration must retain what the user has already typed.
+            self.host.new_tab_pending = True
+            try:
+                edit.restore(self.host.address)
+            finally:
+                self.host.new_tab_pending = edit.new_tab_pending
+
+    def tabs(self):
+        state = self.host.state or {}
+        unique = {}
+        for key in ('favorites', 'pinned', 'today'):
+            for tab in state.get(key, []):
+                unique.setdefault(tab['id'], tab)
+        return list(unique.values())
+
+    def render(self, *, force=False):
+        self.render_bar(force=force)
+        self.sync_signin()
+
+    # A site's sign-in or an extension prompt grows from the bar until it is
+    # answered: a fold without an answer (a rebuilt bar, a hidden bar, a click
+    # away) grows it again.
+    def sync_signin(self):
+        prompt = (self.host.state or {}).get('permissionPrompt')
+        if not (is_signin(prompt) or is_extension_prompt(prompt)) or prompt['id'] == self.signin_answered:
+            if self.signin is not None and self.center.grown == 'signin':
+                self.signin = None
+                self.center.fold()
+            return
+        if self.signin is not None and self.signin.prompt_id == prompt['id'] and self.center.grown == 'signin':
+            return
+        self.reveal_bar()
+        self.signin = (SignInPanel(prompt, self.answer_signin) if is_signin(prompt)
+                       else ExtensionPromptPanel(prompt, self.answer_extension))
+        self.center.grow('signin', self.signin, on_fold=self.signin_folded)
+        self.panel = 'signin'
+        GLib.idle_add(lambda: (self.signin is not None and self.signin.grab_focus(), False)[1])
+
+    def signin_key(self, _controller, keyval, _code, _state):
+        if keyval == Gdk.KEY_Escape and self.signin is not None and self.center.grown == 'signin':
+            self.signin.cancel()
+            return True
+        return False
+
+    def signin_folded(self):
+        if self.panel == 'signin':
+            self.panel = None
+        if self.signin is not None and not self.signin.answered:
+            self.signin = None
+            GLib.idle_add(lambda: (self.sync_signin(), False)[1])
+
+    def answer_signin(self, key, supplied, username, password):
+        self.signin_answered = key
+        self.signin = None
+        if supplied:
+            self.host.send('permission:respond', {'id': key, 'decision': 'signin',
+                                                  'username': username, 'password': password})
+        else:
+            self.host.send('permission:respond', {'id': key, 'decision': 'dismiss'})
+        if self.center.grown == 'signin':
+            self.center.fold()
+
+    def answer_extension(self, key, accepted):
+        self.signin_answered = key
+        self.signin = None
+        self.host.send('permission:respond', {'id': key, 'decision': 'allow' if accepted else 'dismiss'})
+        if self.center.grown == 'signin':
+            self.center.fold()
+
+    def render_bar(self, *, force=False):
+        state = self.host.state or {}
+        self.update_bar_handle()
+        active = (state.get('activeTabId'), state.get('activeUrl'))
+        previous = getattr(self, 'page_identity', None)
+        if active != previous:
+            self.page_identity = active
+            # In-page history changes (including a chat receiving its URL)
+            # must not uncover controls over an editor the user is using.
+            if previous is None or active[0] != previous[0]:
+                self.reveal_bar()
+        if self.panel == 'downloads' and getattr(self, 'downloads_footer', None):
+            self.downloads_footer.state = state
+            for card in self.downloads_footer.cards.values():
+                self.downloads_footer.card(card.item)
+        tabs = self.tabs()
+        url = state.get('activeUrl', '')
+        if not self.phone and getattr(self, 'share_anchor', None):
+            self.share_anchor.set_sensitive(url.startswith(('https://', 'http://')))
+        # Desktop navigation sensitivity is updated on the retained buttons
+        # by render_state. Rebuilding that bar would unparent a focused entry
+        # exactly when New Tab delivers its first state.
+        tv = self.on_tv()
+        if self.tv is not None:
+            self.tv.state_changed(state)
+        signature = (self.phone, tv, state.get('canGoBack') if self.phone or tv else None,
+                     state.get('canGoForward') if self.phone or tv else None,
+                     len(tabs) if self.phone or tv else None,
+                     (url, state.get('activeTitle'), self.tv.saved(state)) if tv else None,
+                     rows_signature(extension_rows(state)))
+        if not force and signature == self.signature:
+            if self.phone and self.search and not self.center.searching:
+                self.search.set_text('' if url == 'about:blank' else url)
+                word = getattr(self.search.widget, 'word', None)
+                if word:
+                    word.set_label(urlsplit(url).netloc or 'Search or type an address')
+            return
+        self.signature = signature
+        parent = self.host.address_field.get_parent()
+        if parent:
+            parent.remove(self.host.address_field)
+        self.query_generation += 1
+        self.panel = None
+        domain = urlsplit(url).netloc if url.startswith(('https://', 'http://')) else ''
+        if tv:
+            self.render_tv(state)
+            return
+        if not self.phone:
+            self.render_desktop(state)
+            return
+        self.search = BarSearch(domain or 'Search or type an address',
+            label='Address and search', text='' if url == 'about:blank' else url,
+            opens=True, on_change=self.changed, on_activate=self.navigate)
+        self.center.show_bar([
+            BarAction('chevron-left', tooltip='Back', sensitive=bool(state.get('canGoBack')),
+                      on_activate=lambda: self.host.send('nav:back')),
+            self.search,
+            BarAction('', str(len(tabs)), text_glyph=True, tooltip=f'{len(tabs)} tabs',
+                      on_activate=self.show_tabs),
+            BarAction('ellipsis', tooltip='More', on_activate=self.show_more),
+        ], fill=True)
+        if self.finding():
+            self.host.find.view.rebuilt()
+
+    def render_tv(self, state):
+        url = state.get('activeUrl', '')
+        self.search = BarSearch('Search, or type an address', label='Address and search',
+                                text='' if url == 'about:blank' else url,
+                                on_change=self.changed, on_activate=self.navigate)
+        self.center.show_bar(self.tv.items(state))
+        children = []
+        child = self.center.bar_row.get_first_child()
+        while child is not None:
+            children.append(child)
+            child = child.get_next_sibling()
+        self.host.back, self.host.forward, self.host.reload = children[0], children[1], children[2]
+        self.share_anchor = children[-2]
+        self.download_anchor = None
+        self.host.menu_button = children[-1]
+        if self.finding():
+            self.host.find.view.rebuilt()
+
+    def render_desktop(self, state):
+        actions = [
+            BarAction('chevron-left', tooltip='Back', sensitive=bool(state.get('canGoBack')),
+                      on_activate=lambda: self.host.send('nav:back')),
+            BarAction('chevron-right', tooltip='Forward', sensitive=bool(state.get('canGoForward')),
+                      on_activate=lambda: self.host.send('nav:forward')),
+            BrowserAddress(self.host.address_field),
+            BarAction('rotate-cw', tooltip='Reload', on_activate=lambda: self.host.send('nav:reload')),
+            BarAction('share-2', tooltip='Share page', on_activate=self.show_share),
+            BarAction('download', tooltip='Downloads', on_activate=self.show_downloads),
+        ]
+        # Pinned extensions keep their icon in the bar; the Extensions key
+        # lists every enabled one. Neither shows without extensions.
+        rows = [] if self.host.mini else extension_rows(state)
+        extension_items = [ExtensionBarItem(self.extensions.bar_button(row))
+                           for row in rows if row.get('pinned')][:4]
+        if rows:
+            extension_items.append(BarAction('blocks', tooltip='Extensions', on_activate=self.show_extensions))
+        actions += extension_items
+        actions.append(BarAction('ellipsis', tooltip='Browser menu', on_activate=self.browser_menu))
+        if self.host.mini:
+            actions.append(BarAction('', 'Open in Viola', primary=True, keep_label=True,
+                tooltip='Move this live page into the full browser',
+                on_activate=lambda: self.host.window_manager.command(self.host, 'Open in Viola')))
+        self.center.show_bar(actions)
+        self.center.bar.set_visible(not self.bar_hidden)
+        self.update_bar_handle()
+        self.host.back = self.center.bar_row.get_first_child()
+        self.host.forward = self.host.back.get_next_sibling()
+        self.host.reload = self.host.address_field.get_next_sibling()
+        self.share_anchor = self.host.reload.get_next_sibling()
+        self.download_anchor = self.share_anchor.get_next_sibling()
+        following = self.download_anchor.get_next_sibling()
+        self.extensions_anchor = None
+        for index in range(len(extension_items)):
+            if index == len(extension_items) - 1:
+                self.extensions_anchor = following
+            following = following.get_next_sibling()
+        self.host.menu_button = following
+        if self.host.mini:
+            self.expand = self.host.menu_button.get_next_sibling()
+            self.expand.set_visible(not getattr(self.host, 'developer_tools', False))
+            if hasattr(self.host, 'mini_presentation'):
+                self.host.mini_presentation.expand = self.expand
+        self.share_anchor.set_sensitive(state.get('activeUrl', '').startswith(('https://', 'http://')))
+        if self.finding():
+            self.host.find.view.rebuilt()
+
+    def toggle_pin(self):
+        state = self.host.state or {}
+        key = state.get('activeTabId')
+        if not key:
+            return
+        tab = next((tab for tab in self.tabs() if tab['id'] == key), {})
+        pinned = any(tab['id'] == key for tab in state.get('favorites', []))
+        self.host.send('tab:reorder', {'tabId': key,
+            'spaceId': tab.get('sourceSpaceId') or state.get('activeSpaceId'),
+            'section': 'today' if pinned else 'favorite', 'index': 0})
+        self.center.fold()
+        self.panel = None
+
+    def show_share(self):
+        state = self.host.state or {}
+        url = state.get('activeUrl', '')
+        if not url.startswith(('https://', 'http://')):
+            return
+        self.center.fold()
+        self.panel = None
+        targets = [ShareTarget('mail', 'Email', icon='mail')] if Gio.AppInfo.get_default_for_uri_scheme('mailto') else []
+        anchor = self.center.bar_row.get_last_child() if self.phone else self.share_anchor
+        active = next((tab for tab in self.tabs() if tab['id'] == state.get('activeTabId')), {})
+        self.share_sheet = ShareSheet.present(anchor,
+            document=ShareSubject(state.get('activeTitle') or active.get('title') or urlsplit(url).netloc,
+                                  subtitle=url, kind='link', icon='globe'),
+            targets=targets, choices=('send-copy',), on_choice=self.share)
+        # The engine exposes no native QR action; show only supported actions.
+        code = self.share_sheet.action_buttons.pop('code', None)
+        if code:
+            code.get_parent().remove(code)
+
+    def share(self, choice, value):
+        sheet = getattr(self, 'share_sheet', None)
+        if not sheet:
+            return None
+        # A sheet shares the page it opened for even if the active tab changes.
+        url = sheet.document.subtitle
+        if choice == 'copy-link':
+            self.host.get_display().get_clipboard().set(url)
+            return 'Link copied'
+        if choice == 'target' and value == 'mail':
+            uri = 'mailto:?subject=' + quote(sheet.document.title) + '&body=' + quote(url)
+            Gio.AppInfo.launch_default_for_uri(uri, None)
+            sheet.close()
+        return None
+
+    def show_downloads(self):
+        state = self.host.state or {}
+        downloads = state.get('downloads') or []
+        if not downloads:
+            panel = panel_list([PanelRow('No downloads yet', icon='download', sensitive=False)], label='Downloads')
+        else:
+            panel = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+            # Cards in the sidebar retain their parent. The panel owns a
+            # separate presenter over the same Chromium download state.
+            self.downloads_footer = DownloadPanelFooter(self.host)
+            self.downloads_footer.state = state
+            for download in downloads[-8:]:
+                notice = next((item for item in state.get('notifications', [])
+                               if item.get('downloadId') == download.get('id')), None)
+                item = notice or dict(id='download-' + download['id'], downloadId=download['id'],
+                    url='vela://downloads', title=download.get('filename') or 'Download', body='',
+                    syntheticDownload=True)
+                card = self.downloads_footer.card(item)
+                if not notice:
+                    card.open.get_parent().get_last_child().set_visible(False)
+                panel.append(card)
+        self.center.grow('downloads', panel)
+        self.panel = 'downloads'
+
+    # The bar sinks into the frame-edge handle and rises back out of it. The
+    # tucked pose and its transition live in native_sidebar.css; these delays
+    # only decide when the widget is truly hidden or the handle unmapped.
+    BAR_TUCK_MS = 280
+    HANDLE_FADE_MS = 180
+
+    def _animations(self):
+        return Gtk.Settings.get_default().get_property('gtk-enable-animations')
+
+    def _after(self, name, delay, callback):
+        previous = getattr(self, name, None)
+        if previous:
+            GLib.source_remove(previous)
+        def run():
+            setattr(self, name, None)
+            callback()
+            return GLib.SOURCE_REMOVE
+        setattr(self, name, GLib.timeout_add(delay if self._animations() else 0, run))
+
+    def reveal_bar(self):
+        bar = self.center.bar
+        tucked = not bar.get_visible() or bar.has_css_class('viola-bar-tucked')
+        self.bar_hidden = False
+        self.scroll_distance = 0
+        if tucked:
+            bar.add_css_class('viola-bar-tucked')
+            bar.set_visible(True)
+            # Lay out one frame in the tucked pose so the transition rises.
+            self._after('bar_motion', 16, lambda: bar.remove_css_class('viola-bar-tucked'))
+        self.update_bar_handle()
+
+    def update_bar_handle(self):
+        handle = self.bar_handle
+        shown = self.bar_hidden and not self.phone and not self.on_tv()
+        handle.set_tooltip_text('Show address bar (Ctrl+L)')
+        handle.update_property([Gtk.AccessibleProperty.LABEL], ['Show address bar'])
+        if shown == handle.has_css_class('viola-bar-handle-shown') and handle.get_visible() == shown:
+            return
+        if shown:
+            handle.set_visible(True)
+            # The handle surfaces as the bar lands in it.
+            self._after('handle_motion', self.BAR_TUCK_MS // 2,
+                        lambda: handle.add_css_class('viola-bar-handle-shown'))
+        else:
+            handle.remove_css_class('viola-bar-handle-shown')
+            self._after('handle_motion', self.HANDLE_FADE_MS,
+                        lambda: handle.set_visible(self.bar_hidden and not self.phone))
+
+    def hide_bar(self):
+        if self.bar_hidden or self.on_tv():
+            return
+        self.query_generation += 1
+        self.host.address_suggestions.close()
+        self.center.close_search()
+        self.center.fold()
+        self.panel = None
+        sheet = getattr(self, 'share_sheet', None)
+        if sheet:
+            sheet.close()
+        self.host.page.grab_focus()
+        self.bar_hidden = True
+        bar = self.center.bar
+        bar.add_css_class('viola-bar-tucked')
+        self._after('bar_motion', self.BAR_TUCK_MS,
+                    lambda: bar.set_visible(not self.bar_hidden))
+        self.scroll_distance = 0
+        self.update_bar_handle()
+
+    def toggle_bar(self, *_):
+        if self.bar_hidden:
+            self.host._focus_address()
+        else:
+            self.hide_bar()
+
+    def pointer_moved(self, x, y):
+        # Only the small, explicit handle or a browser command reveals the
+        # bar. Page pointer motion belongs to the web page, including inputs
+        # at the very bottom of the window.
+        return None
+
+    def page_scrolled(self, dx, dy):
+        if abs(dy) < abs(dx) or not dy or self.on_tv():
+            return  # (on a TV the bar is on demand: LumaUI puts it away)
+        # Scrolling the page ends address editing before chrome retreats.
+        if self.host.address_focused():
+            self.host.address_suggestions.close()
+            self.host.page.grab_focus()
+        if self.panel or self.center.searching or self.center.grown or (getattr(self, 'share_sheet', None) and self.share_sheet.get_mapped()):
+            return
+        direction = 1 if dy > 0 else -1
+        if direction != self.scroll_direction:
+            self.scroll_distance = 0
+            self.scroll_direction = direction
+        self.scroll_distance += abs(dy)
+        if self.scroll_distance < 32:
+            return
+        if direction > 0:
+            self.hide_bar()
+        else:
+            self.reveal_bar()
+        self.scroll_distance = 0
+
+    def focus_address(self):
+        self.reveal_bar()
+        if self.finding():
+            self.host.find.close(refocus=False)
+        self.center.open_search(self.search)
+        # ActionCenter owns the live field; the BarSearch descriptor is the
+        # resting well, not the hosted editor. Select after its focus idle.
+        def select_address():
+            field = self.host.get_focus()
+            if self.center.searching and isinstance(field, Gtk.Editable):
+                field.select_region(0, -1)
+            return GLib.SOURCE_REMOVE
+        GLib.idle_add(select_address)
+        self.changed(self.search.text)
+
+    def navigate(self, text):
+        if text.strip() and self.host.services:
+            self.query_generation += 1
+            self.host.submit(lambda: self.host.services.navigate(text))
+            self.center.close_search()
+            self.center.fold()
+            self.panel = None
+            self.host.page.grab_focus()
+
+    def changed(self, text):
+        self.query_generation += 1
+        generation = self.query_generation
+        if self.query_timer is not None:
+            GLib.source_remove(self.query_timer)
+        def query():
+            self.query_timer = None
+            if not self.phone or not self.host.services or len(text.encode('utf-8')) > 2048:
+                return GLib.SOURCE_REMOVE
+            tab = (self.host.state or {}).get('activeTabId')
+            payload = json.dumps({'q': text, 'mode': 'edit'})
+            self.host.submit(lambda: self.host.services.evaluate('overlay',
+                'vela.invoke("palette:query", ' + payload + ')'),
+                lambda items: self.suggestions(generation, tab, items))
+            return GLib.SOURCE_REMOVE
+        self.query_timer = GLib.timeout_add(120, query)
+
+    def suggestions(self, generation, tab, items):
+        if (not self.phone or generation != self.query_generation or
+                tab != (self.host.state or {}).get('activeTabId') or not isinstance(items, list)):
+            return
+        rows = [PanelRow(item.get('title') or item.get('url', ''),
+                         subtitle=item.get('detail') or item.get('url'), icon='search',
+                         on_activate=lambda item=item: self.commit_suggestion(item, tab))
+                for item in items[:8]]
+        if rows and self.center.searching:
+            # Suggestions must not take keyboard focus away from the address.
+            field = self.host.get_focus()
+            self.center.grow(f'address-{generation}', panel_list(rows, label='Address suggestions'))
+            if isinstance(field, Gtk.Editable):
+                GLib.idle_add(lambda: (field.grab_focus(), GLib.SOURCE_REMOVE)[1])
+
+    def commit_suggestion(self, item, tab):
+        self.query_generation += 1
+        self.center.close_search()
+        self.center.fold()
+        self.host.address_suggestions.commit(item, 'edit', tab)
+
+    def show_tabs(self):
+        if self.panel == 'tabs':
+            self.center.fold(); self.panel = None
+            return
+        self.query_generation += 1
+        state = self.host.state or {}
+        rows = []
+        for tab in self.tabs():
+            rows.append(PanelRow(tab.get('title') or tab.get('url') or 'New tab',
+                subtitle=tab.get('url'), icon='globe', current=tab['id'] == state.get('activeTabId'),
+                on_activate=lambda key=tab['id']: self.activate_tab(key)))
+        rows.append(PanelRow('New tab', icon='plus', on_activate=self.host._new_tab))
+        self.center.grow('tabs', panel_list(rows, label='Tabs'))
+        self.panel = 'tabs'
+
+    def activate_tab(self, key):
+        self.center.fold(); self.panel = None
+        self.host.send('tab:activate', {'tabId': key})
+
+    def show_more(self):
+        if self.panel == 'more':
+            self.center.fold(); self.panel = None
+            return
+        state = self.host.state or {}
+        rows = [PanelRow('Share page', icon='share-2', sensitive=state.get('activeUrl', '').startswith(('https://', 'http://')), on_activate=self.show_share),
+                PanelRow('Downloads', icon='download', on_activate=self.show_downloads),
+                PanelRow('Forward', icon='chevron-right', sensitive=bool(state.get('canGoForward')), on_activate=lambda: self.command('nav:forward')),
+                PanelRow('Reload', icon='rotate-cw', on_activate=lambda: self.command('nav:reload')),
+                PanelRow('Find on page', icon='search', on_activate=self.find_from_panel),
+                PanelRow('Unpin from top' if any(tab['id'] == state.get('activeTabId') for tab in state.get('favorites', [])) else 'Pin to top', icon='pin', on_activate=self.toggle_pin),
+                PanelRow('New private window', icon='eye-off', on_activate=self.host._new_private_window),
+                *([PanelRow('Extensions', icon='blocks', closes=False, on_activate=self.show_extensions)]
+                  if extension_rows(state) else []),
+                PanelRow('Browser menu', icon='ellipsis', on_activate=self.browser_menu)]
+        self.center.grow('more', panel_list(rows, label='More'))
+        self.panel = 'more'
+
+    def show_extensions(self):
+        # A row folds the panel itself; only a panel still grown folds here.
+        if self.center.grown == 'extensions':
+            self.center.fold(); self.panel = None
+            return
+        self.query_generation += 1
+        self.center.grow('extensions', self.extensions.panel,
+                         anchor=None if self.phone else getattr(self, 'extensions_anchor', None))
+        self.panel = 'extensions'
+
+    def find_from_panel(self):
+        self.center.fold(); self.panel = None
+        self.host.find.open()
+
+    def command(self, channel):
+        self.center.fold(); self.panel = None
+        self.host.send(channel)
+
+    def browser_menu(self):
+        anchor = self.host.menu_button
+        self.host.submit(lambda: self.host.services.open_menu('browser:menu',
+            {'anchorRect': {'x': 0, 'y': 0, 'width': 48, 'height': 48}}),
+            lambda model: self.host.show_menu(anchor, model, position=Gtk.PositionType.TOP))

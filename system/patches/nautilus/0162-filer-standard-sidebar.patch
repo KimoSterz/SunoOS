@@ -1,0 +1,368 @@
+From: Project Luma <engineering@projectluma.org>
+Subject: [PATCH] Filer: Tasks' sidebar instead of the icon rail
+
+The places sidebar was the kit's 88 px "rail": each place drawn as an
+icon over a wrapped label. Draw it as Tasks' sidebar, the kit's
+"destinations" NavigationSidebar: 224 px on the window frame, with the
+kit's classes on the sidebar, its lists and Nautilus' live rows, so
+LumaUI owns the row height, inset, gap, hover and selection. GTK's
+navigation-sidebar look (its 11 px top padding and inset separators)
+is no longer used. The kit takes the list's selection bleed back from
+the scroller; Filer's scroller and Trash list sit one box deeper, so
+the same margin is stated for them and rows keep the kit's 10 px inset.
+
+Section headings are Tasks' "Lists" heading: title case in the kit's
+sidebar heading face under a hairline the sidebar's full width, none
+over the first group. Long names still ellipsize in the middle.
+
+As in Tasks, the sidebar always shows where you are: when no place is
+the current folder, the deepest place that holds it is selected.
+
+The title row is the kit's 46 px instead of Filer's own 42, and the
+desktop sidebar toggle's empty host is hidden with the toggle, so it no
+longer adds the header bar's start spacing in front of the window
+identity.
+
+On a phone the title island grows into the places at their natural
+height: the sidebar's scroller passes its list's height up, so every
+place shows instead of a two-row strip.
+---
+diff --git a/src/nautilus-sidebar-row.c b/src/nautilus-sidebar-row.c
+index b9af2e0..7e8f79e 100644
+--- a/src/nautilus-sidebar-row.c
++++ b/src/nautilus-sidebar-row.c
+@@ -586,8 +586,20 @@ nautilus_sidebar_row_init (NautilusSidebarRow *self)
+     gtk_widget_init_template (GTK_WIDGET (self));
+ 
+     gtk_widget_set_focus_on_click (GTK_WIDGET (self), FALSE);
+-    gtk_label_set_ellipsize (GTK_LABEL (self->label_widget), PANGO_ELLIPSIZE_NONE);
+-    gtk_label_set_wrap (GTK_LABEL (self->label_widget), TRUE);
++
++    /* The kit's SidebarRow (Tasks' rows): its classes, so LumaUI draws the
++     * row; the line's gap is the kit's, not the template's margins. */
++    GtkWidget *line = gtk_widget_get_parent (self->label_widget);
++    gtk_widget_add_css_class (GTK_WIDGET (self), "luma-navigation-row");
++    gtk_widget_add_css_class (GTK_WIDGET (self), "lumaui-row");
++    gtk_widget_add_css_class (GTK_WIDGET (self), "lead-icon");
++    gtk_widget_add_css_class (line, "luma-navigation-line");
++    gtk_widget_add_css_class (line, "lumaui-row-line");
++    gtk_widget_add_css_class (self->start_icon_widget, "lumaui-row-lead");
++    gtk_widget_add_css_class (self->start_icon_widget, "lead-icon");
++    gtk_widget_set_margin_end (self->start_icon_widget, 0);
++    gtk_widget_add_css_class (self->label_widget, "lumaui-row-title");
++    gtk_widget_set_margin_end (self->label_widget, 0);
+ 
+     self->file = NULL;
+ }
+diff --git a/src/nautilus-sidebar.c b/src/nautilus-sidebar.c
+index 1bc9a5f..52a3158 100644
+--- a/src/nautilus-sidebar.c
++++ b/src/nautilus-sidebar.c
+@@ -435,17 +435,17 @@ list_box_header_func (GtkListBoxRow *row,
+     if (row_section_type == NAUTILUS_SIDEBAR_SECTION_DEFAULT_LOCATIONS &&
+         before_section_type == NAUTILUS_SIDEBAR_SECTION_INVALID)
+     {
+-        heading = _("PLACES");
++        heading = _("Places");
+     }
+     else if (row_section_type == NAUTILUS_SIDEBAR_SECTION_CLOUD &&
+              before_section_type != row_section_type)
+     {
+-        heading = _("CLOUD");
++        heading = _("Cloud");
+     }
+     else if (row_section_type == NAUTILUS_SIDEBAR_SECTION_MOUNTS &&
+              before_section_type != row_section_type)
+     {
+-        heading = _("DEVICES");
++        heading = _("Devices");
+     }
+ 
+     if ((row_section_type == NAUTILUS_SIDEBAR_SECTION_FAVORITES ||
+@@ -453,22 +453,20 @@ list_box_header_func (GtkListBoxRow *row,
+         before_section_type != NAUTILUS_SIDEBAR_SECTION_FAVORITES &&
+         before_section_type != NAUTILUS_SIDEBAR_SECTION_BOOKMARKS)
+     {
+-        heading = _("FAVORITES");
++        heading = _("Favorites");
+     }
+-    if (heading != NULL)
++    /* Tasks' section heading: the first group has none; each later one sits
++     * under a hairline the sidebar's full width (style.css). */
++    if (heading != NULL && before != NULL)
+     {
+-        header = gtk_label_new (heading);
+-        gtk_label_set_xalign (GTK_LABEL (header), 0.0f);
+-        gtk_widget_add_css_class (header, "luma-sidebar-section-heading");
+-        if (before != NULL)
+-        {
+-            GtkWidget *group = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+-            GtkWidget *divider = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
+-            gtk_widget_add_css_class (divider, "luma-navigation-divider");
+-            gtk_box_append (GTK_BOX (group), divider);
+-            gtk_box_append (GTK_BOX (group), header);
+-            header = group;
+-        }
++        GtkWidget *label = gtk_label_new (heading);
++        gtk_label_set_xalign (GTK_LABEL (label), 0.0f);
++        gtk_label_set_ellipsize (GTK_LABEL (label), PANGO_ELLIPSIZE_END);
++        gtk_widget_set_hexpand (label, TRUE);
++        gtk_widget_add_css_class (label, "luma-navigation-heading");
++        header = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
++        gtk_widget_add_css_class (header, "filer-sidebar-section");
++        gtk_box_append (GTK_BOX (header), label);
+         gtk_list_box_row_set_header (row, header);
+     }
+ }
+@@ -764,20 +762,32 @@ add_fixture_places (NautilusSidebar *sidebar,
+     }
+ }
+ 
+-static void
+-refresh_luma_file_sidebar (NautilusSidebar *sidebar)
++/* Tasks' sidebar, the kit's "destinations" variant: 224 px on the frame. */
++#define FILER_SIDEBAR_WIDTH 224
++
++void
++nautilus_sidebar_adapt_to_split (NautilusSidebar *sidebar)
+ {
+-    /* Mount and bookmark updates replace Nautilus's live row children. The
+-     * shared adapter keeps their actions and DnD, but needs to arrange the
+-     * newly-created rows again after each rebuild. During construction the
+-     * sidebar has not yet been placed in its split view. */
++    /* Mount and bookmark updates replace Nautilus's live row children; the
++     * adapter keeps their actions and DnD. During construction the sidebar
++     * has not yet been placed in its split view. */
+     GtkWidget *split = gtk_widget_get_ancestor (GTK_WIDGET (sidebar),
+                                                  ADW_TYPE_OVERLAY_SPLIT_VIEW);
+-    if (split != NULL)
++    if (split == NULL)
+     {
+-        luma_navigation_sidebar_adapt_live (ADW_OVERLAY_SPLIT_VIEW (split),
+-                                            GTK_WIDGET (sidebar), "rail");
++        return;
+     }
++    AdwOverlaySplitView *view = ADW_OVERLAY_SPLIT_VIEW (split);
++    luma_navigation_sidebar_adapt_live (view, GTK_WIDGET (sidebar), "narrow");
++    gtk_widget_set_size_request (adw_overlay_split_view_get_sidebar (view), FILER_SIDEBAR_WIDTH, -1);
++    adw_overlay_split_view_set_min_sidebar_width (view, FILER_SIDEBAR_WIDTH);
++    adw_overlay_split_view_set_max_sidebar_width (view, FILER_SIDEBAR_WIDTH);
++}
++
++static void
++refresh_luma_file_sidebar (NautilusSidebar *sidebar)
++{
++    nautilus_sidebar_adapt_to_split (sidebar);
+ }
+ 
+ static void
+@@ -3833,6 +3843,8 @@ nautilus_sidebar_init (NautilusSidebar *sidebar)
+ 
+     sidebar->swin = gtk_scrolled_window_new ();
+     gtk_widget_set_vexpand (sidebar->swin, TRUE);
++    /* The phone's title island grows into the places at their natural height. */
++    gtk_scrolled_window_set_propagate_natural_height (GTK_SCROLLED_WINDOW (sidebar->swin), TRUE);
+     gtk_box_append (GTK_BOX (sidebar->root_box), sidebar->swin);
+ 
+     gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (sidebar->swin),
+@@ -3840,9 +3852,14 @@ nautilus_sidebar_init (NautilusSidebar *sidebar)
+                                     GTK_POLICY_AUTOMATIC);
+ 
+     /* list box */
++    /* The kit's NavigationSidebar classes (Tasks): LumaUI draws the sidebar,
++     * its rows and headings; GTK's own navigation-sidebar look is not used. */
++    gtk_widget_add_css_class (GTK_WIDGET (sidebar), "luma-navigation-sidebar");
++    gtk_widget_add_css_class (GTK_WIDGET (sidebar), "luma-sidebar-surface");
++    gtk_widget_add_css_class (GTK_WIDGET (sidebar), "lumaui-sidebar-variant");
++    gtk_widget_add_css_class (GTK_WIDGET (sidebar), "lumaui-sidebar-destinations");
+     sidebar->list_box = gtk_list_box_new ();
+-    gtk_widget_add_css_class (sidebar->list_box, "navigation-sidebar");
+-    gtk_widget_add_css_class (sidebar->list_box, "luma-navigation-sidebar");
++    gtk_widget_add_css_class (sidebar->list_box, "luma-navigation-list");
+ 
+     gtk_list_box_set_header_func (GTK_LIST_BOX (sidebar->list_box),
+                                   list_box_header_func, sidebar, NULL);
+@@ -3886,8 +3903,7 @@ nautilus_sidebar_init (NautilusSidebar *sidebar)
+     gtk_scrolled_window_set_child (GTK_SCROLLED_WINDOW (sidebar->swin), sidebar->list_box);
+ 
+     sidebar->trash_list_box = gtk_list_box_new ();
+-    gtk_widget_add_css_class (sidebar->trash_list_box, "navigation-sidebar");
+-    gtk_widget_add_css_class (sidebar->trash_list_box, "luma-navigation-sidebar");
++    gtk_widget_add_css_class (sidebar->trash_list_box, "luma-navigation-list");
+     gtk_widget_add_css_class (sidebar->trash_list_box, "luma-trash-list");
+     gtk_list_box_set_selection_mode (GTK_LIST_BOX (sidebar->trash_list_box), GTK_SELECTION_SINGLE);
+     gtk_list_box_set_activate_on_single_click (GTK_LIST_BOX (sidebar->trash_list_box), TRUE);
+@@ -4464,6 +4480,42 @@ nautilus_sidebar_set_location (NautilusSidebar *sidebar,
+         g_free (row_uri);
+     }
+ 
++    /* As in Tasks, the sidebar always shows where you are: inside a place,
++     * the deepest place that holds the folder stays chosen. */
++    if (!found)
++    {
++        GtkWidget *nearest = NULL;
++        gsize nearest_length = 0;
++
++        for (row = gtk_widget_get_first_child (GTK_WIDGET (sidebar->list_box));
++             row != NULL;
++             row = gtk_widget_get_next_sibling (row))
++        {
++            if (!GTK_IS_LIST_BOX_ROW (row))
++            {
++                continue;
++            }
++
++            g_object_get (row, "uri", &row_uri, NULL);
++            if (row_uri != NULL && strlen (row_uri) > nearest_length)
++            {
++                g_autoptr (GFile) place = g_file_new_for_uri (row_uri);
++                if (g_file_has_prefix (location, place))
++                {
++                    nearest = row;
++                    nearest_length = strlen (row_uri);
++                }
++            }
++            g_free (row_uri);
++        }
++
++        if (nearest != NULL)
++        {
++            gtk_list_box_select_row (GTK_LIST_BOX (sidebar->list_box),
++                                     GTK_LIST_BOX_ROW (nearest));
++        }
++    }
++
+     g_free (uri);
+ 
+ out:
+diff --git a/src/nautilus-sidebar.h b/src/nautilus-sidebar.h
+index 112d96a..6ea1db7 100644
+--- a/src/nautilus-sidebar.h
++++ b/src/nautilus-sidebar.h
+@@ -39,5 +39,6 @@ void               nautilus_sidebar_set_show_trash             (NautilusSidebar
+                                                                            gboolean                    show_trash);
+ 
+ char *nautilus_sidebar_get_location_title (NautilusSidebar *sidebar);
++void nautilus_sidebar_adapt_to_split (NautilusSidebar *sidebar);
+ 
+ G_END_DECLS
+diff --git a/src/nautilus-window.c b/src/nautilus-window.c
+index 759175f..7c5cae3 100644
+--- a/src/nautilus-window.c
++++ b/src/nautilus-window.c
+@@ -2665,6 +2665,9 @@ nautilus_window_constructed (GObject *self)
+      * sidebar); on a phone the title island's ☰ opens the places. The toggle
+      * stays as the one owner of the sidebar's open state, unshown. */
+     luma_sidebar_toggle_set_control_visible (window->sidebar_toggle, FALSE);
++    /* Its empty host would still take the header bar's start spacing and push
++     * the window's identity off the kit's inset. */
++    gtk_widget_set_visible (window->sidebar_toggle_desktop_host, FALSE);
+     gtk_widget_set_visible (window->sidebar_toggle_phone_host, FALSE);
+     GMenuModel *main_menu = NULL;
+     g_object_get (window->toolbar, "main-menu", &main_menu, NULL);
+@@ -3433,10 +3436,8 @@ nautilus_window_init (NautilusWindow *window)
+                              G_CALLBACK (on_window_tier_changed), window, 0);
+     update_action_center (window);
+ 
+-    /* v71: the 88 px vertical icon-and-label rail (the kit's "rail"; the wider
+-     * "rail-wide" of .63 is not v71 and not on the foundation kit). */
+-    luma_navigation_sidebar_adapt_live (ADW_OVERLAY_SPLIT_VIEW (window->split_view),
+-                                        GTK_WIDGET (window->places_sidebar), "rail");
++    /* Tasks' sidebar: one-line icon and label rows, always shown beside the content. */
++    nautilus_sidebar_adapt_to_split (window->places_sidebar);
+     gtk_widget_set_visible (window->sidebar_resize_handle, FALSE);
+     controller = GTK_EVENT_CONTROLLER (gtk_gesture_drag_new ());
+     gtk_event_controller_set_propagation_phase (controller, GTK_PHASE_CAPTURE);
+diff --git a/src/resources/style.css b/src/resources/style.css
+index 9e9b285..0b9b84c 100644
+--- a/src/resources/style.css
++++ b/src/resources/style.css
+@@ -48,11 +48,9 @@
+   background-image: none;
+ }
+ .luma-files-window #filer-location-scope image { -gtk-icon-size: 0px; }
+-.luma-files-window row.luma-live-rail-row { padding-left: 3px; padding-right: 3px; }
+ 
+ /* Filer uses a deliberate two-row native title composition. */
+ .luma-files-window:not(.luma-native-file-chooser) headerbar.luma-titlebar {
+-  min-height: 42px;
+   background-color: @luma_window;
+   background-image: none;
+   color: @luma_ink;
+@@ -333,43 +331,32 @@
+     background-color: @luma_window;
+   }
+ 
+-  .luma-files-window .luma-sidebar-surface,
+-  .luma-files-window .luma-sidebar-surface .navigation-sidebar {
+-    background-color: @luma_content;
+-    color: @luma_ink;
+-  }
+-
+-  .luma-files-window .luma-sidebar-surface {
+-    border: none;
++  /* Places is Tasks' sidebar (the kit's destinations variant, on the
++   * frame). Its rows sit in a revealer, so the line's gap is restated; a
++   * section heading is Tasks' "Lists": a hairline the sidebar's full width. */
++  .luma-files-window .luma-navigation-sidebar.lumaui-sidebar-destinations row.lumaui-row > revealer > box.lumaui-row-line {
++    border-spacing: var(--lumaui-nav-destinations-row-gap);
+   }
+-
+-  /* The shared island boundary owns the complete perimeter.  The older
+-   * sidebar divider reset is intentionally more specific, so restore the
+-   * semantic island stroke at that same source-owned specificity. */
+-  .luma-files-window .luma-sidebar-surface.luma-island {
+-    border: 1px solid @luma_line;
++  .luma-files-window .luma-navigation-sidebar.lumaui-sidebar-destinations row.lumaui-row image.lead-icon {
++    -gtk-icon-size: var(--lumaui-nav-destinations-icon);
+   }
+-
+-
+-  .luma-files-window .luma-sidebar-surface:dir(rtl) {
+-    border: none;
++  .luma-files-window .luma-navigation-sidebar.lumaui-sidebar-destinations list.luma-navigation-list > box.filer-sidebar-section {
++    margin: var(--lumaui-nav-destinations-action-heading-top) 0 var(--lumaui-nav-destinations-action-heading-bottom);
++    padding: var(--lumaui-nav-destinations-action-heading-padding-top) var(--lumaui-sidebar-edge) 0 var(--lumaui-nav-destinations-action-heading-padding-start);
++    border-top: 1px solid @luma_line;
+   }
+-
+-
+-  .luma-files-window .luma-sidebar-section-heading {
+-    min-height: 18px;
+-    padding: 4px 8px 0;
+-    color: alpha(currentColor, 0.52);
+-    font-size: 11px;
+-    font-weight: 700;
+-    letter-spacing: 0.11em;
++  /* The kit pads the list by the selection bleed and takes it back from the
++   * scroller; Filer's scroller (and the Trash list) sit one box deeper. */
++  .luma-files-window .luma-navigation-sidebar.lumaui-sidebar-destinations > box > scrolledwindow,
++  .luma-files-window .luma-navigation-sidebar.lumaui-sidebar-destinations > box > list.luma-trash-list {
++    margin-left: calc(-1 * var(--lumaui-sidebar-selection-bleed));
++    margin-right: calc(-1 * var(--lumaui-sidebar-selection-bleed));
+   }
+-
+-
+-
+-
+-  .luma-files-window .navigation-sidebar.luma-trash-list {
+-    padding: 0 6px 6px;
++  .luma-files-window .luma-navigation-sidebar.lumaui-sidebar-destinations label.luma-navigation-heading {
++    color: @luma_frame_muted;
++    font-size: var(--lumaui-sidebar-heading-size);
++    font-weight: var(--lumaui-sidebar-heading-weight);
++    line-height: var(--lumaui-sidebar-heading-line-height);
+   }
+ 
+ 
+@@ -999,10 +986,6 @@ rubberband {
+ 
+ 
+ 
+-window.luma-files-window .luma-sidebar-section-heading {
+-  padding: 4px 8px 0;
+-  color: alpha(currentColor, 0.46);
+-}
+ 
+ /* Back and forward are quiet until looked for, and grey out rather than
+  * vanish: a control that disappears makes the toolbar jump. */

@@ -1,0 +1,96 @@
+{
+ "app": "zz-ovl-assets",
+ "title": "overlay test surfaces",
+ "spec": {
+  "root": "design-center",
+  "url": "mockups/overlay-perms/faded.html",
+  "window": "#stage",
+  "ready": "html[data-ready]",
+  "viewport": {
+   "width": 1280,
+   "height": 800
+  }
+ },
+ "states": [
+  {
+   "name": "voice-k",
+   "about": "voice-k",
+   "window": "#cap",
+   "spec": [
+    {
+     "eval": "document.body.style.background='#000000';document.getElementById('stage').style.background='#000000';document.getElementById('stage').innerHTML=`<div class=\"ov-surface\" id=\"cap\" style=\"left:40px;top:40px;padding:0\">${OV.voice()}</div>`;",
+     "wait": 1200
+    }
+   ]
+  },
+  {
+   "name": "voice-w",
+   "about": "voice-w",
+   "window": "#cap",
+   "spec": [
+    {
+     "eval": "document.body.style.background='#ffffff';document.getElementById('stage').style.background='#ffffff';document.getElementById('stage').innerHTML=`<div class=\"ov-surface\" id=\"cap\" style=\"left:40px;top:40px;padding:0\">${OV.voice()}</div>`;",
+     "wait": 1200
+    }
+   ]
+  },
+  {
+   "name": "bubble-k",
+   "about": "bubble-k",
+   "window": "#cap",
+   "spec": [
+    {
+     "eval": "document.body.style.background='#000000';document.getElementById('stage').style.background='#000000';document.getElementById('stage').innerHTML=`<div class=\"ov-surface\" id=\"cap\" style=\"left:40px;top:40px\"><div class=\"hd-bub\" style=\"position:relative;background-image:url(${OV.PH}life-ari-street.webp)\"><b>Priya</b></div></div>`;",
+     "wait": 1200
+    }
+   ]
+  },
+  {
+   "name": "bubble-w",
+   "about": "bubble-w",
+   "window": "#cap",
+   "spec": [
+    {
+     "eval": "document.body.style.background='#ffffff';document.getElementById('stage').style.background='#ffffff';document.getElementById('stage').innerHTML=`<div class=\"ov-surface\" id=\"cap\" style=\"left:40px;top:40px\"><div class=\"hd-bub\" style=\"position:relative;background-image:url(${OV.PH}life-ari-street.webp)\"><b>Priya</b></div></div>`;",
+     "wait": 1200
+    }
+   ]
+  },
+  {
+   "name": "chat-k",
+   "about": "chat-k",
+   "window": "#cap",
+   "spec": [
+    {
+     "eval": "document.body.style.background='#000000';document.getElementById('stage').style.background='#000000';document.getElementById('stage').innerHTML=`<div class=\"ov-surface\" id=\"cap\" style=\"left:40px;top:40px\"><div class=\"dk-chat\" style=\"width:700px;height:600px;position:relative\">${OV.chat().slice('<div class=\"dk-chat\">'.length)}</div></div>`;",
+     "wait": 1200
+    }
+   ]
+  },
+  {
+   "name": "chat-w",
+   "about": "chat-w",
+   "window": "#cap",
+   "spec": [
+    {
+     "eval": "document.body.style.background='#ffffff';document.getElementById('stage').style.background='#ffffff';document.getElementById('stage').innerHTML=`<div class=\"ov-surface\" id=\"cap\" style=\"left:40px;top:40px\"><div class=\"dk-chat\" style=\"width:700px;height:600px;position:relative\">${OV.chat().slice('<div class=\"dk-chat\">'.length)}</div></div>`;",
+     "wait": 1200
+    }
+   ]
+  },
+  {
+   "name": "empty",
+   "about": "background",
+   "window": "#stage",
+   "spec": [
+    {
+     "eval": "document.getElementById('stage').innerHTML='';",
+     "wait": 600
+    }
+   ]
+  }
+ ],
+ "groups": [],
+ "pairs": [],
+ "text_aliases": {}
+}

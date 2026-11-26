@@ -1,0 +1,211 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Project Luma <engineering@projectluma.org>
+Date: Tue, 24 Nov 2026 23:00:00 -0600
+Subject: [PATCH] lumaSession: callers are held by the broker's pidfd
+
+callerIdentity took the caller's pid from GetConnectionUnixProcessID and read
+/proc/<pid>, so a caller that exited mid-check could have its pid taken by
+another process, whose namespace, Flatpak info and app scope were then read
+as the caller's. It now takes GetConnectionCredentials with its ProcessFD,
+refuses another user, and checks that the pidfd still refers to that pid,
+and that the process isn't a zombie, before and after reading the process's
+details (as luma-shell-state does). A caller that is gone is refused.
+
+A caller whose details can't be read (in practice a non-dumpable process:
+its mount namespace and root need ptrace-read access) is refused on purpose
+by every method rather than read as sandboxed or as the system. A broker
+without ProcessFD is trusted on the pid alone, as luma-shell-state does; one
+that names a ProcessFD it didn't send is refused. .flatpak-info is read only
+if it is a regular file, so a planted FIFO can't block the compositor.
+Restore's refusals are ACCESS_DENIED like the other methods', and each
+refusal is logged once.
+
+---
+diff --git a/js/ui/lumaSession.js b/js/ui/lumaSession.js
+index abdcb46..b716db3 100644
+--- a/js/ui/lumaSession.js
++++ b/js/ui/lumaSession.js
+@@ -276,35 +276,151 @@ function decodeScope(text) {
+     return text.replace(/\\x([0-9a-f]{2})/gi, (_m, hex) => String.fromCharCode(parseInt(hex, 16)));
+ }
+ 
+-// Who a D-Bus caller is: its process, whether it is sandboxed (another mount
+-// namespace: Flatpak, ADR-052 app sandboxes) and the app its scope or its
+-// Flatpak instance names.
+-async function callerIdentity(sender) {
+-    const [pid] = (await Gio.DBus.session.call('org.freedesktop.DBus', '/org/freedesktop/DBus',
+-        'org.freedesktop.DBus', 'GetConnectionUnixProcessID', new GLib.Variant('(s)', [sender]),
+-        new GLib.VariantType('(u)'), Gio.DBusCallFlags.NONE, -1, null)).deepUnpack();
+-    let sandboxed = false;
++// The process a pidfd refers to; 0 once it has been reaped (the kernel
++// reports -1) or is outside our pid namespace (0).
++export function pidfdPid(fd) {
++    try {
++        const [, bytes] = GLib.file_get_contents(`/proc/self/fdinfo/${fd}`);
++        const match = new TextDecoder().decode(bytes).match(/^Pid:\s*(-?\d+)/m);
++        return match ? Math.max(Number(match[1]), 0) : 0;
++    } catch {
++        return 0;
++    }
++}
++
++// Exited but not yet reaped: the pid is still its own, its details are gone.
++function zombie(pid) {
+     try {
+-        sandboxed = GLib.file_read_link(`/proc/${pid}/ns/mnt`) !== GLib.file_read_link('/proc/self/ns/mnt');
++        const text = new TextDecoder().decode(GLib.file_get_contents(`/proc/${pid}/stat`)[1]);
++        return text.slice(text.lastIndexOf(')') + 2, text.lastIndexOf(')') + 3) === 'Z';
+     } catch {
+-        sandboxed = true;
++        return true;
++    }
++}
++
++// The caller's uid, pid and pidfd as the bus broker took them when it
++// connected (GetConnectionCredentials). A broker that sends no ProcessFD
++// leaves the pid alone (as luma-shell-state); one that names a ProcessFD
++// it didn't send is refused.
++async function callerCredentials(sender) {
++    const [result, fdList] = await Gio.DBus.session.call_with_unix_fd_list('org.freedesktop.DBus',
++        '/org/freedesktop/DBus', 'org.freedesktop.DBus', 'GetConnectionCredentials',
++        new GLib.Variant('(s)', [sender]), new GLib.VariantType('(a{sv})'), Gio.DBusCallFlags.NONE, 5000,
++        null, null);
++    const fds = fdList?.steal_fds() ?? [];
++    let values;
++    try {
++        values = result.recursiveUnpack()[0];
++    } catch (e) {
++        fds.forEach(fd => GLib.close(fd));
++        throw e;
++    }
++    const index = values.ProcessFD;
++    const named = index !== undefined;
++    const pidfd = named && Number.isInteger(index) && index >= 0 && index < fds.length ? fds[index] : -1;
++    fds.forEach(fd => fd !== pidfd && GLib.close(fd));
++    if (named && pidfd < 0)
++        throw new Error('the broker named a pidfd it did not send');
++    return {
++        uid: Number.isInteger(values.UnixUserID) ? values.UnixUserID : -1,
++        pid: Number.isInteger(values.ProcessID) ? values.ProcessID : 0,
++        pidfd,
++    };
++}
++
++// .flatpak-info if it is a regular file: nothing to open if there is none
++// (not a Flatpak), and never a FIFO or device a caller planted to block the
++// compositor. Throws for anything else.
++function flatpakInfo(path) {
++    let type;
++    try {
++        type = Gio.File.new_for_path(path).query_info('standard::type',
++            Gio.FileQueryInfoFlags.NOFOLLOW_SYMLINKS, null).get_file_type();
++    } catch (e) {
++        if (e.matches(Gio.IOErrorEnum, Gio.IOErrorEnum.NOT_FOUND))
++            return null;
++        throw e;
+     }
+-    let appId = null;
++    if (type !== Gio.FileType.REGULAR)
++        throw new Error('not a regular file');
++    const info = new GLib.KeyFile();
++    info.load_from_file(path, GLib.KeyFileFlags.NONE);
++    return info.get_string('Application', 'name') || null;
++}
++
++const loggedRefusals = new Set();
++
++function logRefusal(sender, pid, reason) {
++    const key = `${sender}|${reason}`;
++    if (loggedRefusals.has(key) || loggedRefusals.size >= 256)
++        return;
++    loggedRefusals.add(key);
++    log(`lumaSession: refused ${sender} (pid ${pid}): ${reason}`);
++}
++
++// Who a D-Bus caller is: its process, whether it is sandboxed (another mount
++// namespace: Flatpak, ADR-052 app sandboxes) and the app its scope or its
++// Flatpak instance names. The process is held by the broker's pidfd, checked
++// before and after its details are read, so a pid reused mid-check (the
++// caller exits, another process takes its number) is refused, not trusted.
++// A caller whose details can't be read is refused on purpose, by every
++// method: unknown is never the system, and never an app. In practice that is
++// a non-dumpable process (PR_SET_DUMPABLE 0, a setuid or file-capability
++// binary), whose mount namespace and root need ptrace-read access.
++// Tests only: between runs after the first check; proc reads the caller's
++// details from another directory; withoutProcessFd drops the broker's pidfd.
++export async function callerIdentity(sender, {between, proc = '/proc', withoutProcessFd = false} = {}) {
++    const credentials = await callerCredentials(sender);
++    if (withoutProcessFd && credentials.pidfd >= 0) {
++        GLib.close(credentials.pidfd);
++        credentials.pidfd = -1;
++    }
++    const {uid, pid, pidfd} = credentials;
++    const alive = () => (pidfd < 0 || pidfdPid(pidfd) === pid) && !zombie(pid);
++    // A failed read: the process left (refused as gone) or hides its details.
++    const unreadable = what => new Error(alive() ? `${what} unreadable` : 'process gone');
+     try {
+-        const info = new GLib.KeyFile();
+-        info.load_from_file(`/proc/${pid}/root/.flatpak-info`, GLib.KeyFileFlags.NONE);
+-        appId = info.get_string('Application', 'name');
+-    } catch {}
+-    if (!appId) {
++        if (uid !== new Gio.Credentials().get_unix_user())
++            throw new Error('another user');
++        if (pid <= 0)
++            throw new Error('no process');
++        if (!alive())
++            throw new Error('process gone');
++        await between?.(pid);
++        let sandboxed;
++        try {
++            sandboxed = GLib.file_read_link(`${proc}/${pid}/ns/mnt`) !== GLib.file_read_link('/proc/self/ns/mnt');
++        } catch {
++            throw unreadable('mount namespace');
++        }
++        let appId;
+         try {
+-            const [, bytes] = GLib.file_get_contents(`/proc/${pid}/cgroup`);
+-            const text = new TextDecoder().decode(bytes);
++            appId = flatpakInfo(`${proc}/${pid}/root/.flatpak-info`);
++        } catch {
++            throw unreadable('Flatpak info');
++        }
++        if (!appId) {
++            let text;
++            try {
++                text = new TextDecoder().decode(GLib.file_get_contents(`${proc}/${pid}/cgroup`)[1]);
++            } catch {
++                throw unreadable('cgroup');
++            }
+             const match = text.match(/app-(?:gnome|flatpak|luma)-(.+?)-[0-9a-z]+\.scope/);
+             if (match)
+                 appId = decodeScope(match[1]).replace(/\.desktop$/, '');
+-        } catch {}
++        }
++        // What was read belongs to the caller only if it is still that process.
++        if (!alive())
++            throw new Error('process gone');
++        return {pid, sandboxed, appId, pidfd: pidfd >= 0};
++    } catch (e) {
++        logRefusal(sender, pid, e.message);
++        throw e;
++    } finally {
++        if (pidfd >= 0)
++            GLib.close(pidfd);
+     }
+-    return {pid, sandboxed, appId};
+ }
+ 
+ function sameApp(a, b) {
+@@ -1243,6 +1359,11 @@ export class LumaSession {
+     async RestoreAsync([text, mode], invocation) {
+         try {
+             await this._requireHost(invocation);
++        } catch (e) {
++            invocation.return_error_literal(Gio.DBusError, Gio.DBusError.ACCESS_DENIED, e.message);
++            return;
++        }
++        try {
+             if (Main.sessionMode.isLocked)
+                 throw new Error('the session is locked');
+             const snapshot = JSON.parse(text);

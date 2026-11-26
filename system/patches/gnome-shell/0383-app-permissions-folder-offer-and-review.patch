@@ -1,0 +1,472 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Project Luma <engineering@projectluma.org>
+Date: Sun, 22 Nov 2026 01:00:00 -0600
+Subject: [PATCH] App permissions: the folder offer and the command-line review
+
+ADR-052 step 3 (design-center 8bd4ccf, mockups/app-perms/offer.html).
+org.projectluma.AppPermissions1 emits Refused(app, folder) once per app and
+folder when an app was refused one of the person's folders. The Shell offers
+it with its standard notification banner (lumaPermissionOffer.js), never a
+dialog and never pausing the app: the app's own source (its name the source
+line, its icon the tile), the Settings icon as a badge only the Shell can
+set (lumaShellBadge), "Music folder", "Let Tide use your Music folder?",
+Allow and Not now of equal weight. The answer goes back with AnswerOffer;
+dismissing counts as Not now. On a TV, where the lip is hidden, the same
+banner at x1.5 at the top right with the remote's focus on Not now.
+
+ReviewRequested(app, name), raised after a command-line install that went
+ahead at the suggested level, becomes a standard notification from Valet,
+"Kiln installed", whose Review runs `luma-install --review APP`.
+
+lumaPermissionOffer.showOffer() is the one offer surface; the layer
+permission offer can draw through it too.
+---
+diff --git a/data/theme/luma-shelf.css b/data/theme/luma-shelf.css
+index 889936a..f128e0f 100644
+--- a/data/theme/luma-shelf.css
++++ b/data/theme/luma-shelf.css
+@@ -2713,6 +2713,33 @@ StBoxLayout.luma-notification-tray.luma-surface-dark .luma-notification-tray-cou
+ .luma-notification-lip .notification-banner.luma-lip-card .luma-notification-tile-glyph .message-source-icon { icon-size: 20px; }
+ .luma-notification-lip .luma-lip-app-badge { border-radius: 5px; border: 2px solid #21252b; margin: 0 -4px -4px 0; }
+ .luma-notification-lip.luma-surface-light .luma-lip-app-badge { border-color: #eceef1; }
++
++/* Permission offers (lumaPermissionOffer.js, ADR-052 step 3): the standard
++ * banner carries them; on a TV, where the lip is hidden, the same banner at TV
++ * scale (x1.5) at the top right: 51 px icon at 21,21, text from x=90, source,
++ * title, body, content-width actions 45 px tall, the remote's focus a white ring. */
++.luma-perm-toast-tv { width: 543px; padding: 21px 24px 21px 22.5px; spacing: 16.5px; border-radius: 30px;
++  background-color: #21252b; color: #f2f3f5; font-family: Figtree;
++  box-shadow: 0 27px 60px -27px rgba(0,0,0,.35); }
++.luma-perm-toast-tv.luma-surface-light { background-color: #eceef1; color: #1f2328; }
++.luma-perm-toast-tile { width: 51px; height: 51px; }
++.luma-perm-toast-badge { border: 3px solid #21252b; border-radius: 7.5px; }
++.luma-surface-light .luma-perm-toast-badge { border-color: #eceef1; }
++.luma-perm-toast-column { spacing: 0; padding-top: 1.5px; }
++.luma-perm-toast-top { height: 18px; }
++.luma-perm-toast-source { font-size: 15px; font-weight: 700; letter-spacing: 1.8px; color: rgba(242,243,245,.5); }
++.luma-perm-toast-time { font-size: 16.5px; color: rgba(242,243,245,.5); }
++.luma-surface-light .luma-perm-toast-source, .luma-surface-light .luma-perm-toast-time { color: rgba(31,35,40,.5); }
++.luma-perm-toast-title { margin-top: 3px; height: 24px; font-size: 20.25px; font-weight: 650; }
++.luma-perm-toast-body { margin-top: 4.5px; font-size: 18.75px; font-weight: 400; color: rgba(242,243,245,.78); }
++.luma-surface-light .luma-perm-toast-body { color: rgba(31,35,40,.78); }
++.luma-perm-toast-actions { spacing: 9px; padding-top: 15px; }
++/* Opaque fills (the .1 white over the banner): St paints the focus ring, a
++ * spread shadow, under a translucent fill. */
++.luma-perm-toast-button { height: 45px; padding: 0 19.5px; border-radius: 15px;
++  font-size: 18px; font-weight: 650; color: #f2f3f5; background-color: #32363c; }
++.luma-surface-light .luma-perm-toast-button { color: #1f2328; background-color: #dfe1e4; }
++.luma-perm-toast-tv .luma-perm-toast-actions .luma-perm-toast-button:focus { box-shadow: 0 0 0 4.5px #ffffff; }
+ .luma-notification-lip .notification-banner.luma-lip-card .message-header { min-height: 12px; spacing: 0; }
+ .luma-notification-lip .notification-banner.luma-lip-card .message-header .message-header-content { spacing: 8px; }
+ .luma-notification-lip .notification-banner.luma-lip-card .message-header .message-source-title {
+diff --git a/js/js-resources.gresource.xml b/js/js-resources.gresource.xml
+index 03e1a30..dd0e7c3 100644
+--- a/js/js-resources.gresource.xml
++++ b/js/js-resources.gresource.xml
+@@ -123,6 +123,9 @@
+     <file>ui/lumaSealCopy.js</file>
+     <file>ui/lumaSealGlyph.js</file>
+     <file>ui/lumaShare.js</file>
++    <file>ui/lumaPermissionOffer.js</file>
++    <file>ui/lumaAppPermissions.js</file>
++    <file>ui/lumaAppPermissionsModel.js</file>
+     <file>ui/lumaShelfSurface.js</file>
+     <file>ui/lumaWindowMotion.js</file>
+     <file>ui/lumaWindowPath.js</file>
+diff --git a/js/ui/lumaAppPermissions.js b/js/ui/lumaAppPermissions.js
+new file mode 100644
+index 0000000..be0f491
+--- /dev/null
++++ b/js/ui/lumaAppPermissions.js
+@@ -0,0 +1,124 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++// App permissions for every format (ADR-052 step 3), the Shell's part:
++// - the folder offer. org.projectluma.AppPermissions1 emits Refused(app,
++//   folder) once per app and folder, ever, when the app was refused one of the
++//   person's folders; the Shell offers it with the standard banner
++//   (lumaPermissionOffer.js): "Music folder", "Let Tide use your Music
++//   folder?", Allow / Not now. The answer goes back with AnswerOffer, which
++//   remembers it (Not now and dismiss too) and on Allow makes the folder
++//   appear for the running app at once.
++// - the command-line review. A scripted install never waits on Valet's sheet;
++//   ReviewRequested(app, name) becomes a standard notification from Valet,
++//   "Kiln installed", whose Review opens the sheet in review mode.
++import Gio from 'gi://Gio';
++import GLib from 'gi://GLib';
++import Shell from 'gi://Shell';
++
++import * as Main from './main.js';
++import * as MessageTray from './messageTray.js';
++import * as Model from './lumaAppPermissionsModel.js';
++import {appInfo, showOffer} from './lumaPermissionOffer.js';
++
++const BUS_NAME = 'org.projectluma.AppPermissions1';
++const OBJECT_PATH = '/org/projectluma/AppPermissions';
++const VALET = 'io.luma.Valet';
++
++class AppPermissions {
++    constructor() {
++        this._offers = new Map();
++        this._bus = Gio.DBus.session;
++        this._signals = [
++            this._bus.signal_subscribe(BUS_NAME, BUS_NAME, 'Refused', OBJECT_PATH, null,
++                Gio.DBusSignalFlags.NONE, (_c, _s, _p, _i, _n, params) => this._refused(...params.deepUnpack())),
++            this._bus.signal_subscribe(BUS_NAME, BUS_NAME, 'ReviewRequested', OBJECT_PATH, null,
++                Gio.DBusSignalFlags.NONE, (_c, _s, _p, _i, _n, params) => this._review(...params.deepUnpack())),
++            this._bus.signal_subscribe(BUS_NAME, BUS_NAME, 'RestartRequested', OBJECT_PATH, null,
++                Gio.DBusSignalFlags.NONE, (_c, _s, _p, _i, _n, params) => this._restart(...params.deepUnpack())),
++        ];
++    }
++
++    _call(method, args) {
++        this._bus.call(BUS_NAME, OBJECT_PATH, BUS_NAME, method, args, null,
++            Gio.DBusCallFlags.NONE, 15000, null, (bus, result) => {
++                try {
++                    bus.call_finish(result);
++                } catch (e) {
++                    logError(e, `AppPermissions1.${method}`);
++                }
++            });
++    }
++
++    _refused(app, folder) {
++        if (!app || !Model.offerable(folder))
++            return;
++        const key = Model.offerKey(app, folder);
++        if (this._offers.has(key))
++            return;
++        const {name} = appInfo(app);
++        const words = Model.offerWords(name, folder);
++        const notification = showOffer({
++            appId: app, title: words.title, body: words.body, allow: words.allow, notNow: words.notNow,
++            decide: allowed => this._call('AnswerOffer', new GLib.Variant('(ssb)', [app, folder, allowed])),
++        });
++        this._offers.set(key, notification);
++        notification.connect('destroy', () => this._offers.delete(key));
++    }
++
++    // Settings' "Restart <App>": ask the app to quit the normal way (its own unsaved-work
++    // prompt can appear and keep it open), then open it again once it has closed. Never killed.
++    _restart(app) {
++        const {app: shellApp} = appInfo(app);
++        if (!shellApp || shellApp.get_state() === Shell.AppState.STOPPED)
++            return;
++        let timeout = 0;
++        const id = shellApp.connect('notify::state', () => {
++            if (shellApp.get_state() !== Shell.AppState.STOPPED)
++                return;
++            shellApp.disconnect(id);
++            GLib.source_remove(timeout);
++            shellApp.activate();
++        });
++        // The person kept it open from its own prompt: stop waiting after a while.
++        timeout = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 300, () => {
++            shellApp.disconnect(id);
++            return GLib.SOURCE_REMOVE;
++        });
++        shellApp.request_quit();
++    }
++
++    _review(app, name) {
++        const valet = Shell.AppSystem.get_default().lookup_app(`${VALET}.desktop`);
++        const source = new MessageTray.Source({
++            title: valet?.get_name() ?? 'Valet',
++            icon: valet?.get_icon() ?? new Gio.ThemedIcon({name: VALET}),
++            policy: new MessageTray.NotificationGenericPolicy(),
++        });
++        Main.messageTray.add(source);
++        const words = Model.reviewWords(name || app);
++        const notification = new MessageTray.Notification({source, title: words.title, isTransient: false});
++        const open = () => {
++            try {
++                Gio.Subprocess.new(['luma-install', '--review', app], Gio.SubprocessFlags.NONE);
++            } catch (e) {
++                logError(e, 'Opening the review');
++            }
++        };
++        notification.addAction(words.action, open);
++        notification.connect('activated', open);
++        source.addNotification(notification);
++    }
++
++    destroy() {
++        for (const id of this._signals)
++            this._bus.signal_unsubscribe(id);
++        this._signals = [];
++    }
++}
++
++let _instance = null;
++
++export function init() {
++    if (!_instance)
++        _instance = new AppPermissions();
++    return _instance;
++}
+diff --git a/js/ui/lumaAppPermissionsModel.js b/js/ui/lumaAppPermissionsModel.js
+new file mode 100644
+index 0000000..6e1770f
+--- /dev/null
++++ b/js/ui/lumaAppPermissionsModel.js
+@@ -0,0 +1,30 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++// What the folder offer and the command-line review say (ADR-052 step 3,
++// design-center 8bd4ccf mockups/app-perms). Pure: tests/gnome-shell/app-permissions-policy.js.
++
++// A folder the person can give an app: one of the folders in their home
++// folder, by name. Keys, other apps' data and anything hidden are never offered.
++export function offerable(folder) {
++    return typeof folder === 'string' && folder.length > 0 && !folder.includes('/') &&
++        !folder.startsWith('.') && folder !== '..';
++}
++
++// The standard banner's words: the folder's display name plus "folder", and the question.
++export function offerWords(appName, folder) {
++    return {
++        title: `${folder} folder`,
++        body: `Let ${appName} use your ${folder} folder?`,
++        allow: 'Allow',
++        notNow: 'Not now',
++    };
++}
++
++// A command-line install finished at the suggested level: "Kiln installed", with Review.
++export function reviewWords(appName) {
++    return {title: `${appName} installed`, action: 'Review'};
++}
++
++// One offer per app and folder at a time; the service remembers the answer for good.
++export function offerKey(app, folder) {
++    return `${app}\u0000${folder}`;
++}
+diff --git a/js/ui/lumaPermissionOffer.js b/js/ui/lumaPermissionOffer.js
+new file mode 100644
+index 0000000..6ac846f
+--- /dev/null
++++ b/js/ui/lumaPermissionOffer.js
+@@ -0,0 +1,158 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++// A permission offer: the shell's standard notification banner from the app's
++// own source (its name the source line, its icon the tile), with the Settings
++// icon as a badge only the Shell can set (lumaShellBadge), a title, one
++// question, and Allow and Not now of equal weight, neither a default.
++// Dismissing it counts as Not now. The app keeps running: nothing waits on it.
++// On a TV, where the notification lip is hidden, it is the same banner at TV
++// scale (x1.5) at the top right, the remote's focus on Not now so a stray OK
++// never grants anything; it answers the same notification.
++import Clutter from 'gi://Clutter';
++import GObject from 'gi://GObject';
++import Gio from 'gi://Gio';
++import Shell from 'gi://Shell';
++import St from 'gi://St';
++
++import * as Main from './main.js';
++import * as MessageTray from './messageTray.js';
++import * as SurfaceMaterials from './lumaSurfaceMaterials.js';
++import {LumaIconMask} from './iconMask.js';
++
++export const SETTINGS_ICON = 'org.gnome.Settings';
++const ICON_RADIUS = 5 / 16;
++
++export function appInfo(appId) {
++    const app = Shell.AppSystem.get_default().lookup_app(`${appId}.desktop`);
++    return {
++        app,
++        name: app?.get_name() ?? appId,
++        gicon: app?.get_icon() ?? new Gio.ThemedIcon({name: 'application-x-executable'}),
++    };
++}
++
++export function posture() {
++    if (Main.presentation?._state?.posture?.effective === 'tv')
++        return 'tv';
++    return Main.presentation?.mode === 'mobile' ? 'phone' : 'desktop';
++}
++
++function maskedIcon(gicon, size, styleClass) {
++    const icon = new St.Icon({gicon, icon_size: size, style_class: styleClass});
++    try {
++        const mask = new LumaIconMask();
++        mask.set_uniform_float(mask.get_uniform_location('radius'), 1, [ICON_RADIUS]);
++        icon.add_effect_with_name('luma-perm-mask', mask);
++    } catch (e) {
++        logError(e, 'Permission offer icon mask unavailable');
++    }
++    return icon;
++}
++
++const TvOfferToast = GObject.registerClass(
++class LumaPermissionTvOfferToast extends St.BoxLayout {
++    _init(appName, gicon, title, body, labels, answer) {
++        super._init({style_class: 'luma-perm-toast-tv', reactive: true,
++            orientation: Clutter.Orientation.HORIZONTAL});
++        const tile = new St.Widget({style_class: 'luma-perm-toast-tile', layout_manager: new Clutter.BinLayout(),
++            y_align: Clutter.ActorAlign.START});
++        tile.add_child(maskedIcon(gicon, 51, 'luma-perm-toast-icon'));
++        // The art sits 1.5 px above the column's top, as the standard banner's (St has no negative margin).
++        tile.translation_x = 0.5;
++        tile.translation_y = -1.5;
++        const badge = maskedIcon(new Gio.ThemedIcon({name: SETTINGS_ICON}), 26, 'luma-perm-toast-badge');
++        badge.set({x_align: Clutter.ActorAlign.END, y_align: Clutter.ActorAlign.END, x_expand: true, y_expand: true});
++        // The standard banner's tile and badge x1.5 (app art fills 15/16 of its icon box): a 48 px
++        // tile at 22.5, the 24 px badge inside its corner as the desktop's x1.5 (measured: 7.5 px
++        // from the tile art's corner to the badge's, where the 51 px box alone gives 4).
++        badge.translation_x = badge.translation_y = -1;
++        tile.add_child(badge);
++        this.add_child(tile);
++        const column = new St.BoxLayout({orientation: Clutter.Orientation.VERTICAL, x_expand: true,
++            style_class: 'luma-perm-toast-column'});
++        const top = new St.BoxLayout({style_class: 'luma-perm-toast-top'});
++        top.add_child(new St.Label({style_class: 'luma-perm-toast-source', text: appName.toLocaleUpperCase(), x_expand: true}));
++        top.add_child(new St.Label({style_class: 'luma-perm-toast-time', text: _('now')}));
++        column.add_child(top);
++        column.add_child(new St.Label({style_class: 'luma-perm-toast-title', text: title}));
++        const text = new St.Label({style_class: 'luma-perm-toast-body', text: body});
++        text.clutter_text.line_wrap = true;
++        column.add_child(text);
++        const actions = new St.BoxLayout({style_class: 'luma-perm-toast-actions'});
++        this._buttons = labels.map((label, index) => {
++            const button = new St.Button({style_class: 'luma-perm-toast-button', label, can_focus: true});
++            button.connect('clicked', () => answer(index === 0));
++            actions.add_child(button);
++            return button;
++        });
++        column.add_child(actions);
++        this.add_child(column);
++        SurfaceMaterials.bindSurface(this, {classActors: [this]});
++        this.connect('key-press-event', (_a, event) =>
++            global.focus_manager.navigate_from_event(event) ? Clutter.EVENT_STOP : Clutter.EVENT_PROPAGATE);
++    }
++
++    show() {
++        const monitor = Main.layoutManager.primaryMonitor;
++        Main.layoutManager.addTopChrome(this);
++        super.show();
++        const [, width] = this.get_preferred_width(-1);
++        this.set_position(monitor.x + monitor.width - 72 - width, monitor.y + 72);
++        this._grab = Main.pushModal(this);
++        this._buttons[1].grab_key_focus();
++    }
++
++    dismiss() {
++        if (this._grab)
++            Main.popModal(this._grab);
++        this._grab = null;
++        this.destroy();
++    }
++});
++
++// showOffer({appId, title, body, allow, notNow, decide}): decide(true) on
++// Allow, decide(false) on Not now or dismiss. Returns the notification.
++export function showOffer({appId, title, body, allow = _('Allow'), notNow = _('Not now'), decide}) {
++    const {name, gicon} = appInfo(appId);
++    const source = new MessageTray.Source({
++        title: name,
++        icon: gicon,
++        policy: new MessageTray.NotificationGenericPolicy(),
++    });
++    Main.messageTray.add(source);
++    const notification = new MessageTray.Notification({
++        source,
++        title,
++        body,
++        isTransient: false,
++        urgency: MessageTray.Urgency.HIGH,
++    });
++    notification.lumaShellBadge = new Gio.ThemedIcon({name: SETTINGS_ICON});
++    notification.lumaPosture = posture();
++    let answered = false;
++    const answer = allowed => {
++        if (answered)
++            return;
++        answered = true;
++        decide(allowed);
++    };
++    notification.addAction(allow, () => answer(true));
++    notification.addAction(notNow, () => answer(false));
++    notification.connect('destroy', (_n, reason) => {
++        if (reason === MessageTray.NotificationDestroyedReason.DISMISSED)
++            answer(false);
++    });
++    source.addNotification(notification);
++    if (notification.lumaPosture === 'tv') {
++        const toast = new TvOfferToast(name, gicon, title, body, [allow, notNow], allowed => {
++            toast.dismiss();
++            answer(allowed);
++            notification.destroy(MessageTray.NotificationDestroyedReason.SOURCE_CLOSED);
++        });
++        notification.connect('destroy', () => {
++            if (toast._grab)
++                toast.dismiss();
++        });
++        toast.show();
++    }
++    return notification;
++}
+diff --git a/js/ui/main.js b/js/ui/main.js
+index e74fd28..9cccec0 100644
+--- a/js/ui/main.js
++++ b/js/ui/main.js
+@@ -38,6 +38,7 @@ import * as LumaSearch from './lumaSearch.js';
+ import * as LumaWindowCorners from './lumaWindowCorners.js';
+ import * as LumaWindowWatch from './lumaWindowWatch.js';
+ import * as LumaShare from './lumaShare.js';
++import * as LumaAppPermissions from './lumaAppPermissions.js';
+ import * as NotificationDaemon from './notificationDaemon.js';
+ import * as WindowAttentionHandler from './windowAttentionHandler.js';
+ import * as Screenshot from './screenshot.js';
+@@ -274,6 +275,14 @@ async function _initializeUI() {
+             logError(error, 'Failed to initialize the screen sharing picker');
+         }
+     }
++    // App permissions (ADR-052 step 3): the folder offer and the command-line review.
++    if (!sessionMode.isGreeter) {
++        try {
++            LumaAppPermissions.init();
++        } catch (error) {
++            logError(error, 'Failed to start the app permission offers');
++        }
++    }
+     magnifier = new Magnifier.Magnifier();
+     locatePointer = new LocatePointer.LocatePointer();
+ 
+diff --git a/js/ui/messageList.js b/js/ui/messageList.js
+index a9c30e6..ed694cb 100644
+--- a/js/ui/messageList.js
++++ b/js/ui/messageList.js
+@@ -816,12 +816,15 @@ export const Message = GObject.registerClass({
+         // the app's full-colour tile, as does a symbolic image file: a glyph
+         // drawn at tile size is what made a mail notification's icon look
+         // tiny on its card.
+-        const showImage = !!image && isPicture(image);
++        const showImage = !!image && isPicture(image) && !this._lumaShellBadge;
+         this._tileImage.gicon = showImage ? image : null;
+         this._tileImage.visible = showImage;
+         sourceIcon.visible = !showImage;
+-        this._appBadge.gicon = sourceIcon.gicon;
+-        this._appBadge.visible = showImage;
++        // The Shell's own badge on an app's tile (the Settings icon on a
++        // permission offer). Only the Shell sets it: no notification an app
++        // sends can carry it.
++        this._appBadge.gicon = this._lumaShellBadge ?? sourceIcon.gicon;
++        this._appBadge.visible = showImage || !!this._lumaShellBadge;
+         this._tileImage.get_effect('luma-tile-mask')?.set_uniform_float(
+             this._tileImage.get_effect('luma-tile-mask').get_uniform_location('radius'), 1, [0.5]);
+         const glyph = !showImage && isGlyphIcon(sourceIcon.gicon);
+@@ -982,6 +985,7 @@ class NotificationMessage extends Message {
+         super(notification.source);
+ 
+         this.notification = notification;
++        this._lumaShellBadge = notification.lumaShellBadge ?? null;
+ 
+         notification.connectObject(
+             'action-added', (_, action) => this._addAction(action),
+@@ -1028,6 +1032,8 @@ class NotificationMessage extends Message {
+ 
+     useCardLayout() {
+         super.useCardLayout();
++        if (this._lumaShellBadge)
++            this._syncTile();
+         this._syncActionButtons();
+         this._syncInlineReplyStyle();
+         this._header.closeButton.visible = this.canClose();

@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: Apache-2.0
+# Runs luma-dl-space.service every minute (see that unit).
+[Unit]
+Description=Report dl origin free space every minute
+
+[Timer]
+OnBootSec=30s
+OnUnitActiveSec=60s
+AccuracySec=5s
+
+[Install]
+WantedBy=timers.target

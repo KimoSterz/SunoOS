@@ -1,0 +1,98 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Project Luma <maintainers@projectluma.org>
+Date: Sun, 22 Nov 2026 23:30:00 +0000
+Subject: [PATCH] scan: Prefer a usable higher band over a stronger lower band
+
+wpa_scan_result_compar() compares the throughput estimate only when the
+SNRs of two BSSs, adjusted for channel width, are within 7 dB, or when
+either BSS is on 6 GHz. Otherwise the stronger BSS wins. On a dual-band AP
+the 2.4 GHz BSS is commonly 10-20 dB stronger than the 5 GHz BSS of the
+same AP, and an 80 MHz channel lowers the adjusted 5 GHz SNR by a further
+6 dB, so a station picks 2.4 GHz even when 5 GHz would give a good link
+with several times the throughput. The 6 GHz exception has the opposite
+problem: a weak 6 GHz BSS with a wide channel wins on its estimate alone,
+however close it is to unusable.
+
+Compare BSSs in two tiers. A BSS with at least USABLE_SNR (20 dB over
+20 MHz: about -72 dBm on 5 and 6 GHz and -69 dBm on 2.4 GHz with the
+default noise floors) is preferred over one below it. Between two usable
+BSSs the throughput estimate decides, which already accounts for band,
+channel width, spatial streams and SNR, then the higher band, then SNR.
+Below the usable SNR the previous rules apply, without the 6 GHz
+exception.
+
+Example (2.4 GHz HE20 at -45 dBm, 5 GHz VHT80 at -68 dBm, same AP): the
+station used to select 2.4 GHz; it now selects 5 GHz.
+---
+ wpa_supplicant/scan.c | 37 +++++++++++++++++++++++++++++--------
+ wpa_supplicant/scan.h |  9 +++++++++
+ 2 files changed, 38 insertions(+), 8 deletions(-)
+
+diff --git a/wpa_supplicant/scan.c b/wpa_supplicant/scan.c
+index 8b59e40..77de559 100644
+--- a/wpa_supplicant/scan.c
++++ b/wpa_supplicant/scan.c
+@@ -2451,14 +2451,35 @@ static int wpa_scan_result_compar(const void *a, const void *b)
+ 			return 1;
+ 	}
+ 
+-	/* If SNR is close, decide by max rate or frequency band. For cases
+-	 * involving the 6 GHz band, use the throughput estimate irrespective
+-	 * of the SNR difference since the LPI/VLP rules may result in
+-	 * significant differences in SNR for cases where the estimated
+-	 * throughput can be considerably higher with the lower SNR. */
+-	if (snr_a && snr_b && (abs(snr_b - snr_a) < 7 ||
+-			       is_6ghz_freq(wa->freq) ||
+-			       is_6ghz_freq(wb->freq))) {
++	/*
++	 * When both BSSs would give a usable link, the throughput estimate
++	 * decides: it already accounts for band, channel width, spatial
++	 * streams and the SNR, so a usable 5 GHz or 6 GHz BSS is preferred
++	 * over a stronger 2.4 GHz BSS that would carry less traffic. A usable
++	 * BSS is preferred over one that is not, so a weak 6 GHz BSS with a
++	 * wide channel does not win on its estimate alone. Below the usable
++	 * SNR, signal strength matters most.
++	 */
++	if (wa->flags & wb->flags & WPA_SCAN_LEVEL_DBM) {
++		bool usable_a = wa->snr >= USABLE_SNR;
++		bool usable_b = wb->snr >= USABLE_SNR;
++
++		if (usable_a && usable_b) {
++			if (wa->est_throughput != wb->est_throughput)
++				return (int) wb->est_throughput -
++					(int) wa->est_throughput;
++			if (is_6ghz_freq(wa->freq) ^ is_6ghz_freq(wb->freq))
++				return is_6ghz_freq(wa->freq) ? -1 : 1;
++			if (IS_5GHZ(wa->freq) ^ IS_5GHZ(wb->freq))
++				return IS_5GHZ(wa->freq) ? -1 : 1;
++			return snr_b_full - snr_a_full;
++		}
++		if (usable_a != usable_b)
++			return usable_a ? -1 : 1;
++	}
++
++	/* If SNR is close, decide by max rate or frequency band. */
++	if (snr_a && snr_b && abs(snr_b - snr_a) < 7) {
+ 		if (wa->est_throughput != wb->est_throughput)
+ 			return (int) wb->est_throughput -
+ 				(int) wa->est_throughput;
+diff --git a/wpa_supplicant/scan.h b/wpa_supplicant/scan.h
+index d4c06c1..b4d04dd 100644
+--- a/wpa_supplicant/scan.h
++++ b/wpa_supplicant/scan.h
+@@ -30,6 +30,15 @@
+  */
+ #define GREAT_SNR 25
+ 
++/*
++ * A link with at least this SNR (measured over 20 MHz) is usable for normal
++ * traffic: about -72 dBm on 5 GHz and 6 GHz and -69 dBm on 2.4 GHz with the
++ * default noise floors, which is MCS 3-4 at 80 MHz. Between usable BSSs the
++ * throughput estimate decides, so a usable 5 GHz or 6 GHz BSS is preferred
++ * over a stronger 2.4 GHz BSS that would carry less traffic.
++ */
++#define USABLE_SNR 20
++
+ /*
+  * IEEE Sts 802.11ax-2021, 9.4.2.161 (Transmit Power Envelope element) indicates
+  * no max TX power limit if Maximum Transmit Power field is 63.5 dBm.

@@ -1,0 +1,23 @@
+{
+ "about": "Valet's restore list as design-center 38858a5 mockups/connect-sync/restore.html draws it (cs.js restore()), in GetRestore and ListDevices shapes.",
+ "rows": [
+  {"app": "org.projectluma.Kiln", "name": "Kiln", "kind": "flatpak", "state": "restoring", "progress": 0.44, "reason": "", "from": "dell", "bytes": 410000000},
+  {"app": "org.projectluma.Tide", "name": "Tide", "kind": "flatpak", "state": "ready", "progress": null, "reason": "", "from": "dell", "bytes": null},
+  {"app": "org.projectluma.Viola", "name": "Viola", "kind": "flatpak", "state": "ready", "progress": null, "reason": "", "from": "dell", "bytes": null},
+  {"app": "com.diskord.Diskord", "name": "Diskord", "kind": "flatpak", "state": "installing", "progress": 0.2, "reason": "", "from": "dell", "bytes": null},
+  {"app": "com.hearth.RecipeBox", "name": "Recipe Box", "kind": "flatpak", "state": "waiting", "progress": null, "reason": "", "from": "dell", "bytes": null},
+  {"app": "com.example.StudioMixer", "name": "Studio Mixer", "kind": "store", "state": "unavailable", "progress": null, "reason": "Not available for this device · x86 only", "from": "dell", "bytes": null}
+ ],
+ "devices": [
+  {"device": "thinkpad", "name": "ThinkPad", "class": "computer", "state": "member", "this_device": true, "last_sync": null},
+  {"device": "dell", "name": "Dell XPS 14", "class": "computer", "state": "member", "this_device": false, "last_sync": null}
+ ],
+ "pictures": {
+  "org.projectluma.Kiln": "valet-restore/kiln.svg",
+  "org.projectluma.Tide": "valet-restore/luma-v4-music.svg",
+  "org.projectluma.Viola": "valet-restore/luma-v4-browser.svg",
+  "com.diskord.Diskord": "valet-restore/luma-v4-diskord.svg",
+  "com.hearth.RecipeBox": "valet-restore/recipe-box.svg",
+  "com.example.StudioMixer": "valet-restore/recipe-box.svg"
+ }
+}

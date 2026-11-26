@@ -1,0 +1,24 @@
+[Application]
+name=org.projectluma.Viewer
+runtime=org.projectluma.Platform/x86_64/44
+sdk=org.projectluma.Sdk/x86_64/44
+command=luma-viewer
+
+[Context]
+shared=ipc;
+sockets=fallback-x11;pulseaudio;wayland;
+devices=dri;
+
+[Session Bus Policy]
+org.project_luma.ShellState1=talk
+org.projectluma.ApplicationDirectory1=talk
+org.projectluma.AppData1=talk
+
+[Environment]
+LUMA_VIEWER_ICON_PATH=/app/share/luma-viewer/icons
+LUMA_LEAF_DATA_DIR=/app/share/leaf
+LUMA_VIEWER_STYLE_PATH=/app/share/luma-viewer/viewer.css
+
+[X-Luma]
+min-host-installer=62
+app-data-schema=viewer-v1

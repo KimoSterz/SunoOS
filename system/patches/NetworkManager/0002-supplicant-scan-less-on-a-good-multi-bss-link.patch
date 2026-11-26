@@ -1,0 +1,94 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Project Luma <maintainers@projectluma.org>
+Date: Sun, 22 Nov 2026 23:30:00 +0000
+Subject: [PATCH] supplicant: scan less on a good multi-BSS link
+
+For an ESS with more than one BSS (or 802.1X) NetworkManager sets
+bgscan "simple:30:-65:300": a scan every 30 seconds while the signal is
+below -65 dBm and every 5 minutes above it. -65 dBm is a good link on
+every band, so a station whose signal sits around it switches between
+the two intervals and scans every 30 seconds for long stretches. Each
+full scan takes the radio off channel for seconds and is a roam
+decision, so traffic stutters and a station on a dual- or tri-band AP
+changes bands repeatedly.
+
+Use "simple:30:-70:900": below -70 dBm, where a link starts to lose
+rate and a roam candidate list is needed, scan every 30 seconds as
+before; above it, every 15 minutes. Recovery from a weakening link is
+unchanged; a good link scans a third as often.
+---
+ src/core/supplicant/nm-supplicant-config.c        | 15 +++++++++------
+ src/core/supplicant/tests/test-supplicant-config.c |  8 ++++----
+ 2 files changed, 13 insertions(+), 10 deletions(-)
+
+diff --git a/src/core/supplicant/nm-supplicant-config.c b/src/core/supplicant/nm-supplicant-config.c
+--- a/src/core/supplicant/nm-supplicant-config.c
++++ b/src/core/supplicant/nm-supplicant-config.c
+@@ -765,11 +765,14 @@
+      */
+     bgscan = "simple:30:-70:86400";
+ 
+-    /* If using WPA Enterprise, Dynamic WEP or we have seen more than one AP use
+-     * a shorter bgscan interval on the assumption that this is a multi-AP ESS
+-     * in which we want more reliable roaming between APs. Thus trigger scans
+-     * when the signal is still somewhat OK so we have an up-to-date roam
+-     * candidate list when the signal gets bad.
++    /* If using WPA Enterprise, Dynamic WEP or we have seen more than one AP,
++     * this is likely a multi-AP ESS or one AP on several bands. Below -70 dBm
++     * scan every 30 seconds, so an up-to-date roam candidate list is ready
++     * when the signal gets bad. Above it the link is good and is kept, so a
++     * background scan only looks for a much better BSS: every 15 minutes.
++     * A threshold well above a usable signal (it used to be -65 dBm) makes
++     * a good link near it rescan every 30 seconds and keeps the off-channel
++     * scans and roam decisions coming while it hovers there.
+      */
+     if (num_seen_bssids > 1u
+         || ((s_wsec = nm_connection_get_setting_wireless_security(connection))
+@@ -777,7 +780,7 @@
+                             "ieee8021x",
+                             "wpa-eap",
+                             "wpa-eap-suite-b-192")))
+-        bgscan = "simple:30:-65:300";
++        bgscan = "simple:30:-70:900";
+ 
+     return nm_supplicant_config_add_option(self, "bgscan", bgscan, -1, FALSE, error);
+ }
+diff --git a/src/core/supplicant/tests/test-supplicant-config.c b/src/core/supplicant/tests/test-supplicant-config.c
+--- a/src/core/supplicant/tests/test-supplicant-config.c
++++ b/src/core/supplicant/tests/test-supplicant-config.c
+@@ -723,7 +723,7 @@
+     gs_unref_variant GVariant    *config_dict = NULL;
+     const unsigned char    ssid_data[] = {0x54, 0x65, 0x73, 0x74, 0x20, 0x53, 0x53, 0x49, 0x44};
+     gs_unref_bytes GBytes *ssid        = g_bytes_new(ssid_data, sizeof(ssid_data));
+-    const char            *bgscan_data = "simple:30:-65:300";
++    const char            *bgscan_data = "simple:30:-70:900";
+     gs_unref_bytes GBytes *bgscan      = g_bytes_new(bgscan_data, strlen(bgscan_data));
+     guint32                mtu         = 1100;
+ 
+@@ -744,7 +744,7 @@
+     NMTST_EXPECT_NM_INFO("Config: added 'ca_cert' value '*/test-ca-cert.pem'");
+     NMTST_EXPECT_NM_INFO("Config: added 'private_key' value '*/test-cert.p12'");
+     NMTST_EXPECT_NM_INFO("Config: added 'proactive_key_caching' value '1'");
+-    NMTST_EXPECT_NM_INFO("Config: added 'bgscan' value 'simple:30:-65:300'");
++    NMTST_EXPECT_NM_INFO("Config: added 'bgscan' value 'simple:30:-70:900'");
+     config_dict = build_supplicant_config(connection, mtu, 0, NM_SUPPL_CAP_MASK_T_FILS_YES);
+     g_test_assert_expected_messages();
+     g_assert(config_dict);
+@@ -775,7 +775,7 @@
+     gs_unref_variant GVariant    *config_dict = NULL;
+     const unsigned char    ssid_data[] = {0x54, 0x65, 0x73, 0x74, 0x20, 0x53, 0x53, 0x49, 0x44};
+     gs_unref_bytes GBytes *ssid        = g_bytes_new(ssid_data, sizeof(ssid_data));
+-    const char            *bgscan_data = "simple:30:-65:300";
++    const char            *bgscan_data = "simple:30:-70:900";
+     gs_unref_bytes GBytes *bgscan      = g_bytes_new(bgscan_data, strlen(bgscan_data));
+     guint32                mtu         = 1100;
+ 
+@@ -796,7 +796,7 @@
+     NMTST_EXPECT_NM_INFO("Config: added 'ca_cert' value '*/test-ca-cert.pem'");
+     NMTST_EXPECT_NM_INFO("Config: added 'private_key' value '*/test-cert.p12'");
+     NMTST_EXPECT_NM_INFO("Config: added 'proactive_key_caching' value '1'");
+-    NMTST_EXPECT_NM_INFO("Config: added 'bgscan' value 'simple:30:-65:300'");
++    NMTST_EXPECT_NM_INFO("Config: added 'bgscan' value 'simple:30:-70:900'");
+     config_dict =
+         build_supplicant_config(connection,
+                                 mtu,

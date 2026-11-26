@@ -1,0 +1,52 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Project Luma <engineering@projectluma.org>
+Date: Mon, 23 Nov 2026 10:00:00 -0600
+Subject: [PATCH] Banner cards cast their drop shadow
+
+A banner card is the notification lip's surface grown into a card. The
+surface clips everything it paints to its box, its own box-shadow
+included, so cards had no drop shadow where every banner design draws
+0 18px 40px -18px rgba(0,0,0,.35). The shadow is now a sibling behind
+the surface with the same box and corners; the island and pill states
+have none.
+---
+diff --git a/data/theme/luma-shelf.css b/data/theme/luma-shelf.css
+index df3547f..68bf5b6 100644
+--- a/data/theme/luma-shelf.css
++++ b/data/theme/luma-shelf.css
+@@ -2686,6 +2686,12 @@ StBoxLayout.luma-notification-tray.luma-surface-dark .luma-notification-tray-cou
+   background-color: #21252b; border: 1px solid rgba(255,255,255,.075);
+   border-top-width: 0; border-radius: 0 0 22px 22px;
+   box-shadow: 0 12px 30px -14px rgba(0,0,0,.6); }
++/* A card's drop shadow, as every banner design draws it; the island and
++ * pill states have none. */
++.luma-notification-lip .luma-lip-drop-shadow {
++  border-radius: 0 0 22px 22px; box-shadow: 0 18px 40px -18px rgba(0,0,0,.35); }
++.luma-notification-lip.idle .luma-lip-drop-shadow,
++.luma-notification-lip.pill .luma-lip-drop-shadow { box-shadow: none; }
+ .luma-notification-lip.idle .luma-lip-surface { border-radius: 0 0 5px 5px; }
+ .luma-notification-lip.pill .luma-lip-surface { border-radius: 0 0 11px 11px; }
+ .luma-notification-lip.luma-surface-light { color: #1d1f23; }
+diff --git a/js/ui/lumaNotificationBeacon.js b/js/ui/lumaNotificationBeacon.js
+index a75560e..4a6c610 100644
+--- a/js/ui/lumaNotificationBeacon.js
++++ b/js/ui/lumaNotificationBeacon.js
+@@ -79,6 +79,10 @@ export const NotificationLip = GObject.registerClass(class NotificationLip exten
+         this._sources = new Map();
+         this._notifications = new Set();
+         this._cards = new Map();
++        // The banner's drop shadow: the surface clips everything it paints,
++        // its own shadow included, so the shadow is a sibling behind it.
++        this._dropShadow = new St.Widget({style_class: 'luma-lip-drop-shadow'});
++        this.add_child(this._dropShadow);
+         this._surface = new St.Bin({style_class: 'luma-lip-surface', clip_to_allocation: true});
+         this.add_child(this._surface);
+         this._left = new St.DrawingArea({style_class: 'luma-lip-shoulder'});
+@@ -616,6 +620,7 @@ export const NotificationLip = GObject.registerClass(class NotificationLip exten
+         const width = box.get_width(), height = box.get_height();
+         const scale = St.ThemeContext.get_for_stage(global.stage).scale_factor;
+         this._pullTarget.allocate(new Clutter.ActorBox({x1: 0, y1: 0, x2: width, y2: Math.max(height, 44 * scale)}));
++        this._dropShadow.allocate(new Clutter.ActorBox({x1: 0, y1: 0, x2: width, y2: height}));
+         this._surface.allocate(new Clutter.ActorBox({x1: 0, y1: 0, x2: width, y2: height}));
+         const shoulderY = this._bottomAnchored ? height - 12 * scale : 0;
+         this._left.allocate(new Clutter.ActorBox({x1: -12 * scale, y1: shoulderY, x2: 0, y2: shoulderY + 12 * scale}));

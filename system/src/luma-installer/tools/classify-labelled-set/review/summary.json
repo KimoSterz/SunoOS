@@ -1,0 +1,45 @@
+{
+  "ubuntu-24.04": {
+    "candidates": 7000,
+    "unanimous": 5131,
+    "reviewed_kept": 1135,
+    "decided_rows_kept": 1135,
+    "queue": 202,
+    "queue_by_reason": {
+      "disagree": 113,
+      "metadata-conflict": 17,
+      "no-vote-harm": 72
+    },
+    "marked_for_review": 202,
+    "long_tail": 0,
+    "audit": 283,
+    "harmless_without_vote": 532,
+    "coverage_now": 0.916113218408905,
+    "coverage_after_review": 0.9294801145639188,
+    "coverage_with_safe_defaults": 1.0,
+    "coverage_after_review_of_all_popcon": 0.3846864411743521,
+    "coverage_now_of_all_popcon": 0.3791542478214778,
+    "weight": "Debian popcon installs (by_inst)"
+  },
+  "fedora-45": {
+    "candidates": 3000,
+    "unanimous": 1187,
+    "reviewed_kept": 777,
+    "decided_rows_kept": 777,
+    "queue": 136,
+    "queue_by_reason": {
+      "disagree": 37,
+      "metadata-conflict": 5,
+      "no-vote-harm": 94
+    },
+    "marked_for_review": 136,
+    "long_tail": 0,
+    "audit": 104,
+    "harmless_without_vote": 900,
+    "coverage_now": 0.5266740761322589,
+    "coverage_after_review": 0.5382745207001945,
+    "coverage_with_safe_defaults": 1.0,
+    "coverage_label": "proxy (rev-deps \u00d7 comps), not install data",
+    "weight": "proxy (rev-deps \u00d7 comps), not install data: (1 + reverse dependencies within the list) x 4 for a mandatory/default comps member, x 2 for an optional one"
+  }
+}

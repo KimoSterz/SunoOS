@@ -1,0 +1,3 @@
+# Apps whose data describes this device, not the person: never copied between devices.
+# Depot: its install history and update holds (holds already travel with each app's installed record).
+org.projectluma.Depot

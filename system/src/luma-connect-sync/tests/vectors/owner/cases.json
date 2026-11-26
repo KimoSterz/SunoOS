@@ -1,0 +1,49 @@
+{
+ "cases": [
+  {
+   "fingerprints": [
+    "7AE544451971D714470F27650267A072E89FCF36"
+   ],
+   "owner": "flatpak:e38f143aeb73bbb445bb01f0af2083bf",
+   "remote_url": "https://publisher-a.example.invalid/repo/",
+   "why": "trailing slash removed"
+  },
+  {
+   "fingerprints": [
+    "7AE544451971D714470F27650267A072E89FCF36"
+   ],
+   "owner": "flatpak:e38f143aeb73bbb445bb01f0af2083bf",
+   "remote_url": "https://publisher-a.example.invalid/repo",
+   "why": "same without the slash"
+  },
+  {
+   "fingerprints": [
+    "b47329074b43f9ba3d9ab2747c8c2b2bc653bfa1",
+    "B47329074B43F9BA3D9AB2747C8C2B2BC653BFA1"
+   ],
+   "owner": "flatpak:2efcecd2766108699a0376bc5d77359b",
+   "remote_url": "https://publisher-c.example.invalid/flatpak",
+   "why": "lowercase, duplicated and unsorted fingerprints normalise"
+  },
+  {
+   "fingerprints": [
+    "A3CBD908DDE6F139C79A89E9BD0F8A57551EF5CD",
+    "7AE544451971D714470F27650267A072E89FCF36"
+   ],
+   "owner": "flatpak:28c4a1e217ab017af949320e0fe1202d",
+   "remote_url": "https://publisher-b.example.invalid/repo",
+   "why": "two primaries, sorted"
+  },
+  {
+   "fingerprints": [
+    "7AE544451971D714470F27650267A072E89FCF36",
+    "F407B9EE043A3EB03EDCB400E08D280504F480C9"
+   ],
+   "not_equal_to": "flatpak:e38f143aeb73bbb445bb01f0af2083bf",
+   "owner": "flatpak:1abcce7c2f1b53a7af148ce4d5ca0ba3",
+   "remote_url": "https://publisher-a.example.invalid/repo/",
+   "why": "a subkey fingerprint is never part of the owner (this owner is NOT publisher A's)"
+  }
+ ],
+ "construction": "flatpak: + first 32 hex of SHA-256(lp(remote_url.rstrip('/'), sorted unique uppercase primary fingerprints\u2026)); lp = 4-byte big-endian length \u2016 bytes"
+}

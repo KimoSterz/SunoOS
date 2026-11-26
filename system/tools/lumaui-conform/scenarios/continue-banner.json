@@ -1,0 +1,172 @@
+{
+ "app": "continue-banner",
+ "title": "Continue: the shell banner (desktop)",
+ "about": "Continue banner (ADR-055), Shell 0395-0397, against design-center mockups/continue (22047dd). Pixel mode, 1x crops: light over #808080, dark over #0f1218 (the reference pages paint the same backdrop and the lip material).",
+ "spec": {
+  "root": "design-center",
+  "url": "mockups/continue/offer.html",
+  "window": "#stage",
+  "ready": "html[data-ready]",
+  "viewport": {
+   "width": 460,
+   "height": 480
+  },
+  "init_script": "if (matchMedia('(prefers-color-scheme: light)').matches && !/[?&]mode=/.test(location.search)) history.replaceState(null, '', location.pathname + (location.search ? location.search + '&' : '?') + 'mode=light');"
+ },
+ "states": [
+  {
+   "name": "offer",
+   "window": "#stage",
+   "spec": [
+    {
+     "eval": "(async () => { const b=document.getElementById('stage'); b.innerHTML=CN.offer('offer'); await Promise.all([...b.querySelectorAll('img')].map(i=>i.decode().catch(()=>0))); })()",
+     "wait": 600
+    },
+    {
+     "eval": "(() => { document.querySelectorAll('#stage svg.i').forEach(s => s.setAttribute('stroke-width', '1.6')); })()",
+     "wait": 100
+    }
+   ]
+  },
+  {
+   "name": "busy",
+   "window": "#stage",
+   "spec": [
+    {
+     "eval": "(async () => { const b=document.getElementById('stage'); b.innerHTML=CN.offer('busy'); await Promise.all([...b.querySelectorAll('img')].map(i=>i.decode().catch(()=>0))); })()",
+     "wait": 600
+    },
+    {
+     "eval": "(() => { document.querySelectorAll('#stage svg.i').forEach(s => s.setAttribute('stroke-width', '1.6')); })()",
+     "wait": 100
+    }
+   ]
+  },
+  {
+   "name": "restoring",
+   "window": "#stage",
+   "spec": [
+    {
+     "eval": "(async () => { const b=document.getElementById('stage'); b.innerHTML=CN.offer('restoring'); await Promise.all([...b.querySelectorAll('img')].map(i=>i.decode().catch(()=>0))); })()",
+     "wait": 600
+    },
+    {
+     "eval": "(() => { document.querySelectorAll('#stage svg.i').forEach(s => s.setAttribute('stroke-width', '1.6')); })()",
+     "wait": 100
+    }
+   ]
+  },
+  {
+   "name": "partial",
+   "window": "#stage",
+   "spec": [
+    {
+     "eval": "(async () => { const b=document.getElementById('stage'); b.innerHTML=CN.offer('partial'); await Promise.all([...b.querySelectorAll('img')].map(i=>i.decode().catch(()=>0))); })()",
+     "wait": 600
+    },
+    {
+     "eval": "(() => { document.querySelectorAll('#stage svg.i').forEach(s => s.setAttribute('stroke-width', '1.6')); })()",
+     "wait": 100
+    }
+   ]
+  },
+  {
+   "name": "list",
+   "window": "#stage",
+   "spec": [
+    {
+     "eval": "(async () => { const b=document.getElementById('stage'); b.innerHTML=CN.offer('list'); await Promise.all([...b.querySelectorAll('img')].map(i=>i.decode().catch(()=>0))); })()",
+     "wait": 600
+    },
+    {
+     "eval": "(() => { document.querySelectorAll('#stage svg.i').forEach(s => s.setAttribute('stroke-width', '1.6')); })()",
+     "wait": 100
+    }
+   ]
+  },
+  {
+   "name": "local",
+   "window": "#stage",
+   "spec": [
+    {
+     "eval": "(async () => { const b=document.getElementById('stage'); b.innerHTML=CN.offer('local'); await Promise.all([...b.querySelectorAll('img')].map(i=>i.decode().catch(()=>0))); })()",
+     "wait": 600
+    },
+    {
+     "eval": "(() => { document.querySelectorAll('#stage svg.i').forEach(s => s.setAttribute('stroke-width', '1.6')); })()",
+     "wait": 100
+    }
+   ]
+  },
+  {
+   "name": "continued",
+   "window": "#stage",
+   "spec": [
+    {
+     "eval": "(async () => { const b=document.getElementById('stage'); b.innerHTML=CN.offer('continued'); await Promise.all([...b.querySelectorAll('img')].map(i=>i.decode().catch(()=>0))); })()",
+     "wait": 600
+    },
+    {
+     "eval": "(() => { document.querySelectorAll('#stage svg.i').forEach(s => s.setAttribute('stroke-width', '1.6')); })()",
+     "wait": 100
+    }
+   ]
+  },
+  {
+   "name": "reverse",
+   "window": "#stage",
+   "spec": [
+    {
+     "eval": "(async () => { const b=document.getElementById('stage'); b.innerHTML=CN.offer('reverse'); await Promise.all([...b.querySelectorAll('img')].map(i=>i.decode().catch(()=>0))); })()",
+     "wait": 600
+    },
+    {
+     "eval": "(() => { document.querySelectorAll('#stage svg.i').forEach(s => s.setAttribute('stroke-width', '1.6')); })()",
+     "wait": 100
+    }
+   ]
+  },
+  {
+   "name": "handheld",
+   "window": "#stage",
+   "spec": [
+    {
+     "eval": "(async () => { const b=document.getElementById('stage'); b.innerHTML=CN.offer('handheld'); await Promise.all([...b.querySelectorAll('img')].map(i=>i.decode().catch(()=>0))); })()",
+     "wait": 600
+    },
+    {
+     "eval": "(() => { document.querySelectorAll('#stage svg.i').forEach(s => s.setAttribute('stroke-width', '1.6')); })()",
+     "wait": 100
+    }
+   ]
+  }
+ ],
+ "phone_states": [],
+ "groups": [
+  {
+   "name": "fills",
+   "spec": "#stage, #stage .bn-i, #stage .bn-acts button, #stage .cn-more, #stage .lprog, #stage .cn-open"
+  },
+  {
+   "name": "appicons",
+   "spec": "#stage .cn-apps > :not(.cn-more), #stage .cn-ai, #stage .cn-gi"
+  },
+  {
+   "name": "content",
+   "spec": "#stage .bn-i, #stage .bn-src, #stage .bn-when, #stage .bn-sum, #stage .bn-body, #stage .bn-acts button, #stage .cn-apps, #stage .cn-note, #stage .cn-list"
+  }
+ ],
+ "pairs": [],
+ "text_aliases": {},
+ "pixel": {
+  "max_mean": 4.0,
+  "max_over10": 1.0,
+  "fills": "fills",
+  "max_fill_over10": 0.005,
+  "glyphs_as_text": true,
+  "mean_without_text": true,
+  "exclude_groups": [
+   "appicons"
+  ]
+ }
+}

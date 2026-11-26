@@ -1,0 +1,11 @@
+driver=nl80211
+bridge=br0
+ssid=LumaTest
+country_code=CA
+ieee80211d=1
+wmm_enabled=1
+ctrl_interface=/run/hostapd
+wpa=2
+rsn_pairwise=CCMP
+wpa_passphrase=lumatest123
+sae_password=lumatest123

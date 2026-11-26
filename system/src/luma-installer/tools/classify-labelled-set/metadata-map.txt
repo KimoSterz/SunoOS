@@ -1,0 +1,120 @@
+# The distributions' own metadata, as a second opinion on the classifier (curate.py).
+# Each line: a pattern, the class it means, and why. A package whose sources give
+# different classes has no opinion ("conflict"); one with no matching line has none.
+# The comparison is with the classifier's default (DEFAULT-RULE), by kind.
+#
+# [appstream]  AppStream component types (Ubuntu DEP-11, Fedora appstream-data XML)
+# [debtags]    Debian debtags (from Debian trixie's Packages Tag fields, by package name;
+#              Ubuntu has no tags of its own). Rules are tried in order on the tag set;
+#              "a & b" needs both, "a | b" either; fnmatch patterns.
+# [comps]      Fedora comps group ids (fnmatch), for the packages a group lists
+
+[appstream]
+desktop-application  application     # a launcher a person opens: rule 6
+desktop              application     # the older name of desktop-application
+console-application  workspace       # a terminal program, typed: rule 7
+addon                application     # extends one application: added to its tree (add_on_of), ADR Applications 8
+font                 device-add-on   # fonts for the person: rule 5
+codec                device-add-on   # codecs per release: rule 5
+inputmethod          device-add-on   # an input-method engine: rule 4
+icon-theme           device-add-on   # data add-on: rule 4
+localization         device-add-on   # language data for the session: rule 4
+driver               system-module   # a hardware driver for the device: rule 1
+firmware             system-module   # firmware: rule 1
+service              system-module   # a system service: rule 1
+
+[debtags]
+interface::daemon                                             system-module   # a daemon: rule 1
+made-of::font                                                 device-add-on   # fonts: rule 5
+role::shared-lib | role::devel-lib | devel::library           workspace       # libraries: rule 7
+role::program & interface::x11                                application     # a windowed program: rule 6
+role::program & interface::graphical                          application     # a windowed program: rule 6
+role::program & admin::boot & interface::commandline          system-tool     # boot administration needs root
+role::program & admin::kernel & interface::commandline        system-tool     # kernel administration needs root
+role::program & admin::filesystem & interface::commandline    system-tool     # filesystem administration needs root
+role::program & admin::hardware & interface::commandline      system-tool     # hardware administration needs root
+role::program & interface::commandline                        workspace       # a command: rule 7
+role::program & interface::text-mode                          workspace       # a terminal program: rule 7
+role::program & interface::shell                              workspace       # a shell program: rule 7
+
+[comps]
+fonts                    device-add-on   # the fonts group
+*-fonts                  device-add-on   # per-language font groups
+input-methods            device-add-on   # input-method engines
+*-input-methods          device-add-on   # per-language input methods
+development-tools        workspace       # compilers and build tools
+*-development            workspace       # language and library development groups
+rpm-development-tools    workspace       # packaging tools
+web-server               system-module   # servers: rule 1
+sql-server               system-module
+mysql                    system-module
+mail-server              system-module
+dns-server               system-module
+ftp-server               system-module
+network-server           system-module
+smb-server               system-module
+directory-server         system-module
+*-server                 system-module
+hardware-support         system-module   # firmware and drivers
+printing                 system-module   # printer drivers and CUPS: rule 1
+admin-tools              system-tool     # graphical administration tools that need root
+office                   application
+graphics                 application
+sound-and-video          application
+graphical-internet       application
+internet-applications    application
+games                    application
+text-internet            workspace       # terminal internet programs
+
+# [section]    the archive's Section field (Debian/Ubuntu Packages index), its component
+#              prefix ("universe/") removed. The classifier never reads it. Sections that
+#              mix classes (admin, utils, net, x11, gnome, kde, graphics, sound, video, web,
+#              mail, database, text, editors, misc, shells, metapackages, science, comm,
+#              otherosfs, hamradio, electronics, education, embedded, news, translations)
+#              abstain.
+[section]
+libs              workspace       # shared libraries: rule 7
+oldlibs           workspace       # transitional and old libraries
+libdevel          workspace       # -dev packages: rule 7
+devel             workspace       # development tools
+python            workspace       # language modules: rule 7 (interpreter modules)
+perl              workspace
+ruby              workspace
+golang            workspace
+rust              workspace
+javascript        workspace
+java              workspace
+php               workspace
+haskell           workspace
+lisp              workspace
+ocaml             workspace
+tcl               workspace
+interpreters      workspace
+gnu-r             workspace
+cli-mono          workspace
+zope              workspace
+introspection     workspace       # GObject introspection data for libraries
+debug             workspace       # debug symbols
+doc               workspace       # documentation
+tex               workspace       # TeX packages (TeX's fonts too: rule 5 excludes them)
+vcs               workspace       # version control commands
+fonts             device-add-on   # fonts: rule 5
+localization      device-add-on   # language packs: rule 4
+kernel            system-module   # kernels, modules and boot: rule 1
+httpd             system-module   # web servers and their modules: rule 1
+games             application     # games and their data (an application's add-on is an application)
+
+# [rpm-group]  Fedora's rpm Group tag, where a spec still sets a meaningful one (most say
+#              "Unspecified" and abstain).
+[rpm-group]
+System Environment/Daemons     system-module
+System Environment/Kernel      system-module
+System Environment/Libraries   workspace
+Development/Libraries          workspace
+Development/Languages          workspace
+Development/Tools              workspace
+Development/Debuggers          workspace
+Documentation                  workspace
+User Interface/Fonts           device-add-on
+Applications/Games             application
+Amusements/Games               application

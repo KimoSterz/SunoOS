@@ -1,0 +1,340 @@
+{
+  "schema": "org.projectluma.flatpak-narrow-grants/v1",
+  "about": "A Flatpak is NOT full control only if every filesystem, socket, device and bus name it effectively has (flatpak's canonical, runtime-merged permissions) is listed here. Anything else, unknown or unparsable is full control. An entry is here only if the grant cannot reach outside the sandbox or into protected paths; each says why. Read by luma_installer.flatpak_guard.narrow_grants() for the guard, depot-review and AppPermissions1's full_control.",
+  "filesystems": {
+    "user_folders": {
+      "keys": [
+        "xdg-desktop",
+        "xdg-documents",
+        "xdg-download",
+        "xdg-music",
+        "xdg-pictures",
+        "xdg-public-share",
+        "xdg-templates",
+        "xdg-videos"
+      ],
+      "subfolders": true,
+      "modes": [
+        "ro",
+        "rw",
+        "create"
+      ],
+      "why": "The person's own document folders. Not home, not hidden folders, not other applications' data. Where they lie is read from user-dirs.dirs, which no application other than a full-control one may write (the guard makes it read-only); flatpak ignores a user folder that is the home folder itself; a subfolder an application could plant a link at is taken away by the guard."
+    },
+    "own_data": {
+      "keys": [
+        "~/.var/app/{app}",
+        "xdg-run/app/{app}"
+      ],
+      "subfolders": true,
+      "modes": [
+        "ro",
+        "rw",
+        "create"
+      ],
+      "why": "The application's own data and runtime folders, which flatpak gives it anyway."
+    },
+    "pipewire": {
+      "keys": [
+        "xdg-run/pipewire-0"
+      ],
+      "subfolders": false,
+      "modes": [
+        "ro"
+      ],
+      "why": "PipeWire's socket. WirePlumber names a Flatpak client by its ID and applies the camera, microphone and screen permissions to it; the socket gives no files. Read-only: a socket still connects on a read-only mount, but nothing can be replaced, removed or made in its place."
+    },
+    "read_only_look": {
+      "keys": [
+        "xdg-config/kdeglobals",
+        "xdg-config/gtk-3.0",
+        "xdg-config/gtk-4.0",
+        "xdg-config/fontconfig",
+        "xdg-data/fonts",
+        "xdg-data/icons",
+        "xdg-data/themes",
+        "~/.fonts",
+        "~/.icons",
+        "~/.themes"
+      ],
+      "subfolders": false,
+      "modes": [
+        "ro"
+      ],
+      "why": "Read-only theme, font and toolkit settings, so the application looks like the rest of the desktop. Read-only: nothing it can change, nothing secret, nothing that starts a program."
+    },
+    "user_dirs_read_only": {
+      "keys": [
+        "xdg-config/user-dirs.dirs",
+        "xdg-config/user-dirs.locale"
+      ],
+      "subfolders": false,
+      "modes": [
+        "ro"
+      ],
+      "why": "Read-only, it says only where the person's document folders are (and their language); the guard itself gives these files read-only to every application that could write them."
+    },
+    "removable_media": {
+      "keys": [
+        "/media",
+        "/run/media",
+        "/mnt"
+      ],
+      "subfolders": true,
+      "modes": [
+        "ro",
+        "rw",
+        "create"
+      ],
+      "why": "Removable and mounted volumes. Not the home folder, not the system; Luma mounts nothing of its own there."
+    },
+    "inert_sockets": {
+      "keys": [
+        "xdg-run/speech-dispatcher",
+        "xdg-run/gamescope-0"
+      ],
+      "subfolders": false,
+      "modes": [
+        "ro"
+      ],
+      "why": "Speech output (the client sends text to be read aloud; it can choose only modules the system configured) and gamescope's display socket (a compositor, like Wayland; nothing listens on a Luma desktop). Neither gives files or runs anything. Read-only: a socket still connects on a read-only mount, but nothing can be replaced, removed or made in its place."
+    }
+  },
+  "sockets": {
+    "wayland": "The Wayland compositor: a window, its own input and clipboard through the compositor's rules; no files, no other window's input.",
+    "fallback-x11": "Only used when there is no Wayland display. Luma's sessions are Wayland, so it is never given the X server.",
+    "inherit-wayland-socket": "The same Wayland connection, inherited.",
+    "cups": "Submits print jobs as the person; changing printers or their filters needs an administrator."
+  },
+  "sockets_with_luma_flatpak": {
+    "pulseaudio": "With Luma's flatpak the application gets a PulseAudio server of its own: no module loading, recording only with the microphone permission. A stock flatpak gives it the session's server, which can load modules that write files: full control."
+  },
+  "devices": {
+    "dri": "GPU render nodes for drawing; no files, no other application's memory.",
+    "kvm": "Hardware virtualisation for emulators and virtual machines; the guest runs inside the application, the host is not reachable through it."
+  },
+  "session_bus": {
+    "talk": {
+      "names": [
+        "org.freedesktop.Notifications",
+        "org.kde.StatusNotifierWatcher",
+        "org.kde.StatusNotifierItem",
+        "com.canonical.AppMenu.Registrar",
+        "com.canonical.indicator.application",
+        "org.ayatana.indicator.application",
+        "org.freedesktop.ScreenSaver",
+        "org.kde.KGlobalSettings",
+        "org.kde.kconfig.notify",
+        "com.canonical.Unity.LauncherEntry"
+      ],
+      "why": "Notifications, tray icons, the global menu, keeping the screen awake, dock badges and KDE's settings-changed signals: each answers the caller about itself, or carries only signals, and runs nothing."
+    },
+    "talk_scoped_to_caller": {
+      "names": {
+        "org.projectluma.AppData1": "Luma's first-launch data hand-off. It takes no arguments: it verifies the caller's Flatpak instance against its installed signed deployment and refuses any app not on its own list; for a listed app it moves only that app's mapped native store into that app's own ~/.var/app/ID. It reads no other app's data and runs nothing the caller chooses.",
+        "org.project_luma.ShellState1": "Luma's shell state. Every setter (favourites, home apps, wallpaper, appearance, idle delay, presentation, posture, home layout, input capabilities) answers only the shell, Settings and statectl and refuses every sandboxed caller; an application reads only the appearance, presentation, posture, input capabilities and the weather without the place name, and Changed goes to the shells alone. Narrow only where the installed luma-shell-state has that check (requires): 0.2.0-1.luma.42 as merged into main at 7bd52761, the whole line through 904ca971 (setters' caller check and the reduced reads); no published .42 build lacks them."
+      },
+      "why": "Luma services that verify the caller's identity themselves and act only on the caller's own data. Not here: org.projectluma.ApplicationDirectory1 (Launch starts any installed application, host ones included, with documents the caller picks), org.projectluma.Shell.Remote (ShowQuickPanel is answered for any caller at any time). A name with a requirement (requires) counts only where the installed package is at least that version; an older image keeps it as full control.",
+      "requires": {
+        "org.project_luma.ShellState1": {
+          "package": "luma-shell-state",
+          "version": "0.2.0-1.luma.42"
+        }
+      }
+    },
+    "talk_bound": {
+      "names": {
+        "org.projectluma.ClockHost1": {
+          "bound_to": "org.projectluma.Clock",
+          "for_bound": "narrow",
+          "why": "Clock's alarms and timers: every caller but the signed Clock is refused (the reference caller check); Clock passes only fixed alarm and timer plans, no paths or commands."
+        },
+        "org.projectluma.MailHost1": {
+          "bound_to": "org.projectluma.Charlie",
+          "for_bound": "narrow",
+          "why": "Charlie's own mail accounts, sync and sending, and its keyring entries: every caller but the signed Charlie is refused; attachments arrive as bytes, never host paths. It opens the default browser at the provider's sign-in page the service builds (only the client ID comes from Charlie)."
+        },
+        "org.projectluma.ViolaHost1": {
+          "bound_to": "com.rhyme.viola",
+          "for_bound": "narrow",
+          "why": "Viola's private displays: every caller but the signed Viola is refused; Viola gets up to four headless displays (a private mutter and bus each, started with fixed arguments), reachable only through its own xdg-run/luma-viola."
+        },
+        "org.projectluma.ModProfiles1": {
+          "bound_to": "org.projectluma.Mods",
+          "for_bound": "narrow",
+          "requires": {
+            "package": "luma-mods",
+            "version": "0.1.0-1.luma.25"
+          },
+          "why": "Mods' own state and the one validated shell preference it manages (dock appearance): every caller but the signed Mods is refused, checked before any work is queued (requires: the release with that order)."
+        },
+        "org.projectluma.MonitorHost1": {
+          "bound_to": "io.luma.Monitor",
+          "for_bound": "tier1",
+          "line": "sees and can stop any program you run",
+          "why": "Every caller but the signed Monitor is refused. Monitor itself samples every process, reads their open files and can force any of them to quit."
+        },
+        "org.projectluma.Ari1": {
+          "bound_to": "org.projectluma.Ari",
+          "for_bound": "tier1",
+          "line": "runs tools that change your settings, applications and programs",
+          "why": "Every caller but the signed Ari (or a native program of the session) is refused. Ari itself drives tool servers over settings, processes, applications and installs."
+        },
+        "org.projectluma.DepotHost1": {
+          "bound_to": "org.projectluma.Depot",
+          "for_bound": "tier1",
+          "line": "installs, changes and removes applications, system packages and firmware",
+          "why": "Every caller but the signed Depot is refused. Depot itself installs, updates, reverts and removes applications, launches them, resets system package overrides and installs firmware."
+        }
+      },
+      "why": "Luma services that admit exactly one signed application (the reference caller check) and refuse every other caller: for every other application the name is inert, so narrow. For the one it serves, its own line decides: narrow (its own data), or a capability disclosed (tier1: it can act as you outside its sandbox)."
+    },
+    "talk_with_luma_flatpak": {
+      "names": [
+        "org.freedesktop.secrets"
+      ],
+      "why": "With Luma's flatpak this is the application's own keyring broker, which keeps it to the entries it saved itself. A stock flatpak gives it the whole keyring: full control."
+    },
+    "own": {
+      "names": [
+        "{app}",
+        "{app}.*",
+        "org.mpris.MediaPlayer2.*"
+      ],
+      "why": "Its own name and a media-player name: owning a name gives the application nothing of anyone else."
+    },
+    "see": "Seeing a name only tells the application that it exists."
+  },
+  "system_bus": {
+    "talk": {
+      "names": [
+        "org.freedesktop.UPower",
+        "org.freedesktop.Avahi"
+      ],
+      "why": "Battery state and local network name lookup: read-only answers about the device."
+    },
+    "capabilities": {
+      "org.freedesktop.UDisks2": {
+        "line": "manages your drives: sees every disk; mounts, unlocks, formats, ejects and powers off removable drives, and mounts disk images, without asking (opening a drive directly, or changing internal disks, asks for an administrator password)",
+        "why": "UDisks2 identifies no application: polkit answers for the person's active session. On Luma (udisks2's own policy, no local rules, 2026-11-25): yes for filesystem-mount, encrypted-unlock, modify-device, loop-setup, eject-media, power-off-drive, rescan; auth_admin_keep for open-device, *-system, *-other-seat. Disclosed, not narrow."
+      }
+    }
+  },
+  "shared": {
+    "network": "The network: no files, no host commands.",
+    "ipc": "The person's System V shared memory (MIT-SHM for drawing); no files, no host commands."
+  },
+  "features": {
+    "multiarch": "32-bit libraries inside the sandbox.",
+    "devel": "Debugging its own processes inside the sandbox (ptrace, perf); the host is not reachable.",
+    "per-app-dev-shm": "Shared memory between its own instances only."
+  },
+  "known_sections": {
+    "X-DConf": "Flatpak copies the application's own dconf settings (its migrate-path, which must match its ID) into its own store once; it grants nothing.",
+    "X-Luma": "Luma's compatibility declarations (min-host-* and app-data-schema): read only by the installer to refuse an install or channel change the host cannot serve; nothing reads them to grant anything."
+  },
+  "reserved_ids": {
+    "hard": {
+      "prefixes": [
+        "io.luma.",
+        "org.projectluma.",
+        "org.project_luma.",
+        "org.freedesktop.DBus",
+        "org.freedesktop.portal.",
+        "org.freedesktop.impl.",
+        "org.freedesktop.secrets",
+        "org.freedesktop.Flatpak",
+        "org.freedesktop.Notifications",
+        "org.freedesktop.ScreenSaver",
+        "org.freedesktop.IBus",
+        "org.freedesktop.systemd1",
+        "org.freedesktop.Tracker3.",
+        "org.freedesktop.LocalSearch3",
+        "org.freedesktop.a11y.",
+        "org.freedesktop.background.",
+        "org.freedesktop.ReserveDevice1.",
+        "org.freedesktop.ColorHelper",
+        "org.freedesktop.MalcontentControl",
+        "org.freedesktop.import1",
+        "org.freedesktop.machine1",
+        "org.freedesktop.PowerManagement",
+        "org.gnome.Shell.",
+        "org.gnome.SettingsDaemon.",
+        "org.gnome.keyring",
+        "org.kde.KWin.",
+        "org.kde.plasma.",
+        "org.kde.plasmashell",
+        "org.kde.kwalletd.",
+        "org.kde.kwalletd5.",
+        "org.kde.kwalletd6.",
+        "org.kde.kglobalaccel.",
+        "org.gnome.Mutter.",
+        "org.gnome.SessionManager.",
+        "org.a11y.",
+        "org.gtk.vfs.",
+        "org.gtk.MountOperationHandler.",
+        "ca.desrt.dconf.",
+        "org.gtk.GLib.PACRunner."
+      ],
+      "why": "Names no application from anyone else has a reason to own: Luma's own (io.luma, org.projectluma, org.project_luma: Luma's applications are trusted only by origin, installed system-wide from the luma remote whose URL and key match the installer's own luma.flatpakrepo), the session bus itself, the portals and their backends, the keyring (org.freedesktop.secrets, org.gnome.keyring) and the other freedesktop names a Luma session answers to, GNOME Shell, its settings daemon, Mutter and the session manager, KWin, Plasma, KDE's global shortcuts and KWallet (a keyring), and the session services whose capture breaks a security property: accessibility (org.a11y: text and keys), GVfs and its mount password prompt (org.gtk.vfs, org.gtk.MountOperationHandler), dconf (settings writes) and GLib's proxy resolver (org.gtk.GLib.PACRunner). Flatpak lets an application own its ID and every name below it, and no override takes that away, so an ID equal to, inside or above one of these is refused by Valet, Depot and Depot review (none of Flathub's 3431 application IDs is, 2026-11-24)."
+    },
+    "soft": {
+      "prefixes": [
+        "org.freedesktop.",
+        "org.gnome.OnlineAccounts.",
+        "org.gnome.evolution.",
+        "org.gnome.ScreenSaver.",
+        "org.gnome.DisplayManager.",
+        "org.gnome.Identity.",
+        "org.kde.kded",
+        "com.canonical.",
+        "org.ayatana."
+      ],
+      "services": [
+        "com.feralinteractive.GameMode",
+        "id.waydro.Session",
+        "io.snapcraft.Launcher",
+        "io.snapcraft.SessionAgent",
+        "io.snapcraft.Settings",
+        "org.bluez.obex",
+        "org.fedoraproject.Config.Printing",
+        "org.flatpak.Authenticator.Oci",
+        "org.freedesktop.FileManager1",
+        "org.gnome.BrowserConnector",
+        "org.gnome.Epiphany.WebAppProvider",
+        "org.gnome.NautilusPreviewer",
+        "org.gnome.Rygel1",
+        "org.gnome.Settings",
+        "org.gnome.Settings.GlobalShortcutsProvider",
+        "org.gnome.Settings.SearchProvider",
+        "org.gtk.Notifications",
+        "org.gtk.Settings",
+        "org.kde.StatusNotifierWatcher",
+        "org.mobian_project.CallAudio",
+        "org.pipewire.Telephony",
+        "org.project_luma.ShellState1",
+        "org.pulseaudio.Server",
+        "org.sigxcpu.Feedback"
+      ],
+      "why": "Names a session service answers to that an application from elsewhere may also legitimately carry (GNOME Web's org.gnome.Epiphany is above epiphany-runtime's WebAppProvider; Sushi is org.gnome.NautilusPreviewer; GameMode, and the other freedesktop.org projects' own IDs). Installable, and disclosed as full control: it can take over a system service name. services lists the session services a Luma session answers to outside the prefixes (a nightly's bus, running and activatable, Flatpak exports left out), so the answer is the same whether or not anything is running. A file manager may be the person's \"show in folder\" handler (org.freedesktop.FileManager1): taken, it only answers those requests, so it is disclosed. On Flathub, 2026-11-24: org.gnome.Epiphany and nine freedesktop.org projects (Bustle, Piper, fwupd, appstream and others)."
+    }
+  },
+  "context_keys": {
+    "filesystems": "Checked entry by entry.",
+    "sockets": "Checked entry by entry.",
+    "devices": "Checked entry by entry.",
+    "features": "Checked entry by entry.",
+    "shared": "Checked entry by entry.",
+    "persistent": "Folders inside its own data folder.",
+    "unset-environment": "Variables removed from its own environment."
+  },
+  "acts_as_you": {
+    "session_bus": {
+      "org.projectluma.Terminal": {
+        "line": "runs any program as you",
+        "why": "Terminal opens any folder and runs any program it is handed (Filer's Run), for any caller: an application that can talk to it can run anything as you."
+      }
+    },
+    "why": "Names that let any caller act as the person outside the sandbox: tier 1 for every application that can talk to them, and the guard keeps only its covers (flatpak_guard.HOST_CONTROL)."
+  }
+}

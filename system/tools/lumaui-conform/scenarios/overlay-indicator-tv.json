@@ -1,0 +1,81 @@
+{
+ "app": "overlay-indicator-tv",
+ "title": "Layer permissions: popover on TV (design-center 51db99e)",
+ "spec": {
+  "root": "design-center",
+  "url": "mockups/overlay-perms/indicator.html?posture=tv",
+  "window": "#stage",
+  "ready": "html[data-ready]",
+  "viewport": {
+   "width": 1920,
+   "height": 1080
+  },
+  "init_script": "if (matchMedia('(prefers-color-scheme: light)').matches && !/[?&]mode=/.test(location.search)) history.replaceState(null, '', location.pathname + (location.search ? location.search + '&' : '?') + 'mode=light');"
+ },
+ "states": [
+  {
+   "name": "pop-1",
+   "about": "popover, 1 app",
+   "window": "#stage",
+   "spec": [
+    {
+     "eval": "const ids=['diskord','huddle','playground'].slice(0,1);OV.APPS.playground={n:'Playground',i:OV.AP('playground'),what:'Game stats',since:'now'};document.getElementById('grid').innerHTML=OV.cell(ids)+['wifi','shield','bluetooth','battery-medium'].map(n=>`<span class=\"pc\"><span class=\"ind\"><i class=\"g\" style=\"--i:url('../../icons/${n}.svg')\"></i></span></span>`).join('');document.getElementById('pop').innerHTML=OV.pop(ids);",
+     "wait": 900
+    }
+   ]
+  },
+  {
+   "name": "pop-2",
+   "about": "popover, 2 apps",
+   "window": "#stage",
+   "spec": [
+    {
+     "eval": "const ids=['diskord','huddle','playground'].slice(0,2);OV.APPS.playground={n:'Playground',i:OV.AP('playground'),what:'Game stats',since:'now'};document.getElementById('grid').innerHTML=OV.cell(ids)+['wifi','shield','bluetooth','battery-medium'].map(n=>`<span class=\"pc\"><span class=\"ind\"><i class=\"g\" style=\"--i:url('../../icons/${n}.svg')\"></i></span></span>`).join('');document.getElementById('pop').innerHTML=OV.pop(ids);",
+     "wait": 900
+    }
+   ]
+  },
+  {
+   "name": "pop-3",
+   "about": "popover, 3 apps",
+   "window": "#stage",
+   "spec": [
+    {
+     "eval": "const ids=['diskord','huddle','playground'].slice(0,3);OV.APPS.playground={n:'Playground',i:OV.AP('playground'),what:'Game stats',since:'now'};document.getElementById('grid').innerHTML=OV.cell(ids)+['wifi','shield','bluetooth','battery-medium'].map(n=>`<span class=\"pc\"><span class=\"ind\"><i class=\"g\" style=\"--i:url('../../icons/${n}.svg')\"></i></span></span>`).join('');document.getElementById('pop').innerHTML=OV.pop(ids);",
+     "wait": 900
+    }
+   ]
+  }
+ ],
+ "groups": [
+  {
+   "name": "cell",
+   "spec": "#grid .pc:first-child .ov-ic, #grid .pc:first-child .ov-more"
+  },
+  {
+   "name": "fills",
+   "spec": "#stage, #stage .q2l, #stage .ov-stop, #grid .pc:first-child .ov-ic, #grid .pc:first-child .ov-more, .ov-tip"
+  },
+  {
+   "name": "content",
+   "spec": "#stage .q2h b, #stage .q2i img, #stage .q2t, #stage .ov-stop, #stage .q2more"
+  },
+  {
+   "name": "artwork",
+   "spec": "#stage .q2i img"
+  }
+ ],
+ "pairs": [],
+ "text_aliases": {},
+ "pixel": {
+  "max_mean": 4.0,
+  "max_over10": 1.0,
+  "exclude_groups": [
+   "artwork"
+  ],
+  "fills": "fills",
+  "max_fill_over10": 0.005,
+  "glyphs_as_text": true,
+  "mean_without_text": true
+ }
+}

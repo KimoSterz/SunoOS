@@ -1,0 +1,11 @@
+#!/bin/bash
+# Offline stand-in for `gh api` inside interim CI jobs (GitHub is unavailable).
+# Serves only responses snapshotted by tools/interim/gh-snapshot.sh into
+# $LUMA_INTERIM_GH_CACHE/<api path> with "/", "?", "&" and "=" mapped to "_" (one flat directory).
+# Anything not snapshotted fails, so a check that needs live GitHub fails closed.
+set -euo pipefail
+[ "${1:-}" = api ] || { echo "interim gh: only 'gh api PATH' is available offline" >&2; exit 1; }
+path=${2:?path}; path=${path#/}
+file=${LUMA_INTERIM_GH_CACHE:?}/$(printf '%s' "$path" | sed 's|[/?&=]|_|g')
+[ -f "$file" ] || { echo "interim gh: no snapshot for $path" >&2; exit 1; }
+cat "$file"

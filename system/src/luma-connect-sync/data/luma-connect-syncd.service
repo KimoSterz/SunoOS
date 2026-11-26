@@ -1,0 +1,20 @@
+[Unit]
+Description=Luma Connect Sync
+Documentation=file:///usr/share/doc/luma-connect-sync/README.md
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+# No mount or user-namespace options (ProtectSystem, ProtectHome, PrivateTmp, PrivateUsers, ...): in the user
+# manager they put the service in its own user namespace, where /proc/PID/exe of the Shell and Settings can't be
+# read, and callers.py would refuse them (tests/test_callers.py: UnitFile).
+Type=dbus
+BusName=org.projectluma.ConnectSync1
+ExecStart=/usr/bin/luma-connect-syncd
+Nice=10
+IOSchedulingClass=idle
+Restart=on-failure
+RestartSec=30
+
+[Install]
+WantedBy=graphical-session.target

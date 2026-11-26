@@ -1,0 +1,298 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Project Luma <maintainers@projectluma.org>
+Date: Sun, 22 Nov 2026 23:30:00 +0000
+Subject: [PATCH] Remember BSSs that failed to connect and do not roam to them
+
+When a connection attempt to a BSS fails, the BSS is put on the ignore
+list for a short time and the ignore list is cleared once every BSS of
+the ESS has been tried or a connection succeeds. Nothing stops the next
+scan from selecting the same BSS again. A BSS that never accepts the
+station (for example a 6 GHz BSS whose AKM, password or MLO setup the
+station cannot use, or a misconfigured extender) is then a roaming
+target again after every background scan: the station leaves its
+working link, fails, and reconnects, with every hop costing the
+connection 5-40 seconds. With the default bgscan of a multi-BSS ESS this
+repeats every 5 minutes.
+
+Remember connection failures per BSSID for much longer: 10 minutes after
+the first failure, doubling with every further failure, at most 24
+hours, until a connection to the BSS succeeds. Only failures before the
+connection completed count; losing an established link later does not
+mark the BSS. A BSS that failed recently
+
+ - is never the target of a roam away from a working link, and
+ - is tried only after every other matching BSS when selecting a BSS for
+   a connection, so it does not add a failed attempt to every new
+   connection while a network whose only BSSs failed is still found.
+
+The table holds 8 BSSIDs; the entry that expires first is replaced.
+---
+ wpa_supplicant/bssid_ignore.c     | 94 +++++++++++++++++++++++++++++++
+ wpa_supplicant/bssid_ignore.h     |  4 ++
+ wpa_supplicant/events.c           | 55 +++++++++++++-----
+ wpa_supplicant/wpa_supplicant.c   | 13 +++++
+ wpa_supplicant/wpa_supplicant_i.h | 17 ++++++
+ 5 files changed, 168 insertions(+), 15 deletions(-)
+
+diff --git a/wpa_supplicant/bssid_ignore.c b/wpa_supplicant/bssid_ignore.c
+index ab16fc5..577806e 100644
+--- a/wpa_supplicant/bssid_ignore.c
++++ b/wpa_supplicant/bssid_ignore.c
+@@ -219,3 +219,97 @@ void wpa_bssid_ignore_update(struct wpa_supplicant *wpa_s)
+ 		}
+ 	}
+ }
++
++
++static struct wpa_bss_failure *
++wpas_bss_failure_get(struct wpa_supplicant *wpa_s, const u8 *bssid)
++{
++	unsigned int i;
++
++	for (i = 0; i < WPA_BSS_FAILURES; i++) {
++		if (wpa_s->bss_failures[i].count &&
++		    ether_addr_equal(wpa_s->bss_failures[i].bssid, bssid))
++			return &wpa_s->bss_failures[i];
++	}
++	return NULL;
++}
++
++
++/**
++ * wpas_bss_failure_add - Remember a failed connection attempt to a BSS
++ * @wpa_s: Pointer to wpa_supplicant data
++ * @bssid: BSSID of the BSS that could not be connected to
++ *
++ * The BSS is avoided for voluntary roaming for WPA_BSS_FAILURE_BASE_SECS,
++ * doubling with each further failure up to WPA_BSS_FAILURE_MAX_SECS, until a
++ * connection to it succeeds. When the table is full, the entry that expires
++ * first is replaced.
++ */
++void wpas_bss_failure_add(struct wpa_supplicant *wpa_s, const u8 *bssid)
++{
++	struct wpa_bss_failure *e;
++	struct os_reltime now;
++	unsigned int i, secs;
++
++	if (!bssid || is_zero_ether_addr(bssid))
++		return;
++	os_get_reltime(&now);
++	e = wpas_bss_failure_get(wpa_s, bssid);
++	if (!e) {
++		e = &wpa_s->bss_failures[0];
++		for (i = 1; i < WPA_BSS_FAILURES; i++) {
++			struct wpa_bss_failure *c = &wpa_s->bss_failures[i];
++
++			if (!e->count)
++				break;
++			if (!c->count || os_reltime_before(&c->until, &e->until))
++				e = c;
++		}
++		os_memset(e, 0, sizeof(*e));
++		os_memcpy(e->bssid, bssid, ETH_ALEN);
++	}
++	secs = WPA_BSS_FAILURE_BASE_SECS;
++	for (i = 1; i < e->count + 1 && secs < WPA_BSS_FAILURE_MAX_SECS; i++)
++		secs *= 2;
++	if (secs > WPA_BSS_FAILURE_MAX_SECS)
++		secs = WPA_BSS_FAILURE_MAX_SECS;
++	e->count++;
++	e->until = now;
++	e->until.sec += secs;
++	wpa_dbg(wpa_s, MSG_DEBUG, "BSS " MACSTR
++		" failed %u time(s); not a roaming target for %u seconds",
++		MAC2STR(bssid), e->count, secs);
++}
++
++
++/**
++ * wpas_bss_failure_clear - Forget failures of a BSS after a connection to it
++ * @wpa_s: Pointer to wpa_supplicant data
++ * @bssid: BSSID of the BSS that was connected to
++ */
++void wpas_bss_failure_clear(struct wpa_supplicant *wpa_s, const u8 *bssid)
++{
++	struct wpa_bss_failure *e = wpas_bss_failure_get(wpa_s, bssid);
++
++	if (e)
++		os_memset(e, 0, sizeof(*e));
++}
++
++
++/**
++ * wpas_bss_failed_recently - Whether connecting to a BSS failed recently
++ * @wpa_s: Pointer to wpa_supplicant data
++ * @bssid: BSSID to check
++ * Returns: true if a connection attempt to the BSS failed and its avoidance
++ * period has not ended yet
++ */
++bool wpas_bss_failed_recently(struct wpa_supplicant *wpa_s, const u8 *bssid)
++{
++	struct wpa_bss_failure *e = wpas_bss_failure_get(wpa_s, bssid);
++	struct os_reltime now;
++
++	if (!e)
++		return false;
++	os_get_reltime(&now);
++	return os_reltime_before(&now, &e->until);
++}
+diff --git a/wpa_supplicant/bssid_ignore.h b/wpa_supplicant/bssid_ignore.h
+index 721b0e1..d1f82a7 100644
+--- a/wpa_supplicant/bssid_ignore.h
++++ b/wpa_supplicant/bssid_ignore.h
+@@ -30,4 +30,8 @@ int wpa_bssid_ignore_is_listed(struct wpa_supplicant *wpa_s, const u8 *bssid);
+ void wpa_bssid_ignore_clear(struct wpa_supplicant *wpa_s);
+ void wpa_bssid_ignore_update(struct wpa_supplicant *wpa_s);
+ 
++void wpas_bss_failure_add(struct wpa_supplicant *wpa_s, const u8 *bssid);
++void wpas_bss_failure_clear(struct wpa_supplicant *wpa_s, const u8 *bssid);
++bool wpas_bss_failed_recently(struct wpa_supplicant *wpa_s, const u8 *bssid);
++
+ #endif /* BSSID_IGNORE_H */
+diff --git a/wpa_supplicant/events.c b/wpa_supplicant/events.c
+index a822f12..0b81299 100644
+--- a/wpa_supplicant/events.c
++++ b/wpa_supplicant/events.c
+@@ -1746,7 +1746,7 @@ wpa_supplicant_select_bss(struct wpa_supplicant *wpa_s,
+ 			  struct wpa_ssid **selected_ssid,
+ 			  int only_first_ssid)
+ {
+-	unsigned int i;
++	unsigned int i, pass;
+ 
+ 	if (wpa_s->current_ssid) {
+ 		struct wpa_ssid *ssid;
+@@ -1774,21 +1774,36 @@ wpa_supplicant_select_bss(struct wpa_supplicant *wpa_s,
+ 		wpa_dbg(wpa_s, MSG_DEBUG, "Selecting BSS from priority group %d",
+ 			group->priority);
+ 
+-	for (i = 0; i < wpa_s->last_scan_res_used; i++) {
+-		struct wpa_bss *bss = wpa_s->last_scan_res[i];
++	/*
++	 * BSSs that failed to connect recently are tried only after every
++	 * other matching BSS, so a BSS that keeps failing does not delay each
++	 * new connection, while a network whose only BSSs failed is still
++	 * found.
++	 */
++	for (pass = 0; pass < 2; pass++) {
++		for (i = 0; i < wpa_s->last_scan_res_used; i++) {
++			struct wpa_bss *bss = wpa_s->last_scan_res[i];
++			bool failed = wpas_bss_failed_recently(wpa_s,
++							       bss->bssid);
+ 
+-		wpa_s->owe_transition_select = 1;
+-		*selected_ssid = wpa_scan_res_match(wpa_s, i, bss, group,
+-						    only_first_ssid, 1);
+-		wpa_s->owe_transition_select = 0;
+-		if (!*selected_ssid)
+-			continue;
+-		wpa_dbg(wpa_s, MSG_DEBUG, "   selected %sBSS " MACSTR
+-			" ssid='%s'",
+-			bss == wpa_s->current_bss ? "current ": "",
+-			MAC2STR(bss->bssid),
+-			wpa_ssid_txt(bss->ssid, bss->ssid_len));
+-		return bss;
++			if (failed != (pass == 1))
++				continue;
++			wpa_s->owe_transition_select = 1;
++			*selected_ssid = wpa_scan_res_match(wpa_s, i, bss,
++							    group,
++							    only_first_ssid,
++							    1);
++			wpa_s->owe_transition_select = 0;
++			if (!*selected_ssid)
++				continue;
++			wpa_dbg(wpa_s, MSG_DEBUG, "   selected %sBSS " MACSTR
++				" ssid='%s'%s",
++				bss == wpa_s->current_bss ? "current " : "",
++				MAC2STR(bss->bssid),
++				wpa_ssid_txt(bss->ssid, bss->ssid_len),
++				failed ? " (failed recently)" : "");
++			return bss;
++		}
+ 	}
+ 
+ 	return NULL;
+@@ -2210,6 +2225,16 @@ int wpa_supplicant_need_to_roam_within_ess(struct wpa_supplicant *wpa_s,
+ 		return 1;
+ 	}
+ 
++	/*
++	 * Leaving a working link for a BSS that just failed to accept this
++	 * station turns a voluntary roam into an outage.
++	 */
++	if (wpas_bss_failed_recently(wpa_s, selected->bssid)) {
++		wpa_dbg(wpa_s, MSG_DEBUG,
++			"Skip roam - connecting to the selected BSS failed recently");
++		return 0;
++	}
++
+ 	/*
+ 	 * Try to poll the signal from the driver since this will allow to get
+ 	 * more accurate values. In some cases, there can be big differences
+diff --git a/wpa_supplicant/wpa_supplicant.c b/wpa_supplicant/wpa_supplicant.c
+index 4362ed6..8759073 100644
+--- a/wpa_supplicant/wpa_supplicant.c
++++ b/wpa_supplicant/wpa_supplicant.c
+@@ -1118,6 +1118,7 @@ void wpa_supplicant_set_state(struct wpa_supplicant *wpa_s,
+ 			fils_hlp_sent ? " FILS_HLP_SENT" : "", mld_addr);
+ #endif /* CONFIG_CTRL_IFACE || !CONFIG_NO_STDOUT_DEBUG */
+ 		wpas_clear_temp_disabled(wpa_s, ssid, 1);
++		wpas_bss_failure_clear(wpa_s, wpa_s->bssid);
+ 		wpa_s->consecutive_conn_failures = 0;
+ 		wpa_s->new_connection = 0;
+ 		wpa_drv_set_operstate(wpa_s, 1);
+@@ -8401,6 +8402,18 @@ void wpas_connection_failed(struct wpa_supplicant *wpa_s, const u8 *bssid,
+ 		return;
+ 	}
+ 
++	/*
++	 * Remember BSSs that did not accept this station. A link that worked
++	 * and was lost later is not a failure of the BSS to accept it.
++	 */
++	if (wpa_s->wpa_state < WPA_COMPLETED) {
++		const u8 **link = link_bssids;
++
++		while (link && *link)
++			wpas_bss_failure_add(wpa_s, *link++);
++		wpas_bss_failure_add(wpa_s, bssid);
++	}
++
+ 	/* Also mark links as failed */
+ 	while (link_bssids && *link_bssids) {
+ 		wpa_bssid_ignore_add(wpa_s, *link_bssids);
+diff --git a/wpa_supplicant/wpa_supplicant_i.h b/wpa_supplicant/wpa_supplicant_i.h
+index 110a864..c7463a0 100644
+--- a/wpa_supplicant/wpa_supplicant_i.h
++++ b/wpa_supplicant/wpa_supplicant_i.h
+@@ -677,6 +677,22 @@ struct ml_sta_link_info {
+  * data is used from other files as an arbitrary context pointer in calls to
+  * core functions.
+  */
++/*
++ * Connection failures per BSS, remembered much longer than the ignore list
++ * (which only spaces out retries and is cleared once every BSS was tried).
++ * A BSS that failed recently is not a target for a voluntary roam away from
++ * a working link, and is tried last when selecting a BSS for a connection.
++ */
++#define WPA_BSS_FAILURES 8
++#define WPA_BSS_FAILURE_BASE_SECS 600
++#define WPA_BSS_FAILURE_MAX_SECS (24 * 3600)
++
++struct wpa_bss_failure {
++	u8 bssid[ETH_ALEN];
++	unsigned int count;
++	struct os_reltime until;
++};
++
+ struct wpa_supplicant {
+ 	struct wpa_global *global;
+ 	struct wpa_radio *radio; /* shared radio context */
+@@ -839,6 +855,7 @@ struct wpa_supplicant {
+ 				    * known not to be configured with a key */
+ 
+ 	struct wpa_bssid_ignore *bssid_ignore;
++	struct wpa_bss_failure bss_failures[WPA_BSS_FAILURES];
+ 
+ 	/* Number of connection failures since last successful connection */
+ 	unsigned int consecutive_conn_failures;

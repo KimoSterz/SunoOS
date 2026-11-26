@@ -1,0 +1,47 @@
+--- a/wmediumd/config.c
++++ b/wmediumd/config.c
+@@ -52,10 +52,36 @@ static int get_link_snr_default(struct wmediumd *ctx, struct station *sender,
+ 	return SNR_DEFAULT;
+ }
+ 
++#include <signal.h>
++#include <stdio.h>
++static volatile sig_atomic_t snr_reload_pending;
++static void snr_reload_signal(int sig) { (void) sig; snr_reload_pending = 1; }
++
++/* Test harness: on SIGUSR1, set link SNRs from $WMEDIUMD_SNR_FILE ("i j snr" lines, symmetric). */
++static void snr_reload(struct wmediumd *ctx)
++{
++	const char *path = getenv("WMEDIUMD_SNR_FILE");
++	FILE *f;
++	int i, j, snr;
++
++	snr_reload_pending = 0;
++	if (!path || !(f = fopen(path, "r")))
++		return;
++	while (fscanf(f, "%d %d %d", &i, &j, &snr) == 3) {
++		if (i < 0 || j < 0 || i >= ctx->num_stas || j >= ctx->num_stas)
++			continue;
++		ctx->snr_matrix[i * ctx->num_stas + j] = snr;
++		ctx->snr_matrix[j * ctx->num_stas + i] = snr;
++	}
++	fclose(f);
++}
++
+ static int get_link_snr_from_snr_matrix(struct wmediumd *ctx,
+ 					struct station *sender,
+ 					struct station *receiver)
+ {
++	if (snr_reload_pending)
++		snr_reload(ctx);
+ 	return ctx->snr_matrix[sender->index * ctx->num_stas + receiver->index];
+ }
+ 
+@@ -403,6 +429,7 @@ int load_config(struct wmediumd *ctx, const char *file, const char *per_file)
+ int load_config(struct wmediumd *ctx, const char *file, const char *per_file)
+ {
+ 	config_t cfg, *cf;
++	signal(SIGUSR1, snr_reload_signal);
+ 	const config_setting_t *ids, *links, *model_type;
+ 	const config_setting_t *error_probs = NULL, *error_prob;
+ 	const config_setting_t *enable_interference;

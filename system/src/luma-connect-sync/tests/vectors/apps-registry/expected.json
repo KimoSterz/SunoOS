@@ -1,0 +1,34 @@
+{
+ "fingerprints": {
+  "org.example.Game": {
+   "primary": "7AE544451971D714470F27650267A072E89FCF36",
+   "subkeys": [
+    "F407B9EE043A3EB03EDCB400E08D280504F480C9"
+   ]
+  },
+  "org.example.Notes": {
+   "primary": "A3CBD908DDE6F139C79A89E9BD0F8A57551EF5CD",
+   "subkeys": []
+  },
+  "org.example.Recipes": {
+   "primary": "B47329074B43F9BA3D9AB2747C8C2B2BC653BFA1",
+   "subkeys": [
+    "24D144A629D20CE5D87E171B089DA4AA5B915DA2"
+   ]
+  }
+ },
+ "invalid": {
+  "comment-mismatch": "refused (trusted comment version differs)",
+  "expired": "refused (expires_at passed)",
+  "forged-body": "refused (signature)",
+  "older": "refused when 412 was accepted (lower version)",
+  "wrong-key": "refused (key id)"
+ },
+ "now_for_checks": 1795086400000,
+ "remotes": {
+  "org.example.Game": "https://publisher-a.example.invalid/repo/",
+  "org.example.Notes": "https://publisher-b.example.invalid/repo",
+  "org.example.Recipes": "https://publisher-c.example.invalid/flatpak"
+ },
+ "version": 412
+}

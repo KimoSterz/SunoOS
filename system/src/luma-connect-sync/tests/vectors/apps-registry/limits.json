@@ -1,0 +1,145 @@
+{
+ "caps": {
+  "asset_bytes": 5000000000,
+  "record_bytes": 5000000000,
+  "records": 10000000,
+  "relay_bytes_month": 50000000000,
+  "transit_bytes": 10000000000,
+  "upload_bytes_per_hour": 20000000,
+  "writes_per_hour": 120,
+  "zones": 256
+ },
+ "cases": [
+  {
+   "device": {
+    "asset_bytes": 1000000000,
+    "record_bytes": 100000000,
+    "records": 100000,
+    "relay_bytes_month": 10000000000,
+    "transit_bytes": 2000000000,
+    "upload_bytes_per_hour": 5000000,
+    "writes_per_hour": 30,
+    "zones": 16
+   },
+   "hub": "publish",
+   "limits": {
+    "upload_bytes_per_hour": 5000000,
+    "writes_per_hour": 30
+   },
+   "why": "lowered rate limits apply"
+  },
+  {
+   "device": {
+    "asset_bytes": 1000000000,
+    "record_bytes": 100000000,
+    "records": 100000,
+    "relay_bytes_month": 10000000000,
+    "transit_bytes": 2000000000,
+    "upload_bytes_per_hour": 20000000,
+    "writes_per_hour": 120,
+    "zones": 16
+   },
+   "hub": "refuse",
+   "limits": {
+    "writes_per_hour": 121
+   },
+   "why": "rate limits can't be raised"
+  },
+  {
+   "device": {
+    "asset_bytes": 1000000000,
+    "record_bytes": 100000000,
+    "records": 100000,
+    "relay_bytes_month": 10000000000,
+    "transit_bytes": 2000000000,
+    "upload_bytes_per_hour": 20000000,
+    "writes_per_hour": 120,
+    "zones": 16
+   },
+   "hub": "refuse",
+   "limits": {
+    "upload_bytes_per_hour": 20000001
+   },
+   "why": "upload rate can't be raised"
+  },
+  {
+   "device": {
+    "asset_bytes": 1000000000,
+    "record_bytes": 100000000,
+    "records": 100000,
+    "relay_bytes_month": 10000000000,
+    "transit_bytes": 2000000000,
+    "upload_bytes_per_hour": 20000000,
+    "writes_per_hour": 0,
+    "zones": 16
+   },
+   "hub": "publish",
+   "limits": {
+    "writes_per_hour": 0
+   },
+   "why": "zero stops sending without stopping the app"
+  },
+  {
+   "device": {
+    "asset_bytes": 1000000000,
+    "record_bytes": 5000000000,
+    "records": 100000,
+    "relay_bytes_month": 10000000000,
+    "transit_bytes": 2000000000,
+    "upload_bytes_per_hour": 20000000,
+    "writes_per_hour": 120,
+    "zones": 16
+   },
+   "hub": "publish",
+   "limits": {
+    "record_bytes": 5000000000
+   },
+   "why": "storage may be raised up to the account-wide cap"
+  },
+  {
+   "device": {
+    "asset_bytes": 1000000000,
+    "record_bytes": 5000000000,
+    "records": 100000,
+    "relay_bytes_month": 10000000000,
+    "transit_bytes": 2000000000,
+    "upload_bytes_per_hour": 20000000,
+    "writes_per_hour": 120,
+    "zones": 16
+   },
+   "hub": "refuse",
+   "limits": {
+    "record_bytes": 5000000001
+   },
+   "why": "storage above the account-wide cap"
+  },
+  {
+   "device": {
+    "asset_bytes": 1000000000,
+    "record_bytes": 100000000,
+    "records": 100000,
+    "relay_bytes_month": 10000000000,
+    "transit_bytes": 2000000000,
+    "upload_bytes_per_hour": 20000000,
+    "writes_per_hour": 120,
+    "zones": 16
+   },
+   "hub": "refuse",
+   "limits": {
+    "zones": -1
+   },
+   "why": "negative"
+  }
+ ],
+ "defaults": {
+  "asset_bytes": 1000000000,
+  "record_bytes": 100000000,
+  "records": 100000,
+  "relay_bytes_month": 10000000000,
+  "transit_bytes": 2000000000,
+  "upload_bytes_per_hour": 20000000,
+  "writes_per_hour": 120,
+  "zones": 16
+ },
+ "rule": "limits a reviewer sets; the Hub refuses to publish a value above its cap, a device clamps anything above the cap to the cap and fills a missing field with the default"
+}

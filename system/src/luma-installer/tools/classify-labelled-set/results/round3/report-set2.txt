@@ -1,0 +1,92 @@
+Labelled set: 300 requests (fedora 150, ubuntu 150); 0 names missing from the release; 0 unlabelled.
+Agreement: 272/300 = 90.67% (fedora 137/150, ubuntu 135/150). Gate: >= 98 %.
+Counting the labeller's alternative kind too: 285/300 = 95.00%.
+Applications classified as system modules or system tools: 0 (gate: 0).
+Non-system packages silently classified as system modules or system tools: 0 (gate: 0).
+Packages with a launcher put in a workspace or device add-on: 0 (gate: 0).
+Read from the package file (not only indices): 300/300.
+Choices (the person picks): 53; agreeing (label among the candidates): 45.
+Agreement with ADR-052's literal rules (the ADR column where a label disputes them): 272/300 = 90.67%.
+Rows where the label differs from ADR-052's literal rules: 0; the classifier follows the label in 0.
+
+Label distribution: workspace 128, system-module 66, application 59, device-add-on 22, system-tool 21, device-request 4
+Disagreements by (label -> classifier): system-tool->workspace 5, device-add-on->workspace 4, system-tool->choice 4, system-tool->system-module 3, application->device-add-on 3, system-module->choice 2, system-module->workspace 2, application->workspace 2, device-add-on->choice 2, workspace->application 1
+
+Disagreements:
+  ubuntu:lxqt-branding-debian: label device-add-on, classifier workspace [label note: branding data]
+      - a typed package command: the workspace
+  ubuntu:bluedevil: label system-module, classifier choice (application|device-add-on) [label note: kded integration]
+      - dependency daemon stays inert; the host's is used: a D-Bus system service: /usr/share/dbus-1/system.d/org.kde.kf5auth.conf (libkf5auth-data)
+      - loads native code into the session: device-wide only as an image-signed system module after a yes, otherwise refused (/usr/bin/bluedevil-sendfile)
+      - an add-on with a window of its own (org.kde.bluedevilsendfile.desktop): the person chooses
+  ubuntu:lxqt-globalkeys-l10n: label system-module, classifier workspace [label note: l10n of session daemon]
+      - a typed package command: the workspace
+  ubuntu:system-config-printer: label system-tool, classifier choice (system-module|application) [label note: cups admin GUI]
+      - a desktop component (/etc/xdg/autostart/print-applet.desktop): it changes the desktop for everyone
+      - a desktop component with a window of its own: the person chooses
+  ubuntu:systemd-container: label system-tool, classifier system-module
+      - optional service dbus-org.freedesktop.import1.service (systemd-container) stays inert in the workspace; to run it, install systemd-container as a system module
+      - system service systemd-importd.service (systemd-container)
+      - a D-Bus system service: /usr/share/dbus-1/system-services/org.freedesktop.import1.service (systemd-container)
+  ubuntu:lvm2: label system-tool, classifier system-module
+      - maintenance or boot-image hook /usr/share/initramfs-tools/hooks/lvm2 stays inert (lvm2)
+      - optional service blk-availability.service (lvm2) stays inert in the workspace; to run it, install lvm2 as a system module
+      - maintenance or boot-image hook /usr/share/initramfs-tools/hooks/dmsetup stays inert (dmsetup)
+  ubuntu:vlc-data: label application, classifier workspace
+      - a typed package command: the workspace
+  ubuntu:kde-style-oxygen-qt5: label device-add-on, classifier workspace
+      - dependency daemon stays inert; the host's is used: a D-Bus system service: /usr/share/dbus-1/system.d/org.kde.kf5auth.conf (libkf5auth-data)
+      - a typed package command: the workspace
+  ubuntu:kde-config-gtk-style: label device-add-on, classifier choice (system-module|workspace)
+      - dependency daemon stays inert; the host's is used: a D-Bus system service: /usr/share/dbus-1/system.d/org.kde.kf5auth.conf (libkf5auth-data)
+      - a desktop component (/usr/lib/x86_64-linux-gnu/qt5/plugins/kf5/kded/gtkconfig.so): it changes the desktop for everyone
+      - a desktop component that also holds what a person uses directly: the person chooses
+  ubuntu:apt-config-icons-large-hidpi: label device-add-on, classifier choice (workspace|system-module)
+      - package manager configuration: /etc/apt/apt.conf.d/60icons-large-hidpi (apt-config-icons-large-hidpi)
+      - package manager configuration: /etc/apt/apt.conf.d/60icons (apt-config-icons)
+      - package manager configuration: /etc/apt/apt.conf.d/60icons-large (apt-config-icons-large)
+  ubuntu:ibus-gtk4: label device-add-on, classifier workspace
+      - a typed package command: the workspace
+  ubuntu:breeze: label device-add-on, classifier workspace
+      - dependency daemon stays inert; the host's is used: a D-Bus system service: /usr/share/dbus-1/system.d/org.kde.kf5auth.conf (libkf5auth-data)
+      - a typed package command: the workspace
+  ubuntu:molly-guard: label system-module, classifier choice (system-tool|workspace) [label note: shutdown guard]
+      - administration commands (coldreboot in sbin); whether they need real root is not known: the person chooses
+  ubuntu:strace: label system-tool, classifier workspace [label note: tracing]
+      - a typed package command: the workspace
+  ubuntu:aptitude: label system-tool, classifier choice (workspace|system-module) [label note: package manager TUI]
+      - a cron job: /etc/cron.daily/aptitude (aptitude)
+      - system parts beside what a person uses directly: the person chooses
+  fedora:damo: label system-tool, classifier workspace [label note: DAMON]
+      - a typed package command: the workspace
+  fedora:snapm: label system-tool, classifier choice (workspace|system-module)
+      - a service named like the package: snapm-create@.service (snapm)
+      - system parts beside what a person uses directly: the person chooses
+  fedora:zswap-cli: label system-tool, classifier system-module
+      - system service zswap-cli.service (zswap-cli)
+  fedora:kf5-akonadi-server: label system-module, classifier workspace
+      - dependency daemon stays inert; the host's is used: a D-Bus system service: /usr/share/dbus-1/system.d/org.kde.kf5auth.conf (kf5-kauth)
+      - a typed package command: the workspace
+  fedora:libreoffice-data: label application, classifier workspace [label note: data for libreoffice]
+      - a typed package command: the workspace
+  fedora:kde-runtime: label workspace, classifier application
+      - dependency daemon stays inert; the host's is used: a D-Bus system service: /etc/dbus-1/system.d/org.kde.auth.conf (kdelibs)
+      - launcher knetattach.desktop runs a program from the package (kde-runtime)
+      - a D-Bus system service: /etc/dbus-1/system.d/org.kde.kcontrol.kcmremotewidgets.conf (kde-runtime)
+  fedora:libreoffice-dict-eo: label application, classifier device-add-on [label note: dict plugin]
+      - data-only add-on: for the person under ~/.local/share (/usr/share/hunspell/eo.aff)
+  fedora:libreoffice-dict-bg: label application, classifier device-add-on
+      - data-only add-on: for the person under ~/.local/share (/usr/share/hunspell/bg_BG.aff)
+  fedora:libreoffice-dict-pa: label application, classifier device-add-on
+      - data-only add-on: for the person under ~/.local/share (/usr/share/hunspell/pa_IN.aff)
+  fedora:amanda-client: label system-tool, classifier choice (workspace|system-module) [label note: backup]
+      - optional service amanda-udp.service (amanda) stays inert in the workspace; to run it, install amanda as a system module
+      - system service amanda.socket (amanda)
+      - system parts beside what a person uses directly: the person chooses
+  fedora:keyring-ima-signer: label system-tool, classifier workspace
+      - a typed package command: the workspace
+  fedora:ioping: label system-tool, classifier workspace [label note: raw device]
+      - a typed package command: the workspace
+  fedora:mininet: label system-tool, classifier workspace [label note: netns root]
+      - dependency daemon stays inert; the host's is used: system service cgconfig.service (libcgroup-tools)
+      - a typed package command: the workspace

@@ -1,0 +1,6 @@
+# Privilege facts Debian Code Search cannot show (a path in a variable, a
+# Fedora spec file), for packages in the labelled set. Read by build_corpus.py.
+# Columns: setuid|caps, Debian source package, absolute path. Fedora packages
+# shipping the same path get the same fact.
+caps wireshark /usr/bin/dumpcap   # Debian wireshark-common.postinst setcap; Fedora wireshark.spec %caps(cap_net_raw,cap_net_admin=ep)
+setuid fuse3 /usr/bin/fusermount3   # installed 4755 by upstream meson (install_mode rwsr-xr-x); Debian fuse3.lintian-overrides lists it

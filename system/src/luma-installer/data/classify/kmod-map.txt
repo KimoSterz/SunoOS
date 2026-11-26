@@ -1,0 +1,42 @@
+# Luma kernel-module map (ADR-052 Amendment 1, section 5.2). Read by
+# luma_installer/classify.py.
+#
+# Kernel modules are never built on the device. A request for a module
+# package (DKMS sources, akmod, kmod, a driver meta-package) maps through this
+# list to Luma's build, with one "Luma:" line:
+#
+#   image:<name>      ships in the image and loads on demand (small modules)
+#   module:<name>     Luma's kernel-module extension for each kernel it builds
+#   refuse            not on the list: the tool's failure code and the reason
+#
+# Anything with kernel modules or DKMS sources that matches no line here is
+# refused. Patterns are fnmatch, against package names; first match wins.
+
+v4l2loopback-dkms        image:v4l2loopback
+v4l2loopback-utils       image:v4l2loopback
+akmod-v4l2loopback       image:v4l2loopback
+kmod-v4l2loopback*       image:v4l2loopback
+xone-dkms                image:xone
+akmod-xone               image:xone
+nvidia-dkms-*            module:nvidia
+nvidia-driver-*          module:nvidia
+nvidia-kernel-source-*   module:nvidia
+nvidia-kernel-common-*   module:nvidia
+nvidia-kernel-open-dkms  module:nvidia
+nvidia-kernel-dkms       module:nvidia
+nvidia-driver            module:nvidia
+nvidia-open-dkms*        module:nvidia
+linux-modules-nvidia-*   module:nvidia
+linux-objects-nvidia-*   module:nvidia
+akmod-nvidia*            module:nvidia
+kmod-nvidia*             module:nvidia
+xorg-x11-drv-nvidia*     module:nvidia
+cuda-drivers*            module:nvidia
+nvidia-open*             module:nvidia
+virtualbox-dkms          module:virtualbox
+virtualbox               module:virtualbox
+virtualbox-qt            module:virtualbox
+virtualbox-7.*           module:virtualbox
+akmod-VirtualBox         module:virtualbox
+kmod-VirtualBox*         module:virtualbox
+VirtualBox*              module:virtualbox

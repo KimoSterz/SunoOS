@@ -1,0 +1,114 @@
+diff --git a/chrome/browser/ui/webui/viola/viola_message_handler.h b/chrome/browser/ui/webui/viola/viola_message_handler.h
+--- a/chrome/browser/ui/webui/viola/viola_message_handler.h
++++ b/chrome/browser/ui/webui/viola/viola_message_handler.h
+@@ -67,6 +67,17 @@
+ // readiness handshake and a deliberately narrow active-tab history/reload
+ // slice only when the WebUI is the gated non-tab product shell. The same shell
+ // may observe its own Chromium tab strip and publish read-only render state.
++#if BUILDFLAG(IS_LINUX)
++namespace viola {
++// find:result for the native host: the engine's count and, while there is an
++// active match, its rect in the page view (DIPs), so the host can keep the
++// match clear of what covers the page (its bar, a TV keyboard).
++base::DictValue NativeFindResult(const std::string& target_id,
++                                 const std::u16string& text,
++                                 const find_in_page::FindNotificationDetails& result);
++}  // namespace viola
++#endif
++
+ class ViolaMessageHandler : public content::WebUIMessageHandler,
+                             public TabStripModelObserver,
+                             public BrowserCollectionObserver,
+diff --git a/chrome/browser/ui/webui/viola/viola_message_handler.cc b/chrome/browser/ui/webui/viola/viola_message_handler.cc
+--- a/chrome/browser/ui/webui/viola/viola_message_handler.cc
++++ b/chrome/browser/ui/webui/viola/viola_message_handler.cc
+@@ -7917,17 +7917,37 @@
+   find_observation_.Reset();
+ }
+ 
++namespace viola {
++base::DictValue NativeFindResult(const std::string& target_id,
++                                 const std::u16string& text,
++                                 const find_in_page::FindNotificationDetails& result) {
++  base::DictValue value;
++  value.Set("targetId", target_id);
++  value.Set("text", base::UTF16ToUTF8(text));
++  value.Set("active", result.active_match_ordinal());
++  value.Set("matches", result.number_of_matches());
++  value.Set("final", result.final_update());
++  const gfx::Rect& rect = result.selection_rect();
++  if (result.active_match_ordinal() > 0 && !rect.IsEmpty()) {
++    base::DictValue box;
++    box.Set("x", rect.x());
++    box.Set("y", rect.y());
++    box.Set("width", rect.width());
++    box.Set("height", rect.height());
++    value.Set("rect", std::move(box));
++  }
++  return value;
++}
++}  // namespace viola
++
+ void ViolaMessageHandler::OnFindResultAvailable(content::WebContents* contents) {
+   auto* tabs = GetProductTabStrip();
+   if (!IsJavascriptAllowed() || !tabs || tabs->GetActiveWebContents() != contents ||
+       !find_observation_.IsObserving()) return;
+   auto* helper = find_observation_.GetSource();
+-  const auto& result = helper->find_result();
+-  base::DictValue value;
+-  value.Set("targetId", content::DevToolsAgentHost::GetOrCreateFor(contents)->GetId());
+-  value.Set("text", base::UTF16ToUTF8(helper->find_text()));
+-  value.Set("active", result.active_match_ordinal());
+-  value.Set("matches", result.number_of_matches());
++  base::DictValue value = viola::NativeFindResult(
++      content::DevToolsAgentHost::GetOrCreateFor(contents)->GetId(),
++      helper->find_text(), helper->find_result());
+   web_ui()->CallJavascriptFunctionUnsafe("__violaHostReceive",
+       base::Value("find:result"), base::Value(std::move(value)));
+ }
+diff --git a/chrome/browser/ui/webui/viola/viola_ui_browsertest.cc b/chrome/browser/ui/webui/viola/viola_ui_browsertest.cc
+--- a/chrome/browser/ui/webui/viola/viola_ui_browsertest.cc
++++ b/chrome/browser/ui/webui/viola/viola_ui_browsertest.cc
+@@ -20,6 +20,11 @@
+ #include "base/test/test_future.h"
+ #include "build/build_config.h"
+ #if BUILDFLAG(IS_LINUX)
++#include "chrome/browser/ui/webui/viola/viola_message_handler.h"
++#include "components/find_in_page/find_notification_details.h"
++#include "ui/gfx/geometry/rect.h"
++#endif
++#if BUILDFLAG(IS_LINUX)
+ #include "base/functional/bind.h"
+ #include "gpu/command_buffer/service/skia_utils.h"
+ #include "third_party/skia/include/gpu/ganesh/GrTypes.h"
+@@ -1087,6 +1092,30 @@
+   )").ExtractBool());
+ }
+ 
++#if BUILDFLAG(IS_LINUX)
++// find:result tells the native host where the active match is, so it can keep
++// the match clear of its bar; without an active match there is no rect.
++IN_PROC_BROWSER_TEST_F(ViolaUIBrowserTest, NativeFindResultCarriesActiveRect) {
++  const base::DictValue found = viola::NativeFindResult(
++      "target", u"kernel",
++      find_in_page::FindNotificationDetails(7, 3, gfx::Rect(10, 20, 30, 40), 2, true));
++  EXPECT_EQ("kernel", *found.FindString("text"));
++  EXPECT_EQ(2, *found.FindInt("active"));
++  EXPECT_EQ(3, *found.FindInt("matches"));
++  EXPECT_TRUE(*found.FindBool("final"));
++  const base::DictValue* rect = found.FindDict("rect");
++  ASSERT_TRUE(rect);
++  EXPECT_EQ(10, *rect->FindInt("x"));
++  EXPECT_EQ(20, *rect->FindInt("y"));
++  EXPECT_EQ(30, *rect->FindInt("width"));
++  EXPECT_EQ(40, *rect->FindInt("height"));
++  const base::DictValue none = viola::NativeFindResult(
++      "target", u"kernal",
++      find_in_page::FindNotificationDetails(8, 0, gfx::Rect(), 0, true));
++  EXPECT_FALSE(none.FindDict("rect"));
++}
++#endif
++
+ // The overlay's find channels are implemented end to end: the native host
+ // sends find:query and find:close through the bridge, and find:result reaches
+ // the surface's listeners instead of throwing in __violaHostReceive.

@@ -1,0 +1,516 @@
+{
+ "invalid": [
+  {
+   "answer": 400,
+   "body": {
+    "app": "org.example.Game",
+    "context": {
+     "app_version": "1.4.2",
+     "arch": "aarch64",
+     "class": "tv",
+     "luma_version": "44.2026w48"
+    },
+    "day": "2026-11-23",
+    "estimate": {
+     "bucket": 7,
+     "field": "record_bytes"
+    },
+    "owner": "flatpak:e38f143aeb73bbb445bb01f0af2083bf",
+    "v": 1
+   },
+   "why": "v1 (exact usage) is withdrawn"
+  },
+  {
+   "answer": 400,
+   "body": {
+    "app": "org.example.Game",
+    "context": {
+     "app_version": "1.4.2",
+     "arch": "aarch64",
+     "class": "tv",
+     "luma_version": "44.2026w48"
+    },
+    "day": "2026-11-23",
+    "estimate": {
+     "bucket": 7,
+     "field": "record_bytes"
+    },
+    "health": {
+     "conflicts": 1
+    },
+    "owner": "flatpak:e38f143aeb73bbb445bb01f0af2083bf",
+    "reads": {},
+    "v": 2
+   },
+   "why": "v2 (exact health and reads) is withdrawn"
+  },
+  {
+   "answer": 400,
+   "body": {
+    "app": "org.example.Game",
+    "context": {
+     "app_version": "1.4.2",
+     "arch": "aarch64",
+     "class": "tv",
+     "luma_version": "44.2026w48"
+    },
+    "day": "2026-11-23",
+    "estimate": {
+     "bucket": 7,
+     "field": "record_bytes"
+    },
+    "owner": "flatpak:e38f143aeb73bbb445bb01f0af2083bf",
+    "usage": {
+     "writes": 37
+    },
+    "v": 3
+   },
+   "why": "exact usage is refused"
+  },
+  {
+   "answer": 400,
+   "body": {
+    "app": "org.example.Game",
+    "context": {
+     "app_version": "1.4.2",
+     "arch": "aarch64",
+     "class": "tv",
+     "luma_version": "44.2026w48"
+    },
+    "day": "2026-11-23",
+    "estimate": {
+     "bucket": 7,
+     "field": "record_bytes"
+    },
+    "health": {
+     "conflicts": 1
+    },
+    "owner": "flatpak:e38f143aeb73bbb445bb01f0af2083bf",
+    "v": 3
+   },
+   "why": "exact health is refused"
+  },
+  {
+   "answer": 400,
+   "body": {
+    "app": "org.example.Game",
+    "context": {
+     "app_version": "1.4.2",
+     "arch": "aarch64",
+     "class": "tv",
+     "luma_version": "44.2026w48"
+    },
+    "day": "2026-11-23",
+    "estimate": {
+     "bucket": 7,
+     "field": "record_bytes"
+    },
+    "owner": "flatpak:e38f143aeb73bbb445bb01f0af2083bf",
+    "reads": {
+     "FetchChanges": 9
+    },
+    "v": 3
+   },
+   "why": "exact reads are refused"
+  },
+  {
+   "answer": 400,
+   "body": {
+    "app": "org.example.Game",
+    "context": {
+     "app_version": "1.4.2",
+     "arch": "aarch64",
+     "class": "tv",
+     "luma_version": "44.2026w48"
+    },
+    "day": "2026-11-23",
+    "device": "abc",
+    "estimate": {
+     "bucket": 7,
+     "field": "record_bytes"
+    },
+    "owner": "flatpak:e38f143aeb73bbb445bb01f0af2083bf",
+    "v": 3
+   },
+   "why": "unknown top-level field"
+  },
+  {
+   "answer": 400,
+   "body": {
+    "app": "org.example.Game",
+    "context": {
+     "app_version": "1.4.2",
+     "arch": "aarch64",
+     "class": "tv",
+     "luma_version": "44.2026w48"
+    },
+    "day": "2026-11-23",
+    "estimate": {
+     "bucket": 7,
+     "field": "zones"
+    },
+    "owner": "flatpak:e38f143aeb73bbb445bb01f0af2083bf",
+    "v": 3
+   },
+   "why": "unknown estimate field"
+  },
+  {
+   "answer": 400,
+   "body": {
+    "app": "org.example.Game",
+    "context": {
+     "app_version": "1.4.2",
+     "arch": "aarch64",
+     "class": "tv",
+     "luma_version": "44.2026w48"
+    },
+    "day": "2026-11-23",
+    "estimate": {
+     "bucket": 16,
+     "field": "record_bytes"
+    },
+    "owner": "flatpak:e38f143aeb73bbb445bb01f0af2083bf",
+    "v": 3
+   },
+   "why": "bucket out of range"
+  },
+  {
+   "answer": 400,
+   "body": {
+    "app": "org.example.Game",
+    "context": {
+     "app_version": "1.4.2",
+     "arch": "aarch64",
+     "class": "tv",
+     "luma_version": "44.2026w48"
+    },
+    "day": "2026-11-23",
+    "estimate": {
+     "bucket": -1,
+     "field": "record_bytes"
+    },
+    "owner": "flatpak:e38f143aeb73bbb445bb01f0af2083bf",
+    "v": 3
+   },
+   "why": "negative bucket"
+  },
+  {
+   "answer": 400,
+   "body": {
+    "app": "org.example.Game",
+    "context": {
+     "app_version": "1.4.2",
+     "arch": "aarch64",
+     "class": "tv",
+     "luma_version": "44.2026w48"
+    },
+    "day": "2026-11-23",
+    "estimate": {
+     "bucket": 1.5,
+     "field": "record_bytes"
+    },
+    "owner": "flatpak:e38f143aeb73bbb445bb01f0af2083bf",
+    "v": 3
+   },
+   "why": "float bucket"
+  },
+  {
+   "answer": 400,
+   "body": {
+    "app": "org.example.Game",
+    "context": {
+     "app_version": "1.4.2",
+     "arch": "aarch64",
+     "class": "watch",
+     "luma_version": "44.2026w48"
+    },
+    "day": "2026-11-23",
+    "estimate": {
+     "bucket": 7,
+     "field": "record_bytes"
+    },
+    "owner": "flatpak:e38f143aeb73bbb445bb01f0af2083bf",
+    "v": 3
+   },
+   "why": "bad class"
+  },
+  {
+   "answer": 400,
+   "body": {
+    "app": "org.example.Game",
+    "context": {
+     "app_version": "1.4.2",
+     "arch": "riscv64",
+     "class": "tv",
+     "luma_version": "44.2026w48"
+    },
+    "day": "2026-11-23",
+    "estimate": {
+     "bucket": 7,
+     "field": "record_bytes"
+    },
+    "owner": "flatpak:e38f143aeb73bbb445bb01f0af2083bf",
+    "v": 3
+   },
+   "why": "bad arch"
+  },
+  {
+   "answer": 400,
+   "body": {
+    "app": "org.example.Game",
+    "context": {
+     "app_version": "1.4.2",
+     "arch": "aarch64",
+     "class": "tv",
+     "luma_version": "44.20261124.3"
+    },
+    "day": "2026-11-23",
+    "estimate": {
+     "bucket": 7,
+     "field": "record_bytes"
+    },
+    "owner": "flatpak:e38f143aeb73bbb445bb01f0af2083bf",
+    "v": 3
+   },
+   "why": "exact nightly id as luma_version"
+  },
+  {
+   "answer": 400,
+   "body": {
+    "app": "org.example.Game",
+    "context": {
+     "app_version": "1.0 beta",
+     "arch": "aarch64",
+     "class": "tv",
+     "luma_version": "44.2026w48"
+    },
+    "day": "2026-11-23",
+    "estimate": {
+     "bucket": 7,
+     "field": "record_bytes"
+    },
+    "owner": "flatpak:e38f143aeb73bbb445bb01f0af2083bf",
+    "v": 3
+   },
+   "why": "bad app_version"
+  },
+  {
+   "answer": 400,
+   "body": {
+    "app": "org.example.Game",
+    "context": {
+     "app_version": "1.4.2",
+     "arch": "aarch64",
+     "class": "tv",
+     "luma_version": "44.2026w48"
+    },
+    "day": "2026-11-16",
+    "estimate": {
+     "bucket": 7,
+     "field": "record_bytes"
+    },
+    "owner": "flatpak:e38f143aeb73bbb445bb01f0af2083bf",
+    "v": 3
+   },
+   "why": "day too old (today - 8)"
+  },
+  {
+   "answer": 400,
+   "body": {
+    "app": "org.example.Game",
+    "context": {
+     "app_version": "1.4.2",
+     "arch": "aarch64",
+     "class": "tv",
+     "luma_version": "44.2026w48"
+    },
+    "day": "2026-11-26",
+    "estimate": {
+     "bucket": 7,
+     "field": "record_bytes"
+    },
+    "owner": "flatpak:e38f143aeb73bbb445bb01f0af2083bf",
+    "v": 3
+   },
+   "why": "day in the future"
+  },
+  {
+   "answer": 404,
+   "body": {
+    "app": "org.example.Unknown",
+    "context": {
+     "app_version": "1.4.2",
+     "arch": "aarch64",
+     "class": "tv",
+     "luma_version": "44.2026w48"
+    },
+    "day": "2026-11-23",
+    "estimate": {
+     "bucket": 7,
+     "field": "record_bytes"
+    },
+    "owner": "flatpak:e38f143aeb73bbb445bb01f0af2083bf",
+    "v": 3
+   },
+   "why": "unknown app"
+  },
+  {
+   "answer": 404,
+   "body": {
+    "app": "org.example.Game",
+    "context": {
+     "app_version": "1.4.2",
+     "arch": "aarch64",
+     "class": "tv",
+     "luma_version": "44.2026w48"
+    },
+    "day": "2026-11-23",
+    "estimate": {
+     "bucket": 7,
+     "field": "record_bytes"
+    },
+    "owner": "flatpak:2efcecd2766108699a0376bc5d77359b",
+    "v": 3
+   },
+   "why": "app under another owner"
+  }
+ ],
+ "ldp": {
+  "bucket_of": [
+   [
+    0,
+    0
+   ],
+   [
+    0.5,
+    0
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    3,
+    1
+   ],
+   [
+    4,
+    2
+   ],
+   [
+    15,
+    2
+   ],
+   [
+    16,
+    3
+   ],
+   [
+    1000,
+    5
+   ],
+   [
+    1000000000000,
+    15
+   ]
+  ],
+  "buckets": 16,
+  "epsilon_permanent": 2.0,
+  "epsilon_report": 4.0,
+  "estimator_example": {
+   "counts": [
+    18,
+    18,
+    18,
+    318,
+    18,
+    18,
+    18,
+    18,
+    138,
+    18,
+    18,
+    18,
+    18,
+    18,
+    18,
+    18
+   ],
+   "estimate": [
+    -75.197286,
+    -75.197286,
+    -75.197286,
+    1289.914555,
+    -75.197286,
+    -75.197286,
+    -75.197286,
+    -75.197286,
+    470.84745,
+    -75.197286,
+    -75.197286,
+    -75.197286,
+    -75.197286,
+    -75.197286,
+    -75.197286,
+    -75.197286
+   ]
+  },
+  "fields": [
+   "record_bytes",
+   "asset_bytes",
+   "records",
+   "assets",
+   "hub_up_bytes",
+   "hub_down_bytes",
+   "writes",
+   "outbox_bytes",
+   "write_calls",
+   "latency_s",
+   "conflicts",
+   "siblings_resolved",
+   "too_many_siblings",
+   "held_writes",
+   "refusals",
+   "errors",
+   "reads"
+  ],
+  "p": 0.268527075,
+  "q": 0.048764862
+ },
+ "today_for_checks": "2026-11-24",
+ "valid": [
+  {
+   "app": "org.example.Game",
+   "context": {
+    "app_version": "1.4.2",
+    "arch": "aarch64",
+    "class": "tv",
+    "luma_version": "44.2026w48"
+   },
+   "day": "2026-11-23",
+   "estimate": {
+    "bucket": 7,
+    "field": "record_bytes"
+   },
+   "owner": "flatpak:e38f143aeb73bbb445bb01f0af2083bf",
+   "v": 3
+  },
+  {
+   "app": "org.example.Game",
+   "context": {
+    "app_version": "0",
+    "arch": "x86_64",
+    "class": "computer",
+    "luma_version": "44"
+   },
+   "day": "2026-11-23",
+   "estimate": {
+    "bucket": 0,
+    "field": "reads"
+   },
+   "owner": "flatpak:e38f143aeb73bbb445bb01f0af2083bf",
+   "v": 3
+  }
+ ],
+ "valid_for_revoked_or_suspended": "a report for org.example.Notes or org.example.Recipes is accepted (any state in the registry)"
+}

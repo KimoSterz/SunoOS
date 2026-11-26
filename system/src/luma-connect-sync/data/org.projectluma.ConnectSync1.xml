@@ -1,0 +1,136 @@
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+ "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<!-- Luma Connect Sync (ADR-054), served by luma-connect-syncd on the session bus at
+     /org/projectluma/ConnectSync1. Values typed "s" named *json are JSON documents
+     (see README.md). The recovery key is only ever in a method reply. -->
+<node>
+  <!-- Callers in a sandbox (Flatpak, ADR-052 store apps and capsules, snaps) are refused on every method.
+       ApproveJoin, RemoveDevice, JoinWithRecoveryKey, RevealRecoveryKey, BeginSetup, FinishSetup and DeleteAllSyncedData
+       answer only the shell, Settings or a login session (cgroup allow-list). Clients must check that the name's owner
+       runs in luma-connect-syncd.service before sending words or showing codes.
+       ApproveJoin, RemoveDevice, DeleteAppData and SetEnabled(false) need polkit org.projectluma.connect-sync.manage
+       (auth_self_keep); RevealRecoveryKey needs org.projectluma.connect-sync.reveal-recovery-key (auth_self). -->
+  <interface name="org.projectluma.ConnectSync1">
+    <!-- State: {state: off|joining|syncing|paused|up_to_date|attention, detail,
+         attention: null | {reason: conflict|quota|revoked, detail, ...}, last_sync,
+         enabled, categories: {apps, app_data, settings, appearance, wallpaper, keyboard,
+         wifi, passwords, browser}, phase_one: [...], storage: {used, quota}, devices,
+         this_device, device_name, set_up (the account has Sync: turning it on joins), member (this device is one),
+         recovery: {saved_at}} -->
+    <method name="GetState"><arg name="json" type="s" direction="out"/></method>
+    <!-- Turning Sync on, before the device has: one look at the account on the Hub (the service never talks to it
+         about Sync until then). {"set_up": the account has Sync, "member": this device is in it}. Nothing is kept. -->
+    <method name="ProbeAccount"><arg name="json" type="s" direction="out"/></method>
+    <method name="SetEnabled"><arg name="on" type="b" direction="in"/></method>
+    <method name="SetCategory"><arg name="category" type="s" direction="in"/><arg name="on" type="b" direction="in"/></method>
+    <method name="SyncNow"/>
+    <signal name="StateChanged"/>
+
+    <!-- Turning Sync on: the 24 words and the three positions to check (1-based). -->
+    <method name="BeginSetup">
+      <arg name="words" type="as" direction="out"/>
+      <arg name="check" type="ai" direction="out"/>
+    </method>
+    <method name="FinishSetup"><arg name="answers" type="a{is}" direction="in"/></method>
+    <method name="CancelSetup"/>
+    <!-- polkit org.projectluma.connect-sync.reveal-recovery-key -->
+    <method name="RevealRecoveryKey"><arg name="words" type="as" direction="out"/></method>
+    <!-- After GetState shows attention.reason "new_recovery_key" (the recovery key was replaced when the device
+         that held it was removed): the person has written the new words down (read with RevealRecoveryKey). -->
+    <method name="AcknowledgeRecoveryKey"/>
+    <!-- A new recovery key, every device kept (a key that was seen or written somewhere unsafe): a new account key
+         epoch with new recovery entropy; the old words open nothing. Devices that joined during this epoch that
+         this device never counted are left out (they may have joined with the old words). polkit
+         org.projectluma.connect-sync.reveal-recovery-key; the new words come back once here, and GetState shows
+         attention "new_recovery_key" until AcknowledgeRecoveryKey. json: {epoch, left_out: [device]} -->
+    <method name="ReplaceRecoveryKey">
+      <arg name="words" type="as" direction="out"/>
+      <arg name="json" type="s" direction="out"/>
+    </method>
+
+    <!-- This device joining: {state: none|waiting|code|confirmed|approved|denied|expired|tampered, code,
+         join, approvers: [{device, name, class}]}. In "code" the person compares the code with the other device and
+         answers ConfirmJoin here; the approval is only taken after ConfirmJoin(true) ("confirmed"). -->
+    <method name="RequestJoin"><arg name="json" type="s" direction="out"/></method>
+    <method name="GetJoin"><arg name="json" type="s" direction="out"/></method>
+    <method name="ConfirmJoin"><arg name="matched" type="b" direction="in"/><arg name="json" type="s" direction="out"/></method>
+    <method name="CancelJoin"/>
+    <method name="JoinWithRecoveryKey"><arg name="words" type="s" direction="in"/></method>
+    <signal name="JoinChanged"><arg name="json" type="s"/></signal>
+
+    <!-- Other devices asking to join: [{id, device, name, class, code, created_at, tampered, held, fingerprint}].
+         Every request this device answered has a card (JoinRequested), even before its code is ready; at most one
+         per device and three new ones a day are answered, the rest are "held" (no code). -->
+    <method name="ListJoinRequests"><arg name="json" type="s" direction="out"/></method>
+    <method name="ApproveJoin"><arg name="join" type="s" direction="in"/><arg name="code" type="s" direction="in"/></method>
+    <method name="DenyJoin"><arg name="join" type="s" direction="in"/></method>
+    <!-- No code in the signal (every client hears it); the card reads it with ListJoinRequests. -->
+    <signal name="JoinRequested">
+      <arg name="join" type="s"/><arg name="device" type="s"/><arg name="name" type="s"/><arg name="class" type="s"/>
+    </signal>
+    <!-- outcome: approved | denied | answered (on another device) | expired -->
+    <signal name="JoinCleared"><arg name="join" type="s"/><arg name="outcome" type="s"/></signal>
+
+    <!-- App data: [{app, name, kind, size, enabled, denied, uses_api, state, last_synced, syncs_when_closed}] -->
+    <method name="ListApps"><arg name="json" type="s" direction="out"/></method>
+    <method name="SetAppEnabled"><arg name="app" type="s" direction="in"/><arg name="on" type="b" direction="in"/></method>
+    <method name="DeleteAppData"><arg name="app" type="s" direction="in"/></method>
+    <!-- Everything synced for the account; needs the recovery key and polkit. -->
+    <method name="DeleteAllSyncedData"><arg name="words" type="s" direction="in"/></method>
+    <method name="ApplyPending"><arg name="app" type="s" direction="in"/><arg name="applied" type="b" direction="out"/></method>
+    <method name="Quiesce"><arg name="app" type="s" direction="in"/></method>
+    <!-- {recent: [{app, name, from, at, files}], versions: {app: [{path, label, device, at}]}}: the losing copy of a
+         file changed on two devices is kept as a labelled sibling in the app's zone, never overwritten. -->
+    <method name="ListConflicts"><arg name="json" type="s" direction="out"/></method>
+    <!-- kept (in ListConflicts): {app: [{label, device, at, kept_until, files}]}, the copies kept on this device.
+         UseVersion puts one back in the app's folder while the app is closed (Error.AppRunning otherwise);
+         what it replaces is kept the same way. Shell and Settings only. -->
+    <method name="UseVersion"><arg name="app" type="s" direction="in"/><arg name="label" type="s" direction="in"/></method>
+    <signal name="AppsChanged"/>
+
+    <!-- Devices: [{device, name, class: computer|handheld|tv, state, this_device, last_sync}] -->
+    <method name="ListDevices"><arg name="json" type="s" direction="out"/></method>
+    <!-- polkit org.projectluma.connect-sync.manage. new_recovery_key replaces the recovery key too (offered when the
+         removed device held the words); the new words come back, else an empty list. -->
+    <method name="RemoveDevice">
+      <arg name="device" type="s" direction="in"/><arg name="new_recovery_key" type="b" direction="in"/>
+      <arg name="words" type="as" direction="out"/>
+    </method>
+    <!-- A device joined with the recovery key (no approval): every member raises the card, with Remove. -->
+    <signal name="RecoveryJoined"><arg name="device" type="s"/><arg name="name" type="s"/><arg name="class" type="s"/></signal>
+
+    <!-- Restore, for Valet and the launcher: [{app, name, kind,
+         state: installing|restoring|waiting|ready|unavailable|failed|offered, progress, reason,
+         from (the device id the app came from, as ListDevices names it), bytes (while restoring: the size of the data
+         being brought over, else null)}] -->
+    <method name="GetRestore"><arg name="json" type="s" direction="out"/></method>
+    <method name="GetAppState"><arg name="app" type="s" direction="in"/><arg name="json" type="s" direction="out"/></method>
+    <signal name="RestoreChanged"><arg name="app" type="s"/></signal>
+    <!-- Continue (ADR-055): sessions of the account's other devices. Only the shell, Settings or a terminal. -->
+    <method name="GetContinueOffer"><arg name="json" type="s" direction="out"/></method>
+    <!-- Another device's session arrived from the Hub: the shell asks GetContinueOffer again
+         (a device that woke before its network got only the sessions it already held). -->
+    <signal name="ContinueOfferChanged"/>
+    <method name="TakeContinue"><arg name="offer" type="s" direction="in"/><arg name="json" type="s" direction="out"/></method>
+    <method name="DeclineContinue"><arg name="offer" type="s" direction="in"/></method>
+    <method name="PublishContinue"><arg name="json" type="s" direction="out"/></method>
+    <method name="ClearContinue"/>
+
+    <!-- Sync for apps (ADR-057 §4, §9, §10): every app in the app directory and on this device.
+         [{owner, app, name, luma_state: approved|suspended|revoked|not-approved, off, here, usage: null | {record_bytes,
+           asset_bytes, records, assets, zones, held, outbox_bytes}, on_devices, purged, bin: [{label, epoch, at}]}]
+         The app interface is org.projectluma.impl.portal.Sync at /org/projectluma/ConnectSync1/Apps (portal only). -->
+    <method name="ListSyncApps"><arg name="json" type="s" direction="out"/></method>
+    <!-- The per-app switch for the whole account (the app directory) and this device's permission row. -->
+    <method name="SetSyncAppEnabled">
+      <arg name="owner" type="s" direction="in"/><arg name="app" type="s" direction="in"/><arg name="on" type="b" direction="in"/>
+    </method>
+    <!-- Delete synced data: every zone of the app on the Hub and every device (polkit manage). -->
+    <method name="DeleteSyncAppData"><arg name="owner" type="s" direction="in"/><arg name="app" type="s" direction="in"/></method>
+    <!-- Restore a zone the app deleted, within 30 days (polkit manage). -->
+    <method name="RestoreSyncAppZone">
+      <arg name="owner" type="s" direction="in"/><arg name="app" type="s" direction="in"/>
+      <arg name="label" type="s" direction="in"/><arg name="epoch" type="u" direction="in"/>
+    </method>
+  </interface>
+</node>

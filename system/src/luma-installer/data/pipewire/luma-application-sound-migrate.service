@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: Apache-2.0
+[Unit]
+Description=Keep the microphone for applications installed before it was a permission
+ConditionPathExists=!%S/luma/application-sound-1
+After=graphical-session.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 -m luma_installer.app_sound migrate
+
+[Install]
+WantedBy=graphical-session.target

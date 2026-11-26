@@ -1,0 +1,25 @@
+[Unit]
+Description=Keep Luma's records and the session's controls from every Flatpak
+Documentation=https://simplyluma.com/apps
+Before=graphical-session-pre.target
+# This person's global Flatpak override takes Luma's own folders, Flatpak's
+# overrides, autostart and user services away from every Flatpak, whatever its
+# bundle declares (luma_installer.flatpak_guard). Runs at sign-in and when
+# Flatpak's overrides change (luma-flatpak-guard.path); writes only what is missing.
+# A burst of Flatpak transactions (the first-boot app baseline, an update of every
+# application) triggers it once per transaction; a start rate limit would fail it and
+# the path unit with it, and changes would go unguarded until the next sign-in.
+StartLimitIntervalSec=0
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/luma-flatpak-guard
+# An application it could not read is locked down and the run fails: tried again,
+# backing off from 30 s to 15 min, until every application is read and verified.
+Restart=on-failure
+RestartSec=30s
+RestartSteps=5
+RestartMaxDelaySec=15min
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,1595 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Project Luma <engineering@projectluma.org>
+Date: Tue, 24 Nov 2026 21:30:00 -0600
+Subject: [PATCH] Continue: the phone lip card, the drawer list, pending app
+ switcher cards and the TV home hero (ADR-055 Phase C)
+
+Phone and tablet: the Continue offer is the lip card; Continue turns it into
+"Opening <app> from <device>" in place (the Connect badge drops, the card is
+not replaced), and the result list is a bottom drawer. The source device's
+other apps wait in the app switcher as pending cards (icon, no picture) until
+chosen; swiping one away forgets it.
+
+TV: no prompt. The home's hero shows what was playing on another device: the
+app and "From <device>" chips, the item, minutes left, Continue (focused) and
+Start over, over the item's artwork under the home's shade. lumaSession
+sends the artwork as a JPEG of at most 96 KB made from the player's local
+cover art (file:// only; a remote URL is never fetched).
+
+Apps the other device has and this one doesn't show the name and icon from
+Depot's catalogue and media cache, for the host Depot and the Depot Flatpak.
+
+Tablet: the phone shell with room. The lip card is the phone's (340), and
+the result list is the phone's drawer, 400 wide, centred and 16 px above the
+foot with all corners round. The card's choices take equal shares of the
+row, and a card without buttons keeps no room for them.
+
+---
+diff --git a/data/theme/luma-continue.css b/data/theme/luma-continue.css
+index 453ecfc..594126b 100644
+--- a/data/theme/luma-continue.css
++++ b/data/theme/luma-continue.css
+@@ -50,3 +50,42 @@
+ 
+ /* Done, 6 px under the list. */
+ .luma-notification-lip .notification-banner.luma-lip-card .message-action-bin.luma-notification-actions-end { padding-top: 6px; }
++
++/* Phone and tablet: the result list as a bottom drawer (cn.css .cn-drawer):
++ * full width, 28 px top corners, a grab handle, the same rows at 36 px,
++ * and a full-width Done. */
++.luma-continue-drawer-shade { background-color: rgba(0, 0, 0, 0.32); }
++.luma-continue-drawer {
++  padding: 10px 20px 30px; border-radius: 28px 28px 0 0;
++  background-color: #f4f5f7; color: #1f2328;
++}
++/* Tablet (design-center continue/offer.html ?posture=tablet): 400 wide, centred, 16 above the foot. */
++.luma-continue-drawer.luma-continue-drawer-tablet {
++  width: 360px; /* 400 with the 20 px sides */ margin-bottom: 16px; padding-bottom: 20px; border-radius: 28px;
++  box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.6);
++}
++.luma-continue-drawer-grab {
++  width: 36px; height: 4px; margin-bottom: 16px; border-radius: 2px;
++  background-color: rgba(31, 35, 40, 0.25);
++}
++.luma-continue-drawer-title { font-size: 17px; font-weight: 650; min-height: 22px; }
++.luma-continue-drawer-subtitle { margin-top: 2px; font-size: 13px; min-height: 18px; color: rgba(31, 35, 40, 0.6); }
++.luma-continue-drawer .luma-continue-list { margin-top: 14px; border-top-color: rgba(127, 127, 127, 0.18); }
++.luma-continue-drawer .luma-continue-row { padding: 12px 0; }
++.luma-continue-drawer .luma-continue-divider { background-color: rgba(127, 127, 127, 0.14); }
++.luma-continue-drawer .luma-continue-row-name { font-size: 15px; min-height: 20px; }
++.luma-continue-drawer .luma-continue-row-reason { font-size: 13px; min-height: 18px; color: rgba(31, 35, 40, 0.66); }
++.luma-continue-drawer .luma-continue-open {
++  height: 36px; padding: 0 16px; border-radius: 12px; font-size: 14px;
++  background-color: rgba(127, 127, 127, 0.2);
++}
++.luma-continue-drawer-done {
++  margin-top: 16px; height: 44px; border-radius: 14px;
++  font-size: 15px; font-weight: 650; color: #1f2328;
++  background-color: rgba(127, 127, 127, 0.2);
++}
++.luma-continue-drawer.luma-surface-dark { background-color: #1d2026; color: #eceef1; }
++.luma-continue-drawer.luma-surface-dark .luma-continue-drawer-grab { background-color: rgba(236, 238, 241, 0.25); }
++.luma-continue-drawer.luma-surface-dark .luma-continue-drawer-subtitle { color: rgba(236, 238, 241, 0.6); }
++.luma-continue-drawer.luma-surface-dark .luma-continue-row-reason { color: rgba(236, 238, 241, 0.62); }
++.luma-continue-drawer.luma-surface-dark .luma-continue-drawer-done { color: #eceef1; }
+diff --git a/js/js-resources.gresource.xml b/js/js-resources.gresource.xml
+index 37765b3..fb5c71b 100644
+--- a/js/js-resources.gresource.xml
++++ b/js/js-resources.gresource.xml
+@@ -96,6 +96,7 @@
+     <file>ui/lumaWindowWatch.js</file>
+     <file>ui/lumaSession.js</file>
+     <file>ui/lumaContinue.js</file>
++    <file>ui/lumaTvContinue.js</file>
+     <file>ui/lumaFocusVisible.js</file>
+     <file>ui/lumaWell.js</file>
+     <file>ui/lumaWellModel.js</file>
+diff --git a/js/ui/lumaContinue.js b/js/ui/lumaContinue.js
+index 96d6ecf..acf98bd 100644
+--- a/js/ui/lumaContinue.js
++++ b/js/ui/lumaContinue.js
+@@ -12,10 +12,12 @@ import Gio from 'gi://Gio';
+ import GObject from 'gi://GObject';
+ import GLib from 'gi://GLib';
+ import Shell from 'gi://Shell';
++import Soup from 'gi://Soup';
+ import St from 'gi://St';
+ 
+ import * as Main from './main.js';
+ import * as MessageTray from './messageTray.js';
++import * as SurfaceMaterials from './lumaSurfaceMaterials.js';
+ import {peekNotificationLip} from './lumaNotificationBeacon.js';
+ 
+ const STYLESHEET_URI = 'resource:///org/gnome/shell/theme/luma-continue.css';
+@@ -107,37 +109,143 @@ function appFor(id) {
+     return Shell.AppSystem.get_default().lookup_app(id);
+ }
+ 
+-// Apps neither installed here nor named by the snapshot: the Depot's kept
+-// catalogue (signed, verified by the installer when it was written; read here
+-// for display only) gives the name, and Flathub's AppStream icon cache the
+-// picture.
++// Apps the other device has and this one doesn't: Depot's signed catalogue
++// (verified by Depot or the installer when they kept it; read here for
++// display only) gives the name and the listing's icon. The icon is the file
++// Depot keeps for that listing, shared with Depot's own media cache; when
++// Depot hasn't drawn that listing yet, it is fetched once from Luma's media
++// hosts and kept there for both.
+ const CATALOGUE_MAX_BYTES = 16 * 1024 * 1024;
++const ICON_MAX_BYTES = 2 * 1024 * 1024;
++const DEPOT_MEDIA_HOSTS = ['https://media.simplyluma.com/', 'https://dl.simplyluma.com/media/',
++    'https://hub.simplyluma.com/api/depot/media/'];
+ let catalogue = null;
++let catalogueStamp = null;
+ let iconTheme = null;
++let soup = null;
++const fetching = new Set();
++const iconListeners = new Set();
++
++// Depot keeps its catalogue and pictures under its cache: the host app's
++// ~/.cache, or the Flatpak's own cache when Depot runs as a Flatpak.
++function depotRoots() {
++    return [
++        GLib.build_filenamev([GLib.get_home_dir(), '.var', 'app', 'org.projectluma.Depot', 'cache',
++            'luma-depot', 'catalogue-v1']),
++        GLib.build_filenamev([GLib.get_user_cache_dir(), 'luma-depot', 'catalogue-v1']),
++    ];
++}
+ 
+-function catalogueEntry(id) {
+-    if (catalogue === null) {
+-        catalogue = new Map();
++function catalogueFiles() {
++    return depotRoots().map(root => GLib.build_filenamev([root, 'catalogue.json']));
++}
++
++function readCatalogue() {
++    const rows = new Map();
++    for (const root of depotRoots()) {
+         try {
+-            const path = GLib.build_filenamev([GLib.get_user_cache_dir(), 'luma', 'depot', 'catalogue-v1.json']);
+-            const file = Gio.File.new_for_path(path);
+-            if (file.query_info('standard::size', 0, null).get_size() <= CATALOGUE_MAX_BYTES) {
+-                const document = JSON.parse(new TextDecoder().decode(file.load_contents(null)[1]));
+-                for (const row of document?.apps ?? []) {
+-                    if (typeof row?.id === 'string' && typeof row?.name === 'string')
+-                        catalogue.set(row.id.toLowerCase(), row.name.slice(0, 128));
+-                }
++            const file = Gio.File.new_for_path(GLib.build_filenamev([root, 'catalogue.json']));
++            if (file.query_info('standard::size', 0, null).get_size() > CATALOGUE_MAX_BYTES)
++                continue;
++            const document = JSON.parse(new TextDecoder().decode(file.load_contents(null)[1]));
++            const entries = document?.items ?? document?.apps ?? [];
++            for (const row of Array.isArray(entries) ? entries : []) {
++                if (typeof row?.id !== 'string' || typeof row?.name !== 'string' || (row.kind ?? 'app') !== 'app')
++                    continue;
++                const key = row.id.toLowerCase();
++                if (rows.has(key))
++                    continue;
++                const icon = typeof row.icon === 'string' ? row.icon : row.icon?.url ?? row.icon?.src ?? null;
++                rows.set(key, {name: row.name.slice(0, 128), icon: typeof icon === 'string' ? icon : null, root});
+             }
+         } catch {}
+     }
++    return rows;
++}
++
++// Read again only when Depot or the installer kept a newer copy.
++function catalogueEntry(id) {
++    const stamp = catalogueFiles().map(path => {
++        try {
++            return `${path}:${Gio.File.new_for_path(path).query_info('time::modified', 0, null)
++                .get_modification_date_time()?.to_unix() ?? 0}`;
++        } catch {
++            return null;
++        }
++    }).filter(x => x).join('|');
++    if (catalogue === null || stamp !== catalogueStamp) {
++        catalogue = readCatalogue();
++        catalogueStamp = stamp;
++    }
+     return catalogue.get(id.replace(/\.desktop$/, '').toLowerCase()) ?? null;
+ }
+ 
++// Where Depot keeps a listing's picture (luma_depot.model.catalogue_v1.MediaCache).
++export function depotMediaPath(url, root = depotRoots()[1]) {
++    const clean = url.split('#')[0];
++    const digest = GLib.compute_checksum_for_string(GLib.ChecksumType.SHA256, clean, -1).slice(0, 32);
++    return GLib.build_filenamev([root, 'media', digest, clean.split('/').pop()]);
++}
++
++function isPicture(bytes) {
++    const head = bytes.slice(0, 256);
++    const png = [0x89, 0x50, 0x4e, 0x47].every((b, i) => head[i] === b);
++    const text = new TextDecoder().decode(head).trimStart();
++    return png || text.startsWith('<svg') || text.startsWith('<?xml');
++}
++
++async function fetchDepotIcon(url, path) {
++    fetching.add(url);
++    try {
++        soup ??= new Soup.Session({timeout: 15, max_conns: 2, max_conns_per_host: 1});
++        const message = Soup.Message.new('GET', url);
++        const bytes = await soup.send_and_read_async(message, GLib.PRIORITY_LOW, null);
++        if (message.get_status() !== Soup.Status.OK)
++            return;
++        const data = bytes.get_data() ?? new Uint8Array();
++        if (data.length === 0 || data.length > ICON_MAX_BYTES || !isPicture(data))
++            return;
++        // Content-addressed names are checked; other listing pictures come
++        // only from the hosts the signed catalogue names.
++        const name = url.split('/').pop().split('.')[0];
++        if (/^[0-9a-f]{64}$/.test(name) &&
++            GLib.compute_checksum_for_bytes(GLib.ChecksumType.SHA256, bytes) !== name)
++            return;
++        GLib.mkdir_with_parents(GLib.path_get_dirname(path), 0o700);
++        Gio.File.new_for_path(path).replace_contents(data, null, false,
++            Gio.FileCreateFlags.REPLACE_DESTINATION, null);
++        for (const listener of iconListeners)
++            listener();
++    } catch (e) {
++        log(`[luma-continue] Depot icon ${url}: ${e.message}`);
++    } finally {
++        fetching.delete(url);
++    }
++}
++
++function depotIcon(id) {
++    const entry = catalogueEntry(id);
++    const url = entry?.icon?.split('#')[0];
++    if (!url || !DEPOT_MEDIA_HOSTS.some(host => url.startsWith(host)))
++        return null;
++    // Depot may have drawn it under either root; a fetch goes to the root
++    // whose catalogue named it, so Depot finds it there too.
++    for (const root of [entry.root, ...depotRoots()]) {
++        const path = depotMediaPath(url, root);
++        if (GLib.file_test(path, GLib.FileTest.IS_REGULAR))
++            return Gio.FileIcon.new(Gio.File.new_for_path(path));
++    }
++    if (!fetching.has(url))
++        fetchDepotIcon(url, depotMediaPath(url, entry.root)).catch(() => {});
++    return null;
++}
++
++// Apps Depot doesn't list: the AppStream icon cache of a Flatpak remote.
+ function appstreamIcon(id) {
+     const bare = id.replace(/\.desktop$/, '');
+     const roots = [GLib.build_filenamev([GLib.get_user_data_dir(), 'flatpak', 'appstream']), '/var/lib/flatpak/appstream'];
+     for (const root of roots) {
+-        for (const remote of ['flathub', 'luma']) {
++        for (const remote of ['luma', 'flathub']) {
+             for (const size of ['128x128', '64x64']) {
+                 const path = GLib.build_filenamev([root, remote, Shell.util_get_architecture?.() ?? 'x86_64',
+                     'active', 'icons', size, `${bare}.png`]);
+@@ -150,28 +258,47 @@ function appstreamIcon(id) {
+ }
+ 
+ export function appName(id) {
+-    return appFor(id)?.get_name() ?? known.get(id)?.name ?? catalogueEntry(id) ??
++    return appFor(id)?.get_name() ?? known.get(id)?.name ?? catalogueEntry(id)?.name ??
+         id.replace(/\.desktop$/, '').split('.').pop();
+ }
+ 
+-function appIcon(id, size) {
++// The picture for an app: its own when installed here; otherwise what the
++// other device drew it with when this one has it, Depot's listing icon, or
++// a Flatpak remote's AppStream icon.
++export function appGicon(id) {
+     const app = appFor(id);
+     if (app)
+-        return app.create_icon_texture(size);
++        return app.get_icon();
+     let gicon = null;
+     try {
+         const name = known.get(id)?.icon;
+         const candidate = name ? Gio.Icon.new_for_string(name) : null;
+-        // A themed name only counts when this computer's theme has it.
++        // The other device's icon counts only when it exists here: a themed
++        // name this computer's theme has, or a file that is on this disk.
+         iconTheme ??= St.IconTheme.new?.() ?? null;
+-        if (candidate instanceof Gio.ThemedIcon && iconTheme?.has_icon &&
+-            !iconTheme.has_icon(candidate.get_names()[0]))
+-            gicon = null;
++        if (candidate instanceof Gio.ThemedIcon)
++            gicon = !iconTheme?.has_icon || iconTheme.has_icon(candidate.get_names()[0]) ? candidate : null;
++        else if (candidate instanceof Gio.FileIcon)
++            gicon = candidate.get_file().query_exists(null) ? candidate : null;
+         else
+             gicon = candidate;
+     } catch {}
+-    gicon ??= appstreamIcon(id);
+-    return new St.Icon({gicon: gicon ?? new Gio.ThemedIcon({name: 'application-x-executable'}), icon_size: size});
++    return gicon ?? depotIcon(id) ?? appstreamIcon(id) ?? new Gio.ThemedIcon({name: 'application-x-executable'});
++}
++
++function appIcon(id, size) {
++    const app = appFor(id);
++    if (app)
++        return app.create_icon_texture(size);
++    return new St.Icon({gicon: appGicon(id), icon_size: size});
++}
++
++// Phone and tablet: the lip card offers one app, and the result list is a
++// bottom drawer. A TV never shows Continue as a banner (tv.js's home hero).
++export function handheldForm() {
++    const presentation = Main.presentation;
++    return presentation?._state?.posture?.effective !== 'tv' &&
++        ['mobile', 'tablet'].includes(presentation?.mode);
+ }
+ 
+ // Rows of the result list, one per app that needs a word.
+@@ -209,22 +336,36 @@ export class ContinueBanner {
+         loadStylesheet();
+         this._notification = null;
+         this._state = null;
++        // A Depot icon fetched for an app not installed here: draw it.
++        this._iconLanded = () => {
++            for (const rebuild of this._notification?.lumaContent.views ?? [])
++                rebuild();
++        };
++        iconListeners.add(this._iconLanded);
+     }
+ 
+-    _ensure(sourceTitle, iconName, urgency) {
+-        if (this._notification && this._sourceTitle !== sourceTitle)
++    // icon: a theme name or a Gio.Icon (a handheld's lip card leads with the
++    // offered app); badge: the Shell's own badge on that tile (Connect).
++    _ensure(sourceTitle, icon, urgency, badge = null) {
++        const gicon = typeof icon === 'string' ? new Gio.ThemedIcon({name: icon}) : icon;
++        // The same card changes in place (offer, restoring, result); only a
++        // new source or icon makes a new one. The badge follows the state.
++        const key = `${sourceTitle}|${gicon.to_string()}`;
++        if (this._notification && this._sourceKey !== key)
+             this.close();
+         if (!this._notification) {
+-            this._sourceTitle = sourceTitle;
++            this._sourceKey = key;
+             const source = new MessageTray.Source({
+                 title: sourceTitle,
+-                icon: new Gio.ThemedIcon({name: iconName}),
++                icon: gicon,
+                 policy: new MessageTray.NotificationGenericPolicy(),
+             });
+             Main.messageTray.add(source);
+             this._notification = new MessageTray.Notification({
+                 source, title: '', body: '', isTransient: false, urgency,
+             });
++            // Only the Shell sets this badge; no app's notification can carry it.
++            this._notification.lumaShellBadge = badge;
+             this._notification.lumaContent = {
+                 views: new Set(),
+                 actions: [],
+@@ -237,6 +378,10 @@ export class ContinueBanner {
+             });
+             this._source = source;
+         }
++        if (this._notification.lumaShellBadge !== badge) {
++            this._notification.lumaShellBadge = badge;
++            this._notification.notify('title');
++        }
+         this._notification.urgency = urgency;
+         return this._notification;
+     }
+@@ -273,6 +418,7 @@ export class ContinueBanner {
+ 
+     close() {
+         this._stopTick();
++        this._drawer?.close();
+         this._notification?.destroy(MessageTray.NotificationDestroyedReason.SOURCE_CLOSED);
+         this._notification = null;
+         this._shown = false;
+@@ -301,6 +447,47 @@ export class ContinueBanner {
+         });
+     }
+ 
++    // Phone and tablet: the lip card offers the app that had focus there,
++    // with its document, led by the app's icon with the Connect badge. The
++    // snapshot's other apps wait in the app switcher.
++    offerApp({device, app, document = null, others = 0, taken = null}, onContinue, onNotNow) {
++        rememberApps([app]);
++        this._ensure('Luma Connect', appGicon(app.id), MessageTray.Urgency.CRITICAL,
++            new Gio.ThemedIcon({name: CONNECT_ICON}));
++        this._apps = [app];
++        this._done = null;
++        this._busy = false;
++        const parts = [];
++        if (document)
++            parts.push(`“${document}”.`);
++        if (others > 0)
++            parts.push(`Your other ${others} ${plural(others, 'app waits', 'apps wait')} in the app switcher.`);
++        this._set({
++            title: `Continue ${appName(app.id)} from ${device}?`,
++            body: parts.join(' ') || 'Opens where you left it.',
++            equal: true, state: 'offer-app', when: taken,
++            actions: [['Continue', onContinue], ['Not now', onNotNow]],
++        });
++    }
++
++    // The lip card while that app opens: no buttons; it closes when the app is up.
++    restoringApp({device, app, document = null}) {
++        rememberApps([app]);
++        this._ensure('Luma Connect', appGicon(app.id), MessageTray.Urgency.CRITICAL);
++        this._apps = [app];
++        this._total = 1;
++        this._placed = 0;
++        this._done = new Set();
++        this._busy = false;
++        this._started = GLib.get_monotonic_time();
++        this._set({
++            title: `Opening ${appName(app.id)} from ${device}`,
++            body: document ? `Bringing “${document}” up to date` : 'Bringing it up to date',
++            state: 'restoring-app',
++        });
++        this._startTick();
++    }
++
+     // 3: the same banner, counting windows as they are placed.
+     restoring({device, total, apps = null, onStop}) {
+         this._ensure('Luma Connect', CONNECT_ICON, MessageTray.Urgency.CRITICAL);
+@@ -323,6 +510,10 @@ export class ContinueBanner {
+     }
+ 
+     placed(appId) {
++        if (this._state === 'restoring-app') {
++            this.close();
++            return;
++        }
+         if (this._state !== 'restoring')
+             return;
+         this._placed++;
+@@ -354,12 +545,19 @@ export class ContinueBanner {
+         this._rows = rows;
+         this._onOpen = onOpen;
+         const title = `Reopened ${result.placed} of ${result.windows} windows`;
+-        const show = () => this._set({
+-            title,
+-            body: local ? 'After the restart' : `From ${device}, ${this._ago(at)}`,
+-            actions: [['Done', () => this.close()]],
+-            state: 'list',
+-        });
++        const subtitle = local ? 'After the restart' : `From ${device}, ${this._ago(at)}`;
++        // Phone and tablet: the list is a bottom drawer, not the card grown.
++        const show = handheldForm()
++            ? () => {
++                this._drawer ??= new ContinueDrawer();
++                this._drawer.open({title, subtitle, rows, onOpen, onDone: () => this.close()});
++            }
++            : () => this._set({
++                title,
++                body: subtitle,
++                actions: [['Done', () => this.close()]],
++                state: 'list',
++            });
+         const actions = [];
+         const openable = rows.filter(r => r.open);
+         if (local && openable.length === 1)
+@@ -432,13 +630,7 @@ export class ContinueBanner {
+     }
+ 
+     _progress(styleClass) {
+-        const track = new St.Widget({style_class: styleClass, x_expand: true,
+-            layout_manager: new Clutter.FixedLayout()});
+-        track._fill = new St.Widget({style_class: 'luma-continue-progress-fill', x: 0, y: 0, width: 0});
+-        track._share = 0;
+-        track.connect('notify::width', () => (track._fill.width = Math.round(track.width * track._share)));
+-        track.add_child(track._fill);
+-        return track;
++        return progressTrack(styleClass);
+     }
+ 
+     _build(_message) {
+@@ -455,46 +647,156 @@ export class ContinueBanner {
+                 x_expand: true}));
+             box.add_child(note);
+         }
+-        if (this._state === 'restoring') {
++        if (this._state === 'restoring' || this._state === 'restoring-app') {
+             const bar = this._progress('luma-continue-progress');
+             bar.connect('notify::allocation', () => this._sizeProgress(bar));
+             this._progressBars.push(bar);
+             box.add_child(bar);
+         }
+         if (this._state === 'list') {
+-            const list = new St.BoxLayout({orientation: Clutter.Orientation.VERTICAL,
+-                style_class: 'luma-continue-list', x_expand: true});
+-            for (const row of this._rows ?? []) {
+-                // The hairline between rows is its own actor: a row's
+-                // bottom border took its width but was not painted.
+-                if (list.get_n_children())
+-                    list.add_child(new St.Widget({style_class: 'luma-continue-divider', x_expand: true}));
+-                const line = new St.BoxLayout({style_class: 'luma-continue-row', x_expand: true});
+-                line.add_child(appIcon(row.id, 28));
+-                const text = new St.BoxLayout({orientation: Clutter.Orientation.VERTICAL, x_expand: true,
+-                    y_align: Clutter.ActorAlign.CENTER});
+-                text.add_child(new St.Label({style_class: 'luma-continue-row-name', text: appName(row.id)}));
+-                const why = new St.Label({style_class: 'luma-continue-row-reason', text: row.reason});
+-                why.clutter_text.line_wrap = true;
+-                text.add_child(why);
+-                if (row.progress !== undefined) {
+-                    const bar = this._progress('luma-continue-progress luma-continue-progress-small');
+-                    bar._share = Math.min(1, Math.max(0, row.progress / 100));
+-                    text.add_child(bar);
+-                }
+-                line.add_child(text);
+-                if (row.open) {
+-                    const open = new St.Button({style_class: 'luma-continue-open', label: 'Open',
+-                        y_align: Clutter.ActorAlign.CENTER, can_focus: true});
+-                    open.connect('clicked', () => this._onOpen?.(row.id));
+-                    line.add_child(open);
+-                }
+-                list.add_child(line);
+-            }
+             // The list runs under the source icon too: its column starts
+             // where the card's content does (34 px tile + 12 px gap).
+-            box.add_child(new OutdentBin(list, LIST_OUTDENT));
++            box.add_child(new OutdentBin(resultList(this._rows ?? [], 28, id => this._onOpen?.(id)),
++                LIST_OUTDENT));
+         }
+         return box.get_n_children() ? box : null;
+     }
+ }
++
++// A LumaUI progress track and its fill (its share set by the owner).
++function progressTrack(styleClass) {
++    const track = new St.Widget({style_class: styleClass, x_expand: true,
++        layout_manager: new Clutter.FixedLayout()});
++    track._fill = new St.Widget({style_class: 'luma-continue-progress-fill', x: 0, y: 0, width: 0});
++    track._share = 0;
++    track.connect('notify::width', () => (track._fill.width = Math.round(track.width * track._share)));
++    track.add_child(track._fill);
++    return track;
++}
++
++// The result rows, in the banner (28 px icons) and in the phone's drawer (36).
++function resultList(rows, iconSize, onOpen) {
++    const list = new St.BoxLayout({orientation: Clutter.Orientation.VERTICAL,
++        style_class: 'luma-continue-list', x_expand: true});
++    for (const row of rows) {
++        // The hairline between rows is its own actor: a row's
++        // bottom border took its width but was not painted.
++        if (list.get_n_children())
++            list.add_child(new St.Widget({style_class: 'luma-continue-divider', x_expand: true}));
++        const line = new St.BoxLayout({style_class: 'luma-continue-row', x_expand: true});
++        line.add_child(appIcon(row.id, iconSize));
++        const text = new St.BoxLayout({orientation: Clutter.Orientation.VERTICAL, x_expand: true,
++            y_align: Clutter.ActorAlign.CENTER});
++        text.add_child(new St.Label({style_class: 'luma-continue-row-name', text: appName(row.id)}));
++        const why = new St.Label({style_class: 'luma-continue-row-reason', text: row.reason});
++        why.clutter_text.line_wrap = true;
++        text.add_child(why);
++        if (row.progress !== undefined) {
++            const bar = progressTrack('luma-continue-progress luma-continue-progress-small');
++            bar._share = Math.min(1, Math.max(0, row.progress / 100));
++            text.add_child(bar);
++        }
++        line.add_child(text);
++        if (row.open) {
++            const open = new St.Button({style_class: 'luma-continue-open', label: 'Open',
++                y_align: Clutter.ActorAlign.CENTER, can_focus: true});
++            open.connect('clicked', () => onOpen?.(row.id));
++            line.add_child(open);
++        }
++        list.add_child(line);
++    }
++    return list;
++}
++
++// Phone and tablet: the result list as a bottom drawer: a 28 px top, a grab handle, the same rows at 36 px, and a
++// full-width Done; tapping outside or swiping it down closes it.
++class ContinueDrawer {
++    open({title, subtitle, rows, onOpen, onDone}) {
++        this.close();
++        this._onDone = onDone;
++        const monitor = Main.layoutManager.primaryMonitor;
++        this._shade = new St.Widget({style_class: 'luma-continue-drawer-shade', reactive: true,
++            layout_manager: new Clutter.BinLayout()});
++        this._shade.set_position(monitor.x, monitor.y);
++        this._shade.set_size(monitor.width, monitor.height);
++        // A tablet has room: the phone's drawer, 400 wide, centred and lifted
++        // off the foot with all four corners round.
++        const tablet = Main.presentation?.mode === 'tablet';
++        const sheet = new St.BoxLayout({style_class: 'luma-continue-drawer', reactive: true,
++            orientation: Clutter.Orientation.VERTICAL, x_expand: true, y_expand: true,
++            x_align: tablet ? Clutter.ActorAlign.CENTER : Clutter.ActorAlign.FILL, y_align: Clutter.ActorAlign.END});
++        if (tablet)
++            sheet.add_style_class_name('luma-continue-drawer-tablet');
++        // The drawer's own fill (cn.css .cn-drawer): dark only in Dark;
++        // Light, Frost and Glass draw it as paper.
++        if (SurfaceMaterials.effectiveTreatment() === 'dark')
++            sheet.add_style_class_name('luma-surface-dark');
++        const scale = St.ThemeContext.get_for_stage(global.stage).scale_factor;
++        sheet.add_child(new St.Widget({style_class: 'luma-continue-drawer-grab',
++            x_align: Clutter.ActorAlign.CENTER}));
++        sheet.add_child(new St.Label({style_class: 'luma-continue-drawer-title', text: title}));
++        sheet.add_child(new St.Label({style_class: 'luma-continue-drawer-subtitle', text: subtitle}));
++        sheet.add_child(resultList(rows, 36, id => {
++            onOpen?.(id);
++            this.close();
++        }));
++        const done = new St.Button({style_class: 'luma-continue-drawer-done', label: 'Done',
++            x_expand: true, can_focus: true});
++        done.connect('clicked', () => this._finish());
++        sheet.add_child(done);
++        this._shade.add_child(sheet);
++        const tap = new Clutter.ClickGesture();
++        tap.connect('may-recognize', g => global.stage.get_event_actor(g.get_point_event(0)) === this._shade);
++        tap.connect('recognize', () => this._finish());
++        this._shade.add_action(tap);
++        // A downward swipe on the sheet puts it away.
++        const swipe = new Clutter.PanGesture({min_n_points: 1, max_n_points: 1, pan_axis: Clutter.PanAxis.Y});
++        swipe.connect('pan-update', g => {
++            sheet.translation_y = Math.max(0, g.get_accumulated_delta().get_y());
++        });
++        swipe.connect('end', g => {
++            if (sheet.translation_y > 80 * scale || g.get_velocity().get_y() > 600)
++                this._finish();
++            else
++                sheet.ease({translation_y: 0, duration: 160, mode: Clutter.AnimationMode.EASE_OUT_QUAD});
++        });
++        swipe.connect('cancel', () => (sheet.translation_y = 0));
++        sheet.add_action(swipe);
++        this._shade.connect('key-press-event', (_a, event) => {
++            const key = event.get_key_symbol();
++            if (key === Clutter.KEY_Escape || key === Clutter.KEY_Back) {
++                this._finish();
++                return Clutter.EVENT_STOP;
++            }
++            return global.focus_manager.navigate_from_event(event)
++                ? Clutter.EVENT_STOP : Clutter.EVENT_PROPAGATE;
++        });
++        Main.layoutManager.addTopChrome(this._shade);
++        this._sheet = sheet;
++        this._grab = Main.pushModal(this._shade);
++        done.grab_key_focus();
++    }
++
++    get actor() {
++        return this._sheet ?? null;
++    }
++
++    _finish() {
++        const done = this._onDone;
++        this.close();
++        done?.();
++    }
++
++    close() {
++        if (!this._shade)
++            return;
++        if (this._grab)
++            Main.popModal(this._grab);
++        this._grab = null;
++        const shade = this._shade;
++        this._shade = null;
++        this._sheet = null;
++        Main.layoutManager.removeChrome(shade);
++        shade.destroy();
++    }
++}
+diff --git a/js/ui/lumaGrid.js b/js/ui/lumaGrid.js
+index 3360429..b40e253 100644
+--- a/js/ui/lumaGrid.js
++++ b/js/ui/lumaGrid.js
+@@ -403,6 +403,106 @@ class GridCard extends St.Widget {
+     }
+ });
+ 
++// After a phone or tablet continues from another device, that device's
++// other apps wait in the app switcher, unstarted (ADR-055 handheld): the
++// app's icon on the plain card colour, no picture, until chosen. Choosing it
++// opens the app with its state; swiping it away forgets it.
++const PendingGridCard = GObject.registerClass(
++class PendingGridCard extends St.Widget {
++    _init(pending, popup) {
++        super._init({reactive: true, can_focus: true, track_hover: true,
++            accessible_role: Atk.Role.PUSH_BUTTON});
++        this.window = null;
++        this.pending = pending;
++        this._popup = popup;
++        this._selected = false;
++        this._radius = 9;
++        this._shapeRadius = null;
++        this._letterboxed = false;
++        this._edge = new St.Widget({reactive: false});
++        this._mark = Main.lumaSession?.pendingIcon?.(pending.id, 64) ??
++            new St.Icon({icon_name: 'application-x-executable', icon_size: 64});
++        this._header = new St.BoxLayout({clip_to_allocation: true, style: 'spacing: 6px;'});
++        this._header.add_child(Main.lumaSession?.pendingIcon?.(pending.id, 20) ??
++            new St.Icon({icon_name: 'application-x-executable', icon_size: 20}));
++        this._name = new St.Label({text: pending.name ?? pending.id, x_expand: true,
++            y_align: Clutter.ActorAlign.CENTER, style: 'font-weight: 700;'});
++        this._name.clutter_text.ellipsize = Pango.EllipsizeMode.END;
++        this._header.add_child(this._name);
++        this.accessible_name = pending.device
++            ? _('%s, from %s').format(this._name.text, pending.device) : this._name.text;
++        this.add_child(this._edge);
++        this.add_child(this._mark);
++        this.add_child(this._header);
++        const click = new Clutter.ClickGesture();
++        click.connect('recognize', () => popup.activate(this));
++        this.add_action(click);
++        this.connect('notify::hover', () => this._syncSelection());
++        this.connect('key-focus-in', () => popup.selectCard(this));
++        this._syncSelection();
++    }
++
++    vfunc_paint(paintContext) {
++        if (!this._popup.isHidden(this))
++            super.vfunc_paint(paintContext);
++    }
++
++    syncTimeVisible() {}
++
++    // The card has the screen's shape, as the app's window will.
++    get dimensions() {
++        const monitor = Main.layoutManager.primaryMonitor;
++        return {width: Math.max(1, monitor?.width ?? 1), height: Math.max(1, monitor?.height ?? 1)};
++    }
++
++    setSelected(selected) {
++        this._selected = selected;
++        this._syncSelection();
++    }
++
++    get lift() {
++        return 0;
++    }
++
++    // The plain card: the quiet surface a card shows where its preview
++    // doesn't fill it, with the card's own edge and shadow.
++    _syncSelection() {
++        this._name.opacity = 255;
++        this._edge.set_style(`border-radius: ${this._radius}px;
++            background-color: rgba(255,255,255,0.06);
++            border: 1px solid rgba(255,255,255,0.18);
++            box-shadow: 0 4px 14px rgba(0,0,0,0.35);`);
++    }
++
++    setCloseShown() {}
++
++    canClose() {
++        return true;
++    }
++
++    closeWindow() {
++        Main.lumaSession?.forgetPending?.(this.pending.id);
++        this._popup.removeCard(this);
++    }
++
++    open() {
++        Main.lumaSession?.openPending?.(this.pending.id);
++    }
++
++    vfunc_allocate(box) {
++        this.set_allocation(box);
++        const scale = St.ThemeContext.get_for_stage(global.stage).scale_factor;
++        const width = box.get_width();
++        const height = box.get_height() - 28 * scale;
++        allocate(this._header, 0, 0, width, 20 * scale);
++        allocate(this._edge, 0, 28 * scale, width, height);
++        const [, markWidth] = this._mark.get_preferred_width(-1);
++        const [, markHeight] = this._mark.get_preferred_height(-1);
++        allocate(this._mark, Math.round((width - markWidth) / 2),
++            Math.round(28 * scale + (height - markHeight) / 2), markWidth, markHeight);
++    }
++});
++
+ const GridPopup = GObject.registerClass(
+ class GridPopup extends St.Widget {
+     _init(backward, modifierMask) {
+@@ -474,6 +574,15 @@ class GridPopup extends St.Widget {
+             this._cards.push(card);
+             this._stage.add_child(card);
+         });
++        // A handheld that continued from another device: the apps still to
++        // open follow the open ones, in that device's stacking order.
++        if (['mobile', 'tablet'].includes(Main.presentation?.mode)) {
++            for (const pending of Main.lumaSession?.pendingApps?.() ?? []) {
++                const card = new PendingGridCard(pending, this);
++                this._cards.push(card);
++                this._stage.add_child(card);
++            }
++        }
+         // Alt-Tab still means "the one before this one" in recency terms, which
+         // is no longer simply the next card along.
+         const positionOf = window => Math.max(0, windows.indexOf(window));
+@@ -570,7 +679,7 @@ class GridPopup extends St.Widget {
+     }
+ 
+     _stackLikeTheDesktop(last = null) {
+-        const windows = global.display.sort_windows_by_stacking(this._cards.map(c => c.window));
++        const windows = global.display.sort_windows_by_stacking(this._cards.map(c => c.window).filter(w => w));
+         windows.forEach(window => {
+             const card = this._cards.find(c => c.window === window);
+             if (card)
+@@ -648,7 +757,7 @@ class GridPopup extends St.Widget {
+         const label = 28 * scale;
+         const monitor = Main.layoutManager.primaryMonitor;
+         this._cards.forEach(card => {
+-            const rect = this._desktopRect(card.window);
++            const rect = card.window ? this._desktopRect(card.window) : null;
+             const home = card.home;
+             card._travelFrom = rect
+                 ? {x: rect.x, y: rect.y - label, width: rect.width, height: rect.height + label}
+@@ -917,7 +1026,7 @@ class GridPopup extends St.Widget {
+     // One line per card when Grid opens, and a warning if resting cards
+     // overlap, so a report of a stray or misplaced card can be traced.
+     _logCards() {
+-        const lines = this._cards.map((card, index) => {
++        const lines = this._cards.filter(card => card.window).map((card, index) => {
+             const w = card.window;
+             const r = w.get_frame_rect();
+             const home = card.home;
+@@ -1070,6 +1179,12 @@ class GridPopup extends St.Widget {
+     }
+ 
+     activate(card) {
++        // An app still to open: start it with its state, then leave.
++        if (card?.pending) {
++            card.open();
++            this.dismiss(null);
++            return;
++        }
+         this.dismiss(card?.window ?? null);
+     }
+ 
+diff --git a/js/ui/lumaNotificationBeacon.js b/js/ui/lumaNotificationBeacon.js
+index 4a6c610..aaebe86 100644
+--- a/js/ui/lumaNotificationBeacon.js
++++ b/js/ui/lumaNotificationBeacon.js
+@@ -496,6 +496,10 @@ export const NotificationLip = GObject.registerClass(class NotificationLip exten
+                 width = Math.min(width, PILL_MAX_WIDTH * scale);
+             }
+             width = Math.min(width, Math.max(1, monitor.width - 60 * scale));
++            // A tablet is the phone shell with room: its lip card is the
++            // phone's (design-center continue/offer.html ?posture=tablet).
++            if (this._state === 'card' && Main.presentation?.mode === 'tablet')
++                width = Math.min(width, 340 * scale);
+             if (this._state === 'card' && Main.presentation?.mode !== 'desktop') {
+                 const safe = surfaceInsets(Main.presentation?._displayGeometry, monitor,
+                     {x: (monitor.width - width) / 2, y: top - monitor.y, width, height: 60 * scale}, 14 * scale, 8 * scale);
+diff --git a/js/ui/lumaSession.js b/js/ui/lumaSession.js
+index abdcb46..eb8c9e8 100644
+--- a/js/ui/lumaSession.js
++++ b/js/ui/lumaSession.js
+@@ -13,15 +13,20 @@
+ //   journalctl --user -b -g luma-session
+ 
+ import Clutter from 'gi://Clutter';
++import GdkPixbuf from 'gi://GdkPixbuf';
+ import Gio from 'gi://Gio';
+ import GioUnix from 'gi://GioUnix';
+ import GLib from 'gi://GLib';
+ import Meta from 'gi://Meta';
+ import Shell from 'gi://Shell';
++import St from 'gi://St';
+ 
+ import * as LoginManager from '../misc/loginManager.js';
++import * as Signals from '../misc/signals.js';
+ import * as Main from './main.js';
+-import {ContinueBanner, snapshotApps} from './lumaContinue.js';
++import * as Mpris from './mpris.js';
++import {flatpakTv} from './lumaPresentation/tvModel.js';
++import {ContinueBanner, appGicon, handheldForm, rememberApps, snapshotApps} from './lumaContinue.js';
+ 
+ Gio._promisify(Gio.DBusConnection.prototype, 'call_with_unix_fd_list');
+ 
+@@ -35,6 +40,8 @@ const SAVE_TIMEOUT_MS = 500;
+ const MORE_WINDOWS_MS = 3000;
+ const SLEEP_BUDGET_MS = 2000;
+ const CONTINUE_TTL_S = 72 * 3600;
++const ART_EDGE = 960;           // the artwork's longest side, in pixels
++const ART_MAX = 96 * 1024;       // Connect Sync's limit (sessions.ART_MAX)
+ 
+ const SessionIface = `<node>
+   <interface name="org.projectluma.Session1">
+@@ -312,8 +319,9 @@ function sameApp(a, b) {
+     return norm(a) !== '' && norm(a) === norm(b);
+ }
+ 
+-export class LumaSession {
++export class LumaSession extends Signals.EventEmitter {
+     constructor() {
++        super();
+         this._settings = null;
+         try {
+             this._settings = new Gio.Settings({schema_id: SCHEMA});
+@@ -483,9 +491,116 @@ export class LumaSession {
+             windows,
+             apps: [...apps.values()],
+             continuedFrom: this._continuedFrom ?? null,
++            media: await this._nowPlaying(),
+         };
+     }
+ 
++    // What is playing (or paused) here, for a TV to continue (ADR-055 §6):
++    // the app, the item, where it was; tv is true only for an app with a TV
++    // presentation. Connect Sync gives a TV these fields and nothing else.
++    async _nowPlaying() {
++        const players = [...(Mpris.getDefaultSource()?.players ?? [])].filter(p => p.app && p.trackTitle);
++        const player = players.find(p => p.status === 'Playing') ?? players.find(p => p.status === 'Paused');
++        if (!player)
++            return null;
++        const id = player.app.get_id();
++        let position = null;
++        let length = null;
++        try {
++            const [value] = (await Gio.DBus.session.call(player.busName, '/org/mpris/MediaPlayer2',
++                'org.freedesktop.DBus.Properties', 'Get',
++                new GLib.Variant('(ss)', ['org.mpris.MediaPlayer2.Player', 'Position']),
++                new GLib.VariantType('(v)'), Gio.DBusCallFlags.NONE, 1000, null)).deepUnpack();
++            position = Math.floor(Number(value.deepUnpack()) / 1e6);
++            const metadata = player._playerProxy?.Metadata ?? {};
++            length = metadata['mpris:length'] ? Math.floor(Number(metadata['mpris:length'].deepUnpack()) / 1e6) : null;
++        } catch {}
++        const artists = (player.trackArtists ?? []).filter(a => typeof a === 'string' && a.trim());
++        const tv = this._hasTvPresentation(player.app);
++        return {
++            tv,
++            app: id, name: player.app.get_name(), item: player.trackTitle,
++            subtitle: artists.join(', ') || null,
++            position: Number.isFinite(position) && position >= 0 ? position : null,
++            length: Number.isFinite(length) && length > 0 ? length : null,
++            art: tv ? await this._artOf(player.trackCoverUrl) : null,
++        };
++    }
++
++    // The item's artwork as a small JPEG (base64) for a TV home's backdrop.
++    // Only the player's own local art (file://); a remote URL is never
++    // fetched. Connect Sync keeps it under 96 KB (sessions.ART_MAX).
++    async _artOf(url) {
++        if (!url?.startsWith('file://'))
++            return null;
++        if (this._art?.url === url)
++            return this._art.data;
++        let data = null;
++        try {
++            const file = Gio.File.new_for_uri(url);
++            const stream = await new Promise((resolve, reject) => file.read_async(GLib.PRIORITY_LOW, null,
++                (f, res) => { try { resolve(f.read_finish(res)); } catch (e) { reject(e); } }));
++            const pixbuf = await new Promise((resolve, reject) => GdkPixbuf.Pixbuf.new_from_stream_at_scale_async(
++                stream, ART_EDGE, ART_EDGE, true, null,
++                (_o, res) => { try { resolve(GdkPixbuf.Pixbuf.new_from_stream_finish(res)); } catch (e) { reject(e); } }));
++            stream.close(null);
++            // Lower the quality first, then the size, until it fits.
++            for (const [scale, quality] of [[1, '78'], [1, '62'], [1, '48'], [0.75, '62'], [0.5, '62']]) {
++                const image = scale === 1 ? pixbuf : pixbuf.scale_simple(Math.round(pixbuf.width * scale),
++                    Math.round(pixbuf.height * scale), GdkPixbuf.InterpType.BILINEAR);
++                const [ok, bytes] = image.save_to_bufferv('jpeg', ['quality'], [quality]);
++                if (ok && bytes.length <= ART_MAX) {
++                    data = GLib.base64_encode(bytes);
++                    break;
++                }
++            }
++        } catch (e) {
++            log(`lumaSession: no artwork from ${url}: ${e.message}`);
++        }
++        this._art = {url, data};
++        return data;
++    }
++
++    _hasTvPresentation(app) {
++        const info = app.get_app_info();
++        if ((info?.get_string?.('X-Luma-TV') ?? '').trim().toLowerCase() === 'true')
++            return true;
++        // A Flatpak's export drops the X-Luma-TV keys: read its deployed file (tvModel.flatpakTv).
++        const flatpak = info?.get_string?.('X-Flatpak');
++        if (!flatpak)
++            return false;
++        const home = GLib.get_home_dir();
++        const roots = [{exports: '/var/lib/flatpak/exports/share/applications/', deploy: '/var/lib/flatpak/app'},
++            {exports: `${home}/.local/share/flatpak/exports/share/applications/`, deploy: `${home}/.local/share/flatpak/app`}];
++        const read = path => {
++            try {
++                return new TextDecoder().decode(GLib.file_get_contents(path)[1]);
++            } catch {
++                return null;
++            }
++        };
++        const found = flatpakTv(app.get_id(), flatpak, info.get_filename?.() ?? '', roots, read);
++        return (found?.keys?.['X-Luma-TV'] ?? '').trim().toLowerCase() === 'true';
++    }
++
++    // On a TV: Continue's app starts with the item and where it was (the
++    // restore API's 'continue' reason, state {'luma-continue-media': ...});
++    // an app that doesn't take it simply opens.
++    _playOnTv(offer, fromStart) {
++        const media = offer.media;
++        const fields = {item: new GLib.Variant('s', media.item)};
++        if (media.subtitle)
++            fields.subtitle = new GLib.Variant('s', media.subtitle);
++        fields.position = new GLib.Variant('u', fromStart ? 0 : Math.max(0, media.position ?? 0));
++        this._pendingRestore.set(media.app.replace(/\.desktop$/, '').toLowerCase(), {reason: 'continue',
++            state: new GLib.Variant('a{sv}', {'luma-continue-media': new GLib.Variant('a{sv}', fields)})});
++        Main.presentation?._tv?.launchApp(media.app);
++        // Played: it doesn't come back; a newer session replaces it.
++        Gio.DBus.session.call('org.projectluma.ConnectSync1', '/org/projectluma/ConnectSync1',
++            'org.projectluma.ConnectSync1', 'DeclineContinue', new GLib.Variant('(s)', [offer.id]),
++            null, Gio.DBusCallFlags.NO_AUTO_START, 15000, null).catch(() => {});
++    }
++
+     async snapshot(reason) {
+         if (this._frozen)
+             return null;
+@@ -682,13 +797,18 @@ export class LumaSession {
+         this.restore(snapshot, 'restore');
+     }
+ 
+-    restore(snapshot, mode) {
++    // options.handheld: a phone or tablet places nothing (its presentation
++    // owns every window's place); the app opens with its state.
++    // options.quiet: no banner (an app opened from the app switcher).
++    // options.app, options.document: what a handheld's lip card names.
++    restore(snapshot, mode, options = {}) {
+         if (this._restoring)
+             return {ok: false, reason: 'busy'};
++        const handheld = Boolean(options.handheld);
+         const wm = global.workspace_manager;
+         const current = this._monitors();
+         const monitorMap = mapMonitors(snapshot.monitors ?? [], current);
+-        const busy = mode === 'continue' && this._windows().length > 0;
++        const busy = !handheld && mode === 'continue' && this._windows().length > 0;
+         // Over an existing session, a new workspace after the last one.
+         let base = 0;
+         if (busy) {
+@@ -697,7 +817,7 @@ export class LumaSession {
+             if (last && last.list_windows().filter(isRestorable).length === 0)
+                 base -= 1;
+         }
+-        const needed = base + Math.max(1, snapshot.workspaces?.count ?? 1);
++        const needed = handheld ? 0 : base + Math.max(1, snapshot.workspaces?.count ?? 1);
+         while (wm.get_n_workspaces() < needed)
+             wm.append_new_workspace(false, global.get_current_time());
+ 
+@@ -709,7 +829,7 @@ export class LumaSession {
+         const folded = new Set((snapshot.monitors ?? []).filter(m => !here.has(identity(m)) &&
+             (snapshot.monitors ?? []).length > current.length).map(m => m.index));
+         const restoring = {
+-            snapshot, mode, base, monitorMap, current, slots,
++            snapshot, mode, base, monitorMap, current, slots, handheld, quiet: Boolean(options.quiet),
+             started: GLib.get_monotonic_time(),
+             apps: new Map(),
+             result: {mode, windows: slots.length, placed: 0, missing: [], late: [], failed: [], moved: []},
+@@ -722,8 +842,15 @@ export class LumaSession {
+             this._continuedFrom = {device: snapshot.device, taken: snapshot.taken,
+                 at: Math.floor(Date.now() / 1000)};
+             this._banner ??= new ContinueBanner();
+-            this._banner.restoring({device: snapshot.deviceName, total: slots.length,
+-                apps: snapshotApps(snapshot), onStop: () => this.stopRestore()});
++            if (restoring.quiet) {
++                // Opened from the app switcher: the app's own window says it.
++            } else if (handheld && options.app) {
++                this._banner.restoringApp({device: snapshot.deviceName, app: options.app,
++                    document: options.document ?? null});
++            } else {
++                this._banner.restoring({device: snapshot.deviceName, total: slots.length,
++                    apps: snapshotApps(snapshot), onStop: () => this.stopRestore()});
++            }
+         }
+         this._restoring = restoring;
+ 
+@@ -872,7 +999,9 @@ export class LumaSession {
+         });
+         const target = this._target(slot);
+         slot.target = target;
+-        if (window.is_restored_from_session?.()) {
++        if (restoring.handheld) {
++            log(`${slot.app}: opened on a handheld`);
++        } else if (window.is_restored_from_session?.()) {
+             log(`${slot.app}: restored by its client`);
+         } else if (!config) {
+             this._placeShown(window, slot, target);
+@@ -900,9 +1029,9 @@ export class LumaSession {
+             else
+                 window.change_workspace_by_index(restoring.base + slot.workspace, false);
+         }
+-        if (slot.above)
++        if (slot.above && !restoring.handheld)
+             window.make_above();
+-        if (slot.minimized)
++        if (slot.minimized && !restoring.handheld)
+             window.minimize();
+         const late = restoring === this._late;
+         if (late) {
+@@ -916,7 +1045,7 @@ export class LumaSession {
+             }, this);
+         }
+         log(`${slot.app}: window ${slot.index} placed${target.exact ? ' exactly' : ''}`);
+-        if (restoring.mode === 'continue')
++        if (restoring.mode === 'continue' && !restoring.quiet)
+             this._banner?.placed(slot.app);
+         this._openMoreWindows(slot);
+         this._checkRestoreDone();
+@@ -997,7 +1126,7 @@ export class LumaSession {
+         // A fresh server time: a restore runs from a timeout, with no event
+         // whose time would let the activation through.
+         const time = global.display.get_current_time_roundtrip();
+-        if (active < wm.get_n_workspaces() && active !== wm.get_active_workspace_index())
++        if (!restoring.handheld && active < wm.get_n_workspaces() && active !== wm.get_active_workspace_index())
+             wm.get_workspace_by_index(active).activate(time);
+         const focus = slots.find(s => s.focus && s.window && !s.window.minimized);
+         if (focus) {
+@@ -1029,12 +1158,17 @@ export class LumaSession {
+                 return GLib.SOURCE_REMOVE;
+             });
+         }
+-        if (result.missing.length + result.unplaced.length + result.failed.length +
+-            result.moved.length > 0)
++        // A handheld shows no other display, so a fold onto this screen says nothing.
++        const moved = restoring.handheld ? 0 : result.moved.length;
++        if (restoring.handheld)
++            result.moved = [];
++        const failed = result.missing.length + result.unplaced.length + result.failed.length + moved > 0;
++        if (!restoring.quiet && failed)
+             this._notifyPartial(result);
+-        else if (restoring.mode === 'continue')
++        else if (!restoring.quiet && restoring.mode === 'continue')
+             this._banner?.close();
+         this._markDirty();
++        this._openNextPending();
+     }
+ 
+     // Restored apps present their windows as they come up and can take the
+@@ -1091,6 +1225,56 @@ export class LumaSession {
+         });
+     }
+ 
++    // Phone and tablet: the app that had focus opens with its state; the
++    // snapshot's other apps wait in the app switcher, unstarted, in stacking
++    // order, each opening with its own state when chosen there.
++    continueOnHandheld(snapshot, app, document) {
++        const only = id => ({...snapshot,
++            windows: (snapshot.windows ?? []).filter(w => (w.app ?? `${w.ids?.wmClass}.desktop`) === id),
++            apps: (snapshot.apps ?? []).filter(a => a.app === id)});
++        rememberApps(snapshotApps(snapshot));
++        this._pendingApps = snapshotApps(snapshot).filter(a => a.id !== app.id)
++            .map(a => ({...a, snapshot: only(a.id), device: snapshot.deviceName}));
++        this._pendingOpen = [];
++        this.emit('pending-apps-changed');
++        this.restore(only(app.id), 'continue', {handheld: true, app, document});
++    }
++
++    // An app still to open, as its card draws it.
++    pendingIcon(id, size) {
++        return new St.Icon({gicon: appGicon(id), icon_size: size});
++    }
++
++    // What the app switcher shows after a handheld continue, topmost first.
++    pendingApps() {
++        return [...(this._pendingApps ?? [])];
++    }
++
++    // Chosen in the app switcher: open it now, or as soon as the restore
++    // under way has finished.
++    openPending(id) {
++        const pending = (this._pendingApps ?? []).find(a => a.id === id);
++        if (!pending)
++            return;
++        this._pendingApps = this._pendingApps.filter(a => a !== pending);
++        this.emit('pending-apps-changed');
++        this._pendingOpen = [...(this._pendingOpen ?? []), pending];
++        this._openNextPending();
++    }
++
++    // Swiped away in the app switcher: it won't open.
++    forgetPending(id) {
++        this._pendingApps = (this._pendingApps ?? []).filter(a => a.id !== id);
++        this.emit('pending-apps-changed');
++    }
++
++    _openNextPending() {
++        if (this._restoring || !this._pendingOpen?.length)
++            return;
++        const next = this._pendingOpen.shift();
++        this.restore(next.snapshot, 'continue', {handheld: true, quiet: true});
++    }
++
+     // Stop: nothing more starts; what is open stays.
+     stopRestore() {
+         const restoring = this._restoring;
+@@ -1123,6 +1307,12 @@ export class LumaSession {
+         }
+         if (!offer || Main.sessionMode.isLocked)
+             return;
++        // A TV never prompts: the home's hero carries what was playing.
++        if (Main.presentation?._state?.posture?.effective === 'tv') {
++            Main.presentation._tv?.setContinue?.(offer.media ? offer : null,
++                (fromStart, chosen) => this._playOnTv(chosen, fromStart));
++            return;
++        }
+         const own = readJson(GLib.build_filenamev([this._dir, 'current.json']));
+         const continuedHere = offer.continuedFrom?.device === this._device;
+         if (!continuedHere && own?.taken && offer.taken <= own.taken)
+@@ -1146,6 +1336,33 @@ export class LumaSession {
+         const call = (method, args, type = null) => Gio.DBus.session.call('org.projectluma.ConnectSync1',
+             '/org/projectluma/ConnectSync1', 'org.projectluma.ConnectSync1', method, args,
+             type ? new GLib.VariantType(type) : null, Gio.DBusCallFlags.NO_AUTO_START, 120000, null);
++        const notNow = () => {
++            this._offering = null;
++            this._banner.close();
++            call('DeclineContinue', new GLib.Variant('(s)', [offer.id])).catch(() => {});
++        };
++        // Phone and tablet: one app, the one that had focus there, with its
++        // document; the others wait in the app switcher.
++        if (handheldForm() && (offer.apps ?? []).length > 0) {
++            const focusId = offer.focus?.app ?? offer.apps[0];
++            const app = {id: focusId, ...(offer.appInfo?.[focusId] ?? {})};
++            this._banner.offerApp({
++                device: offer.name, app, document: offer.focus?.document ?? null,
++                others: offer.apps.filter(id => id !== focusId).length, taken: offer.taken,
++            }, async () => {
++                this._offering = null;
++                try {
++                    const [json] = (await call('TakeContinue', new GLib.Variant('(s)', [offer.id]), '(s)')).deepUnpack();
++                    const snapshot = JSON.parse(json);
++                    snapshot.deviceName = offer.name;
++                    this.continueOnHandheld(snapshot, app, offer.focus?.document ?? null);
++                } catch (e) {
++                    log(`could not continue from ${offer.name}: ${e.message}`);
++                    this._banner.close();
++                }
++            }, notNow);
++            return;
++        }
+         this._banner.offer({
+             device: offer.name,
+             windows: offer.windows,
+diff --git a/js/ui/lumaTvContinue.js b/js/ui/lumaTvContinue.js
+new file mode 100644
+index 0000000..238b5a6
+--- /dev/null
++++ b/js/ui/lumaTvContinue.js
+@@ -0,0 +1,304 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++// Continue on a TV (ADR-055 §6; design-center mockups/continue, target
++// tv-home): no prompt. The TV home's hero, the slot that shows what to
++// resume, carries what was playing on another device: the app chip, then
++// "From ThinkPad", the item, where it was, and Continue (focus starts there)
++// and Start over. A TV gets only media apps with a TV presentation, the item
++// and its position; never a document, another app's title or a sign-in.
++// Once played or replaced, the hero goes back to the TV's own. The item's
++// artwork, when the other device sent it, fills the home behind the hero
++// under the reference's shade.
++
++import Cairo from 'cairo';
++import Clutter from 'gi://Clutter';
++import Cogl from 'gi://Cogl';
++import GdkPixbuf from 'gi://GdkPixbuf';
++import GLib from 'gi://GLib';
++import Pango from 'gi://Pango';
++import St from 'gi://St';
++
++// The hero at 1080 (mockups/luma-tv.html .home .hero), in TV units.
++const HERO = {
++    top: 244, width: 960,
++    chip_gap: 16, chip_height: 40, chip_padding_x: 14, chip_radius: 12, chip_size: 22, chip_weight: 650,
++    title_gap: 22, title_size: 128, title_weight: 750, title_tracking: -0.05, title_line: 0.95,
++    subtitle_gap: 18, subtitle_size: 30, subtitle_weight: 600,
++    progress_gap: 25, track_width: 520, track_height: 6, track_label_gap: 20, label_size: 24, label_weight: 500,
++    buttons_gap: 39.5, button_gap: 16,
++    button_height: 72, button_padding_x: 32, button_radius: 20, button_size: 28, button_weight: 650,
++    button_icon: 30, button_spacing: 14,
++    // The artwork's focus point (background-position 50% 40%).
++    art_x: 0.5, art_y: 0.4,
++};
++
++// The home's shade over the artwork (.home .shade), back to front: [direction
++// (x0, y0, x1, y1 as a share of the screen), stops [offset, rgb, alpha]].
++const SHADE_TOP = [5, 6, 8];       // oklch(0.12 0.006 265)
++const SHADE_FOOT = [8, 9, 12];     // oklch(0.14 0.006 265)
++const SHADE = [
++    [[0, 0, 0, 1], [[0, SHADE_TOP, 0.82], [0.16, SHADE_TOP, 0.35], [0.26, SHADE_TOP, 0]]],
++    [[0, 0, 1, 0], [[0, SHADE_TOP, 0.92], [0.40, SHADE_TOP, 0.5], [0.58, SHADE_TOP, 0], [0.72, SHADE_TOP, 0.55],
++        [1, SHADE_TOP, 0.85]]],
++    [[0, 1, 0, 0], [[0, SHADE_FOOT, 1], [0.22, SHADE_FOOT, 0.82], [0.44, SHADE_FOOT, 0.4], [0.60, SHADE_FOOT, 0]]],
++];
++
++// base64 JPEG -> pixbuf, or null.
++export function artPixbuf(art) {
++    if (typeof art !== 'string' || !art)
++        return null;
++    try {
++        const loader = GdkPixbuf.PixbufLoader.new_with_type('jpeg');
++        loader.write_bytes(new GLib.Bytes(GLib.base64_decode(art)));
++        loader.close();
++        return loader.get_pixbuf();
++    } catch {
++        return null;
++    }
++}
++
++// The source rectangle that covers width x height around the focus point.
++export function coverCrop(sourceWidth, sourceHeight, width, height, fx = 0.5, fy = 0.5) {
++    const scale = Math.max(width / sourceWidth, height / sourceHeight);
++    const w = Math.min(sourceWidth, Math.round(width / scale));
++    const h = Math.min(sourceHeight, Math.round(height / scale));
++    return {x: Math.round((sourceWidth - w) * fx), y: Math.round((sourceHeight - h) * fy), width: w, height: h};
++}
++
++export function minutesLeft(media) {
++    if (!(media?.length > 0))
++        return null;
++    return Math.max(1, Math.round((media.length - Math.min(media.position ?? 0, media.length)) / 60));
++}
++
++export class TvContinueHero {
++    // tv: the TvPresentation (its units, fonts and materials).
++    constructor(tv) {
++        this._tv = tv;
++        this._offer = null;
++        this.actor = new St.BoxLayout({orientation: Clutter.Orientation.VERTICAL, visible: false,
++            accessible_name: 'Continue'});
++        this._chips = new St.BoxLayout({});
++        this._appChip = new St.Label({y_align: Clutter.ActorAlign.CENTER});
++        this._fromChip = new St.Label({y_align: Clutter.ActorAlign.CENTER});
++        this._chipBoxes = [this._appChip, this._fromChip].map(label => {
++            const chip = new St.Bin({child: label, y_align: Clutter.ActorAlign.START});
++            this._chips.add_child(chip);
++            return chip;
++        });
++        // The artwork and its shade, full screen behind the hero; the TV
++        // places it above its own backdrop and below the bar.
++        this.backdrop = new St.Widget({layout_manager: new Clutter.BinLayout(), visible: false});
++        this._art = new St.Widget({x_expand: true, y_expand: true});
++        this._art.set_content_scaling_filters(Clutter.ScalingFilter.TRILINEAR, Clutter.ScalingFilter.LINEAR);
++        this._shade = new St.DrawingArea({x_expand: true, y_expand: true});
++        this._shade.connect('repaint', area => this._paintShade(area));
++        this.backdrop.add_child(this._art);
++        this.backdrop.add_child(this._shade);
++        for (const property of ['notify::width', 'notify::height']) {
++            this.backdrop.connect(property, () => {
++                if (this._offer)
++                    this._placeArt(Math.round(this.backdrop.width), Math.round(this.backdrop.height));
++            });
++        }
++        this._title = new St.Label({});
++        this._subtitle = new St.Label({});
++        this._progress = new St.BoxLayout({});
++        this._track = new St.Widget({layout_manager: new Clutter.FixedLayout(), y_align: Clutter.ActorAlign.CENTER});
++        this._fill = new St.Widget({});
++        this._track.add_child(this._fill);
++        this._left = new St.Label({y_align: Clutter.ActorAlign.CENTER});
++        this._progress.add_child(this._track);
++        this._progress.add_child(this._left);
++        this._row = new St.BoxLayout({});
++        this.buttons = [
++            this._button('lumaui-play-symbolic', 'Continue', false),
++            this._button('lumaui-rotate-ccw-symbolic', 'Start over', true),
++        ];
++        for (const part of [this._chips, this._title, this._subtitle, this._progress, this._row])
++            this.actor.add_child(part);
++    }
++
++    _button(icon, label, fromStart) {
++        const box = new St.BoxLayout({y_align: Clutter.ActorAlign.CENTER});
++        const glyph = new St.Icon({icon_name: icon, y_align: Clutter.ActorAlign.CENTER});
++        const text = new St.Label({text: label, y_align: Clutter.ActorAlign.CENTER});
++        box.add_child(glyph);
++        box.add_child(text);
++        const button = new St.Button({child: box, can_focus: false, reactive: true, accessible_name: label});
++        button.connect('clicked', () => this.activate(fromStart ? 1 : 0));
++        this._row.add_child(button);
++        return {button, box, glyph, text, fromStart};
++    }
++
++    get visible() {
++        return Boolean(this._offer) && this.actor.visible;
++    }
++
++    // offer: {id, name (the device), media: {app, name, item, subtitle,
++    // position, length}}; play(fromStart) starts it. null: the TV's own again.
++    set(offer, play) {
++        this._offer = offer?.media ? offer : null;
++        this._play = play;
++        this.actor.visible = Boolean(this._offer);
++        // The hero is the home's headline while it shows: the greeting steps
++        // aside and comes back when it leaves (Not now, played, expired).
++        if (this._tv._greeting)
++            this._tv._greeting.visible = !this._offer;
++        if (!this._offer)
++            return;
++        const {media} = this._offer;
++        this._appChip.text = media.name || media.app.replace(/\.desktop$/, '').split('.').pop();
++        this._fromChip.text = `From ${this._offer.name}`;
++        this._chipBoxes[1].visible = Boolean(this._offer.name);
++        this._title.text = media.item;
++        this._subtitle.text = media.subtitle ?? '';
++        this._subtitle.visible = Boolean(media.subtitle);
++        const left = minutesLeft(media);
++        this._progress.visible = left !== null;
++        this._left.text = left !== null ? `${left} min left` : '';
++        this._share = media.length > 0 ? Math.min(1, (media.position ?? 0) / media.length) : 0;
++        // Nothing played yet: there's nothing to start over.
++        this.buttons[1].button.visible = (media.position ?? 0) > 0;
++        this._artSource = media.art ?? null;
++        this._artSize = null;
++        this.restyle();
++    }
++
++    // Show the artwork while the home is the page (onHome) and there is one.
++    showBackdrop(onHome, duration = 0) {
++        const on = onHome && this.visible && Boolean(this._art.content);
++        this.backdrop.remove_all_transitions();
++        if (on)
++            this.backdrop.show();
++        this.backdrop.ease({opacity: on ? 255 : 0, duration, mode: Clutter.AnimationMode.EASE_OUT_QUAD,
++            onComplete: () => { if (!on) this.backdrop.hide(); }});
++    }
++
++    _placeArt(width, height) {
++        if (this._artSize?.width === width && this._artSize?.height === height)
++            return;
++        this._artSize = {width, height};
++        this._art.content = null;
++        const pixbuf = this._offer ? artPixbuf(this._artSource) : null;
++        if (pixbuf && width > 0 && height > 0) {
++            const crop = coverCrop(pixbuf.width, pixbuf.height, width, height, HERO.art_x, HERO.art_y);
++            const part = pixbuf.new_subpixbuf(crop.x, crop.y, crop.width, crop.height).copy();
++            const content = St.ImageContent.new_with_preferred_size(part.width, part.height);
++            content.set_bytes(global.stage.context.get_backend().get_cogl_context(), part.read_pixel_bytes(),
++                part.has_alpha ? Cogl.PixelFormat.RGBA_8888 : Cogl.PixelFormat.RGB_888,
++                part.width, part.height, part.rowstride);
++            this._art.content = content;
++        }
++        this._shade.queue_repaint();
++        this.showBackdrop(this._tv._page === 'home');
++    }
++
++    _paintShade(area) {
++        const cr = area.get_context();
++        const [width, height] = area.get_surface_size();
++        for (const [[x0, y0, x1, y1], stops] of SHADE) {
++            const gradient = new Cairo.LinearGradient(x0 * width, y0 * height, x1 * width, y1 * height);
++            for (const [offset, [r, g, b], alpha] of stops)
++                gradient.addColorStopRGBA(offset, r / 255, g / 255, b / 255, alpha);
++            cr.setSource(gradient);
++            cr.paint();
++        }
++        cr.$dispose();
++    }
++
++    activate(index) {
++        const offer = this._offer;
++        if (!offer)
++            return;
++        const fromStart = this.buttons[index]?.fromStart ?? false;
++        this.set(null);
++        this._play?.(fromStart, offer);
++    }
++
++    // Focusable items for the remote: the hero's buttons.
++    items() {
++        if (!this.visible)
++            return [];
++        return this.buttons.filter(b => b.button.visible).map(({button}, index) => {
++            const [x, y] = button.get_transformed_position();
++            const [ox, oy] = this._tv._home.get_transformed_position();
++            return {kind: 'hero', index, x: x - ox, y: y - oy, width: button.width, height: button.height};
++        });
++    }
++
++    restyle() {
++        const tv = this._tv;
++        if (!tv._u)
++            return;
++        const m = name => tv._material(name);
++        const px = value => tv._px(value);
++        this.actor.set_position(tv._tokens.layout.safe_x * tv._u, HERO.top * tv._u);
++        this.actor.style = `width: ${px(HERO.width)};`;
++        this._chips.style = `spacing: ${px(HERO.chip_gap)};`;
++        for (const [index, chip] of this._chipBoxes.entries()) {
++            chip.style = `height: ${px(HERO.chip_height)}; padding: 0 ${px(HERO.chip_padding_x)};
++                border-radius: ${px(HERO.chip_radius)}; background-color: ${m('chip')};`;
++            [this._appChip, this._fromChip][index].style =
++                `${tv._font(HERO.chip_size, HERO.chip_weight)} color: ${m('ink')};`;
++        }
++        // The title's line is 0.95 of its size (the reference's line-height):
++        // St lays out the font's own line, so the gaps around it give back
++        // half the difference each.
++        const titleFont = `${tv._font(HERO.title_size, HERO.title_weight)} color: ${m('ink')};
++            letter-spacing: ${px(HERO.title_size * HERO.title_tracking)};`;
++        this._title.style = titleFont;
++        this._title.clutter_text.ellipsize = Pango.EllipsizeMode.END;
++        let half = 0;
++        if (this._title.get_stage()) {
++            this._title.ensure_style();
++            const line = this._title.clutter_text.get_layout().get_pixel_extents()[1].height;
++            half = Math.max(0, (line - HERO.title_size * HERO.title_line * tv._u) / 2);
++        }
++        const gap = value => `${Math.max(0, Math.round(value * tv._u - half))}px`;
++        this._title.style = `${titleFont} margin-top: ${gap(HERO.title_gap)};`;
++        this._subtitle.style = `${tv._font(HERO.subtitle_size, HERO.subtitle_weight)} color: ${m('ink_2')};
++            margin-top: ${gap(HERO.subtitle_gap)};`;
++        this._progress.style = `spacing: ${px(HERO.track_label_gap)}; margin-top: ${px(HERO.progress_gap)};`;
++        this._track.style = `width: ${px(HERO.track_width)}; height: ${px(HERO.track_height)};
++            border-radius: ${px(HERO.track_height / 2)}; background-color: rgba(255, 255, 255, 0.25);`;
++        this._fill.set_size(Math.round(HERO.track_width * tv._u * (this._share ?? 0)), HERO.track_height * tv._u);
++        this._fill.style = `border-radius: ${px(HERO.track_height / 2)}; background-color: #ffffff;`;
++        this._left.style = `${tv._font(HERO.label_size, HERO.label_weight)} color: ${m('ink_3')};`;
++        this._row.style = `spacing: ${px(HERO.button_gap)}; margin-top: ${px(HERO.buttons_gap)};`;
++        // The backdrop is the home's size (the TV sizes it with its own).
++        if (this._offer)
++            this._placeArt(Math.round(this.backdrop.width), Math.round(this.backdrop.height));
++        else
++            this.showBackdrop(false);
++    }
++
++    // The focused button is the key (the TV's one bright thing); the other
++    // sits on the chip material.
++    draw(focus) {
++        const tv = this._tv;
++        if (!this.visible || !tv._u)
++            return;
++        const m = name => tv._material(name);
++        const px = value => tv._px(value);
++        this.buttons.forEach(({button, box, glyph, text}, index) => {
++            const focused = focus?.kind === 'hero' && focus.index === index;
++            const ink = focused ? m('key_ink') : m('ink');
++            button.style = `height: ${px(HERO.button_height)}; padding: 0 ${px(HERO.button_padding_x)};
++                border-radius: ${px(HERO.button_radius)};` +
++                // The edge is a ring outside the box (lumaui-tv.css --key-edge),
++                // so focus doesn't change the button's size; at rest the chip
++                // has no edge, only its drop.
++                (focused
++                    ? `background-gradient-direction: vertical; background-gradient-start: ${m('key_top')};
++                       background-gradient-end: ${m('key_bottom')};
++                       box-shadow: 0 0 0 ${px(1.5)} ${m('key_rim')};`
++                    : `background-color: ${m('chip')};
++                       box-shadow: 0 ${px(2)} ${px(5)} ${m('chip_drop')};`);
++            box.style = `spacing: ${px(HERO.button_spacing)};`;
++            glyph.icon_size = Math.round(HERO.button_icon * tv._u /
++                (St.ThemeContext.get_for_stage(global.stage).scale_factor || 1));
++            glyph.style = `color: ${ink};`;
++            text.style = `${tv._font(HERO.button_size, HERO.button_weight)} color: ${ink};`;
++        });
++    }
++}
+diff --git a/js/ui/messageList.js b/js/ui/messageList.js
+index 0ce8970..4c28c6d 100644
+--- a/js/ui/messageList.js
++++ b/js/ui/messageList.js
+@@ -1052,6 +1052,12 @@ class NotificationMessage extends Message {
+             'notify', () => {
+                 this._syncInlineReply();
+                 this._syncActionButtons();
++                // The Shell may drop or change its badge on a card that changes in place.
++                const badge = notification.lumaShellBadge ?? null;
++                if (badge !== this._lumaShellBadge) {
++                    this._lumaShellBadge = badge;
++                    this._syncTile();
++                }
+             },
+             'destroy', () => {
+                 this.notification = null;
+@@ -1200,14 +1206,30 @@ class NotificationMessage extends Message {
+             this._actionBin.add_style_class_name('luma-notification-actions-end');
+         else
+             this._actionBin.remove_style_class_name('luma-notification-actions-end');
+-        if (actions.length === 0)
++        // No buttons (restoring): the empty row takes no room in the card.
++        if (this._buttonBox)
++            this._buttonBox.visible = actions.length > 0 || this._buttonBox.get_n_children() > 0;
++        const empty = !this._actionBox?.get_children().some(child => child.visible);
++        if (actions.length === 0) {
++            if (empty && this._actionBin.visible) {
++                this._actionBin.hide();
++                this._lumaHidActions = true;
++            }
+             return;
++        }
++        if (this._lumaHidActions) {
++            this._actionBin.show();
++            this._lumaHidActions = false;
++        }
+         this._ensureActionBox();
+         if (!this._buttonBox) {
+             this._buttonBox = new St.BoxLayout({x_expand: true, style_class: 'notification-buttons-bin'});
+             this._actionBox.add_child(this._buttonBox);
+             global.focus_manager.add_group(this._buttonBox);
+         }
++        // Equal shares of the row, whatever each label's length.
++        this._buttonBox.layout_manager.homogeneous = true;
++        this._buttonBox.visible = true;
+         for (const {label, callback, end} of actions) {
+             const button = new St.Button({style_class: 'notification-button', x_expand: true, can_focus: true, label});
+             // A lone closing button (Done) sits at the end of the row.

@@ -1,0 +1,22 @@
+{
+  "run": 45136152290,
+  "source": "097cdec201b9acb0ed7450a54d57612cd996a984",
+  "assigned": {},
+  "artifacts": {
+    "aarch64": {
+      "id": 14801782469,
+      "sha256": "aeb7bc1175f968dedf6d6f1f6ad4b03ac493ca530dfbed149e4761b38b2d0e5e"
+    },
+    "x86_64": {
+      "id": 14804375509,
+      "sha256": "171d00b9bca65bda901688014cd534ea2e90ff904f903f08f6bc97055bfb1fc7"
+    }
+  },
+  "interim": {
+    "commit": "ab900f93e9b7c24ce99206ae6e0abc188bb77e3c",
+    "records": {
+      "aarch64": "a73214967f9ee5a02f317ba973d0f5e2849801cfda8e59861e809c73d9f836a4",
+      "x86_64": "40b5d1fa924cb1208b37458d0f304f8e6b04ca2c80f1aa1ec2b0a1120c744bee"
+    }
+  }
+}

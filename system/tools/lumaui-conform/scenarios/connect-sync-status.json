@@ -1,0 +1,129 @@
+{
+ "app": "connect-sync-status",
+ "title": "Connect Sync: the status popover (design-center 38858a5, mockups/connect-sync/status.html)",
+ "about": "The island popover per state (cs.js STATES), measured in pixel mode against crops of the real Shell popover (gnome-shell 0384) in a VM. The popover's own surface is the shell's translucent material and is not a fill; the tile, the action and the progress bar are. Scored as the banners (ruling, design-center b118c1d): Lucide glyphs count as text, out of fill heat (Chromium and librsvg anti-alias a 1.5 px stroke differently), and the mean leaves out text. Phone (design-center 934d899): the popover as a bottom drawer, status.html ?posture=phone.",
+ "spec": {
+  "root": "design-center",
+  "url": "mockups/connect-sync/status.html",
+  "window": "#stage",
+  "ready": "html[data-ready]",
+  "viewport": {
+   "width": 420,
+   "height": 360
+  },
+  "init_script": "if (matchMedia('(prefers-color-scheme: light)').matches && !/[?&]mode=/.test(location.search)) history.replaceState(null, '', location.pathname + (location.search ? location.search + '&' : '?') + 'mode=light');",
+  "phone_url": "mockups/connect-sync/status.html?posture=phone",
+  "phone_viewport": {
+   "width": 400,
+   "height": 860
+  }
+ },
+ "states": [
+  {
+   "name": "syncing",
+   "about": "Syncing, with progress",
+   "window": "#stage",
+   "spec": [
+    {
+     "eval": "(() => { if (POST === 'phone') document.getElementById('stage').innerHTML = CS.popPhone('syncing'); else document.getElementById('q').innerHTML = CS.pop('syncing'); })()",
+     "wait": 600
+    }
+   ]
+  },
+  {
+   "name": "done",
+   "about": "Up to date (reference only: the cell is hidden)",
+   "window": "#stage",
+   "spec": [
+    {
+     "eval": "(() => { if (POST === 'phone') document.getElementById('stage').innerHTML = CS.popPhone('done'); else document.getElementById('q').innerHTML = CS.pop('done'); })()",
+     "wait": 600
+    }
+   ]
+  },
+  {
+   "name": "paused",
+   "about": "Paused, Sync now",
+   "window": "#stage",
+   "spec": [
+    {
+     "eval": "(() => { if (POST === 'phone') document.getElementById('stage').innerHTML = CS.popPhone('paused'); else document.getElementById('q').innerHTML = CS.pop('paused'); })()",
+     "wait": 600
+    }
+   ]
+  },
+  {
+   "name": "conflict",
+   "about": "a conflict, Show versions",
+   "window": "#stage",
+   "spec": [
+    {
+     "eval": "(() => { if (POST === 'phone') document.getElementById('stage').innerHTML = CS.popPhone('conflict'); else document.getElementById('q').innerHTML = CS.pop('conflict'); })()",
+     "wait": 600
+    }
+   ]
+  },
+  {
+   "name": "quota",
+   "about": "storage full, Manage storage",
+   "window": "#stage",
+   "spec": [
+    {
+     "eval": "(() => { if (POST === 'phone') document.getElementById('stage').innerHTML = CS.popPhone('quota'); else document.getElementById('q').innerHTML = CS.pop('quota'); })()",
+     "wait": 600
+    }
+   ]
+  },
+  {
+   "name": "revoked",
+   "about": "removed from Sync, Join again",
+   "window": "#stage",
+   "spec": [
+    {
+     "eval": "(() => { if (POST === 'phone') document.getElementById('stage').innerHTML = CS.popPhone('revoked'); else document.getElementById('q').innerHTML = CS.pop('revoked'); })()",
+     "wait": 600
+    }
+   ]
+  },
+  {
+   "name": "newkey",
+   "about": "status.html?state=newkey (f10cf9b): New recovery key, Show new key…",
+   "window": "#stage",
+   "spec": [
+    {
+     "eval": "(() => { if (POST === 'phone') document.getElementById('stage').innerHTML = CS.popPhone('newkey'); else document.getElementById('q').innerHTML = CS.pop('newkey'); })()",
+     "wait": 600
+    }
+   ]
+  }
+ ],
+ "phone_states": [
+  "syncing",
+  "done",
+  "paused",
+  "conflict",
+  "quota",
+  "revoked",
+  "newkey"
+ ],
+ "groups": [
+  {
+   "name": "fills",
+   "spec": "#stage .cs-line > span, #stage .cs-row button, #stage .cs-prog, #stage .cs-dacts button"
+  },
+  {
+   "name": "content",
+   "spec": "#stage .q2h b, #stage .cs-line b, #stage .cs-line small, #stage .cs-msg, #stage .q2more, #stage .cs-dh, #stage .cs-dacts button"
+  }
+ ],
+ "pairs": [],
+ "text_aliases": {},
+ "pixel": {
+  "max_mean": 4.0,
+  "max_over10": 1.0,
+  "fills": "fills",
+  "max_fill_over10": 0.005,
+  "glyphs_as_text": true,
+  "mean_without_text": true
+ }
+}

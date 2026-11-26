@@ -1,0 +1,105 @@
+# SPDX-License-Identifier: Apache-2.0
+#
+# One installed application's PulseAudio server.
+#
+# Installed as /usr/share/luma-application-installer/luma-application-sound.conf.in;
+# /usr/libexec/luma-application-sound fills in @APP@ and @ADDRESS@ and runs
+# pipewire with it for luma-application-sound@APP.service. The application
+# finds this server's socket as its pulse/native, and never the session's.
+#
+# - Every client gets the access "luma-application" and the application's ID
+#   (pipewire.access.portal.app_id). The last pulse.rules entry sets both after
+#   whatever the client sent, so the application cannot name itself.
+# - The server connects to PipeWire on pipewire-0-application-pulse, the only
+#   socket on which WirePlumber believes that ID (application-sound.lua).
+# - No modules can be loaded: a module runs in this server, outside the
+#   application's sandbox (module-pipe-sink would write any file).
+# - It does not take the org.pulseaudio.Server name, and loads none of the
+#   session server's start-up modules.
+
+context.properties = {
+    log.level = 2
+}
+
+context.spa-libs = {
+    audio.convert.* = audioconvert/libspa-audioconvert
+    support.*       = support/libspa-support
+}
+
+context.modules = [
+    { name = libpipewire-module-rt
+        args = {
+            nice.level   = -11
+            rtportal.enabled = false
+        }
+        flags = [ ifexists nofail ]
+    }
+    { name = libpipewire-module-protocol-native }
+    { name = libpipewire-module-client-node }
+    { name = libpipewire-module-adapter }
+    { name = libpipewire-module-metadata }
+    { name = libpipewire-module-protocol-pulse
+        args = {
+        }
+    }
+]
+
+stream.properties = {
+}
+
+pulse.properties = {
+    server.address = [
+        { address = "@ADDRESS@" client.access = "luma-application" }
+    ]
+    server.dbus-name = ""
+    pulse.allow-module-loading = false
+}
+
+pulse.properties.rules = [
+    {   matches = [ { cpu.vm.name = !null } ]
+        actions = {
+            update-props = {
+                pulse.min.quantum = 1024/48000
+            }
+        }
+    }
+]
+
+# The session server's quirks (pipewire-pulse.conf), then the identity.
+pulse.rules = [
+    {
+        matches = [
+             { application.process.binary = "teams" }
+             { application.process.binary = "teams-insiders" }
+             { application.process.binary = "teams-for-linux" }
+             { application.process.binary = "skypeforlinux" }
+        ]
+        actions = { quirks = [ force-s16-info ] }
+    }
+    {
+        matches = [ { application.process.binary = "firefox" } ]
+        actions = { quirks = [ remove-capture-dont-move ] }
+    }
+    {
+        matches = [ { application.name = "~speech-dispatcher.*" } ]
+        actions = {
+            update-props = {
+                pulse.min.req          = 512/48000
+                pulse.min.quantum      = 512/48000
+                pulse.idle.timeout     = 5
+            }
+        }
+    }
+    {
+        # Every client: an empty match object matches none, and any value
+        # the client set matches the first object, no value the second.
+        matches = [ { client.api = "~.*" } { client.api = null } ]
+        actions = {
+            update-props = {
+                pipewire.client.access = "luma-application"
+                pipewire.access.portal.app_id = "@APP@"
+                remote.name = "pipewire-0-application-pulse"
+            }
+        }
+    }
+]

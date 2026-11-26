@@ -1,0 +1,56 @@
+{
+ "app": "connect-sync-approve-tv",
+ "title": "Connect Sync: the approval card at TV scale (design-center 38858a5, mockups/connect-sync/approve.html)",
+ "about": "The shell-owned approval card (gnome-shell 0384) in pixel mode. TV: x1.5, the remote's focus on Not me. Scored as the banners (ruling, design-center b118c1d): Lucide glyphs count as text, out of fill heat (Chromium and librsvg anti-alias a 1.5 px stroke differently), and the mean leaves out text.",
+ "spec": {
+  "root": "design-center",
+  "url": "mockups/connect-sync/approve.html?posture=tv",
+  "window": "#stage",
+  "ready": "html[data-ready]",
+  "viewport": {
+   "width": 1000,
+   "height": 700
+  },
+  "init_script": "if (matchMedia('(prefers-color-scheme: light)').matches && !/[?&]mode=/.test(location.search)) history.replaceState(null, '', location.pathname + (location.search ? location.search + '&' : '?') + 'mode=light');"
+ },
+ "states": [
+  {
+   "name": "card",
+   "about": "Approve ThinkPad?",
+   "window": "#stage .cs-appr",
+   "spec": []
+  },
+  {
+   "name": "early",
+   "about": "approve.html?early (f10cf9b): before its code exists, Approve waits",
+   "window": "#stage .cs-appr",
+   "spec": [
+    {
+     "eval": "(() => { document.getElementById('stage').innerHTML = CS.approve(MODE === 'light', POST === 'tv', true); })()",
+     "wait": 600
+    }
+   ]
+  }
+ ],
+ "phone_states": [],
+ "groups": [
+  {
+   "name": "fills",
+   "spec": "#stage .cs-appr, #stage .cs-hd span, #stage .cs-code span, #stage .cs-btns button"
+  },
+  {
+   "name": "content",
+   "spec": "#stage .cs-from, #stage h3, #stage small, #stage p, #stage .cs-code span, #stage .cs-btns button"
+  }
+ ],
+ "pairs": [],
+ "text_aliases": {},
+ "pixel": {
+  "max_mean": 4.0,
+  "max_over10": 1.0,
+  "fills": "fills",
+  "max_fill_over10": 0.005,
+  "glyphs_as_text": true,
+  "mean_without_text": true
+ }
+}

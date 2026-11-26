@@ -1,0 +1,21 @@
+# Prairie greeter defaults. These apply to GDM's separate dconf profile and
+# remain unlocked; the authenticated user's own clock preference is separate.
+
+[org/gnome/desktop/interface]
+clock-format='12h'
+
+[org/gnome/desktop/wm/preferences]
+# The greeter runs its own Mutter session, so it reads this dconf profile
+# instead of 00-luma-desktop. Same reasoning as the user session: GTK's own
+# error bell is already off system-wide (/etc/gtk-3.0/settings.ini,
+# gtk-4.0/settings.ini), so a wrong password's Backspace never asks for a
+# beep; this is the same defense-in-depth for any other bell request.
+audible-bell=false
+
+[org/gnome/mutter]
+# The greeter's Mutter reads this profile, not 00-luma-desktop, so it needs
+# its own copy of the frame thread clamp (Mutter 0026): without it the login
+# screen and its on-screen keyboard draw each frame at the governor's idle
+# frequency. The clamp acts only while those threads run, so a blanked
+# greeter costs nothing more.
+frame-utilization-min=uint32 512

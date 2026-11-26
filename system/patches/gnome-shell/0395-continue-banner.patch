@@ -1,0 +1,1261 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Project Luma <engineering@projectluma.org>
+Date: Mon, 23 Nov 2026 06:00:00 -0600
+Subject: [PATCH] Continue: the offer, progress and result banner
+
+One standard banner that changes in place (ADR-055; design-center
+mockups/continue): "Continue from ThinkPad?" with the snapshot's apps
+(24 px icons, up to six, then +N) and Continue / Not now of equal weight;
+over windows already here, the line that it opens on a new desktop;
+restoring, with the apps still to open dimmed, a progress bar over the
+20 s placement budget and Stop; and the result, "Reopened 8 of 11
+windows" with one line about what is outstanding, which Show grows into
+the list in place: installing (with its progress), not available on this
+device, didn't open in time (Open), opened without a document, windows
+moved off a display that isn't here. A restore after restart on this
+device shows nothing unless something failed, then one banner from
+Desktop with Open <app> and Show. On the device continued from, "Your
+windows continued on Surface", or the offer back when there is something
+newer there.
+
+The offer comes after unlock, resume and login from Connect Sync's
+GetContinueOffer when another device's session is newer than this one's;
+Continue takes it (TakeContinue, after a sync cycle) and restores it;
+Not now declines it until a newer one. Snapshots record continuedFrom.
+
+messageList.js: a notification can draw content below its body
+(notification.lumaContent, built per message and rebuilt in place), with
+its own buttons that change the notification in place instead of marking it
+acted on and closing its card, equal-width or at the end of the row (a
+closing row at the end sits 6 px under the content). The banner's time is
+when its subject happened: the snapshot's for an offer, the continue's on
+the device continued from.
+
+Snapshots carry each app's name and icon, so a device without the app
+still shows which app it is; for an app neither installed nor named, the
+Depot's kept catalogue gives the name and Flathub's AppStream cache the
+icon. The result after a restart on this device is an ordinary banner
+(standard timeout, then the list, Do Not Disturb respected), shown as a
+banner and after the first unlock.
+
+Restore, from the real Luma Shell: a window on the same display at the
+same place keeps its exact rectangle (the work area at login is not final
+until the panel and dock reserve their space); an X11 window adopted
+without a configure (mapped while Xwayland was starting) is placed when
+shown; a window that arrives after the restore doesn't take the focus;
+the focused window keeps the focus for 3 s against apps presenting late,
+until the person types or clicks; apps that reopen their own windows get
+3 s before being asked for more. The shield going up is the lock also for
+an account without a password, whose shield shows without locking: its
+session is saved then, and the offer comes when the shield goes down.
+A session that ended during its restore at login (the shell or the
+display manager restarted) is restored once more, never a third time.
+A shutdown delay lock (logind Inhibit shutdown/delay) holds the shutdown
+until its snapshot is written, so the session's apps are still there:
+without it the shutdown snapshot could replace the session with an empty
+desktop. Snapshots are written durably (synced before the rename), so one
+taken as the lid closes or the power goes is on disk.
+---
+diff --git a/data/gnome-shell-icons.gresource.xml b/data/gnome-shell-icons.gresource.xml
+index 21e3eec..a259d13 100644
+--- a/data/gnome-shell-icons.gresource.xml
++++ b/data/gnome-shell-icons.gresource.xml
+@@ -51,6 +51,7 @@
+     <file preprocess="xml-stripblanks">scalable/actions/shell-focus-windows-symbolic.svg</file>
+     <file preprocess="xml-stripblanks">scalable/status/background-app-ghost-symbolic.svg</file>
+     <file preprocess="xml-stripblanks">scalable/status/luma-grid-2x2-symbolic.svg</file>
++    <file preprocess="xml-stripblanks">scalable/status/luma-continue-layers-symbolic.svg</file>
+     <file preprocess="xml-stripblanks">scalable/status/check-symbolic.svg</file>
+     <file preprocess="xml-stripblanks">scalable/status/keyboard-brightness-high-symbolic.svg</file>
+     <file preprocess="xml-stripblanks">scalable/status/keyboard-brightness-medium-symbolic.svg</file>
+diff --git a/data/gnome-shell-theme.gresource.xml b/data/gnome-shell-theme.gresource.xml
+index 151b88d..1406197 100644
+--- a/data/gnome-shell-theme.gresource.xml
++++ b/data/gnome-shell-theme.gresource.xml
+@@ -11,6 +11,7 @@
+     <file>luma-capture.css</file>
+     <file>luma-seal.css</file>
+     <file>luma-share.css</file>
++    <file>luma-continue.css</file>
+     <file>luma-cast.css</file>
+     <file>luma-shelf.css</file>
+     <file>luma-presentation.css</file>
+diff --git a/data/icons/scalable/status/luma-continue-layers-symbolic.svg b/data/icons/scalable/status/luma-continue-layers-symbolic.svg
+new file mode 100644
+index 0000000..f7a95c3
+--- /dev/null
++++ b/data/icons/scalable/status/luma-continue-layers-symbolic.svg
+@@ -0,0 +1,6 @@
++<!-- Lucide geometry, ISC; adapted to GTK 4.20+ symbolic stroke classes. -->
++<svg xmlns="http://www.w3.org/2000/svg" class="lucide lucide-layers" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
++  <path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z" class="transparent-fill foreground-stroke" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
++  <path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12" class="transparent-fill foreground-stroke" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
++  <path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17" class="transparent-fill foreground-stroke" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
++</svg>
+diff --git a/data/theme/luma-continue.css b/data/theme/luma-continue.css
+new file mode 100644
+index 0000000..453ecfc
+--- /dev/null
++++ b/data/theme/luma-continue.css
+@@ -0,0 +1,52 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++/* Continue (ADR-055): what the banner adds below its body. Design:
++ * design-center mockups/continue/cn.css. Light values first; the banner's
++ * smoked (dark) surface overrides; frost and glass are paper and keep them. */
++.luma-continue { spacing: 0; }
++
++/* App strip: 24 px icons, 6 px apart, then +N in a 24 px chip, 9 px under the body. */
++/* 8 px: the content column already puts 1 px between the body and this box. */
++.luma-continue-apps { spacing: 6px; margin-top: 8px; }
++.luma-continue-more {
++  height: 24px; width: 24px; padding: 0; border-radius: 7px;
++  background-color: #dfe1e4; font-size: 11px; font-weight: 650; text-align: center;
++}
++
++/* The line when this device already has windows: neutral ink, never a warning. */
++.luma-continue-note { spacing: 7px; margin-top: 9px; height: 16px; font-size: 12px; }
++.luma-continue-note StIcon { margin-top: 1px; color: rgba(31, 35, 40, 0.78); }
++.luma-continue-note StLabel { color: rgba(31, 35, 40, 0.78); }
++
++/* LumaUI progress: 4 px under the strip; 3 px in a list row. */
++.luma-continue-progress {
++  height: 4px; margin-top: 10px; border-radius: 3px;
++  background-color: rgba(0, 0, 0, 0.10);
++}
++.luma-continue-progress-small { height: 3px; margin-top: 6px; }
++.luma-continue-progress-fill { height: 4px; border-radius: 3px; background-color: #3584e4; }
++.luma-continue-progress-small .luma-continue-progress-fill { height: 3px; }
++
++/* The result list, grown in place: 28 px icon, name 12.5/650, reason 12/400,
++ * each on a 16 px line; hairlines between rows. */
++/* 11 px: the content column already puts 1 px between the body and this box. */
++.luma-continue-list { margin-top: 11px; border-top: 1px solid rgba(0, 0, 0, 0.08); }
++.luma-continue-row { spacing: 12px; padding: 9px 0; }
++.luma-continue-divider { height: 1px; background-color: rgba(0, 0, 0, 0.06); }
++.luma-continue-row-name { font-size: 12.5px; font-weight: 650; min-height: 16px; }
++.luma-continue-row-reason { font-size: 12px; font-weight: 400; min-height: 16px; color: rgba(31, 35, 40, 0.66); }
++.luma-continue-open {
++  height: 26px; padding: 0 12px; border-radius: 9px;
++  background-color: #dfe1e4; font-size: 12px; font-weight: 650;
++}
++
++.luma-surface-dark .luma-continue-more,
++.luma-surface-dark .luma-continue-open { background-color: #32363c; }
++.luma-surface-dark .luma-continue-note StLabel,
++.luma-surface-dark .luma-continue-note StIcon,
++.luma-surface-dark .luma-continue-row-reason { color: rgba(231, 233, 232, 0.62); }
++.luma-surface-dark .luma-continue-list { border-top-color: rgba(255, 255, 255, 0.08); }
++.luma-surface-dark .luma-continue-divider { background-color: rgba(255, 255, 255, 0.06); }
++.luma-surface-dark .luma-continue-progress { background-color: rgba(255, 255, 255, 0.10); }
++
++/* Done, 6 px under the list. */
++.luma-notification-lip .notification-banner.luma-lip-card .message-action-bin.luma-notification-actions-end { padding-top: 6px; }
+diff --git a/js/js-resources.gresource.xml b/js/js-resources.gresource.xml
+index 46446ac..37765b3 100644
+--- a/js/js-resources.gresource.xml
++++ b/js/js-resources.gresource.xml
+@@ -95,6 +95,7 @@
+     <file>ui/lumaWindowCorners.js</file>
+     <file>ui/lumaWindowWatch.js</file>
+     <file>ui/lumaSession.js</file>
++    <file>ui/lumaContinue.js</file>
+     <file>ui/lumaFocusVisible.js</file>
+     <file>ui/lumaWell.js</file>
+     <file>ui/lumaWellModel.js</file>
+diff --git a/js/ui/lumaContinue.js b/js/ui/lumaContinue.js
+new file mode 100644
+index 0000000..96d6ecf
+--- /dev/null
++++ b/js/ui/lumaContinue.js
+@@ -0,0 +1,500 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++// The Continue banner (ADR-055; design: design-center mockups/continue).
++//
++// One standard shell banner that changes in place: the offer ("Continue
++// from ThinkPad?"), restoring (progress, Stop), and the result, which grows
++// into its list. The same banner reports a restore after restart on this
++// device that didn't reopen everything. It never times out while it offers
++// or restores; dismissed, it waits in the notification list.
++
++import Clutter from 'gi://Clutter';
++import Gio from 'gi://Gio';
++import GObject from 'gi://GObject';
++import GLib from 'gi://GLib';
++import Shell from 'gi://Shell';
++import St from 'gi://St';
++
++import * as Main from './main.js';
++import * as MessageTray from './messageTray.js';
++import {peekNotificationLip} from './lumaNotificationBeacon.js';
++
++const STYLESHEET_URI = 'resource:///org/gnome/shell/theme/luma-continue.css';
++const CONNECT_ICON = 'org.projectluma.Connect';
++const DESKTOP_ICON = 'org.gnome.Settings';
++const STRIP_MAX = 6;
++const LIST_OUTDENT = 46;
++const RESTORE_BUDGET_MS = 20 * 1000;
++
++let stylesheetLoaded = false;
++
++// Lays its child out from `outdent` px left of its own box: the result
++// list starts under the card's source icon, not under the text column.
++const OutdentBin = GObject.registerClass(
++class OutdentBin extends St.Widget {
++    _init(child, outdent) {
++        super._init({x_expand: true});
++        this._outdent = outdent;
++        this.add_child(child);
++    }
++
++    vfunc_get_preferred_width(_forHeight) {
++        return [0, 0];
++    }
++
++    vfunc_get_preferred_height(forWidth) {
++        return this.get_first_child().get_preferred_height(forWidth < 0 ? -1 : forWidth + this._outdent);
++    }
++
++    vfunc_allocate(box) {
++        this.set_allocation(box);
++        const child = this.get_first_child();
++        const width = box.get_width() + this._outdent;
++        const [, height] = child.get_preferred_height(width);
++        child.allocate(new Clutter.ActorBox({x1: -this._outdent, y1: 0, x2: width - this._outdent, y2: height}));
++    }
++});
++
++function loadStylesheet() {
++    if (stylesheetLoaded)
++        return;
++    const theme = St.ThemeContext.get_for_stage(global.stage).get_theme();
++    try {
++        theme.load_stylesheet(Gio.File.new_for_uri(STYLESHEET_URI));
++        stylesheetLoaded = true;
++    } catch (e) {
++        logError(e, '[luma-continue] stylesheet');
++    }
++}
++
++function plural(n, one, many) {
++    return n === 1 ? one : many;
++}
++
++export function windowsInApps(windows, apps) {
++    return `${windows} ${plural(windows, 'window', 'windows')} in ${apps} ${plural(apps, 'app', 'apps')}`;
++}
++
++function clock(seconds) {
++    return GLib.DateTime.new_from_unix_local(seconds).format('%R');
++}
++
++// The apps of a snapshot in stacking order (topmost first), each once,
++// with the name and icon the snapshot carries for them.
++export function snapshotApps(snapshot) {
++    const info = new Map((snapshot.apps ?? []).map(a => [a.app, a]));
++    const seen = new Map();
++    for (const w of [...(snapshot.windows ?? [])].reverse()) {
++        const id = w.app ?? `${w.ids?.wmClass}.desktop`;
++        if (!seen.has(id))
++            seen.set(id, {id, windows: 0, name: info.get(id)?.name ?? null, icon: info.get(id)?.icon ?? null});
++        seen.get(id).windows++;
++    }
++    return [...seen.values()];
++}
++
++// What the device that took the snapshot called each app and drew it with:
++// an app not installed here still shows its own name and icon.
++const known = new Map();
++
++export function rememberApps(apps) {
++    for (const app of apps ?? []) {
++        if (app.name || app.icon)
++            known.set(app.id, app);
++    }
++}
++
++function appFor(id) {
++    return Shell.AppSystem.get_default().lookup_app(id);
++}
++
++// Apps neither installed here nor named by the snapshot: the Depot's kept
++// catalogue (signed, verified by the installer when it was written; read here
++// for display only) gives the name, and Flathub's AppStream icon cache the
++// picture.
++const CATALOGUE_MAX_BYTES = 16 * 1024 * 1024;
++let catalogue = null;
++let iconTheme = null;
++
++function catalogueEntry(id) {
++    if (catalogue === null) {
++        catalogue = new Map();
++        try {
++            const path = GLib.build_filenamev([GLib.get_user_cache_dir(), 'luma', 'depot', 'catalogue-v1.json']);
++            const file = Gio.File.new_for_path(path);
++            if (file.query_info('standard::size', 0, null).get_size() <= CATALOGUE_MAX_BYTES) {
++                const document = JSON.parse(new TextDecoder().decode(file.load_contents(null)[1]));
++                for (const row of document?.apps ?? []) {
++                    if (typeof row?.id === 'string' && typeof row?.name === 'string')
++                        catalogue.set(row.id.toLowerCase(), row.name.slice(0, 128));
++                }
++            }
++        } catch {}
++    }
++    return catalogue.get(id.replace(/\.desktop$/, '').toLowerCase()) ?? null;
++}
++
++function appstreamIcon(id) {
++    const bare = id.replace(/\.desktop$/, '');
++    const roots = [GLib.build_filenamev([GLib.get_user_data_dir(), 'flatpak', 'appstream']), '/var/lib/flatpak/appstream'];
++    for (const root of roots) {
++        for (const remote of ['flathub', 'luma']) {
++            for (const size of ['128x128', '64x64']) {
++                const path = GLib.build_filenamev([root, remote, Shell.util_get_architecture?.() ?? 'x86_64',
++                    'active', 'icons', size, `${bare}.png`]);
++                if (GLib.file_test(path, GLib.FileTest.EXISTS))
++                    return Gio.FileIcon.new(Gio.File.new_for_path(path));
++            }
++        }
++    }
++    return null;
++}
++
++export function appName(id) {
++    return appFor(id)?.get_name() ?? known.get(id)?.name ?? catalogueEntry(id) ??
++        id.replace(/\.desktop$/, '').split('.').pop();
++}
++
++function appIcon(id, size) {
++    const app = appFor(id);
++    if (app)
++        return app.create_icon_texture(size);
++    let gicon = null;
++    try {
++        const name = known.get(id)?.icon;
++        const candidate = name ? Gio.Icon.new_for_string(name) : null;
++        // A themed name only counts when this computer's theme has it.
++        iconTheme ??= St.IconTheme.new?.() ?? null;
++        if (candidate instanceof Gio.ThemedIcon && iconTheme?.has_icon &&
++            !iconTheme.has_icon(candidate.get_names()[0]))
++            gicon = null;
++        else
++            gicon = candidate;
++    } catch {}
++    gicon ??= appstreamIcon(id);
++    return new St.Icon({gicon: gicon ?? new Gio.ThemedIcon({name: 'application-x-executable'}), icon_size: size});
++}
++
++// Rows of the result list, one per app that needs a word.
++export function resultRows(result) {
++    const rows = [];
++    for (const id of result.installing ?? [])
++        rows.push({id, reason: 'Installing · opens when it’s ready', progress: result.progress?.[id] ?? 0});
++    for (const id of result.missing ?? [])
++        rows.push({id, reason: 'Not available on this device'});
++    for (const id of [...(result.unplaced ?? []), ...(result.failed ?? [])])
++        rows.push({id, reason: 'Didn’t open in time', open: true});
++    for (const {id, document} of result.withoutDocuments ?? [])
++        rows.push({id, reason: `Opened without “${document}”. It hasn’t synced yet.`});
++    for (const {id, windows} of result.moved ?? [])
++        rows.push({id, reason: `${windows} ${plural(windows, 'window', 'windows')} on this screen. The other display isn’t here.`});
++    return rows;
++}
++
++// The line under "Reopened 8 of 11 windows".
++export function resultSummary(result) {
++    const installing = result.installing ?? [];
++    const failed = new Set([...(result.missing ?? []), ...(result.unplaced ?? []), ...(result.failed ?? [])]);
++    const parts = [];
++    if (installing.length)
++        parts.push(`${appName(installing[0])} is installing and opens when it’s ready.`);
++    if (failed.size === 1 && !installing.length)
++        parts.push(`${appName([...failed][0])} didn’t open${(result.unplaced ?? []).includes([...failed][0]) ? ' in time' : ''}.`);
++    else if (failed.size)
++        parts.push(`${failed.size} ${plural(failed.size, 'app', 'apps')} didn’t open.`);
++    return parts.join(' ');
++}
++
++export class ContinueBanner {
++    constructor() {
++        loadStylesheet();
++        this._notification = null;
++        this._state = null;
++    }
++
++    _ensure(sourceTitle, iconName, urgency) {
++        if (this._notification && this._sourceTitle !== sourceTitle)
++            this.close();
++        if (!this._notification) {
++            this._sourceTitle = sourceTitle;
++            const source = new MessageTray.Source({
++                title: sourceTitle,
++                icon: new Gio.ThemedIcon({name: iconName}),
++                policy: new MessageTray.NotificationGenericPolicy(),
++            });
++            Main.messageTray.add(source);
++            this._notification = new MessageTray.Notification({
++                source, title: '', body: '', isTransient: false, urgency,
++            });
++            this._notification.lumaContent = {
++                views: new Set(),
++                actions: [],
++                equalActions: false,
++                build: message => this._build(message),
++            };
++            this._notification.connect('destroy', () => {
++                this._notification = null;
++                this._stopTick();
++            });
++            this._source = source;
++        }
++        this._notification.urgency = urgency;
++        return this._notification;
++    }
++
++    // The tray measures a card when it places it: ask again after the
++    // content grew or shrank in place.
++    _relayout() {
++        GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
++            peekNotificationLip()?._queuePlace?.();
++            return GLib.SOURCE_REMOVE;
++        });
++    }
++
++    // when: what the banner is about happened then (a snapshot taken, a
++    // continue elsewhere); the source row shows its age. Otherwise now.
++    _set({title, body, actions = [], equal = false, state, when = null}) {
++        const n = this._notification;
++        this._state = state;
++        const datetime = when ? GLib.DateTime.new_from_unix_local(when) : GLib.DateTime.new_now_local();
++        n.set({title, body, datetime});
++        n.clearActions();
++        n.lumaContent.equalActions = equal;
++        // In-place buttons: a Notification action would mark the banner acted
++        // on and close it, and every state here changes the same banner.
++        n.lumaContent.actions = actions.map(([label, callback]) => ({label, callback, end: state === 'list'}));
++        for (const rebuild of n.lumaContent.views)
++            rebuild();
++        if (!this._shown) {
++            this._shown = true;
++            this._source.addNotification(n);
++        }
++        this._relayout();
++    }
++
++    close() {
++        this._stopTick();
++        this._notification?.destroy(MessageTray.NotificationDestroyedReason.SOURCE_CLOSED);
++        this._notification = null;
++        this._shown = false;
++    }
++
++    // --- states ----------------------------------------------------------
++
++    // 1, 2, 5 (reverse) and handheld: the question, with Continue and Not
++    // now of equal weight.
++    offer({device, windows, apps, busy = false, continuedAt = null, handheldApp = null, taken = null},
++        onContinue, onNotNow) {
++        this._ensure('Luma Connect', CONNECT_ICON, MessageTray.Urgency.CRITICAL);
++        rememberApps(apps);
++        this._apps = apps;
++        this._done = null;
++        this._busy = busy && !handheldApp;
++        const title = handheldApp
++            ? `Continue ${appName(handheldApp)} from ${device}?`
++            : `Continue from ${device}?`;
++        let body = handheldApp ? 'Opens beside what’s here.' : windowsInApps(windows, apps.length);
++        if (continuedAt && !handheldApp)
++            body += ` · you continued there at ${clock(continuedAt)}`;
++        this._set({
++            title, body, equal: true, state: 'offer', when: taken,
++            actions: [['Continue', onContinue], ['Not now', onNotNow]],
++        });
++    }
++
++    // 3: the same banner, counting windows as they are placed.
++    restoring({device, total, apps = null, onStop}) {
++        this._ensure('Luma Connect', CONNECT_ICON, MessageTray.Urgency.CRITICAL);
++        if (apps) {
++            rememberApps(apps);
++            this._apps = apps;
++        }
++        this._total = total;
++        this._placed = 0;
++        this._done = new Set();
++        this._busy = false;
++        this._started = GLib.get_monotonic_time();
++        this._set({
++            title: `Continuing from ${device}`,
++            body: `0 of ${total} windows`,
++            actions: [['Stop', onStop]],
++            state: 'restoring',
++        });
++        this._startTick();
++    }
++
++    placed(appId) {
++        if (this._state !== 'restoring')
++            return;
++        this._placed++;
++        this._done.add(appId);
++        this._notification?.set({body: `${this._placed} of ${this._total} windows`});
++        for (const rebuild of this._notification?.lumaContent.views ?? [])
++            rebuild();
++    }
++
++    // 4: the result, which grows into its list in place. When everything
++    // was placed the banner just closes.
++    result({result, device, at, local = false, apps = null, onOpen}) {
++        rememberApps(apps);
++        this._stopTick();
++        const rows = resultRows(result);
++        if (rows.length === 0) {
++            this.close();
++            return;
++        }
++        // After a restart: an ordinary banner (standard timeout, then the
++        // list; Do Not Disturb sends it straight to the list), shown as a
++        // banner rather than only in the notification island.
++        if (local) {
++            this._ensure('Desktop', DESKTOP_ICON, MessageTray.Urgency.NORMAL);
++            this._notification.forFeedback = true;
++        }
++        else
++            this._ensure('Luma Connect', CONNECT_ICON, MessageTray.Urgency.CRITICAL);
++        this._rows = rows;
++        this._onOpen = onOpen;
++        const title = `Reopened ${result.placed} of ${result.windows} windows`;
++        const show = () => this._set({
++            title,
++            body: local ? 'After the restart' : `From ${device}, ${this._ago(at)}`,
++            actions: [['Done', () => this.close()]],
++            state: 'list',
++        });
++        const actions = [];
++        const openable = rows.filter(r => r.open);
++        if (local && openable.length === 1)
++            actions.push([`Open ${appName(openable[0].id)}`, () => onOpen?.(openable[0].id)]);
++        actions.push(['Show', show]);
++        this._set({title, body: resultSummary(result), actions, state: 'partial', equal: actions.length > 1});
++    }
++
++    // 5: on the source device, the next unlock.
++    continued({device, at}) {
++        this._ensure('Luma Connect', CONNECT_ICON, MessageTray.Urgency.NORMAL);
++        this._set({
++            title: `Your windows continued on ${device}`,
++            body: `At ${clock(at)}. Nothing here was closed.`,
++            state: 'continued', when: at,
++        });
++    }
++
++    _ago(at) {
++        const minutes = Math.max(0, Math.round((Date.now() / 1000 - at) / 60));
++        if (minutes < 1)
++            return 'just now';
++        if (minutes < 60)
++            return `${minutes} min ago`;
++        const hours = Math.round(minutes / 60);
++        return `${hours} h ago`;
++    }
++
++    _startTick() {
++        this._stopTick();
++        this._tickId = GLib.timeout_add(GLib.PRIORITY_LOW, 250, () => {
++            this._progressBars?.forEach(bar => this._sizeProgress(bar));
++            return GLib.SOURCE_CONTINUE;
++        });
++    }
++
++    _stopTick() {
++        if (this._tickId)
++            GLib.source_remove(this._tickId);
++        this._tickId = 0;
++    }
++
++    _sizeProgress(bar) {
++        if (!bar.get_parent())
++            return;
++        const elapsed = (GLib.get_monotonic_time() - this._started) / 1000;
++        bar._share = Math.min(1, Math.max(this._placed / Math.max(1, this._total), elapsed / RESTORE_BUDGET_MS));
++        bar._fill.width = Math.round(bar.width * bar._share);
++    }
++
++    // --- content ---------------------------------------------------------
++
++    _strip() {
++        const box = new St.BoxLayout({style_class: 'luma-continue-apps'});
++        const shown = (this._apps ?? []).slice(0, STRIP_MAX);
++        for (const {id} of shown) {
++            const icon = appIcon(id, 24);
++            icon.add_style_class_name('luma-continue-app');
++            // Not open yet: 32 % and without colour until its first window is placed.
++            if (this._done && !this._done.has(id)) {
++                icon.opacity = 82;
++                icon.add_effect(new Clutter.DesaturateEffect({factor: 1}));
++            }
++            box.add_child(icon);
++        }
++        const more = (this._apps ?? []).length - shown.length;
++        if (more > 0)
++            box.add_child(new St.Label({style_class: 'luma-continue-more', text: `+${more}`}));
++        return box;
++    }
++
++    _progress(styleClass) {
++        const track = new St.Widget({style_class: styleClass, x_expand: true,
++            layout_manager: new Clutter.FixedLayout()});
++        track._fill = new St.Widget({style_class: 'luma-continue-progress-fill', x: 0, y: 0, width: 0});
++        track._share = 0;
++        track.connect('notify::width', () => (track._fill.width = Math.round(track.width * track._share)));
++        track.add_child(track._fill);
++        return track;
++    }
++
++    _build(_message) {
++        const box = new St.BoxLayout({orientation: Clutter.Orientation.VERTICAL,
++            style_class: 'luma-continue', x_expand: true});
++        this._progressBars = [];
++        if (this._state === 'offer' || this._state === 'restoring')
++            box.add_child(this._strip());
++        if (this._state === 'offer' && this._busy) {
++            const note = new St.BoxLayout({style_class: 'luma-continue-note'});
++            note.add_child(new St.Icon({icon_name: 'luma-continue-layers-symbolic', icon_size: 14,
++                y_align: Clutter.ActorAlign.START}));
++            note.add_child(new St.Label({text: 'Opens on a new desktop. What’s open here stays.',
++                x_expand: true}));
++            box.add_child(note);
++        }
++        if (this._state === 'restoring') {
++            const bar = this._progress('luma-continue-progress');
++            bar.connect('notify::allocation', () => this._sizeProgress(bar));
++            this._progressBars.push(bar);
++            box.add_child(bar);
++        }
++        if (this._state === 'list') {
++            const list = new St.BoxLayout({orientation: Clutter.Orientation.VERTICAL,
++                style_class: 'luma-continue-list', x_expand: true});
++            for (const row of this._rows ?? []) {
++                // The hairline between rows is its own actor: a row's
++                // bottom border took its width but was not painted.
++                if (list.get_n_children())
++                    list.add_child(new St.Widget({style_class: 'luma-continue-divider', x_expand: true}));
++                const line = new St.BoxLayout({style_class: 'luma-continue-row', x_expand: true});
++                line.add_child(appIcon(row.id, 28));
++                const text = new St.BoxLayout({orientation: Clutter.Orientation.VERTICAL, x_expand: true,
++                    y_align: Clutter.ActorAlign.CENTER});
++                text.add_child(new St.Label({style_class: 'luma-continue-row-name', text: appName(row.id)}));
++                const why = new St.Label({style_class: 'luma-continue-row-reason', text: row.reason});
++                why.clutter_text.line_wrap = true;
++                text.add_child(why);
++                if (row.progress !== undefined) {
++                    const bar = this._progress('luma-continue-progress luma-continue-progress-small');
++                    bar._share = Math.min(1, Math.max(0, row.progress / 100));
++                    text.add_child(bar);
++                }
++                line.add_child(text);
++                if (row.open) {
++                    const open = new St.Button({style_class: 'luma-continue-open', label: 'Open',
++                        y_align: Clutter.ActorAlign.CENTER, can_focus: true});
++                    open.connect('clicked', () => this._onOpen?.(row.id));
++                    line.add_child(open);
++                }
++                list.add_child(line);
++            }
++            // The list runs under the source icon too: its column starts
++            // where the card's content does (34 px tile + 12 px gap).
++            box.add_child(new OutdentBin(list, LIST_OUTDENT));
++        }
++        return box.get_n_children() ? box : null;
++    }
++}
+diff --git a/js/ui/lumaSession.js b/js/ui/lumaSession.js
+index 502e3a9..abdcb46 100644
+--- a/js/ui/lumaSession.js
++++ b/js/ui/lumaSession.js
+@@ -12,14 +12,18 @@
+ //
+ //   journalctl --user -b -g luma-session
+ 
++import Clutter from 'gi://Clutter';
+ import Gio from 'gi://Gio';
++import GioUnix from 'gi://GioUnix';
+ import GLib from 'gi://GLib';
+ import Meta from 'gi://Meta';
+ import Shell from 'gi://Shell';
+ 
+ import * as LoginManager from '../misc/loginManager.js';
+ import * as Main from './main.js';
+-import * as MessageTray from './messageTray.js';
++import {ContinueBanner, snapshotApps} from './lumaContinue.js';
++
++Gio._promisify(Gio.DBusConnection.prototype, 'call_with_unix_fd_list');
+ 
+ export const FORMAT = 1;
+ const SCHEMA = 'org.projectluma.session';
+@@ -28,7 +32,7 @@ const SETTLE_MS = 3000;
+ const RESTORE_WAIT_MS = 20 * 1000;
+ const LATE_WINDOW_MS = 15 * 60 * 1000;
+ const SAVE_TIMEOUT_MS = 500;
+-const MORE_WINDOWS_MS = 1500;
++const MORE_WINDOWS_MS = 3000;
+ const SLEEP_BUDGET_MS = 2000;
+ const CONTINUE_TTL_S = 72 * 3600;
+ 
+@@ -260,11 +264,12 @@ function readJson(path) {
+     }
+ }
+ 
++// Written whole and synced before it replaces the file: a snapshot taken as
++// the lid closes or the power goes must be on disk, not in the page cache.
+ function writePrivate(path, text) {
+     GLib.mkdir_with_parents(GLib.path_get_dirname(path), 0o700);
+-    const file = Gio.File.new_for_path(path);
+-    file.replace_contents(new TextEncoder().encode(text), null, false,
+-        Gio.FileCreateFlags.PRIVATE | Gio.FileCreateFlags.REPLACE_DESTINATION, null);
++    GLib.file_set_contents_full(path, new TextEncoder().encode(text),
++        GLib.FileSetContentsFlags.CONSISTENT | GLib.FileSetContentsFlags.DURABLE, 0o600);
+ }
+ 
+ function decodeScope(text) {
+@@ -327,6 +332,7 @@ export class LumaSession {
+         this._answers = null;           // serial -> Map(bus -> state)
+         this._pendingRestore = new Map(); // app id (normalised) -> {reason, state}
+         this._restoring = null;
++        this._banner = null;
+ 
+         this._dbusImpl = Gio.DBusExportedObject.wrapJSObject(SessionIface, this);
+         this._dbusImpl.export(Gio.DBus.session, OBJECT_PATH);
+@@ -444,7 +450,11 @@ export class LumaSession {
+         for (const w of windows) {
+             if (!w.app || apps.has(w.app))
+                 continue;
+-            apps.set(w.app, {app: w.app, windows: 0, state: null});
++            // Name and icon travel with the snapshot, so a device without
++            // the app can still show which app it is.
++            const app = Shell.AppSystem.get_default().lookup_app(w.app);
++            apps.set(w.app, {app: w.app, windows: 0, state: null,
++                name: app?.get_name() ?? null, icon: app?.get_icon()?.to_string() ?? null});
+         }
+         for (const w of windows) {
+             if (w.app)
+@@ -472,6 +482,7 @@ export class LumaSession {
+             monitors,
+             windows,
+             apps: [...apps.values()],
++            continuedFrom: this._continuedFrom ?? null,
+         };
+     }
+ 
+@@ -540,16 +551,27 @@ export class LumaSession {
+     }
+ 
+     _watchSession() {
+-        Main.screenShield?.connectObject('locked-changed', () => {
+-            if (Main.screenShield.locked)
++        // The shield going up is the lock, also for an account without a
++        // password, whose shield shows without locking (screenShield.js lock()).
++        const shield = () => {
++            const up = Main.screenShield.locked || Main.screenShield.active;
++            if (up === this._shieldUp)
++                return;
++            this._shieldUp = up;
++            if (up)
+                 this.snapshot('lock').catch(logError);
+-        }, this);
++            else
++                this._checkOffer().catch(logError);
++        };
++        Main.screenShield?.connectObject('locked-changed', shield, 'active-changed', shield, this);
+ 
+         const loginManager = LoginManager.getLoginManager();
+         this._takeSleepInhibitor();
+         loginManager.connectObject('prepare-for-sleep', (_lm, aboutToSuspend) => {
+             if (!aboutToSuspend) {
+                 this._takeSleepInhibitor();
++                if (!Main.sessionMode.isLocked)
++                    this._checkOffer().catch(logError);
+                 return;
+             }
+             const release = () => {
+@@ -566,13 +588,20 @@ export class LumaSession {
+             });
+         }, this);
+ 
++        this._takeShutdownInhibitor();
+         try {
+             this._shutdownSignal = Gio.DBus.system.signal_subscribe('org.freedesktop.login1',
+                 'org.freedesktop.login1.Manager', 'PrepareForShutdown', '/org/freedesktop/login1', null,
+                 Gio.DBusSignalFlags.NONE, (_c, _s, _p, _i, _n, params) => {
+                     const [starting] = params.deepUnpack();
+-                    if (starting)
+-                        this.finalSnapshot('shutdown').catch(logError);
++                    if (!starting) {
++                        this._takeShutdownInhibitor();
++                        return;
++                    }
++                    this.finalSnapshot('shutdown').catch(logError).finally(() => {
++                        this._shutdownInhibitor?.close(null);
++                        this._shutdownInhibitor = null;
++                    });
+                 });
+         } catch (e) {
+             log(`no shutdown signal: ${e.message}`);
+@@ -588,6 +617,25 @@ export class LumaSession {
+         }
+     }
+ 
++    // Logind holds the shutdown until this lock is released (at most its
++    // InhibitDelayMaxSec), so the session is still whole when the shutdown
++    // snapshot is taken: without it the session's apps may already be gone,
++    // and the snapshot would replace the session with an empty desktop.
++    async _takeShutdownInhibitor() {
++        if (this._shutdownInhibitor)
++            return;
++        try {
++            const [, fdList] = await Gio.DBus.system.call_with_unix_fd_list('org.freedesktop.login1',
++                '/org/freedesktop/login1', 'org.freedesktop.login1.Manager', 'Inhibit',
++                new GLib.Variant('(ssss)', ['shutdown', 'GNOME Shell', 'Saving the open windows', 'delay']),
++                null, Gio.DBusCallFlags.NONE, -1, null, null);
++            const [fd] = fdList.steal_fds();
++            this._shutdownInhibitor = new GioUnix.InputStream({fd});
++        } catch (e) {
++            log(`no shutdown inhibitor: ${e.message}`);
++        }
++    }
++
+     async _takeSleepInhibitor() {
+         if (this._sleepInhibitor)
+             return;
+@@ -602,11 +650,20 @@ export class LumaSession {
+     // --- restore ---------------------------------------------------------
+ 
+     _restoreAtLogin() {
++        // After the local restore (if any) has started, offer another
++        // device's newer session.
++        GLib.timeout_add_seconds(GLib.PRIORITY_LOW, 8, () => {
++            this._checkOffer().catch(logError);
++            return GLib.SOURCE_REMOVE;
++        });
+         if (!this.reopenWindows)
+             return;
+         const path = GLib.build_filenamev([this._dir, 'current.json']);
+         const snapshot = readJson(path);
+-        if (!snapshot || snapshot.format !== FORMAT || snapshot.restoredAt)
++        // A session that ended during its restore (the shell or the display
++        // manager restarted) gets one more try; never a third, so a restore
++        // that brings the session down can't loop.
++        if (!snapshot || snapshot.format !== FORMAT || (snapshot.restoreAttempts ?? (snapshot.restoredAt ? 1 : 0)) >= 2)
+             return;
+         if (snapshot.device && snapshot.device !== this._device)
+             return;
+@@ -615,6 +672,7 @@ export class LumaSession {
+             return;
+         }
+         snapshot.restoredAt = Math.floor(Date.now() / 1000);
++        snapshot.restoreAttempts = (snapshot.restoreAttempts ?? 0) + 1;
+         try {
+             writePrivate(path, JSON.stringify(snapshot));
+         } catch (e) {
+@@ -644,12 +702,29 @@ export class LumaSession {
+             wm.append_new_workspace(false, global.get_current_time());
+ 
+         const slots = (snapshot.windows ?? []).map((w, index) => ({...w, index, window: null}));
++        // Windows whose display isn't here: their monitor had no match by
++        // identity and shares a monitor with another saved one.
++        const identity = m => `${m.vendor}|${m.product}|${m.serial}`;
++        const here = new Set(current.map(identity));
++        const folded = new Set((snapshot.monitors ?? []).filter(m => !here.has(identity(m)) &&
++            (snapshot.monitors ?? []).length > current.length).map(m => m.index));
+         const restoring = {
+             snapshot, mode, base, monitorMap, current, slots,
+             started: GLib.get_monotonic_time(),
+             apps: new Map(),
+-            result: {mode, windows: slots.length, placed: 0, missing: [], late: [], failed: []},
++            result: {mode, windows: slots.length, placed: 0, missing: [], late: [], failed: [], moved: []},
+         };
++        const movedBy = new Map();
++        for (const slot of slots.filter(x => folded.has(x.monitor)))
++            movedBy.set(slot.app, (movedBy.get(slot.app) ?? 0) + 1);
++        restoring.result.moved = [...movedBy].map(([id, windows]) => ({id, windows}));
++        if (mode === 'continue') {
++            this._continuedFrom = {device: snapshot.device, taken: snapshot.taken,
++                at: Math.floor(Date.now() / 1000)};
++            this._banner ??= new ContinueBanner();
++            this._banner.restoring({device: snapshot.deviceName, total: slots.length,
++                apps: snapshotApps(snapshot), onStop: () => this.stopRestore()});
++        }
+         this._restoring = restoring;
+ 
+         const byApp = new Map();
+@@ -704,6 +779,14 @@ export class LumaSession {
+             if (config.get_is_initial())
+                 this._configure(w, config);
+         }, this);
++        // An X11 window mapped while Xwayland was still starting is adopted
++        // without a configure: place it once it is shown.
++        if (window.get_client_type() === Meta.WindowClientType.X11) {
++            window.connectObject('shown', () => {
++                if (!(this._restoring ?? this._late)?.slots.some(slot => slot.window === window))
++                    this._configure(window, null);
++            }, this);
++        }
+     }
+ 
+     _slotFor(window) {
+@@ -742,8 +825,12 @@ export class LumaSession {
+         const savedMonitor = (restoring.snapshot.monitors ?? []).find(m => m.index === slot.monitor);
+         const currentMonitor = restoring.current.find(m => m.index === monitor) ?? restoring.current[0];
+         const area = currentMonitor.workArea;
+-        const exact = savedMonitor && sameArea(savedMonitor.workArea, area) &&
+-            savedMonitor.vendor === currentMonitor.vendor && savedMonitor.serial === currentMonitor.serial;
++        // The same display at the same place keeps the window exactly where it
++        // was. Its work area is not compared: at login the panel and dock may
++        // not have reserved their space yet, and it settles to what it was.
++        const exact = savedMonitor && sameArea(savedMonitor, currentMonitor) &&
++            savedMonitor.vendor === currentMonitor.vendor && savedMonitor.product === currentMonitor.product &&
++            savedMonitor.serial === currentMonitor.serial;
+         const floating = exact ? slot.floating : fit(unshare(slot.floatingShare, area), area);
+         const frame = exact ? slot.frame : fit(unshare(slot.frameShare, area), area);
+         return {monitor, area, floating, frame, exact};
+@@ -751,8 +838,11 @@ export class LumaSession {
+ 
+     _configure(window, config) {
+         const slot = this._slotFor(window);
+-        if (!slot)
++        if (!slot) {
++            if (isRestorable(window))
++                log(`no saved place for ${window.get_wm_class()} "${window.get_title() ?? ''}"`);
+             return;
++        }
+         const restoring = this._restoring ?? this._late;
+         slot.window = window;
+         restoring.result.placed++;
+@@ -765,6 +855,11 @@ export class LumaSession {
+             this._checkRestoreDone();
+         };
+         window.connectObject('shown', ready, this);
++        if (!config)
++            GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
++                ready();
++                return GLib.SOURCE_REMOVE;
++            });
+         if (slot.minimized) {
+             GLib.timeout_add(GLib.PRIORITY_DEFAULT, 1000, () => {
+                 ready();
+@@ -779,6 +874,8 @@ export class LumaSession {
+         slot.target = target;
+         if (window.is_restored_from_session?.()) {
+             log(`${slot.app}: restored by its client`);
++        } else if (!config) {
++            this._placeShown(window, slot, target);
+         } else {
+             const r = slot.state === 'floating' ? target.frame : target.floating;
+             // set_rect() takes the rectangle by value, which GJS can't pass.
+@@ -808,13 +905,37 @@ export class LumaSession {
+         if (slot.minimized)
+             window.minimize();
+         const late = restoring === this._late;
+-        if (late)
++        if (late) {
+             restoring.result.late.push(slot.app);
++            // A window that comes after the restore finished doesn't take the
++            // focus from the window the person is using.
++            const focused = global.display.focus_window;
++            window.connectObject('shown', () => {
++                if (focused && global.display.focus_window === window && !focused.minimized)
++                    focused.focus(global.display.get_current_time_roundtrip());
++            }, this);
++        }
+         log(`${slot.app}: window ${slot.index} placed${target.exact ? ' exactly' : ''}`);
++        if (restoring.mode === 'continue')
++            this._banner?.placed(slot.app);
+         this._openMoreWindows(slot);
+         this._checkRestoreDone();
+     }
+ 
++    // The same placement for a window that is already on the screen.
++    _placeShown(window, slot, target) {
++        const r = slot.state === 'floating' ? target.frame : target.floating;
++        window.move_resize_frame(false, r.x, r.y, r.width, r.height);
++        if (slot.workspace < 0)
++            window.stick();
++        else
++            window.change_workspace_by_index((this._restoring ?? this._late).base + slot.workspace, false);
++        if (slot.state === 'maximized')
++            window.maximize();
++        else if (slot.state === 'fullscreen')
++            window.make_fullscreen();
++    }
++
+     // An app that doesn't reopen its own windows opens one; once no new
+     // window of it has come for a moment, ask it for one more, until every
+     // window of it in the snapshot is there.
+@@ -880,6 +1001,7 @@ export class LumaSession {
+             wm.get_workspace_by_index(active).activate(time);
+         const focus = slots.find(s => s.focus && s.window && !s.window.minimized);
+         if (focus) {
++            this._holdFocus(focus.window);
+             Main.activateWindow(focus.window, time);
+             // A client's own user time (an X11 client's, a startup token's)
+             // can be ahead of the server time and turn the activation into
+@@ -889,9 +1011,11 @@ export class LumaSession {
+             if (global.display.focus_window !== focus.window)
+                 log(`${focus.app}: window ${focus.index} could not take the focus`);
+         }
+-        const unplaced = slots.filter(s => !s.window && !s.missing);
++        const unplaced = slots.filter(s => !s.window && !s.missing && !s.stopped);
++        this._lastRestore = {snapshot, mode: restoring.mode};
+         result.unplaced = [...new Set(unplaced.map(s => s.app))];
+         result.seconds = (GLib.get_monotonic_time() - restoring.started) / 1e6;
++        result.workAreas = restoring.current.map(m => m.workArea);
+         log(`restored ${result.placed} of ${result.windows} windows in ${result.seconds.toFixed(1)} s` +
+             (result.missing.length ? `; not installed: ${result.missing.join(', ')}` : '') +
+             (result.unplaced.length ? `; didn't open in time: ${result.unplaced.join(', ')}` : ''));
+@@ -905,25 +1029,146 @@ export class LumaSession {
+                 return GLib.SOURCE_REMOVE;
+             });
+         }
+-        if (result.missing.length + result.unplaced.length + result.failed.length > 0)
++        if (result.missing.length + result.unplaced.length + result.failed.length +
++            result.moved.length > 0)
+             this._notifyPartial(result);
++        else if (restoring.mode === 'continue')
++            this._banner?.close();
+         this._markDirty();
+     }
+ 
++    // Restored apps present their windows as they come up and can take the
++    // focus after the restore has given it: for a moment, give it back,
++    // unless the person has done something since.
++    _holdFocus(window) {
++        let touched = false;
++        const input = global.stage.connect('captured-event', (_stage, event) => {
++            const type = event.type();
++            if (type === Clutter.EventType.BUTTON_PRESS || type === Clutter.EventType.KEY_PRESS ||
++                type === Clutter.EventType.TOUCH_BEGIN)
++                touched = true;
++            return Clutter.EVENT_PROPAGATE;
++        });
++        const focus = global.display.connect('notify::focus-window', () => {
++            const now = global.display.focus_window;
++            if (touched || !now || now === window || window.minimized)
++                return;
++            window.focus(global.display.get_current_time_roundtrip());
++        });
++        GLib.timeout_add(GLib.PRIORITY_DEFAULT, 3000, () => {
++            global.display.disconnect(focus);
++            global.stage.disconnect(input);
++            return GLib.SOURCE_REMOVE;
++        });
++    }
++
+     _notifyPartial(result) {
+-        const open = result.placed;
+-        const source = MessageTray.getSystemSource();
+-        const reasons = [];
+-        if (result.missing.length)
+-            reasons.push(`Not on this device: ${result.missing.map(id => this._appName(id)).join(', ')}`);
+-        if (result.unplaced.length)
+-            reasons.push(`Didn't open: ${result.unplaced.map(id => this._appName(id)).join(', ')}`);
+-        const notification = new MessageTray.Notification({
+-            source,
+-            title: `Reopened ${open} of ${result.windows} windows`,
+-            body: reasons.join('\n'),
++        // Never on the lock screen: after the first unlock.
++        if (Main.sessionMode.isLocked && Main.screenShield) {
++            const id = Main.screenShield.connect('locked-changed', () => {
++                if (Main.screenShield.locked)
++                    return;
++                Main.screenShield.disconnect(id);
++                this._notifyPartial(result);
++            });
++            return;
++        }
++        const {snapshot, mode} = this._lastRestore ?? {};
++        this._banner ??= new ContinueBanner();
++        this._banner.result({
++            result,
++            apps: snapshot ? snapshotApps(snapshot) : null,
++            device: snapshot?.deviceName ?? '',
++            at: snapshot?.taken ?? Date.now() / 1000,
++            local: mode !== 'continue',
++            onOpen: id => {
++                try {
++                    Shell.AppSystem.get_default().lookup_app(id)?.activate();
++                } catch (e) {
++                    log(`could not open ${id}: ${e.message}`);
++                }
++            },
++        });
++    }
++
++    // Stop: nothing more starts; what is open stays.
++    stopRestore() {
++        const restoring = this._restoring;
++        if (!restoring)
++            return;
++        for (const slot of restoring.slots.filter(x => !x.window))
++            slot.stopped = true;
++        if (this._restoreTimer)
++            GLib.source_remove(this._restoreTimer);
++        this._restoreTimer = 0;
++        this._finishRestore();
++    }
++
++    // The offer (ADR-055 §5.3): after unlock, resume or login, the newest
++    // session of another device that is newer than this one's own last
++    // use. Nothing opens without Continue, and nothing shows while locked.
++    async _checkOffer() {
++        if (Main.sessionMode.isLocked || this._restoring || this._offering)
++            return;
++        if (!(this._settings?.get_boolean('continue-offer') ?? true))
++            return;
++        let offer;
++        try {
++            const [json] = (await Gio.DBus.session.call('org.projectluma.ConnectSync1',
++                '/org/projectluma/ConnectSync1', 'org.projectluma.ConnectSync1', 'GetContinueOffer',
++                null, new GLib.VariantType('(s)'), Gio.DBusCallFlags.NO_AUTO_START, 15000, null)).deepUnpack();
++            offer = JSON.parse(json);
++        } catch (e) {
++            return;
++        }
++        if (!offer || Main.sessionMode.isLocked)
++            return;
++        const own = readJson(GLib.build_filenamev([this._dir, 'current.json']));
++        const continuedHere = offer.continuedFrom?.device === this._device;
++        if (!continuedHere && own?.taken && offer.taken <= own.taken)
++            return;
++        // Continued from here and nothing new there yet: say so once. With
++        // newer windows there, offer them back instead (never both).
++        if (continuedHere && offer.taken - (offer.continuedFrom.at ?? 0) < 120) {
++            if (this._toldContinued !== offer.id) {
++                this._toldContinued = offer.id;
++                this._banner ??= new ContinueBanner();
++                this._banner.continued({device: offer.name, at: offer.continuedFrom.at});
++            }
++            return;
++        }
++        this.offerContinue(offer, continuedHere ? offer.continuedFrom.at ?? null : null);
++    }
++
++    offerContinue(offer, continuedAt = null) {
++        this._banner ??= new ContinueBanner();
++        this._offering = offer.id;
++        const call = (method, args, type = null) => Gio.DBus.session.call('org.projectluma.ConnectSync1',
++            '/org/projectluma/ConnectSync1', 'org.projectluma.ConnectSync1', method, args,
++            type ? new GLib.VariantType(type) : null, Gio.DBusCallFlags.NO_AUTO_START, 120000, null);
++        this._banner.offer({
++            device: offer.name,
++            windows: offer.windows,
++            apps: (offer.apps ?? []).map(id => ({id, ...(offer.appInfo?.[id] ?? {})})),
++            busy: this._windows().length > 0,
++            continuedAt,
++            taken: offer.taken,
++        }, async () => {
++            this._offering = null;
++            try {
++                const [json] = (await call('TakeContinue', new GLib.Variant('(s)', [offer.id]), '(s)')).deepUnpack();
++                const snapshot = JSON.parse(json);
++                snapshot.deviceName = offer.name;
++                this.restore(snapshot, 'continue');
++            } catch (e) {
++                log(`could not continue from ${offer.name}: ${e.message}`);
++                this._banner.close();
++            }
++        }, () => {
++            this._offering = null;
++            this._banner.close();
++            call('DeclineContinue', new GLib.Variant('(s)', [offer.id])).catch(() => {});
+         });
+-        source.addNotification(notification);
+     }
+ 
+     _appName(id) {
+diff --git a/js/ui/messageList.js b/js/ui/messageList.js
+index 98ccd28..5d06212 100644
+--- a/js/ui/messageList.js
++++ b/js/ui/messageList.js
+@@ -631,6 +631,7 @@ export const Message = GObject.registerClass({
+             child: this._bodyLabel,
+         });
+         contentBox.add_child(this._bodyBin);
++        this._contentBox = contentBox;
+ 
+         this._header.closeButton.connect('clicked', this.close.bind(this));
+         this._header.closeButton.visible = this.canClose();
+@@ -1069,6 +1070,24 @@ class NotificationMessage extends Message {
+             this._addAction(action);
+         });
+         this._syncInlineReply();
++
++        // Content a notification draws below its body (Continue's app strip,
++        // progress and result list): built per message, since the banner
++        // and the list each show the notification, and rebuilt in place
++        // when the notification asks.
++        if (notification.lumaContent) {
++            const rebuild = () => {
++                this._lumaContent?.destroy();
++                this._lumaContent = notification.lumaContent.build(this);
++                if (this._lumaContent)
++                    this._contentBox.add_child(this._lumaContent);
++                this._setLumaActions(notification.lumaContent.actions ?? []);
++                this._syncActionButtons();
++            };
++            notification.lumaContent.views.add(rebuild);
++            this.connect('destroy', () => notification.lumaContent?.views.delete(rebuild));
++            rebuild();
++        }
+     }
+ 
+     // The dismiss control throws a notification away, wherever the card is.
+@@ -1093,7 +1112,8 @@ class NotificationMessage extends Message {
+         if (!this._buttonBox || !this._cardLayout)
+             return;
+         this._buttonBox.get_children().forEach((button, index) => {
+-            button.x_expand = false;
++            // Choices of equal weight share the row equally (Continue / Not now).
++            button.x_expand = Boolean(this.notification?.lumaContent?.equalActions) || Boolean(button._lumaEnd);
+             button.visible = index < CARD_MAX_ACTIONS && !(this._inlineReply && this._allowInlineReply !== false);
+             if (this._allowInlineReply !== undefined && isIncomingCallNotification(this.notification) && !button._lumaCallGlyph) {
+                 const id = button._lumaAction.id;
+@@ -1158,6 +1178,40 @@ class NotificationMessage extends Message {
+         this._syncActionButtons();
+     }
+ 
++    // Buttons that change the notification in place (Show grows a list,
++    // Continue turns into progress): not Notification actions, which mark
++    // the notification acted on and close its card.
++    _setLumaActions(actions) {
++        for (const button of this._lumaButtons ?? [])
++            button.destroy();
++        this._lumaButtons = [];
++        // A closing row under grown content (a list) sits closer to it.
++        if (actions.some(action => action.end))
++            this._actionBin.add_style_class_name('luma-notification-actions-end');
++        else
++            this._actionBin.remove_style_class_name('luma-notification-actions-end');
++        if (actions.length === 0)
++            return;
++        this._ensureActionBox();
++        if (!this._buttonBox) {
++            this._buttonBox = new St.BoxLayout({x_expand: true, style_class: 'notification-buttons-bin'});
++            this._actionBox.add_child(this._buttonBox);
++            global.focus_manager.add_group(this._buttonBox);
++        }
++        for (const {label, callback, end} of actions) {
++            const button = new St.Button({style_class: 'notification-button', x_expand: true, can_focus: true, label});
++            // A lone closing button (Done) sits at the end of the row.
++            if (end) {
++                button._lumaEnd = true;
++                button.x_align = Clutter.ActorAlign.END;
++            }
++            button._lumaAction = {id: label, label};
++            button.connect('clicked', () => callback());
++            this._lumaButtons.push(button);
++            this._buttonBox.add_child(button);
++        }
++    }
++
+     _removeAction(action) {
+         this._actions.get(action)?.destroy();
+         this._actions.delete(action);

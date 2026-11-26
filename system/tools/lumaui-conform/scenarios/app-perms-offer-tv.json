@@ -1,0 +1,84 @@
+{
+ "app": "app-perms-offer-tv",
+ "title": "App permissions: the folder offer on a TV",
+ "about": "The folder offer (Shell 0383) against design-center 8bd4ccf mockups/app-perms/offer.html: the Shell's standard banner, Tide asking for Music. Pixel mode: crops of the VM's banner (2x). Glyphs: the reference's Lucide SVGs at LumaUI's 1.6 stroke (Prairie's adaptation of every Lucide glyph), not Lucide's 2. The reference is captured at 2x (spec.scale) to match. The banner's translucent surface is masked (real shell material is canonical): the score covers its words, tile and badge and button fills only. Design ruling (a): the buttons' fills are translucent material too and are masked; their labels count, and their edges (2 px each side) are judged by geometry alone (pixels over ΔE 10). TV is the desktop at x1.5: the buttons' edges (focus ring and box) and the badge's ring scale to 3 px.",
+ "spec": {
+  "root": "design-center",
+  "url": "mockups/app-perms/offer.html?app=tide&folder=Music&posture=tv",
+  "window": "#stage",
+  "ready": "html[data-ready]",
+  "viewport": {
+   "width": 1000,
+   "height": 400
+  },
+  "init_script": "if (matchMedia('(prefers-color-scheme: light)').matches && !/[?&]mode=/.test(location.search)) history.replaceState(null, '', location.pathname + (location.search ? location.search + '&' : '?') + 'mode=light');",
+  "scale": 2
+ },
+ "states": [
+  {
+   "name": "music",
+   "about": "Tide, Music folder",
+   "window": "#stage",
+   "spec": [
+    {
+     "eval": "(() => { document.querySelectorAll('#stage svg.i').forEach(s => s.setAttribute('stroke-width', '1.6')); })()",
+     "wait": 100
+    },
+    {
+     "eval": "(() => { document.querySelectorAll('#stage .bn-src, #stage .bn-sum, #stage .bn-body').forEach(e => { e.style.width = 'fit-content'; }); })()",
+     "wait": 50
+    }
+   ]
+  }
+ ],
+ "phone_states": [],
+ "groups": [
+  {
+   "name": "fills",
+   "spec": "#stage, #stage .bn-acts button"
+  },
+  {
+   "name": "content",
+   "spec": "#stage .bn-i, #stage .bn-src, #stage .bn-when, #stage .bn-sum, #stage .bn-body, #stage .bn-acts button"
+  },
+  {
+   "name": "art",
+   "spec": "#stage .bn-i"
+  },
+  {
+   "name": "controls",
+   "spec": "#stage .bn-acts button"
+  },
+  {
+   "name": "badge",
+   "spec": "#stage .bn-i i"
+  }
+ ],
+ "pairs": [],
+ "text_aliases": {},
+ "pixel": {
+  "max_mean": 4.0,
+  "max_over10": 1.0,
+  "fills": "fills",
+  "max_fill_over10": 0.005,
+  "glyphs_as_text": true,
+  "mean_without_text": true,
+  "exclude_groups": [],
+  "material": [
+   {
+    "group": "controls",
+    "edge": 3
+   },
+   {
+    "group": "badge",
+    "ring": 3
+   },
+   {
+    "group": "art",
+    "ring": 1.5,
+    "inner": 1.5
+   }
+  ],
+  "max_edge_over10": 0.1
+ }
+}

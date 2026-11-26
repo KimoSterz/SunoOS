@@ -1,0 +1,377 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Project Luma <maintainers@projectluma.org>
+Date: Sun, 22 Nov 2026 23:30:00 +0000
+Subject: [PATCH] Roaming: keep a usable link and roam only for a clear gain
+
+wpa_supplicant_need_to_roam_within_ess() allows a roam whenever the
+selected BSS has an estimated throughput 5 Mbit/s higher than the current
+one. Between BSSs that estimate hundreds of Mbit/s this is any difference
+at all, so a station on a good link roams after every background scan to
+whichever BSS estimates highest, often a wider-channel BSS with a weaker
+signal, and back again once the signal poll shows the new link is
+weaker. Each roam delays or drops traffic for at least a moment, and a
+failed one for many seconds. The decision does not consider whether the
+link is in use, and a scan that missed the current BSS (for example
+while the station was busy on its channel) also forces a roam.
+
+Use a policy that keeps a usable link:
+
+ - The traffic counters of the association are sampled every 10 seconds
+   (a station query to the driver, no radio use). A link on which the
+   station sent at least 10 packets per second, or that moved 16 KiB per
+   second, over the last 5-20 seconds is busy. Received packets are not
+   counted: on many drivers they include the AP's beacons.
+ - While the current link is usable (SNR over 20 MHz of at least
+   USABLE_SNR from the signal poll), do not roam while it is busy or in
+   the first 120 seconds after an association, and otherwise only to a
+   BSS that is 3 dB above the usable SNR with half again the estimated
+   throughput (typically a usable higher band), or to one with a signal
+   10 dB stronger and no lower throughput estimate.
+ - While the current link is weak, do not roam to a weaker BSS that is
+   not usable either, roam to a usable BSS with 20% more estimated
+   throughput, and otherwise use the existing signal-difference rules.
+   This keeps recovery from a failing link as fast as before.
+ - When the last scan did not see the current BSS but the signal poll
+   reports a usable link, evaluate the roam with these rules instead of
+   roaming unconditionally.
+
+The gap between the conditions for leaving a BSS and for coming back
+keeps a link whose signal hovers near a threshold from switching back
+and forth.
+---
+ wpa_supplicant/events.c           |  97 ++++++++++++++++++++++++--
+ wpa_supplicant/wpa_supplicant.c   | 111 ++++++++++++++++++++++++++++++
+ wpa_supplicant/wpa_supplicant_i.h |  12 ++++
+ 3 files changed, 215 insertions(+), 5 deletions(-)
+
+diff --git a/wpa_supplicant/events.c b/wpa_supplicant/events.c
+index 0b81299..34a4508 100644
+--- a/wpa_supplicant/events.c
++++ b/wpa_supplicant/events.c
+@@ -2173,6 +2173,15 @@ wpas_get_est_throughput_from_bss_snr(const struct wpa_supplicant *wpa_s,
+ }
+ 
+ 
++/*
++ * Roaming away from a usable link (SNR >= USABLE_SNR): wait this long after
++ * an association, require the target to have this much more SNR than the
++ * usable minimum for a throughput upgrade, or this many dB more signal.
++ */
++#define ROAM_SETTLE_SECS 120
++#define ROAM_UPGRADE_SNR_MARGIN 3
++#define ROAM_GOOD_LINK_MIN_GAIN 10
++
+ static int wpas_evaluate_band_score(int frequency)
+ {
+ 	if (is_6ghz_freq(frequency))
+@@ -2190,7 +2199,7 @@ int wpa_supplicant_need_to_roam_within_ess(struct wpa_supplicant *wpa_s,
+ 	int min_diff, diff;
+ 	int cur_band_score, sel_band_score;
+ 	int to_5ghz, to_6ghz;
+-	int cur_level, sel_level;
++	int cur_level, sel_level, cur_level20, cur_snr20;
+ 	unsigned int cur_est, sel_est;
+ 	struct wpa_signal_info si;
+ 	int cur_snr = 0;
+@@ -2276,6 +2285,8 @@ int wpa_supplicant_need_to_roam_within_ess(struct wpa_supplicant *wpa_s,
+ 		cur_snr = current_bss->snr;
+ 		cur_est = current_bss->est_throughput;
+ 	}
++	cur_level20 = cur_level;
++	cur_snr20 = cur_snr;
+ 
+ 	/* Adjust the SNR of BSSes based on the channel width. */
+ 	cur_level += wpas_channel_width_rssi_bump(cur_ies, cur_ie_len,
+@@ -2288,10 +2299,66 @@ int wpa_supplicant_need_to_roam_within_ess(struct wpa_supplicant *wpa_s,
+ 		wpas_channel_width_rssi_bump(sel_ies, sel_ie_len,
+ 					     selected->max_cw);
+ 
+-	if (sel_est > cur_est + 5000) {
++	/*
++	 * A roam costs the connection at least a moment of lost or delayed
++	 * traffic and can fail. While the current link is usable, keep it:
++	 * never leave it while it carries traffic, give a new association
++	 * time to settle, and move otherwise only for a clear gain (a usable
++	 * BSS with half again the estimated throughput, e.g., a higher band,
++	 * or a signal 10 dB stronger). The margins between staying and
++	 * leaving keep a link near a threshold from switching back and forth.
++	 */
++	if (cur_level20 < 0 && cur_snr20 >= USABLE_SNR) {
++		struct os_reltime now;
++
++		if (wpas_link_busy(wpa_s)) {
++			wpa_dbg(wpa_s, MSG_DEBUG,
++				"Skip roam - current link is good and carrying traffic");
++			return 0;
++		}
++		os_get_reltime(&now);
++		if (os_reltime_initialized(&wpa_s->link_assoc_time) &&
++		    !os_reltime_expired(&now, &wpa_s->link_assoc_time,
++					ROAM_SETTLE_SECS)) {
++			wpa_dbg(wpa_s, MSG_DEBUG,
++				"Skip roam - current link is good and was associated less than %d seconds ago",
++				ROAM_SETTLE_SECS);
++			return 0;
++		}
++		if (selected->snr >= USABLE_SNR + ROAM_UPGRADE_SNR_MARGIN &&
++		    sel_est >= cur_est + cur_est / 2) {
++			wpa_dbg(wpa_s, MSG_DEBUG,
++				"Allow reassociation - selected BSS has much better estimated throughput");
++			ret = 1;
++		} else if (selected->level >= cur_level20 + ROAM_GOOD_LINK_MIN_GAIN &&
++			   sel_est >= cur_est) {
++			wpa_dbg(wpa_s, MSG_DEBUG,
++				"Allow reassociation - selected BSS has a much stronger signal");
++			ret = 1;
++		} else {
++			wpa_dbg(wpa_s, MSG_DEBUG,
++				"Skip roam - current link is good (snr=%d)",
++				cur_snr20);
++			ret = 0;
++		}
++		goto out;
++	}
++
++	/*
++	 * The current link is weak. Do not move to a weaker BSS unless that
++	 * one is usable; move to a usable BSS that is clearly faster.
++	 */
++	if (cur_level20 < 0 && selected->snr < USABLE_SNR &&
++	    selected->level < cur_level20) {
+ 		wpa_dbg(wpa_s, MSG_DEBUG,
+-			"Allow reassociation - selected BSS has better estimated throughput");
+-		return 1;
++			"Skip roam - selected BSS is weaker and not usable either");
++		return 0;
++	}
++	if (selected->snr >= USABLE_SNR && sel_est > cur_est + cur_est / 5) {
++		wpa_dbg(wpa_s, MSG_DEBUG,
++			"Allow reassociation - current link is weak and the selected BSS is usable and faster");
++		ret = 1;
++		goto out;
+ 	}
+ 
+ 	to_5ghz = selected->freq > 4000 && current_bss->freq < 4000;
+@@ -2367,6 +2434,7 @@ int wpa_supplicant_need_to_roam_within_ess(struct wpa_supplicant *wpa_s,
+ 			diff, min_diff);
+ 		ret = 1;
+ 	}
++out:
+ 	wpa_msg_ctrl(wpa_s, MSG_INFO, "%scur_bssid=" MACSTR
+ 		     " cur_freq=%d cur_level=%d cur_est=%d sel_bssid=" MACSTR
+ 		     " sel_freq=%d sel_level=%d sel_est=%d",
+@@ -2418,8 +2486,27 @@ static int wpa_supplicant_need_to_roam(struct wpa_supplicant *wpa_s,
+ 	if (current_bss == selected)
+ 		return 0;
+ 
+-	if (selected->last_update_idx > current_bss->last_update_idx)
++	if (selected->last_update_idx > current_bss->last_update_idx) {
++#ifndef CONFIG_NO_ROAMING
++		struct wpa_signal_info si;
++
++		/*
++		 * A scan can miss the current BSS, e.g., while the station is
++		 * busy on its channel. That alone is no reason to leave a link
++		 * the driver still reports as usable.
++		 */
++		if (wpa_drv_signal_poll(wpa_s, &si) == 0 && si.data.signal &&
++		    si.data.signal != -WPA_INVALID_NOISE &&
++		    wpas_get_snr_signal_info(si.frequency, si.data.signal,
++					     si.current_noise) >= USABLE_SNR) {
++			wpa_dbg(wpa_s, MSG_DEBUG,
++				"Current BSS not seen in the last scan, but the link is good");
++			return wpa_supplicant_need_to_roam_within_ess(
++				wpa_s, current_bss, selected);
++		}
++#endif /* CONFIG_NO_ROAMING */
+ 		return 1; /* current BSS not seen in the last scan */
++	}
+ 
+ #ifndef CONFIG_NO_ROAMING
+ 	return wpa_supplicant_need_to_roam_within_ess(wpa_s, current_bss,
+diff --git a/wpa_supplicant/wpa_supplicant.c b/wpa_supplicant/wpa_supplicant.c
+index 8759073..cd48d22 100644
+--- a/wpa_supplicant/wpa_supplicant.c
++++ b/wpa_supplicant/wpa_supplicant.c
+@@ -525,12 +525,15 @@ void wpas_clear_driver_signal_override(struct wpa_supplicant *wpa_s)
+ #endif /* CONFIG_TESTING_OPTIONS */
+ 
+ 
++static void wpas_link_activity_stop(struct wpa_supplicant *wpa_s);
++
+ static void wpa_supplicant_cleanup(struct wpa_supplicant *wpa_s)
+ {
+ 	int i;
+ 
+ 	bgscan_deinit(wpa_s);
+ 	autoscan_deinit(wpa_s);
++	wpas_link_activity_stop(wpa_s);
+ 	scard_deinit(wpa_s->scard);
+ 	wpa_s->scard = NULL;
+ 	wpa_sm_set_scard_ctx(wpa_s->wpa, NULL);
+@@ -843,6 +846,112 @@ const char * wpa_supplicant_state_txt(enum wpa_states state)
+ }
+ 
+ 
++/*
++ * Link activity: the traffic counters of the current association are sampled
++ * every WPA_LINK_SAMPLE_SECS while connected, so roaming and background
++ * scanning can tell a link that carries traffic (a call, a stream, a
++ * download) from an idle one. Reading the counters is a station query to the
++ * local driver; it does not use the radio.
++ */
++#define WPA_LINK_SAMPLE_SECS 10
++#define WPA_LINK_MIN_WINDOW_SECS 5
++/* Transmitted packets: received ones include the AP's beacons on many drivers. */
++#define WPA_LINK_BUSY_TX_PACKETS_PER_SEC 10
++#define WPA_LINK_BUSY_BYTES_PER_SEC 16384
++
++static bool wpas_link_sample(struct wpa_supplicant *wpa_s,
++			     struct wpa_link_sample *s)
++{
++	struct hostap_sta_driver_data data;
++
++	os_memset(s, 0, sizeof(*s));
++	os_memset(&data, 0, sizeof(data));
++	if (wpa_drv_pktcnt_poll(wpa_s, &data) < 0)
++		return false;
++	os_get_reltime(&s->time);
++	s->bytes = data.rx_bytes + data.tx_bytes;
++	s->tx_packets = data.tx_packets;
++	s->valid = true;
++	return true;
++}
++
++
++static void wpas_link_sample_timeout(void *eloop_ctx, void *timeout_ctx)
++{
++	struct wpa_supplicant *wpa_s = eloop_ctx;
++
++	if (wpa_s->wpa_state < WPA_ASSOCIATED)
++		return;
++	/* Keep sampling across group rekeys; skip the sample during one. */
++	if (wpa_s->wpa_state == WPA_COMPLETED) {
++		wpa_s->link_samples[1] = wpa_s->link_samples[0];
++		wpas_link_sample(wpa_s, &wpa_s->link_samples[0]);
++	}
++	eloop_register_timeout(WPA_LINK_SAMPLE_SECS, 0,
++			       wpas_link_sample_timeout, wpa_s, NULL);
++}
++
++
++static void wpas_link_activity_stop(struct wpa_supplicant *wpa_s)
++{
++	eloop_cancel_timeout(wpas_link_sample_timeout, wpa_s, NULL);
++	os_memset(wpa_s->link_samples, 0, sizeof(wpa_s->link_samples));
++}
++
++
++static void wpas_link_activity_start(struct wpa_supplicant *wpa_s)
++{
++	wpas_link_activity_stop(wpa_s);
++	os_get_reltime(&wpa_s->link_assoc_time);
++	wpas_link_sample(wpa_s, &wpa_s->link_samples[0]);
++	eloop_register_timeout(WPA_LINK_SAMPLE_SECS, 0,
++			       wpas_link_sample_timeout, wpa_s, NULL);
++}
++
++
++/**
++ * wpas_link_busy - Whether the current association is carrying traffic
++ * @wpa_s: Pointer to wpa_supplicant data
++ * Returns: true if the station sent at least WPA_LINK_BUSY_TX_PACKETS_PER_SEC
++ * packets or the link moved WPA_LINK_BUSY_BYTES_PER_SEC bytes per second over
++ * the last 5 to 20 seconds; false when idle or unknown
++ */
++bool wpas_link_busy(struct wpa_supplicant *wpa_s)
++{
++	struct wpa_link_sample now, *ref = NULL;
++	struct os_reltime age;
++	u64 ms, packets, bytes;
++	bool busy;
++	int i;
++
++	if (wpa_s->wpa_state != WPA_COMPLETED || !wpas_link_sample(wpa_s, &now))
++		return false;
++	for (i = 0; i < 2; i++) {
++		struct wpa_link_sample *s = &wpa_s->link_samples[i];
++
++		if (!s->valid)
++			continue;
++		os_reltime_sub(&now.time, &s->time, &age);
++		if (age.sec >= WPA_LINK_MIN_WINDOW_SECS) {
++			ref = s;
++			break;
++		}
++	}
++	if (!ref || now.bytes < ref->bytes || now.tx_packets < ref->tx_packets)
++		return false;
++	ms = (u64) age.sec * 1000 + age.usec / 1000;
++	packets = (now.tx_packets - ref->tx_packets) * 1000 / ms;
++	bytes = (now.bytes - ref->bytes) * 1000 / ms;
++	busy = packets >= WPA_LINK_BUSY_TX_PACKETS_PER_SEC ||
++		bytes >= WPA_LINK_BUSY_BYTES_PER_SEC;
++	wpa_dbg(wpa_s, MSG_DEBUG,
++		"Link activity: %llu tx packets/s %llu bytes/s over %u ms: %s",
++		(unsigned long long) packets, (unsigned long long) bytes,
++		(unsigned int) ms, busy ? "busy" : "idle");
++	return busy;
++}
++
++
+ #ifdef CONFIG_BGSCAN
+ 
+ static void wpa_supplicant_stop_bgscan(struct wpa_supplicant *wpa_s)
+@@ -1119,6 +1228,7 @@ void wpa_supplicant_set_state(struct wpa_supplicant *wpa_s,
+ #endif /* CONFIG_CTRL_IFACE || !CONFIG_NO_STDOUT_DEBUG */
+ 		wpas_clear_temp_disabled(wpa_s, ssid, 1);
+ 		wpas_bss_failure_clear(wpa_s, wpa_s->bssid);
++		wpas_link_activity_start(wpa_s);
+ 		wpa_s->consecutive_conn_failures = 0;
+ 		wpa_s->new_connection = 0;
+ 		wpa_drv_set_operstate(wpa_s, 1);
+@@ -1142,6 +1252,7 @@ void wpa_supplicant_set_state(struct wpa_supplicant *wpa_s,
+ 	} else if (state == WPA_DISCONNECTED || state == WPA_ASSOCIATING ||
+ 		   state == WPA_ASSOCIATED) {
+ 		wpa_s->new_connection = 1;
++		wpas_link_activity_stop(wpa_s);
+ 		wpa_drv_set_operstate(wpa_s, 0);
+ #ifndef IEEE8021X_EAPOL
+ 		wpa_drv_set_supp_port(wpa_s, 0);
+diff --git a/wpa_supplicant/wpa_supplicant_i.h b/wpa_supplicant/wpa_supplicant_i.h
+index c7463a0..4752b41 100644
+--- a/wpa_supplicant/wpa_supplicant_i.h
++++ b/wpa_supplicant/wpa_supplicant_i.h
+@@ -687,6 +687,14 @@ struct ml_sta_link_info {
+ #define WPA_BSS_FAILURE_BASE_SECS 600
+ #define WPA_BSS_FAILURE_MAX_SECS (24 * 3600)
+ 
++/* Traffic counters of the current association, sampled periodically */
++struct wpa_link_sample {
++	bool valid;
++	struct os_reltime time;
++	u64 bytes;
++	u64 tx_packets;
++};
++
+ struct wpa_bss_failure {
+ 	u8 bssid[ETH_ALEN];
+ 	unsigned int count;
+@@ -856,6 +864,9 @@ struct wpa_supplicant {
+ 
+ 	struct wpa_bssid_ignore *bssid_ignore;
+ 	struct wpa_bss_failure bss_failures[WPA_BSS_FAILURES];
++	/* When the current association completed */
++	struct os_reltime link_assoc_time;
++	struct wpa_link_sample link_samples[2];
+ 
+ 	/* Number of connection failures since last successful connection */
+ 	unsigned int consecutive_conn_failures;
+@@ -1795,6 +1806,7 @@ void wpas_clear_beacon_rep_data(struct wpa_supplicant *wpa_s);
+ void wpas_flush_fils_hlp_req(struct wpa_supplicant *wpa_s);
+ void wpas_clear_disabled_interface(void *eloop_ctx, void *timeout_ctx);
+ void wpa_supplicant_reset_bgscan(struct wpa_supplicant *wpa_s);
++bool wpas_link_busy(struct wpa_supplicant *wpa_s);
+ 
+ 
+ /* MBO functions */

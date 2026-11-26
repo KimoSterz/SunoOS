@@ -1,0 +1,54 @@
+{
+ "app": "shelf-dock",
+ "title": "Dock: app icons against shelf-2",
+ "about": "The dock's app icons (pixel mode) against the approved shelf-2 dock (mockups/shelf-2.html): nine v4 apps the desktop ships, in a row with shelf-2's 8 px gap, cropped to the icons' 40 px row. The dock island's surface is the Shell's material, kept as material with each icon kept as art.",
+ "spec": {
+  "root": "design-center",
+  "url": "mockups/shelf-2.html",
+  "window": "#zz-apps",
+  "ready": "#scr .island.dock",
+  "viewport": {
+   "width": 1600,
+   "height": 1000
+  }
+ },
+ "states": [
+  {
+   "name": "icons",
+   "about": "dock app icons, no app running",
+   "window": "#zz-apps",
+   "spec": [
+    {
+     "eval": "const scr=document.getElementById('scr'); const light=matchMedia('(prefers-color-scheme: light)').matches; scr.dataset.theme=light?'light':'dark'; scr.style.transform='none'; const dock=scr.querySelector('.island.dock'); const c=dock.querySelector('.cmp')||dock; const ids=[['files','Filer'],['music','Tide'],['messages','Messages'],['notes','Notes'],['photos','Photos'],['calendar','Calendar'],['terminal','Terminal'],['app-store','Depot'],['settings','Settings']]; c.innerHTML='<div id=\"zz-apps\" style=\"display:flex;gap:8px\">'+ids.map(([id,n])=>`<button class=\"dapp\" type=\"button\" data-app=\"${id}\"><span class=\"ic\" style=\"background-image:url(../icons/luma-v4-${id}.svg)\"></span><i class=\"dot\"></i></button>`).join('')+'</div>';",
+     "wait": 1200
+    }
+   ]
+  }
+ ],
+ "groups": [
+  {
+   "name": "surface",
+   "spec": "#zz-apps"
+  },
+  {
+   "name": "art",
+   "spec": "#zz-apps .ic"
+  }
+ ],
+ "pairs": [],
+ "text_aliases": {},
+ "pixel": {
+  "max_mean": 4.0,
+  "max_over10": 1.0,
+  "glyphs_as_text": true,
+  "mean_without_text": true,
+  "exclude_groups": [],
+  "material": [
+   {
+    "group": "surface",
+    "edge": 0,
+    "keep": "art"
+   }
+  ]
+ }
+}

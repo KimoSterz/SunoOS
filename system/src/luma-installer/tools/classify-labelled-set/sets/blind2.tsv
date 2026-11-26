@@ -1,0 +1,301 @@
+release	name	label	alt	note
+ubuntu-24.04	pavucontrol	application		
+ubuntu-24.04	brasero	application		
+ubuntu-24.04	smplayer	application		
+ubuntu-24.04	openbox-lxde-session	system-module	application	session component
+ubuntu-24.04	lxqt-branding-debian	device-add-on	application	branding data
+ubuntu-24.04	vinagre	application		
+ubuntu-24.04	flameshot	application		
+ubuntu-24.04	xfce4-dict	application	device-add-on	panel dict plugin w/ window
+ubuntu-24.04	bluedevil	system-module	device-add-on	kded integration
+ubuntu-24.04	totem	application		
+ubuntu-24.04	baobab	application		
+ubuntu-24.04	gucharmap	application		
+ubuntu-24.04	kmag	application		
+ubuntu-24.04	kmousetool	application		
+ubuntu-24.04	gnote	application		
+ubuntu-24.04	debian-reference-common	application	workspace	data for doc viewer
+ubuntu-24.04	lxappearance	application		
+ubuntu-24.04	handbrake	application		
+ubuntu-24.04	lxtask	application		
+ubuntu-24.04	qterminal	application		
+ubuntu-24.04	lxinput	application		
+ubuntu-24.04	five-or-more	application		
+ubuntu-24.04	gcr	system-module	workspace	prompter daemon
+ubuntu-24.04	dragonplayer	application		
+ubuntu-24.04	four-in-a-row	application		
+ubuntu-24.04	yelp	application		
+ubuntu-24.04	mate-control-center	application	device-add-on	
+ubuntu-24.04	gnome-calendar	application		
+ubuntu-24.04	mysql-server	system-module		
+ubuntu-24.04	python3-mysqldb	workspace		
+ubuntu-24.04	maint-guide-it	workspace	application	docs
+ubuntu-24.04	node-lru-cache	workspace		
+ubuntu-24.04	libinotifytools0	workspace		
+ubuntu-24.04	libxmlsec1t64-nss	workspace		
+ubuntu-24.04	libehcache-java	workspace		
+ubuntu-24.04	python3-py	workspace		
+ubuntu-24.04	libqqwing2v5	workspace		
+ubuntu-24.04	python3-isort	workspace		
+ubuntu-24.04	libzmq5	workspace		
+ubuntu-24.04	python3-pathspec	workspace		
+ubuntu-24.04	libnginx-mod-http-upstream-fair	system-module		nginx module
+ubuntu-24.04	libgom-1.0-0t64	workspace		
+ubuntu-24.04	libshaderc1	workspace		
+ubuntu-24.04	python3-requests-toolbelt	workspace		
+ubuntu-24.04	liblua5.1-0	workspace		
+ubuntu-24.04	libjs-bootstrap5	workspace		
+ubuntu-24.04	node-color-name	workspace		
+ubuntu-24.04	libldap-dev	workspace		
+ubuntu-24.04	samba-common-bin	workspace	system-tool	samba client tools
+ubuntu-24.04	grub-efi-amd64	system-module		
+ubuntu-24.04	liblist-someutils-xs-perl	workspace		
+ubuntu-24.04	libharfbuzz-dev	workspace		
+ubuntu-24.04	libreadonly-perl	workspace		
+ubuntu-24.04	untex	workspace		
+ubuntu-24.04	node-promise-inflight	workspace		
+ubuntu-24.04	socat	workspace		
+ubuntu-24.04	libqt5gui5t64	workspace		
+ubuntu-24.04	node-parse-json	workspace		
+ubuntu-24.04	libqt5xml5t64	workspace		
+ubuntu-24.04	lxqt-globalkeys-l10n	system-module	application	l10n of session daemon
+ubuntu-24.04	libcharls2	workspace		
+ubuntu-24.04	clang-14	workspace		
+ubuntu-24.04	sssd-ad-common	system-module		
+ubuntu-24.04	gnome-software	system-tool	application	package manager GUI
+ubuntu-24.04	open-vm-tools	system-module		
+ubuntu-24.04	tumbler	system-module	device-add-on	thumbnail service
+ubuntu-24.04	clamav-freshclam	system-module	system-tool	
+ubuntu-24.04	memcached	system-module		
+ubuntu-24.04	dovecot-core	system-module		
+ubuntu-24.04	nagios-nrpe-server	system-module		
+ubuntu-24.04	iperf3	workspace	system-module	bandwidth CLI with optional unit
+ubuntu-24.04	lxqt-powermanagement	system-module		session component
+ubuntu-24.04	libnss-sss	system-module		
+ubuntu-24.04	sssd-common	system-module		
+ubuntu-24.04	plasma-desktop	system-module	application	desktop session
+ubuntu-24.04	gnome-keyring	system-module		
+ubuntu-24.04	systemd-resolved	system-module		
+ubuntu-24.04	lxqt-panel	system-module	device-add-on	
+ubuntu-24.04	xinetd	system-module		
+ubuntu-24.04	wpasupplicant	system-module	system-tool	
+ubuntu-24.04	nvme-cli	system-tool	system-module	
+ubuntu-24.04	libnss-resolve	system-module		
+ubuntu-24.04	spice-vdagent	system-module		
+ubuntu-24.04	xfce4-settings	system-module	application	settings daemon
+ubuntu-24.04	mate-settings-daemon	system-module		
+ubuntu-24.04	snmpd	system-module		
+ubuntu-24.04	xfce4-session	system-module		
+ubuntu-24.04	system-config-printer	system-tool	application	cups admin GUI
+ubuntu-24.04	ceph-common	system-module	system-tool	mount helper
+ubuntu-24.04	exim4-daemon-light	system-module		
+ubuntu-24.04	systemd-container	system-tool	system-module	
+ubuntu-24.04	lvm2	system-tool	system-module	
+ubuntu-24.04	vlc-data	application		
+ubuntu-24.04	lxqt-themes	device-add-on		
+ubuntu-24.04	kde-style-oxygen-qt5	device-add-on		
+ubuntu-24.04	fonts-cantarell	device-add-on		
+ubuntu-24.04	gnome-wise-icon-theme	device-add-on		
+ubuntu-24.04	gstreamer1.0-nice	device-add-on		
+ubuntu-24.04	fonts-tlwg-sawasdee-otf	device-add-on		
+ubuntu-24.04	mate-control-center-common	application	device-add-on	
+ubuntu-24.04	xfce4-genmon-plugin	device-add-on		panel plugin
+ubuntu-24.04	kde-config-gtk-style	device-add-on		
+ubuntu-24.04	apt-config-icons-large-hidpi	device-add-on		
+ubuntu-24.04	atril-common	application		
+ubuntu-24.04	mc-data	workspace		
+ubuntu-24.04	fonts-liberation	device-add-on		
+ubuntu-24.04	texlive-font-utils	workspace		
+ubuntu-24.04	libfarstream-0.2-5	workspace	device-add-on	
+ubuntu-24.04	hunspell-en-gb	device-add-on		
+ubuntu-24.04	smplayer-themes	application		
+ubuntu-24.04	libkf5purpose-bin	workspace	device-add-on	
+ubuntu-24.04	libgarcon-common	workspace	device-add-on	
+ubuntu-24.04	fonts-linuxlibertine	device-add-on		
+ubuntu-24.04	fonts-lato	device-add-on		
+ubuntu-24.04	fonts-wqy-zenhei	device-add-on		
+ubuntu-24.04	ibus-gtk4	device-add-on		
+ubuntu-24.04	breeze	device-add-on		
+ubuntu-24.04	fonts-droid-fallback	device-add-on		
+ubuntu-24.04	fonts-hack	device-add-on		
+ubuntu-24.04	mate-themes	device-add-on		
+ubuntu-24.04	gstreamer1.0-tools	workspace		
+ubuntu-24.04	fonts-osifont	device-add-on		
+ubuntu-24.04	libfprint-2-2	workspace	device-request	lib+udev rules
+ubuntu-24.04	libinput-bin	device-request	workspace	
+ubuntu-24.04	libwacom-common	device-request	workspace	
+ubuntu-24.04	libopenni2-0	workspace	device-request	
+ubuntu-24.04	mate-settings-daemon-common	system-module	device-request	
+ubuntu-24.04	libffado2	workspace	device-request	
+ubuntu-24.04	android-sdk-platform-tools-common	device-request		
+ubuntu-24.04	usb-modeswitch-data	device-request		
+ubuntu-24.04	tigervnc-common	workspace	system-module	
+ubuntu-24.04	bup	workspace		
+ubuntu-24.04	rfkill	system-tool		
+ubuntu-24.04	nload	workspace	system-tool	
+ubuntu-24.04	python3-watchdog	workspace		
+ubuntu-24.04	molly-guard	system-module	system-tool	shutdown guard
+ubuntu-24.04	sntp	workspace	system-tool	
+ubuntu-24.04	strace	system-tool		tracing
+ubuntu-24.04	selinux-utils	system-tool		
+ubuntu-24.04	xinput	workspace	system-tool	
+ubuntu-24.04	dvdauthor	workspace		
+ubuntu-24.04	aptitude	system-tool	application	package manager TUI
+ubuntu-24.04	lrzsz	workspace	system-tool	
+ubuntu-24.04	grub-pc	system-module	system-tool	bootloader
+ubuntu-24.04	mtr-tiny	system-tool	workspace	raw sockets
+ubuntu-24.04	net-tools	system-tool		
+ubuntu-24.04	fuseiso	system-module	workspace	FUSE mount
+ubuntu-24.04	clang	workspace		
+ubuntu-24.04	libnss3-dev	workspace		
+ubuntu-24.04	f2fs-tools	system-tool		
+fedora-45	palapeli	application		
+fedora-45	shotcut	application		
+fedora-45	keditbookmarks	application		
+fedora-45	piper	application		
+fedora-45	stormbaancoureur	application		
+fedora-45	grsync	application		
+fedora-45	weechat	workspace	application	TUI IRC client
+fedora-45	plasmatube	application		
+fedora-45	xosview	application		
+fedora-45	krusader	application		
+fedora-45	kdiff3	application		
+fedora-45	rcssserver3d	application	workspace	sim server
+fedora-45	cqrlog	application		
+fedora-45	zps	workspace	application	
+fedora-45	qt-qdbusviewer	application		
+fedora-45	kmail-account-wizard	application		
+fedora-45	gpac	application	workspace	
+fedora-45	plasma-pa	device-add-on	system-module	plasmoid
+fedora-45	imhex	application		
+fedora-45	lxmusic	application		
+fedora-45	xblast-common	application		
+fedora-45	openarena	application		
+fedora-45	simple-ccsm	application		
+fedora-45	glmark2	application		
+fedora-45	foot	application		
+fedora-45	screenkey	application		
+fedora-45	ghostwriter	application		
+fedora-45	jd	application		
+fedora-45	rust-chunked_transfer+default-devel	workspace		
+fedora-45	rust-num_enum+external_doc-devel	workspace		
+fedora-45	golang-github-gobwas-ws-devel	workspace		
+fedora-45	perl-Regexp-Assemble	workspace		
+fedora-45	rust-signature-devel	workspace		
+fedora-45	libmks-devel	workspace		
+fedora-45	python3-digitalocean	workspace		
+fedora-45	python3-pyface	workspace		
+fedora-45	texlive-comma	workspace		
+fedora-45	python3-authres	workspace		
+fedora-45	libreport-filesystem	workspace		
+fedora-45	SDL_net-devel	workspace		
+fedora-45	rust-glib+v2_64-devel	workspace		
+fedora-45	perl-Nmap-Parser	workspace		
+fedora-45	python3-tox-uv	workspace		
+fedora-45	texlive-mucproc	workspace		
+fedora-45	rust-libadwaita-sys+v1_6-devel	workspace		
+fedora-45	perl-Log-Log4perl-tests	workspace		
+fedora-45	rust-futures-core+alloc-devel	workspace		
+fedora-45	rust-sqlx-postgres+any-devel	workspace		
+fedora-45	ghc-css-text	workspace		
+fedora-45	libgxps-tools	workspace		
+fedora-45	python3-xmltodict	workspace		
+fedora-45	perl-Locale-MO-File	workspace		
+fedora-45	ifstat	workspace	system-tool	
+fedora-45	fedtex	workspace		
+fedora-45	rust-norm+__into-score-devel	workspace		
+fedora-45	damo	system-tool		DAMON
+fedora-45	rust-csscolorparser+rust-rgb-devel	workspace		
+fedora-45	nqc	workspace	device-request	
+fedora-45	rust-combine+tokio-dep-devel	workspace		
+fedora-45	python-jenkins-job-builder	workspace		
+fedora-45	rust-owned_ttf_parser-devel	workspace		
+fedora-45	golang-github-xaionaro-unsafetools-devel	workspace		
+fedora-45	x509watch	system-module	workspace	timer
+fedora-45	obs-signd	system-module		
+fedora-45	vaultwarden	system-module		
+fedora-45	teamd	system-module		
+fedora-45	mon	system-module		
+fedora-45	prometheus-foomuuri-exporter	system-module		
+fedora-45	keylime-registrar	system-module		
+fedora-45	ostree	system-module	system-tool	
+fedora-45	group-service	system-module		
+fedora-45	libvirt-daemon	system-module		
+fedora-45	galera	system-module		
+fedora-45	tiny-dfr	system-module		
+fedora-45	blueman	system-module	application	
+fedora-45	systemd-imds	system-module		
+fedora-45	imsettings	system-module	device-add-on	
+fedora-45	zvbi	workspace	system-module	
+fedora-45	orangefs	system-module		
+fedora-45	pure-ftpd	system-module		
+fedora-45	rabbitmq-server	system-module		
+fedora-45	samba-dc	system-module		
+fedora-45	cri-o1.36	system-module		
+fedora-45	exchange-bmc-os-info	system-module		
+fedora-45	kunifiedpush	system-module	workspace	
+fedora-45	snapm	system-tool	system-module	
+fedora-45	zswap-cli	system-tool	system-module	
+fedora-45	mdns-repeater	system-module		
+fedora-45	authd	system-module		
+fedora-45	bacula-director	system-module		
+fedora-45	freeipa-server-dns	system-module		
+fedora-45	stansoft	system-module	application	
+fedora-45	kf5-akonadi-server	system-module		
+fedora-45	libreoffice-data	application		data for libreoffice
+fedora-45	texlive-manfnt-font	workspace		
+fedora-45	mingw64-hunspell-static	workspace		
+fedora-45	kde-runtime	workspace	device-add-on	
+fedora-45	texlive-mnsymbol	workspace		
+fedora-45	rust-linicon+linicon-theme-devel	workspace		
+fedora-45	gstreamer1-vaapi-devel	workspace		
+fedora-45	texlive-lucide-icons	workspace		
+fedora-45	rust-font-kit+freetype-devel	workspace		
+fedora-45	libreoffice-dict-eo	application	device-add-on	dict plugin
+fedora-45	texlive-haranoaji	workspace		
+fedora-45	texlive-umtypewriter	workspace		
+fedora-45	kremotecontrol	application	system-module	
+fedora-45	texlive-mflogo-font	workspace		
+fedora-45	rust-font-kit+loader-freetype-devel	workspace		
+fedora-45	kwooty	application		
+fedora-45	aspell	workspace	device-add-on	
+fedora-45	rust-cursor-icon+default-devel	workspace		
+fedora-45	fcitx-qt5-devel	workspace		
+fedora-45	mingw32-hicolor-icon-theme	workspace		
+fedora-45	texlive-scholax	workspace		
+fedora-45	gstreamer1-devel	workspace		
+fedora-45	libreoffice-dict-bg	application	device-add-on	
+fedora-45	texlive-fourier	workspace		
+fedora-45	libreoffice-dict-pa	application	device-add-on	
+fedora-45	texlive-hep-math-font	workspace		
+fedora-45	cinnamon-session	system-module		session
+fedora-45	texlive-cochineal	workspace		
+fedora-45	rust-font-kit+source-fontconfig-dlopen-devel	workspace		
+fedora-45	libdrm	workspace	device-request	lib+udev rules
+fedora-45	libticables	workspace	device-request	lib+udev rules
+fedora-45	libphidget22	workspace	device-request	lib+udev rules
+fedora-45	libpsm2-compat	workspace	device-request	lib+udev rules
+fedora-45	libiio	workspace	device-request	lib+udev rules
+fedora-45	libfprint	workspace	device-request	lib+udev rules
+fedora-45	libjaylink	workspace	device-request	lib+udev rules
+fedora-45	libftdi	workspace	device-request	lib+udev rules
+fedora-45	libstoragemgmt-nfs-plugin	system-module	system-tool	
+fedora-45	proxyfuzz	workspace		
+fedora-45	sockperf	workspace		
+fedora-45	amanda-client	system-tool	system-module	backup
+fedora-45	clpeak	workspace		
+fedora-45	keyring-ima-signer	system-tool	workspace	
+fedora-45	arch-test	workspace		
+fedora-45	ioping	system-tool	workspace	raw device
+fedora-45	perftest	system-tool	workspace	
+fedora-45	otf2	workspace		
+fedora-45	idevicerestore	system-tool	workspace	raw usb
+fedora-45	audispd-plugins	system-module	system-tool	
+fedora-45	e2tools	workspace	system-tool	
+fedora-45	fence-agents-amt-ws	workspace	system-tool	
+fedora-45	golang-x-perf	workspace		
+fedora-45	flamegraph	workspace		
+fedora-45	mininet	system-tool		netns root
+fedora-45	scalasca	workspace		
+fedora-45	mingw64-filesystem	workspace		
+fedora-45	bluez-libs-devel	workspace		

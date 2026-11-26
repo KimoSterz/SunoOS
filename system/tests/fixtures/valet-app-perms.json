@@ -1,0 +1,159 @@
+{
+ "apps": [
+  {
+   "id": "kiln",
+   "n": "Kiln",
+   "dev": "Kiln Labs",
+   "ok": true,
+   "file": "kiln-2.4.1.flatpakref",
+   "fmt": "flatpak",
+   "v": "2.4.1",
+   "sz": "38 MB",
+   "inst": "214 MB",
+   "g": "image",
+   "a": "oklch(0.72 0.15 40)",
+   "b": "oklch(0.55 0.17 25)",
+   "desc": "Photo editor",
+   "runs": "Runs in a sandbox. It sees only the photos and folders you give it.",
+   "src": "Flathub",
+   "sig": "Kiln Labs",
+   "perms": [
+    [
+     "Network",
+     "globe",
+     true,
+     "Syncs presets"
+    ],
+    [
+     "Pictures",
+     "image",
+     true,
+     "Opens and saves photos"
+    ],
+    [
+     "Camera",
+     "camera",
+     false,
+     "Tethered shooting"
+    ],
+    [
+     "Notifications",
+     "bell",
+     true,
+     ""
+    ]
+   ],
+   "adds": [
+    [
+     "file-text",
+     "Opens .jpg, .png, .tiff and camera raw files"
+    ]
+   ],
+   "net": [
+    "api.kilnlabs.app",
+    "presets.kilnlabs.app"
+   ],
+   "rt": "org.freedesktop.Platform 24.08 (already installed, shared)",
+   "access": {
+    "files": {
+     "level": "folders",
+     "folders": [
+      "Pictures"
+     ],
+     "suggested_level": "folders",
+     "suggested_folders": [
+      "Pictures"
+     ]
+    },
+    "uses": [
+     "network",
+     "camera",
+     "notifications"
+    ],
+    "blocked": [
+     "camera"
+    ],
+    "devices": {},
+    "never": true
+   }
+  },
+  {
+   "id": "polychrome",
+   "n": "Polychrome",
+   "dev": "Polychrome project",
+   "ok": true,
+   "file": "polychrome_1.3.0_amd64.deb",
+   "fmt": "deb",
+   "v": "1.3.0",
+   "sz": "38 MB",
+   "inst": "38 MB",
+   "g": "lightbulb",
+   "a": "oklch(0.75 0.14 300)",
+   "b": "oklch(0.55 0.18 330)",
+   "desc": "Lighting control",
+   "runs": "",
+   "src": "Debian 12",
+   "sig": "Debian archive",
+   "perms": [],
+   "adds": [],
+   "net": [],
+   "rt": "Debian 12",
+   "access": {
+    "files": {
+     "level": "chooser",
+     "folders": [],
+     "suggested_level": "chooser",
+     "suggested_folders": []
+    },
+    "uses": [
+     "network",
+     "autostart"
+    ],
+    "blocked": [],
+    "devices": {
+     "name": "USB lighting and keyboards",
+     "icon": "usb",
+     "kinds": [
+      "lighting",
+      "hid"
+     ],
+     "count": 14,
+     "requests": [
+      "lighting:1d50:1770",
+      "lighting:1d50:1771",
+      "lighting:1d50:1772",
+      "lighting:1d50:1773",
+      "lighting:1d50:1774",
+      "lighting:1d50:1775",
+      "lighting:1d50:1776",
+      "lighting:1d50:1777",
+      "lighting:1d50:1778",
+      "lighting:1d50:1779",
+      "lighting:1d50:177a",
+      "lighting:1d50:177b",
+      "lighting:1d50:177c",
+      "lighting:1d50:177d"
+     ],
+     "default": true,
+     "granted": true
+    },
+    "never": true
+   }
+  }
+ ],
+ "installed": [],
+ "initial": {
+  "view": "install",
+  "app": "kiln",
+  "keep": true,
+  "sandbox": true
+ },
+ "folders": [
+  "Desktop",
+  "Documents",
+  "Downloads",
+  "Music",
+  "Pictures",
+  "Videos"
+ ]
+}

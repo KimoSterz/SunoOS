@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: Apache-2.0
+[Unit]
+Description=Sound for %I
+Documentation=file:///usr/share/luma-application-installer/luma-application-sound.conf.in
+# Started by the launcher before the application, or enabled for a Flatpak.
+
+[Socket]
+ListenStream=%t/luma-sound/%I/native
+SocketMode=0600
+DirectoryMode=0700
+RemoveOnStop=yes
+# The server's folder (its config and pid file) goes with the socket.
+ExecStopPost=/usr/bin/rm -rf %t/luma-sound/%I
+
+[Install]
+WantedBy=sockets.target

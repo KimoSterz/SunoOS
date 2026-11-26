@@ -1,0 +1,4 @@
+#!/bin/bash
+# SPDX-License-Identifier: Apache-2.0
+# vmcp SRC... DEST(in VM)
+exec scp -q -P 2299 -i ${WIFI_ROAM_DIR:-/srv/dev-storage/projects/wifi-roam}/vm/vmkey -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null "${@:1:$#-1}" root@127.0.0.1:"${@: -1}"

@@ -1,0 +1,90 @@
+{
+ "apps": [
+  {
+   "app": "org.example.Game",
+   "changed_at": 1794913600000,
+   "keys": [
+    "mDMEawXoqBYJKwYBBAHaRw8BAQdA4bmL6lse_pGGnAp_-MxDvocQpLYDp8cWzaeur0w7Wyi0NVB1Ymxpc2hlciBBIChURVNUIE9OTFkpIDxwdWJsaXNoZXItYUBleGFtcGxlLmludmFsaWQ-iJMEExYKADsWIQR65URFGXHXFEcPJ2UCZ6By6J_PNgUCawXoqAIbAQULCQgHAgIiAgYVCgkICwIEFgIDAQIeBwIXgAAKCRACZ6By6J_PNrISAP9wTw035jyo0RIOqTw4ESqcZAFDmYH-u5cMf3QwG0nwTgEAyuwOyqTSigDYTiG7hON4-v4o4g4XHo_HG_XBbOkx1Qu4MwRrBeioFgkrBgEEAdpHDwEBB0DW0kFwHsgzPR9mIhmC0ya9oBWIPAjGm738qvJn1ME52YjvBBgWCgAgFiEEeuVERRlx1xRHDydlAmegcuifzzYFAmsF6KgCGwIAgQkQAmegcuifzzZ2IAQZFgoAHRYhBPQHue4EOj6wPty0AOCNKAUE9IDJBQJrBeioAAoJEOCNKAUE9IDJlvUBANqUi4avZcCeyVE937H4qV7FO2bL1PobkIkcoCBz5I-nAQDoprRF1BpmW-ihItbAFNCXL8Zvy6KhaewTa6JowtAvD5j7AP4p6DFs87Oz_hPfgm_0NuT3e47oxYQMESCwmI5RUUkFnAEA5pHzcHlLC-rQlKpwTU_SoahbUutHXDplyMPmWKTxzgA"
+   ],
+   "labels": [
+    "library",
+    "saves"
+   ],
+   "limits": {
+    "asset_bytes": 1000000000,
+    "record_bytes": 100000000,
+    "records": 100000,
+    "relay_bytes_month": 10000000000,
+    "transit_bytes": 2000000000,
+    "upload_bytes_per_hour": 20000000,
+    "writes_per_hour": 120,
+    "zones": 16
+   },
+   "owner": "flatpak:e38f143aeb73bbb445bb01f0af2083bf",
+   "purge": false,
+   "state": "approved"
+  },
+  {
+   "app": "org.example.Notes",
+   "changed_at": 1794827200000,
+   "keys": [
+    "mDMEawXoqBYJKwYBBAHaRw8BAQdA60qT5lO5B2Vgflz_CnlDzIbpT7BPTkg8CRnfrozBr_60NVB1Ymxpc2hlciBCIChURVNUIE9OTFkpIDxwdWJsaXNoZXItYkBleGFtcGxlLmludmFsaWQ-iJMEExYKADsWIQSjy9kI3ebxOceaiem9D4pXVR71zQUCawXoqAIbAwULCQgHAgIiAgYVCgkICwIEFgIDAQIeBwIXgAAKCRC9D4pXVR71zfacAQDfwYSthRoUZaBLIXcZ8KwKL0DsVux9NE7JAhQAC9_3ZgD-PdWxD810jUx95buJ7LzSyKnaeXK7Ngf_vdtaS-rHuQQ"
+   ],
+   "labels": [
+    "notes"
+   ],
+   "limits": {
+    "asset_bytes": 1000000000,
+    "record_bytes": 100000000,
+    "records": 100000,
+    "relay_bytes_month": 10000000000,
+    "transit_bytes": 2000000000,
+    "upload_bytes_per_hour": 20000000,
+    "writes_per_hour": 120,
+    "zones": 16
+   },
+   "owner": "flatpak:08d91585e761c3a155a024bf31209230",
+   "purge": true,
+   "state": "revoked"
+  },
+  {
+   "app": "org.example.Recipes",
+   "changed_at": 1794740800000,
+   "keys": [
+    "mDMEawXoqBYJKwYBBAHaRw8BAQdA8lqfXXhtrbYBJh7Jnei_BrPFVSSltCtQLZK7XYt15du0NVB1Ymxpc2hlciBDIChURVNUIE9OTFkpIDxwdWJsaXNoZXItY0BleGFtcGxlLmludmFsaWQ-iJMEExYKADsWIQS0cykHS0P5uj2asnR8jCsrxlO_oQUCawXoqAIbAQULCQgHAgIiAgYVCgkICwIEFgIDAQIeBwIXgAAKCRB8jCsrxlO_obXnAP0eDwcFMbAQqypEA-pC5YHwcWC46Nctr8BU7jElCyJQvgEA9327EPOz22MXZl8YrziCpgc-DV24qdGPdVv6TeiMLw64MwRrBeioFgkrBgEEAdpHDwEBB0D3MMpQF7WItX2OW0DIk57Nna0fsQnwj98owxeDacjrW4jvBBgWCgAgFiEEtHMpB0tD-bo9mrJ0fIwrK8ZTv6EFAmsF6KgCGwIAgQkQfIwrK8ZTv6F2IAQZFgoAHRYhBCTRRKYp0gzl2H4XGwidpKpbkV2iBQJrBeioAAoJEAidpKpbkV2iQ1oA_0SQtmuyxYVOsaD34jrdYF6FoJPcxYOPRq0JLVCgIUppAP0T3NzbQORXgOiacPh6skG1n00qh2DlM3nto5UKFYlSDhgbAP9h1LBm9NbK9FuI6FXXR7J1gRpknCqjdnbCA6jDLiKH6wD_apjMu75vbSOwuxr3MAiJrcBos0bw0cWr3mv1Y33AWAI"
+   ],
+   "labels": [
+    "recipes"
+   ],
+   "limits": {
+    "asset_bytes": 1000000000,
+    "record_bytes": 20000000,
+    "records": 100000,
+    "relay_bytes_month": 10000000000,
+    "transit_bytes": 2000000000,
+    "upload_bytes_per_hour": 5000000,
+    "writes_per_hour": 30,
+    "zones": 16
+   },
+   "owner": "flatpak:2efcecd2766108699a0376bc5d77359b",
+   "purge": false,
+   "state": "suspended"
+  }
+ ],
+ "expires_at": 1796209600000,
+ "issued_at": 1795000000000,
+ "schema": 1,
+ "tokens": {
+  "issuer": "hub.simplyluma.com",
+  "keys": [
+   {
+    "id": "94a0f2a382e93f3de6f7c3db6386aee6e41ebb02fba886788cde0c9f22c8a2f4",
+    "not_after": 1800184000000,
+    "not_before": 1792408000000,
+    "slot": "2026-11",
+    "spki": "MIIBVjBBBgkqhkiG9w0BAQowNKAPMA0GCWCGSAFlAwQCAgUAoRwwGgYJKoZIhvcNAQEIMA0GCWCGSAFlAwQCAgUAogMCATADggEPADCCAQoCggEBAND3n05LIqU_h9L0hIhadZXbGswGryi2an6MDQ8e0nLeAo9SCBsKjmSEe5tX6zAqAWjU4eKDsyIKuq918pEEi1NZ5ub1PlBt5QZlsHC0O7ILp0vhIgZX06VVIW2LIQWE3jT44X4PnI4M9QW3YtjrLXsLZK1oNFyN9tMmj9-Xhie_A4TrOr630CsUjW23SG-hBpyL02PS0BDQXCdv5QO1e9L4QfUgwYW-yGmhdGis1dJHPJIoLSynsEkiGbhE4Use68eXgs9iW-pTB_6NTQqmnLaQL2ptzxSRuWCKaD10wOQRHj4nzpn9YtyEUnUpKuFol7nm44uEnQBVu97lFX7Bt00CAwEAAQ"
+   }
+  ]
+ },
+ "version": 412
+}

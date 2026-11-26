@@ -1,0 +1,41 @@
+{
+ "app": "overlay-faded",
+ "title": "Layer permissions: faded overlay and its name tag (design-center 72259a4)",
+ "spec": {
+  "root": "design-center",
+  "url": "mockups/overlay-perms/faded.html",
+  "window": "#stage",
+  "ready": "html[data-ready]",
+  "viewport": {
+   "width": 1280,
+   "height": 800
+  }
+ },
+ "states": [
+  {
+   "name": "faded",
+   "about": "over 40%, app not focused",
+   "window": "#stage",
+   "spec": [
+    {
+     "eval": "const faded=true;document.getElementById('stage').innerHTML=`<div class=\"ov-surface${faded?' faded':''}\" style=\"left:520px;top:70px\"><div class=\"dk-chat\" style=\"width:700px;height:600px;position:relative\">${OV.chat().slice('<div class=\"dk-chat\">'.length)}</div>${faded?`<div class=\"ov-tag\" style=\"left:520px;top:38px\"><img src=\"${OV.APPS.diskord.i}\" alt=\"\">Diskord</div>`:''}`;",
+     "wait": 900
+    }
+   ]
+  }
+ ],
+ "groups": [
+  {
+   "name": "fills",
+   "spec": "#stage .dk-chat, #stage .ov-tag, #stage .ov-tag img"
+  }
+ ],
+ "pairs": [],
+ "text_aliases": {},
+ "pixel": {
+  "max_mean": 4.0,
+  "max_over10": 1.0,
+  "fills": "fills",
+  "max_fill_over10": 0.005
+ }
+}

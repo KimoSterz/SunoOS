@@ -1,0 +1,75 @@
+{
+ "app": "valet-restore",
+ "title": "Valet: restoring from your other devices",
+ "about": "Valet's restore list (ADR-054, luma_installer/valet_restore.py) against design-center daccee5 mockups/connect-sync/restore.html, drawn from tests/fixtures/valet-restore.json (GetRestore and ListDevices shapes). The launcher tile under the list is the Shell's and is removed from the reference. Viola's 'Ready · bookmarks and tabs here' is 'Ready' on the GTK side: Phase 1 doesn't sync the browser, and GetRestore has no per-app note. The reference page is placed where Valet's window puts it (its title row, left out on the GTK side, and the panel's 8 px inset: 73.4 px from the top, 42 px from the left), and its list given the 620 px it has in the design's own render (the conform page shrinks it to its words). A tile drawn as a picture (Kiln, Recipe Box) carries its glyph, so the reference's glyph inside .vlic is left out.",
+ "spec": {
+  "root": "design-center",
+  "url": "mockups/connect-sync/restore.html",
+  "window": "#stage",
+  "ready": "html[data-ready]",
+  "exclude": [
+   ".cs-app .vlic > svg"
+  ],
+  "viewport": {
+   "width": 760,
+   "height": 560
+  },
+  "before": [
+   {
+    "eval": "(() => { if (matchMedia('(prefers-color-scheme: light)').matches) document.documentElement.dataset.mode = 'light'; const s = document.querySelector('#stage'); const tile = s.querySelector('.cs-tile'); if (tile) tile.parentElement.remove(); s.style.boxSizing = 'border-box'; s.style.minHeight = '560px'; s.style.padding = '73.4px 42px 30px'; s.querySelector('.cs-rest').style.width = '620px'; for (const b of s.querySelectorAll('.cs-app small')) if (b.textContent.startsWith('Ready')) b.textContent = 'Ready'; })()",
+    "wait": 300
+   }
+  ]
+ },
+ "gtk": {
+  "module": "luma_installer.installer",
+  "pythonpath": [
+   "src/luma-installer"
+  ],
+  "fixtures": [
+   "tests/fixtures/valet-restore.json",
+   "tests/fixtures/valet-restore"
+  ],
+  "env": {
+   "LUMA_VALET_RESTORE_FIXTURE": "{run}/fixtures/valet-restore.json"
+  },
+  "exclude": [
+   "vl-top"
+  ]
+ },
+ "states": [
+  {
+   "name": "restoring",
+   "about": "Kiln's data coming over, Diskord installing, Tide and Viola ready, Recipe Box waiting, Studio Mixer not available",
+   "spec": [],
+   "gtk": []
+  }
+ ],
+ "phone_states": [],
+ "groups": [
+  {
+   "name": "title",
+   "spec": ".cs-rest h1"
+  },
+  {
+   "name": "line",
+   "spec": ".cs-rest > p"
+  },
+  {
+   "name": "list",
+   "spec": ".cs-rest .cs-list"
+  }
+ ],
+ "pairs": [
+  {
+   "spec": ".cs-rest .cs-list",
+   "gtk": "vl-restore-list",
+   "name": "list"
+  },
+  {
+   "spec": ".cs-rest > p",
+   "gtk": "vl-restore-line",
+   "name": "line"
+  }
+ ]
+}

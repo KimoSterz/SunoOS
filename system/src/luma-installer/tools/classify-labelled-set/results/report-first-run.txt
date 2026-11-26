@@ -1,0 +1,320 @@
+Labelled set: 953 requests (fedora 308, ubuntu 645); 10 names missing from the release; 0 unlabelled.
+Agreement: 840/953 = 88.14% (fedora 253/308, ubuntu 587/645). Gate: >= 98 %.
+Applications classified as system modules or system tools: 13 (gate: 0).
+Rows where the label differs from ADR-052's literal rules: 24; the classifier follows the label in 8.
+
+Label distribution: workspace 621, system-module 137, application 128, device-add-on 48, system-tool 13, source 3, device-request 3
+Disagreements by (label -> classifier): workspace->system-module 44, device-add-on->workspace 13, application->system-module 10, workspace->system-tool 7, system-module->workspace 6, system-tool->system-module 5, device-add-on->application 5, application->workspace 4, device-add-on->system-module 4, application->system-tool 3, workspace->device-add-on 2, system-tool->workspace 2, source->system-module 2, system-tool->application 2, device-request->workspace 1, workspace->application 1, device-add-on->device-request 1, system-module->system-tool 1
+
+Disagreements:
+  ubuntu:dpkg: label workspace, classifier system-module [ADR rules: system-module] [label note: dpkg-db-backup.timer is incidental]
+      - system service dpkg-db-backup.service (dpkg)
+      - a cron job: /etc/cron.daily/dpkg (dpkg)
+  ubuntu:apt: label workspace, classifier system-module [ADR rules: system-module] [label note: apt-daily timers are incidental]
+      - system service apt-daily-upgrade.service (apt)
+      - a cron job: /etc/cron.daily/apt-compat (apt)
+  ubuntu:libc6: label workspace, classifier system-module
+      - NSS modules: /usr/lib/x86_64-linux-gnu/libnss_compat.so.2 (libc6)
+  ubuntu:util-linux: label workspace, classifier system-module [ADR rules: system-module] [label note: fstrim.timer is incidental; image has it]
+      - system service fstrim.service (util-linux)
+      - PAM configuration: /etc/pam.d/runuser (util-linux)
+  ubuntu:bsdutils: label workspace, classifier system-tool
+      - setuid/setgid /usr/bin/wall (bsdutils)
+  ubuntu:base-files: label workspace, classifier system-module
+      - system service motd-news.service (base-files)
+  ubuntu:procps: label workspace, classifier system-module [ADR rules: system-module] [label note: sysctl.d defaults are incidental]
+      - an init script: /etc/init.d/procps (procps)
+      - kernel settings: /etc/sysctl.d/10-bufferbloat.conf (procps)
+  ubuntu:e2fsprogs: label workspace, classifier system-module [ADR rules: system-module] [label note: e2scrub timers are incidental]
+      - system service e2scrub@.service (e2fsprogs)
+      - a cron job: /etc/cron.d/e2scrub_all (e2fsprogs)
+  ubuntu:iputils-ping: label workspace, classifier system-tool [ADR rules: system-tool] [label note: cap_net_raw not needed with ping_group_range]
+      - setuid/setgid /usr/bin/ping (iputils-ping)
+      - setuid/setgid /usr/bin/ping6 (iputils-ping)
+  ubuntu:dmsetup: label workspace, classifier system-module
+      - boot chain hooks: /usr/share/initramfs-tools/hooks/dmsetup (dmsetup)
+  ubuntu:linux-base: label workspace, classifier system-module
+      - boot chain hooks: /etc/kernel/postinst.d/xx-update-initrd-links (linux-base)
+  ubuntu:libpam-modules-bin: label system-tool, classifier system-module
+      - system service pam_namespace.service (libpam-modules-bin)
+  ubuntu:klibc-utils: label workspace, classifier system-module
+      - boot chain hooks: /usr/share/initramfs-tools/hooks/klibc-utils (klibc-utils)
+  ubuntu:iproute2: label workspace, classifier system-tool
+      - file capabilities /bin/ip (iproute2)
+  ubuntu:xkb-data: label device-add-on, classifier workspace
+      - a typed package command: the workspace
+  ubuntu:init: label system-module, classifier workspace
+      - transitional: no files of its own, brings systemd-sysv
+      - a typed package command: the workspace
+  ubuntu:systemd-sysv: label system-module, classifier workspace
+      - a typed package command: the workspace
+  ubuntu:kbd: label workspace, classifier system-module
+      - boot chain hooks: /usr/share/initramfs-tools/hooks/kbd (kbd)
+      - system service console-setup.service (console-setup-linux)
+      - an init script: /etc/init.d/console-setup.sh (console-setup-linux)
+  ubuntu:os-prober: label workspace, classifier system-module
+      - system service grub-initrd-fallback.service (grub-common)
+      - an init script: /etc/init.d/grub-common (grub-common)
+      - boot chain hooks: /etc/grub.d/00_header (grub-common)
+  ubuntu:wamerican: label device-add-on, classifier workspace
+      - a typed package command: the workspace
+  ubuntu:liblockfile-bin: label workspace, classifier system-tool [ADR rules: system-tool] [label note: dotlockfile setgid mail is unused in a workspace]
+      - setuid/setgid /usr/bin/dotlockfile (liblockfile-bin)
+  ubuntu:man-db: label workspace, classifier system-module [ADR rules: system-module] [label note: man-db.timer is incidental]
+      - system service man-db.service (man-db)
+      - a cron job: /etc/cron.daily/man-db (man-db)
+  ubuntu:gpg: label workspace, classifier system-tool
+      - setuid/setgid /usr/bin/gpg (gpg)
+  ubuntu:fonts-dejavu-core: label device-add-on, classifier workspace
+      - a typed package command: the workspace
+  ubuntu:ssl-cert: label workspace, classifier system-module
+      - system service ssl-cert.service (ssl-cert)
+  ubuntu:libaspell15: label workspace, classifier device-add-on
+      - data-only add-on: for the person under ~/.local/share (/usr/lib/aspell/cp1250.cmap)
+  ubuntu:hicolor-icon-theme: label device-add-on, classifier workspace
+      - a typed package command: the workspace
+  ubuntu:adwaita-icon-theme: label device-add-on, classifier workspace
+      - a typed package command: the workspace
+  ubuntu:alsa-topology-conf: label workspace, classifier system-module
+      - firmware: /lib/firmware/skl_hda_dsp_generic-tplg.bin (alsa-topology-conf)
+  ubuntu:fuse3: label system-tool, classifier system-module
+      - boot chain hooks: /usr/share/initramfs-tools/hooks/fuse (fuse3)
+  ubuntu:libgstreamer1.0-0: label workspace, classifier device-add-on
+      - codecs: add-ons in this release's trees and workspace (/usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstcoreelements.so)
+  ubuntu:build-essential: label workspace, classifier system-module
+      - NSS modules: /usr/lib/x86_64-linux-gnu/libnss_compat.so (libc6-dev)
+  ubuntu:wireshark: label system-tool, classifier workspace
+      - udev rules become a device request (/lib/udev/rules.d/80-libinput-device-groups.rules)
+      - a typed package command: the workspace
+  ubuntu:gvfs-backends: label workspace, classifier system-module [label note: host provides it; ADR hard-case row lists it among applications' dependencies]
+      - polkit rules: /usr/share/polkit-1/rules.d/org.gtk.vfs.file-operations.rules (gvfs-backends)
+  ubuntu:timeshift: label system-tool, classifier system-module
+      - launcher timeshift-gtk.desktop runs a program from the package (timeshift)
+      - dependency daemon stays inert; the host's is used: system service cron.service (cron)
+      - cron job stays inert in the tree: /etc/cron.d/.placeholder (cron-daemon-common)
+  ubuntu:rpi-imager: label system-tool, classifier workspace
+      - udev rules become a device request (/lib/udev/rules.d/80-libinput-device-groups.rules)
+      - a typed package command: the workspace
+  ubuntu:android-sdk-platform-tools-common: label device-request, classifier workspace
+      - udev rules become a device request (/lib/udev/rules.d/51-android.rules)
+      - a typed package command: the workspace
+  ubuntu:ubuntu-restricted-extras: label device-add-on, classifier workspace
+      - transitional: no files of its own, brings ubuntu-restricted-addons
+      - a typed package command: the workspace
+  ubuntu:gnome-system-monitor: label application, classifier system-tool [ADR rules: system-tool] [label note: exec.path helpers (gsm-kill, renice) are optional]
+      - polkit exec.path */gsm-kill (gnome-system-monitor)
+      - polkit exec.path */gsm-renice (gnome-system-monitor)
+  ubuntu:mumble: label application, classifier workspace
+      - udev rules become a device request (/lib/udev/rules.d/80-libinput-device-groups.rules)
+      - a typed package command: the workspace
+  ubuntu:input-remapper: label application, classifier system-tool
+      - transitional: no files of its own, brings input-remapper-gtk
+      - launcher input-remapper-gtk.desktop runs a program from the package (input-remapper-gtk)
+      - dependency daemon stays inert; the host's is used: system service input-remapper-daemon.service (input-remapper-daemon)
+  ubuntu:fonts-firacode: label device-add-on, classifier workspace
+      - a typed package command: the workspace
+  ubuntu:ttf-mscorefonts-installer: label device-add-on, classifier system-module [label note: fonts are downloaded by its maintainer script]
+      - system service apt-news.service (ubuntu-pro-client)
+      - system service update-notifier-download.service (update-notifier-common)
+      - boot chain hooks: /etc/kernel/postinst.d/update-notifier (update-notifier-common)
+  ubuntu:hunspell-de-de: label device-add-on, classifier workspace
+      - a typed package command: the workspace
+  ubuntu:ibus-mozc: label device-add-on, classifier workspace
+      - a typed package command: the workspace
+  ubuntu:fcitx5-chinese-addons: label device-add-on, classifier application
+      - meta-package: no files of its own; members classified one by one (3)
+      - launcher org.fcitx.Fcitx5.desktop runs a program from the package (fcitx5)
+  ubuntu:libavcodec-extra: label device-add-on, classifier workspace
+      - transitional: no files of its own, brings libavcodec-extra60
+      - a typed package command: the workspace
+  ubuntu:nautilus-nextcloud: label device-add-on, classifier application
+      - launcher org.gnome.Nautilus.desktop runs a program from the package (nautilus)
+      - udev rules become a device request (/lib/udev/rules.d/80-libinput-device-groups.rules)
+  ubuntu:podman: label workspace, classifier system-module
+      - system unit podman-auto-update.service is the system copy of a user service; start at sign-in is a permission (podman)
+      - system service podman-clean-transient.service (podman)
+      - boot chain hooks: /lib/systemd/system-generators/podman-system-generator (podman)
+  ubuntu:emacs: label application, classifier system-module
+      - transitional: no files of its own, brings emacs-gtk
+      - launcher emacsclient.desktop runs a program from the package (emacs-common)
+      - NSS modules: /usr/lib/x86_64-linux-gnu/libnss_compat.so (libc6-dev)
+  ubuntu:imagemagick: label workspace, classifier application [ADR rules: application] [label note: mainly command-line; the display viewer's launcher makes it an application by rule 6]
+      - transitional: no files of its own, brings imagemagick-6.q16
+      - launcher display-im6.q16.desktop runs a program from the package (imagemagick-6.q16)
+  ubuntu:rustc: label workspace, classifier system-module
+      - NSS modules: /usr/lib/x86_64-linux-gnu/libnss_compat.so (libc6-dev)
+  ubuntu:cargo: label workspace, classifier system-module
+      - NSS modules: /usr/lib/x86_64-linux-gnu/libnss_compat.so (libc6-dev)
+  ubuntu:clang: label workspace, classifier system-module
+      - NSS modules: /usr/lib/x86_64-linux-gnu/libnss_compat.so (libc6-dev)
+  ubuntu:clamav: label workspace, classifier system-module [ADR rules: system-module] [label note: freshclam service comes from a dependency; clamscan is the request]
+      - system service clamav-freshclam.service (clamav-freshclam)
+      - an init script: /etc/init.d/clamav-freshclam (clamav-freshclam)
+      - system service cron.service (cron)
+  ubuntu:qemu-system-x86: label workspace, classifier system-module [ADR rules: system-module] [label note: qemu-kvm.service is incidental]
+      - system service qemu-kvm.service (qemu-system-common)
+  ubuntu:distrobox: label workspace, classifier system-module
+      - system unit podman-auto-update.service is the system copy of a user service; start at sign-in is a permission (podman)
+      - system service cni-dhcp.service (containernetworking-plugins)
+      - system service podman-clean-transient.service (podman)
+  ubuntu:gamemode: label workspace, classifier system-module
+      - polkit rules: /usr/share/polkit-1/rules.d/gamemode.rules (gamemode-daemon)
+  fedora:gnome-software: label application, classifier system-module
+      - launcher org.gnome.Software.desktop runs a program from the package (gnome-software)
+      - dependency daemon stays inert; the host's is used: system service dnf5daemon-server.service (dnf5daemon-server)
+      - polkit rules: /usr/share/polkit-1/rules.d/org.rpm.dnf.v0.rules (dnf5daemon-server-polkit)
+  fedora:gnome-bluetooth: label workspace, classifier system-module
+      - system service canberra-system-bootup.service (libcanberra)
+      - a D-Bus system service: /usr/share/dbus-1/system.d/pulseaudio-system.conf (pulseaudio)
+  fedora:gnome-boxes: label application, classifier system-module
+      - launcher org.gnome.Boxes.desktop runs a program from the package (gnome-boxes)
+      - dependency daemon stays inert; the host's is used: system service dm-event.service (device-mapper-event)
+      - a NetworkManager plugin or configuration: /usr/lib/NetworkManager/dispatcher.d/04-iscsi (iscsi-initiator-utils)
+  fedora:gnome-browser-connector: label workspace, classifier system-module
+      - a display manager: /usr/lib/systemd/system/gdm.service (gdm)
+      - a desktop session: /usr/share/wayland-sessions/gnome.desktop (gnome-session-wayland-session)
+  fedora:gnome-system-monitor: label application, classifier system-tool [ADR rules: system-tool] [label note: exec.path helpers are optional]
+      - launcher org.gnome.SystemMonitor.desktop runs a program from the package (gnome-system-monitor)
+      - polkit exec.path */gsm-kill (gnome-system-monitor)
+      - polkit exec.path */gsm-renice (gnome-system-monitor)
+  fedora:gnome-user-share: label workspace, classifier system-module
+      - system service htcacheclean.service (httpd)
+  fedora:gvfs-afc: label workspace, classifier system-module
+      - system service usbmuxd.service (usbmuxd)
+  fedora:papers-nautilus: label device-add-on, classifier application
+      - launcher org.gnome.Nautilus.desktop runs a program from the package (nautilus)
+  fedora:rygel: label application, classifier workspace [label note: media server user service with a preferences window]
+      - a typed package command: the workspace
+  fedora:xdg-desktop-portal: label system-module, classifier workspace
+      - a typed package command: the workspace
+  fedora:xdg-desktop-portal-gnome: label device-add-on, classifier workspace
+      - a typed package command: the workspace
+  fedora:xdg-desktop-portal-gtk: label device-add-on, classifier workspace
+      - a typed package command: the workspace
+  fedora:dnf5: label workspace, classifier system-module
+      - system service dnf-makecache.service (dnf5)
+  fedora:cifs-utils: label system-module, classifier workspace
+      - a typed package command: the workspace
+  fedora:desktop-backgrounds-gnome: label device-add-on, classifier device-request
+      - meta-package: no files of its own; members classified one by one (2)
+      - udev rules become a device request (/usr/lib/udev/rules.d/80-libinput-device-groups.rules)
+  fedora:dnf5-plugins: label workspace, classifier system-module
+      - system service dnf-makecache.service (dnf5)
+  fedora:fedora-flathub-remote: label source, classifier system-module
+      - system service fedora-third-party-refresh.service (fedora-third-party)
+      - polkit rules: /usr/share/polkit-1/rules.d/org.fedoraproject.thirdparty.rules (fedora-third-party)
+      - system service flatpak-add-fedora-repos.service (flatpak)
+  fedora:fedora-release-workstation: label system-module, classifier workspace
+      - transitional: no files of its own, brings fedora-release-common
+      - a typed package command: the workspace
+  fedora:fedora-workstation-repositories: label source, classifier system-module
+      - system service fedora-third-party-refresh.service (fedora-third-party)
+      - polkit rules: /usr/share/polkit-1/rules.d/org.fedoraproject.thirdparty.rules (fedora-third-party)
+  fedora:gamemode: label workspace, classifier system-module
+      - polkit rules: /usr/share/polkit-1/rules.d/gamemode.rules (gamemode)
+  fedora:gnome-shell-extension-background-logo: label device-add-on, classifier system-module
+      - a display manager: /usr/lib/systemd/system/gdm.service (gdm)
+      - a desktop session: /usr/share/wayland-sessions/gnome.desktop (gnome-session-wayland-session)
+  fedora:gnupg2: label workspace, classifier system-tool
+      - setuid/setgid /usr/bin/gpg (gnupg2)
+  fedora:mediawriter: label system-tool, classifier application [ADR rules: application] [label note: ADR names disk writers (rpi-imager, Etcher) as system tools; they use udisks2, which rule 2 does not detect]
+      - launcher org.fedoraproject.MediaWriter.desktop runs a program from the package (mediawriter)
+      - its commands (mediawriter) start in its sandbox
+      - udev rules become a device request (/usr/lib/udev/rules.d/80-libinput-device-groups.rules)
+  fedora:mtr: label workspace, classifier system-tool [ADR rules: system-tool] [label note: mtr-packet cap_net_raw like ping]
+      - setuid/setgid /usr/bin/mtr-packet (mtr)
+      - file capabilities /usr/bin/mtr-packet (mtr)
+  fedora:net-tools: label workspace, classifier system-module
+      - system service arp-ethers.service (net-tools)
+  fedora:ntfs-3g: label system-module, classifier system-tool
+      - setuid/setgid /usr/bin/ntfs-3g (ntfs-3g)
+  fedora:opensc: label workspace, classifier system-module
+      - system service pcscd.service (pcsc-lite)
+  fedora:policycoreutils-python-utils: label workspace, classifier system-module
+      - a D-Bus system service: /etc/dbus-1/system.d/org.selinux.conf (policycoreutils-python-utils)
+  fedora:quota: label system-module, classifier workspace
+      - a typed package command: the workspace
+  fedora:unoconv: label workspace, classifier system-module
+      - launcher libreoffice-calc.desktop runs a program from the package (libreoffice-calc)
+      - dependency daemon stays inert; the host's is used: system service canberra-system-bootup.service (libcanberra)
+      - boot chain hooks: /usr/share/plymouth/themes/charge/progress-00.png (fedora-logos)
+  fedora:alsa-utils: label workspace, classifier system-module [ADR rules: system-module] [label note: alsa-state/alsa-restore services are incidental to the tools]
+      - system service alsa-card-wait@.service (alsa-utils)
+  fedora:gstreamer1-plugin-libav: label device-add-on, classifier system-module
+      - system service zvbid.service (zvbi)
+  fedora:gstreamer1-plugins-bad-free: label device-add-on, classifier workspace
+      - a typed package command: the workspace
+  fedora:gparted: label system-tool, classifier system-module
+      - a desktop session: /usr/share/wayland-sessions/cinnamon-wayland.desktop (cinnamon)
+  fedora:wireshark: label system-tool, classifier application
+      - launcher org.wireshark.Wireshark.desktop runs a program from the package (wireshark)
+      - dependency daemon stays inert; the host's is used: system service zvbid.service (zvbi)
+      - its commands (wireshark) start in its sandbox
+  fedora:wine: label workspace, classifier system-module [label note: class moot: substituted by Luma's Windows runtime]
+      - the distribution's wine becomes Luma's Windows runtime, announced
+      - meta-package: no files of its own; members classified one by one (15)
+      - launcher wine.desktop runs a program from the package (wine-desktop)
+  fedora:syncthing: label application, classifier workspace
+      - system unit syncthing@.service is the system copy of a user service; start at sign-in is a permission (syncthing)
+      - a typed package command: the workspace
+  fedora:libreoffice: label application, classifier system-module
+      - meta-package: no files of its own; members classified one by one (7)
+      - launcher libreoffice-base.desktop runs a program from the package (libreoffice-base)
+      - dependency daemon stays inert; the host's is used: system service firebird.service (firebird)
+  fedora:timeshift: label system-tool, classifier system-module
+      - launcher timeshift-gtk.desktop runs a program from the package (timeshift)
+      - dependency daemon stays inert; the host's is used: system service crond.service (cronie)
+      - cron job stays inert in the tree: /etc/cron.d/0hourly (cronie)
+  fedora:kdenlive: label application, classifier system-module
+      - launcher org.kde.kdenlive.desktop runs a program from the package (kdenlive)
+      - dependency daemon stays inert; the host's is used: system service canberra-system-bootup.service (libcanberra)
+      - boot chain hooks: /usr/share/plymouth/themes/charge/progress-00.png (fedora-logos)
+  fedora:transmission-gtk: label application, classifier workspace
+      - a typed package command: the workspace
+  fedora:konsole: label application, classifier system-module
+      - boot chain hooks: /usr/share/plymouth/themes/charge/progress-00.png (fedora-logos)
+      - system service canberra-system-bootup.service (libcanberra)
+      - system service zvbid.service (zvbi)
+  fedora:okular: label application, classifier system-module
+      - launcher org.kde.okular.desktop runs a program from the package (okular)
+      - dependency daemon stays inert; the host's is used: system service canberra-system-bootup.service (libcanberra)
+      - boot chain hooks: /usr/share/plymouth/themes/charge/progress-00.png (fedora-logos)
+  fedora:firewall-config: label application, classifier system-module
+      - launcher firewall-config.desktop runs a program from the package (firewall-config)
+      - dependency daemon stays inert; the host's is used: system service firewalld.service (firewalld)
+      - polkit rules: /usr/share/polkit-1/rules.d/org.fedoraproject.FirewallD1.desktop.rules.choice (firewalld)
+  fedora:input-remapper: label application, classifier system-module
+      - system service input-remapper.service (input-remapper)
+      - a D-Bus system service: /usr/share/dbus-1/system.d/inputremapper.Control.conf (input-remapper)
+  fedora:gnome-shell-extension-appindicator: label device-add-on, classifier system-module
+      - a display manager: /usr/lib/systemd/system/gdm.service (gdm)
+      - a desktop session: /usr/share/wayland-sessions/gnome.desktop (gnome-session-wayland-session)
+  fedora:fcitx5-chinese-addons: label device-add-on, classifier application
+      - launcher org.fcitx.Fcitx5.desktop runs a program from the package (fcitx5-data)
+      - dependency daemon stays inert; the host's is used: system service zvbid.service (zvbi)
+      - Electron command /usr/bin/scel2org5 is exported as the application's command
+  fedora:nextcloud-client-nautilus: label device-add-on, classifier application
+      - launcher org.gnome.Nautilus.desktop runs a program from the package (nautilus)
+      - udev rules become a device request (/usr/lib/udev/rules.d/80-libinput-device-groups.rules)
+  fedora:podman: label workspace, classifier system-module
+      - system unit podman-auto-update.service is the system copy of a user service; start at sign-in is a permission (podman)
+      - boot chain hooks: /usr/lib/systemd/system-generators/podman-system-generator (podman)
+  fedora:tmux: label workspace, classifier system-module
+      - system service tmux@.service (tmux)
+  fedora:ffmpeg-free: label workspace, classifier system-module
+      - system service zvbid.service (zvbi)
+  fedora:clamav: label workspace, classifier system-module
+      - system service clamav-clamonacc.service (clamav)
+  fedora:qemu-system-x86: label workspace, classifier system-module
+      - meta-package: no files of its own; members classified one by one (44)
+      - kernel settings: /etc/modprobe.d/kvm.conf (qemu-common)
+      - system service qemu-pr-helper.service (qemu-pr-helper)
+  fedora:winetricks: label application, classifier system-module
+      - launcher winetricks.desktop runs a program from the package (winetricks)
+      - dependency daemon stays inert; the host's is used: system service epmd.service (erlang-erts)
+      - boot chain hooks: /usr/share/plymouth/themes/charge/progress-00.png (fedora-logos)
+  fedora:@development-tools: label workspace, classifier system-module
+      - meta-package: no files of its own; members classified one by one (8)
+      - system service svnserve.service (subversion)
+
+Missing from the release: ubuntu:qmk, ubuntu:dolphin-emu, ubuntu:telegram-desktop, fedora:akmod-nvidia, fedora:epel-release, fedora:iotop, fedora:thunar, fedora:hexchat, fedora:pandoc, fedora:java-21-openjdk

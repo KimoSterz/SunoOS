@@ -1,0 +1,420 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Project Luma <engineering@projectluma.org>
+Date: Mon, 23 Nov 2026 06:00:00 -0600
+Subject: [PATCH] Dock: shelf-2's icon tiles: 40 px, the plate filling the
+ tile, squircle and lit
+
+The dock's tile was 45 px with an 11 px gap and its icons drew their whole
+canvas, so a plate was smaller than the tile. The tile is shelf-2's 40 px
+with an 8 px gap; an app icon is drawn through syncAppIconPlate with its
+icon bin as the masked clip, cut as shelf-2's squircle (30%, CSS
+corner-shape: squircle) and lit as its data-icon="lit" (a top sheen and a
+bottom shade, a 1 px white top rim, a 0.5 px white ring and a 1 px dark
+bottom rim, each following the corner). An icon without a plate sits on the
+dock's own gradient plate. The show-apps glyph keeps its mask.
+
+For the dock's tiles only (syncAppIconPlate's dock argument), the plate
+helper follows group transforms: Prairie r42 draws the r40 art 1.12 times
+about the centre, so its plate is 963.2 of 1024, not the 860 rect alone,
+and a plated icon keeps the tile's size in layout (a fixed size), so a clip
+that sizes to its child stays the tile; St draws the larger texture into
+that box and the plate's scale shows it. Banners, offers and the overlay
+indicator read and draw icons as before.
+
+LumaIconMask gains squircle and lit uniforms, off unless an effect's
+squircle or lit field is set (the dock's). Every mask sets both on each
+paint: the GL program is shared by all of them, so a uniform one left unset
+would keep another icon's value.
+---
+ data/theme/luma-shelf.css |  4 ++
+ js/ui/iconMask.js         | 78 +++++++++++++++++++++++---------
+ js/ui/lumaAppIconPlate.js | 94 ++++++++++++++++++++++++++++++++-------
+ js/ui/shelf.js            | 37 +++++++++++++--
+ js/ui/shelfMetrics.js     |  8 ++--
+ 5 files changed, 179 insertions(+), 42 deletions(-)
+
+diff --git a/data/theme/luma-shelf.css b/data/theme/luma-shelf.css
+index 68bf5b6..81d0162 100644
+--- a/data/theme/luma-shelf.css
++++ b/data/theme/luma-shelf.css
+@@ -3418,3 +3418,7 @@ StBoxLayout.luma-notification-tray.luma-surface-dark .luma-notification-tray-cou
+ .luma-surface-light .luma-ov-toast-button { color: #1f2328; background-color: #dfe1e4; }
+ /* The remote's focus is a white ring; the fill and ink stay as they are. */
+ .luma-ov-toast-tv .luma-ov-toast-actions .luma-ov-toast-button:focus { box-shadow: 0 0 0 4.5px #ffffff; }
++
++/* The dock's tile is already a plate (the overview icon's gradient and
++ * shadow): an app icon without a plate of its own sits on that one. */
++.luma-shelf-dock-island #dash .dash-item-container .overview-tile .overview-icon .luma-app-icon-plate { background-color: transparent; }
+diff --git a/js/ui/iconMask.js b/js/ui/iconMask.js
+index bdf60d0..eb91e35 100644
+--- a/js/ui/iconMask.js
++++ b/js/ui/iconMask.js
+@@ -8,15 +8,30 @@ import St from 'gi://St';
+ 
+ import {plateScaleForFile, platedIconSize} from './lumaAppIconPlate.js';
+ 
+-// radius is a fraction of the actor's shorter side. The offscreen texture is
+-// the actor's paint volume, enlarged beyond the actor on every side, so the
++// radius is a fraction of the actor's shorter side; squircle 1 cuts a
++// superellipse corner (CSS corner-shape: squircle, |x|^4 + |y|^4 = r^4)
++// instead of a circle. lit 1 lights the icon as shelf-2's data-icon="lit":
++// a white sheen fading out by 44% of its height and a dark one from 72%, an
++// inset 1 px white top rim (34%), a 0.5 px white ring (18%) and a 1 px dark
++// bottom rim (14%), each following the corner. The offscreen texture is the
++// actor's paint volume, enlarged beyond the actor on every side, so the
+ // texture coordinates are mapped back to actor pixels (as LumaRoundedClip
+ // does) and the corner is cut at the actor's corner, not the texture's.
+ const ICON_MASK_DECLARATIONS = `
+ uniform float radius;
++uniform float squircle;
++uniform float lit;
+ uniform vec2 mask_extent;
+ uniform vec2 mask_size;
+ uniform vec2 mask_origin;
++
++float luma_icon_cover(vec2 p, vec2 size, float r, float sq) {
++    vec2 edge = min(p, size - p);
++    vec2 inset = max(vec2(r) - edge, vec2(0.0));
++    vec2 inset2 = inset * inset;
++    float corner = mix(length(inset), sqrt(sqrt(dot(inset2, inset2))), sq);
++    return (1.0 - smoothstep(r - 0.5, r + 0.5, corner)) * clamp(min(edge.x, edge.y) + 0.5, 0.0, 1.0);
++}
+ `;
+ 
+ // Runs after the default fragment stage, so cogl_color_out already holds the
+@@ -25,11 +40,24 @@ uniform vec2 mask_origin;
+ const ICON_MASK_CODE = `
+ vec2 point = cogl_tex_coord_in[0].st * mask_extent + mask_origin;
+ float r = radius * min(mask_size.x, mask_size.y);
+-vec2 edge = min(point, mask_size - point);
+-float corner = length(max(vec2(r) - edge, vec2(0.0)));
+-cogl_color_out *= 1.0 - smoothstep(r - 0.5, r + 0.5, corner);
++float cover = luma_icon_cover(point, mask_size, r, squircle);
++if (lit > 0.5) {
++    vec4 c = cogl_color_out;
++    float t = point.y / mask_size.y;
++    float sheen = 0.17 * clamp(1.0 - t / 0.44, 0.0, 1.0);
++    float shade = 0.09 * clamp((t - 0.72) / 0.28, 0.0, 1.0);
++    c.rgb = c.rgb * (1.0 - sheen) + vec3(sheen) * c.a;
++    c.rgb = c.rgb * (1.0 - shade);
++    float bottom = 0.14 * cover * (1.0 - luma_icon_cover(point + vec2(0.0, 1.0), mask_size, r, squircle));
++    float ring = 0.18 * cover * (1.0 - luma_icon_cover(point - vec2(0.5), mask_size - vec2(1.0), max(r - 0.5, 0.0), squircle));
++    float top = 0.34 * cover * (1.0 - luma_icon_cover(point - vec2(0.0, 1.0), mask_size, r, squircle));
++    c.rgb = c.rgb * (1.0 - bottom);
++    c.rgb = c.rgb * (1.0 - ring) + vec3(ring) * c.a;
++    c.rgb = c.rgb * (1.0 - top) + vec3(top) * c.a;
++    cogl_color_out = c;
++}
++cogl_color_out *= cover;
+ `;
+-
+ // Clutter draws an offscreen effect with nearest-texel sampling at whole
+ // display scales. Any sub-pixel position or scale on the way to the screen
+ // then duplicated and dropped rows of the icon, which read as pixelation.
+@@ -55,20 +83,25 @@ function iconFile(gicon) {
+ }
+ 
+ // The scale at which an app icon's plate covers its tile (lumaAppIconPlate.js),
+-// or null for an icon without one.
+-export function appIconPlateScale(gicon) {
++// or null for an icon without one. followGroups: the dock's reading
++// (lumaAppIconPlate.js plateScaleFromSvg).
++export function appIconPlateScale(gicon, followGroups = false) {
+     try {
+-        return plateScaleForFile(iconFile(gicon));
++        return plateScaleForFile(iconFile(gicon), followGroups);
+     } catch {
+         return null;
+     }
+ }
+ 
+-// A layout gives the icon no more than its clip, so St draws the larger
+-// texture into the clip's size; scaling the icon about its centre by the
+-// plate's scale shows the plate exactly as large as the clip, for the clip
+-// to crop the margin.
+-function setOverhang(icon, ratio) {
++// The icon keeps the tile's size in layout (a fixed size, so a clip that
++// sizes to its child stays the tile) and St draws its larger texture into
++// that box; scaling the icon about its centre by the plate's scale makes the
++// plate exactly as large as the tile, for the clip to crop the margin.
++function setOverhang(icon, ratio, base = -1) {
++    const length = base > 0 ? base * St.ThemeContext.get_for_stage(global.stage).scale_factor : -1;
++    if (length < 0 ? icon.natural_width_set || icon.natural_height_set
++        : icon.natural_width !== length || icon.natural_height !== length)
++        icon.set_size(length, length);
+     icon.set_pivot_point(0.5, 0.5);
+     if (icon.scale_x !== ratio || icon.scale_y !== ratio)
+         icon.set_scale(ratio, ratio);
+@@ -78,8 +111,10 @@ function setOverhang(icon, ratio) {
+ // an icon with a plate at the plate's scale (the clip takes the margin
+ // around it), any other at the clip's size on the plate the clip draws
+ // (luma-app-icon-plate). size is the tile's in logical pixels; without it the
+-// icon's own CSS icon-size is the tile's.
+-export function syncAppIconPlate(icon, clip, size = null) {
++// icon's own CSS icon-size is the tile's. dock: the dock's tiles only (shelf-2):
++// the plate scale follows group transforms and the icon keeps the tile's size
++// in layout; banners, offers and the indicator keep their earlier drawing.
++export function syncAppIconPlate(icon, clip, size = null, dock = false) {
+     let base = size;
+     if (base === null) {
+         if (!icon.get_stage())
+@@ -87,13 +122,11 @@ export function syncAppIconPlate(icon, clip, size = null) {
+         const scale = St.ThemeContext.get_for_stage(global.stage).scale_factor;
+         base = Math.round(icon.get_theme_node().get_length('icon-size') / scale);
+     }
+-    const plate = icon.gicon ? appIconPlateScale(icon.gicon) : null;
++    const plate = icon.gicon ? appIconPlateScale(icon.gicon, dock) : null;
+     const want = plate === null ? base : platedIconSize(base, plate);
+     if (icon.icon_size !== want)
+         icon.icon_size = want;
+-    // A layout gives a child no more than the clip; negative margins let the
+-    // icon take its full size, centred, for the clip to crop.
+-    setOverhang(icon, plate ?? 1);
++    setOverhang(icon, plate ?? 1, dock ? base : -1);
+     if (plate === null && icon.gicon)
+         clip.add_style_class_name('luma-app-icon-plate');
+     else
+@@ -142,6 +175,11 @@ class LumaIconMask extends Shell.GLSLEffect {
+ 
+     vfunc_paint_target(node, paintContext) {
+         setActorMapping(this, 'mask');
++        // Every mask states its corner shape and lighting on each paint: the GL
++        // program is shared by all of them, so a uniform one leaves unset keeps
++        // another icon's value (the dock's lit squircle on a banner tile).
++        this.set_uniform_float(this.get_uniform_location('squircle'), 1, [this.squircle ? 1 : 0]);
++        this.set_uniform_float(this.get_uniform_location('lit'), 1, [this.lit ? 1 : 0]);
+         smoothOffscreenSampling(this);
+         super.vfunc_paint_target(node, paintContext);
+     }
+diff --git a/js/ui/lumaAppIconPlate.js b/js/ui/lumaAppIconPlate.js
+index 114890d..265888e 100644
+--- a/js/ui/lumaAppIconPlate.js
++++ b/js/ui/lumaAppIconPlate.js
+@@ -12,18 +12,46 @@ import Gio from 'gi://Gio';
+ 
+ // A plate smaller than this share of the canvas is art, not a plate.
+ const MIN_PLATE_SHARE = 0.6;
+-const DRAWN = /<(rect|path|circle|ellipse|polygon|polyline|line|image|use|text)\b[^>]*>/;
++const LEGACY_DRAWN = /<(rect|path|circle|ellipse|polygon|polyline|line|image|use|text)\b[^>]*>/;
++const DRAWN_NAMES = new Set(['rect', 'path', 'circle', 'ellipse', 'polygon', 'polyline', 'line', 'image', 'use', 'text']);
+ 
+ function attr(tag, name) {
+     const match = tag.match(new RegExp(`\\s${name}\\s*=\\s*["']\\s*(-?[\\d.]+)(px)?\\s*["']`));
+     return match ? Number(match[1]) : NaN;
+ }
+ 
++// An axis-aligned transform [sx, sy, tx, ty] for a transform attribute, or
++// null for a rotation or skew.
++function parseTransform(text) {
++    let m = [1, 1, 0, 0];
++    for (const [, name, args] of text.matchAll(/(translate|scale|matrix)\s*\(([^)]*)\)/g)) {
++        const v = args.trim().split(/[\s,]+/).map(Number);
++        let t;
++        if (name === 'translate')
++            t = [1, 1, v[0] || 0, v[1] || 0];
++        else if (name === 'scale')
++            t = [v[0], v.length > 1 ? v[1] : v[0], 0, 0];
++        else if (v[1] === 0 && v[2] === 0)
++            t = [v[0], v[3], v[4], v[5]];
++        else
++            return null;
++        if (t.some(Number.isNaN))
++            return null;
++        // m then t: a point is mapped by t first, then by m.
++        m = [m[0] * t[0], m[1] * t[1], m[0] * t[2] + m[2], m[1] * t[3] + m[3]];
++    }
++    if (/\b(rotate|skewX|skewY)\s*\(/.test(text))
++        return null;
++    return m;
++}
++
+ // The scale at which the SVG's plate covers its canvas (1024/860 for a v4
+-// icon on its full canvas, 1 for one already cropped to its plate), or null
+-// when the first thing it draws is not a rounded square centred on a square
+-// canvas.
+-export function plateScaleFromSvg(text) {
++// icon on its full canvas, 1024/963.2 for one drawn at 1.12, 1 for one
++// already cropped to its plate), or null when the first thing it draws is
++// not a rounded square centred on a square canvas. With followGroups (the
++// dock) group transforms around it are followed; without it the first drawn
++// element is read as written, as banners and offers always have.
++export function plateScaleFromSvg(text, followGroups = false) {
+     const svg = text.match(/<svg\b[^>]*>/)?.[0];
+     if (!svg)
+         return null;
+@@ -36,13 +64,48 @@ export function plateScaleFromSvg(text) {
+     const body = text.slice(text.indexOf(svg) + svg.length)
+         .replace(/<defs\b[\s\S]*?<\/defs>/g, '')
+         .replace(/<(clipPath|mask|pattern|symbol)\b[\s\S]*?<\/\1>/g, '');
+-    const first = body.match(DRAWN);
+-    if (!first || first[1] !== 'rect')
++    // Walk the tags in order, keeping the transforms of the open groups.
++    const stack = [[1, 1, 0, 0]];
++    let rect = null;
++    if (!followGroups) {
++        const first = body.match(LEGACY_DRAWN);
++        if (!first || first[1] !== 'rect')
++            return null;
++        rect = {tag: first[0], m: [1, 1, 0, 0]};
++    }
++    for (const [tag, close, name] of body.matchAll(/<(\/?)([a-zA-Z]+)\b[^>]*>/g)) {
++        if (rect)
++            break;
++        if (name === 'g') {
++            if (close) {
++                if (stack.length > 1)
++                    stack.pop();
++            } else if (!tag.endsWith('/>')) {
++                const t = tag.match(/\stransform\s*=\s*["']([^"']*)["']/)?.[1];
++                const m = t ? parseTransform(t) : [1, 1, 0, 0];
++                if (!m)
++                    return null;
++                const p = stack[stack.length - 1];
++                stack.push([p[0] * m[0], p[1] * m[1], p[0] * m[2] + p[2], p[1] * m[3] + p[3]]);
++            }
++            continue;
++        }
++        if (close || !DRAWN_NAMES.has(name))
++            continue;
++        if (name !== 'rect' || /\stransform\s*=/.test(tag))
++            return null;
++        rect = {tag, m: stack[stack.length - 1]};
++        break;
++    }
++    if (!rect)
++        return null;
++    const [sx, sy, tx, ty] = rect.m;
++    const x0 = attr(rect.tag, 'x') || 0, y0 = attr(rect.tag, 'y') || 0;
++    const w0 = attr(rect.tag, 'width'), h0 = attr(rect.tag, 'height'), rx = attr(rect.tag, 'rx');
++    if (!(w0 > 0) || !(h0 > 0) || !(rx > 0) || !(sx > 0) || !(sy > 0))
+         return null;
+-    const rect = first[0];
+-    const x = attr(rect, 'x') || 0, y = attr(rect, 'y') || 0;
+-    const w = attr(rect, 'width'), h = attr(rect, 'height'), rx = attr(rect, 'rx');
+-    if (!(w > 0) || Math.abs(w - h) > 0.5 || !(rx > 0))
++    const x = x0 * sx + tx, y = y0 * sy + ty, w = w0 * sx, h = h0 * sy;
++    if (Math.abs(w - h) > 0.5)
+         return null;
+     if (w < MIN_PLATE_SHARE * bw || w > bw + 0.5)
+         return null;
+@@ -55,7 +118,7 @@ const cache = new Map();
+ 
+ // plateScaleFromSvg for an icon file, read once per path and modification
+ // time. Anything but a readable .svg has no plate.
+-export function plateScaleForFile(path) {
++export function plateScaleForFile(path, followGroups = false) {
+     if (!path)
+         return null;
+     const file = Gio.File.new_for_path(path);
+@@ -67,19 +130,20 @@ export function plateScaleForFile(path) {
+     } catch {
+         return null;
+     }
+-    const hit = cache.get(path);
++    const key = `${followGroups ? 1 : 0}:${path}`;
++    const hit = cache.get(key);
+     if (hit?.stamp === stamp)
+         return hit.scale;
+     let scale = null;
+     if (/\.svg$/i.test(path)) {
+         try {
+             const [, bytes] = file.load_contents(null);
+-            scale = plateScaleFromSvg(new TextDecoder().decode(bytes));
++            scale = plateScaleFromSvg(new TextDecoder().decode(bytes), followGroups);
+         } catch {
+             scale = null;
+         }
+     }
+-    cache.set(path, {stamp, scale});
++    cache.set(key, {stamp, scale});
+     return scale;
+ }
+ 
+diff --git a/js/ui/shelf.js b/js/ui/shelf.js
+index 5016a12..410bcfa 100644
+--- a/js/ui/shelf.js
++++ b/js/ui/shelf.js
+@@ -15,7 +15,7 @@ import {MediaIslandGuard} from './lumaMediaIslandGuard.js';
+ import {Well} from './lumaWell.js';
+ import {FocusVisible} from './lumaFocusVisible.js';
+ import {NotificationBeacon, getNotificationTray} from './lumaNotificationBeacon.js';
+-import {LumaIconMask} from './iconMask.js';
++import {LumaIconMask, syncAppIconPlate} from './iconMask.js';
+ import * as SurfaceMaterials from './lumaSurfaceMaterials.js';
+ import {WindowMarks} from './lumaDockWindows.js';
+ import {DASH_TILE_SIZE, DIVIDER_WIDTH, SHELF_INSET, SHELF_ISLAND_RADIUS, windowMarkRow} from './shelfMetrics.js';
+@@ -43,6 +43,9 @@ const DASH_PADDING = 10;
+ // so the mask agrees with the artwork instead of cutting into it.
+ // The shelf spec draws every 36px dock icon at radius 10.
+ const ICON_CORNER_RATIO = 10 / 36;
++// shelf-2's dock icon: a squircle corner at 30% of the tile (--ir, CSS
++// corner-shape: squircle), lit as its data-icon="lit" (iconMask.js).
++const DOCK_ICON_CORNER_RATIO = 0.3;
+ const LEGACY_DESKTOP_DOCK_UUID = 'dash-to-dock@micxgx.gmail.com';
+ const SHELF_STYLESHEET_URI = 'resource:///org/gnome/shell/theme/luma-shelf.css';
+ // Filled controls (ADR-043), loaded after the Shelf's own sheet.
+@@ -3181,16 +3184,42 @@ export const Shelf = GObject.registerClass({
+             // changes (BaseIcon._createIconTexture), which drops the mask
+             // without the dock changing width. Follow the replacement so no
+             // icon is ever left square.
++            // An application's icon is clipped at the tile by its icon bin
++            // and drawn so its plate fills the tile (iconMask.js
++            // syncAppIconPlate); the show-apps glyph keeps its own mask.
++            const app = !!delegate.app && !!baseIcon._iconBin;
+             if (baseIcon._iconBin && !baseIcon._lumaMaskFollowed) {
+                 baseIcon._lumaMaskFollowed = true;
+-                baseIcon._iconBin.connectObject('notify::child',
+-                    () => this._maskIcon(baseIcon.icon), this);
++                baseIcon._iconBin.connectObject('notify::child', () => (app
++                    ? this._plateIcon(baseIcon) : this._maskIcon(baseIcon.icon)), this);
+             }
+-            if (!this._maskIcon(baseIcon.icon))
++            if (!(app ? this._plateIcon(baseIcon) : this._maskIcon(baseIcon.icon)))
+                 return;
+         }
+     }
+ 
++    _plateIcon(baseIcon) {
++        const bin = baseIcon._iconBin;
++        if (!bin.get_effect('luma-icon-mask')) {
++            try {
++                const effect = new LumaIconMask();
++                effect.set_uniform_float(
++                    effect.get_uniform_location('radius'), 1,
++                    [DOCK_ICON_CORNER_RATIO]);
++                effect.squircle = true;
++                effect.lit = true;
++                bin.add_effect_with_name('luma-icon-mask', effect);
++                bin.clip_to_allocation = true;
++            } catch (error) {
++                logError(error, 'Luma Shelf: icon mask unavailable');
++                return false;
++            }
++        }
++        if (baseIcon.icon)
++            syncAppIconPlate(baseIcon.icon, bin, baseIcon.iconSize, true);
++        return true;
++    }
++
+     _maskIcon(icon) {
+         if (!icon || icon.get_effect('luma-icon-mask'))
+             return true;
+diff --git a/js/ui/shelfMetrics.js b/js/ui/shelfMetrics.js
+index 27d70e1..1be3967 100644
+--- a/js/ui/shelfMetrics.js
++++ b/js/ui/shelfMetrics.js
+@@ -1,9 +1,11 @@
+ // SPDX-License-Identifier: GPL-2.0-or-later
+ // Native Dash and status geometry share one logical tile size. Display scale
+ // multiplies these logical measurements; it is not a second size policy.
+-// Studio Desktop uses 40px content, 8px between dock icons, and a 16px inset.
+-export const DASH_TILE_SIZE = 45;
+-export const DASH_TILE_GAP = 11;
++// Studio Desktop (shelf-2) uses 40px content, 8px between dock icons, and a
++// 16px inset. An app icon's plate fills the 40px tile (iconMask.js
++// syncAppIconPlate), so the tile is the content size itself.
++export const DASH_TILE_SIZE = 40;
++export const DASH_TILE_GAP = 8;
+ export const SHELF_INSET = 16;
+ // The rule between pinned and running apps, and between status parts.
+ export const SHELF_DIVIDER_LENGTH = 24;

@@ -35,11 +35,16 @@ pozyskujemy bezpośrednio z serwisu. Szczegóły i pełna lista plików:
 ## Struktura
 
 ```
+system/             wendorowane źródła systemu operacyjnego Luma (GitLab) — patrz system/VENDOR.md
 preview/            podgląd makiety przez iframe (działa od razu)
 tools/              narzędzia (fetch_upstream.py)
-simframe/           kod makiety Luma — ładowany przez tools/fetch_upstream.py
+simframe/           kod makiety Luma — ładowany przez tools/fetch_upstream.py (zamrożona referencja wyglądu)
 docs/inventory.md   pełny inwentarz plików makiety + adnotacje
 ```
+
+Praca przeniosła się na **źródła systemu** (`system/`): OS, aplikacje (GTK4/LumaUI),
+pakiety, dokumentacja i zasoby — 1:1 z [simplyluma/luma](https://gitlab.com/simplyluma/luma)
+(commit `794eaee…`, bez `.git` i `.github` upstream).
 
 ## Co jest już w repo
 

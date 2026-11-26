@@ -1,0 +1,123 @@
+{
+ "app": "overlay-offer",
+ "title": "Layer permissions: the offer (design-center b118c1d)",
+ "spec": {
+  "root": "design-center",
+  "url": "mockups/overlay-perms/offer.html",
+  "window": "#stage",
+  "ready": "html[data-ready]",
+  "viewport": {
+   "width": 460,
+   "height": 420
+  },
+  "phone_url": "mockups/overlay-perms/offer.html?posture=phone",
+  "phone_viewport": {
+   "width": 400,
+   "height": 844
+  },
+  "init_script": "if (matchMedia('(prefers-color-scheme: light)').matches && !/[?&]mode=/.test(location.search)) history.replaceState(null, '', location.pathname + (location.search ? location.search + '&' : '?') + 'mode=light');"
+ },
+ "states": [
+  {
+   "name": "overlay",
+   "about": "offer, overlay",
+   "window": "#stage",
+   "spec": [
+    {
+     "eval": "const a=OV.APPS.diskord;document.getElementById('stage').innerHTML=`<span class=\"bi\" style=\"background-image:url(${a.i})\"><i style=\"background-image:url(${OV.AP('settings')})\"></i></span><span class=\"src\"><span class=\"t\">${a.n}</span></span><span class=\"when\"><span class=\"t\">now</span></span><b class=\"sum\"><span class=\"t\">Display over other apps</span></b><span class=\"body\"><span class=\"t\">Allow ${a.n} to display over games and full-screen apps?</span></span><span class=\"acts\"><button type=\"button\"><span>Allow</span></button><button type=\"button\"><span>Not now</span></button></span>`;",
+     "wait": 900
+    }
+   ]
+  },
+  {
+   "name": "panel",
+   "about": "offer, panel",
+   "window": "#stage",
+   "spec": [
+    {
+     "eval": "const a=OV.APPS.diskord;document.getElementById('stage').innerHTML=`<span class=\"bi\" style=\"background-image:url(${a.i})\"><i style=\"background-image:url(${OV.AP('settings')})\"></i></span><span class=\"src\"><span class=\"t\">${a.n}</span></span><span class=\"when\"><span class=\"t\">now</span></span><b class=\"sum\"><span class=\"t\">Add a panel</span></b><span class=\"body\"><span class=\"t\">Allow ${a.n} to add a panel to the desktop?</span></span><span class=\"acts\"><button type=\"button\"><span>Allow</span></button><button type=\"button\"><span>Not now</span></button></span>`;",
+     "wait": 900
+    }
+   ]
+  },
+  {
+   "name": "background",
+   "about": "offer, background",
+   "window": "#stage",
+   "spec": [
+    {
+     "eval": "const a=OV.APPS.diskord;document.getElementById('stage').innerHTML=`<span class=\"bi\" style=\"background-image:url(${a.i})\"><i style=\"background-image:url(${OV.AP('settings')})\"></i></span><span class=\"src\"><span class=\"t\">${a.n}</span></span><span class=\"when\"><span class=\"t\">now</span></span><b class=\"sum\"><span class=\"t\">Desktop background</span></b><span class=\"body\"><span class=\"t\">Allow ${a.n} to draw the desktop background?</span></span><span class=\"acts\"><button type=\"button\"><span>Allow</span></button><button type=\"button\"><span>Not now</span></button></span>`;",
+     "wait": 900
+    }
+   ]
+  },
+  {
+   "name": "keyboard",
+   "about": "offer, keyboard",
+   "window": "#stage",
+   "spec": [
+    {
+     "eval": "const a=OV.APPS.diskord;document.getElementById('stage').innerHTML=`<span class=\"bi\" style=\"background-image:url(${a.i})\"><i style=\"background-image:url(${OV.AP('settings')})\"></i></span><span class=\"src\"><span class=\"t\">${a.n}</span></span><span class=\"when\"><span class=\"t\">now</span></span><b class=\"sum\"><span class=\"t\">Take the keyboard</span></b><span class=\"body\"><span class=\"t\">Allow ${a.n} to take the keyboard?</span></span><span class=\"acts\"><button type=\"button\"><span>Allow</span></button><button type=\"button\"><span>Not now</span></button></span>`;",
+     "wait": 900
+    }
+   ]
+  }
+ ],
+ "phone_states": [
+  "overlay",
+  "panel",
+  "background",
+  "keyboard"
+ ],
+ "groups": [
+  {
+   "name": "fills",
+   "spec": "#stage, #stage .bi, #stage .acts button"
+  },
+  {
+   "name": "content",
+   "spec": "#stage .bi, #stage .src, #stage .when, #stage .sum, #stage .body, #stage .acts button"
+  },
+  {
+   "name": "art",
+   "spec": "#stage .bi"
+  },
+  {
+   "name": "controls",
+   "spec": "#stage .acts button"
+  },
+  {
+   "name": "badge",
+   "spec": "#stage .bi i"
+  },
+  {
+   "name": "surface",
+   "spec": "#stage"
+  }
+ ],
+ "pairs": [],
+ "text_aliases": {},
+ "pixel": {
+  "max_mean": 4.0,
+  "max_over10": 1.0,
+  "glyphs_as_text": true,
+  "mean_without_text": true,
+  "exclude_groups": [],
+  "material": [
+   {
+    "group": "surface",
+    "edge": 0,
+    "keep": "art"
+   },
+   {
+    "group": "controls",
+    "edge": 2
+   },
+   {
+    "group": "badge",
+    "ring": 2,
+    "ring_radius": 5
+   }
+  ]
+ }
+}

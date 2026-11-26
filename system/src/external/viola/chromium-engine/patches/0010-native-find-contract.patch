@@ -1,0 +1,63 @@
+diff --git a/chrome/browser/resources/viola/host-bootstrap.js b/chrome/browser/resources/viola/host-bootstrap.js
+--- a/chrome/browser/resources/viola/host-bootstrap.js
++++ b/chrome/browser/resources/viola/host-bootstrap.js
+@@ -8,7 +8,7 @@
+   if (location.protocol !== 'chrome:' || location.hostname !== 'viola') return;
+ 
+   const policies = {"sidebar.html":{"send":["app:menu","browser:menu","cast:menu","download:dragFile","download:manager","file:openDropped","ext:openControl","media:menu","media:mute","media:next","media:pip","media:playpause","media:prev","media:seek","nav:back","nav:forward","nav:reload","notification:clear","notification:dismiss","notification:menu","notification:open","palette:open","permission:respond","settings:open","sidebar:collapsedGroups","sidebar:collapsedWorkspaceSections","sidebar:dragEnd","sidebar:dragStart","sidebar:modal","sidebar:peekStart","sidebar:setWidth","sidebar:toggle","siteProtection:failed","siteProtection:menu","space:create","space:delete","space:menu","space:switch","space:update","split:dragEnd","split:dragStart","split:resize","tab:activate","tab:bookmark","tab:close","tab:dragDropped","tab:menu","tab:moveToSpace","tab:new","tab:rename","tab:reorder","tab:toggleMute","tabGroup:close","tabGroup:dragDropped","tabGroup:groupTab","tabGroup:menu","tabGroup:moveToSpace","tabGroup:openSaved","tabGroup:rename","tabGroup:reorder","tabs:menu","tabs:selectionAction","ui:ready","url:copy","window:control"],"invoke":[],"receive":["cast:state","download:update","extension:activate-action","favorite:activateIndex","media:preview","media:progress","permission:prompt","render","sidebar:collapsed","sidebar:peek","space:confirmDelete","space:startCreate","space:startRename","split:layout","tabGroup:startRename","toast","window:chromeState","workspace:cycle"]},"overlay.html":{"send":["download:cancel","download:clear","download:dragFile","download:open","download:pause","download:remove","download:resume","download:reveal","find:close","find:query","notification:historyClear","notification:historyOpen","overlay:blurred","palette:close","palette:commit","ui:ready"],"invoke":["palette:query"],"receive":["download:update","find:result","notification:historyUpdate","overlay:open","split:hint"]},"settings.html":{"send":["browser:openPage","download:cancel","download:clear","download:open","download:pause","download:remove","download:resume","download:reveal","ext:openStore","ext:remove","library:clearHistory","library:open","library:removeBookmark","library:removeHistory","library:updateBookmark","media:setSiteBlocked","profile:clearPermissions","profile:delete","profile:openManager","profile:update","settings:open","settings:set","space:create","space:delete","space:update","ui:ready","window:control"],"invoke":["account:continueWithGoogle","account:emailComplete","account:emailResetLegacy","account:emailStart","account:emailVerify","account:remove","account:update","ext:list","ext:setEnabled","library:data","profile:create","settings:data","settings:exportAppearance","settings:exportBackup","settings:importAppearance","settings:importBackup","settings:makeDefaultBrowser","settings:resetAdvancedAppearance","settings:sleepInactiveTabs","updates:check"],"receive":["download:update","library:changed","settings:changed","settings:section","window:chromeState"]},"library.html":{"send":["download:cancel","download:clear","download:open","download:pause","download:remove","download:resume","download:reveal","library:clearHistory","library:open","library:removeBookmark","library:removeHistory","library:updateBookmark","window:control"],"invoke":["library:data"],"receive":["download:update","library:changed","library:section","window:chromeState"]},"little.html":{"send":["little:adopt","little:back","little:copy","little:forward","little:navigate","little:reload","ui:ready","window:control"],"invoke":[],"receive":["little:focus-input","little:render","window:chromeState"]},"dimmer.html":{"send":["ui:ready"],"invoke":[],"receive":["dimmer:set"]},"history-gesture.html":{"send":[],"invoke":[],"receive":["history:gesture"]},"window-chrome.html":{"send":["window:control"],"invoke":[],"receive":["window:chromeState"]}};
+-  const implementedPolicies = {"sidebar.html":{"send":["app:menu","browser:menu","ext:openControl","download:manager","download:dragFile","media:menu","media:mute","media:next","media:pip","media:playpause","media:prev","media:seek","nav:back","nav:forward","nav:reload","notification:clear","notification:dismiss","notification:menu","notification:open","permission:respond","palette:open","settings:open","sidebar:collapsedGroups","sidebar:collapsedWorkspaceSections","sidebar:dragEnd","sidebar:dragStart","sidebar:modal","sidebar:peekStart","sidebar:setWidth","sidebar:toggle","space:menu","split:dragEnd","split:dragStart","space:create","space:delete","space:switch","space:update","tab:activate","tab:bookmark","tab:close","tab:dragDropped","tab:menu","tab:moveToSpace","tab:new","tab:reorder","tab:toggleMute","tabGroup:close","tabGroup:groupTab","tabGroup:menu","tabGroup:moveToSpace","tabGroup:openSaved","tabGroup:rename","tabGroup:reorder","tabs:menu","tabs:selectionAction","ui:ready","url:copy","window:control"],"invoke":[],"receive":["download:update","media:progress","media:preview","permission:prompt","render","sidebar:collapsed","sidebar:peek","space:confirmDelete","space:startRename","tabGroup:startRename","window:chromeState","workspace:cycle"]},"overlay.html":{"send":["download:cancel","download:clear","download:open","download:pause","download:remove","download:resume","download:reveal","overlay:blurred","palette:close","palette:commit","ui:ready"],"invoke":["palette:query"],"receive":["download:update","overlay:open","split:hint"]},"dimmer.html":{"send":["ui:ready"],"invoke":[],"receive":["dimmer:set"]},"little.html":{"send":["little:adopt","little:back","little:copy","little:forward","little:navigate","little:reload","ui:ready","window:control"],"invoke":[],"receive":["little:focus-input","little:render","window:chromeState"]},"settings.html":{"send":["browser:openPage","download:cancel","download:clear","download:open","download:pause","download:remove","download:resume","download:reveal","ext:remove","library:clearHistory","library:open","library:removeBookmark","library:removeHistory","library:updateBookmark","profile:openManager","settings:open","settings:set","space:create","space:delete","space:update","ui:ready","window:control"],"invoke":["account:continueWithGoogle","account:emailComplete","account:emailResetLegacy","account:emailStart","account:emailVerify","account:remove","account:update","ext:list","ext:setEnabled","library:data","settings:data","updates:check"],"receive":["download:update","library:changed","settings:changed","settings:section","window:chromeState"]}};
++  const implementedPolicies = {"sidebar.html":{"send":["app:menu","browser:menu","ext:openControl","download:manager","download:dragFile","media:menu","media:mute","media:next","media:pip","media:playpause","media:prev","media:seek","nav:back","nav:forward","nav:reload","notification:clear","notification:dismiss","notification:menu","notification:open","permission:respond","palette:open","settings:open","sidebar:collapsedGroups","sidebar:collapsedWorkspaceSections","sidebar:dragEnd","sidebar:dragStart","sidebar:modal","sidebar:peekStart","sidebar:setWidth","sidebar:toggle","space:menu","split:dragEnd","split:dragStart","space:create","space:delete","space:switch","space:update","tab:activate","tab:bookmark","tab:close","tab:dragDropped","tab:menu","tab:moveToSpace","tab:new","tab:reorder","tab:toggleMute","tabGroup:close","tabGroup:groupTab","tabGroup:menu","tabGroup:moveToSpace","tabGroup:openSaved","tabGroup:rename","tabGroup:reorder","tabs:menu","tabs:selectionAction","ui:ready","url:copy","window:control"],"invoke":[],"receive":["download:update","media:progress","media:preview","permission:prompt","render","sidebar:collapsed","sidebar:peek","space:confirmDelete","space:startRename","tabGroup:startRename","window:chromeState","workspace:cycle"]},"overlay.html":{"send":["download:cancel","download:clear","download:open","download:pause","download:remove","download:resume","download:reveal","find:close","find:query","overlay:blurred","palette:close","palette:commit","ui:ready"],"invoke":["palette:query"],"receive":["download:update","find:result","overlay:open","split:hint"]},"dimmer.html":{"send":["ui:ready"],"invoke":[],"receive":["dimmer:set"]},"little.html":{"send":["little:adopt","little:back","little:copy","little:forward","little:navigate","little:reload","ui:ready","window:control"],"invoke":[],"receive":["little:focus-input","little:render","window:chromeState"]},"settings.html":{"send":["browser:openPage","download:cancel","download:clear","download:open","download:pause","download:remove","download:resume","download:reveal","ext:remove","library:clearHistory","library:open","library:removeBookmark","library:removeHistory","library:updateBookmark","profile:openManager","settings:open","settings:set","space:create","space:delete","space:update","ui:ready","window:control"],"invoke":["account:continueWithGoogle","account:emailComplete","account:emailResetLegacy","account:emailStart","account:emailVerify","account:remove","account:update","ext:list","ext:setEnabled","library:data","settings:data","updates:check"],"receive":["download:update","library:changed","settings:changed","settings:section","window:chromeState"]}};
+   const pathSurface = decodeURIComponent(location.pathname).split('/').pop().toLowerCase();
+   const surface = pathSurface || 'sidebar.html';
+   const policy = policies[surface] || { send: [], invoke: [], receive: [] };
+diff --git a/chrome/browser/ui/webui/viola/viola_ui_browsertest.cc b/chrome/browser/ui/webui/viola/viola_ui_browsertest.cc
+--- a/chrome/browser/ui/webui/viola/viola_ui_browsertest.cc
++++ b/chrome/browser/ui/webui/viola/viola_ui_browsertest.cc
+@@ -1087,6 +1087,47 @@
+   )").ExtractBool());
+ }
+ 
++// The overlay's find channels are implemented end to end: the native host
++// sends find:query and find:close through the bridge, and find:result reaches
++// the surface's listeners instead of throwing in __violaHostReceive.
++IN_PROC_BROWSER_TEST_F(ViolaUIBrowserTest, OverlayBridgeCarriesNativeFind) {
++  ASSERT_TRUE(ui_test_utils::NavigateToURL(
++      browser(), GURL("chrome://viola/overlay.html")));
++  content::WebContents *web_contents =
++      browser()->tab_strip_model()->GetActiveWebContents();
++  ASSERT_TRUE(web_contents);
++  EXPECT_TRUE(content::EvalJs(web_contents, R"(
++    (() => {
++      try {
++        vela.send('find:query', {text: 'luma', targetId: 'none', forward: true});
++        vela.send('find:close');
++        return true;
++      } catch {
++        return false;
++      }
++    })()
++  )")
++                  .ExtractBool());
++  EXPECT_TRUE(content::EvalJs(web_contents, R"(
++    new Promise((resolve) => {
++      const stop = vela.on('find:result', (result) => {
++        stop();
++        resolve(result?.text === 'luma' && result?.active === 2 &&
++                result?.matches === 4);
++      });
++      __violaHostReceive('find:result',
++                         {targetId: 'none', text: 'luma', active: 2, matches: 4});
++    })
++  )")
++                  .ExtractBool());
++  EXPECT_TRUE(viola::IsHostChannelAllowed(
++      "overlay.html", viola::HostTransport::kSend, viola::HostChannel::kFindQuery));
++  EXPECT_TRUE(viola::IsHostChannelAllowed(
++      "overlay.html", viola::HostTransport::kReceive, viola::HostChannel::kFindResult));
++  EXPECT_FALSE(viola::IsHostChannelAllowed(
++      "sidebar.html", viola::HostTransport::kSend, viola::HostChannel::kFindQuery));
++}
++
+ IN_PROC_BROWSER_TEST_F(ViolaUIBrowserTest,
+                        SanitizesLegacyOrganizationWithoutProfileSecrets) {
+   const std::optional<base::DictValue> organization =

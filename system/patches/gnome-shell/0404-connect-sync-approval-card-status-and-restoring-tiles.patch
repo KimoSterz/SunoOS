@@ -1,0 +1,1794 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Project Luma <engineering@projectluma.org>
+Date: Sun, 22 Nov 2026 03:00:00 -0600
+Subject: [PATCH] Luma Connect Sync: approval card, status cell and restoring
+ tiles
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Reads org.projectluma.ConnectSync1 (luma-connect-sync, ADR-054).
+
+Approval card: when a device asks to join (ListJoinRequests on start,
+JoinRequested), every member shows a Shell-owned card at the top centre
+above windows: "LUMA CONNECT", the device's class glyph, "Approve
+ThinkPad?", one sentence, the six digits in two wells, and Not me and
+Approve at equal width. Approve calls ApproveJoin(join, code), Not me
+DenyJoin. The card stays until the request leaves ListJoinRequests
+(answered here or on another device; JoinCleared, and a 20 s re-read while
+a card is up); nothing times out. One card at a time, oldest first. Phone:
+a bottom sheet with 44 px buttons; TV: x1.5 with the focus on Not me.
+
+Status cell: one of the island's status slots (QuickSettings.setStatusCell,
+its own button) only for syncing (refresh-cw), paused (cloud-off) or
+attention (cloud-alert amber; cloud-off red when removed). A click opens
+a 312 px shell pop: "Luma Connect", the state's tile, title and line, the
+progress bar while syncing, one sentence and at most one action (Sync now,
+Show versions, Manage storage, Sign in again), and Sync settings (Settings
+launch-panel ('users', ['sync']); Show versions ['sync', 'versions', APP];
+Sign in again opens Luma Connect's sign-in). Phone: the
+cell in the status bar's right group, the pop a bottom drawer
+(status.html ?posture=phone: grab handle, 44 px tile, the action and Sync
+settings as 44 px buttons side by side);
+TV: the top bar's status group and a sheet at TV scale at the top right (the
+TV quick panel has no page model). Storage full and Removed from Sync post
+one banner each from "Luma Connect"; conflicts never do. A device that joins
+with the recovery key (RecoveryJoined) posts one banner on every syncing
+device, "ThinkPad joined with your recovery key", with Remove… (Settings
+['sync', 'remove', DEVICE]) and It was me; it stays until answered. On a TV
+these notices are the shared TV toast (the TV code routes every banner
+there); the recovery-key one says "Not you? Remove it from the quick panel.",
+where its actions are. A TV notice that informs goes through the toast,
+with its actions in the quick panel; one that asks for a decision is an
+offer card (0383).
+
+Re-review B3/S1/B2 (design-center f10cf9b): a card comes as soon as this
+device answers a join, before its code exists ("··· ···", a turning loader,
+"Waiting for its code"; Approve waits, Not me works) and becomes the
+approval card in place when the code arrives (ListJoinRequests every 2 s
+meanwhile); held requests get no card. A replaced recovery key
+(attention new_recovery_key) shows a warn cell; its popover says "Your old
+words stopped working" and Show new key… opens Settings ('users', ['sync',
+'newkey']).
+
+Restoring apps (GetRestore, RestoreChanged): an app's grid, dock and launcher
+drawer tile (lumaPresentation/appDrawer.js, in luma-shell-presentation) at
+55% opacity and saturation 0.5 with a 3 px accent ring and "Restoring…";
+activating it runs `luma-installer --restore APP` instead of the app.
+Valet is opened once when restore rows first appear.
+
+Glyphs: Lucide cloud, cloud-off, cloud-alert, refresh-cw, laptop,
+smartphone and tv as luma-sync-*-symbolic in the Shell's icon resource.
+Copy and states: lumaConnectSyncModel.js (no gi imports; checked in %check
+by connect-sync-policy.js).
+
+Design: design-center 38858a5, mockups/connect-sync (approve.html,
+status.html, restore.html; cs.css, cs.js).
+---
+ data/gnome-shell-icons.gresource.xml          |   9 +
+ .../status/luma-sync-cloud-alert-symbolic.svg |   6 +
+ .../status/luma-sync-cloud-off-symbolic.svg   |   6 +
+ .../status/luma-sync-cloud-symbolic.svg       |   4 +
+ .../status/luma-sync-key-round-symbolic.svg   |   5 +
+ .../status/luma-sync-laptop-symbolic.svg      |   5 +
+ .../luma-sync-loader-circle-symbolic.svg      |   4 +
+ .../status/luma-sync-refresh-cw-symbolic.svg  |   7 +
+ .../status/luma-sync-smartphone-symbolic.svg  |   5 +
+ .../scalable/status/luma-sync-tv-symbolic.svg |   5 +
+ data/theme/luma-shelf.css                     | 160 ++++
+ js/js-resources.gresource.xml                 |   3 +
+ js/ui/appDisplay.js                           |  10 +
+ js/ui/lumaConnectSync.js                      | 836 ++++++++++++++++++
+ js/ui/lumaConnectSyncModel.js                 | 302 +++++++
+ js/ui/lumaConnectSyncRestore.js               | 133 +++
+ js/ui/main.js                                 |  13 +
+ js/ui/panel.js                                |  31 +
+ 18 files changed, 1544 insertions(+)
+
+diff --git a/data/gnome-shell-icons.gresource.xml b/data/gnome-shell-icons.gresource.xml
+index a259d13..167e1d2 100644
+--- a/data/gnome-shell-icons.gresource.xml
++++ b/data/gnome-shell-icons.gresource.xml
+@@ -52,6 +52,15 @@
+     <file preprocess="xml-stripblanks">scalable/status/background-app-ghost-symbolic.svg</file>
+     <file preprocess="xml-stripblanks">scalable/status/luma-grid-2x2-symbolic.svg</file>
+     <file preprocess="xml-stripblanks">scalable/status/luma-continue-layers-symbolic.svg</file>
++    <file preprocess="xml-stripblanks">scalable/status/luma-sync-cloud-symbolic.svg</file>
++    <file preprocess="xml-stripblanks">scalable/status/luma-sync-cloud-off-symbolic.svg</file>
++    <file preprocess="xml-stripblanks">scalable/status/luma-sync-cloud-alert-symbolic.svg</file>
++    <file preprocess="xml-stripblanks">scalable/status/luma-sync-refresh-cw-symbolic.svg</file>
++    <file preprocess="xml-stripblanks">scalable/status/luma-sync-laptop-symbolic.svg</file>
++    <file preprocess="xml-stripblanks">scalable/status/luma-sync-smartphone-symbolic.svg</file>
++    <file preprocess="xml-stripblanks">scalable/status/luma-sync-key-round-symbolic.svg</file>
++    <file preprocess="xml-stripblanks">scalable/status/luma-sync-loader-circle-symbolic.svg</file>
++    <file preprocess="xml-stripblanks">scalable/status/luma-sync-tv-symbolic.svg</file>
+     <file preprocess="xml-stripblanks">scalable/status/check-symbolic.svg</file>
+     <file preprocess="xml-stripblanks">scalable/status/keyboard-brightness-high-symbolic.svg</file>
+     <file preprocess="xml-stripblanks">scalable/status/keyboard-brightness-medium-symbolic.svg</file>
+diff --git a/data/icons/scalable/status/luma-sync-cloud-alert-symbolic.svg b/data/icons/scalable/status/luma-sync-cloud-alert-symbolic.svg
+new file mode 100644
+index 0000000..e3ba26d
+--- /dev/null
++++ b/data/icons/scalable/status/luma-sync-cloud-alert-symbolic.svg
+@@ -0,0 +1,6 @@
++<!-- Lucide geometry, ISC; at Lucide's own 2 px stroke, with GTK 4.20+ symbolic stroke classes. -->
++<svg xmlns="http://www.w3.org/2000/svg" class="lucide lucide-cloud-alert" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
++  <path d="M12 12v4" class="transparent-fill foreground-stroke" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
++  <path d="M12 20h.01" class="transparent-fill foreground-stroke" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
++  <path d="M17 18h.5a1 1 0 0 0 0-9h-1.79A7 7 0 1 0 7 17.708" class="transparent-fill foreground-stroke" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
++</svg>
+diff --git a/data/icons/scalable/status/luma-sync-cloud-off-symbolic.svg b/data/icons/scalable/status/luma-sync-cloud-off-symbolic.svg
+new file mode 100644
+index 0000000..1980541
+--- /dev/null
++++ b/data/icons/scalable/status/luma-sync-cloud-off-symbolic.svg
+@@ -0,0 +1,6 @@
++<!-- Lucide geometry, ISC; at Lucide's own 2 px stroke, with GTK 4.20+ symbolic stroke classes. -->
++<svg xmlns="http://www.w3.org/2000/svg" class="lucide lucide-cloud-off" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
++  <path d="m2 2 20 20" class="transparent-fill foreground-stroke" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
++  <path d="M5.782 5.782A7 7 0 0 0 9 19h8.5a4.5 4.5 0 0 0 1.307-.193" class="transparent-fill foreground-stroke" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
++  <path d="M21.532 16.5A4.5 4.5 0 0 0 17.5 10h-1.79A7.008 7.008 0 0 0 10 5.07" class="transparent-fill foreground-stroke" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
++</svg>
+diff --git a/data/icons/scalable/status/luma-sync-cloud-symbolic.svg b/data/icons/scalable/status/luma-sync-cloud-symbolic.svg
+new file mode 100644
+index 0000000..1989129
+--- /dev/null
++++ b/data/icons/scalable/status/luma-sync-cloud-symbolic.svg
+@@ -0,0 +1,4 @@
++<!-- Lucide geometry, ISC; at Lucide's own 2 px stroke, with GTK 4.20+ symbolic stroke classes. -->
++<svg xmlns="http://www.w3.org/2000/svg" class="lucide lucide-cloud" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
++  <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" class="transparent-fill foreground-stroke" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
++</svg>
+diff --git a/data/icons/scalable/status/luma-sync-key-round-symbolic.svg b/data/icons/scalable/status/luma-sync-key-round-symbolic.svg
+new file mode 100644
+index 0000000..403c696
+--- /dev/null
++++ b/data/icons/scalable/status/luma-sync-key-round-symbolic.svg
+@@ -0,0 +1,5 @@
++<!-- Lucide geometry, ISC; at Lucide's own 2 px stroke, with GTK 4.20+ symbolic stroke classes. -->
++<svg xmlns="http://www.w3.org/2000/svg" class="lucide lucide-key-round" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
++  <path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z" class="transparent-fill foreground-stroke" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
++  <circle cx="16.5" cy="7.5" r=".5" class="foreground-fill foreground-stroke" stroke-width="2" />
++</svg>
+diff --git a/data/icons/scalable/status/luma-sync-laptop-symbolic.svg b/data/icons/scalable/status/luma-sync-laptop-symbolic.svg
+new file mode 100644
+index 0000000..ca69bf4
+--- /dev/null
++++ b/data/icons/scalable/status/luma-sync-laptop-symbolic.svg
+@@ -0,0 +1,5 @@
++<!-- Lucide geometry, ISC; at Lucide's own 2 px stroke, with GTK 4.20+ symbolic stroke classes. -->
++<svg xmlns="http://www.w3.org/2000/svg" class="lucide lucide-laptop" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
++  <path d="M18 5a2 2 0 0 1 2 2v8.526a2 2 0 0 0 .212.897l1.068 2.127a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45l1.068-2.127A2 2 0 0 0 4 15.526V7a2 2 0 0 1 2-2z" class="transparent-fill foreground-stroke" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
++  <path d="M20.054 15.987H3.946" class="transparent-fill foreground-stroke" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
++</svg>
+diff --git a/data/icons/scalable/status/luma-sync-loader-circle-symbolic.svg b/data/icons/scalable/status/luma-sync-loader-circle-symbolic.svg
+new file mode 100644
+index 0000000..4131cf9
+--- /dev/null
++++ b/data/icons/scalable/status/luma-sync-loader-circle-symbolic.svg
+@@ -0,0 +1,4 @@
++<!-- Lucide geometry, ISC; at Lucide's own 2 px stroke, with GTK 4.20+ symbolic stroke classes. -->
++<svg xmlns="http://www.w3.org/2000/svg" class="lucide lucide-loader-circle" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
++  <path d="M21 12a9 9 0 1 1-6.219-8.56" class="transparent-fill foreground-stroke" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
++</svg>
+diff --git a/data/icons/scalable/status/luma-sync-refresh-cw-symbolic.svg b/data/icons/scalable/status/luma-sync-refresh-cw-symbolic.svg
+new file mode 100644
+index 0000000..7fcdb19
+--- /dev/null
++++ b/data/icons/scalable/status/luma-sync-refresh-cw-symbolic.svg
+@@ -0,0 +1,7 @@
++<!-- Lucide geometry, ISC; at Lucide's own 2 px stroke, with GTK 4.20+ symbolic stroke classes. -->
++<svg xmlns="http://www.w3.org/2000/svg" class="lucide lucide-refresh-cw" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
++  <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" class="transparent-fill foreground-stroke" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
++  <path d="M21 3v5h-5" class="transparent-fill foreground-stroke" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
++  <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" class="transparent-fill foreground-stroke" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
++  <path d="M8 16H3v5" class="transparent-fill foreground-stroke" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
++</svg>
+diff --git a/data/icons/scalable/status/luma-sync-smartphone-symbolic.svg b/data/icons/scalable/status/luma-sync-smartphone-symbolic.svg
+new file mode 100644
+index 0000000..302f628
+--- /dev/null
++++ b/data/icons/scalable/status/luma-sync-smartphone-symbolic.svg
+@@ -0,0 +1,5 @@
++<!-- Lucide geometry, ISC; at Lucide's own 2 px stroke, with GTK 4.20+ symbolic stroke classes. -->
++<svg xmlns="http://www.w3.org/2000/svg" class="lucide lucide-smartphone" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
++  <rect width="14" height="20" x="5" y="2" rx="2" ry="2" class="transparent-fill foreground-stroke" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
++  <path d="M12 18h.01" class="transparent-fill foreground-stroke" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
++</svg>
+diff --git a/data/icons/scalable/status/luma-sync-tv-symbolic.svg b/data/icons/scalable/status/luma-sync-tv-symbolic.svg
+new file mode 100644
+index 0000000..8507164
+--- /dev/null
++++ b/data/icons/scalable/status/luma-sync-tv-symbolic.svg
+@@ -0,0 +1,5 @@
++<!-- Lucide geometry, ISC; at Lucide's own 2 px stroke, with GTK 4.20+ symbolic stroke classes. -->
++<svg xmlns="http://www.w3.org/2000/svg" class="lucide lucide-tv" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
++  <path d="m17 2-5 5-5-5" class="transparent-fill foreground-stroke" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
++  <rect width="20" height="15" x="2" y="7" rx="2" class="transparent-fill foreground-stroke" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
++</svg>
+diff --git a/data/theme/luma-shelf.css b/data/theme/luma-shelf.css
+index a1a877f..ae75eb6 100644
+--- a/data/theme/luma-shelf.css
++++ b/data/theme/luma-shelf.css
+@@ -3449,3 +3449,163 @@ StBoxLayout.luma-notification-tray.luma-surface-dark .luma-notification-tray-cou
+ /* The dock's tile is already a plate (the overview icon's gradient and
+  * shadow): an app icon without a plate of its own sits on that one. */
+ .luma-shelf-dock-island #dash .dash-item-container .overview-tile .overview-icon .luma-app-icon-plate { background-color: transparent; }
++
++/* ── Luma Connect Sync (design-center 38858a5, mockups/connect-sync) ─────── */
++/* Tones (cs.css): ok oklch(0.74 0.13 150) = #69c27e, warn oklch(0.8 0.14 75)
++ * = #f2af48, bad oklch(0.7 0.17 25) = #f66d67. */
++.luma-sync-ok { color: #69c27e; }
++.luma-sync-warn { color: #f2af48; }
++.luma-sync-bad { color: #f66d67; }
++.luma-status-cluster .luma-status-slot .system-status-icon.luma-sync-warn { color: #f2af48; }
++.luma-status-cluster .luma-status-slot .system-status-icon.luma-sync-bad { color: #f66d67; }
++
++/* The status cell: one of the island's slots, its own button. */
++.luma-sync-cell { padding: 0; border-radius: 8px; }
++.luma-sync-cell:hover { background-color: rgba(255,255,255,.08); }
++.luma-sync-cell-phone { margin: 0 6px; }
++.luma-sync-cell-tv { margin: 0 18px 0 0; }
++.luma-sync-cell-phone .luma-sync-glyph, .luma-sync-cell-tv .luma-sync-glyph { icon-size: 16px; }
++
++/* The popover (cs.js pop(): .pop.k-qs .q2 with .cs-pop), the shell pop: 312 px.
++ * The menu content's own inset puts the title 6 px left of the rest (.q2h). */
++.luma-sync-popover .popup-menu-content.luma-sync-pop,
++.luma-sync-pop.luma-sync-sheet {
++  width: 298px; padding: 14px 4px 12px 10px; spacing: 0; border-radius: 26px; border: none;
++  background-color: rgba(32,33,36,.86); color: #e7e9e8; font-family: Figtree;
++  box-shadow: inset 0 0 0 1px rgba(255,255,255,.16); }
++/* The message may run 12 px into the right inset: Pango sets the reference's one-line
++ * sentences a few pixels wider than Chromium. */
++.luma-sync-pop-head { height: 20px; margin-right: 12px; }
++.luma-sync-pop-title { font-size: 14.5px; font-weight: 650; letter-spacing: -0.145px; }
++.luma-sync-line { margin: 18px 12px 0 6px; padding: 4px 2px; spacing: 12px; }
++.luma-sync-tile { width: 36px; height: 36px; border-radius: 10px; background-color: rgba(255,255,255,.07); }
++.luma-sync-tile-glyph { icon-size: 18px; color: #e7e9e8; }
++.luma-sync-words { spacing: 1px; }
++.luma-sync-title { font-size: 13px; font-weight: 650; }
++.luma-sync-sub { font-size: 11.5px; color: rgba(231,233,232,.62); }
++.luma-sync-prog { margin: 18px 12px 0 6px; height: 4px; border-radius: 2px; background-color: rgba(0,0,0,.2); }
++.luma-sync-prog-fill { height: 4px; border-radius: 2px; background-color: #3584e4; }
++.luma-sync-msg { margin: 20px 0 0 8px; font-size: 12px; color: rgba(231,233,232,.62); }
++.luma-sync-row { margin: 18px 12px 0 6px; }
++.luma-sync-action { height: 28px; padding: 0 12px; border-radius: 9px; font-size: 12px; font-weight: 650;
++  color: #e7e9e8; background-color: rgba(255,255,255,.12); }
++.luma-sync-action:hover, .luma-sync-action:focus { background-color: rgba(255,255,255,.17); }
++.luma-sync-link { height: 28px; margin: 14px 0 0 4px; padding: 0 8px; border-radius: 8px;
++  font-size: 12px; font-weight: 600; color: #e7e9e8; }
++.luma-sync-link:hover, .luma-sync-link:focus { background-color: rgba(255,255,255,.08); }
++/* Light surfaces: the desktop pop's light rule stands alone to outrank its dark rule. */
++.luma-sync-popover .popup-menu-content.luma-sync-pop.luma-surface-light {
++  background-color: #eceef1; color: #16191d; box-shadow: 0 4px 12px rgba(0,0,0,.2); }
++.luma-sync-pop.luma-surface-light {
++  background-color: #eceef1; color: #16191d; box-shadow: 0 4px 12px rgba(0,0,0,.2); }
++.luma-surface-light .luma-sync-tile { background-color: rgba(20,22,26,.05); }
++.luma-surface-light .luma-sync-tile-glyph { color: #16191d; }
++.luma-surface-light .luma-sync-sub, .luma-surface-light .luma-sync-msg { color: rgba(22,25,29,.76); }
++.luma-surface-light .luma-sync-prog { background-color: rgba(25,27,31,.055); }
++.luma-surface-light .luma-sync-action { color: #16191d; background-color: rgba(20,22,26,.09); }
++.luma-surface-light .luma-sync-action:hover, .luma-surface-light .luma-sync-action:focus { background-color: rgba(20,22,26,.14); }
++.luma-surface-light .luma-sync-link { color: #16191d; }
++.luma-surface-light .luma-sync-link:hover { background-color: rgba(25,27,31,.06); }
++.luma-surface-light .luma-sync-tile-glyph.luma-sync-ok { color: #69c27e; }
++.luma-surface-light .luma-sync-tile-glyph.luma-sync-warn { color: #f2af48; }
++.luma-surface-light .luma-sync-tile-glyph.luma-sync-bad { color: #f66d67; }
++.luma-sync-tile-glyph.luma-sync-ok { color: #69c27e; }
++.luma-sync-tile-glyph.luma-sync-warn { color: #f2af48; }
++.luma-sync-tile-glyph.luma-sync-bad { color: #f66d67; }
++/* Phone: a bottom drawer, full width. TV: a page at TV scale (x1.5), top right. */
++.luma-sync-sheet-shade { background-color: rgba(0,0,0,.32); }
++/* Phone: a bottom drawer (status.html ?posture=phone, cs.css .cs-drawer): 400 px, radius 28 at the
++ * top, a grab handle, a 44 px tile, and the action and Sync settings as 44 px buttons side by side. */
++.luma-sync-pop.luma-sync-sheet.luma-sync-phone { width: auto; padding: 10px 20px 30px; border-radius: 28px 28px 0 0;
++  background-color: #1d2026; box-shadow: none; color: #eceef1; }
++.luma-sync-pop.luma-sync-sheet.luma-sync-phone.luma-surface-light { background-color: #f4f5f7; box-shadow: none; color: #1f2328; }
++.luma-sync-phone .luma-sync-grab { width: 36px; height: 4px; margin-bottom: 16px; border-radius: 2px; background-color: rgba(236,238,241,.25); }
++.luma-sync-phone.luma-surface-light .luma-sync-grab { background-color: rgba(31,35,40,.25); }
++.luma-sync-phone .luma-sync-dh { font-size: 17px; font-weight: 650; }
++.luma-sync-phone .luma-sync-line { margin: 16px 0 0; padding: 0; spacing: 14px; }
++.luma-sync-phone .luma-sync-tile { width: 44px; height: 44px; border-radius: 12px; background-color: rgba(127,127,127,.16); }
++.luma-sync-phone .luma-sync-words { spacing: 2px; }
++.luma-sync-phone .luma-sync-title { font-size: 15px; font-weight: 650; }
++.luma-sync-phone .luma-sync-sub { font-size: 13px; color: rgba(236,238,241,.62); }
++.luma-sync-phone.luma-surface-light .luma-sync-sub, .luma-sync-phone.luma-surface-light .luma-sync-msg { color: rgba(31,35,40,.62); }
++.luma-sync-phone .luma-sync-prog { margin: 16px 0 0; background-color: rgba(127,127,127,.2); }
++.luma-sync-phone .luma-sync-msg { margin: 14px 0 0; font-size: 14px; color: rgba(236,238,241,.62); }
++.luma-sync-dacts { margin-top: 20px; spacing: 10px; }
++.luma-sync-daction { height: 44px; border-radius: 14px; font-size: 15px; font-weight: 650; color: #eceef1; background-color: rgba(127,127,127,.2); }
++.luma-sync-phone.luma-surface-light .luma-sync-daction { color: #1f2328; }
++.luma-sync-sheet.luma-sync-tv { width: 447px; margin: 72px 72px 0 0; padding: 21px 6px 18px 15px; border-radius: 39px; }
++.luma-sync-tv .luma-sync-pop-head { height: 30px; margin-right: 18px; }
++.luma-sync-tv .luma-sync-pop-title { font-size: 21.75px; }
++.luma-sync-tv .luma-sync-line { margin: 27px 18px 0 9px; padding: 6px 3px; spacing: 18px; }
++.luma-sync-tv .luma-sync-tile { width: 54px; height: 54px; border-radius: 15px; }
++.luma-sync-tv .luma-sync-tile-glyph { icon-size: 27px; }
++.luma-sync-tv .luma-sync-title { font-size: 19.5px; }
++.luma-sync-tv .luma-sync-sub { font-size: 17.25px; }
++.luma-sync-tv .luma-sync-prog { margin: 27px 18px 0 9px; height: 6px; border-radius: 3px; }
++.luma-sync-tv .luma-sync-prog-fill { height: 6px; border-radius: 3px; }
++.luma-sync-tv .luma-sync-msg { margin: 30px 0 0 12px; font-size: 18px; }
++.luma-sync-tv .luma-sync-row { margin: 27px 18px 0 9px; }
++.luma-sync-tv .luma-sync-action { height: 36px; padding: 0 15px; border: 3px solid transparent; border-radius: 13.5px; font-size: 18px; }
++.luma-sync-tv .luma-sync-link { height: 36px; margin: 21px 0 0 6px; padding: 0 9px; border: 3px solid transparent; border-radius: 12px; font-size: 18px; }
++.luma-sync-tv .luma-sync-action:focus, .luma-sync-tv .luma-sync-link:focus { border-color: #ffffff; }
++
++/* The approval card (cs.css .cs-appr): Shell-owned, top centre, 400 px. */
++.luma-sync-appr { width: 400px; padding: 18px 20px; spacing: 0; border-radius: 22px; font-family: Figtree;
++  background-color: rgba(32,33,36,.94); color: #eceef1; box-shadow: 0 30px 70px rgba(0,0,0,.55); }
++.luma-sync-appr.luma-sync-light { background-color: #f1f2f3; color: #1f2328; box-shadow: 0 30px 70px rgba(0,0,0,.25); }
++.luma-sync-appr-from { spacing: 7px; height: 16px; }
++.luma-sync-appr-from-icon { icon-size: 16px; }
++.luma-sync-appr-from-text { font-size: 10px; font-weight: 700; color: rgba(236,238,241,.55); }
++.luma-sync-light .luma-sync-appr-from-text { color: rgba(31,35,40,.55); }
++.luma-sync-appr-head { min-height: 41px; margin-top: 14px; spacing: 12px; }
++.luma-sync-appr-tile { width: 40px; height: 40px; border-radius: 11px; background-color: rgba(255,255,255,.08); }
++.luma-sync-light .luma-sync-appr-tile { background-color: rgba(0,0,0,.05); }
++.luma-sync-appr-glyph { icon-size: 20px; }
++.luma-sync-appr-title { height: 22px; font-size: 16px; font-weight: 700; }
++.luma-sync-appr-sub { margin-top: 2px; font-size: 12px; color: rgba(236,238,241,.6); }
++.luma-sync-light .luma-sync-appr-sub { color: rgba(31,35,40,.6); }
++.luma-sync-appr-body { margin-top: 14px; font-size: 12.5px; color: rgba(236,238,241,.78); }
++.luma-sync-light .luma-sync-appr-body { color: rgba(31,35,40,.78); }
++.luma-sync-appr-code { margin-top: 12px; spacing: 8px; }
++/* 48 px wells as the reference's line-height 1 (Pango's line for the mono face is taller). */
++.luma-sync-appr-well { width: 55px; height: 43px; padding: 5px 12px 0; border-radius: 14px; font-family: monospace; font-size: 28px;
++  font-weight: 600; background-color: rgba(255,255,255,.07); }
++.luma-sync-light .luma-sync-appr-well { background-color: rgba(0,0,0,.05); }
++.luma-sync-appr-buttons { margin-top: 16px; spacing: 8px; }
++.luma-sync-appr-button { height: 36px; border-radius: 11px; font-size: 13px; font-weight: 650; color: #eceef1;
++  background-color: rgba(255,255,255,.1); }
++.luma-sync-appr-button:hover { background-color: rgba(255,255,255,.15); }
++.luma-sync-light .luma-sync-appr-button { color: #1f2328; background-color: rgba(0,0,0,.06); }
++.luma-sync-light .luma-sync-appr-button:hover { background-color: rgba(0,0,0,.1); }
++/* Phone: a bottom sheet, full width, 44 px buttons. */
++.luma-sync-appr-phone { width: auto; border-radius: 28px 28px 0 0; padding: 20px 20px 30px; }
++.luma-sync-appr-phone .luma-sync-appr-button { height: 44px; }
++/* TV: x1.5; the remote's focus is the reference's 3 px white ring at x1.5 (inside the button). */
++.luma-sync-appr-tv { width: 600px; padding: 27px 30px; border-radius: 33px; }
++.luma-sync-appr-tv .luma-sync-appr-from { spacing: 10.5px; height: 24px; }
++.luma-sync-appr-tv .luma-sync-appr-from-icon { icon-size: 24px; }
++.luma-sync-appr-tv .luma-sync-appr-from-text { font-size: 15px; }
++.luma-sync-appr-tv .luma-sync-appr-head { min-height: 61px; margin-top: 21px; spacing: 18px; }
++.luma-sync-appr-tv .luma-sync-appr-tile { width: 60px; height: 60px; border-radius: 16.5px; }
++.luma-sync-appr-tv .luma-sync-appr-glyph { icon-size: 30px; }
++.luma-sync-appr-tv .luma-sync-appr-title { height: 34px; font-size: 24px; }
++.luma-sync-appr-tv .luma-sync-appr-sub { margin-top: 3px; font-size: 18px; }
++.luma-sync-appr-tv .luma-sync-appr-body { margin-top: 21px; font-size: 18.75px; }
++.luma-sync-appr-tv .luma-sync-appr-code { margin-top: 18px; spacing: 12px; }
++.luma-sync-appr-tv .luma-sync-appr-well { width: 83px; height: 64px; padding: 8px 18px 0; border-radius: 21px; font-size: 42px; }
++/* B3: a card before its code (approve.html?early): the halves as dots at 35%, a turning loader and words at 70%. */
++.luma-sync-appr-wait { spacing: 6px; margin-left: 6px; }
++.luma-sync-appr-wait-icon { icon-size: 14px; }
++.luma-sync-appr-wait-text { font-size: 12.5px; font-weight: 500; }
++.luma-sync-appr-tv .luma-sync-appr-wait { spacing: 9px; margin-left: 9px; }
++.luma-sync-appr-tv .luma-sync-appr-wait-icon { icon-size: 21px; }
++.luma-sync-appr-tv .luma-sync-appr-wait-text { font-size: 18.75px; }
++.luma-sync-appr-tv .luma-sync-appr-buttons { margin-top: 24px; spacing: 12px; }
++.luma-sync-appr-tv .luma-sync-appr-button { height: 44px; border: 5px solid transparent; border-radius: 16.5px; font-size: 19.5px; }
++.luma-sync-appr-tv .luma-sync-appr-button:focus { border-color: #ffffff; }
++
++/* An app still restoring (restore.html .cs-tile): the ring in the accent. */
++.luma-sync-restore-ring { color: -st-accent-color; }
++.luma-sync-restore-caption { font-size: 11px; color: rgba(255,255,255,.6); }
++
++
+diff --git a/js/js-resources.gresource.xml b/js/js-resources.gresource.xml
+index 367a761..a189aa1 100644
+--- a/js/js-resources.gresource.xml
++++ b/js/js-resources.gresource.xml
+@@ -131,6 +131,9 @@
+     <file>ui/lumaSealCopy.js</file>
+     <file>ui/lumaSealGlyph.js</file>
+     <file>ui/lumaShare.js</file>
++    <file>ui/lumaConnectSync.js</file>
++    <file>ui/lumaConnectSyncModel.js</file>
++    <file>ui/lumaConnectSyncRestore.js</file>
+     <file>ui/lumaPermissionOffer.js</file>
+     <file>ui/lumaAppPermissions.js</file>
+     <file>ui/lumaAppPermissionsModel.js</file>
+diff --git a/js/ui/appDisplay.js b/js/ui/appDisplay.js
+index ec720ed..32b5990 100644
+--- a/js/ui/appDisplay.js
++++ b/js/ui/appDisplay.js
+@@ -24,6 +24,7 @@ import * as SessionApplications from './sessionApplications.js';
+ import * as SwipeTracker from './swipeTracker.js';
+ import * as SystemActions from '../misc/systemActions.js';
+ 
++import * as LumaSyncRestore from './lumaConnectSyncRestore.js';
+ import * as Main from './main.js';
+ import * as LumaWindowMotion from './lumaWindowMotion.js';
+ 
+@@ -2968,6 +2969,9 @@ export const AppIcon = GObject.registerClass({
+         this._menu = null;
+         this._menuManager = new PopupMenu.PopupMenuManager(this);
+ 
++        // Still restoring from the person's other devices (Connect Sync).
++        LumaSyncRestore.attach(this);
++
+         this._sessionApplications = SessionApplications.getDefault();
+         this.app.connectObject('notify::state',
+             () => this._updateRunningStyle(), this);
+@@ -3061,6 +3065,12 @@ export const AppIcon = GObject.registerClass({
+     }
+ 
+     activate(button) {
++        // An app still restoring opens its row in Valet, not a launch that
++        // would find none of its data.
++        if (LumaSyncRestore.redirect(this.app)) {
++            Main.overview.hide();
++            return;
++        }
+         const event = Clutter.get_current_event();
+         const modifiers = event ? event.get_state() : 0;
+         const isMiddleButton = button && button === Clutter.BUTTON_MIDDLE;
+diff --git a/js/ui/lumaConnectSync.js b/js/ui/lumaConnectSync.js
+new file mode 100644
+index 0000000..59b750e
+--- /dev/null
++++ b/js/ui/lumaConnectSync.js
+@@ -0,0 +1,836 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++// Luma Connect Sync in the Shell (ADR-054; design-center 38858a5,
++// mockups/connect-sync: approve.html, status.html, cs.css, cs.js).
++//
++// - The approval card: when another device asks to join, every device that
++//   syncs shows a Shell-owned card at the top centre, above windows: the
++//   source line, "Approve ThinkPad?", the six digits in two wells, and Not
++//   me and Approve at equal width. It stays until it is answered here or on
++//   another device (JoinCleared, or the request leaves ListJoinRequests);
++//   it never times out on its own. Not me denies the request, which tells
++//   the new device. Phone: a bottom sheet with 44 px buttons. TV: x1.5 with
++//   the remote's focus on Not me.
++// - The status cell: in the island's status slots only while there's
++//   something to say (syncing, paused, needs attention); a click opens the
++//   popover (state, one sentence, at most one action, Sync settings).
++//   Phone: in the status bar's right group, the popover a bottom drawer;
++//   TV: in the top bar's status group, the popover a page at TV scale.
++// - Banners: storage full and removed from Sync post one standard banner
++//   each; conflicts never do.
++// - Restoring apps: lumaConnectSyncRestore.js marks their tiles; Valet opens
++//   once when apps start arriving after a join.
++import Clutter from 'gi://Clutter';
++import GLib from 'gi://GLib';
++import Gio from 'gi://Gio';
++import Pango from 'gi://Pango';
++import Shell from 'gi://Shell';
++import St from 'gi://St';
++
++import * as Main from './main.js';
++import * as MessageTray from './messageTray.js';
++import * as PopupMenu from './popupMenu.js';
++import * as SurfaceMaterials from './lumaSurfaceMaterials.js';
++import * as Model from './lumaConnectSyncModel.js';
++import * as Restore from './lumaConnectSyncRestore.js';
++
++const BUS_NAME = 'org.projectluma.ConnectSync1';
++const OBJECT_PATH = '/org/projectluma/ConnectSync1';
++const INTERFACE = 'org.projectluma.ConnectSync1';
++const CONNECT_ICON = 'org.projectluma.Connect';
++// While a card is up, the requests are read again this often, so a card
++// answered on another device leaves even if its JoinCleared was missed.
++const CARD_RECHECK_S = 20;
++const EARLY_RECHECK_S = 2;
++
++export function posture() {
++    if (Main.presentation?._state?.posture?.effective === 'tv')
++        return 'tv';
++    return Main.presentation?.mode === 'mobile' ? 'phone' : 'desktop';
++}
++
++function now() {
++    return Math.floor(GLib.get_real_time() / GLib.USEC_PER_SEC);
++}
++
++function icon(name, size, styleClass = '') {
++    return new St.Icon({icon_name: name, icon_size: size, style_class: styleClass});
++}
++
++export function openSettings(route) {
++    const app = Shell.AppSystem.get_default().lookup_app('org.gnome.Settings.desktop');
++    const param = new GLib.Variant('av', [new GLib.Variant('(sav)',
++        ['users', route.map(part => new GLib.Variant('s', part))])]);
++    Main.overview.hide();
++    app?.activate_action('launch-panel', param, 0, -1, null).catch(e =>
++        log(`Failed to open Sync settings: ${e.message}`));
++}
++
++// ── The service ─────────────────────────────────────────────────────────
++class Service {
++    constructor(handlers) {
++        this._handlers = handlers;
++        this._signals = [];
++        this._watch = Gio.bus_watch_name(Gio.BusType.SESSION, BUS_NAME, Gio.BusNameWatcherFlags.NONE,
++            () => this._appeared(), () => this._vanished());
++    }
++
++    _appeared() {
++        const bus = Gio.DBus.session;
++        for (const [name, handler] of Object.entries(this._handlers.signals)) {
++            this._signals.push(bus.signal_subscribe(BUS_NAME, INTERFACE, name, OBJECT_PATH, null,
++                Gio.DBusSignalFlags.NONE, (_c, _s, _p, _i, _n, params) => handler(params.deepUnpack())));
++        }
++        this.present = true;
++        this._handlers.appeared();
++    }
++
++    _vanished() {
++        for (const id of this._signals)
++            Gio.DBus.session.signal_unsubscribe(id);
++        this._signals = [];
++        this.present = false;
++        this._handlers.vanished();
++    }
++
++    async call(method, params = null, replyType = null, timeout = 30000) {
++        const reply = await Gio.DBus.session.call(BUS_NAME, OBJECT_PATH, INTERFACE, method, params,
++            replyType ? new GLib.VariantType(replyType) : null,
++            Gio.DBusCallFlags.NO_AUTO_START | Gio.DBusCallFlags.ALLOW_INTERACTIVE_AUTHORIZATION,
++            timeout, null);
++        return reply?.deepUnpack();
++    }
++
++    async json(method) {
++        const [text] = await this.call(method, null, '(s)');
++        return JSON.parse(text);
++    }
++
++    destroy() {
++        this._vanished();
++        Gio.bus_unwatch_name(this._watch);
++    }
++}
++
++// ── The status cell and its popover ────────────────────────────────────
++// One of the island's status slots (it has .icon, as the others do, so the
++// island sizes it); its own button, so a press opens the popover and never
++// Quick Options.
++class StatusCell {
++    constructor(onActivate) {
++        this.actor = new St.Button({
++            style_class: 'luma-status-slot luma-sync-cell',
++            reactive: true, can_focus: true, track_hover: true, visible: false,
++            y_align: Clutter.ActorAlign.CENTER,
++        });
++        this.actor._lumaSyncCell = true;
++        this.actor.icon = icon(Model.ICON['refresh-cw'], 16, 'system-status-icon luma-sync-glyph');
++        this.actor.icon.x_expand = true;
++        this.actor.icon.x_align = Clutter.ActorAlign.CENTER;
++        this.actor.set_child(this.actor.icon);
++        this.actor.connect('clicked', () => onActivate(this.actor));
++    }
++
++    set(view) {
++        this.actor.icon.icon_name = view.icon;
++        for (const tone of ['ok', 'warn', 'bad'])
++            this.actor.icon.remove_style_class_name(`luma-sync-${tone}`);
++        if (view.tone)
++            this.actor.icon.add_style_class_name(`luma-sync-${view.tone}`);
++        this.actor.accessible_name = view.title;
++    }
++}
++
++// The popover's content (cs.js pop()), the same in the desktop pop, the
++// phone drawer and the TV page.
++export function fillPopover(box, view, {onAction, onSettings, header = true, phone = false}) {
++    box.destroy_all_children();
++    // Phone (status.html ?posture=phone): a bottom drawer with a grab handle, a larger tile and
++    // words, and the action and Sync settings side by side as 44 px buttons.
++    if (phone) {
++        box.add_child(new St.Widget({style_class: 'luma-sync-grab', x_align: Clutter.ActorAlign.CENTER}));
++        box.add_child(new St.Label({style_class: 'luma-sync-dh', text: Model.POPOVER_TITLE}));
++    } else if (header) {
++        const head = new St.BoxLayout({style_class: 'luma-sync-pop-head'});
++        head.add_child(new St.Label({style_class: 'luma-sync-pop-title', text: Model.POPOVER_TITLE, x_expand: true}));
++        box.add_child(head);
++    }
++    const line = new St.BoxLayout({style_class: 'luma-sync-line'});
++    const tile = new St.Bin({style_class: 'luma-sync-tile', y_align: Clutter.ActorAlign.CENTER});
++    const glyph = icon(view.icon, phone ? 22 : 18, 'luma-sync-tile-glyph');
++    if (view.tone)
++        glyph.add_style_class_name(`luma-sync-${view.tone}`);
++    tile.set_child(glyph);
++    line.add_child(tile);
++    const words = new St.BoxLayout({orientation: Clutter.Orientation.VERTICAL, style_class: 'luma-sync-words',
++        y_align: Clutter.ActorAlign.CENTER, x_expand: true});
++    words.add_child(new St.Label({style_class: 'luma-sync-title', text: view.title}));
++    if (view.sub)
++        words.add_child(new St.Label({style_class: 'luma-sync-sub', text: view.sub}));
++    line.add_child(words);
++    box.add_child(line);
++    if (view.progress !== null && view.progress !== undefined) {
++        const track = new St.BoxLayout({style_class: 'luma-sync-prog', x_expand: true});
++        const fill = new St.Widget({style_class: 'luma-sync-prog-fill', y_expand: true});
++        track.add_child(fill);
++        track.connect('notify::width', () => fill.set_width(Math.round(track.width * view.progress)));
++        box.add_child(track);
++    }
++    let focus = null;
++    if (view.message) {
++        const message = paragraph('luma-sync-msg', view.message, phone ? 20 : posture() === 'tv' ? 26.1 : 17.4);
++        box.add_child(message);
++    }
++    if (phone) {
++        const row = new St.BoxLayout({style_class: 'luma-sync-dacts', x_expand: true});
++        row.layout_manager.homogeneous = true;
++        const labels = view.action ? [view.action, Model.SETTINGS_LINK] : [Model.SETTINGS_LINK];
++        for (const text of labels) {
++            const button = new St.Button({style_class: 'luma-sync-daction', label: text, can_focus: true, x_expand: true});
++            button.connect('clicked', () => text === view.action ? onAction(view.action, view.subject ?? null) : onSettings());
++            row.add_child(button);
++            focus ??= button;
++        }
++        box.add_child(row);
++        return focus;
++    }
++    if (view.action) {
++        const row = new St.BoxLayout({style_class: 'luma-sync-row'});
++        const button = new St.Button({style_class: 'luma-sync-action', label: view.action, can_focus: true});
++        button.connect('clicked', () => onAction(view.action, view.subject ?? null));
++        row.add_child(button);
++        box.add_child(row);
++        focus = button;
++    }
++    const more = new St.Button({style_class: 'luma-sync-link', label: Model.SETTINGS_LINK, can_focus: true,
++        x_align: Clutter.ActorAlign.START});
++    more.connect('clicked', () => onSettings());
++    box.add_child(more);
++    return focus ?? more;
++}
++
++// Desktop: a shelf surface from the island (lumaShelfSurface.js places it);
++// phone: a bottom drawer (status.html ?posture=phone); TV: a page at TV scale at the top right.
++class StatusPopover {
++    constructor(handlers) {
++        this._handlers = handlers;
++        this._view = null;
++    }
++
++    get isOpen() {
++        return !!(this._menu?.isOpen || this._sheet?.visible);
++    }
++
++    setView(view) {
++        this._view = view;
++        if (!view)
++            this.close();
++        else if (this.isOpen)
++            this._fill(this._menu?.isOpen ? this._menu.box : this._sheetBox);
++    }
++
++    _fill(box, header = true) {
++        return fillPopover(box, this._view, {
++            header,
++            phone: box === this._sheetBox && this._sheetBox?.has_style_class_name('luma-sync-phone'),
++            onAction: (action, subject) => {
++                this.close();
++                this._handlers.onAction(action, subject);
++            },
++            onSettings: () => {
++                this.close();
++                openSettings(Model.ROUTE.settings);
++            },
++        });
++    }
++
++    toggle(source) {
++        if (this.isOpen) {
++            this.close();
++            return;
++        }
++        if (!this._view)
++            return;
++        const where = posture();
++        if (where === 'desktop')
++            this._openMenu(source);
++        else
++            this._openSheet(where);
++    }
++
++    _openMenu(source) {
++        if (this._menu?.sourceActor !== source) {
++            this._menu?.destroy();
++            this._menu = new PopupMenu.PopupMenu(source, 0.5, St.Side.BOTTOM);
++            this._menu.actor.add_style_class_name('luma-sync-popover');
++            this._menu.box.add_style_class_name('luma-sync-pop');
++            SurfaceMaterials.bindSurface(this._menu.box, {
++                cornerRadii: 26 * St.ThemeContext.get_for_stage(global.stage).scale_factor,
++                classActors: [this._menu.actor, this._menu.box],
++            });
++            Main.uiGroup.add_child(this._menu.actor);
++            this._menu.actor.hide();
++            Main.panel.menuManager.addMenu(this._menu);
++        }
++        this._fill(this._menu.box);
++        this._menu.open(true);
++    }
++
++    _openSheet(where) {
++        if (!this._sheet) {
++            this._sheet = new St.Widget({style_class: 'luma-sync-sheet-shade', reactive: true,
++                layout_manager: new Clutter.BinLayout(), visible: false});
++            this._sheetBox = new St.BoxLayout({style_class: 'luma-sync-pop luma-sync-sheet',
++                orientation: Clutter.Orientation.VERTICAL, reactive: true});
++            this._sheet.add_child(this._sheetBox);
++            SurfaceMaterials.bindSurface(this._sheetBox, {classActors: [this._sheetBox]});
++            const tap = new Clutter.ClickGesture();
++            tap.connect('may-recognize', g =>
++                global.stage.get_event_actor(g.get_point_event(0)) === this._sheet);
++            tap.connect('recognize', () => this.close());
++            this._sheet.add_action(tap);
++            this._sheet.connect('key-press-event', (_a, event) => {
++                if (event.get_key_symbol() === Clutter.KEY_Escape ||
++                    event.get_key_symbol() === Clutter.KEY_Back) {
++                    this.close();
++                    return Clutter.EVENT_STOP;
++                }
++                return global.focus_manager.navigate_from_event(event)
++                    ? Clutter.EVENT_STOP : Clutter.EVENT_PROPAGATE;
++            });
++            Main.layoutManager.addTopChrome(this._sheet);
++        }
++        const monitor = Main.layoutManager.primaryMonitor;
++        this._sheet.set_position(monitor.x, monitor.y);
++        this._sheet.set_size(monitor.width, monitor.height);
++        this._sheetBox.remove_style_class_name('luma-sync-phone');
++        this._sheetBox.remove_style_class_name('luma-sync-tv');
++        this._sheetBox.add_style_class_name(where === 'tv' ? 'luma-sync-tv' : 'luma-sync-phone');
++        if (where === 'tv') {
++            this._sheetBox.set({x_align: Clutter.ActorAlign.END, y_align: Clutter.ActorAlign.START,
++                x_expand: true, y_expand: true});
++        } else {
++            this._sheetBox.set({x_align: Clutter.ActorAlign.FILL, y_align: Clutter.ActorAlign.END,
++                x_expand: true, y_expand: true});
++        }
++        const focus = this._fill(this._sheetBox);
++        this._sheet.show();
++        this._grab = Main.pushModal(this._sheet);
++        (where === 'tv' ? focus : this._sheetBox)?.grab_key_focus();
++    }
++
++    close() {
++        if (this._menu?.isOpen)
++            this._menu.close(true);
++        if (this._sheet?.visible) {
++            this._sheet.hide();
++            if (this._grab)
++                Main.popModal(this._grab);
++            this._grab = null;
++        }
++    }
++
++    destroy() {
++        this.close();
++        this._menu?.destroy();
++        this._sheet?.destroy();
++    }
++}
++
++// A label with letter spacing (.cs-from .08em, .cs-code .06em) that is never
++// cut short.
++function spaced(styleClass, text, px) {
++    const label = new St.Label({style_class: styleClass, y_align: Clutter.ActorAlign.CENTER});
++    label.clutter_text.set_markup(
++        `<span letter_spacing="${Math.round(px * 1024)}">${GLib.markup_escape_text(text, -1)}</span>`);
++    // Pango counts the last letter's spacing when it ellipsizes, not when it measures.
++    label.clutter_text.ellipsize = Pango.EllipsizeMode.NONE;
++    return label;
++}
++
++// Wrapping words with the design's line height (cs.css line-height 1.45),
++// which St's CSS has no property for.
++function paragraph(styleClass, text, lineHeight) {
++    const label = new St.Label({style_class: styleClass});
++    label.clutter_text.set_markup(
++        `<span line_height="${Math.round(lineHeight * 1024)}">${GLib.markup_escape_text(text, -1)}</span>`);
++    label.clutter_text.ellipsize = Pango.EllipsizeMode.NONE;
++    label.clutter_text.line_wrap = true;
++    label.clutter_text.line_wrap_mode = Pango.WrapMode.WORD_CHAR;
++    return label;
++}
++
++// ── The approval card ───────────────────────────────────────────────────
++// Shell-owned, not a notification and not an app window: top centre, above
++// windows (cs.css .cs-appr).
++class ApprovalCard {
++    constructor(request, answer) {
++        this.request = request;
++        const view = Model.card(request);
++        this._where = posture();
++        this.actor = new St.BoxLayout({style_class: `luma-sync-appr luma-sync-appr-${this._where}`,
++            orientation: Clutter.Orientation.VERTICAL, reactive: true});
++        // Its own solid fill (cs.css .cs-appr), light or dark with the appearance.
++        if (SurfaceMaterials.LIGHT_FAMILY.has(SurfaceMaterials.effectiveTreatment()))
++            this.actor.add_style_class_name('luma-sync-light');
++        const from = new St.BoxLayout({style_class: 'luma-sync-appr-from'});
++        // The whole source line is at 55% (cs.css .cs-from), its icon too.
++        from.add_child(new St.Icon({gicon: new Gio.ThemedIcon({name: CONNECT_ICON}),
++            style_class: 'luma-sync-appr-from-icon', y_align: Clutter.ActorAlign.CENTER, opacity: 140}));
++        from.add_child(spaced('luma-sync-appr-from-text', view.source.toLocaleUpperCase(),
++            this._where === 'tv' ? 1.2 : 0.8));
++        this.actor.add_child(from);
++        const head = new St.BoxLayout({style_class: 'luma-sync-appr-head'});
++        const tile = new St.Bin({style_class: 'luma-sync-appr-tile', y_align: Clutter.ActorAlign.CENTER});
++        tile.set_child(new St.Icon({icon_name: view.icon, style_class: 'luma-sync-appr-glyph'}));
++        head.add_child(tile);
++        const words = new St.BoxLayout({orientation: Clutter.Orientation.VERTICAL,
++            y_align: Clutter.ActorAlign.CENTER, x_expand: true});
++        words.add_child(new St.Label({style_class: 'luma-sync-appr-title', text: view.title}));
++        words.add_child(new St.Label({style_class: 'luma-sync-appr-sub', text: view.sub}));
++        head.add_child(words);
++        this.actor.add_child(head);
++        this._body = paragraph('luma-sync-appr-body', view.body, this._where === 'tv' ? 27.19 : 18.13);
++        this.actor.add_child(this._body);
++        this._code = new St.BoxLayout({style_class: 'luma-sync-appr-code'});
++        this._fillCode(view);
++        this.actor.add_child(this._code);
++        // Not me and Approve at equal width: neither is the default.
++        const buttons = new St.BoxLayout({style_class: 'luma-sync-appr-buttons'});
++        buttons.layout_manager.homogeneous = true;
++        this._buttons = view.buttons.map((label, index) => {
++            const button = new St.Button({style_class: 'luma-sync-appr-button', label, can_focus: true,
++                x_expand: true});
++            button.connect('clicked', () => answer(this, index === 1));
++            buttons.add_child(button);
++            return button;
++        });
++        this.actor.add_child(buttons);
++        this._setEarly(view.early);
++        this._focusIndex = view.focus;
++        this.actor.connect('key-press-event', (_a, event) =>
++            global.focus_manager.navigate_from_event(event) ? Clutter.EVENT_STOP : Clutter.EVENT_PROPAGATE);
++    }
++
++    // The two halves of the code; before it exists (B3), "··· ···" at 35% and a turning loader.
++    _fillCode(view) {
++        this._code.destroy_all_children();
++        const spacing = this._where === 'tv' ? 2.52 : 1.68;
++        this._code.remove_style_class_name('luma-sync-appr-code-wait');
++        if (!view.early) {
++            for (const group of view.code)
++                this._code.add_child(spaced('luma-sync-appr-well', group, spacing));
++            return;
++        }
++        this._code.add_style_class_name('luma-sync-appr-code-wait');
++        for (let i = 0; i < 2; i++) {
++            const dots = spaced('luma-sync-appr-well', '···', spacing);
++            dots.opacity = Math.round(0.35 * 255);
++            this._code.add_child(dots);
++        }
++        const wait = new St.BoxLayout({style_class: 'luma-sync-appr-wait', y_align: Clutter.ActorAlign.CENTER,
++            opacity: Math.round(0.7 * 255)});
++        const loader = new St.Icon({icon_name: Model.ICON['loader-circle'], style_class: 'luma-sync-appr-wait-icon',
++            y_align: Clutter.ActorAlign.CENTER});
++        loader.set_pivot_point(0.5, 0.5);
++        if (St.Settings.get().enable_animations) {
++            loader.ease({rotation_angle_z: 360, duration: 1000, mode: Clutter.AnimationMode.LINEAR,
++                repeat_count: -1});
++        }
++        wait.add_child(loader);
++        wait.add_child(new St.Label({style_class: 'luma-sync-appr-wait-text', text: view.waiting,
++            y_align: Clutter.ActorAlign.CENTER}));
++        this._code.add_child(wait);
++    }
++
++    // Approve waits for the code; Not me works at once.
++    _setEarly(early) {
++        this._early = early;
++        const approve = this._buttons[1];
++        approve.reactive = !early;
++        approve.can_focus = !early;
++        approve.opacity = early ? Math.round(0.4 * 255) : 255;
++    }
++
++    // The code arrived: the same card becomes the approval card, in place.
++    update(request) {
++        const view = Model.card(request);
++        if (view.early === this._early)
++            return;
++        this.request = request;
++        this._body.clutter_text.set_markup(`<span line_height="${Math.round((this._where === 'tv' ? 27.19 : 18.13) * 1024)}">${
++            GLib.markup_escape_text(view.body, -1)}</span>`);
++        this._fillCode(view);
++        this._setEarly(view.early);
++        this.place();
++    }
++
++    setBusy(busy) {
++        for (const button of this._buttons)
++            button.reactive = !busy;
++        if (!busy)
++            this._setEarly(this._early);
++    }
++
++    show() {
++        Main.layoutManager.addTopChrome(this.actor);
++        this.place();
++        Main.layoutManager.connectObject('monitors-changed', () => this.place(), this);
++        // A phone's sheet sits on the screen's bottom edge at whatever height it lays out to
++        // (its words wrap at the screen's width only once it is allocated there).
++        if (this._where === 'phone')
++            this.actor.connectObject('notify::height', () => this.place(), this);
++        // A TV's remote needs the focus; it starts on Not me.
++        if (this._where === 'tv') {
++            this._grab = Main.pushModal(this.actor);
++            this._buttons[this._focusIndex].grab_key_focus();
++        }
++    }
++
++    place() {
++        const monitor = Main.layoutManager.primaryMonitor;
++        if (!monitor)
++            return;
++        const [, width] = this.actor.get_preferred_width(-1);
++        const [, height] = this.actor.get_preferred_height(width);
++        const scale = St.ThemeContext.get_for_stage(global.stage).scale_factor;
++        if (this._where === 'phone') {
++            this.actor.set_width(monitor.width);
++            this.actor.set_position(monitor.x, monitor.y + monitor.height - (this.actor.has_allocation() ? this.actor.height : height));
++        } else {
++            const top = (this._where === 'tv' ? 60 : 72) * scale;
++            this.actor.set_position(Math.round(monitor.x + (monitor.width - width) / 2), monitor.y + top);
++        }
++    }
++
++    destroy() {
++        Main.layoutManager.disconnectObject(this);
++        if (this._grab)
++            Main.popModal(this._grab);
++        this._grab = null;
++        this.actor.destroy();
++    }
++}
++
++// ── Everything together ─────────────────────────────────────────────────
++export class ConnectSync {
++    constructor() {
++        this._state = null;
++        this._requests = [];
++        this._cards = new Map();
++        this._restoreRows = null;
++        this._popover = new StatusPopover({onAction: (action, subject) => this._act(action, subject)});
++        this._cell = null;
++        this._service = new Service({
++            appeared: () => this._readAll(),
++            vanished: () => {
++                this._state = null;
++                this._syncCell();
++                this._setRequests([]);
++            },
++            signals: {
++                StateChanged: () => this._readState(),
++                JoinRequested: () => this._readRequests(),
++                JoinCleared: ([join]) => {
++                    this._requests = this._requests.filter(r => r.id !== join);
++                    this._syncCards();
++                    this._readRequests();
++                },
++                RestoreChanged: () => this._readRestore(),
++                AppsChanged: () => {},
++                RecoveryJoined: ([device, name]) => this._recoveryJoined(device, name),
++            },
++        });
++        Main.layoutManager.connectObject('monitors-changed', () => this._queuePlace(), this);
++        global.display.connectObject('workareas-changed', () => this._queuePlace(), this);
++    }
++
++    _readAll() {
++        this._readState();
++        this._readRequests();
++        this._readRestore();
++    }
++
++    async _readState() {
++        try {
++            const state = await this._service.json('GetState');
++            const banner = Model.banner(this._state, state);
++            this._state = state;
++            this._syncCell();
++            if (banner)
++                this._postBanner(banner);
++        } catch (e) {
++            if (!e.matches?.(Gio.DBusError, Gio.DBusError.SERVICE_UNKNOWN))
++                log(`Connect Sync: GetState: ${e.message}`);
++        }
++    }
++
++    async _readRequests() {
++        try {
++            this._setRequests(await this._service.json('ListJoinRequests'));
++        } catch (e) {
++            log(`Connect Sync: ListJoinRequests: ${e.message}`);
++        }
++    }
++
++    async _readRestore() {
++        try {
++            const rows = await this._service.json('GetRestore');
++            if (this._restoreRows !== null && Model.openValet(this._restoreRows, rows))
++                this._spawn(['luma-installer', '--restore']);
++            this.setRestoreRows(rows);
++        } catch (e) {
++            log(`Connect Sync: GetRestore: ${e.message}`);
++        }
++    }
++
++    _spawn(argv) {
++        try {
++            GLib.spawn_async(null, argv, null, GLib.SpawnFlags.SEARCH_PATH, null);
++        } catch (e) {
++            logError(e, `Could not run ${argv[0]}`);
++        }
++    }
++
++    // ── the cell
++    _ensureCell() {
++        if (this._cell?.actor && !this._cell.actor._lumaDestroyed)
++            return;
++        this._cell = new StatusCell(source => this._popover.toggle(source));
++        this._cell.actor.connect('destroy', actor => {
++            actor._lumaDestroyed = true;
++            this._popover.close();
++            this._queuePlace();
++        });
++    }
++
++    _queuePlace() {
++        if (this._placeIdle || this._destroyed)
++            return;
++        this._placeIdle = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
++            this._placeIdle = 0;
++            this._syncCell();
++            for (const card of this._cards.values())
++                card.place();
++            return GLib.SOURCE_REMOVE;
++        });
++    }
++
++    _place() {
++        const where = posture();
++        const actor = this._cell.actor;
++        let parent = null;
++        if (where === 'phone')
++            parent = Main.presentation?._statusRight ?? null;
++        else if (where === 'tv')
++            parent = Main.presentation?._tv?._now ?? null;
++        const quick = Main.panel?.statusArea?.quickSettings;
++        if (!parent && quick?.setStatusCell) {
++            if (actor.get_parent() !== quick._statusSlots)
++                quick.setStatusCell(actor);
++            actor.set_style_class_name('luma-status-slot luma-sync-cell');
++            return;
++        }
++        if (!parent)
++            return;
++        if (actor.get_parent() !== parent) {
++            actor.get_parent()?.remove_child(actor);
++            parent.insert_child_at_index(actor, 0);
++        }
++        actor.set_style_class_name(`luma-sync-cell luma-sync-cell-${where}`);
++    }
++
++    _syncCell() {
++        const cell = Model.cell(this._state);
++        if (!cell.visible && !this._cell) {
++            this._popover.setView(null);
++            return;
++        }
++        this._ensureCell();
++        if (cell.visible)
++            this._cell.set(cell);
++        this._place();
++        this._cell.actor.visible = cell.visible;
++        this._popover.setView(cell.visible ? Model.popover(this._state, now()) : null);
++        Main.panel?.statusArea?.quickSettings?._syncStatusSlots?.();
++    }
++
++    async _act(action, subject = null) {
++        const what = Model.actionTarget(action, subject);
++        if (what?.route) {
++            openSettings(what.route);
++        } else if (what?.app) {
++            // The Luma Connect sign-in, as Settings' TV account page opens it.
++            Main.overview.hide();
++            Shell.AppSystem.get_default().lookup_app(what.app)?.activate();
++        } else if (what?.method)
++            await this._service.call(what.method).catch(e => log(`Connect Sync: ${what.method}: ${e.message}`));
++    }
++
++    // ── banners
++    _postBanner(banner) {
++        const source = new MessageTray.Source({
++            title: banner.source,
++            icon: new Gio.ThemedIcon({name: CONNECT_ICON}),
++            policy: new MessageTray.NotificationGenericPolicy(),
++        });
++        Main.messageTray.add(source);
++        const notification = new MessageTray.Notification({
++            source, title: banner.title, body: banner.body, isTransient: false,
++            urgency: MessageTray.Urgency.HIGH,
++        });
++        if (banner.action)
++            notification.addAction(banner.action, () => this._act(banner.action));
++        notification.connect('activated', () => openSettings(Model.ROUTE.settings));
++        source.addNotification(notification);
++    }
++
++    // A device joined with the recovery key: one standard banner on every
++    // syncing device, kept in the list until answered (no card: nothing waits
++    // on it). Remove… opens Settings' Remove confirm for that device.
++    _recoveryJoined(device, name) {
++        const banner = Model.keyJoinBanner(device, name);
++        const source = new MessageTray.Source({
++            title: banner.source,
++            icon: new Gio.ThemedIcon({name: CONNECT_ICON}),
++            policy: new MessageTray.NotificationGenericPolicy(),
++        });
++        Main.messageTray.add(source);
++        const notification = new MessageTray.Notification({
++            source, title: banner.title, body: banner.body, isTransient: false,
++            urgency: MessageTray.Urgency.HIGH,
++        });
++        // On a TV the shared TV toast says it (tv.js); Remove… and It was me wait in the quick panel.
++        notification.tvToast = {sub: _('Not you? Remove it from the quick panel.')};
++        notification.addAction(banner.actions[0], () => openSettings(banner.route));
++        notification.addAction(banner.actions[1], () => {});
++        source.addNotification(notification);
++        return notification;
++    }
++
++    // ── approval cards
++    _setRequests(requests) {
++        // Held requests (B2) wait their turn without a card; tampered ones never get one.
++        this._requests = requests.filter(r => !r.tampered && !r.held);
++        for (const r of this._requests)
++            this._cards.get(r.id)?.update(r);
++        this._syncCards();
++    }
++
++    _syncCards() {
++        const ids = new Set(this._requests.map(r => r.id));
++        for (const [id, card] of this._cards) {
++            if (!ids.has(id)) {
++                card.destroy();
++                this._cards.delete(id);
++            }
++        }
++        // One card at a time, the oldest first; the next shows when it's answered.
++        const first = [...this._requests].sort((a, b) => (a.created_at ?? 0) - (b.created_at ?? 0))[0];
++        if (first && !this._cards.size) {
++            const card = new ApprovalCard(first, (c, approve) => this._answer(c, approve));
++            this._cards.set(first.id, card);
++            card.show();
++        }
++        // A card waiting for its code reads the requests again every 2 s until the code is there.
++        const early = [...this._cards.values()].some(c => c._early);
++        if (early && !this._earlyRecheck) {
++            this._earlyRecheck = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, EARLY_RECHECK_S, () => {
++                this._readRequests();
++                return GLib.SOURCE_CONTINUE;
++            });
++        } else if (!early && this._earlyRecheck) {
++            GLib.source_remove(this._earlyRecheck);
++            this._earlyRecheck = 0;
++        }
++        if (this._cards.size && !this._recheck) {
++            this._recheck = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, CARD_RECHECK_S, () => {
++                this._readRequests();
++                return GLib.SOURCE_CONTINUE;
++            });
++        } else if (!this._cards.size && this._recheck) {
++            GLib.source_remove(this._recheck);
++            this._recheck = 0;
++        }
++    }
++
++    async _answer(card, approve) {
++        card.setBusy(true);
++        const {id, code} = card.request;
++        try {
++            if (approve)
++                await this._service.call('ApproveJoin', new GLib.Variant('(ss)', [id, code]), null, 180000);
++            else
++                await this._service.call('DenyJoin', new GLib.Variant('(s)', [id]));
++            this._requests = this._requests.filter(r => r.id !== id);
++            this._syncCards();
++        } catch (e) {
++            // Not authorised (the password prompt was cancelled) or the service
++            // refused: the card stays, to be answered again.
++            log(`Connect Sync: ${approve ? 'ApproveJoin' : 'DenyJoin'}: ${e.message}`);
++            card.setBusy(false);
++        }
++        this._readRequests();
++    }
++
++    // The session tests and the conform captures: the popover for a given
++    // GetState document (Up to date too, which the cell never offers), from
++    // the cell, or from the status island while the cell is hidden. Returns
++    // the popover's surface.
++    openPopoverFor(state) {
++        this._ensureCell();
++        this._place();
++        this._popover.close();
++        this._popover.setView(Model.popover(state, now()));
++        const quick = Main.panel?.statusArea?.quickSettings;
++        this._popover.toggle(this._cell.actor.visible || !quick ? this._cell.actor : quick);
++        return posture() === 'desktop' ? this._popover._menu?.box : this._popover._sheetBox;
++    }
++
++    // The approval card for a ListJoinRequests row, as if the service listed it
++    // (the conform captures, with the reference's ThinkPad and 418 207).
++    showCardFor(request) {
++        this._setRequests([request]);
++        return this._cards.get(request.id)?.actor;
++    }
++
++    // GetRestore rows to the tiles (the session test passes its own).
++    setRestoreRows(rows) {
++        this._restoreRows = rows;
++        Restore.setRows(rows);
++    }
++
++    // What an app's tile shows while it restores (the session test reads it).
++    restoreTile(appId) {
++        return Restore.tileForId(appId);
++    }
++
++    // Opening an app the way its grid and dock tile do (AppIcon.activate):
++    // a restoring app shows its row in Valet instead.
++    activateApp(appId) {
++        const app = Shell.AppSystem.get_default().lookup_app(`${appId}.desktop`);
++        if (!app)
++            return 'missing';
++        if (Restore.redirect(app))
++            return 'valet';
++        app.activate();
++        return 'launched';
++    }
++
++    destroy() {
++        this._destroyed = true;
++        Main.layoutManager.disconnectObject(this);
++        global.display.disconnectObject(this);
++        if (this._placeIdle)
++            GLib.source_remove(this._placeIdle);
++        if (this._recheck)
++            GLib.source_remove(this._recheck);
++        if (this._earlyRecheck)
++            GLib.source_remove(this._earlyRecheck);
++        this._earlyRecheck = 0;
++        for (const card of this._cards.values())
++            card.destroy();
++        this._popover.destroy();
++        this._cell?.actor.destroy();
++        this._service.destroy();
++    }
++}
+diff --git a/js/ui/lumaConnectSyncModel.js b/js/ui/lumaConnectSyncModel.js
+new file mode 100644
+index 0000000..096bf90
+--- /dev/null
++++ b/js/ui/lumaConnectSyncModel.js
+@@ -0,0 +1,302 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++// What Luma Connect Sync shows in the Shell, without a Shell: the status
++// cell and its popover, the banners, the approval card's words and the
++// restoring tile. No gi imports, so %check runs it under plain gjs.
++// Design: design-center 38858a5, mockups/connect-sync (cs.js STATES).
++// Behaviour: ADR-054; data: org.projectluma.ConnectSync1 GetState,
++// ListJoinRequests and GetRestore (luma-connect-sync).
++
++// Glyphs (data/icons/scalable/status/luma-sync-*-symbolic.svg, Lucide).
++export const ICON = Object.freeze({
++    cloud: 'luma-sync-cloud-symbolic',
++    'cloud-off': 'luma-sync-cloud-off-symbolic',
++    'cloud-alert': 'luma-sync-cloud-alert-symbolic',
++    'refresh-cw': 'luma-sync-refresh-cw-symbolic',
++    laptop: 'luma-sync-laptop-symbolic',
++    smartphone: 'luma-sync-smartphone-symbolic',
++    tv: 'luma-sync-tv-symbolic',
++    'key-round': 'luma-sync-key-round-symbolic',
++    'loader-circle': 'luma-sync-loader-circle-symbolic',
++});
++
++// Tones: cs.css --cs-ok, --cs-warn, --cs-bad.
++export const TONE = Object.freeze({ok: 'ok', warn: 'warn', bad: 'bad', none: ''});
++
++export const SOURCE = 'Luma Connect';
++export const POPOVER_TITLE = 'Luma Connect';
++export const SETTINGS_LINK = 'Sync settings';
++
++// Settings' routes (gnome-control-center 0111): launch-panel ('users', [...]).
++export const ROUTE = Object.freeze({
++    settings: ['sync'],
++    join: ['sync', 'join'],
++    newKey: ['sync', 'newkey'],
++});
++
++// What each action does: a method on the service, a Settings route, or an
++// app. Show versions opens the app's versions page (Settings › Sync › App).
++export const ACTION = Object.freeze({
++    'Sync now': {method: 'SyncNow'},
++    'Show versions': {route: ['sync', 'versions']},
++    'Manage storage': {route: ROUTE.settings},
++    'Sign in again': {app: 'org.projectluma.Connect.desktop'},
++    // Settings asks for the password (polkit) and shows the new words, with their tick and Done.
++    'Show new key…': {route: ROUTE.newKey},
++});
++
++// The route or app an action of a popover opens; `subject` is the app a
++// conflict names (Show versions) or the device a banner names (Remove…).
++export function actionTarget(action, subject = null) {
++    const what = ACTION[action];
++    if (!what)
++        return null;
++    if (what.route && subject && action === 'Show versions')
++        return {route: [...what.route, subject]};
++    return what;
++}
++
++const DAY = 86400;
++
++// "today", "yesterday", else "21 Nov".
++export function day(at, now) {
++    if (!at)
++        return '';
++    const start = d => {
++        const t = new Date(d * 1000);
++        return new Date(t.getFullYear(), t.getMonth(), t.getDate()).getTime() / 1000;
++    };
++    const days = Math.round((start(now) - start(at)) / DAY);
++    if (days <= 0)
++        return 'today';
++    if (days === 1)
++        return 'yesterday';
++    const t = new Date(at * 1000);
++    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
++    return `${t.getDate()} ${months[t.getMonth()]}`;
++}
++
++// "Synced 2 minutes ago" (cs.js done).
++export function ago(at, now) {
++    if (!at)
++        return '';
++    const seconds = Math.max(0, now - at);
++    if (seconds < 60)
++        return 'Synced just now';
++    const minutes = Math.floor(seconds / 60);
++    if (minutes < 60)
++        return `Synced ${minutes} ${minutes === 1 ? 'minute' : 'minutes'} ago`;
++    const hours = Math.floor(minutes / 60);
++    if (hours < 24)
++        return `Synced ${hours} ${hours === 1 ? 'hour' : 'hours'} ago`;
++    const when = day(at, now);
++    return `Synced ${when}`;
++}
++
++// 5368709120 -> "5 GB", 1932735283 -> "1.8 GB", 35651584 -> "34 MB".
++export function size(bytes) {
++    const n = Number(bytes) || 0;
++    const units = [['GB', 1024 ** 3], ['MB', 1024 ** 2], ['KB', 1024]];
++    for (const [unit, scale] of units) {
++        if (n >= scale) {
++            const value = n / scale;
++            const text = value >= 10 || Number.isInteger(value) ? Math.round(value).toString()
++                : (Math.round(value * 10) / 10).toString();
++            return `${text} ${unit}`;
++        }
++    }
++    return `${n} bytes`;
++}
++
++// Which state the Shell shows for GetState, or null when it shows nothing.
++// Off, joining and up to date show nothing; the person turning Sync off
++// ("paused" with enabled false) is not something to say either.
++export function kind(state) {
++    if (!state || state.enabled === false)
++        return null;
++    switch (state.state) {
++    case 'syncing':
++        return 'syncing';
++    case 'paused':
++        return 'paused';
++    case 'attention': {
++        const reason = state.attention?.reason;
++        if (reason === 'new_recovery_key')
++            return 'newkey';
++        return ['conflict', 'quota', 'revoked'].includes(reason) ? reason : null;
++    }
++    default:
++        return null;
++    }
++}
++
++// The cell: visible only when there's something to say.
++export function cell(state) {
++    const k = kind(state);
++    if (!k)
++        return {visible: false};
++    const view = popover(state, 0);
++    return {visible: true, icon: view.icon, tone: view.tone, title: view.title};
++}
++
++// The popover (cs.js pop()): state tile, title, subline, progress while
++// syncing, one sentence when there's something to know, at most one action.
++// `done` is drawn for the reference; the cell is never shown for it.
++export function popover(state, now) {
++    const a = state?.attention ?? {};
++    const k = state?.state === 'up_to_date' ? 'done' : kind(state);
++    switch (k) {
++    case 'syncing': {
++        const p = state?.progress ?? null;
++        const left = p && p.left != null ? `${size(p.left)} left` : '';
++        const from = p?.from ? `from ${p.from}` : '';
++        const sub = [left, from].filter(Boolean).join(' · ') || (state?.detail ?? '');
++        return {kind: k, icon: ICON['refresh-cw'], tone: TONE.none, title: 'Syncing', sub,
++            progress: p && p.fraction != null ? Math.max(0, Math.min(1, p.fraction)) : null,
++            message: '', action: null};
++    }
++    case 'done':
++        return {kind: k, icon: ICON.cloud, tone: TONE.ok, title: 'Up to date', sub: ago(state?.last_sync, now),
++            progress: null, message: '', action: null};
++    case 'paused':
++        return {kind: k, icon: ICON['cloud-off'], tone: TONE.none, title: 'Paused',
++            sub: state?.metered ? 'On a metered connection' : 'Offline', progress: null, message: '',
++            action: 'Sync now'};
++    case 'conflict': {
++        const from = a.from ?? 'your other device';
++        return {kind: k, icon: ICON['cloud-alert'], tone: TONE.warn, title: a.detail || 'Changed on two devices',
++            subject: a.app ?? null,
++            sub: `Kept both · ${day(a.at, now) || 'today'}`,
++            progress: null,
++            message: `This device’s copy is in use. The copy from ${from} is kept for 30 days.`,
++            action: 'Show versions'};
++    }
++    case 'quota': {
++        const quota = a.quota ?? state?.storage?.quota;
++        const used = a.used ?? state?.storage?.used ?? quota;
++        return {kind: k, icon: ICON['cloud-alert'], tone: TONE.warn, title: 'Storage full',
++            sub: quota ? `${size(used)} of ${size(quota)}` : '',
++            progress: null, message: 'New changes stay on this device until there’s room.',
++            action: 'Manage storage'};
++    }
++    case 'revoked': {
++        const when = day(a.at, now) || 'today';
++        return {kind: k, icon: ICON['cloud-off'], tone: TONE.bad, title: 'Removed from Sync',
++            sub: a.by ? `On ${a.by} · ${when}` : `${when[0].toUpperCase()}${when.slice(1)}`,
++            progress: null,
++            message: 'This device no longer syncs. Everything on it stays. Sign in to Luma Connect again to rejoin.',
++            action: 'Sign in again'};
++    }
++    case 'newkey':
++        // S1: never silent; shown until the person keeps the new words (AcknowledgeRecoveryKey).
++        return {kind: k, icon: ICON['key-round'], tone: TONE.warn, title: 'New recovery key',
++            sub: 'Your old words stopped working', progress: null,
++            message: 'A device was removed from Sync, so your recovery key was replaced. Write down the new words.',
++            action: 'Show new key…'};
++    default:
++        return null;
++    }
++}
++
++// Banners: quota full and removed post one standard banner each when the
++// state is entered; conflicts never do (they resolve on their own).
++export function banner(previous, state) {
++    const k = kind(state);
++    if ((k !== 'quota' && k !== 'revoked') || kind(previous) === k)
++        return null;
++    const view = popover(state, 0);
++    return {kind: k, source: SOURCE, title: view.title, body: view.message, action: view.action};
++}
++
++// A device joined with the recovery key (RecoveryJoined): no card, as
++// nothing waits on it; one banner on every syncing device that stays in the
++// list until it is answered. Remove… opens Settings' Remove confirm.
++export function keyJoinBanner(device, name) {
++    return {
++        kind: 'keyjoin', source: SOURCE, device,
++        title: `${name || 'A device'} joined with your recovery key`,
++        body: 'If this wasn’t you, remove it now.',
++        actions: ['Remove…', 'It was me'],
++        route: ['sync', 'remove', device],
++    };
++}
++
++// ── The approval card ───────────────────────────────────────────────────
++const CLASS = Object.freeze({
++    computer: {icon: ICON.laptop, word: 'Computer', noun: 'computer'},
++    handheld: {icon: ICON.smartphone, word: 'Handheld', noun: 'phone'},
++    tv: {icon: ICON.tv, word: 'TV', noun: 'TV'},
++});
++
++export function deviceClass(name) {
++    return CLASS[name] ?? CLASS.computer;
++}
++
++// Two groups of three: "418207" -> ["418", "207"].
++export function codeGroups(code) {
++    const digits = `${code ?? ''}`.replace(/\D/g, '');
++    return digits.length === 6 ? [digits.slice(0, 3), digits.slice(3)] : [];
++}
++
++// A device asking to join (ListJoinRequests row / JoinRequested).
++export function card(request) {
++    const c = deviceClass(request.class);
++    const name = request.name || 'device';
++    const code = codeGroups(request.code);
++    // B3: the card comes as soon as this device answers, before the code exists; Approve waits for it.
++    const early = code.length === 0;
++    return {
++        id: request.id, icon: c.icon, source: SOURCE,
++        title: `Approve ${name}?`,
++        sub: `${c.word} · wants to sync with your devices`,
++        body: early
++            ? `Its code appears here in a moment. Only approve if the ${name} shows the same code.`
++            : `Only approve if the ${name} shows this code. It will get your passwords, apps and settings.`,
++        code, early, waiting: 'Waiting for its code',
++        buttons: ['Not me', 'Approve'],
++        // On a TV the remote's focus starts on Not me: an OK pressed by
++        // habit never lets a device in.
++        focus: 0,
++    };
++}
++
++// The cards on screen after a change: requests the service lists stay until
++// answered (here or on another device: JoinCleared); nothing times out.
++export function cards(current, listed) {
++    const ids = new Set(listed.map(r => r.id));
++    const kept = current.filter(c => ids.has(c.id));
++    for (const r of listed)
++        if (!kept.some(c => c.id === r.id) && !r.tampered && !r.held)
++            kept.push(r);
++    return kept;
++}
++
++// ── Restoring apps ─────────────────────────────────────────────────────
++// GetRestore rows: {app, name, kind, state: installing|restoring|waiting|
++// ready|unavailable|failed|offered, progress}.
++export const RESTORING = new Set(['installing', 'restoring', 'waiting']);
++
++// The service names apps by Flatpak or store ID; the Shell by desktop file.
++export function appIdForDesktop(desktopId) {
++    return `${desktopId ?? ''}`.replace(/\.desktop$/, '');
++}
++
++export function tile(row) {
++    if (!row || !RESTORING.has(row.state))
++        return null;
++    const fraction = typeof row.progress === 'number' ? row.progress
++        : row.progress && row.progress.total ? row.progress.done / row.progress.total : 0;
++    return {
++        opacity: Math.round(0.55 * 255),
++        saturation: 0.5,
++        ring: Math.max(0, Math.min(1, fraction > 1 ? fraction / 100 : fraction)),
++        caption: 'Restoring…',
++        // Opening it before it's ready shows its row in Valet, not a broken launch.
++        launch: ['luma-installer', '--restore', row.app],
++    };
++}
++
++// Valet opens on its own once, when rows first appear after a join.
++export function openValet(previousRows, rows) {
++    const busy = r => (r ?? []).some(row => RESTORING.has(row.state));
++    return !busy(previousRows) && busy(rows) && (previousRows ?? []).length === 0;
++}
+diff --git a/js/ui/lumaConnectSyncRestore.js b/js/ui/lumaConnectSyncRestore.js
+new file mode 100644
+index 0000000..f90fceb
+--- /dev/null
++++ b/js/ui/lumaConnectSyncRestore.js
+@@ -0,0 +1,133 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++// An app still restoring from the person's other devices (ADR-054 §6,
++// design-center 38858a5 restore.html .cs-tile): its launcher and dock tile
++// at 55% opacity and saturation 0.5, a 3 px progress ring in the accent and
++// "Restoring…" under its name. Opening it shows its row in Valet instead of
++// a launch that would find no data. lumaConnectSync.js feeds the rows from
++// org.projectluma.ConnectSync1 GetRestore.
++import Clutter from 'gi://Clutter';
++import GLib from 'gi://GLib';
++import Graphene from 'gi://Graphene';
++import St from 'gi://St';
++
++import * as Model from './lumaConnectSyncModel.js';
++
++const _rows = new Map();
++// cs.css .cs-ring: a 74 px ring around a 64 px icon.
++const RING_SCALE = 74 / 64;
++
++// rows: GetRestore.
++export function setRows(rows) {
++    _rows.clear();
++    for (const row of rows ?? [])
++        _rows.set(row.app, row);
++    for (const tile of [..._tiles])
++        sync(tile);
++}
++
++export function tileFor(app) {
++    return Model.tile(_rows.get(Model.appIdForDesktop(app?.get_id?.())));
++}
++
++export function tileForId(appId) {
++    return Model.tile(_rows.get(appId));
++}
++
++// AppIcon.activate: true when the app is restoring and Valet was asked
++// to show it instead.
++export function redirect(app) {
++    const view = tileFor(app);
++    if (!view)
++        return false;
++    try {
++        GLib.spawn_async(null, view.launch, null, GLib.SpawnFlags.SEARCH_PATH, null);
++    } catch (e) {
++        logError(e, 'Could not show the app in Valet');
++    }
++    return true;
++}
++
++function drawRing(area, fraction) {
++    const cr = area.get_context();
++    const [w, h] = area.get_surface_size();
++    const node = area.get_theme_node();
++    const scale = St.ThemeContext.get_for_stage(global.stage).scale_factor;
++    // Drawn at the artwork's size and scaled out by RING_SCALE (layout stays put).
++    const width = 3 * scale / RING_SCALE;
++    const r = Math.min(w, h) / 2 - width / 2;
++    cr.setLineWidth(width);
++    cr.setSourceRGBA(1, 1, 1, 0.15);
++    cr.arc(w / 2, h / 2, r, 0, 2 * Math.PI);
++    cr.stroke();
++    if (fraction > 0) {
++        const c = node.get_foreground_color();
++        cr.setSourceRGBA(c.red / 255, c.green / 255, c.blue / 255, c.alpha / 255);
++        cr.setLineCap(1 /* ROUND */);
++        cr.arc(w / 2, h / 2, r, -Math.PI / 2, -Math.PI / 2 + 2 * Math.PI * fraction);
++        cr.stroke();
++    }
++    cr.$dispose();
++}
++
++// The tile's look follows its row: called on attach and on every change.
++// A tile is {owner, app, artwork, captionBox}: the actor whose life it
++// shares, the Shell.App, the icon artwork to dim and ring, and the vertical
++// box that takes "Restoring…" under the name (null where there is no name).
++function sync(tile) {
++    const view = tileFor(tile.app);
++    const artwork = tile.artwork;
++    let state = tile.state;
++    if (!view) {
++        if (state) {
++            artwork.opacity = 255;
++            artwork.remove_effect_by_name('luma-restore-desaturate');
++            state.ring.destroy();
++            state.caption?.destroy();
++            tile.state = null;
++        }
++        return;
++    }
++    if (!state) {
++        const ring = new St.DrawingArea({style_class: 'luma-sync-restore-ring', reactive: false});
++        ring.connect('repaint', () => drawRing(ring, tile.state?.fraction ?? 0));
++        const parent = artwork.get_parent();
++        const holder = new St.Widget({layout_manager: new Clutter.BinLayout(), x_align: artwork.x_align});
++        parent.replace_child(artwork, holder);
++        holder.add_child(artwork);
++        holder.add_child(ring);
++        ring.set({x_expand: true, y_expand: true, pivot_point: new Graphene.Point({x: 0.5, y: 0.5}),
++            scale_x: RING_SCALE, scale_y: RING_SCALE});
++        let caption = null;
++        if (tile.captionBox) {
++            caption = new St.Label({style_class: 'luma-sync-restore-caption', text: view.caption,
++                x_align: Clutter.ActorAlign.CENTER});
++            tile.captionBox.add_child(caption);
++        }
++        state = tile.state = {ring, caption, fraction: 0};
++    }
++    artwork.opacity = view.opacity;
++    if (!artwork.get_effect('luma-restore-desaturate'))
++        artwork.add_effect_with_name('luma-restore-desaturate', new Clutter.DesaturateEffect({factor: view.saturation}));
++    state.fraction = view.ring;
++    state.ring.queue_repaint();
++}
++
++const _tiles = new Set();
++
++// Any launcher tile: the app grid's and dock's AppIcon (appDisplay.js) and
++// the launcher drawer's tile (lumaPresentation/appDrawer.js).
++export function attachTile(owner, app, artwork, captionBox = null) {
++    const tile = {owner, app, artwork, captionBox, state: null};
++    _tiles.add(tile);
++    owner.connect('destroy', () => _tiles.delete(tile));
++    if (_rows.size)
++        sync(tile);
++}
++
++// AppIcon._init (grid and dock).
++export function attach(appIcon) {
++    const base = appIcon.icon;
++    if (!base?._iconBin)
++        return;
++    attachTile(appIcon, appIcon.app, base._iconBin, base.label && base._box ? base._box : null);
++}
+diff --git a/js/ui/main.js b/js/ui/main.js
+index cce73fb..5c57b21 100644
+--- a/js/ui/main.js
++++ b/js/ui/main.js
+@@ -41,6 +41,7 @@ import * as LumaSession from './lumaSession.js';
+ import * as LumaShare from './lumaShare.js';
+ import * as LumaAppPermissions from './lumaAppPermissions.js';
+ import * as LumaLayerShell from './lumaLayerShell.js';
++import * as LumaConnectSync from './lumaConnectSync.js';
+ import * as NotificationDaemon from './notificationDaemon.js';
+ import * as WindowAttentionHandler from './windowAttentionHandler.js';
+ import * as Screenshot from './screenshot.js';
+@@ -77,6 +78,7 @@ export let lumaWindowCorners = null;
+ export let lumaWindowWatch = null;
+ export let lumaSession = null;
+ export let lumaShare = null;
++export let lumaConnectSync = null;
+ export let runDialog = null;
+ export let lookingGlass = null;
+ export let welcomeDialog = null;
+@@ -389,6 +391,17 @@ async function _initializeUI() {
+         }
+     }
+ 
++    // Luma Connect Sync (ADR-054): the approval card, the status cell and
++    // the restoring tiles. Guarded: a failure here is a missing cell, never
++    // a session that does not start.
++    if (sessionMode.hasOverview && !sessionMode.isGreeter) {
++        try {
++            lumaConnectSync = new LumaConnectSync.ConnectSync();
++        } catch (e) {
++            logError(e, 'Luma Connect Sync could not be shown');
++        }
++    }
++
+     // The login screen builds no Presentation, which owns the handheld power
+     // button, so a short press there did nothing. Give the greeter its own:
+     // it blanks and wakes the display (nothing to lock before a login).
+diff --git a/js/ui/panel.js b/js/ui/panel.js
+index 7dfb0f1..be36276 100644
+--- a/js/ui/panel.js
++++ b/js/ui/panel.js
+@@ -1694,6 +1694,37 @@ class QuickSettings extends PanelMenu.Button {
+             this._statusControls.set_width(naturalWidth);
+     }
+ 
++    // A cell that answers its own clicks (Luma Connect Sync's state,
++    // lumaConnectSync.js) goes first in the status slots, a slot like the
++    // others: a press on it never opens Quick Settings. False while the
++    // island has no slots.
++    setStatusCell(cell) {
++        if (!this._statusSlots)
++            return false;
++        cell.get_parent()?.remove_child(cell);
++        this._statusSlots.insert_child_at_index(cell, 0);
++        this._statusCells ??= new Set();
++        if (!this._statusCellsWatched) {
++            this._statusCellsWatched = true;
++            this._clickGesture.connect('may-recognize', () =>
++                ![...this._statusCells].some(actor => this._pressIsIn(actor)));
++        }
++        this._statusCells.add(cell);
++        cell.connectObject('notify::visible', () => this._syncStatusSlots(),
++            'destroy', () => this._statusCells.delete(cell), this);
++        this._syncStatusSlots();
++        return true;
++    }
++
++    _pressIsIn(actor) {
++        if (!actor?.visible || !this.contains(actor))
++            return false;
++        const {x, y} = this._clickGesture.get_coords_abs();
++        const extents = actor.get_transformed_extents();
++        return x >= extents.get_x() && y >= extents.get_y() &&
++            x < extents.get_x() + extents.get_width() && y < extents.get_y() + extents.get_height();
++    }
++
+     // The Well sits first in the cluster, with its own targets: a press on it
+     // must never also open Quick Settings.
+     setStatusWell(well) {

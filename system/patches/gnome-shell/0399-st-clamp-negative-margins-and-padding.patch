@@ -1,0 +1,95 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Project Luma <engineering@projectluma.org>
+Date: Mon, 23 Nov 2026 02:00:00 -0600
+Subject: [PATCH] St: clamp a negative margin or padding to 0
+
+StThemeNode keeps margins and padding as guint. A stylesheet's
+"margin-left: -2px" was stored as 4294967294, st_theme_node_get_margin()
+returned it, and the actor's preferred width became ~4.3e9 px: its parent
+then laid out at 0 px. Clutter's margin-* properties can't be negative, so
+St can't honour the value; it now clamps it to 0. test-theme covers a
+negative margin and padding.
+---
+ src/st/st-theme-node.c |  9 +++++++++
+ src/st/test-theme.c    | 18 ++++++++++++++++++
+ 2 files changed, 27 insertions(+)
+
+diff --git a/src/st/st-theme-node.c b/src/st/st-theme-node.c
+index dd5868a..554a5c6 100644
+--- a/src/st/st-theme-node.c
++++ b/src/st/st-theme-node.c
+@@ -1822,6 +1822,10 @@ do_padding_property_term (StThemeNode *node,
+   if (get_length_from_term_int (node, term, FALSE, &value) != VALUE_FOUND)
+     return;
+ 
++  /* A negative padding is invalid CSS; stored unsigned, -2px read back as
++   * 4294967294 px and gave the actor a ~4.3e9 px preferred size. Clamp to 0. */
++  value = MAX (value, 0);
++
+   if (left)
+     node->padding[ST_SIDE_LEFT] = value;
+   if (right)
+@@ -1904,6 +1908,11 @@ do_margin_property_term (StThemeNode *node,
+   if (get_length_from_term_int (node, term, FALSE, &value) != VALUE_FOUND)
+     return;
+ 
++  /* CSS allows a negative margin, but the margins are stored unsigned and
++   * Clutter's margin-* properties can't go below 0: -2px read back as 4294967294 px
++   * and gave the actor a ~4.3e9 px preferred size. Clamp to 0. */
++  value = MAX (value, 0);
++
+   if (left)
+     node->margin[ST_SIDE_LEFT] = value;
+   if (right)
+diff --git a/src/st/test-theme.c b/src/st/test-theme.c
+index 56a410e..81f83fb 100644
+--- a/src/st/test-theme.c
++++ b/src/st/test-theme.c
+@@ -42,6 +42,7 @@ static StThemeNode *group3;
+ static StThemeNode *group4;
+ static StThemeNode *group5;
+ static StThemeNode *group6;
++static StThemeNode *group7;
+ static StThemeNode *button;
+ static gboolean fail;
+ 
+@@ -372,6 +373,19 @@ test_margin (void)
+      st_theme_node_get_margin (group6, ST_SIDE_BOTTOM));
+   assert_length ("group6", "margin-left", 0.,
+      st_theme_node_get_margin (group6, ST_SIDE_LEFT));
++
++  /* Test that a negative margin or padding is clamped to 0, not read back
++   * as a huge unsigned length */
++  assert_length ("group7", "margin-top", 0.,
++     st_theme_node_get_margin (group7, ST_SIDE_TOP));
++  assert_length ("group7", "margin-right", 3.,
++     st_theme_node_get_margin (group7, ST_SIDE_RIGHT));
++  assert_length ("group7", "margin-bottom", 0.,
++     st_theme_node_get_margin (group7, ST_SIDE_BOTTOM));
++  assert_length ("group7", "margin-left", 3.,
++     st_theme_node_get_margin (group7, ST_SIDE_LEFT));
++  assert_length ("group7", "padding-left", 0.,
++     st_theme_node_get_padding (group7, ST_SIDE_LEFT));
+ }
+ 
+ static void
+@@ -596,6 +610,9 @@ main (int argc, char **argv)
+                               CLUTTER_TYPE_ACTOR, "group5", NULL, NULL, NULL);
+   group6 = st_theme_node_new (theme_context, root, NULL,
+                               CLUTTER_TYPE_ACTOR, "group6", NULL, NULL, NULL);
++  group7 = st_theme_node_new (theme_context, root, NULL,
++                              CLUTTER_TYPE_ACTOR, "group7", NULL, NULL,
++                              "margin: -2px 3px; padding-left: -5px;");
+   text3 = st_theme_node_new  (theme_context, group2, NULL,
+                               CLUTTER_TYPE_TEXT, "text3", NULL, NULL,
+                               "color: #0000ff; padding-bottom: 12px;");
+@@ -627,6 +644,7 @@ main (int argc, char **argv)
+   g_object_unref (group4);
+   g_object_unref (group5);
+   g_object_unref (group6);
++  g_object_unref (group7);
+   g_object_unref (text1);
+   g_object_unref (text2);
+   g_object_unref (text3);
+-- 
+2.47.0
