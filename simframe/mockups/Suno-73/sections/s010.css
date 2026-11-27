@@ -21,11 +21,12 @@ html { --fscale: 1; --bscale: 1; }
 [data-mode="light"] { --float: oklch(0.99 0.002 265 / calc(.8 * var(--fscale))); }
 html.opaque :is(.fbar, .panel, .flo, .mbar) { background: var(--float-solid) !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
 html.noanim *, html.noanim *::before, html.noanim *::after { transition: none !important; animation: none !important; }
-/* SunoOS 0.1: layered windows. Layer 1 — the frame and the sidebar on it, glass like the dock (frosted at
-   the top stop, 15 percent see-through, clear glass at the bottom); .win.lightframe defines its own --win,
-   so it is matched with the same weight. html.opaque pins every layer fully opaque again. */
-[data-mode="dark"] :is(.win, .win.lightframe) { --win: oklch(0.208 0.006 265 / calc(.85 * var(--fscale))); }
-[data-mode="light"] :is(.win, .win.lightframe) { --win: oklch(0.99 0.002 265 / calc(.85 * var(--fscale))); }
+/* SunoOS 0.1: layered windows. Layer 1 — the frame and the sidebar on it, the dock's own glass: the same
+   fill the shelf shows (.72 dark, .74 light), frosted at the top stop, clear glass at the bottom;
+   .win.lightframe defines its own --win, so it is matched with the same weight. html.opaque pins every
+   layer fully opaque again. */
+[data-mode="dark"] :is(.win, .win.lightframe) { --win: oklch(0.208 0.006 265 / calc(.72 * var(--fscale))); }
+[data-mode="light"] :is(.win, .win.lightframe) { --win: oklch(0.99 0.002 265 / calc(.74 * var(--fscale))); }
 html:not(.opaque) .win { -webkit-backdrop-filter: blur(calc(24px * var(--bscale))) saturate(1.5); backdrop-filter: blur(calc(24px * var(--bscale))) saturate(1.5); }
 html.opaque [data-mode="dark"] :is(.win, .win.lightframe) { --win: oklch(0.208 0.006 265); }
 html.opaque [data-mode="light"] :is(.win, .win.lightframe) { --win: oklch(0.99 0.002 265); }
