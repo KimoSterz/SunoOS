@@ -16,12 +16,29 @@
               background: rgba(0,0,0,.55); color: #eee; text-decoration: none;
               font: 12px/1.4 system-ui, sans-serif; border: 1px solid rgba(255,255,255,.18); }
   .module a:hover { background: rgba(0,0,0,.75); }
+  #status { position: fixed; inset: 0; display: grid; place-items: center;
+            color: #9aa; font: 14px/1.6 system-ui, sans-serif; z-index: 1; }
+  #status.err { color: #ffb4a6; text-align: center; padding: 0 24px; }
 </style>
 </head>
 <body>
+  <div id="status">Wczytywanie makiety…</div>
   <iframe class="frame"
     src="../simframe/mockups/Suno-next-73.html?desktop=1&amp;app=none&amp;showcase=1&amp;zoom=0.7950"
     title="SunoOS mockup preview"></iframe>
+  <script>
+    (function () {
+      var frame = document.querySelector('.frame'), status = document.getElementById('status');
+      frame.addEventListener('load', function () {
+        try {
+          var doc = frame.contentDocument;
+          if (doc && doc.querySelector('body[data-mode], .review')) { status.remove(); return; }
+        } catch (e) { }
+        status.className = 'err';
+        status.textContent = 'Makieta nie wczytała się w ramce. Odśwież stronę z pominięciem cache (Ctrl+Shift+R) ';
+      });
+    })();
+  </script>
   <p class="fallback">
     Podgląd nie działa? Najpewniej GitHub Pages jeszcze nie jest włączony
     (Settings → Pages → Branch: <code>main</code>, folder: <code>/ (root)</code>).
