@@ -40,8 +40,8 @@
     tabs: { edge: { dock: 'bottom', live: 'bottom', status: 'bottom' }, align: 'spread', surface: 'separate', attach: 'prot', tuck: false },
     free: { attach: 'free', tuck: false }
   };
-  const S = Object.assign({ clock: 'glance', soonAt: 0, offline: false, low: false, preset: 'suno', theme: 'dark', mat: 'solid', icon: 'lit', shape: 'squircle', size: 45, tiling: false, notif: 'center', dnd: false, free: {} }, PRESETS.luma, store.get('state', {})); S.liveMax = 2;   // recomputed for this screen on every load
-  S.edge = Object.assign({}, PRESETS.luma.edge, S.edge);
+  const S = Object.assign({ clock: 'glance', soonAt: 0, offline: false, low: false, preset: 'suno', theme: 'dark', mat: 'solid', icon: 'lit', shape: 'squircle', size: 45, tiling: false, notif: 'center', dnd: false, free: {} }, PRESETS.suno, store.get('state', {})); S.liveMax = 2;   // recomputed for this screen on every load
+  S.edge = Object.assign({}, PRESETS.suno.edge, S.edge);
   S.size = new URLSearchParams(location.search).get('status') === 'line' ? 30 : 45;   /* the one-line concept: 30 px icons, 7 px round them. Otherwise the dock's icons are 45 px with 11 px around them (25 Oct 2026); no setting changes it, so an older stored 40 is replaced */
   const save = () => store.set('state', { clock: S.clock, preset: S.preset, theme: S.theme, mat: S.mat, icon: S.icon, shape: S.shape, size: S.size, tiling: S.tiling, notif: S.notif, edge: S.edge, align: S.align, surface: S.surface, attach: S.attach, tuck: S.tuck, free: S.free });
 
