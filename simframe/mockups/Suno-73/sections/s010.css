@@ -14,3 +14,10 @@ html[data-form="tablet"][data-o="portrait"] #w-charlie.phone > .phboxbtn { displ
 html[data-form="tablet"][data-o="portrait"] #w-charlie.phone > .ibody > .crside:not(#_):not(#_):not(#_) { padding-top: 112px !important; }   /* the rows start under the island */
 /* a selected row shows beside its page, on a tablet as on the fold; the phone's list is alone and marks nothing */
 html:is([data-form="tablet"], [data-form="fold"]) #w-charlie.phone #cr-side .crrow.on, html:is([data-form="tablet"], [data-form="fold"]) #w-messages.phone .msidebar .crow.on, html:is([data-form="tablet"], [data-form="fold"]) #w-notes.phone .nrow2.on { background: var(--chip) !important; box-shadow: var(--chip-edge) !important; }
+/* SunoOS 0.1: Appearance controls — animations, transparency, surface translucency (settings > Appearance > Effects).
+   --fscale/--bscale are identity at 1 (frost slider at 100, the shipped look); html.opaque pins the glass surfaces opaque. */
+html { --fscale: 1; --bscale: 1; }
+[data-mode="dark"] { --float: oklch(0.27 0.008 265 / calc(.78 * var(--fscale))); }
+[data-mode="light"] { --float: oklch(0.99 0.002 265 / calc(.8 * var(--fscale))); }
+html.opaque :is(.fbar, .panel, .flo, .mbar) { background: var(--float-solid) !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+html.noanim *, html.noanim *::before, html.noanim *::after { transition: none !important; animation: none !important; }

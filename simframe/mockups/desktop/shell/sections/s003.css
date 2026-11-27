@@ -342,3 +342,15 @@
 .k-qs .q2x .g { width: 17px; height: 17px; } .k-qs .q2x .g:last-child { width: 14px; height: 14px; }
 .k-qs .q2xl { background: none; box-shadow: none; padding: 0; gap: 2px; } .k-qs .q2xl .q2r { min-height: 40px; } .k-qs .q2xl .q2t b { font-weight: 500; } .k-qs .q2xl .q2r.on .q2t b { font-weight: 600; }
 .k-qs .q2rad { flex: none; width: 14px; height: 14px; margin-right: 4px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px var(--ink-2); background: radial-gradient(circle, var(--ink) 0 3px, transparent 3.5px); }
+/* SunoOS 0.1: shell surface translucency (settings > Appearance > Effects); identity at --fscale/--bscale 1. */
+.screen { --fscale: 1; --bscale: 1; }
+.screen[data-theme="dark"] { --glass: linear-gradient(180deg, rgba(40,40,45,calc(.74 * var(--fscale))), rgba(26,26,30,calc(.84 * var(--fscale)))); --glass-blur: blur(calc(40px * var(--bscale))) saturate(1.4);
+  --glass-pop: linear-gradient(180deg, rgba(50,50,56,calc(.8 * var(--fscale))), rgba(32,32,36,calc(.86 * var(--fscale)))); }
+.screen[data-theme="light"] { --glass: radial-gradient(120% 60% at 50% 0%, rgba(255,255,255,calc(.35 * var(--fscale))), transparent 60%), linear-gradient(180deg, rgba(232,234,238,calc(.62 * var(--fscale))), rgba(214,217,223,calc(.7 * var(--fscale)))); --glass-blur: blur(calc(40px * var(--bscale))) saturate(1.8);
+  --glass-pop: radial-gradient(120% 50% at 50% 0%, rgba(255,255,255,calc(.4 * var(--fscale))), transparent 60%), linear-gradient(180deg, rgba(238,240,243,calc(.8 * var(--fscale))), rgba(222,225,230,calc(.86 * var(--fscale)))); }
+.screen { --fl-fill: rgba(32,33,36,calc(.78 * var(--fscale))); --fl-blur: blur(calc(24px * var(--bscale))) saturate(1.5); }
+html.opaque .screen[data-theme="dark"] { --fl-fill: rgb(32,33,36); --fl-blur: none; }
+html.opaque .screen[data-theme="light"] { --fl-fill: rgb(240,241,243); --fl-blur: none; }
+html.opaque .screen[data-mat="frost"] .pop { background: var(--pop) !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+html.opaque .screen[data-mat="frost"] .mat { background: var(--bg) !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+html.noanim .screen *, html.noanim .screen *::before, html.noanim .screen *::after { transition: none !important; animation: none !important; }

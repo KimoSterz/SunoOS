@@ -65,7 +65,7 @@
   // The column view walks this: Home, then a folder, then its contents, then the thing you picked
   const FTREE = { Home: [['Desktop', 'folder'], ['Documents', 'folder'], ['Downloads', 'folder'], ['Music', 'folder'], ['Pictures', 'folder'], ['Projects', 'folder']],
     Projects: [['Archive 2025', 'folder'], ['Launch', 'folder'], ['Personal site', 'folder'], ['Taxes 2026', 'folder']], Documents: [['Letters', 'folder'], ['Lease 2026.pdf', 'pdf'], ['Reading list.md', 'md']],
-    Pictures: [['Screenshots', 'folder'], ['Terrace.webp', 'img'], ['Studio morning.webp', 'img']], Downloads: [['SunoOS-0.1-nightly.iso', 'iso'], ['kiln-2.4.1.flatpakref', 'pkg'], ['Invoice 0923.pdf', 'pdf']],
+    Pictures: [['Screenshots', 'folder'], ['Terrace.webp', 'img'], ['Studio morning.webp', 'img']], Downloads: [['SunoOS-0.1-eclipse.iso', 'iso'], ['kiln-2.4.1.flatpakref', 'pkg'], ['Invoice 0923.pdf', 'pdf']],
     Desktop: [['Screenshot 21.40.png', 'img']], Music: [['Pet Sounds', 'folder'], ['Demos', 'folder']], 'Personal site': [['index.html', 'md'], ['styles.css', 'md']], 'Archive 2025': [['Old deck.stage', 'deck']], 'Taxes 2026': [['Return.pdf', 'pdf'], ['Receipts.grid', 'sheet']],
     'Press kit': [['logo.svg', 'img'], ['press-photo-1.webp', 'img'], ['boilerplate.md', 'md']], Screens: [['filer.webp', 'img'], ['photos.webp', 'img']], Website: [['hero.webp', 'img'], ['copy.md', 'md']], Fonts: [['Figtree.ttf', 'md'], ['Instrument Serif.otf', 'md']] };
   FTREE['Fable SSD'] = [['Home', 'folder'], ['Suno', 'folder']]; FTREE.Suno = [['Apps', 'folder'], ['Wallpapers', 'folder']]; FTREE.Archive = [['Archive 2025', 'folder'], ['Photo backups', 'folder']];

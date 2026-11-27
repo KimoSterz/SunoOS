@@ -239,7 +239,7 @@
       { n: 'Launch deck v4.key', k: 'deck', sz: '48 MB', d: 'Today, 2:41 PM', day: 'Today' }, { n: 'Studio North invoice.pdf', k: 'pdf', sz: '220 KB', d: 'Today, 11:08 AM', day: 'Today' },
       { n: 'terrace.jpg', k: 'img', th: 'life-sync-terrace', sz: '3.2 MB', d: 'Today, 9:30 AM', day: 'Today' }, { n: 'Invoices', k: 'folder', items: 6, d: 'Yesterday', day: 'Yesterday', sub: [
         { n: 'September.pdf', k: 'pdf', sz: '180 KB' }, { n: 'August.pdf', k: 'pdf', sz: '176 KB' }, { n: 'July.pdf', k: 'pdf', sz: '181 KB' }] },
-      { n: 'suno-nightly-1022.iso', k: 'zip', sz: '2.4 GB', d: 'Yesterday', day: 'Yesterday' }, { n: 'Budget 2027.xlsx', k: 'sheet', sz: '84 KB', d: 'Oct 21', day: 'Earlier' },
+      { n: 'suno-eclipse-1022.iso', k: 'zip', sz: '2.4 GB', d: 'Yesterday', day: 'Yesterday' }, { n: 'Budget 2027.xlsx', k: 'sheet', sz: '84 KB', d: 'Oct 21', day: 'Earlier' },
       { n: 'studio-walkthrough.mp4', k: 'video', th: 'life-hero-studio', sz: '312 MB', d: 'Oct 20', day: 'Earlier' }, { n: 'Pet Sounds.flac', k: 'audio', th: 'pet-sounds', sz: '41 MB', d: 'Oct 18', day: 'Earlier' }] },
     { id: 'doc', n: 'Documents', g: 'file-text', h: 40, fresh: 0, files: [
       { n: 'Launch plan.docx', k: 'doc', sz: '96 KB', d: 'Today, 1:12 PM', day: 'Today' }, { n: 'Board letter.pdf', k: 'pdf', sz: '310 KB', d: 'Yesterday', day: 'Yesterday' },

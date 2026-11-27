@@ -141,7 +141,7 @@
       ${sec('open', 'Open in', 'Open wears the default app’s own icon and says where it opens. Open in lists every app that can, the best Suno app first, the default marked, then Other app. <code>lOpenBtn(kind)</code>, <code>lOpenIn(anchor, kind, name)</code>.',
         `<div class="luistage">${lOpenBtn('deck', 'data-lui-todo="Opening launch-deck.stage in Stage"')}${lOpenBtn('img', 'data-lui-todo="Opening terrace.webp in Viewer"')}${lOpenBtn('sheet', 'data-lui-todo="Opening budget-q4.grid in Grid"')}<button class="bt fill" type="button" data-luiopenin="img">${ic('square-arrow-out-up-right')}Open in…</button><button class="bt fill" type="button" data-luiopenin="audio">${ic('square-arrow-out-up-right')}Open a song in…</button></div>`)}
       ${sec('file', 'File card', 'One card for a file anywhere: the file’s own face (never larger than its square), the name cut in the middle so the extension stays, size and kind, and Open with the app’s icon. States go in the second line. <code>lFile(f, { sub, extra, act, open })</code>.',
-        `<div class="luistage">${file({ n: 'suno-1.0-nightly-x86_64.iso', k: 'iso', sz: '2.1 of 3.1 GB' }, { sub: '38 s left', extra: '<span class="lprog"><i style="width:68%"></i></span>', act: `<button class="lfx" type="button" title="Pause" aria-label="Pause">${ic('pause')}</button><button class="lfx" type="button" title="Cancel" aria-label="Cancel">${ic('x')}</button>` })}
+        `<div class="luistage">${file({ n: 'suno-1.0-eclipse-x86_64.iso', k: 'iso', sz: '2.1 of 3.1 GB' }, { sub: '38 s left', extra: '<span class="lprog"><i style="width:68%"></i></span>', act: `<button class="lfx" type="button" title="Pause" aria-label="Pause">${ic('pause')}</button><button class="lfx" type="button" title="Cancel" aria-label="Cancel">${ic('x')}</button>` })}
         ${file({ n: 'homepage-hero-final-final.webp', k: 'img', sz: '1.8 MB', src: PH + 'life-hero-writing.webp' }, { sub: 'Just now', open: 'data-lui-todo="Opening in Viewer"' })}
         ${file({ n: 'press-kit.zip', k: 'zip', sz: '48 MB' }, { sub: '<span class="lfbad">Failed: the server stopped responding</span>', act: '<span class="bt sm fill" role="button" data-lui-todo="Retrying">Retry</span>' })}
         ${file({ n: 'setup-helper.flatpakref', k: 'app' }, { sub: '<span class="lfwarn">Not from a source you use</span>', act: '<span class="bt sm fill" role="button" data-lui-todo="Kept. It won’t run until you open it in Valet">Keep…</span>' })}</div>`)}
@@ -224,7 +224,7 @@
     pmode: 'bal', charge: 'max', pbtn: 'suspend', pct: true, autoBright: true, dim: true, autoSaver: true, blank: '5', susBat: true, susBatD: '15', susAc: false, susAcD: '60',
     mtab: 'touchpad', mBtn: 'left', mSpeed: 0, mAccel: true, mNat: false, tp: true, tpType: true, tSpeed: 20, tSec: 'two', tTap: true, tScroll: 'two', tNat: true,
     srcs: ['English (US)'], src: 'English (US)', perWin: 'all', altKey: 'AltRight', compose: 'off',
-    acc: 250, wall: 'prism', tint: true,
+    acc: 250, wall: 'prism', tint: true, anim: true, trans: true, frost: 100,
     preset: 'suno', edge: 'bottom', spread: 'spread', joined: 'separate', float: 'floating', hide: 'never', isz: 40,
     tile: true, gap: 8, edgeTile: true, hot: true, edges: true, ws: 'dynamic', wsN: 4, wsMon: 'primary', swi: 'current',
     dnd: false, lockN: true, nshow: '6', na: { messages: true, charlie: true, calendar: true, phone: true, tasks: true, clock: true, depot: true, tide: false, maps: false },
@@ -369,7 +369,8 @@
       hero: () => `<div class="cfstyles">${['light', 'dark'].map(m => `<button class="cfstyle${document.body.dataset.mode === m ? ' on' : ''}" type="button" data-cfmode="${m}"><span class="cfmini ${m}" style="background-image:url('${WP}${CF.wall}.png')"><i class="w"><i></i><i></i><i></i></i><i class="w2"></i></span><b>${m === 'light' ? 'Light' : 'Dark'}</b></button>`).join('')}</div>`,
       body: () => [{ h: 'Accent', r: [rCu(`<div class="cfaccs">${CFACC.map(([h, n]) => `<button class="cfacc${CF.acc === h ? ' on' : ''}" type="button" data-cfacc="${h}" style="--h:${h}" title="${n}" aria-label="${n}"></button>`).join('')}</div>`, { t: 'Accent colour' })] },
         { h: 'Background', r: [rCu(`<div class="cfwalls">${CFWALL.map(([k, n]) => `<button class="cfwall${CF.wall === k ? ' on' : ''}" type="button" data-cfwall="${k}" title="${n}" style="background-image:url('${WP}${k}.png')"></button>`).join('')}<button class="cfwall add" type="button" data-cfact="addwall" title="Add a picture">${ic('plus')}</button></div>`, { t: 'Background wallpaper' })] },
-        { h: 'Windows', r: [rSw('tint', 'Tint windows with what they hold', 'A frame takes a little colour from its album, photo or folder')] }] },
+        { h: 'Windows', r: [rSw('tint', 'Tint windows with what they hold', 'A frame takes a little colour from its album, photo or folder')] },
+        { h: 'Effects', r: [rSw('anim', 'Animations', 'Turn off to save memory and battery on slower hardware'), rSw('trans', 'Transparency', 'Show what is behind windows with Frost or Glass'), rRg('frost', 'Surface translucency', 'From clear glass to frosted with 15 percent see-through', 0, 100, 5, { fmt: v => v + '%', hide: CF.trans === false })] }] },
     shelf: { n: 'Shelf', i: 'panel-bottom', g: 'Desktop', h: 190, meta: () => `${CFPRE.find(p => p[0] === CF.preset)?.[1] || 'Custom'} · ${CF.hide === 'never' ? 'always shown' : CF.hide === 'touch' ? 'hides when a window touches it' : 'hides until you point at it'}`,
       hero: () => `<div class="cfdesk" style="background-image:url('${WP}${CF.wall}.png')">${cfShelf()}</div><div class="cfpres">${CFPRE.map(([k, n]) => `<button type="button" class="${CF.preset === k ? 'on' : ''}" data-cfpre="${k}">${n}</button>`).join('')}</div>`,
       body: () => [{ h: 'Arrangement', r: [rSg('edge', 'Position', '', [['bottom', 'Bottom'], ['left', 'Left'], ['right', 'Right']]), rSg('spread', 'Islands', 'Together in the middle, or spread to the ends', [['together', 'Together'], ['spread', 'Spread']]),
@@ -648,6 +649,8 @@
     if (k === 'large') $('#cf-body').classList.toggle('big', CF.large);
     if (k === 'hc') $('#w-settings').classList.toggle('cfhc', CF.hc);
     if (k === 'dnd') window.lumaShell?.dnd(CF.dnd);
+    if (k === 'anim') document.documentElement.classList.toggle('noanim', CF.anim === false);
+    if (k === 'trans' || k === 'frost') cfSurf();
     if (k === 'airplane' && CF.airplane) { CF.wifi = false; CF.bt = false; }
     if ((k === 'wifi' || k === 'bt') && cfG(k)) CF.airplane = false;
     if (k === 'wifi' && !CF.wifi) CFV.joinNet = null;
@@ -657,4 +660,8 @@
     if (/^d\.|^join$|^arr$/.test(k) && !/bright|prof|primary/.test(k)) cfKeep();
     if (['edge', 'spread', 'joined', 'float'].includes(k)) CF.preset = CFPRE.find(p => Object.entries(p[2]).every(([a, b]) => CF[a] === b) && !['split', 'free'].includes(p[0]))?.[0] || 'custom';
   }
+  function cfSurf() { const h = document.documentElement, lvl = Math.max(0, Math.min(100, CF.frost ?? 100));
+    h.classList.toggle('opaque', CF.trans === false);
+    h.style.setProperty('--fscale', (0.65 + 0.35 * lvl / 100).toFixed(3));
+    h.style.setProperty('--bscale', (0.4 + 0.6 * lvl / 100).toFixed(3)); }
   function cfScan() { CFV.near = 0; clearTimeout(cfScan.t); const next = () => { if (CFV.pg !== 'bluetooth' || !CF.bt || CFV.near >= CFNEAR.length) return; CFV.near++; if (!CFV.q) cfMain(); cfScan.t = setTimeout(next, 2200); }; cfScan.t = setTimeout(next, 1400); }

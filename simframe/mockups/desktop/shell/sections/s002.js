@@ -276,7 +276,7 @@
   setTimeout(() => notify({ app: 'messages', face: PRIYA, title: 'Priya Raman', body: MSG[0], reply: true }), 2600);
   setTimeout(() => { S.soonAt = Date.now() + 15 * 60e3 - 20e3; tickClock(); renderEv(); layout(); }, 44000);
   setTimeout(() => notify({ app: 'calendar', title: 'Launch walkthrough in 15 minutes', body: 'Studio \u00b7 with Priya, Nora and Theo', acts: ['Join', 'Snooze'] }), 45000);
-  setTimeout(() => notify({ app: 'files', title: 'suno-nightly.iso is ready', body: 'Downloads \u00b7 4.1 GB', acts: ['Show', 'Open'] }), 110000);
+  setTimeout(() => notify({ app: 'files', title: 'suno-eclipse.iso is ready', body: 'Downloads \u00b7 4.1 GB', acts: ['Show', 'Open'] }), 110000);
   setTimeout(() => notify({ app: 'messages', face: PRIYA, title: 'Priya Raman', body: MSG[1], reply: true }), 190000);
 })();
 })();

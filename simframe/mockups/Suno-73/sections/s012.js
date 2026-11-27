@@ -105,7 +105,7 @@
     const w = $('#w-settings');
     $('#cf-q').addEventListener('input', e => { CFV.q = e.target.value.trim(); cfAll(); });
     $('#cf-q').addEventListener('keydown', e => { if (e.key === 'Enter') { const h = cfSearch(CFV.q.toLowerCase())[0]; if (h) cfGo(h.pg); } });
-    w.addEventListener('input', e => { const r = e.target.closest('[data-cfrg]'); if (r) { const k = r.dataset.cfrg; cfS(k, r.value); const o = r.parentNode.querySelector('output'); if (o) { const row = r.closest('.cfrow'); o.textContent = k === 'vol' ? r.value + '%' : o.textContent.replace(/^[\d.-]+/, r.value); }
+    w.addEventListener('input', e => { const r = e.target.closest('[data-cfrg]'); if (r) { const k = r.dataset.cfrg; cfS(k, r.value); if (k === 'frost') cfFx('frost'); const o = r.parentNode.querySelector('output'); if (o) { const row = r.closest('.cfrow'); o.textContent = k === 'vol' ? r.value + '%' : o.textContent.replace(/^[\d.-]+/, r.value); }
         if (k === 'gap') { const t = $('.cftiles'); if (t) t.outerHTML = cfTiles(); } if (k === 'nightT') $('.cftemp')?.style.setProperty('--t', r.value + '%'); if (k === 'isz') {} return; }
       const t = e.target.closest('[data-cftx]'); if (t) { cfS(t.dataset.cftx, t.value); if (t.dataset.cftx === 'devName') { const m = $('.cfhd p'); if (m && CFP[CFV.pg]?.meta) m.innerHTML = CFP[CFV.pg].meta(); } } });
     w.addEventListener('change', e => { if (e.target.closest('[data-cfrg]')) { const k = e.target.dataset.cfrg; if (!['vol', 'nightT', 'gap'].includes(k)) cfMain(); } });
