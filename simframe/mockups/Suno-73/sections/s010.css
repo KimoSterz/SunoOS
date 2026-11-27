@@ -21,10 +21,27 @@ html { --fscale: 1; --bscale: 1; }
 [data-mode="light"] { --float: oklch(0.99 0.002 265 / calc(.8 * var(--fscale))); }
 html.opaque :is(.fbar, .panel, .flo, .mbar) { background: var(--float-solid) !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
 html.noanim *, html.noanim *::before, html.noanim *::after { transition: none !important; animation: none !important; }
-/* SunoOS 0.1: the windows share the surface translucency — frosted at the top stop (15 percent see-through),
-   clear glass at the bottom; html.opaque pins them fully opaque again. Framed windows keep their own fill. */
-[data-mode="dark"] .win { --win: oklch(0.208 0.006 265 / calc(.85 * var(--fscale))); }
-[data-mode="light"] .win { --win: oklch(0.99 0.002 265 / calc(.85 * var(--fscale))); }
-html:not(.opaque) .win { -webkit-backdrop-filter: blur(calc(40px * var(--bscale))) saturate(1.4); backdrop-filter: blur(calc(40px * var(--bscale))) saturate(1.4); }
-html.opaque [data-mode="dark"] .win { --win: oklch(0.208 0.006 265); }
-html.opaque [data-mode="light"] .win { --win: oklch(0.99 0.002 265); }
+/* SunoOS 0.1: layered windows. Layer 1 — the frame and the sidebar on it, glass like the dock (frosted at
+   the top stop, 15 percent see-through, clear glass at the bottom); .win.lightframe defines its own --win,
+   so it is matched with the same weight. html.opaque pins every layer fully opaque again. */
+[data-mode="dark"] :is(.win, .win.lightframe) { --win: oklch(0.208 0.006 265 / calc(.85 * var(--fscale))); }
+[data-mode="light"] :is(.win, .win.lightframe) { --win: oklch(0.99 0.002 265 / calc(.85 * var(--fscale))); }
+html:not(.opaque) .win { -webkit-backdrop-filter: blur(calc(24px * var(--bscale))) saturate(1.5); backdrop-filter: blur(calc(24px * var(--bscale))) saturate(1.5);
+  -webkit-backdrop-filter: url(#suno-warp) blur(calc(24px * var(--bscale))) saturate(1.5); backdrop-filter: url(#suno-warp) blur(calc(24px * var(--bscale))) saturate(1.5); }
+html.opaque [data-mode="dark"] :is(.win, .win.lightframe) { --win: oklch(0.208 0.006 265); }
+html.opaque [data-mode="light"] :is(.win, .win.lightframe) { --win: oklch(0.99 0.002 265); }
+/* Layer 2 — the content island: kept fully opaque for readability, and given a shadow so it reads as floating
+   above the frame instead of set into it. */
+[data-mode="dark"] :is(.iwin, #w-filer) { --isle-out: 0 0 0 1px oklch(1 0 0 / .06), 0 1px 2px rgba(0,0,0,.4), 0 10px 24px -8px rgba(0,0,0,.5); }
+[data-mode="light"] :is(.iwin, #w-filer) { --isle-out: 0 0 0 1px rgba(255,255,255,.8), 0 1px 2px rgba(20,22,26,.12), 0 10px 24px -8px rgba(20,22,26,.3); }
+/* Layer 3 — the action bar is the dock's glass: --bar and the viewing bar follow the same factors. */
+[data-mode="dark"] .win, [data-mat="frost"][data-mode="light"] .win .isle :is(.fbar, .flo, .pop, .crpop) { --bar: oklch(0.305 0.006 265 / calc(.88 * var(--fscale))); }
+[data-mode="light"] .win, [data-mat="frost"][data-mode="light"] .win .isle :is(.fbar, .flo, .pop, .crpop) { --bar: rgba(255,255,255,calc(.88 * var(--fscale))); }
+[data-mode="dark"] .iwin.viewing .fbar { --bar: rgba(38,38,42,calc(.78 * var(--fscale))); }
+/* Curved glass: the SVG displacement map (#suno-warp, in the page) bends what sits beneath glass at the edges.
+   The plain blur stands first, so a browser without filter references keeps its frost. */
+:is(.fbar, .panel, .flo, .mbar) { -webkit-backdrop-filter: url(#suno-warp) blur(24px) saturate(1.7); backdrop-filter: url(#suno-warp) blur(24px) saturate(1.7); }
+.mwin :is(.mbar, .flo), .crwin .flo { -webkit-backdrop-filter: url(#suno-warp) blur(24px) saturate(1.7); backdrop-filter: url(#suno-warp) blur(24px) saturate(1.7); }
+.shelf { -webkit-backdrop-filter: url(#suno-warp) blur(30px) saturate(1.8); backdrop-filter: url(#suno-warp) blur(30px) saturate(1.8); }
+[data-mode="dark"] .shelf { background: oklch(0.19 0.01 265 / calc(.72 * var(--fscale))); }
+[data-mode="light"] .shelf { background: oklch(0.97 0.004 265 / calc(.74 * var(--fscale))); }

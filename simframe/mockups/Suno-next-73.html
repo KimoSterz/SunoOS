@@ -30,6 +30,8 @@
 <link rel="stylesheet" href="dink.css"><link rel="stylesheet" href="dink-apps.css">
 </head>
 <body data-mode="dark">
+<!-- curved-glass refraction map: R bends X, G bends Y, both sample toward the middle, so edges compress like convex glass -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="suno-warp" x="0%" y="0%" width="100%" height="100%" color-interpolation-filters="sRGB"><feImage href="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cdefs%3E%3ClinearGradient id='x' x1='0' y1='0' x2='1' y2='0'%3E%3Cstop offset='0' stop-color='rgb(255,0,0)'/%3E%3Cstop offset='0.5' stop-color='rgb(128,0,0)'/%3E%3Cstop offset='1' stop-color='rgb(0,0,0)'/%3E%3C/linearGradient%3E%3ClinearGradient id='y' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='rgb(0,255,0)'/%3E%3Cstop offset='0.5' stop-color='rgb(0,128,0)'/%3E%3Cstop offset='1' stop-color='rgb(0,0,0)'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='160' height='160' fill='url(%23x)'/%3E%3Crect width='160' height='160' fill='url(%23y)' style='mix-blend-mode:screen'/%3E%3C/svg%3E" x="0" y="0" width="100%" height="100%" preserveAspectRatio="none" result="map"/><feDisplacementMap in="SourceGraphic" in2="map" scale="20" xChannelSelector="R" yChannelSelector="G"/></filter></svg>
 
 <div class="review" role="toolbar" aria-label="Review">
   <strong>Suno</strong><small>take seventy-three · SunoUI · Playground</small><span class="sp"></span>
