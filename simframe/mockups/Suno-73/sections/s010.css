@@ -54,3 +54,10 @@ html.opaque [data-mode="light"] :is(.win, .win.lightframe) { --win: oklch(0.99 0
    mask fades a step lower so the aligned top stays crisp. */
 .cfwin .cfside { padding-top: 8px; }
 .cfwin .cfside .scr { mask-image: linear-gradient(180deg, transparent, #000 14px, #000 calc(100% - 16px), transparent); }
+/* SunoOS 0.1: lit edges — the glass frame reads by its bevel: a bright line along the top edge and a dark
+   one along the bottom, so controls on the glass separate from the wallpaper, in clear glass and full frost alike. */
+[data-mode="dark"] .win:not(.phone) { box-shadow: var(--sh-win), inset 0 1px 0 oklch(1 0 0 / .22), inset 0 -1px 0 oklch(0 0 0 / .5), inset 0 0 0 1px oklch(1 0 0 / .075); }
+[data-mode="light"] .win:not(.phone) { box-shadow: var(--sh-win), inset 0 1px 0 rgba(255,255,255,.95), inset 0 -1px 0 rgba(20,22,26,.1), inset 0 0 0 1px rgba(255,255,255,.4); }
+/* the search field leaves the sidebar and floats on its own glass island at the bottom of the content window */
+.cfwin .cfsrch { bottom: 12px; padding: 6px; justify-content: center; }
+.cfwin .cfsrch .cfq { width: min(430px, 100%); height: 38px; margin: 0; }

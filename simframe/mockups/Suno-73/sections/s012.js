@@ -101,7 +101,7 @@
     if (e.key === 'ArrowLeft' && e.altKey) { const p = cfPg(CFV.pg); if (p.up) cfGo(p.up); } });
 
   function renderSettings() { const sw = $('#w-settings'); sw.classList.toggle('lsideoff', !lSideOn(sw)); $('#cf-top').innerHTML = `<img src="${A}settings.svg" alt=""><b>Settings</b><span class="chev">${ic('chevron-down')}</span>${lSideBtn(sw)}`;
-    $('#cf-side .cfq').insertAdjacentHTML('afterbegin', ic('search'));
+    $('#cf-srch .cfq').insertAdjacentHTML('afterbegin', ic('search'));
     const w = $('#w-settings');
     $('#cf-q').addEventListener('input', e => { CFV.q = e.target.value.trim(); cfAll(); });
     $('#cf-q').addEventListener('keydown', e => { if (e.key === 'Enter') { const h = cfSearch(CFV.q.toLowerCase())[0]; if (h) cfGo(h.pg); } });
