@@ -1,4 +1,4 @@
-/* Diskord, a Discord client for Luma (mockup, 22 Oct 2026; take two). Shared parts come from the simulator (.si, .srch,
+/* Diskord, a Discord client for Suno (mockup, 22 Oct 2026; take two). Shared parts come from the simulator (.si, .srch,
    .snew, .sfoot, .flo, .ib, .bt, .fbar, .misl, .fsha/.fvt, .ldp, .av); everything here is prefixed dc-. dc-ph means the
    room is under 560 (a phone, or a narrow window). --ch is the current server's hue; it washes the island. */
 #w-discord { --dc-rl: 0.78; --dc-red: oklch(0.63 0.2 25); --dc-gold: oklch(0.8 0.14 80); --dc-link: oklch(0.8 0.1 250); --dc-ring: var(--win); }

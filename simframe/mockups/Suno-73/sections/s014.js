@@ -110,7 +110,7 @@
       const ph = hit('[data-photo]'); if (ph) { P.viewer = +ph.dataset.photo; photosBar(); return; }
       if (hit('[data-pclose]')) { P.viewer = null; P.info = false; photosBar(); return; }
       if (hit('[data-pinfo]')) { P.info = !P.info; photosBar(); return; }
-      if (hit('[data-pfav]')) { const p = PHOTOS[P.viewer], redo = () => { photosBar(); photosBody(); }; p.fav = !p.fav; redo();   // the LumaUI toast confirms it (#9)
+      if (hit('[data-pfav]')) { const p = PHOTOS[P.viewer], redo = () => { photosBar(); photosBody(); }; p.fav = !p.fav; redo();   // the SunoUI toast confirms it (#9)
         lToast(win, p.fav ? 'Added to Favorites' : 'Removed from Favorites', { icon: 'heart', undo: p.fav ? null : () => { p.fav = true; redo(); } }); return; }
       const pm = hit('[data-pmore]'); if (pm) { if ($('#lmenu')) { $('#lmenu').remove(); return; } lMenu(pm, crMi('data-popenin', 'app-window', 'Open in\u2026') + crMi('data-palbum', 'folder-plus', 'Add to album\u2026') + '<span class="crsep"></span>' + crMi('data-pdel', 'trash-2', 'Delete', ' red')); $('#lmenu')?.classList.add('ldrawer'); return; }
       if (hit('[data-popenin]')) { $('#lmenu')?.remove(); lOpenIn($('#p-corner [data-pmore]'), 'img', PHOTOS[P.viewer].t); return; }
@@ -136,7 +136,7 @@
       if (hit('[data-vstar]')) { e.preventDefault(); $('#lmenu')?.remove(); const t = curTab(); V.star[t.page] = !V.star[t.page]; renderViola(); return; }
       if (hit('[data-vdl]')) { V.dl = !V.dl; V.dlNew = 0; renderViola(); return; }
       if (hit('[data-vdlpause]')) { V.dlPause = !V.dlPause; $('#w-viola .dlls').innerHTML = vDownloads(); return; }
-      if (hit('[data-vdlcancel]')) { lConfirm(win, { title: 'Stop this download?', body: 'luma-1.0-x86_64.iso stops, and the 2.1 GB downloaded so far is deleted.', action: 'Stop download', icon: 'x', onOK: () => lToast(win, 'Download stopped', { icon: 'x' }) }); return; }
+      if (hit('[data-vdlcancel]')) { lConfirm(win, { title: 'Stop this download?', body: 'suno-1.0-x86_64.iso stops, and the 2.1 GB downloaded so far is deleted.', action: 'Stop download', icon: 'x', onOK: () => lToast(win, 'Download stopped', { icon: 'x' }) }); return; }
       const vm = hit('[data-vmore]'); if (vm) { if ($('#lmenu')) { $('#lmenu').remove(); return; } const t = curTab(), pg = PAGE(t.page);
         lMenu(vm, crMi('data-vtodo="New private tab: nothing you do here is kept"', 'eye-off', 'New private tab') + '<span class="crsep"></span>' + crMi('data-vtodo="Find in page"', 'search', 'Find in page\u2026') + crMi('data-vtodo="Reader view: just the words"', 'book-open-text', 'Reader view') + `<div class="vzoom"><span>Zoom</span><button class="ib" type="button" data-vzoom="-1" aria-label="Zoom out">${ic('minus')}</button><b>${V.zoom || 100}%</b><button class="ib" type="button" data-vzoom="1" aria-label="Zoom in">${ic('plus')}</button></div>` + '<span class="crsep"></span>' + crMi(`data-vstar`, 'star', V.star[t.page] ? 'Remove bookmark' : 'Bookmark this page') + crMi('data-vtodo="Sent to the printer"', 'printer', 'Print\u2026') + '<span class="crsep"></span>' + crMi('data-vtodo="Opening Viola in Settings"', 'settings', 'Viola settings')); return; }
       const vz = hit('[data-vzoom]'); if (vz) { V.zoom = Math.max(50, Math.min(200, (V.zoom || 100) + 10 * +vz.dataset.vzoom)); $('#v-web').style.zoom = V.zoom / 100; const b = $('#lmenu .vzoom b'); if (b) b.textContent = V.zoom + '%'; return; }
@@ -227,7 +227,7 @@
     if (e.target.id === 't-rng') { T.pos = +e.target.value; const dur = secs(curTr().d); e.target.style.setProperty('--p', T.pos / dur * 100 + '%'); $('#t-pos').textContent = mmss(T.pos); $('#t-rem').textContent = '−' + mmss(dur - T.pos); }
     if (e.target.id === 't-vol') { T.vol = +e.target.value; e.target.style.setProperty('--p', T.vol + '%'); }
   });
-  /* ══ LumaUI A–Z index (phone) ═══════════════════════════════════════════════════════════
+  /* ══ SunoUI A–Z index (phone) ═══════════════════════════════════════════════════════════
      Long alphabetical lists get the letters down the right edge: touch or drag along them and the list jumps, with the
      letter shown large beside your thumb. Only letters that have people are live. */
   function lAZ(win, scroller, headSel) { const w = $(win); if (!w) return; w.querySelector(':scope > .lazidx')?.remove(); w.querySelectorAll('.lazgut').forEach(x => x.classList.remove('lazgut')); const sc = $(scroller); if (!w.classList.contains('phone') || !sc) return;
@@ -243,7 +243,7 @@
   /* the lists that get the index redraw often, so it follows them rather than each render */
   [['#c-side', () => lAZ('#w-contacts', '#c-side .scr', '.sh')], ['#pn-side', () => { if (PN.tab === 'contacts' && !PN.drill) lAZ('#w-phone', '#pn-side .pnlist', '.pnlet'); else $('#w-phone > .lazidx')?.remove(); }]].forEach(([sel, fn]) => { const el = $(sel); if (!el) return; let t; new MutationObserver(() => { clearTimeout(t); t = setTimeout(fn, 60); }).observe(el, { childList: true }); new ResizeObserver(() => { clearTimeout(t); t = setTimeout(fn, 60); }).observe(el.closest('.win')); });
 
-  /* ══ LumaUI safe area above the bar (phone) ═══════════════════════════════════════════════
+  /* ══ SunoUI safe area above the bar (phone) ═══════════════════════════════════════════════
      One rule for every app instead of each guessing: measure the bar that floats at the bottom (one row, two rows,
      whatever it is right now) and give every scroller behind it exactly that much room at its end, plus 20px, so the last
      line always stops 20px above the bar and never further. The bar growing a panel doesn't count: panels float over the
@@ -278,7 +278,7 @@
     const end = e => { pts.delete(e.pointerId); if (pts.size < 2) d0 = 0; }; document.addEventListener('pointerup', end, true); document.addEventListener('pointercancel', end, true);
     document.addEventListener('wheel', e => { if (!e.ctrlKey || !e.target.closest?.('#w-photos.pnarrow #p-body')) return; e.preventDefault(); set(P.size * (e.deltaY < 0 ? 1.06 : 1 / 1.06)); }, { passive: false, capture: true }); })();
 
-  /* ══ LumaUI swipe rows (phone) ══════════════════════════════════════════════════════════
+  /* ══ SunoUI swipe rows (phone) ══════════════════════════════════════════════════════════
      The thing phones do best with a list: slide a row to act on it without opening it. Right reveals the gentle action
      on the left edge, left reveals the other on the right edge; past 90px it commits, with the row sliding away and the
      app's own toast (with Undo where the app has one). A vertical drag stays a scroll. */
@@ -318,7 +318,7 @@
    ['w-notes', () => nNarrow() || phTab(), () => { N.px = ''; nBar(); }, () => $('#n-bar').classList.contains('nphbar')], ['w-filer', () => fNarrow() ? 'phone' : phWide() ? 'tablet' : 'desk', () => { F.exp = false; filerTitle(); filerBar(); }, () => $('#f-ttl .fisl') ? 'phone' : $('#f-ttl .fviews') ? 'tablet' : $('#f-bar [data-fexp], #f-bar [data-fsexp], #f-bar .fhold') ? 'phone' : 'desk'],   /* three shapes: the island, the title row with views, the desktop */ ['w-photos', pNarrow, () => { P.px = ''; photosBar(); }, w => w.classList.contains('pnarrow')], ['w-term', tmNarrow, () => { TT.px = ''; tmBar(); }, () => $('#tm-bar').classList.contains('tmphbar')], ['w-monitor', mnNarrow, () => { MN.px = ''; mnBody(); mnBar(); }, w => w.classList.contains('mnnarrow')], ['w-memos', meNarrow, () => { ME.px = ''; meSide(); meBar(); }, () => !!$('#me-side .melbar') || $('#me-bar').classList.contains('mephbar')], ['w-disks', dskNarrow, () => { DSS.px = ''; dskAll(); }, () => $('#dsk-bar').classList.contains('dskphbar')], ['w-ari', ariNarrow, () => { AR.px = ''; arBar(); }, () => $('#ari-bar').classList.contains('ariphbar')], ['w-maps', mpNarrow, () => { MP.px = ''; mpBar(); mpCorner(); }, () => $('#mp-bar').classList.contains('mpphbar')], ['w-depot', dNarrow, () => { DS2.px = ''; depRender(); }, w => w.classList.contains('dpnarrow')], ['w-valet', vlNarrow, () => { VL.px = ''; vlRender(); }, w => w.classList.contains('vlph')], ['w-weather', wxNarrow, () => { WS2.px = ''; renderWx(); }, w => w.classList.contains('wxph')], ['w-tasks', tkNarrow, () => { TK.px = ''; tkBar(); }, () => $('#tk-bar').classList.contains('tkphbar')], ['w-leaf', lfNarrow, () => { LF.px = ''; lfBar(); lfLayout(); }, () => $('#lf-bar').classList.contains('lfphbar')], ['w-viewer', vwNarrow, () => { VW.px = ''; VW.zoom = 0; vwStage(); vwBar(); }, () => $('#vw-bar').classList.contains('vwphbar')], ['w-clock', ckNarrow, () => { CK.px = ''; cbBody(); }, () => $('#cb-bar').classList.contains('ckphbar')], ['w-reel', rlNarrow, () => { RL.px = ''; rlAll(); }, w => w.classList.contains('rlph')], ['w-darkroom', drNarrow, () => { DR.px = ''; drAll(); }, () => $('#dr-bar').classList.contains('drphbar')], ['w-write', wrNarrow, () => { W.px = ''; renderWrite(); }, w => w.classList.contains('wrph')], ['w-canvas', cvNarrow, () => { CV.px = ''; cvAll(); }, w => w.classList.contains('cvph')], ['w-grid', grNarrow, () => { GR.px = ''; grAll(); }, w => w.classList.contains('grphone')], ['w-session', seNarrow, () => { SE.px = ''; seAll(); }, w => w.classList.contains('seph')], ['w-picker', fpNarrow, () => { FP.px = ''; fpAll(); }, w => w.classList.contains('fpph')], ['w-notes', () => $('#w-notes').classList.contains('phone'), () => { nSide(); nBar(); }, () => !!$('#n-side .nlist2')], ['w-stage', stNarrow, () => { ST.px = ''; stAll(); }, w => w.classList.contains('stph')]].forEach(([id, narrow, redraw, drawn]) => {
     const w = $('#' + id); if (!w) return; new ResizeObserver(() => { if (w.clientWidth && narrow() !== drawn(w)) redraw(); }).observe(w); });
   desk.addEventListener('keydown', e => { const go = e.target.closest('[data-vgo]'); if (!go || e.key !== 'Enter') return; const v = go.value.trim().toLowerCase(); go.blur();
-    vOpen(v.includes('hub') ? 'hub' : v.includes('linux') ? 'post:linux' : v.includes('ai') ? 'post:ai' : v.includes('free') ? 'post:free' : v.includes('luma') ? 'home' : 'start'); });
+    vOpen(v.includes('hub') ? 'hub' : v.includes('linux') ? 'post:linux' : v.includes('ai') ? 'post:ai' : v.includes('free') ? 'post:free' : v.includes('suno') ? 'home' : 'start'); });
   document.addEventListener('selectionchange', wSel);
   doc().addEventListener('input', () => { writeOutRows(); writeTop(); writeStat(); if (W.find) runFind(); });
   $('#d-desk').addEventListener('scroll', () => { $('#d-sel').classList.remove('show'); writeStat(); });
@@ -386,12 +386,12 @@
   window.lumaDesk = { open: dtOpen, dock: dtDock, getDnd: () => CF.dnd,
     get: k => cfG(k), set(k, v) { cfS(k, v); cfFx(k); if (!$('#w-settings').hidden) cfAll(); },
     settings(p) { dtOpen('settings'); cfGo(p); },
-    phone(a) { wins.forEach(w => { if (w.dataset.app !== a && w.classList.contains('phone')) { w.classList.remove('phone', 'navopen'); w.hidden = true; w.dispatchEvent(new CustomEvent('luma-phone', { detail: false })); } }); const w = $('#w-' + a); if (!w) return;
-      w.hidden = false; w.classList.remove('min'); w.classList.add('phone'); focusWin(w); w.dispatchEvent(new CustomEvent('luma-phone', { detail: true })); setTimeout(settle, 60); },
-    phoneHome() { wins.forEach(w => { if (w.classList.contains('phone')) { w.classList.remove('phone', 'navopen'); w.hidden = true; w.dispatchEvent(new CustomEvent('luma-phone', { detail: false })); } }); }, mode(m) { $(`[data-set-mode="${m}"]`)?.click(); }, mat(m) { S.mat = m === 'frost' ? 'frost' : 'solid'; apply(); }, wall(n) { S.wall = n; apply(); },
+    phone(a) { wins.forEach(w => { if (w.dataset.app !== a && w.classList.contains('phone')) { w.classList.remove('phone', 'navopen'); w.hidden = true; w.dispatchEvent(new CustomEvent('suno-phone', { detail: false })); } }); const w = $('#w-' + a); if (!w) return;
+      w.hidden = false; w.classList.remove('min'); w.classList.add('phone'); focusWin(w); w.dispatchEvent(new CustomEvent('suno-phone', { detail: true })); setTimeout(settle, 60); },
+    phoneHome() { wins.forEach(w => { if (w.classList.contains('phone')) { w.classList.remove('phone', 'navopen'); w.hidden = true; w.dispatchEvent(new CustomEvent('suno-phone', { detail: false })); } }); }, mode(m) { $(`[data-set-mode="${m}"]`)?.click(); }, mat(m) { S.mat = m === 'frost' ? 'frost' : 'solid'; apply(); }, wall(n) { S.wall = n; apply(); },
     area(r, tiling) { DTA.res = r; DTA.tiling = tiling; if (tiling) dtTile(); },
     dnd(v) { CF.dnd = v; if (!$('#w-settings').hidden) cfAll(); },
-    ready() { syncDock(); requestAnimationFrame(() => { document.documentElement.classList.add('dtready'); try { parent.postMessage('luma-desk-ready', '*'); } catch (e) {} }); } };
+    ready() { syncDock(); requestAnimationFrame(() => { document.documentElement.classList.add('dtready'); try { parent.postMessage('suno-desk-ready', '*'); } catch (e) {} }); } };
 
   /* Dropping a window on an edge tiles it; the top edge fills the work area */
   function dtEdge(e) { if (!CF.edgeTile) return null; const r = desk.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top, b = bounds(), R = DTA.res, g = 10, h = b.h - R.top - R.bottom, w = b.w - R.left - R.right;
@@ -419,7 +419,7 @@
     const sc = document.createElement('script'); sc.src = 'desktop/phone.js?v=' + Date.now(); sc.onload = () => { if (!QS.get('app') || !document.getElementById('w-' + QS.get('app'))) markReady(700); }; document.body.appendChild(sc); }
   else if (QS.get('desktop')) dtInit();
   else markReady(400);
-  /* ?setup=1: first login, the system's setup sheet (desktop/setup.js); ?setup=new on the phone: "Set up new Luma" */
+  /* ?setup=1: first login, the system's setup sheet (desktop/setup.js); ?setup=new on the phone: "Set up new Suno" */
   if (QS.get('setup')) { const su = document.createElement('script'); su.src = 'desktop/setup.js?v=' + Date.now(); document.body.appendChild(su); }
   addEventListener('resize', () => { const b = bounds(); wins.forEach(w => { if (w.offsetLeft > b.w - 160) w.style.left = Math.max(8, b.w - w.offsetWidth - 8) + 'px'; }); settle(); });
 })();

@@ -54,7 +54,7 @@
     : [['dim', `# ${PGAG[PG.ag.waitlist]?.n || 'Ari'}, the last run for this goal`], ['pr', 'kiln % npm run check'], ['ok', 'svelte-check found 0 errors and 0 warnings'], ['pr', 'kiln % npm test -- waitlist'], ['ok', ` ✓ tests/waitlist.test.ts (6 tests) 412ms${PG.wl.phase !== 'decide' ? '\n ✓ tests/offers.test.ts (4 tests) 388ms' : ''}`], ['pr', 'kiln % playground checks run --goal add-a-waitlist'], ['ok', PG.wl.phase === 'decide' ? '✓ 3 of 5 checks passed · 2 wait for a decision' : '✓ 6 of 6 checks passed on Stage']];
   function pgTermRun(cmd) { const out = PGX.term.length ? PGX.term : (PGX.term = pgTermSeed(PGX.code.gid || pgGoal()?.id)); const c = cmd.trim(); out.push(['pr', 'kiln % ' + c]);
     const r = { '': null, help: 'Commands that work here: ls, pwd, git status, git log, npm test, cat AGENTS.md, clear', pwd: '/home/kiln/Documents/Playground Projects/Kiln', ls: 'AGENTS.md  CLAUDE.md  package.json  src  static  tests', whoami: 'nick (certificate valid until 6:10 PM)',
-      'git status': `On branch goal/add-a-waitlist\nChanges not yet released:\n${pgChanged('waitlist').map(p => '  ' + (PGBASE[p] ? 'modified:   ' : 'new file:   ') + p).join('\n')}`, 'git log': '9f3c1e2 Sign in with Luma Connect (restore point 14)\n41a8b7d Booking reminders (restore point 13)\n0c2d9a4 First version of Kiln (restore point 1)',
+      'git status': `On branch goal/add-a-waitlist\nChanges not yet released:\n${pgChanged('waitlist').map(p => '  ' + (PGBASE[p] ? 'modified:   ' : 'new file:   ') + p).join('\n')}`, 'git log': '9f3c1e2 Sign in with Suno Connect (restore point 14)\n41a8b7d Booking reminders (restore point 13)\n0c2d9a4 First version of Kiln (restore point 1)',
       'npm test': ` ✓ tests/bookings.test.ts (9 tests)\n ✓ tests/waitlist.test.ts (6 tests)${PG.wl.phase !== 'decide' ? '\n ✓ tests/offers.test.ts (4 tests)' : ''}\n\nAll tests passed`, 'cat agents.md': pgAgentsMd('Kiln', '~/Documents/Playground Projects/Kiln') }[c.toLowerCase()];
     if (c === 'clear') { PGX.term = []; } else if (r !== undefined) { if (r) out.push(['', r]); } else out.push(['dim', `${c.split(' ')[0]}: not available in this preview. Type help to see what is.`]);
     pgPage(); setTimeout(() => $('#pg-termin')?.focus(), 0); }
@@ -336,7 +336,7 @@
     const ac = q('[data-pgaccess]'); if (ac) { const k = ac.dataset.pgaccess, on = PG.access[k] !== false; PG.access[k] = !on; pgSave(); pgSheet(); const n = pgFirst(k);
       lToast(w, on ? `${n} can no longer get into the Dev server, Production or the emulator` : `${n} is back in. A new certificate was issued`, { icon: on ? 'lock' : 'key-round', undo: () => { PG.access[k] = on; pgSave(); pgSheet(); } }); return true; }
     const ir = q('[data-pginvrole]'); if (ir) { PGX.invRole = ir.dataset.pginvrole; const v = $('#pg-invq')?.value; pgSheet(); if ($('#pg-invq')) $('#pg-invq').value = v || ''; return true; }
-    if (q('[data-pginvite]')) { const v = $('#pg-invq')?.value.trim(); if (!v) { $('#pg-invq')?.focus(); lToast(w, 'Type a Luma Connect name or an email', { icon: 'user-plus' }); return true; } PG.members.push({ n: v.replace(/@.*/, '').replace(/^\w/, c => c.toUpperCase()), role: PGX.invRole || 'Builder' }); pgSave(); pgSheet(); lToast(w, `Invited. They’ll get the full app and an invitation`, { icon: 'user-plus' }); return true; }
+    if (q('[data-pginvite]')) { const v = $('#pg-invq')?.value.trim(); if (!v) { $('#pg-invq')?.focus(); lToast(w, 'Type a Suno Connect name or an email', { icon: 'user-plus' }); return true; } PG.members.push({ n: v.replace(/@.*/, '').replace(/^\w/, c => c.toUpperCase()), role: PGX.invRole || 'Builder' }); pgSave(); pgSheet(); lToast(w, `Invited. They’ll get the full app and an invitation`, { icon: 'user-plus' }); return true; }
     const rb = q('[data-pgrolebtn]'); if (rb) { const k = rb.dataset.pgrolebtn; if ($('#lmenu')) { $('#lmenu').remove(); return true; } lMenu(rb, `<h6>${esc(pgFirst(k))}’s role</h6>` + ['Builder', 'Reviewer', 'Viewer'].map(r => crMi(`data-pgsetrole="${k}:${r}"`, '', `${r}<small>${PGROLES[r]}</small>`)).join('') + '<span class="crsep"></span>' + crMi(`data-pgaccess="${k}"`, 'lock', 'Take away access', ' red')); return true; }
     const sr = q('[data-pgsetrole]'); if (sr) { $('#lmenu')?.remove(); const [k, r] = sr.dataset.pgsetrole.split(':'); const m = PGPEOPLE.find(x => x.k === k); if (m) m.role = r; pgSheet(); lToast(w, `${pgFirst(k)} is now a ${r}`, { icon: 'users' }); return true; }
     if (q('[data-pglook]')) { PG.look = !PG.look; pgSave(); pgSheet(); return true; }
@@ -371,7 +371,7 @@
     setInterval(() => { PGX.tick = Date.now(); if (w.hidden || !w.clientWidth) return;
       if (PGX.rec) { const b = w.querySelector('[data-pgrec] b'); if (b) b.textContent = pgDur((Date.now() - PGX.rec) / 1000); }
       if (PG.proj === 'kiln' && pgGoal()?.id === 'texts' && !PGX.page) { const n = $('#pg-body [data-pgi="tx-s1"]'), it = pgBase('texts').find(x => x.id === 'tx-s1'); if (n && it && (PGX.tick / 1000 | 0) % 5 === 0) n.outerHTML = pgItem(it); } }, 1000);
-    w.addEventListener('luma-phone', () => setTimeout(() => { PGX.stageOn = false; pgAll(); }, 80));
+    w.addEventListener('suno-phone', () => setTimeout(() => { PGX.stageOn = false; pgAll(); }, 80));
     /* on a phone, Playground sits on the home screen with the other apps (the shell draws its grid from its own list, so add the tile once it exists) */
     /* not in the website's showcase preview (?showcase=1, Nick 14 Oct 2026) */
     if (!QS.has('showcase')) { let n = 0; const t = setInterval(() => { const g = document.getElementById('lphone')?.shadowRoot?.querySelector('#grid'); if (g && !g.querySelector('[data-open="playground"]')) { const a = g.querySelector('[data-open="ari"]') || g.lastElementChild; a?.insertAdjacentHTML('beforebegin', `<button class="app" data-open="playground"><i class="ic" style="background-image:url(&quot;${PGICON}&quot;)"></i><span>Playground</span></button>`); } if (g || ++n > 80) clearInterval(t); }, 250); }
@@ -396,7 +396,7 @@
     kitchen: { n: 'Small Kitchen', h: '@smallkitchen', av: [YLP + 'tablet-cafe.webp', '50% 40%'], subs: '97K', ban: [PH + 'life-hero-home.webp', '50% 50%'], about: 'Weeknight cooking for two, and bread on Sundays.' },
     coop: { n: 'Couch Co-op', h: '@couchcoop', av: [YLP + 'gamers-evening.webp', '55% 30%'], subs: '431K', ban: [YLP + 'gamers-evening.webp', '50% 40%'], about: 'Games to play with the people on your sofa.' },
     build: { n: 'The Long Build', h: '@thelongbuild', av: [YLP + 'creatives-painter.webp', '50% 25%'], subs: '176K', ban: [YLP + 'scene-tablet-print.webp', '50% 50%'], about: 'Workshops, studios and the people who keep them.' },
-    luma: { n: 'Luma', h: '@simplyluma', logo: '../social-suno/brand/luma-logo-light.svg', subs: '48.2K', ban: [YLP + 'hero-field.webp', '50% 50%'], about: 'A better computer. Free and open source.', v: 1 },
+    suno: { n: 'Suno', h: '@simplyluma', logo: '../social-suno/brand/suno-logo-light.svg', subs: '48.2K', ban: [YLP + 'hero-field.webp', '50% 50%'], about: 'A better computer. Free and open source.', v: 1 },
   };
   /* id, channel, title, picture, position, length (s), views, when, hue, watched (0..1) */
   const YV = [
@@ -410,7 +410,7 @@
     ['coop', 'coop', 'Ten couch co-op games you can finish in a weekend', YLP + 'gamers-evening.webp', '50% 40%', 1267, '640K views', '6 days ago', 285, 0],
     ['song', 'sess', 'Writing a song from a voice memo, start to finish', YLP + 'studio-suite.webp', '45% 35%', 1878, '301K views', '2 weeks ago', 300, .35],
     ['sketch', 'ari', 'My sketchbook system, two years in', YLP + 'designers-studio.webp', '45% 40%', 728, '154K views', '3 weeks ago', 330, 0],
-    ['luma', 'luma', 'A better computer. Luma, in two minutes.', YLP + 'hero-field.webp', '50% 50%', 124, '96K views', '2 weeks ago', 140, 1],
+    ['suno', 'suno', 'A better computer. Suno, in two minutes.', YLP + 'hero-field.webp', '50% 50%', 124, '96K views', '2 weeks ago', 140, 1],
     ['cafe', 'north', 'The best café to work from in every city I’ve lived in', YLP + 'tablet-cafe.webp', '50% 50%', 824, '1.1M views', '1 month ago', 35, 0],
     ['riso', 'build', 'Inside a risograph print shop', YLP + 'scene-tablet-print.webp', '50% 50%', 1166, '203K views', '1 week ago', 335, 0],
     ['hand', 'coop', 'Is a $200 handheld enough for everything?', YLP + 'gaming.webp', '50% 35%', 711, '922K views', '2 days ago', 230, 0],
@@ -433,7 +433,7 @@
     ['ari', 'Ari Moreno', '3 days ago', 'The colour of that first light. I paused it just to look.', '942', 0], ['north', 'Northbound', '3 days ago', 'Same coast, different month. You picked the right one.', '611', 0],
     ['grain', 'Pixel & Grain', '1 day ago', 'Shot list for the cove please. Asking for a friend who is me.', '208', 0]];
   const YMOD = { view: 'home', back: [], cur: 'shore', t: 0, playing: false, chip: 'All', theater: false, cc: false, vol: 70, speed: 1, autoplay: true, desc: false, sort: 'top', q: '',
-    later: ['paint', 'song', 'riso', 'film', 'light'], liked: new Set(['desert', 'luma', 'shore']), disliked: new Set(), subs: new Set(['field', 'sess', 'kernel', 'north', 'ari', 'grain', 'luma']),
+    later: ['paint', 'song', 'riso', 'film', 'light'], liked: new Set(['desert', 'suno', 'shore']), disliked: new Set(), subs: new Set(['field', 'sess', 'kernel', 'north', 'ari', 'grain', 'suno']),
     queue: [], hist: true, composing: false, comment: '', dl: {}, mine: [], bell: new Set(['field']), ctab: 'videos' };
   const YT = YMOD;
   YT.t = Math.round(YV[0].d * YV[0].w);
@@ -448,9 +448,9 @@
   const yCard = v => `<div class="ytcard" role="button" tabindex="0" data-ytplay="${v.id}">${yThumb(v)}<span class="ytmeta"><button type="button" data-ytchan="${v.ch}" aria-label="${esc(ych(v.ch).n)}">${yAv(v.ch)}</button><span><b>${esc(v.t)}</b><span><button type="button" data-ytchan="${v.ch}">${esc(ych(v.ch).n)}</button>${yVer(v.ch)}<br>${v.views} · ${v.ago}</span></span></span></div>`;
   const yRow = (v, o = {}) => `<div class="ytrow" role="button" tabindex="0" data-ytplay="${v.id}">${o.n ? `<span class="n">${o.n}</span>` : ''}${yThumb(v, { hov: false })}<span class="tx"><b>${esc(v.t)}</b>${o.compact ? `<span class="by">${esc(ych(v.ch).n)}${yVer(v.ch)}</span><span class="s">${v.views} · ${v.ago}</span>` : `<span class="s">${v.views} · ${v.ago}</span><span class="by">${yAv(v.ch)}${esc(ych(v.ch).n)}${yVer(v.ch)}</span>${o.desc ? `<p>${esc(ych(v.ch).about)}</p>` : ''}`}</span>${o.more ? `<button class="ib" type="button" data-ytrowmore="${v.id}" data-lmenu aria-label="More">${ic('ellipsis')}</button>` : ''}</div>`;
   const YCHIPS = ['All', 'Music', 'Photography', 'Linux', 'Design', 'Cooking', 'Gaming', 'Live', 'New to you'];
-  const YCHIPK = { Music: ['sess'], Photography: ['field', 'grain'], Linux: ['kernel', 'luma'], Design: ['ari', 'build'], Cooking: ['kitchen'], Gaming: ['coop'], Live: [], 'New to you': ['build', 'kitchen', 'coop'] };
+  const YCHIPK = { Music: ['sess'], Photography: ['field', 'grain'], Linux: ['kernel', 'suno'], Design: ['ari', 'build'], Cooking: ['kitchen'], Gaming: ['coop'], Live: [], 'New to you': ['build', 'kitchen', 'coop'] };
   const yFiltered = () => YT.chip === 'All' ? YV : YT.chip === 'Live' ? YV.filter(v => !v.d) : YV.filter(v => (YCHIPK[YT.chip] || []).includes(v.ch));
-  const YPL = { later: { n: 'Watch later', ids: () => YT.later }, liked: { n: 'Liked videos', ids: () => [...YT.liked] }, road: { n: 'Road trip', ids: () => ['desert', 'cafe', 'field', 'shore'] }, learn: { n: 'Learn Linux', ids: () => ['linux', 'sync', 'family', 'luma'] } };
+  const YPL = { later: { n: 'Watch later', ids: () => YT.later }, liked: { n: 'Liked videos', ids: () => [...YT.liked] }, road: { n: 'Road trip', ids: () => ['desert', 'cafe', 'field', 'shore'] }, learn: { n: 'Learn Linux', ids: () => ['linux', 'sync', 'family', 'suno'] } };
   const YPLACES = [['home', 'Home', 'house'], ['shorts', 'Shorts', 'clapperboard'], ['subs', 'Subscriptions', 'list-video']];
   const YYOU = [['history', 'History', 'history'], ['pl:later', 'Watch later', 'clock'], ['pl:liked', 'Liked videos', 'thumbs-up'], ['downloads', 'Downloads', 'arrow-down-to-line']];
   const yTitle = v => v === 'home' ? 'Home' : v === 'shorts' ? 'Shorts' : v === 'subs' ? 'Subscriptions' : v === 'history' ? 'History' : v === 'downloads' ? 'Downloads' : v === 'search' ? `“${YT.q}”` : v.startsWith('pl:') ? YPL[v.slice(3)].n : v.startsWith('ch:') ? ych(v.slice(3)).n : v === 'watch' ? (yv(YT.cur)?.t || 'Video') : '';
@@ -483,7 +483,7 @@
     return `<div class="ytpage"><h1>Shorts</h1><div class="ytgrid" style="grid-template-columns:repeat(auto-fill,minmax(180px,1fr))">${[...YSHORT, ...YSHORT.slice().reverse()].map(([t, img, n, ch, base]) => `<button class="ytshort" type="button" data-ytshort><img src="${base}${img}.webp" alt=""><b>${esc(t)}</b><span>${n} views · ${esc(ych(ch).n)}</span></button>`).join('')}</div></div>`;
   }
   function ytHistory() {
-    const seen = ['shore', 'desert', 'luma', 'song', 'paint', 'linux', 'skate', 'cafe'].map(yv), q = YT.hq || '', f = seen.filter(v => !q || (v.t + ych(v.ch).n).toLowerCase().includes(q.toLowerCase()));
+    const seen = ['shore', 'desert', 'suno', 'song', 'paint', 'linux', 'skate', 'cafe'].map(yv), q = YT.hq || '', f = seen.filter(v => !q || (v.t + ych(v.ch).n).toLowerCase().includes(q.toLowerCase()));
     const g = [['Today', f.slice(0, 3)], ['Yesterday', f.slice(3, 5)], ['Monday', f.slice(5)]];
     return `<div class="ytpage"><h1>History</h1><div class="ythist"><label class="srch keep">${ic('search')}<input placeholder="Search watch history" data-ythq value="${esc(q)}" aria-label="Search watch history"></label><span class="sp"></span>
       <button class="hpause" type="button" data-ythist role="switch" aria-checked="${YT.hist}"><span>Keep watch history</span><i class="cfsw${YT.hist ? ' on' : ''}"></i></button><button class="bt" type="button" data-ytclear>${ic('trash-2')}Clear all</button></div>
@@ -705,7 +705,7 @@
     if (w.classList.contains('phone')) { const r = JSON.parse(w.dataset.phone); place(w, r.x, r.y, r.w, r.h); w.classList.remove('phone', 'navopen'); desk.classList.remove('phoning'); $('#phone').classList.remove('on'); }
     else { wins.forEach(x => { if (x.classList.contains('phone')) togglePhone(); }); w.dataset.phone = JSON.stringify({ x: w.offsetLeft, y: w.offsetTop, w: w.offsetWidth, h: w.offsetHeight });
       const h = Math.min(820, b.h - b.dock - 40); place(w, Math.round((b.w - 390) / 2), Math.round((b.h - b.dock - h) / 2), 390, h); w.classList.add('phone'); desk.classList.add('phoning'); $('#phone').classList.add('on'); }
-    w.dispatchEvent(new CustomEvent('luma-phone', { detail: w.classList.contains('phone') })); setTimeout(settle, 60); }
+    w.dispatchEvent(new CustomEvent('suno-phone', { detail: w.classList.contains('phone') })); setTimeout(settle, 60); }
   /* Dragging moves the window on the GPU (transform) and commits left/top once, on release;
      resizing is batched to one layout per frame. Nothing re-lays out per mouse event. */
   let drag = null, raf = 0;

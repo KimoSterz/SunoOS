@@ -1,21 +1,21 @@
-/* Depot's catalogue for the simulator. As uneven as a real store: Luma's own apps are complete, the popular apps
+/* Depot's catalogue for the simulator. As uneven as a real store: Suno's own apps are complete, the popular apps
    from other developers have most things, and some have almost nothing (a .deb you opened yourself, a small
    command-line tool). Nothing is filled in when it's missing: no default ratings, no stand-in screenshots,
    no invented licence. The design decides what absence looks like (see depot.js, "sparse").
 
    App fields: id, name, dev, verified, summary, cat, icon (a v4 icon name) or mark ({ file, bg }) or neither,
-   pk (system · luma · flatpak · deb · rpm · layered), size, version, updated, license, site, desc [paragraphs],
+   pk (system · suno · flatpak · deb · rpm · layered), size, version, updated, license, site, desc [paragraphs],
    news { v, date, items }, shots [keys in shots/], rating { avg, n, dist [5★..1★] }, reviews [], reach [[icon,
    what, why]], alt [names people know], inst, upd (a newer version), win (the simulator window it opens). */
 (() => {
-const L = (id, name, summary, cat, o = {}) => ({ id, name, summary, cat, dev: 'Luma', verified: true, pk: 'luma', icon: id, win: id, inst: 1, ...o });
+const L = (id, name, summary, cat, o = {}) => ({ id, name, summary, cat, dev: 'Suno', verified: true, pk: 'suno', icon: id, win: id, inst: 1, ...o });
 const X = (id, name, dev, summary, cat, o = {}) => ({ id, name, dev, summary, cat, pk: 'flatpak', ...o });
 const R = (avg, n, d) => ({ avg, n, dist: d });
 const S = (id, k = ['desktop-dark', 'desktop-light', 'phone-dark']) => k.map(x => `${id}-${x}`);
 const FILES = ['folder-open', 'Your files', 'Only the ones you open or save'], NET = ['globe', 'The network', 'To reach its servers'];
 
 const apps = [
-  /* Luma's own: complete */
+  /* Suno's own: complete */
   L('tide', 'Tide', 'Your music, from everywhere you keep it', 'media', { icon: 'music', size: '38 MB', version: '1.0.4', updated: 'Oct 18, 2026', shots: S('tide'),
     desc: ['Tide plays the music on this computer and on your own music server in one library. The album that\'s playing lights the window, and the queue survives a restart.', 'Gapless playback, a mini player in the Shelf, and the same library on your phone.'],
     news: { v: '1.0.4', date: 'Oct 18', items: ['Crossfade between tracks, from off to 12 seconds', 'Albums from a Navidrome server load twice as fast'] },
@@ -26,16 +26,16 @@ const apps = [
     rating: R(4.8, 902, [760, 104, 24, 8, 6]), reviews: [['JN', 'Jonah', 5, 'Oct 3', 'Years view is the best way to scroll through ten years of photos I have used.']],
     reach: [['image', 'Your Pictures folder', 'Where your library lives'], ['map-pin', 'Places in your photos', 'Read from the photos themselves; nothing is uploaded']], alt: ['Google Photos', 'Apple Photos'] }),
   L('filer', 'Filer', 'Files, with a tray you can carry', 'tools', { icon: 'files', pk: 'system', size: '21 MB', version: '1.0.2', updated: 'Oct 2, 2026', shots: S('filer'),
-    desc: ['Your files and drives, with a tray that holds what you\'re moving between folders and windows. Filer comes with Luma and updates with it.'],
+    desc: ['Your files and drives, with a tray that holds what you\'re moving between folders and windows. Filer comes with Suno and updates with it.'],
     rating: R(4.8, 655, [540, 88, 15, 7, 5]), reach: [['hard-drive', 'Every drive and folder', 'It is the file manager']], alt: ['File Explorer', 'Finder'] }),
   L('write', 'Write', 'Documents, beautifully set and easy to share', 'work', { icon: 'documents', size: '62 MB', version: '0.1.0', updated: 'Oct 6, 2026', shots: S('write'),
     desc: ['A word processor that sets your text well without a ribbon. Opens and saves Word documents, exports to PDF, and shares a live copy anyone can read in a browser.'],
     news: { v: '0.1.0', date: 'Oct 6', items: ['The first release'] }, rating: R(4.7, 188, [150, 24, 8, 3, 3]), reach: [FILES], alt: ['Microsoft Word', 'Pages', 'Microsoft Office', 'Google Docs'] }),
   L('viola', 'Viola', 'A calmer way to browse', 'work', { icon: 'browser', pk: 'system', size: '118 MB', version: '1.0', updated: 'Oct 20, 2026', shots: S('viola'),
-    desc: ['The web, with tabs in a sidebar you can name and keep. Viola comes with Luma and updates with it.'],
+    desc: ['The web, with tabs in a sidebar you can name and keep. Viola comes with Suno and updates with it.'],
     rating: R(4.6, 1418, [1020, 280, 70, 28, 20]), reach: [NET, ['download', 'Downloads', 'Where it saves files']], alt: ['Chrome', 'Edge', 'Safari'] }),
   L('messages', 'Messages', 'Talk to anyone, privately', 'work', { size: '33 MB', version: '1.0.1', updated: 'Oct 16, 2026', shots: S('messages'),
-    desc: ['Messages and calls, end-to-end encrypted, on your own Luma network. Your @username finds people; your number never has to.'],
+    desc: ['Messages and calls, end-to-end encrypted, on your own Suno network. Your @username finds people; your number never has to.'],
     rating: R(4.8, 433, [380, 36, 9, 5, 3]), reach: [NET, ['mic', 'Microphone and camera', 'Only during a call you start or answer'], ['bell', 'Notifications', 'For new messages']], alt: ['WhatsApp', 'iMessage', 'Telegram'] }),
   L('notes', 'Notes', 'Catch a thought, share it with anyone', 'work', { size: '12 MB', version: '1.0.2', updated: 'Oct 11, 2026', shots: S('notes'),
     desc: ['Notes that open where you left off. Checklists, pictures and links; share one with a link anyone can open.'], rating: R(4.9, 612, [570, 30, 6, 3, 3]), reach: [['shield-check', 'Nothing else', 'Your notes stay in your account']], alt: ['OneNote', 'Apple Notes', 'Google Keep'] }),
@@ -45,8 +45,8 @@ const apps = [
   L('charlie', 'Charlie', 'Mail, with the noise turned down', 'work', { icon: 'mail', size: '41 MB', version: '1.0.2', updated: 'Oct 17, 2026', shots: S('charlie'),
     desc: ['Mail from all your accounts in one inbox. People you write to come first; newsletters and receipts wait in their own place. Replies grow out of the bar.'],
     rating: R(4.7, 377, [300, 55, 12, 6, 4]), reach: [NET, ['bell', 'Notifications', 'For mail from people you know']], alt: ['Outlook', 'Apple Mail', 'Gmail'] }),
-  L('youtube', 'YouTube', 'Watch YouTube, made for Luma', 'media', { size: '27 MB', version: '0.9', updated: 'Oct 21, 2026', shots: S('youtube'),
-    desc: ['A YouTube client in Luma\'s own parts: the video leads, Up next sits beside it, and it keeps your place across the desktop, a tablet and your phone.'], reach: [NET] }),
+  L('youtube', 'YouTube', 'Watch YouTube, made for Suno', 'media', { size: '27 MB', version: '0.9', updated: 'Oct 21, 2026', shots: S('youtube'),
+    desc: ['A YouTube client in Suno\'s own parts: the video leads, Up next sits beside it, and it keeps your place across the desktop, a tablet and your phone.'], reach: [NET] }),
   L('term', 'Terminal', 'A quiet, fast command line', 'tools', { icon: 'terminal', pk: 'system', size: '8 MB', version: '1.0', updated: 'Sep 22, 2026', shots: S('term'), rating: R(4.9, 210, [196, 10, 2, 1, 1]), alt: ['Command Prompt', 'PowerShell', 'iTerm'] }),
   L('maps', 'Maps', 'Find your way, without being followed', 'tools', { size: '46 MB', version: '1.0', updated: 'Oct 1, 2026', shots: S('maps'),
     desc: ['Maps and directions with no account. Your searches and trips stay on this computer.'], reach: [NET, ['map-pin', 'Your location', 'Only while you ask for it']], alt: ['Google Maps'] }),
@@ -70,7 +70,7 @@ const apps = [
   L('grid', 'Grid', 'Spreadsheets without the dread', 'work', { icon: 'spreadsheets', size: '54 MB', version: '0.2', updated: 'Oct 10, 2026', shots: S('grid'), inst: 0, reach: [FILES], alt: ['Excel', 'Microsoft Office', 'Google Sheets'] }),
   L('stage', 'Stage', 'Presentations that look designed', 'work', { icon: 'presentations', size: '71 MB', version: '0.2', updated: 'Oct 10, 2026', shots: S('stage'), inst: 0, reach: [FILES], alt: ['PowerPoint', 'Keynote', 'Microsoft Office'] }),
   L('session', 'Sessions', 'Record, arrange and mix music', 'create', { icon: 'daw', size: '212 MB', version: '0.3', updated: 'Oct 8, 2026', shots: S('session'), inst: 0,
-    desc: ['A recording studio: record takes, arrange them on a timeline and mix with real-time effects. Works with any audio interface Luma sees.'], rating: R(4.7, 81, [66, 10, 3, 1, 1]), reach: [['mic', 'Microphones and instruments', 'Your audio inputs'], FILES], alt: ['GarageBand', 'Logic', 'Ableton'] }),
+    desc: ['A recording studio: record takes, arrange them on a timeline and mix with real-time effects. Works with any audio interface Suno sees.'], rating: R(4.7, 81, [66, 10, 3, 1, 1]), reach: [['mic', 'Microphones and instruments', 'Your audio inputs'], FILES], alt: ['GarageBand', 'Logic', 'Ableton'] }),
   L('darkroom', 'Darkroom', 'Develop your photos like film', 'create', { icon: 'photo-editor', size: '88 MB', version: '0.4', updated: 'Oct 13, 2026', shots: S('darkroom'),
     desc: ['Raw development with film looks you can tune, and edits that never touch the original.'], rating: R(4.8, 142, [124, 12, 4, 1, 1]), reach: [['image', 'Your Pictures folder', 'To find your photos']], alt: ['Lightroom', 'Photoshop'] }),
   L('reel', 'Reel', 'Edit video on a timeline that stays out of the way', 'create', { icon: 'video-editor', size: '140 MB', version: '0.3', updated: 'Oct 11, 2026', shots: S('reel'), inst: 0,
@@ -106,7 +106,7 @@ const apps = [
     reach: [['folder-open', 'Your vault folder', 'The folder you choose for your notes'], ['globe', 'The network', 'For sync and community plugins']], alt: ['Notion', 'OneNote', 'Evernote'] }),
   X('zoom', 'Zoom', 'Zoom Video Communications', 'Video meetings', 'work', { mark: { file: 'zoom', bg: '#0B5CFF' }, pk: 'deb', size: '312 MB', version: '6.6.0', updated: 'Oct 2, 2026', license: 'Proprietary' }),
   X('steam', 'Steam', 'Valve', 'Your games library', 'play', { verified: true, mark: { file: 'steam', bg: '#1B2838' }, pk: 'layered', size: '4 MB', version: '1.0.0.82', updated: 'Oct 8, 2026', license: 'Proprietary', 
-    desc: ['Your Steam library on Luma. Most Windows games run through Proton without changes.'], rating: R(4.6, 5120, [3900, 800, 220, 110, 90]), reach: [['shield-check', 'Installed into the system', 'It comes off the next time you restart after removing it']] }),
+    desc: ['Your Steam library on Suno. Most Windows games run through Proton without changes.'], rating: R(4.6, 5120, [3900, 800, 220, 110, 90]), reach: [['shield-check', 'Installed into the system', 'It comes off the next time you restart after removing it']] }),
   X('vscodium', 'VSCodium', 'VSCodium', 'The code editor, without telemetry', 'work', { mark: { file: 'vscodium', bg: '#2F80ED' }, size: '134 MB', version: '1.105', updated: 'Oct 10, 2026', license: 'MIT', rating: R(4.7, 733, [580, 110, 25, 10, 8]), reach: [FILES, ['terminal', 'A terminal', 'Runs the commands you type in it']], alt: ['Visual Studio Code'] }),
   X('godot', 'Godot Engine', 'Godot Foundation', 'Make 2D and 3D games', 'play', { verified: true, mark: { file: 'godotengine', bg: '#478CBF' }, size: '118 MB', version: '4.5', updated: 'Oct 5, 2026', license: 'MIT', site: 'godotengine.org', rating: R(4.8, 219, [190, 20, 5, 2, 2]), alt: ['Unity', 'Unreal'] }),
   X('nextcloud', 'Nextcloud', 'Nextcloud', 'Sync your files with your own server', 'tools', { mark: { file: 'nextcloud', bg: '#0082C9' }, size: '66 MB', version: '3.17', updated: 'Sep 30, 2026', license: 'GPL-2.0-or-later', rating: R(4.1, 96, [52, 22, 10, 6, 6]), alt: ['Dropbox', 'OneDrive'] }),
@@ -132,7 +132,7 @@ const D = window.DEPOT_DATA = {
   /* one editorial pick at a time, or none: Discover holds without it */
   feature: { app: 'tide', kick: 'Editor\'s choice', title: 'Your music, from everywhere you keep it.', blurb: 'Tide plays the files on this computer and your own music server, lit by whatever you\'re listening to.' },
   stories: [
-    { id: 'studio', kick: 'Start a studio', title: 'Make music on Luma', blurb: 'Record in Sessions, clean up in Audacity, listen back in Tide. No subscriptions.', hue: 25, apps: ['session', 'audacity', 'tide'] },
+    { id: 'studio', kick: 'Start a studio', title: 'Make music on Suno', blurb: 'Record in Sessions, clean up in Audacity, listen back in Tide. No subscriptions.', hue: 25, apps: ['session', 'audacity', 'tide'] },
     { id: 'games', kick: 'Game night', title: 'Your games already work here', blurb: 'Steam, Epic and GOG libraries run as they are. Stream the rest from your PC.', hue: 150, apps: ['steam', 'heroic', 'moonlight', 'supertux'] },
     { id: 'office', kick: 'Work', title: 'An office with no subscription', blurb: 'Documents, spreadsheets and slides that open the files you already have.', hue: 250, apps: ['write', 'grid', 'stage', 'libreoffice'] },
     { id: 'private', kick: 'Private by default', title: 'Keep your things yours', blurb: 'Messages, passwords and notes that stay encrypted and stay with you.', hue: 200, apps: ['messages', 'signal', 'vault', 'bitwarden'] },
@@ -141,7 +141,7 @@ const D = window.DEPOT_DATA = {
   switching: [['Photoshop', ['gimp', 'krita', 'darkroom']], ['Microsoft Office', ['libreoffice', 'write', 'grid', 'stage']], ['iTunes', ['tide', 'spotify']], ['WhatsApp', ['signal', 'messages', 'telegram']], ['Premiere', ['reel', 'kdenlive']], ['Notion', ['obsidian', 'notes']], ['Outlook', ['charlie', 'thunderbird']], ['1Password', ['vault', 'bitwarden']]],
   popular: ['blender', 'obsidian', 'spotify', 'signal', 'vlc', 'steam', 'gimp', 'discord', 'libreoffice', 'firefox', 'krita', 'obs'],
   fresh: ['youtube', 'vault', 'tide', 'krita', 'obsidian', 'godot', 'discord', 'darkroom'],
-  system: { name: 'Luma 1.0 · nightly October 22', size: '312 MB', blurb: 'Faster wake from sleep, Tide crossfades, plus 14 more changes.', running: 'Luma 1.0 · nightly October 16', channel: 'Nightly', from: 'dl.simplyluma.com', checked: '6 hours ago',
+  system: { name: 'SunoOS 0.1 · nightly October 22', size: '312 MB', blurb: 'Faster wake from sleep, Tide crossfades, plus 14 more changes.', running: 'SunoOS 0.1 · nightly October 16', channel: 'Nightly', from: 'dl.simplyluma.com', checked: '6 hours ago',
     notes: [['Feature', 'sparkles', 'Adjustable scroll speed', 'Set how fast mice and touchpads scroll, in Settings › Mouse and touchpad.'], ['Improvement', 'folder-open', 'Filer\'s tray remembers', 'What you were carrying is still there after a restart.'], ['Improvement', 'music-2', 'Tide fades between tracks', 'Choose how long in Tide\'s settings, or turn it off.'], ['Fix', 'wrench', '11 fixes', 'For things you told us about, from Calendar to Quick Options.'], ['Security', 'shield-check', '2 security fixes', 'Both in system libraries. Nothing you need to do.']] },
   recent: [['discord', '1.0.158 → 1.0.159', 'Yesterday'], ['obsidian', '1.7.4 → 1.7.5', 'Oct 18'], ['spotify', '1.2.47 → 1.2.48', 'Oct 18']],
 };

@@ -1,4 +1,4 @@
-/* Luma take seventy-three: every app, the desktop view and the phone view (loaded by Suno-next-73.html). */
+/* Suno take seventy-three: every app, the desktop view and the phone view (loaded by Suno-next-73.html). */
 (async () => {
   'use strict';
   const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -65,10 +65,10 @@
   // The column view walks this: Home, then a folder, then its contents, then the thing you picked
   const FTREE = { Home: [['Desktop', 'folder'], ['Documents', 'folder'], ['Downloads', 'folder'], ['Music', 'folder'], ['Pictures', 'folder'], ['Projects', 'folder']],
     Projects: [['Archive 2025', 'folder'], ['Launch', 'folder'], ['Personal site', 'folder'], ['Taxes 2026', 'folder']], Documents: [['Letters', 'folder'], ['Lease 2026.pdf', 'pdf'], ['Reading list.md', 'md']],
-    Pictures: [['Screenshots', 'folder'], ['Terrace.webp', 'img'], ['Studio morning.webp', 'img']], Downloads: [['Luma-1.0-nightly.iso', 'iso'], ['kiln-2.4.1.flatpakref', 'pkg'], ['Invoice 0923.pdf', 'pdf']],
+    Pictures: [['Screenshots', 'folder'], ['Terrace.webp', 'img'], ['Studio morning.webp', 'img']], Downloads: [['SunoOS-0.1-nightly.iso', 'iso'], ['kiln-2.4.1.flatpakref', 'pkg'], ['Invoice 0923.pdf', 'pdf']],
     Desktop: [['Screenshot 21.40.png', 'img']], Music: [['Pet Sounds', 'folder'], ['Demos', 'folder']], 'Personal site': [['index.html', 'md'], ['styles.css', 'md']], 'Archive 2025': [['Old deck.stage', 'deck']], 'Taxes 2026': [['Return.pdf', 'pdf'], ['Receipts.grid', 'sheet']],
     'Press kit': [['logo.svg', 'img'], ['press-photo-1.webp', 'img'], ['boilerplate.md', 'md']], Screens: [['filer.webp', 'img'], ['photos.webp', 'img']], Website: [['hero.webp', 'img'], ['copy.md', 'md']], Fonts: [['Figtree.ttf', 'md'], ['Instrument Serif.otf', 'md']] };
-  FTREE['Fable SSD'] = [['Home', 'folder'], ['Luma', 'folder']]; FTREE.Luma = [['Apps', 'folder'], ['Wallpapers', 'folder']]; FTREE.Archive = [['Archive 2025', 'folder'], ['Photo backups', 'folder']];
+  FTREE['Fable SSD'] = [['Home', 'folder'], ['Suno', 'folder']]; FTREE.Suno = [['Apps', 'folder'], ['Wallpapers', 'folder']]; FTREE.Archive = [['Archive 2025', 'folder'], ['Photo backups', 'folder']];
   /* Where you are: a root (Home, Recent or a drive) and the folders below it. Every folder's contents come from fDir, so the title, its count,
      the search field and the columns all name the same place (audit #5, #6) */
   const FROOT = { recent: 'Recent', ssd: 'Fable SSD', hd: 'Archive' }, FPLACE = { documents: 'Documents', downloads: 'Downloads', pictures: 'Pictures', projects: 'Projects' };
@@ -89,8 +89,8 @@
   const mini = f => f.src ? `<img src="${f.src}" alt="">` : f.k === 'folder' ? FOLDER : APPOF[f.k] ? `<img src="${A}${APPOF[f.k]}.svg" alt="">` : ic('file-text');
   const fRows = () => fHere().filter(f => !F.q || f.n.toLowerCase().includes(F.q.toLowerCase()));
   /* Search gives results, not a filtered folder: where each one lives, the match highlighted, a line of text when the words are inside */
-  const FSNIP = { 'launch-plan.md': 'Freeze strings on the 10th. Launch day is October 14: film at 9, download at 10, press all day.', 'press-release.write': 'Luma 1.0 launches October 14 as a free download for any PC.',
-    'why-letter.pdf': 'Why we built Luma: a computer that feels calm again.', 'boilerplate.md': 'Luma is a desktop operating system. It launches October 14.', 'copy.md': 'Your computer, calm again. Launch film and download on the 14th.' };
+  const FSNIP = { 'launch-plan.md': 'Freeze strings on the 10th. Launch day is October 14: film at 9, download at 10, press all day.', 'press-release.write': 'SunoOS 0.1 launches October 14 as a free download for any PC.',
+    'why-letter.pdf': 'Why we built Suno: a computer that feels calm again.', 'boilerplate.md': 'Suno is a desktop operating system. It launches October 14.', 'copy.md': 'Your computer, calm again. Launch film and download on the 14th.' };
   function fIndex() { const out = [], walk = (dir, path) => fDir(dir).forEach(x => { out.push({ ...x, p: path, where: ['Home', ...path].join(' › ') }); if (x.k === 'folder') walk(x.n, [...path, x.n]); }); walk('Home', []); return out; }
   function fSearch() { const q = F.q.trim().toLowerCase(), m = x => x.n.toLowerCase().includes(q) || (FSNIP[x.n] || '').toLowerCase().includes(q), all = fIndex().filter(m), home = F.root === 'Home';
     all.forEach(x => { x.here = home ? F.path.every((d, i) => x.p[i] === d) : fHere().some(y => y.n === x.n); x.direct = x.here && (!home || x.p.length === F.path.length); });
@@ -103,7 +103,7 @@
     const grp = (h, l) => l.length ? `<section class="fresg"><h6>${h}${lCount(l.length)}</h6>${l.map(row).join('')}</section>` : '';
     if (!here.length && !(F.scope === 'all' && away.length)) return `<div class="fnone"><b>No results for “${esc(F.q)}”${F.scope === 'here' ? ` in ${cur}` : ''}</b>${F.scope === 'here' && away.length ? `<button type="button" data-fscope="all">${away.length} elsewhere in Home</button>` : ''}</div>`;
     return `<div class="fresults">${grp(`In ${cur}`, here)}${F.scope === 'all' ? grp('Elsewhere in Home', away) : away.length ? `<button class="fmore" type="button" data-fscope="all">${away.length} more elsewhere in Home${ic('chevron-right')}</button>` : ''}</div>`; }
-  /* List view sorts by the LumaUI table header: folders first, then the chosen column */
+  /* List view sorts by the SunoUI table header: folders first, then the chosen column */
   const fBytes = z => { const m = String(z).match(/([\d.]+)\s*(KB|MB|GB|items)/); return m ? +m[1] * ({ KB: 1, MB: 1e3, GB: 1e6, items: 0 }[m[2]]) : 0; };
   const fSorted = rows => { const { k, dir } = F.sort; return [...rows].sort((a, b) => (a.k === 'folder') !== (b.k === 'folder') ? (a.k === 'folder' ? -1 : 1)
     : dir * (k === 'size' ? fBytes(a.size) - fBytes(b.size) : k === 'kind' ? KIND[a.k].localeCompare(KIND[b.k]) : k === 'mod' ? fHere().indexOf(a) - fHere().indexOf(b) : a.n.localeCompare(b.n))); };
@@ -278,7 +278,7 @@
     if (P.edit) return;
     $('#p-main').insertAdjacentHTML('beforeend', `<div class="pstrip" id="p-strip" aria-label="Photos">${set.map(x => `<button type="button" class="${x.i === P.viewer ? 'on' : ''}" data-pgo="${x.i}" aria-label="${esc(x.t)}"><img src="${x.src}" alt="" loading="lazy"${pStyle(P.edits[x.i])}></button>`).join('')}</div>`);
     requestAnimationFrame(() => requestAnimationFrame(() => { const st = $('#p-strip'), on = st?.querySelector('.on'); if (on) st.scrollLeft = on.offsetLeft - st.clientWidth / 2 + on.offsetWidth / 2; }));
-    const facts = [['Taken', `${DAYSUB[p.day]}, ${p.time}`], ['Place', p.place], ['Camera', p.wall ? 'Made in Canvas' : 'Luma phone · 24 MP'], ['Stored', 'This phone'], ['Backup', 'Luma Connect'], ...(P.edits[p.i] ? [['Edits', 'Original kept']] : [])];
+    const facts = [['Taken', `${DAYSUB[p.day]}, ${p.time}`], ['Place', p.place], ['Camera', p.wall ? 'Made in Canvas' : 'Suno phone · 24 MP'], ['Stored', 'This phone'], ['Backup', 'Suno Connect'], ...(P.edits[p.i] ? [['Edits', 'Original kept']] : [])];
     const panel = X === 'info' ? `<div class="fexp finfo2"><div class="fih"><img class="ppth big" src="${p.src}" alt=""${pStyle(P.edits[p.i])}><span><b>${esc(p.t)}</b><small>${esc(p.place)} · ${at + 1} of ${set.length}</small></span></div><dl>${facts.map(([k, v]) => `<dt>${k}</dt><dd>${esc(v)}</dd>`).join('')}</dl></div>`
       : X === 'share' ? `<div class="fexp fshare2"><div class="fexh">Send to</div><div class="fshp">${['PR', 'NF', 'SK', 'TH', 'MO'].map(k => `<button type="button" data-pdo="Sent to ${esc(ppl(k).n.split(' ')[0])}">${av(k, 48)}<span>${esc(ppl(k).n.split(' ')[0])}</span></button>`).join('')}</div>
         <div class="fsha">${[['message-square', 'Messages', 'Opening Messages'], ['mail', 'Email', 'Opening a new email'], ['copy', 'Copy', 'Photo copied'], ['radio-tower', 'Nearby', 'Looking for devices nearby']].map(([i, n, t]) => `<button type="button" class="fvt" data-pdo="${t}">${ic(i)}<span>${n}</span></button>`).join('')}</div></div>`
@@ -307,7 +307,7 @@
     }
     const set = pset(), at = set.findIndex(p => p.i === P.viewer), p = PHOTOS[P.viewer];
     $('#p-main').insertAdjacentHTML('beforeend', `<div class="viewer${P.edit ? ' editing' : ''}"><div class="vt"><b>${esc(p.t)}</b><span>${esc(p.place)} · ${esc(DAYSUB[p.day])} · ${esc(p.time)}</span></div><img id="p-img" src="${p.src}" alt="${esc(p.t)}"${pStyle(P.edit ? P.ed : P.edits[p.i])}></div>`);
-    /* Edit grows the bar into the editor in place (LumaUI action center), never a side panel: the tool groups as a switch in its header,
+    /* Edit grows the bar into the editor in place (SunoUI action center), never a side panel: the tool groups as a switch in its header,
        the chosen group's controls, then Revert, Cancel and Done. The photo sits above it. */
     photosEditor(p);
     const back = (PNAV.find(x => x && x[0] === P.view) || [0, 'Library'])[1];
@@ -335,14 +335,14 @@
   }
   function pCorner() { let c = $('#p-corner'); const p = PHOTOS[P.viewer]; if (!c) { $('#p-main').insertAdjacentHTML('beforeend', '<div class="flo lcorner" id="p-corner"></div>'); c = $('#p-corner'); }
     c.hidden = P.viewer == null || P.edit; if (c.hidden) return; const fl = p.fav ? 'Remove from Favorites' : 'Add to Favorites';
-    c.innerHTML = `<button class="ib" type="button" data-share aria-label="Share" title="Share">${ic('share-2')}</button><button class="ib${p.fav ? ' faved on' : ''}" type="button" data-pfav aria-pressed="${p.fav}" aria-label="${fl}" title="${fl}">${ic('heart')}</button><button class="ib${P.info ? ' on' : ''}" type="button" data-pinfo aria-pressed="${!!P.info}" aria-label="Information" title="Information">${ic('info')}</button><button class="bt pri" type="button" data-pedit>${ic('pencil')}<span class="wide">Edit</span></button><button class="ib" type="button" data-pmore aria-label="More" title="More" aria-haspopup="menu">${ic('ellipsis')}</button>`;   /* the LumaUI order: Share, the on/off states, the action, then ··· */ }
-  /* Information is the one LumaUI details pane: closed until you ask, gone when the photo closes (#17) */
+    c.innerHTML = `<button class="ib" type="button" data-share aria-label="Share" title="Share">${ic('share-2')}</button><button class="ib${p.fav ? ' faved on' : ''}" type="button" data-pfav aria-pressed="${p.fav}" aria-label="${fl}" title="${fl}">${ic('heart')}</button><button class="ib${P.info ? ' on' : ''}" type="button" data-pinfo aria-pressed="${!!P.info}" aria-label="Information" title="Information">${ic('info')}</button><button class="bt pri" type="button" data-pedit>${ic('pencil')}<span class="wide">Edit</span></button><button class="ib" type="button" data-pmore aria-label="More" title="More" aria-haspopup="menu">${ic('ellipsis')}</button>`;   /* the SunoUI order: Share, the on/off states, the action, then ··· */ }
+  /* Information is the one SunoUI details pane: closed until you ask, gone when the photo closes (#17) */
   function pDet() { const d = $('#p-det'), p = PHOTOS[P.viewer]; if (!lDPShow(d, { open: P.info && !P.edit, subject: P.viewer != null })) { d.innerHTML = ''; return; }
-    d.innerHTML = lDP({ title: 'Information', close: 'data-pinfo', body: `<p class="pdockt">${esc(p.t)}</p>${lDP.kv([['Taken', `${esc(DAYSUB[p.day])}, ${esc(p.time)}`], ['Place', esc(p.place)], ['Camera', p.wall ? 'Made in Canvas' : 'Luma phone · 24 MP'], ['Stored', 'This computer'], ['Backup', '<i class="pbk"></i>Luma Connect'], ...(P.edits[p.i] ? [['Edits', 'Yes · original kept']] : [])])}` }); }
+    d.innerHTML = lDP({ title: 'Information', close: 'data-pinfo', body: `<p class="pdockt">${esc(p.t)}</p>${lDP.kv([['Taken', `${esc(DAYSUB[p.day])}, ${esc(p.time)}`], ['Place', esc(p.place)], ['Camera', p.wall ? 'Made in Canvas' : 'Suno phone · 24 MP'], ['Stored', 'This computer'], ['Backup', '<i class="pbk"></i>Suno Connect'], ...(P.edits[p.i] ? [['Edits', 'Yes · original kept']] : [])])}` }); }
   function renderPhotos() {
     const row = x => `<button class="si${P.view === x[0] ? ' on' : ''}" type="button" data-pview="${x[0]}">${ic(x[2])}<span class="lab">${x[1]}</span>${x[0] === 'library' ? lCount(PHOTOS.filter(p => !p.del).length) : ''}</button>`;
     $('#p-rail').innerHTML = `<div class="scr"><div class="sh">Library</div>${PNAV.slice(0, 4).map(row).join('')}<div class="sh">Albums<button class="ib" type="button" data-lmenu data-pnewalbum aria-label="New album" title="New album">${ic('plus')}</button></div>${PNAV.slice(5).map(row).join('')}</div>
-      <button class="tstatus" type="button" title="Photos from this computer and your phone stay in step"><i class="stat"></i><span class="tx">Synced with Luma Connect</span></button>`;
+      <button class="tstatus" type="button" title="Photos from this computer and your phone stay in step"><i class="stat"></i><span class="tx">Synced with Suno Connect</span></button>`;
     photosBody(); photosBar();
   }
 
@@ -354,26 +354,26 @@
     linux: { t: 'What actually is Linux?', tags: ['Computing 101', 'Linux'], d: 'September 19, 2026 · 6 minute read', img: 'life-ledge-blog-1', q: 'Linux is a kernel, not the whole computer.',
       p: ['Most people who ask what Linux is are really asking what their computer is. The honest answer is a stack: something that talks to the hardware, something that manages your files and windows, and the apps you actually came for.', 'The kernel is the part nobody sees. It decides which program gets the processor, how memory is shared, and how a keypress becomes a letter on the screen.', 'That is why two computers can both run Linux and feel nothing alike. What makes a system yours is everything above the kernel, and that is the part we build.'] },
     free: { t: 'The future of software is free.', tags: ['Opinion'], d: 'September 12, 2026 · 5 minute read', img: 'life-suite-bg-canvas', q: 'The best tools should not be a subscription.', p: ['Every tool on this computer is included, and none of them will ask you for money later.', 'Software gets cheaper to make every year. The price people pay for it keeps going up. Somewhere in between is a business model we decided not to have.'] },
-    open: { t: 'Our thoughts on open source.', tags: ['Community'], d: 'September 4, 2026 · 7 minute read', img: 'life-professionals-loft', q: 'Open is not a feature. It is the foundation.', p: ['Luma stands on decades of other people’s work. The least we can do is make ours as easy to read, change and give back.'] },
-    ai: { t: 'Luma and AI.', tags: ['Ari'], d: 'August 28, 2026 · 12:40 video', img: 'life-suite-bg-sessions', video: true, q: 'An assistant should ask before it acts.', p: ['Ari runs on your computer, not ours. It can move files, draft a note and find a setting, and it asks you before it does anything you would want to know about.'] },
+    open: { t: 'Our thoughts on open source.', tags: ['Community'], d: 'September 4, 2026 · 7 minute read', img: 'life-professionals-loft', q: 'Open is not a feature. It is the foundation.', p: ['Suno stands on decades of other people’s work. The least we can do is make ours as easy to read, change and give back.'] },
+    ai: { t: 'Suno and AI.', tags: ['Ari'], d: 'August 28, 2026 · 12:40 video', img: 'life-suite-bg-sessions', video: true, q: 'An assistant should ask before it acts.', p: ['Ari runs on your computer, not ours. It can move files, draft a note and find a setting, and it asks you before it does anything you would want to know about.'] },
     sv: { t: 'Silicon Valley 2.0', tags: ['Industry'], d: 'August 20, 2026 · 8 minute read', img: 'life-work-suite', q: 'We have been here before, and we know how it ends.', p: ['Every generation of computing starts open and ends locked. This one does not have to.'] }};
   const PAGE = k => k.startsWith('post:') ? { title: POSTS[k.slice(5)].t, host: 'simplyluma.com', path: '/blog/' + k.slice(5), fav: FAV }
-    : { home: { title: 'Luma — A better computer.', host: 'simplyluma.com', path: '', fav: FAV }, hub: { title: 'Community — Luma Hub', host: 'hub.simplyluma.com', path: '/community', fav: FAV }, start: { title: 'Start page', host: '', path: '', fav: A + 'browser.svg', start: true } }[k];
+    : { home: { title: 'Suno — A better computer.', host: 'simplyluma.com', path: '', fav: FAV }, hub: { title: 'Community — Suno Hub', host: 'hub.simplyluma.com', path: '/community', fav: FAV }, start: { title: 'Start page', host: '', path: '', fav: A + 'browser.svg', start: true } }[k];
   const V = { dlNew: 2, zoom: 100, space: 'personal', n: 30, star: {}, playing: true, dl: false, wsp: false, hist: {},
     spaces: { personal: { name: 'Personal', h: 75, on: 1, items: [{ id: 1, page: 'home' }, { id: 2, page: 'post:linux' }, { group: 'Reading', gh: 250, open: true, tabs: [{ id: 3, page: 'post:free' }, { id: 4, page: 'post:open' }, { id: 5, page: 'post:ai', audio: true }] }, { id: 6, page: 'start' }] },
       work: { name: 'Work', h: 250, on: 11, items: [{ id: 11, page: 'hub' }, { group: 'Launch', gh: 45, open: true, tabs: [{ id: 12, page: 'post:sv' }, { id: 13, page: 'home' }] }, { group: 'Research', gh: 150, open: false, tabs: [{ id: 14, page: 'post:open' }, { id: 15, page: 'post:linux' }] }, { id: 16, page: 'start' }] } } };
   const SP = () => V.spaces[V.space], allTabs = sp => sp.items.flatMap(it => it.group ? it.tabs : [it]);
   const curTab = () => allTabs(SP()).find(t => t.id === SP().on) || allTabs(SP())[0];
   function webHTML(k) {
-    const nav = `<div class="w-nav"><b>luma<i>.</i></b><span>Why Luma</span><span>Creative Collection</span><span>Ari</span><span>Blog</span><span class="dl2">Download Luma</span></div>`;
+    const nav = `<div class="w-nav"><b>suno<i>.</i></b><span>Why Suno</span><span>Creative Collection</span><span>Ari</span><span>Blog</span><span class="dl2">Download Suno</span></div>`;
     if (k === 'start') return `<div class="w-start"><img class="mark" src="${A}browser.svg" alt=""><label class="q">${ic('search')}<input placeholder="Search the web or type an address" data-vgo aria-label="Search the web"></label>
-      <div class="w-tiles">${[['home', 'Luma', FAV], ['post:linux', 'Blog', FAV], ['hub', 'Hub', FAV], ['start', 'Depot', A + 'app-store.svg'], ['start', 'Maps', A + 'maps.svg'], ['start', 'Mail', A + 'mail.svg']].map(([p, n, f]) => `<button class="w-tile" type="button" data-vopen="${p}"><span class="tb2"><img src="${f}" alt=""></span>${n}</button>`).join('')}</div></div>`;
-    if (k === 'hub') { const T = [['Welcome to the Luma Hub', 'Start here · pinned', 'NF', 45, '128 replies'], ['Show us your desktop', 'Screenshots', 'SO', 150, '64 replies'], ['Fairphone 6 support thread', 'Hardware', 'AV', 250, '41 replies'], ['Tiling presets for ultrawide screens', 'Ideas', 'PR', 320, '23 replies'], ['Stage exports to PDF with notes?', 'Help', 'NM', 200, '9 replies']];
-      return nav + `<div class="w-hub"><h2>Community</h2><p class="lede">Questions, ideas and what people are making with Luma.</p><div class="cats"><span class="on">Latest</span><span>Help</span><span>Ideas</span><span>Hardware</span><span>Screenshots</span></div>${T.map(([t, c, i, h, r]) => `<div class="th"><span class="av" style="background:oklch(0.6 0.13 ${h})">${i}</span><span><b>${t}</b><span>${c}</span></span><em>${r}</em></div>`).join('')}</div>`; }
+      <div class="w-tiles">${[['home', 'Suno', FAV], ['post:linux', 'Blog', FAV], ['hub', 'Hub', FAV], ['start', 'Depot', A + 'app-store.svg'], ['start', 'Maps', A + 'maps.svg'], ['start', 'Mail', A + 'mail.svg']].map(([p, n, f]) => `<button class="w-tile" type="button" data-vopen="${p}"><span class="tb2"><img src="${f}" alt=""></span>${n}</button>`).join('')}</div></div>`;
+    if (k === 'hub') { const T = [['Welcome to the Suno Hub', 'Start here · pinned', 'NF', 45, '128 replies'], ['Show us your desktop', 'Screenshots', 'SO', 150, '64 replies'], ['Fairphone 6 support thread', 'Hardware', 'AV', 250, '41 replies'], ['Tiling presets for ultrawide screens', 'Ideas', 'PR', 320, '23 replies'], ['Stage exports to PDF with notes?', 'Help', 'NM', 200, '9 replies']];
+      return nav + `<div class="w-hub"><h2>Community</h2><p class="lede">Questions, ideas and what people are making with Suno.</p><div class="cats"><span class="on">Latest</span><span>Help</span><span>Ideas</span><span>Hardware</span><span>Screenshots</span></div>${T.map(([t, c, i, h, r]) => `<div class="th"><span class="av" style="background:oklch(0.6 0.13 ${h})">${i}</span><span><b>${t}</b><span>${c}</span></span><em>${r}</em></div>`).join('')}</div>`; }
     if (k.startsWith('post:')) { const p = POSTS[k.slice(5)];
       return nav + `<article class="w-post"><div class="tags">${p.tags.map(t => `<span>${t}</span>`).join('')}</div><h2>${p.t}</h2><div class="when">${p.d}</div><figure><img src="${PH}${p.img}.webp" alt="">${p.video ? `<span class="vid">${V.playing ? 'Playing' : 'Paused'} · 4:12 of 12:40</span>` : ''}</figure><p>${p.p[0]}</p><blockquote>${p.q}</blockquote>${p.p.slice(1).map(x => `<p>${x}</p>`).join('')}</article>`; }
-    return nav + `<section class="w-hero"><img src="${PH}life-hero-writing.webp" alt=""><div class="copy"><h2>A better computer.</h2><p>Luma is a free, open-source operating system, designed around how we believe computers should actually feel today.</p><div class="ctas"><span class="a">Download Luma</span><span class="b">See what's inside</span></div></div></section>
-      <section class="w-sec"><h3>Your computer shouldn't end at the edge of a screen. <span>With Luma, it doesn't.</span></h3><div class="w-cards"><div class="w-card"><img src="${PH}life-professionals-loft.webp" alt=""><b>A focused, full-scale workspace.</b></div><div class="w-card"><img src="${PH}life-sync-terrace.webp" alt=""><b>Full apps, made for your fingers.</b></div><div class="w-card"><img src="${PH}life-ari-street.webp" alt=""><b>Your real computer in your pocket.</b></div></div></section>`;
+    return nav + `<section class="w-hero"><img src="${PH}life-hero-writing.webp" alt=""><div class="copy"><h2>A better computer.</h2><p>Suno is a free, open-source operating system, designed around how we believe computers should actually feel today.</p><div class="ctas"><span class="a">Download Suno</span><span class="b">See what's inside</span></div></div></section>
+      <section class="w-sec"><h3>Your computer shouldn't end at the edge of a screen. <span>With Suno, it doesn't.</span></h3><div class="w-cards"><div class="w-card"><img src="${PH}life-professionals-loft.webp" alt=""><b>A focused, full-scale workspace.</b></div><div class="w-card"><img src="${PH}life-sync-terrace.webp" alt=""><b>Full apps, made for your fingers.</b></div><div class="w-card"><img src="${PH}life-ari-street.webp" alt=""><b>Your real computer in your pocket.</b></div></div></section>`;
   }
   /* Viola in the kit. The title bar says where you are (the address, a recessed field). The floating
      bar holds what you do to the page, and tucks away while you read. The tab list sits on the frame. */
@@ -393,7 +393,7 @@
       <div class="pins">${[['home', FAV, 'simplyluma.com'], ['start', A + 'mail.svg', 'Mail'], ['start', A + 'calendar.svg', 'Calendar'], ['start', A + 'maps.svg', 'Maps']].map(([p, f, n]) => `<button class="pin" type="button" data-vopen="${p}" title="${n}"><img src="${f}" alt="${n}"></button>`).join('')}</div>
       <div class="tabs">${sp.items.map((it, gi) => it.group ? `<div class="grp${it.open ? ' open' : ''}"><button class="grph" type="button" data-vgroup="${gi}" style="--gh:${it.gh}"><span class="gsw"></span>${esc(it.group)}${lCount(it.tabs.length)}${ic('chevron-down')}</button>${it.open ? it.tabs.map(row).join('') : ''}</div>` : row(it)).join('')}
         <button class="si" type="button" data-vnew>${ic('plus')}<span class="lab">New tab</span></button></div>
-      ${pl ? media({ art: `${PH}life-suite-bg-sessions.webp`, title: 'Luma and AI.', from: 'simplyluma.com', at: 252, len: 760, playing: V.playing, jump: pl.id }) : ''}`;
+      ${pl ? media({ art: `${PH}life-suite-bg-sessions.webp`, title: 'Suno and AI.', from: 'simplyluma.com', at: 252, len: 760, playing: V.playing, jump: pl.id }) : ''}`;
     const web = $('#v-web'); web.className = 'scroll' + (pg.start ? ' start' : ''); web.innerHTML = webHTML(t.page); web.scrollTop = 0; vTuck(false, true);
     if (load) { const l = $('#v-load'); l.classList.remove('go'); void l.offsetWidth; l.classList.add('go'); }
     $('#w-viola .pop')?.remove();
@@ -412,7 +412,7 @@
   function vBarPhone() { const bar = $('#v-nav'), X = V.px || '', sp = SP(), t = curTab(), pg = PAGE(t.page), h = V.hist[t.id] || [], n = allTabs(sp).length;
     bar.classList.add('phnofit', 'vphbar');
     const tile = (attr, icn, label, on) => `<button type="button" class="fvt${on ? ' on' : ''}" ${attr}>${ic(icn)}<span>${label}</span></button>`;
-    const pins = [['home', FAV, 'Luma'], ['post:linux', FAV, 'Blog'], ['hub', FAV, 'Hub'], ['start', A + 'mail.svg', 'Mail']];
+    const pins = [['home', FAV, 'Suno'], ['post:linux', FAV, 'Blog'], ['hub', FAV, 'Hub'], ['start', A + 'mail.svg', 'Mail']];
     const tabRow = x => { const p = PAGE(x.page); return `<div class="vtrow${x.id === sp.on ? ' on' : ''}"><button type="button" class="vtgo" data-vtab="${x.id}"><img src="${p.fav}" alt=""><span>${esc(p.title)}<small>${p.host || 'New tab'}</small></span>${x.audio ? ic('volume-2') : ''}</button><button class="ib" type="button" data-vclosetab="${x.id}" aria-label="Close tab" title="Close tab">${ic('x')}</button></div>`; };
     /* tabs as cards, each a live miniature of its page, the way phone browsers show them */
     const tabCard = x => { const p = PAGE(x.page); return `<div class="vtcard${x.id === sp.on ? ' on' : ''}"><button type="button" class="vtcgo" data-vtab="${x.id}" aria-label="${esc(p.title)}"><span class="vtch"><img src="${p.fav}" alt=""><b>${esc(p.title)}</b>${x.audio ? ic('volume-2') : ''}</span><span class="vtcp">${p.start ? `<span class="vtcstart"><img src="${A}browser.svg" alt=""><i>${ic('search')}Search or type an address</i></span>` : `<span class="vtcpi">${webHTML(x.page)}</span>`}</span></button><button class="vtcx" type="button" data-vclosetab="${x.id}" aria-label="Close tab">${ic('x')}</button></div>`; };
@@ -420,7 +420,7 @@
     const panel = X === 'go' ? `<div class="fexp vgo2"><div class="fexh">Favorites</div><div class="vpins">${pins.map(([p, f, nm]) => `<button type="button" data-vopen="${p}"><span><img src="${f}" alt=""></span>${nm}</button>`).join('')}</div>
         <div class="fexh">Recent</div>${['post:free', 'post:open', 'hub'].map(k => { const p = PAGE(k); return `<button class="fexr2" type="button" data-vopen="${k}"><img class="vfav2" src="${p.fav}" alt=""><span>${esc(p.title)}<small>${p.host}${p.path}</small></span></button>`; }).join('')}</div>`
       : X === 'tabs' ? `<div class="fexp vtabs2"><div class="fexs">${Object.entries(V.spaces).map(([k, x]) => `<button type="button" class="fsch${k === V.space ? ' on' : ''}" data-vspace="${k}"><i class="dot" style="background:oklch(0.75 0.13 ${x.h})"></i>${x.name}<em>${allTabs(x).length}</em></button>`).join('')}</div>
-        ${pl && V.space === 'personal' ? media({ art: `${PH}life-suite-bg-sessions.webp`, title: 'Luma and AI.', from: 'simplyluma.com', at: 252, len: 760, playing: V.playing, jump: pl.id }) : ''}
+        ${pl && V.space === 'personal' ? media({ art: `${PH}life-suite-bg-sessions.webp`, title: 'Suno and AI.', from: 'simplyluma.com', at: 252, len: 760, playing: V.playing, jump: pl.id }) : ''}
         <div class="vtcards">${sp.items.map(it => it.group ? `<div class="fexh vtgh"><i class="dot" style="background:oklch(0.75 0.13 ${it.gh})"></i>${esc(it.group)}</div>${it.tabs.map(tabCard).join('')}` : tabCard(it)).join('')}</div>
         <button class="bt pri vnewt" type="button" data-vnew>${ic('plus')}New tab</button></div>`
       : X === 'more' ? `<div class="fexp vmore2"><div class="fsha">${tile(`data-vfwd disabled`, 'chevron-right', 'Forward')}${tile('data-vreload', 'rotate-cw', 'Reload')}${tile('data-vpx="share"', 'share-2', 'Share')}${tile('data-vstar', 'star', V.star[t.page] ? 'Saved' : 'Bookmark', V.star[t.page])}</div>
@@ -435,7 +435,7 @@
     if (X === 'go') setTimeout(() => { const i = $('#v-nav [data-vgo]'); i?.focus(); i?.select(); }, 30); }
   /* Downloads are File cards (#13) in each state: downloading (speed, time left, pause, cancel), paused, done (Open wears the default
      app's icon; Show in Filer beside it), failed (the reason, Retry) and blocked (why, then a deliberate Delete or Keep) */
-  function vDownloads() { const fx = (icon, label, attr) => `<button class="lfx" type="button" ${attr} title="${label}" aria-label="${label}">${ic(icon)}</button>`, iso = { n: 'luma-1.0-x86_64.iso', k: 'iso', sz: '2.1 of 3.1 GB' };
+  function vDownloads() { const fx = (icon, label, attr) => `<button class="lfx" type="button" ${attr} title="${label}" aria-label="${label}">${ic(icon)}</button>`, iso = { n: 'suno-1.0-x86_64.iso', k: 'iso', sz: '2.1 of 3.1 GB' };
     return [lFile(iso, V.dlPause ? { sub: 'Paused', extra: '<span class="lprog paused"><i style="width:68%"></i></span>', act: fx('play', 'Resume', 'data-vdlpause') + fx('x', 'Stop download', 'data-vdlcancel') }
         : { sub: '24 MB/s · 38 s left', extra: '<span class="lprog"><i style="width:68%"></i></span>', act: fx('pause', 'Pause', 'data-vdlpause') + fx('x', 'Stop download', 'data-vdlcancel') }),
       lFile({ n: 'homepage-hero.webp', k: 'img', sz: '1.8 MB', src: PH + 'life-hero-writing.webp' }, { sub: 'Just now', act: fx('folder-open', 'Show in Filer', 'data-vtodo="Showing homepage-hero.webp in Filer"') + lOpenBtn('img', 'data-lui-open="viewer" data-lui-name="homepage-hero.webp"', 'Open', 'bt sm fill') }),
@@ -454,7 +454,7 @@
   function vOpen(page) { V.px = ''; const t = curTab(); if (t.page !== page) { (V.hist[t.id] = V.hist[t.id] || []).push(t.page); t.page = page; } renderViola(true); }
 
   /* ══ Write ═════════════════════════════════════════════════════════════ */
-  const DOC = `<h1>Interface Standard</h1><p class="subtitle">How Luma keeps one language across every application in the system.</p><h2>Why a standard at all</h2>
+  const DOC = `<h1>Interface Standard</h1><p class="subtitle">How Suno keeps one language across every application in the system.</p><h2>Why a standard at all</h2>
     <p>A design system earns its keep the moment a second application exists. The first application can be beautiful by taste alone; the second has to agree with the first, and the tenth has to agree <mark class="cm" data-cm="c0">without anyone re-reading the first</mark>.</p>
     <p>What follows is the short version of that agreement: the parts that are settled, the parts still under discussion, and the reasoning behind the decisions that surprised us.</p>
     <blockquote>A shared vocabulary, not a shared layout. Every app should be arranged around what it is for.</blockquote>

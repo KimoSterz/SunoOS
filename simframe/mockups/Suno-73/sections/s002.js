@@ -79,7 +79,7 @@
   const PLS = [{ id: 'sun', t: 'Sunday morning', h: 70, h2: 95, h3: 40, n: 42 }, { id: 'focus', t: 'Focus', h: 230, h2: 200, h3: 260, n: 88 }, { id: 'road', t: 'Road trip', h: 25, h2: 50, h3: 350, n: 61 }, { id: 'launch', t: 'Launch week', h: 300, h2: 320, h3: 270, n: 17 }];
   const cover = (x, plain) => x.img ? `<span class="cv"><img src="${x.img}" alt="" draggable="false"></span>` : `<span class="cv${plain ? ' plain' : ''}" style="--h:${x.h};--h2:${x.h2};--h3:${x.h3}"><b>${esc(x.t)}</b><span>${esc(x.a || 'Playlist')}</span></span>`;
   const T = { view: 'album', album: 'pet', hist: [], playing: true, cur: { al: 'pet', i: 7 }, pos: 64, vol: 70, shuf: false, rep: false, queue: false, now: false, nowTab: 'next', src: false, out: false, device: 'This computer', liked: { 'pet:7': 1, 'pet:0': 1 }, q: '', pane: null, srcAt: null, sort: { k: 'album', dir: 1 } };
-  /* Where the music comes from. Sources and Up next open in the LumaUI details pane beside the room (on a phone, the drawer). */
+  /* Where the music comes from. Sources and Up next open in the SunoUI details pane beside the room (on a phone, the drawer). */
   const TSRC = [{ id: 'nd', n: 'Navidrome', icon: 'server', st: 'ok', remote: 1, sub: 'Up to date · 19,333 songs', kv: [['Server', 'music.home.lan'], ['Account', 'nick'], ['Songs', '19,333'], ['Last sync', '4 minutes ago'], ['Password', 'In your keyring']] },
     { id: 'dev', n: 'This device', icon: 'monitor', st: 'ok', sub: 'Music folder · 412 songs', kv: [['Folder', '~/Music'], ['Songs', '412'], ['Last sync', 'Watching for changes']] },
     { id: 'dl', n: 'Downloads', icon: 'download', st: 'busy', sub: 'Downloading 3 songs', kv: [['Kept offline', '38 songs · 312 MB'], ['Downloading', '3 songs']] }];
@@ -221,7 +221,7 @@
 
   /* ══ Messages ══════════════════════════════════════════════════════════════
      Conversations on the frame, the conversation as the island, the composer grown from the frame.
-     Everyone is an @username; everything is end-to-end encrypted; texts from a Luma phone share the inbox.
+     Everyone is an @username; everything is end-to-end encrypted; texts from a Suno phone share the inbox.
      Click a message and the composer becomes that message's actions; Done or Esc brings it back. */
   const SMILE = SVG['smile'];
   const BELLOFF = SVG['bell-off'];
@@ -249,9 +249,9 @@
       m('PR', 'Updated deck with the new milestones', { at: '9:48 AM' }),
       m('NF', null, { kind: 'voice', dur: 23, at: '9:52 AM' }),
       m('me', 'Love it. I’ll go through the deck before lunch', { at: '9:58 AM', status: 'read', reply: 7 }),
-      m('SK', 'simplyluma.com is live on the new server btw', { at: '10:02 AM', link: { host: 'simplyluma.com', title: 'Luma — A better computer.', img: PH + 'life-hero-writing.webp' } }) ] },
+      m('SK', 'simplyluma.com is live on the new server btw', { at: '10:02 AM', link: { host: 'simplyluma.com', title: 'Suno — A better computer.', img: PH + 'life-hero-writing.webp' } }) ] },
     { id: 'priya', dm: 'PR', pinned: true, unread: 0, msgs: [ m('PR', 'Are we still on for the walkthrough at 2?', { day: 'Today', at: '8:40 AM' }), m('PR', null, { kind: 'event', card: { t: 'Launch walkthrough', mon: 'Sep', day: '25', when: '2:00 PM', where: 'Studio', h: 285 }, at: '8:40 AM' }), m('me', 'Yes, bring the Fairphone build', { at: '8:42 AM', status: 'read' }), m('PR', 'Will do 👍', { at: '8:43 AM' }) ] },
-    { id: 'mom', dm: 'MO', sms: true, unread: 1, msgs: [ m('MO', 'Saw the article about Luma. Proud of you kid. Call me this weekend', { day: 'Today', at: '11:05 AM' }) ] },
+    { id: 'mom', dm: 'MO', sms: true, unread: 1, msgs: [ m('MO', 'Saw the article about Suno. Proud of you kid. Call me this weekend', { day: 'Today', at: '11:05 AM' }) ] },
     { id: 'theo', dm: 'TH', unread: 0, msgs: [ m('TH', null, { kind: 'song', card: { t: 'God Only Knows', a: 'The Beach Boys', al: 'Pet Sounds', img: PH + 'pet-sounds.webp' }, day: 'Yesterday', at: '6:18 PM' }), m('TH', null, { kind: 'voice', dur: 41, at: '6:20 PM' }), m('me', 'Haha yes. Saturday works', { at: '6:31 PM', status: 'read' }) ] },
     { id: 'climb', name: 'Climbing Saturday', h: 150, group: ['TH', 'CL', 'AR'], muted: true, unread: 0, msgs: [ m('CL', null, { kind: 'place', card: { n: 'Mission Cliffs', addr: '2295 Harrison St', eta: '14 min' }, day: 'Yesterday', at: '4:01 PM' }), m('CL', 'Gym at 10, coffee after?', { at: '4:02 PM' }) ] },
     { id: 'alex', dm: 'AR', unread: 0, msgs: [ m('AR', 'Sent you the invoice, no rush', { day: 'Monday', at: '3:12 PM' }) ] },
@@ -330,7 +330,7 @@
     const p = c.dm ? ppl(c.dm) : null, bg = ppl(c.dm || c.group[0]).face;
     $('#m-light').style.backgroundImage = bg ? `url('${PH}${bg[0]}.webp')` : 'none'; $('#m-light').style.backgroundPosition = bg ? `${bg[1] * 100}% ${bg[2] * 100}%` : '';
     b.innerHTML = `<div class="mthread"><div class="mintro">${c.group ? `<span class="gbig">${[...c.group, 'me'].map(k => av(k, 56)).join('')}</span>` : av(c.dm, 88)}<b>${esc(who(c).n)}</b><span class="u">${p ? (p.u ? '@' + p.u : p.phone) : c.group.map(k => ppl(k).n.split(' ')[0]).join(', ') + ' and you'}</span>
-      <span class="lockl">${c.sms ? `${ic('message-square')}Text messages aren’t encrypted. <button type="button" data-mtodo="Invite sent: they can keep their number">Invite ${esc(who(c).n)} to Luma</button>` : `${ic('lock')}End-to-end encrypted. Only the people here can read this.`}</span></div>
+      <span class="lockl">${c.sms ? `${ic('message-square')}Text messages aren’t encrypted. <button type="button" data-mtodo="Invite sent: they can keep their number">Invite ${esc(who(c).n)} to Suno</button>` : `${ic('lock')}End-to-end encrypted. Only the people here can read this.`}</span></div>
       ${c.msgs.map((x, i, a) => bubble(c, x, i, a)).join('')}${c.typing ? `<div class="msg theirs first last typing">${c.group ? av(c.typing, 28) : ''}<div class="mcol"><div class="bub"><span class="dots"><i></i><i></i><i></i></span></div></div></div>` : ''}</div>`;
     if (!keep || atEnd) b.scrollTop = b.scrollHeight; c.msgs.forEach(x => delete x.fresh); mShape(); }
   /* A run of messages from one person reads as one flowing block. Corners are round only where a bubble is free; they
@@ -344,7 +344,7 @@
         v.classList.add('mshaped'); v.style.setProperty('--rtl', tl + 'px'); v.style.setProperty('--rtr', tr + 'px'); v.style.setProperty('--rbr', br + 'px'); v.style.setProperty('--rbl', bl + 'px'); }); g = []; };
     rows.forEach(m => { if (m.classList.contains('first')) flush(); g.push(m); if (m.classList.contains('last')) flush(); }); flush(); }
   new ResizeObserver(() => mShape()).observe($('#m-body'));
-  /* The composer: text by default; a message's actions when one is selected. It grows into the editor (LumaUI action center,
+  /* The composer: text by default; a message's actions when one is selected. It grows into the editor (SunoUI action center,
      Charlie's reply editor): the context line when replying, the full editor with formatting on demand. */
   function msgBar() { const bar = $('#m-bar'), c = cv(); bar.classList.toggle('acting', MS.sel != null); bar.classList.remove('tight');
     if (MS.sel != null && mNarrow()) { MS.comp = false; mComp(); bar.hidden = false; const x = c.msgs.find(y => y.id === MS.sel), mine = x.from === 'me';
@@ -419,11 +419,11 @@
     if (c.sms) return;
     setTimeout(() => { x.status = 'read'; const r = (REPLIES[c.id] || [])[0]; if (r) c.typing = r[0]; if (MS.cur === c.id) { msgBody(true); msgHead(); } msgSide(); }, 1300);
     setTimeout(() => { const list = REPLIES[c.id] || []; const r = list.shift(); c.typing = null; if (r) { c.msgs.push(m(r[0], r[1], { at: x.at, fresh: true })); list.push(r); if (MS.cur !== c.id) c.unread++; } if (MS.cur === c.id) { msgBody(true); msgHead(); } msgSide(); }, 3200); }
-  /* Accounts: chats from other networks, signed in on this device, beside your Luma chats and your phone's texts. The title menu
+  /* Accounts: chats from other networks, signed in on this device, beside your Suno chats and your phone's texts. The title menu
      lists them (as Charlie's lists mail accounts); Add account opens the details pane on the networks, then the network's own page:
      what it does, the honest caveat, and its one way in. Google Messages signs in like Messages for web; the phone stays the sender. */
-  const MNETS = [['gm', 'Google Messages', 'Texts and RCS from your Android phone'], ['wa', 'WhatsApp', 'Link Luma as one of your devices'], ['sg', 'Signal', 'Link Luma as one of your devices'], ['tg', 'Telegram', 'Unofficial client · a code or your number']];
-  const mNet = (k, lg) => `<span class="mnet ${k}${lg ? ' lg' : ''}">${k === 'gm' ? '<img src="apps/marks/google-messages.svg" alt="">' : k === 'wa' ? '<img src="../social-suno/apps/whatsapp.svg" alt="">' : k === 'luma' ? `<img src="${FAV}" alt="">` : k === 'sms' ? ic('smartphone') : ''}</span>`;
+  const MNETS = [['gm', 'Google Messages', 'Texts and RCS from your Android phone'], ['wa', 'WhatsApp', 'Link Suno as one of your devices'], ['sg', 'Signal', 'Link Suno as one of your devices'], ['tg', 'Telegram', 'Unofficial client · a code or your number']];
+  const mNet = (k, lg) => `<span class="mnet ${k}${lg ? ' lg' : ''}">${k === 'gm' ? '<img src="apps/marks/google-messages.svg" alt="">' : k === 'wa' ? '<img src="../social-suno/apps/whatsapp.svg" alt="">' : k === 'suno' ? `<img src="${FAV}" alt="">` : k === 'sms' ? ic('smartphone') : ''}</span>`;
   Object.assign(PPL, { MC: { n: 'Maya Chen', u: null, phone: '+1 (415) 555-0187', h: 300 }, BO: { n: 'Ben Ortiz', u: null, phone: '+1 (510) 555-0119', h: 195 }, GR: { n: 'Grace Lee', u: null, phone: '+1 (628) 555-0164', h: 25 } });
   const GCONVOS = [
     { id: 'g-maya', dm: 'MC', gm: true, unread: 2, msgs: [m('MC', 'Can you send me the photos from Saturday?', { day: 'Today', at: '11:24 AM' }), m('MC', 'The ones from the lake especially 🙏', { at: '11:24 AM' })] },
@@ -437,12 +437,12 @@
       <div class="mnetgo"><button class="bt pri" type="button" data-mgsign>${ic('log-in')}Sign in with Google</button></div><p class="lfhint">Your sign-in stays in this device’s keyring and your chats are stored only on this device.</p>`; }
     else if (pg === 'gmwait') { title = 'Add Google Messages'; body = `<div class="ldphero">${mNet('gm', 1)}<b>Signing in…</b></div><div class="mnetwait"><span class="tspin"></span><span>Sign in with your Google account in the browser window that just opened. It closes by itself once you’re signed in.</span></div>`; }
     else if (pg === 'gmok') { title = 'Google Messages'; body = `<div class="ldphero">${mNet('gm', 1)}<b>Google Messages</b><span class="mnetok">${ic('circle-check')}Connected</span></div>${lDP.kv([['Phone', 'Pixel 8'], ['Chats', String(GCONVOS.length)], ['Stored', 'On this device']])}<div class="mnetgo"><button class="bt pri" type="button" data-maccts="">Done</button></div>`; }
-    else body = `${lDP.lab('On this device')}<div class="ldplist">${lDP.row({ av: mNet('luma'), n: 'Luma', sub: '@nick · end-to-end encrypted' })}${lDP.row({ av: mNet('sms'), n: 'Text messages', sub: 'From your Luma phone' })}</div>
-      ${lDP.lab('Accounts')}<div class="ldplist">${MS.gm ? lDP.row({ av: mNet('gm'), n: 'Google Messages', sub: 'Connected · Pixel 8', attr: 'data-maccts="gmok"' }) : ''}${lAddRow('Add account', 'data-maccts="add"', 'plus')}</div><p class="lfhint">Chats from other networks, signed in on this device. Nothing passes through a Luma server.</p>`;
+    else body = `${lDP.lab('On this device')}<div class="ldplist">${lDP.row({ av: mNet('suno'), n: 'Suno', sub: '@nick · end-to-end encrypted' })}${lDP.row({ av: mNet('sms'), n: 'Text messages', sub: 'From your Suno phone' })}</div>
+      ${lDP.lab('Accounts')}<div class="ldplist">${MS.gm ? lDP.row({ av: mNet('gm'), n: 'Google Messages', sub: 'Connected · Pixel 8', attr: 'data-maccts="gmok"' }) : ''}${lAddRow('Add account', 'data-maccts="add"', 'plus')}</div><p class="lfhint">Chats from other networks, signed in on this device. Nothing passes through a Suno server.</p>`;
     return lDP({ title, close: 'data-maccts=""', body }); }
   function mGSign() { MS.accts = 'gmwait'; msgDetails();
     setTimeout(() => { if (MS.accts !== 'gmwait') return; MS.gm = true; CONVOS.unshift(...GCONVOS.filter(g => !CONVOS.includes(g))); MS.accts = 'gmok'; msgSide(); msgDetails(); }, 2400); }
-  /* Details: the LumaUI details pane. Closed by default; Info or the name opens it; Esc or × closes it. The person's own actions
+  /* Details: the SunoUI details pane. Closed by default; Info or the name opens it; Esc or × closes it. The person's own actions
      are Contacts' (lContactActs); facts get hairlines; people get full-row hover and quiet actions; Leave and Delete are stacked buttons. */
   function msgDetails() { const d = $('#m-det'), c = cv(); if (MS.accts !== null) { if (lDPShow(d, { open: true, subject: true })) { d.setAttribute('aria-label', 'Accounts'); d.innerHTML = mAccounts(); } return; } d.setAttribute('aria-label', 'Details'); if (!lDPShow(d, { open: MS.details, subject: c })) return; const members = c.dm ? [c.dm] : c.group, p = c.dm ? ppl(c.dm) : null;
     const photos = c.msgs.filter(x => x.kind === 'photo').map(x => x.src).concat([PH + 'life-sync-terrace.webp', PH + 'life-work-suite.webp', PH + 'life-suite-bg-stage.webp']).slice(0, 6);
@@ -460,7 +460,7 @@
   const mClose = () => $$('#w-messages .pop').forEach(p => p.remove());
   function mPop(anchor, html, cls = '') { const r = anchor.getBoundingClientRect(); mClose(); const w = $('#w-messages'), wr = w.getBoundingClientRect(), p = document.createElement('div'); p.className = 'pop ' + cls; p.innerHTML = html; w.appendChild(p);
     Object.assign(p.style, { left: Math.max(8, Math.min(r.left - wr.left - 6, wr.width - p.offsetWidth - 8)) + 'px', bottom: (wr.bottom - r.top + 10) + 'px' }); return p; }
-  /* LumaUI toast, centred on the conversation just above whatever floats at its foot (the composer lives beside the island) */
+  /* SunoUI toast, centred on the conversation just above whatever floats at its foot (the composer lives beside the island) */
   function mToast(msg, o) { const w = $('#w-messages'); lToast(w, msg, o); const t = lToast.el, b = [$('#m-comp'), $('#m-bar')].find(x => x && !x.hidden && x.offsetHeight); if (t && b) t.style.bottom = Math.round(w.getBoundingClientRect().bottom - b.getBoundingClientRect().top + 12) + 'px'; }
   function react(id, e) { const x = cv().msgs.find(y => y.id === id); x.reacts = x.reacts || {}; const ks = x.reacts[e] = x.reacts[e] || []; const i = ks.indexOf('me'); i > -1 ? ks.splice(i, 1) : ks.push('me'); if (!ks.length) delete x.reacts[e]; msgBody(true); }
   const EMO = ['❤️', '😂', '👍', '🎉', '😮', '🙏'];
@@ -471,7 +471,7 @@
     const cvb = hit('[data-mcv]'); if (cvb) { openCv(cvb.dataset.mcv); return true; }
     const fl = hit('[data-mfilter]'); if (fl) { MS.filter = fl.dataset.mfilter; msgSide(); return true; }
     if (hit('#m-top b, #m-top .chev')) { const it = (k, label, sub, mark) => `<button class="crmi${MS.acct === k ? ' on' : ''}" type="button" data-macct="${k}">${mark}<span>${label}${sub ? `<small>${sub}</small>` : ''}</span></button>`;
-      lMenu(hit('#m-top b, #m-top .chev'), `<h6>Accounts</h6>${it('all', 'All chats', '', ic('inbox'))}${it('luma', 'Luma', '@nick', mNet('luma'))}${it('sms', 'Text messages', 'Your Luma phone', mNet('sms'))}${MS.gm ? it('gm', 'Google Messages', 'Pixel 8', mNet('gm')) : ''}<span class="crsep"></span>${crMi('data-maccts="add"', 'plus', 'Add account…')}${crMi('data-maccts="list"', 'settings', 'Manage accounts')}`); return true; }
+      lMenu(hit('#m-top b, #m-top .chev'), `<h6>Accounts</h6>${it('all', 'All chats', '', ic('inbox'))}${it('suno', 'Suno', '@nick', mNet('suno'))}${it('sms', 'Text messages', 'Your Suno phone', mNet('sms'))}${MS.gm ? it('gm', 'Google Messages', 'Pixel 8', mNet('gm')) : ''}<span class="crsep"></span>${crMi('data-maccts="add"', 'plus', 'Add account…')}${crMi('data-maccts="list"', 'settings', 'Manage accounts')}`); return true; }
     const ma = hit('[data-macct]'); if (ma) { $('#lmenu')?.remove(); MS.acct = ma.dataset.macct; msgSide(); return true; }
     const mp = hit('[data-maccts]'); if (mp) { $('#lmenu')?.remove(); MS.accts = mp.dataset.maccts || null; if (MS.accts) MS.details = false; msgHead(); msgDetails(); requestAnimationFrame(shapeGrow); return true; }
     if (hit('[data-mgsign]')) { mGSign(); return true; }
@@ -543,7 +543,7 @@
       else if ((e.ctrlKey || e.metaKey) && k === 'f') { e.preventDefault(); MS.searching = true; msgSide(); $('#m-q').focus(); }
       else if ((e.ctrlKey || e.metaKey) && k === 'n') { e.preventDefault(); $('[data-mnew]').click(); }
       else if ((e.ctrlKey || e.metaKey) && (k === 'arrowup' || k === 'arrowdown')) { e.preventDefault(); const i = CONVOS.findIndex(c => c.id === MS.cur), n = CONVOS[(i + (k === 'arrowdown' ? 1 : CONVOS.length - 1)) % CONVOS.length]; openCv(n.id); } }); })();
-  /* Rich text in Messages, Notes and Charlie: LumaUI's selection bubble (Write's), the common marks just above the selection
+  /* Rich text in Messages, Notes and Charlie: SunoUI's selection bubble (Write's), the common marks just above the selection
      (bold, italic, highlight, link, ··· for the rest). It waits for the selection to settle, hides on typing, scrolling or
      deselecting; Alt+F10 reaches it, arrows move in it, Esc hides it. The editors' own toolbars stay where they are. */
   const RT = { eds: [['#m-comp .laced', '#m-sel', '#m-main'], ['#n-doc', '#n-sel', '#n-main'], ['#cr-comp .cr2ed', '#cr-sel', '#cr-main']] };

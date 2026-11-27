@@ -34,7 +34,7 @@ html[data-phone] .win.phone :is(.lacft small, kbd, .cakbd, .tkey) { display: non
 .pmemt { position: absolute; left: 20px; right: 20px; bottom: 60px; z-index: 2; display: grid; color: #fff; text-shadow: 0 2px 12px rgba(0,0,0,.6); } .pmemt b { font-size: 30px; font-weight: 800; letter-spacing: -.02em; } .pmemt small { font-size: 14px; opacity: .85; }
 .pmemx { position: absolute; right: 12px; top: 62px; z-index: 3; color: #fff; background: rgba(0,0,0,.35); border-radius: 50%; }
 
-/* LumaUI rule: text entry is the bottom-most thing in the bar. In a grown panel, its field sits last, right above the row
+/* SunoUI rule: text entry is the bottom-most thing in the bar. In a grown panel, its field sits last, right above the row
    (suggestions and choices above it, closest to the thumb's reach first); in a two-row bar, the field row is the bottom one. */
 html[data-phone] .win.phone .fexp > .cfield { order: 99; } html[data-phone] .win.phone .fexp > .cfield ~ .ppmk { order: 100; }
 html[data-phone] .win.phone .fexp.mnewp > .fexh, html[data-phone] .win.phone .fexp.caddp > .fexh { order: -1; }
@@ -44,7 +44,7 @@ html[data-phone] .win.phone .fexp.mnewp > .fexh, html[data-phone] .win.phone .fe
 .mwin .k-photo .bub.mshaped .mph { border-radius: max(4px, calc(var(--rtl) - 3px)) max(4px, calc(var(--rtr) - 3px)) max(4px, calc(var(--rbr) - 3px)) max(4px, calc(var(--rbl) - 3px)); }
 .mwin .msg:not(.first) { margin-top: 2px; }
 
-/* LumaUI safe area: the measured padding (lSafe) is the only bottom padding in a phone scroller */
+/* SunoUI safe area: the measured padding (lSafe) is the only bottom padding in a phone scroller */
 html[data-phone] .win.phone .lsafec { padding-bottom: 0 !important; margin-bottom: 0 !important; }
 
 /* second-pass fixes */
@@ -177,7 +177,7 @@ html[data-phone] #w-charlie#w-charlie.phone.phboxes > .phboxbtn { width: min(320
 html[data-phone] #w-charlie#w-charlie.phone.phboxes .crnav { top: 52px !important; left: 12px !important; bottom: auto !important; width: min(320px, calc(100% - 24px)) !important; max-height: calc(100% - 52px - 128px); overflow-y: auto; padding: 56px 6px 6px !important; border-radius: 16px !important; background: var(--bar) !important; box-shadow: var(--bar-edge), 0 0 0 100vmax rgba(0,0,0,.38) !important; -webkit-backdrop-filter: blur(24px) saturate(1.7); backdrop-filter: blur(24px) saturate(1.7); animation: islgrow .32s cubic-bezier(.3,1.1,.4,1) backwards !important; transform-origin: top left; }
 @keyframes islgrow { from { clip-path: inset(0 45% calc(100% - 48px) 0 round 16px); } to { clip-path: inset(0 0 0 0 round 16px); } }
 html[data-phone] #w-charlie#w-charlie.phone.phboxes .crnav .crni { min-height: 48px; border-radius: 12px; }
-/* LumaUI title island, open: the island grows into the sidebar. Its header row is solid (the bar colour) so the list scrolls cleanly under it. One glass from the island down; its row stays as the header
+/* SunoUI title island, open: the island grows into the sidebar. Its header row is solid (the bar colour) so the list scrolls cleanly under it. One glass from the island down; its row stays as the header
    (☰ becomes ✕, a hairline under it); the places continue below. Applies to any app whose ☰ carries a title (lNavTtl). */
 html[data-phone] .win.phone.navopen:has(.navbtn.hasttl) .navbtn.hasttl { width: min(320px, calc(100% - 24px)) !important; max-width: none !important; background: var(--bar) !important; box-shadow: inset 0 -1px 0 var(--hair), inset 0 1px 0 rgba(255,255,255,.07), inset 1px 0 0 rgba(255,255,255,.05), inset -1px 0 0 rgba(255,255,255,.05) !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; border-radius: 16px 16px 0 0 !important; z-index: 60; position: relative; }
 html[data-phone] .win.phone.navopen:has(.navbtn.hasttl) .navbtn.hasttl > svg { visibility: hidden; }
@@ -220,7 +220,7 @@ html[data-phone] #cb-bar.cktabbar .cktab .ckrun { position: absolute; top: 7px; 
 /* A–Z index, best practice (iOS Contacts, Android): it has its own lane at the right edge; the list's rows stop short of it, so nothing runs under the letters */
 html[data-phone] .win.phone .lazgut { padding-right: 26px !important; } html[data-phone] #w-phone.phone:has(> .lazidx) .pnfavs { margin-right: 26px !important; }   /* Phone's favorites sit above the list, outside the scroller: same lane */ html[data-phone] .win.phone .lazidx { right: 3px; width: 20px; }
 /* Depot polish (30 Sep) */
-/* Made for Luma: each app is a small card with room inside it (the card and the icon shared .dic) */
+/* Made for Suno: each app is a small card with room inside it (the card and the icon shared .dic) */
 .dicons > .dic { width: 84px; padding: 10px 6px 10px; border-radius: 18px; background: var(--fill-1); box-shadow: inset 0 0 0 1px var(--hair); } .dicons > .dic > b { margin-top: 8px; }
 /* the dropdown's tiles: the label's line box no longer adds space under it, so the content is centred */
 .fvt > span { line-height: 1.15; }
@@ -385,7 +385,7 @@ html[data-phone] .win.phone .fbar.phsearch > .srch { display: flex !important; f
 html[data-phone] .win.phone .fbar.phsearch > .srch input { display: block !important; flex: 1; min-width: 0; width: auto !important; font-size: 16px; }
 html[data-phone] .win.phone .fbar.phsearch > .phsx { flex: none; }
 
-/* ── LumaUI, narrow (any window under 560): the page header stacks ─────────────────────────────────
+/* ── SunoUI, narrow (any window under 560): the page header stacks ─────────────────────────────────
    The title gets the whole width, larger, and its meta runs on the line below, so neither truncates. */
 @container win (max-width: 560px) {
   .lnt { flex-wrap: wrap; row-gap: 3px; } .lnt h1 { font-size: 30px; font-weight: 750; letter-spacing: -.03em; flex: 1 1 auto; }

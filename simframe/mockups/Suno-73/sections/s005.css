@@ -216,9 +216,9 @@ button.lfc:hover { filter: brightness(1.06); } [data-mode="light"] button.lfc:ho
 /* Filer's selection chip carries its own clear button */
 .win .fbar .who .whox { width: 24px; height: 24px; margin: 0 -4px 0 2px; display: grid; place-items: center; border-radius: 8px; background: var(--fill-2); color: var(--ink); } .win .fbar .who .whox:hover { background: var(--fill-3); } .win .fbar .who .whox svg.i { width: 14px; height: 14px; stroke-width: 2.2; }
 
-/* ══ Desktop view (?desktop=1): Luma's windows under the Shelf take two shell (desktop/shell.js) ═══ */
+/* ══ Desktop view (?desktop=1): Suno's windows under the Shelf take two shell (desktop/shell.js) ═══ */
 html[data-desktop] .review, html[data-desktop] .shelf { display: none; }
-/* Luma on a phone (?phone=1, Studio's Phone view): the open app is the whole screen. The status bar sits over its top
+/* Suno on a phone (?phone=1, Studio's Phone view): the open app is the whole screen. The status bar sits over its top
    44px, the home bar over its foot; the app's own compact layout comes from .phone and its container queries. */
 html[data-phone] .desk { background: none !important; pointer-events: none; }
 html[data-phone] .desk > .win { pointer-events: auto; }
@@ -318,7 +318,7 @@ button.cfrow { transition: background .12s; } button.cfrow:hover { background: v
 .cftx { width: 240px; height: 32px; padding: 0 10px; border: 0; outline: 0; border-radius: 10px; background: var(--well); box-shadow: var(--well-edge); color: var(--ink); font: 13px var(--font); } .cftx:focus { box-shadow: var(--well-edge), 0 0 0 2px oklch(0.65 0.13 var(--acc)); }
 .cfwin .cfhero .seg, .cfwin .cfhda .seg { width: max-content; } .cfwin .cfhero .cfjoin { margin: -4px auto 0; }
 .cfhint { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 10px 0 -4px; font-size: 12px; color: var(--ink-3); letter-spacing: .01em; } .cfhint span { color: var(--ink-4); } .cfhint i + span, .cfhint i:not(:first-child) { margin-left: 8px; }
-/* Settings, G1 pass: search at the sidebar foot (#51); LumaUI buttons, dropdowns, progress and category pills in rows (#50, #34); a drawer on a phone */
+/* Settings, G1 pass: search at the sidebar foot (#51); SunoUI buttons, dropdowns, progress and category pills in rows (#50, #34); a drawer on a phone */
 #cf-side .lfoot .cfq { height: 34px; margin: 0; } .cfrow.cu:has(> .laddrow) { padding: 4px 8px; } .cfrow.cu > .laddrow { width: 100%; } .cftoner .lprog { width: 140px; } .cfrow .cfc .lcat { margin-right: 2px; } .cfbt { font-weight: 500; }
 #w-settings.lsideoff .cfside { width: 0; padding: 0; opacity: 0; overflow: hidden; } #w-settings.lsideoff .ibody { padding-left: 8px; } #w-settings .cfside { transition: width .28s var(--ease), padding .28s var(--ease), opacity .2s; }
 @container win (max-width: 599px) { #w-settings.phone .cfside { display: none; } } #w-settings.phone.navopen .cfside { display: flex; position: absolute; z-index: 35; left: 8px; top: 8px; bottom: 8px; width: 256px; padding: 12px 10px 10px; opacity: 1; border-radius: 20px; background: var(--pop); box-shadow: var(--sh-float), 0 0 0 100vmax oklch(0 0 0 / .3); }
@@ -446,7 +446,7 @@ button.cfrow { transition: background .12s; } button.cfrow:hover { background: v
 .cfnl .cftemp i { position: absolute; left: var(--t); top: -4px; width: 6px; height: 22px; margin-left: -3px; border-radius: 3px; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.4); transition: left .1s; }
 .cfnl .cfday { position: relative; height: 26px; margin-top: 18px; border-radius: 8px; background: oklch(0.85 0.06 85 / .3); overflow: hidden; } [data-mode="dark"] .cfnl .cfday { background: oklch(0.6 0.06 85 / .18); }
 .cfnl .cfday i { position: absolute; top: 0; bottom: 0; background: oklch(0.45 0.08 270 / .55); } .cfnl .cfday b { position: absolute; top: 0; bottom: 0; width: 2px; margin-left: -1px; background: var(--ink); }
-/* Settings forms grow the bar (LumaUI action center): wider labels for its longer field names, the QR code centred in the body */
+/* Settings forms grow the bar (SunoUI action center): wider labels for its longer field names, the QR code centred in the body */
 .cflac { width: min(560px, calc(100% - 48px)); z-index: 32; } .cflac .lacf label { width: 128px; } .cflac .lach > span:not(.lacmode) { white-space: normal; line-height: 1.35; } .cflacb { padding: 14px 16px 6px; } .cflac .lacft .bt { height: 36px; padding: 0 16px; border-radius: 12px; }
 .cflac .lacft .bt:not(.key) { background: var(--fill-2); } .cflac .lacft .bt:not(.key):hover { background: var(--fill-3); }
 .cfwin .bt.danger { background: oklch(0.58 0.18 25); color: #fff; font-weight: 600; box-shadow: inset 0 1px 0 rgba(255,255,255,.18); } .cfwin .bt.danger:hover { filter: brightness(1.08); }

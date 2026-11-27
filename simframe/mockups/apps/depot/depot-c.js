@@ -1,5 +1,5 @@
 /* ══ Depot C (24 Oct 2026): places, a list, a page ═══════════════════════════════════════════════════════════════
-   Depot built the way Luma's own list apps are built (Charlie, Messages, Settings), so a store is as easy to read as
+   Depot built the way Suno's own list apps are built (Charlie, Messages, Settings), so a store is as easy to read as
    your mail. Three panes: the places on the ground (Today, Apps, Looks, Tweaks; then Library, Updates, Sent by you),
    the list for the place, and the page for what you picked.
 
@@ -8,7 +8,7 @@
      when a new one joins. No dialog, no checklist to fill in: the switches are the checklist.
    · Where it runs is said in words, quietly, under the name ("Every screen", "Desktop only"), never as a row of
      marks. The list's foot narrows the list to what runs on the device in your hand.
-   · Updates is a place: Luma first, then each app waiting (with the devices it's waiting on), then Automatic and
+   · Updates is a place: Suno first, then each app waiting (with the devices it's waiting on), then Automatic and
      History as rows of their own. Each opens as a page: release notes, devices, Go back.
    · Sent by you is a list of what you made, each with its review as a page; New starts a submission as a page.
 
@@ -22,7 +22,7 @@
   const D = () => window.DEPOT_DATA;
   const PLACES = [['today', 'Today', 'sparkles'], ['apps', 'Apps', 'blocks'], ['looks', 'Looks', 'palette'], ['tweaks', 'Tweaks', 'sliders-horizontal']];
   const YOURS = [['library', 'Library', 'layers'], ['updates', 'Updates', 'refresh-cw'], ['sent', 'Sent by you', 'send']];
-  const PK = { system: 'Part of Luma', luma: 'Luma app', flatpak: 'Flatpak', deb: 'Universal .deb', rpm: 'Universal .rpm', layered: 'Layered package' };
+  const PK = { system: 'Part of Suno', suno: 'Suno app', flatpak: 'Flatpak', deb: 'Universal .deb', rpm: 'Universal .rpm', layered: 'Layered package' };
   const LOOKIC = { Sounds: 'volume-2', Font: 'type', Cursor: 'mouse-pointer-2', Theme: 'palette', Icons: 'blocks', Appearance: 'paintbrush', Wallpaper: 'image' };
 
   /* ── small parts ── */
@@ -41,7 +41,7 @@
   const list = (a, and = 'and') => a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ` ${and} ` + a[a.length - 1];
 
   /* ── one shape for every kind of thing ── */
-  const sealOf = a => a.dev === 'Luma' ? 'luma' : a.verified ? 'verified' : 'community';
+  const sealOf = a => a.dev === 'Suno' ? 'suno' : a.verified ? 'verified' : 'community';
   function item(kind, id) {
     if (kind === 'app') { const a = D().apps.find(x => x.id === id); if (!a) return null;
       return { kind, id, key: 'app:' + id, name: a.name, by: a.dev || 'Unknown developer', seal: sealOf(a), line: a.summary || `${D().cats[a.cat]?.name || 'An'} app · ${PK[a.pk]}`, runs: D().runs[id] || ['desktop', 'tablet'], hue: hash(id), a }; }
@@ -52,7 +52,7 @@
   const isSystem = it => it.kind === 'app' && it.a.pk === 'system';
   const can = it => devs().filter(d => it.runs.includes(d.form)).map(d => d.id);
   function has(it) { if (ST.has[it.key]) return ST.has[it.key];
-    let v; if (it.kind === 'app') v = it.a.dev === 'Luma' ? can(it) : devs().filter(d => (D().installed[d.id] || []).includes(it.id)).map(d => d.id);
+    let v; if (it.kind === 'app') v = it.a.dev === 'Suno' ? can(it) : devs().filter(d => (D().installed[d.id] || []).includes(it.id)).map(d => d.id);
     else if (it.kind === 'look') v = it.id === 'prism' ? can(it) : []; else v = [...(it.x.on || [])];
     return (ST.has[it.key] = v); }
   const matched = it => ST.match.has(it.key);
@@ -106,7 +106,7 @@
   /* ── the places ── */
   function side() { const el = q$('#dp-side'); if (!el) return; const cur = ST.q.trim() ? '' : ST.place, n = upCount();
     const si = (k, label, icon, em = '') => `<button class="si${cur === k ? ' on' : ''}" type="button" data-dpc-place="${k}">${ic(icon)}<span class="lab">${label}</span>${em}</button>`;
-    const sys = D().system, st = ST.sys === 'restarted' ? ['ok', 'Luma is up to date'] : ST.sys === 'done' ? ['go', 'Restart to finish updating'] : ST.sys === 'run' ? ['go', `Downloading Luma · ${ST.pct}%`] : ['go', 'A Luma update is ready'];
+    const sys = D().system, st = ST.sys === 'restarted' ? ['ok', 'Suno is up to date'] : ST.sys === 'done' ? ['go', 'Restart to finish updating'] : ST.sys === 'run' ? ['go', `Downloading Suno · ${ST.pct}%`] : ['go', 'A Suno update is ready'];
     el.innerHTML = `<div class="scr">${PLACES.map(([k, l, i]) => si(k, l, i)).join('')}
       ${ST.place === 'apps' && !ST.q.trim() ? `<div class="dpc-cats">${Object.entries(D().cats).map(([k, c]) => `<button class="si dpc-sub${ST.cat === k ? ' on' : ''}" type="button" data-dpc-cat="${k}"><span class="lab">${esc(c.name)}</span></button>`).join('')}</div>` : ''}
       <div class="sh dpsh">Yours</div>${YOURS.map(([k, l, i]) => si(k, l, i, k === 'updates' && n ? K.lCount(n, true) : '')).join('')}</div>
@@ -127,8 +127,8 @@
     if (p === 'apps') { const all = scoped(apps()); let h = '', first = null;
       const add = (title, its) => { if (!its.length) return; first = first || its[0].key; h += sh(title, its.length) + its.map(it => row(it, metaOf(it))).join(''); };
       if (ST.cat) add(D().cats[ST.cat].name, all.filter(it => it.a.cat === ST.cat));
-      else { const pop = D().popular.map(id => all.find(it => it.id === id)).filter(Boolean); add('Popular', pop.slice(0, 6)); add('Made by Luma', all.filter(it => it.seal === 'luma'));
-        Object.entries(D().cats).forEach(([k, c]) => add(c.name, all.filter(it => it.a.cat === k && it.seal !== 'luma' && !pop.slice(0, 6).includes(it)))); }
+      else { const pop = D().popular.map(id => all.find(it => it.id === id)).filter(Boolean); add('Popular', pop.slice(0, 6)); add('Made by Suno', all.filter(it => it.seal === 'suno'));
+        Object.entries(D().cats).forEach(([k, c]) => add(c.name, all.filter(it => it.a.cat === k && it.seal !== 'suno' && !pop.slice(0, 6).includes(it)))); }
       return [first, h || empty()]; }
     if (p === 'looks') { const its = scoped(D().looks.map(l => item('look', l.id))); return [its[0]?.key, its.map(it => row(it, metaOf(it))).join('') || empty()]; }
     if (p === 'tweaks') { const its = scoped(D().tweaks.map(t => item('tweak', t.id))), parts = [...new Set(its.flatMap(it => it.x.changes.slice(0, 1)))];
@@ -138,10 +138,10 @@
       return [mine[0]?.key, h || `<p class="dpc-empty">Nothing on ${esc(devOf(ST.libDev)?.name || 'it')} yet.</p>`]; }
     if (p === 'updates') { const P = pending(), sys = D().system;
       const sysLine = ST.sys === 'restarted' ? 'Up to date' : ST.sys === 'done' ? 'Ready to restart' : ST.sys === 'run' ? `Downloading · ${ST.pct}%` : `Ready to download · ${sys.size}`;
-      return ['sys', lrow('sys', glyph('sparkles', 290, 'sm'), 'Luma', esc(ST.sys === 'restarted' ? sys.name : sys.name.replace('Luma 1.0 · ', '')), esc(sysLine), ST.sys === 'restarted' ? '' : '<i class="dpc-dot"></i>')
+      return ['sys', lrow('sys', glyph('sparkles', 290, 'sm'), 'Suno', esc(ST.sys === 'restarted' ? sys.name : sys.name.replace('SunoOS 0.1 · ', '')), esc(sysLine), ST.sys === 'restarted' ? '' : '<i class="dpc-dot"></i>')
         + sh('Apps', P.length || null) + (P.map(p => { const it = item('app', p.app); return lrow('up:' + p.app, face(it, 'sm'), esc(it.name), `${esc(p.from)} → ${esc(p.to)}`, esc(list(p.devs.map(short))), '<i class="dpc-dot"></i>'); }).join('') || `<p class="dpc-empty">Every app is up to date, on every device.</p>`)
-        + sh('How updates happen') + lrow('auto', glyph('settings-2', 220, 'sm'), 'Automatic updates', esc(ST.auto.apps ? 'Apps update overnight' : 'Apps wait for you'), esc(ST.auto.luma === 'ask' ? 'Luma asks before it restarts' : 'Luma restarts overnight'))
-        + lrow('history', glyph('history', 200, 'sm'), 'History', esc(`Last: ${ST.done[0][0] === 'luma' ? 'Luma' : item('app', ST.done[0][0])?.name}, ${ST.done[0][2]}`), '')]; }
+        + sh('How updates happen') + lrow('auto', glyph('settings-2', 220, 'sm'), 'Automatic updates', esc(ST.auto.apps ? 'Apps update overnight' : 'Apps wait for you'), esc(ST.auto.luma === 'ask' ? 'Suno asks before it restarts' : 'Suno restarts overnight'))
+        + lrow('history', glyph('history', 200, 'sm'), 'History', esc(`Last: ${ST.done[0][0] === 'suno' ? 'Suno' : item('app', ST.done[0][0])?.name}, ${ST.done[0][2]}`), '')]; }
     if (p === 'sent') { const S = ST.mine;
       return [S.length ? 'sub:0' : 'new', S.map((s, i) => lrow('sub:' + i, glyph(s.icon, s.hue, 'sm'), esc(s.name), esc({ app: 'App', look: 'Look', tweak: 'Tweak' }[s.kind]), '', `<span class="dpc-state st-${s.state}">${{ review: 'In review', checks: 'Checking', live: 'In Depot', changes: 'Needs changes' }[s.state]}</span>`)).join('')
         + lrow('new', glyph('plus', 250, 'sm dpc-new'), 'Send something new', 'An app, a Look or a Tweak', '')]; }
@@ -179,7 +179,7 @@
   const cur = () => ST.stack.length ? null : ST.sel[ST.q.trim() ? 'search' : ST.place];
   function lhead() { const el = q$('#dpc-lhead'); if (!el) return; const p = ST.place, m = mode();
     const title = ST.q.trim() ? 'Results' : p === 'apps' && ST.cat ? D().cats[ST.cat].name : [...PLACES, ...YOURS].find(x => x[0] === p)[1];
-    const sub = ST.q.trim() ? `For “${esc(ST.q.trim())}”` : { today: new Date().toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' }), apps: ST.cat ? esc(D().cats[ST.cat].about) : 'For every screen you own', looks: 'Change how Luma looks', tweaks: 'Change how Luma works', library: 'What you have, on which device', updates: upCount() ? `${upCount()} waiting` : 'Everything is up to date', sent: 'What you made, and its review' }[p];
+    const sub = ST.q.trim() ? `For “${esc(ST.q.trim())}”` : { today: new Date().toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' }), apps: ST.cat ? esc(D().cats[ST.cat].about) : 'For every screen you own', looks: 'Change how Suno looks', tweaks: 'Change how Suno works', library: 'What you have, on which device', updates: upCount() ? `${upCount()} waiting` : 'Everything is up to date', sent: 'What you made, and its review' }[p];
     const had = document.activeElement?.id === 'dpc-q';
     el.innerHTML = `<div class="dpc-ltitle">${m === 'tport' ? `<button class="ib" type="button" data-dpc-places aria-label="Places">${ic('panel-left')}</button>` : ''}<span><h2>${esc(title)}</h2><small>${sub}</small></span></div>
       <div class="dpc-find"><label class="srch">${ic('search')}<input id="dpc-q" type="search" placeholder="Search apps, Looks, Tweaks" aria-label="Search Depot" value="${esc(ST.q)}" autocomplete="off" spellcheck="false"></label><button class="dpc-newsq" type="button" data-dpc-newmenu aria-label="Send something new" title="Send something new">${ic('square-pen')}</button></div>`;
@@ -224,19 +224,19 @@
     if (el) { el.innerHTML = mode() === 'phone' ? '' : h; el.hidden = !h || mode() === 'phone'; } return ''; }
 
   function itemPage(it) { const x = it.x, a = it.a, h = has(it); W.style.setProperty('--dpc-h', it.hue);
-    const facts = [a?.rating ? [`${a.rating.avg} ★`, `${fmtN(a.rating.n)} ratings`] : x?.n ? [fmtN(x.n), 'use it'] : ['New', 'No ratings yet'], [it.runs.length === forms().length ? 'Every screen' : it.runs.length === 1 ? runsText(it) : `${it.runs.length} screens`, it.runs.length === forms().length || it.runs.length === 1 ? 'Where it runs' : runsText(it)], a ? [PK[a.pk], [a.size, a.version].filter(Boolean).join(' · ') || '—'] : [x.kind, it.kind === 'look' ? 'Look' : 'Tweak'], [D().seals[it.seal].name, { luma: 'Made by Luma', verified: 'Reviewed by Luma', community: 'Not reviewed yet' }[it.seal]]];
+    const facts = [a?.rating ? [`${a.rating.avg} ★`, `${fmtN(a.rating.n)} ratings`] : x?.n ? [fmtN(x.n), 'use it'] : ['New', 'No ratings yet'], [it.runs.length === forms().length ? 'Every screen' : it.runs.length === 1 ? runsText(it) : `${it.runs.length} screens`, it.runs.length === forms().length || it.runs.length === 1 ? 'Where it runs' : runsText(it)], a ? [PK[a.pk], [a.size, a.version].filter(Boolean).join(' · ') || '—'] : [x.kind, it.kind === 'look' ? 'Look' : 'Tweak'], [D().seals[it.seal].name, { suno: 'Made by Suno', verified: 'Reviewed by Suno', community: 'Not reviewed yet' }[it.seal]]];
     const shots = a?.shots?.length ? `<section class="dpc-sec"><h3>Pictures</h3><div class="dpc-shots">${a.shots.map(k => `<img class="${k.includes('-phone-') ? 'ph' : ''}" src="apps/depot/shots/${k}.webp" alt="" loading="lazy">`).join('')}</div></section>` : '';
     const look = it.kind === 'look' ? `<section class="dpc-sec"><div class="dpc-lbig${x.art ? '' : ' none'}" style="${x.art ? `background-image:url(${x.art})` : `--h:${x.hue}`}">${x.art ? '' : lookArt(x)}</div></section>` : '';
-    const changes = it.kind === 'tweak' ? `<section class="dpc-sec"><h3>What it changes</h3><div class="dpc-chg">${x.changes.map(c => `<span>${ic('git-branch')}${esc(c)}</span>`).join('')}${x.restart ? `<span class="w">${ic('rotate-ccw')}Restarts to turn on or off</span>` : ''}</div><p class="dpc-fine">${ic('undo-2')}Turn it off and these go back exactly as they were. Luma keeps the system as it was, beside the changed one.</p></section>` : '';
+    const changes = it.kind === 'tweak' ? `<section class="dpc-sec"><h3>What it changes</h3><div class="dpc-chg">${x.changes.map(c => `<span>${ic('git-branch')}${esc(c)}</span>`).join('')}${x.restart ? `<span class="w">${ic('rotate-ccw')}Restarts to turn on or off</span>` : ''}</div><p class="dpc-fine">${ic('undo-2')}Turn it off and these go back exactly as they were. Suno keeps the system as it was, beside the changed one.</p></section>` : '';
     const news = a?.news ? `<section class="dpc-sec"><h3>What's new <small>${esc(a.news.v)} · ${esc(a.news.date)}</small></h3><ul class="dpc-ul">${a.news.items.map(i => `<li>${esc(i)}</li>`).join('')}</ul></section>` : '';
     const about = a?.desc ? `<section class="dpc-sec"><h3>About</h3>${a.desc.map(p => `<p class="dpc-p">${esc(p)}</p>`).join('')}</section>` : '';
     const reach = a?.reach ? a.reach : it.kind !== 'app' ? [['lock', 'Nothing of yours', `It can't read your files or reach the network`]] : null;
-    const reachH = reach ? `<section class="dpc-sec"><h3>What it can reach</h3><div class="dpc-reach">${reach.map(([i, w, why]) => `<span>${ic(i)}<b>${esc(w)}</b><small>${esc(why)}</small></span>`).join('')}</div></section>` : a ? `<section class="dpc-sec"><h3>What it can reach</h3><p class="dpc-p dim">The maker hasn't said. Luma runs it in its own space and asks before it reaches anything of yours.</p></section>` : '';
+    const reachH = reach ? `<section class="dpc-sec"><h3>What it can reach</h3><div class="dpc-reach">${reach.map(([i, w, why]) => `<span>${ic(i)}<b>${esc(w)}</b><small>${esc(why)}</small></span>`).join('')}</div></section>` : a ? `<section class="dpc-sec"><h3>What it can reach</h3><p class="dpc-p dim">The maker hasn't said. Suno runs it in its own space and asks before it reaches anything of yours.</p></section>` : '';
     const reviews = a?.reviews?.length ? `<section class="dpc-sec"><h3>What people say</h3><div class="dpc-revs">${a.reviews.slice(0, 2).map(([ini, n, s, d, t]) => `<blockquote><p>${esc(t)}</p><footer><i>${esc(ini)}</i>${esc(n)} · ${'★'.repeat(s)} · ${esc(d)}</footer></blockquote>`).join('')}</div></section>` : '';
     return `<article class="dpc-it k-${it.kind}">
       <header class="dpc-hero">${x?.art ? `<i class="dpc-hbg" style="background-image:url(${x.art})"></i>` : ''}${face(it, 'xl')}<span class="dpc-ht"><small>${esc(kindWord(it))}</small><h1>${esc(it.name)}</h1><p>${esc(it.line)}</p><span class="dpc-by">${esc(it.by)}${it.seal === 'community' ? '' : `<i class="dpc-sealic" title="${esc(D().seals[it.seal].line)}">${ic(D().seals[it.seal].icon)}</i>`}</span></span></header>
       <section class="dpc-facts">${facts.map(([b, s]) => `<span><b>${esc(b)}</b><small>${esc(s)}</small></span>`).join('')}</section>
-      ${isSystem(it) ? `<p class="dpc-note">${ic('lock')}Part of Luma: on every device, updated with Luma.</p>` : devCard(it)}
+      ${isSystem(it) ? `<p class="dpc-note">${ic('lock')}Part of Suno: on every device, updated with Suno.</p>` : devCard(it)}
       ${look}${changes}${shots}${news}${about}${reviews}${reachH}</article>`; }
   function lookArt(x) { if (x.swatch) return `<span class="dpc-lsw">${x.swatch.map((c, i) => `<i style="background:${c}">${ic(['music', 'image', 'folder-open', 'mail'][i])}</i>`).join('')}</span>`;
     if (x.ink) return `<span class="dpc-ink"><b>Aa</b><i></i><i></i><i></i></span>`;
@@ -263,7 +263,7 @@
       h = `<header class="dpc-shero tall"><i class="dpc-hbg sharp" style="background-image:url(${it.x.art})"></i><span><small>${esc(s.kick)}</small><h1>${esc(it.name)}</h1><p>${esc(it.line)}</p></span></header><section class="dpc-sec"><div class="dpc-cards one">${card(it)}</div></section>`; }
     else if (s.kind === 'tweak') { const it = item('tweak', s.tweak);
       h = `<header class="dpc-shero" style="--h:${it.hue}"><span><small>${esc(s.kick)}</small><h1>${esc(it.name)}</h1><p>${esc(s.blurb)}</p></span>${face(it, 'xl')}</header><section class="dpc-sec"><div class="dpc-cards one">${card(it)}</div></section>
-        <section class="dpc-sec"><h3>What it changes</h3><div class="dpc-chg">${it.x.changes.map(c => `<span>${ic('git-branch')}${esc(c)}</span>`).join('')}</div><p class="dpc-fine">${ic('undo-2')}Turn it off and Luma is exactly as it was.</p></section>`; }
+        <section class="dpc-sec"><h3>What it changes</h3><div class="dpc-chg">${it.x.changes.map(c => `<span>${ic('git-branch')}${esc(c)}</span>`).join('')}</div><p class="dpc-fine">${ic('undo-2')}Turn it off and Suno is exactly as it was.</p></section>`; }
     else if (s.kind === 'switch') h = `<header class="dpc-shero plain"><span><small>${esc(s.kick)}</small><h1>${esc(s.title)}</h1><p>Search knows the names you bring. These do the same jobs, and open the same files.</p></span></header>
         <section class="dpc-sec"><div class="dpc-names">${D().switching.map(([n, ids]) => `<div class="dpc-name"><b>${esc(n)}</b>${ic('arrow-right')}<span>${ids.map(id => item('app', id)).filter(Boolean).map(it => `<button type="button" data-dpc-open="${it.key}">${face(it, 'xs')}${esc(it.name)}</button>`).join('')}</span></div>`).join('')}</div></section>`;
     else if (s.kind === 'screen') { const f = formOf(s.form), its = apps().filter(it => it.runs.includes(s.form)), d = devs().find(x => x.form === s.form);
@@ -277,12 +277,12 @@
     const types = ['Feature', 'Improvement', 'Fix', 'Security'], notes = sys.notes || [];
     const devRows = devs().map(d => { const st = done ? 'Up to date' : d.id === here() ? { ready: 'Ready to download', run: `Downloading · ${ST.pct}%`, done: 'Ready to restart' }[ST.sys] : d.form === 'tv' ? 'Asleep · updates overnight' : d.form === 'home' ? 'Updates itself overnight' : 'Ready to download';
       return `<div class="dpc-dev"><i class="dpc-dic">${ic(formOf(d.form).icon)}</i><span><b>${esc(d.name)}${d.id === here() ? '<em>This one</em>' : ''}</b><small>${esc(st)}</small></span></div>`; }).join('');
-    return `<article class="dpc-up"><header class="dpc-shero sys"><span><small>Luma · ${esc(sys.channel)}</small><h1>${esc(done ? 'Luma is up to date' : sys.name.replace('Luma 1.0 · ', 'Luma 1.0, '))}</h1><p>${esc(done ? `You're on ${sys.name}.` : sys.blurb)}</p></span>${glyph('sparkles', 290, 'xl')}</header>
+    return `<article class="dpc-up"><header class="dpc-shero sys"><span><small>Suno · ${esc(sys.channel)}</small><h1>${esc(done ? 'Suno is up to date' : sys.name.replace('SunoOS 0.1 · ', 'SunoOS 0.1, '))}</h1><p>${esc(done ? `You're on ${sys.name}.` : sys.blurb)}</p></span>${glyph('sparkles', 290, 'xl')}</header>
       ${ST.sys === 'run' ? `<div class="dpc-prog"><i style="width:${ST.pct}%"></i></div>` : ST.sys === 'done' ? `<p class="dpc-note go">${ic('rotate-ccw')}Downloaded. Restart when you like: your windows come back where you left them.</p>` : ''}
       ${done ? '' : types.map(t => { const n = notes.filter(x => x[0] === t); return n.length ? `<section class="dpc-sec"><h3><span class="dpc-nt t-${t.toLowerCase()}">${t}</span></h3><div class="dpc-notes">${n.map(([, i, title, d]) => `<div>${ic(i)}<span><b>${esc(title)}</b><small>${esc(d)}</small></span></div>`).join('')}</div></section>` : ''; }).join('')}
       <section class="dpc-sec"><h3>On your devices</h3><div class="dpc-devs">${devRows}</div></section>
-      <p class="dpc-fine">${ic('undo-2')}${done ? `Luma kept ${esc(sys.running)}, so you can go back from ··· if anything feels wrong.` : `You're on ${esc(sys.running)}. Luma keeps it after updating, so you can always go back one version.`}</p>
-      <p class="dpc-fine">${ic('shield-check')}Signed by Luma, from ${esc(sys.from)}. Checked ${esc(sys.checked)}.</p></article>`; }
+      <p class="dpc-fine">${ic('undo-2')}${done ? `Suno kept ${esc(sys.running)}, so you can go back from ··· if anything feels wrong.` : `You're on ${esc(sys.running)}. Suno keeps it after updating, so you can always go back one version.`}</p>
+      <p class="dpc-fine">${ic('shield-check')}Signed by Suno, from ${esc(sys.from)}. Checked ${esc(sys.checked)}.</p></article>`; }
   function upPage(app) { const p = pending().find(x => x.app === app), it = item('app', app);
     if (!p) return `<div class="dpc-blank">${ic('circle-check')}<p>${esc(it.name)} is up to date everywhere</p></div>`;
     return `<article class="dpc-up"><header class="dpc-hero">${face(it, 'xl')}<span class="dpc-ht"><small>Update</small><h1>${esc(it.name)} ${esc(p.to)}</h1><p>${esc(p.size)} · you have ${esc(p.from)}</p></span></header>
@@ -291,16 +291,16 @@
       ${matched(it) ? `<p class="dpc-fine">${ic('link')}Matched: every device moves to ${esc(p.to)} together.</p>` : ''}</article>`; }
   function autoPage() { const A = ST.auto;
     const seg = (opts, attr, curV) => `<div class="seg dpc-seg" role="tablist"><i class="ind"></i>${opts.map(([k, l]) => `<button type="button" role="tab" class="${curV === k ? 'on' : ''}" ${attr}="${k}">${l}</button>`).join('')}</div>`;
-    return `<article class="dpc-up"><header class="dpc-shero plain"><span><small>Updates</small><h1>Automatic updates</h1><p>Luma keeps apps current while you sleep. It never restarts a device without asking unless you tell it to.</p></span></header>
+    return `<article class="dpc-up"><header class="dpc-shero plain"><span><small>Updates</small><h1>Automatic updates</h1><p>Suno keeps apps current while you sleep. It never restarts a device without asking unless you tell it to.</p></span></header>
       <section class="dpc-sec"><h3>Apps</h3><div class="dpc-set"><div><span><b>Update apps automatically</b><small>Overnight, while each device charges</small></span>${sw(A.apps, 'data-dpc-auto="apps"', 'Update apps automatically')}</div>
         ${devs().map(d => `<div class="sub"><i class="dpc-dic">${ic(formOf(d.form).icon)}</i><span><b>${esc(d.name)}</b></span>${sw(A.apps && A.devs[d.id], `data-dpc-autodev="${d.id}"`, d.name, !A.apps)}</div>`).join('')}</div></section>
-      <section class="dpc-sec"><h3>Luma</h3><div class="dpc-set"><div><span><b>Download Luma updates</b><small>In the background, on every device</small></span>${sw(A.dl, 'data-dpc-auto="dl"', 'Download Luma updates')}</div>
-        <div><span><b>Restart to finish</b><small>${A.luma === 'ask' ? 'Luma asks first, on each device' : 'Overnight, if nothing is open and unsaved'}</small></span>${seg([['ask', 'Ask me'], ['night', 'Overnight']], 'data-dpc-lumaauto', A.luma)}</div></div></section>
+      <section class="dpc-sec"><h3>Suno</h3><div class="dpc-set"><div><span><b>Download Suno updates</b><small>In the background, on every device</small></span>${sw(A.dl, 'data-dpc-auto="dl"', 'Download Suno updates')}</div>
+        <div><span><b>Restart to finish</b><small>${A.luma === 'ask' ? 'Suno asks first, on each device' : 'Overnight, if nothing is open and unsaved'}</small></span>${seg([['ask', 'Ask me'], ['night', 'Overnight']], 'data-dpc-lumaauto', A.luma)}</div></div></section>
       <section class="dpc-sec"><h3>Matched apps</h3><div class="dpc-set"><div><span><b>Keep them on the same version</b><small>A device that wakes catches up before you use it</small></span>${sw(A.matched, 'data-dpc-auto="matched"', 'Keep matched apps on the same version')}</div></div></section></article>`; }
   function historyPage() { const groups = {}; ST.done.forEach(r => (groups[r[2]] = groups[r[2]] || []).push(r));
-    return `<article class="dpc-up"><header class="dpc-shero plain"><span><small>Updates</small><h1>History</h1><p>What changed, where, and when. Luma itself can always go back one version.</p></span></header>
-      ${Object.entries(groups).map(([when, rs]) => `<section class="dpc-sec"><h3>${esc(when)}</h3><div class="dpc-hist">${rs.map(([id, what, , where]) => { const it = id === 'luma' ? null : item('app', id);
-        return `<div>${it ? face(it, 'xs') : glyph('sparkles', 290, 'xs')}<span><b>${it ? esc(it.name) : 'Luma'}</b><small>${esc(what)} · ${esc(where)}</small></span>${id === 'luma' ? `<button class="dpc-link" type="button" data-dpc-rollback>Go back</button>` : ''}</div>`; }).join('')}</div></section>`).join('')}</article>`; }
+    return `<article class="dpc-up"><header class="dpc-shero plain"><span><small>Updates</small><h1>History</h1><p>What changed, where, and when. Suno itself can always go back one version.</p></span></header>
+      ${Object.entries(groups).map(([when, rs]) => `<section class="dpc-sec"><h3>${esc(when)}</h3><div class="dpc-hist">${rs.map(([id, what, , where]) => { const it = id === 'suno' ? null : item('app', id);
+        return `<div>${it ? face(it, 'xs') : glyph('sparkles', 290, 'xs')}<span><b>${it ? esc(it.name) : 'Suno'}</b><small>${esc(what)} · ${esc(where)}</small></span>${id === 'suno' ? `<button class="dpc-link" type="button" data-dpc-rollback>Go back</button>` : ''}</div>`; }).join('')}</div></section>`).join('')}</article>`; }
 
   /* ── sent by you ── */
   const STEPS = ['Sent', 'Checks', 'Review', 'In Depot'];
@@ -309,18 +309,18 @@
     const when = ['Oct 20', 'Oct 20', s.state === 'live' ? 'Oct 21' : 'Now', s.state === 'live' ? 'Oct 22' : ''];
     return `<article class="dpc-sub"><header class="dpc-hero" style="--h:${s.hue}">${glyph(s.icon, s.hue, 'xl')}<span class="dpc-ht"><small>Your ${esc(s.kind === 'app' ? 'app' : s.kind === 'look' ? 'Look' : 'Tweak')}</small><h1>${esc(s.name)}</h1><p>${esc(s.note)}</p></span></header>
       <section class="dpc-sec"><h3>Review</h3><ol class="dpc-steps">${STEPS.map((n, k) => { const st = k < at || s.state === 'live' ? 'done' : k === at ? (s.state === 'changes' ? 'warn' : 'now') : '';
-        return `<li class="s-${st}"><i>${st === 'done' ? ic('check') : st === 'warn' ? ic('circle-alert') : ''}</i><span><b>${n}</b><small>${esc(st === 'done' ? when[k] : st === 'now' ? (k === 2 ? 'A person at Luma is trying it. Usually two days.' : 'Signature, package and what it reaches. A few minutes.') : st === 'warn' ? 'Luma asked for a change' : '')}</small></span></li>`; }).join('')}</ol></section>
-      ${s.state === 'changes' ? `<section class="dpc-sec"><h3>From Luma's review</h3><blockquote class="dpc-quote"><p>${esc(s.note)}</p><footer>Luma review · Oct 21</footer></blockquote></section>` : ''}
-      ${s.state === 'live' ? `<section class="dpc-facts">${[['1.2k', 'Installs'], ['4.8 ★', '86 ratings'], ['Verified', 'Reviewed by Luma']].map(([b, x]) => `<span><b>${b}</b><small>${x}</small></span>`).join('')}</section>` : ''}</article>`; }
+        return `<li class="s-${st}"><i>${st === 'done' ? ic('check') : st === 'warn' ? ic('circle-alert') : ''}</i><span><b>${n}</b><small>${esc(st === 'done' ? when[k] : st === 'now' ? (k === 2 ? 'A person at Suno is trying it. Usually two days.' : 'Signature, package and what it reaches. A few minutes.') : st === 'warn' ? 'Suno asked for a change' : '')}</small></span></li>`; }).join('')}</ol></section>
+      ${s.state === 'changes' ? `<section class="dpc-sec"><h3>From Suno's review</h3><blockquote class="dpc-quote"><p>${esc(s.note)}</p><footer>Suno review · Oct 21</footer></blockquote></section>` : ''}
+      ${s.state === 'live' ? `<section class="dpc-facts">${[['1.2k', 'Installs'], ['4.8 ★', '86 ratings'], ['Verified', 'Reviewed by Suno']].map(([b, x]) => `<span><b>${b}</b><small>${x}</small></span>`).join('')}</section>` : ''}</article>`; }
   function newPage() { const k = ST.nk, kinds = [['app', 'An app', 'package'], ['look', 'A Look', 'palette'], ['tweak', 'A Tweak', 'sliders-horizontal']];
-    return `<article class="dpc-new"><header class="dpc-shero plain"><span><small>Sent by you</small><h1>Send something new</h1><p>Everyone on Luma can find it. Luma checks it in minutes; for the Verified seal, a person tries it first.</p></span></header>
+    return `<article class="dpc-new"><header class="dpc-shero plain"><span><small>Sent by you</small><h1>Send something new</h1><p>Everyone on Suno can find it. Suno checks it in minutes; for the Verified seal, a person tries it first.</p></span></header>
       <section class="dpc-sec"><div class="dpc-kinds">${kinds.map(([x, n, i]) => `<button type="button" class="${k === x ? 'on' : ''}" data-dpc-nk="${x}">${ic(i)}<b>${n}</b></button>`).join('')}</div></section>
       <section class="dpc-sec"><div class="dpc-drop">${ic('upload')}<b>${{ app: 'Drop a Flatpak, a .deb or an .rpm', look: 'Drop the Look\'s folder or a .lumalook', tweak: 'Drop the Tweak\'s folder or a .lumatweak' }[k]}</b><small>or paste a link to where it lives</small></div></section>
       <section class="dpc-sec"><h3>Name</h3><input class="dpc-in" type="text" placeholder="${{ app: 'Recipe Box', look: 'Studio Morning', tweak: 'Kitchen Timer Tile' }[k]}"></section>
       <section class="dpc-sec"><h3>In one line</h3><input class="dpc-in" type="text" placeholder="What it does, the way you'd say it"></section>
       ${k === 'app' ? `<section class="dpc-sec"><h3>Screens it's made for <small>People see this on its page</small></h3><div class="dpc-forms">${forms().map(f => `<button type="button" class="${ST.nforms.includes(f.id) ? 'on' : ''}" data-dpc-nform="${f.id}">${ic(f.icon)}${esc(f.name)}</button>`).join('')}</div></section>` : ''}
-      ${k === 'tweak' ? `<section class="dpc-sec"><h3>What it changes <small>Luma checks this against the package</small></h3><div class="dpc-forms">${['Shelf', 'Windows', 'Lock screen', 'Keyboard', 'Quick Options', 'A system service'].map((c, i) => `<button type="button" class="${i === 4 ? 'on' : ''}" data-dpc-tog>${esc(c)}</button>`).join('')}</div></section>` : ''}
-      <p class="dpc-fine">${ic('shield-check')}Luma signs nothing it can't build and run. Community items go live after checks; Verified ones after review.</p></article>`; }
+      ${k === 'tweak' ? `<section class="dpc-sec"><h3>What it changes <small>Suno checks this against the package</small></h3><div class="dpc-forms">${['Shelf', 'Windows', 'Lock screen', 'Keyboard', 'Quick Options', 'A system service'].map((c, i) => `<button type="button" class="${i === 4 ? 'on' : ''}" data-dpc-tog>${esc(c)}</button>`).join('')}</div></section>` : ''}
+      <p class="dpc-fine">${ic('shield-check')}Suno signs nothing it can't build and run. Community items go live after checks; Verified ones after review.</p></article>`; }
 
   /* ── the action bar: what you can do on this page ── */
   function bar() { const b = q$('#dpc-bar'); if (!b) return; const v = view(), it = byKey(v); let h = '';
@@ -357,7 +357,7 @@
 
   function render() { W = document.getElementById('w-depot'); if (!W || !K) return;
     if (!ST.match) { ST.match = new Set(D().matched.map(id => 'app:' + id)); ST.mine = D().mine.map(s => ({ ...s })); ST.done = D().done.map(r => [...r]);
-      ST.auto = { apps: D().auto.apps, dl: true, luma: 'ask', matched: D().auto.matched, devs: Object.fromEntries(D().devices.map(d => [d.id, true])) }; }
+      ST.auto = { apps: D().auto.apps, dl: true, suno: 'ask', matched: D().auto.matched, devs: Object.fromEntries(D().devices.map(d => [d.id, true])) }; }
     frame(); lastMode = mode(); layout(); rows(); }
 
   function click(e) { const t = e.target, h = s => t.closest(s); if (!W || !h('#w-depot')) return false; let b;
@@ -378,8 +378,8 @@
       else { ST.match.add(it.key); can(it).forEach(d => setOn(it, d, true)); ST.match.add(it.key); K.lToast(W, `${it.name} is matched: on every device that runs it`, { icon: 'link' }); } refresh(true); return true; }
     if (h('[data-dpc-share]')) { const it = byKey(view()); K.lToast(W, `Link to ${it ? it.name : 'it'} copied`, { icon: 'link' }); return true; }
     if ((b = h('[data-dpc-more]'))) { const it = byKey(view()); K.lMenu(b, `${it.kind === 'app' && has(it).length ? `<button class="crmi" type="button" data-dpc-rmall>${ic('trash-2')}Remove from every device</button>` : ''}<button class="crmi" type="button" data-dpc-report>${ic('flag')}Report a problem</button><button class="crmi" type="button" data-dpc-share>${ic('link')}Copy link</button>`); return true; }
-    if (h('[data-dpc-rmall]')) { const it = byKey(view()); document.getElementById('lmenu')?.remove(); K.lConfirm(W, { title: `Remove ${it.name} from every device?`, body: 'Its settings stay in your Luma account for 30 days, in case you get it again.', action: 'Remove', icon: 'trash-2', danger: true, onOK: () => { ST.has[it.key] = []; ST.match.delete(it.key); refresh(true); K.lToast(W, `${it.name} removed everywhere`, { icon: 'trash-2' }); } }); return true; }
-    if (h('[data-dpc-report]')) { document.getElementById('lmenu')?.remove(); K.lToast(W, 'Thanks. Luma review will look at it', { icon: 'flag' }); return true; }
+    if (h('[data-dpc-rmall]')) { const it = byKey(view()); document.getElementById('lmenu')?.remove(); K.lConfirm(W, { title: `Remove ${it.name} from every device?`, body: 'Its settings stay in your Suno account for 30 days, in case you get it again.', action: 'Remove', icon: 'trash-2', danger: true, onOK: () => { ST.has[it.key] = []; ST.match.delete(it.key); refresh(true); K.lToast(W, `${it.name} removed everywhere`, { icon: 'trash-2' }); } }); return true; }
+    if (h('[data-dpc-report]')) { document.getElementById('lmenu')?.remove(); K.lToast(W, 'Thanks. Suno review will look at it', { icon: 'flag' }); return true; }
     if ((b = h('[data-dpc-openapp]'))) { K.open?.(b.dataset.dpcOpenapp); return true; }
     if (h('[data-dpc-try]')) { const it = byKey(view()); if (ST.trying === it.id) untry(); else { ST.trying = it.id; W.classList.add('dpc-trying'); W.style.setProperty('--dpc-try', it.x.art ? `url(${it.x.art})` : 'none'); K.lToast(W, `Trying ${it.name} on this window. Nothing else changes`, { icon: 'eye' }); } bar(); return true; }
     if (h('[data-dpc-newmenu]')) { K.lMenu(h('[data-dpc-newmenu]'), [['app', 'An app', 'package'], ['look', 'A Look', 'palette'], ['tweak', 'A Tweak', 'sliders-horizontal']].map(([k, n, i]) => `<button class="crmi" type="button" data-dpc-newk="${k}">${ic(i)}${n}</button>`).join('')); return true; }
@@ -388,16 +388,16 @@
     if ((b = h('[data-dpc-nform]'))) { const f = b.dataset.dpcNform, i = ST.nforms.indexOf(f); i < 0 ? ST.nforms.push(f) : ST.nforms.splice(i, 1); b.classList.toggle('on'); return true; }
     if ((b = h('[data-dpc-tog]'))) { b.classList.toggle('on'); return true; }
     if (h('[data-dpc-send]')) { const name = q$('.dpc-new .dpc-in')?.value.trim() || { app: 'Untitled app', look: 'Untitled Look', tweak: 'Untitled Tweak' }[ST.nk];
-      ST.mine.unshift({ kind: ST.nk, name, icon: { app: 'package', look: 'palette', tweak: 'sliders-horizontal' }[ST.nk], hue: hash(name), state: 'checks', note: 'Luma is checking the package. A few minutes.' });
-      ST.sel.sent = 'sub:0'; ST.pg = true; rows(); K.lToast(W, `${name} sent. Luma is checking it`, { icon: 'send' }); return true; }
-    if (h('[data-dpc-resend]')) { const i = +view().slice(4), s = ST.mine[i]; s.state = 'checks'; s.note = 'A new version. Luma is checking it.'; refresh(true); K.lToast(W, `New version of ${s.name} sent`, { icon: 'send' }); return true; }
+      ST.mine.unshift({ kind: ST.nk, name, icon: { app: 'package', look: 'palette', tweak: 'sliders-horizontal' }[ST.nk], hue: hash(name), state: 'checks', note: 'Suno is checking the package. A few minutes.' });
+      ST.sel.sent = 'sub:0'; ST.pg = true; rows(); K.lToast(W, `${name} sent. Suno is checking it`, { icon: 'send' }); return true; }
+    if (h('[data-dpc-resend]')) { const i = +view().slice(4), s = ST.mine[i]; s.state = 'checks'; s.note = 'A new version. Suno is checking it.'; refresh(true); K.lToast(W, `New version of ${s.name} sent`, { icon: 'send' }); return true; }
     if (h('[data-dpc-withdraw]')) { const i = +view().slice(4), s = ST.mine[i]; K.lConfirm(W, { title: `Withdraw ${s.name}?`, body: 'It leaves review. You can send it again whenever you like.', action: 'Withdraw', icon: 'undo-2', onOK: () => { ST.mine.splice(i, 1); ST.sel.sent = null; ST.pg = false; rows(); } }); return true; }
     if ((b = h('[data-dpc-up]'))) { const [app, d] = b.dataset.dpcUp.split(':'); ST.upd[app + d] = 1; ST.done.unshift([app, `${D().pending.find(p => p.app === app).from} → ${D().pending.find(p => p.app === app).to}`, 'Today', devOf(d).name]); refresh(true); K.lToast(W, `${item('app', app).name} updated on ${devOf(d).name}`, { icon: 'refresh-cw' }); return true; }
     if ((b = h('[data-dpc-upall]'))) { const app = b.dataset.dpcUpall, p = pending().find(x => x.app === app); p.devs.forEach(d => { ST.upd[app + d] = 1; }); ST.done.unshift([app, `${p.from} → ${p.to}`, 'Today', p.devs.length > 2 ? 'Every device' : list(p.devs.map(d => devOf(d).name))]); refresh(true); K.lToast(W, `${item('app', app).name} updated on ${p.devs.length} device${p.devs.length > 1 ? 's' : ''}`, { icon: 'refresh-cw' }); return true; }
     if (h('[data-dpc-everything]')) { pending().forEach(p => p.devs.forEach(d => { ST.upd[p.app + d] = 1; ST.done.unshift([p.app, `${p.from} → ${p.to}`, 'Today', devOf(d).name]); })); if (ST.sys === 'ready') sysRun(); refresh(true); K.lToast(W, 'Updating everything, on every device', { icon: 'refresh-cw' }); return true; }
-    if (h('[data-dpc-sys]')) { if (ST.sys === 'done') { ST.sys = 'restarted'; ST.done.unshift(['luma', D().system.name, 'Today', 'All devices']); refresh(true); K.lToast(W, 'Luma restarted into the new version. Your windows came back', { icon: 'rotate-ccw' }); } else if (ST.sys === 'ready') sysRun(); return true; }
-    if ((b = h('[data-dpc-sysmore]'))) { K.lMenu(b, `<button class="crmi" type="button" data-dpc-rollback>${ic('undo-2')}Go back to ${esc(D().system.running.replace('Luma 1.0 · ', ''))}</button><button class="crmi" type="button" data-dpc-pickto="auto">${ic('settings-2')}Automatic updates</button>`); return true; }
-    if (h('[data-dpc-rollback]')) { document.getElementById('lmenu')?.remove(); K.lConfirm(W, { title: `Go back to ${D().system.running}?`, body: 'Luma restarts into the version you had before. Your files, apps and settings stay as they are.', action: 'Restart', icon: 'undo-2', onOK: () => K.lToast(W, 'Luma will restart into the previous version', { icon: 'undo-2' }) }); return true; }
+    if (h('[data-dpc-sys]')) { if (ST.sys === 'done') { ST.sys = 'restarted'; ST.done.unshift(['suno', D().system.name, 'Today', 'All devices']); refresh(true); K.lToast(W, 'Suno restarted into the new version. Your windows came back', { icon: 'rotate-ccw' }); } else if (ST.sys === 'ready') sysRun(); return true; }
+    if ((b = h('[data-dpc-sysmore]'))) { K.lMenu(b, `<button class="crmi" type="button" data-dpc-rollback>${ic('undo-2')}Go back to ${esc(D().system.running.replace('SunoOS 0.1 · ', ''))}</button><button class="crmi" type="button" data-dpc-pickto="auto">${ic('settings-2')}Automatic updates</button>`); return true; }
+    if (h('[data-dpc-rollback]')) { document.getElementById('lmenu')?.remove(); K.lConfirm(W, { title: `Go back to ${D().system.running}?`, body: 'Suno restarts into the version you had before. Your files, apps and settings stay as they are.', action: 'Restart', icon: 'undo-2', onOK: () => K.lToast(W, 'Suno will restart into the previous version', { icon: 'undo-2' }) }); return true; }
     if ((b = h('[data-dpc-auto]'))) { const k = b.dataset.dpcAuto; ST.auto[k] = !ST.auto[k]; refresh(true); return true; }
     if ((b = h('[data-dpc-autodev]'))) { const k = b.dataset.dpcAutodev; ST.auto.devs[k] = !ST.auto.devs[k]; refresh(true); return true; }
     if ((b = h('[data-dpc-lumaauto]'))) { ST.auto.luma = b.dataset.dpcLumaauto; refresh(true); return true; }

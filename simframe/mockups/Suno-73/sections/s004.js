@@ -9,28 +9,28 @@
   const DCATIMG = { create: 'life-suite-bg-canvas', work: 'life-work-suite', media: 'life-suite-bg-sessions', play: 'life-hero-home', tools: 'life-professionals-loft' };
   const DA = [];
   const da = (id, n, t, cat, o = {}) => DA.push({ id, n, t, cat, size: o.size || '—', rating: o.rating || 4.7, reviews: o.reviews || 320, ...o });
-  // Made for Luma (real icons, real screenshots)
-  da('tide', 'Tide', 'Your music, from everywhere you keep it', 'media', { luma: 1, icon: 'music', shot: 'tide', inst: 1, size: '38 MB', rating: 4.9, reviews: 1204, reach: [['music-2', 'Your Music folder', 'Reads it to build your library'], ['headphones', 'Your music server', 'Only if you add one, like Navidrome'], ['shield-check', 'No account needed', 'Nothing about what you play leaves']] });
-  da('photos', 'Photos', 'Every photo you’ve taken, beautifully kept', 'media', { luma: 1, icon: 'photos', shot: 'photos', inst: 1, size: '44 MB', rating: 4.8 });
-  da('filer', 'Filer', 'Files, with a tray you can carry', 'tools', { luma: 1, icon: 'files', shot: 'filer', inst: 1, size: '21 MB', rating: 4.8 });
-  da('write', 'Write', 'Documents, beautifully set and easy to share', 'work', { luma: 1, icon: 'documents', shot: 'write', inst: 1, size: '62 MB', rating: 4.7 });
-  da('viola', 'Viola', 'A calmer way to browse', 'work', { luma: 1, icon: 'browser', shot: 'viola', inst: 1, size: '118 MB', rating: 4.6 });
-  da('messages', 'Messages', 'Talk to anyone, privately', 'work', { luma: 1, icon: 'messages', shot: 'messages', inst: 1, size: '33 MB', rating: 4.8 });
-  da('notes', 'Notes', 'Catch a thought, share it with anyone', 'work', { luma: 1, icon: 'notes', shot: 'notes', inst: 1, size: '12 MB', rating: 4.9 });
-  da('calendar', 'Calendar', 'See what’s next and when you’re free', 'work', { luma: 1, icon: 'calendar', shot: 'calendar', inst: 1, size: '18 MB' });
-  da('contacts', 'Contacts', 'Everyone you know, in one place', 'work', { luma: 1, icon: 'contacts', shot: 'contacts', inst: 1, size: '9 MB' });
-  da('terminal', 'Terminal', 'A quiet, fast command line', 'tools', { luma: 1, icon: 'terminal', shot: 'term', inst: 1, size: '8 MB', rating: 4.9 });
-  da('stage', 'Stage', 'Presentations that look designed', 'work', { luma: 1, icon: 'presentations', size: '71 MB' });
-  da('grid', 'Grid', 'Spreadsheets without the dread', 'work', { luma: 1, icon: 'spreadsheets', size: '54 MB' });
-  da('canvas', 'Canvas', 'Design anything, from posters to apps', 'create', { luma: 1, icon: 'designer', size: '96 MB', rating: 4.8 });
-  da('darkroom', 'Focus', 'Develop your photos like film', 'create', { luma: 1, icon: 'photo-editor', inst: 1, size: '88 MB', rating: 4.8 });
-  da('reel', 'Reel', 'Edit video on a timeline that stays out of the way', 'create', { luma: 1, icon: 'video-editor', size: '140 MB' });
-  da('sessions', 'Sessions', 'Record, arrange and mix music', 'create', { luma: 1, icon: 'daw', size: '212 MB', rating: 4.7 });
-  da('memo', 'Memo', 'Voice notes that write themselves down', 'tools', { luma: 1, icon: 'memo', inst: 1, size: '14 MB' });
-  da('camera', 'Camera', 'Photos and video from any camera', 'media', { luma: 1, icon: 'camera', inst: 1, size: '11 MB' });
-  da('maps', 'Maps', 'Find your way, without being followed', 'tools', { luma: 1, icon: 'maps', size: '46 MB' });
-  da('weather', 'Weather', 'The sky, at a glance', 'tools', { luma: 1, icon: 'weather', inst: 1, size: '6 MB' });
-  da('vault', 'Vault', 'Passwords and passkeys, synced privately', 'tools', { luma: 1, icon: 'vault', size: '15 MB', rating: 4.9 });
+  // Made for Suno (real icons, real screenshots)
+  da('tide', 'Tide', 'Your music, from everywhere you keep it', 'media', { suno: 1, icon: 'music', shot: 'tide', inst: 1, size: '38 MB', rating: 4.9, reviews: 1204, reach: [['music-2', 'Your Music folder', 'Reads it to build your library'], ['headphones', 'Your music server', 'Only if you add one, like Navidrome'], ['shield-check', 'No account needed', 'Nothing about what you play leaves']] });
+  da('photos', 'Photos', 'Every photo you’ve taken, beautifully kept', 'media', { suno: 1, icon: 'photos', shot: 'photos', inst: 1, size: '44 MB', rating: 4.8 });
+  da('filer', 'Filer', 'Files, with a tray you can carry', 'tools', { suno: 1, icon: 'files', shot: 'filer', inst: 1, size: '21 MB', rating: 4.8 });
+  da('write', 'Write', 'Documents, beautifully set and easy to share', 'work', { suno: 1, icon: 'documents', shot: 'write', inst: 1, size: '62 MB', rating: 4.7 });
+  da('viola', 'Viola', 'A calmer way to browse', 'work', { suno: 1, icon: 'browser', shot: 'viola', inst: 1, size: '118 MB', rating: 4.6 });
+  da('messages', 'Messages', 'Talk to anyone, privately', 'work', { suno: 1, icon: 'messages', shot: 'messages', inst: 1, size: '33 MB', rating: 4.8 });
+  da('notes', 'Notes', 'Catch a thought, share it with anyone', 'work', { suno: 1, icon: 'notes', shot: 'notes', inst: 1, size: '12 MB', rating: 4.9 });
+  da('calendar', 'Calendar', 'See what’s next and when you’re free', 'work', { suno: 1, icon: 'calendar', shot: 'calendar', inst: 1, size: '18 MB' });
+  da('contacts', 'Contacts', 'Everyone you know, in one place', 'work', { suno: 1, icon: 'contacts', shot: 'contacts', inst: 1, size: '9 MB' });
+  da('terminal', 'Terminal', 'A quiet, fast command line', 'tools', { suno: 1, icon: 'terminal', shot: 'term', inst: 1, size: '8 MB', rating: 4.9 });
+  da('stage', 'Stage', 'Presentations that look designed', 'work', { suno: 1, icon: 'presentations', size: '71 MB' });
+  da('grid', 'Grid', 'Spreadsheets without the dread', 'work', { suno: 1, icon: 'spreadsheets', size: '54 MB' });
+  da('canvas', 'Canvas', 'Design anything, from posters to apps', 'create', { suno: 1, icon: 'designer', size: '96 MB', rating: 4.8 });
+  da('darkroom', 'Focus', 'Develop your photos like film', 'create', { suno: 1, icon: 'photo-editor', inst: 1, size: '88 MB', rating: 4.8 });
+  da('reel', 'Reel', 'Edit video on a timeline that stays out of the way', 'create', { suno: 1, icon: 'video-editor', size: '140 MB' });
+  da('sessions', 'Sessions', 'Record, arrange and mix music', 'create', { suno: 1, icon: 'daw', size: '212 MB', rating: 4.7 });
+  da('memo', 'Memo', 'Voice notes that write themselves down', 'tools', { suno: 1, icon: 'memo', inst: 1, size: '14 MB' });
+  da('camera', 'Camera', 'Photos and video from any camera', 'media', { suno: 1, icon: 'camera', inst: 1, size: '11 MB' });
+  da('maps', 'Maps', 'Find your way, without being followed', 'tools', { suno: 1, icon: 'maps', size: '46 MB' });
+  da('weather', 'Weather', 'The sky, at a glance', 'tools', { suno: 1, icon: 'weather', inst: 1, size: '6 MB' });
+  da('vault', 'Vault', 'Passwords and passkeys, synced privately', 'tools', { suno: 1, icon: 'vault', size: '15 MB', rating: 4.9 });
   // Third party (monograms)
   da('blender', 'Blender', 'Free and open 3D creation', 'create', { mono: ['Bl', 30], size: '477 MB', rating: 4.8, reviews: 2890 });
   da('gimp', 'GIMP', 'High-end image editing', 'create', { mono: ['Gi', 45], size: '100 MB', rating: 4.3 });
@@ -48,10 +48,10 @@
   da('supertux', 'SuperTux', 'A classic side-scroller', 'play', { mono: ['Su', 95], size: '160 MB', rating: 4.4 });
   da('discord', 'Discord', 'Talk, play, hang out', 'work', { mono: ['Di', 265], size: '92 MB', rating: 4.3, pk: 'deb' });
   const app = id => DA.find(a => a.id === id);
-  /* How each app is installed, which decides how it comes off (#35): part of Luma (can't be removed), a Luma app or a Flatpak, a universal
+  /* How each app is installed, which decides how it comes off (#35): part of Suno (can't be removed), a Suno app or a Flatpak, a universal
      .deb or .rpm (ADR-050), or a package layered onto the system (removed at the next restart) */
-  const DSYS = ['filer', 'viola', 'terminal'], DPK = { system: 'Part of Luma', luma: 'Luma app', flatpak: 'Flatpak', deb: 'Universal .deb', rpm: 'Universal .rpm', layered: 'Layered package' };
-  const dPk = a => DSYS.includes(a.id) ? 'system' : a.pk || (a.luma ? 'luma' : 'flatpak');
+  const DSYS = ['filer', 'viola', 'terminal'], DPK = { system: 'Part of Suno', suno: 'Suno app', flatpak: 'Flatpak', deb: 'Universal .deb', rpm: 'Universal .rpm', layered: 'Layered package' };
+  const dPk = a => DSYS.includes(a.id) ? 'system' : a.pk || (a.luma ? 'suno' : 'flatpak');
   const DS3 = { sort: { k: 'name', dir: 1 } };
   const DS2 = { view: 'discover', app: null, cat: null, q: '', hist: [], jobs: {}, sysUpd: 'ready', sysP: 0 };
   const dIcon = (a, sz = 56) => a.icon ? `<img class="dic" src="${A}${a.icon}.svg" alt="" style="width:${sz}px;height:${sz}px">` : `<span class="dic mono" style="width:${sz}px;height:${sz}px;--mh:${a.mono[1]};font-size:${Math.round(sz * .36)}px">${a.mono[0]}</span>`;
@@ -70,57 +70,57 @@
      fills the screen), then shelves: unframed app icons that scroll sideways, a ranked list with hairlines, categories. */
   const dNarrow = () => ($('#w-depot .ibody')?.clientWidth || 999) < 560;
   function discoverPhone() { const t = app('tide'), st = (k, h, kick, title, ids) => `<section class="dfc story" data-dcat="${k}" role="button" tabindex="0" style="--sh2:${h}"><div class="dfct"><span class="kick">${kick}</span><h3>${title}</h3></div><div class="dfcst">${ids.map(i => dIcon(app(i), 44)).join('')}</div></section>`;
-    return `<header class="dph2"><h1>Discover</h1><p>Apps for Luma, checked and signed</p></header>
-      <div class="dfeat">${`<section class="dfc" data-dapp="tide" role="button" tabindex="0" style="--hh:95"><img class="dfcbg" src="depot/tide-dark.png" alt=""><div class="dfct"><span class="kick">Editor’s choice</span><h3>Your music, from everywhere you keep it.</h3></div><div class="dfcapp">${dIcon(t, 40)}<span><b>Tide</b><small>Music · ${stars(t.rating)} ${t.rating}</small></span>${dBtn(t)}</div></section>`}${st('create', 25, 'Start a studio', 'Make music on Luma', ['sessions', 'audacity', 'tide'])}${st('play', 225, 'Game night', 'Your games already work here', ['steam', 'heroic', 'moonlight'])}</div>
-      <section class="dshelf"><header><h2>Made for Luma</h2><button class="dmore" type="button" data-dcat="luma">See all</button></header><div class="dicons">${DA.filter(a => a.luma).slice(0, 10).map(a => `<div class="dic" data-dapp="${a.id}" role="button" tabindex="0">${dIcon(a, 64)}<b>${esc(a.n)}</b><span>${esc(DCAT[a.cat]?.[0] || '')}</span></div>`).join('')}</div></section>
-      <section class="dshelf"><header><h2>Popular on Luma</h2></header><div class="dlist2">${['blender', 'obsidian', 'spotify', 'signal', 'vlc', 'steam', 'gimp', 'discord', 'libre'].map(app).map((a, i) => `<div class="dli2" data-dapp="${a.id}" role="button" tabindex="0"><em>${i + 1}</em>${dIcon(a, 52)}<span class="dptx"><b>${esc(a.n)}</b><span>${esc(a.t)}</span></span>${dBtn(a)}</div>`).join('')}</div></section>
+    return `<header class="dph2"><h1>Discover</h1><p>Apps for Suno, checked and signed</p></header>
+      <div class="dfeat">${`<section class="dfc" data-dapp="tide" role="button" tabindex="0" style="--hh:95"><img class="dfcbg" src="depot/tide-dark.png" alt=""><div class="dfct"><span class="kick">Editor’s choice</span><h3>Your music, from everywhere you keep it.</h3></div><div class="dfcapp">${dIcon(t, 40)}<span><b>Tide</b><small>Music · ${stars(t.rating)} ${t.rating}</small></span>${dBtn(t)}</div></section>`}${st('create', 25, 'Start a studio', 'Make music on Suno', ['sessions', 'audacity', 'tide'])}${st('play', 225, 'Game night', 'Your games already work here', ['steam', 'heroic', 'moonlight'])}</div>
+      <section class="dshelf"><header><h2>Made for Suno</h2><button class="dmore" type="button" data-dcat="suno">See all</button></header><div class="dicons">${DA.filter(a => a.luma).slice(0, 10).map(a => `<div class="dic" data-dapp="${a.id}" role="button" tabindex="0">${dIcon(a, 64)}<b>${esc(a.n)}</b><span>${esc(DCAT[a.cat]?.[0] || '')}</span></div>`).join('')}</div></section>
+      <section class="dshelf"><header><h2>Popular on Suno</h2></header><div class="dlist2">${['blender', 'obsidian', 'spotify', 'signal', 'vlc', 'steam', 'gimp', 'discord', 'libre'].map(app).map((a, i) => `<div class="dli2" data-dapp="${a.id}" role="button" tabindex="0"><em>${i + 1}</em>${dIcon(a, 52)}<span class="dptx"><b>${esc(a.n)}</b><span>${esc(a.t)}</span></span>${dBtn(a)}</div>`).join('')}</div></section>
       <section class="dshelf"><header><h2>Categories</h2></header><div class="dcatl">${Object.entries(DCAT).map(([k, [n, sub, h]]) => `<button class="dcl" type="button" data-dcat="${k}" style="--ch2:${h}"><i class="dcli">${ic(DCATIC[k])}</i><span><b>${n}</b><small>${sub}</small></span>${ic('chevron-right')}</button>`).join('')}</div></section>`; }
   function discover() { if (dNarrow()) return discoverPhone(); const hero = app('tide');
-    return `<section class="dhero" data-dapp="tide" role="button" tabindex="0" style="--hh:95"><img class="dhbg" src="${PH}life-hero-studio.webp" alt=""><div class="dhtx"><span class="kick">Made for Luma · Editor’s choice</span><h1>Your music,<br>from everywhere<br>you keep it.</h1><p>Tide plays the files on this computer and your own music server, lit by whatever you’re listening to.</p>
+    return `<section class="dhero" data-dapp="tide" role="button" tabindex="0" style="--hh:95"><img class="dhbg" src="${PH}life-hero-studio.webp" alt=""><div class="dhtx"><span class="kick">Made for Suno · Editor’s choice</span><h1>Your music,<br>from everywhere<br>you keep it.</h1><p>Tide plays the files on this computer and your own music server, lit by whatever you’re listening to.</p>
         <div class="dhacts">${dBtn(hero, true)}<span class="dmeta">${stars(hero.rating)} ${hero.rating}</span></div></div><img class="dhshot" src="depot/tide-dark.png" alt=""></section>
-      ${shelf('Made for Luma', 'Free, private, and they work together', DA.filter(a => a.luma).slice(0, 10), 'tiles', 'data-dcat="luma"')}
+      ${shelf('Made for Suno', 'Free, private, and they work together', DA.filter(a => a.luma).slice(0, 10), 'tiles', 'data-dcat="suno"')}
       <div class="dstories">
-        <section class="dstory" style="--sh2:25" data-dcat="create" role="button" tabindex="0"><span class="kick">Start a studio</span><h3>Make music on Luma</h3><p>Record in Sessions, clean up in Audacity, and master anywhere. No subscriptions.</p><div class="dstack">${['sessions', 'audacity', 'tide'].map(i => dIcon(app(i), 52)).join('')}</div></section>
+        <section class="dstory" style="--sh2:25" data-dcat="create" role="button" tabindex="0"><span class="kick">Start a studio</span><h3>Make music on Suno</h3><p>Record in Sessions, clean up in Audacity, and master anywhere. No subscriptions.</p><div class="dstack">${['sessions', 'audacity', 'tide'].map(i => dIcon(app(i), 52)).join('')}</div></section>
         <section class="dstory" style="--sh2:225" data-dcat="play" role="button" tabindex="0"><span class="kick">Game night</span><h3>Your games already work here</h3><p>Steam, Epic and GOG libraries run as they are. Stream the rest from your PC.</p><div class="dstack">${['steam', 'heroic', 'moonlight'].map(i => dIcon(app(i), 52)).join('')}</div></section></div>
-      ${shelf('Popular on Luma', 'What people install first', ['blender', 'obsidian', 'spotify', 'signal', 'vlc', 'steam', 'gimp', 'discord', 'libre'].map(app))}
+      ${shelf('Popular on Suno', 'What people install first', ['blender', 'obsidian', 'spotify', 'signal', 'vlc', 'steam', 'gimp', 'discord', 'libre'].map(app))}
       <section class="dshelf"><header><h2>Categories</h2></header><div class="dcatl">${Object.entries(DCAT).map(([k, [n, s, h]]) => `<button class="dcl" type="button" data-dcat="${k}" style="--ch2:${h}"><i class="dcli">${ic(DCATIC[k])}</i><span><b>${n}</b><small>${s}</small></span>${lCount(DA.filter(a => a.cat === k).length)}</button>`).join('')}</div></section>`; }
-  function catPage(k) { if (k === 'luma') return `<header class="dph" style="--ch2:25"><img class="dphic" src="${FAV}" alt=""><span><h1>Made for Luma</h1><p>Free, private, and they work together · ${DA.filter(a => a.luma).length} apps</p></span></header>${shelf('', '', DA.filter(a => a.luma))}`;
+  function catPage(k) { if (k === 'suno') return `<header class="dph" style="--ch2:25"><img class="dphic" src="${FAV}" alt=""><span><h1>Made for Suno</h1><p>Free, private, and they work together · ${DA.filter(a => a.luma).length} apps</p></span></header>${shelf('', '', DA.filter(a => a.luma))}`;
     const [n, s, h] = DCAT[k], l = DA.filter(a => a.cat === k);
-    return `<header class="dph" style="--ch2:${h}"><i class="dcli big">${ic(DCATIC[k])}</i><span><h1>${n}</h1><p>${s} · ${l.length} apps</p></span></header>${l.some(a => a.luma) ? shelf('Made for Luma', '', l.filter(a => a.luma), 'tiles') : ''}${l.some(a => !a.luma) ? shelf(l.some(a => a.luma) ? 'From other developers' : 'Everything in ' + n, '', l.filter(a => !a.luma)) : ''}`; }
+    return `<header class="dph" style="--ch2:${h}"><i class="dcli big">${ic(DCATIC[k])}</i><span><h1>${n}</h1><p>${s} · ${l.length} apps</p></span></header>${l.some(a => a.luma) ? shelf('Made for Suno', '', l.filter(a => a.luma), 'tiles') : ''}${l.some(a => !a.luma) ? shelf(l.some(a => a.luma) ? 'From other developers' : 'Everything in ' + n, '', l.filter(a => !a.luma)) : ''}`; }
   function appPage(id) { const a = app(id), rv = [['PR', 'Priya', 'Finally, my Navidrome server and my laptop in one place. The album colour thing is gorgeous.'], ['TH', 'Theo', 'Gapless playback that actually works. The queue survives a restart.']];
-    return `<section class="dapp" style="--hh:${a.hue ?? (a.mono ? a.mono[1] : 250)}" data-dhue="${a.icon || ''}">${a.icon ? `<img class="dappbg" src="${A}${a.icon}.svg" alt="">` : '<i class="dappbg mono"></i>'}<div class="dapph">${dIcon(a, 108)}<div class="dapptx"><h1>${esc(a.n)}</h1><span class="dmk">${a.luma ? `Luma ${VERIF}` : 'Community package'}${lCat(a.cat)}</span><p>${esc(a.t)}</p>
-        <div class="dhacts">${dBtn(a, true)}${a.inst ? dMoreBtn(a, 'big') : ''}${a.inst ? `<span class="dinst">${ic('check')}${a.luma ? 'Installed with Luma' : 'Installed'}</span>` : `<span class="dinst">${a.size}</span>`}</div></div></div>
-      <div class="dfacts"><div><b>${a.rating}</b>${stars(a.rating)}<span>${a.reviews.toLocaleString()} ratings</span></div><div><b>${a.size}</b><span>Size</span></div><div><b>${a.luma ? 'Luma' : 'GPL 3.0'}</b><span>${a.luma ? 'Made by' : 'License'}</span></div><div><b>${a.inst ? DPK[dPk(a)] : a.luma ? 'Luma app' : 'Flatpak'}</b><span>Package</span></div></div></section>
+    return `<section class="dapp" style="--hh:${a.hue ?? (a.mono ? a.mono[1] : 250)}" data-dhue="${a.icon || ''}">${a.icon ? `<img class="dappbg" src="${A}${a.icon}.svg" alt="">` : '<i class="dappbg mono"></i>'}<div class="dapph">${dIcon(a, 108)}<div class="dapptx"><h1>${esc(a.n)}</h1><span class="dmk">${a.luma ? `Suno ${VERIF}` : 'Community package'}${lCat(a.cat)}</span><p>${esc(a.t)}</p>
+        <div class="dhacts">${dBtn(a, true)}${a.inst ? dMoreBtn(a, 'big') : ''}${a.inst ? `<span class="dinst">${ic('check')}${a.luma ? 'Installed with Suno' : 'Installed'}</span>` : `<span class="dinst">${a.size}</span>`}</div></div></div>
+      <div class="dfacts"><div><b>${a.rating}</b>${stars(a.rating)}<span>${a.reviews.toLocaleString()} ratings</span></div><div><b>${a.size}</b><span>Size</span></div><div><b>${a.luma ? 'Suno' : 'GPL 3.0'}</b><span>${a.luma ? 'Made by' : 'License'}</span></div><div><b>${a.inst ? DPK[dPk(a)] : a.luma ? 'Suno app' : 'Flatpak'}</b><span>Package</span></div></div></section>
       <div class="dshots3">${(a.shot ? [`depot/${a.shot}-dark.webp`, `depot/${a.shot}-light.webp`, `depot/${a.shot}-dark.webp`] : (() => { const L = ['life-hero-studio', 'life-work-suite', 'life-suite-bg-canvas', 'life-hero-home', 'life-sync-terrace', 'life-suite-bg-sessions', 'life-professionals-loft', 'life-ari-street'], k = DA.indexOf(a); return [0, 1, 2].map(i => PH + L[(k + i * 3) % L.length] + '.webp'); })()).map((src, i) => `<img src="${src}" alt="${esc(a.n)}, screenshot ${i + 1}" loading="lazy">`).join('')}</div>
-      <div class="dcols"><section><h2>Description</h2><p class="dp">${esc(a.t)}. ${a.luma ? 'It comes with Luma, updates with Luma, and works with the rest of your apps: share from anywhere, find it in search, and pick up where you left off on your phone.' : 'It’s packaged for Luma and kept up to date automatically. Updates are checked and signed before they reach you.'}</p>
+      <div class="dcols"><section><h2>Description</h2><p class="dp">${esc(a.t)}. ${a.luma ? 'It comes with Suno, updates with Suno, and works with the rest of your apps: share from anywhere, find it in search, and pick up where you left off on your phone.' : 'It’s packaged for Suno and kept up to date automatically. Updates are checked and signed before they reach you.'}</p>
           <h2>Ratings and reviews</h2><div class="drevs">${rv.map(([k, n, t]) => `<div class="drev">${av(k, 28)}<span><b>${n}</b>${stars(5)}<p>${t}</p></span></div>`).join('')}</div></section>
-        <section><h2>Details</h2><dl class="facts dwell">${[['Version', a.luma ? '1.0 (nightly 0922)' : '2.4.1'], ['Updated', 'Sep 22, 2026'], ['Size', a.size], ['Made by', a.luma ? 'Luma' : a.n + ' developers'], ['License', a.luma ? 'Apache 2.0' : 'GPL 3.0'], ['Package', a.inst ? DPK[dPk(a)] : a.luma ? 'Luma app' : 'Flatpak']].map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('')}</dl></section></div>
-      ${shelf(a.luma ? 'More from Luma' : 'You might also like', '', DA.filter(x => x.cat === a.cat && x.id !== a.id).slice(0, 4), 'tiles')}`; }
-  /* Your apps is a list view, so it uses the LumaUI table header (#2): sort by name, category, how it's installed or size. Each row has
+        <section><h2>Details</h2><dl class="facts dwell">${[['Version', a.luma ? '1.0 (nightly 0922)' : '2.4.1'], ['Updated', 'Sep 22, 2026'], ['Size', a.size], ['Made by', a.luma ? 'Suno' : a.n + ' developers'], ['License', a.luma ? 'Apache 2.0' : 'GPL 3.0'], ['Package', a.inst ? DPK[dPk(a)] : a.luma ? 'Suno app' : 'Flatpak']].map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('')}</dl></section></div>
+      ${shelf(a.luma ? 'More from Suno' : 'You might also like', '', DA.filter(x => x.cat === a.cat && x.id !== a.id).slice(0, 4), 'tiles')}`; }
+  /* Your apps is a list view, so it uses the SunoUI table header (#2): sort by name, category, how it's installed or size. Each row has
      Open and ··· (Uninstall, #35) */
   const dMoreBtn = (a, cls = '') => `<button class="ib dmorebtn ${cls}" type="button" data-dmenu="${a.id}" aria-label="More for ${esc(a.n)}" title="More" aria-haspopup="menu">${ic('ellipsis')}</button>`;
   function yours() { const l = DA.filter(a => a.inst), { k, dir } = DS3.sort, sz = a => parseFloat(a.size) * (/GB/.test(a.size) ? 1e3 : 1) || 0;
     const s = [...l].sort((a, b) => dir * (k === 'size' ? sz(a) - sz(b) : k === 'cat' ? DCAT[a.cat][0].localeCompare(DCAT[b.cat][0]) : k === 'kind' ? DPK[dPk(a)].localeCompare(DPK[dPk(b)]) : a.n.localeCompare(b.n)));
-    return `<header class="dph"><span><h1>Your apps</h1><p>${l.length} on this computer. Luma apps update with the system; the rest update on their own.</p></span></header>
+    return `<header class="dph"><span><h1>Your apps</h1><p>${l.length} on this computer. Suno apps update with the system; the rest update on their own.</p></span></header>
       <table class="flist dtab">${lTHead([['name', 'Name'], ['cat', 'Category'], ['kind', 'Installed as', 'wide'], ['size', 'Size', 'num'], ['', '', 'act']], DS3.sort, 'data-dsort')}<tbody>${s.map(a => `<tr data-dapp="${a.id}" tabindex="0"><td class="n"><span>${dIcon(a, 28)}${esc(a.n)}</span></td><td>${lCat(a.cat)}</td><td class="dim wide">${DPK[dPk(a)]}</td><td class="dim num">${a.size}</td><td class="act"><span>${dBtn(a)}${dMoreBtn(a)}</span></td></tr>`).join('')}</tbody></table>`; }
-  /* Uninstall, for every kind of install, through the standard destructive dialog; data stays unless you say so. Part of Luma says why instead */
+  /* Uninstall, for every kind of install, through the standard destructive dialog; data stays unless you say so. Part of Suno says why instead */
   function dUninstall(id) { const a = app(id), pk = dPk(a), win = $('#w-depot'); if (pk === 'system') return;
     const body = { layered: `${a.n} comes off the next time you restart. Until then it keeps working.`, deb: `${a.n} and the parts it installed with it are removed from this computer.`, rpm: `${a.n} and the parts it installed with it are removed from this computer.` }[pk] || `${a.n} is removed from this computer. You can get it again from Depot.`;
     lConfirm(win, { title: `Uninstall ${a.n}?`, body, action: 'Uninstall', icon: 'trash-2', option: 'Also remove its data', onOK: data => { a.inst = 0; delete a.upd; depRender(true);
       lToast(win, pk === 'layered' ? `${a.n} comes off when you restart${data ? ', with its data' : ''}` : `${a.n} uninstalled${data ? ' with its data' : '. Its data is kept'}`, { icon: 'trash-2' }); } }); }
   function updates() { const u = DA.filter(a => a.upd && a.inst), sp = DS2.sysUpd;
-    return `<section class="dsys"><i class="dsysbg"></i><div class="dsysh"><img src="${FAV}" alt=""><span><span class="kick">System update</span><h1>Luma 1.0 · nightly September 22</h1><p>Adjustable scroll speed for mice and touchpads, plus 14 more changes.</p></span></div>
+    return `<section class="dsys"><i class="dsysbg"></i><div class="dsysh"><img src="${FAV}" alt=""><span><span class="kick">System update</span><h1>SunoOS 0.1 · nightly September 22</h1><p>Adjustable scroll speed for mice and touchpads, plus 14 more changes.</p></span></div>
         ${sp === 'ready' ? `<div class="dhacts"><button class="dget big key" type="button" data-dsys>Update now</button><button class="bt dnewb${DS2.news ? ' on' : ''}" type="button" data-dnew>What’s new${ic('chevron-down')}</button><span class="dinst">312 MB · you can keep working</span></div>`
-          : sp === 'run' ? `<div class="dprog"><i style="width:${DS2.sysP}%"></i></div><p class="dinst">Downloading ${DS2.sysP}% · you can keep working. Luma asks before it restarts.</p>`
-          : `<div class="dhacts"><button class="dget big key" type="button" data-dtodo="Restarting into Luma 1.0 nightly 0922…">Restart now</button><span class="dinst">${ic('check')}Ready. Restart whenever you like.</span></div>`}
+          : sp === 'run' ? `<div class="dprog"><i style="width:${DS2.sysP}%"></i></div><p class="dinst">Downloading ${DS2.sysP}% · you can keep working. Suno asks before it restarts.</p>`
+          : `<div class="dhacts"><button class="dget big key" type="button" data-dtodo="Restarting into SunoOS 0.1 nightly 0922…">Restart now</button><span class="dinst">${ic('check')}Ready. Restart whenever you like.</span></div>`}
         ${DS2.news ? `<div class="dsnotes">${[['Feature', 'sparkles', 'Adjustable scroll speed', 'Set how fast mice and touchpads scroll, in Settings › Mouse and touchpad.'], ['Improvement', 'folder', 'Filer’s tray remembers', 'What you were carrying is still there after a restart.'], ['Improvement', 'music-2', 'Tide fades between tracks', 'Choose how long in Tide’s settings, or turn it off.'], ['Improvement', 'zap', 'Faster wake from sleep', 'Opening the lid gets you back to work about a second sooner.'], ['Fix', 'wrench', '11 fixes', 'For things you told us about, from Calendar to Quick Options.'], ['Security', 'shield-check', '2 security fixes', 'Both in system libraries. Nothing you need to do.']].map(([k, i, t, d]) => `<div class="dsnote dsk-${k.toLowerCase()}"><i>${ic(i)}</i><span><em>${k}</em><b>${t}</b><small>${d}</small></span></div>`).join('')}</div><button class="dfull" type="button" data-dtodo="The full notes open in Viola">Read the full release notes${ic('chevron-right')}</button>` : ''}</section>
       ${u.length ? `<section class="dshelf"><header><h2>Apps</h2><span>${u.length} update${u.length > 1 ? 's' : ''}</span><button class="dget key dupall" type="button" data-dupall>Update all</button></header><div class="dupds">${u.map(a => `<div class="dupd" data-dapp="${a.id}" role="button" tabindex="0">${dIcon(a, 48)}<span class="dptx"><b>${esc(a.n)}</b><span>1.0.159 → ${a.upd} · ${a.size}</span><em>Faster start-up and a fix for screen sharing</em></span>${dBtn(a)}</div>`).join('')}</div></section>` : `<section class="dshelf"><header><h2>Apps</h2></header><p class="dallup">${ic('check')}Every app is up to date</p></section>`}
       <section class="dshelf"><header><h2>Recently updated</h2></header><div class="drows">${[].map(([i, v, w]) => `<div class="drow quiet">${dIcon(app(i), 36)}<span class="dptx"><b>${app(i).n}</b><span>Updated automatically · ${v} · ${w}</span></span><button class="dget" type="button" data-dtodo="Went back to the previous version of ${app(i).n}">Go back</button></div>`).join('')}</div></section>
-      <section class="dshelf"><header><h2>This computer</h2></header><dl class="facts dwell">${[['Running', 'Luma 1.0 · nightly September 16'], ['Channel', 'Nightly'], ['Updates from', 'dl.simplyluma.com'], ['Signature', `${ic('shield-check')}Verified`], ['Last checked', '6 hours ago']].map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('')}</dl></section>`; }
+      <section class="dshelf"><header><h2>This computer</h2></header><dl class="facts dwell">${[['Running', 'SunoOS 0.1 · nightly September 16'], ['Channel', 'Nightly'], ['Updates from', 'dl.simplyluma.com'], ['Signature', `${ic('shield-check')}Verified`], ['Last checked', '6 hours ago']].map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('')}</dl></section>`; }
   function results() { const q = DS2.q.toLowerCase(), l = DA.filter(a => (a.n + ' ' + a.t + ' ' + DCAT[a.cat][0]).toLowerCase().includes(q));
     return `<header class="dph"><span><h1>${l.length ? `${l.length} result${l.length > 1 ? 's' : ''}` : 'No results'}</h1><p>for “${esc(DS2.q)}”</p></span></header>${l.length ? shelf('', '', l) : `<p class="dempty">Try a different word, or browse a category.</p>`}`; }
   function depRender(keep) { const b = $('#dp-body'), v = DS2.view, top = b.scrollTop;
-    const bk = DS2.hist.length && (v === 'app' || v === 'cat'), prev = DS2.hist[DS2.hist.length - 1], bl = !prev ? 'Back' : prev.view === 'cat' ? (prev.cat === 'luma' ? 'Made for Luma' : DCAT[prev.cat][0]) : prev.view === 'app' ? app(prev.app).n : { discover: 'Discover', apps: 'Your apps', updates: 'Updates' }[prev.view];
+    const bk = DS2.hist.length && (v === 'app' || v === 'cat'), prev = DS2.hist[DS2.hist.length - 1], bl = !prev ? 'Back' : prev.view === 'cat' ? (prev.cat === 'suno' ? 'Made for Suno' : DCAT[prev.cat][0]) : prev.view === 'app' ? app(prev.app).n : { discover: 'Discover', apps: 'Your apps', updates: 'Updates' }[prev.view];
     b.innerHTML = `<div class="dpad">${bk && !DS2.q ? `<button class="dbk" type="button" data-dback aria-label="Back to ${esc(bl)}"><i class="dbki">${ic('chevron-left')}</i><span>${esc(bl)}</span></button>` : ''}${DS2.q ? results() : v === 'app' ? appPage(DS2.app) : v === 'cat' ? catPage(DS2.cat) : v === 'apps' ? yours() : v === 'updates' ? updates() : discover()}</div>`; b.scrollTop = keep ? top : 0;
     $('#dp-back').hidden = true;
     $$('#dp-body .dtv[data-dhic]').forEach(el => sampleHue(`${A}${el.dataset.dhic}.svg`, h => el.style.setProperty('--hh', h)));
@@ -141,11 +141,11 @@
       const q = $('#dp-pq'); q.oninput = () => { DS2.q = q.value.trim(); depRender(); }; q.onkeydown = e => { if (e.key === 'Escape') { DS2.q = ''; DS2.searching = false; depRender(); } }; if (had || DS2.searching) { q.focus(); q.setSelectionRange(q.value.length, q.value.length); } return; }
     bar.classList.remove('dpsearching'); bar.classList.add('phnofit', 'dpph2'); const X = DS2.px || '';
     const tv = cur && !String(cur).startsWith('cat:') ? cur : DS2.view === 'app' ? (DS2.hist[0]?.view || 'discover') : DS2.view === 'cat' ? 'cat' : 'discover';
-    const SEC = { discover: ['star', 'Discover'], apps: ['layout-grid', 'Your apps'], updates: ['download', 'Updates'], cat: [DCATIC[DS2.cat] || 'compass', DS2.cat === 'luma' ? 'Made for Luma' : DCAT[DS2.cat]?.[0] || 'Browse'] }[tv] || ['star', 'Discover'];
+    const SEC = { discover: ['star', 'Discover'], apps: ['layout-grid', 'Your apps'], updates: ['download', 'Updates'], cat: [DCATIC[DS2.cat] || 'compass', DS2.cat === 'suno' ? 'Made for Suno' : DCAT[DS2.cat]?.[0] || 'Browse'] }[tv] || ['star', 'Discover'];
     const panel = X === 'sec' ? `<div class="fexp dpsec"><div class="fsha c3">${[['discover', 'star', 'Discover'], ['apps', 'layout-grid', 'Your apps'], ['updates', 'download', 'Updates']].map(([k, i, n]) => `<button type="button" class="fvt${tv === k ? ' on' : ''}" data-dview="${k}">${ic(i)}<span>${n}${k === 'updates' && u ? ` · ${u}` : ''}</span></button>`).join('')}</div><div class="fexh">Categories</div>${Object.entries(DCAT).map(([k, [n, sub, h]]) => `<button class="fexr2${DS2.view === 'cat' && DS2.cat === k ? ' on' : ''}" type="button" data-dcat="${k}"><i class="dcli" style="--ch2:${h}">${ic(DCATIC[k])}</i><span>${n}<small>${sub}</small></span></button>`).join('')}</div>` : '';
     bar.classList.toggle('phgrow', !!panel); bar.classList.remove('dpappbar');
     if (DS2.view === 'app' && !panel) { const a = app(DS2.app); bar.classList.add('dpappbar');
-      bar.innerHTML = `<span class="dpappid">${dIcon(a, 32)}<span><b>${esc(a.n)}</b><small>${a.inst ? (a.luma ? 'Installed with Luma' : 'Installed') : a.size}</small></span></span><span class="sp"></span><button class="ib" type="button" data-ctodo="Sharing ${esc(a.n)}" data-dshare="${a.id}" aria-label="Share ${esc(a.n)}" title="Share">${ic('share-2')}</button>${a.inst && dPk(a) !== 'system' ? `<button class="ib dpun" type="button" data-dun="${a.id}" aria-label="Uninstall ${esc(a.n)}" title="Uninstall">${ic('trash-2')}</button>` : ''}${dBtn(a, false, true)}`; return; }   /* the menu only ever held Uninstall, so the bar shows it directly; system apps can't be uninstalled and show nothing */
+      bar.innerHTML = `<span class="dpappid">${dIcon(a, 32)}<span><b>${esc(a.n)}</b><small>${a.inst ? (a.luma ? 'Installed with Suno' : 'Installed') : a.size}</small></span></span><span class="sp"></span><button class="ib" type="button" data-ctodo="Sharing ${esc(a.n)}" data-dshare="${a.id}" aria-label="Share ${esc(a.n)}" title="Share">${ic('share-2')}</button>${a.inst && dPk(a) !== 'system' ? `<button class="ib dpun" type="button" data-dun="${a.id}" aria-label="Uninstall ${esc(a.n)}" title="Uninstall">${ic('trash-2')}</button>` : ''}${dBtn(a, false, true)}`; return; }   /* the menu only ever held Uninstall, so the bar shows it directly; system apps can't be uninstalled and show nothing */
     bar.innerHTML = `${panel}<button class="dpsec2${X === 'sec' ? ' on' : ''}" type="button" data-dppx="sec" aria-expanded="${X === 'sec'}">${ic(SEC[0])}<b>${esc(SEC[1])}</b>${u && tv !== 'updates' ? `<em class="tbadge dpsecb">${u}</em>` : ''}${ic('chevron-down')}</button><span class="sp"></span><button class="ib" type="button" data-dpsearch aria-label="Search" title="Search">${ic('search')}</button>`; }
   function dBar() { return dSide(); const u = DA.filter(a => a.upd && a.inst).length + (DS2.sysUpd !== 'done' ? 1 : 0), cur = DS2.q ? null : ['discover', 'apps', 'updates'].includes(DS2.view) ? DS2.view : null;
     if (!$('#dp-q')) setBar($('#dp-bar'), `<span id="dp-bk"></span><div class="seg" role="group" aria-label="Depot"><i class="ind"></i><button type="button" data-dview="discover">${ic('star')}Discover</button><button type="button" data-dview="apps">${ic('layout-grid')}Your apps</button><button type="button" data-dview="updates">${ic('download')}Updates<em class="dbadge" id="dp-ub"></em></button></div>
@@ -157,7 +157,7 @@
   function go2(view, extra = {}) { if (!DS2.q) DS2.hist.push({ view: DS2.view, app: DS2.app, cat: DS2.cat }); Object.assign(DS2, { view, ...extra }); DS2.q = ''; depRender(); }
   function install(id, upd) { const a = app(id); DS2.jobs[id] = 0; depRender(true);
     const t = setInterval(() => { DS2.jobs[id] = Math.min(100, DS2.jobs[id] + 7 + Math.round(Math.random() * 9)); if (DS2.jobs[id] >= 100) { clearInterval(t); delete DS2.jobs[id]; a.inst = 1; if (upd) delete a.upd; dToast(`${a.n} is ${upd ? 'up to date' : 'installed'}`); } depRender(true); }, 160); }
-  const dToast = msg => lToast($('#w-depot'), msg, { icon: /^Opening/.test(msg) ? 'square-arrow-out-up-right' : 'check' });   // the LumaUI toast
+  const dToast = msg => lToast($('#w-depot'), msg, { icon: /^Opening/.test(msg) ? 'square-arrow-out-up-right' : 'check' });   // the SunoUI toast
   function depClick(e, hit) { if (hit('#lmenu .crmi')) setTimeout(() => $('#lmenu')?.remove());
     if (dNarrow()) { const px = hit('[data-dppx]'); if (px) { DS2.px = DS2.px === 'sec' ? '' : 'sec'; dSide(); return true; } if (hit('[data-dview]') || hit('[data-dcat]') || hit('[data-dpsearch]') || hit('[data-dapp]')) DS2.px = ''; }
     const g = hit('[data-dget]'); if (g) { e.stopPropagation(); install(g.dataset.dget); return true; }
@@ -184,7 +184,7 @@
   const VERIF = SVG['badge-check'];
   function dMenu(b, a) { const sys = dPk(a) === 'system';
     lMenu(b, `${DS2.view === 'app' ? '' : crMi(`data-dapp="${a.id}"`, 'info', 'About this app') + '<span class="crsep"></span>'}${sys
-      ? `<div class="dsysnote">${ic('lock')}<span><b>Part of Luma</b><small>${esc(a.n)} comes with the system and updates with it, so it can't be uninstalled.</small></span></div>`
+      ? `<div class="dsysnote">${ic('lock')}<span><b>Part of Suno</b><small>${esc(a.n)} comes with the system and updates with it, so it can't be uninstalled.</small></span></div>`
       : crMi(`data-dun="${a.id}"`, 'trash-2', 'Uninstall\u2026', ' red')}`); }
   /* Depot, next (22 Oct 2026): apps/depot/ draws Depot now; it gets the shared parts it needs and nothing else. The code above
      stays for Settings, which reads Depot's categories through app(). */
@@ -256,7 +256,7 @@
      Places are cards in the sidebar, each lit by its own sky. The island is the sky where you're looking: the place,
      the temperature and the conditions centred on it, then glass cards (hours, ten days, rain, wind, sun, air). */
   const WXQ = { q: '', i: 0 };
-  /* A place picked from the LumaUI place search joins the list with a plausible sky for its latitude */
+  /* A place picked from the SunoUI place search joins the list with a plausible sky for its latitude */
   function wxAdd(id) { const g = LPLACES.find(x => x.id === id); if (!g) return; let p = WP2.find(x => x.id === id);
     if (!p) { p = { id, n: g.n, r: g.r, off: g.off, base: 60 + (g.h % 17), amp: 8, rain: g.h % 3 ? null : [15, 18], rise: 400 + g.h % 60, set: 1120 + g.h % 50, aq: 20 + g.h % 30, uv: 3 + g.h % 5, wind: [4 + g.h % 9, g.h], hum: 40 + g.h % 35 }; WP2.push(p); }
     WS2.place = id; WXQ.q = ''; WXQ.i = 0; renderWx(); $('#wb-body').scrollTop = 0; lToast($('#w-weather'), `Added ${g.n}, ${g.r}`, { icon: 'map-pin' }); }
@@ -353,7 +353,7 @@
   const cityKind = m => m < 400 || m > 1150 ? 'n' : m < 470 || m > 1080 ? 'g' : 'd';
   const PRESETS = [[60, '1 min'], [180, '3 min'], [300, '5 min'], [600, '10 min'], [1500, 'Focus 25'], [3600, '1 hour']];
   function ckToast(msg, icon) { lToast($('#w-clock'), msg, { icon: icon || 'bell' }); }
-  /* Add a city: the same LumaUI place search as Weather. Type a city or ZIP, the matches open above the field, Enter or a click adds it. */
+  /* Add a city: the same SunoUI place search as Weather. Type a city or ZIP, the matches open above the field, Enter or a click adds it. */
   const ckSugHTML = () => CK.find.q.trim() ? lPlaceSug(CK.find.q, CK.find.i, 'data-ckpick') : (() => { const have = CKC.map(c => c[0]); return LPLACES.filter(g => !have.includes(g.n)).slice(0, 5).map(g => `<button class="lsugi" type="button" ${'data-ckpick'}="${g.id}">${ic('map-pin')}<span><b>${esc(g.n)}, ${esc(g.r)}</b></span></button>`).join(''); })();
   function ckAddPlace(id) { const g = LPLACES.find(x => x.id === id); if (!g) return; if (!CKC.some(c => c[0] === g.n)) CKC.push([g.n, g.off]); CK.find = { on: false, q: '', i: 0 }; cbMin = -1; ckRedraw(); lToast($('#w-clock'), `Added ${esc(g.n)}, ${esc(g.r)}`, { icon: 'map-pin' }); }
   document.addEventListener('input', e => { if (!e.target.matches?.('[data-ckq]')) return; CK.find.q = e.target.value; CK.find.i = 0; const g = $('#ck-sug'); if (g) g.innerHTML = ckSugHTML(); });
@@ -529,7 +529,7 @@
   /* Threads */
   const CRT = [
     { id: 'deck', subj: 'Launch walkthrough deck', box: 'inbox', flag: true, msgs: [
-      { id: 'd1', from: 'PR', to: ['me', 'NF'], day: 'Tuesday', at: 'Tue 4:12 PM', text: ['Hi both,', 'Here’s v3 of the walkthrough deck. I moved the milestones slide up front and cut the pricing section; we can talk to that live.', 'Two things I need before Thursday:\n• Nick: the ISO timeline for slide 7\n• Nora: the homepage crop for slide 2'], sig: 'Priya Raman\nDesign lead, Luma', files: [{ n: 'launch-walkthrough-v3.stage', k: 'deck', sz: '18.4 MB' }, { n: 'milestones.pdf', k: 'pdf', sz: '412 KB' }] },
+      { id: 'd1', from: 'PR', to: ['me', 'NF'], day: 'Tuesday', at: 'Tue 4:12 PM', text: ['Hi both,', 'Here’s v3 of the walkthrough deck. I moved the milestones slide up front and cut the pricing section; we can talk to that live.', 'Two things I need before Thursday:\n• Nick: the ISO timeline for slide 7\n• Nora: the homepage crop for slide 2'], sig: 'Priya Raman\nDesign lead, Suno', files: [{ n: 'launch-walkthrough-v3.stage', k: 'deck', sz: '18.4 MB' }, { n: 'milestones.pdf', k: 'pdf', sz: '412 KB' }] },
       { id: 'd2', from: 'NF', to: ['PR', 'me'], at: 'Tue 5:03 PM', text: ['Crop’s in. I went with the wider one; it breathes better on the slide.'], imgs: ['life-sync-terrace'], quote: 'On Tue, Sep 22, Priya Raman wrote:\nHere’s v3 of the walkthrough deck. I moved the milestones slide up front and cut the pricing section…' },
       { id: 'd3', from: 'me', to: ['PR', 'NF'], day: 'Yesterday', at: 'Wed 9:15 AM', text: ['Timeline is on slide 7: nightly ISO on the 28th, sign-off on the 30th, launch on the 1st.', 'Looks great, both of you.'] },
       { id: 'd4', from: 'PR', to: ['me', 'NF'], day: 'Today', at: '9:41 AM', un: true, text: ['Perfect. Last thing: can you both do a 20-minute dry run at 7:30 tonight? I’ll send an invite.'] }] },
@@ -558,15 +558,15 @@
   const crSnip = t => { if (t.box === 'drafts') return t.draft; const m = crLast(t); return (m.from === 'me' ? 'You: ' : '') + (m.snip || (m.text || []).find(x => !/^(hi|hey)\b.*,$/i.test(x)) || ''); };
   const crNames = t => { const o = crOthers(t); return o.length === 1 ? crWho(o[0]).n : o.map(crFirst).join(', '); };
   const CRBOX = [['inbox', 'Inbox', 'inbox'], ['flagged', 'Flagged', 'star'], ['drafts', 'Drafts', 'file-text'], ['sent', 'Sent', 'send-horizontal'], ['archive', 'Archive', 'archive'], ['trash', 'Trash', 'trash-2']];
-  const CRACCT = [['luma', 'Luma', 'nick@simplyluma.com', 250], ['home', 'Personal', 'nick@studionorth.net', 150]];
-  const crInBox = (t, b, a = CR.acct) => (a === 'all' || (t.acct || 'luma') === a) && (b === 'flagged' ? t.flag && t.box !== 'trash' : t.box === b);
+  const CRACCT = [['suno', 'Suno', 'nick@simplyluma.com', 250], ['home', 'Personal', 'nick@studionorth.net', 150]];
+  const crInBox = (t, b, a = CR.acct) => (a === 'all' || (t.acct || 'suno') === a) && (b === 'flagged' ? t.flag && t.box !== 'trash' : t.box === b);
   /* Left column: every account, and the mailboxes inside it. */
   function crNav() { const un = (a, b = 'inbox') => CRT.filter(t => crInBox(t, b, a) && crUn(t)).length, cnt = (a, b) => CRT.filter(t => crInBox(t, b, a)).length;
     const item = (a, b, n, i, c) => `<button class="crni${CR.acct === a && CR.box === b ? ' on' : ''}" type="button" data-crnav="${a}:${b}">${ic(i)}<span>${n}</span>${lCount(c, b === 'inbox')}</button>`;
     $('#cr-nav').innerHTML = `
       ${item('all', 'inbox', 'All inboxes', 'inbox', un('all'))}${item('all', 'flagged', 'Flagged', 'star', cnt('all', 'flagged'))}
       ${CRACCT.map(([a, n, mail, h]) => `<div class="crnh"><i style="background:oklch(0.68 0.12 ${h})"></i><span><b>${n}</b><small>${mail}</small></span></div>
-        ${item(a, 'inbox', 'Inbox', 'inbox', un(a))}${item(a, 'drafts', 'Drafts', 'file-text', cnt(a, 'drafts'))}${item(a, 'sent', 'Sent', 'send-horizontal', '')}${item(a, 'archive', 'Archive', 'archive', '')}${a === 'luma' ? item(a, 'trash', 'Trash', 'trash-2', '') : ''}`).join('')}
+        ${item(a, 'inbox', 'Inbox', 'inbox', un(a))}${item(a, 'drafts', 'Drafts', 'file-text', cnt(a, 'drafts'))}${item(a, 'sent', 'Sent', 'send-horizontal', '')}${item(a, 'archive', 'Archive', 'archive', '')}${a === 'suno' ? item(a, 'trash', 'Trash', 'trash-2', '') : ''}`).join('')}
       <div class="crnh lbl"><span><b>Labels</b></span></div><button class="crni" type="button" data-crtodo="Launch: 4 threads"><i class="crlbl" style="background:oklch(0.72 0.14 30)"></i><span>Launch</span></button><button class="crni" type="button" data-crtodo="Receipts: 2 threads"><i class="crlbl" style="background:oklch(0.72 0.12 150)"></i><span>Receipts</span></button>
       <div class="crnfoot">${lAddRow('Add account', 'data-craddacct', 'plus')}</div>`; }
 
@@ -601,11 +601,11 @@
       bar.classList.toggle('phgrow', !!panel); bar.classList.remove('cr2row');
       setBar(bar, `${panel}${ib('data-crreply="one"', 'reply', 'Reply')}${many ? ib('data-crreply="all"', 'reply-all', 'Reply all') : ''}${ib('data-crreply="fwd"', 'forward', 'Forward')}${ib('data-crcopymsg', 'copy', 'Copy text')}${ib('data-crpx="msg"', 'ellipsis', 'More', X === 'msg')}${ib('data-crdesel', 'x', 'Done')}`); return; }
     const brand = crIsBrand(t), c = CR.comp, many = crOthers(t).length > 1, mode = c.mode || (many ? 'all' : 'one'), to = mode === 'all' ? crOthers(t) : [c.re ? (c.re.from === 'me' ? c.re.to[0] : c.re.from) : (crLast(t).from === 'me' ? crLast(t).to[0] : crLast(t).from)];
-    const o = crOthers(t), acct = CRACCT.find(a => a[0] === (t.acct || 'luma')), nf = t.msgs.reduce((n, m) => n + (m.files || []).length + (m.imgs || []).length, 0);
+    const o = crOthers(t), acct = CRACCT.find(a => a[0] === (t.acct || 'suno')), nf = t.msgs.reduce((n, m) => n + (m.files || []).length + (m.imgs || []).length, 0);
     const panel = X === 'mode' ? `<div class="fexp fmore2">${[['one', 'reply', `Reply to ${esc(crFirst(c.re ? c.re.from : crLast(t).from === 'me' ? crLast(t).to[0] : crLast(t).from))}`], ...(many ? [['all', 'reply-all', 'Reply all']] : []), ['fwd', 'forward', 'Forward']].map(([k, i, n]) => crMi(`data-crcmodeset="${k}"`, i, n, mode === k ? ' on' : '')).join('')}</div>`
       : X === 'more' ? `<div class="fexp fmore2">${crMi('data-crpx="info"', 'info', 'Details')}${crMi('data-crunread', 'mail', 'Mark unread')}${crMi('data-crmove', 'folder', 'Move to…')}${crMi('data-crmute', 'bell-off', 'Mute this thread')}${t.id === 'light' ? crMi('data-crunsub', 'bell-off', 'Unsubscribe') : ''}${crMi('data-crprint', 'printer', 'Print')}${crMi('data-crdel', 'trash-2', 'Delete thread', ' red')}</div>`
       : X === 'info' ? `<div class="fexp crinfo2"><button class="fexr2 fback" type="button" data-crpx="more">${ic('chevron-left')}<span>Details</span></button>${[...o, ...(o.length > 1 ? ['me'] : [])].map(k => `<div class="crprow">${crAv(k, 36)}<span><b>${esc(k === 'me' ? 'You' : crWho(k).n)}</b><small>${esc(crMail(k))}</small></span></div>`).join('')}
-        <dl><dt>Messages</dt><dd>${t.msgs.length}</dd><dt>Account</dt><dd>${acct ? acct[1] : 'Luma'}</dd>${nf ? `<dt>Attachments</dt><dd>${nf}</dd>` : ''}</dl></div>` : '';
+        <dl><dt>Messages</dt><dd>${t.msgs.length}</dd><dt>Account</dt><dd>${acct ? acct[1] : 'Suno'}</dd>${nf ? `<dt>Attachments</dt><dd>${nf}</dd>` : ''}</dl></div>` : '';
     bar.classList.toggle('phgrow', !!panel); bar.classList.add('cr2row');
     const row1 = brand ? '' : `<div class="crr1">${c.re ? `<div class="crcre">${ic('reply')}<span>Replying to <b>${esc(crFirst(c.re.from))}’s</b> message</span><button type="button" class="crx" data-crcrex aria-label="Cancel">${ic('x')}</button></div>` : ''}<div class="crcrow"><button class="crqf" type="button" data-crexpand>${ic('reply')}<span>${CR.keep?.t === CR.open && CR.keep.html ? `Draft: ${esc(CR.keep.html.replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').trim())}` : `Reply to ${esc(to.map(crFirst).join(' and '))}…`}</span></button>${ib('data-cradd2', 'paperclip', 'Attach')}</div></div>`;
     const who = brand ? `<span class="crwho2">${crAv(t.msgs[0].from, 30)}<span><b>${esc(crWho(t.msgs[0].from).n)}</b><small>${esc(crMail(t.msgs[0].from))}</small></span></span>`
@@ -613,9 +613,9 @@
     setBar(bar, `${panel}<div class="crr2">${who}<span class="sp"></span>${ib('data-crarch', 'archive', 'Archive')}${ib('data-crstar', 'star', t.flag ? 'Unflag' : 'Flag', t.flag)}${ib('data-crpx="more"', 'ellipsis', 'More', X === 'more' || X === 'info')}</div>${row1}`); }
 
   /* What a thread is: who's in it, then the facts. On a phone the title island grows into this */
-  function crInfoBody(t) { const o = crOthers(t), acct = CRACCT.find(a => a[0] === (t.acct || 'luma')), nf = t.msgs.reduce((n, m) => n + (m.files || []).length + (m.imgs || []).length, 0);
+  function crInfoBody(t) { const o = crOthers(t), acct = CRACCT.find(a => a[0] === (t.acct || 'suno')), nf = t.msgs.reduce((n, m) => n + (m.files || []).length + (m.imgs || []).length, 0);
     return `${[...o, ...(o.length > 1 ? ['me'] : [])].map(k => `<div class="crprow">${crAv(k, 36)}<span><b>${esc(k === 'me' ? 'You' : crWho(k).n)}</b><small>${esc(crMail(k))}</small></span></div>`).join('')}
-        <dl><dt>Messages</dt><dd>${t.msgs.length}</dd><dt>Account</dt><dd>${acct ? acct[1] : 'Luma'}</dd>${nf ? `<dt>Attachments</dt><dd>${nf}</dd>` : ''}</dl>`; }
+        <dl><dt>Messages</dt><dd>${t.msgs.length}</dd><dt>Account</dt><dd>${acct ? acct[1] : 'Suno'}</dd>${nf ? `<dt>Attachments</dt><dd>${nf}</dd>` : ''}</dl>`; }
   function crHead() { const h = $('#cr-head');
     if (CR.open === 'new') { h.innerHTML = ''; return; }
     const t = crT(CR.open); if (!t || t.box === 'drafts') { h.innerHTML = ''; return; }

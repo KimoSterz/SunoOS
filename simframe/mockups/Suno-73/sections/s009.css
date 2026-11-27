@@ -5,8 +5,8 @@ html[data-phone] .win.phone.navopen :is(.pside, .vside, .nside, .dpside, .vwside
    Three things in one window: the projects and their goals (the rail), the conversation for the goal you're in
    (the centre island, where the agent's work arrives as cards), and the Stage (the live product, on the right).
    Everything else opens from those: the Project book, Places, People, Usage, the code one step down.
-   LumaUI parts throughout (pside, si, sh, seg, fbar, mdsheet, crpop, lToast, lConfirm, lNavTtl); this block is the
-   layout, the cards and the Kiln preview, which is drawn in its own warm studio style on purpose (it is not Luma). */
+   SunoUI parts throughout (pside, si, sh, seg, fbar, mdsheet, crpop, lToast, lConfirm, lNavTtl); this block is the
+   layout, the cards and the Kiln preview, which is drawn in its own warm studio style on purpose (it is not Suno). */
 [data-mode="dark"] .pgwin { --pg-card: oklch(0.252 0.006 265); --pg-card-edge: inset 0 0 0 1px oklch(1 0 0 / .06), 0 1px 2px rgba(0,0,0,.25); --pg-row: oklch(1 0 0 / .04);
   --pg-amber: oklch(0.8 0.15 75); --pg-amber-soft: oklch(0.78 0.15 75 / .14); --pg-violet: oklch(0.78 0.11 300); --pg-violet-soft: oklch(0.72 0.12 300 / .16);
   --pg-run: oklch(0.8 0.1 var(--acc)); --pg-run-soft: oklch(0.72 0.12 var(--acc) / .15); --pg-red: oklch(0.72 0.16 25); --pg-red-soft: oklch(0.66 0.17 25 / .15);
@@ -276,7 +276,7 @@ html[data-phone] .pgwin.phone .pgside .pgphonly { display: grid; }
 .pgcap { flex: none; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 0 16px 74px; font-size: 12px; color: var(--ink-3); letter-spacing: .01em; text-align: center; min-height: 20px; } .pgcap b { color: var(--ink-2); font-weight: 600; } .pgcap .stat { width: 6px; height: 6px; } .pgcap .pgsd { width: 6px; height: 6px; border-radius: 50%; background: oklch(0.72 0.12 var(--acc)); flex: none; corner-shape: round; }
 .pgwin .fbar.pgstbar { bottom: 12px; padding: 4px; gap: 2px; border-radius: 16px; }
 .pgstbar .bt { height: 36px; border-radius: 12px; padding: 0 12px 0 10px; font-size: 13px; } .pgstbar .bt svg.i { width: 16px; height: 16px; } .pgstbar .bt.on { background: var(--chip); box-shadow: var(--chip-edge); }
-.pgstbar .bt.rec { color: var(--luma-live, #c1462f); } .pgstbar .bt.rec .pgrecdot { width: 9px; height: 9px; border-radius: 50%; background: currentColor; animation: pgblink 1s ease-in-out infinite; corner-shape: round; } @keyframes pgblink { 50% { opacity: .35; } }
+.pgstbar .bt.rec { color: var(--suno-live, #c1462f); } .pgstbar .bt.rec .pgrecdot { width: 9px; height: 9px; border-radius: 50%; background: currentColor; animation: pgblink 1s ease-in-out infinite; corner-shape: round; } @keyframes pgblink { 50% { opacity: .35; } }
 .pgstbar .bt.rec b { font-variant-numeric: tabular-nums; font-weight: 600; }
 .pgdevwrap { position: relative; transform-origin: 50% 50%; flex: none; }
 .pgpointing .pgcanvas { cursor: crosshair; } .pgpointing [data-kp] { cursor: crosshair; }
@@ -300,7 +300,7 @@ html[data-phone] .pgwin.phone .pgside .pgphonly { display: grid; }
 .pgappbar { flex: none; height: 46px; display: flex; align-items: center; gap: 10px; padding: 0 16px; background: #efe6d9; border-bottom: 1px solid #e2d6c5; font: 600 14px var(--font); color: #2b211a; } .pgappbar .klmk { width: 22px; height: 22px; } .pgappbar .pgwc { margin-left: auto; display: flex; gap: 14px; color: #8a7a6a; } .pgappbar .pgwc svg.i { width: 15px; height: 15px; }
 .pgdev.appw > .pgscr { flex: 1; position: relative; overflow: hidden; }
 
-/* ── Kiln: Maya's pottery studio, in its own warm style (deliberately not Luma) ── */
+/* ── Kiln: Maya's pottery studio, in its own warm style (deliberately not Suno) ── */
 .kl { --kc: #f7f1e8; --kc2: #efe5d6; --kink: #2b211a; --kink2: #6b5a4b; --kink3: #9a8877; --kclay: #b5532f; --kclay2: #9c4224; --ksage: #5f6f52; --kline: #e4d8c7; --kcard: #fffaf3;
   position: absolute; inset: 0; display: flex; flex-direction: column; background: var(--kc); color: var(--kink); font: 15px/1.45 'Atkinson Hyperlegible', system-ui, sans-serif; letter-spacing: 0; overflow: hidden; text-align: left; }
 .kl * { box-sizing: border-box; } .kl button { font: inherit; color: inherit; }

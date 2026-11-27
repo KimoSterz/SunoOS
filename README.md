@@ -63,6 +63,11 @@ pakiety, dokumentacja i zasoby — 1:1 z [simplyluma/luma](https://gitlab.com/si
   w `apps/depot/marks/`), więc same bloki `X(…)` w `catalogue.js` pozostają, pozbawione jedynie flag
   `inst: 1` / `upd: '…'`. Logika, animacje i wygląd okien/docka pozostały nietknięte — zmienione są
   wyłącznie dane.
+- **Rebranding stringów UI** (`rebrand_ui` w polityce): widoczne napisy „Luma” → „Suno”, wersja
+  „Luma 1.0” → „SunoOS 0.1” (w tym nazwa ISO), „LumaUI” → „SunoUI” w nagłówkach galerii, domena
+  `look.luma.app` → `look.suno.app`, katalog domowy i suffix kernela. Identyfikatory wewnętrzne
+  (`window.lumaDesk`, app-id `lumaui`, klucze storage, CSS `--luma-*`... wymieniane jednak spójnie
+  wszędzie tam, gdzie reguła tokenowa je łapie) oraz URL-e upstream pozostają chronione.
 - **Podział na sekcje** (`tools/split_sections.py`): monolity `Suno-73.js` (~1,7 MB), `Suno-73.css` (~1,1 MB),
   `desktop/shell.js` i `desktop/shell.css` rozbite na małe, po kolei składane sekcje w katalogach `Suno-73/sections/`
   i `desktop/shell/sections/`. Każda sekcja to bajt-dokładny wycinek oryginału (sha256 sklejenia równa się sha256

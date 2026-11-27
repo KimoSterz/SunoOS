@@ -50,7 +50,7 @@
 .lfwin .fbar .ctxc.lfsnip { font-family: 'Literata', serif; font-style: italic; font-weight: 400; color: var(--ink-2); }
 .lfhsw { display: flex; gap: 6px; padding: 0 4px; } .lfhsw button { width: 22px; height: 22px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(0,0,0,.15); transition: transform .15s var(--spring); } .lfhsw button:hover { transform: scale(1.18); }
 /* Leaf, audit pass (25 Sep, #45–#47): the hero's progress is the small rows' component at hero scale; search and Add books sit at the sidebar foot,
-   sort with the shelf it sorts; a selection's actions float above it in the LumaUI bubble, and the bottom bar is for reading only */
+   sort with the shelf it sorts; a selection's actions float above it in the SunoUI bubble, and the bottom bar is for reading only */
 .lfhero .lfmeta { display: grid; gap: 8px; width: 100%; } .lfhero .lfmeta > span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-variant-numeric: tabular-nums; } .lfhero .lfmeta .lfpr { width: 100%; }
 .lfside .shead.lfoot { margin-top: auto; } .lfshh .seg { margin-left: auto; align-self: center; } .lfbar[hidden] { display: none; }
 .lfsel .lfsnip { max-width: 190px; padding: 0 8px 0 6px; font-family: 'Literata', Georgia, serif; font-style: italic; font-size: 13px; color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -155,7 +155,7 @@
 .vwpk { display: inline-flex; gap: 3px; } .vwpk i { width: 18px; height: 18px; border-radius: 6px; box-shadow: inset 0 0 0 1px rgba(255,255,255,.25); cursor: copy; }
 .vwtext svg.i { color: oklch(0.78 0.12 var(--acc)); }
 @container win (max-width: 980px) { .vwinfo { display: none; } } @container win (max-width: 720px) { .vwside { display: none; } .vwwin .isle { margin-left: 8px; } }
-/* Sidebar toggle (LumaUI): closed gives the file the room; on a phone the file list opens as a drawer from the left */
+/* Sidebar toggle (SunoUI): closed gives the file the room; on a phone the file list opens as a drawer from the left */
 #w-viewer .ibody { position: relative; } #w-viewer .vwside { transition: width .28s var(--ease), padding .28s var(--ease), opacity .2s; } #w-viewer.lsideoff .vwside { width: 0; padding: 0; opacity: 0; overflow: hidden; } #w-viewer.lsideoff .isle { margin-left: 8px; }
 #w-viewer.phone.navopen .vwside { display: flex; position: absolute; z-index: 46; left: 8px; top: 8px; bottom: 8px; width: 264px; padding: 12px 10px 10px; opacity: 1; border-radius: 20px; background: var(--pop); box-shadow: var(--sh-float), 0 0 0 100vmax oklch(0 0 0 / .3); }
 
@@ -377,7 +377,7 @@ html[data-solo="valet"] body #w-valet.vlt { left: calc(50% - 360px) !important; 
 .tkbadd .tkchips { flex: none; } .tkbadd .tkchips i { height: 24px; }
 .tkck { width: 20px; height: 20px; box-shadow: inset 0 0 0 1.5px var(--p); } .tkck svg.i { width: 12px; height: 12px; } .tkck.big { width: 22px; height: 22px; margin-top: 2px; } .tkck.big svg.i { width: 13px; height: 13px; }
 .tkwin.nodet .tkdet { display: none; }
-/* Tasks (v70): the task pane is the LumaUI details pane: facts get hairlines, sections a label; the comment field sits at its foot */
+/* Tasks (v70): the task pane is the SunoUI details pane: facts get hairlines, sections a label; the comment field sits at its foot */
 /* Notes (v70): on a phone the full bar swipes sideways instead of spilling out of the window */
 .win.phone .nbar { max-width: calc(100% - 16px); overflow-x: auto; scrollbar-width: none; } .win.phone .nbar::-webkit-scrollbar { display: none; } .win.phone .nbar > * { flex: none; } .nkids .kid { width: 100%; min-width: 0; } .nkids .kid > span { flex: 1; min-width: 0; } .nkids .kid > span > span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 #me-corner .ib.on { background: none; box-shadow: none; color: var(--fav); } #me-corner .ib.on svg.i { fill: currentColor; }
@@ -478,7 +478,7 @@ html[data-solo="valet"] body #w-valet.vlt { left: calc(50% - 360px) !important; 
 #dsk-bar .bt.lk, #dsk-bar .bt[disabled] { opacity: .42; cursor: default; } #dsk-bar .bt.lk:hover { background: transparent; }
 #dsk-pop .crmi[disabled] { opacity: .4; cursor: default; } #dsk-pop .crmi[disabled]:hover { background: transparent; }
 
-/* ══ Camera (v53): a black body, the picture set in it with an even margin, one centred column of Luma parts ══ */
+/* ══ Camera (v53): a black body, the picture set in it with an even margin, one centred column of Suno parts ══ */
 .cmwin .isle { margin-left: 8px; overflow: clip; position: relative; background: #0a0a0b; }
 /* The body is always dark, in light mode too, so the kit inside it takes the dark tokens */
 .cmbody { position: absolute; inset: 0; container-type: size; color-scheme: dark;
@@ -612,7 +612,7 @@ html[data-solo="valet"] body #w-valet.vlt { left: calc(50% - 360px) !important; 
 .cmlast .th { width: 36px; height: 36px; flex: none; border-radius: 8px; display: grid; place-items: center; background: var(--well) center/cover; box-shadow: var(--well-edge); } .cmlast .th svg.i { width: 15px; height: 15px; color: var(--ink-4); }
 .cmlast .th.cmnew { animation: cmpop .5s var(--spring); } @keyframes cmpop { from { transform: scale(.5); } }
 .cmvf .cmlast[disabled] { opacity: 1; } .cmlast[disabled] span { color: var(--ink-4); }
-/* Pickers are the ordinary Luma popover; the session strip is the ordinary floating bar, centred on the picture */
+/* Pickers are the ordinary Suno popover; the session strip is the ordinary floating bar, centred on the picture */
 .cmpop { width: 250px; } .cmpop .crmi > svg.i:last-child { color: var(--ink); } .cmpop .cmv { font-style: normal; font-size: 12px; color: var(--ink-3); white-space: nowrap; letter-spacing: .01em; }
 .cmwin .fbar.cmstrip { left: calc(var(--m) + var(--fw) / 2); bottom: calc(var(--m) + 16px); gap: 4px; }
 .cmstrip .th { position: relative; width: 44px; height: 36px; border-radius: 9px; background: center/cover; box-shadow: inset 0 0 0 1px rgba(255,255,255,.08); }

@@ -6,7 +6,7 @@
    · Get models: families, each with one plain line on how it runs here. Too-big ones stay out of the way.
    · A model's page: its sizes, one sentence on whether this computer can run the one you picked, what the maker
      says it can do, and the facts (licence, release, how much it reads at once). No guesses, no speeds.
-   · The bar holds the one thing to do: Download or Remove. Remove grows it in place (LumaUI).
+   · The bar holds the one thing to do: Download or Remove. Remove grows it in place (SunoUI).
 
    Facts come from each maker's model card and the download sizes from Ollama's library (October 2026).
    Only with ?ari=b. ?arv=models|store and ?arx=family:size open a page directly. */

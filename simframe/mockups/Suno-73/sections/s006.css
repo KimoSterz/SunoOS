@@ -67,7 +67,7 @@
 /* An item's on/off state (Pin, Star) lights its icon; no plate behind it */
 .nfloat .ib.lit { color: var(--acc-ink); background: none; box-shadow: none; } .nfloat .ib.lit svg.i { fill: currentColor; fill-opacity: .25; }
 
-/* Contacts: a file shared with them is the LumaUI file card, full width in Together */
+/* Contacts: a file shared with them is the SunoUI file card, full width in Together */
 .ctog .lfc.tgfile { width: 100%; max-width: none; margin-top: 4px; }
 /* Contacts: my card in its own inset; a hairline beside each letter; Together as tall as Contact; one kind of action button */
 .cmecard { margin: 2px 0 6px; padding: 4px; border-radius: 14px; background: var(--well); box-shadow: var(--well-edge); } .cmecard .ctrow.me { margin: 0; } .cmecard .ctrow > svg.i { width: 15px; height: 15px; margin-left: auto; color: var(--ink-4); }
@@ -109,7 +109,7 @@
 /* Docked side panels: a full-width hairline under the header frames what's below */
 .vwinfo .vwih { flex: none; margin: 0 -12px 12px; padding: 0 8px 0 16px; border-bottom: 1px solid var(--hair); } .fdockh { border-bottom: 1px solid var(--hair); } .fdock .scr { padding-top: 14px; }
 /* Photos edit panel */
-/* Photos' editor is the bar grown (LumaUI action center): the photo keeps the room above it */
+/* Photos' editor is the bar grown (SunoUI action center): the photo keeps the room above it */
 .lac.ped { width: min(640px, calc(100% - 48px)); } .ped .lach .seg { height: 32px; } .ped .lach .seg button { height: 26px; padding: 0 12px; font-size: 12.5px; } .ped .lach .sp { flex: 1; }
 .ped .lach .lacmode { font-weight: 600; } .ped .lach .bt.sm { gap: 6px; } .ped .lach .bt.sm svg.i { width: 14px; height: 14px; }
 .pedb { padding: 14px 16px 10px; } .pedgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 20px; } .ped .ppre { grid-template-columns: repeat(6, 1fr); }
@@ -138,8 +138,8 @@
 .twin .panel.tq { top: 68px; }   /* below the corner pill, never over it */
 .tflo .tsbtn { width: 36px; height: 36px; border-radius: 12px; color: var(--ink-2); } .tflo .tsbtn:hover { color: var(--ink); }
 .tflo .tsrch { animation: tsopen .22s var(--ease); } @keyframes tsopen { from { opacity: 0; transform: translateX(8px); } } .tflo .tsrch .fqx { margin-right: -4px; }
-/* Tide, audit pass (25 Sep, #14–#16): the back chevron joins the title row as the LumaUI navigation trail (no band above it);
-   Sources and Up next are the LumaUI details pane beside the room; the deck's words use the standard text hierarchy. */
+/* Tide, audit pass (25 Sep, #14–#16): the back chevron joins the title row as the SunoUI navigation trail (no band above it);
+   Sources and Up next are the SunoUI details pane beside the room; the deck's words use the standard text hierarchy. */
 .twin .ibody { display: flex; } .twin .tpane { margin-left: 8px; }
 .twin .tmain .ttl.tttl { padding: 24px 300px 12px 28px; }
 .twin .hero .kick .lnt { margin-top: -6px; }
@@ -212,7 +212,7 @@
 .cdp { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 4px 0 4px; border-radius: 999px; background: var(--chip); box-shadow: var(--chip-edge); font-size: 12.5px; font-weight: 500; } .cdp button { width: 18px; height: 18px; display: grid; place-items: center; border-radius: 50%; color: var(--ink-3); } .cdp button:hover { background: var(--fill-2); } .cdp button svg.i { width: 11px; height: 11px; }
 .cdsug { display: grid; gap: 2px; margin: 2px 0 4px 24px; padding: 4px; border-radius: 12px; background: var(--raised); box-shadow: var(--chip-edge); } .cdsug button { display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 8px; border-radius: 9px; text-align: left; } .cdsug button:hover, .cdsug button.first { background: var(--fill-1); }
 .cdpop { width: 180px; max-height: 260px; overflow-y: auto; scrollbar-width: none; }
-/* Calendar (v70): the day panel is the LumaUI details pane, open by default (its main view); the event editor is the bar grown (LumaUI action center) */
+/* Calendar (v70): the day panel is the SunoUI details pane, open by default (its main view); the event editor is the bar grown (SunoUI action center) */
 .calwin .fbar[hidden] { display: none; } .calcals.lcorner { gap: 4px; } .calcals .ccal { flex: none; } #cal-cals .ib { width: 36px; height: 36px; border-radius: 12px; } #cal-cals .ib.on { background: var(--fill-2); color: var(--ink); }
 .win.phone #cal-cals .ccal span, .win.phone #cal-cals .lmodes button span { display: none; } .win.phone #cal-cals .lmodes button { padding: 0 9px; } .win.phone .cfree2 b { opacity: 1; }
 #cal-det .ldph .calback { margin-left: -6px; } #cal-det .ldph b { flex: 1; }
@@ -295,7 +295,7 @@
 .mwin #m-body { padding-top: 72px; -webkit-mask: linear-gradient(transparent 52px, #000 104px); mask: linear-gradient(transparent 52px, #000 104px); }
 .mfile .bt.sm { background: var(--fill-2); box-shadow: none; color: var(--ink); } .mfile .bt.sm:hover { background: var(--fill-3); }
 .msg.k-file .bub, .mine.k-file .bub { padding: 0; background: none; box-shadow: none; } .msg.k-file.sel .bub .lfc { box-shadow: var(--chip-edge), 0 0 0 2px var(--acc-ink); }
-/* Messages (v70): cards from the owning apps, the selected message's bar, the composer that grows into the editor, the LumaUI details pane */
+/* Messages (v70): cards from the owning apps, the selected message's bar, the composer that grows into the editor, the SunoUI details pane */
 .msg:is(.k-place, .k-event, .k-song, .k-contact) .bub { padding: 0; background: none; box-shadow: none; } .msg:is(.k-place, .k-event, .k-song, .k-contact).sel .bub .lmini { box-shadow: var(--chip-edge), 0 0 0 2px var(--acc-ink); }
 .mt.rich p, .mt.rich ul { margin: 0; } .mt.rich ul { padding-left: 18px; } .mt.rich a { color: inherit; text-decoration: underline; }
 .mbar[hidden] { display: none; } .mwin .mbar.acting { width: auto; white-space: nowrap; } .mwin .mbar.acting .mcin { gap: 4px; }
@@ -449,7 +449,7 @@ body[data-mat="frost"][data-mode="dark"] .iwin { --isle: rgba(20,21,25,.86); --i
 body[data-mat="frost"][data-mode="light"] .iwin { --isle: rgba(250,250,251,.95); --isle-out: 0 0 0 1px rgba(0,0,0,.25); --isle-in: inset 0 0 0 1px rgba(255,255,255,.35); }
 /* ink on the frost is darker than on paper, so labels and icons hold over a bright wallpaper; the island keeps its own */
 body[data-mat="frost"][data-mode="light"] .iwin .isle { --ink: oklch(0.2 0.008 265); --ink-2: oklch(0.38 0.008 265); --ink-3: oklch(0.54 0.008 265); --ink-4: oklch(0.68 0.006 265); }
-/* Ink on dark surfaces is Luma's off-white, never pure white (Nick, 25 Sep). Solid Dark keeps the theme's own greys;
+/* Ink on dark surfaces is Suno's off-white, never pure white (Nick, 25 Sep). Solid Dark keeps the theme's own greys;
    on Frost's glass the greys step up a little for legibility, still in the off-white family. */
 body[data-mat="frost"][data-mode="dark"] .iwin, body[data-mat="frost"][data-mode="dark"] .iwin .isle :is(.fbar, .flo, .pop, .crpop), body[data-mat="frost"][data-mode="light"] .iwin, body[data-mat="frost"][data-mode="light"] .iwin .isle :is(.fbar, .flo, .pop, .crpop) { --ink: oklch(0.965 0.003 265); --ink-2: rgba(242,243,246,.9); --ink-3: rgba(242,243,246,.78); --ink-4: rgba(242,243,246,.62); color: var(--ink); }
 body[data-mat][data-mode="dark"] .iwin .isle { --ink: oklch(0.965 0.003 265); --ink-2: oklch(0.82 0.005 265); --ink-3: oklch(0.65 0.006 265); --ink-4: oklch(0.5 0.006 265); }
@@ -498,18 +498,18 @@ body[data-mat] .iwin :is(.bt.key, .bt.pri, .pp, .mkey, .meplay, .merecb, .seplay
 body .win :is(.pp, .twin .pp, .deck .pp, .mkey, .meplay, .mewin .fbar .meplay, .pnplay, .seplay) { background: var(--soft-key) !important; color: var(--soft-key-ink) !important; box-shadow: none !important; }
 body .win :is(.pp, .mkey, .meplay, .pnplay, .seplay):hover { background: var(--soft-key-hi) !important; }
 body[data-mode="dark"][data-mat] .iwin.tmwin { --isle: oklch(0.185 0.006 265); }
-/* ══ LumaUI components (v70, from the Studio audit of 25 Sep) ═══════════════════════════════════
+/* ══ SunoUI components (v70, from the Studio audit of 25 Sep) ═══════════════════════════════════
    The shared parts every app uses. One implementation each, light and dark, keyboard and phone.
-   Each part is its own block labelled "LumaUI: <component>" so per-app branches merge cleanly.
-   The LumaUI window (?app=lumaui) shows every part with its states; the JS helpers sit beside lFile. */
+   Each part is its own block labelled "SunoUI: <component>" so per-app branches merge cleanly.
+   The SunoUI window (?app=lumaui) shows every part with its states; the JS helpers sit beside lFile. */
 
-/* LumaUI: Tokens (danger ink, category hues, sky cards) */
+/* SunoUI: Tokens (danger ink, category hues, sky cards) */
 [data-mode="dark"] .win { --lui-danger: oklch(0.7 0.17 25); }
 [data-mode="light"] .win { --lui-danger: oklch(0.55 0.19 25); }
 :root { --cat-create: 25; --cat-work: 250; --cat-media: 330; --cat-play: 150; --cat-tools: 200;
   --card-sky: oklch(0.2 0.035 255 / .42); --card-sky-edge: inset 0 0 0 1px rgba(255,255,255,.12), inset 0 1px 0 rgba(255,255,255,.1); --card-sky-ink-2: rgba(255,255,255,.9); }
 
-/* LumaUI: Type scale
+/* SunoUI: Type scale
    Figtree only; five roles plus the small label, each with one size, weight and tracking. Numbers that change are tabular.
    No one-off weights, sizes or letter-spacing: use these. */
 :root { --t-display: 600 72px/1 var(--font); --t-title-1: 650 24px/1.15 var(--font); --t-title-2: 650 15px/1.3 var(--font); --t-body: 400 13px/1.45 var(--font);
@@ -523,14 +523,14 @@ body[data-mode="dark"][data-mat] .iwin.tmwin { --isle: oklch(0.185 0.006 265); }
 .t-numeric { font: var(--t-numeric); letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
 :is(.t-display, .t-numeric) small { margin-left: .12em; font-size: .4em; font-weight: 500; letter-spacing: 0; color: var(--ink-3); }   /* seconds, AM/PM, units */
 
-/* LumaUI: Count badge
+/* SunoUI: Count badge
    A small pill with tabular numbers: neutral for totals, .acc for unread or needs attention. Never 0. */
 :is(em, i, span, b).lcount { display: inline-grid; place-items: center; flex: none; min-width: 20px; height: 18px; padding: 0 6px; border-radius: 9px; corner-shape: round;
   font: 650 11px/1 var(--font); font-style: normal; font-variant-numeric: tabular-nums; letter-spacing: .01em; background: var(--fill-2); color: var(--ink-2); }
 :is(em, i, span, b).lcount.acc { background: oklch(0.52 0.15 var(--acc)); color: #fff; }
 .seg .lcount { margin-left: 6px; } .seg button:not(.on) .lcount.acc { background: oklch(0.52 0.15 var(--acc)); }
 
-/* LumaUI: Details pane
+/* SunoUI: Details pane
    One pane for Details and Information in every app: recessed into the frame like the island (same top, 8 from the edges),
    a header with a hairline under it and a close button, one scrolling body. Key/value facts get hairlines; lists of people
    or things get none, but every row highlights across its full width. Closed by default, opened by Info, closes itself
@@ -566,16 +566,16 @@ body[data-mode="dark"][data-mat] .iwin.tmwin { --isle: oklch(0.185 0.006 265); }
 .win.phone .ldp::after { display: none; } .win.phone .ldp::before { content: ""; position: absolute; top: 7px; left: 50%; width: 36px; height: 5px; margin-left: -18px; border-radius: 3px; background: var(--fill-3); }
 @keyframes ldpup { from { transform: translateY(40px); opacity: 0; } }
 
-/* LumaUI: Details pane item
+/* SunoUI: Details pane item
    A thing in a details-pane list (an event, a thread): its mark, a title, one quiet line, an optional trail; the same row, hover and type
    as the people rows. lDPItem({ lead, n, sub, attr, style, trail }). */
 .ldpitem { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 44px; padding: 6px 8px; border-radius: 10px; text-align: left; transition: background .12s; } .ldpitem:hover, .ldpitem:focus-visible, .ldpitem.on { background: var(--fill-1); } .ldpitem:focus-visible { outline-offset: -2px; }
 .ldpitem > svg.i { width: 16px; height: 16px; flex: none; color: var(--ink-3); } .ldpitem > span:not(.nfaces) { flex: 1; min-width: 0; display: grid; } .ldpitem b { font-size: 13px; font-weight: 550; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .ldpitem small { font: var(--t-caption); letter-spacing: .01em; color: var(--ink-3); font-variant-numeric: tabular-nums; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-/* LumaUI: Details pane photos
+/* SunoUI: Details pane photos
    A conversation's or thread's photos: three square thumbnails a row under "Photos and files", never one giant image. <div class="ldpph"> of <img>. */
 .ldpph { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; border-radius: 10px; overflow: hidden; } .ldpph img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; }
 
-/* LumaUI: Add row
+/* SunoUI: Add row
    "Add people", "Add source", "Add account": a list row, not a framed button. The + sits in the avatar column, the label lines up with the names. */
 .laddrow { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 44px; padding: 6px 8px; border-radius: 10px; text-align: left; color: var(--ink-2); transition: background .12s; }
 .laddrow:hover { background: var(--fill-1); color: var(--ink); } .laddrow:focus-visible { outline-offset: -2px; }
@@ -583,7 +583,7 @@ body[data-mode="dark"][data-mat] .iwin.tmwin { --isle: oklch(0.185 0.006 265); }
 .laddrow b { font-size: 13px; font-weight: 550; }
 .laddrow kbd { margin-left: auto; font: 500 11px var(--font); color: var(--ink-4); letter-spacing: .01em; } .win.phone .laddrow kbd { display: none; }   /* a shortcut, shown the menus' way (none on a phone) */
 
-/* LumaUI: Stacked button
+/* SunoUI: Stacked button
    Icon on top, label below, on the raised chip (the Contacts action look). Always in equal pairs or trios; .sm for tight panes;
    .danger for destructive (red ink, still confirmed); hover lifts, press sinks, focus rings, disabled fades. */
 .lstks { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 8px; }
@@ -594,15 +594,15 @@ body[data-mode="dark"][data-mat] .iwin.tmwin { --isle: oklch(0.185 0.006 265); }
 .lstk:focus-visible { outline: 2px solid var(--acc-ink); outline-offset: 2px; } .lstk[disabled] { opacity: .35; pointer-events: none; }
 .lstk.danger { color: var(--lui-danger); }
 .lstks.sm .lstk { height: 56px; gap: 4px; padding: 0 2px; border-radius: 14px; font-size: 11.5px; } .lstks.sm .lstk svg.i { width: 17px; height: 17px; }
-/* LumaUI: Contact actions (Contacts owns them: Message, Call, Video, Email, in that order) */
+/* SunoUI: Contact actions (Contacts owns them: Message, Call, Video, Email, in that order) */
 .lcacts { max-width: 376px; }
 
-/* LumaUI: Selection bubble (.selbar, from Write)
+/* SunoUI: Selection bubble (.selbar, from Write)
    Floats 10 above the selection, centred and kept inside its host; flips below near the top edge. Arrows move inside it, Esc hides it. */
 .selbar.below { animation: morph .14s var(--ease); } .selbar .ib:focus-visible, .selbar .bt:focus-visible { outline-offset: -2px; }
 .win.phone .selbar .wrsel { display: none; }
 
-/* LumaUI: Action center
+/* SunoUI: Action center
    The floating bar is where you act, and it grows in place: the bar (.fbar), double height (.fbar.lac2: a context line over the bar),
    the full editor (.lac: Charlie's reply, ported exactly), or split in two (.lacsplit). It caps at the island and its text scrolls.
    Esc collapses it back to the bar and keeps what you typed. On a phone it spans the width from the bottom edge. */
@@ -630,7 +630,7 @@ body[data-mode="dark"][data-mat] .iwin.tmwin { --isle: oklch(0.185 0.006 265); }
 .win.phone .lac { left: 0; right: 0; bottom: 0; width: auto; max-height: calc(100% - 60px); transform: none; border-radius: 22px 22px 0 0; } .win.phone .lac.enter { animation: none; }
 .win.phone .fbar.lac2 { width: calc(100% - 16px); } .win.phone .lacsplit { left: 8px; right: 8px; transform: none; flex-direction: column; align-items: stretch; } .win.phone .lacsplit > .fbar { width: 100%; justify-content: center; }
 
-/* LumaUI: Placement (top right = modes and the thing itself; bottom bar = what you do right now)
+/* SunoUI: Placement (top right = modes and the thing itself; bottom bar = what you do right now)
    .lcorner is the top-right pill: the mode switch, then Open in, Share, Edit, Info and ···. Modes are .lmodes: icon plus label;
    on a narrow window only the current mode keeps its label. */
 .win .flo.lcorner { position: absolute; top: 16px; right: 16px; z-index: 26; display: flex; align-items: center; }
@@ -640,12 +640,12 @@ body[data-mode="dark"][data-mat] .iwin.tmwin { --isle: oklch(0.185 0.006 265); }
 /* Viewer (reference): the markup tools rise above the bar they belong to, so the top right stays the corner's */
 #vw-pal.vwpal { top: auto; bottom: 76px; transform: translate(-50%, 12px); } #vw-pal.vwpal.on { transform: translate(-50%, 0); }
 
-/* LumaUI: Open in
+/* SunoUI: Open in
    The Open button wears the default app's own icon ("Open in Stage"); the Open in menu lists the apps that can open the file,
-   best Luma app first, the default marked, then Other app. */
+   best Suno app first, the default marked, then Other app. */
 .lappi { width: 18px; height: 18px; flex: none; border-radius: 5px; } .crmi .lappi { width: 20px; height: 20px; }
 .lopenb .lappi { margin-left: -2px; } .lfc .lopenb { gap: 6px; padding-left: 8px; } .lfc .lopenb .lappi { width: 16px; height: 16px; border-radius: 4px; }
-/* LumaUI: Menu drawer. Every shared menu (lMenu: Open in, the sidebar-foot filter, ···, style and zoom menus) is the usual popover on a
+/* SunoUI: Menu drawer. Every shared menu (lMenu: Open in, the sidebar-foot filter, ···, style and zoom menus) is the usual popover on a
    computer and a bottom drawer on a phone: full width, a grab handle, rows sized for a thumb, the window dimmed behind it */
 .win.phone :is(#lmenu, .crpop.ldrawer) { left: 0 !important; right: 0; top: auto !important; bottom: 0; width: auto; min-width: 0; max-height: 72%; overflow-y: auto; padding: 26px 10px 16px; border-radius: 28px 28px 0 0; box-shadow: 0 0 0 100vmax oklch(0 0 0 / .32), var(--sh-float); animation: ldrawer .26s var(--ease); }
 .win.phone :is(#lmenu, .crpop.ldrawer)::before { content: ""; position: absolute; top: 9px; left: 50%; width: 36px; height: 5px; margin-left: -18px; border-radius: 3px; background: var(--fill-3); }
@@ -653,25 +653,25 @@ body[data-mode="dark"][data-mat] .iwin.tmwin { --isle: oklch(0.185 0.006 265); }
 @keyframes ldrawer { from { transform: translateY(48px); opacity: 0; } }
 .lopenmenu { min-width: 232px; } .lopenmenu .crmi > small { margin-left: auto; font-size: 11px; color: var(--ink-3); letter-spacing: .01em; }
 
-/* LumaUI: Sidebar toggle
+/* SunoUI: Sidebar toggle
    lSideBtn(win) in the title bar, just after the app's name: Lucide panel-left, F9; pressed while the sidebar shows. Each app says what
    "closed" means (Viola keeps a strip of tab icons; the others give the room to the content). On a phone it opens the sidebar as a drawer. */
 .tbar .lsidebtn { width: 30px; height: 30px; flex: none; border-radius: 9px; color: var(--ink-3); } .tbar .lsidebtn:hover { color: var(--ink); background: var(--fill-1); } .tbar .lsidebtn svg.i { width: 16px; height: 16px; }
 .tbar .lsidebtn[aria-pressed="false"] { color: var(--ink-2); } .win.phone:has(.navbtn, .navback) .tbar .lsidebtn { display: none !important; }
-/* LumaUI: Message bubble
+/* SunoUI: Message bubble
    Messages owns the look and every thread uses it (Messages, Charlie): theirs is the raised chip, yours the accent gradient (--mbub) in white;
    18 round, 6 where one sender's run joins; 9/13/10 padding; 14/1.45 text. Use the tokens, never a local radius or size. */
 :root { --lbub-r: 18px; --lbub-join: 6px; --lbub-pad: 9px 13px 10px; --lbub-text: 400 14px/1.45 var(--font); }
 :where([data-mode="dark"]) :where(.win) { --mbub: linear-gradient(180deg, oklch(0.52 0.12 var(--acc)), oklch(0.46 0.12 var(--acc))); --mbub-ink: #fff; --mbub-edge: inset 0 1px 0 oklch(1 0 0 / .18), 0 0 0 1px rgba(0,0,0,.35), 0 1px 2px rgba(0,0,0,.3); }
 :where([data-mode="light"]) :where(.win) { --mbub: linear-gradient(180deg, oklch(0.6 0.13 var(--acc)), oklch(0.54 0.13 var(--acc))); --mbub-ink: #fff; --mbub-edge: inset 0 1px 0 oklch(1 0 0 / .25), 0 0 0 1px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.12); }
 
-/* LumaUI: File card (lFile)
+/* SunoUI: File card (lFile)
    The file's face (never bigger than its 44 square), a middle-truncated name that keeps the extension, size · kind, one Open. */
 .lfc .lfth > img { max-width: 44px; max-height: 44px; } .lfc { max-width: 100%; }
 .lmid { display: flex !important; min-width: 0; } .lmid > span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .lmid > span + span { flex: none; white-space: pre; }
 .lfc .lfbad { color: var(--lui-danger); } .lfc .lfwarn { color: oklch(0.72 0.14 70); } [data-mode="light"] .lfc .lfwarn { color: oklch(0.55 0.14 60); }
 
-/* LumaUI: Destructive dialog
+/* SunoUI: Destructive dialog
    Centred on the asking window, which dims under its title bar: icon on top, the question as the title, one line of consequence,
    Cancel and the red action as two equal buttons. Cancel has focus (Enter never deletes by accident); Esc cancels. A drawer on a phone. */
 .lcscrim { position: absolute; left: 0; right: 0; top: 46px; bottom: 0; z-index: 60; background: rgba(0,0,0,.26); backdrop-filter: blur(3px) saturate(.9); -webkit-backdrop-filter: blur(3px) saturate(.9); opacity: 0; transition: opacity .2s var(--ease); }
@@ -692,13 +692,13 @@ body[data-mode="dark"][data-mat] .iwin.tmwin { --isle: oklch(0.185 0.006 265); }
 .win.phone .lconf.on { transform: none; } .win.phone .lconf::before { content: ""; position: absolute; top: 8px; left: 50%; width: 36px; height: 5px; margin-left: -18px; border-radius: 3px; background: var(--fill-3); }
 .win.phone .lcacts2 { grid-template-columns: 1fr; } .win.phone .lcacts2 .bt { height: 44px; } .win.phone .lcacts2 .danger { order: -1; }
 
-/* LumaUI: Toast (.ftoast.ltoast, via lToast)
+/* SunoUI: Toast (.ftoast.ltoast, via lToast)
    One place: centred on the visible content, just above the bottom bar. A plain past-tense line, the icon for what happened, Undo when it can be undone. */
 .win > .ltoast { z-index: 60; } .ftoast[data-kind="map-pin"] > svg.i, .ftoast[data-kind="navigation"] > svg.i { color: var(--acc-ink); } .ftoast[data-kind="heart"] > svg.i { color: var(--love); fill: currentColor; }
 .ftoast:is([data-kind="copy"], [data-kind="trash-2"], [data-kind="bell"], [data-kind="download"], [data-kind="archive"], [data-kind="log-out"]) > svg.i { color: var(--ink-2); }
 .win.phone > .ltoast { max-width: calc(100% - 24px); }
 
-/* LumaUI: Category pill
+/* SunoUI: Category pill
    Depot's categories carry their colour everywhere a category shows: one map (--cat-*), light and dark, AA text. */
 :is(span, em, b).lcat { --ch: 250; display: inline-flex; align-items: center; flex: none; min-height: 0; overflow: visible; height: 22px; padding: 0 9px; border-radius: 11px; corner-shape: round; font: 600 11.5px/1 var(--font); font-style: normal; letter-spacing: .01em; white-space: nowrap;
   background: oklch(0.93 0.045 var(--ch)); color: oklch(0.42 0.12 var(--ch)); }
@@ -706,7 +706,7 @@ body[data-mode="dark"][data-mat] .iwin.tmwin { --isle: oklch(0.185 0.006 265); }
 .lcat[data-cat="create"] { --ch: var(--cat-create); } .lcat[data-cat="work"] { --ch: var(--cat-work); } .lcat[data-cat="media"] { --ch: var(--cat-media); } .lcat[data-cat="play"] { --ch: var(--cat-play); } .lcat[data-cat="tools"] { --ch: var(--cat-tools); }
 .dcard > .lcat { position: absolute; top: 14px; right: 14px; }
 
-/* LumaUI: Table header
+/* SunoUI: Table header
    A subtle recessed bar across the columns. Each heading is a button: click or Enter sorts, again reverses; the active column
    shows its arrow and aria-sort says so. Rows start 6 below it. */
 .lthead th { height: 30px; padding: 0; border: 0; background: var(--fill-1); text-align: left; font-weight: inherit; }
@@ -715,19 +715,19 @@ body[data-mode="dark"][data-mat] .iwin.tmwin { --isle: oklch(0.185 0.006 265); }
 .lthead th > button:hover, .lthead th:not([aria-sort="none"]) > button { color: var(--ink); } .lthead th > button svg.i { width: 12px; height: 12px; stroke-width: 2.2; } .lthead th > button:focus-visible { outline-offset: -2px; }
 .lthead + tbody tr:first-child td { border-top: 6px solid transparent; background-clip: padding-box; }
 
-/* LumaUI: Selection
+/* SunoUI: Selection
    One selection look: the raised chip. In a path (column view) the steps before the active column keep the same shape as a quieter trail. */
 .lsel, #w-filer :is(.tile.on, .fcrow.on) { background: var(--chip); box-shadow: var(--chip-edge); color: var(--ink); }
 .ltrail, #w-filer .fcrow.trail { background: var(--fill-2); box-shadow: none; color: var(--ink); }
 
-/* LumaUI: Sidebar foot
+/* SunoUI: Sidebar foot
    Search at the foot of the sidebar (above a hairline), then a filter picker (lit when a filter is on; its menu opens upward)
    or the raised New square. A filtered list names its filter at the top, with Show all. */
 .lfoot { position: relative; } .lfilt.on { color: var(--acc-ink); box-shadow: var(--chip-edge), inset 0 0 0 1.5px color-mix(in oklch, var(--acc-ink) 50%, transparent); }
 .lfhead { display: flex; align-items: center; gap: 8px; margin: 2px 2px 6px 8px; font: var(--t-label); letter-spacing: .01em; color: var(--ink-2); } .lfhead span { flex: 1; }
 .lfhead button { height: 24px; padding: 0 8px; border-radius: 7px; font-size: 12px; font-weight: 600; color: var(--acc-ink); } .lfhead button:hover { background: var(--fill-1); }
 
-/* LumaUI: Place search
+/* SunoUI: Place search
    The field at the sidebar foot is the whole flow: resolved places open above it as you type, Enter or a click adds the top or
    chosen one, and no match says so in the list. */
 .lsug { position: absolute; left: 0; right: 0; bottom: calc(100% + 6px); z-index: 30; display: grid; gap: 1px; padding: 4px; border-radius: 14px; background: var(--pop, var(--float-solid)); box-shadow: var(--sh-float), inset 0 0 0 1px var(--hair); animation: crpop .16s var(--ease); }
@@ -737,12 +737,12 @@ body[data-mode="dark"][data-mat] .iwin.tmwin { --isle: oklch(0.185 0.006 265); }
 .lsugi small { font: var(--t-caption); letter-spacing: .01em; color: var(--ink-3); } .lsugi kbd { font: 500 11px var(--font); color: var(--ink-4); letter-spacing: .01em; }
 .lsugnone { margin: 8px 10px; font-size: 12.5px; color: var(--ink-3); }
 
-/* LumaUI: Account card
+/* SunoUI: Account card
    The person at the top of a sidebar sits in its own subtle frame, a section gap above the list; it opens the account page. */
 .lacct { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 10px 10px 10px; margin: 0 0 14px; border-radius: 14px; background: var(--fill-1); box-shadow: inset 0 0 0 1px var(--hair); text-align: left; }
 .lacct:hover { background: var(--fill-2); } .lacct.on { background: var(--chip); box-shadow: var(--chip-edge); } .lacct > span { flex: 1; min-width: 0; } .lacct > svg.i:last-child { width: 15px; height: 15px; color: var(--ink-4); }
 
-/* LumaUI: Cards on content-lit backgrounds
+/* SunoUI: Cards on content-lit backgrounds
    On a light sky or photo, a card sits darker than what's behind it (a deep blue-black frost at 42%: the least that passes AA for
    90% white on the brightest sky, measured) so white text passes AA;
    secondary text in it is 90% white. Where colour means nothing, use a plain .lcard. */
@@ -750,7 +750,7 @@ body[data-mode="dark"][data-mat] .iwin.tmwin { --isle: oklch(0.185 0.006 265); }
 .lskycard :is(p, h6, small) { color: var(--card-sky-ink-2); }
 .lcard { border-radius: 16px; background: var(--card, var(--raised)); box-shadow: var(--chip-edge); color: var(--ink); }
 
-/* LumaUI: Mini cards (owning-app parity)
+/* SunoUI: Mini cards (owning-app parity)
    When an app shows something another app owns, it shows that app's own card: a person (Contacts), an event (Calendar),
    a song (Tide), a place (Maps). Files use the file card. Same size family as the file card. */
 .lmini { display: flex; align-items: center; gap: 11px; width: 300px; max-width: 100%; min-height: 60px; padding: 8px 10px 8px 8px; border-radius: 16px; background: var(--chip); box-shadow: var(--chip-edge); color: var(--ink); text-align: left; }
@@ -767,7 +767,7 @@ body[data-mode="dark"][data-mat] .iwin.tmwin { --isle: oklch(0.185 0.006 265); }
 .lmini.song .lmplay { width: 32px; height: 32px; flex: none; display: grid; place-items: center; border-radius: 50%; corner-shape: round; background: var(--fill-2); } .lmini.song .lmplay:hover { background: var(--fill-3); } .lmini.song .lmplay svg.i { width: 15px; height: 15px; fill: currentColor; }
 .lmini.place .lmth i { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%; corner-shape: round; color: #fff; background: oklch(0.58 0.17 30); box-shadow: 0 0 0 2px #fff, 0 2px 6px rgba(0,0,0,.3); } .lmini.place .lmth svg.i { width: 17px; height: 17px; }
 
-/* LumaUI: Navigation trail (G3, 25 Sep)
+/* SunoUI: Navigation trail (G3, 25 Sep)
    Where you came from sits inline with where you are: "‹ Albums · 12 albums". The chevron is part of the trail, never a framed button on a row of its own. */
 .lnt { display: flex; align-items: center; gap: 8px; min-width: 0; }
 .lnt h1 { margin: 0; min-width: 0; font: var(--t-title-1); letter-spacing: -.024em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -776,13 +776,13 @@ body[data-mode="dark"][data-mat] .iwin.tmwin { --isle: oklch(0.185 0.006 265); }
 .lntb.ico { width: 30px; height: 30px; margin: 0 -4px 0 -8px; padding: 0; justify-content: center; color: var(--ink-3); } .lntb.ico svg.i { width: 20px; height: 20px; }
 .lntm { display: flex; align-items: center; gap: 0 7px; min-width: 0; font: var(--t-caption); font-size: 12.5px; letter-spacing: .01em; color: var(--ink-3); white-space: nowrap; overflow: hidden; }
 .lnt i.d { width: 3px; height: 3px; flex: none; border-radius: 50%; corner-shape: round; background: var(--ink-4); } .lntm button:hover { color: var(--ink); }
-/* LumaUI: Field (G3)
+/* SunoUI: Field (G3)
    A label above a recessed well (the search well); the accent ring on focus; a caption hint below. */
 .lfld { display: grid; gap: 6px; margin-top: 14px; } .lfld > span { font: var(--t-label); letter-spacing: .01em; color: var(--ink-3); }
 .lfld input { width: 100%; height: 38px; padding: 0 12px; border: 0; outline: 0; border-radius: 12px; background: var(--well); box-shadow: var(--well-edge); color: var(--ink); font: var(--t-body); font-size: 13.5px; }
 .lfld input::placeholder { color: var(--ink-3); } .lfld input:focus { box-shadow: var(--well-edge), 0 0 0 2px var(--acc-ink); }
 .lfhint { margin: 8px 0 0; font: var(--t-caption); letter-spacing: .01em; color: var(--ink-3); }
-/* LumaUI: Table header on grid rows
+/* SunoUI: Table header on grid rows
    The same recessed, sortable bar as lTHead, for lists laid out as grid or flex rows (Tide's songs, Monitor, Disks, the file picker):
    lTHead.grid(cols, { k, dir }, 'data-x', cls). Each heading that sorts is a button with aria-sort and the arrow on the active one;
    a column without a key is a plain label; .d right-aligns a heading. One part (G1's .lthgrid and G3's lTHead.grid merged). */
@@ -790,11 +790,11 @@ body[data-mode="dark"][data-mat] .iwin.tmwin { --isle: oklch(0.185 0.006 265); }
 .lthgrid > button { display: inline-flex; align-items: center; gap: 4px; height: 30px; padding: 0; border-radius: 8px; font: inherit; letter-spacing: inherit; color: inherit; white-space: nowrap; background: none !important; box-shadow: none !important; }
 .lthgrid > button:hover, .lthgrid > button:not([aria-sort="none"]) { color: var(--ink); } .lthgrid svg.i { width: 12px; height: 12px; stroke-width: 2.2; } .lthgrid > button:focus-visible { outline-offset: 2px; }
 .lthgrid > .d { justify-self: end; justify-content: flex-end; text-align: right; }
-/* LumaUI: Status dot (G3). .stat is connected or fine (green); .busy is working (accent, breathing); .bad needs you (red), and always says why in words beside it. */
+/* SunoUI: Status dot (G3). .stat is connected or fine (green); .busy is working (accent, breathing); .bad needs you (red), and always says why in words beside it. */
 .stat.busy { background: oklch(0.7 0.13 var(--acc)); box-shadow: 0 0 0 3px oklch(0.7 0.13 var(--acc) / .2); animation: lstatp 1.4s ease-in-out infinite; } @keyframes lstatp { 50% { opacity: .4; } } [data-mode="light"] .stat.busy { background: oklch(0.58 0.14 var(--acc)); }
 .stat.bad { background: var(--lui-danger, oklch(0.62 0.19 25)); box-shadow: 0 0 0 3px color-mix(in oklch, var(--lui-danger, red) 22%, transparent); }
 
-/* LumaUI: the reference sheet (the LumaUI window) */
+/* SunoUI: the reference sheet (the SunoUI window) */
 .luiwin .ibody { position: relative; }
 .luinav { width: 212px; flex: none; display: flex; flex-direction: column; gap: 1px; padding: 4px 10px 12px; overflow-y: auto; scrollbar-width: none; }
 .luinav h6 { margin: 10px 10px 6px; font: var(--t-label); letter-spacing: .01em; color: var(--ink-3); }

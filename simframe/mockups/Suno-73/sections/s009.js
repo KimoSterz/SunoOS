@@ -45,7 +45,7 @@
   function cvDo(k) { if (k === 'del') cvDel(); else if (k === 'dup') cvDup(); else if (k === 'zoom') { cvFit(CV.sel); cvAll(); }
     else if (k === 'front' || k === 'back') { cvSel().forEach(n => { CV.nodes.splice(CV.nodes.indexOf(n), 1); k === 'front' ? CV.nodes.push(n) : CV.nodes.unshift(n); }); cvAll(); } }
   function renderCanvas() { $('#cv-top').innerHTML = `<img src="${A}designer.svg" alt=""><b>Launch kit</b><span class="sumeta">Canvas · Saved</span><span class="sutopr" id="cv-topr"></span>`; cvTopR();
-    $('#w-canvas').addEventListener('luma-phone', e => { CV.left = !e.detail; CV.pinsp = false; setTimeout(() => { cvFit(); cvAll(); }, 120); });
+    $('#w-canvas').addEventListener('suno-phone', e => { CV.left = !e.detail; CV.pinsp = false; setTimeout(() => { cvFit(); cvAll(); }, 120); });
     const w = $('#cv-work'); w.addEventListener('pointerdown', cvPtr); w.addEventListener('pointermove', cvPtrMove); w.addEventListener('pointerup', cvPtrUp); w.addEventListener('pointercancel', cvPtrUp);
     w.addEventListener('dblclick', e => { if (CV.pen) { cvPenEnd(false); return; } const n = e.target.closest('#cv-space [data-cvn]'); if (n && cvG(n.dataset.cvn)?.t === 'text' && CV.tool === 'move') { CV.edit = n.dataset.cvn; cvAll(); } });
     w.addEventListener('wheel', e => { if (e.target.closest('.supanel')) return; e.preventDefault(); const wr = w.getBoundingClientRect(); if (e.ctrlKey || e.metaKey) cvZoom(CV.cam.z * Math.exp(-e.deltaY * .01), e.clientX - wr.left, e.clientY - wr.top); else { CV.cam.x -= e.deltaX; CV.cam.y -= e.deltaY; cvDraw(); } }, { passive: false });
@@ -341,7 +341,7 @@
   let STID = 1;
   const stN = o => ({ id: 's' + STID++, op: 1, rot: 0, r: 0, fill: '#d9d9d9', ...o });
   const stT = o => stN({ t: 'text', ff: 'Figtree', fw: 400, fs: 48, lh: 1.2, ls: 0, color: '#ffffff', align: 'left', h: Math.round((o.fs || 48) * (o.lh || 1.2)), ...o });
-  const stWord = (x, y, fs, color, extra = {}) => stT({ name: 'Wordmark', text: 'Luma 1.0', x, y, w: fs * 4.6, fs, fw: 650, ls: -.04, color, h: Math.round(fs * 1.05), lh: 1.05, ...extra });
+  const stWord = (x, y, fs, color, extra = {}) => stT({ name: 'Wordmark', text: 'SunoOS 0.1', x, y, w: fs * 4.6, fs, fw: 650, ls: -.04, color, h: Math.round(fs * 1.05), lh: 1.05, ...extra });
   const ST = { cur: 0, sel: [], tool: 'move', left: true, notes: true, focus: false, itab: 'design', slidePanel: false, edit: null, drag: null, present: null, slides: [
     { name: 'Title', bg: STNIGHT, trans: 'magic', notes: 'Welcome, everyone. Priya opens with the milestones, then I do the live demo. Keep it under two minutes.', nodes: [
       stN({ t: 'ellipse', name: 'Glow', x: 1080, y: -360, w: 1180, h: 1180, fill: 'radial-gradient(circle, rgba(111,124,255,.7), rgba(111,124,255,0) 66%)' }),
@@ -529,7 +529,7 @@
     const td = q('[data-sttodo]'); if (td) { stToast(td.dataset.sttodo); return true; }
     return false; }
   function renderStage() { $('#st-top').innerHTML = `<img src="${A}presentations.svg" alt=""><b>Launch walkthrough</b><span class="sumeta">Stage · Saved</span><span class="sutopr">${av('PR', 26)}${av('NF', 26)}<button class="bt sm fill" type="button" data-share>${ic('share-2')}Share</button><button class="bt sm key stplay" type="button" data-stpresent>${ic('play')}Present</button><button class="ib" type="button" data-lmenu data-docmore title="More" aria-label="More">${ic('ellipsis')}</button></span>`;
-    $('#w-stage').addEventListener('luma-phone', e => { ST.left = ST.notes = !e.detail; setTimeout(stAll, 120); });
+    $('#w-stage').addEventListener('suno-phone', e => { ST.left = ST.notes = !e.detail; setTimeout(stAll, 120); });
     const w = $('#st-work'); w.addEventListener('pointerdown', stPtr); w.addEventListener('pointermove', stPtrMove); addEventListener('pointerup', stPtrUp);
     w.addEventListener('dblclick', e => { const n = e.target.closest('#st-slide [data-stn]'); if (n && stG(n.dataset.stn)?.t === 'text') { ST.edit = n.dataset.stn; stAll(); } });
     new ResizeObserver(() => { stDraw(); }).observe(w); stAll(); }

@@ -1,5 +1,5 @@
-/* ══ Diskord: a Discord client for Luma (mockup, 22 Oct 2026; take two) ══════════════════════════════════════════
-   Not a copy of Discord's layout: what Discord is for, drawn with Luma's parts.
+/* ══ Diskord: a Discord client for Suno (mockup, 22 Oct 2026; take two) ══════════════════════════════════════════
+   Not a copy of Discord's layout: what Discord is for, drawn with Suno's parts.
 
    Why people open it, most often first: to catch up (who said my name, what's new), to talk in a channel, to hop
    into a room with friends, to message someone. So:
@@ -12,7 +12,7 @@
    - A channel has one header that belongs to it: what it is and what it's for on the left; who's here,
      notifications and ··· on the right. Threads and pins are tabs in the details panel, beside Members.
    - The composer is one surface: add, what you write, emoji, and Send once there's something to send. It grows
-     in place for a reply line, emoji and attachments (LumaUI action center).
+     in place for a reply line, emoji and attachments (SunoUI action center).
    - Messages flow (face, name, lines), not bubbles: a channel is many people, and code, links and long messages
      need the width.
 

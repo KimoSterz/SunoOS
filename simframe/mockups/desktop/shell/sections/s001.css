@@ -1,4 +1,4 @@
-/* Luma desktop shell: Shelf take two (mockups/shelf-2.html), mounted unchanged in a shadow root over the
+/* Suno desktop shell: Shelf take two (mockups/shelf-2.html), mounted unchanged in a shadow root over the
    desktop in Studio's Desktop view. Only the screen's size, background and hit-testing differ. */
 :host { all: initial; font-kerning: normal; text-rendering: optimizeLegibility; position: absolute; inset: 0; z-index: 100000; pointer-events: none; font: 13px/1.4 Figtree, system-ui, sans-serif; color: #e9e9ea; -webkit-font-smoothing: antialiased; }
 * { box-sizing: border-box; }
@@ -344,7 +344,7 @@ input { cursor: text; outline: none; }
 /* ── Icon plate: why the icons look the way they do ─────────────────────── */
 
 @media (prefers-reduced-motion: reduce) { .screen *, .screen *::before, .screen *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } }
-/* Desktop: the screen is the whole window, the wallpaper is Luma's, and only the shell's own parts take the pointer */
+/* Desktop: the screen is the whole window, the wallpaper is Suno's, and only the shell's own parts take the pointer */
 .screen { width: 100% !important; height: 100% !important; border-radius: 0 !important; box-shadow: none !important; background: none !important; transform: none !important; pointer-events: none; }
 .island, .nl, .hot { pointer-events: auto; } .tip, .tlip { pointer-events: none; }
 

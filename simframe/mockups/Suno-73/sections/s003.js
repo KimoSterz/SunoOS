@@ -97,7 +97,7 @@
       if (t.dataset.dropf) { const k = t.dataset.dropf; return d.type === 'n' ? true : k !== d.id && !inFolder(k, d.id); }
       if (t.dataset.dropn) { const id = +t.dataset.dropn; return d.type === 'n' && id !== d.id && !isDesc(id, d.id); }
       if (t.hasAttribute('data-droproot')) return d.type === 'f'; return false; };
-    w.addEventListener('dragstart', e => { const r = e.target.closest?.('[data-dragn], [data-dragf]'); if (!r) return; N.drag = r.dataset.dragn ? { type: 'n', id: +r.dataset.dragn } : { type: 'f', id: r.dataset.dragf }; e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', 'luma-note'); });
+    w.addEventListener('dragstart', e => { const r = e.target.closest?.('[data-dragn], [data-dragf]'); if (!r) return; N.drag = r.dataset.dragn ? { type: 'n', id: +r.dataset.dragn } : { type: 'f', id: r.dataset.dragf }; e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', 'suno-note'); });
     w.addEventListener('dragover', e => { const t = e.target.closest('[data-dropf], [data-dropn], [data-droproot]'); clear(); if (!ok(t)) return; e.preventDefault(); t.classList.add('drop'); });
     w.addEventListener('drop', e => { const t = e.target.closest('[data-dropf], [data-dropn], [data-droproot]'); clear(); if (!ok(t)) return; e.preventDefault(); const d = N.drag, s = nSnap(); N.drag = null; let msg;
       if (d.type === 'n') { const n = NOTES.find(x => x.id === d.id); if (t.dataset.dropf) { setF(n, t.dataset.dropf); n.parent = null; msg = `Moved “${esc(n.t)}” to ${FOLD[n.f][0]}`; } else { const p = NOTES.find(x => x.id === +t.dataset.dropn); setF(n, p.f); n.parent = p.id; N.open.add('n' + p.id); msg = `“${esc(n.t)}” is now inside “${esc(p.t)}”`; } nReveal(n); }
@@ -117,22 +117,22 @@
     'at-sign': SVG['at-sign'] });
   /* ══ Contacts ══════════════════════════════════════════════════════════════
      People, not a form. The list: your card, favourite faces, then A to Z. A contact is lit like a Messages room:
-     their face, @username, one row of actions (Message is the key), then what you share with them across Luma,
+     their face, @username, one row of actions (Message is the key), then what you share with them across Suno,
      what they can see of you, and a private note. Add people by @username or your code; phone numbers are optional. */
   Object.assign(PPL, { AC: { n: 'Ada Chen', u: 'ada', h: 200 }, BO: { n: 'Ben Okoro', u: 'benok', h: 30 }, CD: { n: 'Carmen Díaz', u: 'carmen', h: 350 }, EN: { n: 'Eli Novak', u: 'eli', h: 230 },
     GP: { n: 'Grace Park', u: 'grace.p', h: 300 }, HS: { n: 'Hana Sato', u: 'hana', h: 180 }, KM: { n: 'Kofi Mensah', u: 'kofi', h: 60 }, MS2: { n: 'Maya Singh', u: 'maya', h: 320 },
     OH: { n: 'Omar Haddad', u: 'omar', h: 140 }, RA: { n: 'Ruth Adler', u: null, phone: '+1 (212) 555-0107', h: 10 }, ZM: { n: 'Zoe Martin', u: 'zoe', h: 270 } });
   const CX = {
-    PR: { fav: 1, lists: ['launch'], phone: '+1 (415) 555-0199', email: 'priya@simplyluma.com', work: 'Luma · Design', bday: 'March 14', addr: 'Oakland, California', note: 'Oat milk, no sugar. Loves the Pet Sounds sleeve as much as I do.' },
-    NF: { fav: 1, lists: ['launch'], phone: '+1 (510) 555-0133', email: 'nora@simplyluma.com', work: 'Luma · Press', bday: 'November 2', addr: 'Berkeley, California' },
+    PR: { fav: 1, lists: ['launch'], phone: '+1 (415) 555-0199', email: 'priya@simplyluma.com', work: 'Suno · Design', bday: 'March 14', addr: 'Oakland, California', note: 'Oat milk, no sugar. Loves the Pet Sounds sleeve as much as I do.' },
+    NF: { fav: 1, lists: ['launch'], phone: '+1 (510) 555-0133', email: 'nora@simplyluma.com', work: 'Suno · Press', bday: 'November 2', addr: 'Berkeley, California' },
     MO: { fav: 1, lists: ['family'], phone: '+1 (510) 555-0142', bday: 'June 2', addr: 'Sacramento, California', note: 'Birthday dinner: Thai place on J Street.' },
     TH: { fav: 1, phone: '+1 (628) 555-0170', email: 'theo.marsh@proton.me', bday: 'August 19', addr: 'San Francisco, California' },
-    SK: { lists: ['launch'], email: 'sam@simplyluma.com', work: 'Luma · Engineering' }, AR: { email: 'alex@ruizstudio.co', work: 'Ruiz Studio' }, CL: { phone: '+1 (510) 555-0181' }, JK: {},
-    RA: { lists: ['family'], phone: '+1 (212) 555-0107', bday: 'January 30' }, KM: { lists: ['launch'], work: 'Luma · Community' } };
+    SK: { lists: ['launch'], email: 'sam@simplyluma.com', work: 'Suno · Engineering' }, AR: { email: 'alex@ruizstudio.co', work: 'Ruiz Studio' }, CL: { phone: '+1 (510) 555-0181' }, JK: {},
+    RA: { lists: ['family'], phone: '+1 (212) 555-0107', bday: 'January 30' }, KM: { lists: ['launch'], work: 'Suno · Community' } };
   const LISTS = { launch: 'Launch team', family: 'Family' };
   /* the rest of the address book: enough people that the list reads like a real one */
   Object.assign(PPL, { X00: { n: 'Aaron Fischer', u: 'aaronf', h: 20 }, X01: { n: 'Amara Osei', u: 'amara', h: 67 }, X02: { n: 'Anya Petrova', u: 'anya', h: 114 }, X03: { n: 'Beatriz Souza', u: 'bia', h: 161 }, X04: { n: 'Bram de Vries', u: 'bram', h: 208 }, X05: { n: 'Caleb Wright', u: null, phone: '+1 (510) 555-0125', h: 255 }, X06: { n: 'Chloé Martin', u: 'chloe', h: 302 }, X07: { n: 'Daniel Park', u: 'dpark', h: 349 }, X08: { n: 'Diego Alvarez', u: 'diego', h: 36 }, X09: { n: 'Elena Rossi', u: 'elena', h: 83 }, X10: { n: 'Emma Lindqvist', u: 'emmal', h: 130 }, X11: { n: 'Farah Haddad', u: 'farah', h: 177 }, X12: { n: 'Felix Braun', u: null, phone: '+1 (925) 555-0132', h: 224 }, X13: { n: 'Grace Liu', u: 'grace', h: 271 }, X14: { n: 'Hana Sato', u: 'hana', h: 318 }, X15: { n: 'Hugo Laurent', u: 'hugo', h: 5 }, X16: { n: 'Imani Brooks', u: 'imani', h: 52 }, X17: { n: 'Isaac Cohen', u: null, phone: '+1 (510) 555-0137', h: 99 }, X18: { n: 'Jade Nguyen', u: 'jade', h: 146 }, X19: { n: 'Jonas Weber', u: 'jonas', h: 193 }, X20: { n: 'Kai Tanaka', u: 'kai', h: 240 }, X21: { n: 'Kiara Patel', u: 'kiara', h: 287 }, X22: { n: 'Leo Moretti', u: null, phone: '+1 (510) 555-0142', h: 334 }, X23: { n: 'Lucía Romero', u: 'lucia', h: 21 }, X24: { n: 'Marcus Hill', u: 'marcus', h: 68 }, X25: { n: 'Mei Chen', u: 'mei', h: 115 }, X26: { n: 'Mia Svensson', u: null, phone: '+1 (628) 555-0146', h: 162 }, X27: { n: 'Noah Bennett', u: 'noahb', h: 209 }, X28: { n: 'Olivia Grant', u: 'olivia', h: 256 }, X29: { n: 'Omar Farouk', u: 'omar', h: 303 }, X30: { n: 'Paulo Silva', u: 'paulo', h: 350 }, X31: { n: 'Quinn Harper', u: 'quinn', h: 37 }, X32: { n: 'Rafael Costa', u: null, phone: '+1 (510) 555-0152', h: 84 }, X33: { n: 'Rosa Jiménez', u: 'rosa', h: 131 }, X34: { n: 'Samir Nasser', u: 'samir', h: 178 }, X35: { n: 'Sofia Ricci', u: 'sofia', h: 225 }, X36: { n: 'Tomás Ortega', u: 'tomas', h: 272 }, X37: { n: 'Uma Reddy', u: 'uma', h: 319 }, X38: { n: 'Victor Hugo Lima', u: null, phone: '+1 (415) 555-0158', h: 6 }, X39: { n: 'Wren Adler', u: 'wren', h: 53 }, X40: { n: 'Yara Haddad', u: 'yara', h: 100 }, X41: { n: 'Zoe Kim', u: 'zoek', h: 147 } });
-  Object.assign(CX, { X00: { work: 'Architect', phone: '+1 (628) 555-0120' }, X01: { phone: '+1 (415) 555-0121' }, X02: { work: 'Photographer', phone: '+1 (925) 555-0122' }, X03: { phone: '+1 (510) 555-0123' }, X04: { work: 'Sound engineer', phone: '+1 (510) 555-0124' }, X06: { work: 'Illustrator', phone: '+1 (628) 555-0126' }, X07: { phone: '+1 (510) 555-0127' }, X08: { work: 'Luma · Engineering', phone: '+1 (415) 555-0128' }, X09: { phone: '+1 (510) 555-0129' }, X10: { work: 'Product designer', phone: '+1 (510) 555-0130' }, X11: { phone: '+1 (925) 555-0131' }, X12: { work: 'Landlord' }, X13: { work: 'Pediatrician', phone: '+1 (510) 555-0133' }, X14: { phone: '+1 (415) 555-0134' }, X15: { work: 'Chef · Nopa', phone: '+1 (510) 555-0135' }, X16: { phone: '+1 (925) 555-0136' }, X17: { work: 'Plumber' }, X18: { work: 'Luma · Support', phone: '+1 (510) 555-0138' }, X19: { phone: '+1 (415) 555-0139' }, X20: { work: 'Climbing coach', phone: '+1 (510) 555-0140' }, X21: { phone: '+1 (925) 555-0141' }, X23: { work: 'Translator', phone: '+1 (415) 555-0143' }, X24: { phone: '+1 (510) 555-0144' }, X25: { work: 'Luma · Engineering', phone: '+1 (415) 555-0145' }, X26: { work: 'Dentist' }, X27: { phone: '+1 (925) 555-0147' }, X28: { work: 'Editor, The Verge', phone: '+1 (415) 555-0148' }, X29: { phone: '+1 (510) 555-0149' }, X30: { phone: '+1 (628) 555-0150' }, X31: { work: 'Luma · Community', phone: '+1 (415) 555-0151' }, X33: { phone: '+1 (415) 555-0153' }, X34: { work: 'Accountant', phone: '+1 (628) 555-0154' }, X35: { phone: '+1 (510) 555-0155' }, X36: { phone: '+1 (510) 555-0156' }, X37: { work: 'Luma · Design', phone: '+1 (510) 555-0157' }, X39: { work: 'Musician', phone: '+1 (925) 555-0159' }, X40: { phone: '+1 (925) 555-0160' }, X41: { phone: '+1 (628) 555-0161' } });
+  Object.assign(CX, { X00: { work: 'Architect', phone: '+1 (628) 555-0120' }, X01: { phone: '+1 (415) 555-0121' }, X02: { work: 'Photographer', phone: '+1 (925) 555-0122' }, X03: { phone: '+1 (510) 555-0123' }, X04: { work: 'Sound engineer', phone: '+1 (510) 555-0124' }, X06: { work: 'Illustrator', phone: '+1 (628) 555-0126' }, X07: { phone: '+1 (510) 555-0127' }, X08: { work: 'Suno · Engineering', phone: '+1 (415) 555-0128' }, X09: { phone: '+1 (510) 555-0129' }, X10: { work: 'Product designer', phone: '+1 (510) 555-0130' }, X11: { phone: '+1 (925) 555-0131' }, X12: { work: 'Landlord' }, X13: { work: 'Pediatrician', phone: '+1 (510) 555-0133' }, X14: { phone: '+1 (415) 555-0134' }, X15: { work: 'Chef · Nopa', phone: '+1 (510) 555-0135' }, X16: { phone: '+1 (925) 555-0136' }, X17: { work: 'Plumber' }, X18: { work: 'Suno · Support', phone: '+1 (510) 555-0138' }, X19: { phone: '+1 (415) 555-0139' }, X20: { work: 'Climbing coach', phone: '+1 (510) 555-0140' }, X21: { phone: '+1 (925) 555-0141' }, X23: { work: 'Translator', phone: '+1 (415) 555-0143' }, X24: { phone: '+1 (510) 555-0144' }, X25: { work: 'Suno · Engineering', phone: '+1 (415) 555-0145' }, X26: { work: 'Dentist' }, X27: { phone: '+1 (925) 555-0147' }, X28: { work: 'Editor, The Verge', phone: '+1 (415) 555-0148' }, X29: { phone: '+1 (510) 555-0149' }, X30: { phone: '+1 (628) 555-0150' }, X31: { work: 'Suno · Community', phone: '+1 (415) 555-0151' }, X33: { phone: '+1 (415) 555-0153' }, X34: { work: 'Accountant', phone: '+1 (628) 555-0154' }, X35: { phone: '+1 (510) 555-0155' }, X36: { phone: '+1 (510) 555-0156' }, X37: { work: 'Suno · Design', phone: '+1 (510) 555-0157' }, X39: { work: 'Musician', phone: '+1 (925) 555-0159' }, X40: { phone: '+1 (925) 555-0160' }, X41: { phone: '+1 (628) 555-0161' } });
   const CT = { cur: 'PR', q: '', searching: false, list: 'all', edit: false, shareMine: { PR: true } };
   const cx = k => CX[k] || (CX[k] = {});
   const cName = k => k === 'me' ? 'Nick' : ppl(k).n;
@@ -151,21 +151,21 @@
     NOTES.filter(n => n.share.includes(k) || n.from === k).forEach(n => out.push({ ic: 'file-text', t: n.t, s: n.from ? 'Shared with you' : 'You both can edit', at: n.at.replace('Today, ', ''), app: 'Notes' }));
     if (k === 'PR') out.push({ ic: 'image', t: 'Press photos', s: '12 photos in a shared album', at: 'Today', app: 'Photos' }, { file: { n: 'launch-deck.stage', k: 'deck', sz: '18.4 MB' }, s: 'Sent to you in Launch crew', app: 'Stage' });
     return out; }
-  function ctMain() { const k = CT.cur, p = k === 'me' ? { n: 'Nick', u: 'nick', h: 250 } : ppl(k), c = k === 'me' ? { phone: '+1 (510) 555-0100', email: 'nick@simplyluma.com', work: 'Luma · Founder' } : cx(k), me = k === 'me', onLuma = !!p.u;
+  function ctMain() { const k = CT.cur, p = k === 'me' ? { n: 'Nick', u: 'nick', h: 250 } : ppl(k), c = k === 'me' ? { phone: '+1 (510) 555-0100', email: 'nick@simplyluma.com', work: 'Suno · Founder' } : cx(k), me = k === 'me', onLuma = !!p.u;
     const bg = p.face; $('#c-light').style.backgroundImage = bg ? `url('${PH}${bg[0]}.webp')` : 'none'; $('#c-light').style.backgroundPosition = bg ? `${bg[1] * 100}% ${bg[2] * 100}%` : ''; $('#w-contacts').style.setProperty('--ch', p.h);
     const E = CT.edit, fld = (key, label, val, icon) => (val || E) ? `<div class="crow2">${ic(icon)}<span><em>${label}</em>${E ? `<input data-cf="${key}" value="${esc(val || '')}" placeholder="Add ${label.toLowerCase()}">` : `<b>${esc(val)}</b>`}</span>${!E && val ? `<button class="ib" type="button" data-ccopy="${esc(val)}" aria-label="Copy ${label}">${ic('copy')}</button>` : ''}</div>` : '';
     const tg = me ? [] : together(k);
     $('#c-body').innerHTML = `<div class="chero">${av(me ? 'me' : k, 116)}<h1>${E && !me ? `<input class="cname" data-cf="name" value="${esc(p.n)}">` : esc(p.n)}</h1>
-        <div class="csub">${onLuma ? `<span class="handle">@${p.u}</span><span class="onl2"><i class="round"></i>On Luma</span>` : `<span class="handle">${esc(p.phone)}</span><span class="onl2 off">Not on Luma</span>`}</div>${c.work ? `<div class="cwork">${esc(c.work)}</div>` : ''}
+        <div class="csub">${onLuma ? `<span class="handle">@${p.u}</span><span class="onl2"><i class="round"></i>On Suno</span>` : `<span class="handle">${esc(p.phone)}</span><span class="onl2 off">Not on Suno</span>`}</div>${c.work ? `<div class="cwork">${esc(c.work)}</div>` : ''}
         ${me || E ? '' : lContactActs(k)}</div>
       <div class="cgrid">
         <section class="ccard"><h6>Contact</h6>${fld('phone', 'Mobile', c.phone || (!onLuma && p.phone), 'phone')}${fld('email', 'Email', c.email, 'mail')}${fld('bday', 'Birthday', c.bday, 'cake')}${fld('addr', 'Address', c.addr, 'map-pin')}${fld('work', 'Work', c.work, 'briefcase')}
-          ${!E && !c.phone && !c.email && !c.bday && !c.addr ? `<p class="cempty">Only their @username. That’s all you need to reach someone on Luma.</p>` : ''}</section>
+          ${!E && !c.phone && !c.email && !c.bday && !c.addr ? `<p class="cempty">Only their @username. That’s all you need to reach someone on Suno.</p>` : ''}</section>
         ${me ? `<section class="ccard"><h6>What people see</h6><p class="cp">Your name, photo and <b>@nick</b>. Your phone number and email stay hidden unless you share them with someone.</p><div class="crow2">${ic('link')}<span><em>Your link</em><b>simplyluma.com/@nick</b></span><button class="ib" type="button" data-ccopy="simplyluma.com/@nick" aria-label="Copy link">${ic('copy')}</button></div></section>`
           : `<section class="ccard ctog"><h6>Together</h6><div class="tgl">${tg.length ? tg.map(x => x.file ? lFile(x.file, { sub: x.s, cls: 'tgfile', open: `data-ctodo="Opening ${esc(x.file.n)} in ${x.app}"` }) : `<button class="tgi" type="button" data-ctodo="Opening in ${x.app}">${ic(x.ic)}<span><b>${esc(x.t)}</b><span>${esc(x.s)}</span></span><em>${x.at}</em></button>`).join('') : `<p class="cempty">Nothing shared yet. Conversations, notes and files you share with ${esc(p.n.split(' ')[0])} will gather here.</p>`}</div></section>`}
         ${me ? '' : onLuma ? `<section class="ccard"><h6>What ${esc(p.n.split(' ')[0])} sees</h6><p class="cp">Your name, photo and <b>@nick</b>.${CT.shareMine[k] ? ' And your mobile number.' : ' Your number stays hidden.'}</p>
           <div class="crow2 tog">${ic('phone')}<span><b>Share my mobile number</b><em>Only with ${esc(p.n.split(' ')[0])}</em></span><button class="sw${CT.shareMine[k] ? ' on' : ''}" type="button" data-cshare aria-label="Share my mobile number"></button></div></section>`
-          : `<section class="ccard invite"><h6>Not on Luma</h6><p class="cp">Texts with ${esc(p.n.split(' ')[0])} go through the phone network and aren’t encrypted. Invite them, and they can keep their number.</p><button class="bt fill" type="button" data-ctodo="Invite sent to ${esc(p.n.split(' ')[0])}">${ic('send')}Invite ${esc(p.n.split(' ')[0])}</button></section>`}
+          : `<section class="ccard invite"><h6>Not on Suno</h6><p class="cp">Texts with ${esc(p.n.split(' ')[0])} go through the phone network and aren’t encrypted. Invite them, and they can keep their number.</p><button class="bt fill" type="button" data-ctodo="Invite sent to ${esc(p.n.split(' ')[0])}">${ic('send')}Invite ${esc(p.n.split(' ')[0])}</button></section>`}
         ${me ? '' : `<section class="ccard"><h6>Private note</h6><div class="cnote" contenteditable="true" data-ph="Only you can see this" data-cnote="${k}">${esc(c.note || '')}</div><span class="cnh">${ic('lock')}Only you can see this</span></section>`}
       </div>`;
     $('#c-float').innerHTML = E ? `<button class="bt" type="button" data-ccancel>Cancel</button><button class="bt key" type="button" data-csave>Done</button>`
@@ -197,8 +197,8 @@
       const i = $('#c-addq'); i.focus(); i.oninput = () => { const v = i.value.trim(), lv = v.replace(/^@/, '').toLowerCase(), isMail = /\S+@\S+\.\S+/.test(v), isPhone = /^[+\d][\d\s().-]{5,}$/.test(v);
         const hits = !isMail && !isPhone && lv.length > 1 ? Object.keys(PPL).filter(k => PPL[k].u && PPL[k].u.startsWith(lv)).slice(0, 3) : [];
         $('#c-addres').innerHTML = isMail || isPhone ? `<button class="mi cnewrow" type="button" data-cnewc="${isMail ? 'email' : 'phone'}:${esc(v)}">${ic(isMail ? 'mail' : 'phone')}<span><b>New contact</b><span class="sub">${esc(v)}</span></span><span class="end bt sm fill">Add</span></button>`
-          : hits.length ? hits.map(k => `<button class="mi" type="button" data-cnew="${k}">${av(k, 30)}<span><b>${esc(PPL[k].n)}</b><span class="sub">@${PPL[k].u} · On Luma</span></span><span class="end bt sm fill">${people().includes(k) ? 'Open' : 'Add'}</span></button>`).join('')
-          : lv.length > 1 ? `<p class="cnone">No one on Luma is @${esc(lv)}. Try their phone or email.</p>` : ''; };
+          : hits.length ? hits.map(k => `<button class="mi" type="button" data-cnew="${k}">${av(k, 30)}<span><b>${esc(PPL[k].n)}</b><span class="sub">@${PPL[k].u} · On Suno</span></span><span class="end bt sm fill">${people().includes(k) ? 'Open' : 'Add'}</span></button>`).join('')
+          : lv.length > 1 ? `<p class="cnone">No one on Suno is @${esc(lv)}. Try their phone or email.</p>` : ''; };
       i.onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); $('#c-addres .mi')?.click(); } }; return true; }
     const nc = hit('[data-cnewc]'); if (nc) { const [kind, v] = nc.dataset.cnewc.split(/:(.*)/s); const key = 'NEW' + Date.now(); PPL[key] = { n: 'New contact', ini: ' ', fresh: true, u: null, h: 200, ...(kind === 'phone' ? { phone: v } : {}) }; Object.assign(cx(key), kind === 'phone' ? { phone: v } : { email: v });
       cClose(); CT.q = ''; CT.cur = key; CT.edit = true; CT.px = null; $('#w-contacts').classList.remove('navopen'); ctSide(); ctMain(); const n = $('#c-body .cname'); if (n) { n.value = ''; n.placeholder = 'Name'; n.focus(); } return true; }
@@ -257,7 +257,7 @@
       const hits = !isMail && !isPhone && lv.length > 1 ? Object.keys(PPL).filter(x => PPL[x].u && PPL[x].u.startsWith(lv)).slice(0, 3) : [];
       $('#c-paddres').innerHTML = isMail || isPhone ? `<button class="bt pri cnewb" type="button" data-cnewc="${isMail ? 'email' : 'phone'}:${esc(v)}">${ic('user-plus')}<span>Add ${esc(v)} as a new contact</span></button>`
         : hits.length ? hits.map(x => `<button class="fexr2" type="button" data-cnew="${x}">${av(x, 28)}<span>${esc(PPL[x].n)} <small>@${PPL[x].u}</small></span>${people().includes(x) ? ic('chevron-right') : ic('plus')}</button>`).join('')
-        : lv.length > 1 ? `<p class="cnone">No one on Luma is @${esc(lv)}. Try their phone or email.</p>` : ''; }; } }
+        : lv.length > 1 ? `<p class="cnone">No one on Suno is @${esc(lv)}. Try their phone or email.</p>` : ''; }; } }
   function renderContacts() { $('#c-top').innerHTML = `<img src="${A}contacts.svg" alt=""><b>Contacts</b><span class="chev">${ic('chevron-down')}</span>`; ctSide(); ctMain();
     const w = $('#w-contacts'); new MutationObserver(() => { const l = w.classList.contains('navopen'); if (l !== CT.wasList) { CT.wasList = l; CT.px = null; ctPhBar(); } }).observe(w, { attributes: true, attributeFilter: ['class'] }); }
 
@@ -265,15 +265,15 @@
      The prompt is the floating bar: session on the left, the command field in the middle (your path and
      branch as its prefix, ghost suggestions from history), splits on the right. Output arrives in blocks:
      the command, a status dot and how long it took. Click a block and the bar acts on it instead. */
-  const TFS = { '/home/nick': ['Documents/', 'Downloads/', 'Music/', 'Pictures/', 'Projects/', '.bashrc'], '/home/nick/Projects': ['luma/', 'website/'],
-    '/home/nick/Projects/luma': ['Makefile', 'README.md', 'package.json', 'src/', 'build.sh*'], '/home/nick/Projects/luma/src': ['main.rs', 'shell.rs', 'window.rs'],
-    '/home/nick/Projects/website': ['index.html', 'blog/', 'assets/'], '/home/nick/Documents': ['launch-plan.md', 'why-letter.pdf'], '/home/nick/Downloads': ['luma-1.0-x86_64.iso', 'press-kit.zip'],
+  const TFS = { '/home/nick': ['Documents/', 'Downloads/', 'Music/', 'Pictures/', 'Projects/', '.bashrc'], '/home/nick/Projects': ['suno/', 'website/'],
+    '/home/nick/Projects/suno': ['Makefile', 'README.md', 'package.json', 'src/', 'build.sh*'], '/home/nick/Projects/suno/src': ['main.rs', 'shell.rs', 'window.rs'],
+    '/home/nick/Projects/website': ['index.html', 'blog/', 'assets/'], '/home/nick/Documents': ['launch-plan.md', 'why-letter.pdf'], '/home/nick/Downloads': ['suno-1.0-x86_64.iso', 'press-kit.zip'],
     '/home/nick/Music': [], '/home/nick/Pictures': ['terrace.webp', 'studio.webp'] };
-  const TFILE = { 'README.md': '# Luma\nA better computer. Free, open source, yours.\n\nBuild with `make`, run with `./build.sh --dev`.', 'package.json': '{\n  "name": "luma-shell",\n  "version": "1.0.0",\n  "private": true\n}',
-    '.bashrc': 'export EDITOR=editor\nalias ll="ls -la"\neval "$(luma prompt)"', 'launch-plan.md': '# Launch plan\nOctober 14. Film at 9, download at 10.' };
-  const TCMDS = ['cat', 'cd', 'clear', 'date', 'echo', 'exit', 'git status', 'git log', 'help', 'history', 'ls', 'll', 'lumafetch', 'luma update', 'pwd', 'uname -a', 'uptime', 'whoami'];
+  const TFILE = { 'README.md': '# Suno\nA better computer. Free, open source, yours.\n\nBuild with `make`, run with `./build.sh --dev`.', 'package.json': '{\n  "name": "suno-shell",\n  "version": "1.0.0",\n  "private": true\n}',
+    '.bashrc': 'export EDITOR=editor\nalias ll="ls -la"\neval "$(suno prompt)"', 'launch-plan.md': '# Launch plan\nOctober 14. Film at 9, download at 10.' };
+  const TCMDS = ['cat', 'cd', 'clear', 'date', 'echo', 'exit', 'git status', 'git log', 'help', 'history', 'ls', 'll', 'lumafetch', 'suno update', 'pwd', 'uname -a', 'uptime', 'whoami'];
   let PID = 1, BID = 1; const mkPane = cwd => ({ id: PID++, cwd: cwd || '/home/nick', blocks: [], hist: [], busy: null });
-  const TT = { tabs: [], cur: 0, active: null, fs: 13.5, hist: ['cd Projects/luma', 'git status', 'git log', 'lumafetch', 'luma update'], hi: -1, sel: null };
+  const TT = { tabs: [], cur: 0, active: null, fs: 13.5, hist: ['cd Projects/suno', 'git status', 'git log', 'lumafetch', 'suno update'], hi: -1, sel: null };
   const tab = () => TT.tabs[TT.cur];
   const panesOf = n => n.t === 'p' ? [n.p] : [...panesOf(n.a), ...panesOf(n.b)];
   const paneById = id => panesOf(tab().root).find(p => p.id === id);
@@ -284,7 +284,7 @@
   const SPARK = SVG['sparkle'], REDO = SVG['rotate-cw'];
   const sessName = t => { if (t.name) return t.name; const p = panesOf(t.root)[0]; return p.cwd === '/home/nick' ? 'Home' : p.cwd.split('/').pop(); };
   const sessIcon = t => { const ps = panesOf(t.root); return ps.some(p => p.busy) ? '<i class="tspin round"></i>' : ic(ps[0].cwd === '/home/nick' ? 'house' : 'folder'); };
-  const branchOf = cwd => cwd.includes('Projects/luma') ? 'main' : null;
+  const branchOf = cwd => cwd.includes('Projects/suno') ? 'main' : null;
   function newTab(cwd) { const p = mkPane(cwd); TT.tabs.push({ root: { t: 'p', p } }); TT.cur = TT.tabs.length - 1; TT.active = p.id; return p; }
   /* Blocks */
   const blockHTML = (p, b) => `<div class="tb ${b.status}${TT.sel === b.id ? ' sel' : ''}" data-tblock="${b.id}">${b.cmd != null ? `<div class="tbh"><span class="tbp">${esc(short(b.cwd))}${branchOf(b.cwd) ? `<i class="tbr">${BRANCH}${branchOf(b.cwd)}</i>` : ''}</span><span class="tbc">${esc(b.cmd)}</span><span class="tbm">${b.status === 'run' ? '<i class="tspin round"></i>running' : `<i class="dot round"></i>${b.dur}`}</span></div>` : ''}${b.out.length ? `<div class="tbo">${b.out.join('\n')}</div>` : ''}</div>`;
@@ -329,7 +329,7 @@
   const resolve = (cwd, a) => { if (!a || a === '~') return '/home/nick'; let path = a.startsWith('/') ? a : a.startsWith('~') ? '/home/nick' + a.slice(1) : cwd + '/' + a; const parts = []; path.split('/').forEach(x => { if (!x || x === '.') return; if (x === '..') parts.pop(); else parts.push(x); }); return '/' + parts.join('/'); };
   const fmtName = x => x.endsWith('/') ? `<span class="tm-dir">${x.slice(0, -1)}</span>` : x.endsWith('*') ? `<span class="tm-exe">${x.slice(0, -1)}</span>` : x.startsWith('.') ? `<span class="tm-mut">${x}</span>` : x;
   const lsFmt = (items, long) => long ? items.map(x => `<span class="tm-mut">${x.endsWith('/') ? 'drwxr-xr-x' : '-rw-r--r--'}  nick  ${x.endsWith('/') ? ' 4.0K' : ' 1.2K'}  Sep 23 15:04</span>  ${fmtName(x)}`).join('\n') : items.map(fmtName).join('   ');
-  const LUMAFETCH = () => `<span class="lf"><span class="lfa" aria-hidden="true">   ▄▄▄███▄▄▄\n ▄███████████▄\n▐█████████████▌\n▐█████████████▌\n ▀███████████▀\n   ▀▀▀███▀▀▀</span><span><span class="tm-u">nick</span><span class="tm-mut">@</span><span class="tm-u">thinkpad</span>\n<span class="tm-mut">──────────────</span>\n<span class="tm-b">OS</span>       Luma 1.0 x86_64\n<span class="tm-b">Host</span>     ThinkPad X1 Carbon Gen 12\n<span class="tm-b">Kernel</span>   6.11.4-luma\n<span class="tm-b">Uptime</span>   3 days, 4 hours\n<span class="tm-b">Shell</span>    bash 5.2\n<span class="tm-b">CPU</span>      Intel Core Ultra 7 165U (14)\n<span class="tm-b">Memory</span>   6.1 GiB / 32 GiB\n<span class="lfsw">${[25, 60, 95, 150, 200, 250, 300, 340].map(h => `<i style="background:oklch(0.7 0.14 ${h})"></i>`).join('')}</span></span></span>`;
+  const LUMAFETCH = () => `<span class="lf"><span class="lfa" aria-hidden="true">   ▄▄▄███▄▄▄\n ▄███████████▄\n▐█████████████▌\n▐█████████████▌\n ▀███████████▀\n   ▀▀▀███▀▀▀</span><span><span class="tm-u">nick</span><span class="tm-mut">@</span><span class="tm-u">thinkpad</span>\n<span class="tm-mut">──────────────</span>\n<span class="tm-b">OS</span>       SunoOS 0.1 x86_64\n<span class="tm-b">Host</span>     ThinkPad X1 Carbon Gen 12\n<span class="tm-b">Kernel</span>   6.11.4-suno\n<span class="tm-b">Uptime</span>   3 days, 4 hours\n<span class="tm-b">Shell</span>    bash 5.2\n<span class="tm-b">CPU</span>      Intel Core Ultra 7 165U (14)\n<span class="tm-b">Memory</span>   6.1 GiB / 32 GiB\n<span class="lfsw">${[25, 60, 95, 150, 200, 250, 300, 340].map(h => `<i style="background:oklch(0.7 0.14 ${h})"></i>`).join('')}</span></span></span>`;
   function run(p, line) { const raw = line.trim(); if (!raw) return; TT.hist.push(raw); TT.hi = -1;
     const b = { id: BID++, cmd: raw, cwd: p.cwd, out: [], status: 'run', dur: '' }, t0 = performance.now(); p.blocks.push(b);
     const [c, ...args] = raw.split(/\s+/), a = args.join(' '), say = s => b.out.push(s), err = s => { b.out.push(`<span class="tm-err">${s}</span>`); b.status = 'err'; };
@@ -337,20 +337,20 @@
     switch (c) {
       case 'clear': p.blocks = []; paneRender(p); return;
       case 'pwd': say(esc(p.cwd)); break; case 'whoami': say('nick'); break; case 'date': say(new Date().toString().replace(/ GMT.*/, '')); break;
-      case 'uname': say(a.includes('-a') ? 'Linux thinkpad 6.11.4-luma #1 SMP PREEMPT_DYNAMIC x86_64 GNU/Linux' : 'Linux'); break;
+      case 'uname': say(a.includes('-a') ? 'Linux thinkpad 6.11.4-suno #1 SMP PREEMPT_DYNAMIC x86_64 GNU/Linux' : 'Linux'); break;
       case 'uptime': say(' 15:04:12 up 3 days,  4:21,  1 user,  load average: 0.42, 0.38, 0.35'); break;
       case 'echo': say(esc(a.replace(/^["']|["']$/g, '').replace('$USER', 'nick').replace('$HOME', '/home/nick'))); break;
       case 'history': say(TT.hist.map((h, i) => `<span class="tm-mut">${String(i + 1).padStart(4)}</span>  ${esc(h)}`).join('\n')); break;
-      case 'help': say(`Try  <span class="tm-b">cd Projects/luma</span>  ·  <span class="tm-b">git status</span>  ·  <span class="tm-b">cat README.md</span>  ·  <span class="tm-b">luma update</span>  ·  <span class="tm-b">lumafetch</span>\n<span class="tm-mut">Tab or → accepts a suggestion · click any block to copy, rerun or ask Ari about it · Ctrl Shift D / E split · Ctrl Shift T new session</span>`); break;
+      case 'help': say(`Try  <span class="tm-b">cd Projects/suno</span>  ·  <span class="tm-b">git status</span>  ·  <span class="tm-b">cat README.md</span>  ·  <span class="tm-b">suno update</span>  ·  <span class="tm-b">lumafetch</span>\n<span class="tm-mut">Tab or → accepts a suggestion · click any block to copy, rerun or ask Ari about it · Ctrl Shift D / E split · Ctrl Shift T new session</span>`); break;
       case 'cd': { const d = resolve(p.cwd, a); if (TFS[d]) p.cwd = d; else err(`cd: ${esc(a)}: No such file or directory`); break; }
       case 'ls': case 'll': { const long = c === 'll' || /-\w*l/.test(a), path = a.replace(/-\w+/g, '').trim(), d = resolve(p.cwd, path || '.'), items = TFS[d]; if (!items) { err(`ls: cannot access '${esc(path)}': No such file or directory`); break; }
         const show = /-\w*a/.test(a) || c === 'll' ? items : items.filter(x => !x.startsWith('.')); if (show.length) say(lsFmt(show, long)); break; }
       case 'cat': { const f = a.split('/').pop(); if (TFILE[f]) say(esc(TFILE[f])); else err(`cat: ${esc(a || '')}: No such file or directory`); break; }
-      case 'git': if (!p.cwd.includes('Projects/luma')) { err('fatal: not a git repository (or any of the parent directories): .git'); break; }
+      case 'git': if (!p.cwd.includes('Projects/suno')) { err('fatal: not a git repository (or any of the parent directories): .git'); break; }
         if (args[0] === 'log') say(`<span class="tm-y">a41f2c9</span> Tray: carry files between folders\n<span class="tm-y">7c03e1b</span> Tide: the deck grows from the frame\n<span class="tm-y">19be8d0</span> Kit: recessed, raised, floating`);
         else say(`On branch <span class="tm-g">main</span>\nChanges not staged for commit:\n  <span class="tm-err">modified:   src/window.rs</span>\n  <span class="tm-err">modified:   README.md</span>`); break;
       case 'lumafetch': say(LUMAFETCH()); break;
-      case 'luma': if (args[0] !== 'update') { say('usage: luma update'); break; }
+      case 'suno': if (args[0] !== 'update') { say('usage: suno update'); break; }
         p.busy = raw; paneRender(p); tmBar(); say('Checking the nightly channel…'); let k = 0; const steps = [['tide', '2.4.1'], ['write', '1.9.0'], ['filer', '3.2.0'], ['kernel', '6.11.5']];
         const tick = setInterval(() => { if (k < steps.length) { const [n, v] = steps[k++]; say(`  <span class="tm-g">↓</span> ${n.padEnd(8)} ${v}  <span class="tm-bar"><i></i></span>`); paneRender(p); } else { clearInterval(tick); say(`<span class="tm-g">✓</span> 4 updates installed. Restart when you like; nothing is waiting on you.`); p.busy = null; done(); } }, 500); return;
       case 'exit': p.blocks.pop(); closePane(p.id); return;
@@ -362,7 +362,7 @@
     const rm = n => n.t === 'p' ? n : (n.a.t === 'p' && n.a.p.id === id) ? n.b : (n.b.t === 'p' && n.b.p.id === id) ? n.a : { ...n, a: rm(n.a), b: rm(n.b) }; t.root = rm(t.root); TT.active = panesOf(t.root)[0].id; tmRender(); }
   function closeTab(i) { if (TT.tabs.length === 1) { TT.tabs = []; newTab(); tmRender(); return; } TT.tabs.splice(i, 1); TT.cur = Math.min(TT.cur, TT.tabs.length - 1); TT.active = panesOf(tab().root)[0].id; tmRender(); }
   const tmClose = () => $$('#w-term .pop').forEach(x => x.remove());
-  const tmToast = msg => lToast($('#w-term'), msg, { icon: /copied/.test(msg) ? 'copy' : /^Ari/.test(msg) ? 'sparkle' : 'check' });   // the LumaUI toast
+  const tmToast = msg => lToast($('#w-term'), msg, { icon: /copied/.test(msg) ? 'copy' : /^Ari/.test(msg) ? 'sparkle' : 'check' });   // the SunoUI toast
   /* Your sessions, and only them: the current one marked, each with its folder and what's running; Rename and Close on hover (or focus);
      arrows move through them. With one session it says so. On a phone it's a drawer. */
   function tmSessHTML() { return `<h6>Sessions</h6>${TT.tabs.map((t, i) => { const ps = panesOf(t.root), busy = ps.find(p => p.busy);
@@ -430,7 +430,7 @@
       else if (k === 'ArrowUp' || k === 'ArrowDown') { e.preventDefault(); const H = TT.hist; if (!H.length) return; TT.hi = k === 'ArrowUp' ? (TT.hi < 0 ? H.length - 1 : Math.max(0, TT.hi - 1)) : (TT.hi < 0 ? -1 : TT.hi + 1); if (TT.hi >= H.length) TT.hi = -1; i.value = TT.hi < 0 ? '' : H[TT.hi]; ghost(); }
       else if (m && k.toLowerCase() === 'l') { e.preventDefault(); p.blocks = []; paneRender(p); }
       else if (m && k.toLowerCase() === 'c' && !getSelection().toString()) { e.preventDefault(); if (p.busy) tmToast('Stopped'); i.value = ''; ghost(); } }); })();
-  function renderTerm() { $('#tm-top').innerHTML = `<img src="${A}terminal.svg" alt=""><b>Terminal</b><span class="chev">${ic('chevron-down')}</span>`; const p = newTab(); p.blocks.push({ id: BID++, cmd: null, cwd: p.cwd, out: [`<span class="tm-mut tm-hello">Luma 1.0 · bash 5.2 · ${new Date().toLocaleString([], { weekday: 'long', hour: 'numeric', minute: '2-digit' })}</span>`, LUMAFETCH()], status: 'ok', dur: '' }); tmRender(); }
+  function renderTerm() { $('#tm-top').innerHTML = `<img src="${A}terminal.svg" alt=""><b>Terminal</b><span class="chev">${ic('chevron-down')}</span>`; const p = newTab(); p.blocks.push({ id: BID++, cmd: null, cwd: p.cwd, out: [`<span class="tm-mut tm-hello">SunoOS 0.1 · bash 5.2 · ${new Date().toLocaleString([], { weekday: 'long', hour: 'numeric', minute: '2-digit' })}</span>`, LUMAFETCH()], status: 'ok', dur: '' }); tmRender(); }
 
   /* ══ Calendar ══════════════════════════════════════════════════════════════
      Two questions: what's next, and when am I free. Flow shows time as a stream: days run on, nights fold
@@ -444,7 +444,7 @@
   const dur = m => m >= 60 ? `${Math.floor(m / 60)}h${m % 60 ? ' ' + (m % 60) + 'm' : ''}` : `${m}m`;
   let EID = 1; const ev = (o, s, e, t, cal, x = {}) => ({ id: EID++, o, s, e, t, cal, ...x });
   const EVS = [];
-  for (let o = 0; o < 26; o++) { const wd = dOf(o).getDay(); if (wd > 0 && wd < 6) EVS.push(ev(o, 570, 585, 'Standup', 'work', { people: ['PR', 'NF', 'SK'], loc: 'Luma Hub' })); }
+  for (let o = 0; o < 26; o++) { const wd = dOf(o).getDay(); if (wd > 0 && wd < 6) EVS.push(ev(o, 570, 585, 'Standup', 'work', { people: ['PR', 'NF', 'SK'], loc: 'Suno Hub' })); }
   EVS.push(ev(0, 660, 720, 'Design review', 'work', { people: ['PR', 'NF'] }), ev(0, 1110, 1200, 'Dinner with Nora', 'personal', { people: ['NF'], loc: 'Nopa, Divisadero St' }),
     ev(1, 0, 0, 'First day of autumn', 'hol', { all: true }), ev(1, 780, 840, 'Lunch with Alex', 'personal', { people: ['AR'], loc: 'Tartine Manufactory' }), ev(1, 900, 990, 'Fairphone build review', 'work', { people: ['SK'] }),
     ev(2, 630, 690, 'Press call · The Verge', 'work', { people: ['NF'], loc: 'Video call', video: true }), ev(2, 840, 900, 'Launch walkthrough', 'work', { people: ['PR', 'NF', 'SK'], loc: 'The studio', note: 'Bring the Fairphone build. Walk the installer end to end.' }), ev(2, 1050, 1095, 'Call Dad', 'family', { people: ['MO'] }),
@@ -452,7 +452,7 @@
     ev(4, 660, 720, 'Mirror load test', 'work', { people: ['SK'] }), ev(4, 1140, 1320, 'Movie night', 'personal', { people: ['TH', 'CL'], loc: 'Theo’s place' }),
     ev(5, 600, 780, 'Climbing', 'personal', { people: ['TH', 'CL', 'AR'], loc: 'Mission Cliffs' }), ev(6, 660, 750, 'Brunch with Dad', 'family', { people: ['MO'], loc: 'Sacramento' }),
     ev(7, 900, 960, 'Tech Central bi-weekly', 'work'), ev(8, 600, 660, 'Launch rehearsal', 'work', { people: ['PR', 'NF', 'SK'] }), ev(9, 0, 0, 'Release candidate', 'work', { all: true }),
-    ev(10, 720, 810, 'Lunch with Lena', 'personal', { people: ['CL'] }), ev(12, 600, 720, 'Farmers market', 'personal'), ev(15, 0, 0, 'Press preview', 'work', { all: true }), ev(21, 0, 0, 'Columbus Day', 'hol', { all: true }), ev(23, 0, 0, 'Luma 1.0 launch', 'work', { all: true, people: ['PR', 'NF', 'SK'] }));
+    ev(10, 720, 810, 'Lunch with Lena', 'personal', { people: ['CL'] }), ev(12, 600, 720, 'Farmers market', 'personal'), ev(15, 0, 0, 'Press preview', 'work', { all: true }), ev(21, 0, 0, 'Columbus Day', 'hol', { all: true }), ev(23, 0, 0, 'SunoOS 0.1 launch', 'work', { all: true, people: ['PR', 'NF', 'SK'] }));
   const CS = { view: 'month', anchor: TODAY, sel: null, day: TODAY, off: {}, q: '', draft: null, rsvp: {}, panel: (() => { try { return localStorage.getItem('luma70-cal-panel') !== '0'; } catch (x) { return true; } })(), pick: false };
   const nowMin = () => { const d = new Date(); return d.getHours() * 60 + d.getMinutes(); };
   const visible = e => !CS.off[e.cal];
@@ -538,7 +538,7 @@
     i.oninput = () => { CS.q = i.value; const d = parseEv(i.value); $('#cal-prev').innerHTML = d ? `${fmtD(d.o)} · ${fmtT(d.s)}${d.people?.length ? ' · ' + d.people.map(k => ppl(k).n.split(' ')[0]).join(', ') : ''}` : ''; };
     i.onkeydown = e => { if (e.key === 'Enter') grow(); if (e.key === 'Escape') { i.value = ''; CS.q = ''; CS.keep = null; i.blur(); } };
     $('#cal-bar .cadd > svg.i')?.addEventListener('click', grow); }
-  /* New event: the bar grows into the editor in place (LumaUI action center, Charlie's reply editor): what was understood from what you
+  /* New event: the bar grows into the editor in place (SunoUI action center, Charlie's reply editor): what was understood from what you
      typed, ready to check and change, then Create. Esc folds it back to the bar and keeps it. */
   const CALERT = [[0, 'None'], [-1, 'At the start'], [10, '10 minutes before'], [30, '30 minutes before'], [60, '1 hour before'], [1440, '1 day before']];
   function calDraftCard() { const el = $('#cal-draft'), d = CS.draft; if (!el) return; if (!d) { el.hidden = true; el.innerHTML = ''; return; }
@@ -567,7 +567,7 @@
     if (o == null) o = TODAY; if (st == null) st = Math.min(DE - 60, Math.ceil((nowMin() + 30) / 60) * 60);
     const cal = /stand|review|call|press|launch|meeting|sync/i.test(t) ? 'work' : people.includes('MO') ? 'family' : 'personal';
     return { o, s: st, e: Math.min(24 * 60, st + len), t: t.charAt(0).toUpperCase() + t.slice(1), people, cal, ...(loc ? { loc } : {}) }; }
-  /* The panel on the right is the LumaUI details pane and Calendar's main view: open by default on today, then whichever day you pick;
+  /* The panel on the right is the SunoUI details pane and Calendar's main view: open by default on today, then whichever day you pick;
      an event opens in the same pane with a way back. × or the corner toggle hides it (remembered); on a phone it's a drawer you open. */
   function calDet() { calDet0(); if (calNarrow()) calBar(); }
   function calDet0() { const d = $('#cal-det'), on = calPanelOn(); $('#cal-cals [data-cpanel]')?.classList.toggle('on', on); if (!on) { d.hidden = true; return; }

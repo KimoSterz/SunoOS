@@ -73,7 +73,7 @@
       el.innerHTML = `<header class="suph1"><button class="supage" type="button" data-drlib><b>${ic('chevron-left')}Terrace</b></button><button class="ib" type="button" data-drleft title="Hide filmstrip" aria-label="Hide filmstrip">${ic('panel-left')}</button></header><div class="suscroll drstrip">${DR.photos.map((p, i) => `<button type="button" class="drst${i === DR.cur ? ' on' : ''}${p.flag === -1 ? ' rej' : ''}" data-drgo="${i}"><span class="drthumb">${drImg(p)}</span></button>`).join('')}</div>`; requestAnimationFrame(() => $('#dr-left .drst.on')?.scrollIntoView({ block: 'nearest' })); return; }
     if (!DR.left) { el.innerHTML = `<button class="supill" type="button" data-drleft>${ic('image')}<b>Terrace</b><span>${DR.photos.length} photos</span></button>`; return; }
     const row = (icn, n, c, on, attr = 'data-drtodo="This set is empty in the mockup"') => `<div class="sulyr${on ? ' lsel' : ''}" style="--d:0" ${attr}${on ? ' aria-current="page"' : ''}><i class="sucar"></i>${ic(icn)}<span>${n}</span>${typeof c === 'number' ? lCount(c) : `<em class="suem">${c}</em>`}</div>`;
-    el.innerHTML = `<header class="suph1"><button class="supage" type="button" data-drtodo="Library on Luma SSD · 1,284 photos"><b>Library</b>${ic('chevron-down')}</button><button class="ib" type="button" data-drleft title="Hide library" aria-label="Hide library">${ic($('#w-darkroom').classList.contains('phone') ? 'x' : 'panel-left')}</button></header><div class="suscroll">
+    el.innerHTML = `<header class="suph1"><button class="supage" type="button" data-drtodo="Library on Suno SSD · 1,284 photos"><b>Library</b>${ic('chevron-down')}</button><button class="ib" type="button" data-drleft title="Hide library" aria-label="Hide library">${ic($('#w-darkroom').classList.contains('phone') ? 'x' : 'panel-left')}</button></header><div class="suscroll">
       ${row('image', 'All photos', 1284)}${row('flag', 'Picks', 212)}${row('download', 'Last import', 18)}<h6 class="suh">Shoots</h6>${row('calendar', 'Terrace', 'Sep 21', true, '')}${row('calendar', 'Studio', 'Sep 18')}${row('calendar', 'Loft launch', 'Sep 12')}${row('calendar', 'Street', 'Aug 30')}
       <h6 class="suh">Albums</h6>${row('bookmark', 'Portfolio', 48)}${row('bookmark', 'Launch press', 22)}</div>`; }
   function drInsp() { const el = $('#dr-right'), p = drP(), sec = (t, b, add = '') => `<section class="susec"><header><b>${t}</b>${add}</header>${b}</section>`; if (DR.focus) { el.className = 'supanel r gone'; return; } el.className = 'supanel r';
@@ -92,7 +92,7 @@
     else body = `<p class="drhint">Click a spot on the photo to remove it. Focus fills it from the area around it.</p>${p.heal.length ? `<dl class="sedl">${p.heal.map((h, i) => `<div><dt>Spot ${i + 1}</dt><dd>${Math.round(h[0])}%, ${Math.round(h[1])}%</dd></div>`).join('')}</dl><button class="bt sm fill suwide2" type="button" data-drhealclear>Clear spots</button>` : ''}`;
     el.innerHTML = `<header class="suinsph">${ic({ adjust: 'sliders-vertical', crop: 'crop', looks: 'aperture', mask: 'user', heal: 'bandage' }[DR.tool])}<b>${title}</b>${act}<button class="ib" type="button" data-drreset title="Reset all">${ic('rotate-ccw')}</button></header>${DR.tool === 'adjust' || DR.tool === 'looks' ? hist : ''}<div class="suscroll">${body}</div>`;
     drHist(); if (drNarrow() && DR.view === 'edit' && $('#dr-bar .drinsp2')) drBar(); }
-  /* The library's photo information: the LumaUI details pane, closed until Info, closed again when nothing is selected */
+  /* The library's photo information: the SunoUI details pane, closed until Info, closed again when nothing is selected */
   function drInfo() { const el = $('#dr-info'), p = drP(), on = lDPShow(el, { open: DR.info || (drNarrow() && DR.px === 'info'), subject: DR.view === 'library' && DR.sel.length }); if (!on) return;
     const [cam, lens, ss, ap, iso] = p.cam, many = DR.sel.length > 1;
     el.innerHTML = lDP({ title: many ? `${DR.sel.length} photos` : p.n, close: 'data-drinfo', body: `<div class="drinfoimg"><span class="drthumb">${drImg(p)}</span></div>`
@@ -181,7 +181,7 @@
     if (D.k === 'crop') { const p = drP(), dx = (e.clientX - D.x0) / D.r.width * 100, dy = (e.clientY - D.y0) / D.r.height * 100, c = { ...D.c0 }; if (D.d.includes('w')) c.l = Math.max(0, Math.min(80 - c.r, D.c0.l + dx)); if (D.d.includes('e')) c.r = Math.max(0, Math.min(80 - c.l, D.c0.r - dx)); if (D.d.includes('n')) c.t = Math.max(0, Math.min(80 - c.b, D.c0.t + dy)); if (D.d.includes('s')) c.b = Math.max(0, Math.min(80 - c.t, D.c0.b - dy));
       p.crop = c; DR.ar = 'free'; const cr = $('#dr-crop'); if (cr) cr.style.cssText = `--t:${c.t}%;--r:${c.r}%;--b:${c.b}%;--l:${c.l}%`; } }
   function drUp() { if (DR.drag?.k === 'crop') { DR.drag = null; drEdit(); drInsp(); return; } DR.drag = null; }
-  function renderDarkroom() { $('#w-darkroom').addEventListener('luma-phone', e => { DR.left = !e.detail; DR.pinsp = false; setTimeout(drAll, 120); }); $('#dr-top').innerHTML = `<img src="${A}photo-editor.svg" alt=""><b>Focus</b><span class="sumeta">1,284 photos · Luma SSD</span><span class="sutopr" id="dr-topr"></span>`;
+  function renderDarkroom() { $('#w-darkroom').addEventListener('suno-phone', e => { DR.left = !e.detail; DR.pinsp = false; setTimeout(drAll, 120); }); $('#dr-top').innerHTML = `<img src="${A}photo-editor.svg" alt=""><b>Focus</b><span class="sumeta">1,284 photos · Suno SSD</span><span class="sutopr" id="dr-topr"></span>`;
     const w = $('#dr-work'); w.addEventListener('pointerdown', drPtr); addEventListener('pointermove', drMove); addEventListener('pointerup', drUp);
     new ResizeObserver(() => { if (DR.view === 'edit') drFitPic(); }).observe(w); drAll(); }
   document.addEventListener('input', e => { const t = e.target; if (!t.closest?.('#w-darkroom')) return; const p = drP();
@@ -220,7 +220,7 @@
     scale: 100, px: 0, py: 0, rot: 0, ax: 50, ay: 50, crop: { l: 0, r: 0, t: 0, b: 0 }, op: 100, blend: 'Normal', speed: 100, stab: false, vol: 0, pan: 0, eq: 'Flat', nr: false, fx: [], ...x });
   const RL = { t: 12.3, playing: false, sel: null, tool: 'select', lib: false, libTab: 'media', skim: null, zoom: 1, snap: true, focus: false, exp: 'share', itab: 'video', loop: false,
     main: RLMEDIA.slice(0, 7).map(([n, f, d]) => rlClip(n, f, d)),
-    over: [rlClip('Luma 1.0', '', 4, { kind: 'title', s: 1, text: 'Luma 1.0', sub: 'A better computer', style: 'big' }), rlClip('Home office', 'life-hero-home', 4, { kind: 'video', s: 18.5, scale: 42, px: 26, py: -24, blend: 'Normal' }), rlClip('October 14', '', 5, { kind: 'title', s: 37, text: 'October 14', sub: 'simplyluma.com', style: 'lower' })],
+    over: [rlClip('SunoOS 0.1', '', 4, { kind: 'title', s: 1, text: 'SunoOS 0.1', sub: 'A better computer', style: 'big' }), rlClip('Home office', 'life-hero-home', 4, { kind: 'video', s: 18.5, scale: 42, px: 26, py: -24, blend: 'Normal' }), rlClip('October 14', '', 5, { kind: 'title', s: 37, text: 'October 14', sub: 'simplyluma.com', style: 'lower' })],
     audio: [[rlClip('Late light', '', 44, { kind: 'music', s: 0, vol: -8, h: 150 })], [rlClip('Narration, take 3', '', 11, { kind: 'voice', s: 4, vol: -3, h: 190, nr: true }), rlClip('Narration, take 3 (b)', '', 11, { kind: 'voice', s: 23, vol: -3, h: 190 })]],
     trans: {}, marks: [5.2, 20.4] };
   RL.trans[RL.main[1].id] = 'dissolve'; RL.trans[RL.main[4].id] = 'dissolve';
@@ -299,7 +299,7 @@
   function rlLib0() { const el = $('#rl-lib'), w = $('#w-reel'), open = RL.lib && !RL.focus; w.classList.toggle('libopen', open); $('#rl-libb')?.classList.toggle('on', open); if (!open) return; const T = RL.libTab, c = RL.sel && rlG(RL.sel), vid = c && !c.kind || c?.kind === 'video';
     const note = T === 'fx' || T === 'lut' ? `<p class="rlnote">${vid ? `Applies to ${esc(c.n)}` : 'Select a clip to apply to it'}</p>` : T === 'trans' ? '<p class="rlnote">Goes on the cut nearest the playhead</p>' : '';
     const body = T === 'media' ? `<div class="rlmedia">${RLMEDIA.map(([n, f, d], i) => `<button type="button" data-rladd="${i}" title="Add to the end of the story"><span style="background-image:url('${PH}${f}.webp')"><em>0:${String(d).padStart(2, '0')}</em></span><b>${n}</b></button>`).join('')}</div>`
-      : T === 'titles' ? `<div class="rltitles">${[['big', 'Centred', 'Luma 1.0'], ['lower', 'Lower third', 'Priya Raman'], ['end', 'End card', 'Thank you']].map(([k, n, x]) => `<button type="button" data-rladdtitle="${k}"><span class="rltprev ${k}"><b>${x}</b></span><b>${n}</b></button>`).join('')}</div>`
+      : T === 'titles' ? `<div class="rltitles">${[['big', 'Centred', 'SunoOS 0.1'], ['lower', 'Lower third', 'Priya Raman'], ['end', 'End card', 'Thank you']].map(([k, n, x]) => `<button type="button" data-rladdtitle="${k}"><span class="rltprev ${k}"><b>${x}</b></span><b>${n}</b></button>`).join('')}</div>`
       : T === 'trans' ? `<div class="rlfxgrid">${[['dissolve', 'Cross dissolve'], ['black', 'Fade through black'], ['slide', 'Slide']].map(([k, n]) => `<button type="button" data-rladdtrans="${k}"><span class="rlfxp tr-${k}"><i style="background-image:url('${PH}life-hero-studio.webp')"></i><i style="background-image:url('${PH}life-sync-terrace.webp')"></i></span><b>${n}</b></button>`).join('')}</div>`
       : T === 'fx' ? `<div class="rlfxgrid">${Object.entries(RLFX).map(([k, [n]]) => `<button type="button" data-rladdfx="${k}"${vid ? '' : ' disabled'}><span class="rlfxp fx-${k}"><i style="background-image:url('${PH}life-hero-writing.webp')"></i></span><b>${n}</b></button>`).join('')}</div>`
       : T === 'lut' ? `<div class="rlfxgrid">${Object.entries(RLLUT).filter(([k]) => k !== 'none').map(([k, [n, f, tint]]) => `<button type="button" data-rllut="${k}"${vid ? '' : ' disabled'} class="${c?.lut === k ? 'on' : ''}"><span class="rlfxp"><i style="background-image:url('${PH}life-hero-writing.webp');filter:${f}"></i>${tint ? `<i class="rlfxt" style="background:${tint}"></i>` : ''}</span><b>${n}</b></button>`).join('')}</div><button class="bt sm fill rlimport" type="button" data-rltodo="Pick a .cube file">${ic('plus')}Import a LUT (.cube)…</button>`
@@ -396,7 +396,7 @@
     const tb = q('[data-rltab]'); if (tb) { RL.libTab = tb.dataset.rltab; rlLib(); return true; }
     const it = q('[data-rlitab]'); if (it) { RL.itab = it.dataset.rlitab; rlInsp(); return true; }
     const ad = q('[data-rladd]'); if (ad) { const [n, f, d] = RLMEDIA[+ad.dataset.rladd], c = rlClip(n, f, d); RL.main.push(c); rlAll(); rlToast(`${n} added to the end`); return true; }
-    const at = q('[data-rladdtitle]'); if (at) { const k = at.dataset.rladdtitle, c = rlClip('Title', '', 4, { kind: 'title', s: RL.t, text: { big: 'Luma 1.0', lower: 'Priya Raman', end: 'Thank you' }[k], sub: { big: '', lower: 'Design', end: 'simplyluma.com' }[k], style: k }); RL.over.push(c); RL.sel = c.id; RL.itab = 'text'; rlAll(); rlLayout(); return true; }
+    const at = q('[data-rladdtitle]'); if (at) { const k = at.dataset.rladdtitle, c = rlClip('Title', '', 4, { kind: 'title', s: RL.t, text: { big: 'SunoOS 0.1', lower: 'Priya Raman', end: 'Thank you' }[k], sub: { big: '', lower: 'Design', end: 'simplyluma.com' }[k], style: k }); RL.over.push(c); RL.sel = c.id; RL.itab = 'text'; rlAll(); rlLayout(); return true; }
     const ax = q('[data-rladdtrans]'); if (ax) { const A = rlAt(RL.t), c = A.local < A.c.d / 2 && A.i > 0 ? RL.main[A.i - 1] : A.c; RL.trans[c.id] = ax.dataset.rladdtrans; rlTL(); rlPaint(); rlToast('Transition added'); return true; }
     const af = q('[data-rladdfx]'); if (af) { const c = rlG(RL.sel); c.fx.push({ k: af.dataset.rladdfx, amt: 50, on: true }); RL.itab = 'fx'; rlPaint(); rlTL(); rlInsp(); rlToast(`${RLFX[af.dataset.rladdfx][0]} added to ${c.n}`); return true; }
     const lu = q('[data-rllut]'); if (lu) { const c = rlG(RL.sel); c.lut = lu.dataset.rllut; RL.itab = 'colour'; rlPaint(); rlTL(); rlInsp(); rlLib(); return true; }
@@ -510,7 +510,7 @@
      Any [data-share] button opens it, anchored to the button. There is no key: sharing has no single job, so every
      target acts the moment you tap it.
        Header       what is being shared
-       People       recent people on Luma, a scroller; tap to send in Messages
+       People       recent people on Suno, a scroller; tap to send in Messages
        Apps         where it can go, a scroller: Messages, Mail, Nearby, then apps that take it in (Notes, Photos, Canvas, Write, Ari)
        Actions      an inset list: Copy, Save a copy, Print
        Link         an inset: who the link works for (a picker), and Copy link as a raised button inside it
@@ -526,7 +526,7 @@
     if (app === 'calendar' && CS.sel != null) { const e = EVS.find(x => x.id === CS.sel); return { kind: 'link', t: e.t, sub: `${fmtD(e.o)} · ${e.all ? 'All day' : fmtT(e.s)}`, th: icon }; }
     if (app === 'viewer') { const f = vwF(VW.cur); if (f) return { kind: 'file', img: !f.pdf, t: f.n, sub: `${f.kind} · ${f.sz}`, th: f.pdf ? icon : `<img src="${f.src}" alt="">` }; }
     if (app === 'contacts') { const k = CT.cur, p = ppl(k); return { kind: 'contact', self: k, u: p.u, t: p.n, sub: p.u ? `simplyluma.com/@${p.u}` : 'Contact card', th: av(k, 46) }; }
-    if (app === 'maps') { if (btn.dataset.share === 'loc') return { kind: 'link', t: 'My location', sub: 'Live for 1 hour · Luma Studio, 2nd St', th: `<span class="shloc">${ic('navigation')}</span>` }; const p = mpP(MP.place); if (p) return { kind: 'link', t: p.n, sub: `${p.c} · ${p.addr}, Oakland`, th: `<img src="${p.img}" alt="">` }; }
+    if (app === 'maps') { if (btn.dataset.share === 'loc') return { kind: 'link', t: 'My location', sub: 'Live for 1 hour · Suno Studio, 2nd St', th: `<span class="shloc">${ic('navigation')}</span>` }; const p = mpP(MP.place); if (p) return { kind: 'link', t: p.n, sub: `${p.c} · ${p.addr}, Oakland`, th: `<img src="${p.img}" alt="">` }; }
     if (app === 'youtube') return ytShare();
     if (app === 'viola' || app === 'maps' || app === 'tide') return { kind: 'link', t: title, sub: { viola: 'simplyluma.com', maps: 'A place in Maps', tide: 'An album in Tide' }[app], th: icon };
     const img = win?.querySelector('.main img:not([src$=".svg"]), .isle img:not([src$=".svg"])'); return { kind: 'file', img: app === 'photos' || app === 'viewer' || app === 'darkroom', t: title, sub: cfName(app), th: img ? `<img src="${img.getAttribute('src')}" alt="">` : icon }; }
@@ -541,7 +541,7 @@
     if (together) { const d = s.d, q = SHR.q.trim().toLowerCase(), sug = q ? Object.keys(PPL).filter(k => k !== 'me' && PPL[k].u && !d.people.some(p => p[0] === k) && (PPL[k].n.toLowerCase().includes(q) || PPL[k].u.includes(q.replace('@', '')))).slice(0, 4) : [];
       const LOPT = [['off', 'Only people with access', 'Nobody else can open it'], ['view', 'Anyone with the link can view', 'No account needed'], ['edit', 'Anyone with the link can edit', 'No account needed']], lo = LOPT.find(x => x[0] === d.link);
       return `${head}<hr class="shd"><label class="shinv">${ic('user-plus')}<input data-shq placeholder="Add people by name or @username" value="${esc(SHR.q)}" autocomplete="off" spellcheck="false"></label>
-        ${sug.length ? `<div class="shsug">${sug.map((k, i) => `<button type="button" class="${i ? '' : 'first'}" data-shadd="${k}">${av(k, 28)}<span><b>${esc(PPL[k].n)}</b><small>@${PPL[k].u}</small></span><em>${i ? '' : 'Return to add'}</em></button>`).join('')}</div>` : q ? `<p class="shnone">No one called “${esc(SHR.q)}” is on Luma yet.</p>` : ''}
+        ${sug.length ? `<div class="shsug">${sug.map((k, i) => `<button type="button" class="${i ? '' : 'first'}" data-shadd="${k}">${av(k, 28)}<span><b>${esc(PPL[k].n)}</b><small>@${PPL[k].u}</small></span><em>${i ? '' : 'Return to add'}</em></button>`).join('')}</div>` : q ? `<p class="shnone">No one called “${esc(SHR.q)}” is on Suno yet.</p>` : ''}
         <div class="shlist"><div class="shp">${av('me', 32)}<span><b>You</b><small>@nick</small></span><em>Owner</em></div>
         ${d.people.map(([k, r], i) => `<div class="shp">${av(k, 32)}<span><b>${esc(PPL[k].n)}</b><small>@${PPL[k].u}</small></span><button class="shrole" type="button" data-shmenu="${i}">${SHROLE.find(x => x[0] === r)[1]}${ic('chevron-down')}</button>${shMenu(i, SHROLE, r)}</div>`).join('')}</div>
         <div class="shlink"><span class="shli">${ic(d.link === 'off' ? 'lock' : 'globe')}</span><button class="shlpk" type="button" data-shmenu="link"><b>${lo[1]}</b><small>${lo[2]}</small>${ic('chevrons-up-down')}</button>${copyChip}${shMenu('link', LOPT, d.link)}</div>`; }
@@ -607,14 +607,14 @@
   function lFile(f, o = {}) { const k = LFK[f.k] || LFK.zip, a = LDEF[f.k] || 'filer', tag = o.tag || 'span';
     return `<${tag} class="lfc${o.sel ? ' sel' : ''}${o.cls ? ' ' + o.cls : ''}"${tag === 'button' ? ' type="button"' : ''} ${o.attr || ''}><span class="lfth${f.src ? ' img' : ''}">${f.src ? `<img src="${f.src}" alt="">` : `<img src="${lAppI(a)}" alt="">`}${o.badge || ''}</span><span class="lftx"><b class="lmid" title="${esc(f.n)}">${lMid(f.n)}</b><small>${[f.sz, o.sub || k[0]].filter(Boolean).join(' · ')}</small>${o.extra || ''}</span>${o.act ?? `<span class="bt sm fill lopenb" role="button" tabindex="0" title="Open in ${lAppN(a)}" aria-label="Open in ${lAppN(a)}" ${o.open || `data-lui-open="${a}" data-lui-name="${esc(f.n)}"`}><img class="lappi" src="${lAppI(a)}" alt="">Open</span>`}</${tag}>`; }
 
-  /* ══ LumaUI components (v70) ═══════════════════════════════════════════════════════════════
+  /* ══ SunoUI components (v70) ═══════════════════════════════════════════════════════════════
      The shared parts from the Studio audit. Each helper returns markup (or acts on one element); apps call these
-     instead of writing their own. The LumaUI window (?app=lumaui) shows every one with its states. */
+     instead of writing their own. The SunoUI window (?app=lumaui) shows every one with its states. */
 
-  /* LumaUI: Count badge. lCount(1284) is a total, shown exactly (1,284); lCount(2, true) is unread or needs attention, capped at 99+. Nothing for 0. */
+  /* SunoUI: Count badge. lCount(1284) is a total, shown exactly (1,284); lCount(2, true) is unread or needs attention, capped at 99+. Nothing for 0. */
   const lCount = (n, acc) => n ? `<em class="lcount${acc ? ' acc' : ''}">${acc ? (n > 99 ? '99+' : n) : n.toLocaleString('en-US')}</em>` : '';
 
-  /* LumaUI: Details pane. The inside of <aside class="ldp">: lDP({ title, close: 'data-x', body }).
+  /* SunoUI: Details pane. The inside of <aside class="ldp">: lDP({ title, close: 'data-x', body }).
      Parts: lDP.kv([[key, value]]) facts with hairlines · lDP.lab(title, button) section label · lDP.row({ av, n, sub, attr, acts }) a person
      or thing with full-row hover and quiet actions (lDP.act) · lAddRow(label, attr) the "Add people" row. lDPShow opens and closes it. */
   const lDP = o => `<header class="ldph"><b>${esc(o.title || 'Details')}</b><button class="ib" type="button" ${o.close || ''} aria-label="Close" title="Close">${ic('x')}</button></header><div class="ldpb">${o.body || ''}</div>`;
@@ -627,24 +627,24 @@
   function lDPShow(pane, o) { if (!pane) return false; const on = !!(o.main || (o.open && o.subject)); if (o.main) pane.dataset.main = '';
     if (on && pane.hidden) { pane.hidden = false; pane.classList.remove('enter'); void pane.offsetWidth; pane.classList.add('enter'); } else if (!on) pane.hidden = true; return on; }
 
-  /* LumaUI: Details pane item. A thing in a details-pane list (an event, a thread): its mark, a title, one quiet line, an optional trail;
+  /* SunoUI: Details pane item. A thing in a details-pane list (an event, a thread): its mark, a title, one quiet line, an optional trail;
      full-row hover like the people rows. lDPItem({ lead, n, sub, attr, style, trail }); sub and trail are markup. */
   function lDPItem(o) { return `<button class="ldpitem" type="button" ${o.attr || ''}${o.style ? ` style="${o.style}"` : ''}>${o.lead || ''}<span><b>${esc(o.n)}</b>${o.sub ? `<small>${o.sub}</small>` : ''}</span>${o.trail || ''}</button>`; }
 
-  /* LumaUI: Stacked button. lStack([{ icon, label, attr, danger, disabled }], 'sm'): icon on top, label below, in equal pairs or trios. */
+  /* SunoUI: Stacked button. lStack([{ icon, label, attr, danger, disabled }], 'sm'): icon on top, label below, in equal pairs or trios. */
   const lStack = (items, size = '', cls = '') => `<div class="lstks${size ? ' ' + size : ''}${cls ? ' ' + cls : ''}">${items.map(b => `<button class="lstk${b.danger ? ' danger' : ''}" type="button" ${b.attr || ''}${b.disabled ? ' disabled' : ''}>${ic(b.icon)}<span>${esc(b.label)}</span></button>`).join('')}</div>`;
-  /* LumaUI: Contact actions. Contacts owns them; anywhere a person appears embeds this: lContactActs(personKey, { size: 'sm' }). */
+  /* SunoUI: Contact actions. Contacts owns them; anywhere a person appears embeds this: lContactActs(personKey, { size: 'sm' }). */
   const lContactActs = (k, o = {}) => { const p = ppl(k) || {}, on = p.on || p.u; return lStack([['message-square', 'Message', 'message'], ['phone', 'Call', 'call'], ['video', 'Video', 'video', !on], ['mail', 'Email', 'email', !p.u]]
     .map(([icon, label, a, off]) => ({ icon, label, attr: `data-lui-ca="${a}" data-lui-p="${k}"`, disabled: off })), o.size || '', 'lcacts'); };
 
-  /* LumaUI: Mini cards. The owning app's own card, shown elsewhere: a person (Contacts), an event (Calendar), a song (Tide), a place (Maps).
+  /* SunoUI: Mini cards. The owning app's own card, shown elsewhere: a person (Contacts), an event (Calendar), a song (Tide), a place (Maps).
      Files use lFile (Filer). */
-  const lContactCard = (k, o = {}) => { const p = ppl(k); return `<div class="lmini person"><span class="lmth">${av(k, 44)}</span><span><b>${esc(p.n)}</b><small>${p.u ? `<span class="onluma"><i></i>@${esc(p.u)} · On Luma</span>` : esc(p.phone || '')}</small></span>${lContactActs(k, { size: 'sm' })}</div>`; };
+  const lContactCard = (k, o = {}) => { const p = ppl(k); return `<div class="lmini person"><span class="lmth">${av(k, 44)}</span><span><b>${esc(p.n)}</b><small>${p.u ? `<span class="onluma"><i></i>@${esc(p.u)} · On Suno</span>` : esc(p.phone || '')}</small></span>${lContactActs(k, { size: 'sm' })}</div>`; };
   const lEventCard = e => `<div class="lmini event" style="--eh:${e.h ?? 250}"><span class="lmth"><em>${esc(e.mon)}</em><strong>${esc(e.day)}</strong></span><span><b>${esc(e.t)}</b><small>${esc(e.when)}${e.where ? ' · ' + esc(e.where) : ''}</small></span><button class="bt sm" type="button" data-lui-todo="Added to Calendar">Add</button></div>`;
   const lSongCard = s => `<div class="lmini song"><span class="lmth"><img src="${s.img}" alt=""></span><span><b>${esc(s.t)}</b><small>${esc(s.a)} · ${esc(s.al)}</small></span><button class="lmplay" type="button" data-lui-todo="Playing in Tide" aria-label="Play in Tide" title="Play in Tide">${ic('play')}</button></div>`;
   const lPlaceCard = pl => `<div class="lmini place"><span class="lmth"><i>${ic(pl.icon || 'map-pin')}</i></span><span><b>${esc(pl.n)}</b><small>${esc(pl.addr)}${pl.eta ? ' · ' + esc(pl.eta) : ''}</small></span><button class="bt sm" type="button" data-lui-todo="Directions open in Maps">Directions</button></div>`;
 
-  /* LumaUI: Selection bubble (Write's .selbar, shared). lBubble(bar, host, rect, html) shows it 10 above the selection, centred and kept
+  /* SunoUI: Selection bubble (Write's .selbar, shared). lBubble(bar, host, rect, html) shows it 10 above the selection, centred and kept
      inside host, flipping below near the top; it waits for a drag to finish. lBubble.hide(bar). Arrows move inside it; Esc hides it;
      Alt+F10 reaches it from the text. */
   function lBubble(bar, host, r, html) { if (lBubble.down) { lBubble.wait = [bar, host, r, html]; return; } if (html != null) bar.innerHTML = html;
@@ -660,7 +660,7 @@
     else if (bar && e.key === 'Escape') { lBubble.hide(bar); lBubble.ret?.focus(); }
     else if (e.altKey && e.key === 'F10') { const s = front()?.querySelector('.selbar.show'); if (s) { lBubble.ret = document.activeElement; s.querySelector('button')?.focus(); e.preventDefault(); } } });
 
-  /* LumaUI: Action center. The bar grows in place: .fbar → .fbar.lac2 (double) → .lac (the editor, Charlie's reply) → .lacsplit.
+  /* SunoUI: Action center. The bar grows in place: .fbar → .fbar.lac2 (double) → .lac (the editor, Charlie's reply) → .lacsplit.
      lAC.open(el) plays the rise; lAC.bind(el, collapse) makes Esc collapse it back to the bar, keeping what was typed. */
   const lAC = { open(el) { el.hidden = false; el.classList.remove('enter'); void el.offsetWidth; el.classList.add('enter'); }, bind(el, fn) { if (el) el._lacCollapse = fn; } };
   document.addEventListener('keydown', e => { if (e.key !== 'Escape') return; const el = e.target.closest?.('.lac'); if (el && el._lacCollapse && !$('#lmenu, #cr-pop, #lc')) { e.preventDefault(); e.stopPropagation(); el._lacCollapse(); } }, true);
@@ -668,10 +668,10 @@
   /* The reference: Charlie's reply editor folds back to the bar on Esc and keeps the draft (reopening restores it) */
   lAC.bind($('#cr-comp'), () => { const d = CR.draft; if (!d || d.mode === 'new') return; const ed = $('#cr-comp .cr2ed'); if (ed) d.html = ed.innerHTML; CR.keep = d; CR.draft = null; crBody(); crBar(); setTimeout(() => $('#cr-bar [data-crexpand]')?.focus(), 60); });
 
-  /* LumaUI: Mode switch. lModes([[key, label, icon]], cur, 'data-x'): icon plus label, for the top-right corner (.flo.lcorner). */
+  /* SunoUI: Mode switch. lModes([[key, label, icon]], cur, 'data-x'): icon plus label, for the top-right corner (.flo.lcorner). */
   const lModes = (items, cur, attr, label = 'Mode') => seg(items.map(([k, n, i]) => [k, `${ic(i)}<span>${esc(n)}</span>`, n]), cur, attr, label, 'lmodes');
 
-  /* LumaUI: Open in. lOpenIn(anchor, kind, name) lists the apps that can open it (best Luma app first, the default marked, then Other app);
+  /* SunoUI: Open in. lOpenIn(anchor, kind, name) lists the apps that can open it (best Suno app first, the default marked, then Other app);
      lOpenBtn(kind, attr) is an Open button wearing the default app's icon, named "Open in <App>". */
   const LOPEN = { img: ['canvas', 'darkroom', 'viewer', 'photos'], pdf: ['viewer', 'write'], doc: ['write', 'viewer'], md: ['write', 'notes'], deck: ['stage', 'viewer'], sheet: ['grid'], video: ['reel', 'viewer'], audio: ['tide', 'session', 'memos'], zip: ['filer'], iso: ['disks', 'filer'], app: ['valet'] };
   const LDEF = { img: 'viewer', pdf: 'viewer', doc: 'write', md: 'write', deck: 'stage', sheet: 'grid', video: 'viewer', audio: 'tide', zip: 'filer', iso: 'disks', app: 'valet', note: 'notes' };
@@ -682,7 +682,7 @@
   /* The name keeps its extension when it's cut: "press-rel…ase.write" never loses ".write" */
   const lMid = n => { const m = String(n).match(/^(.+?)(.{0,5}\.[A-Za-z0-9]{1,6})$/); return m ? `<span>${esc(m[1])}</span><span>${esc(m[2])}</span>` : `<span>${esc(n)}</span>`; };
 
-  /* LumaUI: Destructive dialog. lConfirm(win, { title, body, action: 'Delete', icon: 'trash-2', option, onOK(optionOn) }).
+  /* SunoUI: Destructive dialog. lConfirm(win, { title, body, action: 'Delete', icon: 'trash-2', option, onOK(optionOn) }).
      For what can't come back; things you can undo use lToast with Undo instead. */
   function lConfirm(win, o) { lConfirm.close(true); if (!win) return; lConfirm.o = o; lConfirm.ret = document.activeElement;
     win.insertAdjacentHTML('beforeend', `<div class="lcscrim" id="lc-scrim"></div><div class="lconf" id="lc" role="alertdialog" aria-modal="true" aria-labelledby="lc-t" aria-describedby="lc-d"><span class="lcico">${ic(o.icon || 'trash-2')}</span><h2 id="lc-t">${esc(o.title)}</h2><p id="lc-d">${esc(o.body)}</p>${o.option ? `<button class="lcopt" type="button" role="checkbox" aria-checked="false" data-lui-copt><i>${ic('check')}</i>${esc(o.option)}</button>` : ''}<div class="lcacts2"><button class="bt fill" type="button" data-lui-cno>Cancel</button><button class="bt danger" type="button" data-lui-cok>${esc(o.action || 'Delete')}</button></div></div>`);

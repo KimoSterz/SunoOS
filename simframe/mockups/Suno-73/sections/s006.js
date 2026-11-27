@@ -83,7 +83,7 @@
       : `<div class="vwcmp ${m}" id="vw-cmp"><img src="${a.src}" alt="" class="base"><img src="${b.src}" alt="" class="top" style="${m === 'swipe' ? `clip-path:inset(0 0 0 ${VW.cmpX * 100}%)` : ''}">${m === 'swipe' ? `<i class="vwhandle" style="left:${VW.cmpX * 100}%"><b>${ic('chevrons-up-down')}</b></i><span class="vwlab l">${esc(a.n)}</span><span class="vwlab r">${esc(b.n)}</span>` : `<span class="vwlab l">Only what changed is bright</span>`}</div>`; }
 
   /* ── Information ── */
-  /* The one LumaUI details pane (#17): closed until Information opens it, a drawer on a phone */
+  /* The one SunoUI details pane (#17): closed until Information opens it, a drawer on a phone */
   function vwInfo() { const box = $('#vw-info'), f = vwF(VW.cur); $('#w-viewer').classList.toggle('noinfo', !VW.info); if (!lDPShow(box, { open: VW.info, subject: f && !f.gone })) return; const [W, H] = f.pdf ? [612, 792] : vwNat(f), L = (VW.ann[f.id] || []), adj = Object.values(VW.adj[f.id] || {}).some(v => v) || VW.crop[f.id] || VW.rot[f.id] || VW.flip[f.id];
     const rows = [['Kind', f.kind], ['Size', f.sz], [f.pdf ? 'Pages' : 'Dimensions', f.pdf ? '3 · US Letter' : `${W} × ${H}`], ['Modified', f.id === 'frame' ? '15 September 2026' : 'Today, 9:40 AM'], ['Where', f.where]];
     box.innerHTML = lDP({ title: 'Information', close: 'data-vwinfo', body: `<b class="vwiname">${esc(f.n)}</b><small class="vwis">${f.pdf ? 'PDF · 3 pages' : `${(W * H / 1e6).toFixed(1)} MP · ${W} × ${H}`}</small>
@@ -123,7 +123,7 @@
         ${f.text ? `<button class="bt${VW.live ? ' on' : ''} vwtext" type="button" data-vwlive>${ic('scan-text')}Text</button>` : ''}`}
 `; }
     setBar(bar, h); if (vwNarrow() && VW.mode !== 'view' && !VW.cmp) bar.insertAdjacentHTML('afterbegin', `<button class="ib" type="button" data-vwmode="view" aria-label="Close" title="Close">${ic('x')}</button>`); vwPalette(); vwAdjPanel(); }
-  /* Top right: the modes and the file itself (Open in, Share, Information), per the LumaUI placement rule */
+  /* Top right: the modes and the file itself (Open in, Share, Information), per the SunoUI placement rule */
   function vwCorner(f) { let c = $('#vw-corner'); if (!c) { $('#vw-main').insertAdjacentHTML('beforeend', '<div class="flo lcorner" id="vw-corner"></div>'); c = $('#vw-corner'); } c.hidden = !!VW.cmp;
     c.innerHTML = `${lModes([['view', 'View', 'eye'], ['markup', f.pdf ? 'Sign and mark' : 'Mark up', f.pdf ? 'signature' : 'pen-line'], ...(f.pdf ? [] : [['adjust', 'Adjust', 'sliders-horizontal']])], VW.mode, 'data-vwmode')}<button class="ib" type="button" data-vwopenin title="Open in" aria-label="Open in" aria-haspopup="menu">${ic('square-arrow-out-up-right')}</button><button class="ib" type="button" data-share title="Share" aria-label="Share">${ic('share-2')}</button><button class="ib${VW.info ? ' on' : ''}" type="button" data-vwinfo title="Information" aria-label="Information" aria-pressed="${!!VW.info}">${ic('info')}</button>`; requestAnimationFrame(segs); }
   function vwPalette() { const p = $('#vw-pal'), f = vwF(VW.cur), on = VW.mode === 'markup' && !VW.cmp; p.classList.toggle('on', on); if (!on) return;
@@ -135,7 +135,7 @@
     const any = Object.values(a).some(v => v); let grp = '';
     p.innerHTML = `<div class="vwah"><b>Adjust</b><button class="vwreset" type="button" data-vwreset ${any ? '' : 'disabled'}>Reset</button></div><div class="vwasc">${VWADJ.map(([k, n, lo, hi, g]) => `${g !== grp ? `${grp ? '<hr>' : ''}<h6>${(grp = g) === 'Straighten' ? '' : g}</h6>` : ''}<label class="vwsl"><span>${n}<em>${a[k] ? (a[k] > 0 ? '+' : '') + a[k] : '0'}</em></span><input type="range" min="${lo}" max="${hi}" value="${a[k] || 0}" data-vwadj="${k}"></label>`).join('')}</div>`; }
   document.addEventListener('input', e => { if (e.target.matches?.('[data-vwq]')) { VW.q = e.target.value; vwSide(); const i = $('[data-vwq]'); i.focus(); i.setSelectionRange(i.value.length, i.value.length); } });
-  const vwToast = (msg, icon) => lToast($('#w-viewer'), msg, { icon: icon || (/^Copied/.test(msg) ? 'copy' : /moved or deleted/.test(msg) ? 'triangle-alert' : 'check') });   // the LumaUI toast
+  const vwToast = (msg, icon) => lToast($('#w-viewer'), msg, { icon: icon || (/^Copied/.test(msg) ? 'copy' : /moved or deleted/.test(msg) ? 'triangle-alert' : 'check') });   // the SunoUI toast
 
   function vwClick(e, hit) { const q = s => hit(s), f = vwF(VW.cur);
     if (vwNarrow()) { const px = q('[data-vwpx]'); if (px) { const k = px.dataset.vwpx; VW.px = VW.px === k ? '' : k; if (k === 'info' && VW.px) { VW.info = true; vwInfo(); } vwBar(); return true; } if (q('[data-vwopen]') || q('[data-vwmode]') || q('[data-vwtodo]')) VW.px = ''; }
@@ -205,15 +205,15 @@
     { id: 'kiln', n: 'Kiln', dev: 'Kiln Labs', ok: true, file: 'kiln-2.4.1.flatpakref', fmt: 'flatpak', v: '2.4.1', sz: '38 MB', inst: '214 MB', g: 'image', a: 'oklch(0.72 0.15 45)', b: 'oklch(0.52 0.16 20)', desc: 'Photo editor',
       runs: 'Runs in a sandbox. It sees only the photos and folders you give it.', src: 'Flathub', sig: 'Kiln Labs', perms: [['Network', 'globe', true, 'Syncs presets'], ['Pictures', 'image', true, 'Opens and saves photos'], ['Camera', 'camera', false, 'Tethered shooting'], ['Notifications', 'bell', true, '']], adds: [['file-text', 'Opens .jpg, .png, .tiff and camera raw files']], net: ['api.kilnlabs.app', 'presets.kilnlabs.app'], rt: 'org.freedesktop.Platform 24.08 (already installed, shared)' },
     { id: 'driftwood', n: 'Driftwood', dev: 'Driftwood Software', ok: true, file: 'driftwood_1.8.2_amd64.deb', fmt: 'deb', v: '1.8.2', sz: '64 MB', inst: '190 MB', g: 'notebook-pen', a: 'oklch(0.78 0.08 80)', b: 'oklch(0.55 0.09 60)', desc: 'Notes and outlines', have: '1.7.0',
-      runs: 'Runs as a normal Luma app on a shared Debian 12 runtime that Luma keeps patched.', src: 'apt.driftwood.app', sig: 'Driftwood Software', perms: [['Home folder', 'folder', true, 'Command-line tools see your real files'], ['Network', 'globe', true, 'Sync']], adds: [['terminal', 'A command: driftwood'], ['bell', 'A background sync service (you’ll be asked first)'], ['file-text', 'Opens .md and .opml files']], net: ['sync.driftwood.app'], rt: 'Debian 12 runtime (shared with 4 other apps)', scripts: 'postinst ran in a recording sandbox. It tried to add a service and a command; both were turned into Luma equivalents.' },
+      runs: 'Runs as a normal Suno app on a shared Debian 12 runtime that Suno keeps patched.', src: 'apt.driftwood.app', sig: 'Driftwood Software', perms: [['Home folder', 'folder', true, 'Command-line tools see your real files'], ['Network', 'globe', true, 'Sync']], adds: [['terminal', 'A command: driftwood'], ['bell', 'A background sync service (you’ll be asked first)'], ['file-text', 'Opens .md and .opml files']], net: ['sync.driftwood.app'], rt: 'Debian 12 runtime (shared with 4 other apps)', scripts: 'postinst ran in a recording sandbox. It tried to add a service and a command; both were turned into Suno equivalents.' },
     { id: 'labelpress', n: 'LabelPress', dev: 'LabelPress Inc.', ok: true, file: 'labelpress-driver-4.0.x86_64.rpm', fmt: 'rpm', v: '4.0.0', sz: '12 MB', inst: '41 MB', g: 'printer', a: 'oklch(0.7 0.02 250)', b: 'oklch(0.45 0.02 250)', desc: 'Label printer driver',
-      runs: 'Runs on a Fedora 44 runtime. RPMs never change the system itself.', warn: 'USB printing won’t work: its kernel driver isn’t signed. Network printing will.', src: 'rpm.labelpress.com', sig: 'LabelPress Inc.', perms: [['Printers', 'printer', true, 'Adds a print queue'], ['USB devices', 'cpu', false, 'Needs the kernel driver']], adds: [['printer', 'A printer: LabelPress LP-2'], ['cpu', 'A kernel driver (DKMS), which can’t be loaded yet']], net: [], rt: 'Fedora 44 runtime (downloads on first use, 180 MB)', scripts: 'post-install asked to build a kernel module with DKMS. Luma skipped that step.' },
+      runs: 'Runs on a Fedora 44 runtime. RPMs never change the system itself.', warn: 'USB printing won’t work: its kernel driver isn’t signed. Network printing will.', src: 'rpm.labelpress.com', sig: 'LabelPress Inc.', perms: [['Printers', 'printer', true, 'Adds a print queue'], ['USB devices', 'cpu', false, 'Needs the kernel driver']], adds: [['printer', 'A printer: LabelPress LP-2'], ['cpu', 'A kernel driver (DKMS), which can’t be loaded yet']], net: [], rt: 'Fedora 44 runtime (downloads on first use, 180 MB)', scripts: 'post-install asked to build a kernel module with DKMS. Suno skipped that step.' },
     { id: 'tessera', n: 'Tessera', dev: 'Unknown developer', ok: false, file: 'Tessera-0.9.3-x86_64.AppImage', fmt: 'appimage', v: '0.9.3', sz: '112 MB', inst: '112 MB', g: 'layout-grid', a: 'oklch(0.72 0.12 300)', b: 'oklch(0.5 0.14 280)', desc: 'Tile map editor',
       runs: 'Not signed. Valet runs it in a sandbox unless you turn that off.', sandbox: true, src: 'github.com', sig: '', perms: [['Documents', 'folder', true, ''], ['Network', 'globe', true, '']], adds: [['file-text', 'Opens .tmx files']], net: ['Not declared. Valet will show you what it connects to'] },
     { id: 'garden', n: 'Pixel Garden', dev: 'Small Sprout Games', ok: true, file: 'pixel-garden-3.1.apk', fmt: 'apk', v: '3.1', sz: '86 MB', inst: '150 MB', g: 'sunrise', a: 'oklch(0.8 0.14 130)', b: 'oklch(0.55 0.15 150)', desc: 'Game',
-      runs: 'Runs in Luma’s Android layer, in its own space, like on a phone.', src: 'Signed APK', sig: 'Small Sprout Games', perms: [['Notifications', 'bell', true, 'Garden reminders'], ['Storage', 'folder', false, 'Save screenshots'], ['Location', 'map-pin', false, 'Weather in the garden']], adds: [], net: ['play.smallsprout.games'] },
+      runs: 'Runs in Suno’s Android layer, in its own space, like on a phone.', src: 'Signed APK', sig: 'Small Sprout Games', perms: [['Notifications', 'bell', true, 'Garden reminders'], ['Storage', 'folder', false, 'Save screenshots'], ['Location', 'map-pin', false, 'Weather in the garden']], adds: [], net: ['play.smallsprout.games'] },
     { id: 'ledger', n: 'Ledger 5', dev: 'Northfield Accounting', ok: true, file: 'Ledger5-Setup.exe', fmt: 'exe', v: '5.2', sz: '220 MB', inst: '640 MB', g: 'receipt', a: 'oklch(0.7 0.1 160)', b: 'oklch(0.45 0.1 180)', desc: 'Accounting',
-      runs: 'Runs through Luma’s Windows layer in its own private space.', src: 'northfield.com', sig: 'Northfield Accounting', perms: [['Documents', 'folder', true, 'Company files'], ['Downloads', 'download', true, 'Bank statements'], ['Network', 'globe', true, 'Bank feeds']], adds: [['file-text', 'Opens .ldg files']], net: ['feeds.northfield.com'], rt: 'A private Windows space: 1.1 GB, shared by all Windows apps' }
+      runs: 'Runs through Suno’s Windows layer in its own private space.', src: 'northfield.com', sig: 'Northfield Accounting', perms: [['Documents', 'folder', true, 'Company files'], ['Downloads', 'download', true, 'Bank statements'], ['Network', 'globe', true, 'Bank feeds']], adds: [['file-text', 'Opens .ldg files']], net: ['feeds.northfield.com'], rt: 'A private Windows space: 1.1 GB, shared by all Windows apps' }
   ];
   const VLI = [{ id: 'harbor', n: 'Harbor', fmt: 'flatpak', g: 'waves', a: 'oklch(0.7 0.1 220)', b: 'oklch(0.45 0.12 240)', when: '12 August', parts: [['App', 312, 1], ['Cache', 860, 1], ['Settings', 4, 0], ['Saved data', 38, 0]] },
     { id: 'driftwood', n: 'Driftwood', fmt: 'deb', g: 'notebook-pen', a: 'oklch(0.78 0.08 80)', b: 'oklch(0.55 0.09 60)', when: '2 September', v: '1.7.0', parts: [['App', 180, 1], ['Cache', 64, 1], ['Settings', 2, 0], ['Notes database', 210, 0]] }];
@@ -288,7 +288,7 @@
     return `<div class="vladv${VL.adv ? ' on' : ''}"><header><b>Advanced</b><span>${esc(a.file)}</span><button class="ib" type="button" data-vladv title="Close">${ic('x')}</button></header><div class="scr">
       ${sect('How it runs', `<p>${esc(a.runs)}</p>${a.rt ? `<dl>${row('Runtime', esc(a.rt))}</dl>` : ''}${a.scripts ? `<p class="vlfine">${ic('terminal')}${esc(a.scripts)}</p>` : ''}`)}
       ${sect('Permissions', `<div class="vlperms">${a.perms.map(([n, i, on, why], k) => `<div class="vlperm">${ic(i)}<span><b>${n}</b>${why ? `<small>${why}</small>` : ''}</span><em>${(VL.perms[a.id + k] ?? on) ? 'Allowed' : 'Not allowed'}</em></div>`).join('')}</div>`)}
-      ${a.adds.length ? sect('What it adds to Luma', `<ul class="vladds">${a.adds.map(([i, t]) => `<li>${ic(i)}${esc(t)}</li>`).join('')}</ul>`) : ''}
+      ${a.adds.length ? sect('What it adds to Suno', `<ul class="vladds">${a.adds.map(([i, t]) => `<li>${ic(i)}${esc(t)}</li>`).join('')}</ul>`) : ''}
       ${sect('Network', `<ul class="vladds">${(a.net.length ? a.net : ['Doesn’t use the network']).map(d => `<li>${ic('globe')}${esc(d)}</li>`).join('')}</ul>`)}
       ${sect('Package', `<dl>${row('Architecture', a.fmt === 'apk' ? 'arm64, x86_64' : 'x86_64')}${row('Download', a.sz)}${row('Installed size', a.inst)}${row('SHA-256', `<button type="button" class="vlsha" data-vltodo="Copied the checksum">9f2c 41ab 7e08 … c3d1 ${ic('copy')}</button>`, 1)}</dl>`)}
     </div></div>`; }
@@ -308,7 +308,7 @@
     const dx = t.left + t.width / 2 - (r.left + r.width / 2), dy = t.top + t.height / 2 - (r.top + r.height / 2);
     fly.animate([{ transform: 'none' }, { transform: `translate(${dx * .3}px, ${dy * .1 - 50}px) scale(.7)`, offset: .4 }, { transform: `translate(${dx}px, ${dy}px) scale(${s})`, opacity: .2 }], { duration: 900, easing: 'cubic-bezier(.45, 0, .2, 1)' })
       .onfinish = () => { fly.remove(); if (shown) dest.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.3)' }, { transform: 'scale(.95)' }, { transform: 'scale(1)' }], { duration: 480, easing: 'ease-out' }); }; }
-  function vlToast(msg) { lToast($('#w-valet'), msg, { icon: /^Opening|^Opens/.test(msg) ? 'square-arrow-out-up-right' : 'check' }); }   // the LumaUI toast
+  function vlToast(msg) { lToast($('#w-valet'), msg, { icon: /^Opening|^Opens/.test(msg) ? 'square-arrow-out-up-right' : 'check' }); }   // the SunoUI toast
   function vlPop(anchor, html) { $('#vl-pop')?.remove(); const w = $('#w-valet'), wr = w.getBoundingClientRect(), r = anchor.getBoundingClientRect(); w.insertAdjacentHTML('beforeend', `<div class="crpop vlpop" id="vl-pop">${html}</div>`); const p = $('#vl-pop');
     p.style.left = Math.max(8, Math.min(wr.width - p.offsetWidth - 8, r.left - wr.left + r.width / 2 - p.offsetWidth / 2)) + 'px'; p.style.top = (r.bottom - wr.top + 6) + 'px'; }
   function vlClick(e, hit) { const q = s => hit(s);
@@ -405,7 +405,7 @@
     // One memo on screen, so the bar doesn't repeat its name: it's all actions. Rare or destructive ones stay behind ···
     else h = `${m ? `<button class="bt" type="button" data-metrim>${ic('scissors')}Trim</button><span class="vr"></span>` : ''}<button class="bt merecb" type="button" data-merec title="Record (R)"><i></i>Record</button>`;
     setBar(bar, h);
-    /* top right: the memo itself (Favorite, Share, ···); per the LumaUI placement rule */
+    /* top right: the memo itself (Favorite, Share, ···); per the SunoUI placement rule */
     const c = $('#me-corner'); c.hidden = !m || !!ME.rec || ME.view === 'deleted'; c.innerHTML = c.hidden ? '' : `<button class="bt" type="button" data-meshare data-share>${ic('share-2')}Share</button><button class="ib${m.fav ? ' on' : ''}" type="button" data-mefav title="${m.fav ? 'Remove from Favorites' : 'Favorite'}" aria-label="Favorite" aria-pressed="${!!m.fav}">${ic('star')}</button><button class="ib" type="button" data-memore title="More" aria-label="More">${ic('ellipsis')}</button>`; }
   function meFrame() { const m = meM(ME.cur); if (!m || ME.rec) return; const p = ME.t / m.dur, now = $('#me-now'); if (now) now.textContent = meFmt(ME.t);
     const bars = $$('#me-body .mewave i:not(.merail)'); bars.forEach((b, i) => b.classList.toggle('p', i / bars.length < p)); const hd = $('#me-body .mehead'); if (hd) hd.style.left = p * 100 + '%'; $('#me-body .mewave')?.style.setProperty('--mp', p * 100 + '%');
@@ -643,12 +643,12 @@
   const dskSize = g => g >= 1000 ? (g / 1000).toFixed(g % 1000 ? 1 : 0).replace(/\.0$/, '') + ' TB' : g >= 1 ? Math.round(g) + ' GB' : Math.round(g * 1000) + ' MB';
   const DSKC = { blue: 'oklch(0.7 0.13 250)', violet: 'oklch(0.7 0.13 295)', amber: 'oklch(0.78 0.13 75)', green: 'oklch(0.72 0.14 155)', pink: 'oklch(0.72 0.14 350)', slate: 'oklch(0.62 0.03 250)' };
   const DSK = [
-    { id: 'nvme', n: 'Luma SSD', grp: 'In this computer', kind: 'ssd', model: 'NVMe SSD, 512 GB', dev: '/dev/nvme0n1', size: 512, scheme: 'GPT', fixed: true,
+    { id: 'nvme', n: 'Suno SSD', grp: 'In this computer', kind: 'ssd', model: 'NVMe SSD, 512 GB', dev: '/dev/nvme0n1', size: 512, scheme: 'GPT', fixed: true,
       health: ['ok', 'Healthy', [['Bad sectors', '0'], ['Last self-test', 'Passed · today, 21:14'], ['Powered on', '2 yr 4 mo'], ['Temperature', '38 °C'], ['Written', '41 TB'], ['Spare blocks', '100%']]],
       speed: [3400, 2100],
       vols: [{ n: 'EFI', c: 'amber', size: .63, used: .015, fs: 'FAT32', mount: '/boot/efi', part: 'p1', uuid: '6B35-F4BE', role: 'The firmware reads this one first when the computer starts.', sys: true },
         { n: 'Boot', c: 'violet', size: 2.1, used: 1.4, fs: 'Ext4', mount: '/boot', part: 'p2', uuid: '8c1a33fe-b902-71dd-4c0a-90fe21b7c455', role: 'How this computer starts up.', sys: true },
-        { n: 'Luma', c: 'blue', size: 509, used: 214, fs: 'Btrfs', mount: '/', part: 'p3', uuid: '4f7b21c8-9ea3-4d1e-bb70-2c5f9e18a4d2', role: 'Luma, your apps, and everything in your Home folder.', sys: true }] },
+        { n: 'Suno', c: 'blue', size: 509, used: 214, fs: 'Btrfs', mount: '/', part: 'p3', uuid: '4f7b21c8-9ea3-4d1e-bb70-2c5f9e18a4d2', role: 'Suno, your apps, and everything in your Home folder.', sys: true }] },
     { id: 'ext', n: 'Archive HD', grp: 'Plugged in', kind: 'hdd', model: 'USB hard drive, 2 TB', dev: '/dev/sda', size: 2000, scheme: 'GPT',
       health: ['warn', 'Needs attention', [['Bad sectors', '3', 'warn'], ['Last self-test', 'Passed · 12 Sep'], ['Powered on', '6 yr 1 mo'], ['Temperature', '44 °C'], ['Written', '96 TB'], ['Spare blocks', '91%', 'warn']]],
       speed: [118, 104],
@@ -657,7 +657,7 @@
         { n: 'Scratch', c: 'pink', size: 400, used: 12, fs: 'exFAT', mount: null, part: '3', uuid: '9C4A-11D7', role: 'Readable on Windows and Macs as well.' }] },
     { id: 'usb', n: 'USB stick', grp: 'Plugged in', kind: 'usb', model: 'USB flash drive, 64 GB', dev: '/dev/sdb', size: 64, scheme: 'MBR',
       health: ['none', 'Not reported', []], speed: [152, 41],
-      vols: [{ n: 'LUMA-1.0', c: 'amber', size: 6.2, used: 5.9, fs: 'ISO 9660', mount: null, part: '1', uuid: '2026-09-22-18-00-00-00', role: 'A Luma installer written to this stick. It can start a computer.' }] }
+      vols: [{ n: 'LUMA-1.0', c: 'amber', size: 6.2, used: 5.9, fs: 'ISO 9660', mount: null, part: '1', uuid: '2026-09-22-18-00-00-00', role: 'A Suno installer written to this stick. It can start a computer.' }] }
   ];
   const DSS = { cur: 'nvme', vol: 2, sheet: null, bench: null, test: null };
   const dskD = () => DSK.find(d => d.id === DSS.cur);

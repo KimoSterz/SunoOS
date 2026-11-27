@@ -1,4 +1,4 @@
-/* Depot D (24 Oct 2026): your Luma. See apps/depot/depot-d.js. Only applies with ?depot=d (.ddwin). */
+/* Depot D (24 Oct 2026): your Suno. See apps/depot/depot-d.js. Only applies with ?depot=d (.ddwin). */
 .ddwin .ibody { display: flex; }
 .ddwin :where(h1, h2, h3, p, ol, ul, blockquote) { margin: 0; } .ddwin small { color: var(--ink-3); } .ddwin .i { width: 18px; height: 18px; flex: none; }
 
@@ -148,7 +148,7 @@
 .dpd-fine { display: flex; align-items: flex-start; gap: 8px; margin-top: 14px; font-size: 12.5px; line-height: 1.5; color: var(--ink-3); } .dpd-fine > .i { width: 14px; height: 14px; margin-top: 2px; }
 .dpd-link { font: 600 12.5px var(--font); color: var(--acc-ink); }
 
-/* Your Luma: each device's home screen */
+/* Your Suno: each device's home screen */
 .dpd-homes { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 26px 18px; align-items: start; }
 .dpd-home { display: grid; gap: 10px; align-content: start; min-width: 0; } .dpd-hscr { min-width: 0; overflow: hidden; } .dpd-home > header { display: flex; align-items: center; gap: 10px; padding: 0 4px; } .dpd-home > header > i { display: grid; color: var(--ink-3); }
 .dpd-home > header > span { display: grid; } .dpd-home b { font: 650 14px var(--font); } .dpd-home b em { margin-left: 4px; padding: 2px 6px; border-radius: 6px; background: var(--fill-2); font: 650 10.5px var(--font); font-style: normal; color: var(--ink-2); vertical-align: 1px; } .dpd-home header small { font-size: 12px; }

@@ -1,4 +1,4 @@
-/* Huddle (25 Oct 2026). See apps/huddle/huddle.js. LumaUI parts: the sidebar on the ground, the page an island,
+/* Huddle (25 Oct 2026). See apps/huddle/huddle.js. SunoUI parts: the sidebar on the ground, the page an island,
    raised cards, the floating bar, the key. Team colours live in the team marks and a hairline; the page washes in a
    team's colour only on its own page. Scores are the largest type on screen. */
 .hdwin .ibody { display: flex; }

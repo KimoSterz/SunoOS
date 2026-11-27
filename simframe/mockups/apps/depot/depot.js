@@ -1,18 +1,18 @@
-/* ══ Depot A (24 Oct 2026, second pass): the store for every Luma screen ════════════════════════════════════════
-   Depot holds three kinds of thing: Apps; Looks, which change how Luma looks (wallpapers, themes, icons, sounds,
-   fonts, pointers); and Tweaks, which change how it works. It is built around the person's devices, which Luma
+/* ══ Depot A (24 Oct 2026, second pass): the store for every Suno screen ════════════════════════════════════════
+   Depot holds three kinds of thing: Apps; Looks, which change how Suno looks (wallpapers, themes, icons, sounds,
+   fonts, pointers); and Tweaks, which change how it works. It is built around the person's devices, which Suno
    Connect already knows.
 
-   The LumaUI frame every app has: the title bar names the app and holds the sidebar button; the sidebar holds the
+   The SunoUI frame every app has: the title bar names the app and holds the sidebar button; the sidebar holds the
    places, what's yours, and the devices (pick one and Depot shows what runs on it), with search at its foot; the
    action bar at the bottom holds what you can do on the page you're on, and nothing else.
 
    · Every item says where it runs with the screens it runs on, and only those.
    · Get asks which of your devices it should go to; Keep matched adds it to every device that can run it.
-   · Updates is a place of its own: Luma itself first, then apps by device, then what changed recently, with Luma's
+   · Updates is a place of its own: Suno itself first, then apps by device, then what changed recently, with Suno's
      previous version always one step back.
    · Library is a board of what you have against where you have it.
-   · Every item carries one seal (Luma, Verified, Community); every Tweak lists what it changes and can be undone.
+   · Every item carries one seal (Suno, Verified, Community); every Tweak lists what it changes and can be undone.
 
    ?depot=b loads the other direction (depot-b.js). The simulator hands over its shared parts in render(K). */
 (() => {
@@ -22,7 +22,7 @@
   const D = () => window.DEPOT_DATA;
   const PLACES = [['today', 'Today', 'sparkles'], ['apps', 'Apps', 'blocks'], ['looks', 'Looks', 'palette'], ['tweaks', 'Tweaks', 'sliders-horizontal']];
   const YOURS = [['library', 'Library', 'layers'], ['updates', 'Updates', 'refresh-cw'], ['publish', 'Made by you', 'upload']];
-  const PK = { system: 'Part of Luma', luma: 'Luma app', flatpak: 'Flatpak', deb: 'Universal .deb', rpm: 'Universal .rpm', layered: 'Layered package' };
+  const PK = { system: 'Part of Suno', suno: 'Suno app', flatpak: 'Flatpak', deb: 'Universal .deb', rpm: 'Universal .rpm', layered: 'Layered package' };
 
   /* ── small parts ── */
   const q$ = s => W && W.querySelector(s);
@@ -39,7 +39,7 @@
   const mode = () => { const w = q$('#dq-main')?.clientWidth || W?.clientWidth || 1200; return W?.classList.contains('phone') && document.documentElement.dataset.form !== 'tablet' ? 'compact' : w < 560 ? 'compact' : w < 860 ? 'mid' : 'wide'; };
 
   /* ── one shape for every kind of item ── */
-  const sealOfApp = a => a.dev === 'Luma' ? 'luma' : a.verified ? 'verified' : 'community';
+  const sealOfApp = a => a.dev === 'Suno' ? 'suno' : a.verified ? 'verified' : 'community';
   function item(kind, id) {
     if (kind === 'app') { const a = D().apps.find(x => x.id === id); if (!a) return null;
       return { kind, id, name: a.name, by: a.dev || 'Unknown developer', seal: sealOfApp(a), line: a.summary || `${D().cats[a.cat]?.name || 'An'} app · ${PK[a.pk]}`, runs: D().runs[id] || ['desktop', 'tablet'], hue: hash(id), a, n: a.rating?.n }; }
@@ -50,7 +50,7 @@
   function onDevices(it) {
     if (ST.sent[it.kind + it.id]) return ST.sent[it.kind + it.id];
     const can = devs().filter(d => it.runs.includes(d.form)).map(d => d.id);
-    if (it.kind === 'app') { if (it.a.dev === 'Luma') return can; return devs().filter(d => (D().installed[d.id] || []).includes(it.id)).map(d => d.id); }
+    if (it.kind === 'app') { if (it.a.dev === 'Suno') return can; return devs().filter(d => (D().installed[d.id] || []).includes(it.id)).map(d => d.id); }
     if (it.kind === 'look') return it.id === 'prism' ? can : [];
     return it.x.on || [];
   }
@@ -158,9 +158,9 @@
   const empty = () => `<p class="dq-empty">Nothing here runs on ${esc(devOf(lens())?.name || 'this screen')} yet.</p>`;
   const sec = (kick, title, inner, more) => `<section class="dq-sec"><header><span>${kick ? `<small>${kick}</small>` : ''}<h3>${title}</h3></span>${more || ''}</header>${inner}</section>`;
 
-  /* Made for Luma: one family, presented as one thing */
-  function suite() { const its = D().apps.filter(a => a.dev === 'Luma' && a.pk !== 'system').map(a => item('app', a.id)).filter(runsHere).slice(0, 16);
-    return `<section class="dq-suite"><div class="dq-suitx"><img src="assets/Suno-favicon.svg" alt=""><h2>Made for Luma</h2><p>Free, private, and they work together: what you start on one device is waiting on the next.</p><span>${its.length} apps · all free</span></div>
+  /* Made for Suno: one family, presented as one thing */
+  function suite() { const its = D().apps.filter(a => a.dev === 'Suno' && a.pk !== 'system').map(a => item('app', a.id)).filter(runsHere).slice(0, 16);
+    return `<section class="dq-suite"><div class="dq-suitx"><img src="assets/Suno-favicon.svg" alt=""><h2>Made for Suno</h2><p>Free, private, and they work together: what you start on one device is waiting on the next.</p><span>${its.length} apps · all free</span></div>
       <div class="dq-suitg">${its.map(it => `<button type="button" class="dq-sapp" data-dq-item="app:${it.id}">${face(it)}<small>${esc(it.name)}</small></button>`).join('')}</div></section>`; }
 
   function today() { const t = D().today;
@@ -177,30 +177,30 @@
       if (s.kind === 'row') return sec(esc(s.kick), esc(s.title), `<div class="dq-grid g3">${s.items.map(([k, id]) => item(k, id)).filter(Boolean).slice(0, 6).map(card).join('')}</div>`);
       return ''; }).join(''); }
   function tweakStory(s) { const it = item('tweak', s.tweak);
-    return `<article class="dq-story tweak" data-dq-item="tweak:${it.id}" style="--h:${it.hue}"><div><small>${esc(s.kick)}</small>${face(it, 'lg')}<h3>${esc(it.name)}</h3><p>${esc(s.blurb)}</p><span class="dq-undo">${ic('undo-2')}Switch it off and Luma is exactly as it was</span><span class="dq-sbtns">${act(it)}</span></div></article>`; }
+    return `<article class="dq-story tweak" data-dq-item="tweak:${it.id}" style="--h:${it.hue}"><div><small>${esc(s.kick)}</small>${face(it, 'lg')}<h3>${esc(it.name)}</h3><p>${esc(s.blurb)}</p><span class="dq-undo">${ic('undo-2')}Switch it off and Suno is exactly as it was</span><span class="dq-sbtns">${act(it)}</span></div></article>`; }
 
   function apps() { const cats = D().cats, all = D().apps.map(a => item('app', a.id)).filter(it => !isSystem(it) && runsHere(it));
     if (ST.chip) { const c = cats[ST.chip]; return intro(c.name, c.about) + `<div class="dq-grid">${all.filter(it => it.a.cat === ST.chip).map(card).join('') || empty()}</div>`; }
     const ids = new Set(all.map(it => it.id)), pop = D().popular.map(id => item('app', id)).filter(it => it && ids.has(it.id));
     return intro('Apps', 'For every screen you own') + suite() + sec('What people install first', 'Popular', `<div class="dq-grid">${pop.slice(0, 9).map(card).join('') || empty()}</div>`)
-      + Object.entries(cats).map(([k, c]) => { const its = all.filter(it => it.a.cat === k && it.seal !== 'luma').slice(0, 3); return its.length ? sec(esc(c.about), esc(c.name), `<div class="dq-grid g3">${its.map(card).join('')}</div>`, `<button class="dq-link" type="button" data-dq-chip="${k}">See all ${ic('chevron-right')}</button>`) : ''; }).join(''); }
+      + Object.entries(cats).map(([k, c]) => { const its = all.filter(it => it.a.cat === k && it.seal !== 'suno').slice(0, 3); return its.length ? sec(esc(c.about), esc(c.name), `<div class="dq-grid g3">${its.map(card).join('')}</div>`, `<button class="dq-link" type="button" data-dq-chip="${k}">See all ${ic('chevron-right')}</button>`) : ''; }).join(''); }
   function looks() { const main = ['Wallpaper', 'Theme', 'Icons', 'Sounds'], vis = D().looks.map(l => item('look', l.id)).filter(runsHere).filter(it => !ST.chip || (ST.chip === 'more' ? !main.includes(it.x.kind) : it.x.kind === ST.chip));
-    return intro('Looks', 'Change how Luma looks. Try anything on this window first.') + `<div class="dq-looks">${vis.map(lookCard).join('') || empty()}</div>`; }
+    return intro('Looks', 'Change how Suno looks. Try anything on this window first.') + `<div class="dq-looks">${vis.map(lookCard).join('') || empty()}</div>`; }
   function tweaks() { const me = lens() === 'any' ? here() : lens(), all = D().tweaks.map(t => item('tweak', t.id)).filter(it => !ST.chip || (ST.chip === 'on') === onDevices(it).includes(me));
     const kinds = [...new Set(all.map(it => it.x.kind))];
-    return intro('Tweaks', 'Change how Luma works.') + `<aside class="dq-promise">${ic('undo-2')}<span><b>Every Tweak can be undone.</b> Luma keeps your system as it was beside the changed one. Switch a Tweak off and the parts it changed go back exactly as they were.</span></aside>`
+    return intro('Tweaks', 'Change how Suno works.') + `<aside class="dq-promise">${ic('undo-2')}<span><b>Every Tweak can be undone.</b> Suno keeps your system as it was beside the changed one. Switch a Tweak off and the parts it changed go back exactly as they were.</span></aside>`
       + (kinds.map(k => sec('', esc(k), `<div class="dq-tweaks">${all.filter(it => it.x.kind === k).map(tweakRow).join('')}</div>`)).join('') || empty()); }
 
-  /* Updates: Luma first, then apps by device, then what changed recently */
+  /* Updates: Suno first, then apps by device, then what changed recently */
   const autoRows = () => { const A = D().auto; return `<button type="button" class="dq-autorow" data-dq-auto="apps"><span><b>Update apps overnight</b><small>On every device, while it charges</small></span><i class="dq-sw${A.apps ? ' on' : ''}"><i></i></i></button>
-    <button type="button" class="dq-autorow" data-dq-auto="luma"><span><b>Get Luma updates overnight</b><small>Downloads in the background; you choose when to restart</small></span><i class="dq-sw${A.luma ? ' on' : ''}"><i></i></i></button>
+    <button type="button" class="dq-autorow" data-dq-auto="suno"><span><b>Get Suno updates overnight</b><small>Downloads in the background; you choose when to restart</small></span><i class="dq-sw${A.luma ? ' on' : ''}"><i></i></i></button>
     <button type="button" class="dq-autorow" data-dq-auto="matched"><span><b>Keep matched apps on the same version</b><small>A device that wakes catches up before you use it</small></span><i class="dq-sw${A.matched ? ' on' : ''}"><i></i></i></button>`; };
   function updates() { const sys = D().system, P = pending(), me = here();
-    const sysCard = ST.sys === 'restarted' ? `<section class="dq-sysup ok"><span class="dq-sysic">${ic('circle-check')}</span><span class="dq-syst"><b>Luma is up to date</b><small>${esc(sys.name)} · checked just now</small></span></section>`
-      : `<section class="dq-sysup"><span class="dq-sysic">${ic('sparkles')}</span><span class="dq-syst"><small>Luma · ${esc(sys.channel || 'Nightly')}</small><b>${esc(sys.name)}</b><small>${esc(sys.blurb)} · ${esc(sys.size)}</small></span>
+    const sysCard = ST.sys === 'restarted' ? `<section class="dq-sysup ok"><span class="dq-sysic">${ic('circle-check')}</span><span class="dq-syst"><b>Suno is up to date</b><small>${esc(sys.name)} · checked just now</small></span></section>`
+      : `<section class="dq-sysup"><span class="dq-sysic">${ic('sparkles')}</span><span class="dq-syst"><small>Suno · ${esc(sys.channel || 'Nightly')}</small><b>${esc(sys.name)}</b><small>${esc(sys.blurb)} · ${esc(sys.size)}</small></span>
         <button class="dq-act${ST.sys === 'run' ? ' quiet' : ''}" type="button" data-dq-sys>${ST.sys === 'done' ? 'Restart' : ST.sys === 'run' ? 'Downloading…' : 'Download'}</button>
         <details class="dq-notes"${ST.open.sys ? ' open' : ''}><summary data-dq-toggleopen="sys">What's new</summary><ul>${(sys.notes || []).map(([t, i, n, d]) => `<li><span class="dq-nt t-${t.toLowerCase()}">${esc(t)}</span><b>${esc(n)}</b><small>${esc(d)}</small></li>`).join('')}</ul></details>
-        <p class="dq-sysfoot">${ic('undo-2')}You're on ${esc(sys.running)}. Luma keeps it, so you can go back with one click if anything feels wrong.</p></section>`;
+        <p class="dq-sysfoot">${ic('undo-2')}You're on ${esc(sys.running)}. Suno keeps it, so you can go back with one click if anything feels wrong.</p></section>`;
     const byDev = devs().map(d => ({ d, list: P.filter(p => p.devs.includes(d.id)) })).filter(g => g.list.length).sort((a, b) => (b.d.id === me) - (a.d.id === me));
     const upRow = (p, d) => { const it = item('app', p.app), k = p.app + d.id; return `<div class="dq-uprow"><span class="dq-upa" data-dq-item="app:${p.app}">${face(it, 'sm')}<span><b>${esc(it.name)}</b><small>${esc(p.from)} → ${esc(p.to)} · ${esc(p.size)}</small></span></span>
       <details${ST.open[k] ? ' open' : ''}><summary data-dq-toggleopen="${k}">What's new</summary><ul>${p.notes.map(n => `<li>${esc(n)}</li>`).join('')}</ul></details><button class="dq-act" type="button" data-dq-up="${p.app}:${d.id}">Update</button></div>`; };
@@ -208,7 +208,7 @@
       + (byDev.length ? byDev.map(({ d, list }) => `<section class="dq-updev"><header><i>${ic(formOf(d.form).icon)}</i><span><b>${esc(d.name)}${d.id === me ? '<em class="dq-this">This</em>' : ''}</b><small>${list.length} update${list.length > 1 ? 's' : ''}${d.form === 'tv' ? ' · installs when it wakes' : ''}</small></span><button class="dq-link" type="button" data-dq-updev="${d.id}">Update ${d.id === me ? 'all here' : 'all on ' + esc(d.name)}</button></header>${list.map(p => upRow(p, d)).join('')}</section>`).join('')
         : `<section class="dq-updev done"><header><i>${ic('circle-check')}</i><span><b>Every app is up to date</b><small>On all ${devs().length} devices</small></span></header></section>`)
       + `<section class="dq-auto"><h3>Automatically</h3>${autoRows()}</section>`
-      + sec('', 'Recently', `<div class="dq-done">${D().done.map(([id, what, when, where]) => { const it = id === 'luma' ? null : item('app', id); return `<div class="dq-donerow">${it ? face(it, 'xs') : `<i class="dq-face glyph xs" style="--h:290">${ic('sparkles')}</i>`}<span><b>${it ? esc(it.name) : 'Luma'}</b><small>${esc(what)} · ${esc(where)}</small></span><time>${esc(when)}</time>${id === 'luma' ? `<button class="dq-link" type="button" data-dq-rollback>Go back to this</button>` : ''}</div>`; }).join('')}</div>`); }
+      + sec('', 'Recently', `<div class="dq-done">${D().done.map(([id, what, when, where]) => { const it = id === 'suno' ? null : item('app', id); return `<div class="dq-donerow">${it ? face(it, 'xs') : `<i class="dq-face glyph xs" style="--h:290">${ic('sparkles')}</i>`}<span><b>${it ? esc(it.name) : 'Suno'}</b><small>${esc(what)} · ${esc(where)}</small></span><time>${esc(when)}</time>${id === 'suno' ? `<button class="dq-link" type="button" data-dq-rollback>Go back to this</button>` : ''}</div>`; }).join('')}</div>`); }
 
   /* Library: what you have, against where you have it */
   const libApps = () => { const ids = new Set(); devs().forEach(d => (D().installed[d.id] || []).forEach(id => ids.add(id))); ['tide', 'photos', 'messages', 'write', 'notes'].forEach(id => ids.add(id)); Object.keys(ST.sent).filter(k => k.startsWith('app')).forEach(k => ids.add(k.slice(3))); return [...ids].map(id => item('app', id)).filter(Boolean); };
@@ -223,13 +223,13 @@
       + sec(`On ${esc(devOf(me).name)}`, 'Your Looks and Tweaks', `<div class="dq-rows">${[item('look', 'prism'), ...D().tweaks.filter(t => (ST.sent['tweak' + t.id] || t.on || []).includes(me)).map(t => item('tweak', t.id))].map(row).join('')}</div>`); }
 
   function publish() { const steps = ['Sent', 'Checks', 'Review', 'In Depot'];
-    const kinds = [['app', 'An app', 'package', 'A Flatpak, a Luma app, or a .deb or .rpm Luma can run as one'], ['look', 'A Look', 'palette', 'Wallpapers, a theme, icons, sounds, a font or pointers'], ['tweak', 'A Tweak', 'sliders-horizontal', 'A change to how Luma works, listed with the parts it touches']];
+    const kinds = [['app', 'An app', 'package', 'A Flatpak, a Suno app, or a .deb or .rpm Suno can run as one'], ['look', 'A Look', 'palette', 'Wallpapers, a theme, icons, sounds, a font or pointers'], ['tweak', 'A Tweak', 'sliders-horizontal', 'A change to how Suno works, listed with the parts it touches']];
     const at = s => s.state === 'live' ? 4 : s.state === 'changes' ? 3 : s.step + 1;
-    return intro('Made by you', 'Send what you made to everyone on Luma')
+    return intro('Made by you', 'Send what you made to everyone on Suno')
       + `<div class="dq-kinds">${kinds.map(([k, n, i, s]) => `<button class="dq-kind" type="button" data-dq-new="${k}"><i>${ic(i)}</i><b>${n}</b><small>${s}</small><span>Start ${ic('arrow-right')}</span></button>`).join('')}</div>`
       + sec('Yours', 'Sent to Depot', `<div class="dq-subs">${D().mine.map(s => `<div class="dq-sub st-${s.state}"><i class="dq-face glyph sm" style="--h:${s.hue}">${ic(s.icon)}</i><span class="dq-st"><b>${esc(s.name)}</b><small>${esc(s.note)}</small></span>
           <ol class="dq-steps">${steps.map((n, i) => `<li class="${i < at(s) ? 's-done' : ''}${i === at(s) - 1 && s.state !== 'live' ? ' s-now' : ''}${s.state === 'changes' && i === 2 ? ' s-warn' : ''}">${n}</li>`).join('')}</ol></div>`).join('')}</div>`)
-      + `<section class="dq-how"><h3>How review works</h3><ol><li><b>Checks, in minutes.</b> Luma signs nothing it can't build and run. It checks the signature, the package and everything the item asks to reach.</li><li><b>Review, for the Verified seal.</b> A person at Luma tries it on a real device and reads what it reaches. Usually two days.</li><li><b>Community, straight away.</b> Skip review and your item goes up signed, with the Community seal and its reach listed.</li></ol></section>`; }
+      + `<section class="dq-how"><h3>How review works</h3><ol><li><b>Checks, in minutes.</b> Suno signs nothing it can't build and run. It checks the signature, the package and everything the item asks to reach.</li><li><b>Review, for the Verified seal.</b> A person at Suno tries it on a real device and reads what it reaches. Usually two days.</li><li><b>Community, straight away.</b> Skip review and your item goes up signed, with the Community seal and its reach listed.</li></ol></section>`; }
 
   function search() { const q = ST.q.trim().toLowerCase(); if (!q) return '';
     const hit = it => (it.name + ' ' + it.line + ' ' + it.by).toLowerCase().includes(q);
@@ -237,8 +237,8 @@
     const A = D().apps.map(a => item('app', a.id)).filter(it => hit(it) || (it.a.alt || []).some(n => n.toLowerCase().includes(q)));
     const Lk = D().looks.map(l => item('look', l.id)).filter(hit), T = D().tweaks.map(t => item('tweak', t.id)).filter(hit);
     const grp = (n, list) => list.length ? sec('', n, `<div class="dq-rows">${list.slice(0, 8).map(row).join('')}</div>`) : '';
-    return `<header class="dq-intro"><h1>“${esc(ST.q.trim())}”</h1></header>` + (sw ? `<aside class="dq-swhit">${ic('arrow-right')}<span><b>${esc(sw[0])}</b> isn't on Luma. These do the same job:</span></aside><div class="dq-rows">${sw[1].map(id => row(item('app', id))).join('')}</div>` : '')
-      + grp(sw ? 'More apps' : 'Apps', sw ? A.filter(it => !sw[1].includes(it.id)) : A) + grp('Looks', Lk) + grp('Tweaks', T) + (!sw && !A.length && !Lk.length && !T.length ? `<p class="dq-empty">Nothing called that yet. <button class="dq-link" type="button" data-dq-place="publish">Make it for Luma</button></p>` : ''); }
+    return `<header class="dq-intro"><h1>“${esc(ST.q.trim())}”</h1></header>` + (sw ? `<aside class="dq-swhit">${ic('arrow-right')}<span><b>${esc(sw[0])}</b> isn't on Suno. These do the same job:</span></aside><div class="dq-rows">${sw[1].map(id => row(item('app', id))).join('')}</div>` : '')
+      + grp(sw ? 'More apps' : 'Apps', sw ? A.filter(it => !sw[1].includes(it.id)) : A) + grp('Looks', Lk) + grp('Tweaks', T) + (!sw && !A.length && !Lk.length && !T.length ? `<p class="dq-empty">Nothing called that yet. <button class="dq-link" type="button" data-dq-place="publish">Make it for Suno</button></p>` : ''); }
 
   /* An item's page */
   function page(it) { if (!it) return ''; const on = onDevices(it), x = it.x, a = it.a;
@@ -251,7 +251,7 @@
       return `<span class="dq-md ${has ? 'm-has' : can ? 'm-can' : 'm-no'}">${ic(formOf(d.form).icon)}<span><b>${esc(d.name)}</b><small>${has ? (it.kind === 'tweak' ? 'On' : 'Installed') : can ? 'Not yet' : `No ${formOf(d.form).name.toLowerCase()} version`}</small></span></span>`; }).join('')}</div></section>`;
     const shots = shotsK.length ? `<section class="dq-isec"><h3>${forms2.length > 1 ? forms2.map(f => `<button type="button" class="${f === shotForm ? 'on' : ''}" data-dq-shot="${f}">${formOf(f).name}</button>`).join('') : 'Pictures'}</h3><div class="dq-shots f-${shotForm}">${shotsK.filter(k => (k.includes('-phone-') ? 'phone' : 'desktop') === shotForm).map(k => `<img src="apps/depot/shots/${k}.webp" alt="" loading="lazy">`).join('')}</div></section>` : '';
     const lookBig = it.kind === 'look' ? `<section class="dq-isec"><div class="dq-lbig${x.art ? ' pic' : ''}"${x.art ? ` style="background-image:url(${x.art})"` : ''}>${x.art ? '' : lookPreview(x)}</div></section>` : '';
-    const changes = it.kind === 'tweak' ? `<section class="dq-isec"><h3>What it changes</h3><div class="dq-chgs">${x.changes.map(c => `<span>${ic('git-branch')}${esc(c)}</span>`).join('')}${x.restart ? `<span class="c-warn">${ic('rotate-ccw')}Needs a restart to turn on and off</span>` : ''}</div><aside class="dq-promise sm">${ic('undo-2')}<span>Switch it off and these go back exactly as they were. Luma keeps your system as it was, beside the changed one.</span></aside></section>` : '';
+    const changes = it.kind === 'tweak' ? `<section class="dq-isec"><h3>What it changes</h3><div class="dq-chgs">${x.changes.map(c => `<span>${ic('git-branch')}${esc(c)}</span>`).join('')}${x.restart ? `<span class="c-warn">${ic('rotate-ccw')}Needs a restart to turn on and off</span>` : ''}</div><aside class="dq-promise sm">${ic('undo-2')}<span>Switch it off and these go back exactly as they were. Suno keeps your system as it was, beside the changed one.</span></aside></section>` : '';
     const about = a?.desc ? `<section class="dq-isec"><h3>About</h3>${a.desc.map(p => `<p>${esc(p)}</p>`).join('')}</section>` : '';
     const news = a?.news ? `<section class="dq-isec"><h3>What's new <small>${esc(a.news.v)} · ${esc(a.news.date)}</small></h3><ul>${a.news.items.map(i => `<li>${esc(i)}</li>`).join('')}</ul></section>` : '';
     const rating = a?.rating ? `<span><b>${a.rating.avg} ★</b><small>${fmtN(a.rating.n)} ratings</small></span>` : x?.n ? `<span><b>${fmtN(x.n)}</b><small>use it</small></span>` : `<span><b>New</b><small>Not rated yet</small></span>`;
@@ -320,9 +320,9 @@
       K.lToast(W, i >= 0 ? `${it.name} is no longer matched` : `${it.name} is matched: on every device that can run it`, { icon: 'link' }); return true; }
     if ((b = h('[data-dq-up]'))) { const [app, d] = b.dataset.dqUp.split(':'); updateOne(app, d); render(); K.lToast(W, `${item('app', app).name} updated${d === here() ? '' : ' on ' + devOf(d).name}`, { icon: 'refresh-cw' }); return true; }
     if ((b = h('[data-dq-updev]'))) { const d = b.dataset.dqUpdev; pending().filter(p => p.devs.includes(d)).forEach(p => updateOne(p.app, d)); render(); K.lToast(W, `Updating everything on ${devOf(d).name}`, { icon: 'refresh-cw' }); return true; }
-    if (h('[data-dq-upall]')) { pending().forEach(p => p.devs.forEach(d => updateOne(p.app, d))); if (ST.sys === 'ready') sysRun(); render(); K.lToast(W, 'Updating every app on every device. Luma downloads in the background', { icon: 'refresh-cw' }); return true; }
-    if (h('[data-dq-sys]')) { if (ST.sys === 'done') { ST.sys = 'restarted'; render(); K.lToast(W, 'Luma restarted into the new version. Your apps came back where you left them', { icon: 'rotate-ccw' }); return true; } if (ST.sys === 'ready') sysRun(); return true; }
-    if (h('[data-dq-rollback]')) { K.lConfirm?.(W, { title: 'Go back to Luma 1.0 · nightly October 16?', body: 'Luma restarts into the version you had before. Your files, apps and settings stay as they are.', action: 'Restart', icon: 'undo-2', onOK: () => K.lToast(W, 'Luma will restart into the previous version', { icon: 'undo-2' }) }); return true; }
+    if (h('[data-dq-upall]')) { pending().forEach(p => p.devs.forEach(d => updateOne(p.app, d))); if (ST.sys === 'ready') sysRun(); render(); K.lToast(W, 'Updating every app on every device. Suno downloads in the background', { icon: 'refresh-cw' }); return true; }
+    if (h('[data-dq-sys]')) { if (ST.sys === 'done') { ST.sys = 'restarted'; render(); K.lToast(W, 'Suno restarted into the new version. Your apps came back where you left them', { icon: 'rotate-ccw' }); return true; } if (ST.sys === 'ready') sysRun(); return true; }
+    if (h('[data-dq-rollback]')) { K.lConfirm?.(W, { title: 'Go back to SunoOS 0.1 · nightly October 16?', body: 'Suno restarts into the version you had before. Your files, apps and settings stay as they are.', action: 'Restart', icon: 'undo-2', onOK: () => K.lToast(W, 'Suno will restart into the previous version', { icon: 'undo-2' }) }); return true; }
     if ((b = h('[data-dq-auto]'))) { const k = b.dataset.dqAuto, A = D().auto; A[k] = !A[k]; if (ST.sheet) sheet(); else body(); return true; }
     if (h('[data-dq-autoset]')) { ST.sheet = { type: 'auto' }; sheet(); return true; }
     if ((b = h('[data-dq-toggleopen]'))) { e.preventDefault(); const k = b.dataset.dqToggleopen; ST.open[k] = !ST.open[k]; b.parentElement.open = ST.open[k]; return true; }

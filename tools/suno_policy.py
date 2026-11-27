@@ -37,6 +37,16 @@ REF_RENAMES = [('luma-next-73.html', 'Suno-next-73.html'),
                ('luma-favicon', 'Suno-favicon'),
                ('social-luma', 'social-suno')]
 
+# UI rebranding: visible brand strings, keeping internal identifiers intact.
+RE_URL = re.compile(r'(?:https?://|git@|ssh://)[^\s"\'<>)]+', re.I)
+RE_SIMPLY = re.compile(r'[A-Za-z0-9.-]*simplyluma[A-Za-z0-9./_#?=&-]*', re.I)
+RE_LUMA_VER = re.compile(r'Luma 1\.0')
+RE_LUMA_ISO = re.compile(r'Luma-1\.0-nightly\.iso')
+RE_LUMAUI = re.compile(r'(?<![A-Za-z0-9_$.])LumaUI(?![A-Za-z0-9_$(.])')
+RE_LUMA_ESC = re.compile(r'(\\[nrt])(Luma|luma)(?![A-Za-z0-9_$])')
+RE_LUMA_UP = re.compile(r'(?<![A-Za-z0-9_$.])Luma(?![A-Za-z0-9_$])')
+RE_LUMA_LO = re.compile(r'(?<![A-Za-z0-9_$.])luma(?![A-Za-z0-9_$])')
+
 
 def read(path):
     return io.open(path, encoding='utf-8').read()
@@ -149,7 +159,7 @@ def clean_world(root):
         rows = re.findall(r'\[[^\[\]]+\]', m.group(1))
         kept = [r for r in rows
                 if not re.match(r"\s*\['([^']+)'", r)
-                or re.match(r"\s*\['([^']+)'", r).group(1) == 'luma']
+                or re.match(r"\s*\['([^']+)'", r).group(1) in ('luma', 'suno')]
         return 'D.done = [' + ', '.join(kept) + '];'
     s = re.sub(r'D\.done = \[(.*?)\];', keep_done, s, count=1, flags=re.S)
     diff_write(p, s)
@@ -258,11 +268,52 @@ def clean_icons(simframe):
     return removed
 
 
+def rebrand_ui(mock):
+    """Brand strings in the mockup: Luma -> Suno, version -> SunoOS 0.1.
+    Token rules skip identifiers (window.lumaDesk, ST.lumaOpen, renderLumaUI,
+    --luma vars are NOT skipped: they are replaced uniformly everywhere so
+    definitions and uses stay consistent). Upstream URLs are protected."""
+    n = 0
+    for base, dirs, files in os.walk(mock):
+        for f in files:
+            if not f.endswith(('.js', '.html', '.css')):
+                continue
+            p = os.path.join(base, f)
+            try:
+                s = io.open(p, encoding='utf-8').read()
+            except UnicodeDecodeError:
+                continue
+            vault = []
+
+            def stash(m):
+                vault.append(m.group(0))
+                return '\x00%d\x00' % (len(vault) - 1)
+
+            t = RE_URL.sub(stash, s)
+            t = RE_SIMPLY.sub(stash, t)
+            t = RE_LUMA_ISO.sub('SunoOS-0.1-nightly.iso', t)
+            t = RE_LUMA_ESC.sub(lambda m: m.group(1) + ('Suno' if m.group(2)[0] == 'L' else 'suno'), t)
+            t = t.replace('6.16.8-luma1', '6.16.8-suno1')
+            t = t.replace('look.luma.app', 'look.suno.app')
+            t = t.replace('FTREE.Luma', 'FTREE.Suno')
+            t = RE_LUMA_VER.sub('SunoOS 0.1', t)
+            t = RE_LUMAUI.sub('SunoUI', t)
+            t = RE_LUMA_UP.sub('Suno', t)
+            t = RE_LUMA_LO.sub('suno', t)
+            t = re.sub(r'\x00(\d+)\x00',
+                       lambda m: vault[int(m.group(1))], t)
+            if t != s:
+                write(p, t)
+                n += 1
+    return n
+
+
 def clean(root):
     simframe = root
     mock = os.path.join(root, 'mockups')
     rename_refs(mock)
     rename_bundle_keys(simframe)
+    rebrand_ui(mock)
     clean_catalogue_installed(mock)
     clean_world(mock)
     clean_shell(mock)

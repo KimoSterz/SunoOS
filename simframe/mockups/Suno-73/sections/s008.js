@@ -1,6 +1,6 @@
-    alert: { sys: true, icon: 'rotate-cw', t: 'Restart to finish updating', p: 'Luma 1.0.3 is installed. Open apps come back where you left them.', left: ['Tonight at 2:00', 'Restarting tonight at 2:00'], key: ['Restart now', 'Restarting'], cancel: 0, cancelLabel: 'Later' }
+    alert: { sys: true, icon: 'rotate-cw', t: 'Restart to finish updating', p: 'SunoOS 0.1.3 is installed. Open apps come back where you left them.', left: ['Tonight at 2:00', 'Restarting tonight at 2:00'], key: ['Restart now', 'Restarting'], cancel: 0, cancelLabel: 'Later' }
   };
-  /* Reversible things just happen and offer Undo; what can't come back asks through the LumaUI destructive dialog (audit #24) */
+  /* Reversible things just happen and offer Undo; what can't come back asks through the SunoUI destructive dialog (audit #24) */
   const MDLIST = [['bar', 'Undo', 'Delete 3 items'], ['save', 'Sheet', 'Save before closing'], ['rename', 'Sheet', 'Rename'], ['replace', 'Sheet', 'Replace a file'], ['report', 'Sheet', 'Report'], ['purge', 'Dialog', 'Delete for good'], ['alert', 'System', 'Restart to update']];
   const mdTrash = () => { MD.barAsk = false; MD.sel = 99; mdHost(); lToast($('#w-modal'), '3 items moved to Trash', { icon: 'trash-2', undo: () => { MD.sel = 3; mdHost(); } }); };
   const MD = { open: null, choice: 0, extra: true, sel: 3, barAsk: false };
@@ -8,7 +8,7 @@
       <p>Priya opens with the milestones slide, then the live demo. Keep the demo under two minutes and start with Filer, because everyone gets it instantly.</p>
       <p>Then Messages, then the shelf. The notification lip is the moment people will remember.</p>
       <div class="mdfiles">${['Walkthrough script.md', 'Press note.docx', 'Homepage crop.png', 'Old outline.md', 'Old outline 2.md', 'Scratch.txt'].slice(0, MD.sel === 99 ? 3 : 6).map((n, i) => `<button type="button" class="mdf${i >= MD.sel ? ' on' : ''}">${ic(n.endsWith('.png') ? 'image' : 'file-text')}${n}</button>`).join('')}</div>
-      <p class="mdhint">Try any way Luma asks from the menu next to the title.</p></div>`; mdBar(); }
+      <p class="mdhint">Try any way Suno asks from the menu next to the title.</p></div>`; mdBar(); }
   function mdBar() { const bar = $('#md-bar');
     setBar(bar, MD.barAsk ? `<span class="mdq">Delete 3 items?</span><button class="bt" type="button" data-mdbarno>Cancel</button><button class="bt danger" type="button" data-mdbaryes>${ic('trash-2')}Delete</button>`
       : MD.sel === 99 ? `<button class="bt" type="button" data-mdtodo="Choose files to share">${ic('share-2')}Share</button>` : `<span class="ctxc mdctx">${ic('file-text')}3 selected</span><button class="bt" type="button" data-mdopen="rename">${ic('pencil')}Rename</button><button class="bt" type="button" data-mdtodo="Share opens">${ic('share-2')}Share</button><span class="vr"></span><button class="ib" type="button" data-mdbarask title="Delete">${ic('trash-2')}</button>`); }
@@ -31,7 +31,7 @@
     else if (b.matches('[data-mdextra]')) { MD.extra = !MD.extra; b.classList.toggle('on', MD.extra); } }
   function mdNudge() { $('#md-sheet').animate([{ translate: '0' }, { translate: '-6px' }, { translate: '6px' }, { translate: '0' }], { duration: 260 }); }   // a sheet waits for an answer; a click behind it nudges it
   function mdClose(msg) { MD.open = null; $('#w-modal').classList.remove('mdon'); document.documentElement.classList.remove('mdsys'); const sh = $('#md-sheet'); sh.className = 'mdsheet'; if (sh.parentElement !== $('#w-modal')) setTimeout(() => { if (!MD.open) $('#w-modal').append(sh); }, 250); if (msg) mdToast(msg); }
-  const mdToast = msg => lToast($('#w-modal'), msg, { icon: /Trash|Deleted/.test(msg) ? 'trash-2' : 'check' });   // the LumaUI toast
+  const mdToast = msg => lToast($('#w-modal'), msg, { icon: /Trash|Deleted/.test(msg) ? 'trash-2' : 'check' });   // the SunoUI toast
   function mdPop(anchor, html) { $('#md-pop')?.remove(); const w = $('#w-modal'), wr = w.getBoundingClientRect(), r = anchor.getBoundingClientRect(); w.insertAdjacentHTML('beforeend', `<div class="crpop ldrawer" id="md-pop">${html}</div>`); const p = $('#md-pop'); p.style.left = Math.max(8, r.left - wr.left - 20) + 'px'; p.style.top = (r.bottom - wr.top + 6) + 'px'; }
   function mdClick(e, hit) { const q = s => hit(s);
     if (q('.mdmenu')) return true;   // the menu opened on pointer-down; its own click must not close it
@@ -44,7 +44,7 @@
     const o = q('[data-mdopen]'); if (o) { mdShow(o.dataset.mdopen); return true; }
     const td = q('[data-mdtodo]'); if (td) { mdToast(td.dataset.mdtodo); return true; }
     return false; }
-  function renderModal() { $('#md-sheet').addEventListener('click', mdSheetClick); $('#md-sysscrim').addEventListener('click', () => MD.open && mdNudge()); $('#md-top').innerHTML = `<img src="${A}documents.svg" alt=""><b>Write</b><button class="chev mdmenu" type="button" aria-label="Ways Luma asks">${ic('chevron-down')}</button>`; mdHost();
+  function renderModal() { $('#md-sheet').addEventListener('click', mdSheetClick); $('#md-sysscrim').addEventListener('click', () => MD.open && mdNudge()); $('#md-top').innerHTML = `<img src="${A}documents.svg" alt=""><b>Write</b><button class="chev mdmenu" type="button" aria-label="Ways Suno asks">${ic('chevron-down')}</button>`; mdHost();
     $('#w-modal').addEventListener('pointerdown', e => { const m = e.target.closest('.mdmenu'); if (!m) return; e.stopPropagation(); e.preventDefault(); if ($('#md-pop')) { $('#md-pop').remove(); return; }
       let g = ''; mdPop(m, MDLIST.map(([k, grp, n]) => (grp !== g ? `${g ? '<span class="crsep"></span>' : ''}<h6>${(g = grp)}</h6>` : '') + crMi(`data-mdpick="${k}"`, '', n)).join('')); }, true); }
   document.addEventListener('keydown', e => { if (!MD.open) return; if (e.key === 'Escape') { e.preventDefault(); MDK[MD.open].cancel || MDK[MD.open].cancelLabel ? mdClose() : null; } else if (e.key === 'Enter' && !e.target.closest?.('[data-mdchoice]')) { e.preventDefault(); $('#md-sheet [data-mdyes]')?.click(); } }, true);
@@ -201,7 +201,7 @@
     return false; }
 
   /* ══ Ari ═════════════════════════════════════════════════════════════════════
-     Ari is the part of Luma you can talk to, and it can act. Everything it does leaves a trace you can see:
+     Ari is the part of Suno you can talk to, and it can act. Everything it does leaves a trace you can see:
      a chain of the things it touched, joined by what it did to them, lighting up step by step as it works.
      Anything that leaves this computer waits for your OK. Activity keeps every chain, with Undo.
      Ari runs on any model. Models are measured against one thing people can picture: this computer's
@@ -238,7 +238,7 @@
     if (AP.step === 'pick') return `<header class="apvh"><h2>Add a provider</h2><button class="ib" type="button" data-arisx title="Close">${ic('x')}</button></header><p class="apsub">Use a model that runs somewhere else. Ari sends only the conversation you're in, never your files, and asks first.</p>
       <div class="aplist">${ARPROV.map(p => `<button type="button" class="aprov" data-approv="${p.id}"${conn(p.id) ? ' disabled' : ''}>${arLogo(p.id, 36)}<span><b>${p.n}</b><small>${p.what}</small></span>${conn(p.id) ? '<em class="apon">Connected</em>' : ic('chevron-right')}</button>`).join('')}</div>`;
     const own = P.id === 'own', ok = AP.test === 'ok';
-    const field = own ? `<label class="apfld"><span>Server address</span><input data-apurl value="${esc(AP.url)}" spellcheck="false"></label>` : `<label class="apfld"><span>API key</span><input data-apkey type="password" placeholder="${P.key}" value="${esc(AP.key)}" spellcheck="false" autocomplete="off"></label><p class="aphint">Get one at <b>${P.where}</b>. It stays in Luma’s keyring on this computer.</p>`;
+    const field = own ? `<label class="apfld"><span>Server address</span><input data-apurl value="${esc(AP.url)}" spellcheck="false"></label>` : `<label class="apfld"><span>API key</span><input data-apkey type="password" placeholder="${P.key}" value="${esc(AP.key)}" spellcheck="false" autocomplete="off"></label><p class="aphint">Get one at <b>${P.where}</b>. It stays in Suno’s keyring on this computer.</p>`;
     return `<header class="apvh"><button class="ib" type="button" data-apback title="Back">${ic('chevron-left')}</button>${arLogo(P.id, 28)}<h2>${P.n}</h2><button class="ib" type="button" data-arisx title="Close">${ic('x')}</button></header>
       ${field}<div class="aptest ${AP.test || ''}">${AP.test === 'run' ? '<i class="arispin"></i>Checking…' : ok ? `${ic('check')}Connected. ${P.models.length} models available` : AP.test === 'bad' ? `${ic('x')}That key didn’t work. Check it and try again` : ''}</div>
       ${ok ? `<h6 class="aph">Show in the picker</h6><div class="apmods">${P.models.map(([id, n, d]) => `<button type="button" class="apmod${AP.sel[id] !== false ? ' on' : ''}" data-apmod="${id}"><i class="apck">${ic('check')}</i><span><b>${n}</b><small>${d}</small></span></button>`).join('')}</div>` : ''}
@@ -246,8 +246,8 @@
   const arFit = m => m.mem <= 12 ? ['good', 'Runs well'] : m.mem <= ARPC.mem - ARPC.sys - 3 ? ['ok', 'Runs, but slower'] : ['no', 'Too big for this computer'];
   const arM = id => { if (id === 'auto') return { id, n: 'Auto', local: true, mono: '', h: 250 }; const l = ARLM.find(m => m.id === id); if (l) return { ...l, local: true };
     for (const s of ARCL) { const m = s.models.find(x => x[0] === id); if (m) return { id, n: m[1], local: false, via: s.n, mono: s.mono, h: s.h, pid: s.id }; } };
-  /* Provider marks, drawn in Luma's icon form: a gradient squircle, a soft bloom top left, a white mark that casts a small shadow */
-  // Official marks from Simple Icons (CC0), paths unchanged; only the tile behind them is Luma's
+  /* Provider marks, drawn in Suno's icon form: a gradient squircle, a soft bloom top left, a white mark that casts a small shadow */
+  // Official marks from Simple Icons (CC0), paths unchanged; only the tile behind them is Suno's
   const ARLOGO = {
     anthropic: ['#2B2A27', '#161614', '<path transform="translate(18.200000000000003 18.200000000000003) scale(1.15)" d="M17.3041 3.541h-3.6718l6.696 16.918H24Zm-10.6082 0L0 20.459h3.7442l1.3693-3.5527h7.0052l1.3693 3.5528h3.7442L10.5363 3.5409Zm-.3712 10.2232 2.2914-5.9456 2.2914 5.9456Z" fill="#fff"/>'],
     claude: ['#E3876A', '#C8603F', '<path transform="translate(17.0 17.0) scale(1.25)" d="m4.7144 15.9555 4.7174-2.6471.079-.2307-.079-.1275h-.2307l-.7893-.0486-2.6956-.0729-2.3375-.0971-2.2646-.1214-.5707-.1215-.5343-.7042.0546-.3522.4797-.3218.686.0608 1.5179.1032 2.2767.1578 1.6514.0972 2.4468.255h.3886l.0546-.1579-.1336-.0971-.1032-.0972L6.973 9.8356l-2.55-1.6879-1.3356-.9714-.7225-.4918-.3643-.4614-.1578-1.0078.6557-.7225.8803.0607.2246.0607.8925.686 1.9064 1.4754 2.4893 1.8336.3643.3035.1457-.1032.0182-.0728-.164-.2733-1.3539-2.4467-1.445-2.4893-.6435-1.032-.17-.6194c-.0607-.255-.1032-.4674-.1032-.7285L6.287.1335 6.6997 0l.9957.1336.419.3642.6192 1.4147 1.0018 2.2282 1.5543 3.0296.4553.8985.2429.8318.091.255h.1579v-.1457l.1275-1.706.2368-2.0947.2307-2.6957.0789-.7589.3764-.9107.7468-.4918.5828.2793.4797.686-.0668.4433-.2853 1.8517-.5586 2.9021-.3643 1.9429h.2125l.2429-.2429.9835-1.3053 1.6514-2.0643.7286-.8196.85-.9046.5464-.4311h1.0321l.759 1.1293-.34 1.1657-1.0625 1.3478-.8804 1.1414-1.2628 1.7-.7893 1.36.0729.1093.1882-.0183 2.8535-.607 1.5421-.2794 1.8396-.3157.8318.3886.091.3946-.3278.8075-1.967.4857-2.3072.4614-3.4364.8136-.0425.0304.0486.0607 1.5482.1457.6618.0364h1.621l3.0175.2247.7892.522.4736.6376-.079.4857-1.2142.6193-1.6393-.3886-3.825-.9107-1.3113-.3279h-.1822v.1093l1.0929 1.0686 2.0035 1.8092 2.5075 2.3314.1275.5768-.3218.4554-.34-.0486-2.2039-1.6575-.85-.7468-1.9246-1.621h-.1275v.17l.4432.6496 2.3436 3.5214.1214 1.0807-.17.3521-.6071.2125-.6679-.1214-1.3721-1.9246L14.38 17.959l-1.1414-1.9428-.1397.079-.674 7.2552-.3156.3703-.7286.2793-.6071-.4614-.3218-.7468.3218-1.4753.3886-1.9246.3157-1.53.2853-1.9004.17-.6314-.0121-.0425-.1397.0182-1.4328 1.9672-2.1796 2.9446-1.7243 1.8456-.4128.164-.7164-.3704.0667-.6618.4008-.5889 2.386-3.0357 1.4389-1.882.929-1.0868-.0062-.1579h-.0546l-6.3385 4.1164-1.1293.1457-.4857-.4554.0608-.7467.2307-.2429 1.9064-1.3114Z" fill="#fff"/>'],
@@ -335,8 +335,8 @@
   /* ── Memory: the one picture every model is measured against ── */
   function arMem(extra) { const loaded = arM(AR.model).local ? ARLM.find(m => m.id === (AR.model === 'auto' ? 'qwen8' : AR.model)) : null, T = ARPC.mem, used = ARPC.sys + (loaded ? loaded.mem : 0);
     const marks = extra ? [['qwen8', '8B'], ['qwen14', '14B'], ['qwen30', '30B'], ['llama70', '70B']].map(([id, l]) => { const m = ARLM.find(x => x.id === id), x = Math.min(100, (ARPC.sys + m.mem) / T * 100); return `<i class="arimk ${arFit(m)[0]}" style="left:${x}%"><em>${l}</em></i>`; }).join('') : '';
-    return `<div class="arimem${extra ? ' marks' : ''}"><div class="arimbar"><i class="sys" style="width:${ARPC.sys / T * 100}%" title="Luma and your apps"></i>${loaded ? `<i class="mdl" style="width:${loaded.mem / T * 100}%" title="${loaded.n}"></i>` : ''}${marks}</div>
-      <div class="arimleg"><span><i class="sys"></i>Luma and apps ${ARPC.sys} GB</span>${loaded ? `<span><i class="mdl"></i>${loaded.n} ${loaded.mem} GB</span>` : ''}<span><i class="free"></i>Free ${T - used} GB</span><span class="tot">${T} GB memory</span></div></div>`; }
+    return `<div class="arimem${extra ? ' marks' : ''}"><div class="arimbar"><i class="sys" style="width:${ARPC.sys / T * 100}%" title="Suno and your apps"></i>${loaded ? `<i class="mdl" style="width:${loaded.mem / T * 100}%" title="${loaded.n}"></i>` : ''}${marks}</div>
+      <div class="arimleg"><span><i class="sys"></i>Suno and apps ${ARPC.sys} GB</span>${loaded ? `<span><i class="mdl"></i>${loaded.n} ${loaded.mem} GB</span>` : ''}<span><i class="free"></i>Free ${T - used} GB</span><span class="tot">${T} GB memory</span></div></div>`; }
 
   /* ── Views ── */
   function arSide() { const row = (attr, icn, label, on, em = '') => `<button class="si${on ? ' on' : ''}" type="button" ${attr}>${ic(icn)}<span class="lab">${label}</span>${em ? `<em>${em}</em>` : ''}</button>`, days = [...new Set(ARC.map(c => c.day))];
@@ -368,7 +368,7 @@
     return `<div class="aripad wide"><header class="aripghd"><h1>Models</h1><p>${ARPC.n} · ${ARPC.gpu} · ${ARPC.disk} GB free on disk</p></header>${arMem(false)}
       <section class="arisec"><h6>On this computer<span>Nothing you say to these leaves this computer</span></h6><div class="arilocal">${local.map(m => { const def = AR.model === m.id || (AR.model === 'auto' && m.id === 'qwen8');
         return `<div class="arirow">${arMono(m, 34)}<div><b>${m.n}</b><small>${m.dl != null ? `Downloading · ${Math.round(m.dl)}%` : `${arGB(m.sz)} on disk · needs ${m.mem} GB memory · about ${m.wps} words a second`}</small></div>${m.dl != null ? `<div class="aridl sm"><i style="width:${m.dl}%"></i></div>` : `${def ? `<span class="aridef">${AR.model === 'auto' ? 'Auto uses this' : 'In use'}</span>` : `<button class="bt sm fill" type="button" data-ariuse="${m.id}">Use</button>`}<button class="ib" type="button" data-aritodo="Remove ${m.n} (${arGB(m.sz)})" title="More">${ic('ellipsis')}</button>`}</div>`; }).join('')}</div></section>
-      <section class="arisec"><h6>Cloud<span>These send your conversation to the company you pick</span></h6><div class="aricloud">${ARCL.map(s => `<div class="aricl${s.on ? ' on' : ''}">${arMono(s, 34)}<div><b>${s.n}</b><small>${s.on ? `Connected · key ${s.key}` : 'Not connected'}</small><small class="m">${s.note || s.models.map(x => x[1]).join(', ')}</small></div>${s.on ? `<button class="bt sm" type="button" data-aritodo="Key ${s.key} is in Luma’s keyring">${ic('key-round')}Key</button>` : `<button class="bt sm fill" type="button" data-arikey="${s.id}">${ic('key-round')}Add key</button>`}</div>`).join('')}</div></section>
+      <section class="arisec"><h6>Cloud<span>These send your conversation to the company you pick</span></h6><div class="aricloud">${ARCL.map(s => `<div class="aricl${s.on ? ' on' : ''}">${arMono(s, 34)}<div><b>${s.n}</b><small>${s.on ? `Connected · key ${s.key}` : 'Not connected'}</small><small class="m">${s.note || s.models.map(x => x[1]).join(', ')}</small></div>${s.on ? `<button class="bt sm" type="button" data-aritodo="Key ${s.key} is in Suno’s keyring">${ic('key-round')}Key</button>` : `<button class="bt sm fill" type="button" data-arikey="${s.id}">${ic('key-round')}Add key</button>`}</div>`).join('')}</div></section>
       <section class="arisec"><h6>Get models</h6>${rec && S === 'All' && !q ? arCard(rec, true) : ''}<div class="arigrid">${store.map(m => arCard(m)).join('') || '<p class="arinone">No models match.</p>'}</div></section></div>`; }
   function arTtl() { const w = $('#w-ari'), c = AR.view === 'chat' && arConv(); if (!w.clientWidth) return; $('#ari-ttl')?.remove(); lNavTtl(w, ariNarrow() && c ? c.t : null, c ? c.day : ''); }
   function arMain() { setTimeout(arTtl); const b = $('#ari-body'); if (AR.view === 'models' && window.LumaAriModels) { LumaAriModels.render(); return; } $('#w-ari').classList.remove('arxwin'); b.innerHTML = AR.view === 'activity' ? arActivity() : AR.view === 'models' ? arModels() : arChat(); if (AR.view === 'chat') b.scrollTop = b.scrollHeight; }
@@ -413,7 +413,7 @@
       <h6>On this computer</h6>${ARLM.filter(m => m.have).map(m => row(m.id, m.n, `${m.mem <= 12 ? 'Quick' : 'Slower, more capable'} · ${m.mem} GB memory`, 'house')).join('')}
       <h6>Cloud</h6>${ARCL.filter(s => s.on).flatMap(s => s.models.map(([id, n]) => row(id, n, `Via ${s.api}`, 'cloud'))).join('')}<button class="arirowp aradd" type="button" data-arikey="${ARCL.find(s => !s.on)?.id || 'openai'}"><i class="aradd-ic">${ic('plus')}</i><span><b>Add a provider</b><small>OpenAI, OpenRouter, Anthropic or your own</small></span></button>
       <span class="crsep"></span><button class="crmi" type="button" data-ariview="models">${ic('download')}<span>Get more models…</span></button>`; }
-  /* A sheet, the way Luma asks (see Modals) */
+  /* A sheet, the way Suno asks (see Modals) */
   function arSheet(html) { const w = $('#w-ari'), s = $('#ari-sheet'); w.classList.add('arion'); s.innerHTML = html; s.className = 'mdsheet'; void s.offsetWidth; s.classList.add('show'); requestAnimationFrame(() => (s.querySelector('input') || s.querySelector('.key'))?.focus({ preventScroll: true })); }
   function arSheetClose(msg) { $('#w-ari').classList.remove('arion'); $('#ari-sheet').className = 'mdsheet'; if (msg) arToast(msg); }
 
@@ -498,12 +498,12 @@
     cvAdd({ t: 'image', name: 'Photo', parent: a, x: 96, y: 520, w: 888, h: 420, r: 32, img: PH + 'life-hero-studio.webp' });
     cvT({ name: 'Date', parent: a, x: 96, y: 980, w: 800, text: 'October 14 · simplyluma.com', fs: 30, color: '#c9ccdf' });
     const b = cvAdd({ t: 'frame', name: 'Web hero', x: 1240, y: 0, w: 1440, h: 900, fill: '#f6f3ee' }).id;
-    cvT({ name: 'Wordmark', parent: b, x: 64, y: 34, w: 200, text: 'Luma', fs: 30, fw: 700, ls: -.02, color: '#16161a' });
+    cvT({ name: 'Wordmark', parent: b, x: 64, y: 34, w: 200, text: 'Suno', fs: 30, fw: 700, ls: -.02, color: '#16161a' });
     cvT({ name: 'Nav', parent: b, x: 1030, y: 40, w: 350, text: 'Features   Apps   Download', fs: 20, color: '#5a5a60', align: 'right' });
     cvT({ name: 'Headline', parent: b, x: 64, y: 210, w: 700, h: 190, text: 'Your computer, calm again.', fs: 84, fw: 650, lh: 1.04, ls: -.03, color: '#16161a' });
-    cvT({ name: 'Subhead', parent: b, x: 64, y: 430, w: 600, h: 72, text: 'Luma 1.0 arrives October 14. Free on every computer you own.', fs: 26, lh: 1.4, color: '#5a5a60' });
+    cvT({ name: 'Subhead', parent: b, x: 64, y: 430, w: 600, h: 72, text: 'SunoOS 0.1 arrives October 14. Free on every computer you own.', fs: 26, lh: 1.4, color: '#5a5a60' });
     cvAdd({ t: 'rect', name: 'Button', parent: b, x: 64, y: 548, w: 264, h: 72, r: 36, fill: '#16161a' });
-    cvT({ name: 'Button label', parent: b, x: 64, y: 569, w: 264, text: 'Download Luma', fs: 24, fw: 600, color: '#ffffff', align: 'center' });
+    cvT({ name: 'Button label', parent: b, x: 64, y: 569, w: 264, text: 'Download Suno', fs: 24, fw: 600, color: '#ffffff', align: 'center' });
     cvAdd({ t: 'image', name: 'Hero image', parent: b, x: 790, y: 150, w: 586, h: 640, r: 32, img: PH + 'life-hero-writing.webp', shadow: true });
     const c = cvAdd({ t: 'frame', name: 'Poster A3', x: 2780, y: 0, w: 842, h: 1191, fill: '#e9e2d6' }).id;
     cvAdd({ t: 'image', name: 'Photo', parent: c, x: 56, y: 56, w: 730, h: 720, img: PH + 'life-sync-terrace.webp' });
@@ -623,7 +623,7 @@
     S.forEach(n => { const dx = k === 'l' ? ref.x - n.x : k === 'c' ? ref.x + ref.w / 2 - n.w / 2 - n.x : k === 'r' ? ref.x + ref.w - n.w - n.x : 0, dy = k === 't' ? ref.y - n.y : k === 'm' ? ref.y + ref.h / 2 - n.h / 2 - n.y : k === 'b' ? ref.y + ref.h - n.h - n.y : 0; cvMove(n, dx, dy); }); cvAll(); }
   const cvMove = (n, dx, dy) => { [n, ...cvDesc(n.id)].forEach(m => { m.x = Math.round(m.x + dx); m.y = Math.round(m.y + dy); if (m.pts) m.pts = m.pts.map(p => [p[0] + dx, p[1] + dy]); }); };
   function cvComp(k) { const f = cvSel()[0] ? (cvSel()[0].t === 'frame' ? cvSel()[0] : cvG(cvSel()[0].parent)) : null, fr = f || CV.nodes.find(n => n.t === 'frame'), x = 80, y = 80; let made = [];
-    if (k === 'button') { made = [cvAdd({ t: 'rect', name: 'Button', parent: fr.id, x, y, w: 240, h: 64, r: 32, fill: '#6f7cff' }), cvT({ name: 'Button label', parent: fr.id, x, y: y + 17, w: 240, text: 'Get Luma', fs: 24, fw: 600, align: 'center' })]; }
+    if (k === 'button') { made = [cvAdd({ t: 'rect', name: 'Button', parent: fr.id, x, y, w: 240, h: 64, r: 32, fill: '#6f7cff' }), cvT({ name: 'Button label', parent: fr.id, x, y: y + 17, w: 240, text: 'Get Suno', fs: 24, fw: 600, align: 'center' })]; }
     else if (k === 'badge') made = [cvAdd({ t: 'rect', name: 'Badge', parent: fr.id, x, y, w: 150, h: 44, r: 22, fill: '#f2b544' }), cvT({ name: 'Badge label', parent: fr.id, x, y: y + 9, w: 150, text: 'NEW', fs: 20, fw: 700, ls: .1, color: '#16161a', align: 'center' })];
     else made = [cvAdd({ t: 'image', name: 'Photo card', parent: fr.id, x, y, w: 320, h: 400, r: 24, img: PH + 'life-ari-street.webp', shadow: true })];
     CV.sel = made.map(m => m.id); cvAll(); cvToast(`Added to ${fr.name}`); }

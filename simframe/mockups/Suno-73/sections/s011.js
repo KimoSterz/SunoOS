@@ -4,20 +4,20 @@
     if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); lConfirm.close(); return; }
     if (e.key === 'Tab') { const f = [...d.querySelectorAll('button')], i = f.indexOf(document.activeElement); e.preventDefault(); f[(i + (e.shiftKey ? -1 : 1) + f.length) % f.length].focus(); } }, true);
 
-  /* LumaUI: Category pill. lCat('media'): the category's own colour from the shared map (--cat-*). */
+  /* SunoUI: Category pill. lCat('media'): the category's own colour from the shared map (--cat-*). */
   const LCAT = { create: 'Create', work: 'Work', media: 'Media', play: 'Play', tools: 'Tools' };
   const lCat = k => `<span class="lcat" data-cat="${k}">${esc(LCAT[k] || k)}</span>`;
 
-  /* LumaUI: Table header. lTHead([[key, label, cls]], { k, dir }, 'data-x'): a recessed bar; each heading sorts, again reverses. */
+  /* SunoUI: Table header. lTHead([[key, label, cls]], { k, dir }, 'data-x'): a recessed bar; each heading sorts, again reverses. */
   const lTHead = (cols, sort, attr) => `<thead class="lthead"><tr>${cols.map(([k, n, cls = '']) => { const on = sort && sort.k === k; return `<th class="${cls}" scope="col" aria-sort="${on ? (sort.dir > 0 ? 'ascending' : 'descending') : 'none'}"><button type="button" ${attr}="${k}">${esc(n)}${on ? ic(sort.dir > 0 ? 'arrow-up' : 'arrow-down') : ''}</button></th>`; }).join('')}</tr></thead>`;
 
-  /* LumaUI: Sidebar foot. lFoot({ q: { attr, ph, value }, filter: { items: [[key, label, icon]], cur, attr }, add: { attr, label, icon }, sug: { id, html } }).
+  /* SunoUI: Sidebar foot. lFoot({ q: { attr, ph, value }, filter: { items: [[key, label, icon]], cur, attr }, add: { attr, label, icon }, sug: { id, html } }).
      The filter's menu opens upward; when a filter is on the button lights and the list names it with lFiltHead(label, attr, allKey). */
   function lFoot(o) { const f = o.filter, cur = f && (f.items.find(x => x[0] === f.cur) || f.items[0]);
     return `<div class="shead sfoot lfoot">${o.sug ? `<div class="lsug" ${o.sug.id ? `id="${o.sug.id}"` : ''} role="listbox" aria-label="Places"${o.sug.html ? '' : ' hidden'}>${o.sug.html || ''}</div>` : ''}<label class="srch">${ic('search')}<input ${o.q.attr} placeholder="${esc(o.q.ph)}" aria-label="${esc(o.q.ph)}" value="${esc(o.q.value || '')}" autocomplete="off" spellcheck="false"></label>${f ? `<button class="snew lfilt${cur !== f.items[0] ? ' on' : ''}" type="button" data-lui-filter="${esc(JSON.stringify(f))}" title="Show: ${esc(cur[1])}" aria-label="Show: ${esc(cur[1])}" aria-haspopup="menu">${ic('list-filter')}</button>` : ''}${o.add ? `<button class="snew" type="button" ${o.add.attr} title="${esc(o.add.label)}" aria-label="${esc(o.add.label)}">${ic(o.add.icon || 'plus')}</button>` : ''}</div>`; }
   const lFiltHead = (label, attr, allKey) => `<div class="lfhead"><span>${esc(label)}</span><button type="button" ${attr}="${allKey}">Show all</button></div>`;
 
-  /* LumaUI: Place search. lPlaceSug(query, selected, attr) fills the list above the foot field: resolved places, or "No places match". */
+  /* SunoUI: Place search. lPlaceSug(query, selected, attr) fills the list above the foot field: resolved places, or "No places match". */
   const LPLACES = [['kc', 'Kansas City', 'MO', '64105', 2, 21], ['nyc', 'New York', 'NY', '10001', 3, 40], ['chi', 'Chicago', 'IL', '60601', 2, 27], ['sea', 'Seattle', 'WA', '98101', 0, 150],
     ['aus', 'Austin', 'TX', '78701', 2, 30], ['den', 'Denver', 'CO', '80202', 1, 60], ['lon', 'London', 'United Kingdom', '', 8, 200], ['par', 'Paris', 'France', '', 9, 210], ['ber', 'Berlin', 'Germany', '', 9, 220],
     ['syd', 'Sydney', 'Australia', '', 17, 90], ['mex', 'Mexico City', 'Mexico', '', 1, 45], ['tor', 'Toronto', 'Canada', '', 3, 180], ['kcks', 'Kansas City', 'KS', '66101', 2, 21], ['sf', 'San Francisco', 'CA', '94103', 0, 240]]
@@ -25,17 +25,17 @@
   const lPlaceFind = q => { q = q.trim().toLowerCase(); return q ? LPLACES.filter(p => `${p.n} ${p.r} ${p.zip}`.toLowerCase().includes(q) || (p.zip && p.zip.startsWith(q))).slice(0, 5) : []; };
   const lPlaceSug = (q, sel = 0, attr = 'data-lui-place') => { const l = lPlaceFind(q); return l.length ? l.map((p, i) => `<button class="lsugi${i === sel ? ' on' : ''}" type="button" role="option" aria-selected="${i === sel}" ${attr}="${p.id}">${ic('map-pin')}<span><b>${esc(p.n)}, ${esc(p.r)}</b>${p.zip ? `<small>${p.zip}</small>` : ''}</span>${i === sel ? '<kbd>Return</kbd>' : ''}</button>`).join('') : '<p class="lsugnone">No places match</p>'; };
 
-  /* LumaUI: Navigation trail (G3, 25 Sep). lTrail({ back: { label, attr }, title, meta: [..] }): where you came from, inline with where you are,
+  /* SunoUI: Navigation trail (G3, 25 Sep). lTrail({ back: { label, attr }, title, meta: [..] }): where you came from, inline with where you are,
      "‹ Albums · 12 albums" on one line. Before a title the chevron stands alone (its name says where it goes); with no title it carries the name. */
   const lTrail = o => { const b = o.back, m = (o.meta || []).filter(Boolean); return `<nav class="lnt" aria-label="Navigation">${b ? `<button class="lntb${o.title ? ' ico' : ''}" type="button" ${b.attr} title="Back to ${esc(b.label)}" aria-label="Back to ${esc(b.label)}">${ic('chevron-left')}${o.title ? '' : `<span>${esc(b.label)}</span>`}</button>` : ''}${o.title ? `<h1>${esc(o.title)}</h1>` : ''}${m.length ? `<span class="lntm">${m.map((p, i) => `${o.title || i ? '<i class="d"></i>' : ''}<span>${p}</span>`).join('')}</span>` : ''}</nav>`; };
-  /* LumaUI: Field (G3). lField(label, inputAttrs, value): a label over a recessed well; lfhint for the line under it. */
+  /* SunoUI: Field (G3). lField(label, inputAttrs, value): a label over a recessed well; lfhint for the line under it. */
   const lField = (label, attr = '', v = '') => `<label class="lfld"><span>${esc(label)}</span><input ${attr} value="${esc(v)}"></label>`;
-  /* LumaUI: Table header on grid rows. lTHead.grid([[key, label, cls]], { k, dir }, 'data-x', cls): the same recessed, sortable bar for lists
+  /* SunoUI: Table header on grid rows. lTHead.grid([[key, label, cls]], { k, dir }, 'data-x', cls): the same recessed, sortable bar for lists
      laid out as grid or flex rows (Tide, Monitor, Disks, the file picker). A column with no key is a plain label (or an empty cell). */
   lTHead.grid = (cols, sort, attr, cls = '') => `<div class="lthgrid${cls ? ' ' + cls : ''}">${cols.map(([k, n = '', c = '']) => { if (!k) return `<span class="${c}">${esc(n)}</span>`; const on = sort && sort.k === k;
     return `<button type="button" class="${c}" ${attr}="${k}" aria-sort="${on ? (sort.dir > 0 ? 'ascending' : 'descending') : 'none'}">${esc(n)}${on ? ic(sort.dir > 0 ? 'arrow-up' : 'arrow-down') : ''}</button>`; }).join('')}</div>`;
 
-  /* LumaUI: Sidebar toggle. lSideBtn(win) is the one control that hides and shows a window's sidebar: Lucide panel-left in the title bar,
+  /* SunoUI: Sidebar toggle. lSideBtn(win) is the one control that hides and shows a window's sidebar: Lucide panel-left in the title bar,
      just after the app's name, F9 (as GNOME Files), the sidebar sliding closed with the window's ease. Remembered per window (lSideOn(win)
      at render). Each app says what "closed" means in its CSS (.lsideoff). On a phone it opens the sidebar as a drawer (.navopen) instead. */
   function lSideKey(w) { return 'luma70-side-' + w.id; }
@@ -47,7 +47,7 @@
     else if (w?.classList.contains('phone') && w.querySelector('.lsidebtn') && !e.target.closest('.vside, .dpside, .cfside, .nside, .vwside, .rail, .pside, [data-navtoggle], #lmenu')) w.classList.remove('navopen');   /* a tap beside the drawer closes it */ }, true);
   document.addEventListener('keydown', e => { if (e.key !== 'F9' || e.ctrlKey || e.metaKey || e.altKey) return; const w = front(); if (w?.querySelector('.lsidebtn')) { e.preventDefault(); lSide(w); } });
 
-  /* LumaUI: Title island. On a phone, ☰ and the name of what you're looking at are ONE island: the menu glyph, a title, a line under it.
+  /* SunoUI: Title island. On a phone, ☰ and the name of what you're looking at are ONE island: the menu glyph, a title, a line under it.
      Tap it for the sidebar. lNavTtl(win, title, sub); a null title puts the plain ☰ back. Use it wherever a place needs naming beside ☰. */
   document.addEventListener('scroll', e => { const t = e.target; if (t?.matches?.('.crnav, .pside')) t.closest('.win')?.classList.toggle('islscrolled', t.scrollTop > 2); }, true);   // the grown island's header shadows a scrolled list
   document.addEventListener('click', e => { const b = e.target.closest?.('#w-filer.navopen .fisl button'); if (b) { e.stopPropagation(); e.preventDefault(); b.closest('.win').classList.remove('navopen'); } }, true);   // the grown Filer island: either half closes it
@@ -55,7 +55,7 @@
     if (!t) { if (b.classList.contains('hasttl')) { b.classList.remove('hasttl'); b.innerHTML = SVG.menu; b.setAttribute('aria-label', 'Places'); } return; }
     b.classList.add('hasttl'); b.innerHTML = `${SVG.menu}<span class="lnt"><b>${esc(t)}</b>${sub ? `<small>${esc(sub)}</small>` : ''}</span>`; b.setAttribute('aria-label', `${t}. Show the sidebar`); }
 
-  /* LumaUI: Toast. lToast(win, msg, { icon: 'check' | 'map-pin' | 'heart' | 'copy' | 'trash-2' …, undo: fn }). One place: centred on the visible
+  /* SunoUI: Toast. lToast(win, msg, { icon: 'check' | 'map-pin' | 'heart' | 'copy' | 'trash-2' …, undo: fn }). One place: centred on the visible
      island, just above its bottom bar. Plain text; announced to screen readers; 4 s when it can be undone. */
   function lToast(w, msg, o = {}) { if (!w) return; if (typeof o === 'function') o = { undo: o };
     let t = w.querySelector(':scope > .ltoast'); if (!t) { w.insertAdjacentHTML('beforeend', '<div class="ftoast ltoast" role="status" aria-live="polite"></div>'); t = w.querySelector(':scope > .ltoast'); }
@@ -67,7 +67,7 @@
     t.style.left = Math.round(ir.left + ir.width / 2 - wr.left) + 'px'; t.style.bottom = Math.round(wr.bottom - top) + 'px';
     lToast.undo = o.undo || null; lToast.el = t; t.classList.add('on'); clearTimeout(lToast.t); lToast.t = setTimeout(() => { t.classList.remove('on'); lToast.undo = null; }, o.undo ? 4000 : 2400); }
 
-  /* LumaUI clicks: the shared parts' own buttons (dialog, toast Undo, Open in, filter picker, contact actions). Returns true when handled. */
+  /* SunoUI clicks: the shared parts' own buttons (dialog, toast Undo, Open in, filter picker, contact actions). Returns true when handled. */
   function luiClick(e, hit) { const win = e.target.closest('.win');
     if (hit('[data-lui-cno]')) { lConfirm.close(); return true; }
     if (hit('[data-lui-cok]')) { const o = lConfirm.o, opt = $('#lc [data-lui-copt]')?.getAttribute('aria-checked') === 'true'; lConfirm.close(); o?.onOK?.(opt); return true; }
@@ -84,7 +84,7 @@
   /* A details pane closes with Esc (unless it's the app's main view) */
   document.addEventListener('keydown', e => { if (e.key !== 'Escape' || e.defaultPrevented || $('#lc, #lmenu')) return; const b = front()?.querySelector('.ldp:not([hidden]):not([data-main]) .ldph [aria-label="Close"]'); if (b && !e.target.closest?.('input, textarea, [contenteditable]')) b.click(); });
 
-  /* ══ The LumaUI window: every shared part, its states, and where it's used ══ */
+  /* ══ The SunoUI window: every shared part, its states, and where it's used ══ */
   const LUI = { side: true, gsort: { k: 'title', dir: 1 }, sort: { k: 'name', dir: 1 }, det: true, ac: 'bar', mode: 'view', filter: 'all', q: '', qi: 0, sel: 'Receipts.grid' };
   const LUISECS = [['type', 'Type scale', 'type'], ['count', 'Count badge', 'hash'], ['details', 'Details pane', 'panel-right'], ['stack', 'Stacked button', 'square-stack'], ['parity', 'Mini cards', 'users'],
     ['bubble', 'Selection bubble', 'highlighter'], ['ac', 'Action center', 'panel-bottom'], ['place', 'Placement and modes', 'layout-template'], ['open', 'Open in', 'square-arrow-out-up-right'], ['file', 'File card', 'file-text'],
@@ -115,13 +115,13 @@
     const l = LUI.filter === 'fav' ? all.filter(x => x[2]) : LUI.filter === 'deleted' ? [['Old idea', '28 days left', 0]] : all;
     return `<div class="luiside"><div class="scr">${LUI.filter !== 'all' ? lFiltHead(names[LUI.filter], 'data-luifilt', 'all') : ''}${l.map(([t, s], i) => `<div class="luirow${i ? '' : ' on'}" style="height:44px;width:100%"><span style="display:grid"><b style="font-weight:600;color:var(--ink)">${t}</b><small class="t-caption">${s}</small></span></div>`).join('')}</div>
       ${lFoot({ q: { attr: 'data-luifq', ph: 'Search what was said' }, filter: { items: [['all', 'All', 'layers'], ['fav', 'Favorites', 'star'], ['deleted', 'Recently deleted', 'trash-2']], cur: LUI.filter, attr: 'data-luifilt' } })}</div>
-      <div class="luiside"><div class="scr"><div class="luirow on" style="width:100%">${ic('inbox')}<span>Inbox</span>${lCount(2, true)}</div><div class="luirow" style="width:100%">${ic('file-text')}<span>Drafts</span>${lCount(1)}</div><div class="luirow" style="width:100%">${ic('send-horizontal')}<span>Sent</span></div>${lAddRow('Add account', 'data-lui-todo="Account setup opens: your Luma account first, then others"', 'plus')}</div>
+      <div class="luiside"><div class="scr"><div class="luirow on" style="width:100%">${ic('inbox')}<span>Inbox</span>${lCount(2, true)}</div><div class="luirow" style="width:100%">${ic('file-text')}<span>Drafts</span>${lCount(1)}</div><div class="luirow" style="width:100%">${ic('send-horizontal')}<span>Sent</span></div>${lAddRow('Add account', 'data-lui-todo="Account setup opens: your Suno account first, then others"', 'plus')}</div>
       ${lFoot({ q: { attr: 'data-luifq2', ph: 'Search mail' }, add: { attr: 'data-lui-todo="New email"', label: 'New email', icon: 'square-pen' } })}</div>`; }
   function luiSug() { const s = $('#lui-sug'); if (!s) return; s.hidden = !LUI.q.trim(); s.innerHTML = LUI.q.trim() ? lPlaceSug(LUI.q, LUI.qi, 'data-luiplace') : ''; }
-  function renderLumaUI() { const w = $('#w-lumaui'); if (!w) return; $('#lui-top').innerHTML = `<img src="${FAV}" alt=""><b>LumaUI</b><span class="chev">${ic('chevron-down')}</span>`;
+  function renderLumaUI() { const w = $('#w-lumaui'); if (!w) return; $('#lui-top').innerHTML = `<img src="${FAV}" alt=""><b>SunoUI</b><span class="chev">${ic('chevron-down')}</span>`;
     $('#lui-nav').innerHTML = `<h6>Components</h6>${LUISECS.map(([k, n, i]) => `<button type="button" data-luigo="${k}">${ic(i)}<span>${n}</span></button>`).join('')}`;
     const sec = (k, h, p, body) => `<section class="luisec" id="lui-${k}"><h2>${h}</h2><p>${p}</p>${body}</section>`, file = (f, o) => lFile(f, o);
-    $('#lui-body').innerHTML = `<div class="luipad"><header><h1>LumaUI</h1><p>The shared parts from the Studio audit. Apps use these; they don't restyle them.</p></header>
+    $('#lui-body').innerHTML = `<div class="luipad"><header><h1>SunoUI</h1><p>The shared parts from the Studio audit. Apps use these; they don't restyle them.</p></header>
       ${sec('type', 'Type scale', 'Figtree, five roles and a label. Numbers that change are tabular. <code>.t-display</code> <code>.t-title-1</code> <code>.t-title-2</code> <code>.t-body</code> <code>.t-caption</code> <code>.t-label</code> <code>.t-numeric</code>, or the <code>--t-*</code> tokens.',
         `<div class="luistage col luitype"><div><code>display 72/600</code><span class="t-display">9:41<small>:07 AM</small></span></div><div><code>title 1 · 24/650</code><span class="t-title-1">Launch walkthrough</span></div><div><code>title 2 · 15/650</code><span class="t-title-2">Lisbon</span></div><div><code>body · 13/400</code><span class="t-body">Light rain from around 6 PM, gone by 9 PM.</span></div><div><code>numeric · 30/500</code><span class="t-numeric">1,248<small>mph</small></span></div><div><code>caption · 11.5/500</code><span class="t-caption">Today · +3 h</span></div><div><code>label · 11.5/600</code><span class="t-label">People</span></div></div>`)}
       ${sec('count', 'Count badge', 'A pill with tabular numbers: neutral for totals, accent for unread or needs attention; never 0. <code>lCount(n, accent)</code>. Used in Charlie’s sidebar and filter.',
@@ -138,10 +138,10 @@
         `<div class="luistage col" style="gap:14px">${seg([['bar', 'Bar'], ['double', 'Double'], ['editor', 'Editor'], ['split', 'Split']], LUI.ac, 'data-luiac', 'State')}<div class="luiframe" style="height:400px"><main class="isle" id="lui-acisle"><div class="luicontent"><b>Launch walkthrough deck</b>Priya, Nora and you · 4 messages</div>${luiAC()}</main></div></div>`)}
       ${sec('place', 'Placement and modes', 'Top right holds the mode switch and the thing itself (Open in, Share, Edit, Info, ···); the bottom bar holds what you do in this mode right now. Modes are icon plus label; a narrow window keeps only the current label. <code>.flo.lcorner</code> + <code>lModes()</code>.',
         `<div class="luiframe" style="height:340px"><main class="isle" id="lui-plisle"><div class="luicontent" style="top:60px"><b>Offsite-hero.jpg</b>1672 × 941</div>${luiPlace()}</main></div>`)}
-      ${sec('open', 'Open in', 'Open wears the default app’s own icon and says where it opens. Open in lists every app that can, the best Luma app first, the default marked, then Other app. <code>lOpenBtn(kind)</code>, <code>lOpenIn(anchor, kind, name)</code>.',
+      ${sec('open', 'Open in', 'Open wears the default app’s own icon and says where it opens. Open in lists every app that can, the best Suno app first, the default marked, then Other app. <code>lOpenBtn(kind)</code>, <code>lOpenIn(anchor, kind, name)</code>.',
         `<div class="luistage">${lOpenBtn('deck', 'data-lui-todo="Opening launch-deck.stage in Stage"')}${lOpenBtn('img', 'data-lui-todo="Opening terrace.webp in Viewer"')}${lOpenBtn('sheet', 'data-lui-todo="Opening budget-q4.grid in Grid"')}<button class="bt fill" type="button" data-luiopenin="img">${ic('square-arrow-out-up-right')}Open in…</button><button class="bt fill" type="button" data-luiopenin="audio">${ic('square-arrow-out-up-right')}Open a song in…</button></div>`)}
       ${sec('file', 'File card', 'One card for a file anywhere: the file’s own face (never larger than its square), the name cut in the middle so the extension stays, size and kind, and Open with the app’s icon. States go in the second line. <code>lFile(f, { sub, extra, act, open })</code>.',
-        `<div class="luistage">${file({ n: 'luma-1.0-nightly-x86_64.iso', k: 'iso', sz: '2.1 of 3.1 GB' }, { sub: '38 s left', extra: '<span class="lprog"><i style="width:68%"></i></span>', act: `<button class="lfx" type="button" title="Pause" aria-label="Pause">${ic('pause')}</button><button class="lfx" type="button" title="Cancel" aria-label="Cancel">${ic('x')}</button>` })}
+        `<div class="luistage">${file({ n: 'suno-1.0-nightly-x86_64.iso', k: 'iso', sz: '2.1 of 3.1 GB' }, { sub: '38 s left', extra: '<span class="lprog"><i style="width:68%"></i></span>', act: `<button class="lfx" type="button" title="Pause" aria-label="Pause">${ic('pause')}</button><button class="lfx" type="button" title="Cancel" aria-label="Cancel">${ic('x')}</button>` })}
         ${file({ n: 'homepage-hero-final-final.webp', k: 'img', sz: '1.8 MB', src: PH + 'life-hero-writing.webp' }, { sub: 'Just now', open: 'data-lui-todo="Opening in Viewer"' })}
         ${file({ n: 'press-kit.zip', k: 'zip', sz: '48 MB' }, { sub: '<span class="lfbad">Failed: the server stopped responding</span>', act: '<span class="bt sm fill" role="button" data-lui-todo="Retrying">Retry</span>' })}
         ${file({ n: 'setup-helper.flatpakref', k: 'app' }, { sub: '<span class="lfwarn">Not from a source you use</span>', act: '<span class="bt sm fill" role="button" data-lui-todo="Kept. It won’t run until you open it in Valet">Keep…</span>' })}</div>`)}
@@ -160,7 +160,7 @@
       ${sec('psearch', 'Place search', 'The field is the whole flow: places open above it as you type, Enter or a click adds the top or chosen one, no match says so in the list. <code>lFoot({ sug })</code> + <code>lPlaceSug()</code>. Used in Weather.',
         `<div class="luistage"><div class="luiside" style="height:300px"><div class="scr">${['Oakland', 'Lisbon', 'Tokyo'].map((n, i) => `<div class="luirow${i ? '' : ' on'}" style="width:100%">${ic('map-pin')}<span>${n}</span></div>`).join('')}</div>${lFoot({ q: { attr: 'data-luiq', ph: 'Add a city or ZIP', value: LUI.q }, sug: { id: 'lui-sug', html: LUI.q.trim() ? lPlaceSug(LUI.q, LUI.qi, 'data-luiplace') : '' } })}</div><p class="luinote" style="align-self:flex-end">Try “64105”, “Kansas” or “Atlantis”.</p></div>`)}
       ${sec('acct', 'Account card', 'The person at the top of a sidebar, in its own subtle frame, a section gap above the list. <code>.lacct</code>. Used in Settings.',
-        `<div class="luistage"><div class="luiside" style="height:auto"><button class="lacct" type="button" data-lui-todo="Opening your Luma account">${av('me', 36)}<span><b style="display:block;font-weight:600">Nick</b><small class="t-caption">Luma account</small></span>${ic('chevron-right')}</button><div class="luirow on" style="width:100%">${ic('wifi')}<span>Wi-Fi</span></div><div class="luirow" style="width:100%">${ic('bluetooth')}<span>Bluetooth</span></div></div></div>`)}
+        `<div class="luistage"><div class="luiside" style="height:auto"><button class="lacct" type="button" data-lui-todo="Opening your Suno account">${av('me', 36)}<span><b style="display:block;font-weight:600">Nick</b><small class="t-caption">Suno account</small></span>${ic('chevron-right')}</button><div class="luirow on" style="width:100%">${ic('wifi')}<span>Wi-Fi</span></div><div class="luirow" style="width:100%">${ic('bluetooth')}<span>Bluetooth</span></div></div></div>`)}
       ${sec('sky', 'Cards on a lit background', 'On a light sky the card sits darker than the sky (a deep blue-black frost) so white text passes AA; secondary text is 90% white. Where colour means nothing, use a plain card. <code>.lskycard</code>, <code>--card-sky</code>, <code>.lcard</code>. Used in Weather.',
         `<div class="luisky d">${[['Rain', '80%', 'Light rain 6 PM to 9 PM.'], ['Wind', '11 mph', 'From the west'], ['UV index', '5', 'Moderate']].map(([h, b, p]) => `<section class="lskycard"><h6>${h}</h6><b class="t-numeric">${b}</b><p>${p}</p></section>`).join('')}</div><div class="luisky g" style="margin-top:10px">${[['Sunset', '7:02 PM', 'Sunrise was 7:01 AM'], ['Humidity', '64%', 'Dew point 50°']].map(([h, b, p]) => `<section class="lskycard"><h6>${h}</h6><b class="t-numeric">${b}</b><p>${p}</p></section>`).join('')}<section class="lcard" style="padding:12px 14px 14px"><h6 class="t-label" style="margin:0 0 8px">Plain card</h6><b class="t-numeric">+3 h</b><p class="t-caption">Lisbon, today</p></section></div>`)}
       ${sec('share', 'Share, Export, Upload', 'Each icon has one meaning. Share is <code>share-2</code> everywhere; <code>share</code> means Export (save a copy elsewhere); <code>upload</code> means Upload.',
@@ -172,7 +172,7 @@
       ${sec('trail', 'Navigation trail', 'Where you came from sits inline with where you are, never as a framed Back button on a row of its own. Before a title the chevron stands alone (its name says where it goes); with no title it carries the name. <code>lTrail({ back: { label, attr }, title, meta })</code>. Used in Tide and its Sources pane.',
         `<div class="luistage col" style="gap:18px">${lTrail({ back: { label: 'Albums', attr: 'data-lui-todo="Back to Albums"' }, title: 'The Beach Boys', meta: ['12 albums', '214 songs'] })}${lTrail({ back: { label: 'Sources', attr: 'data-lui-todo="Back to Sources"' } })}</div>`)}
       ${sec('field', 'Field', 'A label above a recessed well (the search well), the accent ring on focus, a caption hint below. <code>lField(label, inputAttrs, value)</code> and <code>.lfhint</code>. Used in Tide’s Add source.',
-        `<div class="luistage col"><div style="width:320px;max-width:100%">${lField('Server address', 'placeholder="music.example.com" aria-label="Server address"')}${lField('Username', 'placeholder="nick" aria-label="Username"', 'nick')}<p class="lfhint">Luma signs in with a token; the password isn’t kept.</p></div></div>`)}
+        `<div class="luistage col"><div style="width:320px;max-width:100%">${lField('Server address', 'placeholder="music.example.com" aria-label="Server address"')}${lField('Username', 'placeholder="nick" aria-label="Username"', 'nick')}<p class="lfhint">Suno signs in with a token; the password isn’t kept.</p></div></div>`)}
       ${sec('stat', 'Status dot', 'A small dot for how a connection or job is doing: green is fine, accent and breathing is working, red needs you and always says why in words beside it. <code>.stat</code>, <code>.stat.busy</code>, <code>.stat.bad</code>.',
         `<div class="luistage col">${[['', 'Connected'], ['busy', 'Syncing 214 songs'], ['bad', 'Can’t reach the server: check the address']].map(([k, t]) => `<div class="luirow" style="width:auto"><i class="stat ${k}"></i><span>${t}</span></div>`).join('')}</div>`)}
       ${sec('msg', 'Message bubble', 'Messages owns the look; every thread uses it (Messages, Charlie). Theirs is the raised chip, yours the accent gradient in white; 18 round, 6 where one sender’s run joins. <code>.msg.theirs|.mine</code> › <code>.mcol</code> › <code>.bub</code>, tokens <code>--lbub-*</code> and <code>--mbub</code>.',
@@ -208,7 +208,7 @@
   document.addEventListener('scroll', e => { if (e.target.id === 'lui-body') lBubble.hide($('#lui-sel')); }, true);
 
   /* ══ Settings ═════════════════════════════════════════════════════════════════
-     Everything GNOME Settings offers, in Luma's form. Every page opens on the thing itself: the network you're
+     Everything GNOME Settings offers, in Suno's form. Every page opens on the thing itself: the network you're
      on, the displays as they sit on the desk, where sound is going, the battery's day, the keyboard under your
      hands. The rows under it are the settings, and they act at once. Search finds rows, not pages, and a row it
      finds works right there in the results. */
@@ -225,7 +225,7 @@
     mtab: 'touchpad', mBtn: 'left', mSpeed: 0, mAccel: true, mNat: false, tp: true, tpType: true, tSpeed: 20, tSec: 'two', tTap: true, tScroll: 'two', tNat: true,
     srcs: ['English (US)'], src: 'English (US)', perWin: 'all', altKey: 'AltRight', compose: 'off',
     acc: 250, wall: 'prism', tint: true,
-    preset: 'luma', edge: 'bottom', spread: 'spread', joined: 'separate', float: 'floating', hide: 'never', isz: 40,
+    preset: 'suno', edge: 'bottom', spread: 'spread', joined: 'separate', float: 'floating', hide: 'never', isz: 40,
     tile: true, gap: 8, edgeTile: true, hot: true, edges: true, ws: 'dynamic', wsN: 4, wsMon: 'primary', swi: 'current',
     dnd: false, lockN: true, nshow: '6', na: { messages: true, charlie: true, calendar: true, phone: true, tasks: true, clock: true, depot: true, tide: false, maps: false },
     sa: [['filer', true], ['settings', true], ['calc', true], ['contacts', true], ['calendar', true], ['charlie', true], ['notes', true], ['tide', true], ['depot', true], ['term', false]], askAri: true,
@@ -283,15 +283,15 @@
   /* ── Data the pages draw from ───────────────────────────────────────────────── */
   const CFNETS = [{ n: 'Studio North', sig: 4, lock: true, known: true, band: '5 GHz' }, { n: 'Studio North Guest', sig: 3, lock: false, known: true, band: '2.4 GHz' }, { n: 'Priya’s phone', sig: 3, lock: true, band: '5 GHz' },
     { n: 'Harbor Café', sig: 2, lock: false, band: '2.4 GHz' }, { n: 'Maple Court 2F', sig: 2, lock: true, band: '5 GHz' }, { n: 'Coastline Rail', sig: 1, lock: true, band: '2.4 GHz' }];
-  const CFKNOWN = ['Studio North', 'Studio North Guest', 'Coastline Rail', 'Harbor Café', 'Luma Office', 'Home'];
+  const CFKNOWN = ['Studio North', 'Studio North Guest', 'Coastline Rail', 'Harbor Café', 'Suno Office', 'Home'];
   const CFBT = [{ id: 'hp', n: 'WH-1000XM5', i: 'headphones', kind: 'Headphones', on: true, bat: 80 }, { id: 'ms', n: 'MX Master 3S', i: 'mouse', kind: 'Mouse', on: true, bat: 55 }, { id: 'kb', n: 'Keychron K3', i: 'keyboard', kind: 'Keyboard', on: false }];
   const CFNEAR = [{ id: 'jbl', n: 'JBL Flip 6', i: 'volume-2', kind: 'Speaker' }, { id: 'px', n: 'Pixel 9', i: 'smartphone', kind: 'Phone' }, { id: 'k2', n: 'MX Keys', i: 'keyboard', kind: 'Keyboard', code: '482 913' }];
   const CFOUT = [{ id: 'spk', n: 'Speakers', s: 'Built in', i: 'volume-2' }, { id: 'hp', n: 'WH-1000XM5', s: 'Bluetooth', i: 'headphones' }, { id: 'dock', n: 'Studio monitors', s: 'USB dock', i: 'music' }];
   const CFDISP = { int: { n: 'Built-in display', m: '14″ · ThinkPad', w: 1920, h: 1200, res: ['1920 × 1200', '1680 × 1050', '1280 × 800'], hz: ['60 Hz', '48 Hz'] },
     ext: { n: 'Dell U2723QE', m: '27″ · USB-C', w: 3840, h: 2160, res: ['3840 × 2160', '2560 × 1440', '1920 × 1080'], hz: ['60 Hz', '50 Hz', '30 Hz'] } };
   const CFACC = [[250, 'Blue'], [195, 'Teal'], [150, 'Green'], [95, 'Yellow'], [55, 'Orange'], [25, 'Red'], [350, 'Pink'], [300, 'Purple']];
-  const CFWALL = [['prism', 'Prism'], ['meadow', 'Meadow'], ['blue-fog', 'Blue fog'], ['ember', 'Ember'], ['luma-creatives', 'Creatives']];
-  const CFPRE = [['luma', 'Luma', { edge: 'bottom', spread: 'spread', joined: 'separate', float: 'floating' }], ['one', 'One bar', { edge: 'bottom', spread: 'together', joined: 'joined', float: 'floating' }],
+  const CFWALL = [['prism', 'Prism'], ['meadow', 'Meadow'], ['blue-fog', 'Blue fog'], ['ember', 'Ember'], ['suno-creatives', 'Creatives']];
+  const CFPRE = [['suno', 'Suno', { edge: 'bottom', spread: 'spread', joined: 'separate', float: 'floating' }], ['one', 'One bar', { edge: 'bottom', spread: 'together', joined: 'joined', float: 'floating' }],
     ['grown', 'Grown', { edge: 'bottom', spread: 'together', joined: 'separate', float: 'edge' }], ['tabs', 'Tabs', { edge: 'bottom', spread: 'spread', joined: 'separate', float: 'edge' }],
     ['taskbar', 'Taskbar', { edge: 'bottom', spread: 'spread', joined: 'joined', float: 'edge' }], ['split', 'Split', { edge: 'bottom', spread: 'spread', joined: 'separate', float: 'floating' }],
     ['side', 'Side', { edge: 'left', spread: 'spread', joined: 'separate', float: 'floating' }], ['free', 'Free', { edge: 'bottom', spread: 'spread', joined: 'separate', float: 'floating' }]];
@@ -326,7 +326,7 @@
 
   /* ── Pages ─────────────────────────────────────────────────────────────────── */
   const CFP = {
-    me: { n: 'Luma account', i: 'user', h: 250, meta: () => '@nick · nick@simplyluma.com',
+    me: { n: 'Suno account', i: 'user', h: 250, meta: () => '@nick · nick@simplyluma.com',
       hero: () => `<div class="cfid">${av('me', 64)}<div><b>Nick</b><em>@nick</em><span>Messages, sync and Depot use this account</span></div></div>`,
       body: () => [{ h: 'Account', r: [rTx('myName', 'Name', 'Shown to people you message'), rVl('Username', '@nick', { s: 'How people find you in Messages' }), rVl('Email', 'nick@simplyluma.com'), rBt('pw', 'Password', 'Changed in June', 'Change…')] },
         { h: 'Keep in step across your computers', r: [rSw('sync.look', 'Appearance and wallpaper'), rSw('sync.wifi', 'Wi‑Fi networks'), rSw('sync.shelf', 'Shelf layout')] },
@@ -341,7 +341,7 @@
       body: () => [CF.wifi && { h: 'Nearby', r: [...CFNETS.filter(n => n.n !== CF.net).map(n => rCu(cfNetRow(n), { t: n.n, cls: CFV.joinNet === n.n ? 'open' : '' })), rBt('hidden', 'Hidden network', 'Join a network that doesn’t show its name', 'Join…')] },
         { h: 'More', r: [rNv('wifi-known', 'Known networks', 'Networks this computer joins on its own', String(CFKNOWN.length)), rNv('hotspot', 'Hotspot', 'Share this computer’s connection', CF.hotspot ? 'On' : 'Off'), rSw('airplane', 'Airplane mode', 'Turns off Wi‑Fi, Bluetooth and mobile data')] }] },
     'wifi-net': { get n() { return CF.net || 'Network'; }, up: 'wifi', meta: () => 'Connected · WPA3 · 5 GHz',
-      body: () => [{ r: [rSw('autoJoin', 'Join automatically'), rSw('allUsers', 'Available to everyone on this computer'), rPk('metered', 'Metered', 'Luma holds back big downloads on metered networks', [['auto', 'Automatic'], ['yes', 'Yes'], ['no', 'No']])] },
+      body: () => [{ r: [rSw('autoJoin', 'Join automatically'), rSw('allUsers', 'Available to everyone on this computer'), rPk('metered', 'Metered', 'Suno holds back big downloads on metered networks', [['auto', 'Automatic'], ['yes', 'Yes'], ['no', 'No']])] },
         { h: 'Connection', r: [rVl('Signal', 'Excellent'), rVl('Speed', '1.2 Gb/s'), rVl('Security', 'WPA3'), rVl('Band', '5 GHz, channel 149')] },
         { h: 'Addresses', r: [rVl('IPv4', '192.168.10.24', { mono: true, copy: true }), rVl('IPv6', 'fe80::9a3b:2cff:fe41:7d10', { mono: true, copy: true }), rVl('Router', '192.168.10.1', { mono: true }), rVl('DNS', 'Automatic', {})] },
         { r: [rBt('qr', 'Share this network', 'Show a code a phone can scan', 'Share…'), rBt('forget', 'Forget this network', 'The password is removed from this computer', 'Forget…', { danger: true })] }] },
@@ -470,7 +470,7 @@
     'p-files': { n: 'File history and trash', up: 'privacy', meta: () => CF.hist ? 'Remembering files you open' : 'Not remembering files you open',
       body: () => [{ h: 'Recent files', r: [rSw('hist', 'Remember files I open', 'Shown in Recent and in search'), rPk('histKeep', 'Keep for', '', [['1', '1 day'], ['7', '7 days'], ['30', '30 days'], ['forever', 'Forever']], { hide: !CF.hist }), rBt('clearhist', 'Clear recent files', '', 'Clear…', { danger: true })] },
         { h: 'Trash and temporary files', r: [rSw('trash', 'Empty the trash on its own'), rSw('temp', 'Delete temporary files on their own'), rPk('trashAge', 'After', '', [['1', '1 day'], ['7', '7 days'], ['30', '30 days']], { hide: !CF.trash && !CF.temp }), rBt('emptytrash', 'Empty the trash', '1.2 GB in 214 items', 'Empty…', { danger: true }), rBt('cleartemp', 'Delete temporary files', '380 MB', 'Delete…')] }] },
-    'p-diag': { n: 'Problem reports', up: 'privacy', meta: () => 'When an app crashes, a report can help the Luma team fix it',
+    'p-diag': { n: 'Problem reports', up: 'privacy', meta: () => 'When an app crashes, a report can help the Suno team fix it',
       body: () => [{ r: [rRd('diag', 'never', 'Don’t send'), rRd('diag', 'ask', 'Ask me each time', 'You see what’s in it first'), rRd('diag', 'auto', 'Send automatically')] }] },
     'p-dev': { n: 'Device security', up: 'privacy', meta: () => 'Every check passed',
       body: () => [{ r: [rVl('Disk encryption', 'On', { i: 'lock' }), rVl('Secure Boot', 'On', { i: 'shield-check' }), rVl('TPM', 'Version 2.0', { i: 'cpu' }), rVl('Firmware', 'Up to date', { i: 'refresh-cw' })] },
@@ -523,13 +523,13 @@
         : [{ r: [rSw('rdLogin', 'Remote sign-in', 'Sign in to this computer when nobody is using it')] }, !CF.rdLogin ? null : cfConn()] },
     ssh: { n: 'Secure Shell', i: 'terminal', g: 'System', h: 160, meta: () => CF.ssh ? 'Signing in from a terminal is allowed' : 'Off',
       body: () => [{ r: [rSw('ssh', 'Secure Shell', 'Sign in to this computer from a terminal elsewhere')] }, CF.ssh && { h: 'Connect with', r: [rVl('Command', 'ssh nick@nicks-thinkpad.local', { mono: true, copy: true })] }] },
-    about: { n: 'About', i: 'info', g: 'System', h: 250, meta: () => `${esc(CF.devName)} · Luma 1.0`,
-      hero: () => `<div class="cfabout"><img src="${FAV}" alt=""><div><b>Luma 1.0</b><em>Nightly · 23 September 2026</em><span><i class="dot"></i>Up to date</span></div><button class="bt fill" type="button" data-cfopen="depot">Updates</button></div>`,
+    about: { n: 'About', i: 'info', g: 'System', h: 250, meta: () => `${esc(CF.devName)} · SunoOS 0.1`,
+      hero: () => `<div class="cfabout"><img src="${FAV}" alt=""><div><b>SunoOS 0.1</b><em>Nightly · 23 September 2026</em><span><i class="dot"></i>Up to date</span></div><button class="bt fill" type="button" data-cfopen="depot">Updates</button></div>`,
       body: () => [{ r: [rTx('devName', 'Computer name')] },
         { h: 'Hardware', r: [rVl('Model', 'ThinkPad X1 Carbon Gen 12'), rVl('Memory', '32 GB'), rVl('Processor', 'Intel Core Ultra 7 155U'), rVl('Graphics', 'Intel Arc'), rNv('~disks', 'Storage', '215 GB used of 512 GB', 'Open Disks')] },
         { h: 'Software', r: [rVl('Updates', 'Nightly channel', { s: 'Change it in Depot' }), rNv('about-sys', 'System details', 'For support and bug reports')] }] },
     'about-sys': { n: 'System details', up: 'about', meta: () => 'Copy these into a bug report', top: () => `<button class="bt fill" type="button" data-cfact="copysys">${ic('copy')}Copy all</button>`,
-      body: () => [{ r: [rVl('Luma', '1.0 nightly 20260923', { mono: true }), rVl('Kernel', 'Linux 6.16.8-luma1', { mono: true }), rVl('Desktop', 'Luma Shell 1.0 on Wayland', { mono: true }), rVl('Firmware', 'N3XET47W (1.22)', { mono: true }), rVl('Processor', 'Intel Core Ultra 7 155U × 14', { mono: true }), rVl('Graphics', 'Intel Arc (MTL)', { mono: true }), rVl('Disk', 'Samsung PM9C1a 512 GB', { mono: true })] }] }
+      body: () => [{ r: [rVl('Suno', '1.0 nightly 20260923', { mono: true }), rVl('Kernel', 'Linux 6.16.8-suno1', { mono: true }), rVl('Desktop', 'Suno Shell 1.0 on Wayland', { mono: true }), rVl('Firmware', 'N3XET47W (1.22)', { mono: true }), rVl('Processor', 'Intel Core Ultra 7 155U × 14', { mono: true }), rVl('Graphics', 'Intel Arc (MTL)', { mono: true }), rVl('Disk', 'Samsung PM9C1a 512 GB', { mono: true })] }] }
   };
   const cfGB = mb => mb >= 1000 ? (mb / 1000).toFixed(1).replace(/\.0$/, '') + ' GB' : mb + ' MB';
   const cfConn = () => ({ h: 'How to connect', r: [rVl('Address', 'nicks-thinkpad.local', { mono: true, copy: true }), rVl('Username', 'nick', { mono: true, copy: true }), rVl('Password', CFV.rev ? 'tern-5ivy-quartz' : '••••••••••', { mono: true }), rBt('reveal', 'Show password', '', CFV.rev ? 'Hide' : 'Show')] });
@@ -538,10 +538,10 @@
   const cfZoneName = () => new Intl.DateTimeFormat('en-US', { timeZone: CF.zone, timeZoneName: 'long' }).formatToParts(new Date()).find(p => p.type === 'timeZoneName').value;
   function cfAppPage(a) { if (CFAP[a]) return CFAP[a]; const perms = CFPERMS[a] || ['notif', 'search'], sz = CFSZ[a] || [20, 10, 5]; perms.forEach(p => { if (CF['perm_' + a + p] == null) CF['perm_' + a + p] = true; });
     return CFAP[a] = { n: cfName(a), up: 'apps', meta: () => `Version 1.0 · from Depot · ${cfGB(sz[0] + sz[1] + sz[2])}`,
-      hero: () => `<div class="cfid"><img class="cfappi" src="${cfIco(a)}" alt=""><div><b>${esc(cfName(a))}</b><em>From Depot · updates with Luma</em></div><button class="bt fill" type="button" data-cfopen="${a}">Open</button></div>`,
+      hero: () => `<div class="cfid"><img class="cfappi" src="${cfIco(a)}" alt=""><div><b>${esc(cfName(a))}</b><em>From Depot · updates with Suno</em></div><button class="bt fill" type="button" data-cfopen="${a}">Open</button></div>`,
       body: () => [{ h: 'Allowed to', r: perms.map(p => rSw('perm_' + a + p, CFPERM[p][0], CFPERM[p][1])) },
         { h: 'Storage', r: [rVl('App', cfGB(sz[0])), rVl('Documents and data', cfGB(sz[1])), rVl('Cache', cfGB(sz[2])), rBt('clearcache', 'Clear cache', 'It fills up again as you use the app', 'Clear')] },
-        CFSYS.includes(a) ? { r: [rVl('Part of Luma', '', { i: 'lock', s: `${esc(cfName(a))} comes with the system and updates with it, so it can’t be uninstalled` })] } : { r: [rBt('uninstall', `Uninstall ${cfName(a)}`, 'Keeps your documents unless you choose otherwise', 'Uninstall…', { danger: true })] }] }; }
+        CFSYS.includes(a) ? { r: [rVl('Part of Suno', '', { i: 'lock', s: `${esc(cfName(a))} comes with the system and updates with it, so it can’t be uninstalled` })] } : { r: [rBt('uninstall', `Uninstall ${cfName(a)}`, 'Keeps your documents unless you choose otherwise', 'Uninstall…', { danger: true })] }] }; }
   const CFSYS = ['filer', 'viola', 'term', 'depot', 'settings'], cfCat = a => { const d = typeof app === 'function' && app({ term: 'terminal', memos: 'memo' }[a] || a); return d ? lCat(d.cat) : ''; };
   const cfPg = id => id.startsWith('app:') ? cfAppPage(id.slice(4)) : CFP[id] || CFP.wifi;
   const CFGRPS = [['', ['wifi', 'network', 'bluetooth']], ['Desktop', ['appearance', 'shelf', 'windows', 'notifications', 'search']], ['Devices', ['displays', 'sound', 'power', 'mouse', 'keyboard', 'printers']],
@@ -590,7 +590,7 @@
   function cfSide() { const q = CFV.q.toLowerCase(), hits = q ? cfSearch(q) : null;
     const row = id => { const p = CFP[id], n = hits ? hits.filter(h => cfRoot(h.pg) === id).length : 0, on = !hits && cfRoot(CFV.pg) === id;
       return `<button class="si${on ? ' on' : ''}${hits && !n ? ' dim' : ''}" type="button" data-cfp="${id}">${ic(p.i)}<span class="lab">${esc(p.n)}</span>${hits ? lCount(n) : p.em ? `<em>${esc(p.em())}</em>` : ''}</button>`; };
-    $('#cf-nav').innerHTML = `<button class="cfme lacct${cfRoot(CFV.pg) === 'me' && !hits ? ' on' : ''}" type="button" data-cfp="me">${av('me', 34)}<span><b>Nick</b><em>Luma account</em></span>${ic('chevron-right')}</button>` + CFGRPS.map(([h, ids]) => `${h ? `<div class="sh">${h}</div>` : ''}${ids.map(row).join('')}`).join('');
+    $('#cf-nav').innerHTML = `<button class="cfme lacct${cfRoot(CFV.pg) === 'me' && !hits ? ' on' : ''}" type="button" data-cfp="me">${av('me', 34)}<span><b>Nick</b><em>Suno account</em></span>${ic('chevron-right')}</button>` + CFGRPS.map(([h, ids]) => `${h ? `<div class="sh">${h}</div>` : ''}${ids.map(row).join('')}`).join('');
   }
   function cfMain() { const b = $('#cf-body'), w = $('#w-settings'); CFV.pk = {};
     if (CFV.q) { const hits = cfSearch(CFV.q.toLowerCase()), by = []; hits.forEach(h => { let g = by.find(x => x.pg === h.pg); if (!g) by.push(g = { pg: h.pg, r: [] }); if (h.r) g.r.push(h.r); });
@@ -623,9 +623,9 @@
     p.style.minWidth = Math.max(200, r.width) + 'px'; p.style.left = Math.max(8, Math.min(wr.width - p.offsetWidth - 8, r.right - wr.left - p.offsetWidth)) + 'px';
     const below = r.bottom - wr.top + 6; if (below + p.offsetHeight > wr.height - 8) p.style.top = Math.max(8, r.top - wr.top - p.offsetHeight - 6) + 'px'; else p.style.top = below + 'px'; }
   const cfToast = (msg, icon) => lToast($('#w-settings'), msg, { icon: icon || (/^Copied|copied$/.test(msg) ? 'copy' : /^Opening|^Opens/.test(msg) ? 'square-arrow-out-up-right' : 'check') });
-  /* Anything that can't come back asks through the standard LumaUI destructive dialog; the sheet stays for forms (join, add, change) */
+  /* Anything that can't come back asks through the standard SunoUI destructive dialog; the sheet stays for forms (join, add, change) */
   function cfSheet(h, line, go, label, danger, extra = '') { if (danger) { lConfirm($('#w-settings'), { title: h.replace(/&amp;/g, '&').replace(/&#39;|&quot;/g, "'"), body: line, action: label, icon: label === 'Sign out' ? 'log-out' : 'trash-2', onOK: () => go?.() }); return; } CFV.sheet = go;
-    /* A form grows the bar in place (LumaUI action center), never a sheet over the page: a header naming the task, one labelled row per
+    /* A form grows the bar in place (SunoUI action center), never a sheet over the page: a header naming the task, one labelled row per
        field, then Cancel and the action. Esc or Cancel folds it away; Enter does the action. */
     const icon = { Join: 'wifi', Change: 'key-round', Add: 'user-plus', 'Import file…': 'shield', Done: 'qr-code' }[label] || 'settings';
     const fields = /class="cfform"/.test(extra) ? [...extra.matchAll(/<input ([^>]*)>/g)].map(m => { const a = m[1], l = (a.match(/aria-label="([^"]*)"/) || [])[1] || ''; return `<div class="lacf"><label>${l}</label><input ${a.replace(/placeholder="[^"]*"/, `placeholder="${/password/i.test(l) ? 'Required' : 'Type here'}"`)}></div>`; }).join('') : '';

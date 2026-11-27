@@ -1,5 +1,5 @@
-/* Luma desktop shell: Shelf take two (mockups/shelf-2.html), mounted over the desktop in Studio's Desktop view.
-   Its code is kept as it was; the bridge (window.lumaDesk) connects it to Luma's real windows and Settings. */
+/* Suno desktop shell: Shelf take two (mockups/shelf-2.html), mounted over the desktop in Studio's Desktop view.
+   Its code is kept as it was; the bridge (window.lumaDesk) connects it to Suno's real windows and Settings. */
 (() => {
 (() => {
   'use strict';
@@ -14,7 +14,7 @@
     <div class="nl idle" id="nl"><div class="clip" id="nclip"><div class="inner" id="ninner"></div><i class="glow"></i></div></div>
     <div class="pop" id="pop"></div><div class="tip" id="tip"></div><div class="plate" id="plate"></div></div>`;
   const $ = (s, r = ROOT) => r.querySelector(s), $$ = (s, r = ROOT) => [...r.querySelectorAll(s)];
-  const L = window.lumaDesk;   // the bridge to Luma's windows and Settings
+  const L = window.lumaDesk;   // the bridge to Suno's windows and Settings
   const esc = t => String(t ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const scr = $('#scr'), INS = 14, WG = 10; let W = desk.clientWidth, H = desk.clientHeight;
   const U = p => new URL(p, location.href).href, GL = U('../icons/'), PH = U('../social-suno/photos/');   // absolute: the shell's stylesheet lives in desktop/
@@ -31,7 +31,7 @@
 
   /* ── State ─────────────────────────────────────────────────────────────── */
   const PRESETS = {
-    luma: { edge: { dock: 'bottom', live: 'bottom', status: 'bottom' }, align: 'center', surface: 'separate', attach: 'float', tuck: false },
+    suno: { edge: { dock: 'bottom', live: 'bottom', status: 'bottom' }, align: 'center', surface: 'separate', attach: 'float', tuck: false },
     onebar: { edge: { dock: 'bottom', live: 'bottom', status: 'bottom' }, align: 'center', surface: 'joined', attach: 'float', tuck: false },
     grown: { edge: { dock: 'bottom', live: 'bottom', status: 'bottom' }, align: 'center', surface: 'joined', attach: 'prot', tuck: false },
     taskbar: { edge: { dock: 'bottom', live: 'bottom', status: 'bottom' }, align: 'spread', surface: 'joined', attach: 'prot', tuck: false },
@@ -40,7 +40,7 @@
     tabs: { edge: { dock: 'bottom', live: 'bottom', status: 'bottom' }, align: 'spread', surface: 'separate', attach: 'prot', tuck: false },
     free: { attach: 'free', tuck: false }
   };
-  const S = Object.assign({ clock: 'glance', soonAt: 0, offline: false, low: false, preset: 'luma', theme: 'dark', mat: 'solid', icon: 'lit', shape: 'squircle', size: 45, tiling: false, notif: 'center', dnd: false, free: {} }, PRESETS.luma, store.get('state', {})); S.liveMax = 2;   // recomputed for this screen on every load
+  const S = Object.assign({ clock: 'glance', soonAt: 0, offline: false, low: false, preset: 'suno', theme: 'dark', mat: 'solid', icon: 'lit', shape: 'squircle', size: 45, tiling: false, notif: 'center', dnd: false, free: {} }, PRESETS.luma, store.get('state', {})); S.liveMax = 2;   // recomputed for this screen on every load
   S.edge = Object.assign({}, PRESETS.luma.edge, S.edge);
   S.size = new URLSearchParams(location.search).get('status') === 'line' ? 30 : 45;   /* the one-line concept: 30 px icons, 7 px round them. Otherwise the dock's icons are 45 px with 11 px around them (25 Oct 2026); no setting changes it, so an older stored 40 is replaced */
   const save = () => store.set('state', { clock: S.clock, preset: S.preset, theme: S.theme, mat: S.mat, icon: S.icon, shape: S.shape, size: S.size, tiling: S.tiling, notif: S.notif, edge: S.edge, align: S.align, surface: S.surface, attach: S.attach, tuck: S.tuck, free: S.free });
@@ -222,7 +222,7 @@
     closePop(); renderStatus(); layout(); }
 
   /* ══ The launcher and folders (25 Oct 2026) ═══════════════════════════════════════════════════════════════════
-     The launcher: Luma's own icon pinned at the start of the dock, in the same icon treatment as every app. It opens
+     The launcher: Suno's own icon pinned at the start of the dock, in the same icon treatment as every app. It opens
      the app drawer: the screen blurs, and every app stands in a large grid with search on top; the shelf stays above.
      Folders: their own island between the dock and the system island. How a folder looks in it (&fl=):
        stack   a pocket in the folder's colour with its newest files standing in it
@@ -239,7 +239,7 @@
       { n: 'Launch deck v4.key', k: 'deck', sz: '48 MB', d: 'Today, 2:41 PM', day: 'Today' }, { n: 'Studio North invoice.pdf', k: 'pdf', sz: '220 KB', d: 'Today, 11:08 AM', day: 'Today' },
       { n: 'terrace.jpg', k: 'img', th: 'life-sync-terrace', sz: '3.2 MB', d: 'Today, 9:30 AM', day: 'Today' }, { n: 'Invoices', k: 'folder', items: 6, d: 'Yesterday', day: 'Yesterday', sub: [
         { n: 'September.pdf', k: 'pdf', sz: '180 KB' }, { n: 'August.pdf', k: 'pdf', sz: '176 KB' }, { n: 'July.pdf', k: 'pdf', sz: '181 KB' }] },
-      { n: 'luma-nightly-1022.iso', k: 'zip', sz: '2.4 GB', d: 'Yesterday', day: 'Yesterday' }, { n: 'Budget 2027.xlsx', k: 'sheet', sz: '84 KB', d: 'Oct 21', day: 'Earlier' },
+      { n: 'suno-nightly-1022.iso', k: 'zip', sz: '2.4 GB', d: 'Yesterday', day: 'Yesterday' }, { n: 'Budget 2027.xlsx', k: 'sheet', sz: '84 KB', d: 'Oct 21', day: 'Earlier' },
       { n: 'studio-walkthrough.mp4', k: 'video', th: 'life-hero-studio', sz: '312 MB', d: 'Oct 20', day: 'Earlier' }, { n: 'Pet Sounds.flac', k: 'audio', th: 'pet-sounds', sz: '41 MB', d: 'Oct 18', day: 'Earlier' }] },
     { id: 'doc', n: 'Documents', g: 'file-text', h: 40, fresh: 0, files: [
       { n: 'Launch plan.docx', k: 'doc', sz: '96 KB', d: 'Today, 1:12 PM', day: 'Today' }, { n: 'Board letter.pdf', k: 'pdf', sz: '310 KB', d: 'Yesterday', day: 'Yesterday' },

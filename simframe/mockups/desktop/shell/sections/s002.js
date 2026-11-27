@@ -180,7 +180,7 @@
     const nx = hit('[data-ndis]'); if (nx) { e.stopPropagation(); dismiss(nx.dataset.ndis); return; }
     const na = hit('[data-nact]'); if (na) { const [id, a] = na.dataset.nact.split(':'), n = NQ.find(x => x.id === +id);
       if (a === 'Accept') { NQ = NQ.filter(x => x !== n); C.on = true; C.t0 = Date.now(); C.muted = false; rest(); renderStatus(); layout(); isl.call.classList.add('enter'); setTimeout(() => isl.call.classList.remove('enter'), 600); return; }
-      if (a === 'Decline') { n.urgent = false; n.title = PRIYA.n; n.body = 'Missed Luma call'; n.acts = ['Call back', 'Message']; n.at = Date.now(); rest(); setTimeout(buzz, 480); return; }
+      if (a === 'Decline') { n.urgent = false; n.title = PRIYA.n; n.body = 'Missed Suno call'; n.acts = ['Call back', 'Message']; n.at = Date.now(); rest(); setTimeout(buzz, 480); return; }
       if (a === 'Call back') { NQ = NQ.filter(x => x !== n); C.on = true; C.t0 = Date.now(); rest(); layout(); return; }
       dismiss(id); if (['Join', 'Show', 'Open', 'Update'].includes(a) && NAPP[n?.app]) L.open(NAPP[n.app]); return; }
     const ns = hit('[data-nsend]'); if (ns) { sendReply(ns.dataset.nsend); return; }
@@ -255,13 +255,13 @@
   S.clock = 'quiet'; S.theme = document.body.dataset.mode || 'dark'; S.mat = document.body.dataset.mat === 'frost' ? 'frost' : 'solid'; S.dnd = !!L.getDnd(); QD.vol = L.get('vol'); QD.bri = L.get('d.int.bright');
   renderDock(); renderFolders(); renderStatus(); renderMusic(); renderCall(); renderWx(); renderEv(); renderRec(); renderTg(); renderNfl();
   fit(); layout(); rest();
-  /* Luma drives the shell: which windows are open, the mode, Do Not Disturb */
+  /* Suno drives the shell: which windows are open, the mode, Do Not Disturb */
   window.lumaLive = (k, on) => { if (k === 'rec') { RCL.on = on; RCL.t0 = Date.now() - 14e3; RCL.acc = 0; RCL.paused = false; } if (k === 'ev') { EVL.on = on; EVL.forced = on; EVL.t = on ? 'Product sync' : 'Walkthrough'; EVL.at = Date.now() + 8 * 60e3; } if (k === 'tg') TGL.on = on; if (k === 'wx') S.wx = on; if (k === 'music') M.on = on; if (k === 'call') { C.on = on; C.t0 = Date.now(); } renderEv(); renderRec(); renderTg(); renderWx(); renderMusic(); renderCall(); layout(); };
   window.lumaShell = {
     sync(run, front) { RUN = new Set(run); FOCUS = front || ''; renderDock(); },
     theme(m) { if (S.theme === m) return; S.theme = m; scr.dataset.theme = m; save(); },
     mat(m) { if (S.mat === m) return; S.mat = m; scr.dataset.mat = m; save(); },
-    /* the dash and the tiler, as first login (desktop/setup.js) and Settings choose them: luma, onebar (Cupertino), taskbar (Redmond) */
+    /* the dash and the tiler, as first login (desktop/setup.js) and Settings choose them: suno, onebar (Cupertino), taskbar (Redmond) */
     preset(p) { if (!PRESETS[p] || !PRESETS[p].edge) return; Object.assign(S, JSON.parse(JSON.stringify(PRESETS[p])), { preset: p }); S.liveMax = 2; layout(); },
     tiling(v) { S.tiling = !!v; layout(); },
     dnd(v) { S.dnd = !!v; renderStatus(); if (NS === 'has' || NS === 'idle') rest(); refreshPop(); },
@@ -276,7 +276,7 @@
   setTimeout(() => notify({ app: 'messages', face: PRIYA, title: 'Priya Raman', body: MSG[0], reply: true }), 2600);
   setTimeout(() => { S.soonAt = Date.now() + 15 * 60e3 - 20e3; tickClock(); renderEv(); layout(); }, 44000);
   setTimeout(() => notify({ app: 'calendar', title: 'Launch walkthrough in 15 minutes', body: 'Studio \u00b7 with Priya, Nora and Theo', acts: ['Join', 'Snooze'] }), 45000);
-  setTimeout(() => notify({ app: 'files', title: 'luma-nightly.iso is ready', body: 'Downloads \u00b7 4.1 GB', acts: ['Show', 'Open'] }), 110000);
+  setTimeout(() => notify({ app: 'files', title: 'suno-nightly.iso is ready', body: 'Downloads \u00b7 4.1 GB', acts: ['Show', 'Open'] }), 110000);
   setTimeout(() => notify({ app: 'messages', face: PRIYA, title: 'Priya Raman', body: MSG[1], reply: true }), 190000);
 })();
 })();

@@ -66,7 +66,7 @@
 .wxarc { width: 100%; height: 52px; margin-top: 6px; } .wxarc path { fill: none; stroke: rgba(255,255,255,.35); stroke-width: 1.5; stroke-dasharray: 3 4; } .wxarc line { stroke: rgba(255,255,255,.25); } .wxarc circle { fill: #fff; filter: drop-shadow(0 0 6px rgba(255,220,150,.9)); }
 .wxside { width: 250px; flex: none; display: flex; flex-direction: column; min-height: 0; padding: 4px 10px 10px; } .wxplaces { flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: none; display: grid; align-content: start; gap: 8px; padding: 3px; margin: -3px; }
 .wbtabs[hidden] { display: none !important; }
-/* sidebar places: plain Luma rows, raised when chosen */
+/* sidebar places: plain Suno rows, raised when chosen */
 .wxplaces { gap: 2px !important; } .wxside .wxpl { display: flex !important; align-items: center; gap: 11px; padding: 8px 10px !important; border-radius: 12px !important; background: none !important; box-shadow: none !important; color: var(--ink) !important; transform: none !important; }
 .wxside .wxpl:hover { background: var(--fill-1) !important; } .wxside .wxpl.on { background: var(--raised) !important; box-shadow: inset 0 1px 0 var(--hi), 0 1px 2px rgba(0,0,0,.15) !important; }
 .wxplg2 { width: 30px; height: 30px; flex: none; display: grid; place-items: center; } .wxside .wxplt { flex: 1; } .wxside .wxplt b { font-size: 13.5px; font-weight: 600; } .wxside .wxplt b svg.i { width: 11px; height: 11px; color: var(--acc-ink); margin-left: 3px; } .wxside .wxplt small { font-size: 11.5px; color: var(--ink-3); opacity: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: .01em; }
@@ -82,12 +82,12 @@
 /* On a phone the sidebar (and its foot: search, place search, New) is the Places drawer, opened from the title bar, as in Photos and Filer */
 @container win (max-width: 720px) { .win.navopen :is(.wxside, .lfside) { display: flex; position: absolute; z-index: 35; left: 8px; top: 50px; bottom: 8px; width: 260px; padding-top: 10px; border-radius: 16px; background: var(--float-solid); box-shadow: var(--sh-float); } .win:is(.wxwin, .lfwin, .ariwin) .tbar .navbtn { margin: 0 2px 0 -4px; } }
 /* ══ Clock, lock-in ══ */
-/* Luma: the clock is lit by the sky where you are; each city wears its own */
+/* Suno: the clock is lit by the sky where you are; each city wears its own */
 .ckwash { position: absolute; inset: 0 0 auto 0; height: 420px; z-index: 0; pointer-events: none; transition: background .8s; background: radial-gradient(90% 100% at 50% 0%, oklch(0.55 0.11 238 / .45), transparent 70%); }
 #w-clock[data-sky="g"] .ckwash { background: radial-gradient(90% 100% at 50% 0%, oklch(0.62 0.14 45 / .42), oklch(0.4 0.09 290 / .18) 45%, transparent 75%); }
 #w-clock[data-sky="n"] .ckwash { background: radial-gradient(90% 100% at 50% 0%, oklch(0.42 0.1 280 / .55), transparent 72%); }
 #cb-main .scroll { position: relative; z-index: 1; } .ckwin .isle.main { margin-left: 8px !important; }
-/* Clock, audit pass (25 Sep, #38): the standard window background (no page gradient); city cards are plain LumaUI cards, day and night only as the
+/* Clock, audit pass (25 Sep, #38): the standard window background (no page gradient); city cards are plain SunoUI cards, day and night only as the
    sun or moon; every word and number on the type scale, numbers tabular. The big time and the world view stay: they are the Clock's character. */
 .ckwin .ckwash { display: none; }
 @container win (max-width: 560px) { .ckplaces button:not(.on) > span { display: none; } .ckplaces button:not(.on) { padding: 0 10px; } }   /* phone: only the current place keeps its name */
@@ -202,7 +202,7 @@
 .cmcorner { box-shadow: 0 0 0 1px rgba(0,0,0,.3), 0 6px 16px -10px rgba(0,0,0,.5) !important; }
 .cmbar3 .cmshutter { box-shadow: inset 0 0 0 2.5px rgba(255,255,255,.9) !important; }
 .dstack .dic, .dcic .dic { box-shadow: 0 0 0 1px rgba(255,255,255,.08), 0 4px 10px -6px rgba(0,0,0,.4) !important; } .dstack .dic { margin-left: -8px; }
-/* the system update wears Luma's own colours, and its notes read like notes */
+/* the system update wears Suno's own colours, and its notes read like notes */
 .dsys { position: relative; overflow: hidden; isolation: isolate; background: #2a1f24 !important; box-shadow: 0 0 0 1px rgba(0,0,0,.35); }
 .dsysbg { position: absolute; inset: 0; z-index: -1; pointer-events: none; background: radial-gradient(60% 120% at 0% 0%, rgba(254,104,25,.75), transparent 65%), radial-gradient(55% 110% at 100% 100%, rgba(240,86,143,.6), transparent 70%), radial-gradient(50% 80% at 60% 0%, rgba(255,199,154,.28), transparent 70%); filter: saturate(1.1); }
 .dsysbg::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.38)); }
@@ -503,9 +503,9 @@ body[data-mode="dark"] :is(.crpop, .shmenu):not(#_) { background: rgba(32,33,36,
 #cr-body, .crhead { transition: padding .3s var(--ease); }
 .crwin .fbar[hidden] { display: none; }
 .crdt { display: grid; gap: 3px; padding: 8px 4px 4px; } .crdt b { font-size: 15px; font-weight: 650; line-height: 1.3; } .crdt span { font-size: 12px; color: var(--ink-3); letter-spacing: .01em; }
-/* Charlie's thread wears the LumaUI message bubble (tokens in the shared block) */
+/* Charlie's thread wears the SunoUI message bubble (tokens in the shared block) */
 .crbub:not(.paper), .crmsg.in .crbub:not(.paper), .crmsg.out .crbub:not(.paper) { padding: var(--lbub-pad); border-radius: var(--lbub-r); font: var(--lbub-text); } .crbub p { margin: 0 0 6px; }
-/* Charlie (v70): the LumaUI details pane beside the island, Add account at the nav's foot, a Calendar card for an invitation */
+/* Charlie (v70): the SunoUI details pane beside the island, Add account at the nav's foot, a Calendar card for an invitation */
 .crnfoot { margin: auto -10px 0; padding: 8px 10px 0; border-top: 1px solid var(--hair); } .crnfoot .laddrow { min-height: 40px; } .crnfoot .laddi { width: 28px; height: 28px; }
 #cr-det .ldphero .crstk > * + * { margin-left: -14px; } #cr-det .crdfiles { display: grid; gap: 6px; } #cr-det .crdfiles .lfc { width: 100%; } #cr-det .ldpph { margin-bottom: 8px; } .crcol { grid-template-columns: minmax(0, 1fr); }
 @container win (max-width: 1320px) { .crwin.dpon .crnav { display: none; } }   /* on a laptop, the mailboxes step aside while Details is open */ #cr-det .lmini.person { width: 100%; }

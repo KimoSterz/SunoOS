@@ -1,4 +1,4 @@
-/* Discord on Luma (mockup, 22 Oct 2026): the servers, channels, people and conversations the client shows.
+/* Discord on Suno (mockup, 22 Oct 2026): the servers, channels, people and conversations the client shows.
    People with a key in the simulator's PPL (PR, NF, SK, TH, AR, JK, CL, me) keep their faces; the rest are drawn
    from their initials. Times are the simulator's day. */
 (() => {
@@ -12,7 +12,7 @@
     RB: { n: 'Rosa Bell', u: 'rosab', h: 15 },
     KO: { n: 'Kofi Owusu', u: 'kofi', h: 130 },
     OW: { n: 'Owlbot', u: 'owlbot', h: 265, bot: true },
-    LB: { n: 'Luma', u: 'luma', h: 25, bot: true, img: 'assets/Suno-favicon.svg' },
+    LB: { n: 'Suno', u: 'suno', h: 25, bot: true, img: 'assets/Suno-favicon.svg' },
     EM: { n: 'Emma Lindqvist', u: 'emma.l', h: 300 },
     WS: { n: 'Wes Ortega', u: 'wes', h: 75 },
   };
@@ -70,14 +70,14 @@
       ],
       members: ['DV', 'EM', 'me', 'WS', 'AR'] },
 
-    { id: 'luma', n: 'Luma', h: 28, icon: 'assets/Suno-favicon.svg', last: 'announcements', mentions: 0, unreadDot: true,
-      roles: [['Luma team', 'LB', 'oklch(0.78 0.14 45)'], ['Members', null, null]], roleOf: { LB: 'Luma team', NF: 'Luma team' },
+    { id: 'suno', n: 'Suno', h: 28, icon: 'assets/Suno-favicon.svg', last: 'announcements', mentions: 0, unreadDot: true,
+      roles: [['Suno team', 'LB', 'oklch(0.78 0.14 45)'], ['Members', null, null]], roleOf: { LB: 'Suno team', NF: 'Suno team' },
       cats: [
         { n: 'Start here', chs: [
-          { id: 'announcements', n: 'announcements', kind: 'news', unread: 1, topic: 'News from the Luma team', msgs: [
+          { id: 'announcements', n: 'announcements', kind: 'news', unread: 1, topic: 'News from the Suno team', msgs: [
             m('LB', 'Nightly 20261021.1 is out. Mail sorts newsletters on its own now, Depot has a new design, and phones get the pocket layout.', { day: 'Today', at: '1:45 AM', reacts: { '🎉': ['NF', 'DV', 'EM', 'KO', 'me'], '❤️': ['PR', 'SK'] } }),
           ] },
-          { id: 'welcome', n: 'welcome', msgs: [ m('LB', 'Welcome to the Luma community. Say hello in #general and tell us what you run Luma on.', { day: 'Oct 7', at: '9:00 AM' }) ] },
+          { id: 'welcome', n: 'welcome', msgs: [ m('LB', 'Welcome to the Suno community. Say hello in #general and tell us what you run Suno on.', { day: 'Oct 7', at: '9:00 AM' }) ] },
         ] },
         { n: 'Community', chs: [
           { id: 'help', n: 'help', msgs: [ m('KO', 'Fairphone 6: modem works after the second boot, is that expected?', { day: 'Today', at: '11:20 AM' }), m('NF', 'Yes, the first start has to be a fastboot boot. The guide has the steps.', { at: '11:31 AM', reply: 'prev' }) ] },

@@ -187,7 +187,7 @@
 .dq-make > span:nth-child(2) { flex: 1; display: grid; } .dq-make b { font: 700 16px var(--font); } .dq-make small { font-size: 13px; }
 .dq-mkic { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 14px; background: rgba(255,255,255,.14); }
 
-/* ── Make for Luma ── */
+/* ── Make for Suno ── */
 .dq-kinds { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
 .dq-kind { display: grid; gap: 6px; justify-items: start; padding: 20px; border-radius: 20px; text-align: left; background: var(--card, var(--raised)); box-shadow: inset 0 0 0 1px var(--hair); }
 .dq-kind:hover { box-shadow: inset 0 0 0 1px var(--ink-3); }
@@ -327,7 +327,7 @@ html[data-phone] #w-depot.phone .dq-bar:not(#_) { left: 12px !important; right: 
 .dq-board td > .i, .dq-board th.mt > .i { display: inline-block; vertical-align: middle; } .dq-board th.mt { text-align: center; }
 
 
-/* ══ second pass (24 Oct): the LumaUI frame (sidebar + action bar), quieter screens, the suite, Updates ══ */
+/* ══ second pass (24 Oct): the SunoUI frame (sidebar + action bar), quieter screens, the suite, Updates ══ */
 .dqwin .dq-side .si .i { width: 17px; height: 17px; }
 .dqwin .dq-side .dq-dsi .lab { font-weight: 500; }
 .dq-this { margin-left: auto; padding: 1px 7px; border-radius: 7px; background: var(--fill-2); color: var(--ink-2); font: 700 10px/16px var(--font); font-style: normal; }
@@ -349,7 +349,7 @@ html[data-phone] #w-depot.phone .dq-bar:not(#_) { left: 12px !important; right: 
 .dq-facts { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .dq-grid.g3 { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
 .dq-hscreens { grid-template-columns: repeat(5, auto); justify-content: end; gap: 12px; }
-/* Made for Luma: one family */
+/* Made for Suno: one family */
 .dq-suite { display: grid; grid-template-columns: minmax(220px, 300px) 1fr; gap: 28px; align-items: center; margin: 6px 0 0; padding: 28px; border-radius: 24px; overflow: hidden;
   background: radial-gradient(90% 120% at 0% 0%, oklch(0.55 0.13 30 / .35), transparent 60%), radial-gradient(80% 120% at 100% 100%, oklch(0.5 0.12 290 / .3), transparent 60%), var(--card, var(--raised)); box-shadow: inset 0 0 0 1px var(--hair); }
 .dq-suitx img { width: 34px; height: 34px; margin-bottom: 12px; } .dq-suitx h2 { font: 760 26px/1.1 var(--font); letter-spacing: -.02em; } .dq-suitx p { margin-top: 8px; font-size: 14px; line-height: 1.5; color: var(--ink-2); }

@@ -5,10 +5,10 @@
 
    · One search, "Find something for XPS 14", with the jobs people come for under it (Listen, Watch, Play, Work,
      Create, Talk, and Make it yours for Looks and Tweaks).
-   · The page for a device: what's waiting for it (updates, Luma's first), what's on it, what's picked for that
+   · The page for a device: what's waiting for it (updates, Suno's first), what's on it, what's picked for that
      kind of screen, Looks and Tweaks that fit it.
    · All devices, the last card in the row, is the library: everything you have against where you have it.
-   · The action bar is the action centre (LumaUI): tap anything and the bar grows into it in place, with the
+   · The action bar is the action centre (SunoUI): tap anything and the bar grows into it in place, with the
      devices to send it to already in it. Nothing opens a page or a dialog over the store.
 
    Loaded beside depot.js; it is Depot when the simulator is opened with ?depot=b. */
@@ -18,7 +18,7 @@
   const ST = { dev: null, q: '', job: '', grown: null, picks: null, keep: false, more: false, sent: {}, upd: {}, sys: 'ready', open: {} };
   let K = null, W = null, RO = null, lastMode = '';
   const D = () => window.DEPOT_DATA;
-  const PK = { system: 'Part of Luma', luma: 'Luma app', flatpak: 'Flatpak', deb: 'Universal .deb', rpm: 'Universal .rpm', layered: 'Layered package' };
+  const PK = { system: 'Part of Suno', suno: 'Suno app', flatpak: 'Flatpak', deb: 'Universal .deb', rpm: 'Universal .rpm', layered: 'Layered package' };
   const JOBS = [['listen', 'Listen', 'headphones', ['media'], ['tide', 'spotify', 'audacity', 'session']], ['watch', 'Watch', 'clapperboard', ['media'], ['youtube', 'vlc', 'kodi', 'reel', 'photos']], ['play', 'Play', 'gamepad-2', ['play'], []],
     ['work', 'Work', 'briefcase', ['work'], []], ['create', 'Create', 'palette', ['create'], []], ['talk', 'Talk', 'message-circle', [], ['messages', 'signal', 'telegram', 'discord', 'zoom', 'charlie', 'thunderbird']], ['yours', 'Make it yours', 'wand-sparkles', [], []]];
 
@@ -33,7 +33,7 @@
   const form = () => dev() === 'all' ? null : devOf(dev()).form;
   const mode = () => { const w = W?.clientWidth || 1200; return W?.classList.contains('phone') && document.documentElement.dataset.form !== 'tablet' ? 'compact' : w < 600 ? 'compact' : w < 900 ? 'mid' : 'wide'; };
 
-  const sealOfApp = a => a.dev === 'Luma' ? 'luma' : a.verified ? 'verified' : 'community';
+  const sealOfApp = a => a.dev === 'Suno' ? 'suno' : a.verified ? 'verified' : 'community';
   function item(kind, id) {
     if (kind === 'app') { const a = D().apps.find(x => x.id === id); if (!a) return null;
       return { kind, id, name: a.name, by: a.dev || 'Unknown developer', seal: sealOfApp(a), line: a.summary || `${D().cats[a.cat]?.name || 'An'} app · ${PK[a.pk]}`, runs: D().runs[id] || ['desktop', 'tablet'], hue: hash(id), a }; }
@@ -44,7 +44,7 @@
   function onDevices(it) {
     if (ST.sent[it.kind + it.id]) return ST.sent[it.kind + it.id];
     const can = devs().filter(d => it.runs.includes(d.form)).map(d => d.id);
-    if (it.kind === 'app') return it.a.dev === 'Luma' ? can : devs().filter(d => (D().installed[d.id] || []).includes(it.id)).map(d => d.id);
+    if (it.kind === 'app') return it.a.dev === 'Suno' ? can : devs().filter(d => (D().installed[d.id] || []).includes(it.id)).map(d => d.id);
     if (it.kind === 'look') return it.id === 'prism' ? can : [];
     return it.x.on || [];
   }
@@ -96,7 +96,7 @@
   const sec = (title, inner, sub, more) => `<section class="db-sec"><header><span><h3>${title}</h3>${sub ? `<small>${sub}</small>` : ''}</span>${more || ''}</header>${inner}</section>`;
   function updatesCard(d) { const P = pending(d), sys = D().system, n = P.length + (sysWaiting() ? 1 : 0); if (!n) return '';
     return `<section class="db-ups"><header><i>${ic('refresh-cw')}</i><span><b>${n} update${n > 1 ? 's' : ''} waiting${d === here() ? '' : ' for ' + esc(devOf(d).name)}</b><small>${[sysWaiting() ? esc(sys.name) : '', ...P.map(p => esc(item('app', p.app).name))].filter(Boolean).join(' · ')}</small></span><button class="db-act" type="button" data-db-upall="${d}">Update all</button></header>
-      <div class="db-uplist">${sysWaiting() ? `<button type="button" class="db-uprow sys" data-db-grow="sys"><i class="db-face glyph sm" style="--h:290">${ic('sparkles')}</i><span><b>Luma</b><small>${esc(sys.name)} · ${esc(sys.size)}</small></span><em>${ST.sys === 'done' ? 'Restart' : ST.sys === 'run' ? 'Downloading…' : "What's new"}</em></button>` : ''}
+      <div class="db-uplist">${sysWaiting() ? `<button type="button" class="db-uprow sys" data-db-grow="sys"><i class="db-face glyph sm" style="--h:290">${ic('sparkles')}</i><span><b>Suno</b><small>${esc(sys.name)} · ${esc(sys.size)}</small></span><em>${ST.sys === 'done' ? 'Restart' : ST.sys === 'run' ? 'Downloading…' : "What's new"}</em></button>` : ''}
         ${P.map(p => { const it = item('app', p.app); return `<button type="button" class="db-uprow" data-db-grow="up:${p.app}">${face(it, 'sm')}<span><b>${esc(it.name)}</b><small>${esc(p.from)} → ${esc(p.to)} · ${esc(p.notes[0])}</small></span><em>${esc(p.size)}</em></button>`; }).join('')}</div></section>`; }
   function forDevice() { const d = dev(), f = form(), dv = devOf(d), all = D().apps.map(a => item('app', a.id)).filter(it => it && !isSystem(it));
     const on = all.filter(it => onDevices(it).includes(d)), picks = all.filter(it => it.runs.includes(f) && !onDevices(it).includes(d));
@@ -106,15 +106,15 @@
     return updatesCard(d)
       + sec(`On ${esc(dv.name)}`, `<div class="db-shelf">${on.map(it => `<button type="button" class="db-mini" data-db-item="app:${it.id}">${face(it)}<small>${esc(it.name)}</small></button>`).join('')}</div>`, `${on.length} apps`)
       + sec(pickTitle, picksHtml || `<p class="db-empty">You have everything that runs here.</p>`, `What runs on ${esc(dv.name)} and isn't on it yet`)
-      + sec('Make it yours', `<div class="db-looks">${look.map(it => `<button type="button" class="db-look" data-db-item="look:${it.id}" style="--h:${it.hue}">${it.x.art ? `<i class="db-lpic" style="background-image:url(${it.x.art})"></i>` : `<i class="db-lpic none">${face(it, 'lg')}</i>`}<span><b>${esc(it.name)}</b><small>${esc(it.x.kind)}</small></span>${state(it)}</button>`).join('')}</div>`, 'Looks change how Luma looks')
-      + (tw.length ? sec('Change how it works', `<div class="db-rows">${tw.map(rowI).join('')}</div>`, 'Tweaks. Switch one off and Luma is exactly as it was') : '')
+      + sec('Make it yours', `<div class="db-looks">${look.map(it => `<button type="button" class="db-look" data-db-item="look:${it.id}" style="--h:${it.hue}">${it.x.art ? `<i class="db-lpic" style="background-image:url(${it.x.art})"></i>` : `<i class="db-lpic none">${face(it, 'lg')}</i>`}<span><b>${esc(it.name)}</b><small>${esc(it.x.kind)}</small></span>${state(it)}</button>`).join('')}</div>`, 'Looks change how Suno looks')
+      + (tw.length ? sec('Change how it works', `<div class="db-rows">${tw.map(rowI).join('')}</div>`, 'Tweaks. Switch one off and Suno is exactly as it was') : '')
       + `<section class="db-names"><h3>Coming from Windows or a Mac?</h3><div>${D().switching.slice(0, 6).map(([n]) => `<button type="button" data-db-search="${esc(n)}">${esc(n)}</button>`).join('')}</div></section>`
-      + `<button type="button" class="db-make" data-db-grow="make"><i>${ic('upload')}</i><span><b>Made something for Luma?</b><small>Send an app, a Look or a Tweak</small></span>${ic('chevron-right')}</button>`; }
+      + `<button type="button" class="db-make" data-db-grow="make"><i>${ic('upload')}</i><span><b>Made something for Suno?</b><small>Send an app, a Look or a Tweak</small></span>${ic('chevron-right')}</button>`; }
   /* All devices: the library */
   function allDevices() { const ds = devs(), ids = new Set(); ds.forEach(d => (D().installed[d.id] || []).forEach(id => ids.add(id))); ['tide', 'photos', 'messages', 'write', 'notes'].forEach(id => ids.add(id)); Object.keys(ST.sent).filter(k => k.startsWith('app')).forEach(k => ids.add(k.slice(3)));
     const its = [...ids].map(id => item('app', id)).filter(Boolean).sort((a, b) => a.name.localeCompare(b.name));
     const waiting = ds.reduce((n, d) => n + pending(d.id).length, 0);
-    return (waiting || sysWaiting() ? `<section class="db-ups"><header><i>${ic('refresh-cw')}</i><span><b>${waiting + (sysWaiting() ? 1 : 0)} updates across your devices</b><small>Luma installs them overnight, or now</small></span><button class="db-act" type="button" data-db-upall="all">Update everything</button></header></section>` : '')
+    return (waiting || sysWaiting() ? `<section class="db-ups"><header><i>${ic('refresh-cw')}</i><span><b>${waiting + (sysWaiting() ? 1 : 0)} updates across your devices</b><small>Suno installs them overnight, or now</small></span><button class="db-act" type="button" data-db-upall="all">Update everything</button></header></section>` : '')
       + sec('Everything you have', `<div class="db-board">${its.map(it => `<button type="button" class="db-brow" data-db-item="app:${it.id}">${face(it, 'xs')}<b>${esc(it.name)}</b><span class="db-bdevs">${ds.map(d => { const can = it.runs.includes(d.form), has = onDevices(it).includes(d.id), up = pending(d.id).some(p => p.app === it.id); return `<i class="${has ? (up ? 'up' : 'has') : can ? 'can' : 'no'}" title="${esc(d.name)}">${ic(formOf(d.form).icon)}</i>`; }).join('')}</span>${matched(it) ? `<em>${ic('link')}Matched</em>` : ''}</button>`).join('')}</div>`, 'Lit where it is installed; blue where an update is waiting'); }
   function results() { const q = ST.q.trim().toLowerCase(), job = JOBS.find(j => j[0] === ST.job);
     let list = [];
@@ -136,15 +136,15 @@
     if (!g) { const n = (dev() === 'all' ? devs().reduce((s, d) => s + pending(d.id).length, 0) : pending(dev()).length) + (sysWaiting() ? 1 : 0);
       b.innerHTML = `<button class="ib" type="button" data-db-top aria-label="Search">${ic('search')}</button>${n ? `<button class="db-act bar" type="button" data-db-grow="updates">${ic('refresh-cw')}${n} update${n > 1 ? 's' : ''}</button>` : ''}<button class="db-act bar" type="button" data-db-dev="all">${ic('layers')}All devices</button>`; return; }
     if (g === 'sys') { const sys = D().system;
-      b.innerHTML = `<div class="db-gx"><header><i class="db-face glyph sm" style="--h:290">${ic('sparkles')}</i><span><b>${esc(sys.name)}</b><small>Luma · ${esc(sys.size)}</small></span><button class="ib" type="button" data-db-shrink aria-label="Close">${ic('x')}</button></header>
+      b.innerHTML = `<div class="db-gx"><header><i class="db-face glyph sm" style="--h:290">${ic('sparkles')}</i><span><b>${esc(sys.name)}</b><small>Suno · ${esc(sys.size)}</small></span><button class="ib" type="button" data-db-shrink aria-label="Close">${ic('x')}</button></header>
         <ul class="db-notes">${(sys.notes || []).map(([t, i, n, dd]) => `<li><span class="db-nt t-${t.toLowerCase()}">${esc(t)}</span><b>${esc(n)}</b><small>${esc(dd)}</small></li>`).join('')}</ul>
-        <p class="db-fine">${ic('undo-2')}You're on ${esc(sys.running)}. Luma keeps it, so you can go back with one click.</p>
+        <p class="db-fine">${ic('undo-2')}You're on ${esc(sys.running)}. Suno keeps it, so you can go back with one click.</p>
         <footer><button class="db-act bar" type="button" data-db-rollback>${ic('undo-2')}Go back</button><button class="db-act bar key" type="button" data-db-sys>${ST.sys === 'done' ? 'Restart now' : ST.sys === 'run' ? 'Downloading…' : 'Download'}</button></footer></div>`; return; }
     if (g === 'updates') { const ds = dev() === 'all' ? devs().map(d => d.id) : [dev()];
       b.innerHTML = `<div class="db-gx"><header><i class="db-face glyph sm" style="--h:250">${ic('refresh-cw')}</i><span><b>Updates</b><small>${dev() === 'all' ? 'Every device' : esc(devOf(dev()).name)}</small></span><button class="ib" type="button" data-db-shrink aria-label="Close">${ic('x')}</button></header>
-        <div class="db-uplist">${sysWaiting() ? `<button type="button" class="db-uprow sys" data-db-grow="sys"><i class="db-face glyph sm" style="--h:290">${ic('sparkles')}</i><span><b>Luma</b><small>${esc(D().system.name)}</small></span><em>${ic('chevron-right')}</em></button>` : ''}${ds.flatMap(d => pending(d).map(p => { const it = item('app', p.app); return `<div class="db-uprow">${face(it, 'sm')}<span><b>${esc(it.name)}${ds.length > 1 ? ` <small>· ${esc(devOf(d).name)}</small>` : ''}</b><small>${esc(p.from)} → ${esc(p.to)} · ${esc(p.notes.join('. '))}</small></span><button class="db-act" type="button" data-db-up="${p.app}:${d}">Update</button></div>`; })).join('')}</div>
+        <div class="db-uplist">${sysWaiting() ? `<button type="button" class="db-uprow sys" data-db-grow="sys"><i class="db-face glyph sm" style="--h:290">${ic('sparkles')}</i><span><b>Suno</b><small>${esc(D().system.name)}</small></span><em>${ic('chevron-right')}</em></button>` : ''}${ds.flatMap(d => pending(d).map(p => { const it = item('app', p.app); return `<div class="db-uprow">${face(it, 'sm')}<span><b>${esc(it.name)}${ds.length > 1 ? ` <small>· ${esc(devOf(d).name)}</small>` : ''}</b><small>${esc(p.from)} → ${esc(p.to)} · ${esc(p.notes.join('. '))}</small></span><button class="db-act" type="button" data-db-up="${p.app}:${d}">Update</button></div>`; })).join('')}</div>
         <footer><button class="db-act bar" type="button" data-db-auto>${ic('settings-2')}Overnight: ${D().auto.apps ? 'on' : 'off'}</button><button class="db-act bar key" type="button" data-db-upall="${dev()}">Update all</button></footer></div>`; return; }
-    if (g === 'make') { b.innerHTML = `<div class="db-gx"><header><i class="db-face glyph sm" style="--h:290">${ic('upload')}</i><span><b>Make for Luma</b><small>Send what you made to everyone on Luma</small></span><button class="ib" type="button" data-db-shrink aria-label="Close">${ic('x')}</button></header>
+    if (g === 'make') { b.innerHTML = `<div class="db-gx"><header><i class="db-face glyph sm" style="--h:290">${ic('upload')}</i><span><b>Make for Suno</b><small>Send what you made to everyone on Suno</small></span><button class="ib" type="button" data-db-shrink aria-label="Close">${ic('x')}</button></header>
         <div class="db-kinds">${[['app', 'An app', 'package'], ['look', 'A Look', 'palette'], ['tweak', 'A Tweak', 'sliders-horizontal']].map(([k, n, i]) => `<button type="button" data-db-new="${k}">${ic(i)}<b>${n}</b></button>`).join('')}</div>
         <div class="db-uplist">${D().mine.map(s => `<div class="db-uprow"><i class="db-face glyph sm" style="--h:${s.hue}">${ic(s.icon)}</i><span><b>${esc(s.name)}</b><small>${esc(s.note)}</small></span><em class="st-${s.state}">${{ review: 'In review', live: 'In Depot', changes: 'Needs changes' }[s.state]}</em></div>`).join('')}</div></div>`; return; }
     if (g.startsWith('up:')) { const app = g.slice(3), it = item('app', app), p = D().pending.find(x => x.app === app);
@@ -159,7 +159,7 @@
       ${a?.reach ? `<div class="db-reach">${a.reach.map(([i, w, why]) => `<span>${ic(i)}<b>${esc(w)}</b><small>${esc(why)}</small></span>`).join('')}</div>` : kind !== 'app' ? `<div class="db-reach"><span>${ic('lock')}<b>Nothing of yours</b><small>It can't read your files or the network</small></span></div>` : ''}</div>` : '';
     b.innerHTML = `<div class="db-gx item k-${kind}"><header>${face(it, 'md')}<span><b>${esc(it.name)}</b><small>${esc(it.by)} · ${esc(D().seals[it.seal].name)}${a?.rating ? ` · ${a.rating.avg} ★` : x?.n ? ` · ${fmtN(x.n)} use it` : ''}</small><p>${esc(it.line)}</p></span><button class="ib" type="button" data-db-shrink aria-label="Close">${ic('x')}</button></header>
       ${details}
-      ${isSystem(it) ? `<p class="db-fine">${ic('lock')}Part of Luma: on every device, updated with it.</p>` : `<div class="db-where"><small>${kind === 'tweak' ? 'Turn it on for' : 'Send it to'}</small><div class="db-chips">${devChips}</div>${kind === 'app' ? `<button type="button" class="db-keep" data-db-keep>${ic('link')}<span>Keep matched on every device that can run it</span><i class="dq-sw${ST.keep ? ' on' : ''}"><i></i></i></button>` : ''}</div>`}
+      ${isSystem(it) ? `<p class="db-fine">${ic('lock')}Part of Suno: on every device, updated with it.</p>` : `<div class="db-where"><small>${kind === 'tweak' ? 'Turn it on for' : 'Send it to'}</small><div class="db-chips">${devChips}</div>${kind === 'app' ? `<button type="button" class="db-keep" data-db-keep>${ic('link')}<span>Keep matched on every device that can run it</span><i class="dq-sw${ST.keep ? ' on' : ''}"><i></i></i></button>` : ''}</div>`}
       <footer><button class="db-act bar" type="button" data-db-more>${ic(ST.more ? 'chevron-down' : 'info')}${ST.more ? 'Less' : 'More'}</button>${kind === 'app' && on.includes(here()) && a.win ? `<button class="db-act bar" type="button" data-db-open="${id}">Open</button>` : ''}${isSystem(it) ? '' : `<button class="db-act bar key" type="button" data-db-confirm ${n ? '' : 'disabled'}>${n ? `${verb(it)} on ${n === 1 ? esc(devOf([...ST.picks][0]).name) : n + ' devices'}` : on.length ? `On ${on.length} device${on.length > 1 ? 's' : ''}` : 'Pick a device'}</button>`}</footer></div>`; }
   function grow(g) { ST.grown = g; ST.more = false;
     if (g && g.includes(':') && !g.startsWith('up:')) { const [k, id] = g.split(':'), it = item(k, id), on = onDevices(it), target = dev() === 'all' ? here() : dev();
@@ -187,8 +187,8 @@
       shrink(); feed(); K.lToast(W, `${it.name}: ${picks.map(d => d === here() ? (k === 'app' ? 'installing here' : 'on here') : devOf(d).name).join(', ')}`, { icon: k === 'tweak' ? 'sliders-horizontal' : 'download' }); return true; }
     if ((b = h('[data-db-up]'))) { const [app, d] = b.dataset.dbUp.split(':'); ST.upd[app + d] = 1; if (ST.grown?.startsWith('up:')) shrink(); else bar(); page(); K.lToast(W, `${item('app', app).name} updated${d === here() ? '' : ' on ' + devOf(d).name}`, { icon: 'refresh-cw' }); return true; }
     if ((b = h('[data-db-upall]'))) { const v = b.dataset.dbUpall, ds = v === 'all' ? devs().map(d => d.id) : [v]; ds.forEach(d => pending(d).forEach(p => { ST.upd[p.app + d] = 1; })); if (ST.sys === 'ready') sysRun(); shrink(); page(); K.lToast(W, v === 'all' ? 'Updating everything on every device' : `Updating everything on ${devOf(v).name}`, { icon: 'refresh-cw' }); return true; }
-    if (h('[data-db-sys]')) { if (ST.sys === 'done') { ST.sys = 'restarted'; shrink(); page(); K.lToast(W, 'Luma restarted into the new version. Your apps came back where you left them', { icon: 'rotate-ccw' }); } else if (ST.sys === 'ready') sysRun(); return true; }
-    if (h('[data-db-rollback]')) { K.lConfirm?.(W, { title: `Go back to ${D().system.running}?`, body: 'Luma restarts into the version you had before. Your files, apps and settings stay as they are.', action: 'Restart', icon: 'undo-2', onOK: () => K.lToast(W, 'Luma will restart into the previous version', { icon: 'undo-2' }) }); return true; }
+    if (h('[data-db-sys]')) { if (ST.sys === 'done') { ST.sys = 'restarted'; shrink(); page(); K.lToast(W, 'Suno restarted into the new version. Your apps came back where you left them', { icon: 'rotate-ccw' }); } else if (ST.sys === 'ready') sysRun(); return true; }
+    if (h('[data-db-rollback]')) { K.lConfirm?.(W, { title: `Go back to ${D().system.running}?`, body: 'Suno restarts into the version you had before. Your files, apps and settings stay as they are.', action: 'Restart', icon: 'undo-2', onOK: () => K.lToast(W, 'Suno will restart into the previous version', { icon: 'undo-2' }) }); return true; }
     if (h('[data-db-auto]')) { D().auto.apps = !D().auto.apps; bar(); return true; }
     if ((b = h('[data-db-new]'))) { K.lToast(W, 'Drop a file on Depot, or paste a link to where it lives', { icon: 'upload' }); return true; }
     return false; }
