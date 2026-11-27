@@ -6,7 +6,7 @@
   const desk = document.getElementById('desk'), host = document.createElement('div'); host.id = 'lshell'; desk.appendChild(host);
   const ROOT = host.attachShadow({ mode: 'open' });
   const WARP = `<svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="suno-warp" x="0%" y="0%" width="100%" height="100%" color-interpolation-filters="sRGB"><feImage href="desktop/warp-map.png" x="0" y="0" width="100%" height="100%" preserveAspectRatio="none" result="map"/><feDisplacementMap in="SourceGraphic" in2="map" scale="40" xChannelSelector="R" yChannelSelector="G"/></filter></svg>`;
-  ROOT.innerHTML = `<link rel="stylesheet" href="desktop/shell.css">${WARP}<div class="screen" id="scr" data-theme="dark" data-mat="solid" data-icon="lit" data-shape="squircle">
+  ROOT.innerHTML = `<link rel="stylesheet" href="desktop/shell.css?v=${Date.now()}">${WARP}<div class="screen" id="scr" data-theme="dark" data-mat="solid" data-icon="lit" data-shape="squircle">
     <div class="row" id="row-bottom"><div class="slot s"></div><div class="slot c"></div><div class="slot e"></div></div>
     <div class="row" id="row-top"><div class="slot s"></div><div class="slot c"></div><div class="slot e"></div></div>
     <div class="row" id="row-left"><div class="slot s"></div><div class="slot c"></div><div class="slot e"></div></div>
