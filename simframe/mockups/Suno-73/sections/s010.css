@@ -26,7 +26,7 @@ html.noanim *, html.noanim *::before, html.noanim *::after { transition: none !i
    .win.lightframe defines its own --win, so it is matched with the same weight. html.opaque pins every
    layer fully opaque again. */
 [data-mode="dark"] :is(.win, .win.lightframe) { --win: oklch(0.208 0.006 265 / calc(.72 * var(--fscale))); }
-[data-mode="light"] :is(.win, .win.lightframe) { --win: oklch(0.99 0.002 265 / calc(.74 * var(--fscale))); }
+[data-mode="light"] :is(.win, .win.lightframe) { --win: oklch(0.97 0.004 265 / calc(.66 * var(--fscale))); }
 html:not(.opaque) .win { -webkit-backdrop-filter: blur(calc(24px * var(--bscale))) saturate(1.5); backdrop-filter: blur(calc(24px * var(--bscale))) saturate(1.5); }
 html.opaque [data-mode="dark"] :is(.win, .win.lightframe) { --win: oklch(0.208 0.006 265); }
 html.opaque [data-mode="light"] :is(.win, .win.lightframe) { --win: oklch(0.99 0.002 265); }
@@ -38,9 +38,9 @@ html.opaque [data-mode="light"] :is(.win, .win.lightframe) { --win: oklch(0.99 0
 [data-mode="dark"] .win, [data-mat="frost"][data-mode="light"] .win .isle :is(.fbar, .flo, .pop, .crpop) { --bar: oklch(0.305 0.006 265 / calc(.88 * var(--fscale))); }
 [data-mode="light"] .win, [data-mat="frost"][data-mode="light"] .win .isle :is(.fbar, .flo, .pop, .crpop) { --bar: rgba(255,255,255,calc(.88 * var(--fscale))); }
 [data-mode="dark"] .iwin.viewing .fbar { --bar: rgba(38,38,42,calc(.78 * var(--fscale))); }
-:is(.fbar, .panel, .flo, .mbar) { -webkit-backdrop-filter: blur(24px) saturate(1.7); backdrop-filter: blur(24px) saturate(1.7); }
-.mwin :is(.mbar, .flo), .crwin .flo { -webkit-backdrop-filter: blur(24px) saturate(1.7); backdrop-filter: blur(24px) saturate(1.7); }
-.shelf { -webkit-backdrop-filter: blur(30px) saturate(1.8); backdrop-filter: blur(30px) saturate(1.8); }
+:is(.fbar, .panel, .flo, .mbar) { -webkit-backdrop-filter: blur(calc(24px * var(--bscale))) saturate(1.7); backdrop-filter: blur(calc(24px * var(--bscale))) saturate(1.7); }
+.mwin :is(.mbar, .flo), .crwin .flo { -webkit-backdrop-filter: blur(calc(24px * var(--bscale))) saturate(1.7); backdrop-filter: blur(calc(24px * var(--bscale))) saturate(1.7); }
+.shelf { -webkit-backdrop-filter: blur(calc(30px * var(--bscale))) saturate(1.8); backdrop-filter: blur(calc(30px * var(--bscale))) saturate(1.8); }
 [data-mode="dark"] .shelf { background: oklch(0.19 0.01 265 / calc(.72 * var(--fscale))); }
 [data-mode="light"] .shelf { background: oklch(0.97 0.004 265 / calc(.74 * var(--fscale))); }
 /* The content island floats on all four sides now: the glass frame (with its sidebar) shows around it, and the
@@ -48,6 +48,7 @@ html.opaque [data-mode="light"] :is(.win, .win.lightframe) { --win: oklch(0.99 0
 .isle { margin: 8px; }
 /* Photos: the picture fills the whole working field edge to edge, and the action island below is the dock's glass. */
 .viewer { padding: 0; }
+#w-photos .viewer.editing { padding-bottom: 0; }
 .viewer img { width: 100%; height: 100%; object-fit: cover; border-radius: 0; box-shadow: none; }
 .iwin .fbar { background: var(--float); }
 /* SunoOS 0.1: the Settings sidebar starts level with the content window — its first item (the account

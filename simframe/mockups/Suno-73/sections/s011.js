@@ -664,7 +664,7 @@
      rules and inherited custom properties from the document cannot cross the shadow boundary on their own */
   const cfHost = () => document.getElementById('lshell');
   function cfAnim() { const no = CF.anim === false; document.documentElement.classList.toggle('noanim', no); cfHost()?.classList.toggle('noanim', no); }
-  function cfSurf() { const h = document.documentElement, host = cfHost(), lvl = Math.max(0, Math.min(100, CF.frost ?? 100)), fs = (0.45 + 0.55 * lvl / 100).toFixed(3), bs = (0.15 + 0.85 * lvl / 100).toFixed(3), op = CF.trans === false;
+  function cfSurf() { const h = document.documentElement, host = cfHost(), lvl = Math.max(0, Math.min(100, CF.frost ?? 100)), fs = (0.45 + 0.55 * lvl / 100).toFixed(3), bs = (0.02 + 0.98 * lvl / 100).toFixed(3), op = CF.trans === false;
     h.classList.toggle('opaque', op); h.style.setProperty('--fscale', fs); h.style.setProperty('--bscale', bs);
     if (host) { host.classList.toggle('opaque', op); host.style.setProperty('--fscale', fs); host.style.setProperty('--bscale', bs); } }
   cfAnim(); cfSurf();
