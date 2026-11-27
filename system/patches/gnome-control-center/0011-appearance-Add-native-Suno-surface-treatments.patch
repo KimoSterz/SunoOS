@@ -4,11 +4,11 @@ Date: Mon, 7 Sep 2026 18:47:59 -0500
 Subject: [PATCH] appearance: Add native Suno surface treatments
 
 ---
- panels/background/cc-background-panel.blp |  71 ++++++++++++-
- panels/background/cc-background-panel.c   | 130 +++++++++++++++++++----
- panels/background/meson.build             |   2 +
- panels/background/preview.css             |  16 +++
- 4 files changed, 197 insertions(+), 22 deletions(-)
+ panels/background/cc-background-panel.blp |   96 +++++++++++++
+ panels/background/cc-background-panel.c   |  164 ++++++++++++++++++++---
+ panels/background/meson.build             |    2 
+ panels/background/preview.css             |   16 ++
+ 4 files changed, 256 insertions(+), 22 deletions(-)
 
 diff --git a/panels/background/cc-background-panel.blp b/panels/background/cc-background-panel.blp
 index ff2b3fb..fa9a0b4 100644
@@ -23,7 +23,7 @@ index ff2b3fb..fa9a0b4 100644
                      use-underline: true;
                      mnemonic-widget: default_toggle;
  
-@@ -111,11 +111,80 @@ template $CcBackgroundPanel: $CcPanel {
+@@ -111,11 +111,105 @@ template $CcBackgroundPanel: $CcPanel {
                        row: 1;
                      }
                    }
@@ -95,9 +95,34 @@ index ff2b3fb..fa9a0b4 100644
 +            title: _("Transparency");
 +
 +            Adw.SwitchRow reduce_transparency_switch {
-+              title: _("Reduce Transparency");
-+              subtitle: _("Use solid, readable surfaces instead of Frost or Glass");
++              title: _("Transparency");
++              subtitle: _("Show what is behind windows with Frost or Glass");
 +              notify::active => $on_reduce_transparency_changed_cb(template);
++            }
++
++            Adw.ActionRow frost_level_row {
++              title: _("Surface _Translucency");
++              use-underline: true;
++              subtitle: _("From clear glass to frosted with 15 percent see-through");
++
++              [suffix]
++              Gtk.Scale frost_level_scale {
++                adjustment: Gtk.Adjustment (value: 100, lower: 0, upper: 100,
++                  step-increment: 5, page-increment: 10, page-size: 0);
++                draw-value: true;
++                hexpand: true;
++                width-request: 200;
++                value-changed => $on_translucency_level_changed_cb(template);
++              }
++            }
++          }
++
++          Adw.PreferencesGroup {
++            title: _("Animations");
++
++            Adw.SwitchRow animations_switch {
++              title: _("Animations");
++              subtitle: _("Turn off to save memory and battery on slower hardware");
 +            }
 +          }
 +
@@ -117,27 +142,30 @@ index 201d2ab..c9cfc05 100644
  
  #include "cc-background-panel.h"
  
-@@ -46,6 +48,9 @@
+@@ -46,6 +48,11 @@
  #define INTERFACE_PATH_ID "org.gnome.desktop.interface"
  #define INTERFACE_COLOR_SCHEME_KEY "color-scheme"
  #define INTERFACE_ACCENT_COLOR_KEY "accent-color"
 +#define SUNO_SHELL_STATE_ID "org.projectSuno.shell-state"
 +#define SUNO_SURFACE_TREATMENT_KEY "surface-treatment"
 +#define SUNO_REDUCE_TRANSPARENCY_KEY "reduce-transparency"
++#define SUNO_TRANSLUCENCY_LEVEL_KEY "surface-translucency"
++#define INTERFACE_ENABLE_ANIMATIONS_KEY "enable-animations"
  
  struct _CcBackgroundPanel
  {
-@@ -56,6 +61,9 @@ struct _CcBackgroundPanel
+@@ -56,6 +63,10 @@ struct _CcBackgroundPanel
    GSettings *settings;
    GSettings *lock_settings;
    GSettings *interface_settings;
 +  GSettings *surface_settings;
 +  SunoSurfacePolicy *surface_policy;
 +  gboolean syncing_surface_controls;
++  AdwSwitchRow *animations_switch;
  
    GDBusProxy *proxy;
  
-@@ -65,8 +72,14 @@ struct _CcBackgroundPanel
+@@ -65,8 +75,16 @@ struct _CcBackgroundPanel
    CcBackgroundChooser *background_chooser;
    CcBackgroundPreview *default_preview;
    CcBackgroundPreview *dark_preview;
@@ -149,10 +177,12 @@ index 201d2ab..c9cfc05 100644
 +  GtkToggleButton *glass_toggle;
 +  AdwSwitchRow *reduce_transparency_switch;
 +  GtkLabel *surface_status;
++  AdwSwitchRow *animations_switch;
++  GtkScale *frost_level_scale;
  };
  
  CC_PANEL_REGISTER (CcBackgroundPanel, cc_background_panel)
-@@ -233,25 +247,34 @@ reload_accent_color_toggles (CcBackgroundPanel *self)
+@@ -233,25 +252,39 @@ reload_accent_color_toggles (CcBackgroundPanel *self)
  }
  
  static void
@@ -184,13 +214,18 @@ index 201d2ab..c9cfc05 100644
 +  gtk_toggle_button_set_active (self->glass_toggle, g_str_equal (requested, "glass"));
 +  gtk_widget_set_sensitive (GTK_WIDGET (self->frost_toggle), available);
 +  gtk_widget_set_sensitive (GTK_WIDGET (self->glass_toggle), available);
++  gtk_widget_set_sensitive (GTK_WIDGET (self->frost_level_scale),
++                            available && !locked && !reduce);
++  gtk_range_set_value (GTK_RANGE (self->frost_level_scale),
++                       g_settings_get_uint (self->surface_settings,
++                                            SUNO_TRANSLUCENCY_LEVEL_KEY));
 +
 +  if (locked)
 +    gtk_label_set_text (self->surface_status,
 +                        _("Frost and Glass are unavailable while High Contrast is enabled."));
 +  else if (reduce)
 +    gtk_label_set_text (self->surface_status,
-+                        _("Frost and Glass currently use the opaque Light treatment."));
++                        _("Transparency is off; Frost and Glass use the opaque Light treatment."));
 +  else if (!available)
 +    gtk_label_set_text (self->surface_status,
 +                        _("Frost and Glass need compositor blur and are unavailable on this renderer."));
@@ -204,7 +239,7 @@ index 201d2ab..c9cfc05 100644
  }
  
  static void
-@@ -280,10 +302,46 @@ set_color_scheme (CcBackgroundPanel   *self,
+@@ -280,10 +312,61 @@ set_color_scheme (CcBackgroundPanel   *self,
  static void
  on_color_scheme_toggle_active_cb (CcBackgroundPanel *self)
  {
@@ -241,19 +276,34 @@ index 201d2ab..c9cfc05 100644
 +static void
 +on_reduce_transparency_changed_cb (CcBackgroundPanel *self)
 +{
-+  gboolean active = adw_switch_row_get_active (self->reduce_transparency_switch);
++  gboolean transparent = adw_switch_row_get_active (self->reduce_transparency_switch);
 +  if (self->syncing_surface_controls)
 +    return;
 +
-+  if (active != g_settings_get_boolean (self->surface_settings,
-+                                        SUNO_REDUCE_TRANSPARENCY_KEY))
++  if (transparent != !g_settings_get_boolean (self->surface_settings,
++                                              SUNO_REDUCE_TRANSPARENCY_KEY))
 +    g_settings_set_boolean (self->surface_settings,
 +                            SUNO_REDUCE_TRANSPARENCY_KEY,
-+                            active);
++                            !transparent);
++  reload_surface_treatment (self);
++}
++
++static void
++on_translucency_level_changed_cb (CcBackgroundPanel *self)
++{
++  double level = gtk_range_get_value (GTK_RANGE (self->frost_level_scale));
++  if (self->syncing_surface_controls)
++    return;
++
++  if ((guint) (level + 0.5) != g_settings_get_uint (self->surface_settings,
++                                                    SUNO_TRANSLUCENCY_LEVEL_KEY))
++    g_settings_set_uint (self->surface_settings,
++                         SUNO_TRANSLUCENCY_LEVEL_KEY,
++                         (guint) (level + 0.5));
  }
  
  static void
-@@ -313,6 +365,8 @@ update_preview (CcBackgroundPanel *self)
+@@ -313,6 +390,8 @@ update_preview (CcBackgroundPanel *self)
    current_background = self->current_background;
    cc_background_preview_set_item (self->default_preview, current_background);
    cc_background_preview_set_item (self->dark_preview, current_background);
@@ -262,7 +312,7 @@ index 201d2ab..c9cfc05 100644
  }
  
  static void
-@@ -491,6 +545,8 @@ cc_background_panel_dispose (GObject *object)
+@@ -491,6 +570,8 @@ cc_background_panel_dispose (GObject *object)
    g_clear_object (&self->settings);
    g_clear_object (&self->lock_settings);
    g_clear_object (&self->interface_settings);
@@ -271,7 +321,7 @@ index 201d2ab..c9cfc05 100644
    g_clear_object (&self->proxy);
  
    G_OBJECT_CLASS (cc_background_panel_parent_class)->dispose (object);
-@@ -527,10 +583,17 @@ cc_background_panel_class_init (CcBackgroundPanelClass *klass)
+@@ -527,10 +608,20 @@ cc_background_panel_class_init (CcBackgroundPanelClass *klass)
    gtk_widget_class_bind_template_child (widget_class, CcBackgroundPanel, background_chooser);
    gtk_widget_class_bind_template_child (widget_class, CcBackgroundPanel, default_preview);
    gtk_widget_class_bind_template_child (widget_class, CcBackgroundPanel, dark_preview);
@@ -283,13 +333,16 @@ index 201d2ab..c9cfc05 100644
 +  gtk_widget_class_bind_template_child (widget_class, CcBackgroundPanel, glass_toggle);
 +  gtk_widget_class_bind_template_child (widget_class, CcBackgroundPanel, reduce_transparency_switch);
 +  gtk_widget_class_bind_template_child (widget_class, CcBackgroundPanel, surface_status);
++  gtk_widget_class_bind_template_child (widget_class, CcBackgroundPanel, animations_switch);
++  gtk_widget_class_bind_template_child (widget_class, CcBackgroundPanel, frost_level_scale);
  
    gtk_widget_class_bind_template_callback (widget_class, on_color_scheme_toggle_active_cb);
 +  gtk_widget_class_bind_template_callback (widget_class, on_reduce_transparency_changed_cb);
++  gtk_widget_class_bind_template_callback (widget_class, on_translucency_level_changed_cb);
    gtk_widget_class_bind_template_callback (widget_class, on_chooser_background_chosen_cb);
    gtk_widget_class_bind_template_callback (widget_class, on_add_picture_button_clicked_cb);
  }
-@@ -558,6 +621,14 @@ cc_background_panel_init (CcBackgroundPanel *self)
+@@ -558,6 +649,20 @@ cc_background_panel_init (CcBackgroundPanel *self)
    g_settings_delay (self->lock_settings);
  
    self->interface_settings = g_settings_new (INTERFACE_PATH_ID);
@@ -301,10 +354,16 @@ index 201d2ab..c9cfc05 100644
 +    Suno_surface_policy_set_capabilities (self->surface_policy,
 +                                          available, available, available);
 +  }
++
++  g_settings_bind (self->interface_settings,
++                   INTERFACE_ENABLE_ANIMATIONS_KEY,
++                   G_OBJECT (self->animations_switch),
++                   "active",
++                   G_SETTINGS_BIND_DEFAULT);
  
    /* Load the background */
    reload_current_bg (self);
-@@ -567,12 +638,22 @@ cc_background_panel_init (CcBackgroundPanel *self)
+@@ -567,12 +672,22 @@ cc_background_panel_init (CcBackgroundPanel *self)
    g_signal_connect_object (self->settings, "changed", G_CALLBACK (on_settings_changed), self, G_CONNECT_SWAPPED);
  
    /* Interface settings */
@@ -312,8 +371,8 @@ index 201d2ab..c9cfc05 100644
 +  reload_surface_treatment (self);
 +  adw_switch_row_set_active (
 +    self->reduce_transparency_switch,
-+    g_settings_get_boolean (self->surface_settings,
-+                            SUNO_REDUCE_TRANSPARENCY_KEY));
++    !g_settings_get_boolean (self->surface_settings,
++                             SUNO_REDUCE_TRANSPARENCY_KEY));
    setup_accent_color_toggles (self);
  
    g_signal_connect_object (self->interface_settings,

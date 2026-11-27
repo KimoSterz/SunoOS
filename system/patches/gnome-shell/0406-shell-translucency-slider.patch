@@ -1,0 +1,188 @@
+From bbb3fe79d3d52b757f38ab1895100d989ebd1f27 Mon Sep 17 00:00:00 2001
+From: Project Suno <maintainers@projectSuno.org>
+Date: Fri, 27 Nov 2026 00:53:11 +0000
+Subject: [PATCH] shell: give the translucency slider the frost and glass veils
+
+---
+ js/ui/SunoSurfaceMaterials.js      | 79 +++++++++++++++++++++++++++++-
+ tests/unit/SunoSurfaceMaterials.js | 24 ++++++++-
+ 2 files changed, 100 insertions(+), 3 deletions(-)
+
+diff --git a/js/ui/SunoSurfaceMaterials.js b/js/ui/SunoSurfaceMaterials.js
+index 29ed23d..1bd27e2 100644
+--- a/js/ui/SunoSurfaceMaterials.js
++++ b/js/ui/SunoSurfaceMaterials.js
+@@ -34,6 +34,22 @@ const SURFACE_CLASSES = {
+ };
+ const ALL_SURFACE_CLASSES = [...TREATMENTS.map(name => `Suno-surface-${name}`), 'Suno-surface-smoke'];
+ 
++// The translucency slider thins the veils the theme paints over the blurred
++// wallpaper. 100 is the shipped look -- the frost smoke and the glass veil
++// each leave 15 percent see-through -- and 0 is the clearest readable glass:
++// the veil thins to 65 percent of the shipped fill and the blur relaxes to 40
++// percent of the shipped recipe. Light and Dark are opaque and ignore the
++// level.
++const CLEAR_FILL_SCALE = 0.65;
++const CLEAR_BLUR_SCALE = 0.4;
++// The translucent veils restated from the theme so the slider can scale them
++// in place: Glass is one flat veil, Frost the vertical smoke gradient.
++const VEIL_GLASS = [250, 250, 251, 0.85];
++const VEIL_SMOKE = {
++    start: [40, 40, 45, 0.74],
++    end: [26, 26, 30, 0.84],
++};
++
+ // One ink ledger for every surface Suno draws over the wallpaper: the Shelf
+ // islands, the Well, the clock, Quick Options, notifications, the beacon, the
+ // administrator prompt, the sharing picker and the sharing indicator all read
+@@ -137,6 +153,28 @@ export function inkFor(treatment) {
+     return SURFACE_INK[treatment] ?? SURFACE_INK.dark;
+ }
+ 
++export function translucencyScales(level) {
++    const t = Math.min(Math.max(level, 0), 100) / 100;
++    return {
++        fill: CLEAR_FILL_SCALE + (1 - CLEAR_FILL_SCALE) * t,
++        blur: CLEAR_BLUR_SCALE + (1 - CLEAR_BLUR_SCALE) * t,
++    };
++}
++
++export function translucentFill(treatment, scale) {
++    if (!TRANSLUCENT.has(treatment))
++        return null;
++    const rgba = (rgb, alpha) =>
++        `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${(rgb[3] * alpha).toFixed(3)})`;
++    if (treatment === 'frost') {
++        return `background-color: ${rgba(VEIL_SMOKE.end, scale)};`
++            + ' background-gradient-direction: vertical;'
++            + ` background-gradient-start: ${rgba(VEIL_SMOKE.start, scale)};`
++            + ` background-gradient-end: ${rgba(VEIL_SMOKE.end, scale)};`;
++    }
++    return `background-color: ${rgba(VEIL_GLASS, scale)};`;
++}
++
+ function optionalSettings(schemaId, key) {
+     const source = Gio.SettingsSchemaSource.get_default();
+     const schema = source?.lookup(schemaId, true);
+@@ -170,6 +208,7 @@ export function resolveTreatment({
+ class SurfaceMaterialController {
+     constructor() {
+         this._bindings = new Set();
++        this._scales = {fill: 1, blur: 1};
+         // Anything that has to follow the appearance mode without being a
+         // bound surface -- the Shell's variant stylesheet, extension
+         // stylesheets -- listens here, so there is one source of truth.
+@@ -224,9 +263,17 @@ class SurfaceMaterialController {
+         });
+     }
+ 
++    _translucencyScales() {
++        const schema = this._surfaceSettings?.settings_schema;
++        if (!schema?.has_key('surface-translucency'))
++            return {fill: 1, blur: 1};
++        return translucencyScales(this._surfaceSettings.get_uint('surface-translucency'));
++    }
++
+     _sync() {
+         const previous = this._effective;
+         this._effective = this._effectiveTreatment();
++        this._scales = this._translucencyScales();
+         const recipe = RECIPES[this._effective];
+ 
+         // This is the compositor-owned parameter source for Wayland client
+@@ -234,7 +281,8 @@ class SurfaceMaterialController {
+         // protocol; Suno applications then remain opaque.
+         try {
+             global.compositor.set_background_blur_params(
+-                recipe.radius, recipe.saturation, 0);
++                Math.round(recipe.radius * this._scales.blur),
++                recipe.saturation, 0);
+         } catch (error) {
+             if (TRANSLUCENT.has(this._effective))
+                 logError(error, 'Suno client backdrop protocol is unavailable');
+@@ -287,6 +335,8 @@ class SurfaceMaterialBinding {
+         this._controller = controller;
+         this._actor = actor;
+         this._enabled = enabled;
++        this._fillStyle = null;
++        this._baseStyle = null;
+         this._classActors = [actor, ...classActors];
+         this._cornerRadii = Array.isArray(cornerRadii)
+             ? [...cornerRadii]
+@@ -377,11 +427,36 @@ class SurfaceMaterialBinding {
+ 
+             if (TRANSLUCENT.has(treatment) && this._translucentRecipe) recipe = this._translucentRecipe;
+             if (floating && allowed) recipe = this._floatingRecipe;
+-            this._effect.radius = recipe.radius;
++            this._effect.radius = Math.round(
++                recipe.radius * (this._controller._scales?.blur ?? 1));
+             this._effect.saturation = recipe.saturation;
+             this._effect.enabled = active;
+             this._setEffectGeometry();
+         }
++        this._applyFill(treatment);
++    }
++
++    _applyFill(treatment) {
++        if (!this._actor)
++            return;
++        const scales = this._controller._scales ?? {fill: 1};
++        const fill = this._enabled && scales.fill < 1 && TRANSLUCENT.has(treatment)
++            ? translucentFill(treatment, scales.fill)
++            : null;
++        if (fill === this._fillStyle)
++            return;
++        this._fillStyle = fill;
++        if (!fill) {
++            if (this._baseStyle !== null) {
++                this._actor.set_style(this._baseStyle);
++                this._baseStyle = null;
++            }
++            return;
++        }
++        if (this._baseStyle === null)
++            this._baseStyle = this._actor.style ?? '';
++        const base = this._baseStyle.trim().replace(/;$/, '');
++        this._actor.set_style(base ? `${base}; ${fill}` : fill);
+     }
+ }
+ 
+diff --git a/tests/unit/SunoSurfaceMaterials.js b/tests/unit/SunoSurfaceMaterials.js
+index 711e31c..3da5a34 100644
+--- a/tests/unit/SunoSurfaceMaterials.js
++++ b/tests/unit/SunoSurfaceMaterials.js
+@@ -1,4 +1,4 @@
+-import {resolveTreatment} from
++import {resolveTreatment, translucentFill, translucencyScales} from
+     'resource:///org/gnome/shell/ui/SunoSurfaceMaterials.js';
+ 
+ describe('Suno surface treatment policy', () => {
+@@ -28,3 +28,25 @@ describe('Suno surface treatment policy', () => {
+         })).toEqual('dark');
+     });
+ });
++
++describe('Suno translucency slider', () => {
++    it('keeps the shipped veils at the stock level', () => {
++        expect(translucencyScales(100)).toEqual({fill: 1, blur: 1});
++        expect(translucentFill('glass', 1))
++            .toEqual('background-color: rgba(250, 250, 251, 0.850);');
++        expect(translucentFill('light', 1)).toBeNull();
++    });
++
++    it('thins the veil and relaxes the blur toward clear glass', () => {
++        const scales = translucencyScales(0);
++        expect(scales.fill).toBeCloseTo(0.65);
++        expect(scales.blur).toBeCloseTo(0.4);
++        expect(translucentFill('frost', scales.fill))
++            .toContain('background-gradient-end: rgba(26, 26, 30, 0.546);');
++    });
++
++    it('clamps out-of-range levels', () => {
++        expect(translucencyScales(140).fill).toEqual(1);
++        expect(translucencyScales(-20).fill).toBeCloseTo(0.65);
++    });
++});
+-- 
+2.47.3
+

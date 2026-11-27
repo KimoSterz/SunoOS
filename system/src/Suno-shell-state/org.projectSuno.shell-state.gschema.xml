@@ -75,6 +75,12 @@
       <summary>Render live backdrop blur</summary>
       <description>Device capability, not an accessibility preference. When false, Shell surfaces skip the live blur of what lies behind them but keep their translucent fill; use it on hardware where sampling the framebuffer behind every blurred surface is costly. Reduce transparency, not this key, makes surfaces opaque.</description>
     </key>
+    <key name="surface-translucency" type="u">
+      <range min="0" max="100"/>
+      <default>100</default>
+      <summary>Translucency of frost and glass surfaces</summary>
+      <description>How much of the backdrop shows through translucent shell surfaces. 0 is clear glass; 100 is the shipped frosted look with 15 percent see-through. Only the Frost and Glass treatments read this level; Light and Dark stay opaque.</description>
+    </key>
     <key name="schema-version" type="u">
       <default>2</default>
       <summary>Shell-state contract version</summary>
