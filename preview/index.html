@@ -29,13 +29,34 @@
   <script>
     (function () {
       var frame = document.querySelector('.frame'), status = document.getElementById('status');
+      function fail(html) { status.className = 'err'; status.innerHTML = html; }
       frame.addEventListener('load', function () {
+        var doc;
+        try { doc = frame.contentDocument; } catch (e) { }
+        if (!doc || !doc.querySelector('body[data-mode], .review')) {
+          fail('Makieta nie wczytała się w ramce. Odśwież z pominięciem cache (Ctrl+Shift+R).');
+          return;
+        }
+        var problems = [];
         try {
-          var doc = frame.contentDocument;
-          if (doc && doc.querySelector('body[data-mode], .review')) { status.remove(); return; }
+          frame.contentWindow.onerror = function (msg, src, line, col) {
+            problems.push(msg + ' @ ' + String(src).split('/').pop() + ':' + line);
+          };
+          frame.contentWindow.addEventListener('unhandledrejection', function (e) {
+            var r = e.reason; problems.push('Promise: ' + (r && r.message ? r.message : r));
+          });
         } catch (e) { }
-        status.className = 'err';
-        status.textContent = 'Makieta nie wczytała się w ramce. Odśwież stronę z pominięciem cache (Ctrl+Shift+R) ';
+        var tries = 0;
+        var timer = setInterval(function () {
+          tries++;
+          if (doc.documentElement.dataset.ready === '1') { status.remove(); clearInterval(timer); return; }
+          if (tries > 16) {
+            clearInterval(timer);
+            var det = problems.length ? 'Błędy: ' + problems.slice(0, 3).join(' · ') : 'Brak zgłoszonych błędów JS.';
+            fail('Powłoka nie dorysowała się w 8 s. ' + det +
+                 ' <br><a href="../simframe/mockups/Suno-next-73.html?desktop=1&app=none&showcase=1&zoom=0.7950" target="_blank">Otwórz makietę bezpośrednio (bez ramki)</a> — jeśli i tam jest czerń, otwórz konsolę (F12) i prześlij pierwszy czerwony błąd.');
+          }
+        }, 500);
       });
     })();
   </script>
