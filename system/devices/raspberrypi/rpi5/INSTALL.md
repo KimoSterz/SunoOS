@@ -2,7 +2,7 @@
 
 This experimental profile is for the Raspberry Pi 5 Model B, C1 and D0
 steppings, all memory sizes. It does not cover the Pi 500 or Compute Module 5.
-Luma installs to an NVMe drive on the PCIe connector or to a USB drive; the SD
+Suno installs to an NVMe drive on the PCIe connector or to a USB drive; the SD
 card stays in the Pi as its boot card.
 
 ## The card image
@@ -10,7 +10,7 @@ card stays in the Pi as its boot card.
 `scripts/devices/build-rpi5-sd-image.sh` turns a nightly aarch64 installer ISO
 into the card image:
 
-- Partition 1, FAT32 `LUMA_PI5`: `config.txt`, Fedora's U-Boot
+- Partition 1, FAT32 `SUNO_PI5`: `config.txt`, Fedora's U-Boot
   (`uboot-images-armv8`, `rpi_arm64/u-boot.bin`), the installer kernel's
   upstream device trees (`bcm2712-rpi-5-b.dtb` for C1, `bcm2712-d-rpi-5-b.dtb`
   copied as `bcm2712d0-rpi-5-b.dtb` for D0) with a 256 MB CMA pool, the same
@@ -30,12 +30,12 @@ update; the installed system updates itself and the card is not rewritten.
 3. The card menu starts the installer. Choose the NVMe or USB drive as the
    installation disk. Never choose the SD card itself.
 4. After installing, leave the card in. Its menu now starts the installed
-   Luma by default, through that system's own boot menu, so kernel updates and
+   Suno by default, through that system's own boot menu, so kernel updates and
    rollbacks need no change on the card.
 
 The board must boot from the SD card first (the default boot order). The GRUB
-menu cannot be driven with a USB keyboard; from a running Luma,
-`sudo luma-rpi5-boot-next install` (or `rescue`) chooses the next boot once.
+menu cannot be driven with a USB keyboard; from a running Suno,
+`sudo Suno-rpi5-boot-next install` (or `rescue`) chooses the next boot once.
 
 Do not use the Raspberry Pi OS device trees: the display works with them, but
 USB and Ethernet (RP1) stop working under the Fedora kernel. Do not add a
@@ -46,9 +46,9 @@ because U-Boot stores them on the card and an entry would bypass the card menu.
 ## Known limits
 
 This installer card boots Fedora's kernel with upstream device trees: no
-Bluetooth, HDMI audio, fan, RTC or HEVC. The Luma Pi image (the preinstalled
-card, `scripts/devices/build-rpi5-disk-image.sh`) runs `kernel-luma-rpi` on the
-firmware's device tree, as an override of the generic ARM commit; see `SUPPORT.md` and `src/luma-rpi5-platform/README.md`. 4K at 60 Hz
+Bluetooth, HDMI audio, fan, RTC or HEVC. The Suno Pi image (the preinstalled
+card, `scripts/devices/build-rpi5-disk-image.sh`) runs `kernel-Suno-rpi` on the
+firmware's device tree, as an override of the generic ARM commit; see `SUPPORT.md` and `src/Suno-rpi5-platform/README.md`. 4K at 60 Hz
 needs a TV input in HDMI 2.0 (enhanced) mode.
 
 ## Hardware results
@@ -64,15 +64,15 @@ a tier change.
 ## Preinstalled card: one ARM OS, Pi kernel override
 
 The preinstalled card (`scripts/devices/build-rpi5-disk-image.sh`) carries the
-same signed OS commit as every other ARM computer (`luma/1/aarch64/<channel>`)
-and runs `kernel-luma-rpi` as a client-side rpm-ostree override (Fedora's
+same signed OS commit as every other ARM computer (`Suno/1/aarch64/<channel>`)
+and runs `kernel-Suno-rpi` as a client-side rpm-ostree override (Fedora's
 kernel packages removed), applied when the card is built, so the first boot
 needs no network. There is no Raspberry Pi OS ref, graph or Depot entry. The
-card keeps `/etc/yum.repos.d/luma-raspberrypi-rpi5.repo` (the signed Raspberry
-Pi 5 device repository, only `kernel-luma-rpi`, signed with the Luma OS
+card keeps `/etc/yum.repos.d/Suno-raspberrypi-rpi5.repo` (the signed Raspberry
+Pi 5 device repository, only `kernel-Suno-rpi`, signed with the Suno OS
 release key) and that key armored for rpm,
-`/etc/pki/rpm-gpg/RPM-GPG-KEY-luma-os-release`; every update
-(luma-update or `rpm-ostree upgrade`) rebuilds the override on the new commit
+`/etc/pki/rpm-gpg/RPM-GPG-KEY-Suno-os-release`; every update
+(Suno-update or `rpm-ostree upgrade`) rebuilds the override on the new commit
 and takes newer Pi kernels from that repository. `rpm-ostree status` shows the
 override.
 
@@ -81,14 +81,14 @@ root grows: the 14 GiB image (the override adds a second tree while the card is 
 
 Inputs: the night's aarch64 ISO (release key, update URL), the signed OSTree
 repository holding the generic commit, and the signed device repository
-(rpm-md with `repomd.xml.asc`, RPMs signed with the Luma OS release key) and
-that key, armored (`RPM-GPG-KEY-luma-os-release` beside the repository).
+(rpm-md with `repomd.xml.asc`, RPMs signed with the Suno OS release key) and
+that key, armored (`RPM-GPG-KEY-Suno-os-release` beside the repository).
 
-1. Gate card (luma-build, as root, unconfined: a system service may not write
+1. Gate card (Suno-build, as root, unconfined: a system service may not write
    SELinux types the host's policy lacks; about 25 minutes, 10 of them the
    override's initramfs under qemu-user):
 
-       systemd-run --scope luma-heavy bash scripts/devices/build-rpi5-disk-image.sh \
+       systemd-run --scope Suno-heavy bash scripts/devices/build-rpi5-disk-image.sh \
          --iso <aarch64 ISO> --output <dir>/gate --no-xz \
          --test-payload <signed repo> <commit> --test-ssh-key <key.pub> \
          --device-repo <device repo> --device-key <key.asc> \
@@ -104,29 +104,29 @@ that key, armored (`RPM-GPG-KEY-luma-os-release` beside the repository).
          --expect-commit <commit> --output gate-result.json
 
 3. Release card, from the same inputs with the signed ref instead of the test
-   payload: `--release --payload <signed repo> luma/1/aarch64/<channel>`.
+   payload: `--release --payload <signed repo> Suno/1/aarch64/<channel>`.
    `--release` requires the override, refuses test payloads and keys, and
    checks that the card gives no root SSH access.
 
 `--local-package` and `--replace-local` layer RPM files the commit does not
 carry yet (the Pi platform, Bluetooth firmware, GStreamer with the HEVC
 fix); once a nightly ships them, build without them. Every card refuses a
-hardware-targeted commit and an `/etc/luma/update.conf` that names a hardware
-target (luma-rpi5-platform before 0.4.0).
+hardware-targeted commit and an `/etc/Suno/update.conf` that names a hardware
+target (Suno-rpi5-platform before 0.4.0).
 
 Flash on a Mac (never a card in use):
 
-1. `scp` the `.img.xz` and its `.sha256` from luma-build and check it:
-   `shasum -a 256 -c luma-rpi5-*.img.xz.sha256`.
+1. `scp` the `.img.xz` and its `.sha256` from Suno-build and check it:
+   `shasum -a 256 -c Suno-rpi5-*.img.xz.sha256`.
 2. Raspberry Pi Imager: Choose OS > Use custom > the `.img.xz`; Choose Storage >
    the card; no OS customisation. Or in a terminal:
    `diskutil list` (find the card, e.g. `/dev/disk6`), then
    `diskutil unmountDisk /dev/disk6` and
-   `xz -dc luma-rpi5-*.img.xz | sudo dd of=/dev/rdisk6 bs=4m && diskutil eject /dev/disk6`.
+   `xz -dc Suno-rpi5-*.img.xz | sudo dd of=/dev/rdisk6 bs=4m && diskutil eject /dev/disk6`.
 3. Insert the card and power on. The first boot grows the root partition,
-   imports the apps and opens Luma's setup.
+   imports the apps and opens Suno's setup.
 
 Expected: U-Boot and GRUB pass the firmware's tree (model "Raspberry Pi 5
-Model B Rev …", the board's MAC and Bluetooth address), `uname -r` is the Luma
+Model B Rev …", the board's MAC and Bluetooth address), `uname -r` is the Suno
 Pi kernel, HDMI audio, Bluetooth and `/dev/video19` (HEVC) are present, and
-`luma-rpi5-firmware-sync` reports the trees in place.
+`Suno-rpi5-firmware-sync` reports the trees in place.

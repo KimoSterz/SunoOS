@@ -36,28 +36,28 @@ def tiny_oci(root, source):
         for name, uid, gid, mode in (
             ('.', 0, 0, 0o555), ('etc', 0, 0, 0o755), ('usr', 0, 0, 0o755), ('usr/lib', 0, 0, 0o755),
             ('usr/lib/ostree-boot', 0, 0, 0o755), ('usr/lib/ostree-boot/efi', 0, 0, 0o700),
-            ('usr/lib/luma-import-service', 123, 456, 0o750),
+            ('usr/lib/Suno-import-service', 123, 456, 0o750),
         ):
             entry = tarfile.TarInfo(name)
             entry.type = tarfile.DIRTYPE
             entry.uid, entry.gid, entry.mode = uid, gid, mode
-            entry.pax_headers = {'SCHILY.xattr.user.luma-import': 'directory',
+            entry.pax_headers = {'SCHILY.xattr.user.Suno-import': 'directory',
                                  'SCHILY.xattr.security.selinux': 'system_u:object_r:pesto_exec_t:s0'}
             archive.addfile(entry)
         for name, mode, data in (('state', 0o640, b'preserve service ownership\n'),
                                  ('empty', 0o600, b''), ('unreadable', 0o000, hashlib.shake_256(b'private content').digest(100000)),
                                  ('setuid', 0o4755, b'setuid content\n')):
-            entry = tarfile.TarInfo('usr/lib/luma-import-service/' + name)
+            entry = tarfile.TarInfo('usr/lib/Suno-import-service/' + name)
             entry.uid, entry.gid, entry.mode = 123, 456, mode
             entry.size = len(data)
-            entry.pax_headers = {'SCHILY.xattr.user.luma-import': 'file',
+            entry.pax_headers = {'SCHILY.xattr.user.Suno-import': 'file',
                                  'SCHILY.xattr.user.binary': b'\x00\xffvalue'.decode('utf-8', 'surrogateescape'),
                                  'SCHILY.xattr.security.selinux': 'system_u:object_r:pesto_exec_t:s0'}
             archive.addfile(entry, io.BytesIO(data))
         entry = tarfile.TarInfo('etc/example')
         entry.size, entry.uid, entry.gid, entry.mode = 0, 123, 456, 0o600
         archive.addfile(entry, io.BytesIO())
-        entry = tarfile.TarInfo('usr/lib/luma-import-service/link')
+        entry = tarfile.TarInfo('usr/lib/Suno-import-service/link')
         entry.type, entry.linkname = tarfile.SYMTYPE, 'state'
         entry.uid, entry.gid, entry.mode = 567, 678, 0o777
         archive.addfile(entry)
@@ -84,7 +84,7 @@ def tiny_oci(root, source):
         'application/vnd.oci.image.config.v1+json')
     manifest = blob(json.dumps({'schemaVersion': 2, 'config': config, 'layers': [layer]}).encode(),
                     'application/vnd.oci.image.manifest.v1+json')
-    manifest['annotations'] = {'org.opencontainers.image.ref.name': 'luma'}
+    manifest['annotations'] = {'org.opencontainers.image.ref.name': 'Suno'}
     (root / 'index.json').write_text(json.dumps({'schemaVersion': 2, 'manifests': [manifest]}))
     (root / 'oci-layout').write_text('{"imageLayoutVersion":"1.0.0"}\n')
 
@@ -93,10 +93,10 @@ def import_image(repo, oci, image, environment, mode):
     subprocess.run(['ostree', '--repo=' + str(repo), 'init', '--mode=' + mode], check=True)
     result = subprocess.run(['podman', 'run', '--rm', '--pull=never', '--net=none', '--privileged',
         '--cgroups=disabled', '--security-opt', 'label=disable',
-        '--volume', str(oci) + ':/run/luma-import/oci:ro',
-        '--volume', str(repo) + ':/run/luma-import/repo',
+        '--volume', str(oci) + ':/run/Suno-import/oci:ro',
+        '--volume', str(repo) + ':/run/Suno-import/repo',
         '--entrypoint', '/usr/bin/ostree', image, 'container', 'image', 'pull',
-        '/run/luma-import/repo', 'ostree-unverified-image:oci:/run/luma-import/oci:luma'],
+        '/run/Suno-import/repo', 'ostree-unverified-image:oci:/run/Suno-import/oci:Suno'],
         env=environment, capture_output=True, text=True, timeout=150)
     (repo.parent / (repo.name + '-import.log')).write_text(result.stdout + result.stderr)
     if result.returncode:
@@ -115,8 +115,8 @@ def metadata(path, commit):
     repo.open(None)
     _, root, _ = repo.read_commit(commit, None)
     rows = {}
-    for name in ('/usr', '/usr/lib/ostree-boot/efi', '/usr/lib/luma-import-service',
-                 '/usr/lib/luma-import-service/state'):
+    for name in ('/usr', '/usr/lib/ostree-boot/efi', '/usr/lib/Suno-import-service',
+                 '/usr/lib/Suno-import-service/state'):
         node = root.resolve_relative_path(name.lstrip('/'))
         info = node.query_info('standard::type,unix::uid,unix::gid,unix::mode',
                                Gio.FileQueryInfoFlags.NOFOLLOW_SYMLINKS, None)
@@ -186,8 +186,8 @@ def main():
     _, directory_rows = repair.tree(repo, fixed_commit)
     policy_tar = args.work / 'raw-policy-fixture.tar'
     with tarfile.open(policy_tar, 'x', format=tarfile.PAX_FORMAT) as archive:
-        entry = tarfile.TarInfo('usr/lib/luma-import-service')
-        row = directory_rows['/usr/lib/luma-import-service']
+        entry = tarfile.TarInfo('usr/lib/Suno-import-service')
+        row = directory_rows['/usr/lib/Suno-import-service']
         entry.type, entry.uid, entry.gid, entry.mode = tarfile.DIRTYPE, row['uid'], row['gid'], row['mode']
         attrs = {name: bytes.fromhex(value).decode('utf-8', 'surrogateescape') for name, value in row['xattrs'].items()}
         attrs['security.selinux'] = 'system_u:object_r:pesto_exec_t:s0\0'
@@ -215,17 +215,17 @@ def main():
     fixed_rows = metadata(candidate_repo, candidate)
     final_files, final_dirs = repair.tree(repair.open_repo(str(candidate_repo)), candidate)
     assert (final_dirs['/']['uid'], final_dirs['/']['gid'], final_dirs['/']['mode']) == (0, 0, 0o555)
-    assert final_dirs['/usr/lib/luma-import-service']['xattrs']['security.selinux'] == b'system_u:object_r:pesto_exec_t:s0\0'.hex()
+    assert final_dirs['/usr/lib/Suno-import-service']['xattrs']['security.selinux'] == b'system_u:object_r:pesto_exec_t:s0\0'.hex()
     for name, mode in (('empty', 0o600), ('unreadable', 0), ('state', 0o640), ('setuid', 0o4755)):
-        record = repair.file_record(repair.open_repo(str(candidate_repo)), final_files['/usr/lib/luma-import-service/' + name])
+        record = repair.file_record(repair.open_repo(str(candidate_repo)), final_files['/usr/lib/Suno-import-service/' + name])
         assert (record['uid'], record['gid'], record['mode']) == (123, 456, mode), record
         assert record['xattrs']['user.binary'] == b'\x00\xffvalue'.hex(), record
-    link = repair.file_record(repair.open_repo(str(candidate_repo)), final_files['/usr/lib/luma-import-service/link'])
+    link = repair.file_record(repair.open_repo(str(candidate_repo)), final_files['/usr/lib/Suno-import-service/link'])
     assert (link['uid'], link['gid'], link['link_target']) == (567, 678, 'state'), link
     # A real changed ordinary-file object must fail exhaustive verification.
     altered_tar = args.work / 'altered.tar'
     with tarfile.open(altered_tar, 'x') as archive:
-        entry = tarfile.TarInfo('usr/lib/luma-import-service/state')
+        entry = tarfile.TarInfo('usr/lib/Suno-import-service/state')
         data = b'unexpected contents'
         entry.size = len(data)
         archive.addfile(entry, io.BytesIO(data))
@@ -238,7 +238,7 @@ def main():
     else:
         raise AssertionError('Changed ordinary file was accepted')
     # A changed copied-file source must fail capture before producing outputs.
-    unreadable = source / 'usr/lib/luma-import-service/unreadable'
+    unreadable = source / 'usr/lib/Suno-import-service/unreadable'
     original = unreadable.read_bytes()
     unreadable.write_bytes(b'changed source')
     try:
@@ -253,13 +253,13 @@ def main():
     assert not any((args.work / name).exists() for name in ('bad.json', 'bad.tar', 'bad-modes.txt'))
     subprocess.run(['ostree', '--repo=' + str(candidate_repo), 'fsck'], check=True)
     expected = {'/usr': (0, 0, 0o755), '/usr/lib/ostree-boot/efi': (0, 0, 0o700),
-                '/usr/lib/luma-import-service': (123, 456, 0o750),
-                '/usr/lib/luma-import-service/state': (123, 456, 0o640)}
+                '/usr/lib/Suno-import-service': (123, 456, 0o750),
+                '/usr/lib/Suno-import-service/state': (123, 456, 0o640)}
     for path, (uid, gid, mode) in expected.items():
         row = fixed_rows[path]
         assert (row['uid'], row['gid'], row['mode']) == (uid, gid, mode), (path, row)
         assert not any(key.startswith('system.posix_acl_') for key in row['xattrs']), row
-        assert row['xattrs'].get('user.luma-import') == ('file' if path.endswith('/state') else 'directory').encode().hex(), row
+        assert row['xattrs'].get('user.Suno-import') == ('file' if path.endswith('/state') else 'directory').encode().hex(), row
     assert parent_before == (shared.stat().st_mode, shared.stat().st_uid, shared.stat().st_gid,
                             {x: os.getxattr(shared, x) for x in os.listxattr(shared)})
     result = {'result': 'PASS_REAL_TINY_OCI_IMPORT_AND_METADATA_REPAIR', 'metadata_verification': report, 'bad': bad_rows, 'fixed': fixed_rows,

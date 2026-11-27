@@ -1,4 +1,4 @@
-# Android applications as Luma applications
+# Android applications as Suno applications
 
 Engineering decision and acceptance work, 2026-10-28. This is an implementation
 plan with explicitly limited evidence, not a declaration of complete compatibility.
@@ -6,7 +6,7 @@ plan with explicitly limited evidence, not a declaration of complete compatibili
 ## Product and runtime boundary
 
 An APK belongs in the same install flow, application registry, search, dock,
-window manager, permissions UI and resource monitor as other Luma applications.
+window manager, permissions UI and resource monitor as other Suno applications.
 It must retain its original signing identity. A phone layout stays useful as a
 phone layout; a resizable tablet layout receives real task configuration changes.
 Closing a window retires its task, not all Android services or another app.
@@ -18,17 +18,17 @@ not imply a separate Android image for each app. The intended storage increment
 is APK/splits, private data and bounded compilation caches. Never allocate another
 platform image just because another application was installed.
 
-Keep the replaceable runtime backend behind Luma-owned app and capability
+Keep the replaceable runtime backend behind Suno-owned app and capability
 contracts. Existing Waydroid/Lineage components are useful implementation inputs;
 their current security, latency and compatibility properties are not assumed.
 A kernel-sharing backend needs demonstrated isolation. Where that cannot be
 provided, qualify a shared hardware-virtualized backend with the same app-facing
 contract. Never silently migrate live app data or weaken isolation on a failed
 launch. ChromeOS's [container/VM security rationale](https://chromium.googlesource.com/chromiumos/docs/+/d2df969632e7c227618deeb201e1aa7a168d42c7/containers_and_vms.md)
-is a useful design reference, not proof of Luma's own implementation.
+is a useful design reference, not proof of Suno's own implementation.
 
 The smaller-runtime research path retains AOSP framework/ART/application behavior
-while replacing selected services underneath it with native Luma adapters.
+while replacing selected services underneath it with native Suno adapters.
 Evaluate it against the same corpus and permission/lifecycle tests. A framework
 rewrite is not a prerequisite for improving the existing subsystem, and an empty
 API implementation is never counted as compatibility.
@@ -38,12 +38,12 @@ API implementation is never counted as compatibility.
 | Input | Relevant finding | Decision |
 | --- | --- | --- |
 | [Mac.apk at ce1499e](https://github.com/kksimp/Mac.apk/tree/ce1499e8b856fb453c773acbf8584ad42307d312) | Direct framework/JVM/Bionic compatibility is possible for selected applications; inspected NotificationManager operations are empty and its security policy gives apps the host user's permissions. | Study its API-boundary experiments; do not inherit absent notification semantics or absent app isolation. |
-| [Waydroid](https://github.com/waydroid/waydroid) | Luma already has native task surfaces, supervised launch and source-built framework/window patches. | Preserve useful work, fix demonstrated defects, and qualify a maintained platform rebase. |
+| [Waydroid](https://github.com/waydroid/waydroid) | Suno already has native task surfaces, supervised launch and source-built framework/window patches. | Preserve useful work, fix demonstrated defects, and qualify a maintained platform rebase. |
 | [Valve Lepton at 150aba0](https://gitlab.steamos.cloud/frame-public/lepton/-/blob/150aba0a65daba7ff512f0d25cebf529bb9eb79e/README.md) | Official source documents rootless execution, same-UID processes within an instance, per-app containers, reduced services and cached boot state. | Study caching and graphics integration. Its game-oriented isolation/service tradeoffs do not meet this shared general-app contract. |
 | [ATL architecture](https://gitlab.com/android_translation_layer/android_translation_layer/-/raw/master/doc/Architecture.md) | Open Linux framework replacement experiment. | Use as a research/reference input; require real app, resize and sandbox evidence. |
-| [Drion](https://actinis.io/drion/how-it-works) | Author describes retained Android framework with native service replacements; public source/build qualification was unavailable in this investigation. | Interesting seam to investigate independently; vendor claims are not Luma test results. |
+| [Drion](https://actinis.io/drion/how-it-works) | Author describes retained Android framework with native service replacements; public source/build qualification was unavailable in this investigation. | Interesting seam to investigate independently; vendor claims are not Suno test results. |
 | [Digitalis integration](https://github.com/DigitalisX64/digitalis/blob/e81431d67766f9a827b568b9137da131daecfa87/docs/integrating-digitalis.md) | Source-buildable ARM64-on-x86 Android Native Bridge candidate, tied to matching Android guest libraries/platform. | Evaluate after the platform rebase; do not insert Android 16 libraries into Android 13 images. |
-| [Ika at 6fde114](https://github.com/DesktopECHO/ika/tree/6fde114bcf3fc99291c442f52ec2b14aa642b4d2) | LineageOS23.2/Cuttlefish products for x86_64 and ARM64; its modified scrcpy app windows select a direct Cuttlefish frame socket, including DMA-BUF transport. The launcher defaults `enable_sandbox=false` and force-stops the selected app before starting it on a dedicated display. | Study its shared-VM and frame-lifetime integration, without adopting disabled VMM sandboxing or assuming force-stop lifecycle semantics meet Luma requirements. No Luma runtime, performance, power or security qualification inferred. |
+| [Ika at 6fde114](https://github.com/DesktopECHO/ika/tree/6fde114bcf3fc99291c442f52ec2b14aa642b4d2) | LineageOS23.2/Cuttlefish products for x86_64 and ARM64; its modified scrcpy app windows select a direct Cuttlefish frame socket, including DMA-BUF transport. The launcher defaults `enable_sandbox=false` and force-stops the selected app before starting it on a dedicated display. | Study its shared-VM and frame-lifetime integration, without adopting disabled VMM sandboxing or assuming force-stop lifecycle semantics meet Suno requirements. No Suno runtime, performance, power or security qualification inferred. |
 
 The October30 source intake records an Android16/Lineage23.2 evaluation in
 [`lineage-23.2-intake.json`](../../config/android/candidates/lineage-23.2-intake.json).
@@ -51,12 +51,12 @@ It pins the upstream manifest, manifest fragments and33 local project revisions;
 the complete platform graph and builds are still unqualified. The upstream
 [manifest](https://github.com/WayDroid-ATV/android_vendor_waydroid/blob/dd850b3d341195f3a1924ce994d48d3f647988d6/manifest_scripts/manifests-36/02-waydroid.xml)
 includes four proprietary/service projects for Widevine, Google native
-translation and phone/TV GApps. Luma excludes those projects from this candidate;
-source availability does not establish redistribution rights. Port the Luma
+translation and phone/TV GApps. Suno excludes those projects from this candidate;
+source availability does not establish redistribution rights. Port the Suno
 framework, graphics and host-service integration against this separate complete
 platform; retain matching system/vendor pairs and validate both CPUs.
 
-The current Luma source pins Android 13/Lineage 20. Repairing that baseline makes
+The current Suno source pins Android 13/Lineage 20. Repairing that baseline makes
 failures reproducible; it does not make it the final maintained shipping platform.
 The evaluation [base project inventory](../../config/android/candidates/lineage-23.2-base-projects.json) resolves all 1,166 public base-manifest project revisions. Local device/profile overlays have not been assembled with it. This inventory is not a source-content, license, build, security or runtime admission.
 
@@ -66,7 +66,7 @@ CPU architectures. A third-party image download alone is not that rebase.
 ## Host integration contract
 
 Android's framework derives app identity from kernel Binder UID and PackageManager
-state, including signing identity and user/profile. Luma's broker authenticates
+state, including signing identity and user/profile. Suno's broker authenticates
 that framework/runtime endpoint. Strings supplied by an APK, Wayland app IDs and
 icons are presentation metadata, not authority. Handles expire on uninstall,
 signing-identity change, profile removal, revocation or runtime-generation change.
@@ -78,11 +78,11 @@ signing-identity change, profile removal, revocation or runtime-generation chang
 | Clipboard/input | Focus/paste policy, MIME conversion, touch/stylus/keyboard/IME and accessibility semantics belong to the actual app. Background APKs do not receive the desktop clipboard indiscriminately. |
 | Audio/media | Per-app stream and MediaSession identity, routing, focus, volume, interruptions and native transport controls. |
 | Camera/microphone/location | Verified per-app consent, native device selection, live revocation and recording indicators; absent hardware is reported honestly. |
-| Contacts/calendar/telephony | Consented providers reach Luma's authoritative native services. Do not mount native private databases or hand Android ownership of the modem/controller. |
+| Contacts/calendar/telephony | Consented providers reach Suno's authoritative native services. Do not mount native private databases or hand Android ownership of the modem/controller. |
 | USB/Bluetooth/NFC/sensors | Shared controller/device arbitration, bounded rates and tested capability advertisement. |
 | Processes/resources | Verified package/process identity, PSS and CPU accounting, background policy and scoped app termination. A single aggregate Android row is insufficient for app attribution. |
 
-Android notifications use Luma's notification renderer, with Luma typography,
+Android notifications use Suno's notification renderer, with Suno typography,
 spacing, colors and controls in both banners and the notification center.
 Android supplies structured content and behavior; it does not supply a second
 notification shade or Android system chrome. Preserve actions, inline replies,
@@ -130,12 +130,12 @@ mobile hardware. Never turn a VM idle CPU sample into a battery-life claim.
 
 ## Concrete work and evidence
 
-The first source change adds a Luma-owned notification transport, additive Android
+The first source change adds a Suno-owned notification transport, additive Android
 dismissal/reset callbacks, original-action PendingIntent handling, and a kernel
 UID check on the privileged Android platform stub. Clean/incremental builders
 apply the same patches. Existing provider-owned Waydroid files remain intact.
 
-The reply candidate extends Luma's existing native notification entry and send
+The reply candidate extends Suno's existing native notification entry and send
 button. It negotiates a custom Shell capability before advertising a reply,
 binds each post to a registered Android listener and unpredictable host token,
 and exports the reply endpoint on the producer's Notify connection. Android
@@ -157,13 +157,13 @@ SELinux module maps the adapter to the provider's existing entrypoint type; it
 adds no allow rules. The adapter verifies its execution domain on SELinux hosts
 before starting the service, so a missing policy/label fails closed.
 Guest image-replacement transactions are rejected even from Android root or
-system. Luma's verified host update path owns the matched system/vendor pair;
+system. Suno's verified host update path owns the matched system/vendor pair;
 a guest-provided file path cannot authorize a privileged host image write.
 The runtime package preserves the derived GPL transport's license and attribution.
-The Luma-owned session admits only kernel UID1000 at the user-monitor callback.
+The Suno-owned session admits only kernel UID1000 at the user-monitor callback.
 Its old AIDL clipboard guard is defense for a legacy endpoint, not the path used
 by the matched Android image. Framework DEX inspection and composer source show
-that actual clipboard traffic uses native HIDL inside the Wayland composer. Luma
+that actual clipboard traffic uses native HIDL inside the Wayland composer. Suno
 preserves that native path and disables the unused Python/AIDL clipboard manager;
 pyclip and wl-clipboard are not runtime dependencies of native copy/paste.
 

@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-// Luma Seal: the conversation coordinator (js/ui/lumaSealAuth.js) and the copy
-// table (js/ui/lumaSealCopy.js), with scripted polkit sessions that behave
-// like the helper does under Luma's PAM stack (pam_fprintd, then pam_unix).
-// Run: gjs -m seal-conversations.js path/to/lumaSealAuth.js path/to/lumaSealCopy.js
+// Suno Seal: the conversation coordinator (js/ui/SunoSealAuth.js) and the copy
+// table (js/ui/SunoSealCopy.js), with scripted polkit sessions that behave
+// like the helper does under Suno's PAM stack (pam_fprintd, then pam_unix).
+// Run: gjs -m seal-conversations.js path/to/SunoSealAuth.js path/to/SunoSealCopy.js
 import GLib from 'gi://GLib';
 import System from 'system';
 
@@ -67,7 +67,7 @@ class FakeSession {
 }
 
 // The reader: one claim at a time, like fprintd.
-function makeWorld({reader = true, password = 'luma', autoAsk = true} = {}) {
+function makeWorld({reader = true, password = 'Suno', autoAsk = true} = {}) {
     const world = {
         sessions: [],
         events: [],
@@ -120,9 +120,9 @@ const names = world => world.events.map(([n]) => n);
     const w = makeWorld();
     w.conversations.start();
     check('reader listens first', w.conversations.fingerprint === 'listening' && w.sessions.length === 1);
-    w.conversations.submit('luma');
+    w.conversations.submit('Suno');
     check('a second session starts beside the reader', w.sessions.length === 2);
-    check('the typed password reaches the second session once', w.sessions[1].responses.length === 1 && w.sessions[1].responses[0] === 'luma');
+    check('the typed password reaches the second session once', w.sessions[1].responses.length === 1 && w.sessions[1].responses[0] === 'Suno');
     check('the reader session is not given the password', w.sessions[0].responses.length === 0);
     w.finishCheck();
     check('success by password', names(w).includes('success') && w.events.find(([n]) => n === 'success')[1].method === 'password');
@@ -136,7 +136,7 @@ const names = world => world.events.map(([n]) => n);
 {
     const w = makeWorld();
     w.conversations.start();
-    w.conversations.submit('luma');
+    w.conversations.submit('Suno');
     // pam_fprintd reports a no-match on its way out just as pam_unix succeeds.
     w.finishCheck();
     const before = w.events.length;
@@ -152,7 +152,7 @@ const names = world => world.events.map(([n]) => n);
 {
     const w = makeWorld();
     w.conversations.start();
-    w.conversations.submit('luma');
+    w.conversations.submit('Suno');
     w.miss(w.sessions[0]);
     w.finishCheck();
     check('miss then success still succeeds', names(w).includes('fingerprint-miss') && names(w).at(-1) === 'success');
@@ -192,8 +192,8 @@ const names = world => world.events.map(([n]) => n);
     check('rejected', names(w).includes('password-rejected'));
     check('the reader session still listens', !w.sessions[0].cancelled && w.conversations.fingerprint === 'listening');
     check('a fresh password session is ready', w.sessions.length === 3 && !w.sessions[2].cancelled);
-    check('submit is accepted again', w.conversations.submit('luma'));
-    check('handed to the ready session', w.sessions[2].responses[0] === 'luma');
+    check('submit is accepted again', w.conversations.submit('Suno'));
+    check('handed to the ready session', w.sessions[2].responses[0] === 'Suno');
     w.finishCheck();
     check('then success', names(w).at(-1) === 'success');
 }
@@ -203,8 +203,8 @@ const names = world => world.events.map(([n]) => n);
     const w = makeWorld({reader: false});
     w.conversations.start();
     check('asks for the password first', w.sessions.length === 1 && w.conversations.fingerprint === 'unknown');
-    w.conversations.submit('luma');
-    check('answered in the same session', w.sessions[0].responses[0] === 'luma' && w.sessions.length === 1);
+    w.conversations.submit('Suno');
+    check('answered in the same session', w.sessions[0].responses[0] === 'Suno' && w.sessions.length === 1);
     w.finishCheck();
     check('no fingerprint events', !names(w).some(n => n.startsWith('fingerprint')));
     check('success', names(w).includes('success'));
@@ -218,8 +218,8 @@ const names = world => world.events.map(([n]) => n);
     w.timeout(w.sessions[0]);
     check('reader armed again', w.sessions.length === 2 && w.holder === w.sessions[1]);
     check('listening again', w.conversations.fingerprint === 'listening');
-    w.conversations.submit('luma');
-    check('the waiting session takes the password', w.sessions[0].responses[0] === 'luma' && w.sessions.length === 2);
+    w.conversations.submit('Suno');
+    check('the waiting session takes the password', w.sessions[0].responses[0] === 'Suno' && w.sessions.length === 2);
 }
 
 // 9. Submitted just as the reader times out: the password goes to whichever
@@ -227,10 +227,10 @@ const names = world => world.events.map(([n]) => n);
 {
     const w = makeWorld({autoAsk: false});
     w.conversations.start();
-    w.conversations.submit('luma');
+    w.conversations.submit('Suno');
     // The second session has not spoken yet when the first one times out.
     w.timeout(w.sessions[0]);
-    check('the first asking session gets it', w.sessions[0].responses.join() === 'luma');
+    check('the first asking session gets it', w.sessions[0].responses.join() === 'Suno');
     w.sessions[1].emit('request', 'Password: ', false);
     check('the second is not given it again', w.sessions[1].responses.length === 0);
     check('and is dropped', w.sessions[1].cancelled);
@@ -246,8 +246,8 @@ const names = world => world.events.map(([n]) => n);
     w.sessions[0].emit('request', 'Password: ', false);
     check('exhausted after misses', w.conversations.fingerprint === 'exhausted' && names(w).includes('fingerprint-exhausted'));
     check('not re-armed after misses', w.sessions.length === 1);
-    w.conversations.submit('luma');
-    check('password answered by the same session', w.sessions[0].responses[0] === 'luma');
+    w.conversations.submit('Suno');
+    check('password answered by the same session', w.sessions[0].responses[0] === 'Suno');
 }
 
 // 11. A helper that keeps failing stops being restarted.
@@ -263,7 +263,7 @@ const names = world => world.events.map(([n]) => n);
 {
     const w = makeWorld();
     w.conversations.start();
-    w.conversations.submit('luma');
+    w.conversations.submit('Suno');
     w.conversations.cancel();
     check('all sessions cancelled', w.sessions.every(s => s.cancelled));
     const before = w.events.length;
@@ -277,14 +277,14 @@ const fakeDevice = () => ({size: 31_914_983_424, partition: false});
     const d = Copy.describe({
         actionId: 'org.freedesktop.udisks2.open-device',
         message: 'Authentication is required to open USB DISK 3.0 (/dev/sda) for writing',
-        appName: 'Imager', executable: '/usr/bin/luma-imager', device: fakeDevice,
+        appName: 'Imager', executable: '/usr/bin/Suno-imager', device: fakeDevice,
     });
     check('udisks write title', d.title === 'Imager wants to write to “USB DISK 3.0”', d.title);
     check('udisks write body', d.body === 'Everything on this 32 GB drive will be erased and replaced. Writing to a disk needs an administrator.', d.body);
-    check('udisks facts', JSON.stringify(d.facts) === JSON.stringify([['Action', 'org.freedesktop.udisks2.open-device'], ['Device', '/dev/sda · USB DISK 3.0'], ['Requested by', '/usr/bin/luma-imager · Imager']]), JSON.stringify(d.facts));
+    check('udisks facts', JSON.stringify(d.facts) === JSON.stringify([['Action', 'org.freedesktop.udisks2.open-device'], ['Device', '/dev/sda · USB DISK 3.0'], ['Requested by', '/usr/bin/Suno-imager · Imager']]), JSON.stringify(d.facts));
 }
 {
-    const d = Copy.describe({actionId: 'org.freedesktop.Flatpak.app-install', message: 'Authentication is required to install software', appName: 'Depot', executable: '/usr/bin/luma-depot'});
+    const d = Copy.describe({actionId: 'org.freedesktop.Flatpak.app-install', message: 'Authentication is required to install software', appName: 'Depot', executable: '/usr/bin/Suno-depot'});
     check('flatpak title', d.title === 'Depot wants to install an app for everyone on this computer', d.title);
 }
 {
@@ -317,7 +317,7 @@ const fakeDevice = () => ({size: 31_914_983_424, partition: false});
 check('cgroup scope', Copy.appFromCgroup('0::/user.slice/user-1000.slice/user@1000.service/app.slice/app-gnome-org.gnome.Settings-3021.scope\n')?.id === 'org.gnome.Settings');
 check('cgroup flatpak', JSON.stringify(Copy.appFromCgroup('0::/user.slice/user-1000.slice/user@1000.service/app.slice/app-flatpak-dev.lattice.Lattice-4121.scope')) === JSON.stringify({id: 'dev.lattice.Lattice', flatpak: true}));
 check('cgroup dbus service', Copy.appFromCgroup('0::/user.slice/user-1000.slice/user@1000.service/app.slice/dbus-:1.2-org.gnome.Settings@0.service')?.id === 'org.gnome.Settings');
-check('cgroup escaped dash', Copy.appFromCgroup('0::/user.slice/user-1000.slice/user@1000.service/app.slice/app-gnome-io.luma\\x2dimager-77.scope')?.id === 'io.luma-imager');
+check('cgroup escaped dash', Copy.appFromCgroup('0::/user.slice/user-1000.slice/user@1000.service/app.slice/app-gnome-io.Suno\\x2dimager-77.scope')?.id === 'io.Suno-imager');
 check('cgroup vte scope is not an app', Copy.appFromCgroup('0::/user.slice/user-1000.slice/user@1000.service/app.slice/vte-spawn-2b2a.scope') === null);
 check('cgroup session is not an app', Copy.appFromCgroup('0::/user.slice/user-1000.slice/session-2.scope') === null);
 check('size 32 GB', Copy.formatSize(31_914_983_424) === '32 GB');

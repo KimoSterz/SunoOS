@@ -34,7 +34,7 @@ hashes=(
   59f897297bb4f9033800e6a14429e8163b50bd40bbb6bcd960e18bdc9cd63487
 )
 
-printf 'LUMA_FP6_SENSOR_INSPECTION_VERSION=1\n'
+printf 'SUNO_FP6_SENSOR_INSPECTION_VERSION=1\n'
 printf 'BOOT_ID=%s\n' "$(cat /proc/sys/kernel/random/boot_id)"
 printf 'MODEL=%s\n' "$(tr -d '\000' </proc/device-tree/model)"
 printf 'KERNEL=%s\n' "$(uname -r)"

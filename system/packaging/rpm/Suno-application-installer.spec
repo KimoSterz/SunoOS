@@ -1,0 +1,1250 @@
+# SPDX-License-Identifier: Apache-2.0
+
+Name:           Suno-application-installer
+Version:        0.1.0
+Release:        1.Suno.114%{?dist}
+Summary:        Project Suno universal application package broker
+License:        Apache-2.0
+URL:            https://projectluma.org/applications
+BuildArch:      noarch
+
+Source0:        Suno-application-installer.tar.gz
+Source1:        LICENSE.md
+Source2:        org.projectSuno.shell-state.gschema.xml
+
+BuildRequires:  python3-gobject
+BuildRequires:  python3-cairo
+BuildRequires:  flatpak-libs
+# Live-instance authority tests validate the maintained sandbox executables.
+BuildRequires:  xdg-dbus-proxy
+BuildRequires:  bubblewrap
+BuildRequires:  ostree-libs
+# test_depot_third_party_install builds and installs from a signed local repository.
+BuildRequires:  flatpak
+BuildRequires:  gnupg2
+BuildRequires:  desktop-file-utils
+BuildRequires:  python3-devel
+BuildRequires:  shared-mime-info
+BuildRequires:  systemd-rpm-macros
+BuildRequires:  gtk4
+BuildRequires:  libadwaita
+BuildRequires:  Suno-developer-platform >= 0.1.0-1.Suno.111.tester20261026.1
+BuildRequires:  xorg-x11-server-Xvfb
+BuildRequires:  dbus-daemon
+BuildRequires:  dconf
+BuildRequires:  glib2
+# test_application_socket starts a PipeWire server with the socket file.
+BuildRequires:  pipewire
+BuildRequires:  pipewire-utils
+Requires:       cpio
+Requires:       bubblewrap
+Requires:       dpkg
+Requires:       flatpak
+Requires:       gtk4
+Requires:       libadwaita
+Requires:       Suno-developer-platform >= 0.1.0-1.Suno.125
+Requires:       container-selinux
+Requires:       policycoreutils
+Requires:       podman
+# PID 1 in every package capsule: reaps orphaned processes (podman --init).
+Requires:       catatonit
+# The capsule runtime is crun with the application scoped (capsule_scope).
+Requires:       crun
+# The application socket and what a client on it may do.
+Requires:       pipewire >= 1.2
+Requires:       wireplumber >= 0.5.9
+# Debian capsules reach the network through slirp4netns (backends._install_deb).
+Requires:       slirp4netns
+# The application store (ADR-052): trees are commits in an OSTree repository,
+# built on the device by each distribution's own tools, without root.
+Requires:       ostree
+Requires:       util-linux-core
+Requires:       shadow-utils-subid
+# Debian and Ubuntu userlands: the bootstrap and the archive keys it is checked against.
+Requires:       debootstrap
+Requires:       debian-keyring
+Requires:       ubu-keyring
+# Fedora userlands: dnf5 --installroot, checked against the release keys.
+Requires:       dnf5
+Requires:       fedora-gpg-keys
+# Publisher repository keys and APT index signatures are checked with gpg.
+Requires:       gnupg2
+Requires:       polkit
+Requires:       python3
+Requires:       Suno-apk-metadata = 0.1.0-1.Suno.2.android20261030.1%{?dist}
+Requires:       python3-libarchive-c
+# Launch failures are written to the journal with fields Suno Vitals reads.
+Requires:       python3-systemd
+# AppImages run against the host's libraries; this fills the AppImage baseline.
+Requires:       Suno-appimage-compat
+Requires:       python3-gobject
+Requires:       python3-pyyaml
+Requires:       flatpak-libs
+Requires:       ostree-libs
+# Firmware updates are listed and installed through fwupd over D-Bus.
+Recommends:     fwupd
+Requires:       rpm
+Requires:       rpm-ostree
+Requires:       shared-mime-info
+Requires:       snapd
+Requires:       squashfs-tools
+Requires:       xdg-dbus-proxy
+Recommends:     Suno-android-runtime >= 0.1.0-1.Suno.62
+Recommends:     Suno-relay >= 0.1.0-1.Suno.10
+
+%description
+Project Suno's single application-package review and transaction boundary.
+It statically inspects RPM, DEB, AppImage, Flatpak, and Snap inputs; dispatches
+Android and Windows inputs to their dedicated compatibility services; and
+preserves each ecosystem's dependency, sandbox, signature, and update model.
+
+%prep
+%autosetup -n Suno-application-installer/src/Suno-installer
+cp %{SOURCE1} LICENSE.md
+# Private canonical appearance policy for genuine Light/Dark native checks.
+mkdir -p tests/appearance-schema
+cp %{SOURCE2} tests/appearance-schema/
+glib-compile-schemas --strict tests/appearance-schema
+
+%build
+
+%install
+install -d %{buildroot}%{python3_sitelib}/Suno_depot
+install -m 0644 Suno_depot/*.py %{buildroot}%{python3_sitelib}/Suno_depot/
+for part in model pages parts pictures; do
+  install -d %{buildroot}%{python3_sitelib}/Suno_depot/$part
+  install -m 0644 Suno_depot/$part/*.py %{buildroot}%{python3_sitelib}/Suno_depot/$part/
+done
+install -D -m0644 data/depot.css %{buildroot}%{_datadir}/Suno-depot/depot.css
+install -D -m0644 data/depot-redesign.css %{buildroot}%{_datadir}/Suno-depot/depot-redesign.css
+install -D -m0644 data/Suno-logo-white.svg %{buildroot}%{_datadir}/Suno-depot/Suno-logo-white.svg
+install -D -m0644 data/icons/hicolor/scalable/actions/SunoUI-code-xml-symbolic.svg %{buildroot}%{_datadir}/Suno-depot/icons/hicolor/scalable/actions/SunoUI-code-xml-symbolic.svg
+# Valet's permission sheet draws three Lucide glyphs the platform's icon set has not taken yet.
+for glyph in SunoUI-file-search-symbolic SunoUI-cable-symbolic SunoUI-lightbulb-symbolic; do
+  install -D -m0644 data/icons/hicolor/scalable/actions/$glyph.svg %{buildroot}%{_datadir}/Suno-installer/icons/hicolor/scalable/actions/$glyph.svg
+done
+for pictures in screenshots photos rooms; do
+  install -d %{buildroot}%{_datadir}/Suno-depot/$pictures
+  install -m 0644 data/$pictures/*.webp %{buildroot}%{_datadir}/Suno-depot/$pictures/
+done
+install -d %{buildroot}%{python3_sitelib}/Suno_installer
+install -m 0644 Suno_installer/*.py %{buildroot}%{python3_sitelib}/Suno_installer/
+install -D -m0644 data/org.projectSuno.AppPreferences.Read.gschema.xml %{buildroot}%{_datadir}/glib-2.0/schemas/org.projectSuno.AppPreferences.Read.gschema.xml
+glib-compile-schemas --strict %{buildroot}%{_datadir}/glib-2.0/schemas
+# glib2's installed schema trigger owns the shared compiled cache.
+rm %{buildroot}%{_datadir}/glib-2.0/schemas/gschemas.compiled
+install -D -m 0755 bin/Suno-installer %{buildroot}%{_bindir}/Suno-installer
+ln -s Suno-installer %{buildroot}%{_bindir}/Suno-install
+install -D -m 0755 bin/Suno-depot %{buildroot}%{_bindir}/Suno-depot
+install -D -m 0644 data/org.projectSuno.Depot.desktop %{buildroot}%{_datadir}/applications/org.projectSuno.Depot.desktop
+install -D -m 0644 data/icons/hicolor/scalable/apps/org.projectSuno.Depot-tv.svg %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/org.projectSuno.Depot-tv.svg
+install -D -m 0644 data/depot-catalog.json %{buildroot}%{_datadir}/Suno/installer/depot-catalog.json
+install -D -m 0644 data/depot-catalog-4.json %{buildroot}%{_datadir}/Suno/installer/depot-catalog-4.json
+# Pinned minisign key of the signed Depot catalogue v1 (third-party apps).
+install -D -m 0644 data/depot-catalogue-v1.pub %{buildroot}%{_datadir}/Suno/installer/depot-catalogue-v1.pub
+# The catalogue key and the Suno remote's .flatpakrepo come from the
+# distribution workstream. Until they are committed Depot reads its seed and
+# reports the Suno remote as not set up; it never ships a stand-in key.
+printf '%%%%dir %%%%{_datadir}/Suno/installer\n' > depot-trust.files
+for trust in depot-catalog.pub Suno.flatpakrepo; do
+  if [ -f "data/$trust" ]; then
+    install -D -m 0644 "data/$trust" "%{buildroot}%{_datadir}/Suno/installer/$trust"
+    printf '%%%%{_datadir}/Suno/installer/%s\n' "$trust" >> depot-trust.files
+  fi
+done
+# Suno's firmware block list, signed with the catalogue key (depot_firmware.py).
+install -D -m 0644 data/energy-flag-exceptions.txt %{buildroot}%{_datadir}/Suno/energy-flag-exceptions.txt
+install -D -m 0644 data/firmware-blocklist.json %{buildroot}%{_datadir}/Suno/firmware/blocklist.json
+install -D -m 0644 data/firmware-blocklist.json.minisig %{buildroot}%{_datadir}/Suno/firmware/blocklist.json.minisig
+install -D -m 0644 data/org.projectSuno.Depot.service \
+  %{buildroot}%{_datadir}/dbus-1/services/org.projectSuno.Depot.service
+install -D -m 0644 data/org.projectSuno.SoftwareUpdate.desktop \
+  %{buildroot}%{_datadir}/applications/org.projectSuno.SoftwareUpdate.desktop
+# Retire obsolete applications automatically for system and per-user installs.
+# Immutable wants links also enable this on upgrades where presets do not run.
+install -D -m 0644 data/Suno-retired-apps.service %{buildroot}%{_userunitdir}/Suno-retired-apps.service
+install -d %{buildroot}%{_userunitdir}/default.target.wants
+ln -s ../Suno-retired-apps.service %{buildroot}%{_userunitdir}/default.target.wants/Suno-retired-apps.service
+# Every person's global Flatpak override keeps Suno's records, Flatpak's overrides,
+# autostart and user services from every Flatpak, at sign-in and whenever the
+# overrides change (Suno_installer.flatpak_guard).
+install -D -m 0755 bin/Suno-flatpak-guard %{buildroot}%{_libexecdir}/Suno-flatpak-guard
+install -D -m 0644 data/Suno-flatpak-guard.service %{buildroot}%{_userunitdir}/Suno-flatpak-guard.service
+install -D -m 0644 data/Suno-flatpak-guard.path %{buildroot}%{_userunitdir}/Suno-flatpak-guard.path
+ln -s ../Suno-flatpak-guard.service %{buildroot}%{_userunitdir}/default.target.wants/Suno-flatpak-guard.service
+ln -s ../Suno-flatpak-guard.path %{buildroot}%{_userunitdir}/default.target.wants/Suno-flatpak-guard.path
+install -D -m 0644 data/Suno-flatpak-guard.timer %{buildroot}%{_userunitdir}/Suno-flatpak-guard.timer
+install -d %{buildroot}%{_userunitdir}/timers.target.wants
+ln -s ../Suno-flatpak-guard.timer %{buildroot}%{_userunitdir}/timers.target.wants/Suno-flatpak-guard.timer
+install -D -m 0644 data/Suno-retired-system-apps.service %{buildroot}%{_unitdir}/Suno-retired-system-apps.service
+install -d %{buildroot}%{_unitdir}/multi-user.target.wants
+ln -s ../Suno-retired-system-apps.service %{buildroot}%{_unitdir}/multi-user.target.wants/Suno-retired-system-apps.service
+install -D -m 0644 data/Suno-depot-provision.service %{buildroot}%{_userunitdir}/Suno-depot-provision.service
+install -D -m 0644 data/Suno-depot-app-updates.service %{buildroot}%{_userunitdir}/Suno-depot-app-updates.service
+install -D -m 0644 data/Suno-depot-app-updates.timer %{buildroot}%{_userunitdir}/Suno-depot-app-updates.timer
+install -D -m 0644 data/Suno-system-app-refresh.service %{buildroot}%{_userunitdir}/Suno-system-app-refresh.service
+install -d %{buildroot}%{_userunitdir}/graphical-session.target.wants
+ln -s ../Suno-depot-provision.service \
+  %{buildroot}%{_userunitdir}/graphical-session.target.wants/Suno-depot-provision.service
+ln -s ../Suno-depot-app-updates.timer \
+  %{buildroot}%{_userunitdir}/graphical-session.target.wants/Suno-depot-app-updates.timer
+install -D -m 0644 data/Suno-depot-app-updates-login.service %{buildroot}%{_userunitdir}/Suno-depot-app-updates-login.service
+ln -s ../Suno-depot-app-updates-login.service \
+  %{buildroot}%{_userunitdir}/graphical-session.target.wants/Suno-depot-app-updates-login.service
+install -d %{buildroot}%{_userpresetdir}
+printf 'enable Suno-depot-provision.service\nenable Suno-depot-app-updates.timer\nenable Suno-depot-app-updates-login.service\nenable Suno-app-baseline-notice.service\n' > %{buildroot}%{_userpresetdir}/60-Suno-depot.preset
+install -D -m 0755 bin/Suno-appctl %{buildroot}%{_bindir}/Suno-appctl
+install -D -m 0755 bin/Suno-icon-plates %{buildroot}%{_bindir}/Suno-icon-plates
+install -D -m 0644 data/Suno-icon-plates.service %{buildroot}%{_userunitdir}/Suno-icon-plates.service
+install -D -m 0644 data/Suno-icon-plates.path %{buildroot}%{_userunitdir}/Suno-icon-plates.path
+install -d %{buildroot}%{_userpresetdir}
+printf 'enable Suno-icon-plates.service\nenable Suno-icon-plates.path\n' > %{buildroot}%{_userpresetdir}/60-Suno-icon-plates.preset
+install -D -m 0755 bin/Suno-installer-service %{buildroot}%{_bindir}/Suno-installer-service
+install -D -m 0755 bin/Suno-capsule-open %{buildroot}%{_libexecdir}/Suno-capsule-open
+install -D -m 0755 bin/Suno-capsule-launch %{buildroot}%{_bindir}/Suno-capsule-launch
+install -D -m 0755 bin/Suno-capsule-refresh %{buildroot}%{_bindir}/Suno-capsule-refresh
+install -D -m 0644 data/Suno-capsule-refresh.service %{buildroot}%{_userunitdir}/Suno-capsule-refresh.service
+install -D -m 0644 data/Suno-capsule-refresh.timer %{buildroot}%{_userunitdir}/Suno-capsule-refresh.timer
+ln -s ../Suno-capsule-refresh.timer \
+  %{buildroot}%{_userunitdir}/graphical-session.target.wants/Suno-capsule-refresh.timer
+# The application store: its tool, the per-release data it builds from, and
+# the background move of existing capsules into it.
+install -D -m 0755 bin/Suno-app-closure %{buildroot}%{_bindir}/Suno-app-closure
+install -D -m 0755 bin/Suno-app-migrate %{buildroot}%{_bindir}/Suno-app-migrate
+install -D -m 0644 data/userland-baseline.json %{buildroot}%{_datadir}/Suno/installer/userland-baseline.json
+install -D -m 0644 data/graphics-layers.json %{buildroot}%{_datadir}/Suno/installer/graphics-layers.json
+install -d %{buildroot}%{_datadir}/Suno/installer/classify
+install -m 0644 data/classify/*.txt data/classify/*.json %{buildroot}%{_datadir}/Suno/installer/classify/
+install -D -m 0644 data/Suno-app-migrate.service %{buildroot}%{_userunitdir}/Suno-app-migrate.service
+install -D -m 0644 data/Suno-app-migrate.timer %{buildroot}%{_userunitdir}/Suno-app-migrate.timer
+ln -s ../Suno-app-migrate.timer \
+  %{buildroot}%{_userunitdir}/graphical-session.target.wants/Suno-app-migrate.timer
+# crun with the application scoped; Podman knows a runtime by its file name.
+install -D -m 0755 bin/Suno-capsule-runtime %{buildroot}%{_libexecdir}/Suno-capsule-runtime/crun
+install -D -m 0644 data/pipewire/60-Suno-application-socket.conf \
+  %{buildroot}%{_datadir}/pipewire/pipewire.conf.d/60-Suno-application-socket.conf
+install -D -m 0644 data/pipewire/70-Suno-application-access.conf \
+  %{buildroot}%{_datadir}/wireplumber/wireplumber.conf.d/70-Suno-application-access.conf
+install -D -m 0644 data/pipewire/application-sound.lua \
+  %{buildroot}%{_datadir}/wireplumber/scripts/Suno/application-sound.lua
+# Each application's own PulseAudio server (app_sound.py), socket-activated.
+install -D -m 0644 data/pipewire/Suno-application-sound.conf.in \
+  %{buildroot}%{_datadir}/Suno-application-installer/Suno-application-sound.conf.in
+install -D -m 0755 data/pipewire/Suno-application-sound %{buildroot}%{_libexecdir}/Suno-application-sound
+install -D -m 0644 data/pipewire/Suno-application-sound@.socket %{buildroot}%{_userunitdir}/Suno-application-sound@.socket
+install -D -m 0644 data/pipewire/Suno-application-sound@.service %{buildroot}%{_userunitdir}/Suno-application-sound@.service
+install -D -m 0644 data/pipewire/Suno-application-sound-migrate.service \
+  %{buildroot}%{_userunitdir}/Suno-application-sound-migrate.service
+ln -s ../Suno-application-sound-migrate.service \
+  %{buildroot}%{_userunitdir}/graphical-session.target.wants/Suno-application-sound-migrate.service
+install -D -m 0755 bin/Suno-app-data-broker %{buildroot}%{_libexecdir}/Suno-app-data-broker
+# One permission store for every format (ADR-052 step 3): the service, the
+# keeper of running applications' folder views, the refusal watch (root, AVCs
+# on the refusal stub only), the native-messaging broker, and the stub used
+# where SELinux cannot report a refusal.
+install -D -m 0755 bin/Suno-app-permissions %{buildroot}%{_libexecdir}/Suno-app-permissions
+install -D -m 0755 bin/Suno-refusal-watch %{buildroot}%{_libexecdir}/Suno-refusal-watch
+install -D -m 0755 bin/Suno-native-messaging %{buildroot}%{_bindir}/Suno-native-messaging
+install -D -m 0644 data/Suno-app-permissions.service %{buildroot}%{_userunitdir}/Suno-app-permissions.service
+install -D -m 0644 data/Suno-app-views.service %{buildroot}%{_userunitdir}/Suno-app-views.service
+install -D -m 0644 data/org.projectSuno.AppPermissions1.service %{buildroot}%{_datadir}/dbus-1/services/org.projectSuno.AppPermissions1.service
+install -D -m 0644 data/Suno-refusal-watch.service %{buildroot}%{_unitdir}/Suno-refusal-watch.service
+ln -s ../Suno-refusal-watch.service %{buildroot}%{_unitdir}/multi-user.target.wants/Suno-refusal-watch.service
+install -d -m 0000 %{buildroot}%{_datadir}/Suno-installer/refused
+# The one list of narrow Flatpak grants: anything else is shown as full control (flatpak_guard).
+install -D -m 0644 data/flatpak-narrow-grants.json %{buildroot}%{_datadir}/Suno-installer/flatpak-narrow-grants.json
+install -D -m 0755 bin/Suno-seed-app-baseline %{buildroot}%{_bindir}/Suno-seed-app-baseline
+install -D -m 0644 data/Suno-app-baseline.service %{buildroot}%{_unitdir}/Suno-app-baseline.service
+install -D -m 0644 data/Suno-app-baseline-display-manager.conf \
+  %{buildroot}%{_unitdir}/display-manager.service.d/20-Suno-app-baseline.conf
+install -D -m 0644 data/Suno-app-baseline-notice.service %{buildroot}%{_userunitdir}/Suno-app-baseline-notice.service
+ln -s ../Suno-app-baseline-notice.service \
+  %{buildroot}%{_userunitdir}/graphical-session.target.wants/Suno-app-baseline-notice.service
+install -D -m 0644 data/Suno-app-baseline.conf %{buildroot}%{_tmpfilesdir}/Suno-app-baseline.conf
+install -d %{buildroot}%{_unitdir}/graphical.target.wants
+ln -s ../Suno-app-baseline.service %{buildroot}%{_unitdir}/graphical.target.wants/Suno-app-baseline.service
+# App updates downloaded with a staged Suno update; deployed on its first boot.
+install -D -m 0755 bin/Suno-system-app-updates %{buildroot}%{_libexecdir}/Suno-system-app-updates
+install -D -m 0644 data/Suno-system-app-updates-prefetch.service %{buildroot}%{_unitdir}/Suno-system-app-updates-prefetch.service
+install -D -m 0644 data/Suno-system-app-updates.service %{buildroot}%{_unitdir}/Suno-system-app-updates.service
+ln -s ../Suno-system-app-updates.service %{buildroot}%{_unitdir}/graphical.target.wants/Suno-system-app-updates.service
+install -D -m 0644 data/org.projectSuno.AppData1.service %{buildroot}%{_datadir}/dbus-1/services/org.projectSuno.AppData1.service
+install -D -m 0644 data/org.projectSuno.DepotHost1.service %{buildroot}%{_datadir}/dbus-1/services/org.projectSuno.DepotHost1.service
+install -D -m 0644 data/org.projectSuno.ApplicationDirectory1.service %{buildroot}%{_datadir}/dbus-1/services/org.projectSuno.ApplicationDirectory1.service
+install -D -m 0755 bin/Suno-installer-system %{buildroot}%{_libexecdir}/Suno-installer-system
+install -D -m 0755 bin/Suno-snap-mount-generator \
+  %{buildroot}%{_prefix}/lib/systemd/system-generators/Suno-snap-mount-generator
+install -D -m 0644 data/org.projectSuno.ApplicationInstaller.desktop \
+  %{buildroot}%{_datadir}/applications/org.projectSuno.ApplicationInstaller.desktop
+install -D -m 0644 data/io.Suno.Valet.desktop %{buildroot}%{_datadir}/applications/io.Suno.Valet.desktop
+install -D -m 0644 data/io.Suno.Install.desktop %{buildroot}%{_datadir}/applications/io.Suno.Install.desktop
+install -D -m 0644 data/io.Suno.Valet.service %{buildroot}%{_datadir}/dbus-1/services/io.Suno.Valet.service
+install -D -m 0644 data/org.projectSuno.ApplicationInstaller2.service \
+  %{buildroot}%{_datadir}/dbus-1/services/org.projectSuno.ApplicationInstaller2.service
+install -D -m 0644 data/Suno-application-packages.xml \
+  %{buildroot}%{_datadir}/mime/packages/Suno-application-packages.xml
+install -D -m 0644 data/org.projectSuno.application-installer.policy \
+  %{buildroot}%{_datadir}/polkit-1/actions/org.projectSuno.application-installer.policy
+install -D -m 0644 data/Suno-installer-reconcile.service \
+  %{buildroot}%{_unitdir}/Suno-installer-reconcile.service
+install -D -m 0644 data/Suno-depot-appstream.service \
+  %{buildroot}%{_unitdir}/Suno-depot-appstream.service
+install -D -m 0644 data/Suno-depot-appstream.timer \
+  %{buildroot}%{_unitdir}/Suno-depot-appstream.timer
+install -d %{buildroot}%{_unitdir}/multi-user.target.wants
+ln -s ../Suno-installer-reconcile.service \
+  %{buildroot}%{_unitdir}/multi-user.target.wants/Suno-installer-reconcile.service
+install -d %{buildroot}%{_unitdir}/timers.target.wants
+ln -s ../Suno-depot-appstream.timer \
+  %{buildroot}%{_unitdir}/timers.target.wants/Suno-depot-appstream.timer
+
+install -D -m 0644 data/selinux/Suno_application.cil %{buildroot}%{_datadir}/selinux/packages/Suno_application.cil
+
+%check
+PYTHONPATH=.:tests/dependencies python3 -c 'from Suno_installer.app_host_compatibility import SUPPORTED_INSTALLER_RELEASE; assert SUPPORTED_INSTALLER_RELEASE == int("%{release}".split(".Suno.", 1)[1].split(".", 1)[0]), "Installer host declaration differs from its actual package release"'
+PYTHONPATH=.:tests/dependencies python3 -m unittest discover -s tests -p "test_*.py" -v
+PYTHONPATH=.:tests/dependencies dbus-run-session -- python3 -B tests/runtime_app_preferences.py
+PYTHONPATH=.:tests/dependencies dbus-run-session -- python3 -B tests/runtime_app_native_owner.py
+desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
+# Depot notifies when first-boot apps finish installing, so Settings must list
+# it under Notifications.
+grep -qx 'X-GNOME-UsesNotifications=true' \
+  %{buildroot}%{_datadir}/applications/org.projectSuno.Depot.desktop
+python3 -m py_compile %{buildroot}%{python3_sitelib}/Suno_installer/*.py
+PYTHONPATH=%{buildroot}%{python3_sitelib}:$PWD/tests/dependencies python3 tests/smoke.py
+GSETTINGS_SCHEMA_DIR=$PWD/tests/appearance-schema PYTHONPATH=%{buildroot}%{python3_sitelib}:$PWD/tests/dependencies GSK_RENDERER=cairo timeout --kill-after=5s 30s xvfb-run -a -s '-screen 0 1920x1080x24' dbus-run-session -- python3 tests/valet_android_preview.py
+# Real widgets must retain scrolling while installation progress arrives.
+GSETTINGS_SCHEMA_DIR=$PWD/tests/appearance-schema PYTHONPATH=%{buildroot}%{python3_sitelib}:$PWD/tests/dependencies SUNO_DEPOT_STYLE_PATH=%{buildroot}%{_datadir}/Suno-depot/depot.css GSK_RENDERER=cairo timeout --kill-after=5s 60s xvfb-run -a -s '-screen 0 1920x1080x24' dbus-run-session -- python3 tests/native_depot_preview.py
+grep -qx 'NoDisplay=true' %{buildroot}%{_datadir}/applications/org.projectSuno.SoftwareUpdate.desktop
+
+%post
+/usr/sbin/semodule -i %{_datadir}/selinux/packages/Suno_application.cil
+update-mime-database %{_datadir}/mime >/dev/null 2>&1 || :
+update-desktop-database %{_datadir}/applications >/dev/null 2>&1 || :
+
+%postun
+if [ "$1" -eq 0 ]; then /usr/sbin/semodule -r Suno_application; fi
+update-mime-database %{_datadir}/mime >/dev/null 2>&1 || :
+update-desktop-database %{_datadir}/applications >/dev/null 2>&1 || :
+
+%files -f depot-trust.files
+%{_libexecdir}/Suno-capsule-open
+%{_datadir}/selinux/packages/Suno_application.cil
+%dir %{_libexecdir}/Suno-capsule-runtime
+%{_libexecdir}/Suno-capsule-runtime/crun
+%{_datadir}/pipewire/pipewire.conf.d/60-Suno-application-socket.conf
+%{_datadir}/wireplumber/wireplumber.conf.d/70-Suno-application-access.conf
+%dir %{_datadir}/wireplumber/scripts/Suno
+%{_datadir}/wireplumber/scripts/Suno/application-sound.lua
+%dir %{_datadir}/Suno-application-installer
+%{_datadir}/Suno-application-installer/Suno-application-sound.conf.in
+%{_libexecdir}/Suno-application-sound
+%{_userunitdir}/Suno-application-sound@.socket
+%{_userunitdir}/Suno-application-sound@.service
+%{_userunitdir}/Suno-application-sound-migrate.service
+%{_userunitdir}/graphical-session.target.wants/Suno-application-sound-migrate.service
+%{_datadir}/applications/io.Suno.Valet.desktop
+%{_datadir}/dbus-1/services/io.Suno.Valet.service
+%{_datadir}/applications/io.Suno.Install.desktop
+%license LICENSE.md
+%{_bindir}/Suno-installer
+%{_bindir}/Suno-install
+%{_bindir}/Suno-depot
+%{_datadir}/applications/org.projectSuno.Depot.desktop
+%{_datadir}/icons/hicolor/scalable/apps/org.projectSuno.Depot-tv.svg
+%{_datadir}/Suno/installer/depot-catalog.json
+%{_datadir}/Suno/installer/depot-catalogue-v1.pub
+%dir %{_datadir}/Suno/firmware
+%{_datadir}/Suno/energy-flag-exceptions.txt
+%{_datadir}/Suno/firmware/blocklist.json
+%{_datadir}/Suno/firmware/blocklist.json.minisig
+%{_datadir}/Suno/installer/depot-catalog-4.json
+%{_datadir}/dbus-1/services/org.projectSuno.Depot.service
+%{_datadir}/applications/org.projectSuno.SoftwareUpdate.desktop
+%{_userunitdir}/Suno-retired-apps.service
+%{_userunitdir}/default.target.wants/Suno-retired-apps.service
+%{_unitdir}/Suno-retired-system-apps.service
+%{_unitdir}/multi-user.target.wants/Suno-retired-system-apps.service
+%{_userunitdir}/Suno-depot-provision.service
+%{_userunitdir}/Suno-depot-app-updates.service
+%{_userunitdir}/Suno-depot-app-updates.timer
+%{_userunitdir}/Suno-system-app-refresh.service
+%{_userunitdir}/graphical-session.target.wants/Suno-depot-provision.service
+%{_userunitdir}/graphical-session.target.wants/Suno-depot-app-updates.timer
+%{_userunitdir}/Suno-depot-app-updates-login.service
+%{_userunitdir}/graphical-session.target.wants/Suno-depot-app-updates-login.service
+%{_userpresetdir}/60-Suno-depot.preset
+%{_bindir}/Suno-appctl
+%{_bindir}/Suno-icon-plates
+%{_userunitdir}/Suno-icon-plates.service
+%{_userunitdir}/Suno-icon-plates.path
+%{_userpresetdir}/60-Suno-icon-plates.preset
+%{_bindir}/Suno-installer-service
+%{_bindir}/Suno-capsule-launch
+%{_bindir}/Suno-capsule-refresh
+%{_userunitdir}/Suno-capsule-refresh.service
+%{_userunitdir}/Suno-capsule-refresh.timer
+%{_userunitdir}/graphical-session.target.wants/Suno-capsule-refresh.timer
+%{_bindir}/Suno-app-closure
+%{_bindir}/Suno-app-migrate
+%{_datadir}/Suno/installer/userland-baseline.json
+%{_datadir}/Suno/installer/graphics-layers.json
+%{_datadir}/Suno/installer/classify/
+%{_userunitdir}/Suno-app-migrate.service
+%{_userunitdir}/Suno-app-migrate.timer
+%{_userunitdir}/graphical-session.target.wants/Suno-app-migrate.timer
+%{_libexecdir}/Suno-app-data-broker
+%{_libexecdir}/Suno-app-permissions
+%{_libexecdir}/Suno-refusal-watch
+%{_libexecdir}/Suno-flatpak-guard
+%{_userunitdir}/Suno-flatpak-guard.service
+%{_userunitdir}/Suno-flatpak-guard.path
+%{_userunitdir}/default.target.wants/Suno-flatpak-guard.service
+%{_userunitdir}/default.target.wants/Suno-flatpak-guard.path
+%{_userunitdir}/Suno-flatpak-guard.timer
+%{_userunitdir}/timers.target.wants/Suno-flatpak-guard.timer
+%{_bindir}/Suno-native-messaging
+%{_userunitdir}/Suno-app-permissions.service
+%{_userunitdir}/Suno-app-views.service
+%{_datadir}/dbus-1/services/org.projectSuno.AppPermissions1.service
+%{_unitdir}/Suno-refusal-watch.service
+%{_unitdir}/multi-user.target.wants/Suno-refusal-watch.service
+%dir %attr(0000,root,root) %{_datadir}/Suno-installer/refused
+%{_datadir}/Suno-installer/icons/
+%{_datadir}/Suno-installer/flatpak-narrow-grants.json
+%{_bindir}/Suno-seed-app-baseline
+%{_unitdir}/Suno-app-baseline.service
+%{_unitdir}/graphical.target.wants/Suno-app-baseline.service
+%dir %{_unitdir}/display-manager.service.d
+%{_unitdir}/display-manager.service.d/20-Suno-app-baseline.conf
+%{_userunitdir}/Suno-app-baseline-notice.service
+%{_userunitdir}/graphical-session.target.wants/Suno-app-baseline-notice.service
+%{_libexecdir}/Suno-system-app-updates
+%{_unitdir}/Suno-system-app-updates-prefetch.service
+%{_unitdir}/Suno-system-app-updates.service
+%{_unitdir}/graphical.target.wants/Suno-system-app-updates.service
+%{_tmpfilesdir}/Suno-app-baseline.conf
+%{_datadir}/dbus-1/services/org.projectSuno.AppData1.service
+%{_datadir}/dbus-1/services/org.projectSuno.DepotHost1.service
+%{_datadir}/dbus-1/services/org.projectSuno.ApplicationDirectory1.service
+%{_libexecdir}/Suno-installer-system
+%{_prefix}/lib/systemd/system-generators/Suno-snap-mount-generator
+%{python3_sitelib}/Suno_installer/
+%{_datadir}/glib-2.0/schemas/org.projectSuno.AppPreferences.Read.gschema.xml
+%{python3_sitelib}/Suno_depot/
+%{_datadir}/Suno-depot/
+%{_datadir}/applications/org.projectSuno.ApplicationInstaller.desktop
+%{_datadir}/dbus-1/services/org.projectSuno.ApplicationInstaller2.service
+%{_datadir}/mime/packages/Suno-application-packages.xml
+%{_datadir}/polkit-1/actions/org.projectSuno.application-installer.policy
+%{_unitdir}/Suno-installer-reconcile.service
+%{_unitdir}/multi-user.target.wants/Suno-installer-reconcile.service
+%{_unitdir}/Suno-depot-appstream.service
+%{_unitdir}/Suno-depot-appstream.timer
+%{_unitdir}/timers.target.wants/Suno-depot-appstream.timer
+
+%changelog
+* Wed Nov 25 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.113
+- A finished restore closes to a notification, "Your apps are ready", with
+  Show to open the list again; Valet can be started for it over D-Bus
+  (io.Suno.Valet.service).
+- Restoring from your other devices (ADR-054): `Suno-installer --restore
+  [APP_ID]` lists the apps Suno Connect Sync brings to a new device, from
+  GetRestore, with their progress; it closes to a notification when done.
+- On a TV the finish notification's body is the count, the TV toast's value.
+
+* Tue Nov 24 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.112
+- Every person's global Flatpak override keeps Suno's records, Flatpak's
+  overrides, autostart, user services and the session's runtime sockets from
+  every Flatpak, at sign-in and whenever the overrides change
+  (Suno-flatpak-guard.service/.path, flatpak_guard).
+- Sound: each application gets its own PulseAudio server; recording follows
+  the app's microphone permission.
+- aarch64 store path: Ubuntu ports archive, the device architecture's
+  graphics routes; a first store build that falls back drops the package it
+  kept.
+- ApplicationDirectory1: the Open With backend is held by its pidfd and an
+  undelivered ProcessFD is refused; the opening app is granted each document;
+  a store app's own launcher may be the person's default; an absent app is no
+  longer reported installed.
+
+* Tue Nov 24 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.111
+- Running applications' records are no longer trusted for the home folder,
+  the keeper or anything outside the visible home folders; views, stubs and
+  grants are opened without following links and bound from their descriptors
+  (permission_views).
+- A Flatpak's saved override is restored only as far as its own metadata
+  goes (flatpak_permissions.narrow_override).
+
+* Tue Nov 24 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.110
+- native_app_roles retries passing resolve failures and names real ones in
+  the journal; the current branch wins over a second installed one.
+
+* Tue Nov 24 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.109
+- AppData1: launches close together share one Prepare.
+
+* Sun Nov 22 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.108
+- The install sheet for every route (ADR-052 step 3): Files as three file
+  levels with the suggested one tagged, Uses for what the package asks for,
+  its device rules as one request, the fixed Never line; review mode for
+  command-line installs (valet_access, valet_review); phone and TV columns.
+- Depot asks with the same sheet (depot_access).
+- AppPermissions1 names each stray document's size, tracks a change a running
+  Flatpak takes at its next start (PendingRestart) and asks the shell to
+  restart it (RestartApp).
+- A .deb whose container has no /usr/share/pixmaps installs (icon lookup).
+
+* Sun Nov 22 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.107
+- One permission store for every format (ADR-052 step 3): grants keyed by
+  application ID in the desktop's permission store, the
+  org.projectSuno.AppPermissions1 service for the install sheet, Settings
+  and the folder offer (app_permissions).
+- File levels from what an application is, read from the package before it
+  is installed and shown in the install transaction (package_access).
+- Store trees, capsules and AppImages see every home folder at its real
+  path; a folder they may not use is a refusal stub (EACCES), hidden folders
+  never appear, and grants apply while the application runs
+  (permission_views, Suno-app-views.service).
+- Refusals are read from SELinux AVCs without blocking the application and
+  offered once per application and folder (Suno-refusal-watch.service).
+- Flatpak home and host requests become a file level; protected paths are
+  excluded, nothing is redirected (flatpak_permissions).
+- A package's udev rules become a device request; granted, its device nodes
+  are present in the sandbox (device_requests).
+- A native-messaging broker between browsers and applications in different
+  sandboxes (native_messaging).
+
+* Sun Nov 22 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.106
+- SELinux: capsules and store applications may use ~/Music (audio_home_t)
+  with the same rights as the other standard folders (user_home_t). A music
+  player saw the folder and could not list, read or save into it.
+
+* Sun Nov 22 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.105
+- The keyring broker never lets an application search, read, adopt or
+  write entries of Suno's own schemas (org.projectSuno.*).
+
+* Sat Nov 21 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.104
+- Package files (.deb, .rpm, AppImage, archives) are installed into the
+  application store (ADR-052): a tree of the package and its dependencies,
+  built on the device by its own distribution's tools without root, kept as
+  a commit in one OSTree repository and started with bubblewrap. No
+  container engine runs at launch. If the build, the library check or a
+  hidden first start fails, the package is installed as a podman capsule as
+  before and its record says why (store_install, store_fallback).
+- One session boundary for capsules and store applications
+  (session_boundary): keyring broker, filtered accessibility bus, play-only
+  sound socket, an X socket without the session's cookie, Landlock scope,
+  allocated category pairs, systemd scope.
+- A system-call filter for everything started with bubblewrap
+  (sandbox_seccomp), modelled on Flatpak's; nested user namespaces stay.
+- SELinux: executable JIT memory for an application's own anonymous files,
+  watches on its read-only tree, file contexts for the store.
+- Session-bus names an application may own are derived from its package's
+  launchers, D-Bus service files and program (bus_names).
+- The undeclared-library check follows the launcher's program and skips
+  libraries the package ships (tree_check); the desktop baseline is recorded
+  per release (userland-baseline.json).
+- Updates for store applications: hidden start, swap between runs,
+  rollback, hold, vendor repositories recorded at install (store_refresh),
+  on the capsule refresh schedule.
+- Existing capsules move to the store in the background, one at a time
+  (Suno-app-migrate.timer); a capsule is kept until its application has
+  started from the store once.
+- Requires ostree, debootstrap, debian-keyring, ubu-keyring, dnf5.
+- A refresh takes a newer build of the package itself from its repository
+  instead of rebuilding from the kept file; console programs get no desktop
+  baseline; 32-bit x86 Debian packages go through Valet into a tree with
+  both architectures; the hidden start has an X server of its own.
+- The device's settings-daemon schemas (without xsettings) are shown to
+  trees and capsules; GSettings of store applications are kept in a file.
+
+* Sat Nov 21 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.103
+- PipeWire: the access module is back in its default mode. 1.Suno.101 named
+  the sockets in module.access.args, which made every client on pipewire-0
+  wait for the session manager: with WirePlumber stopped or not yet up, new
+  PipeWire and PulseAudio clients hung, and xdg-desktop-portal started in
+  that state stalled for ten seconds and reported no camera until restarted.
+  The application socket now marks its clients itself (socket props,
+  pipewire.client.access "Suno-application"), and the WirePlumber rule and
+  the capture hook go by pipewire.sec.socket, so a client on that socket is
+  held to the same list whatever access PipeWire derives for it. Clients on
+  pipewire-0 and pipewire-0-manager are treated as before 1.Suno.101.
+
+* Fri Nov 20 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.102
+- Security updates for package capsules (capsule_refresh). Once a day, on
+  mains power and an unmetered connection, Suno-capsule-refresh.timer runs
+  the distribution's own upgrade in a build container started from each
+  capsule's image (apt-get dist-upgrade, dnf upgrade), including any
+  repository the application's package added for itself, and commits the
+  result under a new tag. Those repositories are recorded as part of the
+  application's origin.
+- The new image is started once out of sight (no network, a throwaway home, a
+  headless compositor behind a bus filter that grants nothing) and its
+  libraries are checked with the loader; an image that fails is deleted and
+  that package set is not tried again. An apt source that cannot be read
+  (a vendor repository whose key was never installed) is noted and does not
+  keep the distribution's updates out.
+- The record moves to the new image only while the application is closed;
+  otherwise the launcher makes the swap before the next start. One previous
+  image is kept. If the first real start on a new image fails while opening,
+  the launcher returns to the previous image, starts the application from it
+  and does not report a failure.
+- Suno-appctl hold, release, rollback and updates; Suno-appctl update
+  refreshes a capsule now. manager.update_states() and
+  depot_inventory.InstalledApp.update_state carry "Updated", "Held",
+  "Rolled back", "Update waiting" and "Update failed" for the application
+  list. Removing an application removes its previous and waiting images.
+
+* Fri Nov 20 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.101
+- Package capsules and sandboxed AppImages no longer reach the whole session.
+  ADR-052, step 1.
+- Keyring (capsule_secrets): the Secret Service is not let through the
+  filtered bus. A broker in the launcher owns a per-application name of the
+  same length on the session bus, and a relay in front of the application's
+  bus socket exchanges the two names message by message, so every client
+  (libsecret or direct D-Bus) finds org.freedesktop.secrets. The broker
+  forwards to the real service and adds the attribute Suno:application to
+  every stored entry and every search; entries without it cannot be read,
+  changed or deleted, and the keyring cannot be locked, deleted or re-aliased.
+  Sessions are opened end to end, so secrets pass through encrypted. A record
+  written before this may, for 90 days, take over an older entry whose
+  attributes a search names in full; the entry stays visible to the session.
+  Removing an application with its data deletes its entries.
+- Accessibility: the capsule gets a filtered accessibility bus with the calls
+  Flatpak allows (Socket.Embed/Unembed, GetRegisteredEvents, key listener
+  queries and notifications), and org.a11y.Bus is limited to GetAddress and
+  its properties.
+- PipeWire: pipewire.conf.d/60-Suno-application-socket.conf adds the socket
+  pipewire-0-application with access "Suno-application" and moves the access
+  module to socket-based mode (pipewire-0 "default", pipewire-0-manager
+  "unrestricted"). wireplumber.conf.d/70-Suno-application-access.conf gives
+  that access the client-node factory, the settings and default metadata and
+  Audio/Sink nodes only, and scripts/Suno/application-capture.lua refuses
+  capture streams from it (a sink's monitor would record every application).
+  The launcher mounts that socket as the capsule's pipewire-0 and never the
+  session's own. The PulseAudio socket is unchanged.
+- X11 (capsule_display): the Xauthority file and /tmp/.X11-unix are no longer
+  mounted. The capsule gets one socket, display :724, answered by the
+  launcher, which forwards to the session's X server and inserts the cookie
+  into the connection setup. X clients still share one server.
+- Landlock (capsule_scope, ABI 6): abstract Unix sockets and signals are
+  scoped to the application. bubblewrap sandboxes are started through the
+  scope; Podman capsules use /usr/libexec/Suno-capsule-runtime/crun, which
+  scopes the container's first process. no_new_privs is set as a result.
+  Not applied on kernels without ABI 6, to a record with "scope": false, or
+  to a process that joins a running capsule.
+- Sound: capsules get the PulseAudio client library (libpulse0,
+  pulseaudio-libs), which Chromium, Electron, Firefox, SDL and Qt open at run
+  time and do not declare; without it a browser in a capsule played nothing.
+  Capsule runtime version 5; existing capsules are brought up to date on
+  their next start.
+
+* Fri Nov 20 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.100
+- Package capsules run under an allocated SELinux category pair instead of
+  one derived from a hash of the package, which let two applications land on
+  the same pair (capsule_identity). The pair is checked against every
+  installed application and kept in the record as mcs_level. An existing
+  record keeps the pair its private files already carry when no other record
+  holds it; otherwise it is given a free pair and Podman relabels its private
+  home on the next start. Installing a package over itself keeps the pair.
+
+* Wed Nov 18 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.99
+- An AppImage opened from Filer or a browser runs at once, with no Valet
+  window: Suno-install FILE starts it before any interface is loaded
+  (appimage_run). It is unpacked into the private copy and started in the
+  AppImage sandbox without being added to Applications; its launcher is
+  hidden (NoDisplay, no file types) so the window keeps its name and icon.
+  Once it is running, one notification offers Keep in Apps. The same file
+  opened again starts the copy already there.
+- Package capsules may own their own session bus name: the launcher's
+  desktop ID, AppStream ID and window class, and the names under them, as
+  Flatpak grants. The filtered bus denied RequestName (ServiceUnknown), so
+  GApplication failed to register and the application exited before its
+  first window. Session service names are never granted.
+
+* Wed Nov 18 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.98
+- Package capsules run in the host's time zone instead of the image's UTC:
+  podman run --tz=<host zone> with the host's zone database mounted
+  read-only, so /etc/localtime is a link by name for glibc and ICU. While
+  the capsule runs, the launcher follows changes to the host's
+  /etc/localtime (inotify) and replaces the capsule's link to match. TZ is
+  passed through only when the session sets it.
+
+* Tue Nov 17 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.97
+- Valet runs an AppImage when it is opened (double-click in Filer, a
+  browser's downloads), executable bit or not: no Install step. The file is
+  unpacked into Valet's private copy and started in the AppImage sandbox, and
+  stays in Applications; the same file opened again starts that copy. Valet's
+  window closes once the application's window takes focus.
+
+* Tue Nov 17 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.96
+- Suno-system-app-refresh.service: Suno-system-app-updates refresh updates
+  the system installation's Suno apps and runtimes in the session before
+  each background app update, catalogued or not; waits for the offline
+  baseline import, defers like Depot (off, metered, power saver, low
+  battery), holds updates that ask for more, were taken back or need a newer
+  host, and deploys the compared commit.
+- Suno-depot-app-updates-login.service also starts the run when a system
+  Suno ref has an update waiting, and waits up to ten minutes for the network.
+
+* Tue Nov 17 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.95
+- Depot 0.1.5 from main: catalogue icons redraw before screenshots finish,
+  monogram for icon names the theme lacks, no title-bar sidebar button.
+
+* Mon Nov 16 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.94
+- Depot host: carry the Depot model from main (App.tv_input); the host and
+  the Depot app accept each other's view models when one adds a field.
+- Depot pages read whether an update asks for more by app id.
+
+* Sun Nov 08 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.93
+- Suno-app-baseline.service is Type=notify: ready when the handoff finishes
+  or after 90 seconds, then the import continues in the background and
+  resumes on the next boot. The display manager drop-in moves here and only
+  Wants= and orders After= it; it no longer Requires= it, so a slow or failed
+  first import never keeps the login screen away.
+- Progress is published to /run/Suno/app-baseline/status.json and
+  Suno-app-baseline-notice.service tells the signed-in person that apps are
+  still being set up, then when they are ready.
+- System retirement opens the system installation under its lock, so the
+  baseline and Suno-retired-system-apps no longer race to create
+  /var/lib/flatpak/repo on a first boot.
+
+* Sun Nov 08 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.92
+- App and runtime updates on the Suno remote are downloaded with a staged Suno
+  update (Suno-system-app-updates-prefetch.service) and deployed from the
+  local repository on that deployment's first boot, before the display
+  manager (Suno-system-app-updates.service, bounded, never fatal). Updates
+  that ask for more, apps taken back to a previous version and apps needing a
+  newer host are left for Depot.
+- Suno-depot-app-updates-login.service starts Depot's background app update
+  at sign-in when an app it updates has an update waiting.
+- Depot's first update check after boot is a real check: a host started in a
+  boot's first ten minutes took "never checked" for a fresh empty answer.
+- The redesigned Updates page says Checking until a check returns, shows the
+  background update ("Installing in the background", Update now) and no
+  longer runs the background update in a window it can present.
+
+* Sun Nov 08 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.91
+- Depot's store lists (Today, Apps, categories, search) show only Depot
+  catalogue listings; Android and other local apps stay in the Library.
+  Popular and Top apps are ranked only by real install counts, otherwise
+  "Explore apps" in the catalogue's curated order. Unfiled apps are no longer
+  called Tools, and launchers that aren't apps (folder shortcuts, developer
+  scripts) are left out.
+
+* Sun Nov 08 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.90
+- The host accepts lifecycle events from the redesigned Depot window
+  (DepotShell), so its launches reach the journal again.
+
+* Sun Nov 08 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.89
+- Depot matches its design: bar buttons at their own width, the Off and On
+  panels, theme previews, tweak cards, Library tile names and Oklab-blended
+  gradients.
+
+* Sat Nov 07 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.88
+- Depot installs, updates and removes third-party apps listed in the signed
+  Depot catalogue v1 from the Suno remote. The catalogue is verified against
+  the pinned depot-catalogue-v1 key and the last good copy is kept. Its apps
+  can never take a Suno app id, and each deployed commit must carry Suno's
+  signature and ref binding or it is removed again. Without a valid catalogue
+  Depot behaves as before.
+
+* Sat Nov 07 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.87
+- Depot opens its redesigned window (Suno_depot.shell; the old window remains
+  for TV posture, an older SunoUI, the v70 fixture and SUNO_DEPOT_LEGACY=1),
+  reads the signed v1 catalogue with AppStream as the fallback, keeps updates
+  that ask for more held until approved on the app's page, and posts
+  anonymous install counts.
+
+* Thu Nov 05 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.86
+- Depot installs and updates wait in one first-in, first-out queue instead
+  of being refused while another runs; a waiting job reports Queued and can
+  be cancelled. Refusals are shown as given, not as an unreachable service.
+
+* Wed Nov 04 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.85
+- Depot on TV: installed apps, updates and the system row as wide tiles
+  and app pages in TV posture.
+
+* Mon Nov 02 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.84
+- Seed the offline app baseline through the Suno remote
+
+* Sat Oct 31 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.83
+- Run user app retirement only for signed-in users
+
+* Mon Oct 26 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.77.nightly20261026.1
+- Seed older signed OS app inventories with their original role contract.
+
+* Mon Oct 26 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.76.nightly20261026.1
+- Keep system app repositories readable when retirement runs before first setup.
+
+* Mon Oct 26 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.75.nightly20261026.1
+- Keep system app baseline contents readable by ordinary users.
+
+
+* Mon Oct 26 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.74.nightly20261026.1
+- Package the October 26 shared source updates.
+
+* Sat Oct 24 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.73.creator20261024.1
+- Remove retired Displays installations automatically while preserving app data.
+
+* Fri Oct 23 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.72.creator20261023.1
+- Declare ARM support for the bundled applications in the Depot catalogue.
+
+* Tue Oct 20 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.70.creator20261020.1
+- Deliver Filer and Ari updates through their installed signed Flatpaks.
+
+* Fri Oct 09 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.69.creator20261009.1
+- Use supported Gio notification actions for app updates and provisioning
+- Recognize installed Flatpak updates behind canonical OS launchers
+
+* Thu Oct 08 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.68.creator20261008.1
+- Restore real application rollback, update channels and automatic settings in Suno Updates
+
+* Thu Oct 08 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.67.creator20261008.1
+- Record signed Depot lifecycle through its authenticated host service
+
+* Thu Oct 08 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.66.creator20261008.1
+- Admit signed Messages first launch without copying native conversation state
+
+* Wed Oct 07 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.65.creator20261007.1
+- Explain independent application updates separately from system updates
+
+* Tue Oct 06 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.51.creator20261006.1
+- Bind sandbox update consent to exact target and compared installed commits
+- Retain filesystem scope/mode and fail closed on missing sandbox metadata
+- Reject changed displayed/planned/prepared builds; bulk and retry do not approve permissions
+- Notify deferred and completed app updates without reporting failed or cancelled jobs as success
+- Exercise provider, controller, and prepared-transaction boundaries in package source tests
+
+* Mon Oct 05 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.48.creator20261005.1
+- Regenerate the seed with accurate baseline and optional collection metadata.
+- Render Opening feedback before launching; coalesce clicks and cancel on close.
+- Verify true Light/Dark native geometry and the completed feedback frame.
+- Keep install progress on existing Depot controls and retain allocated scroll.
+- Let installed rows and shelves measure their content and use shared buttons.
+- Keep Software Update available through Depot without a duplicate launcher.
+- Use shared inset panels in Valet.
+
+* Sun Oct 04 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.45.creator20261004.2
+- Keep newly launched application capsules under app.slice so their payloads
+  participate in the existing swap exhaustion memory guard.
+
+* Sat Sep 26 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.45.creator20261004.1
+- Depot's Updates says which added packages an update removes or keeps.
+
+* Sat Sep 26 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.43.SunoUI20260928.1
+- Depot and Valet on SunoUI; capsule apps reap their child processes.
+
+* Sat Sep 26 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.42.SunoUI20260926.2
+- Rebuilt from the latest Depot and Valet on SunoUI; keeps the capsule reaper.
+
+* Sat Sep 26 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.42.SunoUI20260926.1
+- Depot and Valet on SunoUI; capsule apps reap their child processes.
+
+* Sat Sep 26 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.41.reaper20260926.1
+- Fix: apps no longer stop being able to start new processes after running
+  for a while. Each app now runs under a small init that cleans up finished
+  processes, instead of leaving them to pile up until the app hits its limit.
+
+* Sat Sep 26 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.40.SunoUI20260926.1
+- SunoUI port: the app is rebuilt on SunoUI to match the approved design. (Depot and Valet)
+
+* Tue Sep 22 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.38.preview20260922.1
+- Valet's uninstall window names the application and shows its icon, even for
+  an application that is part of Suno. For those it says, in one sentence that
+  wraps, that the application is part of Suno and can't be uninstalled, and
+  offers only Close: no Uninstall button and no data choice.
+- Keep settings and data is checked every time the window opens. Unchecking it
+  turns the button into Uninstall and Delete Data and says what will be lost.
+- The Shell, Settings, Filer, Terminal, Depot, Valet and Software Update are
+  refused however they were installed, in the window and in Suno-appctl.
+  (.37 left unused: reported as taken while this release was prepared.)
+
+* Sun Sep 20 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.36.preview20260920.1
+- An application that will not start with Suno's display and video settings is
+  now started again immediately the way its publisher does, rather than on its
+  next launch. If that works, the person sees their application open a beat
+  later and is told nothing at all, because they should not have to learn that
+  a flag existed in order to get their work done. If it fails again, the real
+  failure is reported rather than the one we went looking for.
+- What Suno changes about how an application starts can be read in words:
+  `Suno-appctl energy` lists every application Suno adds switches to, what each
+  one does in a sentence, which have been withdrawn and why, and how to undo or
+  restore any of them.
+- The rules about overriding a publisher's command line now run in %check, so a
+  build cannot ship without them passing. They were in the repository's own
+  test suite, which the package's %check does not read.
+
+* Sun Sep 20 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.35.preview20260920.1
+- Suno starts some applications with switches their publisher did not choose,
+  so there is now always a way out of that. An application that fails while
+  opening with those switches applied is started the publisher's own way next
+  time, and the decision is written where the person can read and undo it.
+  SUNO_ENERGY_FLAGS=off skips them for one launch without recording anything,
+  and a list at /usr/share/Suno/energy-flag-exceptions.txt, /etc/Suno or in
+  the person's own configuration turns them off for named applications,
+  individually or altogether.
+
+* Sun Sep 20 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.34.preview20260920.1
+- Video plays on the graphics chip. Chromium leaves accelerated decode off on
+  Linux, so an installed application decoded every frame on the processor even
+  where the machine had a media engine, the VA-API driver and the kernel
+  driver all present and open: the decode engine's own counter read zero
+  cycles while two renderers spent half a processor on one stream. An
+  application Suno installs is now started with the decode features named, in
+  the single --enable-features switch, since a repeated switch keeps only its
+  last value. An unknown feature name is ignored and an unsupported codec
+  still falls back to software, so the worst case is no change.
+- An application is recognised as Chromium by more of the files only Chromium
+  ships. At least one Electron application matched none of the old five, so it
+  was started with no switches at all and fell to the X11 default.
+
+* Sat Sep 19 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.33.preview20260919.1
+- Claude installs in one click from Anthropic's signed APT repository: the
+  repository key must match the fingerprint pinned in the catalogue, InRelease
+  must verify with it and be unexpired, the package list and .deb must hash to
+  what the signed index says; the verified package then goes through Valet's
+  Debian capsule. Update installs a newer build and carries the app's capsule
+  data over; Remove removes every build
+- Apps Depot installed from Flathub show their source instead of "Review
+  removal in Valet"
+- Requires gnupg2 and slirp4netns, which publisher repositories and Debian
+  capsules already used
+- Valet: installing an app's icon no longer fails the whole install on a
+  system without the GdkPixbuf typelib (UnboundLocalError on GLib)
+* Fri Sep 18 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.32.preview20260918.1
+- Depot installs listings from their publisher's official channel instead of
+  sending people to a website: a verified publisher's strictly confined snap
+  (through snapd, the Snap Store must still name and verify the pinned
+  publisher) or the publisher's signed RPM repository (key checked against the
+  fingerprint pinned in the signed catalogue, package added with rpm-ostree and
+  applied live), through new Suno-installer-system commands snap-install,
+  snap-refresh, snap-remove, repo-install and repo-remove behind the existing
+  polkit action. Progress, a password prompt, plain-language errors with
+  Details and Try Again; Open after install; Remove
+- Listings show where an app comes from ("From Flathub · Verified", "From
+  NordVPN’s snap · Verified"), the remaining publisher-only listings say why
+  with Visit Website or Open in Browser, snaps and repository packages say how
+  they are sandboxed and how they update, and age ratings show their age
+- App artwork is drawn full size without a tile behind it; screenshots keep
+  their own shape and are decoded into plain textures every renderer draws
+- The seed carries the new rich listings: icons of at least 256 px,
+  screenshots, descriptions, releases, sizes and permissions for every app;
+  7-Zip and Ollama (command-line tools) leave the schema 4 catalogue
+- Permission keys may contain a hyphen; system.ssh_agent and system.gpg_agent
+  are accepted as the catalogue's spelling of the hyphenated keys
+- Includes the Sticky Notes withdrawal from the catalogue
+* Fri Sep 18 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.31.preview20260918.3
+- Hardware updates: before Install, Depot lists what fwupd and the computer
+  still need (charger, battery level, lid, device problems, EFI partition
+  space, Secure Boot updater, stale metadata with Refresh) and a connected
+  modem's disconnect. A failure is explained from fwupd's error code, message
+  and phase: "Nothing was changed on your device" before writing, urgent
+  recovery steps while writing, a restart after it; Try Again, Restart and
+  Details with fwupd's journal. Never "unspecified error"
+- Failures that changed nothing are recorded per device, firmware, plugin and
+  fwupd build: a second holds the offer for a day, a third pauses it until
+  fwupd or the firmware changes. Built-in known issues (fwupd 2.1.7 PCIe
+  firehose modems) and the signed block list, which now also matches a plugin
+  and fwupd builds, pause offers with their reason instead of hiding them
+- Every attempt, failure, hold and unmet requirement is journaled with
+  structured fields under MESSAGE_ID 5f0c3e8a92d44b6c8e17a4d2b9f06c31 for
+  Suno Vitals
+
+* Fri Sep 18 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.31.preview20260918.2
+- Assembles preview20260917.3 to .7 below, each cut separately from
+  preview20260917.2, on top of preview20260918.1, into one build
+
+* Fri Sep 18 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.31.preview20260918.1
+- "What's new" on a system update opens Depot's own sheet instead of a
+  browser on the raw notes JSON: the release's name and date, then its
+  changes under New features, Improvements, Fixes and Security, each with a
+  headline and details. The package list sits in a collapsed Technical details
+  disclosure. The notes are verified against the update graph keys Suno-update
+  trusts before they are read; a failure shows an inline message with Retry.
+  The update card, "This computer" and the preview all use the one sheet
+
+* Thu Sep 17 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.31.preview20260917.7
+- Every application in Depot draws an icon. An AppStream cached icon is a file
+  name, not an icon theme name, and a theme name nothing answers to draws the
+  toolkit's missing-image glyph with no error raised: a shelf of empty boxes.
+  The decision now lives in Suno_installer.depot_icons, the icon theme is
+  asked before any name is used, and anything left over is the application's
+  monogram rather than a blank
+- Icons load at the display's scale. They go through the icon theme's loader
+  as a GIcon instead of a fixed texture from Gtk.Image.new_from_file, so a
+  40pt tile on a 1.25x display gets the pixels it needs, and the AppStream
+  cache's 128px artwork is preferred over its 64px artwork where it matters
+- Download the application metadata Depot draws from. It is a Flatpak remote's
+  AppStream branch under /var, which an image cannot carry, so a freshly
+  installed computer had none: Suno-depot-appstream.timer fetches it after
+  boot and every six hours, Depot asks for it itself when it finds none, and
+  the window redraws when it lands instead of waiting to be reopened. The
+  unit cannot fail a boot with no network
+- A catalogue image that failed to download is retried after 45 seconds and
+  at once when the machine reports a route again, instead of staying missing
+  for as long as the window is open
+
+* Thu Sep 17 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.31.preview20260917.6
+- A browser names an installed application by reading Name from whichever
+  desktop entry holds the link's scheme, and prints its own opener command when
+  nothing holds it. Every declared link scheme is now held by the application's
+  own launcher, for deb, RPM, AppImage, archive and Flatpak installs alike,
+  including the schemes an application claims for itself on first run inside
+  its capsule. The session's own links -- http, https, mailto and the rest --
+  are never taken by an application that merely offers to open them.
+
+* Thu Sep 17 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.31.preview20260917.5
+- The accessibility bus is bound into both capsule kinds: the address a toolkit
+  reads from the session bus named a socket that did not exist inside the
+  sandbox, so every application began with "Couldn't connect to accessibility
+  bus" and no assistive tool could reach it
+- A sandboxed application reads the desktop's font, text scale, theme and
+  colour scheme through the settings portal (GTK_USE_PORTAL), as an application
+  in a package capsule already did. The settings store is not on the capsule's
+  bus, so a toolkit fell back to its built-in defaults and an application drew
+  in a font the desktop does not use
+
+* Thu Sep 17 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.31.preview20260917.4
+- A launch that cannot build the window shows "Depot could not open" with the
+  reason and Try Again, instead of nothing at all
+- Every launch is written to the journal for Suno Vitals (asked, shown with
+  how long it took, slow after 12 s, degraded, failed:
+  MESSAGE_ID=9d41c6b70f2e4a58bd3e7c19a06f5b24), and a native crash leaves a
+  traceback there through faulthandler
+- The update agent and the firmware check can no longer keep the window off
+  the screen: an unreachable service leaves its own section empty
+- Release gate: tests/os/gate/depot-opens.sh opens Depot from its desktop
+  entry in a headless Shell on a fresh install, with fwupd running and while
+  first-boot provisioning works, and fails if no window appears
+
+* Thu Sep 17 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.31.preview20260917.3
+- Depot declares X-GNOME-UsesNotifications, so Settings lists it under
+  Notifications and its per-app switches, including Badge App Icon, can be
+  reached. It notifies when first-boot apps finish installing.
+
+* Thu Sep 17 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.31.preview20260917.2
+- Never close when fwupd is running: libfwupd 2.1.7 aborted in g_mutex_clear
+  when a FwupdClient made on a worker thread was finalized from a queued
+  notification while the window was busy drawing. fwupd is now reached only
+  through Suno_depot.firmware_probe in a process of its own; a check that
+  fails, hangs (90 s) or crashes shows the firmware section's own error state
+  with Try Again, and is logged to the journal
+
+* Thu Sep 17 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.31.preview20260917.1
+- Depot shows release names on the Updates page and the system update card
+  ("Suno (Prairie, Beta 0, Nightly 20260917) is ready", "you have Suno
+  (Prairie, Beta 0, Nightly 20260916)") from Suno-update's new *Name
+  properties. For an older Suno-update it names versions by the same rules:
+  the booted os-release PRETTY_NAME, else derived from the version. "This
+  computer" adds a Build row with the machine version.
+
+* Thu Sep 17 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.31.preview20260916.6
+- Updates page, attention first: one "Needs your attention" section at the
+  top for a system update to download or restart for, hardware updates, app
+  updates that failed, ask for more or wait for you, paused apps and errors,
+  each with its action; otherwise "Everything is up to date" with when it was
+  last checked and Check Now. Then Recently updated, this computer and its
+  channel, and automatic updates, with long explanations behind disclosures.
+  The sidebar badge counts exactly the attention items
+- Apps update automatically by default (switch on the Updates page): every
+  six hours, not on metered connections, power saving or a low battery (30%);
+  open apps keep running and use the new version next time
+- Recently updated: 90 days of app updates, automatic or not, with what's new
+- Go Back: within 30 days, the latest update of an app can be taken back to the
+  build it replaced, through Suno-installer-system (polkit) for system
+  Flatpaks; a build the source no longer offers is said plainly. Going back
+  pauses automatic updates for that app until something newer appears, with
+  Resume
+- Hardware updates: plain titles and summaries from the device kind (startup
+  protection, firmware, modem, ...), what they need, Details with maker, part,
+  versions and release notes; security ones get one reminder; never installed
+  automatically. Suno's signed firmware block list hides listed releases
+  (an empty, signed list ships at /usr/share/Suno/firmware/blocklist.json)
+- Every automatic action and every app change is journaled for Suno Vitals
+
+* Wed Sep 16 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.31.preview20260916.5
+- App updates in Depot follow the remote's newest commit instead of naming
+  one: flatpak's system helper refuses a pinned commit from anyone but root,
+  so every update of a system-installed Flatpak (Discord on the ThinkPad)
+  failed with "Can't update to a specific commit without root permissions".
+  The resolved commit is still checked before the transaction runs
+- Install, update and removal failures say what happened in plain words
+  (out of space, no connection, not allowed, not verified), keep the original
+  error behind Details, offer Try again on Updates, and write a structured
+  journal entry (MESSAGE_ID c4d1a8e27b3f4f6a9e05d6b2a1f7c389) for Suno Vitals
+- Canvas ships only with Suno: its Flatpak listing leaves the Depot catalog
+
+* Wed Sep 16 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.31.preview20260916.4
+- Updates, on a computer that follows no channel: before Start Following,
+  say what adopting does. The chosen channel's release becomes the system,
+  replaced packages take the channel's versions, added packages stay, and
+  the running system is kept to go back to. Missing trust now points at
+  updating Suno-update (Suno-os-remote) rather than an administrator
+
+* Wed Sep 16 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.31.preview20260916.3
+- Updates: Official, Beta and Nightly are one public choice, with no account
+  and no sign-in. Choosing Beta or Nightly says what it means and switches,
+  shows progress, then checks for that channel's newest release at once
+- A computer that follows no channel starts following any of them the same way
+- A computer that still has an early-updates credential says who set it up
+  and can remove it while keeping its channel; leaving says Official, not "stable"
+- Plain errors when Suno Connect is signed out (SignInRequired) or the update
+  service is too old for the request
+- Depot: a developer's verified Flatpak listing can say Suno's image already
+  ships the same app (Viola), and apps on the Suno remote may take their
+  runtimes from Flathub (catalog agent, e29fb914 and 2a8942ad)
+
+* Wed Sep 16 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.31.preview20260916.2
+- My apps lists "System tools you installed" (packages added with sudo dnf
+  install) with Remove, through Suno-install-commands' polkit helper (ADR-038).
+
+* Wed Sep 16 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.31.preview20260916.1
+- An installed app that fails while opening no longer leaves a spinner: the
+  launch's startup sequence ends at once, one notification says the app
+  couldn't open and why in plain words, and the specifics (missing library,
+  signal, exit status, last error lines) go to the journal for Suno Vitals
+- AppImages get the runtime's ARGV0 and OWD: the common AppRun picked no
+  program without ARGV0 (PrusaSlicer 2.8.1 exited with "Is a directory")
+- An application's private home starts with .config, .cache, .local/share and
+  .local/state (OrcaSlicer 2.4.2 exited creating ~/.config/OrcaSlicer)
+- Requires Suno-appimage-compat, so AppImages built on Debian and Ubuntu find
+  libbz2.so.1.0, FUSE 2, libcrypt.so.1 and libnsl.so.1
+* Tue Sep 15 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.31.preview20260915.6
+- Never a dead end: the Official / Beta / Nightly picker is on the Updates
+  page in every state, each channel saying what it is, how often it
+  changes, how much testing it has had and what it needs
+- Say what choosing a channel would do before it happens, and that a
+  release which does not start properly puts itself back
+- A computer following no channel explains why in one line and offers
+  Start Following, or says exactly what it would take when it cannot
+- Preferences always render: a control that cannot act is shown off and
+  disabled with the reason and what would re-enable it, never as a bare
+  "unavailable"; the same for the firmware and apps rows
+* Tue Sep 15 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.31.preview20260915.5
+- Depot's Updates page is the one place for everything about updates: the
+  version this computer runs, its channel, when it last checked and why,
+  where updates are hosted (read from the agent, never hard-coded) and
+  whether their metadata verified
+- Choose Official, Beta or Nightly there, with preview enrolment inline
+  through Suno Connect and a clear way to leave
+- Download updates automatically, on by default, with what it does said
+  plainly; Ignore this version, and the way back from it
+- The Updates badge stops counting a version the person ignored
+
+* Tue Sep 15 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.31.preview20260915.4
+- List every first-party app Suno's image ships (ADR-031): read schema 4 sources and preinstalled_on_Suno
+- Show Installed with Suno, Removed with Restore, and Restart to Finish from the booted rpm-ostree deployments
+- Remove and restore image apps through the system helper's new override-remove and override-reset
+- Never offer the Flatpak of an app whose image package is present, and list each app once
+- Restart to finish through the session manager, using logind only without one when the update agent's Apply() does not apply
+- Carry the Suno-update review fixes of preview20260915.3
+
+* Tue Sep 15 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.31.preview20260915.3
+- Restart to finish updating without a timeout, and never through the
+  update agent after the person cancels or the session refuses; only a
+  missing session manager falls back to Apply()
+- Show errors from the update agent (the reply callback no longer fails)
+- Show Cancel while the system update downloads, Download for every
+  available update, and a waiting barrier release instead of up to date
+- Say honestly that counts arrive from this computer's network address and,
+  on early updates, could be connected to the Suno account
+
+* Tue Sep 15 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.31.preview20260915.2
+- Rebuild from the launch integration branch with the Depot distribution
+  tooling and the update agent merged; the client's source is unchanged, so
+  the build does not share a NEVRA with the earlier preview20260915.1 file
+
+* Tue Sep 15 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.31.preview20260915.1
+- Read the signed schema 4 catalogue, verified with the shipped minisign key, falling back to the last verified copy and then the seed
+- Install, update and remove apps from the Suno remote with the same commit pinning as Flathub, and show Flatpak app updates
+- Show tiers, verified developers, permissions computed from sandbox metadata, permission changes on update and sign-in disclosure
+- Show verified screenshots, ratings and reviews, and write reviews with this computer's Suno Connect sign-in
+- Open Suno-depot:// and appstream:// links, and collections on Home
+- Count installs and active computers anonymously, with both switches in Settings
+- Install the apps chosen during installation on first login, in the background
+- Make the Updates tab the one place for updates: the system update from Suno's update agent, firmware from fwupd, and apps
+- Update apps every six hours in the background, holding any update that asks for more until it is reviewed
+- Add a Software Update entry that opens Depot's Updates tab
+
+* Mon Sep 14 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.30.preview20260914.17
+- Keep each application's SELinux categories between launches so its data is not relabelled every time
+- Let applications sandbox their own tools with bubblewrap inside their capsule
+
+* Mon Sep 14 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.30.preview20260914.16
+- Find an AppImage's application where its runtime ends, validating the SquashFS superblock, instead of at the first matching bytes
+- Unpack DwarFS and type 1 AppImages with their own runtime in a sandbox with no network
+
+* Mon Sep 14 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.30.preview20260914.15
+- Share the person's Documents, Downloads and other folders with every application at their real paths, so saving from a file chooser writes where the person chose
+
+* Fri Sep 11 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.30.preview20260912.13
+- Reach a console application by name from the shell, not only from an icon
+- Keep a package's Terminal declaration instead of launching it into a closed pipe
+- Refuse to publish a command name that would shadow one the user already has
+- Pass arguments through the capsule boundary to the payload
+
+* Fri Sep 04 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.17
+- The application installer is the Application Kit's window
+
+* Sat Aug 29 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.16
+- Run boot reconciliation even when interruption occurred before receipt creation
+
+* Sat Aug 29 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.15
+- Serialize identical user transactions and all authenticated system transactions
+- Reconcile abandoned user partials only after proving their process lock is free
+- Remove root-owned interrupted transaction directories during boot reconciliation
+
+* Sat Aug 29 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.14
+- Reject staging and capsule transactions before exhausting their destination filesystem
+- Extract AppImages through a private partial directory and remove incomplete payloads
+- Remove newly committed capsule images when launcher publication cannot complete
+
+* Sat Aug 29 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.13
+- Route each newly opened package into a fresh review window
+
+* Sat Aug 29 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.12
+- Activate snapd-owned mounts during normal boot across immutable deployments
+- Reconcile completed system-RPM removals after the deployment switch
+
+* Sat Aug 29 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.11
+- Reconstruct snapd-owned mount target dependencies after immutable /etc merges
+
+* Sat Aug 29 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.10
+- Route an already-installed Flatpak reference through Flatpak update semantics
+
+* Sat Aug 29 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.9
+- Record Flatpak, Snap, and system-RPM transactions alongside local capsules
+- Add ecosystem-preserving list, update, and removal lifecycle commands
+- Preserve the conventional /home account contract on Fedora Atomic images
+
+* Sat Aug 29 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.8
+- Validate privileged inputs against the owning account's canonical home path
+- Accept Fedora Atomic's canonical /var/home staging location without weakening isolation
+
+* Sat Aug 29 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.7
+- Keep Snap state below /var and remove the unsupported immutable-root /snap payload
+
+* Sat Aug 29 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.6
+- Stop completed rootless install containers before committing their image
+
+* Sat Aug 29 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.5
+- Map desktop sockets into a fixed private runtime path inside each capsule
+- Add canonical rootless backend acceptance fixtures for AppImage, DEB, and RPM
+
+* Sat Aug 29 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.4
+- Distinguish RPM publisher signatures from payload integrity digests
+- Describe application-RPM scriptlets at their actual rootless capsule boundary
+
+* Sat Aug 29 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.3
+- Include Fedora's sbin locations in the bounded package-tool search path
+
+* Sat Aug 29 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.2
+- Persist Snap's Silverblue mount boundary only when the first Snap is installed
+- Reject AppImage icon symlinks that escape the extracted application payload
+
+* Sat Aug 29 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.1
+- Add one review and transaction boundary for native and compatibility packages
+- Preserve Flatpak, Snap, RPM, DEB, AppImage, Android, and Windows semantics
+- Add bounded static inspection, architecture checks, fingerprinted staging,
+  rootless Debian capsules, sandboxed AppImages, and a narrow polkit helper

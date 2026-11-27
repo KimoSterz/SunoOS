@@ -1,19 +1,19 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
 #
-# Sign assembled runtime components into the Luma remote.
+# Sign assembled runtime components into the Suno remote.
 #
 #   publish-runtime.sh [COMPONENT...]    (default: Platform Sdk Platform.GL.default Platform.openh264)
 #
 # Platform: its share/runtime/locale tree is split out into
-#   org.projectluma.Platform.Locale (a locale-subset extension, so people
+#   org.projectSuno.Platform.Locale (a locale-subset extension, so people
 #   download only the languages they use), then both are exported.
 # Sdk: the SDK mounts the same Platform.Locale extension, so its own copy of
 #   the locale tree is dropped rather than published twice.
 # GL.default and Office: the assembled commit is re-signed into the remote
 #   unchanged with `flatpak build-commit-from`.
 # openh264: nothing to assemble. The extension is laid out here from
-#   src/luma-openh264/cisco-openh264.conf (runtime/openh264-extension.sh): extra
+#   src/Suno-openh264/cisco-openh264.conf (runtime/openh264-extension.sh): extra
 #   data naming Cisco's binary, which each device downloads from Cisco.
 #
 # Nothing is uploaded here; update-remote.sh regenerates the summary and
@@ -40,16 +40,16 @@ for component in "${components[@]}"; do
     depot_in_signer rm -rf "$work"
     depot_in_signer bash "$depot_repo_root/scripts/depot/runtime/openh264-extension.sh" \
       "$work" "$DEPOT_ARCH" "$DEPOT_RUNTIME_BRANCH" >/dev/null
-    depot_log "exporting runtime/org.projectluma.$component/$DEPOT_ARCH/$DEPOT_RUNTIME_BRANCH"
-    export_tree "$work" "org.projectluma.$component $DEPOT_RUNTIME_BRANCH (Cisco OpenH264, extra data)"
+    depot_log "exporting runtime/org.projectSuno.$component/$DEPOT_ARCH/$DEPOT_RUNTIME_BRANCH"
+    export_tree "$work" "org.projectSuno.$component $DEPOT_RUNTIME_BRANCH (Cisco OpenH264, extra data)"
     depot_in_signer rm -rf "$work"
     continue
   fi
   result="$depot_out/runtime/$component"
   [ -d "$result/ostree" ] || depot_die "no assembled $component; run build-runtime.sh $component"
   build_id=$(cat "$result/BUILD_ID")
-  ref="runtime/org.projectluma.$component/$DEPOT_ARCH/$DEPOT_RUNTIME_BRANCH"
-  subject="org.projectluma.$component $DEPOT_RUNTIME_BRANCH build $build_id"
+  ref="runtime/org.projectSuno.$component/$DEPOT_ARCH/$DEPOT_RUNTIME_BRANCH"
+  subject="org.projectSuno.$component $DEPOT_RUNTIME_BRANCH build $build_id"
 
   case "$component" in
     Platform|Sdk)
@@ -65,16 +65,16 @@ for component in "${components[@]}"; do
         depot_in_signer sh -c "mv '$work/runtime/files/share/runtime/locale/'* '$locale/files/'"
         depot_in_signer sh -c "cat > '$locale/metadata'" <<META
 [Runtime]
-name=org.projectluma.Platform.Locale
-runtime=org.projectluma.Platform/$DEPOT_ARCH/$DEPOT_RUNTIME_BRANCH
-sdk=org.projectluma.Sdk/$DEPOT_ARCH/$DEPOT_RUNTIME_BRANCH
+name=org.projectSuno.Platform.Locale
+runtime=org.projectSuno.Platform/$DEPOT_ARCH/$DEPOT_RUNTIME_BRANCH
+sdk=org.projectSuno.Sdk/$DEPOT_ARCH/$DEPOT_RUNTIME_BRANCH
 
 [ExtensionOf]
-ref=runtime/org.projectluma.Platform/$DEPOT_ARCH/$DEPOT_RUNTIME_BRANCH
+ref=runtime/org.projectSuno.Platform/$DEPOT_ARCH/$DEPOT_RUNTIME_BRANCH
 META
         depot_in_signer python3 -B "$depot_repo_root/scripts/depot/runtime/normalize-publish-metadata.py" "$locale"
-        depot_log "exporting org.projectluma.Platform.Locale"
-        export_tree "$locale" "org.projectluma.Platform.Locale $DEPOT_RUNTIME_BRANCH build $build_id"
+        depot_log "exporting org.projectSuno.Platform.Locale"
+        export_tree "$locale" "org.projectSuno.Platform.Locale $DEPOT_RUNTIME_BRANCH build $build_id"
       else
         depot_in_signer sh -c "rm -rf '$work/runtime/files/share/runtime/locale/'*"
       fi

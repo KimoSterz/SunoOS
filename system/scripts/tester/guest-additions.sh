@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Complete the converged desktop/mobile extension stack inside the builder VM.
 set -euo pipefail
-work=/var/tmp/luma-tester-build
+work=/var/tmp/Suno-tester-build
 cd "$work"
 # shellcheck disable=SC1091
 . source/config/desktop/inputs.env
@@ -17,8 +17,8 @@ if ! rpm -q "$DASH_TO_DOCK_NEVRA" >/dev/null 2>&1; then
   (cd "$work/dock-extract"; rpm2cpio "$work/$DASH_TO_DOCK_SRPM" >payload.cpio; cpio -idm --quiet <payload.cpio; rm payload.cpio)
   mv "$work/dock-extract/gnome-shell-extension-dash-to-dock.spec" "$top/SPECS/"
   cp "$work/dock-extract/"* "$top/SOURCES/"
-  cp source/patches/dash-to-dock/0001-luma-dock-material.patch "$top/SOURCES/"
-  (cd "$top/SPECS"; git apply "$work/source/patches/dash-to-dock/0000-luma-fedora-spec.patch")
+  cp source/patches/dash-to-dock/0001-Suno-dock-material.patch "$top/SOURCES/"
+  (cd "$top/SPECS"; git apply "$work/source/patches/dash-to-dock/0000-Suno-fedora-spec.patch")
   dnf -y --setopt=install_weak_deps=False builddep "$top/SPECS/gnome-shell-extension-dash-to-dock.spec"
   rpmbuild -ba --define "_topdir $top" "$top/SPECS/gnome-shell-extension-dash-to-dock.spec"
   dnf -y --setopt=install_weak_deps=False install "$top/RPMS/noarch/$DASH_TO_DOCK_NEVRA.rpm"

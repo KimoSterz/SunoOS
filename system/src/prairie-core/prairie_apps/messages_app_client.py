@@ -39,7 +39,7 @@ def unpack(value):
 
 
 def sandboxed():
-    return Path('/.flatpak-info').is_file() and os.environ.get('LUMA_MESSAGES_STANDALONE')!='1'
+    return Path('/.flatpak-info').is_file() and os.environ.get('SUNO_MESSAGES_STANDALONE')!='1'
 
 
 def cache_directory():
@@ -110,8 +110,8 @@ class ApplicationStore:
                 raise ValueError('Choose a nonempty regular attachment under 25 MB')
             fds = Gio.UnixFDList.new(); index = fds.append(fd)
             result, _ = self.client.connection.call_with_unix_fd_list_sync(
-                'org.projectluma.Messages.Agent', '/org/projectluma/Messages/Agent',
-                'org.projectluma.Messages.Agent1', 'ApplicationImport',
+                'org.projectSuno.Messages.Agent', '/org/projectSuno/Messages/Agent',
+                'org.projectSuno.Messages.Agent1', 'ApplicationImport',
                 GLib.Variant('(sssh)', (self.account, address, str(name or Path(source).name), index)),
                 GLib.VariantType.new('(s)'), Gio.DBusCallFlags.NO_AUTO_START, 30000, fds, None)
             return unpack(json.loads(result.unpack()[0]))
@@ -138,8 +138,8 @@ class ApplicationStore:
                         return path
                 finally: os.close(cached)
         result, fds = self.client.connection.call_with_unix_fd_list_sync(
-            'org.projectluma.Messages.Agent', '/org/projectluma/Messages/Agent',
-            'org.projectluma.Messages.Agent1', 'ApplicationAttachment',
+            'org.projectSuno.Messages.Agent', '/org/projectSuno/Messages/Agent',
+            'org.projectSuno.Messages.Agent1', 'ApplicationAttachment',
             GLib.Variant('(sss)', (self.account, uid, part)),
             GLib.VariantType.new('(h)'), Gio.DBusCallFlags.NO_AUTO_START, 10000, None, None)
         fd = fds.get(result.unpack()[0]); temporary = None
@@ -232,8 +232,8 @@ class ApplicationLogin:
     def __init__(self, client, network, on_step, account=None):
         self.client, self.network, self.on_step, self.account = client, network, on_step, account
         self.session = str(uuid.uuid4())
-        self.subscription = client.connection.signal_subscribe('org.projectluma.Messages.Agent',
-            'org.projectluma.Messages.Agent1', 'LoginStep', '/org/projectluma/Messages/Agent', None,
+        self.subscription = client.connection.signal_subscribe('org.projectSuno.Messages.Agent',
+            'org.projectSuno.Messages.Agent1', 'LoginStep', '/org/projectSuno/Messages/Agent', None,
             Gio.DBusSignalFlags.NONE, self._step)
     def _step(self, _connection, _sender, _path, _interface, _signal, parameters, *_user):
         session, name, data = parameters.unpack()

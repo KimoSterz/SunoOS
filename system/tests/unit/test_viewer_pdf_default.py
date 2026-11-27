@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Viewer is Luma's PDF default, and GNOME's Document Viewer never ships.
+"""Viewer is Suno's PDF default, and GNOME's Document Viewer never ships.
 
-Source gate: every mimeapps list Luma ships must send each PDF type to Viewer,
+Source gate: every mimeapps list Suno ships must send each PDF type to Viewer,
 Viewer must declare those types, org.gnome.Papers must be on the system
 Flatpak replacement list and nowhere in an install list, and the once-per-
 account migration must follow its rules.
@@ -14,15 +14,15 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-VIEWER = "org.projectluma.Viewer.desktop"
+VIEWER = "org.projectSuno.Viewer.desktop"
 PDF_TYPES = ("application/pdf", "application/x-bzpdf", "application/x-gzpdf",
              "application/x-xzpdf", "application/x-ext-pdf")
 SKIP_PARTS = {".git", "build", "artifacts", "tests", "docs", "node_modules"}
 
 
 def load_migration():
-    path = ROOT / "src/luma-desktop-launcher-policy/default-apps/luma-default-apps-migration"
-    loader = importlib.machinery.SourceFileLoader("luma_default_apps_migration", str(path))
+    path = ROOT / "src/Suno-desktop-launcher-policy/default-apps/Suno-default-apps-migration"
+    loader = importlib.machinery.SourceFileLoader("Suno_default_apps_migration", str(path))
     spec = importlib.util.spec_from_loader(loader.name, loader)
     module = importlib.util.module_from_spec(spec)
     loader.exec_module(module)
@@ -49,7 +49,7 @@ def defaults(path):
 
 class ShippedDefaultsTests(unittest.TestCase):
     def test_desktop_policy_sends_every_pdf_type_to_viewer(self):
-        policy = defaults(ROOT / "src/luma-desktop-launcher-policy/gnome-mimeapps.list")
+        policy = defaults(ROOT / "src/Suno-desktop-launcher-policy/gnome-mimeapps.list")
         for mime in PDF_TYPES:
             self.assertEqual(policy.get(mime, "").split(";")[0], VIEWER, mime)
 
@@ -62,7 +62,7 @@ class ShippedDefaultsTests(unittest.TestCase):
                     self.assertEqual(value.split(";")[0], VIEWER, f"{path}: {mime}={value}")
 
     def test_viewer_declares_every_pdf_type(self):
-        entry = (ROOT / "src/luma-viewer/data/org.projectluma.Viewer.desktop").read_text()
+        entry = (ROOT / "src/Suno-viewer/data/org.projectSuno.Viewer.desktop").read_text()
         line = next(l for l in entry.splitlines() if l.startswith("MimeType="))
         declared = set(line.split("=", 1)[1].split(";"))
         for mime in PDF_TYPES:
@@ -76,11 +76,11 @@ class PapersDoesNotShipTests(unittest.TestCase):
             if line.strip() and not line.startswith("#"):
                 app, provider = line.split()
                 entries[app] = provider
-        self.assertEqual(entries.get("org.gnome.Papers"), "luma-viewer")
-        self.assertEqual(entries.get("org.gnome.Evince"), "luma-viewer")
+        self.assertEqual(entries.get("org.gnome.Papers"), "Suno-viewer")
+        self.assertEqual(entries.get("org.gnome.Evince"), "Suno-viewer")
 
     def test_no_launcher_override_or_install_list_carries_papers(self):
-        self.assertFalse((ROOT / "src/luma-desktop-launcher-policy/applications/org.gnome.Papers.desktop").exists())
+        self.assertFalse((ROOT / "src/Suno-desktop-launcher-policy/applications/org.gnome.Papers.desktop").exists())
         for path in [*(ROOT / "config").rglob("*"), *(ROOT / "image").rglob("*")]:
             if not path.is_file() or path.name == "system-flatpak-replacements.txt":
                 continue

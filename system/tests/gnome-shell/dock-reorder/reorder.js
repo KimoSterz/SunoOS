@@ -15,7 +15,7 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as L from '../shelf-arrange/lib.js';
 
 const shell = new Gio.Settings({schema_id: 'org.gnome.shell'});
-const short = id => id.replace(/^org\.(projectluma|oracle)\./, '').replace(/\.desktop$/, '');
+const short = id => id.replace(/^org\.(projectSuno|oracle)\./, '').replace(/\.desktop$/, '');
 const favorites = () => shell.get_strv('favorite-apps').map(short);
 const dash = () => Main.overview.dash;
 const tiles = () => dash()._box.get_children().filter(c => c.child?._delegate?.app && c.visible && !c.animatingOut);
@@ -89,7 +89,7 @@ async function scratchApp() {
     const here = GLib.path_get_dirname(GLib.filename_from_uri(import.meta.url)[0]);
     const win = GLib.canonicalize_filename('../shelf-arrange/win.py', here);
     GLib.file_set_contents(`${dir}/org.oracle.Scratch.desktop`,
-        `[Desktop Entry]\nType=Application\nName=Scratch\nExec=python3 ${win} org.oracle.Scratch Scratch\nIcon=org.projectluma.Weather\n`);
+        `[Desktop Entry]\nType=Application\nName=Scratch\nExec=python3 ${win} org.oracle.Scratch Scratch\nIcon=org.projectSuno.Weather\n`);
     const system = Shell.AppSystem.get_default();
     await L.until(() => system.lookup_app('org.oracle.Scratch.desktop'), 8000);
     const app = system.lookup_app('org.oracle.Scratch.desktop');

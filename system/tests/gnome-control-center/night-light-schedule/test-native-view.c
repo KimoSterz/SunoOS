@@ -1,11 +1,11 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 #define main upstream_view_main
-#include "test-luma-view.c"
+#include "test-Suno-view.c"
 #undef main
 
 static void capture (GtkWidget *window, const char *name)
 {
-  const char *out = g_getenv ("LUMA_NIGHT_TEST_OUT");
+  const char *out = g_getenv ("SUNO_NIGHT_TEST_OUT");
   if (!out) return;
   g_autoptr (GdkPaintable) paintable = gtk_widget_paintable_new (window);
   g_autoptr (GskRenderNode) node = NULL;
@@ -31,9 +31,9 @@ static void schedule_matrix (void)
   for (guint clock = 0; clock < 2; clock++) for (guint narrow = 0; narrow < 2; narrow++)
     {
       g_settings_set_string (iface, "clock-format", modes[clock]);
-      g_autoptr (CcLumaFixture) model = load ();
+      g_autoptr (CcSunoFixture) model = load ();
       GtkWidget *window = gtk_window_new ();
-      GtkWidget *view = cc_luma_view_new (model, "nightlight", NULL);
+      GtkWidget *view = cc_Suno_view_new (model, "nightlight", NULL);
       gtk_window_set_child (GTK_WINDOW (window), view);
       gtk_window_set_default_size (GTK_WINDOW (window), narrow ? 390 : 1040, 800);
       gtk_window_present (GTK_WINDOW (window)); wait_ms (150);
@@ -41,22 +41,22 @@ static void schedule_matrix (void)
       g_assert_false (gtk_widget_get_sensitive (find_name (view, "cf-nightFrom")));
       choose (find_name (view, "cf-nightWhen-manual")); drain ();
       g_assert_true (gtk_widget_get_sensitive (find_name (view, "cf-nightFrom")));
-      g_autofree char *before = g_strdup (json_node_get_string (cc_luma_fixture_get (model, "nightFrom")));
+      g_autofree char *before = g_strdup (json_node_get_string (cc_Suno_fixture_get (model, "nightFrom")));
       nightlight_edit_time (view, "cf-nightFrom", clock ? 10 : 22, 17, clock ? 1 : -1, FALSE);
-      g_assert_cmpstr (json_node_get_string (cc_luma_fixture_get (model, "nightFrom")), ==, before);
+      g_assert_cmpstr (json_node_get_string (cc_Suno_fixture_get (model, "nightFrom")), ==, before);
       nightlight_edit_time (view, "cf-nightFrom", clock ? 10 : 22, 17, clock ? 1 : -1, TRUE);
-      g_assert_cmpstr (json_node_get_string (cc_luma_fixture_get (model, "nightFrom")), ==, "22:17");
+      g_assert_cmpstr (json_node_get_string (cc_Suno_fixture_get (model, "nightFrom")), ==, "22:17");
       nightlight_edit_time (view, "cf-nightTo", clock ? 6 : 6, 43, clock ? 0 : -1, TRUE);
-      g_assert_cmpstr (json_node_get_string (cc_luma_fixture_get (model, "nightTo")), ==, "06:43");
+      g_assert_cmpstr (json_node_get_string (cc_Suno_fixture_get (model, "nightTo")), ==, "06:43");
       g_assert_true (has_text (view, clock ? "From 10:17 PM to 6:43 AM" : "From 22:17 to 06:43"));
       g_autofree char *name = g_strdup_printf ("night-light-%s-%s.png", modes[clock], narrow ? "390" : "1040");
       capture (window, name);
       nightlight_edit_time (view, "cf-nightFrom", clock ? 12 : 0, 0, clock ? 0 : -1, TRUE);
-      g_assert_cmpstr (json_node_get_string (cc_luma_fixture_get (model, "nightFrom")), ==, "00:00");
+      g_assert_cmpstr (json_node_get_string (cc_Suno_fixture_get (model, "nightFrom")), ==, "00:00");
       nightlight_edit_time (view, "cf-nightFrom", 12, 0, clock ? 1 : -1, TRUE);
-      g_assert_cmpstr (json_node_get_string (cc_luma_fixture_get (model, "nightFrom")), ==, "12:00");
+      g_assert_cmpstr (json_node_get_string (cc_Suno_fixture_get (model, "nightFrom")), ==, "12:00");
       g_assert_cmpint (gtk_widget_get_width (window), ==, narrow ? 390 : 1040);
-      g_assert_null (cc_luma_view_get_error (view));
+      g_assert_null (cc_Suno_view_get_error (view));
       gtk_window_destroy (GTK_WINDOW (window)); wait_ms (100);
     }
 }

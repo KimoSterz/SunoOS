@@ -44,7 +44,7 @@ cc $(pkg-config --cflags gtk+-3.0 libhandy-1 gio-unix-2.0) \
   $(pkg-config --libs gtk+-3.0 libhandy-1 gio-unix-2.0) -lm
 xvfb-run -a ./test-home-pages
 cc $(pkg-config --cflags gtk+-3.0 libhandy-1 gio-unix-2.0) \
-  src/luma-home-pages.c tests/test-home-catalog.c -o test-home-catalog \
+  src/Suno-home-pages.c tests/test-home-catalog.c -o test-home-catalog \
   $(pkg-config --libs gtk+-3.0 libhandy-1 gio-unix-2.0) -lm
 ./test-home-catalog
 ```

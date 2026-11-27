@@ -1,6 +1,6 @@
 ---
 title: Icons
-summary: Designing your app icon for Luma’s tile, using Prairie’s Lucide-style symbolic icons, drawing your own symbolic icons in the right format, and sizes.
+summary: Designing your app icon for Suno’s tile, using Prairie’s Lucide-style symbolic icons, drawing your own symbolic icons in the right format, and sizes.
 order: 6
 section: Design
 ---
@@ -10,7 +10,7 @@ section: Design
 ## Your app icon
 
 Your app icon appears in the dock, the app grid, Depot, the identity in your
-window’s corner, and search. Luma presents application artwork on a square tile
+window’s corner, and search. Suno presents application artwork on a square tile
 with a corner radius of a quarter of the tile’s width, a subtle top-to-bottom
 light gradient and a faint outline.
 
@@ -21,10 +21,10 @@ Design it so:
 - the main shape is simple, recognizable and distinct from system apps;
 - it sits well inside a rounded square: a full-bleed tile with its own color, or
   a shape on a transparent background with enough margin;
-- it has **no baked-in drop shadow, glow or extra frame**, because Luma adds the
+- it has **no baked-in drop shadow, glow or extra frame**, because Suno adds the
   tile treatment;
 - it contains no text, apart from a single letterform if that is your brand;
-- it is not confusingly similar to another app’s icon or to a Luma system icon.
+- it is not confusingly similar to another app’s icon or to a Suno system icon.
 
 Ship a **scalable SVG** named with your app ID:
 
@@ -42,7 +42,7 @@ The `Icon=` key in your desktop entry must be your app ID.
 
 Interface icons are **symbolic**: single-color glyphs that GTK recolors to match
 the text around them, so they work in light, dark and high contrast
-automatically. Luma’s **Prairie** icon theme provides them, and falls back to
+automatically. Suno’s **Prairie** icon theme provides them, and falls back to
 the Adwaita icon theme for anything Prairie does not include.
 
 Prairie’s navigation, places and media transport glyphs use **Lucide**
@@ -63,11 +63,11 @@ Conversation and identity glyphs are Prairie's too, under standard names:
 `go-next-symbolic`, `go-previous-symbolic`, `edit-clear-symbolic`,
 `object-select-symbolic`, `phone-symbolic`, `mail-message-new-symbolic`, and for
 avatars `avatar-default-symbolic` (a person or a number),
-`system-users-symbolic` (a group) and `luma-business-symbolic` (a short code).
+`system-users-symbolic` (a group) and `Suno-business-symbolic` (a short code).
 
-LumaUI parts name their icons with Lucide names (`"share-2"`), which resolve to
-`lumaui-<name>-symbolic` glyphs that LumaUI ships (`lumaui_icon()` in Python,
-`luma_ui_icon_name()` in C).
+SunoUI parts name their icons with Lucide names (`"share-2"`), which resolve to
+`SunoUI-<name>-symbolic` glyphs that SunoUI ships (`SunoUI_icon()` in Python,
+`Suno_ui_icon_name()` in C).
 
 Use icons from the theme by their standard names wherever one exists:
 
@@ -81,10 +81,10 @@ Common names: `list-add-symbolic`, `edit-delete-symbolic`,
 `go-previous-symbolic`, `go-next-symbolic`, `emblem-system-symbolic`,
 `starred-symbolic`, `folder-symbolic`, `user-home-symbolic`.
 
-LumaUI also installs a few icons of its own, such as `luma-plus-symbolic`,
-`luma-chevron-down-symbolic`, the text formatting set
-(`luma-format-bold-symbolic` and others) and the alignment set
-(`luma-align-left-symbolic` and others).
+SunoUI also installs a few icons of its own, such as `Suno-plus-symbolic`,
+`Suno-chevron-down-symbolic`, the text formatting set
+(`Suno-format-bold-symbolic` and others) and the alignment set
+(`Suno-align-left-symbolic` and others).
 
 ### Drawing your own symbolic icon
 
@@ -111,7 +111,7 @@ When no standard icon fits, draw one in the same style and ship it in your app:
 
 ## Sizes
 
-These are the sizes LumaUI’s own parts use.
+These are the sizes SunoUI’s own parts use.
 
 | Size | Where |
 | --- | --- |

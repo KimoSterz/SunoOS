@@ -23,11 +23,11 @@ if not env.get('SSL_CERT_FILE'):
 # The sole dynamic image loader is SVG. PNG/JPEG/GIF are builtin, avoiding a
 # separate subprocess and preserving artwork decoding inside Flatpak.
 template = (base / 'pixbuf-loaders.cache').read_text()
-cache_dir = Path(env.get('XDG_CACHE_HOME', str(Path.home() / '.cache'))) / 'luma-memos/portable'
+cache_dir = Path(env.get('XDG_CACHE_HOME', str(Path.home() / '.cache'))) / 'Suno-memos/portable'
 cache_dir.mkdir(parents=True, exist_ok=True)
 import hashlib
 dependencies = hashlib.sha256((base / 'native-dependencies.json').read_bytes()).hexdigest()[:16]
-env['LUMA_MEMO_STYLE_PATH'] = str(base/'usr/share/prairie-core/memo.css')
+env['SUNO_MEMO_STYLE_PATH'] = str(base/'usr/share/prairie-core/memo.css')
 env['GST_PLUGIN_SYSTEM_PATH_1_0'] = str(base/'usr/lib64/gstreamer-1.0')
 env['GST_PLUGIN_PATH_1_0'] = ''
 env['GST_REGISTRY_1_0'] = str(cache_dir/('gst-'+dependencies+'.bin'))

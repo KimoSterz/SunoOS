@@ -6,7 +6,7 @@ upstream commit `662435b853d865d360507f5daee6ff309838c5ca`.
 
 The 41 commits were mechanically rebased, in original order and with original
 authorship, from signed Linux tag `v7.1` onto signed stable tag `v7.1.2` so they
-apply to Luma's pinned `linux-v7.1.2-milos` archive (SHA-256
+apply to Suno's pinned `linux-v7.1.2-milos` archive (SHA-256
 `6043a062d595e1b4913512c3414387d9a016c4690d8832720651df07276dc78b`).
 The complete series passes `git apply --check` against that archive.
 

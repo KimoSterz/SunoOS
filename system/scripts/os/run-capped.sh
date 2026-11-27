@@ -2,8 +2,8 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # Run an OS pipeline command in a transient systemd unit with the shared build
-# host's resource caps (the same budget /srv/luma-build/bin/luma-build-run
-# gives Luma package builds), so an image build or VM gate can never starve
+# host's resource caps (the same budget /srv/Suno-build/bin/Suno-build-run
+# gives Suno package builds), so an image build or VM gate can never starve
 # the other work on the machine.
 #
 #   run-capped.sh [--wait] [--private-mounts] [--name NAME] [--log FILE] COMMAND [ARG...]
@@ -16,7 +16,7 @@ set -euo pipefail
 
 wait_flag=()
 isolation=()
-name="luma-os-$(date -u +%Y%m%dT%H%M%SZ)"
+name="Suno-os-$(date -u +%Y%m%dT%H%M%SZ)"
 log=
 while [ "$#" -gt 0 ]; do
   case "$1" in
@@ -30,16 +30,16 @@ while [ "$#" -gt 0 ]; do
   esac
 done
 [ "$#" -gt 0 ] || { printf 'usage: %s [--wait] [--private-mounts] [--name NAME] [--log FILE] COMMAND [ARG...]\n' "$0" >&2; exit 2; }
-luma_os_require_root
-luma_os_check_host
+Suno_os_require_root
+Suno_os_check_host
 
 # Leave the machine at least 8 GiB, as the shared runner does.
 available=$(awk '/^MemAvailable:/ { print int($2 / 1048576) }' /proc/meminfo)
-[ "${available:-0}" -ge 12 ] || luma_os_die "only ${available} GiB of memory is available; refusing to start"
+[ "${available:-0}" -ge 12 ] || Suno_os_die "only ${available} GiB of memory is available; refusing to start"
 
 forwarded=()
-for key in LUMA_OS_PROFILE LUMA_TARGET_ARCHITECTURE LUMA_OS_KEYS LUMA_OS_SECRETS \
-           CONTAINERS_STORAGE_CONF LUMA_OS_GRAPH_TOOLS_IMAGE LUMA_OS_SLICE LUMA_OS_TOOLS_IMAGE_NAME; do
+for key in SUNO_OS_PROFILE SUNO_TARGET_ARCHITECTURE SUNO_OS_KEYS SUNO_OS_SECRETS \
+           CONTAINERS_STORAGE_CONF SUNO_OS_GRAPH_TOOLS_IMAGE SUNO_OS_SLICE SUNO_OS_TOOLS_IMAGE_NAME; do
   [ -z "${!key+x}" ] || forwarded+=("--setenv=$key=${!key}")
 done
 
@@ -49,23 +49,23 @@ if [ -n "$log" ]; then
   # systemd itself may not write to the unlabeled pipeline volume under
   # SELinux; the unit's own shell opens the log instead.
   install -d -m 0755 "$(dirname "$log")"
-  command=(/usr/bin/bash -c 'log=$1; shift; exec >>"$log" 2>&1; exec "$@"' luma-os-log "$log" "$@")
+  command=(/usr/bin/bash -c 'log=$1; shift; exec >>"$log" 2>&1; exec "$@"' Suno-os-log "$log" "$@")
 fi
 
-# The caps live on luma-os.slice, which also holds every container the
+# The caps live on Suno-os.slice, which also holds every container the
 # pipeline starts (lib/common.sh), so scripts and containers share one budget.
-luma_os_ensure_slice
+Suno_os_ensure_slice
 exec systemd-run --system --collect "${wait_flag[@]}" \
   --unit="$name" \
-  --slice="$LUMA_OS_SLICE" \
-  --description="Luma OS release pipeline: $*" \
+  --slice="$SUNO_OS_SLICE" \
+  --description="Suno OS release pipeline: $*" \
   --property=Nice=10 \
   --property=KillMode=control-group \
   "${isolation[@]}" \
   "${output[@]}" \
   "${forwarded[@]}" \
-  --setenv=LUMA_OS_ROOT="$LUMA_OS_ROOT" \
-  --setenv=TMPDIR="$LUMA_OS_ROOT/tmp" \
+  --setenv=SUNO_OS_ROOT="$SUNO_OS_ROOT" \
+  --setenv=TMPDIR="$SUNO_OS_ROOT/tmp" \
   --setenv=PATH=/usr/local/bin:/usr/bin:/usr/sbin \
   --working-directory=/ \
   -- "${command[@]}"

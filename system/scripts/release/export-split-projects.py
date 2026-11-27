@@ -41,7 +41,7 @@ def committed_projects(source: str) -> tuple[list[dict], str]:
             raise SystemExit("invalid or duplicate product branch")
         git("check-ref-format", "refs/heads/" + branch)
         git("check-ref-format", "refs/heads/" + project.get("publish_branch", branch))
-        if not re.fullmatch(r"LUMA_[A-Z0-9_]+_REMOTE", project.get("remote_env", "")):
+        if not re.fullmatch(r"SUNO_[A-Z0-9_]+_REMOTE", project.get("remote_env", "")):
             raise SystemExit("invalid product remote environment variable")
         if not isinstance(paths, list) or not paths or len(paths) != len(set(paths)):
             raise SystemExit("empty or duplicate source paths")
@@ -96,7 +96,7 @@ def export(project: dict[str, object], source: str, output: Path, publish: bool,
            manifest_digest: str) -> None:
     name, branch = str(project["name"]), str(project["branch"])
     paths = [str(path) for path in project["paths"]]
-    with tempfile.TemporaryDirectory(prefix=f"luma-split-{name}-") as temporary:
+    with tempfile.TemporaryDirectory(prefix=f"Suno-split-{name}-") as temporary:
         temporary_path = Path(temporary)
         archive = temporary_path / "source.tar"
         with archive.open("wb") as stream:
@@ -112,12 +112,12 @@ def export(project: dict[str, object], source: str, output: Path, publish: bool,
             # packaging and provenance inputs live in a separate namespace,
             # preserving the product's own packaging, scripts and licenses.
             shutil.copytree(canonical / source_root, tree, symlinks=True)
-            if (tree / ".luma-integration").exists() or (tree / ".luma-integration").is_symlink():
-                raise SystemExit("source already owns reserved .luma-integration namespace")
+            if (tree / ".Suno-integration").exists() or (tree / ".Suno-integration").is_symlink():
+                raise SystemExit("source already owns reserved .Suno-integration namespace")
             for path in paths:
                 if path == source_root:
                     continue
-                destination_path = tree / ".luma-integration" / path
+                destination_path = tree / ".Suno-integration" / path
                 destination_path.parent.mkdir(parents=True, exist_ok=True)
                 source_path = canonical / path
                 if source_path.is_dir() and not source_path.is_symlink():
@@ -135,8 +135,8 @@ def export(project: dict[str, object], source: str, output: Path, publish: bool,
                 raise SystemExit(f"invalid exported symlink: {path.relative_to(tree)}") from error
             if not target.is_relative_to(tree.resolve()):
                 raise SystemExit(f"exported symlink escapes product: {path.relative_to(tree)}")
-        if (tree / "LUMA-SOURCE.json").exists() or (tree / "LUMA-SOURCE.json").is_symlink():
-            raise SystemExit("source already owns reserved LUMA-SOURCE.json receipt")
+        if (tree / "SUNO-SOURCE.json").exists() or (tree / "SUNO-SOURCE.json").is_symlink():
+            raise SystemExit("source already owns reserved SUNO-SOURCE.json receipt")
         source_epoch = int(git("show", "-s", "--format=%ct", source))
         generated_at = datetime.fromtimestamp(source_epoch, timezone.utc).isoformat(timespec="seconds")
         receipt = {
@@ -149,7 +149,7 @@ def export(project: dict[str, object], source: str, output: Path, publish: bool,
             "paths": paths,
             "source_root": source_root or None,
         }
-        (tree / "LUMA-SOURCE.json").write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
+        (tree / "SUNO-SOURCE.json").write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
         destination = output / name; destination.mkdir(parents=True, exist_ok=True)
         tar_path = destination / f"{name}-{source[:12]}.tar.gz"
         raw_tar = temporary_path / "product.tar"
@@ -177,8 +177,8 @@ def publish_tree(project: dict[str, object], tree: Path, source: str, branch: st
         raise SystemExit(f"publishing requires explicit {project['remote_env']}; no implicit origin push")
     repository = tree.parent / "repository"; repository.mkdir()
     git("init", "-q", cwd=repository)
-    git("config", "user.name", "Project Luma Release Automation", cwd=repository)
-    git("config", "user.email", "maintainers@projectluma.org", cwd=repository)
+    git("config", "user.name", "Project Suno Release Automation", cwd=repository)
+    git("config", "user.email", "maintainers@projectSuno.org", cwd=repository)
     git("remote", "add", "publish", remote, cwd=repository)
     lookup = subprocess.run(("git", "ls-remote", "--exit-code", "--heads", "publish",
                              "refs/heads/" + branch), cwd=repository,
@@ -202,7 +202,7 @@ def publish_tree(project: dict[str, object], tree: Path, source: str, branch: st
     if not changed:
         print(f"{project['name']}: split branch already matches {source}")
         return
-    git("commit", "-q", "-m", f"Release {project['name']} from Project Luma {source}", cwd=repository)
+    git("commit", "-q", "-m", f"Release {project['name']} from Project Suno {source}", cwd=repository)
     git("push", "publish", f"HEAD:refs/heads/{branch}", cwd=repository)
 
 

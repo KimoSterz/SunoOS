@@ -60,7 +60,7 @@ def artwork(profile, canonical, directory, handheld=False):
     directory.mkdir(parents=True,exist_ok=True)
     # A profile switch must not keep assets from an earlier ring variant.
     for previous in directory.glob('*.png'):
-        if previous.name in {'luma-wordmark.png','luma-wordmark-stop.png','luma-loading-dot.png','luma-track.png','luma-mark.png',*PROMPT_PIECES.values()} or re.fullmatch(r'(?:ring-(?:progress|spin)|luma-wordmark(?:-stop)?)-[0-9]+\.png', previous.name):
+        if previous.name in {'Suno-wordmark.png','Suno-wordmark-stop.png','Suno-loading-dot.png','Suno-track.png','Suno-mark.png',*PROMPT_PIECES.values()} or re.fullmatch(r'(?:ring-(?:progress|spin)|Suno-wordmark(?:-stop)?)-[0-9]+\.png', previous.name):
             previous.unlink()
     _,ink=PALETTES[profile['surface']]
     # Preserve exact geometry, separating the existing orange stop path.
@@ -72,7 +72,7 @@ def artwork(profile, canonical, directory, handheld=False):
                     orange=child.get('fill') != 'currentColor'
                     if orange != stop: group.remove(child)
                     elif not orange: child.set('fill',ink)
-        name='luma-wordmark-stop.png' if stop else 'luma-wordmark.png'
+        name='Suno-wordmark-stop.png' if stop else 'Suno-wordmark.png'
         vector=ET.tostring(tree,encoding='unicode')
         raster(vector,directory/name,2219,715)
         # Plymouth's bilinear image scaler samples rather than integrates
@@ -85,13 +85,13 @@ def artwork(profile, canonical, directory, handheld=False):
             raster(vector,directory/f'{stem}-{width}.png',width,width*715//2219)
     def svg(body,box='0 0 128 128'):
         return f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="{box}">{body}</svg>'
-    raster(svg(f'<circle cx="64" cy="64" r="64" fill="{ink}"/>'),directory/'luma-loading-dot.png',128,128)
-    raster(svg(f'<path fill="{ink}" d="M0 0H128V128H0Z"/>'),directory/'luma-track.png',1,1)
+    raster(svg(f'<circle cx="64" cy="64" r="64" fill="{ink}"/>'),directory/'Suno-loading-dot.png',128,128)
+    raster(svg(f'<path fill="{ink}" d="M0 0H128V128H0Z"/>'),directory/'Suno-track.png',1,1)
     # Direct translation of the simulator's 1.66em x 1em capsule mark,
     # .145em border; this does not replace or redraw the canonical wordmark.
     raster(svg(f'<rect x="3.045" y="3.045" width="63.63" height="35.91" rx="17.955" '
-               f'fill="none" stroke="{ink}" stroke-width="6.09"/>','0 0 69.72 42'),directory/'luma-mark.png',280,168)
-    # The unlock prompt, drawn with the same geometry as luma-firmware's and
+               f'fill="none" stroke="{ink}" stroke-width="6.09"/>','0 0 69.72 42'),directory/'Suno-mark.png',280,168)
+    # The unlock prompt, drawn with the same geometry as Suno-firmware's and
     # coloured for this surface: the field in the ink colour, bullets in the
     # surface colour.
     renderer=importlib.util.spec_from_file_location('render_firmware_theme',
@@ -111,12 +111,12 @@ def artwork(profile, canonical, directory, handheld=False):
             raster(svg(body),directory/f'{prefix}-{frame}.png',128,128)
 
 def compile_profiles(root,desktop,mobile,output,rasterize=True):
-    template=(root/'assets/boot/luma-theme.script.in').read_text()
+    template=(root/'assets/boot/Suno-theme.script.in').read_text()
     output.mkdir(parents=True,exist_ok=True)
-    for name,profile,handheld in [('luma-loading',desktop,False),('luma-loading-handheld',mobile,True)]:
+    for name,profile,handheld in [('Suno-loading',desktop,False),('Suno-loading-handheld',mobile,True)]:
         (output/f'{name}.script').write_text(script(profile,template,handheld))
         if rasterize:
-            artwork(profile,(root/'website/public/brand/luma-wordmark.svg').read_text(),output/'variant-assets'/name,handheld)
+            artwork(profile,(root/'website/public/brand/Suno-wordmark.svg').read_text(),output/'variant-assets'/name,handheld)
     # Keep the pre-kernel theme's palette coupled to the selected desktop profile.
     bg,ink=PALETTES[desktop['surface']]
     grub=(root/'assets/boot/grub-theme/theme.txt').read_text()
@@ -124,10 +124,10 @@ def compile_profiles(root,desktop,mobile,output,rasterize=True):
     grub=grub.replace('@BACKGROUND@',bg).replace('@INK@',ink)
     if desktop['surface']=='paper':
         grub=grub.replace('#c2c5c8','#687078').replace('#9ca3af','#687078').replace('#484c52','#d1d4d8')
-    if rasterize: (output/'luma-grub-theme.txt').write_text(grub)
+    if rasterize: (output/'Suno-grub-theme.txt').write_text(grub)
     if rasterize:
         # Archive members are a fixed pair of package-owned theme directories.
-        with (output/'luma-boot-variants.tar.gz').open('wb') as raw:
+        with (output/'Suno-boot-variants.tar.gz').open('wb') as raw:
             with gzip.GzipFile(fileobj=raw,mode='wb',filename='',mtime=0) as compressed:
                 with tarfile.open(fileobj=compressed,mode='w') as tar:
                     for path in sorted((output/'variant-assets').rglob('*.png')):

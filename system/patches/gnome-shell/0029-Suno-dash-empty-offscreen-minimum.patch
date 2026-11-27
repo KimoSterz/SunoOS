@@ -1,0 +1,15 @@
+--- a/data/theme/Suno-shelf.css
++++ b/data/theme/Suno-shelf.css
+@@ -45,7 +45,12 @@
+ .Suno-shelf-dock-island .Suno-shelf-material {
+   padding: 7px; }
+ 
++/* An empty favorites/running list still needs a nonzero offscreen surface.
++ * Dash owns ALWAYS offscreen redirection; a zero-width viewport trips Cogl.
++ * This does not change the natural size of any populated dock. */
+ .Suno-shelf-dock-island #dash {
++  min-width: 1px;
++  min-height: 1px;
+   padding: 0; }
+   .Suno-shelf-dock-island #dash .dash-background {
+     background-color: transparent;

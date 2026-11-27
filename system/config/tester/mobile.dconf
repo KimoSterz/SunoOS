@@ -2,7 +2,7 @@
 [org/gnome/desktop/interface]
 icon-theme='Prairie'
 font-name='Figtree 11'
-gtk-theme='Luma'
+gtk-theme='Suno'
 
 [org/gnome/desktop/session]
 idle-delay=uint32 0

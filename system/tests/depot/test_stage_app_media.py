@@ -35,7 +35,7 @@ class MediaStage(unittest.TestCase):
                 media.png_structure(value)
 
     def test_exact_object_media_is_required_and_immutable(self):
-        app = 'org.projectluma.Notes'
+        app = 'org.projectSuno.Notes'
         image = png()
         sha = hashlib.sha256(image).hexdigest()
         url = f'https://dl.simplyluma.com/media/{app}/{sha}.png'

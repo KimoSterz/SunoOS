@@ -37,8 +37,8 @@ Its generated driver matches the compiled module input. No full replacement
 kernel is required for the live development test because this driver is a module.
 
 Package `scripts/mobile/touch-wake-policy.py` as
-`/usr/libexec/luma-touch-wake-policy` and the matching unit from
-`config/mobile/luma-touch-wake-policy.service` in the device image. Enable the
+`/usr/libexec/Suno-touch-wake-policy` and the matching unit from
+`config/mobile/Suno-touch-wake-policy.service` in the device image. Enable the
 service only on profiles that provide the driver's `wake_gesture` capability.
 The policy follows the active seat's compositor display-power events, including
 lock screen and greeter, and arms hardware recognition while the panel is blank.

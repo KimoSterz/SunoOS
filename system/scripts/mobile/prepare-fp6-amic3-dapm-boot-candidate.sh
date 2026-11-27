@@ -15,7 +15,7 @@ repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 base_boot=${1:?usage: prepare-fp6-amic3-dapm-boot-candidate.sh V4_BOOT DAPM_BUNDLE [OUTPUT_DIR]}
 bundle=${2:?usage: prepare-fp6-amic3-dapm-boot-candidate.sh V4_BOOT DAPM_BUNDLE [OUTPUT_DIR]}
 output_dir=${3:-$repo_root/build/mobile/fp6-physical/fp6-microphone-boot-v5}
-candidate=$output_dir/boot-fp6-luma-microphone-v5.img
+candidate=$output_dir/boot-fp6-Suno-microphone-v5.img
 bundle_manifest=$bundle/manifest.env
 dtb=$bundle/milos-fairphone-fp6.dtb
 
@@ -52,7 +52,7 @@ if grep -Evq '^[A-Z0-9_]+=[A-Za-z0-9._,-]+$' "$bundle_manifest"; then
 fi
 # shellcheck disable=SC1090
 . "$bundle_manifest"
-[ "${LUMA_FP6_AMIC3_DAPM_BUILD_VERSION:-}" = 1 ] || die 'bundle version differs'
+[ "${SUNO_FP6_AMIC3_DAPM_BUILD_VERSION:-}" = 1 ] || die 'bundle version differs'
 [ "${KERNEL_RELEASE:-}" = 7.1.2 ] || die 'kernel release differs'
 [ "${BASE_KERNEL_SHA256:-}" = "$FP6_MICROPHONE_V3_RELINKED_KERNEL_SHA256" ] || die 'base kernel differs'
 [ "${BASE_DTB_SHA256:-}" = "$FP6_MICROPHONE_AMIC3_V1_DTB_SHA256" ] || die 'base DTB differs'
@@ -93,13 +93,13 @@ cmp "$base_dir/ramdisk" "$candidate_dir/ramdisk"
 candidate_sha256=$(hash "$candidate")
 hash_pinned=true
 if [ "$FP6_MICROPHONE_V5_BOOT_SHA256" = UNPACKAGED ]; then
-  [ "${LUMA_ALLOW_UNPINNED_FP6_MICROPHONE_V5:-}" = 1 ] || die 'v5 hash is not pinned'
+  [ "${SUNO_ALLOW_UNPINNED_FP6_MICROPHONE_V5:-}" = 1 ] || die 'v5 hash is not pinned'
   hash_pinned=false
 else
   [ "$candidate_sha256" = "$FP6_MICROPHONE_V5_BOOT_SHA256" ] || die 'v5 checksum differs'
 fi
 {
-  printf 'LUMA_FP6_MICROPHONE_BOOT_CANDIDATE_VERSION=5\n'
+  printf 'SUNO_FP6_MICROPHONE_BOOT_CANDIDATE_VERSION=5\n'
   printf 'SCOPE=wcd9378-amic3-dapm-route\n'
   printf 'BASE_BOOT_SHA256=%s\n' "$FP6_MICROPHONE_V4_BOOT_SHA256"
   printf 'KERNEL_SHA256=%s\n' "$FP6_MICROPHONE_V3_RELINKED_KERNEL_SHA256"

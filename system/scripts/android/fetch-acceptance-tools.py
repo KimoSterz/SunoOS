@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 # SPDX-License-Identifier: Apache-2.0
-"""Fetch only the hash-pinned tools for Luma's source-owned test APK."""
+"""Fetch only the hash-pinned tools for Suno's source-owned test APK."""
 import argparse
 import base64
 import hashlib

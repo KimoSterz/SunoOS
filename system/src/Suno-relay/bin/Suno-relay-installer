@@ -1,0 +1,4 @@
+#!/usr/bin/python3
+from Suno_relay.installer import main
+
+raise SystemExit(main())

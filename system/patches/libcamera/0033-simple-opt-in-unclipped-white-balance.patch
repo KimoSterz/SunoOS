@@ -1,9 +1,9 @@
-From: Luma Developers <dev@projectluma.org>
+From: Suno Developers <dev@projectSuno.org>
 Subject: [PATCH] simple: allow AWB to ignore saturated sensor samples
 
 Adapt the saturated-sample exclusion described and implemented by Martin
 Neiva de Carvalho in https://patchwork.libcamera.org/patch/28175/ to the
-pinned Simple IPA and existing Luma metering statistics.
+pinned Simple IPA and existing Suno metering statistics.
 
 Keep existing whole-frame colour sums and luminance histograms unchanged.
 Sensor tuning opts into unclipped colour sums using Awb.rejectSaturated.

@@ -1,7 +1,7 @@
 # Dock badge evidence harness (Shell patch 0147)
 
 Runs the headless Shell with the badge code (installed or as a resource
-overlay) against stand-ins for luma-background, three background agents and a
+overlay) against stand-ins for Suno-background, three background agents and a
 LauncherEntry sender (`fakes.py`), then captures and checks:
 
 - `MODE=behaviour`: LauncherEntry counts, partial updates, urgent dots, the

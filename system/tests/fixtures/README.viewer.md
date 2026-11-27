@@ -6,9 +6,9 @@ Offsite and Terrace: copied byte for byte from repository commit 5a9f886c,
 `88aa33940488fbe27da899ac0176e93cb0163481fc79de4bee35fd2b373de717` and
 `1f33ade3672636a9414ffc2a786e55c623cf7de7e7b73ef7ba63c1ff2cca72d7`.
 
-Share-sheet face crops: copied from tracked tests/fixtures/phone-v70/face-{PR,NF,TH,SK,AR}.jpg in repository commit 57d6d7c0 (Phone v70 fixture), with the names/usernames/hues from v70 PPL. No portrait files were copied from LumaDesign.
+Share-sheet face crops: copied from tracked tests/fixtures/phone-v70/face-{PR,NF,TH,SK,AR}.jpg in repository commit 57d6d7c0 (Phone v70 fixture), with the names/usernames/hues from v70 PPL. No portrait files were copied from SunoDesign.
 
-Receipt, Frame and Lease are generated in memory by `luma_viewer.fixture`
+Receipt, Frame and Lease are generated in memory by `Suno_viewer.fixture`
 from the approved Viewer sample content.
 
 Comparison fixture `viewer-v70/v6.png` is the unmodified native Filer grid
@@ -24,7 +24,7 @@ folder; these exact output bytes are identified by SHA256:
 - v7: `6d866f9fb47db49f672744335966341dfce2b2bad1bd2813da328ecaacb11108`
 
 This source route was explicitly authorized by the coordinator in
-`viewer-05-fixture-artwork.md`: use Luma's own native Filer fixture captures,
+`viewer-05-fixture-artwork.md`: use Suno's own native Filer fixture captures,
 with provenance. The old reference-only WebP files are preserved outside the
 source checkout and are never committed. Logical sample names, metadata,
 comparison modes and actions remain v70's; only the sample image bytes change.

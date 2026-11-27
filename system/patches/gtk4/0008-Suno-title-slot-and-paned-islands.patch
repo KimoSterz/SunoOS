@@ -1,0 +1,361 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Project Suno <devnull@projectSuno.local>
+Date: Wed, 2 Sep 2026 11:30:00 -0500
+Subject: [PATCH] headerbar: host title-slot controls on the command row; paned surfaces become islands
+
+The clean title row carries text only. A GtkHeaderBar that owns the automatic
+Suno identity keeps GtkLabel and GtkInscription titles centered and hosts any
+other title widget at the center of its command row;
+gtk_header_bar_get_title_widget() keeps returning the application's widget.
+A GtkPaned that is the native work surface becomes transparent and both panes
+become clipped islands separated by the 9px handle, in the maintained SCSS and
+the generated release CSS.
+---
+
+diff --git a/gtk/gtkheaderbar.c b/gtk/gtkheaderbar.c
+index de49187..64be119 100644
+--- a/gtk/gtkheaderbar.c
++++ b/gtk/gtkheaderbar.c
+@@ -29,6 +29,7 @@
+ #include "gtkcenterbox.h"
+ #include "gtkimage.h"
+ #include "gtklabel.h"
++#include "gtkinscription.h"
+ #include "gtkmenubutton.h"
+ #include "gtkprivate.h"
+ #include "gtktypebuiltins.h"
+@@ -149,6 +150,7 @@ struct _GtkHeaderBar
+   GtkWidget *Suno_command_bar;
+   GtkWidget *Suno_command_start;
+   GtkWidget *Suno_command_end;
++  GtkWidget *Suno_hosted_title;
+ 
+   char *decoration_layout;
+ 
+@@ -180,6 +182,9 @@ static void add_automatic_Suno_identity (GtkHeaderBar *bar);
+ static void update_title (GtkHeaderBar *bar);
+ static void Suno_enter_command_row (GtkHeaderBar *bar);
+ static void Suno_leave_command_row (GtkHeaderBar *bar);
++static void Suno_update_command_bar_visibility (GtkHeaderBar *bar);
++static void Suno_host_title (GtkHeaderBar *bar);
++static void Suno_unhost_title (GtkHeaderBar *bar);
+ 
+ static void gtk_header_bar_buildable_init (GtkBuildableIface *iface);
+ static void update_default_decoration (GtkHeaderBar *bar);
+@@ -615,7 +620,57 @@ Suno_update_command_bar_visibility (GtkHeaderBar *bar)
+ 
+   gtk_widget_set_visible (bar->Suno_command_bar,
+                           gtk_widget_get_visible (bar->Suno_command_start) ||
+-                          gtk_widget_get_visible (bar->Suno_command_end));
++                          gtk_widget_get_visible (bar->Suno_command_end) ||
++                          (bar->Suno_hosted_title &&
++                           gtk_widget_get_visible (bar->Suno_hosted_title)));
++}
++
++/* Suno title slot: the clean title row carries text only.  A header that owns
++ * the automatic identity keeps GtkLabel and GtkInscription titles centered;
++ * any other title widget is a control and is hosted in the command row's
++ * center slot.  gtk_header_bar_get_title_widget() keeps returning it. */
++static gboolean
++Suno_title_widget_is_text (GtkWidget *widget)
++{
++  return widget == NULL || GTK_IS_LABEL (widget) || GTK_IS_INSCRIPTION (widget);
++}
++
++static void
++Suno_host_title (GtkHeaderBar *bar)
++{
++  GtkWidget *title = bar->title_widget;
++
++  if (!bar->Suno_command_bar || bar->Suno_hosted_title ||
++      Suno_title_widget_is_text (title))
++    return;
++
++  g_object_ref (title);
++  gtk_center_box_set_center_widget (GTK_CENTER_BOX (bar->center_box), NULL);
++  gtk_widget_add_css_class (title, "Suno-command-title");
++  gtk_center_box_set_center_widget (GTK_CENTER_BOX (bar->Suno_command_bar), title);
++  g_signal_connect_swapped (title, "notify::visible",
++                            G_CALLBACK (Suno_update_command_bar_visibility), bar);
++  g_object_unref (title);
++  bar->Suno_hosted_title = title;
++  Suno_update_command_bar_visibility (bar);
++}
++
++static void
++Suno_unhost_title (GtkHeaderBar *bar)
++{
++  GtkWidget *title = bar->Suno_hosted_title;
++
++  if (!title)
++    return;
++
++  g_object_ref (title);
++  g_signal_handlers_disconnect_by_func (title, Suno_update_command_bar_visibility, bar);
++  gtk_center_box_set_center_widget (GTK_CENTER_BOX (bar->Suno_command_bar), NULL);
++  gtk_widget_remove_css_class (title, "Suno-command-title");
++  bar->Suno_hosted_title = NULL;
++  if (bar->title_widget == title)
++    gtk_center_box_set_center_widget (GTK_CENTER_BOX (bar->center_box), title);
++  g_object_unref (title);
+ }
+ 
+ static void
+@@ -696,6 +751,7 @@ Suno_enter_command_row (GtkHeaderBar *bar)
+ 
+   Suno_move_children (bar, bar->start_box, bar->Suno_command_start, NULL, TRUE);
+   Suno_move_children (bar, bar->end_box, bar->Suno_command_end, NULL, TRUE);
++  Suno_host_title (bar);
+   Suno_update_group_visibility (bar->Suno_command_start);
+   Suno_update_group_visibility (bar->Suno_command_end);
+   Suno_update_command_bar_visibility (bar);
+@@ -719,6 +775,7 @@ Suno_leave_command_row (GtkHeaderBar *bar)
+   g_signal_handlers_disconnect_by_func (bar->Suno_command_end,
+                                         Suno_update_command_bar_visibility, bar);
+ 
++  Suno_unhost_title (bar);
+   Suno_move_children (bar, bar->Suno_command_start, bar->start_box, NULL, FALSE);
+   Suno_move_children (bar, bar->Suno_command_end, bar->end_box, bar->end_window_controls, FALSE);
+ 
+@@ -896,6 +953,15 @@ gtk_header_bar_set_title_widget (GtkHeaderBar *bar,
+   if (bar->title_widget == title_widget)
+     return;
+ 
++  if (bar->Suno_hosted_title)
++    {
++      g_signal_handlers_disconnect_by_func (bar->Suno_hosted_title,
++                                            Suno_update_command_bar_visibility, bar);
++      gtk_widget_remove_css_class (bar->Suno_hosted_title, "Suno-command-title");
++      gtk_center_box_set_center_widget (GTK_CENTER_BOX (bar->Suno_command_bar), NULL);
++      bar->Suno_hosted_title = NULL;
++    }
++
+   gtk_center_box_set_center_widget (GTK_CENTER_BOX (bar->center_box), NULL);
+   bar->title_widget = NULL;
+ 
+@@ -906,6 +972,7 @@ gtk_header_bar_set_title_widget (GtkHeaderBar *bar,
+       gtk_center_box_set_center_widget (GTK_CENTER_BOX (bar->center_box), title_widget);
+ 
+       bar->title_label = NULL;
++      Suno_host_title (bar);
+     }
+   else
+     {
+diff --git a/gtk/gtkpaned.c b/gtk/gtkpaned.c
+index e4c9743..079b79c 100644
+--- a/gtk/gtkpaned.c
++++ b/gtk/gtkpaned.c
+@@ -1657,6 +1657,12 @@ gtk_paned_set_start_child (GtkPaned  *paned,
+       gtk_widget_insert_before (child, GTK_WIDGET (paned), paned->handle_widget);
+     }
+ 
++  if (child && gtk_widget_has_css_class (GTK_WIDGET (paned), "Suno-split-surface"))
++    {
++      gtk_widget_add_css_class (child, "Suno-pane-island");
++      gtk_widget_set_overflow (child, GTK_OVERFLOW_HIDDEN);
++    }
++
+   g_object_notify (G_OBJECT (paned), "start-child");
+ }
+ 
+@@ -1777,6 +1783,12 @@ gtk_paned_set_end_child (GtkPaned  *paned,
+       gtk_widget_insert_after (child, GTK_WIDGET (paned), paned->handle_widget);
+     }
+ 
++  if (child && gtk_widget_has_css_class (GTK_WIDGET (paned), "Suno-split-surface"))
++    {
++      gtk_widget_add_css_class (child, "Suno-pane-island");
++      gtk_widget_set_overflow (child, GTK_OVERFLOW_HIDDEN);
++    }
++
+   g_object_notify (G_OBJECT (paned), "end-child");
+ }
+ 
+diff --git a/gtk/gtkwindow.c b/gtk/gtkwindow.c
+index e9e564d..e6b97e1 100644
+--- a/gtk/gtkwindow.c
++++ b/gtk/gtkwindow.c
+@@ -25,6 +25,7 @@
+ #include "config.h"
+ 
+ #include "gtkwindowprivate.h"
++#include "gtkpaned.h"
+ 
+ #include "gtkaccessibleprivate.h"
+ #include "gtkapplicationprivate.h"
+@@ -7036,6 +7037,23 @@ gtk_window_set_child (GtkWindow *window,
+                              GINT_TO_POINTER (gtk_widget_get_overflow (child) + 1));
+           gtk_widget_set_overflow (child, GTK_OVERFLOW_HIDDEN);
+           gtk_widget_add_css_class (child, "Suno-native-work-surface");
++          /* Suno: a paned work surface presents both panes as islands. Children
++           * placed before the window adopted the paned are marked here; later
++           * children are marked by the paned setters. */
++          if (GTK_IS_PANED (child))
++            {
++              GtkWidget *panes[2] = { gtk_paned_get_start_child (GTK_PANED (child)),
++                                      gtk_paned_get_end_child (GTK_PANED (child)) };
++              guint i;
++
++              gtk_widget_add_css_class (child, "Suno-split-surface");
++              for (i = 0; i < 2; i++)
++                if (panes[i])
++                  {
++                    gtk_widget_add_css_class (panes[i], "Suno-pane-island");
++                    gtk_widget_set_overflow (panes[i], GTK_OVERFLOW_HIDDEN);
++                  }
++            }
+         }
+ 
+       priv->child = child;
+diff --git a/gtk/theme/Default/Default-dark.css b/gtk/theme/Default/Default-dark.css
+index c6504e5..a6afd30 100644
+--- a/gtk/theme/Default/Default-dark.css
++++ b/gtk/theme/Default/Default-dark.css
+@@ -643,6 +643,12 @@ window.Suno-native-window:not(.Suno-adw-native-window):not(.Suno-no-native-surfa
+ 
+ window.Suno-native-window:not(.Suno-adw-native-window):not(.Suno-no-native-surfaces) { background-color: #21252b; color: #e4e8ea; font-family: "Figtree", sans-serif; }
+ 
++window.Suno-native-window:not(.Suno-adw-native-window):not(.Suno-no-native-surfaces) > paned.Suno-native-work-surface.Suno-split-surface { background: none; border: none; box-shadow: none; }
++
++window.Suno-native-window:not(.Suno-adw-native-window):not(.Suno-no-native-surfaces) > paned.Suno-native-work-surface.Suno-split-surface > separator { min-width: 9px; min-height: 9px; margin: 0; background: none; border: none; box-shadow: none; }
++
++window.Suno-native-window:not(.Suno-adw-native-window):not(.Suno-no-native-surfaces) > paned.Suno-native-work-surface.Suno-split-surface > .Suno-pane-island { border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; background-color: #2a2e34; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.42), 0 20px 38px -15px rgba(0, 0, 0, 0.78); }
++
+ window.Suno-native-window:not(.Suno-adw-native-window):not(.Suno-no-native-surfaces) > .Suno-native-work-surface { margin: 0 9px 9px; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; background-color: #2a2e34; color: #e4e8ea; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.42), 0 20px 38px -15px rgba(0, 0, 0, 0.78); }
+ 
+ headerbar switch { margin-top: 10px; margin-bottom: 10px; }
+@@ -1967,6 +1973,21 @@ window.Suno-native-window:not(.Suno-adw-native-window):not(.Suno-no-native-surfa
+ 
+ window.Suno-native-window:not(.Suno-adw-native-window):not(.Suno-no-native-surfaces) headerbar.Suno-command-host .Suno-command-group > menubutton { margin: 0; }
+ 
++window.Suno-native-window:not(.Suno-adw-native-window):not(.Suno-no-native-surfaces) headerbar.Suno-command-host > .Suno-command-bar > .Suno-command-title { margin: 5px 0; }
++
++window.Suno-native-window:not(.Suno-adw-native-window):not(.Suno-no-native-surfaces) headerbar.Suno-command-host > .Suno-command-bar > stackswitcher.Suno-command-title { min-height: 30px; border-spacing: 0; border-radius: 8px; background-color: rgba(255, 255, 255, 0.038); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08); }
++
++window.Suno-native-window:not(.Suno-adw-native-window):not(.Suno-no-native-surfaces) headerbar.Suno-command-host > .Suno-command-bar > stackswitcher.Suno-command-title > button { min-height: 30px; margin: 0; padding: 0 12px; border: none; border-right: 1px solid rgba(255, 255, 255, 0.08); border-radius: 0; background: transparent; box-shadow: none; color: #e4e8ea; }
++
++window.Suno-native-window:not(.Suno-adw-native-window):not(.Suno-no-native-surfaces) headerbar.Suno-command-host > .Suno-command-bar > stackswitcher.Suno-command-title > button:first-child { border-radius: 8px 0 0 8px; }
++
++window.Suno-native-window:not(.Suno-adw-native-window):not(.Suno-no-native-surfaces) headerbar.Suno-command-host > .Suno-command-bar > stackswitcher.Suno-command-title > button:last-child { border-right: none; border-radius: 0 8px 8px 0; }
++
++window.Suno-native-window:not(.Suno-adw-native-window):not(.Suno-no-native-surfaces) headerbar.Suno-command-host > .Suno-command-bar > stackswitcher.Suno-command-title > button:hover { background-color: rgba(255, 255, 255, 0.06); }
++
++window.Suno-native-window:not(.Suno-adw-native-window):not(.Suno-no-native-surfaces) headerbar.Suno-command-host > .Suno-command-bar > stackswitcher.Suno-command-title > button:checked { background-color: rgba(255, 255, 255, 0.108); }
++
++
+ window.Suno-native-window:not(.Suno-adw-native-window):not(.Suno-no-native-surfaces) headerbar.Suno-command-host .Suno-command-group > button, window.Suno-native-window:not(.Suno-adw-native-window):not(.Suno-no-native-surfaces) headerbar.Suno-command-host .Suno-command-group > menubutton > button { min-width: 30px; min-height: 30px; padding: 0 9px; margin: 0; border: none; border-right: 1px solid rgba(255, 255, 255, 0.08); border-radius: 0; background: transparent; box-shadow: none; color: #e4e8ea; }
+ 
+ window.Suno-native-window:not(.Suno-adw-native-window):not(.Suno-no-native-surfaces) headerbar.Suno-command-host .Suno-command-group > button > image, window.Suno-native-window:not(.Suno-adw-native-window):not(.Suno-no-native-surfaces) headerbar.Suno-command-host .Suno-command-group > menubutton > button > image { -gtk-icon-size: 14px; color: inherit; }
+diff --git a/gtk/theme/Default/Default-light.css b/gtk/theme/Default/Default-light.css
+index bdee743..1858434 100644
+--- a/gtk/theme/Default/Default-light.css
++++ b/gtk/theme/Default/Default-light.css
+@@ -651,6 +651,12 @@ window.Suno-native-window:not(.Suno-adw-native-window):not(.Suno-no-native-surfa
+ 
+ window.Suno-native-window:not(.Suno-adw-native-window):not(.Suno-no-native-surfaces) { background-color: #f1f2f3; color: #283038; font-family: "Figtree", sans-serif; }
+ 
++window.Suno-native-window:not(.Suno-adw-native-window):not(.Suno-no-native-surfaces) > paned.Suno-native-work-surface.Suno-split-surface { background: none; border: none; box-shadow: none; }
++
++window.Suno-native-window:not(.Suno-adw-native-window):not(.Suno-no-native-surfaces) > paned.Suno-native-work-surface.Suno-split-surface > separator { min-width: 9px; min-height: 9px; margin: 0; background: none; border: none; box-shadow: none; }
++
++window.Suno-native-window:not(.Suno-adw-native-window):not(.Suno-no-native-surfaces) > paned.Suno-native-work-surface.Suno-split-surface > .Suno-pane-island { border: 1px solid rgba(39, 48, 56, 0.095); border-radius: 10px; background-color: #fbfbfa; box-shadow: 0 2px 5px rgba(25, 27, 31, 0.16), 0 18px 36px -16px rgba(25, 27, 31, 0.48); }
++
+ window.Suno-native-window:not(.Suno-adw-native-window):not(.Suno-no-native-surfaces) > .Suno-native-work-surface { margin: 0 9px 9px; border: 1px solid rgba(39, 48, 56, 0.095); border-radius: 10px; background-color: #fbfbfa; color: #283038; box-shadow: 0 2px 5px rgba(25, 27, 31, 0.16), 0 18px 36px -16px rgba(25, 27, 31, 0.48); }
+ 
+ headerbar switch { margin-top: 10px; margin-bottom: 10px; }
+@@ -1979,6 +1985,21 @@ window.Suno-native-window:not(.Suno-adw-native-window):not(.Suno-no-native-surfa
+ 
+ window.Suno-native-window:not(.Suno-adw-native-window):not(.Suno-no-native-surfaces) headerbar.Suno-command-host .Suno-command-group > menubutton { margin: 0; }
+ 
++window.Suno-native-window:not(.Suno-adw-native-window):not(.Suno-no-native-surfaces) headerbar.Suno-command-host > .Suno-command-bar > .Suno-command-title { margin: 5px 0; }
++
++window.Suno-native-window:not(.Suno-adw-native-window):not(.Suno-no-native-surfaces) headerbar.Suno-command-host > .Suno-command-bar > stackswitcher.Suno-command-title { min-height: 30px; border-spacing: 0; border-radius: 8px; background-color: rgba(39, 48, 56, 0.04); box-shadow: inset 0 0 0 1px rgba(39, 48, 56, 0.095); }
++
++window.Suno-native-window:not(.Suno-adw-native-window):not(.Suno-no-native-surfaces) headerbar.Suno-command-host > .Suno-command-bar > stackswitcher.Suno-command-title > button { min-height: 30px; margin: 0; padding: 0 12px; border: none; border-right: 1px solid rgba(39, 48, 56, 0.095); border-radius: 0; background: transparent; box-shadow: none; color: #283038; }
++
++window.Suno-native-window:not(.Suno-adw-native-window):not(.Suno-no-native-surfaces) headerbar.Suno-command-host > .Suno-command-bar > stackswitcher.Suno-command-title > button:first-child { border-radius: 8px 0 0 8px; }
++
++window.Suno-native-window:not(.Suno-adw-native-window):not(.Suno-no-native-surfaces) headerbar.Suno-command-host > .Suno-command-bar > stackswitcher.Suno-command-title > button:last-child { border-right: none; border-radius: 0 8px 8px 0; }
++
++window.Suno-native-window:not(.Suno-adw-native-window):not(.Suno-no-native-surfaces) headerbar.Suno-command-host > .Suno-command-bar > stackswitcher.Suno-command-title > button:hover { background-color: rgba(39, 48, 56, 0.06); }
++
++window.Suno-native-window:not(.Suno-adw-native-window):not(.Suno-no-native-surfaces) headerbar.Suno-command-host > .Suno-command-bar > stackswitcher.Suno-command-title > button:checked { background-color: rgba(39, 48, 56, 0.105); }
++
++
+ window.Suno-native-window:not(.Suno-adw-native-window):not(.Suno-no-native-surfaces) headerbar.Suno-command-host .Suno-command-group > button, window.Suno-native-window:not(.Suno-adw-native-window):not(.Suno-no-native-surfaces) headerbar.Suno-command-host .Suno-command-group > menubutton > button { min-width: 30px; min-height: 30px; padding: 0 9px; margin: 0; border: none; border-right: 1px solid rgba(39, 48, 56, 0.095); border-radius: 0; background: transparent; box-shadow: none; color: #283038; }
+ 
+ window.Suno-native-window:not(.Suno-adw-native-window):not(.Suno-no-native-surfaces) headerbar.Suno-command-host .Suno-command-group > button > image, window.Suno-native-window:not(.Suno-adw-native-window):not(.Suno-no-native-surfaces) headerbar.Suno-command-host .Suno-command-group > menubutton > button > image { -gtk-icon-size: 14px; color: inherit; }
+diff --git a/gtk/theme/Default/_common.scss b/gtk/theme/Default/_common.scss
+index 5d95b73..f7ccc58 100644
+--- a/gtk/theme/Default/_common.scss
++++ b/gtk/theme/Default/_common.scss
+@@ -1718,6 +1718,32 @@ window.Suno-native-window:not(.Suno-adw-native-window):not(.Suno-no-native-surfa
+   color: if($variant == 'light', #283038, #e4e8ea);
+   font-family: "Figtree", sans-serif;
+ 
++  > paned.Suno-native-work-surface.Suno-split-surface {
++    background: none;
++    border: none;
++    box-shadow: none;
++
++    > separator {
++      min-width: 9px;
++      min-height: 9px;
++      margin: 0;
++      background: none;
++      border: none;
++      box-shadow: none;
++    }
++
++    > .Suno-pane-island {
++      border: 1px solid if($variant == 'light', rgba(39, 48, 56, 0.095), rgba(255, 255, 255, 0.08));
++      border-radius: 10px;
++      background-color: if($variant == 'light', #fbfbfa, #2a2e34);
++      box-shadow: if($variant == 'light',
++                     (0 2px 5px rgba(25, 27, 31, 0.16),
++                      0 18px 36px -16px rgba(25, 27, 31, 0.48)),
++                     (0 2px 6px rgba(0, 0, 0, 0.42),
++                      0 20px 38px -15px rgba(0, 0, 0, 0.78)));
++    }
++  }
++
+   > .Suno-native-work-surface {
+     margin: 0 9px 9px;
+     border: 1px solid if($variant == 'light', rgba(39, 48, 56, 0.095), rgba(255, 255, 255, 0.08));
+@@ -4658,6 +4684,36 @@ window.Suno-native-window:not(.Suno-adw-native-window):not(.Suno-no-native-surfa
+       // margins; the connected group owns its own 30px targets.
+       .Suno-command-group > menubutton { margin: 0; }
+ 
++      // A control hosted from the title slot sits at the command row's center.
++      // Stack switchers take the connected-group material; other controls keep
++      // their own presentation at the 30px command height.
++      > .Suno-command-bar > .Suno-command-title { margin: 5px 0; }
++
++      > .Suno-command-bar > stackswitcher.Suno-command-title {
++        min-height: 30px;
++        border-spacing: 0;
++        border-radius: 8px;
++        background-color: if($variant == 'light', rgba(39, 48, 56, 0.04), rgba(255, 255, 255, 0.038));
++        box-shadow: inset 0 0 0 1px if($variant == 'light', rgba(39, 48, 56, 0.095), rgba(255, 255, 255, 0.08));
++
++        > button {
++          min-height: 30px;
++          margin: 0;
++          padding: 0 12px;
++          border: none;
++          border-right: 1px solid if($variant == 'light', rgba(39, 48, 56, 0.095), rgba(255, 255, 255, 0.08));
++          border-radius: 0;
++          background: transparent;
++          box-shadow: none;
++          color: if($variant == 'light', #283038, #e4e8ea);
++
++          &:first-child { border-radius: 8px 0 0 8px; }
++          &:last-child { border-right: none; border-radius: 0 8px 8px 0; }
++          &:hover { background-color: if($variant == 'light', rgba(39, 48, 56, 0.06), rgba(255, 255, 255, 0.06)); }
++          &:checked { background-color: if($variant == 'light', rgba(39, 48, 56, 0.105), rgba(255, 255, 255, 0.108)); }
++        }
++      }
++
+       .Suno-command-group > button,
+       .Suno-command-group > menubutton > button {
+         min-width: 30px;

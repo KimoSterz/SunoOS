@@ -1,7 +1,7 @@
 ---
 type: fix
 component: Valet
-packages: [luma-application-installer]
+packages: [Suno-application-installer]
 highlight: false
 ---
 Summary: Apps installed from a file can use the Music folder

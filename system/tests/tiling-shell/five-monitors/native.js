@@ -5,9 +5,9 @@ import GLib from 'gi://GLib';
 import Clutter from 'gi://Clutter';
 import Shell from 'gi://Shell';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
-const out=GLib.getenv('LUMA_FIVE_OUT'),results=[];
+const out=GLib.getenv('SUNO_FIVE_OUT'),results=[];
 const geometry=r=>({x:r.x,y:r.y,width:r.width,height:r.height});
-const scale=Number(GLib.getenv('LUMA_FIVE_SCALE')??'1');
+const scale=Number(GLib.getenv('SUNO_FIVE_SCALE')??'1');
 const pause=ms=>new Promise(r=>GLib.timeout_add(GLib.PRIORITY_DEFAULT,ms,()=>{r();return GLib.SOURCE_REMOVE;}));
 const check=(name,ok,detail='')=>{results.push({name,ok:!!ok,detail});print(`${ok?'PASS':'FAIL'} ${name} ${detail}`);};
 const call=(method,args)=>new Promise((resolve,reject)=>Gio.DBus.session.call('org.gnome.Mutter.DisplayConfig','/org/gnome/Mutter/DisplayConfig','org.gnome.Mutter.DisplayConfig',method,args,null,Gio.DBusCallFlags.NONE,5000,null,(c,r)=>{try{resolve(c.call_finish(r));}catch(e){reject(e);}}));
@@ -32,7 +32,7 @@ async function work(){
  settings.set_string('layouts-json',JSON.stringify([layout]));
  settings.set_value('selected-layouts',new GLib.Variant('aas',Array.from({length:5},()=>['five-monitor-probe'])));
  await pause(600);
- const child=Gio.Subprocess.new(['python3',GLib.getenv('LUMA_FIVE_APP'),'org.projectluma.FiveMonitorProbe'],Gio.SubprocessFlags.NONE);
+ const child=Gio.Subprocess.new(['python3',GLib.getenv('SUNO_FIVE_APP'),'org.projectSuno.FiveMonitorProbe'],Gio.SubprocessFlags.NONE);
  const pointer=Clutter.get_default_backend().get_default_seat().create_virtual_device(Clutter.InputDeviceType.POINTER_DEVICE);
  const move=async(x,y,ms=150)=>{pointer.notify_absolute_motion(GLib.get_monotonic_time(),x,y);await pause(ms);};
  const button=state=>pointer.notify_button(GLib.get_monotonic_time(),Clutter.BUTTON_PRIMARY,state);
@@ -58,10 +58,10 @@ async function work(){
    await pause(500); // Let the final native motion and preview animation settle.
    const manager=extension._tilingManagers.find(m=>m._monitor.index===central.index),preview=manager._selectedTilesPreview;
    const [x,y]=points.at(-1),r=preview.rect;
-   if(GLib.getenv('LUMA_FIVE_TRACE')==='1')print('DRAG_TRACE '+JSON.stringify({caseName,wanted:[x,y],actual:global.get_pointer(),last:manager._lastCursorPos,showing:preview.showing,selection:geometry(r),tiles:manager._workspaceTilingLayout.get(window.get_workspace())._previews.map(p=>({rect:geometry(p.rect),original:geometry(p.originalRect),restore:p.canRestore}))}));
+   if(GLib.getenv('SUNO_FIVE_TRACE')==='1')print('DRAG_TRACE '+JSON.stringify({caseName,wanted:[x,y],actual:global.get_pointer(),last:manager._lastCursorPos,showing:preview.showing,selection:geometry(r),tiles:manager._workspaceTilingLayout.get(window.get_workspace())._previews.map(p=>({rect:geometry(p.rect),original:geometry(p.originalRect),restore:p.canRestore}))}));
    check(`${caseName} real drag active`,manager._isGrabbingWindow);
    check(`${caseName} centre selection covers pointer`,preview.showing&&x>=r.x&&x<=r.x+r.width&&y>=r.y&&y<=r.y+r.height,JSON.stringify(geometry(r)));
-   const area=manager._lumaCellArea;
+   const area=manager._SunoCellArea;
    check(`${caseName} centre column has complete height`,Math.abs(r.y-area.y)<=1&&Math.abs(r.height-area.height)<=1,JSON.stringify({selection:geometry(r),area:geometry(area)}));
    await shot(`five-${caseName}`);
    button(Clutter.ButtonState.RELEASED);await pause(700);

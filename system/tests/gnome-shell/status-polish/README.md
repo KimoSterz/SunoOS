@@ -1,8 +1,8 @@
 # Native status and Quick Options regression
 
 Run `run-native.sh` inside an owned disposable Shell fixture with the candidate
-Shell resources installed, the normal Luma theme/icons/fonts, the `luma-media-test`
-user (UID 1000), and `LUMA_NATIVE_SHELL_DISPOSABLE=1`. Set `DEV_ARTIFACT_DIR` to its
+Shell resources installed, the normal Suno theme/icons/fonts, the `Suno-media-test`
+user (UID 1000), and `SUNO_NATIVE_SHELL_DISPOSABLE=1`. Set `DEV_ARTIFACT_DIR` to its
 private output directory. Never run it in a person's desktop session.
 
 The fixture checks AM/PM allocation at real 100% and 125% monitor scaling,

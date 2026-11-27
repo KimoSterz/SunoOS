@@ -72,11 +72,11 @@ def main() -> None:
             item['source'] = f'artwork/icon-family-r42/{name}'
             item['sha256'] = hashlib.sha256(output).hexdigest()
     if not args.check:
-        manifest['source'] = ('Owner-selected Luma icon family revision 40 '
+        manifest['source'] = ('Owner-selected Suno icon family revision 40 '
                               '(2026-09-27), derived revision 42 retains dock '
                               'sizing and removes the decorative outer rim; '
                               'preserved v3 icons for unselected apps')
-        manifest['license'] = ('Luma-owned icon-family revision 40 and derived '
+        manifest['license'] = ('Suno-owned icon-family revision 40 and derived '
                                'revision 42 artwork: CC-BY-SA-4.0; owner confirmed '
                                'distribution rights on 2026-09-28. Attributed '
                                'Lucide geometry retains ISC/MIT notices.')

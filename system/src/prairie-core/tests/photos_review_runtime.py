@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # SPDX-License-Identifier: Apache-2.0
 """Private generated-photo regression for the five manual Photos review findings.
-Set LUMA_PHOTOS_REVIEW_OUTPUT to retain optional PNG evidence. No user store is used.
+Set SUNO_PHOTOS_REVIEW_OUTPUT to retain optional PNG evidence. No user store is used.
 """
 import os,tempfile
 from pathlib import Path
@@ -11,12 +11,12 @@ from prairie_apps.photos_backend import PhotoLibrary
 from gi.repository import Gtk,Graphene
 temporary=tempfile.TemporaryDirectory(prefix='photos-review-')
 root=Path(temporary.name)
-output=Path(os.environ.get('LUMA_PHOTOS_REVIEW_OUTPUT',str(root/'captures')))
+output=Path(os.environ.get('SUNO_PHOTOS_REVIEW_OUTPUT',str(root/'captures')))
 output.mkdir(parents=True,exist_ok=True)
 for key in ('HOME','XDG_CONFIG_HOME','XDG_DATA_HOME','XDG_CACHE_HOME','XDG_STATE_HOME'):
  p=root/key;p.mkdir();os.environ[key]=str(p)
-os.environ['LUMA_PHOTOS_NON_UNIQUE']='1'
-os.environ.pop('LUMA_PHOTOS_FIXTURE',None)
+os.environ['SUNO_PHOTOS_NON_UNIQUE']='1'
+os.environ.pop('SUNO_PHOTOS_FIXTURE',None)
 pics=root/'pictures';pics.mkdir()
 for n in range(8):(pics/f'Fixture {n}.png').write_bytes(_png(120,80))
 lib=PhotoLibrary(root/'catalog.sqlite3');source=lib.add_source(pics,'Fixture');assert lib.scan_source(source.id).added==8

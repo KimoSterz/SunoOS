@@ -2,20 +2,20 @@
 // Actual installed actor geometry and real virtual input in disposable Shell.
 // MPRIS provider is an explicit protocol fixture, not physical audio proof.
 import Clutter from 'gi://Clutter';import Gio from 'gi://Gio';import GLib from 'gi://GLib';import Shell from 'gi://Shell';import St from 'gi://St';
-import * as Main from 'resource:///org/gnome/shell/ui/main.js';import * as Notifications from 'resource:///org/gnome/shell/ui/lumaNotificationBeacon.js';import * as Scripting from 'resource:///org/gnome/shell/ui/scripting.js';
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';import * as Notifications from 'resource:///org/gnome/shell/ui/SunoNotificationBeacon.js';import * as Scripting from 'resource:///org/gnome/shell/ui/scripting.js';
 const sleep=ms=>Scripting.sleep(ms);const failures=[];let count=0;
 const check=(v,m)=>{count++;print(`${v?'PASS':'FAIL'} activity-touch: ${m}`);if(!v)failures.push(m);};
 const rect=a=>{const[x,y]=a.get_transformed_position(),[width,height]=a.get_transformed_size();return{x,y,width,height}};
-async function capture(name){const dir=GLib.getenv('LUMA_ACTIVITY_EVIDENCE');if(!dir)return;const stream=Gio.File.new_for_path(`${dir}/${name}.png`).replace(null,false,Gio.FileCreateFlags.NONE,null);try{await new Shell.Screenshot().screenshot(false,stream);}finally{stream.close(null);}}
+async function capture(name){const dir=GLib.getenv('SUNO_ACTIVITY_EVIDENCE');if(!dir)return;const stream=Gio.File.new_for_path(`${dir}/${name}.png`).replace(null,false,Gio.FileCreateFlags.NONE,null);try{await new Shell.Screenshot().screenshot(false,stream);}finally{stream.close(null);}}
 export async function run(){
-const scale=Number(GLib.getenv('LUMA_ACTIVITY_SCALE')??'1');St.ThemeContext.get_for_stage(global.stage).scale_factor=scale;new Gio.Settings({schema_id:'org.gnome.desktop.interface'}).set_boolean('enable-animations',false);Main.overview.hide();await sleep(300);
-const favorites=JSON.parse(GLib.getenv('LUMA_ACTIVITY_FAVORITES'));const settings=new Gio.Settings({schema_id:'org.gnome.shell'});settings.set_strv('favorite-apps',favorites);await sleep(1500);
-const process=Gio.Subprocess.new(['python3',GLib.getenv('LUMA_ACTIVITY_PROVIDER')],Gio.SubprocessFlags.NONE);
+const scale=Number(GLib.getenv('SUNO_ACTIVITY_SCALE')??'1');St.ThemeContext.get_for_stage(global.stage).scale_factor=scale;new Gio.Settings({schema_id:'org.gnome.desktop.interface'}).set_boolean('enable-animations',false);Main.overview.hide();await sleep(300);
+const favorites=JSON.parse(GLib.getenv('SUNO_ACTIVITY_FAVORITES'));const settings=new Gio.Settings({schema_id:'org.gnome.shell'});settings.set_strv('favorite-apps',favorites);await sleep(1500);
+const process=Gio.Subprocess.new(['python3',GLib.getenv('SUNO_ACTIVITY_PROVIDER')],Gio.SubprocessFlags.NONE);
 try{
  await sleep(2200);const s=Main.shelf,m=s.getIsland('media');check(s._media.eligible,'normal D-Bus MPRIS player is eligible');check(m.visible&&m.mapped&&s._mediaAllowed,'default22-app dock preserves visible live media');check(s._dockScroll.width<s._dockContent.get_preferred_width(-1)[1],'native dock scrolls to make room for media');
  const q=Main.panel.statusArea.quickSettings;check(q._statusDateLabel.mapped&&q._statusDateLabel.height>0,'date remains visible beside dock and media');const qr=rect(q),dr=rect(q._statusDateLabel),monitor=Main.layoutManager.primaryMonitor;check(qr.width>180*scale&&dr.x>=qr.x&&dr.x+dr.width<=qr.x+qr.width+1&&qr.x+qr.width<=monitor.x+monitor.width-15,'whole status controls and date fit the measured native row');
  print('ACTIVITY_NATIVE '+JSON.stringify({favorites:settings.get_strv('favorite-apps').length,mediaAllowed:s._mediaAllowed,liveShown:s._liveShown,liveLimit:s._liveLimit,dock:rect(s.getIsland('dock')),media:rect(m),groups:s._groups.map(g=>({rect:rect(g),preferred:g.row.get_preferred_width(-1),containsDock:g.row.contains(s._dockIsland)})),dockNatural:s._dockNatural,status:rect(q),viewport:s._dockScroll.width,natural:s._dockContent.get_preferred_width(-1)[1]}));
- if(m.visible){s._media._toggle.emit('clicked',Clutter.BUTTON_PRIMARY);await sleep(200);const[,data]=GLib.file_get_contents(GLib.getenv('LUMA_MEDIA_ACTION_LOG'));check(new TextDecoder().decode(data).includes('PlayPause'),'native media button dispatches to actual MPRIS recipient');}
+ if(m.visible){s._media._toggle.emit('clicked',Clutter.BUTTON_PRIMARY);await sleep(200);const[,data]=GLib.file_get_contents(GLib.getenv('SUNO_MEDIA_ACTION_LOG'));check(new TextDecoder().decode(data).includes('PlayPause'),'native media button dispatches to actual MPRIS recipient');}
  settings.set_strv('favorite-apps',favorites.slice(0,4));await sleep(1000);check(m.visible&&s._mediaAllowed,'activity remains visible when dock gets smaller');
  settings.set_strv('favorite-apps',favorites);await sleep(1000);check(m.visible&&s._mediaAllowed,'activity remains visible when full dock returns');
  await capture('default-dock-live-media');

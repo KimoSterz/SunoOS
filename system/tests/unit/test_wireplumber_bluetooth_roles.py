@@ -1,17 +1,17 @@
-"""The desktop image's WirePlumber default for Luma Connect phone calls (ADR-021)."""
+"""The desktop image's WirePlumber default for Suno Connect phone calls (ADR-021)."""
 from pathlib import Path
 import sys
 import unittest
 
 REPO = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(REPO / 'src/luma-continuity'))
+sys.path.insert(0, str(REPO / 'src/Suno-continuity'))
 
-from luma_continuity.companion_calls import ROLES_WITH_HANDS_FREE  # noqa: E402
+from Suno_continuity.companion_calls import ROLES_WITH_HANDS_FREE  # noqa: E402
 
 
 class ShippedRolesTest(unittest.TestCase):
     def test_shipped_default_removes_the_hands_free_role(self):
-        text = (REPO / 'config/desktop/wireplumber/60-luma-bluetooth-roles.conf').read_text()
+        text = (REPO / 'config/desktop/wireplumber/60-Suno-bluetooth-roles.conf').read_text()
         self.assertIn('ADR-021', text)
         roles_line = next(line for line in text.splitlines() if 'override.bluez5.roles' in line and not line.lstrip().startswith('#'))
         self.assertNotIn('hfp_hf', roles_line)

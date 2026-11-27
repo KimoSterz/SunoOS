@@ -1,0 +1,10 @@
+/* Generated from shared design tokens; do not edit. */
+.Suno-converged-widget { border-radius: 26px; border: 1px solid rgba(255,255,255,0.12); color: white; background: #202638; padding: 0; }
+.Suno-home-widget-content { padding: 14px 16px; spacing: 4px; }
+.Suno-converged-widget.weather { background-gradient-direction: vertical; background-gradient-start: rgba(46,136,205,0.92); background-gradient-end: rgba(34,74,162,0.94); }
+.Suno-converged-widget-heading { font-size: 0.82143em; font-weight: 600; color: rgba(255,255,255,0.85); }
+.Suno-converged-widget.calendar .Suno-converged-widget-heading { color: #ef8c83; }
+.Suno-converged-widget.weather .Suno-converged-widget-title { font-size: 3.14286em; font-weight: 300; }
+.Suno-converged-widget.calendar .Suno-converged-widget-title { font-size: 2.14286em; font-weight: 600; }
+.Suno-converged-widget-caption { font-size: 0.85714em; color: rgba(255,255,255,0.8); }
+.Suno-converged-widget:focus { border-color: white; }

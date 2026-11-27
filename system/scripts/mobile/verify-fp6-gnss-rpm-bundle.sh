@@ -30,7 +30,7 @@ verify_component() {
   fi
   # shellcheck disable=SC1090
   . "$manifest"
-  [ "${LUMA_FP6_GNSS_BUILD_VERSION:-}" = 1 ] || die "$component bundle version differs"
+  [ "${SUNO_FP6_GNSS_BUILD_VERSION:-}" = 1 ] || die "$component bundle version differs"
   [ "${COMPONENT:-}" = "$component" ] || die "$component identity differs"
   [ "${SOURCE_COMMIT:-}" = "$commit" ] || die "$component source commit differs"
   [ "${SOURCE_VERSION:-}" = "$version" ] || die "$component source version differs"

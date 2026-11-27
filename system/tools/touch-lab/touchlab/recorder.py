@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 # SPDX-License-Identifier: Apache-2.0
-"""Luma Touch Lab recorder.
+"""Suno Touch Lab recorder.
 
 Started as root in a transient system unit (see `touchlab sudo-command`). It
 opens the touchpad's hidraw and evdev nodes, the keyboards' evdev nodes and a
@@ -42,7 +42,7 @@ import time
 import zlib
 
 VERSION = 1
-FORMAT = "luma-touch-lab/1"
+FORMAT = "Suno-touch-lab/1"
 
 EV_SYN, EV_KEY, EV_ABS, EV_MSC, EV_SW = 0x00, 0x01, 0x03, 0x04, 0x05
 SYN_REPORT, SYN_DROPPED = 0, 3
@@ -94,7 +94,7 @@ FAILED_DEVICE = re.compile(r"(?:Failed to initialize device|Invalid path) (/dev/
 
 
 def log(message: str) -> None:
-    print(f"luma-touch-lab: {message}", file=sys.stderr, flush=True)
+    print(f"Suno-touch-lab: {message}", file=sys.stderr, flush=True)
 
 
 # ── Device discovery ────────────────────────────────────────────────────────
@@ -273,7 +273,7 @@ class Writer:
         self.sessions = os.path.join(root, "sessions")
         self.control = os.path.join(root, "control")
         self.cap_bytes, self.floor_bytes = cap_bytes, floor_bytes
-        self.runtime = f"/run/user/{uid}/luma-touch-lab"
+        self.runtime = f"/run/user/{uid}/Suno-touch-lab"
         self.header: bytes | None = None
         self.session_dir = None
         self.chunk = None
@@ -864,21 +864,21 @@ def sanitize_libinput_line(line: str, touchpad: str | None) -> str | None:
 
 
 def main(argv=None) -> int:
-    p = argparse.ArgumentParser(description="Luma Touch Lab recorder (run as root via systemd-run)")
+    p = argparse.ArgumentParser(description="Suno Touch Lab recorder (run as root via systemd-run)")
     p.add_argument("--user", required=True, help="the user who owns the recordings")
     p.add_argument("--touchpad", help="device node or name (default: the internal touchpad)")
     p.add_argument("--cap-gib", type=float, default=4.0, help="pause when recordings reach this size")
     p.add_argument("--free-floor-gib", type=float, default=20.0, help="pause when the disk has less free")
     p.add_argument("--shadow-plugins", help="also run a private libinput with the Lua plugins in this directory")
     p.add_argument("--no-features", action="store_true", help="skip HID GET_FEATURE reads")
-    p.add_argument("--data-root", help="record here instead of ~/.local/share/luma-touch-lab (tests)")
+    p.add_argument("--data-root", help="record here instead of ~/.local/share/Suno-touch-lab (tests)")
     args = p.parse_args(argv)
     pw = pwd.getpwnam(args.user)
     if pw.pw_uid == 0:
         log("refusing to record for root")
         return 2
     root = os.path.realpath(args.data_root) if args.data_root else \
-        os.path.join(os.path.realpath(pw.pw_dir), ".local/share/luma-touch-lab")
+        os.path.join(os.path.realpath(pw.pw_dir), ".local/share/Suno-touch-lab")
     if args.shadow_plugins:
         args.shadow_plugins = os.path.realpath(args.shadow_plugins)
     if os.geteuid() != 0:

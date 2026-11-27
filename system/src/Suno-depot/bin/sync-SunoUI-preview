@@ -1,0 +1,44 @@
+#!/bin/sh
+# Stage Depot beside the installed app. Run through the ThinkPad host bridge.
+set -eu
+
+root=$(CDPATH= cd -- "$(dirname -- "$0")/../../.." && pwd)
+destination="$HOME/.local/share/Suno-dev/SunoUI-depot"
+
+SUNOUI_HOST=local SUNOUI_WORKTREE="$root" \
+  SUNOUI_DEST=.local/share/Suno-dev/SunoUI-depot \
+  sh "$HOME/Documents/SunoDesign/tools/sync-SunoUI-preview.sh"
+
+mkdir -p "$destination/src" "$destination/bin" "$HOME/.local/share/applications"
+rsync -a --delete --exclude __pycache__ --exclude tests \
+  "$root/src/Suno-depot/" "$destination/src/Suno-depot/"
+rsync -a --delete --exclude __pycache__ --exclude tests \
+  "$root/src/Suno-installer/" "$destination/src/Suno-installer/"
+
+cat > "$destination/bin/run" <<'RUN'
+#!/bin/sh
+set -eu
+here=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+export PYTHONPATH="$here/python:$here/src/Suno-depot:$here/src/Suno-installer"
+export SUNO_APPKIT_ICON_PATH="$here/python/icons"
+export SUNO_DEPOT_STYLE_PATH="$here/src/Suno-depot/data/depot.css"
+export SUNO_DEPOT_SUNOUI_PREVIEW=1
+unset SUNO_DEPOT_PREVIEW SUNO_DEPOT_FIXTURE SUNO_DEPOT_FIXTURE_STATE
+exec python3 -m Suno_depot.window "$@"
+RUN
+chmod 755 "$destination/bin/run"
+
+cat > "$HOME/.local/share/applications/org.projectSuno.Depot.SunoUIPreview.desktop" <<'DESKTOP'
+[Desktop Entry]
+Type=Application
+Name=Depot (SunoUI preview)
+Comment=Depot from the SunoUI app worktree
+Exec=/var/home/nick/.local/share/Suno-dev/SunoUI-depot/bin/run
+Icon=org.projectSuno.Depot
+Terminal=false
+Categories=System;PackageManager;
+StartupNotify=true
+StartupWMClass=org.projectSuno.Depot.SunoUIPreview
+DESKTOP
+
+printf 'Depot preview staged at %s (real providers, separate application ID).\n' "$destination"

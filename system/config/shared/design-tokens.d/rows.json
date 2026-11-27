@@ -1,6 +1,6 @@
 {
-  "_doc": "LumaUI rows family (KB-A): navigation rows and sidebar variants (SB1), type roles for app-only surfaces (TY1), ProgressLine (DT3), rich menu rows (MN1), AvatarStack and presence (SB3), FavouritesStrip (SB2) and Mark (SB4). Deep-merged into design-tokens.json's lumaui object. Every number is read off luma-next-70.html; px unless the key says otherwise.",
-  "lumaui": {
+  "_doc": "SunoUI rows family (KB-A): navigation rows and sidebar variants (SB1), type roles for app-only surfaces (TY1), ProgressLine (DT3), rich menu rows (MN1), AvatarStack and presence (SB3), FavouritesStrip (SB2) and Mark (SB4). Deep-merged into design-tokens.json's SunoUI object. Every number is read off Suno-next-70.html; px unless the key says otherwise.",
+  "SunoUI": {
     "nav_people": {
       "_doc": "v70 Messages #m-side .crow (292 wide, 64 px rows, a 46 face) and Phone .pnrow (a 38 face). Title 13.5/550 (700 when it wants attention), the time on line 1 at 11.5, the preview at 12.5.",
       "width": 292, "row_padding_y": 9, "row_padding_x": 10, "row_gap": 12, "row_radius": 12, "row_spacing": 1,
@@ -67,11 +67,11 @@
       "corner_ratio": 0.22, "mono_size_ratio": 0.36, "mono_light_ratio": 0.74, "mono_dark_ratio": 0.46, "mono_chroma_ratio": 0.12, "mono_tracking_em": -0.02
     },
     "lit_glow": {
-      "_doc": "ContentLitHeader(hues=) and tone=\"luma\" (v70 .dapp, .dsysbg): radial light from the corners, fading from 35% to 90% down.",
+      "_doc": "ContentLitHeader(hues=) and tone=\"Suno\" (v70 .dapp, .dsysbg): radial light from the corners, fading from 35% to 90% down.",
       "mask_start_pct": 35, "mask_end_pct": 90,
       "dark": {"lightness_ratio": 0.5, "chroma_ratio": 0.13, "peak_alpha": 0.95, "second_alpha": 0.47},
       "light": {"lightness_ratio": 0.85, "chroma_ratio": 0.1, "peak_alpha": 1.0, "second_alpha": 0.47},
-      "luma": ["rgba(254, 104, 25, 0.75)", "rgba(240, 86, 143, 0.6)", "rgba(255, 199, 154, 0.28)"]
+      "Suno": ["rgba(254, 104, 25, 0.75)", "rgba(240, 86, 143, 0.6)", "rgba(255, 199, 154, 0.28)"]
     },
     "note_card": {
       "_doc": "NoteCard (v70 #n-kids .kid): 10/12 inside, 12 gap, 12 round, on the well; a 16 glyph, a 14 chevron, 600 title, 12 preview.",
@@ -120,12 +120,12 @@
       "trail_button": 22, "trail_radius": 6, "trail_icon": 12, "switch_width": 32, "switch_height": 19, "switch_knob": 14
     },
     "swipe_row": {
-      "_doc": "v71 LumaUI swipe rows (.lswu, LSW): past 90 commits, 12 px slop, sideways when |dx| > 1.4|dy|; the reveal is 14 round in the action's colour, its icon (20) over its name (11.5/700) in a 76 column, 3 apart, at 75% and 92% until it would commit (100%, 106%); settles in 220 ms.",
+      "_doc": "v71 SunoUI swipe rows (.lswu, LSW): past 90 commits, 12 px slop, sideways when |dx| > 1.4|dy|; the reveal is 14 round in the action's colour, its icon (20) over its name (11.5/700) in a 76 column, 3 apart, at 75% and 92% until it would commit (100%, 106%); settles in 220 ms.",
       "commit": 90, "slop": 12, "radius": 14, "face_min": 76, "face_gap": 3, "icon": 20, "label_size": 11.5, "label_weight": 700,
       "face_opacity": 0.75, "face_scale": 0.92, "face_go_scale": 1.06, "face_ms": 150, "settle_ms": 220
     },
     "az_index": {
-      "_doc": "v71 LumaUI A-Z index (.lazidx, lAZ, phone): 20 wide at 3 from the window's right, 150 from its top and bottom, 4 inside, 11 round (fill-1 while touched); letters 10.5/700 in the accent, those with no one at the faint ink and 45%; the list's own lane is 26 (.lazgut); the bubble is 56 round, 40 left of the index's right edge, 26/700. Shown with 6 or more letters.",
+      "_doc": "v71 SunoUI A-Z index (.lazidx, lAZ, phone): 20 wide at 3 from the window's right, 150 from its top and bottom, 4 inside, 11 round (fill-1 while touched); letters 10.5/700 in the accent, those with no one at the faint ink and 45%; the list's own lane is 26 (.lazgut); the bubble is 56 round, 40 left of the index's right edge, 26/700. Shown with 6 or more letters.",
       "width": 20, "end": 3, "top": 150, "bottom": 150, "padding_y": 4, "radius": 11, "letter_size": 10.5, "letter_weight": 700,
       "dim_alpha": 0.45, "gutter": 26, "bubble": 56, "bubble_gap": 40, "bubble_size": 26, "bubble_weight": 700, "minimum": 6
     },

@@ -1,4 +1,4 @@
-From: Project Luma <engineering@projectluma.org>
+From: Project Suno <engineering@projectSuno.org>
 Date: Mon, 8 Sep 2026 01:20:00 +0000
 Subject: [PATCH] compositor: Fix opaque region after surface-content backport
 

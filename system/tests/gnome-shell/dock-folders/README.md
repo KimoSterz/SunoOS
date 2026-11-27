@@ -11,7 +11,7 @@ and time the surface shows is read from the file system.
 
 ```
 podman exec -e SA_OVERLAY=… -e SA_SCHEMA_DIR=… -e SA_MODE=dark \
-  -e SA_EDGES=bottom luma-shell-oracle \
+  -e SA_EDGES=bottom Suno-shell-oracle \
   bash /oracle/shelf-arrange/tests/run.sh /oracle/…/out/dark-bottom folders.js
 ```
 

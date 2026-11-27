@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 # SPDX-License-Identifier: Apache-2.0
-"""A loopback stand-in for Luma's CDN and Hub, for the update agent VM rig only.
+"""A loopback stand-in for Suno's CDN and Hub, for the update agent VM rig only.
 
 Serves the OSTree repository at /os/repo and /os/preview/<credential>/repo,
 graphs at /os/graph/, accepts update events (recorded, and checked for the
@@ -14,7 +14,7 @@ import sys
 import time
 from pathlib import Path
 
-ROOT = Path(sys.argv[1] if len(sys.argv) > 1 else "/var/lib/luma-update-test")
+ROOT = Path(sys.argv[1] if len(sys.argv) > 1 else "/var/lib/Suno-update-test")
 PORT = int(sys.argv[2]) if len(sys.argv) > 2 else 8471
 CREDENTIAL = "rigpreviewcredential0123456789"
 TOKEN = "rig-connect-device-token"

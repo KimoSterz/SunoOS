@@ -11,7 +11,7 @@
 Every request is appended to a JSON-lines log with the credential replaced by
 "<credential>". Nothing here is exposed beyond 127.0.0.1.
 
-  dl-test-server.py PORT REPO GRAPH_DIR LOG   (credential files: LUMA_DL_PREVIEW_CREDENTIAL_FILES)
+  dl-test-server.py PORT REPO GRAPH_DIR LOG   (credential files: SUNO_DL_PREVIEW_CREDENTIAL_FILES)
 """
 import importlib.util, json, os, re, sys, threading, time
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer

@@ -1,5 +1,5 @@
---- a/shell/cc-luma-desktop.c
-+++ b/shell/cc-luma-desktop.c
+--- a/shell/cc-Suno-desktop.c
++++ b/shell/cc-Suno-desktop.c
 @@ -12,7 +12,7 @@
  }
  static gboolean number_allowed (const char *key, gint64 value)
@@ -17,7 +17,7 @@
 +  g_set_error_literal (error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT, "Choose a value within the available range");
    return FALSE;
  }
- gboolean cc_luma_windows_validate (CcLumaFixture *model)
+ gboolean cc_Suno_windows_validate (CcSunoFixture *model)
 @@ -98,7 +98,7 @@
  static gboolean shelf_choice_allowed (const char *key, const char *value)
  {
@@ -27,29 +27,29 @@
      (g_str_equal (key, "spread") && (g_str_equal (value, "together") || g_str_equal (value, "spread"))) ||
      (g_str_equal (key, "joined") && (g_str_equal (value, "separate") || g_str_equal (value, "joined"))) ||
      (g_str_equal (key, "float") && (g_str_equal (value, "floating") || g_str_equal (value, "edge"))) ||
---- a/shell/cc-luma-live-windows.c
-+++ b/shell/cc-luma-live-windows.c
+--- a/shell/cc-Suno-live-windows.c
++++ b/shell/cc-Suno-live-windows.c
 @@ -78,6 +78,7 @@
    if (!self->tiling || !self->shell) return;
-   cc_luma_fixture_publish_boolean (self->model, "tile", tiling_on (self));
-   cc_luma_fixture_publish_int (self->model, "gap", g_settings_get_uint (self->tiling, "inner-gaps"));
-+  cc_luma_fixture_publish_boolean (self->model, "resizeTogether", g_settings_get_boolean (self->tiling, "resize-complementing-windows"));
-   cc_luma_fixture_publish_boolean (self->model, "edgeTile", g_settings_get_boolean (self->tiling, "active-screen-edges"));
+   cc_Suno_fixture_publish_boolean (self->model, "tile", tiling_on (self));
+   cc_Suno_fixture_publish_int (self->model, "gap", g_settings_get_uint (self->tiling, "inner-gaps"));
++  cc_Suno_fixture_publish_boolean (self->model, "resizeTogether", g_settings_get_boolean (self->tiling, "resize-complementing-windows"));
+   cc_Suno_fixture_publish_boolean (self->model, "edgeTile", g_settings_get_boolean (self->tiling, "active-screen-edges"));
  }
  
 @@ -115,6 +116,8 @@
-       cc_luma_fixture_verify_key (model, "tile");
-       cc_luma_fixture_verify_key (model, "gap");
-       cc_luma_fixture_verify_key (model, "edgeTile");
-+      cc_luma_fixture_own_key (model, "resizeTogether");
-+      cc_luma_fixture_verify_key (model, "resizeTogether");
+       cc_Suno_fixture_verify_key (model, "tile");
+       cc_Suno_fixture_verify_key (model, "gap");
+       cc_Suno_fixture_verify_key (model, "edgeTile");
++      cc_Suno_fixture_own_key (model, "resizeTogether");
++      cc_Suno_fixture_verify_key (model, "resizeTogether");
        publish_tiling (self);
      }
-   g_autoptr (GSettingsSchema) border = source ? g_settings_schema_source_lookup (source, "org.project_luma.shell-state", TRUE) : NULL;
+   g_autoptr (GSettingsSchema) border = source ? g_settings_schema_source_lookup (source, "org.projectSuno.shell-state", TRUE) : NULL;
 @@ -191,7 +194,7 @@
      }
-   if (cc_luma_gs_table_covers (self->table, key))
-     return cc_luma_gs_table_write (self->table, key, value, error);
+   if (cc_Suno_gs_table_covers (self->table, key))
+     return cc_Suno_gs_table_write (self->table, key, value, error);
 -  if (!self->tiling || !(g_str_equal (key, "tile") || g_str_equal (key, "gap") || g_str_equal (key, "edgeTile")))
 +  if (!self->tiling || !(g_str_equal (key, "tile") || g_str_equal (key, "gap") || g_str_equal (key, "edgeTile") || g_str_equal (key, "resizeTogether")))
      return FALSE;
@@ -71,8 +71,8 @@
      }
    if (g_str_equal (key, "edgeTile"))
      {
---- a/shell/cc-luma-view-bluetooth.c
-+++ b/shell/cc-luma-view-bluetooth.c
+--- a/shell/cc-Suno-view-bluetooth.c
++++ b/shell/cc-Suno-view-bluetooth.c
 @@ -227,7 +227,8 @@
      pairing && json_object_has_member (d, "code") ?
      g_strdup_printf ("Type %s on it, then Return", json_object_get_string_member (d, "code")) : NULL;
@@ -80,7 +80,7 @@
 -  GtkWidget *box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 3);
 +  GtkWidget *box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 10);
 +  GtkWidget *words = gtk_box_new (GTK_ORIENTATION_VERTICAL, 3);
-   GtkWidget *icon = luma_ui_icon_new (json_object_get_string_member (d, "i"));
+   GtkWidget *icon = Suno_ui_icon_new (json_object_get_string_member (d, "i"));
    GtkWidget *name = cf_text (json_object_get_string_member (d, "n"), "cf-ndev-name");
    GtkWidget *what = cf_text (pairing ? (prompt ? prompt : "Pairing…") : json_object_get_string_member (d, "kind"), "cf-ndev-kind");
 @@ -235,8 +236,9 @@
@@ -152,9 +152,9 @@
 +  if (GTK_IS_BOX (parent)) gtk_box_remove (GTK_BOX (parent), search);
 +  return search;
 +}
- void cc_luma_view_bluetooth_render (View *v)
+ void cc_Suno_view_bluetooth_render (View *v)
  {
-   JsonArray *saved = json_object_get_array_member (cc_luma_fixture_get_data (v->model), "CFBT");
+   JsonArray *saved = json_object_get_array_member (cc_Suno_fixture_get_data (v->model), "CFBT");
 @@ -341,39 +396,53 @@
      gtk_box_append (GTK_BOX (scan), how);
      gtk_box_append (GTK_BOX (hero_body), scan);
@@ -233,28 +233,28 @@
    }
    if (confirming)
      {
---- a/shell/cc-luma-view-private.h
-+++ b/shell/cc-luma-view-private.h
+--- a/shell/cc-Suno-view-private.h
++++ b/shell/cc-Suno-view-private.h
 @@ -121,6 +121,7 @@
- void cc_luma_view_report_error (View *v, const GError *error);
+ void cc_Suno_view_report_error (View *v, const GError *error);
  
- GtkWidget *cc_luma_view_toggle (View *v, const char *key, const char *name, const char *accessible);
-+gboolean cc_luma_view_windows_sync (View *v);
- void cc_luma_view_windows_render (View *v);
+ GtkWidget *cc_Suno_view_toggle (View *v, const char *key, const char *name, const char *accessible);
++gboolean cc_Suno_view_windows_sync (View *v);
+ void cc_Suno_view_windows_render (View *v);
  
- GtkWidget *cc_luma_view_link (View *v, const char *caption, const char *target);
---- a/shell/cc-luma-view-shelf.c
-+++ b/shell/cc-luma-view-shelf.c
+ GtkWidget *cc_Suno_view_link (View *v, const char *caption, const char *target);
+--- a/shell/cc-Suno-view-shelf.c
++++ b/shell/cc-Suno-view-shelf.c
 @@ -299,7 +299,6 @@
  
- void cc_luma_view_shelf_render (View *v)
+ void cc_Suno_view_shelf_render (View *v)
  {
 -  const char *edge[] = { "bottom", "Bottom", "left", "Left", "right", "Right", NULL };
    const char *spread[] = { "together", "Together", "spread", "Spread", NULL };
    const char *joined[] = { "separate", "Separate", "joined", "One bar", NULL };
    const char *floating[] = { "floating", "Floating", "edge", "Attached", NULL };
 @@ -314,20 +313,20 @@
-   const char *hide = cc_luma_view_text (v, "hide");
+   const char *hide = cc_Suno_view_text (v, "hide");
    g_autofree char *meta = hiding ? g_strdup_printf ("%s · %s", label, g_str_equal (hide, "never") ? "always shown" : g_str_equal (hide, "touch") ? "hides when a window touches it" : "hides until you point at it")
                                   : g_strdup (label);
 -  cf_header (v, "Shelf", meta, NULL);
@@ -264,7 +264,7 @@
    gtk_box_append (GTK_BOX (hero), preset_buttons (v));
    cf_hero (v, hero, "cf-shelf-hero");
    GtkBox *card = cf_group (v, "Arrangement", NULL);
--  segment_row (v, card, "edge", "Position", NULL, g_str_equal (cc_luma_view_text (v, "edge"), "top") ? edge_top : edge);
+-  segment_row (v, card, "edge", "Position", NULL, g_str_equal (cc_Suno_view_text (v, "edge"), "top") ? edge_top : edge);
 +  segment_row (v, card, "edge", "Position", NULL, edge_top);
    segment_row (v, card, "spread", "Islands", "Together in the middle, or spread to the ends", spread);
    segment_row (v, card, "joined", "Surface", NULL, joined);
@@ -277,8 +277,8 @@
        if (sizing) size_row (v, card);
      }
    card = cf_group (v, "Status island", NULL);
---- a/shell/cc-luma-view-system.c
-+++ b/shell/cc-luma-view-system.c
+--- a/shell/cc-Suno-view-system.c
++++ b/shell/cc-Suno-view-system.c
 @@ -923,7 +923,7 @@
    g = cf_group (v, "Keep in step across your computers", NULL);
    cf_sw (v, g, "sync.look", "Appearance and wallpaper", NULL, NULL);
@@ -288,12 +288,12 @@
    g = cf_group (v, "Signed in", NULL);
    cf_vl (v, g, "Nick’s ThinkPad", "This computer", NULL, FALSE, NULL, lead ("monitor"));
    cf_vl (v, g, "Studio desktop", "Yesterday", NULL, FALSE, NULL, lead ("monitor"));
---- a/shell/cc-luma-view-windows.c
-+++ b/shell/cc-luma-view-windows.c
+--- a/shell/cc-Suno-view-windows.c
++++ b/shell/cc-Suno-view-windows.c
 @@ -1,6 +1,7 @@
  /* SPDX-License-Identifier: GPL-2.0-or-later */
- #include "cc-luma-rows.h"
- #include "cc-luma-desktop.h"
+ #include "cc-Suno-rows.h"
+ #include "cc-Suno-desktop.h"
 +#include <math.h>
  
  static GtkWidget *tiles (View *v);
@@ -304,8 +304,8 @@
    g_autoptr (GError) error = NULL;
 -  gint64 value = (gint64) gtk_range_get_value (range);
 +  gint64 value = (gint64) round (gtk_range_get_value (range));
-   if (!cc_luma_windows_set_number (v->model, key, value, &error))
-     { cc_luma_view_report_error (v, error); return; }
+   if (!cc_Suno_windows_set_number (v->model, key, value, &error))
+     { cc_Suno_view_report_error (v, error); return; }
    /* Keep the emitting slider alive, including through a continuous drag. */
 @@ -101,9 +102,10 @@
    GtkWidget *out = cf_text (caption, "cf-out");
@@ -330,7 +330,7 @@
 +  GString *signature = g_string_new (NULL);
 +  for (guint i = 0; i < G_N_ELEMENTS (keys); i++)
 +    {
-+      JsonNode *node = cc_luma_fixture_get (v->model, keys[i]);
++      JsonNode *node = cc_Suno_fixture_get (v->model, keys[i]);
 +      g_autofree char *value = node ? json_to_string (node, FALSE) : g_strdup ("null");
 +      g_string_append_printf (signature, "%s:%s;", keys[i], value);
 +    }
@@ -346,7 +346,7 @@
 +    }
 +  return NULL;
 +}
-+gboolean cc_luma_view_windows_sync (View *v)
++gboolean cc_Suno_view_windows_sync (View *v)
 +{
 +  g_autofree char *signature = windows_structure (v);
 +  if (g_strcmp0 (signature, g_object_get_data (G_OBJECT (v->root), "cf-windows-structure"))) return FALSE;
@@ -355,7 +355,7 @@
 +    {
 +      g_autofree char *name = g_strconcat ("cf-", keys[i], NULL);
 +      GtkWidget *range = windows_range (v->root, name);
-+      JsonNode *node = cc_luma_fixture_get (v->model, keys[i]);
++      JsonNode *node = cc_Suno_fixture_get (v->model, keys[i]);
 +      if (!GTK_IS_RANGE (range) || !node) continue;
 +      gint64 value = json_node_get_int (node);
 +      if (gtk_range_get_value (GTK_RANGE (range)) == value) continue;
@@ -374,37 +374,37 @@
 +    }
 +  return TRUE;
 +}
- void cc_luma_view_windows_render (View *v)
+ void cc_Suno_view_windows_render (View *v)
  {
 +  g_object_set_data_full (G_OBJECT (v->root), "cf-windows-structure", windows_structure (v), g_free);
-   gint64 count = json_node_get_int (cc_luma_fixture_get (v->model, "wsN"));
-   g_autofree char *space = g_str_equal (cc_luma_view_text (v, "ws"), "dynamic") ?
+   gint64 count = json_node_get_int (cc_Suno_fixture_get (v->model, "wsN"));
+   g_autofree char *space = g_str_equal (cc_Suno_view_text (v, "ws"), "dynamic") ?
      g_strdup ("workspaces come and go") : g_strdup_printf ("%" G_GINT64_FORMAT " workspaces", count);
 @@ -203,7 +256,9 @@
      {
        card = cf_group (v, "Tiling", NULL);
        switch_row (v, card, "tile", "Tile windows", "New windows sit side by side instead of on top of each other");
--      if (cc_luma_view_flag (v, "tile")) number_row (v, card, "gap", "Space between windows", 0, 24, 2, " px");
-+      if (cc_luma_view_flag (v, "tile")) number_row (v, card, "gap", "Space between windows", 0, 24, 1, " px");
-+      if (cc_luma_fixture_get (v->model, "resizeTogether"))
+-      if (cc_Suno_view_flag (v, "tile")) number_row (v, card, "gap", "Space between windows", 0, 24, 2, " px");
++      if (cc_Suno_view_flag (v, "tile")) number_row (v, card, "gap", "Space between windows", 0, 24, 1, " px");
++      if (cc_Suno_fixture_get (v->model, "resizeTogether"))
 +        switch_row (v, card, "resizeTogether", "Resize neighboring tiles together", "When off, resizing frees a window from its tile");
        switch_row (v, card, "edgeTile", "Drag to an edge to tile", "Drop a window on the left, right or top edge");
      }
-   if (cc_luma_fixture_get (v->model, "windowBorder") && cc_luma_fixture_get (v->model, "windowBorderSize"))
---- a/shell/cc-luma-view.c
-+++ b/shell/cc-luma-view.c
+   if (cc_Suno_fixture_get (v->model, "windowBorder") && cc_Suno_fixture_get (v->model, "windowBorderSize"))
+--- a/shell/cc-Suno-view.c
++++ b/shell/cc-Suno-view.c
 @@ -27,7 +27,8 @@
    if (v->display_dragging ||
-       (v->open_menu && luma_floating_menu_get_is_open (LUMA_FLOATING_MENU (v->open_menu))))
+       (v->open_menu && Suno_floating_menu_get_is_open (SUNO_FLOATING_MENU (v->open_menu))))
      { v->refresh = g_timeout_add (150, refresh_view, v); return G_SOURCE_REMOVE; }
 -  render (v);
-+  if (!g_str_equal (v->page, "windows") || !cc_luma_view_windows_sync (v))
++  if (!g_str_equal (v->page, "windows") || !cc_Suno_view_windows_sync (v))
 +    render (v);
    return G_SOURCE_REMOVE;
  }
  
---- a/shell/cc-luma-window.c
-+++ b/shell/cc-luma-window.c
+--- a/shell/cc-Suno-window.c
++++ b/shell/cc-Suno-window.c
 @@ -21,7 +21,7 @@
    { "network", "Network", "ethernet-port" },
    { "bluetooth", "Bluetooth", "bluetooth" },
@@ -414,12 +414,12 @@
    { "windows", "Windows & Workspaces", "square-stack" },
    { "notifications", "Notifications", "bell" },
    { "search", "Search", "search" },
---- a/shell/luma-settings.css
-+++ b/shell/luma-settings.css
+--- a/shell/Suno-settings.css
++++ b/shell/Suno-settings.css
 @@ -47,8 +47,8 @@
- .only > .cf-chevron { color: @luma_muted; }
- .cf-small { font-size: 11.5px; letter-spacing: 0.115px; color: @luma_muted; }
- .cf-out { min-width: 40px; font-size: 12.5px; color: @luma_ink_secondary; font-feature-settings: "tnum"; }
+ .only > .cf-chevron { color: @Suno_muted; }
+ .cf-small { font-size: 11.5px; letter-spacing: 0.115px; color: @Suno_muted; }
+ .cf-out { min-width: 40px; font-size: 12.5px; color: @Suno_ink_secondary; font-feature-settings: "tnum"; }
 -.cf-rg scale { min-width: 200px; }
 -.cf-rg.phone scale { min-width: 140px; }
 +.cf-rg scale { min-width: 120px; }
@@ -428,15 +428,15 @@
  
  /* Picker */
 @@ -145,3 +145,12 @@
-   border: none; outline: none; color: @luma_muted; }
- .cf-panel-host headerbar button.image-button:hover, .cf-panel-host headerbar button.back:hover { background: @luma_hover; color: @luma_ink; }
+   border: none; outline: none; color: @Suno_muted; }
+ .cf-panel-host headerbar button.image-button:hover, .cf-panel-host headerbar button.back:hover { background: @Suno_hover; color: @Suno_ink; }
  .cf-panel-host headerbar button image { -gtk-icon-size: 16px; }
 +
 +.cf-card {
-+  background: @luma_well;
++  background: @Suno_well;
 +  border-radius: 16px;
-+  box-shadow: inset 0 0 0 1px @luma_well_ring,
-+              inset 0 1px 2px @luma_well_shade,
-+              inset 0 -1px 0 @luma_well_lip;
++  box-shadow: inset 0 0 0 1px @Suno_well_ring,
++              inset 0 1px 2px @Suno_well_shade,
++              inset 0 -1px 0 @Suno_well_lip;
 +}
 +.cf-bt-discovery-row { min-height: 44px; }

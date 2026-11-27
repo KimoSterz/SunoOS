@@ -58,8 +58,8 @@ const windowTitled = title => global.get_window_actors().map(actor => actor.meta
     .find(window => window.get_title() === title);
 
 async function work() {
-    const {TvInput} = await import(`file://${SOURCE}/src/luma-shell-presentation/tvInput.js`);
-    const {actsForFocusedApp} = await import(`file://${SOURCE}/src/luma-shell-presentation/callerWindow.js`);
+    const {TvInput} = await import(`file://${SOURCE}/src/Suno-shell-presentation/tvInput.js`);
+    const {actsForFocusedApp} = await import(`file://${SOURCE}/src/Suno-shell-presentation/callerWindow.js`);
     const Main = await import('resource:///org/gnome/shell/ui/main.js');
     const {default: St} = await import('gi://St');
     let shown = 0;

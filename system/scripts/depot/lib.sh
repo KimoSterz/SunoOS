@@ -7,21 +7,21 @@
 depot_repo_root=$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)
 
 # Work tree: package repository, runtime assembly, app builds, the remote.
-: "${DEPOT_ROOT:=/srv/luma-build/depot}"
+: "${DEPOT_ROOT:=/srv/Suno-build/depot}"
 # Signing material. Private keys never leave this directory.
-: "${DEPOT_KEYS:=/srv/luma-build/depot-keys}"
+: "${DEPOT_KEYS:=/srv/Suno-build/depot-keys}"
 # Container that carries flatpak, flatpak-builder, flatpak-module-tools,
 # ostree, minisign and appstream. Created by scripts/depot/tools-container.sh.
-: "${DEPOT_TOOLS_CONTAINER:=luma-depot-tools}"
+: "${DEPOT_TOOLS_CONTAINER:=Suno-depot-tools}"
 : "${DEPOT_ARCH:=$(uname -m)}"
 # Native tools own Bubblewrap namespaces; SDK processes may use binfmt for a
 # separately selected target CPU. Native remains the default for every caller.
 : "${DEPOT_TOOLS_ARCH:=$DEPOT_ARCH}"
 : "${DEPOT_RUNTIME_BRANCH:=44}"
 : "${DEPOT_FEDORA_RELEASE:=44}"
-: "${DEPOT_REMOTE_NAME:=luma}"
+: "${DEPOT_REMOTE_NAME:=Suno}"
 : "${DEPOT_PUBLIC_URL:=https://dl.simplyluma.com}"
-: "${DEPOT_COLLECTION_ID:=org.projectluma.Depot}"
+: "${DEPOT_COLLECTION_ID:=org.projectSuno.Depot}"
 
 # A checkout inside the work tree is addressed through DEPOT_ROOT, the path the
 # tools container mounts it at, so paths are the same inside and outside.
@@ -100,7 +100,7 @@ depot_in_signer() {
     --inputs "$DEPOT_SIGNING_INPUTS" --inputs-sha "$DEPOT_SIGNING_INPUTS_SHA256" \
     --output "$DEPOT_ROOT" --keys "$DEPOT_KEYS" || depot_die "signer custody verification failed"
   local role network
-  role=$(podman inspect "$DEPOT_SIGNING_CONTAINER" --format '{{index .Config.Labels "org.projectluma.depot.role"}}') || depot_die "cannot inspect signer"
+  role=$(podman inspect "$DEPOT_SIGNING_CONTAINER" --format '{{index .Config.Labels "org.projectSuno.depot.role"}}') || depot_die "cannot inspect signer"
   [ "$role" = signer ] || depot_die "refusing signing in an application build container"
   network=$(podman inspect "$DEPOT_SIGNING_CONTAINER" --format '{{.HostConfig.NetworkMode}}') || depot_die "cannot inspect signer network"
   [ "$network" = none ] || depot_die "the signing container must have no network"

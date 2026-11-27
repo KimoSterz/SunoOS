@@ -35,9 +35,9 @@ PY
 . "$root/config/desktop/inputs.env"
 rpms=()
 for identity in "${GTK4_NEVRA%.*}.aarch64" "${LIBADWAITA_NEVRA%.*}.aarch64" \
-  "${LUMA_DEVELOPER_PLATFORM_X86_64_NEVRA%.*}.aarch64" \
-  'luma-apk-metadata-0.1.0-1.luma.1~preview.20260910.1.fc44.aarch64' \
-  'luma-appimage-compat-0.1.0-1.luma.1.fc44.aarch64' \
+  "${SUNO_DEVELOPER_PLATFORM_X86_64_NEVRA%.*}.aarch64" \
+  'Suno-apk-metadata-0.1.0-1.Suno.1~preview.20260910.1.fc44.aarch64' \
+  'Suno-appimage-compat-0.1.0-1.Suno.1.fc44.aarch64' \
   'viola-browser-stable-151.0.7922.72-15.viola8210.native54.creator20261125.1.fc44.aarch64'; do
   mapfile -t found < <(find "$inputs" -type f -name "$identity.rpm")
   printf 'Selecting %s: %s retained copies\n' "$identity" "${#found[@]}"
@@ -54,7 +54,7 @@ for identity in "${GTK4_NEVRA%.*}.aarch64" "${LIBADWAITA_NEVRA%.*}.aarch64" \
   printf '%s  %s\n' "$expected_sha" "${found[0]}" >> "$out/selected-rpms.sha256"
   rpms+=("${found[0]}")
 done
-installer=luma-application-installer-0.1.0-1.luma.86.fc44.noarch.rpm
+installer=Suno-application-installer-0.1.0-1.Suno.86.fc44.noarch.rpm
 installer_sha=ef2b347d41b654f7f6788ab254be031a995662402b0000cd2166c86aa939e3bc
 curl --fail --location --retry 3 --proto '=https' --tlsv1.2 \
   "https://media.simplyluma.com/inputs/rpm/$installer_sha/$installer" --output "$inputs/$installer"
@@ -84,11 +84,11 @@ PY_URL
     "$inputs/runtime-input.tar" "$signed_mirror" "$signed_sha" --url "$signed_url" > "$out/signed-inputs.json"
   signed_deployment="$out/flatpak-deployment.json"
 fi
-host=/usr/share/viola-browser/luma-host
+host=/usr/share/viola-browser/Suno-host
 sha256sum /opt/viola/browser/chrome > "$out/installed-engine.sha256"
 rpm -V viola-browser-stable > "$out/rpm-verify-before.txt"
 cp /usr/share/viola-browser/provenance.json "$out/installed-provenance.json"
-cmp "$root/src/external/viola/chromium-linux/luma-package/desktop-arm-preview-frame-profile.json" \
+cmp "$root/src/external/viola/chromium-linux/Suno-package/desktop-arm-preview-frame-profile.json" \
   /usr/share/viola-browser/native-engine-profile.json
 # The Fedora package uses the real journal socket for dbus-broker-launch.
 # A minimal CI container has no service manager, so supply its ordinary journal
@@ -126,14 +126,14 @@ for _ in $(seq 50); do
   sleep .1
 done
 busctl --system --no-pager status org.freedesktop.login1 > "$out/logind-bus.txt"
-useradd --create-home --uid 1100 luma-gate-browser-opens
-install -d -o luma-gate-browser-opens -g luma-gate-browser-opens -m 0700 /run/user/1100
-qa=$(mktemp -d /tmp/luma-gate-browser-opens.XXXXXX)
+useradd --create-home --uid 1100 Suno-gate-browser-opens
+install -d -o Suno-gate-browser-opens -g Suno-gate-browser-opens -m 0700 /run/user/1100
+qa=$(mktemp -d /tmp/Suno-gate-browser-opens.XXXXXX)
 cp "$root/scripts/os/qa/viola-native/"* "$qa/"
 mkdir "$qa/out"
-chown -R luma-gate-browser-opens:luma-gate-browser-opens "$out" "$qa"
+chown -R Suno-gate-browser-opens:Suno-gate-browser-opens "$out" "$qa"
 status=0
-runuser -u luma-gate-browser-opens -- env HOME=/home/luma-gate-browser-opens XDG_RUNTIME_DIR=/run/user/1100 \
+runuser -u Suno-gate-browser-opens -- env HOME=/home/Suno-gate-browser-opens XDG_RUNTIME_DIR=/run/user/1100 \
   OUT="$out" QA="$qa" BROWSER_GATE_SIGNED_MIRROR="$signed_mirror" \
   BROWSER_GATE_FLATPAK_DEPLOYMENT="$signed_deployment" PYTHONDONTWRITEBYTECODE=1 LIBGL_ALWAYS_SOFTWARE=1 GSK_RENDERER=gl \
   XDG_CURRENT_DESKTOP=GNOME XDG_SESSION_DESKTOP=gnome XDG_SESSION_TYPE=wayland \
@@ -153,8 +153,8 @@ runuser -u luma-gate-browser-opens -- env HOME=/home/luma-gate-browser-opens XDG
         --proc /proc --dev /dev /usr/bin/true \
         >"$OUT/namespace-preflight.stdout" 2>"$OUT/namespace-preflight.stderr"
       # This packaged host-service directory must exist before Flatpak mounts
-      # its manifest-defined read-only xdg-run/luma-viola exposure.
-      install -d -m 0700 /run/user/1100/luma-viola
+      # its manifest-defined read-only xdg-run/Suno-viola exposure.
+      install -d -m 0700 /run/user/1100/Suno-viola
       python3 "$QA/install-signed-flatpak.py" "$BROWSER_GATE_SIGNED_MIRROR" "$OUT" >"$OUT/flatpak-installation.json"
     fi
     pipewire >"$OUT/pipewire.log" 2>&1 & audio=$!
@@ -182,9 +182,9 @@ runuser -u luma-gate-browser-opens -- env HOME=/home/luma-gate-browser-opens XDG
 mkdir "$out/mapped"
 cp -a "$qa/out/." "$out/mapped/"
 # Retain the fresh fixture profile log and exact diagnostics, never a user profile.
-home=/home/luma-gate-browser-opens
-state_root="$home/.local/state/viola-luma/sessions"
-profile="$home/.local/share/viola-luma/profile"
+home=/home/Suno-gate-browser-opens
+state_root="$home/.local/state/viola-Suno/sessions"
+profile="$home/.local/share/viola-Suno/profile"
 if [ -n "$signed_deployment" ] && [ -f "$signed_deployment" ]; then
   state_root=$(python3 -c 'import json,sys;print(json.load(open(sys.argv[1]))["state_root"])' "$signed_deployment")
   profile=$(python3 -c 'import json,sys;print(json.load(open(sys.argv[1]))["profile"])' "$signed_deployment")

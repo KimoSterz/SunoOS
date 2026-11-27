@@ -1,4 +1,4 @@
-From: Luma downstream maintainers
+From: Suno downstream maintainers
 Subject: [PATCH] tests: avoid repeated LTO when GCC fat objects are available
 
 Retain every test and all hardening. Shipped library/demo links retain LTO.

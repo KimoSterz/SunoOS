@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Suno Semantic Inspector
+Comment=Developer inspection client for Suno semantic surfaces
+Exec=Suno semantic list
+Icon=system-search-symbolic
+Terminal=true
+NoDisplay=true
+Categories=Development;

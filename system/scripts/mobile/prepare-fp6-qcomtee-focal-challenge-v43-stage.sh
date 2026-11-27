@@ -16,7 +16,7 @@ focal_source=$repo_root/build/mobile/fp6-physical/fp6-qcomtee-focal-v22-stage/fi
 keymaster_source=$repo_root/build/mobile/fp6-physical/fp6-keymaster-slot-b-qrel1695/keymaster64.elf
 runner=$repo_root/scripts/mobile/run-fp6-qcomtee-focal-challenge-v43-remote.sh
 
-expected_kernel=7.1.2-luma-fp-cma1
+expected_kernel=7.1.2-Suno-fp-cma1
 expected_runtime_config_sha=5bddfee4390b0f66de5709b99282e79ee3787a01749d5cc8d28ea82d6bbed7fe
 expected_sync_config_sha=8b013facc735799355dd39b78d0df0a11b547b5faa0f93ff18dd080a78a220c5
 expected_focal_bundle_sha=9159f0cead5b6478b4279e0ac85d83b38f62374dad80f0a925f0cb1ad02fbdb7
@@ -35,7 +35,7 @@ manifest_value() { sed -n "s/^$2=//p" "$1"; }
 [ -f "$helper_dir/manifest.env" ] || die 'driver helper manifest missing'
 [ -f "$focaltech_dir/focaltech_fp.ko" ] || die 'candidate FocalTech module missing'
 [ -f "$focaltech_dir/manifest.env" ] || die 'candidate FocalTech manifest missing'
-[ "$(manifest_value "$module_dir/manifest.env" LUMA_FP6_QCOMTEE_CONTROL_BUILD_VERSION)" = 43 ] ||
+[ "$(manifest_value "$module_dir/manifest.env" SUNO_FP6_QCOMTEE_CONTROL_BUILD_VERSION)" = 43 ] ||
   die 'qcomtee build version differs'
 [ "$(manifest_value "$module_dir/manifest.env" KERNEL_RELEASE)" = "$expected_kernel" ] ||
   die 'qcomtee kernel release differs'
@@ -49,7 +49,7 @@ manifest_value() { sed -n "s/^$2=//p" "$1"; }
   die 'qcomtee challenge logging policy differs'
 [ "$(manifest_value "$module_dir/manifest.env" CHALLENGE_PERSISTED)" = false ] ||
   die 'qcomtee challenge persistence policy differs'
-[ "$(manifest_value "$helper_dir/manifest.env" LUMA_FP6_FOCAL_DRIVER_STAGE_BUILD_VERSION)" = 1 ] ||
+[ "$(manifest_value "$helper_dir/manifest.env" SUNO_FP6_FOCAL_DRIVER_STAGE_BUILD_VERSION)" = 1 ] ||
   die 'driver helper build version differs'
 [ "$(manifest_value "$helper_dir/manifest.env" CAPTURE_ALLOWED)" = false ] ||
   die 'driver helper capture policy differs'
@@ -57,7 +57,7 @@ manifest_value() { sed -n "s/^$2=//p" "$1"; }
   die 'driver helper enrollment policy differs'
 [ "$(manifest_value "$helper_dir/manifest.env" AUTHENTICATE_ALLOWED)" = false ] ||
   die 'driver helper authentication policy differs'
-[ "$(manifest_value "$focaltech_dir/manifest.env" LUMA_FP6_FOCALTECH_CONTROL_BUILD_VERSION)" = 21 ] ||
+[ "$(manifest_value "$focaltech_dir/manifest.env" SUNO_FP6_FOCALTECH_CONTROL_BUILD_VERSION)" = 21 ] ||
   die 'candidate FocalTech build version differs'
 [ "$(manifest_value "$focaltech_dir/manifest.env" KERNEL_RELEASE)" = "$expected_kernel" ] ||
   die 'candidate FocalTech kernel release differs'
@@ -103,7 +103,7 @@ done
 install -m 0644 "$keymaster_source" "$output_dir/firmware/keymaster64.elf"
 
 {
-  printf 'LUMA_FP6_FOCAL_CHALLENGE_STAGE_VERSION=43\n'
+  printf 'SUNO_FP6_FOCAL_CHALLENGE_STAGE_VERSION=43\n'
   printf 'KERNEL_RELEASE=%s\n' "$expected_kernel"
   printf 'RUNTIME_CONFIG_SHA256=%s\n' "$expected_runtime_config_sha"
   printf 'QCOMTEE_MODULE_SHA256=%s\n' "$module_sha"

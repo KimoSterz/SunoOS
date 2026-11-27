@@ -1,6 +1,6 @@
 # Viola bottom chrome access
 
-Owner: luma-dev-2, root integration agent; worktree arm-desktop.
+Owner: Suno-dev-2, root integration agent; worktree arm-desktop.
 Status: source and mapped GTK component checks complete; packaged browser validation pending.
 
 The desktop bar has an explicit small frame-edge handle. Ordinary page pointer movement no longer reopens it over bottom web inputs. Same-tab history changes preserve its hidden state; tab changes and address commands reveal it. Reload follows the address field.

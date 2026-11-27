@@ -1,21 +1,21 @@
 ---
 title: The developer program
-summary: The free program for publishing apps on Depot. How to apply with a Luma Connect account, what the application asks for, and what happens after Luma approves it.
+summary: The free program for publishing apps on Depot. How to apply with a Suno Connect account, what the application asks for, and what happens after Suno approves it.
 order: 2
 section: Publishing
 ---
 
 # The developer program
 
-The Luma developer program is how developers outside Luma publish apps on
+The Suno developer program is how developers outside Suno publish apps on
 Depot. It is **free**. You apply, manage your apps and send releases in
-**Luma Connect**, at [`simplyluma.com/connect/developer`](https://simplyluma.com/connect/developer).
+**Suno Connect**, at [`simplyluma.com/connect/developer`](https://simplyluma.com/connect/developer).
 
 ## How it works
 
-1. **Sign in** with a Luma Connect account.
+1. **Sign in** with a Suno Connect account.
 2. **Apply** at [`/connect/developer/apply`](https://simplyluma.com/connect/developer/apply).
-3. **Luma approves** your application. If something is missing, Luma tells you
+3. **Suno approves** your application. If something is missing, Suno tells you
    what to change and you send it again.
 4. **Submit your app** at [`/connect/developer/new`](https://simplyluma.com/connect/developer/new).
    See [submitting a release](submitting-a-release.md).
@@ -32,14 +32,14 @@ Depot. It is **free**. You apply, manage your apps and send releases in
 
 Your progress saves as you go.
 
-## Why Luma checks who you are
+## Why Suno checks who you are
 
 People install apps from Depot because they trust it. That needs someone real
 and reachable behind each app, so a security problem reaches a person who can
 fix it.
 
 **The name people see is the publisher name you choose.** Your legal name,
-address and ID are seen only by Luma’s review staff and are never shown on
+address and ID are seen only by Suno’s review staff and are never shown on
 your listing.
 
 ## Suspension and revocation
@@ -58,6 +58,6 @@ From **Your apps** at [`/connect/developer`](https://simplyluma.com/connect/deve
 - follow each submission through checks and review;
 - see each app’s page with its version history.
 
-Apps you publish through the program are in the Verified tier. The Luma tier
-(“Made for Luma”) is for apps that also meet the
-[Luma tier rules](review-guidelines.md#11-luma-tier-design-and-quality).
+Apps you publish through the program are in the Verified tier. The Suno tier
+(“Made for Suno”) is for apps that also meet the
+[Suno tier rules](review-guidelines.md#11-Suno-tier-design-and-quality).

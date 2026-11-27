@@ -1,6 +1,6 @@
 # Touch Lab
 
-A learned contact-role classifier for every touch surface Luma runs on. Each
+A learned contact-role classifier for every touch surface Suno runs on. Each
 contact gets a role: pointing finger, second finger, resting thumb, clicking
 thumb, palm or brush. What libinput does with it follows from the role: a
 resting thumb neither moves the pointer nor breaks a scroll, and a pressing
@@ -23,14 +23,14 @@ training. They never go into this repository.
 |---|---|
 | `touchlab/recorder.py` | Root-started recorder: hidraw reports, touchpad evdev frames, `libinput debug-events --verbose`, key-press times. Writes compressed chunks as the user. |
 | `touchlab/cli.py` (`touchlab`) | User command: status, pause/resume/stop, `mark`, settings mirror, synthetic sessions, reports, features, `libinput record` export. |
-| `touchlab/app.py` (Touch Lab) | LumaUI app: the active session (drills, test round with live role dots and corrections, retrain, follow-up drill), a live view of every contact and a "just use it" mode. |
+| `touchlab/app.py` (Touch Lab) | SunoUI app: the active session (drills, test round with live role dots and corrections, retrain, follow-up drill), a live view of every contact and a "just use it" mode. |
 | `touchlab/surfaces.py` (`touchlab probe`) | Surface classes, capability probe, feature mask; libinput test devices and quirks mined into `data/litest-surfaces.json`. |
 | `touchlab/drills.py` | The 12 drills, per-class text, the rules that give each contact its role, and the follow-up choice. |
 | `touchlab/rfeatures.py` | Role features at 25/50/100/200 ms with masks; mirrored line for line in the plugin. |
 | `touchlab/gbdt.py`, `touchlab/rolemodel.py` (`touchlab train`) | Multi-class boosted trees (pure Python), the two-stage model, votes, the libinput-style baseline, evaluation, personal retrain. |
 | `touchlab/synth_roles.py` | Synthetic active sessions on every surface class, with gold roles. |
-| `touchlab/plugin.py` (`touchlab export-plugin`) | Generates `50-luma-touch-roles.lua` and its quirks from a model. |
-| `plugins/luma-touch-roles.lua.in` | The plugin template: features, tree evaluator, slot handling. |
+| `touchlab/plugin.py` (`touchlab export-plugin`) | Generates `50-Suno-touch-roles.lua` and its quirks from a model. |
+| `plugins/Suno-touch-roles.lua.in` | The plugin template: features, tree evaluator, slot handling. |
 | `touchlab/report.py` | Self-contained HTML report: heat maps, force curves, contact timelines against the keyboard, firmware/libinput/label agreement, session stats. |
 | `touchlab/features.py` | Per-contact feature vectors over the first N ms, and short sequences for a sequence model. |
 | `touchlab/synth.py` | Synthetic sessions with the real report descriptor, for tests and the report before any recording exists. |
@@ -46,13 +46,13 @@ training. They never go into this repository.
   libinput's key events are removed from its output before they leave the
   recorder. Releases and auto-repeat are not recorded.
 - The typing box in the app counts presses for its prompt and keeps nothing.
-- Nothing is sent anywhere. Data lives in `~/.local/share/luma-touch-lab`
+- Nothing is sent anywhere. Data lives in `~/.local/share/Suno-touch-lab`
   (mode 0700).
 
 ## Install (user only)
 
 ```sh
-tools/touch-lab/install.sh            # copies to ~/.local/share/luma-touch-lab/app
+tools/touch-lab/install.sh            # copies to ~/.local/share/Suno-touch-lab/app
 tools/touch-lab/install.sh --remove   # removes the launcher and shortcuts, keeps data
 ```
 
@@ -68,10 +68,10 @@ to the user before it touches any file. It does not grab or write to any
 device; if it stops, input is unaffected. Print the exact command with:
 
 ```sh
-~/.local/share/luma-touch-lab/app/bin/touchlab sudo-command
+~/.local/share/Suno-touch-lab/app/bin/touchlab sudo-command
 ```
 
-It runs `systemd-run --unit=luma-touch-lab` with a read-only filesystem except
+It runs `systemd-run --unit=Suno-touch-lab` with a read-only filesystem except
 the data directory, no network, a 256 MiB memory cap, a 20% CPU quota, idle
 I/O priority and only the capabilities needed to drop privileges. Stop it
 without sudo with `touchlab stop`; pause with `touchlab pause`.
@@ -118,8 +118,8 @@ use, where unmarked contacts count as intended.
 ## Reports and features
 
 ```sh
-touchlab synth                         # a synthetic session under ~/.local/share/luma-touch-lab/synthetic
-touchlab report --root ~/.local/share/luma-touch-lab/synthetic
+touchlab synth                         # a synthetic session under ~/.local/share/Suno-touch-lab/synthetic
+touchlab report --root ~/.local/share/Suno-touch-lab/synthetic
 touchlab report                        # every recorded session
 touchlab features --out DIR            # features-{25,50,100,200}ms.csv, sequences.jsonl, schema.json
 touchlab export-record SESSION --out s.yml   # for `libinput replay`

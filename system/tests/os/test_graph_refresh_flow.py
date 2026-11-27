@@ -22,7 +22,7 @@ import unittest
 from unittest import mock
 
 ROOT=Path(__file__).resolve().parents[2]
-KEY_ID=next(line.partition('=')[2] for line in (ROOT/'config/os/release.env').read_text().splitlines() if line.startswith('LUMA_OS_GRAPH_KEY_ID='))
+KEY_ID=next(line.partition('=')[2] for line in (ROOT/'config/os/release.env').read_text().splitlines() if line.startswith('SUNO_OS_GRAPH_KEY_ID='))
 def load(name,path):
     spec=importlib.util.spec_from_file_location(name,ROOT/path)
     module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module);return module
@@ -38,7 +38,7 @@ def timestamp(hours):return (datetime.now(timezone.utc)+timedelta(hours=hours)).
 def signature(path,bucket):
     value=json.loads(path.read_text());Path(str(path)+'.minisig').write_text('fixture only\nnot a real signature\ntrusted comment: '+bucket.comment(value,KEY_ID)+'\nfixture-sha256='+sha(path)+'\n')
 
-FIXTURE=os.environ.get('LUMA_GRAPH_FIXTURE_ROOT')
+FIXTURE=os.environ.get('SUNO_GRAPH_FIXTURE_ROOT')
 @unittest.skipUnless(os.getuid()==0 and FIXTURE,'needs explicitly owned root-only routing fixture')
 class SealedRefreshFlow(unittest.TestCase):
     def setUp(self):
@@ -56,13 +56,13 @@ class SealedRefreshFlow(unittest.TestCase):
         (self.pipeline/'tmp').mkdir();(self.pipeline/'etc/storage.conf').write_text('fixture storage only\n')
         self.repo=self.pipeline/'publish/public-repo';self.repo.mkdir(parents=True)
         self.keys=self.root/'keys';(self.keys/'update-graph-minisign').mkdir(parents=True,mode=0o700)
-        for name in ('luma-update-graph.pub','luma-update-graph.key'):
+        for name in ('Suno-update-graph.pub','Suno-update-graph.key'):
             path=self.keys/'update-graph-minisign'/name;path.write_text('SYNTHETIC NON-KEY FIXTURE\n');path.chmod(0o600)
         self.secrets=self.root/'secrets';self.secrets.mkdir();(self.secrets/'update-graph-minisign.password').write_text('SYNTHETIC NON-SECRET\n')
         self.origin=self.root/'origin';self.origin.mkdir();self.bin=self.root/'bin';self.bin.mkdir()
         fake=self.bin/'podman';fake.write_text(self.fake_podman());fake.chmod(0o500)
-        self.cfg={'schema':'org.projectluma.approved-graph-refresh/v1','pipeline_root':str(self.pipeline),'keys_root':str(self.keys),
-            'storage_config':str(self.pipeline/'etc/storage.conf'),'public_key_sha256':sha(self.keys/'update-graph-minisign/luma-update-graph.pub'),
+        self.cfg={'schema':'org.projectSuno.approved-graph-refresh/v1','pipeline_root':str(self.pipeline),'keys_root':str(self.keys),
+            'storage_config':str(self.pipeline/'etc/storage.conf'),'public_key_sha256':sha(self.keys/'update-graph-minisign/Suno-update-graph.pub'),
             'tools_image':'a'*64,'key_id':KEY_ID,'workspace':str(self.root/'workspace'),'publication_lock':str(self.root/'publication.lock'),
             'origin_key':str(self.root/'origin.key'),'origin_destination':'publisher@fixture.invalid:',
             'channels':{'nightly':{'repository_path':str(self.repo),'public_repository_url':'https://dl.simplyluma.com/os/repo'}}}
@@ -85,7 +85,7 @@ def resolve(name):
 def sha(path):return hashlib.sha256(path.read_bytes()).hexdigest()
 if '--memory=2g' in args:
  path=resolve(args[-2]);comment=args[-1]
- assert comment.startswith('luma-update-graph channel=')
+ assert comment.startswith('Suno-update-graph channel=')
  pathlib.Path(str(path)+'.minisig').write_text('fixture only\\nnot a real signature\\ntrusted comment: '+comment+'\\nfixture-sha256='+sha(path)+'\\n')
 else:
  path=resolve(args[args.index('-m')+1]);sig=resolve(args[args.index('-x')+1])
@@ -102,7 +102,7 @@ else:
         if target:self.graph['hardware_target']=target
         gate=dict(commit=self.release['commit'],result='pass',fresh='pass',no_account='pass',update='not-applicable',rollback='not-applicable')
         provenance={'source':{'revision':'c'*40,'dirty':False}}
-        delivery=dict(schema='org.projectluma.os-public-delivery/v1',commit=self.release['commit'],repository_url='https://dl.simplyluma.com/os/repo',complete_closure_readback=True,commit_signature_verified=True,summary_signature_verified=True)
+        delivery=dict(schema='org.projectSuno.os-public-delivery/v1',commit=self.release['commit'],repository_url='https://dl.simplyluma.com/os/repo',complete_closure_readback=True,commit_signature_verified=True,summary_signature_verified=True)
         manifest=dict(commit=self.release['commit'],version=self.release['version'],published_utc=self.release['released_at'],channel='nightly',architecture=arch,
             hardware_target=target,ref=self.bucket.ref('nightly'),source_revision='c'*40,source_dirty=False,parent=None,
             gate={'result':'pass','sha256':hashlib.sha256(encoded(gate)).hexdigest()},provenance_sha256=hashlib.sha256(encoded(provenance)).hexdigest())
@@ -143,7 +143,7 @@ else:
             self.uploads.append((str(source),str(target)))
             return subprocess.CompletedProcess(args,0)
         elif args[0]=='/usr/bin/bash' and args[1].endswith('/sign-update-graph.sh'):
-            kwargs['env']={**kwargs['env'],'PATH':str(self.bin)+':/usr/sbin:/usr/bin:/sbin:/bin','LUMA_OS_SECRETS':str(self.secrets)}
+            kwargs['env']={**kwargs['env'],'PATH':str(self.bin)+':/usr/sbin:/usr/bin:/sbin:/bin','SUNO_OS_SECRETS':str(self.secrets)}
         return self.raw_run(args,**kwargs)
 
     def refresh_state(self):
@@ -268,7 +268,7 @@ else:
         for extra,arch in [([], 'x86_64'),(['--arch','aarch64','--profile','arm-preview'],'aarch64'),
                            (['--hardware-target','fairphone,fp6','--source',str(device_source),'--source-sha256',sha(device_source)],'aarch64')]:
             with mock.patch.object(sys,'argv',base+extra),mock.patch.object(entry.os,'execve',side_effect=execute),self.assertRaises(Captured):entry.main()
-            self.assertEqual(invocations[-1][2]['LUMA_TARGET_ARCHITECTURE'],arch)
+            self.assertEqual(invocations[-1][2]['SUNO_TARGET_ARCHITECTURE'],arch)
         with mock.patch.object(sys,'argv',base+['--hardware-target','fairphone,fp6']),self.assertRaises(ValueError):entry.main()
 
     def test_device_installers_generate_distinct_private_units(self):
@@ -288,8 +288,8 @@ else:
             unit=units/(self.bucket.unit_name('nightly')+'.service')
             self.assertTrue(unit.is_file())
             self.assertIn(str(self.sealed),unit.read_text())
-            self.assertFalse(any('luma-beta-os-graph-refresh.timer' in call.args[0] for call in commands.call_args_list))
-        self.assertTrue((units/'luma-approved-os-graph-refresh-aarch64-fairphone-fp6-nightly.service').exists())
-        self.assertTrue((units/'luma-approved-os-graph-refresh-aarch64-unihertz-titan2e-nightly.service').exists())
+            self.assertFalse(any('Suno-beta-os-graph-refresh.timer' in call.args[0] for call in commands.call_args_list))
+        self.assertTrue((units/'Suno-approved-os-graph-refresh-aarch64-fairphone-fp6-nightly.service').exists())
+        self.assertTrue((units/'Suno-approved-os-graph-refresh-aarch64-unihertz-titan2e-nightly.service').exists())
 
 if __name__=='__main__':unittest.main()

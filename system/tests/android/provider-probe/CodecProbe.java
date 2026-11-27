@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-package org.projectluma.androidproviderprobe;
+package org.projectSuno.androidproviderprobe;
 
 import android.app.Instrumentation;
 import android.media.MediaCodec;

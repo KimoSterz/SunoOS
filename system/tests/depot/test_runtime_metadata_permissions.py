@@ -17,7 +17,7 @@ class MetadataPermissions(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             metadata = root / 'metadata'
-            metadata.write_text('[Runtime]\nname=org.projectluma.Platform\n')
+            metadata.write_text('[Runtime]\nname=org.projectSuno.Platform\n')
             metadata.chmod(0o640)
             original = metadata.read_bytes()
             module.normalize(root)
@@ -28,7 +28,7 @@ class MetadataPermissions(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             original = root / 'sealed-source'
-            original.write_text('[Runtime]\nname=org.projectluma.Platform\n')
+            original.write_text('[Runtime]\nname=org.projectSuno.Platform\n')
             original.chmod(0o400)
             os.link(original, root / 'metadata')
             module.normalize(root)

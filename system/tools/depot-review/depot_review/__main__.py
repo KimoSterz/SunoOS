@@ -118,7 +118,7 @@ def main(argv: list[str] | None = None) -> int:
             return 1
         config.catalogue_key.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
         subprocess.run(["minisign", "-G", "-W", "-p", str(config.catalogue_pub), "-s", str(config.catalogue_key),
-                        "-c", "Luma Depot catalogue v1"], check=True)
+                        "-c", "Suno Depot catalogue v1"], check=True)
         config.catalogue_key.chmod(0o600)
         print(config.catalogue_pub.read_text())
         return 0

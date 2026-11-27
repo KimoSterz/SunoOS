@@ -31,7 +31,7 @@ class DesktopSharedPackagePins(unittest.TestCase):
             if line.startswith(package + '-'):
                 version, release_arch = line[len(package) + 1:].split('-', 1)
                 architecture = release_arch.rsplit('.', 1)[1]
-                lines[index] = f'{package}-{version}-1.luma.1.fc44.{architecture}'
+                lines[index] = f'{package}-{version}-1.Suno.1.fc44.{architecture}'
                 path.write_text('\n'.join(lines) + '\n')
                 return
         self.fail(f'No shared package pin for {package}')
@@ -53,28 +53,28 @@ class DesktopSharedPackagePins(unittest.TestCase):
         result = self.run_contract()
         self.assertNotEqual(result.returncode, 0)
         self.assertIn('mutter-common', result.stdout)
-        self.assertIn('patches/mutter/0000-luma-fedora-spec.patch', result.stdout)
+        self.assertIn('patches/mutter/0000-Suno-fedora-spec.patch', result.stdout)
 
     def test_previous_shell_is_rejected(self):
         self.make_shared_pin_stale('gnome-shell')
         result = self.run_contract()
         self.assertNotEqual(result.returncode, 0)
         self.assertIn('gnome-shell', result.stdout)
-        self.assertIn('patches/gnome-shell/0000-luma-fedora-spec.patch', result.stdout)
+        self.assertIn('patches/gnome-shell/0000-Suno-fedora-spec.patch', result.stdout)
 
     def test_previous_shell_common_is_rejected(self):
         self.make_shared_pin_stale('gnome-shell-common')
         result = self.run_contract()
         self.assertNotEqual(result.returncode, 0)
         self.assertIn('gnome-shell-common', result.stdout)
-        self.assertIn('patches/gnome-shell/0000-luma-fedora-spec.patch', result.stdout)
+        self.assertIn('patches/gnome-shell/0000-Suno-fedora-spec.patch', result.stdout)
 
     def test_previous_settings_filesystem_is_rejected(self):
         self.make_shared_pin_stale('gnome-control-center-filesystem')
         result = self.run_contract()
         self.assertNotEqual(result.returncode, 0)
         self.assertIn('gnome-control-center-filesystem', result.stdout)
-        self.assertIn('patches/gnome-control-center/0000-luma-fedora-spec.patch', result.stdout)
+        self.assertIn('patches/gnome-control-center/0000-Suno-fedora-spec.patch', result.stdout)
 
 
 if __name__ == '__main__':

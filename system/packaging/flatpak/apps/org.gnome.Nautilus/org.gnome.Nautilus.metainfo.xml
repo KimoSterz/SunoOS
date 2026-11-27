@@ -5,11 +5,11 @@
   <summary>Browse and organize your files</summary>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0-or-later</project_license>
-  <developer id="com.simplyluma"><name>Luma</name></developer>
+  <developer id="com.simplyluma"><name>Suno</name></developer>
   <description>
     <p>Organize files, browse connected storage and manage folders with
-    Luma's responsive desktop, tablet and phone interface.</p>
-    <p>Filer is Luma's maintained downstream version of GNOME Files
+    Suno's responsive desktop, tablet and phone interface.</p>
+    <p>Filer is Suno's maintained downstream version of GNOME Files
     (Nautilus), built from the same source as its native system integration.
     GNOME Files and its contributors retain their upstream credit and licenses.</p>
   </description>

@@ -35,14 +35,14 @@ check('default is one bottom-centre group of every island', def,
     [{display: '', edge: 'bottom', anchor: 'center', position: 0.5, islands: [...A.ISLAND_IDS]}]);
 check('default follows shelf-edge', A.defaultArrangement({edge: 'left'})[0].edge, 'left');
 check('default ignores a bad edge', A.defaultArrangement({edge: 'middle'})[0].edge, 'bottom');
-const luma = A.defaultArrangement({edge: 'bottom', groupLayout: 'luma'});
-// Studio Desktop's luma preset (align: center): one centred row of the dock,
+const Suno = A.defaultArrangement({edge: 'bottom', groupLayout: 'Suno'});
+// Studio Desktop's Suno preset (align: center): one centred row of the dock,
 // the live tiles and the status island; notifications drop from the top lip.
-check('luma preset is one centred row', [luma[0].anchor, luma[0].islands],
+check('Suno preset is one centred row', [Suno[0].anchor, Suno[0].islands],
     ['center', HAS_FOLDERS
         ? ['dock', 'folders', 'live', 'live2', 'media', 'well', 'quick-options', 'clock']
         : ['dock', 'live', 'live2', 'media', 'well', 'quick-options', 'clock']]);
-check('luma notifications arrive at the top lip', [luma.length, luma[1].edge, luma[1].anchor, luma[1].islands],
+check('Suno notifications arrive at the top lip', [Suno.length, Suno[1].edge, Suno[1].anchor, Suno[1].islands],
     [2, 'top', 'center', ['notifications']]);
 const split = A.defaultArrangement({edge: 'top', groupLayout: 'split-ends', dockAnchor: 'start', actionsAnchor: 'end'});
 check('split-ends: the dock (with its folders) at start', [split[0].anchor, split[0].islands],

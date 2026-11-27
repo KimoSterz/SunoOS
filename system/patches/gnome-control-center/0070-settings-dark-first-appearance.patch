@@ -1,14 +1,14 @@
-From: Project Luma <devnull@projectluma.local>
+From: Project Suno <devnull@projectSuno.local>
 Subject: [PATCH] appearance: present Dark before Light without changing a saved selection
 
 The creator review requests Dark first. Selection and accessibility must follow
 the semantic mode ID, not its column number; existing saved Light remains Light.
 
-diff --git a/shell/cc-luma-view-appearance.c b/shell/cc-luma-view-appearance.c
---- a/shell/cc-luma-view-appearance.c
-+++ b/shell/cc-luma-view-appearance.c
+diff --git a/shell/cc-Suno-view-appearance.c b/shell/cc-Suno-view-appearance.c
+--- a/shell/cc-Suno-view-appearance.c
++++ b/shell/cc-Suno-view-appearance.c
 @@ -161,7 +161,7 @@
- static gboolean styles_fluid (View *v) { return v->phone && cc_luma_view_phone_device (); }
+ static gboolean styles_fluid (View *v) { return v->phone && cc_Suno_view_phone_device (); }
  static GtkWidget *modes (View *v)
  {
 -  const char *ids[] = { "light", "dark" }, *names[] = { "Light", "Dark" };
@@ -32,12 +32,12 @@ diff --git a/shell/cc-luma-view-appearance.c b/shell/cc-luma-view-appearance.c
        g_signal_connect_object (button, "clicked", G_CALLBACK (mode_clicked), v->root, 0);
        gtk_box_append (GTK_BOX (group), button);
      }
-diff --git a/shell/test-luma-view.c b/shell/test-luma-view.c
---- a/shell/test-luma-view.c
-+++ b/shell/test-luma-view.c
+diff --git a/shell/test-Suno-view.c b/shell/test-Suno-view.c
+--- a/shell/test-Suno-view.c
++++ b/shell/test-Suno-view.c
 @@ -525,6 +525,9 @@
-   g_assert_true (luma_surface_policy_select (policy, "dark", NULL));
-   GtkWidget *view = g_object_ref_sink (cc_luma_view_new (model, "appearance", NULL));
+   g_assert_true (Suno_surface_policy_select (policy, "dark", NULL));
+   GtkWidget *view = g_object_ref_sink (cc_Suno_view_new (model, "appearance", NULL));
    g_assert_true (has_text (view, "Dark · Blue accent · Prism"));
 +  GtkWidget *first_mode = find_name (view, "cf-mode-dark");
 +  g_assert_true (gtk_widget_get_first_child (gtk_widget_get_parent (first_mode)) == first_mode);

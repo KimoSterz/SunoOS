@@ -13,7 +13,7 @@ Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
  1 file changed, 370 insertions(+)
 
 
-Luma rebase onto Linux 7.3: context adjusted; original provenance above.
+Suno rebase onto Linux 7.3: context adjusted; original provenance above.
 
 --- a/arch/arm64/boot/dts/qcom/hamoa.dtsi
 +++ b/arch/arm64/boot/dts/qcom/hamoa.dtsi

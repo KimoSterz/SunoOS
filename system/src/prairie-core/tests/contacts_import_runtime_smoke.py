@@ -9,8 +9,8 @@ from pathlib import Path
 import tempfile
 from prairie_apps.eds_backend import import_contacts_vcard, load_contacts, delete_contact
 
-root = Path(os.environ.get("LUMA_CONTACTS_IMPORT_TEST_ROOT", ""))
-assert root.is_absolute() and root.name.startswith("luma-contacts-import-test-")
+root = Path(os.environ.get("SUNO_CONTACTS_IMPORT_TEST_ROOT", ""))
+assert root.is_absolute() and root.name.startswith("Suno-contacts-import-test-")
 assert Path(os.environ["XDG_DATA_HOME"]).is_relative_to(root)
 assert Path(os.environ["XDG_CONFIG_HOME"]).is_relative_to(root)
 os.environ.pop("PRAIRIE_EDS_MODE", None)

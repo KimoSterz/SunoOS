@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: GPL-3.0-only
 """Additional native layout and existing workspace-command qualification."""
 from gi.repository import GLib, Gtk
-from luma_appkit.menus import _descendants
+from Suno_appkit.menus import _descendants
 
 
 class WorkspaceQualification:
@@ -179,7 +179,7 @@ class WorkspaceQualification:
         if not self.check('workspace_color_submenu_ten_dots', len(dots) == 10):
             return False
         self.submenu = next(w for w in _descendants(menu) if isinstance(w, Gtk.PopoverMenu) and w.get_mapped())
-        heading = next(w for w in _descendants(self.submenu) if w.has_css_class('luma-menu-submenu-heading'))
+        heading = next(w for w in _descendants(self.submenu) if w.has_css_class('Suno-menu-submenu-heading'))
         self.controls.point(heading, (.5, .5), click=False)
         GLib.timeout_add(180, self.colors_pointer)
         return False

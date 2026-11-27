@@ -16,7 +16,7 @@ STATE = os.path.join(GLib.get_user_state_dir(), "continue-docs.json")
 
 class Docs(Gtk.Application):
     def __init__(self):
-        super().__init__(application_id="org.projectluma.ContinueDocs",
+        super().__init__(application_id="org.projectSuno.ContinueDocs",
                          flags=Gio.ApplicationFlags.DEFAULT_FLAGS)
         self.opened = False
 

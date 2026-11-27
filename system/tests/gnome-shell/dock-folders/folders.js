@@ -19,7 +19,7 @@ function makeTree() {
     GLib.mkdir_with_parents(downloads, 0o755);
     GLib.mkdir_with_parents(projects, 0o755);
     const files = [
-        ['Luma-Beta-1.iso', 4096], ['shelf-spec.pdf', 2048],
+        ['Suno-Beta-1.iso', 4096], ['shelf-spec.pdf', 2048],
         ['dock-study-04.png', 1536], ['field-recording.flac', 3072],
         ['panel-teardown.mp4', 5120], ['tokens.json', 512],
         ['invoice-0412.pdf', 768], ['wallpaper-dusk.webp', 2560],
@@ -164,7 +164,7 @@ async function work() {
         {
             const many = [];
             for (let i = 0; i < 26; i++)
-                many.push(`org.projectluma.Notes.desktop`);
+                many.push(`org.projectSuno.Notes.desktop`);
             const before = new Gio.Settings({schema_id: 'org.gnome.shell'})
                 .get_strv('favorite-apps');
             new Gio.Settings({schema_id: 'org.gnome.shell'})
@@ -293,7 +293,7 @@ async function work() {
 
     // Pressing the arrangement control must reach the control, not the grip.
     const head = folders()._surface.header;
-    const viewButton = L.descend(head).find(a => a.style_class === 'luma-dockf-view');
+    const viewButton = L.descend(head).find(a => a.style_class === 'Suno-dockf-view');
     L.check('a press on the arrangement control is not a grip press',
         !folders()._pressedControl ? false : folders()._pressedControl(viewButton.get_children()[0] ?? viewButton),
         '');

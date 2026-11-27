@@ -1,16 +1,16 @@
 # Mobile application startup
 
-The maintained implementation is in `src/luma-platform/apphost/` and
-`appkit/luma_appkit/apphost.py`. Core, Monitor, Terminal and Tide RPM entry
+The maintained implementation is in `src/Suno-platform/apphost/` and
+`appkit/Suno_appkit/apphost.py`. Core, Monitor, Terminal and Tide RPM entry
 points use the same native client. There is one GTK/libadwaita application per
 product across Desktop, Tablet and Mobile; this does not introduce a mobile UI
 runtime, an alternative app implementation or a browser container.
 
 ## Launch path
 
-1. The session starts `luma-app-host.service`. Its single-threaded parent imports
+1. The session starts `Suno-app-host.service`. Its single-threaded parent imports
    Python/GI, common kit and stateless core UI modules, font configuration and
-   renderer libraries. Package manifests live in `luma-app-host/preload.d/`.
+   renderer libraries. Package manifests live in `Suno-app-host/preload.d/`.
    Never put modules with media initialization, threads, connections, open stores
    or application instances in those manifests. Camera and Tide initialize media
    in the launched child, not in the parent.
@@ -21,9 +21,9 @@ runtime, an alternative app implementation or a browser container.
    two seconds later, outside the new app's first frames. Less than 512 MiB
    available RAM skips replacement. Unused spares get a reclaimable OOM score;
    the real app restores its inherited score before executing.
-3. The libc-only `luma-app-launch` frontend reaches the prepared process without
+3. The libc-only `Suno-app-launch` frontend reaches the prepared process without
    starting another Python interpreter. Original Python launchers remain under
-   `/usr/libexec/luma-app-launchers/`. Arguments, environment, working directory,
+   `/usr/libexec/Suno-app-launchers/`. Arguments, environment, working directory,
    standard streams, termination and exit status travel through the protocol.
    Pending executor writes and exit handlers finish before the child exits.
    Windowless agents bypass the host. Native source launchers use `python3 -sP`,
@@ -50,7 +50,7 @@ source or manifests. An app already running continues to use its current code.
 
 ## Native Settings and Filer
 
-The handheld-only `luma-native-app-prewarm.timer` runs a one-shot controller after
+The handheld-only `Suno-native-app-prewarm.timer` runs a one-shot controller after
 session startup. The explicit native manifest names only the OS Settings and
 Filer executables. It prepares at most two services sequentially, requires
 1 GiB available RAM before each, and skips an already running service. Desktop,
@@ -86,7 +86,7 @@ invalidate Fedora's timestamp-based caches, forcing recompilation on immutable
 storage. Hash validation still detects changed development source. This has an
 import/mtime regression test; a complete new image compose remains a separate
 qualification step. Flatpak apps have the same problem in a read-only `/app`
-and `/usr`: the Luma Platform runtime rewrites its Python caches as
+and `/usr`: the Suno Platform runtime rewrites its Python caches as
 checked-hash at the end of its cleanup, and each first-party app manifest
 compiles its `site-packages` the same way after installing them
 (`tests/unit/test_flatpak_python_bytecode.py`).
@@ -143,14 +143,14 @@ restart/password login and repeat timing caught and verified this ordering fix.
 [AOSP ZygoteInit](https://android.googlesource.com/platform/frameworks/base/+/refs/heads/main/core/java/com/android/internal/os/ZygoteInit.java)
 preloads classes, resources, graphics libraries and text resources for shared
 startup. The useful principle here is to pay common initialization before the
-request, share read-only work, and measure the first real frame. Luma retains its
+request, share read-only work, and measure the first real frame. Suno retains its
 Python/GTK ABI and isolation model rather than copying Android's runtime.
 [Android's performance guidance](https://developer.android.com/topic/performance/measuring-performance)
 separates cold, warm and hot startup and gives targets of 500/200/150 ms; TTID
 and full data/display readiness must not be conflated.
 
 [AOSP CachedAppOptimizer](https://android.googlesource.com/platform/frameworks/base/+/refs/heads/main/services/core/java/com/android/server/am/CachedAppOptimizer.java)
-coordinates freezing with Binder transactions and process lifecycle. Luma's
+coordinates freezing with Binder transactions and process lifecycle. Suno's
 clock, call, sync and media services cannot safely be frozen simply because an
 app window is hidden. A future cache/freezer needs explicit background roles,
 IPC wakeup, memory-pressure eviction and restoration tests. No freezer is part
@@ -176,7 +176,7 @@ and ordinary resident-window reuse instead.
 ## Cold-launch and first-frame audit, 2026-11-01
 
 A second physical Titan audit ran two process-cold launches for each of 22
-native Luma/system app entries. The display was 1080×1200 at 2× (540×600 logical).
+native Suno/system app entries. The display was 1080×1200 at 2× (540×600 logical).
 The shared runtime was prepared; each target UI process was confirmed gone
 before dispatch. Normal close preceded termination of any remaining known UI
 PID. Background agents were preserved. Idle inhibition prevented automatic lock
@@ -234,7 +234,7 @@ host restart corrected that; existing app children survive the restart.
 | Terminal | 1046–1071 ms |
 | Settings | 1095–1293 ms |
 | Filer | 1153–1239 ms |
-| Luma Connect | 837–937 ms |
+| Suno Connect | 837–937 ms |
 | Depot | 1840–2387 ms |
 | Charlie | 1602–1889 ms |
 | Search settings | 647–1085 ms |

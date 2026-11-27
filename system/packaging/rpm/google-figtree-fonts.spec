@@ -13,7 +13,7 @@ This package contains the upright and italic variable fonts with a continuous
 weight axis from 300 through 900.}
 
 Version: 2.0.3
-Release: 1.luma.4%{?dist}
+Release: 1.Suno.4%{?dist}
 URL:     https://github.com/erikdkennedy/figtree
 
 # Bytes are pinned from Google Fonts commit
@@ -21,7 +21,7 @@ URL:     https://github.com/erikdkennedy/figtree
 Source0: Figtree[wght].ttf
 Source1: Figtree-Italic[wght].ttf
 Source2: OFL.txt
-Source10: 99-luma-figtree-fonts.conf
+Source10: 99-Suno-figtree-fonts.conf
 Source20: adjust-figtree-ui-metrics.py
 
 BuildRequires: python3-fonttools
@@ -52,14 +52,14 @@ done
 %fontfiles
 
 %changelog
-* Tue Sep 29 2026 Project Luma <project-luma@localhost> - 2.0.3-1.luma.4
+* Tue Sep 29 2026 Project Suno <project-suno@localhost> - 2.0.3-1.Suno.4
 - Map U+2010 and U+2011 to the hyphen glyph so the non-breaking hyphen draws in Figtree
 
-* Sun Aug 23 2026 Project Luma <project-luma@localhost> - 2.0.3-1.luma.3
+* Sun Aug 23 2026 Project Suno <project-suno@localhost> - 2.0.3-1.Suno.3
 - Order the system sans preference after Fedora language fallbacks
 
-* Tue Aug 11 2026 Project Luma <project-luma@localhost> - 2.0.3-1.luma.2
+* Tue Aug 11 2026 Project Suno <project-suno@localhost> - 2.0.3-1.Suno.2
 - Load the system sans alias after Fedora language defaults for fresh accounts
 
-* Sun Aug 09 2026 Project Luma <project-luma@localhost> - 2.0.3-1.luma.1
-- Package the pinned Figtree variable family as Luma's preferred sans font
+* Sun Aug 09 2026 Project Suno <project-suno@localhost> - 2.0.3-1.Suno.1
+- Package the pinned Figtree variable family as Suno's preferred sans font

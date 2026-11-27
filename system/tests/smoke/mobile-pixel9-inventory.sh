@@ -61,11 +61,11 @@ esac
 MOCK_FASTBOOT
 chmod +x "$test_root/bin/adb" "$test_root/bin/fastboot"
 
-LUMA_ADB="$test_root/bin/adb" \
-LUMA_FASTBOOT="$test_root/bin/fastboot" \
-LUMA_PIXEL9_TRANSPORT=adb \
-LUMA_PIXEL9_INVENTORY_DIR="$test_root/adb-output" \
-LUMA_PIXEL9_INVENTORY_TIMESTAMP=fixture \
+SUNO_ADB="$test_root/bin/adb" \
+SUNO_FASTBOOT="$test_root/bin/fastboot" \
+SUNO_PIXEL9_TRANSPORT=adb \
+SUNO_PIXEL9_INVENTORY_DIR="$test_root/adb-output" \
+SUNO_PIXEL9_INVENTORY_TIMESTAMP=fixture \
   "$repo_root/scripts/mobile/inventory-pixel9.sh" >/dev/null
 
 grep -qx 'TRANSPORT=adb' "$test_root/adb-output/summary.env"
@@ -82,11 +82,11 @@ if rg -Fq 'TOKAYFIXTURE1234' "$test_root/adb-output"; then
   exit 1
 fi
 
-LUMA_ADB="$test_root/bin/adb" \
-LUMA_FASTBOOT="$test_root/bin/fastboot" \
-LUMA_PIXEL9_TRANSPORT=fastboot \
-LUMA_PIXEL9_INVENTORY_DIR="$test_root/fastboot-output" \
-LUMA_PIXEL9_INVENTORY_TIMESTAMP=fixture \
+SUNO_ADB="$test_root/bin/adb" \
+SUNO_FASTBOOT="$test_root/bin/fastboot" \
+SUNO_PIXEL9_TRANSPORT=fastboot \
+SUNO_PIXEL9_INVENTORY_DIR="$test_root/fastboot-output" \
+SUNO_PIXEL9_INVENTORY_TIMESTAMP=fixture \
   "$repo_root/scripts/mobile/inventory-pixel9.sh" >/dev/null
 
 grep -qx 'TRANSPORT=fastboot' "$test_root/fastboot-output/summary.env"

@@ -12,13 +12,13 @@ import gi
 from gi.repository import Gio
 
 home = Path.home()
-base = home / '.local/lib/viola-luma'
+base = home / '.local/lib/viola-Suno'
 release = base / 'releases/20260914-native-1'
 assert (release / 'engine/chrome').is_file()
-state = home / '.local/state/viola-luma'
+state = home / '.local/state/viola-Suno'
 backup = state / 'launcher-backup-20260914'
 backup.mkdir(parents=True, exist_ok=True)
-profile = home / '.local/share/viola-luma/profile'
+profile = home / '.local/share/viola-Suno/profile'
 if not profile.exists():
     sources = list((home / 'viola-dev/appkit-spike-results/manual-close-tab-reopen-20260914').glob('native-window-*/profile'))
     assert len(sources) == 1, 'Expected exactly one source profile'
@@ -35,38 +35,38 @@ link.symlink_to(release)
 link.replace(base / 'current')
 bin_dir = home / '.local/bin'
 bin_dir.mkdir(parents=True, exist_ok=True)
-launcher = bin_dir / 'viola-luma'
+launcher = bin_dir / 'viola-Suno'
 launcher.write_text('''#!/usr/bin/bash
 set -euo pipefail
-release="$HOME/.local/lib/viola-luma/current"
+release="$HOME/.local/lib/viola-Suno/current"
 export G_RESOURCE_OVERLAYS="/org/gnome/Adwaita/styles=$release/toolkit/adw:/org/gtk/libgtk/theme/Default=$release/toolkit/gtk"
-exec /usr/bin/python3 "$release/host/integrated_window.py" --engine "$release/engine/chrome" --profile "$HOME/.local/share/viola-luma/profile" --work-root "$HOME/.local/state/viola-luma/sessions" --interactive "$@"
+exec /usr/bin/python3 "$release/host/integrated_window.py" --engine "$release/engine/chrome" --profile "$HOME/.local/share/viola-Suno/profile" --work-root "$HOME/.local/state/viola-Suno/sessions" --interactive "$@"
 ''')
 launcher.chmod(0o755)
 applications = home / '.local/share/applications'
-app_id = 'org.projectluma.Viola.NativeIntegration.desktop'
+app_id = 'org.projectSuno.Viola.NativeIntegration.desktop'
 body = f'''[Desktop Entry]
 Type=Application
 Version=1.0
 Name=Viola
-Comment=Viola for Luma
+Comment=Viola for Suno
 Exec={launcher} %U
-Icon={release}/host/assets/org.projectluma.Viola.NativeIntegration.svg
+Icon={release}/host/assets/org.projectSuno.Viola.NativeIntegration.svg
 Terminal=false
 Categories=Network;WebBrowser;
 MimeType=text/html;x-scheme-handler/http;x-scheme-handler/https;
 StartupNotify=true
-StartupWMClass=org.projectluma.Viola.NativeIntegration
+StartupWMClass=org.projectSuno.Viola.NativeIntegration
 '''
 (applications / app_id).write_text(body)
-old_ids = ['org.projectluma.Installed.rpm-viola-browser-stable-c3812ebd3343.desktop', 'com.rhyme.viola.LumaPreview.desktop']
+old_ids = ['org.projectSuno.Installed.rpm-viola-browser-stable-c3812ebd3343.desktop', 'com.rhyme.viola.SunoPreview.desktop']
 for old_id in old_ids:
     path = applications / old_id
     if path.exists() and not (backup / old_id).exists(): shutil.copy2(path, backup / old_id)
     path.write_text(body + 'NoDisplay=true\n')
-old_script = home / 'bin/viola-luma-preview'
+old_script = home / 'bin/viola-Suno-preview'
 if old_script.exists():
-    if not (backup / 'viola-luma-preview').exists(): shutil.copy2(old_script, backup / 'viola-luma-preview')
+    if not (backup / 'viola-Suno-preview').exists(): shutil.copy2(old_script, backup / 'viola-Suno-preview')
     old_script.write_text(f'#!/usr/bin/bash\nexec {launcher} "$@"\n')
     old_script.chmod(0o755)
 settings = Gio.Settings.new('org.gnome.shell')

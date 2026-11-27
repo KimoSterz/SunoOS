@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-import {reconcileGrid, moveItem, copyGrid, overlaps, MAX_PAGES} from '../../../src/luma-shell-presentation/grid.js';
+import {reconcileGrid, moveItem, copyGrid, overlaps, MAX_PAGES} from '../../../src/Suno-shell-presentation/grid.js';
 const app = id => ({id: `org.example.App${id}.desktop`, kind: 'app', w: 1, h: 1});
 const widget = {id: 'weather', kind: 'widget', w: 2, h: 2};
 function assert(value, message) { if (!value) throw new Error(message); }

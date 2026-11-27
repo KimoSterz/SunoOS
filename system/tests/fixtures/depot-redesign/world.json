@@ -39,9 +39,9 @@
    "name": "Tide",
    "summary": "Your music, from everywhere you keep it",
    "cat": "media",
-   "dev": "Luma",
+   "dev": "Suno",
    "verified": true,
-   "pk": "luma",
+   "pk": "Suno",
    "icon": "music",
    "win": "tide",
    "inst": 1,
@@ -155,9 +155,9 @@
    "name": "Photos",
    "summary": "Every photo you've taken, beautifully kept",
    "cat": "media",
-   "dev": "Luma",
+   "dev": "Suno",
    "verified": true,
-   "pk": "luma",
+   "pk": "Suno",
    "icon": "photos",
    "win": "photos",
    "inst": 1,
@@ -236,7 +236,7 @@
    "name": "Filer",
    "summary": "Files, with a tray you can carry",
    "cat": "tools",
-   "dev": "Luma",
+   "dev": "Suno",
    "verified": true,
    "pk": "system",
    "icon": "files",
@@ -251,7 +251,7 @@
     "filer-phone-dark"
    ],
    "desc": [
-    "Your files and drives, with a tray that holds what you're moving between folders and windows. Filer comes with Luma and updates with it."
+    "Your files and drives, with a tray that holds what you're moving between folders and windows. Filer comes with Suno and updates with it."
    ],
    "rating": {
     "avg": 4.8,
@@ -281,9 +281,9 @@
    "name": "Write",
    "summary": "Documents, beautifully set and easy to share",
    "cat": "work",
-   "dev": "Luma",
+   "dev": "Suno",
    "verified": true,
-   "pk": "luma",
+   "pk": "Suno",
    "icon": "documents",
    "win": "write",
    "inst": 1,
@@ -358,7 +358,7 @@
    "name": "Viola",
    "summary": "A calmer way to browse",
    "cat": "work",
-   "dev": "Luma",
+   "dev": "Suno",
    "verified": true,
    "pk": "system",
    "icon": "browser",
@@ -373,7 +373,7 @@
     "viola-phone-dark"
    ],
    "desc": [
-    "The web, with tabs in a sidebar you can name and keep. Viola comes with Luma and updates with it."
+    "The web, with tabs in a sidebar you can name and keep. Viola comes with Suno and updates with it."
    ],
    "rating": {
     "avg": 4.6,
@@ -409,9 +409,9 @@
    "name": "Messages",
    "summary": "Talk to anyone, privately",
    "cat": "work",
-   "dev": "Luma",
+   "dev": "Suno",
    "verified": true,
-   "pk": "luma",
+   "pk": "Suno",
    "icon": "messages",
    "win": "messages",
    "inst": 1,
@@ -424,7 +424,7 @@
     "messages-phone-dark"
    ],
    "desc": [
-    "Messages and calls, end-to-end encrypted, on your own Luma network. Your @username finds people; your number never has to."
+    "Messages and calls, end-to-end encrypted, on your own Suno network. Your @username finds people; your number never has to."
    ],
    "rating": {
     "avg": 4.8,
@@ -488,9 +488,9 @@
    "name": "Notes",
    "summary": "Catch a thought, share it with anyone",
    "cat": "work",
-   "dev": "Luma",
+   "dev": "Suno",
    "verified": true,
-   "pk": "luma",
+   "pk": "Suno",
    "icon": "notes",
    "win": "notes",
    "inst": 1,
@@ -557,9 +557,9 @@
    "name": "Calendar",
    "summary": "See what's next and when you're free",
    "cat": "work",
-   "dev": "Luma",
+   "dev": "Suno",
    "verified": true,
-   "pk": "luma",
+   "pk": "Suno",
    "icon": "calendar",
    "win": "calendar",
    "inst": 1,
@@ -623,9 +623,9 @@
    "name": "Contacts",
    "summary": "Everyone you know, in one place",
    "cat": "work",
-   "dev": "Luma",
+   "dev": "Suno",
    "verified": true,
-   "pk": "luma",
+   "pk": "Suno",
    "icon": "contacts",
    "win": "contacts",
    "inst": 1,
@@ -654,9 +654,9 @@
    "name": "Charlie",
    "summary": "Mail, with the noise turned down",
    "cat": "work",
-   "dev": "Luma",
+   "dev": "Suno",
    "verified": true,
-   "pk": "luma",
+   "pk": "Suno",
    "icon": "mail",
    "win": "charlie",
    "inst": 1,
@@ -703,11 +703,11 @@
   {
    "id": "youtube",
    "name": "YouTube",
-   "summary": "Watch YouTube, made for Luma",
+   "summary": "Watch YouTube, made for Suno",
    "cat": "media",
-   "dev": "Luma",
+   "dev": "Suno",
    "verified": true,
-   "pk": "luma",
+   "pk": "Suno",
    "icon": "youtube",
    "win": "youtube",
    "inst": 1,
@@ -720,7 +720,7 @@
     "youtube-phone-dark"
    ],
    "desc": [
-    "A YouTube client in Luma's own parts: the video leads, Up next sits beside it, and it keeps your place across the desktop, a tablet and your phone."
+    "A YouTube client in Suno's own parts: the video leads, Up next sits beside it, and it keeps your place across the desktop, a tablet and your phone."
    ],
    "reach": [
     [
@@ -735,7 +735,7 @@
    "name": "Terminal",
    "summary": "A quiet, fast command line",
    "cat": "tools",
-   "dev": "Luma",
+   "dev": "Suno",
    "verified": true,
    "pk": "system",
    "icon": "terminal",
@@ -771,9 +771,9 @@
    "name": "Maps",
    "summary": "Find your way, without being followed",
    "cat": "tools",
-   "dev": "Luma",
+   "dev": "Suno",
    "verified": true,
-   "pk": "luma",
+   "pk": "Suno",
    "icon": "maps",
    "win": "maps",
    "inst": 1,
@@ -809,9 +809,9 @@
    "name": "Weather",
    "summary": "The sky, at a glance",
    "cat": "tools",
-   "dev": "Luma",
+   "dev": "Suno",
    "verified": true,
-   "pk": "luma",
+   "pk": "Suno",
    "icon": "weather",
    "win": "weather",
    "inst": 1,
@@ -852,9 +852,9 @@
    "name": "Clock",
    "summary": "Alarms, timers and the time anywhere",
    "cat": "tools",
-   "dev": "Luma",
+   "dev": "Suno",
    "verified": true,
-   "pk": "luma",
+   "pk": "Suno",
    "icon": "clock",
    "win": "clock",
    "inst": 1,
@@ -872,9 +872,9 @@
    "name": "Camera",
    "summary": "Photos and video from any camera",
    "cat": "media",
-   "dev": "Luma",
+   "dev": "Suno",
    "verified": true,
-   "pk": "luma",
+   "pk": "Suno",
    "icon": "camera",
    "win": "camera",
    "inst": 1,
@@ -899,9 +899,9 @@
    "name": "Memo",
    "summary": "Voice notes that write themselves down",
    "cat": "tools",
-   "dev": "Luma",
+   "dev": "Suno",
    "verified": true,
-   "pk": "luma",
+   "pk": "Suno",
    "icon": "memo",
    "win": "memos",
    "inst": 1,
@@ -929,9 +929,9 @@
    "name": "Tasks",
    "summary": "What to do, and when",
    "cat": "work",
-   "dev": "Luma",
+   "dev": "Suno",
    "verified": true,
-   "pk": "luma",
+   "pk": "Suno",
    "icon": "tasks",
    "win": "tasks",
    "inst": 1,
@@ -949,9 +949,9 @@
    "name": "Leaf",
    "summary": "Long reads, set for reading",
    "cat": "media",
-   "dev": "Luma",
+   "dev": "Suno",
    "verified": true,
-   "pk": "luma",
+   "pk": "Suno",
    "icon": "leaf",
    "win": "leaf",
    "inst": 1,
@@ -969,9 +969,9 @@
    "name": "Viewer",
    "summary": "Open any picture or PDF",
    "cat": "tools",
-   "dev": "Luma",
+   "dev": "Suno",
    "verified": true,
-   "pk": "luma",
+   "pk": "Suno",
    "icon": "viewer",
    "win": "viewer",
    "inst": 1,
@@ -989,9 +989,9 @@
    "name": "Valet",
    "summary": "Keeps the computer tidy",
    "cat": "tools",
-   "dev": "Luma",
+   "dev": "Suno",
    "verified": true,
-   "pk": "luma",
+   "pk": "Suno",
    "icon": "valet",
    "win": "valet",
    "inst": 1,
@@ -1009,7 +1009,7 @@
    "name": "Disks",
    "summary": "Drives, partitions and their health",
    "cat": "tools",
-   "dev": "Luma",
+   "dev": "Suno",
    "verified": true,
    "pk": "system",
    "icon": "disks",
@@ -1029,7 +1029,7 @@
    "name": "Monitor",
    "summary": "What the computer is doing, right now",
    "cat": "tools",
-   "dev": "Luma",
+   "dev": "Suno",
    "verified": true,
    "pk": "system",
    "icon": "monitor",
@@ -1053,9 +1053,9 @@
    "name": "Calculator",
    "summary": "Sums, units and currencies",
    "cat": "tools",
-   "dev": "Luma",
+   "dev": "Suno",
    "verified": true,
-   "pk": "luma",
+   "pk": "Suno",
    "icon": "calculator",
    "win": "calc",
    "inst": 1,
@@ -1073,9 +1073,9 @@
    "name": "Tip Split",
    "summary": "Split the bill",
    "cat": "tools",
-   "dev": "Luma",
+   "dev": "Suno",
    "verified": true,
-   "pk": "luma",
+   "pk": "Suno",
    "icon": "tipsplit",
    "win": "tipsplit",
    "inst": 0,
@@ -1093,9 +1093,9 @@
    "name": "Ari",
    "summary": "Ask anything, on this computer",
    "cat": "tools",
-   "dev": "Luma",
+   "dev": "Suno",
    "verified": true,
-   "pk": "luma",
+   "pk": "Suno",
    "icon": "ari",
    "win": "ari",
    "inst": 1,
@@ -1128,9 +1128,9 @@
    "name": "Canvas",
    "summary": "Design anything, from posters to apps",
    "cat": "create",
-   "dev": "Luma",
+   "dev": "Suno",
    "verified": true,
-   "pk": "luma",
+   "pk": "Suno",
    "icon": "designer",
    "win": "canvas",
    "inst": 0,
@@ -1174,9 +1174,9 @@
    "name": "Grid",
    "summary": "Spreadsheets without the dread",
    "cat": "work",
-   "dev": "Luma",
+   "dev": "Suno",
    "verified": true,
-   "pk": "luma",
+   "pk": "Suno",
    "icon": "spreadsheets",
    "win": "grid",
    "inst": 0,
@@ -1206,9 +1206,9 @@
    "name": "Stage",
    "summary": "Presentations that look designed",
    "cat": "work",
-   "dev": "Luma",
+   "dev": "Suno",
    "verified": true,
-   "pk": "luma",
+   "pk": "Suno",
    "icon": "presentations",
    "win": "stage",
    "inst": 0,
@@ -1238,9 +1238,9 @@
    "name": "Sessions",
    "summary": "Record, arrange and mix music",
    "cat": "create",
-   "dev": "Luma",
+   "dev": "Suno",
    "verified": true,
-   "pk": "luma",
+   "pk": "Suno",
    "icon": "daw",
    "win": "session",
    "inst": 0,
@@ -1253,7 +1253,7 @@
     "session-phone-dark"
    ],
    "desc": [
-    "A recording studio: record takes, arrange them on a timeline and mix with real-time effects. Works with any audio interface Luma sees."
+    "A recording studio: record takes, arrange them on a timeline and mix with real-time effects. Works with any audio interface Suno sees."
    ],
    "rating": {
     "avg": 4.7,
@@ -1289,9 +1289,9 @@
    "name": "Darkroom",
    "summary": "Develop your photos like film",
    "cat": "create",
-   "dev": "Luma",
+   "dev": "Suno",
    "verified": true,
-   "pk": "luma",
+   "pk": "Suno",
    "icon": "photo-editor",
    "win": "darkroom",
    "inst": 1,
@@ -1334,9 +1334,9 @@
    "name": "Reel",
    "summary": "Edit video on a timeline that stays out of the way",
    "cat": "create",
-   "dev": "Luma",
+   "dev": "Suno",
    "verified": true,
-   "pk": "luma",
+   "pk": "Suno",
    "icon": "video-editor",
    "win": "reel",
    "inst": 0,
@@ -1369,9 +1369,9 @@
    "name": "Vault",
    "summary": "Passwords and passkeys, synced privately",
    "cat": "tools",
-   "dev": "Luma",
+   "dev": "Suno",
    "verified": true,
-   "pk": "luma",
+   "pk": "Suno",
    "icon": "vault",
    "win": null,
    "inst": 0,
@@ -2173,7 +2173,7 @@
      "Ruth",
      4,
      "Oct 16",
-     "Opens everything. Looks a little old next to Luma’s apps."
+     "Opens everything. Looks a little old next to Suno’s apps."
     ],
     [
      "OH",
@@ -2242,7 +2242,7 @@
      "Luis",
      4,
      "Oct 11",
-     "Great. I wish it used the Luma file picker."
+     "Great. I wish it used the Suno file picker."
     ]
    ]
   },
@@ -2281,7 +2281,7 @@
    "license": "Proprietary",
    "inst": 1,
    "desc": [
-    "Your Steam library on Luma. Most Windows games run through Proton without changes."
+    "Your Steam library on Suno. Most Windows games run through Proton without changes."
    ],
    "rating": {
     "avg": 4.6,
@@ -2314,7 +2314,7 @@
      "Kemi",
      4,
      "Oct 8",
-     "A couple of anti-cheat games won’t start, which is not Luma’s fault."
+     "A couple of anti-cheat games won’t start, which is not Suno’s fault."
     ],
     [
      "JN",
@@ -2962,30 +2962,30 @@
   "signal"
  ],
  "seals": {
-  "luma": {
-   "name": "Luma",
+  "Suno": {
+   "name": "Suno",
    "icon": "badge-check",
-   "line": "Made by Luma"
+   "line": "Made by Suno"
   },
   "verified": {
    "name": "Verified",
    "icon": "shield-check",
-   "line": "Developer verified, build reviewed by Luma"
+   "line": "Developer verified, build reviewed by Suno"
   },
   "community": {
    "name": "Community",
    "icon": "users",
-   "line": "Signed by its maker, not reviewed by Luma"
+   "line": "Signed by its maker, not reviewed by Suno"
   }
  },
  "looks": [
   {
-   "id": "theme-luma",
-   "name": "Luma",
-   "by": "Luma",
-   "seal": "luma",
+   "id": "theme-Suno",
+   "name": "Suno",
+   "by": "Suno",
+   "seal": "Suno",
    "kind": "Theme",
-   "theme": "luma",
+   "theme": "Suno",
    "hue": 260,
    "line": "Soft glass, round corners and one bright key",
    "n": 48200,
@@ -2996,7 +2996,7 @@
     "tv",
     "home"
    ],
-   "about": "The way Luma comes: translucent windows over your wallpaper, rounded corners, and a single bright button for the thing you came to do."
+   "about": "The way Suno comes: translucent windows over your wallpaper, rounded corners, and a single bright button for the thing you came to do."
   },
   {
    "id": "theme-cupertino",
@@ -3067,8 +3067,8 @@
   {
    "id": "ember",
    "name": "Ember",
-   "by": "Luma",
-   "seal": "luma",
+   "by": "Suno",
+   "seal": "Suno",
    "kind": "Wallpaper",
    "art": "../wallpapers/ember.png",
    "hue": 30,
@@ -3086,8 +3086,8 @@
   {
    "id": "fog",
    "name": "Blue Fog",
-   "by": "Luma",
-   "seal": "luma",
+   "by": "Suno",
+   "seal": "Suno",
    "kind": "Wallpaper",
    "art": "../wallpapers/blue-fog.png",
    "hue": 230,
@@ -3105,8 +3105,8 @@
   {
    "id": "dink",
    "name": "D-Ink",
-   "by": "Luma",
-   "seal": "luma",
+   "by": "Suno",
+   "seal": "Suno",
    "kind": "Appearance",
    "hue": 60,
    "ink": true,
@@ -3122,8 +3122,8 @@
   {
    "id": "meadow",
    "name": "Meadow",
-   "by": "Luma",
-   "seal": "luma",
+   "by": "Suno",
+   "seal": "Suno",
    "kind": "Wallpaper",
    "art": "../wallpapers/meadow.png",
    "hue": 120,
@@ -3141,12 +3141,12 @@
   {
    "id": "prism",
    "name": "Prism",
-   "by": "Luma",
-   "seal": "luma",
+   "by": "Suno",
+   "seal": "Suno",
    "kind": "Wallpaper",
    "art": "../wallpapers/prism.png",
    "hue": 290,
-   "line": "The colour Luma started with",
+   "line": "The colour Suno started with",
    "n": 22100,
    "runs": [
     "desktop",
@@ -3155,7 +3155,7 @@
     "tv",
     "home"
    ],
-   "about": "The ribbon of colour Luma started with. It looks good in the dark and the light appearance."
+   "about": "The ribbon of colour Suno started with. It looks good in the dark and the light appearance."
   },
   {
    "id": "studio-night",
@@ -3163,7 +3163,7 @@
    "by": "Ines Duarte",
    "seal": "verified",
    "kind": "Theme",
-   "art": "../wallpapers/luma-creatives.png",
+   "art": "../wallpapers/Suno-creatives.png",
    "hue": 330,
    "line": "A deep plum appearance with a matching wallpaper and accent",
    "n": 4300,
@@ -3199,8 +3199,8 @@
   {
    "id": "softkeys",
    "name": "Soft Keys",
-   "by": "Luma",
-   "seal": "luma",
+   "by": "Suno",
+   "seal": "Suno",
    "kind": "Sounds",
    "hue": 160,
    "line": "Gentle clicks, chimes and alerts recorded on wood",
@@ -3229,7 +3229,7 @@
     "phone",
     "tv"
    ],
-   "about": "A typeface designed so each letter is hard to mistake for another. Set across Luma as the system font."
+   "about": "A typeface designed so each letter is hard to mistake for another. Set across Suno as the system font."
   },
   {
    "id": "pointer-dusk",
@@ -3251,8 +3251,8 @@
   {
    "id": "battery-care",
    "name": "Battery Care",
-   "by": "Luma",
-   "seal": "luma",
+   "by": "Suno",
+   "seal": "Suno",
    "kind": "Hardware",
    "icon": "power",
    "hue": 140,
@@ -3276,12 +3276,12 @@
   {
    "id": "android",
    "name": "Android Apps",
-   "by": "Luma",
-   "seal": "luma",
+   "by": "Suno",
+   "seal": "Suno",
    "kind": "System",
    "icon": "smartphone",
    "hue": 100,
-   "line": "Run Android apps in a window, beside your Luma apps",
+   "line": "Run Android apps in a window, beside your Suno apps",
    "changes": [
     "A system service",
     "App list"
@@ -3293,7 +3293,7 @@
     "phone"
    ],
    "n": 21300,
-   "about": "Install Android apps from Depot and run them in their own windows, next to your Luma apps.",
+   "about": "Install Android apps from Depot and run them in their own windows, next to your Suno apps.",
    "off": "Android apps are not available",
    "onTxt": "Android apps open in windows like any other app"
   },
@@ -3325,8 +3325,8 @@
   {
    "id": "peek",
    "name": "Three-finger Peek",
-   "by": "Luma",
-   "seal": "luma",
+   "by": "Suno",
+   "seal": "Suno",
    "kind": "Gestures",
    "icon": "layers",
    "hue": 260,
@@ -3346,8 +3346,8 @@
   {
    "id": "compose",
    "name": "Compose Key",
-   "by": "Luma",
-   "seal": "luma",
+   "by": "Suno",
+   "seal": "Suno",
    "kind": "Keyboard",
    "icon": "keyboard",
    "hue": 30,
@@ -3431,8 +3431,8 @@
   {
    "id": "seconds",
    "name": "Seconds in the Shelf",
-   "by": "Luma",
-   "seal": "luma",
+   "by": "Suno",
+   "seal": "Suno",
    "kind": "Shelf",
    "icon": "clock",
    "hue": 220,
@@ -3457,7 +3457,7 @@
    "title": "Tide follows you from desk to sofa",
    "blurb": "Start an album at your desk, keep it going on your phone, finish it on the TV. One library, no subscriptions.",
    "app": "tide",
-   "art": "../social-luma/photos/pet-sounds.webp",
+   "art": "../social-Suno/photos/pet-sounds.webp",
    "hue": 25
   },
   {
@@ -3585,8 +3585,8 @@
  ],
  "done": [
   [
-   "luma",
-   "Luma 1.0 · nightly October 16",
+   "Suno",
+   "Suno 1.0 · nightly October 16",
    "Oct 16",
    "All devices"
   ],
@@ -3611,14 +3611,14 @@
  ],
  "auto": {
   "apps": true,
-  "luma": "overnight",
+  "Suno": "overnight",
   "matched": true
  },
  "system": {
-  "name": "Luma 1.0 · nightly October 22",
+  "name": "Suno 1.0 · nightly October 22",
   "size": "312 MB",
   "blurb": "Faster wake from sleep, Tide crossfades, plus 14 more changes.",
-  "running": "Luma 1.0 · nightly October 16",
+  "running": "Suno 1.0 · nightly October 16",
   "channel": "Nightly",
   "from": "dl.simplyluma.com",
   "checked": "6 hours ago",

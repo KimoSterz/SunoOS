@@ -84,8 +84,8 @@ class Words(unittest.TestCase):
                                              runtime)["full_control"])
 
     def test_reserved_namespaces_are_refused(self):
-        policy = {"reserved_prefixes": ["io.luma."]}
-        for app in ("org.freedesktop.impl.portal", "org.gnome.Shell.X", "org.kde.KWin", "io.luma.Secrets"):
+        policy = {"reserved_prefixes": ["io.Suno."]}
+        for app in ("org.freedesktop.impl.portal", "org.gnome.Shell.X", "org.kde.KWin", "io.Suno.Secrets"):
             self.assertIsNotNone(checks.reserved(app, policy, set()), app)
         self.assertIsNone(checks.reserved("org.gnome.Calculator", policy, set()))
 
@@ -127,36 +127,36 @@ class Checks(unittest.TestCase):
     policy = checks.load_policy()
 
     def test_reserved_ids(self):
-        self.assertIsNotNone(checks.reserved("org.projectluma.Notes", self.policy, set()))
+        self.assertIsNotNone(checks.reserved("org.projectSuno.Notes", self.policy, set()))
         self.assertIsNotNone(checks.reserved("com.rhyme.viola", self.policy, {"com.rhyme.viola"}))
         self.assertIsNone(checks.reserved("com.example.Notes", self.policy, set()))
 
-    def test_luma_services_are_refused_in_any_spelling(self):
+    def test_Suno_services_are_refused_in_any_spelling(self):
         meta = lambda body: "[Application]\nname=com.example.App\nruntime=org.gnome.Platform/x86_64/49\n\n" + body
-        for rule, policy in (("org.projectluma.Terminal", "talk"), ("org.projectluma.DepotHost1", "own"),
-                             ("org.projectluma.*", "talk"), ("org.*", "see"), ("io.luma.Monitor", "talk"),
-                             ("io.*", "talk"), ("org.project_luma.ShellState1", "talk"), ("ORG.ProjectLuma.Terminal", "talk"),
-                             ("org.projectluma", "own"), ("*", "talk")):
-            names = checks.luma_bus_names(meta(f"[Session Bus Policy]\n{rule}={policy}\n"))
+        for rule, policy in (("org.projectSuno.Terminal", "talk"), ("org.projectSuno.DepotHost1", "own"),
+                             ("org.projectSuno.*", "talk"), ("org.*", "see"), ("io.Suno.Monitor", "talk"),
+                             ("io.*", "talk"), ("org.projectSuno.ShellState1", "talk"), ("ORG.projectSuno.Terminal", "talk"),
+                             ("org.projectSuno", "own"), ("*", "talk")):
+            names = checks.Suno_bus_names(meta(f"[Session Bus Policy]\n{rule}={policy}\n"))
             self.assertEqual(names, [rule], (rule, policy))
-        self.assertEqual(checks.luma_bus_names(meta("[System Bus Policy]\norg.projectluma.ModTransactions1=talk\n")),
-                         ["org.projectluma.ModTransactions1"])
-        for rule, policy in (("org.projectluma.Terminal", "none"), ("org.freedesktop.Notifications", "talk"),
-                             ("org.projectlumax.App", "talk"), ("io.lumafoo.X", "talk"), ("com.*", "talk")):
-            self.assertEqual(checks.luma_bus_names(meta(f"[Session Bus Policy]\n{rule}={policy}\n")), [], rule)
-        self.assertEqual(checks.luma_bus_names("[broken"), ["(unreadable metadata)"])
+        self.assertEqual(checks.Suno_bus_names(meta("[System Bus Policy]\norg.projectSuno.ModTransactions1=talk\n")),
+                         ["org.projectSuno.ModTransactions1"])
+        for rule, policy in (("org.projectSuno.Terminal", "none"), ("org.freedesktop.Notifications", "talk"),
+                             ("org.projectSunox.App", "talk"), ("io.Sunofoo.X", "talk"), ("com.*", "talk")):
+            self.assertEqual(checks.Suno_bus_names(meta(f"[Session Bus Policy]\n{rule}={policy}\n")), [], rule)
+        self.assertEqual(checks.Suno_bus_names("[broken"), ["(unreadable metadata)"])
 
-    def test_a_bundle_talking_to_luma_s_terminal_is_refused(self):
+    def test_a_bundle_talking_to_Suno_s_terminal_is_refused(self):
         facts = {"sha256": "x", "format": "flatpak", "app_id": "com.example.Evil", "arch": "x86_64",
                  "runtime": "org.gnome.Platform/x86_64/49", "desktop_files": ["com.example.Evil.desktop"],
                  "scan": {"ran": True, "clean": True},
-                 "metadata": "[Application]\nname=com.example.Evil\n\n[Session Bus Policy]\norg.projectluma.Terminal=talk\n"}
+                 "metadata": "[Application]\nname=com.example.Evil\n\n[Session Bus Policy]\norg.projectSuno.Terminal=talk\n"}
         out = checks.package_checks(facts, {"arch": "x86_64", "sha256": "x"}, {"app_id": "com.example.Evil"},
                                     self.policy, set())
         failed = [c for c in out if not c["ok"]]
-        self.assertEqual([c["key"] for c in failed], ["luma-services (x86_64)"])
-        self.assertIn("uses a Luma system service reserved for Luma's own apps", failed[0]["message"])
-        self.assertIn("org.projectluma.Terminal", failed[0]["message"])
+        self.assertEqual([c["key"] for c in failed], ["Suno-services (x86_64)"])
+        self.assertIn("uses a Suno system service reserved for Suno's own apps", failed[0]["message"])
+        self.assertIn("org.projectSuno.Terminal", failed[0]["message"])
         self.assertEqual(checks.outcome(out), "needs_changes")
         facts["metadata"] = "[Application]\nname=com.example.Evil\n\n[Session Bus Policy]\norg.freedesktop.Notifications=talk\n"
         out = checks.package_checks(facts, {"arch": "x86_64", "sha256": "x"}, {"app_id": "com.example.Evil"},
@@ -165,7 +165,7 @@ class Checks(unittest.TestCase):
 
     def test_runtime(self):
         self.assertTrue(checks.runtime_allowed("org.gnome.Platform/x86_64/49", self.policy))
-        self.assertTrue(checks.runtime_allowed("org.projectluma.Platform/aarch64/44", self.policy))
+        self.assertTrue(checks.runtime_allowed("org.projectSuno.Platform/aarch64/44", self.policy))
         self.assertFalse(checks.runtime_allowed("org.gnome.Platform/x86_64/3.38", self.policy))
         self.assertFalse(checks.runtime_allowed("com.evil.Platform/x86_64/1", self.policy))
 

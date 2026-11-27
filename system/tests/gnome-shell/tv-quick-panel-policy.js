@@ -2,9 +2,9 @@
 // The TV quick panel: its rows, the remote in it, how it reads the shell's
 // own Quick Options and notifications, and the wiring that opens it from the
 // bar's cluster and a long press of Home.
-// Run: gjs -m tv-quick-panel-policy.js js/ui/lumaPresentation/tvQuickPanelModel.js \
-//        js/ui/lumaPresentation/tvTokens.js js/ui/lumaPresentation/tvQuickPanel.js \
-//        js/ui/lumaPresentation/tv.js js/ui/lumaPresentation/tvInput.js
+// Run: gjs -m tv-quick-panel-policy.js js/ui/SunoPresentation/tvQuickPanelModel.js \
+//        js/ui/SunoPresentation/tvTokens.js js/ui/SunoPresentation/tvQuickPanel.js \
+//        js/ui/SunoPresentation/tv.js js/ui/SunoPresentation/tvInput.js
 // (node tv-quick-panel-policy.js ... works too).
 const gjs = typeof globalThis.ARGV !== 'undefined';
 const args = gjs ? globalThis.ARGV : process.argv.slice(2);

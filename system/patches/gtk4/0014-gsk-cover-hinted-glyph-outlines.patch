@@ -1,4 +1,4 @@
-From: Project Luma
+From: Project Suno
 Subject: [PATCH] gsk: Cover hinted glyph outlines in text bounds and the glyph cache
 
 GTK lays text out without hint metrics, and without hint metrics cairo

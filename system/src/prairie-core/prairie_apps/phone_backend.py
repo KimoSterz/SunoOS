@@ -26,7 +26,7 @@ class PhoneCapability:
     modem_count: int = 0
     has_audio_route: bool = False
     # No cellular modem at all, as on most desktops and laptops: calls need a
-    # phone paired through Luma Connect. This is a setup to offer, not a fault.
+    # phone paired through Suno Connect. This is a setup to offer, not a fault.
     no_modem: bool = False
 
 
@@ -265,8 +265,8 @@ def set_audio_input_muted(muted: bool, runner=None) -> None:
     )
 
 
-AUDIO_ROUTE_BUS_NAME = "org.projectluma.AudioRoute1"
-AUDIO_ROUTE_OBJECT_PATH = "/org/projectluma/AudioRoute1"
+AUDIO_ROUTE_BUS_NAME = "org.projectSuno.AudioRoute1"
+AUDIO_ROUTE_OBJECT_PATH = "/org/projectSuno/AudioRoute1"
 AUDIO_ROUTE_INTERFACE = AUDIO_ROUTE_BUS_NAME
 
 
@@ -432,7 +432,7 @@ class ModemVoiceTransport:
 
 
 class ImsVoiceTransport:
-    """Call transport for Luma's userspace IMS service.
+    """Call transport for Suno's userspace IMS service.
 
     Gio carries the dialled address in the D-Bus message body.  It is never
     placed in a subprocess argument or journal message by Prairie Phone.
@@ -717,7 +717,7 @@ def preferred_voice_transport():
     """Keep the installed native IMS owner through discovery/registration loss."""
     # This packaged service is the FP6 native voice ownership contract.
     # A slow or restarting owner must not redirect dialing to MM voice.
-    if Path("/usr/lib/systemd/system/luma-fp6-imsd.service").is_file():
+    if Path("/usr/lib/systemd/system/Suno-fp6-imsd.service").is_file():
         return ImsVoiceTransport()
     busctl = shutil.which("busctl")
     if busctl:

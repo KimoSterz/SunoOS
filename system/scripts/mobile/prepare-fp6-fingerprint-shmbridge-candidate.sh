@@ -16,7 +16,7 @@ repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 base_boot=${1:?usage: prepare-fp6-fingerprint-shmbridge-candidate.sh LOW32_BOOT KERNEL_BUNDLE OUTPUT_DIR}
 bundle=${2:?usage: prepare-fp6-fingerprint-shmbridge-candidate.sh LOW32_BOOT KERNEL_BUNDLE OUTPUT_DIR}
 output_dir=${3:?usage: prepare-fp6-fingerprint-shmbridge-candidate.sh LOW32_BOOT KERNEL_BUNDLE OUTPUT_DIR}
-candidate=$output_dir/boot-fp6-luma-fingerprint-shmbridge-v7.img
+candidate=$output_dir/boot-fp6-Suno-fingerprint-shmbridge-v7.img
 bundle_manifest=$bundle/manifest.env
 kernel=$bundle/Image.gz
 module_focal=$bundle/focaltech_fp.ko
@@ -61,7 +61,7 @@ if grep -Evq '^[A-Z0-9_]+=[A-Za-z0-9._,-]+$' "$bundle_manifest"; then
 fi
 # shellcheck disable=SC1090
 . "$bundle_manifest"
-[ "${LUMA_FP6_FINGERPRINT_BUILD_VERSION:-}" = 1 ] ||
+[ "${SUNO_FP6_FINGERPRINT_BUILD_VERSION:-}" = 1 ] ||
   die 'bundle version differs'
 [ "${KERNEL_RELEASE:-}" = 7.1.2 ] || die 'kernel release differs'
 [ "${QSEECOM_PATCHSET_SHA256:-}" = "$FP6_FINGERPRINT_QSEECOM_PATCHSET_SHA256" ] ||
@@ -132,7 +132,7 @@ cmp "$base_dir/ramdisk" "$candidate_dir/ramdisk"
 
 candidate_sha=$(hash "$candidate")
 {
-  printf 'LUMA_FP6_FINGERPRINT_BOOT_CANDIDATE_VERSION=7\n'
+  printf 'SUNO_FP6_FINGERPRINT_BOOT_CANDIDATE_VERSION=7\n'
   printf 'SCOPE=fp6-fingerprint-shmbridge-diagnostic\n'
   printf 'BASE_BOOT_SHA256=%s\n' "$FP6_FINGERPRINT_QSEE_POOL_LOW32_BOOT_SHA256"
   printf 'KERNEL_SHA256=%s\n' "$IMAGE_SHA256"

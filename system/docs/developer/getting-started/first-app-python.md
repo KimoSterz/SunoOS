@@ -1,24 +1,24 @@
 ---
 title: Your first app in Python
-summary: Build Notebook, a complete adaptive Luma app with a sidebar, a toolbar, an empty state, commands and a keyboard shortcut, using LumaUI from Python.
+summary: Build Notebook, a complete adaptive Suno app with a sidebar, a toolbar, an empty state, commands and a keyboard shortcut, using SunoUI from Python.
 order: 2
 section: Getting started
 ---
 
 # Your first app in Python
 
-LumaUI’s Python package, `luma_appkit`, is the fastest way to build a Luma
+SunoUI’s Python package, `Suno_appkit`, is the fastest way to build a Suno
 app. In this tutorial you build **Notebook**: a window with a sidebar
 island and a content island, a toolbar button, an empty state, a status bar,
 commands that drive the identity menu and a keyboard shortcut, and a layout that
 collapses into a navigation stack on a phone.
 
-The code on this page targets `luma-developer-platform` 0.1.0 (preview).
+The code on this page targets `Suno-developer-platform` 0.1.0 (preview).
 
 ## Before you start
 
-To run the app directly you need a Luma system, where the platform is
-preinstalled. Elsewhere, build it as a Flatpak on the Luma runtime with the
+To run the app directly you need a Suno system, where the platform is
+preinstalled. Elsewhere, build it as a Flatpak on the Suno runtime with the
 manifest in [project layout](project-layout.md). See
 [install the SDK](install-the-sdk.md).
 
@@ -28,7 +28,7 @@ Make this layout. [Project layout](project-layout.md) explains every file.
 
 ```text
 notebook/
-├── luma-app.toml
+├── Suno-app.toml
 ├── src/
 │   └── main.py
 ├── data/
@@ -38,13 +38,13 @@ notebook/
 ├── flatpak/
 │   └── com.example.Notebook.json
 └── verification/
-    └── luma-native-evidence.json
+    └── Suno-native-evidence.json
 ```
 
-You can also run `luma new "Notebook" --id com.example.Notebook --destination notebook`
+You can also run `Suno new "Notebook" --id com.example.Notebook --destination notebook`
 to generate a starting tree (it also writes a `README.md`, a `run-app`
 launcher and a YAML copy of the Flatpak manifest). The generated `src/main.py`
-uses the C library through introspection rather than LumaUI’s Python package,
+uses the C library through introspection rather than SunoUI’s Python package,
 so replace it with the code below. Replace the generated Flatpak manifest too;
 [project layout](project-layout.md#flatpak-manifest) explains why.
 
@@ -58,7 +58,7 @@ Save this as `src/main.py`:
 ```python
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""Notebook: a minimal Luma application written with LumaUI."""
+"""Notebook: a minimal Suno application written with SunoUI."""
 
 from __future__ import annotations
 
@@ -70,7 +70,7 @@ gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 from gi.repository import Adw, Gtk
 
-from luma_appkit import (
+from Suno_appkit import (
     AppWindow,
     Command,
     CommandGroup,
@@ -210,13 +210,13 @@ Try it:
 
 ## What just happened
 
-**`install_appkit()`** loads LumaUI’s tokens, base sheet and structural sheet
+**`install_appkit()`** loads SunoUI’s tokens, base sheet and structural sheet
 for the current display, and keeps them in step with light, dark, Frost, Glass
 and high contrast. Call it once after GTK has a display, which is why it lives
 in `do_activate`. `AppWindow` and `add_style_sheet()` also call it, so an
 extra call does nothing.
 
-**`AppWindow`** is LumaUI’s window. LumaUI draws its frame, title row, identity
+**`AppWindow`** is SunoUI’s window. SunoUI draws its frame, title row, identity
 (your app’s name and icon from its desktop entry) and window controls, so your
 app draws none of them. The window also comes back at the size it had last
 time and hides its title row when the app runs fullscreen on a phone. See
@@ -230,8 +230,8 @@ shortcut can never disagree. `enabled` is checked every time the command is
 invoked. See [commands and menus](../kit/commands-and-menus.md).
 
 **`Island`**, **`NavigationSidebar`**, **`Toolbar`**, **`EmptyState`** and
-**`StatusBar`** are LumaUI components. Your app never sets their radius,
-shadow, padding or colors, so a change to the Luma design reaches them without
+**`StatusBar`** are SunoUI components. Your app never sets their radius,
+shadow, padding or colors, so a change to the Suno design reaches them without
 a change to your app. See the [Python reference](../kit/appkit-reference.md).
 
 **`IslandSplitView`** is a split view that keeps island shadows intact while
@@ -240,19 +240,19 @@ its pages sit side by side. The breakpoint collapses it on narrow windows. See
 
 ## 4. Describe and check the project
 
-Add `luma-app.toml`, the desktop entry, metainfo, icon and Flatpak manifest from
+Add `Suno-app.toml`, the desktop entry, metainfo, icon and Flatpak manifest from
 [project layout](project-layout.md), then run the static contract checks:
 
 ```sh
-luma lint
-luma inspect
-luma test
+Suno lint
+Suno inspect
+Suno test
 ```
 
-`luma lint` prints `Luma application contract passed` when the app ID, desktop
+`Suno lint` prints `Suno application contract passed` when the app ID, desktop
 entry, metainfo, icon, Flatpak manifest, permissions and lifecycle agree. A new
-project reports the status `Development` in `luma inspect`; that is expected.
-See [the `luma` command](../kit/sdk-command-line.md).
+project reports the status `Development` in `Suno inspect`; that is expected.
+See [the `Suno` command](../kit/sdk-command-line.md).
 
 ## Next steps
 

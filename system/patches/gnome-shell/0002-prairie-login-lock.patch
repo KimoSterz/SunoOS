@@ -762,17 +762,17 @@ index 26eb8ee..e39e243 100644
 +.clock-display-box {
 +  spacing: 0; }
 +
-+.luma-clock-content {
++.Suno-clock-content {
 +  spacing: 0; }
 +
-+.luma-clock-time {
++.Suno-clock-time {
 +  color: #1f2937;
 +  font-size: 12.5px;
 +  font-weight: 600;
 +  font-feature-settings: "tnum";
 +  letter-spacing: -0.005em; }
 +
-+.luma-secondary-status-text {
++.Suno-secondary-status-text {
 +  color: #6b7280;
 +  font-size: 11.5px;
 +  font-weight: 500; }
@@ -1001,7 +1001,7 @@ index 26eb8ee..e39e243 100644
      .unlock-dialog .user-widget.vertical .user-icon StIcon {
        padding: 30px; }
 -
--/* Project Luma light panel. Keep this generated artifact beside the SCSS so
+-/* Project Suno light panel. Keep this generated artifact beside the SCSS so
 - * Fedora's release-tarball build packages the same source-owned treatment. */
 -#panel,
 -#panel:overview {
@@ -1078,18 +1078,18 @@ index 26eb8ee..e39e243 100644
 -  background-color: rgba(72, 120, 184, 0.14); }
 -
 -.clock-display-box,
--.luma-clock-content {
+-.Suno-clock-content {
 -  spacing: 0; }
 -
--#panel .luma-clock-time {
+-#panel .Suno-clock-time {
 -  color: #1f2937;
 -  font-size: 12.5px;
 -  font-weight: 600;
 -  font-feature-settings: "tnum";
 -  letter-spacing: -0.005em; }
 -
--#panel .luma-clock-date,
--#panel .luma-secondary-status-text {
+-#panel .Suno-clock-date,
+-#panel .Suno-secondary-status-text {
 -  color: #6b7280;
 -  font-size: 11.5px;
 -  font-weight: 500; }

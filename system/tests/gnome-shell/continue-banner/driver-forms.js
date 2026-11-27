@@ -10,13 +10,13 @@ import GLib from 'gi://GLib';
 import Shell from 'gi://Shell';
 import St from 'gi://St';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
-import {ContinueBanner} from 'resource:///org/gnome/shell/ui/lumaContinue.js';
+import {ContinueBanner} from 'resource:///org/gnome/shell/ui/SunoContinue.js';
 
 Gio._promisify(Shell.Screenshot.prototype, 'screenshot_area');
 
-const out = GLib.getenv('LUMA_BANNER_OUT');
-const mode = GLib.getenv('LUMA_BANNER_MODE') || 'dark';
-const posture = GLib.getenv('LUMA_BANNER_POSTURE') || 'phone';
+const out = GLib.getenv('SUNO_BANNER_OUT');
+const mode = GLib.getenv('SUNO_BANNER_MODE') || 'dark';
+const posture = GLib.getenv('SUNO_BANNER_POSTURE') || 'phone';
 // Files are named as the references: tablet-landscape-*, tablet-portrait-*.
 const label = () => posture !== 'tablet' ? posture
     : `tablet-${global.stage.height > global.stage.width ? 'portrait' : 'landscape'}`;
@@ -26,22 +26,22 @@ const sleep = ms => new Promise(resolve => GLib.timeout_add(GLib.PRIORITY_DEFAUL
     return GLib.SOURCE_REMOVE;
 }));
 
-const NOTES = {id: 'org.projectluma.Notes.desktop', windows: 1, name: 'Notes', icon: 'org.projectluma.Notes'};
+const NOTES = {id: 'org.projectSuno.Notes.desktop', windows: 1, name: 'Notes', icon: 'org.projectSuno.Notes'};
 const APPS = [
-    ['org.projectluma.Viola.desktop', 'Viola', 'luma-v3-browser'],
-    ['org.projectluma.Documents.desktop', 'Documents', 'luma-v3-documents'],
-    ['org.projectluma.Notes.desktop', 'Notes', 'org.projectluma.Notes'],
-    ['org.projectluma.Tide.desktop', 'Tide', 'org.projectluma.Tide'],
+    ['org.projectSuno.Viola.desktop', 'Viola', 'Suno-v3-browser'],
+    ['org.projectSuno.Documents.desktop', 'Documents', 'Suno-v3-documents'],
+    ['org.projectSuno.Notes.desktop', 'Notes', 'org.projectSuno.Notes'],
+    ['org.projectSuno.Tide.desktop', 'Tide', 'org.projectSuno.Tide'],
     ['org.gnome.Nautilus.desktop', 'Filer', 'org.gnome.Nautilus'],
-    ['org.example.Kiln.desktop', 'Kiln', 'org.projectluma.Photos'],
-    ['org.example.RecipeBox.desktop', 'Recipe Box', 'luma-v3-documents'],
-    ['org.example.StudioMixer.desktop', 'Studio Mixer', 'luma-v3-music'],
+    ['org.example.Kiln.desktop', 'Kiln', 'org.projectSuno.Photos'],
+    ['org.example.RecipeBox.desktop', 'Recipe Box', 'Suno-v3-documents'],
+    ['org.example.StudioMixer.desktop', 'Studio Mixer', 'Suno-v3-music'],
 ].map(([id, name, icon]) => ({id, windows: 1, name, icon}));
 const RESULT = {
     windows: 11, placed: 8, missing: ['org.example.StudioMixer.desktop'], unplaced: ['org.example.Kiln.desktop'],
     installing: ['org.example.RecipeBox.desktop'], progress: {'org.example.RecipeBox.desktop': 62}, failed: [],
-    withoutDocuments: [{id: 'org.projectluma.Notes.desktop', document: 'Packing list'}],
-    moved: [{id: 'org.projectluma.Viola.desktop', windows: 2}],
+    withoutDocuments: [{id: 'org.projectSuno.Notes.desktop', document: 'Packing list'}],
+    moved: [{id: 'org.projectSuno.Viola.desktop', windows: 2}],
 };
 
 function measure(actor, depth = 0, list = []) {
@@ -135,7 +135,7 @@ async function phone() {
     await sleep(1200);
     banner.result({result: RESULT, apps: APPS, device: 'ThinkPad', at: Date.now() / 1000 - 240});
     await sleep(600);
-    banner._notification.lumaContent.actions.find(a => a.label === 'Show')?.callback();
+    banner._notification.SunoContent.actions.find(a => a.label === 'Show')?.callback();
     await sleep(900);
     await shoot('list', banner._drawer?.actor ?? null, 0);
     records.push({presentation: p.mode});
@@ -146,11 +146,11 @@ async function tv() {
     const p = Main.presentation;
     p._snapshot({...(p._state ?? {}), posture: {effective: 'tv', selected: 'tv'}});
     await sleep(2500);
-    // The reference's item (mockups/luma-tv.html coast), with its artwork when ART is given.
-    const artFile = GLib.getenv('LUMA_BANNER_ART');
+    // The reference's item (mockups/Suno-tv.html coast), with its artwork when ART is given.
+    const artFile = GLib.getenv('SUNO_BANNER_ART');
     const art = artFile ? GLib.base64_encode(GLib.file_get_contents(artFile)[1]) : null;
     const shown = p._tv.setContinue({id: 'tp:1', name: 'ThinkPad', tv: true, media: {
-        app: 'org.projectluma.Tide.desktop', name: 'Tide', item: 'Coastline', subtitle: 'Episode 3 · The north shore',
+        app: 'org.projectSuno.Tide.desktop', name: 'Tide', item: 'Coastline', subtitle: 'Episode 3 · The north shore',
         kind: 'video', position: 2573, length: 4020, art}}, () => {});
     p._tv.showHome('home');
     await sleep(1500);

@@ -6,9 +6,9 @@ switch = true
 source_profile = true
 
 [initial_session]
-command = "/usr/local/bin/luma-android-pixman-session"
-user = "luma"
+command = "/usr/local/bin/Suno-android-pixman-session"
+user = "Suno"
 
 [default_session]
-command = "agreety --cmd /usr/local/bin/luma-shell-session"
+command = "agreety --cmd /usr/local/bin/Suno-shell-session"
 user = "greetd"

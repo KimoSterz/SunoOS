@@ -1,0 +1,108 @@
+diff --git a/shell/cc-application.c b/shell/cc-application.c
+index 853662e..bbddace 100644
+--- a/shell/cc-application.c
++++ b/shell/cc-application.c
+@@ -465,6 +465,55 @@ static gboolean fixture_smoke (gpointer data)
+   return G_SOURCE_REMOVE;
+ }
+ 
++/* The SunoUI window over live data, made once. @page: the page it opens on
++ * (a restored window's), or NULL for the default. Its restore key is
++ * "settings": the shell puts it back where it was. */
++static void
++ensure_Suno_window (CcApplication *self, const char *page)
++{
++  if (self->Suno_window)
++    return;
++  g_autoptr (GError) error = NULL;
++  self->live = cc_Suno_live_model_new (&error);
++  if (!self->live)
++    {
++      g_warning ("Settings: the SunoUI window has no model (%s); using GNOME's", error->message);
++      self->Suno_ui = FALSE;
++      return;
++    }
++  self->Suno_window = GTK_WINDOW (cc_Suno_window_new (GTK_APPLICATION (self), self->live, NULL));
++  g_object_add_weak_pointer (G_OBJECT (self->Suno_window), (gpointer *) &self->Suno_window);
++  self->Suno_shell = CC_SHELL (g_object_get_data (G_OBJECT (self->Suno_window), "cf-shell"));
++  gtk_window_set_default_size (self->Suno_window, 1180, 740);
++  Suno_window_set_restore_key (self->Suno_window, "settings");
++  /* A phone starts on its destinations; explicit panel requests
++   * still navigate through the command-line route below. */
++  if (page && *page)
++    cc_Suno_shell_go (CC_SUNO_SHELL (self->Suno_shell), page);
++  else if (!Suno_ui_mobile_form_factor ())
++    cc_Suno_shell_go (CC_SUNO_SHELL (self->Suno_shell), "wifi");
++}
++
++/* Settings' own state for the shell's snapshot (ADR-055): the page its window shows. */
++static void
++restore_save_window (SunoRestore *restore, GtkWindow *window, GVariantDict *state, CcApplication *self)
++{
++  const char *page = self->Suno_shell ? cc_Suno_shell_get_page (CC_SUNO_SHELL (self->Suno_shell)) : NULL;
++  if (window == self->Suno_window && page)
++    g_variant_dict_insert (state, "page", "s", page);
++}
++
++static void
++restore_window (SunoRestore *restore, const char *reason, const char *key, GVariant *state, CcApplication *self)
++{
++  if (g_strcmp0 (key, "settings") != 0 || !self->Suno_ui)
++    return;
++  const char *page = NULL;
++  if (state && g_variant_is_of_type (state, G_VARIANT_TYPE_VARDICT))
++    g_variant_lookup (state, "page", "&s", &page);
++  ensure_Suno_window (self, page);
++}
++
+ static void
+ cc_application_activate (GApplication *application)
+ {
+@@ -523,27 +572,15 @@ cc_application_activate (GApplication *application)
+ 
+   if (self->Suno_ui)
+     {
+-      if (!self->Suno_window)
++      /* Started by the shell to bring Settings back (a restart, or Continue
++       * from another device): the window comes back on the page it showed. */
++      if (!self->Suno_window && Suno_restore_restore (Suno_restore_get_default (GTK_APPLICATION (self))) &&
++          self->Suno_window)
+         {
+-          g_autoptr (GError) error = NULL;
+-          self->live = cc_Suno_live_model_new (&error);
+-          if (!self->live)
+-            {
+-              g_warning ("Settings: the SunoUI window has no model (%s); using GNOME's", error->message);
+-              self->Suno_ui = FALSE;
+-            }
+-          else
+-            {
+-              self->Suno_window = GTK_WINDOW (cc_Suno_window_new (GTK_APPLICATION (self), self->live, NULL));
+-              g_object_add_weak_pointer (G_OBJECT (self->Suno_window), (gpointer *) &self->Suno_window);
+-              self->Suno_shell = CC_SHELL (g_object_get_data (G_OBJECT (self->Suno_window), "cf-shell"));
+-              gtk_window_set_default_size (self->Suno_window, 1180, 740);
+-              /* A phone starts on its destinations; explicit panel requests
+-               * still navigate through the command-line route below. */
+-              if (!Suno_ui_mobile_form_factor ())
+-                cc_Suno_shell_go (CC_SUNO_SHELL (self->Suno_shell), "wifi");
+-            }
++          gtk_window_present (self->Suno_window);
++          return;
+         }
++      ensure_Suno_window (self, NULL);
+       if (self->Suno_ui)
+         {
+           gtk_window_present (self->Suno_window);
+@@ -577,6 +614,12 @@ cc_application_startup (GApplication *application)
+                                          "app.help", help_accels);
+ 
+   self->Suno_ui = use_Suno_ui ();
++  if (self->Suno_ui && !self->fixture_mode)
++    {
++      SunoRestore *restore = Suno_restore_get_default (GTK_APPLICATION (self));
++      g_signal_connect (restore, "save-window", G_CALLBACK (restore_save_window), self);
++      g_signal_connect (restore, "restore-window", G_CALLBACK (restore_window), self);
++    }
+   if (self->fixture_mode || self->Suno_ui)
+     {
+       Suno_init ();

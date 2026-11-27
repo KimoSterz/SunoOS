@@ -1,6 +1,6 @@
 {
-  "_doc": "LumaUI bar family (KB-B): items that plug into the action center, the share and export sheets, the document header. Every group is --lumaui-bar-<group>-<key> in CSS and lumaui_tokens.BAR[group][key] in Python.",
-  "lumaui": {
+  "_doc": "SunoUI bar family (KB-B): items that plug into the action center, the share and export sheets, the document header. Every group is --SunoUI-bar-<group>-<key> in CSS and SunoUI_tokens.BAR[group][key] in Python.",
+  "SunoUI": {
     "action_center": {"anchor_frame_radius": 24},
     "bar": {
       "tool_palette": {"_doc": "v71 Viewer .vwpal: own editing palette over image, above bottom action bar; scrolling at narrow widths.", "side": 12, "bottom": 76, "phone_side": 16, "phone_bottom": 104, "gap": 2, "padding": 4, "phone_padding": 6, "radius": 16, "phone_radius": 22},
@@ -359,7 +359,7 @@
         "bar_pager_media": "#000000",
         "bar_pager_media_ink": "#ffffff"
       },
-      "_doc": "v70 Terminal's command field (.tpre, .tpre b, .tkey), measured by lumaui-conform bar-term: the prompt folder, its $ and the Return hint. v71: a bar button's corner count (Weather's .wxbell em, oklch .72 .16 60 on #111) and the lit glyph of the chosen icon tab in a phone bar (Clock's .cktab.on, oklch .8 .11 acc); a held thing's kind (.fhtx small, oklch .75 .12 acc) and a red panel row (.fexr2.red, oklch .68 .19 25), the same in both modes; the red count on a bar control (.tbadge, .pnbadge: oklch .6 .2 25, white)."
+      "_doc": "v70 Terminal's command field (.tpre, .tpre b, .tkey), measured by SunoUI-conform bar-term: the prompt folder, its $ and the Return hint. v71: a bar button's corner count (Weather's .wxbell em, oklch .72 .16 60 on #111) and the lit glyph of the chosen icon tab in a phone bar (Clock's .cktab.on, oklch .8 .11 acc); a held thing's kind (.fhtx small, oklch .75 .12 acc) and a red panel row (.fexr2.red, oklch .68 .19 25), the same in both modes; the red count on a bar control (.tbadge, .pnbadge: oklch .6 .2 25, white)."
     }
   }
 }

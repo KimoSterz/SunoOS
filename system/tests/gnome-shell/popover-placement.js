@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-// Placement checks for Shelf popovers (js/ui/lumaPopoverPlacement.js).
-// Run: gjs -m popover-placement.js path/to/lumaPopoverPlacement.js
+// Placement checks for Shelf popovers (js/ui/SunoPopoverPlacement.js).
+// Run: gjs -m popover-placement.js path/to/SunoPopoverPlacement.js
 import GLib from 'gi://GLib';
 import System from 'system';
 const P = await import(

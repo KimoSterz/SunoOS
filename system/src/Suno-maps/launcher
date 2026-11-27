@@ -1,0 +1,3 @@
+#!/bin/sh
+export PYTHONPATH=/opt/Suno-previews/maps
+exec /usr/bin/python3 /opt/Suno-previews/maps/bin/Suno-maps "$@"

@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """Camera's photographic canvas and shutter silhouette (v70/v71 app-only parts).
 
-The frame, menus, text roles and feedback are LumaUI's. Geometry below is
+The frame, menus, text roles and feedback are SunoUI's. Geometry below is
 measured from cmRender/cmShape (desktop) and cmRenderPhone (a phone, v71) in
 the simulator. Colours come from kit media tokens.
 There is no device access or persistent state in this composition module.
@@ -25,16 +25,16 @@ gi.require_version("Graphene", "1.0")
 gi.require_version("Gsk", "4.0")
 import cairo
 from gi.repository import Gdk, GLib, Graphene, Gsk, Gtk
-from luma_appkit import (ActionCenter, BarWidget, TextButton, Island, Toast, ToastHost, BarThumbnail,
+from Suno_appkit import (ActionCenter, BarWidget, TextButton, Island, Toast, ToastHost, BarThumbnail,
                         ModeSwitch, RichMenuItem, apply_type, icons)
-from luma_appkit import lumaui_tokens
-from luma_appkit.action_bubble import FloatingMenu, MenuItem, float_at, rect_in
-from luma_appkit.bar_frame import BarFrame
-from luma_appkit.action_center import BarAction, make_control
-from luma_appkit.media_style import TextureLoader
-from luma_appkit.structure_adapt import WidthWatch, _LayoutWatch
-from luma_appkit.structure_layers import LayerHost
-from luma_appkit.lumaui import media_context, mobile_form_factor, set_css_class
+from Suno_appkit import SunoUI_tokens
+from Suno_appkit.action_bubble import FloatingMenu, MenuItem, float_at, rect_in
+from Suno_appkit.bar_frame import BarFrame
+from Suno_appkit.action_center import BarAction, make_control
+from Suno_appkit.media_style import TextureLoader
+from Suno_appkit.structure_adapt import WidthWatch, _LayoutWatch
+from Suno_appkit.structure_layers import LayerHost
+from Suno_appkit.SunoUI import media_context, mobile_form_factor, set_css_class
 from .camera_backend import image_rotation_from_mount
 from .camera_state import ASPECT_RATIOS, aspect_frame, portrait
 
@@ -55,13 +55,13 @@ class CameraMenuItem(RichMenuItem):
 def colour(widget, name, alpha=1):
     found, value = widget.get_style_context().lookup_color(name)
     if not found:
-        raise RuntimeError(f"Missing LumaUI media token: {name}")
+        raise RuntimeError(f"Missing SunoUI media token: {name}")
     return value.red, value.green, value.blue, value.alpha * alpha
 
 
 class FixedViewport(Gtk.Widget):
     """Keep photographic content inside the v70 overlay's fixed geometry."""
-    __gtype_name__ = "LumaCameraFixedViewport"
+    __gtype_name__ = "SunoCameraFixedViewport"
 
     def __init__(self, child, width, height, *, radius=0):
         super().__init__(overflow=Gtk.Overflow.HIDDEN)
@@ -100,7 +100,7 @@ class FixedViewport(Gtk.Widget):
 
 class CameraPicture(Gtk.Picture):
     """The crop/zoom/mirror in the viewfinder; saved captures are independent."""
-    __gtype_name__ = "LumaCameraPicture"
+    __gtype_name__ = "SunoCameraPicture"
 
     def __init__(self, window):
         super().__init__(can_shrink=True, content_fit=Gtk.ContentFit.COVER,
@@ -112,7 +112,7 @@ class CameraPicture(Gtk.Picture):
     def do_snapshot(self, snapshot):
         canvas_width, canvas_height = self.get_width(), self.get_height()
         background = Gdk.RGBA()
-        background.red, background.green, background.blue, background.alpha = colour(self, "luma_media_shadow")
+        background.red, background.green, background.blue, background.alpha = colour(self, "Suno_media_shadow")
         snapshot.append_color(background, Graphene.Rect().init(0, 0, canvas_width, canvas_height))
         surface = self.window._surface
         left, top, width, height = aspect_frame(canvas_width, canvas_height,
@@ -175,7 +175,7 @@ class CameraPicture(Gtk.Picture):
 
 class FinderMarks(Gtk.DrawingArea):
     """Thirds, focus reticle and document outline, without capturing them."""
-    __gtype_name__ = "LumaCameraFinderMarks"
+    __gtype_name__ = "SunoCameraFinderMarks"
 
     def __init__(self, window):
         super().__init__(can_target=False, hexpand=True, vexpand=True)
@@ -191,7 +191,7 @@ class FinderMarks(Gtk.DrawingArea):
         context.clip()
         context.translate(left, top)
         if window.state.grid:
-            context.set_source_rgba(*colour(self, "luma_on_media", .3))
+            context.set_source_rgba(*colour(self, "Suno_on_media", .3))
             context.set_line_width(1)
             for n in (1, 2):
                 context.move_to(width * n / 3, 0)
@@ -200,19 +200,19 @@ class FinderMarks(Gtk.DrawingArea):
                 context.line_to(width, height * n / 3)
             context.stroke()
         if window.state.mode == "scan":
-            context.set_source_rgba(*colour(self, "luma_on_media", .1))
+            context.set_source_rgba(*colour(self, "Suno_on_media", .1))
             for n, (x, y) in enumerate(((.28, .22), (.71, .18), (.76, .80), (.24, .84))):
                 (context.move_to if n == 0 else context.line_to)(width * x, height * y)
             context.close_path()
             context.fill_preserve()
-            context.set_source_rgba(*colour(self, "luma_on_media"))
+            context.set_source_rgba(*colour(self, "Suno_on_media"))
             context.set_line_width(2)
             context.stroke()
         context.restore()
 
 
 class Shutter(Gtk.Button):
-    __gtype_name__ = "LumaCameraShutter"
+    __gtype_name__ = "SunoCameraShutter"
 
     def __init__(self, window):
         super().__init__()
@@ -254,15 +254,15 @@ class Shutter(Gtk.Button):
             self.draw_phone(cr, width, height)
             return
         cx, cy = width / 2, height / 2
-        cr.set_source_rgba(*colour(self, "luma_on_media", .92))
+        cr.set_source_rgba(*colour(self, "Suno_on_media", .92))
         cr.set_line_width(2.5)
         cr.arc(cx, cy, 28.75, 0, math.tau)
         cr.stroke()
         video = self.window.state.mode in ("video", "time")
         extent = 11 if self.window.state.recording else 24
         gradient = cairo.LinearGradient(0, cy - extent, 0, cy + extent)
-        gradient.add_color_stop_rgba(0, *colour(self, "luma_danger_fill" if video else "luma_media_key"))
-        gradient.add_color_stop_rgba(1, *colour(self, "luma_danger_fill_end" if video else "luma_media_key_end"))
+        gradient.add_color_stop_rgba(0, *colour(self, "Suno_danger_fill" if video else "Suno_media_key"))
+        gradient.add_color_stop_rgba(1, *colour(self, "Suno_danger_fill_end" if video else "Suno_media_key_end"))
         cr.set_source(gradient)
         if self.window.state.recording:
             for x, y, start in ((cx + 5, cy - 5, -math.pi / 2),
@@ -277,16 +277,16 @@ class Shutter(Gtk.Button):
 
     def draw_phone(self, cr, width, height):
         """v71 .cmshutter2: an 80 white ring (4 px), a 64 disc, white for photos and red
-        for video; recording, the disc becomes a 30 square with 8 px corners. Luma's
+        for video; recording, the disc becomes a 30 square with 8 px corners. Suno's
         corners are superellipses (v71 `corner-shape: superellipse(1.6)`), so the ring
         and disc are too."""
         cx, cy = width / 2, height / 2
-        cr.set_source_rgba(*colour(self, "luma_on_media"))
+        cr.set_source_rgba(*colour(self, "Suno_on_media"))
         cr.set_line_width(4)
         squircle(cr, cx, cy, 38, 38, 38)
         cr.stroke()
         video = self.window.state.mode in ("video", "time")
-        cr.set_source_rgba(*colour(self, "luma_record" if video else "luma_on_media"))
+        cr.set_source_rgba(*colour(self, "Suno_record" if video else "Suno_on_media"))
         pressed = .9 if self.get_state_flags() & Gtk.StateFlags.ACTIVE else 1
         if self.window.state.recording:
             squircle(cr, cx, cy, 15 * pressed, 15 * pressed, 8 * pressed)
@@ -300,7 +300,7 @@ SUPERELLIPSE = 2 ** 1.6
 
 
 def squircle(cr, cx, cy, half_width, half_height, radius, steps=24):
-    """A rectangle centred on (cx, cy) whose corners of `radius` are Luma's superellipse."""
+    """A rectangle centred on (cx, cy) whose corners of `radius` are Suno's superellipse."""
     radius = min(radius, half_width, half_height)
     exponent = 2 / SUPERELLIPSE
     corners = ((half_width - radius, -(half_height - radius), -math.pi / 2),
@@ -322,7 +322,7 @@ class PhoneFrame(Gtk.Widget):
     """v71 .cmvf2 .cmframe: the picture as wide as the phone, as tall as its shape asks,
     and never taller than the room between the rows (then it simply fills that room).
     Square-cornered; a shorter frame sits low in the room, near the controls."""
-    __gtype_name__ = "LumaCameraPhoneFrame"
+    __gtype_name__ = "SunoCameraPhoneFrame"
 
     def __init__(self, ratio):
         super().__init__(hexpand=True, vexpand=True)
@@ -365,7 +365,7 @@ class ModeStrip(Gtk.Widget):
     current word sits on the centre line, as the simulator scrolls it; the
     words that do not fit run off either edge.
     """
-    __gtype_name__ = "LumaCameraModeStrip"
+    __gtype_name__ = "SunoCameraModeStrip"
     GAP = 22
 
     def __init__(self, on_choose):
@@ -633,8 +633,8 @@ class CameraSurface:
         self._show_desktop_controls()
         # v71: Camera watches its own size and redraws in the other shape when the
         # window crosses the phone width (the kit's tier), in either direction.
-        self.width_watch = WidthWatch(self.host, lambda width: self.adapt(width <= lumaui_tokens.PHONE_MAX_WIDTH),
-                                      threshold=lumaui_tokens.PHONE_MAX_WIDTH)
+        self.width_watch = WidthWatch(self.host, lambda width: self.adapt(width <= SunoUI_tokens.PHONE_MAX_WIDTH),
+                                      threshold=SunoUI_tokens.PHONE_MAX_WIDTH)
         swipe = Gtk.GestureDrag(button=1)
         swipe.connect("drag-end", self.swiped)
         w._picture.add_controller(swipe)
@@ -1071,7 +1071,7 @@ class CameraSurface:
             # Changing the crop must not accidentally switch the desktop
             # window into its phone anatomy. A user drag still crosses the
             # tier normally; only this automatic fit keeps the current tier.
-            desktop_width = (lumaui_tokens.PHONE_MAX_WIDTH + 1
+            desktop_width = (SunoUI_tokens.PHONE_MAX_WIDTH + 1
                              + w.get_width() - self.host.get_width())
             next_width = max(next_width, desktop_width - chrome_width)
             next_height = next_width / ratio
@@ -1254,7 +1254,7 @@ class CameraSurface:
         separator = Gtk.Box(valign=Gtk.Align.CENTER, accessible_role=Gtk.AccessibleRole.PRESENTATION)
         separator.add_css_class("camera-strip-separator")
         self.strip.append(separator)
-        if os.environ.get("LUMA_CAMERA_PRIVATE_PREVIEW") != "1":
+        if os.environ.get("SUNO_CAMERA_PRIVATE_PREVIEW") != "1":
             # In the fixture the app's open-photos action says the samples stay in the preview.
             open_button = make_control(BarAction("", "Open in Photos", primary=True,
                                                  on_activate=lambda: w.get_application().activate_action("open-photos", None)))
@@ -1338,7 +1338,7 @@ class CameraSurface:
         self.record_dot.set_visible(recording and not self.phone)
         set_css_class(self.tag, "recording", recording and not self.phone)
         w._source_picker.set_sensitive(not w.state.recording)
-        self.source_icon.set_from_icon_name("lumaui-smartphone-symbolic" if fixture and fixture.camera.phone else "lumaui-camera-symbolic")
+        self.source_icon.set_from_icon_name("SunoUI-smartphone-symbolic" if fixture and fixture.camera.phone else "SunoUI-camera-symbolic")
         self.source_icon.set_pixel_size(16)
         w._mode_picker.set_sensitive(not w.state.recording)
         # While recording v71 leaves the words, last shot and switch camera unchanged (not dimmed);
@@ -1415,17 +1415,17 @@ class CameraSurface:
         return format_time(self.window.state.elapsed)
 
     def draw_record_dot(self, area, cr, width, height):
-        cr.set_source_rgba(*colour(area, "luma_danger_ink"))
+        cr.set_source_rgba(*colour(area, "Suno_danger_ink"))
         cr.arc(width / 2, height / 2, 4, 0, math.tau)
         cr.fill()
 
     def draw_pill_dot(self, area, cr, width, height):
-        cr.set_source_rgba(*colour(area, "luma_on_media"))
+        cr.set_source_rgba(*colour(area, "Suno_on_media"))
         cr.arc(width / 2, height / 2, 4, 0, math.tau)
         cr.fill()
 
     def draw_flash(self, area, cr, width, height):
-        cr.set_source_rgba(*colour(area, "luma_on_media"))
+        cr.set_source_rgba(*colour(area, "Suno_on_media"))
         cr.paint()
 
     def flash_capture(self):

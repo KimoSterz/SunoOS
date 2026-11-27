@@ -29,4 +29,4 @@ The Android artifact is not a production fingerprint backend.
 The release architecture remains a Linux-native `libfprint` driver using this
 kernel/TEE transport directly, with `fprintd`, PAM, and polkit providing the
 shared desktop/mobile integration. No proprietary HAL or trustlet belongs in
-the Luma source tree or distributable package.
+the Suno source tree or distributable package.

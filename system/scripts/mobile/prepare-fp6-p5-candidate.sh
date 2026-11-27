@@ -16,24 +16,24 @@ repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 # shellcheck disable=SC1091
 . "$repo_root/config/mobile/stevia-source.env"
 
-build_root=${LUMA_FP6_PHYSICAL_BUILD_DIR:-$repo_root/build/mobile/fp6-physical}
+build_root=${SUNO_FP6_PHYSICAL_BUILD_DIR:-$repo_root/build/mobile/fp6-physical}
 control_dir="$build_root/downloads/postmarketos-$FP6_CONTROL_BUILD"
-control_raw=${LUMA_FP6_CONTROL_RAW:-$control_dir/${FP6_CONTROL_ROOTFS_IMAGE%.img.xz}-raw.img}
-fedora_dir=${LUMA_FP6_ROOTFS_OUTPUT:-$build_root/fedora-rootfs}
+control_raw=${SUNO_FP6_CONTROL_RAW:-$control_dir/${FP6_CONTROL_ROOTFS_IMAGE%.img.xz}-raw.img}
+fedora_dir=${SUNO_FP6_ROOTFS_OUTPUT:-$build_root/fedora-rootfs}
 fedora_manifest="$fedora_dir/manifest.env"
-fedora_archive="$fedora_dir/luma-fp6-fedora44-rootfs.tar.zst"
-output_dir=${LUMA_FP6_P5_OUTPUT:-$build_root/p5-candidate}
-output_raw="$output_dir/luma-fp6-fedora44-p5.raw"
-output_sparse="$output_dir/luma-fp6-fedora44-p5.img"
+fedora_archive="$fedora_dir/Suno-fp6-fedora44-rootfs.tar.zst"
+output_dir=${SUNO_FP6_P5_OUTPUT:-$build_root/p5-candidate}
+output_raw="$output_dir/Suno-fp6-fedora44-p5.raw"
+output_sparse="$output_dir/Suno-fp6-fedora44-p5.img"
 output_manifest="$output_dir/manifest.env"
 bridge_manifest="$output_dir/board-support-sha256.txt"
-public_key_file=${LUMA_FP6_SSH_PUBLIC_KEY_FILE:-}
-password_hash=${LUMA_FP6_LOGIN_PASSWORD_HASH:-}
+public_key_file=${SUNO_FP6_SSH_PUBLIC_KEY_FILE:-}
+password_hash=${SUNO_FP6_LOGIN_PASSWORD_HASH:-}
 policy="$repo_root/config/mobile/fp6-physical/board-support-paths.txt"
 static_overlay="$repo_root/config/mobile/fp6-physical/overlay"
-keyboard_dir="$build_root/luma-keyboard-aarch64"
+keyboard_dir="$build_root/Suno-keyboard-aarch64"
 keyboard_manifest="$keyboard_dir/manifest.env"
-stevia_dir="$build_root/luma-stevia-aarch64"
+stevia_dir="$build_root/Suno-stevia-aarch64"
 stevia_manifest="$stevia_dir/manifest.env"
 fingerprint_runtime="$build_root/fp6-fingerprint-runtime-accepted-v1"
 fingerprint_manifest="$fingerprint_runtime/manifest.sha256"
@@ -61,11 +61,11 @@ done
 [ -f "$fedora_archive" ] || die "missing Fedora rootfs archive: $fedora_archive"
 [ -d "$static_overlay" ] || die "missing P5 static overlay: $static_overlay"
 [ -f "$policy" ] || die "missing board-support policy: $policy"
-[ -f "$keyboard_manifest" ] || die "missing Luma keyboard manifest: $keyboard_manifest"
-[ -x "$keyboard_dir/luma-latinime-decoder" ] || die 'missing Luma keyboard decoder'
-[ -f "$keyboard_dir/main_en.dict" ] || die 'missing Luma keyboard dictionary'
-[ -f "$stevia_manifest" ] || die "missing Luma Stevia manifest: $stevia_manifest"
-[ -x "$stevia_dir/luma-phosh-osk-stevia" ] || die 'missing Luma Stevia binary'
+[ -f "$keyboard_manifest" ] || die "missing Suno keyboard manifest: $keyboard_manifest"
+[ -x "$keyboard_dir/Suno-latinime-decoder" ] || die 'missing Suno keyboard decoder'
+[ -f "$keyboard_dir/main_en.dict" ] || die 'missing Suno keyboard dictionary'
+[ -f "$stevia_manifest" ] || die "missing Suno Stevia manifest: $stevia_manifest"
+[ -x "$stevia_dir/Suno-phosh-osk-stevia" ] || die 'missing Suno Stevia binary'
 [ -f "$fingerprint_manifest" ] || die 'missing accepted FP6 fingerprint runtime manifest'
 [ -x "$carrier_pdc_qmicli" ] || die 'missing typed FP6 qmicli executable'
 [ -f "$carrier_pdc_profile" ] || die 'missing accepted FP6 AT&T PDC profile'
@@ -79,10 +79,10 @@ done
 [ "$(sha256sum "$carrier_pdc_platform" | awk '{print $1}')" = \
   281cf305a5bcd98b709a0446f9733d1859cb423a791b2af17ab9776ffeaf0400 ] ||
   die 'accepted FP6 DSDS PDC platform checksum mismatch'
-[ -x "$fingerprint_runtime/luma-fp6-wake-input" ] || die 'missing fingerprint wake helper'
-[ -x "$fingerprint_runtime/luma-qcomtee-listener-supplicant" ] || die 'missing fingerprint listener'
+[ -x "$fingerprint_runtime/Suno-fp6-wake-input" ] || die 'missing fingerprint wake helper'
+[ -x "$fingerprint_runtime/Suno-qcomtee-listener-supplicant" ] || die 'missing fingerprint listener'
 [ -f "$fingerprint_runtime/qcomtee-freezer-v144.ko" ] || die 'missing freezer-aware fingerprint transport'
-[ -n "$public_key_file" ] || die 'LUMA_FP6_SSH_PUBLIC_KEY_FILE is required'
+[ -n "$public_key_file" ] || die 'SUNO_FP6_SSH_PUBLIC_KEY_FILE is required'
 [ -f "$public_key_file" ] || die "SSH public key file does not exist: $public_key_file"
 
 [ "$(wc -l <"$public_key_file" | tr -d ' ')" -eq 1 ] || \
@@ -92,7 +92,7 @@ grep -Eq '^(ssh-ed25519|ssh-rsa|ecdsa-sha2-nistp(256|384|521)|sk-ssh-ed25519@ope
 
 case "$password_hash" in
   '$y$'*|'$6$'*) ;;
-  *) die 'LUMA_FP6_LOGIN_PASSWORD_HASH must be a caller-supplied yescrypt or SHA-512 crypt hash' ;;
+  *) die 'SUNO_FP6_LOGIN_PASSWORD_HASH must be a caller-supplied yescrypt or SHA-512 crypt hash' ;;
 esac
 case "$password_hash" in
   *:*|*$'\n'*) die 'login password hash contains a forbidden delimiter' ;;
@@ -108,21 +108,21 @@ actual_policy=$(sed -e '/^[[:space:]]*#/d' -e '/^[[:space:]]*$/d' "$policy")
 
 # shellcheck disable=SC1090
 . "$keyboard_manifest"
-[ "${LUMA_KEYBOARD_BUNDLE_VERSION:-}" = 1 ] || die 'Luma keyboard manifest version mismatch'
-[ "${ARCHITECTURE:-}" = aarch64 ] || die 'Luma keyboard architecture mismatch'
-[ "$(sha256sum "$keyboard_dir/luma-latinime-decoder" | awk '{print $1}')" = \
-  "${DECODER_SHA256:-}" ] || die 'Luma keyboard decoder checksum mismatch'
+[ "${SUNO_KEYBOARD_BUNDLE_VERSION:-}" = 1 ] || die 'Suno keyboard manifest version mismatch'
+[ "${ARCHITECTURE:-}" = aarch64 ] || die 'Suno keyboard architecture mismatch'
+[ "$(sha256sum "$keyboard_dir/Suno-latinime-decoder" | awk '{print $1}')" = \
+  "${DECODER_SHA256:-}" ] || die 'Suno keyboard decoder checksum mismatch'
 [ "$(sha256sum "$keyboard_dir/main_en.dict" | awk '{print $1}')" = \
-  "${DICTIONARY_SHA256:-}" ] || die 'Luma keyboard dictionary checksum mismatch'
+  "${DICTIONARY_SHA256:-}" ] || die 'Suno keyboard dictionary checksum mismatch'
 
 # shellcheck disable=SC1090
 . "$stevia_manifest"
-[ "${LUMA_STEVIA_BUNDLE_VERSION:-}" = 2 ] || die 'Luma Stevia manifest version mismatch'
-[ "${ARCHITECTURE:-}" = aarch64 ] || die 'Luma Stevia architecture mismatch'
+[ "${SUNO_STEVIA_BUNDLE_VERSION:-}" = 2 ] || die 'Suno Stevia manifest version mismatch'
+[ "${ARCHITECTURE:-}" = aarch64 ] || die 'Suno Stevia architecture mismatch'
 [ "${STEVIA_UPSTREAM_COMMIT:-}" = cd8cc1d33a701573af106c53ed4dc493ef68b88c ] || \
-  die 'Luma Stevia source commit mismatch'
-[ "$(sha256sum "$stevia_dir/luma-phosh-osk-stevia" | awk '{print $1}')" = \
-  "${BINARY_SHA256:-}" ] || die 'Luma Stevia binary checksum mismatch'
+  die 'Suno Stevia source commit mismatch'
+[ "$(sha256sum "$stevia_dir/Suno-phosh-osk-stevia" | awk '{print $1}')" = \
+  "${BINARY_SHA256:-}" ] || die 'Suno Stevia binary checksum mismatch'
 [ "$(sha256sum "$stevia_dir/schemas/gschemas.compiled" | awk '{print $1}')" = "${SCHEMAS_SHA256:-}" ] || die 'Stevia schema checksum mismatch'
 [ "$(sha256sum "$stevia_dir/schemas/mobi.phosh.osk.gschema.xml" | awk '{print $1}')" = "${SCHEMA_XML_SHA256:-}" ] || die 'Stevia schema XML checksum mismatch'
 [ "$(sha256sum "$stevia_dir/schemas/mobi.phosh.osk.enums.xml" | awk '{print $1}')" = "${ENUM_XML_SHA256:-}" ] || die 'Stevia enum checksum mismatch'
@@ -215,114 +215,114 @@ cp -a "$static_overlay/." "$overlay/"
 install -d -m 0755 "$overlay/usr/lib/modules" "$overlay/usr/lib/firmware"
 cp -a "$control_export/modules/." "$overlay/usr/lib/modules/"
 cp -a "$control_export/firmware/." "$overlay/usr/lib/firmware/"
-install -D -m 0755 "$repo_root/scripts/mobile/luma-fp6-primary-gw-session" \
-  "$overlay/usr/libexec/luma-fp6-primary-gw-session"
-install -D -m 0644 "$repo_root/scripts/mobile/luma-fp6-primary-gw-session.service" \
-  "$overlay/usr/lib/systemd/system/luma-fp6-primary-gw-session.service"
-install -D -m 0755 "$repo_root/scripts/mobile/luma-fp6-carrier-pdc" \
-  "$overlay/usr/libexec/luma-fp6-carrier-pdc"
+install -D -m 0755 "$repo_root/scripts/mobile/Suno-fp6-primary-gw-session" \
+  "$overlay/usr/libexec/Suno-fp6-primary-gw-session"
+install -D -m 0644 "$repo_root/scripts/mobile/Suno-fp6-primary-gw-session.service" \
+  "$overlay/usr/lib/systemd/system/Suno-fp6-primary-gw-session.service"
+install -D -m 0755 "$repo_root/scripts/mobile/Suno-fp6-carrier-pdc" \
+  "$overlay/usr/libexec/Suno-fp6-carrier-pdc"
 install -D -m 0755 "$carrier_pdc_qmicli" \
-  "$overlay/usr/libexec/luma-fp6-qmicli-pdc"
-install -D -m 0644 "$repo_root/scripts/mobile/luma-fp6-carrier-pdc.service" \
-  "$overlay/usr/lib/systemd/system/luma-fp6-carrier-pdc.service"
+  "$overlay/usr/libexec/Suno-fp6-qmicli-pdc"
+install -D -m 0644 "$repo_root/scripts/mobile/Suno-fp6-carrier-pdc.service" \
+  "$overlay/usr/lib/systemd/system/Suno-fp6-carrier-pdc.service"
 install -D -m 0644 "$carrier_pdc_profile" \
-  "$overlay/usr/lib/firmware/luma/fp6-carrier-pdc/att-volte-qrel1695.mbn"
+  "$overlay/usr/lib/firmware/Suno/fp6-carrier-pdc/att-volte-qrel1695.mbn"
 install -D -m 0644 "$carrier_pdc_platform" \
-  "$overlay/usr/lib/firmware/luma/fp6-carrier-pdc/dsds-la-milos.mbn"
-install -D -m 0755 "$repo_root/scripts/mobile/luma-fp6-modem-quiesce" \
-  "$overlay/usr/libexec/luma-fp6-modem-quiesce"
-install -D -m 0644 "$repo_root/scripts/mobile/luma-fp6-modem-quiesce.service" \
-  "$overlay/usr/lib/systemd/system/luma-fp6-modem-quiesce.service"
-install -D -m 0755 "$repo_root/scripts/mobile/luma-fp6-ims-pdn-up.sh" \
-  "$overlay/usr/libexec/luma-fp6-ims-pdn-up"
-install -D -m 0755 "$repo_root/scripts/mobile/luma-fp6-ims-state-guard" \
-  "$overlay/usr/libexec/luma-fp6-ims-state-guard"
-install -D -m 0644 "$repo_root/scripts/mobile/luma-fp6-imsd.service" \
-  "$overlay/usr/lib/systemd/system/luma-fp6-imsd.service"
-install -D -m 0755 "$repo_root/scripts/mobile/luma-fp6-cellular-resume" \
-  "$overlay/usr/libexec/luma-fp6-cellular-resume"
-install -D -m 0644 "$repo_root/scripts/mobile/luma-fp6-cellular-resume.service" \
-  "$overlay/usr/lib/systemd/system/luma-fp6-cellular-resume.service"
-install -D -m 0755 "$repo_root/scripts/mobile/luma-fp6-cellular-system-sleep" \
-  "$overlay/usr/lib/systemd/system-sleep/luma-fp6-cellular"
+  "$overlay/usr/lib/firmware/Suno/fp6-carrier-pdc/dsds-la-milos.mbn"
+install -D -m 0755 "$repo_root/scripts/mobile/Suno-fp6-modem-quiesce" \
+  "$overlay/usr/libexec/Suno-fp6-modem-quiesce"
+install -D -m 0644 "$repo_root/scripts/mobile/Suno-fp6-modem-quiesce.service" \
+  "$overlay/usr/lib/systemd/system/Suno-fp6-modem-quiesce.service"
+install -D -m 0755 "$repo_root/scripts/mobile/Suno-fp6-ims-pdn-up.sh" \
+  "$overlay/usr/libexec/Suno-fp6-ims-pdn-up"
+install -D -m 0755 "$repo_root/scripts/mobile/Suno-fp6-ims-state-guard" \
+  "$overlay/usr/libexec/Suno-fp6-ims-state-guard"
+install -D -m 0644 "$repo_root/scripts/mobile/Suno-fp6-imsd.service" \
+  "$overlay/usr/lib/systemd/system/Suno-fp6-imsd.service"
+install -D -m 0755 "$repo_root/scripts/mobile/Suno-fp6-cellular-resume" \
+  "$overlay/usr/libexec/Suno-fp6-cellular-resume"
+install -D -m 0644 "$repo_root/scripts/mobile/Suno-fp6-cellular-resume.service" \
+  "$overlay/usr/lib/systemd/system/Suno-fp6-cellular-resume.service"
+install -D -m 0755 "$repo_root/scripts/mobile/Suno-fp6-cellular-system-sleep" \
+  "$overlay/usr/lib/systemd/system-sleep/Suno-fp6-cellular"
 install -d -m 0755 "$overlay/usr/lib/systemd/system/multi-user.target.wants"
-ln -sfn ../luma-fp6-camera-gpu-guard.service \
-  "$overlay/usr/lib/systemd/system/multi-user.target.wants/luma-fp6-camera-gpu-guard.service"
-ln -sfn ../luma-fp6-bluetooth-address.service \
-  "$overlay/usr/lib/systemd/system/multi-user.target.wants/luma-fp6-bluetooth-address.service"
-ln -sfn ../luma-fp6-primary-gw-session.service \
-  "$overlay/usr/lib/systemd/system/multi-user.target.wants/luma-fp6-primary-gw-session.service"
-ln -sfn ../luma-fp6-carrier-pdc.service \
-  "$overlay/usr/lib/systemd/system/multi-user.target.wants/luma-fp6-carrier-pdc.service"
-ln -sfn ../luma-fp6-modem-quiesce.service \
-  "$overlay/usr/lib/systemd/system/multi-user.target.wants/luma-fp6-modem-quiesce.service"
-ln -sfn ../luma-fp6-imsd.service \
-  "$overlay/usr/lib/systemd/system/multi-user.target.wants/luma-fp6-imsd.service"
+ln -sfn ../Suno-fp6-camera-gpu-guard.service \
+  "$overlay/usr/lib/systemd/system/multi-user.target.wants/Suno-fp6-camera-gpu-guard.service"
+ln -sfn ../Suno-fp6-bluetooth-address.service \
+  "$overlay/usr/lib/systemd/system/multi-user.target.wants/Suno-fp6-bluetooth-address.service"
+ln -sfn ../Suno-fp6-primary-gw-session.service \
+  "$overlay/usr/lib/systemd/system/multi-user.target.wants/Suno-fp6-primary-gw-session.service"
+ln -sfn ../Suno-fp6-carrier-pdc.service \
+  "$overlay/usr/lib/systemd/system/multi-user.target.wants/Suno-fp6-carrier-pdc.service"
+ln -sfn ../Suno-fp6-modem-quiesce.service \
+  "$overlay/usr/lib/systemd/system/multi-user.target.wants/Suno-fp6-modem-quiesce.service"
+ln -sfn ../Suno-fp6-imsd.service \
+  "$overlay/usr/lib/systemd/system/multi-user.target.wants/Suno-fp6-imsd.service"
 
-# Keep the diagnostic Luma GNOME session available beside the selected Phosh
+# Keep the diagnostic Suno GNOME session available beside the selected Phosh
 # handheld renderer. These files support the real desktop/docked renderer and
 # rollback-safe comparison; greetd's product default remains Phosh.
-install -D -m 0755 "$repo_root/scripts/mobile/luma-shell-session" \
-  "$overlay/usr/local/bin/luma-shell-session"
-install -D -m 0755 "$repo_root/scripts/mobile/luma-phosh-session" \
-  "$overlay/usr/local/bin/luma-phosh-session"
+install -D -m 0755 "$repo_root/scripts/mobile/Suno-shell-session" \
+  "$overlay/usr/local/bin/Suno-shell-session"
+install -D -m 0755 "$repo_root/scripts/mobile/Suno-phosh-session" \
+  "$overlay/usr/local/bin/Suno-phosh-session"
 install -D -m 0755 "$repo_root/scripts/mobile/release-stale-plymouth-drm.sh" \
-  "$overlay/usr/local/libexec/luma-release-stale-plymouth-drm"
+  "$overlay/usr/local/libexec/Suno-release-stale-plymouth-drm"
 install -D -m 0644 \
-  "$repo_root/config/mobile/fp6-physical/overlay/usr/lib/systemd/user/luma-shell-session.target" \
-  "$overlay/usr/lib/systemd/user/luma-shell-session.target"
-install -D -m 0644 "$repo_root/config/mobile/environment.d/90-luma-handheld.conf" \
-  "$overlay/etc/environment.d/90-luma-handheld.conf"
-install -D -m 0644 "$repo_root/config/mobile/systemd-user/luma-graphical-session.target" \
-  "$overlay/usr/lib/systemd/user/luma-graphical-session.target"
-install -D -m 0644 "$repo_root/config/mobile/systemd-preset/80-luma-handheld.preset" \
-  "$overlay/usr/lib/systemd/system-preset/80-luma-handheld.preset"
-install -D -m 0644 "$repo_root/config/mobile/luma-shell-handheld.dconf" \
-  "$overlay/usr/share/luma/mobile/luma-shell-handheld.dconf"
+  "$repo_root/config/mobile/fp6-physical/overlay/usr/lib/systemd/user/Suno-shell-session.target" \
+  "$overlay/usr/lib/systemd/user/Suno-shell-session.target"
+install -D -m 0644 "$repo_root/config/mobile/environment.d/90-Suno-handheld.conf" \
+  "$overlay/etc/environment.d/90-Suno-handheld.conf"
+install -D -m 0644 "$repo_root/config/mobile/systemd-user/Suno-graphical-session.target" \
+  "$overlay/usr/lib/systemd/user/Suno-graphical-session.target"
+install -D -m 0644 "$repo_root/config/mobile/systemd-preset/80-Suno-handheld.preset" \
+  "$overlay/usr/lib/systemd/system-preset/80-Suno-handheld.preset"
+install -D -m 0644 "$repo_root/config/mobile/Suno-shell-handheld.dconf" \
+  "$overlay/usr/share/Suno/mobile/Suno-shell-handheld.dconf"
 install -D -m 0644 "$repo_root/config/desktop/dconf/profile/user" \
   "$overlay/etc/dconf/profile/user"
-install -D -m 0644 "$repo_root/config/desktop/dconf/db/luma.d/00-luma-desktop" \
-  "$overlay/etc/dconf/db/luma.d/00-luma-desktop"
-install -D -m 0644 "$repo_root/config/mobile/luma-shell-handheld.dconf" \
-  "$overlay/etc/dconf/db/luma.d/90-luma-handheld"
-install -D -m 0755 "$keyboard_dir/luma-latinime-decoder" \
-  "$overlay/usr/libexec/luma-latinime-decoder"
+install -D -m 0644 "$repo_root/config/desktop/dconf/db/Suno.d/00-Suno-desktop" \
+  "$overlay/etc/dconf/db/Suno.d/00-Suno-desktop"
+install -D -m 0644 "$repo_root/config/mobile/Suno-shell-handheld.dconf" \
+  "$overlay/etc/dconf/db/Suno.d/90-Suno-handheld"
+install -D -m 0755 "$keyboard_dir/Suno-latinime-decoder" \
+  "$overlay/usr/libexec/Suno-latinime-decoder"
 install -D -m 0644 "$keyboard_dir/main_en.dict" \
-  "$overlay/usr/share/luma-keyboard/main_en.dict"
-install -D -m 0755 "$repo_root/src/luma-keyboard/luma_ibus_engine.py" \
-  "$overlay/usr/libexec/luma-ibus-latinime"
-install -D -m 0644 "$repo_root/src/luma-keyboard/luma-latinime.xml" \
-  "$overlay/usr/share/ibus/component/luma-latinime.xml"
-install -D -m 0755 "$stevia_dir/luma-phosh-osk-stevia" \
-  "$overlay/usr/local/libexec/luma-phosh-osk-stevia"
-install -d -m 0755 "$overlay/usr/local/share/luma-keyboard/schemas"
+  "$overlay/usr/share/Suno-keyboard/main_en.dict"
+install -D -m 0755 "$repo_root/src/Suno-keyboard/Suno_ibus_engine.py" \
+  "$overlay/usr/libexec/Suno-ibus-latinime"
+install -D -m 0644 "$repo_root/src/Suno-keyboard/Suno-latinime.xml" \
+  "$overlay/usr/share/ibus/component/Suno-latinime.xml"
+install -D -m 0755 "$stevia_dir/Suno-phosh-osk-stevia" \
+  "$overlay/usr/local/libexec/Suno-phosh-osk-stevia"
+install -d -m 0755 "$overlay/usr/local/share/Suno-keyboard/schemas"
 install -m 0644 "$stevia_dir/schemas/gschemas.compiled" \
   "$stevia_dir/schemas/mobi.phosh.osk.gschema.xml" \
   "$stevia_dir/schemas/mobi.phosh.osk.enums.xml" \
-  "$overlay/usr/local/share/luma-keyboard/schemas/"
-install -D -m 0644 "$stevia_dir/fonts/Figtree.ttf" "$overlay/usr/local/share/fonts/luma-figtree/Figtree.ttf"
-install -D -m 0644 "$stevia_dir/fonts/OFL.txt" "$overlay/usr/local/share/fonts/luma-figtree/OFL.txt"
+  "$overlay/usr/local/share/Suno-keyboard/schemas/"
+install -D -m 0644 "$stevia_dir/fonts/Figtree.ttf" "$overlay/usr/local/share/fonts/Suno-figtree/Figtree.ttf"
+install -D -m 0644 "$stevia_dir/fonts/OFL.txt" "$overlay/usr/local/share/fonts/Suno-figtree/OFL.txt"
 
-install -D -m 0755 "$repo_root/extensions/luma-handheld/luma-power-key-broker.py" \
-  "$overlay/usr/libexec/luma-power-key-broker"
-install -D -m 0644 "$repo_root/extensions/luma-handheld/luma-power-key-broker.service" \
-  "$overlay/usr/lib/systemd/user/luma-power-key-broker.service"
+install -D -m 0755 "$repo_root/extensions/Suno-handheld/Suno-power-key-broker.py" \
+  "$overlay/usr/libexec/Suno-power-key-broker"
+install -D -m 0644 "$repo_root/extensions/Suno-handheld/Suno-power-key-broker.service" \
+  "$overlay/usr/lib/systemd/user/Suno-power-key-broker.service"
 
 # Install the exact physically accepted fingerprint adapter and the
 # reproducible freezer-aware transport. The units are intentionally shipped
 # disabled until suspend/thaw and cold-boot physical acceptance close.
-fingerprint_target="$overlay/usr/lib/luma/fp6-fingerprint"
+fingerprint_target="$overlay/usr/lib/Suno/fp6-fingerprint"
 install -d -m 0755 "$fingerprint_target/adapter" "$fingerprint_target/firmware"
 install -m 0644 "$fingerprint_runtime/qcomtee-freezer-v144.ko" \
   "$fingerprint_target/qcomtee-freezer-v144.ko"
 install -m 0644 "$fingerprint_runtime/focaltech_fp.ko" \
   "$fingerprint_target/focaltech_fp.ko"
-install -m 0755 "$fingerprint_runtime/luma-qcomtee-listener-supplicant" \
-  "$fingerprint_target/luma-qcomtee-listener-supplicant"
+install -m 0755 "$fingerprint_runtime/Suno-qcomtee-listener-supplicant" \
+  "$fingerprint_target/Suno-qcomtee-listener-supplicant"
 install -m 0755 "$fingerprint_runtime/fp6-focal-driver-stage" \
   "$fingerprint_target/fp6-focal-driver-stage"
-install -m 0644 "$fingerprint_runtime/libluma-servicemanager-access.so" \
-  "$fingerprint_target/libluma-servicemanager-access.so"
+install -m 0644 "$fingerprint_runtime/libSuno-servicemanager-access.so" \
+  "$fingerprint_target/libSuno-servicemanager-access.so"
 for adapter in "$fingerprint_runtime/adapter/"*.so; do
   install -m 0644 "$adapter" "$fingerprint_target/adapter/"
 done
@@ -330,38 +330,38 @@ for firmware in "$fingerprint_runtime/firmware/"*; do
   install -m 0644 "$firmware" "$fingerprint_target/firmware/"
 done
 install -m 0644 "$fingerprint_manifest" "$fingerprint_target/manifest.sha256"
-install -D -m 0755 "$fingerprint_runtime/luma-fp6-wake-input" \
-  "$overlay/usr/libexec/luma-fp6-wake-input"
-install -D -m 0755 "$repo_root/scripts/mobile/luma-fp6-fingerprint-backend" \
-  "$overlay/usr/libexec/luma-fp6-fingerprint-backend"
-install -D -m 0755 "$repo_root/scripts/mobile/luma-fp6-fingerprint-backend-stop" \
-  "$overlay/usr/libexec/luma-fp6-fingerprint-backend-stop"
-install -D -m 0755 "$repo_root/scripts/mobile/luma-fp6-wait-graphical-session" \
-  "$overlay/usr/libexec/luma-fp6-wait-graphical-session"
-install -D -m 0755 "$repo_root/scripts/mobile/luma-fp6-fingerprint-lock-agent.sh" \
-  "$overlay/usr/libexec/luma-fp6-fingerprint-lock-agent"
+install -D -m 0755 "$fingerprint_runtime/Suno-fp6-wake-input" \
+  "$overlay/usr/libexec/Suno-fp6-wake-input"
+install -D -m 0755 "$repo_root/scripts/mobile/Suno-fp6-fingerprint-backend" \
+  "$overlay/usr/libexec/Suno-fp6-fingerprint-backend"
+install -D -m 0755 "$repo_root/scripts/mobile/Suno-fp6-fingerprint-backend-stop" \
+  "$overlay/usr/libexec/Suno-fp6-fingerprint-backend-stop"
+install -D -m 0755 "$repo_root/scripts/mobile/Suno-fp6-wait-graphical-session" \
+  "$overlay/usr/libexec/Suno-fp6-wait-graphical-session"
+install -D -m 0755 "$repo_root/scripts/mobile/Suno-fp6-fingerprint-lock-agent.sh" \
+  "$overlay/usr/libexec/Suno-fp6-fingerprint-lock-agent"
 install -D -m 0755 "$repo_root/scripts/mobile/restore-fp6-stock-biometric-mounts-remote.sh" \
-  "$overlay/usr/libexec/luma-fp6-fingerprint-restore-mounts"
+  "$overlay/usr/libexec/Suno-fp6-fingerprint-restore-mounts"
 install -D -m 0755 "$repo_root/scripts/mobile/run-fp6-stock-biometric-service-smoke-v1-remote.sh" \
-  "$overlay/usr/libexec/luma-fp6-fingerprint-auth"
-install -d -m 0755 "$overlay/usr/lib/systemd/user/luma-shell-session.target.wants"
-ln -sfn ../luma-power-key-broker.service \
-  "$overlay/usr/lib/systemd/user/luma-shell-session.target.wants/luma-power-key-broker.service"
-dconf compile "$overlay/etc/dconf/db/luma" "$overlay/etc/dconf/db/luma.d"
+  "$overlay/usr/libexec/Suno-fp6-fingerprint-auth"
+install -d -m 0755 "$overlay/usr/lib/systemd/user/Suno-shell-session.target.wants"
+ln -sfn ../Suno-power-key-broker.service \
+  "$overlay/usr/lib/systemd/user/Suno-shell-session.target.wants/Suno-power-key-broker.service"
+dconf compile "$overlay/etc/dconf/db/Suno" "$overlay/etc/dconf/db/Suno.d"
 
-install -d -m 0700 "$overlay/home/luma/.ssh"
+install -d -m 0700 "$overlay/home/Suno/.ssh"
 install -m 0600 "$public_key_file" \
-  "$overlay/home/luma/.ssh/authorized_keys"
-chmod 0644 "$overlay/etc/greetd/config.toml" "$overlay/etc/luma/p5-candidate.env"
-chmod 0600 "$overlay/etc/NetworkManager/system-connections/luma-usb-rescue.nmconnection"
-chmod 0440 "$overlay/etc/sudoers.d/luma-diagnostic"
+  "$overlay/home/Suno/.ssh/authorized_keys"
+chmod 0644 "$overlay/etc/greetd/config.toml" "$overlay/etc/Suno/p5-candidate.env"
+chmod 0600 "$overlay/etc/NetworkManager/system-connections/Suno-usb-rescue.nmconnection"
+chmod 0440 "$overlay/etc/sudoers.d/Suno-diagnostic"
 
 tar --zstd -xf "$fedora_archive" -C "$account_root" \
   ./etc/passwd ./etc/shadow ./etc/group ./etc/gshadow
 chmod u+rw "$account_root/etc/passwd" "$account_root/etc/shadow" \
   "$account_root/etc/group" "$account_root/etc/gshadow"
 awk -F: -v OFS=: -v hash="$password_hash" '
-  $1 == "luma" { $2 = hash; found = 1 }
+  $1 == "Suno" { $2 = hash; found = 1 }
   { print }
   END { if (!found) exit 1 }
 ' "$account_root/etc/shadow" >"$account_root/etc/shadow.new" || \
@@ -387,7 +387,7 @@ tar --acls --xattrs --selinux --numeric-owner --sort=name \
   -C "$overlay" -cf "$overlay_tar" .
 tar --acls --xattrs --selinux --numeric-owner --sort=name \
   --owner=1000 --group=1000 \
-  -C "$overlay" -rf "$overlay_tar" ./home/luma/.ssh
+  -C "$overlay" -rf "$overlay_tar" ./home/Suno/.ssh
 
 cp --reflink=auto --sparse=always "$control_raw" "$output_raw"
 guestfish --rw --blocksize=4096 -a "$output_raw" \
@@ -409,13 +409,13 @@ os_id=$(guestfish --ro --blocksize=4096 -a "$output_raw" \
   run : mount-ro /dev/sda2 / : grep '^ID=' /etc/os-release)
 [ "$os_id" = ID=fedora ] || die 'candidate root is not Fedora'
 marker=$(guestfish --ro --blocksize=4096 -a "$output_raw" \
-  run : mount-ro /dev/sda2 / : grep '^INSTALL_AUTHORIZED=' /etc/luma/p5-candidate.env)
+  run : mount-ro /dev/sda2 / : grep '^INSTALL_AUTHORIZED=' /etc/Suno/p5-candidate.env)
 [ "$marker" = INSTALL_AUTHORIZED=false ] || die 'candidate authorization marker is not negative'
 guestfish --ro --blocksize=4096 -a "$output_raw" \
   run : mount-ro /dev/sda2 / : is-dir "/usr/lib/modules/$FP6_P5_MODULE_ABI" \
   | grep -qx true || die 'candidate lost the proven Milos modules'
 guestfish --ro --blocksize=4096 -a "$output_raw" \
-  run : mount-ro /dev/sda2 / : is-file /home/luma/.ssh/authorized_keys \
+  run : mount-ro /dev/sda2 / : is-file /home/Suno/.ssh/authorized_keys \
   | grep -qx true || die 'candidate lost the key-only rescue credential'
 
 img2simg "$output_raw" "$output_sparse"
@@ -428,7 +428,7 @@ raw_bytes=$(stat -c '%s' "$output_raw")
 sparse_bytes=$(stat -c '%s' "$output_sparse")
 
 cat >"$output_manifest" <<EOF
-LUMA_FP6_P5_MANIFEST_VERSION=1
+SUNO_FP6_P5_MANIFEST_VERSION=1
 SOURCE_CONTROL_BUILD=$FP6_P5_CONTROL_BUILD
 SOURCE_CONTROL_RAW_SHA256=$control_sha256
 PROVEN_BOOT_SHA256=$FP6_P5_PROVEN_BOOT_SHA256
@@ -449,10 +449,10 @@ SPARSE_SHA256=$sparse_sha256
 FEDORA_RELEASE=44
 ARCHITECTURE=aarch64
 PHYSICAL_TARGET=fairphone-fp6
-LUMA_KEYBOARD_DECODER_SHA256=$DECODER_SHA256
-LUMA_KEYBOARD_DICTIONARY_SHA256=$DICTIONARY_SHA256
-LUMA_KEYBOARD_ANDROID_RUNTIME_REQUIRED=false
-LUMA_KEYBOARD_SECOND_COMPOSITOR_REQUIRED=false
+SUNO_KEYBOARD_DECODER_SHA256=$DECODER_SHA256
+SUNO_KEYBOARD_DICTIONARY_SHA256=$DICTIONARY_SHA256
+SUNO_KEYBOARD_ANDROID_RUNTIME_REQUIRED=false
+SUNO_KEYBOARD_SECOND_COMPOSITOR_REQUIRED=false
 CONTROL_EXECUTABLES_IMPORTED=false
 SSH_PASSWORD_AUTHENTICATION=false
 SSH_PUBLIC_KEY_INJECTED=true

@@ -1,7 +1,7 @@
 ---
 type: feature
 component: Depot
-packages: [luma-application-installer]
+packages: [Suno-application-installer]
 highlight: false
 ---
 Summary: Depot on a TV, with every place

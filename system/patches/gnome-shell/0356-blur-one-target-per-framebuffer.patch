@@ -1,5 +1,5 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Project Luma <engineering@projectluma.org>
+From: Project Suno <engineering@projectSuno.org>
 Date: Fri, 20 Nov 2026 22:00:00 -0600
 Subject: [PATCH] blur: keep textures per framebuffer; copy only the part on it
 
@@ -48,24 +48,24 @@ diff --git a/src/shell-blur-effect.c b/src/shell-blur-effect.c
 +++ b/src/shell-blur-effect.c
 @@ -48,7 +48,9 @@
  "uniform float brightness;                                                 \n"
- "uniform float luma_saturation;                                            \n"
- "uniform vec2 luma_size;                                                   \n"
--"uniform vec4 luma_corners;                                                \n";
-+"uniform vec4 luma_corners;                                                \n"
-+"uniform vec2 luma_origin;                                                 \n"
-+"uniform vec2 luma_extent;                                                 \n";
+ "uniform float Suno_saturation;                                            \n"
+ "uniform vec2 Suno_size;                                                   \n"
+-"uniform vec4 Suno_corners;                                                \n";
++"uniform vec4 Suno_corners;                                                \n"
++"uniform vec2 Suno_origin;                                                 \n"
++"uniform vec2 Suno_extent;                                                 \n";
  
  static const gchar *brightness_glsl =
- "  float luma = dot(cogl_color_out.rgb, vec3(0.2126, 0.7152, 0.0722));        \n"
+ "  float Suno = dot(cogl_color_out.rgb, vec3(0.2126, 0.7152, 0.0722));        \n"
 @@ -57,7 +59,7 @@
  "  cogl_color_out.rgb *= brightness;                                       \n"
- "  if (dot(luma_corners, vec4(1.0)) > 0.0) {                               \n"
- "    vec2 half_size = luma_size * 0.5;                                     \n"
--"    vec2 point = cogl_tex_coord_in[0].st * luma_size;                      \n"
-+"    vec2 point = luma_origin + cogl_tex_coord_in[0].st * luma_extent;      \n"
+ "  if (dot(Suno_corners, vec4(1.0)) > 0.0) {                               \n"
+ "    vec2 half_size = Suno_size * 0.5;                                     \n"
+-"    vec2 point = cogl_tex_coord_in[0].st * Suno_size;                      \n"
++"    vec2 point = Suno_origin + cogl_tex_coord_in[0].st * Suno_extent;      \n"
  "    float r = point.x < half_size.x                                        \n"
- "      ? (point.y < half_size.y ? luma_corners.x : luma_corners.w)          \n"
- "      : (point.y < half_size.y ? luma_corners.y : luma_corners.z);         \n"
+ "      ? (point.y < half_size.y ? Suno_corners.x : Suno_corners.w)          \n"
+ "      : (point.y < half_size.y ? Suno_corners.y : Suno_corners.z);         \n"
 @@ -110,9 +112,17 @@
  "                                                                          \n"
  "  cogl_texel = ret / gauss_coefficient_total;                             \n";
@@ -74,7 +74,7 @@ diff --git a/src/shell-blur-effect.c b/src/shell-blur-effect.c
  #define MIN_DOWNSCALED_SIZE 16.f
  #define MAX_RADIUS 12.f
  
-+/* Luma: how many framebuffers (stage views, or an off-stage capture) one
++/* Suno: how many framebuffers (stage views, or an off-stage capture) one
 + * background blur keeps textures for, and how long a framebuffer's textures
 + * live without being painted.
 + */
@@ -89,7 +89,7 @@ diff --git a/src/shell-blur-effect.c b/src/shell-blur-effect.c
  } FramebufferData;
  
 -struct _ShellBlurEffect
-+/* Luma: what the effect keeps for one framebuffer it paints into.
++/* Suno: what the effect keeps for one framebuffer it paints into.
 + *
 + * A stage view is its own framebuffer, at its own scale and offset. With one
 + * set of textures for the whole effect, an actor painted on two views of a
@@ -130,7 +130,7 @@ diff --git a/src/shell-blur-effect.c b/src/shell-blur-effect.c
    CacheFlags cache_flags;
  
 -  FramebufferData background_fb;
--  /* Luma: the vertical and horizontal pass results, kept between frames.
+-  /* Suno: the vertical and horizontal pass results, kept between frames.
 -   * brightness_fb only holds the pipeline that draws the result.
 +  /* Background mode: the framebuffer box the background was last copied
 +   * from (the part of the actor inside the framebuffer), and the actor-local
@@ -172,12 +172,12 @@ diff --git a/src/shell-blur-effect.c b/src/shell-blur-effect.c
    int radius;
 -  float blur_sigma;
  
--  /* Luma: the box the background was last copied from. */
+-  /* Suno: the box the background was last copied from. */
 -  ClutterActorBox background_box;
 -
--  /* Luma: how many frames in a row the background could have been stale. */
+-  /* Suno: how many frames in a row the background could have been stale. */
 -  int stale_frames;
-   /* Luma: counters a test reads, to see the case happen and stop happening. */
+   /* Suno: counters a test reads, to see the case happen and stop happening. */
    int stale_background_paints;
    int reused_background_paints;
 +  int framebuffer_allocations;
@@ -252,7 +252,7 @@ diff --git a/src/shell-blur-effect.c b/src/shell-blur-effect.c
 +}
 +
 +/*
-+ * Luma: the target for the framebuffer being painted. An actor blur paints
++ * Suno: the target for the framebuffer being painted. An actor blur paints
 + * into its own offscreen at the actor's size whatever the view, so it keeps
 + * one target; a background blur keeps one per framebuffer. Targets that went
 + * unpainted for TARGET_IDLE_US (the actor left that monitor, or the monitor
@@ -464,7 +464,7 @@ diff --git a/src/shell-blur-effect.c b/src/shell-blur-effect.c
 + * The box the effect copies or renders, in the target framebuffer's pixels,
 + * and the actor-local rectangle it covers.
 + *
-+ * Luma: a background blur copies only the part of the actor inside the
++ * Suno: a background blur copies only the part of the actor inside the
 + * framebuffer. Its box was the whole actor, so a full-screen scrim over three
 + * monitors allocated, copied and blurred the whole desktop for each monitor
 + * it was painted on, though the copy outside that monitor was never defined.
@@ -521,7 +521,7 @@ diff --git a/src/shell-blur-effect.c b/src/shell-blur-effect.c
 -        }
 -      else
 -        {
--          /* Luma: drawing off stage (a screenshot or a screen recording).
+-          /* Suno: drawing off stage (a screenshot or a screen recording).
 -           * The stage is painted into its own framebuffer at the capture's
 -           * scale, offset by the captured rectangle's origin: both are in the
 -           * viewport clutter_stage_paint_to_framebuffer() sets. Reading the
@@ -550,7 +550,7 @@ diff --git a/src/shell-blur-effect.c b/src/shell-blur-effect.c
 +    }
 +  else
 +    {
-+      /* Luma: drawing off stage (a screenshot or a screen recording).
++      /* Suno: drawing off stage (a screenshot or a screen recording).
 +       * The stage is painted into its own framebuffer at the capture's
 +       * scale, offset by the captured rectangle's origin: both are in the
 +       * viewport clutter_stage_paint_to_framebuffer() sets. Reading the
@@ -666,7 +666,7 @@ diff --git a/src/shell-blur-effect.c b/src/shell-blur-effect.c
 +  add_covered_rectangle (target, pipeline_node);
  }
  
--/* Luma: the blur draws into textures it keeps while the actor's size and
+-/* Suno: the blur draws into textures it keeps while the actor's size and
 - * downscale stay the same. A ClutterBlurNode allocated three new textures
 - * and pipelines on every paint (a background blur paints every frame), and
 - * its result went through a further copy into brightness_fb before reaching
@@ -674,7 +674,7 @@ diff --git a/src/shell-blur-effect.c b/src/shell-blur-effect.c
 - * allocations each frame. Here the source is drawn straight into the
 - * vertical pass (downscaling as it samples), the horizontal pass reads that,
 - * and the brightness pipeline draws the horizontal result to the stage.
-+/* Luma: the blur draws into textures it keeps while the box and downscale
++/* Suno: the blur draws into textures it keeps while the box and downscale
 + * stay the same. A ClutterBlurNode allocated three new textures and
 + * pipelines on every paint (a background blur paints every frame), and its
 + * result went through a further copy before reaching the stage. Here the
@@ -795,7 +795,7 @@ diff --git a/src/shell-blur-effect.c b/src/shell-blur-effect.c
 -  /* Blit node */
    src = clutter_paint_context_get_framebuffer (paint_context);
 -
--  /* Luma: only what lies inside the framebuffer is copied. An actor partly
+-  /* Suno: only what lies inside the framebuffer is copied. An actor partly
 -   * outside it (a capture of part of the screen, or an island at a monitor's
 -   * edge) blitted from outside the framebuffer, which is undefined and came
 -   * out as a grey smear.
@@ -1064,7 +1064,7 @@ diff --git a/src/shell-blur-effect.c b/src/shell-blur-effect.c
 + * shell_blur_effect_get_framebuffer_allocations:
 + * @self: a #ShellBlurEffect
 + *
-+ * Luma: how many textures and framebuffers the effect has allocated. A test
++ * Suno: how many textures and framebuffers the effect has allocated. A test
 + * reads it to check that a steady blur allocates nothing per frame, on one
 + * monitor or several.
 + *
@@ -1114,7 +1114,7 @@ diff --git a/src/shell-blur-effect.c b/src/shell-blur-effect.c
  
 +      target = get_target (self, paint_context);
 +
-+      /* Luma: nothing of the actor is inside this framebuffer: nothing to
++      /* Suno: nothing of the actor is inside this framebuffer: nothing to
 +       * blur behind it.
 +       */
 +      if (!update_actor_box (self, paint_context, &source_actor_box, &covered))
@@ -1123,7 +1123,7 @@ diff --git a/src/shell-blur-effect.c b/src/shell-blur-effect.c
 +          return;
 +        }
 +
-       /* Luma: a held background keeps the last blur while the actor stays
+       /* Suno: a held background keeps the last blur while the actor stays
         * where it was copied from.
         */
        if (self->mode == SHELL_BLUR_MODE_BACKGROUND &&
@@ -1147,7 +1147,7 @@ diff --git a/src/shell-blur-effect.c b/src/shell-blur-effect.c
 +          return;
          }
  
-       /* Luma: the background copy would be this surface's own last output,
+       /* Suno: the background copy would be this surface's own last output,
         * so keep the blur we have and ask for a frame that repaints what is
 -       * behind us. Without a blur to keep, or after MAX_STALE_FRAMES, take
 -       * the copy rather than show nothing.
@@ -1284,15 +1284,15 @@ diff --git a/src/shell-blur-effect.c b/src/shell-blur-effect.c
 +  self->brightness_pipeline = create_brightness_pipeline ();
    self->brightness_uniform =
 -    cogl_pipeline_get_uniform_location (self->brightness_fb.pipeline, "brightness");
--  self->saturation_uniform = cogl_pipeline_get_uniform_location (self->brightness_fb.pipeline, "luma_saturation");
--  self->size_uniform = cogl_pipeline_get_uniform_location (self->brightness_fb.pipeline, "luma_size");
--  self->corners_uniform = cogl_pipeline_get_uniform_location (self->brightness_fb.pipeline, "luma_corners");
+-  self->saturation_uniform = cogl_pipeline_get_uniform_location (self->brightness_fb.pipeline, "Suno_saturation");
+-  self->size_uniform = cogl_pipeline_get_uniform_location (self->brightness_fb.pipeline, "Suno_size");
+-  self->corners_uniform = cogl_pipeline_get_uniform_location (self->brightness_fb.pipeline, "Suno_corners");
 +    cogl_pipeline_get_uniform_location (self->brightness_pipeline, "brightness");
-+  self->saturation_uniform = cogl_pipeline_get_uniform_location (self->brightness_pipeline, "luma_saturation");
-+  self->size_uniform = cogl_pipeline_get_uniform_location (self->brightness_pipeline, "luma_size");
-+  self->corners_uniform = cogl_pipeline_get_uniform_location (self->brightness_pipeline, "luma_corners");
-+  self->origin_uniform = cogl_pipeline_get_uniform_location (self->brightness_pipeline, "luma_origin");
-+  self->extent_uniform = cogl_pipeline_get_uniform_location (self->brightness_pipeline, "luma_extent");
++  self->saturation_uniform = cogl_pipeline_get_uniform_location (self->brightness_pipeline, "Suno_saturation");
++  self->size_uniform = cogl_pipeline_get_uniform_location (self->brightness_pipeline, "Suno_size");
++  self->corners_uniform = cogl_pipeline_get_uniform_location (self->brightness_pipeline, "Suno_corners");
++  self->origin_uniform = cogl_pipeline_get_uniform_location (self->brightness_pipeline, "Suno_origin");
++  self->extent_uniform = cogl_pipeline_get_uniform_location (self->brightness_pipeline, "Suno_extent");
  }
  
  ShellBlurEffect *
@@ -1326,14 +1326,14 @@ diff --git a/src/shell-blur-effect.c b/src/shell-blur-effect.c
 -    case SHELL_BLUR_MODE_ACTOR:
 -      clear_framebuffer_data (&self->background_fb);
 -      break;
-+  /* Luma: an actor blur keeps one target, a background blur one per
++  /* Suno: an actor blur keeps one target, a background blur one per
 +   * framebuffer; neither keeps the other's textures.
 +   */
 +  g_ptr_array_set_size (self->targets, 0);
  
 -    case SHELL_BLUR_MODE_BACKGROUND:
 -    default:
--      /* Luma: the background blur samples its copy, not actor_fb. */
+-      /* Suno: the background blur samples its copy, not actor_fb. */
 -      clear_framebuffer_data (&self->actor_fb);
 -      break;
 -    }

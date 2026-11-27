@@ -30,8 +30,8 @@ command -v llvm-strip >/dev/null 2>&1 || die 'llvm-strip is missing'
 mkdir -p "$build_dir"
 
 clang -O2 -g -Wall -Wextra -Werror -Wformat=2 -Wshadow -Wconversion \
-  -ffile-prefix-map="$repo_root=/usr/src/luma" \
-  -fdebug-prefix-map="$repo_root=/usr/src/luma" \
+  -ffile-prefix-map="$repo_root=/usr/src/Suno" \
+  -fdebug-prefix-map="$repo_root=/usr/src/Suno" \
   -Wl,--build-id=none -I"$bridge_dir" \
   -o "$build_dir/test-focal-protocol" \
   "$source_dir/focal_protocol.c" "$source_dir/test_focal_protocol.c"
@@ -40,8 +40,8 @@ clang -O2 -g -Wall -Wextra -Werror -Wformat=2 -Wshadow -Wconversion \
 
 SOURCE_DATE_EPOCH=1787356800 clang -O2 -g -Wall -Wextra -Werror \
   -Wformat=2 -Wshadow -Wconversion \
-  -ffile-prefix-map="$repo_root=/usr/src/luma" \
-  -fdebug-prefix-map="$repo_root=/usr/src/luma" \
+  -ffile-prefix-map="$repo_root=/usr/src/Suno" \
+  -fdebug-prefix-map="$repo_root=/usr/src/Suno" \
   -Wl,--build-id=none -I"$bridge_dir" -o "$build_dir/probe" \
   "$source_dir/fp6_fingerprint_probe.c" "$source_dir/focal_protocol.c" \
   "$bridge_dir/qseecom_bridge.c" -pthread
@@ -49,7 +49,7 @@ llvm-strip --strip-debug "$build_dir/probe" -o "$binary"
 chmod 0755 "$binary"
 
 {
-  printf 'LUMA_FP6_FINGERPRINT_PROBE_VERSION=3\n'
+  printf 'SUNO_FP6_FINGERPRINT_PROBE_VERSION=3\n'
   printf 'BINARY_SHA256=%s\n' "$(hash "$binary")"
   printf 'BINARY_SIZE=%s\n' "$(stat -c %s "$binary")"
   printf 'TARGET_ARCH=aarch64\n'

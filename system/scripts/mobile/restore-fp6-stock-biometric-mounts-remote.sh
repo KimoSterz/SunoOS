@@ -4,14 +4,14 @@
 set -Eeuo pipefail
 umask 077
 
-image_root=/var/tmp/luma-stock-qrel1695-images
-system_mount=/var/tmp/luma-stock-qrel1695-system
-vendor_mount=/var/tmp/luma-stock-qrel1695-vendor
-system_ext_mount=/var/tmp/luma-stock-qrel1695-system_ext
-product_mount=/var/tmp/luma-stock-qrel1695-product
-runtime_files=/var/tmp/luma-stock-qrel1695-runtime-apex-files
-runtime_mount=/var/tmp/luma-stock-qrel1695-runtime-apex
-waydroid_mount=/var/tmp/luma-waydroid-system-ro
+image_root=/var/tmp/Suno-stock-qrel1695-images
+system_mount=/var/tmp/Suno-stock-qrel1695-system
+vendor_mount=/var/tmp/Suno-stock-qrel1695-vendor
+system_ext_mount=/var/tmp/Suno-stock-qrel1695-system_ext
+product_mount=/var/tmp/Suno-stock-qrel1695-product
+runtime_files=/var/tmp/Suno-stock-qrel1695-runtime-apex-files
+runtime_mount=/var/tmp/Suno-stock-qrel1695-runtime-apex
+waydroid_mount=/var/tmp/Suno-waydroid-system-ro
 waydroid_image=/etc/waydroid-extra/images/system.img
 
 fail() {
@@ -22,7 +22,7 @@ fail() {
 [[ $(id -u) -eq 0 ]] || fail not_root
 grep -qw 'androidboot.slot_suffix=_b' /proc/cmdline || fail slot
 case $(uname -r) in
-  7.1.2-luma-fp-cma1|7.1.2-luma-fp-ims1) ;;
+  7.1.2-Suno-fp-cma1|7.1.2-Suno-fp-ims1) ;;
   *) fail kernel ;;
 esac
 

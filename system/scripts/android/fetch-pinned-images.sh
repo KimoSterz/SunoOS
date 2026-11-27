@@ -7,7 +7,7 @@ manifest="$repo_root/config/android/images-$arch.env"
 [ -r "$manifest" ] || { printf 'no pinned Android images for %s\n' "$arch" >&2; exit 1; }
 # shellcheck disable=SC1090
 . "$manifest"
-destination=${LUMA_ANDROID_IMAGE_CACHE:-"$repo_root/build/cache/android/$arch"}
+destination=${SUNO_ANDROID_IMAGE_CACHE:-"$repo_root/build/cache/android/$arch"}
 install -d -m 0755 "$destination"
 fetch() {
   name=$1 url=$2 digest=$3 size=$4 target="$destination/$1"
@@ -26,6 +26,6 @@ fetch() {
     mv "$part" "$target"
   fi
 }
-fetch "$LUMA_ANDROID_SYSTEM_FILENAME" "$LUMA_ANDROID_SYSTEM_URL" "$LUMA_ANDROID_SYSTEM_SHA256" "$LUMA_ANDROID_SYSTEM_SIZE"
-fetch "$LUMA_ANDROID_VENDOR_FILENAME" "$LUMA_ANDROID_VENDOR_URL" "$LUMA_ANDROID_VENDOR_SHA256" "$LUMA_ANDROID_VENDOR_SIZE"
+fetch "$SUNO_ANDROID_SYSTEM_FILENAME" "$SUNO_ANDROID_SYSTEM_URL" "$SUNO_ANDROID_SYSTEM_SHA256" "$SUNO_ANDROID_SYSTEM_SIZE"
+fetch "$SUNO_ANDROID_VENDOR_FILENAME" "$SUNO_ANDROID_VENDOR_URL" "$SUNO_ANDROID_VENDOR_SHA256" "$SUNO_ANDROID_VENDOR_SIZE"
 printf 'Verified Android images: %s\n' "$destination"

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-package org.projectluma.androidtest;
+package org.projectSuno.androidtest;
 
 import android.content.Context;
 import android.os.Process;
@@ -8,7 +8,7 @@ import org.json.JSONObject;
 /** Read-only raw HIDL control for the privileged task-forwarding service. */
 public final class NativeTaskProbe {
     private static final String DESCRIPTOR = "vendor.waydroid.task@1.0::IWaydroidTask";
-    private static final String PACKAGE = "org.projectluma.androidtest";
+    private static final String PACKAGE = "org.projectSuno.androidtest";
     private static final String LABEL = "Android Integration Test";
 
     private static String read() throws Exception {
@@ -47,7 +47,7 @@ public final class NativeTaskProbe {
                 if (error.getCause() != null) type += "/" + error.getCause().getClass().getSimpleName();
                 MainActivity.receipt(context, "native-task-error-type", type);
             }
-        }, "luma-native-task-probe").start();
+        }, "Suno-native-task-probe").start();
     }
 
     /** Same read-only wire request as the app, run as trusted UID1000. */

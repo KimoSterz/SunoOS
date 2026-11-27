@@ -128,13 +128,13 @@ class SurfaceMigrationTest(unittest.TestCase):
                 self.current_address = thread.address
         path = source.with_name('messages_app_port.py')
         tree = ast.parse(path.read_text())
-        owner = next(n for n in tree.body if isinstance(n, ast.ClassDef) and n.name == 'LumaUIMessagesWindow')
+        owner = next(n for n in tree.body if isinstance(n, ast.ClassDef) and n.name == 'SunoUIMessagesWindow')
         method = next(n for n in owner.body if isinstance(n, ast.FunctionDef) and n.name == '_resolve_sent_conversation')
         owner.bases = [ast.Name(id='Base', ctx=ast.Load())]
         owner.body = [method]
         namespace = {'Base': Base}
         exec(compile(ast.fix_missing_locations(ast.Module(body=[owner], type_ignores=[])), str(path), 'exec'), namespace)
-        window = namespace['LumaUIMessagesWindow']()
+        window = namespace['SunoUIMessagesWindow']()
         old = {'id': 'account:test|@carol', 'address': '@carol'}
         new = {'id': 'account:test|u:acct-carol', 'address': 'u:acct-carol'}
         reply, selected = {'id': 'reply-original'}, {'id': 'selected-original'}

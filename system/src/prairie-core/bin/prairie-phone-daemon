@@ -30,7 +30,7 @@ gi.require_version("Adw", "1")
 gi.require_version("Gio", "2.0")
 from gi.repository import Adw, Gio, GLib, Gtk  # noqa: E402
 
-from luma_appkit import Avatar, install_appkit, motion_duration  # noqa: E402
+from Suno_appkit import Avatar, install_appkit, motion_duration  # noqa: E402
 from prairie_ui import install_theme  # noqa: E402
 
 # wlr-layer-shell lets the call surface sit on the overlay layer, which phosh
@@ -63,7 +63,7 @@ from prairie_apps.phone_system import (  # noqa: E402
     TransientShellSurface,
 )
 
-APP_ID = "org.projectluma.PhoneDaemon"
+APP_ID = "org.projectSuno.PhoneDaemon"
 
 
 def lockscreen_identity_visible() -> bool:
@@ -220,10 +220,10 @@ class CallWindow(Adw.Window):
         )
         incoming.add_css_class("phone-incoming-actions")
         self._decline = self._action_button(
-            "luma-phone-hangup-symbolic", "Decline", "phone-decline-button", self._do_hangup
+            "Suno-phone-hangup-symbolic", "Decline", "phone-decline-button", self._do_hangup
         )
         self._accept = self._action_button(
-            "luma-phone-call-symbolic", "Accept", "phone-accept-button", self._do_accept
+            "Suno-phone-call-symbolic", "Accept", "phone-accept-button", self._do_accept
         )
         incoming.append(self._decline)
         incoming.append(self._accept)
@@ -232,23 +232,23 @@ class CallWindow(Adw.Window):
         active = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=9)
         controls = Gtk.Grid(row_spacing=8, column_spacing=8, halign=Gtk.Align.CENTER)
         self._controls = controls
-        self._mute = self._control(controls, 0, 0, "luma-phone-mic-symbolic", "Mute")
+        self._mute = self._control(controls, 0, 0, "Suno-phone-mic-symbolic", "Mute")
         self._mute.connect("toggled", lambda button: self._on_mute(button.get_active()))
         try:
             self._mute.set_active(audio_input_muted())
         except (OSError, RuntimeError, subprocess.SubprocessError):
             pass
         for column, row, icon, label in (
-            (1, 0, "luma-phone-dialer-symbolic", "Keypad"),
-            (0, 1, "luma-phone-hold-symbolic", "Hold"),
-            (1, 1, "luma-phone-add-symbolic", "Add call"),
-            (2, 1, "luma-phone-video-symbolic", "Video"),
+            (1, 0, "Suno-phone-dialer-symbolic", "Keypad"),
+            (0, 1, "Suno-phone-hold-symbolic", "Hold"),
+            (1, 1, "Suno-phone-add-symbolic", "Add call"),
+            (2, 1, "Suno-phone-video-symbolic", "Video"),
         ):
             button = self._control(controls, column, row, icon, label)
             button.set_sensitive(False)
             button.set_tooltip_text("Not supported by the current native call service")
         self._speaker = self._control(
-            controls, 2, 0, "luma-phone-speaker-symbolic", "Speaker"
+            controls, 2, 0, "Suno-phone-speaker-symbolic", "Speaker"
         )
         self._speaker.connect("toggled", self._on_speaker)
         try:
@@ -272,7 +272,7 @@ class CallWindow(Adw.Window):
         )
         end_icon = Gtk.Box(halign=Gtk.Align.CENTER, valign=Gtk.Align.CENTER)
         end_icon.add_css_class("phone-end-icon")
-        end_icon.append(Gtk.Image(icon_name="luma-phone-hangup-symbolic", pixel_size=23))
+        end_icon.append(Gtk.Image(icon_name="Suno-phone-hangup-symbolic", pixel_size=23))
         end_content.append(end_icon)
         end_content.append(Gtk.Label(label="End"))
         end.set_child(end_content)
@@ -431,7 +431,7 @@ class PhoneDaemon:
         self._contacts = load_contacts()
         self._transport = None
         self._shell_surface = TransientShellSurface(
-            "org.projectluma.Phone.desktop"
+            "org.projectSuno.Phone.desktop"
         )
         self._calls = {}
         self._indicator_call_id = ""
@@ -677,7 +677,7 @@ class PhoneDaemon:
 
     @staticmethod
     def _return_to_call() -> None:
-        application = Gio.DesktopAppInfo.new("org.projectluma.Phone.desktop")
+        application = Gio.DesktopAppInfo.new("org.projectSuno.Phone.desktop")
         if application is not None:
             try:
                 application.launch([], None)

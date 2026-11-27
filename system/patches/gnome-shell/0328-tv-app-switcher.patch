@@ -2,11 +2,11 @@ diff --git a/js/js-resources.gresource.xml b/js/js-resources.gresource.xml
 --- a/js/js-resources.gresource.xml
 +++ b/js/js-resources.gresource.xml
 @@ -185,6 +185,8 @@
-     <file>ui/lumaPresentation/tvScreenEdges.js</file>
-     <file>ui/lumaPresentation/tvQuickPanel.js</file>
-     <file>ui/lumaPresentation/tvQuickPanelModel.js</file>
-+    <file>ui/lumaPresentation/tvAppSwitcher.js</file>
-+    <file>ui/lumaPresentation/tvAppSwitcherModel.js</file>
-     <file>ui/lumaPresentation/tv-backdrop.jpg</file>
+     <file>ui/SunoPresentation/tvScreenEdges.js</file>
+     <file>ui/SunoPresentation/tvQuickPanel.js</file>
+     <file>ui/SunoPresentation/tvQuickPanelModel.js</file>
++    <file>ui/SunoPresentation/tvAppSwitcher.js</file>
++    <file>ui/SunoPresentation/tvAppSwitcherModel.js</file>
+     <file>ui/SunoPresentation/tv-backdrop.jpg</file>
      <file>ui/shelfMetrics.js</file>
      <file>ui/shelfArrangement.js</file>

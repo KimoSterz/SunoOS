@@ -1,5 +1,5 @@
 From 01b947aa92aa937622194942fa598fcafbeaccb3 Mon Sep 17 00:00:00 2001
-From: Project Luma <engineering@projectluma.org>
+From: Project Suno <engineering@projectSuno.org>
 Date: Thu, 19 Nov 2026 23:04:26 -0500
 Subject: [PATCH] wayland: Let a client keep its window at an aspect ratio
 
@@ -10,7 +10,7 @@ no such hint, so a Wayland client (an emulator, a video player) can only
 fit its window after a resize ends, and the window takes any shape while
 it is dragged.
 
-luma_window_shape_v1 adds one. get_window_shape() takes the wl_surface
+Suno_window_shape_v1 adds one. get_window_shape() takes the wl_surface
 rather than the xdg_toplevel, because GTK keeps its xdg_toplevel private;
 the state applies while the surface is an xdg_toplevel. set_aspect_ratio
 (width, height, base_width, base_height) and unset_aspect_ratio are
@@ -54,7 +54,7 @@ index a3e7c7f..7838c76 100644
  }
  
 +/* The largest size inside *width x *height whose content keeps the aspect
-+ * ratio a Wayland client set through luma_window_shape_v1. The content is
++ * ratio a Wayland client set through Suno_window_shape_v1. The content is
 + * the frame rectangle less the client's fixed chrome (frame_aspect.base_*).
 + */
 +static void
@@ -86,7 +86,7 @@ index a3e7c7f..7838c76 100644
      }
  
 +  /* A window that keeps its content at an aspect ratio
-+   * (luma_window_shape_v1) maximizes to the largest size with that ratio,
++   * (Suno_window_shape_v1) maximizes to the largest size with that ratio,
 +   * centred in the area it would otherwise fill, rather than stretching its
 +   * content or leaving the client to letterbox a screen-sized window. */
 +  if (window->frame_aspect.set &&
@@ -119,7 +119,7 @@ index a3e7c7f..7838c76 100644
      }
  
 -  meta_window_frame_rect_to_client_rect (window, &info->current, &client_rect);
-+  /* A ratio set through luma_window_shape_v1 is for the frame rectangle less
++  /* A ratio set through Suno_window_shape_v1 is for the frame rectangle less
 +   * the client's fixed chrome; ICCCM hints are for the client rectangle. */
 +  if (window->frame_aspect.set)
 +    {
@@ -169,7 +169,7 @@ index a3e7c7f..7838c76 100644
    target.width = MAX (MIN (rect->width, area.width), min_size.width);
    target.height = MAX (MIN (rect->height, area.height), min_size.height);
 +  /* Shrinking one side alone would undo an aspect ratio a client set through
-+   * luma_window_shape_v1; keep it while it still fits the minimum size. */
++   * Suno_window_shape_v1; keep it while it still fits the minimum size. */
 +  if (window->frame_aspect.set &&
 +      (target.width != rect->width || target.height != rect->height) &&
 +      !meta_window_is_maximized (window) &&
@@ -198,7 +198,7 @@ index 2195e83..fac0668 100644
    /* Placed in a tile by a tiling manager rather than by Mutter itself */
    gboolean externally_tiled;
  
-+  /* An aspect ratio a Wayland client set through luma_window_shape_v1. It is
++  /* An aspect ratio a Wayland client set through Suno_window_shape_v1. It is
 +   * kept in size_hints.min_aspect and max_aspect, like an ICCCM aspect hint,
 +   * but applies to the frame rectangle less this fixed size (the client's
 +   * header bar, say) rather than to the client rectangle. */
@@ -228,9 +228,9 @@ index 9ca496c..8f207d9 100644
    ['keyboard-shortcuts-inhibit', 'unstable', 1, ],
    ['linux-dmabuf', 'stable', 1, ],
    ['linux-drm-syncobj', 'staging', 1, ],
-+  # Luma: the XML is a package source (src/luma-platform/protocols in the
-+  # Luma tree), installed into this private protocol directory in %prep.
-+  ['luma-window-shape-v1', 'private', ],
++  # Suno: the XML is a package source (src/Suno-platform/protocols in the
++  # Suno tree), installed into this private protocol directory in %prep.
++  ['Suno-window-shape-v1', 'private', ],
    ['pointer-constraints', 'unstable', 1, ],
    ['pointer-gestures', 'unstable', 1, ],
    ['pointer-warp', 'staging', 1, ],
@@ -242,7 +242,7 @@ index f17a642..d4d1f96 100644
  #define META_WL_FIXES_VERSION 1
  #define META_WP_POINTER_WARP_VERSION 1
  #define META_EXT_BACKGROUND_EFFECT_V1_VERSION 1
-+#define META_LUMA_WINDOW_SHAPE_V1_VERSION 1
++#define META_SUNO_WINDOW_SHAPE_V1_VERSION 1
 diff --git a/src/wayland/meta-wayland-window-shape.c b/src/wayland/meta-wayland-window-shape.c
 new file mode 100644
 index 0000000..5e759cc
@@ -250,7 +250,7 @@ index 0000000..5e759cc
 +++ b/src/wayland/meta-wayland-window-shape.c
 @@ -0,0 +1,246 @@
 +/*
-+ * Copyright (C) 2026 Project Luma
++ * Copyright (C) 2026 Project Suno
 + *
 + * This program is free software; you can redistribute it and/or
 + * modify it under the terms of the GNU General Public License as
@@ -266,7 +266,7 @@ index 0000000..5e759cc
 + * along with this program; if not, see <http://www.gnu.org/licenses/>.
 + */
 +
-+/* luma_window_shape_v1: a client keeps its toplevel's content at a fixed
++/* Suno_window_shape_v1: a client keeps its toplevel's content at a fixed
 + * aspect ratio. The ratio is pending state of the wl_surface; the
 + * xdg_toplevel role hands it to its MetaWindow's size hints on commit, and
 + * the constraints apply it the way they apply ICCCM aspect hints. */
@@ -281,7 +281,7 @@ index 0000000..5e759cc
 +#include "wayland/meta-wayland-versions.h"
 +#include "wayland/meta-window-wayland.h"
 +
-+#include "luma-window-shape-v1-server-protocol.h"
++#include "Suno-window-shape-v1-server-protocol.h"
 +
 +#define MAX_ASPECT_VALUE 65535
 +
@@ -353,7 +353,7 @@ index 0000000..5e759cc
 +      base_width > MAX_ASPECT_VALUE || base_height > MAX_ASPECT_VALUE)
 +    {
 +      wl_resource_post_error (resource,
-+                              LUMA_WINDOW_SHAPE_V1_ERROR_INVALID_ASPECT_RATIO,
++                              SUNO_WINDOW_SHAPE_V1_ERROR_INVALID_ASPECT_RATIO,
 +                              "invalid aspect ratio %u:%u (base %ux%u)",
 +                              width, height, base_width, base_height);
 +      return;
@@ -378,7 +378,7 @@ index 0000000..5e759cc
 +  shape->pending = (AspectRatio) { 0 };
 +}
 +
-+static const struct luma_window_shape_v1_interface window_shape_interface = {
++static const struct Suno_window_shape_v1_interface window_shape_interface = {
 +  window_shape_destroy,
 +  window_shape_set_aspect_ratio,
 +  window_shape_unset_aspect_ratio,
@@ -445,15 +445,15 @@ index 0000000..5e759cc
 +  if (g_object_get_qdata (G_OBJECT (surface), quark_window_shape))
 +    {
 +      wl_resource_post_error (resource,
-+                              LUMA_WINDOW_SHAPE_MANAGER_V1_ERROR_ALREADY_CONSTRUCTED,
-+                              "the wl_surface already has a luma_window_shape_v1");
++                              SUNO_WINDOW_SHAPE_MANAGER_V1_ERROR_ALREADY_CONSTRUCTED,
++                              "the wl_surface already has a Suno_window_shape_v1");
 +      return;
 +    }
 +
 +  shape = g_new0 (MetaWaylandWindowShape, 1);
 +  shape->surface = surface;
 +  shape->resource = wl_resource_create (client,
-+                                        &luma_window_shape_v1_interface,
++                                        &Suno_window_shape_v1_interface,
 +                                        wl_resource_get_version (resource),
 +                                        id);
 +  wl_resource_set_implementation (shape->resource,
@@ -464,7 +464,7 @@ index 0000000..5e759cc
 +                           shape, window_shape_surface_destroyed);
 +}
 +
-+static const struct luma_window_shape_manager_v1_interface window_shape_manager_interface = {
++static const struct Suno_window_shape_manager_v1_interface window_shape_manager_interface = {
 +  window_shape_manager_destroy,
 +  window_shape_manager_get_window_shape,
 +};
@@ -477,7 +477,7 @@ index 0000000..5e759cc
 +{
 +  struct wl_resource *resource;
 +
-+  resource = wl_resource_create (client, &luma_window_shape_manager_v1_interface,
++  resource = wl_resource_create (client, &Suno_window_shape_manager_v1_interface,
 +                                 version, id);
 +  wl_resource_set_implementation (resource, &window_shape_manager_interface,
 +                                  data, NULL);
@@ -487,13 +487,13 @@ index 0000000..5e759cc
 +meta_wayland_init_window_shape (MetaWaylandCompositor *compositor)
 +{
 +  quark_window_shape =
-+    g_quark_from_static_string ("-meta-wayland-luma-window-shape");
++    g_quark_from_static_string ("-meta-wayland-Suno-window-shape");
 +
 +  if (wl_global_create (compositor->wayland_display,
-+                        &luma_window_shape_manager_v1_interface,
-+                        META_LUMA_WINDOW_SHAPE_V1_VERSION,
++                        &Suno_window_shape_manager_v1_interface,
++                        META_SUNO_WINDOW_SHAPE_V1_VERSION,
 +                        compositor, bind_window_shape_manager) == NULL)
-+    g_error ("Failed to register a global luma_window_shape_manager_v1 object");
++    g_error ("Failed to register a global Suno_window_shape_manager_v1 object");
 +}
 diff --git a/src/wayland/meta-wayland-window-shape.h b/src/wayland/meta-wayland-window-shape.h
 new file mode 100644
@@ -502,7 +502,7 @@ index 0000000..0d1dde2
 +++ b/src/wayland/meta-wayland-window-shape.h
 @@ -0,0 +1,27 @@
 +/*
-+ * Copyright (C) 2026 Project Luma
++ * Copyright (C) 2026 Project Suno
 + *
 + * This program is free software; you can redistribute it and/or
 + * modify it under the terms of the GNU General Public License as
@@ -595,7 +595,7 @@ index f373a24..5c7875f 100644
 + * @base_height: surface-local height of the geometry outside the content
 + *
 + * Keeps the window geometry less the base at @width:@height
-+ * (luma_window_shape_v1). Setting the ratio the window already has does
++ * (Suno_window_shape_v1). Setting the ratio the window already has does
 + * nothing.
 + */
 +void

@@ -42,7 +42,7 @@ done
 
 mkdir -p "$(dirname -- "$output")"
 {
-  printf 'LUMA_PIXEL9_KERNEL_REPRODUCIBILITY_VERSION=1\n'
+  printf 'SUNO_PIXEL9_KERNEL_REPRODUCIBILITY_VERSION=1\n'
   printf 'COMPARISON=byte-for-byte\n'
   printf 'IMAGE_REPRODUCIBLE=true\n'
   printf 'TOKAY_DTB_REPRODUCIBLE=true\n'

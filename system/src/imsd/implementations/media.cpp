@@ -1049,7 +1049,7 @@ int main(int argc, char** argv) {
                 d[0] = (v >> 24) & 0xFF; d[1] = (v >> 16) & 0xFF;
                 d[2] = (v >> 8) & 0xFF;  d[3] = v & 0xFF;
             };
-            const char* cname = "imsd@luma";
+            const char* cname = "imsd@Suno";
             int waited = 0;
             while (!stop.load()) {
                 std::this_thread::sleep_for(std::chrono::milliseconds(200));

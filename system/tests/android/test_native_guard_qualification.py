@@ -89,11 +89,11 @@ class ControlEvidenceTests(unittest.TestCase):
 
 class InstalledPathTests(unittest.TestCase):
     def test_randomized_android_package_directory(self):
-        path = "/data/app/~~Abc_012+==/org.projectluma.androidtest-Abc_12==/base.apk"
+        path = "/data/app/~~Abc_012+==/org.projectSuno.androidtest-Abc_12==/base.apk"
         self.assertEqual(gate.installed_apk_path("package:" + path + "\n"), path)
 
     def test_old_package_directory(self):
-        path = "/data/app/org.projectluma.androidtest-1/base.apk"
+        path = "/data/app/org.projectSuno.androidtest-1/base.apk"
         self.assertEqual(gate.installed_apk_path("package:" + path), path)
 
     def test_paths_outside_package_root_and_multiple_payloads_rejected(self):

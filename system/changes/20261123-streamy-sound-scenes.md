@@ -1,7 +1,7 @@
 ---
 type: improvement
 component: Streamy
-packages: [luma-streamy]
+packages: [Suno-streamy]
 highlight: false
 ---
 Summary: Streamy streams with sound and smooth scene changes

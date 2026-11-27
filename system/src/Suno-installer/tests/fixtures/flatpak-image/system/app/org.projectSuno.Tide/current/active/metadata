@@ -1,0 +1,23 @@
+[Application]
+name=org.projectSuno.Tide
+runtime=org.projectSuno.Platform/x86_64/44
+sdk=org.projectSuno.Sdk/x86_64/44
+command=org.projectSuno.Tide
+
+[Context]
+shared=ipc;network;
+sockets=fallback-x11;pulseaudio;wayland;
+devices=dri;
+
+[Session Bus Policy]
+org.projectSuno.Shell.Remote=talk
+org.projectSuno.ShellState1=talk
+org.projectSuno.ApplicationDirectory1=talk
+org.mpris.MediaPlayer2.Tide=own
+org.projectSuno.Shell.Keyboard=talk
+org.freedesktop.secrets=talk
+org.projectSuno.AppData1=talk
+
+[X-Suno]
+min-host-installer=60
+app-data-schema=tide-v1

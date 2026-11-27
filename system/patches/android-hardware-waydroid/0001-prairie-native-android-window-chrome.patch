@@ -1043,7 +1043,7 @@ index 0000000..a76d14e
 +++ b/hwcomposer/prairie-titlebar.cpp
 @@ -0,0 +1,618 @@
 +/*
-+ * Copyright (C) 2026 Project Luma
++ * Copyright (C) 2026 Project Suno
 + * SPDX-License-Identifier: Apache-2.0
 + */
 +
@@ -1419,7 +1419,7 @@ index 0000000..a76d14e
 +
 +bool desktop_chrome_enabled() {
 +    char value[PROPERTY_VALUE_MAX] {};
-+    property_get("persist.luma.device_class", value, "desktop");
++    property_get("persist.Suno.device_class", value, "desktop");
 +    return std::strcmp(value, "handheld") != 0;
 +}
 +
@@ -1667,7 +1667,7 @@ index 0000000..eef08a7
 +++ b/hwcomposer/prairie-titlebar.h
 @@ -0,0 +1,41 @@
 +/*
-+ * Copyright (C) 2026 Project Luma
++ * Copyright (C) 2026 Project Suno
 + * SPDX-License-Identifier: Apache-2.0
 + */
 +
@@ -1715,7 +1715,7 @@ index 0000000..a5dbcf0
 @@ -0,0 +1,88 @@
 +/*
 + * Copyright (C) 2012 The Android Open Source Project
-+ * Copyright (C) 2026 Project Luma
++ * Copyright (C) 2026 Project Suno
 + *
 + * Licensed under the Apache License, Version 2.0 (the "License");
 + * you may not use this file except in compliance with the License.
@@ -1830,7 +1830,7 @@ index 0516752..ae96d51 100644
  
 +namespace {
 +
-+constexpr uint32_t kPrairieResizeMagic = 0x4c554d41;  // LUMA
++constexpr uint32_t kPrairieResizeMagic = 0x4c554d41;  // SUNO
 +constexpr uint16_t kPrairieResizeVersion = 1;
 +constexpr char kPrairieResizeSocket[] = "prairie-waydroid-task-v1";
 +
@@ -2587,7 +2587,7 @@ index bfa8231..c3e19c5 100644
  
 +namespace {
 +
-+constexpr uint32_t kPrairieResizeMagic = 0x4c554d41;  // LUMA
++constexpr uint32_t kPrairieResizeMagic = 0x4c554d41;  // SUNO
 +constexpr uint16_t kPrairieResizeVersion = 1;
 +constexpr char kPrairieResizeSocket[] = "prairie-waydroid-task-v1";
 +

@@ -16,7 +16,7 @@ with tempfile.TemporaryDirectory(prefix="photos-catalog-test-") as directory:
     for kind in ("CACHE", "DATA", "CONFIG"):
         os.environ[f"XDG_{kind}_HOME"] = str(root / kind.lower())
     os.environ["GSETTINGS_BACKEND"] = "memory"
-    os.environ["LUMA_PHOTOS_NON_UNIQUE"] = "1"
+    os.environ["SUNO_PHOTOS_NON_UNIQUE"] = "1"
     from prairie_apps import photos as p
 
     library = p.PhotoLibrary(root / "library.db")

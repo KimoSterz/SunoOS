@@ -1,6 +1,6 @@
 {
-  "_doc": "LumaUI media family tokens (KB-C): media tiles and grids, the transport, voice clips, waveforms, cover art, adjustment sliders, the image viewport and crop, colour choice, charts and measures, and the timeline. Deep-merged into design-tokens.json's `lumaui` block by the generator; metrics become --lumaui-media-<group>-<key>, colours @luma_<name>. Python mirror: luma_appkit/media_tokens.py.",
-  "lumaui": {
+  "_doc": "SunoUI media family tokens (KB-C): media tiles and grids, the transport, voice clips, waveforms, cover art, adjustment sliders, the image viewport and crop, colour choice, charts and measures, and the timeline. Deep-merged into design-tokens.json's `SunoUI` block by the generator; metrics become --SunoUI-media-<group>-<key>, colours @Suno_<name>. Python mirror: Suno_appkit/media_tokens.py.",
+  "SunoUI": {
     "media": {
       "tile": {
         "_doc": "v70 .pgrid > .pc (168 min, gap 3, outer corners 12 by pCorners, heart15 at8 with inherited .fav padding8/6 (v71 line715), hover zoom 1.035), .drgrid > .drtile (170 min, gap 10, 3:2 at 10, ring 2.5 at 2 in --susel, set aside .35 + grayscale .6, meta 22, Edited badge 10.5/600 at 7), .rlmedia (16:9 at 8, gap 8, duration 10/600 at 4, caption 11.5/500 5 below, ring 2 at 1).",

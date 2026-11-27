@@ -35,7 +35,7 @@ for avb in "$avb_a" "$avb_b"; do
     [ -f "$avb/$required" ] || die "AVB proof is incomplete: $avb/$required"
   done
   for boundary in \
-    'LUMA_PIXEL9_DIRECT_KERNEL_AVB_WRAPPER_VERSION=1' \
+    'SUNO_PIXEL9_DIRECT_KERNEL_AVB_WRAPPER_VERSION=1' \
     'SCOPE=offline-stock-size-avb-parser-shape-experiment' \
     'STOCK_PARTITION_SIZE_MATCH=true' \
     'AVB_FOOTER_PRESENT=true' \
@@ -67,7 +67,7 @@ grep -Fqx "PARTITION_BYTES=$candidate_bytes" "$avb_a/manifest.env" ||
   die 'AVB candidate byte size differs from its manifest'
 grep -Fqx "PARTITION_SHA256=$candidate_sha" "$avb_a/manifest.env" ||
   die 'AVB candidate digest differs from its manifest'
-grep -Fqx 'LUMA_PIXEL9_CANDIDATE_REVOCATION_VERSION=1' "$prior_revocation" ||
+grep -Fqx 'SUNO_PIXEL9_CANDIDATE_REVOCATION_VERSION=1' "$prior_revocation" ||
   die 'prior revocation version differs'
 grep -Fqx "WRAPPER_SHA256=$inner_sha" "$prior_revocation" ||
   die 'AVB inner image is not the exact revoked predecessor'
@@ -85,7 +85,7 @@ done
 install -m 0644 "$prior_revocation" "$output_dir/prior-revocation.env"
 
 {
-  printf 'LUMA_PIXEL9_DIRECT_KERNEL_AVB_CANDIDATE_VERSION=1\n'
+  printf 'SUNO_PIXEL9_DIRECT_KERNEL_AVB_CANDIDATE_VERSION=1\n'
   printf 'CANDIDATE_KIND=direct-kernel-embedded-dtb-initramfs-stock-size-avb\n'
   printf 'COMPARISON=byte-for-byte\n'
   printf 'AVB_PARTITION_IDENTICAL=true\n'

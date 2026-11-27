@@ -1,3 +1,0 @@
-[D-BUS Service]
-Name=org.projectluma.Tide
-Exec=@bindir@/org.projectluma.Tide --gapplication-service

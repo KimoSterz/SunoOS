@@ -61,7 +61,7 @@ class GraphBucket:
 
     def releases(self,repo):
         if self.hardware_target:
-            return Path(repo)/'luma'/'targets'/self.architecture/self.slug/'releases'
+            return Path(repo)/'Suno'/'targets'/self.architecture/self.slug/'releases'
         return sibling('desktop_paths').releases_path(repo,self.architecture)
 
     def release_manifest(self,repo,version):
@@ -71,7 +71,7 @@ class GraphBucket:
 
     def ref(self,channel):
         self.channel(channel)
-        return '/'.join(('luma',self.major,*self.parts,channel))
+        return '/'.join(('Suno',self.major,*self.parts,channel))
 
     @staticmethod
     def channel(channel):
@@ -97,7 +97,7 @@ class GraphBucket:
 
     def comment(self,graph,key_id):
         self.validate_graph(graph,graph.get('channel'))
-        value=('luma-update-graph channel='+graph['channel']+' arch='+self.architecture+
+        value=('Suno-update-graph channel='+graph['channel']+' arch='+self.architecture+
                ' generated_at='+graph['generated_at']+' key='+key_id)
         if self.hardware_target:value+=' hardware_target='+self.hardware_target
         return value
@@ -105,7 +105,7 @@ class GraphBucket:
     def unit_name(self,channel):
         self.channel(channel)
         suffix='' if self.architecture=='x86_64' and not self.hardware_target else '-'.join(self.parts)+'-'
-        return 'luma-approved-os-graph-refresh-'+suffix+channel
+        return 'Suno-approved-os-graph-refresh-'+suffix+channel
 
 
 def main():

@@ -1,0 +1,22 @@
+[Application]
+name=io.Suno.Monitor
+runtime=org.projectSuno.Platform/x86_64/44
+sdk=org.projectSuno.Sdk/x86_64/44
+command=io.Suno.Monitor
+
+[Context]
+shared=ipc;
+sockets=fallback-x11;wayland;
+devices=dri;
+
+[Session Bus Policy]
+org.projectSuno.ShellState1=talk
+org.projectSuno.MonitorHost1=talk
+
+[Environment]
+SUNO_MONITOR_STYLE_PATH=/app/share/Suno-monitor/monitor.css
+
+[X-Suno]
+app-data-schema=monitor-v1
+min-host-monitor=17
+min-host-installer=57

@@ -1,5 +1,5 @@
 {
-  "schema": "org.projectluma.device-audio-source/v1",
+  "schema": "org.projectSuno.device-audio-source/v1",
   "device": "microsoft/sp12in",
   "repository": "https://github.com/linux-msm/audioreach-topology",
   "commit": "d6bb205aca5f4b8fa6b2f44cf8b5f6a081cbf037",

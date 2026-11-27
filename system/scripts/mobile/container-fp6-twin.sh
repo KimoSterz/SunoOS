@@ -4,8 +4,8 @@
 set -euo pipefail
 
 repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
-runtime_image=localhost/luma-fp6-twin-runtime:fedora44
-runtime_name=luma-fp6-twin-runtime
+runtime_image=localhost/Suno-fp6-twin-runtime:fedora44
+runtime_name=Suno-fp6-twin-runtime
 qmp_socket="$repo_root/build/mobile/fp6-twin/qmp.sock"
 
 command -v podman >/dev/null 2>&1 || {

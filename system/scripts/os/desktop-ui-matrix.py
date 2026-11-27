@@ -10,17 +10,17 @@ SHARED_FILES = {
     'scripts/os/admit-desktop-toolkit.py', 'config/os/desktop-toolkit-cohort.json',
     'scripts/os/lib/package_releases.py', 'scripts/packages/run-in-rpm-builder.sh',
     'scripts/packages/spec-release.sh', 'scripts/packages/patch-series.sh',
-    'scripts/packages/fetch-source-rpm.sh', 'packaging/rpm/luma-developer-platform.spec',
+    'scripts/packages/fetch-source-rpm.sh', 'packaging/rpm/Suno-developer-platform.spec',
     'packaging/rpm/google-figtree-fonts.spec', 'LICENSE.md',
 }
 SHARED_PREFIXES = (
-    'patches/gtk4/', 'patches/libadwaita/', 'src/luma-platform/',
+    'patches/gtk4/', 'patches/libadwaita/', 'src/Suno-platform/',
     'scripts/fonts/', 'packaging/fontconfig/', 'assets/icon-theme/Prairie/',
     'tests/toolkit-native/',
 )
 PROVIDER_RECIPES = {
     f'scripts/packages/build-{name}.sh'
-    for name in ('gtk4', 'libadwaita', 'luma-developer-platform', 'figtree-fonts')
+    for name in ('gtk4', 'libadwaita', 'Suno-developer-platform', 'figtree-fonts')
 }
 
 def select(paths):

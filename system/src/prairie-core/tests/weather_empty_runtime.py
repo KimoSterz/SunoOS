@@ -15,11 +15,11 @@ import gi
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
 from gi.repository import Adw, Gio, GLib
-from luma_appkit import install_appkit
+from Suno_appkit import install_appkit
 from prairie_apps import weather
 
 with tempfile.TemporaryDirectory() as root:
-    app = Adw.Application(application_id='org.projectluma.WeatherEmptyTest',
+    app = Adw.Application(application_id='org.projectSuno.WeatherEmptyTest',
                           flags=Gio.ApplicationFlags.NON_UNIQUE)
     assert app.register(None)
     install_appkit()

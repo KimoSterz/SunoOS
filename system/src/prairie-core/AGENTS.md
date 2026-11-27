@@ -1,8 +1,8 @@
-# Luma core application agent contract
+# Suno core application agent contract
 
 - Every visible core app is one responsive source tree and one binary shared by
   desktop and handheld. Do not create device-specific implementations.
-- Use `luma_appkit` components and semantic tokens. App CSS may map app roles;
+- Use `Suno_appkit` components and semantic tokens. App CSS may map app roles;
   it may not redefine the global design system or patch GTK globally.
 - Implement real persistent behavior. A launcher, mock, dead control, delayed
   boot script, or extension overlay is not a completed application feature.

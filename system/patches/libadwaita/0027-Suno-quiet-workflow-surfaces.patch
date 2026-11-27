@@ -1,0 +1,46 @@
+From: Project Suno <devnull@projectSuno.local>
+Subject: [PATCH] stylesheet: add explicit shared quiet workflow variant
+
+diff --git a/src/stylesheet/_common.scss b/src/stylesheet/_common.scss
+--- a/src/stylesheet/_common.scss
++++ b/src/stylesheet/_common.scss
+@@ -562,3 +562,39 @@
+     border-spacing: 10px;
+   }
+ }
++
++// Explicit quiet surface variant: shared by native transient workflows.
++// Existing application islands keep their established elevation and rhythm.
++:root {
++  --Suno-quiet-gap: 8px;
++  --Suno-quiet-radius: 10px;
++  --Suno-quiet-control-height: 36px;
++  --Suno-quiet-touch-height: 44px;
++  --Suno-quiet-shadow: 0 1px 2px RGB(25 27 31 / 12%);
++}
++
++.Suno-island.Suno-island-quiet {
++  border-radius: var(--Suno-quiet-radius);
++  border: 1px solid unquote("@Suno_line");
++  background-color: unquote("@Suno_content");
++  box-shadow: var(--Suno-quiet-shadow);
++
++  @media (prefers-contrast: more) {
++    border-color: currentColor;
++    box-shadow: none;
++  }
++}
++
++.Suno-controls-quiet button,
++.Suno-controls-quiet entry,
++.Suno-controls-quiet dropdown > button {
++  min-height: calc(var(--Suno-quiet-control-height) - 12px);
++  padding: 5px 10px;
++  border-width: 1px;
++}
++
++.Suno-touch .Suno-controls-quiet button,
++.Suno-touch .Suno-controls-quiet entry,
++.Suno-touch .Suno-controls-quiet dropdown > button {
++  min-height: calc(var(--Suno-quiet-touch-height) - 12px);
++}

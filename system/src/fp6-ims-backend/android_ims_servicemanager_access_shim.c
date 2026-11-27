@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /*
- * Narrow SELinux/Binder registry bridge for Luma's disposable stock-IMS
+ * Narrow SELinux/Binder registry bridge for Suno's disposable stock-IMS
  * namespace.  Fedora has no Android service_manager policy, so the isolated
  * manager permits only its own registry and Fairphone's IMS factory service.
  */
@@ -52,11 +52,11 @@ int selinux_status_open(int fallback) {
 }
 int selinux_status_updated(void) { return 0; }
 int getcon(char **context) {
-  return allocate_context(context, "u:r:luma_ims_servicemanager:s0");
+  return allocate_context(context, "u:r:Suno_ims_servicemanager:s0");
 }
 int getpidcon(pid_t pid, char **context) {
   (void)pid;
-  return allocate_context(context, "u:r:luma_ims_client:s0");
+  return allocate_context(context, "u:r:Suno_ims_client:s0");
 }
 void freecon(char *context) { free(context); }
 struct selabel_handle *selinux_android_service_context_handle(void) {
@@ -66,25 +66,25 @@ struct selabel_handle *selinux_android_hw_service_context_handle(void) {
   return (struct selabel_handle *)&hw_service_context_handle;
 }
 
-void luma_set_requesting_sid(void *binder, int requesting)
+void Suno_set_requesting_sid(void *binder, int requesting)
     __asm__("_ZN7android7BBinder16setRequestingSidEb");
-void luma_set_requesting_sid(void *binder, int requesting) {
+void Suno_set_requesting_sid(void *binder, int requesting) {
   (void)binder;
   (void)requesting;
 }
 
-void luma_hidl_set_requesting_sid(const void *binder, int requesting)
+void Suno_hidl_set_requesting_sid(const void *binder, int requesting)
     __asm__("_ZN7android8hardware16setRequestingSidERKNS_2spINS_4hidl4base4V1_05IBaseEEEb");
-void luma_hidl_set_requesting_sid(const void *binder, int requesting) {
+void Suno_hidl_set_requesting_sid(const void *binder, int requesting) {
   (void)binder;
   (void)requesting;
 }
 
-const char *luma_get_calling_sid(const void *thread_state)
+const char *Suno_get_calling_sid(const void *thread_state)
     __asm__("_ZNK7android14IPCThreadState13getCallingSidEv");
-const char *luma_get_calling_sid(const void *thread_state) {
+const char *Suno_get_calling_sid(const void *thread_state) {
   (void)thread_state;
-  return "u:r:luma_ims_client:s0";
+  return "u:r:Suno_ims_client:s0";
 }
 
 int ioctl(int descriptor, unsigned long request, ...) {
@@ -126,7 +126,7 @@ static int allowed_service(const char *name) {
 
 int selabel_lookup(struct selabel_handle *handle, char **context,
                    const char *key, int type) {
-  static const char registry_context[] = "u:object_r:luma_ims_service:s0";
+  static const char registry_context[] = "u:object_r:Suno_ims_service:s0";
   char *copy;
   (void)handle;
   (void)type;

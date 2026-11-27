@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/org/projectSuno/platform">
+    <!-- The AppKit's own vocabulary. Applications are written against these
+         names, so a GTK 4 application has to be able to resolve them without
+         depending on a desktop theme that only ships gtk-3.0 files. -->
+    <file alias="Suno-appkit-base.css">../appkit/Suno-appkit-base.css</file>
+    <file alias="Suno-appkit-tokens.css">../appkit/Suno-appkit-tokens.css</file>
+    <file alias="Suno-appkit-dark-tokens.css">../appkit/Suno-appkit-dark-tokens.css</file>
+    <file alias="Suno-appkit-frost-tokens.css">../appkit/Suno-appkit-frost-tokens.css</file>
+    <file alias="Suno-appkit-glass-tokens.css">../appkit/Suno-appkit-glass-tokens.css</file>
+    <file alias="Suno-appkit-high-contrast-tokens.css">../appkit/Suno-appkit-high-contrast-tokens.css</file>
+    <file>Suno-tokens.css</file>
+    <file>Suno-tokens-dark.css</file>
+    <file>Suno-ui.css</file>
+    <file>Suno-reorder-hint.css</file>
+    <file>Suno-save-sheet.css</file>
+    <file alias="Suno-empty-state-tokens.css">../appkit/Suno-empty-state-tokens.css</file>
+    <!-- SunoUI's own window and toolkit look (ADR-052), above libadwaita. -->
+    <file alias="SunoUI-palette.css">../appkit/SunoUI-palette.css</file>
+    <file alias="SunoUI-toolkit.css">../appkit/SunoUI-toolkit.css</file>
+    <file alias="Suno-appkit-creative.css">../appkit/Suno-appkit-creative.css</file>
+    <file alias="Suno-appkit-media.css">../appkit/Suno-appkit-media.css</file>
+    <file alias="Suno-appkit-bar.css">../appkit/Suno-appkit-bar.css</file>
+    <file alias="Suno-appkit-rows.css">../appkit/Suno-appkit-rows.css</file>
+    <file>Suno-creatives.png</file>
+  </gresource>
+</gresources>

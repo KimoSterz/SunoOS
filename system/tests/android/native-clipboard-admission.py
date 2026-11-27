@@ -106,7 +106,7 @@ def main():
         work=Path(directory);copy=work/'hwcomposer/WaydroidClipboard.cpp';copy.parent.mkdir()
         copy.write_text(original)
         shutil.copyfile(args.hardware_source/'hwcomposer/Android.bp',work/'hwcomposer/Android.bp')
-        subprocess.run(['patch','--batch','--fuzz=0','-p1','-d',str(work),'-i',str(repo/'patches/android-hardware-waydroid/0015-luma-native-clipboard-caller-admission.patch')],check=True)
+        subprocess.run(['patch','--batch','--fuzz=0','-p1','-d',str(work),'-i',str(repo/'patches/android-hardware-waydroid/0015-Suno-native-clipboard-caller-admission.patch')],check=True)
         for label,source,expected in [('patched',copy.read_text(),0),('unpatched',original,42)]:
             unit=work/(label+'.cpp');binary=work/label
             unit.write_text(PREFIX+methods(source)+TEST)

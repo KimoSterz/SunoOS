@@ -1,6 +1,6 @@
-diff --git a/shell/cc-luma-live-windows.c b/shell/cc-luma-live-windows.c
---- a/shell/cc-luma-live-windows.c
-+++ b/shell/cc-luma-live-windows.c
+diff --git a/shell/cc-Suno-live-windows.c b/shell/cc-Suno-live-windows.c
+--- a/shell/cc-Suno-live-windows.c
++++ b/shell/cc-Suno-live-windows.c
 @@ -43,7 +43,8 @@
        g_autoptr (GSettingsSchemaSource) source =
          g_settings_schema_source_new_from_directory (dirs->pdata[i], g_settings_schema_source_get_default (), FALSE, NULL);
@@ -26,7 +26,7 @@ diff --git a/shell/cc-luma-live-windows.c b/shell/cc-luma-live-windows.c
  }
  
 +typedef struct {
-+  CcLumaFixture *model;
++  CcSunoFixture *model;
 +  GSettings *shell;
 +  GSettings *tiling;
 +  gboolean enabled;
@@ -54,7 +54,7 @@ diff --git a/shell/cc-luma-live-windows.c b/shell/cc-luma-live-windows.c
 +        g_warning ("Settings live: GNOME Shell did not switch tiling: %s", error ? error->message : "refused");
 +      g_auto (GStrv) enabled = g_settings_get_strv (request->shell, "enabled-extensions");
 +      g_auto (GStrv) disabled = g_settings_get_strv (request->shell, "disabled-extensions");
-+      cc_luma_fixture_publish_boolean (request->model, "tile",
++      cc_Suno_fixture_publish_boolean (request->model, "tile",
 +        g_strv_contains ((const char * const *) enabled, TILING_UUID) &&
 +        !g_strv_contains ((const char * const *) disabled, TILING_UUID) &&
 +        g_settings_get_boolean (request->tiling, "enable-autotiling"));

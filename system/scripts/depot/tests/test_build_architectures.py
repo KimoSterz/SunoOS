@@ -77,7 +77,7 @@ class BuildArchitectures(unittest.TestCase):
     def runtime_calls(self, target, tools=None):
         with tempfile.TemporaryDirectory() as tmp:
             tmp = Path(tmp); bin = tmp/'bin'; bin.mkdir(); depot = tmp/'depot'; depot.mkdir()
-            (depot/'site').mkdir(); (depot/'site/luma.flatpakrepo').write_text('[Flatpak Repo]\nUrl=https://example.invalid/repo\n')
+            (depot/'site').mkdir(); (depot/'site/Suno.flatpakrepo').write_text('[Flatpak Repo]\nUrl=https://example.invalid/repo\n')
             log = tmp/'calls'
             mock = bin/'flatpak'; mock.write_text('#!/usr/bin/python3\nimport json,os,sys\nwith open(os.environ["MOCK_LOG"],"a") as f:f.write(json.dumps(sys.argv[1:])+"\\n")\n')
             mock.chmod(0o755)
@@ -92,7 +92,7 @@ class BuildArchitectures(unittest.TestCase):
     def test_sdk_uses_target_but_linter_uses_native_tools(self):
         calls = [c for c in self.runtime_calls('aarch64', 'x86_64') if c[0] == 'install']
         self.assertEqual(len(calls), 2)
-        self.assertIn('--arch=aarch64', calls[0]); self.assertIn('org.projectluma.Sdk//44', calls[0])
+        self.assertIn('--arch=aarch64', calls[0]); self.assertIn('org.projectSuno.Sdk//44', calls[0])
         self.assertIn('--arch=x86_64', calls[1]); self.assertIn('org.flatpak.Builder', calls[1])
 
     def test_native_default_runtime_and_linter_still_match(self):

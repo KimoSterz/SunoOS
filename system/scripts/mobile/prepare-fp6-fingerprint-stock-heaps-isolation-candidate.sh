@@ -26,7 +26,7 @@ case $mode in
   *) printf 'error: mode must be kernel-only or dt-only\n' >&2; exit 1 ;;
 esac
 
-candidate=$output_dir/boot-fp6-luma-fingerprint-stock-heaps-$mode-v9.img
+candidate=$output_dir/boot-fp6-Suno-fingerprint-stock-heaps-$mode-v9.img
 die() { printf 'error: %s\n' "$*" >&2; exit 1; }
 hash() { sha256sum "$1" | awk '{print $1}'; }
 
@@ -143,7 +143,7 @@ fi
 
 candidate_sha=$(hash "$candidate")
 {
-  printf 'LUMA_FP6_FINGERPRINT_BOOT_CANDIDATE_VERSION=9\n'
+  printf 'SUNO_FP6_FINGERPRINT_BOOT_CANDIDATE_VERSION=9\n'
   printf 'SCOPE=fp6-fingerprint-stock-heaps-isolation-%s\n' "$mode"
   printf 'BASE_BOOT_SHA256=%s\n' "$FP6_FINGERPRINT_SHMBRIDGE_BOOT_SHA256"
   printf 'KERNEL_SHA256=%s\n' "$selected_kernel_sha"

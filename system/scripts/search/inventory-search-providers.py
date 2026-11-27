@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""Inventory the standard providers consumed by Luma Search."""
+"""Inventory the standard providers consumed by Suno Search."""
 
 from __future__ import annotations
 
@@ -11,10 +11,10 @@ import sys
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(REPO_ROOT / "src/luma-search"))
+sys.path.insert(0, str(REPO_ROOT / "src/Suno-search"))
 
-from luma_search.contract import KIND_ORDER  # noqa: E402
-from luma_search.providers import discover_providers  # noqa: E402
+from Suno_search.contract import KIND_ORDER  # noqa: E402
+from Suno_search.providers import discover_providers  # noqa: E402
 
 
 def main() -> int:

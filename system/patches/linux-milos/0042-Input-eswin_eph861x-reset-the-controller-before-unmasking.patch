@@ -1,4 +1,4 @@
-From: Project Luma <luma@local>
+From: Project Suno <Suno@local>
 Subject: [PATCH] Input: eswin_eph861x: reset the controller before unmasking its interrupt
 
 With eswin,suspend-mode = <2> (EPH_SUSPEND_REGULATOR) on SPI, eph_stop()

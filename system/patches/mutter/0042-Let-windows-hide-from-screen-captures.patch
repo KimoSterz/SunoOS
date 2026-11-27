@@ -1,5 +1,5 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Project Luma <engineering@projectluma.org>
+From: Project Suno <engineering@projectSuno.org>
 Date: Sat, 21 Nov 2026 20:00:00 -0600
 Subject: [PATCH] Let windows hide from screen captures
 
@@ -20,10 +20,10 @@ alone, which window streams and window screenshots do, is unaffected.
 meta_window_set_hidden_from_capture() and MetaWindow:hidden-from-capture
 set it on the window actor. A window transient for a hidden window (a
 dialog, a menu, a popup) is hidden with it. Wayland clients ask through
-luma_window_capture_v1: get_window_capture(wl_surface), then a
+Suno_window_capture_v1: get_window_capture(wl_surface), then a
 double-buffered set_visibility(visible|hidden) that reaches the window on
 the xdg_toplevel's next commit; destroying the object shows the window
-again. X11 clients set the _LUMA_WINDOW_HIDDEN_FROM_CAPTURE CARDINAL
+again. X11 clients set the _SUNO_WINDOW_HIDDEN_FROM_CAPTURE CARDINAL
 property to 1. Hiding only removes content from captures, so no
 permission is involved.
 
@@ -351,7 +351,7 @@ index d1bf807..beb7d89 100644
  
    GList *windows;
  
-+  /* Window actors hidden from capture (luma_window_capture_v1). */
++  /* Window actors hidden from capture (Suno_window_capture_v1). */
 +  int n_capture_hidden_actors;
 +
    CoglContext *context;
@@ -515,8 +515,8 @@ index fac0668..15ae8df 100644
      int base_height;
    } frame_aspect;
  
-+  /* Luma: hidden from captures of the screen. hidden_from_capture is what
-+   * the client (luma_window_capture_v1, _LUMA_WINDOW_HIDDEN_FROM_CAPTURE) or
++  /* Suno: hidden from captures of the screen. hidden_from_capture is what
++   * the client (Suno_window_capture_v1, _SUNO_WINDOW_HIDDEN_FROM_CAPTURE) or
 +   * the shell asked; capture_hidden adds what the window inherits from the
 +   * window it is transient for. */
 +  gboolean hidden_from_capture;
@@ -665,10 +665,10 @@ index 8f207d9..cbfd9c5 100644
    'wayland/meta-window-wayland.c',
 @@ -1086,6 +1088,7 @@ wayland_protocols = [
    ['linux-drm-syncobj', 'staging', 1, ],
-   # Luma: the XML is a package source (src/luma-platform/protocols in the
-   # Luma tree), installed into this private protocol directory in %prep.
-+  ['luma-window-capture-v1', 'private', ],
-   ['luma-window-shape-v1', 'private', ],
+   # Suno: the XML is a package source (src/Suno-platform/protocols in the
+   # Suno tree), installed into this private protocol directory in %prep.
++  ['Suno-window-capture-v1', 'private', ],
+   ['Suno-window-shape-v1', 'private', ],
    ['pointer-constraints', 'unstable', 1, ],
    ['pointer-gestures', 'unstable', 1, ],
 diff --git a/src/meta/compositor.h b/src/meta/compositor.h
@@ -711,8 +711,8 @@ index d4d1f96..daf4152 100644
 @@ -72,3 +72,4 @@
  #define META_WP_POINTER_WARP_VERSION 1
  #define META_EXT_BACKGROUND_EFFECT_V1_VERSION 1
- #define META_LUMA_WINDOW_SHAPE_V1_VERSION 1
-+#define META_LUMA_WINDOW_CAPTURE_V1_VERSION 1
+ #define META_SUNO_WINDOW_SHAPE_V1_VERSION 1
++#define META_SUNO_WINDOW_CAPTURE_V1_VERSION 1
 diff --git a/src/wayland/meta-wayland-window-capture.c b/src/wayland/meta-wayland-window-capture.c
 new file mode 100644
 index 0000000..e1d1d06
@@ -720,7 +720,7 @@ index 0000000..e1d1d06
 +++ b/src/wayland/meta-wayland-window-capture.c
 @@ -0,0 +1,208 @@
 +/*
-+ * Copyright (C) 2026 Project Luma
++ * Copyright (C) 2026 Project Suno
 + *
 + * This program is free software; you can redistribute it and/or
 + * modify it under the terms of the GNU General Public License as
@@ -737,7 +737,7 @@ index 0000000..e1d1d06
 + */
 +
 +
-+/* luma_window_capture_v1: a client keeps its toplevel out of captures of
++/* Suno_window_capture_v1: a client keeps its toplevel out of captures of
 + * the screen. The visibility is pending state of the wl_surface; the
 + * xdg_toplevel role hands it to its MetaWindow on commit. */
 +
@@ -750,7 +750,7 @@ index 0000000..e1d1d06
 +#include "wayland/meta-wayland-surface-private.h"
 +#include "wayland/meta-wayland-versions.h"
 +
-+#include "luma-window-capture-v1-server-protocol.h"
++#include "Suno-window-capture-v1-server-protocol.h"
 +
 +static GQuark quark_window_capture = 0;
 +
@@ -806,22 +806,22 @@ index 0000000..e1d1d06
 +
 +  switch (visibility)
 +    {
-+    case LUMA_WINDOW_CAPTURE_V1_VISIBILITY_VISIBLE:
-+    case LUMA_WINDOW_CAPTURE_V1_VISIBILITY_HIDDEN:
++    case SUNO_WINDOW_CAPTURE_V1_VISIBILITY_VISIBLE:
++    case SUNO_WINDOW_CAPTURE_V1_VISIBILITY_HIDDEN:
 +      break;
 +    default:
 +      wl_resource_post_error (resource,
-+                              LUMA_WINDOW_CAPTURE_V1_ERROR_INVALID_VISIBILITY,
++                              SUNO_WINDOW_CAPTURE_V1_ERROR_INVALID_VISIBILITY,
 +                              "invalid visibility %u", visibility);
 +      return;
 +    }
 +
 +  capture->has_pending = TRUE;
 +  capture->pending_hidden =
-+    visibility == LUMA_WINDOW_CAPTURE_V1_VISIBILITY_HIDDEN;
++    visibility == SUNO_WINDOW_CAPTURE_V1_VISIBILITY_HIDDEN;
 +}
 +
-+static const struct luma_window_capture_v1_interface window_capture_interface = {
++static const struct Suno_window_capture_v1_interface window_capture_interface = {
 +  window_capture_destroy,
 +  window_capture_set_visibility,
 +};
@@ -877,15 +877,15 @@ index 0000000..e1d1d06
 +  if (g_object_get_qdata (G_OBJECT (surface), quark_window_capture))
 +    {
 +      wl_resource_post_error (resource,
-+                              LUMA_WINDOW_CAPTURE_MANAGER_V1_ERROR_ALREADY_CONSTRUCTED,
-+                              "the wl_surface already has a luma_window_capture_v1");
++                              SUNO_WINDOW_CAPTURE_MANAGER_V1_ERROR_ALREADY_CONSTRUCTED,
++                              "the wl_surface already has a Suno_window_capture_v1");
 +      return;
 +    }
 +
 +  capture = g_new0 (MetaWaylandWindowCapture, 1);
 +  capture->surface = surface;
 +  capture->resource = wl_resource_create (client,
-+                                          &luma_window_capture_v1_interface,
++                                          &Suno_window_capture_v1_interface,
 +                                          wl_resource_get_version (resource),
 +                                          id);
 +  wl_resource_set_implementation (capture->resource,
@@ -896,7 +896,7 @@ index 0000000..e1d1d06
 +                           capture, window_capture_surface_destroyed);
 +}
 +
-+static const struct luma_window_capture_manager_v1_interface window_capture_manager_interface = {
++static const struct Suno_window_capture_manager_v1_interface window_capture_manager_interface = {
 +  window_capture_manager_destroy,
 +  window_capture_manager_get_window_capture,
 +};
@@ -909,7 +909,7 @@ index 0000000..e1d1d06
 +{
 +  struct wl_resource *resource;
 +
-+  resource = wl_resource_create (client, &luma_window_capture_manager_v1_interface,
++  resource = wl_resource_create (client, &Suno_window_capture_manager_v1_interface,
 +                                 version, id);
 +  wl_resource_set_implementation (resource, &window_capture_manager_interface,
 +                                  data, NULL);
@@ -919,13 +919,13 @@ index 0000000..e1d1d06
 +meta_wayland_init_window_capture (MetaWaylandCompositor *compositor)
 +{
 +  quark_window_capture =
-+    g_quark_from_static_string ("-meta-wayland-luma-window-capture");
++    g_quark_from_static_string ("-meta-wayland-Suno-window-capture");
 +
 +  if (wl_global_create (compositor->wayland_display,
-+                        &luma_window_capture_manager_v1_interface,
-+                        META_LUMA_WINDOW_CAPTURE_V1_VERSION,
++                        &Suno_window_capture_manager_v1_interface,
++                        META_SUNO_WINDOW_CAPTURE_V1_VERSION,
 +                        compositor, bind_window_capture_manager) == NULL)
-+    g_error ("Failed to register a global luma_window_capture_manager_v1 object");
++    g_error ("Failed to register a global Suno_window_capture_manager_v1 object");
 +}
 diff --git a/src/wayland/meta-wayland-window-capture.h b/src/wayland/meta-wayland-window-capture.h
 new file mode 100644
@@ -934,7 +934,7 @@ index 0000000..aaca624
 +++ b/src/wayland/meta-wayland-window-capture.h
 @@ -0,0 +1,27 @@
 +/*
-+ * Copyright (C) 2026 Project Luma
++ * Copyright (C) 2026 Project Suno
 + *
 + * This program is free software; you can redistribute it and/or
 + * modify it under the terms of the GNU General Public License as
@@ -1008,7 +1008,7 @@ index 50b0e37..615de67 100644
  item(_NET_WM_FULLSCREEN_MONITORS)
  item(_NET_WM_STATE_FOCUSED)
  item(_NET_WM_BYPASS_COMPOSITOR)
-+item(_LUMA_WINDOW_HIDDEN_FROM_CAPTURE)
++item(_SUNO_WINDOW_HIDDEN_FROM_CAPTURE)
  item(_NET_WM_OPAQUE_REGION)
  item(_NET_WM_FRAME_DRAWN)
  item(_NET_WM_FRAME_TIMINGS)
@@ -1020,8 +1020,8 @@ index eec3fd5..34632fe 100644
    priv->bypass_compositor = requested_value;
  }
  
-+/* _LUMA_WINDOW_HIDDEN_FROM_CAPTURE (CARDINAL): 1 hides the window from
-+ * captures of the screen, like luma_window_capture_v1 for Wayland clients;
++/* _SUNO_WINDOW_HIDDEN_FROM_CAPTURE (CARDINAL): 1 hides the window from
++ * captures of the screen, like Suno_window_capture_v1 for Wayland clients;
 + * 0 or no property shows it. */
 +static void
 +reload_hidden_from_capture (MetaWindow    *window,
@@ -1043,7 +1043,7 @@ index eec3fd5..34632fe 100644
      { x11_display->atom__NET_WM_STRUT,         META_PROP_VALUE_INVALID, reload_struts, NONE },
      { x11_display->atom__NET_WM_STRUT_PARTIAL, META_PROP_VALUE_INVALID, reload_struts, NONE },
      { x11_display->atom__NET_WM_BYPASS_COMPOSITOR, META_PROP_VALUE_CARDINAL,  reload_bypass_compositor, LOAD_INIT | INCLUDE_OR },
-+    { x11_display->atom__LUMA_WINDOW_HIDDEN_FROM_CAPTURE, META_PROP_VALUE_CARDINAL, reload_hidden_from_capture, LOAD_INIT },
++    { x11_display->atom__SUNO_WINDOW_HIDDEN_FROM_CAPTURE, META_PROP_VALUE_CARDINAL, reload_hidden_from_capture, LOAD_INIT },
      { x11_display->atom__NET_WM_WINDOW_OPACITY, META_PROP_VALUE_CARDINAL, reload_window_opacity, LOAD_INIT | INCLUDE_OR },
      { x11_display->atom__NET_WM_WINDOW_TAG,    META_PROP_VALUE_STRING, reload_toplevel_tag, LOAD_INIT },
      { x11_display->atom__NET_WM_FULLSCREEN_MONITORS, META_PROP_VALUE_CARDINAL_LIST, reload_fullscreen_monitors, LOAD_INIT | INIT_ONLY },

@@ -4,8 +4,8 @@ from dataclasses import replace
 import threading
 from unittest.mock import patch
 from test_host_mail_owner import MailOwnerTests
-from charlie_luma.engine import ImapSmtpTransport
-from charlie_luma.oauth import GoogleOAuthUnavailable, GOOGLE_UNAVAILABLE
+from charlie_Suno.engine import ImapSmtpTransport
+from charlie_Suno.oauth import GoogleOAuthUnavailable, GOOGLE_UNAVAILABLE
 
 
 import unittest
@@ -23,7 +23,7 @@ class GoogleReleaseTests(unittest.TestCase):
 
     def test_host_google_enrollment_cannot_touch_retained_profile(self):
         before = (self.owner.store.accounts(), self.owner.store.server_config(self.account.id), dict(self.owner.secrets.values))
-        with patch('charlie_luma.oauth.HTTPServer') as socket, patch('charlie_luma.oauth._post_form') as network:
+        with patch('charlie_Suno.oauth.HTTPServer') as socket, patch('charlie_Suno.oauth._post_form') as network:
             with self.assertRaises(GoogleOAuthUnavailable):
                 self.owner.perform('GoogleSignIn', {}, threading.Event())
             socket.assert_not_called(); network.assert_not_called()
@@ -31,7 +31,7 @@ class GoogleReleaseTests(unittest.TestCase):
 
     def test_native_sync_is_paused_before_imap_connection_and_keeps_token(self):
         self.owner.transport = ImapSmtpTransport(self.owner.secrets.lookup, self.owner._token)
-        with patch('charlie_luma.engine.imaplib.IMAP4_SSL') as imap:
+        with patch('charlie_Suno.engine.imaplib.IMAP4_SSL') as imap:
             with self.assertRaisesRegex(OSError, 'Google sign-in is unavailable'):
                 self.owner.perform('Sync', {'account_id': self.account.id}, self.live)
             imap.assert_not_called()

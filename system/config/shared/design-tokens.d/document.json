@@ -1,6 +1,6 @@
 {
   "_doc": "Document editor visual layout from simulator v71 #n-doc and .peer; transient presentation does not enter saved content.",
-  "lumaui": {
+  "SunoUI": {
     "document_text": {
       "paragraph_after": 12,
       "list_gap": 3,

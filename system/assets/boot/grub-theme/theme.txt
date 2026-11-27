@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
-title-text: "Luma"
+title-text: "Suno"
 title-font: "Prairie Regular 22"
 title-color: "#f2f3f4"
 desktop-color: "#21252b"

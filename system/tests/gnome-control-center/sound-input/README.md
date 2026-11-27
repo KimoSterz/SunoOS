@@ -1,4 +1,4 @@
-# Sound input stays in Luma Settings
+# Sound input stays in Suno Settings
 
 Run in a disposable Settings build environment, as an ordinary user:
 
@@ -6,13 +6,13 @@ Run in a disposable Settings build environment, as an ordinary user:
 sh tests/gnome-control-center/sound-input/run.sh /path/to/patched/settings/source /path/to/settings/build
 ```
 
-The matching Meson build must already contain `test-luma-view`,
-`test-luma-live-desk` and Gvc. The runner reuses those compiled view objects
+The matching Meson build must already contain `test-Suno-view`,
+`test-Suno-live-desk` and Gvc. The runner reuses those compiled view objects
 and compiles the production sound adapter from the supplied source. It needs
 PulseAudio, `pactl`, Xvfb, D-Bus, GCC, Ninja and the build's development libraries.
 
 The test loads only a silent sink and two virtual microphones into a private
-PulseAudio server. It opens the mapped Luma picker, selects a different input,
+PulseAudio server. It opens the mapped Suno picker, selects a different input,
 checks that no older panel opens, changes input volume, and checks the actual
 server's default source, volume and unmute. It recreates the adapter and view
 to verify retained settings, then rejects an input absent from the picker

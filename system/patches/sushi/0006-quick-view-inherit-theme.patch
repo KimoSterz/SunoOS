@@ -19,8 +19,8 @@
 -        let scheme = styleManager.get_scheme('builder-dark');
 -        buffer.set_style_scheme(scheme);
 +        // Respect the shared theme; never force the bundled dark palette.
-+        // A Luma source scheme may be provided by the shared platform.
-+        buffer.set_style_scheme(styleManager.get_scheme('luma'));
++        // A Suno source scheme may be provided by the shared platform.
++        buffer.set_style_scheme(styleManager.get_scheme('Suno'));
  
          let langManager = GtkSource.LanguageManager.get_default();
          let language = langManager.guess_language(file.get_basename(),

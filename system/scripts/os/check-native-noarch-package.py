@@ -7,18 +7,18 @@ from pathlib import Path
 import subprocess
 
 REQUIRED = {
-    'luma-android-runtime': {
-        '/usr/bin/luma-android', '/usr/bin/luma-android-settings',
-        '/usr/libexec/luma-waydroid-container',
-        '/usr/libexec/luma-waydroid-package-session',
-        '/usr/share/mime/packages/luma-android.xml',
-        '/usr/share/selinux/packages/luma_android_runtime.cil',
+    'Suno-android-runtime': {
+        '/usr/bin/Suno-android', '/usr/bin/Suno-android-settings',
+        '/usr/libexec/Suno-waydroid-container',
+        '/usr/libexec/Suno-waydroid-package-session',
+        '/usr/share/mime/packages/Suno-android.xml',
+        '/usr/share/selinux/packages/Suno_android_runtime.cil',
     },
-    'luma-shell-state': {
-        '/usr/libexec/luma-shell-state-service', '/usr/bin/luma-shell-statectl',
-        '/usr/share/glib-2.0/schemas/org.project_luma.shell-state.gschema.xml',
-        '/usr/lib/systemd/user/graphical-session.target.wants/luma-shell-state.service',
-        '/usr/share/themes/Luma/gtk-4.0/gtk.css',
+    'Suno-shell-state': {
+        '/usr/libexec/Suno-shell-state-service', '/usr/bin/Suno-shell-statectl',
+        '/usr/share/glib-2.0/schemas/org.projectSuno.shell-state.gschema.xml',
+        '/usr/lib/systemd/user/graphical-session.target.wants/Suno-shell-state.service',
+        '/usr/share/themes/Suno/gtk-4.0/gtk.css',
     },
     'prairie-icon-theme': {
         '/usr/share/icons/Prairie/index.theme',
@@ -27,25 +27,25 @@ REQUIRED = {
         '/usr/share/glib-2.0/schemas/90-prairie.gschema.override',
         '/usr/share/doc/prairie-icon-theme/LUCIDE_REFERENCE_LICENSE.txt',
     },
-    'luma-application-installer': {
-        '/usr/bin/luma-installer', '/usr/bin/luma-depot',
-        '/usr/lib/systemd/user/luma-retired-apps.service',
-        '/usr/lib/systemd/system/luma-retired-system-apps.service',
-        '/usr/lib/systemd/user/default.target.wants/luma-retired-apps.service',
-        '/usr/lib/systemd/system/multi-user.target.wants/luma-retired-system-apps.service',
+    'Suno-application-installer': {
+        '/usr/bin/Suno-installer', '/usr/bin/Suno-depot',
+        '/usr/lib/systemd/user/Suno-retired-apps.service',
+        '/usr/lib/systemd/system/Suno-retired-system-apps.service',
+        '/usr/lib/systemd/user/default.target.wants/Suno-retired-apps.service',
+        '/usr/lib/systemd/system/multi-user.target.wants/Suno-retired-system-apps.service',
     },
-    'luma-ari': {'/usr/bin/ari', '/usr/lib/systemd/user/ari-daemon.service'},
-    'luma-openh264': {
-        '/usr/bin/luma-openh264', '/usr/share/luma-openh264/cisco-openh264.conf',
-        '/usr/lib/systemd/system/luma-openh264.service',
-        '/usr/lib/systemd/system/timers.target.wants/luma-openh264.timer',
-        '/usr/lib/systemd/system-preset/60-luma-openh264.preset',
-        '/usr/lib/tmpfiles.d/luma-openh264.conf',
-        '/usr/share/polkit-1/rules.d/50-luma-openh264.rules',
+    'Suno-ari': {'/usr/bin/ari', '/usr/lib/systemd/user/ari-daemon.service'},
+    'Suno-openh264': {
+        '/usr/bin/Suno-openh264', '/usr/share/Suno-openh264/cisco-openh264.conf',
+        '/usr/lib/systemd/system/Suno-openh264.service',
+        '/usr/lib/systemd/system/timers.target.wants/Suno-openh264.timer',
+        '/usr/lib/systemd/system-preset/60-Suno-openh264.preset',
+        '/usr/lib/tmpfiles.d/Suno-openh264.conf',
+        '/usr/share/polkit-1/rules.d/50-Suno-openh264.rules',
     },
-    'luma-desktop-launcher-policy': {
-        '/usr/share/luma/system-flatpak-replacements.txt',
-        '/usr/libexec/luma-flatpak-replacements',
+    'Suno-desktop-launcher-policy': {
+        '/usr/share/Suno/system-flatpak-replacements.txt',
+        '/usr/libexec/Suno-flatpak-replacements',
     },
 }
 
@@ -84,13 +84,13 @@ def check(root, spec):
     missing = REQUIRED[name] - files
     if missing:
         raise ValueError(f'Missing shipped files: {sorted(missing)}')
-    if name == 'luma-application-installer' and not any(
-            path.endswith('/site-packages/luma_installer/retired_apps.py') for path in files):
+    if name == 'Suno-application-installer' and not any(
+            path.endswith('/site-packages/Suno_installer/retired_apps.py') for path in files):
         raise ValueError('Installer does not ship its retirement implementation')
-    if name == 'luma-ari':
+    if name == 'Suno-ari':
         requirements = output('rpm', '-qp', '--nosignature', '--requires', str(rpm)).splitlines()
-        if 'luma-display-config' not in requirements or any(
-                row.split()[0] == 'luma-displays' for row in requirements):
+        if 'Suno-display-config' not in requirements or any(
+                row.split()[0] == 'Suno-displays' for row in requirements):
             raise ValueError('Ari must depend on the headless display backend')
     print(f'Checked {expected}: checksum, noarch header and required payload')
 

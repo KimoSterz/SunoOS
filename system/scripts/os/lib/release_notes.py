@@ -12,7 +12,7 @@
       Assemble the notes of a release. Included fragments are the changes/*.md
       files present at --to and not at --from (the previous published release's
       source). Every pinned package whose release differs between the two
-      luma-packages.manifest files ("NEVRA sha256 header-sha256" lines), or that
+      Suno-packages.manifest files ("NEVRA sha256 header-sha256" lines), or that
       was added or removed, must be named in the packages list of an included
       fragment, or be recorded in --exceptions as a pure rebuild with no
       user-visible change ("NAME VERSION-RELEASE REASON"). Otherwise nothing is
@@ -212,8 +212,8 @@ def cmd_build(args):
                 name, vr, reason = (line.split(None, 2) + [""])[:3]
                 exceptions[(name, vr)] = reason
     covered = {p for f in fragments for p in f["packages"]}
-    # A subpackage built from a named package's spec in the same build (luma-os-remote
-    # from luma-update) is covered by that package's fragment.
+    # A subpackage built from a named package's spec in the same build (Suno-os-remote
+    # from Suno-update) is covered by that package's fragment.
     # A package rebuilt from an imported SRPM (NetworkManager, gnome-shell) has no
     # packaging/rpm spec here: its other binary packages share the name prefix and the
     # exact epoch, version and release in the same build.
@@ -242,7 +242,7 @@ def cmd_build(args):
     for f in fragments:
         sections[f["type"]].append({"summary": f["summary"], "details": f["details"]})
     notes = {
-        "schema": "org.projectluma.os-release-notes/v2",
+        "schema": "org.projectSuno.os-release-notes/v2",
         "section_labels": TYPE_LABELS,
         "section_order": list(TYPES),
         "channel": args.channel,
@@ -290,7 +290,7 @@ def main(argv):
     b.add_argument("--build-id", required=True)
     b.add_argument("--version", required=True)
     b.add_argument("--nightly-date", required=True)
-    b.add_argument("--display-name", default="", help="the build's LUMA_DISPLAY_NAME; derived from the release identity when empty")
+    b.add_argument("--display-name", default="", help="the build's SUNO_DISPLAY_NAME; derived from the release identity when empty")
     b.add_argument("--summary", default="")
     b.add_argument("--out", default="")
     args = parser.parse_args(argv)

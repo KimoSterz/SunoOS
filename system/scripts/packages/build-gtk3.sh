@@ -15,11 +15,11 @@ for tool in cpio curl mktemp patch podman rpm2cpio sha256sum; do
 done
 
 if [ "$(uname -s)" != Linux ]; then
-  printf 'error: build the Luma GTK 3 RPM on a Linux builder\n' >&2
+  printf 'error: build the Suno GTK 3 RPM on a Linux builder\n' >&2
   exit 1
 fi
 
-architecture=${LUMA_TARGET_ARCHITECTURE:-$(uname -m)}
+architecture=${SUNO_TARGET_ARCHITECTURE:-$(uname -m)}
 case "$architecture" in
   x86_64)
     builder_container=$FEDORA_RPM_BUILD_CONTAINER
@@ -34,7 +34,7 @@ case "$architecture" in
     exit 1
     ;;
 esac
-export LUMA_RPM_BUILDER_ARCHITECTURE=$architecture
+export SUNO_RPM_BUILDER_ARCHITECTURE=$architecture
 
 cache_dir="$repo_root/build/cache/srpm"
 output_dir="$repo_root/build/packages/gtk3"
@@ -69,18 +69,18 @@ mkdir -p "$rpmbuild_dir/BUILD" "$rpmbuild_dir/BUILDROOT" \
 mv "$work_dir/gtk3.spec" "$rpmbuild_dir/SPECS/"
 find "$work_dir" -maxdepth 1 -type f -exec mv -t "$rpmbuild_dir/SOURCES" {} +
 install -m 0644 \
-  "$repo_root/patches/gtk3/0001-luma-generic-application-identity.patch" \
-  "$repo_root/patches/gtk3/0002-luma-native-application-surfaces.patch" \
-  "$repo_root/patches/gtk3/0003-luma-generic-command-row.patch" \
-  "$repo_root/patches/gtk3/0004-luma-title-slot-and-paned-islands.patch" \
-  "$repo_root/patches/gtk3/0005-luma-identity-title-and-window-gutter.patch" \
-  "$repo_root/patches/gtk3/0006-luma-frame-child-clipping.patch" \
+  "$repo_root/patches/gtk3/0001-Suno-generic-application-identity.patch" \
+  "$repo_root/patches/gtk3/0002-Suno-native-application-surfaces.patch" \
+  "$repo_root/patches/gtk3/0003-Suno-generic-command-row.patch" \
+  "$repo_root/patches/gtk3/0004-Suno-title-slot-and-paned-islands.patch" \
+  "$repo_root/patches/gtk3/0005-Suno-identity-title-and-window-gutter.patch" \
+  "$repo_root/patches/gtk3/0006-Suno-frame-child-clipping.patch" \
   "$rpmbuild_dir/SOURCES/"
 
 (
   cd "$rpmbuild_dir/SPECS"
   patch --batch --forward --fuzz=0 -p1 \
-    <"$repo_root/patches/gtk3/0000-luma-fedora-spec.patch"
+    <"$repo_root/patches/gtk3/0000-Suno-fedora-spec.patch"
 )
 
 "$repo_root/scripts/packages/run-in-rpm-builder.sh" \
@@ -101,20 +101,20 @@ install -m 0644 \
     rpm2cpio "$OLDPWD/$main_rpm" >payload.cpio
     cpio -idm --quiet <payload.cpio
     rm -f payload.cpio
-    grep -aFq "gtk3-header-bar-luma-identity-owner" usr/lib64/libgtk-3.so.0
-    grep -aFq "luma-no-automatic-identity" usr/lib64/libgtk-3.so.0
-    grep -aFq "luma-identity-display" usr/lib64/libgtk-3.so.0
-    grep -aFq "luma-automatic-identity" usr/lib64/libgtk-3.so.0
+    grep -aFq "gtk3-header-bar-Suno-identity-owner" usr/lib64/libgtk-3.so.0
+    grep -aFq "Suno-no-automatic-identity" usr/lib64/libgtk-3.so.0
+    grep -aFq "Suno-identity-display" usr/lib64/libgtk-3.so.0
+    grep -aFq "Suno-automatic-identity" usr/lib64/libgtk-3.so.0
     grep -aFq "notify::application" usr/lib64/libgtk-3.so.0
-    grep -aFq "luma-native-window" usr/lib64/libgtk-3.so.0
-    grep -aFq "luma-native-work-surface" usr/lib64/libgtk-3.so.0
-    grep -aFq "luma-command-host" usr/lib64/libgtk-3.so.0
-    grep -aFq "luma-no-command-row" usr/lib64/libgtk-3.so.0
-    grep -aFq "luma-split-paned" usr/lib64/libgtk-3.so.0
-    grep -aFq "luma-command-title" usr/lib64/libgtk-3.so.0
-    grep -aFq "luma-repeats-identity" usr/lib64/libgtk-3.so.0
+    grep -aFq "Suno-native-window" usr/lib64/libgtk-3.so.0
+    grep -aFq "Suno-native-work-surface" usr/lib64/libgtk-3.so.0
+    grep -aFq "Suno-command-host" usr/lib64/libgtk-3.so.0
+    grep -aFq "Suno-no-command-row" usr/lib64/libgtk-3.so.0
+    grep -aFq "Suno-split-paned" usr/lib64/libgtk-3.so.0
+    grep -aFq "Suno-command-title" usr/lib64/libgtk-3.so.0
+    grep -aFq "Suno-repeats-identity" usr/lib64/libgtk-3.so.0
     grep -aFq "notify::border-width" usr/lib64/libgtk-3.so.0
-    grep -aFq "luma-clip-children" usr/lib64/libgtk-3.so.0
+    grep -aFq "Suno-clip-children" usr/lib64/libgtk-3.so.0
   '
 
 stable_rpms="$output_dir/RPMS/$architecture"
@@ -123,7 +123,7 @@ rm -rf "$stable_rpms" "$output_dir/SHA256SUMS"
 install -d -m 0755 "$stable_rpms" "$stable_srpms"
 install -m 0644 "$rpmbuild_dir/RPMS/$architecture/$package_nevra.rpm" "$stable_rpms/"
 install -m 0644 \
-  "$rpmbuild_dir/SRPMS/gtk3-3.24.52-${GTK3_LUMA_RELEASE}.fc44.src.rpm" \
+  "$rpmbuild_dir/SRPMS/gtk3-3.24.52-${GTK3_SUNO_RELEASE}.fc44.src.rpm" \
   "$stable_srpms/"
 
 (
@@ -131,4 +131,4 @@ install -m 0644 \
   find RPMS SRPMS -type f -name '*.rpm' -exec sha256sum {} + | sort >SHA256SUMS
 )
 
-printf 'Luma GTK 3 packages: %s\n' "$output_dir"
+printf 'Suno GTK 3 packages: %s\n' "$output_dir"

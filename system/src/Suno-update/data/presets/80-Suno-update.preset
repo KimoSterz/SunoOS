@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: Apache-2.0
+enable Suno-updated.timer
+enable Suno-update-boot.service
+enable Suno-greenboot-arm.service
+enable Suno-greenboot-fallback.service
+enable Suno-device-layer.service
+enable Suno-device-boot.service
+enable Suno-device-boot-confirm.service

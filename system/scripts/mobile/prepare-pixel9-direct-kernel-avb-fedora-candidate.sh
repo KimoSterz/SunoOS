@@ -48,9 +48,9 @@ done
 	die 'Fedora init source differs from its pin'
 [ "$(sha256sum "$fedora_lock" | awk '{print $1}')" = "$PIXEL9_DIAGNOSTIC_FEDORA_RPM_LOCK_SHA256" ] ||
 	die 'Fedora RPM lock differs from its pin'
-grep -Fq "echo 'LUMA_PIXEL9_DIAGNOSTIC_REPORT_VERSION=4'" "$fedora_init" ||
+grep -Fq "echo 'SUNO_PIXEL9_DIAGNOSTIC_REPORT_VERSION=4'" "$fedora_init" ||
 	die 'Fedora report version differs'
-grep -Fq 'FEDORA_BASH_EXECUTION_TOKEN=LUMA_PIXEL9_FEDORA44_AARCH64_OK' "$fedora_init" ||
+grep -Fq 'FEDORA_BASH_EXECUTION_TOKEN=SUNO_PIXEL9_FEDORA44_AARCH64_OK' "$fedora_init" ||
 	die 'Fedora execution token differs'
 
 for avb in "$avb_a" "$avb_b"; do
@@ -58,7 +58,7 @@ for avb in "$avb_a" "$avb_b"; do
 		[ -f "$avb/$required" ] || die "Fedora AVB proof is incomplete: $avb/$required"
 	done
 	for boundary in \
-		'LUMA_PIXEL9_DIRECT_KERNEL_AVB_WRAPPER_VERSION=1' \
+		'SUNO_PIXEL9_DIRECT_KERNEL_AVB_WRAPPER_VERSION=1' \
 		'SCOPE=offline-stock-size-avb-parser-shape-experiment' \
 		'DIAGNOSTIC_VARIANT=fedora-userspace-copy-dtb-v6' \
 		'REPORT_TRANSPORTS=usb-ecm-http' \
@@ -107,7 +107,7 @@ done
 [ "$accepted_bytes" = "$PIXEL9_STOCK_BOOT_IMAGE_BYTES" ] || die 'accepted predecessor size differs from stock'
 grep -Fqx "PARTITION_SHA256=$candidate_sha" "$avb_a/manifest.env" || die 'candidate digest differs from manifest'
 
-grep -Fqx 'LUMA_PIXEL9_DIRECT_KERNEL_AVB_UFS_ACCEPTANCE_VERSION=1' "$accepted_acceptance" ||
+grep -Fqx 'SUNO_PIXEL9_DIRECT_KERNEL_AVB_UFS_ACCEPTANCE_VERSION=1' "$accepted_acceptance" ||
 	die 'accepted UFS result version differs'
 grep -Fqx "CANDIDATE_SHA256=$accepted_sha" "$accepted_acceptance" ||
 	die 'accepted UFS bytes differ from acceptance'
@@ -139,7 +139,7 @@ install -m 0644 "$accepted_reproducibility" "$output_dir/accepted-v5-reproducibi
 install -m 0644 "$fedora_lock" "$output_dir/fedora44-ram-userspace-rpms.lock"
 
 {
-	printf 'LUMA_PIXEL9_DIRECT_KERNEL_AVB_FEDORA_CANDIDATE_VERSION=1\n'
+	printf 'SUNO_PIXEL9_DIRECT_KERNEL_AVB_FEDORA_CANDIDATE_VERSION=1\n'
 	printf 'CANDIDATE_KIND=direct-kernel-embedded-copied-dtb-fedora44-userspace-stock-size-avb-ecm-v6\n'
 	printf 'DIAGNOSTIC_VARIANT=fedora-userspace-copy-dtb-v6\n'
 	printf 'REPORT_VERSION=4\n'

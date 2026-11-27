@@ -14,7 +14,7 @@ index 1750b1f..dddac5b 100644
 +++ b/src/nautilus-file.c
 @@ -22,6 +22,7 @@
  
- #include <luma-1/luma-ui/luma-application-icon.h>
+ #include <Suno-1/Suno-ui/Suno-application-icon.h>
  #include "nautilus-file.h"
 +#include "nautilus-filer-fixture.h"
  

@@ -1,7 +1,7 @@
 # Saved passwords on accounts that sign in automatically
 
 Saved passwords live in the login keyring: Wi-Fi passwords a person saves for
-themselves, app and website sign-ins, Luma Connect tokens. gnome-keyring keeps
+themselves, app and website sign-ins, Suno Connect tokens. gnome-keyring keeps
 the keyring encrypted, and `pam_gnome_keyring` unlocks it with the password
 typed at login.
 
@@ -9,7 +9,7 @@ An account that signs in automatically types no password, so the keyring
 stays locked. The first thing that stores a secret then asks "Unlock
 keyring". On a TV there is nobody to ask.
 
-The mechanism lives entirely in `luma-keyring`. gnome-keyring, its file
+The mechanism lives entirely in `Suno-keyring`. gnome-keyring, its file
 formats, PAM stacks and the display manager are unchanged.
 
 ## Design: envelope encryption with two key slots
@@ -36,7 +36,7 @@ once per unlock method, and any one slot opens it.
     count. A Secure Boot database update then needs the password once.
     Without an encrypted root no PCR policy is used; the threat model below
     says what each case protects.
-  - At the start of each session, `luma-keyring-autologin.service` (a user
+  - At the start of each session, `Suno-keyring-autologin.service` (a user
     unit before `graphical-session-pre.target`) unseals the key. It then
     unlocks the keyring with gnome-keyring's `UnlockWithMasterPassword`, the
     same unlock `pam_gnome_keyring` performs. The unit is bounded to a few
@@ -90,10 +90,10 @@ step and check this.
   reveal that password. On a device without a TPM2, root or the whole disk
   is enough to open the seal.
 - **An empty keyring password**, GNOME's long-standing autologin advice,
-  stores the keyring unencrypted. Luma fails closed instead: if sealing
-  fails, nothing changes, the keyring stays on the password, and Luma asks
+  stores the keyring unencrypted. Suno fails closed instead: if sealing
+  fails, nothing changes, the keyring stays on the password, and Suno asks
   again later. Plain text is only an explicit opt-in
-  (`luma-keyring --enable-auto-unlock --unencrypted`).
+  (`Suno-keyring --enable-auto-unlock --unencrypted`).
 - **The PAM slot** (`pam_systemd_loadkey`, or GDM's `pam_gdm` in
   `gdm-autologin`): these read a LUKS passphrase from root's kernel keyring.
   Feeding them would put a per-user secret where every root process can read
@@ -107,15 +107,15 @@ Each account is enrolled at a point where its password is already in hand.
 - **Installer.** When "Sign me in automatically" is chosen, the Atlas
   Account step hands the password to the kickstart `%post`:
   - It travels through the installer's memory only, in
-    `/run/luma-atlas/keyring-enrol`. The file is written from stdin, is
+    `/run/Suno-atlas/keyring-enrol`. The file is written from stdin, is
     root-only from its first byte, and is never on a command line.
-  - The `%post` runs `luma-keyring --enrol USER` inside the installed system,
+  - The `%post` runs `Suno-keyring --enrol USER` inside the installed system,
     which generates, seals and wraps the key.
   - The intent file is shredded either way.
   - At the first sign-in, the session's keyring daemon makes the login
     keyring with the key.
   - New installs are never prompted.
-- **Devices set up earlier, or automatic sign-in turned on in Settings.** Luma
+- **Devices set up earlier, or automatic sign-in turned on in Settings.** Suno
   asks once, in its own sheet, at the start of the session (see "First
   unlock" below).
   - The password is checked with PAM, and the keyring is re-keyed onto a new
@@ -123,14 +123,14 @@ Each account is enrolled at a point where its password is already in hand.
   - The new seal and wrap are written before the keyring is re-keyed, and
     moved into place only after it succeeds. The keyring is never left on a
     key nothing holds.
-  - Over SSH: `luma-keyring --enable-auto-unlock`, with the password on
+  - Over SSH: `Suno-keyring --enable-auto-unlock`, with the password on
     stdin, inside the person's session.
 
 ## First unlock
 
 An automatic sign-in with no seal and a locked login keyring is the one
 case nothing opens. Rather than let the first app that wants a secret raise
-gnome-keyring's own prompt, `luma-keyring.service` asks first:
+gnome-keyring's own prompt, `Suno-keyring.service` asks first:
 
 - The unit is ordered after `gnome-session-initialized.target` (the shell
   is up) and before `graphical-session.target`, so autostarted apps start
@@ -139,7 +139,7 @@ gnome-keyring's own prompt, `luma-keyring.service` asks first:
   when there is, and never later than 8 seconds. The session never waits on
   a person.
 - The sheet: "Unlock your saved passwords", one line, a password field (the
-  TV keyboard on a TV) and "Unlock automatically on this TV" (LumaUI's
+  TV keyboard on a TV) and "Unlock automatically on this TV" (SunoUI's
   device noun), on by default. The password is checked by unlocking the
   keyring with it (`UnlockWithMasterPassword`); a wrong one stays on the
   sheet. With the switch on, the enrolment above follows (PAM check, seal,
@@ -166,15 +166,15 @@ gnome-keyring's own prompt, `luma-keyring.service` asks first:
 A line in the passwd PAM stack keeps the wrap in step, the way
 `pam_gnome_keyring use_authtok` keeps the login keyring in step:
 
-    -password   optional	pam_luma_keyring.so
+    -password   optional	pam_Suno_keyring.so
 
-`luma-keyring-pam-setup` adds it after `pam_gnome_keyring` (package `%post`
+`Suno-keyring-pam-setup` adds it after `pam_gnome_keyring` (package `%post`
 with `Requires(post): passwd`, and a trigger on `passwd` and `shadow-utils`,
 either of which owns `/etc/pam.d/passwd` depending on the Fedora release)
 and removes it on uninstall. It replaces the `pam_exec` line of earlier
 builds.
 
-`pam_luma_keyring.so` is a small native module (C, built with meson,
+`pam_Suno_keyring.so` is a small native module (C, built with meson,
 `/usr/lib64/security`). Optional lines still run after a failing substack,
 so it trusts nothing the stack says and checks the outcome itself:
 
@@ -188,7 +188,7 @@ so it trusts nothing the stack says and checks the outcome itself:
   `/etc/shadow` (`crypt_rn` from libxcrypt, compared in constant time).
   Otherwise the change did not happen (`pam_unix` failed after
   `pam_pwquality` set the token) and nothing is written.
-- Only then does it run `/usr/libexec/luma-keyring --pam-rewrap` with a
+- Only then does it run `/usr/libexec/Suno-keyring --pam-rewrap` with a
   clean environment and the password on a socket, bounded to 20 seconds.
   No file descriptor of the caller reaches the helper (`close_range`).
   It always returns `PAM_IGNORE`, so it can neither fail nor pass a
@@ -220,7 +220,7 @@ only a later day counts. Other writes to `/etc/shadow` never raise a prompt.
 
 ## Storage hygiene
 
-- The slots live in `~/.local/state/luma-keyring` (0700; the same path for
+- The slots live in `~/.local/state/Suno-keyring` (0700; the same path for
   the installer, PAM and the session). The files are 0600 and owned by the
   user. A copy of the standalone recovery script sits next to them (0700).
 - Every write goes to a temporary file created with `O_CREAT|O_EXCL|O_NOFOLLOW`
@@ -249,10 +249,10 @@ only a later day counts. Other writes to `/etc/shadow` never raise a prompt.
 | Situation | What happens |
 | --- | --- |
 | Seal unusable (new board, cleared TPM, lost host key, Secure Boot change with FDE) or corrupt | Keyring left intact and locked; one notification asks for the password, which unwraps the key; the key is sealed again |
-| Sealing fails | Nothing changes; the keyring stays on the password; Luma asks again later |
+| Sealing fails | Nothing changes; the keyring stays on the password; Suno asks again later |
 | Crash during a key change | Some slot on disk always opens the keyring (see crash consistency) |
 | Wrap corrupt or missing | Keyring left intact; the person is told plainly; "Start a new keyring" keeps the old file aside |
-| Password changed | Re-wrapped at the change by pam_luma_keyring.so; the previous wrap is kept until the session confirms it; otherwise the session asks for the new password once |
+| Password changed | Re-wrapped at the change by pam_Suno_keyring.so; the previous wrap is kept until the session confirms it; otherwise the session asks for the new password once |
 | Password change fails | The new password does not verify against /etc/shadow; nothing is written; no extra prompt |
 | Automatic sign-in turned off | The seal keeps unlocking (nothing breaks); one notification offers to move the keyring back onto the login password, which deletes both slots |
 | Wrong password at any prompt | Nothing changes |
@@ -309,31 +309,31 @@ one Argon2id run (64 MiB) per guess. The state folder therefore holds a
 tool, honours by leaving the folder out. The files are also marked
 `user.xdg.robots.backup=false` (freedesktop Common Extended Attributes), but
 few tools read that; any other backup or sync should exclude
-`~/.local/state/luma-keyring`. `CACHEDIR.TAG` is not used: the folder is not
+`~/.local/state/Suno-keyring`. `CACHEDIR.TAG` is not used: the folder is not
 a cache, and cleaners delete tagged folders. A restore onto new
 hardware without it loses saved passwords unless the old disk comes along.
 When the password a person types is weak (libpwquality's `pwscore` below 50),
-Luma says so and recommends a stronger one.
+Suno says so and recommends a stronger one.
 
 ## Rolling back
 
-A luma-keyring older than 0.2 does not know the slots. After a rollback the
+A Suno-keyring older than 0.2 does not know the slots. After a rollback the
 keyring stays locked and the older "locked with an older password" window
 appears. Two ways out:
 
-- **Standalone script.** `luma-keyring-recover-standalone` is installed at
-  `/usr/share/luma-keyring/`, which a rollback takes away, so luma-keyring
-  also keeps a copy at `~/.local/state/luma-keyring/luma-keyring-recover`
+- **Standalone script.** `Suno-keyring-recover-standalone` is installed at
+  `/usr/share/Suno-keyring/`, which a rollback takes away, so Suno-keyring
+  also keeps a copy at `~/.local/state/Suno-keyring/Suno-keyring-recover`
   (written at enrolment, refreshed at session start). It is kept in the
-  source tree at `src/luma-keyring/tools/`. It needs only
+  source tree at `src/Suno-keyring/tools/`. It needs only
   python3-cryptography, python3-gobject and systemd-creds; run it in the
   person's session. It tries every seal (`login.cred`, `login.cred.new`),
   and a seal that opens but holds a key the keyring refuses counts as not
   opening. It then asks for the password and tries every wrap
   (`login.wrap`, `login.wrap.new`, `login.wrap.prev`, versions 2 and 3).
   The first key the keyring takes re-keys it to the login password.
-- **Without the script.** `systemd-creds --user --name=luma-login-keyring
-  decrypt - - < ~/.local/state/luma-keyring/login.cred` prints the key. Paste it
+- **Without the script.** `systemd-creds --user --name=Suno-login-keyring
+  decrypt - - < ~/.local/state/Suno-keyring/login.cred` prints the key. Paste it
   as the "Older password" in the older window, which re-keys the keyring to
   the login password.
 

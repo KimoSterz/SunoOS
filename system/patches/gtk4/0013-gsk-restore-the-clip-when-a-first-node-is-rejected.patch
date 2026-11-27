@@ -1,4 +1,4 @@
-From: Project Luma
+From: Project Suno
 Subject: [PATCH] gpu: Restore the clip when a first node is rejected
 
 gsk_gpu_node_processor_add_first_node_clipped() saves the node processor's

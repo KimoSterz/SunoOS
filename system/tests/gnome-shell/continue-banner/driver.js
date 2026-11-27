@@ -8,12 +8,12 @@ import GLib from 'gi://GLib';
 import Shell from 'gi://Shell';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as MessageTray from 'resource:///org/gnome/shell/ui/messageTray.js';
-import {ContinueBanner} from 'resource:///org/gnome/shell/ui/lumaContinue.js';
+import {ContinueBanner} from 'resource:///org/gnome/shell/ui/SunoContinue.js';
 
 Gio._promisify(Shell.Screenshot.prototype, 'screenshot_area');
 
-const out = GLib.getenv('LUMA_BANNER_OUT');
-const mode = GLib.getenv('LUMA_BANNER_MODE') || 'dark';
+const out = GLib.getenv('SUNO_BANNER_OUT');
+const mode = GLib.getenv('SUNO_BANNER_MODE') || 'dark';
 const records = [];
 const sleep = ms => new Promise(resolve => GLib.timeout_add(GLib.PRIORITY_DEFAULT, ms, () => {
     resolve();
@@ -23,20 +23,20 @@ const sleep = ms => new Promise(resolve => GLib.timeout_add(GLib.PRIORITY_DEFAUL
 // The design's snapshot: 11 windows of 8 apps on the ThinkPad, with the names
 // and icons the snapshot carries (some apps aren't installed here).
 const APPS = [
-    ['org.projectluma.Viola.desktop', 'Viola', 'luma-v3-browser'],
-    ['org.projectluma.Documents.desktop', 'Documents', 'luma-v3-documents'],
-    ['org.projectluma.Notes.desktop', 'Notes', 'org.projectluma.Notes'],
-    ['org.projectluma.Tide.desktop', 'Tide', 'org.projectluma.Tide'],
+    ['org.projectSuno.Viola.desktop', 'Viola', 'Suno-v3-browser'],
+    ['org.projectSuno.Documents.desktop', 'Documents', 'Suno-v3-documents'],
+    ['org.projectSuno.Notes.desktop', 'Notes', 'org.projectSuno.Notes'],
+    ['org.projectSuno.Tide.desktop', 'Tide', 'org.projectSuno.Tide'],
     ['org.gnome.Nautilus.desktop', 'Filer', 'org.gnome.Nautilus'],
-    ['org.example.Kiln.desktop', 'Kiln', 'org.projectluma.Photos'],
-    ['org.example.RecipeBox.desktop', 'Recipe Box', 'luma-v3-documents'],
-    ['org.example.StudioMixer.desktop', 'Studio Mixer', 'luma-v3-music'],
+    ['org.example.Kiln.desktop', 'Kiln', 'org.projectSuno.Photos'],
+    ['org.example.RecipeBox.desktop', 'Recipe Box', 'Suno-v3-documents'],
+    ['org.example.StudioMixer.desktop', 'Studio Mixer', 'Suno-v3-music'],
 ].map(([id, name, icon]) => ({id, windows: 1, name, icon}));
 const RESULT = {
     windows: 11, placed: 8, missing: ['org.example.StudioMixer.desktop'], unplaced: ['org.example.Kiln.desktop'],
     installing: ['org.example.RecipeBox.desktop'], progress: {'org.example.RecipeBox.desktop': 62}, failed: [],
-    withoutDocuments: [{id: 'org.projectluma.Notes.desktop', document: 'Packing list'}],
-    moved: [{id: 'org.projectluma.Viola.desktop', windows: 2}],
+    withoutDocuments: [{id: 'org.projectSuno.Notes.desktop', document: 'Packing list'}],
+    moved: [{id: 'org.projectSuno.Viola.desktop', windows: 2}],
 };
 
 function measure(actor, depth = 0, list = []) {
@@ -57,7 +57,7 @@ async function capture(name) {
     // The card the notification is shown in: a desktop card in the message
     // tray's banner bin, or the lip card on a handheld.
     const find = actor => {
-        if (actor.notification && actor.notification === globalThis._lumaBanner?._notification && actor.visible)
+        if (actor.notification && actor.notification === globalThis._SunoBanner?._notification && actor.visible)
             return actor;
         for (const child of actor.get_children()) {
             const found = find(child);
@@ -74,7 +74,7 @@ async function capture(name) {
     const parts = banner ? measure(banner) : [];
     const tray = Main.messageTray;
     const debug = {cards: tray._cards?.length, queue: tray._notificationQueue?.length, blocked: tray._bannerBlocked,
-        state: banner ? null : String(globalThis._lumaBanner?._notification?.lifecycleState),
+        state: banner ? null : String(globalThis._SunoBanner?._notification?.lifecycleState),
         presentation: Main.presentation?.mode ?? Main.sessionMode.currentMode, bin: bin.get_n_children(),
         message: Boolean(message)};
     records.push({name, mode, banner: {x, y, width: w, height: h}, parts, debug});
@@ -91,7 +91,7 @@ async function capture(name) {
 async function main() {
     await sleep(2000);
     const banner = new ContinueBanner();
-    globalThis._lumaBanner = banner;
+    globalThis._SunoBanner = banner;
     // The reference's times: run.sh sets TZ so that it is about 16:20 here.
     const now = Date.now() / 1000;
     const [y, m, d] = GLib.DateTime.new_now_local().get_ymd();
@@ -111,7 +111,7 @@ async function main() {
         await capture('restoring');
         banner.result({result: RESULT, apps: APPS, device: 'ThinkPad', at: Date.now() / 1000 - 240});
         await capture('partial');
-        banner._notification.lumaContent.actions.find(a => a.label === 'Show')?.callback();
+        banner._notification.SunoContent.actions.find(a => a.label === 'Show')?.callback();
         await capture('list');
         banner.close();
         await sleep(1500);
@@ -128,8 +128,8 @@ async function main() {
             continuedAt: t1420, taken: Date.now() / 1000 - 600}, () => {}, () => {});
         await capture('reverse');
         banner.offer({device: 'Fairphone', windows: 1,
-            apps: [{id: 'org.projectluma.Messages.desktop', windows: 1, name: 'Messages', icon: 'org.projectluma.Notes'}],
-            handheldApp: 'org.projectluma.Messages.desktop'}, () => {}, () => {});
+            apps: [{id: 'org.projectSuno.Messages.desktop', windows: 1, name: 'Messages', icon: 'org.projectSuno.Notes'}],
+            handheldApp: 'org.projectSuno.Messages.desktop'}, () => {}, () => {});
         await capture('handheld');
         banner.close();
         await sleep(1500);
@@ -137,9 +137,9 @@ async function main() {
         // copy (app-perms offer, Connect Sync restored and keyjoin), so a change
         // to the shared banner can be checked against them too.
         for (const [name, source, icon, title, body, actions] of [
-            ['appperms', 'Tide', 'org.projectluma.Tide', 'Music folder', 'Let Tide use your Music folder?', ['Allow', 'Not now']],
-            ['restored', 'Valet', 'io.luma.Valet', 'Your apps are ready', '6 apps from Dell XPS 14 are on this ThinkPad.', ['Show']],
-            ['keyjoin', 'Luma Connect', 'org.projectluma.Connect', 'ThinkPad joined with your recovery key',
+            ['appperms', 'Tide', 'org.projectSuno.Tide', 'Music folder', 'Let Tide use your Music folder?', ['Allow', 'Not now']],
+            ['restored', 'Valet', 'io.Suno.Valet', 'Your apps are ready', '6 apps from Dell XPS 14 are on this ThinkPad.', ['Show']],
+            ['keyjoin', 'Suno Connect', 'org.projectSuno.Connect', 'ThinkPad joined with your recovery key',
                 'If this wasn’t you, remove it now.', ['Remove…', 'It was me']],
         ]) {
             const src = new MessageTray.Source({title: source, icon: new Gio.ThemedIcon({name: icon}),
@@ -149,7 +149,7 @@ async function main() {
                 urgency: MessageTray.Urgency.HIGH});
             for (const label of actions)
                 n.addAction(label, () => {});
-            globalThis._lumaBanner = {_notification: n};
+            globalThis._SunoBanner = {_notification: n};
             src.addNotification(n);
             await capture(name);
             n.destroy();

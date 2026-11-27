@@ -1,12 +1,12 @@
 {
- "source": "design-center mockups/apps/depot/catalogue.js, the apps luma-tv-depot.html lists",
+ "source": "design-center mockups/apps/depot/catalogue.js, the apps Suno-tv-depot.html lists",
  "apps": [
   {
    "id": "tide",
    "name": "Tide",
    "summary": "Your music, from everywhere you keep it",
    "cat": "media",
-   "dev": "Luma",
+   "dev": "Suno",
    "verified": true,
    "size": "38 MB",
    "version": "1.0.4",
@@ -59,7 +59,7 @@
    "name": "Photos",
    "summary": "Every photo you've taken, beautifully kept",
    "cat": "media",
-   "dev": "Luma",
+   "dev": "Suno",
    "verified": true,
    "size": "44 MB",
    "version": "1.0.3",
@@ -96,9 +96,9 @@
   {
    "id": "youtube",
    "name": "YouTube",
-   "summary": "Watch YouTube, made for Luma",
+   "summary": "Watch YouTube, made for Suno",
    "cat": "media",
-   "dev": "Luma",
+   "dev": "Suno",
    "verified": true,
    "size": "27 MB",
    "version": "0.9",
@@ -108,7 +108,7 @@
     "youtube-phone-dark"
    ],
    "desc": [
-    "A YouTube client in Luma's own parts: the video leads, Up next sits beside it, and it keeps your place across the desktop, a tablet and your phone."
+    "A YouTube client in Suno's own parts: the video leads, Up next sits beside it, and it keeps your place across the desktop, a tablet and your phone."
    ],
    "reach": [
     [
@@ -123,7 +123,7 @@
    "name": "Weather",
    "summary": "The sky, at a glance",
    "cat": "tools",
-   "dev": "Luma",
+   "dev": "Suno",
    "verified": true,
    "size": "6 MB",
    "version": "1.0",
@@ -154,7 +154,7 @@
    "name": "Ari",
    "summary": "Ask anything, on this computer",
    "cat": "tools",
-   "dev": "Luma",
+   "dev": "Suno",
    "verified": true,
    "size": "1.2 GB",
    "version": "0.8",
@@ -295,7 +295,7 @@
    "size": "4 MB",
    "version": "1.0.0.82",
    "desc": [
-    "Your Steam library on Luma. Most Windows games run through Proton without changes."
+    "Your Steam library on Suno. Most Windows games run through Proton without changes."
    ],
    "rating": {
     "avg": 4.6,
@@ -350,7 +350,7 @@
   }
  ],
  "system": {
-  "name": "Luma 1.0 · nightly October 22",
+  "name": "Suno 1.0 · nightly October 22",
   "blurb": "Faster wake from sleep, Tide crossfades, plus 14 more changes.",
   "size": "312 MB"
  },

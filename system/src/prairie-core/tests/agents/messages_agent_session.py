@@ -9,7 +9,7 @@ user:
 
     messages_agent_session.py --evidence DIR
 
-Proves, with the fake luma-messages-bridge/1 helper standing in for a network:
+Proves, with the fake Suno-messages-bridge/1 helper standing in for a network:
 starts at login from the autostart entry inside its systemd unit and slice;
 loads no GTK; one agent however often it is started; announces a message with
 the window closed (Reply, reaction, Mark as Read, desktop-entry, inline reply);
@@ -35,10 +35,10 @@ from session import Failure, Session, mib  # noqa: E402
 
 from gi.repository import GLib  # noqa: E402
 
-APP = "org.projectluma.Messages"
-AGENT = "org.projectluma.Messages.Agent"
-API = "org.projectluma.Messages.Agent1"
-API_PATH = "/org/projectluma/Messages/Agent"
+APP = "org.projectSuno.Messages"
+AGENT = "org.projectSuno.Messages.Agent"
+API = "org.projectSuno.Messages.Agent1"
+API_PATH = "/org/projectSuno/Messages/Agent"
 FAKE = Path(__file__).resolve().parents[1] / "fake_messages_bridge.py"
 
 
@@ -78,7 +78,7 @@ def agent_pid(session: Session) -> int:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--evidence", type=Path, required=True)
-    parser.add_argument("--helpers", type=Path, default=Path(os.environ.get("XDG_RUNTIME_DIR", "/tmp")) / "luma-test-helpers")
+    parser.add_argument("--helpers", type=Path, default=Path(os.environ.get("XDG_RUNTIME_DIR", "/tmp")) / "Suno-test-helpers")
     options = parser.parse_args()
     session = Session(options.evidence)
     extra: dict = {"managed": session.managed}
@@ -86,7 +86,7 @@ def main() -> int:
     try:
         session.systemctl("stop", UNIT, check=False)
         account_id, directory = seed_account(options.helpers)
-        session.systemctl("set-environment", f"LUMA_MESSAGES_HELPER_DIR={options.helpers}")
+        session.systemctl("set-environment", f"SUNO_MESSAGES_HELPER_DIR={options.helpers}")
         session.note(f"seeded one fake Google Messages account in {directory.name}")
 
         # 1. Login starts the agent from its autostart entry, inside its unit.
@@ -131,9 +131,9 @@ def main() -> int:
         actions = dict(zip(record["actions"][0::2], record["actions"][1::2]))
         hints = record["hints"]
         session.step("announces a message with the window closed",
-                     record["summary"] == "Fake Friend" and hints.get("desktop-entry") == "org.projectluma.Messages"
+                     record["summary"] == "Fake Friend" and hints.get("desktop-entry") == "org.projectSuno.Messages"
                      and hints.get("category") == "im.received" and {"default", "reply", "mark-read", "react"} <= set(actions)
-                     and bool(hints.get("x-luma-inline-reply-token")) and record["sender"] == session.owner(AGENT),
+                     and bool(hints.get("x-Suno-inline-reply-token")) and record["sender"] == session.owner(AGENT),
                      summary=record["summary"], actions=actions, hint_keys=sorted(hints))
         unread = session.wait(lambda: session.values(AGENT).get("unread-count"), "unread count published", 10)
         session.step("publishes the unread count", unread >= 1, values=session.values(AGENT))
@@ -145,7 +145,7 @@ def main() -> int:
         locked = session.wait_notification(lambda r: r["locked"], "notification while locked", 20, mark)
         session.step("locked screen: no sender or text", locked["summary"] == "Messages"
                      and "4512" not in locked["body"] and "Fake Friend" not in json.dumps(locked)
-                     and "x-luma-inline-reply-token" not in locked["hints"], summary=locked["summary"], body=locked["body"])
+                     and "x-Suno-inline-reply-token" not in locked["hints"], summary=locked["summary"], body=locked["body"])
         mark = session.mark()
         session.lock(False)
         restored = session.wait_notification(lambda r: r["replaces"] == locked["id"], "restored after unlock", 10, mark)
@@ -167,7 +167,7 @@ def main() -> int:
         # 7. The window is a client: no second helper, and quitting it leaves the agent.
         pid_before = agent_pid(session)
         ui = session.launch_window(APP, "window1", "prairie-messages", env={"GSK_RENDERER": "cairo"})
-        session.wait(lambda: session.has_owner("org.projectluma.Messages"), "Messages window running", 60)
+        session.wait(lambda: session.has_owner("org.projectSuno.Messages"), "Messages window running", 60)
         time.sleep(4)
         window_pids = session.unit_pids(ui)
         window_rss = max((session.rss(p) for p in window_pids if "prairie-messages" in session.cmdline(p)), default=0)
@@ -179,7 +179,7 @@ def main() -> int:
         session.wait(lambda: len(jsonl(directory / "read.jsonl")) > read_before, "window's open conversation reached the agent", 20)
         session.step("opening a conversation in the window goes through the agent", True)
         session.systemctl("stop", ui, check=False)
-        session.wait(lambda: not session.has_owner("org.projectluma.Messages"), "window quit", 20)
+        session.wait(lambda: not session.has_owner("org.projectSuno.Messages"), "window quit", 20)
         time.sleep(1)
         mark = session.mark()
         deliver(directory, "live3", "Still there?")
@@ -205,7 +205,7 @@ def main() -> int:
         session.step("catches up after a simulated suspend", caught["summary"] == "Fake Friend",
                      journal=session.journal_grep(UNIT, "woke: resume"))
 
-        # 9. A crash is restarted (by the unit luma-background generated) and the account reconnects.
+        # 9. A crash is restarted (by the unit Suno-background generated) and the account reconnects.
         if session.managed:
             crashed = agent_pid(session)
             os.kill(crashed, signal.SIGKILL)
@@ -232,7 +232,7 @@ def main() -> int:
         result = session.unit_property(UNIT, "Result")
         if session.managed:
             window = session.launch_window(APP, "window2", "prairie-messages", env={"GSK_RENDERER": "cairo"})
-            session.wait(lambda: session.has_owner(AGENT), "the window asks luma-background for the agent", 60)
+            session.wait(lambda: session.has_owner(AGENT), "the window asks Suno-background for the agent", 60)
             session.step("with no accounts the agent stops cleanly, and opening Messages asks for it again",
                          signed_out and result == "success" and session.unit_active(UNIT), result=result)
             session.systemctl("stop", window, check=False)
@@ -245,7 +245,7 @@ def main() -> int:
     finally:
         session.restore_logind()
         session.systemctl("thaw", UNIT, check=False)
-        session.systemctl("stop", f"app-luma-{APP}@window1.service", f"app-luma-{APP}@window2.service", check=False)
+        session.systemctl("stop", f"app-Suno-{APP}@window1.service", f"app-Suno-{APP}@window2.service", check=False)
     summary = session.summary("messages", extra)
     print(json.dumps({"passed": summary["passed"], **extra}))
     return 0 if summary["passed"] else 1

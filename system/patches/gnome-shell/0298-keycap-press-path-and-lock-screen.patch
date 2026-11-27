@@ -1,4 +1,4 @@
-From: Luma Developers
+From: Suno Developers
 Subject: [PATCH] Keycap: a press costs a translation, and the keyboard serves the unlock prompt
 
 Measured on the Pixel 9 Pro Fold, handling a TOUCH_BEGIN took 7.1 ms and
@@ -254,7 +254,7 @@ diff --git a/js/ui/keyboard.js b/js/ui/keyboard.js
              this._onSelectionOwnerChanged.bind(this), this);
          St.ThemeContext.get_for_stage(global.stage).connectObject('changed',
 @@ -2076,10 +2117,12 @@ export const Keyboard = GObject.registerClass({
-         this.add_style_class_name('luma-keycap');
+         this.add_style_class_name('Suno-keycap');
          keycapVariant = variant;
          setKeycapVariantClass(this);
 -        if (this._preview)
@@ -369,7 +369,7 @@ diff --git a/js/ui/keyboard.js b/js/ui/keyboard.js
 -            button.connect('released', () => this._hidePreview());
  
              if (parseInt(key.keyval, 16) === Clutter.KEY_Return || key.iconName === 'osk-enter-symbolic') {
-                 button.keyButton.add_style_class_name('luma-keycap-enter');
+                 button.keyButton.add_style_class_name('Suno-keycap-enter');
 @@ -2551,7 +2626,7 @@ export const Keyboard = GObject.registerClass({
          this._spaceTap = str === ' ' ? now : 0;
          if (str !== ' ' || !previous || now - previous > Keycap.keycap.timing.double_space ||
@@ -496,7 +496,7 @@ diff --git a/js/ui/keyboard.js b/js/ui/keyboard.js
 +            return;
 +        const uiGroup = Main.layoutManager.uiGroup;
 +        if (!this._tint) {
-+            this._tint = new St.Widget({style_class: 'luma-keycap-press', opacity: 0});
++            this._tint = new St.Widget({style_class: 'Suno-keycap-press', opacity: 0});
 +            setKeycapVariantClass(this._tint);
 +            uiGroup.insert_child_above(this._tint, Main.layoutManager.keyboardBox);
 +        }
@@ -527,7 +527,7 @@ diff --git a/js/ui/keyboard.js b/js/ui/keyboard.js
 +                this._previewLayer = new Clutter.Actor({reactive: false});
 +                Main.layoutManager.uiGroup.add_child(this._previewLayer);
 +            }
-+            label = new St.Label({style_class: 'luma-keycap-preview', text, opacity: 0});
++            label = new St.Label({style_class: 'Suno-keycap-preview', text, opacity: 0});
 +            setKeycapVariantClass(label);
 +            this._previewLayer.add_child(label);
 +            this._previews.set(text, label);
@@ -544,7 +544,7 @@ diff --git a/js/ui/keyboard.js b/js/ui/keyboard.js
 -            // Painted only: tracked chrome would recompute the input region
 -            // on every key press. Its variant is set here and on theme
 -            // changes, never per press (a class change restyles it).
--            this._preview = new St.Label({style_class: 'luma-keycap-preview', opacity: 0});
+-            this._preview = new St.Label({style_class: 'Suno-keycap-preview', opacity: 0});
 -            setKeycapVariantClass(this._preview);
 -            uiGroup.add_child(this._preview);
 -            this._previewSize = null;
@@ -620,7 +620,7 @@ diff --git a/js/ui/keyboard.js b/js/ui/keyboard.js
 +    }
 +
      _createTools() {
-         const tools = new St.BoxLayout({style_class: 'luma-keycap-tools', x_expand: true});
+         const tools = new St.BoxLayout({style_class: 'Suno-keycap-tools', x_expand: true});
          const add = (icon, name, callback) => {
 @@ -3202,6 +3388,8 @@ export const Keyboard = GObject.registerClass({
  

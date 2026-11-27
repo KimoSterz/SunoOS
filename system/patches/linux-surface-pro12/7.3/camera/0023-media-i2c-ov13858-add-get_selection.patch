@@ -1,7 +1,7 @@
 Implement get_selection for ov13858
 
 
-Luma rebase onto Linux 7.3: context adjusted; original provenance above.
+Suno rebase onto Linux 7.3: context adjusted; original provenance above.
 
 --- a/drivers/media/i2c/ov13858.c
 +++ b/drivers/media/i2c/ov13858.c

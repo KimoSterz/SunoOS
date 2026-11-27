@@ -1,4 +1,4 @@
-From: Project Luma <builds@project-luma.local>
+From: Project Suno <builds@project-suno.local>
 Subject: [PATCH] screenshot: pick several colours from one stage paint
 
 Handheld status ink samples six points around the application edges. Each

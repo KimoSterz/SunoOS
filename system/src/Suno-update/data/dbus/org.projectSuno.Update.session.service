@@ -1,0 +1,3 @@
+[D-BUS Service]
+Name=org.projectSuno.Update
+Exec=/usr/libexec/Suno-update-notifier --gapplication-service

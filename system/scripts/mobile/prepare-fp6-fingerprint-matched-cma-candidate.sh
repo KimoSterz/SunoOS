@@ -16,19 +16,19 @@ base_boot=${1:?usage: prepare-fp6-fingerprint-matched-cma-candidate.sh V13_BOOT 
 bundle=${2:?missing kernel bundle}
 output_dir=${3:?missing output directory}
 manifest=$bundle/manifest.env
-kernel_release=${LUMA_MATCHED_CMA_KERNEL_RELEASE_OVERRIDE:-7.1.2-luma-fp-cma1}
-old_kernel_release=${LUMA_MATCHED_CMA_OLD_KERNEL_RELEASE_OVERRIDE:-7.1.2}
-candidate_name=${LUMA_MATCHED_CMA_CANDIDATE_NAME:-boot-fp6-luma-fingerprint-matched-cma-v14.img}
+kernel_release=${SUNO_MATCHED_CMA_KERNEL_RELEASE_OVERRIDE:-7.1.2-Suno-fp-cma1}
+old_kernel_release=${SUNO_MATCHED_CMA_OLD_KERNEL_RELEASE_OVERRIDE:-7.1.2}
+candidate_name=${SUNO_MATCHED_CMA_CANDIDATE_NAME:-boot-fp6-Suno-fingerprint-matched-cma-v14.img}
 candidate=$output_dir/$candidate_name
-signing_key=${LUMA_MATCHED_CMA_SIGNING_KEY:-}
-source_tree=${LUMA_MATCHED_CMA_SOURCE_TREE:-}
+signing_key=${SUNO_MATCHED_CMA_SIGNING_KEY:-}
+source_tree=${SUNO_MATCHED_CMA_SOURCE_TREE:-}
 signing_key_sha=94f151fcd2cec29112beb22cf226ea9cc2acb5f000de05b518ffab7657e14220
-expected_signing_key_sha=${LUMA_MATCHED_CMA_SIGNING_KEY_SHA256_OVERRIDE:-$signing_key_sha}
-expected_base_boot_sha=${LUMA_MATCHED_CMA_BASE_BOOT_SHA256_OVERRIDE:-$FP6_FINGERPRINT_STOCK_NODE_NAMES_BOOT_SHA256}
-expected_base_kernel_sha=${LUMA_MATCHED_CMA_BASE_KERNEL_SHA256_OVERRIDE:-$FP6_FINGERPRINT_QSEELOG_KERNEL_SHA256}
-expected_base_ramdisk_sha=${LUMA_MATCHED_CMA_BASE_RAMDISK_SHA256_OVERRIDE:-$FP6_FINGERPRINT_BASE_RAMDISK_SHA256}
-expected_base_dtb_sha=${LUMA_MATCHED_CMA_BASE_DTB_SHA256_OVERRIDE:-$FP6_FINGERPRINT_STOCK_NODE_NAMES_DTB_SHA256}
-preserve_dtb=${LUMA_MATCHED_CMA_PRESERVE_DTB:-false}
+expected_signing_key_sha=${SUNO_MATCHED_CMA_SIGNING_KEY_SHA256_OVERRIDE:-$signing_key_sha}
+expected_base_boot_sha=${SUNO_MATCHED_CMA_BASE_BOOT_SHA256_OVERRIDE:-$FP6_FINGERPRINT_STOCK_NODE_NAMES_BOOT_SHA256}
+expected_base_kernel_sha=${SUNO_MATCHED_CMA_BASE_KERNEL_SHA256_OVERRIDE:-$FP6_FINGERPRINT_QSEELOG_KERNEL_SHA256}
+expected_base_ramdisk_sha=${SUNO_MATCHED_CMA_BASE_RAMDISK_SHA256_OVERRIDE:-$FP6_FINGERPRINT_BASE_RAMDISK_SHA256}
+expected_base_dtb_sha=${SUNO_MATCHED_CMA_BASE_DTB_SHA256_OVERRIDE:-$FP6_FINGERPRINT_STOCK_NODE_NAMES_DTB_SHA256}
+preserve_dtb=${SUNO_MATCHED_CMA_PRESERVE_DTB:-false}
 
 die() { printf 'error: %s\n' "$*" >&2; exit 1; }
 hash() { sha256sum "$1" | awk '{print $1}'; }
@@ -180,7 +180,7 @@ if [ "$preserve_dtb" = false ]; then
   [ "$(fdtget "$matched_dtb" /aliases qseecom_mem)" = "$apps" ] || die 'apps alias differs'
   [ "$(fdtget "$matched_dtb" /aliases qseecom_ta_mem)" = "$ta" ] || die 'TA alias differs'
   fdtget "$matched_dtb" /soc@0/qseecom@c1700000 qcom,appsbl-qseecom-support >/dev/null || die 'AppsBL marker absent'
-  fdtget "$matched_dtb" /firmware/scm/qseecom-tee-heaps luma,dedicated-heaps >/dev/null || die 'dedicated heaps absent'
+  fdtget "$matched_dtb" /firmware/scm/qseecom-tee-heaps Suno,dedicated-heaps >/dev/null || die 'dedicated heaps absent'
   ! fdtget "$matched_dtb" /firmware/scm memory-region >/dev/null 2>&1 || die 'global SCM pool reintroduced'
 else
   [ "$(hash "$matched_dtb")" = "$expected_base_dtb_sha" ] || die 'preserved DTB differs'
@@ -197,7 +197,7 @@ cmp "$matched_dtb" "$work/candidate/dtb"
 [ "$(stat -c %s "$candidate")" -le $((96 * 1024 * 1024)) ] || die 'candidate exceeds boot partition'
 
 {
-  printf 'LUMA_FP6_FINGERPRINT_BOOT_CANDIDATE_VERSION=14\n'
+  printf 'SUNO_FP6_FINGERPRINT_BOOT_CANDIDATE_VERSION=14\n'
   printf 'SCOPE=fp6-fingerprint-matched-cma\n'
   printf 'BASE_BOOT_SHA256=%s\n' "$expected_base_boot_sha"
   printf 'KERNEL_RELEASE=%s\n' "$kernel_release"

@@ -1,4 +1,4 @@
-From: Luma Developers
+From: Suno Developers
 Subject: [PATCH] Add the app menu window section once in grouped order
 
 The shared group loop owns insertion. Adding the same section beforehand

@@ -1,0 +1,22 @@
+[Default Applications]
+x-scheme-handler/sms=org.projectSuno.Messages.desktop
+x-scheme-handler/tel=org.projectSuno.Phone.desktop
+x-scheme-handler/Suno-depot=org.projectSuno.Depot.desktop
+x-scheme-handler/appstream=org.projectSuno.Depot.desktop
+application/vnd.android.package-archive=org.projectSuno.ApplicationInstaller.desktop
+application/vnd.projectSuno.android-package-set=org.projectSuno.ApplicationInstaller.desktop
+application/x-ms-dos-executable=org.projectSuno.ApplicationInstaller.desktop
+application/x-msdownload=org.projectSuno.ApplicationInstaller.desktop
+application/x-msi=org.projectSuno.ApplicationInstaller.desktop
+application/vnd.microsoft.portable-executable=org.projectSuno.ApplicationInstaller.desktop
+application/x-rpm=org.projectSuno.ApplicationInstaller.desktop
+application/vnd.debian.binary-package=org.projectSuno.ApplicationInstaller.desktop
+application/vnd.appimage=org.projectSuno.ApplicationInstaller.desktop
+application/vnd.flatpak=org.projectSuno.ApplicationInstaller.desktop
+application/vnd.flatpak.ref=org.projectSuno.ApplicationInstaller.desktop
+application/vnd.flatpak.repo=org.projectSuno.ApplicationInstaller.desktop
+application/vnd.snap=org.projectSuno.ApplicationInstaller.desktop
+text/plain=org.projectSuno.Notes.desktop
+text/markdown=org.projectSuno.Notes.desktop
+text/x-markdown=org.projectSuno.Notes.desktop
+text/x-readme=org.projectSuno.Notes.desktop

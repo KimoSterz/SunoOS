@@ -51,7 +51,7 @@ def assemble(packages, firmware, output):
         if row['path'].startswith('rpms/'):
             row['header_sha256']=subprocess.check_output(['rpm','-qp','--nosignature','--qf','%{SHA256HEADER}',str(path)],text=True)
         rows.append(row)
-    manifest={'schema':'org.projectluma.hardware-inputs/v1','scope':'owner-personal-test-only',
+    manifest={'schema':'org.projectSuno.hardware-inputs/v1','scope':'owner-personal-test-only',
               'device':'microsoft/sp12in','source_lock_sha256':sha(lock),
               'kernel_release':json.loads(lock.read_text())['release'],'files':rows}
     (output/'hardware-inputs.json').write_text(json.dumps(manifest,indent=2)+'\n')

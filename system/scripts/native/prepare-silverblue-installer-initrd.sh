@@ -58,7 +58,7 @@ case "$output_initrd" in
   *) output_initrd="$PWD/$output_initrd" ;;
 esac
 
-work_dir=$(mktemp -d /var/tmp/luma-silverblue-initrd.XXXXXX)
+work_dir=$(mktemp -d /var/tmp/Suno-silverblue-initrd.XXXXXX)
 cleanup() {
   rm -rf -- "$work_dir"
 }
@@ -71,13 +71,13 @@ mkdir -p "$work_dir/root"
 )
 
 install -D -m 0600 "$nm_keyfile" \
-  "$work_dir/root/etc/NetworkManager/system-connections/luma-installer.nmconnection"
-install -D -m 0600 "$kickstart" "$work_dir/root/luma.ks"
+  "$work_dir/root/etc/NetworkManager/system-connections/Suno-installer.nmconnection"
+install -D -m 0600 "$kickstart" "$work_dir/root/Suno.ks"
 if [ -n "$driver_overlay" ]; then
   cp -a "$driver_overlay/." "$work_dir/root/"
 fi
 if [ -n "$stage2_image" ]; then
-  install -m 0600 "$stage2_image" "$work_dir/root/luma-install.img"
+  install -m 0600 "$stage2_image" "$work_dir/root/Suno-install.img"
 fi
 
 mkdir -p "$(dirname -- "$output_initrd")"
@@ -99,20 +99,20 @@ xz -t "$output_initrd"
 archive_list="$work_dir/archive.list"
 xz -dc "$output_initrd" | cpio --quiet -it > "$archive_list"
 for required_path in \
-  etc/NetworkManager/system-connections/luma-installer.nmconnection \
-  luma.ks; do
+  etc/NetworkManager/system-connections/Suno-installer.nmconnection \
+  Suno.ks; do
   grep -Fxq "$required_path" "$archive_list" || {
     printf 'error: prepared initramfs is missing %s\n' "$required_path" >&2
     exit 1
   }
 done
 if [ -n "$stage2_image" ]; then
-  grep -Fxq luma-install.img "$archive_list" || {
-    printf 'error: prepared initramfs is missing luma-install.img\n' >&2
+  grep -Fxq Suno-install.img "$archive_list" || {
+    printf 'error: prepared initramfs is missing Suno-install.img\n' >&2
     exit 1
   }
   extracted_stage2_hash=$(
-    xz -dc "$output_initrd" | cpio --quiet -i --to-stdout luma-install.img | sha256sum | awk '{print $1}'
+    xz -dc "$output_initrd" | cpio --quiet -i --to-stdout Suno-install.img | sha256sum | awk '{print $1}'
   )
   source_stage2_hash=$(sha256sum "$stage2_image" | awk '{print $1}')
   [ "$extracted_stage2_hash" = "$source_stage2_hash" ] || {

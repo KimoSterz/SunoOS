@@ -1,8 +1,8 @@
 # Dash to Dock patch set
 
-Project Luma carries a narrow downstream patch over Fedora's exact Dash to
+Project Suno carries a narrow downstream patch over Fedora's exact Dash to
 Dock 105 source RPM. The patch keeps the extension's identity, license, and
-upstream history intact while making Luma's dock material, apps glyph,
+upstream history intact while making Suno's dock material, apps glyph,
 divider, geometry, and activity indicators first-class source components.
 
 The four-dot Show Applications glyph is a source-owned SVG installed into the
@@ -13,13 +13,13 @@ cold boot.
 - Upstream: <https://github.com/micheleg/dash-to-dock>
 - Fedora source RPM: `gnome-shell-extension-dash-to-dock-105-1.fc44.src.rpm`
 - License: GPL-2.0-or-later
-- Luma patches: GPL-2.0-or-later, to remain compatible with upstream
+- Suno patches: GPL-2.0-or-later, to remain compatible with upstream
 
-`0000-luma-fedora-spec.patch` gives the downstream package a deterministic
-release and registers the source patch. `0001-luma-dock-material.patch`
+`0000-Suno-fedora-spec.patch` gives the downstream package a deterministic
+release and registers the source patch. `0001-Suno-dock-material.patch`
 contains the functional and visual changes. It also removes the slide
 container's explicit viewport only when the dock is fixed. Sliding docks keep
-the upstream clip; the fixed Luma dock needs its surrounding paint space so a
+the upstream clip; the fixed Suno dock needs its surrounding paint space so a
 rounded CSS shadow is not cut into a rectangle.
 
 The Trash location remains Dash to Dock's native GIO-backed `trash:///`
@@ -44,6 +44,6 @@ prevents the source actor from briefly returning to its old slot.
 
 GNOME Shell has no CSS `backdrop-filter`, and its native `Shell.BlurEffect`
 clips to a rectangular actor rather than the dock's 16px radius. That produces
-a visible rectangular cutoff, so Luma deliberately uses the documented
+a visible rectangular cutoff, so Suno deliberately uses the documented
 fallback: `rgba(250,250,251,.90)` without backdrop blur. The full-width panel
 can use native compositor blur because its geometry is rectangular.

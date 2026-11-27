@@ -51,7 +51,7 @@ ICON_SUFFIXES = (".svg", ".png", ".xpm")
 SOURCE_SUFFIXES = {".ui", ".py", ".js", ".c", ".h", ".css", ".desktop", ".in"}
 SKIP_DIRS = {".git", "__pycache__", "node_modules", "tests", "test", "fixtures", "testdata"}
 NAME = r"[a-z0-9][a-z0-9._-]*[a-z0-9]"
-# Where the context says "icon name", application ids such as org.projectluma.Contacts count too.
+# Where the context says "icon name", application ids such as org.projectSuno.Contacts count too.
 ANY_NAME = r"[A-Za-z0-9][A-Za-z0-9._-]*[A-Za-z0-9]"
 
 UI_PROPERTY = re.compile(
@@ -384,7 +384,7 @@ def scan_patches(base: Path, installed_packages: set[str] | None = None) -> list
         # Only omit its sources with an actual image RPM inventory; callers
         # without that evidence retain the full check.
         if (installed_packages is not None and patch.relative_to(base).parts[0] == "stevia"
-                and not {"stevia", "luma-stevia", "phosh-osk-stub"} & installed_packages):
+                and not {"stevia", "Suno-stevia", "phosh-osk-stub"} & installed_packages):
             continue
         target, lines, numbers, new_line = None, [], [], 0
 
@@ -416,12 +416,12 @@ def scan_patches(base: Path, installed_packages: set[str] | None = None) -> list
 
 
 INSTALLED_GLOBS = (
-    "usr/share/applications/org.projectluma.*.desktop",
-    "usr/share/applications/io.luma.*.desktop",
-    "usr/lib/python3*/site-packages/luma_*",
+    "usr/share/applications/org.projectSuno.*.desktop",
+    "usr/share/applications/io.Suno.*.desktop",
+    "usr/lib/python3*/site-packages/Suno_*",
     "usr/lib/python3*/site-packages/prairie_*",
     "usr/lib/python3*/site-packages/charlie_*",
-    "usr/share/luma*",
+    "usr/share/Suno*",
     "usr/share/prairie-core",
     "usr/share/charlie",
 )
@@ -465,12 +465,12 @@ def unavailable_preview_wine_stubs(root: Path, sources: list[Path]) -> list[tupl
     def contained_file(base: Path, path: Path) -> bool:
         return not path.is_symlink() and path.is_file() and path.resolve().is_relative_to(base.resolve())
 
-    capability_path = root / "usr/share/luma/desktop-capabilities.json"
+    capability_path = root / "usr/share/Suno/desktop-capabilities.json"
     try:
         if not contained_file(root, capability_path):
             return []
         caps = json.loads(capability_path.read_text())
-        if (caps.get("schema") != "org.projectluma.desktop-capabilities/v1"
+        if (caps.get("schema") != "org.projectSuno.desktop-capabilities/v1"
                 or caps.get("architecture") != "aarch64" or caps.get("profile") != "arm-preview"
                 or not isinstance(caps.get("capabilities"), dict)
                 or caps["capabilities"].get("windows_apps") is not False
@@ -490,12 +490,12 @@ def unavailable_preview_wine_stubs(root: Path, sources: list[Path]) -> list[tupl
                 return []
             if any(os.path.lexists(base / name) for name in backends):
                 return []
-        source_roots = [base for base in sources if (base / "luma-desktop-launcher-policy/applications").is_dir()]
+        source_roots = [base for base in sources if (base / "Suno-desktop-launcher-policy/applications").is_dir()]
         if not source_roots:
             return []
         entries = []
         for filename, (icon, command) in PREVIEW_WINE_STUBS.items():
-            relative = "usr/share/luma/desktop-overrides/applications/" + filename
+            relative = "usr/share/Suno/desktop-overrides/applications/" + filename
             installed = root / relative
             if not contained_file(root, installed):
                 return []
@@ -512,7 +512,7 @@ def unavailable_preview_wine_stubs(root: Path, sources: list[Path]) -> list[tupl
                            or k.startswith(("NoDisplay[", "Icon[", "Exec[")) for k in desktop)):
                 return []
             for base in source_roots:
-                source = base / "luma-desktop-launcher-policy/applications" / filename
+                source = base / "Suno-desktop-launcher-policy/applications" / filename
                 if (not contained_file(base, source) or source.read_bytes() != installed.read_bytes()
                         or any(c in str(source) for c in "*?[]")):
                     return []

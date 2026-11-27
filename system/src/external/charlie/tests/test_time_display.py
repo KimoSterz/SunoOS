@@ -2,7 +2,7 @@
 from datetime import datetime, timedelta, timezone
 import unittest
 
-from charlie_luma.time_display import display_time, local_datetime
+from charlie_Suno.time_display import display_time, local_datetime
 
 
 class TimeDisplayTests(unittest.TestCase):

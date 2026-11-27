@@ -1,4 +1,4 @@
-From: Project Luma <luma@localhost>
+From: Project Suno <Suno@localhost>
 Subject: [PATCH] media: qcom: camss: add FP6 IMX896 C-PHY receive mode
 
 The Fairphone 6 rear-main Sony IMX896 is connected to CSIPHY0 using three

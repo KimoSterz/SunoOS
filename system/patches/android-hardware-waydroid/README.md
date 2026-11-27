@@ -1,10 +1,10 @@
-# Luma Waydroid hardware integration
+# Suno Waydroid hardware integration
 
 These patches apply to Waydroid's `android_hardware_waydroid` `lineage-20`
 branch at commit `85f31a9103b84faba24eb7cbca47750d12e64e4b`.
 
-Project Luma keeps Waydroid visibly credited as the initial Android container
-engine. This patch family owns only Luma's converged host-window integration:
+Project Suno keeps Waydroid visibly credited as the initial Android container
+engine. This patch family owns only Suno's converged host-window integration:
 
 - one Prairie client-side title component for Android application surfaces;
 - real Wayland move, minimize, maximize, restore, and close controls;
@@ -29,10 +29,10 @@ one Wayland toplevel with one lifecycle and one input coordinate space.
 
 ## Effective build order
 
-`0019` adds the shared Luma settings glyph beside Android Back. It sends only a
+`0019` adds the shared Suno settings glyph beside Android Back. It sends only a
 package-scoped presentation request through a bounded, system-UID-only channel;
-the host opens the native Luma compatibility panel. Normal sound controls remain
-in Luma. The initial panel exposes mouse-as-touch input and explicitly reopens
+the host opens the native Suno compatibility panel. Normal sound controls remain
+in Suno. The initial panel exposes mouse-as-touch input and explicitly reopens
 the app after a preference change.
 
 `0020` collects xdg-output logical monitor geometry before initial display
@@ -47,7 +47,7 @@ Android display on every configure, which left fixed-size apps letterboxed.
 
 `0022` gives Android text fields the host keyboard. The composer speaks
 `zwp_text_input_v3` and serves a system-UID-only channel
-(`luma-text-input-channel.h`) to `LumaInputMethod`, a window-less input
+(`Suno-text-input-channel.h`) to `SunoInputMethod`, a window-less input
 method: a field asking for a keyboard enables host text input, and the
 host's commits, preedit and deletions are applied to the field. Android's
 own keyboard window, which blacked out the app behind it and lost focus
@@ -84,20 +84,20 @@ the composer logs `frame stats:` (compositions, new buffers, skipped, dmabuf
 or shm), since Android's timestats does not track video layers.
 
 `0024` derives Android's density from the output in touch presentations
-(Luma reserves its bars: `persist.luma.status_bar_px` or `nav_bar_px` > 0):
+(Suno reserves its bars: `persist.Suno.status_bar_px` or `nav_bar_px` > 0):
 the output's physical pixel density, snapped to an Android bucket, published
 as `ro.sf.lcd_density` when the composer starts instead of when the first
 window calibrates (420 on a Pixel 9). The desktop, and outputs reporting no
 physical size, keep 180 per scale step. The value is also published as
-`luma.touch_density`, for the host to switch presentations at runtime through
+`Suno.touch_density`, for the host to switch presentations at runtime through
 WindowManager's forced density, since `ro.sf.lcd_density` is set only once.
 
 1. `0001-prairie-native-android-window-chrome.patch`
 2. `0002-prairie-host-pointer-policy.patch`
-3. `0003-luma-appkit-content-island.patch`
-4. `0004-luma-surface-treatment-frame.patch`
-5. `0007-lumaui-current-inset-frame.patch`
-6. `0008-luma-desktop-window-behavior-recovery.patch`
+3. `0003-Suno-appkit-content-island.patch`
+4. `0004-Suno-surface-treatment-frame.patch`
+5. `0007-SunoUI-current-inset-frame.patch`
+6. `0008-Suno-desktop-window-behavior-recovery.patch`
 
 Historical `0005` requires intermediate sources absent from both the pinned
 upstream tree and the preserved Sep12 files. Preserve `0005`, `0006` and that
@@ -114,7 +114,7 @@ compare the three shared frame headers, resize-worker header and Figtree notice.
 incremental state includes both new patch hashes, so an older prepared tree
 cannot silently retain its older behavior.
 
-`0007` takes geometry and colors from current `lumaui.window` and `lumaui.colors`
+`0007` takes geometry and colors from current `SunoUI.window` and `SunoUI.colors`
 tokens, with the same native symbolic control SVGs: 46px title row, 30px controls,
 8px left/right/bottom content gutters, 20px outer and 12px island radii. Android
 Back sits immediately before Minimize. The platform SDK installs the generated
@@ -135,7 +135,7 @@ primitive/worker checks. Complete HWC/image compilation, actual mouse/touch
 move/resize/maximize/restore, missing-size recovery, accessibility, visual
 shadow parity, media-layer regression and upgrade/rollback remain required.
 
-The patch includes the pinned Figtree 2.0.3 variable font used by native Luma
+The patch includes the pinned Figtree 2.0.3 variable font used by native Suno
 title bars. Its expected SHA-256 is
 `26ad3db9b31ff7dde67a91ff515d022d2f495cd506590699cf264f0bfe6fb714`.
 The unmodified copyright/OFL notice is pinned to Google Fonts commit
@@ -155,7 +155,7 @@ before calling Android's task manager. This avoids silently changing a frozen
 HIDL transport ABI.
 
 The desktop component is intentionally absent when Android property
-`persist.luma.device_class=handheld`. Desktop, tablet, and handheld therefore
+`persist.Suno.device_class=handheld`. Desktop, tablet, and handheld therefore
 use the same compositor and Android runtime; posture changes only presentation.
 
 The second patch consumes SurfaceFlinger's cursor layer without assigning it a
@@ -166,7 +166,7 @@ complete presentation surface.
 
 The third patch consumes the platform's toolkit-independent frame primitive and
 its generated design tokens. Both preparation paths compare the vendored header
-bytes against `src/luma-platform/compat` and reject drift. The frame remains a
+bytes against `src/Suno-platform/compat` and reject drift. The frame remains a
 subsurface of the app's existing toplevel. In SurfaceFlinger-composed RGB mode,
 Wayland viewporter fits the existing canvas to the island; pointer, touch and
 stylus coordinates use the inverse scale. Resizing this mode does not change
@@ -178,7 +178,7 @@ system/vendor image construction, runtime graphics/input/accessibility and
 cold-boot/rollback checks remain open. Do not admit it from source checks alone.
 See `docs/changes/2026-09-06-android-appkit-frame.md`.
 
-`0009-luma-frame-buffer-thread-ownership.patch` fixes an installed clean-boot
+`0009-Suno-frame-buffer-thread-ownership.patch` fixes an installed clean-boot
 Scudo double-free in `redraw_titlebar`: the HWC creation thread and Wayland
 configure dispatcher could replace the same proxy/mapping simultaneously.
 Frame storage and geometry share a per-window recursive lock. Opaque never
@@ -190,7 +190,7 @@ require the unlocked control to fail. Compiled callback tests exercise retired
 handles, in-flight lifetime, concurrency, stale generations and capacity refusal.
 Installed repeated close/reopen and resize controls remain mandatory.
 
-`0010-luma-authoritative-task-removal.patch` adds the backward-compatible window
+`0010-Suno-authoritative-task-removal.patch` adds the backward-compatible window
 HAL 1.3 task-removal method. Android TaskStackListener supplies the authoritative
 task ID; only system_server UID 1000 can retire its host surface. Healthy
 minimized windows remain alive. Resize work is cancelled before collection
@@ -198,7 +198,7 @@ locking, callback admission is retired before erase, and existing in-flight
 listeners keep their strong owners. Native task-removal tests cover unauthorized
 UIDs, unknown/zero IDs, minimized survivors and callback lifetime.
 
-`0011-luma-mandatory-initial-task-resize.patch` prevents an old composed layer
+`0011-Suno-mandatory-initial-task-resize.patch` prevents an old composed layer
 from acknowledging and cancelling a newly queued resize before its first socket
 delivery. The worker owns the first dispatch under the existing generation lock;
 retry, cancellation and value-only thread ownership remain unchanged. A blocked
@@ -206,7 +206,7 @@ worker regression fails with the preceding header and passes with the corrected
 header. Composed layer bounds remain weaker than package-manager task bounds;
 installed close/reopen content-size stress is required before acceptance.
 
-`0012-luma-shared-composer-rpc-threadpool.patch` matches the module's HIDL
+`0012-Suno-shared-composer-rpc-threadpool.patch` matches the module's HIDL
 thread pool configuration to the maintained composer service's four-thread,
 caller-joins pool. Configuring one thread after service registration has started
 the shared pool causes libhwbinder to abort; configuring earlier can silently

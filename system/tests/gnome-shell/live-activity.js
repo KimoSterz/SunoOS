@@ -22,10 +22,10 @@ const item = (extension, application_id = 'org.example.App') => ({
     },
 });
 
-// Exactly what luma-calls published for the owner's Claude Desktop voice call:
+// Exactly what Suno-calls published for the owner's Claude Desktop voice call:
 // a category, a start, and a subtitle carrying the elapsed clock.
 const claudeCall = item({
-    id: 'calls.active', app_id: 'org.projectluma.Calls', category: 'call',
+    id: 'calls.active', app_id: 'org.projectSuno.Calls', category: 'call',
     title: 'Claude', subtitle: 'Claude · 03:23',
     starts_at: '2026-09-16T16:40:12.402119+00:00',
     actions: [
@@ -35,12 +35,12 @@ const claudeCall = item({
         {id: 'call.hangup', label: 'End call', risk: 'low', enabled: false,
             description: 'Claude does not allow another application to end its calls.'},
     ],
-}, 'org.projectluma.Calls');
+}, 'org.projectSuno.Calls');
 const calendar = item({
     id: 'agenda.next', category: 'event', title: 'Design review',
     subtitle: 'Up next · 20 min', starts_at: '2026-09-16T17:00:00+00:00',
     actions: [{id: 'agenda.open', label: 'Open', risk: 'passive', enabled: true}],
-}, 'org.projectluma.Calendar');
+}, 'org.projectSuno.Calendar');
 const media = item({id: 'm', category: 'media', title: 'Manchild', starts_at: '2026-09-16T16:00:00Z'});
 
 // The bug: a call with a start was dressed as a calendar entry.
@@ -104,8 +104,8 @@ check('phone call: mute then hang up',
 check('muted when offering unmute', L.microphoneMuted(continuity.extension.actions), true);
 check('live when offering mute', L.microphoneMuted(claudeCall.extension.actions), false);
 check('no mic control', L.microphoneMuted([]), null);
-check('muted glyph', L.actionIcon(continuity.extension.actions[2]), 'luma-mic-off-symbolic');
-check('live glyph', L.actionIcon(claudeCall.extension.actions[0]), 'luma-mic-symbolic');
+check('muted glyph', L.actionIcon(continuity.extension.actions[2]), 'Suno-mic-off-symbolic');
+check('live glyph', L.actionIcon(claudeCall.extension.actions[0]), 'Suno-mic-symbolic');
 check('hangup glyph', L.actionIcon({id: 'call.hangup'}), 'call-stop-symbolic');
 check('unknown action has no glyph', L.actionIcon({id: 'agenda.open'}), null);
 check('lone passive action hidden',
@@ -136,7 +136,7 @@ check('initials non-latin', L.initialsOf('émile zola'), 'ÉZ');
 check('tint stable', L.tintOf('Ada Lovelace'), L.tintOf('Ada Lovelace'));
 check('tint in range', [..."abcdefghij"].every(c => L.tintOf(c) >= 0 && L.tintOf(c) < L.TINT_COUNT), true);
 
-// What luma-calls 0.1.0-1.luma.3 publishes: intent ids, mute and deafen for
+// What Suno-calls 0.1.0-1.Suno.3 publishes: intent ids, mute and deafen for
 // any application, no dead controls.
 const discord = item({
     id: 'calls.active', category: 'call', title: 'Discord', subtitle: 'Discord · 01:00',
@@ -145,11 +145,11 @@ const discord = item({
         {id: 'call.deafen', label: 'Deafen', risk: 'low', enabled: true},
         {id: 'call.mute', label: 'Mute microphone', risk: 'low', enabled: true},
     ],
-}, 'org.projectluma.Calls');
+}, 'org.projectSuno.Calls');
 check('mute then deafen', L.shownActions(discord, discord.extension.actions).map(a => a.id),
     ['call.mute', 'call.deafen']);
 check('live call state', L.callState(discord.extension.actions), 'live');
-check('deafen glyph', L.actionIcon({id: 'call.deafen', label: 'Deafen'}), 'luma-headphones-symbolic');
+check('deafen glyph', L.actionIcon({id: 'call.deafen', label: 'Deafen'}), 'Suno-headphones-symbolic');
 check('deafen role', L.actionRole({id: 'call.deafen'}), 'deafen');
 const mutedActions = [
     {id: 'call.unmute', label: 'Unmute microphone', risk: 'low', enabled: true},
@@ -162,7 +162,7 @@ const deafenedActions = [
     {id: 'call.undeafen', label: 'Undeafen', risk: 'low', enabled: true},
 ];
 check('deafened call state', L.callState(deafenedActions), 'deafened');
-check('deafened glyph', L.actionIcon(deafenedActions[1]), 'luma-headphones-off-symbolic');
+check('deafened glyph', L.actionIcon(deafenedActions[1]), 'Suno-headphones-off-symbolic');
 check('deafen is not a microphone', L.microphoneMuted([{id: 'call.undeafen', label: 'Undeafen'}]), null);
 
 // Two live tiles at most, the most urgent first (Studio Desktop): a call, a

@@ -15,7 +15,7 @@ import * as L from './lib.js';
 const EXT = 'tilingshell@ferrarodomenico.com';
 const T = GLib.path_get_dirname(GLib.getenv('SA_OUT')) + '/../tests';
 const LAYOUTS = [
-    {id: 'Luma Split', tiles: [{x: 0, y: 0, width: 0.5, height: 1}, {x: 0.5, y: 0, width: 0.5, height: 1}]},
+    {id: 'Suno Split', tiles: [{x: 0, y: 0, width: 0.5, height: 1}, {x: 0.5, y: 0, width: 0.5, height: 1}]},
     {id: 'Layout 1', tiles: [{x: 0, y: 0, width: 0.22, height: 0.5}, {x: 0, y: 0.5, width: 0.22, height: 0.5},
         {x: 0.22, y: 0, width: 0.56, height: 1}, {x: 0.78, y: 0, width: 0.22, height: 0.5},
         {x: 0.78, y: 0.5, width: 0.22, height: 0.5}]},

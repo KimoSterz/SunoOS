@@ -18,10 +18,10 @@ class PrivateMetadataTest(unittest.TestCase):
     def test_generated_private_directory_stays_private(self):
         self.assertEqual(normalize('/usr/etc/selinux/active', self.record(0o2700), {}, True)['mode'], 0o700)
     def test_generated_public_data_directory_is_traversable(self):
-        self.assertEqual(normalize('/usr/share/luma/data', self.record(0o2750), {}, True)['mode'], 0o755)
+        self.assertEqual(normalize('/usr/share/Suno/data', self.record(0o2750), {}, True)['mode'], 0o755)
     def test_private_file_never_gains_permissions(self):
         record = self.record(0o600)
-        self.assertEqual(normalize('/usr/share/luma/private', record, {}), record)
+        self.assertEqual(normalize('/usr/share/Suno/private', record, {}), record)
     def test_packaged_private_file_stays_private(self):
         record = self.record(0o640)
         self.assertEqual(normalize('/usr/etc/secret', record, {'/usr/etc/secret': 0o640}), record)

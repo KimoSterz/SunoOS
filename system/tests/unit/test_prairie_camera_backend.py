@@ -202,11 +202,11 @@ class CameraCapabilityTests(unittest.TestCase):
             now = datetime(2026, 8, 18, 13, 4, 5, tzinfo=timezone.utc)
             environment = {"HOME": directory}
             first = new_photo_path(environment, now)
-            self.assertEqual(first.name, "Luma-20260818-130405.jpg")
+            self.assertEqual(first.name, "Suno-20260818-130405.jpg")
             self.assertEqual(first.parent.name, "Camera")
             first.touch()
             second = new_photo_path(environment, now)
-            self.assertEqual(second.name, "Luma-20260818-130405-2.jpg")
+            self.assertEqual(second.name, "Suno-20260818-130405-2.jpg")
 
     def test_publication_preserves_file_created_after_name_selection(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

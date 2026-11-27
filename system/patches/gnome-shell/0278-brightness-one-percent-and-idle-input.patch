@@ -1,4 +1,4 @@
-From: Luma Developers
+From: Suno Developers
 Subject: [PATCH] Brightness keys use one percent and wake idle dimming
 
 diff --git a/js/misc/brightnessManager.js b/js/misc/brightnessManager.js

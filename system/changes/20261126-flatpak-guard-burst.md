@@ -1,7 +1,7 @@
 ---
 type: fix
 component: Apps
-packages: [luma-application-installer]
+packages: [Suno-application-installer]
 highlight: false
 ---
 Summary: App protections keep watching after many apps install at once

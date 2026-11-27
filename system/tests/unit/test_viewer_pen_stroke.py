@@ -5,7 +5,7 @@ from types import SimpleNamespace as NS
 import unittest
 from unittest.mock import Mock
 
-source = Path(__file__).resolve().parents[2] / 'src/luma-viewer/luma_viewer/application.py'
+source = Path(__file__).resolve().parents[2] / 'src/Suno-viewer/Suno_viewer/application.py'
 tree = ast.parse(source.read_text())
 methods = [n for n in ast.walk(tree) if isinstance(n, ast.FunctionDef) and n.name in ('_mark_begin', '_cancel_drag')]
 scope = {'Gdk': NS(DeviceToolType=NS(MOUSE='mouse')),

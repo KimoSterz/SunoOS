@@ -6,7 +6,7 @@ from base64 import urlsafe_b64encode
 from unittest.mock import patch
 from urllib.parse import parse_qs, urlparse
 
-from charlie_luma.oauth import GmailOAuth, MicrosoftOAuth, OAuthError, GoogleOAuthUnavailable, failure_requires_sign_in, pkce_challenge
+from charlie_Suno.oauth import GmailOAuth, MicrosoftOAuth, OAuthError, GoogleOAuthUnavailable, failure_requires_sign_in, pkce_challenge
 
 
 class GmailOAuthTests(unittest.TestCase):
@@ -17,9 +17,9 @@ class GmailOAuthTests(unittest.TestCase):
     def test_google_oauth_refuses_before_browser_socket_or_network(self):
         oauth = GmailOAuth("client-id", "client-secret")
         self.assertEqual(oauth.profile_picture_for_access_token(""), "")
-        with patch("charlie_luma.oauth.HTTPServer") as server, \
-             patch("charlie_luma.oauth._post_form") as post, \
-             patch("charlie_luma.oauth._userinfo") as profile:
+        with patch("charlie_Suno.oauth.HTTPServer") as server, \
+             patch("charlie_Suno.oauth._post_form") as post, \
+             patch("charlie_Suno.oauth._userinfo") as profile:
             with self.assertRaises(GoogleOAuthUnavailable):
                 oauth.authorization_url("http://localhost:4321", "verifier", "state")
             with self.assertRaises(GoogleOAuthUnavailable):
@@ -31,7 +31,7 @@ class GmailOAuthTests(unittest.TestCase):
     def test_saved_google_grants_are_paused_without_refresh_or_revocation(self):
         token = json.dumps({"access_token": "retained", "refresh_token": "retained-refresh",
                             "expires_at": int(time.time()) + 600})
-        with patch("charlie_luma.oauth._post_form") as post:
+        with patch("charlie_Suno.oauth._post_form") as post:
             for saved in (token, "damaged-but-retained"):
                 for forced in (False, True):
                     with self.assertRaises(GoogleOAuthUnavailable) as caught:
@@ -74,7 +74,7 @@ class MicrosoftOAuthTests(unittest.TestCase):
             "id_token": "identity",
         })
         oauth = MicrosoftOAuth.from_token_json(token)
-        with patch("charlie_luma.oauth._post_form", return_value={
+        with patch("charlie_Suno.oauth._post_form", return_value={
             "access_token": "fresh", "expires_in": 3600
         }) as post:
             access, refreshed = oauth.access_token(token, force_refresh=True)

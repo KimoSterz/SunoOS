@@ -1,0 +1,17 @@
+[Unit]
+Description=Suno bounded user Mod preferences
+
+[Service]
+Type=dbus
+BusName=org.projectSuno.ModProfiles1
+ExecStart=/usr/bin/python3 -m Suno_mods.profile_service
+# No mount namespacing: in a user manager it brings a user namespace, from
+# which callers' /proc entries (their Flatpak sandbox record) are unreadable.
+NoNewPrivileges=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+RestrictNamespaces=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+SystemCallArchitectures=native
+TasksMax=32
+MemoryMax=256M

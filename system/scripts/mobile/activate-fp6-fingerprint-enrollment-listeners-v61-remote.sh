@@ -7,9 +7,9 @@
 set -Eeuo pipefail
 umask 077
 
-stage=/tmp/luma-fp-listeners-enroll
-state=/var/lib/luma/fingerprint/qsee-state
-expected_kernel=7.1.2-luma-fp-cma1
+stage=/tmp/Suno-fp-listeners-enroll
+state=/var/lib/Suno/fingerprint/qsee-state
+expected_kernel=7.1.2-Suno-fp-cma1
 expected_module_sha=1f74052412d9fc34eb581cb7aac0df80d949ca2c6da9bd6e9e70dc2fa68415df
 expected_supplicant_sha=dd355adb58b1775752cc2ff1172b5e4ec2f5914429a9d0efbe7e8bd871e6085e
 success=false
@@ -32,8 +32,8 @@ trap cleanup EXIT INT TERM HUP
 [[ $(uname -r) == "$expected_kernel" ]] || fail kernel
 grep -qw 'androidboot.slot_suffix=_b' /proc/cmdline || fail slot
 grep -qw qcomtee /proc/modules || fail qcomtee_missing
-[[ -c /dev/luma-fp6-fingerprint ]] || fail enrollment_device_missing
-[[ $(stat -c %a /dev/luma-fp6-fingerprint) == 600 ]] || fail enrollment_device_mode
+[[ -c /dev/Suno-fp6-fingerprint ]] || fail enrollment_device_missing
+[[ $(stat -c %a /dev/Suno-fp6-fingerprint) == 600 ]] || fail enrollment_device_mode
 ! grep -qw qseecomtee /proc/modules || fail qseecomtee_already_loaded
 ! pgrep -x qsee-supplicant >/dev/null || fail supplicant_already_running
 [[ -d $stage && ! -L $stage ]] || fail stage

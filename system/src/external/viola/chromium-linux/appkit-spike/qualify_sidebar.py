@@ -5,7 +5,7 @@ import json
 import gi
 gi.require_version('Gtk', '4.0')
 from gi.repository import Gtk
-from luma_appkit import install_appkit
+from Suno_appkit import install_appkit
 from native_sidebar import NativeSidebar
 
 

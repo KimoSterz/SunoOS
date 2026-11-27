@@ -1,15 +1,15 @@
-# Native Luma boot presentations
+# Native Suno boot presentations
 
-The desktop selects `luma-loading`. It starts on the firmware's BGRT logo
-(through Luma's Plymouth script patch), cross-fades to the Ink surface with the
+The desktop selects `Suno-loading`. It starts on the firmware's BGRT logo
+(through Suno's Plymouth script patch), cross-fades to the Ink surface with the
 wordmark and loader, and draws its own unlock prompt and update screen.
-`luma-firmware`, Plymouth's two-step plugin keeping the firmware logo for the
+`Suno-firmware`, Plymouth's two-step plugin keeping the firmware logo for the
 whole boot, stays packaged; its images are rendered from the brand SVGs at
 package build by `scripts/boot/render-firmware-theme.py`, which also renders
-the prompt pieces for `luma-loading`'s surface. See `config/boot/README.md` for
+the prompt pieces for `Suno-loading`'s surface. See `config/boot/README.md` for
 the selection and migration policy.
 
-One shared renderer (`luma-theme.script.in`) is compiled into the two script
+One shared renderer (`Suno-theme.script.in`) is compiled into the two script
 Plymouth themes by `scripts/boot/compile-theme.py`. Desktop defaults to
 Hearth/Ink/dots/word/indeterminate; handheld keeps Hearth/Paper/dots/word/activity.
 The generated scripts remain checked in for source/composition inspections;
@@ -32,7 +32,7 @@ build the new RPM, and compose the corresponding initramfs/deployment. Do not
 copy theme files manually into a release image or advertise live user settings.
 
 GRUB owns Threshold's real pre-kernel choices and timeout. Preview timeout policy
-with `/usr/libexec/luma-apply-grub-policy --timeout 5 --print-policy`
+with `/usr/libexec/Suno-apply-grub-policy --timeout 5 --print-policy`
 on an installed image (or the source script in `config/boot`); applying
 it requires the existing authorized OSTree composition path. The theme cannot
 invent boot entries or select another boot device after kernel handoff.

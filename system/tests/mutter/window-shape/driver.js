@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
-// gnome-shell --automation-script for the luma_window_shape_v1 test (run.sh).
-// LUMA_SHAPE_TILER=none: real pointer drags from every edge and corner
+// gnome-shell --automation-script for the Suno_window_shape_v1 test (run.sh).
+// SUNO_SHAPE_TILER=none: real pointer drags from every edge and corner
 // through a Clutter virtual pointer, maximize, Mutter's half tiles
 // (Super+Left/Right), a tiling manager's tiles through
 // meta_window_set_externally_tiled() at several sizes and below the minimum,
 // fullscreen, and ordinary GTK 3, GTK 4 and libadwaita windows.
-// LUMA_SHAPE_TILER=tilingshell: Tiling Shell's own zones (half, quarter,
+// SUNO_SHAPE_TILER=tilingshell: Tiling Shell's own zones (half, quarter,
 // third, strip, a zone below the minimum size), its neighbours,
 // drag-to-zone, its keyboard moves and an app letting go of its shape.
 // Screenshots are taken mid-drag, with the button still held.
@@ -17,11 +17,11 @@ import Mtk from 'gi://Mtk';
 import Shell from 'gi://Shell';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
-const out = GLib.getenv('LUMA_SHAPE_OUT');
-const here = GLib.getenv('LUMA_SHAPE_HERE');
-const client = GLib.getenv('LUMA_SHAPE_CLIENT');
-const expectEnforced = GLib.getenv('LUMA_SHAPE_EXPECT') !== 'stock';
-const tiler = GLib.getenv('LUMA_SHAPE_TILER') || 'none';
+const out = GLib.getenv('SUNO_SHAPE_OUT');
+const here = GLib.getenv('SUNO_SHAPE_HERE');
+const client = GLib.getenv('SUNO_SHAPE_CLIENT');
+const expectEnforced = GLib.getenv('SUNO_SHAPE_EXPECT') !== 'stock';
+const tiler = GLib.getenv('SUNO_SHAPE_TILER') || 'none';
 const MIN_W = 400, MIN_H = 300; // the locked client's minimum content size
 const results = [];
 const shots = [];
@@ -35,7 +35,7 @@ const check = (name, ok, detail = '') => {
     results.push({name, ok: !!ok, detail: String(detail)});
     console.log(`${ok ? 'PASS' : 'FAIL'} ${name} ${detail}`);
 };
-const mark = text => console.log(`LUMA-SHAPE-MARK ${text}`);
+const mark = text => console.log(`SUNO-SHAPE-MARK ${text}`);
 const frame = w => {
     const r = w.get_frame_rect();
     return {x: r.x, y: r.y, width: r.width, height: r.height};
@@ -213,8 +213,8 @@ async function drag(w, edge, dx, dy, opts = {}) {
 function configuresBetween(begin, end) {
     const [, bytes] = GLib.file_get_contents(`${out}/shell.log`);
     const text = new TextDecoder().decode(bytes);
-    const a = text.indexOf(`LUMA-SHAPE-MARK ${begin}`);
-    const b = text.indexOf('LUMA-SHAPE-MARK', a + 1);
+    const a = text.indexOf(`SUNO-SHAPE-MARK ${begin}`);
+    const b = text.indexOf('SUNO-SHAPE-MARK', a + 1);
     const segment = text.slice(a, end === 'eof' ? text.length : b < 0 ? text.length : b);
     return [...segment.matchAll(/Configuring xdg_toplevel#(\d+) \(wl_surface#(\d+)\): serial=(\d+) state=([^,]*), size=(\d+)x(\d+)/g)]
         .map(m => ({toplevel: m[1], surface: m[2], states: m[4], width: +m[5], height: +m[6]}));
@@ -339,7 +339,7 @@ async function work() {
     check('unmaximize: restores the floating size', frame(locked).width === 640 || contentRatioOk(frame(locked), base), JSON.stringify(frame(locked)));
 
     // -- Mutter's half tiles (edge tiling: drag to a screen edge) -------------
-    // Luma turns Mutter's own tiling off in favour of Tiling Shell; run.sh
+    // Suno turns Mutter's own tiling off in favour of Tiling Shell; run.sh
     // turns edge tiling on so this path is covered for every other setup.
     ref.unminimize();
     ref.activate(global.get_current_time());
@@ -536,16 +536,16 @@ function shellLogLength() {
     return bytes.length;
 }
 
-// Tiling Shell's corrections ([luma-tiling] tile-corrected / tile-refused /
+// Tiling Shell's corrections ([Suno-tiling] tile-corrected / tile-refused /
 // reflow-stopped) for a window since a shell.log offset.
 function tilerCorrections(since, title) {
     const [, bytes] = GLib.file_get_contents(`${out}/shell.log`);
     const text = new TextDecoder().decode(bytes.slice(since));
-    return text.split('\n').filter(l => l.includes('[luma-tiling]') && l.includes(`"${title}"`) &&
+    return text.split('\n').filter(l => l.includes('[Suno-tiling]') && l.includes(`"${title}"`) &&
         /put .* back in its tile|stays at|stopped re-tiling/.test(l));
 }
 
-// Tiling Shell, as Luma ships it: its zones through its own tile path, its
+// Tiling Shell, as Suno ships it: its zones through its own tile path, its
 // neighbours, drag-to-zone, screen-edge tiling and its keyboard moves.
 async function tilingShell({locked, ref, base, sizes, clientAtFrame, lockedLog, refLog}) {
     const ts = Main.extensionManager.lookup('tilingshell@ferrarodomenico.com')?.stateObj;
@@ -652,7 +652,7 @@ async function tilingShell({locked, ref, base, sizes, clientAtFrame, lockedLog, 
     key(Clutter.KEY_Super_L, false);
     await sleep(1500);
     const byKey = !sameRect(frame(locked), before);
-    // In the headless seat the Luma Shell does not route Super+arrow from the
+    // In the headless seat the Suno Shell does not route Super+arrow from the
     // virtual keyboard to Tiling Shell; run the handler that key binding runs
     // (move-window-left) so its keyboard tile path is still exercised.
     console.log(`keyboard move: Super+Left from the virtual keyboard ${byKey ? 'moved' : 'did not move'} the window`);
@@ -679,7 +679,7 @@ async function finish() {
 }
 
 // Upstream GNOME Shell's automation runner calls run() once the shell is up;
-// Luma Shell's calls init(). Whichever comes first runs the scenario once.
+// Suno Shell's calls init(). Whichever comes first runs the scenario once.
 let started = null;
 function start() {
     started ??= (async () => {

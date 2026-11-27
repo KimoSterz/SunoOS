@@ -8,7 +8,7 @@
 
 set -Eeuo pipefail
 
-stage=/tmp/luma-fingerprint-dedicated-heaps-module-v10
+stage=/tmp/Suno-fingerprint-dedicated-heaps-module-v10
 module=$stage/qseecomtee.ko
 expected_model='The Fairphone (Gen. 6)'
 expected_kernel=7.1.2
@@ -45,7 +45,7 @@ cleanup() {
       printf 'event=cleanup_error reason=module_still_loaded\n' >&2
       cleanup_status=1
     fi
-    if [[ -d $stage && ! -L $stage && $stage == /tmp/luma-fingerprint-dedicated-heaps-module-v10 ]]; then
+    if [[ -d $stage && ! -L $stage && $stage == /tmp/Suno-fingerprint-dedicated-heaps-module-v10 ]]; then
       find "$stage" -depth -delete || cleanup_status=1
     else
       printf 'event=cleanup_error reason=stage_identity\n' >&2
@@ -79,8 +79,8 @@ runtime_config=$(gzip -dc /proc/config.gz)
 grep -qx 'CONFIG_QCOM_TZMEM_MODE_SHMBRIDGE=y' <<<"$runtime_config" || fail shmbridge_config
 grep -qx '# CONFIG_QCOM_TZMEM_MODE_GENERIC is not set' <<<"$runtime_config" || fail generic_tzmem_enabled
 grep -qx '# CONFIG_DMA_CMA is not set' <<<"$runtime_config" || fail dma_cma_enabled
-[[ $(sha256sum /lib/modules/7.1.2/extra/luma-fingerprint/focaltech_fp.ko | cut -d' ' -f1) == "$expected_focal_module_sha" ]] || fail focal_module_hash
-[[ $(sha256sum /lib/modules/7.1.2/extra/luma-fingerprint/qseecomtee.ko | cut -d' ' -f1) == "$expected_installed_module_sha" ]] || fail installed_qsee_module_hash
+[[ $(sha256sum /lib/modules/7.1.2/extra/Suno-fingerprint/focaltech_fp.ko | cut -d' ' -f1) == "$expected_focal_module_sha" ]] || fail focal_module_hash
+[[ $(sha256sum /lib/modules/7.1.2/extra/Suno-fingerprint/qseecomtee.ko | cut -d' ' -f1) == "$expected_installed_module_sha" ]] || fail installed_qsee_module_hash
 ! grep -qw qseecomtee /proc/modules || fail module_already_loaded
 ! pgrep -x qsee-supplicant >/dev/null || fail supplicant_running
 ! pgrep -x qsee-app-loader >/dev/null || fail loader_running
@@ -91,8 +91,8 @@ scm=/proc/device-tree/firmware/scm
 child=$scm/qseecom-tee-heaps
 [[ -d $ta_pool && -d $apps_pool && -d $child ]] || fail dedicated_dt_nodes
 [[ ! -e $scm/memory-region ]] || fail global_scm_owns_pool
-[[ $(tr -d '\0' <"$child/compatible") == luma,qseecom-tee-heaps ]] || fail child_compatible
-[[ -e $child/luma,dedicated-heaps ]] || fail child_opt_in
+[[ $(tr -d '\0' <"$child/compatible") == Suno,qseecom-tee-heaps ]] || fail child_compatible
+[[ -e $child/Suno,dedicated-heaps ]] || fail child_opt_in
 [[ $(od -An -tx1 -v "$child/memory-region-names" | tr -d ' \n') == 7461006170707300 ]] || fail memory_region_names
 [[ $(od -An -tx1 -v "$ta_pool/size" | tr -d ' \n') == 0000000001000000 ]] || fail ta_pool_size
 [[ $(od -An -tx1 -v "$apps_pool/size" | tr -d ' \n') == 0000000001400000 ]] || fail apps_pool_size

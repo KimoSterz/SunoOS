@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """Messages forms composed from the kit's modal, card and navigation controls."""
 from gi.repository import Adw, GObject, Gtk
-from luma_appkit import Card, IconOnlyButton, LayerHost, PageHeader
+from Suno_appkit import Card, IconOnlyButton, LayerHost, PageHeader
 
 
 class MessagesDialog(Card):

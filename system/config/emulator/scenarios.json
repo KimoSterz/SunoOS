@@ -5,7 +5,7 @@
       "summary": "Return the guest to its ordinary state: network on, no shaping, default appearance and accessibility settings, no scenario environment.",
       "interface": "NetworkManager, org.gnome.desktop.* settings",
       "supported": true,
-      "script": "nmcli networking on >/dev/null 2>&1 || true\nsudo tc qdisc del dev enp0s1 root >/dev/null 2>&1 || true\ngsettings reset org.gnome.desktop.interface text-scaling-factor || true\ngsettings reset org.gnome.desktop.interface enable-animations || true\ngsettings reset org.gnome.desktop.interface color-scheme || true\ngsettings reset org.gnome.desktop.a11y.interface high-contrast || true\ngsettings reset org.gnome.desktop.a11y.applications screen-keyboard-enabled || true\nrm -f \"$HOME/.local/share/luma-emulator/scenario.env\"\necho 'guest returned to normal'"
+      "script": "nmcli networking on >/dev/null 2>&1 || true\nsudo tc qdisc del dev enp0s1 root >/dev/null 2>&1 || true\ngsettings reset org.gnome.desktop.interface text-scaling-factor || true\ngsettings reset org.gnome.desktop.interface enable-animations || true\ngsettings reset org.gnome.desktop.interface color-scheme || true\ngsettings reset org.gnome.desktop.a11y.interface high-contrast || true\ngsettings reset org.gnome.desktop.a11y.applications screen-keyboard-enabled || true\nrm -f \"$HOME/.local/share/Suno-emulator/scenario.env\"\necho 'guest returned to normal'"
     },
     {
       "id": "offline",
@@ -26,21 +26,21 @@
       "summary": "Publish one incoming-message notification through the freedesktop notification service the shell actually listens to.",
       "interface": "org.freedesktop.Notifications",
       "supported": true,
-      "script": "gdbus call --session --dest org.freedesktop.Notifications --object-path /org/freedesktop/Notifications --method org.freedesktop.Notifications.Notify 'Messages' 0 'org.projectluma.Messages' 'Avery Chen' 'Are we still on for tomorrow?' '[]' '{}' 8000"
+      "script": "gdbus call --session --dest org.freedesktop.Notifications --object-path /org/freedesktop/Notifications --method org.freedesktop.Notifications.Notify 'Messages' 0 'org.projectSuno.Messages' 'Avery Chen' 'Are we still on for tomorrow?' '[]' '{}' 8000"
     },
     {
       "id": "multiple-notifications",
       "summary": "Publish four notifications in sequence so stacking, grouping and overflow presentation can be inspected.",
       "interface": "org.freedesktop.Notifications",
       "supported": true,
-      "script": "set -e\nnotify() { gdbus call --session --dest org.freedesktop.Notifications --object-path /org/freedesktop/Notifications --method org.freedesktop.Notifications.Notify \"$1\" 0 \"$2\" \"$3\" \"$4\" '[]' '{}' 12000 >/dev/null; }\nnotify Messages org.projectluma.Messages 'Avery Chen' 'Are we still on for tomorrow?'\nnotify Messages org.projectluma.Messages 'Rowan Patel' 'Sent the file over.'\nnotify Calendar org.projectluma.Calendar 'Design review' 'Starts in 10 minutes'\nnotify Tasks org.projectluma.Tasks 'Water the plants' 'Due today'\necho 'four notifications published'"
+      "script": "set -e\nnotify() { gdbus call --session --dest org.freedesktop.Notifications --object-path /org/freedesktop/Notifications --method org.freedesktop.Notifications.Notify \"$1\" 0 \"$2\" \"$3\" \"$4\" '[]' '{}' 12000 >/dev/null; }\nnotify Messages org.projectSuno.Messages 'Avery Chen' 'Are we still on for tomorrow?'\nnotify Messages org.projectSuno.Messages 'Rowan Patel' 'Sent the file over.'\nnotify Calendar org.projectSuno.Calendar 'Design review' 'Starts in 10 minutes'\nnotify Tasks org.projectSuno.Tasks 'Water the plants' 'Due today'\necho 'four notifications published'"
     },
     {
       "id": "calendar-reminder",
       "summary": "Publish one calendar reminder notification.",
       "interface": "org.freedesktop.Notifications",
       "supported": true,
-      "script": "gdbus call --session --dest org.freedesktop.Notifications --object-path /org/freedesktop/Notifications --method org.freedesktop.Notifications.Notify 'Calendar' 0 'org.projectluma.Calendar' 'Design review' 'Starts in 10 minutes, Studio 2' '[]' '{}' 10000"
+      "script": "gdbus call --session --dest org.freedesktop.Notifications --object-path /org/freedesktop/Notifications --method org.freedesktop.Notifications.Notify 'Calendar' 0 'org.projectSuno.Calendar' 'Design review' 'Starts in 10 minutes, Studio 2' '[]' '{}' 10000"
     },
     {
       "id": "large-text",
@@ -58,7 +58,7 @@
     },
     {
       "id": "reduced-motion",
-      "summary": "Disable animations. Luma's AppKit motion_duration() reads the same toolkit preference, so component transitions collapse to zero.",
+      "summary": "Disable animations. Suno's AppKit motion_duration() reads the same toolkit preference, so component transitions collapse to zero.",
       "interface": "org.gnome.desktop.interface enable-animations",
       "supported": true,
       "script": "gsettings set org.gnome.desktop.interface enable-animations false\ngsettings get org.gnome.desktop.interface enable-animations"
@@ -89,14 +89,14 @@
       "summary": "Launch subsequent previews in a right-to-left locale. Applies to previews started after the scenario, because text direction is fixed at application start.",
       "interface": "POSIX locale, honoured by GTK text direction",
       "supported": true,
-      "script": "mkdir -p \"$HOME/.local/share/luma-emulator\"\nprintf 'export LANG=ar_EG.UTF-8\\nexport LC_ALL=ar_EG.UTF-8\\nexport LANGUAGE=ar\\n' > \"$HOME/.local/share/luma-emulator/scenario.env\"\necho 'right-to-left locale armed for the next preview launch'"
+      "script": "mkdir -p \"$HOME/.local/share/Suno-emulator\"\nprintf 'export LANG=ar_EG.UTF-8\\nexport LC_ALL=ar_EG.UTF-8\\nexport LANGUAGE=ar\\n' > \"$HOME/.local/share/Suno-emulator/scenario.env\"\necho 'right-to-left locale armed for the next preview launch'"
     },
     {
       "id": "long-localization",
       "summary": "Launch subsequent previews in a locale with long translated strings, to expose truncation and wrapping.",
       "interface": "POSIX locale",
       "supported": true,
-      "script": "mkdir -p \"$HOME/.local/share/luma-emulator\"\nprintf 'export LANG=de_DE.UTF-8\\nexport LC_ALL=de_DE.UTF-8\\nexport LANGUAGE=de\\n' > \"$HOME/.local/share/luma-emulator/scenario.env\"\necho 'long-string locale armed for the next preview launch'"
+      "script": "mkdir -p \"$HOME/.local/share/Suno-emulator\"\nprintf 'export LANG=de_DE.UTF-8\\nexport LC_ALL=de_DE.UTF-8\\nexport LANGUAGE=de\\n' > \"$HOME/.local/share/Suno-emulator/scenario.env\"\necho 'long-string locale armed for the next preview launch'"
     },
     {
       "id": "landscape",

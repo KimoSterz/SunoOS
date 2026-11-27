@@ -3,17 +3,17 @@
 
 # Physical C0 gate for the RAM-only FP6 BinderFS plus Android memfd/ashmem
 # compatibility kernel.  This verifies the exact ioctl sequence used by
-# Android libcutils while proving boot_b and Luma's normal modem ownership are
+# Android libcutils while proving boot_b and Suno's normal modem ownership are
 # unchanged.
 
 set -Eeuo pipefail
 umask 077
 
-release=7.1.2-luma-fp-ims1
+release=7.1.2-Suno-fp-ims1
 boot_b_sha=2eb1c71fe073c8624ed6f1a4f1267744cd7c8281b52c4f64eca65b9f9050a1e6
-candidate=/var/tmp/luma-fp6-stock-android-memfd-boot1/boot-fp6-luma-binderfs-memfd-ram1.img
+candidate=/var/tmp/Suno-fp6-stock-android-memfd-boot1/boot-fp6-Suno-binderfs-memfd-ram1.img
 candidate_sha=fae4c67c00f37abab072ce7cb51c8205d97de221544ce97df9ed6fb80e62d5fc
-hook=/var/tmp/luma-stock-android-container-build-inputs/fp6-stock-android-binderfs-lxc-hook.py
+hook=/var/tmp/Suno-stock-android-container-build-inputs/fp6-stock-android-binderfs-lxc-hook.py
 hook_sha=0b4b7ba7517a71b5894407e61ca5eaf9385a56b310f37b48c4e721e4fa2ffdca
 test_root=
 
@@ -51,7 +51,7 @@ import fcntl
 import os
 
 size = 65536
-fd = os.memfd_create("luma-android-ashmem-gate", os.MFD_CLOEXEC | os.MFD_ALLOW_SEALING)
+fd = os.memfd_create("Suno-android-ashmem-gate", os.MFD_CLOEXEC | os.MFD_ALLOW_SEALING)
 try:
     os.ftruncate(fd, size)
     fcntl.fcntl(fd, fcntl.F_ADD_SEALS, fcntl.F_SEAL_GROW | fcntl.F_SEAL_SHRINK)
@@ -72,13 +72,13 @@ for process in qcrilNrd imsdaemon ims-dataservice-daemon ims_rtp_daemon; do
 done
 systemctl is-active --quiet ModemManager.service || die 'ModemManager is not active'
 
-test_root=$(mktemp -d /run/luma-binderfs-memfd-ram1.XXXXXXXX)
+test_root=$(mktemp -d /run/Suno-binderfs-memfd-ram1.XXXXXXXX)
 mkdir -m 0700 "$test_root/dev" "$test_root/dev/binderfs"
 unshare --mount --ipc --fork --propagation private -- /bin/bash -euo pipefail -c '
   root=$1
   hook=$2
   mount -t binder binder -o max=3 "$root/dev/binderfs"
-  env LXC_NAME=luma-stock-android-c1 LXC_ROOTFS_MOUNT="$root" "$hook"
+  env LXC_NAME=Suno-stock-android-c1 LXC_ROOTFS_MOUNT="$root" "$hook"
   [[ $(readlink "$root/dev/binder") == binderfs/binder ]]
   [[ $(readlink "$root/dev/hwbinder") == binderfs/hwbinder ]]
   [[ $(readlink "$root/dev/vndbinder") == binderfs/vndbinder ]]

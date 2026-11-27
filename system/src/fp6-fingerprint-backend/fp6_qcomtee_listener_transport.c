@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-2-Clause
 #include "qsee_supplicant.h"
-#include "luma-fp6-listener-abi.h"
+#include "Suno-fp6-listener-abi.h"
 
 #include <errno.h>
 #include <fcntl.h>
@@ -31,19 +31,19 @@ static const struct qs_service *find_service(const struct qs_service *services,
 	return NULL;
 }
 
-static int serve_luma_qcomtee(struct qs_store *store,
+static int serve_Suno_qcomtee(struct qs_store *store,
 			      const struct qs_service *services, size_t count,
 			      volatile sig_atomic_t *stop,
 			      void (*ready)(void *data), void *ready_data)
 {
-	struct luma_fp6_listener_message message = {
-		.abi_version = LUMA_FP6_LISTENER_ABI_VERSION,
+	struct Suno_fp6_listener_message message = {
+		.abi_version = SUNO_FP6_LISTENER_ABI_VERSION,
 	};
 	void *payload;
 	const struct qs_service *service;
 	int fd, rc = -1, saved_errno;
 
-	fd = open("/dev/luma-fp6-qsee-listener", O_RDWR | O_CLOEXEC);
+	fd = open("/dev/Suno-fp6-qsee-listener", O_RDWR | O_CLOEXEC);
 	if (fd < 0)
 		return -1;
 	payload = calloc(1, 504U * 1024U);
@@ -69,10 +69,10 @@ static int serve_luma_qcomtee(struct qs_store *store,
 		int dispatch_result;
 
 		memset(&message, 0, sizeof(message));
-		message.abi_version = LUMA_FP6_LISTENER_ABI_VERSION;
+		message.abi_version = SUNO_FP6_LISTENER_ABI_VERSION;
 		message.payload_ptr = (uintptr_t)payload;
 		message.payload_capacity = 504U * 1024U;
-		if (ioctl(fd, LUMA_FP6_LISTENER_IOC_WAIT, &message)) {
+		if (ioctl(fd, SUNO_FP6_LISTENER_IOC_WAIT, &message)) {
 			if (errno == EINTR && *stop) {
 				rc = 0;
 				break;
@@ -81,7 +81,7 @@ static int serve_luma_qcomtee(struct qs_store *store,
 		}
 		service = find_service(services, count, message.listener_id);
 		if (!service ||
-		    message.abi_version != LUMA_FP6_LISTENER_ABI_VERSION ||
+		    message.abi_version != SUNO_FP6_LISTENER_ABI_VERSION ||
 		    message.buffer_size != service->buffer_size) {
 			errno = EPROTO;
 			goto out;
@@ -139,7 +139,7 @@ static int serve_luma_qcomtee(struct qs_store *store,
 					(unsigned long long)request_path_token);
 			}
 		}
-		if (ioctl(fd, LUMA_FP6_LISTENER_IOC_RESPOND, &message))
+		if (ioctl(fd, SUNO_FP6_LISTENER_IOC_RESPOND, &message))
 			goto out;
 	}
 
@@ -159,5 +159,5 @@ out:
 
 const struct qs_transport qs_qseecom_transport = {
 	.name = "qseecomcompat",
-	.serve = serve_luma_qcomtee,
+	.serve = serve_Suno_qcomtee,
 };

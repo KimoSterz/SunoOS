@@ -21,6 +21,6 @@ rm -rf /run/systemd/seats
 timeout 200 dbus-run-session -- gnome-shell --headless --no-x11 --virtual-monitor 1920x1080 \
   --automation-script=$T/sticky-dock.js > "$SD_OUT/shell.log" 2>&1
 echo "exit $?"
-grep -E "\[stickydock\]|\[luma-sticky-dock\]" "$SD_OUT/shell.log" | cut -c1-300
+grep -E "\[stickydock\]|\[Suno-sticky-dock\]" "$SD_OUT/shell.log" | cut -c1-300
 grep -c "JS ERROR" "$SD_OUT/shell.log"
 grep -i "sticky" "$SD_OUT/shell.log" | grep -iE "error|could not|ServiceUnknown" | grep -v "\[stickydock\]" | head -5

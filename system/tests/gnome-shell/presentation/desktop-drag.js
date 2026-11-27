@@ -3,7 +3,7 @@ import Clutter from 'gi://Clutter';
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
-import * as LumaGrid from 'resource:///org/gnome/shell/ui/lumaGrid.js';
+import * as SunoGrid from 'resource:///org/gnome/shell/ui/SunoGrid.js';
 export async function testDesktopDrag(p, check, sleep, shot, source) {
     const tiler = Main.extensionManager.lookup('tilingshell@ferrarodomenico.com')?.stateObj;
     check('real Desktop tiler exposes window preview drag', Boolean(tiler?.beginWindowPreviewDrag));
@@ -33,7 +33,7 @@ export async function testDesktopDrag(p, check, sleep, shot, source) {
     const pointer=Clutter.get_default_backend().get_default_seat().create_virtual_device(Clutter.InputDeviceType.POINTER_DEVICE);
     const keyboard=Clutter.get_default_backend().get_default_seat().create_virtual_device(Clutter.InputDeviceType.KEYBOARD_DEVICE);
     const now=()=>GLib.get_monotonic_time();
-    const open=async()=>{LumaGrid.show();await sleep(550);return Main.uiGroup.get_children().find(actor=>actor.constructor.name==='GridPopup');};
+    const open=async()=>{SunoGrid.show();await sleep(550);return Main.uiGroup.get_children().find(actor=>actor.constructor.name==='GridPopup');};
     const begin=async(grid)=>{
         const card=grid._cards.find(c=>c.window===a);
         check('Desktop uses existing native Grid card drag', card._delegate?.window===a);
@@ -51,7 +51,7 @@ export async function testDesktopDrag(p, check, sleep, shot, source) {
     pointer.notify_button(now(),Clutter.BUTTON_PRIMARY,Clutter.ButtonState.PRESSED);
     for(let i=1;i<=8;i++){pointer.notify_absolute_motion(now(),bx+bw/2-100*i/8,by+bh/2);await sleep(15);}
     pointer.notify_button(now(),Clutter.BUTTON_PRIMARY,Clutter.ButtonState.RELEASED);await sleep(200);
-    check('ordinary Grid browsing drag does not start window placement',!p._tasks._activeDrag && grid.opacity===255 && !tiler._lumaPreviewDrag);
+    check('ordinary Grid browsing drag does not start window placement',!p._tasks._activeDrag && grid.opacity===255 && !tiler._SunoPreviewDrag);
     const start=await begin(grid);
     const original=JSON.stringify(a.assignedTile);
     for(let step=1;step<=20;step++){
@@ -90,16 +90,16 @@ export async function testDesktopDrag(p, check, sleep, shot, source) {
     pointer.notify_button(now(),Clutter.BUTTON_PRIMARY,Clutter.ButtonState.RELEASED);
     await sleep(700);
     check('cancel restores Grid, real window opacity, original tile and geometry',!cancelGrid._destroyed && cancelGrid.opacity===255 &&
-        a.get_compositor_private().opacity===255 && JSON.stringify({frame:frame(a),tile:a.assignedTile})===before && !tiler._lumaPreviewDrag);
-    LumaGrid.toggle();await sleep(400);
+        a.get_compositor_private().opacity===255 && JSON.stringify({frame:frame(a),tile:a.assignedTile})===before && !tiler._SunoPreviewDrag);
+    SunoGrid.toggle();await sleep(400);
     const interrupted=tiler.beginWindowPreviewDrag(a);
     interrupted.update(Main.layoutManager.primaryMonitor.width*.5,Main.layoutManager.primaryMonitor.height*.5);
     tiler._createTilingManagers();
-    check('rebuilding monitor managers cancels preview before disposing its zones',!tiler._lumaPreviewDrag && !interrupted.drop());
+    check('rebuilding monitor managers cancels preview before disposing its zones',!tiler._SunoPreviewDrag && !interrupted.drop());
     await Main.extensionManager.disableExtension('tilingshell@ferrarodomenico.com');await sleep(300);
     const offGrid=await open();
     check('Grid respects disabled Desktop tiling without enabling it',!offGrid._cards.find(c=>c.window===a)._delegate &&
         Main.extensionManager.lookup('tilingshell@ferrarodomenico.com').state!==1);
-    LumaGrid.toggle();await sleep(400);
+    SunoGrid.toggle();await sleep(400);
     a.delete(global.get_current_time());b.delete(global.get_current_time());
 }

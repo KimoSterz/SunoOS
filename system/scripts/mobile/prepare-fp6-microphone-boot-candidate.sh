@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
 
-# Replace only the DTB in Luma's physically proven FP6 audio boot image. The
+# Replace only the DTB in Suno's physically proven FP6 audio boot image. The
 # kernel, ramdisk, and every boot-header field remain byte-identical. Keeping
 # the kernel is required because the installed module set uses split BTF tied
 # to its exact base-type graph. This script is offline: it cannot contact a
@@ -17,7 +17,7 @@ repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 base_boot=${1:?usage: prepare-fp6-microphone-boot-candidate.sh BASE_BOOT MICROPHONE_BUNDLE [OUTPUT_DIR]}
 bundle=${2:?usage: prepare-fp6-microphone-boot-candidate.sh BASE_BOOT MICROPHONE_BUNDLE [OUTPUT_DIR]}
 output_dir=${3:-$repo_root/build/mobile/fp6-physical/fp6-microphone-boot-v2}
-candidate=$output_dir/boot-fp6-luma-microphone-v2.img
+candidate=$output_dir/boot-fp6-Suno-microphone-v2.img
 bundle_manifest=$bundle/manifest.env
 dtb=$bundle/milos-fairphone-fp6.dtb
 
@@ -60,7 +60,7 @@ fi
 # shellcheck disable=SC1090
 . "$bundle_manifest"
 
-[ "${LUMA_FP6_MICROPHONE_BUILD_VERSION:-}" = 1 ] ||
+[ "${SUNO_FP6_MICROPHONE_BUILD_VERSION:-}" = 1 ] ||
   die 'unsupported microphone bundle version'
 [ "${KERNEL_RELEASE:-}" = 7.1.2 ] || die 'bundle kernel differs'
 [ "${RAM_BOOT_ONLY:-}" = true ] || die 'bundle is not RAM-boot-only'
@@ -114,7 +114,7 @@ candidate_sha256=$(sha256sum "$candidate" | cut -d ' ' -f 1)
   die 'DTB-only candidate checksum differs'
 
 {
-  printf 'LUMA_FP6_MICROPHONE_BOOT_CANDIDATE_VERSION=2\n'
+  printf 'SUNO_FP6_MICROPHONE_BOOT_CANDIDATE_VERSION=2\n'
   printf 'SCOPE=wcd9378-soundwire-capture\n'
   printf 'BASE_BOOT_SHA256=%s\n' "$FP6_MICROPHONE_BASE_BOOT_SHA256"
   printf 'KERNEL_SHA256=%s\n' "$FP6_MICROPHONE_PROVEN_KERNEL_SHA256"

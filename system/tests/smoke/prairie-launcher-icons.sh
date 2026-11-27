@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
 #
-# Every visible Luma launcher must have artwork an installed image can resolve.
+# Every visible Suno launcher must have artwork an installed image can resolve.
 #
 # This exists because the failure it catches is completely silent. A desktop
-# file naming `Icon=org.projectluma.Clock` installs perfectly, rpm verifies
+# file naming `Icon=org.projectSuno.Clock` installs perfectly, rpm verifies
 # clean, and the application launches — and the user sees a question mark,
 # because no package ever shipped the artwork. Ten of eleven core applications
 # were in that state while every other check passed.
@@ -37,10 +37,10 @@ grep -Fq 'app-icons.tar' "$builder" || {
   exit 1
 }
 
-# 2. Every visible launcher carrying a Luma-branded icon name must have
+# 2. Every visible launcher carrying a Suno-branded icon name must have
 #    artwork. A generic freedesktop name such as `edit-find-symbolic` is
-#    legitimately inherited from Adwaita and is not Luma's to ship; an
-#    `org.projectluma.*` name is an identity Luma owns and must provide.
+#    legitimately inherited from Adwaita and is not Suno's to ship; an
+#    `org.projectSuno.*` name is an identity Suno owns and must provide.
 missing=0
 checked=0
 warned=0
@@ -54,7 +54,7 @@ while IFS= read -r desktop; do
     continue
   }
   case "$icon" in
-    org.projectluma.*) ;;
+    org.projectSuno.*) ;;
     *)
       # Inherited from adwaita-icon-theme or hicolor, which the Prairie theme
       # declares as its fallbacks.
@@ -87,14 +87,14 @@ while IFS= read -r desktop; do
       warned=$((warned + 1))
       ;;
   esac
-done < <(find src -name 'org.projectluma.*.desktop' | sort)
+done < <(find src -name 'org.projectSuno.*.desktop' | sort)
 
 if [ "$missing" -gt 0 ]; then
   printf '\n%d visible launcher(s) would render as a question mark.\n' "$missing" >&2
   exit 1
 fi
 
-printf 'prairie launcher icons: %d Luma-branded launchers checked, every core icon has artwork' \
+printf 'prairie launcher icons: %d Suno-branded launchers checked, every core icon has artwork' \
   "$checked"
 if [ "$warned" -gt 0 ]; then
   printf ' (%d non-core launcher(s) still missing artwork)' "$warned"

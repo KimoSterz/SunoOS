@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Contacts from a JSON file, in memory: LUMA_CONTACTS_FIXTURE=<path>.
+"""Contacts from a JSON file, in memory: SUNO_CONTACTS_FIXTURE=<path>.
 
-For conformance runs (tools/lumaui-conform) and tests. It never opens the
+For conformance runs (tools/SunoUI-conform) and tests. It never opens the
 address book, Messages or the sharing store on disk; edits, deletes and
 sharing changes live in memory until the window closes. Paths in the file
 are relative to it. The v71 sample is tests/fixtures/contacts-v71.json.
@@ -11,7 +11,7 @@ are relative to it. The v71 sample is tests/fixtures/contacts-v71.json.
       "lists": {"launch": "Launch team", ...},                 # list key → name
       "share_to": [uid, ...],                                  # who Share offers (v71 "Send ___'s card to")
       "sheet_to": [uid, ...],                                  # who the computer's share sheet offers (v71 SHPPL)
-      "contacts": [{"uid", "name", "handle", "on_luma", "phone", "email", "organization", "role",
+      "contacts": [{"uid", "name", "handle", "on_Suno", "phone", "email", "organization", "role",
                     "birthday", "address", "note", "favourite", "lists": [key, ...], "hue",
                     "photo": "face.jpg", "light": "wide.jpg", "light_focus": [x, y]}],
       "together": {uid: [{"kind": "conversation" | "note" | "album" | "file", "icon", "title",
@@ -21,10 +21,10 @@ are relative to it. The v71 sample is tests/fixtures/contacts-v71.json.
       "edit": false                                            # open it in edit mode
     }
 
-A field that is missing or empty is not shown. LUMA_CONTACTS_EDIT=1 also
-opens the selected card in edit mode, and LUMA_CONTACTS_SELECTED=<uid | "me">
+A field that is missing or empty is not shown. SUNO_CONTACTS_EDIT=1 also
+opens the selected card in edit mode, and SUNO_CONTACTS_SELECTED=<uid | "me">
 names another card to open on. At phone width the window opens on its
-list (v71 list-first); LUMA_CONTACTS_OPEN=1 pushes the selected card instead.
+list (v71 list-first); SUNO_CONTACTS_OPEN=1 pushes the selected card instead.
 
 The fixture makes every write v71 asks for (favourite, lists, block, link a
 duplicate, your own card), in memory, so the gate and the tests see them.
@@ -66,9 +66,9 @@ class FixtureSource(ContactsSource):
         base = self.path.parent
         document = json.loads(self.path.read_text(encoding="utf-8"))
         self.lists = dict(document.get("lists", {}))
-        self.selected = os.environ.get("LUMA_CONTACTS_SELECTED") or document.get("selected")
-        self.edit = bool(document.get("edit")) or os.environ.get("LUMA_CONTACTS_EDIT") == "1"
-        self.open = os.environ.get("LUMA_CONTACTS_OPEN") == "1"
+        self.selected = os.environ.get("SUNO_CONTACTS_SELECTED") or document.get("selected")
+        self.edit = bool(document.get("edit")) or os.environ.get("SUNO_CONTACTS_EDIT") == "1"
+        self.open = os.environ.get("SUNO_CONTACTS_OPEN") == "1"
         self.share_to = [str(uid) for uid in document.get("share_to", ())]
         self.sheet_to = [str(uid) for uid in document.get("sheet_to", ())]
         self.blocked: set[str] = set()
@@ -82,7 +82,7 @@ class FixtureSource(ContactsSource):
                 birthday=raw.get("birthday", ""), address=raw.get("address", ""),
                 photo=_read(base, raw.get("photo")), note=raw.get("note", ""),
                 favourite=bool(raw.get("favourite")), handle=raw.get("handle", "") or "",
-                on_luma=raw.get("on_luma"), hue=raw.get("hue"))
+                on_Suno=raw.get("on_Suno"), hue=raw.get("hue"))
             self._records[record.uid] = record
             if raw.get("light"):
                 focus = raw.get("light_focus") or (0.5, 0.5)

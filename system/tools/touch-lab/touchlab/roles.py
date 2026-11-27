@@ -31,7 +31,7 @@ DESCRIPTIONS = {
 NAMES_TOUCHSCREEN = {**NAMES, "point": "Touching finger", "thumb-rest": "Holding finger",
                      "thumb-click": "Pressing thumb"}
 
-# What libinput is asked to do with each role (plugins/luma-touch-roles.lua).
+# What libinput is asked to do with each role (plugins/Suno-touch-roles.lua).
 #   track:  the touch moves the pointer / joins gestures
 #   count:  it counts for clickfinger (1 finger = left, 2 = right) and taps
 #   button: a physical or haptic click while it is down still clicks
@@ -50,14 +50,14 @@ ACTIONS = {
 SUPPRESS = frozenset(r for r, a in ACTIONS.items() if not a["track"])
 INTENDED = frozenset(("point", "second", "thumb-click"))
 
-# Colours in the live test view (LumaUI roles).
+# Colours in the live test view (SunoUI roles).
 COLOURS = {
-    "point": "luma_accent",
-    "second": "luma_green",
-    "thumb-rest": "luma_violet",
-    "thumb-click": "luma_amber",
-    "palm": "luma_red",
-    "brush": "luma_ink",
+    "point": "Suno_accent",
+    "second": "Suno_green",
+    "thumb-rest": "Suno_violet",
+    "thumb-click": "Suno_amber",
+    "palm": "Suno_red",
+    "brush": "Suno_ink",
 }
 
 # Phase 1 labels mapped to roles (multi-finger labels: the first finger down

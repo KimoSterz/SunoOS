@@ -13,15 +13,15 @@ index 2f019af..a00d2a7 100644
 +++ b/src/nautilus-grid-cell.c
 @@ -80,6 +80,10 @@ update_art_badges (NautilusGridCell *self,
          {
-             app_icon = "org.projectluma.Notes";
+             app_icon = "org.projectSuno.Notes";
          }
 +        else if (g_ascii_strcasecmp (extension, "pdf") == 0)
 +        {
-+            app_icon = "org.projectluma.Viewer";
++            app_icon = "org.projectSuno.Viewer";
 +        }
          else if (g_ascii_strcasecmp (extension, "ogg") == 0)
          {
-             app_icon = "org.projectluma.VoiceMemos";
+             app_icon = "org.projectSuno.VoiceMemos";
 -- 
 2.55.0
 

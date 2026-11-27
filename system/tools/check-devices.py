@@ -45,7 +45,7 @@ SHA256 = re.compile(r"^[0-9a-f]{64}$")
 DIGITS = re.compile(r"(?<![0-9A-Za-z])[0-9]{15,20}(?![0-9A-Za-z])")
 REQUIRED_ENFORCING = "enforcing=1"
 # docs/kernel.md, "Transition": these devices keep the kernel they had until
-# they move to the Luma base. Every other device points at a SimplyLuma/linux tag.
+# they move to the Suno base. Every other device points at a SimplyLuma/linux tag.
 TRANSITIONAL_KERNELS = {"fairphone/fp6", "microsoft/sp12in", "raspberrypi/rpi5"}
 # Kernel patch directories from before docs/kernel.md. New kernel work is a
 # pull request to SimplyLuma/linux, not a patches/linux-* directory.
@@ -56,7 +56,7 @@ LEGACY_KERNEL_PATCH_DIRS = {
     "linux-qseecom", "linux-qseecom-dedicated-heaps", "linux-qseecom-qseelog",
     "linux-qseecom-shmbridge", "linux-qseecom-stock-heaps", "linux-surface-pro12", "linux-zumapro",
 }
-LUMA_KERNEL_REPOSITORY = "https://gitlab.com/simplyluma/linux"
+SUNO_KERNEL_REPOSITORY = "https://gitlab.com/simplyluma/linux"
 KCONFIG_LINE = re.compile(r"CONFIG_[A-Z0-9_]+=.+|# CONFIG_[A-Z0-9_]+ is not set|#( .*)?")
 
 
@@ -267,7 +267,7 @@ class Checker:
             return
         try:
             lock = json.loads(path.read_text())
-            if lock.get("schema") != "org.projectluma.kernel-source/v1":
+            if lock.get("schema") != "org.projectSuno.kernel-source/v1":
                 raise ValueError("unknown kernel source schema")
             if lock.get("release") != kernel.get("release"):
                 raise ValueError("kernel source release differs from device manifest")
@@ -297,14 +297,14 @@ class Checker:
             self.error(where, f"invalid kernel source lock: {exc}")
 
     def check_kernel_policy(self, device_dir: Path, key: str, device: dict, soc: dict | None) -> None:
-        """docs/kernel.md: one Luma kernel; vendor or source-locked kernels stay experimental."""
+        """docs/kernel.md: one Suno kernel; vendor or source-locked kernels stay experimental."""
         kernel = device.get("kernel", {})
         where = device_dir / "device.toml"
         codename = device.get("codename", device_dir.name)
         if kernel.get("source_lock") and device.get("tier") != "experimental":
-            self.error(where, "a source-locked kernel is not on the Luma base; the tier stays 'experimental'")
+            self.error(where, "a source-locked kernel is not on the Suno base; the tier stays 'experimental'")
         tag = kernel.get("tag", "")
-        prefixes = ("luma-kernel-", f"luma-{codename}-") if key in TRANSITIONAL_KERNELS else ("luma-kernel-",)
+        prefixes = ("Suno-kernel-", f"Suno-{codename}-") if key in TRANSITIONAL_KERNELS else ("Suno-kernel-",)
         if tag and not tag.startswith(prefixes):
             self.error(where, "kernel.tag must start with " + " or ".join(repr(p) for p in prefixes))
         if key in TRANSITIONAL_KERNELS:
@@ -312,8 +312,8 @@ class Checker:
         if kernel.get("source_lock") or kernel.get("patches"):
             self.error(where, "kernel must be a SimplyLuma/linux tag; source locks and kernel patches "
                               "in this repository are refused (docs/kernel.md)")
-        if tag and (soc or {}).get("kernel", {}).get("repository") != LUMA_KERNEL_REPOSITORY:
-            self.error(where, f"the SoC's kernel.repository must be {LUMA_KERNEL_REPOSITORY}")
+        if tag and (soc or {}).get("kernel", {}).get("repository") != SUNO_KERNEL_REPOSITORY:
+            self.error(where, f"the SoC's kernel.repository must be {SUNO_KERNEL_REPOSITORY}")
 
     def check_kernel_patch_dirs(self) -> None:
         base = self.root / "patches"

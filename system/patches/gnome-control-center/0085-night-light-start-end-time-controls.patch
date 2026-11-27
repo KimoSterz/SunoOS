@@ -1,11 +1,11 @@
-From: Luma Developers
+From: Suno Developers
 Subject: [PATCH] Night Light accepts local times to the minute with native editors
 
-diff --git a/shell/cc-luma-displays.c b/shell/cc-luma-displays.c
---- a/shell/cc-luma-displays.c
-+++ b/shell/cc-luma-displays.c
+diff --git a/shell/cc-Suno-displays.c b/shell/cc-Suno-displays.c
+--- a/shell/cc-Suno-displays.c
++++ b/shell/cc-Suno-displays.c
 @@ -238,8 +238,18 @@
- void cc_luma_display_draft_free (CcLumaDisplayDraft *draft) { if (!draft) return; g_object_unref (draft->model); g_hash_table_unref (draft->original); g_free (draft); }
+ void cc_Suno_display_draft_free (CcSunoDisplayDraft *draft) { if (!draft) return; g_object_unref (draft->model); g_hash_table_unref (draft->original); g_free (draft); }
  
  static const char * const schedules[] = { "sun", "manual", NULL };
 -static const char * const from_times[] = { "19:00", "20:00", "21:00", "22:00", "23:00", NULL };
@@ -22,21 +22,21 @@ diff --git a/shell/cc-luma-displays.c b/shell/cc-luma-displays.c
 +    (text[0] - '0') * 10 + text[1] - '0' < 24 &&
 +    (text[3] - '0') * 10 + text[4] - '0' < 60;
 +}
- gboolean cc_luma_night_validate (CcLumaFixture *model)
+ gboolean cc_Suno_night_validate (CcSunoFixture *model)
  {
-   JsonNode *enabled = cc_luma_fixture_get (model, "night"), *temperature = cc_luma_fixture_get (model, "nightT");
+   JsonNode *enabled = cc_Suno_fixture_get (model, "night"), *temperature = cc_Suno_fixture_get (model, "nightT");
 @@ -247,16 +257,16 @@
      temperature && json_node_get_value_type (temperature) == G_TYPE_INT64 &&
      json_node_get_int (temperature) >= 0 && json_node_get_int (temperature) <= 100 &&
-     string_in (cc_luma_fixture_get (model, "nightWhen"), schedules) &&
--    string_in (cc_luma_fixture_get (model, "nightFrom"), from_times) &&
--    string_in (cc_luma_fixture_get (model, "nightTo"), to_times);
-+    night_time_valid (cc_luma_fixture_get (model, "nightFrom")) &&
-+    night_time_valid (cc_luma_fixture_get (model, "nightTo"));
+     string_in (cc_Suno_fixture_get (model, "nightWhen"), schedules) &&
+-    string_in (cc_Suno_fixture_get (model, "nightFrom"), from_times) &&
+-    string_in (cc_Suno_fixture_get (model, "nightTo"), to_times);
++    night_time_valid (cc_Suno_fixture_get (model, "nightFrom")) &&
++    night_time_valid (cc_Suno_fixture_get (model, "nightTo"));
  }
- gboolean cc_luma_night_set_choice (CcLumaFixture *model, const char *key, const char *value, GError **error)
+ gboolean cc_Suno_night_set_choice (CcSunoFixture *model, const char *key, const char *value, GError **error)
  {
-   if (!cc_luma_night_validate (model) || !key || !value) return invalid (error);
+   if (!cc_Suno_night_validate (model) || !key || !value) return invalid (error);
 -  const char * const *choices = g_str_equal (key, "nightWhen") ? schedules :
 -    g_str_equal (key, "nightFrom") ? from_times : g_str_equal (key, "nightTo") ? to_times : NULL;
    g_autoptr (JsonNode) node = json_node_init_string (json_node_alloc (), value);
@@ -44,38 +44,38 @@ diff --git a/shell/cc-luma-displays.c b/shell/cc-luma-displays.c
 +  gboolean valid = g_str_equal (key, "nightWhen") ? string_in (node, schedules) :
 +    (g_str_equal (key, "nightFrom") || g_str_equal (key, "nightTo")) && night_time_valid (node);
 +  if (!valid) return invalid (error);
-   return cc_luma_fixture_set (model, key, node, error);
+   return cc_Suno_fixture_set (model, key, node, error);
  }
- gboolean cc_luma_night_set_temperature (CcLumaFixture *model, gint64 value, GError **error)
-diff --git a/shell/cc-luma-view-nightlight.c b/shell/cc-luma-view-nightlight.c
---- a/shell/cc-luma-view-nightlight.c
-+++ b/shell/cc-luma-view-nightlight.c
+ gboolean cc_Suno_night_set_temperature (CcSunoFixture *model, gint64 value, GError **error)
+diff --git a/shell/cc-Suno-view-nightlight.c b/shell/cc-Suno-view-nightlight.c
+--- a/shell/cc-Suno-view-nightlight.c
++++ b/shell/cc-Suno-view-nightlight.c
 @@ -8,17 +8,6 @@
    if (g_str_equal (key, "nightT"))
-     return cc_luma_night_set_temperature (v->model, json_node_get_int (value), error);
-   return cc_luma_night_set_choice (v->model, key, json_node_get_string (value), error);
+     return cc_Suno_night_set_temperature (v->model, json_node_get_int (value), error);
+   return cc_Suno_night_set_choice (v->model, key, json_node_get_string (value), error);
 -}
 -
 -static void until_tomorrow (GtkButton *button, View *v)
 -{
 -  g_autoptr (GError) error = NULL;
--  if (cc_luma_fixture_set_flag (v->model, "night", FALSE, &error))
+-  if (cc_Suno_fixture_set_flag (v->model, "night", FALSE, &error))
 -    {
--      cc_luma_view_queue_refresh (v);
--      luma_toast_show (v->root, "Night Light is off until tomorrow", "done");
+-      cc_Suno_view_queue_refresh (v);
+-      Suno_toast_show (v->root, "Night Light is off until tomorrow", "done");
 -    }
--  else cc_luma_view_report_error (v, error);
+-  else cc_Suno_view_report_error (v, error);
  }
  
  /* Children placed by fraction of the width: spans ("cf-wf" > 0) fill the
 @@ -82,8 +71,8 @@
  static GtkWidget *night_hero (View *v)
  {
-   gboolean sun = g_str_equal (cc_luma_view_text (v, "nightWhen"), "sun");
--  double a = sun ? 18.87 : hours (cc_luma_view_text (v, "nightFrom"));
--  double b = sun ? 6.97 : hours (cc_luma_view_text (v, "nightTo"));
-+  double a = hours (cc_luma_view_text (v, "nightFrom"));
-+  double b = hours (cc_luma_view_text (v, "nightTo"));
+   gboolean sun = g_str_equal (cc_Suno_view_text (v, "nightWhen"), "sun");
+-  double a = sun ? 18.87 : hours (cc_Suno_view_text (v, "nightFrom"));
+-  double b = sun ? 6.97 : hours (cc_Suno_view_text (v, "nightTo"));
++  double a = hours (cc_Suno_view_text (v, "nightFrom"));
++  double b = hours (cc_Suno_view_text (v, "nightTo"));
    const char *labels[] = { "Midnight", "6 AM", "Noon", "6 PM", "Midnight", NULL };
    g_autoptr (GDateTime) now = g_date_time_new_now_local ();
    GtkWidget *hero = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
@@ -84,11 +84,11 @@ diff --git a/shell/cc-luma-view-nightlight.c b/shell/cc-luma-view-nightlight.c
    placed (day, (g_date_time_get_hour (now) + g_date_time_get_minute (now) / 60.0) / 24, 0, "cf-now-mark");
    gtk_box_append (GTK_BOX (hero), temp);
 -  gtk_box_append (GTK_BOX (hero), day);
--  gtk_box_append (GTK_BOX (hero), cc_luma_dev_day_labels (labels));
+-  gtk_box_append (GTK_BOX (hero), cc_Suno_dev_day_labels (labels));
 +  if (!sun)
 +    {
 +      gtk_box_append (GTK_BOX (hero), day);
-+      gtk_box_append (GTK_BOX (hero), cc_luma_dev_day_labels (labels));
++      gtk_box_append (GTK_BOX (hero), cc_Suno_dev_day_labels (labels));
 +    }
 +  else
 +    {
@@ -135,19 +135,19 @@ diff --git a/shell/cc-luma-view-nightlight.c b/shell/cc-luma-view-nightlight.c
 +  if (edit->twelve_hour)
 +    hour = hour % 12 + 12 * gtk_drop_down_get_selected (edit->period);
 +  g_autofree char *value = g_strdup_printf ("%02d:%02d", hour, minute);
-+  if (!cc_luma_night_set_choice (edit->view->model, edit->key, value, &error))
++  if (!cc_Suno_night_set_choice (edit->view->model, edit->key, value, &error))
 +    {
-+      cc_luma_view_report_error (edit->view, error);
++      cc_Suno_view_report_error (edit->view, error);
 +      return;
 +    }
 +  gtk_popover_popdown (edit->popover);
-+  cc_luma_view_queue_refresh (edit->view);
++  cc_Suno_view_queue_refresh (edit->view);
 +}
 +
 +static void night_time_row (View *v, GtkBox *card, const char *key,
 +                            const char *title, gboolean manual)
 +{
-+  const char *current = cc_luma_view_text (v, key);
++  const char *current = cc_Suno_view_text (v, key);
 +  int hour = (int) hours (current), minute = (int) g_ascii_strtoll (current + 3, NULL, 10);
 +  g_autoptr (GSettings) iface = g_settings_new ("org.gnome.desktop.interface");
 +  g_autofree char *clock_format = g_settings_get_string (iface, "clock-format");
@@ -203,7 +203,7 @@ diff --git a/shell/cc-luma-view-nightlight.c b/shell/cc-luma-view-nightlight.c
 +      gtk_accessible_update_property (GTK_ACCESSIBLE (edit->period), GTK_ACCESSIBLE_PROPERTY_LABEL, "AM or PM", -1);
 +      gtk_box_append (GTK_BOX (fields), GTK_WIDGET (edit->period));
 +    }
-+  gtk_box_append (GTK_BOX (body), cc_luma_view_label (title, "body", FALSE));
++  gtk_box_append (GTK_BOX (body), cc_Suno_view_label (title, "body", FALSE));
 +  gtk_box_append (GTK_BOX (body), fields);
 +  gtk_box_append (GTK_BOX (body), save);
 +  gtk_popover_set_child (GTK_POPOVER (popover), body);
@@ -213,23 +213,23 @@ diff --git a/shell/cc-luma-view-nightlight.c b/shell/cc-luma-view-nightlight.c
 +  cf_row (card, NULL, title, NULL, button, FALSE);
 +}
 +
- void cc_luma_view_nightlight_render (View *v)
+ void cc_Suno_view_nightlight_render (View *v)
  {
-   gboolean manual = g_str_equal (cc_luma_view_text (v, "nightWhen"), "manual");
+   gboolean manual = g_str_equal (cc_Suno_view_text (v, "nightWhen"), "manual");
 +  g_autoptr (GSettings) iface = g_settings_new ("org.gnome.desktop.interface");
 +  g_autofree char *clock_format = g_settings_get_string (iface, "clock-format");
 +  gboolean twelve_hour = g_str_equal (clock_format, "12h");
-+  g_autofree char *from = night_time_caption (cc_luma_view_text (v, "nightFrom"), twelve_hour);
-+  g_autofree char *to = night_time_caption (cc_luma_view_text (v, "nightTo"), twelve_hour);
-   g_autofree char *meta = !cc_luma_view_flag (v, "night") ? g_strdup ("Off") :
++  g_autofree char *from = night_time_caption (cc_Suno_view_text (v, "nightFrom"), twelve_hour);
++  g_autofree char *to = night_time_caption (cc_Suno_view_text (v, "nightTo"), twelve_hour);
+   g_autofree char *meta = !cc_Suno_view_flag (v, "night") ? g_strdup ("Off") :
      !manual ? g_strdup ("From sunset to sunrise") :
--    g_strdup_printf ("From %s to %s", cc_luma_view_text (v, "nightFrom"), cc_luma_view_text (v, "nightTo"));
+-    g_strdup_printf ("From %s to %s", cc_Suno_view_text (v, "nightFrom"), cc_Suno_view_text (v, "nightTo"));
 +    g_strdup_printf ("From %s to %s", from, to);
    cf_header (v, "Night Light", meta, cf_top_switch (v, "night"));
    cf_hero (v, night_hero (v), "cf-nightlight");
    GtkBox *card = cf_group (v, NULL, NULL);
-   cc_luma_dev_rd (v, card, "nightWhen", "sun", "Sunset to sunrise", "Follows the sun where you are", night_set);
-   cc_luma_dev_rd (v, card, "nightWhen", "manual", "Set times", NULL, night_set);
+   cc_Suno_dev_rd (v, card, "nightWhen", "sun", "Sunset to sunrise", "Follows the sun where you are", night_set);
+   cc_Suno_dev_rd (v, card, "nightWhen", "manual", "Set times", NULL, night_set);
 -  if (manual)
 -    {
 -      const char * const from[] = { "19:00", "19:00", "20:00", "20:00", "21:00", "21:00", "22:00", "22:00", "23:00", "23:00", NULL };
@@ -240,15 +240,15 @@ diff --git a/shell/cc-luma-view-nightlight.c b/shell/cc-luma-view-nightlight.c
 +  night_time_row (v, card, "nightFrom", "Starts at", manual);
 +  night_time_row (v, card, "nightTo", "Ends at", manual);
    card = cf_group (v, NULL, NULL);
-   cc_luma_dev_rg (v, card, "nightT", "Color temperature", NULL, 0, 100, 1, "Cooler", "Warmer", NULL, night_set);
+   cc_Suno_dev_rg (v, card, "nightT", "Color temperature", NULL, 0, 100, 1, "Cooler", "Warmer", NULL, night_set);
 -  card = cf_group (v, NULL, NULL);
 -  GtkWidget *row = cf_bt (v, card, "Turn off until tomorrow", NULL, "Turn off", FALSE, G_CALLBACK (until_tomorrow));
 -  gtk_widget_set_name (gtk_widget_get_last_child (gtk_widget_get_last_child (row)), "cf-nightoff");
 -}
 +}
-diff --git a/shell/test-luma-live-gsettings.c b/shell/test-luma-live-gsettings.c
---- a/shell/test-luma-live-gsettings.c
-+++ b/shell/test-luma-live-gsettings.c
+diff --git a/shell/test-Suno-live-gsettings.c b/shell/test-Suno-live-gsettings.c
+--- a/shell/test-Suno-live-gsettings.c
++++ b/shell/test-Suno-live-gsettings.c
 @@ -75,11 +75,11 @@
    g_settings_set_double (color, "night-light-schedule-to", 7.0);
    spin ();
@@ -258,40 +258,40 @@ diff --git a/shell/test-luma-live-gsettings.c b/shell/test-luma-live-gsettings.c
    g_settings_set_double (color, "night-light-schedule-to", 6.25);
    spin ();
    g_assert_cmpstr (text (model, "nightTo"), ==, "06:15");
--  g_assert_false (cc_luma_night_validate (model));
-+  g_assert_true (cc_luma_night_validate (model));
-   cc_luma_adapter_gsettings.stop (state);
+-  g_assert_false (cc_Suno_night_validate (model));
++  g_assert_true (cc_Suno_night_validate (model));
+   cc_Suno_adapter_gsettings.stop (state);
  }
  
-diff --git a/shell/test-luma-fixture.c b/shell/test-luma-fixture.c
---- a/shell/test-luma-fixture.c
-+++ b/shell/test-luma-fixture.c
+diff --git a/shell/test-Suno-fixture.c b/shell/test-Suno-fixture.c
+--- a/shell/test-Suno-fixture.c
++++ b/shell/test-Suno-fixture.c
 @@ -407,6 +407,20 @@
-   g_assert_true (cc_luma_night_set_temperature (model, 100, NULL));
-   g_assert_true (json_node_get_boolean (cc_luma_fixture_get (model, "wifi")));
-   g_assert_cmpstr (json_node_get_string (cc_luma_fixture_get (model, "nightFrom")), ==, "22:00");
+   g_assert_true (cc_Suno_night_set_temperature (model, 100, NULL));
+   g_assert_true (json_node_get_boolean (cc_Suno_fixture_get (model, "wifi")));
+   g_assert_cmpstr (json_node_get_string (cc_Suno_fixture_get (model, "nightFrom")), ==, "22:00");
 +  for (int minute = 0; minute < 24 * 60; minute++)
 +    {
 +      g_autofree char *time = g_strdup_printf ("%02d:%02d", minute / 60, minute % 60);
-+      g_assert_true (cc_luma_night_set_choice (model, "nightFrom", time, NULL));
-+      g_assert_true (cc_luma_night_set_choice (model, "nightTo", time, NULL));
-+      g_assert_true (cc_luma_night_validate (model));
++      g_assert_true (cc_Suno_night_set_choice (model, "nightFrom", time, NULL));
++      g_assert_true (cc_Suno_night_set_choice (model, "nightTo", time, NULL));
++      g_assert_true (cc_Suno_night_validate (model));
 +    }
 +  const char *invalid_times[] = { "", "24:00", "23:60", "-1:00", "1:00", "01:1", "01:00x", "ab:cd", NULL };
 +  for (guint i = 0; invalid_times[i]; i++)
 +    {
-+      g_assert_false (cc_luma_night_set_choice (model, "nightFrom", invalid_times[i], NULL));
-+      g_assert_false (cc_luma_night_set_choice (model, "nightTo", invalid_times[i], NULL));
++      g_assert_false (cc_Suno_night_set_choice (model, "nightFrom", invalid_times[i], NULL));
++      g_assert_false (cc_Suno_night_set_choice (model, "nightTo", invalid_times[i], NULL));
 +    }
 +
  }
  static void search_folder_model (void)
  {
-diff --git a/shell/test-luma-view.c b/shell/test-luma-view.c
---- a/shell/test-luma-view.c
-+++ b/shell/test-luma-view.c
+diff --git a/shell/test-Suno-view.c b/shell/test-Suno-view.c
+--- a/shell/test-Suno-view.c
++++ b/shell/test-Suno-view.c
 @@ -967,8 +967,30 @@
-   for (guint i = 0; i < G_N_ELEMENTS (ids); i++) { g_autofree char *p = cc_luma_fixture_asset_path (model, ids[i], NULL); g_assert_cmpint (g_remove (p), ==, 0); }
+   for (guint i = 0; i < G_N_ELEMENTS (ids); i++) { g_autofree char *p = cc_Suno_fixture_asset_path (model, ids[i], NULL); g_assert_cmpint (g_remove (p), ==, 0); }
    remove_asset_fixture (dir);
  }
 +static void nightlight_edit_time (GtkWidget *view, const char *key, int hour, int minute, int period, gboolean save)
@@ -318,8 +318,8 @@ diff --git a/shell/test-luma-view.c b/shell/test-luma-view.c
  {
 +  g_autoptr (GSettings) iface = g_settings_new ("org.gnome.desktop.interface");
 +  g_settings_set_string (iface, "clock-format", "24h");
-   g_autoptr(CcLumaFixture) model = load ();
-   g_autoptr(CcLumaFixture) other = load ();
+   g_autoptr(CcSunoFixture) model = load ();
+   g_autoptr(CcSunoFixture) other = load ();
    GtkWidget *window = gtk_window_new ();
 @@ -976,26 +998,26 @@
    gtk_window_set_child (GTK_WINDOW (window), view); gtk_window_set_default_size (GTK_WINDOW (window), 390, 740);
@@ -328,7 +328,7 @@ diff --git a/shell/test-luma-view.c b/shell/test-luma-view.c
 -  g_assert_null (find_name (view, "cf-nightFrom"));
 +  g_assert_false (gtk_widget_get_sensitive (find_name (view, "cf-nightFrom")));
    choose (find_name (view, "cf-nightWhen-manual")); drain ();
-   g_assert_cmpstr (json_node_get_string (cc_luma_fixture_get (model, "nightWhen")), ==, "manual");
+   g_assert_cmpstr (json_node_get_string (cc_Suno_fixture_get (model, "nightWhen")), ==, "manual");
    g_assert_nonnull (find_name (view, "cf-nightFrom"));
 -  gtk_widget_activate_action (view, "cf.pick", "(ss)", "nightFrom", "23:00"); drain ();
 -  gtk_widget_activate_action (view, "cf.pick", "(ss)", "nightTo", "05:30"); drain ();
@@ -338,18 +338,18 @@ diff --git a/shell/test-luma-view.c b/shell/test-luma-view.c
    GtkWidget *range = find_name (view, "cf-nightT");
    gtk_range_set_value (GTK_RANGE (range), 91); drain ();
    g_assert_true (range == find_name (view, "cf-nightT"));
-   g_assert_cmpint (json_node_get_int (cc_luma_fixture_get (model, "nightT")), ==, 91);
-   g_assert_cmpint (json_node_get_int (cc_luma_fixture_get (other, "nightT")), ==, 55);
+   g_assert_cmpint (json_node_get_int (cc_Suno_fixture_get (model, "nightT")), ==, 91);
+   g_assert_cmpint (json_node_get_int (cc_Suno_fixture_get (other, "nightT")), ==, 55);
 -  g_signal_emit_by_name (find_name (view, "cf-nightoff"), "clicked"); drain ();
 +  set_switch (find_name (view, "cf-night"), FALSE); drain ();
-   g_assert_false (json_node_get_boolean (cc_luma_fixture_get (model, "night")));
+   g_assert_false (json_node_get_boolean (cc_Suno_fixture_get (model, "night")));
    g_assert_true (has_text (view, "Off"));
-   g_assert_cmpstr (json_node_get_string (cc_luma_fixture_get (model, "nightFrom")), ==, "23:00");
-   g_assert_cmpint (json_node_get_int (cc_luma_fixture_get (model, "nightT")), ==, 91);
+   g_assert_cmpstr (json_node_get_string (cc_Suno_fixture_get (model, "nightFrom")), ==, "23:00");
+   g_assert_cmpint (json_node_get_int (cc_Suno_fixture_get (model, "nightT")), ==, 91);
    set_switch (find_name (view, "cf-night"), TRUE); drain ();
    choose (find_name (view, "cf-nightWhen-sun")); drain ();
 -  g_assert_null (find_name (view, "cf-nightFrom"));
 +  g_assert_false (gtk_widget_get_sensitive (find_name (view, "cf-nightFrom")));
    g_assert_true (has_text (view, "From sunset to sunrise"));
    g_assert_cmpint (gtk_widget_get_width (window), ==, 390);
-   g_assert_null (cc_luma_view_get_error (view));
+   g_assert_null (cc_Suno_view_get_error (view));

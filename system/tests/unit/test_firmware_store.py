@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-"""luma_verify_firmware_store checks /var/lib/luma/device-firmware against the
+"""Suno_verify_firmware_store checks /var/lib/Suno/device-firmware against the
 device's own firmware.manifest, anchored by digest in the initramfs."""
 import hashlib
 import importlib.util
@@ -13,9 +13,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "scripts/mobile/fp6-native-init-functions.sh"
 TOOL = ROOT / "scripts/mobile/common/firmware-store-anchor.py"
-SHELL = os.environ.get("LUMA_TEST_SH", "bash").split()
-GENERIC = "/etc/luma-firmware-manifest.sha256"
-LEGACY = "/etc/luma-fp6-firmware-manifest.sha256"
+SHELL = os.environ.get("SUNO_TEST_SH", "bash").split()
+GENERIC = "/etc/Suno-firmware-manifest.sha256"
+LEGACY = "/etc/Suno-fp6-firmware-manifest.sha256"
 ROOTS = 'case "$root" in /|/sysroot) ;; *) return 1 ;; esac'
 # The test is not root: report owner 0:0 for its own files, and safe root-owned
 # directories above its temporary directory.
@@ -49,7 +49,7 @@ class FirmwareStore(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         self.t = Path(os.path.realpath(self.tmp.name))
         self.root = self.t / "sysroot"
-        self.store = self.root / "var/lib/luma/device-firmware"
+        self.store = self.root / "var/lib/Suno/device-firmware"
         (self.t / "etc").mkdir(mode=0o755)
         os.chmod(self.t / "etc", 0o755)
         text = SCRIPT.read_text()
@@ -69,7 +69,7 @@ class FirmwareStore(unittest.TestCase):
             path = self.store / "qcom" / name
             path.write_bytes(content)
             os.chmod(path, 0o644)
-        path = self.store / "luma-firmware.manifest"
+        path = self.store / "Suno-firmware.manifest"
         path.write_bytes(data)
         os.chmod(path, 0o644)
 
@@ -79,7 +79,7 @@ class FirmwareStore(unittest.TestCase):
         os.chmod(path, 0o644)
 
     def verify(self):
-        script = f". {self.t}/init_functions.sh\n{STAT}\nluma_verify_firmware_store {self.root}\n"
+        script = f". {self.t}/init_functions.sh\n{STAT}\nSuno_verify_firmware_store {self.root}\n"
         return subprocess.run([*SHELL, "-c", script], capture_output=True, text=True,
                               env={**os.environ, "T": str(self.t)}).returncode
 
@@ -144,7 +144,7 @@ class FirmwareStore(unittest.TestCase):
 class DeviceDeclaration(unittest.TestCase):
     def test_no_device_count_in_the_check(self):
         text = SCRIPT.read_text()
-        start = text.index("luma_verify_firmware_store() {")
+        start = text.index("Suno_verify_firmware_store() {")
         body = text[start:text.index("\n}\n", start)]
         self.assertNotIn("267", body)
 

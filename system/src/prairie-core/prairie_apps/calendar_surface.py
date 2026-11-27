@@ -1,10 +1,10 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Calendar-only month cells and time surfaces; shared controls come from LumaUI."""
+"""Calendar-only month cells and time surfaces; shared controls come from SunoUI."""
 from datetime import date, datetime, timedelta
 import gi
 gi.require_version("Gtk", "4.0")
 from gi.repository import Gdk, GObject, Gsk, Graphene, Gtk, Pango, GLib
-from luma_appkit import PersonAvatar, CountBadge, apply_type, icons
+from Suno_appkit import PersonAvatar, CountBadge, apply_type, icons
 from pathlib import Path
 from .calendar_fixture import events_on, free_gaps, minute_text, month_days, overlap_lanes, duration_text
 from .calendar_data import same_occurrence, participant_rows, contact_for_person
@@ -74,7 +74,7 @@ def event_category(event, window):
 
 class CalendarCanvas(Gtk.Widget):
     """Allocate time blocks by minute and lane, clipping short events correctly."""
-    __gtype_name__ = "LumaCalendarCanvas"
+    __gtype_name__ = "SunoCalendarCanvas"
 
     def __init__(self, height=810, *, column_gap=0):
         super().__init__(hexpand=True, overflow=Gtk.Overflow.HIDDEN)
@@ -113,7 +113,7 @@ class CalendarCanvas(Gtk.Widget):
 
 class CalendarFlowColumn(Gtk.Widget):
     """Let Flow use the full island width without imposing a phone minimum."""
-    __gtype_name__ = "LumaCalendarFlowColumn"
+    __gtype_name__ = "SunoCalendarFlowColumn"
 
     def __init__(self, compact=False):
         super().__init__(hexpand=True)
@@ -139,7 +139,7 @@ class CalendarFlowColumn(Gtk.Widget):
 
 class CalendarMonthGrid(Gtk.Widget):
     """Seven equal columns whose content cannot widen a phone's island."""
-    __gtype_name__="LumaCalendarMonthGrid"
+    __gtype_name__="SunoCalendarMonthGrid"
 
     def __init__(self,weeks):
         super().__init__(hexpand=True,vexpand=True,overflow=Gtk.Overflow.HIDDEN)

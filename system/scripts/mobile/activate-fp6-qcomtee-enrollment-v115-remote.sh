@@ -8,29 +8,29 @@
 set -Eeuo pipefail
 umask 077
 
-stage=${LUMA_FP6_ENROLLMENT_STAGE:-/tmp/luma-fingerprint-enrollment-v125}
-phase=/sys/bus/platform/devices/qcomtee/luma_focal_phase
+stage=${SUNO_FP6_ENROLLMENT_STAGE:-/tmp/Suno-fingerprint-enrollment-v125}
+phase=/sys/bus/platform/devices/qcomtee/Suno_focal_phase
 firmware_path=/sys/module/firmware_class/parameters/path
-listener_device=/dev/luma-fp6-qsee-listener
-listener_state=/var/lib/luma/fingerprint/qsee-state
+listener_device=/dev/Suno-fp6-qsee-listener
+listener_state=/var/lib/Suno/fingerprint/qsee-state
 listener_log=$stage/listener.log
 listener_pid_file=$stage/listener.pid
-marker="luma-fingerprint-enrollment-v125-baseline-$(cat /proc/sys/kernel/random/uuid)"
+marker="Suno-fingerprint-enrollment-v125-baseline-$(cat /proc/sys/kernel/random/uuid)"
 expected_model='The Fairphone (Gen. 6)'
-expected_kernel=7.1.2-luma-fp-cma1
+expected_kernel=7.1.2-Suno-fp-cma1
 expected_boot_sha=c6acad3a30d944d59648258eef383c33a3b51ac1148a98ef24256ee4dee61dd8
 expected_config_sha=5bddfee4390b0f66de5709b99282e79ee3787a01749d5cc8d28ea82d6bbed7fe
-expected_qcomtee_sha=${LUMA_FP6_QCOMTEE_SHA256:-80a5fcaa2416563f5a88796cc841bfeea0f5bf284cf992e3b52ba7f5d09c17e0}
-expected_listener_daemon_sha=${LUMA_FP6_LISTENER_DAEMON_SHA256:-1b59b3fbda0297b0338c18bf952c2d81c77a3ae3db56351d33cb028e30404c04}
-expected_helper_sha=${LUMA_FP6_HELPER_SHA256:-9b41c1368561a71450de764cec2b7bf1caf4925eed84025292f21582a35baccf}
+expected_qcomtee_sha=${SUNO_FP6_QCOMTEE_SHA256:-80a5fcaa2416563f5a88796cc841bfeea0f5bf284cf992e3b52ba7f5d09c17e0}
+expected_listener_daemon_sha=${SUNO_FP6_LISTENER_DAEMON_SHA256:-1b59b3fbda0297b0338c18bf952c2d81c77a3ae3db56351d33cb028e30404c04}
+expected_helper_sha=${SUNO_FP6_HELPER_SHA256:-9b41c1368561a71450de764cec2b7bf1caf4925eed84025292f21582a35baccf}
 expected_focal_sha=3d90a639fc07d43afd04f31c6ebe313824cb5714356f6ef9de51777cb0a6cded
 expected_installed_focal_sha=be860585db2c68ca80b3ee9e5e4929413c0d7207f9524ba489f974c46e26d051
 expected_bundle_sha=9159f0cead5b6478b4279e0ac85d83b38f62374dad80f0a925f0cb1ad02fbdb7
 expected_keymaster_sha=8acb7eec3333ba720fb7fb95ad6832567b561d41e0125386451e475ec9899198
 expected_focal_config_sha=0b34dac598933331f43866dcbce18feda9909efaa4726a19ffccf100ecb29f10
 expected_old_firmware_path=/lib/firmware/postmarketos
-allow_verified_listeners=${LUMA_FP6_ALLOW_VERIFIED_LISTENERS:-false}
-listener_stage=/tmp/luma-fp-listeners-enroll-v95
+allow_verified_listeners=${SUNO_FP6_ALLOW_VERIFIED_LISTENERS:-false}
+listener_stage=/tmp/Suno-fp-listeners-enroll-v95
 expected_listener_module_sha=1f74052412d9fc34eb581cb7aac0df80d949ca2c6da9bd6e9e70dc2fa68415df
 expected_listener_supplicant_sha=d979286aef1fecb23dd250192c6a062863ef999f38927b2e2ae329627af8154c
 
@@ -103,7 +103,7 @@ runtime_config=$(gzip -dc /proc/config.gz)
 [[ $(sha256sum <<<"$runtime_config" | cut -d' ' -f1) == "$expected_config_sha" ]] || fail runtime_config_hash
 grep -qx '# CONFIG_MODULE_SIG_FORCE is not set' <<<"$runtime_config" || fail signature_policy
 [[ $(sha256sum "$stage/qcomtee-enrollment.ko" | cut -d' ' -f1) == "$expected_qcomtee_sha" ]] || fail qcomtee_hash
-[[ $(sha256sum "$stage/luma-qcomtee-listener-supplicant" | cut -d' ' -f1) == "$expected_listener_daemon_sha" ]] || fail listener_daemon_hash
+[[ $(sha256sum "$stage/Suno-qcomtee-listener-supplicant" | cut -d' ' -f1) == "$expected_listener_daemon_sha" ]] || fail listener_daemon_hash
 [[ $(sha256sum "$stage/fp6-focal-driver-stage" | cut -d' ' -f1) == "$expected_helper_sha" ]] || fail helper_hash
 [[ $(sha256sum "$stage/focaltech_fp.ko" | cut -d' ' -f1) == "$expected_focal_sha" ]] || fail focal_hash
 [[ $(modinfo -F vermagic "$stage/qcomtee-enrollment.ko" | awk '{print $1}') == "$expected_kernel" ]] || fail qcomtee_vermagic
@@ -154,16 +154,16 @@ printf '<6>%s\n' "$marker" >/dev/kmsg
 
 "$stage/fp6-focal-driver-stage" prepare
 driver_prepared=true
-insmod "$stage/qcomtee-enrollment.ko" luma_focal_enroll_service=1
+insmod "$stage/qcomtee-enrollment.ko" Suno_focal_enroll_service=1
 qcomtee_loaded=true
-[[ -c /dev/luma-fp6-fingerprint ]] || fail enrollment_device_missing
-[[ $(stat -c %a /dev/luma-fp6-fingerprint) == 600 ]] || fail enrollment_device_mode
+[[ -c /dev/Suno-fp6-fingerprint ]] || fail enrollment_device_missing
+[[ $(stat -c %a /dev/Suno-fp6-fingerprint) == 600 ]] || fail enrollment_device_mode
 [[ -c $listener_device ]] || fail listener_device_missing
 [[ $(stat -c %a "$listener_device") == 600 ]] || fail listener_device_mode
 install -d -m 0700 -o root -g root "$listener_state"
 : >"$listener_log"
 chmod 0600 "$listener_log"
-"$stage/luma-qcomtee-listener-supplicant" --state-dir "$listener_state" \
+"$stage/Suno-qcomtee-listener-supplicant" --state-dir "$listener_state" \
   >"$listener_log" 2>&1 &
 listener_pid=$!
 printf '%s\n' "$listener_pid" >"$listener_pid_file"
@@ -189,15 +189,15 @@ printf '%s\n' enumerate >"$phase" || fail enumeration_phase
 [[ $(cat "$phase") == complete ]] || fail enumeration_state
 
 new_dmesg=$(dmesg | sed -n "/$marker/,\$p")
-grep -Fq 'luma-focal: root-only enrollment transport registered payload_contents_logged=0 raw_images=0' <<<"$new_dmesg" || fail transport_registration
-grep -Fq "luma-focal: stock configuration accepted bytes=7846 sha256=$expected_focal_config_sha" <<<"$new_dmesg" || fail linux_native_config_acceptance
-grep -Eq 'luma-focal: enumeration accepted count=[0-9]+ raw_images=0 templates_written=0' <<<"$new_dmesg" || fail enumeration_acceptance
+grep -Fq 'Suno-focal: root-only enrollment transport registered payload_contents_logged=0 raw_images=0' <<<"$new_dmesg" || fail transport_registration
+grep -Fq "Suno-focal: stock configuration accepted bytes=7846 sha256=$expected_focal_config_sha" <<<"$new_dmesg" || fail linux_native_config_acceptance
+grep -Eq 'Suno-focal: enumeration accepted count=[0-9]+ raw_images=0 templates_written=0' <<<"$new_dmesg" || fail enumeration_acceptance
 for listener_id in 10 8192 28672; do
-  grep -Eq "luma-listener: registered id=$listener_id .*transport=qseecomcompat contents_logged=0" <<<"$new_dmesg" || fail kernel_listener_identity
+  grep -Eq "Suno-listener: registered id=$listener_id .*transport=qseecomcompat contents_logged=0" <<<"$new_dmesg" || fail kernel_listener_identity
 done
-! grep -Eq 'luma-focal: command=0x(1013|1018|2000|2001|2008)' <<<"$new_dmesg" || fail forbidden_biometric_command
+! grep -Eq 'Suno-focal: command=0x(1013|1018|2000|2001|2008)' <<<"$new_dmesg" || fail forbidden_biometric_command
 [[ -z $(critical_faults <<<"$new_dmesg") ]] || fail critical_fault
 
 success=true
 trap - EXIT INT TERM HUP
-printf 'event=fp6_enrollment_v125_active slot=b kernel=%s device=/dev/luma-fp6-fingerprint listener_device=%s listeners=10,8192,28672 mode=600 qcomtee_loaded=true candidate_focal_loaded=true driver_prepared=true raw_images=0 templates_written=0\n' "$expected_kernel" "$listener_device"
+printf 'event=fp6_enrollment_v125_active slot=b kernel=%s device=/dev/Suno-fp6-fingerprint listener_device=%s listeners=10,8192,28672 mode=600 qcomtee_loaded=true candidate_focal_loaded=true driver_prepared=true raw_images=0 templates_written=0\n' "$expected_kernel" "$listener_device"

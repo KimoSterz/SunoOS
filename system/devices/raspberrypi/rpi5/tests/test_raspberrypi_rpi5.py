@@ -7,7 +7,7 @@ import unittest
 
 DEVICE = Path(__file__).resolve().parents[1]
 ROOT = DEVICE.parents[2]
-CARD = ROOT / 'src/luma-rpi5-platform/card'
+CARD = ROOT / 'src/Suno-rpi5-platform/card'
 
 
 def toml(name):
@@ -15,14 +15,14 @@ def toml(name):
 
 
 class RaspberryPi5Profile(unittest.TestCase):
-    def test_luma_pi_kernel_matches_its_source_lock_and_package(self):
+    def test_Suno_pi_kernel_matches_its_source_lock_and_package(self):
         import json
         kernel = toml('device.toml')['kernel']
         lock = json.loads((ROOT / kernel['source_lock']).read_text())
         self.assertEqual(kernel['release'], lock['release'])
         self.assertEqual(lock['device_tree'], kernel['dtb'])
         self.assertEqual(lock['pi_defconfig'], 'bcm2711_defconfig')
-        spec = (ROOT / 'packaging/rpm/kernel-luma-rpi.spec').read_text()
+        spec = (ROOT / 'packaging/rpm/kernel-Suno-rpi.spec').read_text()
         version, release = kernel['rpm_version_release'].rsplit('.fc', 1)[0].split('-', 1)
         self.assertIn(f'Version: {version}', spec)
         self.assertIn(f'Release: {release}%{{?dist}}', spec)
@@ -60,8 +60,8 @@ class RaspberryPi5Profile(unittest.TestCase):
         device = toml('device.toml')
         manifest = (DEVICE / 'firmware.manifest').read_bytes()
         self.assertEqual(hashlib.sha256(manifest).hexdigest(), device['firmware']['manifest_sha256'])
-        platform = (ROOT / 'packaging/rpm/luma-rpi5-platform.spec').read_text()
-        bluetooth = (ROOT / 'packaging/rpm/luma-rpi-bluetooth-firmware.spec').read_text()
+        platform = (ROOT / 'packaging/rpm/Suno-rpi5-platform.spec').read_text()
+        bluetooth = (ROOT / 'packaging/rpm/Suno-rpi-bluetooth-firmware.spec').read_text()
         files = 0
         for row in manifest.decode().splitlines()[1:]:
             kind, _, digest, path, target = row.split('\t')

@@ -26,7 +26,7 @@ def main():
                 self.send_response(200)
                 self.send_header('Content-Type','application/javascript')
                 self.end_headers()
-                self.wfile.write((args.repo / 'test/fixtures/luma-settings-host.js').read_bytes())
+                self.wfile.write((args.repo / 'test/fixtures/Suno-settings-host.js').read_bytes())
             else:
                 super().do_GET()
         def log_message(self, *a):
@@ -91,7 +91,7 @@ def main():
             assert evaluate("document.activeElement.classList.contains('library-search') && document.activeElement.selectionStart===2"), 'Search caret moved'
             checks.append('Library search preserves focus and caret')
             evaluate("globalThis.testHost=document.createElement('div');document.body.append(testHost);globalThis.testRoot=testHost.attachShadow({mode:'open'});let control=document.createElement('button');control.textContent='Use Google Translate';control.onclick=()=>globalThis.controlClicked=true;testRoot.append(control);let help=document.createElement('a');help.href='https://support.example.test/';help.textContent='Help';testRoot.append(help);true")
-            evaluate((args.repo/'src/ui/browser-tools-luma.js').read_text())
+            evaluate((args.repo/'src/ui/browser-tools-Suno.js').read_text())
             assert evaluate("getComputedStyle(testRoot.querySelector('button')).display!=='none' && getComputedStyle(testRoot.querySelector('a')).display!=='none'"), 'Advanced tool controls were hidden'
             evaluate("testRoot.querySelector('button').click();true")
             assert evaluate('globalThis.controlClicked === true'), 'Advanced control handler replaced'

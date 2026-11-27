@@ -14,7 +14,7 @@ def verify(record, ref, commit, url):
         raise ValueError('the window process belongs to another application')
     if not record['exe'].rsplit('/', 1)[-1].startswith('python3'):
         raise ValueError('the window process is not the packaged browser host')
-    if record['argv'][1:2] != ['/app/share/viola-browser/luma-host/integrated_window.py']:
+    if record['argv'][1:2] != ['/app/share/viola-browser/Suno-host/integrated_window.py']:
         raise ValueError('the process is only a launcher or another executable')
     if '--interactive' not in record['argv'] or url not in record['argv']:
         raise ValueError('the actual browser host did not receive the exact URL')
@@ -27,7 +27,7 @@ def observe(pid, url):
     import gi
     gi.require_version('Flatpak', '1.0')
     from gi.repository import Flatpak
-    from luma_installer.native_app_roles import installed, required
+    from Suno_installer.native_app_roles import installed, required
     if not required('com.rhyme.viola'):
         raise ValueError('a signed browser owner is required for this actor')
     installation = Flatpak.Installation.new_system(None)

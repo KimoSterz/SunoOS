@@ -10,20 +10,20 @@ umask 077
 
 mode=${1:-manager}
 self=$(readlink -f "$0")
-hold_seconds=${LUMA_STOCK_HOLD_SECONDS:-0}
-challenge_probe=${LUMA_STOCK_CHALLENGE_PROBE:-}
-challenge_probe_sha=${LUMA_STOCK_CHALLENGE_PROBE_SHA256:-}
-enrollment_client=${LUMA_STOCK_ENROLLMENT_CLIENT:-}
-enrollment_client_sha=${LUMA_STOCK_ENROLLMENT_CLIENT_SHA256:-}
-persist_fingerprint=${LUMA_STOCK_PERSIST_FINGERPRINT:-0}
-biometric_client_mode=${LUMA_STOCK_BIOMETRIC_CLIENT_MODE:-enroll}
+hold_seconds=${SUNO_STOCK_HOLD_SECONDS:-0}
+challenge_probe=${SUNO_STOCK_CHALLENGE_PROBE:-}
+challenge_probe_sha=${SUNO_STOCK_CHALLENGE_PROBE_SHA256:-}
+enrollment_client=${SUNO_STOCK_ENROLLMENT_CLIENT:-}
+enrollment_client_sha=${SUNO_STOCK_ENROLLMENT_CLIENT_SHA256:-}
+persist_fingerprint=${SUNO_STOCK_PERSIST_FINGERPRINT:-0}
+biometric_client_mode=${SUNO_STOCK_BIOMETRIC_CLIENT_MODE:-enroll}
 
 expected_model='The Fairphone (Gen. 6)'
 # Both kernels are accepted.  Every hash below covers stock Android userspace,
 # which does not change with the kernel; the kernel-dependent hashes (boot
 # image, kernel config, TEE and sensor modules) are checked by
-# luma-fp6-fingerprint-backend, which already selects them per release.
-expected_kernels=(7.1.2-luma-fp-cma1 7.1.2-luma-fp-ims1)
+# Suno-fp6-fingerprint-backend, which already selects them per release.
+expected_kernels=(7.1.2-Suno-fp-cma1 7.1.2-Suno-fp-ims1)
 expected_servicemanager_sha=626eaac3336fcf91e3510aaf920d7fa7882733ba1648ab9a432b0532a1570c70
 expected_service_sha=63d064e0ae4796608374a3ac757a9c05a5c8766a9a802cf7e79e784dda26cafb
 expected_compat_servicemanager_sha=b0bbad22855c01859f02ba3c3026c31e5421f9be8b51894774dd7631167c5061
@@ -37,22 +37,22 @@ expected_dmabuf_shim_sha=0e0cb66562f6c1c0afbf969f7abb3c49d0c12c13b1704deb6fb4b07
 expected_fdsan_compat_sha=0a4481adc907cdbba76fa208501e3bd48292d9b2f4aca6d0a129944054ae169a
 expected_property_shim_sha=136cf789f167462e32e946c707a7b0e5abe1cfde840db26fb923c15e7888237e
 expected_socat_sha=19c49d4cbcc1e410cda71df3f41d225b07184691ebbe7d231753f404ac0470aa
-expected_listener_daemon_sha=${LUMA_FP6_LISTENER_DAEMON_SHA256:-1b59b3fbda0297b0338c18bf952c2d81c77a3ae3db56351d33cb028e30404c04}
+expected_listener_daemon_sha=${SUNO_FP6_LISTENER_DAEMON_SHA256:-1b59b3fbda0297b0338c18bf952c2d81c77a3ae3db56351d33cb028e30404c04}
 expected_manager_access_shim_sha=bf49e5e886fcdcdcfea5665a9809d11dfef6c9c718b49da1947a2c94ea238f54
 
-stock_system=${LUMA_STOCK_SYSTEM_ROOT:-/var/tmp/luma-stock-qrel1695-system/system}
-stock_vendor=${LUMA_STOCK_VENDOR_ROOT:-/var/tmp/luma-stock-qrel1695-vendor}
-stock_system_ext=${LUMA_STOCK_SYSTEM_EXT_ROOT:-/var/tmp/luma-stock-qrel1695-system_ext}
-stock_product=${LUMA_STOCK_PRODUCT_ROOT:-/var/tmp/luma-stock-qrel1695-product}
-stock_runtime=${LUMA_STOCK_RUNTIME_ROOT:-/var/tmp/luma-stock-qrel1695-runtime-apex}
-compat_system=${LUMA_STOCK_COMPAT_SYSTEM_ROOT:-/var/tmp/luma-waydroid-system-ro/system}
+stock_system=${SUNO_STOCK_SYSTEM_ROOT:-/var/tmp/Suno-stock-qrel1695-system/system}
+stock_vendor=${SUNO_STOCK_VENDOR_ROOT:-/var/tmp/Suno-stock-qrel1695-vendor}
+stock_system_ext=${SUNO_STOCK_SYSTEM_EXT_ROOT:-/var/tmp/Suno-stock-qrel1695-system_ext}
+stock_product=${SUNO_STOCK_PRODUCT_ROOT:-/var/tmp/Suno-stock-qrel1695-product}
+stock_runtime=${SUNO_STOCK_RUNTIME_ROOT:-/var/tmp/Suno-stock-qrel1695-runtime-apex}
+compat_system=${SUNO_STOCK_COMPAT_SYSTEM_ROOT:-/var/tmp/Suno-waydroid-system-ro/system}
 compat_servicemanager=$compat_system/bin/servicemanager
 compat_service=$compat_system/bin/service
-adapter_dir=${LUMA_STOCK_ADAPTER_DIR:-/tmp/qcomtee-smoke-src/adapter}
-listener_stage=${LUMA_FP6_ENROLLMENT_STAGE:-/tmp/luma-stock-qcomtee-stage.UnUPSc}
+adapter_dir=${SUNO_STOCK_ADAPTER_DIR:-/tmp/qcomtee-smoke-src/adapter}
+listener_stage=${SUNO_FP6_ENROLLMENT_STAGE:-/tmp/Suno-stock-qcomtee-stage.UnUPSc}
 secure_firmware=$listener_stage/firmware
-persistent_fingerprint_root=/var/lib/luma/fingerprint
-manager_access_shim=${LUMA_STOCK_MANAGER_ACCESS_SHIM:-/tmp/qcomtee-smoke-src/libluma-servicemanager-access.so}
+persistent_fingerprint_root=/var/lib/Suno/fingerprint
+manager_access_shim=${SUNO_STOCK_MANAGER_ACCESS_SHIM:-/tmp/qcomtee-smoke-src/libSuno-servicemanager-access.so}
 
 fail() {
   printf 'event=fp6_stock_biometric_smoke_v1_failed mode=%s reason=%s\n' "$mode" "$1" >&2
@@ -145,15 +145,15 @@ findmnt -rn -T "$compat_servicemanager" -o OPTIONS | tr ',' '\n' | grep -qx ro |
 [[ $(sha256sum "$stock_vendor/lib64/hw/fingerprint.default.so" | cut -d' ' -f1) == "$expected_fingerprint_hal_sha" ]] || fail fingerprint_hal_hash
 ! pgrep -x servicemanager >/dev/null || fail servicemanager_already_running
 if [[ $mode != manager ]]; then
-  marker="luma-stock-gatekeeper-$(cat /proc/sys/kernel/random/uuid)"
+  marker="Suno-stock-gatekeeper-$(cat /proc/sys/kernel/random/uuid)"
   printf '<6>%s\n' "$marker" >/dev/kmsg
   grep -qw qcomtee /proc/modules || fail qcomtee_missing
   [[ -c /dev/tee0 ]] || fail tee_device_missing
   [[ -d $adapter_dir && ! -L $adapter_dir ]] || fail adapter_directory
   [[ $(sha256sum "$adapter_dir/libminkdescriptor.so" | cut -d' ' -f1) == "$expected_mink_adapter_sha" ]] || fail mink_adapter_hash
   [[ $(sha256sum "$adapter_dir/libdmabufheap.so" | cut -d' ' -f1) == "$expected_dmabuf_shim_sha" ]] || fail dmabuf_shim_hash
-  [[ $(sha256sum "$adapter_dir/libluma-fdsan-compat.so" | cut -d' ' -f1) == "$expected_fdsan_compat_sha" ]] || fail fdsan_compat_hash
-  [[ $(sha256sum "$adapter_dir/libluma-biometric-properties.so" | cut -d' ' -f1) == "$expected_property_shim_sha" ]] || fail property_shim_hash
+  [[ $(sha256sum "$adapter_dir/libSuno-fdsan-compat.so" | cut -d' ' -f1) == "$expected_fdsan_compat_sha" ]] || fail fdsan_compat_hash
+  [[ $(sha256sum "$adapter_dir/libSuno-biometric-properties.so" | cut -d' ' -f1) == "$expected_property_shim_sha" ]] || fail property_shim_hash
   [[ -f $manager_access_shim && ! -L $manager_access_shim ]] || fail manager_access_shim_identity
   [[ $(sha256sum "$manager_access_shim" | cut -d' ' -f1) == "$expected_manager_access_shim_sha" ]] || fail manager_access_shim_hash
   [[ -d $secure_firmware && ! -L $secure_firmware ]] || fail secure_firmware_directory
@@ -177,7 +177,7 @@ if [[ $mode != manager ]]; then
   done
 fi
 
-root=$(mktemp -d /var/tmp/luma-stock-bio-root.XXXXXX)
+root=$(mktemp -d /var/tmp/Suno-stock-bio-root.XXXXXX)
 mounted=false
 cleanup() {
   local status=$?
@@ -193,17 +193,17 @@ trap cleanup EXIT INT TERM HUP
 mount --make-rprivate /
 mount -t tmpfs -o mode=0755,size=64m tmpfs "$root"
 mounted=true
-mkdir -p "$root"/{system,vendor,system_ext,product,apex/com.android.runtime,dev,proc,sys,data,linkerconfig,luma-manager}
+mkdir -p "$root"/{system,vendor,system_ext,product,apex/com.android.runtime,dev,proc,sys,data,linkerconfig,Suno-manager}
 bind_ro "$stock_system" "$root/system"
 bind_ro "$stock_runtime" "$root/apex/com.android.runtime"
 bind_ro "$stock_vendor" "$root/vendor"
 bind_ro "$stock_system_ext" "$root/system_ext"
 bind_ro "$stock_product" "$root/product"
-touch "$root/luma-manager/libluma-servicemanager-access.so"
-bind_ro "$manager_access_shim" "$root/luma-manager/libluma-servicemanager-access.so"
-touch "$root/luma-manager/libluma-biometric-properties.so"
-bind_ro "$adapter_dir/libluma-biometric-properties.so" \
-  "$root/luma-manager/libluma-biometric-properties.so"
+touch "$root/Suno-manager/libSuno-servicemanager-access.so"
+bind_ro "$manager_access_shim" "$root/Suno-manager/libSuno-servicemanager-access.so"
+touch "$root/Suno-manager/libSuno-biometric-properties.so"
+bind_ro "$adapter_dir/libSuno-biometric-properties.so" \
+  "$root/Suno-manager/libSuno-biometric-properties.so"
 
 mount -t tmpfs -o mode=0755,size=8m tmpfs "$root/dev"
 mkdir -p "$root/dev"/{socket,binderfs}
@@ -278,12 +278,12 @@ fi
 
 launch=(env -i LD_LIBRARY_PATH="$ld_library_path" /usr/sbin/chroot "$root" \
   /system/bin/sh -c \
-  'export LD_PRELOAD=/luma-manager/libluma-servicemanager-access.so:/luma-manager/libluma-biometric-properties.so; exec /system/bin/servicemanager')
-if [[ -n ${LUMA_STOCK_TRACE_MANAGER:-} ]]; then
-  [[ -x $LUMA_STOCK_TRACE && ! -L $LUMA_STOCK_TRACE ]] || fail tracer_identity
-  [[ -n ${LUMA_STOCK_TRACE_SHA256:-} ]] || fail tracer_hash_missing
-  [[ $(sha256sum "$LUMA_STOCK_TRACE" | cut -d' ' -f1) == "$LUMA_STOCK_TRACE_SHA256" ]] || fail tracer_hash
-  launch=("$LUMA_STOCK_TRACE" "${launch[@]}")
+  'export LD_PRELOAD=/Suno-manager/libSuno-servicemanager-access.so:/Suno-manager/libSuno-biometric-properties.so; exec /system/bin/servicemanager')
+if [[ -n ${SUNO_STOCK_TRACE_MANAGER:-} ]]; then
+  [[ -x $SUNO_STOCK_TRACE && ! -L $SUNO_STOCK_TRACE ]] || fail tracer_identity
+  [[ -n ${SUNO_STOCK_TRACE_SHA256:-} ]] || fail tracer_hash_missing
+  [[ $(sha256sum "$SUNO_STOCK_TRACE" | cut -d' ' -f1) == "$SUNO_STOCK_TRACE_SHA256" ]] || fail tracer_hash
+  launch=("$SUNO_STOCK_TRACE" "${launch[@]}")
 fi
 "${launch[@]}" \
   >"$root/data/servicemanager.log" 2>&1 &
@@ -300,7 +300,7 @@ for _ in $(seq 1 5); do
   fi
   if timeout 2 env -i LD_LIBRARY_PATH="$ld_library_path" /usr/sbin/chroot "$root" \
     /system/bin/sh -c \
-    'export LD_PRELOAD=/luma-manager/libluma-biometric-properties.so; exec /system/bin/service list' \
+    'export LD_PRELOAD=/Suno-manager/libSuno-biometric-properties.so; exec /system/bin/service list' \
     >"$root/data/service-list.txt" 2>"$root/data/service-list.err"; then
     ready=true
     break
@@ -317,18 +317,18 @@ printf 'event=stock_servicemanager_ready binder=/dev/binder registered_services=
 
 if [[ $mode != manager ]]; then
   qrel_root=$root/qrel-root
-  mkdir -p "$qrel_root"/{system,vendor,system_ext,product,apex/com.android.runtime,dev,proc,sys,data,linkerconfig,luma-adapter}
+  mkdir -p "$qrel_root"/{system,vendor,system_ext,product,apex/com.android.runtime,dev,proc,sys,data,linkerconfig,Suno-adapter}
   chmod 0755 "$qrel_root" "$qrel_root/apex"
   bind_ro "$stock_system" "$qrel_root/system"
   bind_ro "$stock_vendor" "$qrel_root/vendor"
   bind_ro "$stock_system_ext" "$qrel_root/system_ext"
   bind_ro "$stock_product" "$qrel_root/product"
   bind_ro "$stock_runtime" "$qrel_root/apex/com.android.runtime"
-  bind_ro "$adapter_dir" "$qrel_root/luma-adapter"
+  bind_ro "$adapter_dir" "$qrel_root/Suno-adapter"
   if [[ -n $challenge_probe ]]; then
     [[ $mode == fingerprint ]] || fail challenge_probe_requires_fingerprint_mode
     [[ -f $challenge_probe && ! -L $challenge_probe ]] || fail challenge_probe_identity
-    [[ $challenge_probe == "$adapter_dir/libluma-fingerprint-challenge-probe.so" ]] || \
+    [[ $challenge_probe == "$adapter_dir/libSuno-fingerprint-challenge-probe.so" ]] || \
       fail challenge_probe_path
     [[ $challenge_probe_sha =~ ^[0-9a-f]{64}$ ]] || fail challenge_probe_hash_missing
     [[ $(sha256sum "$challenge_probe" | cut -d' ' -f1) == "$challenge_probe_sha" ]] || fail challenge_probe_hash
@@ -337,7 +337,7 @@ if [[ $mode != manager ]]; then
     [[ $mode == fingerprint ]] || fail enrollment_client_requires_fingerprint_mode
     [[ $persist_fingerprint == 1 ]] || fail enrollment_client_requires_persistence
     [[ -f $enrollment_client && ! -L $enrollment_client ]] || fail enrollment_client_identity
-    [[ $enrollment_client == "$adapter_dir/libluma-fingerprint-enrollment-client.so" ]] || \
+    [[ $enrollment_client == "$adapter_dir/libSuno-fingerprint-enrollment-client.so" ]] || \
       fail enrollment_client_path
     [[ $enrollment_client_sha =~ ^[0-9a-f]{64}$ ]] || fail enrollment_client_hash_missing
     [[ $(sha256sum "$enrollment_client" | cut -d' ' -f1) == "$enrollment_client_sha" ]] || \
@@ -393,9 +393,9 @@ if [[ $mode != manager ]]; then
     install -d -m 0760 -o 1000 -g 1000 "$persistent_fingerprint_root/fpdata"
     install -d -m 0700 -o 1000 -g 1000 \
       "$persistent_fingerprint_root/fpdata/templates"
-    install -d -m 0700 -o 1000 -g 1000 "$qrel_root/data/luma-state"
+    install -d -m 0700 -o 1000 -g 1000 "$qrel_root/data/Suno-state"
     mount --bind "$persistent_fingerprint_root/android-state" \
-      "$qrel_root/data/luma-state"
+      "$qrel_root/data/Suno-state"
     mount --bind "$persistent_fingerprint_root/fpdata" \
       "$qrel_root/data/vendor_de/0/fpdata"
   fi
@@ -414,10 +414,10 @@ if [[ $mode != manager ]]; then
   done
   [[ -S $qrel_root/dev/socket/logdw ]] || fail log_sink_not_ready
 
-  qrel_ld_library_path=/luma-adapter:/apex/com.android.runtime/lib64/bionic:/vendor/lib64:/vendor/lib64/hw:/system/lib64:/system_ext/lib64:/product/lib64
+  qrel_ld_library_path=/Suno-adapter:/apex/com.android.runtime/lib64/bionic:/vendor/lib64:/vendor/lib64/hw:/system/lib64:/system_ext/lib64:/product/lib64
   keymint_launch=(env -i LD_LIBRARY_PATH="$qrel_ld_library_path" \
     /usr/sbin/chroot --userspec=1000:1000 "$qrel_root" /system/bin/sh -c \
-    'export LD_PRELOAD=/luma-adapter/libluma-biometric-properties.so; exec /vendor/bin/hw/android.hardware.security.keymint-service-qti')
+    'export LD_PRELOAD=/Suno-adapter/libSuno-biometric-properties.so; exec /vendor/bin/hw/android.hardware.security.keymint-service-qti')
   "${keymint_launch[@]}" </dev/null >"$qrel_root/data/keymint.log" 2>&1 &
   keymint_pid=$!
   keymint_ready=false
@@ -430,7 +430,7 @@ if [[ $mode != manager ]]; then
     fi
     if timeout 2 env -i LD_LIBRARY_PATH="$ld_library_path" /usr/sbin/chroot "$root" \
       /system/bin/sh -c \
-      'export LD_PRELOAD=/luma-manager/libluma-biometric-properties.so; exec /system/bin/service list' \
+      'export LD_PRELOAD=/Suno-manager/libSuno-biometric-properties.so; exec /system/bin/service list' \
       >"$root/data/service-list-keymint.txt" 2>/dev/null &&
       grep -Fq 'android.hardware.security.keymint.IKeyMintDevice/default' "$root/data/service-list-keymint.txt"; then
       keymint_ready=true
@@ -457,9 +457,9 @@ if [[ $mode != manager ]]; then
 
   gatekeeper_launch=(env -i LD_LIBRARY_PATH="$qrel_ld_library_path" \
     /usr/sbin/chroot --userspec=1000:1000 "$qrel_root" /system/bin/sh -c \
-    'export LD_PRELOAD=/luma-adapter/libluma-biometric-properties.so; exec /vendor/bin/hw/android.hardware.gatekeeper-service-qti')
-  if [[ -n ${LUMA_STOCK_TRACE:-} ]]; then
-    gatekeeper_launch=("$LUMA_STOCK_TRACE" "${gatekeeper_launch[@]}")
+    'export LD_PRELOAD=/Suno-adapter/libSuno-biometric-properties.so; exec /vendor/bin/hw/android.hardware.gatekeeper-service-qti')
+  if [[ -n ${SUNO_STOCK_TRACE:-} ]]; then
+    gatekeeper_launch=("$SUNO_STOCK_TRACE" "${gatekeeper_launch[@]}")
   fi
   "${gatekeeper_launch[@]}" \
     </dev/null >"$qrel_root/data/gatekeeper.log" 2>&1 &
@@ -474,7 +474,7 @@ if [[ $mode != manager ]]; then
     fi
     if timeout 2 env -i LD_LIBRARY_PATH="$ld_library_path" /usr/sbin/chroot "$root" \
       /system/bin/sh -c \
-      'export LD_PRELOAD=/luma-manager/libluma-biometric-properties.so; exec /system/bin/service list' \
+      'export LD_PRELOAD=/Suno-manager/libSuno-biometric-properties.so; exec /system/bin/service list' \
       >"$root/data/service-list-gatekeeper.txt" 2>/dev/null &&
       grep -Fq 'android.hardware.gatekeeper.IGatekeeper/default' "$root/data/service-list-gatekeeper.txt"; then
       gatekeeper_ready=true
@@ -498,7 +498,7 @@ if [[ $mode != manager ]]; then
   if [[ $mode == fingerprint ]]; then
     fingerprint_launch=(env -i LD_LIBRARY_PATH="$qrel_ld_library_path" \
       /usr/sbin/chroot --userspec=1000:1000 "$qrel_root" /system/bin/sh -c \
-      'export LD_PRELOAD=/luma-adapter/libluma-biometric-properties.so:/luma-adapter/libluma-fdsan-compat.so; exec /vendor/bin/hw/android.hardware.biometrics.fingerprint-service')
+      'export LD_PRELOAD=/Suno-adapter/libSuno-biometric-properties.so:/Suno-adapter/libSuno-fdsan-compat.so; exec /vendor/bin/hw/android.hardware.biometrics.fingerprint-service')
     "${fingerprint_launch[@]}" </dev/null >"$qrel_root/data/fingerprint.log" 2>&1 &
     fingerprint_pid=$!
     fingerprint_ready=false
@@ -511,7 +511,7 @@ if [[ $mode != manager ]]; then
       fi
       if timeout 2 env -i LD_LIBRARY_PATH="$ld_library_path" /usr/sbin/chroot "$root" \
         /system/bin/sh -c \
-        'export LD_PRELOAD=/luma-manager/libluma-biometric-properties.so; exec /system/bin/service list' \
+        'export LD_PRELOAD=/Suno-manager/libSuno-biometric-properties.so; exec /system/bin/service list' \
         >"$root/data/service-list-fingerprint.txt" 2>/dev/null &&
         grep -Fq 'android.hardware.biometrics.fingerprint.IFingerprint/default' "$root/data/service-list-fingerprint.txt"; then
         fingerprint_ready=true
@@ -535,7 +535,7 @@ if [[ $mode != manager ]]; then
       challenge_probe_status=0
       env -i LD_LIBRARY_PATH="$qrel_ld_library_path" \
         /usr/sbin/chroot --userspec=1000:1000 "$qrel_root" /system/bin/sh -c \
-        'export LD_PRELOAD=/luma-adapter/libluma-biometric-properties.so:/luma-adapter/libluma-fingerprint-challenge-probe.so; exec /system/bin/sh' \
+        'export LD_PRELOAD=/Suno-adapter/libSuno-biometric-properties.so:/Suno-adapter/libSuno-fingerprint-challenge-probe.so; exec /system/bin/sh' \
         </dev/null >"$qrel_root/data/challenge-probe.log" 2>&1 || challenge_probe_status=$?
       sed -n '1,80p' "$qrel_root/data/challenge-probe.log"
       if [[ $challenge_probe_status -ne 0 ]]; then
@@ -568,7 +568,7 @@ if [[ $mode != manager ]]; then
       fi
       env -i LD_LIBRARY_PATH="$qrel_ld_library_path" \
         /usr/sbin/chroot --userspec=1000:1000 "$qrel_root" /system/bin/sh -c \
-        'export LD_PRELOAD=/luma-adapter/libluma-biometric-properties.so:/luma-adapter/libluma-fingerprint-enrollment-client.so; exec /system/bin/sh' \
+        'export LD_PRELOAD=/Suno-adapter/libSuno-biometric-properties.so:/Suno-adapter/libSuno-fingerprint-enrollment-client.so; exec /system/bin/sh' \
         || enrollment_client_status=$?
       if [[ -n $saved_terminal_state ]]; then
         stty "$saved_terminal_state"

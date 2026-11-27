@@ -8,11 +8,11 @@
 set -Eeuo pipefail
 umask 077
 
-stage=/tmp/luma-fp-native-qsee-v124
-state=/var/lib/luma/fingerprint/qsee-state
+stage=/tmp/Suno-fp-native-qsee-v124
+state=/var/lib/Suno/fingerprint/qsee-state
 firmware_path=/sys/module/firmware_class/parameters/path
 expected_firmware_path=/lib/firmware/postmarketos
-expected_kernel=7.1.2-luma-fp-cma1
+expected_kernel=7.1.2-Suno-fp-cma1
 expected_module_sha=953cf2afecb41b59beec1b507c95590190608240bc483767a58bf97828c8205e
 expected_supplicant_sha=d979286aef1fecb23dd250192c6a062863ef999f38927b2e2ae329627af8154c
 expected_loader_sha=57955bc42c50ab5fccd27fa7b27d9c3a1e9717cb2e213fc31c8c820f81335900
@@ -61,9 +61,9 @@ install -d -o root -g root -m 0700 "$state"
 chmod 0600 "$stage/qseecomtee.ko"
 chmod 0700 "$stage/qsee-supplicant" "$stage/qsee-app-loader"
 printf '%s' "$stage/firmware" >"$firmware_path"
-insmod "$stage/qseecomtee.ko" luma_adopt_resident_focal=0
+insmod "$stage/qseecomtee.ko" Suno_adopt_resident_focal=0
 grep -qw qseecomtee /proc/modules || fail module_load
-[[ $(cat /sys/module/qseecomtee/parameters/luma_adopt_resident_focal) == N ]] || fail adoption_enabled
+[[ $(cat /sys/module/qseecomtee/parameters/Suno_adopt_resident_focal) == N ]] || fail adoption_enabled
 [[ -c /dev/tee0 && -c /dev/teepriv0 ]] || fail tee_nodes
 
 "$stage/qsee-supplicant" --state-dir "$state" >"$stage/supplicant.log" 2>&1 &

@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Suno Updates
+Comment=Notifications about Suno system updates
+Icon=software-update-available
+Exec=/usr/libexec/Suno-update-notifier
+DBusActivatable=true
+NoDisplay=true
+Terminal=false
+Categories=System;
+X-GNOME-UsesNotifications=true

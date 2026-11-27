@@ -27,8 +27,8 @@ notes_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 exec "$notes_dir/Notes" "$@"
 ''')
 (appdir / 'AppRun').chmod(0o755)
-shutil.copy2(appdir / 'usr/share/applications/org.projectluma.Notes.desktop', appdir)
-shutil.copy2(appdir / 'usr/share/icons/hicolor/scalable/apps/org.projectluma.Notes.svg', appdir)
+shutil.copy2(appdir / 'usr/share/applications/org.projectSuno.Notes.desktop', appdir)
+shutil.copy2(appdir / 'usr/share/icons/hicolor/scalable/apps/org.projectSuno.Notes.svg', appdir)
 payload = args.output / 'payload.squashfs'
 subprocess.run(['mksquashfs', str(appdir), str(payload), '-noappend', '-no-xattrs', '-all-root', '-comp', 'zstd',
                 '-Xcompression-level', '15', '-processors', '2'], check=True)

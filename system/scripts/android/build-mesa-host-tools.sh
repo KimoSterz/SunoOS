@@ -17,7 +17,7 @@ set -euo pipefail
 build_root=$(realpath "$1")
 source_dir=$(realpath "$2")
 output=$3
-jobs=${LUMA_BUILD_JOBS:-8}
+jobs=${SUNO_BUILD_JOBS:-8}
 tools=(mesa_clc vtn_bindgen2 panfrost_compile asahi_clc)
 
 test -x "$build_root/usr/bin/meson" || { printf 'error: build root lacks meson\n' >&2; exit 1; }

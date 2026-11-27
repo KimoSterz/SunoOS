@@ -1,3 +1,0 @@
-[D-BUS Service]
-Name=io.luma.Valet
-Exec=/usr/bin/luma-install --gapplication-service

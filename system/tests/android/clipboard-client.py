@@ -26,7 +26,7 @@ def main():
         wrapper=work/'source/sdk/src/java/lineageos/waydroid/Clipboard.java'
         wrapper.parent.mkdir(parents=True)
         shutil.copyfile(original,wrapper)
-        subprocess.run(['patch','--batch','--fuzz=0','-p1','-d',str(work/'source'),'-i',str(repo/'patches/android-lineage-sdk/0004-luma-native-clipboard-reconnect.patch')],check=True)
+        subprocess.run(['patch','--batch','--fuzz=0','-p1','-d',str(work/'source'),'-i',str(repo/'patches/android-lineage-sdk/0004-Suno-native-clipboard-reconnect.patch')],check=True)
         fixtures={
             'android/content/Context.java':'package android.content; public class Context { public Context getApplicationContext(){return this;} }',
             'android/os/RemoteException.java':'package android.os; public class RemoteException extends Exception {}',

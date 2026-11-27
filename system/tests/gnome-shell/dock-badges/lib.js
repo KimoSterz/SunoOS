@@ -14,14 +14,14 @@ export const wait = ms => new Promise(r => GLib.timeout_add(GLib.PRIORITY_DEFAUL
 
 export async function test(method, ...args) {
     const sig = args.map(() => 's').join('');
-    return Gio.DBus.session.call_sync('org.projectluma.Background1', '/org/projectluma/Background1',
-        'org.luma.BadgeTest', method, args.length ? new GLib.Variant(`(${sig})`, args) : null,
+    return Gio.DBus.session.call_sync('org.projectSuno.Background1', '/org/projectSuno/Background1',
+        'org.Suno.BadgeTest', method, args.length ? new GLib.Variant(`(${sig})`, args) : null,
         null, Gio.DBusCallFlags.NONE, -1, null);
 }
 export const setAgent = (app, values) => test('SetValues', app, JSON.stringify(values));
 export const launcher = (desktopId, props) => test('Launcher', `application://${desktopId}`, JSON.stringify(props));
 
-export const shellState = new Gio.Settings({schema_id: 'org.project_luma.shell-state'});
+export const shellState = new Gio.Settings({schema_id: 'org.projectSuno.shell-state'});
 
 export function dashIcons() {
     const box = Main.overview.dash._box;

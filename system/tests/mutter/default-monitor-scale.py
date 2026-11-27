@@ -59,20 +59,20 @@ static void expect(float expected, int calls, const char *message)
 }
 int main(void)
 {
-  explicit_scale = false; unsetenv("LUMA_DEVICE_CLASS");
+  explicit_scale = false; unsetenv("SUNO_DEVICE_CLASS");
   expect(1.f, 0, "new desktop without a device hint starts at 100 percent");
-  setenv("LUMA_DEVICE_CLASS", "desktop", 1);
+  setenv("SUNO_DEVICE_CLASS", "desktop", 1);
   expect(1.f, 0, "desktop profile starts at 100 percent");
   explicit_scale = true; configured_scale = 2;
   expect(2.f, 0, "explicit desktop global scale survives");
-  explicit_scale = false; setenv("LUMA_DEVICE_CLASS", "handheld", 1);
+  explicit_scale = false; setenv("SUNO_DEVICE_CLASS", "handheld", 1);
   expect(1.75f, 1, "handheld retains automatic DPI scale");
   explicit_scale = true; configured_scale = 3;
   expect(3.f, 0, "explicit handheld global scale survives");
   return 0;
 }
 '''
-    with tempfile.TemporaryDirectory(prefix="luma-scale-test-") as directory:
+    with tempfile.TemporaryDirectory(prefix="Suno-scale-test-") as directory:
         path = Path(directory)
         (path / "test.c").write_text(harness)
         subprocess.run([os.environ.get("CC", "cc"), "-std=c11", "-D_POSIX_C_SOURCE=200809L",

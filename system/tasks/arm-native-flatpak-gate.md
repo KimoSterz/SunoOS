@@ -1,11 +1,11 @@
 # Task: arm-native-flatpak-gate
 
 - Status: active
-- Owner: luma-dev-2; Codex /root/native_browser_environment
+- Owner: Suno-dev-2; Codex /root/native_browser_environment
 - Updated: 2026-10-25T23:38:42.055995+00:00
-- Project: luma-os
+- Project: Suno-os
 - Branch and last useful commit: agent/1003/arm-native-flatpak-gate; 6f8bbafd149406cd757f8171f902aafb8bb36e79
-- Worktree: /srv/dev/worktrees/luma-os/arm-native-flatpak-gate
+- Worktree: /srv/dev/worktrees/Suno-os/arm-native-flatpak-gate
 - Scope and expected result: native ARM signed Flatpak browser acceptance using the existing real GNOME mechanism proof, without rebuilding or changing product permissions.
 - Files / interfaces owned by this task: browser runtime workflow/probe, fixture actor and identity observer, signed selected-ref intake/installer.
 - Related tasks and integration owner: root arm-desktop integrates; arm_publication_r6 owns selected signed-ref archive export/transport.
@@ -22,7 +22,7 @@ Publication agent owns export/upload; this task did neither.
 The installer imports all four exact signed commits through a fresh normal
 user Flatpak installation (runtimes first, then app with normal dependency
 checks), verifies the original signed summary and maintained
-signature fingerprint/ref bindings, restores the maintained official `luma`
+signature fingerprint/ref bindings, restores the maintained official `Suno`
 remote URL, rejects all permission overrides, and compares the actual engine
 and every native38 shipping host file (excluding generated PYC) with the signed
 app's files. Extra signed app source files are retained. Only normal

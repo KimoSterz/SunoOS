@@ -17,8 +17,8 @@ class ToolsArchitectureTests(unittest.TestCase):
             script = r'''
 source "$TEST_ROOT/scripts/os/lib/common.sh"
 uname() { printf '%s\n' "$TEST_HOST"; }
-LUMA_OS_ARCH=$TEST_TARGET
-luma_os_podman() {
+SUNO_OS_ARCH=$TEST_TARGET
+Suno_os_podman() {
   printf '%s\n' "$*" >> "$TEST_LOG"
   case "$1 $2" in
     'image exists') [ "$TEST_CACHED" = 1 ] ;;
@@ -27,12 +27,12 @@ luma_os_podman() {
     *) return 23 ;;
   esac
 }
-luma_os_tools_image
+Suno_os_tools_image
 '''
             env = dict(os.environ, TEST_ROOT=str(ROOT), TEST_HOST=host,
                        TEST_TARGET=target, TEST_IMAGE_ARCH=image_arch,
                        TEST_CACHED=str(int(cached)), TEST_LOG=str(log))
-            env.pop('LUMA_TARGET_ARCHITECTURE', None)
+            env.pop('SUNO_TARGET_ARCHITECTURE', None)
             result = subprocess.run(['bash', '-e', '-c', script], env=env,
                                     capture_output=True, text=True)
             return result, log.read_text() if log.exists() else ''

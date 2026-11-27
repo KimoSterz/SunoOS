@@ -5,7 +5,7 @@
 // opens the drawer on the island's inner side, moving in from that edge.
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as MessageTray from 'resource:///org/gnome/shell/ui/messageTray.js';
-import {getNotificationTray} from 'resource:///org/gnome/shell/ui/lumaNotificationBeacon.js';
+import {getNotificationTray} from 'resource:///org/gnome/shell/ui/SunoNotificationBeacon.js';
 import * as A from 'resource:///org/gnome/shell/ui/shelfArrangement.js';
 import * as L from './lib.js';
 

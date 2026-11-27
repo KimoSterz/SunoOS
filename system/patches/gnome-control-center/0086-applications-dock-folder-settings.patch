@@ -1,4 +1,4 @@
-From: Luma Developers
+From: Suno Developers
 Subject: [PATCH] Keep dock folder settings aligned with the Applications drawer
 
 --- a/panels/dash/cc-dash-panel.c

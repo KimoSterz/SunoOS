@@ -12,7 +12,7 @@ test "$(id -u)" != 0 || { echo 'Run as an ordinary user in a disposable build en
 source=$(CDPATH= cd -- "$1" && pwd)
 build=$(CDPATH= cd -- "$2" && pwd)
 tests=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
-runtime=$(mktemp -d /tmp/luma-sound-input-test-XXXXXX)
+runtime=$(mktemp -d /tmp/Suno-sound-input-test-XXXXXX)
 trap 'rm -rf "$runtime"' EXIT HUP INT TERM
 export GSETTINGS_BACKEND=memory G_DEBUG=fatal-warnings
 # All data/config writes and fake desktop entries are private to this run.
@@ -32,24 +32,24 @@ done
 # Compile the current production writer, rather than a hand-copied test implementation.
 # pkg-config returns compiler/linker tokens, which intentionally undergo shell splitting.
 flags=$(pkg-config --cflags --libs gtk4 json-glib-1.0 gio-unix-2.0)
-gcc -g -O0 -Wall -Wno-deprecated-declarations -I"$source/shell" -c "$source/shell/cc-luma-live-gsettings.c" -o "$runtime/gsettings.o" $flags
+gcc -g -O0 -Wall -Wno-deprecated-declarations -I"$source/shell" -c "$source/shell/cc-Suno-live-gsettings.c" -o "$runtime/gsettings.o" $flags
 for name in gsettings permissions notifications app-portals defaults shelf windows; do
  extra="$runtime/gsettings.o"
  test "$name" != gsettings || extra=
- test "$name" != shelf || extra="$extra $source/shell/cc-luma-desktop.c"
- gcc -g -O0 -Wall -Wno-deprecated-declarations -I"$source/shell" "$tests/test-native-$name.c" "$source/shell/cc-luma-fixture.c" $extra -o "$runtime/test-native-$name" $flags -lm
+ test "$name" != shelf || extra="$extra $source/shell/cc-Suno-desktop.c"
+ gcc -g -O0 -Wall -Wno-deprecated-declarations -I"$source/shell" "$tests/test-native-$name.c" "$source/shell/cc-Suno-fixture.c" $extra -o "$runtime/test-native-$name" $flags -lm
 done
 "$runtime/test-native-gsettings"
 dbus-run-session -- "$runtime/test-native-permissions"
 "$runtime/test-native-notifications"
 dbus-run-session -- "$runtime/test-native-app-portals"
 dbus-run-session -- "$runtime/test-native-defaults"
-"$runtime/test-native-shelf" "$source/shell/luma-settings-structure.json"
+"$runtime/test-native-shelf" "$source/shell/Suno-settings-structure.json"
 schemas="$XDG_DATA_HOME/gnome-shell/extensions/tilingshell@ferrarodomenico.com/schemas"
 mkdir -p "$schemas"
 cat > "$schemas/test.gschema.xml" <<'EOF'
 <schemalist>
- <schema id="org.project_luma.shell-state" path="/org/project-luma/shell-state/">
+ <schema id="org.projectSuno.shell-state" path="/org/project-suno/shell-state/">
   <key name="window-border-enabled" type="b"><default>true</default></key>
   <key name="window-border-size" type="i"><range min="1" max="64"/><default>14</default></key>
   <key name="shelf-padding" type="i"><default>14</default></key>

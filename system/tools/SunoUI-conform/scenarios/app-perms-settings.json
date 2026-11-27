@@ -1,0 +1,120 @@
+{
+ "app": "app-perms-settings",
+ "title": "App permissions: Settings",
+ "about": "Settings 0110 against design-center 6023f2f mockups/app-perms/settings.html: Kiln's page (?page=app) Apps that can use all your files (?page=all) and Kiln open with a change waiting (?pending). Pixel mode: crops of the VM's Settings page column (2x), Settings started with SUNO_SETTINGS_FIXTURE=tests/fixtures/settings-app-perms.json. Glyphs: the reference's Lucide SVGs at SunoUI's 1.6 stroke (Prairie's adaptation of every Lucide glyph), not Lucide's 2. The reference is captured at 2x (spec.scale) to match.",
+ "spec": {
+  "root": "design-center",
+  "url": "mockups/app-perms/settings.html?page=app",
+  "window": "#stage",
+  "ready": "html[data-ready]",
+  "viewport": {
+   "width": 820,
+   "height": 1700
+  },
+  "phone_url": "mockups/app-perms/settings.html?page=app&posture=phone",
+  "phone_viewport": {
+   "width": 400,
+   "height": 2000
+  },
+  "init_script": "if (matchMedia('(prefers-color-scheme: light)').matches && !/[?&]mode=/.test(location.search)) history.replaceState(null, '', location.pathname + (location.search ? location.search + '&' : '?') + 'mode=light');",
+  "before": [
+   {
+    "eval": "(() => { const s = document.querySelector('#stage'); s.style.minHeight = '0'; })()",
+    "wait": 200
+   },
+   {
+    "eval": "(() => { const s = document.getElementById('stage'); s.style.position = 'relative'; const m = document.createElement('div'); m.id = 'ap-wash'; m.style.cssText = 'position:absolute;left:0;top:0;right:0;height:300px;pointer-events:none'; s.appendChild(m); })()",
+    "wait": 50
+   }
+  ],
+  "scale": 2
+ },
+ "states": [
+  {
+   "name": "app",
+   "about": "Kiln's page, every group; On screen is 0109's (#526) and a slot until it lands, so the reference drops it",
+   "window": "#stage",
+   "spec": [
+    {
+     "eval": "(() => { [...document.querySelectorAll('#stage .cfgrp')].filter(g => /^On screen/.test(g.textContent.trim())).forEach(g => g.remove()); })()",
+     "wait": 100
+    },
+    {
+     "eval": "(() => { document.querySelectorAll('#stage svg.i').forEach(s => s.setAttribute('stroke-width', '1.6')); })()",
+     "wait": 100
+    }
+   ]
+  },
+  {
+   "name": "all",
+   "about": "Apps that can use all your files",
+   "window": "#stage",
+   "spec": [
+    {
+     "eval": "(() => { document.querySelector('.cfpage').outerHTML = APX.allPage(); })()",
+     "wait": 400
+    },
+    {
+     "eval": "(() => { document.querySelectorAll('#stage svg.i').forEach(s => s.setAttribute('stroke-width', '1.6')); })()",
+     "wait": 100
+    }
+   ]
+  },
+  {
+   "name": "pending",
+   "about": "Kiln open while a Files change waits for its next start (?pending)",
+   "window": "#stage",
+   "spec": [
+    {
+     "eval": "(() => { document.querySelector('.cfpage').outerHTML = APX.appPage('kiln', true); [...document.querySelectorAll('#stage .cfgrp')].filter(g => /^On screen/.test(g.textContent.trim())).forEach(g => g.remove()); })()",
+     "wait": 400
+    },
+    {
+     "eval": "(() => { document.querySelectorAll('#stage svg.i').forEach(s => s.setAttribute('stroke-width', '1.6')); })()",
+     "wait": 100
+    }
+   ]
+  }
+ ],
+ "phone_states": [
+  "app",
+  "pending"
+ ],
+ "groups": [
+  {
+   "name": "fills",
+   "spec": "#stage .cfcard, #stage .cfhero, #stage .ap-fld, #stage .cfsw, #stage .cfrd, #stage .cfri, #stage .bt"
+  },
+  {
+   "name": "content",
+   "spec": "#stage .cfhd, #stage .cfhero, #stage .cfgrp, #stage .ap-note, #stage .cfback"
+  },
+  {
+   "name": "art",
+   "spec": "#stage .vlic, #stage .cfimg"
+  },
+  {
+   "name": "controls",
+   "spec": "#stage .cfsw, #stage .cfrd, #stage .bt"
+  },
+  {
+   "name": "wash",
+   "spec": "#ap-wash"
+  }
+ ],
+ "pairs": [],
+ "text_aliases": {},
+ "pixel": {
+  "max_mean": 4.0,
+  "max_over10": 1.0,
+  "fills": "fills",
+  "max_fill_over10": 0.005,
+  "glyphs_as_text": true,
+  "mean_without_text": true,
+  "exclude_groups": [
+   "art",
+   "wash"
+  ],
+  "fill_rim": 3
+ }
+}

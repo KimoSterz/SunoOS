@@ -32,7 +32,7 @@ index d7bdd76..83cafdd 100644
 +            }
 +        }
          if (preview != NULL)
-             luma_bar_item_chip_set_paintable (items[0], preview);
+             Suno_bar_item_chip_set_paintable (items[0], preview);
          g_signal_connect (items[3], "activated", G_CALLBACK (on_bar_share), window);
 -- 
 2.55.0

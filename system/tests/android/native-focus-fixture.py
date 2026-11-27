@@ -29,9 +29,9 @@ def main():
             stream.write(json.dumps({'event':'native-window-activation','active':bool(active),
                 'source':'Gtk.Window:is-active','input_focus_attested':False,
                 'elapsed_ms':time.clock_gettime_ns(time.CLOCK_BOOTTIME)//1_000_000})+'\n')
-        app=Gtk.Application(application_id='org.projectluma.AndroidFocusControl')
+        app=Gtk.Application(application_id='org.projectSuno.AndroidFocusControl')
         def activate(application):
-            window=Gtk.ApplicationWindow(application=application,title='Luma clipboard focus control')
+            window=Gtk.ApplicationWindow(application=application,title='Suno clipboard focus control')
             window.set_default_size(360,200)
             label=Gtk.Label(label='Synthetic native focus control\n\nClick here after scheduling the\nAndroid clipboard test.')
             window.set_child(label)

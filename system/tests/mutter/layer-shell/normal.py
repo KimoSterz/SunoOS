@@ -17,6 +17,6 @@ def activate(app):
     window.present()
 
 
-app = Gtk.Application(application_id="org.luma.test.LayerNormal")
+app = Gtk.Application(application_id="org.Suno.test.LayerNormal")
 app.connect("activate", activate)
 app.run([])

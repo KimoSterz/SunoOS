@@ -19,11 +19,11 @@ and native-function regression tests; it is not a second installed module.
 builder verifies that both complete patched modules reached final stage 2.
 
 The initial UEFI deployment defers OSTree bootloader auto-detection until
-Anaconda has copied Luma's own loader and bound its API mounts. The original
+Anaconda has copied Suno's own loader and bound its API mounts. The original
 repository bootloader policy is restored on success or failure; existing EFI
-vendor configurations are never used as Luma's deployment target.
+vendor configurations are never used as Suno's deployment target.
 
 When preserving the current default on an existing ESP, the bootupd boundary
-registers Luma's own named EFI entry and restores existing priorities, appending
+registers Suno's own named EFI entry and restores existing priorities, appending
 the new entry. This avoids the generic shim fallback rebuilding firmware order
 on first boot. Ordinary default installation and BIOS paths remain native.

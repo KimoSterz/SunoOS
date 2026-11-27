@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 // Keycap policy and its wiring into the Shell keyboard.
-// Run: gjs -m keycap-policy.js js/ui/lumaPresentation/keycap.js js/ui/keyboard.js [js/gdm/loginDialog.js [js/gdm/authPrompt.js]]
+// Run: gjs -m keycap-policy.js js/ui/SunoPresentation/keycap.js js/ui/keyboard.js [js/gdm/loginDialog.js [js/gdm/authPrompt.js]]
 // (node keycap-policy.js ... works too). The cases mirror Stevia's
 // test-keycap-history.c so both keyboards keep one behaviour.
 const gjs = typeof globalThis.ARGV !== 'undefined';
@@ -18,7 +18,7 @@ function assert(value, message) {
 }
 
 const Keycap = await import(`file://${absolute(args[0])}`);
-// safeAreas.js sits next to keycap.js (js/ui/lumaPresentation/).
+// safeAreas.js sits next to keycap.js (js/ui/SunoPresentation/).
 const SafeAreas = await import(`file://${absolute(args[0]).replace(/[^/]*$/, 'safeAreas.js')}`);
 const keyboard = read(args[1]);
 const loginDialog = args[2] ? read(args[2]) : null;
@@ -264,7 +264,7 @@ for (const monitor of [{width: 360, height: 800}, {width: 800, height: 360}, {wi
     const greeter = (deviceClass, profile = null) => relayout.call(actor,
         {layoutManager: {keyboardMonitor: {width: 372, height: 828}}, presentation: null},
         {ThemeContext: {get_for_stage: () => ({scale_factor: 1})}}, Keycap, {stage: {}},
-        {getenv: name => (name === 'LUMA_DEVICE_CLASS' ? deviceClass : null)},
+        {getenv: name => (name === 'SUNO_DEVICE_CLASS' ? deviceClass : null)},
         () => profile, SafeAreas.bottomCornerClearance);
     greeter('handheld');
     assert(style === `padding-bottom: ${g.thumb_gap - g.min_row}px;` && actor._controls.visible &&
@@ -408,7 +408,7 @@ full.add('a', 0); full.add('b', 0); full.pin('a', true); full.pin('b', true);
 assert(!full.add('c', 0) && full.list(0).join() === 'b,a', 'all slots pinned refuses new captures');
 
 for (const [needle, message] of [
-    ["import * as Keycap from './lumaPresentation/keycap.js';", 'keyboard uses the shared policy'],
+    ["import * as Keycap from './SunoPresentation/keycap.js';", 'keyboard uses the shared policy'],
     ['this._keyboardController.setOskCompletion(false);', 'taps never switch to a completion engine'],
     ['GLib.idle_add(GLib.PRIORITY_LOW, () => {', 'suggestions are computed off the key path'],
     ['analysis?.word !== this._word || !analysis.correction', 'autocorrect never waits for analysis'],
@@ -550,7 +550,7 @@ for (const body of handlers) {
     const build = keyboard.slice(keyboard.indexOf('    _updateLayout('), keyboard.indexOf('    _keycapRow('));
     assert(/pad \|\| this\._tv \|\| !phone\s*\?\s*keyboardModel\.getLevels\(\)\s*:\s*Keycap\.phoneLevels\(/.test(build),
         'the keyboard uses the phone arrangement except on number pads, TV, Tablet and Desktop');
-    assert(/const phone = Main\.presentation\s*\?\s*Main\.presentation\.mode === 'mobile'\s*:\s*GLib\.getenv\('LUMA_DEVICE_CLASS'\) === 'handheld';/.test(build),
+    assert(/const phone = Main\.presentation\s*\?\s*Main\.presentation\.mode === 'mobile'\s*:\s*GLib\.getenv\('SUNO_DEVICE_CLASS'\) === 'handheld';/.test(build),
         'the phone arrangement follows Mobile, and a handheld greeter');
 }
 // A keyboard destroyed while shown (a mouse or keyboard plugged in) stops
@@ -616,7 +616,7 @@ for (const body of handlers) {
     const shows = keyboard.slice(keyboard.indexOf('    _tapAlwaysShows() {'),
         keyboard.indexOf('\n    }\n', keyboard.indexOf('    _tapAlwaysShows() {')));
     assert(/\['mobile', 'tablet'\]\.includes\(Main\.presentation\.mode\)/.test(shows) &&
-        /\['handheld', 'tablet'\]\.includes\(GLib\.getenv\('LUMA_DEVICE_CLASS'\)\)/.test(shows) &&
+        /\['handheld', 'tablet'\]\.includes\(GLib\.getenv\('SUNO_DEVICE_CLASS'\)\)/.test(shows) &&
         !/desktop|'tv'/.test(shows),
         'a tap always shows the keyboard on Mobile, Tablet and a handheld or tablet greeter only');
     if (authPrompt) {

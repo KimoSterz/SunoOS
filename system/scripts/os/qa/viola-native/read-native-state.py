@@ -18,11 +18,11 @@ def validate_runtime_identity(runtime, commit, deployment):
     from gi.repository import Flatpak
     # Flatpak 1.18 flatpak_run_add_app_info_args() writes the full ref, not
     # the shorter runtime preference used in the application's metadata.
-    expected = 'runtime/org.projectluma.Platform/aarch64/44'
+    expected = 'runtime/org.projectSuno.Platform/aarch64/44'
     reference = Flatpak.Ref.parse(runtime)
     assert runtime == reference.format_ref() == deployment['runtime_ref'] == expected
     assert reference.get_kind() == Flatpak.RefKind.RUNTIME
-    assert reference.get_name() == 'org.projectluma.Platform'
+    assert reference.get_name() == 'org.projectSuno.Platform'
     assert reference.get_arch() == 'aarch64' and reference.get_branch() == '44'
     assert re.fullmatch('[0-9a-f]{64}', commit)
     assert commit == deployment['runtime_commit'] == deployment['refs'][expected]
@@ -43,9 +43,9 @@ def main():
     before = identity()
     assert before[0] == os.getuid() == 1100
     argv = [v.decode() for v in before[2].split(b'\0') if v]
-    host = '/usr/share/viola-browser/luma-host/integrated_window.py'
-    home = Path('/home/luma-gate-browser-opens')
-    root = home / '.local/state/viola-luma/sessions'
+    host = '/usr/share/viola-browser/Suno-host/integrated_window.py'
+    home = Path('/home/Suno-gate-browser-opens')
+    root = home / '.local/state/viola-Suno/sessions'
     deployment_path = os.environ.get('BROWSER_GATE_FLATPAK_DEPLOYMENT')
     deployment = None
     if deployment_path:
@@ -64,7 +64,7 @@ def main():
         instance_id = info['Instance']['instance-id']
         assert instance_id.isdecimal()
         assert (Path('/run/user/1100/.flatpak') / instance_id / 'info').read_text() == text
-        from luma_installer.app_data_broker import authenticate_deployment
+        from Suno_installer.app_data_broker import authenticate_deployment
         authenticate_deployment(info, 'com.rhyme.viola', args.pid)
         import gi
         gi.require_version('Flatpak', '1.0')
@@ -94,12 +94,12 @@ def main():
         root = Path(deployment['state_root'])
         assert root.is_relative_to(home / '.var/app/com.rhyme.viola')
         assert Path(deployment['profile']).is_relative_to(home / '.var/app/com.rhyme.viola')
-        assert argv == ['/usr/bin/python3', '/app/share/viola-browser/luma-host/integrated_window.py',
+        assert argv == ['/usr/bin/python3', '/app/share/viola-browser/Suno-host/integrated_window.py',
                         '--engine', '/app/bin/viola-engine', '--profile', deployment['profile'],
                         '--work-root', str(root), '--interactive']
     else:
         assert argv == ['/usr/bin/python3', host, '--engine', '/opt/viola/browser/chrome',
-                        '--profile', str(home / '.local/share/viola-luma/profile'),
+                        '--profile', str(home / '.local/share/viola-Suno/profile'),
                         '--work-root', str(root), '--interactive', '--start-url', args.url]
     path = root / 'presentation-live.json'
     fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)

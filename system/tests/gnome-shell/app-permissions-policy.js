@@ -3,8 +3,8 @@
 // words, nothing offered that can't be granted, one offer per app and folder
 // at a time, Allow / Not now with no default and dismissing as Not now, and a
 // review that opens Valet's sheet.
-// Run: gjs -m app-permissions-policy.js js/ui/lumaAppPermissionsModel.js \
-//   js/ui/lumaAppPermissions.js js/ui/lumaPermissionOffer.js js/ui/messageList.js
+// Run: gjs -m app-permissions-policy.js js/ui/SunoAppPermissionsModel.js \
+//   js/ui/SunoAppPermissions.js js/ui/SunoPermissionOffer.js js/ui/messageList.js
 // (node app-permissions-policy.js ... works too).
 const gjs = typeof globalThis.ARGV !== 'undefined';
 const args = gjs ? globalThis.ARGV : process.argv.slice(2);
@@ -42,11 +42,11 @@ assert(/signal_subscribe\(BUS_NAME, BUS_NAME, 'Refused'/.test(service), 'offers 
 assert(/'AnswerOffer', new GLib.Variant\('\(ssb\)', \[app, folder, allowed\]\)/.test(service),
     'the answer goes back with AnswerOffer');
 assert(/this\._offers\.has\(key\)/.test(service), 'an offer showing is not shown twice');
-assert(/'luma-install', '--review', app/.test(service), 'Review opens the sheet in review mode');
+assert(/'Suno-install', '--review', app/.test(service), 'Review opens the sheet in review mode');
 
 // The standard banner: the app's source, the Shell's badge, two plain actions, dismiss = Not now.
 assert(/new MessageTray\.Source\(\{\s*title: name,\s*icon: gicon/.test(offer), 'the app is the source');
-assert(/notification\.lumaShellBadge = new Gio\.ThemedIcon\(\{name: SETTINGS_ICON\}\)/.test(offer),
+assert(/notification\.SunoShellBadge = new Gio\.ThemedIcon\(\{name: SETTINGS_ICON\}\)/.test(offer),
     'the Settings icon is the Shell\'s badge');
 assert(/addAction\(allow,/.test(offer) && /addAction\(notNow,/.test(offer), 'Allow and Not now are actions');
 assert(!/setDefault|isDefault|default: true/.test(offer), 'neither answer is a default');
@@ -54,6 +54,6 @@ assert(/reason === MessageTray\.NotificationDestroyedReason\.DISMISSED\)\s*answe
     'dismissing is Not now');
 assert(!/ModalDialog|Dialog\(/.test(offer.replace(/TvOfferToast[\s\S]*?\}\);/, '')), 'never a dialog');
 assert(/this\._buttons\[1\]\.grab_key_focus\(\)/.test(offer), 'on a TV the remote starts on Not now');
-assert(/this\._lumaShellBadge = notification\.lumaShellBadge \?\? null/.test(messageList),
+assert(/this\._SunoShellBadge = notification\.SunoShellBadge \?\? null/.test(messageList),
     'the banner reads the Shell\'s badge');
 print('app-permissions-policy: ok');

@@ -1,6 +1,6 @@
 ---
 title: Windows, title rows and islands
-summary: Design guidance for the Luma window, the identity and title, the sidebar, islands, the details pane, bars, empty states and dialogs.
+summary: Design guidance for the Suno window, the identity and title, the sidebar, islands, the details pane, bars, empty states and dialogs.
 order: 2
 section: Design
 ---
@@ -8,11 +8,11 @@ section: Design
 # Windows, title rows and islands
 
 This page is about design decisions. For the code, see
-[windows and islands in LumaUI](../kit/windows-and-islands.md).
+[windows and islands in SunoUI](../kit/windows-and-islands.md).
 
 ## The window
 
-A Luma window is a calm ground with islands set into it. LumaUI draws the
+A Suno window is a calm ground with islands set into it. SunoUI draws the
 frame: 20px corners (square only in full screen) and a soft layered shadow. An
 inactive window is drawn exactly like the active one, so a window in the
 background stays readable.
@@ -107,7 +107,7 @@ Every pane that can be empty needs a designed empty state.
   (“Delete 3 notes?”), explain the consequence in one sentence, and label buttons
   with verbs: “Cancel” and “Delete”. Mark destructive responses as destructive.
   `DestructiveDialog` follows this pattern.
-- **Sheets and dialogs** hold short, focused tasks. On a phone, LumaUI moves
+- **Sheets and dialogs** hold short, focused tasks. On a phone, SunoUI moves
   its dialogs, menus and the details pane to the bottom of the screen.
 - **Preferences** use the standard preferences dialog, grouped by topic.
 - Avoid dialogs for information that can be shown inline, and never stack
@@ -117,5 +117,5 @@ Every pane that can be empty needs a designed empty state.
 
 Creative and document apps may open to a welcome surface with the app’s icon,
 a one-line description, **New** and **Open** actions, and a check to skip it
-next time. LumaUI’s `WelcomeView` draws this. Other apps should open straight
+next time. SunoUI’s `WelcomeView` draws this. Other apps should open straight
 to their content.

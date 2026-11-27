@@ -17,7 +17,7 @@ are retained under `upstream/`. They are already incorporated in the combined
 patch and must not be applied twice. Upstream source:
 https://github.com/waydroid/android_vendor_waydroid/tree/1b95b85221f4faaa357932fa5e93eacb7430f636/waydroid-patches/base-patches-33/hardware/libhardware
 
-Luma adds bounded YV12/flexible 4:2:0 planar allocation and `lock_ycbcr`, the
+Suno adds bounded YV12/flexible 4:2:0 planar allocation and `lock_ycbcr`, the
 required handle metadata, and a variable-page-size-compatible page helper.
 The initial vanilla-Lineage candidate omitted Waydroid's framebuffer behavior:
 byte-buffer decoding passed, but visual presentation failed. That candidate is

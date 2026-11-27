@@ -38,7 +38,7 @@ def prepare(srpm, output, repository):
             archive.extractall(sources, filter="data")
     source = sources / SOURCE_NAME
     patches = sorted((int(n), name) for n, name in re.findall(
-        r"^Patch(\d+):\s+(\S+)", (inputs / "luma-phosh.spec").read_text(), re.M))
+        r"^Patch(\d+):\s+(\S+)", (inputs / "Suno-phosh.spec").read_text(), re.M))
     with (output / "assembly.log").open("w") as log:
         for _, name in patches:
             subprocess.run(["patch", "--batch", "--fuzz=0", "-p1", "-i", str(inputs / name)],
@@ -52,12 +52,12 @@ def prepare(srpm, output, repository):
                                     cwd=source, stdout=log, stderr=subprocess.STDOUT)
             if result.returncode != status:
                 raise RuntimeError(f"unexpected source compatibility result: {patch.name}")
-    allowed = {"src/app-grid.c.rej", "src/meson.build.rej", "src/luma-today.c.rej", "src/stylesheet/common.css.rej"}
+    allowed = {"src/app-grid.c.rej", "src/meson.build.rej", "src/Suno-today.c.rej", "src/stylesheet/common.css.rej"}
     rejects = list(source.rglob("*.rej"))
     if {str(p.relative_to(source)) for p in rejects} != allowed:
         raise RuntimeError("unexpected compatibility conflicts")
     path = source / "src/app-grid.c"
-    text = path.read_text().replace('#include "luma-today.h"', '#include "luma-today.h"\n#include "luma-home-pages.h"', 1)
+    text = path.read_text().replace('#include "Suno-today.h"', '#include "Suno-today.h"\n#include "Suno-home-pages.h"', 1)
     text = text.replace("  GtkWidget *today_slot;", "  GtkWidget *today_slot;\n  GtkWidget *home_pages;", 1)
     text = text.replace("app_ids[i] && g_list_model_get_n_items (G_LIST_MODEL (priv->home_model)) < priv->home_slots", "app_ids[i]")
     text = text.replace('  g_signal_connect (priv->favs, "size-allocate", G_CALLBACK (on_home_grid_allocated), self);\n', "")
@@ -70,19 +70,19 @@ def prepare(srpm, output, repository):
                         '    gtk_box_set_spacing (GTK_BOX (dock_box), pocket ? 10 : 2);')
     path.write_text(text)
     path = source / "src/meson.build"
-    path.write_text(path.read_text().replace("  'luma-today.c',", "  'luma-today.c',\n  'luma-home-pages.c',", 1))
+    path.write_text(path.read_text().replace("  'Suno-today.c',", "  'Suno-today.c',\n  'Suno-home-pages.c',", 1))
     path = source / "src/stylesheet/common.css"
     text = path.read_text().replace("box-shadow: 0 18px 40px -16px rgba(0,0,0,.6);", "box-shadow: none;")
     additions = "\n".join(line[1:] for line in path.with_suffix(".css.rej").read_text().splitlines()
                           if line.startswith("+") and not line.startswith("+++"))
-    path.write_text(text + "\n" + additions + "\n.luma-today-card { min-height: 114px; }\n")
-    patch = (repository / "patches/phosh/0051-luma-shared-home-widgets.patch").read_text().split("--- a/src/meson.build")[0]
+    path.write_text(text + "\n" + additions + "\n.Suno-today-card { min-height: 114px; }\n")
+    patch = (repository / "patches/phosh/0051-Suno-shared-home-widgets.patch").read_text().split("--- a/src/meson.build")[0]
     body = patch[patch.index("@@"):].splitlines()[1:]
     replacement = "\n".join(line[1:] for line in body if line.startswith(("+", " "))) + "\n"
     if not replacement.rstrip().endswith("{"):
         raise RuntimeError("shared widget constructor boundary changed")
     compact = (Path(__file__).with_name("titan2e-experience") / "compact-today.c.inc").read_text()
-    (source / "src/luma-today.c").write_text(replacement + "  return g_object_new (PHOSH_TYPE_LUMA_TODAY, NULL);\n}\n" + compact)
+    (source / "src/Suno-today.c").write_text(replacement + "  return g_object_new (PHOSH_TYPE_SUNO_TODAY, NULL);\n}\n" + compact)
     for path in rejects:
         path.unlink()
     for target, name in (("gvc", "libgnome-volume-control-d2442f455844e5292cb4a74ffc66ecc8d7595a9f"), ("libcall-ui", "libcall-ui-v0.1.5")):
@@ -90,7 +90,7 @@ def prepare(srpm, output, repository):
         if destination.exists():
             shutil.rmtree(destination)
         shutil.move(str(sources / name), destination)
-    shutil.copytree(repository / "src/luma-home-widgets", output / "home-widgets")
+    shutil.copytree(repository / "src/Suno-home-widgets", output / "home-widgets")
     print(source)
 
 

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-package org.projectluma.androidtest;
+package org.projectSuno.androidtest;
 
 public final class ActionReceiver extends android.content.BroadcastReceiver {
     @Override public void onReceive(android.content.Context context, android.content.Intent intent) {

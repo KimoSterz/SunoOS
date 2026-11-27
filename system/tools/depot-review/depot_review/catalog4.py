@@ -49,8 +49,8 @@ def command(config: Config) -> list[str]:
     scripts = config.source / "scripts/depot"
     keys = config.depot_keys / "minisign"
     argv = ["python3", "-I", str(scripts / "sign-catalog.py"), "--hub", config.hub,
-            "--token-file", str(config.token_file), "--key", str(keys / "luma-depot-catalog.key"),
-            "--public-key", str(keys / "luma-depot-catalog.pub"), "--site", str(config.depot_root / "site")]
+            "--token-file", str(config.token_file), "--key", str(keys / "Suno-depot-catalog.key"),
+            "--public-key", str(keys / "Suno-depot-catalog.pub"), "--site", str(config.depot_root / "site")]
     if config.sync_remote:
         sync = scripts / "sync-remote.sh"
         argv += ["--upload", f"bash '{sync}' --media && bash '{sync}' --catalog"]

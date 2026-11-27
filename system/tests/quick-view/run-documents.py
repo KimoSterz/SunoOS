@@ -65,7 +65,7 @@ body {{font-family:probe;background-image:url('{endpoint}/background')}}
 <a href="{endpoint}/navigation">A link must not navigate</a>
 </body></html>"""
     try:
-        with tempfile.TemporaryDirectory(prefix="luma-quick-view-test-") as directory:
+        with tempfile.TemporaryDirectory(prefix="Suno-quick-view-test-") as directory:
             fixture = pathlib.Path(directory) / "probe.html"
             fixture.write_text(html, encoding="utf-8")
             before = (hashlib.sha256(fixture.read_bytes()).digest(), fixture.stat().st_mtime_ns)

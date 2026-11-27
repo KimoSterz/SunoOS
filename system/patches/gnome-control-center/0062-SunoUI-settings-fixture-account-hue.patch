@@ -1,0 +1,13 @@
+diff --git a/shell/cc-Suno-window.c b/shell/cc-Suno-window.c
+index 6a23cb1..3244155 100644
+--- a/shell/cc-Suno-window.c
++++ b/shell/cc-Suno-window.c
+@@ -325,6 +325,8 @@ GtkWidget *cc_Suno_window_new (GtkApplication *application, CcSunoFixture *model
+                        cc_Suno_fixture_is_live (model) ? g_get_real_name () : "Nick";
+     if (!real || !*real || g_str_equal (real, "Unknown")) real = g_get_user_name ();
+     f->account = Suno_account_card_new (real, "Suno account");
++    if (!cc_Suno_fixture_is_live (model))
++      Suno_account_card_set_hue (SUNO_ACCOUNT_CARD (f->account), 250);
+     Suno_account_card_set_compact (SUNO_ACCOUNT_CARD (f->account), TRUE);
+     /* v71 phone (Settings audit, 1 Oct): the card is a plain inset card, the kit's recessed well
+      * (#w-settings.phone .cfme { background: var(--well); padding: 10px 12px; border-radius: 16px }). */

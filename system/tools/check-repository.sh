@@ -10,13 +10,13 @@ export PYTHONDONTWRITEBYTECODE=1
 # and separate Creative/Office sources are not inputs to a public build.
 for path in README.md BUILDING.md CONTRIBUTING.md SECURITY.md LICENSE.md \
   config/desktop/inputs.env config/mobile/phosh-source.env \
-  src/luma-search/luma-search-service \
-  docs/developer/kit/lumaui-deviations.md; do
+  src/Suno-search/Suno-search-service \
+  docs/developer/kit/SunoUI-deviations.md; do
   test -s "$path" || { printf 'Required public source file missing: %s\n' "$path" >&2; exit 1; }
 done
 git diff --check
-python3 -B -m unittest tests.unit.test_luma_notes_store tests.unit.test_luma_appkit \
-  tests.unit.test_luma_appkit_conformance tests.unit.test_luma_appkit_families.KitGuard \
+python3 -B -m unittest tests.unit.test_Suno_notes_store tests.unit.test_Suno_appkit \
+  tests.unit.test_Suno_appkit_conformance tests.unit.test_Suno_appkit_families.KitGuard \
   tests.unit.test_desktop_targets tests.unit.test_desktop_package_matrix tests.unit.test_desktop_profiles tests.unit.test_desktop_namespaces tests.unit.test_desktop_ci_changed \
   tests.unit.test_media_aggregate tests.unit.test_system_apps_notes tests.unit.test_app_baseline_login_order \
   tests.unit.test_selinux_journal_senders

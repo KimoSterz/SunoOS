@@ -1,7 +1,7 @@
 # Milos kernel diagnostics
 
 These patches target the external Milos kernel used by the Fairphone 6
-physical-device build.  They are not part of Luma's shared desktop/mobile
+physical-device build.  They are not part of Suno's shared desktop/mobile
 presentation layer and must never be applied to desktop kernels.
 
 `0001-drm-msm-a810-disable-ifpc-diagnostic.patch` is a one-variable diagnostic
@@ -35,7 +35,7 @@ one-variable behavior test and applies after patch 0002. Fairphone's published
 Android 16 Gen8.3 driver programs the GMU AHB fence lower bound to `0x8a0`,
 while Milos applies the generic A8xx `0x8c0` bound to A810. Patch 0003 matches
 the authoritative Gen8.3 value only for A810 and retains the timeout
-diagnostics. Its RAM-only boot failed before Android: the native Luma session
+diagnostics. Its RAM-only boot failed before Android: the native Suno session
 produced a GMU fence-interrupt storm with more than 81,000 callbacks suppressed,
 then a ring-0 hangcheck attributed to GNOME Shell. Patch 0003 is rejected and
 must not be carried into another candidate.
@@ -48,7 +48,7 @@ only while bringing up A810; it leaves every other GPU and the firmware-managed
 frequency table unchanged. Its builder mode explicitly removes patch 0003
 before applying patch 0004 when reusing the diagnostic build tree.
 
-Its first RAM-only physical run completed native Luma Shell and one
+Its first RAM-only physical run completed native Suno Shell and one
 software-isolated cold TikTok launch with more than five minutes of stable
 process identity, a 44.4-degree Celsius cold-start peak that settled to 37
 degrees, and zero GMU, GPU, or DPU fault signatures. This is enough to retain
@@ -59,14 +59,14 @@ idle power gates stayed open until the 2026-11-14 qualification below.
 
 Promotion requires physical FP6 evidence showing:
 
-- repeated Luma Shell suspend/wake remains healthy;
+- repeated Suno Shell suspend/wake remains healthy;
 - native Waydroid surfaces run without an Adreno hangcheck;
-- Android applications are managed as ordinary Luma application windows; and
+- Android applications are managed as ordinary Suno application windows; and
 - idle-power measurements are understood.
 
 On 2026-11-14 the kernel built from the tag with 0002, 0004 and 0039-0042
 (`/sys/kernel/notes` sha256 `bd0064a7...c617`) passed the physical Android GPU
-qualification on an FP6 with `luma-android-runtime` 1.luma.114: three normal
+qualification on an FP6 with `Suno-android-runtime` 1.Suno.114: three normal
 cold boots with a cold launch each, 69 minutes of Android rendered by
 freedreno on the A810 (apps switched every five minutes), ten display-power
 cycles, five s2idle `rtcwake` cycles with relaunch, and a 30-minute idle soak.
@@ -77,12 +77,12 @@ settled to within 1 C of its idle reading within five minutes.
 
 Android GPU admission follows `devices/fairphone/fp6/device.toml`
 `[kernel.android_gpu]`: it requires 0002 and 0004, refuses 0003, and the
-kernel build writes an admission entry into `kernel-modules-luma-fp6` only
+kernel build writes an admission entry into `kernel-modules-Suno-fp6` only
 after `scripts/kernel/fp6-android-gpu-admission.py qualify` has recorded a
 passed physical qualification of those GPU inputs.
 
 The exact `cross-x86_64` baseline and the IFPC diagnostic have both passed
-RAM-only boot with Linux USB, Fedora userspace, and Luma Shell returning. The
+RAM-only boot with Linux USB, Fedora userspace, and Suno Shell returning. The
 baseline also passed a 24-minute idle soak at 37 degrees Celsius with zero GPU
 hangchecks or GMU timeouts. Native Waydroid workload testing remains gated and
 must not be inferred from these idle results.
@@ -139,12 +139,12 @@ never force-loaded. The normal speaker path uses non-mmap PipeWire access and
 2400-frame periods. Receiver mode is routed beneath the same stable sink to
 avoid an ACP profile teardown that stalls the single AudioReach PCM.
 
-Microphone capture remains a distinct Luma integration gap, but it is no
+Microphone capture remains a distinct Suno integration gap, but it is no
 longer a greenfield driver design. Current Catcrafts history contains the
 SoundWire paging, WCD9378 codec, FP6 DT, clock-stop, gain-TLV, and mainline-v1
 sync series (`8ed47c2`, `2fd346e`, `5c9c899`, `9df8d66`, `e9a6b53`,
 `5694c4a`, `82c43dd`, `08f135e`) and reports physical microphone operation.
-Luma must backport that exact series to its running ABI, RAM-boot it, and pass
+Suno must backport that exact series to its running ABI, RAM-boot it, and pass
 capture/call acceptance. Do not represent working speaker output or an
 enumerated capture PCM as microphone or call-audio support.
 
@@ -152,7 +152,7 @@ enumerated capture PCM as microphone or call-audio support.
 
 `devices/fairphone/fp6/device.toml` `[kernel] patches` lists the patches
 `scripts/kernel/build-fp6.sh` applies over the kernel tag. Both touch built-in
-code, so the kernel release and `kernel-modules-luma-fp6` are unchanged.
+code, so the kernel release and `kernel-modules-Suno-fp6` are unchanged.
 
 - `0041`: backport of mainline `fb2a238f15f0`. The Milos UFS PHY loses its
   register state in system suspend; with the default suspend level every

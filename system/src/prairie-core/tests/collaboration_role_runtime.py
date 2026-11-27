@@ -9,12 +9,12 @@ from unittest.mock import patch
 import gi
 gi.require_version('Gtk','4.0');gi.require_version('Adw','1')
 from gi.repository import Adw,Gio,GLib
-from luma_appkit import install_appkit,install_lumaui
+from Suno_appkit import install_appkit,install_SunoUI
 from prairie_apps.connect_sync import ConnectError,DeviceIdentity
 from prairie_apps import collaboration_transport as transport
 from prairie_apps.collaboration import CollaborationCache
 from prairie_apps.notes import _install_notes_style
-from prairie_apps.notes_lumaui import NotesLumaWindow
+from prairie_apps.notes_SunoUI import NotesSunoWindow
 
 def settle(predicate,label,seconds=5):
  deadline=time.monotonic()+seconds
@@ -41,12 +41,12 @@ with patch.object(transport,'_metadata',cache),patch.object(transport,'_fresh_id
  settle(lambda:cache.value is None,'real NameOwnerChanged invalidates metadata')
 print('Actual GIO StateChanged/NameOwnerChanged invalidation PASS (transport seam, no authorization claim)')
 
-with tempfile.TemporaryDirectory(prefix='luma-notes-role-') as temporary:
+with tempfile.TemporaryDirectory(prefix='Suno-notes-role-') as temporary:
  env={'HOME':temporary,'XDG_DATA_HOME':temporary+'/data','XDG_CONFIG_HOME':temporary+'/config','XDG_CACHE_HOME':temporary+'/cache','XDG_STATE_HOME':temporary+'/state','GSETTINGS_BACKEND':'memory'}
  with patch.dict(os.environ,env),patch('prairie_apps.connect_sync.load_identity',side_effect=ConnectError('Owned offline transport')):
-  app=Adw.Application(application_id='org.projectluma.PrivateNotesRole',flags=Gio.ApplicationFlags.NON_UNIQUE);assert app.register(None)
-  install_appkit();install_lumaui();_install_notes_style()
-  window=NotesLumaWindow(app);window.present();settle(window.get_mapped,'actual Notes GTK mapping')
+  app=Adw.Application(application_id='org.projectSuno.PrivateNotesRole',flags=Gio.ApplicationFlags.NON_UNIQUE);assert app.register(None)
+  install_appkit();install_SunoUI();_install_notes_style()
+  window=NotesSunoWindow(app);window.present();settle(window.get_mapped,'actual Notes GTK mapping')
   note=window.store.create_note(title='Owned role recovery',body='Personal text retained offline');window._open_note(note)
   window._apply_collaboration_role();assert window.editor.get_editable(),'Unshared personal note must remain editable offline'
   db=CollaborationCache()

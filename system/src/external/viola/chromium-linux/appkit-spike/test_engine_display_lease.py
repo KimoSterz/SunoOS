@@ -23,7 +23,7 @@ class Reply:
 
 class LeaseBus(unittest.TestCase):
     def setUp(self):
-        root = Path('/run/user')/str(os.getuid())/'luma-viola'
+        root = Path('/run/user')/str(os.getuid())/'Suno-viola'
         root.mkdir(mode=0o700, parents=True, exist_ok=True)
         self.display = tempfile.TemporaryDirectory(prefix='display-', dir=root)
         self.addCleanup(self.display.cleanup)

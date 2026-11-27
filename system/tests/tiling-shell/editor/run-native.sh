@@ -2,24 +2,24 @@
 # SPDX-License-Identifier: Apache-2.0
 # Root inside a disposable fixture with the candidate packages installed only.
 set -euo pipefail
-[[ ${LUMA_NATIVE_SHELL_DISPOSABLE:-0} == 1 && $(id -u) == 0 ]]
-[[ $(id -u luma-media-test) == 1000 ]]
-test_primary=${LUMA_TILING_TEST_PRIMARY:-1920x1080}
+[[ ${SUNO_NATIVE_SHELL_DISPOSABLE:-0} == 1 && $(id -u) == 0 ]]
+[[ $(id -u Suno-media-test) == 1000 ]]
+test_primary=${SUNO_TILING_TEST_PRIMARY:-1920x1080}
 [[ $test_primary =~ ^[0-9]+x[0-9]+$ ]]
 root=$(cd "$(dirname "$0")" && pwd)
 work=${DEV_ARTIFACT_DIR:?}/tiling-editor-native
 mkdir -p "$work"/{config/glib-2.0/settings,data,runtime}
 chmod 700 "$work/runtime"
-rpm -q gnome-shell mutter gnome-shell-extension-tiling-shell gnome-shell-extension-luma-tiling-toggle > "$work/packages.txt"
+rpm -q gnome-shell mutter gnome-shell-extension-tiling-shell gnome-shell-extension-Suno-tiling-toggle > "$work/packages.txt"
 . "$root/../../../config/desktop/inputs.env"
 rpm -q --qf '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' gnome-shell-extension-tiling-shell | grep -Fx "$TILING_SHELL_NEVRA"
-rpm -q --qf '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' gnome-shell-extension-luma-tiling-toggle | grep -Fx "$LUMA_TILING_TOGGLE_NEVRA"
+rpm -q --qf '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' gnome-shell-extension-Suno-tiling-toggle | grep -Fx "$SUNO_TILING_TOGGLE_NEVRA"
 cat > "$work/config/glib-2.0/settings/keyfile" <<'K'
-[org/project-luma/shell-state]
+[org/project-suno/shell-state]
 surface-treatment='light'
 
 [org/gnome/shell]
-enabled-extensions=['tilingshell@ferrarodomenico.com', 'tiling-toggle@project-luma.local']
+enabled-extensions=['tilingshell@ferrarodomenico.com', 'tiling-toggle@project-suno.local']
 disable-user-extensions=false
 welcome-dialog-last-shown-version='999'
 K
@@ -30,9 +30,9 @@ if ! dbus-send --system --print-reply --dest=org.freedesktop.DBus / org.freedesk
  dbus-daemon --system --fork
 fi
 chown -R 1000:1000 "$work"
-runuser -u luma-media-test -- env XDG_RUNTIME_DIR="$work/runtime" XDG_CONFIG_HOME="$work/config" \
+runuser -u Suno-media-test -- env XDG_RUNTIME_DIR="$work/runtime" XDG_CONFIG_HOME="$work/config" \
  XDG_DATA_HOME="$work/data" GSETTINGS_BACKEND=keyfile LIBGL_ALWAYS_SOFTWARE=1 \
- LUMA_MUTTER_ALLOW_SOFTWARE_BLUR=1 LUMA_TILING_EDITOR_OUT="$work" \
+ SUNO_MUTTER_ALLOW_SOFTWARE_BLUR=1 SUNO_TILING_EDITOR_OUT="$work" \
  dbus-run-session -- timeout 150 gnome-shell --headless --no-x11 \
  --virtual-monitor "$test_primary" --virtual-monitor 1600x900 --virtual-monitor 1280x800 \
  --automation-script="$work/probe.js" > "$work/shell.log" 2>&1

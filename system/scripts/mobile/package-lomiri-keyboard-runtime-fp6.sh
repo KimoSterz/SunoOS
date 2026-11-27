@@ -9,9 +9,9 @@ set -euo pipefail
 repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 package_dir="$repo_root/build/mobile/keyboard-labs-fp6/lomiri-1.1.0"
 output_dir="$repo_root/build/mobile/keyboard-labs-fp6"
-base_image=localhost/luma-lomiri-runtime:questing
-runtime_image=localhost/luma-lomiri-runtime:1.1.0
-bundle="$output_dir/luma-keyboard-lomiri-1.1.0-aarch64.tar.zst"
+base_image=localhost/Suno-lomiri-runtime:questing
+runtime_image=localhost/Suno-lomiri-runtime:1.1.0
+bundle="$output_dir/Suno-keyboard-lomiri-1.1.0-aarch64.tar.zst"
 
 for tool in podman sha256sum tar zstd; do
   command -v "$tool" >/dev/null 2>&1 || {
@@ -44,7 +44,7 @@ for package in lomiri-keyboard lomiri-keyboard-data lomiri-keyboard-english \
     }
 done
 
-container=luma-lomiri-runtime-110-$$
+container=Suno-lomiri-runtime-110-$$
 cleanup() {
   podman rm -f "$container" >/dev/null 2>&1 || true
 }

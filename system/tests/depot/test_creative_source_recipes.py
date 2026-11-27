@@ -40,7 +40,7 @@ class CreativeRecipes(unittest.TestCase):
             output = cls.work / app
             with contextlib.redirect_stdout(io.StringIO()):
                 sealer.seal(ROOT, app, output)
-            recipe = yaml.safe_load((output / f'org.projectluma.{app}.yml').read_text())
+            recipe = yaml.safe_load((output / f'org.projectSuno.{app}.yml').read_text())
             archive = output / recipe['modules'][0]['sources'][0]['path']
             with tarfile.open(archive) as tf:
                 tf.extractall(output / 'unpacked', filter='data')
@@ -60,7 +60,7 @@ class CreativeRecipes(unittest.TestCase):
         cls.temporary.cleanup()
 
     def source_directory(self, app, module, root):
-        expected = 'src/luma-reel' if app == 'Reel' else f'src/external/{app.lower()}'
+        expected = 'src/Suno-reel' if app == 'Reel' else f'src/external/{app.lower()}'
         self.assertEqual(module.get('subdir'), expected,
                          'the sealed archive retains the maintained nested source path')
         directory = root / module['subdir']
@@ -78,7 +78,7 @@ class CreativeRecipes(unittest.TestCase):
             # exercises the recipe's real post-install compiler, not its engine.
             identity = configparser.ConfigParser()
             identity.read_string('[identity]\n' + (cwd / 'identity/product.ini').read_text())
-            schema = (cwd / 'data/io.luma.Grid.gschema.xml.in').read_text()
+            schema = (cwd / 'data/io.Suno.Grid.gschema.xml.in').read_text()
             for key in ('application_id', 'settings_path'):
                 schema = schema.replace('@' + key.upper() + '@', identity['identity'][key])
             self.assertNotIn('@', schema)
@@ -96,9 +96,9 @@ class CreativeRecipes(unittest.TestCase):
             subprocess.run(args, cwd=cwd, check=True, capture_output=True, timeout=15)
             installs += 1
         self.assertGreater(installs, 2)
-        metadata = target / f'share/metainfo/org.projectluma.{app}.metainfo.xml'
+        metadata = target / f'share/metainfo/org.projectSuno.{app}.metainfo.xml'
         self.assertEqual(metadata.read_bytes(), (root / 'depot.metainfo.xml').read_bytes())
-        self.assertTrue((target / f'share/licenses/org.projectluma.{app}/LICENSE.md').is_file())
+        self.assertTrue((target / f'share/licenses/org.projectSuno.{app}/LICENSE.md').is_file())
 
     def test_actual_five_archives_resolve_and_install_metadata(self):
         for app in APPS:
@@ -113,7 +113,7 @@ class CreativeRecipes(unittest.TestCase):
                 target = self.work / f'installed-{app}'
                 self.install_metadata(app, recipe, root, target)
                 if app == 'Stage':
-                    self.assertEqual((target / 'share/licenses/org.projectluma.Stage/Lucide.txt').read_bytes(),
+                    self.assertEqual((target / 'share/licenses/org.projectSuno.Stage/Lucide.txt').read_bytes(),
                                      (root / 'src/external/stage/LICENSES/Lucide.txt').read_bytes())
 
     def test_old_root_meson_directory_is_rejected_for_each_nested_app(self):
@@ -140,7 +140,7 @@ class CreativeRecipes(unittest.TestCase):
         schema = target / 'share/glib-2.0/schemas'
         self.assertTrue((schema / 'gschemas.compiled').is_file())
         env = dict(os.environ, GSETTINGS_SCHEMA_DIR=str(schema), GSETTINGS_BACKEND='memory')
-        command = ['gsettings', 'get', 'org.projectluma.Reel', 'show-welcome']
+        command = ['gsettings', 'get', 'org.projectSuno.Reel', 'show-welcome']
         result = subprocess.run(command, env=env, check=True, capture_output=True, text=True, timeout=15)
         self.assertEqual(result.stdout.strip(), 'true')
         (schema / 'gschemas.compiled').unlink()
@@ -174,21 +174,21 @@ class CreativeRecipes(unittest.TestCase):
                 identity.read_string('[identity]\n' + (source / 'identity/product.ini').read_text())
                 self.assertEqual(identity['identity']['application_id'], recipe['id'])
                 self.assertEqual(identity['identity']['icon_name'], recipe['id'])
-                self.assertEqual((source / 'lumaui/scenarios/grid.json').read_bytes(),
-                                 (source / 'tools/lumaui-conform/scenarios/grid.json').read_bytes())
-                self.assertFalse((source / 'lumaui/scenarios/grid.json').is_symlink())
+                self.assertEqual((source / 'SunoUI/scenarios/grid.json').read_bytes(),
+                                 (source / 'tools/SunoUI-conform/scenarios/grid.json').read_bytes())
+                self.assertFalse((source / 'SunoUI/scenarios/grid.json').is_symlink())
             else:
-                self.assertIn("luma_app_id = '" + recipe['id'] + "'",
+                self.assertIn("Suno_app_id = '" + recipe['id'] + "'",
                               (source / 'identity/meson.build').read_text())
-                self.assertIn('Icon=@APP_ID@', (source / 'data/io.luma.Stage.desktop.in').read_text())
+                self.assertIn('Icon=@APP_ID@', (source / 'data/io.Suno.Stage.desktop.in').read_text())
                 self.assertIn('<id>' + recipe['id'] + '</id>',
-                              (source / 'data/io.luma.Stage.metainfo.xml').read_text())
+                              (source / 'data/io.Suno.Stage.metainfo.xml').read_text())
             alias = configparser.ConfigParser(interpolation=None)
-            alias.read(source / f'data/io.luma.{app}.desktop')
+            alias.read(source / f'data/io.Suno.{app}.desktop')
             self.assertTrue(alias['Desktop Entry'].getboolean('NoDisplay'))
             self.assertEqual(alias['Desktop Entry']['StartupWMClass'], recipe['id'])
             self.assertEqual((root / 'depot-icon.svg').read_bytes(),
-                             (source / f'data/io.luma.{app}.svg').read_bytes())
+                             (source / f'data/io.Suno.{app}.svg').read_bytes())
 
     def test_sealer_still_rejects_the_former_in_tree_symlink(self):
         _recipe, sealed = self.packets['Grid']
@@ -196,11 +196,11 @@ class CreativeRecipes(unittest.TestCase):
         source = fixture / 'src/external/grid'
         shutil.copytree(sealed / 'src/external/grid', source)
         shutil.copyfile(ROOT / 'LICENSE.md', fixture / 'LICENSE.md')
-        shutil.copytree(ROOT / 'packaging/flatpak/apps/org.projectluma.Grid',
-                        fixture / 'packaging/flatpak/apps/org.projectluma.Grid')
-        link = source / 'lumaui/scenarios/grid.json'
+        shutil.copytree(ROOT / 'packaging/flatpak/apps/org.projectSuno.Grid',
+                        fixture / 'packaging/flatpak/apps/org.projectSuno.Grid')
+        link = source / 'SunoUI/scenarios/grid.json'
         link.unlink()
-        link.symlink_to('../../tools/lumaui-conform/scenarios/grid.json')
+        link.symlink_to('../../tools/SunoUI-conform/scenarios/grid.json')
         with self.assertRaisesRegex(ValueError, 'symlink input is not admitted'):
             self.sealer.seal(fixture, 'Grid', self.work / 'rejected-symlink-source')
 
@@ -208,10 +208,10 @@ class CreativeRecipes(unittest.TestCase):
         for app in ('Write', 'Grid', 'Stage'):
             recipe, _root = self.packets[app]
             self.assertIn('-Dlibreofficekit=enabled', recipe['modules'][0]['config-opts'])
-            extension = recipe['add-extensions']['org.projectluma.Platform.Office']
+            extension = recipe['add-extensions']['org.projectSuno.Platform.Office']
             self.assertEqual(extension['directory'], 'lib/office')
             self.assertFalse(extension['no-autodownload'])
-            self.assertIn('--env=LUMA_LIBREOFFICE_PROGRAM=/app/lib/office/lib64/libreoffice/program',
+            self.assertIn('--env=SUNO_LIBREOFFICE_PROGRAM=/app/lib/office/lib64/libreoffice/program',
                           recipe['finish-args'])
 
     def test_real_wrapper_install_preserves_binary_and_seals_only_preference_helper(self):
@@ -224,11 +224,11 @@ class CreativeRecipes(unittest.TestCase):
             cwd = self.source_directory(app, module, root)
             target = self.work / ('wrapper-' + app)
             (target / 'bin').mkdir(parents=True)
-            binary = 'luma-' + app.lower()
+            binary = 'Suno-' + app.lower()
             original = b'owned packaging fixture; not a compiled application\n'
             (target / 'bin' / binary).write_bytes(original)
             for command in module['post-install']:
-                if command.startswith(('mv ', 'printf ', 'chmod ')) or 'luma_app_preferences.py' in command:
+                if command.startswith(('mv ', 'printf ', 'chmod ')) or 'Suno_app_preferences.py' in command:
                     translated = command.replace('/app/', str(target) + '/')
                     subprocess.run(['sh', '-c', translated], cwd=cwd,
                                    env=dict(os.environ, FLATPAK_BUILDER_BUILDDIR=str(root)),
@@ -238,19 +238,19 @@ class CreativeRecipes(unittest.TestCase):
             self.assertEqual(launcher.stat().st_mode & 0o777, 0o755)
             subprocess.run(['sh', '-n', str(launcher)], check=True,
                            capture_output=True, timeout=15)
-            self.assertEqual(launcher.read_text(), '#!/bin/sh\nexec python3 -m luma_appkit.migration_startup '
-                             'python3 -m luma_app_preferences ' + binary + '-real "$@"\n')
-            helper = target / 'lib/python3.14/site-packages/luma_app_preferences.py'
-            sealed_helper = root / 'src/luma-installer/luma_installer/app_preferences.py'
+            self.assertEqual(launcher.read_text(), '#!/bin/sh\nexec python3 -m Suno_appkit.migration_startup '
+                             'python3 -m Suno_app_preferences ' + binary + '-real "$@"\n')
+            helper = target / 'lib/python3.14/site-packages/Suno_app_preferences.py'
+            sealed_helper = root / 'src/Suno-installer/Suno_installer/app_preferences.py'
             self.assertEqual(helper.read_bytes(), sealed_helper.read_bytes())
             ast.parse(helper.read_text())
             manifest = json.loads((root / 'SOURCE-MANIFEST.json').read_text())
-            self.assertEqual([name for name in manifest['materials'] if name.startswith('src/luma-installer/')],
-                             ['src/luma-installer/luma_installer/app_preferences.py'])
+            self.assertEqual([name for name in manifest['materials'] if name.startswith('src/Suno-installer/')],
+                             ['src/Suno-installer/Suno_installer/app_preferences.py'])
             minimum = 64 if app in {'Write', 'Grid', 'Stage'} else 63
-            self.assertIn('--metadata=X-Luma=min-host-installer=' + str(minimum), recipe['finish-args'])
-            self.assertIn('--metadata=X-Luma=app-data-schema=' + schemas[app], recipe['finish-args'])
-            self.assertIn('--talk-name=org.projectluma.AppData1', recipe['finish-args'])
+            self.assertIn('--metadata=X-Suno=min-host-installer=' + str(minimum), recipe['finish-args'])
+            self.assertIn('--metadata=X-Suno=app-data-schema=' + schemas[app], recipe['finish-args'])
+            self.assertIn('--talk-name=org.projectSuno.AppData1', recipe['finish-args'])
             self.assertIn('--env=GSETTINGS_BACKEND=keyfile', recipe['finish-args'])
 
 

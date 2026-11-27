@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
-# Configure the Luma Raspberry Pi kernel: Fedora's configuration for the same
+# Configure the Suno Raspberry Pi kernel: Fedora's configuration for the same
 # series, plus everything Raspberry Pi's bcm2711_defconfig enables, plus
 # config/kernel/rpi.config; then fail on any unexplained lost option.
 # usage: configure-rpi.sh SOURCE OUTPUT FEDORA_CONFIG
@@ -22,7 +22,7 @@ if [ -z "${CROSS_COMPILE+x}" ]; then
 fi
 export CROSS_COMPILE
 mkdir -p "$output_dir"
-pi_base="$output_dir/.luma-pi-base"
+pi_base="$output_dir/.Suno-pi-base"
 rm -rf "$pi_base"
 make -s -C "$source_dir" O="$pi_base" "$(field pi_defconfig)"
 merge=(python3 "$repo_root/scripts/kernel/merge-rpi-config.py")
@@ -31,7 +31,7 @@ common=(--fedora "$base_config" --pi "$pi_base/.config" --fragment "$repo_root/c
 make -s -C "$source_dir" O="$output_dir" olddefconfig
 "${merge[@]}" check "${common[@]}" --final "$output_dir/.config" \
   --exceptions "$repo_root/config/kernel/rpi-config-exceptions.txt" \
-  --report "$output_dir/luma-config-exceptions.txt"
+  --report "$output_dir/Suno-config-exceptions.txt"
 cp "$pi_base/.config" "$output_dir/raspberrypi-$(field pi_defconfig).config"
 rm -rf "$pi_base"
 release=$(make -s -C "$source_dir" O="$output_dir" kernelrelease)

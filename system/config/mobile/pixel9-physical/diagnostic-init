@@ -10,8 +10,8 @@ export PATH
 umask 077
 
 bb=/bin/busybox
-report=/run/luma-pixel9-report.txt
-gadget=/sys/kernel/config/usb_gadget/luma_pixel9_diagnostic
+report=/run/Suno-pixel9-report.txt
+gadget=/sys/kernel/config/usb_gadget/Suno_pixel9_diagnostic
 
 $bb mount -t devtmpfs devtmpfs /dev 2>/dev/null || true
 $bb mkdir -p /dev/pts /proc /sys /run /sys/kernel/config
@@ -30,7 +30,7 @@ read_one() {
 
 make_report() {
 	{
-		echo 'LUMA_PIXEL9_DIAGNOSTIC_REPORT_VERSION=1'
+		echo 'SUNO_PIXEL9_DIAGNOSTIC_REPORT_VERSION=1'
 		echo 'SCOPE=volatile-allowlisted-native-linux-inventory'
 		echo 'PERSISTENT_FILESYSTEMS_MOUNTED=false'
 		echo 'MODULES_AUTOLOADED=false'
@@ -110,7 +110,7 @@ setup_acm() {
 	echo 0x1d6b >"$gadget/idVendor" || return 1
 	echo 0x0104 >"$gadget/idProduct" || return 1
 	$bb mkdir -p "$gadget/strings/0x409" "$gadget/configs/c.1/strings/0x409" || return 1
-	echo 'Luma Project' >"$gadget/strings/0x409/manufacturer" || return 1
+	echo 'Suno Project' >"$gadget/strings/0x409/manufacturer" || return 1
 	echo 'Pixel 9 volatile diagnostic' >"$gadget/strings/0x409/product" || return 1
 	echo 'Read-only report' >"$gadget/configs/c.1/strings/0x409/configuration" || return 1
 	$bb mkdir -p "$gadget/functions/acm.usb0" || return 1
@@ -124,7 +124,7 @@ setup_acm() {
 }
 
 make_report
-echo 'Luma Pixel 9 volatile diagnostic started; automatic reboot in 180 seconds.'
+echo 'Suno Pixel 9 volatile diagnostic started; automatic reboot in 180 seconds.'
 $bb cat "$report"
 
 if setup_acm; then
@@ -139,16 +139,16 @@ iteration=0
 while [ "$iteration" -lt 36 ]; do
 	if [ -c /dev/ttyGS0 ]; then
 		{
-			echo 'LUMA_PIXEL9_REPORT_BEGIN'
+			echo 'SUNO_PIXEL9_REPORT_BEGIN'
 			$bb cat "$report"
-			echo 'LUMA_PIXEL9_REPORT_TRANSPORT_END'
+			echo 'SUNO_PIXEL9_REPORT_TRANSPORT_END'
 		} >/dev/ttyGS0 2>/dev/null || true
 	fi
 	iteration=$((iteration + 1))
 	$bb sleep 5
 done
 
-echo 'Luma Pixel 9 volatile diagnostic timeout; rebooting to the bootloader-selected stock path.'
+echo 'Suno Pixel 9 volatile diagnostic timeout; rebooting to the bootloader-selected stock path.'
 $bb reboot -f
 $bb sleep 10
 echo o >/proc/sysrq-trigger 2>/dev/null || true

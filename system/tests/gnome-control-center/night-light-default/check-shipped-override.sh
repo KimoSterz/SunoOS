@@ -1,7 +1,7 @@
 #!/bin/bash
 # SPDX-License-Identifier: Apache-2.0
 #
-# Check that Luma's shipped default for Settings › Displays › Night Light's
+# Check that Suno's shipped default for Settings › Displays › Night Light's
 # Color Temperature sits at the slider's far-left, least-warm end.
 #
 # The slider is inverted (panels/display/cc-night-light-page.blp: adjustment
@@ -11,27 +11,27 @@
 # own maximum, 4700.
 #
 # This default lives in the image's desktop-defaults dconf database --
-# config/desktop/dconf/db/luma.d/00-luma-desktop, installed to
-# /etc/dconf/db/luma.d/00-luma-desktop by image/luma-desktop/scripts/
+# config/desktop/dconf/db/Suno.d/00-Suno-desktop, installed to
+# /etc/dconf/db/Suno.d/00-Suno-desktop by image/Suno-desktop/scripts/
 # configure-system.sh and compiled with `dconf update` -- the same place
-# every other Luma fresh-profile GNOME default (icon theme, wallpaper, clock
+# every other Suno fresh-profile GNOME default (icon theme, wallpaper, clock
 # format, Shelf...) lives, so it can't be silently dropped by an unrelated
 # package change. It deliberately does NOT live in a package's own
 # gschema.override.
 #
 # Usage:
 #   check-shipped-override.sh                              # check the repo source file
-#   check-shipped-override.sh path/to/00-luma-desktop       # check an installed copy
-#   check-shipped-override.sh path/to/etc-dconf-db-luma.d   # check an installed /etc/dconf/db/luma.d dir
+#   check-shipped-override.sh path/to/00-Suno-desktop       # check an installed copy
+#   check-shipped-override.sh path/to/etc-dconf-db-Suno.d   # check an installed /etc/dconf/db/Suno.d dir
 set -euo pipefail
 
 repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../../.." && pwd)
-target=${1:-"$repo_root/config/desktop/dconf/db/luma.d/00-luma-desktop"}
+target=${1:-"$repo_root/config/desktop/dconf/db/Suno.d/00-Suno-desktop"}
 expect_key="night-light-temperature=uint32 4700"
 status=0
 
 if [ -d "$target" ]; then
-  target="$target/00-luma-desktop"
+  target="$target/00-Suno-desktop"
 fi
 test -f "$target" || { printf 'FAIL %s not found\n' "$target" >&2; exit 1; }
 
@@ -51,9 +51,9 @@ fi
 if command -v dconf >/dev/null 2>&1; then
   db_root=$(mktemp -d)
   trap 'rm -rf "$db_root"' EXIT
-  mkdir -p "$db_root/db/luma.d"
-  cp "$target" "$db_root/db/luma.d/00-luma-desktop"
-  printf 'user-db:user\nsystem-db:luma\n' >"$db_root/profile"
+  mkdir -p "$db_root/db/Suno.d"
+  cp "$target" "$db_root/db/Suno.d/00-Suno-desktop"
+  printf 'user-db:user\nsystem-db:Suno\n' >"$db_root/profile"
   DCONF_PROFILE="$db_root/profile" dconf update "$db_root/db" 2>&1 || {
     printf 'FAIL dconf update failed to compile %s\n' "$target" >&2
     status=1

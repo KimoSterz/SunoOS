@@ -1,5 +1,5 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Project Luma <engineering@projectluma.org>
+From: Project Suno <engineering@projectSuno.org>
 Date: Mon, 23 Nov 2026 06:00:00 -0600
 Subject: [PATCH] Dock: shelf-2's icon tiles: 40 px, the plate filling the
  tile, squircle and lit
@@ -21,37 +21,37 @@ that sizes to its child stays the tile; St draws the larger texture into
 that box and the plate's scale shows it. Banners, offers and the overlay
 indicator read and draw icons as before.
 
-LumaIconMask gains squircle and lit uniforms, off unless an effect's
+SunoIconMask gains squircle and lit uniforms, off unless an effect's
 squircle or lit field is set (the dock's). Every mask sets both on each
 paint: the GL program is shared by all of them, so a uniform one left unset
 would keep another icon's value.
 ---
- data/theme/luma-shelf.css |  4 ++
+ data/theme/Suno-shelf.css |  4 ++
  js/ui/iconMask.js         | 78 +++++++++++++++++++++++---------
- js/ui/lumaAppIconPlate.js | 94 ++++++++++++++++++++++++++++++++-------
+ js/ui/SunoAppIconPlate.js | 94 ++++++++++++++++++++++++++++++++-------
  js/ui/shelf.js            | 37 +++++++++++++--
  js/ui/shelfMetrics.js     |  8 ++--
  5 files changed, 179 insertions(+), 42 deletions(-)
 
-diff --git a/data/theme/luma-shelf.css b/data/theme/luma-shelf.css
+diff --git a/data/theme/Suno-shelf.css b/data/theme/Suno-shelf.css
 index 68bf5b6..81d0162 100644
---- a/data/theme/luma-shelf.css
-+++ b/data/theme/luma-shelf.css
-@@ -3418,3 +3418,7 @@ StBoxLayout.luma-notification-tray.luma-surface-dark .luma-notification-tray-cou
- .luma-surface-light .luma-ov-toast-button { color: #1f2328; background-color: #dfe1e4; }
+--- a/data/theme/Suno-shelf.css
++++ b/data/theme/Suno-shelf.css
+@@ -3418,3 +3418,7 @@ StBoxLayout.Suno-notification-tray.Suno-surface-dark .Suno-notification-tray-cou
+ .Suno-surface-light .Suno-ov-toast-button { color: #1f2328; background-color: #dfe1e4; }
  /* The remote's focus is a white ring; the fill and ink stay as they are. */
- .luma-ov-toast-tv .luma-ov-toast-actions .luma-ov-toast-button:focus { box-shadow: 0 0 0 4.5px #ffffff; }
+ .Suno-ov-toast-tv .Suno-ov-toast-actions .Suno-ov-toast-button:focus { box-shadow: 0 0 0 4.5px #ffffff; }
 +
 +/* The dock's tile is already a plate (the overview icon's gradient and
 + * shadow): an app icon without a plate of its own sits on that one. */
-+.luma-shelf-dock-island #dash .dash-item-container .overview-tile .overview-icon .luma-app-icon-plate { background-color: transparent; }
++.Suno-shelf-dock-island #dash .dash-item-container .overview-tile .overview-icon .Suno-app-icon-plate { background-color: transparent; }
 diff --git a/js/ui/iconMask.js b/js/ui/iconMask.js
 index bdf60d0..eb91e35 100644
 --- a/js/ui/iconMask.js
 +++ b/js/ui/iconMask.js
 @@ -8,15 +8,30 @@ import St from 'gi://St';
  
- import {plateScaleForFile, platedIconSize} from './lumaAppIconPlate.js';
+ import {plateScaleForFile, platedIconSize} from './SunoAppIconPlate.js';
  
 -// radius is a fraction of the actor's shorter side. The offscreen texture is
 -// the actor's paint volume, enlarged beyond the actor on every side, so the
@@ -62,7 +62,7 @@ index bdf60d0..eb91e35 100644
 +// inset 1 px white top rim (34%), a 0.5 px white ring (18%) and a 1 px dark
 +// bottom rim (14%), each following the corner. The offscreen texture is the
 +// actor's paint volume, enlarged beyond the actor on every side, so the
- // texture coordinates are mapped back to actor pixels (as LumaRoundedClip
+ // texture coordinates are mapped back to actor pixels (as SunoRoundedClip
  // does) and the corner is cut at the actor's corner, not the texture's.
  const ICON_MASK_DECLARATIONS = `
  uniform float radius;
@@ -72,7 +72,7 @@ index bdf60d0..eb91e35 100644
  uniform vec2 mask_size;
  uniform vec2 mask_origin;
 +
-+float luma_icon_cover(vec2 p, vec2 size, float r, float sq) {
++float Suno_icon_cover(vec2 p, vec2 size, float r, float sq) {
 +    vec2 edge = min(p, size - p);
 +    vec2 inset = max(vec2(r) - edge, vec2(0.0));
 +    vec2 inset2 = inset * inset;
@@ -89,7 +89,7 @@ index bdf60d0..eb91e35 100644
 -vec2 edge = min(point, mask_size - point);
 -float corner = length(max(vec2(r) - edge, vec2(0.0)));
 -cogl_color_out *= 1.0 - smoothstep(r - 0.5, r + 0.5, corner);
-+float cover = luma_icon_cover(point, mask_size, r, squircle);
++float cover = Suno_icon_cover(point, mask_size, r, squircle);
 +if (lit > 0.5) {
 +    vec4 c = cogl_color_out;
 +    float t = point.y / mask_size.y;
@@ -97,9 +97,9 @@ index bdf60d0..eb91e35 100644
 +    float shade = 0.09 * clamp((t - 0.72) / 0.28, 0.0, 1.0);
 +    c.rgb = c.rgb * (1.0 - sheen) + vec3(sheen) * c.a;
 +    c.rgb = c.rgb * (1.0 - shade);
-+    float bottom = 0.14 * cover * (1.0 - luma_icon_cover(point + vec2(0.0, 1.0), mask_size, r, squircle));
-+    float ring = 0.18 * cover * (1.0 - luma_icon_cover(point - vec2(0.5), mask_size - vec2(1.0), max(r - 0.5, 0.0), squircle));
-+    float top = 0.34 * cover * (1.0 - luma_icon_cover(point - vec2(0.0, 1.0), mask_size, r, squircle));
++    float bottom = 0.14 * cover * (1.0 - Suno_icon_cover(point + vec2(0.0, 1.0), mask_size, r, squircle));
++    float ring = 0.18 * cover * (1.0 - Suno_icon_cover(point - vec2(0.5), mask_size - vec2(1.0), max(r - 0.5, 0.0), squircle));
++    float top = 0.34 * cover * (1.0 - Suno_icon_cover(point - vec2(0.0, 1.0), mask_size, r, squircle));
 +    c.rgb = c.rgb * (1.0 - bottom);
 +    c.rgb = c.rgb * (1.0 - ring) + vec3(ring) * c.a;
 +    c.rgb = c.rgb * (1.0 - top) + vec3(top) * c.a;
@@ -114,11 +114,11 @@ index bdf60d0..eb91e35 100644
 @@ -55,20 +83,25 @@ function iconFile(gicon) {
  }
  
- // The scale at which an app icon's plate covers its tile (lumaAppIconPlate.js),
+ // The scale at which an app icon's plate covers its tile (SunoAppIconPlate.js),
 -// or null for an icon without one.
 -export function appIconPlateScale(gicon) {
 +// or null for an icon without one. followGroups: the dock's reading
-+// (lumaAppIconPlate.js plateScaleFromSvg).
++// (SunoAppIconPlate.js plateScaleFromSvg).
 +export function appIconPlateScale(gicon, followGroups = false) {
      try {
 -        return plateScaleForFile(iconFile(gicon));
@@ -148,7 +148,7 @@ index bdf60d0..eb91e35 100644
 @@ -78,8 +111,10 @@ function setOverhang(icon, ratio) {
  // an icon with a plate at the plate's scale (the clip takes the margin
  // around it), any other at the clip's size on the plate the clip draws
- // (luma-app-icon-plate). size is the tile's in logical pixels; without it the
+ // (Suno-app-icon-plate). size is the tile's in logical pixels; without it the
 -// icon's own CSS icon-size is the tile's.
 -export function syncAppIconPlate(icon, clip, size = null) {
 +// icon's own CSS icon-size is the tile's. dock: the dock's tiles only (shelf-2):
@@ -172,9 +172,9 @@ index bdf60d0..eb91e35 100644
 -    setOverhang(icon, plate ?? 1);
 +    setOverhang(icon, plate ?? 1, dock ? base : -1);
      if (plate === null && icon.gicon)
-         clip.add_style_class_name('luma-app-icon-plate');
+         clip.add_style_class_name('Suno-app-icon-plate');
      else
-@@ -142,6 +175,11 @@ class LumaIconMask extends Shell.GLSLEffect {
+@@ -142,6 +175,11 @@ class SunoIconMask extends Shell.GLSLEffect {
  
      vfunc_paint_target(node, paintContext) {
          setActorMapping(this, 'mask');
@@ -186,10 +186,10 @@ index bdf60d0..eb91e35 100644
          smoothOffscreenSampling(this);
          super.vfunc_paint_target(node, paintContext);
      }
-diff --git a/js/ui/lumaAppIconPlate.js b/js/ui/lumaAppIconPlate.js
+diff --git a/js/ui/SunoAppIconPlate.js b/js/ui/SunoAppIconPlate.js
 index 114890d..265888e 100644
---- a/js/ui/lumaAppIconPlate.js
-+++ b/js/ui/lumaAppIconPlate.js
+--- a/js/ui/SunoAppIconPlate.js
++++ b/js/ui/SunoAppIconPlate.js
 @@ -12,18 +12,46 @@ import Gio from 'gi://Gio';
  
  // A plate smaller than this share of the canvas is art, not a plate.
@@ -334,14 +334,14 @@ diff --git a/js/ui/shelf.js b/js/ui/shelf.js
 index 5016a12..410bcfa 100644
 --- a/js/ui/shelf.js
 +++ b/js/ui/shelf.js
-@@ -15,7 +15,7 @@ import {MediaIslandGuard} from './lumaMediaIslandGuard.js';
- import {Well} from './lumaWell.js';
- import {FocusVisible} from './lumaFocusVisible.js';
- import {NotificationBeacon, getNotificationTray} from './lumaNotificationBeacon.js';
--import {LumaIconMask} from './iconMask.js';
-+import {LumaIconMask, syncAppIconPlate} from './iconMask.js';
- import * as SurfaceMaterials from './lumaSurfaceMaterials.js';
- import {WindowMarks} from './lumaDockWindows.js';
+@@ -15,7 +15,7 @@ import {MediaIslandGuard} from './SunoMediaIslandGuard.js';
+ import {Well} from './SunoWell.js';
+ import {FocusVisible} from './SunoFocusVisible.js';
+ import {NotificationBeacon, getNotificationTray} from './SunoNotificationBeacon.js';
+-import {SunoIconMask} from './iconMask.js';
++import {SunoIconMask, syncAppIconPlate} from './iconMask.js';
+ import * as SurfaceMaterials from './SunoSurfaceMaterials.js';
+ import {WindowMarks} from './SunoDockWindows.js';
  import {DASH_TILE_SIZE, DIVIDER_WIDTH, SHELF_INSET, SHELF_ISLAND_RADIUS, windowMarkRow} from './shelfMetrics.js';
 @@ -43,6 +43,9 @@ const DASH_PADDING = 10;
  // so the mask agrees with the artwork instead of cutting into it.
@@ -351,7 +351,7 @@ index 5016a12..410bcfa 100644
 +// corner-shape: squircle), lit as its data-icon="lit" (iconMask.js).
 +const DOCK_ICON_CORNER_RATIO = 0.3;
  const LEGACY_DESKTOP_DOCK_UUID = 'dash-to-dock@micxgx.gmail.com';
- const SHELF_STYLESHEET_URI = 'resource:///org/gnome/shell/theme/luma-shelf.css';
+ const SHELF_STYLESHEET_URI = 'resource:///org/gnome/shell/theme/Suno-shelf.css';
  // Filled controls (ADR-043), loaded after the Shelf's own sheet.
 @@ -3181,16 +3184,42 @@ export const Shelf = GObject.registerClass({
              // changes (BaseIcon._createIconTexture), which drops the mask
@@ -361,8 +361,8 @@ index 5016a12..410bcfa 100644
 +            // and drawn so its plate fills the tile (iconMask.js
 +            // syncAppIconPlate); the show-apps glyph keeps its own mask.
 +            const app = !!delegate.app && !!baseIcon._iconBin;
-             if (baseIcon._iconBin && !baseIcon._lumaMaskFollowed) {
-                 baseIcon._lumaMaskFollowed = true;
+             if (baseIcon._iconBin && !baseIcon._SunoMaskFollowed) {
+                 baseIcon._SunoMaskFollowed = true;
 -                baseIcon._iconBin.connectObject('notify::child',
 -                    () => this._maskIcon(baseIcon.icon), this);
 +                baseIcon._iconBin.connectObject('notify::child', () => (app
@@ -376,18 +376,18 @@ index 5016a12..410bcfa 100644
  
 +    _plateIcon(baseIcon) {
 +        const bin = baseIcon._iconBin;
-+        if (!bin.get_effect('luma-icon-mask')) {
++        if (!bin.get_effect('Suno-icon-mask')) {
 +            try {
-+                const effect = new LumaIconMask();
++                const effect = new SunoIconMask();
 +                effect.set_uniform_float(
 +                    effect.get_uniform_location('radius'), 1,
 +                    [DOCK_ICON_CORNER_RATIO]);
 +                effect.squircle = true;
 +                effect.lit = true;
-+                bin.add_effect_with_name('luma-icon-mask', effect);
++                bin.add_effect_with_name('Suno-icon-mask', effect);
 +                bin.clip_to_allocation = true;
 +            } catch (error) {
-+                logError(error, 'Luma Shelf: icon mask unavailable');
++                logError(error, 'Suno Shelf: icon mask unavailable');
 +                return false;
 +            }
 +        }
@@ -397,7 +397,7 @@ index 5016a12..410bcfa 100644
 +    }
 +
      _maskIcon(icon) {
-         if (!icon || icon.get_effect('luma-icon-mask'))
+         if (!icon || icon.get_effect('Suno-icon-mask'))
              return true;
 diff --git a/js/ui/shelfMetrics.js b/js/ui/shelfMetrics.js
 index 27d70e1..1be3967 100644

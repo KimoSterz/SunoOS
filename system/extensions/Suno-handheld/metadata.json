@@ -1,0 +1,7 @@
+{
+  "uuid": "handheld@project-suno.local",
+  "name": "Suno Handheld",
+  "description": "Adaptive edge gestures and single-surface window posture for Suno handheld devices.",
+  "shell-version": ["50"],
+  "version": 2
+}

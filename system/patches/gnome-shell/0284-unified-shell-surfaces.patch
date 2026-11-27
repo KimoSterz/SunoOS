@@ -1,9 +1,9 @@
-From: Project Luma <builds@project-luma.local>
+From: Project Suno <builds@project-suno.local>
 Subject: [PATCH] shell: unify floating surfaces and responsive controls
 
-diff --git a/js/ui/lumaClockLayout.js b/js/ui/lumaClockLayout.js
---- a/js/ui/lumaClockLayout.js
-+++ b/js/ui/lumaClockLayout.js
+diff --git a/js/ui/SunoClockLayout.js b/js/ui/SunoClockLayout.js
+--- a/js/ui/SunoClockLayout.js
++++ b/js/ui/SunoClockLayout.js
 @@ -28,6 +28,8 @@
      _metrics() {
          return this.get_children().filter(actor => actor.visible).map(actor => {
@@ -35,8 +35,8 @@ diff --git a/js/ui/quickSettings.js b/js/ui/quickSettings.js
  import * as Main from './main.js';
  import * as PopupMenu from './popupMenu.js';
 -import {Slider} from './slider.js';
-+import {FillSlider} from './lumaPresentation/fillSlider.js';
-+import {OptionsSurface} from './lumaPresentation/optionsSurface.js';
++import {FillSlider} from './SunoPresentation/fillSlider.js';
++import {OptionsSurface} from './SunoPresentation/optionsSurface.js';
  
  import {PopupAnimation} from './boxpointer.js';
  
@@ -67,7 +67,7 @@ diff --git a/js/ui/quickSettings.js b/js/ui/quickSettings.js
 +            return;
 +        }
          if (!this._studioUtilities || item.constructor.name !== 'TilingToggle' ||
-             item._lumaStudioRow)
+             item._SunoStudioRow)
              return;
 @@ -1602,7 +1607,7 @@
                  this.close(); return Clutter.EVENT_STOP;
@@ -83,9 +83,9 @@ diff --git a/js/ui/quickSettings.js b/js/ui/quickSettings.js
              if (this._activeMenu !== menu) this._activeMenu?.close(PopupAnimation.NONE);
              this._activeMenu = menu;
 +            if (item === this._surfaceLayout?._modePicker)
-+                this.box.add_style_class_name('lumaui-mode-detail');
++                this.box.add_style_class_name('SunoUI-mode-detail');
 +            else
-+                this.box.remove_style_class_name('lumaui-mode-detail');
++                this.box.remove_style_class_name('SunoUI-mode-detail');
              this._mainPage?.hide(); this._pageHost.show();
              this._pageScroll.vadjustment.value = 0;
              const scale = St.ThemeContext.get_for_stage(global.stage).scale_factor;
@@ -93,20 +93,20 @@ diff --git a/js/ui/quickSettings.js b/js/ui/quickSettings.js
              this._back.grab_key_focus();
          } else if (this._activeMenu === menu) {
              this._activeMenu = null;
-+            this.box.remove_style_class_name('lumaui-mode-detail');
++            this.box.remove_style_class_name('SunoUI-mode-detail');
              this._pageRadioBinding?.unbind(); this._pageRadioBinding = null;
              this._pageHost.hide(); this._mainPage?.show();
              if (this._mainPage) {
 @@ -1647,10 +1657,8 @@
  
-     _updateLumaHeader() {
+     _updateSunoHeader() {
          const now = GLib.DateTime.new_now_local();
--        const format = this._lumaClockSettings.get_string('clock-format') === '24h'
+-        const format = this._SunoClockSettings.get_string('clock-format') === '24h'
 -            ? '%H:%M' : '%l:%M %p';
--        this._lumaTime.text = now.format(format).trim();
--        this._lumaDate.text = now.format(Shell.util_translate_time_string('%a, %b %-d')).replaceAll(',', '');
-+        this._lumaTime.text = now.format(Shell.util_translate_time_string('%A'));
-+        this._lumaDate.text = now.format(Shell.util_translate_time_string('%B %-d'));
+-        this._SunoTime.text = now.format(format).trim();
+-        this._SunoDate.text = now.format(Shell.util_translate_time_string('%a, %b %-d')).replaceAll(',', '');
++        this._SunoTime.text = now.format(Shell.util_translate_time_string('%A'));
++        this._SunoDate.text = now.format(Shell.util_translate_time_string('%B %-d'));
      }
  
      // Bind the existing UPower presentation model. Header percentage is
@@ -116,8 +116,8 @@ diff --git a/js/ui/panel.js b/js/ui/panel.js
 @@ -38,6 +38,7 @@
  import * as BacklightStatus from './status/backlight.js';
  import * as ThunderboltStatus from './status/thunderbolt.js';
- import {BaselineClockRow} from './lumaClockLayout.js';
-+import {statusGrid} from './lumaPresentation/statusGrid.js';
+ import {BaselineClockRow} from './SunoClockLayout.js';
++import {statusGrid} from './SunoPresentation/statusGrid.js';
  
  import * as AutoRotateStatus from './status/autoRotate.js';
  import * as BackgroundAppsStatus from './status/backgroundApps.js';
@@ -126,22 +126,22 @@ diff --git a/js/ui/panel.js b/js/ui/panel.js
  
      _visibleChildren(container) {
 -        return container.get_children().filter(child => child.visible);
-+        const children = container.get_children().filter(child => child.visible && !child._lumaMore);
-+        if (container.has_style_class_name('luma-status-slots') && children.length > 8)
-+            return [...children.slice(0, 7), container._lumaMore];
++        const children = container.get_children().filter(child => child.visible && !child._SunoMore);
++        if (container.has_style_class_name('Suno-status-slots') && children.length > 8)
++            return [...children.slice(0, 7), container._SunoMore];
 +        return children;
      }
  
      // Studio Desktop's status is one row of glyphs along a horizontal
      // shelf, and a two-wide grid down a side one.
      _columns(container) {
-+        if (container.has_style_class_name('luma-status-slots'))
++        if (container.has_style_class_name('Suno-status-slots'))
 +            return statusGrid(this._visibleChildren(container).length, this._vertical ? 2 : 4).columns;
          return this._vertical ? 2 : Math.max(1, this._visibleChildren(container).length);
      }
  
      _rows(container) {
-+        if (container.has_style_class_name('luma-status-slots'))
++        if (container.has_style_class_name('Suno-status-slots'))
 +            return statusGrid(this._visibleChildren(container).length, this._vertical ? 2 : 4).rows;
          return this._vertical
              ? Math.max(2, Math.ceil(this._visibleChildren(container).length / 2)) : 1;
@@ -150,7 +150,7 @@ diff --git a/js/ui/panel.js b/js/ui/panel.js
      }
  
      vfunc_get_preferred_width(container, forHeight) {
-+        if (container.has_style_class_name('luma-status-slots')) {
++        if (container.has_style_class_name('Suno-status-slots')) {
 +            const size = this._columns(container) * 26 * this._scale();
 +            return [size, size];
 +        }
@@ -161,7 +161,7 @@ diff --git a/js/ui/panel.js b/js/ui/panel.js
      }
  
      vfunc_get_preferred_height(container, forWidth) {
-+        if (container.has_style_class_name('luma-status-slots')) {
++        if (container.has_style_class_name('Suno-status-slots')) {
 +            const size = (this._vertical ? Math.max(50, this._rows(container) * 25) : 50) * this._scale();
 +            return [size, size];
 +        }
@@ -172,7 +172,7 @@ diff --git a/js/ui/panel.js b/js/ui/panel.js
  
      vfunc_allocate(container, box) {
          const children = this._visibleChildren(container);
-+        if (container.has_style_class_name('luma-status-slots')) {
++        if (container.has_style_class_name('Suno-status-slots')) {
 +            const scale = this._scale();
 +            const grid = statusGrid(children.length, this._vertical ? 2 : 4);
 +            const x = (box.get_width() - grid.columns * 26 * scale) / 2;
@@ -199,14 +199,14 @@ diff --git a/js/ui/panel.js b/js/ui/panel.js
 @@ -1379,9 +1416,9 @@
              // Time over date, centred on each other: each label takes its own
              // width, centred in the clock, rather than the clock's full width.
-             this._statusTime = new St.Label({style_class: 'luma-status-time',
+             this._statusTime = new St.Label({style_class: 'Suno-status-time',
 -                x_align: Clutter.ActorAlign.START, y_align: Clutter.ActorAlign.CENTER});
 +                x_align: Clutter.ActorAlign.CENTER, y_align: Clutter.ActorAlign.CENTER});
-             this._statusDateLabel = new St.Label({style_class: 'luma-status-date',
+             this._statusDateLabel = new St.Label({style_class: 'Suno-status-date',
 -                x_align: Clutter.ActorAlign.START, y_align: Clutter.ActorAlign.CENTER});
 +                x_align: Clutter.ActorAlign.CENTER, y_align: Clutter.ActorAlign.CENTER});
              // In a 36px column the date is the short "Sat 19" form.
-             this._statusDateShort = new St.Label({style_class: 'luma-status-date',
+             this._statusDateShort = new St.Label({style_class: 'Suno-status-date',
                  x_align: Clutter.ActorAlign.CENTER, y_align: Clutter.ActorAlign.CENTER, visible: false});
 @@ -1391,7 +1428,7 @@
              this._statusAmPm.clutter_text.single_line_mode = true;
@@ -231,22 +231,22 @@ diff --git a/js/ui/panel.js b/js/ui/panel.js
              };
              dateMenu._timeDisplay.connectObject('notify::text', syncTime, this);
 @@ -1490,7 +1527,7 @@
-         this._statusSlots = new St.Widget({style_class: 'panel-status-indicators-box luma-status-slots',
+         this._statusSlots = new St.Widget({style_class: 'panel-status-indicators-box Suno-status-slots',
              layout_manager: layout});
          this._slots = {};
 -        for (const name of ['mic', 'wifi', 'bluetooth', 'volume', 'power', 'battery']) {
 +        for (const name of ['wifi', 'mobile', 'vpn', 'bluetooth', 'camera', 'mic', 'dnd', 'volume', 'power', 'battery']) {
-             const slot = new St.BoxLayout({style_class: 'luma-status-slot',
+             const slot = new St.BoxLayout({style_class: 'Suno-status-slot',
                  y_align: Clutter.ActorAlign.CENTER});
              slot.icon = new St.Icon({style_class: 'system-status-icon', icon_size: STATUS_GLYPH,
 @@ -1516,6 +1553,11 @@
              this._slots[name] = slot;
              this._statusSlots.add_child(slot);
          }
-+        this._statusMore = new St.Label({style_class: 'luma-status-more', visible: false,
++        this._statusMore = new St.Label({style_class: 'Suno-status-more', visible: false,
 +            x_align: Clutter.ActorAlign.CENTER, y_align: Clutter.ActorAlign.CENTER});
-+        this._statusMore._lumaMore = true;
-+        this._statusSlots._lumaMore = this._statusMore;
++        this._statusMore._SunoMore = true;
++        this._statusSlots._SunoMore = this._statusMore;
 +        this._statusSlots.add_child(this._statusMore);
          this._syncStatusSlots();
      }
@@ -279,26 +279,26 @@ diff --git a/js/ui/panel.js b/js/ui/panel.js
          this._slots.power.visible = false;
 +        const camera = this._camera?._indicator;
 +        this._slots.camera.visible = Boolean(camera?.visible);
-+        set('camera', 'lumaui-camera-active-symbolic', true);
++        set('camera', 'SunoUI-camera-active-symbolic', true);
 +        this._slots.camera.icon.set_style('color: #53ce80;');
 +        const vpn = this._network?._vpnIndicator;
 +        this._slots.vpn.visible = Boolean(vpn?.visible);
-+        set('vpn', 'lumaui-shield-symbolic', true);
++        set('vpn', 'SunoUI-shield-symbolic', true);
 +        const modem = this._network?._modemToggle;
 +        this._slots.mobile.visible = Boolean(modem?.visible && modem?.checked);
 +        set('mobile', modem?.iconName || 'network-cellular-offline-symbolic', true);
 +        const dnd = this._doNotDisturb?.quickSettingsItems[0];
 +        this._slots.dnd.visible = Boolean(dnd?.checked);
-+        set('dnd', 'luma-moon-symbolic', true);
++        set('dnd', 'Suno-moon-symbolic', true);
          const wifi = this._network?._primaryIndicator;
--        set('wifi', 'luma-wifi-symbolic', Boolean(wifi?.visible));
+-        set('wifi', 'Suno-wifi-symbolic', Boolean(wifi?.visible));
 +        this._slots.wifi.visible = Boolean(wifi?.visible);
-+        set('wifi', (wifi?.icon_name ?? '').includes('wired') ? 'lumaui-globe-symbolic' : 'luma-wifi-symbolic', true);
-         set('bluetooth', 'luma-bluetooth-symbolic', Boolean(this._bluetooth?._indicator?.visible));
++        set('wifi', (wifi?.icon_name ?? '').includes('wired') ? 'SunoUI-globe-symbolic' : 'Suno-wifi-symbolic', true);
+         set('bluetooth', 'Suno-bluetooth-symbolic', Boolean(this._bluetooth?._indicator?.visible));
 +        this._slots.volume.visible = Boolean(this._volumeOutput?._indicator?.visible);
          const volume = this._volumeOutput?._indicator?.icon_name ?? 'audio-volume-high-symbolic';
-         set('volume', 'luma-volume-2-symbolic', !volume.includes('muted'));
-         set('power', 'luma-gauge-symbolic', Boolean(this._powerProfiles?._indicator));
+         set('volume', 'Suno-volume-2-symbolic', !volume.includes('muted'));
+         set('power', 'Suno-gauge-symbolic', Boolean(this._powerProfiles?._indicator));
          const battery = this._system?._indicator;
          const batterySlot = this._slots.battery;
          const percentage = this._system?._percentageLabel;
@@ -318,7 +318,7 @@ diff --git a/js/ui/panel.js b/js/ui/panel.js
 +        this._slots.mic.icon.set_style('color: #efbc67;');
 +        for (const slot of this._statusSlots.get_children())
 +            if (slot.icon) slot.icon.icon_size = this._statusVertical ? 16 : STATUS_GLYPH;
-+        const visible = this._statusSlots.get_children().filter(child => child.visible && !child._lumaMore).length;
++        const visible = this._statusSlots.get_children().filter(child => child.visible && !child._SunoMore).length;
 +        this._statusMore.visible = visible > 8;
 +        this._statusMore.text = visible > 8 ? `+${visible - 7}` : '';
 +        this._statusMore.accessible_name = visible > 8 ? _('%d more indicators').format(visible - 7) : '';
@@ -395,7 +395,7 @@ diff --git a/js/ui/panel.js b/js/ui/panel.js
 +        this._statusControls.set_height(vertical ? -1 : 50 * scale);
          // _syncStatusSlots measures the live grid, including privacy changes.
          this._syncStatusSlots();
-         this.remove_style_class_name('luma-status-light');
+         this.remove_style_class_name('Suno-status-light');
 diff --git a/js/ui/shelfMetrics.js b/js/ui/shelfMetrics.js
 --- a/js/ui/shelfMetrics.js
 +++ b/js/ui/shelfMetrics.js
@@ -508,9 +508,9 @@ diff --git a/js/ui/shelf.js b/js/ui/shelf.js
 +        const open = [...new Set([...(this._rimOpenSides ?? []), ...(this._joins?.vertical
 +            ? [this._joins.start ? 'top' : null, this._joins.end ? 'bottom' : null].filter(Boolean) : [])])];
 +        const body = this._content;
-+        const opacity = body.has_style_class_name('luma-island-press') ? .24
-+            : body.has_style_class_name('luma-island-hover') ? .16 : .06;
-+        const floating = this.has_style_class_name('lumaui-floating-island') &&
++        const opacity = body.has_style_class_name('Suno-island-press') ? .24
++            : body.has_style_class_name('Suno-island-hover') ? .16 : .06;
++        const floating = this.has_style_class_name('SunoUI-floating-island') &&
 +            !SurfaceMaterials.LIGHT_FAMILY.has(SurfaceMaterials.effectiveTreatment());
 +        const rim = floating ? `border: 1px solid rgba(255,255,255,${opacity});` : '';
 +        this._stroke.set_style(`${style}${rim}${open.map(side => ` border-${side}-width: 0px;`).join('')}`);
@@ -532,23 +532,23 @@ diff --git a/js/ui/shelf.js b/js/ui/shelf.js
          const scale = St.ThemeContext.get_for_stage(global.stage).scale_factor;
          // Dock cross-axis padding belongs INSIDE the scroll viewport so lifted
          // artwork is not clipped at its resting tile bounds.
--        const insets = this._content._lumaDock
-+        const insets = this._content.has_style_class_name('luma-shelf-clock-button')
+-        const insets = this._content._SunoDock
++        const insets = this._content.has_style_class_name('Suno-shelf-clock-button')
 +            ? (this._vertical ? [padding,6,padding,6] : [0,16.5,0,16.5])
 +            : this._content._statusActive ? (this._vertical ? [8.5,6,8.5,6] : [8.5,10.5,8.5,9])
-+            : this._content._lumaDock
++            : this._content._SunoDock
              ? (this._vertical ? [padding, 0, padding, 0] : [0, padding, 0, padding])
              : [padding, padding, padding, padding];
          // Connected-mode separators are real borders inside the material.
 @@ -1318,6 +1357,8 @@
      // 'media', 'notifications', 'quick-options', 'aux') and a matching actor
-     // name, lumaShelfIsland-<id>.
+     // name, SunoShelfIsland-<id>.
      _registerIsland(id, island) {
-+        island.add_style_class_name('lumaui-floating-island');
++        island.add_style_class_name('SunoUI-floating-island');
 +        island._materialBinding.setFloatingRecipe({radius: 24, saturation: 1.5});
          island.islandId = id;
          this._arrange?._watchPresses?.();
-         island.name = `lumaShelfIsland-${id}`;
+         island.name = `SunoShelfIsland-${id}`;
 @@ -1814,7 +1855,7 @@
          // otherwise.
          const quickGroup = this._resolved.find(placed => placed.islands.includes('quick-options'));
@@ -596,11 +596,11 @@ diff --git a/js/ui/shelf.js b/js/ui/shelf.js
              const flushStart = gutterless && (placed.anchor === 'start' || !!placed.merged);
              const flushEnd = gutterless && (placed.anchor === 'end' || !!placed.merged);
  
--            const surfaceClass = `luma-shelf-island luma-shelf-root luma-shelf-${surfaceMode} ` +
-+            const surfaceClass = `lumaui-floating-island luma-shelf-island luma-shelf-root luma-shelf-${surfaceMode} ` +
-                 `luma-shelf-${placed.edge} ${vertical ? 'luma-shelf-vertical' : 'luma-shelf-horizontal'} ` +
-                 `${this._protrude ? 'luma-shelf-attached' : ''} ` +
-                 `${flushStart || flushEnd ? 'luma-shelf-flush' : ''} ` +
+-            const surfaceClass = `Suno-shelf-island Suno-shelf-root Suno-shelf-${surfaceMode} ` +
++            const surfaceClass = `SunoUI-floating-island Suno-shelf-island Suno-shelf-root Suno-shelf-${surfaceMode} ` +
+                 `Suno-shelf-${placed.edge} ${vertical ? 'Suno-shelf-vertical' : 'Suno-shelf-horizontal'} ` +
+                 `${this._protrude ? 'Suno-shelf-attached' : ''} ` +
+                 `${flushStart || flushEnd ? 'Suno-shelf-flush' : ''} ` +
 @@ -2272,6 +2314,7 @@
                  row._rowClass = rowClass;
                  row.set_style_class_name(rowClass);
@@ -631,7 +631,7 @@ diff --git a/js/ui/shelf.js b/js/ui/shelf.js
                  anchor: 'start', position: 0.5, islands: order.flatMap(p => p.islands), merged: true,
                  segments: order.map(p => ({anchor: p.anchor, position: p.position, islands: [...p.islands]}))});
 @@ -2399,15 +2449,18 @@
-                 this._clockButton = new St.Button({style_class: 'luma-shelf-clock-button',
+                 this._clockButton = new St.Button({style_class: 'Suno-shelf-clock-button',
                      can_focus: true, reactive: true, track_hover: true,
                      accessible_role: Atk.Role.PUSH_BUTTON});
 -                this._clockButton.connect('clicked', () =>
@@ -641,7 +641,7 @@ diff --git a/js/ui/shelf.js b/js/ui/shelf.js
 +                    calendar.sourceActor = this._clockButton;
 +                    calendar.toggle();
 +                });
-                 this._clockIsland = new ShelfIsland('luma-shelf-clock-island', this._clockButton);
+                 this._clockIsland = new ShelfIsland('Suno-shelf-clock-island', this._clockButton);
                  this._registerIsland('clock', this._clockIsland);
                  this._clockIsland.setBody(this._clockButton);
                  const name = () => {
@@ -670,9 +670,9 @@ diff --git a/js/ui/shelf.js b/js/ui/shelf.js
          this._dockScroll.update_fade_effect(new Clutter.Margin({
              top: this._vertical ? fade : 0, bottom: this._vertical ? fade : 0,
              left: this._vertical ? 0 : fade, right: this._vertical ? 0 : fade,
-diff --git a/js/ui/lumaDockFolders.js b/js/ui/lumaDockFolders.js
---- a/js/ui/lumaDockFolders.js
-+++ b/js/ui/lumaDockFolders.js
+diff --git a/js/ui/SunoDockFolders.js b/js/ui/SunoDockFolders.js
+--- a/js/ui/SunoDockFolders.js
++++ b/js/ui/SunoDockFolders.js
 @@ -45,7 +45,7 @@
  
  // The tile. The dock's own 36px slot and 32px mark at radius 9, so a folder is
@@ -688,7 +688,7 @@ diff --git a/js/ui/lumaDockFolders.js b/js/ui/lumaDockFolders.js
          });
 +        this._material.setFloatingRecipe({radius: 28, saturation: 1.5});
  
-         this._header = new St.BoxLayout({style_class: 'luma-dockf-head',
+         this._header = new St.BoxLayout({style_class: 'Suno-dockf-head',
              reactive: true, track_hover: true});
 @@ -964,6 +965,7 @@
      }
@@ -698,14 +698,14 @@ diff --git a/js/ui/lumaDockFolders.js b/js/ui/lumaDockFolders.js
          const shelf = this._shelf;
          // The legacy preference still defines an untouched default layout.
          // After a direct move, actual membership owns the presentation: an
-diff --git a/js/ui/lumaSurfaceMaterials.js b/js/ui/lumaSurfaceMaterials.js
---- a/js/ui/lumaSurfaceMaterials.js
-+++ b/js/ui/lumaSurfaceMaterials.js
+diff --git a/js/ui/SunoSurfaceMaterials.js b/js/ui/SunoSurfaceMaterials.js
+--- a/js/ui/SunoSurfaceMaterials.js
++++ b/js/ui/SunoSurfaceMaterials.js
 @@ -283,6 +283,7 @@
          translucentRecipe = null,
      } = {}) {
          this._translucentRecipe = translucentRecipe;
-+        this._floatingRecipe = actor.has_style_class_name('luma-shelf-material') ? {radius: 24, saturation: 1.5} : null;
++        this._floatingRecipe = actor.has_style_class_name('Suno-shelf-material') ? {radius: 24, saturation: 1.5} : null;
          this._controller = controller;
          this._actor = actor;
          this._enabled = enabled;
@@ -730,12 +730,12 @@ diff --git a/js/ui/lumaSurfaceMaterials.js b/js/ui/lumaSurfaceMaterials.js
 +            !this._controller._surfaceSettings?.get_boolean('reduce-transparency') &&
 +            !this._controller._a11ySettings?.get_boolean('high-contrast');
 +        for (const actor of this._classActors) {
-+            if (floating && actor === this._actor) actor.add_style_class_name('lumaui-floating-material');
-+            else actor.remove_style_class_name('lumaui-floating-material');
-+            if (floating && actor !== this._actor) actor.add_style_class_name('lumaui-floating-owner');
-+            else actor.remove_style_class_name('lumaui-floating-owner');
-+            if (floating && !allowed && actor === this._actor) actor.add_style_class_name('lumaui-floating-reduced');
-+            else actor.remove_style_class_name('lumaui-floating-reduced');
++            if (floating && actor === this._actor) actor.add_style_class_name('SunoUI-floating-material');
++            else actor.remove_style_class_name('SunoUI-floating-material');
++            if (floating && actor !== this._actor) actor.add_style_class_name('SunoUI-floating-owner');
++            else actor.remove_style_class_name('SunoUI-floating-owner');
++            if (floating && !allowed && actor === this._actor) actor.add_style_class_name('SunoUI-floating-reduced');
++            else actor.remove_style_class_name('SunoUI-floating-reduced');
 +        }
          if (this._effect) {
 -            const active = this._enabled && TRANSLUCENT.has(treatment);
@@ -757,9 +757,9 @@ diff --git a/js/ui/popupMenu.js b/js/ui/popupMenu.js
  
          global.focus_manager.add_group(this.actor);
          this.actor.reactive = true;
-diff --git a/js/ui/lumaNotificationBeacon.js b/js/ui/lumaNotificationBeacon.js
---- a/js/ui/lumaNotificationBeacon.js
-+++ b/js/ui/lumaNotificationBeacon.js
+diff --git a/js/ui/SunoNotificationBeacon.js b/js/ui/SunoNotificationBeacon.js
+--- a/js/ui/SunoNotificationBeacon.js
++++ b/js/ui/SunoNotificationBeacon.js
 @@ -144,6 +144,7 @@
                  this._left.queue_repaint(); this._right.queue_repaint();
              },
@@ -772,12 +772,12 @@ diff --git a/js/js-resources.gresource.xml b/js/js-resources.gresource.xml
 --- a/js/js-resources.gresource.xml
 +++ b/js/js-resources.gresource.xml
 @@ -157,6 +157,9 @@
-     <file>ui/lumaPresentation/widgets.js</file>
-     <file>ui/lumaPresentation/tabletTasks.js</file>
-     <file>ui/lumaPresentation/handheldOptions.js</file>
-+    <file>ui/lumaPresentation/statusGrid.js</file>
-+    <file>ui/lumaPresentation/fillSlider.js</file>
-+    <file>ui/lumaPresentation/optionsSurface.js</file>
-     <file>ui/lumaPresentation/frameTokens.js</file>
-     <file>ui/lumaPresentation/switcherDrag.js</file>
+     <file>ui/SunoPresentation/widgets.js</file>
+     <file>ui/SunoPresentation/tabletTasks.js</file>
+     <file>ui/SunoPresentation/handheldOptions.js</file>
++    <file>ui/SunoPresentation/statusGrid.js</file>
++    <file>ui/SunoPresentation/fillSlider.js</file>
++    <file>ui/SunoPresentation/optionsSurface.js</file>
+     <file>ui/SunoPresentation/frameTokens.js</file>
+     <file>ui/SunoPresentation/switcherDrag.js</file>
      <file>ui/shelfMetrics.js</file>

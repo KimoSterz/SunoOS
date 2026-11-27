@@ -4,7 +4,7 @@
 # Fails if the shipped image would beep when Backspace is pressed in an empty
 # field (or any other action GTK refuses with its error bell).
 #
-# Runs GTK's own gtk_widget_error_bell() path against Luma's *shipped* GTK 3
+# Runs GTK's own gtk_widget_error_bell() path against Suno's *shipped* GTK 3
 # and GTK 4 settings (config/desktop/gtk-3.0/settings.ini, gtk-4.0/settings.ini
 # — the actual files this repo installs to /etc, not stand-ins) and proves
 # nothing downstream ever asks to ring the bell. It intercepts GDK's own beep
@@ -66,7 +66,7 @@ cat >"$work/beep_guard.c" <<'C'
 #include <stdlib.h>
 
 static void log_call(const char *name) {
-    const char *path = getenv("LUMA_BEEP_LOG");
+    const char *path = getenv("SUNO_BEEP_LOG");
     if (!path)
         return;
     FILE *f = fopen(path, "a");
@@ -111,7 +111,7 @@ def read_log(path):
     with open(path) as fh:
         return [line.strip() for line in fh if line.strip()]
 
-log_path = os.environ["LUMA_BEEP_LOG"]
+log_path = os.environ["SUNO_BEEP_LOG"]
 ini_path = sys.argv[1]
 
 # Parse the exact file the image ships to /etc/gtk-4.0/settings.ini and read
@@ -147,7 +147,7 @@ print("PASS positive control: gtk-error-bell=True does reach gdk_surface_beep")
 PY
 
 beep_log="$work/beep.log"
-GDK_BACKEND=x11 LUMA_BEEP_LOG="$beep_log" LD_PRELOAD="$work/beep_guard.so" \
+GDK_BACKEND=x11 SUNO_BEEP_LOG="$beep_log" LD_PRELOAD="$work/beep_guard.so" \
   xvfb-run -a python3 "$work/error_bell_probe.py" "$gtk4_ini"
 
 printf '\nno-error-bell-sound: PASS\n'

@@ -5,7 +5,7 @@ import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 
 const OUT = GLib.getenv('SSC_OUT') ?? '/out';
-const NAME = 'org.project_luma.ShellState1', PATH = '/org/project_luma/ShellState1';
+const NAME = 'org.projectSuno.ShellState1', PATH = '/org/projectSuno/ShellState1';
 const checks = [];
 const check = (name, ok, detail = '') => {
     checks.push({name, ok: Boolean(ok), detail: String(detail)});

@@ -1,4 +1,4 @@
-From: Project Luma <luma@local>
+From: Project Suno <Suno@local>
 Subject: [PATCH] Fix StButton pressed getter gesture target
 
 st_button_get_pressed() incorrectly casts the StButton itself to a

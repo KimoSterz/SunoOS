@@ -1,4 +1,4 @@
-From: Project Luma <luma@local>
+From: Project Suno <Suno@local>
 Subject: [PATCH] iio: imu: inv_icm42600: add ICM-42630 identity
 
 The Fairphone 6 identifies its SPI IMU as ICM-42630 and returns 0x0c from

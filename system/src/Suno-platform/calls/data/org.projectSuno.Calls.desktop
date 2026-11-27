@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: Apache-2.0
+[Desktop Entry]
+Type=Application
+Name=Calls
+Comment=System call activity for the Suno live island
+Icon=call-start-symbolic
+Exec=/usr/libexec/Suno-calls-producer
+Terminal=false
+NoDisplay=true
+X-GNOME-Autostart-enabled=false
+Categories=System;

@@ -1,3 +1,0 @@
-[D-BUS Service]
-Name=org.projectluma.AppData1
-Exec=/usr/libexec/luma-app-data-broker

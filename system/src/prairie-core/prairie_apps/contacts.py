@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: Apache-2.0
 
-"""Contacts, the LumaUI reference app (simulator v71).
+"""Contacts, the SunoUI reference app (simulator v71).
 
-Every visible part is a LumaUI part used through its semantic API: the app
+Every visible part is a SunoUI part used through its semantic API: the app
 says what is on screen, and the kit decides how it looks and moves. What is
 left here is what an address book actually is: who is in it, how the list is
 narrowed, one person's card, and what you share with them.
@@ -17,7 +17,7 @@ narrowed, one person's card, and what you share with them.
       ├ corner    CornerPill (computer): Share · Edit · ⋯ (Block, Delete), or Cancel · Done while editing
       ├ back      ListFirst's floating ‹ (phone): to the list
       ├ page      PersonAvatar, HeroTitleField, @handle + StatusPill, ContactActions, then Cards:
-      │           Contact · Together, What <they> see (or Not on Luma) · Private note
+      │           Contact · Together, What <they> see (or Not on Suno) · Private note
       └ bar       ActionCenter (phone): Edit · Share · Favorite · ⋯, or Cancel · Done while editing
 
 On a phone (the kit's phone tier, under 560) Contacts is list-first, as v71
@@ -29,11 +29,11 @@ the kit's menus, sheets and dialogs at their buttons.
 
 People come from one ContactsSource (contacts_data): the address book,
 Messages (read only) and the sharing store, or a JSON fixture
-(LUMA_CONTACTS_FIXTURE). The writes v71 adds (favourite, lists, block, link a
+(SUNO_CONTACTS_FIXTURE). The writes v71 adds (favourite, lists, block, link a
 duplicate, your own card) are offered only where the source makes them
 (`ContactsSource.can`). This module owns no styling: style/contacts.css holds
 only this app's layout. Every element v71 has carries a stable widget name
-(WIDGET_NAMES) for tools/lumaui-conform.
+(WIDGET_NAMES) for tools/SunoUI-conform.
 
 Every part is the kit's v71 part (KIT-STATUS.md); what v71 shows that the kit
 does not offer yet is marked TODO(v71-kit …) with its kit request.
@@ -57,17 +57,17 @@ gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 from gi.repository import Adw, Gdk, Gio, GLib, Gtk, Pango  # noqa: E402
 
-from luma_appkit import (  # noqa: E402
+from Suno_appkit import (  # noqa: E402
     AccountCard, ActionCenter, AppWindow, AZIndex, BarAction, BarSearch, BarTile, BarTiles, Card, Command, CommandGroup,
     CommandRegistry, ContactActions, ContentLitHeader, CornerPill, DestructiveDialog, DetailsItem, EmptyState,
     FactRow, FileCard, HeroTitleField, Island, ListEmptyState, ListFirst, MenuSection, NavigationRow,
     NavigationSidebar, PanelField, PanelHeading, PanelRow, ParagraphField, Person, PersonAvatar, RichMenuItem,
     ScrollView, SharePanel, ShareSheet, ShareSubject, ShareTarget, SidebarFoot, StatusPill, TextButton,
-    Toast, ToastHost, add_style_sheet, apply_type, hue_class, icons, install_appkit, install_lumaui,
-    lumaui_tokens, modifier_text, panel_list, person_hue,
+    Toast, ToastHost, add_style_sheet, apply_type, hue_class, icons, install_appkit, install_SunoUI,
+    SunoUI_tokens, modifier_text, panel_list, person_hue,
 )
-from luma_appkit.action_bubble import FloatingMenu, MenuItem  # noqa: E402
-from luma_appkit.bar_share import PANEL_TARGETS  # noqa: E402
+from Suno_appkit.action_bubble import FloatingMenu, MenuItem  # noqa: E402
+from Suno_appkit.bar_share import PANEL_TARGETS  # noqa: E402
 from .contacts_data import ContactsSource, Me, source_from_environment  # noqa: E402
 from .contacts_import import MAX_VCARD_BYTES  # noqa: E402
 from .qr_code import QUIET_ZONE, matrix as qr_matrix  # noqa: E402
@@ -77,7 +77,7 @@ from .eds_backend import (  # noqa: E402
 )
 
 
-APP_ID = "org.projectluma.Contacts"
+APP_ID = "org.projectSuno.Contacts"
 ICON_NAME = APP_ID
 # Contact and Together sit side by side from this window width (v70 900).
 TWO_COLUMN_MIN_WIDTH = 900
@@ -101,7 +101,7 @@ ADD_MATCHES = 3
 SHARE_PEOPLE = 5
 CODE_POP_WIDTH = 240                      # v71 .codepop
 
-SIDEBAR = lumaui_tokens.SIDEBAR
+SIDEBAR = SunoUI_tokens.SIDEBAR
 # The face at the top of a person's page (v70 .chero .av).
 HERO_FACE = 116
 
@@ -227,12 +227,12 @@ def letter(record: ContactRecord) -> str:
 
 
 def work_line(record: ContactRecord | Me) -> str:
-    """Where they work, then what they do there (v70 .cwork: "Luma · Design")."""
+    """Where they work, then what they do there (v70 .cwork: "Suno · Design")."""
     return " · ".join(part for part in (record.organization, record.role) if part)
 
 
 def row_subtitle(record: ContactRecord) -> str:
-    """The list's second line (v70): their @username, "Phone contact" when they aren't on Luma,
+    """The list's second line (v70): their @username, "Phone contact" when they aren't on Suno,
     or how to reach them when nobody knows yet; never the name again."""
     if record.handle:
         return f"@{record.handle}"
@@ -262,7 +262,7 @@ def when(timestamp: int, now: float | None = None) -> str:
 #: Edit mode's fields, in the card's order: (field, label, placeholder).
 EDIT_FIELDS = (("name", "Name", "Name", "name", "user"), ("phone", "Mobile", "Add mobile", "phone", "phone"),
                ("email", "Email", "Add email", "email", "mail"),
-               ("handle", "Luma username", "@username", "text", "at-sign"),
+               ("handle", "Suno username", "@username", "text", "at-sign"),
                ("birthday", "Birthday", "Add birthday", "text", "cake"),
                ("address", "Address", "Add address", "text", "map-pin"),
                ("work", "Work", "Add work", "text", "briefcase"))
@@ -280,18 +280,18 @@ def with_fields(record: ContactRecord | None, uid: str, values: dict[str, str], 
     """The card as it reads after a save, before the address book's own copy arrives."""
     base = record or ContactRecord(uid, "", book=book)
     organization, _, role = values.get("work", work_line(base)).partition(" · ")
-    account = values.get('luma_account', base.luma_account if values.get('handle', base.handle) == base.handle else '')
+    account = values.get('Suno_account', base.Suno_account if values.get('handle', base.handle) == base.handle else '')
     return replace(base, uid=uid, name=values.get("name", base.name), phone=values.get("phone", base.phone),
                    handle=values.get("handle", base.handle),
                    email=values.get("email", base.email), birthday=values.get("birthday", base.birthday),
                    address=values.get("address", base.address), note=values.get("note", base.note),
                    role=role.strip(), organization=organization.strip(),
-                   luma_account=account, on_luma=True if account else None)
+                   Suno_account=account, on_Suno=True if account else None)
 
 
 def book_place(label: str) -> str:
-    """An address book's name as the end of a sentence ("removed from your Luma account")."""
-    places = {LOCAL_ADDRESS_BOOK.label: LOCAL_ADDRESS_BOOK.place, "Luma account": "your Luma account"}
+    """An address book's name as the end of a sentence ("removed from your Suno account")."""
+    places = {LOCAL_ADDRESS_BOOK.label: LOCAL_ADDRESS_BOOK.place, "Suno account": "your Suno account"}
     return places.get(label, label)
 
 
@@ -372,7 +372,7 @@ class ContactsWindow(AppWindow):
 
     def _opens_on_card(self) -> bool:
         """Whether a window that becomes a phone shows the card rather than the list. v71 is list-first:
-        the list, unless a card is being edited (or a fixture asks: LUMA_CONTACTS_OPEN, LUMA_CONTACTS_EDIT)."""
+        the list, unless a card is being edited (or a fixture asks: SUNO_CONTACTS_OPEN, SUNO_CONTACTS_EDIT)."""
         return (not self.phone or self.editing or bool(getattr(self.source, "open", False))
                 or bool(getattr(self.source, "edit", False)))
 
@@ -408,9 +408,9 @@ class ContactsWindow(AppWindow):
         narrow.add_setter(self.list_host, "width-request", _sidebar_pane("narrow_width"))
         narrow.add_setter(self.sidebar, "width-request", _sidebar_pane("narrow_width") - SIDEBAR["gutter"])
         self.add_breakpoint(narrow)
-        # The kit's phone tier (under 560, lumaui_tokens.PHONE_MAX_WIDTH): list first, the bars at the thumb.
+        # The kit's phone tier (under 560, SunoUI_tokens.PHONE_MAX_WIDTH): list first, the bars at the thumb.
         phone = stacked(Adw.Breakpoint.new(Adw.BreakpointCondition.parse(
-            f"max-width: {lumaui_tokens.PHONE_MAX_WIDTH}px")))
+            f"max-width: {SunoUI_tokens.PHONE_MAX_WIDTH}px")))
         # ListFirst lays the list out full width on a phone.
         phone.add_setter(self.list_host, "width-request", -1)
         phone.add_setter(self.sidebar, "width-request", -1)
@@ -549,25 +549,25 @@ class ContactsWindow(AppWindow):
         self.address_book = book
         self._apply_records()
         if not self.source.rehearsal:
-            self._discover_luma_contacts(tuple(self.all_records.values()))
+            self._discover_Suno_contacts(tuple(self.all_records.values()))
         if then is not None:
             then()
         return GLib.SOURCE_REMOVE
 
-    def _discover_luma_contacts(self, records):
+    def _discover_Suno_contacts(self, records):
         """Enrich only positive, opt-in Hub matches without delaying the list."""
-        if getattr(self, '_luma_discovery_busy', False):
+        if getattr(self, '_Suno_discovery_busy', False):
             return
         from .connect_sync import load_identity
         if load_identity() is None:
             return
-        checked = getattr(self, '_luma_discovery_checked', {})
-        self._luma_discovery_checked = checked
-        candidates = [r for r in records if not r.luma_account and (r.handle or r.email or r.phone)
+        checked = getattr(self, '_Suno_discovery_checked', {})
+        self._Suno_discovery_checked = checked
+        candidates = [r for r in records if not r.Suno_account and (r.handle or r.email or r.phone)
                       and time.monotonic() - checked.get(r.uid, -3600) >= 600][:500]
         if not candidates:
             return
-        self._luma_discovery_busy = True
+        self._Suno_discovery_busy = True
         for record in candidates:
             checked[record.uid] = time.monotonic()
         def worker():
@@ -587,7 +587,7 @@ class ContactsWindow(AppWindow):
                         except Exception: return record, None
                     for value in (record.email.strip().lower(), record.phone.strip()):
                         if value:
-                            person = by_hash.get(hashlib.sha256(('luma-discovery-v1:' + value).encode()).hexdigest())
+                            person = by_hash.get(hashlib.sha256(('Suno-discovery-v1:' + value).encode()).hexdigest())
                             if person and person.get('handle'): return record, person
                     return record, None
                 with ThreadPoolExecutor(max_workers=4) as pool:
@@ -596,16 +596,16 @@ class ContactsWindow(AppWindow):
                 for old, person in resolved:
                     current = latest.get(old.uid)
                     if person and current and (current.handle, current.email, current.phone) == (old.handle, old.email, old.phone):
-                        self.source.update(old.uid, {'handle': person['handle'], 'luma_account': person['account']})
+                        self.source.update(old.uid, {'handle': person['handle'], 'Suno_account': person['account']})
                         changed = True
             except Exception:
-                # Offline/opt-out is not evidence of "not on Luma".
+                # Offline/opt-out is not evidence of "not on Suno".
                 pass
-            GLib.idle_add(self._luma_discovery_finished, changed)
-        threading.Thread(target=worker, daemon=True, name='contacts-luma-discovery').start()
+            GLib.idle_add(self._Suno_discovery_finished, changed)
+        threading.Thread(target=worker, daemon=True, name='contacts-Suno-discovery').start()
 
-    def _luma_discovery_finished(self, changed):
-        self._luma_discovery_busy = False
+    def _Suno_discovery_finished(self, changed):
+        self._Suno_discovery_busy = False
         if changed:
             self._reload()
         return GLib.SOURCE_REMOVE
@@ -750,7 +750,7 @@ class ContactsWindow(AppWindow):
         self.hero.set_name("ct-hero")
         self.page.append(self.hero)
         # Two rows of two cards (v70 .cgrid), each stacked in a narrow window:
-        # Contact beside Together, then What they see (or Not on Luma) beside the Private note.
+        # Contact beside Together, then What they see (or Not on Suno) beside the Private note.
         self.grid = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, vexpand=False)
         self.grid.add_css_class("ct-grid")
         self.rows_of_cards = []
@@ -783,11 +783,11 @@ class ContactsWindow(AppWindow):
         self.card_stack = Gtk.Stack(vexpand=True, hexpand=True)
         self.card_stack.add_named(overlay, "card")
         self.empty_state = EmptyState(
-            "Your contacts", "Choose someone to see their card.", "luma-empty-contacts-symbolic",
+            "Your contacts", "Choose someone to see their card.", "Suno-empty-contacts-symbolic",
             primary=("New contact", self._new_contact))
         self.fresh_state = EmptyState(
             "No contacts yet", "Add the first one, or bring them in from a vCard file.",
-            "luma-empty-contacts-symbolic", primary=("New contact", self._new_contact),
+            "Suno-empty-contacts-symbolic", primary=("New contact", self._new_contact),
             secondary=("Import vCard…", self._import_vcard))
         self.card_stack.add_named(Gtk.Box(), "loading")
         self.card_stack.add_named(self.empty_state, "empty")
@@ -959,7 +959,7 @@ class ContactsWindow(AppWindow):
         light, focus = self.source.light(record) if record else (b"", (0.5, 0.5))
         actions = ContactActions(person, handler=self._contact_action) if record and not edit else None
         if actions is not None:
-            # The shared action row assumes a handler can place a Luma video call; Contacts has no video
+            # The shared action row assumes a handler can place a Suno video call; Contacts has no video
             # provider yet, so a real source does not offer a dead action (the fixture rehearses it, as Phone's).
             if not self.source.rehearsal:
                 actions.buttons["video"].set_sensitive(False)
@@ -968,7 +968,7 @@ class ContactsWindow(AppWindow):
         self._fill_hero(name, record.name if record else "", picture, _picture(light), focus, edit,
                         hue=record.hue if record else None,
                         reach=reach_line(record) if record else "",
-                        status=True if record is not None and record.on_luma is True else None,
+                        status=True if record is not None and record.on_Suno is True else None,
                         work=work_line(record) if record else "",
                         actions=actions)
         self._arrange_cards(mine=False)
@@ -1051,7 +1051,7 @@ class ContactsWindow(AppWindow):
                 handle.set_name("ct-handle")
                 line.append(handle)
             if status is True:
-                pill = StatusPill("on-luma")
+                pill = StatusPill("on-Suno")
                 pill.set_name("ct-status")
                 line.append(pill)
             self.hero.append(line)
@@ -1063,16 +1063,16 @@ class ContactsWindow(AppWindow):
         if actions is not None:
             # Four equal tiles, never wider than the kit's row (v70 .lcacts: 376).
             actions.set_name("ct-actions")
-            row = Adw.Clamp(maximum_size=lumaui_tokens.STACK["row_max_width"], child=actions)
+            row = Adw.Clamp(maximum_size=SunoUI_tokens.STACK["row_max_width"], child=actions)
             row.add_css_class("ct-actions")
             self.hero.append(row)
 
     def _fill_sees_card(self, record: ContactRecord | None, edit: bool) -> None:
-        """What they see of you, with the one thing you choose to share; or, not on Luma, an invite."""
+        """What they see of you, with the one thing you choose to share; or, not on Suno, an invite."""
         card = self.sees_card
         self._clear(card)
-        card.set_visible(record is not None and record.on_luma is True and not edit)
-        if record is None or record.on_luma is not True or edit:
+        card.set_visible(record is not None and record.on_Suno is True and not edit)
+        if record is None or record.on_Suno is not True or edit:
             return
         first = first_name(record)
         card.set_name("ct-sees")
@@ -1145,7 +1145,7 @@ class ContactsWindow(AppWindow):
         facts = [(value, label, icon) for value, label, icon in (
             (record.phone, "Mobile", "phone"),
             (record.email, "Email", "mail"),
-            (f"@{record.handle}" if record.handle else "", "Luma username", "at-sign"),
+            (f"@{record.handle}" if record.handle else "", "Suno username", "at-sign"),
             (record.birthday, "Birthday", "cake"),
             (record.address, "Address", "map-pin"),
             (work_line(record), "Work", "briefcase"),
@@ -1153,7 +1153,7 @@ class ContactsWindow(AppWindow):
         for value, label, icon in facts:
             card.append(FactRow(icon, label, value))
         if not facts:
-            card.append(_paragraph("Only their @username. That’s all you need to reach someone on Luma."
+            card.append(_paragraph("Only their @username. That’s all you need to reach someone on Suno."
                                    if record.handle else "No phone number or email on this card yet.",
                                    muted=True, markup=False))
 
@@ -1235,19 +1235,19 @@ class ContactsWindow(AppWindow):
             self._save_me(values)
             return
         if values.get("handle"):
-            from .messages_luma import handle_from
+            from .messages_Suno import handle_from
             handle = handle_from(values["handle"])
             if handle is None:
-                self._toast("Enter a valid Luma username, such as @alex.", kind="warning")
+                self._toast("Enter a valid Suno username, such as @alex.", kind="warning")
                 self._fields["handle"].entry.grab_focus()
                 return
             values["handle"] = handle
         record = self.selected
         changes = {key: value for key, value in values.items() if value != shown_fields(record)[key]}
-        person = getattr(self, "_resolved_luma_person", None)
+        person = getattr(self, "_resolved_Suno_person", None)
         if person and person.get("handle", "").casefold() == values.get("handle", "").casefold():
-            changes["luma_account"] = person["account"]
-            values["luma_account"] = person["account"]
+            changes["Suno_account"] = person["account"]
+            values["Suno_account"] = person["account"]
         if record is not None and not changes:
             self._show_contact(record)
             return
@@ -1257,13 +1257,13 @@ class ContactsWindow(AppWindow):
 
         def save() -> None:
             try:
-                if not self.source.rehearsal and changes.get('handle') and 'luma_account' not in changes:
+                if not self.source.rehearsal and changes.get('handle') and 'Suno_account' not in changes:
                     from .connect_sync import load_identity
                     if load_identity() is not None:
                         from .collaboration import PeopleDirectory
                         matched = PeopleDirectory().lookup(changes['handle'])
-                        changes['luma_account'] = matched['account']
-                        values['luma_account'] = matched['account']
+                        changes['Suno_account'] = matched['account']
+                        values['Suno_account'] = matched['account']
                 uid = self.source.update(record.uid, changes) if record else self.source.create(changes)
                 error = ""
             except (ValueError, RuntimeError, OSError, GLib.Error) as failure:
@@ -1383,10 +1383,10 @@ class ContactsWindow(AppWindow):
 
     def _add_typed(self, text: str) -> None:
         """Live answers as Add a person is typed into (v71): a phone or an email offers a new card with it;
-        a username lists the people it starts, or says no one on Luma has it."""
+        a username lists the people it starts, or says no one on Suno has it."""
         self._add_lookup_generation = getattr(self, "_add_lookup_generation", 0) + 1
         self._add_current_query = text
-        self._resolved_luma_person = None
+        self._resolved_Suno_person = None
         results = self._add_results
         if results is None:
             return
@@ -1413,7 +1413,7 @@ class ContactsWindow(AppWindow):
                                         on_activate=lambda record=record: self._add_open(record)))
             if not found:
                 results.append(PanelRow(f"Add @{value}", icon="user-plus",
-                                        subtitle="Save their Luma username in a new contact",
+                                        subtitle="Save their Suno username in a new contact",
                                         on_activate=lambda: self._add_new({"handle": value})))
 
     def _lookup_add_person(self, results, kind, value, generation):
@@ -1425,7 +1425,7 @@ class ContactsWindow(AppWindow):
             except Exception:
                 people = []
             GLib.idle_add(self._add_person_found, results, generation, people)
-        threading.Thread(target=worker, daemon=True, name="contacts-luma-lookup").start()
+        threading.Thread(target=worker, daemon=True, name="contacts-Suno-lookup").start()
 
     def _add_person_found(self, results, generation, people):
         if results is not self._add_results or generation != self._add_lookup_generation:
@@ -1434,18 +1434,18 @@ class ContactsWindow(AppWindow):
         for person in people:
             if not person.get("account") or not person.get("handle"):
                 continue
-            self._resolved_luma_person = person
+            self._resolved_Suno_person = person
             name = public_name(person)
             row = PanelRow(name, lead=PersonAvatar(name, 28, hue=person.get("hue")),
-                           subtitle="On Luma · @" + person["handle"],
-                           on_activate=lambda person=person: self._add_luma_person(person))
-            row.set_name("ct-add-luma-person")
+                           subtitle="On Suno · @" + person["handle"],
+                           on_activate=lambda person=person: self._add_Suno_person(person))
+            row.set_name("ct-add-Suno-person")
             results.prepend(row)
         return GLib.SOURCE_REMOVE
 
-    def _add_luma_person(self, person):
+    def _add_Suno_person(self, person):
         from .collaboration import public_name
-        self._resolved_luma_person = person
+        self._resolved_Suno_person = person
         fields = {"name": public_name(person), "handle": person["handle"]}
         kind, value = add_query(getattr(self, "_add_current_query", ""))
         if kind in ("email", "phone"):
@@ -1455,10 +1455,10 @@ class ContactsWindow(AppWindow):
     def _add_submit(self, text: str) -> None:
         """Return takes the first answer: the new card, or the first match."""
         kind, value = add_query(text)
-        person = getattr(self, "_resolved_luma_person", None)
+        person = getattr(self, "_resolved_Suno_person", None)
         resolved_current = text == getattr(self, "_add_current_query", "") and kind in ("email", "phone")
         if person and (resolved_current or (kind == "handle" and person.get("handle", "").casefold() == value.casefold())):
-            self._add_luma_person(person)
+            self._add_Suno_person(person)
             return
         if kind in ("email", "phone"):
             self._add_new({kind: value})
@@ -1697,7 +1697,7 @@ class ContactsWindow(AppWindow):
             return "Opening Mail" if self._launch_uri(uri) else None
         self.get_clipboard().set(card)
         if person is not None and person.username:
-            self._launch_core_app("prairie-messages", f"luma-messages://u/{person.username}")
+            self._launch_core_app("prairie-messages", f"Suno-messages://u/{person.username}")
         elif person is not None and person.phone:
             self._launch_core_app("prairie-messages", f"sms:{person.phone}")
         else:
@@ -1742,7 +1742,7 @@ class ContactsWindow(AppWindow):
         the contact is simply not deleted, which is the safe direction.
         """
         self._flush_delete()
-        timeout = GLib.timeout_add(lumaui_tokens.MOTION["toast_undo_ms"] + 500, self._flush_delete)
+        timeout = GLib.timeout_add(SunoUI_tokens.MOTION["toast_undo_ms"] + 500, self._flush_delete)
         self._pending_delete = (record, timeout)
         self.all_records.pop(record.uid, None)
         self.selected = None
@@ -1871,7 +1871,7 @@ class ContactsWindow(AppWindow):
         card = "\n".join(part for part in (name, f"@{handle}" if handle else "", phone, email) if part)
         # The sheet's head (v71 lShare): their face, their name and their link.
         picture = _picture(contact.photo)
-        subject = ShareSubject(name, link.removeprefix("https://") or "Luma contact", kind="contact",
+        subject = ShareSubject(name, link.removeprefix("https://") or "Suno contact", kind="contact",
                                picture=picture, person=Person(name, phone=phone, email=email, username=handle,
                                                               picture=picture, hue=contact.hue))
 
@@ -1909,7 +1909,7 @@ class ContactsWindow(AppWindow):
         sheet = ShareSheet.present(button, document=subject, people=people, on_choice=chosen)
 
     def _share_nearby(self, contact: ContactRecord | Me) -> str:
-        """Nearby (v71 offers it in every share). Luma has no Nearby sending yet, so a real source says so."""
+        """Nearby (v71 offers it in every share). Suno has no Nearby sending yet, so a real source says so."""
         if not self.source.rehearsal:
             return "Nearby sharing isn’t on this computer yet"
         return "Sharing your card with Nearby" if isinstance(contact, Me) else \
@@ -1922,14 +1922,14 @@ class ContactsWindow(AppWindow):
                     "ari": "Ari has it. Ask what you like."}.get(target.key, f"Opened in {target.label}")
         if not target.app_id:
             return f"{target.label} isn’t installed"
-        folder = os.path.join(GLib.get_user_cache_dir(), "luma-contacts", "shared")
+        folder = os.path.join(GLib.get_user_cache_dir(), "Suno-contacts", "shared")
         os.makedirs(folder, exist_ok=True)
         safe = re.sub(r"[^\w .-]+", "", contact.name).strip() or "Contact"
         path = os.path.join(folder, f"{safe}.vcf")
         with open(path, "w", encoding="utf-8") as handle:
             handle.write(_contact_vcard(contact.name, contact.phone, contact.email))
         os.chmod(path, 0o600)
-        from luma_appkit.application_directory import launch
+        from Suno_appkit.application_directory import launch
         def accepted(ok, error):
             self._toast('Opened in ' + target.label if ok else error or 'Could not share contact',
                         kind='done' if ok else 'error')
@@ -1960,7 +1960,7 @@ class ContactsWindow(AppWindow):
             return True
         if action == "message":
             if person.username:
-                return self._launch_core_app("prairie-messages", f"luma-messages://u/{person.username}")
+                return self._launch_core_app("prairie-messages", f"Suno-messages://u/{person.username}")
             if person.phone:
                 return self._launch_core_app("prairie-messages", f"sms:{person.phone}")
         if action == "call" and person.phone:
@@ -1992,7 +1992,7 @@ class ContactsWindow(AppWindow):
 
     def _show_about(self) -> None:
         Adw.AboutDialog(application_name="Contacts", application_icon=ICON_NAME,
-                        developer_name="Project Luma").present(self)
+                        developer_name="Project Suno").present(self)
 
 
 
@@ -2133,7 +2133,7 @@ class ContactsApplication(Adw.Application):
     def do_startup(self) -> None:
         Adw.Application.do_startup(self)
         install_appkit()
-        install_lumaui()
+        install_SunoUI()
         _install_contacts_style()
 
     def do_activate(self) -> None:
@@ -2144,7 +2144,7 @@ def _install_contacts_style() -> None:
     if Gdk.Display.get_default() is None:
         return
     # The kit owns the sheet, so it reloads with the appearance.
-    add_style_sheet(os.environ.get("LUMA_CONTACTS_STYLE_PATH", "/usr/share/prairie-core/contacts.css"))
+    add_style_sheet(os.environ.get("SUNO_CONTACTS_STYLE_PATH", "/usr/share/prairie-core/contacts.css"))
 
 
 def main() -> int:

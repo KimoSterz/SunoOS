@@ -18,7 +18,7 @@ OBJECT = 'os/repo/objects/ab/' + 'c' * 62 + '.commit'
 class OriginRedirectTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.temp = tempfile.TemporaryDirectory(prefix='luma-origin-redirect-')
+        cls.temp = tempfile.TemporaryDirectory(prefix='Suno-origin-redirect-')
         cls.work = Path(cls.temp.name)
         cls.cert, cls.key = cls.work/'cert.pem', cls.work/'key.pem'
         subprocess.run(['openssl','req','-x509','-newkey','rsa:2048','-nodes',

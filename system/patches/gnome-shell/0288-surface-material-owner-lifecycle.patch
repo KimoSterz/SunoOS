@@ -1,4 +1,4 @@
-From: Project Luma <builds@project-luma.local>
+From: Project Suno <builds@project-suno.local>
 Subject: [PATCH] shell: Scope a surface material to its owning island across presentation changes
 
 --- a/js/ui/shelf.js
@@ -11,8 +11,8 @@ Subject: [PATCH] shell: Scope a surface material to its owning island across pre
              cornerRadii: SHELF_ISLAND_RADIUS,
              classActors: [this, stroke, ...this._joinStrokes, ...this._shadows],
              onTreatmentChanged: treatment => {
---- a/js/ui/lumaSurfaceMaterials.js
-+++ b/js/ui/lumaSurfaceMaterials.js
+--- a/js/ui/SunoSurfaceMaterials.js
++++ b/js/ui/SunoSurfaceMaterials.js
 @@ -276,6 +276,7 @@
  class SurfaceMaterialBinding {
      constructor(controller, actor, {
@@ -54,7 +54,7 @@ Subject: [PATCH] shell: Scope a surface material to its owning island across pre
              !this._controller._surfaceSettings?.get_boolean('reduce-transparency') &&
              !this._controller._a11ySettings?.get_boolean('high-contrast');
 @@ -373,7 +383,7 @@
-             else actor.remove_style_class_name('lumaui-floating-reduced');
+             else actor.remove_style_class_name('SunoUI-floating-reduced');
          }
          if (this._effect) {
 -            const active = this._enabled && (TRANSLUCENT.has(treatment) || floating && allowed);

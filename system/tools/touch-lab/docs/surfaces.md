@@ -73,7 +73,7 @@ for ranges, units and the Confidence usage; or a recorder header.
 
 - libinput 1.31 disables `ABS_MT_PRESSURE` on pressure pads before plugins
   see frames, so a force pad needs the generated quirk
-  (`50-luma-touch-roles.quirks`: `-INPUT_PROP_PRESSUREPAD`,
+  (`50-Suno-touch-roles.quirks`: `-INPUT_PROP_PRESSUREPAD`,
   `AttrPressureRange=0:0`, palm and thumb pressure thresholds 0). libinput
   then still ignores pressure and only the plugin reads it. Without the
   quirk the plugin runs with `m_pressure = 0`.

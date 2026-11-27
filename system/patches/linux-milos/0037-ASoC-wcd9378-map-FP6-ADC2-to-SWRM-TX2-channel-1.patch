@@ -1,5 +1,5 @@
 From 0000000000000000000000000000000000000037 Mon Sep 17 00:00:00 2001
-From: Project Luma <luma@local>
+From: Project Suno <Suno@local>
 Date: Wed, 19 Aug 2026 18:00:00 -0500
 Subject: [PATCH] ASoC: wcd9378: map FP6 ADC2 to SWRM TX2 channel 1
 
@@ -15,7 +15,7 @@ importing Android's audio HAL or routing framework. DMIC device-port mappings
 remain unchanged; analog and digital paths sharing a master port are mutually
 exclusive DAPM routes.
 
-Signed-off-by: Project Luma <luma@local>
+Signed-off-by: Project Suno <Suno@local>
 ---
  .../boot/dts/qcom/milos-fairphone-fp6.dts      | 8 ++++----
  sound/soc/codecs/wcd9378-sdw.c                 | 8 ++++----

@@ -45,7 +45,7 @@ def main() -> int:
     except CalendarUnavailable as error:
         print(f"could not run: {error}")
         return 77
-    uid = create_calendar("Luma standards test (temporary)", tone="green")
+    uid = create_calendar("Suno standards test (temporary)", tone="green")
     try:
         source = next(item for item in list_sources() if item.uid == uid)
         check(source.writable and source.kind == "local" and source.removable, "a new local calendar is writable and removable")
@@ -61,7 +61,7 @@ def main() -> int:
         check("SEQUENCE" not in text or "SEQUENCE:0" in text, "a new event starts at sequence 0")
         check("CREATED:" in text and "DTSTAMP:" in text and "LAST-MODIFIED:" in text, "created, stamp and modified are recorded")
 
-        # A property Luma does not know survives an edit.
+        # A property Suno does not know survives an edit.
         from prairie_apps.calendar_backend import _client
         client, _s, cal, ical = _client(uid)
         stored = client.get_object_sync(event_uid, None, None)
@@ -74,7 +74,7 @@ def main() -> int:
         save_event(EventDraft(source_uid=uid, summary="Standup (moved)", start=start + timedelta(hours=1),
                               end=start + timedelta(hours=1, minutes=30), tzid="America/Chicago", uid=event_uid))
         text = unfold(component_text(uid, event_uid))
-        check("X-OTHER-CLIENT:keep me" in text, "an unknown property survives a Luma edit")
+        check("X-OTHER-CLIENT:keep me" in text, "an unknown property survives a Suno edit")
         check("SEQUENCE:1" in text, "an edit raises SEQUENCE")
         check("BEGIN:VALARM" not in text, "clearing alerts removes the VALARM")
 
@@ -135,7 +135,7 @@ def main() -> int:
         # Export, then import into a second calendar: same events.
         exported = export_ics(uid)
         check("BEGIN:VTIMEZONE" in exported and "TZID" in exported, "export carries the VTIMEZONE")
-        copy = create_calendar("Luma import test (temporary)", tone="amber")
+        copy = create_calendar("Suno import test (temporary)", tone="amber")
         try:
             count = import_ics(copy, exported)
             copy_source = next(item for item in list_sources() if item.uid == copy)
@@ -147,7 +147,7 @@ def main() -> int:
         finally:
             remove_calendar(copy)
 
-        subscription = create_calendar("Luma subscription test (temporary)", kind="subscription",
+        subscription = create_calendar("Suno subscription test (temporary)", kind="subscription",
                                        url="webcal://example.com/holidays.ics")
         try:
             listed = next(item for item in list_sources() if item.uid == subscription)

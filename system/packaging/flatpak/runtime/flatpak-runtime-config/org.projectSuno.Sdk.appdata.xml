@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="runtime">
+  <id>org.projectSuno.Sdk</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <name>Suno SDK</name>
+  <summary>Compilers, headers and tools for building Suno applications</summary>
+  <developer id="org.projectSuno">
+    <name>Project Suno</name>
+  </developer>
+  <description>
+    <p>
+      The Suno SDK is the development runtime matching the Suno Platform. It is built
+      from the same Fedora 44 packages as the Suno operating system, including
+      Suno's GTK 4, libadwaita, the Suno Developer Platform, the Prairie icon
+      theme and Suno's fonts, so an application looks and behaves the same on
+      Suno and on any other distribution with Flatpak.
+    </p>
+  </description>
+  <url type="homepage">https://simplyluma.com/</url>
+  <releases>
+    <release version="44" date="2026-09-15"/>
+  </releases>
+</component>

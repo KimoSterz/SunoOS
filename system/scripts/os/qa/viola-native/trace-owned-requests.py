@@ -8,9 +8,9 @@ import sys
 import threading
 import time
 
-host = Path('/usr/share/viola-browser/luma-host/integrated_window.py')
+host = Path('/usr/share/viola-browser/Suno-host/integrated_window.py')
 assert os.getuid() == 1100
-assert os.environ.get('HOME') == '/home/luma-gate-browser-opens'
+assert os.environ.get('HOME') == '/home/Suno-gate-browser-opens'
 assert '--interactive' in sys.argv and '--start-url' in sys.argv
 sys.path.insert(0, str(host.parent))
 from engine_pipe import EnginePipe

@@ -6,7 +6,7 @@ index 3597ccd..caf2cca 100644
          nautilus_files_view_is_empty (self))
      {
          adw_status_page_set_child (status_page, NULL);
-+        gtk_widget_remove_css_class (self->empty_view_page, "luma-empty-folder");
++        gtk_widget_remove_css_class (self->empty_view_page, "Suno-empty-folder");
  
          if (NAUTILUS_IS_SEARCH_DIRECTORY (self->directory))
          {
@@ -16,7 +16,7 @@ index 3597ccd..caf2cca 100644
          {
 -            adw_status_page_set_icon_name (status_page, "folder-symbolic");
 -            adw_status_page_set_title (status_page, _("Folder is Empty"));
-+            gtk_widget_add_css_class (self->empty_view_page, "luma-empty-folder");
++            gtk_widget_add_css_class (self->empty_view_page, "Suno-empty-folder");
 +            adw_status_page_set_icon_name (status_page, "prairie-folder-empty");
 +            adw_status_page_set_title (status_page, _("This folder is empty"));
              adw_status_page_set_description (status_page, NULL);
@@ -44,7 +44,7 @@ index b3c859e..b7ee387 100644
  
      <!-- Icons -->
 +    <file preprocess="xml-stripblanks">icons/scalable/actions/prairie-folder-empty.svg</file>
-     <file preprocess="xml-stripblanks">icons/scalable/actions/luma-folder.svg</file>
+     <file preprocess="xml-stripblanks">icons/scalable/actions/Suno-folder.svg</file>
      <file preprocess="xml-stripblanks">icons/scalable/actions/arrow-next-symbolic-rtl.svg</file>
      <file preprocess="xml-stripblanks">icons/scalable/actions/arrow-next-symbolic.svg</file>
 diff --git a/src/resources/style.css b/src/resources/style.css
@@ -59,23 +59,23 @@ index 086c392..fd86830 100644
 +/* Prairie's ordinary empty-folder state. Keep the existing AdwStatusPage and
 + * Nautilus empty-directory state machine; only its state-specific presentation
 + * changes. Other empty states retain their upstream treatment. */
-+statuspage.luma-empty-folder > scrolledwindow > viewport > box {
++statuspage.Suno-empty-folder > scrolledwindow > viewport > box {
 +  margin: 0 12px;
 +  padding-bottom: 26px;
 +  border-spacing: 0;
 +}
 +
-+statuspage.luma-empty-folder > scrolledwindow > viewport > box > clamp > box {
++statuspage.Suno-empty-folder > scrolledwindow > viewport > box > clamp > box {
 +  border-spacing: 15px;
 +}
 +
-+statuspage.luma-empty-folder > scrolledwindow > viewport > box > clamp > box > .icon {
++statuspage.Suno-empty-folder > scrolledwindow > viewport > box > clamp > box > .icon {
 +  color: #ccd1d7;
 +  -gtk-icon-size: 82px;
 +  margin-bottom: 0;
 +}
 +
-+statuspage.luma-empty-folder > scrolledwindow > viewport > box > clamp > box > .title {
++statuspage.Suno-empty-folder > scrolledwindow > viewport > box > clamp > box > .title {
 +  color: #a4aab2;
 +  font-size: 14px;
 +  font-weight: 500;

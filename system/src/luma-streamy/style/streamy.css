@@ -1,4 +1,0 @@
-/* Streamy's own content inside LumaUI's tiles. Tokens only. */
-box.streamy-editor { min-width: 300px; }
-box.lumaui-details.raised box.streamy-editor { min-width: 0; }
-/* Canvas panel header: "Live" after the title while an output takes the canvas (until DockTile.set_status). */

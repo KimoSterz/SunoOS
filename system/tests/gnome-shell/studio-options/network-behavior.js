@@ -118,7 +118,7 @@ async function secureProfileTest(operation = toggle) {
     assert(actor._hotspotBusy === false && calls.at(-1).busy === false, 'busy state must clear after success');
 }
 async function lifecycleTest() {
-    const saved = {get_id: () => 'Luma Hotspot', get_setting_wireless: () => ({mode: 'ap'}),
+    const saved = {get_id: () => 'Suno Hotspot', get_setting_wireless: () => ({mode: 'ap'}),
         get_setting_wireless_security: () => ({key_mgmt: 'wpa-psk'}), get_setting_ip4_config: () => ({method: 'shared'})};
     const reused = fixture({saved: [saved]});
     await toggle.call(reused.actor, true);

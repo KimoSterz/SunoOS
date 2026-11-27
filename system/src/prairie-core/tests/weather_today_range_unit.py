@@ -9,7 +9,7 @@ import unittest
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[3]
-sys.path[:0] = [str(ROOT / 'src/prairie-core'), str(ROOT / 'src/luma-platform/appkit')]
+sys.path[:0] = [str(ROOT / 'src/prairie-core'), str(ROOT / 'src/Suno-platform/appkit')]
 
 from prairie_apps import weather_backend  # noqa: E402
 from prairie_apps.weather_backend import keep_today_range, parse_forecast  # noqa: E402

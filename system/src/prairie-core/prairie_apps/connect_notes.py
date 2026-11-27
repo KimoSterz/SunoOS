@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """Notes to a sync host one change at a time, with versions and pictures.
 
-The protocol is plain HTTP and JSON, and nothing in it is particular to the Luma
+The protocol is plain HTTP and JSON, and nothing in it is particular to the Suno
 Hub: any host that answers ``GET <host>/api/hub/sync/capabilities`` with
 ``notes_delta`` can hold a device's notes, so the source of truth can move (to
 a person's own machine, say) without the device changing how it talks.
@@ -706,7 +706,7 @@ def _is_sha(value) -> bool:
 
 
 def _log(message: str) -> None:
-    print(f"luma-connect-sync: {message}", file=sys.stderr)
+    print(f"Suno-connect-sync: {message}", file=sys.stderr)
 
 
 def _usage(reply: dict) -> dict:

@@ -3,10 +3,10 @@
 
 The production-ID incumbent is an inert NotesApplication subclass. It counts
 activation/open requests, never creates a window and never opens a store.
-The child uses the exact sync-lumaui-preview launcher APP_ID override and
+The child uses the exact sync-SunoUI-preview launcher APP_ID override and
 real Notes activation, fixture data, and GTK window. All of its windows close.
 No native compatibility shim is used: passing must prove the preview stack.
-Run ONLY through notes_lumaui_headless.py after capsule recovery.
+Run ONLY through notes_SunoUI_headless.py after capsule recovery.
 """
 import json
 import os
@@ -16,19 +16,19 @@ import sys
 import time
 import unittest
 from unittest import mock
-import luma_appkit.widgets as widgets
+import Suno_appkit.widgets as widgets
 from gi.repository import Gio, GLib
-import notes_lumaui_runtime as base
+import notes_SunoUI_runtime as base
 from prairie_apps import notes
 
-PRODUCTION = 'org.projectluma.Notes'
-PREVIEW = PRODUCTION + '.LumaUIPreview'
+PRODUCTION = 'org.projectSuno.Notes'
+PREVIEW = PRODUCTION + '.SunoUIPreview'
 
 WRONG_HOOK = r"""
 import json
 import prairie_apps.notes as m
 # Deliberately reproduce the mismatched-hook fault on the private bus only.
-m.APPLICATION_ID = m.APP_ID + '.LumaUIPreview'
+m.APPLICATION_ID = m.APP_ID + '.SunoUIPreview'
 app = m.NotesApplication()
 app.register(None)
 print(json.dumps({'application_id': app.get_application_id(),
@@ -94,8 +94,8 @@ class Probe(original):
             self.quit()
         return GLib.SOURCE_REMOVE
 m.NotesApplication = Probe
-# Exact app launcher statement from sync-lumaui-preview.sh:
-m.APP_ID = getattr(m, 'APP_ID', 'org.projectluma.notes') + '.LumaUIPreview'
+# Exact app launcher statement from sync-SunoUI-preview.sh:
+m.APP_ID = getattr(m, 'APP_ID', 'org.projectSuno.notes') + '.SunoUIPreview'
 sys.argv[0] = 'prairie-notes'
 raise SystemExit(m.main())
 """
@@ -116,8 +116,8 @@ class PreviewIdentity(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.env = mock.patch.dict(os.environ, {
-            'LUMA_NOTES_FIXTURE': str(base.ROOT / 'tests/fixtures/notes-v70.json'),
-            'LUMA_NOTES_STYLE_PATH': str(base.ROOT / 'src/prairie-core/style/notes.css'),
+            'SUNO_NOTES_FIXTURE': str(base.ROOT / 'tests/fixtures/notes-v70.json'),
+            'SUNO_NOTES_STYLE_PATH': str(base.ROOT / 'src/prairie-core/style/notes.css'),
         })
         cls.env.start()
         # Keep one inert production owner for the whole private-bus suite.
@@ -138,7 +138,7 @@ class PreviewIdentity(unittest.TestCase):
 
     def test_incorrect_hook_is_detected_by_private_incumbent(self):
         self.assertIn('notes-runtime-', os.environ.get('DBUS_SESSION_BUS_ADDRESS', ''))
-        self.assertTrue(hasattr(widgets.LumaAppearance.SurfacePolicy, 'get_surface'),
+        self.assertTrue(hasattr(widgets.SunoAppearance.SurfacePolicy, 'get_surface'),
                         'Preview requires compatible native kit; no identity-probe shim is allowed')
         incumbent = self.incumbent
         child = None
@@ -176,7 +176,7 @@ class PreviewIdentity(unittest.TestCase):
     def test_launcher_owns_separate_native_id_and_closes_all_windows(self):
         address = os.environ.get('DBUS_SESSION_BUS_ADDRESS', '')
         self.assertIn('notes-runtime-', address, 'Evidence must use the isolated runner bus')
-        self.assertTrue(hasattr(widgets.LumaAppearance.SurfacePolicy, 'get_surface'),
+        self.assertTrue(hasattr(widgets.SunoAppearance.SurfacePolicy, 'get_surface'),
                         'Preview requires compatible native kit; no identity-probe shim is allowed')
         self.assertEqual(notes.APP_ID, PRODUCTION)
         incumbent = self.incumbent
@@ -185,10 +185,10 @@ class PreviewIdentity(unittest.TestCase):
             self.assertEqual(incumbent.get_application_id(), PRODUCTION)
             self.assertTrue(incumbent.register(None))
             self.assertFalse(incumbent.get_is_remote())
-            env = dict(os.environ, LUMA_NOTES_FIXTURE=str(base.ROOT / 'tests/fixtures/notes-v70.json'),
-                       LUMA_NOTES_STYLE_PATH=str(base.ROOT / 'src/prairie-core/style/notes.css'))
-            for key in ('LUMA_NOTES_SELECTED', 'LUMA_NOTES_SELECTION', 'LUMA_NOTES_CONTEXT_FOLDER',
-                        'LUMA_NOTES_QUERY', 'LUMA_NOTES_SIDEBAR', 'LUMA_NOTES_SHARE_QUERY'):
+            env = dict(os.environ, SUNO_NOTES_FIXTURE=str(base.ROOT / 'tests/fixtures/notes-v70.json'),
+                       SUNO_NOTES_STYLE_PATH=str(base.ROOT / 'src/prairie-core/style/notes.css'))
+            for key in ('SUNO_NOTES_SELECTED', 'SUNO_NOTES_SELECTION', 'SUNO_NOTES_CONTEXT_FOLDER',
+                        'SUNO_NOTES_QUERY', 'SUNO_NOTES_SIDEBAR', 'SUNO_NOTES_SHARE_QUERY'):
                 env.pop(key, None)
             child = subprocess.Popen([sys.executable, '-c', CHILD], env=env,
                                      stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
@@ -228,7 +228,7 @@ class PreviewIdentity(unittest.TestCase):
                             scope='private bus and fixture only; no installed instance or live desktop')
             if hasattr(type(self), 'wrong_hook_evidence'):
                 evidence['incorrect_hook_negative_control'] = type(self).wrong_hook_evidence
-            if target := os.environ.get('LUMA_NOTES_IDENTITY_REPORT'):
+            if target := os.environ.get('SUNO_NOTES_IDENTITY_REPORT'):
                 Path(target).write_text(json.dumps(evidence, indent=2) + '\n')
             print('Notes preview identity: ' + json.dumps(evidence), flush=True)
         finally:

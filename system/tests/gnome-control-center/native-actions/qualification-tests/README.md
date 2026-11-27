@@ -1,6 +1,6 @@
 # Native Settings writer qualification
 
-Run `sh run.sh PATCHED_SETTINGS_SOURCE MATCHING_SETTINGS_BUILD` as an ordinary user in a disposable build environment with GCC, pkg-config, Python, GTK4, Json-GLib, PulseAudio utilities, Xvfb and D-Bus. The Settings build must contain matching `shell/test-luma-view` objects and Gvc. No OS/image rebuild is required.
+Run `sh run.sh PATCHED_SETTINGS_SOURCE MATCHING_SETTINGS_BUILD` as an ordinary user in a disposable build environment with GCC, pkg-config, Python, GTK4, Json-GLib, PulseAudio utilities, Xvfb and D-Bus. The Settings build must contain matching `shell/test-Suno-view` objects and Gvc. No OS/image rebuild is required.
 
 These regressions compile current production adapters and the current model write gate. They exercise:
 

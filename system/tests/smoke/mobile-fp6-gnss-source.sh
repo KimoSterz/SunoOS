@@ -25,7 +25,7 @@ bash -n "$acceptor"
 grep -Fq 'COORDINATES_PRINTED=false' "$acceptor"
 grep -Fq 'COORDINATES_PERSISTED=false' "$acceptor"
 grep -Fq -- "--location-disable-gps-raw" "$acceptor"
-grep -Fq 'LUMA_FP6_GNSS_SLEEP_INHIBITED' "$acceptor"
+grep -Fq 'SUNO_FP6_GNSS_SLEEP_INHIBITED' "$acceptor"
 grep -Fq 'PERSISTENT_MUTATIONS=none' "$acceptor"
 if grep -Eq '(fastboot|flash|erase|wipe|reboot|set[_-]active)' "$acceptor"; then
   printf 'error: out-of-scope system mutation found in GNSS acceptor\n' >&2

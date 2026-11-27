@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Architecture contracts; visual conformance is measured by lumaui-conform."""
+"""Architecture contracts; visual conformance is measured by SunoUI-conform."""
 import ast
 import json
 from pathlib import Path
@@ -32,12 +32,12 @@ class PhotosAppKitContractTests(unittest.TestCase):
                 if not declaration.strip():continue
                 name,value=declaration.split(':',1)
                 if name.strip() in ('color','background','border-radius','font-size','font-weight','box-shadow'):
-                    self.assertRegex(value,r'@luma_|var\(--lumaui-',declaration)
-        self.assertNotRegex(css,r'#[0-9a-fA-F]{3,8}\b|rgba?\(|\d+(?:\.\d+)?px|\.lumaui-|@define-color')
+                    self.assertRegex(value,r'@Suno_|var\(--SunoUI-',declaration)
+        self.assertNotRegex(css,r'#[0-9a-fA-F]{3,8}\b|rgba?\(|\d+(?:\.\d+)?px|\.SunoUI-|@define-color')
 
     def test_fixture_and_scenario_are_safe_and_complete(self):
-        scenario=json.loads((ROOT/'tools/lumaui-conform/scenarios/photos.json').read_text())
-        self.assertEqual(scenario['gtk']['env']['LUMA_PHOTOS_FIXTURE'],'{run}/fixtures/photos-v70.json')
+        scenario=json.loads((ROOT/'tools/SunoUI-conform/scenarios/photos.json').read_text())
+        self.assertEqual(scenario['gtk']['env']['SUNO_PHOTOS_FIXTURE'],'{run}/fixtures/photos-v70.json')
         self.assertIn('tests/fixtures/photos-v70',scenario['gtk']['fixtures'])
         required={'library','fav','people','places','launch','walls','deleted','years','months','all','viewer','information','more','edit-light','edit-looks','edit-colour','edit-crop','edit-auto','import','new-album'}
         states={item['name'] for item in scenario['states']}
@@ -58,7 +58,7 @@ class PhotosAppKitContractTests(unittest.TestCase):
         calls={ast.unparse(node.func) for node in ast.walk(methods['do_open']) if isinstance(node,ast.Call)}
         self.assertIn('self.props.active_window.request_open_path',calls)
         self.assertIn('Gio.ApplicationFlags.HANDLES_OPEN',SOURCE.read_text())
-        desktop=(ROOT/'src/prairie-core/data/org.projectluma.Photos.desktop').read_text()
+        desktop=(ROOT/'src/prairie-core/data/org.projectSuno.Photos.desktop').read_text()
         self.assertIn('Exec=prairie-photos %U',desktop)
 
 

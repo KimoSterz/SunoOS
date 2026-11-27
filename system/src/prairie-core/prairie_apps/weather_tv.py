@@ -3,7 +3,7 @@
 
 The window shows this presentation while the shell is in TV posture
 (`AppWindow.tv_posture`); the desktop, tablet and phone pages are untouched.
-It is built from LumaUI's TV parts (TvStage, TvTopBar, TvFocus, TvToast,
+It is built from SunoUI's TV parts (TvStage, TvTopBar, TvFocus, TvToast,
 TvIdle) and the day as the desktop tells it: one sentence, one number and one
 band of sky.
 
@@ -33,23 +33,23 @@ gi.require_version("Gsk", "4.0")
 gi.require_version("Pango", "1.0")
 from gi.repository import Adw, Gdk, GLib, Graphene, Gsk, Gtk, Pango  # noqa: E402
 
-from luma_appkit import icons, lumaui_tokens  # noqa: E402
-from luma_appkit.content_weather import WeatherGlyph  # noqa: E402
-from luma_appkit.lumaui import oklch_rgba, reduced_motion  # noqa: E402
-from luma_appkit.tv_focus import LEFT, RIGHT, TvFocus  # noqa: E402
-from luma_appkit.tv_idle import TvIdle  # noqa: E402
-from luma_appkit.tv_parts import TvButton, TvField, TvTab, TvTopBar  # noqa: E402
-from luma_appkit.tv_stage import TvLift, TvRaster, TvStage, add_tv_style, tv_fade, tv_material  # noqa: E402
-from luma_appkit.tv_toast import TvToast  # noqa: E402
+from Suno_appkit import icons, SunoUI_tokens  # noqa: E402
+from Suno_appkit.content_weather import WeatherGlyph  # noqa: E402
+from Suno_appkit.SunoUI import oklch_rgba, reduced_motion  # noqa: E402
+from Suno_appkit.tv_focus import LEFT, RIGHT, TvFocus  # noqa: E402
+from Suno_appkit.tv_idle import TvIdle  # noqa: E402
+from Suno_appkit.tv_parts import TvButton, TvField, TvTab, TvTopBar  # noqa: E402
+from Suno_appkit.tv_stage import TvLift, TvRaster, TvStage, add_tv_style, tv_fade, tv_material  # noqa: E402
+from Suno_appkit.tv_toast import TvToast  # noqa: E402
 
 from .weather_tv_model import (  # noqa: E402
     LIGHT_DAY, LIGHT_GOLDEN, LIGHT_NIGHT, TvForecast, band_hour, short_time, sky_colours, tv_from_forecast,
 )
 
-TV = lumaui_tokens.TV
+TV = SunoUI_tokens.TV
 SKY_FADE_MS = 1200
 
-# Weather's own TV sheet, in TV units (luma-tv-weather.html, after its density pass).
+# Weather's own TV sheet, in TV units (Suno-tv-weather.html, after its density pass).
 STYLE = """
 .wx-tv-when { font-size: 28tv; font-weight: 650; color: %(ink2)s; margin-bottom: 4tv; }
 .wx-tv-temp { font-size: 200tv; font-weight: 300; letter-spacing: -10tv; line-height: 0.9; }

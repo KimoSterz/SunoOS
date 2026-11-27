@@ -37,7 +37,7 @@ def main():
         p.error('NDK revision must be 28.2.13676358')
     out = a.output.resolve()
     out.mkdir(parents=True, exist_ok=False)
-    patch = Path(__file__).resolve().parents[2] / 'patches/android-hardware-libhardware/0001-luma-software-yuv-buffers.patch'
+    patch = Path(__file__).resolve().parents[2] / 'patches/android-hardware-libhardware/0001-Suno-software-yuv-buffers.patch'
     for name, revision in REVISIONS.items():
         dst = out / name
         dst.mkdir()
@@ -51,7 +51,7 @@ def main():
     cmd = [str(compiler), '-shared', '-fPIC', '-O2', '-std=gnu++17', '-static-libstdc++',
            '-fno-exceptions', '-fno-rtti', '-Wno-c99-designator', '-Wno-deprecated-declarations',
            '-DLOG_TAG="gralloc"', '-Wl,-z,defs', '-Wl,-soname,gralloc.default.so',
-           '-ffile-prefix-map=' + str(out) + '=/luma/gralloc-source']
+           '-ffile-prefix-map=' + str(out) + '=/Suno/gralloc-source']
     for include in ('hardware/include', 'core/libcutils/include', 'core/libsystem/include', 'core/libutils/include', 'logging/liblog/include'):
         cmd += ['-I', str(out / include)]
     cmd += [str(out / 'hardware/modules/gralloc' / f) for f in ('gralloc.cpp', 'mapper.cpp', 'framebuffer.cpp')]

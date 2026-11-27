@@ -5,7 +5,7 @@ from types import SimpleNamespace
 import gi
 gi.require_version('Gtk','4.0')
 from gi.repository import Gtk,GLib
-from luma_appkit import ActionCenter,BarSearch,ToastHost,install_appkit
+from Suno_appkit import ActionCenter,BarSearch,ToastHost,install_appkit
 from native_address_focus import AddressEdit
 from responsive_chrome import ResponsiveChrome
 

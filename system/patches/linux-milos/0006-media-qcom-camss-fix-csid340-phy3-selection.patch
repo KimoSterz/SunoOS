@@ -1,4 +1,4 @@
-From: Project Luma <luma@projectluma.dev>
+From: Project Suno <Suno@projectSuno.dev>
 Subject: [PATCH] media: qcom: camss: fix CSID 3.4.0 PHY3 selection
 
 The TFE CSID665 receiver used by SM7635 encodes the selected CSIPHY in

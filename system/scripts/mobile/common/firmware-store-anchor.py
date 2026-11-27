@@ -5,9 +5,9 @@
 usage: firmware-store-anchor.py DEVICE_DIR OUTPUT
 
 DEVICE_DIR is devices/<vendor>/<codename>. OUTPUT (the initramfs file
-/etc/luma-firmware-manifest.sha256) receives firmware.manifest's SHA-256 and a
-newline, mode 0644. luma_verify_firmware_store (fp6-native-init-functions.sh)
-accepts /var/lib/luma/device-firmware only when its luma-firmware.manifest has
+/etc/Suno-firmware-manifest.sha256) receives firmware.manifest's SHA-256 and a
+newline, mode 0644. Suno_verify_firmware_store (fp6-native-init-functions.sh)
+accepts /var/lib/Suno/device-firmware only when its Suno-firmware.manifest has
 that digest and the store holds exactly the rows it lists.
 
 Refuses unless the manifest matches device.toml [firmware] manifest_sha256 and

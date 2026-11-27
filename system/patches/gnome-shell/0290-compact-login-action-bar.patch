@@ -1,4 +1,4 @@
-From: Luma Developers
+From: Suno Developers
 Subject: [PATCH] Use shared compact clock and authentication action bar
 
 --- a/js/ui/prairieLogin.js
@@ -119,7 +119,7 @@ Subject: [PATCH] Use shared compact clock and authentication action bar
 +            actor.set_style(null);
 +        auth._userWell.show();
 +        auth._message.show();
-+        auth._submitArrow.icon_name = 'lumaui-corner-down-left-symbolic';
++        auth._submitArrow.icon_name = 'SunoUI-corner-down-left-symbolic';
 +    }
 +}
 +

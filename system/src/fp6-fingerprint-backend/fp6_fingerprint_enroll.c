@@ -3,7 +3,7 @@
 #include "enrollment_protocol.h"
 #include "focal_driver_control.h"
 #include "focal_protocol.h"
-#include "luma-fp6-enrollment-abi.h"
+#include "Suno-fp6-enrollment-abi.h"
 #include "../fp6-fingerprint-qsee-bridge/QSEEComAPI.h"
 
 #include <errno.h>
@@ -23,9 +23,9 @@
 #include <time.h>
 #include <unistd.h>
 
-#define FP6_ENROLLMENT_DEVICE "/dev/luma-fp6-fingerprint"
+#define FP6_ENROLLMENT_DEVICE "/dev/Suno-fp6-fingerprint"
 #define FP6_FOCAL_DEVICE "/dev/focaltech_fp"
-#define FP6_CREDENTIAL_DIRECTORY "/var/lib/luma/fingerprint"
+#define FP6_CREDENTIAL_DIRECTORY "/var/lib/Suno/fingerprint"
 #define FP6_ACTIVE_GROUP_PATH "/data/vendor_de/0/fpdata"
 #define FP6_CREDENTIAL_PATH FP6_CREDENTIAL_DIRECTORY "/credential.handle"
 #define FP6_PROTECTED_TEMPLATE_PATH \
@@ -147,7 +147,7 @@ fail:
 	return PAM_CONV_ERR;
 }
 
-static int authenticate_luma_pin(const uint8_t *pin, size_t pin_size)
+static int authenticate_Suno_pin(const uint8_t *pin, size_t pin_size)
 {
 	struct fp6_pam_secret secret = { .data = pin, .size = pin_size };
 	struct pam_conv conversation = {
@@ -157,7 +157,7 @@ static int authenticate_luma_pin(const uint8_t *pin, size_t pin_size)
 	pam_handle_t *handle = NULL;
 	int result;
 
-	result = pam_start("login", "luma", &conversation, &handle);
+	result = pam_start("login", "Suno", &conversation, &handle);
 	if (result == PAM_SUCCESS)
 		result = pam_authenticate(handle, PAM_SILENT);
 	if (handle)
@@ -252,12 +252,12 @@ static int secure_ioctl_exchange(
 	const void *request, size_t request_size, size_t response_capacity,
 	void *response, size_t *response_size, int32_t *secure_status)
 {
-	struct luma_fp6_secure_exchange *exchange;
+	struct Suno_fp6_secure_exchange *exchange;
 	int result = -1;
 
 	if (!transport || transport->secure_fd < 0 ||
-	    request_size > LUMA_FP6_ENROLLMENT_MAX_PAYLOAD ||
-	    response_capacity > LUMA_FP6_ENROLLMENT_MAX_PAYLOAD ||
+	    request_size > SUNO_FP6_ENROLLMENT_MAX_PAYLOAD ||
+	    response_capacity > SUNO_FP6_ENROLLMENT_MAX_PAYLOAD ||
 	    (request_size && !request) || (response_capacity && !response) ||
 	    !response_size || !secure_status) {
 		errno = EINVAL;
@@ -271,14 +271,14 @@ static int secure_ioctl_exchange(
 	exchange = calloc(1, sizeof(*exchange));
 	if (!exchange)
 		return -1;
-	exchange->abi_version = LUMA_FP6_ENROLLMENT_ABI_VERSION;
+	exchange->abi_version = SUNO_FP6_ENROLLMENT_ABI_VERSION;
 	exchange->service = service;
 	exchange->command = command;
 	exchange->request_size = (uint32_t)request_size;
 	exchange->response_capacity = (uint32_t)response_capacity;
 	if (request_size)
 		memcpy(exchange->payload, request, request_size);
-	if (ioctl(transport->secure_fd, LUMA_FP6_ENROLLMENT_IOC_EXCHANGE,
+	if (ioctl(transport->secure_fd, SUNO_FP6_ENROLLMENT_IOC_EXCHANGE,
 		  exchange) < 0) {
 		transport->last_errno = errno;
 		goto out;
@@ -305,7 +305,7 @@ static int gatekeeper_exchange(
 	void *response, size_t response_capacity, size_t *response_size,
 	int32_t *secure_status)
 {
-	return secure_ioctl_exchange(opaque, LUMA_FP6_SERVICE_GATEKEEPER,
+	return secure_ioctl_exchange(opaque, SUNO_FP6_SERVICE_GATEKEEPER,
 				     command, request, request_size,
 				     response_capacity, response,
 				     response_size, secure_status);
@@ -334,7 +334,7 @@ static int focal_exchange(void *opaque, const void *request,
 		return -1;
 	}
 	if (secure_ioctl_exchange(
-		    opaque, LUMA_FP6_SERVICE_FOCAL, header->command,
+		    opaque, SUNO_FP6_SERVICE_FOCAL, header->command,
 		    (const uint8_t *)request + sizeof(*header),
 		    header->payload_length, payload_capacity,
 		    (uint8_t *)response + sizeof(response_header), &payload_size,
@@ -366,7 +366,7 @@ static int read_pin(uint8_t pin[FP6_PIN_CAPACITY], size_t *pin_size)
 		hidden.c_lflag &= (tcflag_t)~ECHO;
 		if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &hidden))
 			return -1;
-		fputs("Luma PIN: ", stderr);
+		fputs("Suno PIN: ", stderr);
 		fflush(stderr);
 	}
 	if (!fgets(buffer, sizeof(buffer), stdin)) {
@@ -426,7 +426,7 @@ static int persist_credential(uint32_t user_id, uint32_t group_id,
 		errno = EINVAL;
 		return -1;
 	}
-	if (verify_private_directory("/var/lib/luma") ||
+	if (verify_private_directory("/var/lib/Suno") ||
 	    verify_private_directory(FP6_CREDENTIAL_DIRECTORY))
 		return -1;
 	memcpy(record.magic, magic, sizeof(magic));
@@ -482,7 +482,7 @@ static int persist_protected_template(uint32_t group_id, uint32_t finger_id,
 		errno = EINVAL;
 		return -1;
 	}
-	if (verify_private_directory("/var/lib/luma") ||
+	if (verify_private_directory("/var/lib/Suno") ||
 	    verify_private_directory(FP6_CREDENTIAL_DIRECTORY))
 		return -1;
 	memcpy(header.magic, magic, sizeof(magic));
@@ -830,8 +830,8 @@ int main(int argc, char **argv)
 		 * The all-zero token field is ABI padding in that mode, not a claimed
 		 * authentication token.  The match-on-chip template remains in the TA.
 		 */
-		if (authenticate_luma_pin(pin, pin_size)) {
-			fputs("Luma PIN authentication failed.\n", stderr);
+		if (authenticate_Suno_pin(pin, pin_size)) {
+			fputs("Suno PIN authentication failed.\n", stderr);
 			goto out;
 		}
 		secure_clear(pin, sizeof(pin));
@@ -856,7 +856,7 @@ int main(int argc, char **argv)
 	/*
 	 * Match gatekeeperd's first-enrollment cold-boot contract.  Android sends
 	 * DELETE_ALL_USERS once after a userdata reset, before it creates any new
-	 * credential.  Luma replaced Android userdata without ever running that
+	 * credential.  Suno replaced Android userdata without ever running that
 	 * lifecycle, so stale secure records can otherwise exhaust the TA's fixed
 	 * per-user table and make a fresh enrollment fail with -30.
 	 */

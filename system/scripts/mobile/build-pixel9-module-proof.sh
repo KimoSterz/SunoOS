@@ -17,7 +17,7 @@ output_dir=${2:?usage: build-pixel9-module-proof.sh SOURCE_ROOT OUTPUT_DIR}
 build_dir=$output_dir/build
 stage_dir=$output_dir/stage
 artifact_dir=$output_dir/artifacts
-jobs=${LUMA_PIXEL9_KERNEL_BUILD_JOBS:-4}
+jobs=${SUNO_PIXEL9_KERNEL_BUILD_JOBS:-4}
 
 die() {
   printf 'error: %s\n' "$*" >&2
@@ -25,9 +25,9 @@ die() {
 }
 
 case "$jobs" in
-  ''|*[!0-9]*) die 'LUMA_PIXEL9_KERNEL_BUILD_JOBS must be a positive integer' ;;
+  ''|*[!0-9]*) die 'SUNO_PIXEL9_KERNEL_BUILD_JOBS must be a positive integer' ;;
 esac
-[ "$jobs" -ge 1 ] || die 'LUMA_PIXEL9_KERNEL_BUILD_JOBS must be at least 1'
+[ "$jobs" -ge 1 ] || die 'SUNO_PIXEL9_KERNEL_BUILD_JOBS must be at least 1'
 [ "$(uname -s)" = Linux ] && [ "$(uname -m)" = aarch64 ] || \
   die 'the Pixel 9 module proof must run off-device on Linux/aarch64'
 
@@ -43,7 +43,7 @@ for tool in awk clang find git install make sha256sum sort tar; do
 done
 
 linux=$source_root/linux-zumapro
-source_manifest=$source_root/luma-source-manifest.env
+source_manifest=$source_root/Suno-source-manifest.env
 [ -d "$linux/.git" ] || die "missing full Linux checkout: $linux"
 [ -f "$source_manifest" ] || die "missing full-source manifest: $source_manifest"
 [ ! -e "$output_dir" ] || die "refusing to replace existing output: $output_dir"
@@ -63,7 +63,7 @@ mkdir -p "$build_dir" "$stage_dir" "$artifact_dir"
 source_date_epoch=$(git -C "$linux" show -s --format=%ct "$PIXEL9_LINUX_COMMIT")
 export SOURCE_DATE_EPOCH="$source_date_epoch"
 export KBUILD_BUILD_TIMESTAMP="@$source_date_epoch"
-export KBUILD_BUILD_USER=luma
+export KBUILD_BUILD_USER=Suno
 export KBUILD_BUILD_HOST=pixel9-builder
 export KBUILD_BUILD_VERSION=1
 
@@ -103,7 +103,7 @@ install -m 0644 \
 
 compiler_line=$(clang --version | sed -n '1p' | tr '\n' ' ')
 {
-  printf 'LUMA_PIXEL9_MODULE_PROOF_VERSION=1\n'
+  printf 'SUNO_PIXEL9_MODULE_PROOF_VERSION=1\n'
   printf 'SCOPE=compile-and-stage-unmodified-upstream-modules\n'
   printf 'LINUX_COMMIT=%s\n' "$PIXEL9_LINUX_COMMIT"
   printf 'DEFCONFIG=%s\n' "$PIXEL9_LINUX_DEFCONFIG"

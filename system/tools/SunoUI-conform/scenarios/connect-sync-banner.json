@@ -1,0 +1,123 @@
+{
+ "app": "connect-sync-banner",
+ "title": "Connect Sync: the standard banners (design-center b118c1d, mockups/connect-sync/banner.html)",
+ "about": "The Shell's standard notification banner showing Valet's restore notification and gnome-shell 0384's recovery-key, storage-full and removed banners, in pixel mode. Scored as the app-perms offer: the banner surface (the phone's lip included), button fills and the badge ring are material (masked; edges judged by geometry), the icon tile is art and stays scored, and the mean leaves out text.",
+ "spec": {
+  "root": "design-center",
+  "url": "mockups/connect-sync/banner.html",
+  "window": "#stage",
+  "ready": "html[data-ready]",
+  "viewport": {
+   "width": 480,
+   "height": 260
+  },
+  "init_script": "if (matchMedia('(prefers-color-scheme: light)').matches && !/[?&]mode=/.test(location.search)) history.replaceState(null, '', location.pathname + (location.search ? location.search + '&' : '?') + 'mode=light');",
+  "phone_url": "mockups/connect-sync/banner.html?posture=phone",
+  "phone_viewport": {
+   "width": 400,
+   "height": 300
+  }
+ },
+ "states": [
+  {
+   "name": "restored",
+   "about": "Valet's finish notification: Your apps are ready, Show",
+   "window": "#stage",
+   "spec": [
+    {
+     "eval": "CS.load().then(() => { document.getElementById('stage').innerHTML = CS.banner('restored'); })",
+     "wait": 600
+    }
+   ]
+  },
+  {
+   "name": "keyjoin",
+   "about": "A device joined with the recovery key: Remove…, It was me",
+   "window": "#stage",
+   "spec": [
+    {
+     "eval": "CS.load().then(() => { document.getElementById('stage').innerHTML = CS.banner('keyjoin'); })",
+     "wait": 600
+    }
+   ]
+  },
+  {
+   "name": "quota",
+   "about": "Storage full (0384)",
+   "window": "#stage",
+   "spec": [
+    {
+     "eval": "CS.load().then(() => { document.getElementById('stage').innerHTML = `<span class=\"bn-i\" style=\"background-image:url(${CS.AP('connect')})\"></span><span class=\"bn-src\">Suno Connect</span><span class=\"bn-when\">now</span><b class=\"bn-sum\">Storage full</b><span class=\"bn-body\">New changes stay on this device until there’s room.</span><span class=\"bn-acts\"><button type=\"button\">Manage storage</button></span>`; })",
+     "wait": 600
+    }
+   ]
+  },
+  {
+   "name": "revoked",
+   "about": "Removed from Sync (0384)",
+   "window": "#stage",
+   "spec": [
+    {
+     "eval": "CS.load().then(() => { document.getElementById('stage').innerHTML = `<span class=\"bn-i\" style=\"background-image:url(${CS.AP('connect')})\"></span><span class=\"bn-src\">Suno Connect</span><span class=\"bn-when\">now</span><b class=\"bn-sum\">Removed from Sync</b><span class=\"bn-body\">This device no longer syncs. Everything on it stays. Sign in to Suno Connect again to rejoin.</span><span class=\"bn-acts\"><button type=\"button\">Sign in again</button></span>`; })",
+     "wait": 600
+    }
+   ]
+  }
+ ],
+ "phone_states": [
+  "restored",
+  "keyjoin",
+  "quota",
+  "revoked"
+ ],
+ "groups": [
+  {
+   "name": "fills",
+   "spec": "#stage, #stage .bn-acts button"
+  },
+  {
+   "name": "content",
+   "spec": "#stage .bn-i, #stage .bn-src, #stage .bn-when, #stage .bn-sum, #stage .bn-body, #stage .bn-acts button"
+  },
+  {
+   "name": "art",
+   "spec": "#stage .bn-i"
+  },
+  {
+   "name": "controls",
+   "spec": "#stage .bn-acts button"
+  },
+  {
+   "name": "badge",
+   "spec": "#stage .bn-i i"
+  },
+  {
+   "name": "surface",
+   "spec": "#stage"
+  }
+ ],
+ "pairs": [],
+ "text_aliases": {},
+ "pixel": {
+  "max_mean": 4.0,
+  "max_over10": 1.0,
+  "glyphs_as_text": true,
+  "mean_without_text": true,
+  "exclude_groups": [],
+  "material": [
+   {
+    "group": "surface",
+    "edge": 0,
+    "keep": "art"
+   },
+   {
+    "group": "controls",
+    "edge": 2
+   },
+   {
+    "group": "badge",
+    "ring": 2
+   }
+  ]
+ }
+}

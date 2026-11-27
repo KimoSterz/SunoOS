@@ -11,7 +11,7 @@
 #
 # usage: build-sp12in-kernel-package.sh --output DIR
 #
-# SP12IN_KERNEL_CACHE (default /srv/dev-storage/projects/luma-os/build/surface-pro12/inputs)
+# SP12IN_KERNEL_CACHE (default /srv/dev-storage/projects/Suno-os/build/surface-pro12/inputs)
 # holds the archives; missing ones are downloaded and checked against the lock.
 # An x86_64 host cross-compiles (aarch64-linux-gnu-); an aarch64 host builds
 # natively. SP12IN_KERNEL_JOBS sets make -j (default 6).
@@ -22,7 +22,7 @@ repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 [ "${1:-}" = --output ] && [ -n "${2:-}" ] || { sed -n 's/^# usage: /usage: /p' "$0" >&2; exit 2; }
 mkdir -p "$2"
 out=$(realpath -e "$2")
-cache=${SP12IN_KERNEL_CACHE:-/srv/dev-storage/projects/luma-os/build/surface-pro12/inputs}
+cache=${SP12IN_KERNEL_CACHE:-/srv/dev-storage/projects/Suno-os/build/surface-pro12/inputs}
 jobs=${SP12IN_KERNEL_JOBS:-6}
 lock=$repo_root/config/kernel/surface-pro12-7.3.json
 spec=$repo_root/packaging/rpm/kernel-surface-pro12.spec
@@ -63,13 +63,13 @@ if not config.exists() or hashlib.sha256(config.read_bytes()).hexdigest() != bas
 shutil.copyfile(config, sources / "fedora-base.config")
 print("sources verified:", ", ".join(sorted(x.name for x in sources.iterdir())))
 PY
-git -C "$repo_root" archive --format=tar.gz --prefix=luma-surface-sources/ HEAD \
+git -C "$repo_root" archive --format=tar.gz --prefix=Suno-surface-sources/ HEAD \
   config/kernel patches/linux-surface-pro12 scripts/kernel packaging/rpm/kernel-surface-pro12.spec \
-  LICENSE.md LICENSES >"$top/SOURCES/luma-surface-sources.tar.gz"
+  LICENSE.md LICENSES >"$top/SOURCES/Suno-surface-sources.tar.gz"
 cp "$spec" "$top/SPECS/"
 
 cross=()
-[ "$(uname -m)" = aarch64 ] || cross=(--define '_luma_cross_compile aarch64-linux-gnu-')
+[ "$(uname -m)" = aarch64 ] || cross=(--define '_Suno_cross_compile aarch64-linux-gnu-')
 export SOURCE_DATE_EPOCH=$(git -C "$repo_root" log -1 --format=%ct)
 rpmbuild -bs --target aarch64 --define "_topdir $top" --define 'dist .fc44' \
   "$top/SPECS/kernel-surface-pro12.spec" >"$out/source-package.log" 2>&1 || { tail -20 "$out/source-package.log"; exit 1; }

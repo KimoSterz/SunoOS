@@ -1,6 +1,6 @@
 {
   "_doc": "v71 places controls: the shared favorite glyph disc and phone ETA readout (mpfavs, mpsrch2, mpphbar).",
-  "lumaui": {
+  "SunoUI": {
     "colors": {
       "light": {
         "place_well_top": "oklch(0.68 0.13 250)",

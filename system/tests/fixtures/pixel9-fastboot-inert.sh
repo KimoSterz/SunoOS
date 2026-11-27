@@ -8,8 +8,8 @@
 set -euo pipefail
 umask 077
 
-log=${LUMA_PIXEL9_INERT_FASTBOOT_LOG:?inert fastboot log path is required}
-expected_sha=${LUMA_PIXEL9_INERT_EXPECTED_SHA256:?expected inert candidate digest is required}
+log=${SUNO_PIXEL9_INERT_FASTBOOT_LOG:?inert fastboot log path is required}
+expected_sha=${SUNO_PIXEL9_INERT_EXPECTED_SHA256:?expected inert candidate digest is required}
 
 case ${1:-} in
   devices)
@@ -36,7 +36,7 @@ case ${1:-} in
     actual_sha=$(sha256sum "$2" | awk '{print $1}')
     [ "$actual_sha" = "$expected_sha" ] || { printf 'inert boot digest differs\n' >&2; exit 65; }
     {
-      printf 'LUMA_PIXEL9_INERT_FASTBOOT_VERSION=1\n'
+      printf 'SUNO_PIXEL9_INERT_FASTBOOT_VERSION=1\n'
       printf 'DEVICE_MODEL=tokay\n'
       printf 'CANDIDATE_BYTES=%s\n' "$(stat -c %s "$2")"
       printf 'CANDIDATE_SHA256=%s\n' "$actual_sha"

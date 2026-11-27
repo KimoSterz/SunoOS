@@ -32,22 +32,22 @@ the same code natively and in the sandbox:
   deadline expires as soon as the machine resumes past that time, and
   TFD_TIMER_CANCEL_ON_SET wakes it if somebody changes the clock.
 
-* **With luma-background, a windowless agent rings them (ADR-033).**
+* **With Suno-background, a windowless agent rings them (ADR-033).**
   `prairie-clock --agent` (clock_agent.py) runs this same service without GTK
-  under the service's limits: it owns `org.projectluma.Clock.Agent`, publishes
+  under the service's limits: it owns `org.projectSuno.Clock.Agent`, publishes
   the next alarm or timer and whether one is ringing, notifies through
   org.freedesktop.Notifications with Snooze and Stop, follows edits to the
   store, and exits when nothing is scheduled. While that agent runs, a Clock
   window or service-mode Clock leaves ringing to it; when something is
-  scheduled and luma-background is present, Clock asks the service for its
+  scheduled and Suno-background is present, Clock asks the service for its
   agent. Without the service, or with background activity turned off, Clock
   rings alarms itself exactly as described above.
 
 * **It wakes a sleeping computer for the next alarm.** Arming a wake-capable
   timer (CLOCK_REALTIME_ALARM, or a systemd timer with WakeSystem=true) needs
   CAP_WAKE_ALARM, which no session process has; the user service manager falls
-  back to an ordinary clock without saying so. luma-background's system helper
-  org.projectluma.BackgroundWake1 arms it for the active session (polkit
+  back to an ordinary clock without saying so. Suno-background's system helper
+  org.projectSuno.BackgroundWake1 arms it for the active session (polkit
   decides; systemd holds the RTC alarm), so Clock asks it to wake the computer
   WAKE_LEAD_SECONDS before the next alarm, snooze or timer, and moves or clears
   that wake-up whenever the plan changes. Without the helper (the sandbox, an
@@ -86,7 +86,7 @@ from .clock_backend import (
     snooze_until, uses_24_hour, valid_uid, volume_ramp,
 )
 
-APP_ID = "org.projectluma.Clock"
+APP_ID = "org.projectSuno.Clock"
 LOG = logging.getLogger("prairie.clock.alarms")
 
 # How late an alarm may still ring. Past this it is reported as missed rather
@@ -123,8 +123,8 @@ LOGIND_MANAGER = "org.freedesktop.login1.Manager"
 SESSION_MANAGER_BUS = "org.gnome.SessionManager"
 SESSION_MANAGER_PATH = "/org/gnome/SessionManager"
 GSM_INHIBIT_SUSPEND, GSM_INHIBIT_IDLE = 4, 8
-WAKE_BUS = "org.projectluma.BackgroundWake1"
-WAKE_PATH = "/org/projectluma/BackgroundWake1"
+WAKE_BUS = "org.projectSuno.BackgroundWake1"
+WAKE_PATH = "/org/projectSuno/BackgroundWake1"
 # The computer is woken this long before an alarm or timer is due, so it has
 # resumed, found its audio device and drawn the lock screen by the time it rings.
 WAKE_LEAD_SECONDS = 60
@@ -500,7 +500,7 @@ class BackgroundPortal:
         self.connection = connection
 
     def request(self, *, autostart: bool, commandline: list[str], reason: str, callback) -> None:
-        token = f"luma_clock_{uuid.uuid4().hex[:16]}"
+        token = f"Suno_clock_{uuid.uuid4().hex[:16]}"
         sender = (self.connection.get_unique_name() or "").lstrip(":").replace(".", "_")
         handle = f"{PORTAL_PATH}/request/{sender}/{token}"
         subscription = 0
@@ -838,8 +838,8 @@ class SessionInhibitor:
 class SystemWake:
     """Wakes a sleeping computer shortly before Clock's next alarm or timer.
 
-    Only the system can arm the RTC; luma-background's helper
-    org.projectluma.BackgroundWake1 does it for the active session, with polkit
+    Only the system can arm the RTC; Suno-background's helper
+    org.projectSuno.BackgroundWake1 does it for the active session, with polkit
     deciding. There is one wake-up, named by Clock's application ID: setting a
     new time replaces it and None clears it. A call is made only when the time
     changes. Without the helper, or when it refuses, alarms ring on resume as
@@ -931,7 +931,7 @@ class AlarmService:
         self.clock = clock
         self.sandboxed = is_sandboxed() if sandboxed is None else sandboxed
         # On the host, logind and the session manager hold sleep and idle off and
-        # luma-background's helper wakes the computer; in the sandbox,
+        # Suno-background's helper wakes the computer; in the sandbox,
         # GtkApplication's inhibit (the Inhibit portal) is all there is.
         self.inhibitor = inhibitor if inhibitor is not None else (None if self.sandboxed else SessionInhibitor())
         self.system_wake = wake if wake is not None else (None if self.sandboxed else SystemWake())
@@ -1205,7 +1205,7 @@ class AlarmService:
         return name_has_owner(connection, f"{APP_ID}.Agent")
 
     def _request_agent(self) -> None:
-        """Something is scheduled: ask luma-background for Clock's agent, once per run."""
+        """Something is scheduled: ask Suno-background for Clock's agent, once per run."""
         if self.agent is not None or self._agent_requested or self.sandboxed:
             return
         connection = self.application.get_dbus_connection()
@@ -1308,7 +1308,7 @@ class AlarmService:
         return self._portal
 
     def _background_managed(self) -> bool:
-        """Whether luma-background runs Clock's agent, so its switch decides, not an autostart entry.
+        """Whether Suno-background runs Clock's agent, so its switch decides, not an autostart entry.
 
         Asked once per run. The answer also becomes what Clock shows about
         working in the background.
@@ -1330,9 +1330,9 @@ class AlarmService:
 
     def _update_background(self, wanted: bool) -> None:
         if self.agent is not None:
-            return  # the agent is started by luma-background, not by an autostart entry
+            return  # the agent is started by Suno-background, not by an autostart entry
         if wanted and not self.sandboxed and self._background_managed():
-            # luma-background starts Clock's agent at login. An autostart entry of
+            # Suno-background starts Clock's agent at login. An autostart entry of
             # Clock's own would be a second start, which the service masks anyway;
             # an entry left from before it was installed is still removed below
             # once nothing is scheduled.

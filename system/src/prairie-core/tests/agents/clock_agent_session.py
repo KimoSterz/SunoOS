@@ -6,7 +6,7 @@
 
 Clock's agent is the Clock process in service mode (see clock_alarms.py). With
 a timer and a one-time alarm on record: `prairie-clock --agent` starts without
-a window, owns org.projectluma.Clock.Agent and publishes the next event, and
+a window, owns org.projectSuno.Clock.Agent and publishes the next event, and
 writes its autostart entry (the portal here has no Background backend, so it
 takes the host fallback); after a logout the next login starts it from that
 entry; the timer notifies with no window; an alarm that falls due during a
@@ -31,10 +31,10 @@ from session import Failure, Session, mib  # noqa: E402
 
 from gi.repository import GLib  # noqa: E402
 
-APP = "org.projectluma.Clock"
-AGENT = "org.projectluma.Clock.Agent"
-# luma-background's system helper; the container grants the test user its polkit action.
-WAKE_HELPER = Path("/usr/libexec/luma-background-wake")
+APP = "org.projectSuno.Clock"
+AGENT = "org.projectSuno.Clock.Agent"
+# Suno-background's system helper; the container grants the test user its polkit action.
+WAKE_HELPER = Path("/usr/libexec/Suno-background-wake")
 
 
 def clock_sleep_holds(session: Session) -> list | None:
@@ -49,7 +49,7 @@ def clock_sleep_holds(session: Session) -> list | None:
 
 def wake_timers(session: Session) -> list[str]:
     listing = session.run("systemctl", "list-units", "--all", "--plain", "--no-legend", "--type=timer",
-                          f"luma-wake-u{os.getuid()}-*", check=False).stdout
+                          f"Suno-wake-u{os.getuid()}-*", check=False).stdout
     return [line.split()[0] for line in listing.splitlines() if line.strip()]
 
 
@@ -70,7 +70,7 @@ def main() -> int:
     session = Session(options.evidence)
     extra: dict = {"managed": session.managed}
     data = Path(os.environ.get("XDG_DATA_HOME") or Path.home() / ".local/share") / "prairie/clock"
-    autostart = Path(os.environ.get("XDG_CONFIG_HOME") or Path.home() / ".config") / "autostart/org.projectluma.Clock.desktop"
+    autostart = Path(os.environ.get("XDG_CONFIG_HOME") or Path.home() / ".config") / "autostart/org.projectSuno.Clock.desktop"
     try:
         session.run("pkill", "-f", "[p]rairie-clock", check=False)
         autostart.unlink(missing_ok=True)
@@ -87,19 +87,19 @@ def main() -> int:
         (data / "scheduler.json").unlink(missing_ok=True)
         session.note(f"timer at {datetime.fromtimestamp(timer_at):%H:%M:%S}, one-time alarm at {ring:%H:%M}")
 
-        unit = "app-org.projectluma.Clock-agent.service" if session.managed else "app-org.projectluma.Clock@autostart.service"
+        unit = "app-org.projectSuno.Clock-agent.service" if session.managed else "app-org.projectSuno.Clock@autostart.service"
         if not session.managed:
-            # Without luma-background: Clock itself (service mode, no window) holds
+            # Without Suno-background: Clock itself (service mode, no window) holds
             # the alarms and writes its autostart entry, as after using Clock once.
             session.login()
-            session.run("systemd-run", "--user", "--collect", "--unit=luma-test-clock-first", "prairie-clock",
+            session.run("systemd-run", "--user", "--collect", "--unit=Suno-test-clock-first", "prairie-clock",
                         "--gapplication-service")
             session.wait(lambda: session.has_owner(APP), "Clock in service mode", 40)
             entry = session.wait(lambda: autostart.is_file() and autostart.read_text(), "autostart entry", 30)
             exec_line = next(line.split("=", 1)[1] for line in entry.splitlines() if line.startswith("Exec="))
-            session.step("without luma-background Clock writes an autostart entry for its service mode",
+            session.step("without Suno-background Clock writes an autostart entry for its service mode",
                          exec_line.endswith("--gapplication-service"), exec=exec_line)
-            session.systemctl("stop", "luma-test-clock-first", check=False)
+            session.systemctl("stop", "Suno-test-clock-first", check=False)
             session.wait(lambda: not session.has_owner(APP), "Clock stopped", 20)
             session.login()
             session.wait(lambda: session.has_owner(APP), "Clock after login", 40)
@@ -109,7 +109,7 @@ def main() -> int:
                          len(pids) == 1 and pids[0] in session.unit_pids(unit), pids=pids, unit=unit)
             owner_name = APP
         else:
-            # With luma-background: the service starts the windowless agent from Clock's declaration.
+            # With Suno-background: the service starts the windowless agent from Clock's declaration.
             session.login()
             session.wait(lambda: session.has_owner(AGENT), "Clock agent after login", 40)
             time.sleep(3)
@@ -134,7 +134,7 @@ def main() -> int:
         if session.managed:
             # A Clock started now (a window's service mode) leaves the alarms to the
             # agent: it holds nothing and exits on its own.
-            session.run("systemd-run", "--user", "--quiet", "--collect", "--unit=luma-test-clock-service",
+            session.run("systemd-run", "--user", "--quiet", "--collect", "--unit=Suno-test-clock-service",
                         "prairie-clock", "--gapplication-service")
             session.wait(lambda: len(clock_pids(session)) == 2, "a second Clock started", 20)
         session.wait(lambda: clock_pids(session) == [pid], "only the agent left", 40)
@@ -164,7 +164,7 @@ def main() -> int:
         # 4b. With the timer done the alarm is next: the computer is to wake a minute before it.
         if WAKE_HELPER.exists():
             wake_at = int(ring.timestamp()) - 60
-            expected = f"luma-wake-u{os.getuid()}-{APP}-{wake_at}.timer"
+            expected = f"Suno-wake-u{os.getuid()}-{APP}-{wake_at}.timer"
             armed = session.wait(lambda: expected in wake_timers(session), "wake-up armed for the alarm", 30)
             waking = session.run("systemctl", "show", "-P", "WakeSystem", expected, check=False).stdout.strip()
             session.step("the computer is set to wake a minute before the alarm (WakeSystem timer)",
@@ -172,7 +172,7 @@ def main() -> int:
                          calendar=session.run("systemctl", "show", "-P", "TimersCalendar", expected,
                                               check=False).stdout.strip())
         else:
-            session.note("luma-background-wake is not installed: waking the computer is not exercised")
+            session.note("Suno-background-wake is not installed: waking the computer is not exercised")
 
         # 5. The alarm falls due during a simulated suspend and rings on resume.
         wait = ring.timestamp() - time.time()
@@ -208,7 +208,7 @@ def main() -> int:
             session.wait(lambda: any(r["event"] == "close" and r["id"] == alarm["id"]
                                      for r in session.notification_records()), "alarm withdrawn", 20)
         else:
-            session.call(APP, "/org/projectluma/Clock", "org.freedesktop.Application", "ActivateAction",
+            session.call(APP, "/org/projectSuno/Clock", "org.freedesktop.Application", "ActivateAction",
                          GLib.Variant("(sava{sv})", ("clock-stop", [GLib.Variant("s", alarm_uid)], {})))
             session.wait(lambda: any(r["event"] == "gtk-remove" and r["id"] == f"alarm-{alarm_uid}"
                                      for r in session.notification_records()), "alarm withdrawn", 20)
@@ -228,7 +228,7 @@ def main() -> int:
             session.failed(failure)
     finally:
         session.restore_logind()
-        session.systemctl("thaw", "app-org.projectluma.Clock@autostart.service", "app-org.projectluma.Clock-agent.service",
+        session.systemctl("thaw", "app-org.projectSuno.Clock@autostart.service", "app-org.projectSuno.Clock-agent.service",
                           check=False)
         session.run("pkill", "-f", "[p]rairie-clock", check=False)
     summary = session.summary("clock", extra)

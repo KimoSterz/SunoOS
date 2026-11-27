@@ -1,5 +1,5 @@
 From 104d84e3b867bcc6d945b5fd07fa622f3cb373ee Mon Sep 17 00:00:00 2001
-From: Project Luma <maintainers@projectluma.org>
+From: Project Suno <maintainers@projectSuno.org>
 Date: Mon, 2 Nov 2026 23:56:51 -0600
 Subject: [PATCH] v3d: copy only the blit region of a raster source, with the
  TFU

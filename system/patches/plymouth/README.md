@@ -1,6 +1,6 @@
 # Plymouth downstream
 
-Project Luma carries four narrow patches, and a defaults change, over Fedora 44's exact
+Project Suno carries four narrow patches, and a defaults change, over Fedora 44's exact
 `plymouth-24.004.60-24.fc44` source package.
 
 - `0001-prairie-light-details.patch` changes the native details plugin's
@@ -26,7 +26,7 @@ Project Luma carries four narrow patches, and a defaults change, over Fedora 44'
   up to 3 s. Without it, when a GPU driver replaces SimpleDRM before its
   connector reports a mode, Plymouth has no display until DeviceTimeout and
   the screen stays frozen on the firmware's image.
-- The spec patch sets `Theme=luma-loading` in `plymouthd.defaults`: Luma's
+- The spec patch sets `Theme=Suno-loading` in `plymouthd.defaults`: Suno's
   splash is selected in `/usr`, and `/etc/plymouth/plymouthd.conf` stays the
   administrator's file (ADR-045). `%check` verifies the defaults and the
   plugin APIs.
@@ -34,4 +34,4 @@ Project Luma carries four narrow patches, and a defaults change, over Fedora 44'
 - Upstream: <https://gitlab.freedesktop.org/plymouth/plymouth>
 - Fedora package: `plymouth-24.004.60-24.fc44`
 - License: GPL-2.0-or-later
-- Luma patch: GPL-2.0-or-later
+- Suno patch: GPL-2.0-or-later

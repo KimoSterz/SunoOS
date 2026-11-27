@@ -1,0 +1,17 @@
+/* SPDX-License-Identifier: Apache-2.0 */
+
+@import url("Suno-appkit.css");
+@import url("Suno-appkit-dark-tokens.css");
+
+
+/* Menus are v70 .crpop (--sh-float), stated once in SunoUI-toolkit.css; only
+ * dialog popovers keep this deeper shadow in dark. */
+.Suno-dialog-popover > contents {
+  box-shadow:
+    inset 0 0 0 1px @Suno_menu_border,
+    0 4px 12px alpha(@Suno_island_shadow, .34),
+    0 24px 56px -18px alpha(@Suno_island_shadow, .82);
+}
+
+/* SunoUI v71 (K-NAV): the title island's title is 650 in dark (600 on light's frame, Suno-appkit-base.css). */
+label.SunoUI-title-island-label { font-weight: var(--SunoUI-title-island-title-weight); }

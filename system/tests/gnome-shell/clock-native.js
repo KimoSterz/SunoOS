@@ -28,7 +28,7 @@ function measure(label) {
 }
 export async function run() {
     const iface = new Gio.Settings({schema_id: 'org.gnome.desktop.interface'});
-    const appearance = new Gio.Settings({schema_id: 'org.project_luma.shell-state'});
+    const appearance = new Gio.Settings({schema_id: 'org.projectSuno.shell-state'});
     iface.set_boolean('enable-animations', false);
     iface.set_string('clock-format', '12h');
     appearance.set_int('status-time-size', 21);
@@ -69,7 +69,7 @@ export async function run() {
                 print(`CLOCK_NATIVE ${JSON.stringify({treatment, scale, rtl, measurements,
                     frameY, frameHeight})}`);
                 if (!rtl) {
-                    const directory = Gio.File.new_for_path('/var/tmp/luma-clock-20261006/captures');
+                    const directory = Gio.File.new_for_path('/var/tmp/Suno-clock-20261006/captures');
                     if (!directory.query_exists(null))
                         directory.make_directory_with_parents(null);
                     const stream = directory.get_child(`clock-${treatment}-${scale}.png`)

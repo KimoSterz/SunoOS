@@ -1,6 +1,6 @@
 {
   "_doc": "K: general type roles for app surfaces v70 draws at sizes the core scale lacks (Round 2 type requests: Depot, Disks, Maps, Memos, Messages, Settings, Clock, Tasks; Settings 12: v70 .cfnowt b, .cft b and small, .cfgrp h6, .bt.sm). Weights vary within a role with apply_type(..., weight=).",
-  "lumaui": {
+  "SunoUI": {
     "type_scale": {
       "editorial": {"size": 38, "weight": 750, "line_height": 1.1, "tracking_em": -0.03},
       "app_title": {"size": 34, "weight": 750, "line_height": 1.12, "tracking_em": -0.03},

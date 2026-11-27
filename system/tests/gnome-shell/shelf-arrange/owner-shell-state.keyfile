@@ -1,6 +1,6 @@
-[org/project-luma/shell-state]
+[org/project-suno/shell-state]
 home-apps=@as []
-input-method='luma-latin'
+input-method='Suno-latin'
 mobile-launcher-columns=4
 reduce-transparency=false
 restore-app-state=true

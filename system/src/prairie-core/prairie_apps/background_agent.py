@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
-"""Background agents for Luma's own apps (ADR-033).
+"""Background agents for Suno's own apps (ADR-033).
 
 An agent is a small process with no windows that keeps one app working while
 its window is closed: Messages receiving, Phone listening for calls, Calendar
@@ -10,23 +10,23 @@ The contract is the published one (docs/developer/kit/background-agents.md,
 interface version 1):
 
 * **Declared, and started by the system.** Each app installs
-  ``/usr/share/luma/background/<app id>.toml`` (``[application]`` and
-  ``[background]``). luma-background generates ``app-<app id>-agent.service``
-  under a luma-background slice with the category's limits, starts it at login
+  ``/usr/share/Suno/background/<app id>.toml`` (``[application]`` and
+  ``[background]``). Suno-background generates ``app-<app id>-agent.service``
+  under a Suno-background slice with the category's limits, starts it at login
   when the app is allowed, and wakes it: ``login``, ``network``, ``resume``,
   ``schedule`` and ``request``. Apps ship no units of their own.
 * **One per session.** The agent owns its D-Bus name (``<app id>.Agent``) with
   ``DO_NOT_QUEUE``; a second start exits at once.
-* **Published values.** ``/org/projectluma/BackgroundAgent1`` carries
-  ``org.projectluma.BackgroundAgent1``: ``AppId``, ``Values`` (announced with
+* **Published values.** ``/org/projectSuno/BackgroundAgent1`` carries
+  ``org.projectSuno.BackgroundAgent1``: ``AppId``, ``Values`` (announced with
   PropertiesChanged) and ``Wake(reason, details)``, accepted only from
-  luma-background. Live extensions read ``Values`` with ``from_agent``.
+  Suno-background. Live extensions read ``Values`` with ``from_agent``.
 * **Before the service is installed** an autostart entry starts each agent at
   login with ``--agent --autostart``; that start steps aside when the service
   is present. Unmanaged, the agent watches the network and resume itself. A
   Flatpak asks the Background portal.
 
-``luma_appkit.background`` implements the bus side. It is used whenever it is
+``Suno_appkit.background`` implements the bus side. It is used whenever it is
 installed, loaded on its own so the kit's GTK widgets never enter an agent;
 without it the same contract is implemented here.
 """
@@ -50,14 +50,14 @@ import gi
 gi.require_version("Gio", "2.0")
 from gi.repository import Gio, GLib  # noqa: E402
 
-LOG = logging.getLogger("luma.background")
+LOG = logging.getLogger("Suno.background")
 
-SERVICE_BUS = "org.projectluma.Background1"
-SERVICE_PATH = "/org/projectluma/Background1"
-SERVICE_INTERFACE = "org.projectluma.Background1"
-AGENT_INTERFACE = "org.projectluma.BackgroundAgent1"
-AGENT_PATH = "/org/projectluma/BackgroundAgent1"
-DECLARATION_DIRECTORY = Path("/usr/share/luma/background")
+SERVICE_BUS = "org.projectSuno.Background1"
+SERVICE_PATH = "/org/projectSuno/Background1"
+SERVICE_INTERFACE = "org.projectSuno.Background1"
+AGENT_INTERFACE = "org.projectSuno.BackgroundAgent1"
+AGENT_PATH = "/org/projectSuno/BackgroundAgent1"
+DECLARATION_DIRECTORY = Path("/usr/share/Suno/background")
 
 CATEGORIES = ("communication", "calendar", "alarms", "mail", "sync", "widget-data", "other")
 WAKE_EVENTS = ("login", "network", "resume", "schedule")
@@ -89,9 +89,9 @@ class AgentInfo:
     wake: tuple[str, ...] = ("login",)
     publishes: tuple[str, ...] = ("notifications",)
     purpose: str = ""
-    #: Other signed Luma apps that may read `shared_values` of this agent; the
+    #: Other signed Suno apps that may read `shared_values` of this agent; the
     #: app itself and the person's own programs read every value, nothing else
-    #: reads any (luma_appkit.agent_readers).
+    #: reads any (Suno_appkit.agent_readers).
     bound_readers: tuple[str, ...] = ()
     shared_values: tuple[str, ...] = ()
 
@@ -109,7 +109,7 @@ class AgentInfo:
 
     @property
     def unit(self) -> str:
-        """The unit luma-background generates for this agent."""
+        """The unit Suno-background generates for this agent."""
         return f"app-{self.app_id}-agent.service"
 
 
@@ -118,8 +118,8 @@ def is_sandboxed() -> bool:
 
 
 def is_managed() -> bool:
-    """Started by luma-background in the unit it generated."""
-    return os.environ.get("LUMA_BACKGROUND_MANAGED") == "1"
+    """Started by Suno-background in the unit it generated."""
+    return os.environ.get("SUNO_BACKGROUND_MANAGED") == "1"
 
 
 def resident_bytes() -> int:
@@ -211,12 +211,12 @@ def name_activatable(connection: Gio.DBusConnection, name: str) -> bool:
 
 
 def service_present(connection: Gio.DBusConnection) -> bool:
-    """Whether luma-background is installed in this session."""
+    """Whether Suno-background is installed in this session."""
     return name_has_owner(connection, SERVICE_BUS) or name_activatable(connection, SERVICE_BUS)
 
 
 def agent_allowed(connection: Gio.DBusConnection, app_id: str) -> bool | None:
-    """The person's decision for an app's agent, from luma-background; None without the service."""
+    """The person's decision for an app's agent, from Suno-background; None without the service."""
     if not service_present(connection):
         return None
     try:
@@ -230,7 +230,7 @@ def agent_allowed(connection: Gio.DBusConnection, app_id: str) -> bool | None:
 
 def ensure_agent(app_id: str, agent_name: str, *, reason: str, connection: Gio.DBusConnection | None = None,
                  timeout: float = 5.0, foreground: bool = False) -> bool:
-    """True once the app's agent is running, asking luma-background to start it if needed.
+    """True once the app's agent is running, asking Suno-background to start it if needed.
 
     Apps call this when their window opens, to use the agent rather than do
     its work twice. The request is the service's RequestBackground, which
@@ -293,14 +293,14 @@ def release_foreground(connection: Gio.DBusConnection) -> None:
 
 
 def load_kit():
-    """luma_appkit.background, loaded by its file so luma_appkit's GTK widgets stay out; None without it."""
-    if os.environ.get("LUMA_AGENT_KIT") == "0":
+    """Suno_appkit.background, loaded by its file so Suno_appkit's GTK widgets stay out; None without it."""
+    if os.environ.get("SUNO_AGENT_KIT") == "0":
         return None
-    cached = sys.modules.get("luma_appkit_background_standalone")
+    cached = sys.modules.get("Suno_appkit_background_standalone")
     if cached is not None:
         return cached
     try:
-        spec = importlib.util.find_spec("luma_appkit")
+        spec = importlib.util.find_spec("Suno_appkit")
     except (ImportError, ValueError):
         return None
     locations = list(spec.submodule_search_locations or []) if spec is not None else []
@@ -309,13 +309,13 @@ def load_kit():
     if path is None:
         return None
     try:
-        module_spec = importlib.util.spec_from_file_location("luma_appkit_background_standalone", path)
+        module_spec = importlib.util.spec_from_file_location("Suno_appkit_background_standalone", path)
         module = importlib.util.module_from_spec(module_spec)
         sys.modules[module_spec.name] = module
         module_spec.loader.exec_module(module)
     except Exception as error:  # a kit this code cannot use is the same as no kit
-        sys.modules.pop("luma_appkit_background_standalone", None)
-        LOG.info("luma_appkit.background not usable (%s); using the built-in agent", type(error).__name__)
+        sys.modules.pop("Suno_appkit_background_standalone", None)
+        LOG.info("Suno_appkit.background not usable (%s); using the built-in agent", type(error).__name__)
         return None
     if getattr(module, "AGENT_PATH", "") != AGENT_PATH or not hasattr(module, "Agent"):
         return None
@@ -328,8 +328,8 @@ def launch_app(app_id: str, argv: list[str]) -> bool:
     A process spawned directly would stay in the agent's cgroup: the window
     would count against the agent's memory limit (and be killed by it) and
     would stop with the agent. On systemd it runs in a new
-    ``app-luma-<app id>-<number>.scope`` under app.slice, named the way the
-    shell names launched apps, so luma-background and the Semantic Broker
+    ``app-Suno-<app id>-<number>.scope`` under app.slice, named the way the
+    shell names launched apps, so Suno-background and the Semantic Broker
     identify the window as the app.
     """
     import shutil
@@ -337,7 +337,7 @@ def launch_app(app_id: str, argv: list[str]) -> bool:
     if not is_sandboxed() and shutil.which("systemd-run") and os.environ.get("XDG_RUNTIME_DIR"):
         number = int.from_bytes(os.urandom(4), "big")
         command = ["systemd-run", "--user", "--scope", "--collect", "--quiet", "--slice=app.slice",
-                   f"--unit=app-luma-{app_id}-{number}.scope", "--", *argv]
+                   f"--unit=app-Suno-{app_id}-{number}.scope", "--", *argv]
     try:
         Gio.Subprocess.new(command, Gio.SubprocessFlags.NONE)
         return True
@@ -610,12 +610,12 @@ class AgentPublisher:
     """An agent's presence on the bus, without owning the process or its main loop.
 
     Owns ``<app id>.Agent`` (DO_NOT_QUEUE), exports
-    ``org.projectluma.BackgroundAgent1`` and turns wakes into ``wake(reason)``.
+    ``org.projectSuno.BackgroundAgent1`` and turns wakes into ``wake(reason)``.
     ``Agent`` runs a whole agent process around one; an app whose alarms live
     in its own process (Clock) uses one directly.
 
-    With luma_appkit.background installed, the kit's Agent does the bus side.
-    Managed by luma-background, wakes come from the service. Unmanaged (the
+    With Suno_appkit.background installed, the kit's Agent does the bus side.
+    Managed by Suno-background, wakes come from the service. Unmanaged (the
     autostart fallback, a developer's terminal) the network returning and
     resume are watched here instead. Unlock is always watched here: the
     service has no such wake.
@@ -669,7 +669,7 @@ class AgentPublisher:
             self._bridge.start()
             return
         node = Gio.DBusNodeInfo.new_for_xml(AGENT_XML)
-        from luma_appkit.agent_readers import Readers
+        from Suno_appkit.agent_readers import Readers
         self._readers = Readers(connection, self.info.app_id, bound=self.info.bound_readers,
                                 shared=self.info.shared_values)
         self._registration = connection.register_object(AGENT_PATH, node.interfaces[0], self._method,
@@ -760,7 +760,7 @@ class AgentPublisher:
     def _flush(self) -> bool:
         self._flush_source = 0
         if self.connection is not None and self._registration and self._readers is not None:
-            # Unicast, each reader seeing what it may (luma_appkit.agent_readers).
+            # Unicast, each reader seeing what it may (Suno_appkit.agent_readers).
             self._readers.emit(AGENT_PATH, AGENT_INTERFACE, dict(self._values))
         return GLib.SOURCE_REMOVE
 
@@ -784,7 +784,7 @@ class AgentPublisher:
         except GLib.Error:
             owner = ""
         if not owner or owner != sender:
-            invocation.return_dbus_error(f"{AGENT_INTERFACE}.Error.NotAuthorized", "wakes are delivered by luma-background")
+            invocation.return_dbus_error(f"{AGENT_INTERFACE}.Error.NotAuthorized", "wakes are delivered by Suno-background")
             return
         reason, _details = parameters.unpack()
         if reason not in WAKE_REASONS:
@@ -815,7 +815,7 @@ class AgentPublisher:
             None, "org.gnome.ScreenSaver", "ActiveChanged", None, None, Gio.DBusSignalFlags.NONE,
             lambda *args: None if args[5].unpack()[0] else self.wake("unlock"))))
         if self.managed:
-            return  # luma-background wakes the agent for the network and resume
+            return  # Suno-background wakes the agent for the network and resume
         self._network = Gio.NetworkMonitor.get_default()
         self._network_available = self._network.get_network_available()
         self._network_handler = self._network.connect("network-changed", self._network_changed)
@@ -839,7 +839,7 @@ class AgentPublisher:
 
 
 def _bridge_class(kit):
-    """A luma_appkit.background Agent that hands its hooks to an AgentPublisher."""
+    """A Suno_appkit.background Agent that hands its hooks to an AgentPublisher."""
 
     class Bridge(kit.Agent):
         def __init__(self, publisher: AgentPublisher, *, connection: Gio.DBusConnection) -> None:
@@ -887,9 +887,9 @@ class Agent(AgentPublisher):
             LOG.error("No session bus for %s: %s", self.info.agent_id, error.message)
             return 1
         if "--autostart" in arguments[1:] and not self.managed and service_present(self.connection):
-            # The session's autostart is only the fallback: luma-background starts
+            # The session's autostart is only the fallback: Suno-background starts
             # allowed agents at login itself, under their limits.
-            LOG.info("%s: luma-background is installed and starts this agent", self.info.agent_id)
+            LOG.info("%s: Suno-background is installed and starts this agent", self.info.agent_id)
             return 0
         self.own(self.connection)
         def terminate() -> bool:
@@ -924,7 +924,7 @@ class Agent(AgentPublisher):
 
 
 def configure_logging() -> None:
-    level = logging.DEBUG if os.environ.get("LUMA_AGENT_DEBUG") else logging.INFO
+    level = logging.DEBUG if os.environ.get("SUNO_AGENT_DEBUG") else logging.INFO
     logging.basicConfig(level=level, format="%(name)s: %(message)s")
 
 
@@ -935,7 +935,7 @@ class BackgroundPortalRequest:
         self.connection = connection
 
     def request(self, commandline: list[str], reason: str, callback: Callable[[bool, bool], None]) -> None:
-        token = f"luma_agent_{uuid.uuid4().hex[:16]}"
+        token = f"Suno_agent_{uuid.uuid4().hex[:16]}"
         sender = (self.connection.get_unique_name() or "").lstrip(":").replace(".", "_")
         handle = f"{PORTAL_PATH}/request/{sender}/{token}"
         holder = [0]

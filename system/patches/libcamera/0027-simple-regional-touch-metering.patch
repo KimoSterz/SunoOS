@@ -1,4 +1,4 @@
-From: Project Luma <project-luma@local>
+From: Project Suno <project-suno@local>
 Subject: [PATCH] simple: add regional touch focus and exposure metering
 
 The Simple software ISP only exposes a global histogram and a fixed centre

@@ -4,8 +4,8 @@ import json
 import time
 from .clock_backend import valid_uid, SOUNDS
 
-BUS = 'org.projectluma.ClockHost1'
-OBJECT = '/org/projectluma/ClockHost1'
+BUS = 'org.projectSuno.ClockHost1'
+OBJECT = '/org/projectSuno/ClockHost1'
 MAX_BYTES = 128 * 1024
 
 def validate_plan(text, *, now=None):

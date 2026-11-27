@@ -49,7 +49,7 @@ else:
         window.present()
 
     app = (Adw.Application if toolkit == "adw" else Gtk.Application)(
-        application_id=f"org.projectluma.WindowScreencast.{toolkit}",
+        application_id=f"org.projectSuno.WindowScreencast.{toolkit}",
         flags=Gio.ApplicationFlags.NON_UNIQUE)
     app.connect("activate", activate)
     app.run([])

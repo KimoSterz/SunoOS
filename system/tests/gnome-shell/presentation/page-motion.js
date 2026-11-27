@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import assert from 'node:assert/strict';
-import {pageProgress, visiblePageRange} from '../../../src/luma-shell-presentation/layout.js';
+import {pageProgress, visiblePageRange} from '../../../src/Suno-shell-presentation/layout.js';
 for (const width of [360, 420, 1280]) for (const rtl of [false, true]) {
     for (const progress of [0, .2, .75, 1, 1.6, 3]) {
         const x = (rtl ? progress - 3 : -progress) * width;

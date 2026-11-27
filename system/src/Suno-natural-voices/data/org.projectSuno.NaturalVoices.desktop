@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Natural Voices
+Comment=Local natural English reading voice
+Exec=org.projectSuno.NaturalVoices
+Icon=org.projectSuno.Leaf
+Categories=Utility;Accessibility;
+StartupNotify=true

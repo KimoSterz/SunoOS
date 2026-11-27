@@ -2,22 +2,22 @@
 # Install a locally entered FP6 IMEI 2 for IMS registration without logging it.
 set -euo pipefail
 
-input=/run/user/1000/luma-fp6-imei2
+input=/run/user/1000/Suno-fp6-imei2
 config=/etc/imsd.env
 backup=/var/lib/imsd/imsd.env.pre-device-identity
 
 fail() {
-  printf 'event=luma_fp6_ims_identity state=stopped reason=%s identifiers_logged=0\n' "$1" >&2
+  printf 'event=Suno_fp6_ims_identity state=stopped reason=%s identifiers_logged=0\n' "$1" >&2
   exit 1
 }
 
 [[ $(id -u) == 0 ]] || fail not_root
 [[ $(tr -d '\0' </sys/firmware/devicetree/base/model 2>/dev/null) == *Fairphone* ]] || fail identity
-[[ $(uname -r) == 7.1.2-luma-fp-ims1 ]] || fail kernel
+[[ $(uname -r) == 7.1.2-Suno-fp-ims1 ]] || fail kernel
 grep -Eq 'androidboot[.]slot_suffix=_b|androidboot[.]slot=b' /proc/cmdline || fail slot
 [[ -f $input && ! -L $input ]] || fail input_missing
 [[ $(stat -c %u:%a "$input") == 1000:600 ]] || fail input_permissions
-service_state=$(systemctl is-active luma-fp6-imsd.service || true)
+service_state=$(systemctl is-active Suno-fp6-imsd.service || true)
 [[ $service_state == active || $service_state == inactive ]] || fail ims_service_state
 if [[ $service_state == active ]] && \
     gdbus call --system --dest net.catcrafts.IMS1 \
@@ -49,7 +49,7 @@ def valid_imei(text):
     return total % 10 == 0
 
 if not valid_imei(value):
-    print("event=luma_fp6_ims_identity state=stopped reason=input_validation identifiers_logged=0", file=sys.stderr)
+    print("event=Suno_fp6_ims_identity state=stopped reason=input_validation identifiers_logged=0", file=sys.stderr)
     raise SystemExit(1)
 
 with open(config, encoding="utf-8") as handle:
@@ -75,7 +75,7 @@ finally:
 os.unlink(source)
 PY
 
-systemctl restart luma-fp6-imsd.service
+systemctl restart Suno-fp6-imsd.service
 
 registered=false
 for _ in $(seq 1 120); do
@@ -89,7 +89,7 @@ for _ in $(seq 1 120); do
 done
 [[ $registered == true ]] || fail registration_timeout
 
-invocation=$(systemctl show luma-fp6-imsd.service -p InvocationID --value)
+invocation=$(systemctl show Suno-fp6-imsd.service -p InvocationID --value)
 [[ -n $invocation ]] || fail service_identity
 if journalctl _SYSTEMD_INVOCATION_ID="$invocation" --no-pager -o cat | \
     grep -q 'using machine-derived UUID'; then
@@ -101,5 +101,5 @@ if journalctl _SYSTEMD_INVOCATION_ID="$invocation" --no-pager -o cat | \
   fail fault_window
 fi
 
-find /tmp -maxdepth 1 -name luma-fp6-imei-entry.py -delete
-printf 'event=luma_fp6_ims_identity state=accepted registered=true identifiers_logged=0\n'
+find /tmp -maxdepth 1 -name Suno-fp6-imei-entry.py -delete
+printf 'event=Suno_fp6_ims_identity state=accepted registered=true identifiers_logged=0\n'

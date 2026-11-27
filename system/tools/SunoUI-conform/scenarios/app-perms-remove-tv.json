@@ -1,0 +1,54 @@
+{
+ "app": "app-perms-remove-tv",
+ "title": "App permissions: the Remove sheet on a TV",
+ "about": "Settings 0110's Remove sheet against design-center 7adf17f mockups/app-perms/settings.html?page=remove&posture=tv (x1.5, remote focus on Cancel). Pixel mode: crops of the VM (2x) of the sheet Settings shows when Remove… is clicked on Kiln's page (SUNO_SETTINGS_FIXTURE=tests/fixtures/settings-app-perms.json: two documents in Kiln's data). The sheet's own scrim and shadow are outside #stage. Glyphs at SunoUI's 1.6 stroke; the reference at 2x.",
+ "spec": {
+  "root": "design-center",
+  "url": "mockups/app-perms/settings.html?page=remove&posture=tv",
+  "window": "#stage",
+  "ready": "html[data-ready]",
+  "viewport": {
+   "width": 1000,
+   "height": 900
+  },
+  "init_script": "if (matchMedia('(prefers-color-scheme: light)').matches && !/[?&]mode=/.test(location.search)) history.replaceState(null, '', location.pathname + (location.search ? location.search + '&' : '?') + 'mode=light');",
+  "scale": 2
+ },
+ "states": [
+  {
+   "name": "remove",
+   "about": "Kiln, two documents in its data",
+   "window": "#stage",
+   "spec": [
+    {
+     "eval": "(() => { document.querySelectorAll('#stage svg.i').forEach(s => s.setAttribute('stroke-width', '1.6')); })()",
+     "wait": 100
+    }
+   ]
+  }
+ ],
+ "groups": [
+  {
+   "name": "fills",
+   "spec": "#stage .ap-docs, #stage .ap-ck i, #stage .bt"
+  },
+  {
+   "name": "content",
+   "spec": "#stage h2, #stage > p, #stage .ap-docs, #stage .ap-ck, #stage .ap-rma .bt"
+  },
+  {
+   "name": "controls",
+   "spec": "#stage .bt, #stage .ap-ck i"
+  }
+ ],
+ "pairs": [],
+ "text_aliases": {},
+ "pixel": {
+  "max_mean": 4.0,
+  "max_over10": 1.0,
+  "fills": "fills",
+  "max_fill_over10": 0.005,
+  "glyphs_as_text": true,
+  "mean_without_text": true
+ }
+}

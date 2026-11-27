@@ -16,7 +16,7 @@ from pathlib import Path
 
 
 def load_analyzer(path: Path):
-    spec = importlib.util.spec_from_file_location("luma_qti_profile", path)
+    spec = importlib.util.spec_from_file_location("Suno_qti_profile", path)
     if spec is None or spec.loader is None:
         raise RuntimeError(f"cannot load analyzer: {path}")
     module = importlib.util.module_from_spec(spec)

@@ -1,6 +1,6 @@
 # Preserve updater behavior while converging architecture/device builds
 
-Owner: luma-dev-2, ARM desktop integration worktree.
+Owner: Suno-dev-2, ARM desktop integration worktree.
 Status: existing phone source behaviors preserved; combined new package build pending.
 
 The private handoff revision76d780848 already selects updater release22. A common build must advance beyond22 and retain its existing behavior. Selected files from that exact revision preserve actionable Phosh notifications, activation of Depot at Updates over D-Bus, the native FP6 trial-boot health backend, and earlier boot/network update checks. This is a selective updater-component convergence; it does not import device kernels or the private repository wholesale. Existing public initial-channel policy remains in the shared engine.

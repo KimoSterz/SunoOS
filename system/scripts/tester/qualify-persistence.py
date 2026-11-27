@@ -7,20 +7,20 @@ import os
 from pathlib import Path
 import subprocess
 import sys
-from luma_tester.core import Session
+from Suno_tester.core import Session
 
 p = argparse.ArgumentParser(description=__doc__)
 p.add_argument('--state', type=Path, required=True)
 p.add_argument('--target', choices=('mobile', 'desktop'), default='mobile')
 a = p.parse_args()
 out = Path(os.environ['DEV_ARTIFACT_DIR'])
-manifest = Path(os.environ['LUMA_TESTER_CATALOG']) / (a.target + '.json')
+manifest = Path(os.environ['SUNO_TESTER_CATALOG']) / (a.target + '.json')
 session = Session(manifest, a.state)
 assert session.disk.is_file(), 'This check requires a previously qualified workspace.'
 key = session.key.read_bytes()
 host_pin = (session.directory / 'known_hosts').read_bytes()
 with (out / 'launcher.log').open('w') as log:
-    child = subprocess.Popen([sys.executable, '-m', 'luma_tester', '--state', str(a.state),
+    child = subprocess.Popen([sys.executable, '-m', 'Suno_tester', '--state', str(a.state),
         'start', str(manifest), '--embedded', '--memory', '3072', '--cpus', '2'], stdout=log, stderr=log)
     try:
         session.wait_graphical(120)

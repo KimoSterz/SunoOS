@@ -1,0 +1,82 @@
+# SPDX-License-Identifier: Apache-2.0
+#
+# Suno desktop operating system image (ADR-030 section 3).
+#
+# The declared recipe for every Suno x86_64 desktop release: the official
+# Fedora Silverblue 44 bootable container, pinned by digest, plus Suno's exact
+# package set and system policy. The result is exported into Suno's signed
+# OSTree repository by scripts/os/export-ostree.sh; devices never pull this
+# container image directly.
+#
+# Build it with scripts/os/build-image.sh, which supplies:
+#   --build-context source=<source checkout>      (this repository)
+#   --build-context packages=<rpm-md repository>  (the verified Suno pins)
+# and the build arguments below. Nothing from the build contexts is copied into
+# the image except the files the scripts install explicitly.
+
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
+
+ARG SUNO_TARGET_ARCHITECTURE=x86_64
+ARG SUNO_OS_PROFILE=full
+ARG SUNO_OS_HARDWARE_TARGET=
+ARG SUNO_BUILD_ID
+ARG SUNO_OS_VERSION
+ARG SUNO_OS_CHANNEL
+ARG SUNO_NIGHTLY_DATE
+ARG SUNO_BUILD_DATE
+ARG SUNO_SOURCE_REVISION
+ARG SUNO_SOURCE_DIRTY=false
+ARG SUNO_SOURCE_SNAPSHOT_SHA256
+ARG SUNO_RELEASE_CHECKS_SHA256
+ARG SUNO_APP_BASELINE_SHA256
+
+# 1. Packages: Suno's exact NEVRA set replaces and extends the Fedora base, the
+#    Fedora additions and application roles are resolved, and the packages
+#    Suno does not ship are removed.
+RUN --mount=type=bind,from=source,target=/run/Suno/source \
+    --mount=type=bind,from=packages,target=/run/Suno/packages \
+    --mount=type=tmpfs,target=/tmp \
+    SUNO_TARGET_ARCHITECTURE="${SUNO_TARGET_ARCHITECTURE}" \
+    SUNO_OS_PROFILE="${SUNO_OS_PROFILE}" \
+    SUNO_OS_HARDWARE_TARGET="${SUNO_OS_HARDWARE_TARGET}" \
+    /usr/bin/bash /run/Suno/source/image/Suno-desktop/scripts/install-packages.sh
+
+# 2. System policy: desktop defaults, update and trust policy, health checks,
+#    boot configuration.
+RUN --mount=type=bind,from=source,target=/run/Suno/source \
+    --mount=type=bind,from=app-baseline,target=/run/Suno/app-baseline \
+    --mount=type=tmpfs,target=/tmp \
+    SUNO_TARGET_ARCHITECTURE="${SUNO_TARGET_ARCHITECTURE}" \
+    SUNO_OS_PROFILE="${SUNO_OS_PROFILE}" \
+    SUNO_APP_BASELINE_SHA256="${SUNO_APP_BASELINE_SHA256}" \
+    /usr/bin/bash /run/Suno/source/image/Suno-desktop/scripts/configure-system.sh
+
+# 3. Identity and boot artifacts: os-release naming this release, the initramfs
+#    that carries the Suno boot theme, and a clean /var.
+RUN --mount=type=bind,from=source,target=/run/Suno/source \
+    --mount=type=tmpfs,target=/tmp \
+    SUNO_BUILD_ID="${SUNO_BUILD_ID}" \
+    SUNO_OS_VERSION="${SUNO_OS_VERSION}" \
+    SUNO_OS_CHANNEL="${SUNO_OS_CHANNEL}" \
+    SUNO_NIGHTLY_DATE="${SUNO_NIGHTLY_DATE}" \
+    SUNO_BUILD_DATE="${SUNO_BUILD_DATE}" \
+    /usr/bin/bash /run/Suno/source/image/Suno-desktop/scripts/finalize-image.sh
+
+RUN bootc container lint
+
+LABEL org.opencontainers.image.title="Suno" \
+      org.opencontainers.image.vendor="Project Suno" \
+      org.opencontainers.image.url="https://simplyluma.com" \
+      org.opencontainers.image.version="${SUNO_OS_VERSION}" \
+      org.opencontainers.image.revision="${SUNO_SOURCE_REVISION}" \
+      org.opencontainers.image.created="${SUNO_BUILD_DATE}" \
+      org.projectSuno.source-dirty="${SUNO_SOURCE_DIRTY}" \
+      org.projectSuno.source-snapshot-sha256="${SUNO_SOURCE_SNAPSHOT_SHA256}" \
+      org.projectSuno.release-checks-sha256="${SUNO_RELEASE_CHECKS_SHA256}" \
+      org.projectSuno.build-id="${SUNO_BUILD_ID}" \
+      org.projectSuno.channel="${SUNO_OS_CHANNEL}" \
+      org.projectSuno.desktop-profile="${SUNO_OS_PROFILE}" \
+      org.projectSuno.hardware-target="${SUNO_OS_HARDWARE_TARGET}" \
+      containers.bootc="1" \
+      ostree.bootable="true"

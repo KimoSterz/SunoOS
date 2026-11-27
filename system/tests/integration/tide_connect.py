@@ -18,8 +18,8 @@ import types
 import unittest
 from unittest.mock import patch
 
-from luma_tide.credentials import LEGACY_SCHEMA_NAME, SCHEMA_NAME, SecretServiceStore
-from luma_tide.model import LibraryStore, SourceState
+from Suno_tide.credentials import LEGACY_SCHEMA_NAME, SCHEMA_NAME, SecretServiceStore
+from Suno_tide.model import LibraryStore, SourceState
 from prairie_apps import connect_tide as tide
 from prairie_apps import connect_sync
 
@@ -104,9 +104,9 @@ class Integration(unittest.TestCase):
         self.environments = {}
         for name in ('phone', 'tablet'):
             home = self.root / name
-            code = str(home) + os.pathsep + str(Path(__file__).resolve().parents[2] / 'src/luma-tide')
+            code = str(home) + os.pathsep + str(Path(__file__).resolve().parents[2] / 'src/Suno-tide')
             self.environments[name] = {'HOME': str(home), 'XDG_DATA_HOME': str(home / 'data'),
-                'LUMA_TIDE_LIBRARY': str(home / 'data/luma-tide/library.db'), 'LUMA_TIDE_PYTHONPATH': code}
+                'SUNO_TIDE_LIBRARY': str(home / 'data/Suno-tide/library.db'), 'SUNO_TIDE_PYTHONPATH': code}
             self.states[name] = {}
             self.vaults[code] = Vault()
         self.real_run = subprocess.run
@@ -117,7 +117,7 @@ class Integration(unittest.TestCase):
     def run_process(self, command, **kwargs):
         sandbox = command[0] == 'flatpak'
         if sandbox:
-            self.assertEqual(command[:4], ['flatpak', 'run', '--command=python3', 'org.projectluma.Tide'])
+            self.assertEqual(command[:4], ['flatpak', 'run', '--command=python3', 'org.projectSuno.Tide'])
             self.assertNotIn('--filesystem=host', command)
             self.assertTrue(json.loads(kwargs['input'])['sandbox'])
         if command[-1] != tide._KEYRING_SCRIPT:
@@ -152,10 +152,10 @@ class Integration(unittest.TestCase):
         return self.environments[name]
 
     def database(self, name):
-        return Path(self.env(name)['LUMA_TIDE_LIBRARY'])
+        return Path(self.env(name)['SUNO_TIDE_LIBRARY'])
 
     def vault(self, name):
-        return self.vaults[self.env(name)['LUMA_TIDE_PYTHONPATH']]
+        return self.vaults[self.env(name)['SUNO_TIDE_PYTHONPATH']]
 
     def sync(self, name, remote_changed=True):
         return tide.sync_tide(address='https://hub.test', token=name, http=self.hub,
@@ -208,16 +208,16 @@ class Integration(unittest.TestCase):
     def test_flatpak_receiver_uses_sandbox_model_and_legacy_credential_api(self):
         source = self.seed(); self.sync('phone')
         env = self.env('tablet')
-        native = Path(env['XDG_DATA_HOME']) / 'luma-tide/library.db'
+        native = Path(env['XDG_DATA_HOME']) / 'Suno-tide/library.db'
         with LibraryStore(native) as store:
             store.add_source('Local only', 'local-folder', self.root / 'music', local=True)
-        sandbox_home = Path(env['HOME']) / '.var/app/org.projectluma.Tide/data'
+        sandbox_home = Path(env['HOME']) / '.var/app/org.projectSuno.Tide/data'
         sandbox_home.mkdir(parents=True)
-        env['LUMA_TIDE_LIBRARY'] = str(sandbox_home / 'luma-tide/library.db')
+        env['SUNO_TIDE_LIBRARY'] = str(sandbox_home / 'Suno-tide/library.db')
         self.sandbox_device = 'tablet'
         from prairie_apps.app_installs import FLATPAK
         installation = types.SimpleNamespace(kind=FLATPAK, data_home=sandbox_home)
-        selected_env = {k: v for k, v in env.items() if not k.startswith('LUMA_TIDE_')}
+        selected_env = {k: v for k, v in env.items() if not k.startswith('SUNO_TIDE_')}
         with patch('prairie_apps.app_installs.resolve', return_value=installation):
             tide.sync_tide(address='https://hub.test', token='tablet', http=self.hub,
                 state=self.states['tablet'], scope='https://hub.test|tablet',
@@ -269,11 +269,11 @@ class Integration(unittest.TestCase):
 
     def test_native_library_wins_over_newer_retained_preview(self):
         self.seed()
-        env = {k: v for k, v in self.env('phone').items() if not k.startswith('LUMA_TIDE_')}
-        preview = Path(env['XDG_DATA_HOME']) / 'luma-dev/preview'
-        (preview / 'src/luma_tide').mkdir(parents=True)
-        (preview / 'src/luma_tide/model.py').touch()
-        with LibraryStore(preview / 'data/luma-tide/library.db'):
+        env = {k: v for k, v in self.env('phone').items() if not k.startswith('SUNO_TIDE_')}
+        preview = Path(env['XDG_DATA_HOME']) / 'Suno-dev/preview'
+        (preview / 'src/Suno_tide').mkdir(parents=True)
+        (preview / 'src/Suno_tide/model.py').touch()
+        with LibraryStore(preview / 'data/Suno-tide/library.db'):
             pass
         self.assertEqual(tide.library(env), (self.database('phone'), ''))
 

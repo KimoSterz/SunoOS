@@ -1,13 +1,13 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Project Luma <engineering@projectluma.org>
+From: Project Suno <engineering@projectSuno.org>
 Date: Sat, 21 Nov 2026 13:01:29 -0500
 Subject: [PATCH] wayland: Tell who a client is
 
 meta_wayland_client_get_identity() looks a client up once, from what the
 kernel says about the connecting process: sandboxed (a Flatpak's
-.flatpak-info and its application ID, a Snap AppArmor label, the Luma
-capsule SELinux domain luma_application.process read with SO_PEERSEC, a
-Luma closure application's app-luma-*.scope), the Shell's own (a client
+.flatpak-info and its application ID, a Snap AppArmor label, the Suno
+capsule SELinux domain Suno_application.process read with SO_PEERSEC, a
+Suno closure application's app-Suno-*.scope), the Shell's own (a client
 Mutter started, or Mutter itself), or a host client, named by the
 desktop-file ID of its app-*.scope or else its executable. A process that
 cannot be inspected counts as sandboxed. The process start time comes with
@@ -43,7 +43,7 @@ index 0000000..c112997
 +++ b/src/wayland/meta-wayland-client-sandbox.c
 @@ -0,0 +1,336 @@
 +/*
-+ * Copyright (C) 2026 Project Luma
++ * Copyright (C) 2026 Project Suno
 + *
 + * This program is free software; you can redistribute it and/or
 + * modify it under the terms of the GNU General Public License as
@@ -139,7 +139,7 @@ index 0000000..c112997
 +}
 +
 +static gboolean
-+peer_is_luma_capsule (struct wl_client *client)
++peer_is_Suno_capsule (struct wl_client *client)
 +{
 +  char label[256] = { 0 };
 +  socklen_t len = sizeof (label) - 1;
@@ -151,7 +151,7 @@ index 0000000..c112997
 +  label[MIN (len, sizeof (label) - 1)] = '\0';
 +
 +  /* user:role:type:level; the dedicated capsule domain. */
-+  return strstr (label, ":luma_application.process:") != NULL;
++  return strstr (label, ":Suno_application.process:") != NULL;
 +}
 +
 +/* The leaf of the unified cgroup hierarchy ("0::/.../NAME.scope"). */
@@ -300,18 +300,18 @@ index 0000000..c112997
 +      return;
 +    }
 +
-+  if (peer_is_luma_capsule (client))
++  if (peer_is_Suno_capsule (client))
 +    {
 +      identity->sandboxed = TRUE;
-+      identity->engine = "luma-capsule";
++      identity->engine = "Suno-capsule";
 +      return;
 +    }
 +
 +  leaf = read_cgroup_leaf (pid);
-+  if (leaf && g_str_has_prefix (leaf, "app-luma-"))
++  if (leaf && g_str_has_prefix (leaf, "app-Suno-"))
 +    {
 +      identity->sandboxed = TRUE;
-+      identity->engine = "luma";
++      identity->engine = "Suno";
 +      return;
 +    }
 +
@@ -385,7 +385,7 @@ index 0000000..b4a0b7c
 +++ b/src/wayland/meta-wayland-client-sandbox.h
 @@ -0,0 +1,58 @@
 +/*
-+ * Copyright (C) 2026 Project Luma
++ * Copyright (C) 2026 Project Suno
 + *
 + * This program is free software; you can redistribute it and/or
 + * modify it under the terms of the GNU General Public License as
@@ -413,9 +413,9 @@ index 0000000..b4a0b7c
 + * Sandboxed:
 + * - Flatpak: /proc/PID/root/.flatpak-info, [Application] name;
 + * - Snap: an AppArmor label "snap.NAME.APP";
-+ * - Luma capsules: the SELinux domain luma_application.process of the peer
++ * - Suno capsules: the SELinux domain Suno_application.process of the peer
 + *   (SO_PEERSEC);
-+ * - Luma closure applications: a systemd scope app-luma-*.scope.
++ * - Suno closure applications: a systemd scope app-Suno-*.scope.
 + * A client whose process cannot be inspected counts as sandboxed. Capsules
 + * and closure applications have no application ID yet: their identity is
 + * the SELinux category pair and scope the application model allocates
@@ -433,7 +433,7 @@ index 0000000..b4a0b7c
 +{
 +  gboolean sandboxed;
 +  gboolean is_shell;
-+  const char *engine;   /* "flatpak", "snap", "luma-capsule", "luma" or NULL */
++  const char *engine;   /* "flatpak", "snap", "Suno-capsule", "Suno" or NULL */
 +  char *app_id;         /* NULL when nothing says */
 +  int64_t start_time_us; /* process start, CLOCK_BOOTTIME; 0 if unknown */
 +} MetaWaylandClientIdentity;

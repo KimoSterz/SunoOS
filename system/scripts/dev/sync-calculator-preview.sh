@@ -27,7 +27,7 @@ preview_root="$repo_root/build/dev/calculator-preview"
 source_root="$preview_root/sources/gnome-calculator"
 build_root="$preview_root/builds/gnome-calculator"
 stage_root="$preview_root/builds/stage"
-guest_prefix=/var/home/luma/.local/share/project-luma/calculator-preview/runtime
+guest_prefix=/var/home/Suno/.local/share/project-suno/calculator-preview/runtime
 mkdir -p "$preview_root"
 sync_root=$(mktemp -d "$preview_root/sync.XXXXXX")
 
@@ -59,11 +59,11 @@ printf '%s  %s\n' "$GNOME_CALCULATOR_SRPM_SHA256" "$srpm" |
 mv "$sync_root/gnome-calculator-50.0" "$sync_root/gnome-calculator"
 (
   cd "$sync_root/gnome-calculator"
-  # This temporary source sits beneath the Project Luma Git worktree. Keep Git
+  # This temporary source sits beneath the Project Suno Git worktree. Keep Git
   # from discovering that parent repository or `git apply` will resolve paths
   # against the repository root instead of this extracted upstream tree.
   GIT_CEILING_DIRECTORIES="$preview_root" \
-    git apply "$repo_root/patches/gnome-calculator/0001-luma-calculator-aesthetic-v1.patch"
+    git apply "$repo_root/patches/gnome-calculator/0001-Suno-calculator-aesthetic-v1.patch"
   GIT_CEILING_DIRECTORIES="$preview_root" \
     git apply "$repo_root/patches/gnome-calculator/0002-prairie-basic-product.patch"
   GIT_CEILING_DIRECTORIES="$preview_root" \
@@ -73,7 +73,7 @@ mv "$sync_root/gnome-calculator-50.0" "$sync_root/gnome-calculator"
   GIT_CEILING_DIRECTORIES="$preview_root" \
     git apply "$repo_root/patches/gnome-calculator/0005-prairie-readout-input-boundary.patch"
   GIT_CEILING_DIRECTORIES="$preview_root" \
-    git apply "$repo_root/patches/gnome-calculator/0006-luma-appkit-convergence.patch"
+    git apply "$repo_root/patches/gnome-calculator/0006-Suno-appkit-convergence.patch"
 )
 
 # Preserve Meson's dependency graph. Fresh SRPM extraction changes every mtime,
@@ -87,7 +87,7 @@ cmp "$sync_root/gnome-calculator/src/ui/math-window.blp" \
 grep -Fq "Prairie's product surface is Basic-only" \
   "$source_root/src/math-buttons.vala"
 grep -Fq "default-width: 320" "$source_root/src/ui/math-window.blp"
-grep -Fq '"luma-identity-button"' "$source_root/src/ui/math-window.blp"
+grep -Fq '"Suno-identity-button"' "$source_root/src/ui/math-window.blp"
 grep -Fq 'decoration-layout: ":minimize,maximize,close"' \
   "$source_root/src/ui/math-window.blp"
 grep -Fq "padding: 18px 16px 6px" "$source_root/src/ui/style.css"
@@ -98,7 +98,7 @@ grep -Fq "focusable: true" "$source_root/src/ui/math-display.blp"
 grep -Fq "vexpand: true" "$source_root/src/ui/math-display.blp"
 grep -Fq 'result_label.label = equation.is_empty ? "0" : equation.display' \
   "$source_root/src/math-display.vala"
-grep -Fq "Shared Luma Application Kit composition" \
+grep -Fq "Shared Suno Application Kit composition" \
   "$source_root/src/ui/style.css"
 install -m 0644 "$sync_root/srpm/gnome-calculator.spec" \
   "$preview_root/gnome-calculator.spec"
@@ -120,7 +120,7 @@ fi
 
 # Blueprint batch compilation is exposed to Ninja as a directory output. Track
 # the actual source content so an edited .blp is embedded on this same build.
-blueprint_stamp=builds/gnome-calculator/.luma-blueprints.sha256
+blueprint_stamp=builds/gnome-calculator/.Suno-blueprints.sha256
 blueprint_checksum=$(
   find sources/gnome-calculator/src/ui -type f -name "*.blp" -print0 |
     sort -z |

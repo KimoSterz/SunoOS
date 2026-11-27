@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Tide (SunoUI preview)
+Comment=Tide rebuilt on SunoUI
+Exec=@PREVIEW_PREFIX@/bin/run
+Icon=org.projectSuno.Tide
+Terminal=false
+Categories=AudioVideo;Audio;Player;
+StartupNotify=true
+StartupWMClass=org.projectSuno.Tide.SunoUIPreview
+DBusActivatable=false

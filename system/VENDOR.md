@@ -31,6 +31,16 @@ w `simframe/`.
   `simplyluma/linux`)
 - `tests/`, `tools/`, `tasks/`, `changes/` — testy, narzędzia, dziennik zmian
 
+## Rebranding (Luma -> Suno)
+
+Drugi krok vendoringu: pełny rebrand marki narzędziem `tools/suno_rebrand.py` —
+nazwy plików/katalogów (luma-platform -> Suno-platform), identyfikatory
+(org.projectluma.* -> org.projectSuno.*, jednostki systemd, klasa CSS `lumaui` ->
+`SunoUI`), stringi UI i dokumentacja. Chronione (nietknięte): domeny i URL-e
+upstream (simplyluma.com, gitlab.com/simplyluma/luma, dl.simplyluma.com/media/... —
+m.in. screenshoty metadanych Depot), pliki binarne (zmieniane tylko nazwy),
+`VENDOR.md`. Weryfikacja: 0 tokenów `luma` poza ochroną; drugi przebieg = 0 zmian.
+
 ## Zasady pracy
 
 - Nie miksujemy pojęć: kopiowanie upstream → `system/` jest jawnym aktem

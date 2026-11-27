@@ -43,13 +43,13 @@ cache_identity=$(
     printf 'srpm=%s\n' "$WINE_SRPM_SHA256"
     printf 'integration_nevra=%s\n' "$WINE_RELAY_EXPLORER_NEVRA"
     sha256sum \
-      "$repo_root/patches/wine/0000-luma-fedora-spec.patch" \
-      "$repo_root/patches/wine/0001-luma-relay-native-notifications.patch"
+      "$repo_root/patches/wine/0000-Suno-fedora-spec.patch" \
+      "$repo_root/patches/wine/0001-Suno-relay-native-notifications.patch"
   } | sha256sum | awk '{ print $1 }'
 )
 cache_identity_file="$output_dir/BUILD-INPUT-SHA256"
 integration_output="$output_dir/RPMS/x86_64/$WINE_RELAY_EXPLORER_NEVRA.rpm"
-source_output="$output_dir/SRPMS/wine-11.0-${WINE_LUMA_RELEASE}.fc44.src.rpm"
+source_output="$output_dir/SRPMS/wine-11.0-${WINE_SUNO_RELEASE}.fc44.src.rpm"
 
 verify_integration_payload() {
   integration_rpm=$1
@@ -59,17 +59,17 @@ verify_integration_payload() {
     set -e
     cd "$verify_dir"
     rpm2cpio "$integration_rpm" | cpio -idm --quiet
-    test -x usr/libexec/luma-relay/wine/x86_64-windows/explorer.exe
+    test -x usr/libexec/Suno-relay/wine/x86_64-windows/explorer.exe
     # PE DLLs are data payloads to the Linux filesystem and Fedora correctly
     # ships them without Unix execute bits.
-    test -f usr/lib64/wine-wow64/wine/x86_64-windows/luma_relay.dll
-    test -f usr/lib64/wine-wow64/wine/i386-windows/luma_relay.dll
-    test -x usr/lib64/wine-wow64/wine/x86_64-unix/luma_relay.so
-    strings usr/libexec/luma-relay/wine/x86_64-windows/explorer.exe >explorer.strings
-    grep -Fxq LUMA_RELAY_NOTIFY_SOCKET explorer.strings
-    grep -Fxq LUMA_RELAY_NOTIFICATIONS explorer.strings
-    strings usr/lib64/wine-wow64/wine/x86_64-unix/luma_relay.so >relay-unix.strings
-    grep -Fxq LUMA_RELAY_NOTIFY_SOCKET relay-unix.strings
+    test -f usr/lib64/wine-wow64/wine/x86_64-windows/Suno_relay.dll
+    test -f usr/lib64/wine-wow64/wine/i386-windows/Suno_relay.dll
+    test -x usr/lib64/wine-wow64/wine/x86_64-unix/Suno_relay.so
+    strings usr/libexec/Suno-relay/wine/x86_64-windows/explorer.exe >explorer.strings
+    grep -Fxq SUNO_RELAY_NOTIFY_SOCKET explorer.strings
+    grep -Fxq SUNO_RELAY_NOTIFICATIONS explorer.strings
+    strings usr/lib64/wine-wow64/wine/x86_64-unix/Suno_relay.so >relay-unix.strings
+    grep -Fxq SUNO_RELAY_NOTIFY_SOCKET relay-unix.strings
   ) || verify_status=$?
   rm -rf -- "$verify_dir"
   return "$verify_status"
@@ -83,7 +83,7 @@ if [ -f "$integration_output" ] && [ -f "$source_output" ] && \
     printf 'Relay Wine integration (verified cache): %s\n' "$output_dir"
     exit 0
   fi
-  if [ "${LUMA_ADMIT_EXISTING_WINE_BUILD:-0}" = 1 ] && \
+  if [ "${SUNO_ADMIT_EXISTING_WINE_BUILD:-0}" = 1 ] && \
     [ -z "$recorded_identity" ]; then
     verify_integration_payload "$integration_output"
     printf '%s\n' "$cache_identity" >"$cache_identity_file"
@@ -97,8 +97,8 @@ fi
 # assertion, admit that exact retained work directory without recompilation.
 # The path is constrained to this package's work tree and both RPM identities
 # and the complete integration payload are checked again before promotion.
-if [ -n "${LUMA_ADMIT_COMPLETED_WINE_RPMBUILD:-}" ]; then
-  completed_rpmbuild=$(realpath "$LUMA_ADMIT_COMPLETED_WINE_RPMBUILD")
+if [ -n "${SUNO_ADMIT_COMPLETED_WINE_RPMBUILD:-}" ]; then
+  completed_rpmbuild=$(realpath "$SUNO_ADMIT_COMPLETED_WINE_RPMBUILD")
   case "$completed_rpmbuild" in
     "$output_dir"/work.*/rpmbuild) ;;
     *)
@@ -107,7 +107,7 @@ if [ -n "${LUMA_ADMIT_COMPLETED_WINE_RPMBUILD:-}" ]; then
       ;;
   esac
   completed_integration="$completed_rpmbuild/RPMS/x86_64/$WINE_RELAY_EXPLORER_NEVRA.rpm"
-  completed_source="$completed_rpmbuild/SRPMS/wine-11.0-${WINE_LUMA_RELEASE}.fc44.src.rpm"
+  completed_source="$completed_rpmbuild/SRPMS/wine-11.0-${WINE_SUNO_RELEASE}.fc44.src.rpm"
   test -f "$completed_integration" && test -f "$completed_source" || {
     printf 'error: completed Wine rpmbuild is missing its expected outputs\n' >&2
     exit 1
@@ -118,7 +118,7 @@ if [ -n "${LUMA_ADMIT_COMPLETED_WINE_RPMBUILD:-}" ]; then
     exit 1
   }
   if [ "$(rpm -qp --qf '%{NEVRA}' "$completed_source")" != \
-      "wine-11.0-${WINE_LUMA_RELEASE}.fc44.x86_64" ] || \
+      "wine-11.0-${WINE_SUNO_RELEASE}.fc44.x86_64" ] || \
     [ "$(rpm -qp --qf '%{SOURCEPACKAGE}' "$completed_source")" != 1 ]; then
     printf 'error: completed Wine source RPM has the wrong package identity\n' >&2
     exit 1
@@ -147,11 +147,11 @@ mkdir -p "$extract_dir" "$rpmbuild_dir"/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPM
 )
 mv "$extract_dir/wine.spec" "$rpmbuild_dir/SPECS/"
 find "$extract_dir" -maxdepth 1 -type f -exec mv -t "$rpmbuild_dir/SOURCES" {} +
-install -m 0644 "$repo_root/patches/wine/0001-luma-relay-native-notifications.patch" \
+install -m 0644 "$repo_root/patches/wine/0001-Suno-relay-native-notifications.patch" \
   "$rpmbuild_dir/SOURCES/"
 (
   cd "$rpmbuild_dir/SPECS"
-  git apply "$repo_root/patches/wine/0000-luma-fedora-spec.patch"
+  git apply "$repo_root/patches/wine/0000-Suno-fedora-spec.patch"
 )
 
 "$repo_root/scripts/packages/run-in-rpm-builder.sh" \
@@ -160,22 +160,22 @@ install -m 0644 "$repo_root/patches/wine/0001-luma-relay-native-notifications.pa
     dnf5 -y install rpm-build dnf5-plugins
     dnf5 -y builddep SPECS/wine.spec
     rpmbuild -ba --define "_topdir $PWD" SPECS/wine.spec
-    integration=$(find RPMS/x86_64 -name "wine-luma-relay-explorer-*.rpm" -print -quit)
+    integration=$(find RPMS/x86_64 -name "wine-Suno-relay-explorer-*.rpm" -print -quit)
     test -n "$integration"
     verify=$(mktemp -d)
     cd "$verify"
     rpm2cpio "$OLDPWD/$integration" >integration.cpio
     cpio -idm --quiet <integration.cpio
     rm -f integration.cpio
-    test -x usr/libexec/luma-relay/wine/x86_64-windows/explorer.exe
-    test -f usr/lib64/wine-wow64/wine/x86_64-windows/luma_relay.dll
-    test -f usr/lib64/wine-wow64/wine/i386-windows/luma_relay.dll
-    test -x usr/lib64/wine-wow64/wine/x86_64-unix/luma_relay.so
-    strings usr/libexec/luma-relay/wine/x86_64-windows/explorer.exe >explorer.strings
-    grep -Fxq LUMA_RELAY_NOTIFY_SOCKET explorer.strings
-    grep -Fxq LUMA_RELAY_NOTIFICATIONS explorer.strings
-    strings usr/lib64/wine-wow64/wine/x86_64-unix/luma_relay.so >relay-unix.strings
-    grep -Fxq LUMA_RELAY_NOTIFY_SOCKET relay-unix.strings
+    test -x usr/libexec/Suno-relay/wine/x86_64-windows/explorer.exe
+    test -f usr/lib64/wine-wow64/wine/x86_64-windows/Suno_relay.dll
+    test -f usr/lib64/wine-wow64/wine/i386-windows/Suno_relay.dll
+    test -x usr/lib64/wine-wow64/wine/x86_64-unix/Suno_relay.so
+    strings usr/libexec/Suno-relay/wine/x86_64-windows/explorer.exe >explorer.strings
+    grep -Fxq SUNO_RELAY_NOTIFY_SOCKET explorer.strings
+    grep -Fxq SUNO_RELAY_NOTIFICATIONS explorer.strings
+    strings usr/lib64/wine-wow64/wine/x86_64-unix/Suno_relay.so >relay-unix.strings
+    grep -Fxq SUNO_RELAY_NOTIFY_SOCKET relay-unix.strings
   '
 
 stable_rpms="$output_dir/RPMS/x86_64"
@@ -183,7 +183,7 @@ stable_srpms="$output_dir/SRPMS"
 install -d -m 0755 "$stable_rpms" "$stable_srpms"
 install -m 0644 "$rpmbuild_dir/RPMS/x86_64/$WINE_RELAY_EXPLORER_NEVRA.rpm" \
   "$stable_rpms/"
-install -m 0644 "$rpmbuild_dir/SRPMS/wine-11.0-${WINE_LUMA_RELEASE}.fc44.src.rpm" \
+install -m 0644 "$rpmbuild_dir/SRPMS/wine-11.0-${WINE_SUNO_RELEASE}.fc44.src.rpm" \
   "$stable_srpms/"
 (
   cd "$output_dir"

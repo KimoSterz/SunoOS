@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # Release gate checks: package files (RPM, DEB, AppImage, Flatpak bundles and
-# references, Snap, APK, Luma's Android package set, Windows programs) open in
+# references, Snap, APK, Suno's Android package set, Windows programs) open in
 # Valet without the "choose an application" prompt, from a sandboxed app
 # (through the OpenURI portal) as well as from the Shell and gio. Run as root
 # inside a disposable VM installed from the candidate image or from a nightly
@@ -16,16 +16,16 @@
 # XDG_CURRENT_DESKTOP=GNOME plus what systemd's environment.d generators give
 # a user session (the launcher policy's XDG_DATA_DIRS).
 set -uo pipefail
-valet=io.luma.Valet.desktop
-policy=/usr/share/luma/open-directly.list
+valet=io.Suno.Valet.desktop
+policy=/usr/share/Suno/open-directly.list
 package_types="application/x-rpm application/vnd.debian.binary-package application/vnd.appimage
   application/vnd.flatpak application/vnd.flatpak.ref application/vnd.flatpak.repo application/vnd.snap
-  application/vnd.android.package-archive application/vnd.projectluma.android-package-set
+  application/vnd.android.package-archive application/vnd.projectSuno.android-package-set
   application/x-ms-dos-executable application/x-msdownload application/x-msi
   application/vnd.microsoft.portable-executable"
-user=luma-gate-valet
+user=Suno-gate-valet
 failed=0
-work=$(mktemp -d /var/tmp/luma-gate-valet.XXXXXX)
+work=$(mktemp -d /var/tmp/Suno-gate-valet.XXXXXX)
 chmod 0755 "$work"
 
 emit() {
@@ -61,11 +61,11 @@ as_session() {
   (cd /tmp && runuser -u "$user" -- env -i "${env_lines[@]}" "$@")
 }
 
-# 1. The portal is Luma's build, with the package-file policy compiled in.
+# 1. The portal is Suno's build, with the package-file policy compiled in.
 portal=$(rpm -q xdg-desktop-portal 2>&1)
 case $portal in
-  *.luma.*) emit portal-is-luma-build pass "$portal" ;;
-  *) emit portal-is-luma-build fail "not a Luma build: $portal" ;;
+  *.Suno.*) emit portal-is-Suno-build pass "$portal" ;;
+  *) emit portal-is-Suno-build fail "not a Suno build: $portal" ;;
 esac
 if grep -qaF "$policy" /usr/libexec/xdg-desktop-portal; then
   emit portal-has-policy pass "/usr/libexec/xdg-desktop-portal reads $policy"

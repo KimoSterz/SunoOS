@@ -1,0 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Read after Fedora's org.gnome.login-screen override, so the login screen's
+# logo is Suno's (ADR-040).
+[org.gnome.login-screen]
+logo='/usr/share/pixmaps/Suno-login-logo.png'

@@ -5,101 +5,101 @@
  Name:           nautilus
  Version:        50.2.2
 -Release:        %autorelease
-+Release:        1.luma.80%{?dist}
-+Requires:       prairie-icon-theme >= 0.1.0-1.luma.21
-+Requires:       luma-application-installer >= 0.1.0-1.luma.60
++Release:        1.Suno.80%{?dist}
++Requires:       prairie-icon-theme >= 0.1.0-1.Suno.21
++Requires:       Suno-application-installer >= 0.1.0-1.Suno.60
  Summary:        File manager for GNOME
  
  # Sources are GPL-3.0-or-later and Appdata is CC0-1.0.
 @@ -29,7 +31,183 @@
  Source0:        https://download.gnome.org/sources/%{name}/%{major_version}/%{name}-%{tarball_version}.tar.xz
-+Source9004:     org.project_luma.shell-state.gschema.xml
++Source9004:     org.projectSuno.shell-state.gschema.xml
  # https://pagure.io/fedora-workstation/issue/442
  Patch:          default-terminal.patch
 -
-+Patch1001:      0001-luma-single-global-search-action.patch
-+Patch1002:      0002-luma-blank-sidebar-title.patch
-+Patch1003:      0003-luma-files-aesthetic-v1.patch
-+Patch1004:      0004-luma-filer-identity-and-devices.patch
-+Patch1005:      0005-luma-sidebar-divider-contract.patch
-+Patch1006:      0006-luma-window-template-types.patch
-+Patch1007:      0007-luma-natural-attached-breadcrumb.patch
-+Patch1008:      0008-luma-pathbar-natural-measure.patch
-+Patch1009:      0009-luma-remove-redundant-tooltips.patch
++Patch1001:      0001-Suno-single-global-search-action.patch
++Patch1002:      0002-Suno-blank-sidebar-title.patch
++Patch1003:      0003-Suno-files-aesthetic-v1.patch
++Patch1004:      0004-Suno-filer-identity-and-devices.patch
++Patch1005:      0005-Suno-sidebar-divider-contract.patch
++Patch1006:      0006-Suno-window-template-types.patch
++Patch1007:      0007-Suno-natural-attached-breadcrumb.patch
++Patch1008:      0008-Suno-pathbar-natural-measure.patch
++Patch1009:      0009-Suno-remove-redundant-tooltips.patch
 +Patch1010:      0010-prairie-empty-folder-state.patch
-+Patch1011:      0011-luma-title-label-metrics.patch
-+Patch1012:      0012-luma-responsive-filer.patch
-+Patch1013:      0013-luma-applications-location.patch
-+Patch1014:      0014-luma-personal-storage.patch
-+Patch1015:      0015-luma-application-installer-drop.patch
-+Patch1016:      0016-luma-production-filer.patch
++Patch1011:      0011-Suno-title-label-metrics.patch
++Patch1012:      0012-Suno-responsive-filer.patch
++Patch1013:      0013-Suno-applications-location.patch
++Patch1014:      0014-Suno-personal-storage.patch
++Patch1015:      0015-Suno-application-installer-drop.patch
++Patch1016:      0016-Suno-production-filer.patch
 +Patch1017:      0017-nautilus-implement-Atlas-islands-and-native-Columns-.patch
 +Patch1018:      0018-nautilus-align-Filer-with-the-running-simulator.patch
-+Patch1019:      0019-luma-title-and-native-control-convergence.patch
-+Patch1020:      0020-luma-shared-component-boundaries.patch
-+Patch1021:      0021-luma-remove-duplicate-title-divider.patch
-+Patch1022:      0022-luma-final-island-spacing-and-stroke.patch
-+Patch1023:      0023-luma-filer-chrome-and-icons.patch
-+Patch1024:      0024-luma-filer-identity-navigation-contrast.patch
-+Patch1025:      0025-luma-filer-density-sidebar-and-type.patch
-+Patch1026:      0026-luma-filer-toolbar-and-list-refinement.patch
-+Patch1027:      0027-luma-filer-history-inset.patch
-+Patch1028:      0028-luma-filer-view-picker-glyph-size.patch
-+Patch1029:      0029-luma-filer-button-owned-history-frames.patch
-+Patch1030:      0030-luma-filer-application-icons-and-location-title.patch
-+Patch1031:      0031-luma-native-chooser-islands.patch
-+Patch1032:      0032-luma-filer-accent-icons-and-test-link-efficiency.patch
-+Patch1033:      0033-luma-native-about-file-dialog.patch
-+Patch1034:      0034-luma-consume-shared-navigation.patch
-+Patch1035:      0035-luma-leading-chrome-and-native-picker-surfaces.patch
-+Patch1036:      0036-luma-report-installer-request-errors.patch
-+Patch1037:      0037-luma-native-file-dock-bridge.patch
-+Patch1038:      0038-luma-applications-uninstall.patch
-+Patch1039:      0039-luma-menu-surface-ownership.patch
-+Patch1040:      0040-luma-shared-empty-panes.patch
-+Patch1041:      0041-luma-translucent-title-ownership.patch
-+Patch1042:      0042-luma-native-picker-chrome.patch
-+Patch1043:      0044-luma-initialize-shared-surface.patch
-+Patch1044:      0045-luma-root-toolbar-material-ownership.patch
-+Patch1045:      0046-luma-portal-application-chooser.patch
-+Patch1046:      0047-luma-remember-column-view-zoom.patch
-+Patch1047:      0048-luma-live-view-mode-default.patch
-+Patch1048:      0049-luma-pin-folder-to-dock.patch
-+Patch1049:      0049-luma-quiet-view-switcher.patch
-+Patch1050:      0050-luma-drag-a-folder-to-the-dock.patch
-+Patch1051:      0051-luma-filer-navigation-polish.patch
-+Patch1052:      0052-luma-shared-sidebar-reorder-feedback.patch
-+Patch1053:      0053-luma-trash-actions-and-compact-list.patch
-+Patch1054:      0054-luma-compact-new-folder-prompt.patch
-+Patch1055:      0055-luma-system-notice-controls.patch
-+Patch1056:      0056-luma-preserve-sidebar-width.patch
-+Patch1057:      0057-lumaui-list-table-header.patch
-+Patch1058:      0057-z-lumaui-view-switcher-context.patch
-+Patch1059:      0058-lumaui-view-mode-switch.patch
-+Patch1060:      0059-lumaui-information-pane.patch
-+Patch1061:      0060-lumaui-adaptive-ancestor-columns.patch
-+Patch1062:      0061-lumaui-sidebar-and-trail.patch
-+Patch1063:      0062-lumaui-location-meta.patch
-+Patch1064:      0063-lumaui-isolated-native-fixture.patch
-+Patch1065:      0064-lumaui-fixture-containment.patch
-+Patch1066:      0065-lumaui-native-conform-states.patch
-+Patch1067:      0066-lumaui-conform-fixture-setup.patch
-+Patch1068:      0067-lumaui-information-preview.patch
-+Patch1069:      0068-lumaui-fixture-size-sort.patch
-+Patch1070:      0069-lumaui-grid-fixture-data.patch
-+Patch1071:      0070-lumaui-window-title.patch
-+Patch1072:      0071-lumaui-columns-information.patch
-+Patch1073:      0072-lumaui-columns-fixture-order.patch
-+Patch1074:      0073-lumaui-preinitialized-gtk.patch
-+Patch1075:      0074-lumaui-grid-fixture-faces.patch
-+Patch1076:      0075-lumaui-search-column-headings.patch
-+Patch1077:      0076-lumaui-fixture-location-trail.patch
-+Patch1078:      0077-lumaui-search-results-rows.patch
-+Patch1079:      0078-lumaui-fixture-global-search.patch
-+Patch1080:      0079-lumaui-search-result-locations.patch
-+Patch1081:      0080-lumaui-grid-tile-scale.patch
-+Patch1082:      0081-lumaui-empty-folder-title.patch
-+Patch1083:      0082-lumaui-inline-search-snippets.patch
++Patch1019:      0019-Suno-title-and-native-control-convergence.patch
++Patch1020:      0020-Suno-shared-component-boundaries.patch
++Patch1021:      0021-Suno-remove-duplicate-title-divider.patch
++Patch1022:      0022-Suno-final-island-spacing-and-stroke.patch
++Patch1023:      0023-Suno-filer-chrome-and-icons.patch
++Patch1024:      0024-Suno-filer-identity-navigation-contrast.patch
++Patch1025:      0025-Suno-filer-density-sidebar-and-type.patch
++Patch1026:      0026-Suno-filer-toolbar-and-list-refinement.patch
++Patch1027:      0027-Suno-filer-history-inset.patch
++Patch1028:      0028-Suno-filer-view-picker-glyph-size.patch
++Patch1029:      0029-Suno-filer-button-owned-history-frames.patch
++Patch1030:      0030-Suno-filer-application-icons-and-location-title.patch
++Patch1031:      0031-Suno-native-chooser-islands.patch
++Patch1032:      0032-Suno-filer-accent-icons-and-test-link-efficiency.patch
++Patch1033:      0033-Suno-native-about-file-dialog.patch
++Patch1034:      0034-Suno-consume-shared-navigation.patch
++Patch1035:      0035-Suno-leading-chrome-and-native-picker-surfaces.patch
++Patch1036:      0036-Suno-report-installer-request-errors.patch
++Patch1037:      0037-Suno-native-file-dock-bridge.patch
++Patch1038:      0038-Suno-applications-uninstall.patch
++Patch1039:      0039-Suno-menu-surface-ownership.patch
++Patch1040:      0040-Suno-shared-empty-panes.patch
++Patch1041:      0041-Suno-translucent-title-ownership.patch
++Patch1042:      0042-Suno-native-picker-chrome.patch
++Patch1043:      0044-Suno-initialize-shared-surface.patch
++Patch1044:      0045-Suno-root-toolbar-material-ownership.patch
++Patch1045:      0046-Suno-portal-application-chooser.patch
++Patch1046:      0047-Suno-remember-column-view-zoom.patch
++Patch1047:      0048-Suno-live-view-mode-default.patch
++Patch1048:      0049-Suno-pin-folder-to-dock.patch
++Patch1049:      0049-Suno-quiet-view-switcher.patch
++Patch1050:      0050-Suno-drag-a-folder-to-the-dock.patch
++Patch1051:      0051-Suno-filer-navigation-polish.patch
++Patch1052:      0052-Suno-shared-sidebar-reorder-feedback.patch
++Patch1053:      0053-Suno-trash-actions-and-compact-list.patch
++Patch1054:      0054-Suno-compact-new-folder-prompt.patch
++Patch1055:      0055-Suno-system-notice-controls.patch
++Patch1056:      0056-Suno-preserve-sidebar-width.patch
++Patch1057:      0057-SunoUI-list-table-header.patch
++Patch1058:      0057-z-SunoUI-view-switcher-context.patch
++Patch1059:      0058-SunoUI-view-mode-switch.patch
++Patch1060:      0059-SunoUI-information-pane.patch
++Patch1061:      0060-SunoUI-adaptive-ancestor-columns.patch
++Patch1062:      0061-SunoUI-sidebar-and-trail.patch
++Patch1063:      0062-SunoUI-location-meta.patch
++Patch1064:      0063-SunoUI-isolated-native-fixture.patch
++Patch1065:      0064-SunoUI-fixture-containment.patch
++Patch1066:      0065-SunoUI-native-conform-states.patch
++Patch1067:      0066-SunoUI-conform-fixture-setup.patch
++Patch1068:      0067-SunoUI-information-preview.patch
++Patch1069:      0068-SunoUI-fixture-size-sort.patch
++Patch1070:      0069-SunoUI-grid-fixture-data.patch
++Patch1071:      0070-SunoUI-window-title.patch
++Patch1072:      0071-SunoUI-columns-information.patch
++Patch1073:      0072-SunoUI-columns-fixture-order.patch
++Patch1074:      0073-SunoUI-preinitialized-gtk.patch
++Patch1075:      0074-SunoUI-grid-fixture-faces.patch
++Patch1076:      0075-SunoUI-search-column-headings.patch
++Patch1077:      0076-SunoUI-fixture-location-trail.patch
++Patch1078:      0077-SunoUI-search-results-rows.patch
++Patch1079:      0078-SunoUI-fixture-global-search.patch
++Patch1080:      0079-SunoUI-search-result-locations.patch
++Patch1081:      0080-SunoUI-grid-tile-scale.patch
++Patch1082:      0081-SunoUI-empty-folder-title.patch
++Patch1083:      0082-SunoUI-inline-search-snippets.patch
 +Patch1084:      0083-filer-search-group-and-snippet-label.patch
 +Patch1085:      0084-filer-search-columns-and-fixture-labels.patch
 +Patch1086:      0085-filer-phone-grid.patch
@@ -123,7 +123,7 @@
 +Patch1104:      0103-filer-ogg-document-tile.patch
 +Patch1105:      0104-filer-search-result-order.patch
 +Patch1106:      0105-filer-transitive-search-order.patch
-+Patch1107:      0106-filer-adopt-native-luma-frame-and-live-sidebar-rail.patch
++Patch1107:      0106-filer-adopt-native-Suno-frame-and-live-sidebar-rail.patch
 +Patch1108:      0107-filer-location-header-and-breadcrumb.patch
 +Patch1109:      0108-filer-live-search-location-header.patch
 +Patch1110:      0109-filer-search-view-header-source.patch
@@ -181,12 +181,12 @@
 +Patch1162:      0160-filer-run-programs-outside-the-sandbox.patch
 +Patch1163:      0162-filer-standard-sidebar.patch
 +
-+BuildRequires:  luma-ui-reorder-feedback >= 1
-+Requires:       luma-ui-reorder-feedback >= 1
-+Requires:       luma-application-installer >= 0.1.0-1.luma.20.preview20260906.1
++BuildRequires:  Suno-ui-reorder-feedback >= 1
++Requires:       Suno-ui-reorder-feedback >= 1
++Requires:       Suno-application-installer >= 0.1.0-1.Suno.20.preview20260906.1
 +
-+BuildRequires:  luma-developer-platform-devel >= 0.1.0-1.luma.91.creator20261005.1
-+Requires:       luma-developer-platform >= 0.1.0-1.luma.91.creator20261005.1
++BuildRequires:  Suno-developer-platform-devel >= 0.1.0-1.Suno.91.creator20261005.1
++Requires:       Suno-developer-platform >= 0.1.0-1.Suno.91.creator20261005.1
 +BuildRequires:  glycin-loaders
 +BuildRequires:  google-figtree-fonts
 +BuildRequires:  xorg-x11-server-Xvfb
@@ -200,7 +200,7 @@
  # don't depend on soname, rather on exact version
  Requires:       %{name}-extensions%{_isa} = %{version}-%{release}
  # For the org.freedesktop.Tracker3.Miner.Files GSettings schema
-+Requires:       libadwaita >= 1.9.3-1.luma.41.preview20260905
++Requires:       libadwaita >= 1.9.3-1.Suno.41.preview20260905
  Requires:       localsearch
  
  Recommends:     glycin-thumbnailer%{_isa}
@@ -240,7 +240,7 @@
 +filer_test_root=$(mktemp -d)
 +mkdir -p "$filer_test_root/config" "$filer_test_root/data" "$filer_test_root/cache" "$filer_test_root/runtime"
 +chmod 0700 "$filer_test_root/runtime"
-+XDG_RUNTIME_DIR="$filer_test_root/runtime" XDG_CONFIG_HOME="$filer_test_root/config" XDG_DATA_HOME="$filer_test_root/data" XDG_CACHE_HOME="$filer_test_root/cache" GSK_RENDERER=cairo GIO_USE_VOLUME_MONITOR=unix xvfb-run -a -s "-screen 0 1920x1080x24" dbus-run-session -- meson test -C %{_vpath_builddir} --no-rebuild --print-errorlogs test-properties-about test-filename-common-prefix test-filename-utilities test-luma-empty-picker test-portal-file-chooser test-luma-column-view-zoom test-luma-column-header-menu
++XDG_RUNTIME_DIR="$filer_test_root/runtime" XDG_CONFIG_HOME="$filer_test_root/config" XDG_DATA_HOME="$filer_test_root/data" XDG_CACHE_HOME="$filer_test_root/cache" GSK_RENDERER=cairo GIO_USE_VOLUME_MONITOR=unix xvfb-run -a -s "-screen 0 1920x1080x24" dbus-run-session -- meson test -C %{_vpath_builddir} --no-rebuild --print-errorlogs test-properties-about test-filename-common-prefix test-filename-utilities test-Suno-empty-picker test-portal-file-chooser test-Suno-column-view-zoom test-Suno-column-header-menu
 +rm -rf "$filer_test_root"
  desktop-file-validate $RPM_BUILD_ROOT%{_datadir}/applications/*.desktop
  

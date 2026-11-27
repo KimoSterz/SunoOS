@@ -5,7 +5,7 @@
    install_dir: bindir,
  )
 +
-+install_data('quick-view-listing.py', rename: 'luma-quick-view-listing', install_dir: libexecdir)
++install_data('quick-view-listing.py', rename: 'Suno-quick-view-listing', install_dir: libexecdir)
 --- a/src/org.gnome.NautilusPreviewer.src.gresource.xml.in
 +++ b/src/org.gnome.NautilusPreviewer.src.gresource.xml.in
 @@ -15,6 +15,7 @@
@@ -143,7 +143,7 @@
 +++ b/src/viewers/listing.js
 @@ -0,0 +1,106 @@
 +/* SPDX-License-Identifier: GPL-2.0-or-later
-+ * Luma read-only archive and folder listing renderer.
++ * Suno read-only archive and folder listing renderer.
 + */
 +const {Gio, GLib, GObject, Gtk} = imports.gi;
 +const Renderer = imports.ui.renderer;
@@ -202,7 +202,7 @@
 +            '--new-session', '--clearenv', '--ro-bind', '/usr', '/usr', '--symlink', 'usr/lib', '/lib',
 +            '--symlink', 'usr/lib64', '/lib64', '--proc', '/proc', '--dev', '/dev',
 +            '--tmpfs', '/tmp', '--ro-bind', path, '/input', '--', '/usr/bin/python3', '-I',
-+            '/usr/libexec/luma-quick-view-listing', '/input', this._folder ? 'folder' : 'archive'],
++            '/usr/libexec/Suno-quick-view-listing', '/input', this._folder ? 'folder' : 'archive'],
 +            Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_SILENCE);
 +        this._timeout = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 6000, () => {
 +            this._timeout = 0;

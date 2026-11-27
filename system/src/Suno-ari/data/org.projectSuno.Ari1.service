@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=org.projectSuno.Ari1
+Exec=/usr/libexec/Suno-ari/ari-daemon
+SystemdService=ari-daemon.service

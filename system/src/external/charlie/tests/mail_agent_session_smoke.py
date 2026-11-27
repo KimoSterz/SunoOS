@@ -10,9 +10,9 @@ The script starts, all of its own:
 
 * a tiny ``org.freedesktop.Notifications`` stub that records ``Notify`` and can
   emit ``ActionInvoked``; the same process stands in for Charlie's window
-  (``org.freedesktop.Application`` on ``org.projectluma.Charlie``) to record
-  the action that opens a message, and owns ``org.projectluma.Background1`` so
-  it can deliver agent wakes the way luma-background does,
+  (``org.freedesktop.Application`` on ``org.projectSuno.Charlie``) to record
+  the action that opens a message, and owns ``org.projectSuno.Background1`` so
+  it can deliver agent wakes the way Suno-background does,
 * ``gnome-keyring-daemon`` (secrets component, a throwaway login keyring
   under a temporary directory) unless a Secret Service is
   already on the bus; ``--keyring-root`` points at an extracted gnome-keyring
@@ -20,9 +20,9 @@ The script starts, all of its own:
 * a local TLS IMAP server with a throwaway certificate authority, trusted by
   the agent through ``SSL_CERT_FILE`` (verification stays on).
 
-It then runs ``python3 -m charlie_luma --agent`` or ``--agent-command``
+It then runs ``python3 -m charlie_Suno --agent`` or ``--agent-command``
 as a managed agent
-(``LUMA_BACKGROUND_MANAGED=1``) against a temporary XDG home, delivers mail and prints a JSON summary. It never
+(``SUNO_BACKGROUND_MANAGED=1``) against a temporary XDG home, delivers mail and prints a JSON summary. It never
 uses the real mail store, keyring or network.
 """
 from __future__ import annotations
@@ -43,12 +43,12 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-AGENT = "org.projectluma.Charlie.Agent"
+AGENT = "org.projectSuno.Charlie.Agent"
 ACCOUNT_ID = "mail-session-smoke"
 ADDRESS = "reader@example.test"
 PASSWORD = "session smoke password"
-STUB_BUS = "org.projectluma.CharlieSmoke.Stub"
-STUB_PATH = "/org/projectluma/CharlieSmoke/Stub"
+STUB_BUS = "org.projectSuno.CharlieSmoke.Stub"
+STUB_PATH = "/org/projectSuno/CharlieSmoke/Stub"
 
 STUB_XML = """<node>
 <interface name="org.freedesktop.Notifications">
@@ -69,7 +69,7 @@ STUB_XML = """<node>
   <method name="ActivateAction"><arg type="s" direction="in"/><arg type="av" direction="in"/>
     <arg type="a{sv}" direction="in"/></method>
 </interface>
-<interface name="org.projectluma.CharlieSmoke.Stub">
+<interface name="org.projectSuno.CharlieSmoke.Stub">
   <method name="EmitAction"><arg type="u" direction="in"/><arg type="s" direction="in"/></method>
   <method name="SendWake"><arg type="s" direction="in"/><arg type="s" direction="in"/>
     <arg type="s" direction="out"/></method>
@@ -118,7 +118,7 @@ def run_stub(record: Path) -> int:
             elif name == "GetCapabilities":
                 invocation.return_value(GLib.Variant("(as)", (["actions", "body", "persistence"],)))
             else:
-                invocation.return_value(GLib.Variant("(ssss)", ("smoke", "Project Luma", "1", "1.2")))
+                invocation.return_value(GLib.Variant("(ssss)", ("smoke", "Project Suno", "1", "1.2")))
         elif interface == "org.freedesktop.Application":
             write(dict(call=name, path=path, arguments=json.loads(json.dumps(
                 [plain(item) if not isinstance(item, list) else [plain(entry) for entry in item]
@@ -134,7 +134,7 @@ def run_stub(record: Path) -> int:
                 except GLib.Error as error:
                     invocation.return_value(GLib.Variant("(s)", (Gio.DBusError.get_remote_error(error) or "error",)))
 
-            connection.call(agent, "/org/projectluma/BackgroundAgent1", "org.projectluma.BackgroundAgent1", "Wake",
+            connection.call(agent, "/org/projectSuno/BackgroundAgent1", "org.projectSuno.BackgroundAgent1", "Wake",
                             GLib.Variant("(sa{sv})", (reason, {})), None, Gio.DBusCallFlags.NO_AUTO_START, 5000,
                             None, delivered)
         elif name == "EmitAction":
@@ -145,7 +145,7 @@ def run_stub(record: Path) -> int:
             connection.emit_signal(None, "/org/freedesktop/Notifications", "org.freedesktop.Notifications",
                                    "ActionInvoked", GLib.Variant("(us)", (identifier, action)))
 
-    for path, interfaces in (("/org/freedesktop/Notifications", (0,)), ("/org/projectluma/Charlie", (1,)),
+    for path, interfaces in (("/org/freedesktop/Notifications", (0,)), ("/org/projectSuno/Charlie", (1,)),
                              (STUB_PATH, (2,))):
         for index in interfaces:
             connection.register_object(path, node.interfaces[index], method, None, None)
@@ -157,7 +157,7 @@ def run_stub(record: Path) -> int:
         if owned["count"] == 4:
             write(dict(call="ready"))
 
-    for name in ("org.freedesktop.Notifications", "org.projectluma.Charlie", STUB_BUS, "org.projectluma.Background1"):
+    for name in ("org.freedesktop.Notifications", "org.projectSuno.Charlie", STUB_BUS, "org.projectSuno.Background1"):
         Gio.bus_own_name_on_connection(connection, name, Gio.BusNameOwnerFlags.NONE, acquired, None)
     GLib.unix_signal_add(GLib.PRIORITY_HIGH, signal.SIGTERM, lambda: (loop.quit(), False)[1])
     loop.run()
@@ -189,11 +189,11 @@ class Smoke:
             self.env[variable] = str(path)
             os.environ[variable] = str(path)
         self.env["PYTHONPATH"] = arguments.pythonpath or str(ROOT)
-        self.env["LUMA_BACKGROUND_MANAGED"] = "1"
-        self.env["LUMA_BACKGROUND_APP_ID"] = "org.projectluma.Charlie"
-        self.env["LUMA_BACKGROUND_CATEGORY"] = "mail"
+        self.env["SUNO_BACKGROUND_MANAGED"] = "1"
+        self.env["SUNO_BACKGROUND_APP_ID"] = "org.projectSuno.Charlie"
+        self.env["SUNO_BACKGROUND_CATEGORY"] = "mail"
         self.env["GSETTINGS_BACKEND"] = "memory"
-        self.env.pop("LUMA_AGENT_DEBUG", None)
+        self.env.pop("SUNO_AGENT_DEBUG", None)
 
     # -- helpers -------------------------------------------------------------------
     def check(self, name: str, ok: bool, detail=None) -> None:
@@ -243,8 +243,8 @@ class Smoke:
     def agent_property(self, name: str):
         from gi.repository import GLib
 
-        value = self.call(AGENT, "/org/projectluma/BackgroundAgent1", "org.freedesktop.DBus.Properties", "Get",
-                          GLib.Variant("(ss)", ("org.projectluma.BackgroundAgent1", name)))
+        value = self.call(AGENT, "/org/projectSuno/BackgroundAgent1", "org.freedesktop.DBus.Properties", "Get",
+                          GLib.Variant("(ss)", ("org.projectSuno.BackgroundAgent1", name)))
         return value.unpack()[0]
 
     def published(self) -> dict:
@@ -312,9 +312,9 @@ class Smoke:
         self.summary["keyring"] = f"gnome-keyring-daemon ({'extracted' if self.arguments.keyring_root else 'installed'})"
 
     def seed(self, port: int) -> None:
-        from charlie_luma.model import Account, ServerConfig
-        from charlie_luma.secrets import SecretStore
-        from charlie_luma.store import MailStore
+        from charlie_Suno.model import Account, ServerConfig
+        from charlie_Suno.secrets import SecretStore
+        from charlie_Suno.store import MailStore
 
         store = MailStore(Path(self.env["XDG_DATA_HOME"]) / "charlie" / "mail.db")
         store.upsert_account(Account(ACCOUNT_ID, "Reader", ADDRESS))
@@ -341,7 +341,7 @@ class Smoke:
         server.deliver(make_message(1, subject="Old unread 1"), make_message(2, subject="Old unread 2"))
 
         agent_command = (shlex.split(self.arguments.agent_command) if self.arguments.agent_command
-                         else [sys.executable, "-m", "charlie_luma", "--agent"])
+                         else [sys.executable, "-m", "charlie_Suno", "--agent"])
         self.summary["agent_command"] = agent_command
         self.summary["agent_pythonpath"] = self.env["PYTHONPATH"]
         agent = self.spawn(agent_command, cwd=ROOT, stderr=open(self.root / "agent.log", "wb"))
@@ -354,13 +354,13 @@ class Smoke:
         self.check("first run notifies nothing", not self.records("Notify"))
         self.check("Values carry unread-by-account and AppId is Charlie",
                    self.published().get("unread-by-account") == {ACCOUNT_ID: 2}
-                   and self.agent_property("AppId") == "org.projectluma.Charlie", self.published())
+                   and self.agent_property("AppId") == "org.projectSuno.Charlie", self.published())
         self.check("agent log names the contract backend", bool(self.wait(
             lambda: "Agent contract from" in (self.root / "agent.log").read_text(errors="replace"), 5)))
         log = (self.root / "agent.log").read_text(errors="replace")
         self.summary["backend"] = "kit" if "Agent contract from the kit" in log else "built-in"
         if self.arguments.expect_kit:
-            self.check("agent runs on the kit's luma_appkit.background", self.summary["backend"] == "kit", log[-400:])
+            self.check("agent runs on the kit's Suno_appkit.background", self.summary["backend"] == "kit", log[-400:])
         else:
             self.check("agent runs on Charlie's built-in contract", self.summary["backend"] == "built-in", log[-400:])
         modules = subprocess.run(["grep", "-c", "-E", "libgtk|libadwaita|libwebkit",
@@ -384,7 +384,7 @@ class Smoke:
         entry = notify[0]
         self.check("notification names subject, app and category",
                    entry["body"] == "Compiler notes" and entry["app_name"] == "Charlie"
-                   and entry["hints"].get("desktop-entry") == "org.projectluma.Charlie"
+                   and entry["hints"].get("desktop-entry") == "org.projectSuno.Charlie"
                    and entry["hints"].get("category") == "email.arrived"
                    and entry["actions"] == ["default", "Open", "mark-read", "Mark Read"], entry)
         self.check("published unread count follows", bool(self.wait(lambda: self.published().get("unread-count") == 3)))
@@ -413,20 +413,20 @@ class Smoke:
             code = None
         self.summary["autostart_with_service"] = {"exit_code": code,
                                                   "seconds": round(time.monotonic() - autostart_started, 2)}
-        self.check("--autostart exits 0 when luma-background is present",
+        self.check("--autostart exits 0 when Suno-background is present",
                    code == 0 and self.owner_pid(AGENT) == pid, self.summary["autostart_with_service"])
 
         try:
-            self.call(AGENT, "/org/projectluma/BackgroundAgent1", "org.projectluma.BackgroundAgent1", "Wake",
+            self.call(AGENT, "/org/projectSuno/BackgroundAgent1", "org.projectSuno.BackgroundAgent1", "Wake",
                       GLib.Variant("(sa{sv})", ("network", {})))
             refused = ""
         except GLib.Error as error:
             refused = error.message
-        self.check("Wake from a peer that is not luma-background is refused", "NotAuthorized" in refused, refused)
+        self.check("Wake from a peer that is not Suno-background is refused", "NotAuthorized" in refused, refused)
         logins = server.logins
-        answer = self.call(STUB_BUS, STUB_PATH, "org.projectluma.CharlieSmoke.Stub", "SendWake",
+        answer = self.call(STUB_BUS, STUB_PATH, "org.projectSuno.CharlieSmoke.Stub", "SendWake",
                            GLib.Variant("(ss)", (AGENT, "network"))).unpack()[0]
-        self.check("network Wake from luma-background is accepted and reconnects",
+        self.check("network Wake from Suno-background is accepted and reconnects",
                    answer == "" and bool(server.wait_for(lambda: server.logins > logins and bool(server.idling), 15)),
                    {"answer": answer, "logins_before": logins, "logins_after": server.logins})
 
@@ -434,7 +434,7 @@ class Smoke:
                                                     subject="Trajectory"))
         notify = self.wait(lambda: [entry for entry in self.records("Notify") if entry["summary"] == "Katherine Johnson"])
         self.check("second message notifies separately", bool(notify) and notify[0]["id"] != entry["id"])
-        self.call(STUB_BUS, STUB_PATH, "org.projectluma.CharlieSmoke.Stub", "EmitAction",
+        self.call(STUB_BUS, STUB_PATH, "org.projectSuno.CharlieSmoke.Stub", "EmitAction",
                   GLib.Variant("(us)", (notify[0]["id"], "mark-read")))
         self.check("mark-read sets \\Seen on the server",
                    bool(server.wait_for(lambda: "\\Seen" in server.flags(second_uid), 15)))
@@ -444,7 +444,7 @@ class Smoke:
             lambda: not self.store.messages_by_ids((f"{ACCOUNT_ID}:inbox:{second_uid}",))[0].unread)))
         self.check("unread count drops after mark-read", bool(self.wait(lambda: self.published().get("unread-count") == 3)))
 
-        self.call(STUB_BUS, STUB_PATH, "org.projectluma.CharlieSmoke.Stub", "EmitAction",
+        self.call(STUB_BUS, STUB_PATH, "org.projectSuno.CharlieSmoke.Stub", "EmitAction",
                   GLib.Variant("(us)", (entry["id"], "default")))
         opened = self.wait(lambda: self.records("ActivateAction"))
         self.check("default action asks Charlie to open the exact message",
@@ -453,7 +453,7 @@ class Smoke:
                    and opened[0]["arguments"][2].get("activation-token") == "smoke-token", opened)
 
         logins = server.logins
-        self.call(AGENT, "/org/projectluma/Charlie/MailAgent", "org.projectluma.Charlie.MailAgent1", "CheckNow")
+        self.call(AGENT, "/org/projectSuno/Charlie/MailAgent", "org.projectSuno.Charlie.MailAgent1", "CheckNow")
         self.check("CheckNow reconnects and checks", bool(server.wait_for(lambda: server.logins > logins
                                                                                  and bool(server.idling), 15)),
                    {"before": logins, "after": server.logins})
@@ -505,10 +505,10 @@ def main() -> int:
     parser.add_argument("--notification-stub", metavar="RECORD")
     parser.add_argument("--keyring-root", help="root of an extracted gnome-keyring (and gcr3) payload")
     parser.add_argument("--agent-command", help="command that starts the agent, e.g. an installed "
-                        "'/usr/bin/org.projectluma.Charlie --agent' (default: python3 -m charlie_luma --agent)")
+                        "'/usr/bin/org.projectSuno.Charlie --agent' (default: python3 -m charlie_Suno --agent)")
     parser.add_argument("--pythonpath", help="PYTHONPATH for the agent (default: this checkout)")
     parser.add_argument("--expect-kit", action="store_true",
-                        help="require the agent to run on luma_appkit.background (found on --pythonpath)")
+                        help="require the agent to run on Suno_appkit.background (found on --pythonpath)")
     arguments = parser.parse_args()
     import gi
 

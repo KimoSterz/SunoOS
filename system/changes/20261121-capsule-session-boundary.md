@@ -1,7 +1,7 @@
 ---
 type: security
 component: Valet
-packages: [luma-application-installer]
+packages: [Suno-application-installer]
 highlight: true
 ---
 Summary: Installed apps are kept to themselves

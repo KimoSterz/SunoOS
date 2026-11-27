@@ -1,31 +1,31 @@
 ---
-title: LumaUI Python reference
-summary: LumaUI's Python package, luma_appkit: its public classes and functions, with their purpose, constructors, properties, signals and methods as they exist in platform 0.1.0.
+title: SunoUI Python reference
+summary: SunoUI's Python package, Suno_appkit: its public classes and functions, with their purpose, constructors, properties, signals and methods as they exist in platform 0.1.0.
 order: 2
 section: Kit
 ---
 
-# LumaUI Python reference
+# SunoUI Python reference
 
-`luma_appkit` is LumaUI’s Python package. Import names from the package root:
+`Suno_appkit` is SunoUI’s Python package. Import names from the package root:
 
 ```python
-from luma_appkit import AppWindow, Island, CommandRegistry, Command, CommandGroup
+from Suno_appkit import AppWindow, Island, CommandRegistry, Command, CommandGroup
 ```
 
 This page covers platform **0.1.0 (preview)**. The public names are those in
-`luma_appkit.__all__`; anything starting with an underscore is private. The
+`Suno_appkit.__all__`; anything starting with an underscore is private. The
 signatures below show the main parameters. Some constructors take further
-keyword arguments, and the newer LumaUI parts are summarized at the end of the
+keyword arguments, and the newer SunoUI parts are summarized at the end of the
 page; each module’s docstrings describe the rest. For the C library, see the
-[LumaUI-1 reference](lumaui-reference.md) and [LumaUI for C](lumaui-c.md).
+[SunoUI-1 reference](SunoUI-reference.md) and [SunoUI for C](SunoUI-c.md).
 
-**Requirements.** Python 3.11 or newer, PyGObject, GTK 4, libadwaita (LumaUI
+**Requirements.** Python 3.11 or newer, PyGObject, GTK 4, libadwaita (SunoUI
 builds on its window, breakpoint and split-view types and draws them itself),
-and the `LumaUI-1` and `LumaAppearance-1` typelibs from
-`luma-developer-platform`.
-Importing a widget loads GTK; `luma_appkit.commands`, `luma_appkit.context` and
-`luma_appkit.navigation` can be imported without a display, which makes them
+and the `SunoUI-1` and `SunoAppearance-1` typelibs from
+`Suno-developer-platform`.
+Importing a widget loads GTK; `Suno_appkit.commands`, `Suno_appkit.context` and
+`Suno_appkit.navigation` can be imported without a display, which makes them
 easy to unit test.
 
 **Spelling.** A few API names use British spelling (`centre_controls`, the
@@ -45,7 +45,7 @@ easy to unit test.
 | [People and facts](#people-and-facts) | `Avatar`, `avatar_tone`, `AVATAR_TONES`, `FieldRow` |
 | [Design tools](#design-tools) | `NumericField`, `evaluate_number`, `AlignCluster`, `ColorSwatch` |
 | [Media and transactions](#media-and-transactions) | `AudioWaveform`, `TransactionCard` |
-| [LumaUI](#lumaui) | `LUMAUI_API_LEVEL`, `install_lumaui`, `reduced_motion`, `lumaui_icon`, `LayerHost`, `Toast`, `ToastHost`, `TOAST_KINDS`, `DestructiveDialog`, `StackedButton`, `StackedButtons`, `CountBadge`, `count_text`, `CategoryPill`, `CATEGORIES`, `TypeLabel`, `apply_type`, `type_class`, `TYPE_ROLES` |
+| [SunoUI](#SunoUI) | `SUNOUI_API_LEVEL`, `install_SunoUI`, `reduced_motion`, `SunoUI_icon`, `LayerHost`, `Toast`, `ToastHost`, `TOAST_KINDS`, `DestructiveDialog`, `StackedButton`, `StackedButtons`, `CountBadge`, `count_text`, `CategoryPill`, `CATEGORIES`, `TypeLabel`, `apply_type`, `type_class`, `TYPE_ROLES` |
 | [Controls, insets and fields](#controls-insets-and-fields) | `TextButton`, `Button`, `IconOnlyButton`, `Switch`, `Checkbox`, `TextField`, `HeroTitleField`, `ParagraphField`, `ChoiceList`, `Disclosure`, `Tooltip`, `Inset`, `TwoColumnInset` |
 | [Phone structure and tabs](#phone-structure-and-tabs) | `ListFirst`, `TitleIsland`, `TabBar`, `ModeSwitch`, `SwipeRow`, `SwipeAction`, `AZIndex` |
 | [The action bar's panels and items](#the-action-bars-panels-and-items) | `ActionCenter`, `BarAction`, `BarWidget`, `BarModes`, `panel_list`, `PanelRow`, `PanelSwitch`, `PanelChoices`, `PanelField`, `PanelConfirm`, `BarTiles`, `ToolPalette` |
@@ -60,17 +60,17 @@ easy to unit test.
 install_appkit() -> None
 ```
 
-Loads LumaUI for the default display: the token sheet for the current
-appearance (light, dark, Frost, Glass or high contrast), LumaUI’s window sheets,
+Loads SunoUI for the default display: the token sheet for the current
+appearance (light, dark, Frost, Glass or high contrast), SunoUI’s window sheets,
 the base and component sheets at `GTK_STYLE_PROVIDER_PRIORITY_APPLICATION`, and
 the structural sheet at `APPLICATION + 2`. It then reloads them whenever the
 appearance or high contrast changes. Call it once after GTK has a display, for
 example at the top of `do_activate`; later calls do nothing. `AppWindow` calls
 it for you.
 
-Environment overrides, for testing LumaUI from source: `LUMA_APPKIT_TOKENS_PATH`,
-`LUMA_APPKIT_BASE_PATH`, `LUMA_APPKIT_STRUCTURE_PATH`, and
-`LUMA_APPKIT_STYLE_PATH` (which also stops the automatic reload).
+Environment overrides, for testing SunoUI from source: `SUNO_APPKIT_TOKENS_PATH`,
+`SUNO_APPKIT_BASE_PATH`, `SUNO_APPKIT_STRUCTURE_PATH`, and
+`SUNO_APPKIT_STYLE_PATH` (which also stops the automatic reload).
 
 ### `add_style_sheet(path, priority=Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION + 1)`
 
@@ -79,7 +79,7 @@ add_style_sheet(path: str, priority: int = 601) -> Gtk.CssProvider
 ```
 
 Loads your app’s own stylesheet and re-parses it whenever the appearance
-changes, so any `@luma_*` color it names follows the desktop into dark and back.
+changes, so any `@Suno_*` color it names follows the desktop into dark and back.
 Calls `install_appkit()` first. Returns the provider. Use this rather than
 creating a `Gtk.CssProvider` yourself.
 
@@ -115,8 +115,8 @@ class AppContext:
 ```
 
 How the app is being presented. `from_environment()` reads
-`LUMA_DEVICE_CLASS` (else `/etc/luma-device-class`, else `desktop`),
-`LUMA_PRESENTATION_MODE` and `LUMA_INPUT_MODE`. Without explicit values, a
+`SUNO_DEVICE_CLASS` (else `/etc/Suno-device-class`, else `desktop`),
+`SUNO_PRESENTATION_MODE` and `SUNO_INPUT_MODE`. Without explicit values, a
 handheld is presented fullscreen, and tablets and handhelds use touch input.
 Unknown values fall back silently. `AppWindow` creates one as `window.context`.
 
@@ -148,10 +148,10 @@ class AppWindow(Adw.ApplicationWindow):
                  identity_icon: bool = True) -> None
 ```
 
-The Luma window. It carries `luma-app-window`, holds an `Adw.ToolbarView`
-whose top bar is an `Adw.HeaderBar` carrying `luma-titlebar`, and a body that
-carries `luma-window-body`. LumaUI draws the frame, the title row, the
-identity (`WindowIdentity`, with LumaUI’s `Menu`) and the controls from its own
+The Suno window. It carries `Suno-app-window`, holds an `Adw.ToolbarView`
+whose top bar is an `Adw.HeaderBar` carrying `Suno-titlebar`, and a body that
+carries `Suno-window-body`. SunoUI draws the frame, the title row, the
+identity (`WindowIdentity`, with SunoUI’s `Menu`) and the controls from its own
 window sheets; apps draw none of it. See
 [windows and islands](windows-and-islands.md).
 
@@ -161,7 +161,7 @@ On construction it:
 - sets the minimum size and restores the last width, height and maximized
   state (bounded to 4096 by 2160). When the desktop’s own window memory is on,
   the window leaves placement to it. With nothing remembered, the window opens
-  at the shared Luma opening size for its shape;
+  at the shared Suno opening size for its shape;
 - is decorated when windowed and undecorated when `fullscreen-mobile`, hiding
   the title bar;
 - binds a compositor backdrop for Frost and Glass where the compositor supports
@@ -190,7 +190,7 @@ moved and resized.
 | `context` | `AppContext` | Presentation and input |
 | `commands` | `CommandRegistry` | The registry passed in; application actions route to the active window’s registry |
 | `title_bar` | `Adw.HeaderBar` | The title row. Use the slot methods below rather than packing it directly; most controls belong in an island toolbar. |
-| `body` | `Gtk.Box` | Horizontal box, 8px spacing, carrying `luma-window-body` |
+| `body` | `Gtk.Box` | Horizontal box, 8px spacing, carrying `Suno-window-body` |
 | `tier` | `str` | `"phone"` (under 560px), `"compact"` (560 to 900px) or `"regular"` |
 
 | Method | Behavior |
@@ -206,9 +206,9 @@ moved and resized.
 | `recall(key, default=None)` | Returns a remembered value |
 | `set_geometry_scope(scope, *, default_width, default_height)` | Switches to a separately remembered size, for example a welcome surface. `scope` must be ASCII letters, digits, `-` or `_`. |
 | `set_hidden_from_capture(hidden=True)` | Keeps the window, with its dialogs and menus, out of screen shares of a display or an area and out of screenshots of the screen; it stays on screen, and sharing the window itself still shows it. Returns whether the compositor hides it. `hidden_from_capture` is the last value asked. API level 14. |
-| `restore_key`, `save_state()`, `restore_state(state)`, `documents()` | The window's key and state for restoring after a restart and continuing on another device: set `restore_key` before the window is first shown; `save_state()` returns JSON values that `restore_state()` gets back; `documents()` lists open documents as dicts (uri, title, dirty, unsaved). With `luma_appkit.restore.enable(app, open_window)` and `restore.restore(app)` in `activate`. API level 15. |
+| `restore_key`, `save_state()`, `restore_state(state)`, `documents()` | The window's key and state for restoring after a restart and continuing on another device: set `restore_key` before the window is first shown; `save_state()` returns JSON values that `restore_state()` gets back; `documents()` lists open documents as dicts (uri, title, dirty, unsaved). With `Suno_appkit.restore.enable(app, open_window)` and `restore.restore(app)` in `activate`. API level 15. |
 
-State lives in `$XDG_STATE_HOME/luma/windows/<app_id>.json` (and
+State lives in `$XDG_STATE_HOME/Suno/windows/<app_id>.json` (and
 `<app_id>.<scope>.json` for a scope), written with mode `0600` when the window
 closes or when you call `remember`.
 
@@ -219,8 +219,8 @@ class Island(Gtk.Box):
     def __init__(self, *, orientation: Gtk.Orientation = Gtk.Orientation.VERTICAL) -> None
 ```
 
-A work island: a `Gtk.Box` carrying `luma-island` that clips its children to
-its rounded corners (`overflow: hidden`). LumaUI draws its radius, ring and
+A work island: a `Gtk.Box` carrying `Suno-island` that clips its children to
+its rounded corners (`overflow: hidden`). SunoUI draws its radius, ring and
 shadow. Put islands in `AppWindow.body` or in a split view. Do not nest islands.
 
 ### `IslandSplitView(**properties)`
@@ -229,8 +229,8 @@ shadow. Put islands in `AppWindow.body` or in a split view. Do not nest islands.
 IslandSplitView(**properties) -> Adw.NavigationSplitView
 ```
 
-Creates a real `Adw.NavigationSplitView` (it is final, so LumaUI composes it)
-carrying `luma-island-split`. While sidebar and content sit side by side, the
+Creates a real `Adw.NavigationSplitView` (it is final, so SunoUI composes it)
+carrying `Suno-island-split`. While sidebar and content sit side by side, the
 split view and its pages stop clipping so island shadows show on every edge;
 when collapsed, clipping returns so navigation transitions stay clean. Pass the
 usual properties, such as `sidebar=` and `content=` with `Adw.NavigationPage`
@@ -356,7 +356,7 @@ adds an `app.<id-with-dashes>` action (once per name) that invokes the command
 on the active window’s `commands`, adds a menu item with the command’s icon, and
 sets its shortcut as an application accelerator. `AppWindow` calls this for you.
 
-The identity pill itself shows a LumaUI `Menu` built from the same registry,
+The identity pill itself shows a SunoUI `Menu` built from the same registry,
 so checked rows, descriptions, destructive rows and submenus appear there. Both
 are built once, when the window is created, so which commands are listed is
 decided by `visible` at that moment.
@@ -372,7 +372,7 @@ class Menu(Gtk.PopoverMenu):
     def popup_below(self, anchor: Gtk.Widget) -> None
 ```
 
-A `Gtk.PopoverMenu` built from a registry, whose rows LumaUI draws. Variants:
+A `Gtk.PopoverMenu` built from a registry, whose rows SunoUI draws. Variants:
 `"app"`, `"compact"`, `"desktop"`, `"dock"`, `"submenu"` (unknown values become
 `"app"`). A menu lets go of its parent after a command runs unless
 `keep_parent=True`; pass that for a menu you give to a `Gtk.MenuButton`. At
@@ -488,7 +488,7 @@ pinned header and footer. It is not a
 boxed island: it stands on the window frame's own surface, its rows 10px from
 the window edge and from the content island, 272px from the window edge to the
 island. Rows are 50px with a 34px round face; the selected row is the raised
-chip. Every number is a `lumaui.sidebar` token. `variant` is one of
+chip. Every number is a `SunoUI.sidebar` token. `variant` is one of
 `SIDEBAR_VARIANTS` (`"people"`, `"destinations"`, `"resources"`, `"files"`,
 `"tree"` or `"settings"`), and `width` a named width (`"narrow"`, `"regular"`,
 `"wide"`). `compact=True` is deprecated: it is `variant="files"`.
@@ -604,7 +604,7 @@ class Toolbar(Gtk.Box):
 ```
 
 The standard island toolbar: horizontal, 8px between controls, carrying
-`luma-toolbar`. `append` centers each control vertically instead of stretching
+`Suno-toolbar`. `append` centers each control vertically instead of stretching
 it to the bar’s height.
 
 ### `centre_controls(bar)`
@@ -743,7 +743,7 @@ class Avatar(Gtk.Box):
 A soft-square avatar: the photo when you pass a `paintable`, otherwise up to two
 initials, otherwise a person, business or group glyph (`group=True` forces the
 group glyph). The tone is derived from the name with `avatar_tone` unless you
-pass one of `AVATAR_TONES`, so a person has the same tone in every Luma app.
+pass one of `AVATAR_TONES`, so a person has the same tone in every Suno app.
 Sizes: default, `compact`, `medium`, `large` and `hero`. Its accessible label
 is “<name> avatar”.
 
@@ -886,43 +886,43 @@ changes content and opacity only, never the widget hierarchy, so focus is stable
 
 ---
 
-## LumaUI
+## SunoUI
 
-LumaUI’s semantic parts. An app says what happened or what it needs; LumaUI
+SunoUI’s semantic parts. An app says what happened or what it needs; SunoUI
 owns the look, spacing, motion and phone behaviour, all from tokens. They also
-load where Luma’s typelibs are missing, on plain GTK 4 and libadwaita.
-Principles: [LumaUI principles](lumaui-principles.md);
-behaviour: [LumaUI behaviour](behaviour.md).
+load where Suno’s typelibs are missing, on plain GTK 4 and libadwaita.
+Principles: [SunoUI principles](SunoUI-principles.md);
+behaviour: [SunoUI behaviour](behaviour.md).
 
-### `LUMAUI_API_LEVEL`
+### `SUNOUI_API_LEVEL`
 
-An integer: 12 in the current Luma Platform runtime. It rises when a public
+An integer: 12 in the current Suno Platform runtime. It rises when a public
 name, keyword or toast kind is added; nothing public is removed within a
-level. Check it before using a newer part (`if LUMAUI_API_LEVEL >= 11:`).
+level. Check it before using a newer part (`if SUNOUI_API_LEVEL >= 11:`).
 
-### `install_lumaui(display=None)`
+### `install_SunoUI(display=None)`
 
-Loads LumaUI’s token, component and base sheets and adds its icon folder to
-the display’s icon theme, once. On a Luma system it calls `install_appkit()`;
-without the Luma appearance library it loads the same sheets directly, beside
-the package first and `/usr/share/luma-appkit` last, and follows the desktop’s
+Loads SunoUI’s token, component and base sheets and adds its icon folder to
+the display’s icon theme, once. On a Suno system it calls `install_appkit()`;
+without the Suno appearance library it loads the same sheets directly, beside
+the package first and `/usr/share/Suno-appkit` last, and follows the desktop’s
 dark and high-contrast state. Every part calls it for you.
 
 ### `reduced_motion()`
 
 `True` when the desktop asks for reduced motion or has animations off. Parts
 already honour it; use it only for motion you draw yourself. Durations:
-`luma_appkit.lumaui.duration("toast_in")` returns the token in milliseconds,
+`Suno_appkit.SunoUI.duration("toast_in")` returns the token in milliseconds,
 shortened to a fade under reduced motion.
 
-### `lumaui_icon(name)`
+### `SunoUI_icon(name)`
 
 ```python
-lumaui_icon("share-2")  # "lumaui-share-2-symbolic"
+SunoUI_icon("share-2")  # "SunoUI-share-2-symbolic"
 ```
 
-The theme name of a Lucide glyph LumaUI ships. Share is `share-2`, Export is
-`share`, Upload is `upload`. Only glyphs LumaUI ships resolve to an icon.
+The theme name of a Lucide glyph SunoUI ships. Share is `share-2`, Export is
+`share`, Upload is `upload`. Only glyphs SunoUI ships resolve to an icon.
 
 ### `LayerHost`
 
@@ -1186,18 +1186,18 @@ ToolPalette(items=())                 # an editor's tools above the bar
   (`"tier-changed"`), `WidthWatch(widget, on_tier=...)` or
   `center.layout()[0]`, not the bar's CSS classes.
 
-### Other LumaUI parts
+### Other SunoUI parts
 
 These families follow the same rules. Each module’s docstrings hold the full
 API.
 
 | Family | Names | Module |
 | --- | --- | --- |
-| Action center and selection | `ActionCenter`, `ActionEditor` (opens with its first field focused and its text selected; a hidden `body` takes no room and leaves one rule; footer hint "Esc to cancel"), `SyncKey(source, target, synced=, primary=, changes=, on_unsync=, on_sync=)` (a section's link to another's look: closed lock "In sync with …" pressed to unsync, open lock with "Sync with …", or the other side's information) and `OverrideDot` (a field that differs), `ToggleChip(label, icon=, active=, live=, on_toggle=)` (a checkable chip for a header's actions; `on_toggle` returning False keeps it; `live=True` shows a red dot), `BarAction`, `BarChip`, `BarContext`, `BarPrompt`, `SEPARATOR`, `SPACER`, `SelectionBubble`, `FloatingMenu(rows).popup(anchor, x=, y=)` (a point in `anchor`'s coordinates: a context menu at the pointer, flipped at the window's edges), `MenuItem(label, shortcut="Ctrl+D", submenu=[rows])` (cascading submenus; drilled in place on a phone) | `luma_appkit/action_*.py` |
-| Bar items, sharing and export | `BarEntry`, `BarSearch`, `BarThumbnail`, `BarReadout`, `BarChip(live=True, meta=, detail=)` with `update()` for a running recording or stream, `BarMenu`, `SplitAction`, `ZoomControl`, `DocumentHeader`, `ShareSheet`, `ExportSheet` | `luma_appkit/bar_*.py` |
-| Content | `Card`, `ContentLitCard`, `AccountCard`, `PersonAvatar`, `ContentLitHeader`, `FileCard`, `OpenButton`, `OpenInMenu`, `ContactCard`, `ContactActions`, `EventCard`, `SongCard`, `PlaceCard`, `PlaceSearch`, `TextField`, `HeroTitleField`, `ParagraphField`, `MessageBubble`, `ChatLine(author, text, lead=, color=, badges=, kind="message"|"action"|"notice")` and `ChatFeed(max_lines=)` (a stream's chat: readable author colours, Jump to newest), `StatusPill` | `luma_appkit/content_*.py` |
-| Rows and sidebars | `SidebarRow`, `SidebarSection`, `RowLead` (`RowLead.thumbnail(picture, fit="contain", aspect=16/9)`: a 16:9 or 9:16 picture whole in the 42x34 slot with the small radius and a hairline), `RowAction` (`quiet=True`: shown on hover, selection or focus; a state worth reading at rest, such as a hidden layer's eye-off, stays shown), `NavigationList(variant)` (a sidebar variant's list outside a sidebar: `.list` takes `SidebarRow`s with the variant's metrics and selection, without the sidebar's frame), `ProgressLine`, `Sparkline(values, capacity=60, max_value=None, tone="accent"|"warning"|"danger", height=24, label=)` (`push()`, `set_values()`, `mark()`, `set_tone()`, `set_label()`), `AvatarStack`, `FavouritesStrip`, `Mark`, `MarkButton`, `MarkPicker`, `MarkValue`, `RichMenuItem`, `MenuSection`, `AppIcon`, `NoteCard` | `luma_appkit/rows_*.py` |
-| Media and imaging | `MediaGrid`, `MediaTile`, `ImageViewport`, `MediaTransport`, `Timeline`, `AdjustmentPanel`, `CoverArt`, `VoiceClip`, `ValueSlider`, `AudioMeter` (`LevelMeter`: the same part; `segments=N` draws N LED segments with the peak hold as a lit segment), `LevelTap(meter, source, measure="peak"|"rms", widget=, on_error=)` (feeds a meter from GStreamer's `level` element while it is mapped, NULL when unmapped; `source` is a PipeWire node serial or name, an `AudioCapture`, or a callable returning a source element; `running`, `stop()`, `close()`), `MediaRow` and `MediaRowChip` (a playing app: artwork with the app's badge, title and line, transport, volume; `density="regular"|"compact"|"touch"`), `MixerStrip` and `MixerRow` (fixed-width channel strips, `--lumaui-mixer-strip-width`, in a row that scrolls sideways; it fits `DockTile(fit=True)`), `CreativeWorkspace` (docks and saved layouts), `Dock` and `DockTile` (an island tiled with insets at `--lumaui-dock-tile-radius`, the island holding them that radius plus the gap round; `DockTile(fit=True)` is its content's size along its split, and a side whose tiles all fit, such as `split("h", 0.5, "widgets", "audio")` under the preview, is as tall as the taller; both stop at `Dock(fit_max=)`, default `--lumaui-dock-fit-max-pct` (40% of the dock), and scroll past it; on a phone a fitted tile stays under the main tile unless `DockTile(phone="drawer")` makes it a key and drawer; `Dock.refit()` follows a content change; fitting is only the default: a person drags a seam anywhere between the tiles' minimums, that size is kept as `"size"` on the split in `layout()`, and a double click on the seam fits it again; a seam with no room to move shows no mark or resize cursor; a tile is docked by dragging its header (or tab; a long press on touch): an edge band of another tile splits it, its middle stacks them as tabs (`{"tabs": [keys], "current": key}` in `layout()`, `show_tile(key)`), the dock's own outer edge makes a full-height column or full-width row (`EDGE_SHARE`, 25%), with a live preview and Esc to cancel; `on_rearrange(previous, new)` for undo; `tree_dock()`, `tree_dock_edge()`, `tree_remove()` on plain layouts; `move_tile(key, target, edge)` takes `"tabs"`, `move_to_edge(key, edge)`; `close_tile(key)`, `open_tile(key, beside=, edge=, size=)`, `is_open(key)`, `request_close(key)` with `Dock.on_close(key)` able to refuse and `DockTile(closable=True)` for "Close panel" in More; closed tiles and their last places are in `layout()` as `{"layout": tree, "closed": {...}}`; several tiles may be `main=True`, the first open one leads), `FloatingPanel`, `ArrangeView`, `ArrangeItem` (resize, Alt from the centre, Shift stretch, Ctrl crop; `croppable=`, `crop=`, `on_crop=`, `on_drag_mode=`), `ColorPicker`, `recent_colors()` | `luma_appkit/media_*.py`, `luma_appkit/creative_workspace.py`, `luma_appkit/creative_parts.py` |
+| Action center and selection | `ActionCenter`, `ActionEditor` (opens with its first field focused and its text selected; a hidden `body` takes no room and leaves one rule; footer hint "Esc to cancel"), `SyncKey(source, target, synced=, primary=, changes=, on_unsync=, on_sync=)` (a section's link to another's look: closed lock "In sync with …" pressed to unsync, open lock with "Sync with …", or the other side's information) and `OverrideDot` (a field that differs), `ToggleChip(label, icon=, active=, live=, on_toggle=)` (a checkable chip for a header's actions; `on_toggle` returning False keeps it; `live=True` shows a red dot), `BarAction`, `BarChip`, `BarContext`, `BarPrompt`, `SEPARATOR`, `SPACER`, `SelectionBubble`, `FloatingMenu(rows).popup(anchor, x=, y=)` (a point in `anchor`'s coordinates: a context menu at the pointer, flipped at the window's edges), `MenuItem(label, shortcut="Ctrl+D", submenu=[rows])` (cascading submenus; drilled in place on a phone) | `Suno_appkit/action_*.py` |
+| Bar items, sharing and export | `BarEntry`, `BarSearch`, `BarThumbnail`, `BarReadout`, `BarChip(live=True, meta=, detail=)` with `update()` for a running recording or stream, `BarMenu`, `SplitAction`, `ZoomControl`, `DocumentHeader`, `ShareSheet`, `ExportSheet` | `Suno_appkit/bar_*.py` |
+| Content | `Card`, `ContentLitCard`, `AccountCard`, `PersonAvatar`, `ContentLitHeader`, `FileCard`, `OpenButton`, `OpenInMenu`, `ContactCard`, `ContactActions`, `EventCard`, `SongCard`, `PlaceCard`, `PlaceSearch`, `TextField`, `HeroTitleField`, `ParagraphField`, `MessageBubble`, `ChatLine(author, text, lead=, color=, badges=, kind="message"|"action"|"notice")` and `ChatFeed(max_lines=)` (a stream's chat: readable author colours, Jump to newest), `StatusPill` | `Suno_appkit/content_*.py` |
+| Rows and sidebars | `SidebarRow`, `SidebarSection`, `RowLead` (`RowLead.thumbnail(picture, fit="contain", aspect=16/9)`: a 16:9 or 9:16 picture whole in the 42x34 slot with the small radius and a hairline), `RowAction` (`quiet=True`: shown on hover, selection or focus; a state worth reading at rest, such as a hidden layer's eye-off, stays shown), `NavigationList(variant)` (a sidebar variant's list outside a sidebar: `.list` takes `SidebarRow`s with the variant's metrics and selection, without the sidebar's frame), `ProgressLine`, `Sparkline(values, capacity=60, max_value=None, tone="accent"|"warning"|"danger", height=24, label=)` (`push()`, `set_values()`, `mark()`, `set_tone()`, `set_label()`), `AvatarStack`, `FavouritesStrip`, `Mark`, `MarkButton`, `MarkPicker`, `MarkValue`, `RichMenuItem`, `MenuSection`, `AppIcon`, `NoteCard` | `Suno_appkit/rows_*.py` |
+| Media and imaging | `MediaGrid`, `MediaTile`, `ImageViewport`, `MediaTransport`, `Timeline`, `AdjustmentPanel`, `CoverArt`, `VoiceClip`, `ValueSlider`, `AudioMeter` (`LevelMeter`: the same part; `segments=N` draws N LED segments with the peak hold as a lit segment), `LevelTap(meter, source, measure="peak"|"rms", widget=, on_error=)` (feeds a meter from GStreamer's `level` element while it is mapped, NULL when unmapped; `source` is a PipeWire node serial or name, an `AudioCapture`, or a callable returning a source element; `running`, `stop()`, `close()`), `MediaRow` and `MediaRowChip` (a playing app: artwork with the app's badge, title and line, transport, volume; `density="regular"|"compact"|"touch"`), `MixerStrip` and `MixerRow` (fixed-width channel strips, `--SunoUI-mixer-strip-width`, in a row that scrolls sideways; it fits `DockTile(fit=True)`), `CreativeWorkspace` (docks and saved layouts), `Dock` and `DockTile` (an island tiled with insets at `--SunoUI-dock-tile-radius`, the island holding them that radius plus the gap round; `DockTile(fit=True)` is its content's size along its split, and a side whose tiles all fit, such as `split("h", 0.5, "widgets", "audio")` under the preview, is as tall as the taller; both stop at `Dock(fit_max=)`, default `--SunoUI-dock-fit-max-pct` (40% of the dock), and scroll past it; on a phone a fitted tile stays under the main tile unless `DockTile(phone="drawer")` makes it a key and drawer; `Dock.refit()` follows a content change; fitting is only the default: a person drags a seam anywhere between the tiles' minimums, that size is kept as `"size"` on the split in `layout()`, and a double click on the seam fits it again; a seam with no room to move shows no mark or resize cursor; a tile is docked by dragging its header (or tab; a long press on touch): an edge band of another tile splits it, its middle stacks them as tabs (`{"tabs": [keys], "current": key}` in `layout()`, `show_tile(key)`), the dock's own outer edge makes a full-height column or full-width row (`EDGE_SHARE`, 25%), with a live preview and Esc to cancel; `on_rearrange(previous, new)` for undo; `tree_dock()`, `tree_dock_edge()`, `tree_remove()` on plain layouts; `move_tile(key, target, edge)` takes `"tabs"`, `move_to_edge(key, edge)`; `close_tile(key)`, `open_tile(key, beside=, edge=, size=)`, `is_open(key)`, `request_close(key)` with `Dock.on_close(key)` able to refuse and `DockTile(closable=True)` for "Close panel" in More; closed tiles and their last places are in `layout()` as `{"layout": tree, "closed": {...}}`; several tiles may be `main=True`, the first open one leads), `FloatingPanel`, `ArrangeView`, `ArrangeItem` (resize, Alt from the centre, Shift stretch, Ctrl crop; `croppable=`, `crop=`, `on_crop=`, `on_drag_mode=`), `ColorPicker`, `recent_colors()` | `Suno_appkit/media_*.py`, `Suno_appkit/creative_workspace.py`, `Suno_appkit/creative_parts.py` |
 
 ```python
 sidebar = NavigationSidebar(variant="people")        # people, destinations, resources, files, tree

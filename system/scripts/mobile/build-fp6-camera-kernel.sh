@@ -14,17 +14,17 @@ repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 kernel_archive=${1:?usage: build-fp6-camera-kernel.sh KERNEL_ARCHIVE PATCH_ARCHIVE [OUTPUT_DIR]}
 patch_archive=${2:?usage: build-fp6-camera-kernel.sh KERNEL_ARCHIVE PATCH_ARCHIVE [OUTPUT_DIR]}
 output_dir=${3:-$repo_root/build/mobile/fp6-physical/fp6-camera-kernel-wide1}
-running_config=${LUMA_FP6_RUNNING_CONFIG:-/proc/config.gz}
-build_jobs=${LUMA_KERNEL_BUILD_JOBS:-2}
+running_config=${SUNO_FP6_RUNNING_CONFIG:-/proc/config.gz}
+build_jobs=${SUNO_KERNEL_BUILD_JOBS:-2}
 
 case "$build_jobs" in
   ''|*[!0-9]*)
-    printf 'error: LUMA_KERNEL_BUILD_JOBS must be a positive integer\n' >&2
+    printf 'error: SUNO_KERNEL_BUILD_JOBS must be a positive integer\n' >&2
     exit 1
     ;;
 esac
 [ "$build_jobs" -ge 1 ] || {
-  printf 'error: LUMA_KERNEL_BUILD_JOBS must be at least 1\n' >&2
+  printf 'error: SUNO_KERNEL_BUILD_JOBS must be at least 1\n' >&2
   exit 1
 }
 
@@ -152,7 +152,7 @@ for module in qcom-camss ov13b10 dw9714; do
 done
 
 {
-  printf 'LUMA_FP6_CAMERA_KERNEL_BUILD_VERSION=1\n'
+  printf 'SUNO_FP6_CAMERA_KERNEL_BUILD_VERSION=1\n'
   printf 'SCOPE=experimental-ov13b10-ultrawide\n'
   printf 'KERNEL_SOURCE_COMMIT=%s\n' "$FP6_CAMERA_KERNEL_COMMIT"
   printf 'CAMERA_PATCH_COMMIT=%s\n' "$FP6_CAMERA_PATCH_COMMIT"

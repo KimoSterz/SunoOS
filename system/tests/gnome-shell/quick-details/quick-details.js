@@ -40,7 +40,7 @@ function panelColour(actor) {
         if (typeof a.get_theme_node !== 'function' || !a.get_stage())
             continue;
         const bg = a.get_theme_node().get_background_color();
-        if (bg.alpha > 200 || a.has_style_class_name?.('luma-quick-options') || a.has_style_class_name?.('popup-menu-content'))
+        if (bg.alpha > 200 || a.has_style_class_name?.('Suno-quick-options') || a.has_style_class_name?.('popup-menu-content'))
             return {colour: over(bg, BACKDROP), owner: a.style_class};
     }
     return {colour: BACKDROP, owner: 'wallpaper'};
@@ -48,13 +48,13 @@ function panelColour(actor) {
 
 async function setMode(mode) {
     new Gio.Settings({schema_id: 'org.gnome.desktop.interface'}).set_string('color-scheme', mode === 'dark' ? 'prefer-dark' : 'default');
-    new Gio.Settings({schema_id: 'org.project_luma.shell-state'}).set_string('surface-treatment', mode);
+    new Gio.Settings({schema_id: 'org.projectSuno.shell-state'}).set_string('surface-treatment', mode);
     await sleep(2500);
 }
 // The sheet paints no fill of its own: the grid's frame does, under it.
 function detailColour(menu, grid) {
-    const frame = grid.get_children().find(c => c.has_style_class_name?.('luma-sheet-frame'));
-    const [, fill] = frame.get_theme_node().lookup_color('-luma-sheet-fill', false);
+    const frame = grid.get_children().find(c => c.has_style_class_name?.('Suno-sheet-frame'));
+    const [, fill] = frame.get_theme_node().lookup_color('-Suno-sheet-fill', false);
     return over(fill, panelColour(grid).colour);
 }
 
@@ -80,7 +80,7 @@ async function work() {
                 const owner = toggle.getSheetAnchor?.() ?? toggle;
                 const wasChecked = owner.checked;
                 const below = grid.get_children().filter(c => c.visible && c.y > toggle.y + toggle.height && c !== toggle.menu.actor &&
-                    !c.has_style_class_name?.('luma-sheet-frame'));
+                    !c.has_style_class_name?.('Suno-sheet-frame'));
                 const before = new Map(below.map(c => [c, c.y]));
                 toggle.menu.open();
                 await sleep(900);
@@ -96,7 +96,7 @@ async function work() {
                 if (!on) {
                     check(`${mode}: ${name} detail is in flow (in the grid, rows below pushed down)`, inGrid && pushed,
                         `inGrid=${inGrid} moved=${below.map(c => `${Math.round(before.get(c))}->${Math.round(c.y)}`).join(',')}`);
-                    check(`${mode}: ${name} owner joins its sheet`, owner.has_style_class_name('luma-sheet-owner'));
+                    check(`${mode}: ${name} owner joins its sheet`, owner.has_style_class_name('Suno-sheet-owner'));
                 }
                 const header = toggle.menu._header;
                 check(`${mode}: ${name} detail (${on ? 'on' : 'off'}) repeats no icon`, !header?.mapped);

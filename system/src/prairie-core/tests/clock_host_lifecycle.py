@@ -77,15 +77,15 @@ class ClockForegroundTests(unittest.TestCase):
         app._window.assert_not_called()
 
     def test_bus_activation_cannot_spawn_an_unmanaged_alarm_agent(self):
-        path = Path(__file__).resolve().parents[1] / 'data/org.projectluma.ClockHost1.service.in'
+        path = Path(__file__).resolve().parents[1] / 'data/org.projectSuno.ClockHost1.service.in'
         fields = dict(line.split('=', 1) for line in path.read_text().splitlines() if '=' in line)
-        self.assertEqual(fields['SystemdService'], 'app-org.projectluma.Clock-agent.service')
+        self.assertEqual(fields['SystemdService'], 'app-org.projectSuno.Clock-agent.service')
         self.assertEqual(fields['Exec'], '/usr/bin/false')
 
     def test_real_retry_window_constructs_without_opening_alarm_store(self):
         from gi.repository import Gtk
         Gtk.init()
-        with mock.patch.dict(os.environ, {'LUMA_CLOCK_FIXTURE': 'unit-no-data-read'}), \
+        with mock.patch.dict(os.environ, {'SUNO_CLOCK_FIXTURE': 'unit-no-data-read'}), \
              mock.patch('prairie_apps.clock.AlarmService') as alarms:
             app = ClockApplication()
             app.register(None)

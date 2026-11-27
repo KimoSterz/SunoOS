@@ -1,4 +1,4 @@
-From: Project Luma <project-luma@local>
+From: Project Suno <project-suno@local>
 Subject: [PATCH] arm64: dts: qcom: milos: correct FP6 front camera rotation
 
 Physical preview and a native-resolution RAW capture show the Fairphone 6

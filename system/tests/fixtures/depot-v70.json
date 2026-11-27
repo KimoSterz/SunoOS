@@ -1,5 +1,5 @@
 {
-  "schema": "org.projectluma.depot.v70-fixture/1",
+  "schema": "org.projectSuno.depot.v70-fixture/1",
   "featured": "tide",
   "categories": {
     "create": [
@@ -44,7 +44,7 @@
       "size": "38 MB",
       "rating": 4.9,
       "reviews": 1204,
-      "luma": 1,
+      "Suno": 1,
       "icon": "music",
       "shot": "tide",
       "inst": 1,
@@ -74,7 +74,7 @@
       "size": "44 MB",
       "rating": 4.8,
       "reviews": 320,
-      "luma": 1,
+      "Suno": 1,
       "icon": "photos",
       "shot": "photos",
       "inst": 1
@@ -87,7 +87,7 @@
       "size": "21 MB",
       "rating": 4.8,
       "reviews": 320,
-      "luma": 1,
+      "Suno": 1,
       "icon": "files",
       "shot": "filer",
       "inst": 1
@@ -100,7 +100,7 @@
       "size": "62 MB",
       "rating": 4.7,
       "reviews": 320,
-      "luma": 1,
+      "Suno": 1,
       "icon": "documents",
       "shot": "write",
       "inst": 1
@@ -113,7 +113,7 @@
       "size": "118 MB",
       "rating": 4.6,
       "reviews": 320,
-      "luma": 1,
+      "Suno": 1,
       "icon": "browser",
       "shot": "viola",
       "inst": 1
@@ -126,7 +126,7 @@
       "size": "33 MB",
       "rating": 4.8,
       "reviews": 320,
-      "luma": 1,
+      "Suno": 1,
       "icon": "messages",
       "shot": "messages",
       "inst": 1
@@ -139,7 +139,7 @@
       "size": "12 MB",
       "rating": 4.9,
       "reviews": 320,
-      "luma": 1,
+      "Suno": 1,
       "icon": "notes",
       "shot": "notes",
       "inst": 1
@@ -152,7 +152,7 @@
       "size": "18 MB",
       "rating": 4.7,
       "reviews": 320,
-      "luma": 1,
+      "Suno": 1,
       "icon": "calendar",
       "shot": "calendar",
       "inst": 1
@@ -165,7 +165,7 @@
       "size": "9 MB",
       "rating": 4.7,
       "reviews": 320,
-      "luma": 1,
+      "Suno": 1,
       "icon": "contacts",
       "shot": "contacts",
       "inst": 1
@@ -178,7 +178,7 @@
       "size": "8 MB",
       "rating": 4.9,
       "reviews": 320,
-      "luma": 1,
+      "Suno": 1,
       "icon": "terminal",
       "shot": "term",
       "inst": 1
@@ -191,7 +191,7 @@
       "size": "71 MB",
       "rating": 4.7,
       "reviews": 320,
-      "luma": 1,
+      "Suno": 1,
       "icon": "presentations"
     },
     {
@@ -202,7 +202,7 @@
       "size": "54 MB",
       "rating": 4.7,
       "reviews": 320,
-      "luma": 1,
+      "Suno": 1,
       "icon": "spreadsheets"
     },
     {
@@ -213,7 +213,7 @@
       "size": "96 MB",
       "rating": 4.8,
       "reviews": 320,
-      "luma": 1,
+      "Suno": 1,
       "icon": "designer"
     },
     {
@@ -224,7 +224,7 @@
       "size": "88 MB",
       "rating": 4.8,
       "reviews": 320,
-      "luma": 1,
+      "Suno": 1,
       "icon": "photo-editor",
       "inst": 1
     },
@@ -236,7 +236,7 @@
       "size": "140 MB",
       "rating": 4.7,
       "reviews": 320,
-      "luma": 1,
+      "Suno": 1,
       "icon": "video-editor"
     },
     {
@@ -247,7 +247,7 @@
       "size": "212 MB",
       "rating": 4.7,
       "reviews": 320,
-      "luma": 1,
+      "Suno": 1,
       "icon": "daw"
     },
     {
@@ -258,7 +258,7 @@
       "size": "14 MB",
       "rating": 4.7,
       "reviews": 320,
-      "luma": 1,
+      "Suno": 1,
       "icon": "memo",
       "inst": 1
     },
@@ -270,7 +270,7 @@
       "size": "11 MB",
       "rating": 4.7,
       "reviews": 320,
-      "luma": 1,
+      "Suno": 1,
       "icon": "camera",
       "inst": 1
     },
@@ -282,7 +282,7 @@
       "size": "46 MB",
       "rating": 4.7,
       "reviews": 320,
-      "luma": 1,
+      "Suno": 1,
       "icon": "maps"
     },
     {
@@ -293,7 +293,7 @@
       "size": "6 MB",
       "rating": 4.7,
       "reviews": 320,
-      "luma": 1,
+      "Suno": 1,
       "icon": "weather",
       "inst": 1
     },
@@ -305,7 +305,7 @@
       "size": "15 MB",
       "rating": 4.9,
       "reviews": 320,
-      "luma": 1,
+      "Suno": 1,
       "icon": "vault"
     },
     {
@@ -515,10 +515,10 @@
     }
   ],
   "system_update": {
-    "title": "Luma 1.0 · nightly September 22",
+    "title": "Suno 1.0 · nightly September 22",
     "summary": "Adjustable scroll speed for mice and touchpads, plus 14 more changes.",
     "size": "312 MB",
-    "running": "Luma 1.0 · nightly September 16",
+    "running": "Suno 1.0 · nightly September 16",
     "channel": "Nightly",
     "source": "dl.simplyluma.com",
     "last_checked": "6 hours ago"

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-// Rules for unread badges on dock icons (js/ui/lumaDockBadgeModel.js).
-// Run: gjs -m dock-badges.js path/to/lumaDockBadgeModel.js
+// Rules for unread badges on dock icons (js/ui/SunoDockBadgeModel.js).
+// Run: gjs -m dock-badges.js path/to/SunoDockBadgeModel.js
 import GLib from 'gi://GLib';
 import System from 'system';
 const M = await import(GLib.filename_to_uri(GLib.canonicalize_filename(ARGV[0], GLib.get_current_dir()), null));
@@ -116,8 +116,8 @@ check('desktop id from uri', M.desktopIdFromUri('application://discord.desktop')
 check('flatpak id from uri', M.desktopIdFromUri('application://com.slack.Slack.desktop') === 'com.slack.Slack.desktop');
 for (const bad of ['discord.desktop', 'application://../x.desktop', 'application://a/b.desktop', 'application://x', 42])
     check(`reject ${bad}`, M.desktopIdFromUri(bad) === null);
-check('app id to desktop id', M.desktopIdForAppId('org.projectluma.Messages') === 'org.projectluma.Messages.desktop');
-check('desktop id to app id', M.appIdForDesktopId('org.projectluma.Messages.desktop') === 'org.projectluma.Messages');
+check('app id to desktop id', M.desktopIdForAppId('org.projectSuno.Messages') === 'org.projectSuno.Messages.desktop');
+check('desktop id to app id', M.appIdForDesktopId('org.projectSuno.Messages.desktop') === 'org.projectSuno.Messages');
 
 if (failures) {
     printerr(`dock-badges: ${failures} failed`);

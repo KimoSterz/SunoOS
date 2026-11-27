@@ -10,12 +10,12 @@ from concurrent.futures import ThreadPoolExecutor
 from gi.repository import Gio, GLib
 from display_leases import DisplayLeases
 from engine_display import EngineDisplay
-from luma_installer.app_data_broker import authenticate
+from Suno_installer.app_data_broker import authenticate
 
-BUS = 'org.projectluma.ViolaHost1'
-PATH = '/org/projectluma/ViolaHost1'
+BUS = 'org.projectSuno.ViolaHost1'
+PATH = '/org/projectSuno/ViolaHost1'
 APP = 'com.rhyme.viola'
-XML = '''<node><interface name="org.projectluma.ViolaHost1">
+XML = '''<node><interface name="org.projectSuno.ViolaHost1">
 <method name="Acquire"><arg name="display" type="s" direction="out"/></method>
 <method name="Release"><arg name="handle" type="s" direction="in"/></method>
 </interface></node>'''
@@ -26,7 +26,7 @@ def runtime_directory():
     st = root.lstat()
     if not stat.S_ISDIR(st.st_mode) or st.st_uid != os.getuid() or st.st_mode & 0o077:
         raise PermissionError('The browser runtime directory is unavailable.')
-    path = root / 'luma-viola'
+    path = root / 'Suno-viola'
     path.mkdir(mode=0o700, exist_ok=True)
     st = path.lstat()
     if not stat.S_ISDIR(st.st_mode) or st.st_uid != os.getuid() or stat.S_IMODE(st.st_mode) != 0o700:

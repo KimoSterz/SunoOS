@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """An application's style sheet belongs to the kit, not to the application.
 
-`luma_appkit.add_style_sheet()` (and `luma_ui_add_style_resource()` in C) keep
+`Suno_appkit.add_style_sheet()` (and `Suno_ui_add_style_resource()` in C) keep
 a sheet in step with the surface treatment: when the desktop moves to Glass,
 every sheet the kit owns is reloaded against the new palette. A sheet loaded
 through a `Gtk.CssProvider` of the application's own is loaded once and never
@@ -33,8 +33,8 @@ ALLOW_FILE = ROOT / "tools/private-css-providers.txt"
 
 # The kit is where a provider is supposed to be made.
 KIT_OWNED = (
-    "src/luma-platform/appkit/luma_appkit/",
-    "src/luma-platform/ui/",
+    "src/Suno-platform/appkit/Suno_appkit/",
+    "src/Suno-platform/ui/",
 )
 
 PYTHON_PATTERN = re.compile(r"\bGtk\.CssProvider\s*\(\s*\)")

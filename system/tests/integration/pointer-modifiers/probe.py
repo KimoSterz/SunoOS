@@ -54,7 +54,7 @@ def mods(state):
 
 
 if args.toolkit == "gtk4":
-    app = Gtk.Application(application_id=f"org.projectluma.PointerProbe.{args.name}")
+    app = Gtk.Application(application_id=f"org.projectSuno.PointerProbe.{args.name}")
 
     def on_activate(application):
         window = Gtk.ApplicationWindow(application=application, title=args.name)

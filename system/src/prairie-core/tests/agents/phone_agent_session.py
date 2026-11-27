@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 # SPDX-License-Identifier: Apache-2.0
-"""Phone's background agent for a phone paired through Luma Connect, in a real user session (ADR-033).
+"""Phone's background agent for a phone paired through Suno Connect, in a real user session (ADR-033).
 
     phone_agent_session.py --evidence DIR
 
 With fake_connect_calls.py standing in for the Connect daemon's relay: at login
-the agent starts and, with no phone chosen for calls, loads nothing of Luma
+the agent starts and, with no phone chosen for calls, loads nothing of Suno
 Connect; choosing one makes it listen; an incoming call rings as a call notification with
 Answer and Decline; Answer reaches the phone and opens Phone in its own scope;
 a call that stops ringing unanswered becomes a Missed Call with Call Back and
@@ -29,9 +29,9 @@ from session import Failure, Session, mib  # noqa: E402
 
 from gi.repository import GLib  # noqa: E402
 
-APP = "org.projectluma.Phone"
-AGENT = "org.projectluma.Phone.Agent"
-UNIT = "app-org.projectluma.Phone-agent.service"  # replaced in main() for the unmanaged fallback
+APP = "org.projectSuno.Phone"
+AGENT = "org.projectSuno.Phone.Agent"
+UNIT = "app-org.projectSuno.Phone-agent.service"  # replaced in main() for the unmanaged fallback
 HERE = Path(__file__).resolve().parent
 
 
@@ -53,14 +53,14 @@ def main() -> int:
     extra: dict = {"managed": session.managed}
     global UNIT
     UNIT = session.agent_unit(APP)
-    connect_units = ("app-org.projectluma.Connect-agent.service", "luma-connect.service",
-                     "app-org.projectluma.Connect.Agent@autostart.service")
-    selection = Path.home() / ".config/luma-connect/calls-phone.json"
+    connect_units = ("app-org.projectSuno.Connect-agent.service", "Suno-connect.service",
+                     "app-org.projectSuno.Connect.Agent@autostart.service")
+    selection = Path.home() / ".config/Suno-connect/calls-phone.json"
     calls_log = options.evidence / "calls.jsonl"
     account, epoch = "acct-test", secrets.token_hex(16)
 
     def set_calls(*rows):
-        session.call("org.projectluma.Connect1", "/org/projectluma/Connect", "org.projectluma.Test.Calls", "SetCalls",
+        session.call("org.projectSuno.Connect1", "/org/projectSuno/Connect", "org.projectSuno.Test.Calls", "SetCalls",
                      GLib.Variant("(s)", (json.dumps(list(rows)),)))
 
     def controls():
@@ -72,11 +72,11 @@ def main() -> int:
         # The real Connect daemon is held off; the fake answers for the phone.
         session.systemctl("stop", *connect_units, check=False)
         session.systemctl("mask", "--runtime", *connect_units, check=False)
-        session.systemctl("stop", "luma-test-connect", check=False)
-        session.run("systemd-run", "--user", "--quiet", "--unit=luma-test-connect", f"--setenv=LUMA_TEST_CALLS_LOG={calls_log}",
-                    f"--setenv=LUMA_TEST_ACCOUNT={account}", f"--setenv=LUMA_TEST_EPOCH={epoch}",
+        session.systemctl("stop", "Suno-test-connect", check=False)
+        session.run("systemd-run", "--user", "--quiet", "--unit=Suno-test-connect", f"--setenv=SUNO_TEST_CALLS_LOG={calls_log}",
+                    f"--setenv=SUNO_TEST_ACCOUNT={account}", f"--setenv=SUNO_TEST_EPOCH={epoch}",
                     sys.executable, str(HERE / "fake_connect_calls.py"))
-        session.wait(lambda: session.has_owner("org.projectluma.Connect1"), "fake Connect1", 20)
+        session.wait(lambda: session.has_owner("org.projectSuno.Connect1"), "fake Connect1", 20)
 
         # 1. Login without a phone chosen for calls: the agent waits, cheaply.
         session.login()
@@ -84,7 +84,7 @@ def main() -> int:
         pid = agent_pid(session)
         idle_rss = session.smaps(pid)
         maps = Path(f"/proc/{pid}/maps").read_text()
-        session.step("no phone chosen: the agent waits without loading Luma Connect", not session.loads_gtk(pid)
+        session.step("no phone chosen: the agent waits without loading Suno Connect", not session.loads_gtk(pid)
                      and "cryptography" not in maps and session.values(AGENT).get("call-state") == "idle",
                      unit=UNIT, idle=idle_rss)
         session.limits_step(UNIT, "communication")
@@ -98,7 +98,7 @@ def main() -> int:
             "address": "192.0.2.10", "port": 7443, "carrier": "relay"}}))
         os.chmod(selection, 0o600)
         session.wait(lambda: session.journal_grep(UNIT, "Listening") or session.run(
-            "gdbus", "call", "--session", "--dest", "org.projectluma.Connect1", "--object-path", "/org/projectluma/Connect",
+            "gdbus", "call", "--session", "--dest", "org.projectSuno.Connect1", "--object-path", "/org/projectSuno/Connect",
             "--method", "org.freedesktop.DBus.Peer.Ping", check=False).returncode == 0, "fake Connect reachable", 10)
         time.sleep(2)
         session.step("choosing a phone for calls: the same agent listens", agent_pid(session) == pid, pid=pid)
@@ -117,15 +117,15 @@ def main() -> int:
         # 4. Answer reaches the phone and opens Phone in its own scope.
         session.invoke(ringing["id"], "answer")
         session.wait(lambda: any(item.get("control") == "answer" for item in controls()), "answer sent to the phone", 20)
-        session.wait(lambda: session.has_owner("org.projectluma.Phone"), "Phone window", 60)
+        session.wait(lambda: session.has_owner("org.projectSuno.Phone"), "Phone window", 60)
         window = [p for p in session.processes("prairie-phone") if "--agent" not in session.cmdline(p)]
         cgroup = Path(f"/proc/{window[0]}/cgroup").read_text().strip().rsplit("/", 1)[-1] if window else ""
         session.step("Answer answers on the phone and opens Phone in its own scope",
-                     bool(window) and cgroup.startswith("app-luma-org.projectluma.Phone-"), cgroup=cgroup)
+                     bool(window) and cgroup.startswith("app-Suno-org.projectSuno.Phone-"), cgroup=cgroup)
         set_calls()
         time.sleep(2)
         session.run("pkill", "-f", "[p]rairie-phone$", check=False)
-        session.wait(lambda: not session.has_owner("org.projectluma.Phone"), "Phone window closed", 30)
+        session.wait(lambda: not session.has_owner("org.projectSuno.Phone"), "Phone window closed", 30)
         session.step("an answered call is not a missed call",
                      not any(r.get("event") == "notify" and r.get("summary") == "Missed call"
                              for r in session.notification_records()[mark:]))
@@ -184,7 +184,7 @@ def main() -> int:
     finally:
         session.restore_logind()
         session.systemctl("thaw", UNIT, check=False)
-        session.systemctl("stop", "luma-test-connect", check=False)
+        session.systemctl("stop", "Suno-test-connect", check=False)
         session.systemctl("unmask", "--runtime", *connect_units, check=False)
         selection.unlink(missing_ok=True)
     summary = session.summary("phone", extra)

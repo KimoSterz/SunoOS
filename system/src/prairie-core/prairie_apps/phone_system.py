@@ -21,8 +21,8 @@ from gi.repository import Gio, GLib  # noqa: E402
 class TransientShellSurface:
     """Lease one bounded shell-edge treatment for this process lifetime."""
 
-    BUS_NAME = "org.project_luma.ShellState1"
-    OBJECT_PATH = "/org/project_luma/ShellState1"
+    BUS_NAME = "org.projectSuno.ShellState1"
+    OBJECT_PATH = "/org/projectSuno/ShellState1"
     INTERFACE = BUS_NAME
 
     def __init__(self, application_id: str) -> None:
@@ -114,9 +114,9 @@ class IncomingCallIndicator:
                 GLib.Variant(
                     "(susssasa{sv}i)",
                     (
-                        "Luma Phone",
+                        "Suno Phone",
                         self._notification_id,
-                        "org.projectluma.Phone",
+                        "org.projectSuno.Phone",
                         self._caller,
                         "Incoming call",
                         [
@@ -133,7 +133,7 @@ class IncomingCallIndicator:
                             # the shell plays its own for call.incoming.
                             "suppress-sound": GLib.Variant("b", True),
                             "desktop-entry": GLib.Variant(
-                                "s", "org.projectluma.Phone"
+                                "s", "org.projectSuno.Phone"
                             ),
                         },
                         0,
@@ -182,7 +182,7 @@ class ActiveCallIndicator:
     INTERFACE = "org.freedesktop.Notifications"
 
     def __init__(self, *, on_return, on_mute, on_end,
-                 application_id: str = "org.projectluma.Phone") -> None:
+                 application_id: str = "org.projectSuno.Phone") -> None:
         self._application_id = application_id
         self._on_return = on_return
         self._on_mute = on_mute
@@ -273,9 +273,9 @@ class ActiveCallIndicator:
                 GLib.Variant(
                     "(susssasa{sv}i)",
                     (
-                        "Luma Phone",
+                        "Suno Phone",
                         self._notification_id,
-                        "org.projectluma.Phone",
+                        "org.projectSuno.Phone",
                         self._caller,
                         body,
                         actions,

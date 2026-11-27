@@ -162,7 +162,7 @@ class RemovePromptTest(unittest.TestCase):
     def test_a_removal_is_the_red_action(self):
         panel = ExtensionPromptPanel({'id': 'r1', 'type': 'extension', 'title': 'Remove "Dark Reader"?',
                                       'accept': 'Remove', 'cancel': 'Cancel', 'danger': True}, lambda *_: None)
-        self.assertTrue(panel.accept_button.has_css_class('lumaui-panel-confirm-action'))
+        self.assertTrue(panel.accept_button.has_css_class('SunoUI-panel-confirm-action'))
         self.assertFalse(panel.accept_button.has_css_class('viola-signin-action'))
 
 

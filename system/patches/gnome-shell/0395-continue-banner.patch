@@ -1,5 +1,5 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Project Luma <engineering@projectluma.org>
+From: Project Suno <engineering@projectSuno.org>
 Date: Mon, 23 Nov 2026 06:00:00 -0600
 Subject: [PATCH] Continue: the offer, progress and result banner
 
@@ -24,7 +24,7 @@ Continue takes it (TakeContinue, after a sync cycle) and restores it;
 Not now declines it until a newer one. Snapshots record continuedFrom.
 
 messageList.js: a notification can draw content below its body
-(notification.lumaContent, built per message and rebuilt in place), with
+(notification.SunoContent, built per message and rebuilt in place), with
 its own buttons that change the notification in place instead of marking it
 acted on and closing its card, equal-width or at the end of the row (a
 closing row at the end sits 6 px under the content). The banner's time is
@@ -38,7 +38,7 @@ icon. The result after a restart on this device is an ordinary banner
 (standard timeout, then the list, Do Not Disturb respected), shown as a
 banner and after the first unlock.
 
-Restore, from the real Luma Shell: a window on the same display at the
+Restore, from the real Suno Shell: a window on the same display at the
 same place keeps its exact rectangle (the work area at login is not final
 until the panel and dock reserve their space); an X11 window adopted
 without a configure (mapped while Xwayland was starting) is placed when
@@ -63,8 +63,8 @@ index 21e3eec..a259d13 100644
 @@ -51,6 +51,7 @@
      <file preprocess="xml-stripblanks">scalable/actions/shell-focus-windows-symbolic.svg</file>
      <file preprocess="xml-stripblanks">scalable/status/background-app-ghost-symbolic.svg</file>
-     <file preprocess="xml-stripblanks">scalable/status/luma-grid-2x2-symbolic.svg</file>
-+    <file preprocess="xml-stripblanks">scalable/status/luma-continue-layers-symbolic.svg</file>
+     <file preprocess="xml-stripblanks">scalable/status/Suno-grid-2x2-symbolic.svg</file>
++    <file preprocess="xml-stripblanks">scalable/status/Suno-continue-layers-symbolic.svg</file>
      <file preprocess="xml-stripblanks">scalable/status/check-symbolic.svg</file>
      <file preprocess="xml-stripblanks">scalable/status/keyboard-brightness-high-symbolic.svg</file>
      <file preprocess="xml-stripblanks">scalable/status/keyboard-brightness-medium-symbolic.svg</file>
@@ -73,18 +73,18 @@ index 151b88d..1406197 100644
 --- a/data/gnome-shell-theme.gresource.xml
 +++ b/data/gnome-shell-theme.gresource.xml
 @@ -11,6 +11,7 @@
-     <file>luma-capture.css</file>
-     <file>luma-seal.css</file>
-     <file>luma-share.css</file>
-+    <file>luma-continue.css</file>
-     <file>luma-cast.css</file>
-     <file>luma-shelf.css</file>
-     <file>luma-presentation.css</file>
-diff --git a/data/icons/scalable/status/luma-continue-layers-symbolic.svg b/data/icons/scalable/status/luma-continue-layers-symbolic.svg
+     <file>Suno-capture.css</file>
+     <file>Suno-seal.css</file>
+     <file>Suno-share.css</file>
++    <file>Suno-continue.css</file>
+     <file>Suno-cast.css</file>
+     <file>Suno-shelf.css</file>
+     <file>Suno-presentation.css</file>
+diff --git a/data/icons/scalable/status/Suno-continue-layers-symbolic.svg b/data/icons/scalable/status/Suno-continue-layers-symbolic.svg
 new file mode 100644
 index 0000000..f7a95c3
 --- /dev/null
-+++ b/data/icons/scalable/status/luma-continue-layers-symbolic.svg
++++ b/data/icons/scalable/status/Suno-continue-layers-symbolic.svg
 @@ -0,0 +1,6 @@
 +<!-- Lucide geometry, ISC; adapted to GTK 4.20+ symbolic stroke classes. -->
 +<svg xmlns="http://www.w3.org/2000/svg" class="lucide lucide-layers" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -92,81 +92,81 @@ index 0000000..f7a95c3
 +  <path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12" class="transparent-fill foreground-stroke" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
 +  <path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17" class="transparent-fill foreground-stroke" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
 +</svg>
-diff --git a/data/theme/luma-continue.css b/data/theme/luma-continue.css
+diff --git a/data/theme/Suno-continue.css b/data/theme/Suno-continue.css
 new file mode 100644
 index 0000000..453ecfc
 --- /dev/null
-+++ b/data/theme/luma-continue.css
++++ b/data/theme/Suno-continue.css
 @@ -0,0 +1,52 @@
 +/* SPDX-License-Identifier: GPL-2.0-or-later */
 +/* Continue (ADR-055): what the banner adds below its body. Design:
 + * design-center mockups/continue/cn.css. Light values first; the banner's
 + * smoked (dark) surface overrides; frost and glass are paper and keep them. */
-+.luma-continue { spacing: 0; }
++.Suno-continue { spacing: 0; }
 +
 +/* App strip: 24 px icons, 6 px apart, then +N in a 24 px chip, 9 px under the body. */
 +/* 8 px: the content column already puts 1 px between the body and this box. */
-+.luma-continue-apps { spacing: 6px; margin-top: 8px; }
-+.luma-continue-more {
++.Suno-continue-apps { spacing: 6px; margin-top: 8px; }
++.Suno-continue-more {
 +  height: 24px; width: 24px; padding: 0; border-radius: 7px;
 +  background-color: #dfe1e4; font-size: 11px; font-weight: 650; text-align: center;
 +}
 +
 +/* The line when this device already has windows: neutral ink, never a warning. */
-+.luma-continue-note { spacing: 7px; margin-top: 9px; height: 16px; font-size: 12px; }
-+.luma-continue-note StIcon { margin-top: 1px; color: rgba(31, 35, 40, 0.78); }
-+.luma-continue-note StLabel { color: rgba(31, 35, 40, 0.78); }
++.Suno-continue-note { spacing: 7px; margin-top: 9px; height: 16px; font-size: 12px; }
++.Suno-continue-note StIcon { margin-top: 1px; color: rgba(31, 35, 40, 0.78); }
++.Suno-continue-note StLabel { color: rgba(31, 35, 40, 0.78); }
 +
-+/* LumaUI progress: 4 px under the strip; 3 px in a list row. */
-+.luma-continue-progress {
++/* SunoUI progress: 4 px under the strip; 3 px in a list row. */
++.Suno-continue-progress {
 +  height: 4px; margin-top: 10px; border-radius: 3px;
 +  background-color: rgba(0, 0, 0, 0.10);
 +}
-+.luma-continue-progress-small { height: 3px; margin-top: 6px; }
-+.luma-continue-progress-fill { height: 4px; border-radius: 3px; background-color: #3584e4; }
-+.luma-continue-progress-small .luma-continue-progress-fill { height: 3px; }
++.Suno-continue-progress-small { height: 3px; margin-top: 6px; }
++.Suno-continue-progress-fill { height: 4px; border-radius: 3px; background-color: #3584e4; }
++.Suno-continue-progress-small .Suno-continue-progress-fill { height: 3px; }
 +
 +/* The result list, grown in place: 28 px icon, name 12.5/650, reason 12/400,
 + * each on a 16 px line; hairlines between rows. */
 +/* 11 px: the content column already puts 1 px between the body and this box. */
-+.luma-continue-list { margin-top: 11px; border-top: 1px solid rgba(0, 0, 0, 0.08); }
-+.luma-continue-row { spacing: 12px; padding: 9px 0; }
-+.luma-continue-divider { height: 1px; background-color: rgba(0, 0, 0, 0.06); }
-+.luma-continue-row-name { font-size: 12.5px; font-weight: 650; min-height: 16px; }
-+.luma-continue-row-reason { font-size: 12px; font-weight: 400; min-height: 16px; color: rgba(31, 35, 40, 0.66); }
-+.luma-continue-open {
++.Suno-continue-list { margin-top: 11px; border-top: 1px solid rgba(0, 0, 0, 0.08); }
++.Suno-continue-row { spacing: 12px; padding: 9px 0; }
++.Suno-continue-divider { height: 1px; background-color: rgba(0, 0, 0, 0.06); }
++.Suno-continue-row-name { font-size: 12.5px; font-weight: 650; min-height: 16px; }
++.Suno-continue-row-reason { font-size: 12px; font-weight: 400; min-height: 16px; color: rgba(31, 35, 40, 0.66); }
++.Suno-continue-open {
 +  height: 26px; padding: 0 12px; border-radius: 9px;
 +  background-color: #dfe1e4; font-size: 12px; font-weight: 650;
 +}
 +
-+.luma-surface-dark .luma-continue-more,
-+.luma-surface-dark .luma-continue-open { background-color: #32363c; }
-+.luma-surface-dark .luma-continue-note StLabel,
-+.luma-surface-dark .luma-continue-note StIcon,
-+.luma-surface-dark .luma-continue-row-reason { color: rgba(231, 233, 232, 0.62); }
-+.luma-surface-dark .luma-continue-list { border-top-color: rgba(255, 255, 255, 0.08); }
-+.luma-surface-dark .luma-continue-divider { background-color: rgba(255, 255, 255, 0.06); }
-+.luma-surface-dark .luma-continue-progress { background-color: rgba(255, 255, 255, 0.10); }
++.Suno-surface-dark .Suno-continue-more,
++.Suno-surface-dark .Suno-continue-open { background-color: #32363c; }
++.Suno-surface-dark .Suno-continue-note StLabel,
++.Suno-surface-dark .Suno-continue-note StIcon,
++.Suno-surface-dark .Suno-continue-row-reason { color: rgba(231, 233, 232, 0.62); }
++.Suno-surface-dark .Suno-continue-list { border-top-color: rgba(255, 255, 255, 0.08); }
++.Suno-surface-dark .Suno-continue-divider { background-color: rgba(255, 255, 255, 0.06); }
++.Suno-surface-dark .Suno-continue-progress { background-color: rgba(255, 255, 255, 0.10); }
 +
 +/* Done, 6 px under the list. */
-+.luma-notification-lip .notification-banner.luma-lip-card .message-action-bin.luma-notification-actions-end { padding-top: 6px; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin.Suno-notification-actions-end { padding-top: 6px; }
 diff --git a/js/js-resources.gresource.xml b/js/js-resources.gresource.xml
 index 46446ac..37765b3 100644
 --- a/js/js-resources.gresource.xml
 +++ b/js/js-resources.gresource.xml
 @@ -95,6 +95,7 @@
-     <file>ui/lumaWindowCorners.js</file>
-     <file>ui/lumaWindowWatch.js</file>
-     <file>ui/lumaSession.js</file>
-+    <file>ui/lumaContinue.js</file>
-     <file>ui/lumaFocusVisible.js</file>
-     <file>ui/lumaWell.js</file>
-     <file>ui/lumaWellModel.js</file>
-diff --git a/js/ui/lumaContinue.js b/js/ui/lumaContinue.js
+     <file>ui/SunoWindowCorners.js</file>
+     <file>ui/SunoWindowWatch.js</file>
+     <file>ui/SunoSession.js</file>
++    <file>ui/SunoContinue.js</file>
+     <file>ui/SunoFocusVisible.js</file>
+     <file>ui/SunoWell.js</file>
+     <file>ui/SunoWellModel.js</file>
+diff --git a/js/ui/SunoContinue.js b/js/ui/SunoContinue.js
 new file mode 100644
 index 0000000..96d6ecf
 --- /dev/null
-+++ b/js/ui/lumaContinue.js
++++ b/js/ui/SunoContinue.js
 @@ -0,0 +1,500 @@
 +// SPDX-License-Identifier: GPL-2.0-or-later
 +// The Continue banner (ADR-055; design: design-center mockups/continue).
@@ -186,10 +186,10 @@ index 0000000..96d6ecf
 +
 +import * as Main from './main.js';
 +import * as MessageTray from './messageTray.js';
-+import {peekNotificationLip} from './lumaNotificationBeacon.js';
++import {peekNotificationLip} from './SunoNotificationBeacon.js';
 +
-+const STYLESHEET_URI = 'resource:///org/gnome/shell/theme/luma-continue.css';
-+const CONNECT_ICON = 'org.projectluma.Connect';
++const STYLESHEET_URI = 'resource:///org/gnome/shell/theme/Suno-continue.css';
++const CONNECT_ICON = 'org.projectSuno.Connect';
 +const DESKTOP_ICON = 'org.gnome.Settings';
 +const STRIP_MAX = 6;
 +const LIST_OUTDENT = 46;
@@ -232,7 +232,7 @@ index 0000000..96d6ecf
 +        theme.load_stylesheet(Gio.File.new_for_uri(STYLESHEET_URI));
 +        stylesheetLoaded = true;
 +    } catch (e) {
-+        logError(e, '[luma-continue] stylesheet');
++        logError(e, '[Suno-continue] stylesheet');
 +    }
 +}
 +
@@ -289,7 +289,7 @@ index 0000000..96d6ecf
 +    if (catalogue === null) {
 +        catalogue = new Map();
 +        try {
-+            const path = GLib.build_filenamev([GLib.get_user_cache_dir(), 'luma', 'depot', 'catalogue-v1.json']);
++            const path = GLib.build_filenamev([GLib.get_user_cache_dir(), 'Suno', 'depot', 'catalogue-v1.json']);
 +            const file = Gio.File.new_for_path(path);
 +            if (file.query_info('standard::size', 0, null).get_size() <= CATALOGUE_MAX_BYTES) {
 +                const document = JSON.parse(new TextDecoder().decode(file.load_contents(null)[1]));
@@ -307,7 +307,7 @@ index 0000000..96d6ecf
 +    const bare = id.replace(/\.desktop$/, '');
 +    const roots = [GLib.build_filenamev([GLib.get_user_data_dir(), 'flatpak', 'appstream']), '/var/lib/flatpak/appstream'];
 +    for (const root of roots) {
-+        for (const remote of ['flathub', 'luma']) {
++        for (const remote of ['flathub', 'Suno']) {
 +            for (const size of ['128x128', '64x64']) {
 +                const path = GLib.build_filenamev([root, remote, Shell.util_get_architecture?.() ?? 'x86_64',
 +                    'active', 'icons', size, `${bare}.png`]);
@@ -395,7 +395,7 @@ index 0000000..96d6ecf
 +            this._notification = new MessageTray.Notification({
 +                source, title: '', body: '', isTransient: false, urgency,
 +            });
-+            this._notification.lumaContent = {
++            this._notification.SunoContent = {
 +                views: new Set(),
 +                actions: [],
 +                equalActions: false,
@@ -428,11 +428,11 @@ index 0000000..96d6ecf
 +        const datetime = when ? GLib.DateTime.new_from_unix_local(when) : GLib.DateTime.new_now_local();
 +        n.set({title, body, datetime});
 +        n.clearActions();
-+        n.lumaContent.equalActions = equal;
++        n.SunoContent.equalActions = equal;
 +        // In-place buttons: a Notification action would mark the banner acted
 +        // on and close it, and every state here changes the same banner.
-+        n.lumaContent.actions = actions.map(([label, callback]) => ({label, callback, end: state === 'list'}));
-+        for (const rebuild of n.lumaContent.views)
++        n.SunoContent.actions = actions.map(([label, callback]) => ({label, callback, end: state === 'list'}));
++        for (const rebuild of n.SunoContent.views)
 +            rebuild();
 +        if (!this._shown) {
 +            this._shown = true;
@@ -454,7 +454,7 @@ index 0000000..96d6ecf
 +    // now of equal weight.
 +    offer({device, windows, apps, busy = false, continuedAt = null, handheldApp = null, taken = null},
 +        onContinue, onNotNow) {
-+        this._ensure('Luma Connect', CONNECT_ICON, MessageTray.Urgency.CRITICAL);
++        this._ensure('Suno Connect', CONNECT_ICON, MessageTray.Urgency.CRITICAL);
 +        rememberApps(apps);
 +        this._apps = apps;
 +        this._done = null;
@@ -473,7 +473,7 @@ index 0000000..96d6ecf
 +
 +    // 3: the same banner, counting windows as they are placed.
 +    restoring({device, total, apps = null, onStop}) {
-+        this._ensure('Luma Connect', CONNECT_ICON, MessageTray.Urgency.CRITICAL);
++        this._ensure('Suno Connect', CONNECT_ICON, MessageTray.Urgency.CRITICAL);
 +        if (apps) {
 +            rememberApps(apps);
 +            this._apps = apps;
@@ -498,7 +498,7 @@ index 0000000..96d6ecf
 +        this._placed++;
 +        this._done.add(appId);
 +        this._notification?.set({body: `${this._placed} of ${this._total} windows`});
-+        for (const rebuild of this._notification?.lumaContent.views ?? [])
++        for (const rebuild of this._notification?.SunoContent.views ?? [])
 +            rebuild();
 +    }
 +
@@ -520,7 +520,7 @@ index 0000000..96d6ecf
 +            this._notification.forFeedback = true;
 +        }
 +        else
-+            this._ensure('Luma Connect', CONNECT_ICON, MessageTray.Urgency.CRITICAL);
++            this._ensure('Suno Connect', CONNECT_ICON, MessageTray.Urgency.CRITICAL);
 +        this._rows = rows;
 +        this._onOpen = onOpen;
 +        const title = `Reopened ${result.placed} of ${result.windows} windows`;
@@ -540,7 +540,7 @@ index 0000000..96d6ecf
 +
 +    // 5: on the source device, the next unlock.
 +    continued({device, at}) {
-+        this._ensure('Luma Connect', CONNECT_ICON, MessageTray.Urgency.NORMAL);
++        this._ensure('Suno Connect', CONNECT_ICON, MessageTray.Urgency.NORMAL);
 +        this._set({
 +            title: `Your windows continued on ${device}`,
 +            body: `At ${clock(at)}. Nothing here was closed.`,
@@ -583,11 +583,11 @@ index 0000000..96d6ecf
 +    // --- content ---------------------------------------------------------
 +
 +    _strip() {
-+        const box = new St.BoxLayout({style_class: 'luma-continue-apps'});
++        const box = new St.BoxLayout({style_class: 'Suno-continue-apps'});
 +        const shown = (this._apps ?? []).slice(0, STRIP_MAX);
 +        for (const {id} of shown) {
 +            const icon = appIcon(id, 24);
-+            icon.add_style_class_name('luma-continue-app');
++            icon.add_style_class_name('Suno-continue-app');
 +            // Not open yet: 32 % and without colour until its first window is placed.
 +            if (this._done && !this._done.has(id)) {
 +                icon.opacity = 82;
@@ -597,14 +597,14 @@ index 0000000..96d6ecf
 +        }
 +        const more = (this._apps ?? []).length - shown.length;
 +        if (more > 0)
-+            box.add_child(new St.Label({style_class: 'luma-continue-more', text: `+${more}`}));
++            box.add_child(new St.Label({style_class: 'Suno-continue-more', text: `+${more}`}));
 +        return box;
 +    }
 +
 +    _progress(styleClass) {
 +        const track = new St.Widget({style_class: styleClass, x_expand: true,
 +            layout_manager: new Clutter.FixedLayout()});
-+        track._fill = new St.Widget({style_class: 'luma-continue-progress-fill', x: 0, y: 0, width: 0});
++        track._fill = new St.Widget({style_class: 'Suno-continue-progress-fill', x: 0, y: 0, width: 0});
 +        track._share = 0;
 +        track.connect('notify::width', () => (track._fill.width = Math.round(track.width * track._share)));
 +        track.add_child(track._fill);
@@ -613,48 +613,48 @@ index 0000000..96d6ecf
 +
 +    _build(_message) {
 +        const box = new St.BoxLayout({orientation: Clutter.Orientation.VERTICAL,
-+            style_class: 'luma-continue', x_expand: true});
++            style_class: 'Suno-continue', x_expand: true});
 +        this._progressBars = [];
 +        if (this._state === 'offer' || this._state === 'restoring')
 +            box.add_child(this._strip());
 +        if (this._state === 'offer' && this._busy) {
-+            const note = new St.BoxLayout({style_class: 'luma-continue-note'});
-+            note.add_child(new St.Icon({icon_name: 'luma-continue-layers-symbolic', icon_size: 14,
++            const note = new St.BoxLayout({style_class: 'Suno-continue-note'});
++            note.add_child(new St.Icon({icon_name: 'Suno-continue-layers-symbolic', icon_size: 14,
 +                y_align: Clutter.ActorAlign.START}));
 +            note.add_child(new St.Label({text: 'Opens on a new desktop. What’s open here stays.',
 +                x_expand: true}));
 +            box.add_child(note);
 +        }
 +        if (this._state === 'restoring') {
-+            const bar = this._progress('luma-continue-progress');
++            const bar = this._progress('Suno-continue-progress');
 +            bar.connect('notify::allocation', () => this._sizeProgress(bar));
 +            this._progressBars.push(bar);
 +            box.add_child(bar);
 +        }
 +        if (this._state === 'list') {
 +            const list = new St.BoxLayout({orientation: Clutter.Orientation.VERTICAL,
-+                style_class: 'luma-continue-list', x_expand: true});
++                style_class: 'Suno-continue-list', x_expand: true});
 +            for (const row of this._rows ?? []) {
 +                // The hairline between rows is its own actor: a row's
 +                // bottom border took its width but was not painted.
 +                if (list.get_n_children())
-+                    list.add_child(new St.Widget({style_class: 'luma-continue-divider', x_expand: true}));
-+                const line = new St.BoxLayout({style_class: 'luma-continue-row', x_expand: true});
++                    list.add_child(new St.Widget({style_class: 'Suno-continue-divider', x_expand: true}));
++                const line = new St.BoxLayout({style_class: 'Suno-continue-row', x_expand: true});
 +                line.add_child(appIcon(row.id, 28));
 +                const text = new St.BoxLayout({orientation: Clutter.Orientation.VERTICAL, x_expand: true,
 +                    y_align: Clutter.ActorAlign.CENTER});
-+                text.add_child(new St.Label({style_class: 'luma-continue-row-name', text: appName(row.id)}));
-+                const why = new St.Label({style_class: 'luma-continue-row-reason', text: row.reason});
++                text.add_child(new St.Label({style_class: 'Suno-continue-row-name', text: appName(row.id)}));
++                const why = new St.Label({style_class: 'Suno-continue-row-reason', text: row.reason});
 +                why.clutter_text.line_wrap = true;
 +                text.add_child(why);
 +                if (row.progress !== undefined) {
-+                    const bar = this._progress('luma-continue-progress luma-continue-progress-small');
++                    const bar = this._progress('Suno-continue-progress Suno-continue-progress-small');
 +                    bar._share = Math.min(1, Math.max(0, row.progress / 100));
 +                    text.add_child(bar);
 +                }
 +                line.add_child(text);
 +                if (row.open) {
-+                    const open = new St.Button({style_class: 'luma-continue-open', label: 'Open',
++                    const open = new St.Button({style_class: 'Suno-continue-open', label: 'Open',
 +                        y_align: Clutter.ActorAlign.CENTER, can_focus: true});
 +                    open.connect('clicked', () => this._onOpen?.(row.id));
 +                    line.add_child(open);
@@ -668,13 +668,13 @@ index 0000000..96d6ecf
 +        return box.get_n_children() ? box : null;
 +    }
 +}
-diff --git a/js/ui/lumaSession.js b/js/ui/lumaSession.js
+diff --git a/js/ui/SunoSession.js b/js/ui/SunoSession.js
 index 502e3a9..abdcb46 100644
---- a/js/ui/lumaSession.js
-+++ b/js/ui/lumaSession.js
+--- a/js/ui/SunoSession.js
++++ b/js/ui/SunoSession.js
 @@ -12,14 +12,18 @@
  //
- //   journalctl --user -b -g luma-session
+ //   journalctl --user -b -g Suno-session
  
 +import Clutter from 'gi://Clutter';
  import Gio from 'gi://Gio';
@@ -686,12 +686,12 @@ index 502e3a9..abdcb46 100644
  import * as LoginManager from '../misc/loginManager.js';
  import * as Main from './main.js';
 -import * as MessageTray from './messageTray.js';
-+import {ContinueBanner, snapshotApps} from './lumaContinue.js';
++import {ContinueBanner, snapshotApps} from './SunoContinue.js';
 +
 +Gio._promisify(Gio.DBusConnection.prototype, 'call_with_unix_fd_list');
  
  export const FORMAT = 1;
- const SCHEMA = 'org.projectluma.session';
+ const SCHEMA = 'org.projectSuno.session';
 @@ -28,7 +32,7 @@ const SETTLE_MS = 3000;
  const RESTORE_WAIT_MS = 20 * 1000;
  const LATE_WINDOW_MS = 15 * 60 * 1000;
@@ -717,7 +717,7 @@ index 502e3a9..abdcb46 100644
  }
  
  function decodeScope(text) {
-@@ -327,6 +332,7 @@ export class LumaSession {
+@@ -327,6 +332,7 @@ export class SunoSession {
          this._answers = null;           // serial -> Map(bus -> state)
          this._pendingRestore = new Map(); // app id (normalised) -> {reason, state}
          this._restoring = null;
@@ -725,7 +725,7 @@ index 502e3a9..abdcb46 100644
  
          this._dbusImpl = Gio.DBusExportedObject.wrapJSObject(SessionIface, this);
          this._dbusImpl.export(Gio.DBus.session, OBJECT_PATH);
-@@ -444,7 +450,11 @@ export class LumaSession {
+@@ -444,7 +450,11 @@ export class SunoSession {
          for (const w of windows) {
              if (!w.app || apps.has(w.app))
                  continue;
@@ -738,7 +738,7 @@ index 502e3a9..abdcb46 100644
          }
          for (const w of windows) {
              if (w.app)
-@@ -472,6 +482,7 @@ export class LumaSession {
+@@ -472,6 +482,7 @@ export class SunoSession {
              monitors,
              windows,
              apps: [...apps.values()],
@@ -746,7 +746,7 @@ index 502e3a9..abdcb46 100644
          };
      }
  
-@@ -540,16 +551,27 @@ export class LumaSession {
+@@ -540,16 +551,27 @@ export class SunoSession {
      }
  
      _watchSession() {
@@ -777,7 +777,7 @@ index 502e3a9..abdcb46 100644
                  return;
              }
              const release = () => {
-@@ -566,13 +588,20 @@ export class LumaSession {
+@@ -566,13 +588,20 @@ export class SunoSession {
              });
          }, this);
  
@@ -800,7 +800,7 @@ index 502e3a9..abdcb46 100644
                  });
          } catch (e) {
              log(`no shutdown signal: ${e.message}`);
-@@ -588,6 +617,25 @@ export class LumaSession {
+@@ -588,6 +617,25 @@ export class SunoSession {
          }
      }
  
@@ -826,7 +826,7 @@ index 502e3a9..abdcb46 100644
      async _takeSleepInhibitor() {
          if (this._sleepInhibitor)
              return;
-@@ -602,11 +650,20 @@ export class LumaSession {
+@@ -602,11 +650,20 @@ export class SunoSession {
      // --- restore ---------------------------------------------------------
  
      _restoreAtLogin() {
@@ -848,7 +848,7 @@ index 502e3a9..abdcb46 100644
              return;
          if (snapshot.device && snapshot.device !== this._device)
              return;
-@@ -615,6 +672,7 @@ export class LumaSession {
+@@ -615,6 +672,7 @@ export class SunoSession {
              return;
          }
          snapshot.restoredAt = Math.floor(Date.now() / 1000);
@@ -856,7 +856,7 @@ index 502e3a9..abdcb46 100644
          try {
              writePrivate(path, JSON.stringify(snapshot));
          } catch (e) {
-@@ -644,12 +702,29 @@ export class LumaSession {
+@@ -644,12 +702,29 @@ export class SunoSession {
              wm.append_new_workspace(false, global.get_current_time());
  
          const slots = (snapshot.windows ?? []).map((w, index) => ({...w, index, window: null}));
@@ -887,7 +887,7 @@ index 502e3a9..abdcb46 100644
          this._restoring = restoring;
  
          const byApp = new Map();
-@@ -704,6 +779,14 @@ export class LumaSession {
+@@ -704,6 +779,14 @@ export class SunoSession {
              if (config.get_is_initial())
                  this._configure(w, config);
          }, this);
@@ -902,7 +902,7 @@ index 502e3a9..abdcb46 100644
      }
  
      _slotFor(window) {
-@@ -742,8 +825,12 @@ export class LumaSession {
+@@ -742,8 +825,12 @@ export class SunoSession {
          const savedMonitor = (restoring.snapshot.monitors ?? []).find(m => m.index === slot.monitor);
          const currentMonitor = restoring.current.find(m => m.index === monitor) ?? restoring.current[0];
          const area = currentMonitor.workArea;
@@ -917,7 +917,7 @@ index 502e3a9..abdcb46 100644
          const floating = exact ? slot.floating : fit(unshare(slot.floatingShare, area), area);
          const frame = exact ? slot.frame : fit(unshare(slot.frameShare, area), area);
          return {monitor, area, floating, frame, exact};
-@@ -751,8 +838,11 @@ export class LumaSession {
+@@ -751,8 +838,11 @@ export class SunoSession {
  
      _configure(window, config) {
          const slot = this._slotFor(window);
@@ -930,7 +930,7 @@ index 502e3a9..abdcb46 100644
          const restoring = this._restoring ?? this._late;
          slot.window = window;
          restoring.result.placed++;
-@@ -765,6 +855,11 @@ export class LumaSession {
+@@ -765,6 +855,11 @@ export class SunoSession {
              this._checkRestoreDone();
          };
          window.connectObject('shown', ready, this);
@@ -942,7 +942,7 @@ index 502e3a9..abdcb46 100644
          if (slot.minimized) {
              GLib.timeout_add(GLib.PRIORITY_DEFAULT, 1000, () => {
                  ready();
-@@ -779,6 +874,8 @@ export class LumaSession {
+@@ -779,6 +874,8 @@ export class SunoSession {
          slot.target = target;
          if (window.is_restored_from_session?.()) {
              log(`${slot.app}: restored by its client`);
@@ -951,7 +951,7 @@ index 502e3a9..abdcb46 100644
          } else {
              const r = slot.state === 'floating' ? target.frame : target.floating;
              // set_rect() takes the rectangle by value, which GJS can't pass.
-@@ -808,13 +905,37 @@ export class LumaSession {
+@@ -808,13 +905,37 @@ export class SunoSession {
          if (slot.minimized)
              window.minimize();
          const late = restoring === this._late;
@@ -990,7 +990,7 @@ index 502e3a9..abdcb46 100644
      // An app that doesn't reopen its own windows opens one; once no new
      // window of it has come for a moment, ask it for one more, until every
      // window of it in the snapshot is there.
-@@ -880,6 +1001,7 @@ export class LumaSession {
+@@ -880,6 +1001,7 @@ export class SunoSession {
              wm.get_workspace_by_index(active).activate(time);
          const focus = slots.find(s => s.focus && s.window && !s.window.minimized);
          if (focus) {
@@ -998,7 +998,7 @@ index 502e3a9..abdcb46 100644
              Main.activateWindow(focus.window, time);
              // A client's own user time (an X11 client's, a startup token's)
              // can be ahead of the server time and turn the activation into
-@@ -889,9 +1011,11 @@ export class LumaSession {
+@@ -889,9 +1011,11 @@ export class SunoSession {
              if (global.display.focus_window !== focus.window)
                  log(`${focus.app}: window ${focus.index} could not take the focus`);
          }
@@ -1011,7 +1011,7 @@ index 502e3a9..abdcb46 100644
          log(`restored ${result.placed} of ${result.windows} windows in ${result.seconds.toFixed(1)} s` +
              (result.missing.length ? `; not installed: ${result.missing.join(', ')}` : '') +
              (result.unplaced.length ? `; didn't open in time: ${result.unplaced.join(', ')}` : ''));
-@@ -905,25 +1029,146 @@ export class LumaSession {
+@@ -905,25 +1029,146 @@ export class SunoSession {
                  return GLib.SOURCE_REMOVE;
              });
          }
@@ -1112,8 +1112,8 @@ index 502e3a9..abdcb46 100644
 +            return;
 +        let offer;
 +        try {
-+            const [json] = (await Gio.DBus.session.call('org.projectluma.ConnectSync1',
-+                '/org/projectluma/ConnectSync1', 'org.projectluma.ConnectSync1', 'GetContinueOffer',
++            const [json] = (await Gio.DBus.session.call('org.projectSuno.ConnectSync1',
++                '/org/projectSuno/ConnectSync1', 'org.projectSuno.ConnectSync1', 'GetContinueOffer',
 +                null, new GLib.VariantType('(s)'), Gio.DBusCallFlags.NO_AUTO_START, 15000, null)).deepUnpack();
 +            offer = JSON.parse(json);
 +        } catch (e) {
@@ -1141,8 +1141,8 @@ index 502e3a9..abdcb46 100644
 +    offerContinue(offer, continuedAt = null) {
 +        this._banner ??= new ContinueBanner();
 +        this._offering = offer.id;
-+        const call = (method, args, type = null) => Gio.DBus.session.call('org.projectluma.ConnectSync1',
-+            '/org/projectluma/ConnectSync1', 'org.projectluma.ConnectSync1', method, args,
++        const call = (method, args, type = null) => Gio.DBus.session.call('org.projectSuno.ConnectSync1',
++            '/org/projectSuno/ConnectSync1', 'org.projectSuno.ConnectSync1', method, args,
 +            type ? new GLib.VariantType(type) : null, Gio.DBusCallFlags.NO_AUTO_START, 120000, null);
 +        this._banner.offer({
 +            device: offer.name,
@@ -1192,17 +1192,17 @@ index 98ccd28..5d06212 100644
 +        // progress and result list): built per message, since the banner
 +        // and the list each show the notification, and rebuilt in place
 +        // when the notification asks.
-+        if (notification.lumaContent) {
++        if (notification.SunoContent) {
 +            const rebuild = () => {
-+                this._lumaContent?.destroy();
-+                this._lumaContent = notification.lumaContent.build(this);
-+                if (this._lumaContent)
-+                    this._contentBox.add_child(this._lumaContent);
-+                this._setLumaActions(notification.lumaContent.actions ?? []);
++                this._SunoContent?.destroy();
++                this._SunoContent = notification.SunoContent.build(this);
++                if (this._SunoContent)
++                    this._contentBox.add_child(this._SunoContent);
++                this._setSunoActions(notification.SunoContent.actions ?? []);
 +                this._syncActionButtons();
 +            };
-+            notification.lumaContent.views.add(rebuild);
-+            this.connect('destroy', () => notification.lumaContent?.views.delete(rebuild));
++            notification.SunoContent.views.add(rebuild);
++            this.connect('destroy', () => notification.SunoContent?.views.delete(rebuild));
 +            rebuild();
 +        }
      }
@@ -1214,10 +1214,10 @@ index 98ccd28..5d06212 100644
          this._buttonBox.get_children().forEach((button, index) => {
 -            button.x_expand = false;
 +            // Choices of equal weight share the row equally (Continue / Not now).
-+            button.x_expand = Boolean(this.notification?.lumaContent?.equalActions) || Boolean(button._lumaEnd);
++            button.x_expand = Boolean(this.notification?.SunoContent?.equalActions) || Boolean(button._SunoEnd);
              button.visible = index < CARD_MAX_ACTIONS && !(this._inlineReply && this._allowInlineReply !== false);
-             if (this._allowInlineReply !== undefined && isIncomingCallNotification(this.notification) && !button._lumaCallGlyph) {
-                 const id = button._lumaAction.id;
+             if (this._allowInlineReply !== undefined && isIncomingCallNotification(this.notification) && !button._SunoCallGlyph) {
+                 const id = button._SunoAction.id;
 @@ -1158,6 +1178,40 @@ class NotificationMessage extends Message {
          this._syncActionButtons();
      }
@@ -1225,15 +1225,15 @@ index 98ccd28..5d06212 100644
 +    // Buttons that change the notification in place (Show grows a list,
 +    // Continue turns into progress): not Notification actions, which mark
 +    // the notification acted on and close its card.
-+    _setLumaActions(actions) {
-+        for (const button of this._lumaButtons ?? [])
++    _setSunoActions(actions) {
++        for (const button of this._SunoButtons ?? [])
 +            button.destroy();
-+        this._lumaButtons = [];
++        this._SunoButtons = [];
 +        // A closing row under grown content (a list) sits closer to it.
 +        if (actions.some(action => action.end))
-+            this._actionBin.add_style_class_name('luma-notification-actions-end');
++            this._actionBin.add_style_class_name('Suno-notification-actions-end');
 +        else
-+            this._actionBin.remove_style_class_name('luma-notification-actions-end');
++            this._actionBin.remove_style_class_name('Suno-notification-actions-end');
 +        if (actions.length === 0)
 +            return;
 +        this._ensureActionBox();
@@ -1246,12 +1246,12 @@ index 98ccd28..5d06212 100644
 +            const button = new St.Button({style_class: 'notification-button', x_expand: true, can_focus: true, label});
 +            // A lone closing button (Done) sits at the end of the row.
 +            if (end) {
-+                button._lumaEnd = true;
++                button._SunoEnd = true;
 +                button.x_align = Clutter.ActorAlign.END;
 +            }
-+            button._lumaAction = {id: label, label};
++            button._SunoAction = {id: label, label};
 +            button.connect('clicked', () => callback());
-+            this._lumaButtons.push(button);
++            this._SunoButtons.push(button);
 +            this._buttonBox.add_child(button);
 +        }
 +    }

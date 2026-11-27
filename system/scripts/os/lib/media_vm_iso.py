@@ -87,7 +87,7 @@ def copy(source, destination, budget, reserve):
             raise ValueError('ISO source is not a regular file')
         if before.st_size > budget:
             raise ValueError(f'the ISO is {size_text(before.st_size)}, over the {size_text(budget)} copy budget; '
-                             'raise LUMA_OS_MEDIA_COPY_BUDGET_GIB or put the fixture directory on a '
+                             'raise SUNO_OS_MEDIA_COPY_BUDGET_GIB or put the fixture directory on a '
                              'reflink filesystem (XFS, btrfs)')
         volume = os.statvfs(destination.parent)
         free = volume.f_bavail * volume.f_frsize

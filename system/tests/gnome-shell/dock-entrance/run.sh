@@ -4,7 +4,7 @@ T=repro-${R_TAG}
 export XDG_RUNTIME_DIR=/tmp/$T-run; rm -rf $XDG_RUNTIME_DIR; mkdir -m 700 -p $XDG_RUNTIME_DIR
 export HOME=/tmp/$T-home; rm -rf $HOME; mkdir -p $HOME/.config/glib-2.0/settings $HOME/.local/share/applications
 cat > $HOME/.config/glib-2.0/settings/keyfile <<KEY
-[org/project-luma/shell-state]
+[org/project-suno/shell-state]
 shelf-edge='bottom'
 shelf-edge-mode='floating'
 shelf-float-ends=false

@@ -24,7 +24,7 @@ release and pins alone. The release on main plus one is written at merge.
 
 Tokens a change may write: @RELEASE@ in a package's own spec or spec patch (a
 %changelog entry: "- 0.1.0-@RELEASE@"), @RELEASE:<package>@ in any spec or spec
-patch (a floor: "Requires: luma-developer-platform >= 0.1.0-@RELEASE:luma-developer-platform@").
+patch (a floor: "Requires: Suno-developer-platform >= 0.1.0-@RELEASE:Suno-developer-platform@").
 """
 
 import argparse
@@ -45,16 +45,16 @@ import package_releases as pr  # noqa: E402
 
 REPO = os.environ.get('GITHUB_REPOSITORY', 'SimplyLuma/luma')
 COHORT = 'config/os/desktop-toolkit-cohort.json'
-TOOLKIT = {'gtk4', 'libadwaita', 'luma-developer-platform', 'google-figtree-fonts'}
+TOOLKIT = {'gtk4', 'libadwaita', 'Suno-developer-platform', 'google-figtree-fonts'}
 UI = {'gnome-shell', 'gnome-control-center', 'nautilus'}
 # Hand-set releases of packages this tree counts fail from this date; until then
 # open pull requests may keep theirs.
 HAND_RELEASES_FAIL_FROM = '2026-11-30'
 BOT = ('github-actions[bot]', '41898282+github-actions[bot]@users.noreply.github.com')
 # The interim forge's release commits (tools/interim/merge-branch.sh).
-INTERIM_BOT = ('Luma interim release', 'interim-release@luma-build.invalid')
+INTERIM_BOT = ('Suno interim release', 'interim-release@Suno-build.invalid')
 RELEASERS = {BOT[1], INTERIM_BOT[1]}
-CANDIDATE_SCHEMA = 'org.projectluma.release-candidate/v1'
+CANDIDATE_SCHEMA = 'org.projectSuno.release-candidate/v1'
 
 
 def git(*args, root=None):
@@ -94,7 +94,7 @@ def cmd_check(args):
     base, head = Tree(args.base), Tree(args.head)
     changed = git('diff', '--name-only', f'{args.base}...{args.head}').splitlines()
     found = pr.packages(head)
-    today = os.environ.get('LUMA_CONTRACT_TODAY') or datetime.date.today().isoformat()
+    today = os.environ.get('SUNO_CONTRACT_TODAY') or datetime.date.today().isoformat()
     failures = 0
     for name, package in sorted(found.items()):
         hits = pr.sources_changed(package, base, head, changed)
@@ -492,7 +492,7 @@ def cmd_release(args):
         tag = f'release-build/{release_commit[:12]}'
         git('push', '--quiet', 'origin', f'{release_commit}:refs/tags/{tag}')
         dispatch('.github/workflows/desktop-toolkit.yml', tag,
-                 {'incremental': 'true' if toolkit == {'luma-developer-platform'} else ''})
+                 {'incremental': 'true' if toolkit == {'Suno-developer-platform'} else ''})
         built = wait_for_run('.github/workflows/desktop-toolkit.yml', release_commit)
         if built['conclusion'] != 'success':
             raise SystemExit(f"toolkit run {built['id']} for {release_commit[:12]} failed; nothing pushed")

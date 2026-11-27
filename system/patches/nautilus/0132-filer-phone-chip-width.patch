@@ -13,10 +13,10 @@ index 478c250..dbc5442 100644
 +++ b/src/resources/style.css
 @@ -45,6 +45,7 @@
  }
- .luma-files-window #filer-location-scope image { -gtk-icon-size: 0px; }
- .luma-files-window box.lumaui-bar-chip { min-width: 243px; }
-+.luma-files-window .lumaui-action-center.phone box.lumaui-bar-chip { min-width: 0; }
- .luma-files-window row.luma-live-rail-row { padding-left: 3px; padding-right: 3px; }
+ .Suno-files-window #filer-location-scope image { -gtk-icon-size: 0px; }
+ .Suno-files-window box.SunoUI-bar-chip { min-width: 243px; }
++.Suno-files-window .SunoUI-action-center.phone box.SunoUI-bar-chip { min-width: 0; }
+ .Suno-files-window row.Suno-live-rail-row { padding-left: 3px; padding-right: 3px; }
  
  /* Filer uses a deliberate two-row native title composition. */
 -- 

@@ -1,0 +1,164 @@
+# System-tool triggers (ADR-052 Amendment 1, section 2, "Classification",
+# rule 2). Read by Suno_installer/classify.py.
+#
+# A package is a system tool when a polkit .policy names an
+# org.freedesktop.policykit.exec.path, when a file is setuid, setgid or
+# carries file capabilities, or when its launcher's Exec runs pkexec. A system
+# tool is a system module labelled "full control of this computer". Only
+# privilege on the package's main binary (named like the package) or a
+# launcher that runs only through pkexec counts; see [hints].
+#
+# [exec]      fnmatch patterns for a launcher's program (the first word of
+#             Exec, base name) that mean "runs itself through pkexec":
+#             pkexec itself and the distributions' pkexec wrappers
+# [dropped]   setuid or capability files that are dropped in an application
+#             tree without loss: the application keeps working, so they do not
+#             make it a system tool (Chromium's setuid sandbox: bubblewrap
+#             keeps nested user namespaces, which Chromium uses instead)
+# [optional]  privileged helpers (exec.path or setuid) of an application that
+#             are named as not working instead of making it a system tool;
+#             the application's main purpose does not need them
+# [hints]     "pattern text": the line shown when a command that is not the
+#             package's main binary loses its setuid bit or capabilities in
+#             the workspace (rule 2 narrowed: only a main binary that needs root
+#             makes a system tool)
+#
+# [admin-libraries]  libraries that reach devices, the kernel or the network
+#             (partitions, device mapper, netlink, netfilter, PCI, USB, udev,
+#             modems, tracing). A command-line package whose commands are all in
+#             sbin and that links one of these is a command-line system tool:
+#             it needs real root, which a workspace's sudo (mapped root) is not.
+#             Commands only in sbin without one of these, and commands
+#             elsewhere that link one (lsusb, aptitude), are a choice. Package
+#             managers' libraries are here: a tool that changes packages acts on
+#             the system.
+#
+# One fnmatch pattern per line; [dropped], [optional] and [hints] match
+# absolute paths, [admin-libraries] package names.
+
+[exec]
+lxsudo
+lxsu
+lxdoas
+lxqt-sudo
+pkexec
+*-pkexec
+*_pkexec
+gksu
+gksudo
+kdesu
+kdesudo
+beesu
+su-to-root
+# programs that are wrapper scripts around pkexec
+timeshift-launcher
+gparted
+
+[dropped]
+*/chrome-sandbox
+*/chrome_sandbox
+/opt/google/chrome*/chrome-sandbox
+/usr/lib*/chromium*/chrome-sandbox
+/usr/lib*/chromium*/chrome_sandbox
+/opt/*/chrome-sandbox
+/usr/share/*/chrome-sandbox
+/usr/lib/*/chrome-sandbox
+/opt/brave.com/*/chrome-sandbox
+/opt/microsoft/msedge*/msedge-sandbox
+/opt/vivaldi*/vivaldi-sandbox
+
+[optional]
+/usr/libexec/gnome-system-monitor/gsm-*
+/usr/lib/gnome-system-monitor/gsm-*
+/usr/lib/*/gnome-system-monitor/gsm-*
+
+[hints]
+*/ping ping works unprivileged through net.ipv4.ping_group_range (systemd's 50-default.conf)
+*/ping6 ping works unprivileged through net.ipv4.ping_group_range (systemd's 50-default.conf)
+*/mtr-packet mtr needs raw sockets for TCP, UDP and MTU probes; ICMP works through ping sockets
+*/dumpcap live capture needs dumpcap's capabilities; reading capture files works
+*/fusermount* FUSE mounts from the workspace need the host's fusermount
+*/wall writing to other people's terminals needs the tty group
+*/dotlockfile locking the system mail spool needs the mail group
+*/ip ip changes to the host's network need root, as without the capability
+*/ssh-keysign host-based SSH authentication needs ssh-keysign's setuid bit
+*/unix_chkpwd checking passwords needs the host's PAM
+
+[admin-libraries]
+libparted*
+libblkid*
+libfdisk*
+libmount*
+libdevmapper*
+libcryptsetup*
+libext2fs*
+libe2p*
+libbtrfs*
+libnl-*
+libmnl*
+libnftnl*
+libnftables*
+libnetfilter*
+libnfnetlink*
+libxtables*
+libip4tc*
+libip6tc*
+libipset*
+libpci*
+libusb*
+libudev*
+libkmod*
+libpcap*
+libiw*
+libqmi*
+libmbim*
+libqrtr*
+libtraceevent*
+libtracefs*
+libefivar*
+libefiboot*
+libsmbios*
+libatasmart*
+libnvme*
+libibverbs*
+libdrm*
+libsysfs*
+device-mapper-libs
+cryptsetup-libs
+e2fsprogs-libs
+libgudev*
+libapt-pkg*
+libapt-inst*
+libdnf*
+librpm*
+libzypp*
+libalpm*
+python3-apt*
+python3-dnf*
+python3-libdnf*
+libtss2*
+tpm2-tss*
+
+[package-managers]
+# A package-manager front end links or runs one of these: its data, -common and backend
+# packages take its choice (ADR rule 2).
+libapt-pkg*
+libapt-inst*
+python3-apt*
+apt
+libdnf*
+python3-dnf*
+python3-libdnf*
+dnf
+dnf5
+librpm*
+libzypp*
+libalpm*
+libpackagekit*
+PackageKit
+PackageKit-glib
+packagekit
+
+[capture-libraries]
+# An application whose main function is packet capture links one of these: a choice with system tool.
+libpcap*

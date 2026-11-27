@@ -18,11 +18,11 @@ rebuild the changed platform cohort and use the resulting runtime for both CPUs.
 
 | Component | Required delivery |
 | --- | --- |
-| Ari engine, account support and application tools | OS-owned `luma-ari-0.1.0-1.luma.21.creator20261029.1.fc44.noarch`; bus `org.projectluma.Ari1` |
-| Shared AppKit accessibility fixes | Native Platform and SDK generation 119, `1.luma.119.creator20261030.1`, on the actual target architecture |
-| Toolkit used by sandboxed applications | Rebuild and sign `org.projectluma.Platform` and its matching SDK on runtime branch `44` with the same maintained platform sources |
-| Ari interface | Signed `app/org.projectluma.Ari/ARCH/beta`, AppStream version `0.2.0`, through Depot |
-| Tide owner interface | Signed `app/org.projectluma.Tide/ARCH/beta` containing `luma_tide/automation.py` and its application startup registration |
+| Ari engine, account support and application tools | OS-owned `Suno-ari-0.1.0-1.Suno.21.creator20261029.1.fc44.noarch`; bus `org.projectSuno.Ari1` |
+| Shared AppKit accessibility fixes | Native Platform and SDK generation 119, `1.Suno.119.creator20261030.1`, on the actual target architecture |
+| Toolkit used by sandboxed applications | Rebuild and sign `org.projectSuno.Platform` and its matching SDK on runtime branch `44` with the same maintained platform sources |
+| Ari interface | Signed `app/org.projectSuno.Ari/ARCH/beta`, AppStream version `0.2.0`, through Depot |
+| Tide owner interface | Signed `app/org.projectSuno.Tide/ARCH/beta` containing `Suno_tide/automation.py` and its application startup registration |
 
 The shared-platform pin advances past published generation 118. Rebuilding the
 previously selected generation 116 would cause a version regression and could
@@ -30,11 +30,11 @@ leave installed native apps using the old toolkit. Its spec, x86_64 and
 aarch64 pins, SDK pin and desktop package list must stay consistent. Later
 integration must preserve monotonic versions rather than restore an older
 branch's pins. The shared icon spec and image pins also advance together to
-`1.luma.43.creator20261030.1`, past published generation 42; this resolves the
+`1.Suno.43.creator20261030.1`, past published generation 42; this resolves the
 pre-existing icon pin/spec mismatch found by the same Nightly preflight.
 No icon artwork changes are part of this packaging correction.
 
-Ari's Flatpak declares `X-Luma=min-host-ari=21`, matching
+Ari's Flatpak declares `X-Suno=min-host-ari=21`, matching
 `packaging/flatpak/first-party-updates.json`. A Flatpak update cannot replace the
 OS-owned engine. Keep the old deployment and explain the required OS update
 when the host is missing or too old. Keep the existing app IDs, beta branch,

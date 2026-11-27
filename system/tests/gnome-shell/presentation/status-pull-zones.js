@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import assert from 'node:assert/strict';
-import {statusPullZone} from '../../../src/luma-shell-presentation/layout.js';
+import {statusPullZone} from '../../../src/Suno-shell-presentation/layout.js';
 for (const width of [360, 390, 540, 700]) {
     const status = {x: 50, y: 20, width, height: 44};
     const clock = {x: 64, y: 20, width: 72, height: 44};

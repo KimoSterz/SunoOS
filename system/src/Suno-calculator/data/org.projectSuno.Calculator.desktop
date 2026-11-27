@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Calculator
+Comment=Work out sums, percentages and conversions
+Exec=Suno-calculator
+Icon=Suno-v3-calculator
+Terminal=false
+Categories=Utility;Calculator;
+Keywords=calculation;arithmetic;maths;math;
+StartupNotify=true

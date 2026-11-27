@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-// Layer-shell grants (0393, lumaLayerShellModel.js): how permission-store
+// Layer-shell grants (0393, SunoLayerShellModel.js): how permission-store
 // rows become Mutter's capability masks, that an offer is made once per app
 // and capability, that switching one capability keeps the others and the
 // "used" marks, and which apps change when the table does.
-// Run: gjs -m layer-shell-policy.js js/ui/lumaLayerShellModel.js
+// Run: gjs -m layer-shell-policy.js js/ui/SunoLayerShellModel.js
 const gjs = typeof globalThis.ARGV !== 'undefined';
 const args = gjs ? globalThis.ARGV : process.argv.slice(2);
 const print = gjs ? globalThis.print : console.log;
@@ -22,7 +22,7 @@ const eq = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 // The bits are Meta.LayerShellCapabilities.
 check(M.Capability.BACKGROUND === 1 && M.Capability.PANEL === 2 &&
     M.Capability.OVERLAY === 4 && M.Capability.KEYBOARD === 8, 'capability bits');
-check(M.TABLE === 'luma' && M.ID === 'display-over-apps', 'store location');
+check(M.TABLE === 'Suno' && M.ID === 'display-over-apps', 'store location');
 
 // Rows to masks.
 check(eq(M.grantsFor(undefined), {granted: 0, refused: 0}), 'no row: defaults');

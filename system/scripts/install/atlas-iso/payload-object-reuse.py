@@ -14,7 +14,7 @@ import re
 import shlex
 import stat
 
-SCHEMA = 'org.projectluma.iso-payload-bodies/v1'
+SCHEMA = 'org.projectSuno.iso-payload-bodies/v1'
 OBJECT = re.compile(r'objects/[0-9a-f]{2}/[0-9a-f]{62}\.(?:filez|dirtree|dirmeta|commit|commitmeta)\Z')
 HEX = re.compile(r'[0-9a-f]{64}\Z')
 TOP = {'.lock', 'config', 'summary', 'summary.sig', 'refs', 'state', 'tmp', 'extensions'}
@@ -62,7 +62,7 @@ def validate_target(manifest):
     arch = manifest.get('architecture')
     if arch not in ('x86_64', 'aarch64'):
         raise ValueError('invalid architecture')
-    if not re.fullmatch(r'luma/1/' + arch + r'/(?:nightly|beta|stable)', manifest.get('ref', '')):
+    if not re.fullmatch(r'Suno/1/' + arch + r'/(?:nightly|beta|stable)', manifest.get('ref', '')):
         raise ValueError('unexpected desktop channel')
     if manifest.get('profile') not in ('full', 'arm-preview'):
         raise ValueError('invalid desktop profile')
@@ -140,7 +140,7 @@ def plan(donor, new):
     old, current = donor['objects'], new['objects']
     reuse = sorted(p for p, body in current.items()
                    if not p.endswith('.commitmeta') and old.get(p) == body)
-    return dict(schema='org.projectluma.iso-payload-reuse-plan/v1',
+    return dict(schema='org.projectSuno.iso-payload-reuse-plan/v1',
                 result='PLAN_NOT_MEDIA_OR_QUALIFICATION',
                 donor_identity={k: donor[k] for k in ('source_revision', 'candidate', 'architecture', 'profile', 'ref')},
                 new_identity={k: new[k] for k in ('source_revision', 'candidate', 'architecture', 'profile', 'ref')},
@@ -198,15 +198,15 @@ def write_options(repository, donor, new, output):
     if actual_dirs != new['directories']: raise ValueError('repository directories differ from pinned inventory')
     commands = []
     for top in operation['remove_metadata']:
-        commands.append(['-rm_r', '/luma/repo/' + top, '--'])
+        commands.append(['-rm_r', '/Suno/repo/' + top, '--'])
     for path in operation['remove']:
-        commands.append(['-rm', '/luma/repo/' + path, '--'])
+        commands.append(['-rm', '/Suno/repo/' + path, '--'])
     old_dirs = {d for d in donor['directories'] if d.startswith('objects/')}
     new_dirs = {d for d in new['directories'] if d.startswith('objects/')}
     for path in sorted(old_dirs - new_dirs, reverse=True):
-        commands.append(['-rmdir', '/luma/repo/' + path, '--'])
+        commands.append(['-rmdir', '/Suno/repo/' + path, '--'])
     for path in sorted({'', 'objects'} | new_dirs):
-        destination = '/luma/repo' + ('/' + path if path else '')
+        destination = '/Suno/repo' + ('/' + path if path else '')
         row = new['directories'][path]
         if path in new_dirs - old_dirs:
             commands.append(['-mkdir', destination, '--'])
@@ -218,9 +218,9 @@ def write_options(repository, donor, new, output):
         row = new['objects'][path]
         if source.stat().st_size != row['bytes'] or digest(source) != row['sha256'] or attributes(source) != {k:row[k] for k in ('mode','uid','gid')}:
             raise ValueError('replacement object differs from pinned compressed body')
-        commands.append(['-map', str(source), '/luma/repo/' + path])
+        commands.append(['-map', str(source), '/Suno/repo/' + path])
     for top in operation['replace_metadata']:
-        commands.append(['-map', str(repository / top), '/luma/repo/' + top])
+        commands.append(['-map', str(repository / top), '/Suno/repo/' + top])
     with Path(output).open('x') as stream:
         for command in commands:
             stream.write(shlex.join(command) + '\n')
@@ -247,8 +247,8 @@ def verify_object_inventory(directory, manifest):
     return dict(result='VERIFIED_OBJECT_BODIES_NOT_MEDIA_QUALIFICATION', files=len(paths))
 
 
-INDEX_SCHEMA = 'org.projectluma.export-object-bodies/v1'
-RECEIPT_SCHEMA = 'org.projectluma.iso-payload-body-receipt/v1'
+INDEX_SCHEMA = 'org.projectSuno.export-object-bodies/v1'
+RECEIPT_SCHEMA = 'org.projectSuno.iso-payload-body-receipt/v1'
 
 
 def identity(path):
@@ -356,16 +356,16 @@ def verify_iso_inventory(iso, manifest):
     """Hash actual ISO bodies in LBA order, with no extraction or per-file opens."""
     import subprocess
     validate(manifest); iso = Path(iso); before = identity(iso)
-    report = subprocess.check_output(['xorriso', '-indev', str(iso), '-find', '/luma/repo',
+    report = subprocess.check_output(['xorriso', '-indev', str(iso), '-find', '/Suno/repo',
                                      '-not', '-type', 'd', '-exec', 'report_sections', '--'],
                                     text=True, stderr=subprocess.PIPE)
-    pattern = re.compile(r"File data lba:\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*'(/luma/repo/[^']+)'$")
+    pattern = re.compile(r"File data lba:\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*'(/Suno/repo/[^']+)'$")
     sections = {}; expected = {**manifest['metadata_bodies'], **manifest['objects']}
     for line in report.splitlines():
         if not line.startswith('File data lba:'): continue
         match = pattern.fullmatch(line)
         if not match: raise ValueError('unsupported ISO extent report')
-        part, start, blocks, size = map(int, match.groups()[:4]); name = match[5][len('/luma/repo/'):]
+        part, start, blocks, size = map(int, match.groups()[:4]); name = match[5][len('/Suno/repo/'):]
         if part != 0 or name in sections:
             raise ValueError('multi-section or duplicate payload path is not supported')
         if name not in expected or size != expected[name]['bytes'] or blocks*2048 < size or start*2048+size > before[2]:
@@ -373,24 +373,24 @@ def verify_iso_inventory(iso, manifest):
         sections[name] = (start*2048, size)
     if set(sections) != set(expected): raise ValueError('ISO object/metadata set differs from expected inventory')
     # Reject symlinks/special entries: they cannot silently disappear from a body report.
-    other = subprocess.check_output(['xorriso', '-indev', str(iso), '-find', '/luma/repo',
+    other = subprocess.check_output(['xorriso', '-indev', str(iso), '-find', '/Suno/repo',
                                      '-not', '-type', 'd', '-not', '-type', 'f', '-exec', 'echo', '--'],
                                     text=True, stderr=subprocess.PIPE)
     if other.strip(): raise ValueError('ISO payload contains a non-regular body')
-    listing = subprocess.check_output(['xorriso', '-indev', str(iso), '-find', '/luma/repo',
+    listing = subprocess.check_output(['xorriso', '-indev', str(iso), '-find', '/Suno/repo',
                                       '-exec', 'lsdl', '--'],
                                      text=True, stderr=subprocess.PIPE)
     listed = set()
-    line_pattern = re.compile(r"([-drwxstST]{10})\s+\d+\s+(\S+)\s+(\S+)\s+\d+\s+.*'(/luma/repo(?:/[^']+)?)'$")
+    line_pattern = re.compile(r"([-drwxstST]{10})\s+\d+\s+(\S+)\s+(\S+)\s+\d+\s+.*'(/Suno/repo(?:/[^']+)?)'$")
     import pwd, grp
     for line in listing.splitlines():
         match = line_pattern.fullmatch(line)
         if not match: raise ValueError('unsupported ISO attribute report: ' + line)
-        mode, user, group, path = match.groups(); name = path[len('/luma/repo/'):]
+        mode, user, group, path = match.groups(); name = path[len('/Suno/repo/'):]
         uid = int(user) if user.isdecimal() else pwd.getpwnam(user).pw_uid
         gid = int(group) if group.isdecimal() else grp.getgrnam(group).gr_gid
         directory = mode.startswith('d')
-        name = '' if path == '/luma/repo' else name
+        name = '' if path == '/Suno/repo' else name
         rows = manifest['directories'] if directory else expected
         label = (directory, name)
         if name not in rows or label in listed: raise ValueError('unexpected ISO attribute path')

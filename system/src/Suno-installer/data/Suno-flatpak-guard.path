@@ -1,0 +1,21 @@
+[Unit]
+Description=Keep Suno's records from every Flatpak when overrides or applications change
+Documentation=https://simplyluma.com/apps
+
+[Path]
+PathChanged=%h/.local/share/flatpak/overrides/global
+PathChanged=%h/.local/share/flatpak/overrides
+PathChanged=/var/lib/flatpak/overrides
+# An application installed or updated, for this person or for everyone.
+PathChanged=%h/.local/share/flatpak/app
+PathChanged=/var/lib/flatpak/app
+# flatpak touches these after every transaction, by any tool (installs and updates).
+PathChanged=%h/.local/share/flatpak/.changed
+PathChanged=/var/lib/flatpak/.changed
+# Where flatpak places xdg-download and the others, read at every start.
+PathChanged=%h/.config/user-dirs.dirs
+PathChanged=%h/.config/user-dirs.locale
+Unit=Suno-flatpak-guard.service
+
+[Install]
+WantedBy=default.target

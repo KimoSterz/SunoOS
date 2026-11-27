@@ -1,6 +1,6 @@
 """Real shared Messages GTK window with two services (ADR-022); synthetic transports only.
 
-This device's own messages and a phone reached through Luma Connect appear in
+This device's own messages and a phone reached through Suno Connect appear in
 one list. Each conversation says which service it goes through, and sending in
 it uses that service and no other.
 """
@@ -11,9 +11,9 @@ gi.require_version('Gtk', '4.0'); gi.require_version('Adw', '1')
 from gi.repository import Gtk, GLib
 from prairie_apps.messages import ConversationRow, MessagesApplication, MessagesWindow
 from prairie_apps.messages_backend import MessageStore, MessagingCapability
-from luma_continuity.bootstrap import create_identity
-from luma_continuity.message_provider import MessageProvider, SelectedPhone
-from luma_continuity.policy import Journal
+from Suno_continuity.bootstrap import create_identity
+from Suno_continuity.message_provider import MessageProvider, SelectedPhone
+from Suno_continuity.policy import Journal
 
 context = GLib.MainContext.default()
 
@@ -66,7 +66,7 @@ class FakeModem:
     def send(self, address, body): self.sent.append((address, body))
 
 
-out = Path(os.environ['LUMA_MESSAGES_CONNECT_UI_OUTPUT']); out.mkdir(parents=True, exist_ok=True)
+out = Path(os.environ['SUNO_MESSAGES_CONNECT_UI_OUTPUT']); out.mkdir(parents=True, exist_ok=True)
 app = MessagesApplication(); assert app.register(None)
 results = []
 NATIVE, PHONE = '+12025550140', '+12025550123'
@@ -92,7 +92,7 @@ for width in (920, 360):
         provider = MessageProvider(directory, SelectedPhone(peer, epoch, account, 'Synthetic phone', '127.0.0.1', 18444), account_observation=lambda: {'account': account, 'signed_in': True, 'stale': False},
                                    store_factory=MessageStore, dispatch=GLib.idle_add, exchange_factory=lambda *_a, **_k: exchange)
         app.message_provider = provider
-        os.environ['LUMA_PRESENTATION_MODE'] = 'fullscreen-mobile' if width == 360 else 'windowed'
+        os.environ['SUNO_PRESENTATION_MODE'] = 'fullscreen-mobile' if width == 360 else 'windowed'
         window = MessagesWindow(app)
         modem = FakeModem(); window.native_service.transport = modem
         window.set_default_size(width, 760); window.present()

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-package org.projectluma.androidtest;
+package org.projectSuno.androidtest;
 
 import android.content.Context;
 import android.os.Process;
@@ -9,9 +9,9 @@ import org.json.JSONObject;
 public final class NativeClipboardProbe {
     private static final String CLASS = "vendor.waydroid.clipboard.V1_0.IWaydroidClipboard";
     private static final String DESCRIPTOR = "vendor.waydroid.clipboard@1.0::IWaydroidClipboard";
-    private static final String HOST = "luma-host-clipboard-fixture";
-    private static final String ANDROID = "luma-android-clipboard-fixture";
-    private static final String ATTEMPT = "luma-android-forbidden-clipboard-write";
+    private static final String HOST = "Suno-host-clipboard-fixture";
+    private static final String ANDROID = "Suno-android-clipboard-fixture";
+    private static final String ATTEMPT = "Suno-android-forbidden-clipboard-write";
 
     private static Object service() throws Exception {
         Class<?> type = Class.forName(CLASS);
@@ -74,7 +74,7 @@ public final class NativeClipboardProbe {
                 if (error.getCause() != null) type += "/" + error.getCause().getClass().getSimpleName();
                 MainActivity.receipt(context, "native-clipboard-error-type", phase + ":" + type);
             }
-        }, "luma-native-clipboard-probe").start();
+        }, "Suno-native-clipboard-probe").start();
     }
 
     /** Fixed synthetic native-service controls, run via app_process as UID1000. */

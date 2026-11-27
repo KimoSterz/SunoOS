@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: GPL-3.0-only
 """Native split layout with a single retained sidebar and temporary hover reveal."""
 from gi.repository import Gdk, GLib, Gtk
-from luma_appkit import Island
+from Suno_appkit import Island
 
 
 class ResizableSidebar:

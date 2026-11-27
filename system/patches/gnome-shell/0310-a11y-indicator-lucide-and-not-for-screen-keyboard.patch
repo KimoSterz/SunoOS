@@ -1,9 +1,9 @@
-From: Project Luma <builds@project-luma.local>
+From: Project Suno <builds@project-suno.local>
 Subject: [PATCH] status: the accessibility indicator ignores the screen keyboard and draws Lucide
 
 The screen keyboard is how a touch device types, so it alone no longer puts
 the accessibility figure in the top bar; any other accessibility setting
-still does. The indicator draws LumaUI's Lucide accessibility glyph.
+still does. The indicator draws SunoUI's Lucide accessibility glyph.
 
 --- a/js/ui/status/accessibility.js
 +++ b/js/ui/status/accessibility.js
@@ -12,7 +12,7 @@ still does. The indicator draws LumaUI's Lucide accessibility glyph.
          this.add_child(new St.Icon({
              style_class: 'system-status-icon',
 -            icon_name: 'accessibility-menu-symbolic',
-+            icon_name: 'lumaui-accessibility-symbolic',
++            icon_name: 'SunoUI-accessibility-symbolic',
          }));
  
          this._a11ySettings = new Gio.Settings({schema_id: A11Y_SCHEMA});

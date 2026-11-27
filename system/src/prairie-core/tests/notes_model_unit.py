@@ -22,7 +22,7 @@ class ModelCase(unittest.TestCase):
         self.home = Path(tempfile.mkdtemp(prefix="notes-model-"))
         self.patch = mock.patch.dict(os.environ, {"HOME": str(self.home), "XDG_DATA_HOME": str(self.home / "d")})
         self.patch.start()
-        self.store = NotesStore(self.home / "d" / "luma" / "notes" / "notes.sqlite3")
+        self.store = NotesStore(self.home / "d" / "Suno" / "notes" / "notes.sqlite3")
 
     def tearDown(self) -> None:
         self.store.close()

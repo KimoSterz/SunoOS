@@ -5,7 +5,7 @@
 # canonical build description; this Makefile mirrors it for environments
 # where crafter-build isn't packaged — same clang module pipeline, same
 # flags. Keep the two in sync when products, module partitions or link
-# flags change. Upstream dropped its Makefile in 0.3.10; Luma keeps this
+# flags change. Upstream dropped its Makefile in 0.3.10; Suno keeps this
 # one because Fedora does not package crafter-build.
 #
 #   make          -> build/make/{imsd,imsd-media,imsd-dialerd,imsd-ofonod,

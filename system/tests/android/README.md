@@ -5,14 +5,14 @@ publisher as an ordinary user. It checks replacement of a read-only prior
 manifest, exact hashes, explicit image lists, preserved symlink targets and
 failure atomicity. It does not qualify the complete Android image export.
 
-`browser-callback-consumption.py --source /prepared/Jelly/app/src/main/java/org/lineageos/jelly/webview/WebClient.kt --patch patches/android-jelly/0001-luma-consume-handled-app-redirects.patch --kotlinc /pinned/kotlinc --java /pinned/java`
+`browser-callback-consumption.py --source /prepared/Jelly/app/src/main/java/org/lineageos/jelly/webview/WebClient.kt --patch patches/android-jelly/0001-Suno-consume-handled-app-redirects.patch --kotlinc /pinned/kotlinc --java /pinned/java`
 compiles the actual navigation decision with explicit Android substitutes. It
 checks consumption after a handled redirect, header fallback, incognito,
 subframes, repeated URLs and gestures. The unchanged decision must fail with
 exit42. All callback values are synthetic; this does not qualify actual Android
 intent resolution, account authentication or native window activation.
 
-`idle-runtime-check.py --minutes 30 --notify` runs as root on a booted Luma
+`idle-runtime-check.py --minutes 30 --notify` runs as root on a booted Suno
 machine with Android started and unused. It posts one notification from
 Android's shell user, then fails on any framework restart, more than one
 Settings process, an app process orphaned by its zygote, more than 300
@@ -38,16 +38,16 @@ oversized, short, stalled and closed peers are checked; deliberately removing
 either credential admission or MSG_TRUNC must fail. Only Binder forwarding is
 substituted, so the result does not qualify Android Binder or actual cog clicks.
 
-The source-owned APK fixture is `org.projectluma.androidtest`. It contains DEX
+The source-owned APK fixture is `org.projectSuno.androidtest`. It contains DEX
 without native libraries, so the same artifact can exercise x86_64 and ARM64.
 It is a debuggable test app, not a bundled user application. It requests
 notification permission, no Internet or privileged permissions, and stores only
 its own synthetic events.
 
 The separate `provider-probe` fixture builds with the same verified tools using
-`--fixture provider`. Its package is `org.projectluma.androidproviderprobe`;
+`--fixture provider`. Its package is `org.projectSuno.androidproviderprobe`;
 it has no launcher, requests only Internet permission, and runs with
-`am instrument -w org.projectluma.androidproviderprobe/.ProviderProbe`.
+`am instrument -w org.projectSuno.androidproviderprobe/.ProviderProbe`.
 It checks the Google service compatibility certificate visible to an ordinary
 app, the Google account authenticator and sign-in service binding, plus verified
 HTTPS through Android's Java networking stack. It never enumerates accounts,
@@ -110,8 +110,8 @@ the fixture's private receipt after an actual native notification action.
 Run component and repository unit checks separately:
 
 ```sh
-PYTHONPATH=src/luma-android python3 -m unittest discover -s src/luma-android/tests
-PYTHONPATH=src/luma-platform/appkit python3 -m unittest discover -s tests/unit -p test_luma_android.py
+PYTHONPATH=src/Suno-android python3 -m unittest discover -s src/Suno-android/tests
+PYTHONPATH=src/Suno-platform/appkit python3 -m unittest discover -s tests/unit -p test_Suno_android.py
 ```
 
 Record the actual executed/skipped counts. Sixteen initialization checks need
@@ -131,7 +131,7 @@ Bash source-cleanliness functions with real Git repositories and an explicit
 repo-enumeration fixture. Tracked edits, deletions, untracked files, Git failures
 and repo failures must prevent preparation/reset. The old false-clean Git-error
 behavior is retained as a negative control. Source verification defaults to two
-projects at a time (`LUMA_ANDROID_VERIFY_JOBS=1..8`), independently of compiler
+projects at a time (`SUNO_ANDROID_VERIFY_JOBS=1..8`), independently of compiler
 parallelism, with Git index preloading disabled to reduce compressed-filesystem
 contention. This changes scheduling, while preserving file checks. It does not
 replace a full Android source or image qualification run.
@@ -176,7 +176,7 @@ notification/fixture receipts are separate. Mapping samples do not substitute
 for a complete sandbox audit. Never use a personal user profile as this fixture.
 
 The fixture boundary button/extra also attempts only the volatile
-`luma.test.property_boundary=fixture-app` write from its ordinary app identity.
+`Suno.test.property_boundary=fixture-app` write from its ordinary app identity.
 For property acceptance, initialize that key as an Android native service to a
 synthetic control value, run the fixture probe, verify its rejection and the
 unchanged native readback, then clear the key. A failed process launch or timeout
@@ -250,7 +250,7 @@ ordinary app through the HIDL1.0 wire ABI and reflected HwBinder/HwParcel method
 Hidden-API restrictions or unavailable transport leave this test inconclusive;
 never count those as a native UID denial. The image's platform jar is not a
 registered application shared library. A UID1000 `app_process` invocation of
-`org.projectluma.androidtest.NativeClipboardProbe read` provides a fixed read-only
+`org.projectSuno.androidtest.NativeClipboardProbe read` provides a fixed read-only
 native control. `native-clipboard-control.py --expect android-fixture` runs that
 control inside a disposable VM, using only whitelisted public init/classpath
 exports and the explicit platform jar. It requires a nonempty match. Require a
@@ -275,17 +275,17 @@ matching image provenance; the image-install driver must establish the latter.
 Run its evidence-classification controls with
 `python3 tests/android/test_native_guard_qualification.py`.
 
-The clipboard fixture copies only `luma-android-clipboard-fixture` and records
+The clipboard fixture copies only `Suno-android-clipboard-fixture` and records
 only whether known host/Android fixture tokens matched on reads. Never use it in a
 personal profile. For the background negative control, select **Check after
-switching to a Luma app**, then focus a native host window within ten seconds.
+switching to a Suno app**, then focus a native host window within ten seconds.
 Keep evidence of the native focus transition and the delayed fixture receipt.
 `android-window-focus=focused` does not establish host focus; a matched host
 clipboard read after switching away leaves the privacy gate failed. Also test
 background writes before claiming a complete clipboard boundary.
 
 For a reproducible host-focus control, run `native-focus-fixture.py --output
-/run/user/UID/luma-android/native-focus.jsonl` as the disposable graphical user.
+/run/user/UID/Suno-android/native-focus.jsonl` as the disposable graphical user.
 Move its GTK window beside Android. It records only `Gtk.Window:is-active` and
 boot-clock timestamps as `native-window-activation` events with `active` values.
 These events do not attest compositor input focus; the old `focused` field was

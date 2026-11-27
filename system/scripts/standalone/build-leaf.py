@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """Assemble Leaf and its selected dependencies into a relocatable Linux directory.
 
-Inputs are a qualified Luma Platform, a GdkPixbuf build with builtin PNG/JPEG/GIF
+Inputs are a qualified Suno Platform, a GdkPixbuf build with builtin PNG/JPEG/GIF
 loaders, and an SVG loader. No application code is forked or patched.
 """
 import argparse
@@ -25,7 +25,7 @@ root = args.runtime_files.resolve()
 pixbuf = args.pixbuf_prefix.resolve()
 voice = args.voice_prefix.resolve()
 dest = args.output.resolve()
-assert (root / 'lib/python3.14/site-packages/luma_appkit').is_dir()
+assert (root / 'lib/python3.14/site-packages/Suno_appkit').is_dir()
 dest.mkdir(parents=True, exist_ok=False)
 
 def copy(source, relative):
@@ -43,7 +43,7 @@ libraries.update({p.name: p for p in (voice / 'lib64').rglob('*.so*')})
 seeds = [root / 'bin/python3', voice / 'bin/speech-dispatcher']
 seeds.extend((voice / 'lib64/speech-dispatcher-modules').glob('sd_espeak-ng'))
 seeds.append(voice / 'lib64/speech-dispatcher/spd_pulse.so')
-for pattern in ('libgtk-4.so.*', 'libadwaita-1.so.*', 'libluma*.so.*',
+for pattern in ('libgtk-4.so.*', 'libadwaita-1.so.*', 'libSuno*.so.*',
                 'libgirepository*.so.*', 'libcairo*.so.*', 'librsvg*.so.*',
                 'libsecret-1.so.*'):
     seeds.extend((root / 'lib64').glob(pattern))
@@ -94,32 +94,32 @@ site = dest / 'usr/lib64/python3.14/site-packages'
 for path in list(site.iterdir()):
     if path.name not in ('gi', 'cairo') and not path.name.startswith(('PyGObject-', 'pycairo-')):
         shutil.rmtree(path) if path.is_dir() else path.unlink()
-copy(root / 'lib/python3.14/site-packages/luma_appkit',
-     'usr/lib64/python3.14/site-packages/luma_appkit')
-copy(REPO / 'src/luma-leaf/luma_leaf', 'usr/lib64/python3.14/site-packages/luma_leaf')
+copy(root / 'lib/python3.14/site-packages/Suno_appkit',
+     'usr/lib64/python3.14/site-packages/Suno_appkit')
+copy(REPO / 'src/Suno-leaf/Suno_leaf', 'usr/lib64/python3.14/site-packages/Suno_leaf')
 copy(args.speechd_prefix / 'lib64/python3.14/site-packages/speechd', 'usr/lib64/python3.14/site-packages/speechd')
 copy(args.speechd_prefix / 'share/licenses/python3-speechd', 'usr/share/licenses/python3-speechd')
 copy(REPO / 'packaging/standalone/leaf/sitecustomize.py',
      'usr/lib64/python3.14/site-packages/sitecustomize.py')
-for path in (root / 'share/luma-appkit').glob('*.css'):
+for path in (root / 'share/Suno-appkit').glob('*.css'):
     shutil.copy2(path, site / path.name)
 for relative in ('share/glib-2.0/schemas', 'share/icons/Prairie', 'share/icons/Adwaita',
                  'share/icons/hicolor', 'share/fonts/google-figtree-fonts', 'share/licenses'):
     copy(root / relative, Path('usr') / relative)
-copy(REPO / 'src/luma-leaf/data', 'usr/share/leaf')
-copy(REPO / 'src/luma-leaf/data/org.projectluma.Leaf.svg',
-     'usr/share/icons/hicolor/scalable/apps/org.projectluma.Leaf.svg')
-desktop = (REPO / 'src/luma-leaf/data/org.projectluma.Leaf.desktop').read_text().replace('Exec=org.projectluma.Leaf', 'Exec=Leaf').replace('DBusActivatable=true', 'DBusActivatable=false')
-desktop += 'StartupWMClass=org.projectluma.Leaf.Standalone\n'
+copy(REPO / 'src/Suno-leaf/data', 'usr/share/leaf')
+copy(REPO / 'src/Suno-leaf/data/org.projectSuno.Leaf.svg',
+     'usr/share/icons/hicolor/scalable/apps/org.projectSuno.Leaf.svg')
+desktop = (REPO / 'src/Suno-leaf/data/org.projectSuno.Leaf.desktop').read_text().replace('Exec=org.projectSuno.Leaf', 'Exec=Leaf').replace('DBusActivatable=true', 'DBusActivatable=false')
+desktop += 'StartupWMClass=org.projectSuno.Leaf.Standalone\n'
 (dest / 'usr/share/applications').mkdir(parents=True, exist_ok=True)
-(dest / 'usr/share/applications/org.projectluma.Leaf.desktop').write_text(desktop)
-copy(REPO / 'packaging/standalone/leaf/org.projectluma.Leaf.metainfo.xml',
-     'usr/share/metainfo/org.projectluma.Leaf.metainfo.xml')
-copy(REPO / 'LICENSES', 'usr/share/licenses/luma-source')
+(dest / 'usr/share/applications/org.projectSuno.Leaf.desktop').write_text(desktop)
+copy(REPO / 'packaging/standalone/leaf/org.projectSuno.Leaf.metainfo.xml',
+     'usr/share/metainfo/org.projectSuno.Leaf.metainfo.xml')
+copy(REPO / 'LICENSES', 'usr/share/licenses/Suno-source')
 subprocess.run(['glib-compile-schemas', str(dest / 'usr/share/glib-2.0/schemas')], check=True)
 (dest / 'usr/share/icons/hicolor/icon-theme.cache').unlink(missing_ok=True)
-namespaces = ('Gtk-4.0', 'Gdk-4.0', 'Gsk-4.0', 'Adw-1', 'LumaUI-1', 'LumaSemantics-1',
-              'LumaAppearance-1', 'GLib-2.0', 'GObject-2.0', 'Gio-2.0', 'GModule-2.0',
+namespaces = ('Gtk-4.0', 'Gdk-4.0', 'Gsk-4.0', 'Adw-1', 'SunoUI-1', 'SunoSemantics-1',
+              'SunoAppearance-1', 'GLib-2.0', 'GObject-2.0', 'Gio-2.0', 'GModule-2.0',
               'GLibUnix-2.0', 'GioUnix-2.0', 'GdkPixbuf-2.0', 'Pango-1.0', 'PangoCairo-1.0',
               'PangoFT2-1.0', 'Graphene-1.0', 'cairo-1.0', 'freetype2-2.0', 'HarfBuzz-0.0',
               'GdkX11-4.0', 'GdkWayland-4.0', 'xlib-2.0', 'Secret-1')
@@ -154,7 +154,7 @@ exec "$leaf_dir/usr/lib64/ld-linux-x86-64.so.2" --inhibit-cache --library-path "
 (dest / 'Leaf').write_text('''#!/bin/sh
 set -eu
 leaf_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
-exec "$leaf_dir/python" -m luma_leaf "$@"
+exec "$leaf_dir/python" -m Suno_leaf "$@"
 ''')
 for name in ('python', 'Leaf'):
     (dest / name).chmod(0o755)

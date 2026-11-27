@@ -1,17 +1,17 @@
 ---
-title: LumaUI behaviour
-summary: How LumaUI parts respond, with their motion tokens: hover, press, focus, keyboard, slide in and out, scroll fades, auto-close, reduced motion and phone width.
+title: SunoUI behaviour
+summary: How SunoUI parts respond, with their motion tokens: hover, press, focus, keyboard, slide in and out, scroll fades, auto-close, reduced motion and phone width.
 order: 10
 section: Kit
 ---
 
-# LumaUI behaviour
+# SunoUI behaviour
 
-Every number below is a LumaUI design token. Python reads them from
-`luma_appkit.lumaui_tokens` (motion is `lumaui_tokens.MOTION`) and, for
-anything timed, from `luma_appkit.lumaui.duration(name)`, which already honours
-reduced motion. CSS reads them as `--lumaui-*` custom properties, such as
-`--lumaui-ease` and `--lumaui-duration-hover`.
+Every number below is a SunoUI design token. Python reads them from
+`Suno_appkit.SunoUI_tokens` (motion is `SunoUI_tokens.MOTION`) and, for
+anything timed, from `Suno_appkit.SunoUI.duration(name)`, which already honours
+reduced motion. CSS reads them as `--SunoUI-*` custom properties, such as
+`--SunoUI-ease` and `--SunoUI-duration-hover`.
 
 ## Motion tokens
 
@@ -43,13 +43,13 @@ animation: a state changes on press, and only the transition animates.
 
 | State | Look | Motion |
 | --- | --- | --- |
-| Hover | A fill one step up behind the control (`@luma_hover`, `@luma_control_fill_hover`); a raised chip lifts 1 px and brightens (dark) or dims slightly (light), `--lumaui-hover-brightness` | `hover_ms` |
+| Hover | A fill one step up behind the control (`@Suno_hover`, `@Suno_control_fill_hover`); a raised chip lifts 1 px and brightens (dark) or dims slightly (light), `--SunoUI-hover-brightness` | `hover_ms` |
 | Pressed | One fill step deeper; a raised chip sinks to 97% | `press_ms`, spring |
-| Focus (keyboard only) | A 2 px `@luma_focus_ring` outline 2 px outside the shape (`:focus-visible`); never on a mouse click | none |
-| Selected / on | The raised chip (`@luma_chip` and its edge) | none |
+| Focus (keyboard only) | A 2 px `@Suno_focus_ring` outline 2 px outside the shape (`:focus-visible`); never on a mouse click | none |
+| Selected / on | The raised chip (`@Suno_chip` and its edge) | none |
 | Disabled | 35% opacity, stays in place, no pointer | none |
 | Busy | A spinner where the icon was | none |
-| Danger | Red ink (`@luma_danger_ink`) on the usual surface; a filled red action only inside the destructive dialog | none |
+| Danger | Red ink (`@Suno_danger_ink`) on the usual surface; a filled red action only inside the destructive dialog | none |
 
 ## Keyboard
 
@@ -84,7 +84,7 @@ animation: a state changes on press, and only the transition animates.
 | --- | --- | --- |
 | Toast | Fades in over `fade_ms` while springing up `toast_rise_px` over `toast_in_ms` | Fades out over `fade_ms`, then leaves the overlay |
 | Destructive dialog | Scrim fades in (`scrim_ms`); the card fades (`dialog_fade_ms`) and springs from 96% scale, 10 px low (`dialog_move_ms`) | Both fade; the card is removed after `dialog_fade_ms` |
-| Drawer (a modal card at phone width) | Rises 48 px from the bottom edge over `drawer_ms` with `ease`; the window dims (`@luma_drawer_scrim`) | Fades; drag it down more than 80 px or tap outside to close |
+| Drawer (a modal card at phone width) | Rises 48 px from the bottom edge over `drawer_ms` with `ease`; the window dims (`@Suno_drawer_scrim`) | Fades; drag it down more than 80 px or tap outside to close |
 | Nudge | A click on the scrim behind a dialog shakes the card ±6 px (`nudge_ms`) | |
 | Details pane | Slides 14 px from its edge and fades, 300 ms `ease` | Reverse |
 | Action center | The editor grows in place: it fades in and springs up 16 px from 98% over `grow_ms` (320). A bar that changes its actions fades them in from 4 px below over `bar_morph_ms` (260) | Esc folds straight back to the bar, the draft kept in its prompt ("Draft: …") |
@@ -119,20 +119,20 @@ alpha mask, so it works over any surface.
 When the desktop asks for reduced motion (`gtk-interface-reduced-motion`) or
 turns animations off, movement becomes a fade:
 
-- CSS: LumaUI parts override their movement inside
+- CSS: SunoUI parts override their movement inside
   `@media (prefers-reduced-motion: reduce)`: no translate, scale, spring or
   shake, only an opacity transition of `reduced_fade_ms`.
-- Python: `lumaui.duration()` returns at most `reduced_fade_ms` for motion
+- Python: `SunoUI.duration()` returns at most `reduced_fade_ms` for motion
   (and 0 when animations are off entirely); timeouts that are not motion
   (toast lifetimes, the tooltip delay) are never shortened.
-- `lumaui.reduced_motion()` answers the question for code that animates by
+- `SunoUI.reduced_motion()` answers the question for code that animates by
   hand. The nudge is skipped entirely.
 
 ## Phone width
 
 Width adapts layout, never identity. A part is at phone width when the place
-it appears in is under 560 px wide (`lumaui.is_phone_width(widget)`, using
-`lumaui_tokens.PHONE_MAX_WIDTH`, 559). Then:
+it appears in is under 560 px wide (`SunoUI.is_phone_width(widget)`, using
+`SunoUI_tokens.PHONE_MAX_WIDTH`, 559). Then:
 
 - A modal card from `LayerHost.present_modal` becomes a bottom drawer: full
   width, grab handle, 28 px top corners, rows at least 46 px tall for a thumb.

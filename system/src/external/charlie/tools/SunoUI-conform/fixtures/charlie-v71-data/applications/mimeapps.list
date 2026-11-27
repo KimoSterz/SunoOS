@@ -1,0 +1,3 @@
+[Default Applications]
+application/x-Suno-stage=io.Suno.Stage.desktop
+application/pdf=org.projectSuno.Viewer.desktop

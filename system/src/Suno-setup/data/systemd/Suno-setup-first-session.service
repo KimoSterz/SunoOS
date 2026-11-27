@@ -1,0 +1,13 @@
+[Unit]
+Description=Suno setup: the choices made at first boot, before the desktop's first frame
+ConditionPathExists=/var/lib/Suno-setup/welcome/%u
+ConditionPathExists=!%S/Suno-setup/welcome-done
+Before=graphical-session-pre.target org.gnome.Shell@wayland.service
+PartOf=graphical-session.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/Suno-setup --first-session settings
+
+[Install]
+WantedBy=graphical-session-pre.target

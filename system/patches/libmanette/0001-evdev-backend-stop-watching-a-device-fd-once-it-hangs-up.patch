@@ -1,5 +1,5 @@
 From 20e2646e01ca1a9d300afa6ee0ef6a00eb46b459 Mon Sep 17 00:00:00 2001
-From: Project Luma <engineering@projectluma.org>
+From: Project Suno <engineering@projectSuno.org>
 Date: Mon, 2 Nov 2026 22:59:26 -0600
 Subject: [PATCH] evdev-backend: stop watching a device's fd once it hangs up
 

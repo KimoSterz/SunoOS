@@ -4,19 +4,19 @@ Date: Thu, 1 Oct 2026 12:28:39 -0500
 Subject: [PATCH 142/142] Filer test: the picker has no item counts since its
  status strip went (0133, 0134)
 
-test-luma-empty-picker waited for "0 items", "0 of 4 items shown" and
+test-Suno-empty-picker waited for "0 items", "0 of 4 items shown" and
 "4 items", which only the removed footer drew (v71's picker shows no count
 either). It now waits for the empty title, the file names and the filtered
 notice; Filer's own window still shows the count in its heading, checked
 below. The v71 compact subject also omits the old footer count.
 ---
- test/automated/display/test-luma-empty-picker.c | 8 ++++----
+ test/automated/display/test-Suno-empty-picker.c | 8 ++++----
  1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/test/automated/display/test-luma-empty-picker.c b/test/automated/display/test-luma-empty-picker.c
+diff --git a/test/automated/display/test-Suno-empty-picker.c b/test/automated/display/test-Suno-empty-picker.c
 index ec2578c..13f9d95 100644
---- a/test/automated/display/test-luma-empty-picker.c
-+++ b/test/automated/display/test-luma-empty-picker.c
+--- a/test/automated/display/test-Suno-empty-picker.c
++++ b/test/automated/display/test-Suno-empty-picker.c
 @@ -96,7 +96,8 @@ int main(int argc, char **argv) {
                  nautilus_file_chooser_add_choices(chooser, G_ACTION_GROUP(choices), G_MENU_MODEL(choices_menu));
                  gtk_window_present(GTK_WINDOW(window));
@@ -48,9 +48,9 @@ index ec2578c..13f9d95 100644
 2.54.0 (Apple Git-157)
 
 
-diff --git a/test/automated/display/test-luma-empty-picker.c b/test/automated/display/test-luma-empty-picker.c
---- a/test/automated/display/test-luma-empty-picker.c
-+++ b/test/automated/display/test-luma-empty-picker.c
+diff --git a/test/automated/display/test-Suno-empty-picker.c b/test/automated/display/test-Suno-empty-picker.c
+--- a/test/automated/display/test-Suno-empty-picker.c
++++ b/test/automated/display/test-Suno-empty-picker.c
 @@ -185,7 +185,11 @@ int main(int argc, char **argv) {
      GtkWindow *filer = gtk_application_get_active_window(GTK_APPLICATION(app));
      g_assert_nonnull(filer);

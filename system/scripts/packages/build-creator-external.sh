@@ -7,12 +7,12 @@ work=${3:?unique writable work directory required}
 platform=${4:?current platform RPM required}
 platform_devel=${5:?current platform devel RPM required}
 case "$app" in
-  grid) package=luma-grid-preview; top=LumaGrid-0.1.0; archive=LumaGrid-0.1.0.tar.xz ;;
-  stage) package=luma-stage-preview; top=Stage-0.1.0; archive=Stage-0.1.0.tar.xz ;;
-  session) package=luma-session; top=luma-session-0.1.0; archive=luma-session-0.1.0.tar.gz ;;
-  canvas) package=luma-canvas-preview; top=luma-canvas; archive=luma-canvas.tar.gz ;;
-  write) package=luma-write; top=luma-write; archive=luma-write.tar.gz ;;
-  charlie) package=luma-charlie; top=charlie-luma; archive=charlie-luma.tar.gz ;;
+  grid) package=Suno-grid-preview; top=SunoGrid-0.1.0; archive=SunoGrid-0.1.0.tar.xz ;;
+  stage) package=Suno-stage-preview; top=Stage-0.1.0; archive=Stage-0.1.0.tar.xz ;;
+  session) package=Suno-session; top=Suno-session-0.1.0; archive=Suno-session-0.1.0.tar.gz ;;
+  canvas) package=Suno-canvas-preview; top=Suno-canvas; archive=Suno-canvas.tar.gz ;;
+  write) package=Suno-write; top=Suno-write; archive=Suno-write.tar.gz ;;
+  charlie) package=Suno-charlie; top=charlie-Suno; archive=charlie-Suno.tar.gz ;;
   *) echo "unsupported application: $app" >&2; exit 2 ;;
 esac
 mkdir -p "$work"/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
@@ -23,10 +23,10 @@ case "$archive" in
 esac
 if [[ $app == charlie ]]; then
   install -m0644 "$source_root/LICENSE.md" "$work/SOURCES/LICENSE.md"
-  install -m0644 "$source_root/src/luma-shell-state/org.project_luma.shell-state.gschema.xml" "$work/SOURCES/"
+  install -m0644 "$source_root/src/Suno-shell-state/org.projectSuno.shell-state.gschema.xml" "$work/SOURCES/"
 fi
 # Use dnf rather than rpm --nodeps: dependency checks remain active.
-sdk=("$(dirname "$platform")"/luma-developer-platform-sdk-*.rpm)
+sdk=("$(dirname "$platform")"/Suno-developer-platform-sdk-*.rpm)
 if [[ ${#sdk[@]} == 1 && -f ${sdk[0]} ]]; then
   dnf -y install "$platform" "$platform_devel" "${sdk[0]}"
   dnf -y reinstall "$platform" "$platform_devel" "${sdk[0]}"

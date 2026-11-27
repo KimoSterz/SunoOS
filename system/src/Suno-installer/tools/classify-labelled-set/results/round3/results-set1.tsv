@@ -1,0 +1,301 @@
+id	kind	expected	adr	agree	flags	refused	reasons
+ubuntu:nautilus	application	application	-	yes	gui-launcher		launcher org.gnome.Nautilus.desktop runs a program from the package (nautilus) | its commands (nautilus) start in its sandbox
+ubuntu:plasma-welcome	choice:application|device-add-on	application	-	yes	dependency-daemon-inert,user-service,gui-launcher		dependency daemon stays inert; the host's is used: a D-Bus system service: /usr/share/dbus-1/system.d/org.kde.kf5auth.conf (libkf5auth-data) | loads native code into the session: device-wide only as an image-signed system module after a yes, otherwise refused (/etc/apparmor.d/usr.bin.plasma-welcome) | an add-on with a window of its own (org.kde.plasma-welcome.desktop): the person chooses
+ubuntu:im-config	application	application	-	yes	user-service,gui-launcher		launcher im-config.desktop runs a program from the package (im-config) | its commands (im-config) start in its sandbox
+ubuntu:ristretto	application	application	-	yes	gui-launcher		launcher org.xfce.ristretto.desktop runs a program from the package (ristretto) | its commands (ristretto) start in its sandbox
+ubuntu:polkit-kde-agent-1	system-module	system-module	-	yes	dependency-daemon-inert,user-service,desktop-component		dependency daemon stays inert; the host's is used: a D-Bus system service: /usr/share/dbus-1/system.d/org.kde.kf5auth.conf (libkf5auth-data) | a desktop component (/etc/xdg/autostart/polkit-kde-authentication-agent-1.desktop): it changes the desktop for everyone
+ubuntu:ibus	application	device-add-on	-	no	user-service,gui-launcher		launcher org.freedesktop.IBus.Setup.desktop runs a program from the package (ibus) | its commands (ibus) start in its sandbox
+ubuntu:swell-foop	application	application	-	yes	gui-launcher		launcher org.gnome.SwellFoop.desktop runs a program from the package (swell-foop) | its commands (swell-foop) start in its sandbox
+ubuntu:gnome-remote-desktop	choice:workspace|system-module	system-module	-	yes	user-service		system unit gnome-remote-desktop.service is the system copy of a user service; start at sign-in is a permission (gnome-remote-desktop) | a D-Bus system service: /usr/share/dbus-1/system-services/org.gnome.RemoteDesktop.service (gnome-remote-desktop) | polkit rules: /usr/share/polkit-1/rules.d/20-gnome-remote-desktop.rules (gnome-remote-desktop) | a FUSE filesystem: /usr/bin/grdctl (gnome-remote-desktop)
+ubuntu:drkonqi	application	system-module	-	no	dependency-daemon-inert,user-service,gui-launcher,app-service-split		dependency daemon stays inert; the host's is used: a D-Bus system service: /usr/share/dbus-1/system.d/org.kde.kf5auth.conf (libkf5auth-data) | launcher org.kde.drkonqi.coredump.gui.desktop runs a program from the package (drkonqi) | a service named like the package: drkonqi-coredump-processor@.service (drkonqi) | split: the window is an application, the service a system module; one entry, one Remove
+ubuntu:btop	workspace	console-application	-	no			launcher btop.desktop opens a terminal: a console program | a typed package command: the workspace
+ubuntu:xarchiver	application	application	-	yes	gui-launcher		launcher xarchiver.desktop runs a program from the package (xarchiver) | its commands (xarchiver) start in its sandbox
+ubuntu:gnome-weather	application	application	-	yes	gui-launcher		launcher org.gnome.Weather.desktop runs a program from the package (gnome-weather) | its commands (gnome-weather) start in its sandbox
+ubuntu:gnome-logs	application	application	-	yes	gui-launcher		launcher org.gnome.Logs.desktop runs a program from the package (gnome-logs) | its commands (gnome-logs) start in its sandbox
+ubuntu:plasma-discover	application	system-tool	-	no	dependency-daemon-inert,gui-launcher		dependency daemon stays inert; the host's is used: a D-Bus system service: /usr/share/dbus-1/system.d/org.kde.kf5auth.conf (libkf5auth-data) | launcher org.kde.discover.desktop runs a program from the package (plasma-discover) | its commands (plasma-discover) start in its sandbox
+ubuntu:gnome-mines	application	application	-	yes	gui-launcher		launcher org.gnome.Mines.desktop runs a program from the package (gnome-mines) | its commands (gnome-mines) start in its sandbox
+ubuntu:gimp	application	application	-	yes	gui-launcher		launcher gimp.desktop runs a program from the package (gimp) | its commands (gimp) start in its sandbox
+ubuntu:network-manager-gnome	choice:system-module|application	application	-	yes	user-service,gui-launcher,desktop-component		a desktop component (/etc/xdg/autostart/nm-applet.desktop): it changes the desktop for everyone | a desktop component with a window of its own: the person chooses
+ubuntu:gnome-chess	application	application	-	yes	gui-launcher		launcher org.gnome.Chess.desktop runs a program from the package (gnome-chess) | its commands (gnome-chess) start in its sandbox
+ubuntu:gnome-sudoku	application	application	-	yes	gui-launcher		launcher org.gnome.Sudoku.desktop runs a program from the package (gnome-sudoku) | its commands (gnome-sudoku) start in its sandbox
+ubuntu:mc	choice:system-tool|workspace	console-application	-	no	privileged-helper-dropped		launcher mc.desktop opens a terminal: a console program | privileged helper /usr/lib/mc/cons.saver (setuid/setgid) is not offered; the rest works (mc) | administration commands (mc, linking libext2fs2t64); whether they need real root is not known: the person chooses
+ubuntu:emacs-common	application	application	-	yes	user-service,application-add-on		data or plugins for the application emacs-gtk: added to that application's tree
+ubuntu:gnome-color-manager	application	application	-	yes	gui-launcher		launcher org.gnome.ColorProfileViewer.desktop runs a program from the package (gnome-color-manager) | its commands (gcm-import) start in its sandbox
+ubuntu:docker.io	system-module	system-module	-	yes	dependency-daemon-inert		dependency daemon stays inert; the host's is used: system service containerd.service (containerd) | system service docker.service (docker.io)
+ubuntu:modemmanager	system-module	system-module	-	yes			system service ModemManager.service (modemmanager) | a D-Bus system service: /usr/share/dbus-1/system-services/org.freedesktop.ModemManager1.service (modemmanager)
+ubuntu:binfmt-support	system-module	system-module	-	yes			a service named like the package: binfmt-support.service (binfmt-support)
+ubuntu:colord	system-module	system-module	-	yes	user-service		system service colord.service (colord) | a D-Bus system service: /usr/share/dbus-1/system-services/org.freedesktop.ColorManager.service (colord)
+ubuntu:ksystemstats	choice:system-tool|workspace	system-module	-	no	dependency-daemon-inert,user-service		dependency daemon stays inert; the host's is used: a D-Bus system service: /usr/share/dbus-1/system.d/org.kde.kf5auth.conf (libkf5auth-data) | administration commands (kstatsviewer, linking libnl-3-200); whether they need real root is not known: the person chooses
+ubuntu:dmeventd	choice:workspace|system-module	system-module	-	yes			system service dm-event.service (dmeventd) | system parts beside what a person uses directly: the person chooses
+ubuntu:libvirt-daemon-system	system-module	system-module	-	yes	optional-service-inert,dependency-daemon-inert		optional service libvirtd-admin.socket (libvirt-daemon-system) stays inert in the workspace; to run it, install libvirt-daemon-system as a system module | dependency daemon stays inert; the host's is used: system service cron.service (cron) | system service libvirtd.service (libvirt-daemon-system) | polkit rules: /usr/share/polkit-1/rules.d/60-libvirt.rules (libvirt-daemon-system)
+ubuntu:nginx-common	system-module	system-module	-	yes			a service named like the package: nginx.service (nginx-common)
+ubuntu:network-manager	system-module	system-module	-	yes	optional-service-inert		optional service NetworkManager-dispatcher.service (network-manager) stays inert in the workspace; to run it, install network-manager as a system module | system service NetworkManager.service (network-manager) | a D-Bus system service: /usr/share/dbus-1/system-services/org.freedesktop.nm_dispatcher.service (network-manager) | polkit rules: /usr/share/polkit-1/rules.d/org.freedesktop.NetworkManager.rules (network-manager)
+ubuntu:gvfs-backends	workspace	device-add-on	-	no	user-service,host-integration,image-has-name		loads into the host's own service (/usr/lib/gvfs/gvfs-afc-volume-monitor); the image carries it, so this copy serves the workspace's applications | a typed package command: the workspace
+ubuntu:wireplumber	workspace	system-module	-	no	user-service		a typed package command: the workspace
+ubuntu:kactivitymanagerd	choice:system-module|workspace	system-module	-	yes	dependency-daemon-inert,user-service,desktop-component		dependency daemon stays inert; the host's is used: a D-Bus system service: /usr/share/dbus-1/system.d/org.kde.kf5auth.conf (libkf5auth-data) | a desktop component (/usr/share/dbus-1/services/org.kde.ActivityManager.service): it changes the desktop for everyone | a session service started on demand, not with every session: the person chooses
+ubuntu:screen	choice:workspace|system-module	console-application	-	no			a service named like the package: screen-cleanup (screen) | system parts beside what a person uses directly: the person chooses
+ubuntu:switcheroo-control	choice:workspace|system-module	system-module	-	yes			a service named like the package: switcheroo-control.service (switcheroo-control) | a D-Bus system service: /usr/share/dbus-1/system.d/net.hadess.SwitcherooControl.conf (switcheroo-control) | system parts beside what a person uses directly: the person chooses
+ubuntu:libccid	choice:workspace|system-module	system-module	-	yes			smart-card reader drivers: /usr/lib/pcsc/drivers/ifd-ccid.bundle/Contents/Info.plist (libccid) | system parts beside what a person uses directly: the person chooses
+ubuntu:libmtp-common	device-request	device-request	-	yes	device-rules		udev rules become a device request (/usr/lib/udev/rules.d/69-libmtp.rules)
+ubuntu:media-player-info	workspace	device-request	-	no	device-rules		udev rules become a device request (/usr/lib/udev/rules.d/40-usb-media-players.rules) | a typed package command: the workspace
+ubuntu:libsane-hpaio	device-add-on	device-add-on	-	yes			scanner backends: add-ons in this release's trees and workspace (/etc/hp/hplip.conf)
+ubuntu:mutter-common	workspace	system-module	-	no	desktop-component,image-has-name		data for the desktop component mutter: it goes with the desktop
+ubuntu:libgphoto2-6t64	workspace	workspace	-	yes	device-rules		udev rules become a device request (/usr/lib/udev/rules.d/60-libgphoto2-6t64.rules) | a typed package command: the workspace
+ubuntu:firmware-ath9k-htc	system-module	system-module	-	yes			firmware: /lib/firmware/ath9k_htc/htc_7010-1.4.0.fw (firmware-ath9k-htc)
+ubuntu:amd64-microcode	system-module	system-module	-	yes			maintenance or boot-image hook /usr/share/initramfs-tools/hooks/amd64_microcode stays inert (amd64-microcode) | kernel settings: /etc/modprobe.d/amd64-microcode-blacklist.conf (amd64-microcode) | firmware: /lib/firmware/amd-ucode/microcode_amd.bin (amd64-microcode)
+ubuntu:libnss-mdns	system-module	system-module	-	yes	signed-system-module		NSS modules: /usr/lib/x86_64-linux-gnu/libnss_mdns.so.2 (libnss-mdns)
+ubuntu:libpam-cap	system-module	system-module	-	yes			PAM modules: /usr/lib/x86_64-linux-gnu/security/pam_cap.so (libpam-cap) | PAM stack profiles: /usr/share/pam-configs/capability (libpam-cap)
+ubuntu:libpam-fprintd	system-module	system-module	-	yes			PAM modules: /usr/lib/x86_64-linux-gnu/security/pam_fprintd.so (libpam-fprintd) | PAM stack profiles: /usr/share/pam-configs/fprintd (libpam-fprintd) | system service fprintd.service (fprintd) | a D-Bus system service: /usr/share/dbus-1/system-services/net.reactivated.Fprint.service (fprintd)
+ubuntu:dkms	system-module	system-tool	-	no			maintenance or boot-image hook /etc/kernel/postinst.d/dkms stays inert (dkms) | kernel settings: /etc/modprobe.d/dkms.conf (dkms)
+ubuntu:libnss-nis	choice:workspace|system-module	system-module	-	yes			NSS modules: /lib/x86_64-linux-gnu/libnss_nis.so.2 (libnss-nis) | system parts beside what a person uses directly: the person chooses
+ubuntu:libpam-kwallet5	system-module	system-module	-	yes	user-service,desktop-component		a desktop component (/etc/xdg/autostart/pam_kwallet_init.desktop): it changes the desktop for everyone
+ubuntu:nfs-kernel-server	system-module	system-module	-	yes	optional-service-inert,dependency-daemon-inert		optional service auth-rpcgss-module.service (nfs-common) stays inert in the workspace; to run it, install nfs-common as a system module | dependency daemon stays inert; the host's is used: system service portmap.service (rpcbind) | system service fsidd.service (nfs-kernel-server) | boot chain hooks: /usr/lib/systemd/system-generators/nfs-server-generator (nfs-kernel-server)
+ubuntu:libcurl4-openssl-dev	workspace	workspace	-	yes	development		a development package (headers, libraries to link, build files) | a typed package command: the workspace
+ubuntu:firmware-sof-signed	system-module	system-module	-	yes			firmware: /lib/firmware/intel/sof-ace-tplg (firmware-sof-signed)
+ubuntu:gdm3	system-module	system-module	-	yes	desktop-environment	a desktop environment or display manager: a desktop is a Suno Mod (ADR-012)	a display manager: /usr/lib/systemd/system/gdm.service (gdm3) | a desktop: gdm3
+ubuntu:apt-config-icons-large	choice:workspace|system-module	system-module	-	yes			package manager configuration: /etc/apt/apt.conf.d/60icons-large (apt-config-icons-large) | package manager configuration: /etc/apt/apt.conf.d/60icons (apt-config-icons) | system parts beside what a person uses directly: the person chooses
+ubuntu:gnome-themes-extra-data	device-add-on	device-add-on	-	yes			data-only add-on: for the person under ~/.local/share (/usr/share/themes/Adwaita-dark/gtk-2.0/apps.rc)
+ubuntu:kdenetwork-filesharing	choice:device-add-on|system-module	device-add-on	-	yes	dependency-daemon-inert		dependency daemon stays inert; the host's is used: a D-Bus system service: /usr/share/dbus-1/system.d/org.kde.kf5auth.conf (libkf5auth-data) | a D-Bus system service: /usr/share/dbus-1/system-services/org.kde.filesharing.samba.service (kdenetwork-filesharing) | a desktop add-on (/usr/lib/x86_64-linux-gnu/qt5/plugins/kf5/propertiesdialog/SambaAcl.so) with system parts: the person chooses
+ubuntu:libhunspell-1.7-0	workspace	workspace	-	yes			a typed package command: the workspace
+ubuntu:texlive-fonts-recommended	workspace	workspace	-	yes			a typed package command: the workspace
+ubuntu:fonts-quicksand	device-add-on	device-add-on	-	yes			fonts: for the person in ~/.local/share/fonts (/usr/share/fonts/truetype/quicksand/Quicksand-Bold.ttf)
+ubuntu:gedit-common	application	application	-	yes	application-add-on		data or plugins for the application gedit: added to that application's tree
+ubuntu:fonts-noto-ui-extra	device-add-on	device-add-on	-	yes			fonts: for the person in ~/.local/share/fonts (/usr/share/fonts/truetype/noto/NotoLoopedLaoUI-Black.ttf)
+ubuntu:plasma-disks	system-module	system-tool	-	no	dependency-daemon-inert,desktop-component		dependency daemon stays inert; the host's is used: a D-Bus system service: /usr/share/dbus-1/system.d/org.kde.kf5auth.conf (libkf5auth-data) | a desktop component (/usr/lib/x86_64-linux-gnu/qt5/plugins/kf5/kded/smart.so): it changes the desktop for everyone
+ubuntu:nautilus-extension-gnome-terminal	device-add-on	device-add-on	-	yes	user-service		loads native code into the session: device-wide only as an image-signed system module after a yes, otherwise refused (/usr/lib/x86_64-linux-gnu/nautilus/extensions-4/libterminal-nautilus.so)
+ubuntu:gparted-common	application	system-tool	-	no	application-add-on		data or plugins for the application gparted: added to that application's tree
+ubuntu:layer-shell-qt	workspace	workspace	-	yes			a typed package command: the workspace
+ubuntu:gstreamer1.0-libcamera	device-add-on	device-add-on	-	yes			codecs: add-ons in this release's trees and workspace (/usr/lib/x86_64-linux-gnu/gstreamer-1.0/libgstlibcamera.so)
+ubuntu:fonts-dejavu-mono	device-add-on	device-add-on	-	yes			fonts: for the person in ~/.local/share/fonts (/etc/fonts/conf.avail/20-unhint-small-dejavu-lgc-sans-mono.conf)
+ubuntu:thunar-media-tags-plugin	device-add-on	device-add-on	-	yes			loads native code into the session: device-wide only as an image-signed system module after a yes, otherwise refused (/usr/lib/x86_64-linux-gnu/thunarx-3/thunar-media-tags-plugin.so)
+ubuntu:libgstreamer1.0-0	workspace	workspace	-	yes	privileged-helper-dropped		privileged helper /usr/lib/x86_64-linux-gnu/gstreamer1.0/gstreamer-1.0/gst-ptp-helper (setuid/setgid) is not offered; the rest works (libgstreamer1.0-0) | privileged helper /usr/lib/x86_64-linux-gnu/gstreamer1.0/gstreamer-1.0/gst-ptp-helper (file capabilities) is not offered; the rest works (libgstreamer1.0-0) | a typed package command: the workspace
+ubuntu:akonadi-server	workspace	workspace	-	yes	dependency-daemon-inert		dependency daemon stays inert; the host's is used: a D-Bus system service: /usr/share/dbus-1/system.d/org.kde.kf5auth.conf (libkf5auth-data) | a typed package command: the workspace
+ubuntu:xfce4-power-manager-data	workspace	application	-	no			a typed package command: the workspace
+ubuntu:fonts-noto-color-emoji	device-add-on	device-add-on	-	yes			fonts: for the person in ~/.local/share/fonts (/usr/share/fonts/truetype/noto/NotoColorEmoji.ttf)
+ubuntu:fonts-crosextra-carlito	device-add-on	device-add-on	-	yes			fonts: for the person in ~/.local/share/fonts (/usr/share/fonts/truetype/crosextra/Carlito-Bold.ttf)
+ubuntu:libxrandr-dev	workspace	workspace	-	yes	development		a development package (headers, libraries to link, build files) | a typed package command: the workspace
+ubuntu:libtasn1-6-dev	workspace	workspace	-	yes	development		a development package (headers, libraries to link, build files) | a typed package command: the workspace
+ubuntu:libcap-dev	workspace	workspace	-	yes	development		a development package (headers, libraries to link, build files) | a typed package command: the workspace
+ubuntu:libxss-dev	workspace	workspace	-	yes	development		a development package (headers, libraries to link, build files) | a typed package command: the workspace
+ubuntu:make	workspace	workspace	-	yes			a typed package command: the workspace
+ubuntu:libgcc-10-dev	workspace	workspace	-	yes	development		a development package (headers, libraries to link, build files) | a typed package command: the workspace
+ubuntu:libgcc-14-dev	workspace	workspace	-	yes	development		a development package (headers, libraries to link, build files) | a typed package command: the workspace
+ubuntu:libwebp-dev	workspace	workspace	-	yes	development		a development package (headers, libraries to link, build files) | a typed package command: the workspace
+ubuntu:libnsl-dev	workspace	workspace	-	yes	development		a development package (headers, libraries to link, build files) | a typed package command: the workspace
+ubuntu:libxft-dev	workspace	workspace	-	yes	development		a development package (headers, libraries to link, build files) | a typed package command: the workspace
+ubuntu:libblkid-dev	workspace	workspace	-	yes	development		a development package (headers, libraries to link, build files) | a typed package command: the workspace
+ubuntu:libgmp-dev	workspace	workspace	-	yes	development		a development package (headers, libraries to link, build files) | a typed package command: the workspace
+ubuntu:libz3-dev	workspace	workspace	-	yes	development		a development package (headers, libraries to link, build files) | a typed package command: the workspace
+ubuntu:libxcursor-dev	workspace	workspace	-	yes	development		a development package (headers, libraries to link, build files) | a typed package command: the workspace
+ubuntu:node-babel7	workspace	workspace	-	yes			a typed package command: the workspace
+ubuntu:libparams-util-perl	workspace	workspace	-	yes	interpreter-module		a typed package command: the workspace
+ubuntu:node-js-yaml	workspace	workspace	-	yes			a typed package command: the workspace
+ubuntu:liblist-moreutils-perl	workspace	workspace	-	yes	interpreter-module		a typed package command: the workspace
+ubuntu:librepository-java	workspace	workspace	-	yes			a typed package command: the workspace
+ubuntu:libjcommon-java	workspace	workspace	-	yes			a typed package command: the workspace
+ubuntu:node-util-deprecate	workspace	workspace	-	yes			a typed package command: the workspace
+ubuntu:python3-json-pointer	workspace	workspace	-	yes	interpreter-module		a typed package command: the workspace
+ubuntu:node-mime-types	workspace	workspace	-	yes			a typed package command: the workspace
+ubuntu:python3-typing-extensions	workspace	workspace	-	yes	interpreter-module		a typed package command: the workspace
+ubuntu:node-v8flags	workspace	workspace	-	yes			a typed package command: the workspace
+ubuntu:libcommons-lang3-java	workspace	workspace	-	yes			a typed package command: the workspace
+ubuntu:php-xml	choice:workspace|system-module	workspace	-	yes	meta-package,optional-service-inert		meta-package: no files of its own; members classified one by one (2) | optional service phpsessionclean.service (php-common) stays inert in the workspace; to run it, install php-common as a system module | a cron job: /etc/cron.d/php (php-common) | system parts beside what a person uses directly: the person chooses
+ubuntu:node-path-dirname	workspace	workspace	-	yes			a typed package command: the workspace
+ubuntu:pv	workspace	console-application	-	no			a typed package command: the workspace
+ubuntu:vim	workspace	console-application	-	no			launcher vim.desktop opens a terminal: a console program | a typed package command: the workspace
+ubuntu:pkgconf-bin	workspace	workspace	-	yes			a typed package command: the workspace
+ubuntu:libjxr-tools	workspace	workspace	-	yes			a typed package command: the workspace
+ubuntu:isc-dhcp-client	choice:system-tool|workspace	system-tool	-	yes			administration commands (dhclient in sbin); whether they need real root is not known: the person chooses
+ubuntu:avahi-utils	workspace	workspace	-	yes			a typed package command: the workspace
+ubuntu:libqmi-utils	choice:system-tool|workspace	system-tool	-	yes			administration commands (qmi-firmware-update, linking libgudev-1.0-0); whether they need real root is not known: the person chooses
+ubuntu:flex	workspace	workspace	-	yes			a typed package command: the workspace
+ubuntu:libgpod-common	choice:system-tool|workspace	workspace	-	yes	device-rules		udev rules become a device request (/usr/lib/udev/rules.d/90-libgpod.rules) | administration commands (ipod-read-sysinfo-extended, linking libusb-1.0-0); whether they need real root is not known: the person chooses
+ubuntu:apt-file	choice:system-tool|workspace	console-application	-	no			administration commands (apt-file, linking libapt-pkg-perl); whether they need real root is not known: the person chooses
+ubuntu:cpp-x86-64-linux-gnu	workspace	workspace	-	yes			a typed package command: the workspace
+ubuntu:install-info	choice:workspace|system-tool	workspace	-	yes			administration commands (update-info-dir) beside user commands (ginstall-info): the person chooses
+ubuntu:ldap-utils	workspace	workspace	-	yes			a typed package command: the workspace
+ubuntu:aptitude-common	workspace	system-tool	-	no			a typed package command: the workspace
+ubuntu:jq	workspace	workspace	-	yes			a typed package command: the workspace
+ubuntu:mariadb-client	workspace	workspace	-	yes			a typed package command: the workspace
+ubuntu:xfce4-places-plugin	device-add-on	device-add-on	-	yes			loads native code into the session: device-wide only as an image-signed system module after a yes, otherwise refused (/usr/bin/xfce4-popup-places)
+ubuntu:lzop	workspace	workspace	-	yes			a typed package command: the workspace
+ubuntu:webpack	workspace	workspace	-	yes			a typed package command: the workspace
+ubuntu:graphviz	workspace	workspace	-	yes			a typed package command: the workspace
+ubuntu:parted	system-tool	system-tool	-	yes	cli-admin		command-line administration tool (parted in sbin, works on the device through libparted2t64): needs real root, which a workspace's sudo is not
+ubuntu:cmake	workspace	workspace	-	yes			a typed package command: the workspace
+ubuntu:kpackagetool5	workspace	workspace	-	yes			a typed package command: the workspace
+ubuntu:desktop-file-utils	workspace	workspace	-	yes			a typed package command: the workspace
+ubuntu:whois	workspace	console-application	-	no			a typed package command: the workspace
+ubuntu:x11-session-utils	workspace	workspace	-	yes			a typed package command: the workspace
+ubuntu:gnome-menus	choice:system-tool|workspace	workspace	-	yes			administration commands (gnome-menus-blacklist in sbin); whether they need real root is not known: the person chooses
+ubuntu:ipset	system-tool	system-tool	-	yes	cli-admin		command-line administration tool (ipset in sbin, works on the device through libipset13): needs real root, which a workspace's sudo is not
+ubuntu:ethtool	system-tool	system-tool	-	yes	cli-admin		command-line administration tool (ethtool in sbin, works on the device through libmnl0): needs real root, which a workspace's sudo is not
+ubuntu:libgsf-bin	workspace	workspace	-	yes			a typed package command: the workspace
+ubuntu:libevdocument3-4t64	workspace	workspace	-	yes			a typed package command: the workspace
+ubuntu:libteamdctl0	workspace	workspace	-	yes			a typed package command: the workspace
+ubuntu:libarpack2t64	workspace	workspace	-	yes			a typed package command: the workspace
+ubuntu:libpoppler-glib8t64	workspace	workspace	-	yes			a typed package command: the workspace
+ubuntu:libxcb-icccm4	workspace	workspace	-	yes			a typed package command: the workspace
+ubuntu:remmina-plugin-secret	application	device-add-on	-	no	application-add-on		data or plugins for the application remmina: added to that application's tree
+ubuntu:libwxgtk3.2-1t64	workspace	workspace	-	yes			a typed package command: the workspace
+ubuntu:libgnome-desktop-3-20t64	workspace	workspace	-	yes			a typed package command: the workspace
+ubuntu:libjxr0t64	workspace	workspace	-	yes			a typed package command: the workspace
+ubuntu:librygel-core-2.8-0	workspace	workspace	-	yes			a typed package command: the workspace
+ubuntu:libxapian30	workspace	workspace	-	yes			a typed package command: the workspace
+ubuntu:libqt5webenginewidgets5	workspace	workspace	-	yes			a typed package command: the workspace
+ubuntu:node-is-stream	workspace	workspace	-	yes			a typed package command: the workspace
+ubuntu:libsoup-3.0-common	workspace	workspace	-	yes			a typed package command: the workspace
+ubuntu:libgweather-4-0t64	workspace	workspace	-	yes			a typed package command: the workspace
+ubuntu:libgoa-1.0-common	workspace	workspace	-	yes	transitional		transitional: no files of its own, brings dconf-gsettings-backend | a typed package command: the workspace
+ubuntu:task-brazilian-portuguese	choice:workspace|system-tool	device-add-on	-	no	meta-package		meta-package: no files of its own; members classified one by one (2) | administration commands (tasksel) beside no sbin location: the person chooses
+ubuntu:vlc-l10n	workspace	workspace	-	yes			a typed package command: the workspace
+fedora:kid3-qt	application	application	-	yes	dependency-daemon-inert,gui-launcher		dependency daemon stays inert; the host's is used: system service zvbid.service (zvbi) | launcher org.kde.kid3-qt.desktop runs a program from the package (kid3-qt) | its commands (kid3-qt) start in its sandbox
+fedora:hash-o-matic	application	application	-	yes	gui-launcher		launcher org.kde.hashomatic.desktop runs a program from the package (hash-o-matic) | its commands (hashomatic) start in its sandbox
+fedora:sylpheed	application	application	-	yes	gui-launcher		launcher sylpheed.desktop runs a program from the package (sylpheed) | its commands (sylpheed) start in its sandbox
+fedora:screenie-composer	application	application	-	yes	gui-launcher		launcher screenie-composer.desktop runs a program from the package (screenie-composer) | its commands (screenie-composer) start in its sandbox
+fedora:kxkb2locale1	choice:system-module|workspace	system-module	-	yes	user-service,desktop-component		a desktop component (/etc/xdg/autostart/kxkb2locale1.desktop): it changes the desktop for everyone | a desktop component that also holds what a person uses directly: the person chooses
+fedora:gtk3-devel	workspace	workspace	-	yes	development		a development package (headers, libraries to link, build files) | a typed package command: the workspace
+fedora:audex	application	application	-	yes	dependency-daemon-inert,gui-launcher		dependency daemon stays inert; the host's is used: system service zvbid.service (zvbi) | launcher org.kde.audex.desktop runs a program from the package (audex) | its commands (audex) start in its sandbox
+fedora:cutecom	application	application	-	yes	gui-launcher		launcher cutecom.desktop runs a program from the package (cutecom) | its commands (cutecom) start in its sandbox
+fedora:papers-previewer	choice:application|workspace	application	-	yes	gui-launcher		a window opened from another program (org.gnome.Papers-previewer.desktop, hidden from the menu): the person chooses
+fedora:kf6-kwallet	choice:application|workspace	device-add-on	-	no	gui-launcher		a window opened from another program (org.kde.ksecretd.desktop, hidden from the menu): the person chooses
+fedora:pcp-gui	application	application	-	yes	optional-service-inert,dependency-daemon-inert,gui-launcher,app-service-split		optional service pcp-reboot-init.service (pcp) stays inert in the workspace; to run it, install pcp as a system module | dependency daemon stays inert; the host's is used: system service nis-domainname.service (hostname) | launcher pmchart.desktop runs a program from the package (pcp-gui) | system service pmcd.service (pcp)
+fedora:gnome-mines	application	application	-	yes	gui-launcher		launcher org.gnome.Mines.desktop runs a program from the package (gnome-mines) | its commands (gnome-mines) start in its sandbox
+fedora:gajim	application	application	-	yes	gui-launcher		launcher org.gajim.Gajim.desktop runs a program from the package (gajim) | its commands (gajim) start in its sandbox
+fedora:konqueror	application	application	-	yes	dependency-daemon-inert,user-service,gui-launcher		dependency daemon stays inert; the host's is used: system service zvbid.service (zvbi) | launcher konqbrowser.desktop runs a program from the package (konqueror) | its commands (fsview) start in its sandbox
+fedora:jedit	application	application	-	yes	gui-launcher		launcher jedit.desktop runs a program from the package (jedit) | its commands (jedit) start in its sandbox
+fedora:kf6-knewstuff	choice:application|workspace	workspace	-	yes	gui-launcher		a window opened from another program (org.kde.knewstuff-dialog6.desktop, hidden from the menu): the person chooses
+fedora:eom	application	application	-	yes	gui-launcher		launcher eom.desktop runs a program from the package (eom) | its commands (eom) start in its sandbox
+fedora:kanagram	application	application	-	yes	dependency-daemon-inert,gui-launcher		dependency daemon stays inert; the host's is used: system service zvbid.service (zvbi) | launcher org.kde.kanagram.desktop runs a program from the package (kanagram) | its commands (kanagram) start in its sandbox
+fedora:kjots	application	application	-	yes	dependency-daemon-inert,gui-launcher		dependency daemon stays inert; the host's is used: system service zvbid.service (zvbi) | launcher org.kde.kjots.desktop runs a program from the package (kjots) | its commands (kjots) start in its sandbox
+fedora:libsvm-svm-toy-qt	application	application	-	yes	gui-launcher		launcher libsvm-svm-toy-qt.desktop runs a program from the package (libsvm-svm-toy-qt) | its commands (svm-toy-qt) start in its sandbox
+fedora:neovim-qt	application	application	-	yes	gui-launcher		launcher nvim-qt.desktop runs a program from the package (neovim-qt) | its commands (nvim-qt) start in its sandbox
+fedora:xmedcon	application	application	-	yes	gui-launcher		launcher xmedcon.desktop runs a program from the package (xmedcon) | its commands (medcon) start in its sandbox
+fedora:openiked	system-module	system-module	-	yes	optional-service-inert		optional service openiked-keygen.service (openiked) stays inert in the workspace; to run it, install openiked as a system module | a service named like the package: openiked.service (openiked)
+fedora:trace-cmd	system-module	system-tool	-	no			system service trace-cmd.service (trace-cmd)
+fedora:gap-pkg-scscp	choice:workspace|system-module	workspace	-	yes	dependency-daemon-inert		dependency daemon stays inert; the host's is used: system service logrotate.service (logrotate) | a service named like the package: gap-scscp.service (gap-pkg-scscp) | system parts beside what a person uses directly: the person chooses
+fedora:edac-ctl	system-module	system-module	-	yes			a service named like the package: edac.service (edac-ctl)
+fedora:tog-pegasus	choice:workspace|system-module	system-module	-	yes			a service named like the package: tog-pegasus.service (tog-pegasus) | a PAM service configuration: /etc/pam.d/wbem (tog-pegasus) | system parts beside what a person uses directly: the person chooses
+fedora:salt-syndic	system-module	system-module	-	yes	optional-service-inert,dependency-daemon-inert		optional service salt-master.service (salt-master) stays inert in the workspace; to run it, install salt-master as a system module | dependency daemon stays inert; the host's is used: system service logrotate.service (logrotate) | system service salt-syndic.service (salt-syndic)
+fedora:e2scrub	choice:system-tool|workspace	system-tool	-	yes	dependency-daemon-inert,device-rules		maintenance or boot-image hook /usr/lib/systemd/system/e2scrub@.service stays inert (e2scrub) | dependency daemon stays inert; the host's is used: system service dm-event.service (device-mapper-event) | udev rules become a device request (/usr/lib/udev/rules.d/96-e2scrub.rules) | administration commands (e2scrub, linking e2fsprogs-libs); whether they need real root is not known: the person chooses
+fedora:libvirt-daemon-driver-interface	choice:workspace|system-module	system-module	-	yes	optional-service-inert		optional service virtinterfaced-admin.socket (libvirt-daemon-driver-interface) stays inert in the workspace; to run it, install libvirt-daemon-driver-interface as a system module | optional service libvirt-guests.service (libvirt-daemon-common) stays inert in the workspace; to run it, install libvirt-daemon-common as a system module | system service virtinterfaced.service (libvirt-daemon-driver-interface) | polkit rules: /usr/share/polkit-1/rules.d/50-libvirt.rules (libvirt-daemon-common)
+fedora:lemonldap-ng-portal	choice:workspace|system-module	system-module	-	yes	optional-service-inert,dependency-daemon-inert		optional service lemonldap-ng-rotateOidcKeys.service (lemonldap-ng-common) stays inert in the workspace; to run it, install lemonldap-ng-common as a system module | dependency daemon stays inert; the host's is used: system service epmd.service (erlang-erts) | a service named like the package: lemonldap-ng-portal.service (lemonldap-ng-portal) | system unit configuration: /usr/lib/systemd/system-preset/10-lemonldap-ng-portal.preset (lemonldap-ng-portal)
+fedora:dlm	system-module	system-module	-	yes	kernel-module	kernel module not on Suno's list: modules are not built on the device, break at the next kernel and cannot be signed	kernel module (/lib/modules/7.3.4-300.fc45.x86_64+debug/kernel/arch/x86/crypto/aegis128-aesni.ko.xz)
+fedora:gnome-ponytail-daemon	choice:system-module|workspace	workspace	-	yes	user-service,desktop-component		a desktop component (/usr/share/dbus-1/services/org.gnome.Ponytail.service): it changes the desktop for everyone | a session service started on demand, not with every session: the person chooses
+fedora:bitlbee	system-module	system-module	-	yes			system service bitlbee.service (bitlbee)
+fedora:darkhttpd	system-module	system-module	-	yes			system service darkhttpd.service (darkhttpd)
+fedora:targetd	system-module	system-module	-	yes	dependency-daemon-inert		dependency daemon stays inert; the host's is used: system service dm-event.service (device-mapper-event) | system service targetd.service (targetd)
+fedora:infinipath-psm	workspace	workspace	-	yes	device-rules		udev rules become a device request (/usr/lib/udev/rules.d/60-ipath.rules) | a typed package command: the workspace
+fedora:xr-hardware	device-request	device-request	-	yes	device-rules		udev rules become a device request (/usr/lib/udev/rules.d/70-xrhardware.rules)
+fedora:mISDN	workspace	workspace	-	yes	device-rules		udev rules become a device request (/etc/udev/rules.d/mISDN.rules) | a typed package command: the workspace
+fedora:libmtp	workspace	workspace	-	yes	device-rules		udev rules become a device request (/usr/lib/udev/rules.d/69-libmtp.rules) | a typed package command: the workspace
+fedora:libnfc	workspace	workspace	-	yes	device-rules		udev rules become a device request (/usr/lib/udev/rules.d/93-pn53x.rules) | a typed package command: the workspace
+fedora:libcamera	workspace	workspace	-	yes	device-rules		udev rules become a device request (/usr/lib/udev/rules.d/70-libcamera.rules) | a typed package command: the workspace
+fedora:stellarium-data	application	application	-	yes	application-add-on		data or plugins for the application stellarium: added to that application's tree
+fedora:rust-openssl-macros+default-devel	workspace	workspace	-	yes	development		a development package (headers, libraries to link, build files) | a typed package command: the workspace
+fedora:libcap	choice:workspace|system-module	workspace	-	yes			PAM modules: /usr/lib64/security/pam_cap.so (libcap) | system parts beside what a person uses directly: the person chooses
+fedora:cockpit-ostree	workspace	system-tool	-	no			a typed package command: the workspace
+fedora:pam_cifscreds	choice:workspace|system-module	system-module	-	yes			PAM modules: /usr/lib64/security/pam_cifscreds.so (pam_cifscreds) | system parts beside what a person uses directly: the person chooses
+fedora:nss_db	workspace	system-module	-	no			a typed package command: the workspace
+fedora:rust-tiny_http+ssl-openssl-devel	workspace	workspace	-	yes	development		a development package (headers, libraries to link, build files) | a typed package command: the workspace
+fedora:python3-types-pyopenssl	workspace	workspace	-	yes	interpreter-module		a typed package command: the workspace
+fedora:rust-hickory-resolver0.24+dnssec-devel	workspace	workspace	-	yes	development		a development package (headers, libraries to link, build files) | a typed package command: the workspace
+fedora:libcgroup-pam	choice:workspace|system-module	system-module	-	yes			PAM modules: /usr/lib64/security/pam_cgroup.so (libcgroup-pam) | system parts beside what a person uses directly: the person chooses
+fedora:rust-secret-service+rt-async-io-crypto-openssl-devel	workspace	workspace	-	yes	development		a development package (headers, libraries to link, build files) | a typed package command: the workspace
+fedora:wireless-regdb	system-module	system-module	-	yes			firmware: /usr/lib/firmware/regulatory.db (wireless-regdb)
+fedora:gtk3	workspace	workspace	-	yes			a typed package command: the workspace
+fedora:google-noto-serif-hentaigana-fonts	device-add-on	device-add-on	-	yes			fonts: for the person in ~/.local/share/fonts (/etc/fonts/conf.d/58-google-noto-serif-hentaigana.conf)
+fedora:google-noto-sans-vf-fonts	device-add-on	device-add-on	-	yes			fonts: for the person in ~/.local/share/fonts (/etc/fonts/conf.d/56-google-noto-sans-vf.conf)
+fedora:libreoffice-dict-en-US	device-add-on	device-add-on	-	yes			data-only add-on: for the person under ~/.local/share (/usr/share/hunspell/en_US.aff)
+fedora:mingw64-qt5-qtsensors	workspace	workspace	-	yes	dependency-daemon-inert		dependency daemon stays inert; the host's is used: system service epmd.service (erlang-erts) | a typed package command: the workspace
+fedora:rc-tools	workspace	system-tool	-	no	device-rules		udev rules become a device request (/usr/lib/udev/rules.d/70-infrared.rules) | a typed package command: the workspace
+fedora:hunspell-wa	device-add-on	device-add-on	-	yes			data-only add-on: for the person under ~/.local/share (/usr/share/hunspell/wa_BE.aff)
+fedora:senamirmir-wookianos-fonts	device-add-on	device-add-on	-	yes			fonts: for the person in ~/.local/share/fonts (/etc/fonts/conf.d/65-senamirmir-wookianos-fonts.conf)
+fedora:google-noto-sans-ethiopic-vf-fonts	device-add-on	device-add-on	-	yes			fonts: for the person in ~/.local/share/fonts (/etc/fonts/conf.d/65-0-google-noto-sans-ethiopic-vf.conf)
+fedora:google-noto-sans-phoenician-fonts	device-add-on	device-add-on	-	yes			fonts: for the person in ~/.local/share/fonts (/etc/fonts/conf.d/58-google-noto-sans-phoenician.conf)
+fedora:qt6-qtwebengine-devel	workspace	workspace	-	yes	dependency-daemon-inert,development		dependency daemon stays inert; the host's is used: system service zvbid.service (zvbi) | a development package (headers, libraries to link, build files) | a typed package command: the workspace
+fedora:libreoffice-dict-en-ZA	device-add-on	device-add-on	-	yes			data-only add-on: for the person under ~/.local/share (/usr/share/hunspell/en_ZA.aff)
+fedora:rust-zbus-devel	workspace	workspace	-	yes	development		a development package (headers, libraries to link, build files) | a typed package command: the workspace
+fedora:hunspell-mr	device-add-on	device-add-on	-	yes			data-only add-on: for the person under ~/.local/share (/usr/share/hunspell/mr_IN.aff)
+fedora:gst-editing-services	workspace	workspace	-	yes			a typed package command: the workspace
+fedora:gfs-neohellenic-math-fonts	device-add-on	device-add-on	-	yes			fonts: for the person in ~/.local/share/fonts (/etc/fonts/conf.d/61-gfs-neohellenic-math-fonts.conf)
+fedora:aspell-hr	workspace	device-add-on	-	no			a typed package command: the workspace
+fedora:google-noto-sans-newa-fonts	device-add-on	device-add-on	-	yes			fonts: for the person in ~/.local/share/fonts (/etc/fonts/conf.d/58-google-noto-sans-newa.conf)
+fedora:google-noto-sans-bengali-ui-fonts	device-add-on	device-add-on	-	yes			fonts: for the person in ~/.local/share/fonts (/etc/fonts/conf.d/67-google-noto-sans-bengali-ui.conf)
+fedora:qca-qt5-ossl	workspace	workspace	-	yes			a typed package command: the workspace
+fedora:rust-tikv-jemalloc-sys+default-devel	workspace	workspace	-	yes	development		a development package (headers, libraries to link, build files) | a typed package command: the workspace
+fedora:rust-pulldown-cmark0.11+getopts-devel	workspace	workspace	-	yes	development		a development package (headers, libraries to link, build files) | a typed package command: the workspace
+fedora:rust-env-lock+default-devel	workspace	workspace	-	yes	development		a development package (headers, libraries to link, build files) | a typed package command: the workspace
+fedora:rust-pkcs8_0.10-devel	workspace	workspace	-	yes	development		a development package (headers, libraries to link, build files) | a typed package command: the workspace
+fedora:rust-faccess-devel	workspace	workspace	-	yes	development		a development package (headers, libraries to link, build files) | a typed package command: the workspace
+fedora:rust-lexical-parse-integer+compact-devel	workspace	workspace	-	yes	development		a development package (headers, libraries to link, build files) | a typed package command: the workspace
+fedora:stratagus-devel	workspace	workspace	-	yes	development		a development package (headers, libraries to link, build files) | a typed package command: the workspace
+fedora:rust-p521+arithmetic-devel	workspace	workspace	-	yes	development		a development package (headers, libraries to link, build files) | a typed package command: the workspace
+fedora:rust-audiopus_sys+default-devel	workspace	workspace	-	yes	development		a development package (headers, libraries to link, build files) | a typed package command: the workspace
+fedora:libqrcodegen-devel	workspace	workspace	-	yes	development		a development package (headers, libraries to link, build files) | a typed package command: the workspace
+fedora:rust-clap_complete+unstable-dynamic-devel	workspace	workspace	-	yes	development		a development package (headers, libraries to link, build files) | a typed package command: the workspace
+fedora:unbound-devel	workspace	workspace	-	yes	dependency-daemon-inert,development		dependency daemon stays inert; the host's is used: system service epmd.service (erlang-erts) | a development package (headers, libraries to link, build files) | a typed package command: the workspace
+fedora:rust-sqlx-mysql+default-devel	workspace	workspace	-	yes	development		a development package (headers, libraries to link, build files) | a typed package command: the workspace
+fedora:rust-prost-types+default-devel	workspace	workspace	-	yes	development		a development package (headers, libraries to link, build files) | a typed package command: the workspace
+fedora:perl-CPAN-Changes	workspace	workspace	-	yes	interpreter-module		a typed package command: the workspace
+fedora:perl-Time-y2038	workspace	workspace	-	yes	interpreter-module		a typed package command: the workspace
+fedora:python3-httpx-socks+asyncio	workspace	workspace	-	yes	meta-package,interpreter-module		meta-package: no files of its own; members classified one by one (2) | a typed package command: the workspace
+fedora:python3-virtualenv-clone	workspace	workspace	-	yes	interpreter-module		a typed package command: the workspace
+fedora:python3-openshadinglanguage	workspace	workspace	-	yes	interpreter-module		a typed package command: the workspace
+fedora:perl-CPAN-Mini	workspace	workspace	-	yes	interpreter-module		a typed package command: the workspace
+fedora:perl-Business-ISBN	workspace	workspace	-	yes	interpreter-module		a typed package command: the workspace
+fedora:python3-sphinx-argparse-cli	workspace	workspace	-	yes	interpreter-module		a typed package command: the workspace
+fedora:perl-Throwable	workspace	workspace	-	yes	interpreter-module		a typed package command: the workspace
+fedora:gcovr	workspace	workspace	-	yes			a typed package command: the workspace
+fedora:perl-Devel-StackTrace-Extract	workspace	workspace	-	yes	interpreter-module		a typed package command: the workspace
+fedora:perl-DBIx-QueryLog	workspace	workspace	-	yes	interpreter-module		a typed package command: the workspace
+fedora:rubygem-rttool	workspace	workspace	-	yes			a typed package command: the workspace
+fedora:python3-deepdiff+cli	workspace	workspace	-	yes	interpreter-module		a typed package command: the workspace
+fedora:fence-agents-vmware-soap	choice:workspace|system-tool	system-tool	-	yes			administration commands (fence_vmware_soap) beside no sbin location: the person chooses
+fedora:gimgtools	workspace	workspace	-	yes			a typed package command: the workspace
+fedora:ceph-test	choice:workspace|system-module	workspace	-	yes	optional-service-inert		optional service rbdmap.service (ceph-common) stays inert in the workspace; to run it, install ceph-common as a system module | a mount helper: /usr/bin/mount.ceph (ceph-common) | system parts beside what a person uses directly: the person chooses
+fedora:act	workspace	workspace	-	yes			a typed package command: the workspace
+fedora:cswrap	workspace	workspace	-	yes			a typed package command: the workspace
+fedora:nodejs-npm	workspace	workspace	-	yes			a typed package command: the workspace
+fedora:texlive-mathspic	workspace	workspace	-	yes			a typed package command: the workspace
+fedora:qemu-sanity-check-nodeps	workspace	workspace	-	yes			a typed package command: the workspace
+fedora:createrepo_c	choice:workspace|system-tool	workspace	-	yes			administration commands (createrepo_c) beside user commands (createrepo): the person chooses
+fedora:rigsync	workspace	console-application	-	no			a typed package command: the workspace
+fedora:ghc9.4-compiler	workspace	workspace	-	yes			a typed package command: the workspace
+fedora:termcolours	workspace	console-application	-	no			a typed package command: the workspace
+fedora:protobuf-compiler	workspace	workspace	-	yes			a typed package command: the workspace
+fedora:janet	workspace	workspace	-	yes			a typed package command: the workspace
+fedora:xpa	workspace	workspace	-	yes			a typed package command: the workspace
+fedora:mediainfo	workspace	console-application	-	no			a typed package command: the workspace
+fedora:rtla	choice:system-tool|workspace	system-tool	-	yes			administration commands (hwnoise, linking libtraceevent); whether they need real root is not known: the person chooses
+fedora:texlive-pdfcrop	workspace	workspace	-	yes			a typed package command: the workspace
+fedora:iptraf-ng	choice:workspace|system-tool	system-tool	-	yes			administration commands (iptraf-ng) beside no sbin location: the person chooses
+fedora:jasper	workspace	workspace	-	yes			a typed package command: the workspace
+fedora:dogtag-jss-tools	workspace	workspace	-	yes			a typed package command: the workspace
+fedora:ocaml-ocp-indent	workspace	workspace	-	yes			a typed package command: the workspace
+fedora:s3fs-fuse	choice:workspace|system-module	system-module	-	yes			a FUSE filesystem: /usr/bin/s3fs (s3fs-fuse) | system parts beside what a person uses directly: the person chooses
+fedora:sameboy-thumbnailer	device-add-on	device-add-on	-	yes			loads native code into the session: device-wide only as an image-signed system module after a yes, otherwise refused (/usr/bin/sameboy-thumbnailer)
+fedora:libtypec-utils	workspace	system-tool	-	no			a typed package command: the workspace
+fedora:unixcw	workspace	console-application	-	no			a typed package command: the workspace
+fedora:hdf	workspace	workspace	-	yes			a typed package command: the workspace
+fedora:moarvm	workspace	workspace	-	yes			a typed package command: the workspace
+fedora:scoutfish	workspace	workspace	-	yes			a typed package command: the workspace
+fedora:xdpyinfo	workspace	workspace	-	yes			a typed package command: the workspace
+fedora:sil-ezra-fonts-all	device-add-on	device-add-on	-	yes	meta-package		meta-package: no files of its own; members classified one by one (2) | fonts: for the person in ~/.local/share/fonts (/etc/fonts/conf.d/65-sil-ezra-fonts.conf)
+fedora:langpacks-fonts-pt	device-add-on	device-add-on	-	yes	meta-package		meta-package: no files of its own; members classified one by one (3) | fonts: for the person in ~/.local/share/fonts (/etc/fonts/conf.d/56-google-noto-sans-mono-vf.conf)
+fedora:langpacks-fonts-nb	device-add-on	device-add-on	-	yes	meta-package		meta-package: no files of its own; members classified one by one (3) | fonts: for the person in ~/.local/share/fonts (/etc/fonts/conf.d/56-google-noto-sans-mono-vf.conf)
+fedora:bicon-legacyfonts	workspace	device-add-on	-	no			a typed package command: the workspace
+fedora:adf-gillius-fonts-all	device-add-on	device-add-on	-	yes	meta-package		meta-package: no files of its own; members classified one by one (2) | fonts: for the person in ~/.local/share/fonts (/etc/fonts/conf.d/69-adf-gillius-2-fonts.conf)
+fedora:langpacks-fonts-nqo	device-add-on	device-add-on	-	yes	transitional		transitional: no files of its own, brings default-fonts-nqo | fonts: for the person in ~/.local/share/fonts (/etc/fonts/conf.d/66-google-noto-sans-nko.conf)
+fedora:langpacks-fonts-sr	device-add-on	device-add-on	-	yes	meta-package		meta-package: no files of its own; members classified one by one (3) | fonts: for the person in ~/.local/share/fonts (/etc/fonts/conf.d/56-google-noto-sans-mono-vf.conf)
+fedora:bitmap-opentype-fonts-all	device-add-on	device-add-on	-	yes	meta-package		meta-package: no files of its own; members classified one by one (5) | fonts: for the person in ~/.local/share/fonts (/etc/fonts/conf.d/66-bitmap-console-opentype.conf)
+fedora:rust-cpio+default-devel	workspace	workspace	-	yes	development		a development package (headers, libraries to link, build files) | a typed package command: the workspace
+fedora:rust-redis+pin-project-lite-devel	workspace	workspace	-	yes	development		a development package (headers, libraries to link, build files) | a typed package command: the workspace
+fedora:rust-ixdtf-devel	workspace	workspace	-	yes	development		a development package (headers, libraries to link, build files) | a typed package command: the workspace
+fedora:rust-cookie+hkdf-devel	workspace	workspace	-	yes	development		a development package (headers, libraries to link, build files) | a typed package command: the workspace
+fedora:perl-SQL-Abstract-Limit	workspace	workspace	-	yes	interpreter-module		a typed package command: the workspace
+fedora:kturtle	application	application	-	yes	dependency-daemon-inert,gui-launcher		dependency daemon stays inert; the host's is used: system service zvbid.service (zvbi) | launcher org.kde.kturtle.desktop runs a program from the package (kturtle) | its commands (kturtle) start in its sandbox
+fedora:modulemd-tools	workspace	workspace	-	yes			a typed package command: the workspace
+fedora:golang-github-zeebo-assert-devel	workspace	workspace	-	yes	development		a development package (headers, libraries to link, build files) | a typed package command: the workspace
+fedora:rust-rav1e+ivf-devel	workspace	workspace	-	yes	development		a development package (headers, libraries to link, build files) | a typed package command: the workspace
+fedora:sdcv	workspace	console-application	-	no			a typed package command: the workspace

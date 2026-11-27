@@ -1,0 +1,338 @@
+/* SPDX-License-Identifier: Apache-2.0 */
+/* SunoUI media family: MediaTile/MediaGrid, MediaTransport, VoiceClip, AudioWaveform,
+   CoverArt, the adjustment sliders, the image viewport and crop, colour choice, the
+   charts and measures, and the timeline. Colours are @Suno_* roles; metrics are
+   --SunoUI-media-* (config/shared/design-tokens.d/media.json). Parts that draw their
+   own pixels (tiles, waveforms, charts, the timeline) read the same roles through
+   media_style.colour(). */
+
+/* SunoUI: MediaTile / MediaGrid (v70 .pgrid > .pc, .drgrid > .drtile, .rlmedia) */
+SunoUI-media-grid gridview.SunoUI-media-view,
+SunoUI-media-grid gridview.SunoUI-media-view > child { background: none; padding: 0; margin: 0; border-radius: 0; box-shadow: none; outline: none; }
+SunoUI-media-grid gridview.SunoUI-media-view > child:focus-visible SunoUI-media-tile { outline: 2px solid @Suno_focus_ring; outline-offset: 2px; }
+SunoUI-media-tile:focus-visible { outline: 2px solid @Suno_focus_ring; outline-offset: 2px; }
+SunoUI-media-tile.clip label.caption {
+  font-size: var(--SunoUI-media-tile-clip-caption-size); font-weight: 500; letter-spacing: 0.01em;
+  color: @Suno_ink_secondary;
+}
+SunoUI-media-tile .SunoUI-media-meta { min-height: var(--SunoUI-media-tile-meta-height); }
+SunoUI-media-tile:disabled { opacity: 0.35; }
+/* The selection ring sits outside the picture (v70 outline-offset): a scrolling grid keeps room for it. */
+SunoUI-media-grid gridview.SunoUI-media-view.library { padding: calc(var(--SunoUI-media-tile-ring-offset) + var(--SunoUI-media-tile-ring-width) + 1px); }
+SunoUI-media-grid gridview.SunoUI-media-view.clip { padding: calc(var(--SunoUI-media-tile-clip-ring-offset) + var(--SunoUI-media-tile-clip-ring-width)); }
+
+/* SunoUI: ImageViewport (IM3; snapshot paints this role across the full stage) */
+SunoUI-image-viewport { background: @Suno_media_viewport_black; }
+
+/* SunoUI: MediaTransport (v70 Tide .dctlw, Reel .rlctl, Session .selcd, Memos .medeck; play keys are the soft key, line 4200) */
+.SunoUI-media-transport button.SunoUI-media-key:not(.SunoUI-media-play) {
+  min-width: var(--SunoUI-media-transport-button); min-height: var(--SunoUI-media-transport-button);
+  padding: 0; border-radius: var(--SunoUI-media-transport-button-radius); border: none;
+  background: none; box-shadow: none; color: @Suno_ink_secondary;
+  transition: background-color var(--SunoUI-duration-hover) ease, color var(--SunoUI-duration-hover) ease;
+}
+.SunoUI-media-transport button.SunoUI-media-key:not(.SunoUI-media-play):hover { background: @Suno_hover; color: @Suno_ink; }
+.SunoUI-media-transport button.SunoUI-media-key:not(.SunoUI-media-play):active { background: @Suno_control_fill; }
+.SunoUI-media-transport button.SunoUI-media-key.toggle.on { background: none; color: @Suno_media_toggle_on; }
+.SunoUI-media-transport.deck button.SunoUI-media-key.toggle.on { color: @Suno_media_progress; }
+.SunoUI-media-transport button:disabled { opacity: 0.3; }
+.SunoUI-media-transport button:focus-visible { outline: 2px solid @Suno_focus_ring; outline-offset: 2px; }
+.SunoUI-media-transport button.SunoUI-media-play {
+  min-width: var(--SunoUI-media-transport-play); min-height: var(--SunoUI-media-transport-play);
+  padding: 0; border-radius: 9999px; border: none;
+  background: @Suno_media_soft_key; color: @Suno_media_soft_key_ink; box-shadow: none;
+  transition: background-color var(--SunoUI-duration-hover) ease, transform var(--SunoUI-duration-press) var(--SunoUI-spring);
+}
+.SunoUI-media-transport button.SunoUI-media-play:hover { background: @Suno_media_soft_key_hover; }
+.SunoUI-media-transport button.SunoUI-media-play:active { transform: scale(0.94); }
+
+/* Tide's deck: keys 6 apart over the scrub, which runs position · range · time left */
+.SunoUI-media-transport.deck { border-spacing: var(--SunoUI-media-transport-row-gap); }
+.SunoUI-media-transport.deck .SunoUI-media-keys { border-spacing: var(--SunoUI-media-transport-gap); }
+.SunoUI-media-transport.deck button.SunoUI-media-play { margin: 0 var(--SunoUI-media-transport-deck-play-margin); }
+.SunoUI-media-transport .SunoUI-media-scrub { border-spacing: var(--SunoUI-media-transport-scrub-gap); min-width: var(--SunoUI-media-transport-scrub-min-width); }
+.SunoUI-media-transport.deck label.SunoUI-media-time { min-width: var(--SunoUI-media-transport-scrub-time-width); }
+.SunoUI-media-transport label.SunoUI-media-time {
+  font-size: var(--SunoUI-media-transport-scrub-size); letter-spacing: 0.01em; font-feature-settings: "tnum";
+  color: @Suno_ink_secondary;
+}
+scale.SunoUI-media-range { min-height: var(--SunoUI-media-transport-range-height); padding: 0; margin: 0; }
+scale.SunoUI-media-range trough {
+  min-height: var(--SunoUI-media-transport-track); border-radius: var(--SunoUI-media-transport-track-radius);
+  background: @Suno_well; box-shadow: inset 0 0 0 1px @Suno_well_ring, inset 0 1px 1px @Suno_well_shade; outline: none;
+}
+scale.SunoUI-media-range highlight {
+  min-height: var(--SunoUI-media-transport-track); border-radius: var(--SunoUI-media-transport-track-radius);
+  background: @Suno_media_progress; box-shadow: none;
+}
+scale.SunoUI-media-range slider {
+  min-width: var(--SunoUI-media-transport-thumb); min-height: var(--SunoUI-media-transport-thumb);
+  margin: calc((var(--SunoUI-media-transport-track) - var(--SunoUI-media-transport-thumb)) / 2); border-radius: 9999px; border: none;
+  background: @Suno_key; background-image: linear-gradient(to bottom, @Suno_key, @Suno_key_end);
+  box-shadow: inset 0 1px 0 @Suno_key_highlight, 0 0 0 1px @Suno_key_ring, 0 1px 3px @Suno_key_shadow;
+}
+scale.SunoUI-media-range:focus-visible slider { outline: 2px solid @Suno_focus_ring; outline-offset: 2px; }
+.SunoUI-media-volume { border-spacing: var(--SunoUI-media-transport-volume-gap); margin-left: 4px; color: @Suno_ink_secondary; }
+.SunoUI-media-volume scale.SunoUI-media-range { min-width: var(--SunoUI-media-transport-volume-width); }
+
+/* Reel's attached bar: 58 tall under the picture, the LCD at the start */
+.SunoUI-media-transport.attached {
+  min-height: calc(var(--SunoUI-media-transport-attached-height) - 1px);  /* v70's 58 includes the 1 px top edge */
+  padding: 0 var(--SunoUI-media-transport-attached-padding-end) 0 var(--SunoUI-media-transport-attached-padding-start);
+  border-top: 1px solid @Suno_media_attached_edge; box-shadow: inset 0 1px 0 @Suno_bar_highlight; background: @Suno_bar_surface;
+}
+.SunoUI-media-transport.attached .SunoUI-media-keys { border-spacing: var(--SunoUI-media-transport-attached-keys-gap); }
+/* v70's grid gap: when the LCD crowds the middle (a phone), the keys keep 8 px from it */
+.SunoUI-media-transport.attached .SunoUI-media-keys.middle { margin: 0 var(--SunoUI-media-transport-attached-gap); }
+/* At phone width v70's grid lets the keys run into the end padding (the end keys are gone) */
+.SunoUI-media-transport.attached.phone { padding-right: 0; }
+.SunoUI-media-transport.attached.phone .SunoUI-media-keys.middle { margin-right: 0; }
+.SunoUI-media-transport.attached button.SunoUI-media-key:not(.SunoUI-media-play) { min-width: var(--SunoUI-media-transport-attached-button); min-height: var(--SunoUI-media-transport-attached-button); border-radius: var(--SunoUI-media-transport-attached-radius); }
+.SunoUI-media-transport.attached button.SunoUI-media-play { margin: 0 var(--SunoUI-media-transport-attached-play-margin); }
+
+/* The LCD (Reel's and Session's): a well of tabular mono readouts, their frames and dots dimmed */
+.SunoUI-media-lcd {
+  min-height: var(--SunoUI-media-transport-lcd-height); padding: 0 var(--SunoUI-media-transport-lcd-padding-x);
+  border-spacing: var(--SunoUI-media-transport-lcd-gap); border-radius: var(--SunoUI-media-transport-lcd-radius);
+  background: @Suno_well; box-shadow: inset 0 0 0 1px @Suno_well_ring, inset 0 1px 2px @Suno_well_shade, 0 1px 0 @Suno_well_lip;
+}
+.SunoUI-media-lcd .value label {
+  font-family: "IBM Plex Mono", monospace; font-size: var(--SunoUI-media-transport-lcd-value-size); font-weight: 600;
+  letter-spacing: -0.02em; font-feature-settings: "tnum"; color: @Suno_ink; line-height: 1.1;
+}
+.SunoUI-media-lcd .value label.dim { color: @Suno_faint; }
+/* Placed by measurement: Plex Mono's taller line box would otherwise sit the digits 3 px high of v70's. */
+.SunoUI-media-lcd > box.cell { padding-top: var(--SunoUI-media-transport-lcd-value-top); }
+.SunoUI-media-lcd label.caption { margin-top: 0; }
+.SunoUI-media-lcd .value label.dot { margin: 0 var(--SunoUI-media-transport-lcd-separator-margin); }
+.SunoUI-media-lcd label.caption, .SunoUI-media-readout label.caption {
+  font-size: var(--SunoUI-media-transport-lcd-label-size); letter-spacing: 0.01em; color: @Suno_muted;
+  margin-top: var(--SunoUI-media-transport-lcd-label-gap); line-height: 1.1;
+}
+.SunoUI-media-transport.lcd { border-spacing: 4px; }
+.SunoUI-media-transport.lcd .SunoUI-media-lcd { margin: 0 4px; }
+.SunoUI-media-transport.lcd button.SunoUI-media-key:not(.SunoUI-media-play) { min-width: var(--SunoUI-media-transport-lcd-button); min-height: var(--SunoUI-media-transport-lcd-button); border-radius: var(--SunoUI-media-transport-attached-radius); }
+button.SunoUI-media-readout {
+  min-height: var(--SunoUI-media-transport-lcd-height); padding: 0 var(--SunoUI-media-transport-readout-padding-x);
+  border-radius: var(--SunoUI-media-transport-lcd-radius); background: none; box-shadow: none; border: none;
+}
+button.SunoUI-media-readout:hover { background: @Suno_hover; }
+button.SunoUI-media-readout label.value { font-size: var(--SunoUI-media-transport-readout-value-size); font-weight: 600; font-feature-settings: "tnum"; color: @Suno_ink; }
+button.SunoUI-media-record {
+  min-width: var(--SunoUI-media-transport-lcd-button); min-height: var(--SunoUI-media-transport-lcd-button);
+  padding: 0; border-radius: 9999px; background: none; box-shadow: none; border: none;
+}
+button.SunoUI-media-record:hover { background: @Suno_hover; }
+button.SunoUI-media-record .dot {
+  min-width: var(--SunoUI-media-transport-record-dot); min-height: var(--SunoUI-media-transport-record-dot);
+  border-radius: 9999px; background: @Suno_media_recording;
+}
+button.SunoUI-media-record.on .dot { box-shadow: 0 0 10px @Suno_media_recording; }
+.SunoUI-media-separator { min-width: 1px; min-height: 20px; margin: 0 4px; background: @Suno_hairline; }
+
+/* A phone's Now Playing (v71 .now.tnowph, white inks over the artwork): the scrub (5 track), the times 18 under it,
+   the keys 14 down (48 · 60 · 78 round white · 60 · 48), the volume 18 down. */
+.SunoUI-media-transport.now { border-spacing: 0; color: @Suno_media_ink; }
+.SunoUI-media-transport.now .SunoUI-media-scrub-times { margin-top: 2px; }
+.SunoUI-media-transport.now label.SunoUI-media-time { font-size: 12px; color: alpha(white, 0.65); font-feature-settings: "tnum"; }
+.SunoUI-media-transport.now .SunoUI-media-keys { margin: 14px -6px 0; }
+.SunoUI-media-transport.now button.SunoUI-media-key:not(.SunoUI-media-play) { min-width: 60px; min-height: 60px; border-radius: 999px; color: white; }
+.SunoUI-media-transport.now button.SunoUI-media-key.toggle { min-width: 48px; min-height: 48px; }
+.SunoUI-media-transport.now button.SunoUI-media-key.toggle.on { background: alpha(white, 0.12); color: @Suno_media_progress; }
+.SunoUI-media-transport.now button.SunoUI-media-play {
+  min-width: 78px; min-height: 78px; border-radius: 999px; margin: 0; background: white; color: @Suno_media_scrim; /* v71 ink #111 */
+  box-shadow: 0 10px 26px -8px alpha(black, 0.5);
+}
+.SunoUI-media-transport.now .SunoUI-media-volume { margin-top: 18px; border-spacing: 12px; color: alpha(white, 0.7); }
+/* Memos' deck: the recessed well, the waveform on top, time · keys · speed beneath */
+.SunoUI-media-transport.waveform {
+  padding: var(--SunoUI-media-transport-memo-padding-top) var(--SunoUI-media-transport-memo-padding-x) var(--SunoUI-media-transport-memo-padding-bottom);
+  border-radius: var(--SunoUI-media-transport-memo-radius); background: @Suno_media_deck;
+  box-shadow: inset 0 2px 6px @Suno_media_deck_shade, inset 0 0 0 1px @Suno_media_deck_ring, 0 1px 0 @Suno_media_deck_lip;
+}
+.SunoUI-media-transport.waveform .SunoUI-media-controls { margin-top: var(--SunoUI-media-transport-memo-controls-top); }
+.SunoUI-media-transport.waveform .SunoUI-media-keys { border-spacing: var(--SunoUI-media-transport-memo-keys-gap); }
+.SunoUI-media-transport.waveform button.SunoUI-media-play { min-width: var(--SunoUI-media-transport-memo-play); min-height: var(--SunoUI-media-transport-memo-play); }
+.SunoUI-media-transport.waveform label.SunoUI-media-time { font-size: var(--SunoUI-media-transport-memo-time-size); font-weight: 600; color: @Suno_ink; font-feature-settings: "tnum"; letter-spacing: 0; }
+/* the total is the time's <small> (v71 .metime small: 13.5 x 5/6 = 11.25) */
+.SunoUI-media-transport.waveform label.SunoUI-media-total { font-size: calc(var(--SunoUI-media-transport-memo-time-size) * 0.8333333); font-weight: 500; color: @Suno_muted; margin-left: 6px; font-feature-settings: "tnum"; }
+/* Under 560 (v71 .medeck / .medctl, @container win (max-width: 559px)): padding 18 14 16 and 24 corners; page placement belongs to its host;
+   the controls 18 down, the transport on its own row (gap 28; back/forward 52, play 68); time and speed on the
+   line under it, 14 down. */
+.SunoUI-media-transport.waveform.phone { margin-top: 0; padding: 18px 14px 16px; border-radius: 24px; }
+.SunoUI-media-transport.waveform.phone .SunoUI-media-keys { border-spacing: 28px; margin-top: 18px; }
+.SunoUI-media-transport.waveform.phone button.SunoUI-media-key:not(.SunoUI-media-play) { min-width: 52px; min-height: 52px; }
+.SunoUI-media-transport.waveform.phone button.SunoUI-media-play { min-width: 68px; min-height: 68px; }
+.SunoUI-media-transport.waveform.phone .SunoUI-media-controls { margin-top: 14px; }
+button.SunoUI-media-speed {
+  min-height: var(--SunoUI-media-transport-speed-height); padding: 0 var(--SunoUI-media-transport-speed-padding-x);
+  border-radius: var(--SunoUI-media-transport-speed-radius); border: none; box-shadow: none;
+  background: @Suno_hover; color: @Suno_ink_secondary;
+  font-size: var(--SunoUI-media-transport-speed-size); letter-spacing: 0.01em; font-feature-settings: "tnum";
+}
+button.SunoUI-media-speed:hover { background: @Suno_control_fill; color: @Suno_ink; }
+button.SunoUI-media-speed > box { border-spacing: var(--SunoUI-media-transport-speed-gap); }
+button.SunoUI-media-speed .chevron { color: @Suno_muted; }
+
+@media (prefers-reduced-motion: reduce) {
+  .SunoUI-media-transport button.SunoUI-media-play:active { transform: none; }
+}
+
+/* SunoUI: AudioWaveform (v70 .mewave, .memini; the bars, head and marks are drawn, only focus is styled) */
+SunoUI-waveform:focus-visible { outline: 2px solid @Suno_focus_ring; outline-offset: 2px; border-radius: var(--SunoUI-media-waveform-radius); }
+SunoUI-waveform.deck:focus-visible { outline-offset: 6px; }
+
+/* SunoUI: ValueSlider / AdjustmentGroup / AdjustmentPanel (v70 .drsl, .vwsl, the range at line 4109, .drgrp, .vwadj) */
+SunoUI-value-range { min-height: var(--SunoUI-media-adjust-range-height); }
+SunoUI-value-range > thumb {
+  min-width: var(--SunoUI-media-adjust-thumb); min-height: var(--SunoUI-media-adjust-thumb); border-radius: 9999px;
+  background: @Suno_key; background-image: linear-gradient(to bottom, @Suno_key, @Suno_key_end);
+  box-shadow: inset 0 1px 0 @Suno_key_highlight, 0 0 0 1px @Suno_key_ring, 0 1px 3px @Suno_key_shadow;
+}
+SunoUI-value-range:focus-visible > thumb { outline: 2px solid @Suno_focus_ring; outline-offset: 2px; }
+SunoUI-value-range:disabled { opacity: 0.35; }
+/* Mixed (set_mixed): the selection disagrees; the knob rests dimmed and the readout says so. */
+.SunoUI-value-slider.mixed SunoUI-value-range { opacity: 0.5; }
+.SunoUI-value-slider.row {
+  min-height: var(--SunoUI-media-adjust-row-height); padding: 0 var(--SunoUI-media-adjust-row-padding-x);
+  border-radius: var(--SunoUI-media-adjust-row-radius); border-spacing: var(--SunoUI-media-adjust-row-gap);
+  transition: background-color var(--SunoUI-duration-hover) ease;
+}
+.SunoUI-value-slider.row:hover { background: @Suno_hover; }
+.SunoUI-value-slider.row > label.name { min-width: var(--SunoUI-media-adjust-label-width); }
+.SunoUI-value-slider.row > label.value { min-width: var(--SunoUI-media-adjust-value-width); }
+.SunoUI-value-slider label.name { font-size: var(--SunoUI-media-adjust-label-size); color: @Suno_muted; }
+.SunoUI-value-slider label.value { font-size: var(--SunoUI-media-adjust-value-size); font-weight: 600; letter-spacing: 0.01em; font-feature-settings: "tnum"; color: @Suno_muted; }
+.SunoUI-value-slider.set label.name, .SunoUI-value-slider.set label.value { color: @Suno_ink; }
+.SunoUI-value-slider.stacked { border-spacing: var(--SunoUI-media-adjust-stacked-gap); margin-bottom: var(--SunoUI-media-adjust-stacked-bottom); }
+.SunoUI-value-slider.stacked label.name { font-weight: 500; color: @Suno_ink; }
+.SunoUI-value-slider.stacked label.value { font-size: var(--SunoUI-media-adjust-label-size); font-weight: 400; letter-spacing: 0; }
+
+.SunoUI-adjust-group {
+  padding: var(--SunoUI-media-adjust-group-padding-y) var(--SunoUI-media-adjust-group-padding-x);
+  border-top: 1px solid @Suno_hairline;
+}
+.SunoUI-adjust-group:first-child { border-top: none; }
+button.SunoUI-adjust-heading {
+  min-height: var(--SunoUI-media-adjust-group-header); padding: 0 var(--SunoUI-media-adjust-group-header-padding-x);
+  border-radius: var(--SunoUI-media-adjust-row-radius); background: none; box-shadow: none; border: none;
+}
+button.SunoUI-adjust-heading > box { border-spacing: var(--SunoUI-media-adjust-group-gap); }
+button.SunoUI-adjust-heading label.title { font-size: var(--SunoUI-media-adjust-group-header-size); font-weight: 600; color: @Suno_ink_secondary; }
+.SunoUI-adjust-group.open button.SunoUI-adjust-heading label.title { color: @Suno_ink; }
+button.SunoUI-adjust-heading .dot {
+  min-width: var(--SunoUI-media-adjust-group-dot); min-height: var(--SunoUI-media-adjust-group-dot);
+  border-radius: 9999px; background: @Suno_media_adjust_changed;
+}
+button.SunoUI-adjust-heading .chevron { color: @Suno_faint; transition: transform 200ms ease; transform: rotate(-90deg); }
+.SunoUI-adjust-group.open button.SunoUI-adjust-heading .chevron { transform: none; }
+button.SunoUI-adjust-heading:focus-visible { outline: 2px solid @Suno_focus_ring; outline-offset: -2px; }
+.SunoUI-adjust-sliders { border-spacing: var(--SunoUI-media-adjust-group-sliders-gap); padding-bottom: var(--SunoUI-media-adjust-group-sliders-bottom); }
+
+.SunoUI-adjust-panel {
+  min-width: var(--SunoUI-media-adjust-panel-width); border-radius: var(--SunoUI-media-adjust-panel-radius);
+  background: @Suno_bar_surface; box-shadow: inset 0 1px 0 @Suno_bar_highlight, 0 0 0 1px @Suno_bar_ring, 0 18px 40px -12px @Suno_bar_shadow, 0 2px 6px @Suno_bar_shadow_near;
+  opacity: 0; transform: translateX(calc(var(--SunoUI-media-adjust-panel-width) + var(--SunoUI-media-adjust-panel-slide)));
+  transition: transform var(--SunoUI-duration-dialog-move) var(--SunoUI-spring), opacity var(--SunoUI-duration-fade) ease;
+}
+.SunoUI-adjust-panel.shown { opacity: 1; transform: none; }
+.SunoUI-adjust-panel.sheet {
+  border-radius: var(--SunoUI-media-adjust-sheet-radius) var(--SunoUI-media-adjust-sheet-radius) 0 0;
+  transform: translateY(var(--SunoUI-media-adjust-panel-slide));
+}
+.SunoUI-adjust-panel.sheet.shown { transform: none; }
+.SunoUI-adjust-panel-head {
+  min-height: var(--SunoUI-media-adjust-panel-header);
+  padding: 0 var(--SunoUI-media-adjust-panel-header-padding-end) 0 var(--SunoUI-media-adjust-panel-header-padding-start);
+  border-bottom: 1px solid @Suno_hairline;
+}
+.SunoUI-adjust-panel-head label.title { font-size: var(--SunoUI-media-adjust-panel-title-size); font-weight: 650; color: @Suno_ink; }
+button.SunoUI-adjust-reset {
+  min-height: var(--SunoUI-media-adjust-reset-height); padding: 0 var(--SunoUI-media-adjust-reset-padding-x);
+  border-radius: var(--SunoUI-media-adjust-reset-radius); background: none; box-shadow: none; border: none;
+  font-size: var(--SunoUI-media-adjust-reset-size); color: @Suno_ink_secondary;
+}
+button.SunoUI-adjust-reset:hover { background: @Suno_hover; color: @Suno_ink; }
+button.SunoUI-adjust-reset:disabled { opacity: 0.35; }
+.SunoUI-adjust-panel-body {
+  padding: var(--SunoUI-media-adjust-panel-body-padding-top) var(--SunoUI-media-adjust-panel-body-padding-x) var(--SunoUI-media-adjust-panel-body-padding-bottom);
+}
+.SunoUI-adjust-panel-body label.section {
+  font-size: var(--SunoUI-media-adjust-panel-section-size); font-weight: 600; letter-spacing: 0.01em;
+  color: @Suno_muted; margin-bottom: var(--SunoUI-media-adjust-panel-section-bottom);
+}
+.SunoUI-adjust-panel-body .rule { min-height: 1px; background: @Suno_hairline; margin: 4px 0 12px; }
+@media (prefers-reduced-motion: reduce) {
+  .SunoUI-adjust-panel, .SunoUI-adjust-panel.sheet { transform: none; transition: opacity var(--SunoUI-duration-reduced-fade) ease; }
+  button.SunoUI-adjust-heading .chevron { transition: none; }
+}
+
+/* SunoUI: CoverArt (v70 .cv, .lfcov; the cover is drawn, the node carries focus when a cover is a button's child) */
+SunoUI-cover { border-radius: var(--SunoUI-media-cover-album-radius); }
+SunoUI-cover.book { border-radius: var(--SunoUI-media-cover-book-radius-spine) var(--SunoUI-media-cover-book-radius-edge) var(--SunoUI-media-cover-book-radius-edge) var(--SunoUI-media-cover-book-radius-spine); }
+
+/* SunoUI: VoiceClip (v70 .mvoice in Messages, .pnvm in Phone; the key is the soft key) */
+.SunoUI-voice-clip.wave { border-spacing: var(--SunoUI-media-voice-gap); min-width: var(--SunoUI-media-voice-min-width); }
+.SunoUI-voice-clip.bar { border-spacing: var(--SunoUI-media-voice-big-gap); }
+button.SunoUI-voice-key {
+  min-width: var(--SunoUI-media-voice-key); min-height: var(--SunoUI-media-voice-key); padding: 0;
+  border-radius: 9999px; border: none; box-shadow: none;
+  background: @Suno_media_soft_key; color: @Suno_media_soft_key_ink;
+  transition: background-color var(--SunoUI-duration-hover) ease;
+}
+.SunoUI-voice-clip.bar button.SunoUI-voice-key { min-width: var(--SunoUI-media-voice-big-key); min-height: var(--SunoUI-media-voice-big-key); }
+button.SunoUI-voice-key:hover { background: @Suno_media_soft_key_hover; }
+button.SunoUI-voice-key:focus-visible, SunoUI-voice-bar:focus-visible { outline: 2px solid @Suno_focus_ring; outline-offset: 2px; }
+label.SunoUI-voice-time { font-size: var(--SunoUI-media-voice-time-size); letter-spacing: 0.01em; font-feature-settings: "tnum"; color: @Suno_muted; }
+/* SunoUI: Timeline (MD3, shared Reel story / Session arrangement) */
+.SunoUI-media-timeline { background: @Suno_bar_surface; border-top: 1px solid @Suno_hairline; }
+.SunoUI-media-timeline .timeline-header { min-height: var(--SunoUI-media-timeline-header); padding: 0 10px 0 16px; border-bottom: 1px solid @Suno_hairline; }
+.SunoUI-media-timeline .timeline-info { color: @Suno_ink_secondary; font-size: var(--SunoUI-media-timeline-info-size); font-variant-numeric: tabular-nums; }
+.SunoUI-media-timeline .timeline-tools { background: @Suno_well; border-radius: 11px; padding: 3px; }
+.SunoUI-media-timeline .timeline-key { min-width: var(--SunoUI-media-timeline-tool-width); min-height: var(--SunoUI-media-timeline-tool-height); padding: 0; border-radius: var(--SunoUI-media-timeline-tool-radius); border: none; background: none; color: @Suno_ink_secondary; }
+.SunoUI-media-timeline .timeline-key.on { background: @Suno_control_fill; color: @Suno_ink; }
+.SunoUI-media-timeline .timeline-key:hover { background: @Suno_hover; }
+.SunoUI-media-timeline .timeline-key:focus-visible, .SunoUI-media-timeline .timeline-clip:focus-visible,
+.SunoUI-media-timeline .timeline-ruler:focus-visible { outline: 2px solid @Suno_focus_ring; outline-offset: -2px; }
+.SunoUI-media-timeline .timeline-lanes { background: @Suno_bar_surface; }
+.SunoUI-media-timeline .timeline-ruler { border-radius: 0; border: none; border-bottom: 1px solid @Suno_hairline; background: none; }
+.SunoUI-media-timeline .timeline-tick { color: @Suno_muted; font-size: var(--SunoUI-media-timeline-tick-size); font-variant-numeric: tabular-nums; border-left: 1px solid @Suno_hairline; padding-left: 4px; }
+.SunoUI-media-timeline .timeline-marker { color: @Suno_media_toggle_on; font-size: 8px; }
+.SunoUI-media-timeline .timeline-lane { background: @Suno_bar_surface; border-bottom: 1px solid @Suno_hairline; }
+.SunoUI-media-timeline .timeline-lane.main { background: @Suno_media_deck; }
+.SunoUI-media-timeline .timeline-clip { border: 1px solid @Suno_hairline; border-radius: var(--SunoUI-media-timeline-clip-radius); padding: 0 6px; font-size: var(--SunoUI-media-timeline-clip-size); font-weight: 600; color: @Suno_ink; background: @Suno_control_fill; }
+.SunoUI-media-timeline .timeline-clip.video { background: @Suno_media_deck; }
+.SunoUI-media-timeline .timeline-clip.title { background: @Suno_media_toggle_on; color: @Suno_key; }
+.SunoUI-media-timeline .timeline-clip.audio, .SunoUI-media-timeline .timeline-clip.music,
+.SunoUI-media-timeline .timeline-clip.voice { background: @Suno_media_progress; color: @Suno_key; }
+.SunoUI-media-timeline .timeline-clip.selected { outline: 2px solid @Suno_focus_ring; outline-offset: -2px; }
+.SunoUI-media-timeline .timeline-transition { background: @Suno_control_fill; }
+.SunoUI-media-timeline .timeline-playhead { background: @Suno_media_recording; }
+.SunoUI-media-timeline progressbar { min-width: 120px; }
+@media (prefers-reduced-motion: reduce) { .SunoUI-media-timeline * { transition: none; } }
+
+/* Collection covers share the photo loader, lower scrim and caption metrics. */
+button.SunoUI-media-collection {
+  padding: 0; border: none; border-radius: var(--SunoUI-media-collection-radius);
+  background: @Suno_media_shadow; box-shadow: none; color: @Suno_on_media_ink;
+}
+button.SunoUI-media-collection label { color: @Suno_on_media_ink; }
+
+/* Photo editors retain their own spacing; Viewer stacked sliders stay unchanged. */
+.SunoUI-value-slider.editor { border-spacing: var(--SunoUI-media-editor-gap); margin-bottom: var(--SunoUI-media-editor-bottom); }
+.SunoUI-value-slider.editor label { line-height: calc(var(--SunoUI-media-adjust-label-size) * 1.45); }
+.SunoUI-action-center.phone .SunoUI-value-slider.editor { border-spacing: var(--SunoUI-media-editor-phone-gap); margin-bottom: var(--SunoUI-media-editor-phone-bottom); }
+.SunoUI-action-center.phone .SunoUI-value-slider.editor label { font-size: var(--SunoUI-media-editor-phone-label-size); line-height: calc(var(--SunoUI-media-editor-phone-label-size) * 1.45); }
+
+/* v71 compact playback identity; transport keys retain shared BarAction styles. */
+button.SunoUI-media-mini-open { min-width: 0; min-height: var(--SunoUI-media-mini-row-height); padding: 0 var(--SunoUI-media-mini-padding-x); border: none; box-shadow: none; background: transparent; border-radius: var(--SunoUI-media-mini-radius); color: @Suno_ink; }
+button.SunoUI-media-mini-open:hover { background: @Suno_hover; }
+.SunoUI-media-mini label.detail { color: @Suno_muted; }
+/* The live transport readout can stand alone in a phone's secondary row. */
+button.SunoUI-media-readout.chip {
+  min-width: calc(var(--SunoUI-ac-phone-control) - 2 * var(--SunoUI-media-transport-readout-padding-x));
+  min-height: var(--SunoUI-ac-phone-control);
+  border-radius: var(--SunoUI-ac-phone-control-radius);
+  background: @Suno_chip;
+  box-shadow: inset 0 1px 0 @Suno_chip_highlight, 0 0 0 1px @Suno_chip_ring, 0 1px 2px @Suno_chip_shadow;
+}

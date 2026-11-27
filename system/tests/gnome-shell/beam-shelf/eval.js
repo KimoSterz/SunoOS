@@ -17,13 +17,13 @@ const r2 = v => Math.round(v * 100) / 100;
 
 function islandOf(actor) {
     for (let p = actor?.get_parent?.(); p; p = p.get_parent()) {
-        if (!p.has_style_class_name?.('luma-shelf-island'))
+        if (!p.has_style_class_name?.('Suno-shelf-island'))
             continue;
-        if (p.has_style_class_name('luma-shelf-root'))
+        if (p.has_style_class_name('Suno-shelf-root'))
             return null;
         for (let root = p.get_parent(); root; root = root.get_parent())
-            if (root.has_style_class_name?.('luma-shelf-root'))
-                return root.has_style_class_name('luma-shelf-connected') ? root : p;
+            if (root.has_style_class_name?.('Suno-shelf-root'))
+                return root.has_style_class_name('Suno-shelf-connected') ? root : p;
         return p;
     }
     return null;
@@ -69,7 +69,7 @@ export default async function ({Main, shot}) {
             const centred = Math.abs(along.surfaceCentre - along.controlCentre) <= 1;
             const alignedStart = Math.abs(along.surfaceStart - along.islandStart) <= 1;
             const alignedEnd = Math.abs(along.surfaceEnd - along.islandEnd) <= 1;
-            Object.assign(res, {island: island.style_class.split(' ').find(c => c !== 'luma-shelf-island'),
+            Object.assign(res, {island: island.style_class.split(' ').find(c => c !== 'Suno-shelf-island'),
                 islandRect: [i.x, i.y, i.w, i.h].map(r2), surface: [s.x, s.y, s.w, s.h].map(r2),
                 control: [a.x, a.y, a.w, a.h].map(r2), gapStage: r2(gap), gapDevicePx: r2(gap * k * scale), gapLogical: r2(gap / scale), viewScale: k * scale,
                 centred, alignedStart, alignedEnd, insetStart: r2(insetStart), insetEnd: r2(insetEnd),
@@ -159,7 +159,7 @@ export default async function ({Main, shot}) {
         });
         await run('preview', async () => {
             const icon = item.child;
-            const preview = (await import('resource:///org/gnome/shell/ui/lumaDockWindows.js')).getDockPreview();
+            const preview = (await import('resource:///org/gnome/shell/ui/SunoDockWindows.js')).getDockPreview();
             preview._open(item, icon);
             await sleep(1500);
             const pop = preview._popover;
@@ -189,7 +189,7 @@ export default async function ({Main, shot}) {
             const box = menu?.box;
             const bp = menu?._boxPointer;
             log('well-item-debug', {bp: bp && Object.values(rect(bp)).map(r2), bin: bp && Object.values(rect(bp.bin)).map(r2),
-                cls: bp?.style_class, surface: bp?._lumaShelfSurface, src: menu?.sourceActor?.constructor?.name,
+                cls: bp?.style_class, surface: bp?._SunoShelfSurface, src: menu?.sourceActor?.constructor?.name,
                 rise: bp?.get_theme_node().get_length('-arrow-rise'), side: bp?._arrowSide, userSide: bp?._userArrowSide,
                 boxClass: box?.style_class, translation: bp && [bp.translation_x, bp.translation_y],
                 pref: bp?.get_preferred_size(), alloc: bp && [bp.allocation.x1, bp.allocation.y1, bp.allocation.x2, bp.allocation.y2],
@@ -259,8 +259,8 @@ export default async function ({Main, shot}) {
             await measure(`beam-${kind}-${value}`, quick, body, {
                 value: win._value?.text ?? win._label?.text, accessible: body.accessible_name,
                 glyph: win._glyph?._glyph, fill: win._fill?.value ?? win._level?.value, visible: win.visible, opacity: win.opacity,
-                treatment: (body.style_class ?? '').split(' ').find(c => c.startsWith('luma-surface-')),
-                blur: body.get_effect?.('luma-surface-backdrop')?.enabled ?? null,
+                treatment: (body.style_class ?? '').split(' ').find(c => c.startsWith('Suno-surface-')),
+                blur: body.get_effect?.('Suno-surface-backdrop')?.enabled ?? null,
                 size: [body.width / scale, body.height / scale]});
         }
         // Opening Quick Options dismisses Beam, and Beam does not show while it is open.

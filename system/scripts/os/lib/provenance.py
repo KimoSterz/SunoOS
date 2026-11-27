@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""Provenance, release manifests and status records for Luma OS builds.
+"""Provenance, release manifests and status records for Suno OS builds.
 
 Subcommands:
   build     write <build>/provenance.json after an image build
@@ -45,11 +45,11 @@ def read_json(path):
 
 
 def build(args):
-    luma = []
-    with open(args.luma_packages, encoding="utf-8") as stream:
+    Suno = []
+    with open(args.Suno_packages, encoding="utf-8") as stream:
         for line in stream:
             nevra, sha, header = line.split()
-            luma.append({"nevra": nevra, "sha256": sha, "header_sha256": header})
+            Suno.append({"nevra": nevra, "sha256": sha, "header_sha256": header})
     installed_count = 0
     with open(args.installed_packages, encoding="utf-8") as stream:
         installed_count = sum(1 for line in stream if line.strip() and not line.startswith("gpg-pubkey\t"))
@@ -58,13 +58,13 @@ def build(args):
         with open(args.sbom + ".generator", encoding="utf-8") as stream:
             sbom_generator = stream.read().strip()
     payload = {
-        "schema": "org.projectluma.os-build-provenance/v1",
+        "schema": "org.projectSuno.os-build-provenance/v1",
         "build_id": args.build_id,
         "architecture": getattr(args, "architecture", "x86_64"),
         "version": args.version,
         "channel": args.channel,
         "source": {"revision": args.source_revision, "dirty": args.source_dirty == "true"},
-        "recipe": {"path": "image/luma-desktop/Containerfile", "digest": args.recipe_digest},
+        "recipe": {"path": "image/Suno-desktop/Containerfile", "digest": args.recipe_digest},
         "base_image": {
             "repository": args.base_repository,
             "tag": args.base_tag,
@@ -72,10 +72,10 @@ def build(args):
             "ostree_commit": json.loads(args.base_labels or "{}").get("ostree.commit"),
             "version": json.loads(args.base_labels or "{}").get("org.opencontainers.image.version"),
         },
-        "luma_packages": {
-            "count": len(luma),
-            "digest": hashlib.sha256("".join(f"{p['nevra']} {p['sha256']}\n" for p in luma).encode()).hexdigest(),
-            "packages": luma,
+        "Suno_packages": {
+            "count": len(Suno),
+            "digest": hashlib.sha256("".join(f"{p['nevra']} {p['sha256']}\n" for p in Suno).encode()).hexdigest(),
+            "packages": Suno,
         },
         "installed_packages": {
             "count": installed_count,
@@ -99,7 +99,7 @@ def build(args):
             'release_checks_sha256': args.release_checks_sha256})
     if args.app_baseline_input:
         app_input = read_json(args.app_baseline_input)
-        if app_input.get('schema') != 'org.projectluma.os-app-input/v1' or not SHA256.fullmatch(app_input.get('manifest_sha256', '')):
+        if app_input.get('schema') != 'org.projectSuno.os-app-input/v1' or not SHA256.fullmatch(app_input.get('manifest_sha256', '')):
             raise SystemExit('error: invalid application baseline provenance')
         payload['application_baseline'] = app_input
     write_json(args.output, payload)
@@ -109,7 +109,7 @@ def manifest(args):
     provenance = read_json(args.provenance)
     gate = read_json(args.gate) if args.gate else None
     payload = {
-        "schema": "org.projectluma.os-release/v1",
+        "schema": "org.projectSuno.os-release/v1",
         "version": args.version,
         "channel": args.channel,
         "ref": args.ref,
@@ -122,7 +122,7 @@ def manifest(args):
         "source_revision": provenance["source"]["revision"],
         "recipe_digest": provenance["recipe"]["digest"],
         "base_image_digest": provenance["base_image"]["digest"],
-        "luma_package_set_digest": provenance["luma_packages"]["digest"],
+        "Suno_package_set_digest": provenance["Suno_packages"]["digest"],
         "provenance_sha256": sha256_file(args.provenance),
         "sbom_sha256": provenance["sbom"]["sha256"],
         "gate": None if gate is None else {
@@ -147,7 +147,7 @@ def manifest(args):
 def status(args):
     payload = read_json(args.output) if os.path.exists(args.output) and args.merge else {}
     payload.update({
-        "schema": "org.projectluma.os-pipeline-status/v1",
+        "schema": "org.projectSuno.os-pipeline-status/v1",
         "updated_utc": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
     })
     for item in args.set or []:
@@ -166,7 +166,7 @@ def main():
     b = sub.add_parser("build")
     for name in ("output", "build-id", "version", "channel", "source-revision", "source-dirty",
                  "recipe-digest", "base-repository", "base-tag", "base-digest", "base-labels",
-                 "luma-packages", "installed-packages", "image-id", "image-size", "build-log",
+                 "Suno-packages", "installed-packages", "image-id", "image-size", "build-log",
                  "sbom", "started", "completed", "build-seconds", "podman-version"):
         b.add_argument("--" + name, required=True)
     b.set_defaults(func=build)

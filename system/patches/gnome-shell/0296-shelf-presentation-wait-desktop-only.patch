@@ -1,4 +1,4 @@
-From: Luma Developers
+From: Suno Developers
 Subject: [PATCH] Stop the Shelf presentation wait outside Desktop
 
 The Shelf polls every 16 ms until its first layout settles. Tablet and
@@ -11,7 +11,7 @@ diff --git a/js/ui/shelf.js b/js/ui/shelf.js
 +++ b/js/ui/shelf.js
 @@ -23,6 +23,8 @@ import * as LiveActivity from './liveActivity.js';
  import {ShelfArrange, DashedOutline} from './shelfArrange.js';
- import {DockFolders} from './lumaDockFolders.js';
+ import {DockFolders} from './SunoDockFolders.js';
  
 +// Longest wait for the Shelf's first settled layout before it is shown anyway.
 +const INITIAL_PRESENTATION_LIMIT_US = 5 * GLib.USEC_PER_SEC;
@@ -26,11 +26,11 @@ diff --git a/js/ui/shelf.js b/js/ui/shelf.js
 +        // wait stops there and resumes on Desktop. It is bounded, so a layout
 +        // that never settles still shows rather than polling every frame.
 +        if (this._initialPresentationId || this._initialLayoutReady ||
-+            (this._lumaPresentationMode ?? 'desktop') !== 'desktop')
++            (this._SunoPresentationMode ?? 'desktop') !== 'desktop')
 +            return;
 +        const deadline = GLib.get_monotonic_time() + INITIAL_PRESENTATION_LIMIT_US;
          this._initialPresentationId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 16, () => {
-+            if ((this._lumaPresentationMode ?? 'desktop') !== 'desktop') {
++            if ((this._SunoPresentationMode ?? 'desktop') !== 'desktop') {
 +                this._initialPresentationId = 0;
 +                return GLib.SOURCE_REMOVE;
 +            }
@@ -47,9 +47,9 @@ diff --git a/js/ui/shelf.js b/js/ui/shelf.js
              this._initialPresentationId = 0;
              this._initialLayoutReady = true;
 @@ -1075,6 +1088,8 @@ export const Shelf = GObject.registerClass({
-         if ((this._lumaPresentationMode ?? 'desktop') === 'desktop' && mode !== 'desktop')
+         if ((this._SunoPresentationMode ?? 'desktop') === 'desktop' && mode !== 'desktop')
              this._restorePanelActors();
-         this._lumaPresentationMode = mode;
+         this._SunoPresentationMode = mode;
 +        if (mode === 'desktop')
 +            this._queueInitialPresentation();
          this.dockFolders?._desktopUI?.sync();

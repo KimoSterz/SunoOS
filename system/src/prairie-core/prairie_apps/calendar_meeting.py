@@ -29,7 +29,7 @@ def calendar_email(client, cal):
 def _send(client, component, ical, method, uid):
     envelope = ical.Component.new_vcalendar()
     envelope.add_property(ical.Property.new_version("2.0"))
-    envelope.add_property(ical.Property.new_prodid("-//Project Luma//Calendar//EN"))
+    envelope.add_property(ical.Property.new_prodid("-//Project Suno//Calendar//EN"))
     envelope.set_method(method)
     envelope.add_component(component.clone())
     try:

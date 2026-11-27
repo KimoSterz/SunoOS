@@ -1442,7 +1442,7 @@ index 357a7d1..d0dc1e9 100644
 +  height-request: 420;
  
    styles [
-     "luma-calculator-window",
+     "Suno-calculator-window",
 @@ -124,7 +14,7 @@ template $MathWindow: Adw.ApplicationWindow {
  
    Adw.ToolbarView {
@@ -1462,7 +1462,7 @@ index 357a7d1..d0dc1e9 100644
 -      show-end-title-buttons: false;
 -
 -      styles [
--        "luma-calculator-actionbar",
+-        "Suno-calculator-actionbar",
 -      ]
 -
 -      [title]
@@ -1475,7 +1475,7 @@ index 357a7d1..d0dc1e9 100644
 -        Box {
 -          styles [
 -            "linked",
--            "luma-calculator-history-controls",
+-            "Suno-calculator-history-controls",
 -          ]
 -
 -          Button undo_button {
@@ -1485,7 +1485,7 @@ index 357a7d1..d0dc1e9 100644
 -            tooltip-text: _("Undo");
 -
 -            styles [
--              "luma-action-control",
+-              "Suno-action-control",
 -            ]
 -          }
 -
@@ -1496,7 +1496,7 @@ index 357a7d1..d0dc1e9 100644
 -            tooltip-text: _("Redo");
 -
 -            styles [
--              "luma-action-control",
+-              "Suno-action-control",
 -            ]
 -          }
 -
@@ -1506,7 +1506,7 @@ index 357a7d1..d0dc1e9 100644
 -            tooltip-text: _("Financial");
 -
 -            styles [
--              "luma-action-control",
+-              "Suno-action-control",
 -            ]
 -          }
 -        }
@@ -1519,8 +1519,8 @@ index 357a7d1..d0dc1e9 100644
 -          tooltip-text: _("Mode Selection");
 -
 -          styles [
--            "luma-action-control",
--            "luma-mode-control",
+-            "Suno-action-control",
+-            "Suno-mode-control",
 -          ]
 -        }
 -      }
@@ -1534,7 +1534,7 @@ index 357a7d1..d0dc1e9 100644
 -        tooltip-text: _("Main Menu");
 -
 -        styles [
--          "luma-action-control",
+-          "Suno-action-control",
 -        ]
 -      }
 -    }
@@ -1550,7 +1550,7 @@ index 357a7d1..d0dc1e9 100644
 +      orientation: vertical;
  
        styles [
-         "luma-calculator-surface",
+         "Suno-calculator-surface",
        ]
  
        Box {
@@ -1607,13 +1607,13 @@ index b0370be..11db1bd 100644
 --- a/src/ui/style.css
 +++ b/src/ui/style.css
 @@ -356,10 +356,11 @@ button.action-button {
-   .luma-calculator-surface {
+   .Suno-calculator-surface {
      background-color: @window_bg_color;
      color: @window_fg_color;
 +    font-family: "Figtree";
    }
  
-   headerbar.luma-calculator-titlebar {
+   headerbar.Suno-calculator-titlebar {
 -    min-height: 34px;
 +    min-height: 38px;
      background-color: @headerbar_bg_color;
@@ -1672,7 +1672,7 @@ index b0370be..11db1bd 100644
 -    min-height: 18px;
 -    padding: 0 0 6px;
 +    padding: 0 0 5px;
-     color: @luma_secondary_fg_color;
+     color: @Suno_secondary_fg_color;
      font-size: 12px;
      font-weight: 400;
    }
@@ -1688,12 +1688,12 @@ index b0370be..11db1bd 100644
 @@ -531,11 +550,25 @@ button.action-button {
    .math-buttons grid.buttons button:disabled,
    .math-buttons grid.buttons menubutton > button:disabled {
-     color: @luma_faint_fg_color;
+     color: @Suno_faint_fg_color;
 +    opacity: 0.4;
    }
  
 -  .math-buttons grid.buttons button.function-button:checked {
--    background-color: @luma_soft_accent_bg_color;
+-    background-color: @Suno_soft_accent_bg_color;
 -    color: @accent_color;
 +  .math-buttons grid.buttons button:focus-visible,
 +  .math-buttons grid.buttons menubutton > button:focus-visible {
@@ -1706,7 +1706,7 @@ index b0370be..11db1bd 100644
 +  }
 +
 +  .math-buttons grid.buttons button.function-button:hover {
-+    background-color: @luma_hover_bg_color;
++    background-color: @Suno_hover_bg_color;
 +  }
 +
 +  .math-buttons grid.buttons button.function-button:active {

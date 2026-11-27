@@ -4,9 +4,9 @@
 # ORACLE_OUT, ORACLE_EVAL, ORACLE_KEYFILE, ORACLE_W/H, ORACLE_OVERLAY (default /oracle/overlay; "none" for the RPM).
 set -u
 export XDG_RUNTIME_DIR=/tmp/oracle-run; rm -rf $XDG_RUNTIME_DIR; mkdir -m 700 -p $XDG_RUNTIME_DIR
-export HOME=/tmp/oracle-home; rm -rf $HOME; mkdir -p $HOME/.config/glib-2.0/settings $HOME/.local/share/luma
+export HOME=/tmp/oracle-home; rm -rf $HOME; mkdir -p $HOME/.config/glib-2.0/settings $HOME/.local/share/Suno
 cp ${ORACLE_KEYFILE:-/oracle/keyfile} $HOME/.config/glib-2.0/settings/keyfile
-export GSETTINGS_BACKEND=keyfile LIBGL_ALWAYS_SOFTWARE=1 LUMA_MUTTER_ALLOW_SOFTWARE_BLUR=1 ORACLE_OUT=${ORACLE_OUT:-/oracle/out}
+export GSETTINGS_BACKEND=keyfile LIBGL_ALWAYS_SOFTWARE=1 SUNO_MUTTER_ALLOW_SOFTWARE_BLUR=1 ORACLE_OUT=${ORACLE_OUT:-/oracle/out}
 OV=${ORACLE_OVERLAY:-/oracle/overlay}
 [ "$OV" != none ] && export G_RESOURCE_OVERLAYS="/org/gnome/shell/ui=$OV/js/ui:/org/gnome/shell/theme=$OV/data/theme"
 rm -rf "$ORACLE_OUT"; mkdir -p "$ORACLE_OUT"

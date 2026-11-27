@@ -72,11 +72,11 @@ class CalendarPersonRoutesTests(unittest.TestCase):
         self.window.toast.assert_called_once_with("Mail could not open",kind="warning")
 
     def test_missing_contacts_handler_reports_failure(self):
-        with patch("luma_appkit.application_directory.launch") as desktop:
+        with patch("Suno_appkit.application_directory.launch") as desktop:
             desktop.side_effect=lambda _identity, callback: callback(False, "No Contacts handler")
             CalendarWindow.open_contact(self.window,"Alex")
         desktop.assert_called_once()
-        self.assertEqual(desktop.call_args.args, ("org.projectluma.Contacts.desktop",))
+        self.assertEqual(desktop.call_args.args, ("org.projectSuno.Contacts.desktop",))
         self.window.toast.assert_called_once_with("No Contacts handler",kind="warning")
 
     def test_missing_maps_and_call_handlers_report_failures(self):

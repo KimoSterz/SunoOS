@@ -1,10 +1,10 @@
 # GNOME Calculator downstream patch
 
-Project Luma carries six isolated patches against Fedora 44's exact
+Project Suno carries six isolated patches against Fedora 44's exact
 `gnome-calculator-50.0-1.fc44` source package. Its SHA-256 is
 `7c241ad809598b857f28d20e681f2d57886ade032dc62477867c3380f961c827`.
 
-`0001-luma-calculator-aesthetic-v1.patch` establishes the shared Prairie visual
+`0001-Suno-calculator-aesthetic-v1.patch` establishes the shared Prairie visual
 language. `0002-prairie-basic-product.patch` deliberately narrows the product to
 a normal desktop calculator while preserving GNOME Calculator's mature parser,
 arithmetic engine, keyboard editing, clipboard actions, application ID,
@@ -25,7 +25,7 @@ entry to the Calculator display component, and retains the native equation
 buffer as the single parser/editing model. This prevents stale clipped glyphs
 from entering the compositor while keeping button input, keyboard input,
 clipboard actions, undo/redo, and accessibility behavior source-owned.
-`0006-luma-appkit-convergence.patch` moves Calculator onto the shared AppKit
+`0006-Suno-appkit-convergence.patch` moves Calculator onto the shared AppKit
 identity trigger, 42px title row, semantic material tokens, and single inset
 body island. Its selectors remain explicitly Calculator-scoped, so unrelated
 GTK and libadwaita applications retain their upstream presentation.
@@ -42,13 +42,13 @@ are intentionally absent from Prairie Calculator. Their upstream source files
 remain buildable for now, but the product surface neither instantiates nor
 exposes them. This is a reviewed product decision, not a CSS suppression.
 
-Calculator consumes the global light palette from Luma's downstream
+Calculator consumes the global light palette from Suno's downstream
 libadwaita package. It does not install a user stylesheet, theme override,
 extension, startup hook, or injected CSS provider. The four key families are
 selected through native widget classes. Initialization and sign-change behavior
 are source-owned actions; there is no injected provider or startup mutation.
 The identity trigger and window geometry consume the same shared libadwaita
-classes and semantic tokens as Luma-native applications; Calculator does not
+classes and semantic tokens as Suno-native applications; Calculator does not
 carry a parallel theme or application-local window-control implementation.
 
 GNOME Calculator remains GPL-3.0-or-later and retains its upstream name,

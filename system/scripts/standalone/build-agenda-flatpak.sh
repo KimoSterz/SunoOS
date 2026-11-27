@@ -8,7 +8,7 @@ fi
 application=$1
 portable=$(realpath "$2")
 output=$(realpath -m "$3")
-app_id=org.projectluma.$application
+app_id=org.projectSuno.$application
 version=$(python3 -c 'import sys,xml.etree.ElementTree as E;print(E.parse(sys.argv[1]).find("releases/release").get("version"))' "$portable/usr/share/metainfo/$app_id.metainfo.xml")
 mkdir "$output"
 flatpak build-init "$output/app" "$app_id" org.freedesktop.Platform org.freedesktop.Platform 25.08

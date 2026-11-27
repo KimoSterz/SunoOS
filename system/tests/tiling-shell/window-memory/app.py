@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # SPDX-License-Identifier: Apache-2.0
 # Stand-in app for window memory tests: app.py APP_ID NAME COLOR [--dialog] [--splash] [--windows N] [--size WxH] [--clicks] [--adw] [--slow-relayout MS]
-# --adw: a libadwaita window with a header bar, like the Luma apps.
+# --adw: a libadwaita window with a header bar, like the Suno apps.
 # --slow-relayout MS: every layout at a size other than the window's first takes
 #   MS longer, like a heavy app relayouting after a resize.
 # --clicks: the window is one button; each click appends a line to $XDG_RUNTIME_DIR/clicks-APP_ID.

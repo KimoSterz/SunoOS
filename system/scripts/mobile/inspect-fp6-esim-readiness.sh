@@ -8,7 +8,7 @@
 set -euo pipefail
 umask 077
 
-slot=${LUMA_FP6_ESIM_SLOT:-2}
+slot=${SUNO_FP6_ESIM_SLOT:-2}
 case "$slot" in 1|2) ;; *) printf 'error: slot must be 1 or 2\n' >&2; exit 2 ;; esac
 
 for command in lpac python3 timeout; do
@@ -18,7 +18,7 @@ for command in lpac python3 timeout; do
   }
 done
 
-scratch=$(mktemp -d /run/luma-esim-probe.XXXXXX)
+scratch=$(mktemp -d /run/Suno-esim-probe.XXXXXX)
 cleanup() {
   rm -f "$scratch/chip.json" "$scratch/profiles.json"
   rmdir "$scratch" 2>/dev/null || true

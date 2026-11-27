@@ -1,4 +1,4 @@
-From: Project Luma <engineering@projectluma.org>
+From: Project Suno <engineering@projectSuno.org>
 Date: Mon, 21 Sep 2026 12:00:00 -0500
 Subject: [PATCH] input: Adjustable scroll speed for mice and touchpads
 
@@ -9,8 +9,8 @@ before any client sees it, so every Wayland and Xwayland client and the
 Shell itself follow the same speed. This is the approach KWin takes
 with its per-device scroll factor.
 
-Two settings, org.projectluma.peripherals.mouse scroll-speed and
-org.projectluma.peripherals.touchpad scroll-speed (0.25 to 4.0, default
+Two settings, org.projectSuno.peripherals.mouse scroll-speed and
+org.projectSuno.peripherals.touchpad scroll-speed (0.25 to 4.0, default
 1.0), follow the same split as natural-scroll: touchpads use the
 touchpad setting, every other pointer the mouse one. They apply live.
 
@@ -26,7 +26,7 @@ At 1.0 no scaling code runs: both paths call the unchanged upstream
 functions with the values libinput gave.
 ---
  data/meson.build                              |   7 +
- data/org.projectluma.peripherals.gschema.xml  |  27 ++++
+ data/org.projectSuno.peripherals.gschema.xml  |  27 ++++
  src/backends/meta-input-settings-private.h    |   3 +
  src/backends/meta-input-settings.c            |  99 +++++++++++++
  src/backends/meta-scroll-scale.c              |  66 +++++++++
@@ -38,7 +38,7 @@ functions with the values libinput gave.
  src/meson.build                               |   2 +
  src/tests/scroll-scale-test.c                 | 137 ++++++++++++++++++
  12 files changed, 461 insertions(+), 8 deletions(-)
- create mode 100644 data/org.projectluma.peripherals.gschema.xml
+ create mode 100644 data/org.projectSuno.peripherals.gschema.xml
  create mode 100644 src/backends/meta-scroll-scale.c
  create mode 100644 src/backends/meta-scroll-scale.h
  create mode 100644 src/tests/scroll-scale-test.c
@@ -52,8 +52,8 @@ index 2a70387..12f75e6 100644
  )
  
 +schema_xmls += configure_file(
-+  input: 'org.projectluma.peripherals.gschema.xml',
-+  output: 'org.projectluma.peripherals.gschema.xml',
++  input: 'org.projectSuno.peripherals.gschema.xml',
++  output: 'org.projectSuno.peripherals.gschema.xml',
 +  copy: true,
 +  install_dir: schemadir
 +)
@@ -61,16 +61,16 @@ index 2a70387..12f75e6 100644
  locally_compiled_schemas_dir = meson.current_build_dir()
  
  locally_compiled_schemas = custom_target(
-diff --git a/data/org.projectluma.peripherals.gschema.xml b/data/org.projectluma.peripherals.gschema.xml
+diff --git a/data/org.projectSuno.peripherals.gschema.xml b/data/org.projectSuno.peripherals.gschema.xml
 new file mode 100644
 index 0000000..6d49f2c
 --- /dev/null
-+++ b/data/org.projectluma.peripherals.gschema.xml
++++ b/data/org.projectSuno.peripherals.gschema.xml
 @@ -0,0 +1,27 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<schemalist>
-+  <schema id="org.projectluma.peripherals.mouse"
-+          path="/org/projectluma/peripherals/mouse/">
++  <schema id="org.projectSuno.peripherals.mouse"
++          path="/org/projectSuno/peripherals/mouse/">
 +    <key name="scroll-speed" type="d">
 +      <range min="0.25" max="4.0"/>
 +      <default>1.0</default>
@@ -81,8 +81,8 @@ index 0000000..6d49f2c
 +      </description>
 +    </key>
 +  </schema>
-+  <schema id="org.projectluma.peripherals.touchpad"
-+          path="/org/projectluma/peripherals/touchpad/">
++  <schema id="org.projectSuno.peripherals.touchpad"
++          path="/org/projectSuno/peripherals/touchpad/">
 +    <key name="scroll-speed" type="d">
 +      <range min="0.25" max="4.0"/>
 +      <default>1.0</default>
@@ -232,13 +232,13 @@ index bdb2406..519046b 100644
                      G_CALLBACK (meta_input_settings_changed_cb), settings);
  
 +  priv->mouse_scroll_settings =
-+    maybe_new_settings ("org.projectluma.peripherals.mouse");
++    maybe_new_settings ("org.projectSuno.peripherals.mouse");
 +  if (priv->mouse_scroll_settings)
 +    g_signal_connect (priv->mouse_scroll_settings, "changed",
 +                      G_CALLBACK (scroll_speed_changed_cb), settings);
 +
 +  priv->touchpad_scroll_settings =
-+    maybe_new_settings ("org.projectluma.peripherals.touchpad");
++    maybe_new_settings ("org.projectSuno.peripherals.touchpad");
 +  if (priv->touchpad_scroll_settings)
 +    g_signal_connect (priv->touchpad_scroll_settings, "changed",
 +                      G_CALLBACK (scroll_speed_changed_cb), settings);

@@ -19,16 +19,16 @@ gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
 from gi.repository import Gio, GLib, Gtk
 
-NAME = 'org.projectluma.SemanticBroker1'
-PATH = '/org/projectluma/SemanticBroker1'
-APP = 'org.projectluma.VoiceMemos'
+NAME = 'org.projectSuno.SemanticBroker1'
+PATH = '/org/projectSuno/SemanticBroker1'
+APP = 'org.projectSuno.VoiceMemos'
 
 
 def broker(reader):
-    from luma_semantic_broker.core import BrokerCore
-    from luma_semantic_broker.identity import IdentityError
-    from luma_semantic_broker.model import Identity, IdentityStrength
-    from luma_semantic_broker.service import SemanticBrokerService
+    from Suno_semantic_broker.core import BrokerCore
+    from Suno_semantic_broker.identity import IdentityError
+    from Suno_semantic_broker.model import Identity, IdentityStrength
+    from Suno_semantic_broker.service import SemanticBrokerService
     class Grants:
         def load(self): return ()
         def save(self, _): pass
@@ -66,8 +66,8 @@ def settle(condition=lambda: True, timeout=6):
 
 
 def run():
-    schema_name = os.environ.get('LUMA_CREATOR_SCHEMA_FILE')
-    schema = Path(schema_name) if schema_name else Path(__file__).resolve().parents[3] / 'src/luma-shell-state/org.project_luma.shell-state.gschema.xml'
+    schema_name = os.environ.get('SUNO_CREATOR_SCHEMA_FILE')
+    schema = Path(schema_name) if schema_name else Path(__file__).resolve().parents[3] / 'src/Suno-shell-state/org.projectSuno.shell-state.gschema.xml'
     assert schema.is_file(), 'The canonical appearance schema is required'
     schema_dir = tempfile.TemporaryDirectory(prefix='memos-appearance-')
     shutil.copyfile(schema, Path(schema_dir.name) / schema.name)

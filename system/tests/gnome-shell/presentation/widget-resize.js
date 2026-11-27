@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-import {reconcileGrid, resizeItem, resizeCell, findItem, overlaps, MAX_PAGES} from '../../../src/luma-shell-presentation/grid.js';
+import {reconcileGrid, resizeItem, resizeCell, findItem, overlaps, MAX_PAGES} from '../../../src/Suno-shell-presentation/grid.js';
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
 const widget = (id, w = 2, h = 2) => ({id, kind: 'widget', w, h, minW: 2, minH: 2});
 const apps = count => Array.from({length: count}, (_, i) => ({id: `org.example.App${i}.desktop`, kind: 'app', w: 1, h: 1}));

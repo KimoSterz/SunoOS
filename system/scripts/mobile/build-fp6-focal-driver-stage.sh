@@ -35,7 +35,7 @@ file "$output_dir/fp6-focal-driver-stage" | grep -Fq 'statically linked' ||
   die 'output is not static'
 
 {
-  printf 'LUMA_FP6_FOCAL_DRIVER_STAGE_BUILD_VERSION=1\n'
+  printf 'SUNO_FP6_FOCAL_DRIVER_STAGE_BUILD_VERSION=1\n'
   printf 'CONTROL_SOURCE_SHA256=%s\n' "$(hash "$control")"
   printf 'CONTROL_HEADER_SHA256=%s\n' "$(hash "$control_header")"
   printf 'RUNNER_SHA256=%s\n' "$(hash "$runner")"

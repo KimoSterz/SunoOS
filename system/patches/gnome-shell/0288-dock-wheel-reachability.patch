@@ -1,4 +1,4 @@
-From: Luma Developers
+From: Suno Developers
 Subject: [PATCH] Reach overflow dock apps with either mouse wheel axis
 
 The native ScrollView handles its primary axis. Relay only the cross-axis

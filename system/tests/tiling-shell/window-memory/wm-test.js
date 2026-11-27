@@ -41,7 +41,7 @@ const hooks = {
 
 function refresh() {
     ext = Main.extensionManager.lookup(UUID)?.stateObj;
-    mem = ext?._lumaWindowMemory ?? mem;
+    mem = ext?._SunoWindowMemory ?? mem;
     return mem;
 }
 let step = 0;
@@ -296,14 +296,14 @@ async function launchHoldScenarios() {
     const Tile = (await import(`file://${ext.path}/components/layout/Tile.js`)).default;
     const x11Display = GLib.getenv('DISPLAY');
     const clients = [
-        {label: 'GTK4 (Wayland)', argv: ['python3', APP, 'org.projectluma.Reel', 'Reel', '#5e35b1', '--clicks'], clicks: 'org.projectluma.Reel', env: {GDK_BACKEND: 'wayland'},
-            match: w => w.get_gtk_application_id() === 'org.projectluma.Reel', monitor: () => home().main, tile: {x: 0.5, y: 0, width: 0.5, height: 0.5}},
+        {label: 'GTK4 (Wayland)', argv: ['python3', APP, 'org.projectSuno.Reel', 'Reel', '#5e35b1', '--clicks'], clicks: 'org.projectSuno.Reel', env: {GDK_BACKEND: 'wayland'},
+            match: w => w.get_gtk_application_id() === 'org.projectSuno.Reel', monitor: () => home().main, tile: {x: 0.5, y: 0, width: 0.5, height: 0.5}},
         {label: 'Chromium app window (Wayland, like Viola and Claude)',
             argv: ['chromium-browser', '--no-sandbox', '--ozone-platform=wayland', '--user-data-dir=/tmp/wm-chromium', '--no-first-run',
-                '--disable-gpu', '--class=org.projectluma.ChromiumApp', '--app=data:text/html,<body style="background:%23d97757"><h1>Chromium app</h1>'],
+                '--disable-gpu', '--class=org.projectSuno.ChromiumApp', '--app=data:text/html,<body style="background:%23d97757"><h1>Chromium app</h1>'],
             env: {}, match: w => /chrom/i.test(`${w.get_wm_class()} ${w.get_sandboxed_app_id()} ${w.get_wm_class_instance()}`),
             monitor: () => home().main, tile: {x: 0, y: 0.5, width: 0.5, height: 0.5}, slow: true},
-        {label: 'GTK4 (XWayland)', argv: ['python3', APP, 'org.projectluma.XNotes', 'XNotes', '#00838f'], env: {GDK_BACKEND: 'x11', DISPLAY: x11Display ?? ':0'},
+        {label: 'GTK4 (XWayland)', argv: ['python3', APP, 'org.projectSuno.XNotes', 'XNotes', '#00838f'], env: {GDK_BACKEND: 'x11', DISPLAY: x11Display ?? ':0'},
             match: w => w.get_client_type() === Meta.WindowClientType.X11 && /xnotes/i.test(`${w.get_gtk_application_id()} ${w.get_wm_class()}`),
             monitor: () => home().side, tile: {x: 0.5, y: 0.5, width: 0.5, height: 0.5}, needsX11: true},
         // Maps and keeps resizing itself without waiting for the window
@@ -314,8 +314,8 @@ async function launchHoldScenarios() {
             monitor: () => home().main, tile: {x: 0, y: 0, width: 0.5, height: 1}, needsX11: true, slow: true},
         // The late path: shown before it is in place, then moved there. It
         // must end visible and in its tile (Tide opened invisible here).
-        {label: 'GTK4 placed after it is shown', argv: ['python3', APP, 'org.projectluma.LateTide', 'LateTide', '#2e7d32', '--clicks'], clicks: 'org.projectluma.LateTide', env: {GDK_BACKEND: 'wayland'},
-            match: w => w.get_gtk_application_id() === 'org.projectluma.LateTide', monitor: () => home().main, tile: {x: 0.5, y: 0.5, width: 0.5, height: 0.5}, forceLate: true},
+        {label: 'GTK4 placed after it is shown', argv: ['python3', APP, 'org.projectSuno.LateTide', 'LateTide', '#2e7d32', '--clicks'], clicks: 'org.projectSuno.LateTide', env: {GDK_BACKEND: 'wayland'},
+            match: w => w.get_gtk_application_id() === 'org.projectSuno.LateTide', monitor: () => home().main, tile: {x: 0.5, y: 0.5, width: 0.5, height: 0.5}, forceLate: true},
     ];
     for (const client of clients) {
         if (client.needsX11 && !x11Display)
@@ -402,7 +402,7 @@ async function lockScenarios({tide, viola, claude}) {
     await lockScreen();
     await sleep(2500);
     refresh();
-    check('Tiling Shell stays enabled on the lock screen', Main.extensionManager.lookup(UUID).state === 1 && !!ext._lumaWindowMemory);
+    check('Tiling Shell stays enabled on the lock screen', Main.extensionManager.lookup(UUID).state === 1 && !!ext._SunoWindowMemory);
     log(`window memory ${mem === memBefore ? 'kept' : 're-created (GNOME re-enabled later extensions)'} at lock`);
     check('while locked every tiled window is still tiled', [tide, viola, claude].every(isTiledAt));
     const stopUnlock = frameSampler(expected);
@@ -518,7 +518,7 @@ export async function run() {
 
 async function work() {
     ext = Main.extensionManager.lookup(UUID)?.stateObj;
-    mem = await until(() => ext?._lumaWindowMemory ?? (ext = Main.extensionManager.lookup(UUID)?.stateObj)?._lumaWindowMemory, 10000, 'window memory');
+    mem = await until(() => ext?._SunoWindowMemory ?? (ext = Main.extensionManager.lookup(UUID)?.stateObj)?._SunoWindowMemory, 10000, 'window memory');
     check('Tiling Shell is running with window memory', !!mem);
     if (!mem) return;
     mem.constructor.testHooks = hooks;
@@ -537,13 +537,13 @@ async function work() {
     const home = () => ({main: indexOfIdentity('HOME-MAIN'), side: indexOfIdentity('HOME-SIDE'), panel: indexOfIdentity('panel:')});
     check('home setup has three monitors', Main.layoutManager.monitors.length === 3);
 
-    let tide = await launch('org.projectluma.Tide', 'Tide', '#2d6cdf', ['--dialog', '--splash']);
-    let viola = await launch('org.projectluma.Viola', 'Viola', '#8e44ad');
+    let tide = await launch('org.projectSuno.Tide', 'Tide', '#2d6cdf', ['--dialog', '--splash']);
+    let viola = await launch('org.projectSuno.Viola', 'Viola', '#8e44ad');
     let claude = await launch('com.anthropic.Claude', 'Claude', '#d97757');
     let terminal = await launch('org.gnome.Ptyxis', 'Terminal', '#333333', ['--windows', '2']);
     await sleep(1200);
-    const dialog = windowsOf('org.projectluma.Tide').find(w => w.get_transient_for() !== null);
-    const splash = windowsOf('org.projectluma.Tide').find(w => !w.allows_resize());
+    const dialog = windowsOf('org.projectSuno.Tide').find(w => w.get_transient_for() !== null);
+    const splash = windowsOf('org.projectSuno.Tide').find(w => !w.allows_resize());
     check('stand-in dialog and splash exist', !!dialog && !!splash);
 
     await personTiles(tide, home().side, {x: 0, y: 0, width: 0.5, height: 0.5});
@@ -552,7 +552,7 @@ async function work() {
     await sleep(mem.timing.dwell + 400);
     await shot('home-arranged');
     const dialogRect = dialog.get_frame_rect();
-    const tideApp = mem._memory.setups[mem._setupKey]?.apps?.['org.projectluma.tide'] ?? {};
+    const tideApp = mem._memory.setups[mem._setupKey]?.apps?.['org.projectSuno.tide'] ?? {};
     check('only the main Tide window is remembered (dialog and splash never)', Object.keys(tideApp).join() === 'main', Object.keys(tideApp).join());
     const termApp = mem._memory.setups[mem._setupKey]?.apps?.['org.gnome.ptyxis'] ?? {};
     check('two Terminal windows get stable roles main and main-2', Object.keys(termApp).sort().join() === 'main,main-2', Object.keys(termApp).join());
@@ -560,32 +560,32 @@ async function work() {
 
     // ---- launch memory: close, reopen (new PID and window id) ----
     const oldViolaId = viola.get_id();
-    await quit('org.projectluma.Viola');
-    viola = await launch('org.projectluma.Viola', 'Viola', '#8e44ad');
+    await quit('org.projectSuno.Viola');
+    viola = await launch('org.projectSuno.Viola', 'Viola', '#8e44ad');
     check('relaunched Viola is a new window', viola.get_id() !== oldViolaId);
     expectPlacement('relaunched Viola opens in its last tile (identity survives PID/window churn)', viola, 'HOME-MAIN', 'tile', [0, 0, 0.5, 1]);
     await sleep(mem.timing.dwell + 400);
-    // A Luma window asks for an opening size of its own (the kit's shared rule,
+    // A Suno window asks for an opening size of its own (the kit's shared rule,
     // ADR-042). A remembered tile outranks it: the app's request never wins
     // over where the person left the window.
-    await quit('org.projectluma.Viola');
-    viola = await launch('org.projectluma.Viola', 'Viola', '#8e44ad', ['--size', '1336x941']);
+    await quit('org.projectSuno.Viola');
+    viola = await launch('org.projectSuno.Viola', 'Viola', '#8e44ad', ['--size', '1336x941']);
     expectPlacement('a remembered tile outranks the size the app asks to open at', viola, 'HOME-MAIN', 'tile', [0, 0, 0.5, 1]);
     await sleep(mem.timing.dwell + 400);
     // Overnight: the last placement is 14 hours old and there are only two sessions of habit.
-    await quit('org.projectluma.Viola');
+    await quit('org.projectSuno.Viola');
     hooks.timeOffset += 14 * HOUR;
-    viola = await launch('org.projectluma.Viola', 'Viola', '#8e44ad');
+    viola = await launch('org.projectSuno.Viola', 'Viola', '#8e44ad');
     expectPlacement('overnight (14 h, 2 sessions): Viola opens in its last tile', viola, 'HOME-MAIN', 'tile', [0, 0, 0.5, 1]);
     await sleep(mem.timing.dwell + 400);
     for (let i = 0; i < 2; i++) {
-        await quit('org.projectluma.Viola');
-        viola = await launch('org.projectluma.Viola', 'Viola', '#8e44ad');
+        await quit('org.projectSuno.Viola');
+        viola = await launch('org.projectSuno.Viola', 'Viola', '#8e44ad');
         await sleep(mem.timing.dwell + 400);
     }
-    await quit('org.projectluma.Viola');
+    await quit('org.projectSuno.Viola');
     hooks.timeOffset += 9 * HOUR;
-    viola = await launch('org.projectluma.Viola', 'Viola', '#8e44ad');
+    viola = await launch('org.projectSuno.Viola', 'Viola', '#8e44ad');
     expectPlacement('after 9 more hours Viola opens in its tile (last placement and habit agree)', viola, 'HOME-MAIN', 'tile', [0, 0, 0.5, 1]);
     await sleep(mem.timing.dwell + 400);
 
@@ -615,9 +615,9 @@ async function work() {
     const touchId = global.display.connect('window-created', (_d, w) => {
         GLib.idle_add(GLib.PRIORITY_DEFAULT, () => { mem.touch(w, 'test-early-drag'); return GLib.SOURCE_REMOVE; });
     });
-    await quit('org.projectluma.Viola');
+    await quit('org.projectSuno.Viola');
     hooks.timeOffset += 9 * HOUR;
-    viola = await launch('org.projectluma.Viola', 'Viola', '#8e44ad');
+    viola = await launch('org.projectSuno.Viola', 'Viola', '#8e44ad');
     global.display.disconnect(touchId);
     const vp = placementOf(viola);
     check('Viola touched before placement stays where the person has it', vp && !(vp.k === 'tile' && vp.m.includes('HOME-MAIN')), vp ? `${vp.k} on ${vp.m}` : 'nothing');
@@ -632,7 +632,7 @@ async function work() {
     expectPlacement('first office visit: Claude follows its role to the new external (same tile)', claude, 'OFFICE', 'tile', [0.5, 0, 0.5, 1]);
     const tp = placementOf(tide);
     check('first office visit: Tide (from a monitor with no counterpart) stays where Mutter put it', tp && !tp.m.includes('OFFICE'), tp?.m);
-    check('dialog never remembered after hotplug', !Object.keys(mem._memory.setups).some(k => Object.keys(mem._memory.setups[k].apps?.['org.projectluma.tide'] ?? {}).some(r => r !== 'main')));
+    check('dialog never remembered after hotplug', !Object.keys(mem._memory.setups).some(k => Object.keys(mem._memory.setups[k].apps?.['org.projectSuno.tide'] ?? {}).some(r => r !== 'main')));
     const office = () => indexOfIdentity('OFFICE');
     await personTiles(tide, office(), {x: 0.5, y: 0, width: 0.5, height: 0.5});
     await personTiles(viola, office(), {x: 0, y: 0, width: 0.34, height: 1});
@@ -651,7 +651,7 @@ async function work() {
     expectPlacement('home again: Viola back in the left tile of the main monitor', viola, 'HOME-MAIN', 'tile', [0, 0, 0.5, 1]);
     expectPlacement('home again: Claude back in the right tile of the main monitor', claude, 'HOME-MAIN', 'tile', [0.5, 0, 0.5, 1]);
     const d2 = dialog.get_transient_for() ? dialog : null;
-    check('dialog was not placed by memory', !!d2 && !mem._windows.get(dialog)?.touchedWhy && dialog[Object.getOwnPropertySymbols(dialog).find(s => s.description === 'luma-window-memory-own')] === undefined);
+    check('dialog was not placed by memory', !!d2 && !mem._windows.get(dialog)?.touchedWhy && dialog[Object.getOwnPropertySymbols(dialog).find(s => s.description === 'Suno-window-memory-own')] === undefined);
 
     // ---- office again: known setup ----
     await setMonitors(['3440x1440']);
@@ -676,7 +676,7 @@ async function work() {
     expectPlacement('resume: Claude restored', claude, 'OFFICE', 'tile', [0.5, 0, 0.5, 1]);
     const afterSleep = JSON.parse(beforeSleep);
     const nowRec = mem._memory.setups[mem._setupKey];
-    check('nothing was recorded while asleep', ['org.projectluma.tide', 'org.projectluma.viola', 'com.anthropic.claude'].every(a => JSON.stringify(afterSleep.apps[a].main.last.p) === JSON.stringify(nowRec.apps[a].main.last.p)));
+    check('nothing was recorded while asleep', ['org.projectSuno.tide', 'org.projectSuno.viola', 'com.anthropic.claude'].every(a => JSON.stringify(afterSleep.apps[a].main.last.p) === JSON.stringify(nowRec.apps[a].main.last.p)));
 
     // ---- the person moves a window while the monitors settle: it wins ----
     await setMonitors(['2560x1440', '1600x900'], {wait: false});
@@ -691,11 +691,11 @@ async function work() {
     expectPlacement('others still restored around it: Claude', claude, 'HOME-MAIN', 'tile', [0.5, 0, 0.5, 1]);
 
     // ---- restart every app: identity churn, recent placements ----
-    for (const id of ['org.projectluma.Tide', 'com.anthropic.Claude', 'org.projectluma.Viola'])
+    for (const id of ['org.projectSuno.Tide', 'com.anthropic.Claude', 'org.projectSuno.Viola'])
         await quit(id);
-    tide = await launch('org.projectluma.Tide', 'Tide', '#2d6cdf');
+    tide = await launch('org.projectSuno.Tide', 'Tide', '#2d6cdf');
     claude = await launch('com.anthropic.Claude', 'Claude', '#d97757');
-    viola = await launch('org.projectluma.Viola', 'Viola', '#8e44ad');
+    viola = await launch('org.projectSuno.Viola', 'Viola', '#8e44ad');
     await shot('home-apps-restarted');
     expectPlacement('restarted Tide opens where it lives at home', tide, 'HOME-SIDE', 'tile', [0, 0, 0.5, 0.5]);
     expectPlacement('restarted Claude opens where it lives at home', claude, 'HOME-MAIN', 'tile', [0.5, 0, 0.5, 1]);
@@ -711,11 +711,11 @@ async function work() {
         await sleep(mem.timing.settle + 300);
     };
     const canvasSession = async (hours, tile, monitor) => {
-        const win = await launch('org.projectluma.Canvas', 'Canvas', '#00897b');
+        const win = await launch('org.projectSuno.Canvas', 'Canvas', '#00897b');
         await sleep(600);
         if (tile) await tileBy(win, monitor, tile);
         hooks.timeOffset += hours * HOUR;
-        await quit('org.projectluma.Canvas');
+        await quit('org.projectSuno.Canvas');
         hooks.timeOffset += 7 * DAY;
         return win;
     };
@@ -725,19 +725,19 @@ async function work() {
     await canvasSession(4, HABIT_TILE, home().main);
     for (let i = 0; i < 13; i++)
         await canvasSession(4);
-    let canvas = await launch('org.projectluma.Canvas', 'Canvas', '#00897b');
+    let canvas = await launch('org.projectSuno.Canvas', 'Canvas', '#00897b');
     expectPlacement('after 14 weeks of use Canvas opens in its long-term tile', canvas, 'HOME-MAIN', 'tile', [0, 0, 0.5, 1]);
-    await quit('org.projectluma.Canvas');
+    await quit('org.projectSuno.Canvas');
     await canvasSession(2, DETOUR_TILE, home().panel);
-    canvas = await launch('org.projectluma.Canvas', 'Canvas', '#00897b');
+    canvas = await launch('org.projectSuno.Canvas', 'Canvas', '#00897b');
     expectPlacement('a one-off detour does not erode months of habit: Canvas opens in its long-term tile', canvas, 'HOME-MAIN', 'tile', [0, 0, 0.5, 1]);
-    await quit('org.projectluma.Canvas');
+    await quit('org.projectSuno.Canvas');
     for (let i = 0; i < 4; i++)
         await canvasSession(5, NEW_TILE, home().side);
-    canvas = await launch('org.projectluma.Canvas', 'Canvas', '#00897b');
+    canvas = await launch('org.projectSuno.Canvas', 'Canvas', '#00897b');
     await shot('home-canvas-moved-for-good');
     expectPlacement('a move kept for 4 sessions wins over months of habit', canvas, 'HOME-SIDE', 'tile', [0, 0.5, 0.5, 0.5]);
-    await quit('org.projectluma.Canvas');
+    await quit('org.projectSuno.Canvas');
 
     // ---- one observation, then a reboot seconds later ----
     let notes = await launch('org.gnome.TextEditor', 'Notes', '#f9a825');
@@ -745,7 +745,7 @@ async function work() {
     notes.move_to_monitor(home().side);
     managerFor(home().side).onTileFromWindowMenu(new Tile({x: 0.5, y: 0, width: 0.5, height: 1, groups: []}), notes);
     await sleep(mem.timing.touchedSettle + mem.timing.touchedSave + 300);
-    const onDisk = JSON.parse(new TextDecoder().decode(GLib.file_get_contents(GLib.build_filenamev([GLib.get_user_state_dir(), 'luma', 'window-memory.json']))[1]));
+    const onDisk = JSON.parse(new TextDecoder().decode(GLib.file_get_contents(GLib.build_filenamev([GLib.get_user_state_dir(), 'Suno', 'window-memory.json']))[1]));
     const savedNotes = Object.values(onDisk.setups).map(x => x.apps?.['org.gnome.texteditor']?.main?.last).find(Boolean);
     check('a window tiled seconds after launch is saved to disk within a second', savedNotes?.p?.k === 'tile' && savedNotes.p.m.includes('HOME-SIDE'), JSON.stringify(savedNotes?.p ?? null));
     await quit('org.gnome.TextEditor');
@@ -790,9 +790,9 @@ async function work() {
     expectPlacement('unlock after moving desks: Viola restored', viola, 'OFFICE', 'tile', [0, 0, 0.34, 1]);
 
     // ---- forget ----
-    mem._settings.set_int64('luma-window-memory-reset', GLib.get_real_time());
+    mem._settings.set_int64('Suno-window-memory-reset', GLib.get_real_time());
     await sleep(300);
     check('Forget Window Positions clears the memory', Object.values(mem._memory.setups).every(s => Object.keys(s.apps ?? {}).length === 0));
-    const saved = GLib.file_get_contents(GLib.build_filenamev([GLib.get_user_state_dir(), 'luma', 'window-memory.json']));
+    const saved = GLib.file_get_contents(GLib.build_filenamev([GLib.get_user_state_dir(), 'Suno', 'window-memory.json']));
     check('memory file lives under XDG state and is versioned', saved[0] && JSON.parse(new TextDecoder().decode(saved[1])).version === 1);
 }

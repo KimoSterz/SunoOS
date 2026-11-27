@@ -67,13 +67,13 @@ rpmbuild -ba \
   --define "_buildrootdir $fixed_build_root/BUILDROOT" \
   "$topdir/SPECS/rmtfs-fp6.spec"
 
-rpm_path=$(find "$topdir/RPMS/aarch64" -maxdepth 1 -type f -name 'rmtfs-1.1.1-3.luma.1.fc44.aarch64.rpm' -print -quit)
-srpm_path=$(find "$topdir/SRPMS" -maxdepth 1 -type f -name 'rmtfs-1.1.1-3.luma.1.fc44.src.rpm' -print -quit)
+rpm_path=$(find "$topdir/RPMS/aarch64" -maxdepth 1 -type f -name 'rmtfs-1.1.1-3.Suno.1.fc44.aarch64.rpm' -print -quit)
+srpm_path=$(find "$topdir/SRPMS" -maxdepth 1 -type f -name 'rmtfs-1.1.1-3.Suno.1.fc44.src.rpm' -print -quit)
 [ -n "$rpm_path" ] || die 'expected AArch64 RPM was not produced'
 [ -n "$srpm_path" ] || die 'expected source RPM was not produced'
 
 rpm -qp --qf '%{NAME}-%{EVR}.%{ARCH}\n' "$rpm_path" |
-  grep -Fxq 'rmtfs-1.1.1-3.luma.1.fc44.aarch64'
+  grep -Fxq 'rmtfs-1.1.1-3.Suno.1.fc44.aarch64'
 rpm -qp --scripts "$rpm_path" >/dev/null
 payload_dir=$output_dir/payload
 install -d -m 0700 "$payload_dir"
@@ -86,7 +86,7 @@ grep -Fq 'ExecStart=/usr/bin/rmtfs -r -P -s' \
   "$payload_dir/usr/lib/systemd/system/rmtfs.service"
 
 {
-  printf 'LUMA_FP6_RMTFS_BUILD_VERSION=2\n'
+  printf 'SUNO_FP6_RMTFS_BUILD_VERSION=2\n'
   printf 'UPSTREAM_VERSION=1.1.1\n'
   printf 'FEDORA_RELEASE=44\n'
   printf 'ARCHITECTURE=aarch64\n'

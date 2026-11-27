@@ -1,0 +1,73 @@
+/* Calculator-only surfaces. Colours and shared metrics come from SunoUI. */
+.calc-display .calc-expression { color: @Suno_ink; font-variant-numeric: tabular-nums; }
+.calc-display .calc-expression-operator { color: @Suno_calc_expression_operator_ink; }
+.calc-display .calc-preview {
+  min-height: var(--SunoUI-pill-height);
+  color: @Suno_muted;
+  font-size: var(--SunoUI-dialog-title-size);
+  font-variant-numeric: tabular-nums;
+}
+.calc-display .calc-preview.error { color: @Suno_danger_ink; }
+.calc-display .calc-tape-line { color: @Suno_muted; font-variant-numeric: tabular-nums; }
+.calc-display .calc-tape-expression { color: @Suno_muted; }
+.calc-display button.calc-tape-result {
+  min-height: var(--SunoUI-pill-height);
+  padding: 0;
+  border-radius: var(--SunoUI-status-radius);
+  color: @Suno_ink_secondary;
+  font-weight: var(--SunoUI-t-label-weight);
+}
+.calc-display .calc-angle-mode {
+  color: @Suno_muted;
+  background: @Suno_fill;
+  border-radius: var(--SunoUI-status-radius);
+}
+button.calc-key {
+  border-radius: var(--SunoUI-calc-key-radius);
+  background: @Suno_chip;
+  color: @Suno_ink;
+  font-variant-numeric: tabular-nums;
+  box-shadow: inset 0 var(--SunoUI-calc-chip-highlight-y) 0 @Suno_chip_highlight,
+              0 0 0 var(--SunoUI-calc-chip-ring-spread) @Suno_chip_ring,
+              0 var(--SunoUI-calc-chip-shadow-y) var(--SunoUI-calc-chip-shadow-blur) @Suno_chip_shadow,
+              0 var(--SunoUI-calc-chip-far-shadow-y) var(--SunoUI-calc-chip-far-shadow-blur)
+                var(--SunoUI-calc-chip-far-shadow-spread) @Suno_calc_chip_far_shadow;
+}
+button.calc-key:hover { filter: brightness(var(--SunoUI-hover-brightness)); }
+button.calc-key:focus-visible { outline: 2px solid @Suno_focus_ring; outline-offset: 2px; }
+button.calc-key-function {
+  color: @Suno_ink_secondary;
+  background: @Suno_calc_function_fill;
+}
+button.calc-key-operator {
+  color: @Suno_calc_operator_ink;
+  background: @Suno_calc_operator_fill;
+}
+button.calc-key-operator.active { color: @Suno_key_ink; background: @Suno_accent; }
+button.calc-key-equals {
+  color: @Suno_key_ink;
+  background-color: @Suno_key;
+  background-image: linear-gradient(@Suno_key, @Suno_key_end);
+  box-shadow: inset 0 var(--SunoUI-key-edge-highlight-y) 0 @Suno_key_highlight,
+              0 0 0 var(--SunoUI-key-edge-ring-spread) @Suno_key_ring,
+              0 var(--SunoUI-key-edge-shadow-y) var(--SunoUI-key-edge-shadow-blur) @Suno_key_shadow;
+}
+button.calc-key-scientific {
+  color: @Suno_ink_secondary;
+  border-radius: var(--SunoUI-stack-sm-radius);
+}
+button.calc-key-scientific .calc-superscript { font-size: var(--SunoUI-calc-superscript-size); }
+button.calc-key-scientific.active { color: @Suno_ink; background: @Suno_calc_operator_fill; }
+.Suno-treatment-light button.calc-key-function,
+.Suno-treatment-light button.calc-key-scientific { color: @Suno_ink; }
+
+/* v71 on a phone (the "Calculator on a phone" block): the display is the page itself and the keys are big
+   squircles on the 16px gutter. Sizes are the simulator's; colours are the tokens above. */
+.calc-display-phone .calc-preview { font-size: 20px; min-height: 28px; }
+.calc-display-phone .calc-tape-line label, .calc-display-phone .calc-tape-line button { font-size: 16px; }
+button.calc-key-phone { padding: 0; border-radius: 40px; font-size: 32px; }
+button.calc-key-phone.calc-key-function { font-size: 26px; }
+button.calc-key-phone.calc-key-operator, button.calc-key-phone.calc-key-equals { font-size: 36px; }
+button.calc-key-phone.on { color: @Suno_ink; background: @Suno_chip; }
+button.calc-key-phone.calc-key-phone-beside { border-radius: var(--SunoUI-calc-key-radius); font-size: 27px; }
+button.calc-key-phone.calc-key-phone-sci { border-radius: 14px; font-size: 15px; }

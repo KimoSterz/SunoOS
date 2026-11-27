@@ -12,24 +12,24 @@ import * as Scripting from 'resource:///org/gnome/shell/ui/scripting.js';
 const sleep = ms => Scripting.sleep(ms);
 const check = (value, message) => {if (!value) throw Error(message); print(`PASS picker: ${message}`);};
 async function capture(name) {
-    const dir=GLib.getenv('LUMA_PICKER_EVIDENCE'); if (!dir) return;
+    const dir=GLib.getenv('SUNO_PICKER_EVIDENCE'); if (!dir) return;
     const file=Gio.File.new_for_path(`${dir}/${name}.png`);
     const stream=file.replace(null,false,Gio.FileCreateFlags.NONE,null);
     try {await new Shell.Screenshot().screenshot(false,stream);} finally {stream.close(null);}
 }
 export async function run() {
-    const scale = Number(GLib.getenv('LUMA_PICKER_SCALE') ?? '1');
+    const scale = Number(GLib.getenv('SUNO_PICKER_SCALE') ?? '1');
     St.ThemeContext.get_for_stage(global.stage).scale_factor = scale;
     new Gio.Settings({schema_id:'org.gnome.desktop.interface'}).set_boolean('enable-animations',false);
-    new Gio.Settings({schema_id:'org.project_luma.shell-state'}).set_string('surface-treatment',GLib.getenv('LUMA_PICKER_TREATMENT') ?? 'dark');
+    new Gio.Settings({schema_id:'org.projectSuno.shell-state'}).set_string('surface-treatment',GLib.getenv('SUNO_PICKER_TREATMENT') ?? 'dark');
     Main.overview.hide(); await sleep(400);
-    if (GLib.getenv('LUMA_PICKER_GREEN')) {
-        St.ThemeContext.get_for_stage(global.stage).set_theme(new St.Theme({application_stylesheet:Gio.File.new_for_path('/var/tmp/luma-connectivity-audit-20261006/picker/theme.css')}));
+    if (GLib.getenv('SUNO_PICKER_GREEN')) {
+        St.ThemeContext.get_for_stage(global.stage).set_theme(new St.Theme({application_stylesheet:Gio.File.new_for_path('/var/tmp/Suno-connectivity-audit-20261006/picker/theme.css')}));
         await sleep(200);
     }
     const qs=Main.panel.statusArea.quickSettings, menu=qs.menu;
     menu.open();await sleep(200);await capture('quick-options-main');menu.close();
-    if (!(GLib.getenv('LUMA_PICKER_PHASE') ?? '').startsWith('bluetooth')) {
+    if (!(GLib.getenv('SUNO_PICKER_PHASE') ?? '').startsWith('bluetooth')) {
         const toggle=new QuickSettings.QuickMenuToggle({title:'Wi-Fi',checked:true,icon_name:'network-wireless-symbolic'});
         toggle.menu.setHeader('network-wireless-symbolic','Wi-Fi');
         toggle.menu._studioRadio=toggle;toggle.menu._studioTitle='Wi-Fi';menu.addItem(toggle);
@@ -50,7 +50,7 @@ export async function run() {
         print(`PICKER GEOMETRY ${JSON.stringify({x,y,width:scroll.width,height:scroll.height,value:adjustment.value,rowHeight:rows[0].height})}`);
         check(rows[0].height>=52*scale,'two-line rows have usable vertical spacing at display scale');
         check(scroll.overlay_scrollbars,'scrollbar does not reserve asymmetric content width');
-        check(!!scroll.get_effect('luma-page-clip'),'complete list and scrollbar share the native rounded clip');
+        check(!!scroll.get_effect('Suno-page-clip'),'complete list and scrollbar share the native rounded clip');
         await capture('wifi-touch-scrolled');
         rows.at(-1).grab_key_focus();await sleep(200);
         check(adjustment.value>=adjustment.upper-adjustment.page_size-1,'keyboard can still reveal the last row');
@@ -68,7 +68,7 @@ export async function run() {
         check(owner.default_adapter_setup_mode,'opening picker starts native discovery lease');
         const first=bt._nearSection.box.get_children().find(actor=>actor._delegate instanceof QuickSettings.QuickSheetRow);
         check(first,'actual native nearby row exists');first.grab_key_focus();
-        if (GLib.getenv('LUMA_PICKER_PHASE') !== 'bluetooth-expiry') {
+        if (GLib.getenv('SUNO_PICKER_PHASE') !== 'bluetooth-expiry') {
         bt._syncNearby();await sleep(150);
         check(bt._nearSection.box.get_children().includes(first),'device bursts retain existing row actors');
         check(global.stage.key_focus===first,'discovery refresh preserves keyboard focus');

@@ -37,7 +37,7 @@ for proof in "$proof_a" "$proof_b"; do
     [ -f "$proof/$required" ] || die "direct proof is incomplete: $proof/$required"
   done
   for boundary in \
-    'LUMA_PIXEL9_DIRECT_KERNEL_PROOF_VERSION=1' \
+    'SUNO_PIXEL9_DIRECT_KERNEL_PROOF_VERSION=1' \
     'ENTRY_CONTRACT_MATCHES_STOCK=true' \
     'TOKAY_DTB_EMBEDDED_ONCE=true' \
     'INITRAMFS_EMBEDDED_ONCE=true' \
@@ -59,7 +59,7 @@ for wrapper in "$wrapper_a" "$wrapper_b"; do
     [ -f "$wrapper/$required" ] || die "wrapper proof is incomplete: $wrapper/$required"
   done
   for boundary in \
-    'LUMA_PIXEL9_DIRECT_KERNEL_WRAPPER_VERSION=1' \
+    'SUNO_PIXEL9_DIRECT_KERNEL_WRAPPER_VERSION=1' \
     'HEADER_VERSION=4' \
     'LZ4_FORMAT=legacy' \
     'ANDROID_CMDLINE_EMPTY=true' \
@@ -118,7 +118,7 @@ install -m 0644 "$wrapper_a/roundtrip/kernel" "$output_dir/wrapper-proof/roundtr
 install -m 0644 "$wrapper_a/roundtrip/ramdisk" "$output_dir/wrapper-proof/roundtrip/ramdisk"
 
 {
-  printf 'LUMA_PIXEL9_DIRECT_CANDIDATE_REPRODUCIBILITY_VERSION=1\n'
+  printf 'SUNO_PIXEL9_DIRECT_CANDIDATE_REPRODUCIBILITY_VERSION=1\n'
   printf 'CANDIDATE_KIND=direct-kernel-embedded-dtb-initramfs\n'
   printf 'COMPARISON=byte-for-byte\n'
   printf 'KERNEL_IMAGE_IDENTICAL=true\n'

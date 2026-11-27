@@ -1,6 +1,6 @@
-# Luma Developer Platform preview
+# Suno Developer Platform preview
 
-The Luma Developer Platform makes ordinary GTK applications adaptive,
+The Suno Developer Platform makes ordinary GTK applications adaptive,
 consistent, accessible, semantically inspectable, and portable. It does not
 replace GTK, libadwaita, Flatpak, portals, AT-SPI, or AppStream.
 
@@ -8,32 +8,32 @@ replace GTK, libadwaita, Flatpak, portals, AT-SPI, or AppStream.
 
 | Part | Responsibility |
 | --- | --- |
-| Luma UI | Adaptive application structure and app-scoped design tokens |
-| Luma Semantics | Typed objects, actions, privacy/risk, Live Extensions |
-| Luma SDK | Creation, inspection, linting, testing, previews, packaging |
+| Suno UI | Adaptive application structure and app-scoped design tokens |
+| Suno Semantics | Typed objects, actions, privacy/risk, Live Extensions |
+| Suno SDK | Creation, inspection, linting, testing, previews, packaging |
 | Design Guidelines | Open behavioral and visual conformance contract |
 | Semantic Broker | Installed permission, consent, invocation, and payload-free audit boundary for agents/shell |
 
-Start with the [Luma Application Kit](application-kit.md) for the supported
+Start with the [Suno Application Kit](application-kit.md) for the supported
 window, island, command/menu, state, token, and convergence contracts.
 Use the [product terminology](product-terminology.md) for shared shell names,
 including Dash and Dash Settings.
 
-The preview source is in [`src/luma-platform`](../../src/luma-platform). Build
+The preview source is in [`src/Suno-platform`](../../src/Suno-platform). Build
 it with Meson and run `meson test`. Install the SDK Python project from
-`src/luma-platform/sdk`, then run:
+`src/Suno-platform/sdk`, then run:
 
 ```sh
-luma new "Example" --id org.example.Example --destination example
+Suno new "Example" --id org.example.Example --destination example
 cd example
-luma lint
-luma inspect
-luma test
+Suno lint
+Suno inspect
+Suno test
 ```
 
 ## Non-negotiable application rules
 
-1. There is one source tree and one binary across Luma presentations.
+1. There is one source tree and one binary across Suno presentations.
 2. Width changes layout; it never identifies a device.
 3. Presentation mode controls chrome independently of width.
 4. Input capability controls target size and affordances independently.
@@ -48,7 +48,7 @@ luma test
 ## API stability
 
 The `0.x` preview is intentionally not ABI stable. Public types use the
-parallel-installable `LumaUI-1` and `LumaSemantics-1` namespaces so 1.0 can
+parallel-installable `SunoUI-1` and `SunoSemantics-1` namespaces so 1.0 can
 stabilize without claiming compatibility prematurely. Every incompatible
 preview change needs a migration note.
 
@@ -64,19 +64,19 @@ A Native candidate must pass:
 - desktop and mobile package-composition contracts;
 - x86_64 and aarch64 package/runtime checks.
 
-The SDK's local `luma test` command validates declarations. It does not claim
+The SDK's local `Suno test` command validates declarations. It does not claim
 the graphical and physical-device gates passed; those remain CI/release gates.
 
 The [application contract 0.2](application-contract.md) defines portable
 Flatpak/AppStream identity, portal-first sandbox policy, legible data removal,
-and evidence-derived Native status. `luma lint` checks the project; `luma
+and evidence-derived Native status. `Suno lint` checks the project; `Suno
 release-check` checks the cross-architecture, desktop/mobile release evidence.
 
 [TV Mode](tv-mode.md) describes the TV posture: how an application learns it
-through LumaUI, what every window gets in TV posture, the shared TV scale, and
+through SunoUI, what every window gets in TV posture, the shared TV scale, and
 how an application opts in to the TV home.
 
 [Recording other apps' sound](audio-capture.md) covers
-`luma_appkit.audio_capture`: the Audio Capture portal, the Share sound picker,
+`Suno_appkit.audio_capture`: the Audio Capture portal, the Share sound picker,
 restore tokens and a ready `pipewiresrc`, with no PipeWire socket in the
 sandbox.

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-#include "luma-clipboard-transfer.h"
+#include "Suno-clipboard-transfer.h"
 #include <cassert>
 #include <atomic>
 #include <dirent.h>
@@ -7,7 +7,7 @@
 #include <iostream>
 #include <sys/mman.h>
 
-using namespace luma::clipboard;
+using namespace Suno::clipboard;
 using namespace std::chrono_literals;
 
 struct Result {
@@ -30,7 +30,7 @@ int descriptorCount() {
     return count;
 }
 int body(const std::string& text) {
-    int fd = memfd_create("luma-synthetic-clipboard", MFD_CLOEXEC);
+    int fd = memfd_create("Suno-synthetic-clipboard", MFD_CLOEXEC);
     assert(fd >= 0);
     assert(::write(fd, text.data(), text.size()) == static_cast<ssize_t>(text.size()));
     assert(lseek(fd, 0, SEEK_SET) == 0);
@@ -43,7 +43,7 @@ int main() {
     {
         Transfers transfers;
         std::string text;
-        for (unsigned i = 0; i < 20000; ++i) text += "Luma \xf0\x9f\x8c\x99\n";
+        for (unsigned i = 0; i < 20000; ++i) text += "Suno \xf0\x9f\x8c\x99\n";
         // Larger than pipe capacity: simultaneous partial read and write on
         // this same worker must complete with every UTF-8 byte intact.
         int fds[2];
@@ -68,7 +68,7 @@ int main() {
         assert(pipe2(fds, O_CLOEXEC) == 0);
         Result waiting;
         transfers.read(fds[0], waiting.callback());
-        int destination = memfd_create("luma-synthetic-destination", MFD_CLOEXEC);
+        int destination = memfd_create("Suno-synthetic-destination", MFD_CLOEXEC);
         assert(destination >= 0);
         transfers.write(dup(destination), std::make_shared<const std::string>("independent send"));
         const auto sendDeadline = std::chrono::steady_clock::now() + 500ms;

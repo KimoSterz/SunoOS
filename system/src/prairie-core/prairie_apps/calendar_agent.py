@@ -4,7 +4,7 @@
 
 ``prairie-calendar --agent`` watches every enabled calendar and task list in
 Evolution Data Server — local ones, CalDAV and Google accounts, and the shared
-calendars Luma Connect keeps in EDS — and shows each reminder as a Luma
+calendars Suno Connect keeps in EDS — and shows each reminder as a Suno
 notification with Open, Snooze and Dismiss.
 
 It is built on ``ECal.ReminderWatcher``, the engine evolution-alarm-notify
@@ -42,15 +42,15 @@ from .background_agent import Agent, AgentInfo, Notifier, configure_logging, lau
 
 LOG = logging.getLogger("prairie.calendar.agent")
 
-APP_ID = "org.projectluma.Calendar"
+APP_ID = "org.projectSuno.Calendar"
 INFO = AgentInfo(
     APP_ID, "Calendar", "calendar", ("prairie-calendar", "--agent"),
     wake=("login", "network", "resume", "schedule"),
-    publishes=("active-reminders", "snoozed-reminders", "live-extension:org.projectluma.Calendar.Reminders"),
+    publishes=("active-reminders", "snoozed-reminders", "live-extension:org.projectSuno.Calendar.Reminders"),
     purpose="Get reminders when Calendar is closed",
 )
 # Snooze length; the session test shortens it to see a snoozed reminder come back.
-SNOOZE_MINUTES = max(1, int(os.environ.get("LUMA_CALENDAR_SNOOZE_MINUTES", "10") or 10))
+SNOOZE_MINUTES = max(1, int(os.environ.get("SUNO_CALENDAR_SNOOZE_MINUTES", "10") or 10))
 # Reminders already shown before a restart are not shown again; past this age
 # a reminder left from before the agent started is not raised at all.
 PAST_LIMIT_SECONDS = 12 * 3600
@@ -199,10 +199,10 @@ class CalendarReminders:
             key, summary, body,
             actions=[("default", "Open"), ("snooze", f"Snooze {SNOOZE_MINUTES} min"), ("dismiss", "Dismiss")],
             on_action=lambda action, key=key: self._action(key, action),
-            category="x-luma.calendar.reminder", urgency=1, resident=True, timeout=0,
+            category="x-Suno.calendar.reminder", urgency=1, resident=True, timeout=0,
             public_summary="Calendar", public_body="Task reminder" if is_task else "Event reminder",
-            hints={"x-luma-calendar-source": GLib.Variant("s", rd.get_source_uid() or ""),
-                   "x-luma-snoozed": GLib.Variant("b", snoozed)})
+            hints={"x-Suno-calendar-source": GLib.Variant("s", rd.get_source_uid() or ""),
+                   "x-Suno-snoozed": GLib.Variant("b", snoozed)})
         self._shown[key] = self.clock()
         self._save_shown()
         LOG.info("Reminder shown%s", " (snoozed)" if snoozed else "")

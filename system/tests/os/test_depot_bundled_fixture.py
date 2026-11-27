@@ -17,7 +17,7 @@ class FixtureTests(unittest.TestCase):
         source = SimpleNamespace(ref='app/Notes/x86_64/beta', commit='signed')
         ref = SimpleNamespace(format_ref=lambda: source.ref,
                               get_commit=lambda: 'older' if mismatched else source.commit,
-                              get_origin=lambda: 'luma')
+                              get_origin=lambda: 'Suno')
         state = {'ref': ref if present else None, 'events': []}
         def remove(installation, installed):
             def run(unused):
@@ -36,7 +36,7 @@ class FixtureTests(unittest.TestCase):
         api = SimpleNamespace(installed_ref=lambda *args: state['ref'],
                               removal_transaction=remove, transaction=install)
         namespace = dict(depot_flatpak=api, installation=SimpleNamespace(get_id=lambda: 'system'),
-                         source=source, remote='luma', app_id='Notes')
+                         source=source, remote='Suno', app_id='Notes')
         error = None
         with contextlib.redirect_stdout(io.StringIO()):
             try:

@@ -20,7 +20,7 @@ case "$candidate_label" in
     exit 1
     ;;
 esac
-candidate=$output_dir/boot-fp6-luma-$candidate_label.img
+candidate=$output_dir/boot-fp6-Suno-$candidate_label.img
 
 for tool in cmp file install mkbootimg mktemp sha256sum unpack_bootimg xargs; do
   command -v "$tool" >/dev/null 2>&1 || {
@@ -67,7 +67,7 @@ cmp "$control_dir/dtb" "$candidate_dir/dtb"
 kernel_sha=$(sha256sum "$kernel_image" | awk '{print $1}')
 candidate_sha=$(sha256sum "$candidate" | awk '{print $1}')
 {
-  printf 'LUMA_FP6_BOOT_CANDIDATE_VERSION=1\n'
+  printf 'SUNO_FP6_BOOT_CANDIDATE_VERSION=1\n'
   printf 'CANDIDATE_LABEL=%s\n' "$candidate_label"
   printf 'CONTROL_BOOT_SHA256=%s\n' "$expected_control_sha"
   printf 'KERNEL_SHA256=%s\n' "$kernel_sha"

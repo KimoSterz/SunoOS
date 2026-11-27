@@ -4,8 +4,8 @@ import json
 import time
 from urllib.parse import urlsplit
 from gi.repository import Gdk, GLib, Gtk, Pango
-from luma_appkit import Command, CommandGroup, CommandRegistry
-from luma_appkit.menus import Menu
+from Suno_appkit import Command, CommandGroup, CommandRegistry
+from Suno_appkit.menus import Menu
 
 
 class SuggestionMenu(Menu):
@@ -104,7 +104,7 @@ class NativeAddress:
             field = getattr(self.host, 'address_field', None)
             if field:
                 (field.add_css_class if secure else field.remove_css_class)('secure')
-            icon = 'lumaui-shield-check-symbolic' if secure else 'channel-insecure-symbolic'
+            icon = 'SunoUI-shield-check-symbolic' if secure else 'channel-insecure-symbolic'
             if entry.get_icon_name(Gtk.EntryIconPosition.PRIMARY) != icon:
                 entry.set_icon_from_icon_name(Gtk.EntryIconPosition.PRIMARY, icon)
             if entry.get_icon_tooltip_text(Gtk.EntryIconPosition.PRIMARY) is not None:

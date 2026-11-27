@@ -30,7 +30,7 @@ class MessagesNotificationPublisher:
     BUS_NAME = "org.freedesktop.Notifications"
     OBJECT_PATH = "/org/freedesktop/Notifications"
     INTERFACE = "org.freedesktop.Notifications"
-    APPLICATION_ID = "org.projectluma.Messages"
+    APPLICATION_ID = "org.projectSuno.Messages"
 
     def __init__(self, store: MessageStore) -> None:
         self.store = store
@@ -75,8 +75,8 @@ class MessagesNotificationPublisher:
             "desktop-entry": GLib.Variant("s", self.APPLICATION_ID),
             "resident": GLib.Variant("b", False),
             "transient": GLib.Variant("b", False),
-            "x-luma-inline-reply-path": GLib.Variant("o", ReplyEndpoint.PATH),
-            "x-luma-inline-reply-token": GLib.Variant("s", reply_token),
+            "x-Suno-inline-reply-path": GLib.Variant("o", ReplyEndpoint.PATH),
+            "x-Suno-inline-reply-token": GLib.Variant("s", reply_token),
         }
         try:
             result = proxy.call_sync(
@@ -84,7 +84,7 @@ class MessagesNotificationPublisher:
                 GLib.Variant(
                     "(susssasa{sv}i)",
                     (
-                        "Luma Messages",
+                        "Suno Messages",
                         replaces_id,
                         self.APPLICATION_ID,
                         display_name,

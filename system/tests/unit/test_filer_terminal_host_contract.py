@@ -10,9 +10,9 @@ class FilerTerminalHostContract(unittest.TestCase):
     def test_signed_filer_manifest_declares_terminal_and_compatible_depot(self):
         manifest = json.loads((ROOT / 'packaging/flatpak/apps/org.gnome.Nautilus/org.gnome.Nautilus.yml').read_text())
         args = manifest['finish-args']
-        self.assertIn('--talk-name=org.projectluma.Terminal', args)
-        self.assertIn('--metadata=X-Luma=min-host-terminal=12', args)
-        self.assertIn('--metadata=X-Luma=min-host-installer=82', args)
+        self.assertIn('--talk-name=org.projectSuno.Terminal', args)
+        self.assertIn('--metadata=X-Suno=min-host-terminal=12', args)
+        self.assertIn('--metadata=X-Suno=min-host-installer=82', args)
 
 if __name__ == '__main__':
     unittest.main()

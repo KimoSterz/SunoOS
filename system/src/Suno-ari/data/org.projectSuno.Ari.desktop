@@ -1,0 +1,17 @@
+[Desktop Entry]
+Type=Application
+Name=Ari
+GenericName=Assistant
+Comment=Ask Suno's assistant, or tell her what to change
+Exec=org.projectSuno.Ari
+Icon=org.projectSuno.Ari
+Terminal=false
+Categories=Utility;GTK;
+StartupNotify=true
+DBusActivatable=true
+Keywords=Assistant;AI;Ask;Help;Chat;Model;Local;
+Actions=quick;
+
+[Desktop Action quick]
+Name=Quick Question
+Exec=org.projectSuno.Ari --popover

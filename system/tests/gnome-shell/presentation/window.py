@@ -4,7 +4,7 @@ gi.require_version("Gtk", "4.0")
 from gi.repository import Gtk
 import argparse
 parser = argparse.ArgumentParser()
-parser.add_argument("--application-id", default="org.project_luma.PresentationFixture")
+parser.add_argument("--application-id", default="org.projectSuno.PresentationFixture")
 parser.add_argument("--title", default="Presentation document fixture")
 parser.add_argument("--no-decorations", action="store_true")
 args = parser.parse_args()

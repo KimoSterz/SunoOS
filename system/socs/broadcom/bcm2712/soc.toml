@@ -7,7 +7,7 @@ arch = "aarch64"
 part_numbers = ["BCM2712"]
 
 [kernel]
-# Devices on this family boot the distribution kernel; no Luma kernel branch.
+# Devices on this family boot the distribution kernel; no Suno kernel branch.
 repository = "https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git"
 branch = "master"
 upstream = "https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git"

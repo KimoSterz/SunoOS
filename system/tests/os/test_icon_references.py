@@ -78,32 +78,32 @@ class IconReferenceTest(unittest.TestCase):
         self.write(patches / "gnome-shell/0001.patch",
                    "+++ b/js/key.js\n@@ -0,0 +1 @@\n+const icon = 'desktop-only-symbolic';\n")
         self.assertEqual(len(icon_references.scan_patches(patches)), 2)
-        for name in ("stevia", "luma-stevia", "phosh-osk-stub"):
+        for name in ("stevia", "Suno-stevia", "phosh-osk-stub"):
             self.assertEqual(len(icon_references.scan_patches(patches, {name})), 2)
         refs = icon_references.scan_patches(patches, {"gnome-shell", "rpm"})
         self.assertEqual([ref.name for ref in refs], ["desktop-only-symbolic"])
 
     def preview_wine_stubs(self):
-        caps = {"schema": "org.projectluma.desktop-capabilities/v1", "architecture": "aarch64",
+        caps = {"schema": "org.projectSuno.desktop-capabilities/v1", "architecture": "aarch64",
                 "profile": "arm-preview", "capabilities": {"desktop": True, "windows_apps": False},
                 "excluded_packages": ["wine", "winetricks"], "excluded_package_prefixes": ["wine-"]}
-        self.write(self.root / "usr/share/luma/desktop-capabilities.json", json.dumps(caps))
+        self.write(self.root / "usr/share/Suno/desktop-capabilities.json", json.dumps(caps))
         for filename, (icon, command) in icon_references.PREVIEW_WINE_STUBS.items():
             text = f"[Desktop Entry]\nType=Application\nNoDisplay=true\nIcon={icon}\nExec={command}\n"
-            self.write(self.source / "luma-desktop-launcher-policy/applications" / filename, text)
-            self.write(self.root / "usr/share/luma/desktop-overrides/applications" / filename, text)
+            self.write(self.source / "Suno-desktop-launcher-policy/applications" / filename, text)
+            self.write(self.root / "usr/share/Suno/desktop-overrides/applications" / filename, text)
         self.write(self.root / "usr/share/applications/wine-notepad.desktop", "[Desktop Entry]\nNoDisplay=true\n")
         return caps
 
     def change_preview_capability(self, **changes):
-        path = self.root / "usr/share/luma/desktop-capabilities.json"
+        path = self.root / "usr/share/Suno/desktop-capabilities.json"
         value = json.loads(path.read_text())
         value.update(changes)
         path.write_text(json.dumps(value))
 
     def change_preview_stub(self, old, new):
-        for base in (self.source / "luma-desktop-launcher-policy/applications",
-                     self.root / "usr/share/luma/desktop-overrides/applications"):
+        for base in (self.source / "Suno-desktop-launcher-policy/applications",
+                     self.root / "usr/share/Suno/desktop-overrides/applications"):
             path = base / "wine-notepad.desktop"
             path.write_text(path.read_text().replace(old, new))
 
@@ -158,7 +158,7 @@ class IconReferenceTest(unittest.TestCase):
 
     def test_preview_installed_source_mismatch_is_not_exempt(self):
         self.preview_wine_stubs()
-        path = self.root / "usr/share/luma/desktop-overrides/applications/wine-notepad.desktop"
+        path = self.root / "usr/share/Suno/desktop-overrides/applications/wine-notepad.desktop"
         path.write_text(path.read_text() + "Name=Changed\n")
         self.assertEqual(self.run_check("--installed")[0], 1)
 
@@ -208,7 +208,7 @@ class IconReferenceTest(unittest.TestCase):
                    '</object><item><attribute name="icon">ui-menu-symbolic</attribute></item>')
         self.write(self.source / "app/window.py",
                    'b.set_icon_name("py-missing-symbolic")\nImage(icon_name="org.example.App")\n'
-                   'x = f"luma-{kind}-symbolic"\nnames = ("device.icon-name", "api.bluez5.address")\n'
+                   'x = f"Suno-{kind}-symbolic"\nnames = ("device.icon-name", "api.bluez5.address")\n'
                    '__all__ = ("icon_name",\n    "is_listening")\n')
         self.write(self.source / "app/panel.js", "new St.Icon({icon_name: 'js-missing-symbolic'});\n")
         self.write(self.source / "app/view.c",
@@ -258,9 +258,9 @@ class IconReferenceTest(unittest.TestCase):
             self.run_check("--allowlist", str(allow))
 
     def test_installed_first_party_code(self):
-        self.write(self.root / "usr/lib/python3.14/site-packages/luma_example/window.py",
+        self.write(self.root / "usr/lib/python3.14/site-packages/Suno_example/window.py",
                    'Image(icon_name="installed-missing-symbolic")\n')
-        self.write(self.root / "usr/share/applications/org.projectluma.Example.desktop", "Icon=launcher-missing\n")
+        self.write(self.root / "usr/share/applications/org.projectSuno.Example.desktop", "Icon=launcher-missing\n")
         self.write(self.root / "usr/share/applications/org.thirdparty.App.desktop", "Icon=third-party-missing\n")
         code, output = self.run_check("--installed")
         self.assertEqual(code, 1)

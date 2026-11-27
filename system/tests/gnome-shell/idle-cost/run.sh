@@ -1,6 +1,6 @@
 #!/bin/bash
 # SPDX-License-Identifier: GPL-2.0-or-later
-# One headless Luma session at rest, then probe.js. Inside a Fedora (or Luma
+# One headless Suno session at rest, then probe.js. Inside a Fedora (or Suno
 # OS tree) container with the Shell installed; this directory is /oracle/t.
 # ORACLE_OUT, MODE (check|find), ORACLE_MONITORS (default three: 1920x1200,
 # 2560x1440, 1920x1200), ORACLE_SCALES (default 1,1,1.25), IDLE_MS,
@@ -10,12 +10,12 @@ T=${IDLE_HARNESS:-/oracle/t}
 export XDG_RUNTIME_DIR=/tmp/idle-run; rm -rf $XDG_RUNTIME_DIR; mkdir -m 700 -p $XDG_RUNTIME_DIR
 export HOME=/tmp/idle-home; rm -rf $HOME
 mkdir -p $HOME/.config/glib-2.0/settings $HOME/.local/share/applications
-# The OS defaults (dconf luma.d, same group/key syntax as the keyfile
-# backend) under the harness's own keys, as a fresh Luma account has them.
-{ cat /etc/dconf/db/luma.d/* 2>/dev/null; cat ${ORACLE_KEYFILE:-$T/keyfile}; } \
+# The OS defaults (dconf Suno.d, same group/key syntax as the keyfile
+# backend) under the harness's own keys, as a fresh Suno account has them.
+{ cat /etc/dconf/db/Suno.d/* 2>/dev/null; cat ${ORACLE_KEYFILE:-$T/keyfile}; } \
   > $HOME/.config/glib-2.0/settings/keyfile
 cp $T/apps/*.desktop $HOME/.local/share/applications/
-export GSETTINGS_BACKEND=keyfile LIBGL_ALWAYS_SOFTWARE=1 LUMA_MUTTER_ALLOW_SOFTWARE_BLUR=1
+export GSETTINGS_BACKEND=keyfile LIBGL_ALWAYS_SOFTWARE=1 SUNO_MUTTER_ALLOW_SOFTWARE_BLUR=1
 export XDG_CURRENT_DESKTOP=GNOME XDG_SESSION_TYPE=wayland GDK_BACKEND=wayland
 export ORACLE_OUT=${ORACLE_OUT:-/oracle/out} IDLE_HARNESS=$T
 export ORACLE_SCALES=${ORACLE_SCALES-1,1,1.25}

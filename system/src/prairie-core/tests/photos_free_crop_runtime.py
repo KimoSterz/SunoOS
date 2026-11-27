@@ -38,11 +38,11 @@ def point(window,u,v):
     return p.x,p.y
 
 parser=argparse.ArgumentParser();parser.add_argument('--width',type=int,required=True);args=parser.parse_args()
-with tempfile.TemporaryDirectory(prefix='luma-photos-free-crop-') as folder:
+with tempfile.TemporaryDirectory(prefix='Suno-photos-free-crop-') as folder:
     root=Path(folder)
     for key in ('HOME','XDG_CONFIG_HOME','XDG_DATA_HOME','XDG_CACHE_HOME','XDG_STATE_HOME'):
         p=root/key;p.mkdir();os.environ[key]=str(p)
-    os.environ['LUMA_PHOTOS_NON_UNIQUE']='1';os.environ.pop('LUMA_PHOTOS_FIXTURE',None)
+    os.environ['SUNO_PHOTOS_NON_UNIQUE']='1';os.environ.pop('SUNO_PHOTOS_FIXTURE',None)
     source=root/'pictures';source.mkdir();image=source/'Generated.png';image.write_bytes(_png(900,600));before=image.read_bytes()
     library=PhotoLibrary(root/'catalog.sqlite3');s=library.add_source(source,'Private generated fixture');assert library.scan_source(s.id).added==1
     app=PhotosApplication();assert app.register(None);window=PhotosWindow(app,library=library);window.set_default_size(args.width,900);window.present()
@@ -59,7 +59,7 @@ with tempfile.TemporaryDirectory(prefix='luma-photos-free-crop-') as folder:
         x,y,w,h=rect
         drag(window,point(window,x+w/2,y+h/2),point(window,x+w/2+.1,y+h/2+.08))
         moved=window.state.draft['crop_rect'];assert moved[0]>x+.05 and moved[1]>y+.03,(rect,moved)
-        output=os.environ.get('LUMA_PHOTOS_FREE_CROP_OUTPUT')
+        output=os.environ.get('SUNO_PHOTOS_FREE_CROP_OUTPUT')
         def capture(label):
             if output:
                 p=Path(output);p.mkdir(parents=True,exist_ok=True);settle(.3)

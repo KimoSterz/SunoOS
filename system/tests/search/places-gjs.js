@@ -1,6 +1,6 @@
 // Beam offers Filer's places: the packaged Shell module, run by gjs.
-// gjs -m tests/search/places-gjs.js path/to/lumaFilerPlaces.js path/to/filer-places.json
-// lumaSearchRanking.js must sit next to lumaFilerPlaces.js, as in js/ui.
+// gjs -m tests/search/places-gjs.js path/to/SunoFilerPlaces.js path/to/filer-places.json
+// SunoSearchRanking.js must sit next to SunoFilerPlaces.js, as in js/ui.
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import System from 'system';
@@ -8,7 +8,7 @@ import System from 'system';
 const [modulePath, tablePath] = ARGV;
 const P = await import(Gio.File.new_for_path(modulePath).get_uri());
 const R = await import(Gio.File.new_for_path(modulePath).get_parent()
-    .get_child('lumaSearchRanking.js').get_uri());
+    .get_child('SunoSearchRanking.js').get_uri());
 const table = JSON.parse(new TextDecoder().decode(
     Gio.File.new_for_path(tablePath).load_contents(null)[1]));
 
@@ -22,7 +22,7 @@ const check = (ok, message) => {
     }
 };
 
-const home = GLib.dir_make_tmp('luma-places-XXXXXX');
+const home = GLib.dir_make_tmp('Suno-places-XXXXXX');
 const specialDirs = {};
 for (const [key, name] of [['DESKTOP', 'Desktop'], ['DOCUMENTS', 'Documents'],
     ['DOWNLOAD', 'Downloads'], ['PICTURES', 'Pictures'], ['VIDEOS', 'Videos']]) {

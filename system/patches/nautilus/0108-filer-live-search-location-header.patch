@@ -20,20 +20,20 @@ index eea2f85..085ed78 100644
  #include "nautilus-shortcut-manager.h"
  #include "nautilus-sidebar.h"
 @@ -118,6 +119,8 @@ struct _NautilusWindow
-     LumaSidebarToggle *sidebar_toggle;
+     SunoSidebarToggle *sidebar_toggle;
      GtkWidget *location_title;
      GtkWidget *location_meta;
 +    GtkWidget *location_scope;
 +    GFile *search_origin;
      GtkWidget *information_host;
-     LumaDetailsPane *information_pane;
+     SunoDetailsPane *information_pane;
  
 @@ -355,6 +358,78 @@ append_location_separator (NautilusWindow *window)
      gtk_box_append (GTK_BOX (window->location_meta), separator);
  }
  
 +static void
-+on_search_scope_changed (LumaModeSwitch *switcher,
++on_search_scope_changed (SunoModeSwitch *switcher,
 +                         const char     *key,
 +                         NautilusWindow *window)
 +{
@@ -58,7 +58,7 @@ index eea2f85..085ed78 100644
 +    }
 +    g_autoptr (NautilusQuery) query = nautilus_query_copy (current);
 +    g_autoptr (GFile) home = g_file_new_for_path (g_get_home_dir ());
-+    const char *fixture_root = g_getenv ("LUMA_FILER_FIXTURE_ROOT");
++    const char *fixture_root = g_getenv ("SUNO_FILER_FIXTURE_ROOT");
 +    if (fixture_root != NULL)
 +    {
 +        g_autofree char *fixture_home = g_build_filename (fixture_root, "Home", NULL);
@@ -87,10 +87,10 @@ index eea2f85..085ed78 100644
 +    {
 +        gtk_box_remove (GTK_BOX (host), old);
 +    }
-+    window->location_scope = luma_mode_switch_new (_("Search in"));
++    window->location_scope = Suno_mode_switch_new (_("Search in"));
 +    gtk_widget_set_name (window->location_scope, "filer-location-scope");
-+    luma_mode_switch_add (LUMA_MODE_SWITCH (window->location_scope), "here", label, "folder");
-+    luma_mode_switch_add (LUMA_MODE_SWITCH (window->location_scope), "all", _("Everywhere"), "globe");
++    Suno_mode_switch_add (SUNO_MODE_SWITCH (window->location_scope), "here", label, "folder");
++    Suno_mode_switch_add (SUNO_MODE_SWITCH (window->location_scope), "all", _("Everywhere"), "globe");
 +    gtk_widget_set_margin_top (window->location_scope, 12);
 +    gtk_widget_set_halign (window->location_scope, GTK_ALIGN_START);
 +    gtk_widget_set_visible (window->location_scope, FALSE);
@@ -149,7 +149,7 @@ index eea2f85..085ed78 100644
 +        GtkWidget *description_label = gtk_label_new (description);
 +        gtk_box_append (GTK_BOX (window->location_meta), description_label);
 +        GFile *scope = nautilus_query_get_location (query);
-+        luma_mode_switch_set_current (LUMA_MODE_SWITCH (window->location_scope),
++        Suno_mode_switch_set_current (SUNO_MODE_SWITCH (window->location_scope),
 +                                      scope != NULL && window->search_origin != NULL &&
 +                                      g_file_equal (scope, window->search_origin) ? "here" : "all");
 +        return;
@@ -173,7 +173,7 @@ index eea2f85..085ed78 100644
 +    gtk_box_append (GTK_BOX (location), window->location_scope);
      gtk_box_append (GTK_BOX (window->trail_host), location);
      gtk_widget_set_name (window->location_row, "filer-location-row");
-     window->information_pane = LUMA_DETAILS_PANE (
+     window->information_pane = SUNO_DETAILS_PANE (
 -- 
 2.55.0
 

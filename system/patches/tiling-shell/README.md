@@ -1,6 +1,6 @@
 # Tiling Shell downstream patch
 
-Project Luma packages the reviewed GNOME Extensions version 76 payload for
+Project Suno packages the reviewed GNOME Extensions version 76 payload for
 Tiling Shell 17.3. Its upstream name, UUID, interface, settings, links, and
 credits remain intact.
 
@@ -9,29 +9,29 @@ signal-registry disconnect ahead of indicator destruction. GNOME Shell 50
 otherwise reports a disposed `Indicator` and stale handler IDs whenever the
 extension is switched off. The patch changes teardown order only.
 
-`0002-luma-visible-drag-layout.patch` applies that behavior to the compiled
+`0002-Suno-visible-drag-layout.patch` applies that behavior to the compiled
 JavaScript and schema files in the reviewed GNOME Extensions payload. It exposes
 the existing layout renderer and drop target as an explicit **Show layout while
 dragging** preference. When enabled, moving any window reveals the active layout
 without a modifier key, and releasing it over a zone uses Tiling Shell's existing
-tile path. It also makes a two-column `Luma Split` the first fresh-profile layout.
+tile path. It also makes a two-column `Suno Split` the first fresh-profile layout.
 Control is the fresh-profile deactivation modifier, and that deactivation state
 is honored both while rendering the layout and on the final drop.
 
-`0004-luma-quick-settings-interface.patch` keeps Tiling Shell's indicator and
+`0004-Suno-quick-settings-interface.patch` keeps Tiling Shell's indicator and
 editor implementation intact but defaults the redundant top-panel button off.
 It adds `selectLayout` and `newLayout` methods beside the upstream
-`openLayoutEditor` method on Tiling Shell's existing Shell D-Bus object. Luma's
+`openLayoutEditor` method on Tiling Shell's existing Shell D-Bus object. Suno's
 Quick Settings bridge can therefore use the tiler's own global state and editor
 instead of duplicating either implementation.
 
-`0003-luma-visible-drag-layout-source.patch` is the matching TypeScript source
+`0003-Suno-visible-drag-layout-source.patch` is the matching TypeScript source
 change for the pinned upstream 17.3 tag. It is retained as provenance and as the
 maintenance path for future source builds. The reviewed extensions payload does
 not contain `src/`, so the RPM intentionally applies only `0002`; it must not
 pretend to patch source files that are absent from that archive.
 
-`0005-luma-quick-settings-interface-source.patch` is the matching TypeScript
+`0005-Suno-quick-settings-interface-source.patch` is the matching TypeScript
 source correspondence for `0004` and follows the same provenance-only rule.
 
 The package also normalizes the review ZIP's file modes during `%prep`; that is
@@ -42,33 +42,33 @@ Drop the corresponding runtime and source patches together when an equivalent
 upstream release is selected and its drag-layout acceptance test passes without
 them. Upstream identity, preferences, credits, and layout engine remain intact.
 
-`0006-luma-tell-clients-a-window-is-tiled.patch` mirrors Tiling Shell's
+`0006-Suno-tell-clients-a-window-is-tiled.patch` mirrors Tiling Shell's
 `assignedTile` state into Mutter's `meta_window_set_externally_tiled()` (added
-by Luma's Mutter patch 0008). Mutter only sent tiled states for its own
+by Suno's Mutter patch 0008). Mutter only sent tiled states for its own
 side-by-side tiling, so clients drawing their own decorations kept a floating
 window's shadows and resize borders in a tile, and Chromium's content spilled
 past the tile. The call is optional-chained, so the extension still runs on a
 Mutter without it.
 
-`0007-luma-right-click-breaks-the-tiling-spell.patch` lets a right-click or a tap of
+`0007-Suno-right-click-breaks-the-tiling-spell.patch` lets a right-click or a tap of
 Control during a mouse drag do what holding the deactivation modifier does, for the rest of that
 drag, and a second right-click restores tiling. It depends on Mutter patch
 `0009`, which keeps the drag running for that click. There is no source
 correspondence patch yet; the payload change is small and self-contained.
 
-`0008-luma-layouts-follow-monitors-and-setups.patch` remembers the layouts a person
+`0008-Suno-layouts-follow-monitors-and-setups.patch` remembers the layouts a person
 chooses for each combination of connected monitors and for each physical monitor
 (maker, model and serial), and restores them when monitors change, instead of
 keeping layouts by monitor position.
 
-`0009-luma-unique-layout-ids-and-editor-cursors.patch` gives every new layout an
+`0009-Suno-unique-layout-ids-and-editor-cursors.patch` gives every new layout an
 unused id and renames repeated ids when layouts load. Upstream named new layouts
 after the current event time, which is 0 outside event handling, so several
 layouts could share "0" and only the first could ever be selected. It also moves
 the layout editor's divider cursors to GNOME 50's `Clutter.CursorType` interface.
 
-`0010-luma-window-placement-memory.patch` adds window placement memory (ADR-036) in
-`components/lumaWindowMemory/windowMemory.js`. Windows are remembered by app
+`0010-Suno-window-placement-memory.patch` adds window placement memory (ADR-036) in
+`components/SunoWindowMemory/windowMemory.js`. Windows are remembered by app
 identity and window role for each monitor setup, as a last placement and a
 long-term habit (hours lived in each tile, maximized state or floating rect).
 Apps open in their strong habit, otherwise their last placement, and stay
@@ -79,7 +79,7 @@ windows the person moved, are left alone. Tiling Settings gets **Remember window
 positions** and **Forget Window Positions**. The headless scenario test is in
 `tests/tiling-shell/window-memory/`.
 
-`0011-luma-windows-settle-once-after-monitor-changes.patch` makes windows appear
+`0011-Suno-windows-settle-once-after-monitor-changes.patch` makes windows appear
 once, in place, after resume and dock changes. Windows are put back before the
 first frame of each new monitor layout (after the Shell updates its work areas)
 and confirmed when the monitors are stable, instead of 1.5 s later; a monitor
@@ -92,7 +92,7 @@ and such a place is never remembered. `tests/tiling-shell/window-memory/resume-t
 records where every window is painted, frame by frame, across undock, resume
 docked, a late client move and resume undocked, on a mixed-scale layout.
 
-`0012-luma-apps-appear-as-soon-as-they-open.patch` makes sure window memory
+`0012-Suno-apps-appear-as-soon-as-they-open.patch` makes sure window memory
 never holds a window noticeably. The short reveal timer used to start only on
 Mutter's "shown" signal, so an X11 client that mapped and drew without "shown"
 arriving after the hold began (an Electron app through the container launcher)
@@ -105,14 +105,14 @@ long the window was held and what showed it, with a warning above 500 ms.
 `tests/tiling-shell/window-memory/wm-test.js` asserts the reveal time for
 Wayland GTK, Chromium, XWayland GTK and a self-resizing X11 client.
 
-`0014-luma-tiles-follow-the-work-area.patch`: on a work-area change (the Dash freeing or taking an edge), windows in tiles are eased into the same tile of the new work area with the layout's gaps; floating windows are untouched and Mutter re-fits maximized ones. Only once the layout has been stable for 500 ms (after a resume or hotplug window memory puts windows back first, also debounced and once per settled layout); each window moves at most once per settled work area, never to another monitor, and a window moved 3 times in 2 s is left alone (Vitals `reflow-stopped`, `restore-churn`). Tested by `tests/gnome-shell/shelf-arrange/retile.js` and `tests/tiling-shell/window-memory`. .20: a change the Dash makes itself is followed at once on its curve and duration (a shrinking work area before Mutter applies it, a growing one as soon as Mutter has it), each window gliding in one move with no cross-fade (`Main.wm.lumaGlideFrame`); a window is put back in its tile when a late client answer left it elsewhere (Vitals `tile-corrected`, `tile-refused`); a one-time migration (`luma-settings-migration`) turns an outer gap of 0 into the inner gap and the panel button back off. `90_luma-tiling-shell.gschema.override` (installed into the extension's schemas) keeps the panel button off and an outer gap of 16. The outer gap is now per edge: the Dash's reservation already holds the margin a window keeps from an island, so the outer gap on a reserved edge is the rest of the gap and the whole gap on an edge the Dash does not hold (`lumaOuterGaps`). A window is then exactly one gap from another window, from an island and from the screen. Tested by the shelf-arrange oracle's livetile, tiles and gaps scenarios.
+`0014-Suno-tiles-follow-the-work-area.patch`: on a work-area change (the Dash freeing or taking an edge), windows in tiles are eased into the same tile of the new work area with the layout's gaps; floating windows are untouched and Mutter re-fits maximized ones. Only once the layout has been stable for 500 ms (after a resume or hotplug window memory puts windows back first, also debounced and once per settled layout); each window moves at most once per settled work area, never to another monitor, and a window moved 3 times in 2 s is left alone (Vitals `reflow-stopped`, `restore-churn`). Tested by `tests/gnome-shell/shelf-arrange/retile.js` and `tests/tiling-shell/window-memory`. .20: a change the Dash makes itself is followed at once on its curve and duration (a shrinking work area before Mutter applies it, a growing one as soon as Mutter has it), each window gliding in one move with no cross-fade (`Main.wm.SunoGlideFrame`); a window is put back in its tile when a late client answer left it elsewhere (Vitals `tile-corrected`, `tile-refused`); a one-time migration (`Suno-settings-migration`) turns an outer gap of 0 into the inner gap and the panel button back off. `90_Suno-tiling-shell.gschema.override` (installed into the extension's schemas) keeps the panel button off and an outer gap of 16. The outer gap is now per edge: the Dash's reservation already holds the margin a window keeps from an island, so the outer gap on a reserved edge is the rest of the gap and the whole gap on an edge the Dash does not hold (`SunoOuterGaps`). A window is then exactly one gap from another window, from an island and from the screen. Tested by the shelf-arrange oracle's livetile, tiles and gaps scenarios.
 
-`0016-luma-windows-open-straight-into-their-tile.patch`: window memory answers Mutter's initial `configure` signal (Mutter 48 and later) for a window with a remembered place, so a Wayland client's first configure already carries the tile's size and tiled state, and an X11 window is mapped at its tile; its first frame is drawn in place. The position and size are set separately because `set_rect()` takes its rectangle by value and reaches Mutter as garbage from GJS. The hold stays as a safety net for clients that ignore the size, shortened to 150 ms after the window first reaches the screen, then the usual open animation. Session-restored windows, dialogs, transients, fixed-size and splash windows, an app's second window, windows the person moved and a Mutter without the signal keep the old path (placed when first shown), and each reveal logs which path it took. `tests/tiling-shell/open-in-place/` traces every painted frame of a launch for GTK4 on Wayland (also slow to relayout, and maximized), GTK4 and a plain client on XWayland, and Chromium on Wayland and XWayland. The upstream auto-tiling option still tiles new windows after their first frame.
+`0016-Suno-windows-open-straight-into-their-tile.patch`: window memory answers Mutter's initial `configure` signal (Mutter 48 and later) for a window with a remembered place, so a Wayland client's first configure already carries the tile's size and tiled state, and an X11 window is mapped at its tile; its first frame is drawn in place. The position and size are set separately because `set_rect()` takes its rectangle by value and reaches Mutter as garbage from GJS. The hold stays as a safety net for clients that ignore the size, shortened to 150 ms after the window first reaches the screen, then the usual open animation. Session-restored windows, dialogs, transients, fixed-size and splash windows, an app's second window, windows the person moved and a Mutter without the signal keep the old path (placed when first shown), and each reveal logs which path it took. `tests/tiling-shell/open-in-place/` traces every painted frame of a launch for GTK4 on Wayland (also slow to relayout, and maximized), GTK4 and a plain client on XWayland, and Chromium on Wayland and XWayland. The upstream auto-tiling option still tiles new windows after their first frame.
 
-`0017-luma-floating-zone-editor-actions.patch` keeps **Save** and **Close**
+`0017-Suno-floating-zone-editor-actions.patch` keeps **Save** and **Close**
 visible at the top right while creating or editing zones, independently of the
 optional panel indicator. Save uses the existing persistent layout API; Close
-and Escape discard the draft, and Ctrl+S saves it. The toolbar follows Luma's
+and Escape discard the draft, and Ctrl+S saves it. The toolbar follows Suno's
 appearance and button palette, owns no screen reservation, and is removed at
 the end of editing or extension teardown. Monitor changes cancel the draft
 because the editing canvas uses fixed geometry. The editor uses one neutral
@@ -125,7 +125,7 @@ preview/hit testing and ordinary tile placement, including spacing and window
 memory. Previewing does not change the real window's tile or geometry; only a
 valid drop commits. Cancellation and extension teardown close the preview.
 
-`0021-luma-shaped-windows-sit-in-their-tile.patch`: a window that keeps its
+`0021-Suno-shaped-windows-sit-in-their-tile.patch`: a window that keeps its
 shape (an app's aspect ratio lock, Mutter 0047) is the largest size with that
 shape centred in its tile, not the whole tile. Tiling Shell's tile hold,
 re-tiling after work-area changes and window memory compared the window's
@@ -133,14 +133,14 @@ frame with the whole tile, so they put such a window back twice in vain and
 logged "tile-refused" (or held a remembered window until its timeout). They
 now compare with `meta_window_get_frame_rect_in_tile()`, the frame Mutter
 gives the window in that tile; on a Mutter without it the tile itself, as
-before. Tested by `tests/mutter/window-shape/run.sh OUT luma tilingshell`.
+before. Tested by `tests/mutter/window-shape/run.sh OUT Suno tilingshell`.
 `0022-drag-selects-whole-zones-of-the-current-layout.patch`: a drag shows,
 selects and drops into whole zones of the layout selected now for the monitor
 under the pointer. Each workspace keeps its own drawn layout, but upstream
 redrew only the active workspace's when the selection or the layouts changed,
 so every other workspace (and every workspace after layout memory restored a
 monitor's layout) dragged into the layout it had when the Shell started. One
-accessor (`_lumaLayoutFor`) now looks the layout up whenever a workspace's
+accessor (`_SunoLayoutFor`) now looks the layout up whenever a workspace's
 zones are used and redraws them if the selection changed; a change mid-drag
 drops the old selection. Selecting no longer reshapes zones: upstream cut
 every zone a selection crossed into undecorated pieces (no gaps, no corner

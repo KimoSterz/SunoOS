@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""Plan the move of an existing machine onto a Luma release channel.
+"""Plan the move of an existing machine onto a Suno release channel.
 
 Input: `rpm-ostree status --json` of the machine and the target commit's
 package list (rpmostree.rpmdb.pkglist, as `ostree show --print-metadata-key`
@@ -105,7 +105,7 @@ def parse_nevra(text):
 
 def parse_pkglist(text):
     """Parse rpmostree.rpmdb.pkglist GVariant text (a(sssss), as rpm-ostree
-    writes it, or the a(stsss) the first Luma nightlies carried) or a
+    writes it, or the a(stsss) the first Suno nightlies carried) or a
     tab-separated inventory into {name: (e, v, r)}.
 
     a(stsss) epochs are ignored as printed: `ostree show` byte-swaps uint64

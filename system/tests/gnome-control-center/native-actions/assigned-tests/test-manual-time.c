@@ -16,12 +16,12 @@ static void test_call (GDBusProxy *proxy, const char *method, GVariant *paramete
 #define g_dbus_proxy_get_cached_property test_property
 #define g_dbus_proxy_call test_call
 #include SETTINGS_ACTION_SOURCE
-gboolean cc_luma_gs_table_covers (CcLumaGsTable *table, const char *key) { return FALSE; }
-gboolean cc_luma_gs_table_write (CcLumaGsTable *table, const char *key, JsonNode *node, GError **error) { return FALSE; }
-void cc_luma_fixture_publish_boolean (CcLumaFixture *model, const char *key, gboolean value) { }
-void cc_luma_fixture_publish_string (CcLumaFixture *model, const char *key, const char *value) { }
-void cc_luma_live_ready (CcLumaFixture *model, const char *adapter) { }
-void cc_luma_fixture_report_write_error (CcLumaFixture *model, const GError *error) { }
+gboolean cc_Suno_gs_table_covers (CcSunoGsTable *table, const char *key) { return FALSE; }
+gboolean cc_Suno_gs_table_write (CcSunoGsTable *table, const char *key, JsonNode *node, GError **error) { return FALSE; }
+void cc_Suno_fixture_publish_boolean (CcSunoFixture *model, const char *key, gboolean value) { }
+void cc_Suno_fixture_publish_string (CcSunoFixture *model, const char *key, const char *value) { }
+void cc_Suno_live_ready (CcSunoFixture *model, const char *adapter) { }
+void cc_Suno_fixture_report_write_error (CcSunoFixture *model, const GError *error) { }
 int main (int argc, char **argv)
 {
   g_test_init (&argc, &argv, NULL);

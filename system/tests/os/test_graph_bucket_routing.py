@@ -25,9 +25,9 @@ class BucketRouting(unittest.TestCase):
     def test_devices_same_arch_have_distinct_graph_release_and_unit_paths(self):
         targets=[buckets.GraphBucket('aarch64',target) for target in ('fairphone,fp6','unihertz,titan2e')]
         for bucket in targets:
-            self.assertEqual(bucket.releases('/repo'),Path('/repo/luma/targets/aarch64')/bucket.slug/'releases')
+            self.assertEqual(bucket.releases('/repo'),Path('/repo/Suno/targets/aarch64')/bucket.slug/'releases')
             self.assertEqual(bucket.public_prefix(),'os/graph/aarch64/'+bucket.slug)
-            self.assertEqual(bucket.ref('nightly'),'luma/1/aarch64/'+bucket.slug+'/nightly')
+            self.assertEqual(bucket.ref('nightly'),'Suno/1/aarch64/'+bucket.slug+'/nightly')
         self.assertNotEqual(targets[0].unit_name('nightly'),targets[1].unit_name('nightly'))
         self.assertNotEqual(targets[0].directory('/graph'),targets[1].directory('/graph'))
 
@@ -46,13 +46,13 @@ class BucketRouting(unittest.TestCase):
     def test_signature_comment_binds_exact_hardware_target(self):
         bucket=buckets.GraphBucket('aarch64','fairphone,fp6')
         graph=dict(schema_version=2,channel='nightly',arch='aarch64',hardware_target='fairphone,fp6',generated_at='2026-10-24T00:00:00Z')
-        self.assertEqual(bucket.comment(graph,'fixture'),'luma-update-graph channel=nightly arch=aarch64 generated_at=2026-10-24T00:00:00Z key=fixture hardware_target=fairphone,fp6')
+        self.assertEqual(bucket.comment(graph,'fixture'),'Suno-update-graph channel=nightly arch=aarch64 generated_at=2026-10-24T00:00:00Z key=fixture hardware_target=fairphone,fp6')
 
     def test_manifest_bucket_is_explicit_and_version_cannot_traverse(self):
         bucket=buckets.GraphBucket('aarch64','fairphone,fp6')
         base=dict(channel='nightly',architecture='aarch64',hardware_target='fairphone,fp6',ref=bucket.ref('nightly'))
         bucket.validate_manifest(base)
-        for change in ({'ref':'luma/1/aarch64/nightly'},{'hardware_target':'unihertz,titan2e'},{'architecture':'x86_64'}):
+        for change in ({'ref':'Suno/1/aarch64/nightly'},{'hardware_target':'unihertz,titan2e'},{'architecture':'x86_64'}):
             with self.subTest(change=change),self.assertRaises(ValueError):bucket.validate_manifest({**base,**change})
         with self.assertRaises(ValueError):bucket.release_manifest('/repo','../../other')
 

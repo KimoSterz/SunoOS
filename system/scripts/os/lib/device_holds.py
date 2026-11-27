@@ -6,13 +6,13 @@ A device class whose own check (FP6 audio, modem, camera ...) has not passed on
 the newest release stays on its last good release; every other device updates.
 The state lives beside the public repository, never in it:
 
-  <LUMA_OS_ROOT>/publish/device-holds/<arch>/<channel>.json
-  {"schema": "org.projectluma.device-holds/v1", "arch": ..., "channel": ...,
+  <SUNO_OS_ROOT>/publish/device-holds/<arch>/<channel>.json
+  {"schema": "org.projectSuno.device-holds/v1", "arch": ..., "channel": ...,
    "holds": {"fairphone,fp6": {"good_through": "<version>", "reason": "...", "since": "...Z"}}}
 
 graph_from_releases.py marks every release newer than good_through with
 device_holds [{"hardware_target", "reason"}] in the signed graph, so the hold is
-signed with the graph and re-applied by every refresh. luma-update reads the
+signed with the graph and re-applied by every refresh. Suno-update reads the
 device's identity from its device tree and skips releases held for it.
 """
 
@@ -26,7 +26,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import devices  # noqa: E402
 from update_graph import version_key  # noqa: E402
 
-SCHEMA = "org.projectluma.device-holds/v1"
+SCHEMA = "org.projectSuno.device-holds/v1"
 
 
 def default_path(repo, arch, channel):

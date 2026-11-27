@@ -29,7 +29,7 @@ libinput does with them.
 - Personal retrain: a few depth-3 trees per stage fitted on one person's
   drill and correction data, on top of the shipped model.
 - Export: plain Lua tables plus a dozen-line evaluator
-  (`gbdt.to_lua`, `plugins/luma-touch-roles.lua.in`).
+  (`gbdt.to_lua`, `plugins/Suno-touch-roles.lua.in`).
 
 ## Data
 

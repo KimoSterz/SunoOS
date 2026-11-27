@@ -33,7 +33,7 @@ CARD = "\r\n".join((
     "FN:Priya Raman",
     "N:Raman;Priya;K.;Dr.;",
     "X-EVOLUTION-FILE-AS:Raman\\, Priya",
-    "ORG:Luma;Design",
+    "ORG:Suno;Design",
     "TITLE:Designer",
     "TEL;TYPE=PREF;X-EVOLUTION-E164=+1,4155550199:+1 (415) 555-0199",
     "TEL;TYPE=WORK:+1 510 555 0133",
@@ -114,8 +114,8 @@ class ReadModifyWriteTests(unittest.TestCase):
         self.assertIn("BDAY:--0602", after)
         after = self.assert_only({"address": "2 Oak Ave, Berkeley, California"}, {"ADR"})
         self.assertIn("ADR;TYPE=HOME:;;2 Oak Ave;Berkeley;California;94607;USA", after)   # code and country stay
-        after = self.assert_only({"work": "Luma · Lead designer"}, {"ORG", "TITLE"})
-        self.assertIn("ORG:Luma;Design", after)
+        after = self.assert_only({"work": "Suno · Lead designer"}, {"ORG", "TITLE"})
+        self.assertIn("ORG:Suno;Design", after)
         self.assertIn("TITLE:Lead designer", after)
 
     def test_the_private_note(self):
@@ -141,14 +141,14 @@ class ReadModifyWriteTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             apply_contact_changes(contact, {"unsupported_field": "x"}, EBookContacts)
 
-    def test_luma_username_persists_without_changing_other_properties(self):
-        after = self.assert_only({"handle": "@Priya.Raman"}, {"X-LUMA-USERNAME"})
-        self.assertIn("X-LUMA-USERNAME:priya.raman", after)
+    def test_Suno_username_persists_without_changing_other_properties(self):
+        after = self.assert_only({"handle": "@Priya.Raman"}, {"X-SUNO-USERNAME"})
+        self.assertIn("X-SUNO-USERNAME:priya.raman", after)
         contact = EBookContacts.Contact.new_from_vcard("\r\n".join(after) + "\r\n")
         apply_contact_changes(contact, {"handle": ""}, EBookContacts)
-        self.assertFalse(contact.get_attributes_by_name("X-LUMA-USERNAME"))
+        self.assertFalse(contact.get_attributes_by_name("X-SUNO-USERNAME"))
 
-    def test_invalid_luma_username_does_not_change_the_card(self):
+    def test_invalid_Suno_username_does_not_change_the_card(self):
         contact = serialised(CARD)
         before = lines(contact)
         with self.assertRaises(ValueError):

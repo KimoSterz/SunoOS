@@ -131,7 +131,7 @@ def main():
         args.pop(0)
     if not args:
         raise SystemExit('A native check command is required')
-    with tempfile.TemporaryDirectory(prefix='luma-native-check-') as directory:
+    with tempfile.TemporaryDirectory(prefix='Suno-native-check-') as directory:
         root = Path(directory)
         env = os.environ.copy()
         for key in ('DBUS_SESSION_BUS_ADDRESS', 'DISPLAY', 'WAYLAND_DISPLAY'):

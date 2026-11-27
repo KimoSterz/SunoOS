@@ -8,9 +8,9 @@ import unittest
 ROOT = Path(__file__).resolve().parents[2]
 FORBIDDEN = {'gnome-disk-utility', 'gnome-calculator', 'ptyxis', 'gnome-terminal',
              'gnome-console', 'yelp', 'firefox', 'gnome-extensions-app',
-             'openemu-linux', 'luma-imager', 'gnome-tour', 'gnome-system-monitor',
-             'luma-reel', 'luma-darkroom'}
-REPLACEMENTS = {'luma-calculator', 'luma-terminal', 'luma-disks', 'luma-tide'}
+             'openemu-linux', 'Suno-imager', 'gnome-tour', 'gnome-system-monitor',
+             'Suno-reel', 'Suno-darkroom'}
+REPLACEMENTS = {'Suno-calculator', 'Suno-terminal', 'Suno-disks', 'Suno-tide'}
 
 
 def lines(path):
@@ -44,13 +44,13 @@ class DesktopApplicationInventoryTests(unittest.TestCase):
 
     def test_shared_native_apps_keep_exact_noarch_inputs_on_both_images(self):
         roles = lines('config/shared/application-packages.txt')
-        self.assertTrue({'luma-calculator', 'luma-terminal', 'luma-tide', 'luma-monitor'} <= set(roles))
+        self.assertTrue({'Suno-calculator', 'Suno-terminal', 'Suno-tide', 'Suno-monitor'} <= set(roles))
         self.assertFalse(FORBIDDEN & set(roles))
         inputs = dict(line.split('=', 1) for line in lines('config/desktop/inputs.env') if '=' in line)
         pins = lines('config/desktop/packages.txt')
         mobile = (ROOT / 'scripts/mobile/compose-fp6-rootfs.sh').read_text()
         for name in ('CALCULATOR', 'TERMINAL', 'TIDE', 'MONITOR'):
-            alias = 'LUMA_' + name + '_NEVRA'
+            alias = 'SUNO_' + name + '_NEVRA'
             self.assertIn(inputs[alias], pins)
             self.assertTrue(inputs[alias].endswith('.noarch'))
             self.assertIn('$' + alias + '.rpm', mobile)
@@ -59,36 +59,36 @@ class DesktopApplicationInventoryTests(unittest.TestCase):
     def test_mobile_exclusions_match_desktop_and_never_reenter_shared_roles(self):
         excluded = set(lines('config/shared/application-exclusions.txt'))
         self.assertEqual(excluded, {'gnome-tour', 'yelp', 'gnome-system-monitor',
-                                    'luma-reel', 'luma-darkroom'})
+                                    'Suno-reel', 'Suno-darkroom'})
         self.assertLessEqual(excluded, set(lines('config/os/removed-packages.txt')))
         self.assertFalse(excluded & set(lines('config/shared/application-packages.txt')))
         mobile = (ROOT / 'scripts/mobile/compose-fp6-rootfs.sh').read_text()
         self.assertIn('--exclude=', mobile)
         self.assertIn('config/shared/application-exclusions.txt', mobile)
-        self.assertNotIn('$LUMA_DARKROOM_NEVRA.rpm', mobile)
+        self.assertNotIn('$SUNO_DARKROOM_NEVRA.rpm', mobile)
         desktop = (ROOT / 'scripts/vm/compose-desktop-image.sh').read_text()
-        self.assertNotIn('$LUMA_DARKROOM_NEVRA.rpm', desktop)
+        self.assertNotIn('$SUNO_DARKROOM_NEVRA.rpm', desktop)
 
     def test_dock_defaults_match_and_only_pin_baseline_apps(self):
         docks = []
-        for path in ('config/desktop/dconf/db/luma.d/00-luma-desktop',
-                     'src/luma-desktop-launcher-policy/dconf/00-luma-desktop'):
+        for path in ('config/desktop/dconf/db/Suno.d/00-Suno-desktop',
+                     'src/Suno-desktop-launcher-policy/dconf/00-Suno-desktop'):
             value = next(line for line in lines(path) if line.startswith('favorite-apps='))
             docks.append(ast.literal_eval(value.split('=', 1)[1]))
         self.assertEqual(docks[0], docks[1])
         dock = docks[0]
         self.assertEqual(dock[:2], ['org.gnome.Nautilus.desktop', 'viola-browser.desktop'])
-        self.assertEqual(dock[-2:], ['org.projectluma.Viewer.desktop', 'org.gnome.Settings.desktop'])
+        self.assertEqual(dock[-2:], ['org.projectSuno.Viewer.desktop', 'org.gnome.Settings.desktop'])
         self.assertEqual(len(dock), len(set(dock)))
-        self.assertIn('org.projectluma.Terminal.desktop', dock)
+        self.assertIn('org.projectSuno.Terminal.desktop', dock)
         self.assertNotIn('org.gnome.Ptyxis.desktop', dock)
-        optional = {'org.projectluma.Write.desktop', 'io.luma.Grid.desktop', 'io.luma.Stage.desktop',
-                    'org.projectluma.Canvas.desktop'}
+        optional = {'org.projectSuno.Write.desktop', 'io.Suno.Grid.desktop', 'io.Suno.Stage.desktop',
+                    'org.projectSuno.Canvas.desktop'}
         self.assertFalse(optional & set(dock))
 
     def test_touchpad_defaults_match_both_requested_right_clicks(self):
-        owners = ('config/desktop/dconf/db/luma.d/00-luma-desktop',
-                  'src/luma-desktop-launcher-policy/dconf/00-luma-desktop')
+        owners = ('config/desktop/dconf/db/Suno.d/00-Suno-desktop',
+                  'src/Suno-desktop-launcher-policy/dconf/00-Suno-desktop')
         defaults = []
         for owner in owners:
             section = (ROOT / owner).read_text().split(
@@ -100,38 +100,38 @@ class DesktopApplicationInventoryTests(unittest.TestCase):
         self.assertEqual(defaults[0]['tap-to-click'], 'true')
         self.assertEqual(defaults[0]['tap-button-map'], "'lrm'")
         self.assertEqual(defaults[0]['click-method'], "'areas'")
-        self.assertFalse(list((ROOT / 'src/luma-desktop-launcher-policy/dconf').glob('**/locks/*')))
+        self.assertFalse(list((ROOT / 'src/Suno-desktop-launcher-policy/dconf').glob('**/locks/*')))
 
     def test_default_tide_cannot_be_omitted_or_promised_as_a_download(self):
         import json
         pins = lines('config/desktop/packages.txt')
         with self.assertRaisesRegex(ValueError, 'missing native roles'):
-            assert_inventory([pin for pin in pins if not pin.startswith('luma-tide-')],
+            assert_inventory([pin for pin in pins if not pin.startswith('Suno-tide-')],
                              lines('config/os/removed-packages.txt'))
-        self.assertNotIn('luma-tide', lines('config/os/removed-packages.txt'))
-        for path in ('src/luma-installer-atlas/src/data/app-collections.json',
-                     'src/luma-installer/data/depot-catalog-4.json'):
+        self.assertNotIn('Suno-tide', lines('config/os/removed-packages.txt'))
+        for path in ('src/Suno-installer-atlas/src/data/app-collections.json',
+                     'src/Suno-installer/data/depot-catalog-4.json'):
             catalog = json.loads((ROOT / path).read_text())
             self.assertTrue(all('tide' not in collection['applications'] for collection in catalog['collections']))
             if 'atlas' not in path:
-                self.assertTrue(any(app['id'] == 'tide' and app['preinstalled_on_luma']
+                self.assertTrue(any(app['id'] == 'tide' and app['preinstalled_on_Suno']
                                     for app in catalog['applications']))
 
     def test_tide_image_gate_rejects_missing_or_hidden_launcher(self):
         smoke = (ROOT / 'tests/smoke/desktop.sh').read_text()
-        excluded = smoke.split('for launcher in org.projectluma.Write', 1)[1].split('done', 1)[0]
-        self.assertNotIn('org.projectluma.Tide', excluded)
+        excluded = smoke.split('for launcher in org.projectSuno.Write', 1)[1].split('done', 1)[0]
+        self.assertNotIn('org.projectSuno.Tide', excluded)
         self.assertIn('default Tide owns a valid installed launcher', smoke)
-        self.assertIn('rpm -qf --qf "%{NAME}" /usr/share/applications/org.projectluma.Tide.desktop', smoke)
-        visible = smoke.split("for desktop in ('org.projectluma.Calculator'", 1)[1].split('PYGIO', 1)[0]
-        self.assertIn('org.projectluma.Tide', visible)
+        self.assertIn('rpm -qf --qf "%{NAME}" /usr/share/applications/org.projectSuno.Tide.desktop', smoke)
+        visible = smoke.split("for desktop in ('org.projectSuno.Calculator'", 1)[1].split('PYGIO', 1)[0]
+        self.assertIn('org.projectSuno.Tide', visible)
         self.assertIn('lib.g_app_info_should_show(app)', visible)
 
     def test_system_flatpaks_map_to_present_native_providers(self):
         mapping = dict(line.split() for line in lines('config/desktop/system-flatpak-replacements.txt'))
-        self.assertEqual(mapping['org.gnome.Calculator'], 'luma-calculator')
-        self.assertEqual(mapping['org.gnome.Ptyxis'], 'luma-terminal')
-        self.assertEqual(mapping['org.gnome.DiskUtility'], 'luma-disks')
+        self.assertEqual(mapping['org.gnome.Calculator'], 'Suno-calculator')
+        self.assertEqual(mapping['org.gnome.Ptyxis'], 'Suno-terminal')
+        self.assertEqual(mapping['org.gnome.DiskUtility'], 'Suno-disks')
         self.assertEqual(mapping['org.mozilla.firefox'], 'viola-browser-stable')
         self.assertEqual(mapping['org.gnome.Extensions'], 'gnome-shell')
 
@@ -153,7 +153,7 @@ class GateUsbIdentityTests(unittest.TestCase):
                     'Drive': '/gate/drive', 'Size': 64 * 1024 * 1024,
                     'PreferredDevice': list(b'/dev/sdz\0')}},
                 '/gate/drive': {self.bus + '.Drive': {
-                    'Serial': 'LUMAGATEUSB', 'ConnectionBus': 'usb'}}}
+                    'Serial': 'SUNOGATEUSB', 'ConnectionBus': 'usb'}}}
 
     def test_only_owned_gate_usb_is_selected(self):
         self.assertEqual(self.select(self.fixture()), ('/gate/block', '/dev/sdz'))

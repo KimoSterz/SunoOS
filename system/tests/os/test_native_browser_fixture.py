@@ -90,7 +90,7 @@ class SignedBrowserPageServerTest(unittest.TestCase):
                 client.request('GET', url.path)
                 response = client.getresponse()
                 self.assertEqual(response.status, 200)
-                self.assertIn(b'Luma browser gate', response.read())
+                self.assertIn(b'Suno browser gate', response.read())
                 client.close()
                 self.assertEqual(json.loads((out / 'page-requested').read_text())['path'], url.path)
             finally:

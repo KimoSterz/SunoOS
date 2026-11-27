@@ -59,7 +59,7 @@ async function work() {
         await L.arrange(groups, 2200);
         const wa = L.workArea();
         L.check(`${name}: work area`, JSON.stringify(wa) === JSON.stringify(expected[name]), JSON.stringify(wa));
-        const struts = [...shelf._strutActors.values()].filter(a => a.name === 'lumaShelfWorkArea').length;
+        const struts = [...shelf._strutActors.values()].filter(a => a.name === 'SunoShelfWorkArea').length;
         L.check(`${name}: one strut per occupied edge`, struts === new Set(groups.map(g => g.edge)).size, `${struts}`);
         if (window) {
             maximize(window);

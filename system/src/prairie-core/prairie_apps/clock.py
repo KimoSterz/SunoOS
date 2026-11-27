@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Clock: four real clock tools composed from LumaUI parts.
+"""Clock: four real clock tools composed from SunoUI parts.
 
 The ClockStore and AlarmService retain the installed app's alarm and timer
-behavior. LUMA_CLOCK_FIXTURE selects an in-memory v70 sample and starts no
+behavior. SUNO_CLOCK_FIXTURE selects an in-memory v70 sample and starts no
 background service; it never opens the real Clock store.
 """
 
@@ -30,14 +30,14 @@ gi.require_version("Adw", "1")
 gi.require_version("Graphene", "1.0")
 from gi.repository import Adw, Gdk, Gio, GLib, Graphene, Gtk  # noqa: E402
 
-from luma_appkit import (  # noqa: E402
+from Suno_appkit import (  # noqa: E402
     ActionCenter, AppWindow, BarAction, Card, Command, CommandGroup, PanelField, PanelHeading, PanelRow, TabBar,
     CommandRegistry, EmptyState, Island, ModeSwitch, PlaceResult,
     SEPARATOR, ScrollView, Toast, ToastHost, TypeLabel,
-    add_style_sheet, apply_type, icons, install_lumaui, rank_places,
+    add_style_sheet, apply_type, icons, install_SunoUI, rank_places,
 )
-from luma_appkit.content_place import NO_PLACES  # noqa: E402
-from luma_appkit.structure_adapt import WidthWatch  # noqa: E402
+from Suno_appkit.content_place import NO_PLACES  # noqa: E402
+from Suno_appkit.structure_adapt import WidthWatch  # noqa: E402
 from .clock_alarms import (  # noqa: E402
     APP_ID, BACKGROUND_DENIED, BACKGROUND_UNAVAILABLE, BACKGROUND_REASON, IDLE_EXIT_MS,
     AlarmService, register_host_application,
@@ -160,7 +160,7 @@ class TimerRing(Gtk.DrawingArea):
     """Clock's sole instrument: the v70 timer track and remaining arc.
 
     The coordinator triaged clock-02 as an app drawing. All ink comes from
-    LumaUI theme colours; the time in its centre remains a TypeLabel.
+    SunoUI theme colours; the time in its centre remains a TypeLabel.
     """
 
     def __init__(self) -> None:
@@ -178,7 +178,7 @@ class TimerRing(Gtk.DrawingArea):
         radius = min(width, height) * 0.46
         centre = width / 2, height / 2
         cr.set_line_width(min(width, height) * 0.03)
-        found, orange = colours.lookup_color("luma_mark_orange")
+        found, orange = colours.lookup_color("Suno_mark_orange")
         if found:
             glow = cairo.RadialGradient(*centre, 0, *centre, min(width, height) / 2)
             glow.add_color_stop_rgba(0, orange.red, orange.green, orange.blue, 0.12)
@@ -186,23 +186,23 @@ class TimerRing(Gtk.DrawingArea):
             cr.set_source(glow)
             cr.arc(*centre, min(width, height) / 2, 0, 2 * math.pi)
             cr.fill()
-        for token, fraction in (("luma_well", 1.0), ("luma_mark_orange", self.fraction)):
+        for token, fraction in (("Suno_well", 1.0), ("Suno_mark_orange", self.fraction)):
             found, colour = colours.lookup_color(token)
             if not found:
                 continue
             cr.set_source_rgba(colour.red, colour.green, colour.blue, colour.alpha)
-            cr.set_line_cap(cairo.LINE_CAP_ROUND if token == "luma_mark_orange" else cairo.LINE_CAP_BUTT)
+            cr.set_line_cap(cairo.LINE_CAP_ROUND if token == "Suno_mark_orange" else cairo.LINE_CAP_BUTT)
             cr.arc(*centre, radius, -math.pi / 2, -math.pi / 2 + 2 * math.pi * fraction)
             cr.stroke()
 
 
 class ClockWindow(AppWindow):
     def __init__(self, application: Adw.Application) -> None:
-        fixture_path = os.environ.get("LUMA_CLOCK_FIXTURE")
+        fixture_path = os.environ.get("SUNO_CLOCK_FIXTURE")
         self.fixture = FixtureClockStore.from_path(fixture_path) if fixture_path else None
         self.store = self.fixture if self.fixture is not None else ClockStore()
         self.alarms: AlarmService | None = None if self.fixture else getattr(application, "alarms", None)
-        self.capture_time = self.fixture is not None and os.environ.get("LUMA_CLOCK_CAPTURE_TIME") == "1"
+        self.capture_time = self.fixture is not None and os.environ.get("SUNO_CLOCK_CAPTURE_TIME") == "1"
         self.home = (self.fixture.home_zone if self.capture_time else home_zone_name()) or "UTC"
         self.home_label = self.fixture.home_label if self.capture_time else zone_city(self.home)
         if self.fixture is None:
@@ -311,7 +311,7 @@ class ClockWindow(AppWindow):
             box.remove(child)
 
     def _now(self) -> datetime:
-        frozen = os.environ.get("LUMA_CLOCK_NOW") if self.capture_time else None
+        frozen = os.environ.get("SUNO_CLOCK_NOW") if self.capture_time else None
         return datetime.fromisoformat(frozen) if frozen else datetime.now().astimezone()
 
     def _section(self, title: str) -> tuple[Gtk.Box, Gtk.Box]:
@@ -740,7 +740,7 @@ class ClockWindow(AppWindow):
         self.alarm_list.set_margin_top(3)
         page.append(section)
         self.alarm_empty = EmptyState("No alarms yet", "Add an alarm for when you need it.",
-            "lumaui-alarm-clock-symbolic", primary=("New alarm", self._new_alarm))
+            "SunoUI-alarm-clock-symbolic", primary=("New alarm", self._new_alarm))
         self.alarm_empty.set_name("ck-alarm-empty")
         page.append(self.alarm_empty)
         self._load_alarms()
@@ -1329,17 +1329,17 @@ class ClockApplication(Adw.Application):
         Adw.Application.do_startup(self)
         if self.get_flags() & Gio.ApplicationFlags.IS_SERVICE:
             self.set_inactivity_timeout(IDLE_EXIT_MS)
-        if os.environ.get("LUMA_CLOCK_FIXTURE"):
+        if os.environ.get("SUNO_CLOCK_FIXTURE"):
             self._fixture_state = tempfile.TemporaryDirectory(prefix="clock-v70-")
             os.environ["XDG_STATE_HOME"] = self._fixture_state.name
-        install_lumaui()
-        path = os.environ.get("LUMA_CLOCK_STYLE_PATH", "/usr/share/prairie-core/clock.css")
+        install_SunoUI()
+        path = os.environ.get("SUNO_CLOCK_STYLE_PATH", "/usr/share/prairie-core/clock.css")
         if os.path.isfile(path):
             add_style_sheet(path)
         opener = Gio.SimpleAction.new("clock-open", GLib.VariantType.new("s"))
         opener.connect("activate", self._open_tab)
         self.add_action(opener)
-        if not os.environ.get("LUMA_CLOCK_FIXTURE"):
+        if not os.environ.get("SUNO_CLOCK_FIXTURE"):
             from .clock_host import host_available
             self._host_required = Path('/.flatpak-info').exists() and host_available()
             self._host_ready = not self._host_required
@@ -1374,7 +1374,7 @@ class ClockApplication(Adw.Application):
             self._host_boot.connect('close-request', self._host_boot_closed)
         state = EmptyState('Clock needs its alarm service' if failed else 'Opening Clock',
             'Retry, or open Depot to repair Clock’s host support.' if failed else 'Connecting to your alarms and timers…',
-            'lumaui-alarm-clock-symbolic',
+            'SunoUI-alarm-clock-symbolic',
             primary=('Retry', self._retry_clock_foreground) if failed else None)
         self._host_boot.set_body(state)
         self._host_boot.present()
@@ -1472,8 +1472,8 @@ class ClockApplication(Adw.Application):
 
 
 def main(argv: list[str] | None = None) -> int:
-    logging.basicConfig(level=logging.INFO if os.environ.get("LUMA_CLOCK_DEBUG") else logging.WARNING)
-    if not os.environ.get("LUMA_CLOCK_FIXTURE"):
+    logging.basicConfig(level=logging.INFO if os.environ.get("SUNO_CLOCK_DEBUG") else logging.WARNING)
+    if not os.environ.get("SUNO_CLOCK_FIXTURE"):
         register_host_application(APP_ID)
     arguments = list(sys.argv if argv is None else argv)
     if "--agent" in arguments[1:]:

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
 
-# Build only the three FP6 speaker-path modules against Luma's exact running
+# Build only the three FP6 speaker-path modules against Suno's exact running
 # 7.1.2 configuration and symbol table. The default policy refuses to compile
 # on the physical phone; the physical lab may opt in explicitly for this
 # bounded, single-job module-only build after stopping the graphical session.
@@ -12,8 +12,8 @@ umask 022
 
 inputs=${1:?usage: build-fp6-audio-modules.sh INPUT_DIR WORK_DIR}
 work=${2:?usage: build-fp6-audio-modules.sh INPUT_DIR WORK_DIR}
-jobs=${LUMA_KERNEL_BUILD_JOBS:-1}
-allow_phone=${LUMA_ALLOW_FP6_BOUNDED_AUDIO_BUILD:-false}
+jobs=${SUNO_KERNEL_BUILD_JOBS:-1}
+allow_phone=${SUNO_ALLOW_FP6_BOUNDED_AUDIO_BUILD:-false}
 
 kernel_release=7.1.2
 running_config_sha=9bf4fd8e395147f5eb696d2887e7c40d5a5e124a4d27584babeec830ed5d3fb2
@@ -27,7 +27,7 @@ esac
   exit 1
 }
 case "$allow_phone" in true|false) ;; *)
-  printf 'error: LUMA_ALLOW_FP6_BOUNDED_AUDIO_BUILD must be true or false\n' >&2
+  printf 'error: SUNO_ALLOW_FP6_BOUNDED_AUDIO_BUILD must be true or false\n' >&2
   exit 1
 esac
 [ "$(uname -s)" = Linux ] && [ "$(uname -m)" = aarch64 ] || {
@@ -123,7 +123,7 @@ for module in snd-soc-aw88261 q6apm-lpass-dais snd-soc-sc8280xp; do
 done
 
 {
-  printf 'LUMA_FP6_AUDIO_MODULE_BUILD_VERSION=1\n'
+  printf 'SUNO_FP6_AUDIO_MODULE_BUILD_VERSION=1\n'
   printf 'KERNEL_RELEASE=%s\n' "$kernel_release"
   printf 'RUNNING_CONFIG_SHA256=%s\n' "$running_config_sha"
   printf 'MODULE_SYMVERS_SHA256=%s\n' "$module_symvers_sha"

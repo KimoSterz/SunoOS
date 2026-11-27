@@ -15,11 +15,11 @@ for tool in cpio curl mktemp podman rpm2cpio sha256sum; do
 done
 
 [ "$(uname -s)" = Linux ] || {
-  printf 'error: build the Luma libadwaita RPM on a Fedora Linux host\n' >&2
+  printf 'error: build the Suno libadwaita RPM on a Fedora Linux host\n' >&2
   exit 1
 }
 
-architecture=${LUMA_TARGET_ARCHITECTURE:-$(uname -m)}
+architecture=${SUNO_TARGET_ARCHITECTURE:-$(uname -m)}
 case "$architecture" in
   x86_64)
     builder_container=$FEDORA_RPM_BUILD_CONTAINER
@@ -27,14 +27,14 @@ case "$architecture" in
     ;;
   aarch64)
     builder_container=$FEDORA_RPM_BUILD_CONTAINER_AARCH64
-    package_nevra=libadwaita-1.9.3-${LIBADWAITA_LUMA_RELEASE}.fc44.aarch64
+    package_nevra=libadwaita-1.9.3-${LIBADWAITA_SUNO_RELEASE}.fc44.aarch64
     ;;
   *)
     printf 'error: unsupported libadwaita target architecture: %s\n' "$architecture" >&2
     exit 1
     ;;
 esac
-export LUMA_RPM_BUILDER_ARCHITECTURE=$architecture
+export SUNO_RPM_BUILDER_ARCHITECTURE=$architecture
 
 cache_dir="$repo_root/build/cache/srpm"
 output_dir="$repo_root/build/packages/libadwaita"
@@ -67,88 +67,88 @@ mkdir -p "$extract_dir" "$rpmbuild_dir/BUILD" "$rpmbuild_dir/BUILDROOT" \
 mv "$extract_dir/libadwaita.spec" "$rpmbuild_dir/SPECS/"
 find "$extract_dir" -maxdepth 1 -type f -exec mv -t "$rpmbuild_dir/SOURCES" {} +
 install -m 0644 \
-  "$repo_root/patches/libadwaita/0001-luma-light-design-system.patch" \
+  "$repo_root/patches/libadwaita/0001-Suno-light-design-system.patch" \
   "$rpmbuild_dir/SOURCES/"
 install -m 0644 \
-  "$repo_root/patches/libadwaita/0002-luma-title-label-metrics.patch" \
+  "$repo_root/patches/libadwaita/0002-Suno-title-label-metrics.patch" \
   "$rpmbuild_dir/SOURCES/"
 install -m 0644 \
-  "$repo_root/patches/libadwaita/0003-luma-title-label-baseline.patch" \
+  "$repo_root/patches/libadwaita/0003-Suno-title-label-baseline.patch" \
   "$rpmbuild_dir/SOURCES/"
 install -m 0644 \
   "$repo_root/patches/libadwaita/0004-prairie-generic-headerbar-contract.patch" \
   "$rpmbuild_dir/SOURCES/"
 install -m 0644 \
-  "$repo_root/patches/libadwaita/0005-luma-application-components.patch" \
+  "$repo_root/patches/libadwaita/0005-Suno-application-components.patch" \
   "$rpmbuild_dir/SOURCES/"
 install -m 0644 \
-  "$repo_root/patches/libadwaita/0006-stylesheet-add-shared-Luma-work-islands.patch" \
+  "$repo_root/patches/libadwaita/0006-stylesheet-add-shared-Suno-work-islands.patch" \
   "$rpmbuild_dir/SOURCES/"
 install -m 0644 \
-  "$repo_root/patches/libadwaita/0007-luma-application-window-elevation.patch" \
+  "$repo_root/patches/libadwaita/0007-Suno-application-window-elevation.patch" \
   "$rpmbuild_dir/SOURCES/"
 install -m 0644 \
-  "$repo_root/patches/libadwaita/0008-luma-connected-window-controls.patch" \
+  "$repo_root/patches/libadwaita/0008-Suno-connected-window-controls.patch" \
   "$rpmbuild_dir/SOURCES/"
 install -m 0644 \
-  "$repo_root/patches/libadwaita/0009-luma-appkit-component-boundaries.patch" \
+  "$repo_root/patches/libadwaita/0009-Suno-appkit-component-boundaries.patch" \
   "$rpmbuild_dir/SOURCES/"
 install -m 0644 \
-  "$repo_root/patches/libadwaita/0010-luma-native-surface-integrity-and-global-chrome.patch" \
+  "$repo_root/patches/libadwaita/0010-Suno-native-surface-integrity-and-global-chrome.patch" \
   "$rpmbuild_dir/SOURCES/"
 install -m 0644 \
-  "$repo_root/patches/libadwaita/0011-luma-native-command-surfaces.patch" \
+  "$repo_root/patches/libadwaita/0011-Suno-native-command-surfaces.patch" \
   "$rpmbuild_dir/SOURCES/"
 install -m 0644 \
-  "$repo_root/patches/libadwaita/0012-luma-generic-application-identity.patch" \
+  "$repo_root/patches/libadwaita/0012-Suno-generic-application-identity.patch" \
   "$rpmbuild_dir/SOURCES/"
 install -m 0644 \
-  "$repo_root/patches/libadwaita/0013-luma-stable-backdrop-materials.patch" \
+  "$repo_root/patches/libadwaita/0013-Suno-stable-backdrop-materials.patch" \
   "$rpmbuild_dir/SOURCES/"
 install -m 0644 \
-  "$repo_root/patches/libadwaita/0014-luma-native-application-surfaces.patch" \
+  "$repo_root/patches/libadwaita/0014-Suno-native-application-surfaces.patch" \
   "$rpmbuild_dir/SOURCES/"
 install -m 0644 \
-  "$repo_root/patches/libadwaita/0015-luma-application-identity-resolution.patch" \
+  "$repo_root/patches/libadwaita/0015-Suno-application-identity-resolution.patch" \
   "$rpmbuild_dir/SOURCES/"
 install -m 0644 \
-  "$repo_root/patches/libadwaita/0016-luma-generic-command-row.patch" \
+  "$repo_root/patches/libadwaita/0016-Suno-generic-command-row.patch" \
   "$rpmbuild_dir/SOURCES/"
 install -m 0644 \
-  "$repo_root/patches/libadwaita/0017-luma-native-surface-rhythm.patch" \
+  "$repo_root/patches/libadwaita/0017-Suno-native-surface-rhythm.patch" \
   "$rpmbuild_dir/SOURCES/"
 install -m 0644 \
-  "$repo_root/patches/libadwaita/0018-luma-identity-title-duplicates.patch" \
+  "$repo_root/patches/libadwaita/0018-Suno-identity-title-duplicates.patch" \
   "$rpmbuild_dir/SOURCES/"
 install -m 0644 \
-  "$repo_root/patches/libadwaita/0019-luma-dark-design-system.patch" \
-  "$repo_root/patches/libadwaita/0020-luma-title-slot-and-sidebar-islands.patch" \
-  "$repo_root/patches/libadwaita/0021-luma-split-island-shadows.patch" \
-  "$repo_root/patches/libadwaita/0022-luma-sidebar-pane-command-host.patch" \
-  "$repo_root/patches/libadwaita/0023-luma-one-title-row-per-window.patch" \
-  "$repo_root/patches/libadwaita/0024-luma-menu-contract.patch" \
+  "$repo_root/patches/libadwaita/0019-Suno-dark-design-system.patch" \
+  "$repo_root/patches/libadwaita/0020-Suno-title-slot-and-sidebar-islands.patch" \
+  "$repo_root/patches/libadwaita/0021-Suno-split-island-shadows.patch" \
+  "$repo_root/patches/libadwaita/0022-Suno-sidebar-pane-command-host.patch" \
+  "$repo_root/patches/libadwaita/0023-Suno-one-title-row-per-window.patch" \
+  "$repo_root/patches/libadwaita/0024-Suno-menu-contract.patch" \
   "$rpmbuild_dir/SOURCES/"
 
-cp "$repo_root/patches/libadwaita/0025-luma-decision-sheets.patch" "$rpmbuild_dir/SOURCES/"
-cp "$repo_root/patches/libadwaita/0026-luma-shared-preferences-surfaces.patch" "$rpmbuild_dir/SOURCES/"
-cp "$repo_root/patches/libadwaita/0027-luma-quiet-workflow-surfaces.patch" "$rpmbuild_dir/SOURCES/"
+cp "$repo_root/patches/libadwaita/0025-Suno-decision-sheets.patch" "$rpmbuild_dir/SOURCES/"
+cp "$repo_root/patches/libadwaita/0026-Suno-shared-preferences-surfaces.patch" "$rpmbuild_dir/SOURCES/"
+cp "$repo_root/patches/libadwaita/0027-Suno-quiet-workflow-surfaces.patch" "$rpmbuild_dir/SOURCES/"
 cp "$repo_root/patches/libadwaita/0028-test-fixtures-use-fat-object-links.patch" "$rpmbuild_dir/SOURCES/"
-cp "$repo_root/patches/libadwaita/0029-luma-adaptive-navigation-contrast.patch" "$rpmbuild_dir/SOURCES/"
-cp "$repo_root/patches/libadwaita/0030-luma-shared-navigation-islands.patch" "$rpmbuild_dir/SOURCES/"
+cp "$repo_root/patches/libadwaita/0029-Suno-adaptive-navigation-contrast.patch" "$rpmbuild_dir/SOURCES/"
+cp "$repo_root/patches/libadwaita/0030-Suno-shared-navigation-islands.patch" "$rpmbuild_dir/SOURCES/"
 
-cp "$repo_root/patches/libadwaita/0031-luma-native-workflow-material-ownership.patch" "$rpmbuild_dir/SOURCES/"
-cp "$repo_root/patches/libadwaita/0032-luma-focus-invariant-window-elevation.patch" "$rpmbuild_dir/SOURCES/"
-cp "$repo_root/patches/libadwaita/0033-luma-compact-menu-width.patch" "$rpmbuild_dir/SOURCES/"
-cp "$repo_root/patches/libadwaita/0034-luma-maximized-window-corners.patch" "$rpmbuild_dir/SOURCES/"
-cp "$repo_root/patches/libadwaita/0036-luma-tiled-window-corners.patch" "$rpmbuild_dir/SOURCES/"
-cp "$repo_root/patches/libadwaita/0037-luma-identity-inset-and-pointer-state.patch" "$rpmbuild_dir/SOURCES/"
-cp "$repo_root/patches/libadwaita/0038-luma-header-ink-and-tiled-stroke.patch" "$rpmbuild_dir/SOURCES/"
-cp "$repo_root/patches/libadwaita/0039-luma-quiet-filled-controls.patch" "$rpmbuild_dir/SOURCES/"
-cp "$repo_root/patches/libadwaita/0040-luma-frost-glass-light-title-rows.patch" "$rpmbuild_dir/SOURCES/"
-cp "$repo_root/patches/libadwaita/0041-luma-frost-glass-frosted-title-band.patch" "$rpmbuild_dir/SOURCES/"
-cp "$repo_root/patches/libadwaita/0042-luma-one-glass-material-for-every-window.patch" "$rpmbuild_dir/SOURCES/"
+cp "$repo_root/patches/libadwaita/0031-Suno-native-workflow-material-ownership.patch" "$rpmbuild_dir/SOURCES/"
+cp "$repo_root/patches/libadwaita/0032-Suno-focus-invariant-window-elevation.patch" "$rpmbuild_dir/SOURCES/"
+cp "$repo_root/patches/libadwaita/0033-Suno-compact-menu-width.patch" "$rpmbuild_dir/SOURCES/"
+cp "$repo_root/patches/libadwaita/0034-Suno-maximized-window-corners.patch" "$rpmbuild_dir/SOURCES/"
+cp "$repo_root/patches/libadwaita/0036-Suno-tiled-window-corners.patch" "$rpmbuild_dir/SOURCES/"
+cp "$repo_root/patches/libadwaita/0037-Suno-identity-inset-and-pointer-state.patch" "$rpmbuild_dir/SOURCES/"
+cp "$repo_root/patches/libadwaita/0038-Suno-header-ink-and-tiled-stroke.patch" "$rpmbuild_dir/SOURCES/"
+cp "$repo_root/patches/libadwaita/0039-Suno-quiet-filled-controls.patch" "$rpmbuild_dir/SOURCES/"
+cp "$repo_root/patches/libadwaita/0040-Suno-frost-glass-light-title-rows.patch" "$rpmbuild_dir/SOURCES/"
+cp "$repo_root/patches/libadwaita/0041-Suno-frost-glass-frosted-title-band.patch" "$rpmbuild_dir/SOURCES/"
+cp "$repo_root/patches/libadwaita/0042-Suno-one-glass-material-for-every-window.patch" "$rpmbuild_dir/SOURCES/"
 
-install -m 0644 "$repo_root/patches/libadwaita/0043-luma-preserve-generic-client-layout.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/libadwaita/0043-Suno-preserve-generic-client-layout.patch" "$rpmbuild_dir/SOURCES/"
 install -m 0644 "$repo_root/tests/toolkit-native/generic-client.py" "$rpmbuild_dir/SOURCES/"
 
 (
@@ -156,9 +156,9 @@ install -m 0644 "$repo_root/tests/toolkit-native/generic-client.py" "$rpmbuild_d
   # Image-based hosts ship git but not patch; both refuse fuzz here.
   if command -v patch >/dev/null 2>&1; then
     patch --batch --forward --fuzz=0 -p1 \
-      <"$repo_root/patches/libadwaita/0000-luma-fedora-spec.patch"
+      <"$repo_root/patches/libadwaita/0000-Suno-fedora-spec.patch"
   elif command -v git >/dev/null 2>&1; then
-    GIT_CEILING_DIRECTORIES="$rpmbuild_dir" git apply -p1 --whitespace=nowarn "$repo_root/patches/libadwaita/0000-luma-fedora-spec.patch"
+    GIT_CEILING_DIRECTORIES="$rpmbuild_dir" git apply -p1 --whitespace=nowarn "$repo_root/patches/libadwaita/0000-Suno-fedora-spec.patch"
   else
     printf 'error: patch or git is needed to apply the libadwaita spec patch\n' >&2
     exit 1
@@ -167,8 +167,8 @@ install -m 0644 "$repo_root/tests/toolkit-native/generic-client.py" "$rpmbuild_d
 # A spec patch that applied as a no-op builds the stock package; the Release
 # says whether it applied (scripts/packages/spec-release.sh).
 . "$repo_root/scripts/packages/spec-release.sh"
-luma_assert_spec_release "$rpmbuild_dir/SPECS/libadwaita.spec" \
-  "$LIBADWAITA_LUMA_RELEASE" || exit 1
+Suno_assert_spec_release "$rpmbuild_dir/SPECS/libadwaita.spec" \
+  "$LIBADWAITA_SUNO_RELEASE" || exit 1
 
 # Match the shared toolkit provider to this target and release. A stock
 # builder GTK would make the generic-client surface checks measure another UI.
@@ -178,11 +178,11 @@ gtk_dir="$repo_root/build/packages/gtk4/RPMS/$architecture"
   printf 'error: build the matching GTK4 provider first: %s\n' "$gtk_nevra" >&2
   exit 1
 }
-install -d -m 0755 "$rpmbuild_dir/luma-toolkit"
+install -d -m 0755 "$rpmbuild_dir/Suno-toolkit"
 for built in "$gtk_dir"/gtk4-*.rpm; do
   [ -f "$built" ] || continue
   case "$(basename "$built")" in *-debuginfo-*|*-debugsource-*) continue ;; esac
-  install -m 0644 "$built" "$rpmbuild_dir/luma-toolkit/"
+  install -m 0644 "$built" "$rpmbuild_dir/Suno-toolkit/"
 done
 
 "$repo_root/scripts/packages/run-in-rpm-builder.sh" \
@@ -190,7 +190,7 @@ done
   "$builder_container" '
     set -euo pipefail
     dnf5 -y install rpm-build dnf5-plugins
-    dnf5 -y install ./luma-toolkit/gtk4-*.rpm
+    dnf5 -y install ./Suno-toolkit/gtk4-*.rpm
     dnf5 -y builddep SPECS/libadwaita.spec
     rpmbuild -ba --noclean --define "_smp_build_ncpus 4" --define "_topdir $PWD" SPECS/libadwaita.spec
 
@@ -208,30 +208,30 @@ done
     grep -Fq "@define-color headerbar_bg_color #f2f3f5" gtk.css
     grep -Fq -- "--accent-blue: #4878b8" gtk.css
     grep -Fq "headerbar { min-height: 42px" gtk.css
-    grep -Fq ".luma-title-label { min-height: 22px; padding: 4px 0 0; font-family: \"Figtree\"; font-size: 12.5px; font-weight: 600; }" gtk.css
-    grep -Fq "@define-color luma_window #f1f2f3" gtk.css
-    grep -Fq "@define-color luma_window #21252b" gtk.css
-    grep -Fq "@define-color luma_content #fbfbfa" gtk.css
-    grep -Fq "@define-color luma_content #2a2e34" gtk.css
-    grep -Fq "headerbar .luma-identity-button > button" gtk.css
-    grep -Fq "headerbar .luma-identity-icon { min-width: 22px; min-height: 22px; border-radius: 6px; }" gtk.css
-    grep -Fq "headerbar .luma-identity-icon > image { -gtk-icon-size: 20px; }" gtk.css
-    grep -Fq ".luma-window-body { padding: 0 9px 9px; }" gtk.css
+    grep -Fq ".Suno-title-label { min-height: 22px; padding: 4px 0 0; font-family: \"Figtree\"; font-size: 12.5px; font-weight: 600; }" gtk.css
+    grep -Fq "@define-color Suno_window #f1f2f3" gtk.css
+    grep -Fq "@define-color Suno_window #21252b" gtk.css
+    grep -Fq "@define-color Suno_content #fbfbfa" gtk.css
+    grep -Fq "@define-color Suno_content #2a2e34" gtk.css
+    grep -Fq "headerbar .Suno-identity-button > button" gtk.css
+    grep -Fq "headerbar .Suno-identity-icon { min-width: 22px; min-height: 22px; border-radius: 6px; }" gtk.css
+    grep -Fq "headerbar .Suno-identity-icon > image { -gtk-icon-size: 20px; }" gtk.css
+    grep -Fq ".Suno-window-body { padding: 0 9px 9px; }" gtk.css
     grep -Fq "0 10px 20px -14px RGB(25 27 31/40%)" gtk.css
-    grep -Fq ".luma-island { background-color: @luma_content; border: 1px solid @luma_line; border-radius: 10px; box-shadow: 0 2px 5px RGB(25 27 31/16%), 0 18px 36px -16px RGB(25 27 31/48%); }" gtk.css
-    grep -Fq ".luma-command-bar { min-height: 40px; margin: 0 9px 8px; padding: 0 8px; border: 1px solid @luma_line; border-radius: 10px; background-color: @luma_content" gtk.css
-    grep -Fq ".luma-command-group > button, .luma-command-group > menubutton > button { min-width: 30px; min-height: 30px" gtk.css
-    grep -Fq "window.luma-app-window headerbar.luma-titlebar:backdrop > windowhandle { filter: none; transition: none; }" gtk.css
-    grep -Fq "window.luma-app-window .luma-command-bar:backdrop, window.luma-app-window .luma-island:backdrop { background-color: @luma_content" gtk.css
-    grep -Fq "window.luma-files-window, window.luma-calculator-window, window.luma-app-window" gtk.css
+    grep -Fq ".Suno-island { background-color: @Suno_content; border: 1px solid @Suno_line; border-radius: 10px; box-shadow: 0 2px 5px RGB(25 27 31/16%), 0 18px 36px -16px RGB(25 27 31/48%); }" gtk.css
+    grep -Fq ".Suno-command-bar { min-height: 40px; margin: 0 9px 8px; padding: 0 8px; border: 1px solid @Suno_line; border-radius: 10px; background-color: @Suno_content" gtk.css
+    grep -Fq ".Suno-command-group > button, .Suno-command-group > menubutton > button { min-width: 30px; min-height: 30px" gtk.css
+    grep -Fq "window.Suno-app-window headerbar.Suno-titlebar:backdrop > windowhandle { filter: none; transition: none; }" gtk.css
+    grep -Fq "window.Suno-app-window .Suno-command-bar:backdrop, window.Suno-app-window .Suno-island:backdrop { background-color: @Suno_content" gtk.css
+    grep -Fq "window.Suno-files-window, window.Suno-calculator-window, window.Suno-app-window" gtk.css
     grep -Fq "0 54px 110px -28px RGB(25 27 31/56%)" gtk.css
     grep -Fq "0 64px 120px -30px RGB(9 11 14/82%)" gtk.css
-    grep -Fq "headerbar windowcontrols, windowcontrols.luma-window-controls" gtk.css
-    grep -Fq "background-color: @luma_content" gtk.css
+    grep -Fq "headerbar windowcontrols, windowcontrols.Suno-window-controls" gtk.css
+    grep -Fq "background-color: @Suno_content" gtk.css
     grep -Fq "margin-top: 9px" gtk.css
     ! grep -Fq "overflow: hidden" gtk.css
-    grep -Fq ".luma-island-split > .sidebar-pane, .luma-island-split > .content-pane { background-color: transparent; border: none; outline: none; box-shadow: none; --shade-color: transparent; }" gtk.css
-    ! grep -Fq "windowtitle .title, .luma-title-label" gtk.css
+    grep -Fq ".Suno-island-split > .sidebar-pane, .Suno-island-split > .content-pane { background-color: transparent; border: none; outline: none; box-shadow: none; --shade-color: transparent; }" gtk.css
+    ! grep -Fq "windowtitle .title, .Suno-title-label" gtk.css
     grep -Fq "windowtitle .title { min-height: 16px; }" gtk.css
     grep -Fq "headerbar button.image-button > image, headerbar menubutton > button > image { -gtk-icon-size: 14px; color: var(--headerbar-fg-color); }" gtk.css
     grep -Fq "headerbar windowcontrols > button > image, headerbar windowcontrols > button.image-button > image { -gtk-icon-size: 10px; }" gtk.css
@@ -246,30 +246,30 @@ done
     grep -Fq ".navigation-sidebar > row { border-radius: 8px; min-height: 14px; padding: 7px 11px; margin: 1px 10px; color: var(--sidebar-fg-color); font-size: 12.5px; }" gtk.css
     grep -Fq ".navigation-sidebar > row:selected:hover, .navigation-sidebar > row:selected.has-open-popup { background-color: color-mix(in srgb, currentColor 13%, transparent); }" gtk.css
     grep -aFq "#4878b8" ./usr/lib64/libadwaita-1.so.0
-    grep -aFq "luma-automatic-identity" ./usr/lib64/libadwaita-1.so.0
-    grep -aFq "luma-no-automatic-identity" ./usr/lib64/libadwaita-1.so.0
+    grep -aFq "Suno-automatic-identity" ./usr/lib64/libadwaita-1.so.0
+    grep -aFq "Suno-no-automatic-identity" ./usr/lib64/libadwaita-1.so.0
     grep -aFq "notify::application" ./usr/lib64/libadwaita-1.so.0
-    grep -aFq "luma-identity-display" ./usr/lib64/libadwaita-1.so.0
-    grep -aFq "luma-native-window" ./usr/lib64/libadwaita-1.so.0
-    grep -aFq "luma-adw-native-window" ./usr/lib64/libadwaita-1.so.0
-    grep -aFq "luma-native-work-surface" ./usr/lib64/libadwaita-1.so.0
-    grep -aFq "luma-window-toolbar-view" ./usr/lib64/libadwaita-1.so.0
-    grep -aFq "luma-split-surface" ./usr/lib64/libadwaita-1.so.0
-    grep -aFq "luma-command-title" ./usr/lib64/libadwaita-1.so.0
-    grep -aFq "luma-command-host" ./usr/lib64/libadwaita-1.so.0
-    grep -aFq "luma-pane-command-host" ./usr/lib64/libadwaita-1.so.0
-    grep -aFq "luma-window-title-row" ./usr/lib64/libadwaita-1.so.0
-    grep -aFq "luma-pane-toolbar" ./usr/lib64/libadwaita-1.so.0
-    grep -aFq "luma-no-command-row" ./usr/lib64/libadwaita-1.so.0
-    grep -aFq "luma-has-command-row" ./usr/lib64/libadwaita-1.so.0
-    grep -aFq "luma-repeats-identity" ./usr/lib64/libadwaita-1.so.0
-    grep -aFq "adw-luma-work-surface-overflow" ./usr/lib64/libadwaita-1.so.0
+    grep -aFq "Suno-identity-display" ./usr/lib64/libadwaita-1.so.0
+    grep -aFq "Suno-native-window" ./usr/lib64/libadwaita-1.so.0
+    grep -aFq "Suno-adw-native-window" ./usr/lib64/libadwaita-1.so.0
+    grep -aFq "Suno-native-work-surface" ./usr/lib64/libadwaita-1.so.0
+    grep -aFq "Suno-window-toolbar-view" ./usr/lib64/libadwaita-1.so.0
+    grep -aFq "Suno-split-surface" ./usr/lib64/libadwaita-1.so.0
+    grep -aFq "Suno-command-title" ./usr/lib64/libadwaita-1.so.0
+    grep -aFq "Suno-command-host" ./usr/lib64/libadwaita-1.so.0
+    grep -aFq "Suno-pane-command-host" ./usr/lib64/libadwaita-1.so.0
+    grep -aFq "Suno-window-title-row" ./usr/lib64/libadwaita-1.so.0
+    grep -aFq "Suno-pane-toolbar" ./usr/lib64/libadwaita-1.so.0
+    grep -aFq "Suno-no-command-row" ./usr/lib64/libadwaita-1.so.0
+    grep -aFq "Suno-has-command-row" ./usr/lib64/libadwaita-1.so.0
+    grep -aFq "Suno-repeats-identity" ./usr/lib64/libadwaita-1.so.0
+    grep -aFq "adw-Suno-work-surface-overflow" ./usr/lib64/libadwaita-1.so.0
     grep -aFq "application-x-executable" ./usr/lib64/libadwaita-1.so.0
-    grep -Fq "headerbar.luma-command-host { padding: 0; }" gtk.css
-    grep -Fq "headerbar.luma-command-host > windowhandle { min-height: 42px; }" gtk.css
-    grep -Fq "headerbar.luma-command-host > .luma-command-bar { margin: 0 9px 8px; }" gtk.css
-    grep -Fq "headerbar windowtitle.luma-repeats-identity { opacity: 0; }" gtk.css
-    grep -Fq "headerbar box.luma-identity-button { min-height: 24px; padding: 5px 8px 5px 4px; border-radius: 10px;" gtk.css
+    grep -Fq "headerbar.Suno-command-host { padding: 0; }" gtk.css
+    grep -Fq "headerbar.Suno-command-host > windowhandle { min-height: 42px; }" gtk.css
+    grep -Fq "headerbar.Suno-command-host > .Suno-command-bar { margin: 0 9px 8px; }" gtk.css
+    grep -Fq "headerbar windowtitle.Suno-repeats-identity { opacity: 0; }" gtk.css
+    grep -Fq "headerbar box.Suno-identity-button { min-height: 24px; padding: 5px 8px 5px 4px; border-radius: 10px;" gtk.css
     grep -Fq "@define-color view_bg_color #2a2e34" gtk.css
     grep -Fq "@define-color window_bg_color #21252b" gtk.css
     # Patch0041: frost and glass title rows are a frosted band, not a veil.
@@ -287,27 +287,27 @@ done
     # and one apostrophe ends it: the container then receives a different
     # command, which is how two icon checks ran against nothing for
     # seventeen releases (docs/development/checks-that-check-nothing.md).
-    grep -Fq -- "--luma-veil: rgba(250, 250, 251, 0.85)" gtk.css
-    grep -Fq -- "--luma-veil: rgba(248, 249, 250, 0.90)" gtk.css
-    grep -Fq -- "--luma-paper: #fbfbfa" gtk.css
-    grep -Fq "linear-gradient(to bottom, var(--luma-veil), var(--luma-veil))" gtk.css
-    grep -Fq "background-color: var(--luma-paper)" gtk.css
-    grep -Fq "background-color: var(--luma-veil)" gtk.css
+    grep -Fq -- "--Suno-veil: rgba(250, 250, 251, 0.85)" gtk.css
+    grep -Fq -- "--Suno-veil: rgba(248, 249, 250, 0.90)" gtk.css
+    grep -Fq -- "--Suno-paper: #fbfbfa" gtk.css
+    grep -Fq "linear-gradient(to bottom, var(--Suno-veil), var(--Suno-veil))" gtk.css
+    grep -Fq "background-color: var(--Suno-paper)" gtk.css
+    grep -Fq "background-color: var(--Suno-veil)" gtk.css
     # The title band must not name a colour this stylesheet does not define.
-    ! grep -Fq "linear-gradient(to bottom, @luma_chrome, @luma_chrome)" gtk.css
+    ! grep -Fq "linear-gradient(to bottom, @Suno_chrome, @Suno_chrome)" gtk.css
     # Plain text on a translucent surface.
     grep -Fq "text-shadow: none; -gtk-icon-shadow: none;" gtk.css
     # The style manager applies the treatment to every toplevel and redefines
-    # the palette names for it, which is what makes every existing Luma rule
+    # the palette names for it, which is what makes every existing Suno rule
     # in this sheet follow the treatment without being touched.
-    grep -aFq "luma-treatment-glass" ./usr/lib64/libadwaita-1.so.0
-    grep -aFq "luma-treatment-frost" ./usr/lib64/libadwaita-1.so.0
-    grep -aFq "org.project_luma.shell-state" ./usr/lib64/libadwaita-1.so.0
-    grep -aFq "@define-color luma_chrome rgba(250,250,251,0.85);" ./usr/lib64/libadwaita-1.so.0
-    grep -aFq "@define-color luma_island #ffffff;" ./usr/lib64/libadwaita-1.so.0
-    grep -aFq "@define-color luma_window rgba(255,255,255,0.30);" ./usr/lib64/libadwaita-1.so.0
+    grep -aFq "Suno-treatment-glass" ./usr/lib64/libadwaita-1.so.0
+    grep -aFq "Suno-treatment-frost" ./usr/lib64/libadwaita-1.so.0
+    grep -aFq "org.projectSuno.shell-state" ./usr/lib64/libadwaita-1.so.0
+    grep -aFq "@define-color Suno_chrome rgba(250,250,251,0.85);" ./usr/lib64/libadwaita-1.so.0
+    grep -aFq "@define-color Suno_island #ffffff;" ./usr/lib64/libadwaita-1.so.0
+    grep -aFq "@define-color Suno_window rgba(255,255,255,0.30);" ./usr/lib64/libadwaita-1.so.0
     # And the title row paints nothing, whether or not the window is csd.
-    grep -Fq "window.luma-treatment-frost, window.luma-treatment-glass { --headerbar-bg-color: transparent" gtk.css
+    grep -Fq "window.Suno-treatment-frost, window.Suno-treatment-glass { --headerbar-bg-color: transparent" gtk.css
   '
 
 stable_rpms="$output_dir/RPMS/$architecture"
@@ -333,7 +333,7 @@ if [ "$copied" -lt 2 ]; then
   exit 1
 fi
 install -m 0644 \
-  "$rpmbuild_dir/SRPMS/libadwaita-1.9.3-${LIBADWAITA_LUMA_RELEASE}.fc44.src.rpm" \
+  "$rpmbuild_dir/SRPMS/libadwaita-1.9.3-${LIBADWAITA_SUNO_RELEASE}.fc44.src.rpm" \
   "$stable_srpms/"
 
 (
@@ -341,4 +341,4 @@ install -m 0644 \
   find RPMS SRPMS -type f -name '*.rpm' -exec sha256sum {} + | sort >SHA256SUMS
 )
 
-printf 'Luma libadwaita packages: %s\n' "$output_dir"
+printf 'Suno libadwaita packages: %s\n' "$output_dir"

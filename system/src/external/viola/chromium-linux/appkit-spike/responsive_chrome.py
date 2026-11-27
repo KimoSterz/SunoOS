@@ -5,10 +5,10 @@ import json
 from urllib.parse import quote
 from urllib.parse import urlsplit
 from gi.repository import Gdk, Gio, GLib, Gtk
-from luma_appkit import ActionCenter, BarAction, BarSearch
-from luma_appkit.action_center import register_item
-from luma_appkit.bar_share import ShareSheet, ShareSubject, ShareTarget
-from luma_appkit.bar_panel import PanelRow, panel_list
+from Suno_appkit import ActionCenter, BarAction, BarSearch
+from Suno_appkit.action_center import register_item
+from Suno_appkit.bar_share import ShareSheet, ShareSubject, ShareTarget
+from Suno_appkit.bar_panel import PanelRow, panel_list
 from native_footer import NativeFooter
 from native_signin import SignInPanel, is_signin
 from native_extension_prompt import ExtensionPromptPanel, is_extension_prompt
@@ -28,7 +28,7 @@ class BrowserAddress:
 
 
 def address_control(item, size):
-    # The browser owns its composite address field; LumaUI owns the bar.
+    # The browser owns its composite address field; SunoUI owns the bar.
     widget = item.widget
     if widget.get_parent() is not None:
         raise ValueError('Address is still parented')
@@ -48,7 +48,7 @@ class ExtensionBarItem:
 
 
 def extension_control(item, size):
-    # A pinned extension's own icon; LumaUI owns its place in the bar.
+    # A pinned extension's own icon; SunoUI owns its place in the bar.
     return item.widget
 
 
@@ -117,7 +117,7 @@ class ResponsiveChrome:
         if not host.mini:
             from native_tv import TvChrome
             self.tv = TvChrome(self)
-            if hasattr(self.center, 'tv_open'):   # a LumaUI with the TV bar on demand
+            if hasattr(self.center, 'tv_open'):   # a SunoUI with the TV bar on demand
                 self.center.connect('notify::tv-demand', lambda *_a: self.tv_changed())
         self.render(force=True)
         host.add_tick_callback(self.allocated)
@@ -152,10 +152,10 @@ class ResponsiveChrome:
         if finding:
             self.host.find.view.rebuilt()
         self.update_bar_handle()
-        # The page is Viola's own TV presentation, the whole screen: LumaUI's TV frame
+        # The page is Viola's own TV presentation, the whole screen: SunoUI's TV frame
         # (the title and clock strip) leaves a window showing a TV stage alone.
-        from luma_appkit import tv_frame
-        (self.host.page_layers.add_css_class if tv else self.host.page_layers.remove_css_class)('lumaui-tv-stage')
+        from Suno_appkit import tv_frame
+        (self.host.page_layers.add_css_class if tv else self.host.page_layers.remove_css_class)('SunoUI-tv-stage')
         tv_frame.schedule(self.host)
         if tv:
             focus = self.host.get_focus()
@@ -594,7 +594,7 @@ class ResponsiveChrome:
 
     def page_scrolled(self, dx, dy):
         if abs(dy) < abs(dx) or not dy or self.on_tv():
-            return  # (on a TV the bar is on demand: LumaUI puts it away)
+            return  # (on a TV the bar is on demand: SunoUI puts it away)
         # Scrolling the page ends address editing before chrome retreats.
         if self.host.address_focused():
             self.host.address_suggestions.close()

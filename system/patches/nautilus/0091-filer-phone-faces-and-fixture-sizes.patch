@@ -104,13 +104,13 @@ index 95ffe3b..b582f04 100644
    border-spacing: 8px;
  }
  
-+.luma-files-window .nautilus-grid-view.phone-layout gridview {
++.Suno-files-window .nautilus-grid-view.phone-layout gridview {
 +  padding-left: 10px;
 +  padding-right: 10px;
 +}
 +
- .luma-files-window .nautilus-grid-view gridview > child,
- .luma-files-window .nautilus-grid-view .nautilus-view-cell {
+ .Suno-files-window .nautilus-grid-view gridview > child,
+ .Suno-files-window .nautilus-grid-view .nautilus-view-cell {
    border-radius: 10px;
 -- 
 2.55.0

@@ -1,4 +1,4 @@
-From: Project Luma <builds@project-luma.local>
+From: Project Suno <builds@project-suno.local>
 Subject: [PATCH] status: a cellular indicator from the modem's own state
 
 The network indicator draws a modem only while mobile data is the primary
@@ -8,7 +8,7 @@ no SIM showed nothing cellular.
 status/cellular.js reads ModemManager's modems (state, failed reason, SIM,
 signal quality, 3GPP registration) and draws one icon whenever the device
 has a modem: the signal while it is on a network, no service otherwise,
-or no SIM. lumaPresentation/cellularStatus.js maps the state. A searching
+or no SIM. SunoPresentation/cellularStatus.js maps the state. A searching
 modem keeps reporting its last signal, so the signal is drawn only once it
 is registered. Without a modem, or without ModemManager, nothing is drawn.
 
@@ -19,10 +19,10 @@ The no service and no SIM glyphs are Lucide's radio-off and card-sim
 (vendor/lucide-shell-status), geometry unchanged, as symbolic strokes at
 the status weight.
 
-diff --git a/data/icons/hicolor/scalable/status/luma-cellular-no-service-symbolic.svg b/data/icons/hicolor/scalable/status/luma-cellular-no-service-symbolic.svg
+diff --git a/data/icons/hicolor/scalable/status/Suno-cellular-no-service-symbolic.svg b/data/icons/hicolor/scalable/status/Suno-cellular-no-service-symbolic.svg
 new file mode 100644
 --- /dev/null
-+++ b/data/icons/hicolor/scalable/status/luma-cellular-no-service-symbolic.svg
++++ b/data/icons/hicolor/scalable/status/Suno-cellular-no-service-symbolic.svg
 @@ -0,0 +1,9 @@
 +<!-- Lucide geometry, ISC; adapted to GTK 4.20+ symbolic stroke classes. -->
 +<svg xmlns="http://www.w3.org/2000/svg" class="lucide lucide-radio-off" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
@@ -33,10 +33,10 @@ new file mode 100644
 +  <path d="M4.925 19.067a10 10 0 0 1 0-14.134" class="transparent-fill foreground-stroke" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
 +  <path d="M7.753 16.239a6 6 0 0 1 0-8.478" class="transparent-fill foreground-stroke" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
 +</svg>
-diff --git a/data/icons/hicolor/scalable/status/luma-cellular-no-sim-symbolic.svg b/data/icons/hicolor/scalable/status/luma-cellular-no-sim-symbolic.svg
+diff --git a/data/icons/hicolor/scalable/status/Suno-cellular-no-sim-symbolic.svg b/data/icons/hicolor/scalable/status/Suno-cellular-no-sim-symbolic.svg
 new file mode 100644
 --- /dev/null
-+++ b/data/icons/hicolor/scalable/status/luma-cellular-no-sim-symbolic.svg
++++ b/data/icons/hicolor/scalable/status/Suno-cellular-no-sim-symbolic.svg
 @@ -0,0 +1,7 @@
 +<!-- Lucide geometry, ISC; adapted to GTK 4.20+ symbolic stroke classes. -->
 +<svg xmlns="http://www.w3.org/2000/svg" class="lucide lucide-card-sim" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
@@ -49,11 +49,11 @@ diff --git a/js/js-resources.gresource.xml b/js/js-resources.gresource.xml
 --- a/js/js-resources.gresource.xml
 +++ b/js/js-resources.gresource.xml
 @@ -188,6 +188,7 @@
-     <file>ui/lumaPresentation/tvAppSwitcher.js</file>
-     <file>ui/lumaPresentation/tvAppSwitcherModel.js</file>
-     <file>ui/lumaPresentation/tvPointer.js</file>
-+    <file>ui/lumaPresentation/cellularStatus.js</file>
-     <file>ui/lumaPresentation/tv-backdrop.jpg</file>
+     <file>ui/SunoPresentation/tvAppSwitcher.js</file>
+     <file>ui/SunoPresentation/tvAppSwitcherModel.js</file>
+     <file>ui/SunoPresentation/tvPointer.js</file>
++    <file>ui/SunoPresentation/cellularStatus.js</file>
+     <file>ui/SunoPresentation/tv-backdrop.jpg</file>
      <file>ui/shelfMetrics.js</file>
      <file>ui/shelfArrangement.js</file>
 @@ -234,6 +235,7 @@
@@ -74,7 +74,7 @@ diff --git a/js/ui/panel.js b/js/ui/panel.js
 +import * as CellularStatus from './status/cellular.js';
  
  import {DateMenuButton} from './dateMenu.js';
- import {getNotificationTray} from './lumaNotificationBeacon.js';
+ import {getNotificationTray} from './SunoNotificationBeacon.js';
 @@ -2052,6 +2053,7 @@ class QuickSettings extends PanelMenu.Button {
          this._backgroundApps = new BackgroundAppsStatus.Indicator();
          this._cast = new CastStatus.Indicator();
@@ -99,12 +99,12 @@ new file mode 100644
 +// The cellular state of the device's modem for the status area: signal while
 +// it is on a network, no service, or no SIM. Read from ModemManager, which
 +// knows a modem's registration and SIM whether or not a data connection uses
-+// it; lumaPresentation/cellularStatus.js maps what it publishes.
++// it; SunoPresentation/cellularStatus.js maps what it publishes.
 +import Gio from 'gi://Gio';
 +import GObject from 'gi://GObject';
 +
 +import {SystemIndicator} from '../quickSettings.js';
-+import {cellularStatus} from '../lumaPresentation/cellularStatus.js';
++import {cellularStatus} from '../SunoPresentation/cellularStatus.js';
 +
 +const BUS_NAME = 'org.freedesktop.ModemManager1';
 +const OBJECT_PATH = '/org/freedesktop/ModemManager1';

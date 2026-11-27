@@ -1,14 +1,14 @@
 {
   "reserved_prefixes": [
-    "org.projectluma.",
-    "io.luma.",
+    "org.projectSuno.",
+    "io.Suno.",
     "com.simplyluma.",
     "org.simplyluma.",
-    "com.projectluma."
+    "com.projectSuno."
   ],
   "third_party_branch": "stable",
   "runtimes": {
-    "org.projectluma.Platform": [
+    "org.projectSuno.Platform": [
       "44"
     ],
     "org.freedesktop.Platform": [

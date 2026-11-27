@@ -74,9 +74,9 @@
 +++ b/src/nautilus-file-chooser.c
 @@ -69,6 +69,7 @@
       * Cancel and Open "name"). */
-     LumaActionCenter *action_center;
-     LumaBarItem *search_item;
-+    LumaBarItem *filter_item;
+     SunoActionCenter *action_center;
+     SunoBarItem *search_item;
++    SunoBarItem *filter_item;
      GtkWidget *accept_control;
      gboolean phone;
  };
@@ -89,47 +89,47 @@
  
      if (self->slot != NULL)
 @@ -859,6 +861,14 @@
-         luma_bar_panel_add_row (panel, places[i].icon, _(places[i].label), detailed, FALSE);
+         Suno_bar_panel_add_row (panel, places[i].icon, _(places[i].label), detailed, FALSE);
      }
      /* TODO(filer): Devices (mounted drives) as in v71's place panel. */
 +    return panel;
 +}
 +
 +static GtkWidget *
-+chooser_filter_panel (LumaBarItem *item, gpointer user_data)
++chooser_filter_panel (SunoBarItem *item, gpointer user_data)
 +{
 +    NautilusFileChooser *self = NAUTILUS_FILE_CHOOSER (user_data);
-+    GtkWidget *panel = luma_bar_panel_new (_("File type"));
++    GtkWidget *panel = Suno_bar_panel_new (_("File type"));
      GListModel *filters = gtk_drop_down_get_model (self->filters_dropdown);
      guint n = filters != NULL ? g_list_model_get_n_items (filters) : 0;
      if (n > 1)
 @@ -959,20 +969,53 @@
-     luma_bar_item_search_set_collapsed (self->search_item, self->phone);
-     luma_action_center_show_bar (self->action_center, (LumaBarItem *const *) items->pdata, items->len, NULL);
+     Suno_bar_item_search_set_collapsed (self->search_item, self->phone);
+     Suno_action_center_show_bar (self->action_center, (SunoBarItem *const *) items->pdata, items->len, NULL);
  
 -    /* Row 2: Cancel and the key, sharing the width. */
 +    g_clear_object (&self->filter_item);
 +    GtkFileFilter *selected_filter = GTK_FILE_FILTER (gtk_drop_down_get_selected_item (self->filters_dropdown));
 +    if (selected_filter != NULL)
 +    {
-+        self->filter_item = luma_bar_item_new_action ("filter", gtk_file_filter_get_name (selected_filter), NULL);
-+        luma_bar_item_set_keep_label (self->filter_item, TRUE);
-+        luma_bar_item_set_dropdown (self->filter_item, TRUE, FALSE);
-+        luma_bar_item_set_panel (self->filter_item, "file-type", chooser_filter_panel, self, NULL);
-+        luma_bar_item_set_tooltip (self->filter_item, _("File type"));
++        self->filter_item = Suno_bar_item_new_action ("filter", gtk_file_filter_get_name (selected_filter), NULL);
++        Suno_bar_item_set_keep_label (self->filter_item, TRUE);
++        Suno_bar_item_set_dropdown (self->filter_item, TRUE, FALSE);
++        Suno_bar_item_set_panel (self->filter_item, "file-type", chooser_filter_panel, self, NULL);
++        Suno_bar_item_set_tooltip (self->filter_item, _("File type"));
 +    }
 +    /* The second row owns the native filename, format and response controls. */
      g_autofree char *words = chooser_accept_words (self);
-     g_autoptr (LumaBarItem) cancel = luma_bar_item_new_action (NULL, _("Cancel"), "window.close");
-     g_autoptr (LumaBarItem) accept = luma_bar_item_new_action (NULL, words, "chooser.accept");
-     luma_bar_item_set_primary (accept, TRUE);
-     luma_bar_item_set_keep_label (cancel, TRUE);
-     luma_bar_item_set_keep_label (accept, TRUE);
+     g_autoptr (SunoBarItem) cancel = Suno_bar_item_new_action (NULL, _("Cancel"), "window.close");
+     g_autoptr (SunoBarItem) accept = Suno_bar_item_new_action (NULL, words, "chooser.accept");
+     Suno_bar_item_set_primary (accept, TRUE);
+     Suno_bar_item_set_keep_label (cancel, TRUE);
+     Suno_bar_item_set_keep_label (accept, TRUE);
 -    GtkWidget *foot = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 6);
 -    gtk_box_set_homogeneous (GTK_BOX (foot), self->phone);
 -    gtk_widget_set_halign (foot, self->phone ? GTK_ALIGN_FILL : GTK_ALIGN_END);
 -    gtk_widget_set_hexpand (foot, TRUE);
--    gtk_box_append (GTK_BOX (foot), luma_bar_item_create_control (cancel, "bar"));
+-    gtk_box_append (GTK_BOX (foot), Suno_bar_item_create_control (cancel, "bar"));
 +    GtkWidget *foot = gtk_flow_box_new ();
 +    gtk_flow_box_set_selection_mode (GTK_FLOW_BOX (foot), GTK_SELECTION_NONE);
 +    gtk_flow_box_set_min_children_per_line (GTK_FLOW_BOX (foot), 1);
@@ -144,24 +144,24 @@
 +        g_object_ref (self->filename_widget);
 +        if (GTK_IS_BOX (parent)) gtk_box_remove (GTK_BOX (parent), self->filename_widget);
 +        GtkWidget *name_row = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 6);
-+        gtk_widget_add_css_class (GTK_WIDGET (self->filename_entry), "lumaui-bar-entry");
++        gtk_widget_add_css_class (GTK_WIDGET (self->filename_entry), "SunoUI-bar-entry");
 +        gtk_widget_set_hexpand (self->filename_widget, TRUE);
 +        gtk_box_append (GTK_BOX (name_row), self->filename_widget);
 +        g_object_unref (self->filename_widget);
 +        if (self->filter_item != NULL)
-+            gtk_box_append (GTK_BOX (name_row), luma_bar_item_create_control (self->filter_item, "bar"));
++            gtk_box_append (GTK_BOX (name_row), Suno_bar_item_create_control (self->filter_item, "bar"));
 +        gtk_flow_box_insert (GTK_FLOW_BOX (foot), name_row, -1);
 +    }
 +    GtkWidget *responses = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 6);
 +    gtk_widget_set_halign (responses, GTK_ALIGN_END);
 +    if (self->mode != NAUTILUS_MODE_SAVE_FILE && self->filter_item != NULL)
-+        gtk_box_append (GTK_BOX (responses), luma_bar_item_create_control (self->filter_item, "bar"));
-+    gtk_box_append (GTK_BOX (responses), luma_bar_item_create_control (cancel, "bar"));
-     self->accept_control = luma_bar_item_create_control (accept, "bar");
++        gtk_box_append (GTK_BOX (responses), Suno_bar_item_create_control (self->filter_item, "bar"));
++    gtk_box_append (GTK_BOX (responses), Suno_bar_item_create_control (cancel, "bar"));
+     self->accept_control = Suno_bar_item_create_control (accept, "bar");
 -    gtk_box_append (GTK_BOX (foot), self->accept_control);
 +    gtk_box_append (GTK_BOX (responses), self->accept_control);
 +    gtk_flow_box_insert (GTK_FLOW_BOX (foot), responses, -1);
-     luma_action_center_set_foot (self->action_center, foot);
+     Suno_action_center_set_foot (self->action_center, foot);
      gtk_window_set_default_widget (GTK_WINDOW (self), self->accept_control);
  }
 @@ -1112,6 +1155,8 @@
@@ -205,20 +205,20 @@
 --- a/src/nautilus-window-slot.c
 +++ b/src/nautilus-window-slot.c
 @@ -1042,6 +1042,7 @@
-     self->system_banner = luma_action_bar_new ();
-     gtk_widget_add_css_class (self->system_banner, "luma-system-notice");
+     self->system_banner = Suno_action_bar_new ();
+     gtk_widget_add_css_class (self->system_banner, "Suno-system-notice");
      gtk_widget_set_visible (self->system_banner, FALSE);
 +    gtk_widget_set_halign (self->system_banner, GTK_ALIGN_CENTER);
      gtk_widget_set_margin_start (self->system_banner, 12);
      gtk_widget_set_margin_end (self->system_banner, 12);
      gtk_widget_set_margin_top (self->system_banner, 6);
 @@ -1052,7 +1053,9 @@
-     GtkWidget *center = luma_action_bar_get_center (LUMA_ACTION_BAR (self->system_banner));
+     GtkWidget *center = Suno_action_bar_get_center (SUNO_ACTION_BAR (self->system_banner));
      gtk_widget_set_visible (gtk_widget_get_first_child (center), FALSE);
      GtkWidget *warning_label = gtk_label_new (
--        _("You’re in Luma’s system files. Changes here can stop your computer from starting."));
-+        _("Changes to system files can stop Luma from starting."));
-+    luma_ui_apply_type (warning_label, "body");
+-        _("You’re in Suno’s system files. Changes here can stop your computer from starting."));
++        _("Changes to system files can stop Suno from starting."));
++    Suno_ui_apply_type (warning_label, "body");
 +    gtk_label_set_max_width_chars (GTK_LABEL (warning_label), 58);
      gtk_label_set_wrap (GTK_LABEL (warning_label), TRUE);
      gtk_label_set_xalign (GTK_LABEL (warning_label), 0);
@@ -226,18 +226,18 @@
 --- a/src/nautilus-window.c
 +++ b/src/nautilus-window.c
 @@ -1001,11 +1001,15 @@
-     luma_action_center_grow_panel (window->action_center, "scope", panel);
+     Suno_action_center_grow_panel (window->action_center, "scope", panel);
  }
  
-+static GtkWidget *filer_details_panel (LumaBarItem *item, gpointer user_data);
++static GtkWidget *filer_details_panel (SunoBarItem *item, gpointer user_data);
 +
  static void
- on_bar_information (LumaBarItem    *item,
+ on_bar_information (SunoBarItem    *item,
                      NautilusWindow *window)
  {
--    luma_details_pane_toggle (window->information_pane);
-+    luma_details_pane_show (window->information_pane, FALSE);
-+    luma_action_center_grow_panel (window->action_center, "details",
+-    Suno_details_pane_toggle (window->information_pane);
++    Suno_details_pane_show (window->information_pane, FALSE);
++    Suno_action_center_grow_panel (window->action_center, "details",
 +                                  filer_details_panel (NULL, window));
  }
  
@@ -249,10 +249,10 @@
 -    if (g_variant_get_uint32 (state) == NAUTILUS_VIEW_COLUMN_ID &&
 -        !filer_is_phone (window))
 -    {
--        luma_details_pane_show (window->information_pane, TRUE);
+-        Suno_details_pane_show (window->information_pane, TRUE);
 +    if (g_variant_get_uint32 (state) == NAUTILUS_VIEW_COLUMN_ID)
 +    {
-+        luma_details_pane_show (window->information_pane, FALSE);
++        Suno_details_pane_show (window->information_pane, FALSE);
      }
  }
  
@@ -264,24 +264,24 @@
  }
 +
 +/* Separate browsing columns without stacking another material around each one. */
-+window.luma-files-window .nautilus-column-view .luma-column-island {
++window.Suno-files-window .nautilus-column-view .Suno-column-island {
 +  background: transparent;
 +  border-radius: 0;
 +  box-shadow: none;
-+  border-right: 1px solid @luma_line;
++  border-right: 1px solid @Suno_line;
 +}
-+window.luma-files-window .nautilus-column-view .luma-column-island:last-child {
++window.Suno-files-window .nautilus-column-view .Suno-column-island:last-child {
 +  border-right: none;
 +}
-+.luma-native-file-chooser .filer-picker-responses { border-spacing: 10px; }
-+.luma-native-file-chooser entry {
++.Suno-native-file-chooser .filer-picker-responses { border-spacing: 10px; }
++.Suno-native-file-chooser entry {
 +  min-height: 34px;
 +  border-radius: 12px;
-+  background: @luma_well;
-+  color: @luma_ink;
++  background: @Suno_well;
++  color: @Suno_ink;
 +  font-family: "Figtree";
 +  font-size: 13px;
-+  box-shadow: inset 0 0 0 1px @luma_well_ring, inset 0 1px 2px @luma_well_shade, 0 1px 0 @luma_well_lip;
++  box-shadow: inset 0 0 0 1px @Suno_well_ring, inset 0 1px 2px @Suno_well_shade, 0 1px 0 @Suno_well_lip;
 +}
 +
 +.filer-picker-responses > flowboxchild { padding: 0; background: none; }
@@ -295,16 +295,16 @@
 +          decoration-layout: ":";
 +          show-end-title-buttons: false;
            tooltip-text: bind title_widget.label;
-           styles ["luma-titlebar", "luma-no-command-row"]
+           styles ["Suno-titlebar", "Suno-no-command-row"]
            title-widget: Box {};
 +          [end]
 +          Box {
-+            styles ["lumaui-window-controls"]
++            styles ["SunoUI-window-controls"]
 +            Button {
-+              icon-name: "lumaui-x-symbolic";
++              icon-name: "SunoUI-x-symbolic";
 +              action-name: "window.close";
 +              tooltip-text: _("Close");
-+              styles ["lumaui-window-control", "close"]
++              styles ["SunoUI-window-control", "close"]
 +            }
 +          }
            [end]
@@ -316,23 +316,23 @@
              spacing: 8;
 -            visible: bind filename_widget.visible;
 +            visible: false;
-             styles ["luma-island", "luma-island-quiet", "luma-chooser-purpose", "luma-controls-quiet"]
+             styles ["Suno-island", "Suno-island-quiet", "Suno-chooser-purpose", "Suno-controls-quiet"]
  
              Box {
---- a/test/automated/display/test-luma-empty-picker.c
-+++ b/test/automated/display/test-luma-empty-picker.c
+--- a/test/automated/display/test-Suno-empty-picker.c
++++ b/test/automated/display/test-Suno-empty-picker.c
 @@ -6,6 +6,7 @@
  #include <nautilus-location-entry.h>
  #include <nautilus-window-slot.h>
  #include <nautilus-tag-manager.h>
 +#include <nautilus-column-view.h>
- #include <luma-ui.h>
+ #include <Suno-ui.h>
  #include <glib/gstdio.h>
  
 @@ -120,7 +121,32 @@
      }
      /* Native Shell appearance owns the surface treatment. */
-     g_autoptr(GSettings) appearance=g_settings_new("org.project_luma.shell-state");
+     g_autoptr(GSettings) appearance=g_settings_new("org.projectSuno.shell-state");
 +    /* Save destinations must be writable places rather than virtual views. */
 +    for (int mode = NAUTILUS_MODE_SAVE_FILE; mode <= NAUTILUS_MODE_SAVE_FILES; mode++) {
 +        NautilusFileChooser *save = nautilus_file_chooser_new(mode);
@@ -374,8 +374,8 @@
                  g_assert_nonnull(header);
 -                g_assert_cmpstr(adw_header_bar_get_decoration_layout(ADW_HEADER_BAR(header)), ==, ":close");
 +                g_assert_cmpstr(adw_header_bar_get_decoration_layout(ADW_HEADER_BAR(header)), ==, ":");
-                 g_assert_false(gtk_widget_has_css_class(header, "luma-no-automatic-identity"));
-                 g_assert_true(gtk_widget_has_css_class(accept, "lumaui-text-button"));
+                 g_assert_false(gtk_widget_has_css_class(header, "Suno-no-automatic-identity"));
+                 g_assert_true(gtk_widget_has_css_class(accept, "SunoUI-text-button"));
                  g_assert_true(gtk_widget_has_css_class(accept, "small"));
 @@ -173,21 +199,28 @@
                  g_assert_false(gtk_widget_get_visible(native_toolbar));

@@ -15,7 +15,7 @@ umask 022
 build_root=${1:?usage: reconstruct-fp6-fingerprint-base.sh BUILD_ROOT}
 rootfs=$build_root/lab/root
 source_tree=$rootfs/work/linux
-jobs=${LUMA_KERNEL_BUILD_JOBS:-4}
+jobs=${SUNO_KERNEL_BUILD_JOBS:-4}
 stage1_config_sha=67b55b06313dac5f69d6939459fb58791cef4f656cbf7564a881b17c2fdab4c0
 stage1_image_sha=a955ed54f22de57f8d6060fa017a832413034037d08fe0715c40b6d18332e4c2
 stage2_config_sha=a78af97c72e7d454348aa87dbe4bdabc81ab8328e9ae807610842059ef061d09
@@ -32,9 +32,9 @@ hash() {
 }
 
 case "$jobs" in
-  ''|*[!0-9]*) die 'LUMA_KERNEL_BUILD_JOBS must be a positive integer' ;;
+  ''|*[!0-9]*) die 'SUNO_KERNEL_BUILD_JOBS must be a positive integer' ;;
 esac
-[ "$jobs" -ge 1 ] || die 'LUMA_KERNEL_BUILD_JOBS must be at least 1'
+[ "$jobs" -ge 1 ] || die 'SUNO_KERNEL_BUILD_JOBS must be at least 1'
 [ "$(id -u)" -eq 0 ] || die 'run as root on the isolated builder'
 [ "$(uname -s)" = Linux ] && [ "$(uname -m)" = aarch64 ] ||
   die 'run only on an off-device Linux/aarch64 builder'

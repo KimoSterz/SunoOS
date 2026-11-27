@@ -12,7 +12,7 @@ build_root=${1:?usage: build-fp6-sensors-candidate.sh BUILD_ROOT DAPM_PATCH SENS
 dapm_patch=${2:?usage: build-fp6-sensors-candidate.sh BUILD_ROOT DAPM_PATCH SENSOR_PATCH OUTPUT_DIR}
 sensor_patch=${3:?usage: build-fp6-sensors-candidate.sh BUILD_ROOT DAPM_PATCH SENSOR_PATCH OUTPUT_DIR}
 output_dir=${4:?usage: build-fp6-sensors-candidate.sh BUILD_ROOT DAPM_PATCH SENSOR_PATCH OUTPUT_DIR}
-resume=${LUMA_FP6_SENSORS_RESUME:-false}
+resume=${SUNO_FP6_SENSORS_RESUME:-false}
 rootfs=$build_root/lab/root
 source_tree=$rootfs/work/linux
 config_sha=a78af97c72e7d454348aa87dbe4bdabc81ab8328e9ae807610842059ef061d09
@@ -42,7 +42,7 @@ fi
 [ -f "$sensor_patch" ] || die 'sensor patch is missing'
 [ ! -e "$output_dir" ] || die "refuse to overwrite output: $output_dir"
 [ "$resume" = false ] || [ "$resume" = true ] ||
-  die 'LUMA_FP6_SENSORS_RESUME must be true or false'
+  die 'SUNO_FP6_SENSORS_RESUME must be true or false'
 [ "$(hash "$dapm_patch")" = "$dapm_patch_sha" ] || die 'DAPM patch differs'
 [ "$(hash "$sensor_patch")" = "$sensor_patch_sha" ] || die 'sensor patch differs'
 [ "$(hash "$source_tree/arch/arm64/boot/vmlinuz")" = "$image_sha" ] || die 'accepted kernel differs'
@@ -142,7 +142,7 @@ for module in $modules; do
 done
 manifest_tmp=$(mktemp)
 {
-  printf 'LUMA_FP6_SENSORS_BUILD_VERSION=1\n'
+  printf 'SUNO_FP6_SENSORS_BUILD_VERSION=1\n'
   printf 'UPSTREAM_COMMIT=af49850e65bdf5dc6f4a14fb9e8e5c5814522d33\n'
   printf 'KERNEL_RELEASE=7.1.2\n'
   printf 'BASE_KERNEL_SHA256=%s\n' "$image_sha"

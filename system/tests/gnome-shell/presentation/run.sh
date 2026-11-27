@@ -6,7 +6,7 @@ export PRESENTATION_OUT=${PRESENTATION_OUT:-/out}
 export HOME=/tmp/presentation-home XDG_RUNTIME_DIR=/tmp/presentation-run
 mkdir -p "$HOME/.config/glib-2.0/settings" "$HOME/.local/share/applications" "$XDG_RUNTIME_DIR" "$PRESENTATION_OUT" /tmp/presentation-schemas
 chmod 700 "$XDG_RUNTIME_DIR"
-cp "$PRESENTATION_SOURCE/src/luma-shell-state/"*.gschema.xml /tmp/presentation-schemas/
+cp "$PRESENTATION_SOURCE/src/Suno-shell-state/"*.gschema.xml /tmp/presentation-schemas/
 glib-compile-schemas --strict /tmp/presentation-schemas
 if [ -n "${PRESENTATION_WIDGETS_LIB:-}" ]; then
     export GI_TYPELIB_PATH="$PRESENTATION_WIDGETS_LIB${GI_TYPELIB_PATH:+:$GI_TYPELIB_PATH}"
@@ -20,7 +20,7 @@ gjs -m "$PRESENTATION_SOURCE/tests/gnome-shell/presentation/density.js"
 gjs -m "$PRESENTATION_SOURCE/tests/gnome-shell/presentation/home-catalog.js"
 gjs -m "$PRESENTATION_SOURCE/tests/gnome-shell/presentation/status-glyphs.js"
 export GSETTINGS_SCHEMA_DIR=/tmp/presentation-schemas GSETTINGS_BACKEND=keyfile
-export LIBGL_ALWAYS_SOFTWARE=1 LUMA_MUTTER_ALLOW_SOFTWARE_BLUR=1
+export LIBGL_ALWAYS_SOFTWARE=1 SUNO_MUTTER_ALLOW_SOFTWARE_BLUR=1
 # Only inside this networkless, capability-free test container; screenshot
 # encoding otherwise attempts an unavailable nested user namespace.
 mkdir -p /tmp/presentation-bin
@@ -40,11 +40,11 @@ if [ -n "${PRESENTATION_SCALE:-}" ]; then
 fi
 if [ -n "${PRESENTATION_INITIAL_MODE:-}" ]; then
     # Start the session already in this presentation, as a phone or tablet does.
-    printf "[org/project_luma/shell-state]\npresentation-mode='%s'\n" "$PRESENTATION_INITIAL_MODE" \
+    printf "[org/projectSuno/shell-state]\npresentation-mode='%s'\n" "$PRESENTATION_INITIAL_MODE" \
         >> "$HOME/.config/glib-2.0/settings/keyfile"
 fi
 if [ "${PRESENTATION_DESKTOP_DRAG_ONLY:-0}" = 1 ] || [ "${PRESENTATION_OPTIONS_ONLY:-0}" = 1 ]; then
-    sed -i "s/enabled-extensions=\[\]/enabled-extensions=['tilingshell@ferrarodomenico.com','tiling-toggle@project-luma.local']/; s/disable-user-extensions=true/disable-user-extensions=false/" "$HOME/.config/glib-2.0/settings/keyfile"
+    sed -i "s/enabled-extensions=\[\]/enabled-extensions=['tilingshell@ferrarodomenico.com','tiling-toggle@project-suno.local']/; s/disable-user-extensions=true/disable-user-extensions=false/" "$HOME/.config/glib-2.0/settings/keyfile"
 fi
 if [ "${PRESENTATION_OPTIONS_ONLY:-0}" = 1 ]; then
     cat >> "$HOME/.config/glib-2.0/settings/keyfile" <<'EOF'
@@ -91,9 +91,9 @@ dbus-daemon --session --fork --nopidfile --address="$DBUS_SYSTEM_BUS_ADDRESS"
 dbus-send --system --print-reply --dest=org.freedesktop.DBus / org.freedesktop.DBus.GetId
 # Setters answer only the Shell and Settings; the AppKit fixture drives the
 # presentation itself, so the service (not the fixture) names it trusted.
-export LUMA_SHELL_STATE_TRUSTED="$PRESENTATION_SOURCE/tests/gnome-shell/presentation/appkit-window.py"
+export SUNO_SHELL_STATE_TRUSTED="$PRESENTATION_SOURCE/tests/gnome-shell/presentation/appkit-window.py"
 timeout 120 dbus-run-session -- bash -c '
-  python3 "$PRESENTATION_SOURCE/src/luma-shell-state/luma-shell-state-service" > "$PRESENTATION_OUT/state.log" 2>&1 &
+  python3 "$PRESENTATION_SOURCE/src/Suno-shell-state/Suno-shell-state-service" > "$PRESENTATION_OUT/state.log" 2>&1 &
   state=$!
   trap "kill $state 2>/dev/null || true" EXIT
   monitors=(--virtual-monitor "${PRESENTATION_MONITOR:-1280x800}")

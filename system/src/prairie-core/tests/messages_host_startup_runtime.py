@@ -38,18 +38,18 @@ from prairie_apps.messages_agent import AgentClient  # noqa: E402
 from prairie_apps.messages import MessagesApplication, MessagesWindow  # noqa: E402
 
 MAIN = threading.main_thread()
-LUMA, GOOGLE = 'luma-' + 'a' * 16, 'gmessages-' + 'b' * 16
-ACCOUNTS = [Account(LUMA, 'luma', 'Me', '@me', 1, False), Account(GOOGLE, 'gmessages', 'Me', '+15550100', 1, False)]
+SUNO, GOOGLE = 'Suno-' + 'a' * 16, 'gmessages-' + 'b' * 16
+ACCOUNTS = [Account(SUNO, 'Suno', 'Me', '@me', 1, False), Account(GOOGLE, 'gmessages', 'Me', '+15550100', 1, False)]
 STORES = {}
 # The agent's one mailbox worker owns its SQLite stores, as in messages_app_rpc.
 WORKER = ThreadPoolExecutor(max_workers=1, thread_name_prefix='stand-in-agent')
 
 
 def seed():
-    for key, count in (('native', 5), (LUMA, 3), (GOOGLE, 6)):
+    for key, count in (('native', 5), (SUNO, 3), (GOOGLE, 6)):
         STORES[key] = AccountStore(ROOT / f'{key}.db')
         for index in range(count):
-            STORES[key].add(f'@friend{index}' if key == LUMA else f'+1555010{index:04d}', f'hello {index}',
+            STORES[key].add(f'@friend{index}' if key == SUNO else f'+1555010{index:04d}', f'hello {index}',
                             direction='incoming', timestamp=1_700_000_000 + index)
     return sum(len(store.threads()) for store in STORES.values())
 
@@ -61,7 +61,7 @@ agent_main, slots = threading.Lock(), threading.BoundedSemaphore(4)
 def answer(method, values):
     if method == 'ApplicationAccounts': return payload(ACCOUNTS)
     if method in {'ApplicationPhones', 'ApplicationCloud'}: return payload([])
-    if method == 'ApplicationInfo': return payload({'networks': ['luma', 'gmessages'], 'luma_problem': ''})
+    if method == 'ApplicationInfo': return payload({'networks': ['Suno', 'gmessages'], 'Suno_problem': ''})
     if method == 'ApplicationStore':
         account, operation, text = values
         args, kwargs = arguments(text)
@@ -71,7 +71,7 @@ def answer(method, values):
                        MessagingCapability(True, '') if values[0] == 'inspect' else ())
     if method == 'Accounts':
         return json.dumps([{'id': a.id, 'state': 'ready', 'network_state': 'connected', 'detail': ''} for a in ACCOUNTS])
-    if method == 'Luma': return json.dumps({'ok': True, 'result': {'handle': 'me'}})
+    if method == 'Suno': return json.dumps({'ok': True, 'result': {'handle': 'me'}})
     return payload(None)
 
 
@@ -153,7 +153,7 @@ def main():
             if filled is not None and time.monotonic() - quiet > max(30 * COST, 0.5):
                 break
         assert filled is not None, f'listed {len(window.surface._entry_by_id)} of {expected} conversations'
-        assert {service.id for service in window.services} == {'native', f'account:{LUMA}', f'account:{GOOGLE}'}
+        assert {service.id for service in window.services} == {'native', f'account:{SUNO}', f'account:{GOOGLE}'}
         assert window.service.id != 'native', 'a device opens on its network accounts, as before'
         assert window.surface.current is not None, 'the newest conversation is open, as before'
         on_main = [call for call in calls if call[2]]

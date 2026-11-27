@@ -1,8 +1,8 @@
 #!/bin/bash
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Blur motion frame-time run, inside a Fedora container with the built Mutter
-# and Shell RPMs, LumaUI and /oracle mounted. M_TAG M_THEME(light|frost|glass)
-# M_CACHE(1|0: LUMA_MUTTER_BLUR_CACHE) M_MONITORS M_SCALE M_SOFTWARE(1|0)
+# and Shell RPMs, SunoUI and /oracle mounted. M_TAG M_THEME(light|frost|glass)
+# M_CACHE(1|0: SUNO_MUTTER_BLUR_CACHE) M_MONITORS M_SCALE M_SOFTWARE(1|0)
 set -u
 H=/oracle/blur-motion/harness
 T=blurmotion-${M_TAG:-a}
@@ -10,7 +10,7 @@ export XDG_RUNTIME_DIR=/tmp/$T-run; rm -rf $XDG_RUNTIME_DIR; mkdir -m 700 -p $XD
 export HOME=/tmp/$T-home; rm -rf $HOME; mkdir -p $HOME/.config/glib-2.0/settings
 theme=${M_THEME:-light}
 cat > $HOME/.config/glib-2.0/settings/keyfile <<KEY
-[org/project-luma/shell-state]
+[org/project-suno/shell-state]
 reduce-transparency=false
 surface-treatment='$theme'
 
@@ -24,8 +24,8 @@ experimental-features=['scale-monitor-framebuffer']
 [org/gnome/shell]
 welcome-dialog-last-shown-version='999'
 KEY
-export GSETTINGS_BACKEND=keyfile LUMA_MUTTER_BLUR_CACHE=${M_CACHE:-1}
-if [ "${M_SOFTWARE:-1}" = 1 ]; then export LIBGL_ALWAYS_SOFTWARE=1 LUMA_MUTTER_ALLOW_SOFTWARE_BLUR=1; fi
+export GSETTINGS_BACKEND=keyfile SUNO_MUTTER_BLUR_CACHE=${M_CACHE:-1}
+if [ "${M_SOFTWARE:-1}" = 1 ]; then export LIBGL_ALWAYS_SOFTWARE=1 SUNO_MUTTER_ALLOW_SOFTWARE_BLUR=1; fi
 export MUTTER_DEBUG=${M_DEBUG:-}
 export ORACLE_OUT=/oracle/blur-motion/out-${M_TAG:-a} ORACLE_EVAL=$H/eval.js ORACLE_SETTLE=${ORACLE_SETTLE:-6000}
 export M_THEME=$theme M_SCALE=${M_SCALE:-1.25}

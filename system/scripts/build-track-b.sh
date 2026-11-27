@@ -25,7 +25,7 @@ output_dir="$repo_root/build/track-b"
 cache_dir="$repo_root/build/cache"
 blueprint="$repo_root/build/provisioning/track-b-blueprint.toml"
 report="$output_dir/build-report.txt"
-provisioned_tag=localhost/project-luma-track-b-provisioned:baseline
+provisioned_tag=localhost/project-suno-track-b-provisioned:baseline
 mkdir -p "$output_dir" "$cache_dir/image-builder" "$cache_dir/rpmmd"
 
 declared_digest=${TRACK_B_CONTAINER##*@}
@@ -78,7 +78,7 @@ sudo image-builder build \
   --cache "$cache_dir/image-builder" \
   --rpmmd-cache "$cache_dir/rpmmd" \
   --output-dir "$output_dir" \
-  --output-name luma-track-b-baseline \
+  --output-name Suno-track-b-baseline \
   --progress verbose \
   --with-buildlog \
   --with-manifest \

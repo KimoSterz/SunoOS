@@ -1,7 +1,7 @@
 ---
 type: fix
 component: Phones
-packages: [luma-update]
+packages: [Suno-update]
 highlight: false
 ---
 Summary: Phones install their device packages on first start

@@ -20,7 +20,7 @@ class MediaReuse(unittest.TestCase):
         self.iso = Path(self.tmp.name) / 'candidate.iso'
         self.iso.write_bytes(b'isolated media fixture')
         self.sha = hashlib.sha256(self.iso.read_bytes()).hexdigest()
-        self.fields = dict(channel='nightly', ref='luma/1/x86_64/nightly', commit='a'*64,
+        self.fields = dict(channel='nightly', ref='Suno/1/x86_64/nightly', commit='a'*64,
                            version='1.0.0-nightly.20261019.3', candidate_build='20261019.3',
                            atlas_source_revision='b'*40, release_key_fingerprint='C'*40,
                            preview_credential='none', test='', test_build='')
@@ -33,7 +33,7 @@ class MediaReuse(unittest.TestCase):
         self.release.write_text(''.join(f'{k}={v}\n' for k, v in self.fields.items()))
 
     def admit(self):
-        module.admit(self.iso, self.sha, 'nightly', 'luma/1/x86_64/nightly', 'a'*64,
+        module.admit(self.iso, self.sha, 'nightly', 'Suno/1/x86_64/nightly', 'a'*64,
                      '1.0.0-nightly.20261019.3', '20261019.3', 'b'*40, 'C'*40)
 
     def test_exact_candidate(self):

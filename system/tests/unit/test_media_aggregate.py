@@ -49,7 +49,7 @@ class MediaAggregate(unittest.TestCase):
         self.assertEqual(ignored, [])
 
     def disk(self, base):
-        name = 'luma-nightly-20261110.2-aarch64-disk.sparse'
+        name = 'Suno-nightly-20261110.2-aarch64-disk.sparse'
         return {'file': name, 'download_file': name, 'url': base + name, 'download_url': base + name,
                 'sha256_url': base + name + '.sha256', 'sha256': 'b' * 64, 'size_bytes': 4096,
                 'commit': 'c' * 64}
@@ -119,7 +119,7 @@ class MediaAggregate(unittest.TestCase):
 
     def test_prior_index_compare_refuses_a_concurrent_publication(self):
         prior = b'original canonical bytes'
-        receipt = {'schema': 'org.projectluma.media-aggregate-preparation/v1',
+        receipt = {'schema': 'org.projectSuno.media-aggregate-preparation/v1',
                    'canonical_prior_sha256': media.digest(prior)}
         media.check_prior(receipt, prior)
         with self.assertRaisesRegex(ValueError, 'Canonical index changed'):

@@ -1,4 +1,4 @@
-# Luma mobile userspace contract
+# Suno mobile userspace contract
 
 This directory defines the experimental Fedora 44 `aarch64` userspace shared
 by the Fairphone 6 behavioral twin and the eventual physical-device bring-up.
@@ -7,17 +7,17 @@ boot image, or distributable phone image.
 
 ## Optional shared Android application support
 
-The mobile composition consumes the same `luma-android-runtime` source and
+The mobile composition consumes the same `Suno-android-runtime` source and
 installer contract as desktop, Fedora's AArch64 Waydroid engine, and a native
 AArch64 build of the same patched Filer source. This keeps APK/APKS/XAPK/APKM
 installation, Settings, application registration, and security boundaries in
 one shared implementation rather than creating a mobile fork.
 
-`/etc/luma-device-class` selects the handheld policy. Android is not warmed at
+`/etc/Suno-device-class` selects the handheld policy. Android is not warmed at
 login on a phone; opening an Android application starts it on demand. Once
 started it can continue delivering notifications and use Android Doze, but the
 host scope has tighter CPU, memory, IO, and task limits. Pause remains an
-explicit battery-saving control. The composer requires locally verified Luma
+explicit battery-saving control. The composer requires locally verified Suno
 RPMs and never downloads Android system/vendor images during an app launch.
 
 The runtime package alone is not physical-device acceptance. A release still
@@ -58,18 +58,18 @@ image.
 
 Composition uses fixed tar ordering/timestamps and four fixed zstd workers.
 If package installation completed but finalization was interrupted,
-`LUMA_FP6_FINALIZE_ONLY=1` resumes only from an existing tree carrying all
-three negative Luma markers. It refuses to replace an existing archive and
+`SUNO_FP6_FINALIZE_ONLY=1` resumes only from an existing tree carrying all
+three negative Suno markers. It refuses to replace an existing archive and
 regenerates the offline udev and systemd catalog caches before packaging.
 
 The physical manifest includes Fedora-native `qrtr`, `rmtfs`, and `tqftpserv`
 for Qualcomm services, `greetd` for the diagnostic Phosh seat, and `sudo` for
 key-authenticated rescue administration. It installs the exact shared
-`luma-boot-theme` RPM and selects `luma-loading-handheld` through an
+`Suno-boot-theme` RPM and selects `Suno-loading-handheld` through an
 image-owned Plymouth configuration. The handheld theme remains native to the
 boot boundary; the existing quit units still release any inherited initramfs
 splash before Phoc acquires DRM. The composer creates a fixed UID/GID
-1000 `luma` account but leaves it locked and embeds no SSH key. It disables SSH
+1000 `Suno` account but leaves it locked and embeds no SSH key. It disables SSH
 password and root login. An archive's package-contract hash must match the
 current manifests; changing either manifest deliberately makes older archives
 stale.
@@ -99,7 +99,7 @@ equivalent AArch64 builder, choose two new paths and run:
 
 The builder requires the Python `jinja2`, `yaml`, and `ply` build modules,
 checks out exact libcamera and FP6 prerequisite commits, applies the external
-prerequisite patches 1-15 followed by Luma patches 16-29, builds
+prerequisite patches 1-15 followed by Suno patches 16-29, builds
 only the Simple pipeline/IPA and GStreamer plugin, and installs the three
 source-managed sensor tuning files. Both target paths must not already exist;
 the script never deletes an old runtime or replaces Fedora's system packages.
@@ -116,7 +116,7 @@ After the postmarketOS control image reaches Phosh, the owner may temporarily
 start its disabled SSH service and collect a bounded native-Linux inventory:
 
 ```sh
-LUMA_FP6_SSH_TARGET=user@172.16.42.1 \
+SUNO_FP6_SSH_TARGET=user@172.16.42.1 \
   ./scripts/mobile/inventory-fp6-control.sh
 ```
 
@@ -218,7 +218,7 @@ GNSS on every exit path, and restores the original 30-second refresh.
 The current S3NRN4V NFC driver/device-tree series is retained under
 `patches/linux-milos-nfc/` and pinned by `fp6-nfc.env`. The driver's calibration
 requests are deliberately nonfatal for this controller: when `hwreg.bin` and
-`swreg.bin` are absent it keeps the values already stored in chip flash. Luma
+`swreg.bin` are absent it keeps the values already stored in chip flash. Suno
 therefore began with a blob-free, reader-only diagnostic candidate. A later
 read-only audit recovered the exact two calibration files from this phone's
 preserved official stock vendor image. Their source image and byte hashes are
@@ -243,7 +243,7 @@ this candidate's scope.
 
 `fp6-fingerprint.env` records the exact stock fingerprint identity and keeps
 all biometric and release-acceptance gates closed. The FP6 uses a FocalTech
-FT9362; Fairphone now publishes the exact GPL driver source, and the Luma lab
+FT9362; Fairphone now publishes the exact GPL driver source, and the Suno lab
 kernel has physically enumerated both its control shim and QSEECOM TEE nodes.
 The exact manufacturer `focal64` trustlet from QREL 16.95.0 is hash-pinned for
 offline staging but is neither tracked nor approved for redistribution. Its
@@ -286,7 +286,7 @@ initialized; and the bounded fault window was clean. No trustlet was staged or
 loaded. A new, separately authorized identity test is required before any
 biometric protocol work. Read
 `docs/research/fp6-fingerprint-backend.md` before any fingerprint work. Do not
-copy the Android HAL/module into Luma or enable enrollment until the secure-
+copy the Android HAL/module into Suno or enable enrollment until the secure-
 backend gate and each physical biometric acceptance gate are satisfied.
 
 Identity-v8 subsequently proved successful SHM registration of the complete
@@ -355,32 +355,32 @@ pulse longer than 150 ms or stronger than magnitude 24576. Do not weaken those
 first-test ceilings until physical and thermal acceptance is recorded.
 
 The [shared platform architecture](../../docs/platforms.md) uses
-Phosh/Phoc as Luma's handheld renderer and the genuine Luma GNOME/Mutter
+Phosh/Phoc as Suno's handheld renderer and the genuine Suno GNOME/Mutter
 session as its desktop and docked renderer. They consume one Fedora platform,
 application catalog, user account, data model, design system, and release.
-Shell-private settings are projections of the shared Luma shell-state contract,
+Shell-private settings are projections of the shared Suno shell-state contract,
 not independently synchronized product state.
 
 ## Live converged-shell iteration
 
-The physical diagnostic lane may hot-install the exact source-built Luma Shell
+The physical diagnostic lane may hot-install the exact source-built Suno Shell
 and integration RPMs without changing its boot image or rescue session. Its
 visible identity continues to come from the shared desktop dconf source at
-`config/desktop/dconf/db/luma.d/00-luma-desktop`; mobile must not copy or fork
+`config/desktop/dconf/db/Suno.d/00-Suno-desktop`; mobile must not copy or fork
 those appearance, dock, favorite-app, wallpaper, or Tiling defaults.
 
-`luma-shell-handheld.dconf` is loaded only after that shared profile. It is a
+`Suno-shell-handheld.dconf` is loaded only after that shared profile. It is a
 capability overlay that enables the native GNOME on-screen keyboard, removes
 desktop window-control buttons, maximizes ordinary application windows into
 the usable work area, and turns the shared dock into a persistent full-width
 touch target. Maximized is deliberate: the dock continues to reserve space and
 remain visible, unlike exclusive fullscreen. Desktop keeps its compact
 floating dock and window controls because none of these values are added to
-the shared profile. `scripts/mobile/hot-sync-luma-shell-profile.sh` validates
+the shared profile. `scripts/mobile/hot-sync-Suno-shell-profile.sh` validates
 both inputs before applying them to the current graphical user. It is an
 iteration tool, not a replacement for packaged fresh-profile defaults.
 
-That overlay also enables the Luma-authored `handheld@project-luma.local`
+That overlay also enables the Suno-authored `handheld@project-suno.local`
 extension. Its input regions activate only for a portrait primary display and
 turn off on a landscape desktop primary display. It owns bottom-edge Home and
 Apps gestures, right-edge Back, top-corner menu gestures, and the
@@ -394,8 +394,8 @@ hides fixed system partitions from the handheld sidebar, leaves removable and
 network storage visible, and requires the Prairie warning before direct entry
 to the system root. It does not alter mounts, permissions, or desktop Filer.
 
-`environment.d/90-luma-handheld.conf` declares only the hardware capability
-class. The diagnostic `luma-shell-session` launcher exports and imports the
+`environment.d/90-Suno-handheld.conf` declares only the hardware capability
+class. The diagnostic `Suno-shell-session` launcher exports and imports the
 same value before starting Shell directly because greetd does not run the
 systemd user environment generator. The shared Shell combines that explicit
 capability with live primary-monitor geometry: a portrait handheld gets the
@@ -403,7 +403,7 @@ camera-cutout-safe panel and immediate OSK pressed state, while a landscape
 external primary display uses normal desktop chrome.
 
 The initial greetd diagnostic lane starts Shell directly rather than through
-GNOME Session. `systemd-user/luma-graphical-session.target` supplies the normal
+GNOME Session. `systemd-user/Suno-graphical-session.target` supplies the normal
 systemd graphical-session anchor in that lane so standard user services such
 as XDG Desktop Portal are eligible to start and remain bound to the graphical
 login. Product images install this target as session composition; they do not
@@ -412,13 +412,13 @@ carry the transient `sleep infinity` anchor used for live diagnosis.
 Fedora Mutter normally rejects a panel scale when its resulting logical area
 is below 600×600. On the FP6 that hides useful 300% and 400% choices even though
 the panel divides exactly at those scales. The source-level handheld policy is
-`patches/mutter/0001-luma-handheld-scales.patch`; it relaxes only that minimum
-area when `LUMA_DEVICE_CLASS=handheld`, while leaving exact mode validation and
+`patches/mutter/0001-Suno-handheld-scales.patch`; it relaxes only that minimum
+area when `SUNO_DEVICE_CLASS=handheld`, while leaving exact mode validation and
 all desktop sessions unchanged. `build-mutter-handheld-fp6.sh` builds it from
 the pinned Fedora 44 AArch64 source RPM. During P5 bring-up only, the audited
 `patch-mutter-handheld-scales.py` bridge may create a private library from the
 exact installed FP6 binary. The launcher accepts only its pinned output hash
-and exposes it only to the Luma handheld compositor through `LD_LIBRARY_PATH`;
+and exposes it only to the Suno handheld compositor through `LD_LIBRARY_PATH`;
 it never replaces Fedora's system library or changes the global loader.
 
 Wallpaper, font, icon, Shell, dock, and Tiling changes should be built from the
@@ -452,20 +452,20 @@ or the cog above the OSK. Its keyboard registry distinguishes actual support
 from installed binaries: GNOME Shell's native engine is accepted; Stevia and
 Squeekboard target Phoc/wlroots; Plasma Keyboard and Maliit target KWin; Lomiri
 Keyboard is a Maliit plug-in. Non-native engines stay visible as adapter work
-until they type into Luma Wayland clients under Mutter and pass content-free
+until they type into Suno Wayland clients under Mutter and pass content-free
 latency/missed-input diagnostics. A rendered keyboard alone is not accepted.
 
 The converged application composition is additive. The shared
 workstation roles in `config/shared/application-packages.txt` are required on
 both desktop and phone; `phone-capability-packages.txt` adds telephony, chat,
 modem, feedback, and sensor integration without defining a separate mobile
-application product. Luma-owned applications are rebuilt from the same source
+application product. Suno-owned applications are rebuilt from the same source
 RPM for each native architecture. The Phosh packages in `ui-packages.txt`
 provide the selected handheld presentation engine and must not be mistaken for
-or used to subtract from the Luma product application set.
+or used to subtract from the Suno product application set.
 
-`scripts/mobile/build-luma-filer-fp6.sh` enforces that rule for Filer: it
-accepts only the already validated shared Luma source RPM, rebuilds it on
+`scripts/mobile/build-Suno-filer-fp6.sh` enforces that rule for Filer: it
+accepts only the already validated shared Suno source RPM, rebuilds it on
 native Fedora 44 AArch64, verifies the shared schema and warning payload, and
 emits a hashed offline bundle without contacting the phone.
 
@@ -483,7 +483,7 @@ phone capabilities are all inputs to both DNF composition and the recorded
 package-contract hash. Changing the desktop application baseline therefore
 invalidates a stale phone rootfs instead of requiring a manual copy step.
 
-`systemd-preset/80-luma-handheld.preset` is the initial idle-service policy.
+`systemd-preset/80-Suno-handheld.preset` is the initial idle-service policy.
 It disables Avahi's always-on discovery listener and Waydroid's eager
 container start in handheld posture even when shared desktop applications pull
 those packages into the image. This removes neither capability nor forks the

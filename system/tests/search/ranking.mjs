@@ -1,5 +1,5 @@
-// Ranking suite for Luma Search's files, folders and apps.
-// node tests/search/ranking.mjs path/to/lumaSearchRanking.js
+// Ranking suite for Suno Search's files, folders and apps.
+// node tests/search/ranking.mjs path/to/SunoSearchRanking.js
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {pathToFileURL, fileURLToPath} from 'node:url';
@@ -11,7 +11,7 @@ const vectors = JSON.parse(fs.readFileSync(
 const context = {home: vectors.home, now: vectors.now, xdgFolders: new Set(vectors.xdg)};
 const settings = JSON.parse(fs.readFileSync(new URL('./settings-cases.json', import.meta.url), 'utf8'));
 const pages = JSON.parse(fs.readFileSync(process.argv.find(a => a.endsWith('settings-pages.json')) ??
-    new URL('../../src/luma-search/settings-pages.json', import.meta.url), 'utf8')).pages;
+    new URL('../../src/Suno-search/settings-pages.json', import.meta.url), 'utf8')).pages;
 
 // --dump prints every score so the Python twin can be compared exactly.
 if (process.argv.includes('--dump')) {
@@ -89,7 +89,7 @@ assert.ok(R.junkPenalty('IMG_20240512_101010.jpg').reasons.includes('date'));
 assert.equal(R.ftsQuery(['depot-18', 'Backup']), 'depot* 18* Backup*');
 assert.equal(R.ftsQuery(['documnets'], {shorten: true}), 'docu*');
 assert.ok(R.scoreProviderResult('app', '4', ['2+2'], 0, 'org.gnome.Calculator.desktop') > 1300);
-assert.ok(R.scoreProviderResult('mail', 'About the Viola release', ['about'], 0, 'org.projectluma.Charlie.desktop') <
+assert.ok(R.scoreProviderResult('mail', 'About the Viola release', ['about'], 0, 'org.projectSuno.Charlie.desktop') <
     R.scoreSettingPage({title: 'About This Computer', path: 'System', keywords: ['about']}, ['about']),
 'mail follows settings');
 checked += 16;

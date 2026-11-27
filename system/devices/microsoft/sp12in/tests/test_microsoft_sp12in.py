@@ -26,13 +26,13 @@ class SurfaceProfile(unittest.TestCase):
 
     def test_follows_the_generic_arm_image_with_its_kernel_override(self):
         device = tomllib.loads((DEVICE / 'device.toml').read_text())
-        self.assertEqual(device['updates']['ostree_ref'], 'luma/1/aarch64/nightly')
+        self.assertEqual(device['updates']['ostree_ref'], 'Suno/1/aarch64/nightly')
         repo = device['device_repo']
         self.assertEqual(repo['url'], 'https://dl.simplyluma.com/os/devices/aarch64/microsoft-sp12in/')
         self.assertEqual(repo['install'], [device['kernel']['package']])
         self.assertIn('kernel-core', repo['remove'])
         # Owner firmware stays on the device; no repository carries it.
-        self.assertEqual(device['firmware']['store'], '/etc/luma/device-firmware')
+        self.assertEqual(device['firmware']['store'], '/etc/Suno/device-firmware')
 
     def test_firmware_input_manifest_is_exact(self):
         device = tomllib.loads((DEVICE / 'device.toml').read_text())

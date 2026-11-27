@@ -13,7 +13,7 @@ repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 
 base_boot=${1:?usage: prepare-fp6-fingerprint-stock-node-names-candidate.sh V12_BOOT OUTPUT_DIR}
 output_dir=${2:?missing output directory}
-candidate=$output_dir/boot-fp6-luma-fingerprint-stock-node-names-v13.img
+candidate=$output_dir/boot-fp6-Suno-fingerprint-stock-node-names-v13.img
 
 die() { printf 'error: %s\n' "$*" >&2; exit 1; }
 hash() { sha256sum "$1" | awk '{print $1}'; }
@@ -142,14 +142,14 @@ fdtget "$dtb" "$ta" no-map >/dev/null || die 'TA no-map absent'
 ! fdtget "$dtb" "$ta" reusable >/dev/null 2>&1 || die 'TA unexpectedly reusable'
 fdtget "$dtb" "$qsee" qcom,appsbl-qseecom-support >/dev/null || die 'AppsBL marker absent'
 fdtget "$dtb" "$qsee" qcom,commonlib64-loaded-by-uefi >/dev/null || die 'commonlib64 marker absent'
-fdtget "$dtb" /firmware/scm/qseecom-tee-heaps luma,dedicated-heaps >/dev/null || die 'dedicated heaps absent'
-fdtget "$dtb" /firmware/scm luma,qsee-log-diagnostic >/dev/null || die 'QSEE log absent'
+fdtget "$dtb" /firmware/scm/qseecom-tee-heaps Suno,dedicated-heaps >/dev/null || die 'dedicated heaps absent'
+fdtget "$dtb" /firmware/scm Suno,qsee-log-diagnostic >/dev/null || die 'QSEE log absent'
 ! fdtget "$dtb" /firmware/scm memory-region >/dev/null 2>&1 || die 'global SCM pool reintroduced'
 [ "$(stat -c %s "$candidate")" -le $((96 * 1024 * 1024)) ] ||
 	die 'candidate exceeds the 96 MiB boot partition'
 
 {
-	printf 'LUMA_FP6_FINGERPRINT_BOOT_CANDIDATE_VERSION=13\n'
+	printf 'SUNO_FP6_FINGERPRINT_BOOT_CANDIDATE_VERSION=13\n'
 	printf 'SCOPE=fp6-fingerprint-stock-node-names\n'
 	printf 'BASE_BOOT_SHA256=%s\n' "$FP6_FINGERPRINT_APPSBL_CONTRACT_BOOT_SHA256"
 	printf 'KERNEL_SHA256=%s\n' "$(hash "$work/candidate/kernel")"

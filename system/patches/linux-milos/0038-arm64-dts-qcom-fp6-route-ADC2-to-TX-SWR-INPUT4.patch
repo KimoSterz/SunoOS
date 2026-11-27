@@ -1,5 +1,5 @@
 From 0000000000000000000000000000000000000038 Mon Sep 17 00:00:00 2001
-From: Project Luma <luma@local>
+From: Project Suno <Suno@local>
 Date: Wed, 19 Aug 2026 23:00:00 -0500
 Subject: [PATCH] arm64: dts: qcom: fp6: route ADC2 to TX SWR input 4
 
@@ -14,7 +14,7 @@ PS3 with exact-zero capture data. Route ADC2_OUTPUT to SWR_INPUT4 so selecting
 SWR_MIC4 powers the WCD9378 ADC2 sequencer and the corresponding SoundWire
 port.
 
-Signed-off-by: Project Luma <luma@local>
+Signed-off-by: Project Suno <Suno@local>
 ---
  arch/arm64/boot/dts/qcom/milos-fairphone-fp6.dts | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)

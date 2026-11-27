@@ -8,11 +8,11 @@
 set -Eeuo pipefail
 umask 077
 
-release=7.1.2-luma-fp-ims1
+release=7.1.2-Suno-fp-ims1
 boot_b_sha=2eb1c71fe073c8624ed6f1a4f1267744cd7c8281b52c4f64eca65b9f9050a1e6
-candidate=/var/tmp/luma-fp6-stock-android-binderfs-boot1/boot-fp6-luma-binderfs-ram1.img
+candidate=/var/tmp/Suno-fp6-stock-android-binderfs-boot1/boot-fp6-Suno-binderfs-ram1.img
 candidate_sha=b4598536337e1b557a1f6d1d923ff61c1d2baa25adffa5d0c57a2fd8ccbc7086
-hook=/var/tmp/luma-stock-android-container-build-inputs/fp6-stock-android-binderfs-lxc-hook.py
+hook=/var/tmp/Suno-stock-android-container-build-inputs/fp6-stock-android-binderfs-lxc-hook.py
 hook_sha=0b4b7ba7517a71b5894407e61ca5eaf9385a56b310f37b48c4e721e4fa2ffdca
 test_root=
 
@@ -49,7 +49,7 @@ for process in qcrilNrd imsdaemon ims-dataservice-daemon ims_rtp_daemon; do
     die "stock process is already running: $process"
 done
 
-test_root=$(mktemp -d /run/luma-binderfs-ram1.XXXXXXXX)
+test_root=$(mktemp -d /run/Suno-binderfs-ram1.XXXXXXXX)
 mkdir -m 0700 "$test_root/dev" "$test_root/dev/binderfs"
 unshare --mount --ipc --fork --propagation private -- /bin/bash -euo pipefail -c '
   root=$1
@@ -57,7 +57,7 @@ unshare --mount --ipc --fork --propagation private -- /bin/bash -euo pipefail -c
   mount -t binder binder -o max=3 "$root/dev/binderfs"
   findmnt -rn -T "$root/dev/binderfs" -o FSTYPE,OPTIONS |
     awk '\''$1 == "binder" && $2 ~ /(^|,)rw(,|$)/ { found=1 } END { exit !found }'\''
-  env LXC_NAME=luma-stock-android-c1 LXC_ROOTFS_MOUNT="$root" "$hook"
+  env LXC_NAME=Suno-stock-android-c1 LXC_ROOTFS_MOUNT="$root" "$hook"
   [[ $(readlink "$root/dev/binder") == binderfs/binder ]]
   [[ $(readlink "$root/dev/hwbinder") == binderfs/hwbinder ]]
   [[ $(readlink "$root/dev/vndbinder") == binderfs/vndbinder ]]

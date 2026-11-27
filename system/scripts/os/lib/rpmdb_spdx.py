@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""SPDX 2.3 JSON from a Luma build's rpm inventory (the syft fallback).
+"""SPDX 2.3 JSON from a Suno build's rpm inventory (the syft fallback).
 
 Input is the packages-installed.tsv that scripts/os/build-image.sh writes from
 the image's own rpm database: NAME, EPOCHNUM, VERSION, RELEASE, ARCH,
@@ -60,7 +60,7 @@ def document(rows, name, version):
         "documentNamespace": f"https://simplyluma.com/spdx/{name}-{version}-{uuid.uuid4()}",
         "creationInfo": {
             "created": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-            "creators": ["Tool: luma-rpmdb-spdx"],
+            "creators": ["Tool: Suno-rpmdb-spdx"],
         },
         "packages": items,
         "relationships": [

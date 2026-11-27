@@ -43,7 +43,7 @@ def normalize(repo_path, source):
     metadata = GLib.Variant("a{sv}", {})
     _written, commit = repo.write_commit(
         None,
-        "Normalized Project Luma base export tree",
+        "Normalized Project Suno base export tree",
         f"Removed builder-owned {REMOVED_PATH}",
         metadata,
         root,

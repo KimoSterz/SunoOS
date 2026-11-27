@@ -1,7 +1,7 @@
 ---
 type: improvement
 component: TV Mode
-packages: [luma-developer-platform]
+packages: [Suno-developer-platform]
 highlight: false
 ---
 Summary: TV apps keep their sidebar and gain an action bar

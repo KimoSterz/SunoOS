@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {catalogPage, appCells, folderWindow} from '../../src/luma-shell-presentation/launcherModel.js';
+import {catalogPage, appCells, folderWindow} from '../../src/Suno-shell-presentation/launcherModel.js';
 const apps = Array.from({length:61}, (_,i)=>({name:`App ${String(i).padStart(2,'0')}`}));
 assert.equal(catalogPage(apps,'',2).items.length,5);
 assert.equal(catalogPage(apps,'',99).page,2);

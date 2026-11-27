@@ -9,11 +9,11 @@ set -euo pipefail
 umask 077
 
 repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
-ssh_bin=${LUMA_SSH:-ssh}
-ssh_target=${LUMA_FP6_SSH_TARGET:-luma@172.16.42.1}
-ssh_identity_file=${LUMA_FP6_SSH_IDENTITY_FILE:-}
-timestamp=${LUMA_FP6_PERIPHERAL_TIMESTAMP:-$(date -u +%Y%m%dT%H%M%SZ)}
-output_root=${LUMA_FP6_PERIPHERAL_DIR:-$repo_root/build/mobile/fp6-physical/peripheral-inventory/$timestamp}
+ssh_bin=${SUNO_SSH:-ssh}
+ssh_target=${SUNO_FP6_SSH_TARGET:-Suno@172.16.42.1}
+ssh_identity_file=${SUNO_FP6_SSH_IDENTITY_FILE:-}
+timestamp=${SUNO_FP6_PERIPHERAL_TIMESTAMP:-$(date -u +%Y%m%dT%H%M%SZ)}
+output_root=${SUNO_FP6_PERIPHERAL_DIR:-$repo_root/build/mobile/fp6-physical/peripheral-inventory/$timestamp}
 tmp_report=$(mktemp)
 trap 'rm -f "$tmp_report"' EXIT
 
@@ -152,7 +152,7 @@ mmc_media_count=$(find /sys/bus/mmc/devices -maxdepth 1 -mindepth 1 2>/dev/null 
 fingerprint_names=$(join_input_names 'fingerprint')
 fingerprint_input_count=$(printf '%s\n' "$fingerprint_names" | awk -F, 'NF && $1 != "" {print NF; next} {print 0}')
 
-printf 'LUMA_FP6_PERIPHERAL_INVENTORY_VERSION=1\n'
+printf 'SUNO_FP6_PERIPHERAL_INVENTORY_VERSION=1\n'
 printf 'PHONE_ACCESSED=true\n'
 printf 'MUTATING_OPERATIONS=none\n'
 printf 'RADIO_STATE_CHANGED=false\n'
@@ -218,8 +218,8 @@ printf 'ERROR_BLUETOOTH=%s\n' "$(count_pattern 'Bluetooth.*(fail|error)|hci[0-9]
 printf 'ERROR_THERMAL=%s\n' "$(count_pattern 'thermal.*(critical|shutdown)')"
 REMOTE
 
-grep -qx 'LUMA_FP6_PERIPHERAL_INVENTORY_VERSION=1' "$tmp_report" || \
-  die 'remote output is not a Luma FP6 peripheral report'
+grep -qx 'SUNO_FP6_PERIPHERAL_INVENTORY_VERSION=1' "$tmp_report" || \
+  die 'remote output is not a Suno FP6 peripheral report'
 grep -qx 'OS_ID=fedora' "$tmp_report" || die 'remote userspace is not Fedora'
 grep -qx 'OS_VERSION_ID=44' "$tmp_report" || die 'remote Fedora release is not 44'
 grep -Eqi '^DT_MODEL=.*Fairphone.*(Gen[.]? 6|6)' "$tmp_report" || \
@@ -231,7 +231,7 @@ fi
 mkdir -p "$output_root"
 install -m 0600 "$tmp_report" "$output_root/peripherals.env"
 {
-  printf 'LUMA_FP6_PERIPHERAL_SUMMARY_VERSION=1\n'
+  printf 'SUNO_FP6_PERIPHERAL_SUMMARY_VERSION=1\n'
   printf 'IDENTITY=fp6-fedora44-confirmed\n'
   printf 'TRANSPORT=ssh\n'
   printf 'PHONE_ACCESSED=true\n'

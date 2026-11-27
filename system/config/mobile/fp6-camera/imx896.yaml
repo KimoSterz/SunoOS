@@ -1,7 +1,7 @@
 # libcamera Simple-pipeline tuning for the Fairphone 6 Sony IMX896.
 #
 # The CCM and AWB values originate from the public CatCrafts FP6 camera
-# bring-up. Luma enables its accompanying software-ISP autofocus algorithm;
+# bring-up. Suno enables its accompanying software-ISP autofocus algorithm;
 # without the Af entry the DW9784 lens is discovered but never moved.
 %YAML 1.1
 ---

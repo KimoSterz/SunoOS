@@ -48,7 +48,7 @@ class WriterTest(unittest.TestCase):
 
     def test_session_and_pause(self):
         def feed(wr, w):
-            os.write(wr, line([1, "H", {"boot_id": "abcdef12-x", "format": "luma-touch-lab/1"}]))
+            os.write(wr, line([1, "H", {"boot_id": "abcdef12-x", "format": "Suno-touch-lab/1"}]))
             os.write(wr, line([2, "h", "0300"]))
             time.sleep(0.3)
             open(os.path.join(self.root, "control", "pause"), "w").close()

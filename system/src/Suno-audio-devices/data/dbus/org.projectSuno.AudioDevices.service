@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=org.projectSuno.AudioDevices
+Exec=/usr/libexec/Suno-audio-devices --gapplication-service
+SystemdService=Suno-audio-devices.service

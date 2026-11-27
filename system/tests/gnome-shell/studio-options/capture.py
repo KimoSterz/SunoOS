@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-# Derived from tools/lumaui-conform/harness/shell_capture.py at foundation.
+# Derived from tools/SunoUI-conform/harness/shell_capture.py at foundation.
 # Changes: fail on every Eval/empty capture; record native actor bounds; capture
 # both the desktop and its surface directly through ScreenshotArea.
-"""lumaui-conform, Shell route: headless GNOME Shell screenshots for pixel mode.
+"""SunoUI-conform, Shell route: headless GNOME Shell screenshots for pixel mode.
 
     shell_capture.py <scenario.json> <theme> <phone 0|1> <out-dir> [overlay-dir]
 
@@ -11,7 +11,7 @@ Runs on the ThinkPad (the Shell there is the one being patched): gnome-shell --h
 a virtual monitor, on a private session and system bus, a private XDG_RUNTIME_DIR and private
 XDG dirs, so nothing reaches Nick's session, settings or screen. The Shell's JS and theme come
 from the overlay directory (G_RESOURCE_OVERLAYS=/org/gnome/shell=<dir>; default
-~/.local/share/luma-shell-live/active, the live overlays). A tiny extension puts the Shell in
+~/.local/share/Suno-shell-live/active, the live overlays). A tiny extension puts the Shell in
 unsafe mode so the states can be driven through org.gnome.Shell.Eval, and each state is saved
 through org.gnome.Shell.Screenshot as <out-dir>/<state>.png.
 
@@ -36,7 +36,7 @@ import sys
 import tempfile
 import time
 
-EXT = "lumaui-conform@projectluma.org"
+EXT = "SunoUI-conform@projectSuno.org"
 BUS_CONF = ('<busconfig><type>session</type><auth>EXTERNAL</auth><policy context="default">'
             '<allow own="*"/><allow send_destination="*"/><allow receive_sender="*"/></policy></busconfig>')
 EXT_JS = """import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
@@ -73,25 +73,25 @@ def take_slot():
         if os.getloadavg()[0] <= cpus:
             break
         if i == 0:
-            print(f"lumaui-conform: this machine is busy (load {os.getloadavg()[0]:.1f} > {cpus}); waiting up to 60 s", file=sys.stderr)
+            print(f"SunoUI-conform: this machine is busy (load {os.getloadavg()[0]:.1f} > {cpus}); waiting up to 60 s", file=sys.stderr)
         time.sleep(1)
     else:
-        print("lumaui-conform: still busy, skipped", file=sys.stderr)
+        print("SunoUI-conform: still busy, skipped", file=sys.stderr)
         sys.exit(5)
-    d = os.path.expanduser("~/.cache/lumaui-conform")
+    d = os.path.expanduser("~/.cache/SunoUI-conform")
     os.makedirs(d, exist_ok=True)
     f = open(os.path.join(d, "slot-1.lock"), "w")
     try:
         fcntl.flock(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
     except OSError:
-        print("lumaui-conform: waiting for the capture slot", file=sys.stderr, flush=True)
+        print("SunoUI-conform: waiting for the capture slot", file=sys.stderr, flush=True)
         fcntl.flock(f, fcntl.LOCK_EX)
     return f
 
 
 def main() -> int:
     scn_path, theme, phone, out = sys.argv[1], sys.argv[2], sys.argv[3] == "1", sys.argv[4]
-    overlay = sys.argv[5] if len(sys.argv) > 5 and sys.argv[5] else os.path.expanduser("~/.local/share/luma-shell-live/active")
+    overlay = sys.argv[5] if len(sys.argv) > 5 and sys.argv[5] else os.path.expanduser("~/.local/share/Suno-shell-live/active")
     shell = json.load(open(scn_path)).get("shell", {})
     installed = stamped = None
     if shell.get("startup_only") or shell.get("protocol") or shell.get("gtk_protocol"):
@@ -103,7 +103,7 @@ def main() -> int:
         signal.signal(sig, lambda s, f: sys.exit(128 + s))
     slot = take_slot()
     os.makedirs(out, exist_ok=True)
-    t = tempfile.mkdtemp(prefix="lumaui-conform-shell.")
+    t = tempfile.mkdtemp(prefix="SunoUI-conform-shell.")
     procs = []
     log = open(os.path.join(out, "shell.log"), "w")
     try:
@@ -117,15 +117,15 @@ def main() -> int:
             # Even an unexpected source-open fallback cannot launch Nick's app.
             applications = os.path.join(xdg["data"], "applications")
             os.makedirs(applications)
-            identity = "org.projectluma.ShellWireGTK" if shell.get("gtk_protocol") else "org.projectluma.Messages"
+            identity = "org.projectSuno.ShellWireGTK" if shell.get("gtk_protocol") else "org.projectSuno.Messages"
             with open(os.path.join(applications, identity + ".desktop"), "w") as f:
-                f.write("[Desktop Entry]\nType=Application\nName=Luma Wire Fixture\n"
+                f.write("[Desktop Entry]\nType=Application\nName=Suno Wire Fixture\n"
                         "Exec=/usr/bin/false\nIcon=dialog-information\n"
                         "DBusActivatable=true\nNoDisplay=true\n")
         ext = os.path.join(xdg["data"], "gnome-shell", "extensions", EXT)
         os.makedirs(ext)
         with open(os.path.join(ext, "metadata.json"), "w") as f:
-            json.dump({"uuid": EXT, "name": "lumaui-conform", "description": "capture driver", "shell-version": ["50"]}, f)
+            json.dump({"uuid": EXT, "name": "SunoUI-conform", "description": "capture driver", "shell-version": ["50"]}, f)
         with open(os.path.join(ext, "extension.js"), "w") as f:
             f.write(EXT_JS)
         settings = {"org/gnome/shell": {"enabled-extensions": f"['{EXT}']", "disable-user-extensions": "false",
@@ -154,7 +154,7 @@ def main() -> int:
         time.sleep(0.3)
         env.update(DBUS_SESSION_BUS_ADDRESS=f"unix:path={t}/bus", DBUS_SYSTEM_BUS_ADDRESS=f"unix:path={t}/sysbus")
         size = shell.get("phone_size", "390x844") if phone else shell.get("size", "1180x740")
-        procs.append(subprocess.Popen(["gnome-shell", "--headless", "--wayland", "--no-x11", "--wayland-display=lumaui-conform-shell",
+        procs.append(subprocess.Popen(["gnome-shell", "--headless", "--wayland", "--no-x11", "--wayland-display=SunoUI-conform-shell",
                                        "--virtual-monitor", size], env=env, stdout=log, stderr=log, start_new_session=True))
         shell_proc = procs[-1]
         manifest_path = os.path.join(overlay, "STARTUP-TEST.json")
@@ -265,7 +265,7 @@ def main() -> int:
             png = os.path.join(out, f"{state['name']}.png")
             r = gdbus(env, "/org/gnome/Shell/Screenshot", "org.gnome.Shell.Screenshot.Screenshot", "false", "false", png)
             if not os.path.isfile(png): raise RuntimeError(f"missing screenshot: {state['name']}: {r.stdout or r.stderr}")
-            result = gdbus(env, "/org/gnome/Shell", "org.gnome.Shell.Eval", f"global.lumaStudioFixture.surface({str(state.get('quick', False)).lower()})")
+            result = gdbus(env, "/org/gnome/Shell", "org.gnome.Shell.Eval", f"global.SunoStudioFixture.surface({str(state.get('quick', False)).lower()})")
             ok, payload = ast.literal_eval(result.stdout.strip().replace("true", "True", 1))
             if not ok: raise RuntimeError(f"bounds failed: {payload}")
             rect = json.loads(payload)

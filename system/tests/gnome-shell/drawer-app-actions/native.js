@@ -6,7 +6,7 @@ import Shell from 'gi://Shell';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as AppFavorites from 'resource:///org/gnome/shell/ui/appFavorites.js';
 import * as Scripting from 'resource:///org/gnome/shell/ui/scripting.js';
-const out = GLib.getenv('LUMA_POLISH_OUTPUT'), results = [];
+const out = GLib.getenv('SUNO_POLISH_OUTPUT'), results = [];
 const pause = async (ms = 200) => await Scripting.sleep(ms);
 function check(name, ok) {
     results.push({name, ok: !!ok});
@@ -46,12 +46,12 @@ async function work() {
         pointer.notify_button(GLib.get_monotonic_time(), button, Clutter.ButtonState.RELEASED);
         await pause();
     };
-    const id = 'org.projectluma.DrawerProbe.desktop';
+    const id = 'org.projectSuno.DrawerProbe.desktop';
     const favorites = AppFavorites.getAppFavorites();
     const original = global.settings.get_strv('favorite-apps');
     try {
         drawer.open(); await pause();
-        drawer._search.set_text('Luma Drawer Probe'); await pause();
+        drawer._search.set_text('Suno Drawer Probe'); await pause();
         check('real installed application has one drawer tile', drawer._tiles.length === 1);
         let tile = drawer._tiles[0];
         await click(tile, Clutter.BUTTON_SECONDARY);
@@ -86,7 +86,7 @@ async function work() {
         for (const window of launched.get_windows()) window.delete(global.get_current_time());
         await until(() => launched.get_windows().length === 0);
         drawer.open(); await pause();
-        drawer._search.set_text('Luma Drawer Probe'); await pause();
+        drawer._search.set_text('Suno Drawer Probe'); await pause();
         tile = drawer._tiles[0];
         await click(tile, Clutter.BUTTON_PRIMARY, 1200);
         check('pointer hold opens the native app menu', drawer._appMenu?.isOpen);
@@ -94,7 +94,7 @@ async function work() {
         await key(Clutter.KEY_Escape);
         await click(tile, Clutter.BUTTON_SECONDARY);
         const oldMenu = drawer._appMenu;
-        drawer._search.set_text('Luma Drawer'); await pause();
+        drawer._search.set_text('Suno Drawer'); await pause();
         check('search rebuild destroys the previous menu', drawer._appMenu === null && !oldMenu.isOpen);
         check('search rebuild removes the menu from its manager', drawer._menuManager._menus.length === 0);
         tile = drawer._tiles[0]; await click(tile, Clutter.BUTTON_SECONDARY);
@@ -103,7 +103,7 @@ async function work() {
         check('closing drawer releases the modal grab', !drawer._menuManager.activeMenu);
         check('closing drawer leaves no managed menu', drawer._menuManager._menus.length === 0);
         drawer.open(); await pause();
-        drawer._search.set_text('Luma Drawer Probe'); await pause();
+        drawer._search.set_text('Suno Drawer Probe'); await pause();
         tile = drawer._tiles[0]; await click(tile);
         const app = Shell.AppSystem.get_default().lookup_app(id);
         await until(() => app.get_windows().length > 0);

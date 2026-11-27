@@ -5,7 +5,7 @@
 
 set -Eeuo pipefail
 
-stage=/tmp/luma-qsee-region-probe-v1
+stage=/tmp/Suno-qsee-region-probe-v1
 expected_model='The Fairphone (Gen. 6)'
 expected_kernel=7.1.2
 expected_boot_size=27512832
@@ -33,17 +33,17 @@ cleanup() {
 	local cleanup_status=0
 	set +e
 	if [[ $cleaned != true ]]; then
-		if [[ $probe_loaded == true ]] && grep -qw luma_qsee_region_probe /proc/modules; then
-			rmmod luma_qsee_region_probe || cleanup_status=1
+		if [[ $probe_loaded == true ]] && grep -qw Suno_qsee_region_probe /proc/modules; then
+			rmmod Suno_qsee_region_probe || cleanup_status=1
 		fi
 		if [[ $qsee_loaded == true ]] && grep -qw qseecomtee /proc/modules; then
 			rmmod qseecomtee || cleanup_status=1
 		fi
-		if grep -Eqw 'luma_qsee_region_probe|qseecomtee' /proc/modules; then
+		if grep -Eqw 'Suno_qsee_region_probe|qseecomtee' /proc/modules; then
 			printf 'event=qsee_region_cleanup_error reason=module_still_loaded\n' >&2
 			cleanup_status=1
 		fi
-		if [[ -d $stage && ! -L $stage && $stage == /tmp/luma-qsee-region-probe-v1 ]]; then
+		if [[ -d $stage && ! -L $stage && $stage == /tmp/Suno-qsee-region-probe-v1 ]]; then
 			find "$stage" -depth -delete || cleanup_status=1
 		else
 			printf 'event=qsee_region_cleanup_error reason=stage_identity\n' >&2
@@ -52,7 +52,7 @@ cleanup() {
 		cleaned=true
 	fi
 	printf 'event=qsee_region_cleanup probe_loaded=%s qsee_loaded=%s stage_present=%s\n' \
-		"$(grep -qw luma_qsee_region_probe /proc/modules && printf true || printf false)" \
+		"$(grep -qw Suno_qsee_region_probe /proc/modules && printf true || printf false)" \
 		"$(grep -qw qseecomtee /proc/modules && printf true || printf false)" \
 		"$([[ -e $stage ]] && printf true || printf false)"
 	if ((cleanup_status != 0 && status == 0)); then
@@ -73,8 +73,8 @@ grep -qw 'androidboot.slot_suffix=_b' /proc/cmdline || fail slot
 runtime_config=$(gzip -dc /proc/config.gz)
 [[ $(sha256sum <<<"$runtime_config" | cut -d' ' -f1) == "$expected_config_sha" ]] || fail runtime_config_hash
 [[ $(sha256sum "$stage/qseecomtee.ko" | cut -d' ' -f1) == "$expected_qsee_module_sha" ]] || fail qsee_module_hash
-[[ $(sha256sum "$stage/luma_qsee_region_probe.ko" | cut -d' ' -f1) == "$expected_probe_module_sha" ]] || fail probe_module_hash
-! grep -Eqw 'luma_qsee_region_probe|qseecomtee' /proc/modules || fail module_already_loaded
+[[ $(sha256sum "$stage/Suno_qsee_region_probe.ko" | cut -d' ' -f1) == "$expected_probe_module_sha" ]] || fail probe_module_hash
+! grep -Eqw 'Suno_qsee_region_probe|qseecomtee' /proc/modules || fail module_already_loaded
 ! pgrep -x qsee-supplicant >/dev/null || fail supplicant_running
 ! pgrep -x qsee-app-loader >/dev/null || fail loader_running
 [[ $(systemctl is-system-running) == running ]] || fail system_not_running
@@ -89,7 +89,7 @@ grep -qw qseecomtee /proc/modules || fail qsee_module_did_not_load
 [[ -c /dev/tee0 && -c /dev/teepriv0 ]] || fail tee_nodes
 
 set +e
-insmod "$stage/luma_qsee_region_probe.ko"
+insmod "$stage/Suno_qsee_region_probe.ko"
 probe_status=$?
 set -e
 if ((probe_status == 0)); then
@@ -98,15 +98,15 @@ fi
 
 new_dmesg=$(dmesg | tail -n "+$((baseline_dmesg_lines + 1))")
 printf '%s\n' '--- QSEE app-region evidence ---'
-grep -Ei 'dedicated .* heap|dedicated QSEECOM|SHM Bridge|luma_qsee_region|qseecom|QSEE' <<<"$new_dmesg" || true
+grep -Ei 'dedicated .* heap|dedicated QSEECOM|SHM Bridge|Suno_qsee_region|qseecom|QSEE' <<<"$new_dmesg" || true
 printf '%s\n' '--- end QSEE app-region evidence ---'
 ((probe_status == 0)) || fail "probe_insmod_status_${probe_status}"
-grep -Fq 'luma_qsee_region: app region accepted' <<<"$new_dmesg" || fail secure_acceptance_absent
+grep -Fq 'Suno_qsee_region: app region accepted' <<<"$new_dmesg" || fail secure_acceptance_absent
 [[ -z $(critical_faults <<<"$new_dmesg") ]] || fail critical_kernel_fault
 [[ $(systemctl is-system-running) == running ]] || fail system_not_running_after_probe
 [[ $(systemctl --failed --no-legend --no-pager | sed '/^[[:space:]]*$/d' | wc -l) -eq 0 ]] || fail failed_units_after_probe
 
-rmmod luma_qsee_region_probe
+rmmod Suno_qsee_region_probe
 probe_loaded=false
 rmmod qseecomtee
 qsee_loaded=false

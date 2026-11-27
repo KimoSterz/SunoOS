@@ -1,5 +1,5 @@
 From c4d2b6aa965b0129c5ed0ef7e4d50346be81b7e2 Mon Sep 17 00:00:00 2001
-From: Project Luma <maintainers@projectluma.org>
+From: Project Suno <maintainers@projectSuno.org>
 Date: Tue, 18 Aug 2026 19:40:00 -0500
 Subject: [PATCH] ipa: simple: Ignore empty controls during teardown
 
@@ -13,7 +13,7 @@ Require both values to retain their expected integer type before reading them.
 As with a missing-control teardown message, an empty or mistyped message cannot
 produce valid metadata or a safe subsequent sensor request and must be dropped.
 
-Signed-off-by: Project Luma <maintainers@projectluma.org>
+Signed-off-by: Project Suno <maintainers@projectSuno.org>
 ---
  src/ipa/simple/soft_simple.cpp | 14 ++++++++++++--
  1 file changed, 12 insertions(+), 2 deletions(-)

@@ -14,13 +14,13 @@ async function shot(name) {
     await new Shell.Screenshot().screenshot(false, f); f.close(null);
 }
 async function run() {
-    const p = Main.presentation, snapshot = p._state, dialog = Main.lumaSearch._dialog;
-    const settings = new Gio.Settings({schema_id: 'org.project_luma.shell-state'});
+    const p = Main.presentation, snapshot = p._state, dialog = Main.SunoSearch._dialog;
+    const settings = new Gio.Settings({schema_id: 'org.projectSuno.shell-state'});
     const a11y = new Gio.Settings({schema_id: 'org.gnome.desktop.a11y.interface'});
     const reduce = settings.get_user_value('reduce-transparency'), high = a11y.get_user_value('high-contrast');
     const treatment = settings.get_user_value('surface-treatment');
     const reloadStyle = () => {
-        const path = GLib.getenv('LUMA_SEARCH_MATERIAL_CSS');
+        const path = GLib.getenv('SUNO_SEARCH_MATERIAL_CSS');
         if (path) St.ThemeContext.get_for_stage(global.stage).get_theme().load_stylesheet(Gio.File.new_for_path(path));
     };
     const surfaces = [dialog._fieldIsland, dialog._intro, dialog._results];
@@ -29,12 +29,12 @@ async function run() {
         settings.set_string('surface-treatment', 'dark');
         settings.set_boolean('reduce-transparency', false); a11y.set_boolean('high-contrast', false);await sleep(350);reloadStyle();
         for (const mode of ['mobile', 'desktop']) {
-            Main.lumaSearch.close(); await sleep(220);
+            Main.SunoSearch.close(); await sleep(220);
             p._snapshot({...snapshot, presentation: {...snapshot.presentation, effective: mode}});
-            await sleep(250); Main.lumaSearch.open(); await sleep(450);
+            await sleep(250); Main.SunoSearch.open(); await sleep(450);
             check(`${mode}: shared search mapped`, p.mode === mode && dialog.mapped);
             check(`${mode}: one binding per surface`, dialog._surfaceBindings.length === 3 &&
-                surfaces.every(a => a.get_effect('luma-surface-backdrop')));
+                surfaces.every(a => a.get_effect('Suno-surface-backdrop')));
             check(`${mode}: field and intro use dock veil`, surfaces.slice(0, 2).every(a => {
                 const c = ink(a);return c.red === 32 && c.green === 33 && c.blue === 36 && Math.abs(c.alpha - 166) <= 1;
             }), surfaces.slice(0, 2).map(a => ink(a).to_string()));
@@ -46,7 +46,7 @@ async function run() {
             check(`${mode}: results use same veil`, Math.abs(ink(dialog._results).alpha - 166) <= 1);
             check(`${mode}: actionable app results remain`, Boolean(dialog._results._defaultResult));
             await shot(`search-material-${mode}-results`);
-            const effects = surfaces.map(a => a.get_effect('luma-surface-backdrop'));
+            const effects = surfaces.map(a => a.get_effect('Suno-surface-backdrop'));
             check(`${mode}: existing backdrop renderer active`, effects.every(e => e.enabled && e.radius > 0));
         }
         for (const [appearance, alpha] of [['light', 255], ['glass', 217], ['frost', 166]]) {
@@ -59,19 +59,19 @@ async function run() {
         settings.set_string('surface-treatment', 'dark');await sleep(350);reloadStyle();
         settings.set_boolean('reduce-transparency', true); await sleep(350);reloadStyle();
         check('Reduce transparency makes every search surface opaque', surfaces.every(a => ink(a).alpha === 255));
-        check('Reduce transparency disables every search blur', surfaces.every(a => !a.get_effect('luma-surface-backdrop').enabled));
+        check('Reduce transparency disables every search blur', surfaces.every(a => !a.get_effect('Suno-surface-backdrop').enabled));
         settings.set_boolean('reduce-transparency', false); a11y.set_boolean('high-contrast', true); await sleep(350);reloadStyle();
         check('High contrast keeps search opaque', surfaces.every(a => ink(a).alpha === 255));
-        check('High contrast disables search blur', surfaces.every(a => !a.get_effect('luma-surface-backdrop').enabled));
+        check('High contrast disables search blur', surfaces.every(a => !a.get_effect('Suno-surface-backdrop').enabled));
         a11y.set_boolean('high-contrast', false); await sleep(350);
-        Main.lumaSearch.close(); await sleep(250);
+        Main.SunoSearch.close(); await sleep(250);
         check('Closing search unmaps all material surfaces', surfaces.every(a => !a.mapped));
     } finally {
         if (treatment) settings.set_value('surface-treatment', treatment);
         else settings.reset('surface-treatment');
         if (reduce) settings.set_value('reduce-transparency', reduce); else settings.reset('reduce-transparency');
         if (high) a11y.set_value('high-contrast', high); else a11y.reset('high-contrast');
-        Main.lumaSearch.close();p._snapshot(snapshot);await sleep(300);reloadStyle();p.showHome();Main.lumaSearch.open();
+        Main.SunoSearch.close();p._snapshot(snapshot);await sleep(300);reloadStyle();p.showHome();Main.SunoSearch.open();
     }
     const same = (current, expected) => expected === null ? current === null : Boolean(current?.equal(expected));
     check('Appearance test restores explicit or unset treatment', same(settings.get_user_value('surface-treatment'), treatment));

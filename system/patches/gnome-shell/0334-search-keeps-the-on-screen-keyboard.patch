@@ -1,4 +1,4 @@
-From: Project Luma <builds@project-luma.local>
+From: Project Suno <builds@project-suno.local>
 Subject: [PATCH] search: the on-screen keyboard is not an outside press
 
 Search closes on a press outside its painted surfaces. Its captured-event
@@ -6,9 +6,9 @@ handler runs before ModalDialog's, which routes the on-screen keyboard's
 events while the dialog holds the grab, so the first key typed into the
 field closed Search instead. Keyboard events are routed first.
 
---- a/js/ui/lumaSearch.js
-+++ b/js/ui/lumaSearch.js
-@@ -60,6 +60,12 @@ class LumaSearchDialog extends ModalDialog.ModalDialog {
+--- a/js/ui/SunoSearch.js
++++ b/js/ui/SunoSearch.js
+@@ -60,6 +60,12 @@ class SunoSearchDialog extends ModalDialog.ModalDialog {
              if (event.type() !== Clutter.EventType.BUTTON_PRESS &&
                  event.type() !== Clutter.EventType.TOUCH_BEGIN)
                  return Clutter.EVENT_PROPAGATE;

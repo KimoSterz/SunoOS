@@ -8,12 +8,12 @@ section: Kit
 # Semantics and actions
 
 People reach your app through more than its pixels: keyboard shortcuts, screen
-readers, the shell, and tools they approve. Luma Semantics gives all of them
+readers, the shell, and tools they approve. Suno Semantics gives all of them
 one description of what your app contains and what it can do, with privacy and
 risk attached.
 
-> **Status: preview.** `LumaSemantics-1` and the Semantic Broker are version
-> 0.1, and the wire contract can change. Semantics exist only on Luma; your app
+> **Status: preview.** `SunoSemantics-1` and the Semantic Broker are version
+> 0.1, and the wire contract can change. Semantics exist only on Suno; your app
 > must work normally when the broker is absent.
 
 ## The model
@@ -35,7 +35,7 @@ a letter first, then letters, digits, `_` or `-`, with at least one dot. Treat
 them like public API: never rename or reuse a shipped ID, because shortcuts,
 automation and granted permissions refer to it.
 
-In `luma_appkit`, `Command.id` is the action ID. See
+In `Suno_appkit`, `Command.id` is the action ID. See
 [commands and menus](commands-and-menus.md).
 
 ## Risk
@@ -50,7 +50,7 @@ Every action has a risk class. Choose the highest one that honestly applies.
 | `destructive` | Deletes or overwrites data | Delete, move to Trash, discard changes | A system confirmation every time |
 | `security-sensitive` | Changes access, credentials or trust | Share access, change a password, approve a device | A system confirmation every time |
 
-`luma_action_get_requires_confirmation()` returns true for the last three.
+`Suno_action_get_requires_confirmation()` returns true for the last three.
 Holding a grant never skips that confirmation.
 
 ## Privacy
@@ -73,37 +73,37 @@ surfaces at all.
 ### C
 
 ```c
-#include <luma-semantics.h>   /* pkg-config: luma-semantics-1 */
+#include <Suno-semantics.h>   /* pkg-config: Suno-semantics-1 */
 
-g_autoptr(LumaSemanticObject) root =
-    luma_semantic_object_new ("notes", "application", "Notes");
-luma_semantic_object_set_privacy (root, LUMA_PRIVACY_PUBLIC);
-g_autoptr(LumaAction) create = luma_action_new ("notes.create", "Create note");
-luma_semantic_object_add_action (root, create);
+g_autoptr(SunoSemanticObject) root =
+    Suno_semantic_object_new ("notes", "application", "Notes");
+Suno_semantic_object_set_privacy (root, SUNO_PRIVACY_PUBLIC);
+g_autoptr(SunoAction) create = Suno_action_new ("notes.create", "Create note");
+Suno_semantic_object_add_action (root, create);
 
-g_autoptr(LumaSemanticObject) note =
-    luma_semantic_object_new ("note:42", "document", "Groceries");
-g_autoptr(LumaAction) trash = luma_action_new ("notes.delete", "Move note to Trash");
-luma_action_set_risk (trash, LUMA_ACTION_RISK_DESTRUCTIVE);
-luma_semantic_object_add_action (note, trash);
-luma_semantic_object_add_child (root, note);
+g_autoptr(SunoSemanticObject) note =
+    Suno_semantic_object_new ("note:42", "document", "Groceries");
+g_autoptr(SunoAction) trash = Suno_action_new ("notes.delete", "Move note to Trash");
+Suno_action_set_risk (trash, SUNO_ACTION_RISK_DESTRUCTIVE);
+Suno_semantic_object_add_action (note, trash);
+Suno_semantic_object_add_child (root, note);
 
-g_autoptr(GVariant) surface = luma_semantic_object_to_variant (root);
+g_autoptr(GVariant) surface = Suno_semantic_object_to_variant (root);
 ```
 
 ### Python, through introspection
 
 ```python
-gi.require_version("LumaSemantics", "1")
-from gi.repository import LumaSemantics
+gi.require_version("SunoSemantics", "1")
+from gi.repository import SunoSemantics
 
-root = LumaSemantics.SemanticObject.new("notes", "application", "Notes")
-root.set_privacy(LumaSemantics.Privacy.PUBLIC)
-root.add_action(LumaSemantics.Action.new("notes.create", "Create note"))
+root = SunoSemantics.SemanticObject.new("notes", "application", "Notes")
+root.set_privacy(SunoSemantics.Privacy.PUBLIC)
+root.add_action(SunoSemantics.Action.new("notes.create", "Create note"))
 
-note = LumaSemantics.SemanticObject.new("note:42", "document", "Groceries")
-trash = LumaSemantics.Action.new("notes.delete", "Move note to Trash")
-trash.set_risk(LumaSemantics.ActionRisk.DESTRUCTIVE)
+note = SunoSemantics.SemanticObject.new("note:42", "document", "Groceries")
+trash = SunoSemantics.Action.new("notes.delete", "Move note to Trash")
+trash.set_risk(SunoSemantics.ActionRisk.DESTRUCTIVE)
 note.add_action(trash)
 root.add_child(note)
 ```
@@ -120,43 +120,43 @@ root.add_child(note)
 
 ### API summary
 
-| `LumaAction` | |
+| `SunoAction` | |
 | --- | --- |
-| `luma_action_new (id, label)` | Construct. `id` and `label` are construct-only properties. |
+| `Suno_action_new (id, label)` | Construct. `id` and `label` are construct-only properties. |
 | `_get/_set_description` | Optional longer text |
 | `_get/_set_parameter_type` | A GVariant type string for the parameter, or none. The broker accepts `b`, `d`, `s`, `x` and `a{sv}`. |
-| `_get/_set_risk` | `LumaActionRisk`, default `LUMA_ACTION_RISK_LOW` |
+| `_get/_set_risk` | `SunoActionRisk`, default `SUNO_ACTION_RISK_LOW` |
 | `_get/_set_enabled` | Default true |
 | `_get_requires_confirmation` | True for consequential, destructive and security-sensitive |
 | `_to_variant` | `a{sv}` with `id`, `label`, `enabled`, `risk`, and optional `description` and `parameter_type` |
 
-| `LumaSemanticObject` | |
+| `SunoSemanticObject` | |
 | --- | --- |
-| `luma_semantic_object_new (id, kind, name)` | `id` and `kind` are construct-only; `name` can change |
-| `_get/_set_privacy` | `LumaPrivacy`, default `LUMA_PRIVACY_PRIVATE` |
+| `Suno_semantic_object_new (id, kind, name)` | `id` and `kind` are construct-only; `name` can change |
+| `_get/_set_privacy` | `SunoPrivacy`, default `SUNO_PRIVACY_PRIVATE` |
 | `_add_action`, `_get_actions` | Actions as a `GListModel` |
 | `_add_child`, `_get_children` | Child objects as a `GListModel` |
 | `_to_variant` | The object tree as `a{sv}`, with `schema_version` `0.1` |
 
-String helpers: `luma_action_risk_to_string()`, `luma_privacy_to_string()`,
-`luma_live_category_to_string()`.
+String helpers: `Suno_action_risk_to_string()`, `Suno_privacy_to_string()`,
+`Suno_live_category_to_string()`.
 
 ## Publishing to the Semantic Broker
 
-The per-user **Semantic Broker** (`org.projectluma.SemanticBroker1` on the
+The per-user **Semantic Broker** (`org.projectSuno.SemanticBroker1` on the
 session bus) is the only way for anything outside your app to discover or
 invoke your semantics. Your app registers a surface and exposes one provider
-method, `org.projectluma.SemanticProvider1.InvokeAction`, which only the broker
+method, `org.projectSuno.SemanticProvider1.InvokeAction`, which only the broker
 may call.
 
-Python apps can use `SemanticPublisher` from `luma_semantic_broker.client`,
-which ships with LumaUI:
+Python apps can use `SemanticPublisher` from `Suno_semantic_broker.client`,
+which ships with SunoUI:
 
 ```python
 try:
-    from luma_semantic_broker.client import SemanticPublisher
+    from Suno_semantic_broker.client import SemanticPublisher
 except (ImportError, ValueError):
-    SemanticPublisher = None   # not on Luma, or broker not installed
+    SemanticPublisher = None   # not on Suno, or broker not installed
 
 def publish_semantics(self, application):
     if SemanticPublisher is None:
@@ -166,7 +166,7 @@ def publish_semantics(self, application):
             application,                 # a registered Gio.Application
             "com.example.Notebook",      # your app ID
             "notes",                     # a stable surface ID
-            lambda: self.semantic_root,  # returns a LumaSemantics object tree
+            lambda: self.semantic_root,  # returns a SunoSemantics object tree
             {
                 "notes.create": self.semantic_create,   # (object_id, parameter) -> result
                 "notes.delete": self.semantic_delete,
@@ -187,7 +187,7 @@ def publish_semantics(self, application):
 - Call `publisher.close()` when the window closes.
 - The broker identifies your app from its Flatpak sandbox or its systemd
   launch scope, and the app ID you pass must match. Flatpak apps need
-  `--talk-name=org.projectluma.SemanticBroker1`. That lets your app reach the
+  `--talk-name=org.projectSuno.SemanticBroker1`. That lets your app reach the
   broker; it does not grant anyone access to your app.
 
 Limits: 16 surfaces per app, 256 KiB per surface, 512 KiB per message, 512
@@ -218,18 +218,18 @@ decisions and IDs, capped at 1 MiB, never of payloads, parameters or results.
 
 ## Inspecting your app
 
-The SDK's `luma semantic` command is an ordinary broker client with no bypass.
-It runs under its own identity, `org.projectluma.SemanticInspector`, so its
+The SDK's `Suno semantic` command is an ordinary broker client with no bypass.
+It runs under its own identity, `org.projectSuno.SemanticInspector`, so its
 grants last for your session:
 
 ```sh
-luma semantic request com.example.Notebook \
+Suno semantic request com.example.Notebook \
   --scope observe-public --scope observe-private --scope invoke-low-risk
-luma semantic list
-luma semantic get PUBLICATION_ID
-luma semantic invoke PUBLICATION_ID notes notes.create --parameter '{}'
-luma semantic audit
-luma semantic revoke com.example.Notebook
+Suno semantic list
+Suno semantic get PUBLICATION_ID
+Suno semantic invoke PUBLICATION_ID notes notes.create --parameter '{}'
+Suno semantic audit
+Suno semantic revoke com.example.Notebook
 ```
 
 `request` takes `--duration` in seconds; `audit` takes `--limit`.
@@ -252,26 +252,26 @@ in the top bar. Your code never renders in the shell.
 | actions | At most three |
 
 ```python
-ext = LumaSemantics.LiveExtension.new("timer-1", "com.example.Timer",
-                                      LumaSemantics.LiveCategory.TIMER, "Tea")
+ext = SunoSemantics.LiveExtension.new("timer-1", "com.example.Timer",
+                                      SunoSemantics.LiveCategory.TIMER, "Tea")
 ext.set_expires_at("2026-10-08T18:05:00-05:00")
 ext.set_progress(0.4)
-ext.add_action(LumaSemantics.Action.new("timer.pause", "Pause"))
+ext.add_action(SunoSemantics.Action.new("timer.pause", "Pause"))
 ```
 
 A fourth `add_action` fails with "A Live Extension may expose at most three
 actions". The broker allows four Live Extensions per app.
 
 To publish, Python apps use `LiveExtensionPublisher` from
-`luma_semantic_broker.client`: give it your registered `Gio.Application`, your
+`Suno_semantic_broker.client`: give it your registered `Gio.Application`, your
 app ID, the extension ID and a function that returns the extension (or `None`
 to withdraw it), then call `sync()` when it changes and `close()` when it
 ends. An app whose information should stay current with its windows closed
 can publish from a [background agent](background-agents.md#live-extensions-from-agent-values)
 with `LiveExtensionBinding`, which handles this for you. When someone presses
 a control on your extension, the broker calls
-`org.projectluma.SemanticProvider1.InvokeAction` at the provider path you
+`org.projectSuno.SemanticProvider1.InvokeAction` at the provider path you
 registered with; `LiveExtensionPublisher` does not answer that call, so an
 extension with actions needs your own provider object.
 
-Check a payload before you publish it with `luma live-preview activity.json`.
+Check a payload before you publish it with `Suno live-preview activity.json`.

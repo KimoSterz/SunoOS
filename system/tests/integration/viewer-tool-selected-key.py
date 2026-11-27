@@ -8,8 +8,8 @@ gi.require_version("Adw", "1")
 gi.require_version("Gtk", "4.0")
 from gi.repository import Adw, Gio, GLib, Gtk
 
-from luma_appkit import BarAction, install_appkit
-from luma_appkit.action_center import make_control
+from Suno_appkit import BarAction, install_appkit
+from Suno_appkit.action_center import make_control
 
 
 def nodes(node):
@@ -38,7 +38,7 @@ Gio.Settings.new("org.gnome.desktop.interface").set_string(
 install_appkit()
 
 parent = Gtk.Box(spacing=8)
-parent.add_css_class("lumaui-media")
+parent.add_css_class("SunoUI-media")
 selected = make_control(BarAction("pencil", tooltip="Pen", active=True), size="tool")
 plain = make_control(BarAction("highlighter", tooltip="Highlighter"), size="tool")
 ordinary = make_control(BarAction("info", tooltip="Information", active=True))
@@ -52,7 +52,7 @@ root = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
 root.append(parent)
 root.append(normal)
 window = Gtk.Window(default_width=300, default_height=100, child=root)
-window.add_css_class("luma-app-window")
+window.add_css_class("Suno-app-window")
 window.present()
 for _ in range(2):
     loop = GLib.MainLoop()

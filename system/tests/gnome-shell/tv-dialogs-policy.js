@@ -2,9 +2,9 @@
 // System dialogs in TV posture: the remote's keys in a dialog, Back, the
 // panel above the TV keyboard, and the wiring that keeps a dialog's keys
 // alive while it holds the grab.
-// Run: gjs -m tv-dialogs-policy.js js/ui/lumaPresentation/tvDialogsModel.js \
-//        js/ui/lumaPresentation/tvTokens.js js/ui/lumaPresentation/tvDialogs.js \
-//        js/ui/lumaPresentation/tv.js js/ui/lumaPresentation/tvInput.js
+// Run: gjs -m tv-dialogs-policy.js js/ui/SunoPresentation/tvDialogsModel.js \
+//        js/ui/SunoPresentation/tvTokens.js js/ui/SunoPresentation/tvDialogs.js \
+//        js/ui/SunoPresentation/tv.js js/ui/SunoPresentation/tvInput.js
 // (node tv-dialogs-policy.js ... works too).
 const gjs = typeof globalThis.ARGV !== 'undefined';
 const args = gjs ? globalThis.ARGV : process.argv.slice(2);
@@ -34,11 +34,11 @@ assert(M.dialogKey('a') === null && M.dialogKey('BackSpace') === null, 'typing i
 
 // Parts of a card by their classes.
 assert(M.labelRole(['message-dialog-title']) === 'title', 'a dialog title');
-assert(M.labelRole(['luma-seal-title']) === 'title', "the administrator prompt's title");
+assert(M.labelRole(['Suno-seal-title']) === 'title', "the administrator prompt's title");
 assert(M.labelRole(['headline']) === 'title', 'a headline');
 assert(M.labelRole(['message-dialog-description']) === 'body', 'body text');
 assert(M.labelRole(['prompt-dialog-error-label']) === 'warning', 'a warning');
-assert(M.labelRole(['luma-seal-fact-key']) === 'meta', 'small print');
+assert(M.labelRole(['Suno-seal-fact-key']) === 'meta', 'small print');
 assert(M.labelRole([]) === 'body', 'an unclassed label is body text');
 assert(M.labelRole(['dialog-list-title']) === 'heading', "a list's heading");
 assert(M.labelRole(['dialog-list-item-title']) === 'body', "a list row's title");

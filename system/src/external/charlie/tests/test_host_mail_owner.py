@@ -4,11 +4,11 @@ from pathlib import Path
 import tempfile
 import threading
 import unittest
-from charlie_luma.host_mail_owner import MailOwner
-from charlie_luma.host_mail_wire import validate
-from charlie_luma.model import Account, ServerConfig, Draft
-from charlie_luma.store import MailStore
-from charlie_luma.engine import AuthenticationFailure
+from charlie_Suno.host_mail_owner import MailOwner
+from charlie_Suno.host_mail_wire import validate
+from charlie_Suno.model import Account, ServerConfig, Draft
+from charlie_Suno.store import MailStore
+from charlie_Suno.engine import AuthenticationFailure
 
 class Secrets:
     def __init__(self, refuse=False): self.values = {}; self.refuse = refuse

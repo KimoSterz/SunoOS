@@ -16,7 +16,7 @@ source_root=${1:?usage: build-pixel9-kernel-proof.sh SOURCE_ROOT OUTPUT_DIR}
 output_dir=${2:?usage: build-pixel9-kernel-proof.sh SOURCE_ROOT OUTPUT_DIR}
 build_dir=$output_dir/build
 artifact_dir=$output_dir/artifacts
-jobs=${LUMA_PIXEL9_KERNEL_BUILD_JOBS:-4}
+jobs=${SUNO_PIXEL9_KERNEL_BUILD_JOBS:-4}
 
 die() {
   printf 'error: %s\n' "$*" >&2
@@ -24,9 +24,9 @@ die() {
 }
 
 case "$jobs" in
-  ''|*[!0-9]*) die 'LUMA_PIXEL9_KERNEL_BUILD_JOBS must be a positive integer' ;;
+  ''|*[!0-9]*) die 'SUNO_PIXEL9_KERNEL_BUILD_JOBS must be a positive integer' ;;
 esac
-[ "$jobs" -ge 1 ] || die 'LUMA_PIXEL9_KERNEL_BUILD_JOBS must be at least 1'
+[ "$jobs" -ge 1 ] || die 'SUNO_PIXEL9_KERNEL_BUILD_JOBS must be at least 1'
 [ "$(uname -s)" = Linux ] && [ "$(uname -m)" = aarch64 ] || \
   die 'the Pixel 9 kernel proof must run off-device on Linux/aarch64'
 
@@ -42,7 +42,7 @@ for tool in awk clang git install make sha256sum; do
 done
 
 linux=$source_root/linux-zumapro
-source_manifest=$source_root/luma-source-manifest.env
+source_manifest=$source_root/Suno-source-manifest.env
 [ -d "$linux/.git" ] || die "missing full Linux checkout: $linux"
 [ -f "$source_manifest" ] || die "missing full-source manifest: $source_manifest"
 [ ! -e "$output_dir" ] || die "refusing to replace existing output: $output_dir"
@@ -66,7 +66,7 @@ mkdir -p "$build_dir" "$artifact_dir"
 source_date_epoch=$(git -C "$linux" show -s --format=%ct "$PIXEL9_LINUX_COMMIT")
 export SOURCE_DATE_EPOCH="$source_date_epoch"
 export KBUILD_BUILD_TIMESTAMP="@$source_date_epoch"
-export KBUILD_BUILD_USER=luma
+export KBUILD_BUILD_USER=Suno
 export KBUILD_BUILD_HOST=pixel9-builder
 export KBUILD_BUILD_VERSION=1
 
@@ -87,7 +87,7 @@ install -m 0644 "$build_dir/.config" "$artifact_dir/config"
 kernel_release=$(make -s -C "$linux" O="$build_dir" ARCH=arm64 LLVM=1 kernelrelease)
 compiler_line=$(clang --version | sed -n '1p' | tr '\n' ' ')
 {
-  printf 'LUMA_PIXEL9_KERNEL_PROOF_VERSION=1\n'
+  printf 'SUNO_PIXEL9_KERNEL_PROOF_VERSION=1\n'
   printf 'SCOPE=compile-only-unmodified-upstream\n'
   printf 'LINUX_COMMIT=%s\n' "$PIXEL9_LINUX_COMMIT"
   printf 'DEFCONFIG=%s\n' "$PIXEL9_LINUX_DEFCONFIG"

@@ -81,7 +81,7 @@ export default async function ({Main, shot}) {
     log('state', {scale, windows: claude?.get_windows().length, animations: settings.enable_animations});
 
     await run('preview', async () => {
-        const Dock = await import('resource:///org/gnome/shell/ui/lumaDockWindows.js');
+        const Dock = await import('resource:///org/gnome/shell/ui/SunoDockWindows.js');
         const preview = Dock.getDockPreview();
         const item = itemFor(claude);
         await move(rect(item.child).x + rect(item.child).w / 2, rect(item.child).y + rect(item.child).h / 2, 1500);

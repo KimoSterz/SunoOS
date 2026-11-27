@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 # SPDX-License-Identifier: Apache-2.0
-"""The LumaUI Clock opens saved cities and alarms in both size classes.
+"""The SunoUI Clock opens saved cities and alarms in both size classes.
 
 The saved data is built before the window, so this also catches constructor
 ordering errors where World content reaches for chrome that is not ready yet.
@@ -50,7 +50,7 @@ def seed() -> ClockStore:
 
 
 def check(application: Adw.Application, presentation: str) -> str:
-    os.environ["LUMA_PRESENTATION_MODE"] = presentation
+    os.environ["SUNO_PRESENTATION_MODE"] = presentation
     from prairie_apps.clock import ClockWindow
 
     results = []
@@ -95,7 +95,7 @@ def check(application: Adw.Application, presentation: str) -> str:
 def main() -> int:
     seed()
     application = Adw.Application(
-        application_id="org.projectluma.ClockWindowTest", flags=Gio.ApplicationFlags.NON_UNIQUE,
+        application_id="org.projectSuno.ClockWindowTest", flags=Gio.ApplicationFlags.NON_UNIQUE,
     )
     assert application.register(None)
     lines = [check(application, mode) for mode in ("windowed", "fullscreen-mobile")]

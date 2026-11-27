@@ -6,12 +6,12 @@
 set -euo pipefail
 
 apk=${1:?usage: acceptance-desktop.sh ACCEPTANCE.apk}
-package=org.projectluma.androidtest
+package=org.projectSuno.androidtest
 isolation_failed=0
-luma_android=(luma-android)
-if [[ -n ${LUMA_ANDROID_ACCEPTANCE_PYTHONPATH:-} ]]; then
-  export PYTHONPATH=$LUMA_ANDROID_ACCEPTANCE_PYTHONPATH
-  luma_android=(python3 -m luma_android.cli)
+Suno_android=(Suno-android)
+if [[ -n ${SUNO_ANDROID_ACCEPTANCE_PYTHONPATH:-} ]]; then
+  export PYTHONPATH=$SUNO_ANDROID_ACCEPTANCE_PYTHONPATH
+  Suno_android=(python3 -m Suno_android.cli)
 fi
 
 test -r "$apk"
@@ -21,12 +21,12 @@ test -n "${WAYLAND_DISPLAY:-}"
 test -S "${XDG_RUNTIME_DIR:?}/$WAYLAND_DISPLAY"
 test -n "${DBUS_SESSION_BUS_ADDRESS:-}"
 
-if ! "${luma_android[@]}" list | grep -Fq "packageName: $package"; then
-  "${luma_android[@]}" install --confirmed "$apk"
+if ! "${Suno_android[@]}" list | grep -Fq "packageName: $package"; then
+  "${Suno_android[@]}" install --confirmed "$apk"
 fi
-systemctl --user start luma-android.service
+systemctl --user start Suno-android.service
 for _attempt in $(seq 1 180); do
-  status=$("${luma_android[@]}" status)
+  status=$("${Suno_android[@]}" status)
   grep -q '"session": "RUNNING"' <<<"$status" && break
   sleep 0.5
 done
@@ -34,19 +34,19 @@ grep -q '"session": "RUNNING"' <<<"${status:-}"
 
 printf 'PASS  broker and fixture runtime report running\n'
 tests/smoke/android-runtime.sh
-gdbus call --session --dest org.projectluma.ApplicationInstaller1 \
-  --object-path /org/projectluma/ApplicationInstaller1 \
-  --method org.projectluma.ApplicationInstaller1.Supports \
+gdbus call --session --dest org.projectSuno.ApplicationInstaller1 \
+  --object-path /org/projectSuno/ApplicationInstaller1 \
+  --method org.projectSuno.ApplicationInstaller1.Supports \
   application/vnd.android.package-archive | grep -Fq '(true,)'
 printf 'PASS  generic Filer installer interface accepts APK MIME\n'
 
-if ! "${luma_android[@]}" list | grep -Fq "packageName: $package"; then
-  "${luma_android[@]}" install --confirmed "$apk"
+if ! "${Suno_android[@]}" list | grep -Fq "packageName: $package"; then
+  "${Suno_android[@]}" install --confirmed "$apk"
   printf 'PASS  repaired a stale launcher by reinstalling the verified APK\n'
 fi
 
 start_ns=$(date +%s%N)
-"${luma_android[@]}" launch "$package"
+"${Suno_android[@]}" launch "$package"
 launch_ms=$((($(date +%s%N) - start_ns) / 1000000))
 sleep 4
 activities=$(sudo waydroid shell -- dumpsys activity activities)
@@ -107,34 +107,34 @@ printf 'PASS  Android has a validated application network and reachable gateway\
 
 printf 'PENDING  notification delivery/actions require fixture and native renderer receipts\n'
 
-"${luma_android[@]}" pause
+"${Suno_android[@]}" pause
 for _attempt in $(seq 1 60); do
-  status=$("${luma_android[@]}" status)
+  status=$("${Suno_android[@]}" status)
   grep -q '"session": "STOPPED"' <<<"$status" && break
   sleep 0.5
 done
 grep -q '"session": "STOPPED"' <<<"${status:-}"
-"${luma_android[@]}" resume
+"${Suno_android[@]}" resume
 for _attempt in $(seq 1 180); do
-  status=$("${luma_android[@]}" status)
+  status=$("${Suno_android[@]}" status)
   grep -q '"session": "RUNNING"' <<<"$status" && break
   sleep 0.5
 done
 grep -q '"session": "RUNNING"' <<<"${status:-}"
 printf 'PASS  non-destructive pause/resume recovery\n'
 
-"${luma_android[@]}" remove "$package"
-! "${luma_android[@]}" list | grep -Fq "packageName: $package"
+"${Suno_android[@]}" remove "$package"
+! "${Suno_android[@]}" list | grep -Fq "packageName: $package"
 printf 'PASS  uninstall removes the test application\n'
-"${luma_android[@]}" install --confirmed "$apk"
-"${luma_android[@]}" list | grep -Fq "packageName: $package"
+"${Suno_android[@]}" install --confirmed "$apk"
+"${Suno_android[@]}" list | grep -Fq "packageName: $package"
 test -f "$HOME/.local/share/applications/waydroid.$package.desktop"
-"${luma_android[@]}" launch "$package"
+"${Suno_android[@]}" launch "$package"
 printf 'PASS  reinstall restores the first-class application entry and launch\n'
 
 receipt=$(sha256sum "$apk" | cut -d' ' -f1)
-test -f "$HOME/.local/share/luma-android/receipts/$receipt.json"
-test "$(stat -c %a "$HOME/.local/share/luma-android/receipts/$receipt.json")" = 600
+test -f "$HOME/.local/share/Suno-android/receipts/$receipt.json"
+test "$(stat -c %a "$HOME/.local/share/Suno-android/receipts/$receipt.json")" = 600
 printf 'PASS  private installation receipt\n'
 
 if (( isolation_failed )); then

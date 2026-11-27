@@ -14,7 +14,7 @@ def architecture_path(root, arch='x86_64'):
     return Path(root) if arch == 'x86_64' else Path(root) / arch
 
 def releases_path(repo, arch='x86_64'):
-    return architecture_path(Path(repo) / 'luma/releases', arch)
+    return architecture_path(Path(repo) / 'Suno/releases', arch)
 
 def manifest_architecture(manifest):
     arch = architecture(manifest.get('architecture', 'x86_64'))

@@ -565,7 +565,7 @@ launched in the Dell's real graphical session; read-only metadata showed the
 launch unit active/running and both Ari2 D-Bus names owned.
 
 Candidate: `ari2-chatgpt-6c2f666-r4`.
-Launch unit: `luma-preview-ari2-chatgpt-6c2f666-r4-c20e7531.service`.
+Launch unit: `Suno-preview-ari2-chatgpt-6c2f666-r4-c20e7531.service`.
 This was a requested launch, not an automated Dell application test. Manual
 confirmation remains pending for conversation retention, the effort picker,
 Weather changes and actual account hosted-search acceptance. The visual gate
@@ -612,7 +612,7 @@ After the owner closed Ari2 and its background service exited normally, the
 checksum-verified replacement updated its owned registrations and retained
 chats, settings and keyring entries. Candidate `ari2-chatgpt-8795dce-r5` launched
 in the Dell graphical session under
-`luma-preview-ari2-chatgpt-8795dce-r5-436461f9.service`. Read-only metadata showed
+`Suno-preview-ari2-chatgpt-8795dce-r5-436461f9.service`. Read-only metadata showed
 active/running with UI and daemon D-Bus names owned. Manual Weather retry is
 pending; no automated Dell application tests ran. The screenshot failure is not
 declared resolved until live acceptance. Visual conformance still fails.
@@ -689,7 +689,7 @@ Both previous preview D-Bus names were unowned before replacement. The
 checksum-verified candidate updated its owned registrations and retained chats,
 settings and keyring entries. `ari2-chatgpt-9e726a4-r6` launched with
 `--settings permissions` in the Dell graphical session under
-`luma-preview-ari2-chatgpt-9e726a4-r6-1466daa3.service`; metadata showed it
+`Suno-preview-ari2-chatgpt-9e726a4-r6-1466daa3.service`; metadata showed it
 active/running with UI and daemon names owned. This was a requested launch,
 not an automated Dell application test. Live Weather/search acceptance and
 visual conformance remain open. PR #92 remains draft.

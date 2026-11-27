@@ -15,7 +15,7 @@ function rows(menu) {
 
 function metrics(menu) {
     const all = rows(menu);
-    const row = all.find(i => !i.has_style_class_name('luma-menu-title') &&
+    const row = all.find(i => !i.has_style_class_name('Suno-menu-title') &&
         !i.has_style_class_name('popup-separator-menu-item') && i.reactive);
     const label = L.descend(row).find(c => c instanceof St.Label);
     const font = label.get_theme_node().get_font();
@@ -47,7 +47,7 @@ async function work() {
         L.check(`${mode}: the Dash menu reads Dash, Arrange Islands…, Reset Island Layout, Dash Settings…`,
             JSON.stringify(labels) === JSON.stringify(['Dash', 'Arrange Islands…', 'Reset Island Layout', 'Dash Settings…']), JSON.stringify(labels));
         const dm = dash && metrics(dash);
-        const titleRow = dash && rows(dash).find(i => i.has_style_class_name('luma-menu-title'));
+        const titleRow = dash && rows(dash).find(i => i.has_style_class_name('Suno-menu-title'));
         L.check(`${mode}: the Dash menu title takes the rows' ink`, titleRow &&
             titleRow.label.get_theme_node().get_foreground_color().to_string() === dm.ink,
             `${titleRow?.label.get_theme_node().get_foreground_color().to_string()} vs ${dm?.ink}`);

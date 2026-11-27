@@ -1,10 +1,10 @@
 # SPDX-License-Identifier: Apache-2.0
 """Host headroom for the review VM on the shared build server.
 
-A review VM takes its own lane lock (the luma-heavy conform-lane pattern: one
+A review VM takes its own lane lock (the Suno-heavy conform-lane pattern: one
 review VM beside one build), then waits until the host has the VM's memory
 plus a reserve free, the 1-minute load is under 0.75 per CPU, and
-luma-heavy.slice is not frozen by the thermal guard.
+Suno-heavy.slice is not frozen by the thermal guard.
 Only then does it boot, so boot timeouts count from a VM that can run.
 """
 from __future__ import annotations
@@ -39,15 +39,15 @@ def host_busy(cool_celsius: int = 71, load_per_cpu: float = 0.75, loadavg=os.get
     if load > cpus * load_per_cpu:
         return f"load {load:.1f} on {cpus} CPUs"
     try:
-        frozen = subprocess.run(["systemctl", "show", "luma-heavy.slice", "-p", "FreezerState", "--value"],
+        frozen = subprocess.run(["systemctl", "show", "Suno-heavy.slice", "-p", "FreezerState", "--value"],
                                 capture_output=True, text=True, timeout=10).stdout.strip()
     except (OSError, subprocess.SubprocessError):
         frozen = ""
     if frozen == "frozen":
-        return "luma-heavy.slice is frozen by the thermal guard"
-    if shutil.which("luma-nvme-temp"):
+        return "Suno-heavy.slice is frozen by the thermal guard"
+    if shutil.which("Suno-nvme-temp"):
         try:
-            celsius = int(subprocess.run(["luma-nvme-temp"], capture_output=True, text=True, timeout=10).stdout)
+            celsius = int(subprocess.run(["Suno-nvme-temp"], capture_output=True, text=True, timeout=10).stdout)
         except (OSError, ValueError, subprocess.SubprocessError):
             return ""
         if celsius >= cool_celsius:

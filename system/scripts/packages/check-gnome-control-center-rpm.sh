@@ -38,5 +38,5 @@ grep -aFq "dock-folders-detached" "$check_dir/gcc-bin"
 grep -aFq "Saved passwords still use your old password" "$check_dir/gcc-bin"
 grep -aFq "org.gnome.keyring.InternalUnsupportedGuiltRiddenInterface" "$check_dir/gcc-bin"
 # Scroll Speed on Mouse and Touchpad (0026).
-grep -aFq "org.projectluma.peripherals.touchpad" "$check_dir/gcc-bin"
+grep -aFq "org.projectSuno.peripherals.touchpad" "$check_dir/gcc-bin"
 grep -aFq "Reset Scroll Speed" "$check_dir/gcc-bin"

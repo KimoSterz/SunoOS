@@ -18,7 +18,7 @@ source_root=${1:?usage: build-pixel9-direct-kernel-proof.sh SOURCE_ROOT INITRAMF
 initramfs=${2:?usage: build-pixel9-direct-kernel-proof.sh SOURCE_ROOT INITRAMFS_CPIO OUTPUT_DIR}
 output_dir=${3:?usage: build-pixel9-direct-kernel-proof.sh SOURCE_ROOT INITRAMFS_CPIO OUTPUT_DIR}
 linux=$source_root/linux-zumapro
-source_manifest=$source_root/luma-source-manifest.env
+source_manifest=$source_root/Suno-source-manifest.env
 source_dir=$output_dir/source
 build_dir=$output_dir/build
 artifact_dir=$output_dir/artifacts
@@ -26,8 +26,8 @@ patch_path=$repo_root/$PIXEL9_DIRECT_KERNEL_PATCH
 persistent_dtb_patch_path=$repo_root/$PIXEL9_DIRECT_KERNEL_PERSISTENT_DTB_PATCH
 copy_dtb_patch_path=$repo_root/$PIXEL9_DIRECT_KERNEL_COPY_DTB_PATCH
 entry_inspector=$repo_root/scripts/mobile/inspect-pixel9-kernel-entry.py
-jobs=${LUMA_PIXEL9_KERNEL_BUILD_JOBS:-8}
-diagnostic_variant=${LUMA_PIXEL9_DIAGNOSTIC_VARIANT:-acm-v1}
+jobs=${SUNO_PIXEL9_KERNEL_BUILD_JOBS:-8}
+diagnostic_variant=${SUNO_PIXEL9_DIAGNOSTIC_VARIANT:-acm-v1}
 initramfs_kernel_compression=none
 bootargs='reboot=warm panic=10 rdinit=/init loglevel=7 printk.time=1 module.sig_enforce=1'
 
@@ -37,14 +37,14 @@ die() {
 }
 
 case "$jobs" in
-  ''|*[!0-9]*) die 'LUMA_PIXEL9_KERNEL_BUILD_JOBS must be a positive integer' ;;
+  ''|*[!0-9]*) die 'SUNO_PIXEL9_KERNEL_BUILD_JOBS must be a positive integer' ;;
 esac
-[ "$jobs" -ge 1 ] || die 'LUMA_PIXEL9_KERNEL_BUILD_JOBS must be at least 1'
+[ "$jobs" -ge 1 ] || die 'SUNO_PIXEL9_KERNEL_BUILD_JOBS must be at least 1'
 case "$diagnostic_variant" in
   acm-v1)
     expected_initramfs_bytes=$PIXEL9_DIAGNOSTIC_INITRAMFS_BYTES
     expected_initramfs_sha=$PIXEL9_DIAGNOSTIC_INITRAMFS_SHA256
-    expected_report_marker='LUMA_PIXEL9_DIAGNOSTIC_REPORT_VERSION=1'
+    expected_report_marker='SUNO_PIXEL9_DIAGNOSTIC_REPORT_VERSION=1'
     report_transports=usb-acm
     embedded_dtb_lifetime=init-rodata
     persistent_dtb_patch_sha=none
@@ -53,7 +53,7 @@ case "$diagnostic_variant" in
   acm-ecm-v2)
     expected_initramfs_bytes=$PIXEL9_DIAGNOSTIC_ECM_INITRAMFS_BYTES
     expected_initramfs_sha=$PIXEL9_DIAGNOSTIC_ECM_INITRAMFS_SHA256
-    expected_report_marker='LUMA_PIXEL9_DIAGNOSTIC_REPORT_VERSION=2'
+    expected_report_marker='SUNO_PIXEL9_DIAGNOSTIC_REPORT_VERSION=2'
     report_transports=usb-acm,usb-ecm-http
     embedded_dtb_lifetime=init-rodata
     persistent_dtb_patch_sha=none
@@ -62,7 +62,7 @@ case "$diagnostic_variant" in
   acm-ecm-persistent-dtb-v3)
     expected_initramfs_bytes=$PIXEL9_DIAGNOSTIC_ECM_INITRAMFS_BYTES
     expected_initramfs_sha=$PIXEL9_DIAGNOSTIC_ECM_INITRAMFS_SHA256
-    expected_report_marker='LUMA_PIXEL9_DIAGNOSTIC_REPORT_VERSION=2'
+    expected_report_marker='SUNO_PIXEL9_DIAGNOSTIC_REPORT_VERSION=2'
     report_transports=usb-acm,usb-ecm-http
     embedded_dtb_lifetime=persistent-rodata
     persistent_dtb_patch_sha=$PIXEL9_DIRECT_KERNEL_PERSISTENT_DTB_PATCH_SHA256
@@ -71,7 +71,7 @@ case "$diagnostic_variant" in
   acm-ecm-copy-dtb-v4)
     expected_initramfs_bytes=$PIXEL9_DIAGNOSTIC_ECM_INITRAMFS_BYTES
     expected_initramfs_sha=$PIXEL9_DIAGNOSTIC_ECM_INITRAMFS_SHA256
-    expected_report_marker='LUMA_PIXEL9_DIAGNOSTIC_REPORT_VERSION=2'
+    expected_report_marker='SUNO_PIXEL9_DIAGNOSTIC_REPORT_VERSION=2'
     report_transports=usb-acm,usb-ecm-http
     embedded_dtb_lifetime=copied-from-init-rodata
     persistent_dtb_patch_sha=none
@@ -80,7 +80,7 @@ case "$diagnostic_variant" in
   ufs-delay-copy-dtb-v5)
     expected_initramfs_bytes=$PIXEL9_DIAGNOSTIC_UFS_INITRAMFS_BYTES
     expected_initramfs_sha=$PIXEL9_DIAGNOSTIC_UFS_INITRAMFS_SHA256
-    expected_report_marker='LUMA_PIXEL9_DIAGNOSTIC_REPORT_VERSION=3'
+    expected_report_marker='SUNO_PIXEL9_DIAGNOSTIC_REPORT_VERSION=3'
     report_transports=usb-ecm-http
     embedded_dtb_lifetime=copied-from-init-rodata
     persistent_dtb_patch_sha=none
@@ -89,7 +89,7 @@ case "$diagnostic_variant" in
   fedora-userspace-copy-dtb-v6)
     expected_initramfs_bytes=$PIXEL9_DIAGNOSTIC_FEDORA_INITRAMFS_BYTES
     expected_initramfs_sha=$PIXEL9_DIAGNOSTIC_FEDORA_INITRAMFS_SHA256
-    expected_report_marker='LUMA_PIXEL9_DIAGNOSTIC_REPORT_VERSION=4'
+    expected_report_marker='SUNO_PIXEL9_DIAGNOSTIC_REPORT_VERSION=4'
     report_transports=usb-ecm-http
     embedded_dtb_lifetime=copied-from-init-rodata
     persistent_dtb_patch_sha=none
@@ -98,7 +98,7 @@ case "$diagnostic_variant" in
   fedora-zstd-userspace-copy-dtb-v7)
     expected_initramfs_bytes=$PIXEL9_DIAGNOSTIC_FEDORA_INITRAMFS_BYTES
     expected_initramfs_sha=$PIXEL9_DIAGNOSTIC_FEDORA_INITRAMFS_SHA256
-    expected_report_marker='LUMA_PIXEL9_DIAGNOSTIC_REPORT_VERSION=4'
+    expected_report_marker='SUNO_PIXEL9_DIAGNOSTIC_REPORT_VERSION=4'
     report_transports=usb-ecm-http
     embedded_dtb_lifetime=copied-from-init-rodata
     persistent_dtb_patch_sha=none
@@ -171,9 +171,9 @@ if [ "$embedded_dtb_lifetime" = persistent-rodata ]; then
   git -C "$source_dir" apply --check "$persistent_dtb_patch_path"
   git -C "$source_dir" apply "$persistent_dtb_patch_path"
   grep -Fqx $'\t.section ".rodata", "a"' \
-    "$source_dir/arch/arm64/kernel/luma_tokay_dtb.S" ||
+    "$source_dir/arch/arm64/kernel/Suno_tokay_dtb.S" ||
     die 'embedded Tokay DTB is not in persistent read-only data'
-  if grep -Fq '.init.rodata' "$source_dir/arch/arm64/kernel/luma_tokay_dtb.S"; then
+  if grep -Fq '.init.rodata' "$source_dir/arch/arm64/kernel/Suno_tokay_dtb.S"; then
     die 'embedded Tokay DTB still references freed init data'
   fi
 fi
@@ -181,26 +181,26 @@ if [ "$embedded_dtb_lifetime" = copied-from-init-rodata ]; then
   git -C "$source_dir" apply --check "$copy_dtb_patch_path"
   git -C "$source_dir" apply "$copy_dtb_patch_path"
   grep -Fqx $'\t.section ".init.rodata", "a"' \
-    "$source_dir/arch/arm64/kernel/luma_tokay_dtb.S" ||
+    "$source_dir/arch/arm64/kernel/Suno_tokay_dtb.S" ||
     die 'copy-DTB variant changed the accepted init-section placement'
   grep -Fq 'unflatten_and_copy_device_tree();' \
     "$source_dir/arch/arm64/kernel/setup.c" ||
     die 'copy-DTB variant does not select the built-in-FDT copy path'
 fi
 git -C "$source_dir" diff --check
-mkdir -p "$source_dir/luma" "$build_dir" "$artifact_dir"
-install -m 0644 "$initramfs" "$source_dir/luma/diagnostic-initramfs.cpio"
+mkdir -p "$source_dir/Suno" "$build_dir" "$artifact_dir"
+install -m 0644 "$initramfs" "$source_dir/Suno/diagnostic-initramfs.cpio"
 
 source_date_epoch=$(git -C "$linux" show -s --format=%ct "$PIXEL9_LINUX_COMMIT")
 export SOURCE_DATE_EPOCH="$source_date_epoch"
 export KBUILD_BUILD_TIMESTAMP="@$source_date_epoch"
-export KBUILD_BUILD_USER=luma
+export KBUILD_BUILD_USER=Suno
 export KBUILD_BUILD_HOST=pixel9-builder
 export KBUILD_BUILD_VERSION=1
 # GNU build IDs cover unstripped link inputs, including assembler file symbols.
 # Canonicalize both independent work directories so the kernel, VDSO, and
 # compat-VDSO build IDs remain content-derived without absorbing host paths.
-export KCFLAGS="-ffile-prefix-map=$source_dir=/usr/src/luma-linux-zumapro -ffile-prefix-map=$build_dir=/usr/lib/debug/luma-linux-zumapro"
+export KCFLAGS="-ffile-prefix-map=$source_dir=/usr/src/Suno-linux-zumapro -ffile-prefix-map=$build_dir=/usr/lib/debug/Suno-linux-zumapro"
 export KAFLAGS="$KCFLAGS"
 # arm64's compat vDSO deliberately builds with an isolated 32-bit flag set and
 # therefore does not consume KCFLAGS/KAFLAGS. Supply its compiler explicitly so
@@ -210,11 +210,11 @@ compat_cc="clang --target=arm-linux-gnueabi $KCFLAGS"
 make -C "$source_dir" O="$build_dir" ARCH=arm64 LLVM=1 CC_COMPAT="$compat_cc" \
   "$PIXEL9_LINUX_DEFCONFIG"
 config="$source_dir/scripts/config --file $build_dir/.config"
-$config --enable LUMA_TOKAY_EMBEDDED_DIAGNOSTIC
+$config --enable SUNO_TOKAY_EMBEDDED_DIAGNOSTIC
 $config --enable EFI
 $config --enable CMDLINE_FORCE
 $config --set-str CMDLINE "$bootargs"
-$config --set-str INITRAMFS_SOURCE luma/diagnostic-initramfs.cpio
+$config --set-str INITRAMFS_SOURCE Suno/diagnostic-initramfs.cpio
 $config --disable INITRAMFS_COMPRESSION_NONE
 $config --disable INITRAMFS_COMPRESSION_GZIP
 $config --disable INITRAMFS_COMPRESSION_BZIP2
@@ -231,12 +231,12 @@ esac
 make -C "$source_dir" O="$build_dir" ARCH=arm64 LLVM=1 CC_COMPAT="$compat_cc" olddefconfig
 
 for required_config in \
-  'CONFIG_LUMA_TOKAY_EMBEDDED_DIAGNOSTIC=y' \
+  'CONFIG_SUNO_TOKAY_EMBEDDED_DIAGNOSTIC=y' \
   'CONFIG_EFI=y' \
   'CONFIG_EFI_STUB=y' \
   'CONFIG_CMDLINE_FORCE=y' \
   "CONFIG_CMDLINE=\"$bootargs\"" \
-  'CONFIG_INITRAMFS_SOURCE="luma/diagnostic-initramfs.cpio"'; do
+  'CONFIG_INITRAMFS_SOURCE="Suno/diagnostic-initramfs.cpio"'; do
   grep -Fqx "$required_config" "$build_dir/.config" ||
     die "required direct-kernel configuration is absent: $required_config"
 done
@@ -309,7 +309,7 @@ install -m 0644 "$build_dir/.config" "$artifact_dir/config"
 kernel_release=$(make -s -C "$source_dir" O="$build_dir" ARCH=arm64 LLVM=1 kernelrelease)
 compiler_line=$(clang --version | sed -n '1p' | tr '\n' ' ')
 {
-  printf 'LUMA_PIXEL9_DIRECT_KERNEL_PROOF_VERSION=1\n'
+  printf 'SUNO_PIXEL9_DIRECT_KERNEL_PROOF_VERSION=1\n'
   printf 'SCOPE=offline-embedded-dtb-initramfs-entry-proof\n'
   printf 'DIAGNOSTIC_VARIANT=%s\n' "$diagnostic_variant"
   printf 'REPORT_TRANSPORTS=%s\n' "$report_transports"
@@ -324,8 +324,8 @@ compiler_line=$(clang --version | sed -n '1p' | tr '\n' ' ')
   printf 'BUILD_HOST=%s/%s\n' "$(uname -s)" "$(uname -m)"
   printf 'BUILD_PATHS_NORMALIZED=true\n'
   printf 'COMPAT_VDSO_PATHS_NORMALIZED=true\n'
-  printf 'CANONICAL_SOURCE_PATH=/usr/src/luma-linux-zumapro\n'
-  printf 'CANONICAL_BUILD_PATH=/usr/lib/debug/luma-linux-zumapro\n'
+  printf 'CANONICAL_SOURCE_PATH=/usr/src/Suno-linux-zumapro\n'
+  printf 'CANONICAL_BUILD_PATH=/usr/lib/debug/Suno-linux-zumapro\n'
   printf 'ENTRY_CONTRACT=linux-arm64-pe32plus-efi-application\n'
   printf 'ENTRY_CONTRACT_MATCHES_STOCK=true\n'
   printf 'PE_COFF_HEADER_PRESENT=true\n'

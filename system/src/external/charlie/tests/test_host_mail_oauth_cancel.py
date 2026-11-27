@@ -2,7 +2,7 @@
 import threading
 import time
 import unittest
-from charlie_luma.oauth import GmailOAuth, MicrosoftOAuth, OAuthError
+from charlie_Suno.oauth import GmailOAuth, MicrosoftOAuth, OAuthError
 
 class OAuthCancellationTests(unittest.TestCase):
     def test_real_microsoft_loopback_wait_is_promptly_cancelled(self):

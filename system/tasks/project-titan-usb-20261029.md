@@ -1,8 +1,8 @@
 # Project Titan recovery and shared shell
 
 - Status: source147 search polish installed and native-tested; remaining Home/widget/gesture work reconciled with main for integration. No general OS release.
-- Owner: luma-dev-2 / Codex Project Titan chat.
-- Worktree: /srv/dev/worktrees/luma-os/project-titan-usb-20261029.
+- Owner: Suno-dev-2 / Codex Project Titan chat.
+- Worktree: /srv/dev/worktrees/Suno-os/project-titan-usb-20261029.
 - Branch: codex/project-titan-usb-20261029.
 
 ## Owner-authorized scope
@@ -59,11 +59,11 @@ Titan; they now report a 400-pixel minimum. Apps keep smaller declared minimums
 and desktop minimums remain unchanged. The Python policy is shared and pure;
 the native Action Center uses the matching monitor classification.
 
-The device previously launched legacy Ptyxis. The existing maintained Luma
+The device previously launched legacy Ptyxis. The existing maintained Suno
 Terminal source was delivered instead, with its actual shared Action Center and
 command field; no new Terminal UI was invented. Native touchscreen and keyboard
 input ran `pwd` successfully through that field. Nine app captures were reviewed:
-Notes, Clock, Contacts, Calendar, Photos, Tide, Luma Terminal, Settings and Filer.
+Notes, Clock, Contacts, Calendar, Photos, Tide, Suno Terminal, Settings and Filer.
 Their bars meet the bottom edge; Tide's former left edge line is absent. A low
 Clock tab tap reaches Alarms. Earlier "attached-terminal" QA captured Tide during
 a failed activation; the corrected Terminal capture and real command run are the
@@ -184,7 +184,7 @@ timer while the window is closed. A saved Wi-Fi name mismatch was corrected on
 this owner device, and a real forecast populated Home. Fresh-cache, empty-city,
 stale-cache and failure paths have unit coverage; a real stale-cache background
 refresh passed on the phone, producing a fresh forecast without opening Weather. Widget package source/pins advance
-to 1.luma.2; this is not a rebuilt or published OS/package release.
+to 1.Suno.2; this is not a rebuilt or published OS/package release.
 
 Validation: admitted final-delivery job 9761c231 passes compact geometry/grid
 checks, 25 shared-state tests, four refresh tests, the full 266-patch pinned Shell
@@ -226,7 +226,7 @@ Tablet/Desktop gesture regression and general release qualification were not run
 
 The owner requests the existing Tablet shell on the phone and a compact login,
 with rapid personal-device testing. The same GNOME Shell now starts on handheld
-hardware; the old LUMA_DEVICE_CLASS exclusion no longer suppresses Home. The
+hardware; the old SUNO_DEVICE_CLASS exclusion no longer suppresses Home. The
 upstream welcome tour no longer covers an existing account's first shared-shell
 session. Tablet presentation is explicitly selected on this owner device.
 
@@ -449,7 +449,7 @@ Final bounded job b174166a passes the focused checks, including eight two-device
 integration cases with sandbox routing and older credential API coverage,
 install-selection, credentials, library, remote, recovery and shared sync tests,
 RPM spec parsing and paired pins. New candidates: core
-1.luma.124.mobile20261030.2, Tide 2.luma.36.mobile20261030.1. Physical phone runtime
+1.Suno.124.mobile20261030.2, Tide 2.Suno.36.mobile20261030.1. Physical phone runtime
 source_navigation_runtime.py also passes the real More/Edit/focus path. No
 published package/OTA or complete signed-in cross-device playback claim.
 
@@ -475,7 +475,7 @@ in the boot overlay. Temporary QA service stopped and idle delay restored.
 Admitted job 1782f13b passed syntax, bottom-edge regression, status restoration,
 panel motion/policy, page motion, compact layout and diff checks. Evidence stays
 under the private bottom-input experiment directory. Shell source candidate is
-1.luma.126.mobile20261030.1; no package build or OTA publication claimed.
+1.Suno.126.mobile20261030.1; no package build or OTA publication claimed.
 
 
 ### 2026-10-30 — Tide edges and native Mobile Back
@@ -608,7 +608,7 @@ Reconnected directly to the Titan on the owner's other Wi-Fi after matching its
 saved SSH host identity. The Dell bridge is no longer needed on this LAN; access
 configuration stays private. Device is still on the native GNOME deployment.
 
-The live luma accessibility setting was explicitly true despite maintained
+The live Suno accessibility setting was explicitly true despite maintained
 false defaults. Cleared that user override with the real session bus and checked
 false readback. GDM's selected profile also reads false without dconf errors;
 there is no separate GDM user database to clear. Actual screenshots show the
@@ -766,7 +766,7 @@ still requires motion/hub driver support. Accepted audio kernel is unchanged.
 
 Owner answered “Yes, it wakes” after the explicit shell wake-handler fix.
 Readback shows wake count6 (previously5), gesture mode0, and both
-project-titan-touch-wake-driver.service and luma-touch-wake-policy.service
+project-titan-touch-wake-driver.service and Suno-touch-wake-policy.service
 active/enabled. Retain the current source-backed setup. No additional runtime
 change or reboot was needed. This confirms physical double-tap waking from
 display blank; it does not qualify system suspend, a fresh boot or battery life.
@@ -789,7 +789,7 @@ short swipe retained the last card at its original position, and the Clear all
 touch removed the remaining critical test alert while keeping the drawer open.
 All six native lifecycle checks passed again in that clean session.
 
-Shared phone roles now request Luma Monitor instead of GNOME System Monitor.
+Shared phone roles now request Suno Monitor instead of GNOME System Monitor.
 A shared default-app exclusion list prevents Tour, Yelp/Help, System Monitor,
 Reel and Darkroom from entering phone composition, and optional Darkroom was
 removed from both composers' mandatory local RPM inputs. Desktop's existing
@@ -837,7 +837,7 @@ is claimed. Private diagnostics remain outside Git under titan-ui-20261030.
 
 Owner requested substantial, measured mobile launch improvements and primary-source
 Android/Apple/Linux research, with rapid hotfixing and GitHub source convergence.
-Owned worktree/branch unchanged: project-titan-usb-20261029, luma-dev-2.
+Owned worktree/branch unchanged: project-titan-usb-20261029, Suno-dev-2.
 
 Implemented the shared platform's prepared Python/GTK host, libc launch client,
 protocol-v2 commit gate, compatible fallback, same-confinement admission, app-scope
@@ -917,7 +917,7 @@ work and incorporates current main. Other owners' worktrees/jobs were not change
 
 Recovered the office route through the Dell's existing unprivileged stream
 proxy, authenticating the Titan against its existing pinned host key. The generic
-luma.local name resolved to a different machine; its different key was rejected,
+Suno.local name resolved to a different machine; its different key was rejected,
 never trusted. Private SSH addressing/proxy configuration remains outside Git.
 Phone kernel retains accepted audio build#2 2026-10-30 23:00UTC, 4KiB pages,
 Binder/hwbinder/vndbinder devices, wake services active and Mobile presentation.
@@ -966,7 +966,7 @@ Removed previous full Shell/GDM/kit overlays; current source-backed Python apps
 are active from the new source directory. Desktop Settings70/esim was retained.
 
 Root's old authorized_keys did not persist across the formerly transient root
-filesystem. Existing luma public-key login and sudo authenticated successfully;
+filesystem. Existing Suno public-key login and sudo authenticated successfully;
 restored the SAME developer key through a root-only/etc/ssh AuthorizedKeysFile,
 retaining PermitRootLogin prohibit-password. No password login was enabled.
 
@@ -1005,7 +1005,7 @@ Android compatibility claim follows from this deployment.
 
 User reported Settings would not open. Actual journal and ldd-r show retained
 Settings70/esim immediately exits127 because Platform121 lacks seven old
-activation-code/QR-scanner symbols, beginning with luma_activation_code_new.
+activation-code/QR-scanner symbols, beginning with Suno_activation_code_new.
 Retaining the numerically higher device branch package during the earlier update
 was the wrong compatibility decision. Other-agent Android GPU work is untouched.
 
@@ -1038,7 +1038,7 @@ old shared-library injection, platform downgrade or inert symbol shim was used.
 
 ### 2026-10-31 — Terminal source-directory access repair
 
-Terminal launch failed with ModuleNotFoundError for luma_terminal. The imported
+Terminal launch failed with ModuleNotFoundError for Suno_terminal. The imported
 package and launcher were correct, but the private update's top-level source
 directory was root:root0770, preventing the signed-in user from traversing it.
 Changed that public source-only directory to0755; kept private backup/evidence
@@ -1084,7 +1084,7 @@ no persistent polling/inhibitor or rendering override was installed. Last device
 readback remains200percent; normal Terminal and Settings launch are repaired.
 
 Next connection: verify prepared-host module provenance and restart only
-luma-app-host.service after confirming KillMode=process. Its preloaded Python
+Suno-app-host.service after confirming KillMode=process. Its preloaded Python
 modules may still be the installed fallback source: the formerly inaccessible
 PYTHONPATH directory would allow imports to fall through to installed packages
 at host startup. This is an inference, not a live sys.modules readback. Retain
@@ -1210,7 +1210,7 @@ standalone action; navigation was checked through selection plus fresh page
 readback. Root input pixel coordinates were not a reliable way to pick a row,
 so do not reuse guessed physical scale factors. Preference values were restored
 after testing, retaining the owner's original Home layout. Screenshots reviewed;
-controls fit the Titan using shared Settings/LumaUI row parts and scrolling.
+controls fit the Titan using shared Settings/SunoUI row parts and scrolling.
 
 Status: owner approved for commit and push. This commit advances source pins
 to Shell142, Settings60.home20261031.1, shell-state38.home20261031.1 and
@@ -1267,7 +1267,7 @@ not a universal60FPS or battery-life qualification. No app was force-killed.
 
 Source-backed candidate: /var/lib/project-titan/switcher-refinement-20261031.
 It preserves approved Home settings/widget resize sources and adds raw
-lumaGrid.js plus tabletTasks.js. Fresh-process GResource readback matched both
+SunoGrid.js plus tabletTasks.js. Fresh-process GResource readback matched both
 exact files before replacing only the owned presentation overlay and adding the
 scoped UI overlay. Private before/environment and source SHA256 metadata are
 retained there; final packaged Shell143 has not been built/installed. Current
@@ -1413,7 +1413,7 @@ The stage status gesture uses actual rendered clock/island/indicator geometry,
 not a device ID. Invisible nib padding stays inside the status band and avoids
 clock/right controls; the painted nib retains its own native tap/pull handling.
 Clock taps retain Calendar. Locked notification privacy remains in the native
-beacon. A short bottom swipe on idle handheld Home opens Main.lumaSearch;
+beacon. A short bottom swipe on idle handheld Home opens Main.SunoSearch;
 settled hold still opens the switcher, and from-app swipes still return Home.
 
 Native mobile-drawers.js passes40 checks across98 painted frames on the Titan:
@@ -1427,7 +1427,7 @@ Titan; it is not a universal frame-rate claim or another device qualification.
 
 Design references reviewed: AOSP QuickSettingsControllerImpl separately drives
 shade expansion/depth and small content parallax; Apple's Motion guidance
-recommends brief, gesture-consistent feedback. These inform Luma's own shared
+recommends brief, gesture-consistent feedback. These inform Suno's own shared
 controller, not a claim of matching proprietary One UI internals:
 https://android.googlesource.com/platform/frameworks/base/+/refs/heads/main/packages/SystemUI/src/com/android/systemui/shade/QuickSettingsControllerImpl.java
 https://developer.apple.com/design/human-interface-guidelines/motion
@@ -1493,15 +1493,15 @@ integration uses this existing owned worktree instead, with no deleted files.
 
 PR119 merged to main5ace46423451eb70773af6a6dee13e6cc5140c0f.
 Owner then reported Dark Style no longer changed the light appearance. Actual
-state was GNOME prefer-dark plus explicit Luma light. The search appearance
+state was GNOME prefer-dark plus explicit Suno light. The search appearance
 probe saved get_string's default light and restored it with set_string even
 when the original user value was unset; this accidentally pinned Light. Reset
 that treatment to its previous inherited state, immediately restoring Dark.
 
-Source148 fixes the native Quick Options action to write Luma light/dark and
+Source148 fixes the native Quick Options action to write Suno light/dark and
 GNOME default/prefer-dark together, capturing the target before synchronous
-settings signals can change checked. Its indicator follows effective Luma
-appearance and external surface changes. Optional Luma schema lookup preserves
+settings signals can change checked. Its indicator follows effective Suno
+appearance and external surface changes. Optional Suno schema lookup preserves
 normal GNOME preference fallback. Settings signals dispose with the toggle.
 Search probe now saves/restores nullable user values for appearance and both
 accessibility keys, including reset when originally unset.
@@ -1517,7 +1517,7 @@ owned HDD update-20261031/dark-style; persistent native resource override is
 /var/lib/project-titan/dark-style-20261031 with root-private before/environment.
 Prior search, Home and Grid overlays remain intact; leave the owner in Dark.
 
-Next authorized task: cold-launch each installed Luma app, measure initial and
+Next authorized task: cold-launch each installed Suno app, measure initial and
 usable state, identify startup stalls and first-frame layout/state flashes,
 and fix meaningful causes with shared platform solutions where appropriate.
 Prior startup architecture/timings are in docs/operations/mobile-app-startup.md.
@@ -1546,7 +1546,7 @@ scale2 at1080x1200; those were window changes, not monitor scale changes.
 Prepared profiling proves cached prairie_apps/phone.py came from installed
 /usr/lib/python3.14/site-packages, while launch environment now points at the
 repaired current source overlay. The previously documented provenance concern
-is confirmed. Restarting only luma-app-host.service is safe (KillMode=process)
+is confirmed. Restarting only Suno-app-host.service is safe (KillMode=process)
 after a coherent source candidate is prepared; preserve other app children.
 No new product startup edits yet. WidthWatch currently rebuilds tier-dependent
 UI after paint, and Phone starts is_phone=False before first allocation; both
@@ -1556,13 +1556,13 @@ Private profiles and baselines are on owned HDD update-20261031/startup-audit.
 
 ### 2026-11-01 — Cold-launch and first-frame fixes, source149/122 (validated)
 
-Owner/worktree/branch remain luma-dev-2, project-titan-usb-20261029,
+Owner/worktree/branch remain Suno-dev-2, project-titan-usb-20261029,
 codex/project-titan-usb-20261029; base main d88ffa742. Audit completed two
-process-cold launches for22 native Luma/system app entries. Targets closed
+process-cold launches for22 native Suno/system app entries. Targets closed
 normally before terminating any remaining known UI PID; agents preserved.
 An initial auto-lock invalidated later first-pass observations; these were
 excluded and the complete baseline/final runs used a bounded idle inhibitor.
-Terminal's visible Ptyxis launcher maps to org.projectluma.Terminal; measure
+Terminal's visible Ptyxis launcher maps to org.projectSuno.Terminal; measure
 and stop that actual UI identity, not just the alias.
 
 Phone's ~7.4-second native present wait was libglycin decoding filtered window

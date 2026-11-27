@@ -1,23 +1,23 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
 
-# C2 proves that Luma can hand modem and audio ownership to a future stock
+# C2 proves that Suno can hand modem and audio ownership to a future stock
 # Android container and restore the native owners without starting Android.
 # It sends no message, places no call, and exposes no hardware to a container.
 
 set -Eeuo pipefail
 umask 077
 
-expected_kernel=7.1.2-luma-fp-ims1
-expected_mm_evr=1.25.95-0.2.luma2.fc44
-state=/var/lib/luma/stock-android-container1/state
+expected_kernel=7.1.2-Suno-fp-ims1
+expected_mm_evr=1.25.95-0.2.Suno2.fc44
+state=/var/lib/Suno/stock-android-container1/state
 run_id=$(date -u +%Y%m%dT%H%M%SZ)
 start_epoch=$(date +%s)
 run_dir=$state/logs/c2-ownership-$run_id
-user_name=luma
+user_name=Suno
 user_id=$(id -u "$user_name")
 user_runtime=/run/user/$user_id
-system_services=(luma-fp6-imsd luma-fp6-cellular-link ModemManager)
+system_services=(Suno-fp6-imsd Suno-fp6-cellular-link ModemManager)
 audio_system_services=(alsa-state)
 audio_user_sockets=(pipewire-pulse.socket pipewire.socket)
 audio_user_services=(wireplumber.service pipewire-pulse.service pipewire.service)
@@ -63,11 +63,11 @@ restore_owners() {
     [[ ${was_active[user:$service]:-false} == true ]] && user_systemctl start "$service"
   done
   [[ ${was_active[system:ModemManager]:-false} == true ]] && systemctl start ModemManager
-  if [[ ${was_active[system:luma-fp6-cellular-link]:-false} == true ]]; then
-    systemctl start luma-fp6-cellular-link
+  if [[ ${was_active[system:Suno-fp6-cellular-link]:-false} == true ]]; then
+    systemctl start Suno-fp6-cellular-link
   fi
-  if [[ ${was_active[system:luma-fp6-imsd]:-false} == true ]]; then
-    systemctl start luma-fp6-imsd
+  if [[ ${was_active[system:Suno-fp6-imsd]:-false} == true ]]; then
+    systemctl start Suno-fp6-imsd
   fi
   restored=true
   set -e
@@ -98,7 +98,7 @@ grep -qw 'androidboot.slot_suffix=_b' /proc/cmdline || die slot_mismatch
 [[ $(uname -r) == "$expected_kernel" ]] || die kernel_mismatch
 [[ $(rpm -q --qf '%{EVR}' ModemManager) == "$expected_mm_evr" ]] ||
   die modemmanager_version_mismatch
-[[ $(lxc-info -P /var/lib/lxc -n luma-stock-android-c1 -sH 2>/dev/null || printf STOPPED) == STOPPED ]] ||
+[[ $(lxc-info -P /var/lib/lxc -n Suno-stock-android-c1 -sH 2>/dev/null || printf STOPPED) == STOPPED ]] ||
   die android_container_already_running
 for process in qcrilNrd imsdaemon ims-dataservice-daemon ims_rtp_daemon; do
   ! pgrep -f "(^|/)${process}([[:space:]]|$)" >/dev/null || die stock_android_process_already_running
@@ -130,14 +130,14 @@ for service in "${audio_user_sockets[@]}" "${audio_user_services[@]}"; do
   fi
 done
 [[ ${was_active[system:ModemManager]} == true ]] || die modemmanager_not_active
-[[ ${was_active[system:luma-fp6-cellular-link]} == true ]] || die cellular_link_not_active
+[[ ${was_active[system:Suno-fp6-cellular-link]} == true ]] || die cellular_link_not_active
 
 # Stop top-down so clients release their transports before ModemManager and
 # ALSA state ownership disappear. Explicitly disconnect the native data
 # context first: leaving it active across a ModemManager restart can produce a
 # bearer that reports connected while the carrier silently drops its packets.
-systemctl stop luma-fp6-imsd
-systemctl stop luma-fp6-cellular-link
+systemctl stop Suno-fp6-imsd
+systemctl stop Suno-fp6-cellular-link
 mmcli -m any --simple-disconnect >"$run_dir/modem-disconnect.log" 2>&1 ||
   die modem_disconnect_failed
 systemctl stop ModemManager
@@ -159,7 +159,7 @@ for service in "${audio_user_sockets[@]}" "${audio_user_services[@]}"; do
   user_systemctl is-active --quiet "$service" && die user_audio_owner_remained_active
 done
 ! pgrep -x ModemManager >/dev/null || die modemmanager_process_remained
-! pgrep -x imsd >/dev/null || die luma_ims_process_remained
+! pgrep -x imsd >/dev/null || die Suno_ims_process_remained
 if fuser /dev/snd/* >/dev/null 2>&1; then
   fuser -v /dev/snd/* >"$run_dir/audio-fds.exclusive-failure.log" 2>&1 || true
   die audio_fd_remained

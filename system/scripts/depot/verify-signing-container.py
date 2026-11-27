@@ -29,7 +29,7 @@ def check(doc, control, inputs, output, keys, control_sha, input_sha):
     if before != after: raise ValueError('signer process changed during verification')
     labels = doc['Config'].get('Labels', {})
     for key, expected in [('role', 'signer'), ('control', control_sha), ('inputs', input_sha)]:
-        if labels.get('org.projectluma.depot.' + key) != expected:
+        if labels.get('org.projectSuno.depot.' + key) != expected:
             raise ValueError('signer custody label differs from reviewed snapshot')
     expected = {str(control): (control, False), str(inputs): (inputs, False),
                 str(keys): (keys, True)}

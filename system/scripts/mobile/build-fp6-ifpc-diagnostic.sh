@@ -11,8 +11,8 @@ umask 022
 repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 source_dir=${1:?usage: build-fp6-ifpc-diagnostic.sh KERNEL_SOURCE [OUTPUT_DIR]}
 output_dir=${2:-$repo_root/build/mobile/fp6-physical/kernel-ifpc-test1}
-running_config=${LUMA_FP6_RUNNING_CONFIG:-/proc/config.gz}
-build_jobs=${LUMA_KERNEL_BUILD_JOBS:-4}
+running_config=${SUNO_FP6_RUNNING_CONFIG:-/proc/config.gz}
+build_jobs=${SUNO_KERNEL_BUILD_JOBS:-4}
 
 source_commit=dfe0125e73541d1984e4d2d37bd069a036bf0451
 kernel_release=7.1.2
@@ -20,12 +20,12 @@ patch_path=$repo_root/patches/linux-milos/0001-drm-msm-a810-disable-ifpc-diagnos
 
 case "$build_jobs" in
   ''|*[!0-9]*)
-    printf 'error: LUMA_KERNEL_BUILD_JOBS must be a positive integer\n' >&2
+    printf 'error: SUNO_KERNEL_BUILD_JOBS must be a positive integer\n' >&2
     exit 1
     ;;
 esac
 [ "$build_jobs" -ge 1 ] || {
-  printf 'error: LUMA_KERNEL_BUILD_JOBS must be at least 1\n' >&2
+  printf 'error: SUNO_KERNEL_BUILD_JOBS must be at least 1\n' >&2
   exit 1
 }
 
@@ -117,7 +117,7 @@ image_sha=$(sha256sum "$output_dir/Image.gz" | awk '{print $1}')
 config_sha=$(sha256sum "$output_dir/config" | awk '{print $1}')
 patch_sha=$(sha256sum "$patch_path" | awk '{print $1}')
 {
-  printf 'LUMA_FP6_KERNEL_DIAGNOSTIC_VERSION=1\n'
+  printf 'SUNO_FP6_KERNEL_DIAGNOSTIC_VERSION=1\n'
   printf 'SOURCE_COMMIT=%s\n' "$source_commit"
   printf 'KERNEL_RELEASE=%s\n' "$kernel_release"
   printf 'DIAGNOSTIC=A810_IFPC_DISABLED\n'

@@ -22,10 +22,10 @@ from prairie_apps.photos_backend import (
 
 class PhotosBackendTests(unittest.TestCase):
     def test_shared_bind_mount_is_required_even_when_synthetic_home_is_writable(self):
-        directory = Path('/home/user/My photos/luma-photos')
+        directory = Path('/home/user/My photos/Suno-photos')
         home_only = '10 1 0:1 / /home/user rw - tmpfs tmpfs rw\n'
         self.assertFalse(_shared_library_mounted(directory, home_only))
-        family = '11 10 8:1 /luma-photos /home/user/My\\040photos/luma-photos rw - ext4 /dev/sda rw\n'
+        family = '11 10 8:1 /Suno-photos /home/user/My\\040photos/Suno-photos rw - ext4 /dev/sda rw\n'
         self.assertTrue(_shared_library_mounted(directory, home_only + family))
         self.assertFalse(_shared_library_mounted(directory / 'other', family))
 
@@ -33,42 +33,42 @@ class PhotosBackendTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             canonical_home = root / 'var-home'
-            library = canonical_home / '.local/share/luma-photos'
+            library = canonical_home / '.local/share/Suno-photos'
             library.mkdir(parents=True)
             alias_home = root / 'home'
             alias_home.symlink_to(canonical_home, target_is_directory=True)
-            mounts = f'11 1 8:1 /luma-photos {library} rw - ext4 /dev/sda rw\n'
+            mounts = f'11 1 8:1 /Suno-photos {library} rw - ext4 /dev/sda rw\n'
             self.assertTrue(_shared_library_mounted(library, mounts))
-            self.assertTrue(_shared_library_mounted(alias_home / '.local/share/luma-photos', mounts))
+            self.assertTrue(_shared_library_mounted(alias_home / '.local/share/Suno-photos', mounts))
             self.assertFalse(_shared_library_mounted(alias_home / '.local/share/other-library', mounts))
 
     def test_home_symlink_without_explicit_library_mount_remains_denied(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             canonical_home = root / 'var-home'
-            library = canonical_home / '.local/share/luma-photos'
+            library = canonical_home / '.local/share/Suno-photos'
             library.mkdir(parents=True)
             alias_home = root / 'home'
             alias_home.symlink_to(canonical_home, target_is_directory=True)
             mounts = f'10 1 0:1 / {canonical_home} rw - tmpfs tmpfs rw\n'
             self.assertFalse(_shared_library_mounted(library, mounts))
-            self.assertFalse(_shared_library_mounted(alias_home / '.local/share/luma-photos', mounts))
+            self.assertFalse(_shared_library_mounted(alias_home / '.local/share/Suno-photos', mounts))
 
     def test_camera_and_photos_sandboxes_share_host_catalog_not_private_profiles(self):
         with tempfile.TemporaryDirectory() as directory:
             home = Path(directory)
-            for app in ("org.projectluma.Photos", "org.projectluma.Camera"):
+            for app in ("org.projectSuno.Photos", "org.projectSuno.Camera"):
                 environment = {"HOME": str(home), "FLATPAK_ID": app,
                                "XDG_DATA_HOME": str(home / ".var/app" / app / "data")}
-                self.assertEqual(default_database_path(environment), home / ".local/share/luma-photos/library.sqlite3")
+                self.assertEqual(default_database_path(environment), home / ".local/share/Suno-photos/library.sqlite3")
                 environment["HOST_XDG_DATA_HOME"] = str(home / "custom-host-data")
-                self.assertEqual(default_database_path(environment), home / "custom-host-data/luma-photos/library.sqlite3")
+                self.assertEqual(default_database_path(environment), home / "custom-host-data/Suno-photos/library.sqlite3")
                 environment["HOST_XDG_DATA_HOME"] = "relative-unsafe"
                 with self.assertRaises(ValueError):
                     default_database_path(environment)
-            unrelated = {"HOME": str(home), "FLATPAK_ID": "org.projectluma.Notes",
+            unrelated = {"HOME": str(home), "FLATPAK_ID": "org.projectSuno.Notes",
                          "XDG_DATA_HOME": str(home / "private-data"), "HOST_XDG_DATA_HOME": str(home / "custom-host-data")}
-            self.assertEqual(default_database_path(unrelated), home / "private-data/luma-photos/library.sqlite3")
+            self.assertEqual(default_database_path(unrelated), home / "private-data/Suno-photos/library.sqlite3")
 
     def test_indexes_images_but_not_symlinks_or_other_files(self):
         with tempfile.TemporaryDirectory() as directory:

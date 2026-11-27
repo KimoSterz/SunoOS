@@ -59,7 +59,7 @@ index 3c143c6..5e74ed4 100644
 @@ -1992,9 +2001,8 @@ nautilus_window_constructed (GObject *self)
  
      /* The shared frame keeps NautilusWindow and every template child alive. */
-     luma_application_window_frame_adopt (ADW_APPLICATION_WINDOW (window));
+     Suno_application_window_frame_adopt (ADW_APPLICATION_WINDOW (window));
 -    /* The toggle is constructed in Nautilus' template host. Transfer the
 -     * existing control to the kit's selected top title row, retaining its
 -     * split-view action and avoiding an already-parented GTK critical. */
@@ -69,7 +69,7 @@ index 3c143c6..5e74ed4 100644
      g_object_ref (toggle);
      gtk_box_remove (GTK_BOX (window->sidebar_toggle_desktop_host), toggle);
 @@ -2002,6 +2010,9 @@ nautilus_window_constructed (GObject *self)
-     luma_application_window_frame_set_leading_phone_host (ADW_APPLICATION_WINDOW (window),
+     Suno_application_window_frame_set_leading_phone_host (ADW_APPLICATION_WINDOW (window),
                                                            toggle,
                                                            window->sidebar_toggle_phone_host);
 +    g_signal_connect_object (window->split_view, "notify::collapsed",
@@ -79,14 +79,14 @@ index 3c143c6..5e74ed4 100644
      GMenuModel *main_menu = NULL;
      g_object_get (window->toolbar, "main-menu", &main_menu, NULL);
 @@ -2718,10 +2729,10 @@ nautilus_window_init (NautilusWindow *window)
-     window->action_modes_item = luma_bar_item_new_modes (window->action_modes);
+     window->action_modes_item = Suno_bar_item_new_modes (window->action_modes);
      update_action_center (window);
  
 -    /* v70's file rail has a fixed kit width; keep Nautilus' live rows,
 -     * volumes, bookmarks and DnD rather than copying them into a second list. */
 +    /* Use the shared navigation width so full destination names and live
 +     * device labels fit. Keep Nautilus' rows, volumes, bookmarks and DnD. */
-     luma_navigation_sidebar_adapt_live (ADW_OVERLAY_SPLIT_VIEW (window->split_view),
+     Suno_navigation_sidebar_adapt_live (ADW_OVERLAY_SPLIT_VIEW (window->split_view),
 -                                        GTK_WIDGET (window->places_sidebar), "rail");
 +                                        GTK_WIDGET (window->places_sidebar), "narrow");
      gtk_widget_set_visible (window->sidebar_resize_handle, FALSE);

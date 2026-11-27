@@ -61,9 +61,9 @@ class NotesHubClient:
             error.close()
             raise HubResponseError(status, 'The Hub refused the Notes request', retry_after=retry_after) from None
         except (URLError, TimeoutError, OSError):
-            raise ConnectError('Luma Hub could not be reached. Your notes are kept on this computer.') from None
+            raise ConnectError('Suno Hub could not be reached. Your notes are kept on this computer.') from None
         except (ValueError, UnicodeError):
-            raise ConnectError('Luma Hub returned an invalid Notes response.') from None
+            raise ConnectError('Suno Hub returned an invalid Notes response.') from None
 
 
 @dataclass(frozen=True)
@@ -102,10 +102,10 @@ class NotesAccount:
 
     def connect(self, code, name='Notes on this computer'):
         if not isinstance(code, str):
-            raise ConnectError('Enter the connection code from Luma Hub.')
+            raise ConnectError('Enter the connection code from Suno Hub.')
         code = code.strip().upper()
         if not re.fullmatch(r'[A-Z0-9-]{4,128}', code):
-            raise ConnectError('Enter the connection code from Luma Hub.')
+            raise ConnectError('Enter the connection code from Suno Hub.')
         if self.secrets.get() is not None:
             raise ConnectError('Sign out before connecting another Notes account.')
         device_id = str(uuid.uuid4())
@@ -126,7 +126,7 @@ class NotesAccount:
             identity = account.get('account')
             if not isinstance(identity, dict):
                 raise ConnectError('The Hub returned an invalid account identity.')
-            name = profile.get('name') or 'Luma account'
+            name = profile.get('name') or 'Suno account'
             if not isinstance(name,str):
                 raise ConnectError('The Hub returned an invalid account name.')
             session = NotesSession(device_id, token, identity.get('id'), name[:240], self.client.origin).validate()
@@ -175,9 +175,9 @@ class NotesKeyring:
         gi.require_version('Secret', '1')
         from gi.repository import Secret
         self.secret = Secret
-        self.schema = Secret.Schema.new('org.projectluma.Notes.Device', Secret.SchemaFlags.NONE,
+        self.schema = Secret.Schema.new('org.projectSuno.Notes.Device', Secret.SchemaFlags.NONE,
             {'hub': Secret.SchemaAttributeType.STRING, 'app': Secret.SchemaAttributeType.STRING})
-        self.attributes = {'hub': hub_url(origin), 'app': 'org.projectluma.Notes'}
+        self.attributes = {'hub': hub_url(origin), 'app': 'org.projectSuno.Notes'}
 
     def _call(self, operation, *args, timeout=5):
         import threading
@@ -236,7 +236,7 @@ class NotesKeyring:
         if len(raw) > 32768:
             raise ConnectError('The Notes sign-in is too large to store.')
         stored = self._call(self.secret.password_store_sync, self.schema, self.attributes,
-            self.secret.COLLECTION_DEFAULT, 'Notes — Luma Hub', raw, timeout=120)
+            self.secret.COLLECTION_DEFAULT, 'Notes — Suno Hub', raw, timeout=120)
         if not stored:
             raise ConnectError('The Notes sign-in could not be saved in the desktop keyring.')
 

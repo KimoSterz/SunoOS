@@ -96,7 +96,7 @@
     "acc": 250,
     "wall": "prism",
     "tint": true,
-    "preset": "luma",
+    "preset": "Suno",
     "edge": "bottom",
     "spread": "spread",
     "joined": "separate",
@@ -359,7 +359,7 @@
       "Studio North Guest",
       "Coastline Rail",
       "Harbor Café",
-      "Luma Office",
+      "Suno Office",
       "Home"
     ],
     "CFBT": [
@@ -513,14 +513,14 @@
         "Ember"
       ],
       [
-        "luma-creatives",
+        "Suno-creatives",
         "Creatives"
       ]
     ],
     "CFPRE": [
       [
-        "luma",
-        "Luma",
+        "Suno",
+        "Suno",
         {
           "edge": "bottom",
           "spread": "spread",
@@ -1314,63 +1314,63 @@
     "CFAPPINFO": {
       "filer": {
         "name": "Filer",
-        "spec_artwork": "luma-v3-files.svg"
+        "spec_artwork": "Suno-v3-files.svg"
       },
       "photos": {
         "name": "Photos",
-        "spec_artwork": "luma-v3-photos.svg"
+        "spec_artwork": "Suno-v3-photos.svg"
       },
       "viola": {
         "name": "Viola",
-        "spec_artwork": "luma-v3-browser.svg"
+        "spec_artwork": "Suno-v3-browser.svg"
       },
       "write": {
         "name": "Write",
-        "spec_artwork": "luma-v3-documents.svg"
+        "spec_artwork": "Suno-v3-documents.svg"
       },
       "tide": {
         "name": "Tide",
-        "spec_artwork": "luma-v3-music.svg"
+        "spec_artwork": "Suno-v3-music.svg"
       },
       "messages": {
         "name": "Messages",
-        "spec_artwork": "luma-v3-messages.svg"
+        "spec_artwork": "Suno-v3-messages.svg"
       },
       "notes": {
         "name": "Notes",
-        "spec_artwork": "luma-v3-notes.svg"
+        "spec_artwork": "Suno-v3-notes.svg"
       },
       "contacts": {
         "name": "Contacts",
-        "spec_artwork": "luma-v3-contacts.svg"
+        "spec_artwork": "Suno-v3-contacts.svg"
       },
       "term": {
         "name": "Terminal",
-        "spec_artwork": "luma-v3-terminal.svg"
+        "spec_artwork": "Suno-v3-terminal.svg"
       },
       "calendar": {
         "name": "Calendar",
-        "spec_artwork": "luma-v3-calendar.svg"
+        "spec_artwork": "Suno-v3-calendar.svg"
       },
       "depot": {
         "name": "Depot",
-        "spec_artwork": "luma-v3-app-store.svg"
+        "spec_artwork": "Suno-v3-app-store.svg"
       },
       "weather": {
         "name": "Weather",
-        "spec_artwork": "luma-v3-weather.svg"
+        "spec_artwork": "Suno-v3-weather.svg"
       },
       "clock": {
         "name": "Clock",
-        "spec_artwork": "luma-v3-clock.svg"
+        "spec_artwork": "Suno-v3-clock.svg"
       },
       "charlie": {
         "name": "Charlie",
-        "spec_artwork": "luma-v3-mail.svg"
+        "spec_artwork": "Suno-v3-mail.svg"
       },
       "monitor": {
         "name": "Monitor",
-        "spec_artwork": "luma-v3-monitor.svg"
+        "spec_artwork": "Suno-v3-monitor.svg"
       },
       "leaf": {
         "name": "Leaf",
@@ -1378,19 +1378,19 @@
       },
       "viewer": {
         "name": "Viewer",
-        "spec_artwork": "luma-v3-viewer.svg"
+        "spec_artwork": "Suno-v3-viewer.svg"
       },
       "valet": {
         "name": "Valet",
-        "spec_artwork": "luma-v3-valet.svg"
+        "spec_artwork": "Suno-v3-valet.svg"
       },
       "settings": {
         "name": "Settings",
-        "spec_artwork": "luma-v3-settings.svg"
+        "spec_artwork": "Suno-v3-settings.svg"
       },
       "memos": {
         "name": "Memos",
-        "spec_artwork": "luma-v3-memo.svg"
+        "spec_artwork": "Suno-v3-memo.svg"
       },
       "tasks": {
         "name": "Tasks",
@@ -1402,67 +1402,67 @@
       },
       "camera": {
         "name": "Camera",
-        "spec_artwork": "luma-v3-camera.svg"
+        "spec_artwork": "Suno-v3-camera.svg"
       },
       "maps": {
         "name": "Maps",
-        "spec_artwork": "luma-v3-maps.svg"
+        "spec_artwork": "Suno-v3-maps.svg"
       },
       "phone": {
         "name": "Phone",
-        "spec_artwork": "luma-v3-phone.svg"
+        "spec_artwork": "Suno-v3-phone.svg"
       },
       "calc": {
         "name": "Calculator",
-        "spec_artwork": "luma-v3-calculator.svg"
+        "spec_artwork": "Suno-v3-calculator.svg"
       },
       "ari": {
         "name": "Ari",
-        "spec_artwork": "luma-v3-ari.svg"
+        "spec_artwork": "Suno-v3-ari.svg"
       },
       "canvas": {
         "name": "Canvas",
-        "spec_artwork": "luma-v3-designer.svg"
+        "spec_artwork": "Suno-v3-designer.svg"
       },
       "grid": {
         "name": "Grid",
-        "spec_artwork": "luma-v3-spreadsheets.svg"
+        "spec_artwork": "Suno-v3-spreadsheets.svg"
       },
       "stage": {
         "name": "Stage",
-        "spec_artwork": "luma-v3-presentations.svg"
+        "spec_artwork": "Suno-v3-presentations.svg"
       },
       "session": {
         "name": "Session",
-        "spec_artwork": "luma-v3-daw.svg"
+        "spec_artwork": "Suno-v3-daw.svg"
       },
       "darkroom": {
         "name": "Darkroom",
-        "spec_artwork": "luma-v3-photo-editor.svg"
+        "spec_artwork": "Suno-v3-photo-editor.svg"
       },
       "reel": {
         "name": "Reel",
-        "spec_artwork": "luma-v3-video-editor.svg"
+        "spec_artwork": "Suno-v3-video-editor.svg"
       },
       "diskord": {
         "name": "Diskord",
-        "spec_artwork": "luma-v4-diskord.svg",
+        "spec_artwork": "Suno-v4-diskord.svg",
         "version": "2.4",
         "flatpakId": "app.diskord.Diskord",
         "desktopId": "app.diskord.Diskord.desktop"
       },
       "huddle": {
         "name": "Huddle",
-        "spec_artwork": "luma-v4-huddle.svg",
+        "spec_artwork": "Suno-v4-huddle.svg",
         "version": "5.1",
         "flatpakId": "chat.huddle.Huddle",
         "desktopId": "chat.huddle.Huddle.desktop"
       },
       "playground": {
         "name": "Playground",
-        "spec_artwork": "luma-v4-playground.svg",
+        "spec_artwork": "Suno-v4-playground.svg",
         "version": "0.9",
-        "desktopId": "org.projectluma.Playground.desktop"
+        "desktopId": "org.projectSuno.Playground.desktop"
       }
     },
     "CFAPPCATS": {
@@ -1560,7 +1560,7 @@
             "4": 1794484800
           }
         },
-        "org.projectluma.Playground": {
+        "org.projectSuno.Playground": {
           "granted": 0,
           "refused": 4,
           "used": 0,
@@ -1578,7 +1578,7 @@
   "pages": [
     {
       "id": "me",
-      "title": "Luma account",
+      "title": "Suno account",
       "parent": null
     },
     {

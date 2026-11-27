@@ -2,7 +2,7 @@
 #
 # White points and CCMs are numeric calibration data decoded from the stock
 # com.qti.tuned.tsp_ov13b10_fp6.bin profile (sha256 dcd0a321...1dcc69d).
-# They are a strong bring-up baseline, not a substitute for Luma's eventual
+# They are a strong bring-up baseline, not a substitute for Suno's eventual
 # chart-based calibration. Black level remains adaptive. Autofocus uses a
 # narrow sensor-specific range and sustained-loss local rescans.
 %YAML 1.1

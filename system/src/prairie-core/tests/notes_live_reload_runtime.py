@@ -3,7 +3,7 @@
 """Notes: what sync writes to the library shows in an open window.
 
 A real Notes window runs under Xvfb over a library of 40 pages. A second
-connection to the same library stands in for luma-connect-sync and writes the
+connection to the same library stands in for Suno-connect-sync and writes the
 way it does (put_synced_note, as a pull takes another device's version).
 
 1. A page changed and a page added elsewhere appear in the open window's list,
@@ -49,7 +49,7 @@ from prairie_apps import notes as notes_module  # noqa: E402
 from prairie_apps.connect_notes import CONFLICT_SUFFIX  # noqa: E402
 from prairie_apps.notes_backend import NotesStore  # noqa: E402
 
-mock.patch("luma_appkit.widgets._prefers_dark", lambda: Adw.StyleManager.get_default().get_dark()).start()
+mock.patch("Suno_appkit.widgets._prefers_dark", lambda: Adw.StyleManager.get_default().get_dark()).start()
 context = GLib.MainContext.default()
 PAGES = 40
 
@@ -104,7 +104,7 @@ class LiveReloadTests(unittest.TestCase):
         self.window.set_default_size(900, 520)
         self.window.present()
         pump(1.0)
-        # "Sync": another connection to the same library, as luma-connect-sync has.
+        # "Sync": another connection to the same library, as Suno-connect-sync has.
         self.sync = NotesStore(self.window.store.path)
         self.opened = self.window.current.id
 

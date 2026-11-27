@@ -12,4 +12,4 @@ pinned in `config/desktop/inputs.env`.
   for that device type and gives the missing-programmer case a real error.
   Upstream: https://github.com/fwupd/fwupd/issues/10939. Drop it once a
   fwupd release carries the fix.
-- `0000-luma-fedora-spec.patch`: adds the patch and the `luma.N` release.
+- `0000-Suno-fedora-spec.patch`: adds the patch and the `Suno.N` release.

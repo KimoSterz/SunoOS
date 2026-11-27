@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-only
-"""Compact presentation over the existing Chromium page and Luma widgets."""
+"""Compact presentation over the existing Chromium page and Suno widgets."""
 import math
 import time
 from gi.repository import GLib, Gtk

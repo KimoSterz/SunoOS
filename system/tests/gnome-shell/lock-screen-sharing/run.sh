@@ -1,15 +1,15 @@
 #!/bin/bash
 # SPDX-License-Identifier: GPL-2.0-or-later
-# One headless Luma session with the real portal stack, then probe.js.
+# One headless Suno session with the real portal stack, then probe.js.
 #
 #   run.sh OUTDIR MODE        MODE: lock | lifecycle | screens | pill | ring
 #
 # LOCK_MONITORS: virtual monitors, e.g. "1920x1200 3440x1440 2560x1600".
 #
 # Inside a Fedora container with the Shell and Mutter under test, PipeWire,
-# WirePlumber, xdg-desktop-portal, luma-portal (LOCK_PORTAL: the directory
-# holding luma_portal, defaults to the installed one), pipewire-gstreamer and
-# python3-gobject, with the luma-portal D-Bus service pointing at
+# WirePlumber, xdg-desktop-portal, Suno-portal (LOCK_PORTAL: the directory
+# holding Suno_portal, defaults to the installed one), pipewire-gstreamer and
+# python3-gobject, with the Suno-portal D-Bus service pointing at
 # portal-launch.sh. LOCK_OVERLAY loads LOCK_OVERLAY/js/ui and
 # LOCK_OVERLAY/data/theme over the installed Shell. LOCK_KEYFILE, LOCK_W,
 # LOCK_H as in tests/gnome-shell/screen-sharing.
@@ -26,7 +26,7 @@ export HOME=/tmp/lock-home; rm -rf $HOME
 mkdir -p $HOME/.config/glib-2.0/settings $HOME/.local/share/applications
 cp ${LOCK_KEYFILE:-$SHARE_APPS/keyfile.light} $HOME/.config/glib-2.0/settings/keyfile
 cp $SHARE_APPS/apps/*.desktop $HOME/.local/share/applications/
-export GSETTINGS_BACKEND=keyfile LIBGL_ALWAYS_SOFTWARE=1 LUMA_MUTTER_ALLOW_SOFTWARE_BLUR=1
+export GSETTINGS_BACKEND=keyfile LIBGL_ALWAYS_SOFTWARE=1 SUNO_MUTTER_ALLOW_SOFTWARE_BLUR=1
 export XDG_CURRENT_DESKTOP=GNOME XDG_SESSION_TYPE=wayland GDK_BACKEND=wayland
 export GTK_A11Y=none NO_AT_BRIDGE=1
 if [ -n "${LOCK_OVERLAY:-}" ]; then
@@ -36,7 +36,7 @@ fi
 # serve this one's clients.
 cleanup() {
   pkill -x pipewire 2>/dev/null; pkill -x wireplumber 2>/dev/null
-  pkill -f xdg-desktop-portal 2>/dev/null; pkill -f luma_portal 2>/dev/null
+  pkill -f xdg-desktop-portal 2>/dev/null; pkill -f Suno_portal 2>/dev/null
   pkill -f "$here/client.py" 2>/dev/null; pkill -f "screen-sharing/window.py" 2>/dev/null
   pkill -f fake-gdm.py 2>/dev/null
   true
@@ -52,7 +52,7 @@ if [ "$mode" != ring ]; then
   # Container only: no logind to activate, a seats directory, a GDM that
   # answers its version.
   rm -f /usr/share/dbus-1/system-services/org.freedesktop.login1.service
-  cat >/etc/dbus-1/system.d/luma-lock-test.conf <<'CONF'
+  cat >/etc/dbus-1/system.d/Suno-lock-test.conf <<'CONF'
 <!DOCTYPE busconfig PUBLIC "-//freedesktop//DTD D-BUS Bus Configuration 1.0//EN"
  "http://www.freedesktop.org/standards/dbus/1.0/busconfig.dtd">
 <busconfig><policy user="root"><allow own="org.gnome.DisplayManager"/>

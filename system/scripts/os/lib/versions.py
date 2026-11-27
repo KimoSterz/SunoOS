@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""Luma OS version ordering (Semantic Versioning 2.0.0 precedence).
+"""Suno OS version ordering (Semantic Versioning 2.0.0 precedence).
 
   versions.py greater A B     exit 0 when A > B
   versions.py sort V...       print the versions in ascending order
@@ -20,7 +20,7 @@ PATTERN = re.compile(r"^(\d+)\.(\d+)\.(\d+)(?:-([0-9A-Za-z.-]+))?$")
 def parse(version):
     match = PATTERN.match(version)
     if not match:
-        raise ValueError(f"not a Luma OS version: {version}")
+        raise ValueError(f"not a Suno OS version: {version}")
     core = tuple(int(part) for part in match.group(1, 2, 3))
     pre = match.group(4)
     return core, (pre.split(".") if pre else None)

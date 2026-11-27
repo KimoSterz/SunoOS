@@ -1,13 +1,13 @@
 ---
 title: Writing style
-summary: How Luma apps write: voice, capitalization, labels, buttons, menus, empty states, errors, confirmations, numbers and punctuation.
+summary: How Suno apps write: voice, capitalization, labels, buttons, menus, empty states, errors, confirmations, numbers and punctuation.
 order: 9
 section: Design
 ---
 
 # Writing style
 
-Words are most of the interface. Luma apps write the way a helpful person
+Words are most of the interface. Suno apps write the way a helpful person
 talks, in plain words about what the reader is trying to do.
 
 ## Voice
@@ -27,7 +27,7 @@ benefit instead.
 
 ## Capitalization
 
-Luma apps use **sentence case** for interface text: capitalize the first word
+Suno apps use **sentence case** for interface text: capitalize the first word
 and proper nouns only.
 
 | Element | Example |
@@ -38,8 +38,8 @@ and proper nouns only.
 | Sidebar sections | Written in sentence case; `SectionLabel` displays them uppercase |
 | Tooltips and descriptions | “Show the sidebar” |
 
-Product and feature names keep their capitals: Luma, Depot, Filer, Ari, Luma
-Sync, Luma Connect, Trash. Write “Luma” with a capital L everywhere.
+Product and feature names keep their capitals: Suno, Depot, Filer, Ari, Suno
+Sync, Suno Connect, Trash. Write “Suno” with a capital L everywhere.
 
 ## Labels
 

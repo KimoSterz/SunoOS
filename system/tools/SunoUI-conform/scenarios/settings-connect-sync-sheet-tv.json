@@ -1,0 +1,312 @@
+{
+ "app": "settings-connect-sync-sheet-tv",
+ "title": "Settings: Connect Sync sheets (TV)",
+ "about": "The sheets of Suno account › Sync (gnome-control-center 0111) against design-center daccee5, mockups/connect-sync/sheet.html: the recovery key (show, ticked), its check (confirm), the new device's code (join) and the recovery entry (enter). The GTK side is the sheet card alone (SUNO_SETTINGS_SYNC_SHEET, fixture only), the reference's #stage the same card. TV posture (SUNO_POSTURE=tv): the sheet at 1.5 times, the remote on Cancel; B3/S1/B2 at f10cf9b: join compare, wait, tampered, the new recovery key.",
+ "spec": {
+  "root": "design-center",
+  "url": "mockups/connect-sync/sheet.html?posture=tv",
+  "window": "#stage",
+  "ready": "html[data-ready]",
+  "exclude": [],
+  "viewport": {
+   "width": 960,
+   "height": 1300
+  },
+  "init_script": "if (matchMedia('(prefers-color-scheme: light)').matches && !/[?&]mode=/.test(location.search)) history.replaceState(null, '', location.pathname + (location.search ? location.search + '&' : '?') + 'mode=light');"
+ },
+ "gtk": {
+  "module": "settings",
+  "fixtures": [
+   "tests/fixtures/settings-connect-sync.json",
+   "assets/icon-theme/Prairie/scalable/apps/Suno-v3-documents.svg",
+   "assets/icon-theme/Prairie/scalable/apps/Suno-v3-browser.svg",
+   "assets/icon-theme/Prairie/scalable/apps/Suno-v3-messages.svg",
+   "assets/icon-theme/Prairie/scalable/apps/Suno-v3-files.svg",
+   "assets/icon-theme/Prairie/scalable/apps/Suno-v3-music.svg",
+   "assets/icon-theme/Prairie/scalable/apps/Suno-v3-mail.svg",
+   "assets/icon-theme/Prairie/scalable/apps/Suno-v3-photos.svg",
+   "assets/wallpapers/meadow.png",
+   "assets/wallpapers/ember.png",
+   "src/Suno-platform/ui/Suno-creatives.png",
+   "assets/icon-theme/Prairie/scalable/apps/Suno-v3-calendar.svg",
+   "assets/icon-theme/Prairie/scalable/apps/Suno-v3-phone.svg",
+   "assets/icon-theme/Prairie/scalable/apps/Suno-v3-clock.svg",
+   "assets/icon-theme/Prairie/scalable/apps/Suno-v3-app-store.svg",
+   "assets/icon-theme/Prairie/scalable/apps/Suno-v3-maps.svg",
+   "assets/icon-theme/Prairie/scalable/apps/Suno-v3-settings.svg",
+   "assets/icon-theme/Prairie/scalable/apps/Suno-v3-calculator.svg",
+   "assets/icon-theme/Prairie/scalable/apps/Suno-v3-contacts.svg",
+   "assets/icon-theme/Prairie/scalable/apps/Suno-v3-notes.svg",
+   "assets/icon-theme/Prairie/scalable/apps/Suno-v3-terminal.svg",
+   "assets/icon-theme/Prairie/scalable/apps/org.projectSuno.Tasks.svg",
+   "assets/icon-theme/Prairie/scalable/apps/Suno-v3-video-editor.svg",
+   "assets/icon-theme/Prairie/scalable/apps/Suno-v3-camera.svg",
+   "assets/icon-theme/Prairie/scalable/apps/Suno-v3-ari.svg",
+   "assets/icon-theme/Prairie/scalable/apps/Suno-v3-designer.svg",
+   "assets/icon-theme/Prairie/scalable/apps/org.projectSuno.VoiceMemos.svg",
+   "assets/icon-theme/Prairie/scalable/apps/Suno-v3-weather.svg",
+   "tests/fixtures/connect-sync/Suno-v4-diskord.svg",
+   "tests/fixtures/connect-sync/Suno-v4-music.svg"
+  ],
+  "env": {
+   "SUNO_SETTINGS_FIXTURE": "{run}/fixtures/settings-connect-sync.json",
+   "GSETTINGS_BACKEND": "memory",
+   "XDG_CURRENT_DESKTOP": "GNOME",
+   "SUNO_APPKIT_ICON_PATH": "{run}/preview/python/icons",
+   "SUNO_POSTURE": "tv"
+  },
+  "app_id": "org.Suno.Settings.Fixture",
+  "binary": "bin/gnome-control-center",
+  "build": {
+   "patched_upstream": "gnome-control-center",
+   "patches": "patches/gnome-control-center",
+   "meson_options": [
+    "-Dtests=false",
+    "-Ddocumentation=false",
+    "-Dmalcontent=false",
+    "-Dsnap=false",
+    "-Dlocation-services=enabled"
+   ],
+   "patch_series": [
+    "0001-Suno-preferred-choice-order.patch",
+    "0002-Suno-touchpad-gestures-section.patch",
+    "0003-Suno-shared-preferences-layout.patch",
+    "0004-Suno-native-islands-persistent-search.patch",
+    "0005-Suno-native-identity-centered-navigation.patch",
+    "0006-Suno-dash-settings-panel.patch",
+    "0007-Suno-dash-preview-physical-corners.patch",
+    "0008-Suno-dash-padding-control.patch",
+    "0009-Suno-dash-status-settings.patch",
+    "0010-Suno-status-divider-preview.patch",
+    "0011-appearance-Add-native-Suno-surface-treatments.patch",
+    "0012-Suno-settings-material-navigation-sections.patch",
+    "0013-Suno-displays-panel-composition.patch",
+    "0014-Suno-background-activity-page.patch",
+    "0015-Suno-sound-new-devices-and-network-outputs.patch",
+    "0016-Suno-cast-settings-page.patch",
+    "0017-Suno-about-names-Suno.patch",
+    "0018-Suno-device-name-static-slug.patch",
+    "0019-Suno-about-legacy-os-release.patch",
+    "0020-Suno-notifications-badge-app-icon.patch",
+    "0021-Suno-mouse-trackpoint-page.patch",
+    "0022-Suno-dash-allow-free-placement.patch",
+    "0023-Suno-dash-span-and-float-follow-islands.patch",
+    "0024-Suno-dash-dock-folders.patch",
+    "0025-users-Saved-passwords-follow-a-password-change.patch",
+    "0026-mouse-Scroll-Speed-for-the-mouse-and-the-touchpad.patch",
+    "0027-SunoUI-sidebar-foot.patch",
+    "0028-SunoUI-fixture-model.patch",
+    "0029-SunoUI-fixture-startup-wifi.patch",
+    "0030-SunoUI-network-actions-draft.patch",
+    "0031-SunoUI-wifi-join-undo.patch",
+    "0032-SunoUI-wifi-capture-variants.patch",
+    "0033-SunoUI-bluetooth-fixture.patch",
+    "0034-SunoUI-page-modules.patch",
+    "0035-SunoUI-windows-model.patch",
+    "0036-SunoUI-network-copy.patch",
+    "0037-SunoUI-fixture-assets.patch",
+    "0038-SunoUI-windows-page.patch",
+    "0039-SunoUI-shelf-model.patch",
+    "0040-SunoUI-shelf-page.patch",
+    "0041-SunoUI-appearance-model.patch",
+    "0042-SunoUI-appearance-page.patch",
+    "0043-SunoUI-discovery-model.patch",
+    "0044-SunoUI-discovery-pages.patch",
+    "0045-SunoUI-adaptive-padding-and-navigation.patch",
+    "0046-SunoUI-live-network-adapter.patch",
+    "0047-SunoUI-display-draft-model.patch",
+    "0048-settings-add-native-read-adapters-and-isolated-fixtu.patch",
+    "0049-settings-fix-fixture-artwork-and-verify-native-surfa.patch",
+    "0050-settings-add-Apps-fixture-routes-and-scoped-action-c.patch",
+    "0051-settings-add-accessibility-routes-and-bounded-native-reader-action.patch",
+    "0052-settings-add-scoped-native-preference-edits-with-durable-recovery.patch",
+    "0053-settings-compose-scoped-Privacy-routes-and-native-schema-contracts.patch",
+    "0054-settings-scoped-native-permission-edits.patch",
+    "0055-settings-native-screen-lock-view.patch",
+    "0056-settings-native-permission-views.patch",
+    "0057-settings-empty-native-permission-list.patch",
+    "0058-Suno-hide-inapplicable-span-row.patch",
+    "0059-SunoUI-settings-v70-finish.patch",
+    "0060-SunoUI-settings-phone-search-bar.patch",
+    "0061-SunoUI-settings-search-control-names.patch",
+    "0062-SunoUI-settings-fixture-account-hue.patch",
+    "0063-SunoUI-shelf-phone-choices.patch",
+    "0064-SunoUI-phone-first-section-spacing.patch",
+    "0065-SunoUI-stable-display-drag.patch",
+    "0066-settings-use-shared-device-identity.patch",
+    "0067-settings-open-handheld-destination-list.patch",
+    "0068-settings-native-session-identity.patch",
+    "0069-settings-retain-decoded-artwork.patch",
+    "0070-settings-dark-first-appearance.patch",
+    "0071-settings-native-network-editor-frame.patch",
+    "0072-settings-native-scroll-speed.patch",
+    "0073-settings-native-bluetooth-operations.patch",
+    "0074-settings-native-wifi-lifecycle.patch",
+    "0075-settings-bluetooth-error-notice.patch",
+    "0076-settings-retained-bluetooth-and-wifi-drafts.patch",
+    "0077-settings-native-pointer-write-qualification.patch",
+    "0078-settings-tiling-controls-native-autotiling.patch",
+    "0079-settings-display-apply-preview.patch",
+    "0080-settings-retain-live-display-apply-bar.patch",
+    "0081-settings-native-microphone-controls.patch",
+    "0082-settings-retain-native-pane-actions.patch",
+    "0083-maximized-window-border-settings.patch",
+    "0084-live-window-spacing-controls.patch",
+    "0085-night-light-start-end-time-controls.patch",
+    "0086-applications-dock-folder-settings.patch",
+    "0087-live-dock-shortcut-controls.patch",
+    "0088-dash-presets-and-shared-layout.patch",
+    "0089-home-screen-preferences.patch",
+    "0090-SunoUI-tv-opt-in-and-panel-set.patch",
+    "0091-SunoUI-tv-pages.patch",
+    "0092-SunoUI-tv-saved-network-actions.patch",
+    "0093-SunoUI-tv-account-appearance-sound.patch",
+    "0094-SunoUI-tv-about-board-facts.patch",
+    "0095-SunoUI-tv-wifi-nearby-in-place.patch",
+    "0096-SunoUI-tv-page-words-and-one-display-fixture.patch",
+    "0097-SunoUI-one-image-decode-per-file.patch",
+    "0098-SunoUI-page-wash-300px-and-hidden-on-tv.patch",
+    "0099-SunoUI-tv-turn-off-tv-mode.patch",
+    "0100-SunoUI-phone-search-keeps-bar.patch",
+    "0101-SunoUI-mobile-network-with-a-modem.patch",
+    "0102-SunoUI-phone-panel-status-inset.patch",
+    "0103-wwan-mobile-data-on-by-default.patch",
+    "0104-SunoUI-phone-requested-page-leaves-list.patch",
+    "0105-global-shortcuts-without-a-dialog.patch",
+    "0106-SunoUI-sound-volume-mixer.patch",
+    "0107-SunoUI-apps-openh264-switch.patch",
+    "0109-SunoUI-apps-display-over-other-apps.patch",
+    "0111-SunoUI-Suno-connect-sync.patch",
+    "0112-SunoUI-settings-list-first-at-phone-width.patch"
+   ]
+  },
+  "exclude": []
+ },
+ "groups": [],
+ "pairs": [],
+ "app_icon": {
+  "gtk": "^Suno-v4-"
+ },
+ "states": [
+  {
+   "name": "show",
+   "about": "sheet.html?step=show",
+   "spec": [
+    {
+     "eval": "(() => { document.getElementById('stage').innerHTML = CS.recovery('show', false); })()",
+     "wait": 600
+    }
+   ],
+   "gtk": [
+    {
+     "env": {
+      "SUNO_SETTINGS_SYNC_SHEET": "show"
+     }
+    }
+   ]
+  },
+  {
+   "name": "ticked",
+   "about": "sheet.html?step=ticked",
+   "spec": [
+    {
+     "eval": "(() => { document.getElementById('stage').innerHTML = CS.recovery('show', true); })()",
+     "wait": 600
+    }
+   ],
+   "gtk": [
+    {
+     "env": {
+      "SUNO_SETTINGS_SYNC_SHEET": "ticked"
+     }
+    }
+   ]
+  },
+  {
+   "name": "confirm",
+   "about": "sheet.html?step=confirm",
+   "spec": [
+    {
+     "eval": "(() => { document.getElementById('stage').innerHTML = CS.recovery('confirm'); })()",
+     "wait": 600
+    }
+   ],
+   "gtk": [
+    {
+     "env": {
+      "SUNO_SETTINGS_SYNC_SHEET": "confirm"
+     }
+    }
+   ]
+  },
+  {
+   "name": "key",
+   "about": "sheet.html?step=key",
+   "spec": [
+    {
+     "eval": "(() => { document.getElementById('stage').innerHTML = CS.keyView(); })()",
+     "wait": 600
+    }
+   ],
+   "gtk": [
+    {
+     "env": {
+      "SUNO_SETTINGS_SYNC_SHEET": "key"
+     }
+    }
+   ]
+  },
+  {
+   "name": "denied",
+   "about": "sheet.html?step=denied",
+   "spec": [
+    {
+     "eval": "(() => { document.getElementById('stage').innerHTML = CS.denied(); })()",
+     "wait": 600
+    }
+   ],
+   "gtk": [
+    {
+     "env": {
+      "SUNO_SETTINGS_SYNC_SHEET": "denied"
+     }
+    }
+   ]
+  },
+  {
+   "name": "newkey",
+   "about": "sheet.html?step=newkey (f10cf9b)",
+   "spec": [
+    {
+     "eval": "(() => { document.getElementById('stage').innerHTML = CS.newKey(false); })()",
+     "wait": 600
+    }
+   ],
+   "gtk": [
+    {
+     "env": {
+      "SUNO_SETTINGS_SYNC_SHEET": "newkey"
+     }
+    }
+   ]
+  },
+  {
+   "name": "newkey-ticked",
+   "about": "sheet.html?step=newkey-ticked (f10cf9b)",
+   "spec": [
+    {
+     "eval": "(() => { document.getElementById('stage').innerHTML = CS.newKey(true); })()",
+     "wait": 600
+    }
+   ],
+   "gtk": [
+    {
+     "env": {
+      "SUNO_SETTINGS_SYNC_SHEET": "newkey-ticked"
+     }
+    }
+   ]
+  }
+ ],
+ "phone_states": []
+}

@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 # SPDX-License-Identifier: Apache-2.0
-"""A stand-in org.projectluma.Connect1 for Phone's call provider, for agent tests only.
+"""A stand-in org.projectSuno.Connect1 for Phone's call provider, for agent tests only.
 
 Answers GetCallState and ExchangeCall the way the Connect daemon relays a
-paired phone (luma_continuity.call_provider's relay path), keeps the calls a
-test sets with org.projectluma.Test.Calls.SetCalls(s json) and emits
-CallsChanged, and records every control request in $LUMA_TEST_CALLS_LOG.
+paired phone (Suno_continuity.call_provider's relay path), keeps the calls a
+test sets with org.projectSuno.Test.Calls.SetCalls(s json) and emits
+CallsChanged, and records every control request in $SUNO_TEST_CALLS_LOG.
 """
 import json
 import os
@@ -14,10 +14,10 @@ import gi
 gi.require_version("Gio", "2.0")
 from gi.repository import Gio, GLib  # noqa: E402
 
-BUS = "org.projectluma.Connect1"
-PATH = "/org/projectluma/Connect"
-LOG = os.environ.get("LUMA_TEST_CALLS_LOG", "/tmp/calls.jsonl")
-ACCOUNT, EPOCH = os.environ["LUMA_TEST_ACCOUNT"], os.environ["LUMA_TEST_EPOCH"]
+BUS = "org.projectSuno.Connect1"
+PATH = "/org/projectSuno/Connect"
+LOG = os.environ.get("SUNO_TEST_CALLS_LOG", "/tmp/calls.jsonl")
+ACCOUNT, EPOCH = os.environ["SUNO_TEST_ACCOUNT"], os.environ["SUNO_TEST_EPOCH"]
 XML = f"""<node>
 <interface name="{BUS}">
   <method name="GetCallState"><arg type="s" direction="out"/></method>
@@ -28,7 +28,7 @@ XML = f"""<node>
   <method name="GetQuickState"><arg type="s" direction="out"/></method>
   <signal name="CallsChanged"/>
 </interface>
-<interface name="org.projectluma.Test.Calls">
+<interface name="org.projectSuno.Test.Calls">
   <method name="SetCalls"><arg type="s" direction="in"/></method>
 </interface>
 </node>"""

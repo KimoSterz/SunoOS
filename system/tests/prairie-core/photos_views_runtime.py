@@ -11,30 +11,30 @@ with tempfile.TemporaryDirectory(prefix='photos-composition-') as directory:
     for kind in ('CACHE','DATA','CONFIG','STATE'):
         os.environ[f'XDG_{kind}_HOME']=str(Path(directory)/kind.lower())
     os.environ['GSETTINGS_BACKEND']='memory'
-    os.environ['LUMA_PHOTOS_FIXTURE']=str(ROOT/'tests/fixtures/photos-v70.json')
-    os.environ['LUMA_PHOTOS_STYLE_PATH']=str(ROOT/'src/prairie-core/style/photos.css')
+    os.environ['SUNO_PHOTOS_FIXTURE']=str(ROOT/'tests/fixtures/photos-v70.json')
+    os.environ['SUNO_PHOTOS_STYLE_PATH']=str(ROOT/'src/prairie-core/style/photos.css')
     from prairie_apps import photos as p
     production_id=p.APP_ID
-    fixture=os.environ.pop('LUMA_PHOTOS_FIXTURE')
-    override=os.environ.pop('LUMA_PHOTOS_APP_ID',None)
-    non_unique=os.environ.pop('LUMA_PHOTOS_NON_UNIQUE',None)
+    fixture=os.environ.pop('SUNO_PHOTOS_FIXTURE')
+    override=os.environ.pop('SUNO_PHOTOS_APP_ID',None)
+    non_unique=os.environ.pop('SUNO_PHOTOS_NON_UNIQUE',None)
     try:
         assert p.PhotosApplication().get_application_id()==production_id
         # Exercise the shared preview launcher's actual module-level hook
         # without registering an application or presenting any window.
-        p.APP_ID=production_id+'.LumaUIPreview'
+        p.APP_ID=production_id+'.SunoUIPreview'
         assert p.PhotosApplication().get_application_id()==p.APP_ID
         assert p.APP_ID!=production_id,'Preview must not activate the installed Photos app'
-        os.environ['LUMA_PHOTOS_FIXTURE']=fixture
+        os.environ['SUNO_PHOTOS_FIXTURE']=fixture
         assert p.PhotosApplication().get_application_id()==p.APP_ID,'Fixture preview suffix must not be doubled'
-        os.environ['LUMA_PHOTOS_APP_ID']='org.projectluma.Photos.CompositionOverride'
-        assert p.PhotosApplication().get_application_id()=='org.projectluma.Photos.CompositionOverride'
+        os.environ['SUNO_PHOTOS_APP_ID']='org.projectSuno.Photos.CompositionOverride'
+        assert p.PhotosApplication().get_application_id()=='org.projectSuno.Photos.CompositionOverride'
     finally:
         p.APP_ID=production_id
-        os.environ['LUMA_PHOTOS_FIXTURE']=fixture
-        if override is None:os.environ.pop('LUMA_PHOTOS_APP_ID',None)
-        else:os.environ['LUMA_PHOTOS_APP_ID']=override
-        if non_unique is not None:os.environ['LUMA_PHOTOS_NON_UNIQUE']=non_unique
+        os.environ['SUNO_PHOTOS_FIXTURE']=fixture
+        if override is None:os.environ.pop('SUNO_PHOTOS_APP_ID',None)
+        else:os.environ['SUNO_PHOTOS_APP_ID']=override
+        if non_unique is not None:os.environ['SUNO_PHOTOS_NON_UNIQUE']=non_unique
     application_class=p.PhotosApplication
     invocation_argv=p.sys.argv
     invocations=[]
@@ -90,8 +90,8 @@ with tempfile.TemporaryDirectory(prefix='photos-composition-') as directory:
             assert isinstance(row.trail_widget,p.Gtk.Label)
             return row.trail_widget.get_label()
         assert library_badge()=='22'
-        os.environ['LUMA_PHOTOS_VIEWER']='0'
-        os.environ['LUMA_PHOTOS_DELETE']='1'
+        os.environ['SUNO_PHOTOS_VIEWER']='0'
+        os.environ['SUNO_PHOTOS_DELETE']='1'
         try:
             window._apply_fixture_state()
             assert window.state.library_count==21 and library_badge()=='21',\
@@ -101,14 +101,14 @@ with tempfile.TemporaryDirectory(prefix='photos-composition-') as directory:
             window.state.apply_page(window.state.read_page())
             window.state.close_viewer()
             window._render_sidebar();window._render_library()
-            os.environ['LUMA_PHOTOS_UNDO_DELETE']='1'
+            os.environ['SUNO_PHOTOS_UNDO_DELETE']='1'
             window._apply_fixture_state()
             assert window.state.library_count==22 and library_badge()=='22',\
                 'Fixture Delete/Undo must restore the visible Library count'
             assert Path(fixture).read_bytes()==fixture_bytes,'Fixture Undo must stay in memory'
             window.state.close_viewer();window._render_library()
         finally:
-            for key in ('LUMA_PHOTOS_VIEWER','LUMA_PHOTOS_DELETE','LUMA_PHOTOS_UNDO_DELETE'):
+            for key in ('SUNO_PHOTOS_VIEWER','SUNO_PHOTOS_DELETE','SUNO_PHOTOS_UNDO_DELETE'):
                 os.environ.pop(key,None)
         window.request_import()
         assert isinstance(window.menu,p.FloatingMenu)

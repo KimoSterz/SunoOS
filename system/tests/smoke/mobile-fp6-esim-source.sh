@@ -15,10 +15,10 @@ installer=$repo_root/scripts/mobile/install-fp6-esim-profile.py
 pdc_patch=$repo_root/patches/libqmi-fp6/0003-qmicli-pdc-select-platform-or-software-load-type.patch
 libqmi_spec=$repo_root/packaging/rpm/libqmi-fp6.spec
 libqmi_builder=$repo_root/scripts/mobile/build-fp6-gnss-rpm.sh
-link_adapter=$repo_root/config/mobile/fp6-physical/overlay/usr/libexec/luma-fp6-cellular-link
-link_unit=$repo_root/config/mobile/fp6-physical/overlay/etc/systemd/system/luma-fp6-cellular-link.service
-link_config=$repo_root/config/mobile/fp6-physical/overlay/etc/luma/fp6-cellular-link.conf
-preset=$repo_root/config/mobile/systemd-preset/80-luma-handheld.preset
+link_adapter=$repo_root/config/mobile/fp6-physical/overlay/usr/libexec/Suno-fp6-cellular-link
+link_unit=$repo_root/config/mobile/fp6-physical/overlay/etc/systemd/system/Suno-fp6-cellular-link.service
+link_config=$repo_root/config/mobile/fp6-physical/overlay/etc/Suno/fp6-cellular-link.conf
+preset=$repo_root/config/mobile/systemd-preset/80-Suno-handheld.preset
 
 for file in "$env_file" "$spec" "$patch" "$enable_patch" "$selector_patch" "$builder" "$probe" "$installer" \
   "$pdc_patch" "$libqmi_spec" "$libqmi_builder"; do
@@ -37,7 +37,7 @@ grep -Fq 'explicit_bzero' "$enable_patch"
 grep -Fq 'length == 19 || length == 20' "$selector_patch"
 grep -Fq 'Patch1:         0002-profile-enable-read-identifier-from-stdin.patch' "$spec"
 grep -Fq 'Patch2:         0003-profile-enable-accept-19-digit-iccid.patch' "$spec"
-grep -Fq 'FP6_ESIM_LPAC_RELEASE=3.luma1' "$env_file"
+grep -Fq 'FP6_ESIM_LPAC_RELEASE=3.Suno1' "$env_file"
 grep -Fq 'FP6_ESIM_PROFILE_SELECTOR_19_DIGIT_ACCEPTED=true' "$env_file"
 grep -Fq 'r"[0-9]{19,20}"' "$installer"
 grep -Eq '^FP6_ESIM_LPAC_RUNTIME_BINARY_SHA256=[0-9a-f]{64}$' "$env_file"
@@ -84,14 +84,14 @@ grep -Fq 'qmicli_read_pdc_configuration_type_from_string' "$pdc_patch"
 grep -Fq -- '-    g_free (file_contents);' "$pdc_patch"
 grep -Fq 'Patch0: 0003-qmicli-pdc-select-platform-or-software-load-type.patch' "$libqmi_spec"
 grep -Fq '%autosetup -p1' "$libqmi_spec"
-grep -Fq 'Release: 0.3.luma1' "$libqmi_spec"
+grep -Fq 'Release: 0.3.Suno1' "$libqmi_spec"
 grep -Fq '0003-qmicli-pdc-select-platform-or-software-load-type.patch' "$libqmi_builder"
 grep -Fq 'qmapmux' "$link_adapter"
 grep -Fq 'metric", "700"' "$link_adapter"
 grep -Fq 'ipv4.dns' "$link_adapter"
 grep -Fq 'CapabilityBoundingSet=CAP_NET_ADMIN' "$link_unit"
 grep -Fq 'APN=' "$link_config"
-grep -Fq 'enable luma-fp6-cellular-link.service' "$preset"
+grep -Fq 'enable Suno-fp6-cellular-link.service' "$preset"
 
 bash -n "$builder" "$probe" "$libqmi_builder"
 python3 -m py_compile "$link_adapter"

@@ -12,7 +12,7 @@ smoke=$repo_root/scripts/mobile/smoke-rmtfs-fp6.sh
 grep -Fq '27b3a6f00f121a0f8195e25c40faf97b57e2cec1' "$patch"
 grep -Fq '{ "/boot/modem_study", "modem_study", "study" },' "$patch"
 grep -Fq 'Patch0:         0001-storage-add-fp6-modem-study.patch' "$spec"
-grep -Fq 'Release:        2.luma.1%{?dist}' "$spec"
+grep -Fq 'Release:        2.Suno.1%{?dist}' "$spec"
 grep -Fq '%global use_source_date_epoch_as_buildtime 1' "$spec"
 grep -Fq -- '-ffile-prefix-map=%{_builddir}=.' "$spec"
 grep -Fq -- '-frandom-seed=rmtfs-%{version}-%{release}' "$spec"

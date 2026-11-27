@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {statusGrid} from '../../src/luma-shell-presentation/statusGrid.js';
+import {statusGrid} from '../../src/Suno-shell-presentation/statusGrid.js';
 for (const count of [0,1,2,3,4,5,6,7,8,9,12,100]) {
     const grid = statusGrid(count);
     assert.equal(grid.cells.length, Math.min(count,8));

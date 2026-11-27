@@ -28,7 +28,7 @@
     {"path": "/home/ada/Pictures/Café Menu.png", "name": "Café Menu.png"},
     {"path": "/home/ada/Music/Beyoncé", "name": "Beyoncé"},
     {"path": "/home/ada/.cache/thumbnails/Documents", "name": "Documents"},
-    {"path": "/home/ada/Projects/luma/Makefile", "name": "Makefile"},
+    {"path": "/home/ada/Projects/Suno/Makefile", "name": "Makefile"},
     {"path": "/home/ada/Projects/charlie-0.2.10-final-7378de0", "name": "charlie-0.2.10-final-7378de0"},
     {"path": "/home/ada/Projects/charlie", "name": "charlie"}
   ],
@@ -36,14 +36,14 @@
     {"id": "org.gnome.Nautilus.desktop", "name": "Files", "genericName": "File Manager", "keywords": ["folder", "manager", "explore", "disk", "filesystem"]},
     {"id": "org.gnome.Papers.desktop", "name": "Document Viewer", "genericName": "Document Viewer", "keywords": ["pdf", "ps", "postscript"]},
     {"id": "org.gnome.Calendar.desktop", "name": "Calendar", "genericName": "Calendar", "keywords": ["schedule", "event"]},
-    {"id": "org.projectluma.Depot.desktop", "name": "Depot", "genericName": "App Store", "keywords": ["software", "install"]}
+    {"id": "org.projectSuno.Depot.desktop", "name": "Depot", "genericName": "App Store", "keywords": ["software", "install"]}
   ],
   "cases": [
     {"query": "Docu", "files_first": ["/home/ada/Documents"], "files_absent": ["/home/ada/.cache/thumbnails/Documents"], "top": "file:/home/ada/Documents"},
     {"query": "documents", "top": "file:/home/ada/Documents"},
     {"query": "documnets", "files_first": ["/home/ada/Documents"]},
     {"query": "DOWN", "files_first": ["/home/ada/Downloads"]},
-    {"query": "depot", "top": "app:org.projectluma.Depot.desktop", "files_first": ["/home/ada/depot"], "files_before": [["/home/ada/depot", "/home/ada/depot-1840284-backup-x2"], ["/home/ada/depot", "/home/ada/depot-old"], ["/home/ada/depot", "/home/ada/depot-7378de0"], ["/home/ada/depot", "/home/ada/Projects/depot/build/depot"], ["/home/ada/depot-old", "/home/ada/Projects/depot/build/depot"]]},
+    {"query": "depot", "top": "app:org.projectSuno.Depot.desktop", "files_first": ["/home/ada/depot"], "files_before": [["/home/ada/depot", "/home/ada/depot-1840284-backup-x2"], ["/home/ada/depot", "/home/ada/depot-old"], ["/home/ada/depot", "/home/ada/depot-7378de0"], ["/home/ada/depot", "/home/ada/Projects/depot/build/depot"], ["/home/ada/depot-old", "/home/ada/Projects/depot/build/depot"]]},
     {"query": "depot backup", "files_first": ["/home/ada/depot-1840284-backup-x2"]},
     {"query": "report", "files_first": ["/home/ada/Documents/report.pdf"], "files_before": [["/home/ada/Documents/report.pdf", "/home/ada/Documents/report (copy).pdf"], ["/home/ada/Documents/report.pdf", "/home/ada/Documents/report (1).pdf"], ["/home/ada/Documents/report.pdf", "/home/ada/Documents/report.pdf.bak"], ["/home/ada/Documents/report.pdf", "/home/ada/Documents/report~"], ["/home/ada/Documents/report.pdf", "/home/ada/Documents/report-2026-03-14.pdf"]]},
     {"query": "report copy", "files_first": ["/home/ada/Documents/report (copy).pdf"]},

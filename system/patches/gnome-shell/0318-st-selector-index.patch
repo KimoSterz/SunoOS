@@ -1,5 +1,5 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Project Luma <engineering@projectluma.org>
+From: Project Suno <engineering@projectSuno.org>
 Date: Tue, 3 Nov 2026 02:00:00 -0600
 Subject: [PATCH] st: index selectors by ID, class and element type
 
@@ -18,7 +18,7 @@ none of those. Candidates are tested in stylesheet order with the same
 test, so the matched declarations, their order and the specificity
 bookkeeping are unchanged (checked against the full scan on 30000 nodes
 across the desktop, mobile, tablet and TV presentations).
-LUMA_ST_NO_SELECTOR_INDEX=1 restores the full scan for measurements.
+SUNO_ST_NO_SELECTOR_INDEX=1 restores the full scan for measurements.
 ---
  src/st/st-theme.c |  322 ++++++++++++++++++++++++++++++++++++++++---
  1 file changed, 319 insertions(+), 3 deletions(-)
@@ -31,7 +31,7 @@ index 7f3300e..e3fd1f8 100644
    GHashTable *stylesheets_by_file;
    GHashTable *files_by_stylesheet;
  
-+  /* Luma: CRStyleSheet -> SelectorIndex, built on first use. */
++  /* Suno: CRStyleSheet -> SelectorIndex, built on first use. */
 +  GHashTable *selector_indexes;
 +
    CRCascade *cascade;
@@ -72,7 +72,7 @@ index 7f3300e..e3fd1f8 100644
  }
  
 +
-+/* Luma: a selector index per stylesheet.
++/* Suno: a selector index per stylesheet.
 + *
 + * add_matched_properties() tests every selector of every stylesheet against
 + * each new theme node. The Shell's stylesheet has thousands of selectors and
@@ -367,11 +367,11 @@ index 7f3300e..e3fd1f8 100644
 +                  StThemeNode  *node,
 +                  GPtrArray    *props)
 +{
-+  /* LUMA_ST_NO_SELECTOR_INDEX=1 tests every selector, for A/B measurements. */
++  /* SUNO_ST_NO_SELECTOR_INDEX=1 tests every selector, for A/B measurements. */
 +  static int use_index = -1;
 +
 +  if (use_index < 0)
-+    use_index = g_getenv ("LUMA_ST_NO_SELECTOR_INDEX") == NULL;
++    use_index = g_getenv ("SUNO_ST_NO_SELECTOR_INDEX") == NULL;
 +
 +  if (use_index)
 +    add_indexed_matched_properties (theme, sheet, node, props);

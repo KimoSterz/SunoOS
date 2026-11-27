@@ -1,8 +1,8 @@
 # Standalone Calendar and Tasks for Linux
 
 Calendar and Tasks package their existing responsive applications with selected
-LumaUI, AppKit, GTK, Python and Evolution Data Server client dependencies. They
-use the shared Freedesktop Platform 25.08 runtime and do not require Luma Platform.
+SunoUI, AppKit, GTK, Python and Evolution Data Server client dependencies. They
+use the shared Freedesktop Platform 25.08 runtime and do not require Suno Platform.
 
 ## Desktop services and accounts
 
@@ -15,8 +15,8 @@ On GNOME, use Online Accounts in desktop settings to connect supported providers
 such as Google or Nextcloud. Calendar's Add calendar control and Tasks' Accounts
 command open that panel through its D-Bus application interface. Other CalDAV
 accounts can be configured in Evolution. Provider credentials are managed by
-those desktop services and their keyring. These bundles do not install Luma
-Connect or provide a separate Luma Hub browser sign-in.
+those desktop services and their keyring. These bundles do not install Suno
+Connect or provide a separate Suno Hub browser sign-in.
 
 Calendar keeps timed events in named time zones and all-day events as dates.
 Tasks uses standard VTODO records. Existing desktop CalDAV sources continue to
@@ -28,21 +28,21 @@ Download the application bundle and install it with:
 
 ```sh
 flatpak install --user ./Calendar-0.1.1-x86_64.flatpak
-flatpak run org.projectluma.Calendar//standalone
+flatpak run org.projectSuno.Calendar//standalone
 
 flatpak install --user ./Tasks-0.1.2-x86_64.flatpak
-flatpak run org.projectluma.Tasks//standalone
+flatpak run org.projectSuno.Tasks//standalone
 ```
 
 The shared runtime downloads from Flathub when needed. Install a later bundle
 to update an application; these bundles do not add an application update remote.
 They request display, network, desktop account/keyring and EDS D-Bus access.
-They do not request the host filesystem or the Luma account device token.
+They do not request the host filesystem or the Suno account device token.
 
 ## Build
 
 The build host needs PyGObject, readelf, schema compilation and Flatpak tools.
-Use the qualified Luma Platform and standalone GdkPixbuf/SVG inputs documented
+Use the qualified Suno Platform and standalone GdkPixbuf/SVG inputs documented
 in `packaging/standalone/agenda/DEPENDENCIES.md`.
 
 ```sh

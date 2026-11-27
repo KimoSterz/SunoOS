@@ -1,6 +1,6 @@
-# Building Luma
+# Building Suno
 
-Luma shares its native application and platform source across desktop and handheld profiles. Images are built for an architecture and device profile; an x86_64 desktop ISO is not an ARM phone installer. This repository contains the OS and bundled applications. Office, Creative, and the standalone Imager are separate projects. The OS installer and Photos/Darkroom remain part of this repository.
+Suno shares its native application and platform source across desktop and handheld profiles. Images are built for an architecture and device profile; an x86_64 desktop ISO is not an ARM phone installer. This repository contains the OS and bundled applications. Office, Creative, and the standalone Imager are separate projects. The OS installer and Photos/Darkroom remain part of this repository.
 
 These instructions describe the source-owned build entry points. A complete release also needs the pinned upstream inputs, independently built package artifacts, an admitted offline application baseline, and signing material owned by the builder. A fresh clone does not contain those binary inputs or release credentials. Build outputs are not evidence of device qualification.
 
@@ -8,19 +8,19 @@ These instructions describe the source-owned build entry points. A complete rele
 
 | Path | Purpose |
 | --- | --- |
-| `src/luma-platform/` | Native Luma UI, Semantics, Application Kit, and SDK |
+| `src/Suno-platform/` | Native Suno UI, Semantics, Application Kit, and SDK |
 | `src/prairie-core/` | Shared native bundled application source |
 | `src/external/charlie/`, `src/external/viola/` | Bundled mail and browser integration source |
-| `src/luma-installer/`, `src/luma-installer-atlas/` | Application installation services and OS installer |
+| `src/Suno-installer/`, `src/Suno-installer-atlas/` | Application installation services and OS installer |
 | `scripts/packages/`, `packaging/rpm/` | Component package builders and RPM recipes |
 | `packaging/flatpak/`, `scripts/depot/` | Application/runtime packaging and signed repository tooling |
 | `patches/` | Maintained upstream patch families; preserve upstream author and license notices |
 | `config/desktop/`, `config/os/` | Desktop package pins and release contracts |
 | `config/mobile/`, `scripts/mobile/` | Device-specific handheld build profiles |
-| `image/luma-desktop/` | Fedora Atomic desktop image definition |
+| `image/Suno-desktop/` | Fedora Atomic desktop image definition |
 | `tests/` | Source, package, integration, and installation checks |
 
-See [THIRD-PARTY-SOURCES.md](THIRD-PARTY-SOURCES.md) for upstream attribution. Individual component notices and licenses take precedence over the default license for original Luma code.
+See [THIRD-PARTY-SOURCES.md](THIRD-PARTY-SOURCES.md) for upstream attribution. Individual component notices and licenses take precedence over the default license for original Suno code.
 
 ## Native platform development
 
@@ -29,7 +29,7 @@ The platform uses Meson. Its current source declares Meson >= 1.3.0, GLib/GObjec
 From the repository root:
 
 ```sh
-meson setup build/platform src/luma-platform
+meson setup build/platform src/Suno-platform
 meson compile -C build/platform
 meson test -C build/platform --print-errorlogs
 ```
@@ -43,7 +43,7 @@ Use Meson's installation prefix or a staging `DESTDIR` when testing installation
 On a suitable Fedora Linux builder, the platform RPM entry point is:
 
 ```sh
-scripts/packages/build-luma-developer-platform.sh
+scripts/packages/build-Suno-developer-platform.sh
 ```
 
 It supports `x86_64` and `aarch64` using the corresponding builder image. Package pins and builder container digests are recorded in `config/desktop/inputs.env`. Native AArch64 and x86_64 package dependencies must match the selected target architecture; setting an architecture variable does not supply missing cross-compilation or device dependencies.
@@ -60,13 +60,13 @@ Run runtime assembly in the dedicated tools container. RPM installation into an 
 
 ## Viola's external engine dependency
 
-`src/external/viola/chromium-linux/appkit-spike/` contains the shared native host and Application Kit integration. `scripts/packages/build-viola-browser.sh` supports both `x86_64` and `aarch64`; `LUMA_TARGET_ARCHITECTURE` selects the target and defaults to the builder's machine architecture. Each architecture has its own admitted engine archive, release and SHA-256 in that script.
+`src/external/viola/chromium-linux/appkit-spike/` contains the shared native host and Application Kit integration. `scripts/packages/build-viola-browser.sh` supports both `x86_64` and `aarch64`; `SUNO_TARGET_ARCHITECTURE` selects the target and defaults to the builder's machine architecture. Each architecture has its own admitted engine archive, release and SHA-256 in that script.
 
 Run on a builder for the target architecture and supply its matching engine archive, for example:
 
 ```sh
-LUMA_TARGET_ARCHITECTURE=aarch64 \
-LUMA_VIOLA_ENGINE_ARCHIVE=/path/to/admitted-aarch64-engine.tar.zst \
+SUNO_TARGET_ARCHITECTURE=aarch64 \
+SUNO_VIOLA_ENGINE_ARCHIVE=/path/to/admitted-aarch64-engine.tar.zst \
 scripts/packages/build-viola-browser.sh
 ```
 
@@ -76,8 +76,8 @@ This repository is not a complete Chromium/browser-engine source checkout. The m
 
 Two source-owned paths exist:
 
-- `scripts/build-luma-desktop.sh` builds the native component stack and composes a development VM image through `scripts/vm/compose-desktop-image.sh`.
-- `scripts/os/build-image.sh` builds the current Fedora Atomic desktop image from `image/luma-desktop/Containerfile`. `scripts/os/export-ostree.sh` exports its OSTree candidate; `scripts/os/gate.sh` performs release qualification; `scripts/os/build-staff-media.sh` composes installation media using the Atlas installer source/RPM inputs.
+- `scripts/build-Suno-desktop.sh` builds the native component stack and composes a development VM image through `scripts/vm/compose-desktop-image.sh`.
+- `scripts/os/build-image.sh` builds the current Fedora Atomic desktop image from `image/Suno-desktop/Containerfile`. `scripts/os/export-ostree.sh` exports its OSTree candidate; `scripts/os/gate.sh` performs release qualification; `scripts/os/build-staff-media.sh` composes installation media using the Atlas installer source/RPM inputs.
 
 The OS pipeline requires a dedicated Fedora build environment with Podman, RPM tooling, OSTree/rpm-ostree, GPG/minisign tooling, and the dependencies declared by the invoked scripts. Configure the pipeline's output storage and signing locations for your own builder; never reuse another publisher's private keys. Review each script's capacity and host-state checks before execution.
 
@@ -135,11 +135,11 @@ it does not reuse a qualification pass.
 
 
 Interactive media verification gives libvirt a disposable same-filesystem reflink
-of the ISO. It checks access as `LUMA_OS_QEMU_USER` (default `qemu`) before VM
+of the ISO. It checks access as `SUNO_OS_QEMU_USER` (default `qemu`) before VM
 startup and verifies that the original inode, ownership, modes and timestamps
 remain unchanged afterward. Libvirt may relabel or chown only the fixture.
 Where the working root cannot reflink (an ext4 loop image), the fixture is a
-budgeted copy instead: the ISO must be at most `LUMA_OS_MEDIA_COPY_BUDGET_GIB`
+budgeted copy instead: the ISO must be at most `SUNO_OS_MEDIA_COPY_BUDGET_GIB`
 (default 16), the volume and its host disk must have room for it, and the
 copy's sha256 must match the bytes read and the ISO's `.sha256` record. The
 preflight fails if reader traversal is unavailable; it never widens ancestor
@@ -148,8 +148,8 @@ libvirt/SELinux boot check.
 
 
 For a separately admitted publication phase, use
-`scripts/os/lib/publication_window.py --unit luma-os-publication-UNIQUE.service
---state-dir ROOT_OWNED_ATTEMPT --timer luma-APPROVED-REFRESH.timer -- COMMAND ...`
+`scripts/os/lib/publication_window.py --unit Suno-os-publication-UNIQUE.service
+--state-dir ROOT_OWNED_ATTEMPT --timer Suno-APPROVED-REFRESH.timer -- COMMAND ...`
 with the approved host's actual timer names. It supervises a separate native
 worker with a 4 GiB default cap, private mount namespace and two-hour runtime
 bound. Admit the supervisor, worker, containers and storage together; container
@@ -256,9 +256,9 @@ Use the script's documented Fedora dependencies, a D-Bus session, and a display
 is not package, device, installer or release qualification. `--backfill` records
 missing historical checks as unavailable; it is not the normal public workflow.
 
-The complete source-drop suites also include GTK/EDS/LumaAppearance integration
+The complete source-drop suites also include GTK/EDS/SunoAppearance integration
 and root-owned publisher boundary tests. Run them in the isolated native builder
-with the Luma libraries installed, as root inside that builder; a stock host's
+with the Suno libraries installed, as root inside that builder; a stock host's
 missing typelibs or unprivileged account cannot qualify those boundaries.
 Creative/Office/standalone Imager producers are separate products: their absent
 source trees are not required by the OS source check. Their remaining shared
@@ -282,7 +282,7 @@ expected results to fit the container's overlay or shared-drive permissions.
 
 The explicit `arm-preview` desktop profile is available only for `aarch64`.
 Select it with `--profile arm-preview` on the desktop preflight, package collector
-and image builder, or set `LUMA_OS_PROFILE=arm-preview`. It uses the same source,
+and image builder, or set `SUNO_OS_PROFILE=arm-preview`. It uses the same source,
 Fedora kernel, package checks and signed application baseline as the full desktop.
 Android applications, Windows applications and casting are unavailable in this
 preview; their engine/provider packages are excluded. Relay, the application
@@ -290,7 +290,7 @@ installer and the rest of the shared application baseline remain selected.
 
 The default profile is `full` for both architectures. The preview never changes
 that default or bypasses first-party bundle admission or image signing. Every
-new image records `/usr/share/luma/desktop-capabilities.json` and its profile;
+new image records `/usr/share/Suno/desktop-capabilities.json` and its profile;
 composition and desktop smoke checks reject excluded providers that reappear
 through dependency resolution.
 
@@ -300,8 +300,8 @@ candidates into that shared repository; ARM publication refuses a repository
 without its existing x86 desktop refs, and publication serializes shared summary
 updates. Other channel/architecture refs are checked for changes afterward.
 
-Architecture-specific metadata uses `luma/releases/aarch64/<version>` and
-`luma/channels/aarch64/<channel>.json` inside that repository. ARM media and indexes
+Architecture-specific metadata uses `Suno/releases/aarch64/<version>` and
+`Suno/channels/aarch64/<channel>.json` inside that repository. ARM media and indexes
 use `/media/aarch64/<channel>/`, and signed graphs use `/os/graph/aarch64/`.
 Existing x86 metadata, media and graph paths stay unchanged. Graph signing accepts
 `--arch`; sealed approved-refresh configurations may declare `architecture` and

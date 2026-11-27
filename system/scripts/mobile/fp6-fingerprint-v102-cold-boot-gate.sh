@@ -14,7 +14,7 @@ lsmod | grep -E '^(qcomtee|qseecomtee) ' || true
 printf 'firmware='
 readlink -f /lib/firmware/postmarketos
 printf 'credential='
-if test -e /var/lib/luma/fingerprint/credential.handle; then
+if test -e /var/lib/Suno/fingerprint/credential.handle; then
     echo present
 else
     echo absent

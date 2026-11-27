@@ -7,7 +7,7 @@ from the same formulas as wxBodyPhone, so they cannot disagree with the hours.
 
 No PlaceStore, cache, settings, libgweather, network or live data is opened.
 The sample's formulas are copied from wxBody, not used for real forecasts.
-LUMA_WEATHER_FIXTURE_MINUTE pins Studio's local clock for conformance states.
+SUNO_WEATHER_FIXTURE_MINUTE pins Studio's local clock for conformance states.
 """
 from __future__ import annotations
 
@@ -269,9 +269,9 @@ class FixtureSource:
 
 
 def fixture_from_environment() -> FixtureSource | None:
-    path = os.environ.get("LUMA_WEATHER_FIXTURE")
+    path = os.environ.get("SUNO_WEATHER_FIXTURE")
     if not path:
         return None
-    minute = os.environ.get("LUMA_WEATHER_FIXTURE_MINUTE")
+    minute = os.environ.get("SUNO_WEATHER_FIXTURE_MINUTE")
     return FixtureSource(Path(path), minute=int(minute) if minute is not None else None,
-                         selected=os.environ.get("LUMA_WEATHER_SELECTED"))
+                         selected=os.environ.get("SUNO_WEATHER_SELECTED"))

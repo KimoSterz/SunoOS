@@ -1,5 +1,5 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Project Luma <engineering@projectluma.org>
+From: Project Suno <engineering@projectSuno.org>
 Date: Tue, 17 Nov 2026 17:00:00 -0600
 Subject: [PATCH] backends/native: Probe input again when a session starts
  inactive
@@ -12,8 +12,8 @@ an inactive session; at the first activation the resume finds the seat never
 released ("Spurious call to meta_seat_native_reclaim_devices()") and leaves
 it without a keyboard or pointer until the session is restarted.
 
-GDM normally switches to a session's VT before starting it. Luma's GDM
-(0001-luma-setup-handover-vt) keeps the first-boot setup on screen until the
+GDM normally switches to a session's VT before starting it. Suno's GDM
+(0001-Suno-setup-handover-vt) keeps the first-boot setup on screen until the
 person's first session has drawn, so that session's Shell always starts
 inactive.
 

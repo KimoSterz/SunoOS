@@ -9,12 +9,12 @@
 set -Eeuo pipefail
 umask 077
 
-release=7.1.2-luma-fp-ims1
+release=7.1.2-Suno-fp-ims1
 image=/boot/vmlinuz-binderfs-ims1
 initrd=/boot/initramfs
 dtb=/boot/milos-fairphone-fp6.dtb
 kexec_bin=/usr/sbin/kexec
-evidence=/var/lib/luma/stock-android-container1/state/logs/binderfs-kexec-handoff.env
+evidence=/var/lib/Suno/stock-android-container1/state/logs/binderfs-kexec-handoff.env
 image_sha=d1476dbea625aeb22d5d2a27df3a928cd9a2a13bd72a80bfda8507d376df0153
 initrd_sha=3ed23188d9fb5ae8ed90b8d3b274e8d4d4432c3f60a25b14d718c33d9391a8a4
 dtb_sha=9a9d45187ef98874d84e1df9d06044a89e9aedb98d0b79b2b6d8bc32e7a164cf
@@ -31,7 +31,7 @@ grep -qw 'androidboot.slot_suffix=_b' /proc/cmdline || die 'device is not on slo
 zgrep -Fx '# CONFIG_ANDROID_BINDERFS is not set' /proc/config.gz >/dev/null ||
   die 'source kernel is not the proven non-BinderFS kernel'
 zgrep -qx 'CONFIG_KEXEC=y' /proc/config.gz || die 'KEXEC is unavailable'
-[[ $(lxc-info -n luma-stock-android-c1 -sH 2>/dev/null || printf STOPPED) == STOPPED ]] ||
+[[ $(lxc-info -n Suno-stock-android-c1 -sH 2>/dev/null || printf STOPPED) == STOPPED ]] ||
   die 'Android container is active'
 ! grep -Eq '^(qcomtee|qseecomtee|qseecom) ' /proc/modules ||
   die 'a secure transport module is loaded'
@@ -69,8 +69,8 @@ sync
 
 # Quiesce the hardware-owning user space explicitly. This service is launched
 # by PID 1, so terminating the graphical user and network does not cancel it.
-systemctl stop luma-fp6-imsd luma-fp6-cellular-link ModemManager greetd 2>/dev/null || true
-loginctl terminate-user luma 2>/dev/null || true
+systemctl stop Suno-fp6-imsd Suno-fp6-cellular-link ModemManager greetd 2>/dev/null || true
+loginctl terminate-user Suno 2>/dev/null || true
 systemctl stop NetworkManager 2>/dev/null || true
 sync
 

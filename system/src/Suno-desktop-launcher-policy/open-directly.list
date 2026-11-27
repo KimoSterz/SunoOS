@@ -1,0 +1,22 @@
+# Installed as /usr/share/Suno/open-directly.list and read by Suno's
+# xdg-desktop-portal (patches/xdg-desktop-portal). A file of one of these
+# content types, opened through the OpenURI portal (Filer, a browser's
+# downloads, any sandboxed app), goes straight to the named system handler
+# while that handler is its default, without the "choose an application"
+# prompt. Valet reviews a package and asks before installing it.
+# Keep in step with gnome-mimeapps.list. Archives and folders are not
+# packages and keep the chooser.
+[Open Directly]
+application/x-rpm=io.Suno.Valet.desktop
+application/vnd.debian.binary-package=io.Suno.Valet.desktop
+application/vnd.appimage=io.Suno.Valet.desktop
+application/vnd.flatpak=io.Suno.Valet.desktop
+application/vnd.flatpak.ref=io.Suno.Valet.desktop
+application/vnd.flatpak.repo=io.Suno.Valet.desktop
+application/vnd.snap=io.Suno.Valet.desktop
+application/vnd.android.package-archive=io.Suno.Valet.desktop
+application/vnd.projectSuno.android-package-set=io.Suno.Valet.desktop
+application/x-ms-dos-executable=io.Suno.Valet.desktop
+application/x-msdownload=io.Suno.Valet.desktop
+application/x-msi=io.Suno.Valet.desktop
+application/vnd.microsoft.portable-executable=io.Suno.Valet.desktop

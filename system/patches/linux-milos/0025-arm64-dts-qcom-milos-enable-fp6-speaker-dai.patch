@@ -1,5 +1,5 @@
 From 7ce7fcda31b8f57f29d2ba9eadb2f2c52c943a64 Mon Sep 17 00:00:00 2001
-From: Project Luma <luma@project-luma.org>
+From: Project Suno <Suno@project-suno.org>
 Date: Wed, 19 Aug 2026 15:00:00 -0500
 Subject: [PATCH] arm64: dts: qcom: milos: enable FP6 speaker DAI
 
@@ -11,7 +11,7 @@ Enable the existing link without changing any codec configuration.  The
 top amplifier is also the receiver/earpiece; profile selection remains a
 userspace policy concern.
 
-Signed-off-by: Project Luma <luma@project-luma.org>
+Signed-off-by: Project Suno <Suno@project-suno.org>
 ---
  arch/arm64/boot/dts/qcom/milos-fairphone-fp6.dts | 2 --
  1 file changed, 2 deletions(-)

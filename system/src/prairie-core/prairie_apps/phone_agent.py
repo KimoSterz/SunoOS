@@ -4,14 +4,14 @@
 
 ``prairie-phone --agent`` listens for calls without a window:
 
-* **A phone paired through Luma Connect** (the phone chosen for calls in
-  ``~/.config/luma-connect/calls-phone.json``, reached over the Connect relay or
+* **A phone paired through Suno Connect** (the phone chosen for calls in
+  ``~/.config/Suno-connect/calls-phone.json``, reached over the Connect relay or
   Bluetooth hands-free). An incoming call rings and shows a call notification
   with Answer and Decline; answering opens Phone on the call, which owns audio
   and the in-call controls. A call that stops ringing unanswered becomes a
   Missed Call notification with Call Back and Message. Without a phone chosen
   for calls it only watches for one to be chosen, having loaded nothing of
-  Luma Connect.
+  Suno Connect.
 * **This device's own modem** (a handset's IMS service). The full-screen call
   surface above the lock screen belongs to prairie-phone-daemon, which is a
   GTK layer-shell process. When that service is not running, this agent hears
@@ -40,11 +40,11 @@ from .phone_backend import CallPhase, format_phone_number
 
 LOG = logging.getLogger("prairie.phone.agent")
 
-APP_ID = "org.projectluma.Phone"
+APP_ID = "org.projectSuno.Phone"
 INFO = AgentInfo(
     APP_ID, "Phone", "communication", ("prairie-phone", "--agent"),
     wake=("login", "network", "resume"),
-    publishes=("call-state", "missed-calls", "badge", "live-extension:org.projectluma.Phone.Call"),
+    publishes=("call-state", "missed-calls", "badge", "live-extension:org.projectSuno.Phone.Call"),
     purpose="Get calls when Phone is closed",
 )
 NATIVE_PRESENTER = "prairie-phone-daemon.service"
@@ -54,12 +54,12 @@ FINISHED = {CallPhase.ENDED, CallPhase.FAILED, CallPhase.IDLE}
 
 
 def selection_path() -> Path:
-    return Path.home() / ".config/luma-connect/calls-phone.json"
+    return Path.home() / ".config/Suno-connect/calls-phone.json"
 
 
 def default_provider(dispatch):
     try:
-        from luma_continuity.call_provider import selected_provider
+        from Suno_continuity.call_provider import selected_provider
     except ImportError:
         return None
     return selected_provider(dispatch=dispatch)
@@ -417,7 +417,7 @@ def launch_uri(uri: str) -> None:
     if scheme == "tel":
         launch_app(APP_ID, ["prairie-phone", uri])
     elif scheme == "sms":
-        launch_app("org.projectluma.Messages", ["prairie-messages", uri])
+        launch_app("org.projectSuno.Messages", ["prairie-messages", uri])
 
 
 def main(argv: list[str] | None = None) -> int:

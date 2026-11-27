@@ -1,5 +1,5 @@
 From 9c402c4dff4291f50d13f8f593d6e008cfefc29c Mon Sep 17 00:00:00 2001
-From: Project Luma <engineering@projectluma.org>
+From: Project Suno <engineering@projectSuno.org>
 Date: Mon, 2 Nov 2026 22:41:29 -0600
 Subject: [PATCH] st: reuse cairo-prerendered backgrounds for the same node and
  size

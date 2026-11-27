@@ -1,7 +1,7 @@
 ---
 type: security
 component: Desktop
-packages: [luma-shell-state]
+packages: [Suno-shell-state]
 highlight: false
 ---
 Summary: Apps can no longer change desktop settings such as the screen-lock delay

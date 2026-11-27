@@ -24,7 +24,7 @@ class KernelSource(unittest.TestCase):
         self.repo = self.root / 'repo'
         self.repo.mkdir()
         self.output = self.root / 'prepared'
-        self.lock = {'schema': 'org.projectluma.kernel-source/v1',
+        self.lock = {'schema': 'org.projectSuno.kernel-source/v1',
                      'release': '1.0-test', 'sources': {}, 'patches': []}
         for name in ('linux', 'overlay'):
             path = self.cache / (name + '.tar.gz')

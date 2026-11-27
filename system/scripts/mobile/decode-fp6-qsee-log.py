@@ -3,7 +3,7 @@
 
 """Decode the legacy 32 KiB Qualcomm QSEE diagnostic ring.
 
-The input is the exact root-only sysfs snapshot produced by Luma's bounded
+The input is the exact root-only sysfs snapshot produced by Suno's bounded
 QSEE-log kernel. This tool handles only the downstream legacy header
 (`u16 wrap`, `u16 offset`) and emits printable diagnostic text; it does not
 parse or retain biometric command buffers.

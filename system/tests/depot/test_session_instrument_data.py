@@ -7,9 +7,9 @@ import unittest
 from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[2]
-if not (ROOT / 'packaging/flatpak/apps/org.projectluma.Session/prepare-instrument-data.py').is_file():
+if not (ROOT / 'packaging/flatpak/apps/org.projectSuno.Session/prepare-instrument-data.py').is_file():
     raise unittest.SkipTest("Session instrument sources belong to the separate Creative product")
-spec = importlib.util.spec_from_file_location('session_instrument_data', ROOT / 'packaging/flatpak/apps/org.projectluma.Session/prepare-instrument-data.py')
+spec = importlib.util.spec_from_file_location('session_instrument_data', ROOT / 'packaging/flatpak/apps/org.projectSuno.Session/prepare-instrument-data.py')
 api = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(api)
 
@@ -43,7 +43,7 @@ class DataChildren(unittest.TestCase):
     def test_child_deterministic_fixed_modes_and_bytes(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp); source = root / 'source'; source.write_bytes(b'owned sampled audio')
-            entries = [('share/luma-session/instruments/core/a.flac', source, api.digest(source))]
+            entries = [('share/Suno-session/instruments/core/a.flac', source, api.digest(source))]
             first, second = root / 'a.tar', root / 'b.tar'
             self.assertEqual(api.write_child(entries, first), api.write_child(entries, second))
             with tarfile.open(first) as archive:
@@ -55,7 +55,7 @@ class DataChildren(unittest.TestCase):
     def test_no_overwrite_no_partial_on_source_change(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp); source = root / 'source'; source.write_bytes(b'owned')
-            entries = [('share/luma-session/instruments/core/a.flac', source, api.digest(source))]
+            entries = [('share/Suno-session/instruments/core/a.flac', source, api.digest(source))]
             archive = root / 'data.tar'; archive.write_bytes(b'prior admitted bytes')
             with self.assertRaises(ValueError): api.write_child(entries, archive)
             self.assertEqual(archive.read_bytes(), b'prior admitted bytes')

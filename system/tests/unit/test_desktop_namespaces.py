@@ -17,7 +17,7 @@ class DesktopNamespaces(unittest.TestCase):
     def test_paths_preserve_x86_and_separate_arm(self):
         self.assertEqual(str(p.architecture_path('/pipeline/media')), '/pipeline/media')
         self.assertEqual(str(p.architecture_path('/pipeline/media', 'aarch64')), '/pipeline/media/aarch64')
-        self.assertEqual(str(p.releases_path('/repo', 'aarch64')), '/repo/luma/releases/aarch64')
+        self.assertEqual(str(p.releases_path('/repo', 'aarch64')), '/repo/Suno/releases/aarch64')
         self.assertEqual(p.graph_prefix('x86_64'), 'os/graph/x86_64')
         self.assertEqual(p.graph_prefix('aarch64'), 'os/graph/aarch64')
         with self.assertRaises(ValueError):
@@ -26,18 +26,18 @@ class DesktopNamespaces(unittest.TestCase):
     def test_manifest_ref_cannot_lie_about_architecture(self):
         self.assertEqual(p.manifest_architecture({}), 'x86_64')
         with self.assertRaises(ValueError):
-            p.manifest_architecture({'architecture': 'aarch64', 'ref': 'luma/1/x86_64/nightly'})
+            p.manifest_architecture({'architecture': 'aarch64', 'ref': 'Suno/1/x86_64/nightly'})
         with self.assertRaises(ValueError):
             p.manifest_architecture({'architecture': 'armv7l'})
 
     def test_build_record_restores_target_before_paths(self):
         with tempfile.TemporaryDirectory() as folder:
             record = Path(folder) / 'build.env'
-            record.write_text('LUMA_OS_ARCH=aarch64\nLUMA_OS_PROFILE=arm-preview\nLUMA_OS_GRAPH_PREFIX=os/graph\n')
-            command = '. scripts/os/lib/common.sh; luma_os_load_build_env "$1"; printf "%s\\n" "$LUMA_OS_GRAPH_PREFIX" "$LUMA_OS_HUB_GRAPH_URL_TEMPLATE"; luma_os_channel_ref nightly; luma_os_arch_path /pipeline/media'
+            record.write_text('SUNO_OS_ARCH=aarch64\nSuno_OS_PROFILE=arm-preview\nSuno_OS_GRAPH_PREFIX=os/graph\n')
+            command = '. scripts/os/lib/common.sh; Suno_os_load_build_env "$1"; printf "%s\\n" "$SUNO_OS_GRAPH_PREFIX" "$SUNO_OS_HUB_GRAPH_URL_TEMPLATE"; Suno_os_channel_ref nightly; Suno_os_arch_path /pipeline/media'
             run = subprocess.run(['bash', '-ec', command, 'test', str(record)], cwd=ROOT, capture_output=True, text=True, check=True)
-            self.assertEqual(run.stdout.splitlines(), ['os/graph/aarch64', 'https://hub.simplyluma.com/api/updates/graph/<channel>?arch=aarch64', 'luma/1/aarch64/nightly', '/pipeline/media/aarch64'])
-            record.write_text('LUMA_OS_ARCH=armv7l\n')
+            self.assertEqual(run.stdout.splitlines(), ['os/graph/aarch64', 'https://hub.simplyluma.com/api/updates/graph/<channel>?arch=aarch64', 'Suno/1/aarch64/nightly', '/pipeline/media/aarch64'])
+            record.write_text('SUNO_OS_ARCH=armv7l\n')
             self.assertNotEqual(subprocess.run(['bash', '-ec', command, 'test', str(record)], cwd=ROOT, capture_output=True).returncode, 0)
 
     def test_graph_render_selects_only_actual_architecture(self):
@@ -46,7 +46,7 @@ class DesktopNamespaces(unittest.TestCase):
             for arch, commit in [('x86_64', 'a' * 64), ('aarch64', 'b' * 64)]:
                 directory = p.releases_path(repo, arch) / '1.0.0-nightly.20261022.1'
                 directory.mkdir(parents=True)
-                (directory / 'manifest.json').write_text(json.dumps({'version': directory.name, 'channel': 'nightly', 'architecture': arch, 'ref': f'luma/1/{arch}/nightly', 'commit': commit, 'published_utc': '2026-10-22T00:00:00Z', 'build_id': '20261022.1'}))
+                (directory / 'manifest.json').write_text(json.dumps({'version': directory.name, 'channel': 'nightly', 'architecture': arch, 'ref': f'Suno/1/{arch}/nightly', 'commit': commit, 'published_utc': '2026-10-22T00:00:00Z', 'build_id': '20261022.1'}))
                 (directory / 'notes.json').write_text(json.dumps({'summary': 'General bug fixes.'}))
                 obj = repo / 'objects' / commit[:2] / (commit[2:] + '.commit')
                 obj.parent.mkdir(parents=True)
@@ -66,8 +66,8 @@ class DesktopNamespaces(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             output = Path(folder) / 'entry.json'
             args = [str(output), 'nightly', '20261022.1', '1.0.0-nightly.20261022.1', 'b' * 64,
-                    'luma-nightly-20261022.1.iso', 'c' * 64, '100', 'https://dl.simplyluma.com/media/aarch64/nightly',
-                    '0', '2026-10-23 00:00:00 +0000', '2026-10-22', '', 'General bug fixes.', 'Luma test',
+                    'Suno-nightly-20261022.1.iso', 'c' * 64, '100', 'https://dl.simplyluma.com/media/aarch64/nightly',
+                    '0', '2026-10-23 00:00:00 +0000', '2026-10-22', '', 'General bug fixes.', 'Suno test',
                     str(ROOT / 'scripts/os/lib'), 'aarch64', 'arm-preview']
             subprocess.run(['python3', '-', *args], input=body, text=True, check=True)
             value = json.loads(output.read_text())
@@ -79,7 +79,7 @@ class DesktopNamespaces(unittest.TestCase):
         body = source.split("<<'INDEX' || fail 'writing the media index failed'\n", 1)[1].split('\nINDEX', 1)[0]
         with tempfile.TemporaryDirectory() as folder:
             tree = Path(folder)
-            (tree / 'luma-nightly-20261022.1.iso.json').write_text(json.dumps({'arch': 'x86_64'}))
+            (tree / 'Suno-nightly-20261022.1.iso.json').write_text(json.dumps({'arch': 'x86_64'}))
             args = [str(tree), 'nightly', 'latest.iso', 'https://dl.simplyluma.com/media/aarch64/nightly', str(tree / 'releases'), 'aarch64', '20261022.1']
             run = subprocess.run(['python3', '-', *args], input=body, text=True, capture_output=True)
             self.assertNotEqual(run.returncode, 0)
@@ -104,10 +104,10 @@ class DesktopNamespaces(unittest.TestCase):
             import fcntl
             with (locks / 'publish-nightly.lock').open('w') as held:
                 fcntl.flock(held, fcntl.LOCK_EX | fcntl.LOCK_NB)
-                run = subprocess.run(['bash', '-ec', '. scripts/os/lib/common.sh; luma_os_publication_lock'], cwd=ROOT, env={**os.environ, 'LUMA_OS_ROOT': folder}, capture_output=True, text=True)
+                run = subprocess.run(['bash', '-ec', '. scripts/os/lib/common.sh; Suno_os_publication_lock'], cwd=ROOT, env={**os.environ, 'SUNO_OS_ROOT': folder}, capture_output=True, text=True)
                 self.assertNotEqual(run.returncode, 0)
                 self.assertIn('legacy nightly publication', run.stderr)
-            run = subprocess.run(['bash', '-ec', '. scripts/os/lib/common.sh; luma_os_publication_lock'], cwd=ROOT, env={**os.environ, 'LUMA_OS_ROOT': folder}, capture_output=True)
+            run = subprocess.run(['bash', '-ec', '. scripts/os/lib/common.sh; Suno_os_publication_lock'], cwd=ROOT, env={**os.environ, 'SUNO_OS_ROOT': folder}, capture_output=True)
             self.assertEqual(run.returncode, 0)
 
     def test_signer_rejects_unknown_arch_before_signing(self):

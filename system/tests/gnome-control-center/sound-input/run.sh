@@ -10,7 +10,7 @@ for tool in python3 gcc ninja pkg-config pulseaudio pactl Xvfb dbus-run-session 
 done
 test "$(id -u)" != 0 || { echo 'Run this test as an ordinary user in a disposable build environment.' >&2; exit 1; }
 test_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
-runtime=$(mktemp -d /tmp/luma-sound-input-test-XXXXXX)
+runtime=$(mktemp -d /tmp/Suno-sound-input-test-XXXXXX)
 audio_pid= display_pid=
 cleanup() {
   test -z "$audio_pid" || kill "$audio_pid" 2>/dev/null || true

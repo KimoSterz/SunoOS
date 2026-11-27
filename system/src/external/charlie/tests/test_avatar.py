@@ -4,7 +4,7 @@ import tempfile
 import threading
 import unittest
 
-from charlie_luma.avatar import AvatarLoader, avatar_candidates
+from charlie_Suno.avatar import AvatarLoader, avatar_candidates
 
 
 PNG = b"\x89PNG\r\n\x1a\n" + b"avatar"

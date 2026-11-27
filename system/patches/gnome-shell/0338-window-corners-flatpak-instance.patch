@@ -1,4 +1,4 @@
-From: Project Luma
+From: Project Suno
 Subject: [PATCH] windows: decide corner ownership for a Flatpak's whole instance
 
 Mutter reports the D-Bus peer as the PID of a client it connected through
@@ -8,12 +8,12 @@ like a Chromium window: maximized, the mask cut its own shadow out of the
 corner squares. Every process of a Flatpak instance shares its app-flatpak
 scope; a window is left alone when any of them loaded libadwaita.
 
-diff --git a/js/ui/lumaWindowCorners.js b/js/ui/lumaWindowCorners.js
+diff --git a/js/ui/SunoWindowCorners.js b/js/ui/SunoWindowCorners.js
 index 973a1c1..b010cc5 100644
---- a/js/ui/lumaWindowCorners.js
-+++ b/js/ui/lumaWindowCorners.js
+--- a/js/ui/SunoWindowCorners.js
++++ b/js/ui/SunoWindowCorners.js
 @@ -165,18 +165,46 @@ class WindowCornerMask extends Shell.GLSLEffect {
- // Whether the window's process draws Luma's radius itself. Unreadable
+ // Whether the window's process draws Suno's radius itself. Unreadable
  // processes (other users, sandboxes) are masked: the mask is the same curve
  // libadwaita draws, so a libadwaita app masked by mistake looks unchanged.
 +//

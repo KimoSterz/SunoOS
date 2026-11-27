@@ -1,6 +1,6 @@
-# Luma Android runtime contract
+# Suno Android runtime contract
 
-This directory is the shared Android compatibility input for every Luma form
+This directory is the shared Android compatibility input for every Suno form
 factor. It is not a desktop-only layer. Hardware-specific admission identities
 under `hardware/` are narrow safety data consumed by the shared runtime; they
 do not create a second phone implementation.
@@ -31,10 +31,10 @@ APIs, push delivery and mobile power still require qualification. The ordinary
 app [provider probe](../../tests/android/provider-probe/ProviderProbe.java)
 checks service visibility/binding and Java HTTPS without accessing accounts.
 
-Luma never intentionally freezes Android during normal idle because that also
+Suno never intentionally freezes Android during normal idle because that also
 freezes notification delivery. Waydroid may independently report a warm
-container as `FROZEN`; Luma thaws that state through Waydroid's public lifecycle
-API before boot-completion and application-service readiness probes. Luma also
+container as `FROZEN`; Suno thaws that state through Waydroid's public lifecycle
+API before boot-completion and application-service readiness probes. Suno also
 sets the supported `persist.waydroid.suspend` framework property from the
 explicit `idle_freeze` configuration, which defaults to false. Otherwise the
 framework can freeze the runtime independently when the last window closes.
@@ -54,7 +54,7 @@ but no production launch or APK installation may fetch a runtime image.
 ## Host integration defaults
 
 - multi-window mode is enabled;
-- the full Android launcher is not presented as the primary Luma surface;
+- the full Android launcher is not presented as the primary Suno surface;
 - Android desktop entries remain the application registry source;
 - no host home directory is bind-mounted wholesale;
 - APK files open with Prairie Android Installer;
@@ -62,7 +62,7 @@ but no production launch or APK installation may fetch a runtime image.
 - repair never deletes Android user data.
 
 Generated Waydroid launchers are continuously reconciled through
-`/usr/bin/luma-android`, so application-grid, search, dock, permissions, and
+`/usr/bin/Suno-android`, so application-grid, search, dock, permissions, and
 ordinary launch all enter one supervised lifecycle. A cold launch waits for
 Android's public `sys.boot_completed` property before dispatching the requested
 package and reasserts it once after the launcher settles. Warm launches remain
@@ -70,8 +70,8 @@ single-dispatch.
 
 On Fairphone 6, direct interactive startup additionally requires the exact
 running kernel-notes digest in
-`/usr/share/luma/android/hardware/fairphone-fp6-kernel-notes.d/`. The runtime
-carries no list: `kernel-modules-luma-fp6` ships the entry for its own kernel,
+`/usr/share/Suno/android/hardware/fairphone-fp6-kernel-notes.d/`. The runtime
+carries no list: `kernel-modules-Suno-fp6` ships the entry for its own kernel,
 written at kernel build time only when `devices/fairphone/fp6/device.toml`
 `[kernel.android_gpu]` records a passed physical qualification of that
 kernel's GPU inputs (`scripts/kernel/fp6-android-gpu-admission.py`). No FP6
@@ -85,7 +85,7 @@ authorization marker, so ordinary FP6 launches fail closed. A root GPU
 watchdog still latches any GMU timeout or hangcheck and stops Waydroid;
 unknown, revoked, modified-containment, and latched states all fail closed.
 
-See the [runtime package builder](../../scripts/packages/build-luma-android-runtime.sh) and
+See the [runtime package builder](../../scripts/packages/build-Suno-android-runtime.sh) and
 [platform scope](../../docs/platforms.md) for the compatibility boundary.
 
 Android application window chrome and resize lifecycle are governed by
@@ -116,18 +116,18 @@ wrapper in `prebuilts/build-tools/path/linux-x86`. The Prairie builder adds
 that upstream tool directory to the inherited external-build PATH and verifies
 the wrapper before Ninja starts.
 
-Set `LUMA_BUILD_WAYDROID_IMAGES=1` to produce a matched `system.img` and
+Set `SUNO_BUILD_WAYDROID_IMAGES=1` to produce a matched `system.img` and
 `vendor.img`. Framework/SystemUI changes must be deployed as that coherent
 pair; a newly built privileged APK must never be overlaid onto an independently
 downloaded Android image solely because both report the same API level.
 
-`LUMA_BUILD_JOBS` optionally caps Ninja concurrency. Use
-`LUMA_BUILD_JOBS=8` on the 32 GiB ThinkPad while its 8 GiB design VM is running;
+`SUNO_BUILD_JOBS` optionally caps Ninja concurrency. Use
+`SUNO_BUILD_JOBS=8` on the 32 GiB ThinkPad while its 8 GiB design VM is running;
 the Android ABI/link stages can exhaust memory at the host's automatic 18-job
 default. The builder rejects zero and non-numeric values rather than silently
 passing an unsafe or ambiguous job setting.
 
-For accepted visual iteration, set `LUMA_WAYDROID_INCREMENTAL=1`. The first
+For accepted visual iteration, set `SUNO_WAYDROID_INCREMENTAL=1`. The first
 incremental invocation applies Waydroid's pinned series and Prairie's three
 patches as local commits, records the complete repo-project snapshot plus every
 input hash under `.repo`, and leaves that clean prepared state in place.
@@ -145,14 +145,14 @@ filesystem, retains the previous matched pair, restores SELinux labels, and
 registers `/etc/waydroid-extra/images` through Waydroid's official forced
 initializer. Android user data is not removed. The deployer rolls back both
 files and re-runs the initializer if replacement cannot be completed. Start
-the container and the normal Luma Android user service only after the script
+the container and the normal Suno Android user service only after the script
 returns successfully. The image directory carries its own `SHA256SUMS`, so the
 matched pair can be transferred and verified without copying inspection-only
 framework artifacts from the build output.
 
 ### Multi-window feature-mask lifetime
 
-`patches/android-vendor-extra/0001-luma-idempotent-pc-feature-mask.patch` guards
+`patches/android-vendor-extra/0001-Suno-idempotent-pc-feature-mask.patch` guards
 Waydroid's PC-feature file bind mount with a volatile, boot-local property. The
 host also skips unchanged multi-window property writes. Both clean and prepared
 build paths apply the vendor patch. Repeated property writes must leave the

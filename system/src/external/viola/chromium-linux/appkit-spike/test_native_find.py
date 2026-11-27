@@ -6,7 +6,7 @@ import gi
 gi.require_version('Gtk', '4.0')
 gi.require_version('Gdk', '4.0')
 from gi.repository import Gdk, GLib, Gtk
-from luma_appkit import ActionCenter, BarAction, ToastHost, install_appkit
+from Suno_appkit import ActionCenter, BarAction, ToastHost, install_appkit
 from browser_services import BRIDGE_REFUSALS, BrowserServices, HostChannelUnavailable, recoverable
 from native_find import NativeFind, count_text, page_identity, row_key, step_key
 
@@ -93,11 +93,11 @@ class FindBar(unittest.TestCase):
         self.assertIs(field, self.find.view.field)
         self.assertFalse(self.find.view.count.get_visible())
         self.assertTrue(all(not key.get_sensitive() for key in self.find.view.keys))
-        field.set_text('luma')
+        field.set_text('Suno')
         settle(300)
-        self.assertEqual(self.queries()[-1], {'text': 'luma', 'targetId': 'target-1', 'forward': True})
+        self.assertEqual(self.queries()[-1], {'text': 'Suno', 'targetId': 'target-1', 'forward': True})
         self.assertTrue(all(surface == 'overlay' for surface, _c, _p in self.sent))
-        self.find.receive({'targetId': 'target-1', 'text': 'luma', 'active': 2, 'matches': 7})
+        self.find.receive({'targetId': 'target-1', 'text': 'Suno', 'active': 2, 'matches': 7})
         self.assertEqual(self.find.view.count.get_label(), '2 of 7')
         self.assertTrue(all(key.get_sensitive() for key in self.find.view.keys))
         self.find.receive({'targetId': 'target-1', 'text': 'lum', 'active': 1, 'matches': 9})
@@ -106,7 +106,7 @@ class FindBar(unittest.TestCase):
         self.assertEqual(self.queries()[-1]['forward'], False)
         self.find.view.row_key(None, Gdk.KEY_Return, 0, NONE)
         self.assertEqual(self.queries()[-1]['forward'], True)
-        self.find.receive({'targetId': 'target-1', 'text': 'luma', 'active': 0, 'matches': 0})
+        self.find.receive({'targetId': 'target-1', 'text': 'Suno', 'active': 0, 'matches': 0})
         self.assertEqual(self.find.view.count.get_label(), 'No matches')
         self.assertTrue(self.find.view.count.has_css_class('none'))
         self.assertTrue(all(not key.get_sensitive() for key in self.find.view.keys))
@@ -192,21 +192,21 @@ class FindBar(unittest.TestCase):
             page_requests=SimpleNamespace(call=lambda method, params, session, done: calls.append(params)))
         self.find.open()
         settle()
-        self.find.view.field.set_text('luma')
+        self.find.view.field.set_text('Suno')
         settle(300)
         covered = self.find.view.covered()
         self.assertGreater(covered, 0)
         height = self.page.get_height()
         clear = height - covered
-        self.find.receive({'targetId': 'target-1', 'text': 'luma', 'active': 1, 'matches': 2, 'final': True,
+        self.find.receive({'targetId': 'target-1', 'text': 'Suno', 'active': 1, 'matches': 2, 'final': True,
                            'rect': {'x': 10, 'y': 40, 'width': 30, 'height': 16}})
         self.assertEqual(calls, [])   # in the clear: the engine's own scroll stands
-        self.find.receive({'targetId': 'target-1', 'text': 'luma', 'active': 2, 'matches': 2, 'final': True,
+        self.find.receive({'targetId': 'target-1', 'text': 'Suno', 'active': 2, 'matches': 2, 'final': True,
                            'rect': {'x': 10, 'y': height - 10, 'width': 30, 'height': 16}})
         self.assertEqual(len(calls), 1)   # under the bar: up to a third of the clear space
         expected = ((height - 10 + height + 6) / 2 - clear / 3) / 2.0
         self.assertIn(f'top: {expected:.1f}', calls[0]['expression'])
-        self.find.receive({'targetId': 'target-1', 'text': 'luma', 'active': 0, 'matches': 0, 'final': True})
+        self.find.receive({'targetId': 'target-1', 'text': 'Suno', 'active': 0, 'matches': 0, 'final': True})
         self.assertEqual(len(calls), 1)   # no active match, no rect: nothing moves
 
     def test_steps_open_find_when_closed(self):

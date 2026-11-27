@@ -12,9 +12,9 @@ import gi
 gi.require_version('Gtk','4.0')
 gi.require_version('Adw','1')
 from gi.repository import Adw, Gio, Gtk
-from luma_appkit import AppWindow, Command, CommandGroup, CommandRegistry, EmptyState, Island, Toolbar, install_appkit
+from Suno_appkit import AppWindow, Command, CommandGroup, CommandRegistry, EmptyState, Island, Toolbar, install_appkit
 
-APP_ID = 'org.projectluma.Viola.NativeHostProbe'
+APP_ID = 'org.projectSuno.Viola.NativeHostProbe'
 
 class NativeHost(AppWindow):
     def __init__(self, application):

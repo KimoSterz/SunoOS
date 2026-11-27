@@ -1,34 +1,34 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
 #
-# Build the preinstalled Raspberry Pi 5 card image (luma-rpi5-<channel>-
-# <version>-aarch64.img.xz) from a Luma aarch64 installer ISO: the ISO's own
+# Build the preinstalled Raspberry Pi 5 card image (Suno-rpi5-<channel>-
+# <version>-aarch64.img.xz) from a Suno aarch64 installer ISO: the ISO's own
 # OSTree payload, deployed the way the installer deploys it, plus the Pi 5 boot
 # partition. Write it to a microSD card and boot; there is no installer.
 #
 #   MBR, disk identifier 0x4c554d42
-#   p1  FAT32 "LUMA_PI5", 512 MiB at 1 MiB, mounted at /boot/efi: config.txt,
-#       Fedora U-Boot, the deployed kernel's device trees (kernel-luma-rpi:
+#   p1  FAT32 "SUNO_PI5", 512 MiB at 1 MiB, mounted at /boot/efi: config.txt,
+#       Fedora U-Boot, the deployed kernel's device trees (kernel-Suno-rpi:
 #       Raspberry Pi's trees and overlays for the board firmware, which builds
 #       Linux's tree; Fedora's kernel: upstream trees with 256 MiB CMA that
 #       U-Boot loads from dtb/broadcom), GRUB as
 #       EFI/BOOT/BOOTAA64.EFI with the card menu, EFI/fedora (the system's
 #       GRUB stub and bootuuid.cfg)
 #   p2  ext4 "boot", 1 GiB: /boot (BLS entries, kernels, grub2/)
-#   p3  btrfs "luma", the rest: subvolumes root (the OSTree physical root)
+#   p3  btrfs "Suno", the rest: subvolumes root (the OSTree physical root)
 #       and home (/home); grows to the card on the first boot
 #
 # The deployment's origin is <remote>:<ref> from the medium's media.env (the
-# generic ARM ref, luma/<major>/aarch64/<channel>: one OS commit for every ARM
+# generic ARM ref, Suno/<major>/aarch64/<channel>: one OS commit for every ARM
 # device), the remote definition is the image's own (mirror list, GPG on), and
 # the mirror list holds the public repository URL: the system updates online
-# like any other Luma install. No account exists and root is locked: the first boot
-# starts Luma's first-boot setup. A medium carrying a preview credential is
+# like any other Suno install. No account exists and root is locked: the first boot
+# starts Suno's first-boot setup. A medium carrying a preview credential is
 # refused.
 #
 # usage: build-rpi5-disk-image.sh --iso FILE --output DIR [--release] [--payload REPO REF] [--device-repo DIR --device-key FILE [--device-repo-url URL]] [--device-package NAME]... [--device-replace NAME]... [--local-package RPM]... [--replace-local RPM]... [--uboot-rpm FILE] [--size GIB] [--no-xz] [--first-boot-overlay DIR] [--test-payload REPO COMMIT] [--test-ssh-key FILE]
 #
-# --payload deploys REF (the generic ARM channel ref luma/<major>/aarch64/
+# --payload deploys REF (the generic ARM channel ref Suno/<major>/aarch64/
 # <channel>, the medium's own) from the signed OSTree repository REPO (the
 # nightly's candidate or published repository), verified with the medium's
 # release key; the commit must be aarch64, on the medium's channel and name
@@ -37,14 +37,14 @@
 #
 # --device-repo applies the Pi's kernel at build time, as a client-side
 # rpm-ostree override of that commit: Fedora's kernel packages removed,
-# kernel-luma-rpi installed from DIR, the rpm-md repository the Raspberry Pi 5
-# device repository publishes, signed with the Luma OS release key
+# kernel-Suno-rpi installed from DIR, the rpm-md repository the Raspberry Pi 5
+# device repository publishes, signed with the Suno OS release key
 # (repomd.xml.asc and package signatures: repo_gpgcheck=1, gpgcheck=1).
 # --device-key is that key, armored (rpm cannot read the image's binary
 # /etc/pki/ostree copy); it must be the medium's release key. The card
-# keeps that repository (/etc/yum.repos.d/luma-raspberrypi-rpi5.repo at
-# --device-repo-url, only kernel-luma-rpi, excluding every Luma-owned name)
-# and the armored release key (/etc/pki/rpm-gpg/RPM-GPG-KEY-luma-os-release), so every
+# keeps that repository (/etc/yum.repos.d/Suno-raspberrypi-rpi5.repo at
+# --device-repo-url, only kernel-Suno-rpi, excluding every Suno-owned name)
+# and the armored release key (/etc/pki/rpm-gpg/RPM-GPG-KEY-Suno-os-release), so every
 # rpm-ostree update reapplies the override and follows new Pi kernels. The
 # first boot needs no network. The payload's own rpm-ostree does the work
 # (scripts/devices/rpm-ostree-offline.sh; under qemu-user on an x86_64 host,
@@ -61,17 +61,17 @@
 # --release makes a card for publication: it requires --payload (the signed
 # commit) and --device-repo, refuses --test-payload and --test-ssh-key, and
 # checks that the card gives no root SSH access (no /root/.ssh, sshd not
-# forced on, root locked). Every card refuses an /etc/luma/update.conf that
+# forced on, root locked). Every card refuses an /etc/Suno/update.conf that
 # names a hardware target: the Pi follows the generic ARM stream.
 #
 # First boot: the card has no account and root is locked. The builder marks
-# the deployment for first-boot setup with /etc/luma/first-boot/pending
+# the deployment for first-boot setup with /etc/Suno/first-boot/pending
 # (key=value: origin=card, device=raspberrypi,rpi5, created=<epoch>); the
 # image's own first-boot setup owns everything after that. --first-boot-overlay
 # copies a directory tree into the deployment's /etc as well (state or presets
 # the setup needs on a preinstalled card; paths relative to /etc). The
 # manifest records which setup the payload ships; a payload with GNOME
-# Initial Setup and no Luma first-boot setup is reported, not shippable.
+# Initial Setup and no Suno first-boot setup is reported, not shippable.
 #
 # --test-payload deploys COMMIT from the local OSTree repository REPO instead of
 # the medium's signed commit (origin and update path stay the medium's), for
@@ -90,13 +90,13 @@ set -euo pipefail
 # starts while the card is mounted in the host namespace copies those mounts
 # and keeps the root filesystem open after this script unmounts it, which
 # then fails btrfs check (20261108.5 release card).
-if [ -z "${LUMA_CARD_PRIVATE_MOUNTS:-}" ]; then
-  LUMA_CARD_PRIVATE_MOUNTS=1 exec unshare --mount --propagation private bash "$0" "$@"
+if [ -z "${SUNO_CARD_PRIVATE_MOUNTS:-}" ]; then
+  SUNO_CARD_PRIVATE_MOUNTS=1 exec unshare --mount --propagation private bash "$0" "$@"
 fi
 export TZ=UTC LC_ALL=C MTOOLS_SKIP_CHECK=1
 
 repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
-card_src="$repo_root/src/luma-rpi5-platform/card"
+card_src="$repo_root/src/Suno-rpi5-platform/card"
 
 # Fedora U-Boot, rpi_arm64 target (the same pin as build-rpi5-sd-image.sh).
 uboot_nevra=uboot-images-armv8-2026.10-1.fc45.noarch
@@ -106,7 +106,7 @@ uboot_bin_sha256=b552bd48c1745f565d424a5df7846283fbe66a244ea4e7c6f8a42c4e80a5ed5
 
 # The profile's cmdline.args (devices/raspberrypi/rpi5/boot.toml). Never console=.
 board_args="clk_ignore_unused pd_ignore_unused"
-fat_label=LUMA_PI5
+fat_label=SUNO_PI5
 fat_mib=512
 boot_mib=1024
 disk_id=0x4c554d42
@@ -173,7 +173,7 @@ ostree --version | grep -qx '  - composefs' || fail "the host's ostree has no co
 
 iso=$(realpath -e "$iso")
 iso_name=$(basename "$iso" .iso)
-case "$iso_name" in luma-*) image_name="luma-rpi5-${iso_name#luma-}" ;; *) image_name="luma-rpi5-$iso_name" ;; esac
+case "$iso_name" in Suno-*) image_name="Suno-rpi5-${iso_name#Suno-}" ;; *) image_name="Suno-rpi5-$iso_name" ;; esac
 case "$image_name" in *-aarch64) ;; *) image_name="$image_name-aarch64" ;; esac
 mkdir -p "$output"
 output=$(realpath -e "$output")
@@ -194,15 +194,15 @@ trap cleanup EXIT INT TERM
 mkdir "$work/iso" "$work/top" "$work/sysroot"
 mount -o loop,ro "$iso" "$work/iso"
 for file in images/install.img EFI/BOOT/fonts/unicode.pf2; do
-  [ -f "$work/iso/$file" ] || fail "not a Luma aarch64 installer ISO: $file is missing"
+  [ -f "$work/iso/$file" ] || fail "not a Suno aarch64 installer ISO: $file is missing"
 done
 
 # The installer's medium description and release key, from its runtime.
-atlas=usr/share/luma-installer-atlas
+atlas=usr/share/Suno-installer-atlas
 unsquashfs -no-progress -q -d "$work/stage2" "$work/iso/images/install.img" \
-  "$atlas/media.env" "$atlas/luma-release.gpg" "$atlas/preview-credential" >/dev/null 2>&1 || true
-[ -f "$work/stage2/$atlas/media.env" ] && [ -f "$work/stage2/$atlas/luma-release.gpg" ] ||
-  fail "the installer runtime has no $atlas/media.env or luma-release.gpg"
+  "$atlas/media.env" "$atlas/Suno-release.gpg" "$atlas/preview-credential" >/dev/null 2>&1 || true
+[ -f "$work/stage2/$atlas/media.env" ] && [ -f "$work/stage2/$atlas/Suno-release.gpg" ] ||
+  fail "the installer runtime has no $atlas/media.env or Suno-release.gpg"
 [ ! -e "$work/stage2/$atlas/preview-credential" ] ||
   fail "this medium carries a preview credential; build public card images from public media only"
 declare -A media=()
@@ -219,9 +219,9 @@ channel=${media[channel]} remote=${media[remote]} ref=${media[ref]} stateroot=${
 [[ "$remote" =~ ^[A-Za-z0-9][A-Za-z0-9._-]*$ ]] || fail "invalid remote name $remote"
 [[ "$stateroot" =~ ^[A-Za-z0-9][A-Za-z0-9._-]*$ ]] || fail "invalid stateroot $stateroot"
 [[ "${media[https_url]}" =~ ^https://[^[:space:]]+$ ]] || fail "the update repository must use HTTPS"
-[[ "${media[mirrorlist]}" =~ ^/etc/luma/[A-Za-z0-9._-]+$ ]] || fail "invalid mirror list path"
+[[ "${media[mirrorlist]}" =~ ^/etc/Suno/[A-Za-z0-9._-]+$ ]] || fail "invalid mirror list path"
 [[ "${media[target_key]}" =~ ^/etc/[A-Za-z0-9._/-]+$ ]] || fail "invalid release key path"
-key="$work/stage2/$atlas/luma-release.gpg"
+key="$work/stage2/$atlas/Suno-release.gpg"
 if [ -n "$device_key" ]; then
   fpr() { gpg --show-keys --with-colons "$1" 2>/dev/null | awk -F: '$1 == "fpr" {print $10; exit}'; }
   [ -n "$(fpr "$key")" ] && [ "$(fpr "$device_key")" = "$(fpr "$key")" ] ||
@@ -231,11 +231,11 @@ medium="$work/iso/${media[medium_repo]}"
 commit=$(ostree --repo="$medium" rev-parse "$ref") || fail "the medium does not carry $ref"
 payload_repo=$medium
 if [ -n "$payload_src" ]; then
-  [ "$payload_ref" = "$ref" ] && [[ "$payload_ref" =~ ^luma/[0-9]+/aarch64/$channel$ ]] ||
+  [ "$payload_ref" = "$ref" ] && [[ "$payload_ref" =~ ^Suno/[0-9]+/aarch64/$channel$ ]] ||
     fail "--payload ref must be the medium's generic ARM $channel ref ($ref), not $payload_ref"
   payload_repo=$payload_src
   commit=$(ostree --repo="$payload_repo" rev-parse "$ref") || fail "$payload_repo does not carry $ref"
-  for want in "org.projectluma.architecture=aarch64" "org.projectluma.channel=$channel"; do
+  for want in "org.projectSuno.architecture=aarch64" "org.projectSuno.channel=$channel"; do
     got=$(ostree --repo="$payload_repo" show --print-metadata-key="${want%%=*}" "$commit" 2>/dev/null | tr -d "'")
     [ "$got" = "${want#*=}" ] || fail "payload commit metadata ${want%%=*} is '${got}', not '${want#*=}'"
   done
@@ -246,15 +246,15 @@ if [ -n "$test_repo" ]; then
   echo "warning: test payload $commit from $test_repo; do not publish this image" >&2
 fi
 # One OS commit for every ARM device: never a hardware-targeted commit.
-target=$(ostree --repo="$payload_repo" show --print-metadata-key=org.projectluma.hardware-target "$commit" 2>/dev/null | tr -d "'" || true)
+target=$(ostree --repo="$payload_repo" show --print-metadata-key=org.projectSuno.hardware-target "$commit" 2>/dev/null | tr -d "'" || true)
 [ -z "$target" ] || fail "payload commit is built for hardware target $target; the card deploys the generic ARM commit"
 version=$(ostree --repo="$payload_repo" show --print-metadata-key=version "$commit" | tr -d "'")
 echo "Payload: $remote:$ref $commit ($version)"
 if [ -n "$payload_ref" ]; then
   # The card is named after the Pi build, not the ISO that lent its key.
-  build_id=$(ostree --repo="$payload_repo" show --print-metadata-key=org.projectluma.build-id "$commit" | tr -d "'")
+  build_id=$(ostree --repo="$payload_repo" show --print-metadata-key=org.projectSuno.build-id "$commit" | tr -d "'")
   [[ "$build_id" =~ ^[0-9]{8}\.[0-9]+$ ]] || fail "payload build id is not a nightly id: $build_id"
-  image_name="luma-rpi5-$channel-$build_id-aarch64"
+  image_name="Suno-rpi5-$channel-$build_id-aarch64"
 fi
 
 # Kernel arguments: root, the board's, and what the release declares in
@@ -281,7 +281,7 @@ PY
 )
 
 # Filesystem identities, derived from the payload so a rebuild is the same.
-ids=$(python3 -c 'import sys, uuid; n = uuid.uuid5(uuid.NAMESPACE_URL, "luma-rpi5:" + sys.argv[1]); print(uuid.uuid5(n, "boot"), uuid.uuid5(n, "root"), uuid.uuid5(n, "esp").hex[:8].upper())' "$commit")
+ids=$(python3 -c 'import sys, uuid; n = uuid.uuid5(uuid.NAMESPACE_URL, "Suno-rpi5:" + sys.argv[1]); print(uuid.uuid5(n, "boot"), uuid.uuid5(n, "root"), uuid.uuid5(n, "esp").hex[:8].upper())' "$commit")
 read -r boot_uuid root_uuid esp_id <<<"$ids"
 esp_uuid="${esp_id:0:4}-${esp_id:4:4}"
 
@@ -321,7 +321,7 @@ for n in 1 2 3; do [ -b "${loop}p$n" ] || fail "${loop}p$n did not appear"; done
 mkfs.vfat -F 32 -n "$fat_label" --invariant -i "$esp_id" "${loop}p1" >/dev/null
 [ "$(blkid -s UUID -o value "${loop}p1")" = "$esp_uuid" ] || fail "the boot partition ID is not $esp_uuid"
 mkfs.ext4 -q -L boot -U "$boot_uuid" -E "hash_seed=$boot_uuid" -T default "${loop}p2"
-mkfs.btrfs -q -L luma -U "$root_uuid" "${loop}p3"
+mkfs.btrfs -q -L Suno -U "$root_uuid" "${loop}p3"
 mount "${loop}p3" "$work/top"
 btrfs -q subvolume create "$work/top/root"
 btrfs -q subvolume create "$work/top/home"
@@ -373,24 +373,24 @@ grep -Fxq "refspec=$remote:$ref" "$deploy.origin" || fail "the deployment's orig
 # header), made now by the payload's own rpm-ostree so the first boot needs no
 # network. rpm-ostree writes a second deployment; the generic one (Fedora's
 # kernel, which does not boot on the firmware device tree) is then removed.
-device_key_path=/etc/pki/rpm-gpg/RPM-GPG-KEY-luma-os-release
-device_repo_file=/etc/yum.repos.d/luma-raspberrypi-rpi5.repo
+device_key_path=/etc/pki/rpm-gpg/RPM-GPG-KEY-Suno-os-release
+device_repo_file=/etc/yum.repos.d/Suno-raspberrypi-rpi5.repo
 override_removed="" override_layered=""
 write_device_repo() {  # DEPLOYMENT BASEURL REPO_GPGCHECK
   local excludes=""
-  [ ! -s "$1/usr/share/luma/luma-owned-packages.txt" ] || excludes=$(paste -sd, "$1/usr/share/luma/luma-owned-packages.txt")
+  [ ! -s "$1/usr/share/Suno/Suno-owned-packages.txt" ] || excludes=$(paste -sd, "$1/usr/share/Suno/Suno-owned-packages.txt")
   {
-    echo "# Raspberry Pi 5 device packages: the Luma Pi kernel, which this computer runs"
-    echo "# as an rpm-ostree override of the Luma OS (rpm-ostree status shows it)."
-    echo "[luma-raspberrypi-rpi5]"
-    echo "name=Luma Raspberry Pi 5"
+    echo "# Raspberry Pi 5 device packages: the Suno Pi kernel, which this computer runs"
+    echo "# as an rpm-ostree override of the Suno OS (rpm-ostree status shows it)."
+    echo "[Suno-raspberrypi-rpi5]"
+    echo "name=Suno Raspberry Pi 5"
     echo "baseurl=$2"
     echo "enabled=1"
     echo "gpgcheck=1"
     echo "repo_gpgcheck=$3"
     echo "gpgkey=file://$device_key_path"
-    echo "includepkgs=$(IFS=,; echo "kernel-luma-rpi${device_packages[*]+,${device_packages[*]}}${device_replace[*]+,${device_replace[*]}}")"
-    [ -z "$excludes" ] || echo "# Luma: packages the Luma image owns never come from this repository"
+    echo "includepkgs=$(IFS=,; echo "kernel-Suno-rpi${device_packages[*]+,${device_packages[*]}}${device_replace[*]+,${device_replace[*]}}")"
+    [ -z "$excludes" ] || echo "# Suno: packages the Suno image owns never come from this repository"
     [ -z "$excludes" ] || echo "excludepkgs=$excludes"
   } >"$1$device_repo_file"
   chmod 0644 "$1$device_repo_file"
@@ -416,18 +416,18 @@ if [ -n "$device_repo" ]; then
   gpg --homedir "$gpg_home" --batch --quiet --verify "$device_repo/repodata/repomd.xml.asc" \
     "$device_repo/repodata/repomd.xml" 2>/dev/null || fail "the device repository's repomd.xml.asc does not verify with --device-key"
   gpgconf --homedir "$gpg_home" --kill all 2>/dev/null || true
-  write_device_repo "$generic" file:///run/luma-device-repo 0
-  args=(override remove "${fedora_kernel[@]}" --install=kernel-luma-rpi)
+  write_device_repo "$generic" file:///run/Suno-device-repo 0
+  args=(override remove "${fedora_kernel[@]}" --install=kernel-Suno-rpi)
   for name in "${device_packages[@]+"${device_packages[@]}"}"; do args+=(--install="$name"); done
-  binds=(--bind "$device_repo:/run/luma-device-repo")
+  binds=(--bind "$device_repo:/run/Suno-device-repo")
   if [ "${#local_packages[@]}" -gt 0 ] || [ "${#replace_local[@]}" -gt 0 ]; then
     mkdir "$work/rpms"
-    binds+=(--bind "$work/rpms:/run/luma-card-rpms")
+    binds+=(--bind "$work/rpms:/run/Suno-card-rpms")
     for rpm_file in "${local_packages[@]+"${local_packages[@]}"}"; do
-      cp "$rpm_file" "$work/rpms/"; args+=(--install="/run/luma-card-rpms/$(basename "$rpm_file")")
+      cp "$rpm_file" "$work/rpms/"; args+=(--install="/run/Suno-card-rpms/$(basename "$rpm_file")")
     done
     for rpm_file in "${replace_local[@]+"${replace_local[@]}"}"; do
-      cp "$rpm_file" "$work/rpms/"; args+=(--replace="/run/luma-card-rpms/$(basename "$rpm_file")")
+      cp "$rpm_file" "$work/rpms/"; args+=(--replace="/run/Suno-card-rpms/$(basename "$rpm_file")")
     done
   fi
   echo "Override: ${args[*]}"
@@ -446,10 +446,10 @@ if [ -n "$device_repo" ]; then
   # replace --from repo=...): a second transaction on the override deployment,
   # recorded in the origin so updates take them from the repository.
   if [ "${#device_replace[@]}" -gt 0 ]; then
-    echo "Override: override replace --experimental --from repo=luma-raspberrypi-rpi5 ${device_replace[*]}"
+    echo "Override: override replace --experimental --from repo=Suno-raspberrypi-rpi5 ${device_replace[*]}"
     umount "$sysroot/boot/efi"
     TMPDIR="$work" bash "$repo_root/scripts/devices/rpm-ostree-offline.sh" --sysroot "$sysroot" --stateroot "$stateroot" \
-      --deployment "$deploy" "${binds[@]}" -- override replace --experimental --from repo=luma-raspberrypi-rpi5 "${device_replace[@]}"
+      --deployment "$deploy" "${binds[@]}" -- override replace --experimental --from repo=Suno-raspberrypi-rpi5 "${device_replace[@]}"
     mount -o umask=0077,shortname=winnt "${loop}p1" "$sysroot/boot/efi"
     first=$deploy
     deploys=("$sysroot/ostree/deploy/$stateroot/deploy/"*.0)
@@ -467,7 +467,7 @@ if [ -n "$device_repo" ]; then
   write_device_repo "$deploy" "$device_repo_url" 1
   origin=$deploy.origin
   grep -Fxq "baserefspec=$remote:$ref" "$origin" || fail "the override's origin is not based on $remote:$ref"
-  grep -Eq '^requested=(.*;)?kernel-luma-rpi;' "$origin" || fail "the override does not request kernel-luma-rpi"
+  grep -Eq '^requested=(.*;)?kernel-Suno-rpi;' "$origin" || fail "the override does not request kernel-Suno-rpi"
   override_removed=$(sed -n 's/^remove=//p' "$origin")
   override_layered=$(sed -n 's/^requested=//p' "$origin")
   for name in "${fedora_kernel[@]}"; do
@@ -487,9 +487,9 @@ grep -q '^/var/home' "$deploy/etc/selinux/targeted/contexts/files/file_contexts.
 grep -Eq "^(base)?refspec=$remote:$ref\$" "$deploy.origin" || fail "the deployment does not follow $remote:$ref"
 ! grep -Eq '^(base)?refspec=.*raspberrypi-rpi5' "$deploy.origin" || fail "the deployment follows the Raspberry Pi hardware ref"
 # The Pi follows the generic ARM stream: no hardware-targeted update.conf.
-if [ -e "$deploy/etc/luma/update.conf" ] &&
-   grep -Eq '^\s*(hardware_target\s*=\s*\S|ref_template\s*=.*raspberrypi)' "$deploy/etc/luma/update.conf"; then
-  fail "the deployment's /etc/luma/update.conf names a hardware target (luma-rpi5-platform before 0.4.0?)"
+if [ -e "$deploy/etc/Suno/update.conf" ] &&
+   grep -Eq '^\s*(hardware_target\s*=\s*\S|ref_template\s*=.*raspberrypi)' "$deploy/etc/Suno/update.conf"; then
+  fail "the deployment's /etc/Suno/update.conf names a hardware target (Suno-rpi5-platform before 0.4.0?)"
 fi
 
 # The deployed kernel and its device trees.
@@ -497,7 +497,7 @@ kver=$(find "$deploy/usr/lib/modules" -mindepth 1 -maxdepth 1 -type d -printf '%
 [ -n "$kver" ] && [ "$(printf '%s\n' "$kver" | wc -l)" = 1 ] || fail "deployed kernel is ambiguous: $kver"
 [ -f "$deploy/usr/lib/modules/$kver/vmlinuz" ] || fail "kernel $kver has no vmlinuz"
 echo "Kernel: $kver"
-# kernel-luma-rpi ships Raspberry Pi's trees and overlays: the board firmware
+# kernel-Suno-rpi ships Raspberry Pi's trees and overlays: the board firmware
 # builds Linux's tree. Fedora's kernel needs U-Boot to load its upstream tree.
 if [ -f "$deploy/usr/lib/modules/$kver/dtb/overlays/overlay_map.dtb" ]; then
   dt_layout=firmware
@@ -511,7 +511,7 @@ echo "Device trees: $dt_layout layout"
 
 # The update path (what the installer's %post writes): the image's remote
 # definition reads the mirror list; the mirror list holds the public URL; the
-# channel is recorded for luma-update.
+# channel is recorded for Suno-update.
 remote_conf="$deploy/etc/ostree/remotes.d/$remote.conf"
 [ -f "$remote_conf" ] || fail "the image does not define the $remote remote"
 grep -Fxq "url=mirrorlist=file://${media[mirrorlist]}" "$remote_conf" || fail "$remote_conf does not read ${media[mirrorlist]}"
@@ -520,10 +520,10 @@ for opt in gpg-verify gpg-verify-summary; do
 done
 grep -Fxq "collection-id=${media[collection_id]}" "$remote_conf" || fail "$remote_conf has another collection id"
 install -D -m 0644 "$key" "$deploy${media[target_key]}"
-install -d -m 0755 "$deploy/etc/luma"
+install -d -m 0755 "$deploy/etc/Suno"
 (umask 077 && printf '%s\n' "${media[https_url]}" >"$deploy${media[mirrorlist]}")
 chmod 0600 "$deploy${media[mirrorlist]}"
-printf 'channel=%s\n' "$channel" >"$deploy/etc/luma/update-channel.conf"
+printf 'channel=%s\n' "$channel" >"$deploy/etc/Suno/update-channel.conf"
 
 # Mounts: / comes from the kernel command line (composefs), as on installed
 # systems.
@@ -543,23 +543,23 @@ if [ -n "$test_key" ]; then
 fi
 
 # First boot: grow the root partition to the card.
-install -m 0755 "$card_src/luma-rpi5-grow-root" "$deploy/etc/luma/rpi5-grow-root"
-install -m 0644 "$card_src/luma-rpi5-grow-root.service" "$deploy/etc/systemd/system/luma-rpi5-grow-root.service"
+install -m 0755 "$card_src/Suno-rpi5-grow-root" "$deploy/etc/Suno/rpi5-grow-root"
+install -m 0644 "$card_src/Suno-rpi5-grow-root.service" "$deploy/etc/systemd/system/Suno-rpi5-grow-root.service"
 install -d "$deploy/etc/systemd/system/multi-user.target.wants"
-ln -sf /etc/systemd/system/luma-rpi5-grow-root.service \
-  "$deploy/etc/systemd/system/multi-user.target.wants/luma-rpi5-grow-root.service"
+ln -sf /etc/systemd/system/Suno-rpi5-grow-root.service \
+  "$deploy/etc/systemd/system/multi-user.target.wants/Suno-rpi5-grow-root.service"
 
 # First boot: hand the card to the image's first-boot setup (see the header).
-install -d -m 0755 "$deploy/etc/luma/first-boot"
-printf 'origin=card\ndevice=raspberrypi,rpi5\ncreated=%s\n' "$epoch" >"$deploy/etc/luma/first-boot/pending"
+install -d -m 0755 "$deploy/etc/Suno/first-boot"
+printf 'origin=card\ndevice=raspberrypi,rpi5\ncreated=%s\n' "$epoch" >"$deploy/etc/Suno/first-boot/pending"
 if [ -n "$first_boot_overlay" ]; then
   (cd "$first_boot_overlay" && find . -mindepth 1 | grep -q .) || fail "--first-boot-overlay is empty"
   cp -a --no-preserve=ownership "$first_boot_overlay/." "$deploy/etc/"
 fi
-if [ -e "$deploy/usr/libexec/luma-setup" ]; then
-  first_boot=luma-setup
+if [ -e "$deploy/usr/libexec/Suno-setup" ]; then
+  first_boot=Suno-setup
 elif [ -e "$deploy/usr/libexec/gnome-initial-setup" ]; then
-  first_boot="gnome-initial-setup (not shippable: Luma's first-boot setup is missing)"
+  first_boot="gnome-initial-setup (not shippable: Suno's first-boot setup is missing)"
   echo "warning: the payload's first boot is GNOME Initial Setup; do not publish this image" >&2
 else
   first_boot="none (no first-boot setup in the payload)"
@@ -607,11 +607,11 @@ setfiles -F -c "$policy" -r "$sysroot" "$fc" "$sysroot/boot" 2>&1 | grep -v 'Rea
 # first-boot units) carry the build host's labels; systemd cannot read a
 # var_t unit file.
 # Types the build host's kernel does not know (snapd's) cannot be set here,
-# in /etc or /var; the first boot labels those paths (luma-rpi5-grow-root,
+# in /etc or /var; the first boot labels those paths (Suno-rpi5-grow-root,
 # rpi5-relabel.list).
 relabel_unknown() {  # TREE: setfiles TREE, list paths with unknown types
   setfiles -F -c "$policy" -r "$deploy" "$fc" "$deploy$1" 2>"$work/setfiles.err" || true
-  python3 - "$work/setfiles.err" "$deploy" "$1" "$deploy/etc/luma/rpi5-relabel.list" <<'PY'
+  python3 - "$work/setfiles.err" "$deploy" "$1" "$deploy/etc/Suno/rpi5-relabel.list" <<'PY'
 import re, sys
 err, root, tree, out = sys.argv[1:]
 paths, other = [], []
@@ -635,7 +635,7 @@ mount --bind "$var" "$deploy/var"
 mount -o subvol=home "${loop}p3" "$deploy/var/home"
 relabel_unknown /var || fail "labelling /var failed"
 # The list itself was written after /etc was labelled.
-setfiles -F -c "$policy" -r "$deploy" "$fc" "$deploy/etc/luma" || fail "labelling /etc/luma failed"
+setfiles -F -c "$policy" -r "$deploy" "$fc" "$deploy/etc/Suno" || fail "labelling /etc/Suno failed"
 umount "$deploy/var/home" "$deploy/var"
 
 # The boot partition (also the ESP).
@@ -701,7 +701,7 @@ install -m 0644 "$fat/README.txt" "$output/$image_name.README.txt"
   echo "image_bytes $image_bytes"
   echo "image_sha256 $image_sha256"
   echo "artifact $artifact $(stat -c %s "$output/$artifact") $artifact_sha256"
-  echo "layout mbr label-id=$disk_id p1=$p1_start+$p1_sectors(fat32,$fat_label,$esp_uuid) p2=$p2_start+$p2_sectors(ext4,boot,$boot_uuid) p3=$p3_start+rest(btrfs,luma,$root_uuid)"
+  echo "layout mbr label-id=$disk_id p1=$p1_start+$p1_sectors(fat32,$fat_label,$esp_uuid) p2=$p2_start+$p2_sectors(ext4,boot,$boot_uuid) p3=$p3_start+rest(btrfs,Suno,$root_uuid)"
   echo "root_used_mib $used_mib"
   echo "iso $iso_name.iso"
   echo "origin $remote:$ref"

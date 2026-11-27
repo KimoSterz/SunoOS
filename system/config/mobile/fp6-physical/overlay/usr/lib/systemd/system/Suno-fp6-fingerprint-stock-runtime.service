@@ -1,0 +1,17 @@
+[Unit]
+Description=Suno Fairphone 6 read-only stock biometric runtime mounts
+After=local-fs.target
+Before=Suno-fp6-fingerprint-lock-agent.service
+ConditionKernelCommandLine=androidboot.slot_suffix=_b
+ConditionPathExists=/var/tmp/Suno-stock-qrel1695-images/system_a.img
+ConditionPathExists=/etc/waydroid-extra/images/system.img
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/libexec/Suno-fp6-fingerprint-restore-mounts
+TimeoutStartSec=60
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

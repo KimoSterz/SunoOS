@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: Apache-2.0 */
-/* Test client for luma_window_shape_v1: a GTK window with a header bar and a
+/* Test client for Suno_window_shape_v1: a GTK window with a header bar and a
  * game-like content area that draws circles on a 4:3 grid (an ellipse means
  * the content was stretched). It logs every size it lays out at as one JSON
  * line: window geometry, content size, and whether the compositor keeps the
@@ -11,13 +11,13 @@
  * Without --ratio it is an ordinary window. --whole-window locks the window
  * geometry instead of the content; --min is the content's minimum size.
  * SIGUSR1 toggles the lock off and on, as an app's "free" aspect mode does.
- * Built against the kit's luma-window-shape.c (see run.sh). */
+ * Built against the kit's Suno-window-shape.c (see run.sh). */
 #include <glib-unix.h>
 #include <gtk/gtk.h>
 #include <signal.h>
 #include <stdio.h>
 
-#include "luma-window-shape.h"
+#include "Suno-window-shape.h"
 
 static FILE *log_file;
 static const char *name = "client";
@@ -34,7 +34,7 @@ static gboolean
 toggle_lock (gpointer data G_GNUC_UNUSED)
 {
   locked = !locked;
-  luma_window_set_aspect_ratio (main_window, locked ? ratio_w : 0,
+  Suno_window_set_aspect_ratio (main_window, locked ? ratio_w : 0,
                                 locked ? ratio_h : 0);
   fprintf (log_file, "{\"ev\":\"lock\",\"locked\":%s}\n",
            locked ? "true" : "false");
@@ -144,8 +144,8 @@ activate (GtkApplication *app, gpointer data G_GNUC_UNUSED)
   if (ratio_w > 0)
     {
       if (!whole_window)
-        luma_window_set_aspect_content (GTK_WINDOW (window), content);
-      enforced = luma_window_set_aspect_ratio (GTK_WINDOW (window),
+        Suno_window_set_aspect_content (GTK_WINDOW (window), content);
+      enforced = Suno_window_set_aspect_ratio (GTK_WINDOW (window),
                                                ratio_w, ratio_h);
       locked = TRUE;
       g_unix_signal_add (SIGUSR1, toggle_lock, NULL);
@@ -186,7 +186,7 @@ main (int argc, char **argv)
   if (!log_file)
     return 2;
 
-  app_id = g_strdup_printf ("org.projectluma.WindowShapeTest.%s", name);
+  app_id = g_strdup_printf ("org.projectSuno.WindowShapeTest.%s", name);
   app = gtk_application_new (app_id, G_APPLICATION_NON_UNIQUE);
   g_object_set_data_full (G_OBJECT (app), "size", g_strdup (size), g_free);
   g_object_set_data_full (G_OBJECT (app), "min", g_strdup (min), g_free);

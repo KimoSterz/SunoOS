@@ -8,7 +8,7 @@
 Summary: Tool for managing bootable, immutable filesystem trees
 Name: ostree
 Version: 2026.5
-Release: 1.luma.2%{?dist}
+Release: 1.Suno.2%{?dist}
 Source0: libostree-%{version}.tar.gz
 License: LGPL-2.0-or-later AND LGPL-2.1-or-later AND BSD-2-Clause AND LicenseRef-old-glib-tests
 URL: https://ostreedev.github.io/ostree/
@@ -130,18 +130,18 @@ env NOCONFIGURE=1 ./autogen.sh
 
 %check
 %make_build check
-cc -Wall -Wextra -Werror -O2 tests/luma-aboot-overlay-native-control.c -o luma-overlay-control $(pkg-config --cflags --libs glib-2.0 gio-2.0 libarchive)
-LUMA_ABOOT_OVERLAY_CONTROL=$PWD/luma-overlay-control python3 tests/luma-test-aboot-overlay-native.py
+cc -Wall -Wextra -Werror -O2 tests/Suno-aboot-overlay-native-control.c -o Suno-overlay-control $(pkg-config --cflags --libs glib-2.0 gio-2.0 libarchive)
+SUNO_ABOOT_OVERLAY_CONTROL=$PWD/Suno-overlay-control python3 tests/Suno-test-aboot-overlay-native.py
 
 %install
 %make_install INSTALL="install -p -c"
 find %{buildroot} -name '*.la' -delete
 # Preserve bundled-source notices even when ostree-libs is installed alone.
-mkdir -p luma-license-notices/bsdiff luma-license-notices/libglnx
-cp -p COPYING luma-license-notices/
-cp -p bsdiff/LICENSE luma-license-notices/bsdiff/
-cp -p libglnx/COPYING luma-license-notices/libglnx/
-cp -a libglnx/LICENSES luma-license-notices/libglnx/
+mkdir -p Suno-license-notices/bsdiff Suno-license-notices/libglnx
+cp -p COPYING Suno-license-notices/
+cp -p bsdiff/LICENSE Suno-license-notices/bsdiff/
+cp -p libglnx/COPYING Suno-license-notices/libglnx/
+cp -a libglnx/LICENSES Suno-license-notices/libglnx/
 
 # Needed to enable the service at compose time currently
 %post
@@ -152,7 +152,7 @@ cp -a libglnx/LICENSES luma-license-notices/libglnx/
 
 %files
 %{!?_licensedir:%global license %%doc}
-%license COPYING luma-license-notices
+%license COPYING Suno-license-notices
 %doc README.md
 %{_bindir}/ostree
 %{_bindir}/rofiles-fuse
@@ -171,7 +171,7 @@ cp -a libglnx/LICENSES luma-license-notices/libglnx/
 %{_libexecdir}/libostree/*
 
 %files libs
-%license luma-license-notices
+%license Suno-license-notices
 %{_sysconfdir}/ostree
 %{_libdir}/*.so.1*
 %{_libdir}/girepository-1.0/OSTree-1.0.typelib
@@ -198,7 +198,7 @@ cp -a libglnx/LICENSES luma-license-notices/libglnx/
 %endif
 
 %changelog
-* Wed Oct 14 2026 Luma Build <build@luma.invalid> - 2026.5-1.luma.2
+* Wed Oct 14 2026 Suno Build <build@Suno.invalid> - 2026.5-1.Suno.2
 - Ship bundled OSTree, bsdiff and libglnx notices with both runtime packages.
-* Wed Oct 14 2026 Luma Build <build@luma.invalid> - 2026.5-1.luma.1
+* Wed Oct 14 2026 Suno Build <build@Suno.invalid> - 2026.5-1.Suno.1
 - Maintain native boot image assembly, prepare-root and signing capacity fixes.

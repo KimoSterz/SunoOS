@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
 # Publish a complete checksum manifest without truncating a previous export.
-luma_android_write_checksums() {
+Suno_android_write_checksums() {
   local directory=$1 temporary
   shift
-  temporary=$(mktemp "$directory/.luma-checksums-XXXXXX") || return
+  temporary=$(mktemp "$directory/.Suno-checksums-XXXXXX") || return
   if ! (
     set -o pipefail
     cd "$directory" || exit
     if [ "$#" -gt 0 ]; then
       sha256sum -- "$@"
     else
-      find . -type f ! -name SHA256SUMS ! -name '.luma-checksums-*' \
+      find . -type f ! -name SHA256SUMS ! -name '.Suno-checksums-*' \
         -exec sha256sum {} + | sed 's#  \./#  #' | sort
     fi
   ) >"$temporary"; then

@@ -1,14 +1,14 @@
 # Shared native Charlie package completeness
 
 Base source: `361d547019800eec23ed039522a3df08a4724739`, the retained
-`v71/charlie` branch in `LumaApps/charlie-native-v71.bundle`. This branch retains
+`v71/charlie` branch in `SunoApps/charlie-native-v71.bundle`. This branch retains
 the native Apache-2.0 Python/GTK application; the remote main branch is the older
 Flutter application and is not its runtime provider.
 
 The normal package is architecture independent. Its canonical application and
-desktop identities are `org.projectluma.Charlie` and
-`org.projectluma.Charlie.desktop`. It requires Python3/GObject, GTK4.22,
-libadwaita1.9, Luma Developer Platform, WebKitGTK6.0, Secret Service, Evolution Data
+desktop identities are `org.projectSuno.Charlie` and
+`org.projectSuno.Charlie.desktop`. It requires Python3/GObject, GTK4.22,
+libadwaita1.9, Suno Developer Platform, WebKitGTK6.0, Secret Service, Evolution Data
 Server and GNOME Online Accounts. The running development phone has the required
 GI namespaces and WebKitGTK2.52.5/EDS3.60.2/GOA3.58.1. Charlie is not installed,
 so rollback of a later test install is removal of this package; user-created mail
@@ -36,8 +36,8 @@ source package serves desktop and mobile. No phone mutation was made by this
 source change.
 
 
-The canonical icon is the approved v71 `luma-v4-mail.svg`, copied without byte
-changes to the normal `org.projectluma.Charlie` icon provider. Its SHA-256 is
+The canonical icon is the approved v71 `Suno-v4-mail.svg`, copied without byte
+changes to the normal `org.projectSuno.Charlie` icon provider. Its SHA-256 is
 `0bd4e8a2750f599cf686c79e78410d6f8a735b8226d9289312f90b88d797f209`.
 All eight hicolor raster sizes are generated from this one SVG with the normal
 librsvg package tool. Old raster exports are removed so theme resolution cannot
@@ -64,7 +64,7 @@ must pass without skipping `%check` before it becomes an install candidate.
 `tools/mobile-preview.py` is the source-owned development launch profile. It
 validates the existing bundle's c4 ARM toolkit pin and reuses the shared
 `run.py` environment entries. It then executes the normal
-`/usr/bin/org.projectluma.Charlie`; only AppKit is added to `PYTHONPATH`, so Charlie
+`/usr/bin/org.projectSuno.Charlie`; only AppKit is added to `PYTHONPATH`, so Charlie
 comes from the installed RPM. The original preview manifest and payload remain
 untouched. A temporary user desktop may call this profile with
 `DBusActivatable=false`, retaining the same desktop ID and normal package icon.

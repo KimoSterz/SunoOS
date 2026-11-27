@@ -1,0 +1,15 @@
+# Clock's alarms agent (ADR-033): Clock's own service mode, which rings alarms and
+# timers and exits when nothing is scheduled.
+# Installed as /usr/share/Suno/background/org.projectSuno.Clock.toml for Suno-background.
+schema_version = "0.2"
+
+[application]
+id = "org.projectSuno.Clock"
+name = "Clock"
+
+[background]
+agent = "org.projectSuno.Clock.Agent"
+exec = "prairie-clock --agent"
+category = "alarms"
+wake = ["login", "resume", "schedule"]
+publishes = ["next-at", "next-kind", "scheduled", "ringing", "live-extension:org.projectSuno.Clock.Next"]

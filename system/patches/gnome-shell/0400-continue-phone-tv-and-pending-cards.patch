@@ -1,5 +1,5 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Project Luma <engineering@projectluma.org>
+From: Project Suno <engineering@projectSuno.org>
 Date: Tue, 24 Nov 2026 21:30:00 -0600
 Subject: [PATCH] Continue: the phone lip card, the drawer list, pending app
  switcher cards and the TV home hero (ADR-055 Phase C)
@@ -12,7 +12,7 @@ chosen; swiping one away forgets it.
 
 TV: no prompt. The home's hero shows what was playing on another device: the
 app and "From <device>" chips, the item, minutes left, Continue (focused) and
-Start over, over the item's artwork under the home's shade. lumaSession
+Start over, over the item's artwork under the home's shade. SunoSession
 sends the artwork as a JPEG of at most 96 KB made from the player's local
 cover art (file:// only; a remote URL is never fetched).
 
@@ -25,69 +25,69 @@ foot with all corners round. The card's choices take equal shares of the
 row, and a card without buttons keeps no room for them.
 
 ---
-diff --git a/data/theme/luma-continue.css b/data/theme/luma-continue.css
+diff --git a/data/theme/Suno-continue.css b/data/theme/Suno-continue.css
 index 453ecfc..594126b 100644
---- a/data/theme/luma-continue.css
-+++ b/data/theme/luma-continue.css
+--- a/data/theme/Suno-continue.css
++++ b/data/theme/Suno-continue.css
 @@ -50,3 +50,42 @@
  
  /* Done, 6 px under the list. */
- .luma-notification-lip .notification-banner.luma-lip-card .message-action-bin.luma-notification-actions-end { padding-top: 6px; }
+ .Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin.Suno-notification-actions-end { padding-top: 6px; }
 +
 +/* Phone and tablet: the result list as a bottom drawer (cn.css .cn-drawer):
 + * full width, 28 px top corners, a grab handle, the same rows at 36 px,
 + * and a full-width Done. */
-+.luma-continue-drawer-shade { background-color: rgba(0, 0, 0, 0.32); }
-+.luma-continue-drawer {
++.Suno-continue-drawer-shade { background-color: rgba(0, 0, 0, 0.32); }
++.Suno-continue-drawer {
 +  padding: 10px 20px 30px; border-radius: 28px 28px 0 0;
 +  background-color: #f4f5f7; color: #1f2328;
 +}
 +/* Tablet (design-center continue/offer.html ?posture=tablet): 400 wide, centred, 16 above the foot. */
-+.luma-continue-drawer.luma-continue-drawer-tablet {
++.Suno-continue-drawer.Suno-continue-drawer-tablet {
 +  width: 360px; /* 400 with the 20 px sides */ margin-bottom: 16px; padding-bottom: 20px; border-radius: 28px;
 +  box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.6);
 +}
-+.luma-continue-drawer-grab {
++.Suno-continue-drawer-grab {
 +  width: 36px; height: 4px; margin-bottom: 16px; border-radius: 2px;
 +  background-color: rgba(31, 35, 40, 0.25);
 +}
-+.luma-continue-drawer-title { font-size: 17px; font-weight: 650; min-height: 22px; }
-+.luma-continue-drawer-subtitle { margin-top: 2px; font-size: 13px; min-height: 18px; color: rgba(31, 35, 40, 0.6); }
-+.luma-continue-drawer .luma-continue-list { margin-top: 14px; border-top-color: rgba(127, 127, 127, 0.18); }
-+.luma-continue-drawer .luma-continue-row { padding: 12px 0; }
-+.luma-continue-drawer .luma-continue-divider { background-color: rgba(127, 127, 127, 0.14); }
-+.luma-continue-drawer .luma-continue-row-name { font-size: 15px; min-height: 20px; }
-+.luma-continue-drawer .luma-continue-row-reason { font-size: 13px; min-height: 18px; color: rgba(31, 35, 40, 0.66); }
-+.luma-continue-drawer .luma-continue-open {
++.Suno-continue-drawer-title { font-size: 17px; font-weight: 650; min-height: 22px; }
++.Suno-continue-drawer-subtitle { margin-top: 2px; font-size: 13px; min-height: 18px; color: rgba(31, 35, 40, 0.6); }
++.Suno-continue-drawer .Suno-continue-list { margin-top: 14px; border-top-color: rgba(127, 127, 127, 0.18); }
++.Suno-continue-drawer .Suno-continue-row { padding: 12px 0; }
++.Suno-continue-drawer .Suno-continue-divider { background-color: rgba(127, 127, 127, 0.14); }
++.Suno-continue-drawer .Suno-continue-row-name { font-size: 15px; min-height: 20px; }
++.Suno-continue-drawer .Suno-continue-row-reason { font-size: 13px; min-height: 18px; color: rgba(31, 35, 40, 0.66); }
++.Suno-continue-drawer .Suno-continue-open {
 +  height: 36px; padding: 0 16px; border-radius: 12px; font-size: 14px;
 +  background-color: rgba(127, 127, 127, 0.2);
 +}
-+.luma-continue-drawer-done {
++.Suno-continue-drawer-done {
 +  margin-top: 16px; height: 44px; border-radius: 14px;
 +  font-size: 15px; font-weight: 650; color: #1f2328;
 +  background-color: rgba(127, 127, 127, 0.2);
 +}
-+.luma-continue-drawer.luma-surface-dark { background-color: #1d2026; color: #eceef1; }
-+.luma-continue-drawer.luma-surface-dark .luma-continue-drawer-grab { background-color: rgba(236, 238, 241, 0.25); }
-+.luma-continue-drawer.luma-surface-dark .luma-continue-drawer-subtitle { color: rgba(236, 238, 241, 0.6); }
-+.luma-continue-drawer.luma-surface-dark .luma-continue-row-reason { color: rgba(236, 238, 241, 0.62); }
-+.luma-continue-drawer.luma-surface-dark .luma-continue-drawer-done { color: #eceef1; }
++.Suno-continue-drawer.Suno-surface-dark { background-color: #1d2026; color: #eceef1; }
++.Suno-continue-drawer.Suno-surface-dark .Suno-continue-drawer-grab { background-color: rgba(236, 238, 241, 0.25); }
++.Suno-continue-drawer.Suno-surface-dark .Suno-continue-drawer-subtitle { color: rgba(236, 238, 241, 0.6); }
++.Suno-continue-drawer.Suno-surface-dark .Suno-continue-row-reason { color: rgba(236, 238, 241, 0.62); }
++.Suno-continue-drawer.Suno-surface-dark .Suno-continue-drawer-done { color: #eceef1; }
 diff --git a/js/js-resources.gresource.xml b/js/js-resources.gresource.xml
 index 37765b3..fb5c71b 100644
 --- a/js/js-resources.gresource.xml
 +++ b/js/js-resources.gresource.xml
 @@ -96,6 +96,7 @@
-     <file>ui/lumaWindowWatch.js</file>
-     <file>ui/lumaSession.js</file>
-     <file>ui/lumaContinue.js</file>
-+    <file>ui/lumaTvContinue.js</file>
-     <file>ui/lumaFocusVisible.js</file>
-     <file>ui/lumaWell.js</file>
-     <file>ui/lumaWellModel.js</file>
-diff --git a/js/ui/lumaContinue.js b/js/ui/lumaContinue.js
+     <file>ui/SunoWindowWatch.js</file>
+     <file>ui/SunoSession.js</file>
+     <file>ui/SunoContinue.js</file>
++    <file>ui/SunoTvContinue.js</file>
+     <file>ui/SunoFocusVisible.js</file>
+     <file>ui/SunoWell.js</file>
+     <file>ui/SunoWellModel.js</file>
+diff --git a/js/ui/SunoContinue.js b/js/ui/SunoContinue.js
 index 96d6ecf..acf98bd 100644
---- a/js/ui/lumaContinue.js
-+++ b/js/ui/lumaContinue.js
+--- a/js/ui/SunoContinue.js
++++ b/js/ui/SunoContinue.js
 @@ -12,10 +12,12 @@ import Gio from 'gi://Gio';
  import GObject from 'gi://GObject';
  import GLib from 'gi://GLib';
@@ -97,10 +97,10 @@ index 96d6ecf..acf98bd 100644
  
  import * as Main from './main.js';
  import * as MessageTray from './messageTray.js';
-+import * as SurfaceMaterials from './lumaSurfaceMaterials.js';
- import {peekNotificationLip} from './lumaNotificationBeacon.js';
++import * as SurfaceMaterials from './SunoSurfaceMaterials.js';
+ import {peekNotificationLip} from './SunoNotificationBeacon.js';
  
- const STYLESHEET_URI = 'resource:///org/gnome/shell/theme/luma-continue.css';
+ const STYLESHEET_URI = 'resource:///org/gnome/shell/theme/Suno-continue.css';
 @@ -107,37 +109,143 @@ function appFor(id) {
      return Shell.AppSystem.get_default().lookup_app(id);
  }
@@ -113,7 +113,7 @@ index 96d6ecf..acf98bd 100644
 +// (verified by Depot or the installer when they kept it; read here for
 +// display only) gives the name and the listing's icon. The icon is the file
 +// Depot keeps for that listing, shared with Depot's own media cache; when
-+// Depot hasn't drawn that listing yet, it is fetched once from Luma's media
++// Depot hasn't drawn that listing yet, it is fetched once from Suno's media
 +// hosts and kept there for both.
  const CATALOGUE_MAX_BYTES = 16 * 1024 * 1024;
 +const ICON_MAX_BYTES = 2 * 1024 * 1024;
@@ -130,9 +130,9 @@ index 96d6ecf..acf98bd 100644
 +// ~/.cache, or the Flatpak's own cache when Depot runs as a Flatpak.
 +function depotRoots() {
 +    return [
-+        GLib.build_filenamev([GLib.get_home_dir(), '.var', 'app', 'org.projectluma.Depot', 'cache',
-+            'luma-depot', 'catalogue-v1']),
-+        GLib.build_filenamev([GLib.get_user_cache_dir(), 'luma-depot', 'catalogue-v1']),
++        GLib.build_filenamev([GLib.get_home_dir(), '.var', 'app', 'org.projectSuno.Depot', 'cache',
++            'Suno-depot', 'catalogue-v1']),
++        GLib.build_filenamev([GLib.get_user_cache_dir(), 'Suno-depot', 'catalogue-v1']),
 +    ];
 +}
  
@@ -147,7 +147,7 @@ index 96d6ecf..acf98bd 100644
 +    const rows = new Map();
 +    for (const root of depotRoots()) {
          try {
--            const path = GLib.build_filenamev([GLib.get_user_cache_dir(), 'luma', 'depot', 'catalogue-v1.json']);
+-            const path = GLib.build_filenamev([GLib.get_user_cache_dir(), 'Suno', 'depot', 'catalogue-v1.json']);
 -            const file = Gio.File.new_for_path(path);
 -            if (file.query_info('standard::size', 0, null).get_size() <= CATALOGUE_MAX_BYTES) {
 -                const document = JSON.parse(new TextDecoder().decode(file.load_contents(null)[1]));
@@ -191,7 +191,7 @@ index 96d6ecf..acf98bd 100644
      return catalogue.get(id.replace(/\.desktop$/, '').toLowerCase()) ?? null;
  }
  
-+// Where Depot keeps a listing's picture (luma_depot.model.catalogue_v1.MediaCache).
++// Where Depot keeps a listing's picture (Suno_depot.model.catalogue_v1.MediaCache).
 +export function depotMediaPath(url, root = depotRoots()[1]) {
 +    const clean = url.split('#')[0];
 +    const digest = GLib.compute_checksum_for_string(GLib.ChecksumType.SHA256, clean, -1).slice(0, 32);
@@ -228,7 +228,7 @@ index 96d6ecf..acf98bd 100644
 +        for (const listener of iconListeners)
 +            listener();
 +    } catch (e) {
-+        log(`[luma-continue] Depot icon ${url}: ${e.message}`);
++        log(`[Suno-continue] Depot icon ${url}: ${e.message}`);
 +    } finally {
 +        fetching.delete(url);
 +    }
@@ -256,8 +256,8 @@ index 96d6ecf..acf98bd 100644
      const bare = id.replace(/\.desktop$/, '');
      const roots = [GLib.build_filenamev([GLib.get_user_data_dir(), 'flatpak', 'appstream']), '/var/lib/flatpak/appstream'];
      for (const root of roots) {
--        for (const remote of ['flathub', 'luma']) {
-+        for (const remote of ['luma', 'flathub']) {
+-        for (const remote of ['flathub', 'Suno']) {
++        for (const remote of ['Suno', 'flathub']) {
              for (const size of ['128x128', '64x64']) {
                  const path = GLib.build_filenamev([root, remote, Shell.util_get_architecture?.() ?? 'x86_64',
                      'active', 'icons', size, `${bare}.png`]);
@@ -324,7 +324,7 @@ index 96d6ecf..acf98bd 100644
          this._state = null;
 +        // A Depot icon fetched for an app not installed here: draw it.
 +        this._iconLanded = () => {
-+            for (const rebuild of this._notification?.lumaContent.views ?? [])
++            for (const rebuild of this._notification?.SunoContent.views ?? [])
 +                rebuild();
 +        };
 +        iconListeners.add(this._iconLanded);
@@ -355,16 +355,16 @@ index 96d6ecf..acf98bd 100644
                  source, title: '', body: '', isTransient: false, urgency,
              });
 +            // Only the Shell sets this badge; no app's notification can carry it.
-+            this._notification.lumaShellBadge = badge;
-             this._notification.lumaContent = {
++            this._notification.SunoShellBadge = badge;
+             this._notification.SunoContent = {
                  views: new Set(),
                  actions: [],
 @@ -237,6 +378,10 @@ export class ContinueBanner {
              });
              this._source = source;
          }
-+        if (this._notification.lumaShellBadge !== badge) {
-+            this._notification.lumaShellBadge = badge;
++        if (this._notification.SunoShellBadge !== badge) {
++            this._notification.SunoShellBadge = badge;
 +            this._notification.notify('title');
 +        }
          this._notification.urgency = urgency;
@@ -387,7 +387,7 @@ index 96d6ecf..acf98bd 100644
 +    // snapshot's other apps wait in the app switcher.
 +    offerApp({device, app, document = null, others = 0, taken = null}, onContinue, onNotNow) {
 +        rememberApps([app]);
-+        this._ensure('Luma Connect', appGicon(app.id), MessageTray.Urgency.CRITICAL,
++        this._ensure('Suno Connect', appGicon(app.id), MessageTray.Urgency.CRITICAL,
 +            new Gio.ThemedIcon({name: CONNECT_ICON}));
 +        this._apps = [app];
 +        this._done = null;
@@ -408,7 +408,7 @@ index 96d6ecf..acf98bd 100644
 +    // The lip card while that app opens: no buttons; it closes when the app is up.
 +    restoringApp({device, app, document = null}) {
 +        rememberApps([app]);
-+        this._ensure('Luma Connect', appGicon(app.id), MessageTray.Urgency.CRITICAL);
++        this._ensure('Suno Connect', appGicon(app.id), MessageTray.Urgency.CRITICAL);
 +        this._apps = [app];
 +        this._total = 1;
 +        this._placed = 0;
@@ -425,7 +425,7 @@ index 96d6ecf..acf98bd 100644
 +
      // 3: the same banner, counting windows as they are placed.
      restoring({device, total, apps = null, onStop}) {
-         this._ensure('Luma Connect', CONNECT_ICON, MessageTray.Urgency.CRITICAL);
+         this._ensure('Suno Connect', CONNECT_ICON, MessageTray.Urgency.CRITICAL);
 @@ -323,6 +510,10 @@ export class ContinueBanner {
      }
  
@@ -469,7 +469,7 @@ index 96d6ecf..acf98bd 100644
      _progress(styleClass) {
 -        const track = new St.Widget({style_class: styleClass, x_expand: true,
 -            layout_manager: new Clutter.FixedLayout()});
--        track._fill = new St.Widget({style_class: 'luma-continue-progress-fill', x: 0, y: 0, width: 0});
+-        track._fill = new St.Widget({style_class: 'Suno-continue-progress-fill', x: 0, y: 0, width: 0});
 -        track._share = 0;
 -        track.connect('notify::width', () => (track._fill.width = Math.round(track.width * track._share)));
 -        track.add_child(track._fill);
@@ -484,35 +484,35 @@ index 96d6ecf..acf98bd 100644
          }
 -        if (this._state === 'restoring') {
 +        if (this._state === 'restoring' || this._state === 'restoring-app') {
-             const bar = this._progress('luma-continue-progress');
+             const bar = this._progress('Suno-continue-progress');
              bar.connect('notify::allocation', () => this._sizeProgress(bar));
              this._progressBars.push(bar);
              box.add_child(bar);
          }
          if (this._state === 'list') {
 -            const list = new St.BoxLayout({orientation: Clutter.Orientation.VERTICAL,
--                style_class: 'luma-continue-list', x_expand: true});
+-                style_class: 'Suno-continue-list', x_expand: true});
 -            for (const row of this._rows ?? []) {
 -                // The hairline between rows is its own actor: a row's
 -                // bottom border took its width but was not painted.
 -                if (list.get_n_children())
--                    list.add_child(new St.Widget({style_class: 'luma-continue-divider', x_expand: true}));
--                const line = new St.BoxLayout({style_class: 'luma-continue-row', x_expand: true});
+-                    list.add_child(new St.Widget({style_class: 'Suno-continue-divider', x_expand: true}));
+-                const line = new St.BoxLayout({style_class: 'Suno-continue-row', x_expand: true});
 -                line.add_child(appIcon(row.id, 28));
 -                const text = new St.BoxLayout({orientation: Clutter.Orientation.VERTICAL, x_expand: true,
 -                    y_align: Clutter.ActorAlign.CENTER});
--                text.add_child(new St.Label({style_class: 'luma-continue-row-name', text: appName(row.id)}));
--                const why = new St.Label({style_class: 'luma-continue-row-reason', text: row.reason});
+-                text.add_child(new St.Label({style_class: 'Suno-continue-row-name', text: appName(row.id)}));
+-                const why = new St.Label({style_class: 'Suno-continue-row-reason', text: row.reason});
 -                why.clutter_text.line_wrap = true;
 -                text.add_child(why);
 -                if (row.progress !== undefined) {
--                    const bar = this._progress('luma-continue-progress luma-continue-progress-small');
+-                    const bar = this._progress('Suno-continue-progress Suno-continue-progress-small');
 -                    bar._share = Math.min(1, Math.max(0, row.progress / 100));
 -                    text.add_child(bar);
 -                }
 -                line.add_child(text);
 -                if (row.open) {
--                    const open = new St.Button({style_class: 'luma-continue-open', label: 'Open',
+-                    const open = new St.Button({style_class: 'Suno-continue-open', label: 'Open',
 -                        y_align: Clutter.ActorAlign.CENTER, can_focus: true});
 -                    open.connect('clicked', () => this._onOpen?.(row.id));
 -                    line.add_child(open);
@@ -529,11 +529,11 @@ index 96d6ecf..acf98bd 100644
      }
  }
 +
-+// A LumaUI progress track and its fill (its share set by the owner).
++// A SunoUI progress track and its fill (its share set by the owner).
 +function progressTrack(styleClass) {
 +    const track = new St.Widget({style_class: styleClass, x_expand: true,
 +        layout_manager: new Clutter.FixedLayout()});
-+    track._fill = new St.Widget({style_class: 'luma-continue-progress-fill', x: 0, y: 0, width: 0});
++    track._fill = new St.Widget({style_class: 'Suno-continue-progress-fill', x: 0, y: 0, width: 0});
 +    track._share = 0;
 +    track.connect('notify::width', () => (track._fill.width = Math.round(track.width * track._share)));
 +    track.add_child(track._fill);
@@ -543,28 +543,28 @@ index 96d6ecf..acf98bd 100644
 +// The result rows, in the banner (28 px icons) and in the phone's drawer (36).
 +function resultList(rows, iconSize, onOpen) {
 +    const list = new St.BoxLayout({orientation: Clutter.Orientation.VERTICAL,
-+        style_class: 'luma-continue-list', x_expand: true});
++        style_class: 'Suno-continue-list', x_expand: true});
 +    for (const row of rows) {
 +        // The hairline between rows is its own actor: a row's
 +        // bottom border took its width but was not painted.
 +        if (list.get_n_children())
-+            list.add_child(new St.Widget({style_class: 'luma-continue-divider', x_expand: true}));
-+        const line = new St.BoxLayout({style_class: 'luma-continue-row', x_expand: true});
++            list.add_child(new St.Widget({style_class: 'Suno-continue-divider', x_expand: true}));
++        const line = new St.BoxLayout({style_class: 'Suno-continue-row', x_expand: true});
 +        line.add_child(appIcon(row.id, iconSize));
 +        const text = new St.BoxLayout({orientation: Clutter.Orientation.VERTICAL, x_expand: true,
 +            y_align: Clutter.ActorAlign.CENTER});
-+        text.add_child(new St.Label({style_class: 'luma-continue-row-name', text: appName(row.id)}));
-+        const why = new St.Label({style_class: 'luma-continue-row-reason', text: row.reason});
++        text.add_child(new St.Label({style_class: 'Suno-continue-row-name', text: appName(row.id)}));
++        const why = new St.Label({style_class: 'Suno-continue-row-reason', text: row.reason});
 +        why.clutter_text.line_wrap = true;
 +        text.add_child(why);
 +        if (row.progress !== undefined) {
-+            const bar = progressTrack('luma-continue-progress luma-continue-progress-small');
++            const bar = progressTrack('Suno-continue-progress Suno-continue-progress-small');
 +            bar._share = Math.min(1, Math.max(0, row.progress / 100));
 +            text.add_child(bar);
 +        }
 +        line.add_child(text);
 +        if (row.open) {
-+            const open = new St.Button({style_class: 'luma-continue-open', label: 'Open',
++            const open = new St.Button({style_class: 'Suno-continue-open', label: 'Open',
 +                y_align: Clutter.ActorAlign.CENTER, can_focus: true});
 +            open.connect('clicked', () => onOpen?.(row.id));
 +            line.add_child(open);
@@ -581,32 +581,32 @@ index 96d6ecf..acf98bd 100644
 +        this.close();
 +        this._onDone = onDone;
 +        const monitor = Main.layoutManager.primaryMonitor;
-+        this._shade = new St.Widget({style_class: 'luma-continue-drawer-shade', reactive: true,
++        this._shade = new St.Widget({style_class: 'Suno-continue-drawer-shade', reactive: true,
 +            layout_manager: new Clutter.BinLayout()});
 +        this._shade.set_position(monitor.x, monitor.y);
 +        this._shade.set_size(monitor.width, monitor.height);
 +        // A tablet has room: the phone's drawer, 400 wide, centred and lifted
 +        // off the foot with all four corners round.
 +        const tablet = Main.presentation?.mode === 'tablet';
-+        const sheet = new St.BoxLayout({style_class: 'luma-continue-drawer', reactive: true,
++        const sheet = new St.BoxLayout({style_class: 'Suno-continue-drawer', reactive: true,
 +            orientation: Clutter.Orientation.VERTICAL, x_expand: true, y_expand: true,
 +            x_align: tablet ? Clutter.ActorAlign.CENTER : Clutter.ActorAlign.FILL, y_align: Clutter.ActorAlign.END});
 +        if (tablet)
-+            sheet.add_style_class_name('luma-continue-drawer-tablet');
++            sheet.add_style_class_name('Suno-continue-drawer-tablet');
 +        // The drawer's own fill (cn.css .cn-drawer): dark only in Dark;
 +        // Light, Frost and Glass draw it as paper.
 +        if (SurfaceMaterials.effectiveTreatment() === 'dark')
-+            sheet.add_style_class_name('luma-surface-dark');
++            sheet.add_style_class_name('Suno-surface-dark');
 +        const scale = St.ThemeContext.get_for_stage(global.stage).scale_factor;
-+        sheet.add_child(new St.Widget({style_class: 'luma-continue-drawer-grab',
++        sheet.add_child(new St.Widget({style_class: 'Suno-continue-drawer-grab',
 +            x_align: Clutter.ActorAlign.CENTER}));
-+        sheet.add_child(new St.Label({style_class: 'luma-continue-drawer-title', text: title}));
-+        sheet.add_child(new St.Label({style_class: 'luma-continue-drawer-subtitle', text: subtitle}));
++        sheet.add_child(new St.Label({style_class: 'Suno-continue-drawer-title', text: title}));
++        sheet.add_child(new St.Label({style_class: 'Suno-continue-drawer-subtitle', text: subtitle}));
 +        sheet.add_child(resultList(rows, 36, id => {
 +            onOpen?.(id);
 +            this.close();
 +        }));
-+        const done = new St.Button({style_class: 'luma-continue-drawer-done', label: 'Done',
++        const done = new St.Button({style_class: 'Suno-continue-drawer-done', label: 'Done',
 +            x_expand: true, can_focus: true});
 +        done.connect('clicked', () => this._finish());
 +        sheet.add_child(done);
@@ -666,10 +666,10 @@ index 96d6ecf..acf98bd 100644
 +        shade.destroy();
 +    }
 +}
-diff --git a/js/ui/lumaGrid.js b/js/ui/lumaGrid.js
+diff --git a/js/ui/SunoGrid.js b/js/ui/SunoGrid.js
 index 3360429..b40e253 100644
---- a/js/ui/lumaGrid.js
-+++ b/js/ui/lumaGrid.js
+--- a/js/ui/SunoGrid.js
++++ b/js/ui/SunoGrid.js
 @@ -403,6 +403,106 @@ class GridCard extends St.Widget {
      }
  });
@@ -691,10 +691,10 @@ index 3360429..b40e253 100644
 +        this._shapeRadius = null;
 +        this._letterboxed = false;
 +        this._edge = new St.Widget({reactive: false});
-+        this._mark = Main.lumaSession?.pendingIcon?.(pending.id, 64) ??
++        this._mark = Main.SunoSession?.pendingIcon?.(pending.id, 64) ??
 +            new St.Icon({icon_name: 'application-x-executable', icon_size: 64});
 +        this._header = new St.BoxLayout({clip_to_allocation: true, style: 'spacing: 6px;'});
-+        this._header.add_child(Main.lumaSession?.pendingIcon?.(pending.id, 20) ??
++        this._header.add_child(Main.SunoSession?.pendingIcon?.(pending.id, 20) ??
 +            new St.Icon({icon_name: 'application-x-executable', icon_size: 20}));
 +        this._name = new St.Label({text: pending.name ?? pending.id, x_expand: true,
 +            y_align: Clutter.ActorAlign.CENTER, style: 'font-weight: 700;'});
@@ -752,12 +752,12 @@ index 3360429..b40e253 100644
 +    }
 +
 +    closeWindow() {
-+        Main.lumaSession?.forgetPending?.(this.pending.id);
++        Main.SunoSession?.forgetPending?.(this.pending.id);
 +        this._popup.removeCard(this);
 +    }
 +
 +    open() {
-+        Main.lumaSession?.openPending?.(this.pending.id);
++        Main.SunoSession?.openPending?.(this.pending.id);
 +    }
 +
 +    vfunc_allocate(box) {
@@ -784,7 +784,7 @@ index 3360429..b40e253 100644
 +        // A handheld that continued from another device: the apps still to
 +        // open follow the open ones, in that device's stacking order.
 +        if (['mobile', 'tablet'].includes(Main.presentation?.mode)) {
-+            for (const pending of Main.lumaSession?.pendingApps?.() ?? []) {
++            for (const pending of Main.SunoSession?.pendingApps?.() ?? []) {
 +                const card = new PendingGridCard(pending, this);
 +                this._cards.push(card);
 +                this._stage.add_child(card);
@@ -833,10 +833,10 @@ index 3360429..b40e253 100644
          this.dismiss(card?.window ?? null);
      }
  
-diff --git a/js/ui/lumaNotificationBeacon.js b/js/ui/lumaNotificationBeacon.js
+diff --git a/js/ui/SunoNotificationBeacon.js b/js/ui/SunoNotificationBeacon.js
 index 4a6c610..aaebe86 100644
---- a/js/ui/lumaNotificationBeacon.js
-+++ b/js/ui/lumaNotificationBeacon.js
+--- a/js/ui/SunoNotificationBeacon.js
++++ b/js/ui/SunoNotificationBeacon.js
 @@ -496,6 +496,10 @@ export const NotificationLip = GObject.registerClass(class NotificationLip exten
                  width = Math.min(width, PILL_MAX_WIDTH * scale);
              }
@@ -848,12 +848,12 @@ index 4a6c610..aaebe86 100644
              if (this._state === 'card' && Main.presentation?.mode !== 'desktop') {
                  const safe = surfaceInsets(Main.presentation?._displayGeometry, monitor,
                      {x: (monitor.width - width) / 2, y: top - monitor.y, width, height: 60 * scale}, 14 * scale, 8 * scale);
-diff --git a/js/ui/lumaSession.js b/js/ui/lumaSession.js
+diff --git a/js/ui/SunoSession.js b/js/ui/SunoSession.js
 index abdcb46..eb8c9e8 100644
---- a/js/ui/lumaSession.js
-+++ b/js/ui/lumaSession.js
+--- a/js/ui/SunoSession.js
++++ b/js/ui/SunoSession.js
 @@ -13,15 +13,20 @@
- //   journalctl --user -b -g luma-session
+ //   journalctl --user -b -g Suno-session
  
  import Clutter from 'gi://Clutter';
 +import GdkPixbuf from 'gi://GdkPixbuf';
@@ -867,10 +867,10 @@ index abdcb46..eb8c9e8 100644
  import * as LoginManager from '../misc/loginManager.js';
 +import * as Signals from '../misc/signals.js';
  import * as Main from './main.js';
--import {ContinueBanner, snapshotApps} from './lumaContinue.js';
+-import {ContinueBanner, snapshotApps} from './SunoContinue.js';
 +import * as Mpris from './mpris.js';
-+import {flatpakTv} from './lumaPresentation/tvModel.js';
-+import {ContinueBanner, appGicon, handheldForm, rememberApps, snapshotApps} from './lumaContinue.js';
++import {flatpakTv} from './SunoPresentation/tvModel.js';
++import {ContinueBanner, appGicon, handheldForm, rememberApps, snapshotApps} from './SunoContinue.js';
  
  Gio._promisify(Gio.DBusConnection.prototype, 'call_with_unix_fd_list');
  
@@ -882,19 +882,19 @@ index abdcb46..eb8c9e8 100644
 +const ART_MAX = 96 * 1024;       // Connect Sync's limit (sessions.ART_MAX)
  
  const SessionIface = `<node>
-   <interface name="org.projectluma.Session1">
+   <interface name="org.projectSuno.Session1">
 @@ -312,8 +319,9 @@ function sameApp(a, b) {
      return norm(a) !== '' && norm(a) === norm(b);
  }
  
--export class LumaSession {
-+export class LumaSession extends Signals.EventEmitter {
+-export class SunoSession {
++export class SunoSession extends Signals.EventEmitter {
      constructor() {
 +        super();
          this._settings = null;
          try {
              this._settings = new Gio.Settings({schema_id: SCHEMA});
-@@ -483,9 +491,116 @@ export class LumaSession {
+@@ -483,9 +491,116 @@ export class SunoSession {
              windows,
              apps: [...apps.values()],
              continuedFrom: this._continuedFrom ?? null,
@@ -962,7 +962,7 @@ index abdcb46..eb8c9e8 100644
 +                }
 +            }
 +        } catch (e) {
-+            log(`lumaSession: no artwork from ${url}: ${e.message}`);
++            log(`SunoSession: no artwork from ${url}: ${e.message}`);
 +        }
 +        this._art = {url, data};
 +        return data;
@@ -970,9 +970,9 @@ index abdcb46..eb8c9e8 100644
 +
 +    _hasTvPresentation(app) {
 +        const info = app.get_app_info();
-+        if ((info?.get_string?.('X-Luma-TV') ?? '').trim().toLowerCase() === 'true')
++        if ((info?.get_string?.('X-Suno-TV') ?? '').trim().toLowerCase() === 'true')
 +            return true;
-+        // A Flatpak's export drops the X-Luma-TV keys: read its deployed file (tvModel.flatpakTv).
++        // A Flatpak's export drops the X-Suno-TV keys: read its deployed file (tvModel.flatpakTv).
 +        const flatpak = info?.get_string?.('X-Flatpak');
 +        if (!flatpak)
 +            return false;
@@ -987,11 +987,11 @@ index abdcb46..eb8c9e8 100644
 +            }
 +        };
 +        const found = flatpakTv(app.get_id(), flatpak, info.get_filename?.() ?? '', roots, read);
-+        return (found?.keys?.['X-Luma-TV'] ?? '').trim().toLowerCase() === 'true';
++        return (found?.keys?.['X-Suno-TV'] ?? '').trim().toLowerCase() === 'true';
 +    }
 +
 +    // On a TV: Continue's app starts with the item and where it was (the
-+    // restore API's 'continue' reason, state {'luma-continue-media': ...});
++    // restore API's 'continue' reason, state {'Suno-continue-media': ...});
 +    // an app that doesn't take it simply opens.
 +    _playOnTv(offer, fromStart) {
 +        const media = offer.media;
@@ -1000,18 +1000,18 @@ index abdcb46..eb8c9e8 100644
 +            fields.subtitle = new GLib.Variant('s', media.subtitle);
 +        fields.position = new GLib.Variant('u', fromStart ? 0 : Math.max(0, media.position ?? 0));
 +        this._pendingRestore.set(media.app.replace(/\.desktop$/, '').toLowerCase(), {reason: 'continue',
-+            state: new GLib.Variant('a{sv}', {'luma-continue-media': new GLib.Variant('a{sv}', fields)})});
++            state: new GLib.Variant('a{sv}', {'Suno-continue-media': new GLib.Variant('a{sv}', fields)})});
 +        Main.presentation?._tv?.launchApp(media.app);
 +        // Played: it doesn't come back; a newer session replaces it.
-+        Gio.DBus.session.call('org.projectluma.ConnectSync1', '/org/projectluma/ConnectSync1',
-+            'org.projectluma.ConnectSync1', 'DeclineContinue', new GLib.Variant('(s)', [offer.id]),
++        Gio.DBus.session.call('org.projectSuno.ConnectSync1', '/org/projectSuno/ConnectSync1',
++            'org.projectSuno.ConnectSync1', 'DeclineContinue', new GLib.Variant('(s)', [offer.id]),
 +            null, Gio.DBusCallFlags.NO_AUTO_START, 15000, null).catch(() => {});
 +    }
 +
      async snapshot(reason) {
          if (this._frozen)
              return null;
-@@ -682,13 +797,18 @@ export class LumaSession {
+@@ -682,13 +797,18 @@ export class SunoSession {
          this.restore(snapshot, 'restore');
      }
  
@@ -1032,7 +1032,7 @@ index abdcb46..eb8c9e8 100644
          // Over an existing session, a new workspace after the last one.
          let base = 0;
          if (busy) {
-@@ -697,7 +817,7 @@ export class LumaSession {
+@@ -697,7 +817,7 @@ export class SunoSession {
              if (last && last.list_windows().filter(isRestorable).length === 0)
                  base -= 1;
          }
@@ -1041,7 +1041,7 @@ index abdcb46..eb8c9e8 100644
          while (wm.get_n_workspaces() < needed)
              wm.append_new_workspace(false, global.get_current_time());
  
-@@ -709,7 +829,7 @@ export class LumaSession {
+@@ -709,7 +829,7 @@ export class SunoSession {
          const folded = new Set((snapshot.monitors ?? []).filter(m => !here.has(identity(m)) &&
              (snapshot.monitors ?? []).length > current.length).map(m => m.index));
          const restoring = {
@@ -1050,7 +1050,7 @@ index abdcb46..eb8c9e8 100644
              started: GLib.get_monotonic_time(),
              apps: new Map(),
              result: {mode, windows: slots.length, placed: 0, missing: [], late: [], failed: [], moved: []},
-@@ -722,8 +842,15 @@ export class LumaSession {
+@@ -722,8 +842,15 @@ export class SunoSession {
              this._continuedFrom = {device: snapshot.device, taken: snapshot.taken,
                  at: Math.floor(Date.now() / 1000)};
              this._banner ??= new ContinueBanner();
@@ -1068,7 +1068,7 @@ index abdcb46..eb8c9e8 100644
          }
          this._restoring = restoring;
  
-@@ -872,7 +999,9 @@ export class LumaSession {
+@@ -872,7 +999,9 @@ export class SunoSession {
          });
          const target = this._target(slot);
          slot.target = target;
@@ -1079,7 +1079,7 @@ index abdcb46..eb8c9e8 100644
              log(`${slot.app}: restored by its client`);
          } else if (!config) {
              this._placeShown(window, slot, target);
-@@ -900,9 +1029,9 @@ export class LumaSession {
+@@ -900,9 +1029,9 @@ export class SunoSession {
              else
                  window.change_workspace_by_index(restoring.base + slot.workspace, false);
          }
@@ -1091,7 +1091,7 @@ index abdcb46..eb8c9e8 100644
              window.minimize();
          const late = restoring === this._late;
          if (late) {
-@@ -916,7 +1045,7 @@ export class LumaSession {
+@@ -916,7 +1045,7 @@ export class SunoSession {
              }, this);
          }
          log(`${slot.app}: window ${slot.index} placed${target.exact ? ' exactly' : ''}`);
@@ -1100,7 +1100,7 @@ index abdcb46..eb8c9e8 100644
              this._banner?.placed(slot.app);
          this._openMoreWindows(slot);
          this._checkRestoreDone();
-@@ -997,7 +1126,7 @@ export class LumaSession {
+@@ -997,7 +1126,7 @@ export class SunoSession {
          // A fresh server time: a restore runs from a timeout, with no event
          // whose time would let the activation through.
          const time = global.display.get_current_time_roundtrip();
@@ -1109,7 +1109,7 @@ index abdcb46..eb8c9e8 100644
              wm.get_workspace_by_index(active).activate(time);
          const focus = slots.find(s => s.focus && s.window && !s.window.minimized);
          if (focus) {
-@@ -1029,12 +1158,17 @@ export class LumaSession {
+@@ -1029,12 +1158,17 @@ export class SunoSession {
                  return GLib.SOURCE_REMOVE;
              });
          }
@@ -1130,7 +1130,7 @@ index abdcb46..eb8c9e8 100644
      }
  
      // Restored apps present their windows as they come up and can take the
-@@ -1091,6 +1225,56 @@ export class LumaSession {
+@@ -1091,6 +1225,56 @@ export class SunoSession {
          });
      }
  
@@ -1187,7 +1187,7 @@ index abdcb46..eb8c9e8 100644
      // Stop: nothing more starts; what is open stays.
      stopRestore() {
          const restoring = this._restoring;
-@@ -1123,6 +1307,12 @@ export class LumaSession {
+@@ -1123,6 +1307,12 @@ export class SunoSession {
          }
          if (!offer || Main.sessionMode.isLocked)
              return;
@@ -1200,9 +1200,9 @@ index abdcb46..eb8c9e8 100644
          const own = readJson(GLib.build_filenamev([this._dir, 'current.json']));
          const continuedHere = offer.continuedFrom?.device === this._device;
          if (!continuedHere && own?.taken && offer.taken <= own.taken)
-@@ -1146,6 +1336,33 @@ export class LumaSession {
-         const call = (method, args, type = null) => Gio.DBus.session.call('org.projectluma.ConnectSync1',
-             '/org/projectluma/ConnectSync1', 'org.projectluma.ConnectSync1', method, args,
+@@ -1146,6 +1336,33 @@ export class SunoSession {
+         const call = (method, args, type = null) => Gio.DBus.session.call('org.projectSuno.ConnectSync1',
+             '/org/projectSuno/ConnectSync1', 'org.projectSuno.ConnectSync1', method, args,
              type ? new GLib.VariantType(type) : null, Gio.DBusCallFlags.NO_AUTO_START, 120000, null);
 +        const notNow = () => {
 +            this._offering = null;
@@ -1234,11 +1234,11 @@ index abdcb46..eb8c9e8 100644
          this._banner.offer({
              device: offer.name,
              windows: offer.windows,
-diff --git a/js/ui/lumaTvContinue.js b/js/ui/lumaTvContinue.js
+diff --git a/js/ui/SunoTvContinue.js b/js/ui/SunoTvContinue.js
 new file mode 100644
 index 0000000..238b5a6
 --- /dev/null
-+++ b/js/ui/lumaTvContinue.js
++++ b/js/ui/SunoTvContinue.js
 @@ -0,0 +1,304 @@
 +// SPDX-License-Identifier: GPL-2.0-or-later
 +// Continue on a TV (ADR-055 §6; design-center mockups/continue, target
@@ -1259,7 +1259,7 @@ index 0000000..238b5a6
 +import Pango from 'gi://Pango';
 +import St from 'gi://St';
 +
-+// The hero at 1080 (mockups/luma-tv.html .home .hero), in TV units.
++// The hero at 1080 (mockups/Suno-tv.html .home .hero), in TV units.
 +const HERO = {
 +    top: 244, width: 960,
 +    chip_gap: 16, chip_height: 40, chip_padding_x: 14, chip_radius: 12, chip_size: 22, chip_weight: 650,
@@ -1353,8 +1353,8 @@ index 0000000..238b5a6
 +        this._progress.add_child(this._left);
 +        this._row = new St.BoxLayout({});
 +        this.buttons = [
-+            this._button('lumaui-play-symbolic', 'Continue', false),
-+            this._button('lumaui-rotate-ccw-symbolic', 'Start over', true),
++            this._button('SunoUI-play-symbolic', 'Continue', false),
++            this._button('SunoUI-rotate-ccw-symbolic', 'Start over', true),
 +        ];
 +        for (const part of [this._chips, this._title, this._subtitle, this._progress, this._row])
 +            this.actor.add_child(part);
@@ -1527,7 +1527,7 @@ index 0000000..238b5a6
 +            const ink = focused ? m('key_ink') : m('ink');
 +            button.style = `height: ${px(HERO.button_height)}; padding: 0 ${px(HERO.button_padding_x)};
 +                border-radius: ${px(HERO.button_radius)};` +
-+                // The edge is a ring outside the box (lumaui-tv.css --key-edge),
++                // The edge is a ring outside the box (SunoUI-tv.css --key-edge),
 +                // so focus doesn't change the button's size; at rest the chip
 +                // has no edge, only its drop.
 +                (focused
@@ -1553,18 +1553,18 @@ index 0ce8970..4c28c6d 100644
                  this._syncInlineReply();
                  this._syncActionButtons();
 +                // The Shell may drop or change its badge on a card that changes in place.
-+                const badge = notification.lumaShellBadge ?? null;
-+                if (badge !== this._lumaShellBadge) {
-+                    this._lumaShellBadge = badge;
++                const badge = notification.SunoShellBadge ?? null;
++                if (badge !== this._SunoShellBadge) {
++                    this._SunoShellBadge = badge;
 +                    this._syncTile();
 +                }
              },
              'destroy', () => {
                  this.notification = null;
 @@ -1200,14 +1206,30 @@ class NotificationMessage extends Message {
-             this._actionBin.add_style_class_name('luma-notification-actions-end');
+             this._actionBin.add_style_class_name('Suno-notification-actions-end');
          else
-             this._actionBin.remove_style_class_name('luma-notification-actions-end');
+             this._actionBin.remove_style_class_name('Suno-notification-actions-end');
 -        if (actions.length === 0)
 +        // No buttons (restoring): the empty row takes no room in the card.
 +        if (this._buttonBox)
@@ -1573,13 +1573,13 @@ index 0ce8970..4c28c6d 100644
 +        if (actions.length === 0) {
 +            if (empty && this._actionBin.visible) {
 +                this._actionBin.hide();
-+                this._lumaHidActions = true;
++                this._SunoHidActions = true;
 +            }
              return;
 +        }
-+        if (this._lumaHidActions) {
++        if (this._SunoHidActions) {
 +            this._actionBin.show();
-+            this._lumaHidActions = false;
++            this._SunoHidActions = false;
 +        }
          this._ensureActionBox();
          if (!this._buttonBox) {

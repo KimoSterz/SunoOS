@@ -1,0 +1,163 @@
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+ "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<!-- Connect Sync for apps (ADR-057 §3.1), the implementation side: served by Suno-connect-syncd at
+     /org/projectSuno/ConnectSync1/Apps on org.projectSuno.ConnectSync1.
+
+     It answers only the current owner of org.freedesktop.portal.Desktop, and only when that peer runs in
+     xdg-desktop-portal.service: apps reach it through org.projectSuno.portal.Sync, never directly. Every
+     method takes the caller as the frontend named it: {app_id: s, kind: s ("flatpak"), pidfd: h, sender: s};
+     the service checks the pidfd itself. The rest of each method is org.projectSuno.portal.Sync's.
+
+     Signals name the app connection they are for (destination); the frontend sends them to that
+     connection only. Errors are org.projectSuno.portal.Sync.Error.{Invalid, TooLarge, BadDescriptor,
+     TimedOut, NotFound, Refused, Quota, RateLimited, Failed, NotSupported}; Quota and RateLimited
+     messages start with the limit's name and a colon. -->
+<node>
+  <interface name="org.projectSuno.impl.portal.Sync">
+    <method name="GetStatus">
+      <arg type="a{sv}" name="caller" direction="in"/>
+      <arg type="a{sv}" name="status" direction="out"/>
+    </method>
+    <method name="Subscribe">
+      <arg type="a{sv}" name="caller" direction="in"/>
+      <arg type="as" name="zones" direction="in"/>
+    </method>
+    <method name="Save">
+      <arg type="a{sv}" name="caller" direction="in"/>
+      <arg type="s" name="zone" direction="in"/>
+      <arg type="a(says)" name="records" direction="in"/>
+      <arg type="a{sv}" name="options" direction="in"/>
+      <arg type="aa{sv}" name="results" direction="out"/>
+    </method>
+    <method name="Delete">
+      <arg type="a{sv}" name="caller" direction="in"/>
+      <arg type="s" name="zone" direction="in"/>
+      <arg type="a(ss)" name="records" direction="in"/>
+      <arg type="a{sv}" name="options" direction="in"/>
+      <arg type="aa{sv}" name="results" direction="out"/>
+    </method>
+    <method name="FetchChanges">
+      <arg type="a{sv}" name="caller" direction="in"/>
+      <arg type="s" name="zone" direction="in"/>
+      <arg type="s" name="token" direction="in"/>
+      <arg type="a{sv}" name="options" direction="in"/>
+      <arg type="aa{sv}" name="records" direction="out"/>
+      <arg type="s" name="next_token" direction="out"/>
+      <arg type="b" name="more" direction="out"/>
+    </method>
+    <method name="Get">
+      <arg type="a{sv}" name="caller" direction="in"/>
+      <arg type="s" name="zone" direction="in"/>
+      <arg type="s" name="name" direction="in"/>
+      <arg type="b" name="found" direction="out"/>
+      <arg type="a{sv}" name="record" direction="out"/>
+    </method>
+    <method name="List">
+      <arg type="a{sv}" name="caller" direction="in"/>
+      <arg type="s" name="zone" direction="in"/>
+      <arg type="s" name="after" direction="in"/>
+      <arg type="u" name="limit" direction="in"/>
+      <arg type="aa{sv}" name="records" direction="out"/>
+      <arg type="s" name="next" direction="out"/>
+    </method>
+    <method name="PutAsset">
+      <arg type="a{sv}" name="caller" direction="in"/>
+      <arg type="s" name="zone" direction="in"/>
+      <arg type="s" name="record" direction="in"/>
+      <arg type="s" name="name" direction="in"/>
+      <arg type="h" name="fd" direction="in"/>
+      <arg type="s" name="base" direction="in"/>
+      <arg type="a{sv}" name="options" direction="in"/>
+      <arg type="a{sv}" name="result" direction="out"/>
+    </method>
+    <method name="RemoveAsset">
+      <arg type="a{sv}" name="caller" direction="in"/>
+      <arg type="s" name="zone" direction="in"/>
+      <arg type="s" name="record" direction="in"/>
+      <arg type="s" name="name" direction="in"/>
+      <arg type="s" name="base" direction="in"/>
+      <arg type="a{sv}" name="result" direction="out"/>
+    </method>
+    <method name="OpenAsset">
+      <arg type="a{sv}" name="caller" direction="in"/>
+      <arg type="s" name="zone" direction="in"/>
+      <arg type="s" name="record" direction="in"/>
+      <arg type="s" name="name" direction="in"/>
+      <arg type="s" name="version" direction="in"/>
+      <arg type="s" name="state" direction="out"/>
+      <arg type="a{sv}" name="info" direction="out"/>
+    </method>
+    <method name="RequestAsset">
+      <arg type="a{sv}" name="caller" direction="in"/>
+      <arg type="s" name="zone" direction="in"/>
+      <arg type="s" name="record" direction="in"/>
+      <arg type="s" name="name" direction="in"/>
+      <arg type="s" name="state" direction="out"/>
+      <arg type="a{sv}" name="info" direction="out"/>
+    </method>
+    <method name="PinAsset">
+      <arg type="a{sv}" name="caller" direction="in"/>
+      <arg type="s" name="zone" direction="in"/>
+      <arg type="s" name="record" direction="in"/>
+      <arg type="s" name="name" direction="in"/>
+      <arg type="b" name="pinned" direction="in"/>
+      <arg type="s" name="state" direction="out"/>
+      <arg type="a{sv}" name="info" direction="out"/>
+    </method>
+    <method name="EvictAsset">
+      <arg type="a{sv}" name="caller" direction="in"/>
+      <arg type="s" name="zone" direction="in"/>
+      <arg type="s" name="record" direction="in"/>
+      <arg type="s" name="name" direction="in"/>
+      <arg type="s" name="state" direction="out"/>
+      <arg type="a{sv}" name="info" direction="out"/>
+    </method>
+    <method name="Lease">
+      <arg type="a{sv}" name="caller" direction="in"/>
+      <arg type="s" name="zone" direction="in"/>
+      <arg type="s" name="record" direction="in"/>
+      <arg type="u" name="seconds" direction="in"/>
+      <arg type="b" name="take_over" direction="in"/>
+      <arg type="a{sv}" name="lease" direction="out"/>
+    </method>
+    <method name="Release">
+      <arg type="a{sv}" name="caller" direction="in"/>
+      <arg type="s" name="zone" direction="in"/>
+      <arg type="s" name="record" direction="in"/>
+      <arg type="a{sv}" name="lease" direction="out"/>
+    </method>
+    <method name="GetLease">
+      <arg type="a{sv}" name="caller" direction="in"/>
+      <arg type="s" name="zone" direction="in"/>
+      <arg type="s" name="record" direction="in"/>
+      <arg type="a{sv}" name="lease" direction="out"/>
+    </method>
+    <method name="ResolveSiblings">
+      <arg type="a{sv}" name="caller" direction="in"/>
+      <arg type="s" name="zone" direction="in"/>
+      <arg type="s" name="record" direction="in"/>
+      <arg type="s" name="keep" direction="in"/>
+      <arg type="a{sv}" name="result" direction="out"/>
+    </method>
+    <method name="DeleteZone">
+      <arg type="a{sv}" name="caller" direction="in"/>
+      <arg type="s" name="zone" direction="in"/>
+    </method>
+    <signal name="Changed">
+      <arg type="s" name="destination"/>
+      <arg type="s" name="zone"/>
+      <arg type="a{sv}" name="details"/>
+    </signal>
+    <signal name="AssetChanged">
+      <arg type="s" name="destination"/>
+      <arg type="s" name="zone"/>
+      <arg type="s" name="record"/>
+      <arg type="s" name="name"/>
+      <arg type="a{sv}" name="progress"/>
+    </signal>
+    <signal name="StatusChanged">
+      <arg type="s" name="destination"/>
+      <arg type="a{sv}" name="status"/>
+    </signal>
+  </interface>
+</node>

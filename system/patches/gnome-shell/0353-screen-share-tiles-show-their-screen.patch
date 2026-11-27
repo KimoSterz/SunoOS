@@ -1,5 +1,5 @@
-From: Project Luma <builds@project-luma.local>
-Subject: [PATCH] lumaShare: a screen tile shows exactly its screen
+From: Project Suno <builds@project-suno.local>
+Subject: [PATCH] SunoShare: a screen tile shows exactly its screen
 
 Each screen tile cloned global.window_group and was meant to offset and
 scale it onto its monitor, but the clone was allocated at the stage's
@@ -21,10 +21,10 @@ a second for windows moving between monitors. A tile takes the display
 whose layout index is its monitor's, and shows that display's current
 mode in pixels (listDisplays() now returns it).
 
-diff --git a/js/ui/lumaCast.js b/js/ui/lumaCast.js
+diff --git a/js/ui/SunoCast.js b/js/ui/SunoCast.js
 index f7de746..fc6233b 100644
---- a/js/ui/lumaCast.js
-+++ b/js/ui/lumaCast.js
+--- a/js/ui/SunoCast.js
++++ b/js/ui/SunoCast.js
 @@ -179,13 +179,16 @@ export async function listDisplays() {
                  inLayout.add(connector);
          }
@@ -43,10 +43,10 @@ index f7de746..fc6233b 100644
                  };
              })
              .filter(d => inLayout.has(d.connector) && d.index >= 0)
-diff --git a/js/ui/lumaShare.js b/js/ui/lumaShare.js
+diff --git a/js/ui/SunoShare.js b/js/ui/SunoShare.js
 index 22f02ac..8d4d664 100644
---- a/js/ui/lumaShare.js
-+++ b/js/ui/lumaShare.js
+--- a/js/ui/SunoShare.js
++++ b/js/ui/SunoShare.js
 @@ -313,10 +313,19 @@ const PreviewTile = GObject.registerClass({
      }
  });

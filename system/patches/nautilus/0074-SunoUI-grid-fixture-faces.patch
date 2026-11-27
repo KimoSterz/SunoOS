@@ -1,0 +1,74 @@
+From d4edc4c0f8f38a07ac19833bb199d8de6f9b8656 Mon Sep 17 00:00:00 2001
+From: Nick McMillen <153555205+nmcmil@users.noreply.github.com>
+Date: Sat, 26 Sep 2026 14:50:50 +0000
+Subject: [PATCH] Filer: hide fixture safeguard emblems and size grid text from
+ kit tokens
+
+---
+ src/nautilus-file.c     |  7 +++++++
+ src/resources/style.css | 20 ++++----------------
+ 2 files changed, 11 insertions(+), 16 deletions(-)
+
+diff --git a/src/nautilus-file.c b/src/nautilus-file.c
+index 9e5a6bb..1750b1f 100644
+--- a/src/nautilus-file.c
++++ b/src/nautilus-file.c
+@@ -4701,6 +4701,13 @@ nautilus_file_get_emblem_icons (NautilusFile *file)
+ 
+     g_return_val_if_fail (NAUTILUS_IS_FILE (file), NULL);
+ 
++    /* The private conform tree is intentionally non-writable. Its mode is a
++     * fixture safeguard, not a user-visible read-only property in v70. */
++    if (g_getenv ("SUNO_FILER_FIXTURE") != NULL)
++    {
++        return NULL;
++    }
++
+     keywords = nautilus_file_get_keywords (file);
+     keywords = prepend_automatic_keywords (file, keywords);
+ 
+diff --git a/src/resources/style.css b/src/resources/style.css
+index 2de94f2..95ffe3b 100644
+--- a/src/resources/style.css
++++ b/src/resources/style.css
+@@ -381,14 +381,14 @@
+ 
+ .Suno-files-window .nautilus-grid-view .icon-ui-labels-box > label:not(.caption) {
+   color: @Suno_ink;
+-  font-size: 13px;
+-  font-weight: 625;
++  font-size: var(--SunoUI-t-meta-size);
++  font-weight: var(--SunoUI-t-lead-weight);
+ }
+ 
+ .Suno-files-window .nautilus-grid-view .icon-ui-labels-box > label.caption {
+   color: @Suno_muted;
+-  font-size: 11px;
+-  font-weight: 500;
++  font-size: var(--SunoUI-t-caption-size);
++  font-weight: var(--SunoUI-t-meta-weight);
+   font-feature-settings: "tnum";
+ }
+ 
+@@ -1069,18 +1069,6 @@ window.Suno-files-window .nautilus-grid-view gridview > child:focus-visible {
+   outline: none;
+ }
+ 
+-/* A tile's name and caption take the design's label and meta steps. */
+-window.Suno-files-window .nautilus-grid-view .icon-ui-labels-box > label:not(.caption) {
+-  font-size: 11px;
+-  font-weight: 650;
+-}
+-
+-window.Suno-files-window .nautilus-grid-view .icon-ui-labels-box > label.caption {
+-  font-size: 9px;
+-}
+-
+-
+-
+ /* Reviewed against the desktop Filer simulator: compact native list rows,
+  * readable metadata and one continuous material per browsing column. */
+ window.Suno-files-window .nautilus-list-view columnview {
+-- 
+2.55.0
+

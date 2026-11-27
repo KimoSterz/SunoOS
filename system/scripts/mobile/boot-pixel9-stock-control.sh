@@ -28,8 +28,8 @@ die() {
   exit 1
 }
 
-[ "${LUMA_PIXEL9_STOCK_BOOT_CONTROL_AUTHORIZED:-0}" = 1 ] || \
-  die 'one-shot stock-control authorization is absent; set LUMA_PIXEL9_STOCK_BOOT_CONTROL_AUTHORIZED=1'
+[ "${SUNO_PIXEL9_STOCK_BOOT_CONTROL_AUTHORIZED:-0}" = 1 ] || \
+  die 'one-shot stock-control authorization is absent; set SUNO_PIXEL9_STOCK_BOOT_CONTROL_AUTHORIZED=1'
 [ ! -e "$evidence_dir" ] || die "refusing to replace evidence: $evidence_dir"
 for tool in awk grep mkdir sed sha256sum tail tr wc "$fastboot_bin"; do
   command -v "$tool" >/dev/null 2>&1 || die "missing stock-control tool: $tool"
@@ -123,7 +123,7 @@ max_download_dec=$((max_download))
 
 mkdir -p "$evidence_dir"
 {
-  printf 'LUMA_PIXEL9_STOCK_BOOT_CONTROL_ATTEMPT_VERSION=1\n'
+  printf 'SUNO_PIXEL9_STOCK_BOOT_CONTROL_ATTEMPT_VERSION=1\n'
   printf 'DEVICE=tokay\n'
   printf 'OBSERVED_BUILD_ID=%s\n' "$PIXEL9_OBSERVED_BUILD_ID"
   printf 'STOCK_BOOT_BYTES=%s\n' "$stock_boot_bytes"
@@ -142,7 +142,7 @@ printf 'Requesting RAM-only Tokay stock control boot of SHA-256 %s\n' "$stock_bo
 "$fastboot_bin" boot "$stock_boot"
 
 {
-  printf 'LUMA_PIXEL9_STOCK_BOOT_CONTROL_COMMAND_VERSION=1\n'
+  printf 'SUNO_PIXEL9_STOCK_BOOT_CONTROL_COMMAND_VERSION=1\n'
   printf 'DEVICE=tokay\n'
   printf 'STOCK_BOOT_SHA256=%s\n' "$stock_boot_sha"
   printf 'TEMPORARY_BOOT_COMMAND_ACCEPTED=true\n'

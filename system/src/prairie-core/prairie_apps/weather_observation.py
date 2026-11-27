@@ -17,7 +17,7 @@ from urllib.request import Request, urlopen
 from .weather_model import Place, parse_time
 
 NWS_API = 'https://api.weather.gov'
-NWS_AGENT = 'ProjectLuma-Weather/1.0 (+https://project-luma.local/contact)'
+NWS_AGENT = 'projectSuno-Weather/1.0 (+https://project-luma.local/contact)'
 MAX_AGE_SECONDS = 90 * 60
 NEARBY_KM = 30
 

@@ -38,8 +38,8 @@ enum {
 #define HANDLE_CAPACITY 512
 #define MAC_CAPACITY 64
 #define GATEKEEPER_UID 100000
-#define CREDENTIAL_PATH "/data/luma-state/credential.handle"
-#define CREDENTIAL_TEMP "/data/luma-state/.credential.handle.new"
+#define CREDENTIAL_PATH "/data/Suno-state/credential.handle"
+#define CREDENTIAL_TEMP "/data/Suno-state/.credential.handle.new"
 
 typedef void *(*AIBinder_Class_onCreate)(void *args);
 typedef void (*AIBinder_Class_onDestroy)(void *user_data);
@@ -584,7 +584,7 @@ __attribute__((constructor)) static void run_enrollment(void) {
     clear_bytes(pin, sizeof(pin));
     clear_bytes(&credential, sizeof(credential));
     clear_bytes(&hat, sizeof(hat));
-#ifdef LUMA_AUTHENTICATE_ONLY
+#ifdef SUNO_AUTHENTICATE_ONLY
     EMIT("event=fp6_stock_authentication_client_start raw_images=0\n");
 #else
     EMIT("event=fp6_stock_enrollment_client_start raw_images=0\n");
@@ -646,7 +646,7 @@ __attribute__((constructor)) static void run_enrollment(void) {
     }
     AParcel_delete(out);
     out = NULL;
-#ifdef LUMA_AUTHENTICATE_ONLY
+#ifdef SUNO_AUTHENTICATE_ONLY
     enumeration_done = 0;
     enumeration_count = 0;
     rc = AIBinder_prepareTransaction(session, &in);
@@ -662,7 +662,7 @@ __attribute__((constructor)) static void run_enrollment(void) {
     for (i = 0; i < 10 && !enumeration_done; ++i) sleep(1);
     if (!enumeration_done || enumeration_count == 0) {
         EMIT("event=fp6_stock_authentication_fail reason=no_restored_templates\n");
-#ifdef LUMA_PAUSE_ON_EMPTY_ENUMERATION
+#ifdef SUNO_PAUSE_ON_EMPTY_ENUMERATION
         EMIT("event=fp6_empty_enumeration_diagnostic_hold seconds=300\n");
         sleep(300);
 #endif
@@ -763,11 +763,11 @@ __attribute__((constructor)) static void run_enrollment(void) {
         _exit(53);
     }
     EMIT("event=fp6_stock_enrollment_pass template=secure_match_on_chip raw_images=0\n");
-#ifdef LUMA_PAUSE_AFTER_ENROLLMENT
+#ifdef SUNO_PAUSE_AFTER_ENROLLMENT
     EMIT("event=fp6_post_enrollment_persistence_diagnostic_hold seconds=300\n");
     sleep(300);
 #endif
-#ifdef LUMA_ENROLL_THEN_AUTHENTICATE
+#ifdef SUNO_ENROLL_THEN_AUTHENTICATE
     authentication_done = 0;
     authentication_error = 0;
     rc = AIBinder_prepareTransaction(session, &in);

@@ -1,4 +1,4 @@
-From: Project Luma <project-luma@local>
+From: Project Suno <project-suno@local>
 Subject: [PATCH] simple: ipa: make the maximum exposure step tunable
 
 The software ISP updates statistics at a deliberately sparse cadence on the

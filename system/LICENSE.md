@@ -1,12 +1,12 @@
-# Project Luma licensing policy
+# Project Suno licensing policy
 
-Unless a file states otherwise, original material authored specifically for Project Luma is offered under the following licenses:
+Unless a file states otherwise, original material authored specifically for Project Suno is offered under the following licenses:
 
 - **Software source code, build definitions, configuration, schemas, and code samples:** [Apache License 2.0](https://spdx.org/licenses/Apache-2.0.html), SPDX identifier `Apache-2.0`.
 - **Documentation and technical specifications:** [Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/legalcode), SPDX identifier `CC-BY-4.0`.
 - **Original visual, audio, and other media assets:** [Creative Commons Attribution-ShareAlike 4.0 International](https://creativecommons.org/licenses/by-sa/4.0/legalcode), SPDX identifier `CC-BY-SA-4.0`.
 
-Copyright in original Project Luma material is held by its respective contributors.
+Copyright in original Project Suno material is held by its respective contributors.
 
 ## Exceptions and upstream material
 
@@ -16,12 +16,12 @@ Every exception must carry an SPDX license expression in the file or in an adjac
 
 ## Trademarks
 
-Copyright licenses do not grant rights to Project Luma, Fedora, GNOME, or other names, logos, or marks. A separate trademark policy will be required before public branding or distribution.
+Copyright licenses do not grant rights to Project Suno, Fedora, GNOME, or other names, logos, or marks. A separate trademark policy will be required before public branding or distribution.
 
 ## Public source baseline
 
 Canonical license and exception texts are provided in `LICENSES/`. Component license files, source headers, upstream patch notices and adjacent provenance remain controlling for third-party material. The third-party source register records observed licenses and origins; package-level license expressions can include externally fetched dependencies and are not blanket grants for every file.
 
-A `LicenseRef` marked pending is not a grant of redistribution rights. Preserve that qualification and seek clarification before reusing the affected artwork or external artifact. The defaults above apply to original Luma material only; they do not override an explicit exception or third-party copyright.
+A `LicenseRef` marked pending is not a grant of redistribution rights. Preserve that qualification and seek clarification before reusing the affected artwork or external artifact. The defaults above apply to original Suno material only; they do not override an explicit exception or third-party copyright.
 
 The rationale and contribution policy are recorded in [ADR-005](docs/decisions/005-licensing-and-contributions.md).

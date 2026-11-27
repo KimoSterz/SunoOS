@@ -54,13 +54,13 @@ find "$root" -exec touch -h -d "@$PIXEL9_DIAGNOSTIC_SOURCE_DATE_EPOCH" {} +
 ) >"$archive"
 
 cpio -i --quiet --to-stdout init <"$archive" |
-	grep -Fq 'LUMA_PIXEL9_DIAGNOSTIC_REPORT_VERSION=2' ||
+	grep -Fq 'SUNO_PIXEL9_DIAGNOSTIC_REPORT_VERSION=2' ||
 	die 'ECM diagnostic report marker is absent'
 cpio -i --quiet --to-stdout init <"$archive" |
 	grep -Fq 'USB_ECM_HTTP_READY=true' || die 'ECM transport marker is absent'
 
 {
-	printf 'LUMA_PIXEL9_DIAGNOSTIC_ECM_INITRAMFS_VERSION=1\n'
+	printf 'SUNO_PIXEL9_DIAGNOSTIC_ECM_INITRAMFS_VERSION=1\n'
 	printf 'SCOPE=offline-no-shell-acm-ecm-http-initramfs\n'
 	printf 'SOURCE_DATE_EPOCH=%s\n' "$PIXEL9_DIAGNOSTIC_SOURCE_DATE_EPOCH"
 	printf 'BUSYBOX_BYTES=%s\n' "$PIXEL9_DIAGNOSTIC_BUSYBOX_BYTES"

@@ -1,0 +1,4 @@
+#!/usr/bin/python3
+from Suno_installer.app_permissions import main
+
+raise SystemExit(main())

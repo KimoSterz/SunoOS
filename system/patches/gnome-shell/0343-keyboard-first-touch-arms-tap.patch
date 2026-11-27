@@ -1,4 +1,4 @@
-From: Project Luma <builds@project-luma.local>
+From: Project Suno <builds@project-suno.local>
 Subject: [PATCH] keyboard: the first touch arms a tap-focused field too
 
 0342 records the window under the last touch from the keyboard. The

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 // Search's outside-press dismissal and the on-screen keyboard, and the
 // words and esc chip for each presentation.
-// Run: gjs -m search-keyboard-policy.js js/ui/lumaSearch.js
+// Run: gjs -m search-keyboard-policy.js js/ui/SunoSearch.js
 // (node search-keyboard-policy.js ... works too). The dialog's
 // captured-event handler is taken from the source and run against stubs.
 const gjs = typeof globalThis.ARGV !== 'undefined';
@@ -72,7 +72,7 @@ assert(motion.closed === 0 && motion.routed === 0 && motion.result === Clutter.E
 
 function methodBody(name) {
     const at = source.indexOf(`    ${name}() {`);
-    assert(at >= 0, `lumaSearch.js has ${name}()`);
+    assert(at >= 0, `SunoSearch.js has ${name}()`);
     const brace = source.indexOf('{', at);
     let level = 0, stop = brace;
     for (; stop < source.length; stop++) {
@@ -87,7 +87,7 @@ const syncFormFactor = methodBody('_syncFormFactor');
 function words(mode, deviceClass = '') {
     const dialog = {_entry: {}, _introTitle: {}, _closeButton: {}};
     const MainStub = {presentation: mode === null ? null : {mode}};
-    const GLibStub = {getenv: name => (name === 'LUMA_DEVICE_CLASS' ? deviceClass : null)};
+    const GLibStub = {getenv: name => (name === 'SUNO_DEVICE_CLASS' ? deviceClass : null)};
     new Function('Main', 'GLib', '_', syncFormFactor).call(dialog, MainStub, GLibStub, text => text);
     return {hint: dialog._entry.hint_text, a11y: dialog.accessible_name,
         title: dialog._introTitle.text, esc: dialog._closeButton.visible};

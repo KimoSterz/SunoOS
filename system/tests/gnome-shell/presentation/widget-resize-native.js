@@ -4,10 +4,10 @@ import Clutter from 'gi://Clutter';
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import St from 'gi://St';
-import {findItem} from '../../../src/luma-shell-presentation/grid.js';
+import {findItem} from '../../../src/Suno-shell-presentation/grid.js';
 
 export async function testWidgetResize(p, check, sleep, shot = async () => {}) {
-    const settings = new Gio.Settings({schema_id: 'org.project_luma.shell-state'});
+    const settings = new Gio.Settings({schema_id: 'org.projectSuno.shell-state'});
     const interfaceSettings = new Gio.Settings({schema_id: 'org.gnome.desktop.interface'});
     const saved = settings.get_string('home-layouts');
     const animations = interfaceSettings.get_user_value('enable-animations');

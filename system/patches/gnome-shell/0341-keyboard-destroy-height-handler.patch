@@ -1,4 +1,4 @@
-From: Project Luma <builds@project-luma.local>
+From: Project Suno <builds@project-suno.local>
 Subject: [PATCH] keyboard: a destroyed keyboard drops its height handler
 
 The keyboard follows the keyboard box's height once it has shown, and

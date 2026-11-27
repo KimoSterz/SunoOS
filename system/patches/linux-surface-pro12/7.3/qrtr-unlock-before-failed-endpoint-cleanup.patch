@@ -1,4 +1,4 @@
-From: Luma device integration <noreply@simplyluma.com>
+From: Suno device integration <noreply@simplyluma.com>
 Subject: [PATCH] net: qrtr: smd: release send lock before failed endpoint cleanup
 
 With the scoped opening/closing race fix, a failed rpmsg endpoint open

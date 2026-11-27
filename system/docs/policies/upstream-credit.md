@@ -1,9 +1,9 @@
 # Upstream credit policy
 
-Project Luma is a downstream product built from open-source work. Attribution
+Project Suno is a downstream product built from open-source work. Attribution
 is product behavior, not a footnote.
 
-For every third-party component Luma distributes or modifies, the component
+For every third-party component Suno distributes or modifies, the component
 ledger records its upstream project and link, exact source or package revision,
 license expression, integration method, local patch set, displayed name, and
 update policy.
@@ -13,7 +13,7 @@ update policy.
 - Unmodified components keep their upstream names wherever practical.
 - A renamed or substantially reworked application must include an About entry
   that clearly names and links the upstream project it is based on.
-- Luma must not imply authorship of unmodified upstream work.
+- Suno must not imply authorship of unmodified upstream work.
 - Credits must remain easy to discover after rebranding, not buried only in a
   source archive.
 

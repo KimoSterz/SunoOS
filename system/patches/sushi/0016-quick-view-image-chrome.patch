@@ -2,9 +2,9 @@ diff -ruN a/src/ui/mainWindow.js b/src/ui/mainWindow.js
 --- a/src/ui/mainWindow.js	2026-09-11 12:02:48
 +++ b/src/ui/mainWindow.js	2026-09-11 12:05:30
 @@ -123,7 +123,8 @@
-         this._titlebar.get_style_context().add_class('luma-no-automatic-identity');
-         this._titlebar.get_style_context().add_class('luma-no-command-row');
-         this._titlebar.get_style_context().add_class('luma-preview-titlebar');
+         this._titlebar.get_style_context().add_class('Suno-no-automatic-identity');
+         this._titlebar.get_style_context().add_class('Suno-no-command-row');
+         this._titlebar.get_style_context().add_class('Suno-preview-titlebar');
 -        const identity = new Gtk.Box({spacing: 10, valign: Gtk.Align.CENTER});
 +        const titleRow = new Gtk.Box({spacing: 10, hexpand: true});
 +        const identity = new Gtk.Box({spacing: 10, valign: Gtk.Align.CENTER, hexpand: true});
@@ -13,7 +13,7 @@ diff -ruN a/src/ui/mainWindow.js b/src/ui/mainWindow.js
          const labels = new Gtk.Box({orientation: Gtk.Orientation.VERTICAL, spacing: 0});
 @@ -132,25 +133,27 @@
          this._fileFacts = new Gtk.Label({xalign: 0, ellipsize: 3, max_width_chars: 42});
-         this._fileFacts.get_style_context().add_class('luma-preview-facts');
+         this._fileFacts.get_style_context().add_class('Suno-preview-facts');
          labels.add(this._fileName); labels.add(this._fileFacts); identity.add(labels);
 -        this._titlebar.pack_start(identity);
 +        titleRow.pack_start(identity, true, true, 0);
@@ -37,7 +37,7 @@ diff -ruN a/src/ui/mainWindow.js b/src/ui/mainWindow.js
          this.set_titlebar(this._titlebar);
  
          this._openButton = new Gtk.Button({valign: Gtk.Align.CENTER});
-         this._openButton.get_style_context().add_class('luma-preview-open');
+         this._openButton.get_style_context().add_class('Suno-preview-open');
          this._openButton.connect('clicked', this._onFileOpenClicked.bind(this));
 -        this._titlebar.pack_end(this._openButton);
 +        this._titleActions.pack_start(this._openButton, false, false, 0);
@@ -50,8 +50,8 @@ diff -ruN a/src/ui/mainWindow.js b/src/ui/mainWindow.js
          this._embed = new Embed();
 -        const pane = new Gtk.Frame({shadow_type: Gtk.ShadowType.NONE});
 +        const pane = this._pane = new Gtk.Frame({shadow_type: Gtk.ShadowType.NONE});
-         pane.get_style_context().add_class('luma-preview-pane');
-         pane.get_style_context().add_class('luma-clip-children');
+         pane.get_style_context().add_class('Suno-preview-pane');
+         pane.get_style_context().add_class('Suno-clip-children');
          pane.add(this._embed);
          eventBox.add(pane);
  
@@ -107,9 +107,9 @@ diff -ruN a/src/ui/mainWindow.js b/src/ui/mainWindow.js
 +        const paneStyle = this._pane.get_style_context();
 +        if (this._fileInfo?.get_content_type().startsWith('image/') ||
 +            this._fileInfo?.get_content_type().startsWith('video/'))
-+            paneStyle.add_class('luma-preview-media-pane');
++            paneStyle.add_class('Suno-preview-media-pane');
 +        else
-+            paneStyle.remove_class('luma-preview-media-pane');
++            paneStyle.remove_class('Suno-preview-media-pane');
          this._openButton.set_visible(!!this._hasHandler && !renderer.hideOpen);
          if (renderer.viewSwitch) {
 -            this._titlebar.pack_end(renderer.viewSwitch);

@@ -4,14 +4,14 @@
 set -euo pipefail
 
 repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
-base_image="$repo_root/build/track-a/luma-track-a-baseline.qcow2"
+base_image="$repo_root/build/track-a/Suno-track-a-baseline.qcow2"
 
 if [ "$(id -u)" -eq 0 ]; then
-  printf 'error: package builds must run as the rootless Luma build account\n' >&2
+  printf 'error: package builds must run as the rootless Suno build account\n' >&2
   exit 1
 fi
 if [ ! -f "$base_image" ]; then
-  printf 'error: admitted Fedora/Luma base is missing: %s\n' "$base_image" >&2
+  printf 'error: admitted Fedora/Suno base is missing: %s\n' "$base_image" >&2
   exit 1
 fi
 
@@ -29,26 +29,26 @@ package_builders=(
   build-libhandy.sh
   build-libadwaita.sh
   build-nautilus.sh
-  build-luma-android-runtime.sh
-  build-luma-relay.sh
-  build-luma-application-installer.sh
-  build-luma-connect-sync.sh
+  build-Suno-android-runtime.sh
+  build-Suno-relay.sh
+  build-Suno-application-installer.sh
+  build-Suno-connect-sync.sh
   build-wine-relay-integration.sh
   build-gnome-calculator.sh
   build-tiling.sh
-  build-luma-handheld.sh
-  build-luma-shell-state.sh
-  build-luma-mods.sh
-  build-luma-update.sh
+  build-Suno-handheld.sh
+  build-Suno-shell-state.sh
+  build-Suno-mods.sh
+  build-Suno-update.sh
   build-backgrounds.sh
   build-figtree-fonts.sh
   build-caveat-fonts.sh
   build-plymouth.sh
   build-boot-theme.sh
   build-prairie-icon-theme.sh
-  build-luma-desktop-launcher-policy.sh
-  build-luma-homebrew.sh
-  build-luma-developer-platform.sh
+  build-Suno-desktop-launcher-policy.sh
+  build-Suno-homebrew.sh
+  build-Suno-developer-platform.sh
   build-prairie-core-apps.sh
 )
 
@@ -56,7 +56,7 @@ package_builders=(
 # must not force the shared production builder to repeat every earlier,
 # already-verified build. The value is a builder filename from the fixed list
 # above; arbitrary commands are never accepted.
-start_at=${LUMA_PACKAGE_START_AT:-${package_builders[0]}}
+start_at=${SUNO_PACKAGE_START_AT:-${package_builders[0]}}
 start_index=-1
 for index in "${!package_builders[@]}"; do
   if [ "${package_builders[$index]}" = "$start_at" ]; then
@@ -65,7 +65,7 @@ for index in "${!package_builders[@]}"; do
   fi
 done
 if [ "$start_index" -lt 0 ]; then
-  printf 'error: unknown LUMA_PACKAGE_START_AT builder: %s\n' "$start_at" >&2
+  printf 'error: unknown SUNO_PACKAGE_START_AT builder: %s\n' "$start_at" >&2
   exit 1
 fi
 

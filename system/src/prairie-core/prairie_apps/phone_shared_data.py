@@ -4,14 +4,14 @@ import os
 from pathlib import Path
 import re
 
-FAMILIES = frozenset({'prairie/phone', 'luma/phone'})
+FAMILIES = frozenset({'prairie/phone', 'Suno/phone'})
 
 def directory(family, environment=None, *, check_mounts=True):
     if family not in FAMILIES:
         raise ValueError('Unsupported Phone datastore.')
     env = dict(os.environ if environment is None else environment)
     home = Path(env.get('HOME') or str(Path.home()))
-    if env.get('FLATPAK_ID') != 'org.projectluma.Phone':
+    if env.get('FLATPAK_ID') != 'org.projectSuno.Phone':
         return Path(env.get('XDG_DATA_HOME') or home/'.local/share')/family
     base = Path(env.get('HOST_XDG_DATA_HOME') or home/'.local/share')
     target = base/family

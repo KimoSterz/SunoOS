@@ -6,14 +6,14 @@ import sys
 
 def main():
     application = sys.argv.pop(1)
-    os.environ['LUMA_AGENDA_STANDALONE'] = '1'
+    os.environ['SUNO_AGENDA_STANDALONE'] = '1'
     if application == 'Calendar':
         from . import calendar
-        calendar.APP_ID = 'org.projectluma.Calendar.Standalone'
+        calendar.APP_ID = 'org.projectSuno.Calendar.Standalone'
         return calendar.main()
     if application == 'Tasks':
         from . import tasks
-        tasks.APP_ID = 'org.projectluma.Tasks.Standalone'
+        tasks.APP_ID = 'org.projectSuno.Tasks.Standalone'
         return tasks.main()
     raise SystemExit('Expected Calendar or Tasks')
 

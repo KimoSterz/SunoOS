@@ -7,11 +7,11 @@ section: Publishing
 
 # Depot Review Guidelines
 
-People install apps from Depot because they trust that Luma looked. These
-guidelines say exactly what Luma looks for. You accept them when you join the
+People install apps from Depot because they trust that Suno looked. These
+guidelines say exactly what Suno looks for. You accept them when you join the
 developer program.
 
-> **Status.** Today these guidelines apply to Luma’s own apps. They apply to
+> **Status.** Today these guidelines apply to Suno’s own apps. They apply to
 > every developer once the [developer program](developer-program.md) opens,
 > and may still be refined before then. Changes are listed in the
 > [changelog](../CHANGELOG.md).
@@ -20,27 +20,27 @@ Each rule has a number so reviewers can cite it, and a scope:
 
 | Scope | Applies to |
 | --- | --- |
-| **All** | Every listing, including Listed apps Luma does not host |
-| **V** | Verified and Luma tier apps |
-| **L** | Luma tier apps only |
+| **All** | Every listing, including Listed apps Suno does not host |
+| **V** | Verified and Suno tier apps |
+| **L** | Suno tier apps only |
 
 Listed apps install from their publisher and are not reviewed for quality, but
-Luma removes any listing that breaks an **All** rule.
+Suno removes any listing that breaks an **All** rule.
 
 ---
 
 ## How review works
 
-- **Automated checks** run on every release on the Luma remote: the build,
+- **Automated checks** run on every release on the Suno remote: the build,
   metainfo and desktop entry validation, `flatpak-builder-lint`, and permission
   computation. See
   [the checks every release runs](submitting-a-release.md#the-checks-every-release-runs).
 - **People review** a Verified app’s first release and any release whose
-  permissions grow, and every Luma tier release.
-- Reviewers test the release you submitted, on Luma. If your app needs a test
+  permissions grow, and every Suno tier release.
+- Reviewers test the release you submitted, on Suno. If your app needs a test
   account or instructions to review, they will ask for them.
 - A decision comes with the numbers of the rules involved and what to change.
-- Luma may re-review a published app at any time, for example after reports
+- Suno may re-review a published app at any time, for example after reports
   from people.
 
 ---
@@ -76,7 +76,7 @@ systems of other devices or vehicles.
 
 **1.7 (V) Security maintenance.** Use TLS for network connections and validate
 certificates. Fix a known, exploitable vulnerability in your app or its bundled
-dependencies within 30 days of it becoming public, or sooner when Luma asks.
+dependencies within 30 days of it becoming public, or sooner when Suno asks.
 Apps left vulnerable may be hidden from new installs until fixed.
 
 **1.8 (V) No harm to the system.** Do not degrade the system or other apps:
@@ -97,13 +97,13 @@ is using is opt in, or can be turned off in the app’s settings.
 device fingerprinting, or third-party analytics that follow a person beyond
 your app.
 
-**2.4 (V) Truthful sign-in declaration.** Your `sign_in` value (`none`, `luma`,
+**2.4 (V) Truthful sign-in declaration.** Your `sign_in` value (`none`, `Suno`,
 `third-party`, `required-third-party`) matches the app. An app that asks for an
 account anywhere is not `none`.
 
 **2.5 (V) Do not require unnecessary accounts.** Features that can work without
 an account must work without one. Required sign-in must be declared as
-`required-third-party` or `luma`.
+`required-third-party` or `Suno`.
 
 **2.6 (V) Protect secrets.** Store credentials with libsecret. Never log them,
 include them in semantic objects or Live Extensions, or send them anywhere but
@@ -116,7 +116,7 @@ privacy classes and action risks are truthful, and nothing `secret` is published
 children must not collect personal data without the consent the law requires
 and must not include behavioral advertising.
 
-**2.9 (V) Data removal.** Store data where Luma’s uninstall and reset can find it,
+**2.9 (V) Data removal.** Store data where Suno’s uninstall and reset can find it,
 and honor account deletion requests for any account your app creates.
 
 ## 3. Honesty
@@ -126,7 +126,7 @@ categories and release notes describe the real app. Screenshots show the app
 itself running.
 
 **3.2 (All) No impersonation.** Do not present your app as made by, endorsed by
-or affiliated with another person, company, project or Luma when it is not. This
+or affiliated with another person, company, project or Suno when it is not. This
 includes names, icons, developer names and app IDs.
 
 **3.3 (V) No fake functionality.** No buttons or features that do nothing, fake
@@ -144,8 +144,8 @@ review in general, at a sensible moment and at most occasionally, is fine.
 **3.6 (V) Clear pricing.** If the app charges money or shows ads, the listing
 says so. Content that costs money is clearly labeled before purchase.
 
-**3.7 (V) Truthful badges.** Only Luma tier apps may say “Made for Luma”. Do not
-use Luma’s name or logo in a way that suggests a relationship you do not have.
+**3.7 (V) Truthful badges.** Only Suno tier apps may say “Made for Suno”. Do not
+use Suno’s name or logo in a way that suggests a relationship you do not have.
 
 ## 4. Spam and copycats
 
@@ -183,8 +183,8 @@ crash.
 **5.5 (V) Declared architectures work.** The app works on every architecture the
 release is built for.
 
-**5.6 (V) Runs outside Luma.** A Depot app installed from the Luma remote on
-another distribution works, without requiring Luma-only services such as the
+**5.6 (V) Runs outside Suno.** A Depot app installed from the Suno remote on
+another distribution works, without requiring Suno-only services such as the
 Semantic Broker or Live Extensions.
 
 ## 6. Content
@@ -233,7 +233,7 @@ to security reports.
 
 ## 9. Technical requirements
 
-**9.1 (V) Flatpak on the Luma runtime,** `org.projectluma.Platform`, built from
+**9.1 (V) Flatpak on the Suno runtime,** `org.projectSuno.Platform`, built from
 pinned sources (source mode) or a signed bundle (bundle mode, proprietary apps
 only).
 
@@ -264,17 +264,17 @@ appearances the app supports, and the app does not break with large text.
 with the [test plan](../design/accessibility.md#test-plan): screen reader, high
 contrast, reduced motion, right-to-left and touch.
 
-## 11. Luma tier: design and quality
+## 11. Suno tier: design and quality
 
-Luma tier apps look and behave like part of the system. In addition to every
+Suno tier apps look and behave like part of the system. In addition to every
 rule above:
 
-**11.1 (L) Built on LumaUI.** Windows use `AppWindow` or
-`LumaApplicationWindow`; islands, sidebars, toolbars, empty states, dialogs and
-menus use LumaUI components. No local imitation of a LumaUI component.
+**11.1 (L) Built on SunoUI.** Windows use `AppWindow` or
+`SunoApplicationWindow`; islands, sidebars, toolbars, empty states, dialogs and
+menus use SunoUI components. No local imitation of a SunoUI component.
 
 **11.2 (L) Tokens only.** No literal colors in app stylesheets, and no rules for
-LumaUI’s frame, title row, identity, window controls, body or islands. See
+SunoUI’s frame, title row, identity, window controls, body or islands. See
 [windows and islands](../kit/windows-and-islands.md#your-stylesheet).
 
 **11.3 (L) One adaptive app.** One source and one binary work at 360, 500 and
@@ -282,8 +282,8 @@ LumaUI’s frame, title row, identity, window controls, body or islands. See
 `fullscreen-mobile` presentations, with pointer, touch and keyboard. No function
 is lost at any width. See [adaptive layouts](../kit/adaptive-layouts.md).
 
-**11.4 (L) Contract passes.** `luma lint` passes with schema 0.2, and
-`luma release-check` passes with evidence from real test runs on `x86_64` and
+**11.4 (L) Contract passes.** `Suno lint` passes with schema 0.2, and
+`Suno release-check` passes with evidence from real test runs on `x86_64` and
 `aarch64`, desktop and mobile.
 
 **11.5 (L) Commands.** Every meaningful operation has one stable action ID shared
@@ -304,9 +304,9 @@ right-to-left languages.
 activity while the app is idle, unless a declared background feature needs it.
 
 **11.10 (L) Lifecycle.** Keep-data and remove-app-data uninstall choices and reset
-work as declared in `luma-app.toml`, and user documents are never removed.
+work as declared in `Suno-app.toml`, and user documents are never removed.
 
-**11.11 (L) Source.** Built by Luma from a source commit (source mode), never
+**11.11 (L) Source.** Built by Suno from a source commit (source mode), never
 from a bundle.
 
 ---
@@ -333,6 +333,6 @@ Rules 1.1, 1.2, 3.2 and 6.1 can lead directly to revocation.
 
 ## Changes to these guidelines
 
-Luma publishes changes to these guidelines in the
+Suno publishes changes to these guidelines in the
 [documentation changelog](../CHANGELOG.md) before enforcing new rules, except
 where an urgent safety issue requires immediate action.

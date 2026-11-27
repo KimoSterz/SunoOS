@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="gnome-shell-extension-Suno-handheld">
+  <schema id="org.projectSuno.handheld" path="/org/project-suno/handheld/">
+    <key name="keyboard-engine" type="s">
+      <default>'gnome'</default>
+      <summary>Selected handheld virtual keyboard engine</summary>
+      <description>Only engines accepted under the active Suno compositor may be selected.</description>
+    </key>
+  </schema>
+</schemalist>

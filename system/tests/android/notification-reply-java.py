@@ -71,7 +71,7 @@ with tempfile.TemporaryDirectory() as directory:
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(source / 'lineage-sdk' / name, target)
     subprocess.run(['patch', '--batch', '--fuzz=0', '-p1', '-d', str(prepared), '-i',
-                    str(repo / 'patches/android-lineage-sdk/0005-luma-native-notification-replies.patch')],
+                    str(repo / 'patches/android-lineage-sdk/0005-Suno-native-notification-replies.patch')],
                    check=True)
     assert (prepared / 'lineage/lib/main/java/org/lineageos/platform/internal/NotificationReplyDispatcher.java').read_bytes() == dispatcher.read_bytes()
     generated = work / 'generated'

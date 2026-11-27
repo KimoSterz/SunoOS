@@ -12,12 +12,12 @@ maintainers = ["@nmcmil"]
 [kernel]
 # A source lock is experimental bring-up, not a published kernel tag.
 source_lock = "config/kernel/surface-pro12-7.3.json"
-release = "7.3.0-3.luma.surface12.fc44.aarch64"
+release = "7.3.0-3.Suno.surface12.fc44.aarch64"
 # A code change changes release, CONFIG_LOCALVERSION and the source lock's
 # release together (device-kernels.py check). A repackage of the same build may
 # keep the uname: OSTree keys boot files by boot checksum and each deployment
 # has its own /usr/lib/modules.
-rpm_version_release = "7.3.0-3.luma.surface12.fc44"
+rpm_version_release = "7.3.0-3.Suno.surface12.fc44"
 config = "config/kernel/surface-pro12.config"
 dtb = "qcom/x1p42100-microsoft-sp12in.dtb"
 # Carries vmlinuz, modules and the device tree (/usr/lib/modules/<release>/
@@ -35,13 +35,13 @@ rpm_requires = ["alsa-ucm >= 1.2.16.1"]
 
 [firmware]
 # Personal test input hashes, not a grant to publish the payloads. The owner's
-# firmware stays on the Surface: /etc/luma/device-firmware, in the initramfs
+# firmware stays on the Surface: /etc/Suno/device-firmware, in the initramfs
 # through rpm-ostree initramfs-etc and found through firmware_class.path
 # (scripts/devices/sp12in-join-generic.sh). No device repository carries it.
 manifest = "firmware.manifest"
 manifest_sha256 = "a01e7fa4ba34501d9e90a5659612f25f010591958f2c150d5f92242f8ddd6f23"
 files = 14
-store = "/etc/luma/device-firmware"
+store = "/etc/Suno/device-firmware"
 
 [install]
 guide = "INSTALL.md"
@@ -50,12 +50,12 @@ preserve = ["windows", "recovery", "esp"]
 
 [updates]
 # The one ARM OS commit; the device repository is a client-side layer.
-ostree_ref = "luma/1/aarch64/nightly"
+ostree_ref = "Suno/1/aarch64/nightly"
 
 [device_repo]
-# Signed rpm-md repository (Luma OS Release key) with the Surface kernel, which
+# Signed rpm-md repository (Suno OS Release key) with the Surface kernel, which
 # replaces Fedora's as an rpm-ostree override (like the Raspberry Pi 5's).
-id = "luma-microsoft-sp12in"
+id = "Suno-microsoft-sp12in"
 url = "https://dl.simplyluma.com/os/devices/aarch64/microsoft-sp12in/"
 remove = ["kernel", "kernel-core", "kernel-modules", "kernel-modules-core", "kernel-modules-extra"]
 install = ["kernel-surface-pro12"]

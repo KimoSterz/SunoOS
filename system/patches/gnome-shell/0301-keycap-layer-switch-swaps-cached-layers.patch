@@ -1,4 +1,4 @@
-From: Luma Developers
+From: Suno Developers
 Subject: [PATCH] Keycap: a layer switch swaps cached layers
 
 On the Fold every slow frame was a switch between the lowercase and Shift

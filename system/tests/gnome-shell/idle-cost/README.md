@@ -1,6 +1,6 @@
 # Idle cost
 
-What a desktop at rest costs the Shell. A headless Luma session with three
+What a desktop at rest costs the Shell. A headless Suno session with three
 virtual monitors (1920x1200, 2560x1440 and 1920x1200 at scales 1, 1 and
 1.25), the shelf, dock, clock and status cluster, and two still windows.
 After the session settles and the pointer is parked, nothing on screen
@@ -30,7 +30,7 @@ window in turn, `transitions` lists transitions in flight, `clips` what each
 painted frame repaints, `sources` the main-loop sources, laters and redraws
 queued from JavaScript, `allocations` actors whose allocation keeps changing.
 
-Run inside a container with the Shell installed (a Luma OS tree works), with
+Run inside a container with the Shell installed (a Suno OS tree works), with
 this directory at `/oracle/t`:
 
     bash /oracle/t/run.sh    # idle.json, scenarios.json, checks.json, shell.log
@@ -42,7 +42,7 @@ Software rendering (llvmpipe) makes painting cost CPU and main-thread
 context switches; compare dispatches and paints between runs, not CPU with a
 real session.
 
-Headless, aarch64 Luma tree 20261119.2 (Shell .185, Mutter .21), three
+Headless, aarch64 Suno tree 20261119.2 (Shell .185, Mutter .21), three
 monitors at 1, 1 and 1.25:
 
 | state | before: dispatches/s per view | after (Shell 0358 overlay, Mutter with 0037) |

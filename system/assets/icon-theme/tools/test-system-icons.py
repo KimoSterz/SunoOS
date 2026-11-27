@@ -34,7 +34,7 @@ class ArtworkAdmission(unittest.TestCase):
 
     def test_byte_change_and_unapproved_context_file(self):
         original = Path(__file__).resolve().parents[1] / 'Prairie'
-        with tempfile.TemporaryDirectory(prefix='luma-system-icon-test-') as directory:
+        with tempfile.TemporaryDirectory(prefix='Suno-system-icon-test-') as directory:
             theme = Path(directory) / 'Prairie'
             shutil.copytree(original, theme)
             args = (theme, theme/'system-manifest.json', theme/'system-integration.json')

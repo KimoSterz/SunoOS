@@ -19,13 +19,13 @@ done
   exit 1
 }
 
-architecture=${LUMA_TARGET_ARCHITECTURE:-$(uname -m)}
+architecture=${SUNO_TARGET_ARCHITECTURE:-$(uname -m)}
 case "$architecture" in
   x86_64) builder_container=$FEDORA_RPM_BUILD_CONTAINER ;;
   aarch64) builder_container=$FEDORA_RPM_BUILD_CONTAINER_AARCH64 ;;
   *) printf 'error: unsupported Figtree builder architecture: %s\n' "$architecture" >&2; exit 1 ;;
 esac
-export LUMA_RPM_BUILDER_ARCHITECTURE=$architecture
+export SUNO_RPM_BUILDER_ARCHITECTURE=$architecture
 
 output_dir="$repo_root/build/packages/figtree-fonts"
 mkdir -p "$output_dir"
@@ -51,7 +51,7 @@ download_and_verify "$rpmbuild_dir/SOURCES/Figtree-Italic[wght].ttf" \
 download_and_verify "$rpmbuild_dir/SOURCES/OFL.txt" \
   "$source_base/OFL.txt" "$FIGTREE_OFL_SHA256"
 
-install -m 0644 "$repo_root/packaging/fontconfig/99-luma-figtree-fonts.conf" \
+install -m 0644 "$repo_root/packaging/fontconfig/99-Suno-figtree-fonts.conf" \
   "$rpmbuild_dir/SOURCES/"
 install -m 0644 "$repo_root/scripts/fonts/adjust-figtree-ui-metrics.py" \
   "$rpmbuild_dir/SOURCES/"
@@ -75,7 +75,7 @@ install -m 0644 "$repo_root/packaging/rpm/google-figtree-fonts.spec" \
     fc-scan --format "%{family[0]}\n" ./usr/share/fonts/google-figtree-fonts/*.ttf |
       grep -Fxq Figtree
     grep -Fq "<string>Figtree</string>" \
-      ./usr/share/fontconfig/conf.avail/99-luma-figtree-fonts.conf
+      ./usr/share/fontconfig/conf.avail/99-Suno-figtree-fonts.conf
     install_root=$(mktemp -d)
     dnf5 -y --installroot="$install_root" --releasever=44 --use-host-config \
       install fontconfig "$OLDPWD/$rpm_path"
@@ -83,7 +83,7 @@ install -m 0644 "$repo_root/packaging/rpm/google-figtree-fonts.spec" \
       /usr/bin/fc-match --format="%{family[0]}" sans-serif |
       grep -Fxq Figtree
     HOME=/tmp chroot "$install_root" /usr/bin/fc-conflist |
-      grep -Fq 99-luma-figtree-fonts.conf
+      grep -Fq 99-Suno-figtree-fonts.conf
   '
 
 stable_rpms="$output_dir/RPMS/noarch"

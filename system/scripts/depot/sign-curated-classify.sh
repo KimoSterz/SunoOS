@@ -1,16 +1,16 @@
 #!/bin/sh
-# Sign a classifier curated list (src/luma-installer/data/classify/curated-<release>.json)
-# with the luma-depot-classify key: a detached <file>.minisig whose trusted comment is
-#   purpose=luma-curated-classify release=<release> version=<list_version>
-# read from the list itself. luma_installer.classify uses a list only when that signature
+# Sign a classifier curated list (src/Suno-installer/data/classify/curated-<release>.json)
+# with the Suno-depot-classify key: a detached <file>.minisig whose trusted comment is
+#   purpose=Suno-curated-classify release=<release> version=<list_version>
+# read from the list itself. Suno_installer.classify uses a list only when that signature
 # verifies against the pinned data/classify/depot-classify.pub; a Depot catalogue key is
 # refused, so never sign a list with one.
 #   sign-curated-classify.sh <secret-key-path> <curated.json>
 set -eu
-key=${1:?secret key path (luma-depot-classify)}
+key=${1:?secret key path (Suno-depot-classify)}
 list=${2:?curated list}
 case "$(basename "$key")" in
-  *catalog*) echo "refusing: $key looks like a Depot catalogue key; curated lists use luma-depot-classify" >&2; exit 2;;
+  *catalog*) echo "refusing: $key looks like a Depot catalogue key; curated lists use Suno-depot-classify" >&2; exit 2;;
 esac
 command -v minisign >/dev/null || { echo "minisign is not installed" >&2; exit 2; }
 fields=$(python3 -I -c '
@@ -27,5 +27,5 @@ case "$(basename "$list")" in
   "curated-$release.json") ;;
   *) echo "refusing: $list does not name release $release" >&2; exit 2;;
 esac
-minisign -S -s "$key" -m "$list" -x "$list.minisig" -t "purpose=luma-curated-classify release=$release version=$version"
+minisign -S -s "$key" -m "$list" -x "$list.minisig" -t "purpose=Suno-curated-classify release=$release version=$version"
 echo "signed $list (release $release, list_version $version) -> $list.minisig"

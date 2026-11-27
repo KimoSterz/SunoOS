@@ -4,20 +4,20 @@ Date: Sat, 26 Sep 2026 19:30:22 +0000
 Subject: [PATCH] Settings: explain empty native permission lists
 
 ---
- shell/cc-luma-view-live-permission.c |  6 ++++++
- shell/test-luma-permissions.c        | 30 ++++++++++++++++++++++++++++
+ shell/cc-Suno-view-live-permission.c |  6 ++++++
+ shell/test-Suno-permissions.c        | 30 ++++++++++++++++++++++++++++
  2 files changed, 36 insertions(+)
 
-diff --git a/shell/cc-luma-view-live-permission.c b/shell/cc-luma-view-live-permission.c
+diff --git a/shell/cc-Suno-view-live-permission.c b/shell/cc-Suno-view-live-permission.c
 index f0d8a37..72e4a81 100644
---- a/shell/cc-luma-view-live-permission.c
-+++ b/shell/cc-luma-view-live-permission.c
-@@ -239,6 +239,12 @@ void cc_luma_live_permission_render (View *v)
+--- a/shell/cc-Suno-view-live-permission.c
++++ b/shell/cc-Suno-view-live-permission.c
+@@ -239,6 +239,12 @@ void cc_Suno_live_permission_render (View *v)
    }
-   GtkBox *rows = cc_luma_view_group (v, "Apps that asked");
+   GtkBox *rows = cc_Suno_view_group (v, "Apps that asked");
    g_autoptr(GVariant) entries = g_variant_get_child_value (self->snapshot, 1);
 +  if (!g_variant_n_children (entries)) {
-+    GtkWidget *empty = cc_luma_view_label ("No apps have asked for access yet", "body", TRUE);
++    GtkWidget *empty = cc_Suno_view_label ("No apps have asked for access yet", "body", TRUE);
 +    gtk_widget_set_name (empty, "cf-native-permission-empty");
 +    gtk_box_append (rows, empty);
 +    return;
@@ -25,10 +25,10 @@ index f0d8a37..72e4a81 100644
    GVariantIter iter; g_variant_iter_init (&iter, entries); const char *id; GVariant *permission;
    while (g_variant_iter_next (&iter, "{&s@as}", &id, &permission)) {
      gboolean enabled = FALSE, editable = permission_value (self, permission, &enabled);
-diff --git a/shell/test-luma-permissions.c b/shell/test-luma-permissions.c
+diff --git a/shell/test-Suno-permissions.c b/shell/test-Suno-permissions.c
 index b8581cc..e9c3ae8 100644
---- a/shell/test-luma-permissions.c
-+++ b/shell/test-luma-permissions.c
+--- a/shell/test-Suno-permissions.c
++++ b/shell/test-Suno-permissions.c
 @@ -339,6 +339,35 @@ static void native_page_routes (void)
      gtk_window_destroy (GTK_WINDOW (window)); wait_ms (100); g_assert_null (weak);
    }
@@ -43,11 +43,11 @@ index b8581cc..e9c3ae8 100644
 +    entries = g_variant_ref_sink (g_variant_new_array (G_VARIANT_TYPE ("{sas}"), NULL, 0));
 +    g_autoptr(GSettings) settings = g_settings_new ("org.gnome.desktop.privacy");
 +    g_assert_true (g_settings_set_boolean (settings, "disable-camera", FALSE));
-+    g_autoptr(CcLumaPreferences) prefs = cc_luma_preferences_new (settings, keys, NULL);
-+    GtkWidget *view = cc_luma_view_new_permission (prefs, client, CC_LUMA_PERMISSION_CAMERA, backup, NULL);
++    g_autoptr(CcSunoPreferences) prefs = cc_Suno_preferences_new (settings, keys, NULL);
++    GtkWidget *view = cc_Suno_view_new_permission (prefs, client, CC_SUNO_PERMISSION_CAMERA, backup, NULL);
 +    g_assert_nonnull (view);
 +    GtkWidget *window = gtk_window_new (); gtk_window_set_child (GTK_WINDOW (window), view);
-+    luma_layer_host_install (GTK_WINDOW (window));
++    Suno_layer_host_install (GTK_WINDOW (window));
 +    gtk_window_set_default_size (GTK_WINDOW (window), phone ? 390 : 1180, 740);
 +    gtk_window_present (GTK_WINDOW (window));
 +    gint64 deadline = g_get_monotonic_time () + 5000000;

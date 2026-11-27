@@ -120,7 +120,7 @@ def main() -> int:
 
     contract_matches = not failures
     values = {
-        "LUMA_PIXEL9_KERNEL_ENTRY_INSPECTION_VERSION": "1",
+        "SUNO_PIXEL9_KERNEL_ENTRY_INSPECTION_VERSION": "1",
         "IMAGE_BYTES": str(len(image)),
         "IMAGE_SHA256": hashlib.sha256(image).hexdigest(),
         "ARM64_IMAGE_MAGIC_PRESENT": str(arm64_magic).lower(),

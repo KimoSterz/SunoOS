@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: Apache-2.0
+[Unit]
+Description=Say when the apps that come with Suno are still being set up
+After=graphical-session.target
+PartOf=graphical-session.target
+ConditionPathExists=/run/Suno/app-baseline/status.json
+ConditionUser=!@system
+
+[Service]
+Type=exec
+ExecStart=/usr/bin/python3 -B -m Suno_installer.app_baseline_progress notice
+Nice=10
+
+[Install]
+WantedBy=graphical-session.target

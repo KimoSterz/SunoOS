@@ -9,24 +9,24 @@ import subprocess
 import sys
 import tempfile
 
-if 'LUMA_EXPORT_DISCOVERY_CHILD' not in os.environ:
-    with tempfile.TemporaryDirectory(prefix='luma-export-discovery-') as directory:
+if 'SUNO_EXPORT_DISCOVERY_CHILD' not in os.environ:
+    with tempfile.TemporaryDirectory(prefix='Suno-export-discovery-') as directory:
         root = Path(directory)
         (root / 'data/applications').mkdir(parents=True)
-        environment = dict(os.environ, LUMA_EXPORT_DISCOVERY_CHILD=directory,
+        environment = dict(os.environ, SUNO_EXPORT_DISCOVERY_CHILD=directory,
                            XDG_DATA_HOME=str(root / 'data'),
                            XDG_DATA_DIRS=':'.join(str(root / scope / 'flatpak/exports/share')
                                                  for scope in ('user', 'system')))
         raise SystemExit(subprocess.run([sys.executable, __file__], env=environment).returncode)
 
 from gi.repository import Gio, GLib
-root = Path(os.environ['LUMA_EXPORT_DISCOVERY_CHILD'])
+root = Path(os.environ['SUNO_EXPORT_DISCOVERY_CHILD'])
 repo = Path(__file__).resolve().parents[3]
 spec = importlib.util.spec_from_file_location('application_directory',
-    repo / 'src/luma-installer/luma_installer/application_directory.py')
+    repo / 'src/Suno-installer/Suno_installer/application_directory.py')
 directory = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(directory)
-search = runpy.run_path(str(repo / 'src/luma-search/luma-search-service'))['SearchService']
+search = runpy.run_path(str(repo / 'src/Suno-search/Suno-search-service'))['SearchService']
 monitor = Gio.AppInfoMonitor.get()
 changes = []
 monitor.connect('changed', lambda *_: changes.append(GLib.get_monotonic_time()))
@@ -49,7 +49,7 @@ def search_ids():
 assert application_ids() == set()
 assert search_ids() == set()
 for scope in ('user', 'system'):
-    identity = f'org.projectluma.FlatpakProbe.{scope}.desktop'
+    identity = f'org.projectSuno.FlatpakProbe.{scope}.desktop'
     exported = root / scope / 'flatpak/exports/share/applications' / identity
     exported.parent.mkdir(parents=True)
     deployed = root / f'{scope}-deployment.desktop'

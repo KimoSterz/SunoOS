@@ -79,7 +79,7 @@ class FixtureStore(NotesStore):
         self.selected = str(self.document["selected"])
         self.raw_notes = {str(n["id"]): n for n in self.document["notes"]}
         import os
-        if os.environ.get('LUMA_NOTES_LIVE_SETTLED') == '1':
+        if os.environ.get('SUNO_NOTES_LIVE_SETTLED') == '1':
             for raw in self.raw_notes.values():
                 if raw.get('live') and 'id="n-live"' in raw['html']:
                     before, closing = raw['html'].rsplit('</p>', 1)
@@ -120,5 +120,5 @@ class FixtureStore(NotesStore):
 def source_from_environment(environment=None):
     import os
     env = os.environ if environment is None else environment
-    path = env.get("LUMA_NOTES_FIXTURE")
+    path = env.get("SUNO_NOTES_FIXTURE")
     return FixtureStore(Path(path)) if path else NotesStore()

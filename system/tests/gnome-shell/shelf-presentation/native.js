@@ -7,7 +7,7 @@ import Shell from 'gi://Shell';
 import St from 'gi://St';
 import Meta from 'gi://Meta';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
-const out = GLib.getenv('LUMA_SHELF_TEST_OUT');
+const out = GLib.getenv('SUNO_SHELF_TEST_OUT');
 const results = [];
 const frames = [];
 const sleep = ms => new Promise(resolve => GLib.timeout_add(GLib.PRIORITY_DEFAULT, ms, () => {
@@ -48,7 +48,7 @@ async function shot(name) {
 }
 async function work() {
     const shelf = Main.shelf;
-    if (GLib.getenv('LUMA_SHELF_TRACE_LIFT') === '1') {
+    if (GLib.getenv('SUNO_SHELF_TRACE_LIFT') === '1') {
         const seen = new Set();
         const hook = () => {
             for (const group of shelf._groups) {
@@ -67,7 +67,7 @@ async function work() {
             return value;
         };
     }
-    const animated = GLib.getenv('LUMA_SHELF_REDUCED_MOTION') !== '1';
+    const animated = GLib.getenv('SUNO_SHELF_REDUCED_MOTION') !== '1';
     global.force_animations = animated;
     new Gio.Settings({schema_id: 'org.gnome.desktop.interface'}).set_boolean('enable-animations', animated);
     Main.overview.hide();
@@ -80,7 +80,7 @@ async function work() {
         check(`${id} first painted geometry is settled`, first &&
             first.every((v, i) => Math.abs(v - final[i]) < 4), JSON.stringify({first, final}));
     }
-    if (GLib.getenv('LUMA_SHELF_STARTUP_ONLY') === '1') {
+    if (GLib.getenv('SUNO_SHELF_STARTUP_ONLY') === '1') {
         await shot('settled');
         return;
     }
@@ -88,7 +88,7 @@ async function work() {
     const pointer = seat.create_virtual_device(Clutter.InputDeviceType.POINTER_DEVICE);
     const touch = seat.create_virtual_device(Clutter.InputDeviceType.TOUCHSCREEN_DEVICE);
     const now = () => GLib.get_monotonic_time();
-    const targetApp = Shell.AppSystem.get_default().lookup_app('org.projectluma.ShelfProbe01.desktop');
+    const targetApp = Shell.AppSystem.get_default().lookup_app('org.projectSuno.ShelfProbe01.desktop');
     const button = descendants(shelf._dash).find(actor => actor._delegate?.app === targetApp && actor.reactive);
     check('real application button exists', !!button);
     async function press(actor, name, touchscreen = false) {
@@ -150,7 +150,7 @@ async function work() {
     const [tx, ty, , th] = rect(shelf.islandActorFor('dock'));
     touch.notify_touch_down(now(), 0, tx + 6, ty + th / 2);
     await sleep(700);
-    check('intentional touch hold enters arrangement', shelf._arrange.active && !!shelf._arrange._drag, JSON.stringify({touch:[tx+6,ty+th/2],active:shelf._arrange.active,pressed:shelf.islandActorFor('dock')._lumaHoldGesture?.pressed}));
+    check('intentional touch hold enters arrangement', shelf._arrange.active && !!shelf._arrange._drag, JSON.stringify({touch:[tx+6,ty+th/2],active:shelf._arrange.active,pressed:shelf.islandActorFor('dock')._SunoHoldGesture?.pressed}));
     touch.notify_touch_up(now(), 0);
     await sleep(100);
     shelf._arrange.end();

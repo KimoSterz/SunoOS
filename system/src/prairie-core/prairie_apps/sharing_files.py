@@ -4,11 +4,11 @@ from pathlib import Path
 import os
 import tempfile
 from gi.repository import Gdk, Gio, GLib, Gtk
-from luma_appkit import ShareSheet, ShareSubject, ShareResult, Toast
+from Suno_appkit import ShareSheet, ShareSubject, ShareResult, Toast
 
 
 def share_calendar_copy(window, anchor, title, content):
-    directory = tempfile.TemporaryDirectory(prefix='luma-share-')
+    directory = tempfile.TemporaryDirectory(prefix='Suno-share-')
     # Keep snapshots available while a receiving app opens its file argument.
     retained = getattr(window, '_share_snapshots', None)
     if retained is None:
@@ -43,7 +43,7 @@ def share_calendar_copy(window, anchor, title, content):
         if choice == 'target':
             target = next((t for t in sheet.targets if t.key == value), None)
             if not target or not target.app_id: return ShareResult(False, 'This app is no longer available')
-            from luma_appkit.application_directory import launch
+            from Suno_appkit.application_directory import launch
             def accepted(ok, error):
                 if getattr(window, '_closed', False): return
                 Toast.show(anchor, 'Opened in ' + target.label if ok else error or 'Could not share',

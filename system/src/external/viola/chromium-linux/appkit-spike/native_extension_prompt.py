@@ -30,33 +30,33 @@ class ExtensionPromptPanel(Gtk.Box):
 
     def __init__(self, prompt, on_answer):
         super().__init__(orientation=Gtk.Orientation.VERTICAL, accessible_role=Gtk.AccessibleRole.DIALOG)
-        self.add_css_class('lumaui-panel-confirm')
+        self.add_css_class('SunoUI-panel-confirm')
         self.add_css_class('viola-signin')
         self.prompt_id = prompt['id']
         self.on_answer = on_answer
         self.answered = False
         title = str(prompt.get('title') or 'Extension')
-        self.append(_label(title, 'lumaui-panel-confirm-title'))
+        self.append(_label(title, 'SunoUI-panel-confirm-title'))
         body = str(prompt.get('body') or '')
         if body:
-            self.append(_label(body, 'lumaui-panel-confirm-body'))
+            self.append(_label(body, 'SunoUI-panel-confirm-body'))
         details = prompt.get('details') if isinstance(prompt.get('details'), list) else []
         self.details = [str(line) for line in details[:MAX_DETAILS] if line]
         for line in self.details:
-            self.append(_label(line, 'lumaui-panel-confirm-body'))
+            self.append(_label(line, 'SunoUI-panel-confirm-body'))
         buttons = Gtk.Box(homogeneous=True)
-        buttons.add_css_class('lumaui-panel-confirm-buttons')
+        buttons.add_css_class('SunoUI-panel-confirm-buttons')
         accept_label = str(prompt.get('accept') or '')
         self.cancel_button = Gtk.Button(label=str(prompt.get('cancel') or ('Cancel' if accept_label else 'Done')),
                                         hexpand=True)
-        self.cancel_button.add_css_class('lumaui-panel-confirm-cancel')
+        self.cancel_button.add_css_class('SunoUI-panel-confirm-cancel')
         self.cancel_button.connect('clicked', lambda _b: self.cancel())
         buttons.append(self.cancel_button)
         self.accept_button = None
         if accept_label:
             self.accept_button = Gtk.Button(label=accept_label, hexpand=True)
             # Removing an extension is the destructive confirm's red action.
-            self.accept_button.add_css_class('lumaui-panel-confirm-action' if prompt.get('danger')
+            self.accept_button.add_css_class('SunoUI-panel-confirm-action' if prompt.get('danger')
                                              else 'viola-signin-action')
             self.accept_button.connect('clicked', lambda _b: self.accept())
             buttons.append(self.accept_button)

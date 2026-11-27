@@ -13,7 +13,7 @@ SCRIPT = Path(__file__).resolve().parents[2] / 'scripts/os/qa/viola-native/read-
 SPEC = importlib.util.spec_from_file_location('native_state_observer', SCRIPT)
 MODULE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MODULE)
-REF = 'runtime/org.projectluma.Platform/aarch64/44'
+REF = 'runtime/org.projectSuno.Platform/aarch64/44'
 COMMIT = '30f7e30d5d68e20c6c39bcb933508f3706446b39f0aaf2a353a1917544cdc925'
 
 
@@ -25,11 +25,11 @@ class SignedRuntimeIdentityTest(unittest.TestCase):
         MODULE.validate_runtime_identity(REF, COMMIT, self.deployment())
 
     def test_kind_name_arch_branch_and_short_preferences_are_rejected(self):
-        for value in ('org.projectluma.Platform/aarch64/44',
-                      'app/org.projectluma.Platform/aarch64/44',
-                      'runtime/org.projectluma.Sdk/aarch64/44',
-                      'runtime/org.projectluma.Platform/x86_64/44',
-                      'runtime/org.projectluma.Platform/aarch64/45'):
+        for value in ('org.projectSuno.Platform/aarch64/44',
+                      'app/org.projectSuno.Platform/aarch64/44',
+                      'runtime/org.projectSuno.Sdk/aarch64/44',
+                      'runtime/org.projectSuno.Platform/x86_64/44',
+                      'runtime/org.projectSuno.Platform/aarch64/45'):
             with self.subTest(value=value), self.assertRaises((AssertionError, GLib.Error)):
                 MODULE.validate_runtime_identity(value, COMMIT, self.deployment())
 
@@ -41,7 +41,7 @@ class SignedRuntimeIdentityTest(unittest.TestCase):
         with self.assertRaises(AssertionError):
             MODULE.validate_runtime_identity(REF, COMMIT, deployment)
         deployment = self.deployment()
-        deployment['runtime_ref'] = 'runtime/org.projectluma.Sdk/aarch64/44'
+        deployment['runtime_ref'] = 'runtime/org.projectSuno.Sdk/aarch64/44'
         with self.assertRaises(AssertionError):
             MODULE.validate_runtime_identity(REF, COMMIT, deployment)
 

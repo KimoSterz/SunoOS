@@ -10,11 +10,11 @@ umask 022
 
 source_tree=${1:?usage: build-fp6-ims-kernel.sh ACCEPTED_SOURCE_TREE OUTPUT_DIR}
 output_dir=${2:?missing output directory}
-kernel_release=7.1.2-luma-fp-ims1
-localversion=-luma-fp-ims1
+kernel_release=7.1.2-Suno-fp-ims1
+localversion=-Suno-fp-ims1
 build_timestamp='2026-08-27 00:00:00 UTC'
-jobs=${LUMA_KERNEL_BUILD_JOBS:-8}
-in_place=${LUMA_IMS_KERNEL_IN_PLACE:-false}
+jobs=${SUNO_KERNEL_BUILD_JOBS:-8}
+in_place=${SUNO_IMS_KERNEL_IN_PLACE:-false}
 accepted_config_sha=a403b3cb247d3f2ce358f8debcc3b93d3c1949813488da8e12ac81540cee519c
 accepted_kernel_sha=101fafec6d1d661b1b159d69e43c14d1289ca03f0944af4d5593b10662524572
 
@@ -84,7 +84,7 @@ tar --sort=name --mtime="$build_timestamp" --owner=0 --group=0 --numeric-owner \
   zstd -q -19 -T0 -o "$bundle/modules-$kernel_release.tar.zst"
 
 {
-  printf 'LUMA_FP6_IMS_KERNEL_VERSION=1\n'
+  printf 'SUNO_FP6_IMS_KERNEL_VERSION=1\n'
   printf 'KERNEL_RELEASE=%s\n' "$kernel_release"
   printf 'BASE_CONFIG_SHA256=%s\n' "$accepted_config_sha"
   printf 'BASE_KERNEL_SHA256=%s\n' "$accepted_kernel_sha"

@@ -23,7 +23,7 @@ import time
 
 from .labels import LabelLog, MARKS, data_root, now_ns
 
-UNIT = "luma-touch-lab"
+UNIT = "Suno-touch-lab"
 
 
 def app_dir() -> str:
@@ -34,7 +34,7 @@ def sudo_command(user: str | None = None) -> str:
     import pwd
     pw = pwd.getpwnam(user or os.environ.get("USER") or pwd.getpwuid(os.getuid()).pw_name)
     home = os.path.realpath(pw.pw_dir)
-    root = os.path.join(home, ".local/share/luma-touch-lab")
+    root = os.path.join(home, ".local/share/Suno-touch-lab")
     props = [
         "Nice=10", "IOSchedulingClass=idle", "MemoryMax=256M", "CPUQuota=20%", "OOMScoreAdjust=500",
         "NoNewPrivileges=yes", "ProtectSystem=strict", f"ReadWritePaths={root}",
@@ -226,7 +226,7 @@ def cmd_export_plugin(args) -> int:
 
 
 def main(argv=None) -> int:
-    p = argparse.ArgumentParser(prog="touchlab", description="Luma Touch Lab")
+    p = argparse.ArgumentParser(prog="touchlab", description="Suno Touch Lab")
     sub = p.add_subparsers(dest="cmd", required=True)
     s = sub.add_parser("mark")
     s.add_argument("which", choices=sorted(MARKS))
@@ -260,7 +260,7 @@ def main(argv=None) -> int:
     s.add_argument("--model", required=True)
     s.add_argument("--out", required=True)
     for s in sub.choices.values():
-        s.add_argument("--root", help="data directory (default ~/.local/share/luma-touch-lab)")
+        s.add_argument("--root", help="data directory (default ~/.local/share/Suno-touch-lab)")
     args = p.parse_args(argv)
     root = args.root or data_root()
     if args.cmd == "mark":

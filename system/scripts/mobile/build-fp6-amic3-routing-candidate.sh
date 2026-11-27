@@ -90,7 +90,7 @@ mkdir -p "$output_dir"
 install -m 0644 "$module" "$output_dir/snd-soc-wcd9378-sdw.ko"
 install -m 0644 "$dtb" "$output_dir/milos-fairphone-fp6.dtb"
 {
-  printf 'LUMA_FP6_AMIC3_ROUTING_BUILD_VERSION=1\n'
+  printf 'SUNO_FP6_AMIC3_ROUTING_BUILD_VERSION=1\n'
   printf 'KERNEL_RELEASE=7.1.2\n'
   printf 'BASE_KERNEL_SHA256=%s\n' "$image_sha"
   printf 'PATCH_SHA256=%s\n' "$patch_sha"

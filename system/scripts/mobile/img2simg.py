@@ -7,7 +7,7 @@ previous install, not leave it showing through. The rest is RAW.
 
 With --at OFFSET the raw image is placed OFFSET bytes into the partition and
 everything before it is DONT_CARE: flashing it writes that range only (the
-device kit's LumaBoot filesystem inside userdata).
+device kit's SunoBoot filesystem inside userdata).
 
 Usage: img2simg.py RAW SPARSE [BLOCK_SIZE] [--at OFFSET]"""
 import argparse

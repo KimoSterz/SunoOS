@@ -1,7 +1,7 @@
 --- a/js/ui/shelfArrange.js
 +++ b/js/ui/shelfArrange.js
 @@ -34,7 +34,6 @@
- import {getNotificationTray} from './lumaNotificationBeacon.js';
+ import {getNotificationTray} from './SunoNotificationBeacon.js';
  
  const LIFT_SCALE = 1.04;
 -const HOLD_SCALE = 1.02;
@@ -20,7 +20,7 @@
 -            });
              actor.reactive = true;
              actor.add_action(gesture);
-             actor._lumaHoldGesture = gesture;
+             actor._SunoHoldGesture = gesture;
 @@ -457,33 +450,11 @@
          return [x, y];
      }
@@ -76,7 +76,7 @@
 +                    if (this._drag === drag && this._dragGroup() === dragGroup)
 +                        dragGroup.set_scale(LIFT_SCALE, LIFT_SCALE);
 +                }});
-             dragGroup.row.get_children().forEach(island => island.add_style_class_name?.('luma-island-lifted'));
+             dragGroup.row.get_children().forEach(island => island.add_style_class_name?.('Suno-island-lifted'));
          }
          this._decorate();
 @@ -1141,6 +1117,12 @@

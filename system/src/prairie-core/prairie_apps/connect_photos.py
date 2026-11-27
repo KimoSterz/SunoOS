@@ -4,7 +4,7 @@
 
 Each file is identified by its SHA-256. The device sends its whole library as
 a manifest, uploads only the bytes the source of truth does not have yet, and
-downloads photos other devices added into ``Pictures/Luma Hub``. Hashes are
+downloads photos other devices added into ``Pictures/Suno Hub``. Hashes are
 cached by path, size and modification time, so an unchanged library costs a
 directory walk, not a re-read.
 
@@ -23,7 +23,7 @@ import os
 from pathlib import Path
 import tempfile
 
-LIBRARY_FOLDER = "Luma Hub"
+LIBRARY_FOLDER = "Suno Hub"
 MAX_PHOTO_BYTES = 512 * 1024 * 1024
 MAX_MANIFEST_ITEMS = 20000
 _CHUNK = 1024 * 1024
@@ -169,7 +169,7 @@ def sync_photos(*, address: str, token: str, device_id: str, http, state: dict, 
                 continue
             folder.mkdir(mode=0o755, parents=True, exist_ok=True)
             target = _unique(folder, str(item.get("name", "photo")))
-            handle, temporary = tempfile.mkstemp(prefix=".luma-hub-", dir=folder)
+            handle, temporary = tempfile.mkstemp(prefix=".Suno-hub-", dir=folder)
             os.close(handle)
             try:
                 http.download(f"{address}/api/hub/sync/photos/blob/{sha}", Path(temporary), token=token)

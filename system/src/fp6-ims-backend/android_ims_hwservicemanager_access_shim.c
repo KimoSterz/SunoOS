@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /*
  * SELinux-label bridge for the exact QREL hwservicemanager running inside
- * Luma's disposable stock-IMS namespace.  It permits only the HIDL registry's
+ * Suno's disposable stock-IMS namespace.  It permits only the HIDL registry's
  * own interfaces and the two Fairphone IMS interfaces needed by imsdaemon.
  * Binder's real security-context request path is intentionally left intact.
  */
@@ -49,11 +49,11 @@ int selinux_status_open(int fallback) {
 }
 int selinux_status_updated(void) { return 0; }
 int getcon(char **context) {
-  return allocate_context(context, "u:r:luma_ims_hwservicemanager:s0");
+  return allocate_context(context, "u:r:Suno_ims_hwservicemanager:s0");
 }
 int getpidcon(pid_t pid, char **context) {
   (void)pid;
-  return allocate_context(context, "u:r:luma_ims_hidl_client:s0");
+  return allocate_context(context, "u:r:Suno_ims_hidl_client:s0");
 }
 void freecon(char *context) { free(context); }
 struct selabel_handle *selinux_android_hw_service_context_handle(void) {
@@ -63,18 +63,18 @@ struct selabel_handle *selinux_android_hw_service_context_handle(void) {
 /* Fedora's Binder LSM does not emit Android SELinux transaction SIDs.  Keep
  * the request flag off and provide the fixed, namespace-local client label to
  * hwservicemanager's own calling-context lookup instead. */
-void luma_hidl_set_requesting_sid(const void *binder, int requesting)
+void Suno_hidl_set_requesting_sid(const void *binder, int requesting)
     __asm__("_ZN7android8hardware16setRequestingSidERKNS_2spINS_4hidl4base4V1_05IBaseEEEb");
-void luma_hidl_set_requesting_sid(const void *binder, int requesting) {
+void Suno_hidl_set_requesting_sid(const void *binder, int requesting) {
   (void)binder;
   (void)requesting;
 }
 
-const char *luma_hidl_get_calling_sid(const void *thread_state)
+const char *Suno_hidl_get_calling_sid(const void *thread_state)
     __asm__("_ZNK7android8hardware14IPCThreadState13getCallingSidEv");
-const char *luma_hidl_get_calling_sid(const void *thread_state) {
+const char *Suno_hidl_get_calling_sid(const void *thread_state) {
   (void)thread_state;
-  return "u:r:luma_ims_hidl_client:s0";
+  return "u:r:Suno_ims_hidl_client:s0";
 }
 
 int ioctl(int descriptor, unsigned long request, ...) {
@@ -99,18 +99,18 @@ int selinux_check_access(const char *source_context,
   (void)audit_data;
   if (!same_string(target_class, "hwservice_manager")) {
     dprintf(STDERR_FILENO,
-            "event=luma_hidl_policy_check class=other permission=denied\n");
+            "event=Suno_hidl_policy_check class=other permission=denied\n");
     return -1;
   }
   if (same_string(permission, "add") || same_string(permission, "find") ||
       same_string(permission, "list") || same_string(permission, "get")) {
     dprintf(STDERR_FILENO,
-            "event=luma_hidl_policy_check class=hwservice_manager permission=%s result=allowed\n",
+            "event=Suno_hidl_policy_check class=hwservice_manager permission=%s result=allowed\n",
             permission);
     return 0;
   }
   dprintf(STDERR_FILENO,
-          "event=luma_hidl_policy_check class=hwservice_manager permission=%s result=denied\n",
+          "event=Suno_hidl_policy_check class=hwservice_manager permission=%s result=denied\n",
           permission ? permission : "none");
   return -1;
 }
@@ -131,14 +131,14 @@ static const char *service_class(const char *name) {
 
 int selabel_lookup(struct selabel_handle *handle, char **context,
                    const char *key, int type) {
-  static const char registry_context[] = "u:object_r:luma_ims_hwservice:s0";
+  static const char registry_context[] = "u:object_r:Suno_ims_hwservice:s0";
   const char *classification;
   char *copy;
   (void)handle;
   (void)type;
   classification = service_class(key);
   dprintf(STDERR_FILENO,
-          "event=luma_hidl_policy_lookup interface=%s result=%s\n",
+          "event=Suno_hidl_policy_lookup interface=%s result=%s\n",
           classification, same_string(classification, "other") ? "denied" : "allowed");
   if (!context || same_string(classification, "other"))
     return -1;

@@ -6,7 +6,7 @@ Stevia (patches/stevia/0004) carries the Lucide outlines the Keycap design
 uses, drawn for GTK3. GNOME Shell recolours symbolic icons through St's
 `.foreground-stroke` / `.transparent-fill` classes, so each element gets those
 classes and keeps its geometry and stroke width. The Shell icons are written to
-src/luma-shell-presentation/keycap-icons/ and must stay derived: --check fails
+src/Suno-shell-presentation/keycap-icons/ and must stay derived: --check fails
 when they differ from what Stevia's outlines produce.
 """
 
@@ -18,8 +18,8 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-STEVIA = ROOT / "patches/stevia/0004-luma-keycap-input-tools.patch"
-OUTPUT = ROOT / "src/luma-shell-presentation/keycap-icons"
+STEVIA = ROOT / "patches/stevia/0004-Suno-keycap-input-tools.patch"
+OUTPUT = ROOT / "src/Suno-shell-presentation/keycap-icons"
 ICONS = ("arrow-big-up", "arrow-big-up-filled", "arrow-right", "chevron-down", "chevron-left",
          "chevron-right", "chevron-up", "clipboard", "corner-down-left", "delete", "move",
          "settings-2", "smile")
@@ -56,7 +56,7 @@ def expected() -> dict[str, str]:
     files = stevia_files()
     result = {"LICENSE": files["LICENSE"]}
     for icon in ICONS:
-        name = f"luma-keycap-{icon}-symbolic.svg"
+        name = f"Suno-keycap-{icon}-symbolic.svg"
         result[name] = convert(files[name], icon.endswith("-filled"))
     return result
 

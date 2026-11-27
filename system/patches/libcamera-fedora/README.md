@@ -1,10 +1,10 @@
 # libcamera patches (desktop)
 
-Applied by `packaging/rpm/libcamera.spec` (Fedora's spec, release `.luma.N`)
+Applied by `packaging/rpm/libcamera.spec` (Fedora's spec, release `.Suno.N`)
 on top of Fedora's `libcamera-v0.7.2.tar.bz2` and Fedora's own patches 0001
 and 0002. `patches/libcamera` is the separate FP6 series on another base.
 
 | Patch | Origin | Why |
 |---|---|---|
-| 0003 | Luma, 2026-11-20; not upstream yet (submit to libcamera-devel) | The software ISP statistics index the 64-bin luminance histogram with the raw sample value. Unpacked 10/12-bit samples sit in 16-bit containers, so a frame with larger values (the Intel IPU7 ISYS returns frames its firmware rejected, filled with 0xffff) indexes past the array; the `_GLIBCXX_ASSERTIONS` check aborts WirePlumber, and the PipeWire camera node goes with it. Clamps to the top bin and adds the `swstats-cpu` test, which `%check` runs. libcamera main (2026-11-20) has the same code. |
-| 0004 | Luma, 2026-11-22; not upstream yet (submit to libcamera-devel) | The CPU debayer has the same assumption: it indexes its 256-entry colour lookup tables with the sample divided down to 8 bits, so the same out-of-range frames index up to 16383 and abort under `_GLIBCXX_ASSERTIONS` whenever the software ISP runs on the CPU (`LIBCAMERA_SOFTISP_MODE=cpu`, or no usable GPU). Saturates the index and adds the `debayer-cpu` test (unpacked 10/12-bit, with and without CCM), which `%check` runs. libcamera main (2026-11-22) has the same code. |
+| 0003 | Suno, 2026-11-20; not upstream yet (submit to libcamera-devel) | The software ISP statistics index the 64-bin luminance histogram with the raw sample value. Unpacked 10/12-bit samples sit in 16-bit containers, so a frame with larger values (the Intel IPU7 ISYS returns frames its firmware rejected, filled with 0xffff) indexes past the array; the `_GLIBCXX_ASSERTIONS` check aborts WirePlumber, and the PipeWire camera node goes with it. Clamps to the top bin and adds the `swstats-cpu` test, which `%check` runs. libcamera main (2026-11-20) has the same code. |
+| 0004 | Suno, 2026-11-22; not upstream yet (submit to libcamera-devel) | The CPU debayer has the same assumption: it indexes its 256-entry colour lookup tables with the sample divided down to 8 bits, so the same out-of-range frames index up to 16383 and abort under `_GLIBCXX_ASSERTIONS` whenever the software ISP runs on the CPU (`LIBCAMERA_SOFTISP_MODE=cpu`, or no usable GPU). Saturates the index and adds the `debayer-cpu` test (unpacked 10/12-bit, with and without CCM), which `%check` runs. libcamera main (2026-11-22) has the same code. |

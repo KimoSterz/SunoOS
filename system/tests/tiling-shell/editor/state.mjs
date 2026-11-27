@@ -59,7 +59,7 @@ const context = vm.createContext({console,
     global: {stage, display, windowGroup: {bind_property() {}}},
     registerGObjectClass() {}, _: s => s,
     PanelMenu: {Button: Panel}, Settings: {bind() {}, SHOW_INDICATOR: false},
-    GlobalState: {get: () => state}, lumaNewLayoutId: () => `new-${state.adds}`,
+    GlobalState: {get: () => state}, SunoNewLayoutId: () => `new-${state.adds}`,
     Layout, Tile, LayoutEditor: Canvas, DefaultMenu: Menu, EditingMenu: Menu,
     EditorDialog: class { constructor(params) { this.params = params; context.lastDialog = this; } open() {} destroy() {} },
 });
@@ -81,9 +81,9 @@ assert(bar?.visible, 'actions visible even with the panel indicator disabled');
 assert.equal(indicator.visible, false, 'panel preference retained');
 assert.deepEqual(bar.children.map(c => c.label), ['Close', 'Save']);
 assert.equal(bar.x, 1968); assert.equal(bar.y, 48);
-assert(bar.classes.has('luma-surface-dark'));
+assert(bar.classes.has('Suno-surface-dark'));
 appearance.mode = 'light'; appearance.emit('changed::surface-treatment');
-assert(bar.classes.has('luma-surface-light') && !bar.classes.has('luma-surface-dark'));
+assert(bar.classes.has('Suno-surface-light') && !bar.classes.has('Suno-surface-dark'));
 area = {...area, width: 900}; display.emit('workareas-changed'); assert.equal(bar.x, 1668);
 bar.children[0].emit('clicked');
 assert.equal(snapshot(), savedBefore, 'Close must not persist a new draft');

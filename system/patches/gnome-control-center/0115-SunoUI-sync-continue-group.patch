@@ -1,0 +1,172 @@
+diff --git a/shell/cc-Suno-view-sync.c b/shell/cc-Suno-view-sync.c
+index 424cdf1..8930a7a 100644
+--- a/shell/cc-Suno-view-sync.c
++++ b/shell/cc-Suno-view-sync.c
+@@ -2054,6 +2054,147 @@ app_data_row (View *v, GtkBox *card, JsonObject *sync, JsonObject *cats)
+   cc_Suno_view_bind_navigation (v, row, "sync-apps");
+ }
+ 
++/* ── Continue (ADR-055 §5): device-local, so each device decides for itself ──
++ * Two switches (offer here / let others continue from here) in the session's own
++ * settings (org.projectSuno.session, never synced) and Saved windows · Clear,
++ * which deletes the local snapshot and this device's record (ConnectSync1.ClearContinue).
++ * The fixture keeps its own copy in CFSYNC.continue {offer, share, windows, saved}. */
++#define SESSION_SCHEMA "org.projectSuno.session"
++#define CONTINUE_NOTE "Only your computers and phones get your windows. A TV only gets what you were watching or listening to."
++
++static GSettings *
++session_settings (void)
++{
++  GSettingsSchemaSource *source = g_settings_schema_source_get_default ();
++  g_autoptr (GSettingsSchema) schema = source ? g_settings_schema_source_lookup (source, SESSION_SCHEMA, TRUE) : NULL;
++  return schema ? g_settings_new (SESSION_SCHEMA) : NULL;
++}
++
++static JsonObject *
++continue_fixture (View *v)
++{
++  JsonObject *sync = sync_of (v);
++  if (!sync) return NULL;
++  if (!json_object_has_member (sync, "continue"))
++    json_object_set_object_member (sync, "continue", json_object_new ());
++  return obj (sync, "continue");
++}
++
++static gboolean
++continue_flag (View *v, const char *key)
++{
++  if (!live (v)) return flag (continue_fixture (v), key, TRUE);
++  g_autoptr (GSettings) settings = session_settings ();
++  return settings ? g_settings_get_boolean (settings, g_str_equal (key, "offer") ? "continue-offer" : "continue-share") : TRUE;
++}
++
++static void
++continue_call (const char *method)
++{
++  g_autoptr (GDBusConnection) bus = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, NULL);
++  if (bus)
++    g_dbus_connection_call (bus, "org.projectSuno.ConnectSync1", "/org/projectSuno/ConnectSync1", "org.projectSuno.ConnectSync1",
++                            method, NULL, NULL, G_DBUS_CALL_FLAGS_NO_AUTO_START, 30000, NULL, NULL, NULL);
++}
++
++static void
++flip_continue (View *v, GtkWidget *row, gboolean on)
++{
++  const char *key = g_object_get_data (G_OBJECT (row), "cs-key");
++  if (!live (v))
++    {
++      json_object_set_boolean_member (continue_fixture (v), key, on);
++      if (g_str_equal (key, "share") && !on)
++        json_object_set_int_member (continue_fixture (v), "windows", 0);
++      cc_Suno_view_queue_refresh (v);
++      return;
++    }
++  g_autoptr (GSettings) settings = session_settings ();
++  if (!settings) return;
++  g_settings_set_boolean (settings, g_str_equal (key, "offer") ? "continue-offer" : "continue-share", on);
++  /* Off deletes this device's record now, not at the next cycle: Sync withdraws when sharing is off. */
++  if (g_str_equal (key, "share")) continue_call ("PublishContinue");
++}
++
++/* What this device has saved: its windows and how long ago, from its own snapshot. */
++static gboolean
++saved_windows (View *v, guint *windows, gint64 *taken)
++{
++  if (!live (v))
++    {
++      JsonObject *f = continue_fixture (v);
++      *windows = f && json_object_has_member (f, "windows") ? json_object_get_int_member (f, "windows") : 11;
++      *taken = f && json_object_has_member (f, "saved") ? json_object_get_int_member (f, "saved")
++                                                       : g_get_real_time () / G_USEC_PER_SEC - 120;
++      return *windows > 0;
++    }
++  g_autofree char *path = g_build_filename (g_get_user_state_dir (), "Suno", "session", "current.json", NULL);
++  g_autoptr (JsonParser) parser = json_parser_new ();
++  if (!json_parser_load_from_file (parser, path, NULL)) return FALSE;
++  JsonNode *root = json_parser_get_root (parser);
++  JsonObject *snapshot = root && JSON_NODE_HOLDS_OBJECT (root) ? json_node_get_object (root) : NULL;
++  JsonArray *list = snapshot ? arr (snapshot, "windows") : NULL;
++  *windows = list ? json_array_get_length (list) : 0;
++  *taken = snapshot && json_object_has_member (snapshot, "taken") ? json_object_get_int_member (snapshot, "taken") : 0;
++  return *windows > 0;
++}
++
++static void
++clear_continue (GtkButton *button, gpointer data)
++{
++  View *v = view_of (GTK_WIDGET (button));
++  if (!v) return;
++  /* No confirm: the next snapshot is a minute away. */
++  if (!live (v)) json_object_set_int_member (continue_fixture (v), "windows", 0);
++  else continue_call ("ClearContinue");
++  cc_Suno_view_queue_refresh (v);
++}
++
++static GtkWidget *
++continue_switch_row (GtkBox *card, const char *key, const char *icon, const char *title, const char *line, gboolean on)
++{
++  g_autofree char *name = g_strconcat ("cs-continue-", key, NULL);
++  GtkWidget *button = switch_button (title, on, flip_continue, name);
++  g_object_set_data_full (G_OBJECT (button), "cs-key", g_strdup (key), g_free);
++  /* Wraps with no one-line natural width: on a phone the switch stays at the right, centred. */
++  GtkWidget *t = wrap (cf_text (title, "cf-title"));
++  Suno_ui_apply_type (t, "row-title");
++  return custom_row (card, cf_lead_icon (icon), t, sub_label (line), g_object_get_data (G_OBJECT (button), "cf-switch"), button);
++}
++
++static void
++continue_group (View *v, JsonObject *sync)
++{
++  GtkBox *card = cf_group (v, "Continue", NULL);
++  gtk_widget_add_css_class (gtk_widget_get_parent (GTK_WIDGET (card)), "cs-continue");
++  continue_switch_row (card, "offer", "square-stack", "Offer windows from my other devices",
++                       "After you unlock, asks before anything opens", continue_flag (v, "offer"));
++  JsonObject *me = this_device (sync);
++  g_autofree char *share = g_strdup_printf ("Let my other devices continue from this %s", device_name (sync));
++  continue_switch_row (card, "share", class_icon (me ? str (me, "class") : NULL), share,
++                       "Its windows are kept for 72 hours, encrypted", continue_flag (v, "share"));
++  guint windows = 0;
++  gint64 taken = 0;
++  gboolean saved = saved_windows (v, &windows, &taken);
++  g_autofree char *line = NULL;
++  if (saved)
++    {
++      gint64 minutes = MAX (0, (g_get_real_time () / G_USEC_PER_SEC - taken) / 60);
++      g_autofree char *ago = minutes < 1 ? g_strdup ("just now")
++                           : minutes < 60 ? g_strdup_printf ("%" G_GINT64_FORMAT " min ago", minutes)
++                           : g_strdup_printf ("%" G_GINT64_FORMAT " h ago", (minutes + 30) / 60);
++      line = g_strdup_printf ("%u %s · saved %s", windows, windows == 1 ? "window" : "windows", ago);
++    }
++  GtkWidget *clear = cf_button ("Clear", "fill", TRUE);
++  gtk_widget_set_name (clear, "cs-continue-clear");
++  gtk_widget_set_sensitive (clear, saved);
++  g_signal_connect (clear, "clicked", G_CALLBACK (clear_continue), NULL);
++  cf_row (card, cf_lead_icon ("clock"), "Saved windows", saved ? line : "None saved", clear, FALSE);
++  GtkWidget *note = wrap (label (CONTINUE_NOTE, "cs-note"));
++  gtk_widget_add_css_class (note, "cs-continue-note");
++  gtk_box_append (GTK_BOX (gtk_widget_get_parent (GTK_WIDGET (card))), note);
++}
++
+ /* Fixture capture of the hero states (SUNO_SETTINGS_SYNC_STATE=on|off|waiting|removed|newkey, SUNO_SETTINGS_SYNC_HELD=N):
+  * the fixture's own CFSYNC, changed once. */
+ static void
+@@ -2126,6 +2267,8 @@ cc_Suno_view_sync_render (View *v)
+       if (g_str_equal (categories[i].key, "app_data")) app_data_row (v, card, sync, cats);
+       else category_row (card, cats, i);
+     }
++  /* Between What syncs and App data: device-local, so on every member device. */
++  if (member (st)) continue_group (v, sync);
+   g_autoptr (GPtrArray) apps = apps_sorted (sync);
+   if (apps->len)
+     {
+diff --git a/shell/Suno-settings-system.css b/shell/Suno-settings-system.css
+index f908690..49fd1b1 100644
+--- a/shell/Suno-settings-system.css
++++ b/shell/Suno-settings-system.css
+@@ -179,3 +179,6 @@ button#cs-sign-in image { -gtk-icon-size: 14px; }
+ label.cs-note.cs-held { margin: 8px 6px 0; }  /* the reference's 10, less its 18 px line box's lead over the p's */
+ .cs-sheet.tv label.cs-q { margin-top: 13.5px; font-size: 19.5px; line-height: 30px; }
+ .cs-capture .cs-sheet .cs-ico.cs-spin image { animation: none; }
++
++/* Suno Connect › Sync › Continue (ADR-055; design-center mockups/continue cn.css .cn-gnote): the group's note. */
++label.cs-note.cs-continue-note { margin: 10px 6px 0; }

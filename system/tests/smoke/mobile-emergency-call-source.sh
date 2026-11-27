@@ -5,8 +5,8 @@ set -eu
 
 repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 daemon="$repo_root/src/imsd/implementations/main.cpp"
-policy="$repo_root/scripts/mobile/net.catcrafts.IMS1-luma.conf"
-greeter="$repo_root/src/luma-greeter/luma-greeter.c"
+policy="$repo_root/scripts/mobile/net.catcrafts.IMS1-Suno.conf"
+greeter="$repo_root/src/Suno-greeter/Suno-greeter.c"
 
 check() {
   label=$1

@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Keep Messages' established transports while its window uses LumaUI."""
+"""Keep Messages' established transports while its window uses SunoUI."""
 
 from __future__ import annotations
 
@@ -10,8 +10,8 @@ from .messages_port import MessagesSurface
 from .messages_preferences import ConversationPreferences
 
 
-class LumaUIMessagesWindow(MessagesWindow):
-    """The existing message controller with one LumaUI view over its records.
+class SunoUIMessagesWindow(MessagesWindow):
+    """The existing message controller with one SunoUI view over its records.
 
     Messages' network, modem, scroll and delivery code remains the authority.
     This class only observes those updates and presents them through kit parts.
@@ -148,7 +148,7 @@ class LumaUIMessagesWindow(MessagesWindow):
                 return
             key = service.key(record.address)
             preference = self.surface.preferences.flags(key)
-            flags = self._luma_flags(service, record)
+            flags = self._Suno_flags(service, record)
             entry = {"id": key, "name": record.display_name, "address": record.address,
                      "record": record, "service": service, "person": None, "group": (),
                      "sms": service.native, "unread": 0, "pinned": preference["pinned"],

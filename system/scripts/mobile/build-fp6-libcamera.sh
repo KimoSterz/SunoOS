@@ -14,7 +14,7 @@ repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 
 work=${1:?usage: build-fp6-libcamera.sh WORK_DIR PREFIX}
 prefix=${2:?usage: build-fp6-libcamera.sh WORK_DIR PREFIX}
-jobs=${LUMA_LIBCAMERA_BUILD_JOBS:-2}
+jobs=${SUNO_LIBCAMERA_BUILD_JOBS:-2}
 
 case "$jobs" in
   ''|*[!0-9]*) printf 'error: invalid job count: %s\n' "$jobs" >&2; exit 1 ;;

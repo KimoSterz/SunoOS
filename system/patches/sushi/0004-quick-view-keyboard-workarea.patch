@@ -20,7 +20,7 @@
      return;
  
 -  sushi_media_bin_set_fullscreen (self, !priv->fullscreen);
-+  /* Luma keeps video in its parent preview and the shelf visible. */
++  /* Suno keeps video in its parent preview and the shelf visible. */
 +  GtkWidget *window = gtk_widget_get_toplevel (GTK_WIDGET (self));
 +  if (G_IS_ACTION_GROUP (window) &&
 +      g_action_group_has_action (G_ACTION_GROUP (window), "fullscreen"))

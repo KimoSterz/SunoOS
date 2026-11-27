@@ -1,0 +1,24 @@
+[Unit]
+Description=Project Suno FP6 primary eSIM provisioning session
+After=rmtfs.service tqftpserv.service Suno-fp6-carrier-pdc.service
+Wants=rmtfs.service tqftpserv.service Suno-fp6-carrier-pdc.service Suno-fp6-carrier-select.service
+Before=ModemManager.service Suno-fp6-cellular-link.service Suno-fp6-imsd.service
+ConditionPathExists=/sys/firmware/devicetree/base/model
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/Suno-fp6-primary-gw-session
+RemainAfterExit=yes
+TimeoutStartSec=180
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_UNIX AF_QIPCRTR
+
+[Install]
+WantedBy=multi-user.target

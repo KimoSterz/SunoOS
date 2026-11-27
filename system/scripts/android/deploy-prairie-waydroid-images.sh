@@ -5,8 +5,8 @@ set -euo pipefail
 
 repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 image_source=${1:-$repo_root/build/android/prairie-windowing/x86_64/images}
-image_target=${LUMA_WAYDROID_IMAGE_DIR:-/etc/waydroid-extra/images}
-lock_file=/run/lock/luma-waydroid-image-deploy.lock
+image_target=${SUNO_WAYDROID_IMAGE_DIR:-/etc/waydroid-extra/images}
+lock_file=/run/lock/Suno-waydroid-image-deploy.lock
 
 if [[ ${EUID:-$(id -u)} -ne 0 ]]; then
   printf 'error: image deployment must run as root\n' >&2

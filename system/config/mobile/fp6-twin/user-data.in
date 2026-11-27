@@ -1,30 +1,30 @@
 #cloud-config
 users:
-  - name: luma
-    gecos: Project Luma twin developer
+  - name: Suno
+    gecos: Project Suno twin developer
     groups: [wheel]
     lock_passwd: true
     shell: /bin/bash
     sudo: ["ALL=(ALL) NOPASSWD:ALL"]
     ssh_authorized_keys:
-      - __LUMA_TWIN_SSH_PUBLIC_KEY__
+      - __SUNO_TWIN_SSH_PUBLIC_KEY__
 ssh_pwauth: false
 disable_root: true
 write_files:
-  - path: /etc/luma/rootfs-contract
+  - path: /etc/Suno/rootfs-contract
     owner: root:root
     permissions: '0644'
     content: |
-      LUMA_ROOTFS_CONTRACT=mobile-v1
-      LUMA_ROOTFS_BASE=fedora-44-aarch64
-      LUMA_HARDWARE_BACKEND=virtual
-      LUMA_KERNEL_CONTRACT=qemu-virt
-      LUMA_PHYSICAL_DEVICE=false
-  - path: /etc/luma/hardware-profile
+      SUNO_ROOTFS_CONTRACT=mobile-v1
+      SUNO_ROOTFS_BASE=fedora-44-aarch64
+      SUNO_HARDWARE_BACKEND=virtual
+      SUNO_KERNEL_CONTRACT=qemu-virt
+      SUNO_PHYSICAL_DEVICE=false
+  - path: /etc/Suno/hardware-profile
     owner: root:root
     permissions: '0644'
     content: |
-      LUMA_PROFILE=fp6-behavioral-twin-v1
+      SUNO_PROFILE=fp6-behavioral-twin-v1
       REFERENCE_DEVICE=fairphone-fp6
       REFERENCE_SOC=sm7635
       REFERENCE_PLATFORM=milos
@@ -36,11 +36,11 @@ write_files:
       TOUCH_SAMPLE_HZ=240
       REFERENCE_MEMORY_MIB=8192
       REFERENCE_BATTERY_MAH=4415
-  - path: /etc/luma/fp6-twin/default-state.env
+  - path: /etc/Suno/fp6-twin/default-state.env
     owner: root:root
     permissions: '0644'
     content: |
-      LUMA_TWIN_STATE_VERSION=1
+      SUNO_TWIN_STATE_VERSION=1
       BATTERY_PERCENT=82
       BATTERY_STATUS=discharging
       BATTERY_PRESENT=true
@@ -52,16 +52,16 @@ write_files:
       CALL_STATE=idle
       POWER_STATE=active
       THERMAL_STATE=nominal
-  - path: /usr/local/bin/luma-fp6-twinctl
+  - path: /usr/local/bin/Suno-fp6-twinctl
     owner: root:root
     permissions: '0755'
     content: |
       #!/usr/bin/env bash
       set -euo pipefail
 
-      state_dir=/run/luma-fp6-twin
+      state_dir=/run/Suno-fp6-twin
       state_file=$state_dir/state.env
-      defaults=/etc/luma/fp6-twin/default-state.env
+      defaults=/etc/Suno/fp6-twin/default-state.env
 
       usage() {
         printf 'usage: %s status | reset | set KEY VALUE | scenario NAME\n' "$0" >&2
@@ -153,23 +153,23 @@ write_files:
           ;;
         *) usage ;;
       esac
-  - path: /etc/systemd/system/luma-fp6-twin-state.service
+  - path: /etc/systemd/system/Suno-fp6-twin-state.service
     owner: root:root
     permissions: '0644'
     content: |
       [Unit]
-      Description=Initialize Project Luma FP6 behavioral state
-      ConditionPathExists=/etc/luma/rootfs-contract
+      Description=Initialize Project Suno FP6 behavioral state
+      ConditionPathExists=/etc/Suno/rootfs-contract
 
       [Service]
       Type=oneshot
-      ExecStart=/usr/local/bin/luma-fp6-twinctl reset
+      ExecStart=/usr/local/bin/Suno-fp6-twinctl reset
       RemainAfterExit=yes
 
       [Install]
       WantedBy=multi-user.target
 runcmd:
   - [systemctl, daemon-reload]
-  - [systemctl, enable, --now, luma-fp6-twin-state.service]
+  - [systemctl, enable, --now, Suno-fp6-twin-state.service]
   - [systemctl, enable, --now, sshd.service]
-final_message: "Project Luma FP6 behavioral twin is ready"
+final_message: "Project Suno FP6 behavioral twin is ready"

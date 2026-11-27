@@ -6,7 +6,7 @@ separate `sync/secrets/tide-source:<source-id>` route. Local music folders and
 media files are not copied by this service.
 
 Install the matching native Tide and core-apps candidates together: Tide
-`2.luma.36.mobile20261030.2` and core apps `1.luma.124.mobile20261030.2`.
+`2.Suno.36.mobile20261030.2` and core apps `1.Suno.124.mobile20261030.2`.
 These are source candidate pins, not published or qualified packages. The core
 RPM requires the matching Tide API when native Tide is installed. Connect also targets the active signed Flatpak
 install. Model and credential
@@ -34,7 +34,7 @@ Cross-component regression checks use the real Tide model and credential class
 with isolated libsecret and Hub fixtures:
 
 ```sh
-PYTHONPATH=src/prairie-core:src/luma-tide:src/luma-installer \
+PYTHONPATH=src/prairie-core:src/Suno-tide:src/Suno-installer \
   python3 tests/integration/tide_connect.py
 ```
 

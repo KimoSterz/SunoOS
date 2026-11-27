@@ -1,13 +1,13 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Project Luma <engineering@projectluma.org>
+From: Project Suno <engineering@projectSuno.org>
 Date: Sun, 22 Nov 2026 15:10:00 -0600
 Subject: [PATCH] App icons: the plate fills the tile; icons without one get a
  drawn plate
 
-A v4 Luma app icon draws its plate as a rounded square, 860 on its 1024
+A v4 Suno app icon draws its plate as a rounded square, 860 on its 1024
 canvas, inside a transparent margin, so at a tile's size its plate was 84%
 as large as the tile and the tile's corner mask never reached it. The
-LumaUI app-icon helper (lumaAppIconPlate.js, used through iconMask.js
+SunoUI app-icon helper (SunoAppIconPlate.js, used through iconMask.js
 syncAppIconPlate) reads an icon's SVG once per file and modification time;
 an icon whose first drawn element is a rounded square centred on a square
 canvas has its texture rendered at least that large and is scaled about
@@ -20,45 +20,45 @@ The notification tile clips and masks its art as one actor so the icon can
 be larger than the tile, and the app badge is a ring around a 16 px clip so
 its icon never paints over the ring.
 ---
- data/theme/luma-shelf.css     |  8 ++-
+ data/theme/Suno-shelf.css     |  8 ++-
  js/js-resources.gresource.xml |  1 +
  js/ui/iconMask.js             | 69 ++++++++++++++++++++++++++
- js/ui/lumaAppIconPlate.js     | 92 +++++++++++++++++++++++++++++++++++
+ js/ui/SunoAppIconPlate.js     | 92 +++++++++++++++++++++++++++++++++++
  js/ui/messageList.js          | 59 +++++++++++++++++-----
  5 files changed, 216 insertions(+), 13 deletions(-)
- create mode 100644 js/ui/lumaAppIconPlate.js
+ create mode 100644 js/ui/SunoAppIconPlate.js
 
-diff --git a/data/theme/luma-shelf.css b/data/theme/luma-shelf.css
+diff --git a/data/theme/Suno-shelf.css b/data/theme/Suno-shelf.css
 index c3cc58f..0ee675c 100644
---- a/data/theme/luma-shelf.css
-+++ b/data/theme/luma-shelf.css
-@@ -2940,7 +2940,13 @@ StBoxLayout.luma-notification-tray.luma-surface-dark .luma-notification-tray-cou
- .quick-settings.luma-studio-options .luma-options-system { border-top: none; box-shadow: inset 0 1px 0 rgba(255,255,255,.09); }
- .quick-settings.luma-studio-options .luma-options-toggle-row > .luma-options-utility { width: 140px; }
+--- a/data/theme/Suno-shelf.css
++++ b/data/theme/Suno-shelf.css
+@@ -2940,7 +2940,13 @@ StBoxLayout.Suno-notification-tray.Suno-surface-dark .Suno-notification-tray-cou
+ .quick-settings.Suno-studio-options .Suno-options-system { border-top: none; box-shadow: inset 0 1px 0 rgba(255,255,255,.09); }
+ .quick-settings.Suno-studio-options .Suno-options-toggle-row > .Suno-options-utility { width: 140px; }
  
--.luma-notification-lip .luma-lip-app-badge { margin: 0; }
-+.luma-notification-lip .luma-lip-app-badge { margin: 0; border-radius: 10px; background-color: #21252b; }
-+.luma-notification-lip.luma-surface-light .luma-lip-app-badge { background-color: #eceef1; }
-+.luma-notification-lip .luma-lip-app-badge-clip { width: 16px; height: 16px; }
+-.Suno-notification-lip .Suno-lip-app-badge { margin: 0; }
++.Suno-notification-lip .Suno-lip-app-badge { margin: 0; border-radius: 10px; background-color: #21252b; }
++.Suno-notification-lip.Suno-surface-light .Suno-lip-app-badge { background-color: #eceef1; }
++.Suno-notification-lip .Suno-lip-app-badge-clip { width: 16px; height: 16px; }
 +
 +/* The plate the Shell draws behind an app icon that has none of its own
 + * (iconMask.js syncAppIconPlate); the clip's mask gives it the tile's corner. */
-+.luma-app-icon-plate { background-color: #eef0f4; }
++.Suno-app-icon-plate { background-color: #eef0f4; }
  
- .quick-settings.luma-studio-options .luma-options-radio .quick-toggle-menu-button { margin: 0; }
- .quick-settings.luma-studio-options .luma-options-radio .quick-toggle > StBoxLayout { padding: 0; }
+ .quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-menu-button { margin: 0; }
+ .quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle > StBoxLayout { padding: 0; }
 diff --git a/js/js-resources.gresource.xml b/js/js-resources.gresource.xml
 index dd0e7c3..8a298ea 100644
 --- a/js/js-resources.gresource.xml
 +++ b/js/js-resources.gresource.xml
 @@ -131,6 +131,7 @@
-     <file>ui/lumaWindowPath.js</file>
+     <file>ui/SunoWindowPath.js</file>
      <file>ui/mediaArtwork.js</file>
      <file>ui/iconMask.js</file>
-+    <file>ui/lumaAppIconPlate.js</file>
-     <file>ui/lumaMediaIslandGuard.js</file>
++    <file>ui/SunoAppIconPlate.js</file>
+     <file>ui/SunoMediaIslandGuard.js</file>
      <file>ui/shelfMedia.js</file>
-     <file>ui/lumaAndroidActivation.js</file>
+     <file>ui/SunoAndroidActivation.js</file>
 diff --git a/js/ui/iconMask.js b/js/ui/iconMask.js
 index 8ea1c07..bdf60d0 100644
 --- a/js/ui/iconMask.js
@@ -72,11 +72,11 @@ index 8ea1c07..bdf60d0 100644
  import Shell from 'gi://Shell';
  import St from 'gi://St';
  
-+import {plateScaleForFile, platedIconSize} from './lumaAppIconPlate.js';
++import {plateScaleForFile, platedIconSize} from './SunoAppIconPlate.js';
 +
  // radius is a fraction of the actor's shorter side. The offscreen texture is
  // the actor's paint volume, enlarged beyond the actor on every side, so the
- // texture coordinates are mapped back to actor pixels (as LumaRoundedClip
+ // texture coordinates are mapped back to actor pixels (as SunoRoundedClip
 @@ -40,6 +43,72 @@ export function smoothOffscreenSampling(effect) {
  // they read as one family. Stated as a fraction so it holds at every size.
  export const ICON_CORNER_RATIO = 10 / 36;
@@ -92,7 +92,7 @@ index 8ea1c07..bdf60d0 100644
 +    return iconTheme.lookup_by_gicon(gicon, 1024, 0)?.get_filename() ?? null;
 +}
 +
-+// The scale at which an app icon's plate covers its tile (lumaAppIconPlate.js),
++// The scale at which an app icon's plate covers its tile (SunoAppIconPlate.js),
 +// or null for an icon without one.
 +export function appIconPlateScale(gicon) {
 +    try {
@@ -115,7 +115,7 @@ index 8ea1c07..bdf60d0 100644
 +// Draws an app icon so a plate fills its clip, the masked tile it sits in:
 +// an icon with a plate at the plate's scale (the clip takes the margin
 +// around it), any other at the clip's size on the plate the clip draws
-+// (luma-app-icon-plate). size is the tile's in logical pixels; without it the
++// (Suno-app-icon-plate). size is the tile's in logical pixels; without it the
 +// icon's own CSS icon-size is the tile's.
 +export function syncAppIconPlate(icon, clip, size = null) {
 +    let base = size;
@@ -133,9 +133,9 @@ index 8ea1c07..bdf60d0 100644
 +    // icon take its full size, centred, for the clip to crop.
 +    setOverhang(icon, plate ?? 1);
 +    if (plate === null && icon.gicon)
-+        clip.add_style_class_name('luma-app-icon-plate');
++        clip.add_style_class_name('Suno-app-icon-plate');
 +    else
-+        clip.remove_style_class_name('luma-app-icon-plate');
++        clip.remove_style_class_name('Suno-app-icon-plate');
 +}
 +
 +// Lets an icon take its CSS size and its clip no plate again (a glyph or a
@@ -144,20 +144,20 @@ index 8ea1c07..bdf60d0 100644
 +    if (icon.icon_size !== -1)
 +        icon.icon_size = -1;
 +    setOverhang(icon, 1);
-+    clip.remove_style_class_name('luma-app-icon-plate');
++    clip.remove_style_class_name('Suno-app-icon-plate');
 +}
 +
  // Maps an offscreen effect's texture coordinates to its actor's pixels: the
  // texture is the paint volume, which Clutter enlarges beyond the actor.
  // Sets <prefix>_extent (the texture in logical pixels), <prefix>_size (the
-diff --git a/js/ui/lumaAppIconPlate.js b/js/ui/lumaAppIconPlate.js
+diff --git a/js/ui/SunoAppIconPlate.js b/js/ui/SunoAppIconPlate.js
 new file mode 100644
 index 0000000..114890d
 --- /dev/null
-+++ b/js/ui/lumaAppIconPlate.js
++++ b/js/ui/SunoAppIconPlate.js
 @@ -0,0 +1,92 @@
 +// SPDX-License-Identifier: GPL-2.0-or-later
-+// The LumaUI app-icon plate. A v4 Luma app icon draws its plate as a
++// The SunoUI app-icon plate. A v4 Suno app icon draws its plate as a
 +// rounded square centred on its canvas, 860 on 1024: an icon drawn at a
 +// tile's size shows its plate 84% as large, inside a transparent margin.
 +// The Shell draws such an icon at the plate's scale, so the plate fills the
@@ -256,8 +256,8 @@ index ed694cb..4c3c3f6 100644
  
  import * as Util from '../misc/util.js';
  import {formatTime, formatTimeSpan} from '../misc/dateUtils.js';
--import {LumaIconMask} from './iconMask.js';
-+import {LumaIconMask, clearAppIconPlate, syncAppIconPlate} from './iconMask.js';
+-import {SunoIconMask} from './iconMask.js';
++import {SunoIconMask, clearAppIconPlate, syncAppIconPlate} from './iconMask.js';
  import {logErrorUnlessCancelled} from '../misc/errorUtils.js';
  
  const MAX_NOTIFICATION_BUTTONS = 3;
@@ -270,7 +270,7 @@ index ed694cb..4c3c3f6 100644
 +        // its plate's scale (iconMask.js syncAppIconPlate), larger than the
 +        // tile, and the badge sits outside the clip.
 +        this._tileArt = new St.Widget({
-+            style_class: 'luma-notification-tile-art-clip',
++            style_class: 'Suno-notification-tile-art-clip',
 +            layout_manager: new Clutter.BinLayout(),
 +            x_expand: true,
 +            y_expand: true,
@@ -278,13 +278,13 @@ index ed694cb..4c3c3f6 100644
 +        });
 +        this._tileArt.add_child(sourceIcon);
          this._tileImage = new St.Icon({
-             style_class: 'luma-notification-tile-image',
+             style_class: 'Suno-notification-tile-image',
              x_align: Clutter.ActorAlign.CENTER,
              y_align: Clutter.ActorAlign.CENTER,
              visible: false,
          });
 -        this._tile.add_child(this._tileImage);
--        this._appBadge = new St.Icon({style_class: 'luma-lip-app-badge', icon_size: 16,
+-        this._appBadge = new St.Icon({style_class: 'Suno-lip-app-badge', icon_size: 16,
 +        this._tileArt.add_child(this._tileImage);
 +        this._tile.add_child(this._tileArt);
 +        // The badge is a ring (the frame's border) around a 16 px clip that
@@ -292,9 +292,9 @@ index ed694cb..4c3c3f6 100644
 +        // over the ring.
 +        this._appBadgeIcon = new St.Icon({icon_size: 16,
 +            x_align: Clutter.ActorAlign.CENTER, y_align: Clutter.ActorAlign.CENTER});
-+        this._appBadgeClip = new St.Bin({style_class: 'luma-lip-app-badge-clip',
++        this._appBadgeClip = new St.Bin({style_class: 'Suno-lip-app-badge-clip',
 +            clip_to_allocation: true, x_expand: true, y_expand: true, child: this._appBadgeIcon});
-+        this._appBadge = new St.Bin({style_class: 'luma-lip-app-badge', child: this._appBadgeClip,
++        this._appBadge = new St.Bin({style_class: 'Suno-lip-app-badge', child: this._appBadgeClip,
              x_align: Clutter.ActorAlign.END, y_align: Clutter.ActorAlign.END, visible: false});
          this._appBadge.translation_x = this._appBadge.translation_y = 6;
          this._tile.add_child(this._appBadge);
@@ -305,15 +305,15 @@ index ed694cb..4c3c3f6 100644
 -        for (const icon of [sourceIcon, this._tileImage, this._appBadge]) {
 +        for (const clip of [this._tileArt, this._appBadgeClip]) {
              try {
-                 const mask = new LumaIconMask();
+                 const mask = new SunoIconMask();
                  mask.set_uniform_float(mask.get_uniform_location('radius'), 1,
 -                    [icon === this._appBadge ? 0.5 : CARD_TILE_RADIUS / CARD_TILE_SIZE]);
--                icon.add_effect_with_name('luma-tile-mask', mask);
+-                icon.add_effect_with_name('Suno-tile-mask', mask);
 +                    [clip === this._appBadgeClip ? 0.5 : CARD_TILE_RADIUS / CARD_TILE_SIZE]);
-+                clip.add_effect_with_name('luma-tile-mask', mask);
++                clip.add_effect_with_name('Suno-tile-mask', mask);
              } catch (error) {
                  // Without a shader path the tile still clips its own fill.
-                 logError(error, 'Luma notification tile mask unavailable');
+                 logError(error, 'Suno notification tile mask unavailable');
              }
          }
 -        sourceIcon.connectObject('notify::gicon', () => this._syncTile(), this);
@@ -326,25 +326,25 @@ index ed694cb..4c3c3f6 100644
          // The Shell's own badge on an app's tile (the Settings icon on a
          // permission offer). Only the Shell sets it: no notification an app
          // sends can carry it.
--        this._appBadge.gicon = this._lumaShellBadge ?? sourceIcon.gicon;
-+        this._appBadgeIcon.gicon = this._lumaShellBadge ?? sourceIcon.gicon;
-         this._appBadge.visible = showImage || !!this._lumaShellBadge;
--        this._tileImage.get_effect('luma-tile-mask')?.set_uniform_float(
--            this._tileImage.get_effect('luma-tile-mask').get_uniform_location('radius'), 1, [0.5]);
+-        this._appBadge.gicon = this._SunoShellBadge ?? sourceIcon.gicon;
++        this._appBadgeIcon.gicon = this._SunoShellBadge ?? sourceIcon.gicon;
+         this._appBadge.visible = showImage || !!this._SunoShellBadge;
+-        this._tileImage.get_effect('Suno-tile-mask')?.set_uniform_float(
+-            this._tileImage.get_effect('Suno-tile-mask').get_uniform_location('radius'), 1, [0.5]);
 +        syncAppIconPlate(this._appBadgeIcon, this._appBadgeClip, 16);
 +        // A picture is round; an app's art takes the tile's corner.
-+        this._tileArt.get_effect('luma-tile-mask')?.set_uniform_float(
-+            this._tileArt.get_effect('luma-tile-mask').get_uniform_location('radius'), 1,
++        this._tileArt.get_effect('Suno-tile-mask')?.set_uniform_float(
++            this._tileArt.get_effect('Suno-tile-mask').get_uniform_location('radius'), 1,
 +            [showImage ? 0.5 : CARD_TILE_RADIUS / CARD_TILE_SIZE]);
          const glyph = !showImage && isGlyphIcon(sourceIcon.gicon);
 +        this._tileGlyph = glyph;
 +        this._tileShowsImage = showImage;
          this._tile.remove_style_class_name(glyph
-             ? 'luma-notification-tile-art' : 'luma-notification-tile-glyph');
+             ? 'Suno-notification-tile-art' : 'Suno-notification-tile-glyph');
          this._tile.add_style_class_name(glyph
-             ? 'luma-notification-tile-glyph' : 'luma-notification-tile-art');
--        sourceIcon.get_effect('luma-tile-mask')?.set_enabled(!glyph);
-+        this._tileArt.get_effect('luma-tile-mask')?.set_enabled(!glyph);
+             ? 'Suno-notification-tile-glyph' : 'Suno-notification-tile-art');
+-        sourceIcon.get_effect('Suno-tile-mask')?.set_enabled(!glyph);
++        this._tileArt.get_effect('Suno-tile-mask')?.set_enabled(!glyph);
 +        this._syncTilePlate();
 +    }
 +

@@ -3,10 +3,10 @@
 """Prairie's widgets are the Application Kit's, under their old names.
 
 There was a second kit here — its own action bar, icon button, avatar, row
-and empty state — and it was the reason a Prairie application and a Luma
+and empty state — and it was the reason a Prairie application and a Suno
 application did not look like the same application. These names are kept so
 nothing already written breaks; each is the kit's widget, and a new
-application imports luma_appkit directly.
+application imports Suno_appkit directly.
 """
 
 from __future__ import annotations
@@ -17,7 +17,7 @@ gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 from gi.repository import Gtk, Pango  # noqa: E402
 
-from luma_appkit import (  # noqa: E402
+from Suno_appkit import (  # noqa: E402
     AppContext, Avatar, EmptyState, IconButton, MobileHeader, NavigationRow, Toolbar,
 )
 
@@ -47,7 +47,7 @@ class PrairieActionBar(Toolbar):
     def add_title(self, title: str) -> Gtk.Label:
         label = Gtk.Label(label=title, xalign=0, hexpand=True)
         label.set_ellipsize(Pango.EllipsizeMode.END)
-        label.add_css_class("luma-action-title")
+        label.add_css_class("Suno-action-title")
         self.append(label)
         return label
 

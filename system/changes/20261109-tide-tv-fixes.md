@@ -1,7 +1,7 @@
 ---
 type: fix
 component: Tide
-packages: [luma-tide]
+packages: [Suno-tide]
 highlight: false
 ---
 Summary: Tide stays signed in and says why a song can't play

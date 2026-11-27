@@ -19,7 +19,7 @@ publish_repo=
 gpg_key=
 gpg_homedir=
 deployment_json=
-stage_remote=${LUMA_STAGE_REMOTE:-origin}
+stage_remote=${SUNO_STAGE_REMOTE:-origin}
 while [ "$#" -gt 0 ]; do
   case "$1" in
     --image) image=${2:-}; shift 2 ;;

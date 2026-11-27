@@ -1,13 +1,13 @@
 #!/bin/bash
 # Beam search oracle in a Fedora container with the built gnome-shell,
-# luma-search and localsearch installed. run.sh THEME(light|dark) OUT [SCALE]
+# Suno-search and localsearch installed. run.sh THEME(light|dark) OUT [SCALE]
 # The container needs the oracle's bwrap stand-in at /usr/bin/bwrap
 # (containers cannot nest bubblewrap; glycin encodes the screenshots).
 set -u
 theme=${1:-light}; out=${2:-/work/out-$theme}
 export ORACLE_SCALE=${3:-1}
 here=$(cd "$(dirname "$0")" && pwd)
-base=/var/lib/luma-search-oracle-$theme; rm -rf "$base"; mkdir -p "$base"
+base=/var/lib/Suno-search-oracle-$theme; rm -rf "$base"; mkdir -p "$base"
 export HOME=$base/home XDG_RUNTIME_DIR=$base/run
 rm -rf "$out"; mkdir -p "$out" "$HOME" ; mkdir -m 700 -p "$XDG_RUNTIME_DIR"
 export XDG_CONFIG_HOME=$HOME/.config XDG_DATA_HOME=$HOME/.local/share XDG_CACHE_HOME=$HOME/.cache
@@ -25,7 +25,7 @@ XDG_MUSIC_DIR="\$HOME/Music"
 XDG_PICTURES_DIR="\$HOME/Pictures"
 XDG_VIDEOS_DIR="\$HOME/Videos"
 DIRS
-# Settings panels the Luma pages point at (the container has no Settings app).
+# Settings panels the Suno pages point at (the container has no Settings app).
 for panel in applications background display power notifications privacy sound multitasking keyboard mouse datetime region users about search universal-access dash; do
   printf '[Desktop Entry]\nType=Application\nName=%s\nExec=true\nIcon=preferences-system-symbolic\nNoDisplay=true\n' "$panel" >"$XDG_DATA_HOME/applications/gnome-$panel-panel.desktop"
 done
@@ -35,7 +35,7 @@ mkdir -p "$XDG_DATA_HOME/gnome-shell/search-providers"
 printf '[Shell Search Provider]\nDesktopId=org.oracle.Post.desktop\nBusName=org.oracle.Post\nObjectPath=/org/oracle/Post/SearchProvider\nVersion=2\n' >"$XDG_DATA_HOME/gnome-shell/search-providers/org.oracle.Post.search-provider.ini"
 scheme=prefer-light; [ "$theme" = dark ] && scheme=prefer-dark
 cat >"$XDG_CONFIG_HOME/glib-2.0/settings/keyfile" <<KEY
-[org/project-luma/shell-state]
+[org/project-suno/shell-state]
 surface-treatment='$theme'
 reduce-transparency=false
 
@@ -53,7 +53,7 @@ welcome-dialog-last-shown-version='999'
 index-recursive-directories=['\$HOME']
 index-single-directories=@as []
 KEY
-export GSETTINGS_BACKEND=keyfile LIBGL_ALWAYS_SOFTWARE=1 LUMA_MUTTER_ALLOW_SOFTWARE_BLUR=1 ORACLE_OUT=$out LANG=C.UTF-8
+export GSETTINGS_BACKEND=keyfile LIBGL_ALWAYS_SOFTWARE=1 SUNO_MUTTER_ALLOW_SOFTWARE_BLUR=1 ORACLE_OUT=$out LANG=C.UTF-8
 mkdir -p /run/dbus
 if ! dbus-send --system --print-reply --dest=org.freedesktop.DBus / org.freedesktop.DBus.GetId >/dev/null 2>&1; then
   rm -f /run/dbus/system_bus_socket /run/dbus/pid; dbus-daemon --system --fork 2>/dev/null

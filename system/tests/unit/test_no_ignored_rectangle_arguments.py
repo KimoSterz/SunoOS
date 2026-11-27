@@ -18,7 +18,7 @@ class IgnoredRectangleArguments(unittest.TestCase):
             for number, line in enumerate(path.read_text(errors="replace").splitlines(), 1):
                 if PATTERN.search(line) and "`" not in line and "silently" not in line and not line.lstrip().startswith("#"):
                     offenders.append(f"{path.relative_to(ROOT)}:{number}")
-        self.assertEqual(offenders, [], "use Gdk.Rectangle() and set its fields, or luma_appkit.point_rectangle")
+        self.assertEqual(offenders, [], "use Gdk.Rectangle() and set its fields, or Suno_appkit.point_rectangle")
 
 
 if __name__ == "__main__":

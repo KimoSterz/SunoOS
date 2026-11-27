@@ -11,7 +11,7 @@ rpms/media. Fetched RPMs land in --out; their headers are verified when the
 pool admits them. Exit status 1 when a pin is still missing, naming the commit
 that set it.
 
-With --artifacts DIR (or LUMA_INTERIM_ARTIFACTS), a pin is first looked up in
+With --artifacts DIR (or SUNO_INTERIM_ARTIFACTS), a pin is first looked up in
 DIR/<commit>/<artifact>/, the layout tools/interim/ci.py writes for the main
 commit that set it, before GitHub is asked. Interim merges set pins in their
 merge commits, which GitHub has never seen. Toolkit RPMs (the platform) are
@@ -65,8 +65,8 @@ def pins(root, sha):
 def media_pin(root, sha):
     """config/os/media.env's Atlas: NEVRA, SHA-256 and source revision."""
     text = run('git', '-C', str(root), 'show', f'{sha}:config/os/media.env')
-    env = dict(re.findall(r'^(LUMA_MEDIA_ATLAS_[A-Z0-9_]+)=(\S*)$', text, re.M))
-    return env['LUMA_MEDIA_ATLAS_NEVRA'], env['LUMA_MEDIA_ATLAS_SHA256'], env['LUMA_MEDIA_ATLAS_REVISION']
+    env = dict(re.findall(r'^(SUNO_MEDIA_ATLAS_[A-Z0-9_]+)=(\S*)$', text, re.M))
+    return env['SUNO_MEDIA_ATLAS_NEVRA'], env['SUNO_MEDIA_ATLAS_SHA256'], env['SUNO_MEDIA_ATLAS_REVISION']
 
 
 def setter(root, sha, nevra):
@@ -198,7 +198,7 @@ def interim_chain(root, commit, sha):
     after = run('git', '-C', str(root), 'rev-list', '--first-parent', '--reverse', f'{commit}..{sha}').split()
     for child in after:
         parent, author = run('git', '-C', str(root), 'log', '-1', '--format=%P%n%ae', child).splitlines()[:2]
-        if parent.split()[0] != chain[-1] or author != 'interim-release@luma-build.invalid':
+        if parent.split()[0] != chain[-1] or author != 'interim-release@Suno-build.invalid':
             break
         chain.append(child)
     return chain
@@ -219,7 +219,7 @@ def main():
     parser.add_argument('--have', type=Path, required=True)
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--root', type=Path, default=Path(__file__).resolve().parents[1])
-    parser.add_argument('--artifacts', type=Path, default=os.environ.get('LUMA_INTERIM_ARTIFACTS') or None,
+    parser.add_argument('--artifacts', type=Path, default=os.environ.get('SUNO_INTERIM_ARTIFACTS') or None,
                         help='interim CI artifacts (tools/interim/ci.py), searched before GitHub')
     args = parser.parse_args()
     args.out.mkdir(parents=True, exist_ok=True)
@@ -260,7 +260,7 @@ def main():
                 if source:
                     print(f'fetched {nevra} from the interim toolkit cohort {cohort[:8]} ({source})')
             # A GitHub cohort's RPMs (the platform) when only the offline gh cache holds them.
-            cache = os.environ.get('LUMA_INTERIM_GH_CACHE') or str(Path(args.artifacts).parent / 'cache/gh')
+            cache = os.environ.get('SUNO_INTERIM_GH_CACHE') or str(Path(args.artifacts).parent / 'cache/gh')
             if not source and Path(cache).is_dir():
                 source = cached_cohort(cache, nevra, args.out, set(missing))
                 if source:

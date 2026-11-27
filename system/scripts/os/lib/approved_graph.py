@@ -45,7 +45,7 @@ def admitted_release(release, manifest, delivery=None, gate=None, public_reposit
         accepted = ('pass',) if manifest.get('parent') else ('pass', 'not-applicable')
         if gate.get(stage) not in accepted:
             raise ValueError('Upgrade and rollback release gates are required')
-    if (not delivery or delivery.get('schema') != 'org.projectluma.os-public-delivery/v1'
+    if (not delivery or delivery.get('schema') != 'org.projectSuno.os-public-delivery/v1'
             or delivery.get('commit') != release['commit']
             or any(delivery.get(field) is not True for field in (
                 'complete_closure_readback', 'commit_signature_verified', 'summary_signature_verified'))):

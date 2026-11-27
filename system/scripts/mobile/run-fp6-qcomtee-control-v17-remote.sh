@@ -11,9 +11,9 @@
 set -Eeuo pipefail
 umask 077
 
-stage=/tmp/luma-fingerprint-qcomtee-v17
+stage=/tmp/Suno-fingerprint-qcomtee-v17
 expected_model='The Fairphone (Gen. 6)'
-expected_kernel=7.1.2-luma-fp-cma1
+expected_kernel=7.1.2-Suno-fp-cma1
 expected_boot_size=100663296
 expected_boot_sha=c6acad3a30d944d59648258eef383c33a3b51ac1148a98ef24256ee4dee61dd8
 expected_config_sha=5bddfee4390b0f66de5709b99282e79ee3787a01749d5cc8d28ea82d6bbed7fe
@@ -59,7 +59,7 @@ cleanup() {
       printf 'event=qcomtee_control_v17_cleanup_error reason=module_still_loaded\n' >&2
       cleanup_status=1
     fi
-    if [[ -d $stage && ! -L $stage && $stage == /tmp/luma-fingerprint-qcomtee-v17 ]]; then
+    if [[ -d $stage && ! -L $stage && $stage == /tmp/Suno-fingerprint-qcomtee-v17 ]]; then
       find "$stage" -depth -delete || cleanup_status=1
     else
       printf 'event=qcomtee_control_v17_cleanup_error reason=stage_identity\n' >&2
@@ -90,8 +90,8 @@ runtime_config=$(gzip -dc /proc/config.gz)
 grep -qx 'CONFIG_QCOM_TZMEM=y' <<<"$runtime_config" || fail tzmem_config
 grep -qx 'CONFIG_QCOM_TZMEM_MODE_SHMBRIDGE=y' <<<"$runtime_config" || fail shmbridge_config
 grep -qx '# CONFIG_QCOMTEE is not set' <<<"$runtime_config" || fail qcomtee_already_in_kernel
-[[ $(sha256sum /usr/lib/modules/7.1.2-luma-fp-cma1/kernel/drivers/tee/qseecom/qseecomtee.ko.zst | cut -d' ' -f1) == "$expected_installed_qsee_sha" ]] || fail installed_qsee_hash
-[[ $(sha256sum /usr/lib/modules/7.1.2-luma-fp-cma1/kernel/drivers/input/finger/focal_finger/focaltech_fp.ko.zst | cut -d' ' -f1) == "$expected_installed_focal_sha" ]] || fail installed_focal_hash
+[[ $(sha256sum /usr/lib/modules/7.1.2-Suno-fp-cma1/kernel/drivers/tee/qseecom/qseecomtee.ko.zst | cut -d' ' -f1) == "$expected_installed_qsee_sha" ]] || fail installed_qsee_hash
+[[ $(sha256sum /usr/lib/modules/7.1.2-Suno-fp-cma1/kernel/drivers/input/finger/focal_finger/focaltech_fp.ko.zst | cut -d' ' -f1) == "$expected_installed_focal_sha" ]] || fail installed_focal_hash
 [[ $(sha256sum "$stage/qcomtee.ko" | cut -d' ' -f1) == "$expected_qcomtee_sha" ]] || fail staged_module_hash
 [[ $(sha256sum "$stage/fp6-qseecompat-identity" | cut -d' ' -f1) == "$expected_client_sha" ]] || fail client_hash
 [[ $(modinfo -F vermagic "$stage/qcomtee.ko" | awk '{print $1}') == "$expected_kernel" ]] || fail module_vermagic

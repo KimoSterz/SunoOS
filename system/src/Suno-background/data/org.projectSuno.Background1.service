@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=org.projectSuno.Background1
+Exec=/usr/libexec/Suno-background-service
+SystemdService=Suno-background.service

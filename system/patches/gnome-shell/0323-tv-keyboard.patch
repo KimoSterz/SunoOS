@@ -2,11 +2,11 @@ diff --git a/js/js-resources.gresource.xml b/js/js-resources.gresource.xml
 --- a/js/js-resources.gresource.xml
 +++ b/js/js-resources.gresource.xml
 @@ -176,6 +176,7 @@
-     <file>ui/lumaPresentation/tv.js</file>
-     <file>ui/lumaPresentation/tvModel.js</file>
-     <file>ui/lumaPresentation/tvTokens.js</file>
-+    <file>ui/lumaPresentation/tvKeyboard.js</file>
-     <file>ui/lumaPresentation/tv-backdrop.jpg</file>
+     <file>ui/SunoPresentation/tv.js</file>
+     <file>ui/SunoPresentation/tvModel.js</file>
+     <file>ui/SunoPresentation/tvTokens.js</file>
++    <file>ui/SunoPresentation/tvKeyboard.js</file>
+     <file>ui/SunoPresentation/tv-backdrop.jpg</file>
      <file>ui/shelfMetrics.js</file>
      <file>ui/shelfArrangement.js</file>
 diff --git a/js/misc/inputMethod.js b/js/misc/inputMethod.js
@@ -66,9 +66,9 @@ diff --git a/js/ui/keyboard.js b/js/ui/keyboard.js
 @@ -18,6 +18,8 @@ import * as PageIndicators from './pageIndicators.js';
  import * as PopupMenu from './popupMenu.js';
  import * as SwipeTracker from './swipeTracker.js';
- import * as Keycap from './lumaPresentation/keycap.js';
-+import * as TvKeyboard from './lumaPresentation/tvKeyboard.js';
-+import {tv as TV_TOKENS} from './lumaPresentation/tvTokens.js';
+ import * as Keycap from './SunoPresentation/keycap.js';
++import * as TvKeyboard from './SunoPresentation/tvKeyboard.js';
++import {tv as TV_TOKENS} from './SunoPresentation/tvTokens.js';
  
  export const KEYBOARD_ANIMATION_TIME = 150;
  const KEYBOARD_REST_TIME = KEYBOARD_ANIMATION_TIME * 2;
@@ -77,15 +77,15 @@ diff --git a/js/ui/keyboard.js b/js/ui/keyboard.js
  }
  
 +// TV posture: the keyboard's contract with applications. Applications use
-+// ordinary text fields; LumaUI asks for the action key's label (Search, Add)
++// ordinary text fields; SunoUI asks for the action key's label (Search, Add)
 +// and reads the keyboard's height to lift its action bar and toast above it.
 +// docs/developer-platform/tv-mode.md ("Typing").
-+const TV_KEYBOARD_BUS_NAME = 'org.projectluma.Shell.Keyboard';
-+const TV_KEYBOARD_PATH = '/org/projectluma/Shell/Keyboard';
++const TV_KEYBOARD_BUS_NAME = 'org.projectSuno.Shell.Keyboard';
++const TV_KEYBOARD_PATH = '/org/projectSuno/Shell/Keyboard';
 +// How long after a Shell surface lets go the field's focus counts as coming back to it.
 +const TV_RESUME_US = 1500 * 1000;
 +const TV_KEYBOARD_IFACE = `<node>
-+  <interface name="org.projectluma.Shell.Keyboard1">
++  <interface name="org.projectSuno.Shell.Keyboard1">
 +    <method name="SetActionLabel">
 +      <arg type="s" direction="in" name="label"/>
 +    </method>
@@ -227,7 +227,7 @@ diff --git a/js/ui/keyboard.js b/js/ui/keyboard.js
 +    }
 +
 +    // The action key's label for one of the Shell's own entries (the TV
-+    // home's Search field); applications ask through LumaUI instead.
++    // home's Search field); applications ask through SunoUI instead.
 +    setFieldAction(text, label) {
 +        if (label)
 +            this._fieldActions.set(text, label);
@@ -385,7 +385,7 @@ diff --git a/js/ui/keyboard.js b/js/ui/keyboard.js
              let freed = 0;
 @@ -2491,6 +2669,13 @@ export const Keyboard = GObject.registerClass({
                  if (purpose === Clutter.InputContentPurpose.URL)
-                     button.setDisplayIcon('luma-keycap-arrow-right-symbolic');
+                     button.setDisplayIcon('Suno-keycap-arrow-right-symbolic');
              }
 +            if (this._tv) {
 +                const kind = key.tvAction || parseInt(key.keyval, 16) === Clutter.KEY_Return ? 'action'
@@ -592,9 +592,9 @@ diff --git a/js/ui/keyboard.js b/js/ui/keyboard.js
 +        this._tvUnit = 0;
 +        this._syncKeycapTheme();
 +        if (tv)
-+            this.add_style_class_name('luma-keycap-tv');
++            this.add_style_class_name('Suno-keycap-tv');
 +        else
-+            this.remove_style_class_name('luma-keycap-tv');
++            this.remove_style_class_name('Suno-keycap-tv');
 +        this.set_style(null);
 +        this._updateKeys();
 +        this._syncTools();

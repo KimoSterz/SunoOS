@@ -82,7 +82,7 @@ def prepare(images, artifact, output):
         label.unlink(); module.unlink()
         manifest = ''.join(digest(stage / name) + '  ' + name + '\n' for name in BASE)
         (stage / 'SHA256SUMS').write_text(manifest)
-        (stage / 'luma-software-graphics.json').write_text(json.dumps({'base_images': BASE, 'allocator': info, 'profile': 'emulator-software-graphics'}, indent=2) + '\n')
+        (stage / 'Suno-software-graphics.json').write_text(json.dumps({'base_images': BASE, 'allocator': info, 'profile': 'emulator-software-graphics'}, indent=2) + '\n')
         stage.rename(output)
     print(output)
 

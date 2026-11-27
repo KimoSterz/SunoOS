@@ -38,8 +38,8 @@ index 2913303..2934d4a 100644
  
  static void
  filer_fill_details (NautilusWindow  *window,
--                    LumaDetailsPane *pane)
-+                    LumaDetailsPane *pane,
+-                    SunoDetailsPane *pane)
++                    SunoDetailsPane *pane,
 +                    gboolean compact)
  {
      g_autoptr (NautilusFile) directory = NULL;
@@ -60,7 +60,7 @@ index 2913303..2934d4a 100644
 -        gtk_image_set_pixel_size (GTK_IMAGE (icon), 72);
 +        gtk_image_set_pixel_size (GTK_IMAGE (icon), compact ? 44 : 72);
      }
--    luma_details_pane_add_hero (pane,
+-    Suno_details_pane_add_hero (pane,
 -                                nautilus_file_get_display_name (file), NULL, icon);
 +    kind = nautilus_file_get_string_attribute_with_default (file, "type");
 +    size = nautilus_file_get_string_attribute_with_default (file, "size");
@@ -73,10 +73,10 @@ index 2913303..2934d4a 100644
 +        g_autofree char *subtitle = g_strdup_printf ("%s · %s",
 +            fixture_kind != NULL ? fixture_kind : kind,
 +            fixture_size != NULL ? fixture_size : size);
-+        luma_details_pane_add_subject (pane, nautilus_file_get_display_name (file), subtitle, icon);
++        Suno_details_pane_add_subject (pane, nautilus_file_get_display_name (file), subtitle, icon);
 +    }
 +    else
-+        luma_details_pane_add_hero (pane, nautilus_file_get_display_name (file), NULL, icon);
++        Suno_details_pane_add_hero (pane, nautilus_file_get_display_name (file), NULL, icon);
  
      /* The native conform tree stores the sample's displayed metadata alongside
       * its files. Its sparse files cannot carry document dimensions or the
@@ -103,15 +103,15 @@ index 2913303..2934d4a 100644
 +    filer_fill_details (window, window->information_pane, FALSE);
  }
  
- /* ── Filer v71: the action bar (LumaUI-1, K-C) ─────────────────────────────
-@@ -1122,7 +1132,8 @@ filer_details_panel (LumaBarItem *item,
+ /* ── Filer v71: the action bar (SunoUI-1, K-C) ─────────────────────────────
+@@ -1122,7 +1132,8 @@ filer_details_panel (SunoBarItem *item,
      gtk_widget_set_name (GTK_WIDGET (pane), "filer-details-panel");
-     luma_details_pane_set_embedded (pane, TRUE);
-     luma_details_pane_set_closable (pane, FALSE);
+     Suno_details_pane_set_embedded (pane, TRUE);
+     Suno_details_pane_set_closable (pane, FALSE);
 -    filer_fill_details (window, pane);
-+    luma_details_pane_set_header_visible (pane, FALSE);
++    Suno_details_pane_set_header_visible (pane, FALSE);
 +    filer_fill_details (window, pane, TRUE);
-     luma_details_pane_show (pane, TRUE);
+     Suno_details_pane_show (pane, TRUE);
      return GTK_WIDGET (pane);
  }
 diff --git a/test/automated/test-properties-about.c b/test/automated/test-properties-about.c
@@ -119,11 +119,11 @@ index 1545cc3..e9d219c 100644
 --- a/test/automated/test-properties-about.c
 +++ b/test/automated/test-properties-about.c
 @@ -290,6 +290,9 @@ static void review_navigation(void)
-     g_assert_cmpstr(luma_action_center_get_grown(center),==,"details");
+     g_assert_cmpstr(Suno_action_center_get_grown(center),==,"details");
      GtkWidget *panel=required(GTK_WIDGET(window),"filer-details-panel");
-     g_assert_false(luma_details_pane_get_is_drawer(LUMA_DETAILS_PANE(panel)));
-+    g_assert_nonnull(find_css(panel,"lumaui-details-subject"));
-+    g_assert_false(gtk_widget_get_mapped(find_css(panel,"lumaui-details-header")));
+     g_assert_false(Suno_details_pane_get_is_drawer(SUNO_DETAILS_PANE(panel)));
++    g_assert_nonnull(find_css(panel,"SunoUI-details-subject"));
++    g_assert_false(gtk_widget_get_mapped(find_css(panel,"SunoUI-details-header")));
 +    g_assert_cmpint(gtk_widget_get_height(panel),<,350);
      g_assert_true(gtk_widget_get_mapped(copy));
      g_assert_true(gtk_widget_compute_bounds(copy,GTK_WIDGET(window),&files_box));

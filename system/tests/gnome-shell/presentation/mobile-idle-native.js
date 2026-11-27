@@ -32,7 +32,7 @@ async function idleFrames(ms = 3000) {
 
 async function work() {
     const presentation = Main.presentation;
-    const settings = new Gio.Settings({schema_id: 'org.project_luma.shell-state'});
+    const settings = new Gio.Settings({schema_id: 'org.projectSuno.shell-state'});
     settings.set_string('presentation-mode', 'mobile');
     for (let i = 0; i < 40 && presentation?.mode !== 'mobile'; i++)
         await sleep(250);

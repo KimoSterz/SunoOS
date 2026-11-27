@@ -17,7 +17,7 @@ software_id=88f589369ff3a066511dd1b21ed42cf3496686a3
 att_id=444954dcfbd6d5bf196cd8fecf6770ff3c6b34fc
 writer_pid=
 
-event() { printf 'event=luma_fp6_tmo_pdc_persistence %s\n' "$*"; }
+event() { printf 'event=Suno_fp6_tmo_pdc_persistence %s\n' "$*"; }
 fail() { event state=failed reason="$1" >&2; exit 1; }
 hash() { sha256sum "$1" | cut -d' ' -f1; }
 compact_ids() {
@@ -62,8 +62,8 @@ cleanup() {
   systemctl stop tqftpserv.service 2>/dev/null
   systemctl start rmtfs.service tqftpserv.service 2>/dev/null
   [[ $(cat "$remoteproc/state" 2>/dev/null) != offline ]] || printf start >"$remoteproc/state" 2>/dev/null
-  systemctl start ModemManager.service luma-fp6-cellular-link.service 2>/dev/null
-  find /run/luma-fp6-modemst-writer.log -delete 2>/dev/null
+  systemctl start ModemManager.service Suno-fp6-cellular-link.service 2>/dev/null
+  find /run/Suno-fp6-modemst-writer.log -delete 2>/dev/null
   find "$writer" "$qmicli" "$software" -delete 2>/dev/null
   return "$status"
 }
@@ -72,7 +72,7 @@ trap cleanup EXIT INT TERM HUP
 [[ $(id -u) -eq 0 ]] || fail not_root
 [[ $(tr -d '\0' </sys/firmware/devicetree/base/model) == 'The Fairphone (Gen. 6)' ]] || fail model
 grep -qw androidboot.slot_suffix=_b /proc/cmdline || fail slot
-[[ $(uname -r) == 7.1.2-luma-fp-ims1 ]] || fail kernel
+[[ $(uname -r) == 7.1.2-Suno-fp-ims1 ]] || fail kernel
 [[ $(hash "$writer") == c9781b0d25e0bedb5e6ff4e96dd553f0ec443f9d65c64b4d3032ef9fa3245280 ]] || fail writer_hash
 [[ $(hash "$qmicli") == 1b4adcd3d949e8d0f68065ba0022bbc35fe4462717deaaeae0ec244557f76b9c ]] || fail qmicli_hash
 [[ $(hash "$software") == 817e5f33a18a176a14859184de88c60921318864dea994a845133bc841e3edda ]] || fail software_hash
@@ -87,11 +87,11 @@ for id in "${software_ids[@]}"; do
 done
 unset software_before software_ids id
 
-systemctl stop luma-fp6-cellular-link.service ModemManager.service tqftpserv.service rmtfs.service
+systemctl stop Suno-fp6-cellular-link.service ModemManager.service tqftpserv.service rmtfs.service
 stop_modem
-: >/run/luma-fp6-modemst-writer.log
-chmod 0600 /run/luma-fp6-modemst-writer.log
-"$writer" -r -P -s -W >/run/luma-fp6-modemst-writer.log 2>&1 &
+: >/run/Suno-fp6-modemst-writer.log
+chmod 0600 /run/Suno-fp6-modemst-writer.log
+"$writer" -r -P -s -W >/run/Suno-fp6-modemst-writer.log 2>&1 &
 writer_pid=$!
 sleep 1
 kill -0 "$writer_pid" 2>/dev/null || fail writer_start
@@ -146,7 +146,7 @@ systemctl start rmtfs.service tqftpserv.service
 wait_modem || fail normal_modem_start_timeout
 [[ $("$qmicli" -d qrtr://0 --device-open-qmi --pdc-list-configs=platform | grep -c 'Status:      Active') == 1 ]] || fail platform_not_persistent
 [[ $("$qmicli" -d qrtr://0 --device-open-qmi --pdc-list-configs=software | grep -c 'Status:      Active') == 1 ]] || fail software_not_persistent
-systemctl start ModemManager.service luma-fp6-cellular-link.service
+systemctl start ModemManager.service Suno-fp6-cellular-link.service
 modem_state=
 for _ in $(seq 1 60); do
   modem_state=$(mmcli -m 0 --output-keyvalue 2>/dev/null |
@@ -158,6 +158,6 @@ done
 [[ $modem_state != failed ]] || fail modemmanager_failed
 
 trap - EXIT INT TERM HUP
-find /run/luma-fp6-modemst-writer.log -delete
+find /run/Suno-fp6-modemst-writer.log -delete
 find "$writer" "$qmicli" "$software" -delete
 event state=accepted platform=DSDS-LA-Milos software=Commercial-TMO identifiers_logged=0

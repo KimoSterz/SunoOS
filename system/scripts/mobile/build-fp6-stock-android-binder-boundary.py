@@ -2,7 +2,7 @@
 """Derive the no-SELinux libbinder boundary for the FP6 C1 container.
 
 QREL 16.95.0's ProcessState::becomeContextManager() asks Binder to attach a
-security SID to every transaction received by the context manager.  The Luma
+security SID to every transaction received by the context manager.  The Suno
 Fedora kernel deliberately has no Android SELinux policy active, so the kernel
 cannot translate a secid and rejects every transaction with EOPNOTSUPP.
 

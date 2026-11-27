@@ -9,7 +9,7 @@ import time
 from unittest.mock import patch
 from creator_preview_runtime import settle, screenshot
 from gi.repository import Adw, Gdk, Gio, Gtk
-from luma_appkit import Card, EmptyState, install_appkit, install_lumaui
+from Suno_appkit import Card, EmptyState, install_appkit, install_SunoUI
 from prairie_apps.messages_port import FixtureMessagesWindow
 from prairie_apps.messages_dialog import MessagesDialog
 from prairie_apps.messages import install_messages_theme
@@ -25,14 +25,14 @@ def main():
             os.environ[key] = str(root / key)
         fixture = root / 'messages.json'
         fixture.write_text(json.dumps({'people': {}, 'conversations': []}))
-        os.environ['LUMA_MESSAGES_FIXTURE'] = str(fixture)
-        app = Adw.Application(application_id='org.projectluma.CreatorFollowup', flags=Gio.ApplicationFlags.NON_UNIQUE)
+        os.environ['SUNO_MESSAGES_FIXTURE'] = str(fixture)
+        app = Adw.Application(application_id='org.projectSuno.CreatorFollowup', flags=Gio.ApplicationFlags.NON_UNIQUE)
         assert app.register(None)
-        install_appkit(); install_lumaui()
+        install_appkit(); install_SunoUI()
         install_messages_theme()
         count = 0
         for dark in (False, True):
-            Gio.Settings.new('org.project_luma.shell-state').set_string('surface-treatment', 'dark' if dark else 'light')
+            Gio.Settings.new('org.projectSuno.shell-state').set_string('surface-treatment', 'dark' if dark else 'light')
             settle(lambda: Adw.StyleManager.get_default().get_dark() is dark)
             for width in (360, 500, 1024, 1440):
                 window = FixtureMessagesWindow(app)
@@ -45,7 +45,7 @@ def main():
                 assert not view.header.get_visible() and not view.scroller.get_visible()
                 assert view.center.state == 'hidden', view.center.state
                 assert view.empty.primary_button.get_label() == 'Link Google Messages'
-                assert view.empty.secondary_button.get_label() == 'Choose a Luma username'
+                assert view.empty.secondary_button.get_label() == 'Choose a Suno username'
                 screenshot(window, f'messages-active-empty-{width}-{int(dark)}')
                 dialog = MessagesDialog(title='Accounts')
                 navigation = Adw.NavigationView()
@@ -57,7 +57,7 @@ def main():
                 dialog.connect('closed', lambda *_: closed.append(True))
                 dialog.present(window)
                 settle(lambda: dialog.get_mapped())
-                assert isinstance(dialog, Card) and dialog.has_css_class('lumaui-card')
+                assert isinstance(dialog, Card) and dialog.has_css_class('SunoUI-card')
                 assert dialog.get_width() <= window.get_width(), (width, dialog.get_width())
                 navigation.push(second); settle()
                 assert dialog.heading.title.get_text() == 'Google Messages'
@@ -83,28 +83,28 @@ def main():
                 window.close(); settle()
                 count += 1
         # The actual GIO launch path receives real URIs/files, even when no
-        # luma-depot MIME default is configured in this private session. The
+        # Suno-depot MIME default is configured in this private session. The
         # receivers record wire arguments; they do not simulate installation.
-        from prairie_apps.notes_lumaui import NotesLumaWindow
-        from luma_appkit import add_style_sheet
+        from prairie_apps.notes_SunoUI import NotesSunoWindow
+        from Suno_appkit import add_style_sheet
         core = Path(__file__).resolve().parents[1]
-        add_style_sheet(os.environ.get('LUMA_NOTES_STYLE_PATH', str(core / 'style/notes.css')))
+        add_style_sheet(os.environ.get('SUNO_NOTES_STYLE_PATH', str(core / 'style/notes.css')))
         applications = Path(os.environ['XDG_DATA_HOME']) / 'applications'
         applications.mkdir(parents=True)
         recorder = root / 'record-launch.py'
         recorder.write_text('import json,sys\nfrom pathlib import Path\nPath(sys.argv[1]).write_text(json.dumps(sys.argv[2:]))\n')
         marker = root / 'depot-wire.json'
-        (applications / 'org.projectluma.Depot.desktop').write_text(
+        (applications / 'org.projectSuno.Depot.desktop').write_text(
             '[Desktop Entry]\nType=Application\nName=Private Depot wire receiver\n'
             f'Exec=python3 {recorder} {marker} %U\nTerminal=false\n')
         try:
-            absent = Gio.DesktopAppInfo.new('org.projectluma.Write.desktop')
+            absent = Gio.DesktopAppInfo.new('org.projectSuno.Write.desktop')
         except TypeError:
             absent = None
         assert absent is None
-        with patch.object(NotesLumaWindow, '_create_semantic_publisher', return_value=None), \
-             patch.object(NotesLumaWindow, '_watch_store', return_value=None):
-            notes = NotesLumaWindow(app)
+        with patch.object(NotesSunoWindow, '_create_semantic_publisher', return_value=None), \
+             patch.object(NotesSunoWindow, '_watch_store', return_value=None):
+            notes = NotesSunoWindow(app)
             notes.set_default_size(1024, 760); notes.present(); settle()
             notes.create_note(); settle()
             saved = notes.store.get_note(notes.current.id)
@@ -114,10 +114,10 @@ def main():
             assert success and mark.get_x() < 35, mark.get_x()
             notes._open_in_write()
             settle(marker.exists)
-            assert json.loads(marker.read_text()) == ['luma-depot://install/org.projectluma.Write']
+            assert json.loads(marker.read_text()) == ['Suno-depot://install/org.projectSuno.Write']
             assert notes.store.get_note(saved.id) == saved
             marker = root / 'write-wire.json'
-            (applications / 'org.projectluma.Write.desktop').write_text(
+            (applications / 'org.projectSuno.Write.desktop').write_text(
                 '[Desktop Entry]\nType=Application\nName=Private Write wire receiver\n'
                 f'Exec=python3 {recorder} {marker} %F\nTerminal=false\n')
             # GIO's desktop-directory monitor invalidates its cache on the
@@ -125,7 +125,7 @@ def main():
             # installed receiver; an immediate lookup races the monitor.
             def write_receiver_available():
                 try:
-                    return Gio.DesktopAppInfo.new('org.projectluma.Write.desktop') is not None
+                    return Gio.DesktopAppInfo.new('org.projectSuno.Write.desktop') is not None
                 except TypeError:
                     return False
             settle(write_receiver_available)

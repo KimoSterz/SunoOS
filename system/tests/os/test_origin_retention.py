@@ -24,7 +24,7 @@ def obj(name, ext='filez'):
 
 class OriginRetentionTests(unittest.TestCase):
     def setUp(self):
-        self.temp = tempfile.TemporaryDirectory(prefix='luma-origin-retention-')
+        self.temp = tempfile.TemporaryDirectory(prefix='Suno-origin-retention-')
         self.work = Path(self.temp.name)
         self.origin = self.work / 'origin'
         self.generations = self.work / 'generations'
@@ -37,7 +37,7 @@ class OriginRetentionTests(unittest.TestCase):
                         f'cd {self.origin} && exec sh -c "$*"\n')
         shim.chmod(0o755)
         self.env = dict(os.environ, PATH=f'{bin_dir}:{os.environ["PATH"]}',
-                        DL_RSYNC_DEST='luma-publish@origin.test', DL_SSH_KEY='/dev/null',
+                        DL_RSYNC_DEST='Suno-publish@origin.test', DL_SSH_KEY='/dev/null',
                         KNOWN_HOSTS='/dev/null', DL_HTTP_ORIGIN='http://127.0.0.1:9',
                         DL_HOST_HEADER='dl.test', DL_PUBLIC_REPO_DEST='os/preview-repo',
                         DL_ORIGIN_RESERVE_GIB='0')
@@ -47,7 +47,7 @@ class OriginRetentionTests(unittest.TestCase):
         for name in ('aa' + 'a' * 62, 'bb' + 'b' * 62, 'cc' + 'c' * 62):
             self.write(repo / obj(name), b'x' * 10)
         self.write(repo / 'deltas/Zz/stale-delta/superblock', b'delta')
-        self.write(repo / 'luma.trustedkeys.gpg', b'key')
+        self.write(repo / 'Suno.trustedkeys.gpg', b'key')
         self.write(repo / 'summary', b'summary-old')
 
     def tearDown(self):
@@ -67,7 +67,7 @@ class OriginRetentionTests(unittest.TestCase):
         return self.generations / name
 
     def space(self, avail, age=0):
-        self.write(self.origin / '.luma-origin/space',
+        self.write(self.origin / '.Suno-origin/space',
                    f'{avail} {100 * 2**30} {int(time.time()) - age}\n'.encode())
 
     def run_sync(self, generation, apply, prune, keep):
@@ -85,7 +85,7 @@ class OriginRetentionTests(unittest.TestCase):
         self.assertTrue(self.present(obj('bb' + 'b' * 62)))
         self.assertFalse(self.present(obj('cc' + 'c' * 62)), 'object no served generation has')
         self.assertFalse(self.present('deltas/Zz/stale-delta'))
-        self.assertTrue(self.present('luma.trustedkeys.gpg'), 'only objects/ and deltas/ are pruned')
+        self.assertTrue(self.present('Suno.trustedkeys.gpg'), 'only objects/ and deltas/ are pruned')
         self.assertTrue(self.present('summary'))
 
     def test_prune_skipped_when_served_summary_unknown(self):
@@ -128,7 +128,7 @@ class OriginRetentionTests(unittest.TestCase):
         for name in names:
             (generations / name).mkdir(parents=True, exist_ok=True)
         (generations / (names[0] + '.partial')).mkdir()
-        out = subprocess.run(['bash', '-c', f'. {COMMON}; luma_os_served_generations "$1" 20', '-', str(generations)],
+        out = subprocess.run(['bash', '-c', f'. {COMMON}; Suno_os_served_generations "$1" 20', '-', str(generations)],
                              capture_output=True, text=True, check=True).stdout.split()
         # names[0] stopped being served 30 h ago; names[1] was served until 1 h ago.
         self.assertEqual([Path(p).name for p in out], names[1:])

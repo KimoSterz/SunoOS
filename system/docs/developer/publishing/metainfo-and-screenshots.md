@@ -32,9 +32,9 @@ Install it at `/app/share/metainfo/<app-id>.metainfo.xml`.
 | Sign-in | Your [sign-in declaration](../permissions-and-privacy.md#sign-in-disclosure) |
 | Download and installed size | Measured from the build |
 | Architectures | The architectures the release was built for |
-| Tier, ratings, installs | Luma |
+| Tier, ratings, installs | Suno |
 
-Luma copies your icon and screenshots to `dl.simplyluma.com` and records each
+Suno copies your icon and screenshots to `dl.simplyluma.com` and records each
 file’s SHA-256, which Depot checks. Nothing on a listing is loaded from your own
 server.
 
@@ -109,7 +109,7 @@ pedantic note is that the ID contains capital letters, which is normal.
   </screenshots>
 
   <custom>
-    <value key="org.projectluma.ApplicationContract">0.2</value>
+    <value key="org.projectSuno.ApplicationContract">0.2</value>
   </custom>
 
   <content_rating type="oars-1.1"/>
@@ -141,8 +141,8 @@ Release submission is not open yet. When it opens, a release needs:
    second release on, a description of what changed.
 8. `<content_rating type="oars-1.1">`, with every content attribute your app
    actually has declared. Generate it with the OARS questionnaire.
-9. The `org.projectluma.ApplicationContract` custom value `0.2` if you use
-   `luma-app.toml`. `luma lint` checks it.
+9. The `org.projectSuno.ApplicationContract` custom value `0.2` if you use
+   `Suno-app.toml`. `Suno lint` checks it.
 10. A `<url type="homepage">`. If your app sends any personal data off the
     device, a privacy policy link in your listing too.
 
@@ -153,10 +153,10 @@ Screenshots are the most important part of your listing.
 **Requirements**
 
 - PNG, of your **real app running**, showing real functionality.
-- Hosted at a stable HTTPS URL. Luma keeps its own copy, so changing the file
+- Hosted at a stable HTTPS URL. Suno keeps its own copy, so changing the file
   at your URL does not change your listing; submit a release with new
   screenshots instead.
-- At least **1280 by 800** for desktop screenshots. The Luma reference size is
+- At least **1280 by 800** for desktop screenshots. The Suno reference size is
   **2560 by 1600** (a 16:10 window at 2x).
 - No device frames, marketing text overlays, prices, ratings, or other apps’ or
   companies’ content you do not have rights to.
@@ -165,7 +165,7 @@ Screenshots are the most important part of your listing.
 **Recommendations**
 
 - Lead with the screenshot that shows what the app is for.
-- Capture the window alone, with its frame, on Luma’s default light appearance.
+- Capture the window alone, with its frame, on Suno’s default light appearance.
   Add a dark appearance screenshot if it helps.
 - Include one phone-width screenshot to show your app adapts.
 - Use sentence case captions of five to ten words that say what is shown.
@@ -186,5 +186,5 @@ Write release notes for people, not for developers:
 ```sh
 appstreamcli validate --no-net data/com.example.Notebook.metainfo.xml
 desktop-file-validate data/com.example.Notebook.desktop
-luma lint
+Suno lint
 ```

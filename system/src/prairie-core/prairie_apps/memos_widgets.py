@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Memos-only media surfaces, composed with LumaUI type and action parts."""
+"""Memos-only media surfaces, composed with SunoUI type and action parts."""
 from __future__ import annotations
 
 from typing import Callable
@@ -9,7 +9,7 @@ import gi
 gi.require_version("Gtk", "4.0")
 from gi.repository import Graphene, Gsk, Gtk, Pango  # noqa: E402
 
-from luma_appkit import AudioWaveform, MediaTransport, TypeLabel, apply_type, icons
+from Suno_appkit import AudioWaveform, MediaTransport, TypeLabel, apply_type, icons
 from .memos_data import Memo, format_duration
 
 

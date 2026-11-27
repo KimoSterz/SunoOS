@@ -18,7 +18,7 @@
 import Clutter from 'gi://Clutter';
 import GLib from 'gi://GLib';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
-import {getNotificationTray} from 'resource:///org/gnome/shell/ui/lumaNotificationBeacon.js';
+import {getNotificationTray} from 'resource:///org/gnome/shell/ui/SunoNotificationBeacon.js';
 import * as A from 'resource:///org/gnome/shell/ui/shelfArrangement.js';
 import * as L from './lib.js';
 

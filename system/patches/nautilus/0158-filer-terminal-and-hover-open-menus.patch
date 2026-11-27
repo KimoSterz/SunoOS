@@ -1,5 +1,5 @@
-From: Luma Developers
-Subject: [PATCH] Open directories in Luma Terminal and reveal native Open submenus
+From: Suno Developers
+Subject: [PATCH] Open directories in Suno Terminal and reveal native Open submenus
 
 diff --git a/src/nautilus-dbus-launcher.c b/src/nautilus-dbus-launcher.c
 --- a/src/nautilus-dbus-launcher.c
@@ -9,7 +9,7 @@ diff --git a/src/nautilus-dbus-launcher.c b/src/nautilus-dbus-launcher.c
  
      nautilus_dbus_launcher_create_proxy (self->data[NAUTILUS_DBUS_LAUNCHER_CONSOLE],
 -                                         "org.gnome.Ptyxis", "/org/gnome/Ptyxis",
-+                                         "org.projectluma.Terminal", "/org/projectluma/Terminal",
++                                         "org.projectSuno.Terminal", "/org/projectSuno/Terminal",
                                           "org.freedesktop.Application");
  }
 diff --git a/src/nautilus-files-view.c b/src/nautilus-files-view.c

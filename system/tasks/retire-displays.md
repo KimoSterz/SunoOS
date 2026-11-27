@@ -1,6 +1,6 @@
 # Retire standalone Displays
 
-Owner: luma-dev-2 / Codex root, arm-desktop integration worktree.
+Owner: Suno-dev-2 / Codex root, arm-desktop integration worktree.
 Status: source implementation and focused package checks; image delivery pending.
 
 User requests removal of the standalone Displays application across desktop,
@@ -8,7 +8,7 @@ ARM and mobile, including existing installs, with display controls in Settings.
 
 Shell patch0280 removes monitor-arrival/startup activation, including the wake
 path, and retains Settings' explicit display preview ownership. The old UI RPM
-is replaced by luma-display-config: only model/displayconfig and package init
+is replaced by Suno-display-config: only model/displayconfig and package init
 remain, preserving Ari's API without a launcher, D-Bus activation or UI files.
 The new backend obsoletes all historical0.1 Displays RPMs. Ari depends on the
 backend. Shared desktop pins/compose inputs and launcher policy omit Displays.
@@ -18,7 +18,7 @@ Actual evidence,2026-10-25UTC:
   payload checked for absence of UI/activation; an isolated RPM database upgrade
   from synthetic old Displays removes old package. Fixture uses justdb/nodeps/
   ignoresize only for its isolated database, not actual OS installation.
-- 771f4e25: pinned Fedora SRPM verified, complete258 declared Luma Shell patches
+- 771f4e25: pinned Fedora SRPM verified, complete258 declared Suno Shell patches
   applied successfully; resulting Settings helper executed for absent, retired
   Displays and Settings windows; startup/monitor activation absent.
 - Launcher GIO visibility positive/negative checks and shell syntax passed.

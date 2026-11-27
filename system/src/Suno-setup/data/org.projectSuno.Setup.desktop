@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=Suno Setup
+Exec=/usr/libexec/Suno-setup
+Type=Application
+NoDisplay=true
+Icon=Suno-logo

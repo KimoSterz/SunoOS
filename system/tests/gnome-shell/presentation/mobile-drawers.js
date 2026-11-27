@@ -3,7 +3,7 @@
 import Clutter from 'gi://Clutter';
 import GLib from 'gi://GLib';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
-import {peekNotificationLip} from 'resource:///org/gnome/shell/ui/lumaNotificationBeacon.js';
+import {peekNotificationLip} from 'resource:///org/gnome/shell/ui/SunoNotificationBeacon.js';
 import {PopupAnimation} from 'resource:///org/gnome/shell/ui/boxpointer.js';
 const sleep = ms => new Promise(resolve => GLib.timeout_add_once(GLib.PRIORITY_DEFAULT, ms, resolve));
 const results = [], frames = [];
@@ -11,7 +11,7 @@ function check(name, ok, detail = null) {results.push({name, ok: Boolean(ok), de
 async function run() {
     const p = Main.presentation, q = p._handheldOptions, lip = peekNotificationLip();
     check('Unlocked Mobile fixture', p.mode === 'mobile' && !Main.sessionMode.isLocked);
-    check('Native notification island and shared search exist', Boolean(lip && Main.lumaSearch));
+    check('Native notification island and shared search exist', Boolean(lip && Main.SunoSearch));
     check('Home is not being edited', !p._editor.editing && !p._editor.dragging && !p._editor.resizing);
     const m = Main.layoutManager.primaryMonitor;
     const touch = global.stage.context.get_backend().get_default_seat().create_virtual_device(Clutter.InputDeviceType.TOUCHSCREEN_DEVICE);
@@ -55,21 +55,21 @@ async function run() {
         phase = 'idle'; await closeAll(); p.showHome(); await sleep(250);
         await move(m.x + m.width / 2, m.y + m.height - 6, -120 * p._scale, 6);
         touch.notify_touch_up(GLib.get_monotonic_time(), 0); await sleep(400);
-        check('Short swipe on Home opens the shared master search', Main.lumaSearch._dialog.visible && !p._tasks._switcherPopup);
-        Main.lumaSearch.close(); await sleep(250); p.showHome();
+        check('Short swipe on Home opens the shared master search', Main.SunoSearch._dialog.visible && !p._tasks._switcherPopup);
+        Main.SunoSearch.close(); await sleep(250); p.showHome();
         await move(m.x + m.width / 2, m.y + m.height - 6, -120 * p._scale, 6); await sleep(350);
         touch.notify_touch_up(GLib.get_monotonic_time(), 0); await sleep(300);
-        check('Holding Home swipe still opens app switcher', Boolean(p._tasks._switcherPopup) && !Main.lumaSearch._dialog.visible);
+        check('Holding Home swipe still opens app switcher', Boolean(p._tasks._switcherPopup) && !Main.SunoSearch._dialog.visible);
         p._tasks._switcherPopup?.dismiss(null, true); await sleep(350);
         const window = [...p._windows.keys()].find(w => w.get_compositor_private());
         check('Running app available for Home navigation regression', Boolean(window));
         Main.activateWindow(window); await sleep(450);
         await move(m.x + m.width / 2, m.y + m.height - 6, -120 * p._scale, 6);
         touch.notify_touch_up(GLib.get_monotonic_time(), 0); await sleep(400);
-        check('Short swipe from an app returns Home without search', p._home.visible && !Main.lumaSearch._dialog.visible);
+        check('Short swipe from an app returns Home without search', p._home.visible && !Main.SunoSearch._dialog.visible);
     } finally {
         global.stage.disconnect(paintId); touch.run_dispose();
-        Main.lumaSearch.close(); p._tasks._switcherPopup?.destroy(); lip.close(); p.showHome();
+        Main.SunoSearch.close(); p._tasks._switcherPopup?.destroy(); lip.close(); p.showHome();
         q.open();
     }
 }

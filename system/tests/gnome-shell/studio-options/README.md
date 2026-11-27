@@ -4,7 +4,7 @@ Run `gjs behavior.js /path/to/replayed/gnome-shell-50.3 --self-test` after apply
 
 `capture.py` derives from the foundation conform Shell harness (Apache-2.0). It uses only a private headless Shell, private buses/settings/runtime directories and the stamped live overlay. It serializes capture through the shared conform slot, fails on Eval errors or missing/empty screenshots, and records actor bounds. It stops only its own subprocesses. Never target the daily Shell.
 
-`visual-fixtures.js` is test-only. Copy it to the disposable overlay as `ui/lumaStudioVisualFixtures.js`; never include it in the package. It presents sample service rows because the private buses have no hardware services. These fixtures prove native actor rendering, not system integration. Each Eval that calls a fixture returning an actor must end in `; true`, because org.gnome.Shell.Eval serializes results and cannot serialize cyclic actor graphs.
+`visual-fixtures.js` is test-only. Copy it to the disposable overlay as `ui/SunoStudioVisualFixtures.js`; never include it in the package. It presents sample service rows because the private buses have no hardware services. These fixtures prove native actor rendering, not system integration. Each Eval that calls a fixture returning an actor must end in `; true`, because org.gnome.Shell.Eval serializes results and cannot serialize cyclic actor graphs.
 
 `allocation-behavior.js` executes the actual lip allocation methods at a strict fake boundary. It covers unallocated/dormant groups, ancestor allocation, occupied top bands, monitor filtering, first sizing, later morphs, deferred/coalesced allocation callbacks, and destruction. Nine cases pass under V8; the frozen0204 source fails. Real Clutter/GJS startup verification remains required.
 

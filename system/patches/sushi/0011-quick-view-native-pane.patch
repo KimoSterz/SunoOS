@@ -46,10 +46,10 @@
          this.add(eventBox);
  
          this._embed = new Embed();
--        this._embed.get_style_context().add_class('luma-preview-pane');
+-        this._embed.get_style_context().add_class('Suno-preview-pane');
 -        eventBox.add(this._embed);
 +        const pane = new Gtk.Frame({shadow_type: Gtk.ShadowType.NONE});
-+        pane.get_style_context().add_class('luma-preview-pane');
++        pane.get_style_context().add_class('Suno-preview-pane');
 +        pane.add(this._embed);
 +        eventBox.add(pane);
  

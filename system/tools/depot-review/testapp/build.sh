@@ -19,8 +19,8 @@ sed "s/@VERSION@/$version/" "$here/$id.metainfo.xml" >"$d/files/share/metainfo/$
 cat >"$d/metadata" <<META
 [Application]
 name=$id
-runtime=org.projectluma.Platform/$arch/44
-sdk=org.projectluma.Sdk/$arch/44
+runtime=org.projectSuno.Platform/$arch/44
+sdk=org.projectSuno.Sdk/$arch/44
 command=depot-hello
 META
 flatpak build-finish --share=ipc --socket=wayland --socket=fallback-x11 --device=dri "$d"

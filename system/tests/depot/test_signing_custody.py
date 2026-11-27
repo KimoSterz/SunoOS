@@ -16,13 +16,13 @@ control = importlib.util.module_from_spec(spec); spec.loader.exec_module(control
 @unittest.skipUnless(os.geteuid() == 0, 'root-owned custody checks require the qualified root builder')
 class Custody(unittest.TestCase):
     def setUp(self):
-        self.base = Path(tempfile.mkdtemp(prefix='luma-publisher-custody-', dir='/root'))
+        self.base = Path(tempfile.mkdtemp(prefix='Suno-publisher-custody-', dir='/root'))
         self.source = self.base / 'input'; self.source.mkdir(mode=0o700)
         (self.source / 'actual-object').write_bytes(b'immutable producer bytes\n')
         self.target = self.base / 'sealed'
         self.digest = control.seal(self.source, self.target, inputs=True)
     def tearDown(self): shutil.rmtree(self.base)
-    def verify(self): return control.verify(self.target, self.digest, 'org.projectluma.signing-inputs/v1')
+    def verify(self): return control.verify(self.target, self.digest, 'org.projectSuno.signing-inputs/v1')
     def test_actual_snapshot_positive_and_no_overwrite(self):
         self.verify()
         with self.assertRaises(ValueError): control.seal(self.source, self.target, inputs=True)
@@ -32,10 +32,10 @@ class Custody(unittest.TestCase):
         (other / 'repo/config').write_text('[core]\nmode=archive\n')
         target = self.base / 'empty-sealed'
         digest = control.seal(other, target, inputs=True)
-        control.verify(target, digest, 'org.projectluma.signing-inputs/v1')
+        control.verify(target, digest, 'org.projectSuno.signing-inputs/v1')
         self.assertTrue((target / 'repo/tmp').is_dir())
         (target / 'repo/tmp').rmdir()
-        with self.assertRaises(ValueError): control.verify(target, digest, 'org.projectluma.signing-inputs/v1')
+        with self.assertRaises(ValueError): control.verify(target, digest, 'org.projectSuno.signing-inputs/v1')
     def test_changed_code_or_input_fails(self):
         (self.target / 'actual-object').write_bytes(b'execute stolen-key copy\n')
         with self.assertRaises(ValueError): self.verify()
@@ -88,7 +88,7 @@ class Custody(unittest.TestCase):
         source = self.base / 'empty-input'; source.mkdir(mode=0o700)
         target = self.base / 'empty-input-sealed'
         digest = control.seal(source, target, inputs=True)
-        control.verify(target, digest, 'org.projectluma.signing-inputs/v1')
+        control.verify(target, digest, 'org.projectSuno.signing-inputs/v1')
 
     def test_sealed_graph_publisher_includes_and_runs_inherited_lock_helper(self):
         target = self.base / 'graph-lock-control'
@@ -97,17 +97,17 @@ class Custody(unittest.TestCase):
         relative = Path('scripts/os/lib/publication_lock_fds.py')
         self.assertEqual((target / relative).read_bytes(), (SOURCE / relative).read_bytes())
         self.assertNotEqual((target / relative).stat().st_ino, (SOURCE / relative).stat().st_ino)
-        for dependency in ('config/os/media.env', 'config/os/keys/luma-update-graph.pub'):
+        for dependency in ('config/os/media.env', 'config/os/keys/Suno-update-graph.pub'):
             self.assertEqual((target / dependency).read_bytes(), (SOURCE / dependency).read_bytes())
             self.assertNotEqual((target / dependency).stat().st_ino, (SOURCE / dependency).stat().st_ino)
         root = self.base / 'publication'; (root / 'locks').mkdir(parents=True)
         with (root / 'locks/publish-nightly.lock').open('a') as stream:
             env = os.environ.copy()
-            env.pop('LUMA_TARGET_ARCHITECTURE', None)
-            env.update(LUMA_OS_ROOT=str(root), PYTHONDONTWRITEBYTECODE='1',
-                       LUMA_OS_PUBLICATION_LOCK_FDS=json.dumps({'nightly': stream.fileno()}))
+            env.pop('SUNO_TARGET_ARCHITECTURE', None)
+            env.update(SUNO_OS_ROOT=str(root), PYTHONDONTWRITEBYTECODE='1',
+                       SUNO_OS_PUBLICATION_LOCK_FDS=json.dumps({'nightly': stream.fileno()}))
             result = subprocess.run(['bash', '-c',
-                'set -euo pipefail; source "$1/scripts/os/lib/common.sh"; luma_os_publication_lock',
+                'set -euo pipefail; source "$1/scripts/os/lib/common.sh"; Suno_os_publication_lock',
                 'test', str(target)], env=env, pass_fds=(stream.fileno(),),
                 capture_output=True, text=True, timeout=15)
             self.assertEqual(result.returncode, 0, result.stderr)

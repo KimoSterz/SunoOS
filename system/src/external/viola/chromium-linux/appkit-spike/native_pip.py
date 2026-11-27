@@ -5,7 +5,7 @@ Reuse AppKit's window and the existing video-only NativeMedia paintable. The
 original Chromium PiP session retains playback, page API state and audio.
 """
 from gi.repository import Gtk
-from luma_appkit import AppWindow, Command, CommandGroup, CommandRegistry
+from Suno_appkit import AppWindow, Command, CommandGroup, CommandRegistry
 
 
 class NativePip(AppWindow):

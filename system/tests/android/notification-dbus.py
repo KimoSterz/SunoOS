@@ -18,7 +18,7 @@ from gi.repository import Gio, GLib
 
 NAME = 'org.freedesktop.Notifications'
 PATH = '/org/freedesktop/Notifications'
-CONTROL = 'org.projectluma.NotificationFixture'
+CONTROL = 'org.projectSuno.NotificationFixture'
 XML = '''<node><interface name="org.freedesktop.Notifications">
 <method name="Notify"><arg type="s" direction="in"/><arg type="u" direction="in"/>
 <arg type="s" direction="in"/><arg type="s" direction="in"/><arg type="s" direction="in"/>
@@ -29,7 +29,7 @@ XML = '''<node><interface name="org.freedesktop.Notifications">
 <signal name="ActionInvoked"><arg type="u"/><arg type="s"/></signal>
 <signal name="ActivationToken"><arg type="u"/><arg type="s"/></signal>
 <signal name="NotificationClosed"><arg type="u"/><arg type="u"/></signal>
-</interface><interface name="org.projectluma.NotificationFixture">
+</interface><interface name="org.projectSuno.NotificationFixture">
 <method name="Records"><arg type="s" direction="out"/></method>
 <method name="Emit"><arg type="s" direction="in"/><arg type="u" direction="in"/>
 <arg type="s" direction="in"/><arg type="u" direction="in"/></method>
@@ -56,7 +56,7 @@ def server():
                             GLib.Variant('(uu)', (values[0], 3)))
             invocation.return_value(None)
         elif method == 'GetCapabilities':
-            capabilities = ['x-luma-android-inline-reply-v1'] if '--native' in sys.argv else []
+            capabilities = ['x-Suno-android-inline-reply-v1'] if '--native' in sys.argv else []
             invocation.return_value(GLib.Variant('(as)', (capabilities,)))
         elif method == 'Records':
             invocation.return_value(GLib.Variant('(s)', (json.dumps(records),)))
@@ -80,9 +80,9 @@ def main():
     import dbus.mainloop.glib
     dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
     repo = Path(__file__).resolve().parents[2]
-    sys.path.insert(0, str(repo / 'src/luma-android'))
-    from luma_android import waydroid_notifications as transport
-    from luma_android.notification_bridge import Notification
+    sys.path.insert(0, str(repo / 'src/Suno-android'))
+    from Suno_android import waydroid_notifications as transport
+    from Suno_android.notification_bridge import Notification
     bus = Gio.bus_get_sync(Gio.BusType.SESSION)
     args = SimpleNamespace()
     listener = Mock()
@@ -129,8 +129,8 @@ def main():
         first = launch()
         with patch.object(transport, 'add_service', binder_fixture):
             transport.start(args, {})
-            wait(lambda: listener in args.luma_notifications[3].listeners)
-            bridge = args.luma_notifications[3]
+            wait(lambda: listener in args.Suno_notifications[3].listeners)
+            bridge = args.Suno_notifications[3]
             wait(lambda: bridge.generation > 0)
             record = Notification('org.example.Chat', 'Chat', 'Test', '<b>private & literal',
                                   (('default', ''), ('read', 'Mark read')),
@@ -166,8 +166,8 @@ def main():
                 reply_token = bridge.records[stale].reply_token
                 observed = json.loads(control('Records').unpack()[0])[-1]
                 assert observed['actions'] == ['default', '']
-                assert observed['hints']['x-luma-inline-reply-token'] == reply_token
-                assert observed['hints']['x-luma-inline-reply-path'] == '/org/projectluma/Android/Notifications'
+                assert observed['hints']['x-Suno-inline-reply-token'] == reply_token
+                assert observed['hints']['x-Suno-inline-reply-path'] == '/org/projectSuno/Android/Notifications'
             first.terminate()
             first.wait(timeout=5)
             if native:

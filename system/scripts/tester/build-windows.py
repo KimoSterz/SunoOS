@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""Assemble Windows x64 Try Luma using a qualified native LumaUI runtime.
+"""Assemble Windows x64 Try Suno using a qualified native SunoUI runtime.
 
 Inputs are unpacked, checksum-verified runtime packages. No host installation
 or guest OS image is included. Run under the normal build resource admission.
@@ -29,28 +29,28 @@ def build_launcher(repo, out, root, cc, windres, version):
     # The shell icon is a native PE resource. Never reuse another app's launcher.
     assets=out/'icon-assets'
     subprocess.run([sys.executable,str(repo/'scripts/tester/export-icons.py'),
-        '--source',str(repo/'src/luma-tester/luma_tester/io.luma.Tester.svg'),
+        '--source',str(repo/'src/Suno-tester/Suno_tester/io.Suno.Tester.svg'),
         '--output',str(assets)],check=True)
-    shutil.copy2(assets/'windows/Try Luma.ico',root/'Try Luma.ico')
-    resource=out/'try-luma.rc'
+    shutil.copy2(assets/'windows/Try Suno.ico',root/'Try Suno.ico')
+    resource=out/'try-Suno.rc'
     parts=version.split('.')
     numbers=','.join(str(int(value)) for value in parts[:3])+',0'
-    resource.write_text('1 ICON "icon-assets/windows/Try Luma.ico"\n'
+    resource.write_text('1 ICON "icon-assets/windows/Try Suno.ico"\n'
         '1 VERSIONINFO\n FILEVERSION '+numbers+'\n PRODUCTVERSION '+numbers+'\n'
         ' FILEOS 0x40004\n FILETYPE 0x1\n BEGIN\n'
         ' BLOCK "StringFileInfo" BEGIN\n BLOCK "040904B0" BEGIN\n'
-        ' VALUE "FileDescription", "Try Luma\\0"\n'
-        ' VALUE "ProductName", "Try Luma\\0"\n'
+        ' VALUE "FileDescription", "Try Suno\\0"\n'
+        ' VALUE "ProductName", "Try Suno\\0"\n'
         ' VALUE "FileVersion", "'+version+'\\0"\n'
         ' VALUE "ProductVersion", "'+version+'\\0"\n'
         ' END\n END\n BLOCK "VarFileInfo" BEGIN\n'
         ' VALUE "Translation", 0x409, 1200\n END\n END\n')
-    obj=out/'try-luma-icon.o'
+    obj=out/'try-Suno-icon.o'
     subprocess.run([windres,'--input',str(resource),'--output',str(obj),
                     '--output-format=coff'],cwd=out,check=True)
     subprocess.run([cc,'-municode','-mwindows','-O2',
         str(repo/'packaging/standalone/tester/windows-launcher.c'),str(obj),
-        '-o',str(root/'Try Luma.exe'),'-luser32'],check=True)
+        '-o',str(root/'Try Suno.exe'),'-luser32'],check=True)
 
 
 def main():
@@ -60,8 +60,8 @@ def main():
     parser.add_argument('--pycdlib-wheel',type=Path,required=True)
     parser.add_argument('--openssh-zip',type=Path,required=True)
     parser.add_argument('--output',type=Path,required=True)
-    parser.add_argument('--native-kit',type=Path,help='Current cross-built LumaUI DLL build tree')
-    parser.add_argument('--typelibs',type=Path,help='Matching current LumaUI typelibs')
+    parser.add_argument('--native-kit',type=Path,help='Current cross-built SunoUI DLL build tree')
+    parser.add_argument('--typelibs',type=Path,help='Matching current SunoUI typelibs')
     parser.add_argument('--cc',help='MinGW-w64 C compiler executable')
     parser.add_argument('--windres',help='Matching GNU Windows resource compiler')
     parser.add_argument('--release',action='store_true')
@@ -72,13 +72,13 @@ def main():
     windres=tool(args.windres,['x86_64-w64-mingw32-windres','x86_64-w64-mingw32ucrt-windres']+(['windres'] if sys.platform=='win32' else []))
     if not cc or not windres:parser.error('MinGW-w64 gcc and windres are required to build the branded launcher; use --cc and --windres.')
     repo=Path(__file__).resolve().parents[2]
-    sys.path.insert(0,str(repo/'src/luma-tester'))
-    from luma_tester import __version__
+    sys.path.insert(0,str(repo/'src/Suno-tester'))
+    from Suno_tester import __version__
     out=args.output.resolve();out.mkdir(parents=True,exist_ok=False)
-    root=out/'Try Luma'
-    # Preserve notices and the tested GTK/Python/LumaUI closure, replacing app code.
+    root=out/'Try Suno'
+    # Preserve notices and the tested GTK/Python/SunoUI closure, replacing app code.
     shutil.copytree(args.runtime,root,ignore=shutil.ignore_patterns('app','__pycache__','*.pyc','*.exe','*.cmd','application-source.json'))
-    shutil.copytree(args.runtime/'app/luma_appkit',root/'app/luma_appkit')
+    shutil.copytree(args.runtime/'app/Suno_appkit',root/'app/Suno_appkit')
     # Executables in bin were deliberately excluded above; restore required Python/tools.
     for path in (args.runtime/'bin').glob('*.exe'):shutil.copy2(path,root/'bin'/path.name)
     # Windows resolves dependencies beside the executable first. Keep QEMU's
@@ -88,7 +88,7 @@ def main():
         shutil.copy2(path,qemu/path.name)
         if not (root/'bin'/path.name).exists():shutil.copy2(path,root/'bin'/path.name)
     if args.native_kit:
-        for path in args.native_kit.rglob('libluma-*.dll'):shutil.copy2(path,root/'bin'/path.name)
+        for path in args.native_kit.rglob('libSuno-*.dll'):shutil.copy2(path,root/'bin'/path.name)
     for name in ('qemu-img','qemu-system-x86_64','qemu-system-aarch64'):
         shutil.copy2(args.qemu_prefix/('bin/'+name+'.exe'),qemu/(name+'.exe'))
     for relative in ('lib/girepository-1.0','lib/gio/modules','share/licenses'):
@@ -97,24 +97,24 @@ def main():
     shutil.copytree(args.qemu_prefix/'share/qemu',root/'share/qemu',dirs_exist_ok=True)
     shutil.copytree(args.qemu_prefix/'share/licenses',qemu/'licenses')
     if args.typelibs:
-        for path in args.typelibs.glob('Luma*.typelib'):shutil.copy2(path,root/'lib/girepository-1.0'/path.name)
+        for path in args.typelibs.glob('Suno*.typelib'):shutil.copy2(path,root/'lib/girepository-1.0'/path.name)
     schemas=root/'share/glib-2.0/schemas'
-    for path in (repo/'src/luma-platform/schemas').glob('*.gschema.xml'):shutil.copy2(path,schemas/path.name)
+    for path in (repo/'src/Suno-platform/schemas').glob('*.gschema.xml'):shutil.copy2(path,schemas/path.name)
     subprocess.run(['glib-compile-schemas','--strict',str(schemas)],check=True)
-    kit=repo/'src/luma-platform/appkit'
-    shutil.rmtree(root/'app/luma_appkit')
-    shutil.copytree(kit/'luma_appkit',root/'app/luma_appkit',ignore=shutil.ignore_patterns('__pycache__','*.pyc'))
+    kit=repo/'src/Suno-platform/appkit'
+    shutil.rmtree(root/'app/Suno_appkit')
+    shutil.copytree(kit/'Suno_appkit',root/'app/Suno_appkit',ignore=shutil.ignore_patterns('__pycache__','*.pyc'))
     for file in kit.glob('*.css'):shutil.copy2(file,root/'app'/file.name)
     for name in ('fonts','icons'):
         if (kit/name).is_dir():shutil.copytree(kit/name,root/('app/'+name),dirs_exist_ok=True)
-    shutil.copytree(repo/'src/luma-tester/luma_tester',root/'app/luma_tester',ignore=shutil.ignore_patterns('__pycache__','*.pyc'))
-    identity=root/'app/luma_tester/__init__.py'
+    shutil.copytree(repo/'src/Suno-tester/Suno_tester',root/'app/Suno_tester',ignore=shutil.ignore_patterns('__pycache__','*.pyc'))
+    identity=root/'app/Suno_tester/__init__.py'
     if args.release:identity.write_text(identity.read_text().replace("DOWNLOAD_SOURCE = 'test'","DOWNLOAD_SOURCE = 'tester'"))
-    shutil.copy2(repo/'packaging/standalone/tester/windows-bootstrap.py',root/'app/luma_port_boot.py')
-    meta=dict(app_id='io.luma.Tester',name='Try Luma',version=__version__,module='luma_tester.windows',env={'LUMA_PLATFORM':'windows','LUMA_APP_ID':'io.luma.Tester','LUMA_APP_NAME':'Try Luma'})
-    (root/'app/luma-port-app.json').write_text(json.dumps(meta,indent=2)+'\n')
-    icon=root/'share/icons/hicolor/scalable/apps/io.luma.Tester.svg';icon.parent.mkdir(parents=True,exist_ok=True)
-    shutil.copy2(repo/'src/luma-tester/luma_tester/io.luma.Tester.svg',icon)
+    shutil.copy2(repo/'packaging/standalone/tester/windows-bootstrap.py',root/'app/Suno_port_boot.py')
+    meta=dict(app_id='io.Suno.Tester',name='Try Suno',version=__version__,module='Suno_tester.windows',env={'SUNO_PLATFORM':'windows','SUNO_APP_ID':'io.Suno.Tester','SUNO_APP_NAME':'Try Suno'})
+    (root/'app/Suno-port-app.json').write_text(json.dumps(meta,indent=2)+'\n')
+    icon=root/'share/icons/hicolor/scalable/apps/io.Suno.Tester.svg';icon.parent.mkdir(parents=True,exist_ok=True)
+    shutil.copy2(repo/'src/Suno-tester/Suno_tester/io.Suno.Tester.svg',icon)
     build_launcher(repo,out,root,cc,windres,__version__)
     command='''@echo off
 setlocal
@@ -123,9 +123,9 @@ set "PYTHONHOME=%~dp0"
 set "PYTHONPATH=%~dp0app"
 set "PYTHONNOUSERSITE=1"
 set "PYTHONUTF8=1"
-"%~dp0bin\\python.exe" -m luma_port_boot %*
+"%~dp0bin\\python.exe" -m Suno_port_boot %*
 '''
-    (root/'Try Luma (console).cmd').write_text(command,newline='\r\n')
+    (root/'Try Suno (console).cmd').write_text(command,newline='\r\n')
     # Pure Python NoCloud writer; retain its distribution notices.
     site=next((root/'lib').glob('python3.*'))/'site-packages'
     with zipfile.ZipFile(args.pycdlib_wheel) as wheel:
@@ -146,12 +146,12 @@ set "PYTHONUTF8=1"
     for folder,pairs in {'aarch64':{'QEMU_EFI.fd':'edk2-aarch64-code.fd','QEMU_EFI-pflash.raw':'edk2-aarch64-code.fd','vars-template-pflash.raw':'edk2-arm-vars.fd'},'ovmf':{'OVMF_CODE.fd':'edk2-x86_64-code.fd','OVMF_VARS.fd':'edk2-i386-vars.fd'}}.items():
         destination=root/'firmware'/folder;destination.mkdir(parents=True)
         for name,source in pairs.items():shutil.copy2(args.qemu_prefix/'share/qemu'/source,destination/name)
-    (root/'README-WINDOWS.txt').write_text('Try Luma '+__version__+'\nExtract the whole folder and open Try Luma.exe.\nImages download inside Try Luma. Enable Windows Hypervisor Platform for native CPU acceleration.\nARM guests on x86 use slower emulation. This candidate is unsigned.\n')
+    (root/'README-WINDOWS.txt').write_text('Try Suno '+__version__+'\nExtract the whole folder and open Try Suno.exe.\nImages download inside Try Suno. Enable Windows Hypervisor Platform for native CPU acceleration.\nARM guests on x86 use slower emulation. This candidate is unsigned.\n')
     receipt=dict(version=__version__,platform='windows-x86_64',source_commit=subprocess.check_output(['git','-C',str(repo),'rev-parse','HEAD'],text=True).strip(),download_source='tester' if args.release else 'test',signed=False,files=[])
     for path in sorted(root.rglob('*')):
         if path.is_file():receipt['files'].append(dict(path=str(path.relative_to(root)),bytes=path.stat().st_size,sha256=hashlib.file_digest(path.open('rb'),'sha256').hexdigest()))
     (out/'build-receipt.json').write_text(json.dumps(receipt,indent=2)+'\n')
-    archive=out/('Try-Luma-'+__version__+'-windows-x86_64.zip')
+    archive=out/('Try-Suno-'+__version__+'-windows-x86_64.zip')
     with zipfile.ZipFile(archive,'w',zipfile.ZIP_DEFLATED,compresslevel=6) as package:
         for path in sorted(root.rglob('*')):
             if path.is_file():package.write(path,Path(root.name)/path.relative_to(root))

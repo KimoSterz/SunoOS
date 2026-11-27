@@ -28,9 +28,9 @@ die() {
   exit 1
 }
 
-[ "${LUMA_PIXEL9_DIRECT_KERNEL_BOOT_AUTHORIZED:-0}" = 1 ] ||
+[ "${SUNO_PIXEL9_DIRECT_KERNEL_BOOT_AUTHORIZED:-0}" = 1 ] ||
   die 'one-shot direct-kernel boot authorization is absent'
-authorized_sha=${LUMA_PIXEL9_AUTHORIZED_SHA256:-}
+authorized_sha=${SUNO_PIXEL9_AUTHORIZED_SHA256:-}
 case "$authorized_sha" in
   ''|*[!0-9a-f]*) die 'exact authorized SHA-256 is absent or malformed' ;;
 esac
@@ -134,7 +134,7 @@ max_download_dec=$((max_download))
 
 mkdir -p "$evidence_dir"
 {
-  printf 'LUMA_PIXEL9_DIRECT_KERNEL_BOOT_ATTEMPT_VERSION=1\n'
+  printf 'SUNO_PIXEL9_DIRECT_KERNEL_BOOT_ATTEMPT_VERSION=1\n'
   printf 'DEVICE=tokay\n'
   printf 'CANDIDATE_BYTES=%s\n' "$candidate_bytes"
   printf 'CANDIDATE_SHA256=%s\n' "$candidate_sha"
@@ -153,7 +153,7 @@ printf 'Requesting RAM-only Tokay boot of authorized SHA-256 %s\n' "$candidate_s
 "$fastboot_bin" boot "$candidate"
 
 {
-  printf 'LUMA_PIXEL9_DIRECT_KERNEL_BOOT_COMMAND_VERSION=1\n'
+  printf 'SUNO_PIXEL9_DIRECT_KERNEL_BOOT_COMMAND_VERSION=1\n'
   printf 'DEVICE=tokay\n'
   printf 'CANDIDATE_SHA256=%s\n' "$candidate_sha"
   printf 'TEMPORARY_BOOT_COMMAND_ACCEPTED=true\n'

@@ -12,8 +12,8 @@ repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 # shellcheck disable=SC1091
 . "$repo_root/config/mobile/pixel9-physical/inputs.env"
 
-output_root=${LUMA_PIXEL9_SOURCE_AUDIT_DIR:-$repo_root/build/cache/upstream/pixel9-audit}
-minimum_kib=${LUMA_PIXEL9_SOURCE_AUDIT_MINIMUM_KIB:-2097152}
+output_root=${SUNO_PIXEL9_SOURCE_AUDIT_DIR:-$repo_root/build/cache/upstream/pixel9-audit}
+minimum_kib=${SUNO_PIXEL9_SOURCE_AUDIT_MINIMUM_KIB:-2097152}
 
 die() {
   printf 'error: %s\n' "$*" >&2
@@ -147,7 +147,7 @@ verify_sha256 "$PIXEL9_GKI_CERTIFICATE_TOOL_SHA256" \
   "$mkbootimg_dir/gki/generate_gki_certificate.py"
 
 {
-  printf 'LUMA_PIXEL9_SOURCE_AUDIT_VERSION=1\n'
+  printf 'SUNO_PIXEL9_SOURCE_AUDIT_VERSION=1\n'
   printf 'LINUX_COMMIT=%s\n' "$PIXEL9_LINUX_COMMIT"
   printf 'UBOOT_COMMIT=%s\n' "$PIXEL9_UBOOT_COMMIT"
   printf 'PMAPORTS_COMMIT=%s\n' "$PIXEL9_PMAPORTS_COMMIT"
@@ -159,7 +159,7 @@ verify_sha256 "$PIXEL9_GKI_CERTIFICATE_TOOL_SHA256" \
   printf 'PHONE_ACCESSED=false\n'
   printf 'BOOT_AUTHORIZED=false\n'
   printf 'FLASH_AUTHORIZED=false\n'
-} >"$stage/luma-source-audit-manifest.env"
+} >"$stage/Suno-source-audit-manifest.env"
 
 mv "$stage" "$output_root"
 trap - EXIT

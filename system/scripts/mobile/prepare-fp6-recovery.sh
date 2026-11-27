@@ -10,7 +10,7 @@ repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 # shellcheck disable=SC1091
 . "$repo_root/config/mobile/fp6-physical/inputs.env"
 
-build_dir=${LUMA_FP6_PHYSICAL_BUILD_DIR:-$repo_root/build/mobile/fp6-physical}
+build_dir=${SUNO_FP6_PHYSICAL_BUILD_DIR:-$repo_root/build/mobile/fp6-physical}
 downloads_dir="$build_dir/downloads"
 factory_image="$downloads_dir/$FP6_STOCK_FACTORY_IMAGE"
 manifest="$build_dir/recovery-manifest.txt"
@@ -62,7 +62,7 @@ if [ "$actual" != "$FP6_STOCK_FACTORY_SHA256" ]; then
 fi
 
 {
-  printf 'LUMA_FP6_RECOVERY_MANIFEST_VERSION=1\n'
+  printf 'SUNO_FP6_RECOVERY_MANIFEST_VERSION=1\n'
   printf 'SOURCE=official-fairphone-factory-package\n'
   printf 'ANDROID_VERSION=%s\n' "$FP6_STOCK_ANDROID_VERSION"
   printf 'FAIRPHONE_PAGE_VERSION=%s\n' "$FP6_STOCK_PAGE_VERSION"

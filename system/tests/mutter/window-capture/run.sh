@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # Headless test of windows hidden from capture (patches/mutter 0042,
-# luma_window_capture_v1, LumaUI luma_window_set_hidden_from_capture()).
+# Suno_window_capture_v1, SunoUI Suno_window_set_hidden_from_capture()).
 # GNOME Shell on two virtual 1920x1080 monitors with Xwayland, PipeWire and
 # WirePlumber; windows painted one solid colour each, recorded through
 # org.gnome.Mutter.ScreenCast (monitor, area and window streams, read with
@@ -13,7 +13,7 @@
 # gstreamer1-plugins-base-devel, cairo-devel and Xwayland; no GPU, display
 # server or logind session.
 #
-#   run.sh OUTDIR [luma|stock]          the checks (driver.js)
+#   run.sh OUTDIR [Suno|stock]          the checks (driver.js)
 #   MODE=perf run.sh OUTDIR             what a monitor stream costs with no
 #                                       hidden window, one on the other
 #                                       monitor and one on its monitor
@@ -26,7 +26,7 @@ set -euo pipefail
 here=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 repo=$(CDPATH= cd -- "$here/../../.." && pwd)
 out=$1
-expect=${2:-luma}
+expect=${2:-Suno}
 rm -rf "$out/runtime"
 mkdir -p "$out/build" "$out/runtime" "$out/config/glib-2.0/settings" "$out/data"
 chmod 0700 "$out/runtime"
@@ -36,14 +36,14 @@ gcc -O2 -Wall -Wextra -Werror -Wno-unused-parameter "$here/capture.c" \
   $(pkg-config --cflags --libs gio-2.0 gstreamer-1.0 gstreamer-app-1.0 gstreamer-video-1.0 cairo) \
   -o "$out/build/capture"
 
-protocol=$repo/src/luma-platform/protocols/luma-window-capture-v1.xml
-wayland-scanner client-header "$protocol" "$out/build/luma-window-capture-v1-client-protocol.h"
-wayland-scanner private-code "$protocol" "$out/build/luma-window-capture-v1-client-protocol.c"
-# The client is built from the kit's own luma-window-capture.c.
-gcc -O1 -Wall -Wextra -Werror -Wno-unused-parameter -DLUMA_HAVE_WAYLAND \
-  -I"$out/build" -I"$repo/src/luma-platform/ui" \
-  "$here/client.c" "$repo/src/luma-platform/ui/luma-window-capture.c" \
-  "$out/build/luma-window-capture-v1-client-protocol.c" \
+protocol=$repo/src/Suno-platform/protocols/Suno-window-capture-v1.xml
+wayland-scanner client-header "$protocol" "$out/build/Suno-window-capture-v1-client-protocol.h"
+wayland-scanner private-code "$protocol" "$out/build/Suno-window-capture-v1-client-protocol.c"
+# The client is built from the kit's own Suno-window-capture.c.
+gcc -O1 -Wall -Wextra -Werror -Wno-unused-parameter -DSuno_HAVE_WAYLAND \
+  -I"$out/build" -I"$repo/src/Suno-platform/ui" \
+  "$here/client.c" "$repo/src/Suno-platform/ui/Suno-window-capture.c" \
+  "$out/build/Suno-window-capture-v1-client-protocol.c" \
   $(pkg-config --cflags --libs gtk4 wayland-client) -o "$out/build/client"
 
 cat >"$out/config/glib-2.0/settings/keyfile" <<'KEYFILE'
@@ -61,17 +61,17 @@ env -u DISPLAY -u WAYLAND_DISPLAY \
   XDG_RUNTIME_DIR="$out/runtime" XDG_CONFIG_HOME="$out/config" \
   XDG_DATA_HOME="$out/data" GSETTINGS_BACKEND=keyfile LIBGL_ALWAYS_SOFTWARE=1 \
   GTK_A11Y=none NO_AT_BRIDGE=1 \
-  LUMA_CAPTURE_OUT="$out" LUMA_CAPTURE_HERE="$here" \
-  LUMA_CAPTURE_BIN="$out/build/capture" LUMA_CAPTURE_CLIENT="$out/build/client" \
-  LUMA_CAPTURE_EXPECT="$expect" LUMA_CAPTURE_MODE="${MODE:-full}" \
+  SUNO_CAPTURE_OUT="$out" SUNO_CAPTURE_HERE="$here" \
+  SUNO_CAPTURE_BIN="$out/build/capture" SUNO_CAPTURE_CLIENT="$out/build/client" \
+  SUNO_CAPTURE_EXPECT="$expect" SUNO_CAPTURE_MODE="${MODE:-full}" \
   dbus-run-session -- sh -c '
-    pipewire >"$LUMA_CAPTURE_OUT/pipewire.log" 2>&1 &
+    pipewire >"$SUNO_CAPTURE_OUT/pipewire.log" 2>&1 &
     sleep 1
-    wireplumber >"$LUMA_CAPTURE_OUT/wireplumber.log" 2>&1 &
+    wireplumber >"$SUNO_CAPTURE_OUT/wireplumber.log" 2>&1 &
     sleep 1
     exec timeout 900 gnome-shell --headless \
       --virtual-monitor 1920x1080 --virtual-monitor 1920x1080 \
-      --automation-script="$LUMA_CAPTURE_HERE/driver.js"' \
+      --automation-script="$SUNO_CAPTURE_HERE/driver.js"' \
   >"$out/shell.log" 2>&1 || status=$?
 
 python3 - "$out/result.json" "$status" <<'PY'

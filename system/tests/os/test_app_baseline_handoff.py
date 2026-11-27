@@ -4,7 +4,7 @@
 from pathlib import Path
 import hashlib,json,os,sys,tempfile,unittest,importlib.machinery,importlib.util
 REPO=Path(__file__).resolve().parents[2]
-loader=importlib.machinery.SourceFileLoader('baseline',str(REPO/'image/luma-desktop/rootfs/usr/libexec/luma-app-baseline'))
+loader=importlib.machinery.SourceFileLoader('baseline',str(REPO/'image/Suno-desktop/rootfs/usr/libexec/Suno-app-baseline'))
 spec=importlib.util.spec_from_loader(loader.name,loader);baseline=importlib.util.module_from_spec(spec);loader.exec_module(baseline)
 input_loader=importlib.machinery.SourceFileLoader('baseline_input',str(REPO/'scripts/os/lib/app_baseline.py'))
 input_spec=importlib.util.spec_from_loader(input_loader.name,input_loader);baseline_input=importlib.util.module_from_spec(input_spec);input_loader.exec_module(baseline_input)
@@ -21,19 +21,19 @@ class Handoff(unittest.TestCase):
         self.tmp=tempfile.TemporaryDirectory(prefix='handoff-',dir=sys.argv[1]);self.home=Path(self.tmp.name);self.root=self.home/'baseline';self.root.mkdir();self.state=self.home/'state'
         self.apps=json.loads((REPO/'config/os/first-party-app-baseline.json').read_text())['applications']
         (self.root/'shipping.json').write_bytes((REPO/'config/os/first-party-app-baseline.json').read_bytes())
-        roles={'schema':'org.projectluma.first-party-app-roles/v1','roles':{a:'signed-system-flatpak' for a in self.apps}}
+        roles={'schema':'org.projectSuno.first-party-app-roles/v1','roles':{a:'signed-system-flatpak' for a in self.apps}}
         self.write('roles.json',roles)
         # The test fixture uses the actual maintained public key, not a fake key
         # admitted by weakening the production issuer boundary.
         import base64,configparser
-        config=configparser.ConfigParser();config.read(REPO/'config/os/flatpak/luma.flatpakrepo')
-        (self.root/'luma-depot.gpg').write_bytes(base64.b64decode(config['Flatpak Repo']['GPGKey']))
+        config=configparser.ConfigParser();config.read(REPO/'config/os/flatpak/Suno.flatpakrepo')
+        (self.root/'Suno-depot.gpg').write_bytes(base64.b64decode(config['Flatpak Repo']['GPGKey']))
         refs=[f'runtime/{n}/x86_64/44' for n in sorted(baseline.RUNTIMES)]+[f'app/{a}/x86_64/beta' for a in self.apps]
         self.rows=[]
         for ref in refs:
             body=ref.encode();h=hashlib.sha256(body).hexdigest();(self.root/(h+'.flatpak')).write_bytes(body)
             self.rows.append({'ref':ref,'commit':h,'sha256':h,'bytes':len(body),'file':h+'.flatpak'})
-        self.manifest={'schema':'org.projectluma.offline-app-baseline/v1','architecture':'x86_64','selection_scope':'os-shipping','shipping_contract_sha256':baseline.digest(self.root/'shipping.json'),'role_contract_sha256':baseline.digest(self.root/'roles.json'),'public_key_sha256':baseline.digest(self.root/'luma-depot.gpg'),'bundles':self.rows}
+        self.manifest={'schema':'org.projectSuno.offline-app-baseline/v1','architecture':'x86_64','selection_scope':'os-shipping','shipping_contract_sha256':baseline.digest(self.root/'shipping.json'),'role_contract_sha256':baseline.digest(self.root/'roles.json'),'public_key_sha256':baseline.digest(self.root/'Suno-depot.gpg'),'bundles':self.rows}
         self.write('manifest.json',self.manifest);self.installed={};self.calls=[];self.inventories=0
     def tearDown(self):self.tmp.cleanup()
     def write(self,name,value):(self.root/name).write_text(json.dumps(value)+'\n')
@@ -42,7 +42,7 @@ class Handoff(unittest.TestCase):
     def verify(self,ref,expected):self.assertIn(expected,self.installed)
     def run_handoff(self,install=None):return baseline.handoff(self.root,self.state,'x86_64',self.inventory,self.verify,install or self.install)
     def test_retirement_runs_before_completed_baseline_shortcut_and_retries(self):
-        from luma_installer import retired_apps
+        from Suno_installer import retired_apps
         from unittest import mock
         self.state.mkdir();(self.state/'installed-v1.json').write_text('{}')
         events=[]
@@ -96,7 +96,7 @@ class Handoff(unittest.TestCase):
         self.manifest['bundles']=self.rows[:-1];self.write('manifest.json',self.manifest)
         with self.assertRaises(ValueError):self.run_handoff()
         self.manifest['bundles']=self.rows;self.write('manifest.json',self.manifest)
-        shipping=json.loads((self.root/'shipping.json').read_text());shipping['applications'][0]='org.projectluma.Write';self.write('shipping.json',shipping)
+        shipping=json.loads((self.root/'shipping.json').read_text());shipping['applications'][0]='org.projectSuno.Write';self.write('shipping.json',shipping)
         with self.assertRaises(ValueError):self.run_handoff()
         self.assertEqual(self.calls,[])
     def test_linked_state_ancestor_refused(self):
@@ -148,16 +148,16 @@ class RemoteTrust(unittest.TestCase):
         subprocess.run(['ostree','init','--mode=bare-user-only','--repo='+str(self.repo)],check=True)
         # The state found after the reset: remotes.d applied, keyring lost.
         with (self.repo/'config').open('a') as config:
-            config.write('[remote "luma"]\nurl=https://dl.simplyluma.com/repo/\ngpg-verify=true\ngpg-verify-summary=true\n')
-        config=configparser.ConfigParser();config.read(REPO/'config/os/flatpak/luma.flatpakrepo')
-        self.key=home/'luma-depot.gpg';self.key.write_bytes(base64.b64decode(config['Flatpak Repo']['GPGKey']))
+            config.write('[remote "Suno"]\nurl=https://dl.simplyluma.com/repo/\ngpg-verify=true\ngpg-verify-summary=true\n')
+        config=configparser.ConfigParser();config.read(REPO/'config/os/flatpak/Suno.flatpakrepo')
+        self.key=home/'Suno-depot.gpg';self.key.write_bytes(base64.b64decode(config['Flatpak Repo']['GPGKey']))
         self.env=dict(os.environ,FLATPAK_SYSTEM_DIR=str(home))
     def run_flatpak(self,argv,check):
         import subprocess
         return subprocess.run(argv,check=check,env=self.env)
     def keys(self):
         import subprocess
-        out=subprocess.run(['ostree','--repo='+str(self.repo),'remote','gpg-list-keys','luma'],capture_output=True,text=True).stdout
+        out=subprocess.run(['ostree','--repo='+str(self.repo),'remote','gpg-list-keys','Suno'],capture_output=True,text=True).stdout
         return out.replace(' ','')
     def test_existing_remote_without_keyring_gets_the_pinned_key(self):
         fingerprint='069E001599679B49042FE40885FCC398C02A8BEE'

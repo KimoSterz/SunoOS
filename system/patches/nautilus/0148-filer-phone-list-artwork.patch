@@ -1,4 +1,4 @@
-From: Luma UI maintainers <noreply@projectluma.org>
+From: Suno UI maintainers <noreply@projectSuno.org>
 Subject: [PATCH] Show compact phone thumbnails and use the file-row gap
 
 Phone lists use 24px artwork. The thumbnail cutoff previously suppressed

@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
 #
-# Every Luma package the desktop pins must name the release this tree's own
+# Every Suno package the desktop pins must name the release this tree's own
 # spec builds.
 #
 # A pin ahead of its spec means the shipped package was built outside the tree
-# and cannot be rebuilt from this revision. That is how luma-developer-platform
-# 1.luma.64 and 1.luma.65 shipped: the Release line was edited inside a build
+# and cannot be rebuilt from this revision. That is how Suno-developer-platform
+# 1.Suno.64 and 1.Suno.65 shipped: the Release line was edited inside a build
 # directory on the builder, the pins moved, and the spec in the repository
-# stayed at 1.luma.62 with a %changelog stopping at 1.luma.45. The platform is
+# stayed at 1.Suno.62 with a %changelog stopping at 1.Suno.45. The platform is
 # what every other package builds against, so nothing downstream was
 # reproducible either, and the one assertion that would have caught it was not
 # in the release gate.
@@ -18,7 +18,7 @@
 # It reads config/desktop/inputs.env and config/desktop/packages.txt, resolves
 # every image and optional Depot pin that looks like NAME-VERSION-RELEASE.DIST.ARCH, and compares it
 # with Name/Version/Release in packaging/rpm. Packages this tree has no spec
-# for (upstream Fedora packages, and the Fedora specs Luma carries as patch
+# for (upstream Fedora packages, and the Fedora specs Suno carries as patch
 # series, which have their own release-synchronisation checks) are reported and
 # not judged here.
 
@@ -42,7 +42,7 @@ for path in (spec_dir, inputs, packages):
 
 # Every binary package name a spec in this tree produces, with the version and
 # release it produces it at. A subpackage declared as "%package sdk" is
-# <Name>-sdk; "%package -n luma-x" is named outright.
+# <Name>-sdk; "%package -n Suno-x" is named outright.
 built = {}
 for spec in sorted(spec_dir.glob("*.spec")):
     name = version = release = None
@@ -89,7 +89,7 @@ for family, names in {
              "mesa-vulkan-drivers"),
     "noopenh264": ("noopenh264",),
 }.items():
-    patch = root / "patches" / family / "0000-luma-fedora-spec.patch"
+    patch = root / "patches" / family / "0000-Suno-fedora-spec.patch"
     if not patch.exists():
         continue
     text = patch.read_text()
@@ -193,7 +193,7 @@ for where, token in pins():
 import datetime
 import os
 
-today = os.environ.get("LUMA_CONTRACT_TODAY") or datetime.datetime.now(datetime.timezone.utc).date().isoformat()
+today = os.environ.get("SUNO_CONTRACT_TODAY") or datetime.datetime.now(datetime.timezone.utc).date().isoformat()
 problems = []
 excepted = {}
 exceptions_file = root / "config" / "desktop" / "package-release-exceptions.txt"
@@ -296,7 +296,7 @@ problems = []
 for fragment in sorted((root / "changes").glob("*.md")):
     match = re.search(r"^packages:\s*\[(.*)\]\s*$", fragment.read_text(), re.M)
     for name in [p.strip() for p in (match.group(1).split(",") if match else []) if p.strip()]:
-        if name not in pinned and name != "luma-messages-bridges":
+        if name not in pinned and name != "Suno-messages-bridges":
             problems.append(f"{fragment.relative_to(root)}: {name} is not a package this tree pins")
 for problem in problems:
     print(f"    {problem}")
@@ -310,11 +310,11 @@ python3 - "$repo_root" <<'PY'
 import re, sys
 from pathlib import Path
 root = Path(sys.argv[1])
-spec = (root / "packaging/rpm/luma-application-installer.spec").read_text()
-release = int(re.search(r"^Release:\s*1\.luma\.(\d+)", spec, re.M).group(1))
-source = (root / "src/luma-installer/luma_installer/app_host_compatibility.py").read_text()
+spec = (root / "packaging/rpm/Suno-application-installer.spec").read_text()
+release = int(re.search(r"^Release:\s*1\.Suno\.(\d+)", spec, re.M).group(1))
+source = (root / "src/Suno-installer/Suno_installer/app_host_compatibility.py").read_text()
 declared = int(re.search(r"^SUPPORTED_INSTALLER_RELEASE\s*=\s*(\d+)", source, re.M).group(1))
 ok = declared == release
-print(f"{'PASS' if ok else 'FAIL'}  installer host declaration {declared} matches the spec release 1.luma.{release}")
+print(f"{'PASS' if ok else 'FAIL'}  installer host declaration {declared} matches the spec release 1.Suno.{release}")
 sys.exit(0 if ok else 1)
 PY

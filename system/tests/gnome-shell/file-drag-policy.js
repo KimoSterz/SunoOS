@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-// Files dragged out of the Shell (lumaFileDrag.js, Mutter's MetaDataDrag):
-// the rules in lumaFileDragModel.js, and the wiring that makes every file in
+// Files dragged out of the Shell (SunoFileDrag.js, Mutter's MetaDataDrag):
+// the rules in SunoFileDragModel.js, and the wiring that makes every file in
 // a dock folder's surface draggable as if from Filer.
-// Run: gjs -m file-drag-policy.js js/ui/lumaFileDragModel.js js/ui/lumaFileDrag.js \
-//        js/ui/lumaDockFolders.js js/ui/lumaPresentation/launcherFolders.js js/ui/xdndHandler.js
+// Run: gjs -m file-drag-policy.js js/ui/SunoFileDragModel.js js/ui/SunoFileDrag.js \
+//        js/ui/SunoDockFolders.js js/ui/SunoPresentation/launcherFolders.js js/ui/xdndHandler.js
 const args = globalThis.ARGV;
 const GLib = (await import('gi://GLib')).default;
 const read = path => new TextDecoder().decode(GLib.file_get_contents(path)[1]);

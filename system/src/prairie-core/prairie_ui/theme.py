@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import os
 
-from luma_appkit import add_style_sheet, install_appkit
+from Suno_appkit import add_style_sheet, install_appkit
 
 
 def install_theme() -> None:

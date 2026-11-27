@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 // TV posture input: remotes and gamepads onto the TV's keys, the game-input
 // policy, and the wiring that keeps the service to TV posture.
-// Run: gjs -m tv-input-policy.js js/ui/lumaPresentation/tvInputModel.js \
-//        js/ui/lumaPresentation/tvTokens.js js/ui/lumaPresentation/tvInput.js \
-//        js/ui/lumaPresentation/tv.js js/ui/lumaPresentation/tvPointer.js
+// Run: gjs -m tv-input-policy.js js/ui/SunoPresentation/tvInputModel.js \
+//        js/ui/SunoPresentation/tvTokens.js js/ui/SunoPresentation/tvInput.js \
+//        js/ui/SunoPresentation/tv.js js/ui/SunoPresentation/tvPointer.js
 // (node tv-input-policy.js ... works too).
 const gjs = typeof globalThis.ARGV !== 'undefined';
 const args = gjs ? globalThis.ARGV : process.argv.slice(2);
@@ -176,7 +176,7 @@ assert(/action === 'ok' && \(event\.get_flags\(\) & Clutter\.EventFlags\.FLAG_RE
 assert(/create_virtual_device\(Clutter\.InputDeviceType\.KEYBOARD_DEVICE\)/.test(service), 'a virtual keyboard');
 assert(/await import\('gi:\/\/Manette\?version=0\.2'\)[\s\S]*?catch/.test(service), 'libmanette is optional');
 assert(/translates\(action, this\._context\(\)\)/.test(service), 'every pad key asks the policy');
-assert(service.includes('org.projectluma.Shell.Remote1') && service.includes('ClaimGamepadsAsync'),
+assert(service.includes('org.projectSuno.Shell.Remote1') && service.includes('ClaimGamepadsAsync'),
     'the claim contract');
 assert(!/EVIOCGRAB|grab_device/.test(service), 'the pad is never grabbed from games');
 assert(/settings_schema\.has_key\(CONFIRM_KEY\)/.test(service) && /changed::\$\{CONFIRM_KEY\}/.test(service),
@@ -188,7 +188,7 @@ assert(/buttonAction\(code, pad\.confirm\)/.test(service), 'per pad');
 assert(/if \(pressed && pad\.buttons\.has\(code\)\) return;/.test(service), 'a down while down is not a press');
 assert(/const BOUNCE_MS = \d+;/.test(service) && /this\._released\.set\(control, GLib\.timeout_add\(GLib\.PRIORITY_DEFAULT, BOUNCE_MS/.test(service) &&
     /if \(pressed && pending\) \{\s*GLib\.source_remove\(pending\);/.test(service), 'a bounce is no release and no new press');
-assert(/LUMA_TV_INPUT_DEBUG/.test(service) && /5 OK presses within a second/.test(service), 'a stream of OKs shows in the journal');
+assert(/SUNO_TV_INPUT_DEBUG/.test(service) && /5 OK presses within a second/.test(service), 'a stream of OKs shows in the journal');
 print('tv-input-policy: ok');
 
 function print(message) {

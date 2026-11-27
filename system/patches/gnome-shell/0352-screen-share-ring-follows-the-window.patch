@@ -1,5 +1,5 @@
-From: Project Luma <builds@project-luma.local>
-Subject: [PATCH] lumaShare: the window ring follows the window's own outline
+From: Project Suno <builds@project-suno.local>
+Subject: [PATCH] SunoShare: the window ring follows the window's own outline
 
 The shared window's ring was a 7px translucent violet border with a fixed
 16px outer radius around the frame. Its inner radius (9px) did not match
@@ -7,7 +7,7 @@ the window's 15px corners, so the ring and the window parted at every
 corner, and the band ended in a hard edge: a half glow cut off at 7px.
 
 The ring is now drawn from the window's own corner radius
-(lumaWindowCorners.windowCornerRadius(): Luma's 15px for every application
+(SunoWindowCorners.windowCornerRadius(): Suno's 15px for every application
 window, maximized and tiled included, none for fullscreen, Android and
 Mutter-framed X11 windows). Every outline outside a rounded rectangle is the
 same rectangle grown by the distance, so the ring is a function of the
@@ -23,37 +23,37 @@ monitor's scale, so the line is crisp at 100%, 150% and 200%) and are shared
 between rings; moving or resizing a window moves and stretches the pieces
 and draws nothing.
 
-diff --git a/data/theme/luma-share.css b/data/theme/luma-share.css
+diff --git a/data/theme/Suno-share.css b/data/theme/Suno-share.css
 index 45cdc6c..b521a24 100644
---- a/data/theme/luma-share.css
-+++ b/data/theme/luma-share.css
+--- a/data/theme/Suno-share.css
++++ b/data/theme/Suno-share.css
 @@ -264,11 +264,9 @@
  
  /* ── While sharing ───────────────────────────────────────────────────────── */
  
 -/* A shared window's ring, with its halo, drawn 7 outside the frame. */
--.luma-share-window-edge {
+-.Suno-share-window-edge {
 -  border-radius: 16px;
 -  border: 7px solid rgba(125, 92, 240, 0.22);
 -  box-shadow: inset 0 0 0 2.5px #7d5cf0; }
-+/* The shared window's ring is drawn in lumaShare.js (WindowEdge), from the
++/* The shared window's ring is drawn in SunoShare.js (WindowEdge), from the
 + * window's own corner radius: a 2.5 violet line and a halo that fades to
 + * nothing, concentric with the window at every offset. */
  
  /* A shared monitor's edge, 3 inside that monitor. A border rather than an
   * inset shadow: St paints an inset shadow only into a background it renders
-diff --git a/js/ui/lumaShare.js b/js/ui/lumaShare.js
+diff --git a/js/ui/SunoShare.js b/js/ui/SunoShare.js
 index 9669a21..22f02ac 100644
---- a/js/ui/lumaShare.js
-+++ b/js/ui/lumaShare.js
-@@ -36,6 +36,8 @@ import {Glyph} from './lumaSealGlyph.js';
- import {PreviewThumbnail} from './lumaDockWindows.js';
- import {listDisplays} from './lumaCast.js';
- import {placeShelfBar} from './lumaShelfSurface.js';
-+import {windowCornerRadius} from './lumaWindowCorners.js';
+--- a/js/ui/SunoShare.js
++++ b/js/ui/SunoShare.js
+@@ -36,6 +36,8 @@ import {Glyph} from './SunoSealGlyph.js';
+ import {PreviewThumbnail} from './SunoDockWindows.js';
+ import {listDisplays} from './SunoCast.js';
+ import {placeShelfBar} from './SunoShelfSurface.js';
++import {windowCornerRadius} from './SunoWindowCorners.js';
 +import Cogl from 'gi://Cogl';
  
- const STYLESHEET_URI = 'resource:///org/gnome/shell/theme/luma-share.css';
+ const STYLESHEET_URI = 'resource:///org/gnome/shell/theme/Suno-share.css';
  
 @@ -1112,19 +1114,114 @@ export const SharePicker = GObject.registerClass({
  function edgeFace(styleClass) {
@@ -141,7 +141,7 @@ index 9669a21..22f02ac 100644
  class WindowEdge extends CaptureHidden {
      _init(window) {
 -        super._init({reactive: false, layout_manager: new Clutter.BinLayout()});
--        this.add_child(edgeFace('luma-share-window-edge'));
+-        this.add_child(edgeFace('Suno-share-window-edge'));
 +        super._init({reactive: false});
 +        // The pieces are children, never the CaptureHidden actor itself (see
 +        // edgeFace), so none of them reaches a stream.
@@ -221,9 +221,9 @@ index 9669a21..22f02ac 100644
          this.visible = this._window.showing_on_its_workspace() &&
              !this._window.minimized;
      }
-diff --git a/js/ui/lumaWindowCorners.js b/js/ui/lumaWindowCorners.js
---- a/js/ui/lumaWindowCorners.js
-+++ b/js/ui/lumaWindowCorners.js
+diff --git a/js/ui/SunoWindowCorners.js b/js/ui/SunoWindowCorners.js
+--- a/js/ui/SunoWindowCorners.js
++++ b/js/ui/SunoWindowCorners.js
 @@ -343,3 +343,25 @@ export class WindowCorners {
          effect.queue_repaint();
      }
@@ -231,7 +231,7 @@ diff --git a/js/ui/lumaWindowCorners.js b/js/ui/lumaWindowCorners.js
 +
 +/**
 + * The corner radius a window shows on screen, in logical pixels: what a
-+ * frame drawn around it (the screen sharing ring) must follow. Luma's radius
++ * frame drawn around it (the screen sharing ring) must follow. Suno's radius
 + * for every application window -- libadwaita draws it, maximized and tiled
 + * included (libadwaita 0034 and 0036), and this file's mask gives it to every
 + * other window -- and none for a fullscreen window, an Android window or a

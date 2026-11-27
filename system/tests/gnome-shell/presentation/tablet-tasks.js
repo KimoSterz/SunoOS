@@ -2,7 +2,7 @@
 import Clutter from 'gi://Clutter';
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
-import * as LumaGrid from 'resource:///org/gnome/shell/ui/lumaGrid.js';
+import * as SunoGrid from 'resource:///org/gnome/shell/ui/SunoGrid.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 export async function testTabletTasks(p, check, sleep, shot, mode) {
     const tasks = p._tasks;
@@ -61,7 +61,7 @@ export async function testTabletTasks(p, check, sleep, shot, mode) {
     tasks.openSwitcher(); await sleep(200);
     check('Tablet invokes the existing Desktop Grid switcher', Main.uiGroup.get_children().some(actor => actor.constructor.name === 'GridPopup'));
     await shot('tablet-desktop-switcher');
-    LumaGrid.toggle(); await sleep(400);
+    SunoGrid.toggle(); await sleep(400);
     tasks.activate(tasks.groups[0]); await sleep(300);
     check('activating pair restores both clients', !a.minimized && !b.minimized && fits());
     tasks.swap(); await sleep(250);
@@ -114,7 +114,7 @@ export async function testTabletTasks(p, check, sleep, shot, mode) {
     check('native sideways half-bar gesture swaps the pair', tasks.active.left === b && tasks.active.right === a);
     const pairedPointer = await pointerSwitcher(tasks._bars[0]);
     check('pointer hold and upward drag opens Desktop Grid from a paired app', Main.uiGroup.get_children().some(actor => actor.constructor.name === 'GridPopup'), pairedPointer);
-    if (Main.uiGroup.get_children().some(actor => actor.constructor.name === 'GridPopup')) LumaGrid.toggle();
+    if (Main.uiGroup.get_children().some(actor => actor.constructor.name === 'GridPopup')) SunoGrid.toggle();
     await sleep(350);
     tasks.activate(tasks.groups[0]); await sleep(250);
     await pan(tasks._seam, 80, 0);
@@ -135,11 +135,11 @@ export async function testTabletTasks(p, check, sleep, shot, mode) {
     tasks.closeOverlay();
     const fullscreenPointer = await pointerSwitcher(p._gestureBar);
     check('pointer hold and upward drag opens Desktop Grid from a fullscreen app', Main.uiGroup.get_children().some(actor => actor.constructor.name === 'GridPopup'), fullscreenPointer);
-    if (Main.uiGroup.get_children().some(actor => actor.constructor.name === 'GridPopup')) LumaGrid.toggle();
+    if (Main.uiGroup.get_children().some(actor => actor.constructor.name === 'GridPopup')) SunoGrid.toggle();
     await sleep(350);
     await pan(p._gestureBar, 0, -100, 650);
     check('upward swipe and hold opens Desktop Grid', Main.uiGroup.get_children().some(actor => actor.constructor.name === 'GridPopup'));
-    LumaGrid.toggle(); await sleep(400);
+    SunoGrid.toggle(); await sleep(400);
     // Native pointer DND from both the peek dock and the all-app library.
     p._call('SetFavorites', new GLib.Variant('(as)', [['org.example.SplitB.desktop']]));
     await sleep(400);
@@ -213,7 +213,7 @@ export async function testTabletTasks(p, check, sleep, shot, mode) {
     await sleep(700);
     check('cancelled Grid drag restores the switcher and preserves app placement', !cancelledGrid._destroyed && cancelledGrid.opacity === 255 &&
         !tasks._activeDrag && !tasks._dragSurface.visible && !global.window_group.visible && a.is_fullscreen() && b.minimized);
-    LumaGrid.toggle(); await sleep(400);
+    SunoGrid.toggle(); await sleep(400);
     const shortcut = async key => {
         keyboard.notify_keyval(time(), Clutter.KEY_Super_L, Clutter.KeyState.PRESSED);
         keyboard.notify_keyval(time(), key, Clutter.KeyState.PRESSED);
@@ -256,7 +256,7 @@ export async function testTabletTasks(p, check, sleep, shot, mode) {
     lockedClient.force_exit(); await sleep(200);
     // Direct Desktop Grid entry (e.g. three-finger swipe) must hide Home too.
     p.showHome(); await sleep(150);
-    LumaGrid.show(); await sleep(450);
+    SunoGrid.show(); await sleep(450);
     const closingGrid = Main.uiGroup.get_children().find(actor => actor.constructor.name === 'GridPopup');
     check('direct shared switcher entry hides Home', !p._home.visible && Boolean(closingGrid));
     closingGrid._cards.find(card => card.window === b).closeWindow(); await sleep(400);

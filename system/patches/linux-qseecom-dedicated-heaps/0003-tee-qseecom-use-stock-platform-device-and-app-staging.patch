@@ -1,4 +1,4 @@
-From: Project Luma FP6 bring-up <luma@project-luma.invalid>
+From: Project Suno FP6 bring-up <Suno@project-suno.invalid>
 Date: Sun, 23 Aug 2026 01:10:00 -0500
 Subject: [PATCH] tee: qseecom: use stock platform device and app staging
 

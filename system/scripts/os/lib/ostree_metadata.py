@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""OSTree metadata helpers for the Luma OS pipeline.
+"""OSTree metadata helpers for the Suno OS pipeline.
 
   pkglist INVENTORY            print rpmostree.rpmdb.pkglist as GVariant text
   root-dirtree REPO COMMIT     print the commit's root dirtree and dirmeta

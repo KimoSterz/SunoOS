@@ -102,7 +102,7 @@ for stock_boundary in \
 done
 
 uboot_sha=$(sha256sum "$uboot" | awk '{print $1}')
-grep -Fqx 'LUMA_PIXEL9_UBOOT_RAMBOOT_VERSION=3' "$ramboot_manifest" || \
+grep -Fqx 'SUNO_PIXEL9_UBOOT_RAMBOOT_VERSION=3' "$ramboot_manifest" || \
   die 'ramboot proof is not the embedded-FIT loader revision'
 grep -Fqx "UBOOT_BIN_SHA256=$uboot_sha" "$ramboot_manifest" || \
   die 'ramboot manifest does not bind the packaged U-Boot binary'
@@ -173,7 +173,7 @@ cmp -s "$empty_ramdisk" "$roundtrip/ramdisk" || \
   die 'kernel-only wrapper exceeds the stock boot partition image size'
 
 {
-  printf 'LUMA_PIXEL9_ANDROID_RAMBOOT_WRAPPER_VERSION=3\n'
+  printf 'SUNO_PIXEL9_ANDROID_RAMBOOT_WRAPPER_VERSION=3\n'
   printf 'SCOPE=offline-v4-kernel-only-embedded-fit-wrapper\n'
   printf 'OBSERVED_BUILD_ID=%s\n' "$PIXEL9_OBSERVED_BUILD_ID"
   printf 'FACTORY_SHA256=%s\n' "$PIXEL9_FACTORY_IMAGE_SHA256"

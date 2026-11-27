@@ -10,13 +10,13 @@ umask 022
 repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 source_archive=$repo_root/build/mobile/fp6-physical/fp6-camera-source-archives/linux-v7.1.2-milos.tar.gz
 symvers=$repo_root/build/mobile/fp6-physical/fp6-camera-source-archives/Module.symvers
-runtime_config=${LUMA_FP6_QCOMTEE_RUNTIME_CONFIG:-$repo_root/build/mobile/fp6-physical/fp6-fingerprint-matched-cma-v14/bundle/config}
+runtime_config=${SUNO_FP6_QCOMTEE_RUNTIME_CONFIG:-$repo_root/build/mobile/fp6-physical/fp6-fingerprint-matched-cma-v14/bundle/config}
 control_source=$repo_root/src/fp6-fingerprint-qcomtee/qcomtee-control.c
 extension=$repo_root/src/fp6-fingerprint-qcomtee/qcomtee-enroll-extension.inc
-abi_header=$repo_root/src/fp6-fingerprint-qcomtee/luma-fp6-enrollment-abi.h
+abi_header=$repo_root/src/fp6-fingerprint-qcomtee/Suno-fp6-enrollment-abi.h
 listener_extension=$repo_root/src/fp6-fingerprint-qcomtee/qcomtee-listener-extension.inc
-listener_abi_header=$repo_root/src/fp6-fingerprint-qcomtee/luma-fp6-listener-abi.h
-integration_patch=$repo_root/patches/linux-qcomtee-control-v18/0001-qcomtee-add-bounded-luma-control-identity-hook.patch
+listener_abi_header=$repo_root/src/fp6-fingerprint-qcomtee/Suno-fp6-listener-abi.h
+integration_patch=$repo_root/patches/linux-qcomtee-control-v18/0001-qcomtee-add-bounded-Suno-control-identity-hook.patch
 persistent_shm_patch=$repo_root/patches/linux-qcomtee-control-v24/0001-qcomtee-retain-one-bounded-invoke-buffer-pair.patch
 kernel_shm_patch=$repo_root/patches/linux-qcomtee-control-v25/0001-qcomtee-wrap-kernel-shm-as-memory-object.patch
 challenge_patch=$repo_root/patches/linux-qcomtee-control-v22/0001-qcomtee-add-bounded-FocalTech-challenge-cycle.patch
@@ -24,14 +24,14 @@ enrollment_patch=$repo_root/patches/linux-qcomtee-control-v23/0001-qcomtee-wire-
 extractor=$repo_root/scripts/mobile/extract-fp6-focal-config.py
 stock_hal=$repo_root/build/mobile/fp6-physical/fp6-stock-hal-qrel1695/fingerprint.default.so
 output_dir=${1:?usage: build-fp6-qcomtee-enrollment-module-v23.sh OUTPUT_DIR}
-kernel_release=${LUMA_FP6_QCOMTEE_KERNEL_RELEASE:-7.1.2-luma-fp-cma1}
-localversion=${LUMA_FP6_QCOMTEE_LOCALVERSION:--luma-fp-cma1}
-jobs=${LUMA_KERNEL_BUILD_JOBS:-8}
-linux_native_enrollment=${LUMA_FP6_LINUX_NATIVE_ENROLLMENT:-false}
+kernel_release=${SUNO_FP6_QCOMTEE_KERNEL_RELEASE:-7.1.2-Suno-fp-cma1}
+localversion=${SUNO_FP6_QCOMTEE_LOCALVERSION:--Suno-fp-cma1}
+jobs=${SUNO_KERNEL_BUILD_JOBS:-8}
+linux_native_enrollment=${SUNO_FP6_LINUX_NATIVE_ENROLLMENT:-false}
 
 expected_source_archive_sha=6043a062d595e1b4913512c3414387d9a016c4690d8832720651df07276dc78b
 expected_symvers_sha=0136080d85bcb215aad56324ed61259c1581400d0159489c664b75b476de04e0
-expected_config_sha=${LUMA_FP6_QCOMTEE_RUNTIME_CONFIG_SHA256:-5bddfee4390b0f66de5709b99282e79ee3787a01749d5cc8d28ea82d6bbed7fe}
+expected_config_sha=${SUNO_FP6_QCOMTEE_RUNTIME_CONFIG_SHA256:-5bddfee4390b0f66de5709b99282e79ee3787a01749d5cc8d28ea82d6bbed7fe}
 expected_control_source_sha=d9590b359ee72b235c8c0fa28e5fac8f6d8cbff7dffacaaa5f3337e7443b394c
 expected_extension_sha=628a26aabfd111b3d6b9264687e5188e58b5573e6d9155b9ec194f54327c613f
 expected_abi_sha=a19a98c229d10b4e439b236617d3f3a87f3c0727f3f755beb944eeccb69ce75d
@@ -52,11 +52,11 @@ hash() { sha256sum "$1" | cut -d ' ' -f 1; }
 if [[ $linux_native_enrollment == true ]]; then
   expected_focal_header_sha=73144f954a9da47b3db4d83b26730600e7cc9b01b29a271029fcf28d65a92e94
 elif [[ $linux_native_enrollment != false ]]; then
-  die 'LUMA_FP6_LINUX_NATIVE_ENROLLMENT must be true or false'
+  die 'SUNO_FP6_LINUX_NATIVE_ENROLLMENT must be true or false'
 fi
 
-case $jobs in ''|*[!0-9]*) die 'LUMA_KERNEL_BUILD_JOBS must be numeric' ;; esac
-[[ $jobs -ge 1 ]] || die 'LUMA_KERNEL_BUILD_JOBS must be positive'
+case $jobs in ''|*[!0-9]*) die 'SUNO_KERNEL_BUILD_JOBS must be numeric' ;; esac
+[[ $jobs -ge 1 ]] || die 'SUNO_KERNEL_BUILD_JOBS must be positive'
 [[ $(id -u) -eq 0 ]] || die 'run as root in the isolated builder'
 [[ $(uname -s) == Linux && $(uname -m) == aarch64 ]] || die 'builder must be Linux/aarch64'
 clang --version | head -n 1 | grep -Fx 'Ubuntu clang version 21.1.8 (6ubuntu1)' >/dev/null ||
@@ -78,7 +78,7 @@ clang --version | head -n 1 | grep -Fx 'Ubuntu clang version 21.1.8 (6ubuntu1)' 
 [[ $(hash "$extractor") == "$expected_extractor_sha" ]] || die 'configuration extractor differs'
 [[ $(hash "$stock_hal") == "$expected_stock_hal_sha" ]] || die 'stock fingerprint HAL differs'
 
-work_dir=$(mktemp -d /tmp/luma-fp6-qcomtee-enrollment-v23.XXXXXX)
+work_dir=$(mktemp -d /tmp/Suno-fp6-qcomtee-enrollment-v23.XXXXXX)
 cleanup() { find "$work_dir" -depth -delete 2>/dev/null || true; }
 trap cleanup EXIT INT TERM
 
@@ -102,16 +102,16 @@ printf '0x00000000\tqcom_tzmem_shm_bridge_delete\tvmlinux\tEXPORT_SYMBOL_GPL\t\n
   install -m 0644 "$control_source" drivers/tee/qcomtee/qcomtee-control.c
   patch -p1 --fuzz=0 --no-backup-if-mismatch <"$challenge_patch"
   install -m 0644 "$extension" drivers/tee/qcomtee/qcomtee-enroll-extension.inc
-  install -m 0644 "$abi_header" drivers/tee/qcomtee/luma-fp6-enrollment-abi.h
+  install -m 0644 "$abi_header" drivers/tee/qcomtee/Suno-fp6-enrollment-abi.h
   install -m 0644 "$listener_extension" drivers/tee/qcomtee/qcomtee-listener-extension.inc
-  install -m 0644 "$listener_abi_header" drivers/tee/qcomtee/luma-fp6-listener-abi.h
+  install -m 0644 "$listener_abi_header" drivers/tee/qcomtee/Suno-fp6-listener-abi.h
   patch -p1 --fuzz=0 --no-backup-if-mismatch <"$enrollment_patch"
   extractor_args=(--format c-header --nul)
   if [[ $linux_native_enrollment == true ]]; then
     extractor_args+=(--linux-native-enrollment)
   fi
-  python3 "$extractor" "$stock_hal" drivers/tee/qcomtee/luma-focal-config.h "${extractor_args[@]}"
-  [[ $(hash drivers/tee/qcomtee/luma-focal-config.h) == "$expected_focal_header_sha" ]] ||
+  python3 "$extractor" "$stock_hal" drivers/tee/qcomtee/Suno-focal-config.h "${extractor_args[@]}"
+  [[ $(hash drivers/tee/qcomtee/Suno-focal-config.h) == "$expected_focal_header_sha" ]] ||
     die 'generated FocalTech configuration header differs'
   make -j"$jobs" ARCH=arm64 LLVM=1 LOCALVERSION="$localversion" \
     KCFLAGS="$prefix_flags" KBUILD_BUILD_USER=pmos KBUILD_BUILD_HOST=build \
@@ -130,9 +130,9 @@ install -m 0644 "$tree/drivers/tee/qcomtee/qcomtee.ko" "$output_dir/qcomtee-enro
 
 {
   if [[ $linux_native_enrollment == true ]]; then
-    printf 'LUMA_FP6_QCOMTEE_ENROLLMENT_BUILD_VERSION=44\n'
+    printf 'SUNO_FP6_QCOMTEE_ENROLLMENT_BUILD_VERSION=44\n'
   else
-    printf 'LUMA_FP6_QCOMTEE_ENROLLMENT_BUILD_VERSION=44\n'
+    printf 'SUNO_FP6_QCOMTEE_ENROLLMENT_BUILD_VERSION=44\n'
   fi
   printf 'KERNEL_RELEASE=%s\n' "$kernel_release"
   printf 'RUNTIME_CONFIG_SHA256=%s\n' "$expected_config_sha"

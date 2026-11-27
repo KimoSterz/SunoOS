@@ -3,9 +3,9 @@
 """A session notification server and screen lock for agent tests.
 
 Owns org.freedesktop.Notifications (records every Notify/CloseNotification as
-a JSON line in $LUMA_TEST_NOTIFICATIONS) and org.gnome.ScreenSaver (GetActive,
-SetActive, ActiveChanged), and exports org.projectluma.Test.Notifications on
-/org/projectluma/Test with Invoke(u id, s action) to press a button the way the
+a JSON line in $SUNO_TEST_NOTIFICATIONS) and org.gnome.ScreenSaver (GetActive,
+SetActive, ActiveChanged), and exports org.projectSuno.Test.Notifications on
+/org/projectSuno/Test with Invoke(u id, s action) to press a button the way the
 shell does, and Lock(b) to lock or unlock. It also answers org.gtk.Notifications
 (recorded as gtk-add and gtk-remove), which is how GNotification reaches GNOME
 Shell.
@@ -18,7 +18,7 @@ import gi
 gi.require_version("Gio", "2.0")
 from gi.repository import Gio, GLib  # noqa: E402
 
-RECORD = os.environ.get("LUMA_TEST_NOTIFICATIONS", "/tmp/notifications.jsonl")
+RECORD = os.environ.get("SUNO_TEST_NOTIFICATIONS", "/tmp/notifications.jsonl")
 XML = """<node>
 <interface name="org.freedesktop.Notifications">
   <method name="GetCapabilities"><arg type="as" direction="out"/></method>
@@ -41,7 +41,7 @@ XML = """<node>
     <arg type="a{sv}" direction="in"/></method>
   <method name="RemoveNotification"><arg type="s" direction="in"/><arg type="s" direction="in"/></method>
 </interface>
-<interface name="org.projectluma.Test.Notifications">
+<interface name="org.projectSuno.Test.Notifications">
   <method name="Invoke"><arg type="u" direction="in"/><arg type="s" direction="in"/></method>
   <method name="Lock"><arg type="b" direction="in"/></method>
 </interface>
@@ -66,7 +66,7 @@ def call(connection, sender, path, interface, method, parameters, invocation):
     if method == "GetCapabilities":
         invocation.return_value(GLib.Variant("(as)", (["actions", "body", "persistence", "sound"],)))
     elif method == "GetServerInformation":
-        invocation.return_value(GLib.Variant("(ssss)", ("luma-test", "Project Luma", "1", "1.2")))
+        invocation.return_value(GLib.Variant("(ssss)", ("Suno-test", "Project Suno", "1", "1.2")))
     elif method == "Notify":
         app, replaces, icon, summary, body, actions, hints, timeout = args
         identifier = replaces or state["next"]
@@ -120,13 +120,13 @@ def main():
         connection.register_object("/org/freedesktop/Notifications", node.interfaces[0], call, None, None)
         connection.register_object("/org/gnome/ScreenSaver", node.interfaces[1], call, None, None)
         connection.register_object("/org/gtk/Notifications", node.interfaces[2], call, None, None)
-        connection.register_object("/org/projectluma/Test", node.interfaces[3], call, None, None)
+        connection.register_object("/org/projectSuno/Test", node.interfaces[3], call, None, None)
 
     connection = Gio.bus_get_sync(Gio.BusType.SESSION, None)
     bus(connection, None)
     owners = [Gio.bus_own_name_on_connection(connection, name, Gio.BusNameOwnerFlags.NONE, acquired, None)
               for name in ("org.freedesktop.Notifications", "org.gtk.Notifications", "org.gnome.ScreenSaver",
-                           "org.projectluma.Test")]
+                           "org.projectSuno.Test")]
     print("notification stub ready", flush=True)
     loop.run()
     del owners

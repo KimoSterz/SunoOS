@@ -1,0 +1,42 @@
+/* SPDX-License-Identifier: Apache-2.0 */
+/* Ari's thread. Colours come only from Suno's tokens. */
+.ari-header { padding: 14px 16px 12px 20px; border-bottom: 1px solid @Suno_line; }
+.ari-user {
+  background: @Suno_ink; color: @Suno_content;
+  border-radius: 14px; padding: 10px 16px; margin-left: 64px;
+}
+.ari-reply {
+  border: 1px solid @Suno_line; border-radius: 12px;
+  padding: 12px 16px; margin-right: 32px;
+}
+.ari-step {
+  border: 1px solid @Suno_line; border-radius: 12px;
+  padding: 10px 12px 10px 10px; margin-right: 32px;
+}
+.ari-step-tile { min-width: 34px; min-height: 34px; border-radius: 9px; color: @Suno_content; }
+.ari-step-tile.blue { background: @Suno_blue; }
+.ari-step-tile.green { background: @Suno_green; }
+.ari-step-tile.violet { background: @Suno_violet; }
+.ari-step-tile.amber { background: @Suno_amber; }
+.ari-step-tile.slate { background: @Suno_muted; }
+.ari-pill { border-radius: 999px; padding: 4px 14px; background: @Suno_fill; }
+.ari-pill:hover { background: @Suno_hover; }
+.ari-working { padding: 4px 4px 4px 8px; }
+.ari-sources { margin-right: 32px; }
+.ari-sources button { padding: 0 4px; min-height: 0; }
+.ari-consent { border: 1px solid @Suno_line; border-radius: 12px; padding: 14px 16px; margin-right: 32px; }
+.ari-composer { padding: 12px 16px 16px 16px; border-top: 1px solid @Suno_line; }
+.ari-model { border-radius: 14px; padding: 4px 10px; background: @Suno_fill; }
+.ari-entry { min-height: 42px; border-radius: 14px; padding: 0 14px; }
+.ari-badge { border-radius: 999px; padding: 2px 8px; font-size: 11px; font-weight: 600; background: @Suno_fill; }
+.ari-badge.private, .ari-badge-private { color: @Suno_green; }
+.ari-badge.moderate { color: @Suno_muted; }
+.ari-badge.high { color: @Suno_amber; }
+.ari-settings { padding: 18px 20px 24px 20px; }
+.ari-settings-gap { margin-top: 14px; }
+.ari-settings .ari-step-tile { min-width: 30px; min-height: 30px; border-radius: 8px; }
+/* Mirrors the AppKit rule until the next platform build carries it. */
+.Suno-navigation-row .Suno-navigation-subtitle { color: @Suno_muted; font-size: 11px; font-variant-numeric: tabular-nums; }
+.Suno-navigation-list .Suno-navigation-row { padding-top: 4px; padding-bottom: 4px; }
+.Suno-navigation-list .Suno-navigation-row:selected { background: @Suno_selected; border-radius: 8px; }
+.ari-approval { border-color: @Suno_accent; }

@@ -1,7 +1,7 @@
 ---
 type: fix
 component: Android
-packages: [luma-android-runtime]
+packages: [Suno-android-runtime]
 highlight: false
 ---
 Summary: No password prompt for Android at sign-in

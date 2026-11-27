@@ -10,16 +10,16 @@ import sys
 
 if not os.environ.get("XDG_DATA_HOME") or not os.environ.get("XDG_CACHE_HOME"):
     raise SystemExit("private XDG_DATA_HOME and XDG_CACHE_HOME are required")
-if os.environ.get("LUMA_MAPS_FIXTURE"):
+if os.environ.get("SUNO_MAPS_FIXTURE"):
     raise SystemExit("live-map smoke must not use the fixture renderer")
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-sys.path[:0] = [str(ROOT / "src/luma-maps"), str(ROOT / "src/luma-platform/appkit")]
+sys.path[:0] = [str(ROOT / "src/Suno-maps"), str(ROOT / "src/Suno-platform/appkit")]
 
-from luma_maps.application import MapsApplication, MapsWindow  # noqa: E402
-from luma_maps.search import SearchOutcome  # noqa: E402
-from luma_maps.store import Place  # noqa: E402
-from luma_appkit import ShareSheet  # noqa: E402
+from Suno_maps.application import MapsApplication, MapsWindow  # noqa: E402
+from Suno_maps.search import SearchOutcome  # noqa: E402
+from Suno_maps.store import Place  # noqa: E402
+from Suno_appkit import ShareSheet  # noqa: E402
 
 
 app = MapsApplication()

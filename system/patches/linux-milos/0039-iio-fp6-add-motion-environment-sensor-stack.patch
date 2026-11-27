@@ -1,5 +1,5 @@
 From af49850e65bdf5dc6f4a14fb9e8e5c5814522d33 Mon Sep 17 00:00:00 2001
-From: Project Luma <codex@local>
+From: Project Suno <codex@local>
 Date: Wed, 19 Aug 2026 23:20:00 -0500
 Subject: [PATCH] iio: fp6: add motion and environment sensor stack
 

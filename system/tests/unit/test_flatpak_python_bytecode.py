@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Flatpak apps and the Luma Platform runtime ship hash-checked Python bytecode.
+"""Flatpak apps and the Suno Platform runtime ship hash-checked Python bytecode.
 
 OSTree exports every file with mtime 0, so timestamp-checked caches never
 match their sources; with /app and /usr read-only, each launch would recompile
@@ -17,7 +17,7 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
 APPS = ROOT / 'packaging/flatpak/apps'
-RUNTIME = ROOT / 'packaging/flatpak/runtime/org.projectluma.Platform.yaml'
+RUNTIME = ROOT / 'packaging/flatpak/runtime/org.projectSuno.Platform.yaml'
 COMPILE = 'python3 -m compileall -q -f -j0 --invalidation-mode checked-hash /app/lib/python3.14/site-packages'
 
 

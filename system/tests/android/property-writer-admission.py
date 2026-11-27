@@ -47,7 +47,7 @@ TEST = r'''
 int main() {
     for (uint32_t user : {0u, 1u, 2u, 100u}) {
         for (uint32_t app : {0u, 1000u, 1001u, 2000u, 9999u, 10000u, 10129u, 89999u, 99000u, 99999u}) {
-            for (const char* name : {"luma.test.property_boundary", "persist.test.fixture", "ctl.start", "sys.powerctl"}) {
+            for (const char* name : {"Suno.test.property_boundary", "persist.test.fixture", "ctl.start", "sys.powerctl"}) {
                 ucred caller{}; caller.uid = user * AID_USER_OFFSET + app;
                 string error;
                 auto result = CheckPermissions(name, "fixture-only", "fixture", caller, &error);
@@ -68,13 +68,13 @@ def main():
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[2]
     original = (args.system_core / 'init/property_service.cpp').read_text()
-    with tempfile.TemporaryDirectory(prefix='luma-property-admission-') as temporary:
+    with tempfile.TemporaryDirectory(prefix='Suno-property-admission-') as temporary:
         work = Path(temporary)
         (work / 'init').mkdir()
         source = work / 'init/property_service.cpp'
         source.write_text(original)
         subprocess.run(['git', 'apply', '--unsafe-paths', '--directory=' + str(work),
-                        str(root / 'patches/android-system-core/0001-luma-property-writer-admission.patch')],
+                        str(root / 'patches/android-system-core/0001-Suno-property-writer-admission.patch')],
                        cwd=work, check=True)
         for name, text, expected in (('patched', source.read_text(), 0), ('unpatched', original, 42)):
             unit = work / (name + '.cpp')

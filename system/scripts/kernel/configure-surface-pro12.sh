@@ -22,7 +22,7 @@ if [ -z "${CROSS_COMPILE+x}" ]; then
   [ "$(uname -m)" = aarch64 ] || CROSS_COMPILE=aarch64-linux-gnu-
 fi
 export CROSS_COMPILE
-export KBUILD_BUILD_USER=luma KBUILD_BUILD_HOST=builder
+export KBUILD_BUILD_USER=Suno KBUILD_BUILD_HOST=builder
 export KBUILD_BUILD_TIMESTAMP='2026-10-22 00:00:00 UTC'
 "$source_dir/scripts/kconfig/merge_config.sh" -m -O "$output_dir" \
   "$base_config" "$repo_root/config/kernel/surface-pro12.config"

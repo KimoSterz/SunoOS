@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 //
-// dl.simplyluma.com: serve the Luma remote from object storage and count
+// dl.simplyluma.com: serve the Suno remote from object storage and count
 // installs and updates without tracking anyone (ADR-028 sections 9 and 12).
 //
 // Serving. Every request is proxied to the object-storage origin (a public,
@@ -160,7 +160,7 @@ export default {
     }
     const url = new URL(request.url);
     let pathname = url.pathname;
-    if (pathname === "/" || pathname === "") pathname = "/luma.flatpakrepo";
+    if (pathname === "/" || pathname === "") pathname = "/Suno.flatpakrepo";
     if (pathname.includes("..")) return new Response("Bad Request", { status: 400 });
 
     const upstream = await fetch(`${env.ORIGIN_URL}${pathname}`, {

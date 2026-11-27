@@ -21,7 +21,7 @@ done
 # shellcheck disable=SC1090
 . "$manifest"
 
-[ "$LUMA_FP6_RMTFS_BUILD_VERSION" = 2 ]
+[ "$SUNO_FP6_RMTFS_BUILD_VERSION" = 2 ]
 [ "$UPSTREAM_VERSION:$FEDORA_RELEASE:$ARCHITECTURE" = 1.1.1:44:aarch64 ]
 [ "$UPSTREAM_COMMIT" = 27b3a6f00f121a0f8195e25c40faf97b57e2cec1 ]
 [ "$MODEM_STUDY_MAPPING" = true ]
@@ -39,10 +39,10 @@ srpm_path=$output_dir/rpmbuild/SRPMS/$SRPM_FILENAME
 [ "$SRPM_SHA256" = "$(sha256sum "$srpm_path" | awk '{print $1}')" ]
 
 [ "$(rpm -qp --qf '%{NAME}-%{EVR}.%{ARCH}' "$rpm_path")" = \
-  rmtfs-1.1.1-3.luma.1.fc44.aarch64 ]
+  rmtfs-1.1.1-3.Suno.1.fc44.aarch64 ]
 [ "$(rpm -qp --qf '%{LICENSE}' "$rpm_path")" = BSD-3-Clause ]
 [ "$(rpm -qp --qf '%{SIGPGP:pgpsig}|%{SIGGPG:pgpsig}' "$rpm_path")" = '(none)|(none)' ]
-[ "$(rpm --eval '%{lua:print(rpm.vercmp("1.1.1-3.luma.1.fc44", "1.1.1-2.luma.1.fc44"))}')" -gt 0 ]
+[ "$(rpm --eval '%{lua:print(rpm.vercmp("1.1.1-3.Suno.1.fc44", "1.1.1-2.Suno.1.fc44"))}')" -gt 0 ]
 
 temporary=$(mktemp -d "$output_dir/.smoke.XXXXXX")
 trap 'rm -rf "$temporary"' EXIT

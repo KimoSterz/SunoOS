@@ -11,7 +11,7 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[4]
-HELPER = ROOT / "src/luma-fp6-platform/root/usr/libexec/luma-fp6-cellular-link"
+HELPER = ROOT / "src/Suno-fp6-platform/root/usr/libexec/Suno-fp6-cellular-link"
 ICCID = "test-sim-a"
 DATA_UUID = "11111111-2222-3333-4444-555555555555"
 OTHER_UUID = "66666666-7777-8888-9999-000000000000"
@@ -27,7 +27,7 @@ def load_helper():
     saved = {name: sys.modules.get(name) for name in ("gi", "gi.repository")}
     sys.modules.update({"gi": gi, "gi.repository": repository})
     try:
-        loader = importlib.machinery.SourceFileLoader("luma_fp6_cellular_link", str(HELPER))
+        loader = importlib.machinery.SourceFileLoader("Suno_fp6_cellular_link", str(HELPER))
         spec = importlib.util.spec_from_loader(loader.name, loader)
         module = importlib.util.module_from_spec(spec)
         loader.exec_module(module)

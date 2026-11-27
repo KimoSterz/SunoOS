@@ -35,7 +35,7 @@ def die(message: str) -> "None":
 def main() -> int:
     if os.geteuid() != 0:
         die("hook must run as root")
-    if os.environ.get("LXC_NAME") != "luma-stock-android-c1":
+    if os.environ.get("LXC_NAME") != "Suno-stock-android-c1":
         die("unexpected LXC name")
     root_text = os.environ.get("LXC_ROOTFS_MOUNT")
     if not root_text:

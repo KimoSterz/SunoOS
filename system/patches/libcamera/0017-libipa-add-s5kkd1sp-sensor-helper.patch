@@ -1,4 +1,4 @@
-From: Project Luma <project-luma@local>
+From: Project Suno <project-suno@local>
 Subject: [PATCH] libipa: add S5KKD1SP sensor helper
 
 The S5KKD1SP V4L2 control uses gain values from 1 through 64 and the kernel

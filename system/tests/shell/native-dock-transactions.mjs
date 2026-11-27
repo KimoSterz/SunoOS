@@ -18,7 +18,7 @@ export function init(){GLib.timeout_add(GLib.PRIORITY_DEFAULT,2200,()=>{checks()
 export async function run(){await new Promise(()=>{});}
 async function checks(){
  const shelf=Main.shelf,dash=shelf._dash,apps=Shell.AppSystem.get_default();
- const settings=new Gio.Settings({schema_id:'org.project_luma.shell-state'});
+ const settings=new Gio.Settings({schema_id:'org.projectSuno.shell-state'});
  new Gio.Settings({schema_id:'org.gnome.desktop.interface'}).set_boolean('enable-animations',false);
  settings.set_string('shelf-edge','bottom');settings.set_int('shelf-padding',12);settings.set_string('shelf-surface-mode','separate');
  const choices=apps.get_installed().filter(a=>a.should_show()).map(a=>a.get_id());

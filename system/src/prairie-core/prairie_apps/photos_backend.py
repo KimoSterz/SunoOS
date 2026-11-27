@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
-"""Persistent, source-aware media library for Luma Photos.
+"""Persistent, source-aware media library for Suno Photos.
 
 The database is authoritative for user organization and last-known source
 state. Thumbnails, decoded previews, and hashes are rebuildable caches. File
@@ -25,7 +25,7 @@ from urllib.parse import quote, unquote, urlparse
 import uuid
 
 
-APPLICATION_ID = "org.projectluma.Photos"
+APPLICATION_ID = "org.projectSuno.Photos"
 SCHEMA_VERSION = 2
 IMAGE_MIME_PREFIX = "image/"
 VIDEO_MIME_PREFIX = "video/"
@@ -90,19 +90,19 @@ def default_database_path(environment: Mapping[str, str] | None = None) -> Path:
     env = os.environ if environment is None else environment
     # Camera and Photos own one media family catalog. Flatpak rewrites the
     # app's XDG_DATA_HOME, but its supported HOST_XDG_DATA_HOME retains the
-    # host location exposed by the narrow xdg-data/luma-photos permission.
+    # host location exposed by the narrow xdg-data/Suno-photos permission.
     # Never copy the live WAL catalog into two independently updated profiles.
-    if env.get("FLATPAK_ID") in {"org.projectluma.Photos", "org.projectluma.Camera"}:
+    if env.get("FLATPAK_ID") in {"org.projectSuno.Photos", "org.projectSuno.Camera"}:
         root = env.get("HOST_XDG_DATA_HOME", "").strip()
         data = Path(root) if root else Path(env.get("HOME", str(Path.home()))) / ".local/share"
         if not data.is_absolute():
             raise ValueError("The shared Photos library requires an absolute data directory.")
-        if environment is None and not _shared_library_mounted(data / 'luma-photos'):
+        if environment is None and not _shared_library_mounted(data / 'Suno-photos'):
             raise PermissionError("Allow access to the shared Photos library to use Camera or Photos. Your existing library is preserved.")
-        return data / "luma-photos/library.sqlite3"
+        return data / "Suno-photos/library.sqlite3"
     return (
         _xdg_path(env, "XDG_DATA_HOME", ".local/share")
-        / "luma-photos"
+        / "Suno-photos"
         / "library.sqlite3"
     )
 
@@ -250,7 +250,7 @@ def _sha256(path: Path, chunk_size: int = 1024 * 1024) -> str:
 def _atomic_copy(source: Path, destination: Path) -> None:
     destination.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
     descriptor, temporary_name = tempfile.mkstemp(
-        prefix=".luma-import-", suffix=".partial", dir=destination.parent
+        prefix=".Suno-import-", suffix=".partial", dir=destination.parent
     )
     temporary = Path(temporary_name)
     try:
@@ -1454,7 +1454,7 @@ class PhotoLibrary:
                     if _sha256(copy.path) != original_hash:
                         raise OSError('The original photo changed while exporting; try again')
                     output = _unique_destination(target, Path(record.display_name).stem + '.png')
-                    descriptor, name = tempfile.mkstemp(prefix='.luma-export-', suffix='.partial', dir=target)
+                    descriptor, name = tempfile.mkstemp(prefix='.Suno-export-', suffix='.partial', dir=target)
                     temporary = Path(name)
                     try:
                         with os.fdopen(descriptor, 'wb') as stream:

@@ -1,3 +1,0 @@
-[D-BUS Service]
-Name=org.projectluma.ModTransactions1
-SystemdService=luma-mod-transactions.service

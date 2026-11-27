@@ -4,12 +4,12 @@
 // catalogue and media cache, for the host Depot and the Depot Flatpak.
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
-import {appGicon, appName, depotMediaPath} from 'resource:///org/gnome/shell/ui/lumaContinue.js';
+import {appGicon, appName, depotMediaPath} from 'resource:///org/gnome/shell/ui/SunoContinue.js';
 
-const out = GLib.getenv('LUMA_BANNER_OUT');
+const out = GLib.getenv('SUNO_BANNER_OUT');
 const home = GLib.get_home_dir();
-const flatpakRoot = `${home}/.var/app/org.projectluma.Depot/cache/luma-depot/catalogue-v1`;
-const hostRoot = `${GLib.get_user_cache_dir()}/luma-depot/catalogue-v1`;
+const flatpakRoot = `${home}/.var/app/org.projectSuno.Depot/cache/Suno-depot/catalogue-v1`;
+const hostRoot = `${GLib.get_user_cache_dir()}/Suno-depot/catalogue-v1`;
 const PNG = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
 const lines = [];
 const check = (name, ok, detail = '') => lines.push(`${name}: ${ok ? 'PASS' : 'FAIL'}${detail ? `, ${detail}` : ''}`);
@@ -49,7 +49,7 @@ function main() {
         check('host Depot, items form', appName('org.example.Host.desktop') === 'Host App' &&
             iconPath(appGicon('org.example.Host.desktop')) === depotMediaPath(hostIcon, hostRoot));
         check('Looks and Tweaks are not apps', appName('com.example.Look.desktop') === 'Look', appName('com.example.Look.desktop'));
-        check('icons only from Luma hosts', iconPath(appGicon('com.example.Elsewhere.desktop')) === null);
+        check('icons only from Suno hosts', iconPath(appGicon('com.example.Elsewhere.desktop')) === null);
         check('picture not kept yet: placeholder', iconPath(appGicon('com.example.Missing.desktop')) === null &&
             appName('com.example.Missing.desktop') === 'Missing Picture');
 

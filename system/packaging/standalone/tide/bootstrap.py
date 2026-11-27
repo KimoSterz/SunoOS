@@ -26,7 +26,7 @@ if not env.get('SSL_CERT_FILE'):
 # The sole dynamic image loader is SVG. PNG/JPEG/GIF are builtin, avoiding a
 # separate subprocess and preserving artwork decoding inside Flatpak.
 template = (base / 'pixbuf-loaders.cache').read_text()
-cache_dir = Path(env.get('XDG_CACHE_HOME', str(Path.home() / '.cache'))) / 'luma-tide/portable'
+cache_dir = Path(env.get('XDG_CACHE_HOME', str(Path.home() / '.cache'))) / 'Suno-tide/portable'
 cache_dir.mkdir(parents=True, exist_ok=True)
 import hashlib
 dependencies = hashlib.sha256((base / 'native-dependencies.json').read_bytes()).hexdigest()[:16]

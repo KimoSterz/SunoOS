@@ -17,7 +17,7 @@ cp /oracle/dock-parity/fonts/*.ttf $HOME/.local/share/fonts/
 printf 'XDG_DESKTOP_DIR="$HOME/Desktop"\nXDG_PICTURES_DIR="$HOME/Pictures"\nXDG_VIDEOS_DIR="$HOME/Videos"\n' > $HOME/.config/user-dirs.dirs
 theme=${CT_THEME:-light}; scheme=default; [ "$theme" = dark ] && scheme=prefer-dark
 cat > $HOME/.config/glib-2.0/settings/keyfile <<KEY
-[org/project-luma/shell-state]
+[org/project-suno/shell-state]
 reduce-transparency=false
 shelf-edge='bottom'
 shelf-edge-mode='floating'
@@ -44,8 +44,8 @@ for n in Opener Viewer; do
 done
 printf '[Default Applications]\nimage/png=oracle-Opener.desktop\nvideo/webm=oracle-Opener.desktop\n[Added Associations]\nimage/png=oracle-Opener.desktop;oracle-Viewer.desktop;\n' > $HOME/.config/mimeapps.list
 unset GSETTINGS_SCHEMA_DIR
-export GSETTINGS_BACKEND=keyfile LIBGL_ALWAYS_SOFTWARE=1 LUMA_MUTTER_ALLOW_SOFTWARE_BLUR=1
-export LUMA_CAPTURE_DRAG_HELPER=${CT_HELPER:-/usr/libexec/luma-capture-drag}
+export GSETTINGS_BACKEND=keyfile LIBGL_ALWAYS_SOFTWARE=1 SUNO_MUTTER_ALLOW_SOFTWARE_BLUR=1
+export SUNO_CAPTURE_DRAG_HELPER=${CT_HELPER:-/usr/libexec/Suno-capture-drag}
 export ORACLE_OUT=${CT_OUT:-/oracle/si114/capture-work/out-${CT_TAG:-a}} ORACLE_EVAL=${CT_EVAL:-$H/eval.js} ORACLE_SETTLE=${ORACLE_SETTLE:-9000}
 if [ "${CT_OVERLAY:-none}" != none ]; then
   export G_RESOURCE_OVERLAYS="/org/gnome/shell/ui=$CT_OVERLAY/js/ui:/org/gnome/shell/theme=$CT_OVERLAY/data/theme"

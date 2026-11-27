@@ -1,0 +1,1130 @@
+# SPDX-License-Identifier: Apache-2.0
+
+%global use_source_date_epoch_as_buildtime 1
+
+Name:           Suno-developer-platform
+Version:        0.1.0
+Release:        1.Suno.158%{?dist}
+Summary:        Adaptive and semantic application platform for Project Suno
+License:        Apache-2.0
+URL:            https://projectluma.org/developers
+Source0:        Suno-developer-platform.tar.gz
+Source1:        LICENSE.md
+
+BuildRequires:  gcc
+BuildRequires:  meson
+BuildRequires:  ninja-build
+BuildRequires:  glib2-devel >= 2.80
+BuildRequires:  gobject-introspection-devel
+BuildRequires:  gtk4-devel >= 4.18
+# The Glass surface-parity check renders a window that never loads the kit
+# and compares its title band with a kit window's. Before 1.Suno.52 the
+# toolkit gave that window no treatment at all, so the check has something
+# real to compare only against a toolkit that carries Patch0042.
+BuildRequires:  libadwaita >= 1.9.3-1.Suno.52
+BuildRequires:  wayland-devel >= 1.23
+BuildRequires:  libadwaita-devel >= 1.7
+BuildRequires:  appstream
+BuildRequires:  desktop-file-utils
+BuildRequires:  python3-devel
+BuildRequires:  python3-gobject
+BuildRequires:  python3-cairo
+BuildRequires:  python3-pyyaml
+BuildRequires:  systemd-rpm-macros
+BuildRequires:  dbus-daemon
+BuildRequires:  xorg-x11-server-Xvfb
+BuildRequires:  xorg-x11-xauth
+BuildRequires:  xdotool
+BuildRequires:  weston
+# LevelTap's %check pipeline: audiotestsrc and audioconvert (base), level (good).
+BuildRequires:  gstreamer1
+BuildRequires:  gstreamer1-plugins-base
+BuildRequires:  gstreamer1-plugins-good
+Requires:       glib2 >= 2.80
+Requires:       gobject-introspection
+Requires:       gtk4 >= 4.18
+Requires:       libadwaita >= 1.7
+Requires:       python3
+Requires:       python3-gobject
+Requires:       systemd
+# Platform56 adds the appearance/protocol surface and additive shared-control
+# corrections while preserving the full Platform50 ABI. Keep isolated preview
+# applications with an exact Platform50 contract installable while the
+# coordinated app tuple catches up.
+# Public GTK/GObject-introspection reorder feedback API.
+Provides:       Suno-ui-reorder-feedback = 1
+Provides:       Suno-developer-platform = 0.1.0-1.Suno.50~preview.20260907.1%{?dist}
+
+%description
+Suno UI and Suno Semantics provide one adaptive GTK/libadwaita framework and a
+display-independent semantic action/object contract across desktop, tablet,
+and handheld presentations.
+
+%package devel
+Summary:        Development files for the Suno Developer Platform
+Requires:       %{name}%{?_isa} = %{version}-%{release}
+Requires:       glib2-devel
+Requires:       gtk4-devel
+Requires:       libadwaita-devel
+
+%description devel
+Headers, pkg-config metadata, GIR sources, schemas, and templates for building
+applications with the Suno Developer Platform.
+
+%package sdk
+Summary:        Suno application creation and conformance tools
+BuildArch:      noarch
+Requires:       python3 >= 3.11
+Requires:       python3-pyyaml
+Requires:       %{name} = %{version}-%{release}
+
+%description sdk
+The Suno command creates, inspects, lints, and runs declaration-level
+conformance checks for adaptive and semantic Suno applications.
+
+%prep
+%autosetup -n Suno-developer-platform
+cp %{SOURCE1} LICENSE.md
+
+%build
+%meson
+%meson_build
+
+%install
+%meson_install
+install -d %{buildroot}%{python3_sitelib}/Suno_sdk
+install -m 0644 sdk/Suno_sdk/*.py %{buildroot}%{python3_sitelib}/Suno_sdk/
+install -d %{buildroot}%{python3_sitelib}/Suno_appkit
+install -m 0644 appkit/Suno_appkit/*.py %{buildroot}%{python3_sitelib}/Suno_appkit/
+install -d %{buildroot}%{python3_sitelib}/Suno_appkit/icons
+install -m 0644 appkit/Suno_appkit/icons/SunoUI-*.svg \
+  %{buildroot}%{python3_sitelib}/Suno_appkit/icons/
+install -d %{buildroot}%{_datadir}/icons/hicolor/scalable/actions
+install -m 0644 appkit/Suno_appkit/icons/SunoUI-*.svg \
+  %{buildroot}%{_datadir}/icons/hicolor/scalable/actions/
+cp -R sdk/Suno_sdk/templates %{buildroot}%{python3_sitelib}/Suno_sdk/
+install -D -m 0755 sdk/bin/Suno %{buildroot}%{_bindir}/Suno
+ln -s Suno %{buildroot}%{_bindir}/Suno-sdk
+install -D -m 0644 sdk/data/org.projectSuno.SemanticInspector.desktop \
+  %{buildroot}%{_datadir}/applications/org.projectSuno.SemanticInspector.desktop
+install -d %{buildroot}%{python3_sitelib}/Suno_semantic_broker
+install -m 0644 broker/Suno_semantic_broker/*.py \
+  %{buildroot}%{python3_sitelib}/Suno_semantic_broker/
+install -D -m 0755 broker/bin/Suno-semantic-broker \
+  %{buildroot}%{_libexecdir}/Suno-semantic-broker
+install -D -m 0755 broker/bin/Suno-semantic-consent \
+  %{buildroot}%{_libexecdir}/Suno-semantic-consent
+install -D -m 0644 broker/data/Suno-semantic-broker.service \
+  %{buildroot}%{_userunitdir}/Suno-semantic-broker.service
+install -D -m 0644 broker/data/org.projectSuno.SemanticBroker1.service \
+  %{buildroot}%{_datadir}/dbus-1/services/org.projectSuno.SemanticBroker1.service
+
+install -D -m 0644 apphost/Suno-app-host.service \
+  %{buildroot}%{_userunitdir}/Suno-app-host.service
+install -D -m 0644 apphost/80-Suno-app-host.preset \
+  %{buildroot}%{_userpresetdir}/80-Suno-app-host.preset
+
+install -m 0644 apphost/Suno-native-app-prewarm.service apphost/Suno-native-app-prewarm.timer \
+  apphost/Suno-app-prepared@.service \
+  %{buildroot}%{_userunitdir}/
+install -d %{buildroot}%{_datadir}/Suno-app-host/preload.d
+
+%check
+# Exercise the staged installed kit with its matching data, even on a fresh
+# builder that has no platform in /usr/share. The normal source discovery
+# accepts sheets beside the Python package, keeping live appearance signals
+# enabled. These test-only links are removed before the payload is packaged.
+for sheet in %{buildroot}%{_datadir}/Suno-appkit/*.css; do
+  ln -s "$sheet" "%{buildroot}%{python3_sitelib}/$(basename "$sheet")"
+done
+PYTHONPATH="$PWD/appkit" SUNO_APP_LAUNCH=%{buildroot}%{_libexecdir}/Suno-app-launch \
+  python3 tests/test_app_host.py
+timeout 60s xvfb-run -a dbus-run-session -- env \
+  PYTHONPATH=%{buildroot}%{python3_sitelib} \
+  SUNO_APPKIT_TEST_PATH=%{buildroot}%{python3_sitelib} \
+  SUNO_APP_LAUNCH=%{buildroot}%{_libexecdir}/Suno-app-launch \
+  GI_TYPELIB_PATH=%{buildroot}%{_libdir}/girepository-1.0 \
+  LD_LIBRARY_PATH=%{buildroot}%{_libdir} \
+  SUNO_APP_HOST_RUNTIME=1 GSK_RENDERER=cairo GTK_A11Y=none \
+  python3 tests/test_app_host.py
+gcc -shared -fPIC -Wall -Wextra -Werror tests/native-prepare-fixture.c \
+  $(pkg-config --cflags --libs gtk4) -o native-prepare-fixture.so
+timeout 30s xvfb-run -a dbus-run-session -- env GSK_RENDERER=cairo GTK_A11Y=none \
+  SUNO_NATIVE_PREPARE_LIBRARY=%{buildroot}%{_libdir}/libSuno-app-prepare.so \
+  SUNO_NATIVE_PREPARE_FIXTURE="$PWD/native-prepare-fixture.so" \
+  python3 tests/test_native_prepare.py
+PYTHONPATH="$PWD/appkit" python3 tests/icon_assets.py
+# MD3 must be importable from the installed package and allocate its full
+# story/arrangement surface at desktop and compact widths. No display is a
+# failure here, never a silent skip.
+PYTHONPATH=%{buildroot}%{python3_sitelib} \
+GI_TYPELIB_PATH="$PWD/%{_vpath_builddir}/appearance:$PWD/%{_vpath_builddir}/ui:$PWD/%{_vpath_builddir}/semantics" \
+LD_LIBRARY_PATH="$PWD/%{_vpath_builddir}/appearance:$PWD/%{_vpath_builddir}/ui:$PWD/%{_vpath_builddir}/semantics" \
+xvfb-run -a --server-args="-screen 0 1280x1024x24" dbus-run-session -- \
+  env GDK_BACKEND=x11 GSK_RENDERER=cairo G_DEBUG=fatal-criticals \
+  python3 tests/timeline.py
+# The standard badge value agents publish for their dock icon.
+PYTHONPATH="$PWD/appkit" python3 tests/background_badge.py
+# The audio capture client against a stand-in portal on a private bus.
+dbus-run-session -- env PYTHONPATH="$PWD/appkit" python3 tests/audio_capture.py
+# New UI regressions require a display: exit 77 is not package evidence.
+test_runtime=$(mktemp -d)
+chmod 0700 "$test_runtime"
+xvfb-run -a --server-args="-screen 0 1920x1080x24" dbus-run-session -- \
+  env GSK_RENDERER=cairo G_DEBUG=fatal-criticals XDG_RUNTIME_DIR="$test_runtime" \
+  meson test -C %{_vpath_builddir} --no-rebuild --print-errorlogs --num-processes 1
+python3 - <<'PY_CHECK'
+import json
+from pathlib import Path
+rows = [json.loads(line) for line in Path("%{_vpath_builddir}/meson-logs/testlog.json").read_text().splitlines() if line.strip()]
+expected = {"Suno-developer-platform:" + name for name in ("semantics", "Suno-sync", "Suno-sync-gi", "background-agent", "context", "adopted-context", "media-fader", "scaffold", "application-icon", "window-frame", "welcome", "application-menu", "native-app-updates", "empty-state", "save-sheet", "surface-policy", "surface-backdrop", "window-shape", "window-capture", "restore", "reorder-hint", "media-transport-lcd", "timeline", "mobile-identity", "hidden-width-watch", "first-frame-width", "tv-island")}
+names = {row["name"] for row in rows}
+# Platform checks, plus SunoUI-1's own part tests, token check and C/Python parity.
+SunoUI = {name for name in names if name.startswith("Suno-developer-platform:SunoUI-")}
+assert expected <= names, sorted(expected - names)
+assert names == expected | SunoUI, sorted(names - expected - SunoUI)
+assert SunoUI, "the SunoUI-1 part tests did not run"
+assert all(row["result"] == "OK" and row["returncode"] == 0 for row in rows), [(row["name"], row["result"]) for row in rows]
+print(f"Platform package native checks: {len(expected)} platform and {len(SunoUI)} SunoUI executables passed; zero skips.")
+PY_CHECK
+GI_TYPELIB_PATH="$PWD/%{_vpath_builddir}/appearance:$PWD/%{_vpath_builddir}/ui:$PWD/%{_vpath_builddir}/semantics" \
+LD_LIBRARY_PATH="$PWD/%{_vpath_builddir}/appearance:$PWD/%{_vpath_builddir}/ui:$PWD/%{_vpath_builddir}/semantics" \
+PYTHONPATH=%{buildroot}%{python3_sitelib} \
+SUNO_APPKIT_BASE_PATH="$PWD/appkit/Suno-appkit-base.css" \
+GSETTINGS_BACKEND=memory \
+GSETTINGS_SCHEMA_DIR="$PWD/%{_vpath_builddir}/tests/appearance-schemas" \
+xvfb-run -a --server-args="-screen 0 1920x1080x24" dbus-run-session -- env GSK_RENDERER=cairo \
+  python3 tests/transaction_card.py
+GI_TYPELIB_PATH="$PWD/%{_vpath_builddir}/appearance:$PWD/%{_vpath_builddir}/ui:$PWD/%{_vpath_builddir}/semantics" \
+LD_LIBRARY_PATH="$PWD/%{_vpath_builddir}/appearance:$PWD/%{_vpath_builddir}/ui:$PWD/%{_vpath_builddir}/semantics" \
+PYTHONPATH=%{buildroot}%{python3_sitelib} \
+SUNO_APPKIT_BASE_PATH="$PWD/appkit/Suno-appkit-base.css" \
+xvfb-run -a --server-args="-screen 0 1920x1200x24" dbus-run-session -- env GSK_RENDERER=cairo \
+  python3 tests/window_geometry.py
+# How a window opens and what it may never give up (ADR-042): the shared
+# opening size on a laptop panel and on an ultrawide, and the title row a
+# framed desktop window keeps however narrow it is. This runs on a headless
+# Weston, not Xvfb: with no compositor GTK gives an X11 window a solid 5px
+# frame (solid-csd), so a window opened exactly as wide as its full layout
+# needs would measure 10px short and fold. Suno's desktop is composited
+# Wayland, which is what this checks.
+for screen in 1536x960 3440x1440; do
+check_runtime=$(mktemp -d /tmp/Suno-open.XXXXXX)
+XDG_RUNTIME_DIR="$check_runtime" weston --backend=headless --width="${screen%%x*}" \
+  --height="${screen#*x}" --socket=Suno-open --idle-time=0 >"$check_runtime/weston.log" 2>&1 &
+weston_pid=$!
+for _ in $(seq 100); do [ -S "$check_runtime/Suno-open" ] && break; sleep 0.1; done
+[ -S "$check_runtime/Suno-open" ] || { tail -n 5 "$check_runtime/weston.log"; exit 1; }
+status=0
+XDG_RUNTIME_DIR="$check_runtime" WAYLAND_DISPLAY=Suno-open GDK_BACKEND=wayland \
+GI_TYPELIB_PATH="$PWD/%{_vpath_builddir}/appearance:$PWD/%{_vpath_builddir}/ui:$PWD/%{_vpath_builddir}/semantics" \
+LD_LIBRARY_PATH="$PWD/%{_vpath_builddir}/appearance:$PWD/%{_vpath_builddir}/ui:$PWD/%{_vpath_builddir}/semantics" \
+PYTHONPATH=%{buildroot}%{python3_sitelib} \
+SUNO_APPKIT_BASE_PATH="$PWD/appkit/Suno-appkit-base.css" \
+dbus-run-session -- env GSK_RENDERER=cairo python3 tests/window_opening.py || status=$?
+kill "$weston_pid" 2>/dev/null || :
+wait "$weston_pid" 2>/dev/null || :
+[ "$status" = 0 ] || exit "$status"
+done
+SUNO_APPKIT_BASE_PATH="$PWD/appkit/Suno-appkit-base.css" \
+xvfb-run -a dbus-run-session -- env GSK_RENDERER=cairo \
+  python3 tests/control_styles.py
+# Filled controls (ADR-043): one quiet state fill, 3:1 against the off state
+# and 4.5:1 for its glyph in all four modes; ink never fills a state.
+SUNO_APPKIT_BASE_PATH="$PWD/appkit/Suno-appkit-base.css" \
+  python3 tests/filled_controls.py
+# One Glass, whatever built the window (owner, 2026-09-22). Four windows built
+# four different ways are rendered on one display and their pixels compared:
+# the title band must be one colour to the value, island interiors must be
+# opaque, and the surface between the islands must still be see-through. This
+# fails on the toolkit and the tokens before this release.
+GI_TYPELIB_PATH="$PWD/%{_vpath_builddir}/appearance:$PWD/%{_vpath_builddir}/ui:$PWD/%{_vpath_builddir}/semantics" \
+LD_LIBRARY_PATH="$PWD/%{_vpath_builddir}/appearance:$PWD/%{_vpath_builddir}/ui:$PWD/%{_vpath_builddir}/semantics" \
+PYTHONPATH=%{buildroot}%{python3_sitelib} \
+SUNO_APPKIT_BASE_PATH="$PWD/appkit/Suno-appkit-base.css" \
+GSETTINGS_BACKEND=memory \
+GSETTINGS_SCHEMA_DIR="$PWD/%{_vpath_builddir}/tests/appearance-schemas" \
+xvfb-run -a --server-args="-screen 0 1280x1024x24" dbus-run-session -- \
+  env GSK_RENDERER=cairo python3 tests/glass_surface_parity.py
+# Avatars: initials, glyphs for numbers, short codes and groups; the kit
+# scrollbar floats over a list's edge 3px in with nothing reserved for it.
+GI_TYPELIB_PATH="$PWD/%{_vpath_builddir}/appearance:$PWD/%{_vpath_builddir}/ui:$PWD/%{_vpath_builddir}/semantics" \
+LD_LIBRARY_PATH="$PWD/%{_vpath_builddir}/appearance:$PWD/%{_vpath_builddir}/ui:$PWD/%{_vpath_builddir}/semantics" \
+PYTHONPATH=%{buildroot}%{python3_sitelib} \
+SUNO_APPKIT_BASE_PATH="$PWD/appkit/Suno-appkit-base.css" \
+xvfb-run -a dbus-run-session -- env GSK_RENDERER=cairo \
+  python3 tests/avatars_and_scrolling.py
+# Lightbox: geometry, then a real window: open over its content, step, zoom,
+# the unavailable state, an animated GIF, reduced motion, close and focus return.
+GI_TYPELIB_PATH="$PWD/%{_vpath_builddir}/appearance:$PWD/%{_vpath_builddir}/ui:$PWD/%{_vpath_builddir}/semantics" \
+LD_LIBRARY_PATH="$PWD/%{_vpath_builddir}/appearance:$PWD/%{_vpath_builddir}/ui:$PWD/%{_vpath_builddir}/semantics" \
+PYTHONPATH=%{buildroot}%{python3_sitelib} \
+SUNO_APPKIT_BASE_PATH="$PWD/appkit/Suno-appkit-base.css" \
+xvfb-run -a dbus-run-session -- env GSK_RENDERER=cairo \
+  python3 tests/lightbox.py
+# The regular navigation sidebar, loaded as an application loads the kit: the
+# selected row shows a neutral fill, groups are ruled, headings sit on the
+# rows' inset, and an app bar ends in a rule; light and dark.
+GI_TYPELIB_PATH="$PWD/%{_vpath_builddir}/appearance:$PWD/%{_vpath_builddir}/ui:$PWD/%{_vpath_builddir}/semantics" \
+LD_LIBRARY_PATH="$PWD/%{_vpath_builddir}/appearance:$PWD/%{_vpath_builddir}/ui:$PWD/%{_vpath_builddir}/semantics" \
+PYTHONPATH=%{buildroot}%{python3_sitelib} \
+SUNO_APPKIT_BASE_PATH="$PWD/appkit/Suno-appkit-base.css" \
+SUNO_APPKIT_STYLE_PATH="$PWD/appkit/Suno-appkit.css" \
+SUNO_APPKIT_TOKENS_PATH="$PWD/appkit/Suno-appkit-tokens.css" \
+xvfb-run -a dbus-run-session -- env GSK_RENDERER=cairo \
+  bash -c 'python3 tests/navigation_sidebar.py && python3 tests/sidebar_footer_fade.py'
+# The save changes sheet: real key presses through the X server, so the
+# application's own Ctrl+D (accelerator and key handlers) is proven silent
+# while the sheet is open; the three cases, focus, Tab, inline name errors.
+GI_TYPELIB_PATH="$PWD/%{_vpath_builddir}/appearance:$PWD/%{_vpath_builddir}/ui:$PWD/%{_vpath_builddir}/semantics" \
+LD_LIBRARY_PATH="$PWD/%{_vpath_builddir}/appearance:$PWD/%{_vpath_builddir}/ui:$PWD/%{_vpath_builddir}/semantics" \
+PYTHONPATH=%{buildroot}%{python3_sitelib} \
+SUNO_APPKIT_BASE_PATH="$PWD/appkit/Suno-appkit-base.css" \
+SUNO_APPKIT_STYLE_PATH="$PWD/appkit/Suno-appkit.css" \
+SUNO_APPKIT_TOKENS_PATH="$PWD/appkit/Suno-appkit-tokens.css" \
+xvfb-run -a --server-args="-screen 0 1920x1080x24" dbus-run-session -- \
+  env GDK_BACKEND=x11 GSK_RENDERER=cairo G_DEBUG=fatal-criticals \
+  python3 tests/save_sheet.py
+# Current shared runtime regressions execute against the staged installed kit.
+for regression in identity_menu_position action_center_grown_inset details_pane_footer sidebar_header application_directory share_capabilities share_layout_runtime media_transport_fit media_memory media_cover_memory media_crop sdk_app_updates migration_repair_screen icon_button_accessibility tooltip_lifecycle; do
+  scale=1
+  case "$regression" in media_memory|media_cover_memory) scale=3 ;; esac
+  GI_TYPELIB_PATH="$PWD/%{_vpath_builddir}/appearance:$PWD/%{_vpath_builddir}/ui:$PWD/%{_vpath_builddir}/semantics" \
+  LD_LIBRARY_PATH="$PWD/%{_vpath_builddir}/appearance:$PWD/%{_vpath_builddir}/ui:$PWD/%{_vpath_builddir}/semantics" \
+  PYTHONPATH=%{buildroot}%{python3_sitelib} \
+  SUNO_APPKIT_BASE_PATH="$PWD/appkit/Suno-appkit-base.css" \
+  xvfb-run -a --server-args="-screen 0 1920x1080x24" dbus-run-session -- \
+    env GSK_RENDERER=cairo GDK_SCALE="$scale" GSETTINGS_BACKEND=memory \
+    python3 "tests/$regression.py"
+done
+PYTHONPATH=%{buildroot}%{python3_sitelib} \
+  %{buildroot}%{_bindir}/Suno --version
+test_project=$(mktemp -d)
+PYTHONPATH=%{buildroot}%{python3_sitelib} \
+  %{buildroot}%{_bindir}/Suno new Test --id org.projectSuno.platformtest \
+  --destination "$test_project"
+PYTHONPATH=%{buildroot}%{python3_sitelib} \
+  %{buildroot}%{_bindir}/Suno lint "$test_project/Suno-app.toml"
+appstreamcli validate --no-net \
+  "$test_project/data/org.projectSuno.platformtest.metainfo.xml"
+desktop-file-validate \
+  "$test_project/data/org.projectSuno.platformtest.desktop"
+PYTHONPATH=%{buildroot}%{python3_sitelib} \
+  python3 -m py_compile \
+    %{buildroot}%{python3_sitelib}/Suno_semantic_broker/*.py \
+    %{buildroot}%{python3_sitelib}/Suno_appkit/*.py
+PYTHONPATH=%{buildroot}%{python3_sitelib} \
+  python3 -c 'from Suno_semantic_broker.validation import semantic_surface'
+for sheet in %{buildroot}%{_datadir}/Suno-appkit/*.css; do
+  rm "%{buildroot}%{python3_sitelib}/$(basename "$sheet")"
+done
+
+%post
+%systemd_user_post Suno-app-host.service Suno-native-app-prewarm.timer
+
+%preun
+%systemd_user_preun Suno-app-host.service Suno-native-app-prewarm.timer Suno-native-app-prewarm.service
+
+%postun
+%systemd_user_postun_with_restart Suno-app-host.service Suno-native-app-prewarm.timer
+
+%files
+%{_libexecdir}/Suno-app-launch
+%dir %{_libexecdir}/Suno-app-launchers
+%{_libexecdir}/Suno-native-app-prewarm
+%{_libdir}/libSuno-app-prepare.so
+%{_datadir}/Suno-app-host/native.json
+%{_datadir}/Suno-app-host/tv.json
+%{_userunitdir}/Suno-app-prepared@.service
+%{_userunitdir}/Suno-native-app-prewarm.service
+%{_userunitdir}/Suno-native-app-prewarm.timer
+%dir %{_datadir}/Suno-app-host
+%dir %{_datadir}/Suno-app-host/preload.d
+%{_userunitdir}/Suno-app-host.service
+%{_userpresetdir}/80-Suno-app-host.preset
+%license LICENSE.md
+%{_libdir}/libSuno-appearance-1.so.0*
+%{_libdir}/girepository-1.0/SunoAppearance-1.typelib
+%{_libdir}/libSuno-semantics-1.so.0*
+%{_libdir}/libSuno-ui-1.so.0*
+%{_libdir}/libSuno-sync-1.so.0*
+%{_libdir}/girepository-1.0/SunoSync-1.typelib
+%{_libdir}/girepository-1.0/SunoSemantics-1.typelib
+%{_libdir}/girepository-1.0/SunoUI-1.typelib
+%{_datadir}/dbus-1/interfaces/org.projectSuno.SemanticBroker1.xml
+%{_libexecdir}/Suno-semantic-broker
+%{_libexecdir}/Suno-semantic-consent
+%{python3_sitelib}/Suno_semantic_broker/
+%{python3_sitelib}/Suno_appkit/
+%{_datadir}/Suno-appkit/
+%{_datadir}/icons/hicolor/scalable/actions/Suno-*.svg
+%{_datadir}/icons/hicolor/scalable/actions/SunoUI-*.svg
+%{_userunitdir}/Suno-semantic-broker.service
+%{_datadir}/dbus-1/services/org.projectSuno.SemanticBroker1.service
+
+%files devel
+%license LICENSE.md
+%{_includedir}/Suno-1/
+%{_libdir}/libSuno-appearance-1.so
+%{_libdir}/pkgconfig/Suno-appearance-1.pc
+%{_datadir}/gir-1.0/SunoAppearance-1.gir
+%{_libdir}/libSuno-semantics-1.so
+%{_libdir}/libSuno-ui-1.so
+%{_libdir}/libSuno-sync-1.so
+%{_libdir}/pkgconfig/Suno-sync-1.pc
+%{_libdir}/pkgconfig/Suno-semantics-1.pc
+%{_libdir}/pkgconfig/Suno-ui-1.pc
+%{_datadir}/gir-1.0/SunoSemantics-1.gir
+%{_datadir}/gir-1.0/SunoUI-1.gir
+%{_datadir}/gir-1.0/SunoSync-1.gir
+%{_datadir}/Suno-platform/
+
+%files sdk
+%license LICENSE.md
+%{_bindir}/Suno
+%{_bindir}/Suno-sdk
+%{_datadir}/applications/org.projectSuno.SemanticInspector.desktop
+%{python3_sitelib}/Suno_sdk/
+
+%changelog
+* Wed Nov 25 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.158
+- Prairie: Lucide cloud-off, cloud-alert, laptop, loader-circle, log-in and
+  shield-x (Connect Sync).
+
+* Wed Nov 25 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.157
+- SunoSyncStore (libSuno-sync-1, SunoSync-1): an app's own records, assets
+  and leases on every device of the person's account through the Sync
+  portal (ADR-057), on GIO alone; without the portal everything works from
+  the app's data folder (status unavailable).
+
+* Wed Nov 25 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.156
+- Phone sheets: save prompts, app questions and delete confirmations rise
+  from the action bar's place on phones, tablets and the Fold; a swipe down
+  cancels. SunoSheetRole, Suno_sheet_button_set_role/get_role,
+  Suno_save_sheet_add_choice, SUNO_SAVE_CHOICE_OTHER.
+- MediaRow (C, Suno_appkit): one playing app as its content: artwork badged
+  with the app's icon (the icon on a neutral tile without artwork), a title
+  and a line, the transport its player offers and its volume on
+  SunoVolumeSlider. Regular is a card's block with a trailing picker
+  (MediaRowChip) and a segmented level meter under the slider; compact is a
+  row in a panel's well; touch is that row in a 64 px box (44 px artwork,
+  10 px above and below) with a 44 px key. A
+  regular row narrower than media_row.regular.stack_below stacks. The
+  Shell's St row reads the same tokens (mediaRowTokens.js).
+- AudioMeter: set_segment_shape(thickness, gap, radius) for a segmented bar
+  and set_zones(FALSE) for an output's level (one green over the control
+  fill, no loud or hot zone, no peak hold). MediaRow's meter is one: 28
+  segments, 3 px, 2 px apart, 1.5 px round.
+- VolumeSlider: set_compact(), a 12 px knob in a 16 px slot.
+- TV: Up and Down step a list of MediaRows row by row
+  (Suno_media_row_focus_sibling), a focused horizontal VolumeSlider takes
+  Left and Right as a GtkRange does, and OK on a row plays or pauses.
+- Prairie: SunoUI-airplay, SunoUI-play-filled, SunoUI-pause-filled.
+
+* Wed Nov 25 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.155
+- ActionCenter light dismiss (Python and C) no longer claims the press: it
+  folds a grown bar and the press goes on to what is under it, so a drag that
+  starts there works (Photos' crop frame, a canvas).
+- ActionEditor(target=) and Suno_action_editor_set_target(): the content an
+  editor works on in place; a press or Esc there does not fold it.
+  SUNOUI_API_LEVEL 16, SUNO_UI_API_LEVEL 13.
+- Callers are held by their pidfd; a ProcessFD the bus names but doesn't
+  deliver is refused; only a bus that offers none falls back to the pid and
+  its start time.
+- Suno_appkit.agent_readers: an agent's Values property and its changes
+  reach only the app, the person's own programs, and bound signed apps (the
+  agent's shared values); nothing else, and only by unicast.
+  A signed Suno app's own sandbox must also be its signed deployment, and
+  Suno's launcher sandboxes (app-Suno-* scopes, host D-Bus proxies) are
+  never the host.
+- Semantic Broker: no mount namespacing in its unit (in the user manager it
+  brought a user namespace where callers' /proc entries are unreadable);
+  every caller it can't read is refused; Live Extensions are read only by
+  /usr/bin/gnome-shell in the host filesystem holding org.gnome.Shell; Flatpak
+  scopes resolve only with their .flatpak-info.
+- Semantic Broker: a caller is held by its pidfd through every check; a
+  ProcessFD the bus names but doesn't deliver is refused; only a bus that
+  offers none falls back to the pid and its start time.
+- Semantic Broker: a caller that is not a Flatpak must be readable and in
+  the broker's filesystem, and is refused in an app-Suno-* scope or as a host
+  xdg-dbus-proxy (Suno's launcher sandboxes).
+- Application directory: a sandboxed launch waits up to ten minutes, while the
+  person chooses the app in Open With.
+
+* Mon Nov 23 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.154
+- Prairie: SunoUI-layers-2 and SunoUI-panel-top (Lucide), for Settings'
+  On screen permissions.
+
+* Mon Nov 23 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.153
+- SunoRestore (Suno_restore_get_default, _restore, _get_reason,
+  _add_document; signals save, save-window, restore, restore-window) and
+  Suno_window_set_restore_key(): an app's windows, documents and state come
+  back after a restart and on the person's other devices, through the
+  shell's org.projectSuno.Session1 (ADR-055). Python Suno_appkit.restore and
+  AppWindow.restore_key, save_state(), restore_state(), documents().
+  C API level 12, Python 15.
+
+* Sat Nov 21 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.152
+- Suno_window_set_hidden_from_capture(), Suno_window_get_hidden_from_capture()
+  and Suno_window_get_capture_hiding_supported(): a window stays on screen
+  but out of screen shares and screenshots of the screen, through Suno's
+  Suno_window_capture_v1 protocol; elsewhere a no-op that returns FALSE.
+  Python AppWindow.set_hidden_from_capture(). C API level 11, Python 14.
+
+* Sat Nov 21 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.149
+- AudioMeter segments (0 continuous, up to 128 LED segments with the zone
+  colours, the peak hold a lit segment); LevelMeter is AudioMeter.
+- LevelTap(meter, source): a GStreamer level tap on a PipeWire node, an
+  AudioCapture or any source, running only while the meter is mapped.
+- MixerStrip: an icon slot (gicon, icon-name) and optional Mute and
+  Monitor keys, so one strip serves app panels and the volume mixer.
+- Island.do_snapshot draws its rim from cached geometry: no imports or
+  ancestor walks per frame under a live child.
+- ValueSlider.set_mixed(value=None) and .mixed.
+
+* Sat Nov 21 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.148
+- Dock: a tile's header (and tab strip) is a band, @Suno_dock_header, one
+  step toward the island from the well, 1px inside its ring with its top
+  corners, and a @Suno_dock_header_line hairline under it; header_height
+  tall in all. DockTile.set_status(text, tone=None|"live"): a dot and a word
+  after the title, in the tile's accessible label.
+- MixerStrip/MixerRow (C, Suno_appkit): vertical channel strips, a stereo
+  meter with peak hold beside a dB fader, readout, Mute and Monitor;
+  fixed --SunoUI-mixer-strip-width, a row that scrolls sideways.
+- RowLead.thumbnail(fit="contain"): one fixed media_thumb tile (56x32) in
+  every state, drawn into by its paintable; a picture within
+  media_thumb_snap_pct of 16:9 fills it, others are contained, none shows
+  a glyph. Its size never follows the paintable.
+- ModeSwitch(icon_only=True): glyphs alone; labels are tooltips and
+  accessible names.
+- Prairie: SunoUI-arrow-left (Move left). Every glyph named in Suno_appkit
+  and the gallery must be imported (test-SunoUI-icon-names.py).
+
+* Sat Nov 21 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.147
+- ArrangeView: several boxes. Shift+click adds or removes, a rubber band
+  from empty canvas selects what it touches (Shift adds), Ctrl+A selects
+  all; set_selection()/get_selection()/select_all(),
+  selection-ids-changed. Two or more share one box: dragging moves all,
+  its handles scale all in proportion (Shift stretches, Alt from the
+  centre), arrows nudge all; group-changed/group-committed a{s(dddd)}.
+- Suno_appkit: ArrangeView(on_selection=, on_group_change=,
+  on_group_commit=); align_rects() and distribute_rects().
+
+* Sat Nov 21 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.146
+- Dock: a closed tile reopens where and how it was. Its record keeps its tab
+  group and index, or the tiles it was split from, the split, its side,
+  share, pixel size and a fitted side's size; reopening splits that whole
+  part again (the share, so a resized window keeps the proportion), else
+  the smallest part still holding what is left of it at the old size, else
+  the suggested or default place. A remembered place wins over open_tile's
+  beside/edge/size. Records persist in layout()["closed"].
+- ProgressLine (Python and C): a "warning" tone (amber).
+
+* Sat Nov 21 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.145
+- Popovers are opaque in every treatment: the dark treatment's menus were
+  alpha(@Suno_window, .78) and frost/glass popovers the veil, so the window
+  under a menu showed through (nothing blurs behind a popover surface).
+- AppWindow: F10 and win.show-app-menu open the app menu.
+
+* Fri Nov 20 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.144
+- ChatLine and ChatFeed (Suno_appkit): a live chat's lines (lead, badges,
+  the author's colour made readable, selectable text; action and notice
+  kinds; dimmed) and a feed that keeps the newest lines, follows the bottom
+  and offers Jump to newest. readable_color().
+- Dock: a seam a person drags keeps its size. The paned's own drag claims
+  the press, so the gesture that marked a held seam never saw it and every
+  drag was taken for GTK's layout and put back; the dock now marks the seam
+  from its capture phase (press to release). Real-pointer test.
+- Lucide: gem.
+
+* Fri Nov 20 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.143
+- ArrangeView: set_item_shown_rect()/clear_item_shown_rect(): the selection
+  outline and crop frame follow the picture actually on screen during a
+  drag; handles and hit testing keep the live rectangle.
+- ToggleChip (Suno_appkit): a checkable chip for a header's actions; a
+  refusing on_toggle keeps it; a live dot.
+- DetailsPane(raised=True) / Suno_details_pane_set_raised(): a raised island
+  of its own beside the main one (an Inspector).
+- Dock: close_tile(), open_tile(key, beside=, edge=, size=), is_open(),
+  request_close() with on_close(key) to refuse; DockTile(closable=True) adds
+  "Close panel" to its More menu. Closed tiles and their last places
+  round-trip in layout() ({"layout", "closed"}); several tiles may be main
+  (the first open one leads on a phone); on_rearrange covers close and open.
+- Command icons (app menu rows) resolve through the installed icon theme, so
+  a bare Lucide name shows its glyph on an installed system.
+- Sparkline (Suno_appkit): recent values as a line with a soft area, accent,
+  warning or danger, marks, push()/set_values(), an accessible description.
+
+* Fri Nov 20 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.142
+- ActionEditor (Python and C): focuses its first field with the text
+  selected; a hidden body collapses (no band, one rule); the footer hint
+  says "Esc to cancel".
+- SyncKey and OverrideDot (Suno_appkit): a section's link to another's look
+  at the foot of an editor section, and a per-field override mark.
+- RowLead.thumbnail(fit="contain", aspect=): a 16:9 or 9:16 picture whole in
+  the slot, small radius, hairline.
+
+* Fri Nov 20 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.141
+- Dock: tiles dock anywhere by their header or tab (a long press on touch):
+  edge bands of another tile split it, its middle stacks the two as tabs,
+  the dock's outer edge makes a full-height column or full-width row; a live
+  preview glides to the landing rectangle, nothing reflows until release,
+  Esc cancels; no docking on a phone. on_rearrange(previous, new) for undo.
+- Dock tab groups: {"tabs": [keys], "current": key} in layouts, a tab strip
+  with the current tile's actions and More, show_tile(key).
+- tree_dock(), tree_dock_edge(), tree_remove(), tree_keys() on plain layouts.
+
+* Fri Nov 20 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.140
+- FloatingMenu.popup(anchor, x=, y=) / Suno_floating_menu_popup_at(): a
+  context menu with its corner on a point, flipped at the window's edges.
+- Cascading submenus: MenuItem(submenu=[...]) / add_submenu(); hover with a
+  250 ms aim grace, Right opens, Left and Esc close one level; drilled in
+  place with Back on a phone. MenuItem(shortcut=) / add_shortcut_item().
+- FloatingMenu: a menu opened in a window whose layer host is made by that
+  popup is no longer wrapped in a scroller a few rows tall.
+- Dock: header drags show their drop target again (the drag's content isn't
+  readable from PyGObject; the dock follows its own moving tile).
+- Lucide: ratio, save, unlink, headphone-off, maximize, shrink,
+  move-horizontal, move-vertical, redo-2, send-to-back, squircle.
+
+* Fri Nov 20 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.139
+- Dock: a split's ratio is a share of its own length (both tiles and the
+  seam, as drawn), so 0.5 gives two equal tiles. Only a person's move of a
+  seam changes the share; a move GTK makes while laying out goes back to it.
+- PanelRow (switch), PanelSwitch, PanelChoices: the CHECKED accessible state
+  is set as a tristate int, no longer a bool (a GLib critical).
+
+* Fri Nov 20 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.138
+- SunoColorPicker (ColorPicker in Suno_appkit): saturation/brightness area,
+  hue and opacity strips, Suno's palette, the document's colours and the
+  app's recent ones (kept in its config), an eyedropper through the
+  Screenshot portal's PickColor, and a hex code; color-changed live,
+  color-committed once per finished change.
+- SunoPropertyColor: the swatch opens the picker in an opaque popover, in an
+  action center's grown panel (set_action_center), or where an open-picker
+  handler puts it; new color-committed signal.
+- SunoArrangeView: handle drags scale a box that keeps its aspect from the
+  opposite edge or corner; Alt resizes from the centre, Shift stretches,
+  Ctrl crops a croppable box, live as modifiers change. Crop mode (double
+  click, Enter, set_cropping) crops with plain drags and pans inside.
+  Crops are per-edge source fractions (0-0.49): set_item_crop, crop-changed,
+  crop-committed; set_item_ghost draws the cut-away source dim; drag-mode
+  says what a drag does for a hint. Alt on a move still turns snapping off.
+
+* Fri Nov 20 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.137
+- Dock: a fitted side's seam moves anywhere between the tiles' minimums; a
+  person's drag (pointer or F8 and keys) keeps that size as "size" on the
+  split in layout(), and a double click on the seam fits it again.
+- Dock: seams show the resize cursor; a seam with no room to move shows no
+  mark and no resize cursor.
+- NavigationList(variant): a sidebar variant's list outside a sidebar.
+
+* Fri Nov 20 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.136
+- Light dismiss for a grown action bar (panel, More, editor; Python and C):
+  a primary press or tap outside it, or Esc, folds it; the press is consumed
+  and a field in the bar commits its edit first.
+- Dock tiles use --SunoUI-dock-tile-radius (the card radius); an island
+  holding a dock is that radius plus the gap round, so radii stay concentric.
+- Dock: a side whose tiles all fit their content is as tall as the taller,
+  capped at Dock(fit_max=) / --SunoUI-dock-fit-max-pct (40%), then scrolls;
+  DockTile(phone="drawer") makes a fitted tile a key and drawer on a phone.
+- NavigationSidebar: a section heading starts on the rows' lead in every
+  variant (files and tree insets; headings no longer take a toolkit row's
+  padding).
+- VolumeSlider and AudioMeter: the empty track reads at rest on a well.
+
+* Fri Nov 20 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.135
+- SunoVolumeSlider (VolumeSlider in Suno_appkit): the kit's slider for a
+  volume, upright for a mixer's strip or flat for a row, with SunoAudioMeter
+  laid along exactly its track; unity mark and reset, muted, keys along it
+  only, ::moved for the person's moves; tokens --SunoUI-volume-slider-*
+
+* Fri Nov 20 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.134
+- DockTile(fit=True): a tile never larger than its content along its split;
+  on a phone it stays under the main tile; Dock.refit() after a change.
+- A grown action bar is never narrower than its resting row, so the subject
+  chip keeps its name while an editor is open (Python and C).
+- Dock tile headers: 28 px keys, glyphs inset 12 px at both ends.
+- RowAction(quiet=True) waits for hover, selection or focus.
+
+* Fri Nov 20 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.133
+- Suno_appkit.audio_capture: request_audio_capture() and AudioCapture, the
+  client for the Audio Capture portal (pipewiresrc on the granted remote,
+  restore tokens, close)
+
+* Fri Nov 20 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.132
+- Suno_window_set_aspect_ratio(), Suno_window_set_aspect_content() and
+  Suno_window_get_aspect_ratio_enforced(): a window keeps its content at a
+  fixed ratio through Suno's Suno_window_shape_v1 protocol, live while it is
+  resized; elsewhere a no-op that returns FALSE. C API level 10.
+
+* Fri Nov 20 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.131
+- Dock and DockTile: an island tiled with insets (concentric with the
+  island), seams that resize, tiles dragged by their headers onto another
+  tile's edge or middle, a bare stage tile, JSON layouts, a bar clearance
+  and a phone's drawers.
+- NavigationSidebar.append_pane: a second list under the first, with the
+  same rows and insets, resizable at a seam without a grabber.
+- CreativeWorkspace docks keyed panels left, right or bottom, with saved
+  layouts and work-area-changed.
+- ArrangeView: boxes on a canvas with handles, snapping guides and nudges.
+- AudioMeter is drawn by SunoUI (zones, peak hold, ballistics, rows).
+- BarChip(live=True) takes a detail and updates in place.
+* Wed Nov 18 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.130
+- Title island: its title button reads "<title>. Details" or "<title>.
+  Places", as v71 names it.
+- A list-first sidebar on a phone paints the window's flat ground, and its
+  pinned header sits under the large title.
+- Action bar: a recording well takes the row's spare width beside Pause and
+  Done; its words are ink at 700 with a 10 px dot.
+- Memo transport: the total after the time is v71's small (11.25 px).
+
+* Tue Nov 17 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.129
+- Title island: the title and subtitle sit on v71's 1.2 line boxes (18 and
+  14 px) instead of GTK's font-line factor; a sidebar grown into the island
+  drops its frame padding and row, footer and heading insets, so the panel's
+  menu padding is the drawer's only inset.
+- Action bar: a quick field that shares a phone bar row with a key is the
+  48 px kept well with 16 px text, as in a row of its own.
+
+* Sat Nov 14 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.128
+- Prepared launch: a prepared app's window is shown on a new surface made at
+  the launch, not the one realized while preparing (often at session start,
+  before the outputs and their scale were final), and is laid out again for
+  the output it opens on (libSuno-app-prepare and Suno_appkit.prepare).
+
+* Fri Nov 13 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.127
+- TV posture: the island stays open beside the page, its list fading at the
+  plate's edges (SunoTvFade, shared with the page); an attached
+  SunoActionCenter is the action bar on demand; a Flatpak room reads the
+  host wallpaper. The fades measure in the frame's screen unit.
+
+* Wed Nov 11 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.126
+- SunoUI API level 13: the TV action bar (TvActionBar, tv.action_bar),
+  TvFocus.add(console=) for a terminal under the remote, TvRoom.set_wallpaper()
+  and desktop_wallpaper(); an Island on a TV stage draws no card.
+- TV posture: prepared app launches, never idle, weather in the shared bar,
+  the TV home's running light; Terminal's and Photos' TV tokens.
+
+* Sun Nov 08 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.125
+- SunoUI API level 12: an edge-filled phone bar, a medium search well,
+  frosted specimens, the places sidebar and list insets. A bar text
+  button's minimum width is its border box; an Inset holds the frame's ink.
+
+* Sat Nov 07 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.124
+- SunoUI parts for Depot (API level 11): Button by purpose, Confirm in a
+  non-destructive form, Inset and TwoColumnInset, Checkbox, checkbox and radio
+  menu rows that update in place, Tooltip, Disclosure, EdgeFadeScroller,
+  PermissionList with the eleven permission words, Changelog, FramedPicture;
+  wide grown action-bar panels.
+
+* Wed Nov 04 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.123
+- SunoUI TV parts (API level 10): focus, stage, menu, keyboard, island,
+  media, wide tiles, shelves, grids and pages; TV design tokens.
+
+* Sun Nov 01 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.122
+- Settle responsive layouts before the first content frame.
+
+* Sat Oct 31 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.121
+- Merge the shared prepared application runtime with the October 30 nightly.
+
+* Fri Oct 30 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.120.nightly20261030.1
+- Expose shared search, command and invitation text fields to accessibility.
+
+* Fri Oct 30 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.117.mobile20261030.1
+- Add the shared prepared application runtime and native launch frontend
+- Reuse unchanged appearance styles and prepare native Settings/Filer on handhelds
+
+* Mon Oct 26 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.118.nightly20261026.1
+- Update adopted native frames when presentation mode changes.
+
+* Mon Oct 26 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.117.nightly20261026.1
+- Package the October 26 shared source updates.
+
+* Tue Oct 06 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.101.creator20261007.1
+- Delegate Python Flatpak app-menu updates to the installed host update portal
+- Keep current code running and require terminal progress before success notices
+- Exercise real session D-Bus refusal, creation cleanup, owner loss and GTK menu lifecycle
+
+* Mon Oct 05 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.93.creator20261005.1
+- Shared raised transaction actions with preserved progress/state geometry
+
+* Tue Sep 29 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.90.creator20261004.1
+- SunoUI kit for Settings round 4: notice and placeholder tokens, fill buttons on fill-2, the phone confirm drawer, and the layer-host focus leak fixed.
+
+* Tue Sep 29 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.88.SunoUI20260929.1
+- SunoUI kit for Settings round 3: FloatingMenu pickers, hero text buttons, action-editor forms, the mono-small type role and drawers placed before layout; accent ink follows the v70 formula.
+
+* Mon Sep 28 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.87.SunoUI20260928.1
+- SunoUI kit for Settings round 2: TextButton, Switch, a compact ModeSwitch, ProgressLine, the Settings sidebar variant, a compact AccountCard and type roles, in C and Python; window controls fold away at phone width on a phone only.
+
+* Sat Sep 26 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.86.SunoUI20260928.1
+- The installed kit carries its SunoUI glyphs again, so apps find their control icons on any icon theme.
+
+* Sat Sep 26 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.85.SunoUI20260928.1
+- SunoUI kit: rollout of 2026-09-28 reconciled with the device builds.
+
+* Sat Sep 26 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.81~SunoUI.20260926.1
+- SunoUI kit fixes from the evening review.
+
+* Sat Sep 26 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.80~SunoUI.20260926.1
+- SunoUI kit fixes from on-device review: island clipping, mode switch, 13px bar text, font-independent row height, word-only bar actions, toast status role.
+
+* Sat Sep 26 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.79~SunoUI.20260926.1
+- SunoUI foundation: tokens, Lucide icons, window frame and the structure, action, content, rows, bar and media parts every Suno app now uses; includes the reorder hint.
+
+* Wed Sep 23 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.78~preview.20260923.1
+- SunoUI gains a reorder hint (Suno_reorder_hint), the shared insertion
+  feedback Filer's sidebar uses while items are dragged into a new order;
+  provides Suno-ui-reorder-feedback = 1. Otherwise 1.Suno.77 unchanged.
+
+* Mon Sep 22 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.77~preview.20260922.1
+- One Glass for every window. Islands, panes and cards are opaque paper in
+  Frost and Glass, so nothing is read through a sidebar or a month grid;
+  the window surface, the title band and the gaps between islands are the
+  material. The title band, menus, popovers and sheets take one veil,
+  thick enough that text behind a surface does not read as text.
+- A window's treatment no longer depends on its own compositor handshake:
+  the backdrop owns the blur region and nothing else, and what colour a
+  window is painted is one decision per display.
+- Applications load their style sheets through the kit, so they follow a
+  change of treatment instead of keeping the palette they started with.
+- %%check renders four windows built four different ways and compares
+  their pixels (tests/glass_surface_parity.py).
+
+* Sat Sep 19 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.76~preview.20260919.1
+- The save changes sheet is one C implementation in libSuno-ui
+  (SunoSaveRequest, SunoSaveSheet, SunoSaveDocument; SunoUI in Python), so C
+  and C++ applications ask with the same sheet as Python ones. The Python
+  kit's confirm_save keeps its API and drives it; AppWindow's sheet layer is
+  the platform's (Suno_window_set_sheet_layer). A window without that layer
+  gets one the first time it asks: the sheet hangs under its header bar, only
+  its content dims, the application's commands in the title bar wait.
+- Enter answers with the control that has focus when that is Cancel, Don't
+  save or Where; everywhere else it saves. Focus returns where it was when the
+  sheet closes. Where lists the application's folders, then Documents and
+  Desktop, then Other location. More than five documents scroll.
+- Without a recorded edit age the body says "Your changes haven't been
+  saved." instead of guessing.
+- The sheet is opaque in every treatment: a new Suno_sheet token (frost and
+  glass no longer show through). The light Ctrl D label takes the Don't save
+  red (#983b34); #9f463f measured 4.16:1 when pressed. High contrast gets its
+  own red, mix(#ff3b30, window_fg, .55): 8.5:1 light, 7.2:1 dark at rest.
+- tests/test-save-sheet.c (a plain C window) and tests/save_sheet.py (real
+  key presses) in %check.
+
+* Fri Sep 18 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.75~preview.20260918.1
+- Frost and glass are one light material with the Shell: light, see-through
+  panels over the blurred wallpaper with dark ink. The surface roles are now
+  layers sized so the stack composites to the recipe, not finished colours
+  stacked on each other: the frame paints 62% on frost and 30% on glass, the
+  title band and the panes paint over it (frost to 76% and 84%, glass to 62%
+  and 70%), and cards, rows and a pane's header strip paint a thin lift over a
+  pane. Stacking finished .82-.94 veils is what made every frost and glass
+  window a near-opaque slab with a solid title bar.
+- Text roles are one step deeper than paper's on frost and glass, and the
+  state fill is a deeper slate (#4a5a6e frost, #3b4757 glass), so every text
+  pair holds 4.5:1 and every control 3:1 composited over white, mid grey and
+  black. tests/filled_controls.py measures each surface as the stack it
+  composites to.
+- Ink-filled controls (play, the primary button) print their label in paper,
+  not in a translucent surface role, and the save sheet takes the menu's veil.
+
+* Fri Sep 18 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.74~preview.20260918.1
+- Sidebars show which view is open again. A bare row rule in Suno-appkit.css
+  outranked the base sheet's selected and hover fills (GTK takes a property
+  from the last provider at a priority), so no regular NavigationSidebar drew
+  its neutral selection. Headings are the design's 18px band on the rows'
+  inset, groups after the first open with a 1px hairline 7px in, and a pane's
+  app bar ends in the 1px rule that separates it from its content.
+
+* Fri Sep 18 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.73~preview.20260918.1
+- Frost and glass are light, see-through panels with dark ink again, as their
+  thumbnails in Settings show. 1.Suno.71 smoked every frost and glass window
+  surface and projected the rest from the dark family, so both modes read as
+  Dark. The roles now come from the light family; the panels are denser than
+  before (frost frame .82, panes .92, islands .80; glass panes .88, islands
+  .78, the frame stays a see-through .31) so every text and control pair holds
+  4.5:1 (3:1 for large text, controls and disabled rows) composited over pure
+  black as well as white. Quiet text, section labels, the state fill and the
+  menu caps are one step darker than paper's for the same reason.
+- The title row's veil (Suno_chrome) is its own, denser role instead of the
+  frame, matching libadwaita 1.Suno.50.
+- tests/filled_controls.py measures frost and glass on the surfaces content is
+  drawn on (pane, card, island, title row) over white and black; the bare
+  see-through frame carries nothing.
+
+* Fri Sep 18 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.72~preview.20260918.1
+- Integrates the Sept 17 kit work that 1.Suno.71 did not carry, on top of it.
+- Filled controls follow ADR-043: a checked toggle, tab or slider takes one
+  quiet state fill (Suno_state, Suno_state_ink) and ink stays for a view's one
+  emphasis. Menu headings, shortcut caps, disabled rows and sidebar and section
+  headings take measured ledger colours that hold their contrast targets in
+  light, dark, frost and glass.
+- Frost and glass window surfaces are smoked so they carry white ink, and the
+  smoked amber is bright enough for a selected row.
+- One Save changes sheet for every Suno app (Suno_appkit), hung from the
+  window that asked, with Save, Don't Save and Cancel; it is asked on close and
+  on quit.
+- A window opens 16px clear of its own narrow layout instead of exactly on
+  it, so a fractional scale rounding down, or a frame drawn where there is no
+  compositor, cannot fold it into its phone layout as it appears.
+- The desktop opening rule leaves handheld surfaces alone: the shell sizes
+  them full screen, and they keep the application's own default until then.
+- The window-opening check in %check runs on a headless Weston: under Xvfb
+  GTK frames a window with a solid 5px border that no Suno desktop draws.
+- The status dot drops max-width and max-height, which GTK CSS does not have;
+  the parser warning aborted every %check test that loads the kit stylesheet.
+- Save changes sheet: the name field's invalid state is passed as an integer
+  and the card no longer sets labelled-by/described-by relations; through
+  PyGObject both reached GTK as the wrong value type, a GObject critical. The
+  sheet's check waits for each answer instead of expecting it within 120ms.
+
+* Thu Sep 17 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.71~preview.20260917.1
+- One rule decides the size every Suno window opens at when nothing is
+  remembered for it (Suno_appkit.window_policy, ADR-042): one height per
+  monitor for every window, a width from the window's shape, capped inside the
+  work area, never below what the application says it needs, and never inside
+  the window's own narrow layout on a desktop. Applications keep declaring a
+  size; it is read as their shape.
+- A framed desktop window cannot lose its title row, which carries its close,
+  move and resize controls. AppWindow puts the row back if a breakpoint or a
+  page change hides it and records it for Suno Vitals; Phone and Messages
+  opened narrow enough to trip their phone layouts and left no way to close
+  them. Handheld surfaces and windows that draw their own controls are
+  unaffected.
+- Where the person has moved, resized or tiled a window, Tiling Shell's window
+  memory is the one that puts it back: the kit no longer restores a size of its
+  own while that memory is enabled. tests/window_opening.py in %check on a
+  laptop panel and an ultrawide; tests/unit/test_Suno_window_opening.py runs the
+  rule over every Suno window as source.
+
+* Thu Sep 17 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.70~preview.20260917.1
+- A status dot in a NavigationRow stays a 6px dot: the indicator is centred in
+  both directions and bounded in Suno-appkit-base.css, where it had taken the
+  row's full height and drawn as a tall bar in every app with status rows
+  (Tide, aad9e5a0). Carries the `badge` value from .69, which was never pinned.
+
+* Thu Sep 17 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.69~preview.20260917.1
+- Background agents: a standard `badge` value for the unread badge on an app's
+  dock icon, an unsigned count or "dot" (Suno_appkit.background.BADGE_VALUE,
+  BADGE_DOT, Agent.set_badge). BackgroundAgent1 is unchanged; the dock reads the
+  value only from agents that list `badge` in `publishes`. Documented in
+  docs/developer/kit/background-agents.md; tests/background_badge.py in %check.
+
+* Wed Sep 16 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.68~preview.20260916.1
+- Lightbox (Suno_appkit.lightbox): a picture viewer laid over a window's own
+  content, never a new window. It grows from the thumbnail and back, dims the
+  window, zooms (pinch, Ctrl+scroll, double-click between fitted and 1:1 device
+  pixels, +/-/0) and pans when zoomed, steps through a set of pictures (arrow
+  keys, swipe, Prairie pan chevrons), plays animated GIFs, shows loading and
+  unavailable states with Try Again, and has Save As…, Copy and Open With… (the
+  only way to another app). Focus stays inside while open and returns to the
+  thumbnail; motion follows the reduced-motion setting. Only the shown picture
+  and its neighbours hold pixels, at display size, with the shown one decoded at
+  full size only when zoomed; all are released on close.
+- tests/lightbox.py runs in %check.
+
+* Wed Sep 16 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.67~preview.20260916.1
+- Avatar shows a photo when given one, initials otherwise (first and last
+  word, punctuation, emoji and honorifics ignored, one character for scripts
+  written without initials), and a person, business or group glyph for phone
+  numbers, short codes, unnamed senders and groups instead of a digit or a
+  bracket. avatar_initials() and avatar_kind() are public; Avatar gains medium
+  (40 px), group and paintable.
+- ScrollView: the kit's scrolling container. Its overlay scrollbar floats over
+  the content's trailing edge 3px in, clear of rounded corners, with nothing
+  reserved for it, and it cannot be switched to a reserved gutter.
+  NavigationSidebar uses it, and every scrolled window inside a kit island
+  (Python or C) gets the same bar in the same place from Suno-appkit-base.css.
+- A menu opened at the pointer opens from its corner there instead of centred
+  on it, which put half of a row's menu beside the click and off a sidebar.
+- tests/avatars_and_scrolling.py runs in %check.
+
+* Tue Sep 15 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.66~preview.20260915.2
+- The first release of this package built from the repository since
+  1.Suno.62~preview.20260910.1. 1.Suno.64 and 1.Suno.65 were both built
+  outside the tree and are described below; this release is their source
+  landed here, so the shipped platform is reproducible from a revision again.
+- Contains, over 1.Suno.62: the appkit navigation work that 1.Suno.64 carried
+  (Suno_appkit.navigation and the menu/CSS changes for it, in this tree as
+  commit 09045653); the background-agent kit that 1.Suno.65 carried, taken
+  from work/background-activity; and the appkit token, Semantic Broker and
+  portal/agenda/calls work that landed in this tree after the 1.Suno.64 build
+  tree was taken and that neither shipped release contains.
+- 1.Suno.66 is therefore a superset of shipped 1.Suno.65, not a copy of it:
+  packaged payload differs from 1.Suno.65 in the appkit token stylesheets and
+  in Suno_semantic_broker, where this tree is ahead.
+- The entries below stop at 1.Suno.45~preview.20260906.1. Releases .46 to .62
+  were built from the tree but never given changelog entries; this release
+  does not invent them.
+
+* Mon Sep 14 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.65~preview.20260915.1
+- Shipped, and built outside the tree: the 1.Suno.64 build tree plus the
+  background-agent kit, assembled in background-activity-20260915 on the
+  canonical builder rather than from a revision. Its source is recorded
+  byte-identically against its own source RPM on the branch
+  work/background-activity-platform65 (commit fd178a7a); it does not carry
+  the appkit token, broker or portal work this tree had by then.
+- Background agents (ADR-033): Suno_appkit.background (Agent, run_agent,
+  request_background, from_agent, LiveExtensionBinding) and
+  SunoBackgroundAgent in SunoSemantics-1, with its own native test.
+- Suno lint checks the [background] table; the application schema describes
+  it; the Semantic Broker accepts a background agent's unit as its app's
+  identity.
+
+* Mon Sep 14 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.64~preview.20260914.1
+- Shipped, and built outside the tree from the deployed 1.Suno.62 source in
+  Suno-desk-fixes on the canonical builder: only the Release line was edited
+  and no changelog entry was written. Its one source change over 1.Suno.62 is
+  the appkit navigation work, which is in this tree as commit 09045653.
+- 1.Suno.63 was never built or shipped; the release numbering skips it.
+
+* Sun Sep 06 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.45~preview.20260906.1
+- Share native compatibility frame geometry and generated tokens.
+
+* Fri Sep 04 2026 Project Suno <hello@projectSuno.org> - 0.1.0-1.Suno.37
+- One menu component for the whole system (menus.py), with the menu contract's tokens
+
+* Fri Sep 04 2026 Project Suno <hello@projectSuno.org> - 0.1.0-1.Suno.36
+- Let the kit's split views stop clipping their islands
+
+* Fri Sep 04 2026 Project Suno <hello@projectSuno.org> - 0.1.0-1.Suno.35
+- Give the C kit's pane the island class the toolkit styles
+- Resolve command_menu_model and add_style_sheet by name from Suno_appkit
+
+* Fri Sep 04 2026 Project Suno <hello@projectSuno.org> - 0.1.0-1.Suno.34
+- Import GObject in the kit's widgets; NumericField's signal declaration needs it
+
+* Fri Sep 04 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.33
+- One kit. The platform source had been copied into every application's
+  branch and edited there, which left six versions of the window widget and
+  eleven of the Python widget module in circulation, none of them on stage.
+  This release is the reconciliation: the newest lineage, plus the additions
+  the other copies had made — sheet reloading on treatment change, avatar
+  tones, the labelled field row, the numeric field and align cluster, the
+  audio meter and media fader.
+- The frame belongs to the toolkit. A Suno window no longer draws its own
+  title row, identity or window controls; it carries `Suno-app-window` and a
+  header bar carrying `Suno-titlebar`, and the patched libadwaita dresses it
+  the same way it dresses Filer and Calculator. The hand-drawn window
+  controls widget is removed, and the base sheet no longer states a frame,
+  a gutter or an island of its own.
+- One vocabulary for the design's line, fill and selection: Suno_line,
+  Suno_fill and Suno_selected, as the toolkit already names them. The older
+  Suno_border, Suno_passive and Suno_pressed remain defined as aliases.
+
+* Fri Sep 04 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.32
+- Ship the kit's base stylesheet, which had never been in the package.
+- Correct the appbar, status bar and segment to the design's measurements.
+- Restore the island's inset edge in the dark treatment.
+
+* Thu Sep 03 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.31
+- Build SunoApplicationWindow into the UI library. Suno Write links against
+  Suno_application_window_new, which is defined on the branch that added the
+  audio AppKit work and was never built here, so Write installed cleanly and
+  then died at its first symbol lookup. The two lines had added different
+  widgets to the same library and neither carried the other's.
+
+* Thu Sep 03 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.30
+- Import PresentationMode into the widget module. The restored decoration rule
+  reads it, and the module had stopped importing it when the rule became
+  unconditional, so the reference raised NameError while the applications were
+  being built. .29 was already built with the missing import.
+
+* Thu Sep 03 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.29
+- Decide window decoration from the presentation mode again. Deciding it
+  unconditionally kept GTK's native frame for windowed applications, which is
+  right, by also forcing a frame onto handheld fullscreen, where the shell owns
+  the surface chrome; the applications' own responsive check asserts an
+  undecorated window there. .28 was already built with the unconditional
+  behaviour and is not rebuilt with different contents.
+
+* Thu Sep 03 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.28
+- Restore AppWindow.title_bar. The private factory that builds the title bar
+  survived an integration but the public attribute holding the result did not,
+  so every application that hides its chrome on handheld raised AttributeError.
+  .27 was already built without it and is not rebuilt with different contents
+  under the same release.
+
+* Thu Sep 03 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.27
+- Restore Avatar, EmptyState, NavigationRow, NavigationSidebar, SectionLabel,
+  StatusBar and motion_duration to the public AppKit surface, together with the
+  styles they depend on. They were lost during an integration while the Prairie
+  applications that import them survived, so those applications could not be
+  built at all. .26 was already produced without them and is not rebuilt with
+  different contents under the same release.
+
+* Thu Sep 03 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.26
+- Synchronize the AppKit and SDK package recipe with the accepted shared
+  desktop/handheld platform source and composition pin.
+
+* Mon Aug 31 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.25
+- Give inactive AppKit windows a calm backdrop elevation with an unbroken
+  title-row surface.
+
+* Mon Aug 31 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.25
+- Preserve native island elevation outside the AppKit content allocation.
+
+* Mon Aug 31 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.23
+- Protect AppKit island strokes with real borders and simulator-matched elevation.
+
+* Mon Aug 31 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.22
+- Replace the invalid final-type split-view subclass with a native AppKit factory.
+
+* Mon Aug 31 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.21
+- Use native libadwaita window controls and transparent split-pane boundaries.
+- Make the shared work-island elevation a single semantic token.
+
+* Mon Aug 31 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.20
+- Match simulator elevation on primary AppKit work islands.
+
+* Mon Aug 31 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.19
+- Keep native GTK client-side framing active for compositor-owned shadow and resize behavior
+- Clip shared window and island content at the canonical rounded boundaries
+- Align identity icons, window controls, and toolbar dividers with simulator geometry
+
+* Sat Aug 29 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.18
+- Add system-appearance-aware Application Kit materials and exact shared controls.
+- Ship the canonical Notes formatting and window-control symbolic assets.
+
+* Sat Aug 29 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.17
+- Preserve the established shell token aliases beside Application Kit roles.
+
+* Sat Aug 29 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.16
+- Give unified menu rows explicit semantic ink and canonical menu width.
+
+* Sat Aug 29 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.15
+- Add shared toolbar groups, inline rename, save status, and menu focus behavior.
+- Align the canonical application window and island materials with shared tokens.
+
+* Sat Aug 29 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.14
+- Make the shared application body claim all available window space.
+
+* Sat Aug 29 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.13
+- Add the shared Python Application Kit window, island, command, and state primitives
+
+* Thu Aug 27 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.12
+- Add application contract 0.2 identity, sandbox, lifecycle, and evidence checks
+- Derive Native status from cross-architecture desktop/mobile release evidence
+- Require the complete PyGObject/introspection runtime used by broker-owned GTK interfaces
+
+* Thu Aug 27 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.11
+- Add authenticated, bounded, expiring Live Extension publication and host APIs
+- Keep private activity content redacted while the session is locked
+
+* Thu Aug 27 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.10
+- Stabilize verified inspector identity and hardened consent process handling
+- Declare the systemd-run runtime boundary used by inspector and consent UI
+
+* Thu Aug 27 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.3
+- Add the SDK-only Semantic Inspector for consent, observation, actions, and audit
+
+* Thu Aug 27 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.2
+- Add the authenticated, fail-closed per-user Semantic Broker
+- Add expiring grants, confirmation, lock denial, audit, and Notes publication
+
+* Thu Aug 27 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.1
+- Add introspected Suno UI and Suno Semantics preview libraries
+- Add adaptive application templates and declaration-level conformance tools
+- Define bounded Live Extensions and the broker wire-contract scaffold

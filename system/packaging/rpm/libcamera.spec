@@ -2,7 +2,7 @@
 # README). Rebase on Fedora's spec when Fedora updates the package.
 Name:    libcamera
 Version: 0.7.2
-Release: 2.luma.2%{?dist}
+Release: 2.Suno.2%{?dist}
 Summary: A library to support complex camera ISPs
 # see .reuse/dep5 and COPYING for details
 License: LGPL-2.1-or-later
@@ -209,10 +209,10 @@ install -D -m 644 %SOURCE3 %{buildroot}/%{_udevrulesdir}/
 %{python3_sitearch}/*
 
 %changelog
-* Sun Nov 22 2026 Project Luma <maintainers@projectluma.org> - 0.7.2-2.luma.2
+* Sun Nov 22 2026 Project Suno <maintainers@projectSuno.org> - 0.7.2-2.Suno.2
 - Bound the software ISP CPU debayer lookup index
 
-* Fri Nov 20 2026 Project Luma <maintainers@projectluma.org> - 0.7.2-2.luma.1
+* Fri Nov 20 2026 Project Suno <maintainers@projectSuno.org> - 0.7.2-2.Suno.1
 - Bound the software ISP luminance histogram index
 
 * Wed Oct 14 2026 Milan Zamazal <mzamazal@redhat.com> - 0.7.2-2

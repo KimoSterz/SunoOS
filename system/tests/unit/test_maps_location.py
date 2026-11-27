@@ -5,8 +5,8 @@ import unittest
 from types import SimpleNamespace
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT / 'src/luma-maps'))
-from luma_maps.location import LocationFix, LocationRequest
+sys.path.insert(0, str(ROOT / 'src/Suno-maps'))
+from Suno_maps.location import LocationFix, LocationRequest
 
 
 class Portal:

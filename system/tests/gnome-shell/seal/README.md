@@ -2,7 +2,7 @@
 
 Evidence for GNOME Shell patch 0146 (Seal, the administrator prompt). Runs a
 headless Shell in a logind session inside a systemd test container
-(`luma-seal-it` on the build server) against real polkitd, the real polkit
+(`Suno-seal-it` on the build server) against real polkitd, the real polkit
 agent helper, Fedora's `authselect local with-fingerprint` PAM stack and
 fprintd with libfprint's virtual reader.
 

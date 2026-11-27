@@ -6,7 +6,7 @@ set -euo pipefail
 repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 # shellcheck disable=SC1091
 . "$repo_root/config/desktop/inputs.env"
-# Fedora's gnome-settings-daemon with Luma's patches: a volume change from the
+# Fedora's gnome-settings-daemon with Suno's patches: a volume change from the
 # keyboard makes no sound, and the memory notice names the app systemd-oomd
 # stopped, once (patches/gnome-settings-daemon/README.md).
 srpm_name=gnome-settings-daemon-50.1-1.fc44.src.rpm
@@ -21,17 +21,17 @@ for tool in cpio curl git mktemp podman rpm2cpio sha256sum; do
 done
 
 [ "$(uname -s)" = Linux ] || {
-  printf 'error: build the Luma gnome-settings-daemon on a Fedora Linux builder\n' >&2
+  printf 'error: build the Suno gnome-settings-daemon on a Fedora Linux builder\n' >&2
   exit 1
 }
 
-architecture=${LUMA_TARGET_ARCHITECTURE:-$(uname -m)}
+architecture=${SUNO_TARGET_ARCHITECTURE:-$(uname -m)}
 case "$architecture" in
   x86_64) builder_container=$FEDORA_RPM_BUILD_CONTAINER ;;
   aarch64) builder_container=$FEDORA_RPM_BUILD_CONTAINER_AARCH64 ;;
   *) printf 'error: unsupported gnome-settings-daemon architecture: %s\n' "$architecture" >&2; exit 1 ;;
 esac
-export LUMA_RPM_BUILDER_ARCHITECTURE=$architecture
+export SUNO_RPM_BUILDER_ARCHITECTURE=$architecture
 
 cache_dir="$repo_root/build/cache/srpm"
 output_dir="$repo_root/build/packages/gnome-settings-daemon/$architecture"
@@ -62,14 +62,14 @@ for patch in "$repo_root"/patches/gnome-settings-daemon/00[0-9][0-9]-*.patch; do
 done
 (
   cd "$rpmbuild_dir/SPECS"
-  GIT_CEILING_DIRECTORIES="$rpmbuild_dir" git apply "$repo_root/patches/gnome-settings-daemon/0000-luma-fedora-spec.patch"
+  GIT_CEILING_DIRECTORIES="$rpmbuild_dir" git apply "$repo_root/patches/gnome-settings-daemon/0000-Suno-fedora-spec.patch"
 )
 # A spec patch that applied as a no-op builds the stock package; the Release
 # says whether it applied (scripts/packages/spec-release.sh).
 . "$repo_root/scripts/packages/spec-release.sh"
 # The spec patch is the only place this release is kept.
-luma_assert_spec_release "$rpmbuild_dir/SPECS/gnome-settings-daemon.spec" \
-  "$(luma_patch_release "$repo_root/patches/gnome-settings-daemon/0000-luma-fedora-spec.patch")" || exit 1
+Suno_assert_spec_release "$rpmbuild_dir/SPECS/gnome-settings-daemon.spec" \
+  "$(Suno_patch_release "$repo_root/patches/gnome-settings-daemon/0000-Suno-fedora-spec.patch")" || exit 1
 
 "$repo_root/scripts/packages/run-in-rpm-builder.sh" \
   "$rpmbuild_dir" "$builder_container" '
@@ -102,7 +102,7 @@ luma_assert_spec_release "$rpmbuild_dir/SPECS/gnome-settings-daemon.spec" \
       # The memory notice names what was stopped and comes from Monitor...
       need "%s was stopped because memory was full." ./usr/libexec/gsd-housekeeping
       need "A background task" ./usr/libexec/gsd-housekeeping
-      need "io.luma.Monitor" ./usr/libexec/gsd-housekeeping
+      need "io.Suno.Monitor" ./usr/libexec/gsd-housekeeping
       # ...instead of the anonymous upstream text.
       refuse "An application was using a lot of memory" ./usr/libexec/gsd-housekeeping
       # The campaign producer must not return on any session or architecture.
@@ -122,4 +122,4 @@ find "$rpmbuild_dir/SRPMS" -type f -name '*.rpm' -exec install -m 0644 {} "$outp
   cd "$output_dir"
   find RPMS SRPMS -type f -name '*.rpm' -exec sha256sum {} + | sort >SHA256SUMS
 )
-printf 'Luma gnome-settings-daemon: %s\n' "$output_dir"
+printf 'Suno gnome-settings-daemon: %s\n' "$output_dir"

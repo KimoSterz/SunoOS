@@ -1,5 +1,5 @@
 From 3bdb3a9eb56c9ac89eb41814db14936ea0842c9b Mon Sep 17 00:00:00 2001
-From: Project Luma <luma@project-luma.invalid>
+From: Project Suno <Suno@project-suno.invalid>
 Date: Fri, 21 Aug 2026 11:55:00 -0500
 Subject: [PATCH 42/42] firmware: qcom: scm: try modern listener registration
 
@@ -16,7 +16,7 @@ This changes listener registration only.  It does not load an application,
 add a listener protocol, or expose a biometric operation.
 
 Link: https://gerrit-public.fairphone.software/platform/vendor/qcom/opensource/securemsm-kernel/+/11617d92a2eeb05d31d713c7022cbc0999c63f8e
-Signed-off-by: Project Luma <luma@project-luma.invalid>
+Signed-off-by: Project Suno <Suno@project-suno.invalid>
 ---
  drivers/firmware/qcom/qcom_scm.c | 12 +++++++++++-
  1 file changed, 11 insertions(+), 1 deletion(-)

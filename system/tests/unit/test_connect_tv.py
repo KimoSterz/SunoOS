@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 # SPDX-License-Identifier: Apache-2.0
-"""Luma Connect in TV posture: the device noun, the phone actions a TV keeps, the TV home opt-in."""
+"""Suno Connect in TV posture: the device noun, the phone actions a TV keeps, the TV home opt-in."""
 
 from __future__ import annotations
 
@@ -10,15 +10,15 @@ from pathlib import Path
 from unittest import mock
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(REPO_ROOT / "src/luma-platform/appkit"))
-sys.path.insert(0, str(REPO_ROOT / "src/luma-continuity"))
+sys.path.insert(0, str(REPO_ROOT / "src/Suno-platform/appkit"))
+sys.path.insert(0, str(REPO_ROOT / "src/Suno-continuity"))
 
-from luma_appkit.context import AppContext, InputMode, PresentationMode  # noqa: E402
+from Suno_appkit.context import AppContext, InputMode, PresentationMode  # noqa: E402
 
 try:
-    from luma_appkit.lumaui import device_noun  # noqa: E402
-    from luma_continuity import application  # noqa: E402
-except (ImportError, ValueError) as error:  # no GTK 4 / libadwaita / LumaUI typelib here
+    from Suno_appkit.SunoUI import device_noun  # noqa: E402
+    from Suno_continuity import application  # noqa: E402
+except (ImportError, ValueError) as error:  # no GTK 4 / libadwaita / SunoUI typelib here
     application = None
     MISSING = str(error)
 
@@ -27,7 +27,7 @@ def context(device: str, posture: str = "") -> AppContext:
     return AppContext(PresentationMode.WINDOWED, InputMode.POINTER, device, posture)
 
 
-@unittest.skipIf(application is None, "needs GTK 4, libadwaita and LumaUI")
+@unittest.skipIf(application is None, "needs GTK 4, libadwaita and SunoUI")
 class DeviceNoun(unittest.TestCase):
     def test_each_posture(self):
         self.assertEqual(device_noun(context=context("desktop", "tv")), "this TV")
@@ -40,7 +40,7 @@ class DeviceNoun(unittest.TestCase):
         self.assertEqual(device_noun(context=context("tablet", "tv"), postures=("tv",)), "this TV")
 
 
-@unittest.skipIf(application is None, "needs GTK 4, libadwaita and LumaUI")
+@unittest.skipIf(application is None, "needs GTK 4, libadwaita and SunoUI")
 class ConnectCopy(unittest.TestCase):
     def test_off_a_tv_copy_is_unchanged(self):
         for device in ("desktop", "tablet", "handheld"):
@@ -55,12 +55,12 @@ class ConnectCopy(unittest.TestCase):
                                lambda capital=False, postures=None: device_noun(
                                    capital=capital, postures=postures, context=context("desktop", "tv"))):
             self.assertEqual(application.tv_words(application.OPTIONAL),
-                             "Luma Connect is optional. Everything on this TV keeps working without it.")
+                             "Suno Connect is optional. Everything on this TV keeps working without it.")
             self.assertEqual(application.tv_words("This computer can"), "This TV can")
             self.assertEqual(application.tv_words("This Computer"), "This TV")
 
 
-@unittest.skipIf(application is None, "needs GTK 4, libadwaita and LumaUI")
+@unittest.skipIf(application is None, "needs GTK 4, libadwaita and SunoUI")
 class TvActions(unittest.TestCase):
     def test_a_tv_keeps_ring_screen_webcam_and_calls(self):
         with mock.patch.object(application, "runs_on_tv", lambda app_id: app_id is None):
@@ -85,7 +85,7 @@ def _walk(widget):
         child = child.get_next_sibling()
 
 
-@unittest.skipIf(application is None, "needs GTK 4, libadwaita and LumaUI")
+@unittest.skipIf(application is None, "needs GTK 4, libadwaita and SunoUI")
 class WelcomeFocusOnATv(unittest.TestCase):
     """The posture arrives after the window is built and the welcome is redrawn: the remote's first
     OK still presses Sign In (it once pressed the second button)."""
@@ -93,14 +93,14 @@ class WelcomeFocusOnATv(unittest.TestCase):
     def test_first_ok_presses_sign_in(self):
         import os
         import time
-        from gi.repository import Adw, Gio, GLib, Gtk, LumaUI
-        if not Gtk.init_check() or not hasattr(LumaUI, "window_set_tv_frame"):
-            self.skipTest("needs a display and LumaUI API level 9")
-        os.environ["LUMA_POSTURE"] = "desktop"
+        from gi.repository import Adw, Gio, GLib, Gtk, SunoUI
+        if not Gtk.init_check() or not hasattr(SunoUI, "window_set_tv_frame"):
+            self.skipTest("needs a display and SunoUI API level 9")
+        os.environ["SUNO_POSTURE"] = "desktop"
         with mock.patch.object(Gio.DBusProxy, "new_for_bus", lambda *a, **k: None), \
                 mock.patch.object(application.CloudSync, "status", lambda self, done: None), \
                 mock.patch.object(application.CloudSync, "available", True, create=True):
-            app = Adw.Application(application_id="org.projectluma.tests.ConnectTv",
+            app = Adw.Application(application_id="org.projectSuno.tests.ConnectTv",
                                   flags=Gio.ApplicationFlags.NON_UNIQUE)
             app.register(None)
             window = application.ConnectWindow(app)
@@ -127,21 +127,21 @@ class WelcomeFocusOnATv(unittest.TestCase):
             self.assertEqual(focus.get_label(), "Sign In…")
             focus.activate()                # the remote's OK on what has the focus
             spin(0.4)
-            self.assertTrue(any(w.has_css_class("lumaui-modal") for w in _walk(window)))
+            self.assertTrue(any(w.has_css_class("SunoUI-modal") for w in _walk(window)))
             window.destroy()
             spin(0.2)
 
 
 class TvHome(unittest.TestCase):
     def test_connect_desktop_entry_opts_in(self):
-        data = REPO_ROOT / "src/luma-continuity/data"
-        text = (data / "org.projectluma.Connect.desktop").read_text()
-        self.assertIn("X-Luma-TV=true\n", text)
-        self.assertIn("X-Luma-TV-Tile=org.projectluma.Connect-tv\n", text)
-        self.assertIn("X-Luma-TV-Presentation=tv\n", text)
-        self.assertTrue((data / "icons/hicolor/scalable/apps/org.projectluma.Connect-tv.svg").is_file())
-        spec = (REPO_ROOT / "packaging/rpm/luma-continuity.spec").read_text()
-        self.assertEqual(spec.count("org.projectluma.Connect-tv.svg"), 3)
+        data = REPO_ROOT / "src/Suno-continuity/data"
+        text = (data / "org.projectSuno.Connect.desktop").read_text()
+        self.assertIn("X-Suno-TV=true\n", text)
+        self.assertIn("X-Suno-TV-Tile=org.projectSuno.Connect-tv\n", text)
+        self.assertIn("X-Suno-TV-Presentation=tv\n", text)
+        self.assertTrue((data / "icons/hicolor/scalable/apps/org.projectSuno.Connect-tv.svg").is_file())
+        spec = (REPO_ROOT / "packaging/rpm/Suno-continuity.spec").read_text()
+        self.assertEqual(spec.count("org.projectSuno.Connect-tv.svg"), 3)
 
 
 if __name__ == "__main__":

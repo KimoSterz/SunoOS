@@ -11,20 +11,20 @@ diff --git a/src/resources/style.css b/src/resources/style.css
 --- a/src/resources/style.css
 +++ b/src/resources/style.css
 @@ -38,10 +38,14 @@
-   color: @luma_ink;
+   color: @Suno_ink;
  }
  
 -/* The location heading is part of the same inset content surface as the files. */
 +/* The location heading is part of the same inset content surface as the files.
 + * Paint its toolbar band opaquely so the platform's scroll treatment cannot
 + * show diagonal marks through the heading. */
-+.luma-files-window toolbarview.luma-content-surface > .top-bar,
- .luma-files-window #filer-location-row,
- .luma-files-window .luma-action-toolbar-overlay headerbar.luma-secondary-toolbar {
-   background-color: @luma_content;
++.Suno-files-window toolbarview.Suno-content-surface > .top-bar,
+ .Suno-files-window #filer-location-row,
+ .Suno-files-window .Suno-action-toolbar-overlay headerbar.Suno-secondary-toolbar {
+   background-color: @Suno_content;
 +  background-image: none;
  }
- .luma-files-window #filer-location-scope image { -gtk-icon-size: 0px; }
- .luma-files-window box.lumaui-bar-chip { min-width: 243px; }
+ .Suno-files-window #filer-location-scope image { -gtk-icon-size: 0px; }
+ .Suno-files-window box.SunoUI-bar-chip { min-width: 243px; }
 -- 
 2.55.0

@@ -17,7 +17,7 @@ def _time(name, value):
 def _calendar(lines):
     # Fold by octets without cutting a UTF-8 character (RFC5545).
     folded = []
-    for line in ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Project Luma//EN', *lines, 'END:VCALENDAR']:
+    for line in ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Project Suno//EN', *lines, 'END:VCALENDAR']:
         part = ''
         for char in line:
             if len((part + char).encode('utf-8')) > 75:

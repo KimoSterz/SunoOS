@@ -8,7 +8,7 @@
 
 set -Eeuo pipefail
 
-stage=/tmp/luma-fingerprint-identity-v8
+stage=/tmp/Suno-fingerprint-identity-v8
 firmware_path=/sys/module/firmware_class/parameters/path
 expected_old_firmware_path=/lib/firmware/postmarketos
 expected_model='The Fairphone (Gen. 6)'
@@ -69,7 +69,7 @@ cleanup() {
     if [[ -n $old_firmware_path && -w $firmware_path ]]; then
       printf '%s' "$old_firmware_path" >"$firmware_path"
     fi
-    if [[ -d $stage && ! -L $stage && $stage == /tmp/luma-fingerprint-identity-v8 ]]; then
+    if [[ -d $stage && ! -L $stage && $stage == /tmp/Suno-fingerprint-identity-v8 ]]; then
       find "$stage" -depth -delete
     fi
     cleaned=true
@@ -95,8 +95,8 @@ runtime_config=$(gzip -dc /proc/config.gz)
 grep -qx 'CONFIG_QCOM_TZMEM_MODE_SHMBRIDGE=y' <<<"$runtime_config" || fail shmbridge_config
 grep -qx '# CONFIG_QCOM_TZMEM_MODE_GENERIC is not set' <<<"$runtime_config" || fail generic_tzmem_enabled
 grep -qx '# CONFIG_DMA_CMA is not set' <<<"$runtime_config" || fail dma_cma_enabled
-[[ $(sha256sum /lib/modules/7.1.2/extra/luma-fingerprint/focaltech_fp.ko | cut -d' ' -f1) == "$expected_focal_module_sha" ]] || fail focal_module_hash
-[[ $(sha256sum /lib/modules/7.1.2/extra/luma-fingerprint/qseecomtee.ko | cut -d' ' -f1) == "$expected_qsee_module_sha" ]] || fail qsee_module_hash
+[[ $(sha256sum /lib/modules/7.1.2/extra/Suno-fingerprint/focaltech_fp.ko | cut -d' ' -f1) == "$expected_focal_module_sha" ]] || fail focal_module_hash
+[[ $(sha256sum /lib/modules/7.1.2/extra/Suno-fingerprint/qseecomtee.ko | cut -d' ' -f1) == "$expected_qsee_module_sha" ]] || fail qsee_module_hash
 [[ $(sha256sum "$stage/qsee-supplicant" | cut -d' ' -f1) == "$expected_supplicant_sha" ]] || fail supplicant_hash
 [[ $(sha256sum "$stage/qsee-app-loader" | cut -d' ' -f1) == "$expected_loader_sha" ]] || fail loader_hash
 [[ -c /dev/focaltech_fp && -c /dev/tee0 && -c /dev/teepriv0 ]] || fail device_nodes

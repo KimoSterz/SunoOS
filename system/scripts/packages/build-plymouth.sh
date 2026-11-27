@@ -15,17 +15,17 @@ for tool in cpio curl git mktemp podman rpm2cpio sha256sum; do
 done
 
 if [ "$(uname -s)" != Linux ]; then
-  printf 'error: build the Luma Plymouth RPMs on a Linux builder\n' >&2
+  printf 'error: build the Suno Plymouth RPMs on a Linux builder\n' >&2
   exit 1
 fi
 
-architecture=${LUMA_TARGET_ARCHITECTURE:-$(uname -m)}
+architecture=${SUNO_TARGET_ARCHITECTURE:-$(uname -m)}
 case "$architecture" in
   x86_64) builder_container=$FEDORA_RPM_BUILD_CONTAINER ;;
   aarch64) builder_container=$FEDORA_RPM_BUILD_CONTAINER_AARCH64 ;;
   *) printf 'error: unsupported desktop package architecture: %s\n' "$architecture" >&2; exit 1 ;;
 esac
-export LUMA_RPM_BUILDER_ARCHITECTURE=$architecture
+export SUNO_RPM_BUILDER_ARCHITECTURE=$architecture
 
 cache_dir="$repo_root/build/cache/srpm"
 output_dir="$repo_root/build/packages/plymouth"
@@ -57,13 +57,13 @@ install -m 0644 "$repo_root/patches/plymouth/0001-prairie-light-details.patch" \
   "$rpmbuild_dir/SOURCES/"
 (
   cd "$rpmbuild_dir/SPECS"
-  GIT_CEILING_DIRECTORIES="$rpmbuild_dir" git apply "$repo_root/patches/plymouth/0000-luma-fedora-spec.patch"
+  GIT_CEILING_DIRECTORIES="$rpmbuild_dir" git apply "$repo_root/patches/plymouth/0000-Suno-fedora-spec.patch"
 )
 # A spec patch that applied as a no-op builds the stock package; the Release
 # says whether it applied (scripts/packages/spec-release.sh).
 . "$repo_root/scripts/packages/spec-release.sh"
-luma_assert_spec_release "$rpmbuild_dir/SPECS/plymouth.spec" \
-  "$PLYMOUTH_LUMA_RELEASE" || exit 1
+Suno_assert_spec_release "$rpmbuild_dir/SPECS/plymouth.spec" \
+  "$PLYMOUTH_SUNO_RELEASE" || exit 1
 
 "$repo_root/scripts/packages/run-in-rpm-builder.sh" \
   "$rpmbuild_dir" "$builder_container" '
@@ -73,19 +73,19 @@ luma_assert_spec_release "$rpmbuild_dir/SPECS/plymouth.spec" \
     dnf5 -y builddep SPECS/plymouth.spec
     rpmbuild -ba --define "_topdir $PWD" SPECS/plymouth.spec
     rpm_path=$(find RPMS/$architecture -type f \
-      -name "plymouth-24.004.60-'"$PLYMOUTH_LUMA_RELEASE"'.fc44.${architecture}.rpm" -print -quit)
+      -name "plymouth-24.004.60-'"$PLYMOUTH_SUNO_RELEASE"'.fc44.${architecture}.rpm" -print -quit)
     verify_dir=$(mktemp -d "$PWD/verify.XXXXXX")
     cd "$verify_dir"
     rpm2cpio "$OLDPWD/$rpm_path" >payload.cpio
     cpio -idm --quiet <payload.cpio
     rm -f payload.cpio
     # grep -q would close the pipe early and fail it under pipefail.
-    # Luma selects its splash in /usr, not in the /etc file an administrator edits.
-    grep -Fx Theme=luma-loading usr/share/plymouth/plymouthd.defaults >/dev/null
+    # Suno selects its splash in /usr, not in the /etc file an administrator edits.
+    grep -Fx Theme=Suno-loading usr/share/plymouth/plymouthd.defaults >/dev/null
     strings usr/lib64/plymouth/details.so |
       grep -F "using Prairie light details palette" >/dev/null
     script_rpm=$(find "$OLDPWD/RPMS/$architecture" -type f \
-      -name "plymouth-plugin-script-24.004.60-'"$PLYMOUTH_LUMA_RELEASE"'.fc44.${architecture}.rpm" -print -quit)
+      -name "plymouth-plugin-script-24.004.60-'"$PLYMOUTH_SUNO_RELEASE"'.fc44.${architecture}.rpm" -print -quit)
     test -n "$script_rpm"
     mkdir script-plugin
     # Through a file, as above: cpio stops at the trailer and would leave
@@ -102,11 +102,11 @@ luma_assert_spec_release "$rpmbuild_dir/SPECS/plymouth.spec" \
 install -d -m 0755 "$output_dir/RPMS/$architecture" "$output_dir/SRPMS"
 find "$rpmbuild_dir/RPMS/$architecture" -type f -name '*.rpm' \
   -exec install -m 0644 -t "$output_dir/RPMS/$architecture" {} +
-install -m 0644 "$rpmbuild_dir/SRPMS/plymouth-24.004.60-${PLYMOUTH_LUMA_RELEASE}.fc44.src.rpm" \
+install -m 0644 "$rpmbuild_dir/SRPMS/plymouth-24.004.60-${PLYMOUTH_SUNO_RELEASE}.fc44.src.rpm" \
   "$output_dir/SRPMS/"
 (
   cd "$output_dir"
   find RPMS SRPMS -type f -name '*.rpm' -exec sha256sum {} + | sort >SHA256SUMS
 )
 
-printf 'Luma Plymouth packages: %s\n' "$output_dir"
+printf 'Suno Plymouth packages: %s\n' "$output_dir"

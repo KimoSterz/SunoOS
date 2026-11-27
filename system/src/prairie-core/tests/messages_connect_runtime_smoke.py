@@ -6,9 +6,9 @@ gi.require_version('Gtk','4.0');gi.require_version('Adw','1')
 from gi.repository import Gtk,GLib
 from prairie_apps.messages import MessagesApplication,MessagesWindow
 from prairie_apps.messages_backend import MessageStore
-from luma_continuity.bootstrap import create_identity
-from luma_continuity.message_provider import MessageProvider,SelectedPhone
-from luma_continuity.policy import Journal
+from Suno_continuity.bootstrap import create_identity
+from Suno_continuity.message_provider import MessageProvider,SelectedPhone
+from Suno_continuity.policy import Journal
 context=GLib.MainContext.default()
 def pump(seconds=.1):
  end=time.monotonic()+seconds
@@ -20,7 +20,7 @@ def wait(predicate):
  while not predicate():
   if time.monotonic()>end:raise AssertionError('Messages GTK state timed out')
   pump(.03)
-out=Path(os.environ['LUMA_MESSAGES_CONNECT_UI_OUTPUT']);out.mkdir(parents=True,exist_ok=True)
+out=Path(os.environ['SUNO_MESSAGES_CONNECT_UI_OUTPUT']);out.mkdir(parents=True,exist_ok=True)
 app=MessagesApplication();assert app.register(None)
 results=[]
 for width in (920,360):
@@ -40,7 +40,7 @@ for width in (920,360):
    return {'state':'complete','result':result}
   provider=MessageProvider(directory,SelectedPhone(peer,epoch,account,'Synthetic phone','127.0.0.1',18444),account_observation=lambda:{'account':account,'signed_in':True,'stale':False},store_factory=MessageStore,dispatch=GLib.idle_add,exchange_factory=lambda *_a,**_k:exchange)
   app.message_provider=provider
-  os.environ['LUMA_PRESENTATION_MODE']='fullscreen-mobile' if width==360 else 'windowed'
+  os.environ['SUNO_PRESENTATION_MODE']='fullscreen-mobile' if width==360 else 'windowed'
   window=MessagesWindow(app);window.set_default_size(width,760);window.present()
   wait(lambda:len(window.store.thread('+12025550123'))==1 and provider.status['state']=='ready')
   window.open_address('+12025550123');pump()

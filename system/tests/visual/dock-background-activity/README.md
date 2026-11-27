@@ -1,10 +1,10 @@
 <!-- SPDX-License-Identifier: CC-BY-SA-4.0 -->
 # Dock menu "Run in the Background" render
 
-Headless GNOME Shell render of `patches/gnome-shell/0117-luma-dock-menu-background-activity.patch`
-in the Shell render oracle container (Fedora 44, gnome-shell `50.3-1.luma.99.surfacepreview20260914.80`).
+Headless GNOME Shell render of `patches/gnome-shell/0117-Suno-dock-menu-background-activity.patch`
+in the Shell render oracle container (Fedora 44, gnome-shell `50.3-1.Suno.99.surfacepreview20260914.80`).
 
-- `fake_background.py` serves `org.projectluma.Background1` with Messages
+- `fake_background.py` serves `org.projectSuno.Background1` with Messages
   (essential, on) and Weather (off by default).
 - `dock-render.js` opens the dock menu for Messages, Weather and Photos,
   toggles the row through its own `toggled` path, and records the row's

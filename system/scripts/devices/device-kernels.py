@@ -4,7 +4,7 @@
 
 Every devices/<vendor>/<codename>/device.toml with a [kernel] names the RPM
 that ships that kernel to the device ([kernel] package): a phone's
-kernel-modules package, which carries its boot image for luma-device-boot, or a
+kernel-modules package, which carries its boot image for Suno-device-boot, or a
 board kernel the OS image pins. A kernel change that leaves that package's
 release alone never reaches a device: nothing rebuilds it and nothing installs
 it (the FP6's 0041/0042 sat on main for two weeks).
@@ -30,7 +30,7 @@ it (the FP6's 0041/0042 sat on main for two weeks).
 
   device-kernels.py gate --device VENDOR/CODENAME --package-dir DIR --shell CMD --gates DIR
       The automated part of the phone gate, on a phone already running the
-      kernel under test (RAM boot, or installed through luma-device-boot):
+      kernel under test (RAM boot, or installed through Suno-device-boot):
       scripts/devices/kernel-gate-checks.py through CMD (for example
       "ssh root@phone"), with the kernel notes the package in DIR declares.
       All checks passing writes GATES/<vendor>-<codename>/<package>-<evr>.pass

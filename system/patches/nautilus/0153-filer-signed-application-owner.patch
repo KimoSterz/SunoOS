@@ -21,7 +21,7 @@
 +    if (!g_file_test ("/.flatpak-info", G_FILE_TEST_EXISTS) && getuid () != 0)
 +    {
 +        const char *resolve[] = { "/usr/bin/python3", "-I", "-m",
-+                                  "luma_installer.native_app_roles", "--resolve",
++                                  "Suno_installer.native_app_roles", "--resolve",
 +                                  "org.gnome.Nautilus", NULL };
 +        g_autofree char *target = NULL;
 +        g_autofree char *diagnostic = NULL;

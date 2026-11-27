@@ -74,7 +74,7 @@ export default async function ({Main, shot: rawShot}) {
         await shot(`focus-${name}-${tag}`, (g.get_x() - 14) * k, (g.get_y() - 16) * k, (g.get_width() + 28) * k, (g.get_height() + 32) * k);
     };
     const quick = Main.panel.statusArea.quickSettings;
-    const clock = descend(quick).find(a => a.has_style_class_name?.('luma-status-clock'));
+    const clock = descend(quick).find(a => a.has_style_class_name?.('Suno-status-clock'));
     const state = label => {
         const focus = global.stage.get_key_focus();
         const island = paint(quick);
@@ -148,7 +148,7 @@ export default async function ({Main, shot: rawShot}) {
             await shot(`media-${name}-${tag}`, (e.get_x() - 12) * k, (e.get_y() - 14) * k, (e.get_width() + 24) * k, (e.get_height() + 28) * k);
         };
         const traced = () => descend(island).map(paint).filter(p => p && (p.background || p.gradient || p.boxShadow) &&
-            !/luma-shelf-(material|shadow|stroke)|luma-media-art/.test(p.classes));
+            !/Suno-shelf-(material|shadow|stroke)|Suno-media-art/.test(p.classes));
         await away();
         await cropIsland('rest');
         log('media rest paints', {painted: traced()});
@@ -173,7 +173,7 @@ export default async function ({Main, shot: rawShot}) {
         await sleep(400);
         const ledger = {light: ['rgba(25,27,31,0.06)', 'rgba(25,27,31,0.09)'], dark: ['rgba(255,255,255,0.06)', 'rgba(255,255,255,0.09)'],
             frost: ['rgba(255,255,255,0.07)', 'rgba(255,255,255,0.11)'], glass: ['rgba(255,255,255,0.07)', 'rgba(255,255,255,0.11)']};
-        const mode = island.style_class.match(/luma-surface-(\w+)/)?.[1];
+        const mode = island.style_class.match(/Suno-surface-(\w+)/)?.[1];
         log('media ledger', {mode, expected: ledger[mode], hovered: hovered?.background ?? null, pressed: pressed?.background ?? null});
         record('a control hovers and presses, and nothing else on the island does', Boolean(hovered?.background) && Boolean(pressed?.background), {mode});
         await away();

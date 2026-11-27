@@ -1,6 +1,6 @@
-# The Luma composition overlay.
+# The Suno composition overlay.
 #
-# Installing Luma's packages is not enough to get Luma. The FP6 rootfs
+# Installing Suno's packages is not enough to get Suno. The FP6 rootfs
 # composition (scripts/mobile/compose-fp6-rootfs.sh) also installs a session
 # launcher, a device-class environment, and a compiled dconf database — and it
 # is those that carry the dock, the layout, the wallpaper and the touch
@@ -17,7 +17,7 @@
 # the overlay for the device class being built.
 
 shared   0644  config/desktop/dconf/profile/user                  /etc/dconf/profile/user
-shared   0644  config/desktop/dconf/db/luma.d/00-luma-desktop     /etc/dconf/db/luma.d/00-luma-desktop
-mobile   0644  config/mobile/luma-shell-handheld.dconf            /etc/dconf/db/luma.d/90-luma-handheld
-mobile   0644  config/mobile/environment.d/90-luma-handheld.conf  /etc/environment.d/90-luma-handheld.conf
-mobile   0755  scripts/mobile/luma-phosh-session                  /usr/local/bin/luma-phosh-session
+shared   0644  config/desktop/dconf/db/Suno.d/00-Suno-desktop     /etc/dconf/db/Suno.d/00-Suno-desktop
+mobile   0644  config/mobile/Suno-shell-handheld.dconf            /etc/dconf/db/Suno.d/90-Suno-handheld
+mobile   0644  config/mobile/environment.d/90-Suno-handheld.conf  /etc/environment.d/90-Suno-handheld.conf
+mobile   0755  scripts/mobile/Suno-phosh-session                  /usr/local/bin/Suno-phosh-session

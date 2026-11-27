@@ -1,4 +1,4 @@
-// Capture oracle: drives Luma's screenshot tool with real pointer and keyboard
+// Capture oracle: drives Suno's screenshot tool with real pointer and keyboard
 // events in a headless Shell, measures where it sits, and saves what it shows
 // and what it captures. Cases are chosen with C_ONLY (comma separated).
 import Clutter from 'gi://Clutter';
@@ -32,8 +32,8 @@ function dbusCall(name, path, iface, method, params, sig) {
 }
 
 export default async function ({Main, shot}) {
-    const Capture = await import('resource:///org/gnome/shell/ui/lumaCapture.js');
-    const Surface = await import('resource:///org/gnome/shell/ui/lumaShelfSurface.js');
+    const Capture = await import('resource:///org/gnome/shell/ui/SunoCapture.js');
+    const Surface = await import('resource:///org/gnome/shell/ui/SunoShelfSurface.js');
     const want = Number(GLib.getenv('C_SCALE') || 1);
     if (want !== 1) {
         const [serial, monitors] = (await dbusCall('org.gnome.Mutter.DisplayConfig', '/org/gnome/Mutter/DisplayConfig',
@@ -234,7 +234,7 @@ export default async function ({Main, shot}) {
         const menuGap = edge === 'top' ? menu.y - (bar.y + bar.h) : bar.y - (menu.y + menu.h);
         out.push({name: 'menu', menu: [menu.x, menu.y, menu.w, menu.h].map(r2), gapLogical: r2(menuGap / scale),
             centredOnOptions: Math.abs((menu.x + menu.w / 2) - (options.x + options.w / 2)) <= 1,
-            items: ui._menu.items.map(i => `${i._lumaChecked ? '[x] ' : ''}${i.accessible_name}`)});
+            items: ui._menu.items.map(i => `${i._SunoChecked ? '[x] ' : ''}${i.accessible_name}`)});
         log('menu', out.at(-1));
         await snapAround('menu', [ui._bar, ui._menu, Surface.shelfDockIsland()]);
         // Tooltip on hover, placed from the bar.
@@ -564,17 +564,17 @@ export default async function ({Main, shot}) {
         await sleep(800);
         out.opened = state();
         await click(ui._bar.optionsButton, 600);
-        out.menu = ui._menu.items.map(i => `${i._lumaChecked ? '[x] ' : ''}${i.accessible_name}`);
+        out.menu = ui._menu.items.map(i => `${i._SunoChecked ? '[x] ' : ''}${i.accessible_name}`);
         await snapAround('persist-menu', [ui._bar, ui._menu]);
         log('persist', out);
         return out;
     });
 
-    // 9: opened from Luma's search; the search is not in the capture.
+    // 9: opened from Suno's search; the search is not in the capture.
     await run('search', async () => {
         const out = {};
         await shot('search-baseline', mon.x * k, mon.y * k, mon.width * k, mon.height * k);
-        Main.lumaSearch.open();
+        Main.SunoSearch.open();
         await sleep(1200);
         await typeText('screenshot');
         await sleep(2000);
@@ -728,7 +728,7 @@ export default async function ({Main, shot}) {
                     for (const child of actor.get_children())
                         walk(child);
                 };
-                const shelf = Main.layoutManager.uiGroup.get_children().find(a => a.name === 'lumaShelf');
+                const shelf = Main.layoutManager.uiGroup.get_children().find(a => a.name === 'SunoShelf');
                 if (shelf)
                     walk(shelf);
                 return [...ids];
@@ -813,9 +813,9 @@ export default async function ({Main, shot}) {
     // analyze.sh compares them. Run with C_THEME=glass or frost.
     await run('blur', async () => {
         const out = {islands: []};
-        const shelf = Main.layoutManager.uiGroup.get_children().find(a => a.name === 'lumaShelf');
+        const shelf = Main.layoutManager.uiGroup.get_children().find(a => a.name === 'SunoShelf');
         const walk = actor => {
-            if (actor.visible && actor.has_style_class_name?.('luma-shelf-island')) {
+            if (actor.visible && actor.has_style_class_name?.('Suno-shelf-island')) {
                 const r = rect(actor);
                 out.islands.push({style: actor.style_class, rect: [r.x, r.y, r.w, r.h].map(v => Math.round(v * k))});
             }

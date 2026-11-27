@@ -1,7 +1,7 @@
 ---
 type: feature
 component: Depot
-packages: [luma-application-installer, luma-developer-platform, luma-developer-platform-sdk, prairie-icon-theme]
+packages: [Suno-application-installer, Suno-developer-platform, Suno-developer-platform-sdk, prairie-icon-theme]
 highlight: true
 ---
 Summary: Redesigned Depot

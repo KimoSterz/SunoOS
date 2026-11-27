@@ -174,13 +174,13 @@ class MailboxTest(unittest.TestCase):
         try:
             for _ in range(4): self.assertTrue(owner._submit_call(invocation, lambda: gate.wait(5)))
             self.assertFalse(owner._submit_call(invocation, lambda: None))
-            self.assertEqual(refused, ['org.projectluma.Messages.Agent1.Error.Busy'])
+            self.assertEqual(refused, ['org.projectSuno.Messages.Agent1.Error.Busy'])
             self.assertLessEqual(owner.worker._work_queue.qsize(), 4)
         finally: gate.set(); owner.worker.shutdown(wait=True)
 
 
 class ProtocolTest(unittest.TestCase):
-    def test_legacy_luma_input_is_bounded_before_decode_or_provider_access(self):
+    def test_legacy_Suno_input_is_bounded_before_decode_or_provider_access(self):
         from prairie_apps.messages_agent import MessagesAgent
         from gi.repository import GLib
         owner = MessagesAgent.__new__(MessagesAgent)
@@ -190,9 +190,9 @@ class ProtocolTest(unittest.TestCase):
         with patch('prairie_apps.messages_app_rpc.authenticate_caller'), \
              patch.object(owner, '_provider', side_effect=AssertionError('oversized input reached provider')), \
              patch('prairie_apps.messages_agent.json.loads', side_effect=AssertionError('oversized input reached decoder')):
-            owner._call(None, ':1.2', None, None, 'Luma',
+            owner._call(None, ':1.2', None, None, 'Suno',
                         GLib.Variant('(sss)', ('account', 'command', '\u00e9'*65537)), invocation)
-        self.assertEqual(refused, ['org.projectluma.Messages.Agent1.Error.InvalidInput'])
+        self.assertEqual(refused, ['org.projectSuno.Messages.Agent1.Error.InvalidInput'])
 
     def test_account_removal_preparation_failure_preserves_provider_and_capacity(self):
         from prairie_apps.messages_agent import MessagesAgent
@@ -219,10 +219,10 @@ class ProtocolTest(unittest.TestCase):
         nested = '[' * 3000 + '0' + ']' * 3000
         with patch('prairie_apps.messages_app_rpc.authenticate_caller'), \
              patch.object(owner, '_provider', return_value=object()), \
-             patch.object(owner, '_luma', side_effect=AssertionError('invalid JSON dispatched')):
-            owner._call(None, ':1.2', None, None, 'Luma',
+             patch.object(owner, '_Suno', side_effect=AssertionError('invalid JSON dispatched')):
+            owner._call(None, ':1.2', None, None, 'Suno',
                 GLib.Variant('(sss)', ('account', 'command', nested)), invocation)
-        self.assertEqual(refused, ['org.projectluma.Messages.Agent1.Error.InvalidInput'])
+        self.assertEqual(refused, ['org.projectSuno.Messages.Agent1.Error.InvalidInput'])
 
     def test_invalid_input_bounds_are_enforced(self):
         invalid = [json.dumps({'args': [], 'kwargs': {}, 'sql': 'delete'}),
@@ -250,7 +250,7 @@ class CallerVerificationTest(unittest.TestCase):
         from gi.repository import GLib
         self.GLib = GLib
         self.passes = []
-        self.app = 'org.projectluma.Messages'
+        self.app = 'org.projectSuno.Messages'
         # The same (non-root) user as the agent, whichever user runs this test.
         uid, pid = 4242, os.getpid()
         identity = patch('prairie_apps.messages_app_rpc.os.getuid', return_value=uid)
@@ -275,9 +275,9 @@ class CallerVerificationTest(unittest.TestCase):
 
     def test_authenticate_caller_names_only_the_verified_sandbox(self):
         from prairie_apps.messages_app_rpc import authenticate_caller
-        with patch('luma_installer.app_data_broker.authenticate', self.authenticate):
+        with patch('Suno_installer.app_data_broker.authenticate', self.authenticate):
             with self.sandboxed():
-                self.assertEqual(authenticate_caller(self.connection, ':1.2'), 'org.projectluma.Messages')
+                self.assertEqual(authenticate_caller(self.connection, ':1.2'), 'org.projectSuno.Messages')
                 self.app = 'org.example.Other'
                 with self.assertRaises(PermissionError): authenticate_caller(self.connection, ':1.2')
             with self.sandboxed(False):
@@ -293,7 +293,7 @@ class CallerVerificationTest(unittest.TestCase):
         replies = []
         invocation = SimpleNamespace(return_dbus_error=lambda name, _message: replies.append(name),
                                      return_value=lambda value: replies.append(value))
-        with patch('luma_installer.app_data_broker.authenticate', self.authenticate):
+        with patch('Suno_installer.app_data_broker.authenticate', self.authenticate):
             owner._call(self.connection, ':1.2', None, None, method, self.GLib.Variant('()', ()), invocation)
             deadline = time.monotonic() + 5
             while not replies and time.monotonic() < deadline:
@@ -314,11 +314,11 @@ class CallerVerificationTest(unittest.TestCase):
         self.app = None
         with self.sandboxed(False):
             replies = self.request()
-        self.assertEqual(replies, ['org.projectluma.Messages.Agent1.Error.Refused'])
+        self.assertEqual(replies, ['org.projectSuno.Messages.Agent1.Error.Refused'])
         self.app = 'org.example.Other'
         with self.sandboxed():
-            self.assertEqual(self.request(), ['org.projectluma.Messages.Agent1.Error.Refused'])
-        self.app = 'org.projectluma.Messages'
+            self.assertEqual(self.request(), ['org.projectSuno.Messages.Agent1.Error.Refused'])
+        self.app = 'org.projectSuno.Messages'
         with self.sandboxed():
             replies = self.request()
         self.assertNotIsInstance(replies[0], str)
@@ -328,7 +328,7 @@ class CallerVerificationTest(unittest.TestCase):
         self.passes.clear(); replies = []
         invocation = SimpleNamespace(return_dbus_error=lambda name, _message: replies.append(name),
                                      return_value=lambda value: replies.append(value))
-        with patch('luma_installer.app_data_broker.authenticate', self.authenticate):
+        with patch('Suno_installer.app_data_broker.authenticate', self.authenticate):
             mailbox.call(self.connection, ':1.2', 'ApplicationAccounts', self.GLib.Variant('()', ()), invocation)
             deadline = time.monotonic() + 5
             while not replies and time.monotonic() < deadline:

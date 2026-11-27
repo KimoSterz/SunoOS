@@ -7,7 +7,7 @@ import Shell from 'gi://Shell';
 import St from 'gi://St';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as Scripting from 'resource:///org/gnome/shell/ui/scripting.js';
-const out = GLib.getenv('LUMA_POLISH_OUTPUT'), results = [], observations = [];
+const out = GLib.getenv('SUNO_POLISH_OUTPUT'), results = [], observations = [];
 const pause = async (ms = 200) => await Scripting.sleep(ms);
 function check(name, ok) {
     results.push({name, ok: !!ok});
@@ -31,13 +31,13 @@ async function work() {
     try {
         const ids = [];
         for (let i = 0; i < 32; i++) {
-            const id = `org.projectluma.DockScroll${i}.desktop`;
+            const id = `org.projectSuno.DockScroll${i}.desktop`;
             const path = `${GLib.getenv('XDG_DATA_HOME')}/applications/${id}`;
             if (GLib.file_test(path, GLib.FileTest.EXISTS)) throw new Error('Fixture app already exists');
             GLib.file_set_contents(path, `[Desktop Entry]\nType=Application\nName=Dock scroll ${i}\nExec=/usr/bin/true\nIcon=utilities-terminal\nTerminal=false\n`);
             created.push(path); ids.push(id);
         }
-        const targetId = 'org.projectluma.DrawerProbe.desktop'; ids.push(targetId);
+        const targetId = 'org.projectSuno.DrawerProbe.desktop'; ids.push(targetId);
         await until(() => ids.every(id => Shell.AppSystem.get_default().lookup_app(id)));
         global.settings.set_strv('favorite-apps', ids);
         const shelf = Main.shelf, scroll = shelf._dockScroll;

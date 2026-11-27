@@ -1,7 +1,7 @@
 ---
 type: fix
 component: First boot
-packages: [luma-application-installer]
+packages: [Suno-application-installer]
 highlight: false
 ---
 Summary: The login screen no longer waits for the bundled apps

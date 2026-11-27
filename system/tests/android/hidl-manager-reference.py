@@ -24,7 +24,7 @@ old=text[start:end]
 with tempfile.TemporaryDirectory(dir=base) as tmp:
  root=Path(tmp);target=root/'transport/ServiceManagement.cpp';target.parent.mkdir()
  target.write_text(text)
- subprocess.run(['git','apply',str(repo/'patches/android-system-libhidl/0001-luma-copy-service-manager-under-lock.patch')],cwd=root,check=True)
+ subprocess.run(['git','apply',str(repo/'patches/android-system-libhidl/0001-Suno-copy-service-manager-under-lock.patch')],cwd=root,check=True)
  new=target.read_text();new=new[new.index('sp<IServiceManager1_2> defaultServiceManager1_2(bool useHostHwBinder) {'):];new=new[:new.index('\nstatic std::vector')]
  header=r'''
 #include <memory>

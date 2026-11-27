@@ -71,7 +71,7 @@ for module in qcom-camss ov13b10 dw9714; do
 done
 
 {
-  printf 'LUMA_FP6_CAMERA_KERNEL_BUILD_VERSION=1\n'
+  printf 'SUNO_FP6_CAMERA_KERNEL_BUILD_VERSION=1\n'
   printf 'SCOPE=experimental-ov13b10-ultrawide\n'
   printf 'KERNEL_SOURCE_COMMIT=%s\n' "$FP6_CAMERA_KERNEL_COMMIT"
   printf 'CAMERA_PATCH_COMMIT=%s\n' "$FP6_CAMERA_PATCH_COMMIT"

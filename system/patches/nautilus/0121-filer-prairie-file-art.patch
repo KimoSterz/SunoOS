@@ -20,7 +20,7 @@ index ecb85d3..5cdab7b 100644
 +     * path makes that same theme available to isolated visual checks; on an
 +     * installed desktop GTK finds it in the usual icon-theme directories. */
 +    GtkIconTheme *file_icon_theme = gtk_icon_theme_get_for_display (gdk_display_get_default ());
-+    const char *theme_root = g_getenv ("LUMA_FILER_ICON_THEME_ROOT");
++    const char *theme_root = g_getenv ("SUNO_FILER_ICON_THEME_ROOT");
 +    if (theme_root != NULL && g_file_test (theme_root, G_FILE_TEST_IS_DIR))
 +    {
 +        gtk_icon_theme_add_search_path (file_icon_theme, theme_root);

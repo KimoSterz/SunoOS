@@ -1,13 +1,13 @@
 #!/bin/bash
-# Beam / shelf surface evidence matrix. Writes /root/luma-shell-oracle/beam/evidence/<run>/{log,measure.json,*.png}
-H=/root/luma-shell-oracle/beam/harness; E=/root/luma-shell-oracle/beam/evidence; mkdir -p $E
+# Beam / shelf surface evidence matrix. Writes /root/Suno-shell-oracle/beam/evidence/<run>/{log,measure.json,*.png}
+H=/root/Suno-shell-oracle/beam/harness; E=/root/Suno-shell-oracle/beam/evidence; mkdir -p $E
 one() { # tag theme edge scale env...
   local tag=$1; shift
   timeout 400 bash $H/go.sh "$tag" "$@" > $E/$tag.log 2>&1
-  mkdir -p $E/$tag; cp /root/luma-shell-oracle/beam/out-$tag/*.png /root/luma-shell-oracle/beam/out-$tag/measure.json $E/$tag/ 2>/dev/null
-  grep "\[beam\]\|\[dock94\]\|\[motion\]\|\[slider\]\|\[share\]" /root/luma-shell-oracle/beam/out-$tag/shell.log > $E/$tag/beam.log
-  grep -n "JS ERROR\|TypeError\|ReferenceError\|SyntaxError" /root/luma-shell-oracle/beam/out-$tag/shell.log | grep -v "dbus\|portal\|Bluetooth\|NetworkManager\|polkit\|geoclue\|upower\|bolt\|malcontent\|ibus\|gdm" > $E/$tag/js-errors.log
-  rm -rf /root/luma-shell-oracle/beam/out-$tag
+  mkdir -p $E/$tag; cp /root/Suno-shell-oracle/beam/out-$tag/*.png /root/Suno-shell-oracle/beam/out-$tag/measure.json $E/$tag/ 2>/dev/null
+  grep "\[beam\]\|\[dock94\]\|\[motion\]\|\[slider\]\|\[share\]" /root/Suno-shell-oracle/beam/out-$tag/shell.log > $E/$tag/beam.log
+  grep -n "JS ERROR\|TypeError\|ReferenceError\|SyntaxError" /root/Suno-shell-oracle/beam/out-$tag/shell.log | grep -v "dbus\|portal\|Bluetooth\|NetworkManager\|polkit\|geoclue\|upower\|bolt\|malcontent\|ibus\|gdm" > $E/$tag/js-errors.log
+  rm -rf /root/Suno-shell-oracle/beam/out-$tag
 }
 E=${B_EVIDENCE:-$E}; mkdir -p $E
 case "$1" in

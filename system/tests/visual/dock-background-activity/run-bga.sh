@@ -5,7 +5,7 @@
 set -u
 tag=bga-dock-$$
 export XDG_RUNTIME_DIR=/tmp/$tag-run; rm -rf $XDG_RUNTIME_DIR; mkdir -m 700 -p $XDG_RUNTIME_DIR
-export HOME=/tmp/$tag-home; rm -rf $HOME; mkdir -p $HOME/.config/glib-2.0/settings $HOME/.local/share/luma
+export HOME=/tmp/$tag-home; rm -rf $HOME; mkdir -p $HOME/.config/glib-2.0/settings $HOME/.local/share/Suno
 cp /oracle/keyfile.${ORACLE_THEME:-light} $HOME/.config/glib-2.0/settings/keyfile
 export GSETTINGS_BACKEND=keyfile LIBGL_ALWAYS_SOFTWARE=1 ORACLE_OUT=${ORACLE_OUT:?}
 export G_RESOURCE_OVERLAYS="/org/gnome/shell/ui=/tmp/bga-oracle/overlay/js/ui"

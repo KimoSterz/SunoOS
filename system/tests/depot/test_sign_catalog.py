@@ -22,19 +22,19 @@ SPEC.loader.exec_module(sign_catalog)
 
 def app(**overrides):
     entry = {
-        "id": "canvas", "app_id": "org.projectluma.Canvas", "name": "Canvas",
-        "tier": "luma", "visibility": "public", "summary": "Design pages.",
-        "backend": "flatpak", "repository": "luma", "source_id": "org.projectluma.Canvas",
+        "id": "canvas", "app_id": "org.projectSuno.Canvas", "name": "Canvas",
+        "tier": "Suno", "visibility": "public", "summary": "Design pages.",
+        "backend": "flatpak", "repository": "Suno", "source_id": "org.projectSuno.Canvas",
         "branch": "stable", "homepage": "https://simplyluma.com/apps/canvas",
         "icon": {"url": "https://dl.simplyluma.com/media/org.projectluma.Canvas/icon-256.png", "sha256": "0" * 64,
                  "width": 256, "height": 256},
-        "description": "Canvas lays out pages, posters and social graphics with the Luma kit's own type and colour.",
+        "description": "Canvas lays out pages, posters and social graphics with the Suno kit's own type and colour.",
         "screenshots": [{"url": "https://dl.simplyluma.com/media/org.projectluma.Canvas/shot-1.webp",
                          "sha256": "1" * 64, "width": 1600, "height": 1000}],
         "permissions": [{"key": "files.portal", "level": "standard"}],
         "sign_in": "none", "qualification": "admitted", "distribution": "publisher",
         "architectures": ["x86_64"], "reference_url": "https://simplyluma.com/apps/canvas",
-        "qualification_reason": "Reviewed by Luma.",
+        "qualification_reason": "Reviewed by Suno.",
     }
     entry.update(overrides)
     return entry
@@ -78,12 +78,12 @@ class Schema4Tests(unittest.TestCase):
 
     def test_unknown_tier_repository_and_permission(self):
         self.refused(catalog(app(tier="gold")), "unknown tier")
-        self.refused(catalog(app(repository="elsewhere")), "luma or flathub")
+        self.refused(catalog(app(repository="elsewhere")), "Suno or flathub")
         self.refused(catalog(app(permissions=[{"key": "files.everything", "level": "high"}])), "unknown key")
         self.refused(catalog(app(permissions=[{"key": "network", "level": "extreme"}])), "unknown level")
 
-    def test_luma_tier_must_be_on_the_luma_remote(self):
-        self.refused(catalog(app(repository="flathub")), "hosted on the Luma remote")
+    def test_Suno_tier_must_be_on_the_Suno_remote(self):
+        self.refused(catalog(app(repository="flathub")), "hosted on the Suno remote")
         sign_catalog.validate_schema4(catalog(app(tier="listed", repository="flathub")))
 
     def test_urls_must_be_https(self):
@@ -131,8 +131,8 @@ class IconCoverageTests(unittest.TestCase):
 
     def test_coverage_is_counted_over_public_entries(self):
         covered, total, without = sign_catalog.icon_coverage(self.document(
-            app(), app(id="write", app_id="org.projectluma.Write", icon=None),
-            app(id="hidden", app_id="org.projectluma.Hidden", visibility="unlisted", icon=None)))
+            app(), app(id="write", app_id="org.projectSuno.Write", icon=None),
+            app(id="hidden", app_id="org.projectSuno.Hidden", visibility="unlisted", icon=None)))
         self.assertEqual((covered, total), (1, 2))
         self.assertEqual(without, ["write"])
 
@@ -189,7 +189,7 @@ class JobTests(unittest.TestCase):
         self.source = base / "source"
         self.source.mkdir()
         (self.source / "catalog-4.json").write_bytes(catalog(app()))
-        (self.source / "catalog-3.json").write_bytes((ROOT / "src/luma-installer/data/depot-catalog.json").read_bytes())
+        (self.source / "catalog-3.json").write_bytes((ROOT / "src/Suno-installer/data/depot-catalog.json").read_bytes())
         self.site = base / "site"
         self.args = ["--token-file", str(base / "missing-token"), "--key", str(base / "k"),
                      "--public-key", str(base / "k.pub"), "--site", str(self.site)]
@@ -236,7 +236,7 @@ class QualityGateTests(unittest.TestCase):
     def test_complete_listing_passes(self):
         failures, counts, exceptions = self.gate(app())
         self.assertEqual(failures, [])
-        self.assertEqual(counts, {"flatpak:luma": 1})
+        self.assertEqual(counts, {"flatpak:Suno": 1})
         self.assertEqual(exceptions, [])
 
     def test_missing_or_small_icon_fails(self):
@@ -254,7 +254,7 @@ class QualityGateTests(unittest.TestCase):
     def test_system_tools_need_no_screenshots(self):
         self.assertEqual(self.gate(app(screenshots=[], system_tool=True))[0], [])
 
-    def test_pending_screenshots_only_for_luma_apps_with_a_reason(self):
+    def test_pending_screenshots_only_for_Suno_apps_with_a_reason(self):
         failures, _counts, exceptions = self.gate(app(screenshots=[], screenshots_pending="Needs a camera."))
         self.assertEqual(failures, [])
         self.assertEqual(exceptions, ["canvas: screenshots pending: Needs a camera."])
@@ -283,7 +283,7 @@ class QualityGateTests(unittest.TestCase):
         self.assertEqual(counts, {"publisher-only": 1})
         self.assertEqual(exceptions, ["expressvpn: Only offered from the account page."])
 
-    def test_luma_media_must_be_in_the_site_with_its_digest(self):
+    def test_Suno_media_must_be_in_the_site_with_its_digest(self):
         import hashlib
         with tempfile.TemporaryDirectory() as tmp:
             site = Path(tmp)

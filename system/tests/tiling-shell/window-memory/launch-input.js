@@ -4,7 +4,7 @@
 // For GTK4 and libadwaita stand-ins, with and without a remembered place, and
 // with window memory forced down its late path (shown, then placed): after the
 // launch the window is fully visible, a click lands, and its header bar drags it.
-// After Tiling Shell 17.3-1.luma.16, Settings and Notes showed hover but took no
+// After Tiling Shell 17.3-1.Suno.16, Settings and Notes showed hover but took no
 // clicks, Notes could not be moved and Filer and Tide opened invisible.
 import Clutter from 'gi://Clutter';
 import Gio from 'gi://Gio';
@@ -108,16 +108,16 @@ async function work() {
     const seat = Clutter.get_default_backend().get_default_seat();
     pointer = seat.create_virtual_device(Clutter.InputDeviceType.POINTER_DEVICE);
     const ext = await until(() => Main.extensionManager.lookup(UUID)?.stateObj, 10000);
-    const mem = await until(() => ext?._lumaWindowMemory, 10000);
+    const mem = await until(() => ext?._SunoWindowMemory, 10000);
     check('Tiling Shell is running with window memory', !!mem);
     if (mem)
         Object.assign(mem.timing, {settle: 300, stable: 800, quiet: 300, dwell: 1200});
     await sleep(1500);
     const Tile = mem ? (await import(`file://${ext.path}/components/layout/Tile.js`)).default : null;
     const cases = [
-        {label: 'GTK4', appId: 'org.projectluma.PlainGtk', extra: []},
-        {label: 'libadwaita', appId: 'org.projectluma.AdwNotes', extra: ['--adw']},
-        {label: 'libadwaita placed late', appId: 'org.projectluma.AdwLate', extra: ['--adw'], late: true},
+        {label: 'GTK4', appId: 'org.projectSuno.PlainGtk', extra: []},
+        {label: 'libadwaita', appId: 'org.projectSuno.AdwNotes', extra: ['--adw']},
+        {label: 'libadwaita placed late', appId: 'org.projectSuno.AdwLate', extra: ['--adw'], late: true},
     ];
     for (const c of cases) {
         // First run: no history.

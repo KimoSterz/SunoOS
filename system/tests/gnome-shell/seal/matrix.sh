@@ -1,14 +1,14 @@
 #!/bin/bash
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Seal evidence matrix on the build server, against the installed RPMs.
-# matrix.sh RUN: writes /root/luma-seal/evidence/RUN/<tag>/{shell.log,results.json,*.png}
-RUN=${1:?run name}; H=/root/luma-seal/harness; E=/root/luma-seal/evidence/$RUN
+# matrix.sh RUN: writes /root/Suno-seal/evidence/RUN/<tag>/{shell.log,results.json,*.png}
+RUN=${1:?run name}; H=/root/Suno-seal/harness; E=/root/Suno-seal/evidence/$RUN
 mkdir -p $E
 one() { # tag theme env...
   local tag=$1; shift
   timeout 900 bash $H/go.sh "$RUN-$tag" "$@" > $E/$tag.go.log 2>&1
   mkdir -p $E/$tag
-  local O=/root/luma-seal/out/$RUN-$tag
+  local O=/root/Suno-seal/out/$RUN-$tag
   cp $O/*.png $O/results.json $E/$tag/ 2>/dev/null
   cp $O/shell.log $E/$tag/shell.log
   rm -rf $O

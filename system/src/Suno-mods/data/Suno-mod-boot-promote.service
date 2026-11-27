@@ -1,0 +1,23 @@
+[Unit]
+Description=Promote a healthy Project Suno Mod deployment
+Documentation=https://github.com/SimplyLuma/luma
+After=graphical.target display-manager.service Suno-mod-boot-observe.service
+Requires=display-manager.service
+ConditionPathExists=/var/lib/Suno/mods/system-state.json
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/Suno-mod-system-health promote
+StateDirectory=Suno/mods
+StateDirectoryMode=0750
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectHome=yes
+ProtectSystem=strict
+ReadWritePaths=/var/lib/Suno/mods
+RestrictAddressFamilies=AF_UNIX
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+
+[Install]
+WantedBy=graphical.target

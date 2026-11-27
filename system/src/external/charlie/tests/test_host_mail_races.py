@@ -13,10 +13,10 @@ from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
-from charlie_luma.host_mail_owner import MailOwner
-from charlie_luma.accounts import account_id_for_address
-from charlie_luma.account_lifecycle import stripe
-from charlie_luma.model import Account, ServerConfig
+from charlie_Suno.host_mail_owner import MailOwner
+from charlie_Suno.accounts import account_id_for_address
+from charlie_Suno.account_lifecycle import stripe
+from charlie_Suno.model import Account, ServerConfig
 
 
 class Secrets:
@@ -100,9 +100,9 @@ class MailOwnerRaceTests(unittest.TestCase):
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory()
         self.secrets = Secrets()
-        with patch('charlie_luma.host_mail_owner.default_store_path',
+        with patch('charlie_Suno.host_mail_owner.default_store_path',
                    return_value=Path(self.temporary.name) / 'mail.db'), \
-             patch('charlie_luma.host_mail_owner.SecretStore', return_value=self.secrets):
+             patch('charlie_Suno.host_mail_owner.SecretStore', return_value=self.secrets):
             self.owner = MailOwner()
         self.pool = ThreadPoolExecutor(max_workers=3)
         self.addCleanup(self.temporary.cleanup)
@@ -121,7 +121,7 @@ class MailOwnerRaceTests(unittest.TestCase):
                                   {'account_id': identifier or self.account.id}, self.live)
 
     def run_removal_interleaving(self, operation, oauth):
-        self.microsoft_patch = patch('charlie_luma.host_mail_owner.MicrosoftOAuth.from_token_json', return_value=oauth)
+        self.microsoft_patch = patch('charlie_Suno.host_mail_owner.MicrosoftOAuth.from_token_json', return_value=oauth)
         self.microsoft_patch.start(); self.addCleanup(self.microsoft_patch.stop)
         running = self.pool.submit(self.owner.perform, operation,
                                    {'account_id': self.account.id}, self.live)
@@ -165,7 +165,7 @@ class MailOwnerRaceTests(unittest.TestCase):
         self.owner.store.upsert_server_config(other.id, self.config)
         self.secrets.store(other.id, 'password', 'synthetic-other-password')
         oauth = ControlledOAuth(block_refresh=True)
-        self.microsoft_patch = patch('charlie_luma.host_mail_owner.MicrosoftOAuth.from_token_json', return_value=oauth)
+        self.microsoft_patch = patch('charlie_Suno.host_mail_owner.MicrosoftOAuth.from_token_json', return_value=oauth)
         self.microsoft_patch.start(); self.addCleanup(self.microsoft_patch.stop)
         self.owner.transport = RefreshingTransport(self.owner)
         running = self.pool.submit(self.owner.perform, 'Sync',
@@ -181,7 +181,7 @@ class MailOwnerRaceTests(unittest.TestCase):
 
     def test_cancelled_queued_remove_preserves_account_and_refreshed_token(self):
         oauth = ControlledOAuth(block_refresh=True)
-        self.microsoft_patch = patch('charlie_luma.host_mail_owner.MicrosoftOAuth.from_token_json', return_value=oauth)
+        self.microsoft_patch = patch('charlie_Suno.host_mail_owner.MicrosoftOAuth.from_token_json', return_value=oauth)
         self.microsoft_patch.start(); self.addCleanup(self.microsoft_patch.stop)
         self.owner.transport = RefreshingTransport(self.owner)
         running = self.pool.submit(self.owner.perform, 'Sync',
@@ -211,7 +211,7 @@ class MailOwnerRaceTests(unittest.TestCase):
 
     def test_removed_account_token_lookup_cannot_refresh_retained_account_object(self):
         oauth = ControlledOAuth()
-        self.microsoft_patch = patch('charlie_luma.host_mail_owner.MicrosoftOAuth.from_token_json', return_value=oauth)
+        self.microsoft_patch = patch('charlie_Suno.host_mail_owner.MicrosoftOAuth.from_token_json', return_value=oauth)
         self.microsoft_patch.start(); self.addCleanup(self.microsoft_patch.stop)
         self.remove()
         with self.assertRaises(ValueError):
@@ -266,7 +266,7 @@ class MailOwnerRaceTests(unittest.TestCase):
                     raise AssertionError('Fixture starts before cancellation')
                 return identity
 
-        with patch('charlie_luma.host_mail_owner.MicrosoftOAuth', return_value=SignedInOAuth()):
+        with patch('charlie_Suno.host_mail_owner.MicrosoftOAuth', return_value=SignedInOAuth()):
             response = self.complete_after_credential_commit('MicrosoftSignIn', {'client_id':'public-fixture'}, 'store')
         identifier = account_id_for_address(identity.email)
         account = next(a for a in self.owner.store.accounts() if a.id == identifier)

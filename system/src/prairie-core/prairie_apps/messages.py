@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
-"""Shared, responsive Luma Messages application.
+"""Shared, responsive Suno Messages application.
 
 The handset inbox and conversation destinations are adaptive arrangements of
 the same widgets, store, and native ModemManager transport used on desktop.
@@ -8,7 +8,7 @@ Visible state is always derived from the authoritative store; unsupported rich
 messaging features are never presented as working SMS capabilities.
 
 One window shows every message service (ADR-022): this device's own messages
-and each phone Luma Connect reaches. Each service keeps its own store and
+and each phone Suno Connect reaches. Each service keeps its own store and
 transports; a conversation belongs to exactly one service, and everything done
 in it goes through that service.
 """
@@ -33,9 +33,9 @@ gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 gi.require_version("GdkPixbuf", "2.0")
 from gi.repository import Adw, Gdk, GdkPixbuf, Gio, GLib, GObject, Graphene, Gsk, Gtk, Pango  # noqa: E402
-from luma_appkit import IslandSplitView
+from Suno_appkit import IslandSplitView
 
-from luma_appkit import (  # noqa: E402
+from Suno_appkit import (  # noqa: E402
     add_style_sheet,
     AppWindow,
     Avatar,
@@ -61,7 +61,7 @@ from luma_appkit import (  # noqa: E402
     command_popover,
     install_appkit,
     icons,
-    lumaui_tokens,
+    SunoUI_tokens,
     motion_duration,
 )
 from prairie_ui import install_theme  # noqa: E402
@@ -83,7 +83,7 @@ from .messages_backend import (
     png_preview_dimensions,
 )
 from .messages_accounts import Account, AccountProvider, Accounts, AccountStore, KeyringLocked, helper_directory, network, remove_account
-from . import messages_luma as luma
+from . import messages_Suno as Suno
 from .messages_cloud import CLOUD_LABEL, CloudHistory, is_cloud, merge_thread, merge_threads
 from .messages_mms import MmsCapability, MmsMessagingTransport, read_mms_part
 from .messages_fixture import FixtureMessageStore, FixtureTransport
@@ -91,7 +91,7 @@ from . import messages_photos as photos
 from .phone_system import TransientShellSurface
 
 
-APPLICATION_ID = "org.projectluma.Messages"
+APPLICATION_ID = "org.projectSuno.Messages"
 NATIVE_SERVICE = "native"
 _messages_style_provider: Gtk.CssProvider | None = None
 
@@ -101,7 +101,7 @@ class MessageService:
     """One place messages come from and go through (ADR-022).
 
     ``provider`` is None for this device's own modem and MMS service; a phone
-    reached through Luma Connect supplies its provider, whose transports never
+    reached through Suno Connect supplies its provider, whose transports never
     touch this device's modem.
     """
 
@@ -157,14 +157,14 @@ def install_messages_theme() -> None:
     if display is None or _messages_style_provider is not None:
         return
     # The kit owns this sheet, so it is reloaded when the surface
-    # treatment changes (luma_appkit.add_style_sheet). Loaded through a
+    # treatment changes (Suno_appkit.add_style_sheet). Loaded through a
     # provider of its own it was not: whatever the palette was when the
     # application started stayed on screen, so switching to Glass left
     # this application painting Light colours next to windows that had
     # followed, which is one of the ways two windows came out different.
     provider = add_style_sheet(
         os.environ.get(
-            "LUMA_MESSAGES_STYLE_PATH", "/usr/share/prairie-core/messages.css"
+            "SUNO_MESSAGES_STYLE_PATH", "/usr/share/prairie-core/messages.css"
         )
     )
     _messages_style_provider = provider
@@ -191,7 +191,7 @@ def _previewable_image_types() -> frozenset[str]:
 # scroll anchoring both have to agree on.
 MESSAGE_SPACING = 6
 # Scroll anchoring can be traced when a reader reports the conversation moving.
-_ANCHOR_DEBUG = os.environ.get("LUMA_MESSAGES_ANCHOR_DEBUG") == "1"
+_ANCHOR_DEBUG = os.environ.get("SUNO_MESSAGES_ANCHOR_DEBUG") == "1"
 # How far from the bottom still counts as reading the newest messages.
 SCROLL_END_SLACK = 24
 # How far in from the bubble's corner a reaction pill sits.
@@ -295,7 +295,7 @@ def _avatar(name: str, *, small: bool = False, medium: bool = False, group: bool
 ICONS = {
     "compose": "document-edit-symbolic",
     "accounts": "system-users-symbolic",
-    "back": "luma-chevron-left-symbolic",
+    "back": "Suno-chevron-left-symbolic",
     "call": "call-start-symbolic",
     "video": "camera-video-symbolic",
     "attach": "mail-attachment-symbolic",
@@ -449,7 +449,7 @@ class ConversationRow(NavigationRow):
     """A conversation using the shared navigation row, with message state."""
 
     def __init__(self, record: ThreadRecord, service: MessageService, *, group: bool = False) -> None:
-        encrypted = luma.is_luma(service)
+        encrypted = Suno.is_Suno(service)
         super().__init__(
             _one_line(record.display_name) or "Unknown",
             subtitle=_one_line(record.preview) or " ",
@@ -473,7 +473,7 @@ class ConversationRow(NavigationRow):
         if record.preview.startswith("Draft: "):
             self.preview.add_css_class("draft")
         if encrypted:
-            lock = Gtk.Image(icon_name="luma-lock-symbolic", pixel_size=11, valign=Gtk.Align.CENTER)
+            lock = Gtk.Image(icon_name="Suno-lock-symbolic", pixel_size=11, valign=Gtk.Align.CENTER)
             lock.add_css_class("messages-row-lock")
             line.insert_child_after(lock, line.get_first_child())
         self.dot = Gtk.Box(width_request=9, height_request=9, valign=Gtk.Align.CENTER, halign=Gtk.Align.END)
@@ -482,13 +482,13 @@ class ConversationRow(NavigationRow):
         line.append(self.dot)
         state = f", {record.unread} unread" if record.unread else ""
         moment = _moment(record.updated) if record.updated else "New conversation"
-        kind = ", Luma, encrypted" if encrypted else ""
+        kind = ", Suno, encrypted" if encrypted else ""
         _accessible(self, f"{record.display_name}{kind}{state}, {moment}. {_one_line(record.preview)}")
 
 
 class MessagesWindow(AppWindow):
     def __init__(self, application: Adw.Application) -> None:
-        self._fixture_path = os.environ.get("LUMA_MESSAGES_FIXTURE", "")
+        self._fixture_path = os.environ.get("SUNO_MESSAGES_FIXTURE", "")
         self._fixture_mode = bool(self._fixture_path)
         # Acquire before constructing a window or opening any account store.
         # A missing owner is a repair screen, never an unmanaged fallback.
@@ -503,7 +503,7 @@ class MessagesWindow(AppWindow):
                 Command("messages.search", "Search conversations", lambda: self.search.grab_focus(), "system-search-symbolic", shortcut=("Ctrl", "F")),
                 Command("messages.refresh", "Refresh", self._refresh, "view-refresh-symbolic"),
                 Command("messages.accounts", "Accounts…", self._show_accounts, "system-users-symbolic", shortcut=("Ctrl", "comma")),
-                Command("messages.luma", "Your Luma Profile…", self._show_luma_profile, "system-users-symbolic"),
+                Command("messages.Suno", "Your Suno Profile…", self._show_Suno_profile, "system-users-symbolic"),
             )),
             # A desktop gives its sidebar to search and the list, so the
             # filters the handset shows as chips live here instead. They are
@@ -524,7 +524,7 @@ class MessagesWindow(AppWindow):
         if self.context.input_mode.value == "touch":
             self.add_css_class("messages-touch")
         self._service_problems: list[str] = []
-        self.accounts = (Accounts(root=Path(":luma-messages-fixture:no-accounts:")) if self._fixture_mode
+        self.accounts = (Accounts(root=Path(":Suno-messages-fixture:no-accounts:")) if self._fixture_mode
                          else getattr(application, "accounts", None) or Accounts())
         self.helper_directory = getattr(application, "helper_directory", None) or helper_directory()
         self.login_options = getattr(application, "login_options", None) or {}
@@ -553,7 +553,7 @@ class MessagesWindow(AppWindow):
             for service in self.services:
                 service.store.recover_interrupted()
                 service.incoming_revision = service.store.external_revision()
-        # Other devices' history from the Luma Hub: shown beside this device's
+        # Other devices' history from the Suno Hub: shown beside this device's
         # own conversations, never written here.
         self.cloud = (CloudHistory(reader=lambda: []) if self._fixture_mode else
                       CloudHistory(reader=self._host_cloud_rows) if sandboxed() else CloudHistory())
@@ -587,7 +587,7 @@ class MessagesWindow(AppWindow):
         unlock_action = Gio.SimpleAction.new("unlock-phone", None)
         unlock_action.connect("activate", self._unlock_phone)
         self.add_action(unlock_action)
-        self.shell_surface = FixtureTransport() if self._fixture_mode else TransientShellSurface("org.projectluma.Messages.desktop")
+        self.shell_surface = FixtureTransport() if self._fixture_mode else TransientShellSurface("org.projectSuno.Messages.desktop")
         if not self._fixture_mode and sandboxed():
             self.agent.on_store_changed = self._host_store_changed
             self.agent.on_mailbox_error = lambda message: self._notice(message) if not self.closed else None
@@ -596,7 +596,7 @@ class MessagesWindow(AppWindow):
                 service.monitor = Gio.File.new_for_path(str(service.store.path.parent)).monitor_directory(Gio.FileMonitorFlags.NONE, None)
                 service.monitor.connect("changed", self._store_changed)
         if self.context.presentation is PresentationMode.FULLSCREEN:
-            self.maximize(); self.add_css_class("luma-fullscreen"); self.title_bar.set_visible(False)
+            self.maximize(); self.add_css_class("Suno-fullscreen"); self.title_bar.set_visible(False)
             self.shell_surface.set("deep")
         self.split = IslandSplitView(collapsed=False, show_content=False)
         # v70's conversation list sits on the frame; only the conversation is an island.
@@ -609,8 +609,8 @@ class MessagesWindow(AppWindow):
         self.split.set_sidebar(Adw.NavigationPage(child=self.sidebar_island, title="Messages"))
         self.split.set_content(Adw.NavigationPage(child=self.thread_island, title="Conversation"))
         self.split.set_sidebar_width_unit(Adw.LengthUnit.PX)
-        self.split.set_min_sidebar_width(lumaui_tokens.SIDEBAR["width"] - lumaui_tokens.SIDEBAR["gutter"])
-        self.split.set_max_sidebar_width(lumaui_tokens.SIDEBAR["width"] - lumaui_tokens.SIDEBAR["gutter"])
+        self.split.set_min_sidebar_width(SunoUI_tokens.SIDEBAR["width"] - SunoUI_tokens.SIDEBAR["gutter"])
+        self.split.set_max_sidebar_width(SunoUI_tokens.SIDEBAR["width"] - SunoUI_tokens.SIDEBAR["gutter"])
         self.toast_overlay = Adw.ToastOverlay(child=self.split); self.set_body(self.toast_overlay)
         compact = Adw.Breakpoint.new(Adw.BreakpointCondition.parse("max-width: 639px"))
         compact.add_setter(self.split, "collapsed", True); compact.add_setter(self.title_bar, "visible", False)
@@ -698,18 +698,18 @@ class MessagesWindow(AppWindow):
             providers = [injected]
         else:
             try:
-                from luma_continuity.message_provider import message_services
+                from Suno_continuity.message_provider import message_services
             except ImportError as error:
-                # Luma Connect is optional; a saved phone without it is reported, not silently dropped.
-                if (Path.home() / ".config/luma-connect/messages-phone.json").exists():
-                    self._service_problems.append("Luma Connect isn't installed, so your phone's messages can't be shown.")
-                if error.name not in {"luma_continuity", "luma_continuity.message_provider"}:
+                # Suno Connect is optional; a saved phone without it is reported, not silently dropped.
+                if (Path.home() / ".config/Suno-connect/messages-phone.json").exists():
+                    self._service_problems.append("Suno Connect isn't installed, so your phone's messages can't be shown.")
+                if error.name not in {"Suno_continuity", "Suno_continuity.message_provider"}:
                     raise
             else:
                 providers = message_services(
                     store_factory=MessageStore, dispatch=GLib.idle_add,
                     problem=lambda _error: self._service_problems.append(
-                        "The phone saved for Messages couldn't be loaded. Choose it again in Luma Connect."))
+                        "The phone saved for Messages couldn't be loaded. Choose it again in Suno Connect."))
         for provider in providers:
             peer = getattr(provider, "peer", "") or getattr(getattr(provider, "selection", None), "peer", "")
             label = getattr(provider, "label", "") or "Your phone"
@@ -717,13 +717,13 @@ class MessagesWindow(AppWindow):
                 f"phone:{peer}", label, MessageStore(provider.store_path), provider.sms_transport(), provider.mms_transport(),
                 provider, capability=MessagingCapability(False, f"Connecting to {label}…")))
         try:
-            # Every device signed in to Luma Connect has Luma Messages (ADR-051).
+            # Every device signed in to Suno Connect has Suno Messages (ADR-051).
             from .messages_app_client import sandboxed
             if not sandboxed():
-                luma.ensure_account(self.accounts, helper_dir=self.helper_directory)
+                Suno.ensure_account(self.accounts, helper_dir=self.helper_directory)
         except (OSError, ValueError) as error:
-            self._service_problems.append("Luma Messages couldn't be set up on this device.")
-            print(f"messages: Luma account not added: {type(error).__name__}", file=sys.stderr)
+            self._service_problems.append("Suno Messages couldn't be set up on this device.")
+            print(f"messages: Suno account not added: {type(error).__name__}", file=sys.stderr)
         for account in self.accounts.list():
             try:
                 services.append(self._account_service(account, services))
@@ -789,8 +789,8 @@ class MessagesWindow(AppWindow):
                 except Exception: listed[service.id] = ()
             # What the first fill reads for each conversation, asked for side by side.
             def conversation(service, record):
-                if luma.is_luma(service):
-                    self._luma_flags(service, record)
+                if Suno.is_Suno(service):
+                    self._Suno_flags(service, record)
                 participants = getattr(service.store, "conversation_participants", None)
                 if self._is_group(service, record) and surface is not None and callable(participants):
                     participants(record.address)
@@ -861,7 +861,7 @@ class MessagesWindow(AppWindow):
         def conversation(service, address):
             store = service.store
             for name in ("canonical_address", "conversation_kind", "conversation_phone", "draft",
-                         "draft_attachments", "draft_reply", "luma_flags"):
+                         "draft_attachments", "draft_reply", "Suno_flags"):
                 read(store, name, address)
             return read(store, "thread", address)
 
@@ -889,7 +889,7 @@ class MessagesWindow(AppWindow):
     @staticmethod
     def _connect_agent(application):
         from .messages_app_client import sandboxed
-        if not sandboxed() and (getattr(application, "accounts", None) is not None or os.environ.get("LUMA_MESSAGES_AGENT") == "0"):
+        if not sandboxed() and (getattr(application, "accounts", None) is not None or os.environ.get("SUNO_MESSAGES_AGENT") == "0"):
             return None  # tests that inject accounts run the helpers in this process
         from .messages_agent import AgentClient
         return AgentClient.connect()
@@ -1081,14 +1081,14 @@ class MessagesWindow(AppWindow):
         # v70 puts the list on the frame and the search and New square in its foot.
         self.sidebar = NavigationSidebar()
         self.sidebar.set_name("msg-sidebar")
-        self.luma_sidebar_box = self._build_luma_sidebar()
-        self.sidebar.append_header(self.luma_sidebar_box)
+        self.Suno_sidebar_box = self._build_Suno_sidebar()
+        self.sidebar.append_header(self.Suno_sidebar_box)
         self.thread_list = self.sidebar.list
         self.thread_list.set_selection_mode(Gtk.SelectionMode.MULTIPLE)
         self.thread_list.connect("selected-rows-changed", self._selection_changed)
         self.thread_list.connect("row-activated", self._thread_activated)
         self.list_empty = EmptyState("No conversations yet", "Start a message to someone.",
-            "luma-empty-message-symbolic", compact=True)
+            "Suno-empty-message-symbolic", compact=True)
         self.list_empty.set_name("msg-sidebar-empty")
         self.foot = SidebarFoot(
             search="Search people and messages", on_search=lambda _text: self._reload_threads(),
@@ -1135,7 +1135,7 @@ class MessagesWindow(AppWindow):
         self.detail_stack = Gtk.Stack(hexpand=True, vexpand=True)
         self.empty_state = EmptyState("Your messages",
             "Pick a conversation on the left, or start a new one.",
-            "luma-empty-message-symbolic", primary=("New message", self._show_new_message))
+            "Suno-empty-message-symbolic", primary=("New message", self._show_new_message))
         self.detail_stack.add_named(self.empty_state, "empty")
         thread = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, hexpand=True, vexpand=True); thread.add_css_class("messages-thread")
         header = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6); header.add_css_class("messages-thread-header")
@@ -1156,15 +1156,15 @@ class MessagesWindow(AppWindow):
         self.video_button.set_sensitive(False)
         self.video_button.set_tooltip_text("Video calling is not available on this device")
         header.append(self.video_button)
-        # A Luma conversation's safety number, block and report (ADR-051).
-        self.luma_button = Gtk.MenuButton(valign=Gtk.Align.CENTER, halign=Gtk.Align.CENTER)
-        self.luma_button.add_css_class("messages-round-button")
-        self.luma_button.set_child(Gtk.Image(icon_name="luma-info-symbolic"))
-        self.luma_button.set_tooltip_text("Conversation details")
-        _accessible(self.luma_button, "Conversation details")
-        self.luma_button.set_create_popup_func(self._fill_luma_menu)
-        self.luma_button.set_visible(False)
-        header.append(self.luma_button)
+        # A Suno conversation's safety number, block and report (ADR-051).
+        self.Suno_button = Gtk.MenuButton(valign=Gtk.Align.CENTER, halign=Gtk.Align.CENTER)
+        self.Suno_button.add_css_class("messages-round-button")
+        self.Suno_button.set_child(Gtk.Image(icon_name="Suno-info-symbolic"))
+        self.Suno_button.set_tooltip_text("Conversation details")
+        _accessible(self.Suno_button, "Conversation details")
+        self.Suno_button.set_create_popup_func(self._fill_Suno_menu)
+        self.Suno_button.set_visible(False)
+        header.append(self.Suno_button)
         self.thread_header = header
         root.append(header)
         root.append(self.detail_stack)
@@ -1177,14 +1177,14 @@ class MessagesWindow(AppWindow):
         # scroll to any row that takes focus, so a click on a message's text
         # moved the conversation; keyboard focus is handled in _focus_moved.
         self.message_scroll.set_child(_ConversationView(self.message_box, weakref.WeakMethod(self._place_view)))
-        from .messages_luma_ui import RequestBar, SafetyNotice
-        self.luma_notice = SafetyNotice(self._show_luma_safety)
-        self.luma_notice.set_visible(False)
-        thread.append(self.luma_notice)
+        from .messages_Suno_ui import RequestBar, SafetyNotice
+        self.Suno_notice = SafetyNotice(self._show_Suno_safety)
+        self.Suno_notice.set_visible(False)
+        thread.append(self.Suno_notice)
         thread.append(self.message_scroll)
-        self.luma_request_bar = RequestBar(self._answer_luma_request)
-        self.luma_request_bar.set_visible(False)
-        thread.append(self.luma_request_bar)
+        self.Suno_request_bar = RequestBar(self._answer_Suno_request)
+        self.Suno_request_bar.set_visible(False)
+        thread.append(self.Suno_request_bar)
         self.connect("notify::focus-widget", self._focus_moved)
         adjustment = self.message_scroll.get_vadjustment()
         adjustment.connect("value-changed", self._capture_anchor)
@@ -1244,16 +1244,16 @@ class MessagesWindow(AppWindow):
 
     def _sync_detail_state(self, *_args) -> None:
         active = self.detail_stack.get_visible_child_name() == "conversation"
-        if not active and hasattr(self, "luma_request_bar"):
-            self.luma_request_bar.set_visible(False)
-            self.luma_notice.set_visible(False)
+        if not active and hasattr(self, "Suno_request_bar"):
+            self.Suno_request_bar.set_visible(False)
+            self.Suno_notice.set_visible(False)
         child = self.thread_header.get_first_child()
         while child:
             child.set_opacity(1 if active else 0)
             child = child.get_next_sibling()
         self.thread_header.set_sensitive(active)
         self.thread_header.update_state([Gtk.AccessibleState.HIDDEN], [not active])
-        self.composer_region.set_visible(active and not (hasattr(self, "luma_request_bar") and self.luma_request_bar.get_visible()))
+        self.composer_region.set_visible(active and not (hasattr(self, "Suno_request_bar") and self.Suno_request_bar.get_visible()))
 
     def _show_nothing_selected(self) -> None:
         self.current_address = None
@@ -1303,10 +1303,10 @@ class MessagesWindow(AppWindow):
         entries.sort(key=lambda entry: (
             not bool(self.store.conversations.get(entry[1].address, {}).get("pinned"))
             if self._fixture_mode else False, -entry[1].updated))
-        # Luma conversations from people not yet accepted wait in Requests, not the inbox.
-        requests = [entry for entry in entries if self._luma_flags(*entry).get("request")]
+        # Suno conversations from people not yet accepted wait in Requests, not the inbox.
+        requests = [entry for entry in entries if self._Suno_flags(*entry).get("request")]
         entries = [entry for entry in entries if entry not in requests] if self.filter_mode != "requests" else requests
-        self._sync_luma_sidebar(len(requests))
+        self._sync_Suno_sidebar(len(requests))
         all_records = tuple(record for _service, record in entries)
         unread_count = sum(1 for item in all_records if item.unread)
         self.foot.set_filter_counts({"all": len(all_records), "unread": unread_count,
@@ -1399,7 +1399,7 @@ class MessagesWindow(AppWindow):
             return
         dialog = Adw.AlertDialog(
             heading=f"Delete {len(rows)} conversations?",
-            body="This removes the messages from this Luma device. It does not unsend them.",
+            body="This removes the messages from this Suno device. It does not unsend them.",
         )
         dialog.add_response("cancel", "Cancel")
         dialog.add_response("delete", "Delete")
@@ -1521,8 +1521,8 @@ class MessagesWindow(AppWindow):
     def _confirm_delete_thread(self, record: ThreadRecord, service: MessageService) -> None:
         dialog = Adw.AlertDialog(
             heading=f"Delete the conversation with {record.display_name}?",
-            body="This removes the messages from this Luma device. It does not unsend them." if service.native else
-                 f"This removes the copy on this Luma device. The messages stay on {service.label}.",
+            body="This removes the messages from this Suno device. It does not unsend them." if service.native else
+                 f"This removes the copy on this Suno device. The messages stay on {service.label}.",
         )
         dialog.add_response("cancel", "Cancel")
         dialog.add_response("delete", "Delete")
@@ -1538,7 +1538,7 @@ class MessagesWindow(AppWindow):
             return {}
         service = service or self.service
         if not service.native:
-            return {}  # Luma Cloud history is this device's own kind of conversation
+            return {}  # Suno Cloud history is this device's own kind of conversation
         try:
             return self.cloud.by_address(service.store.canonical_address)
         except Exception:
@@ -1556,7 +1556,7 @@ class MessagesWindow(AppWindow):
     def _delete_thread(self, record: ThreadRecord, service: MessageService) -> None:
         native_messages = service.store.thread(record.address)
         if not native_messages and self._thread_messages(record.address, service):
-            self._notice("Luma Cloud history is removed from the device that sent it")
+            self._notice("Suno Cloud history is removed from the device that sent it")
             return
         if service.store.delete_thread(record.address):
             self._delete_native_copies(native_messages, service)
@@ -1585,9 +1585,9 @@ class MessagesWindow(AppWindow):
         generation = self._recipient_search_generation
         # A plain username is as useful as @username or a profile link. Phone
         # numbers are rejected by handle_from, and contact matches stay shown.
-        handle = luma.handle_from(query)
-        luma_service = self._luma_service()
-        if handle and luma_service is not None:
+        handle = Suno.handle_from(query)
+        Suno_service = self._Suno_service()
+        if handle and Suno_service is not None:
             waiting = Gtk.ListBoxRow(selectable=False, activatable=False,
                 child=ListEmptyState(f"Looking up @{handle}…"))
             self.recipient_list.append(waiting)
@@ -1598,15 +1598,15 @@ class MessagesWindow(AppWindow):
                     return
                 self.recipient_list.remove(waiting)
                 if error is not None or not (person or {}).get("account"):
-                    message = getattr(error, "message", "") or f"No Luma member named @{handle}."
+                    message = getattr(error, "message", "") or f"No Suno member named @{handle}."
                     self.recipient_list.prepend(Gtk.ListBoxRow(selectable=False, activatable=False,
                         child=ListEmptyState(message)))
                     return
-                name = luma.public_person_name(person, handle)
-                row = self._recipient_row(f"@{handle}", name, f"Luma · @{handle}")
-                row.luma_handle = handle; row.luma_service = luma_service
+                name = Suno.public_person_name(person, handle)
+                row = self._recipient_row(f"@{handle}", name, f"Suno · @{handle}")
+                row.Suno_handle = handle; row.Suno_service = Suno_service
                 self.recipient_list.prepend(row)
-            self.luma_call(luma_service, "luma.people", {"handle": handle}, found)
+            self.Suno_call(Suno_service, "Suno.people", {"handle": handle}, found)
         candidates = tuple(contact for contact in self.contacts if contact.phone and (not query or query.casefold() in contact.name.casefold() or query in contact.phone or query.casefold() in contact.organization.casefold()))[:20]
         direct = None
         if query:
@@ -1616,8 +1616,8 @@ class MessagesWindow(AppWindow):
         for contact in candidates: self.recipient_list.append(self._recipient_row(contact.phone, contact.name, contact.organization or contact.phone))
         if self.recipient_list.get_first_child() is None:
             row = Gtk.ListBoxRow(selectable=False, activatable=False)
-            message = Gtk.Label(label=("Sign in to Luma Connect to find members" if handle and luma_service is None else
-                "Enter a Luma username or complete phone number" if query else "Search a Luma username or a contact"), wrap=True); message.add_css_class("messages-recipient-empty")
+            message = Gtk.Label(label=("Sign in to Suno Connect to find members" if handle and Suno_service is None else
+                "Enter a Suno username or complete phone number" if query else "Search a Suno username or a contact"), wrap=True); message.add_css_class("messages-recipient-empty")
             row.set_child(message); self.recipient_list.append(row)
 
     def _recipient_row(self, address: str, name: str, subtitle: str) -> Gtk.ListBoxRow:
@@ -1632,17 +1632,17 @@ class MessagesWindow(AppWindow):
         row = self.recipient_list.get_row_at_index(0)
         if row is not None and getattr(row, "address", ""):
             self._recipient_activated(self.recipient_list, row)
-        elif (handle := luma.handle_from(self.recipient_search.get_text())) and (service := self._luma_service()) is not None:
-            self.start_luma_conversation(service, handle, lambda error: error and self._notice(error.message))
+        elif (handle := Suno.handle_from(self.recipient_search.get_text())) and (service := self._Suno_service()) is not None:
+            self.start_Suno_conversation(service, handle, lambda error: error and self._notice(error.message))
 
     def _recipient_activated(self, _list: Gtk.ListBox, row: Gtk.ListBoxRow) -> None:
         address = getattr(row, "address", "")
         if not address: return
-        if getattr(row, "luma_handle", None):
+        if getattr(row, "Suno_handle", None):
             def done(error) -> None:
                 if error is not None:
                     self._notice(error.message)
-            self.start_luma_conversation(row.luma_service, row.luma_handle, done)
+            self.start_Suno_conversation(row.Suno_service, row.Suno_handle, done)
             return
         name = getattr(row, "display_name", address)
         index = self.send_service_picker.get_selected()
@@ -1706,7 +1706,7 @@ class MessagesWindow(AppWindow):
         self._clear(self.thread_avatar_holder)
         self.thread_avatar_holder.append(_avatar(record.display_name, group=self._is_group(self.service, record)))
         self.call_button.set_sensitive(bool(self._callable_number(self.service, record.address)))
-        self._sync_luma_thread()
+        self._sync_Suno_thread()
         if hasattr(self.service.provider, "conversation_opened"):
             self.service.provider.conversation_opened(self.current_address)
         self._update_agent_viewing()
@@ -1784,7 +1784,7 @@ class MessagesWindow(AppWindow):
         self._rendered = signature
         self.message_box.set_valign(Gtk.Align.START if records else Gtk.Align.FILL)
         self.message_box.set_vexpand(not records)
-        self.composer_placeholder.set_label(("Luma Message" if luma.is_luma(self.service) else "Message") if records else "Say hello")
+        self.composer_placeholder.set_label(("Suno Message" if Suno.is_Suno(self.service) else "Message") if records else "Say hello")
         self._sync_peer_presence()
         sender_of = getattr(self.continuity, "sender", None) or getattr(self.store, "sender", None) or (lambda _uid: "")
         media_of = getattr(self.continuity, "media_parts", None)
@@ -1951,7 +1951,7 @@ class MessagesWindow(AppWindow):
         bubble.add_css_class("messages-bubble")  # legacy gesture and scroll-anchor tests
         bubble.set_name(f"msg-bubble-{message.uid}")
         if is_cloud(message):
-            bubble.add_css_class("from-luma-cloud"); bubble.set_tooltip_text(CLOUD_LABEL)
+            bubble.add_css_class("from-Suno-cloud"); bubble.set_tooltip_text(CLOUD_LABEL)
         self._install_message_gesture(bubble, message)
         counts: dict[str, int] = {}
         for reaction in self.store.reactions(message.uid):
@@ -2429,7 +2429,7 @@ class MessagesWindow(AppWindow):
 
     def _sync_lightbox(self) -> None:
         """A picture shown in the lightbox that finishes downloading, or fails, is updated in place."""
-        lightbox = getattr(self, "_luma_lightbox", None)
+        lightbox = getattr(self, "_Suno_lightbox", None)
         if lightbox is None or not lightbox.is_open or not self._lightbox_keys:
             return
         current = {identity: item for _key, identity, item in self._lightbox_items()}
@@ -2684,14 +2684,14 @@ class MessagesWindow(AppWindow):
         presence = self.peer_presence.get(self.current_address or "")
         remaining = presence[0] - time.monotonic() if presence else 0
         if self.current_address and not self._thread_messages(self.current_address):
-            self.thread_subtitle.set_label("New conversation · Luma · End-to-end encrypted" if luma.is_luma(self.service) else
+            self.thread_subtitle.set_label("New conversation · Suno · End-to-end encrypted" if Suno.is_Suno(self.service) else
                                            f"New conversation · {self.service.label}" if len(self.services) > 1 else "New conversation")
         elif remaining > 0:
             self.thread_subtitle.set_label("Active now")
             self.presence_expiry = GLib.timeout_add(max(1, int(remaining * 1000) + 1), self._presence_expired)
         else:
-            if luma.is_luma(self.service):
-                subtitle = "Luma · End-to-end encrypted"
+            if Suno.is_Suno(self.service):
+                subtitle = "Suno · End-to-end encrypted"
             elif not self.service.phone_numbers:
                 # A network account's conversation: the service is what there is to say.
                 subtitle = self.service.label
@@ -2707,7 +2707,7 @@ class MessagesWindow(AppWindow):
         return self._sync_peer_presence()
 
     def _confirm_delete(self, uid: str, popover: Gtk.Popover) -> None:
-        popover.popdown(); dialog = Adw.AlertDialog(heading="Delete this message?", body="This removes the message from this Luma device. It does not unsend it.")
+        popover.popdown(); dialog = Adw.AlertDialog(heading="Delete this message?", body="This removes the message from this Suno device. It does not unsend it.")
         dialog.add_response("cancel", "Cancel"); dialog.add_response("delete", "Delete"); dialog.set_response_appearance("delete", Adw.ResponseAppearance.DESTRUCTIVE)
         dialog.connect("response", lambda _dialog, response: self._delete_message(uid) if response == "delete" else None); dialog.present(self)
 
@@ -2860,8 +2860,8 @@ class MessagesWindow(AppWindow):
             # Re-enable on acknowledgement so cancellation can be retried.
         try:
             connection = Gio.bus_get_sync(Gio.BusType.SESSION, None)
-            connection.call("org.projectluma.Connect1", "/org/projectluma/Connect",
-                "org.projectluma.Connect1", "UnlockAccount", None, None,
+            connection.call("org.projectSuno.Connect1", "/org/projectSuno/Connect",
+                "org.projectSuno.Connect1", "UnlockAccount", None, None,
                 Gio.DBusCallFlags.NONE, 1500, None, done)
         except GLib.Error:
             self._unlock_requested = False
@@ -2988,7 +2988,7 @@ class MessagesWindow(AppWindow):
         self.current_name = thread.display_name
         self.thread_title.set_label(thread.display_name)
         self.remember("conversation", service.key(thread.address))
-        self._sync_luma_thread()
+        self._sync_Suno_thread()
         self._update_agent_viewing()
         if hasattr(service.provider, "conversation_opened"):
             service.provider.conversation_opened(thread.address)
@@ -3036,7 +3036,7 @@ class MessagesWindow(AppWindow):
                 texture = source.read_texture_finish(result)
                 if texture is None:
                     raise ValueError("The clipboard image could not be opened.")
-                descriptor, filename = tempfile.mkstemp(prefix="luma-message-", suffix=".png")
+                descriptor, filename = tempfile.mkstemp(prefix="Suno-message-", suffix=".png")
                 os.close(descriptor)
                 temporary = Path(filename)
                 if not texture.save_to_png(filename):
@@ -3299,111 +3299,111 @@ class MessagesWindow(AppWindow):
     def notice(self, message: str) -> None:
         self._notice(message)
 
-    # ── Luma Messages (ADR-051) ─────────────────────────────────────────────
-    def _luma_service(self) -> MessageService | None:
-        return next((service for service in self.services if luma.is_luma(service)), None)
+    # ── Suno Messages (ADR-051) ─────────────────────────────────────────────
+    def _Suno_service(self) -> MessageService | None:
+        return next((service for service in self.services if Suno.is_Suno(service)), None)
 
     @staticmethod
-    def _luma_flags(service: MessageService, record) -> dict:
-        return luma.conversation_flags(service, record.address) if luma.is_luma(service) else {}
+    def _Suno_flags(service: MessageService, record) -> dict:
+        return Suno.conversation_flags(service, record.address) if Suno.is_Suno(service) else {}
 
-    def _build_luma_sidebar(self) -> Gtk.Widget:
+    def _build_Suno_sidebar(self) -> Gtk.Widget:
         box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         # Until there is a username, nobody can find this account: say so once, calmly.
-        self.luma_banner = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
-        self.luma_banner.add_css_class("messages-luma-banner")
+        self.Suno_banner = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
+        self.Suno_banner.add_css_class("messages-Suno-banner")
         text = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=2, hexpand=True)
-        title = Gtk.Label(label="Choose your Luma username", xalign=0); title.add_css_class("messages-luma-banner-title")
-        detail = Gtk.Label(label="So people on Luma can message you.", xalign=0, wrap=True); detail.add_css_class("messages-luma-banner-detail")
-        text.append(title); text.append(detail); self.luma_banner.append(text)
+        title = Gtk.Label(label="Choose your Suno username", xalign=0); title.add_css_class("messages-Suno-banner-title")
+        detail = Gtk.Label(label="So people on Suno can message you.", xalign=0, wrap=True); detail.add_css_class("messages-Suno-banner-detail")
+        text.append(title); text.append(detail); self.Suno_banner.append(text)
         choose = Gtk.Button(label="Choose", valign=Gtk.Align.CENTER); choose.add_css_class("pill"); choose.add_css_class("suggested-action")
-        choose.connect("clicked", lambda *_: self._show_luma_profile())
-        self.luma_banner.append(choose)
-        self.luma_banner.set_visible(False)
-        box.append(self.luma_banner)
-        self.luma_requests_button = Gtk.Button()
-        self.luma_requests_button.add_css_class("messages-luma-requests")
+        choose.connect("clicked", lambda *_: self._show_Suno_profile())
+        self.Suno_banner.append(choose)
+        self.Suno_banner.set_visible(False)
+        box.append(self.Suno_banner)
+        self.Suno_requests_button = Gtk.Button()
+        self.Suno_requests_button.add_css_class("messages-Suno-requests")
         row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
-        self.luma_requests_label = Gtk.Label(label="Message Requests", xalign=0, hexpand=True)
-        self.luma_requests_count = Gtk.Label(label=""); self.luma_requests_count.add_css_class("messages-luma-count")
-        row.append(self.luma_requests_label); row.append(self.luma_requests_count)
+        self.Suno_requests_label = Gtk.Label(label="Message Requests", xalign=0, hexpand=True)
+        self.Suno_requests_count = Gtk.Label(label=""); self.Suno_requests_count.add_css_class("messages-Suno-count")
+        row.append(self.Suno_requests_label); row.append(self.Suno_requests_count)
         row.append(Gtk.Image(icon_name="go-next-symbolic"))
-        self.luma_requests_button.set_child(row)
-        self.luma_requests_button.connect("clicked", lambda *_: self._show_luma_requests(True))
-        self.luma_requests_button.set_visible(False)
-        box.append(self.luma_requests_button)
-        self.luma_requests_header = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
-        self.luma_requests_header.add_css_class("messages-luma-requests-header")
+        self.Suno_requests_button.set_child(row)
+        self.Suno_requests_button.connect("clicked", lambda *_: self._show_Suno_requests(True))
+        self.Suno_requests_button.set_visible(False)
+        box.append(self.Suno_requests_button)
+        self.Suno_requests_header = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
+        self.Suno_requests_header.add_css_class("messages-Suno-requests-header")
         back = _icon_button("back", "Back to all conversations", "messages-square-button")
-        back.connect("clicked", lambda *_: self._show_luma_requests(False))
-        self.luma_requests_header.append(back)
+        back.connect("clicked", lambda *_: self._show_Suno_requests(False))
+        self.Suno_requests_header.append(back)
         heading = Gtk.Label(label="Message Requests", xalign=0, hexpand=True); heading.add_css_class("messages-thread-title")
-        self.luma_requests_header.append(heading)
-        self.luma_requests_header.set_visible(False)
-        box.append(self.luma_requests_header)
-        self._luma_identity: dict | None = None
-        self._luma_identity_asked = False
+        self.Suno_requests_header.append(heading)
+        self.Suno_requests_header.set_visible(False)
+        box.append(self.Suno_requests_header)
+        self._Suno_identity: dict | None = None
+        self._Suno_identity_asked = False
         return box
 
-    def _sync_luma_sidebar(self, requests: int) -> None:
-        if not hasattr(self, "luma_requests_button"):
+    def _sync_Suno_sidebar(self, requests: int) -> None:
+        if not hasattr(self, "Suno_requests_button"):
             return
         showing = self.filter_mode == "requests"
-        self.luma_requests_button.set_visible(requests > 0 and not showing)
-        self.luma_requests_count.set_label(str(requests))
-        self.luma_requests_header.set_visible(showing)
+        self.Suno_requests_button.set_visible(requests > 0 and not showing)
+        self.Suno_requests_count.set_label(str(requests))
+        self.Suno_requests_header.set_visible(showing)
         if self.foot.filter_button is not None:
             self.foot.filter_button.set_sensitive(not showing)
-        _accessible(self.luma_requests_button, f"Message requests, {requests}")
-        ready = self._refresh_luma_identity()
-        self.luma_banner.set_visible(bool(ready and self._luma_identity is not None and not self._luma_identity.get("handle")))
+        _accessible(self.Suno_requests_button, f"Message requests, {requests}")
+        ready = self._refresh_Suno_identity()
+        self.Suno_banner.set_visible(bool(ready and self._Suno_identity is not None and not self._Suno_identity.get("handle")))
 
-    def _refresh_luma_identity(self) -> bool:
-        service = self._luma_service()
+    def _refresh_Suno_identity(self) -> bool:
+        service = self._Suno_service()
         ready = service is not None and service.provider.status.get("state") == "ready"
-        if ready and not self._luma_identity_asked:
-            self._luma_identity_asked = True
-            self.luma_call(service, "luma.identity", {}, self._luma_identity_loaded)
+        if ready and not self._Suno_identity_asked:
+            self._Suno_identity_asked = True
+            self.Suno_call(service, "Suno.identity", {}, self._Suno_identity_loaded)
         return ready
 
-    def _luma_identity_loaded(self, result, error) -> None:
+    def _Suno_identity_loaded(self, result, error) -> None:
         if error is not None:
-            self._luma_identity_asked = False  # asked again when the account next reports in
+            self._Suno_identity_asked = False  # asked again when the account next reports in
             return
-        self._luma_identity = result or {}
+        self._Suno_identity = result or {}
         self._reload_threads()
 
-    def luma_profile_changed(self, service) -> None:
-        self._luma_identity_asked = False
-        self._luma_identity = None
+    def Suno_profile_changed(self, service) -> None:
+        self._Suno_identity_asked = False
+        self._Suno_identity = None
         self._reload_threads()
 
-    def luma_conversation_changed(self, service, conversation: str) -> None:
+    def Suno_conversation_changed(self, service, conversation: str) -> None:
         if service is self.service and conversation == self.current_address:
-            self._sync_luma_thread()
+            self._sync_Suno_thread()
         self._reload_threads()
 
-    def _show_luma_requests(self, show: bool) -> None:
+    def _show_Suno_requests(self, show: bool) -> None:
         self.filter_mode = "requests" if show else self.foot.filter or "all"
         self._reload_threads()
 
-    def luma_call(self, service, command: str, args: dict, done) -> None:
-        """Ask the Luma helper off the main thread; ``done(result, error)`` runs on it."""
+    def Suno_call(self, service, command: str, args: dict, done) -> None:
+        """Ask the Suno helper off the main thread; ``done(result, error)`` runs on it."""
         provider = service.provider
 
         def work() -> None:
             try:
-                result, error = provider.luma_call(command, args), None
+                result, error = provider.Suno_call(command, args), None
             except Exception as problem:  # BridgeError, or the agent not answering
                 result = None
-                error = problem if hasattr(problem, "code") else type("Failure", (), {"code": "error", "message": "Luma didn't answer."})()
+                error = problem if hasattr(problem, "code") else type("Failure", (), {"code": "error", "message": "Suno didn't answer."})()
                 if not getattr(error, "message", ""):
-                    error.message = str(problem) or "Luma didn't answer."
+                    error.message = str(problem) or "Suno didn't answer."
             GLib.idle_add(lambda: (None if self.closed else done(result, error), GLib.SOURCE_REMOVE)[1])
-        threading.Thread(target=work, daemon=True, name="messages-luma-call").start()
+        threading.Thread(target=work, daemon=True, name="messages-Suno-call").start()
 
-    def _show_luma_profile(self, *_args, start_with: str = "") -> None:
-        service = self._luma_service()
+    def _show_Suno_profile(self, *_args, start_with: str = "") -> None:
+        service = self._Suno_service()
         if service is None:
             # Connect may have enrolled after this window opened. Use the
             # existing account/provider path at explicit user intent, without
@@ -3412,47 +3412,47 @@ class MessagesWindow(AppWindow):
                 from .messages_app_client import sandboxed
                 if sandboxed():
                     self.agent.call('Reload')
-                    account = next((a for a in self.accounts.list() if a.network == 'luma'), None)
+                    account = next((a for a in self.accounts.list() if a.network == 'Suno'), None)
                 else:
-                    account = luma.ensure_account(self.accounts, helper_dir=self.helper_directory)
+                    account = Suno.ensure_account(self.accounts, helper_dir=self.helper_directory)
                 if account is not None:
                     self.account_added(account)
-                    service = self._luma_service()
+                    service = self._Suno_service()
             except (OSError, ValueError, KeyError):
-                self._notice("Luma Messages couldn't load this computer's account. Try again or reopen Messages.")
+                self._notice("Suno Messages couldn't load this computer's account. Try again or reopen Messages.")
                 return
         if service is None:
             from .messages_app_client import sandboxed
-            problem = (json.loads(self.agent.call('ApplicationInfo')[0])['luma_problem'] if sandboxed()
-                       else luma.setup_problem(helper_dir=self.helper_directory))
+            problem = (json.loads(self.agent.call('ApplicationInfo')[0])['Suno_problem'] if sandboxed()
+                       else Suno.setup_problem(helper_dir=self.helper_directory))
             self._notice(problem)
             return
-        from .messages_luma_ui import LumaProfileDialog
-        self.luma_dialog = LumaProfileDialog(self, service, start_with=start_with)
-        self.luma_dialog.present(self)
+        from .messages_Suno_ui import SunoProfileDialog
+        self.Suno_dialog = SunoProfileDialog(self, service, start_with=start_with)
+        self.Suno_dialog.present(self)
 
-    def open_luma_link(self, text: str) -> None:
-        handle = luma.handle_from(text)
+    def open_Suno_link(self, text: str) -> None:
+        handle = Suno.handle_from(text)
         if handle is None:
-            self._notice("That link isn't a Luma profile.")
+            self._notice("That link isn't a Suno profile.")
             return
-        service = self._luma_service()
+        service = self._Suno_service()
         if service is None:
-            self._notice("Luma Messages needs Luma Connect on this device. Sign in there first.")
+            self._notice("Suno Messages needs Suno Connect on this device. Sign in there first.")
             return
-        self.start_luma_conversation(service, handle, lambda error: error and self._notice(error.message))
+        self.start_Suno_conversation(service, handle, lambda error: error and self._notice(error.message))
 
-    def start_luma_conversation(self, service, handle: str, done) -> None:
+    def start_Suno_conversation(self, service, handle: str, done) -> None:
         """Validate the selected account before opening a writable conversation.
 
         The helper owns self conversations and their other enrolled devices.
         The UI checks actual account/device availability before opening it.
         """
-        self._luma_conversation_generation = getattr(self, "_luma_conversation_generation", 0) + 1
-        generation = self._luma_conversation_generation
+        self._Suno_conversation_generation = getattr(self, "_Suno_conversation_generation", 0) + 1
+        generation = self._Suno_conversation_generation
 
         def active():
-            return not self.closed and generation == self._luma_conversation_generation
+            return not self.closed and generation == self._Suno_conversation_generation
 
         def identity_loaded(identity, error):
             if not active():
@@ -3461,7 +3461,7 @@ class MessagesWindow(AppWindow):
                 done(error); return
             own = str((identity or {}).get("account") or "")
             if not own:
-                done(type("Refusal", (), {"code": "identity_unavailable", "message": "Luma Messages couldn't verify your account. Try again after it reconnects."})())
+                done(type("Refusal", (), {"code": "identity_unavailable", "message": "Suno Messages couldn't verify your account. Try again after it reconnects."})())
                 return
 
             def found(person, error) -> None:
@@ -3470,9 +3470,9 @@ class MessagesWindow(AppWindow):
                 if error is not None:
                     done(error); return
                 account = str((person or {}).get("account") or "")
-                name = luma.public_person_name(person, handle)
+                name = Suno.public_person_name(person, handle)
                 if not account:
-                    done(type("Refusal", (), {"code": "handle_unknown", "message": f"No one on Luma has the username @{handle}."})())
+                    done(type("Refusal", (), {"code": "handle_unknown", "message": f"No one on Suno has the username @{handle}."})())
                     return
                 if (person or {}).get("blocked"):
                     done(type("Refusal", (), {"code": "blocked_by_you", "message": f"You blocked {name}. Unblock them to send a message."})())
@@ -3484,7 +3484,7 @@ class MessagesWindow(AppWindow):
                     if error is not None:
                         done(error); return
                     if not (listing or {}).get("devices"):
-                        done(type("Refusal", (), {"code": "not_on_luma", "message": f"{name} hasn't set up Luma Messages yet."})())
+                        done(type("Refusal", (), {"code": "not_on_Suno", "message": f"{name} hasn't set up Suno Messages yet."})())
                         return
                     address = f"u:{account}"
                     record = next((item for item in service.store.threads() if item.address == address), None)
@@ -3497,61 +3497,61 @@ class MessagesWindow(AppWindow):
                     self._open_thread(record, reveal=True, service=service)
                     self.composer_view.grab_focus()
                     done(None)
-                self.luma_call(service, "luma.devices", {"account": account}, devices)
-            self.luma_call(service, "luma.people", {"handle": handle}, found)
-        self.luma_call(service, "luma.identity", {}, identity_loaded)
+                self.Suno_call(service, "Suno.devices", {"account": account}, devices)
+            self.Suno_call(service, "Suno.people", {"handle": handle}, found)
+        self.Suno_call(service, "Suno.identity", {}, identity_loaded)
 
-    def _sync_luma_thread(self) -> None:
-        on = luma.is_luma(self.service) and bool(self.current_address)
-        flags = luma.conversation_flags(self.service, self.current_address) if on else {}
+    def _sync_Suno_thread(self) -> None:
+        on = Suno.is_Suno(self.service) and bool(self.current_address)
+        flags = Suno.conversation_flags(self.service, self.current_address) if on else {}
         group = on and self.service.store.conversation_kind(self.current_address) == "group"
-        self.luma_button.set_visible(on and not flags.get("removed"))
+        self.Suno_button.set_visible(on and not flags.get("removed"))
         request = bool(flags.get("request"))
         if request:
-            self.luma_request_bar.show_for(self.current_name, str(flags.get("handle") or ""), group)
-        self.luma_request_bar.set_visible(request)
+            self.Suno_request_bar.show_for(self.current_name, str(flags.get("handle") or ""), group)
+        self.Suno_request_bar.set_visible(request)
         self.composer_region.set_visible(not request and self.detail_stack.get_visible_child_name() == "conversation")
-        self.luma_notice.set_visible(on and not group and self.luma_notice.show_for(self.current_name, flags))
+        self.Suno_notice.set_visible(on and not group and self.Suno_notice.show_for(self.current_name, flags))
 
-    def _fill_luma_menu(self, button: Gtk.MenuButton) -> None:
+    def _fill_Suno_menu(self, button: Gtk.MenuButton) -> None:
         service, address, name = self.service, self.current_address, self.current_name
-        flags = luma.conversation_flags(service, address) if address else {}
+        flags = Suno.conversation_flags(service, address) if address else {}
         group = service.store.conversation_kind(address) == "group" if address else False
         box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=2)
-        box.add_css_class("messages-luma-menu")
+        box.add_css_class("messages-Suno-menu")
         head = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=4)
-        head.add_css_class("messages-luma-menu-head")
-        from .messages_luma_ui import encrypted_badge
+        head.add_css_class("messages-Suno-menu-head")
+        from .messages_Suno_ui import encrypted_badge
         head.append(encrypted_badge("Verified · End-to-end encrypted" if flags.get("verified") else "End-to-end encrypted"))
-        explain = Gtk.Label(label="Messages and photos here are encrypted on your devices. Luma can't read them.",
+        explain = Gtk.Label(label="Messages and photos here are encrypted on your devices. Suno can't read them.",
                             wrap=True, xalign=0, max_width_chars=34)
-        explain.add_css_class("messages-luma-menu-detail")
+        explain.add_css_class("messages-Suno-menu-detail")
         head.append(explain)
         box.append(head)
         popover = Gtk.Popover(child=box)
 
         def item(label: str, action, destructive: bool = False) -> None:
             entry = Gtk.Button(label=label)
-            entry.add_css_class("flat"); entry.add_css_class("messages-luma-menu-item")
+            entry.add_css_class("flat"); entry.add_css_class("messages-Suno-menu-item")
             if destructive: entry.add_css_class("destructive")
             entry.get_child().set_xalign(0)
             entry.connect("clicked", lambda *_: (popover.popdown(), action()))
             box.append(entry)
-        own = str((self._luma_identity or {}).get('account') or '')
+        own = str((self._Suno_identity or {}).get('account') or '')
         if not group and flags.get("account") and flags.get('account') != own and not flags.get("request"):
-            item("Safety Number", self._show_luma_safety)
+            item("Safety Number", self._show_Suno_safety)
         if flags.get("handle"):
             item(f"Copy {flags['handle']}", lambda: Gdk.Display.get_default().get_clipboard().set(str(flags["handle"])))
         person = str(flags.get("account") or flags.get("request_from") or "")
         if person and person != own:
-            item("Report…", self._report_luma)
-            item(f"Block {name}" if not group else "Block the person who added you", self._block_luma, destructive=True)
+            item("Report…", self._report_Suno)
+            item(f"Block {name}" if not group else "Block the person who added you", self._block_Suno, destructive=True)
         button.set_popover(popover)
 
-    def _answer_luma_request(self, answer: str) -> None:
+    def _answer_Suno_request(self, answer: str) -> None:
         service, address = self.service, self.current_address
         if answer == "block":
-            self._block_luma(); return
+            self._block_Suno(); return
 
         def done(_result, error) -> None:
             if error is not None:
@@ -3559,19 +3559,19 @@ class MessagesWindow(AppWindow):
             if answer == "declined":
                 self._show_nothing_selected()
             else:
-                self._show_luma_requests(False)
-                self._sync_luma_thread()
+                self._show_Suno_requests(False)
+                self._sync_Suno_thread()
             self._reload_threads()
-        self.luma_call(service, "luma.request.answer", {"conversation": address, "state": answer}, done)
+        self.Suno_call(service, "Suno.request.answer", {"conversation": address, "state": answer}, done)
 
-    def _show_luma_safety(self) -> None:
-        from .messages_luma_ui import SafetyNumberDialog
-        self.luma_safety_dialog = SafetyNumberDialog(self, self.service, self.current_address, self.current_name)
-        self.luma_safety_dialog.present(self)
+    def _show_Suno_safety(self) -> None:
+        from .messages_Suno_ui import SafetyNumberDialog
+        self.Suno_safety_dialog = SafetyNumberDialog(self, self.service, self.current_address, self.current_name)
+        self.Suno_safety_dialog.present(self)
 
-    def _block_luma(self) -> None:
+    def _block_Suno(self) -> None:
         service, address, name = self.service, self.current_address, self.current_name
-        flags = luma.conversation_flags(service, address)
+        flags = Suno.conversation_flags(service, address)
         account = str(flags.get("request_from") or flags.get("account") or "")
         dialog = Adw.AlertDialog(heading=f"Block {name}?",
                                  body="They won't be able to message you or add you to groups. They aren't told.")
@@ -3587,20 +3587,20 @@ class MessagesWindow(AppWindow):
                     self._notice(error.message); return
                 self._notice(f"{name} is blocked.")
                 self._show_nothing_selected()
-            self.luma_call(service, "luma.block", {"account": account, "conversation": address, "on": True}, done)
+            self.Suno_call(service, "Suno.block", {"account": account, "conversation": address, "on": True}, done)
         dialog.connect("response", answered)
         dialog.present(self)
 
-    def _report_luma(self) -> None:
+    def _report_Suno(self) -> None:
         service, address, name = self.service, self.current_address, self.current_name
-        flags = luma.conversation_flags(service, address)
+        flags = Suno.conversation_flags(service, address)
         account = str(flags.get("request_from") or flags.get("account") or "")
         recent = [(message.transport_id.split(":", 1)[1], message.body) for message in self._thread_messages(address)
                   if message.direction == "incoming" and message.body and message.transport_id
-                  and message.transport_id.startswith("luma:")][-10:]
-        from .messages_luma_ui import ReportDialog
-        self.luma_report_dialog = ReportDialog(self, service, address, account, name, recent)
-        self.luma_report_dialog.present(self)
+                  and message.transport_id.startswith("Suno:")][-10:]
+        from .messages_Suno_ui import ReportDialog
+        self.Suno_report_dialog = ReportDialog(self, service, address, account, name, recent)
+        self.Suno_report_dialog.present(self)
 
     def _key_pressed(self, _controller, keyval, _keycode, state) -> bool:
         name = Gdk.keyval_name(keyval) or ""
@@ -3720,8 +3720,8 @@ class MessagesApplication(Adw.Application):
         super().__init__(application_id=APPLICATION_ID, flags=Gio.ApplicationFlags.HANDLES_COMMAND_LINE); self.pending_address = ""
         self.message_provider = message_provider
     def do_startup(self) -> None:
-        from luma_appkit import install_lumaui
-        Adw.Application.do_startup(self); install_appkit(); install_lumaui(); install_theme(); install_messages_theme()
+        from Suno_appkit import install_SunoUI
+        Adw.Application.do_startup(self); install_appkit(); install_SunoUI(); install_theme(); install_messages_theme()
         # A notification names the conversation it came from, so clicking it
         # opens that one rather than merely raising the window.
         open_conversation = Gio.SimpleAction.new(
@@ -3750,12 +3750,12 @@ class MessagesApplication(Adw.Application):
         window.show_conversation(address)
         self.withdraw_notification(f"message:{address}")
     def do_activate(self) -> None:
-        from .messages_app_port import LumaUIMessagesWindow
+        from .messages_app_port import SunoUIMessagesWindow
         from .messages_app_client import HostServiceUnavailable
         window = self._window()
         if window is None:
             try:
-                window = LumaUIMessagesWindow(self)
+                window = SunoUIMessagesWindow(self)
             except HostServiceUnavailable as error:
                 window = AppWindow(application=self, app_id=APPLICATION_ID, title='Messages',
                     icon_name=APPLICATION_ID, commands=CommandRegistry(()), default_width=560, default_height=380,
@@ -3782,14 +3782,14 @@ class MessagesApplication(Adw.Application):
             # A notification from the agent names the conversation it announced.
             self._show_conversation(conversation)
             return 0
-        link = next((item for item in arguments[1:] if item.startswith(f"{luma.APP_SCHEME}://") or
+        link = next((item for item in arguments[1:] if item.startswith(f"{Suno.APP_SCHEME}://") or
                      item.startswith("https://simplyluma.com/@")), "")
         if link:
-            # A Luma profile link or QR code (ADR-051): open a conversation with them.
+            # A Suno profile link or QR code (ADR-051): open a conversation with them.
             self.activate()
             window = self._window()
             if window is not None and not getattr(window, '_service_unavailable', False):
-                window.open_luma_link(link)
+                window.open_Suno_link(link)
             return 0
         self.pending_address = next((item for item in arguments[1:] if item.startswith("sms:")), ""); self.activate(); return 0
 
@@ -3818,7 +3818,7 @@ def _release_popover(popover: Gtk.Popover) -> None:
 
 
 def _agent_turned_off() -> bool:
-    """Whether the person turned Messages' background activity off (luma-background's decision)."""
+    """Whether the person turned Messages' background activity off (Suno-background's decision)."""
     try:
         from .background_agent import agent_allowed
         return agent_allowed(Gio.bus_get_sync(Gio.BusType.SESSION, None), APPLICATION_ID) is False

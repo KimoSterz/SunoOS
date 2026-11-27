@@ -10,7 +10,7 @@ section: Kit
 # Background agents
 
 Some apps are only useful if they keep working when their windows are closed:
-a message arrives, a reminder is due, an alarm goes off. On Luma such an app
+a message arrives, a reminder is due, an alarm goes off. On Suno such an app
 does not keep its whole interface running. It ships a **background agent**: a
 small process with no windows that the system starts, wakes and limits.
 
@@ -19,17 +19,17 @@ People see agents only where they look for them. There is no tray icon and no
 its dock menu and a row in **Settings › Apps › Background Activity**, and the
 agent shows up as the notifications, Live Extensions and badges it produces.
 
-> **Status: preview.** The `luma-background` service (version 0.1, D-Bus
-> interface version 2) is part of the Luma desktop image. The Python and C
-> APIs below are in `luma_appkit` and `LumaSemantics-1`.
+> **Status: preview.** The `Suno-background` service (version 0.1, D-Bus
+> interface version 2) is part of the Suno desktop image. The Python and C
+> APIs below are in `Suno_appkit` and `SunoSemantics-1`.
 
 ## How it works
 
-`luma-background` is a session service. It reads your declaration, applies the
+`Suno-background` is a session service. It reads your declaration, applies the
 person's decision, and runs your agent as a systemd user unit named
 `app-<app-id>-agent.service` with your category's limits. It wakes the agent at
 login, when the network comes online, after sleep, and on schedules. Your agent
-owns a D-Bus name, implements `org.projectluma.BackgroundAgent1`, and publishes
+owns a D-Bus name, implements `org.projectSuno.BackgroundAgent1`, and publishes
 values that the dock and Live Extensions read.
 
 It never runs your code with more rights than your app has: a native agent
@@ -38,7 +38,7 @@ through `flatpak run` inside the app's sandbox.
 
 ## Declaring an agent
 
-Add a `[background]` table to `luma-app.toml`:
+Add a `[background]` table to `Suno-app.toml`:
 
 ```toml
 [background]
@@ -60,20 +60,20 @@ publishes = ["remaining", "resets-at", "live-extension:com.example.Usage.Remaini
 | `publishes` | array of strings | Optional. The value names the agent publishes, and `live-extension:<id>` for each Live Extension it publishes. Value names are 1 to 64 characters of lowercase letters, digits, `-`, `_` and `.`, starting with a letter. |
 
 A schema 0.2 manifest that declares `[background]` must also list
-`background` in `distribution.portals`. `luma lint` checks all of these rules,
-and `luma-background` applies the same ones to the installed file.
+`background` in `distribution.portals`. `Suno lint` checks all of these rules,
+and `Suno-background` applies the same ones to the installed file.
 
 ### Where the declaration is installed
 
-`luma-background` reads declarations only from installed places. Install your
-`luma-app.toml` (or a file with just `[application]` `id` and `name`, and
+`Suno-background` reads declarations only from installed places. Install your
+`Suno-app.toml` (or a file with just `[application]` `id` and `name`, and
 `[background]`) as `<app-id>.toml` in:
 
 | App | Path | Notes |
 | --- | --- | --- |
-| RPM or other system package | `/usr/share/luma/background/<app-id>.toml` | `exec` may name a separate helper if it is an absolute path to a root-owned executable under `/usr`. |
-| Flatpak | `share/luma/background/<app-id>.toml` under `/app` | Read from the installed deployment. The agent always runs as `flatpak run --command=<program> <app-id>`. |
-| Per-user install | `~/.local/share/luma/background/<app-id>.toml` | `exec`'s program must be the desktop file's `Exec` program. |
+| RPM or other system package | `/usr/share/Suno/background/<app-id>.toml` | `exec` may name a separate helper if it is an absolute path to a root-owned executable under `/usr`. |
+| Flatpak | `share/Suno/background/<app-id>.toml` under `/app` | Read from the installed deployment. The agent always runs as `flatpak run --command=<program> <app-id>`. |
+| Per-user install | `~/.local/share/Suno/background/<app-id>.toml` | `exec`'s program must be the desktop file's `Exec` program. |
 
 A declaration is ignored, with a journal message saying why, unless a desktop
 file `<app-id>.desktop` for the same ID is installed and the declaration
@@ -102,8 +102,8 @@ before anything the person is using.
 
 Who is on by default:
 
-- **A few system-installed Luma apps** (messaging, phone, calendar, clock,
-  mail and Luma Connect) are on. Settings shows them as **Always On**; people
+- **A few system-installed Suno apps** (messaging, phone, calendar, clock,
+  mail and Suno Connect) are on. Settings shows them as **Always On**; people
   can still turn them off and are told what they will miss.
 - **Everything else** asks once, the first time the app requests background
   activity: "Let *App* work in the background?" with the category sentence,
@@ -115,7 +115,7 @@ itself Always On.
 
 ## Writing an agent in Python
 
-`luma_appkit.background` does not import GTK, so your agent process stays
+`Suno_appkit.background` does not import GTK, so your agent process stays
 small because it never loads your interface.
 
 ```python
@@ -123,7 +123,7 @@ small because it never loads your interface.
 import sys
 from datetime import timedelta
 
-from luma_appkit.background import Agent, LiveExtensionBinding, from_agent, run_agent
+from Suno_appkit.background import Agent, LiveExtensionBinding, from_agent, run_agent
 
 
 class UsageAgent(Agent):
@@ -185,14 +185,14 @@ if __name__ == "__main__":
 `argv` (default `sys.argv`), so the same executable serves the app and its
 agent, as the declaration's `exec` expects.
 
-Agents are started by `luma-background`, not by your app. Running
+Agents are started by `Suno-background`, not by your app. Running
 `usage-meter --agent` by hand works for development; the agent then logs that
 it is unmanaged and receives no wakes.
 
 ### Asking for background activity
 
 ```python
-from luma_appkit.background import request_background
+from Suno_appkit.background import request_background
 
 def on_first_account_added(window):
     request_background(
@@ -207,7 +207,7 @@ def on_first_account_added(window):
 parent_window="", callback=None)` uses the standard Background portal
 (`org.freedesktop.portal.Background.RequestBackground`, with `--agent` appended
 to your command when `commandline` is `None`) when the app is sandboxed, and
-`org.projectluma.Background1.RequestBackground` when it is not. Both reach the
+`org.projectSuno.Background1.RequestBackground` when it is not. Both reach the
 same decision. `reason` is at most 256 characters. The callback receives a
 `BackgroundResult` with `allowed`, `autostart` and `response` (`0` allowed,
 `1` declined, `2` no answer).
@@ -264,7 +264,7 @@ value **`badge`**:
 | `0`, or anything else | | Nothing. |
 
 ```python
-from luma_appkit.background import BADGE_DOT
+from Suno_appkit.background import BADGE_DOT
 
 self.set_badge(unread)        # publishes badge = unread, as an unsigned count
 self.set_badge(BADGE_DOT)     # something new, no number
@@ -282,52 +282,52 @@ self.set_badge(None)          # stop publishing a badge
 - **People decide.** Settings › Notifications › *App* › **Badge app icon**
   turns an app's badge off. Do Not Disturb does not hide badges.
 - In C, publish it like any value:
-  `luma_background_agent_publish (agent, "badge", g_variant_new_uint32 (3), NULL)`.
+  `Suno_background_agent_publish (agent, "badge", g_variant_new_uint32 (3), NULL)`.
 
 ## Writing an agent in C
 
-`LumaBackgroundAgent` in `LumaSemantics-1` (`pkg-config luma-semantics-1`) is
+`SunoBackgroundAgent` in `SunoSemantics-1` (`pkg-config Suno-semantics-1`) is
 the C and introspection equivalent of the Python class.
 
 ```c
-#include <luma-semantics.h>
+#include <Suno-semantics.h>
 
 static void
-on_wake (LumaBackgroundAgent *agent, const char *reason, GVariant *details, gpointer data)
+on_wake (SunoBackgroundAgent *agent, const char *reason, GVariant *details, gpointer data)
 {
-  luma_background_agent_publish (agent, "unread", g_variant_new_uint32 (3), NULL);
+  Suno_background_agent_publish (agent, "unread", g_variant_new_uint32 (3), NULL);
 }
 
 int
 main (int argc, char **argv)
 {
-  g_autoptr (LumaBackgroundAgent) agent =
-    luma_background_agent_new ("org.example.Chat", "org.example.Chat.Agent");
+  g_autoptr (SunoBackgroundAgent) agent =
+    Suno_background_agent_new ("org.example.Chat", "org.example.Chat.Agent");
   g_signal_connect (agent, "wake", G_CALLBACK (on_wake), NULL);
-  return luma_background_agent_run (agent, argc, argv);
+  return Suno_background_agent_run (agent, argc, argv);
 }
 ```
 
-`LumaBackgroundAgent` provides `publish`, `unpublish`, `dup_values`,
+`SunoBackgroundAgent` provides `publish`, `unpublish`, `dup_values`,
 `schedule_at`, `schedule_every`, `unschedule`, `register` (for an agent that
 shares a main loop you already run), `run`, `quit`, the `start`, `wake` and
-`stop` signals, and `luma_background_agent_is_requested (argc, argv)` for the
+`stop` signals, and `Suno_background_agent_is_requested (argc, argv)` for the
 `--agent` switch. `wake` receives the reason and an `a{sv}` with optional
 `schedule` (s) and `missed` (b). Errors are in the
-`LUMA_BACKGROUND_AGENT_ERROR` domain: `INVALID`, `NOT_RUNNING` and `REFUSED`.
+`SUNO_BACKGROUND_AGENT_ERROR` domain: `INVALID`, `NOT_RUNNING` and `REFUSED`.
 
 ## The D-Bus contract
 
 Use the Python or C API when you can. This is what those APIs use, and what
 another toolkit would implement.
 
-### `org.projectluma.BackgroundAgent1`
+### `org.projectSuno.BackgroundAgent1`
 
 Implemented by every agent on its own bus name, object
-`/org/projectluma/BackgroundAgent1`.
+`/org/projectSuno/BackgroundAgent1`.
 
 ```xml
-<interface name="org.projectluma.BackgroundAgent1">
+<interface name="org.projectSuno.BackgroundAgent1">
   <method name="Wake">
     <arg name="reason" type="s" direction="in"/>
     <arg name="details" type="a{sv}" direction="in"/>
@@ -337,15 +337,15 @@ Implemented by every agent on its own bus name, object
 </interface>
 ```
 
-`Wake` is accepted only from the owner of `org.projectluma.Background1`;
+`Wake` is accepted only from the owner of `org.projectSuno.Background1`;
 `details` may contain `schedule` (s) and `missed` (b). `Values` changes are
 announced with `org.freedesktop.DBus.Properties.PropertiesChanged`. A client
 reads a single value `v` as `Values[v]`.
 
-### `org.projectluma.Background1`
+### `org.projectSuno.Background1`
 
-The service: bus name and interface `org.projectluma.Background1`, object
-`/org/projectluma/Background1`, on the session bus. Callers are identified
+The service: bus name and interface `org.projectSuno.Background1`, object
+`/org/projectSuno/Background1`, on the session bus. Callers are identified
 from their D-Bus credentials (the process's systemd unit or Flatpak sandbox),
 never from an argument. The methods an app uses:
 
@@ -359,14 +359,14 @@ never from an argument. The methods an app uses:
 
 `ListAgents`, `GetAgent`, `Wake`, the login-item methods and the
 `AgentsChanged` and `AgentChanged` signals are for Settings and the dock. Use
-`luma-background status <app-id> --json` to see the agent record they read.
-Errors are `org.projectluma.Background1.Error.NotFound`, `.NotAuthorized` and
+`Suno-background status <app-id> --json` to see the agent record they read.
+Errors are `org.projectSuno.Background1.Error.NotFound`, `.NotAuthorized` and
 `.InvalidArgument`.
 
 ### The Background portal
 
-Flatpak apps use the standard `org.freedesktop.portal.Background`. On Luma,
-`luma-background` answers that portal, so sandboxed apps get the same
+Flatpak apps use the standard `org.freedesktop.portal.Background`. On Suno,
+`Suno-background` answers that portal, so sandboxed apps get the same
 decision, prompt and Settings switch as everything else:
 
 - A change made through the portal's own permission tools is taken as the
@@ -377,7 +377,7 @@ decision, prompt and Settings switch as everything else:
 
 ### Autostart entries while the agent is managed
 
-An app may keep an autostart entry for sessions without `luma-background`.
+An app may keep an autostart entry for sessions without `Suno-background`.
 Name the agent in it so the service can tell it apart:
 
 ```ini
@@ -386,23 +386,23 @@ Type=Application
 Name=Usage Meter
 Exec=usage-meter --agent --autostart
 NoDisplay=true
-X-Luma-Background-Agent=com.example.Usage.Agent
+X-Suno-Background-Agent=com.example.Usage.Agent
 ```
 
 While the service runs an app's agent, every autostart entry that would start
 the app a second time is masked: the portal's entry for the app and any entry
-naming the app's agent with `X-Luma-Background-Agent`. The entry's file name
+naming the app's agent with `X-Suno-Background-Agent`. The entry's file name
 must use only letters, digits, `_`, `.` and `-` to be masked. A native app that
 is managed should not ask the Background portal for autostart.
 
 ### Waking the computer for an alarm
 
-A session process cannot wake a suspended computer. `luma-background` includes
-`org.projectluma.BackgroundWake1` (object `/org/projectluma/BackgroundWake1`)
+A session process cannot wake a suspended computer. `Suno-background` includes
+`org.projectSuno.BackgroundWake1` (object `/org/projectSuno/BackgroundWake1`)
 on the **system** bus, which can, for the active local session:
 
 ```xml
-<interface name="org.projectluma.BackgroundWake1">
+<interface name="org.projectSuno.BackgroundWake1">
   <method name="SetWakeup">
     <arg name="name" type="s" direction="in"/>
     <arg name="time" type="x" direction="in"/>
@@ -424,7 +424,7 @@ on the **system** bus, which can, for the active local session:
 | `ClearWakeup` | Removes the wake-up of that name. |
 | `ListWakeups` | The caller's own wake-ups. |
 
-The polkit action `org.projectluma.background.wake-system` allows this for
+The polkit action `org.projectSuno.background.wake-system` allows this for
 the active local session without asking, and refuses it otherwise. Wake-ups
 do not survive a reboot. Waking is all it does: ring from your own wall-clock
 timer, and hold sleep off while you ring (logind `Inhibit` with `sleep:idle`
@@ -434,19 +434,19 @@ a little before it is due, and clear it when there is nothing left.
 ## Testing an agent
 
 ```sh
-luma lint luma-app.toml                      # checks [background]
-luma-background list                         # what the service sees
-luma-background status com.example.Usage     # one agent; add --json for every field
-journalctl --user LUMA_APP_ID=com.example.Usage
+Suno lint Suno-app.toml                      # checks [background]
+Suno-background list                         # what the service sees
+Suno-background status com.example.Usage     # one agent; add --json for every field
+journalctl --user SUNO_APP_ID=com.example.Usage
 ```
 
-The `luma-background` command also has `wake`, `allow`, `deny` and `stop`,
+The `Suno-background` command also has `wake`, `allow`, `deny` and `stop`,
 but they call methods that only Settings and the dock may use, so from a
 terminal they are refused. To start your agent with a `request` wake, turn its
 switch off and on in Settings › Apps › Background Activity or the dock menu.
 A declared `interval` gives you repeating `schedule` wakes. The service logs
 every start, wake, crash, limit and decision with the journal fields
-`LUMA_APP_ID` and `LUMA_BACKGROUND_EVENT`.
+`SUNO_APP_ID` and `SUNO_BACKGROUND_EVENT`.
 
 ## Review rules
 

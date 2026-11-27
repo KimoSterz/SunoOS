@@ -8,13 +8,13 @@
 set -Eeuo pipefail
 umask 077
 
-stage=/tmp/luma-fingerprint-qcomtee-keymaster-v24
+stage=/tmp/Suno-fingerprint-qcomtee-keymaster-v24
 expected_model='The Fairphone (Gen. 6)'
-expected_kernel=7.1.2-luma-fp-cma1
+expected_kernel=7.1.2-Suno-fp-cma1
 expected_boot_sha=c6acad3a30d944d59648258eef383c33a3b51ac1148a98ef24256ee4dee61dd8
 expected_config_sha=5bddfee4390b0f66de5709b99282e79ee3787a01749d5cc8d28ea82d6bbed7fe
 expected_module_sha=77ccd603bb4476dbbef1df72b3cd2e58f8b7399a693e5d96edcff77b5a505230
-marker=luma-qcomtee-keymaster-v24-baseline
+marker=Suno-qcomtee-keymaster-v24-baseline
 
 module_loaded=false
 cleaned=false
@@ -38,7 +38,7 @@ cleanup() {
     if [[ $module_loaded == true ]] && grep -qw qcomtee /proc/modules; then
       rmmod qcomtee || cleanup_status=1
     fi
-    if [[ -d $stage && ! -L $stage && $stage == /tmp/luma-fingerprint-qcomtee-keymaster-v24 ]]; then
+    if [[ -d $stage && ! -L $stage && $stage == /tmp/Suno-fingerprint-qcomtee-keymaster-v24 ]]; then
       find "$stage" -depth -delete || cleanup_status=1
     else
       cleanup_status=1
@@ -86,21 +86,21 @@ grep -qx '# CONFIG_QCOMTEE is not set' <<<"$runtime_config" || fail qcomtee_alre
 [[ $(cat /sys/module/firmware_class/parameters/path) == /lib/firmware/postmarketos ]] || fail firmware_path
 
 printf '<6>%s\n' "$marker" >/dev/kmsg
-insmod "$stage/qcomtee-control.ko" luma_keymaster_lookup=1
+insmod "$stage/qcomtee-control.ko" Suno_keymaster_lookup=1
 module_loaded=true
 grep -qw qcomtee /proc/modules || fail module_did_not_load
 new_dmesg=$(dmesg | sed -n "/$marker/,\$p")
 
 grep -Eq 'qcomtee: QTEE version [0-9]+\.[0-9]+\.[0-9]+' <<<"$new_dmesg" || fail qtee_version
-grep -Fq 'luma-control: begin app=keymaster loader_uid=122 ta_commands=0 biometric_commands=0' <<<"$new_dmesg" || fail control_begin
-grep -Fq 'luma-control: service uid=122 accepted' <<<"$new_dmesg" || fail compatibility_service
-grep -Eq 'luma-control: keymaster lookup accepted arch=[0-9]+ ta_commands=0' <<<"$new_dmesg" || fail keymaster_lookup
-grep -Fq 'luma-control: complete ta_commands=0 biometric_commands=0' <<<"$new_dmesg" || fail control_complete
-! grep -Eq 'luma-control: (.*failed|.*rejected|lookup transport=|keymaster lookup unavailable)' <<<"$new_dmesg" || fail control_error
+grep -Fq 'Suno-control: begin app=keymaster loader_uid=122 ta_commands=0 biometric_commands=0' <<<"$new_dmesg" || fail control_begin
+grep -Fq 'Suno-control: service uid=122 accepted' <<<"$new_dmesg" || fail compatibility_service
+grep -Eq 'Suno-control: keymaster lookup accepted arch=[0-9]+ ta_commands=0' <<<"$new_dmesg" || fail keymaster_lookup
+grep -Fq 'Suno-control: complete ta_commands=0 biometric_commands=0' <<<"$new_dmesg" || fail control_complete
+! grep -Eq 'Suno-control: (.*failed|.*rejected|lookup transport=|keymaster lookup unavailable)' <<<"$new_dmesg" || fail control_error
 [[ -z $(critical_faults <<<"$new_dmesg") ]] || fail critical_fault
 
 printf '%s\n' '--- qcomtee keymaster-lookup-v24 evidence ---'
-grep -E 'qcomtee: QTEE version|luma-control:' <<<"$new_dmesg"
+grep -E 'qcomtee: QTEE version|Suno-control:' <<<"$new_dmesg"
 printf '%s\n' '--- end qcomtee keymaster-lookup-v24 evidence ---'
 
 rmmod qcomtee

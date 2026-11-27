@@ -1,30 +1,30 @@
-From: Project Luma <builds@project-luma.local>
+From: Project Suno <builds@project-suno.local>
 Subject: [PATCH] shell: desktop app drawer and folder stacks on existing controller
 
 diff --git a/js/js-resources.gresource.xml b/js/js-resources.gresource.xml
 --- a/js/js-resources.gresource.xml
 +++ b/js/js-resources.gresource.xml
 @@ -160,6 +160,12 @@
-     <file>ui/lumaPresentation/statusGrid.js</file>
-     <file>ui/lumaPresentation/fillSlider.js</file>
-     <file>ui/lumaPresentation/optionsSurface.js</file>
-+    <file>ui/lumaPresentation/appDrawer.js</file>
-+    <file>ui/lumaPresentation/launcherFolders.js</file>
-+    <file>ui/lumaPresentation/fileFaces.js</file>
-+    <file>ui/lumaPresentation/launcherModel.js</file>
-+    <file>ui/lumaPresentation/launcherFolders.css</file>
-+    <file>ui/lumaPresentation/launcher.svg</file>
-     <file>ui/lumaPresentation/frameTokens.js</file>
-     <file>ui/lumaPresentation/switcherDrag.js</file>
+     <file>ui/SunoPresentation/statusGrid.js</file>
+     <file>ui/SunoPresentation/fillSlider.js</file>
+     <file>ui/SunoPresentation/optionsSurface.js</file>
++    <file>ui/SunoPresentation/appDrawer.js</file>
++    <file>ui/SunoPresentation/launcherFolders.js</file>
++    <file>ui/SunoPresentation/fileFaces.js</file>
++    <file>ui/SunoPresentation/launcherModel.js</file>
++    <file>ui/SunoPresentation/launcherFolders.css</file>
++    <file>ui/SunoPresentation/launcher.svg</file>
+     <file>ui/SunoPresentation/frameTokens.js</file>
+     <file>ui/SunoPresentation/switcherDrag.js</file>
      <file>ui/shelfMetrics.js</file>
-diff --git a/js/ui/lumaDockFolders.js b/js/ui/lumaDockFolders.js
---- a/js/ui/lumaDockFolders.js
-+++ b/js/ui/lumaDockFolders.js
+diff --git a/js/ui/SunoDockFolders.js b/js/ui/SunoDockFolders.js
+--- a/js/ui/SunoDockFolders.js
++++ b/js/ui/SunoDockFolders.js
 @@ -22,6 +22,7 @@
  // the rail is a part of the dock island, separated it is the 'folders' island,
  // placed and dragged like any other. One rail, one setting, no second copy.
  
-+import {LauncherFolders} from './lumaPresentation/launcherFolders.js';
++import {LauncherFolders} from './SunoPresentation/launcherFolders.js';
  import Atk from 'gi://Atk';
  import Clutter from 'gi://Clutter';
  import Gio from 'gi://Gio';
@@ -50,7 +50,7 @@ diff --git a/js/ui/lumaDockFolders.js b/js/ui/lumaDockFolders.js
 -        return [APPLICATIONS_URI, ...(downloads && downloads !== GLib.get_home_dir()
 -            ? [Gio.File.new_for_path(downloads).get_uri()] : [])];
 +        const directories = [GLib.UserDirectory.DIRECTORY_DOWNLOAD,
-+            ...((this._shelf._lumaPresentationMode ?? 'desktop') === 'desktop'
++            ...((this._shelf._SunoPresentationMode ?? 'desktop') === 'desktop'
 +                ? [GLib.UserDirectory.DIRECTORY_DOCUMENTS, GLib.UserDirectory.DIRECTORY_PICTURES] : [])];
 +        const paths = directories.map(kind => GLib.get_user_special_dir(kind))
 +            .filter(path => path && path !== GLib.get_home_dir());
@@ -176,16 +176,16 @@ diff --git a/js/ui/shelf.js b/js/ui/shelf.js
 @@ -518,7 +518,7 @@
          // Dock cross-axis padding belongs INSIDE the scroll viewport so lifted
          // artwork is not clipped at its resting tile bounds.
-         const insets = this._content.has_style_class_name('luma-shelf-clock-button')
+         const insets = this._content.has_style_class_name('Suno-shelf-clock-button')
 -            ? (this._vertical ? [padding,6,padding,6] : [0,16.5,0,16.5])
 +            ? (this._vertical ? [padding,6,padding,6] : [0,padding,0,padding])
              : this._content._statusActive ? (this._vertical ? [8.5,6,8.5,6] : [8.5,10.5,8.5,9])
-             : this._content._lumaDock
+             : this._content._SunoDock
              ? (this._vertical ? [padding, 0, padding, 0] : [0, padding, 0, padding])
 @@ -1075,6 +1075,7 @@
-         if ((this._lumaPresentationMode ?? 'desktop') === 'desktop' && mode !== 'desktop')
+         if ((this._SunoPresentationMode ?? 'desktop') === 'desktop' && mode !== 'desktop')
              this._restorePanelActors();
-         this._lumaPresentationMode = mode;
+         this._SunoPresentationMode = mode;
 +        this.dockFolders?._desktopUI?.sync();
          this._sync();
      }

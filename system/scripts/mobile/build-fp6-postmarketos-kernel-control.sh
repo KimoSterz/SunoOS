@@ -11,19 +11,19 @@ set -eu
 umask 022
 
 mode=${1:-baseline}
-source_dir=${2:-/var/tmp/luma-kernel-ifpc-test1}
-lab_dir=${3:-/var/tmp/luma-alpine-kernel-control-20260805}
-build_host_profile=${LUMA_PMOS_BUILD_HOST_PROFILE:-cross-x86_64}
-kernel_config=${LUMA_PMOS_KERNEL_CONFIG:-/var/tmp/config-postmarketos-qcom-milos.aarch64}
-btf_patch=${LUMA_PMOS_BTF_PATCH:-/var/tmp/linux7.0-resolve_btfids.patch}
-ifpc_patch=${LUMA_IFPC_PATCH:-/var/tmp/0001-drm-msm-a810-disable-ifpc-diagnostic.patch}
-gmu_diag_patch=${LUMA_GMU_DIAG_PATCH:-/var/tmp/0002-drm-msm-a810-gmu-timeout-diagnostics.patch}
-gmu_fence_patch=${LUMA_GMU_FENCE_PATCH:-/var/tmp/0003-drm-msm-a810-use-gen8-3-ahb-fence-range.patch}
-gmu_bootfreq_patch=${LUMA_GMU_BOOTFREQ_PATCH:-/var/tmp/0004-drm-msm-a810-use-gen8-3-gmu-boot-rate.patch}
-mirror=${LUMA_ALPINE_MIRROR:-https://dl-cdn.alpinelinux.org/alpine}
-mirror_host_ip=${LUMA_ALPINE_MIRROR_HOST_IP:-}
-jobs=${LUMA_KERNEL_BUILD_JOBS:-4}
-reuse_lab=${LUMA_REUSE_LAB:-false}
+source_dir=${2:-/var/tmp/Suno-kernel-ifpc-test1}
+lab_dir=${3:-/var/tmp/Suno-alpine-kernel-control-20260805}
+build_host_profile=${SUNO_PMOS_BUILD_HOST_PROFILE:-cross-x86_64}
+kernel_config=${SUNO_PMOS_KERNEL_CONFIG:-/var/tmp/config-postmarketos-qcom-milos.aarch64}
+btf_patch=${SUNO_PMOS_BTF_PATCH:-/var/tmp/linux7.0-resolve_btfids.patch}
+ifpc_patch=${SUNO_IFPC_PATCH:-/var/tmp/0001-drm-msm-a810-disable-ifpc-diagnostic.patch}
+gmu_diag_patch=${SUNO_GMU_DIAG_PATCH:-/var/tmp/0002-drm-msm-a810-gmu-timeout-diagnostics.patch}
+gmu_fence_patch=${SUNO_GMU_FENCE_PATCH:-/var/tmp/0003-drm-msm-a810-use-gen8-3-ahb-fence-range.patch}
+gmu_bootfreq_patch=${SUNO_GMU_BOOTFREQ_PATCH:-/var/tmp/0004-drm-msm-a810-use-gen8-3-gmu-boot-rate.patch}
+mirror=${SUNO_ALPINE_MIRROR:-https://dl-cdn.alpinelinux.org/alpine}
+mirror_host_ip=${SUNO_ALPINE_MIRROR_HOST_IP:-}
+jobs=${SUNO_KERNEL_BUILD_JOBS:-4}
+reuse_lab=${SUNO_REUSE_LAB:-false}
 
 source_commit=dfe0125e73541d1984e4d2d37bd069a036bf0451
 config_sha=9bf4fd8e395147f5eb696d2887e7c40d5a5e124a4d27584babeec830ed5d3fb2
@@ -36,17 +36,17 @@ pmaports_commit=e5422fadf556c3f632f7619a23b13d80f0214a2c
 
 case "$build_host_profile" in
   cross-x86_64)
-    minirootfs=${LUMA_ALPINE_MINIROOTFS:-/var/tmp/alpine-minirootfs-20260805-x86_64.tar.gz}
+    minirootfs=${SUNO_ALPINE_MINIROOTFS:-/var/tmp/alpine-minirootfs-20260805-x86_64.tar.gz}
     minirootfs_sha=5acac12c425a0817c1b6a79bdd5df4c73756fc8dc268eab32f8ba830872b835d
     expected_chroot_arch=x86_64
     ;;
   native-aarch64)
-    minirootfs=${LUMA_ALPINE_MINIROOTFS:-/var/tmp/alpine-minirootfs-20260805-aarch64.tar.gz}
+    minirootfs=${SUNO_ALPINE_MINIROOTFS:-/var/tmp/alpine-minirootfs-20260805-aarch64.tar.gz}
     minirootfs_sha=78525fd3dc43e1bc7a1996cc036715316196ee435b6991c3a6959be3d3988e57
     expected_chroot_arch=aarch64
     ;;
   *)
-    printf 'error: LUMA_PMOS_BUILD_HOST_PROFILE must be cross-x86_64 or native-aarch64\n' >&2
+    printf 'error: SUNO_PMOS_BUILD_HOST_PROFILE must be cross-x86_64 or native-aarch64\n' >&2
     exit 1
     ;;
 esac
@@ -64,19 +64,19 @@ case "$mode" in
 esac
 case "$jobs" in
   ''|*[!0-9]*)
-    printf 'error: LUMA_KERNEL_BUILD_JOBS must be a positive integer\n' >&2
+    printf 'error: SUNO_KERNEL_BUILD_JOBS must be a positive integer\n' >&2
     exit 1
     ;;
 esac
 case "$reuse_lab" in
   true|false) ;;
   *)
-    printf 'error: LUMA_REUSE_LAB must be true or false\n' >&2
+    printf 'error: SUNO_REUSE_LAB must be true or false\n' >&2
     exit 1
     ;;
 esac
 [ "$jobs" -ge 1 ] || {
-  printf 'error: LUMA_KERNEL_BUILD_JOBS must be at least 1\n' >&2
+  printf 'error: SUNO_KERNEL_BUILD_JOBS must be at least 1\n' >&2
   exit 1
 }
 [ "$(id -u)" -eq 0 ] || {
@@ -409,7 +409,7 @@ decompressed_size=$(wc -c <"$output_dir/Image" | tr -d ' ')
 tool_versions=$(chroot "$rootfs" /bin/sh -c \
   "apk info -v clang lld llvm pahole | tr '\n' ' '")
 {
-  printf 'LUMA_FP6_PMOS_KERNEL_CONTROL_VERSION=1\n'
+  printf 'SUNO_FP6_PMOS_KERNEL_CONTROL_VERSION=1\n'
   printf 'MODE=%s\n' "$mode"
   printf 'BUILD_HOST_PROFILE=%s\n' "$build_host_profile"
   printf 'REUSED_LAB=%s\n' "$reuse_lab"

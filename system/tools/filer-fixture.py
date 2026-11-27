@@ -177,7 +177,7 @@ def materialize(fixture: dict, root: Path, images: Path, today: dt.date | None =
     applications = root / "Profile" / "data" / "applications"
     applications.mkdir(mode=0o700)
     (applications / "org.gnome.Nautilus.desktop").write_text(
-        "[Desktop Entry]\nType=Application\nName=Filer\nIcon=luma-v3-files\n"
+        "[Desktop Entry]\nType=Application\nName=Filer\nIcon=Suno-v3-files\n"
         "Exec=nautilus\nCategories=Utility;FileManager;\n"
     )
     cache = root / "Profile" / "cache" / "thumbnails"

@@ -62,11 +62,11 @@ async function keyboardChecks() {
     const rows = keyboard._currentPage?.getRatio()[1] ?? 0;
     check(`Keycap rows are touch size (${tag})`, rows === 4 && Math.min(...keyHeights) >= 34,
         `rows ${rows}, cap heights ${Math.min(...keyHeights)}-${Math.max(...keyHeights)}, keyboard ${keyboard.height}`);
-    check('light variant follows the Shell', keyboard.has_style_class_name('luma-keycap-light'));
-    check('Enter and space carry Keycap roles', keys.some(k => k.has_style_class_name('luma-keycap-enter')) &&
-        keys.some(k => k.has_style_class_name('luma-keycap-space')));
+    check('light variant follows the Shell', keyboard.has_style_class_name('Suno-keycap-light'));
+    check('Enter and space carry Keycap roles', keys.some(k => k.has_style_class_name('Suno-keycap-enter')) &&
+        keys.some(k => k.has_style_class_name('Suno-keycap-space')));
     check('top row shows ten number hints',
-        descendants(keyboard, a => a.has_style_class_name?.('luma-keycap-hint') && a.mapped).length === 10);
+        descendants(keyboard, a => a.has_style_class_name?.('Suno-keycap-hint') && a.mapped).length === 10);
     check('tool strip shows five tools', keyboard._tools.visible &&
         keyboard._toolButtons.filter(button => button.visible).length === 5);
     const cap = keys.find(k => k.get_label?.() === 'q' || descendants(k, a => a.text === 'q').length);
@@ -82,15 +82,15 @@ async function keyboardChecks() {
     const iface = new Gio.Settings({schema_id: 'org.gnome.desktop.interface'});
     iface.set_string('color-scheme', 'prefer-dark');
     await sleep(1500);
-    check('dark variant follows the Shell', keyboard.has_style_class_name('luma-keycap-dark'),
+    check('dark variant follows the Shell', keyboard.has_style_class_name('Suno-keycap-dark'),
         `variant ${Main.getStyleVariant()}`);
     await shot(`keycap-dark-${tag}`);
     iface.reset('color-scheme');
     const contrast = new Gio.Settings({schema_id: 'org.gnome.desktop.a11y.interface'});
     contrast.set_boolean('high-contrast', true);
     await sleep(1500);
-    check('High Contrast keeps the platform keyboard', !keyboard.has_style_class_name('luma-keycap-light') &&
-        !keyboard.has_style_class_name('luma-keycap-dark'));
+    check('High Contrast keeps the platform keyboard', !keyboard.has_style_class_name('Suno-keycap-light') &&
+        !keyboard.has_style_class_name('Suno-keycap-dark'));
     await shot(`keycap-high-contrast-${tag}`);
     contrast.reset('high-contrast');
     await sleep(800);
@@ -103,7 +103,7 @@ async function tabletStatusChecks() {
     const presentation = Main.presentation;
     if (!presentation)
         return;
-    const settings = new Gio.Settings({schema_id: 'org.project_luma.shell-state'});
+    const settings = new Gio.Settings({schema_id: 'org.projectSuno.shell-state'});
     const treatment = GLib.getenv('KEYCAP_TREATMENT');
     if (treatment)
         settings.set_string('surface-treatment', treatment);

@@ -51,11 +51,11 @@
 #
 #   dnf install bash git-core python3 python3-gobject python3-pyyaml \
 #               dbus-daemon gnupg2 ostree rsync util-linux
-#   PYTHONPATH=src/luma-android:src/luma-platform/appkit:src/luma-platform/sdk:src/luma-platform/broker:\
-#              src/luma-relay:src/luma-mods:src/luma-shell-state:src/prairie-core
+#   PYTHONPATH=src/Suno-android:src/Suno-platform/appkit:src/Suno-platform/sdk:src/Suno-platform/broker:\
+#              src/Suno-relay:src/Suno-mods:src/Suno-shell-state:src/prairie-core
 #   run under dbus-run-session
 #
-# Four tests/unit modules need the Luma toolkit itself (appkit, developer
+# Four tests/unit modules need the Suno toolkit itself (appkit, developer
 # platform, semantic broker) and fail to import without it even with the above.
 #
 # KNOWN RED, 2026-09-20: tests/unit does not pass on work/os-release-pipeline.
@@ -104,7 +104,7 @@ esac
 # only way the revision it records can be trusted, rather than asserted.
 #
 # On the build host that means the revision has to exist in the mirror at
-# /mnt/luma-secondary/luma-build/os-release/fs/git/ProjectLuma.git first:
+# /mnt/Suno-secondary/Suno-build/os-release/fs/git/projectSuno.git first:
 #
 #   (on the Mac)  git bundle create rev.bundle <revision>
 #                 scp rev.bundle root@buildhost:/tmp/
@@ -214,8 +214,8 @@ run_check "tools/check-repository.sh" tools/check-repository.sh \
 # This is an exception with a date, not a carve-out. After it, the check runs
 # and its failure is fatal. Move the date deliberately if the triage has not
 # happened; do not delete this block.
-tests_unit_excluded_until=${LUMA_TESTS_UNIT_EXCLUDED_UNTIL:-2026-10-04}
-PYTHONPATH=${PYTHONPATH:-$source_dir/src/luma-android:$source_dir/src/luma-platform/appkit:$source_dir/src/luma-platform/sdk:$source_dir/src/luma-platform/broker:$source_dir/src/luma-relay:$source_dir/src/luma-mods:$source_dir/src/luma-disks:$source_dir/src/luma-installer:$source_dir/src/luma-shell-state:$source_dir/src/prairie-core}
+tests_unit_excluded_until=${SUNO_TESTS_UNIT_EXCLUDED_UNTIL:-2026-10-04}
+PYTHONPATH=${PYTHONPATH:-$source_dir/src/Suno-android:$source_dir/src/Suno-platform/appkit:$source_dir/src/Suno-platform/sdk:$source_dir/src/Suno-platform/broker:$source_dir/src/Suno-relay:$source_dir/src/Suno-mods:$source_dir/src/Suno-disks:$source_dir/src/Suno-installer:$source_dir/src/Suno-shell-state:$source_dir/src/prairie-core}
 export PYTHONPATH PYTHONDONTWRITEBYTECODE=1
 if [ "$(date -u +%Y-%m-%d)" \< "$tests_unit_excluded_until" ]; then
   unavailable="${unavailable}unittest discover tests/unit (excluded until $tests_unit_excluded_until: suite is red on work/os-release-pipeline, see the block above)

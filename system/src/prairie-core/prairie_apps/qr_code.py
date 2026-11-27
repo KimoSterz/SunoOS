@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """QR code modules for pairing codes, with no hard Python dependency.
 
-python3-qrcode is used when installed. Otherwise libqrencode, which Luma images
+python3-qrcode is used when installed. Otherwise libqrencode, which Suno images
 already carry for GNOME Settings, is called directly. Both produce the same
 module matrix: rows of booleans including a four-module quiet zone.
 """

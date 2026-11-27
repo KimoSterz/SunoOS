@@ -1,5 +1,5 @@
 {
-  "schema": "org.projectluma.os-app-baseline-lock/v1",
+  "schema": "org.projectSuno.os-app-baseline-lock/v1",
   "baselines": {
     "aarch64": {
       "manifest_sha256": "1a9702d5c6acf35aeea5d9dfdb8ad9e2f7507ff5f987b0fca7ac0740ed6615d7"
@@ -17,7 +17,7 @@
       "source_sha256": "686abcc75d64f45d96fc0e8652199194be075554fec8f4fc7a388b94febd9ede",
       "version": "0.2.10.38"
     },
-    "io.luma.Monitor": {
+    "io.Suno.Monitor": {
       "commits": {
         "aarch64": "5e4e15b55d56f519aaefa31cf4a6daf0a19480c4c3268285a35269bd995a595c",
         "x86_64": "33d6542d0621a910fe42b0b0753b5c2f4fd6f046ddfb89f7a9faaa1b3153de02"
@@ -33,7 +33,7 @@
       "source_sha256": "e3c68fa7ec68973f64a7a17b638feec938d2231eb1938524824b6adf90f21a17",
       "version": "50.2.2.77"
     },
-    "org.projectluma.Ari": {
+    "org.projectSuno.Ari": {
       "commits": {
         "aarch64": "f13421106ad008754c5eea9c6facf968ff00c423a7eec2f14fa441b955948cff",
         "x86_64": "17d529ed9ca2ee85d8ec796d5e12abb49f90a3fcd73e8043e795335575b50dc0"
@@ -41,7 +41,7 @@
       "source_sha256": "6a0602f272f160e195f20b9dbb82c9e417474e05b45d5fe8c9081d9d561e821a",
       "version": "0.2.2"
     },
-    "org.projectluma.Calendar": {
+    "org.projectSuno.Calendar": {
       "commits": {
         "aarch64": "8131b454bd3049f70137951e27bc1fbc40bad67b142787ee1adb3802abe5bf62",
         "x86_64": "caa9e9523cffcaea2af0a17590e5d00435c448fb8384b6fc8d0f9f502d8e90e7"
@@ -49,7 +49,7 @@
       "source_sha256": "30431366aadca8b33d0416d9085e0063a66673bcd402daf31fafa09b7e66a037",
       "version": "0.1.5"
     },
-    "org.projectluma.Camera": {
+    "org.projectSuno.Camera": {
       "commits": {
         "aarch64": "9df539cdd7a381a033de3b76dea84e6fa0d6a49748d0ba0329a9d205fe6d8254",
         "x86_64": "3c41aaa3684f042b1a3df8e51bb3f52fed4a96dab7ea567a7a0ef0a846675958"
@@ -57,7 +57,7 @@
       "source_sha256": "5dee87fec7d287482a5c313852ceeb6506f926190dc0837252c517421522c3c0",
       "version": "0.1.5"
     },
-    "org.projectluma.Charlie": {
+    "org.projectSuno.Charlie": {
       "commits": {
         "aarch64": "d39f692ea658b7ad144f992f2d6b4329c46540cab8fae2b080d93be2984b6dd9",
         "x86_64": "8b90a152a1c9df3a5925f353f7c2cab769193b73b9877a2643581c171afebd59"
@@ -65,7 +65,7 @@
       "source_sha256": "25dfbacbc9e101a93311d7ceff871c5b39c1797180bc2a8d489aa48e31194371",
       "version": "0.2.14.8"
     },
-    "org.projectluma.Clock": {
+    "org.projectSuno.Clock": {
       "commits": {
         "aarch64": "01e6d5d63227a4419a5681a5a66fbf8ff3620066d3e50a93a59147ff3834b807",
         "x86_64": "3b6339f6ba234e79df0f99edac68cabbc25bbd8cb205282fd3398ef634715bc8"
@@ -73,7 +73,7 @@
       "source_sha256": "c784c3a3376a81e4c8fb8b9083762651af36f7aef3df336814cd6525eea1f0a5",
       "version": "0.1.5"
     },
-    "org.projectluma.Connect": {
+    "org.projectSuno.Connect": {
       "commits": {
         "aarch64": "ecdb5a2d3cbbf3bfd4f1bc8d2d89120c19f1f08610ddb9c9af079b704121d311",
         "x86_64": "2888158509d98f45b84c0bb93d0d8888af0531d856485cf13fb28326a19c6dc0"
@@ -81,7 +81,7 @@
       "source_sha256": "7ec3b0c1ee8b0e252912480a93744665a625e1a3f0aea144650298f81f2b1d30",
       "version": "0.65.2"
     },
-    "org.projectluma.Contacts": {
+    "org.projectSuno.Contacts": {
       "commits": {
         "aarch64": "13654822738bc174186d78dac5e14a7de6acb92190f8775f894568b992694ef3",
         "x86_64": "0f606dfe8431e433599ffa8f6f32224ef5b8b1597d4113fc9650791db95a28a3"
@@ -89,7 +89,7 @@
       "source_sha256": "d8c7a789c31c65616726ff3c0c63c52448e20b29ecb086c771e1779c668f202a",
       "version": "0.1.5"
     },
-    "org.projectluma.Depot": {
+    "org.projectSuno.Depot": {
       "commits": {
         "aarch64": "e3b14d4fcfe4983e32063ddfbbd4ca9edf519be56b6b4cca6e5fe05f926e7c48",
         "x86_64": "c7939e21d546a64fa5f8e6ba09cbb08f6a2a55e4f44132da72c98395735b3ad4"
@@ -97,14 +97,14 @@
       "source_sha256": "e29ba9b2a376d66aa09bf792838519100d36cac1685cfdbdda665b6cb5d51c6f",
       "version": "0.1.13"
     },
-    "org.projectluma.Imager": {
+    "org.projectSuno.Imager": {
       "commits": {
         "aarch64": "3240acf1797723e4543ad6a044b4a303fc732874e00c597199854e63a38c0872",
         "x86_64": "ae723bf3760b581df2ee414dec826ebd1b40f3e7edc62a8c091f5e73cea7427a"
       },
       "source": "external"
     },
-    "org.projectluma.Leaf": {
+    "org.projectSuno.Leaf": {
       "commits": {
         "aarch64": "d64e738ca89f915636bc751236c523b9a6b0a71b3db487317480d1fb5591b701",
         "x86_64": "accba71c648e4d23c2b3c57e666f2a98fe5417a2363f7c945ea7246f0b475cc9"
@@ -112,7 +112,7 @@
       "source_sha256": "02e1fc75c801ea194a3dd8c649f3ccc5e08a1d104833e3fc80618ea6ea992607",
       "version": "0.1.1"
     },
-    "org.projectluma.Messages": {
+    "org.projectSuno.Messages": {
       "commits": {
         "aarch64": "665dd70996c58bd18cfecf3419e21c3a856a68497bfeaef7fe7a0ad8b566fe34",
         "x86_64": "37813c048e1bf0abd6b63e0889e8bfb9654a810e3c3a3092dc0aeedb793b8b98"
@@ -120,7 +120,7 @@
       "source_sha256": "547cc8bcf2fcb61aa3b34ba4309ecd3c8c5a956297616bb7b6dc5922a846d6b7",
       "version": "0.1.7"
     },
-    "org.projectluma.Mods": {
+    "org.projectSuno.Mods": {
       "commits": {
         "aarch64": "8b271b432ca089e626d7a6458babda981cff9cdcb4bed23aa70d354dd827904e",
         "x86_64": "81e52bb96a2bf12b38d41346a82f9cdcc27f129730c2d0aac78fcdfdcb9aa0e6"
@@ -128,7 +128,7 @@
       "source_sha256": "1a8f44efee414ef919389c1f0cefc890a72463d46033cb2b546e5aee31650174",
       "version": "0.1.2"
     },
-    "org.projectluma.Notes": {
+    "org.projectSuno.Notes": {
       "commits": {
         "aarch64": "73fca6eb4d1b755627716244e23dd8dc6583a964f1868649d7373d3a8b599b5c",
         "x86_64": "7a308dbecfd1fefdda0afe73852febcd2bfb83fc9b08e917c95d2794afe91ac4"
@@ -136,7 +136,7 @@
       "source_sha256": "a6e3a85e3698c87431cc6a8e8a488380b68f2958ab8896b03c2ef6936c9d0d8e",
       "version": "0.1.4"
     },
-    "org.projectluma.Phone": {
+    "org.projectSuno.Phone": {
       "commits": {
         "aarch64": "e7ba1625f53dc235dfad84449bb33847586cdc5eb45d1ce53b084ca79d5ad62b",
         "x86_64": "c4f98292cff58b8b347f667d2da433b1d548ea772a62c5eb6e6b1ada5f63be84"
@@ -144,7 +144,7 @@
       "source_sha256": "97834cb8e2b5da12c78fa067c0268a27bacefd0016ef21cdf999b4ba680ea8c4",
       "version": "0.1.6"
     },
-    "org.projectluma.Photos": {
+    "org.projectSuno.Photos": {
       "commits": {
         "aarch64": "da87ad99137ef76491a8f293ac277c38cc2a5070674a1f96f252b0b8e67b9a1a",
         "x86_64": "323840607a090829a4ac52d3332c1cb6768ac07a67a80e641c497e5ce50e3e04"
@@ -152,7 +152,7 @@
       "source_sha256": "849a94889c24ad5c65ed5144b7099cdeef66ab63a33a37cec0443de57eb6a427",
       "version": "0.1.6"
     },
-    "org.projectluma.Tasks": {
+    "org.projectSuno.Tasks": {
       "commits": {
         "aarch64": "c68244fb6aed6c05301ef689f3df21353a671109d3a101ac6876654ef33ee779",
         "x86_64": "a4803929b2043067e13013ac009bc2305a6d3ca172e9ac24988ac25a943c89d2"
@@ -160,7 +160,7 @@
       "source_sha256": "434ea0744cac3e286b9f30fe468000aa32238b46263e27270566fbd552e907ba",
       "version": "0.1.6"
     },
-    "org.projectluma.Tide": {
+    "org.projectSuno.Tide": {
       "commits": {
         "aarch64": "574a8c1354246d7fa4c7947b4fd6b2bcfafc7fb6b196ac29e4c68f81539f2fc9",
         "x86_64": "730abf720540033361fda0f5e1d5e28547e24dbcc8a4a185dc86fa863e93fd40"
@@ -168,7 +168,7 @@
       "source_sha256": "9c63adedf6e0993d9487056cbc1051fda6624edd06707940bcede3797e3d6715",
       "version": "0.1.1"
     },
-    "org.projectluma.Viewer": {
+    "org.projectSuno.Viewer": {
       "commits": {
         "aarch64": "b96c919d5a16588520e48fa00a74b8c7420162e6654925e27e77eae395dc8f09",
         "x86_64": "3451f99c4609eace6c416d6cbf4a735caa25b69e341d386e7cfd04a7cc531971"
@@ -176,7 +176,7 @@
       "source_sha256": "0c5362d3c145a6cac23af21e60f99521426e5684f9c4147ec9070c499eb4d99e",
       "version": "0.1.2"
     },
-    "org.projectluma.VoiceMemos": {
+    "org.projectSuno.VoiceMemos": {
       "commits": {
         "aarch64": "17f960dd3a6a935d82484cc53123fde713a095c1d14828da4db5113686b5cdb2",
         "x86_64": "94b8cb7f753a8c1fdcb1cd9dea9eb97da20b436133e5a036a2b0da8c2d1d32b4"
@@ -184,7 +184,7 @@
       "source_sha256": "1f019f7a194811ff2e48e92b5cdd40d4e9c1650077cc6da652eb027fa9d68c33",
       "version": "0.1.5"
     },
-    "org.projectluma.Weather": {
+    "org.projectSuno.Weather": {
       "commits": {
         "aarch64": "b196e2c8c3b1ffd13b80eaeb0fb976cf72d43e2c48c6796d8570b8594ea13697",
         "x86_64": "3959ce61dae3f0958ec6fa7d683671975cb0eae9c84d271a25a91a7245d38717"

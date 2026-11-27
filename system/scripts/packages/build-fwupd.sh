@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
 #
-# Fedora's fwupd with Luma's modem-manager fix (patches/fwupd). Rebuilt from the
+# Fedora's fwupd with Suno's modem-manager fix (patches/fwupd). Rebuilt from the
 # pinned Fedora SRPM with its full %check.
 
 set -euo pipefail
@@ -18,17 +18,17 @@ for tool in cpio curl git mktemp podman rpm2cpio sha256sum; do
 done
 
 if [ "$(uname -s)" != Linux ]; then
-  printf 'error: build the Luma fwupd RPMs on a Linux builder\n' >&2
+  printf 'error: build the Suno fwupd RPMs on a Linux builder\n' >&2
   exit 1
 fi
 
-architecture=${LUMA_TARGET_ARCHITECTURE:-$(uname -m)}
+architecture=${SUNO_TARGET_ARCHITECTURE:-$(uname -m)}
 case "$architecture" in
   x86_64) builder_container=$FEDORA_RPM_BUILD_CONTAINER ;;
   aarch64) builder_container=$FEDORA_RPM_BUILD_CONTAINER_AARCH64 ;;
   *) printf 'error: unsupported desktop package architecture: %s\n' "$architecture" >&2; exit 1 ;;
 esac
-export LUMA_RPM_BUILDER_ARCHITECTURE=$architecture
+export SUNO_RPM_BUILDER_ARCHITECTURE=$architecture
 
 cache_dir="$repo_root/build/cache/srpm"
 output_dir="$repo_root/build/packages/fwupd"
@@ -58,13 +58,13 @@ install -m 0644 \
   "$rpmbuild_dir/SOURCES/"
 (
   cd "$rpmbuild_dir/SPECS"
-  GIT_CEILING_DIRECTORIES="$rpmbuild_dir" git apply "$repo_root/patches/fwupd/0000-luma-fedora-spec.patch"
+  GIT_CEILING_DIRECTORIES="$rpmbuild_dir" git apply "$repo_root/patches/fwupd/0000-Suno-fedora-spec.patch"
 )
 # A spec patch that applied as a no-op builds the stock package; the Release
 # says whether it applied (scripts/packages/spec-release.sh).
 . "$repo_root/scripts/packages/spec-release.sh"
-luma_assert_spec_release "$rpmbuild_dir/SPECS/fwupd.spec" \
-  "$FWUPD_LUMA_RELEASE" || exit 1
+Suno_assert_spec_release "$rpmbuild_dir/SPECS/fwupd.spec" \
+  "$FWUPD_SUNO_RELEASE" || exit 1
 
 bash "$repo_root/scripts/packages/run-in-rpm-builder.sh" \
   "$rpmbuild_dir" "$builder_container" '
@@ -83,12 +83,12 @@ bash "$repo_root/scripts/packages/run-in-rpm-builder.sh" \
     cp -a "$top/SRPMS/." SRPMS/
     rm -rf "$top"
     for name in fwupd fwupd-plugin-modem-manager; do
-      test -f "RPMS/$architecture/$name-'"$FWUPD_VERSION-$FWUPD_LUMA_RELEASE"'.fc44.${architecture}.rpm"
+      test -f "RPMS/$architecture/$name-'"$FWUPD_VERSION-$FWUPD_SUNO_RELEASE"'.fc44.${architecture}.rpm"
     done
     verify_dir=$(mktemp -d "$PWD/verify.XXXXXX")
     cd "$verify_dir"
-    for rpm in "$OLDPWD"/RPMS/$architecture/fwupd-'"$FWUPD_VERSION-$FWUPD_LUMA_RELEASE"'.fc44.${architecture}.rpm \
-               "$OLDPWD"/RPMS/$architecture/fwupd-plugin-modem-manager-'"$FWUPD_VERSION-$FWUPD_LUMA_RELEASE"'.fc44.${architecture}.rpm; do
+    for rpm in "$OLDPWD"/RPMS/$architecture/fwupd-'"$FWUPD_VERSION-$FWUPD_SUNO_RELEASE"'.fc44.${architecture}.rpm \
+               "$OLDPWD"/RPMS/$architecture/fwupd-plugin-modem-manager-'"$FWUPD_VERSION-$FWUPD_SUNO_RELEASE"'.fc44.${architecture}.rpm; do
       rpm2cpio "$rpm" >payload.cpio
       cpio -idm --quiet <payload.cpio
       rm -f payload.cpio
@@ -106,11 +106,11 @@ bash "$repo_root/scripts/packages/run-in-rpm-builder.sh" \
 install -d -m 0755 "$output_dir/RPMS" "$output_dir/SRPMS"
 find "$rpmbuild_dir/RPMS" -type f -name '*.rpm' \
   -exec install -m 0644 -t "$output_dir/RPMS" {} +
-install -m 0644 "$rpmbuild_dir/SRPMS/fwupd-${FWUPD_VERSION}-${FWUPD_LUMA_RELEASE}.fc44.src.rpm" \
+install -m 0644 "$rpmbuild_dir/SRPMS/fwupd-${FWUPD_VERSION}-${FWUPD_SUNO_RELEASE}.fc44.src.rpm" \
   "$output_dir/SRPMS/"
 (
   cd "$output_dir"
   find RPMS SRPMS -type f -name '*.rpm' -exec sha256sum {} + | sort >SHA256SUMS
 )
 
-printf 'Luma fwupd packages: %s\n' "$output_dir"
+printf 'Suno fwupd packages: %s\n' "$output_dir"

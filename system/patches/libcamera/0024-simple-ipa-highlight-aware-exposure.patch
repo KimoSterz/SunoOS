@@ -1,4 +1,4 @@
-From: Project Luma <project-luma@local>
+From: Project Suno <project-suno@local>
 Subject: [PATCH] simple: ipa: add a highlight guard to automatic exposure
 
 The Simple IPA's five-bin mean-sample-value metering can consider a strongly

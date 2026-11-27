@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-only
-"""Present Chromium's selected-page JavaScript dialogs with Luma's toolkit."""
+"""Present Chromium's selected-page JavaScript dialogs with Suno's toolkit."""
 from urllib.parse import urlsplit
 import gi
 gi.require_version('Adw', '1')

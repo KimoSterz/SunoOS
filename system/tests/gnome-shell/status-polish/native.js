@@ -14,7 +14,7 @@ import * as PrairieLogin from 'resource:///org/gnome/shell/ui/prairieLogin.js';
 import * as QuickSettings from 'resource:///org/gnome/shell/ui/quickSettings.js';
 import * as Scripting from 'resource:///org/gnome/shell/ui/scripting.js';
 const results=[];
-const out=GLib.getenv('LUMA_POLISH_OUTPUT');
+const out=GLib.getenv('SUNO_POLISH_OUTPUT');
 function check(name, ok, detail='') { results.push({name,ok:!!ok,detail}); print(`${ok?'PASS':'FAIL'}: ${name} ${detail}`); }
 const pause=async(ms=180)=>await Scripting.sleep(ms);
 function rect(a) { const [x,y]=a.get_transformed_position(); const [w,h]=a.get_transformed_size(); return {x,y,w,h,right:x+w,bottom:y+h}; }
@@ -143,7 +143,7 @@ async function checkBrightness() {
     }
 }
 async function work() {
-    const appearance=new Gio.Settings({schema_id:'org.project_luma.shell-state'});
+    const appearance=new Gio.Settings({schema_id:'org.projectSuno.shell-state'});
     const iface=new Gio.Settings({schema_id:'org.gnome.desktop.interface'});
     iface.set_boolean('enable-animations',false);
     iface.set_string('clock-format','12h');
@@ -155,33 +155,33 @@ async function work() {
     const trays=[];
     for(const [i,title] of ['chrome_status_icon_1','discord_status_icon','Steam'].entries()) {
         const tray=new PanelMenu.Button(0,title);
-        tray._indicator=new Notifier(`luma-polish-${i}`,title);
+        tray._indicator=new Notifier(`Suno-polish-${i}`,title);
         tray._icon=new St.Icon({icon_name:i===1?'audio-headphones-symbolic':'web-browser-symbolic',icon_size:24});
         tray.add_child(tray._icon);tray.menu.addAction('Application action',()=>{});
-        Main.panel.addToStatusArea(`lumaPolish${i}`,tray);tray.show();trays.push(tray);
+        Main.panel.addToStatusArea(`SunoPolish${i}`,tray);tray.show();trays.push(tray);
         well.setPinned(tray._indicator.id,false);
     }
     Main.shelf._sync();await pause(400);
     check('background app launcher has a visible icon',well._chip.child instanceof St.Icon);
-    check('background app names hide status implementation IDs',well._rest.filter(s=>s.key.startsWith('luma-polish-')).every(s=>!s.name.includes('status_icon')));
-    const source=well._rest.find(s=>s.key==='luma-polish-0');
+    check('background app names hide status implementation IDs',well._rest.filter(s=>s.key.startsWith('Suno-polish-')).every(s=>!s.name.includes('status_icon')));
+    const source=well._rest.find(s=>s.key==='Suno-polish-0');
     const glyph=source.makeGlyph(24);Main.layoutManager.uiGroup.add_child(glyph);await pause();
     check('background glyph preserves source artwork',glyph.child instanceof St.Icon && glyph.child.gicon.equal(trays[0]._icon.gicon));
     trays[0]._icon.gicon=new Gio.ThemedIcon({name:'audio-headphones-symbolic'});await pause();
     check('background glyph follows live artwork changes',glyph.child instanceof St.Icon && glyph.child.gicon.equal(trays[0]._icon.gicon));
     glyph.destroy();
     q.menu.open();await pause();
-    const radioRow=q.menu._mainPage.get_children().find(a=>a.has_style_class_name?.('luma-options-radios'));
+    const radioRow=q.menu._mainPage.get_children().find(a=>a.has_style_class_name?.('Suno-options-radios'));
     check('native Quick Options radio row exists',!!radioRow);
     for(const child of radioRow.get_children()) child.hide();
     const radios=[];
     for(const title of ['Wi-Fi','Bluetooth']) {
         const control=new QuickSettings.QuickMenuToggle({title,subtitle:title==='Wi-Fi'?'Connected':'2 connected',icon_name:title==='Wi-Fi'?'network-wireless-signal-excellent-symbolic':'bluetooth-active-symbolic',toggle_mode:true,checked:true});
         q.menu.addItem(control,2);control.get_parent().remove_child(control);radioRow.add_child(control);
-        control.x_expand=true;control.add_style_class_name('luma-options-radio');control.setPill(false);control.menu._studioTitle=title;control.menu._studioRadio=control;
+        control.x_expand=true;control.add_style_class_name('Suno-options-radio');control.setPill(false);control.menu._studioTitle=title;control.menu._studioRadio=control;
         radios.push(control);
     }
-    const section=new PopupMenu.PopupMenuSection();section.box.add_style_class_name('luma-options-list');
+    const section=new PopupMenu.PopupMenuSection();section.box.add_style_class_name('Suno-options-list');
     const rows=[];
     for(const [i,title] of ['HiveCoworking','BuzzSecurity','Kupersmith','PeachtreeKC24G'].entries()) {
         const row=new QuickSettings.QuickSheetRow();row.setTitle(title);row.setState(i===0?'Connected':'Secured');row.setIcon('network-wireless-signal-excellent-symbolic');row.setCurrent(i===0);section.addMenuItem(row);rows.push(row);
@@ -195,7 +195,7 @@ async function work() {
         row.setTitle(title);row.setState(i<2?'Connected · 100%':'Not connected');
         row.setIcon('bluetooth-active-symbolic');row.setCurrent(i<2);
         bluetoothSection.addMenuItem(row);bluetoothRows.push(row);
-        check('Bluetooth rows retain shared style class',row.has_style_class_name('luma-sheet-row'));
+        check('Bluetooth rows retain shared style class',row.has_style_class_name('Suno-sheet-row'));
     }
     radios[1].menu.addMenuItem(bluetoothSection);
 
@@ -215,7 +215,7 @@ async function work() {
         for(const control of radios) {
             const button=control._menuButton,b=rect(button),card=rect(control);
             check(`${theme} disclosure inset`,card.right-b.right>=5,JSON.stringify({card,button:b}));
-            check(`${theme} radio uses native rounded paint`,!control.get_effect('luma-control-clip'));
+            check(`${theme} radio uses native rounded paint`,!control.get_effect('Suno-control-clip'));
             check(`${theme} radio has no dark bottom rim`,control.get_theme_node().get_border_width(St.Side.BOTTOM)===0);
         }
         radios[0]._menuButton.add_style_pseudo_class('hover');await pause();
@@ -247,13 +247,13 @@ async function work() {
             check(`${theme} Bluetooth rows have breathing room`,b.y-a.bottom>=7,JSON.stringify({gap:b.y-a.bottom}));
             check(`${theme} Bluetooth rows keep two-line height`,a.h>=55,JSON.stringify(a));
         }
-        check(`${theme} detail viewport uses no offscreen alpha mask`,!q.menu._pageScroll.get_effect('luma-page-clip'));
+        check(`${theme} detail viewport uses no offscreen alpha mask`,!q.menu._pageScroll.get_effect('Suno-page-clip'));
         check(`${theme} Bluetooth section has no nested background`,bluetoothSection.box.get_theme_node().get_background_color().alpha===0);
         await shot(`bluetooth-${theme}`,q.menu._boxPointer);
         radios[1].menu.close();q.menu.close();await pause();
         well._togglePopover();await pause(250);
         const pop=well._popover;
-        check(`${theme} background popover has no redundant count`,!pop.box.get_children()[0].get_children().some(a=>a.has_style_class_name?.('luma-well-popover-count')));
+        check(`${theme} background popover has no redundant count`,!pop.box.get_children()[0].get_children().some(a=>a.has_style_class_name?.('Suno-well-popover-count')));
         await shot(`background-apps-${theme}`,pop.actor);pop.close();await pause();
     }
     await checkBattery(q, appearance, iface, '100');

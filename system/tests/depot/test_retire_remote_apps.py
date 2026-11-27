@@ -47,13 +47,13 @@ class Retirement(unittest.TestCase):
                                       ("Displays", "x86_64", "beta"),
                                       ("Displays", "aarch64", "nightly"),
                                       ("Viola", "x86_64", "beta")):
-                (tree / "metadata").write_text(f"[Application]\nname=org.projectluma.{app}\n")
-                ref = f"app/org.projectluma.{app}/{arch}/{branch}"
+                (tree / "metadata").write_text(f"[Application]\nname=org.projectSuno.{app}\n")
+                ref = f"app/org.projectSuno.{app}/{arch}/{branch}"
                 for old in xml_dir.iterdir():
                     old.unlink()
-                (xml_dir / f"org.projectluma.{app}.xml.gz").write_bytes(gzip.compress(
+                (xml_dir / f"org.projectSuno.{app}.xml.gz").write_bytes(gzip.compress(
                     ('<components version="0.8"><component type="desktop-application">'
-                     f'<id>org.projectluma.{app}</id><name>Fixture {app}</name>'
+                     f'<id>org.projectSuno.{app}</id><name>Fixture {app}</name>'
                      '<summary>Isolated repository fixture</summary>'
                      '<metadata_license>CC0-1.0</metadata_license>'
                      '<project_license>Apache-2.0</project_license>'
@@ -66,8 +66,8 @@ class Retirement(unittest.TestCase):
                 listing = ostree("ls", f"appstream2/{arch}")
                 self.assertIn("/appstream.xml", listing)
                 return run("ostree", f"--repo={repo}", "cat", f"appstream2/{arch}", "/appstream.xml")
-            self.assertIn("org.projectluma.Displays", appstream("aarch64"))
-            self.assertIn("org.projectluma.Displays", appstream("x86_64"))
+            self.assertIn("org.projectSuno.Displays", appstream("aarch64"))
+            self.assertIn("org.projectSuno.Displays", appstream("x86_64"))
             records = policy.retire(repo, fingerprint, keys)
             self.assertEqual(len(records), 3)
             for row in records:
@@ -79,7 +79,7 @@ class Retirement(unittest.TestCase):
                 self.assertEqual(ostree("show", "--print-metadata-key=ostree.endoflife", row["commit"]),
                                  "'Display controls are in Settings.'")
                 self.assertTrue(ostree("show", "--list-detached-metadata-keys", row["commit"]))
-            other = "app/org.projectluma.Viola/x86_64/beta"
+            other = "app/org.projectSuno.Viola/x86_64/beta"
             self.assertEqual(ostree("rev-parse", other), originals[other])
             again = policy.retire(repo, fingerprint, keys)
             self.assertEqual([r["commit"] for r in again], [r["commit"] for r in records])
@@ -88,20 +88,20 @@ class Retirement(unittest.TestCase):
             # across both CPUs without deleting the EOL refs or unrelated app.
             site = root / "site"
             (site / "apps").mkdir(parents=True)
-            (site / "apps/org.projectluma.Displays.flatpakref").write_text("stale")
+            (site / "apps/org.projectSuno.Displays.flatpakref").write_text("stale")
             run("python3", str(ROOT / "scripts/depot/generate-remote-files.py"), "--repo", str(repo),
                 "--site", str(site), "--gpg-key", str(key))
-            self.assertFalse(list((site / "apps").glob("org.projectluma.Displays*.flatpakref")))
+            self.assertFalse(list((site / "apps").glob("org.projectSuno.Displays*.flatpakref")))
             self.assertEqual({r["app_id"] for r in json.loads((site / "apps/index.json").read_text())["apps"]},
-                             {"org.projectluma.Viola"})
+                             {"org.projectSuno.Viola"})
             self.assertTrue(set(originals).issubset(ostree("refs").splitlines()))
             run("flatpak", "build-update-repo", str(repo))
             for arch in ("aarch64", "x86_64"):
-                self.assertNotIn("org.projectluma.Displays", appstream(arch))
-            self.assertIn("org.projectluma.Viola", appstream("x86_64"))
+                self.assertNotIn("org.projectSuno.Displays", appstream(arch))
+            self.assertIn("org.projectSuno.Viola", appstream("x86_64"))
 
     def test_signed_host_and_remote_retirement_sets_agree(self):
-        tree = ast.parse((ROOT / "src/luma-installer/luma_installer/retired_apps.py").read_text())
+        tree = ast.parse((ROOT / "src/Suno-installer/Suno_installer/retired_apps.py").read_text())
         value = next(n.value for n in tree.body if isinstance(n, ast.Assign)
                      and any(isinstance(t, ast.Name) and t.id == "RETIRED" for t in n.targets))
         self.assertEqual(set(policy.RETIRED), ast.literal_eval(value.args[0]))

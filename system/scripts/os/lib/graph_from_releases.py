@@ -7,7 +7,7 @@
 Hub renders channel graphs from Switchboard's release state (ADR-030 section
 5). Until the signing job has Hub's service token, the nightly job renders the
 nightly graph from what it published itself: every release manifest in
-REPO/luma/releases whose commit the repository still has, oldest first, each
+REPO/Suno/releases whose commit the repository still has, oldest first, each
 released to everyone at once (nightlies have no staged rollout) and none
 paused, dead-ended or a barrier. sign-update-graph.sh validates and signs it
 like a graph from Hub.
@@ -33,7 +33,7 @@ def release_path(repo, arch, target=""):
         if devices.device(target)["arch"] != arch:
             raise ValueError("device and graph architecture disagree")
         from pathlib import Path
-        return Path(repo) / "luma" / devices.namespace(target) / "releases"
+        return Path(repo) / "Suno" / devices.namespace(target) / "releases"
     return releases_path(repo, arch)
 
 
@@ -41,7 +41,7 @@ NOTES_BASE = "https://dl.simplyluma.com/media"
 
 
 def notes_of(repo, manifest):
-    """The release's signed notes (luma/releases/<version>/notes.json), if any."""
+    """The release's signed notes (Suno/releases/<version>/notes.json), if any."""
     path = str(release_path(repo, manifest_architecture(manifest), manifest.get("hardware_target", "")) / manifest["version"] / "notes.json")
     if not os.path.exists(path):
         return None, ""
@@ -56,7 +56,7 @@ def notes_of(repo, manifest):
 def display_name_of(repo, manifest):
     """The release's name as people see it (ADR-040): its os-release PRETTY_NAME.
 
-    Nightlies published before release names existed say "Luma 1.0" there;
+    Nightlies published before release names existed say "Suno 1.0" there;
     every one of them was a Prairie Beta 0 nightly, named for its nightly date
     (from its notes, or its build id's day).
     """
@@ -69,7 +69,7 @@ def display_name_of(repo, manifest):
                 fields[key] = value.strip('"')
     except OSError:
         pass
-    if fields.get("VERSION_CODENAME") and fields.get("PRETTY_NAME", "").startswith("Luma ("):
+    if fields.get("VERSION_CODENAME") and fields.get("PRETTY_NAME", "").startswith("Suno ("):
         return fields["PRETTY_NAME"]
     if manifest.get("channel") != "nightly":
         return None
@@ -79,7 +79,7 @@ def display_name_of(repo, manifest):
             day = json.load(stream).get("nightly_date", "").replace("-", "") or day
     except (OSError, ValueError):
         pass
-    return f"Luma (Prairie, Beta 0, Nightly {day})" if len(day) == 8 and day.isdigit() else None
+    return f"Suno (Prairie, Beta 0, Nightly {day})" if len(day) == 8 and day.isdigit() else None
 
 
 def superseded_summary(repo, channel, releases, manifest):
@@ -94,7 +94,7 @@ def superseded_summary(repo, channel, releases, manifest):
             except ValueError:
                 label = day
             return f"Superseded; see the {label} {channel}"
-    return f"Luma {channel} build {manifest['build_id']}"
+    return f"Suno {channel} build {manifest['build_id']}"
 
 
 def main(argv):

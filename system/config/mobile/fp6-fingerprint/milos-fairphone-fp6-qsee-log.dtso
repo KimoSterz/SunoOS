@@ -4,10 +4,10 @@
 
 /*
  * Enable only the boot-lifetime, root-readable QSEE diagnostic ring carried
- * by Luma's diagnostic kernel. This overlay does not alter either dedicated
+ * by Suno's diagnostic kernel. This overlay does not alter either dedicated
  * QSEE heap and does not enable a trustlet or biometric command.
  */
 
 &{/firmware/scm} {
-	luma,qsee-log-diagnostic;
+	Suno,qsee-log-diagnostic;
 };

@@ -7,13 +7,13 @@ repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 # shellcheck disable=SC1091
 . "$repo_root/config/mobile/fp6-twin/inputs.env"
 
-build_dir=${LUMA_TWIN_BUILD_DIR:-$repo_root/build/mobile/fp6-twin}
-disk="$build_dir/luma-fp6-twin.qcow2"
-seed="$build_dir/luma-fp6-twin-seed.iso"
+build_dir=${SUNO_TWIN_BUILD_DIR:-$repo_root/build/mobile/fp6-twin}
+disk="$build_dir/Suno-fp6-twin.qcow2"
+seed="$build_dir/Suno-fp6-twin-seed.iso"
 qmp_socket="$build_dir/qmp.sock"
-ssh_port=${LUMA_TWIN_SSH_PORT_OVERRIDE:-$LUMA_TWIN_SSH_PORT}
-vnc_display=${LUMA_TWIN_VNC_DISPLAY_OVERRIDE:-$LUMA_TWIN_VNC_DISPLAY}
-headless=${LUMA_TWIN_HEADLESS:-0}
+ssh_port=${SUNO_TWIN_SSH_PORT_OVERRIDE:-$SUNO_TWIN_SSH_PORT}
+vnc_display=${SUNO_TWIN_VNC_DISPLAY_OVERRIDE:-$SUNO_TWIN_VNC_DISPLAY}
+headless=${SUNO_TWIN_HEADLESS:-0}
 
 if [ "${1:-}" = '--headless' ]; then
   headless=1
@@ -41,7 +41,7 @@ done
 
 find_uefi() {
   for candidate in \
-    "${LUMA_AARCH64_UEFI_CODE:-}" \
+    "${SUNO_AARCH64_UEFI_CODE:-}" \
     /usr/share/edk2/aarch64/QEMU_EFI.fd \
     /usr/share/AAVMF/AAVMF_CODE.fd \
     /opt/homebrew/share/qemu/edk2-aarch64-code.fd \
@@ -56,7 +56,7 @@ find_uefi() {
 
 uefi=$(find_uefi) || {
   printf 'error: no AArch64 UEFI firmware found\n' >&2
-  printf 'Set LUMA_AARCH64_UEFI_CODE to the absolute firmware path.\n' >&2
+  printf 'Set SUNO_AARCH64_UEFI_CODE to the absolute firmware path.\n' >&2
   exit 1
 }
 
@@ -90,19 +90,19 @@ else
   display_args=(-display none -vnc "127.0.0.1:$vnc_display")
 fi
 
-printf 'Starting Luma FP6 behavioral twin (%s acceleration).\n' "$accelerator"
+printf 'Starting Suno FP6 behavioral twin (%s acceleration).\n' "$accelerator"
 printf 'SSH will listen on 127.0.0.1:%s after cloud-init completes.\n' "$ssh_port"
 if [ "${display_args[0]}" = -display ] && [ "${display_args[1]}" = none ]; then
   printf 'VNC will listen on 127.0.0.1:%s.\n' "$((5900 + vnc_display))"
 fi
 
 exec qemu-system-aarch64 \
-  -name luma-fp6-twin \
-  -machine "$LUMA_TWIN_MACHINE",gic-version=3,highmem=on \
+  -name Suno-fp6-twin \
+  -machine "$SUNO_TWIN_MACHINE",gic-version=3,highmem=on \
   -accel "$accelerator" \
   -cpu "$cpu" \
-  -smp "$LUMA_TWIN_CPU_COUNT" \
-  -m "$LUMA_TWIN_MEMORY_MIB" \
+  -smp "$SUNO_TWIN_CPU_COUNT" \
+  -m "$SUNO_TWIN_MEMORY_MIB" \
   -bios "$uefi" \
   -drive "if=none,id=os,file=$disk,format=qcow2,cache=none,discard=unmap" \
   -device virtio-blk-pci,drive=os \

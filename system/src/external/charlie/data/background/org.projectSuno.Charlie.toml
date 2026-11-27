@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: Apache-2.0
+# Charlie's background agent declaration for Suno-background (ADR-033).
+# Installed as /usr/share/Suno/background/org.projectSuno.Charlie.toml; keep the
+# [background] table identical to Suno-app.toml's.
+
+[application]
+id = "org.projectSuno.Charlie"
+name = "Charlie"
+
+[background]
+agent = "org.projectSuno.Charlie.Agent"
+exec = "org.projectSuno.Charlie --agent"
+category = "mail"
+wake = ["login", "network", "resume", "schedule"]
+publishes = ["unread-count", "unread-by-account", "live-extension:org.projectSuno.Charlie.Unread"]

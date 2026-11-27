@@ -1,4 +1,4 @@
-From: Project Luma <luma@local>
+From: Project Suno <Suno@local>
 Subject: [PATCH] scsi: ufs: qcom: Power down UFS during system suspend on Milos
 
 Backport of mainline fb2a238f15f0.

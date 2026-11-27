@@ -1,7 +1,7 @@
 # October 27 targeted desktop nightly
 
-Owner: luma-dev-2, root release integration agent.
-Worktree: `/srv/dev/worktrees/luma-os/nightly-20261027-polish`.
+Owner: Suno-dev-2, root release integration agent.
+Worktree: `/srv/dev/worktrees/Suno-os/nightly-20261027-polish`.
 Branch: `agent/1003/nightly-20261027-polish`.
 
 User authorized a prompt x86_64 and ARM64 desktop nightly containing PRs 76,

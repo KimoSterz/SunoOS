@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://gitlab.com/simplyluma/luma/-/raw/main/socs/soc.schema.json",
-  "title": "Luma SoC family configuration (socs/<vendor>/<family>/soc.toml)",
+  "title": "Suno SoC family configuration (socs/<vendor>/<family>/soc.toml)",
   "type": "object",
   "additionalProperties": false,
   "required": ["schema", "vendor", "family", "name", "arch", "kernel", "boot"],

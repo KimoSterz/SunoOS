@@ -1,0 +1,115 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Project Suno <builds@project-suno.local>
+Date: Sat, 26 Sep 2026 00:00:00 +0000
+Subject: [PATCH] Suno: size and place the default shelf like Studio Desktop
+
+Use forty pixel dock and live pictures with fourteen pixel island padding,
+sixteen pixel screen inset, ten pixel island gaps and sixteen pixel corners.
+The Suno arrangement holds the dock and live islands in the centre while the
+status parts hug the right edge. Preserve the older arrangements for people
+who selected them explicitly.
+diff --git a/data/theme/Suno-shelf.css b/data/theme/Suno-shelf.css
+index ab20d61..956a21f 100644
+--- a/data/theme/Suno-shelf.css
++++ b/data/theme/Suno-shelf.css
+@@ -2655,3 +2655,37 @@ StBoxLayout.Suno-notification-tray.Suno-surface-dark .Suno-notification-tray-cou
+ .Suno-dockf-rail:drop .Suno-dockf-placeholder {
+   border-color: rgba(128, 168, 210, 0.85);
+   background-color: rgba(128, 168, 210, 0.16); }
++
++/* Studio Desktop, Suno preset: forty pixel artwork in sixty-eight pixel islands. */
++.Suno-shelf-material, .Suno-shelf-shadow, .Suno-shelf-stroke { border-radius: 16px; }
++.Suno-shelf-dock-island .Suno-shelf-material { padding: 14px; }
++.Suno-shelf-live-island .Suno-shelf-material { padding: 14px; }
++.Suno-shelf-actions-island .Suno-shelf-material { padding: 14px; }
++.Suno-status-cluster .Suno-status-clock, .Suno-status-cluster .Suno-status-controls { height: 40px; }
++.Suno-status-cluster .Suno-status-clock-text { spacing: 2px; }
++.Suno-status-cluster .Suno-status-clock { min-width: 78px; }
++.Suno-status-cluster .Suno-status-date { color: rgba(231,233,232,0.62); font-weight: 500; }
++.Suno-status-cluster.Suno-surface-light .Suno-status-date { color: rgba(43,48,54,0.62); }
++.Suno-status-slot .system-status-icon { icon-size: 15px; }
++.Suno-shelf-root.Suno-shelf-separate > .Suno-shelf-group > .Suno-shelf-actions-island >
++.Suno-shelf-material.Suno-status-cluster.Suno-surface-light { background-color: #eceef1; }
++.Suno-shelf-dock-scroll { min-height: 40px; }
++.Suno-shelf-apps-divider { background-color: rgba(255,255,255,0.22); margin: 0 8px; }
++.Suno-surface-light .Suno-shelf-apps-divider { background-color: rgba(30,34,39,0.22); }
++.Suno-shelf-dock-island #dash .show-apps:hover { background-color: rgba(255,255,255,0.10) !important; }
++.Suno-shelf-dock-island #dash .show-apps:active { background-color: rgba(255,255,255,0.16) !important; }
++.Suno-media-module { height: 40px; }
++.Suno-media-art { icon-size: 40px; border-radius: 11px; }
++.Suno-shelf-live-island .Suno-live-extension-leading,
++.Suno-shelf-live-island .Suno-live-extension-badge { width: 40px; height: 40px; border-radius: 11px; }
++.Suno-shelf-live-island .Suno-live-extension-text { max-width: 170px; }
++.Suno-shelf-live-island .Suno-live-extension-action,
++.Suno-media-control { min-width: 32px; min-height: 32px; border-radius: 99px; }
++.Suno-media-control { background-color: rgba(255,255,255,0.10); }
++.Suno-media-control.Suno-media-primary { min-width: 34px; min-height: 34px; background-color: rgba(255,255,255,0.20); }
++.Suno-shelf-live-island .Suno-live-extension-action { background-color: rgba(255,255,255,0.10); }
++.Suno-shelf-live-island .Suno-live-extension-action.Suno-live-extension-action-end {
++  min-width: 34px; min-height: 34px; background-color: rgba(255,255,255,0.20); color: #d9534f; }
++.Suno-shelf-material.Suno-surface-light { background-color: #eceef1; }
++.Suno-shelf-shadow-near.Suno-surface-light { box-shadow: 0 3px 8px rgba(20,22,26,0.14); }
++.Suno-shelf-shadow-middle.Suno-surface-light { box-shadow: 0 22px 52px -15px rgba(20,22,26,0.40); }
+diff --git a/js/ui/shelfArrangement.js b/js/ui/shelfArrangement.js
+index 1fb27af..fba0e0a 100644
+--- a/js/ui/shelfArrangement.js
++++ b/js/ui/shelfArrangement.js
+@@ -34,7 +34,7 @@ export const ANCHORS = Object.freeze(['start', 'center', 'end', 'free']);
+ export const ZONE_ANCHORS = Object.freeze(['start', 'center', 'end']);
+ 
+ // Logical pixels; the caller multiplies by the display scale.
+-export const ISLAND_GAP = 9;          // the kit's island_gap: attached islands
++export const ISLAND_GAP = 10;          // the kit's island_gap: attached islands
+ export const GROUP_SEPARATION = 24;   // separate groups on one band, at least
+ export const ATTACH_DISTANCE = 40;    // along a group's run, to attach to it
+ // Beside any group, measured from its end along the band: the pointer in
+@@ -130,6 +130,20 @@ export function defaultArrangement(v1 = {}, order = DEFAULT_ORDER) {
+             {display: '', edge, anchor: 'end', position: 0.5, islands: away},
+         ];
+     }
++    if (v1.groupLayout === 'Suno') {
++        const middle = order.filter(id => ['dock', 'folders', 'live', 'media'].includes(id));
++        const status = order.filter(id => ['well', 'quick-options', 'clock'].includes(id));
++        const other = order.filter(id => !middle.includes(id) && !status.includes(id) && id !== 'notifications');
++        return [
++            {display: '', edge, anchor: 'center', position: 0.5, islands: middle},
++            {display: '', edge, anchor: 'end', position: 0.5, islands: status},
++            // Incoming notifications drop from a separate top-centre lip.
++            ...(order.includes('notifications')
++                ? [{display: '', edge: 'top', anchor: 'center', position: 0.5, islands: ['notifications']}]
++                : []),
++            ...other.map(id => ({display: '', edge, anchor: 'end', position: 0.5, islands: [id]})),
++        ].filter(group => group.islands.length);
++    }
+     if (v1.groupLayout === 'split-ends') {
+         return [
+             {display: '', edge, anchor: anchor(v1.dockAnchor ?? 'start'), position: 0.5, islands: withDock},
+diff --git a/js/ui/shelfMetrics.js b/js/ui/shelfMetrics.js
+index bf007cb..b344657 100644
+--- a/js/ui/shelfMetrics.js
++++ b/js/ui/shelfMetrics.js
+@@ -1,11 +1,10 @@
+ // SPDX-License-Identifier: GPL-2.0-or-later
+ // Native Dash and status geometry share one logical tile size. Display scale
+ // multiplies these logical measurements; it is not a second size policy.
+-// The values are the shelf specification's: 36 content, 6 between dock icons,
+-// 14 from the screen's edges.
+-export const DASH_TILE_SIZE = 36;
+-export const DASH_TILE_GAP = 6;
+-export const SHELF_INSET = 14;
++// Studio Desktop uses 40px content, 8px between dock icons, and a 16px inset.
++export const DASH_TILE_SIZE = 40;
++export const DASH_TILE_GAP = 8;
++export const SHELF_INSET = 16;
+ // The rule between pinned and running apps, and between status parts.
+ export const SHELF_DIVIDER_LENGTH = 24;
+ // The divider between the parts of one island or bar, full height; its ink is
+@@ -107,7 +106,7 @@ export function windowMarkRow(edge, width, height, center, marks, scale = 1, pad
+ export const SHELF_SURFACE_GAP = 8;
+ 
+ // The corner radius of a shelf island, and of the surfaces drawn like one.
+-export const SHELF_ISLAND_RADIUS = 15;
++export const SHELF_ISLAND_RADIUS = 16;
+ 
+ // Where a shelf surface sits. edge: the shelf's side of its monitor; anchor:
+ // the control that opened the surface; island: the painted island holding

@@ -23,7 +23,7 @@ base = Path(sys.executable).resolve().parent
 allow_cairo = '--allow-cairo' in sys.argv
 out = Path(os.environ['DEV_ARTIFACT_DIR'])
 out.mkdir(parents=True, exist_ok=True)
-window = Gtk.Window(title='Try Luma graphics qualification', default_width=960, default_height=600)
+window = Gtk.Window(title='Try Suno graphics qualification', default_width=960, default_height=600)
 picture = Gtk.Picture(hexpand=True, vexpand=True)
 window.set_child(picture)
 frames = 0

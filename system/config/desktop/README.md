@@ -1,20 +1,20 @@
-# Luma desktop configuration
+# Suno desktop configuration
 
-This directory is the source of truth for Luma-owned GNOME defaults. The
+This directory is the source of truth for Suno-owned GNOME defaults. The
 running design VM is only a preview surface.
 
 ## Composition contract
 
-- `packages.txt` pins Luma's patched GNOME Shell, native Shelf, libadwaita
+- `packages.txt` pins Suno's patched GNOME Shell, native Shelf, libadwaita
   design system, and the locally built Files, tiling, and background packages.
 - `inputs.env` pins source checksums and the isolated Fedora RPM build image.
-- `dconf/profile/user`, `dconf/db/luma.d/00-luma-desktop`, and
+- `dconf/profile/user`, `dconf/db/Suno.d/00-Suno-desktop`, and
   `dconf/db/gdm.d/00-prairie-login` are installed at the same paths below
   `/etc` and compiled with `dconf update` during image composition. GDM needs
   its own database because the greeter does not consume a person's settings.
 - `gtk-3.0/settings.ini` and `gtk-4.0/settings.ini` are installed to
   `/etc/gtk-3.0/settings.ini` and `/etc/gtk-4.0/settings.ini`. They are the
-  only Luma-owned GTK-level (not GSettings) system default today:
+  only Suno-owned GTK-level (not GSettings) system default today:
   `gtk-error-bell=0`, so GTK never asks for a beep on Backspace in an empty
   field or any other refused text action. A person can still turn it back on
   in their own `$XDG_CONFIG_HOME/gtk-3.0/settings.ini` or `gtk-4.0/settings.ini`.
@@ -27,14 +27,14 @@ The GNOME Control Center option-order changes are maintained separately as a
 source patch under `patches/gnome-control-center/` because presentation order
 belongs to the Settings application, not to dconf.
 
-Build the patched package on `luma-lab` with
+Build the patched package on `Suno-lab` with
 `scripts/packages/build-gnome-control-center.sh`. The script verifies Fedora's
-source RPM before applying the isolated Luma patch and records checksums for
+source RPM before applying the isolated Suno patch and records checksums for
 all produced packages.
 
 Build the patched Shell packages with
 `scripts/packages/build-gnome-shell.sh`. The script verifies the exact Fedora
-source RPM archived by Koji, applies Luma's isolated user-session panel patch,
+source RPM archived by Koji, applies Suno's isolated user-session panel patch,
 and retains GNOME Shell's package split, license, and identity.
 
 The normal desktop dock is the source-owned GNOME Shell **Shelf**, built by the
@@ -73,11 +73,11 @@ the shared native provider is staged.
 Build the tiling packages with `scripts/packages/build-tiling.sh`. It verifies
 the exact GNOME Extensions-reviewed Tiling Shell zip and upstream license,
 applies the documented teardown-order patch and safe file modes, and separately
-packages Luma's small Quick Settings bridge. All three component builders use
+packages Suno's small Quick Settings bridge. All three component builders use
 one persistent, pinned Fedora RPM container so dependencies are paid once while
 each package build still starts from a fresh RPM top directory.
 
-Build the Luma wallpaper collection with
+Build the Suno wallpaper collection with
 `scripts/packages/build-backgrounds.sh`. It verifies the source-controlled
 asset hashes, installs standard GNOME wallpaper-picker metadata, and leaves the
 desktop preference unlocked. Adding a wallpaper extends the collection rather
@@ -110,7 +110,7 @@ A fresh user on a fresh image must receive all of the following:
    native three-finger Activities and workspace gestures.
 10. A Show Apps button at the left-leading edge of the Shelf dock.
 11. Prism as the unlocked default wallpaper in light and dark appearance, with
-    Prism and Luma Mesh Gradient both available in GNOME's wallpaper picker.
+    Prism and Suno Mesh Gradient both available in GNOME's wallpaper picker.
 12. Filer as the first application in the unlocked fresh-profile dock order,
     using its existing `org.gnome.Nautilus.desktop` compatibility ID.
 13. Prairie as the unlocked icon-theme default, with Filer resolved from the

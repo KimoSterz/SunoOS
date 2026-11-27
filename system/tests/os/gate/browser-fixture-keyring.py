@@ -13,7 +13,7 @@ import time
 
 
 SERVICE = 'org.freedesktop.secrets'
-USER = 'luma-gate-browser-opens'
+USER = 'Suno-gate-browser-opens'
 
 
 def validate_context(uid):

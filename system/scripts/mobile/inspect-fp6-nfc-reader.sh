@@ -26,7 +26,7 @@ hashes=(
   ba972f65e232fca5a12a43a21ba9496b9e417af4156743aa2ea84af457d6551d
   df905d9ad4240b708a11c029af98344fa7d7ea23284ef0eb21f1655c6e67746a
 )
-printf 'LUMA_FP6_NFC_INSPECTION_VERSION=1\n'
+printf 'SUNO_FP6_NFC_INSPECTION_VERSION=1\n'
 printf 'BOOT_ID=%s\n' "$(cat /proc/sys/kernel/random/boot_id)"
 printf 'MODEL=%s\n' "$(tr -d '\000' </proc/device-tree/model)"
 printf 'KERNEL=%s\n' "$(uname -r)"

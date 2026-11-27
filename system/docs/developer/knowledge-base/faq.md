@@ -1,6 +1,6 @@
 ---
 title: Frequently asked questions
-summary: Answers about languages, LumaUI, portals and file access, fonts, dark and light, other distributions, app IDs, testing private releases, tiers and pricing.
+summary: Answers about languages, SunoUI, portals and file access, fonts, dark and light, other distributions, app IDs, testing private releases, tiers and pricing.
 order: 1
 section: Knowledge base
 ---
@@ -11,16 +11,16 @@ section: Knowledge base
 
 ### Which language should I use?
 
-**Python** with LumaUI’s Python package, `luma_appkit`, unless you need a native
+**Python** with SunoUI’s Python package, `Suno_appkit`, unless you need a native
 engine. It has the most complete API, including the command registry and
-navigation history, and several of Luma’s own apps are written in it. Choose
-**C or C++** with `LumaUI-1` for realtime audio, large documents or heavy
+navigation history, and several of Suno’s own apps are written in it. Choose
+**C or C++** with `SunoUI-1` for realtime audio, large documents or heavy
 rendering, as Grid, Stage, Session and Write do. See
 [the stack](../platform/the-stack.md#languages).
 
 ### Can I use another language, such as Rust, JavaScript or Vala?
 
-Only through GObject introspection of `LumaUI-1` and `LumaSemantics-1`. These
+Only through GObject introspection of `SunoUI-1` and `SunoSemantics-1`. These
 are not supported languages yet: there are no examples or tests, and the
 Python command registry is not available to them.
 
@@ -29,25 +29,25 @@ Python command registry is not available to them.
 No. The platform is a 0.1.0 preview. Note the platform version you tested
 against and read the [changelog](../CHANGELOG.md) before upgrading.
 
-### Do I have to use LumaUI?
+### Do I have to use SunoUI?
 
-No. Apps built with plain GTK or other toolkits run on Luma and can be
-published in the Verified tier. LumaUI is what gives an app the Luma window and
-components, and it is required for the Luma tier. See
+No. Apps built with plain GTK or other toolkits run on Suno and can be
+published in the Verified tier. SunoUI is what gives an app the Suno window and
+components, and it is required for the Suno tier. See
 [bringing an existing GTK app](../getting-started/existing-gtk-apps.md).
 
-### LumaUI is missing a component I need
+### SunoUI is missing a component I need
 
 Build it from plain GTK widgets and [color tokens](../design/color.md), keeping
-it inside your islands. Do not copy or restyle LumaUI components.
+it inside your islands. Do not copy or restyle SunoUI components.
 
 ### Can I use a web view or Electron?
 
 Yes, in the Verified tier, as long as your app meets
 [minimum functionality](../publishing/review-guidelines.md#5-minimum-functionality).
-Electron and other toolkits keep their own look; they do not get the Luma window.
-A WebKitGTK view inside a GTK app is fine for showing web content. The Luma tier
-expects a native LumaUI interface.
+Electron and other toolkits keep their own look; they do not get the Suno window.
+A WebKitGTK view inside a GTK app is fine for showing web content. The Suno tier
+expects a native SunoUI interface.
 
 ## Files and portals
 
@@ -71,7 +71,7 @@ try to derive the original location.
 
 ### Can I save next to the original file, for example an export?
 
-Only through a save dialog, or with a filesystem permission, which `luma lint`
+Only through a save dialog, or with a filesystem permission, which `Suno lint`
 reports as too broad. The file chooser
 grant covers the chosen file, not its folder. Offer **Export…** with
 `Gtk.FileDialog.save()` and suggest a name.
@@ -81,42 +81,42 @@ grant covers the chosen file, not its folder. Offer **Export…** with
 Ask for the folder with `Gtk.FileDialog.select_folder()` and monitor it with
 `Gio.File.monitor_directory()`. An app whose purpose is managing a whole media
 library may need a read-only XDG permission such as `--filesystem=xdg-music:ro`,
-which Depot shows as a sensitive permission. `luma lint` reports every
-`--filesystem=` permission as too broad for a Luma Native candidate, so use one
+which Depot shows as a sensitive permission. `Suno lint` reports every
+`--filesystem=` permission as too broad for a Suno Native candidate, so use one
 only when a portal cannot do the job.
 
 ## Look and feel
 
-### Why does my app look different outside Luma?
+### Why does my app look different outside Suno?
 
-It should not, if it is built on LumaUI and runs on the Luma runtime. LumaUI
-draws the Luma window, islands and identity itself, and the
-`org.projectluma.Platform` runtime carries LumaUI, Figtree and the Prairie icons
+It should not, if it is built on SunoUI and runs on the Suno runtime. SunoUI
+draws the Suno window, islands and identity itself, and the
+`org.projectSuno.Platform` runtime carries SunoUI, Figtree and the Prairie icons
 on any distribution. Differences come from running on another runtime, such as
-`org.gnome.Platform`, which has none of them. The manifest `luma new` writes
-still targets the GNOME runtime; switch it to the Luma runtime. See
+`org.gnome.Platform`, which has none of them. The manifest `Suno new` writes
+still targets the GNOME runtime; switch it to the Suno runtime. See
 [runtimes and distributions](../platform/runtimes-and-distributions.md).
 
 ### My colors are wrong in dark mode
 
 You have a literal color, or a token the dark token sheet does not define
-(`@luma_card`, `@luma_chrome`, `@luma_hairline`, `@luma_application_ink`), or you
+(`@Suno_card`, `@Suno_chrome`, `@Suno_hairline`, `@Suno_application_ink`), or you
 loaded your stylesheet with a plain `Gtk.CssProvider` so it was not re-parsed
 when the appearance changed. Use the [tokens](../design/color.md) and
-`add_style_sheet()` or `luma_ui_add_style_resource()`.
+`add_style_sheet()` or `Suno_ui_add_style_resource()`.
 
 ### How do I force dark or light?
 
-Do not. LumaUI follows the person’s choice. If your content is inherently dark,
+Do not. SunoUI follows the person’s choice. If your content is inherently dark,
 such as a photo editor’s canvas or a video monitor, darken that content area
 only.
 
 ### The font is not Figtree
 
-On Luma, Figtree is the system interface font and LumaUI sets it on Luma
+On Suno, Figtree is the system interface font and SunoUI sets it on Suno
 windows. If your app shows another font: check that the window uses `AppWindow`
-or `LumaApplicationWindow`; check that you are not setting `font-family` in your
-stylesheet; and inside Flatpak, check that you are on the Luma runtime, which
+or `SunoApplicationWindow`; check that you are not setting `font-family` in your
+stylesheet; and inside Flatpak, check that you are on the Suno runtime, which
 provides Figtree.
 
 ### Can I use my own icons?
@@ -129,19 +129,19 @@ symbolic icons first, and draw missing ones in the same outlined style. See
 
 ### Will my Depot app run on Ubuntu, Arch or Fedora Workstation?
 
-Yes, on any `x86_64` system with Flatpak, because it runs on the Luma runtime.
-People add the Luma remote or open your app’s `.flatpakref`. Luma-only services
+Yes, on any `x86_64` system with Flatpak, because it runs on the Suno runtime.
+People add the Suno remote or open your app’s `.flatpakref`. Suno-only services
 (the Semantic Broker, Live Extensions) are not there, so your app must work
 without them.
 
 ### Should I also publish on Flathub?
 
 You can, with the same app ID everywhere. Flathub builds use Flathub’s
-runtimes, which do not carry LumaUI, Figtree or the Prairie icons, so a LumaUI
-app would have to build LumaUI itself as a module and would not have Luma’s
-font and icons. The `luma-developer-platform` source tag the SDK template
+runtimes, which do not carry SunoUI, Figtree or the Prairie icons, so a SunoUI
+app would have to build SunoUI itself as a module and would not have Suno’s
+font and icons. The `Suno-developer-platform` source tag the SDK template
 points at is not publicly reachable, so plan on this only for apps that do not
-use LumaUI for now.
+use SunoUI for now.
 
 ## App IDs and publishing
 
@@ -160,8 +160,8 @@ prove you own that account when you register the app.
 
 ### How do testers install a private release?
 
-Keep the app’s visibility `private` and add testers by their Luma Connect
-account. Only Luma staff and your testers can see and install a private app.
+Keep the app’s visibility `private` and add testers by their Suno Connect
+account. Only Suno staff and your testers can see and install a private app.
 Put test builds on the `beta` branch so promoting to `stable` is a separate
 step.
 
@@ -179,8 +179,8 @@ Depot has no payment system. You may charge through your own
 payment system if the listing says so clearly
 ([guideline 3.6](../publishing/review-guidelines.md#3-honesty)).
 
-### How do I get into the Luma tier?
+### How do I get into the Suno tier?
 
-By invitation after review. Build on LumaUI, pass `luma release-check` with real
+By invitation after review. Build on SunoUI, pass `Suno release-check` with real
 evidence, follow the design guidelines, and meet every **L** rule in the
 [review guidelines](../publishing/review-guidelines.md).

@@ -78,7 +78,7 @@ class Retention(unittest.TestCase):
             tree = Path(temporary) / "tree"
             tree.mkdir()
             for entry in self.entries:
-                name = "luma-nightly-" + entry["build_id"] + ".iso"
+                name = "Suno-nightly-" + entry["build_id"] + ".iso"
                 (tree / (name + ".json")).write_text(json.dumps(entry))
                 (tree / name).write_bytes(b"controlled installer fixture")
             (tree / "latest.json").write_text(json.dumps({"latest": self.entries[1]}))

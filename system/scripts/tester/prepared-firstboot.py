@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 # SPDX-License-Identifier: Apache-2.0
-"""Import the launcher's private NoCloud seed into a prepared Luma VM.
+"""Import the launcher's private NoCloud seed into a prepared Suno VM.
 
-This deliberately accepts only the existing luma user's public key and the
+This deliberately accepts only the existing Suno user's public key and the
 requested interface. It does not execute cloud-config commands or create users.
 """
 import hashlib
@@ -54,8 +54,8 @@ def seed_values(text):
         raise ValueError('Expected the launcher NoCloud configuration')
     data = json.loads(text.split('\n', 1)[1])
     users = data.get('users')
-    if not isinstance(users, list) or len(users) != 1 or users[0].get('name') != 'luma':
-        raise ValueError('The seed must configure only the luma account')
+    if not isinstance(users, list) or len(users) != 1 or users[0].get('name') != 'Suno':
+        raise ValueError('The seed must configure only the Suno account')
     keys = users[0].get('ssh_authorized_keys')
     if not isinstance(keys, list) or len(keys) != 1 or not isinstance(keys[0], str):
         raise ValueError('Expected one private workspace public key')
@@ -64,7 +64,7 @@ def seed_values(text):
         raise ValueError('Invalid workspace public key')
     target = 'desktop'
     for item in data.get('write_files', []):
-        if item.get('path') != '/etc/luma-tester-target':
+        if item.get('path') != '/etc/Suno-tester-target':
             raise ValueError('Unsupported seed file')
         target = item.get('content', '').strip()
     if target not in ('desktop', 'tablet', 'mobile', 'tv'):
@@ -76,7 +76,7 @@ def boot_experience(default, timeout=5):
     # The launcher passes this boot's experience in fw_cfg; the seed keeps the
     # experience the workspace was first prepared with.
     subprocess.run(['modprobe', 'qemu_fw_cfg'], check=False)
-    path = Path('/sys/firmware/qemu_fw_cfg/by_name/opt/luma/experience/raw')
+    path = Path('/sys/firmware/qemu_fw_cfg/by_name/opt/Suno/experience/raw')
     deadline = time.monotonic() + timeout
     while time.monotonic() < deadline:
         try:
@@ -103,7 +103,7 @@ def wait_seed(directory=Path('/dev/disk/by-label'), timeout=120):
 
 def main():
     seed = wait_seed()
-    with tempfile.TemporaryDirectory(prefix='try-luma-seed-', dir='/run') as mount:
+    with tempfile.TemporaryDirectory(prefix='try-Suno-seed-', dir='/run') as mount:
         subprocess.run(['mount', '-o', 'ro,nosuid,nodev,noexec', str(seed), mount], check=True)
         try:
             path = Path(mount) / 'user-data'
@@ -112,13 +112,13 @@ def main():
             key, target = seed_values(path.read_text())
         finally:
             subprocess.run(['umount', mount], check=True)
-    user = pwd.getpwnam('luma')
+    user = pwd.getpwnam('Suno')
     prepare_flatpak(user)
     directory = Path(user.pw_dir) / '.ssh'
     directory.mkdir(mode=0o700, exist_ok=True)
     directory.chmod(0o700)
     os.chown(directory, user.pw_uid, user.pw_gid)
-    receipt = Path('/var/lib/try-luma/seed.json')
+    receipt = Path('/var/lib/try-Suno/seed.json')
     try:
         old = json.loads(receipt.read_text()).get('key', '')
     except (OSError, ValueError):
@@ -135,9 +135,9 @@ def main():
     # /var/home but lists home contexts only under /home, so restorecon gives
     # var_t here and sshd cannot read authorized_keys.
     subprocess.run(['chcon', '-R', '-u', 'unconfined_u', '-t', 'ssh_home_t', str(directory)], check=True)
-    Path('/etc/luma-tester-target').write_text(target + '\n')
-    # TV posture follows a television device class (luma-shell-state read_device_posture).
-    marker = Path('/etc/luma-device-class')
+    Path('/etc/Suno-tester-target').write_text(target + '\n')
+    # TV posture follows a television device class (Suno-shell-state read_device_posture).
+    marker = Path('/etc/Suno-device-class')
     if boot_experience(target) == 'tv':
         marker.write_text('tv\n')
     elif marker.is_file() and marker.read_text().strip() == 'tv':

@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """The session's hop between devices for run.sh: the saved snapshot is
 published by one device of an account through a Connect Sync Hub (the
-fake Hub of src/luma-connect-sync/tests) and taken by another, which writes
+fake Hub of src/Suno-connect-sync/tests) and taken by another, which writes
 what it received for the next Shell run. The Hub's storage must hold no
 window title or app ID.
 
@@ -17,11 +17,11 @@ import time
 from pathlib import Path
 
 repo = Path(__file__).resolve().parents[3]
-sys.path[:0] = [str(repo / "src/luma-connect-sync"), str(repo / "src/luma-connect-sync/tests")]
+sys.path[:0] = [str(repo / "src/Suno-connect-sync"), str(repo / "src/Suno-connect-sync/tests")]
 
 from fake_hub import FakeHub, serve  # noqa: E402
 from harness import enrol_fake, make_device, temporary_root  # noqa: E402
-from luma_connect_sync import sessions  # noqa: E402
+from Suno_connect_sync import sessions  # noqa: E402
 
 
 def main() -> int:
@@ -50,7 +50,7 @@ def main() -> int:
             d.account.refresh()
             d.sessions = sessions.Sessions(d.engine, d.account, d.local, d.hub.device,
                                            lambda d=d: d.account.state()["devices"])
-        home = root / "a-state" / "luma" / "session"
+        home = root / "a-state" / "Suno" / "session"
         home.mkdir(parents=True)
         snapshot["taken"] = int(time.time())
         snapshot["expires"] = snapshot["taken"] + sessions.TTL

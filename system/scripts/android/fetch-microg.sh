@@ -11,7 +11,7 @@ set -euo pipefail
 repo_root=$(cd "$(dirname "$0")/../.." && pwd)
 . "$repo_root/config/android/microg.env"
 dest=${1:?usage: fetch-microg.sh DEST [CACHE]}
-cache=${2:-${LUMA_ANDROID_MICROG_CACHE:-$repo_root/build/android/microg}}
+cache=${2:-${SUNO_ANDROID_MICROG_CACHE:-$repo_root/build/android/microg}}
 mkdir -p "$dest" "$cache"
 
 matches() {
@@ -21,7 +21,7 @@ matches() {
 
 for name in GMSCORE:GmsCore GSFPROXY:GsfProxy FAKESTORE:FakeStore; do
   key=${name%%:*} file=${name#*:}.apk
-  url_var=LUMA_MICROG_${key}_URL sha_var=LUMA_MICROG_${key}_SHA256 size_var=LUMA_MICROG_${key}_SIZE
+  url_var=SUNO_MICROG_${key}_URL sha_var=SUNO_MICROG_${key}_SHA256 size_var=SUNO_MICROG_${key}_SIZE
   url=${!url_var} sha=${!sha_var} size=${!size_var}
   matches "$dest/$file" "$size" "$sha" && continue
   if ! matches "$cache/$file" "$size" "$sha"; then

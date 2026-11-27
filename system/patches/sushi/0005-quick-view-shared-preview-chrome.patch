@@ -4,25 +4,25 @@
                        resizable: false });
  
          this.get_accessible().set_name('Quick View');
-+        this.get_style_context().add_class('luma-preview-window');
-+        this.get_style_context().add_class('luma-no-native-surfaces');
++        this.get_style_context().add_class('Suno-preview-window');
++        this.get_style_context().add_class('Suno-no-native-surfaces');
          this.connect('destroy', () => { this._queryCancel?.cancel(); });
  
 -        this._titlebar = new Gtk.HeaderBar({ show_close_button: true,
 -                                             decoration_layout: _getDecorationLayout() });
 +        this._titlebar = new Gtk.HeaderBar({ show_close_button: false,
 +                                             has_subtitle: false });
-+        this._titlebar.get_style_context().add_class('luma-no-automatic-identity');
-+        this._titlebar.get_style_context().add_class('luma-no-command-row');
-+        this._titlebar.get_style_context().add_class('luma-preview-titlebar');
++        this._titlebar.get_style_context().add_class('Suno-no-automatic-identity');
++        this._titlebar.get_style_context().add_class('Suno-no-command-row');
++        this._titlebar.get_style_context().add_class('Suno-preview-titlebar');
 +        const identity = new Gtk.Box({spacing: 10, valign: Gtk.Align.CENTER});
 +        this._kindIcon = new Gtk.Image({pixel_size: 16});
 +        identity.add(this._kindIcon);
 +        const labels = new Gtk.Box({orientation: Gtk.Orientation.VERTICAL, spacing: 0});
 +        this._fileName = new Gtk.Label({xalign: 0, ellipsize: 3, max_width_chars: 32});
-+        this._fileName.get_style_context().add_class('luma-preview-name');
++        this._fileName.get_style_context().add_class('Suno-preview-name');
 +        this._fileFacts = new Gtk.Label({xalign: 0, ellipsize: 3, max_width_chars: 42});
-+        this._fileFacts.get_style_context().add_class('luma-preview-facts');
++        this._fileFacts.get_style_context().add_class('Suno-preview-facts');
 +        labels.add(this._fileName); labels.add(this._fileFacts); identity.add(labels);
 +        this._titlebar.pack_start(identity);
 +        const close = Gtk.Button.new_from_icon_name('window-close-symbolic', Gtk.IconSize.MENU);
@@ -41,7 +41,7 @@
  
 -        this._openButton = new Gtk.Button();
 +        this._openButton = new Gtk.Button({valign: Gtk.Align.CENTER});
-+        this._openButton.get_style_context().add_class('luma-preview-open');
++        this._openButton.get_style_context().add_class('Suno-preview-open');
          this._openButton.connect('clicked', this._onFileOpenClicked.bind(this));
          this._titlebar.pack_end(this._openButton);
  
@@ -49,7 +49,7 @@
          this.add(eventBox);
  
          this._embed = new Embed();
-+        this._embed.get_style_context().add_class('luma-preview-pane');
++        this._embed.get_style_context().add_class('Suno-preview-pane');
          eventBox.add(this._embed);
  
          // call show_all() early when there's still no child Renderer, because show_all() later

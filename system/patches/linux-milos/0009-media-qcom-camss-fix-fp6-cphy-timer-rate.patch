@@ -1,4 +1,4 @@
-From: Project Luma <luma@localhost>
+From: Project Suno <Suno@localhost>
 Subject: [PATCH] media: qcom: camss: fix FP6 C-PHY timer rate selection
 
 The Fairphone 6 IMX896 uses the SM7635 CSIPHY0 C-PHY mission-mode path.

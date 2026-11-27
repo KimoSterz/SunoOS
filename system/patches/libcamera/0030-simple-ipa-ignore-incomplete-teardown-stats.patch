@@ -1,5 +1,5 @@
 From 5b4fb759b23a76cbe9a63e55b40ca2a94063e6fd Mon Sep 17 00:00:00 2001
-From: Project Luma <maintainers@projectluma.org>
+From: Project Suno <maintainers@projectSuno.org>
 Date: Tue, 18 Aug 2026 16:30:00 -0500
 Subject: [PATCH] ipa: simple: Ignore incomplete statistics during teardown
 
@@ -12,7 +12,7 @@ Validate the required controls before dereferencing them.  A late incomplete
 statistics buffer cannot produce valid metadata or a safe next sensor request,
 so dropping it is the only useful action during stop.
 
-Signed-off-by: Project Luma <maintainers@projectluma.org>
+Signed-off-by: Project Suno <maintainers@projectSuno.org>
 ---
  src/ipa/simple/soft_simple.cpp | 14 +++++++-------
  1 file changed, 7 insertions(+), 7 deletions(-)

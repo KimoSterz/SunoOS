@@ -13,7 +13,7 @@ static LRESULT CALLBACK relay_window_proc(
         SetTextColor(device, RGB(31, 41, 55));
         DrawTextA(
             device,
-            "Windows software is running through Luma Relay.",
+            "Windows software is running through Suno Relay.",
             -1,
             &bounds,
             DT_CENTER | DT_VCENTER | DT_SINGLELINE
@@ -32,7 +32,7 @@ static LRESULT CALLBACK relay_window_proc(
 int WINAPI WinMain(
     HINSTANCE instance, HINSTANCE previous, LPSTR command_line, int show
 ) {
-    const char class_name[] = "LumaRelaySmokeWindow";
+    const char class_name[] = "SunoRelaySmokeWindow";
     WNDCLASSA window_class = {0};
     MSG message;
     HWND window;
@@ -50,7 +50,7 @@ int WINAPI WinMain(
     window = CreateWindowExA(
         0,
         class_name,
-        "Luma Relay verification",
+        "Suno Relay verification",
         WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT,
         CW_USEDEFAULT,

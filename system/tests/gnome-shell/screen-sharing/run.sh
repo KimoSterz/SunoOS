@@ -1,7 +1,7 @@
 #!/bin/bash
 # SPDX-License-Identifier: GPL-2.0-or-later
-# One headless Luma session with the real portal stack, then probe.js.
-# Inside a Fedora container with the Shell, luma-portal, PipeWire,
+# One headless Suno session with the real portal stack, then probe.js.
+# Inside a Fedora container with the Shell, Suno-portal, PipeWire,
 # xdg-desktop-portal and GStreamer installed; this directory is /oracle/t.
 # ORACLE_OUT, MODE (full|look|exp|perf), SUFFIX, ORACLE_KEYFILE, ORACLE_W, ORACLE_H,
 # ORACLE_MONITORS (more monitors, e.g. "2560x1440 1920x1200").
@@ -12,7 +12,7 @@ export HOME=/tmp/share-home; rm -rf $HOME
 mkdir -p $HOME/.config/glib-2.0/settings $HOME/.local/share/applications
 cp ${ORACLE_KEYFILE:-$T/keyfile.light} $HOME/.config/glib-2.0/settings/keyfile
 cp $T/apps/*.desktop $HOME/.local/share/applications/
-export GSETTINGS_BACKEND=keyfile LIBGL_ALWAYS_SOFTWARE=1 LUMA_MUTTER_ALLOW_SOFTWARE_BLUR=1
+export GSETTINGS_BACKEND=keyfile LIBGL_ALWAYS_SOFTWARE=1 SUNO_MUTTER_ALLOW_SOFTWARE_BLUR=1
 export XDG_CURRENT_DESKTOP=GNOME XDG_SESSION_TYPE=wayland GDK_BACKEND=wayland
 export ORACLE_OUT=${ORACLE_OUT:-/oracle/out} SHARE_HARNESS=$T
 mkdir -p "$ORACLE_OUT"

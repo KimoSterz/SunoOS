@@ -35,7 +35,7 @@ def device(target, path=TABLE):
 
 def ref(target, major, channel):
     row = device(target)
-    return f"luma/{major}/{row['arch']}/{row['slug']}/{channel}"
+    return f"Suno/{major}/{row['arch']}/{row['slug']}/{channel}"
 
 
 def namespace(target):

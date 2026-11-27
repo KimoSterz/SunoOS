@@ -6,8 +6,8 @@ import time
 from urllib.parse import urlsplit
 from .connect_sync import ConnectError, DeviceIdentity, HubResponseError
 
-BUS = 'org.projectluma.Connect1'
-PATH = '/org/projectluma/Connect'
+BUS = 'org.projectSuno.Connect1'
+PATH = '/org/projectSuno/Connect'
 
 
 def call(method, values=()):
@@ -21,7 +21,7 @@ def call(method, values=()):
         if not isinstance(result, dict): raise ValueError('Invalid Connect response.')
         return result
     except (GLib.Error, ValueError):
-        raise ConnectError('Connect collaboration is unavailable. Open Luma Connect and check your sign-in.') from None
+        raise ConnectError('Connect collaboration is unavailable. Open Suno Connect and check your sign-in.') from None
 
 
 class _MetadataCache:

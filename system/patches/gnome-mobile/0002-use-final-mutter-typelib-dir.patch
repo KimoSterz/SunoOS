@@ -1,4 +1,4 @@
-From: Project Luma <luma@local>
+From: Project Suno <Suno@local>
 Subject: [PATCH] Use the final private Mutter typelib directory at runtime
 
 The bake-off resolves Mutter through a staged pkg-config prefix. Embedding

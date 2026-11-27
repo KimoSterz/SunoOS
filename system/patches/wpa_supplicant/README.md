@@ -2,7 +2,7 @@
 
 Fedora's wpa_supplicant, rebuilt by `scripts/packages/build-wpa-supplicant.sh`
 from the SRPM pinned in `config/desktop/inputs.env` (desktop-components group
-`wpa-supplicant`, both architectures). Luma installs only the `wpa_supplicant`
+`wpa-supplicant`, both architectures). Suno installs only the `wpa_supplicant`
 subpackage, pinned in `config/desktop/packages.txt`. NetworkManager drives it
 with `bgscan` "simple:30:-70:900" for multi-BSS networks
 (`patches/NetworkManager/0002-*`).
@@ -27,7 +27,7 @@ header, written for upstream hostap; drop them once upstream has equivalents.
   no long-interval background scan while the link is above the threshold and
   busy; weak links are scanned on time. On 2.4 GHz with a 5/6 GHz BSS of the
   network known, the long interval is at most 300 s.
-- `0000-luma-fedora-spec.patch`: adds the patches and the `luma.N` release.
+- `0000-Suno-fedora-spec.patch`: adds the patches and the `Suno.N` release.
 
 Measured with mac80211_hwsim, wmediumd, hostapd and NetworkManager 1.56.1 in a
 VM: `tools/wifi-roam-sim/`.

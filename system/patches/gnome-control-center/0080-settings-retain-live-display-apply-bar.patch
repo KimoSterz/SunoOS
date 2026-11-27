@@ -6,59 +6,59 @@ so showing their Apply or Keep bar immediately invoked that handler and
 hid the controls. Retain the bar while the native adapter owns a pending
 display transaction; other editor folding keeps its existing behavior.
 
---- a/shell/cc-luma-view.c
-+++ b/shell/cc-luma-view.c
+--- a/shell/cc-Suno-view.c
++++ b/shell/cc-Suno-view.c
 @@ -533,6 +533,10 @@
- static void center_changed (LumaActionCenter *center, const char *state, GtkWidget *root)
+ static void center_changed (SunoActionCenter *center, const char *state, GtkWidget *root)
  {
    View *v = g_object_get_data (G_OBJECT (root), "cf-view");
 +  if (v && g_str_equal (v->page, "displays") &&
-+      cc_luma_fixture_is_live (v->model) &&
-+      cc_luma_view_flag (v, "display.pending"))
++      cc_Suno_fixture_is_live (v->model) &&
++      cc_Suno_view_flag (v, "display.pending"))
 +    return;
-   if (v && v->display_draft && cc_luma_display_draft_remaining (v->display_draft)) return;
-   if (g_str_equal (state, "bar")) luma_action_center_hide_bar (center);
+   if (v && v->display_draft && cc_Suno_display_draft_remaining (v->display_draft)) return;
+   if (g_str_equal (state, "bar")) Suno_action_center_hide_bar (center);
  }
 
 --- /dev/null
-+++ b/shell/test-luma-display-save-view.c
++++ b/shell/test-Suno-display-save-view.c
 @@ -0,0 +1,129 @@
 +/* SPDX-License-Identifier: GPL-2.0-or-later */
 +/* Real live view and native display adapter, isolated from physical displays. */
-+#include "cc-luma-view-private.h"
-+#include "cc-luma-live-displays.c"
++#include "cc-Suno-view-private.h"
++#include "cc-Suno-live-displays.c"
 +
-+void cc_luma_live_ready (CcLumaFixture *model, const char *adapter)
-+{ cc_luma_fixture_changed (model); }
++void cc_Suno_live_ready (CcSunoFixture *model, const char *adapter)
++{ cc_Suno_fixture_changed (model); }
 +static void spin (void)
 +{
 +  gint64 end = g_get_monotonic_time () + 250000;
 +  do { while (g_main_context_iteration (NULL, FALSE)); g_usleep (1000); }
 +  while (g_get_monotonic_time () < end);
 +}
-+static gboolean write_display (CcLumaFixture *model, const char *key,
++static gboolean write_display (CcSunoFixture *model, const char *key,
 +                               JsonNode *value, gpointer data, GError **error)
 +{ return displays_write (data, key, value, error); }
-+static CcLumaFixture *start_model (Displays **owner)
++static CcSunoFixture *start_model (Displays **owner)
 +{
 +  g_autoptr(JsonParser) parser = json_parser_new ();
 +  g_assert_true (json_parser_load_from_data (parser,
 +    "{\"settings\":{\"night\":false},\"data\":{},\"pages\":[{\"id\":\"displays\"}]}", -1, NULL));
-+  CcLumaFixture *model = cc_luma_fixture_new_live (json_parser_get_root (parser));
++  CcSunoFixture *model = cc_Suno_fixture_new_live (json_parser_get_root (parser));
 +  *owner = displays_start (model); spin ();
-+  cc_luma_fixture_set_writer (model, write_display, *owner);
++  cc_Suno_fixture_set_writer (model, write_display, *owner);
 +  const char *keys[] = { "dsel", "d.int.scale", "d.int.rot", "d.ext.primary" };
-+  for (guint i = 0; i < G_N_ELEMENTS (keys); i++) cc_luma_fixture_verify_key (model, keys[i]);
++  for (guint i = 0; i < G_N_ELEMENTS (keys); i++) cc_Suno_fixture_verify_key (model, keys[i]);
 +  return model;
 +}
-+static GtkWidget *open_view (CcLumaFixture *model, View **view)
++static GtkWidget *open_view (CcSunoFixture *model, View **view)
 +{
 +  g_autoptr(GError) error = NULL;
-+  GtkWidget *root = cc_luma_view_new (model, "displays", &error);
++  GtkWidget *root = cc_Suno_view_new (model, "displays", &error);
 +  g_assert_no_error (error); g_assert_nonnull (root);
 +  GtkWidget *window = gtk_window_new ();
 +  gtk_window_set_child (GTK_WINDOW (window), root);
-+  const char *width = g_getenv ("LUMA_SETTINGS_TEST_WIDTH");
++  const char *width = g_getenv ("SUNO_SETTINGS_TEST_WIDTH");
 +  gtk_window_set_default_size (GTK_WINDOW (window), width ? atoi (width) : 1180, 740);
 +  gtk_window_present (GTK_WINDOW (window)); spin ();
 +  *view = g_object_get_data (G_OBJECT (root), "cf-view");
@@ -89,14 +89,14 @@ display transaction; other editor folding keeps its existing behavior.
 +}
 +static void click_named (View *view, const char *name)
 +{
-+  g_print ("Clicking %s on display %s\n", name, cc_luma_view_text (view, "dsel"));
++  g_print ("Clicking %s on display %s\n", name, cc_Suno_view_text (view, "dsel"));
 +  GtkWidget *control = named (view->root, name);
 +  g_assert_nonnull (control); g_assert_true (gtk_widget_is_sensitive (control));
 +  g_signal_emit_by_name (control, "clicked"); spin ();
 +}
 +static void click_bar (View *view, guint index, const char *caption)
 +{
-+  g_assert_cmpstr (luma_action_center_get_state (view->center), ==, "bar");
++  g_assert_cmpstr (Suno_action_center_get_state (view->center), ==, "bar");
 +  GtkWidget *control = caption_button (GTK_WIDGET (view->center), caption);
 +  g_assert_nonnull (control);
 +  g_assert_true (gtk_widget_get_visible (GTK_WIDGET (view->center)));
@@ -111,56 +111,56 @@ display transaction; other editor folding keeps its existing behavior.
 +int main (int argc, char **argv)
 +{
 +  gtk_init ();
-+  Displays *owner; g_autoptr(CcLumaFixture) model = start_model (&owner);
++  Displays *owner; g_autoptr(CcSunoFixture) model = start_model (&owner);
 +  View *view; GtkWidget *window = open_view (model, &view);
 +  g_assert_null (view->display_draft); /* Native draft belongs to the adapter. */
 +  g_assert_true (gtk_widget_activate_action (view->root, "cf.pick", "(ss)", "d.int.scale", "125")); spin ();
 +  g_assert_nonnull (owner->draft); g_assert_false (owner->preview);
-+  g_assert_true (json_node_get_boolean (cc_luma_fixture_get (model, "display.pending")));
++  g_assert_true (json_node_get_boolean (cc_Suno_fixture_get (model, "display.pending")));
 +  g_assert_null (view->display_draft);
 +  click_named (view, "cf-display-ext");
 +  click_named (view, "cf-d.ext.primary");
-+  g_assert_true (json_node_get_boolean (cc_luma_fixture_get (model, "d.ext.primary")));
++  g_assert_true (json_node_get_boolean (cc_Suno_fixture_get (model, "d.ext.primary")));
 +  click_bar (view, 2, "Apply");
 +  g_assert_true (owner->preview);
 +  g_assert_false (gtk_widget_get_sensitive (GTK_WIDGET (view->body)));
 +  click_bar (view, 2, "Keep");
 +  g_assert_null (owner->draft); g_assert_false (owner->preview);
-+  g_assert_cmpstr (luma_action_center_get_state (view->center), ==, "hidden");
++  g_assert_cmpstr (Suno_action_center_get_state (view->center), ==, "hidden");
 +  gtk_window_destroy (GTK_WINDOW (window)); spin ();
 +  displays_stop (owner); spin (); g_clear_object (&model);
 +  /* A brand new owner must read the retained native state, not the old model. */
 +  model = start_model (&owner);
-+  g_assert_cmpstr (json_node_get_string (cc_luma_fixture_get (model, "d.int.scale")), ==, "125");
-+  g_assert_true (json_node_get_boolean (cc_luma_fixture_get (model, "d.ext.primary")));
-+  g_assert_false (json_node_get_boolean (cc_luma_fixture_get (model, "d.int.primary")));
++  g_assert_cmpstr (json_node_get_string (cc_Suno_fixture_get (model, "d.int.scale")), ==, "125");
++  g_assert_true (json_node_get_boolean (cc_Suno_fixture_get (model, "d.ext.primary")));
++  g_assert_false (json_node_get_boolean (cc_Suno_fixture_get (model, "d.int.primary")));
 +  window = open_view (model, &view);
-+  g_assert_cmpstr (luma_action_center_get_state (view->center), ==, "hidden");
++  g_assert_cmpstr (Suno_action_center_get_state (view->center), ==, "hidden");
 +  click_named (view, "cf-display-int");
 +  g_assert_true (gtk_widget_activate_action (view->root, "cf.pick", "(ss)", "d.int.rot", "Portrait right")); spin ();
 +  click_bar (view, 1, "Cancel");
 +  g_assert_null (owner->draft);
-+  g_assert_cmpstr (json_node_get_string (cc_luma_fixture_get (model, "d.int.rot")), ==, "Landscape");
++  g_assert_cmpstr (json_node_get_string (cc_Suno_fixture_get (model, "d.int.rot")), ==, "Landscape");
 +  g_assert_true (gtk_widget_activate_action (view->root, "cf.pick", "(ss)", "d.int.rot", "Portrait right")); spin ();
 +  click_bar (view, 2, "Apply");
 +  click_bar (view, 1, "Revert");
 +  g_assert_null (owner->draft); g_assert_false (owner->preview);
-+  g_assert_cmpstr (json_node_get_string (cc_luma_fixture_get (model, "d.int.rot")), ==, "Landscape");
-+  g_assert_cmpstr (json_node_get_string (cc_luma_fixture_get (model, "d.int.scale")), ==, "125");
++  g_assert_cmpstr (json_node_get_string (cc_Suno_fixture_get (model, "d.int.rot")), ==, "Landscape");
++  g_assert_cmpstr (json_node_get_string (cc_Suno_fixture_get (model, "d.int.scale")), ==, "125");
 +  gtk_window_destroy (GTK_WINDOW (window)); spin ();
 +  displays_stop (owner); spin ();
 +  g_print ("Native live UI Apply/Keep/Cancel/Revert and new-owner retained readback PASS\n");
 +  return 0;
 +}
 --- /dev/null
-+++ b/shell/test-luma-display-save-view.py
++++ b/shell/test-Suno-display-save-view.py
 @@ -0,0 +1,60 @@
 +#!/usr/bin/python3
 +# SPDX-License-Identifier: GPL-2.0-or-later
 +"""Private D-Bus owner: no real session, displays, or profile is accessed."""
 +import subprocess, sys, json, pathlib, resource, tempfile
 +resource.setrlimit(resource.RLIMIT_CORE, (0, 0))
-+temporary_profile = tempfile.TemporaryDirectory(prefix="luma-display-save-test-")
++temporary_profile = tempfile.TemporaryDirectory(prefix="Suno-display-save-test-")
 +persistent = pathlib.Path(temporary_profile.name) / "monitors.json"
 +from gi.repository import Gio, GLib
 +TYPE='(ua((ssss)a(siiddada{sv})a{sv})a(iiduba(ssss)a{sv})a{sv})'
@@ -219,23 +219,23 @@ display transaction; other editor folding keeps its existing behavior.
 --- a/shell/meson.build
 +++ b/shell/meson.build
 @@ -432,3 +432,20 @@
- test('luma-settings-display-preview', find_program('dbus-run-session'),
-   args: ['--', find_program('python3'), files('test-luma-display-preview.py'), display_preview_test],
+ test('Suno-settings-display-preview', find_program('dbus-run-session'),
+   args: ['--', find_program('python3'), files('test-Suno-display-preview.py'), display_preview_test],
    timeout: 30, env: ['GSETTINGS_BACKEND=memory', 'GTK_A11Y=none', 'G_DEBUG=fatal-criticals'])
 +
 +# The actual live GTK view must expose Apply/Keep and send native persistence.
-+display_save_view_test = executable('test-luma-display-save-view',
-+  ['test-luma-display-save-view.c', 'cc-luma-live-gsettings.c',
++display_save_view_test = executable('test-Suno-display-save-view',
++  ['test-Suno-display-save-view.c', 'cc-Suno-live-gsettings.c',
 +   '../panels/display/cc-display-config.c', '../panels/display/cc-display-config-manager.c',
 +   '../panels/display/cc-display-arrangement.c'] + fixture_view_sources,
 +  include_directories: [top_inc, common_inc],
 +  dependencies: fixture_view_deps + [gnome_desktop_dep])
 +foreach width : ['1180', '320']
-+  test('luma-settings-display-save-view-' + width, find_program('dbus-run-session'),
++  test('Suno-settings-display-save-view-' + width, find_program('dbus-run-session'),
 +    args: ['--', find_program('xvfb-run'), '-a', find_program('python3'),
-+           files('test-luma-display-save-view.py'), display_save_view_test],
++           files('test-Suno-display-save-view.py'), display_save_view_test],
 +    timeout: 30,
 +    env: ['GSETTINGS_BACKEND=memory', 'GTK_A11Y=none', 'G_DEBUG=fatal-criticals',
-+          'GSK_RENDERER=cairo', 'GIO_USE_VFS=local', 'LUMA_SETTINGS_TEST_WIDTH=' + width,
++          'GSK_RENDERER=cairo', 'GIO_USE_VFS=local', 'SUNO_SETTINGS_TEST_WIDTH=' + width,
 +          'GSETTINGS_SCHEMA_DIR=' + meson.current_build_dir() / 'test-fixture-schemas'])
 +endforeach

@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Install, launch, screenshot and uninstall an app in a throwaway Luma VM.
+"""Install, launch, screenshot and uninstall an app in a throwaway Suno VM.
 
-A base disk is installed once from published Luma installation media (the
-way Try Luma provisions its VM), with one person account that logs in
+A base disk is installed once from published Suno installation media (the
+way Try Suno provisions its VM), with one person account that logs in
 automatically and root SSH for this host only. Each run boots a copy-on-write
 overlay of that disk, so nothing an app does survives the run.
 
@@ -25,7 +25,7 @@ import time
 import zlib
 from pathlib import Path
 
-USER = "luma-review"
+USER = "Suno-review"
 WIDTH, HEIGHT = 1920, 1080
 
 
@@ -91,10 +91,10 @@ set -e
 mkdir -p /etc/gdm /var/lib/AccountsService/users /etc/dconf/db/local.d
 printf '[daemon]\\nAutomaticLoginEnable=True\\nAutomaticLogin={USER}\\n' > /etc/gdm/custom.conf
 printf '[User]\\nSystemAccount=false\\n' > /var/lib/AccountsService/users/{USER}
-install -d -o {USER} -g {USER} /home/{USER}/.config /home/{USER}/.local /home/{USER}/.local/state /home/{USER}/.local/state/luma-setup
+install -d -o {USER} -g {USER} /home/{USER}/.config /home/{USER}/.local /home/{USER}/.local/state /home/{USER}/.local/state/Suno-setup
 printf 'yes\\n' > /home/{USER}/.config/gnome-initial-setup-done
-: > /home/{USER}/.local/state/luma-setup/welcome-done
-chown {USER}:{USER} /home/{USER}/.config/gnome-initial-setup-done /home/{USER}/.local/state/luma-setup/welcome-done
+: > /home/{USER}/.local/state/Suno-setup/welcome-done
+chown {USER}:{USER} /home/{USER}/.config/gnome-initial-setup-done /home/{USER}/.local/state/Suno-setup/welcome-done
 {write_review_dconf()}systemctl mask {" ".join(ANDROID_SYSTEM_UNITS)}
 systemctl --global mask {" ".join(REVIEW_USER_MASKS)}
 systemctl set-default graphical.target
@@ -167,17 +167,17 @@ def build_base(iso: Path, out: Path, arch: str = "x86_64", disk_gib: int = 40) -
 
 # Jobs that only matter on a real computer and hold the desktop back in a
 # throwaway VM: update checks, caches, Snap seeding, network-online waits.
-REVIEW_MASKS = ("luma-update-check.service", "luma-update-check.timer",
+REVIEW_MASKS = ("Suno-update-check.service", "Suno-update-check.timer",
                 "fedora-atomic-desktop-appstream-cache-refresh.service",
                 "fedora-atomic-desktop-mandb-update.service", "snapd.seeded.service", "snapd.service",
                 "snapd.socket", "NetworkManager-wait-online.service",
-                "luma-android-initialize.service", "waydroid-container.service")
+                "Suno-android-initialize.service", "waydroid-container.service")
 # Android never runs in the review VM: Flatpak checks don't need it, and once
-# luma-android-initialize has set it up (any boot without /var/lib/waydroid/
+# Suno-android-initialize has set it up (any boot without /var/lib/waydroid/
 # waydroid.cfg, prepare-base's own boots included) the session's prewarm starts
 # it in every run, taking a quarter of the VM's memory and a core of dex2oat.
-REVIEW_USER_MASKS = ("luma-android-prewarm.timer", "luma-android-prewarm.service", "luma-android-session.service")
-ANDROID_SYSTEM_UNITS = ("luma-android-initialize.service", "waydroid-container.service")
+REVIEW_USER_MASKS = ("Suno-android-prewarm.timer", "Suno-android-prewarm.service", "Suno-android-session.service")
+ANDROID_SYSTEM_UNITS = ("Suno-android-initialize.service", "waydroid-container.service")
 
 
 def android_off(runtime: bool = True) -> str:
@@ -250,7 +250,7 @@ def wait_session(guest: "Guest", timeout: int) -> str:
     return ""
 
 
-PREPARED_STAMP = "/etc/luma-depot-review/prepared"
+PREPARED_STAMP = "/etc/Suno-depot-review/prepared"
 
 
 def prepare_refusal(stamped: bool, holders: str, force: bool) -> str:
@@ -522,7 +522,7 @@ def judge_launch(control: bool | None) -> str:
 def run_app(base: Path, key: Path, package: Path | None, app_id: str, fmt: str, out: Path, arch: str = "x86_64",
             boot_timeout: int = 420, remote_ref: str | None = None, memory: str = "6144", cpus: str = "4",
             control_bundle: Path | None = None, control_app_id: str = "") -> dict:
-    """With remote_ref (e.g. luma app/ID/ARCH/stable), install from the VM's own
+    """With remote_ref (e.g. Suno app/ID/ARCH/stable), install from the VM's own
     configured remote instead of a bundle: the published-release check.
 
     Returns {"steps": [{step, ok, message}], "screenshot": path|None, "ok": bool}.
@@ -546,7 +546,7 @@ def run_app(base: Path, key: Path, package: Path | None, app_id: str, fmt: str, 
         step(name, False, message, internal=True, infrastructure=True, reason=reason, detail=detail)
 
     if fmt != "flatpak":
-        step("install", False, "The VM run covers Flatpak bundles tonight; Luma checks universal packages by hand.",
+        step("install", False, "The VM run covers Flatpak bundles tonight; Suno checks universal packages by hand.",
              internal=True)
         return result
     work = Path(tempfile.mkdtemp(prefix="run-", dir=out))
@@ -578,11 +578,11 @@ def run_app(base: Path, key: Path, package: Path | None, app_id: str, fmt: str, 
             couldnt_run("boot", "desktop_timeout", "The test VM's desktop didn't start.",
                         detail=f"no desktop session after {int(time.time() - started)} s")
             return result
-        step("boot", True, f"Luma started ({int(time.time() - started)} s).")
+        step("boot", True, f"Suno started ({int(time.time() - started)} s).")
         # Android starts in the background after sign-in. Its window and memory
         # are not the app's, so it stays off while an app is checked.
         guest.run(f"runuser -u {USER} -- env {session_env(uid)} systemctl --user mask --runtime --now "
-                  "luma-android-prewarm.service >/dev/null 2>&1; "
+                  "Suno-android-prewarm.service >/dev/null 2>&1; "
                   f"runuser -u {USER} -- env {session_env(uid)} waydroid session stop >/dev/null 2>&1; true",
                   timeout=60)
         # A slow boot can outlast the idle delay: the screen blanks, and a blank
@@ -745,7 +745,7 @@ def run_app(base: Path, key: Path, package: Path | None, app_id: str, fmt: str, 
         log(f"launch: window area {shown:.3f} shown, {after_stop:.3f} after stop")
         if not window_verdict(shown, after_stop):
             step("launch", False, "The screen changed while your app ran, but not because of a window of "
-                 "your app. Luma looks at this by hand.", internal=True,
+                 "your app. Suno looks at this by hand.", internal=True,
                  detail=f"changed {shown:.3f} while running, {after_stop:.3f} after stopping it")
             return result
         step("launch", True, f"Your app opened a window ({seconds} s).")
@@ -758,7 +758,7 @@ def run_app(base: Path, key: Path, package: Path | None, app_id: str, fmt: str, 
         result["ok"] = all(s["ok"] for s in steps)
         return result
     except (RuntimeError, OSError, subprocess.SubprocessError, ValueError) as error:
-        couldnt_run("vm", "vm_error", "The test VM had a problem; Luma will look at it.", detail=str(error))
+        couldnt_run("vm", "vm_error", "The test VM had a problem; Suno will look at it.", detail=str(error))
         return result
     finally:
         try:
@@ -797,7 +797,7 @@ def main(argv: list[str] | None = None) -> int:
     r.add_argument("--base", type=Path, required=True)
     r.add_argument("--key", type=Path, required=True)
     r.add_argument("--package", type=Path)
-    r.add_argument("--remote-ref", help="install from the VM's remote, e.g. 'luma app/ID/x86_64/stable'")
+    r.add_argument("--remote-ref", help="install from the VM's remote, e.g. 'Suno app/ID/x86_64/stable'")
     r.add_argument("--app-id", required=True)
     r.add_argument("--format", default="flatpak")
     r.add_argument("--arch", default="x86_64")

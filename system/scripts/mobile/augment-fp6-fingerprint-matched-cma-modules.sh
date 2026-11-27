@@ -13,13 +13,13 @@ repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 tree=${1:?usage: augment-fp6-fingerprint-matched-cma-modules.sh PRESERVED_TREE BASE_BUNDLE OUTPUT_DIR}
 base_bundle=${2:?missing base bundle}
 output_dir=${3:?missing output directory}
-release=7.1.2-luma-fp-cma1
-localversion=-luma-fp-cma1
+release=7.1.2-Suno-fp-cma1
+localversion=-Suno-fp-cma1
 runtime_image_sha=01d9f1070058ad0edb8832ffa3e76589b4b32b903d14f09abb3f10c13c02276c
 runtime_config_sha=5bddfee4390b0f66de5709b99282e79ee3787a01749d5cc8d28ea82d6bbed7fe
 base_archive_sha=23c83b4f0747761a50615b9b558cadae427cbf9b60a4077e834ec6aad20b366b
 build_timestamp='2026-08-22 00:00:00 UTC'
-jobs=${LUMA_KERNEL_BUILD_JOBS:-8}
+jobs=${SUNO_KERNEL_BUILD_JOBS:-8}
 
 die() { printf 'error: %s\n' "$*" >&2; exit 1; }
 hash() { sha256sum "$1" | cut -d ' ' -f 1; }
@@ -228,7 +228,7 @@ for required in \
 done
 
 {
-  printf 'LUMA_FP6_FINGERPRINT_MATCHED_CMA_CONTINUITY_BUILD_VERSION=1\n'
+  printf 'SUNO_FP6_FINGERPRINT_MATCHED_CMA_CONTINUITY_BUILD_VERSION=1\n'
   printf 'KERNEL_RELEASE=%s\n' "$release"
   printf 'IMAGE_SHA256=%s\n' "$(hash "$bundle/Image.gz")"
   printf 'CONFIG_SHA256=%s\n' "$(hash "$bundle/config")"

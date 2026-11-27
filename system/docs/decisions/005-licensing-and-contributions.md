@@ -2,17 +2,17 @@
 
 - **Status:** Accepted
 - **Date:** 2026-08-06
-- **Owner:** Project Luma
+- **Owner:** Project Suno
 - **Review basis:** open adoption goal, Fedora/GNOME license diversity, and complete planning wiki
 - **Revisit trigger:** first upstream fork, public trademark use, or material incompatibility discovered by legal review
 
 ## User problem
 
-People must be able to use, study, modify, redistribute, and adopt Luma's original standards while the project respects all upstream obligations and preserves contribution provenance.
+People must be able to use, study, modify, redistribute, and adopt Suno's original standards while the project respects all upstream obligations and preserves contribution provenance.
 
 ## Constraints
 
-Luma will combine original work with components under GPL, LGPL, permissive, Creative Commons, firmware, font, and other terms. One blanket relicense cannot override upstream files. Specifications should be easy for other platforms to adopt.
+Suno will combine original work with components under GPL, LGPL, permissive, Creative Commons, firmware, font, and other terms. One blanket relicense cannot override upstream files. Specifications should be easy for other platforms to adopt.
 
 ## Decision
 

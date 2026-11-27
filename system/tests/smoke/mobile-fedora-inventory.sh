@@ -13,7 +13,7 @@ cat >"$test_root/bin/ssh" <<'MOCK_SSH'
 set -eu
 cat >/dev/null
 cat <<'REPORT'
-LUMA_FP6_FEDORA_INVENTORY_VERSION=1
+SUNO_FP6_FEDORA_INVENTORY_VERSION=1
 PHONE_ACCESSED=true
 MUTATING_OPERATIONS=none
 P5_INSTALL_AUTHORIZED=false
@@ -79,10 +79,10 @@ REPORT
 MOCK_SSH
 chmod +x "$test_root/bin/ssh"
 
-LUMA_SSH="$test_root/bin/ssh" \
-LUMA_FP6_SSH_TARGET=luma@fixture \
-LUMA_FP6_FEDORA_INVENTORY_DIR="$test_root/output" \
-LUMA_FP6_FEDORA_TIMESTAMP=fixture \
+SUNO_SSH="$test_root/bin/ssh" \
+SUNO_FP6_SSH_TARGET=Suno@fixture \
+SUNO_FP6_FEDORA_INVENTORY_DIR="$test_root/output" \
+SUNO_FP6_FEDORA_TIMESTAMP=fixture \
   "$repo_root/scripts/mobile/inventory-fp6-fedora.sh" >/dev/null
 
 grep -qx 'IDENTITY=fp6-fedora44-confirmed' "$test_root/output/summary.env"

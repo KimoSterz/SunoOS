@@ -6,9 +6,9 @@ import sqlite3
 import tempfile
 import unittest
 
-from charlie_luma.fixtures import DEMO_ACCOUNT, demo_messages
-from charlie_luma.model import Account, Message, ServerConfig, normalized_subject, stable_thread_id
-from charlie_luma.store import MailStore
+from charlie_Suno.fixtures import DEMO_ACCOUNT, demo_messages
+from charlie_Suno.model import Account, Message, ServerConfig, normalized_subject, stable_thread_id
+from charlie_Suno.store import MailStore
 
 
 class ModelTests(unittest.TestCase):
@@ -59,12 +59,12 @@ class StoreTests(unittest.TestCase):
             snippet="Hello", body_text="Hello", references=(),
         )
         incoming = Message(
-            id="demo-luma:inbox:900", folder="inbox", sender_name="Leon",
+            id="demo-Suno:inbox:900", folder="inbox", sender_name="Leon",
             sender_address="leon@example.test", recipients=(DEMO_ACCOUNT.address,),
             unread=False, outgoing=False, **common,
         )
         outgoing = replace(
-            incoming, id="demo-luma:sent:901", folder="sent", uid=901,
+            incoming, id="demo-Suno:sent:901", folder="sent", uid=901,
             message_id="<leon-reply@example.test>", thread_id="root-two",
             subject="Re: Project check-in", sender_name="You",
             sender_address=DEMO_ACCOUNT.address, recipients=("leon@example.test",),

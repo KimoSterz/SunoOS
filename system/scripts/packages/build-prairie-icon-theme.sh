@@ -9,7 +9,7 @@ repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 
 # Direct native CI runs the recipe inside its canonical Fedora container.
 # Install this recipe's host-side SVG validator there, before source staging.
-if [ "${LUMA_RPM_BUILDER_DIRECT:-0}" = 1 ] && ! command -v xmllint >/dev/null 2>&1; then
+if [ "${SUNO_RPM_BUILDER_DIRECT:-0}" = 1 ] && ! command -v xmllint >/dev/null 2>&1; then
   [ "$(id -u)" = 0 ] && { [ -f /run/.containerenv ] || [ -f /.dockerenv ]; } || {
     printf 'error: direct icon prerequisites require the isolated root CI container\n' >&2
     exit 1
@@ -28,14 +28,14 @@ if [ "$(uname -s)" != Linux ]; then
   printf 'error: build the noarch Prairie icon-theme RPM on a native Linux builder\n' >&2
   exit 1
 fi
-architecture=${LUMA_TARGET_ARCHITECTURE:-$(uname -m)}
+architecture=${SUNO_TARGET_ARCHITECTURE:-$(uname -m)}
 [ "$architecture" = "$(uname -m)" ] || { printf 'error: icon RPM builder must execute natively\n' >&2; exit 1; }
 case "$architecture" in
   x86_64) builder_container=$FEDORA_RPM_BUILD_CONTAINER ;;
   aarch64) builder_container=$FEDORA_RPM_BUILD_CONTAINER_AARCH64 ;;
   *) printf 'error: unsupported native icon builder architecture\n' >&2; exit 1 ;;
 esac
-export LUMA_RPM_BUILDER_ARCHITECTURE=$architecture
+export SUNO_RPM_BUILDER_ARCHITECTURE=$architecture
 
 theme_dir="$repo_root/assets/icon-theme/Prairie"
 full_icon="$theme_dir/scalable/apps/org.gnome.Nautilus.svg"
@@ -127,7 +127,7 @@ if grep -Eqi 'stroke=|currentColor|<(style|mask|filter|image|use)[ >]|href=' \
 fi
 # Source digests and shared mask tokens replace old literal 128px artwork checks.
 python3 "$repo_root/assets/icon-theme/tools/sync-application-icons.py" --check
-python3 "$repo_root/assets/icon-theme/tools/import-lumaui-icons.py" --check
+python3 "$repo_root/assets/icon-theme/tools/import-SunoUI-icons.py" --check
 python3 "$repo_root/assets/icon-theme/tools/validate-system-icons.py"
 xmllint --noout "$theme_dir"/scalable/apps/*.svg
 
@@ -163,10 +163,10 @@ install -m 0644 "$theme_dir/upstream/lucide/LICENSE.txt" \
 tar -C "$theme_dir" -cf "$rpmbuild_dir/SOURCES/lucide-navigation-symbolics.tar" symbolic/actions
 install -m 0644 "$theme_dir/upstream/lucide/LUCIDE_REFERENCE_LICENSE.txt" "$rpmbuild_dir/SOURCES/"
 install -m 0644 "$theme_dir/upstream/lucide/navigation-manifest.json" "$rpmbuild_dir/SOURCES/manifest.json"
-install -m 0644 "$theme_dir/upstream/lucide/lumaui-manifest.json" \
-  "$rpmbuild_dir/SOURCES/lumaui-manifest.json"
-tar -C "$theme_dir" -cf "$rpmbuild_dir/SOURCES/lucide-lumaui-sources.tar" \
-  upstream/lucide/lumaui
+install -m 0644 "$theme_dir/upstream/lucide/SunoUI-manifest.json" \
+  "$rpmbuild_dir/SOURCES/SunoUI-manifest.json"
+tar -C "$theme_dir" -cf "$rpmbuild_dir/SOURCES/lucide-SunoUI-sources.tar" \
+  upstream/lucide/SunoUI
 # The transport row's exact upstream Lucide SVGs travel with the package, so
 # the ISC geometry the manifest digests can be checked from the SRPM alone.
 xmllint --noout "$theme_dir"/upstream/lucide/transport/*.svg
@@ -213,7 +213,7 @@ install -m 0644 "$repo_root/packaging/rpm/prairie-icon-theme.spec" \
 
 "$repo_root/scripts/packages/run-in-rpm-builder.sh" \
   "$rpmbuild_dir" \
-  "${LUMA_ICON_RPM_BUILD_CONTAINER:-$builder_container}" '
+  "${SUNO_ICON_RPM_BUILD_CONTAINER:-$builder_container}" '
     set -euo pipefail
     dnf5 -y install rpm-build cpio libxml2 python3 librsvg2-tools python3-gobject gtk4
     rpmbuild -ba --define "_topdir $PWD" SPECS/prairie-icon-theme.spec
@@ -247,21 +247,21 @@ install -m 0644 "$repo_root/packaging/rpm/prairie-icon-theme.spec" \
       grep -Fq "foreground-stroke" "$theme/symbolic/actions/$transport-symbolic.svg"
     done
     for glyph in mail-attachment mail-send call-start camera-video avatar-default \
-      system-users luma-business system-search document-edit audio-input-microphone \
+      system-users Suno-business system-search document-edit audio-input-microphone \
       emblem-favorite view-refresh dialog-warning emblem-ok go-next phone mail-message-new \
       edit-clear object-select go-previous; do
       grep -Fq "foreground-stroke" "$theme/symbolic/actions/$glyph-symbolic.svg"
     done
     for glyph in cloud-rain cloud-sun cloud-moon cloud-fog cloud-lightning snowflake; do
-      test -f "$theme/symbolic/actions/lumaui-$glyph-symbolic.svg"
-      grep -Fq "foreground-stroke" "$theme/symbolic/actions/lumaui-$glyph-symbolic.svg"
+      test -f "$theme/symbolic/actions/SunoUI-$glyph-symbolic.svg"
+      grep -Fq "foreground-stroke" "$theme/symbolic/actions/SunoUI-$glyph-symbolic.svg"
     done
     test -f "$theme/symbolic/actions/go-next-symbolic-rtl.svg"
     test -f "$theme/symbolic/actions/go-previous-symbolic-rtl.svg"
     for glyph in pan-down pan-up pan-start pan-end; do
       grep -Fq "foreground-stroke" "$theme/symbolic/actions/$glyph-symbolic.svg"
     done
-    # Standard names Luma apps and the shell use that Adwaita 50 no longer
+    # Standard names Suno apps and the shell use that Adwaita 50 no longer
     # ships, drawn from Lucide as fills-only symbolics.
     for glyph in cursor-default draw-freehand edit-rename application-x-apk \
       utilities-system-monitor emblem-default emblem-shared emblem-synchronizing \

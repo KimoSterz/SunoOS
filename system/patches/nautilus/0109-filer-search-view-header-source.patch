@@ -17,9 +17,9 @@ index 085ed78..76f27ea 100644
      GFile *search_origin;
 +    GObject *search_model;
      GtkWidget *information_host;
-     LumaDetailsPane *information_pane;
+     SunoDetailsPane *information_pane;
  
-@@ -367,17 +368,12 @@ on_search_scope_changed (LumaModeSwitch *switcher,
+@@ -367,17 +368,12 @@ on_search_scope_changed (SunoModeSwitch *switcher,
      {
          return;
      }
@@ -40,7 +40,7 @@ index 085ed78..76f27ea 100644
      if (current == NULL)
      {
          return;
-@@ -399,6 +395,18 @@ on_search_scope_changed (LumaModeSwitch *switcher,
+@@ -399,6 +395,18 @@ on_search_scope_changed (SunoModeSwitch *switcher,
      }
  }
  

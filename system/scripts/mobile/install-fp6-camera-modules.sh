@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 # Install a hash-pinned FP6 camera module bundle alongside the stock modules.
-# Installation never loads or unloads a module. An existing Luma overlay is
+# Installation never loads or unloads a module. An existing Suno overlay is
 # moved to a recoverable backup outside the depmod search tree before the new
 # overlay is made visible.
 
@@ -10,8 +10,8 @@ set -euo pipefail
 umask 022
 
 expected_kernel=7.1.2
-install_root=/usr/lib/modules/$expected_kernel/updates/luma-fp6-camera
-state_root=/var/lib/luma-fp6-camera
+install_root=/usr/lib/modules/$expected_kernel/updates/Suno-fp6-camera
+state_root=/var/lib/Suno-fp6-camera
 
 die() {
   printf 'error: %s\n' "$*" >&2
@@ -26,7 +26,7 @@ tr '\0' '\n' </proc/device-tree/compatible | grep -Fxq fairphone,fp6 ||
 if [ "${1:-}" = --remove ]; then
   [ "$#" -eq 1 ] || die 'usage: install-fp6-camera-modules.sh --remove'
   [ ! -e "$install_root" ] || die 'refusing destructive removal; restore a pinned bundle instead'
-  printf 'No Luma FP6 camera module overlay is installed.\n'
+  printf 'No Suno FP6 camera module overlay is installed.\n'
   exit 0
 fi
 
@@ -42,7 +42,7 @@ fi
 # shellcheck disable=SC1090
 . "$manifest"
 
-case "${LUMA_FP6_CAMERA_ALL_SENSOR_BUILD_VERSION:-}" in
+case "${SUNO_FP6_CAMERA_ALL_SENSOR_BUILD_VERSION:-}" in
   2|3|4|5)
     [ "${KERNEL_RELEASE:-}" = "$expected_kernel" ] || die 'bundle kernel differs'
     [ "${RAM_LOAD_ONLY:-}" = true ] || die 'bundle provenance flag differs'
@@ -119,7 +119,7 @@ depmod "$expected_kernel"
 for module in "${modules[@]}"; do
   selected=$(modinfo -n "$module")
   [ "$(readlink -f "$selected")" = "$(readlink -f "$install_root/$module.ko")" ] ||
-    die "modprobe did not select the Luma overlay for $module: $selected"
+    die "modprobe did not select the Suno overlay for $module: $selected"
 done
 
 rollback_install=false

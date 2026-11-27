@@ -1,0 +1,139 @@
+# SPDX-License-Identifier: Apache-2.0
+import tempfile
+import unittest
+from pathlib import Path
+from unittest.mock import patch
+
+from Suno_android import graphics_watchdog as watchdog
+
+
+def process(root, pid, comm, start, cgroup=watchdog.CONTAINER_CGROUP):
+    entry = Path(root) / str(pid)
+    entry.mkdir()
+    (entry / "comm").write_text(comm + "\n")
+    (entry / "cgroup").write_text(cgroup + "\n")
+    fields = ["S"] + ["0"] * 18 + [str(start)] + ["0"] * 10
+    (entry / "stat").write_text(f"{pid} ({comm}) " + " ".join(fields) + "\n")
+
+
+class GraphicsWatchdog(unittest.TestCase):
+    def setUp(self):
+        directory = tempfile.TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        self.proc = Path(directory.name)
+
+    def test_only_container_processes_count(self):
+        process(self.proc, 10, "surfaceflinger", 500)
+        process(self.proc, 11, "system_server", 400, cgroup="0::/user.slice")
+        process(self.proc, 12, "system_server", 300)
+        self.assertEqual(watchdog.container_processes(self.proc),
+                         {"surfaceflinger": (10, 500), "system_server": (12, 300)})
+
+    def test_android_process_cgroups_inside_the_payload_count(self):
+        process(self.proc, 10, "surfaceflinger", 500,
+                cgroup=watchdog.CONTAINER_CGROUP + "/uid_1000/pid_93")
+        process(self.proc, 12, "system_server", 300,
+                cgroup=watchdog.CONTAINER_CGROUP + "/uid_1000/pid_348")
+        process(self.proc, 13, "system_server", 200, cgroup="0::/lxc.payload.waydroid2")
+        self.assertEqual(watchdog.container_processes(self.proc),
+                         {"surfaceflinger": (10, 500), "system_server": (12, 300)})
+
+    def test_a_restart_is_seen_without_walking_every_process(self):
+        process(self.proc, 10, "surfaceflinger", 100)
+        process(self.proc, 12, "system_server", 300)
+        found = watchdog.container_processes(self.proc)
+        self.assertTrue(watchdog.still_running(found, self.proc))
+        (self.proc / "10" / "stat").unlink()  # SurfaceFlinger died and came back
+        (self.proc / "10" / "comm").unlink()
+        (self.proc / "10" / "cgroup").unlink()
+        (self.proc / "10").rmdir()
+        process(self.proc, 40, "surfaceflinger", 500)
+        self.assertFalse(watchdog.still_running(found, self.proc))
+        self.assertEqual(watchdog.stale_framework(watchdog.container_processes(self.proc)), 12)
+        self.assertFalse(watchdog.still_running({}, self.proc))
+
+    def test_surfaceflinger_newer_than_framework_is_stale(self):
+        self.assertEqual(watchdog.stale_framework(
+            {"surfaceflinger": (10, 500), "system_server": (12, 300)}), 12)
+        self.assertIsNone(watchdog.stale_framework(
+            {"surfaceflinger": (10, 100), "system_server": (12, 300)}))
+        self.assertIsNone(watchdog.stale_framework({"surfaceflinger": (10, 500)}))
+
+    def test_stale_framework_is_restarted_once_after_settling(self):
+        process(self.proc, 10, "surfaceflinger", 500)
+        process(self.proc, 12, "system_server", 300)
+        now = [0.0]
+
+        def sleep(seconds):
+            now[0] += seconds
+            if now[0] > 20:
+                raise StopIteration
+
+        with patch("Suno_android.graphics_watchdog.restart_android") as restart:
+            with self.assertRaises(StopIteration):
+                watchdog.monitor(self.proc, sleep=sleep, clock=lambda: now[0])
+        restart.assert_called()
+        self.assertLessEqual(restart.call_count, watchdog.MAX_RESTARTS)
+
+    def test_restarts_are_bounded(self):
+        process(self.proc, 10, "surfaceflinger", 500)
+        process(self.proc, 12, "system_server", 300)
+        now = [0.0]
+
+        def sleep(seconds):
+            now[0] += seconds
+            if now[0] > 300:
+                raise StopIteration
+
+        with patch("Suno_android.graphics_watchdog.restart_android") as restart:
+            with self.assertRaises(StopIteration):
+                watchdog.monitor(self.proc, sleep=sleep, clock=lambda: now[0])
+        self.assertEqual(restart.call_count, watchdog.MAX_RESTARTS)
+
+    def test_recovery_starts_the_owner_unit(self):
+        entry = self.proc / "40"
+        entry.mkdir()
+        (entry / "cmdline").write_bytes(b"/usr/bin/python3\0/usr/libexec/Suno-waydroid-session\0")
+        with patch("Suno_android.graphics_watchdog.pwd.getpwuid") as user, \
+             patch("Suno_android.graphics_watchdog.subprocess.run") as run:
+            user.return_value.pw_name = "Suno"
+            watchdog.restart_android(self.proc)
+        run.assert_called_once_with(
+            ["/usr/bin/systemctl", "--no-block", "restart", "Suno-android-recover@Suno.service"],
+            check=False, timeout=10)
+
+    def test_recovery_discards_old_session_before_starting_container(self):
+        unit = (Path(__file__).parents[1] / "data" /
+                "Suno-android-recover@.service").read_text()
+        commands = [line.removeprefix("ExecStart=") for line in unit.splitlines()
+                    if line.startswith("ExecStart=")]
+        # A start on an already-active broker is a no-op: stale Binder handles
+        # survive the container restart and prewarm waits until its timeout.
+        stop = next(i for i, command in enumerate(commands)
+                    if " stop " in command and "--machine=%i@" in command
+                    and "Suno-android-session.service" in command)
+        self.assertIn("Suno-android-prewarm.service", commands[stop])
+        replace = commands.index("/usr/bin/systemctl restart waydroid-container.service")
+        warm = next(i for i, command in enumerate(commands)
+                    if " start Suno-android-prewarm.service" in command)
+        self.assertLess(stop, replace)
+        self.assertLess(replace, warm)
+
+    def test_recovery_budget_survives_watchdog_process_replacement(self):
+        unit = (Path(__file__).parents[1] / "data" /
+                "Suno-android-recover@.service").read_text()
+        settings = dict(line.split("=", 1) for line in unit.splitlines()
+                        if "=" in line and not line.startswith("#"))
+        self.assertEqual(settings["RemainAfterExit"], "yes")
+        self.assertEqual(int(settings["StartLimitBurst"]), watchdog.MAX_RESTARTS)
+        self.assertEqual(int(settings["StartLimitIntervalSec"]),
+                         watchdog.RESTART_WINDOW_SECONDS)
+
+    def test_no_session_owner_restarts_nothing(self):
+        with patch("Suno_android.graphics_watchdog.subprocess.run") as run:
+            watchdog.restart_android(self.proc)
+        run.assert_not_called()
+
+
+if __name__ == "__main__":
+    unittest.main()

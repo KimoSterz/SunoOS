@@ -5,20 +5,20 @@
 A phone downloads two things: the generic phone userdata image
 (scripts/mobile/build-phone-userdata.sh, one per ARM build) and its device kit:
 
-  luma-<codename>-<version>-boot.img   the device's boot image (kernel, DT,
+  Suno-<codename>-<version>-boot.img   the device's boot image (kernel, DT,
                                        initramfs with the shared OSTree resolver)
-  luma-<codename>-<version>-kit.sparse the device packages, offline: a LumaBoot
+  Suno-<codename>-<version>-kit.sparse the device packages, offline: a SunoBoot
                                        filesystem (FAT32, volume ID 032D-57AD)
-                                       holding luma-device-kit/ (kit.json,
+                                       holding Suno-device-kit/ (kit.json,
                                        kit.json.asc, repo/), as an Android sparse
-                                       image that writes only LumaBoot's range of
+                                       image that writes only SunoBoot's range of
                                        userdata (DONT_CARE elsewhere)
   dtbo-blank.img                       when boot.toml [dtbo] policy is "blank"
   kit.json, FLASH.txt, SHA256SUMS
 
 FLASH.txt is device.toml [kit] flash, in order, as fastboot commands. On the
-first boot luma-device-layer.service (luma-update) checks kit.json and the
-repository against the Luma OS Release key, checks [kit] compatible against
+first boot Suno-device-layer.service (Suno-update) checks kit.json and the
+repository against the Suno OS Release key, checks [kit] compatible against
 the device tree, layers [device_repo] (override replace, then install) from
 the local copy and restarts once; updates then follow [device_repo] url.
 
@@ -46,8 +46,8 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 ROOT_UUID = "03797c05-cf87-4eda-adc4-6ce111baf2d3"
 BOOT_UUID = "032D-57AD"
-LUMABOOT_OFFSET = 1 << 20      # start=256 4096-byte sectors
-LUMABOOT_SIZE = 480 << 20
+SUNOBOOT_OFFSET = 1 << 20      # start=256 4096-byte sectors
+SUNOBOOT_SIZE = 480 << 20
 PLACEHOLDERS = {"userdata", "kit", "boot", "dtbo"}
 FLASH = re.compile(r"^(flash [a-z0-9_]+ \{(userdata|kit|boot|dtbo)\}|boot \{boot\}|--set-active=[ab]|reboot)$")
 
@@ -62,7 +62,7 @@ def load_manifest(path: Path) -> dict:
 
 
 def kit_document(device: dict, packages: list[str], version: str) -> dict:
-    """kit.json: what luma-device-layer reads (src/luma-update/luma_update/device_layer.py)."""
+    """kit.json: what Suno-device-layer reads (src/Suno-update/Suno_update/device_layer.py)."""
     kit, repo = device.get("kit", {}), device.get("device_repo")
     if not repo:
         raise KitError("device.toml has no [device_repo]: nothing to layer")
@@ -135,11 +135,11 @@ def repo_packages(repo: Path, ring: Path) -> list[str]:
 
 def make_kit_filesystem(kit_dir: Path, image: Path) -> None:
     image.unlink(missing_ok=True)
-    run(["mkfs.vfat", "-C", "-F", "32", "-S", "4096", "-n", "LUMABOOT", "-i", BOOT_UUID.replace("-", ""),
-         str(image), str(LUMABOOT_SIZE // 1024)])
+    run(["mkfs.vfat", "-C", "-F", "32", "-S", "4096", "-n", "SUNOBOOT", "-i", BOOT_UUID.replace("-", ""),
+         str(image), str(SUNOBOOT_SIZE // 1024)])
     env = dict(os.environ, MTOOLS_SKIP_CHECK="1")
     run(["mcopy", "-s", "-p", "-m", "-i", str(image), str(kit_dir), "::/"], env=env)
-    listing = run(["mdir", "-/", "-b", "-i", str(image), "::/luma-device-kit"], env=env)
+    listing = run(["mdir", "-/", "-b", "-i", str(image), "::/Suno-device-kit"], env=env)
     if "kit.json.asc" not in listing:
         raise KitError("the kit filesystem lacks kit.json.asc after copying")
 
@@ -161,7 +161,7 @@ def build(args: argparse.Namespace) -> None:
         raise KitError(f"{manifest} has no [kit]")
     out = Path(args.output)
     out.mkdir(parents=True, exist_ok=True)
-    prefix = f"luma-{device['codename']}-{args.version}"
+    prefix = f"Suno-{device['codename']}-{args.version}"
     files = {"userdata": args.userdata_name}
 
     boot = out / f"{prefix}-boot.img"
@@ -188,26 +188,26 @@ def build(args: argparse.Namespace) -> None:
             ring = keyring(Path(args.key), work)
             repo = Path(args.device_repo)
             document = kit_document(device, repo_packages(repo, ring), args.version)
-            kit_dir = work / "luma-device-kit"
+            kit_dir = work / "Suno-device-kit"
             shutil.copytree(repo, kit_dir / "repo", ignore=shutil.ignore_patterns("SHA256SUMS", "*.old"))
             (kit_dir / "kit.json").write_text(json.dumps(document, indent=2) + "\n")
             run(["gpg", "--batch", "--yes", "--homedir", args.sign_homedir, "--local-user", args.sign_key,
                  "--armor", "--detach-sign", "--output", str(kit_dir / "kit.json.asc"), str(kit_dir / "kit.json")])
             run(["gpgv", "--keyring", str(ring), str(kit_dir / "kit.json.asc"), str(kit_dir / "kit.json")])
             used = sum(p.stat().st_size for p in kit_dir.rglob("*") if p.is_file())
-            if used > LUMABOOT_SIZE - (16 << 20):
-                raise KitError(f"the kit holds {used >> 20} MiB; LumaBoot has {LUMABOOT_SIZE >> 20} MiB")
-            fat = work / "lumaboot.vfat"
+            if used > SUNOBOOT_SIZE - (16 << 20):
+                raise KitError(f"the kit holds {used >> 20} MiB; SunoBoot has {SUNOBOOT_SIZE >> 20} MiB")
+            fat = work / "Sunoboot.vfat"
             make_kit_filesystem(kit_dir, fat)
             sparse = out / f"{prefix}-kit.sparse"
             run([sys.executable, str(REPO_ROOT / "scripts/mobile/img2simg.py"), str(fat), str(sparse),
-                 "--at", str(LUMABOOT_OFFSET)])
+                 "--at", str(SUNOBOOT_OFFSET)])
             shutil.copy2(kit_dir / "kit.json", out / "kit.json")
             files["kit"] = sparse.name
 
     steps = flash_steps(device, files)
     (out / "FLASH.txt").write_text(
-        f"# {device.get('marketing_name', device['name'])}: Luma {args.version}\n"
+        f"# {device.get('marketing_name', device['name'])}: Suno {args.version}\n"
         f"# {args.userdata_name} is the generic phone userdata image of the same build.\n"
         + "".join(s + "\n" for s in steps))
     sums = [f"{sha256(out / name)}  {name}" for name in sorted(set(files.values()) - {args.userdata_name})]
@@ -226,10 +226,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--version", required=True)
     parser.add_argument("--output", required=True)
     parser.add_argument("--device-repo")
-    parser.add_argument("--key", help="the Luma OS Release public key, armored")
-    parser.add_argument("--sign-homedir", help="GNUPGHOME with the Luma OS Release secret key")
-    parser.add_argument("--sign-key", help="fingerprint of the Luma OS Release key")
-    parser.add_argument("--userdata-name", default="luma-phone-userdata.sparse")
+    parser.add_argument("--key", help="the Suno OS Release public key, armored")
+    parser.add_argument("--sign-homedir", help="GNUPGHOME with the Suno OS Release secret key")
+    parser.add_argument("--sign-key", help="fingerprint of the Suno OS Release key")
+    parser.add_argument("--userdata-name", default="Suno-phone-userdata.sparse")
     args = parser.parse_args(argv)
     try:
         build(args)

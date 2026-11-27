@@ -16,7 +16,7 @@ index 51f89ac..2274517 100644
   * SPDX-License-Identifier: GPL-3.0-or-later
   */
  
-+#include <luma-ui.h>
++#include <Suno-ui.h>
  #include "nautilus-list-base.h"
  #include "nautilus-list-base-private.h"
  
@@ -27,7 +27,7 @@ index 51f89ac..2274517 100644
 +    /* Filer v71 on a phone: tapping a folder opens it, tapping a file
 +     * selects it. */
 +    if (!priv->activate_on_release && button == GDK_BUTTON_PRIMARY && n_press == 1 &&
-+        !selection_mode && luma_ui_get_tier (GTK_WIDGET (self)) == LUMA_TIER_PHONE)
++        !selection_mode && Suno_ui_get_tier (GTK_WIDGET (self)) == SUNO_TIER_PHONE)
 +    {
 +        g_autoptr (NautilusViewItem) item = nautilus_view_cell_get_item (cell);
 +        priv->activate_on_release = item != NULL &&

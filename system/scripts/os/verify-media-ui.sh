@@ -18,7 +18,7 @@
 # screen says, so the watchdog's readable error screen would also pass. The
 # evidence PNGs are kept for a person to look at.
 #
-# Evidence: $LUMA_OS_ROOT/media/verify-ui-<UTC time>/.
+# Evidence: $SUNO_OS_ROOT/media/verify-ui-<UTC time>/.
 
 set -euo pipefail
 . "$(dirname -- "$0")/lib/common.sh"
@@ -38,27 +38,27 @@ done
 [ -f "$iso" ] && [ -f "$iso.release" ] || { printf 'ISO or its .release record is missing: %s\n' "$iso" >&2; exit 2; }
 # Use the medium's recorded payload target, including retained x86 records
 # that predate the explicit architecture field. Never choose the host CPU.
-luma_os_load_env /dev/stdin <<<"$(sed 's/^\([a-z_][a-z0-9_]*\)=/MEDIA_\U\1=/' "$iso.release")"
+Suno_os_load_env /dev/stdin <<<"$(sed 's/^\([a-z_][a-z0-9_]*\)=/MEDIA_\U\1=/' "$iso.release")"
 media_architecture=${MEDIA_ARCHITECTURE:-$(printf '%s' "$MEDIA_REF" | cut -d/ -f3)}
-luma_os_select_architecture "$media_architecture"
-[ "$MEDIA_REF" = "$(luma_os_channel_ref "$MEDIA_CHANNEL")" ] ||
-  luma_os_die 'media architecture/channel does not match its payload ref'
+Suno_os_select_architecture "$media_architecture"
+[ "$MEDIA_REF" = "$(Suno_os_channel_ref "$MEDIA_CHANNEL")" ] ||
+  Suno_os_die 'media architecture/channel does not match its payload ref'
 kvm_available=no
 [ ! -r /dev/kvm ] || [ ! -w /dev/kvm ] || kvm_available=yes
-luma_os_gate_vm_target "$LUMA_OS_ARCH" "$(uname -m)" "$kvm_available"
-luma_os_require_root
-luma_os_check_host
-luma_os_vm_lock
-luma_os_check_space 10
+Suno_os_gate_vm_target "$SUNO_OS_ARCH" "$(uname -m)" "$kvm_available"
+Suno_os_require_root
+Suno_os_check_host
+Suno_os_vm_lock
+Suno_os_check_space 10
 
-run=$(luma_os_media_vm_run "$(date -u +%Y%m%dT%H%M%SZ)")
-out="$LUMA_OS_ROOT/media/verify-ui-$run"
-vm="$LUMA_OS_ROOT/vm/media-ui-$run"
+run=$(Suno_os_media_vm_run "$(date -u +%Y%m%dT%H%M%SZ)")
+out="$SUNO_OS_ROOT/media/verify-ui-$run"
+vm="$SUNO_OS_ROOT/vm/media-ui-$run"
 install -d -m 0755 "$out" "$vm"
 exec > >(tee -a "$out/verify-ui.log") 2>&1
-domain="luma-os-media-ui-$run"
-image="$luma_os_repo_root/scripts/os/lib/screen_image.py"
-fixture_helper="$luma_os_repo_root/scripts/os/lib/media_vm_iso.py"
+domain="Suno-os-media-ui-$run"
+image="$Suno_os_repo_root/scripts/os/lib/screen_image.py"
+fixture_helper="$Suno_os_repo_root/scripts/os/lib/media_vm_iso.py"
 fixture="$out/installer.iso"
 fixture_proof="$out/media-input.json"
 
@@ -78,34 +78,34 @@ cleanup() {
 }
 trap cleanup EXIT
 
-luma_os_gate_vm_preflight "$out/libvirt-capabilities.xml"
+Suno_os_gate_vm_preflight "$out/libvirt-capabilities.xml"
 # libvirt may chown/relabel even a failed launch. Isolate those changes on a
 # disposable inode and fail before VM startup if the real reader cannot reach it.
 # The inode is a reflink; a working root without reflinks (an ext4 loop image)
 # gets a sha256-verified copy instead, once the volume and the disk under it
 # have room for the ISO on top of this run's own budget
-# (LUMA_OS_MEDIA_COPY_BUDGET_GIB caps the ISO size, default 16).
+# (SUNO_OS_MEDIA_COPY_BUDGET_GIB caps the ISO size, default 16).
 prepare_status=0
 python3 "$fixture_helper" prepare "$iso" "$fixture" "$fixture_proof" \
-  --reader "${LUMA_OS_QEMU_USER:-qemu}" || prepare_status=$?
+  --reader "${SUNO_OS_QEMU_USER:-qemu}" || prepare_status=$?
 if [ "$prepare_status" -eq 3 ]; then
-  luma_os_check_space $((10 + ($(stat -c %s "$iso") + 1073741823) / 1073741824))
-  luma_os_log "no reflink under $out; using a verified copy of the ISO"
+  Suno_os_check_space $((10 + ($(stat -c %s "$iso") + 1073741823) / 1073741824))
+  Suno_os_log "no reflink under $out; using a verified copy of the ISO"
   python3 "$fixture_helper" prepare "$iso" "$fixture" "$fixture_proof" \
-    --reader "${LUMA_OS_QEMU_USER:-qemu}" --copy-budget-gib "${LUMA_OS_MEDIA_COPY_BUDGET_GIB:-16}"
+    --reader "${SUNO_OS_QEMU_USER:-qemu}" --copy-budget-gib "${SUNO_OS_MEDIA_COPY_BUDGET_GIB:-16}"
 elif [ "$prepare_status" -ne 0 ]; then
   exit "$prepare_status"
 fi
 qemu-img create -q -f qcow2 "$vm/disk.qcow2" 48G
-luma_os_log "booting $(basename "$iso") interactively (no kickstart)"
+Suno_os_log "booting $(basename "$iso") interactively (no kickstart)"
 virt-install --connect qemu:///system --name "$domain" \
-  --arch "$LUMA_OS_ARCH" --virt-type "$gate_virt" \
+  --arch "$SUNO_OS_ARCH" --virt-type "$gate_virt" \
   --memory 6144 --vcpus 4 --cpu "$gate_cpu" --machine "$gate_machine" --boot "$gate_boot" \
   --disk "path=$vm/disk.qcow2,format=qcow2,bus=virtio,cache=unsafe,discard=unmap" \
   --cdrom "$fixture" --network none \
   --graphics vnc,listen=127.0.0.1 --video virtio --rng /dev/urandom \
   --os-variant fedora-unknown --noautoconsole --wait 0 >"$out/virt-install.log" 2>&1 ||
-  luma_os_die 'the installer VM did not start'
+  Suno_os_die 'the installer VM did not start'
 
 started=$SECONDS
 deadline=$((SECONDS + minutes * 60))
@@ -117,7 +117,7 @@ while [ "$SECONDS" -lt "$deadline" ]; do
   sleep 15
   shot=$((shot + 1))
   elapsed=$((SECONDS - started))
-  python3 "$luma_os_repo_root/scripts/os/lib/screen_image.py" capture "$domain" "$vm/screen.img" >/dev/null 2>&1 || continue
+  python3 "$Suno_os_repo_root/scripts/os/lib/screen_image.py" capture "$domain" "$vm/screen.img" >/dev/null 2>&1 || continue
   read -r colours share < <(python3 "$image" stats "$vm/screen.img" 2>/dev/null || echo "0 1")
   printf '%4ss  colours %-5s largest colour share %s\n' "$elapsed" "$colours" "$share"
   if [ "$elapsed" -ge 90 ] && [ "$colours" -ge 32 ] &&

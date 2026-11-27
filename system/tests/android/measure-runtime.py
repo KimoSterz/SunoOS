@@ -14,7 +14,7 @@ import platform
 import subprocess
 import time
 
-FIXTURE = b'org.projectluma.androidtest'
+FIXTURE = b'org.projectSuno.androidtest'
 
 
 def start_time(pid):

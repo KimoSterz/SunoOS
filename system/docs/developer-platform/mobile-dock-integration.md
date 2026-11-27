@@ -7,7 +7,7 @@ until its prerequisite shell baseline is integrated; it is intentionally not
 listed in the current main branch's RPM recipe. Do not add the whole preview
 patch stack to this PR just to make the candidate apply.
 
-`patches/phosh/0044-luma-uniform-dock-layout.patch` gives the four app slots
+`patches/phosh/0044-Suno-uniform-dock-layout.patch` gives the four app slots
 and Search equal horizontal allocation, centers their row within the existing
 88px dock, uses a 55px Search tile with 13px corners, and normalizes the
 simulator fallback browser's visible tile size. It preserves app bindings,
@@ -24,4 +24,4 @@ claimed by this draft.
 
 - `src/ui/app-grid.ui`: `b3b852cd4090977271dabdee45294df56d5d695f56f6119efbea599bb787b01c`
 - `src/stylesheet/common.css`: `14fdbfbe924a3a586329d9028e6206157b855a4b93e8060d7a8672f3f96be8fc`
-- `data/icons/luma-v4-browser.svg`: `6c0fbce2c049e883f9fdcbed508ac619f0c2922722b69fa2e0847d201ce7be2a`
+- `data/icons/Suno-v4-browser.svg`: `6c0fbce2c049e883f9fdcbed508ac619f0c2922722b69fa2e0847d201ce7be2a`

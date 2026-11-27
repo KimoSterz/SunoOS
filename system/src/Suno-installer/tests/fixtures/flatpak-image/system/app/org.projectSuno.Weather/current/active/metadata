@@ -1,0 +1,27 @@
+[Application]
+name=org.projectSuno.Weather
+runtime=org.projectSuno.Platform/x86_64/44
+sdk=org.projectSuno.Sdk/x86_64/44
+command=prairie-weather
+
+[Context]
+shared=ipc;network;
+sockets=fallback-x11;wayland;
+devices=dri;
+
+[Session Bus Policy]
+org.projectSuno.Shell.Remote=talk
+org.projectSuno.ShellState1=talk
+org.projectSuno.ApplicationDirectory1=talk
+org.projectSuno.Shell.Keyboard=talk
+org.projectSuno.AppData1=talk
+
+[System Bus Policy]
+org.freedesktop.GeoClue2=talk
+
+[Environment]
+SUNO_WEATHER_STYLE_PATH=/app/share/prairie-core/weather.css
+
+[X-Suno]
+app-data-schema=weather-v1
+min-host-installer=60

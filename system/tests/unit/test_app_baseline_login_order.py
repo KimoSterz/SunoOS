@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """The first-boot app baseline may delay the login screen briefly, never block it.
 
-GDM once Requires= luma-app-baseline.service, whose first offline import could
+GDM once Requires= Suno-app-baseline.service, whose first offline import could
 outlast its start timeout on a slow device: the import failed and the person
 got no login screen at all.
 """
@@ -14,11 +14,11 @@ import tempfile
 import unittest
 
 REPO = Path(__file__).resolve().parents[2]
-DATA = REPO / 'src/luma-installer/data'
-UNIT = DATA / 'luma-app-baseline.service'
-DROPIN = DATA / 'luma-app-baseline-display-manager.conf'
-OS_HANDOFF = REPO / 'image/luma-desktop/rootfs/usr/lib/systemd/system/luma-app-baseline.service.d/10-luma-os-handoff.conf'
-SPEC = REPO / 'packaging/rpm/luma-application-installer.spec'
+DATA = REPO / 'src/Suno-installer/data'
+UNIT = DATA / 'Suno-app-baseline.service'
+DROPIN = DATA / 'Suno-app-baseline-display-manager.conf'
+OS_HANDOFF = REPO / 'image/Suno-desktop/rootfs/usr/lib/systemd/system/Suno-app-baseline.service.d/10-Suno-os-handoff.conf'
+SPEC = REPO / 'packaging/rpm/Suno-application-installer.spec'
 STRONG = ('Requires', 'Requisite', 'BindsTo', 'PartOf', 'Upholds')
 
 
@@ -50,20 +50,20 @@ class LoginOrder(unittest.TestCase):
         for path in dropins + [DROPIN]:
             values = settings(path.read_text())
             for key in STRONG:
-                self.assertNotIn('luma-app-baseline.service', values.get(key, []), f'{path}: {key}=')
+                self.assertNotIn('Suno-app-baseline.service', values.get(key, []), f'{path}: {key}=')
         values = settings(DROPIN.read_text())
-        self.assertEqual(values.get('Wants'), ['luma-app-baseline.service'])
-        self.assertEqual(values.get('After'), ['luma-app-baseline.service'])
-        self.assertIn('%{_unitdir}/display-manager.service.d/20-luma-app-baseline.conf', SPEC.read_text())
+        self.assertEqual(values.get('Wants'), ['Suno-app-baseline.service'])
+        self.assertEqual(values.get('After'), ['Suno-app-baseline.service'])
+        self.assertIn('%{_unitdir}/display-manager.service.d/20-Suno-app-baseline.conf', SPEC.read_text())
 
     def test_one_source_for_the_unit_and_the_display_manager_ordering(self):
         files = tracked()
-        self.assertEqual([path for path in files if path.endswith('/luma-app-baseline.service')],
-                         ['src/luma-installer/data/luma-app-baseline.service'])
+        self.assertEqual([path for path in files if path.endswith('/Suno-app-baseline.service')],
+                         ['src/Suno-installer/data/Suno-app-baseline.service'])
         mentions = [path for path in files if re.search(r'\.service\.d/[^/]+\.conf$', path)
-                    and 'luma-app-baseline' in (REPO / path).read_text()]
+                    and 'Suno-app-baseline' in (REPO / path).read_text()]
         self.assertEqual(mentions, [str(OS_HANDOFF.relative_to(REPO))])
-        self.assertEqual(settings(OS_HANDOFF.read_text()), {'ExecStart': ['/usr/libexec/luma-app-baseline']})
+        self.assertEqual(settings(OS_HANDOFF.read_text()), {'ExecStart': ['/usr/libexec/Suno-app-baseline']})
 
     def test_baseline_reports_ready_within_a_bound_and_runs_to_completion(self):
         values = settings(UNIT.read_text())
@@ -78,25 +78,25 @@ class LoginOrder(unittest.TestCase):
             root = Path(directory)
             system = root / 'usr/lib/systemd/system'
             (system / 'display-manager.service.d').mkdir(parents=True)
-            (system / 'luma-app-baseline.service.d').mkdir()
+            (system / 'Suno-app-baseline.service.d').mkdir()
             shutil.copy(UNIT, system)
-            shutil.copy(DROPIN, system / 'display-manager.service.d/20-luma-app-baseline.conf')
-            shutil.copy(OS_HANDOFF, system / 'luma-app-baseline.service.d')
+            shutil.copy(DROPIN, system / 'display-manager.service.d/20-Suno-app-baseline.conf')
+            shutil.copy(OS_HANDOFF, system / 'Suno-app-baseline.service.d')
             (system / 'gdm.service').write_text('[Unit]\nDescription=GDM\n[Service]\nExecStart=/usr/sbin/gdm\n'
                                                 '[Install]\nAlias=display-manager.service\n')
             os.symlink('gdm.service', system / 'display-manager.service')
-            for program in ('usr/bin/luma-seed-app-baseline', 'usr/libexec/luma-app-baseline',
+            for program in ('usr/bin/Suno-seed-app-baseline', 'usr/libexec/Suno-app-baseline',
                             'usr/bin/python3', 'usr/sbin/gdm'):
                 path = root / program
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_text('#!/bin/sh\n')
                 path.chmod(0o755)
             result = subprocess.run(['systemd-analyze', 'verify', '--man=no', '--recursive-errors=no',
-                                     f'--root={root}', str(system / 'luma-app-baseline.service'),
+                                     f'--root={root}', str(system / 'Suno-app-baseline.service'),
                                      str(system / 'gdm.service')],
                                     capture_output=True, text=True)
             problems = [line for line in result.stderr.splitlines()
-                        if 'luma-app-baseline' in line or 'gdm.service' in line or 'display-manager' in line]
+                        if 'Suno-app-baseline' in line or 'gdm.service' in line or 'display-manager' in line]
             self.assertEqual(problems, [], result.stderr)
 
 

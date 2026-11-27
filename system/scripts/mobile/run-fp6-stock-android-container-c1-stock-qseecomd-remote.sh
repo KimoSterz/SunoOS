@@ -11,38 +11,38 @@
 set -Eeuo pipefail
 umask 077
 
-name=luma-stock-android-c1
+name=Suno-stock-android-c1
 lxc_path=/var/lib/lxc
-state=/var/lib/luma/stock-android-container1
+state=/var/lib/Suno/stock-android-container1
 config=$lxc_path/$name/config
 manifest=$state/manifest.json
-module=/var/tmp/luma-stock-qrel1695-keymint-gate1/qcomtee.ko
-qseecomd_mink_adapter=/var/tmp/luma-stock-qseecomd-c1-adapter/libminkdescriptor.so
-qseecomd_dmabuf_adapter=/var/tmp/luma-stock-qseecomd-c1-adapter/libdmabufheap.so
-selinux_disabled_shim=/var/tmp/luma-stock-android-container-framework1/libluma_selinux_disabled.so
-restorecon_disabled_shim=/var/tmp/luma-stock-android-container-framework1/libluma_restorecon_disabled.so
-override=$state/mounts/vendor/etc/init/zzz-luma-stock-qseecomd-c1.rc
-apex_override=$state/mounts/system/system/etc/init/zzz-luma-stock-apexd-c1.rc
-apex_runtime=/var/tmp/luma-stock-qrel1695-apex-runtime2
+module=/var/tmp/Suno-stock-qrel1695-keymint-gate1/qcomtee.ko
+qseecomd_mink_adapter=/var/tmp/Suno-stock-qseecomd-c1-adapter/libminkdescriptor.so
+qseecomd_dmabuf_adapter=/var/tmp/Suno-stock-qseecomd-c1-adapter/libdmabufheap.so
+selinux_disabled_shim=/var/tmp/Suno-stock-android-container-framework1/libSuno_selinux_disabled.so
+restorecon_disabled_shim=/var/tmp/Suno-stock-android-container-framework1/libSuno_restorecon_disabled.so
+override=$state/mounts/vendor/etc/init/zzz-Suno-stock-qseecomd-c1.rc
+apex_override=$state/mounts/system/system/etc/init/zzz-Suno-stock-apexd-c1.rc
+apex_runtime=/var/tmp/Suno-stock-qrel1695-apex-runtime2
 apex_inventory=$apex_runtime/metadata/activated-apex-inventory.json
 apex_hash_manifest=$apex_runtime/metadata/HASHES.sha256
 apex_partition_hashes=$apex_runtime/metadata/partition-images.sha256
 permission_controller_source_dir=$apex_runtime/mounts/com.android.permission@360673420/priv-app/GooglePermissionController@360673420
 permission_controller_source=$permission_controller_source_dir/GooglePermissionController.apk
-permission_controller_target=$state/mounts/system/system/priv-app/LumaGooglePermissionController
+permission_controller_target=$state/mounts/system/system/priv-app/SunoGooglePermissionController
 permission_controller_allowlist_source=$apex_runtime/mounts/com.android.permission@360673420/etc/permissions/privapp_allowlist_com.google.android.permissioncontroller.xml
-permission_controller_allowlist_target=$state/mounts/system/system/etc/permissions/luma-privapp-allowlist-com.google.android.permissioncontroller.xml
+permission_controller_allowlist_target=$state/mounts/system/system/etc/permissions/Suno-privapp-allowlist-com.google.android.permissioncontroller.xml
 extservices_source_dir=$apex_runtime/mounts/com.android.extservices@360671263/priv-app/GoogleExtServices@360671260
 extservices_source=$extservices_source_dir/GoogleExtServices.apk
-extservices_target=$state/mounts/system/system/priv-app/LumaGoogleExtServices
+extservices_target=$state/mounts/system/system/priv-app/SunoGoogleExtServices
 extservices_allowlist_source=$apex_runtime/mounts/com.android.extservices@360671263/etc/permissions/privapp_allowlist_com.google.android.ext.services.xml
-extservices_allowlist_target=$state/mounts/system/system/etc/permissions/luma-privapp-allowlist-com.google.android.ext.services.xml
+extservices_allowlist_target=$state/mounts/system/system/etc/permissions/Suno-privapp-allowlist-com.google.android.ext.services.xml
 sdk_sandbox_source_dir=$apex_runtime/mounts/com.android.adservices@360650020/app/SdkSandboxGoogle@360650020
 sdk_sandbox_source=$sdk_sandbox_source_dir/SdkSandboxGoogle.apk
-sdk_sandbox_target=$state/mounts/system/system/app/LumaSdkSandboxGoogle
+sdk_sandbox_target=$state/mounts/system/system/app/SunoSdkSandboxGoogle
 connectivity_resources_source_dir=$apex_runtime/mounts/com.android.tethering@360671220/priv-app/ServiceConnectivityResourcesGoogle@360671220
 connectivity_resources_source=$connectivity_resources_source_dir/ServiceConnectivityResourcesGoogle.apk
-connectivity_resources_target=$state/mounts/system/system/priv-app/LumaNetRes
+connectivity_resources_target=$state/mounts/system/system/priv-app/SunoNetRes
 stock_sensors_multihal=$state/mounts/vendor/bin/hw/android.hardware.sensors-service.multihal
 stock_netd=$state/mounts/system/system/bin/netd
 stock_netd_rc=$state/mounts/system/system/etc/init/netd.rc
@@ -60,42 +60,42 @@ stock_vendor_audio_hal_rc=$state/mounts/vendor/etc/init/android.hardware.audio.s
 stock_default_audio_hal=$state/mounts/vendor/lib64/hw/audio.primary.default.so
 stock_gpuservice=$state/mounts/system/system/bin/gpuservice
 stock_gpuservice_rc=$state/mounts/system/system/etc/init/gpuservice.rc
-netbpfload_adapter_source=/var/tmp/luma-c1-netbpfload/luma-netbpfload
-netbpfload_adapter_target=$state/mounts/system/system/bin/luma-netbpfload
-connectivity_adapter_source=/var/tmp/luma-c1-connectivity-adapter/libservice-connectivity.so
-service_connectivity_adapter_source=/var/tmp/luma-c1-connectivity-adapter/service-connectivity.jar
-netfilter_custom_module_dir=/var/tmp/luma-c1-netfilter-stage
+netbpfload_adapter_source=/var/tmp/Suno-c1-netbpfload/Suno-netbpfload
+netbpfload_adapter_target=$state/mounts/system/system/bin/Suno-netbpfload
+connectivity_adapter_source=/var/tmp/Suno-c1-connectivity-adapter/libservice-connectivity.so
+service_connectivity_adapter_source=/var/tmp/Suno-c1-connectivity-adapter/service-connectivity.jar
+netfilter_custom_module_dir=/var/tmp/Suno-c1-netfilter-stage
 empty_sensors_config=$state/state/c1-empty-sensors-hals.conf
-minimal_sensors_manifest=/var/tmp/luma-c1-minimal-vintf/android.hardware.sensors-multihal.xml
-minimal_empty_permissions=/var/tmp/luma-c1-minimal-vintf/empty-permissions.xml
-framework_audio_manifest=/var/tmp/luma-c1-minimal-vintf/framework-audio-manifest.xml
+minimal_sensors_manifest=/var/tmp/Suno-c1-minimal-vintf/android.hardware.sensors-multihal.xml
+minimal_empty_permissions=/var/tmp/Suno-c1-minimal-vintf/empty-permissions.xml
+framework_audio_manifest=/var/tmp/Suno-c1-minimal-vintf/framework-audio-manifest.xml
 stock_non_qmaa_manifest=$state/mounts/vendor/etc/vintf/manifest/manifest_non_qmaa.xml
 ssd_scratch=$state/state/qseecomd-c1-ssd
-vendor_dmabuf_dir=$state/mounts/vendor/lib64/luma-qsee
+vendor_dmabuf_dir=$state/mounts/vendor/lib64/Suno-qsee
 vendor_dmabuf_target=$vendor_dmabuf_dir/libdmabufheap.so
 system_mink_target=$state/mounts/system/system/lib64/libminkdescriptor.so
-selinux_disabled_target=$state/mounts/system/system/lib64/libluma_selinux_disabled.so
-restorecon_disabled_target=$state/mounts/system/system/lib64/libluma_restorecon_disabled.so
+selinux_disabled_target=$state/mounts/system/system/lib64/libSuno_selinux_disabled.so
+restorecon_disabled_target=$state/mounts/system/system/lib64/libSuno_restorecon_disabled.so
 angle_egl_source=$state/mounts/vendor/lib64/egl/libEGL_angle.so
 angle_gles1_source=$state/mounts/vendor/lib64/egl/libGLESv1_CM_angle.so
 angle_gles2_source=$state/mounts/vendor/lib64/egl/libGLESv2_angle.so
-angle_egl_target=$state/mounts/vendor/lib64/egl/libEGL_luma_null.so
-angle_gles1_target=$state/mounts/vendor/lib64/egl/libGLESv1_CM_luma_null.so
-angle_gles2_target=$state/mounts/vendor/lib64/egl/libGLESv2_luma_null.so
-angle_probe_source=/var/tmp/luma-stock-android-headless/luma-angle-null-probe
-angle_probe_target=$state/mounts/vendor/bin/luma-angle-null-probe
-swangle_probe_source=/var/tmp/luma-stock-android-headless/luma-swangle-pastel-probe
-swangle_probe_target=$state/mounts/vendor/bin/luma-swangle-pastel-probe
-swangle_egl_target=$state/mounts/vendor/lib64/egl/libEGL_luma_swangle.so
-swangle_gles1_target=$state/mounts/vendor/lib64/egl/libGLESv1_CM_luma_swangle.so
-swangle_gles2_target=$state/mounts/vendor/lib64/egl/libGLESv2_luma_swangle.so
+angle_egl_target=$state/mounts/vendor/lib64/egl/libEGL_Suno_null.so
+angle_gles1_target=$state/mounts/vendor/lib64/egl/libGLESv1_CM_Suno_null.so
+angle_gles2_target=$state/mounts/vendor/lib64/egl/libGLESv2_Suno_null.so
+angle_probe_source=/var/tmp/Suno-stock-android-headless/Suno-angle-null-probe
+angle_probe_target=$state/mounts/vendor/bin/Suno-angle-null-probe
+swangle_probe_source=/var/tmp/Suno-stock-android-headless/Suno-swangle-pastel-probe
+swangle_probe_target=$state/mounts/vendor/bin/Suno-swangle-pastel-probe
+swangle_egl_target=$state/mounts/vendor/lib64/egl/libEGL_Suno_swangle.so
+swangle_gles1_target=$state/mounts/vendor/lib64/egl/libGLESv1_CM_Suno_swangle.so
+swangle_gles2_target=$state/mounts/vendor/lib64/egl/libGLESv2_Suno_swangle.so
 pastel_source=$state/mounts/vendor/lib64/hw/vulkan.pastel.so
-noop_composer_source=/var/tmp/luma-aosp-android36-noop-composer
+noop_composer_source=/var/tmp/Suno-aosp-android36-noop-composer
 noop_composer_target=$state/mounts/vendor/bin/hw/android.hardware.graphics.composer3-service.ranchu
-noop_composer_lib_dir_target=$state/mounts/vendor/lib64/luma-noop-composer
+noop_composer_lib_dir_target=$state/mounts/vendor/lib64/Suno-noop-composer
 stock_allocator=$state/mounts/vendor/bin/hw/vendor.qti.hardware.display.allocator-service
 stock_allocator_rc=$state/mounts/vendor/etc/init/vendor.qti.hardware.display.allocator-service.rc
-system_heap_module=/var/tmp/luma_dma_heap_system.ko
+system_heap_module=/var/tmp/Suno_dma_heap_system.ko
 noop_composer_lib_names=(
   android.hardware.common-V2-ndk.so
   android.hardware.drm.common-V1-ndk.so
@@ -129,8 +129,8 @@ noop_composer_lib_names=(
   libui.so
   libutils.so
 )
-adapter_diagnostic_log=$state/state/data/luma-qcomtee-adapter.log
-expected_kernel=7.1.2-luma-fp-ims1
+adapter_diagnostic_log=$state/state/data/Suno-qcomtee-adapter.log
+expected_kernel=7.1.2-Suno-fp-ims1
 expected_manifest_sha=65a317645db47fb0dfa7b2b8f3ee9b923fa03a543ece43deb158c2e0c14ebfd8
 expected_config_sha=db477c4d10c1511d1444c91a093fe8c4cca3a506a263f5177b33c26b23c1ae6f
 expected_module_sha=54b336ee9c420173ef2419c5bd2d1d4192c72c485d3a2e3ba7f85c32e2019ab7
@@ -234,21 +234,21 @@ frp_loop_gid=
 result=fail
 cleanup_fault=none
 binder_mode=
-framework_required=${LUMA_C1_REQUIRE_FRAMEWORK:-false}
-exact_apexd=${LUMA_C1_EXACT_APEXD:-false}
-exact_surfaceflinger=${LUMA_C1_EXACT_SURFACEFLINGER:-false}
-angle_null_renderer=${LUMA_C1_ANGLE_NULL_RENDERER:-false}
-swangle_pastel_renderer=${LUMA_C1_SWANGLE_PASTEL_RENDERER:-false}
-aosp_noop_composer=${LUMA_C1_AOSP_NOOP_COMPOSER:-false}
-exact_stock_allocator=${LUMA_C1_EXACT_STOCK_ALLOCATOR:-false}
-exact_apex_loop_metadata=${LUMA_C1_EXACT_APEX_LOOP_METADATA:-false}
-permission_controller_projection=${LUMA_C1_PERMISSION_CONTROLLER_PROJECTION:-false}
-empty_sensors_hal=${LUMA_C1_EMPTY_SENSORS_HAL:-false}
-minimal_sensors_vintf=${LUMA_C1_MINIMAL_SENSORS_VINTF:-false}
-minimal_wifi_vintf=${LUMA_C1_MINIMAL_WIFI_VINTF:-false}
-isolated_netd=${LUMA_C1_ISOLATED_NETD:-false}
-exact_audioserver=${LUMA_C1_EXACT_AUDIOSERVER:-false}
-framework_stable_samples_required=${LUMA_C1_FRAMEWORK_STABLE_SAMPLES:-25}
+framework_required=${SUNO_C1_REQUIRE_FRAMEWORK:-false}
+exact_apexd=${SUNO_C1_EXACT_APEXD:-false}
+exact_surfaceflinger=${SUNO_C1_EXACT_SURFACEFLINGER:-false}
+angle_null_renderer=${SUNO_C1_ANGLE_NULL_RENDERER:-false}
+swangle_pastel_renderer=${SUNO_C1_SWANGLE_PASTEL_RENDERER:-false}
+aosp_noop_composer=${SUNO_C1_AOSP_NOOP_COMPOSER:-false}
+exact_stock_allocator=${SUNO_C1_EXACT_STOCK_ALLOCATOR:-false}
+exact_apex_loop_metadata=${SUNO_C1_EXACT_APEX_LOOP_METADATA:-false}
+permission_controller_projection=${SUNO_C1_PERMISSION_CONTROLLER_PROJECTION:-false}
+empty_sensors_hal=${SUNO_C1_EMPTY_SENSORS_HAL:-false}
+minimal_sensors_vintf=${SUNO_C1_MINIMAL_SENSORS_VINTF:-false}
+minimal_wifi_vintf=${SUNO_C1_MINIMAL_WIFI_VINTF:-false}
+isolated_netd=${SUNO_C1_ISOLATED_NETD:-false}
+exact_audioserver=${SUNO_C1_EXACT_AUDIOSERVER:-false}
+framework_stable_samples_required=${SUNO_C1_FRAMEWORK_STABLE_SAMPLES:-25}
 declare -A binder_original_modes=()
 declare -a apex_loop_nodes=()
 declare -a apex_loop_majors=()
@@ -268,15 +268,15 @@ netfilter_custom_modules=(
 
 die() { printf 'error: %s\n' "$*" >&2; exit 1; }
 
-check_luma_primary_owners() {
+check_Suno_primary_owners() {
   local service
-  for service in ModemManager luma-fp6-cellular-link; do
+  for service in ModemManager Suno-fp6-cellular-link; do
     systemctl is-active --quiet "$service" || return 1
   done
 }
 
-record_luma_owners() {
-  systemctl show ModemManager luma-fp6-cellular-link luma-fp6-imsd \
+record_Suno_owners() {
+  systemctl show ModemManager Suno-fp6-cellular-link Suno-fp6-imsd \
     -p Id -p ActiveState -p SubState -p Result -p InvocationID -p NRestarts \
     --no-pager
 }
@@ -495,7 +495,7 @@ cleanup() {
     cleanup_fault=legacy_binder_clients_remain
   fi
   if [[ -d $run_dir ]]; then
-    record_luma_owners >"$run_dir/luma-owners-after.log" 2>&1 || true
+    record_Suno_owners >"$run_dir/Suno-owners-after.log" 2>&1 || true
     printf 'result=%s\ncleanup_fault=%s\ncontainer_started=%s\nmodule_loaded=%s\n' \
       "$result" "$cleanup_fault" "$container_started" "$module_loaded" \
       >"$run_dir/result.env"
@@ -512,36 +512,36 @@ trap cleanup EXIT INT TERM HUP
 
 [[ $(id -u) -eq 0 ]] || die 'run as root on the FP6'
 [[ $framework_required == true || $framework_required == false ]] ||
-  die 'LUMA_C1_REQUIRE_FRAMEWORK must be true or false'
+  die 'SUNO_C1_REQUIRE_FRAMEWORK must be true or false'
 [[ $exact_apexd == true || $exact_apexd == false ]] ||
-  die 'LUMA_C1_EXACT_APEXD must be true or false'
+  die 'SUNO_C1_EXACT_APEXD must be true or false'
 [[ $exact_surfaceflinger == true || $exact_surfaceflinger == false ]] ||
-  die 'LUMA_C1_EXACT_SURFACEFLINGER must be true or false'
+  die 'SUNO_C1_EXACT_SURFACEFLINGER must be true or false'
 [[ $angle_null_renderer == true || $angle_null_renderer == false ]] ||
-  die 'LUMA_C1_ANGLE_NULL_RENDERER must be true or false'
+  die 'SUNO_C1_ANGLE_NULL_RENDERER must be true or false'
 [[ $swangle_pastel_renderer == true || $swangle_pastel_renderer == false ]] ||
-  die 'LUMA_C1_SWANGLE_PASTEL_RENDERER must be true or false'
+  die 'SUNO_C1_SWANGLE_PASTEL_RENDERER must be true or false'
 [[ $aosp_noop_composer == true || $aosp_noop_composer == false ]] ||
-  die 'LUMA_C1_AOSP_NOOP_COMPOSER must be true or false'
+  die 'SUNO_C1_AOSP_NOOP_COMPOSER must be true or false'
 [[ $exact_stock_allocator == true || $exact_stock_allocator == false ]] ||
-  die 'LUMA_C1_EXACT_STOCK_ALLOCATOR must be true or false'
+  die 'SUNO_C1_EXACT_STOCK_ALLOCATOR must be true or false'
 [[ $exact_apex_loop_metadata == true || $exact_apex_loop_metadata == false ]] ||
-  die 'LUMA_C1_EXACT_APEX_LOOP_METADATA must be true or false'
+  die 'SUNO_C1_EXACT_APEX_LOOP_METADATA must be true or false'
 [[ $permission_controller_projection == true || $permission_controller_projection == false ]] ||
-  die 'LUMA_C1_PERMISSION_CONTROLLER_PROJECTION must be true or false'
+  die 'SUNO_C1_PERMISSION_CONTROLLER_PROJECTION must be true or false'
 [[ $empty_sensors_hal == true || $empty_sensors_hal == false ]] ||
-  die 'LUMA_C1_EMPTY_SENSORS_HAL must be true or false'
+  die 'SUNO_C1_EMPTY_SENSORS_HAL must be true or false'
 [[ $minimal_sensors_vintf == true || $minimal_sensors_vintf == false ]] ||
-  die 'LUMA_C1_MINIMAL_SENSORS_VINTF must be true or false'
+  die 'SUNO_C1_MINIMAL_SENSORS_VINTF must be true or false'
 [[ $minimal_wifi_vintf == true || $minimal_wifi_vintf == false ]] ||
-  die 'LUMA_C1_MINIMAL_WIFI_VINTF must be true or false'
+  die 'SUNO_C1_MINIMAL_WIFI_VINTF must be true or false'
 [[ $isolated_netd == true || $isolated_netd == false ]] ||
-  die 'LUMA_C1_ISOLATED_NETD must be true or false'
+  die 'SUNO_C1_ISOLATED_NETD must be true or false'
 [[ $exact_audioserver == true || $exact_audioserver == false ]] ||
-  die 'LUMA_C1_EXACT_AUDIOSERVER must be true or false'
+  die 'SUNO_C1_EXACT_AUDIOSERVER must be true or false'
 [[ $framework_stable_samples_required =~ ^[0-9]+$ ]] &&
   (( framework_stable_samples_required >= 25 && framework_stable_samples_required <= 1200 )) ||
-  die 'LUMA_C1_FRAMEWORK_STABLE_SAMPLES must be an integer from 25 through 1200'
+  die 'SUNO_C1_FRAMEWORK_STABLE_SAMPLES must be an integer from 25 through 1200'
 [[ $exact_apexd == false || $framework_required == true ]] ||
   die 'exact apexd mode requires the framework gate'
 [[ $exact_surfaceflinger == false || $exact_apexd == true ]] ||
@@ -582,10 +582,10 @@ trap cleanup EXIT INT TERM HUP
 grep -qw 'androidboot.slot_suffix=_b' /proc/cmdline || die 'device is not on slot b'
 [[ $(lxc-info -P "$lxc_path" -n "$name" -sH 2>/dev/null || printf STOPPED) == STOPPED ]] ||
   die 'container is already active'
-check_luma_primary_owners || die 'a primary Luma modem owner is unexpectedly inactive'
-ims_state=$(systemctl show luma-fp6-imsd -p ActiveState --value)
+check_Suno_primary_owners || die 'a primary Suno modem owner is unexpectedly inactive'
+ims_state=$(systemctl show Suno-fp6-imsd -p ActiveState --value)
 [[ $ims_state == active || $ims_state == activating ]] ||
-  die 'the pre-existing Luma IMS owner is neither active nor retrying'
+  die 'the pre-existing Suno IMS owner is neither active nor retrying'
 ! grep -qw qseecomtee /proc/modules || die 'legacy QSEECOM is loaded; clean reboot required'
 ! grep -qw qcomtee /proc/modules || die 'QCOMTEE is already loaded; clean reboot required'
 ! pgrep -x qsee-supplicant >/dev/null || die 'Linux qsee-supplicant is running'
@@ -897,7 +897,7 @@ if [[ $exact_stock_allocator == true ]]; then
   [[ $(sha256sum "$system_heap_module" | cut -d' ' -f1) == \
      "$expected_system_heap_module_sha" ]] ||
     die 'RAM-only AOSP system heap module hash mismatch'
-  grep -qw luma_dma_heap_system /proc/modules ||
+  grep -qw Suno_dma_heap_system /proc/modules ||
     die 'RAM-only AOSP system heap module is not loaded'
   [[ -c /dev/dma_heap/system ]] || die 'AOSP system DMA-BUF heap node is absent'
 fi
@@ -1144,12 +1144,12 @@ if [[ $permission_controller_projection == true ]]; then
   install -o root -g root -m 0644 /dev/null "$extservices_allowlist_target"
   extservices_allowlist_target_created=true
   cat >>"$config" <<EOF
-lxc.mount.entry = $permission_controller_source_dir system/priv-app/LumaGooglePermissionController none bind,ro,create=dir 0 0
-lxc.mount.entry = $permission_controller_allowlist_source system/etc/permissions/luma-privapp-allowlist-com.google.android.permissioncontroller.xml none bind,ro,create=file 0 0
-lxc.mount.entry = $extservices_source_dir system/priv-app/LumaGoogleExtServices none bind,ro,create=dir 0 0
-lxc.mount.entry = $extservices_allowlist_source system/etc/permissions/luma-privapp-allowlist-com.google.android.ext.services.xml none bind,ro,create=file 0 0
-lxc.mount.entry = $sdk_sandbox_source_dir system/app/LumaSdkSandboxGoogle none bind,ro,create=dir 0 0
-lxc.mount.entry = $connectivity_resources_source_dir system/priv-app/LumaNetRes none bind,ro,create=dir 0 0
+lxc.mount.entry = $permission_controller_source_dir system/priv-app/SunoGooglePermissionController none bind,ro,create=dir 0 0
+lxc.mount.entry = $permission_controller_allowlist_source system/etc/permissions/Suno-privapp-allowlist-com.google.android.permissioncontroller.xml none bind,ro,create=file 0 0
+lxc.mount.entry = $extservices_source_dir system/priv-app/SunoGoogleExtServices none bind,ro,create=dir 0 0
+lxc.mount.entry = $extservices_allowlist_source system/etc/permissions/Suno-privapp-allowlist-com.google.android.ext.services.xml none bind,ro,create=file 0 0
+lxc.mount.entry = $sdk_sandbox_source_dir system/app/SunoSdkSandboxGoogle none bind,ro,create=dir 0 0
+lxc.mount.entry = $connectivity_resources_source_dir system/priv-app/SunoNetRes none bind,ro,create=dir 0 0
 EOF
 fi
 if [[ $minimal_sensors_vintf == true ]]; then
@@ -1188,7 +1188,7 @@ if [[ $angle_null_renderer == true ]]; then
     "$angle_probe_source" \
     >>"$run_dir/input-hashes.log"
 fi
-record_luma_owners >"$run_dir/luma-owners-before.log"
+record_Suno_owners >"$run_dir/Suno-owners-before.log"
 printf 'mode=%s\nactive_clients_before=%s\n' \
   "$binder_mode" "$(binder_proc_count)" >"$run_dir/binder-boundary.log"
 stdbuf -oL dmesg --follow-new --raw >"$run_dir/kernel-new.log" &
@@ -1220,12 +1220,12 @@ EOF
 fi
 
 if [[ $exact_apex_loop_metadata == true ]]; then
-  [[ $(grep -c '/var/tmp/luma-stock-qrel1695-apex-runtime1/mounts/' "$config") -eq 123 ]] ||
+  [[ $(grep -c '/var/tmp/Suno-stock-qrel1695-apex-runtime1/mounts/' "$config") -eq 123 ]] ||
     die 'base C1 APEX mount-entry count differs before runtime promotion'
   sed -i \
-    's#/var/tmp/luma-stock-qrel1695-apex-runtime1/mounts/#/var/tmp/luma-stock-qrel1695-apex-runtime2/mounts/#g' \
+    's#/var/tmp/Suno-stock-qrel1695-apex-runtime1/mounts/#/var/tmp/Suno-stock-qrel1695-apex-runtime2/mounts/#g' \
     "$config"
-  ! grep -q '/var/tmp/luma-stock-qrel1695-apex-runtime1/mounts/' "$config" ||
+  ! grep -q '/var/tmp/Suno-stock-qrel1695-apex-runtime1/mounts/' "$config" ||
     die 'base C1 retained an old APEX runtime mount'
   apex_runtime2_mount_entries=123
   if [[ $permission_controller_projection == true ]]; then
@@ -1233,7 +1233,7 @@ if [[ $exact_apex_loop_metadata == true ]]; then
     # connectivity-resources APK from the tethering APEX.
     apex_runtime2_mount_entries=$((apex_runtime2_mount_entries + 6))
   fi
-  [[ $(grep -c '/var/tmp/luma-stock-qrel1695-apex-runtime2/mounts/' "$config") -eq \
+  [[ $(grep -c '/var/tmp/Suno-stock-qrel1695-apex-runtime2/mounts/' "$config") -eq \
      $apex_runtime2_mount_entries ]] ||
     die 'effective C1 APEX mount-entry count differs after runtime promotion'
 fi
@@ -1265,7 +1265,7 @@ on property:sys.use_memfd=false
 # init_user0 stops at setfscreatecon before creating the normal user-0 roots.
 # Reproduce only the Android 16 FsCrypt.cpp directory modes and /data/data bind
 # topology, then emit the lifecycle event mount_all normally supplies. These
-# paths remain below C1's private data bind and never touch Luma userdata.
+# paths remain below C1's private data bind and never touch Suno userdata.
 on post-fs-data
     mkdir /data/data 0771 system system
     mkdir /data/user/0 0700 system system
@@ -1291,7 +1291,7 @@ service vendor.qseecomd /vendor/bin/qseecomd
     class core
     user root
     group root drmrpc
-    setenv LD_LIBRARY_PATH /vendor/lib64/luma-qsee
+    setenv LD_LIBRARY_PATH /vendor/lib64/Suno-qsee
 EOF
 if [[ $exact_audioserver == true ]]; then
   cat >>"$override" <<'EOF'
@@ -1324,7 +1324,7 @@ if [[ $angle_null_renderer == true ]]; then
 # payload copied under a container-only suffix. ANGLE's upstream null backend
 # has no platform dependency and performs state validation without rendering.
 on early-init
-    setprop persist.graphics.egl luma_null
+    setprop persist.graphics.egl Suno_null
 EOF
 fi
 if [[ $swangle_pastel_renderer == true ]]; then
@@ -1346,7 +1346,7 @@ service vendor_qti_graphics_boot /system/bin/true
 on early-init
     setprop vendor.display.gpu_rendering false
     setprop ro.hardware.vulkan pastel
-    setprop persist.graphics.egl luma_swangle
+    setprop persist.graphics.egl Suno_swangle
 EOF
 fi
 if [[ $aosp_noop_composer == true ]]; then
@@ -1364,7 +1364,7 @@ service vendor.hwcomposer-3 /vendor/bin/hw/android.hardware.graphics.composer3-s
     user system
     group graphics drmrpc
     capabilities SYS_NICE
-    setenv LD_LIBRARY_PATH /vendor/lib64/luma-noop-composer
+    setenv LD_LIBRARY_PATH /vendor/lib64/Suno-noop-composer
     onrestart restart surfaceflinger
     task_profiles ServiceCapacityLow
 EOF
@@ -1412,7 +1412,7 @@ if [[ $exact_apex_loop_metadata == true ]]; then
   # Keep the backing pathname identical to the path reported by sysfs, as
   # required by apexd's normal loop-device mount discovery.
   cat >>"$config" <<EOF
-lxc.mount.entry = $apex_runtime/images var/tmp/luma-stock-qrel1695-apex-runtime1/images none bind,ro,create=dir 0 0
+lxc.mount.entry = $apex_runtime/images var/tmp/Suno-stock-qrel1695-apex-runtime1/images none bind,ro,create=dir 0 0
 EOF
   for apex_index in "${!apex_loop_nodes[@]}"; do
     cat >>"$config" <<EOF
@@ -1524,13 +1524,13 @@ EOF
     cat >>"$apex_override" <<'EOF'
 
 # Android 16's exact netbpfload refuses Linux 7.1 at its LTS-policy preflight
-# and then requires a writable host-global BPF sysctl. The narrow Luma adapter
+# and then requires a writable host-global BPF sysctl. The narrow Suno adapter
 # invokes the exact stock libbpf_android ABI on the exact signed QREL netd.o
 # inside C1's private bpffs. It publishes bpf.progs_loaded only after a real
 # load and required-pin check; no kernel-version/property spoof is involved.
-service bpfloader /system/bin/luma-netbpfload
+service bpfloader /system/bin/Suno-netbpfload
     override
-    setenv LUMA_C1_NETD_ONLY 1
+    setenv SUNO_C1_NETD_ONLY 1
     capabilities CHOWN SYS_ADMIN NET_ADMIN
     group root graphics network_stack net_admin net_bw_acct net_bw_stats net_raw system
     user root
@@ -1602,7 +1602,7 @@ service zygote /system/bin/app_process64 -Xzygote /system/bin --zygote --start-s
     group root readproc reserved_disk
     socket zygote stream 660 root system
     socket usap_pool_primary stream 660 root system
-    setenv LD_PRELOAD /system/lib64/libluma_selinux_disabled.so
+    setenv LD_PRELOAD /system/lib64/libSuno_selinux_disabled.so
     onrestart exec_background - system system -- /system/bin/vdc volume abort_fuse
     onrestart write /sys/power/state on
     onrestart write /sys/power/wake_lock zygote_kwl
@@ -1624,7 +1624,7 @@ service installd /system/bin/installd
     class main
     user root
     capabilities CHOWN DAC_OVERRIDE DAC_READ_SEARCH FOWNER FSETID KILL SETGID SETUID SYS_ADMIN
-    setenv LD_PRELOAD /system/lib64/libluma_restorecon_disabled.so
+    setenv LD_PRELOAD /system/lib64/libSuno_restorecon_disabled.so
 EOF
   if [[ $exact_audioserver == true ]]; then
     cat >>"$apex_override" <<'EOF'
@@ -1954,7 +1954,7 @@ fi
 
 if [[ $angle_null_renderer == true ]]; then
   lxc-attach -P "$lxc_path" -n "$name" --clear-env -- \
-    /vendor/bin/luma-angle-null-probe >"$run_dir/angle-null-probe.log" 2>&1 ||
+    /vendor/bin/Suno-angle-null-probe >"$run_dir/angle-null-probe.log" 2>&1 ||
     die 'direct stock ANGLE null-renderer probe failed'
   grep -qx 'ANGLE_NULL_DIRECT_GATE=true' "$run_dir/angle-null-probe.log" ||
     die 'direct stock ANGLE null-renderer probe did not publish acceptance'
@@ -1976,7 +1976,7 @@ if [[ $swangle_pastel_renderer == true ]]; then
   } >"$run_dir/swangle-pastel-properties.log"
   grep -qx 'ro.hardware.vulkan=pastel' "$run_dir/swangle-pastel-properties.log" ||
     die 'container did not select the CPU-only Vulkan Pastel driver'
-  grep -Eq '^persist.graphics.egl=(luma_swangle)?$' \
+  grep -Eq '^persist.graphics.egl=(Suno_swangle)?$' \
     "$run_dir/swangle-pastel-properties.log" ||
     die 'container selected an unexpected persistent EGL override'
   grep -qx 'vendor.display.gpu_rendering=false' "$run_dir/swangle-pastel-properties.log" ||
@@ -1984,7 +1984,7 @@ if [[ $swangle_pastel_renderer == true ]]; then
   grep -qx 'ro.hardware.egl=angle' "$run_dir/swangle-pastel-properties.log" ||
     die 'QREL no-GPU mode did not select stock ANGLE'
   lxc-attach -P "$lxc_path" -n "$name" --clear-env -- \
-    /vendor/bin/luma-swangle-pastel-probe \
+    /vendor/bin/Suno-swangle-pastel-probe \
     >"$run_dir/swangle-pastel-probe.log" 2>&1 ||
     die 'direct stock SwANGLE/Pastel probe failed'
   grep -qx 'SWANGLE_PASTEL_DIRECT_GATE=true' "$run_dir/swangle-pastel-probe.log" ||
@@ -2081,25 +2081,25 @@ if [[ $exact_apex_loop_metadata == true ]]; then
   if [[ $permission_controller_projection == true ]]; then
     [[ $apex_active_count -eq 0 ]] ||
       die "permission projection is unsafe with an active APEX set: $apex_active_count"
-    projected_permission_controller=/proc/$(lxc-info -P "$lxc_path" -n "$name" -pH)/root/system/priv-app/LumaGooglePermissionController/GooglePermissionController.apk
+    projected_permission_controller=/proc/$(lxc-info -P "$lxc_path" -n "$name" -pH)/root/system/priv-app/SunoGooglePermissionController/GooglePermissionController.apk
     [[ -f $projected_permission_controller && ! -L $projected_permission_controller ]] ||
       die 'projected exact PermissionController APK is absent or linked'
     [[ $(sha256sum "$projected_permission_controller" | cut -d' ' -f1) == \
        "$expected_permission_controller_sha" ]] ||
       die 'projected exact PermissionController APK hash mismatch'
-    projected_extservices=/proc/$(lxc-info -P "$lxc_path" -n "$name" -pH)/root/system/priv-app/LumaGoogleExtServices/GoogleExtServices.apk
+    projected_extservices=/proc/$(lxc-info -P "$lxc_path" -n "$name" -pH)/root/system/priv-app/SunoGoogleExtServices/GoogleExtServices.apk
     [[ -f $projected_extservices && ! -L $projected_extservices ]] ||
       die 'projected exact Services Extension APK is absent or linked'
     [[ $(sha256sum "$projected_extservices" | cut -d' ' -f1) == \
        "$expected_extservices_sha" ]] ||
       die 'projected exact Services Extension APK hash mismatch'
-    projected_sdk_sandbox=/proc/$(lxc-info -P "$lxc_path" -n "$name" -pH)/root/system/app/LumaSdkSandboxGoogle/SdkSandboxGoogle.apk
+    projected_sdk_sandbox=/proc/$(lxc-info -P "$lxc_path" -n "$name" -pH)/root/system/app/SunoSdkSandboxGoogle/SdkSandboxGoogle.apk
     [[ -f $projected_sdk_sandbox && ! -L $projected_sdk_sandbox ]] ||
       die 'projected exact SDK Sandbox APK is absent or linked'
     [[ $(sha256sum "$projected_sdk_sandbox" | cut -d' ' -f1) == \
        "$expected_sdk_sandbox_sha" ]] ||
       die 'projected exact SDK Sandbox APK hash mismatch'
-    projected_connectivity_resources=/proc/$(lxc-info -P "$lxc_path" -n "$name" -pH)/root/system/priv-app/LumaNetRes/ServiceConnectivityResourcesGoogle.apk
+    projected_connectivity_resources=/proc/$(lxc-info -P "$lxc_path" -n "$name" -pH)/root/system/priv-app/SunoNetRes/ServiceConnectivityResourcesGoogle.apk
     [[ -f $projected_connectivity_resources && ! -L $projected_connectivity_resources ]] ||
       die 'projected exact connectivity resources APK is absent or linked'
     [[ $(sha256sum "$projected_connectivity_resources" | cut -d' ' -f1) == \
@@ -2408,7 +2408,7 @@ if [[ $framework_required == true ]]; then
       lxc-attach -P "$lxc_path" -n "$name" --clear-env -- \
         /system/bin/cmd package path com.google.android.permissioncontroller \
         >"$run_dir/permission-controller-package.log" 2>&1 || true
-      if grep -qx 'package:/system/priv-app/LumaGooglePermissionController/GooglePermissionController.apk' \
+      if grep -qx 'package:/system/priv-app/SunoGooglePermissionController/GooglePermissionController.apk' \
          "$run_dir/permission-controller-package.log"; then
         permission_controller_package_ready=true
         break
@@ -2417,21 +2417,21 @@ if [[ $framework_required == true ]]; then
     done
     [[ $permission_controller_package_ready == true ]] ||
       die 'PackageManager did not resolve the exact PermissionController package'
-    grep -qx 'package:/system/priv-app/LumaGooglePermissionController/GooglePermissionController.apk' \
+    grep -qx 'package:/system/priv-app/SunoGooglePermissionController/GooglePermissionController.apk' \
       "$run_dir/permission-controller-package.log" ||
       die 'PermissionController package resolved from an unexpected path'
     lxc-attach -P "$lxc_path" -n "$name" --clear-env -- \
       /system/bin/cmd package path com.google.android.ext.services \
       >"$run_dir/services-extension-package.log" 2>&1 ||
       die 'PackageManager did not resolve the exact Services Extension package'
-    grep -qx 'package:/system/priv-app/LumaGoogleExtServices/GoogleExtServices.apk' \
+    grep -qx 'package:/system/priv-app/SunoGoogleExtServices/GoogleExtServices.apk' \
       "$run_dir/services-extension-package.log" ||
       die 'Services Extension package resolved from an unexpected path'
     lxc-attach -P "$lxc_path" -n "$name" --clear-env -- \
       /system/bin/cmd package path com.google.android.sdksandbox \
       >"$run_dir/sdk-sandbox-package.log" 2>&1 ||
       die 'PackageManager did not resolve the exact SDK Sandbox package'
-    grep -qx 'package:/system/app/LumaSdkSandboxGoogle/SdkSandboxGoogle.apk' \
+    grep -qx 'package:/system/app/SunoSdkSandboxGoogle/SdkSandboxGoogle.apk' \
       "$run_dir/sdk-sandbox-package.log" ||
       die 'SDK Sandbox package resolved from an unexpected path'
   fi
@@ -2533,7 +2533,7 @@ for binder_node in binder hwbinder vndbinder; do
 done
 lxc-attach -P "$lxc_path" -n "$name" --clear-env -- \
   /system/bin/ps -A -o PID,UID,NAME >"$run_dir/processes.log" 2>&1 || true
-check_luma_primary_owners || die 'a primary Luma modem owner changed during stock qseecomd gate'
+check_Suno_primary_owners || die 'a primary Suno modem owner changed during stock qseecomd gate'
 
 stop_logcat
 if [[ $angle_null_renderer == true ]]; then
@@ -2653,8 +2653,8 @@ if grep -Eiq 'kernel panic|Oops:|(^|[[:space:]<])BUG:|hangcheck|GMU.*(timeout|[[
   "$run_dir/kernel-new.log"; then
   die 'kernel/TEE/GPU/GMU fault observed'
 fi
-check_luma_primary_owners || die 'a primary Luma modem owner did not survive teardown'
-record_luma_owners >"$run_dir/luma-owners-after.log"
+check_Suno_primary_owners || die 'a primary Suno modem owner did not survive teardown'
+record_Suno_owners >"$run_dir/Suno-owners-after.log"
 result=pass
 printf 'C1_STOCK_QSEECOMD_KEYMINT_GATE=true\n'
 printf 'C1_STOCK_FRAMEWORK_GATE=%s\n' "$framework_required"
@@ -2679,6 +2679,6 @@ printf 'EPHEMERAL_FRP_LOOP_EXPOSED=%s\n' "$exact_audioserver"
 printf 'PHYSICAL_SSD_EXPOSED=false\n'
 printf 'PRIVILEGED_TEE_NODE_EXPOSED=false\n'
 printf 'PHYSICAL_MODEM_AUDIO_GPU_BLOCK_RPMB_EXPOSED=false\n'
-printf 'LUMA_PRIMARY_MODEM_OWNERS_REMAINED_ACTIVE=true\n'
-printf 'LUMA_IMS_PREEXISTING_STATE_RECORDED=true\n'
+printf 'SUNO_PRIMARY_MODEM_OWNERS_REMAINED_ACTIVE=true\n'
+printf 'SUNO_IMS_PREEXISTING_STATE_RECORDED=true\n'
 printf 'EVIDENCE_DIR=%s\n' "$run_dir"

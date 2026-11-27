@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Project Luma physical x86_64 installation template.
+# Project Suno physical x86_64 installation template.
 #
 # Render only into a private, one-time installer initramfs. The password hash,
 # disk passphrase, and SSH key placeholders must never be committed with real
@@ -44,8 +44,8 @@ reboot
 target_root=/mnt/sysroot
 [ -d /mnt/sysimage/etc ] && target_root=/mnt/sysimage
 for source_profile in \
-  /run/initramfs/etc/NetworkManager/system-connections/luma-installer.nmconnection \
-  /etc/NetworkManager/system-connections/luma-installer.nmconnection; do
+  /run/initramfs/etc/NetworkManager/system-connections/Suno-installer.nmconnection \
+  /etc/NetworkManager/system-connections/Suno-installer.nmconnection; do
   if [ -f "$source_profile" ]; then
     install -D -m 0600 "$source_profile" \
       "$target_root/etc/NetworkManager/system-connections/HiveCoworking.nmconnection"
@@ -55,7 +55,7 @@ done
 %end
 
 %post --erroronfail
-install -d -m 0755 /etc/luma
-printf '%s\n' 'fedora/44/x86_64/silverblue' > /etc/luma/installed-base-ref
+install -d -m 0755 /etc/Suno
+printf '%s\n' 'fedora/44/x86_64/silverblue' > /etc/Suno/installed-base-ref
 systemctl enable sshd.service
 %end

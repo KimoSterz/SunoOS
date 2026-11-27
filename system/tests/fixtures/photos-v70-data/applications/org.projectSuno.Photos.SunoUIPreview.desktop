@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=Photos
+Icon=org.projectSuno.Photos
+Exec=true
+NoDisplay=true

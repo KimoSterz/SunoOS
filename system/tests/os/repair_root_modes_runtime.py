@@ -9,7 +9,7 @@ import tarfile
 import tempfile
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'scripts/os/lib'))
 import repair_modes as repair
-with tempfile.TemporaryDirectory(prefix='luma-root-mode-') as temp:
+with tempfile.TemporaryDirectory(prefix='Suno-root-mode-') as temp:
     root = Path(temp)
     repo = root / 'repo'
     subprocess.run(['ostree', '--repo='+str(repo), 'init', '--mode=archive'], check=True)

@@ -15,7 +15,7 @@ for name in ['metadata','SOURCES','permissions.json','lint-manifest.json','lint-
 subprocess.run(['ostree','--repo='+str(repo),'fsck'],check=True,timeout=120)
 for name,expected in profile['refs'].items():assert command('ostree','--repo='+str(root/'repo'),'rev-parse',name)==expected
 for name,key in [('summary','summary_sha256'),('summary.sig','summary_signature_sha256')]:assert sha(root/'repo'/name)==profile[key]
-assert sha(root/'site/luma.flatpakrepo')==profile['flatpakrepo_sha256']
+assert sha(root/'site/Suno.flatpakrepo')==profile['flatpakrepo_sha256']
 receipt=dict(result='NATIVE_ARM_FILER_MAINTAINED_UNSIGNED_PROVIDER_NOT_RUNTIME_OR_RELEASE_QUALIFIED',source=profile['source'],architecture='aarch64',app_id='org.gnome.Nautilus',ref=ref,commit=commit,provider_result_directory='provider',metadata_sha256=sha(result/'metadata'),SOURCES_sha256=sha(result/'SOURCES'),source_manifest_sha256=profile['filer_source_manifest_sha256'],sealed_recipe_sha256=profile['filer_manifest_sha256'],normal_build_lint_appstream_access_gates_passed=True,runtime_refs=profile['refs'],runtime_after_refs_and_summary_invariant=True,signature_checks_disabled=False,compiler_flags_changed=False,permissions_override=False,signing=False,publication=False)
 memory={n:Path('/sys/fs/cgroup',n).read_text().strip() for n in ['memory.max','memory.peak','memory.events','memory.swap.max','cpu.max']}
 events=dict(line.split() for line in memory['memory.events'].splitlines());assert events['oom_kill']=='0' and memory['memory.max']=='4294967296' and memory['memory.swap.max']=='0'

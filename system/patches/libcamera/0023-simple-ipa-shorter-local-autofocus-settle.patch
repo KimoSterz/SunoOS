@@ -1,4 +1,4 @@
-From: Project Luma <project-luma@local>
+From: Project Suno <project-suno@local>
 Subject: [PATCH] simple: ipa: tune settling independently for local autofocus
 
 Small local refocus movements do not need the same settling delay as the

@@ -7,10 +7,10 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-LIB = ROOT / "scripts/mobile/common/initramfs/luma-ostree-boot.sh"
-HOOK = ROOT / "scripts/mobile/common/initramfs/hooks-extra/50-luma-ostree-default.sh"
-SHELL = os.environ.get("LUMA_TEST_SH", "sh")
-ANDROID = "console=tty0 androidboot.slot_suffix=_a ostree=/ostree/boot.0/luma/stale/0 quiet"
+LIB = ROOT / "scripts/mobile/common/initramfs/Suno-ostree-boot.sh"
+HOOK = ROOT / "scripts/mobile/common/initramfs/hooks-extra/50-Suno-ostree-default.sh"
+SHELL = os.environ.get("SUNO_TEST_SH", "sh")
+ANDROID = "console=tty0 androidboot.slot_suffix=_a ostree=/ostree/boot.0/Suno/stale/0 quiet"
 
 
 class OstreeDefault(unittest.TestCase):
@@ -19,7 +19,7 @@ class OstreeDefault(unittest.TestCase):
         self.root = Path(self.tmp.name)
         (self.root / "boot/loader.1/entries").mkdir(parents=True)
         (self.root / "boot/loader").symlink_to("loader.1")
-        (self.root / "ostree/boot.1.0/luma").mkdir(parents=True)
+        (self.root / "ostree/boot.1.0/Suno").mkdir(parents=True)
         (self.root / "ostree/boot.1").symlink_to("boot.1.0")
         self.entries = {}
 
@@ -28,21 +28,21 @@ class OstreeDefault(unittest.TestCase):
 
     def deployment(self, name, version, usable=True):
         commit, boot = name * 64, ("b" + name) * 32
-        deploy = self.root / f"ostree/deploy/luma/deploy/{commit}.0"
+        deploy = self.root / f"ostree/deploy/Suno/deploy/{commit}.0"
         (deploy / "etc").mkdir(parents=True, exist_ok=True)
         systemd = deploy / "usr/lib/systemd/systemd"
         if usable:
             systemd.parent.mkdir(parents=True, exist_ok=True)
             systemd.write_text("")
             systemd.chmod(0o755)
-        link = self.root / f"ostree/boot.1.0/luma/{boot}/0"
+        link = self.root / f"ostree/boot.1.0/Suno/{boot}/0"
         link.parent.mkdir(parents=True, exist_ok=True)
-        link.symlink_to(f"../../../deploy/luma/deploy/{commit}.0")
-        target = f"/ostree/boot.1/luma/{boot}/0"
+        link.symlink_to(f"../../../deploy/Suno/deploy/{commit}.0")
+        target = f"/ostree/boot.1/Suno/{boot}/0"
         entry = self.root / f"boot/loader.1/entries/ostree-{version}.conf"
-        entry.write_text(f"title Luma ({name})\nversion {version}\nlinux /ostree/luma-{boot}/vmlinuz\n"
+        entry.write_text(f"title Suno ({name})\nversion {version}\nlinux /ostree/Suno-{boot}/vmlinuz\n"
                          f"options root=UUID=x rw ostree={target} quiet\n")
-        self.entries[name] = (target, f"deploy/luma/deploy/{commit}.0")
+        self.entries[name] = (target, f"deploy/Suno/deploy/{commit}.0")
         return target
 
     def grubenv(self, **values):
@@ -61,13 +61,13 @@ class OstreeDefault(unittest.TestCase):
         return dict(line.split("=", 1) for line in lines[1:] if "=" in line and not line.startswith("#"))
 
     def run_boot(self, cmdline=ANDROID):
-        script = ('. "$1"; luma_ostree_resolve "$2" || { echo rc=1; exit 0; }; '
-                  'luma_ostree_apply "$2" "$3" || echo apply=1; '
+        script = ('. "$1"; Suno_ostree_resolve "$2" || { echo rc=1; exit 0; }; '
+                  'Suno_ostree_apply "$2" "$3" || echo apply=1; '
                   'printf "target=%s\\nindex=%s\\nreason=%s\\ncmdline=%s\\n" '
-                  '"$LUMA_OSTREE_TARGET" "$LUMA_OSTREE_INDEX" "$LUMA_OSTREE_REASON" "$LUMA_OSTREE_CMDLINE"')
+                  '"$SUNO_OSTREE_TARGET" "$SUNO_OSTREE_INDEX" "$SUNO_OSTREE_REASON" "$SUNO_OSTREE_CMDLINE"')
         out = subprocess.run([SHELL, "-c", script, "sh", str(LIB), str(self.root), cmdline],
-                             env={**os.environ, "LUMA_OSTREE_LOG": "/dev/null",
-                                  "LUMA_OSTREE_STATE": str(self.root / "run/ostree-boot")},
+                             env={**os.environ, "SUNO_OSTREE_LOG": "/dev/null",
+                                  "SUNO_OSTREE_STATE": str(self.root / "run/ostree-boot")},
                              capture_output=True, text=True, check=True).stdout
         return dict(line.split("=", 1) for line in out.splitlines() if "=" in line)
 
@@ -138,22 +138,22 @@ class OstreeDefault(unittest.TestCase):
         self.assertEqual(self.run_boot()["index"], "0")
 
     def test_no_entries_keeps_existing_link(self):
-        (self.root / "ostree/root.a").symlink_to("deploy/luma/deploy/old.0")
+        (self.root / "ostree/root.a").symlink_to("deploy/Suno/deploy/old.0")
         self.assertEqual(self.run_boot(), {"rc": "1"})
-        self.assertEqual(self.slot(), "deploy/luma/deploy/old.0")
+        self.assertEqual(self.slot(), "deploy/Suno/deploy/old.0")
 
     def test_slot_b_and_plain_cmdline(self):
         self.deployment("1", 1)
         self.run_boot("androidboot.slot_suffix=_b")
         self.assertEqual(self.slot("b"), self.entries["1"][1])
         self.assertIsNone(self.slot("a"))
-        result = self.run_boot("root=UUID=x ostree=/ostree/boot.0/luma/old/0")
+        result = self.run_boot("root=UUID=x ostree=/ostree/boot.0/Suno/old/0")
         self.assertEqual(result["cmdline"], f"root=UUID=x ostree={self.entries['1'][0]}")
         self.assertIsNone(self.slot("a"))
 
     def test_hook_is_executable_and_sources_the_library(self):
         self.assertTrue(os.access(HOOK, os.X_OK))
-        self.assertIn(". /usr/lib/luma/ostree-boot.sh", HOOK.read_text())
+        self.assertIn(". /usr/lib/Suno/ostree-boot.sh", HOOK.read_text())
 
 
 if __name__ == "__main__":

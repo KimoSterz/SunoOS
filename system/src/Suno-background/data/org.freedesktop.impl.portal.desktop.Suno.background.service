@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=org.freedesktop.impl.portal.desktop.Suno.background
+Exec=/usr/libexec/Suno-background-service
+SystemdService=Suno-background.service

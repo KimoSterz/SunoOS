@@ -1,4 +1,4 @@
-From: Project Luma <luma@projectluma.dev>
+From: Project Suno <Suno@projectSuno.dev>
 Subject: [PATCH] arm64: dts: qcom: milos: add FP6 IMX896 main camera
 
 Describe the Fairphone 6 rear-main sensor using the rail, reset, MCLK, CCI,

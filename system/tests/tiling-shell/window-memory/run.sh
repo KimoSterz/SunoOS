@@ -1,6 +1,6 @@
 #!/bin/bash
 # SPDX-License-Identifier: Apache-2.0
-# Expects this directory at /wm/test inside a Fedora 44 container with the Luma
+# Expects this directory at /wm/test inside a Fedora 44 container with the Suno
 # Shell, Mutter and mutter-tests RPMs, gtk4 and python3-gobject installed.
 # run.sh [extension-source-dir]: run the window memory scenario in a headless Shell
 # (WM_SCRIPT=/wm/test/resume-trace.js for the resume and dock geometry trace).
@@ -11,20 +11,20 @@ if [ -n "$SRC" ]; then
   rm -rf $D && mkdir -p $D && cp -a "$SRC"/. $D/ && glib-compile-schemas $D/schemas
 fi
 # A user-mode-only extension enabled before Tiling Shell: at lock GNOME disables
-# it and re-enables every later extension, as tiling-toggle does on Luma.
-T=/usr/share/gnome-shell/extensions/luma-test-user-only@project-luma.local
+# it and re-enables every later extension, as tiling-toggle does on Suno.
+T=/usr/share/gnome-shell/extensions/Suno-test-user-only@project-suno.local
 mkdir -p $T
-printf '{"uuid":"luma-test-user-only@project-luma.local","name":"Test user-only","description":"test","shell-version":["50"]}' > $T/metadata.json
+printf '{"uuid":"Suno-test-user-only@project-suno.local","name":"Test user-only","description":"test","shell-version":["50"]}' > $T/metadata.json
 printf 'export default class { enable() {} disable() {} }\n' > $T/extension.js
 export XDG_RUNTIME_DIR=/tmp/wm-run; rm -rf $XDG_RUNTIME_DIR; mkdir -m 700 -p $XDG_RUNTIME_DIR
 export HOME=/tmp/wm-home; rm -rf $HOME; mkdir -p $HOME/.config/glib-2.0/settings $HOME/.local/share/applications
 cat > $HOME/.config/glib-2.0/settings/keyfile <<'K'
 [org/gnome/shell]
-enabled-extensions=['luma-test-user-only@project-luma.local', 'tilingshell@ferrarodomenico.com']
+enabled-extensions=['Suno-test-user-only@project-suno.local', 'tilingshell@ferrarodomenico.com']
 disable-user-extensions=false
 welcome-dialog-last-shown-version='999'
 K
-for a in "org.projectluma.Tide Tide" "org.projectluma.Viola Viola" "org.gnome.Ptyxis Terminal"; do
+for a in "org.projectSuno.Tide Tide" "org.projectSuno.Viola Viola" "org.gnome.Ptyxis Terminal"; do
   set -- $a
   printf '[Desktop Entry]\nType=Application\nName=%s\nExec=python3 /wm/test/app.py %s %s #000\nStartupWMClass=%s\n' "$2" "$1" "$2" "$1" > $HOME/.local/share/applications/$1.desktop
 done

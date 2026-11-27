@@ -6,7 +6,7 @@ No real contacts, accounts, modem or network: every name and number here is
 made up (555 numbers, fake short codes). Run under Xvfb with ImageMagick;
 GDK_SCALE=2 (and a doubled screen) gives the 2x captures:
 
-    LUMA_VISUAL_MODE=dark xvfb-run -s "-screen 0 980x700x24" messages_list_visual.py OUTPUT_DIR [--menu]
+    SUNO_VISUAL_MODE=dark xvfb-run -s "-screen 0 980x700x24" messages_list_visual.py OUTPUT_DIR [--menu]
 
 Each capture also writes a JSON sidecar with the row geometry it measured, so
 a reviewer can check row heights without trusting the picture.
@@ -27,7 +27,7 @@ from gi.repository import Adw, Gio, GLib, Gtk  # noqa: E402
 
 NOW = int(time.time())
 SCALE = int(os.environ.get("GDK_SCALE", "1"))
-MODE = os.environ.get("LUMA_VISUAL_MODE", "light")
+MODE = os.environ.get("SUNO_VISUAL_MODE", "light")
 MINUTE = 60
 
 # (conversation id, name, kind, participant phone, [(offset minutes, direction, body)], unread)
@@ -108,12 +108,12 @@ def main() -> int:
     output = Path(sys.argv[1]); output.mkdir(parents=True, exist_ok=True)
     root = Path(tempfile.mkdtemp(prefix="messages-visual-"))
     os.environ.update(XDG_DATA_HOME=str(root / "data"), XDG_STATE_HOME=str(root / "state"),
-                      XDG_CONFIG_HOME=str(root / "config"), PRAIRIE_EDS_MODE="disabled", LUMA_MESSAGES_AGENT="0")
+                      XDG_CONFIG_HOME=str(root / "config"), PRAIRIE_EDS_MODE="disabled", SUNO_MESSAGES_AGENT="0")
     # The treatment a person chose in Settings, as the kit reads it.
-    gi.require_version("LumaAppearance", "1")
-    from gi.repository import LumaAppearance
-    patch.object(LumaAppearance.SurfacePolicy, "get_has_selection", lambda self: True).start()
-    patch.object(LumaAppearance.SurfacePolicy, "get_effective", lambda self: MODE).start()
+    gi.require_version("SunoAppearance", "1")
+    from gi.repository import SunoAppearance
+    patch.object(SunoAppearance.SurfacePolicy, "get_has_selection", lambda self: True).start()
+    patch.object(SunoAppearance.SurfacePolicy, "get_effective", lambda self: MODE).start()
     from prairie_apps import messages
     from prairie_apps.messages_accounts import Account, AccountStore
     from prairie_apps.messages_backend import MessageStore, MessagingCapability

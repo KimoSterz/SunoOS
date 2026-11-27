@@ -3,7 +3,7 @@
 // arrives, then the steady glow. Showing the pill again (closing a menu or the
 // overview maps it) and re-rendering it neither start the breaths over nor
 // interrupt one in flight.
-// Run: gjs -m notification-breaths-policy.js js/ui/lumaNotificationBeacon.js
+// Run: gjs -m notification-breaths-policy.js js/ui/SunoNotificationBeacon.js
 // (node notification-breaths-policy.js ... works too).
 const gjs = typeof globalThis.ARGV !== 'undefined';
 const args = gjs ? globalThis.ARGV : process.argv.slice(2);
@@ -25,7 +25,7 @@ assert(breaths > 0, 'BREATHS is a count');
 // The method body, run against a stand-in pill.
 const start = source.indexOf('    _breathe() {');
 const end = source.indexOf('\n    }\n', start);
-assert(start >= 0 && end > start, 'lumaNotificationBeacon.js has _breathe()');
+assert(start >= 0 && end > start, 'SunoNotificationBeacon.js has _breathe()');
 const body = source.slice(source.indexOf('{', start) + 1, end);
 const breathe = new Function('Main', 'St', 'Clutter', body);
 

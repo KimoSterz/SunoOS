@@ -16,24 +16,24 @@ gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 from gi.repository import Adw, Gdk, Gio, Gtk  # noqa: E402
 
-from luma_appkit import add_style_sheet, install_appkit, install_lumaui
+from Suno_appkit import add_style_sheet, install_appkit, install_SunoUI
 from .calendar_backend import ALERTS, Event
 from .calendar_editor import format_short_time, format_time, short_date
 
 
-APP_ID = "org.projectluma.Calendar"
+APP_ID = "org.projectSuno.Calendar"
 
 
 def week_start() -> int:
     """The first day of the week, as a Python weekday (0 = Monday).
 
     The locale is the default because that is what the person's system already
-    says; `LUMA_WEEK_START` overrides it for anyone whose habit differs from
+    says; `SUNO_WEEK_START` overrides it for anyone whose habit differs from
     their locale. Every surface in this application reads this one function.
     """
-    if os.environ.get("LUMA_CALENDAR_FIXTURE"):
+    if os.environ.get("SUNO_CALENDAR_FIXTURE"):
         return 0  # v70 always starts on Monday, regardless of host locale
-    override = os.environ.get("LUMA_WEEK_START", "").strip().lower()
+    override = os.environ.get("SUNO_WEEK_START", "").strip().lower()
     names = {"monday": 0, "sunday": 6, "saturday": 5}
     if override in names:
         return names[override]
@@ -111,8 +111,8 @@ class CalendarApplication(Adw.Application):
     def do_startup(self) -> None:
         Adw.Application.do_startup(self)
         install_appkit()
-        install_lumaui()
-        fixture=os.environ.get("LUMA_CALENDAR_FIXTURE")
+        install_SunoUI()
+        fixture=os.environ.get("SUNO_CALENDAR_FIXTURE")
         if fixture:
             from pathlib import Path
             Gtk.IconTheme.get_for_display(Gdk.Display.get_default()).add_search_path(str(Path(fixture).parent/"calendar-v70-data/icons"))
@@ -139,7 +139,7 @@ class CalendarApplication(Adw.Application):
 
 def _install_calendar_style() -> None:
     if Gdk.Display.get_default() is not None:
-        add_style_sheet(os.environ.get("LUMA_CALENDAR_STYLE_PATH", "/usr/share/prairie-core/calendar.css"))
+        add_style_sheet(os.environ.get("SUNO_CALENDAR_STYLE_PATH", "/usr/share/prairie-core/calendar.css"))
 
 
 def main() -> int:

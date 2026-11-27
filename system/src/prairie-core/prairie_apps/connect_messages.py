@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-"""This device's messages and call history, sent to the Luma Hub as change logs.
+"""This device's messages and call history, sent to the Suno Hub as change logs.
 
 Both logs are off until the person turns them on: unlike notes or photos they
 carry who someone talked to and what they said. The Hub seals them at rest with
@@ -79,12 +79,12 @@ def _read_rows(path: Path, query: str) -> list[sqlite3.Row]:
         connection.close()
 
 
-# Luma Messages conversations (ADR-051 §7) never enter this log: the Hub seals
+# Suno Messages conversations (ADR-051 §7) never enter this log: the Hub seals
 # it with a key the Hub holds, which would undo their end-to-end encryption.
 # They live in an account store, never this device's messages.db; a row that
-# carries the Luma transport tag, or a store under the accounts directory, is
+# carries the Suno transport tag, or a store under the accounts directory, is
 # refused here anyway.
-LUMA_TRANSPORT = "luma:"
+SUNO_TRANSPORT = "Suno:"
 
 
 def _account_store(path: Path) -> bool:
@@ -97,7 +97,7 @@ def message_items(path: Path) -> dict[str, dict]:
     if _account_store(path):
         return items
     for row in _read_rows(path, "SELECT uid,address,body,timestamp,direction,state,transport_id FROM messages"):
-        if str(row["transport_id"] or "").startswith(LUMA_TRANSPORT):
+        if str(row["transport_id"] or "").startswith(SUNO_TRANSPORT):
             continue
         stamp = int(row["timestamp"])
         address = _address(row["address"])
@@ -245,7 +245,7 @@ def sync_calls(**kwargs) -> str:
 #
 # Pulled rows live in their own store, never in a device's messages.db or
 # calls.db and never in the paired provider. Messages and Phone read it as a
-# "Luma Cloud" history source; a live provider row always wins in the UI.
+# "Suno Cloud" history source; a live provider row always wins in the UI.
 # Turning a service off deletes only this cache.
 
 MAX_PAGES = 50
@@ -261,7 +261,7 @@ _CACHE_SCHEMA = (
 
 
 def cloud_history_path(environment: dict[str, str] | None = None) -> Path:
-    return _data_home(environment) / "luma/connect/cloud-history.db"
+    return _data_home(environment) / "Suno/connect/cloud-history.db"
 
 
 def _open_cache(environment: dict[str, str] | None, scope: str) -> sqlite3.Connection:
@@ -361,7 +361,7 @@ def forget_cloud_history(kind: str, environment: dict[str, str] | None = None) -
 
 
 def cloud_messages(environment: dict[str, str] | None = None) -> list[dict]:
-    """Read-only 'Luma Cloud' messages from other devices, oldest first, deletions excluded."""
+    """Read-only 'Suno Cloud' messages from other devices, oldest first, deletions excluded."""
     path = cloud_history_path(environment)
     if not path.exists():
         return []

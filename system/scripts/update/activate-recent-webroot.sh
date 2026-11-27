@@ -30,15 +30,15 @@ done
 [ -f "$source_repo/config" ] || fail "publication repository is invalid: $source_repo"
 [ -s "$source_repo/summary" ] && [ -s "$source_repo/summary.sig" ] ||
   fail 'publication repository has no signed summary'
-[ -s "$source_repo/luma/luma-recent.gpg" ] || fail 'publication repository has no public key'
-commit=$(ostree rev-parse --repo="$source_repo" "$LUMA_UPDATE_REF")
+[ -s "$source_repo/Suno/Suno-recent.gpg" ] || fail 'publication repository has no public key'
+commit=$(ostree rev-parse --repo="$source_repo" "$SUNO_UPDATE_REF")
 [[ "$commit" =~ ^[0-9a-f]{64}$ ]] || fail 'Recent does not resolve to a commit'
-[ -s "$source_repo/luma/releases/$commit.json" ] || fail 'release manifest is missing'
-[ -s "$source_repo/luma/releases/$commit.json.asc" ] || fail 'release signature is missing'
+[ -s "$source_repo/Suno/releases/$commit.json" ] || fail 'release manifest is missing'
+[ -s "$source_repo/Suno/releases/$commit.json.asc" ] || fail 'release signature is missing'
 ostree fsck --repo="$source_repo" --quiet
 
 mkdir -p "$webroot/generations"
-exec 9>"$webroot/.luma-activate.lock"
+exec 9>"$webroot/.Suno-activate.lock"
 flock -n 9 || fail 'another webroot activation is active'
 destination="$webroot/generations/$commit"
 partial="$webroot/generations/.$commit.partial"
@@ -58,7 +58,7 @@ if [ ! -d "$destination" ]; then
   trap cleanup EXIT INT TERM
   rsync -aH --delete "${link_dest[@]}" "$source_repo/" "$partial/"
   ostree fsck --repo="$partial" --quiet
-  test "$(ostree rev-parse --repo="$partial" "$LUMA_UPDATE_REF")" = "$commit" ||
+  test "$(ostree rev-parse --repo="$partial" "$SUNO_UPDATE_REF")" = "$commit" ||
     fail 'copied generation resolves an unexpected commit'
   mv "$partial" "$destination"
   trap - EXIT INT TERM

@@ -14,13 +14,13 @@ SOURCE = ROOT / "src/prairie-core/prairie_apps/phone.py"
 CONTROL = ROOT / "src/prairie-core/prairie_apps/phone_control.py"
 BACKEND = ROOT / "src/prairie-core/prairie_apps/phone_backend.py"
 CSS = ROOT / "src/prairie-core/style/phone.css"
-DESKTOP = ROOT / "src/prairie-core/data/org.projectluma.Phone.desktop"
-APPKIT_CSS = ROOT / "src/luma-platform/appkit/luma-appkit.css"
+DESKTOP = ROOT / "src/prairie-core/data/org.projectSuno.Phone.desktop"
+APPKIT_CSS = ROOT / "src/Suno-platform/appkit/Suno-appkit.css"
 DAEMON = ROOT / "src/prairie-core/bin/prairie-phone-daemon"
 SYSTEM = ROOT / "src/prairie-core/prairie_apps/phone_system.py"
 AUDIO_SERVICE = (
     ROOT / "config/mobile/fp6-physical/overlay/usr/libexec/"
-    "luma-fp6-audio-route-service"
+    "Suno-fp6-audio-route-service"
 )
 
 
@@ -59,7 +59,7 @@ class PhoneAppKitContractTests(unittest.TestCase):
     def test_phone_css_never_overrides_shared_parts_or_defines_literal_visuals(self) -> None:
         css = re.sub(r"/\*.*?\*/", "", CSS.read_text(encoding="utf-8"), flags=re.S)
         self.assertNotIn("@define-color", css)
-        self.assertNotRegex(css, r"\.(?:luma|lumaui)-")
+        self.assertNotRegex(css, r"\.(?:Suno|SunoUI)-")
         self.assertNotRegex(css, r"#[0-9a-fA-F]{3,8}|rgba?\(|oklch\(|[0-9]px")
         self.assertNotRegex(css, r"font-(?:size|weight|family)\s*:")
         self.assertTrue(all(selector.strip().startswith(".pn-")
@@ -68,26 +68,26 @@ class PhoneAppKitContractTests(unittest.TestCase):
 
     def test_phone_declares_bounded_shell_status_surface(self) -> None:
         desktop = DESKTOP.read_text(encoding="utf-8")
-        self.assertIn("X-Luma-Status-Surface=deep", desktop)
-        self.assertIn("X-Luma-Status-Surfaces=deep;immersive;", desktop)
-        self.assertNotIn("X-Luma-Status-Color=", desktop)
+        self.assertIn("X-Suno-Status-Surface=deep", desktop)
+        self.assertIn("X-Suno-Status-Surfaces=deep;immersive;", desktop)
+        self.assertNotIn("X-Suno-Status-Color=", desktop)
 
     def test_phone_uses_kit_lucide_glyphs(self) -> None:
         source = SOURCE.read_text(encoding="utf-8")
-        self.assertNotIn("luma-phone-", source)
+        self.assertNotIn("Suno-phone-", source)
         self.assertNotIn("cairo", source.casefold())
         self.assertIn("icons.image(", source)
 
     def test_shell_takes_the_screen_for_a_ringing_call(self):
-        takeover = (ROOT / "src/luma-shell-presentation/incomingCall.js").read_text(encoding="utf-8")
+        takeover = (ROOT / "src/Suno-shell-presentation/incomingCall.js").read_text(encoding="utf-8")
         # Built from the same incoming-call contract the notification list uses.
         self.assertIn("MessageList.isIncomingCallNotification(notification)", takeover)
         self.assertIn("Main.layoutManager.modalDialogGroup", takeover)
         self.assertIn("Shell.ActionMode.LOCK_SCREEN", takeover)
         self.assertIn("'PowerSaveMode', new GLib.Variant('i', 0)", takeover)
-        self.assertIn("new CallTakeover(this)", (ROOT / "src/luma-shell-presentation/presentation.js").read_text(encoding="utf-8"))
+        self.assertIn("new CallTakeover(this)", (ROOT / "src/Suno-shell-presentation/presentation.js").read_text(encoding="utf-8"))
         self.assertIn("incomingCall.js", (ROOT / "scripts/packages/build-gnome-shell.sh").read_text(encoding="utf-8"))
-        for patch in ("0000-luma-fedora-spec.patch", "0292-display-exclusions-and-notification-touch.patch"):
+        for patch in ("0000-Suno-fedora-spec.patch", "0292-display-exclusions-and-notification-touch.patch"):
             self.assertIn("incomingCall.js", (ROOT / "patches/gnome-shell" / patch).read_text(encoding="utf-8"))
 
     def test_daemon_logs_every_call_across_modem_restarts(self):
@@ -113,7 +113,7 @@ class PhoneAppKitContractTests(unittest.TestCase):
 
     def test_incoming_presenter_reuses_phone_and_appkit_surfaces(self) -> None:
         daemon = DAEMON.read_text(encoding="utf-8")
-        self.assertIn("from luma_appkit import Avatar, install_appkit", daemon)
+        self.assertIn("from Suno_appkit import Avatar, install_appkit", daemon)
         self.assertIn('add_css_class("phone-call-surface")', daemon)
         self.assertIn('add_css_class("phone-incoming-icon")', daemon)
         self.assertIn('add_css_class("phone-call-control-icon")', daemon)
@@ -153,7 +153,7 @@ class PhoneAppKitContractTests(unittest.TestCase):
         backend = BACKEND.read_text(encoding="utf-8")
         service = AUDIO_SERVICE.read_text(encoding="utf-8")
         self.assertIn("set_audio_output_route(route)", CONTROL.read_text(encoding="utf-8"))
-        self.assertIn('AUDIO_ROUTE_BUS_NAME = "org.projectluma.AudioRoute1"', backend)
+        self.assertIn('AUDIO_ROUTE_BUS_NAME = "org.projectSuno.AudioRoute1"', backend)
         self.assertEqual(service.count('ROUTES = frozenset({"speaker", "earpiece"})'), 1)
         self.assertNotIn("sudo", service)
         self.assertNotIn("shell=True", service)

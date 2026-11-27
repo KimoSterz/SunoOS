@@ -12,7 +12,7 @@ from .collaboration import CollaborationCache, CollaborationClient, public_name
 from .connect_sync import ConnectError, HubResponseError
 from .tasks_backend import Comment, Task, TaskList
 
-SOURCE_PREFIX = 'luma-shared:'
+SOURCE_PREFIX = 'Suno-shared:'
 def shared_items(snapshot):
     content = snapshot['content']
     return [content['task'], *content.get('steps', []), *content.get('history', [])] if snapshot['kind'] == 'task' else content['tasks']
@@ -26,9 +26,9 @@ def task_content(task):
     # An ICalendar round trip stores Hub accounts as valid CAL-ADDRESS URNs.
     # Keep the collaboration record's account identity, including recurrence
     # successors, rather than treating that URI as a different assignee.
-    if result['assignee'].startswith('urn:luma:account:'):
+    if result['assignee'].startswith('urn:Suno:account:'):
         from urllib.parse import unquote
-        result['assignee'] = unquote(result['assignee'].removeprefix('urn:luma:account:'))
+        result['assignee'] = unquote(result['assignee'].removeprefix('urn:Suno:account:'))
     for field in ('due', 'start', 'completed_at'):
         result[field] = result[field].isoformat() if result[field] else None
     if task.raw:
@@ -55,7 +55,7 @@ def task_component(task):
             if _name(prop) == 'ATTENDEE' and (prop.get_value_as_string() or '').removeprefix('mailto:') == original.assignee:
                 component.remove_property(prop)
         if task.assignee:
-            address = ('mailto:' + task.assignee) if '@' in task.assignee else ('urn:luma:account:' + quote(task.assignee, safe=''))
+            address = ('mailto:' + task.assignee) if '@' in task.assignee else ('urn:Suno:account:' + quote(task.assignee, safe=''))
             prop = ical.Property.new_from_string('ATTENDEE:' + address)
             if task.assignee_name: prop.set_parameter_from_string('CN', task.assignee_name)
             component.add_property(prop)
@@ -64,7 +64,7 @@ def task_component(task):
     for comment in task.comments:
         if (comment.text, comment.author) not in existing:
             prop = ical.Property.new_from_string('COMMENT:' + _escape(comment.text))
-            prop.set_parameter_from_string('X-LUMA-AUTHOR', comment.author or 'Me')
+            prop.set_parameter_from_string('X-SUNO-AUTHOR', comment.author or 'Me')
             component.add_property(prop)
     return component
 
@@ -148,7 +148,7 @@ class CollaborativeTasksRepository:
                 uid = SOURCE_PREFIX + mapping['id']
                 self.shared[uid] = snapshot
                 members = tuple((p['account'], public_name(p)) for p in snapshot['members'] if p['accepted'])
-                added_sources.append(TaskList(uid, snapshot['content']['title'], 'Luma Hub', snapshot['role'] in ('owner', 'edit'), members=members, shared=True,
+                added_sources.append(TaskList(uid, snapshot['content']['title'], 'Suno Hub', snapshot['role'] in ('owner', 'edit'), members=members, shared=True,
                                                commentable=snapshot['role'] in ('owner', 'edit', 'comment')))
                 tasks = shared_items(snapshot)
                 added_records.extend(read_task_content(t, uid, snapshot['comments'], snapshot.get('account', '')) for t in tasks)
@@ -232,7 +232,7 @@ class CollaborativeTasksRepository:
             if isinstance(task.due, datetime) and isinstance(task.start, datetime):
                 changed['start'] = _time(next_due) - (task.due - task.start)
             after = patch_task(before, changed)
-            replace_property(after, 'X-LUMA-REPEAT-ANCHOR', ['X-LUMA-REPEAT-ANCHOR:' + anchor.as_ical_string()])
+            replace_property(after, 'X-SUNO-REPEAT-ANCHOR', ['X-SUNO-REPEAT-ANCHOR:' + anchor.as_ical_string()])
             after.set_due(next_due)
             from .tasks_backend import _modules, value
             _, _, ical = _modules()
@@ -242,7 +242,7 @@ class CollaborativeTasksRepository:
                 after.get_first_property(ical.PropertyKind.DUE_PROPERTY).set_parameter_from_string('TZID', tzid)
             copy = patch_task(before, {'completed': True})
             copy.set_uid(str(uuid.uuid4()))
-            for field in ('RRULE', 'RDATE', 'EXDATE', 'RECURRENCE-ID', 'X-LUMA-REPEAT-ANCHOR'):
+            for field in ('RRULE', 'RDATE', 'EXDATE', 'RECURRENCE-ID', 'X-SUNO-REPEAT-ANCHOR'):
                 replace_property(copy, field, [])
             successor = task_content(read_task(after, task.source_uid))
             archived = task_content(read_task(copy, task.source_uid))
@@ -446,7 +446,7 @@ class CollaborativeTasksRepository:
         ok, components = self.personal.clients[source].get_object_list_sync('#t', None)
         if not ok:
             raise RuntimeError('Could not read the source list. Nothing was moved.')
-        records = [task_content(replace(read_task(c, source), section='')) for c in components or () if value(c, 'X-LUMA-KIND') != 'PROJECT']
+        records = [task_content(replace(read_task(c, source), section='')) for c in components or () if value(c, 'X-SUNO-KIND') != 'PROJECT']
         content = json.loads(json.dumps(target['content']))
         if any(t['uid'] == existing['uid'] for t in records for existing in content['tasks']):
             raise ValueError('The destination already contains a task identity. Nothing was moved.')
@@ -509,7 +509,7 @@ class CollaborativeTasksRepository:
 
 def sync_tasks_collaboration(*, environment=None, http=None):
     from .collaboration_ownership import profile_ready
-    if not profile_ready('org.projectluma.Tasks', environment):
+    if not profile_ready('org.projectSuno.Tasks', environment):
         return 0
     from .app_installs import TASKS, app_environment
     client = CollaborationClient(environment, http)

@@ -5,10 +5,10 @@ import GLib from 'gi://GLib';
 const sleep=ms=>new Promise(resolve=>GLib.timeout_add(GLib.PRIORITY_DEFAULT,ms,()=>{resolve();return GLib.SOURCE_REMOVE;}));
 export class OwnedCompositorInput {
     constructor(out) {
-        if (GLib.get_user_name()!=='luma-gate-browser-opens' ||
-            GLib.get_home_dir()!=='/home/luma-gate-browser-opens' ||
+        if (GLib.get_user_name()!=='Suno-gate-browser-opens' ||
+            GLib.get_home_dir()!=='/home/Suno-gate-browser-opens' ||
             GLib.getenv('WAYLAND_DISPLAY')!=='viola-qa-shm-r1' ||
-            !/^\/tmp\/luma-gate-browser-opens\.[A-Za-z0-9]+\/out$/.test(out) ||
+            !/^\/tmp\/Suno-gate-browser-opens\.[A-Za-z0-9]+\/out$/.test(out) ||
             GLib.getenv('BROWSER_GATE_OUT')!==out)
             throw Error('Owned virtual input is restricted to the disposable Shell fixture');
         this.out=out;this.sequence=0;

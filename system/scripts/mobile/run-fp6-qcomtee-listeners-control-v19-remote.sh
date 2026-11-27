@@ -8,11 +8,11 @@
 set -Eeuo pipefail
 umask 077
 
-stage=/tmp/luma-fingerprint-qcomtee-listeners-v19
+stage=/tmp/Suno-fingerprint-qcomtee-listeners-v19
 firmware_path=/sys/module/firmware_class/parameters/path
 expected_old_firmware_path=/lib/firmware/postmarketos
 expected_model='The Fairphone (Gen. 6)'
-expected_kernel=7.1.2-luma-fp-cma1
+expected_kernel=7.1.2-Suno-fp-cma1
 expected_boot_sha=c6acad3a30d944d59648258eef383c33a3b51ac1148a98ef24256ee4dee61dd8
 expected_config_sha=5bddfee4390b0f66de5709b99282e79ee3787a01749d5cc8d28ea82d6bbed7fe
 expected_installed_qsee_sha=047100c255b64b14ec1565cfc089f9bd0c5eb3a28e67b259f206bc930af39f5b
@@ -21,7 +21,7 @@ expected_qsee_module_sha=1f74052412d9fc34eb581cb7aac0df80d949ca2c6da9bd6e9e70dc2
 expected_qcomtee_module_sha=f4e7699f6a4cfe9aa075600c2c61e43cac3ba7a8f3c28629d82ec2ead37dc675
 expected_supplicant_sha=dd355adb58b1775752cc2ff1172b5e4ec2f5914429a9d0efbe7e8bd871e6085e
 expected_bundle_sha=cf447217e7251b74db542cfaecaa001d0a36603dd1053c38d7298efce73a7f74
-marker=luma-qcomtee-listeners-v19-baseline
+marker=Suno-qcomtee-listeners-v19-baseline
 
 qsee_loaded=false
 qcomtee_loaded=false
@@ -72,7 +72,7 @@ cleanup() {
       printf 'event=qcomtee_listeners_v19_cleanup_error reason=module_still_loaded\n' >&2
       cleanup_status=1
     fi
-    if [[ -d $stage && ! -L $stage && $stage == /tmp/luma-fingerprint-qcomtee-listeners-v19 ]]; then
+    if [[ -d $stage && ! -L $stage && $stage == /tmp/Suno-fingerprint-qcomtee-listeners-v19 ]]; then
       find "$stage" -depth -delete || cleanup_status=1
     else
       printf 'event=qcomtee_listeners_v19_cleanup_error reason=stage_identity\n' >&2
@@ -103,8 +103,8 @@ grep -qw 'androidboot.slot_suffix=_b' /proc/cmdline || fail slot
 runtime_config=$(gzip -dc /proc/config.gz)
 [[ $(sha256sum <<<"$runtime_config" | cut -d' ' -f1) == "$expected_config_sha" ]] || fail runtime_config_hash
 grep -qx 'CONFIG_QCOM_TZMEM_MODE_SHMBRIDGE=y' <<<"$runtime_config" || fail shmbridge_config
-[[ $(sha256sum /usr/lib/modules/7.1.2-luma-fp-cma1/kernel/drivers/tee/qseecom/qseecomtee.ko.zst | cut -d' ' -f1) == "$expected_installed_qsee_sha" ]] || fail installed_qsee_hash
-[[ $(sha256sum /usr/lib/modules/7.1.2-luma-fp-cma1/kernel/drivers/input/finger/focal_finger/focaltech_fp.ko.zst | cut -d' ' -f1) == "$expected_installed_focal_sha" ]] || fail installed_focal_hash
+[[ $(sha256sum /usr/lib/modules/7.1.2-Suno-fp-cma1/kernel/drivers/tee/qseecom/qseecomtee.ko.zst | cut -d' ' -f1) == "$expected_installed_qsee_sha" ]] || fail installed_qsee_hash
+[[ $(sha256sum /usr/lib/modules/7.1.2-Suno-fp-cma1/kernel/drivers/input/finger/focal_finger/focaltech_fp.ko.zst | cut -d' ' -f1) == "$expected_installed_focal_sha" ]] || fail installed_focal_hash
 [[ $(sha256sum "$stage/qseecomtee.ko" | cut -d' ' -f1) == "$expected_qsee_module_sha" ]] || fail qsee_module_hash
 [[ $(sha256sum "$stage/qcomtee-control.ko" | cut -d' ' -f1) == "$expected_qcomtee_module_sha" ]] || fail qcomtee_module_hash
 [[ $(sha256sum "$stage/qsee-supplicant" | cut -d' ' -f1) == "$expected_supplicant_sha" ]] || fail supplicant_hash
@@ -168,28 +168,28 @@ for _ in {1..100}; do
 done
 [[ $listeners_ready == true ]] || fail listener_timeout
 
-insmod "$stage/qcomtee-control.ko" luma_control_identity=1
+insmod "$stage/qcomtee-control.ko" Suno_control_identity=1
 qcomtee_loaded=true
 grep -qw qcomtee /proc/modules || fail qcomtee_module_did_not_load
 [[ -c /dev/tee1 ]] || fail qcomtee_node_missing
 
 new_dmesg=$(dmesg | sed -n "/$marker/,\$p")
 grep -Eq 'qcomtee: QTEE version [0-9]+\.[0-9]+\.[0-9]+' <<<"$new_dmesg" || fail qtee_version
-grep -Fq 'luma-control: privileged client environment accepted' <<<"$new_dmesg" || fail privileged_environment
-grep -Fq 'luma-control: service uid=122 accepted' <<<"$new_dmesg" || fail compatibility_service
-grep -Fq 'luma-control: lookup result=23 app=smplap64' <<<"$new_dmesg" || fail lookup_result
-grep -Eq 'luma-control: identity accepted app=smplap64 distinguished_name=.* elf_bytes=1978456; no TA operation invoked' <<<"$new_dmesg" || fail identity_acceptance
-grep -Fq 'luma-control: control TA unloaded' <<<"$new_dmesg" || fail control_unload
-grep -Fq 'luma-control: complete ta_commands=0 biometric_commands=0' <<<"$new_dmesg" || fail control_complete
-[[ $(grep -c 'luma-control: identity accepted ' <<<"$new_dmesg") -eq 1 ]] || fail identity_count
-! grep -Eq 'luma-control: (.*failed|.*rejected|app unexpectedly preloaded|lookup transport=|reconstruction failed=|load transport=|unload transport=)' <<<"$new_dmesg" || fail control_error
+grep -Fq 'Suno-control: privileged client environment accepted' <<<"$new_dmesg" || fail privileged_environment
+grep -Fq 'Suno-control: service uid=122 accepted' <<<"$new_dmesg" || fail compatibility_service
+grep -Fq 'Suno-control: lookup result=23 app=smplap64' <<<"$new_dmesg" || fail lookup_result
+grep -Eq 'Suno-control: identity accepted app=smplap64 distinguished_name=.* elf_bytes=1978456; no TA operation invoked' <<<"$new_dmesg" || fail identity_acceptance
+grep -Fq 'Suno-control: control TA unloaded' <<<"$new_dmesg" || fail control_unload
+grep -Fq 'Suno-control: complete ta_commands=0 biometric_commands=0' <<<"$new_dmesg" || fail control_complete
+[[ $(grep -c 'Suno-control: identity accepted ' <<<"$new_dmesg") -eq 1 ]] || fail identity_count
+! grep -Eq 'Suno-control: (.*failed|.*rejected|app unexpectedly preloaded|lookup transport=|reconstruction failed=|load transport=|unload transport=)' <<<"$new_dmesg" || fail control_error
 [[ -z $(critical_faults <<<"$new_dmesg") ]] || fail critical_kernel_fault
 [[ $(systemctl is-system-running) == running ]] || fail system_not_running_after_probe
 [[ $(systemctl --failed --no-legend --no-pager | sed '/^[[:space:]]*$/d' | wc -l) -eq 0 ]] || fail failed_units_after_probe
 
 printf '%s\n' '--- qcomtee listeners-control-v19 evidence ---'
 sed -n '1,120p' "$stage/supplicant.log"
-grep -E 'qcomtee: QTEE version|luma-control:' <<<"$new_dmesg"
+grep -E 'qcomtee: QTEE version|Suno-control:' <<<"$new_dmesg"
 printf '%s\n' '--- end qcomtee listeners-control-v19 evidence ---'
 
 stop_supplicant

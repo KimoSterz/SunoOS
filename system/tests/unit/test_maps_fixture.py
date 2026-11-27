@@ -6,10 +6,10 @@ import unittest
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT / "src/luma-maps"))
+sys.path.insert(0, str(ROOT / "src/Suno-maps"))
 
-from luma_maps.fixture import MapsFixture, place_matches  # noqa: E402
-from luma_maps.model import MapState, fixture_state, route_progress  # noqa: E402
+from Suno_maps.fixture import MapsFixture, place_matches  # noqa: E402
+from Suno_maps.model import MapState, fixture_state, route_progress  # noqa: E402
 
 
 class MapsFixtureTests(unittest.TestCase):

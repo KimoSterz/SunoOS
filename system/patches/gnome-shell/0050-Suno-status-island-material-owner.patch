@@ -1,0 +1,59 @@
+From: Project Suno <maintainers@projectSuno.org>
+Subject: [PATCH] shell: restore status island material ownership
+
+The quick-settings actor is not a child inside the separate status material:
+it is the material actor itself.  It therefore carries Suno-shelf-material,
+Suno-status-cluster, and the effective Suno-surface-* class on one actor.
+
+The generic status rules deliberately make an inner status cluster
+transparent, but their descendant selectors do not express this same-actor
+ownership.  Depending on theme cascade and state, the separate status island
+could consequently retain only its stroke while the wallpaper painted through
+its entire body.  The dock did not share the status-cluster class and remained
+filled, leaving the two sibling islands visibly inconsistent.
+
+Name the real owner explicitly in separate mode for all four treatments.
+Connected mode still clears that actor because the common Shelf surface is the
+single material owner there.
+
+---
+ data/theme/Suno-shelf.css | 26 ++++++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
+
+diff --git a/data/theme/Suno-shelf.css b/data/theme/Suno-shelf.css
+--- a/data/theme/Suno-shelf.css
++++ b/data/theme/Suno-shelf.css
+@@ -417,5 +417,31 @@
+ .Suno-surface-glass .Suno-status-cluster:hover,
+ .Suno-surface-glass .Suno-status-cluster:active { background-color: transparent; }
++
++/* In separate mode the quick-settings/status actor is the island's material
++ * owner, not a child inside another material. Match those co-located roles so
++ * the material fill cannot be erased by generic panel-button/status rules. */
++.Suno-shelf-root.Suno-shelf-separate > .Suno-shelf-group >
++.Suno-shelf-actions-island >
++.Suno-shelf-material.Suno-status-cluster.Suno-surface-light {
++  background-color: #f1f2f3; }
++.Suno-shelf-root.Suno-shelf-separate > .Suno-shelf-group >
++.Suno-shelf-actions-island >
++.Suno-shelf-material.Suno-status-cluster.Suno-surface-dark {
++  background-color: #21252b; }
++.Suno-shelf-root.Suno-shelf-separate > .Suno-shelf-group >
++.Suno-shelf-actions-island >
++.Suno-shelf-material.Suno-status-cluster.Suno-surface-frost {
++  background-color: rgba(241, 242, 243, 0.73); }
++.Suno-shelf-root.Suno-shelf-separate > .Suno-shelf-group >
++.Suno-shelf-actions-island >
++.Suno-shelf-material.Suno-status-cluster.Suno-surface-glass {
++  background-color: rgba(255, 255, 255, 0.31); }
++
++/* Connected mode owns one material on the outer Shelf surface. */
++.Suno-shelf-root.Suno-shelf-connected > .Suno-shelf-group >
++.Suno-shelf-actions-island >
++.Suno-shelf-material.Suno-status-cluster {
++  background-color: transparent; }
+ .Suno-surface-light .Suno-status-hover,
+ .Suno-surface-frost .Suno-status-hover { background-color: rgba(25,27,31,0.14); }
+ .Suno-surface-dark .Suno-status-hover,
+-- 
+2.54.0

@@ -4,14 +4,14 @@
 // gesture bar; a pull from the top edge peeks them for a few seconds; leaving
 // fullscreen brings them back. Desktop is unchanged.
 // Run: gjs -m client-fullscreen-bars.js (node client-fullscreen-bars.js works too).
-import {barsStepAside, peekPull} from '../../../src/luma-shell-presentation/layout.js';
+import {barsStepAside, peekPull} from '../../../src/Suno-shell-presentation/layout.js';
 
 const gjs = typeof globalThis.ARGV !== 'undefined';
 const files = gjs ? (await import('gi://GLib')).default : await import('node:fs');
 const read = path => {
-    if (!gjs) return files.readFileSync(new URL(`../../../src/luma-shell-presentation/${path}`, import.meta.url), 'utf8');
+    if (!gjs) return files.readFileSync(new URL(`../../../src/Suno-shell-presentation/${path}`, import.meta.url), 'utf8');
     const here = files.path_get_dirname(files.filename_from_uri(import.meta.url)[0]);
-    const file = files.build_filenamev([here, '..', '..', '..', 'src', 'luma-shell-presentation', path]);
+    const file = files.build_filenamev([here, '..', '..', '..', 'src', 'Suno-shell-presentation', path]);
     return new TextDecoder().decode(files.file_get_contents(file)[1]);
 };
 const fail = message => { throw new Error(message); };

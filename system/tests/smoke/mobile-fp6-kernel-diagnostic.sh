@@ -22,7 +22,7 @@ grep -Fq 'declared_size=$(od -An -t u8 -j 16 -N 8 "$image"' "$builder"
 grep -Fq 'truncate -s "$declared_size" "$image"' "$builder"
 grep -Fq 'gzip -9 -n -c "$image"' "$builder"
 grep -Fq 'e5422fadf556c3f632f7619a23b13d80f0214a2c' "$pmos_builder"
-grep -Fq 'LUMA_PMOS_BUILD_HOST_PROFILE:-cross-x86_64' "$pmos_builder"
+grep -Fq 'SUNO_PMOS_BUILD_HOST_PROFILE:-cross-x86_64' "$pmos_builder"
 grep -Fq 'alpine-minirootfs-20260805-x86_64.tar.gz' "$pmos_builder"
 grep -Fq '5acac12c425a0817c1b6a79bdd5df4c73756fc8dc268eab32f8ba830872b835d' \
   "$pmos_builder"

@@ -22,7 +22,7 @@ test -z "$(git -C "$PRODUCT_SOURCE" status --porcelain --untracked-files=no)"
 python3 - "$CI_SOURCE/config/depot/native-arm-filer-transport.json" > "$CI_OUT/downloads.tsv" <<'PY'
 import json,re,sys
 from urllib.parse import urlsplit
-d=json.load(open(sys.argv[1]));assert d['schema']=='org.projectluma.depot.native-filer-transport/v1'
+d=json.load(open(sys.argv[1]));assert d['schema']=='org.projectSuno.depot.native-filer-transport/v1'
 for key,name,limit in [('runtime_archive','runtime-input.tar',8*1024**3),('filer_archive','filer-input.tar',256*1024**2)]:
     r=d[key];assert set(r)=={'url','sha256','bytes'}
     assert re.fullmatch('[a-f0-9]{64}',r.get('sha256') or '') and type(r.get('bytes')) is int and 0<r['bytes']<=limit
@@ -39,14 +39,14 @@ while IFS=$'\t' read -r name url digest bytes; do
   mv --no-clobber "$CI_INPUTS/$name.part" "$CI_INPUTS/$name"
 done < "$CI_OUT/downloads.tsv"
 # Match the maintained desktop-depot worker sandbox, limited to this job.
-profile=$RUNNER_TEMP/luma-native-filer.apparmor
-name=luma-native-filer-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT
+profile=$RUNNER_TEMP/Suno-native-filer.apparmor
+name=Suno-native-filer-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT
 cleanup() {
   if [ -s "$CI_OUT/container-id" ]; then
     local id
     id=$(cat "$CI_OUT/container-id")
     [[ "$id" =~ ^[a-f0-9]{64}$ ]]
-    test "$(docker inspect --format '{{ index .Config.Labels "org.projectluma.native-filer-run" }}' "$id")" = "$GITHUB_RUN_ID:$GITHUB_RUN_ATTEMPT"
+    test "$(docker inspect --format '{{ index .Config.Labels "org.projectSuno.native-filer-run" }}' "$id")" = "$GITHUB_RUN_ID:$GITHUB_RUN_ATTEMPT"
     docker inspect --format '{{json .State}}' "$id" > "$HOST_OUT/CONTAINER-BEFORE-CLEANUP.json"
     local stop_status=0
     timeout --signal=TERM --kill-after=2s 15s docker stop -t 10 "$id" > "$HOST_OUT/container-stop.txt" 2>&1 || stop_status=$?
@@ -67,7 +67,7 @@ trap 'exit 143' TERM
 trap 'exit 130' INT
 cat > "$profile" <<'APPARMOR'
 abi <abi/4.0>,
-profile luma-native-filer flags=(unconfined) {
+profile Suno-native-filer flags=(unconfined) {
   userns,
 }
 APPARMOR
@@ -76,10 +76,10 @@ cpus=$(python3 -c 'import os; a=sorted(os.sched_getaffinity(0))[:4]; assert a; p
 image=registry.fedoraproject.org/fedora@sha256:22dbf85bb441d15ebec58522f98636699b4dc722d89f19a3f01c8ed382695b57
 status=0
 docker run --name "$name" --cidfile "$CI_OUT/container-id" \
-  --label "org.projectluma.native-filer-run=$GITHUB_RUN_ID:$GITHUB_RUN_ATTEMPT" \
+  --label "org.projectSuno.native-filer-run=$GITHUB_RUN_ID:$GITHUB_RUN_ATTEMPT" \
   --cpuset-cpus "$cpus" --cpus=4 --memory=4g --memory-swap=4g --pids-limit=2048 \
   --cap-add SYS_ADMIN --cap-add NET_ADMIN --device /dev/fuse \
-  --security-opt apparmor=luma-native-filer --security-opt seccomp=unconfined \
+  --security-opt apparmor=Suno-native-filer --security-opt seccomp=unconfined \
   --security-opt systempaths=unconfined \
   --env "PRODUCT_SOURCE=$PRODUCT_SOURCE" --env "CI_SOURCE=$CI_SOURCE" \
   --env "CI_OUT=$CI_OUT" --env "CI_INPUTS=$CI_INPUTS" --env "DEPOT_ROOT=$DEPOT_ROOT" \

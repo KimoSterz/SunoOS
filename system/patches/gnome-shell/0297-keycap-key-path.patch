@@ -1,4 +1,4 @@
-From: Luma Developers
+From: Suno Developers
 Subject: [PATCH] Keycap key path: no stall, commit at once, press-order input
 
 The on-screen keyboard's key path rebuilt after an on-device investigation
@@ -533,7 +533,7 @@ diff --git a/js/ui/keyboard.js b/js/ui/keyboard.js
              this.keyButton.connect('notify::allocation',
 @@ -1222,6 +1238,8 @@ const EmojiSelection = GObject.registerClass({
  const HUNSPELL_DIRS = ['/usr/share/hunspell', '/usr/share/myspell'];
- const LEARNED_FILE = GLib.build_filenamev([GLib.get_user_data_dir(), 'luma', 'keycap-words.json']);
+ const LEARNED_FILE = GLib.build_filenamev([GLib.get_user_data_dir(), 'Suno', 'keycap-words.json']);
  let sharedSuggester = null;
 +// The loaded vocabulary, once ready: key hit testing reads it synchronously.
 +let readySuggester = null;
@@ -1410,11 +1410,11 @@ diff --git a/js/ui/keyboard.js b/js/ui/keyboard.js
          if (!this._preview) {
              // Painted only: tracked chrome would recompute the input region
 -            // on every key press.
--            this._preview = new St.Label({style_class: 'luma-keycap-preview', visible: false});
+-            this._preview = new St.Label({style_class: 'Suno-keycap-preview', visible: false});
 -            Main.layoutManager.uiGroup.add_child(this._preview);
 +            // on every key press. Its variant is set here and on theme
 +            // changes, never per press (a class change restyles it).
-+            this._preview = new St.Label({style_class: 'luma-keycap-preview', opacity: 0});
++            this._preview = new St.Label({style_class: 'Suno-keycap-preview', opacity: 0});
 +            setKeycapVariantClass(this._preview);
 +            uiGroup.add_child(this._preview);
 +            this._previewSize = null;
@@ -1617,7 +1617,7 @@ diff --git a/js/ui/keyboard.js b/js/ui/keyboard.js
 +        if (!monitor)
 +            return;
 +        if (!this._reserve) {
-+            this._reserve = new St.Widget({name: 'keyboardReserve', style_class: 'luma-keycap-reserve'});
++            this._reserve = new St.Widget({name: 'keyboardReserve', style_class: 'Suno-keycap-reserve'});
 +            Main.layoutManager.keyboardBox.get_parent().insert_child_below(this._reserve,
 +                Main.layoutManager.keyboardBox);
 +        }
@@ -1762,7 +1762,7 @@ diff --git a/js/ui/keyboard.js b/js/ui/keyboard.js
 +        // Text is sent the moment a key is released, at default priority, as
 +        // one input-method commit (with its deletion) per key. Mutter sends
 +        // the text-input "done" from an idle at CLUTTER_PRIORITY_EVENTS + 1;
-+        // a Mutter without the Luma text-input patch lets a second commit in
++        // a Mutter without the Suno text-input patch lets a second commit in
 +        // the same main-loop turn replace the first (mutter#5087), so a
 +        // second key in one turn goes right after that done
 +        // (CLUTTER_PRIORITY_EVENTS + 2), never at idle priority, where a busy

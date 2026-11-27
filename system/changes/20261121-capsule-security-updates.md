@@ -1,7 +1,7 @@
 ---
 type: feature
 component: Valet
-packages: [luma-application-installer]
+packages: [Suno-application-installer]
 highlight: true
 ---
 Summary: Security updates for apps installed from a file

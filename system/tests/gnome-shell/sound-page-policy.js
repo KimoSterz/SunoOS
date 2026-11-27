@@ -2,9 +2,9 @@
 // Quick Options' Sound page (0360): which outputs are chips, which apps are
 // playing rows and what each says, how tall the list is, and that the page,
 // the St media row and the TV panel are wired to the shared mixer model.
-// Run: gjs -m sound-page-policy.js js/ui/lumaPresentation/soundPageModel.js \
-//        js/ui/lumaPresentation/mediaRowTokens.js js/ui/lumaPresentation/soundPage.js \
-//        js/ui/lumaPresentation/mediaRow.js js/ui/lumaPresentation/tvQuickPanel.js \
+// Run: gjs -m sound-page-policy.js js/ui/SunoPresentation/soundPageModel.js \
+//        js/ui/SunoPresentation/mediaRowTokens.js js/ui/SunoPresentation/soundPage.js \
+//        js/ui/SunoPresentation/mediaRow.js js/ui/SunoPresentation/tvQuickPanel.js \
 //        js/ui/status/volume.js js/ui/quickSettings.js
 // (node sound-page-policy.js ... works too).
 const gjs = typeof globalThis.ARGV !== 'undefined';
@@ -52,19 +52,19 @@ assert(!withAirPlay.more && same(withAirPlay.chips.map(o => o.label ?? o.name),
     'up to four: a nearby AirPlay speaker is a chip; one out of reach or unsupported is not');
 assert(same(M.outputChips(four, nearby).chips.map(o => o.name), ['Speakers', 'WH-1000XM5', 'Studio monitors']) &&
     M.outputChips(four, nearby).more, 'a connected speaker is listed once, and a fifth entry brings More');
-assert(M.outputGlyph({kind: 'headphones'}) === 'lumaui-headphones-symbolic' &&
-    M.outputGlyph({kind: 'usb'}) === 'lumaui-speaker-symbolic' &&
-    M.outputGlyph({kind: 'airplay'}) === 'lumaui-airplay-symbolic' &&
-    M.outputGlyph({kind: 'display'}) === 'lumaui-monitor-symbolic' &&
-    M.outputGlyph({kind: 'speakers'}) === 'lumaui-volume-2-symbolic' &&
-    M.outputGlyph({}) === 'lumaui-volume-2-symbolic', 'each kind of output has its Lucide glyph');
+assert(M.outputGlyph({kind: 'headphones'}) === 'SunoUI-headphones-symbolic' &&
+    M.outputGlyph({kind: 'usb'}) === 'SunoUI-speaker-symbolic' &&
+    M.outputGlyph({kind: 'airplay'}) === 'SunoUI-airplay-symbolic' &&
+    M.outputGlyph({kind: 'display'}) === 'SunoUI-monitor-symbolic' &&
+    M.outputGlyph({kind: 'speakers'}) === 'SunoUI-volume-2-symbolic' &&
+    M.outputGlyph({}) === 'SunoUI-volume-2-symbolic', 'each kind of output has its Lucide glyph');
 assert(M.outputLabel({label: 'Speakers', description: 'Analog Output'}) === 'Speakers',
     'a chip reads the label, never the card or profile');
 
 // Playing: one row per app with a stream; never the silent other sounds.
 const apps = [
     {id: '@system', kind: 'system', listed: false, other: true},
-    {id: 'org.projectluma.Phone', kind: 'app', listed: false, other: true, name: 'Phone'},
+    {id: 'org.projectSuno.Phone', kind: 'app', listed: false, other: true, name: 'Phone'},
     {id: 'tide', kind: 'app', listed: true, name: 'Tide', player: 'p', title: 'God Only Knows', playing: true},
     {id: 'web', kind: 'app', listed: true, name: 'YouTube', player: 'p', title: 'Synth', playing: false,
         output: 'WH-1000XM5'},
@@ -81,7 +81,7 @@ assert(M.playingCount([]) === 0, 'nothing playing counts nothing');
 const words = {muted: 'Muted', paused: 'Paused', on: name => `on ${name}`};
 const outputs = [out('Speakers', {default: true}), out('WH-1000XM5')];
 assert(M.rowTitle(rows[0]) === 'God Only Knows', 'the title is the player\'s');
-assert(M.rowTitle({name: 'Viola', player: 'p', title: ''}, 'Luma launch film') === 'Luma launch film',
+assert(M.rowTitle({name: 'Viola', player: 'p', title: ''}, 'Suno launch film') === 'Suno launch film',
     'a player without a title is named by the window');
 assert(M.rowTitle(rows[2], 'A window') === 'Game', 'an app without a player is its own name');
 assert(M.rowLine(rows[0], outputs, words) === 'Tide', 'under a playing title: the app');
@@ -126,7 +126,7 @@ assert(!/watchLevels|timeout_add|setInterval/.test(page) && !/timeout_add|setInt
     'the page and its rows watch no levels and run no timers');
 assert(/master\.bind_property\('value', slider, 'value',\s*GObject\.BindingFlags\.SYNC_CREATE \| GObject\.BindingFlags\.BIDIRECTIONAL\)/.test(page),
     'the master pill is the main page\'s volume, both ways (volume keys move it)');
-assert(/new FillSlider\(0\)/.test(page) && /'lumaui-filled-slider'/.test(page), 'the master is the shared filled level');
+assert(/new FillSlider\(0\)/.test(page) && /'SunoUI-filled-slider'/.test(page), 'the master is the shared filled level');
 assert(/Model\.playingRows\(this\._mixer\.applications\)/.test(page), 'rows are the playing apps');
 assert(/this\._playing\.visible = any;\s*this\._nothing\.visible = !any;/.test(page),
     'nothing playing: no label or list, one quiet line');
@@ -140,7 +140,7 @@ assert(/row\.connect\('play-pause', \(\) => this\._mixer\.playPause\(app\.id\)\)
     'a row\'s play key, artwork and badge reach the mixer');
 assert(/canPlayPause: !!\(app\.can_play \|\| app\.can_pause\)/.test(page), 'no player, no play key');
 
-// The St row reads the LumaUI media row's tokens and answers the keys.
+// The St row reads the SunoUI media row's tokens and answers the keys.
 assert(/import \{mediaRow as tokens\} from '\.\/mediaRowTokens\.js';/.test(row), 'the St row is drawn from the tokens');
 assert(tokens.compact.art === 40 && tokens.compact.badge === 17 && tokens.compact.play === 32 &&
     tokens.compact.row === 60 && tokens.touch.row === 64 && tokens.touch.art === 44 &&
@@ -155,15 +155,15 @@ assert(/press\(this\._badge, \(\) => this\.emit\('mute-toggled', !this\._state\.
 
 // The model and the sheet in status/volume.js.
 assert(/const MIXER_VERSION = 3;/.test(volume), 'the page needs interface version 3');
-assert(!/AppMixerRow|AppMixerSection|luma-app-mixer/.test(volume), 'the old rows are gone');
-assert(/this\.menu\._lumaPlainPage = true;/.test(volume) && /new SoundPage\(\{/.test(volume), 'the sheet is the Sound page');
-assert(/this\.menu\._lumaBack = \(\) => \{/.test(volume), 'Back leaves the full output list first');
+assert(!/AppMixerRow|AppMixerSection|Suno-app-mixer/.test(volume), 'the old rows are gone');
+assert(/this\.menu\._SunoPlainPage = true;/.test(volume) && /new SoundPage\(\{/.test(volume), 'the sheet is the Sound page');
+assert(/this\.menu\._SunoBack = \(\) => \{/.test(volume), 'Back leaves the full output list first');
 assert(/this\._deviceSection\.actor\.visible = !service;/.test(volume),
     'without the service the sheet is the output list');
 assert(/Util\.spawn\(\['gnome-control-center', 'sound-mixer'\]\)/.test(volume), 'the link opens Settings\' Volume mixer');
-assert(/_lumaBack\?\.\(\)/.test(quickSettings) && /this\._pageMeta/.test(quickSettings) &&
-    /menu\._lumaPageOpened\?\.\(\{/.test(quickSettings), 'the page host asks the page');
-assert(/handleEscape\(\) \{[\s\S]*?if \(!menu\._lumaBack\?\.\(\)\)\s*menu\.close\(\);\s*return true;/.test(quickSettings),
+assert(/_SunoBack\?\.\(\)/.test(quickSettings) && /this\._pageMeta/.test(quickSettings) &&
+    /menu\._SunoPageOpened\?\.\(\{/.test(quickSettings), 'the page host asks the page');
+assert(/handleEscape\(\) \{[\s\S]*?if \(!menu\._SunoBack\?\.\(\)\)\s*menu\.close\(\);\s*return true;/.test(quickSettings),
     'Esc steps out of the output list, then back to the main page');
 assert(/_renderAll\(outputs\)/.test(page) && /Model\.outputLabel\(output\)/.test(page) && /output\.detail/.test(page),
     'the full output list reads the same labels, with how each connects');

@@ -1,0 +1,18 @@
+/* SPDX-License-Identifier: Apache-2.0 */
+
+/* Keep the public component sheet independently loadable, then select the
+ * Glass palette at the same provider priority. */
+@import url("Suno-appkit.css");
+@import url("Suno-appkit-glass-tokens.css");
+
+/* Ink-filled controls (play, the primary button) print their label in the
+ * surface colour. On frost and glass the surface roles are translucent layers,
+ * so a label in one would let the dark plate through; it takes the paper the
+ * layers stand for instead. */
+.Suno-play,
+.Suno-app-window button.Suno-play,
+.Suno-application-window button.Suno-play,
+.Suno-button.primary,
+button.Suno-media-play {
+  color: #fbfbfa;
+}

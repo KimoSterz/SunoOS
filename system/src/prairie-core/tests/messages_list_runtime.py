@@ -56,7 +56,7 @@ class Provider:
 
 def main() -> int:
     root = Path(tempfile.mkdtemp(prefix="messages-list-"))
-    os.environ.update(XDG_DATA_HOME=str(root / "data"), XDG_STATE_HOME=str(root / "state"), LUMA_MESSAGES_AGENT="0",
+    os.environ.update(XDG_DATA_HOME=str(root / "data"), XDG_STATE_HOME=str(root / "state"), SUNO_MESSAGES_AGENT="0",
                       PRAIRIE_EDS_MODE="disabled")
     from prairie_apps import messages
     from prairie_apps.messages_accounts import Account, AccountStore
@@ -126,7 +126,7 @@ def main() -> int:
         for address, kind in expected.items():
             if kinds[address] != kind:
                 failures.append(f"{address}: avatar {kinds[address]}, expected {kind}")
-        initials = [w.get_label() for w in descendants(rows["+15125550150"]) if w.has_css_class("luma-avatar-initials")]
+        initials = [w.get_label() for w in descendants(rows["+15125550150"]) if w.has_css_class("Suno-avatar-initials")]
         if initials != ["PR"]:
             failures.append(f"Dr. Priya Raman's initials: {initials}")
 
@@ -186,7 +186,7 @@ def main() -> int:
             failures.append(f"the menu is not anchored at the pointer: {menu.get_visible()} {rectangle.x},{rectangle.y}")
         if menu.get_halign() != Gtk.Align.START:
             failures.append("the menu is centred on the pointer instead of opening from it")
-        if not menu.has_css_class("luma-menu-popover"):
+        if not menu.has_css_class("Suno-menu-popover"):
             failures.append("the row menu is not the kit menu")
         menu.popdown()
         pump(0.3)

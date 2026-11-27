@@ -199,12 +199,12 @@ def main():
     mount = json.loads(subprocess.check_output(["findmnt", "-J", "-M", str(root), "-o", "SOURCE,FSTYPE,UUID,OPTIONS"]))["filesystems"][0]
     if mount["uuid"] != args.expected_uuid or mount["fstype"] != "ext4" or "rw" not in mount["options"].split(","):
         raise SystemExit("card UUID/type/read-write mount does not match")
-    deployments = list((root / "ostree/deploy/luma/deploy").glob("*.0"))
+    deployments = list((root / "ostree/deploy/Suno/deploy").glob("*.0"))
     if len(deployments) != 1 or not deployments[0].is_dir() or deployments[0].is_symlink():
         raise SystemExit("expected exactly one deployed system")
     deployment = deployments[0]
     identity = (deployment / "usr/lib/os-release").read_text()
-    if "IMAGE_ID=luma-mobile-titan2e\n" not in identity:
+    if "IMAGE_ID=Suno-mobile-titan2e\n" not in identity:
         raise SystemExit("not a Titan mobile deployment")
     # No account secrets are read; the original SSH host identity is retained.
     if not (deployment / "usr/bin/python3").exists() or not (deployment / "usr/sbin/sshd").is_file():

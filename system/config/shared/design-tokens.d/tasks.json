@@ -1,6 +1,6 @@
 {
   "_source": "Simulator v71 .tkplanb line5195: fixed warm gradient and shadow in both appearances.",
-  "lumaui": {
+  "SunoUI": {
     "colors": {
       "light": {
         "task_plan_start": "oklch(0.55 0.16 45)",

@@ -45,7 +45,7 @@ def no_mmcli(_arguments):
 NO_MODEM = ModemMessagingTransport(runner=no_mmcli).inspect()
 assert not NO_MODEM.available and 'Cellular messaging is unavailable' not in NO_MODEM.reason, NO_MODEM
 
-out = Path(os.environ['LUMA_MESSAGES_CONNECT_UI_OUTPUT']); out.mkdir(parents=True, exist_ok=True)
+out = Path(os.environ['SUNO_MESSAGES_CONNECT_UI_OUTPUT']); out.mkdir(parents=True, exist_ok=True)
 app = MessagesApplication(); assert app.register(None)
 ADDRESS = '+12025550140'
 results = []
@@ -54,7 +54,7 @@ for width in (920, 360):
         root = Path(temporary)
         os.environ['XDG_DATA_HOME'] = str(root / 'data'); os.environ['HOME'] = str(root)
         store = MessageStore(); store.add(ADDRESS, 'A conversation kept on this computer', direction='incoming', timestamp=100); store.close()
-        os.environ['LUMA_PRESENTATION_MODE'] = 'fullscreen-mobile' if width == 360 else 'windowed'
+        os.environ['SUNO_PRESENTATION_MODE'] = 'fullscreen-mobile' if width == 360 else 'windowed'
         window = MessagesWindow(app)
         assert [service.label for service in window.services] == ['This device'], window.services
         window.native_service.transport = Modem(NO_MODEM)

@@ -11,16 +11,16 @@
 set -Eeuo pipefail
 umask 077
 
-name=luma-stock-android-c1
+name=Suno-stock-android-c1
 lxc_path=/var/lib/lxc
-state=/var/lib/luma/stock-android-container1
+state=/var/lib/Suno/stock-android-container1
 config=$lxc_path/$name/config
 manifest=$state/manifest.json
-stage=/var/tmp/luma-stock-qrel1695-keymint-gate1
+stage=/var/tmp/Suno-stock-qrel1695-keymint-gate1
 firmware_path=/sys/module/firmware_class/parameters/path
-protected_state=/var/lib/luma/fingerprint/qsee-state
-adapter_dir=/var/tmp/luma-fingerprint-overlay-v1/adapter
-expected_kernel=7.1.2-luma-fp-ims1
+protected_state=/var/lib/Suno/fingerprint/qsee-state
+adapter_dir=/var/tmp/Suno-fingerprint-overlay-v1/adapter
+expected_kernel=7.1.2-Suno-fp-ims1
 expected_manifest_sha=65a317645db47fb0dfa7b2b8f3ee9b923fa03a543ece43deb158c2e0c14ebfd8
 expected_config_sha=db477c4d10c1511d1444c91a093fe8c4cca3a506a263f5177b33c26b23c1ae6f
 expected_module_sha=2438afb551a6c53b497ab588ab9bfefd4722a635c9ad3e4ff93e51108f2acf39
@@ -49,9 +49,9 @@ die() { printf 'error: %s\n' "$*" >&2; exit 1; }
 # stock listener graph inside C1.
 die 'retired split-listener gate; use run-fp6-stock-android-container-c1-stock-qseecomd-remote.sh after a clean reboot'
 
-check_luma_owners() {
+check_Suno_owners() {
   local service
-  for service in ModemManager luma-fp6-cellular-link luma-fp6-imsd; do
+  for service in ModemManager Suno-fp6-cellular-link Suno-fp6-imsd; do
     systemctl is-active --quiet "$service" || return 1
   done
 }
@@ -86,8 +86,8 @@ cleanup() {
     wait "$kernel_follow_pid" 2>/dev/null || true
   fi
   if [[ -d $run_dir ]]; then
-    systemctl is-active ModemManager luma-fp6-cellular-link luma-fp6-imsd \
-      >"$run_dir/luma-owners-after.log" 2>&1 || true
+    systemctl is-active ModemManager Suno-fp6-cellular-link Suno-fp6-imsd \
+      >"$run_dir/Suno-owners-after.log" 2>&1 || true
     printf 'result=%s\ncontainer_started=%s\nqcomtee_module_loaded=%s\nqseecom_module_loaded=%s\n' \
       "$result" "$container_started" "$qcomtee_module_loaded" \
       "$qseecom_module_loaded" >"$run_dir/result.env"
@@ -104,7 +104,7 @@ trap cleanup EXIT INT TERM HUP
 grep -qw 'androidboot.slot_suffix=_b' /proc/cmdline || die 'device is not on slot b'
 [[ $(lxc-info -P "$lxc_path" -n "$name" -sH 2>/dev/null || printf STOPPED) == STOPPED ]] ||
   die 'container is already active'
-check_luma_owners || die 'a Luma modem owner is unexpectedly inactive'
+check_Suno_owners || die 'a Suno modem owner is unexpectedly inactive'
 ! grep -qw qseecomtee /proc/modules || die 'qseecomtee is already loaded'
 ! grep -qw qcomtee /proc/modules || die 'qcomtee is already loaded'
 ! pgrep -x qsee-supplicant >/dev/null || die 'qsee-supplicant is already running'
@@ -149,8 +149,8 @@ sha256sum "$manifest" "$config" "$stage/qcomtee.ko" "$stage/qseecomtee.ko" \
   "$stage/qsee-supplicant" "$stage/firmware/keymaster64.elf" \
   "$adapter_dir/libminkdescriptor.so" "$adapter_dir/libdmabufheap.so" \
   >"$run_dir/input-hashes.log"
-systemctl is-active ModemManager luma-fp6-cellular-link luma-fp6-imsd \
-  >"$run_dir/luma-owners-before.log"
+systemctl is-active ModemManager Suno-fp6-cellular-link Suno-fp6-imsd \
+  >"$run_dir/Suno-owners-before.log"
 stdbuf -oL dmesg --follow-new --raw >"$run_dir/kernel-new.log" &
 kernel_follow_pid=$!
 
@@ -262,7 +262,7 @@ find "/proc/$init_pid/root/dev" -xdev -type b -print -quit | grep -q . &&
 [[ ! -e /proc/$init_pid/root/dev/bsg/0:0:0:49476 ]] || die 'container exposes RPMB device'
 lxc-attach -P "$lxc_path" -n "$name" --clear-env -- /system/bin/ps -A -o PID,UID,NAME \
   >"$run_dir/processes.log" 2>&1 || true
-check_luma_owners || die 'a Luma modem owner changed during KeyMint gate'
+check_Suno_owners || die 'a Suno modem owner changed during KeyMint gate'
 
 lxc-stop -P "$lxc_path" -n "$name" -k
 container_started=false
@@ -286,11 +286,11 @@ if grep -Eiq 'kernel panic|Oops:|(^|[[:space:]<])BUG:|hangcheck|GMU.*(timeout|[[
   "$run_dir/kernel-new.log"; then
   die 'kernel/TEE/GPU/GMU fault observed'
 fi
-check_luma_owners || die 'a Luma modem owner did not survive teardown'
+check_Suno_owners || die 'a Suno modem owner did not survive teardown'
 result=pass
 printf 'C1_KEYMINT_GATE=true\n'
 printf 'PRIVATE_TEE_CLIENT_ONLY=true\n'
 printf 'PRIVILEGED_TEE_NODE_EXPOSED=false\n'
 printf 'MODEM_AUDIO_GPU_EXPOSED=false\n'
-printf 'LUMA_MODEM_OWNERS_UNCHANGED=true\n'
+printf 'SUNO_MODEM_OWNERS_UNCHANGED=true\n'
 printf 'EVIDENCE_DIR=%s\n' "$run_dir"

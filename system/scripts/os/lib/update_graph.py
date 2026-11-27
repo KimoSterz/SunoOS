@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""Validate a Luma update graph before it is signed (ADR-030 section 5).
+"""Validate a Suno update graph before it is signed (ADR-030 section 5).
 
   update_graph.py validate --graph FILE --channel C --arch A
                   [--releases FILE] [--previous FILE] [--max-age-days N]
 
 --releases is a JSON object {commit: version} of the releases the channel
 repository actually publishes; every graph release must be one of them with
-the same version, so the graph can never point devices at a commit Luma did
+the same version, so the graph can never point devices at a commit Suno did
 not publish. --previous is the last signed graph for the channel; the new
 graph must be newer and must not silently drop a release that is still
 published. Exit status 0 means the graph may be signed; problems are printed
@@ -30,11 +30,11 @@ RELEASE_REQUIRED = {
     "deadend_reason", "barrier", "importance", "notes_url", "summary",
     "download_bytes_estimate",
 }
-# display_name (ADR-040): the release's name as people see it. luma-update
+# display_name (ADR-040): the release's name as people see it. Suno-update
 # never rejected unknown release keys, so every installed client accepts it.
 # device_holds: [{"hardware_target", "reason"}], device classes (devices.tsv)
 # this release is not offered to until their own check passes. Generic graphs
-# only. luma-update before the hold-aware client ignores the key, so it parses
+# only. Suno-update before the hold-aware client ignores the key, so it parses
 # everywhere, but only clients with graph.DeviceHold honor it.
 RELEASE_OPTIONAL = {"rollback_to", "display_name", "device_holds"}
 TARGET = re.compile(r"^[a-z0-9][a-z0-9,._-]{0,63}$")
@@ -125,9 +125,9 @@ def validate(graph, channel, arch, releases=None, previous=None, max_age_days=14
         problems.append("releases must be a list")
         entries = []
     if len(entries) > 512:
-        problems.append("a graph may list at most 512 releases (luma-update's limit)")
+        problems.append("a graph may list at most 512 releases (Suno-update's limit)")
     if len(json.dumps(graph).encode()) > 1024 * 1024:
-        problems.append("the graph is larger than 1 MiB (luma-update's limit)")
+        problems.append("the graph is larger than 1 MiB (Suno-update's limit)")
 
     seen_versions, seen_commits = set(), set()
     ordered = []
@@ -146,7 +146,7 @@ def validate(graph, channel, arch, releases=None, previous=None, max_age_days=14
         version = release.get("version")
         commit = release.get("commit")
         if not isinstance(version, str) or not VERSION.match(version):
-            problems.append(f"{where}.version is not a Luma OS version")
+            problems.append(f"{where}.version is not a Suno OS version")
         elif version in seen_versions:
             problems.append(f"{where}.version {version} appears twice")
         else:
@@ -195,9 +195,9 @@ def validate(graph, channel, arch, releases=None, previous=None, max_age_days=14
         if not isinstance(summary, str) or len(summary) > 500 or any(ord(c) < 32 for c in summary):
             problems.append(f"{where}.summary must be one line of at most 500 characters")
         name = release.get("display_name")
-        if "display_name" in release and (not isinstance(name, str) or not name.startswith("Luma")
+        if "display_name" in release and (not isinstance(name, str) or not name.startswith("Suno")
                                           or len(name) > 200 or any(ord(c) < 32 for c in name)):
-            problems.append(f"{where}.display_name must be one line naming Luma, at most 200 characters")
+            problems.append(f"{where}.display_name must be one line naming Suno, at most 200 characters")
         size = release.get("download_bytes_estimate")
         if isinstance(size, bool) or not isinstance(size, int) or size < 0:
             problems.append(f"{where}.download_bytes_estimate must be a non-negative integer")
@@ -206,7 +206,7 @@ def validate(graph, channel, arch, releases=None, previous=None, max_age_days=14
         rollback = release.get("rollback_to")
         if rollback is not None:
             # {"version", "commit"} naming an older release in this graph
-            # (docs/os/luma-update.md, "Graph addition: rollback_to").
+            # (docs/os/Suno-update.md, "Graph addition: rollback_to").
             if (not isinstance(rollback, dict) or set(rollback.keys()) != {"version", "commit"}
                     or not isinstance(rollback.get("commit"), str) or not SHA256.match(rollback["commit"])
                     or not isinstance(rollback.get("version"), str) or not VERSION.match(rollback["version"])):

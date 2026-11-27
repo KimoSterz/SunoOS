@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
 #
-# Upload the switched webroot generation to Luma's object storage under the
+# Upload the switched webroot generation to Suno's object storage under the
 # os/ prefix, the same bucket and the same ordering rules as Depot's
 # scripts/depot/sync-remote.sh (ADR-028 section 12): content-addressed objects
 # and deltas first and never overwritten, then everything that points at
@@ -10,13 +10,13 @@
 #   sync-to-cdn.sh [--apply] [--only repo|preview|graph|keys|media|media-tree]...
 #                  [--media FILE]... [--prune]
 #
-# media-tree uploads $LUMA_OS_ROOT/publish/media, the installer media
+# media-tree uploads $SUNO_OS_ROOT/publish/media, the installer media
 # scripts/os/nightly-media.sh publishes (config/os/media.env prefixes).
 #
 # Default is a dry run. Two origins are supported, chosen by which root-only
 # (0600) file exists:
 #
-# * $LUMA_OS_SECRETS/dl-origin.env: the dl.simplyluma.com origin server over
+# * $SUNO_OS_SECRETS/dl-origin.env: the dl.simplyluma.com origin server over
 #   rsync+SSH (restricted to its web root). Keys: DL_RSYNC_DEST (user@host),
 #   DL_SSH_KEY (private key path), DL_HTTP_ORIGIN (http://host of the origin,
 #   for verification), DL_HOST_HEADER (dl.simplyluma.com), DL_PREVIEW=1 only
@@ -24,8 +24,8 @@
 #   After uploading, the summaries served through the origin must match the
 #   local ones byte for byte, the channel heads' commits must be fetchable and
 #   signed, and sampled objects must be present.
-# * LUMA_OS_SPACES_ENV (default $LUMA_OS_SECRETS/spaces.env, else Depot's
-#   /srv/luma-build/depot-keys/secrets/spaces.env): the S3 bucket, defining
+# * SUNO_OS_SPACES_ENV (default $SUNO_OS_SECRETS/spaces.env, else Depot's
+#   /srv/Suno-build/depot-keys/secrets/spaces.env): the S3 bucket, defining
 #   SPACES_ACCESS_KEY, SPACES_SECRET_KEY, SPACES_REGION and SPACES_BUCKET.
 #
 # Access: os/repo, os/graph and os/keys are uploaded public-read (the public
@@ -35,9 +35,9 @@
 #
 # --prune only deletes, from the origin, objects and static deltas that no
 # generation served in the last DL_PRUNE_AFTER_HOURS names (see
-# luma_os_served_generations). Every --apply upload to the dl origin runs the
+# Suno_os_served_generations). Every --apply upload to the dl origin runs the
 # same prune first, then refuses unless the origin's real free space (its
-# .luma-origin/space report, config/os/origin/) holds the upload plus
+# .Suno-origin/space report, config/os/origin/) holds the upload plus
 # DL_ORIGIN_RESERVE_GIB (default 2).
 #
 # Exit status 3 means hosting is not configured yet (nothing was attempted).
@@ -60,83 +60,83 @@ while [ "$#" -gt 0 ]; do
 done
 [ "${#only[@]}" -gt 0 ] || only=(repo preview graph keys)
 
-current="$LUMA_OS_ROOT/webroot/current"
-[ -L "$current" ] || luma_os_die 'no switched webroot generation; run scripts/os/stage-webroot.sh'
+current="$SUNO_OS_ROOT/webroot/current"
+[ -L "$current" ] || Suno_os_die 'no switched webroot generation; run scripts/os/stage-webroot.sh'
 generation=$(readlink -f "$current")
 
-origin_env="$LUMA_OS_SECRETS/dl-origin.env"
+origin_env="$SUNO_OS_SECRETS/dl-origin.env"
 if [ -f "$origin_env" ]; then
-  [ "$(stat -c %a "$origin_env")" = 600 ] || luma_os_die "$origin_env must be mode 0600"
-  luma_os_load_env "$origin_env"
-  media_staff_prefix=$(sed -n 's/^LUMA_MEDIA_STAFF_PREFIX=//p' "$luma_os_repo_root/config/os/media.env")
-  media_public_prefix=$(sed -n 's/^LUMA_MEDIA_PUBLIC_PREFIX=//p' "$luma_os_repo_root/config/os/media.env")
-  install -d -m 0755 "$LUMA_OS_ROOT/publish/media"
+  [ "$(stat -c %a "$origin_env")" = 600 ] || Suno_os_die "$origin_env must be mode 0600"
+  Suno_os_load_env "$origin_env"
+  media_staff_prefix=$(sed -n 's/^SUNO_MEDIA_STAFF_PREFIX=//p' "$Suno_os_repo_root/config/os/media.env")
+  media_public_prefix=$(sed -n 's/^SUNO_MEDIA_PUBLIC_PREFIX=//p' "$Suno_os_repo_root/config/os/media.env")
+  install -d -m 0755 "$SUNO_OS_ROOT/publish/media"
   : "${DL_RSYNC_DEST:?}" "${DL_SSH_KEY:?}" "${DL_HTTP_ORIGIN:?}" "${DL_HOST_HEADER:?}"
-  [ -f "$DL_SSH_KEY" ] || luma_os_die "origin SSH key is missing: $DL_SSH_KEY"
-  known_hosts="$LUMA_OS_SECRETS/dl-origin.known_hosts"
+  [ -f "$DL_SSH_KEY" ] || Suno_os_die "origin SSH key is missing: $DL_SSH_KEY"
+  known_hosts="$SUNO_OS_SECRETS/dl-origin.known_hosts"
   touch "$known_hosts" && chmod 0600 "$known_hosts"
   # Origin retention: objects leave the origin only once no generation served
   # in the last DL_PRUNE_AFTER_HOURS (default 20) names them, so no client
   # still holds a summary that needs them. Every upload prunes to that union
   # first (sync-origin.sh), so the origin holds what the budget below counts.
-  served_generations=$(luma_os_served_generations "$LUMA_OS_ROOT/webroot/generations" "${DL_PRUNE_AFTER_HOURS:-20}" | tr '\n' ' ')
-  luma_os_log "origin retention keeps generations: $(for g in $served_generations; do printf '%s ' "$(basename "$g")"; done)"
+  served_generations=$(Suno_os_served_generations "$SUNO_OS_ROOT/webroot/generations" "${DL_PRUNE_AFTER_HOURS:-20}" | tr '\n' ' ')
+  Suno_os_log "origin retention keeps generations: $(for g in $served_generations; do printf '%s ' "$(basename "$g")"; done)"
   if [ "$apply" -eq 1 ] && [ "$prune" -eq 0 ]; then
     # Budget: what the origin can hold at most after this upload is every kept
     # generation together (hard links counted once), which is never less than
     # the served generation plus whatever the next prune removes.
     limit_gib=${DL_MAX_GIB:-25}
-    bytes=$(du -scb "$LUMA_OS_ROOT"/webroot/generations/*/os 2>/dev/null | tail -n 1 | cut -f1)
+    bytes=$(du -scb "$SUNO_OS_ROOT"/webroot/generations/*/os 2>/dev/null | tail -n 1 | cut -f1)
     for file in "${media[@]}"; do bytes=$((bytes + $(stat -c %s "$file"))); done
     # Installer media the origin serves (hard links counted once).
-    if [ -d "$LUMA_OS_ROOT/publish/media" ]; then
-      bytes=$(du -scbL "$LUMA_OS_ROOT"/webroot/generations/*/os "$LUMA_OS_ROOT/publish/media" 2>/dev/null | tail -n 1 | cut -f1)
+    if [ -d "$SUNO_OS_ROOT/publish/media" ]; then
+      bytes=$(du -scbL "$SUNO_OS_ROOT"/webroot/generations/*/os "$SUNO_OS_ROOT/publish/media" 2>/dev/null | tail -n 1 | cut -f1)
       for file in "${media[@]}"; do bytes=$((bytes + $(stat -c %s "$file"))); done
     fi
     [ "$bytes" -le $((limit_gib * 1073741824)) ] ||
-      luma_os_die "upload refused: $((bytes / 1073741824)) GiB would exceed the origin budget of $limit_gib GiB (DL_MAX_GIB); prune retention first"
-    luma_os_log "origin budget: at most $((bytes / 1048576)) MiB of $limit_gib GiB"
+      Suno_os_die "upload refused: $((bytes / 1073741824)) GiB would exceed the origin budget of $limit_gib GiB (DL_MAX_GIB); prune retention first"
+    Suno_os_log "origin budget: at most $((bytes / 1048576)) MiB of $limit_gib GiB"
   fi
   if [ "${DL_PREVIEW:-0}" != 1 ]; then
     filtered=()
     for part in "${only[@]}"; do
-      [ "$part" = preview ] && { luma_os_log 'preview repository not uploaded: the origin does not protect it yet (DL_PREVIEW)'; continue; }
+      [ "$part" = preview ] && { Suno_os_log 'preview repository not uploaded: the origin does not protect it yet (DL_PREVIEW)'; continue; }
       filtered+=("$part")
     done
     only=("${filtered[@]}")
   fi
   media_mounts=""
   for file in "${media[@]}"; do media_mounts+=" $(dirname "$file")"; done
-  LUMA_OS_TOOLS_NETWORK=1 \
-  LUMA_OS_TOOLS_MOUNTS="$LUMA_OS_ROOT/webroot/generations $(dirname "$DL_SSH_KEY") $LUMA_OS_SECRETS${DL_PREVIEW_CREDENTIAL_FILE:+ $(dirname "$DL_PREVIEW_CREDENTIAL_FILE")}$media_mounts $LUMA_OS_ROOT/publish/media" \
-    luma_os_tools env DL_RSYNC_DEST="$DL_RSYNC_DEST" DL_SSH_KEY="$DL_SSH_KEY" \
+  SUNO_OS_TOOLS_NETWORK=1 \
+  SUNO_OS_TOOLS_MOUNTS="$SUNO_OS_ROOT/webroot/generations $(dirname "$DL_SSH_KEY") $SUNO_OS_SECRETS${DL_PREVIEW_CREDENTIAL_FILE:+ $(dirname "$DL_PREVIEW_CREDENTIAL_FILE")}$media_mounts $SUNO_OS_ROOT/publish/media" \
+    Suno_os_tools env DL_RSYNC_DEST="$DL_RSYNC_DEST" DL_SSH_KEY="$DL_SSH_KEY" \
       DL_KEEP_GENERATIONS="$served_generations" DL_ORIGIN_RESERVE_GIB="${DL_ORIGIN_RESERVE_GIB:-2}" \
       DL_PUBLIC_REPO_DEST="${DL_PUBLIC_REPO_DEST:-os/repo}" DL_PUBLIC_REPO_LINK_DEST="${DL_PUBLIC_REPO_LINK_DEST:-}" \
       DL_HTTP_ORIGIN="$DL_HTTP_ORIGIN" DL_HOST_HEADER="$DL_HOST_HEADER" KNOWN_HOSTS="$known_hosts" \
       DL_PREVIEW_CREDENTIAL_FILE="${DL_PREVIEW_CREDENTIAL_FILE:-}" \
-      MEDIA_TREE="$LUMA_OS_ROOT/publish/media" \
+      MEDIA_TREE="$SUNO_OS_ROOT/publish/media" \
       MEDIA_STAFF_PREFIX="$media_staff_prefix" MEDIA_PUBLIC_PREFIX="$media_public_prefix" \
       bash -s -- "$generation" "$apply" "$prune" "${only[*]}" "${media[*]:-}" \
-      <"$luma_os_repo_root/scripts/os/lib/sync-origin.sh"
+      <"$Suno_os_repo_root/scripts/os/lib/sync-origin.sh"
   exit $?
 fi
 
-secrets=${LUMA_OS_SPACES_ENV:-}
+secrets=${SUNO_OS_SPACES_ENV:-}
 if [ -z "$secrets" ]; then
-  for candidate in "$LUMA_OS_SECRETS/spaces.env" /srv/luma-build/depot-keys/secrets/spaces.env; do
+  for candidate in "$SUNO_OS_SECRETS/spaces.env" /srv/Suno-build/depot-keys/secrets/spaces.env; do
     [ -f "$candidate" ] && { secrets=$candidate; break; }
   done
 fi
 if [ -z "$secrets" ] || [ ! -f "$secrets" ]; then
-  luma_os_log 'hosting is not configured (no spaces.env); nothing uploaded'
+  Suno_os_log 'hosting is not configured (no spaces.env); nothing uploaded'
   exit 3
 fi
-[ "$(stat -c %a "$secrets")" = 600 ] || luma_os_die "$secrets must be mode 0600"
+[ "$(stat -c %a "$secrets")" = 600 ] || Suno_os_die "$secrets must be mode 0600"
 
 dry=(--dry-run)
 [ "$apply" -eq 1 ] && dry=()
-LUMA_OS_TOOLS_NETWORK=1 LUMA_OS_TOOLS_MOUNTS="$generation" LUMA_OS_TOOLS_ENV_FILE="$secrets" \
-  luma_os_tools bash -s -- "$generation" "$prune" "${only[*]}" "${dry[*]:-}" <<'SH'
+SUNO_OS_TOOLS_NETWORK=1 SUNO_OS_TOOLS_MOUNTS="$generation" SUNO_OS_TOOLS_ENV_FILE="$secrets" \
+  Suno_os_tools bash -s -- "$generation" "$prune" "${only[*]}" "${dry[*]:-}" <<'SH'
 set -euo pipefail
 generation=$1 prune=$2 only=$3 dry=$4
 export RCLONE_CONFIG_SPACES_TYPE=s3 RCLONE_CONFIG_SPACES_PROVIDER=DigitalOcean \

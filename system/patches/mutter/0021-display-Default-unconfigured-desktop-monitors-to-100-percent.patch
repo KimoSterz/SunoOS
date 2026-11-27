@@ -1,4 +1,4 @@
-From: Project Luma
+From: Project Suno
 Subject: [PATCH] display: start unconfigured desktop monitors at 100 percent
 
 Keep explicit global scale overrides and stored monitor arrangements. Only
@@ -15,7 +15,7 @@ choose scale from their panel DPI. No profile or monitors.xml is rewritten.
 +   * scale. Desktop installs start at 100%; a later explicit display choice
 +   * stays in monitors.xml. Handheld profiles retain their DPI-based default.
 +   */
-+  if (g_strcmp0 (g_getenv ("LUMA_DEVICE_CLASS"), "handheld") != 0)
++  if (g_strcmp0 (g_getenv ("SUNO_DEVICE_CLASS"), "handheld") != 0)
 +    return 1.0f;
 +
    return calculate_scale (monitor, monitor_mode, constraints);

@@ -89,7 +89,7 @@ class Provider:
 
 def main() -> int:
     root = Path(tempfile.mkdtemp(prefix="messages-anchor-"))
-    os.environ.update(XDG_DATA_HOME=str(root / "data"), XDG_STATE_HOME=str(root / "state"), LUMA_MESSAGES_AGENT="0",
+    os.environ.update(XDG_DATA_HOME=str(root / "data"), XDG_STATE_HOME=str(root / "state"), SUNO_MESSAGES_AGENT="0",
                       PRAIRIE_EDS_MODE="disabled")
     from prairie_apps import messages
     from prairie_apps.messages_accounts import Account, AccountStore

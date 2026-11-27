@@ -15,7 +15,7 @@ import subprocess
 import time
 import uuid
 
-PACKAGE = "org.projectluma.androidtest"
+PACKAGE = "org.projectSuno.androidtest"
 EVENTS = {"native-clipboard-before", "native-clipboard-write",
           "native-clipboard-after", "native-task-name"}
 
@@ -104,7 +104,7 @@ def run(expected_apk, report):
     start = generation()
     report.update(android_uid=uid, apk_sha256=expected_apk, runtime_generation=start,
                   android_selinux=android("getenforce"),
-                  runtime_package=command("rpm", "-q", "luma-android-runtime"))
+                  runtime_package=command("rpm", "-q", "Suno-android-runtime"))
     android("am", "force-stop", PACKAGE)
     report["phase"] = "focused-fixture-before-controls"
     android("am", "start", "-W", "-n", PACKAGE + "/.MainActivity",

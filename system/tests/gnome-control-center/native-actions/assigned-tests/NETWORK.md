@@ -13,4 +13,4 @@ Passed against the production adapter and fixture on 2026-10-10:
 
 The private service does not implement automatic wired profile selection. Successful physical Ethernet activation, hotspot radio coverage and DHCP reachability are not asserted by this test.
 
-The existing `test-luma-live-network` target continues to cover native join/forget UI, repeated refresh and cancellation behavior.
+The existing `test-Suno-live-network` target continues to cover native join/forget UI, repeated refresh and cancellation behavior.

@@ -13,7 +13,7 @@
 set -uo pipefail
 quick=0
 [ "${1:-}" = --quick ] && quick=1
-user=luma-gate-hurdles
+user=Suno-gate-hurdles
 failed=0
 
 emit() {
@@ -35,7 +35,7 @@ as_user() { (cd /tmp && runuser -u "$user" -- "$@"); }
 in_session() { systemd-run --user -M "$user@" --wait --pipe --quiet --collect -p WorkingDirectory=/tmp "$@"; }
 
 cleanup() {
-  rm -f /etc/sudoers.d/90-luma-gate-hurdles
+  rm -f /etc/sudoers.d/90-Suno-gate-hurdles
   loginctl disable-linger "$user" >/dev/null 2>&1 || true
   loginctl terminate-user "$user" >/dev/null 2>&1 || true
   sleep 2
@@ -49,12 +49,12 @@ rm -rf "/var/home/$user"
 useradd -m -G wheel "$user" || { emit gate-account fail "useradd $user failed"; exit 1; }
 loginctl enable-linger "$user"
 for _ in $(seq 60); do [ -S "/run/user/$(id -u "$user")/bus" ] && break; sleep 1; done
-printf '%s ALL=(ALL) NOPASSWD: ALL\n' "$user" >/etc/sudoers.d/90-luma-gate-hurdles
-chmod 0440 /etc/sudoers.d/90-luma-gate-hurdles
+printf '%s ALL=(ALL) NOPASSWD: ALL\n' "$user" >/etc/sudoers.d/90-Suno-gate-hurdles
+chmod 0440 /etc/sudoers.d/90-Suno-gate-hurdles
 
 # Image contract.
-run_check dnf-is-front-end 'luma-install-commands' readlink -f /usr/bin/dnf
-run_check yum-is-front-end 'luma-install-commands' readlink -f /usr/bin/yum
+run_check dnf-is-front-end 'Suno-install-commands' readlink -f /usr/bin/dnf
+run_check yum-is-front-end 'Suno-install-commands' readlink -f /usr/bin/yum
 run_check dnf5-reachable '^dnf5 version' dnf5 --version
 run_check snap-link '^var/lib/snapd/snap$' readlink /snap
 run_check selinux-enforcing '^Enforcing$' getenforce
@@ -64,20 +64,20 @@ run_check selinux-enforcing '^Enforcing$' getenforce
 if rpm -q htop >/dev/null 2>&1; then as_user sudo dnf remove -y htop >/dev/null 2>&1; fi
 run_check sudo-dnf-install-htop 'Complete! htop is ready to use' as_user sudo dnf install -y htop
 run_check htop-runs-now '^htop ' as_user htop --version
-run_check sudo-dnf-install-luma-terminal-installed 'is already installed' as_user sudo dnf install -y luma-terminal
+run_check sudo-dnf-install-Suno-terminal-installed 'is already installed' as_user sudo dnf install -y Suno-terminal
 run_check sudo-dnf-remove-htop 'Complete! htop removed' as_user sudo dnf remove -y htop
 if command -v htop >/dev/null 2>&1; then emit htop-gone-now fail "$(command -v htop)"; else emit htop-gone-now pass ""; fi
-run_check sudo-apt-install-htop 'Luma uses dnf; running: sudo dnf install -y htop' as_user sudo apt install -y htop
+run_check sudo-apt-install-htop 'Suno uses dnf; running: sudo dnf install -y htop' as_user sudo apt install -y htop
 run_check htop-runs-after-apt '^htop ' as_user htop --version
-run_check sudo-apt-get-install-htop 'Luma uses dnf; running: sudo dnf install -y htop' as_user sudo apt-get install -y htop
-run_check sudo-dnf-upgrade-asks-never-restarts 'Luma|Nothing to do|update' sh -c "cd /tmp && runuser -u $user -- sudo dnf upgrade --assumeno; true"
+run_check sudo-apt-get-install-htop 'Suno uses dnf; running: sudo dnf install -y htop' as_user sudo apt-get install -y htop
+run_check sudo-dnf-upgrade-asks-never-restarts 'Suno|Nothing to do|update' sh -c "cd /tmp && runuser -u $user -- sudo dnf upgrade --assumeno; true"
 as_user sudo dnf remove -y htop >/dev/null 2>&1
 run_check vitals-journal 'install for htop' journalctl -b MESSAGE_ID=a08437fa35fc4db9a55f26f08c3e9847 -o cat
 
 # rpm -i of a package file goes into the system image, live; queries stay rpm.
-rpm_dir=$(mktemp -d /var/tmp/luma-gate-rpm.XXXXXX)
+rpm_dir=$(mktemp -d /var/tmp/Suno-gate-rpm.XXXXXX)
 if (cd /tmp && dnf5 download -q --destdir "$rpm_dir" htop >/dev/null 2>&1); then
-  run_check sudo-rpm-ivh-file 'Luma installs package files' as_user sudo rpm -ivh "$(ls "$rpm_dir"/htop-*.rpm | head -n 1)"
+  run_check sudo-rpm-ivh-file 'Suno installs package files' as_user sudo rpm -ivh "$(ls "$rpm_dir"/htop-*.rpm | head -n 1)"
   run_check htop-runs-after-rpm '^htop ' as_user htop --version
   as_user sudo dnf remove -y htop >/dev/null 2>&1
 else
@@ -85,23 +85,23 @@ else
 fi
 rm -rf "$rpm_dir"
 run_check rpm-query-unchanged '^rpm-' as_user rpm -q rpm
-run_check opt-writable 'ok' sh -c 'touch /opt/.luma-gate && rm /opt/.luma-gate && echo ok'
-run_check usr-local-writable 'ok' sh -c 'touch /usr/local/bin/.luma-gate && rm /usr/local/bin/.luma-gate && echo ok'
+run_check opt-writable 'ok' sh -c 'touch /opt/.Suno-gate && rm /opt/.Suno-gate && echo ok'
+run_check usr-local-writable 'ok' sh -c 'touch /usr/local/bin/.Suno-gate && rm /usr/local/bin/.Suno-gate && echo ok'
 
-# Fedora never replaces a package Luma builds (luma-owned-packages.txt).
-owned_list=/usr/share/luma/luma-owned-packages.txt
+# Fedora never replaces a package Suno builds (Suno-owned-packages.txt).
+owned_list=/usr/share/Suno/Suno-owned-packages.txt
 if [ -s "$owned_list" ]; then
   for pkg in gtk4 gnome-shell; do
     grep -qx "$pkg" "$owned_list" || { emit "owned-$pkg-listed" fail "$pkg missing from $owned_list"; continue; }
     before=$(rpm -q "$pkg")
     out=$(cd /tmp && runuser -u "$user" -- sudo dnf upgrade -y "$pkg" 2>&1); code=$?
-    if [ "$code" != 0 ] && grep -q "Luma's own build" <<<"$out" && [ "$(rpm -q "$pkg")" = "$before" ]; then
+    if [ "$code" != 0 ] && grep -q "Suno's own build" <<<"$out" && [ "$(rpm -q "$pkg")" = "$before" ]; then
       emit "sudo-dnf-upgrade-$pkg-refused" pass "$(tail -n 1 <<<"$out")"
     else
       emit "sudo-dnf-upgrade-$pkg-refused" fail "exit $code: $(tail -n 4 <<<"$out")"
     fi
     out=$(cd /tmp && runuser -u "$user" -- sudo dnf install -y "$pkg" 2>&1); code=$?
-    if grep -q "Luma's own build" <<<"$out" && [ "$(rpm -q "$pkg")" = "$before" ]; then
+    if grep -q "Suno's own build" <<<"$out" && [ "$(rpm -q "$pkg")" = "$before" ]; then
       emit "sudo-dnf-install-$pkg-unchanged" pass "$(tail -n 1 <<<"$out")"
     else
       emit "sudo-dnf-install-$pkg-unchanged" fail "exit $code: $(tail -n 4 <<<"$out")"
@@ -110,7 +110,7 @@ if [ -s "$owned_list" ]; then
   found=$(cd /tmp && dnf5 repoquery -q --repo=fedora --repo=updates gnome-shell 2>/dev/null)
   if [ -z "$found" ]; then emit fedora-gnome-shell-excluded pass ""; else emit fedora-gnome-shell-excluded fail "$found"; fi
 else
-  emit luma-owned-packages-list fail "$owned_list is missing"
+  emit Suno-owned-packages-list fail "$owned_list is missing"
 fi
 
 # Flathub.

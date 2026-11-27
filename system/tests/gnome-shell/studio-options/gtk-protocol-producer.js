@@ -4,7 +4,7 @@ import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 
 if (!ARGV[0]) throw Error('usage: gjs -m gtk-protocol-producer.js STATUS_JSON');
-const appId = 'org.projectluma.ShellWireGTK';
+const appId = 'org.projectSuno.ShellWireGTK';
 const state = {status: 'starting', activations: 0, actions: [], replies: []};
 const file = Gio.File.new_for_path(ARGV[0]);
 function save() {

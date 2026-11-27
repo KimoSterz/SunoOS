@@ -37,7 +37,7 @@ import urllib.parse
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-STATE_DIR = Path("/var/lib/luma/rcs")
+STATE_DIR = Path("/var/lib/Suno/rcs")
 
 # (rcs_version, rcs_profile) pairs seen in real deployments, oldest to newest.
 RCS_SHAPES = [
@@ -167,7 +167,7 @@ def main() -> int:
         query = dict(base)
         query.update({
             "vers": "0", "provisioning_version": "0", "IMSI": imsi,
-            "client_vendor": "LUMA", "client_version": "LUMA-1.0",
+            "client_vendor": "SUNO", "client_version": "SUNO-1.0",
             "rcs_version": version, "rcs_profile": profile,
             "default_sms_app": "1",
         })

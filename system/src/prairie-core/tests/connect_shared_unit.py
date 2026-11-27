@@ -122,7 +122,7 @@ def write_places(env, rows):
                                  "longitude": lon, "timezone": "America/Chicago"} for uid, name, lat, lon in rows]))
 
 
-with tempfile.TemporaryDirectory(prefix="luma-shared-sync-") as directory:
+with tempfile.TemporaryDirectory(prefix="Suno-shared-sync-") as directory:
     root = Path(directory)
     hub = FakeHub()
     phone, desk = device_env(root, "phone"), device_env(root, "desk")
@@ -204,7 +204,7 @@ with tempfile.TemporaryDirectory(prefix="luma-shared-sync-") as directory:
     assert "uploaded 0" in photos(phone, phone_state, remote_changed=False)
     assert [m for m, _u in hub.calls].count("PUT") == 1, "bytes are sent once"
     assert "downloaded 1" in photos(desk, desk_state)
-    copy = Path(desk["XDG_PICTURES_DIR"]) / "Luma Hub" / "IMG_0001.png"
+    copy = Path(desk["XDG_PICTURES_DIR"]) / "Suno Hub" / "IMG_0001.png"
     assert copy.read_bytes() == picture
     photos(desk, desk_state)  # sends the manifest that now includes the copy
     copy.unlink()

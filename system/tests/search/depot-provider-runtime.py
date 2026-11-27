@@ -13,14 +13,14 @@ applications.mkdir(parents=True)
 record = data / 'launch.json'
 launcher = data / 'launcher.py'
 launcher.write_text('import json,sys\nfrom pathlib import Path\nPath(' + repr(str(record)) + ').write_text(json.dumps(sys.argv[1:]))\n')
-(applications / 'org.projectluma.Depot.desktop').write_text('[Desktop Entry]\nType=Application\nName=Depot\nExec=/usr/bin/python3 ' + str(launcher) + ' %U\n')
+(applications / 'org.projectSuno.Depot.desktop').write_text('[Desktop Entry]\nType=Application\nName=Depot\nExec=/usr/bin/python3 ' + str(launcher) + ' %U\n')
 import gi
 gi.require_version('Gio', '2.0')
 from gi.repository import Gio, GLib
 ROOT = Path(__file__).resolve().parents[2]
-sys.path[:0] = [str(ROOT / 'src/luma-search'), str(ROOT / 'src/luma-installer')]
-os.environ['LUMA_DEPOT_DATA_DIRECTORY'] = str(ROOT / 'src/luma-installer/data')
-from luma_search import depot
+sys.path[:0] = [str(ROOT / 'src/Suno-search'), str(ROOT / 'src/Suno-installer')]
+os.environ['SUNO_DEPOT_DATA_DIRECTORY'] = str(ROOT / 'src/Suno-installer/data')
+from Suno_search import depot
 
 connection = Gio.bus_get_sync(Gio.BusType.SESSION, None)
 with ThreadPoolExecutor(max_workers=2) as pool:
@@ -45,7 +45,7 @@ with ThreadPoolExecutor(max_workers=2) as pool:
     assert ids, 'shipped catalogue did not return Blender'
     metas, = call('GetResultMetas', GLib.Variant('(as)', (ids,)))
     assert any(item['name'] == 'Blender' for item in metas), metas
-    assert all(item['lumaKindLabel'] == 'Depot' for item in metas)
+    assert all(item['SunoKindLabel'] == 'Depot' for item in metas)
     narrowed, = call('GetSubsearchResultSet', GLib.Variant('(asas)', (ids, ['blender'])))
     assert narrowed == ids
     empty, = call('GetInitialResultSet', GLib.Variant('(as)', (['no-such-app-928573'],)))
@@ -55,7 +55,7 @@ with ThreadPoolExecutor(max_workers=2) as pool:
     while not record.exists() and time.monotonic() < deadline:
         time.sleep(.01)
     assert record.exists(), 'Depot activation did not launch the desktop entry'
-    assert json.loads(record.read_text()) == ['luma-depot://app/' + quote(ids[0], safe='')]
+    assert json.loads(record.read_text()) == ['Suno-depot://app/' + quote(ids[0], safe='')]
     record.unlink()
     call('LaunchSearch', GLib.Variant('(asu)', (['blender'], 0)))
     deadline = time.monotonic() + 3

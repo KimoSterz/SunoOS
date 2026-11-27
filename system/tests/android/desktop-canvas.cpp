@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: Apache-2.0
-#include "luma-desktop-canvas.h"
-#include "luma-app-settings-channel.h"
+#include "Suno-desktop-canvas.h"
+#include "Suno-app-settings-channel.h"
 #include <cassert>
 #include <climits>
 #include <iostream>
 
 int main() {
-    using luma::desktop_canvas;
+    using Suno::desktop_canvas;
     auto size = desktop_canvas({{0, 0, 1440, 2560}, {1440, 1054, 3440, 1440},
                                {4880, 1398, 1920, 1200}});
     assert(size.width == 6800 && size.height == 2598);
@@ -19,7 +19,7 @@ int main() {
     assert(size.width == 1920 && size.height == 1080);
     assert(desktop_canvas({}).width == 0);
     assert(desktop_canvas({{INT_MIN, 0, 1920, 1080}, {INT_MAX, 0, 1920, 1080}}).width == 0);
-    using namespace luma::app_settings;
+    using namespace Suno::app_settings;
     Request request{magic, version, 0, "org.example.Game"};
     assert(valid(request));
     request.reserved = 1; assert(!valid(request));

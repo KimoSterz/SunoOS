@@ -30,22 +30,22 @@ index 2350d3d..2b5f72b 100644
          gtk_widget_remove_css_class (GTK_WIDGET (self), "search-results");
      }
 +    g_object_notify (G_OBJECT (self), "icon-size");
-     luma_column_view_header_set_visible (self->luma_header,
+     Suno_column_view_header_set_visible (self->Suno_header,
                                           self->search_directory == NULL);
  
 diff --git a/src/resources/style.css b/src/resources/style.css
 index 5d4faa2..21f1fd7 100644
 --- a/src/resources/style.css
 +++ b/src/resources/style.css
-@@ -1118,7 +1118,7 @@ window.luma-files-window .nautilus-list-view columnview > listview > row {
+@@ -1118,7 +1118,7 @@ window.Suno-files-window .nautilus-list-view columnview > listview > row {
  
  /* Search results carry a name, path and optional excerpt in one row. */
- window.luma-files-window .nautilus-list-view.search-results columnview > listview > row {
--  min-height: var(--lumaui-sidebar-row-height);
+ window.Suno-files-window .nautilus-list-view.search-results columnview > listview > row {
+-  min-height: var(--SunoUI-sidebar-row-height);
 +  min-height: 52px;
  }
  
- /* Hover and focus render identically, as everywhere else in Luma. An accent
+ /* Hover and focus render identically, as everywhere else in Suno. An accent
 -- 
 2.55.0
 

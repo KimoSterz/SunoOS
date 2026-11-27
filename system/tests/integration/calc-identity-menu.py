@@ -7,8 +7,8 @@ gi.require_version('Adw', '1')
 gi.require_version('Gtk', '4.0')
 from gi.repository import Adw, GLib, Gtk
 
-from luma_appkit import Command, CommandGroup, CommandRegistry, Menu, install_appkit
-from luma_appkit.window_frame import WindowIdentity, own_window_frame
+from Suno_appkit import Command, CommandGroup, CommandRegistry, Menu, install_appkit
+from Suno_appkit.window_frame import WindowIdentity, own_window_frame
 
 
 def settle():
@@ -56,13 +56,13 @@ for width in (390, 1180):
     rows = []
     labels = []
     def visit(widget):
-        if widget.has_css_class('luma-menu-row'):
+        if widget.has_css_class('Suno-menu-row'):
             rows.append(widget)
         if isinstance(widget, Gtk.Label):
             labels.append(widget)
-        if widget.has_css_class('luma-menu-keycap'):
+        if widget.has_css_class('Suno-menu-keycap'):
             keys.append(widget.get_label())
-        if widget.has_css_class('luma-menu-check'):
+        if widget.has_css_class('Suno-menu-check'):
             marks.append((widget.get_icon_name(), widget.get_visible()))
             mark_widgets.append(widget)
         child = widget.get_first_child()
@@ -73,7 +73,7 @@ for width in (390, 1180):
     assert keys == ['Ctrl', '1', 'Ctrl', '2'], keys
     assert len(marks) == 2 and marks[0][1] and not marks[1][1], marks
     assert all('check' in name and 'object-select' not in name for name, _visible in marks), marks
-    assert [row.has_css_class('luma-menu-selected') for row in rows] == [True, False, False, False]
+    assert [row.has_css_class('Suno-menu-selected') for row in rows] == [True, False, False, False]
     basic = next(label for label in labels if label.get_label() == 'Basic')
     scientific = next(label for label in labels if label.get_label() == 'Scientific')
     assert basic.get_layout().get_context().get_font_description().get_weight() == 600
@@ -96,11 +96,11 @@ for width in (390, 1180):
         assert not any(matches(colour) for colour in painted_row(rows[1]))
     selected['basic'] = False
     menu._refresh_state(menu)
-    assert [row.has_css_class('luma-menu-selected') for row in rows] == [False, True, False, False]
+    assert [row.has_css_class('Suno-menu-selected') for row in rows] == [False, True, False, False]
     assert [mark.get_visible() for mark in mark_widgets] == [False, True]
     selected['basic'] = True
     menu._refresh_state(menu)
-    assert [row.has_css_class('luma-menu-selected') for row in rows] == [True, False, False, False]
+    assert [row.has_css_class('Suno-menu-selected') for row in rows] == [True, False, False, False]
     menu.popdown()
     window.destroy()
     print('PASS identity popover', width, '200px, anchored, Ctrl shortcuts')

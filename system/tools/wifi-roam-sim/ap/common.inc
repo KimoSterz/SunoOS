@@ -1,11 +1,11 @@
 driver=nl80211
 bridge=br0
-ssid=LumaTest
+ssid=SunoTest
 country_code=CA
 ieee80211d=1
 wmm_enabled=1
 ctrl_interface=/run/hostapd
 wpa=2
 rsn_pairwise=CCMP
-wpa_passphrase=lumatest123
-sae_password=lumatest123
+wpa_passphrase=Sunotest123
+sae_password=Sunotest123

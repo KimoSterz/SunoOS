@@ -31,17 +31,17 @@ gi.require_version("Gsk", "4.0")
 gi.require_version("Graphene", "1.0")
 from gi.repository import Adw, Gdk, Gio, GLib, Graphene, Gtk  # noqa: E402
 
-from luma_appkit import (  # noqa: E402
+from Suno_appkit import (  # noqa: E402
     ActionCenter, AppWindow, BarAction, Command, CommandGroup, CommandRegistry, EmptyState, Island,
-    Toast, ToastHost, TypeLabel, add_style_sheet, apply_type, install_appkit, lumaui_icon,
+    Toast, ToastHost, TypeLabel, add_style_sheet, apply_type, install_appkit, SunoUI_icon,
 )
-from luma_appkit import media_style as style  # noqa: E402
+from Suno_appkit import media_style as style  # noqa: E402
 
 from . import contacts, drills, libinput_log, roles  # noqa: E402
 from .cli import read_status, sudo_command  # noqa: E402
 from .labels import LabelLog, MARKS, data_root, now_ns  # noqa: E402
 
-APP_ID = "org.projectluma.TouchLab"
+APP_ID = "org.projectSuno.TouchLab"
 HERE = os.path.dirname(os.path.abspath(__file__))
 
 
@@ -94,7 +94,7 @@ class LiveFeed:
     @property
     def path(self) -> str:
         return os.path.join(os.environ.get("XDG_RUNTIME_DIR", f"/run/user/{os.getuid()}"),
-                            "luma-touch-lab", "live.sock")
+                            "Suno-touch-lab", "live.sock")
 
     def _reconnect(self) -> bool:
         if self.sock is None:
@@ -249,14 +249,14 @@ class PadView(Gtk.Widget):
         pw, ph, k, ox, oy = self._geometry()
         pad = style.rounded(style.rect(ox, oy, pw * k, ph * k), 14)
         snap.push_rounded_clip(pad)
-        snap.append_color(style.colour(self, "luma_well"), style.rect(ox, oy, pw * k, ph * k))
-        snap.append_inset_shadow(pad, style.colour(self, "luma_well_shade"), 0, 1, 0, 3)
+        snap.append_color(style.colour(self, "Suno_well"), style.rect(ox, oy, pw * k, ph * k))
+        snap.append_inset_shadow(pad, style.colour(self, "Suno_well_shade"), 0, 1, 0, 3)
         snap.pop()
         b = self.feed.builder
         if not b:
             return
         now = now_ns()
-        ink = style.colour(self, "luma_ink")
+        ink = style.colour(self, "Suno_ink")
         shown = list(b.active.values())
         if self.focus and self.live:
             shown += [t for t in b.tracks[-12:] if t.key == self.focus and t not in shown]
@@ -266,18 +266,18 @@ class PadView(Gtk.Widget):
             s = tr.samples[-1]
             # Trail: the last 300 ms.
             tail = [p for p in tr.samples if p.t > s.t - 300_000_000]
-            trail = style.colour(self, "luma_ink", 0.25)
+            trail = style.colour(self, "Suno_ink", 0.25)
             for a, c in zip(tail, tail[1:]):
                 x0, y0, x1, y1 = ox + a.x * k, oy + a.y * k, ox + c.x * k, oy + c.y * k
                 n = max(1, int(math.hypot(x1 - x0, y1 - y0) / 3))
                 for i in range(n):
                     snap.append_color(trail, style.rect(x0 + (x1 - x0) * i / n - 1, y0 + (y1 - y0) * i / n - 1, 2, 2))
             verdict = tr.libinput_verdict()
-            role = "luma_accent"
+            role = "Suno_accent"
             if s.confident is False:
-                role = "luma_amber"
+                role = "Suno_amber"
             if verdict in ("palm", "thumb"):
-                role = "luma_violet"
+                role = "Suno_violet"
             predicted, prob = self.live.role(tr.key) if self.live else (None, 0.0)
             if predicted:
                 role = roles.COLOURS[predicted]
@@ -313,7 +313,7 @@ class PadView(Gtk.Widget):
         for t in self.feed.keys:
             age = (now - t) / 1e9
             if 0 <= age < 2:
-                snap.append_color(style.colour(self, "luma_ink", 0.5 * (1 - age / 2)),
+                snap.append_color(style.colour(self, "Suno_ink", 0.5 * (1 - age / 2)),
                                   style.rect(ox + pw * k * (1 - age / 2), oy - 6, 2, 5))
 
 
@@ -378,7 +378,7 @@ class Target(Gtk.Widget):
 
     def do_snapshot(self, snap) -> None:
         cx, cy = self.pos[0] * self.get_width(), self.pos[1] * self.get_height()
-        role = "luma_green" if self.hit else "luma_accent"
+        role = "Suno_green" if self.hit else "Suno_accent"
         for r, a in ((12, 0.25), (5, 1.0)):
             snap.push_rounded_clip(style.rounded(style.rect(cx - r, cy - r, 2 * r, 2 * r), r))
             snap.append_color(style.colour(self, role, a), style.rect(cx - r, cy - r, 2 * r, 2 * r))
@@ -502,7 +502,7 @@ class TouchLabWindow(AppWindow):
         self.stage.add_named(overlay, "target")
         self.libinput_line = TypeLabel("", role="caption")
         self.empty = EmptyState("Not recording", "Copy the start command and run it in a terminal; it asks for "
-                                "your password once. Touch Lab picks it up by itself.", lumaui_icon("circle-alert"))
+                                "your password once. Touch Lab picks it up by itself.", SunoUI_icon("circle-alert"))
         body = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10, margin_start=20, margin_end=20,
                        margin_bottom=96)
         body.append(self.stage)

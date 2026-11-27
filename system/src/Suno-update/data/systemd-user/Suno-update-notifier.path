@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: Apache-2.0
+[Unit]
+Description=Watch Suno system update status
+PartOf=graphical-session.target
+After=graphical-session.target
+
+[Path]
+PathChanged=/run/Suno-update/status.json
+Unit=Suno-update-notifier.service
+
+[Install]
+WantedBy=graphical-session.target

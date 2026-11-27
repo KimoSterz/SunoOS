@@ -50,7 +50,7 @@ fi
 work=$(mktemp -d "${TMPDIR:-/var/tmp}/rpm-ostree-offline.XXXXXX")
 # The bus socket lives under /run: a socket path under a deep TMPDIR exceeds
 # the 108-byte sun_path limit.
-bus=$(mktemp -d /run/luma-rpmo-bus.XXXXXX)
+bus=$(mktemp -d /run/Suno-rpmo-bus.XXXXXX)
 bus_pid=""
 cleanup() {
   [ -z "$bus_pid" ] || kill "$bus_pid" 2>/dev/null || true
@@ -88,7 +88,7 @@ if [ -n "$host_bwrap" ]; then
   loader=$(ldd "$host_bwrap" | sed -n 's|^\s*\(/[^ ]*ld-linux[^ ]*\) .*|\1|p' | head -n 1)
   [ -n "$loader" ] || fail "cannot find the host bwrap's loader"
   for lib in "$host_bwrap" $(ldd "$host_bwrap" | grep -o '/[^ ]*'); do cp -L "$lib" "$work/x86/"; done
-  printf '#!/bin/sh\nexec /run/luma-host/%s --library-path /run/luma-host /run/luma-host/bwrap "$@"\n' \
+  printf '#!/bin/sh\nexec /run/Suno-host/%s --library-path /run/Suno-host /run/Suno-host/bwrap "$@"\n' \
     "$(basename "$loader")" >"$work/bwrap"
   chmod 0755 "$work/bwrap"
 fi
@@ -118,15 +118,15 @@ for pair in $binds; do
   mount --bind "${pair%%:*}" "$r${pair#*:}"
 done
 unset IFS
-cp "$work/inner.sh" "$r/run/luma-offline.sh"
+cp "$work/inner.sh" "$r/run/Suno-offline.sh"
 if [ -n "$host_bwrap" ]; then
-  mkdir -p "$r/run/luma-host"
-  mount --bind "$work/x86" "$r/run/luma-host"
+  mkdir -p "$r/run/Suno-host"
+  mount --bind "$work/x86" "$r/run/Suno-host"
   mount --bind "$work/bwrap" "$r/usr/bin/bwrap"
 fi
 # The host TMPDIR does not exist inside the root.
 rc=0
-chroot "$r" env -u TMPDIR /run/luma-offline.sh "$@" || rc=$?
+chroot "$r" env -u TMPDIR /run/Suno-offline.sh "$@" || rc=$?
 # Nothing may outlive the call: a process left in this namespace keeps the
 # card'\''s filesystems mounted (and the FAT dirty) after the caller unmounts.
 for _ in 1 2 3 4 5; do

@@ -1,54 +1,54 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /* Memos-only media surfaces. Shared window, sidebar, corner, menus and bar
-   remain wholly owned by LumaUI. Every ink and surface comes from kit tokens. */
+   remain wholly owned by SunoUI. Every ink and surface comes from kit tokens. */
 
 .me-page { border-spacing: 0; }
 .me-page .me-heading { margin-bottom: 6px; }
 .me-page .me-title { margin-bottom: 0; }
-.me-page .me-recording-state { color: @luma_record; }
-.me-page .me-heading .me-recording-dot { background: @luma_record; border-radius: 100%; }
-.me-page .me-place { color: @luma_muted; margin-top: 10px; }
+.me-page .me-recording-state { color: @Suno_record; }
+.me-page .me-heading .me-recording-dot { background: @Suno_record; border-radius: 100%; }
+.me-page .me-place { color: @Suno_muted; margin-top: 10px; }
 .me-page .me-scroll-content { margin-bottom: 110px; }
-.me-empty { color: @luma_muted; }
-.me-empty .me-empty-title { color: @luma_ink_secondary; }
+.me-empty { color: @Suno_muted; }
+.me-empty .me-empty-title { color: @Suno_ink_secondary; }
 
-row.me-row { min-height: 40px; padding: 9px 12px; margin: 1px 0; border-radius: var(--lumaui-card-radius); color: @luma_ink; }
-row.me-row:hover { background: @luma_hover; }
-row.me-row:selected { background: @luma_chip;
-  box-shadow: inset 0 1px 0 @luma_chip_highlight, 0 0 0 1px @luma_chip_ring, 0 1px 2px @luma_chip_shadow, 0 3px 8px -3px @luma_chip_drop; }
-row.me-row .me-row-title { color: @luma_ink; font-weight: 600; }
-row.me-row .me-row-meta { font-weight: var(--lumaui-t-body-weight); }
-row.me-row .me-row-hit { color: @luma_muted; margin-top: 3px; }
-row.me-row .me-row-hit label { font-size: calc(var(--lumaui-t-body-size) * .9230769); }
-row.me-row .me-row-hit-match { color: @luma_ink; background: @luma_accent_soft; }
-row.me-row .me-row-star { color: @luma_favourite; -gtk-icon-size: 11px; }
-row.me-recording-row { background: @luma_record_wash; border-radius: var(--lumaui-card-radius);
+row.me-row { min-height: 40px; padding: 9px 12px; margin: 1px 0; border-radius: var(--SunoUI-card-radius); color: @Suno_ink; }
+row.me-row:hover { background: @Suno_hover; }
+row.me-row:selected { background: @Suno_chip;
+  box-shadow: inset 0 1px 0 @Suno_chip_highlight, 0 0 0 1px @Suno_chip_ring, 0 1px 2px @Suno_chip_shadow, 0 3px 8px -3px @Suno_chip_drop; }
+row.me-row .me-row-title { color: @Suno_ink; font-weight: 600; }
+row.me-row .me-row-meta { font-weight: var(--SunoUI-t-body-weight); }
+row.me-row .me-row-hit { color: @Suno_muted; margin-top: 3px; }
+row.me-row .me-row-hit label { font-size: calc(var(--SunoUI-t-body-size) * .9230769); }
+row.me-row .me-row-hit-match { color: @Suno_ink; background: @Suno_accent_soft; }
+row.me-row .me-row-star { color: @Suno_favourite; -gtk-icon-size: 11px; }
+row.me-recording-row { background: @Suno_record_wash; border-radius: var(--SunoUI-card-radius);
   padding: 9px 12px; min-height: 38px; margin: 1px 0; }
-row.me-recording-row .me-recording-dot { background: @luma_record; border-radius: 100%; }
-row.me-recording-row .me-recording-elapsed { color: @luma_record; font-weight: 600; }
+row.me-recording-row .me-recording-dot { background: @Suno_record; border-radius: 100%; }
+row.me-recording-row .me-recording-elapsed { color: @Suno_record; font-weight: 600; }
 
 box.me-deck-host { margin-top: 32px; }
 box.me-deck-host.recording { margin-top: 29px; }
 box.me-recording-deck {
-  background: @luma_media_deck;
-  border-radius: var(--lumaui-media-transport-memo-radius);
-  box-shadow: inset 0 2px 6px @luma_media_deck_shade, inset 0 0 0 1px @luma_media_deck_ring, 0 1px 0 @luma_media_deck_lip;
+  background: @Suno_media_deck;
+  border-radius: var(--SunoUI-media-transport-memo-radius);
+  box-shadow: inset 0 2px 6px @Suno_media_deck_shade, inset 0 0 0 1px @Suno_media_deck_ring, 0 1px 0 @Suno_media_deck_lip;
   padding: 18px 22px 22px;
 }
 box.me-recording-deck .me-live-clock { margin-bottom: 12px; font-variant-numeric: tabular-nums; }
-box.me-recording-deck .me-live-clock label:first-child { font-size: calc(var(--lumaui-t-display-size) * .8888889); font-weight: 250; }
-box.me-recording-deck .me-live-clock label:last-child { font-size: calc(var(--lumaui-t-display-size) * .3888889); font-weight: 500; color: @luma_muted; }
+box.me-recording-deck .me-live-clock label:first-child { font-size: calc(var(--SunoUI-t-display-size) * .8888889); font-weight: 250; }
+box.me-recording-deck .me-live-clock label:last-child { font-size: calc(var(--SunoUI-t-display-size) * .3888889); font-weight: 500; color: @Suno_muted; }
 
 box.me-transcript { margin-top: 31px; border-spacing: 17px; }
 box.me-transcript .me-transcript-paragraph { border-spacing: 4px; }
-box.me-transcript .me-speaker { color: @luma_ink_secondary; font-weight: 600; }
-box.me-transcript label.me-word { color: @luma_muted; font-size: calc(var(--lumaui-t-lead-size) * 1.2142857); line-height: 1.4; }
-box.me-transcript label.me-word.said { color: @luma_ink; }
-box.me-transcript label.me-word.current { color: @luma_accent_ink; }
-box.me-transcript .me-no-speech { color: @luma_muted; font-size: var(--lumaui-t-lead-size); line-height: 1.4; }
-box.me-transcript .me-no-speech-icon { color: @luma_muted; }
-box.me-transcript.live label.me-live-word { color: @luma_ink; }
-box.me-transcript.live .me-live-caret { background: @luma_record; }
+box.me-transcript .me-speaker { color: @Suno_ink_secondary; font-weight: 600; }
+box.me-transcript label.me-word { color: @Suno_muted; font-size: calc(var(--SunoUI-t-lead-size) * 1.2142857); line-height: 1.4; }
+box.me-transcript label.me-word.said { color: @Suno_ink; }
+box.me-transcript label.me-word.current { color: @Suno_accent_ink; }
+box.me-transcript .me-no-speech { color: @Suno_muted; font-size: var(--SunoUI-t-lead-size); line-height: 1.4; }
+box.me-transcript .me-no-speech-icon { color: @Suno_muted; }
+box.me-transcript.live label.me-live-word { color: @Suno_ink; }
+box.me-transcript.live .me-live-caret { background: @Suno_record; }
 
 /* Phone (under 560, v71 "Memos: the player"): the deck spans the 16 px gutter and leads 20 under the
    title island; the transcript is the page. The transport's own phone shape is the kit's (MediaTransport). */
@@ -61,29 +61,29 @@ box.me-transcript.live .me-live-caret { background: @luma_record; }
 .me-page.phone box.me-transcript label.me-word { line-height: 26.35px; }
 .me-page.phone box.me-transcript label.me-speaker { line-height: 20.15px; }
 /* v71 on a phone: words not yet heard are dimmed, the live ones too until they are played back. */
-.me-page.phone box.me-transcript.live label.me-live-word { color: @luma_muted; }
+.me-page.phone box.me-transcript.live label.me-live-word { color: @Suno_muted; }
 
 /* The phone's list (v71 #w-memos.phone .melist): rows 8 from the edge, 1 apart; a group's heading 10 above it
    and 18 in, 5 over its first row (.megh 10/4 plus the list's 1 px gap). */
-window.lumaui-phone #me-sidebar list.luma-navigation-list { margin-left: -2px; margin-right: -2px; }
-window.lumaui-phone #me-sidebar list.luma-navigation-list > row.luma-navigation-section { margin-top: 10px; margin-bottom: 5px; }
-window.lumaui-phone #me-sidebar row.me-row { margin: 0 0 1px; }
+window.SunoUI-phone #me-sidebar list.Suno-navigation-list { margin-left: -2px; margin-right: -2px; }
+window.SunoUI-phone #me-sidebar list.Suno-navigation-list > row.Suno-navigation-section { margin-top: 10px; margin-bottom: 5px; }
+window.SunoUI-phone #me-sidebar row.me-row { margin: 0 0 1px; }
 /* v71 .merow b / small and .menone on the phone's list */
-window.lumaui-phone #me-sidebar row.me-row .me-row-title { font-size: 13.5px; }
-window.lumaui-phone #me-sidebar row.me-row .me-row-meta { font-size: 12px; letter-spacing: 0.12px; font-feature-settings: "tnum"; }
-window.lumaui-phone #me-sidebar row.me-none-row { padding: 0; margin: 0; min-height: 0; background: none; }
-window.lumaui-phone #me-sidebar label.me-none { font-size: 12.5px; font-weight: 400; }
+window.SunoUI-phone #me-sidebar row.me-row .me-row-title { font-size: 13.5px; }
+window.SunoUI-phone #me-sidebar row.me-row .me-row-meta { font-size: 12px; letter-spacing: 0.12px; font-feature-settings: "tnum"; }
+window.SunoUI-phone #me-sidebar row.me-none-row { padding: 0; margin: 0; min-height: 0; background: none; }
+window.SunoUI-phone #me-sidebar label.me-none { font-size: 12.5px; font-weight: 400; }
 /* v71 .mephbar: the memo's bar keeps 6 between its keys; Done beside the recording well is its
    words with 24 each side (.mephbar:has(.merec2) .medone2). */
-window.lumaui-phone #me-action box.lumaui-ac-row { border-spacing: 6px; }
-window.lumaui-phone #me-action button.lumaui-bar-button.me-done { padding: 0 24px; }
+window.SunoUI-phone #me-action box.SunoUI-ac-row { border-spacing: 6px; }
+window.SunoUI-phone #me-action button.SunoUI-bar-button.me-done { padding: 0 24px; }
 /* v71 .metime.big small: the tenths 2 after the time */
-.me-page.phone box.me-recording-deck .me-live-clock label.lumaui-t-unit { margin-left: 2px; }
+.me-page.phone box.me-recording-deck .me-live-clock label.SunoUI-t-unit { margin-left: 2px; }
 /* v71 .menew2: Start recording (.merecgo) is 14.5/650 with a 12 px dot, 8 before its words; the noise switch
    sits 12 under the microphones */
-#me-list-action button.lumaui-panel-key.record label { font-size: 14.5px; }
-#me-list-action button.lumaui-panel-key.record > box { border-spacing: 8px; }
-#me-list-action button.lumaui-panel-key.record box.lumaui-record-dot { min-width: 12px; min-height: 12px; border-radius: 6px; }
-#me-list-action button.lumaui-panel-row.switch { margin-top: 4px; }
+#me-list-action button.SunoUI-panel-key.record label { font-size: 14.5px; }
+#me-list-action button.SunoUI-panel-key.record > box { border-spacing: 8px; }
+#me-list-action button.SunoUI-panel-key.record box.SunoUI-record-dot { min-width: 12px; min-height: 12px; border-radius: 6px; }
+#me-list-action button.SunoUI-panel-row.switch { margin-top: 4px; }
 /* v71 .melbar / .mephbar wrap the grown panel onto its own line, 12 above the keys */
-#me-action scrolledwindow.lumaui-ac-panel, #me-list-action scrolledwindow.lumaui-ac-panel { margin-bottom: 10px; }
+#me-action scrolledwindow.SunoUI-ac-panel, #me-list-action scrolledwindow.SunoUI-ac-panel { margin-bottom: 10px; }

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
 #
-# Assemble the Luma Platform runtime, SDK and platform extensions from RPMs.
+# Assemble the Suno Platform runtime, SDK and platform extensions from RPMs.
 #
 #   build-runtime.sh [COMPONENT...]
 #
@@ -9,7 +9,7 @@
 # Platform, Sdk and Platform.GL.default). Each component's overlay under
 # packaging/flatpak/runtime/ is rendered to a container.yaml and assembled by
 # scripts/depot/runtime/assemble-from-rpms.py inside the tools container, from
-# Fedora 44 and the Luma repository made by collect-luma-rpms.sh. Results land
+# Fedora 44 and the Suno repository made by collect-Suno-rpms.sh. Results land
 # in $DEPOT_ROOT/out/runtime/<COMPONENT>/ and are published by publish-runtime.sh.
 set -euo pipefail
 . "$(dirname -- "$0")/lib.sh"
@@ -23,16 +23,16 @@ components=("$@")
 build_id=${DEPOT_BUILD_ID:-$(date -u +%Y%m%d.%H%M)}
 
 [ -f "$depot_rpms/repodata/repomd.xml" ] ||
-  depot_die "no Luma package repository at $depot_rpms; run collect-luma-rpms.sh"
+  depot_die "no Suno package repository at $depot_rpms; run collect-Suno-rpms.sh"
 install -d -m 0755 "$DEPOT_ROOT/work/runtime" "$depot_out/runtime" "$depot_logs"
 
 for component in "${components[@]}"; do
-  overlay="packaging/flatpak/runtime/org.projectluma.$component.yaml"
+  overlay="packaging/flatpak/runtime/org.projectSuno.$component.yaml"
   [ -f "$depot_repo_root/$overlay" ] || depot_die "unknown component $component"
   spec="$DEPOT_ROOT/work/runtime/$component.container.yaml"
   result="$depot_out/runtime/$component"
   log="$depot_logs/runtime-$component-$build_id.log"
-  name=$(printf 'luma-%s' "$component" | tr 'A-Z.' 'a-z-')
+  name=$(printf 'Suno-%s' "$component" | tr 'A-Z.' 'a-z-')
   extra=()
   if [ -n "${DEPOT_BUILD_MIN_FREE_BYTES:-}" ]; then
     [ "$DEPOT_BUILD_MIN_FREE_BYTES" = 10737418240 ] || depot_die "private builder reserve must be exactly 10 GiB"

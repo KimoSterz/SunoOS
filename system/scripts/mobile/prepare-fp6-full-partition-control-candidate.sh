@@ -52,7 +52,7 @@ candidate_footer_sha=$(tail -c 64 "$candidate" | sha256sum | awk '{print $1}')
 [ "$candidate_footer_sha" = "$stock_footer_sha" ] || die 'AVB footer differs'
 
 {
-	printf 'LUMA_FP6_FULL_PARTITION_CONTROL_VERSION=1\n'
+	printf 'SUNO_FP6_FULL_PARTITION_CONTROL_VERSION=1\n'
 	printf 'STOCK_BOOT_SHA256=%s\n' "$stock_sha"
 	printf 'STOCK_BOOT_SIZE=%s\n' "$stock_size"
 	printf 'CONTROL_BOOT_SHA256=%s\n' "$control_sha"

@@ -1,6 +1,6 @@
 # Release delivery
 
-Luma delivers OS updates, application updates and installation media separately.
+Suno delivers OS updates, application updates and installation media separately.
 A source commit or successful build does not publish a release. Each delivery
 must retain its source identity, actual qualification results and signatures.
 

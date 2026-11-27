@@ -1,5 +1,5 @@
 {
-  "schema": "org.projectluma.public-patch-license-inheritance/v1",
+  "schema": "org.projectSuno.public-patch-license-inheritance/v1",
   "source_snapshot_sha256": "6fd2a4fccad0a356c8659c70c75ae5a014cbaa56852170ac56472276290a594a",
   "rule": "A downstream patch does not erase the modified upstream source license. Package aggregate terms and partial ledger license lists are evidence for component attribution, not permission to blanket relicense every file. Explicit per-file SPDX/copyright notices control. Unknown families remain listed honestly.",
   "families": [
@@ -8,35 +8,35 @@
       "path": "patches/android-device-waydroid/",
       "status": "upstream-license-not-established-by-this-audit",
       "observed_patch_headers": {},
-      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Luma Apache default automatically."
+      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Suno Apache default automatically."
     },
     {
       "family": "android-frameworks-base",
       "path": "patches/android-frameworks-base/",
       "status": "upstream-license-not-established-by-this-audit",
       "observed_patch_headers": {},
-      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Luma Apache default automatically."
+      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Suno Apache default automatically."
     },
     {
       "family": "android-frameworks-native",
       "path": "patches/android-frameworks-native/",
       "status": "upstream-license-not-established-by-this-audit",
       "observed_patch_headers": {},
-      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Luma Apache default automatically."
+      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Suno Apache default automatically."
     },
     {
       "family": "android-hardware-libhardware",
       "path": "patches/android-hardware-libhardware/",
       "status": "upstream-license-not-established-by-this-audit",
       "observed_patch_headers": {},
-      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Luma Apache default automatically."
+      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Suno Apache default automatically."
     },
     {
       "family": "android-hardware-waydroid",
       "path": "patches/android-hardware-waydroid/",
       "status": "documented",
       "observed_patch_headers": {
-        "patches/android-hardware-waydroid/working-tree-20260912/luma-window-frame.h": [
+        "patches/android-hardware-waydroid/working-tree-20260912/Suno-window-frame.h": [
           "Apache-2.0"
         ],
         "patches/android-hardware-waydroid/working-tree-20260912/prairie-titlebar.cpp": [
@@ -45,16 +45,16 @@
         "patches/android-hardware-waydroid/working-tree-20260912/prairie-titlebar.h": [
           "Apache-2.0"
         ],
-        "patches/android-hardware-waydroid/native/luma-rgb-copy-bounds.h": [
+        "patches/android-hardware-waydroid/native/Suno-rgb-copy-bounds.h": [
           "Apache-2.0"
         ],
-        "patches/android-hardware-waydroid/native/luma-task-lifetime.h": [
+        "patches/android-hardware-waydroid/native/Suno-task-lifetime.h": [
           "Apache-2.0"
         ],
-        "patches/android-hardware-waydroid/native/luma-task-resize.h": [
+        "patches/android-hardware-waydroid/native/Suno-task-resize.h": [
           "Apache-2.0"
         ],
-        "patches/android-hardware-waydroid/native/luma-window-callbacks.h": [
+        "patches/android-hardware-waydroid/native/Suno-window-callbacks.h": [
           "Apache-2.0"
         ]
       },
@@ -73,28 +73,28 @@
       "path": "patches/android-lineage-sdk/",
       "status": "upstream-license-not-established-by-this-audit",
       "observed_patch_headers": {},
-      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Luma Apache default automatically."
+      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Suno Apache default automatically."
     },
     {
       "family": "android-mesa",
       "path": "patches/android-mesa/",
       "status": "upstream-license-not-established-by-this-audit",
       "observed_patch_headers": {},
-      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Luma Apache default automatically."
+      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Suno Apache default automatically."
     },
     {
       "family": "android-soong",
       "path": "patches/android-soong/",
       "status": "upstream-license-not-established-by-this-audit",
       "observed_patch_headers": {},
-      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Luma Apache default automatically."
+      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Suno Apache default automatically."
     },
     {
       "family": "android-vendor-extra",
       "path": "patches/android-vendor-extra/",
       "status": "upstream-license-not-established-by-this-audit",
       "observed_patch_headers": {},
-      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before distribution; do not apply the original-Luma Apache default automatically."
+      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before distribution; do not apply the original-Suno Apache default automatically."
     },
     {
       "family": "cage",
@@ -129,7 +129,7 @@
       "path": "patches/fwupd/",
       "status": "upstream-license-not-established-by-this-audit",
       "observed_patch_headers": {},
-      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Luma Apache default automatically."
+      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Suno Apache default automatically."
     },
     {
       "family": "gnome-calculator",
@@ -167,43 +167,43 @@
       "path": "patches/gnome-control-center/",
       "status": "documented",
       "observed_patch_headers": {
-        "patches/gnome-control-center/0042-lumaui-appearance-page.patch": [
+        "patches/gnome-control-center/0042-SunoUI-appearance-page.patch": [
           "GPL-2.0-or-later"
         ],
-        "patches/gnome-control-center/0043-lumaui-discovery-model.patch": [
+        "patches/gnome-control-center/0043-SunoUI-discovery-model.patch": [
           "GPL-2.0-or-later"
         ],
         "patches/gnome-control-center/0069-settings-retain-decoded-artwork.patch": [
           "GPL-2.0-or-later"
         ],
-        "patches/gnome-control-center/0006-luma-dash-settings-panel.patch": [
+        "patches/gnome-control-center/0006-Suno-dash-settings-panel.patch": [
           "GPL-2.0-or-later"
         ],
-        "patches/gnome-control-center/0014-luma-background-activity-page.patch": [
+        "patches/gnome-control-center/0014-Suno-background-activity-page.patch": [
           "GPL-2.0-or-later"
         ],
-        "patches/gnome-control-center/0016-luma-cast-settings-page.patch": [
+        "patches/gnome-control-center/0016-Suno-cast-settings-page.patch": [
           "GPL-2.0-or-later"
         ],
-        "patches/gnome-control-center/0028-lumaui-fixture-model.patch": [
+        "patches/gnome-control-center/0028-SunoUI-fixture-model.patch": [
           "GPL-2.0-or-later"
         ],
-        "patches/gnome-control-center/0033-lumaui-bluetooth-fixture.patch": [
+        "patches/gnome-control-center/0033-SunoUI-bluetooth-fixture.patch": [
           "GPL-2.0-or-later"
         ],
-        "patches/gnome-control-center/0034-lumaui-page-modules.patch": [
+        "patches/gnome-control-center/0034-SunoUI-page-modules.patch": [
           "GPL-2.0-or-later"
         ],
-        "patches/gnome-control-center/0035-lumaui-windows-model.patch": [
+        "patches/gnome-control-center/0035-SunoUI-windows-model.patch": [
           "GPL-2.0-or-later"
         ],
-        "patches/gnome-control-center/0040-lumaui-shelf-page.patch": [
+        "patches/gnome-control-center/0040-SunoUI-shelf-page.patch": [
           "GPL-2.0-or-later"
         ],
-        "patches/gnome-control-center/0046-lumaui-live-network-adapter.patch": [
+        "patches/gnome-control-center/0046-SunoUI-live-network-adapter.patch": [
           "GPL-2.0-or-later"
         ],
-        "patches/gnome-control-center/0047-lumaui-display-draft-model.patch": [
+        "patches/gnome-control-center/0047-SunoUI-display-draft-model.patch": [
           "GPL-2.0-or-later"
         ],
         "patches/gnome-control-center/0051-settings-add-accessibility-routes-and-bounded-native-reader-action.patch": [
@@ -237,63 +237,63 @@
       "path": "patches/gnome-mobile/",
       "status": "upstream-license-not-established-by-this-audit",
       "observed_patch_headers": {},
-      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Luma Apache default automatically."
+      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Suno Apache default automatically."
     },
     {
       "family": "gnome-settings-daemon",
       "path": "patches/gnome-settings-daemon/",
       "status": "upstream-license-not-established-by-this-audit",
       "observed_patch_headers": {},
-      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Luma Apache default automatically."
+      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Suno Apache default automatically."
     },
     {
       "family": "gnome-shell",
       "path": "patches/gnome-shell/",
       "status": "documented",
       "observed_patch_headers": {
-        "patches/gnome-shell/0100-luma-ask-about-new-display-arrangements.patch": [
+        "patches/gnome-shell/0100-Suno-ask-about-new-display-arrangements.patch": [
           "GPL-2.0-or-later"
         ],
-        "patches/gnome-shell/0102-luma-every-window-gets-luma-corners.patch": [
+        "patches/gnome-shell/0102-Suno-every-window-gets-Suno-corners.patch": [
           "GPL-2.0-or-later"
         ],
-        "patches/gnome-shell/0103-luma-log-windows-that-flash.patch": [
+        "patches/gnome-shell/0103-Suno-log-windows-that-flash.patch": [
           "GPL-2.0-or-later"
         ],
-        "patches/gnome-shell/0044-luma-dock-tile-geometry.patch": [
+        "patches/gnome-shell/0044-Suno-dock-tile-geometry.patch": [
           "GPL-2.0-or-later"
         ],
-        "patches/gnome-shell/0060-luma-grid-layout.patch": [
+        "patches/gnome-shell/0060-Suno-grid-layout.patch": [
           "GPL-2.0-or-later"
         ],
-        "patches/gnome-shell/0059-luma-media-live-island.patch": [
+        "patches/gnome-shell/0059-Suno-media-live-island.patch": [
           "GPL-2.0-or-later"
         ],
-        "patches/gnome-shell/0064-luma-native-grid.patch": [
+        "patches/gnome-shell/0064-Suno-native-grid.patch": [
           "GPL-2.0-or-later"
         ],
-        "patches/gnome-shell/0071-luma-grid-centred-scroll.patch": [
+        "patches/gnome-shell/0071-Suno-grid-centred-scroll.patch": [
           "GPL-2.0-or-later"
         ],
-        "patches/gnome-shell/0078-luma-sticky-dock-chrome.patch": [
+        "patches/gnome-shell/0078-Suno-sticky-dock-chrome.patch": [
           "GPL-2.0-or-later"
         ],
-        "patches/gnome-shell/0144-luma-capture-thumbnail-drag.patch": [
+        "patches/gnome-shell/0144-Suno-capture-thumbnail-drag.patch": [
           "GPL-2.0-or-later"
         ],
-        "patches/gnome-shell/0145-luma-now-playing-island-stays-whole.patch": [
+        "patches/gnome-shell/0145-Suno-now-playing-island-stays-whole.patch": [
           "GPL-2.0-or-later"
         ],
-        "patches/gnome-shell/0174-luma-three-fingers-switch-app-four-switch-workspace.patch": [
+        "patches/gnome-shell/0174-Suno-three-fingers-switch-app-four-switch-workspace.patch": [
           "GPL-2.0-or-later"
         ],
-        "patches/gnome-shell/0192-luma-studio-notification-lip.patch": [
+        "patches/gnome-shell/0192-Suno-studio-notification-lip.patch": [
           "GPL-2.0-or-later"
         ],
-        "patches/gnome-shell/0248-luma-native-symbolic-and-workarea-layout.patch": [
+        "patches/gnome-shell/0248-Suno-native-symbolic-and-workarea-layout.patch": [
           "GPL-2.0-or-later"
         ],
-        "patches/gnome-shell/0258-luma-unresponsive-dialog-material.patch": [
+        "patches/gnome-shell/0258-Suno-unresponsive-dialog-material.patch": [
           "GPL-2.0-or-later"
         ]
       },
@@ -311,21 +311,21 @@
       "path": "patches/gnome-text-editor/",
       "status": "upstream-license-not-established-by-this-audit",
       "observed_patch_headers": {},
-      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Luma Apache default automatically."
+      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Suno Apache default automatically."
     },
     {
       "family": "greetd",
       "path": "patches/greetd/",
       "status": "upstream-license-not-established-by-this-audit",
       "observed_patch_headers": {},
-      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Luma Apache default automatically."
+      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Suno Apache default automatically."
     },
     {
       "family": "gtk3",
       "path": "patches/gtk3/",
       "status": "upstream-license-not-established-by-this-audit",
       "observed_patch_headers": {},
-      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Luma Apache default automatically."
+      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Suno Apache default automatically."
     },
     {
       "family": "gtk4",
@@ -347,7 +347,7 @@
       "path": "patches/ibus/",
       "status": "upstream-license-not-established-by-this-audit",
       "observed_patch_headers": {},
-      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Luma Apache default automatically."
+      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Suno Apache default automatically."
     },
     {
       "family": "iio-sensor-proxy",
@@ -364,7 +364,7 @@
       "path": "patches/latinime/",
       "status": "upstream-license-not-established-by-this-audit",
       "observed_patch_headers": {},
-      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Luma Apache default automatically."
+      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Suno Apache default automatically."
     },
     {
       "family": "libadwaita",
@@ -400,7 +400,7 @@
       "path": "patches/libhandy/",
       "status": "upstream-license-not-established-by-this-audit",
       "observed_patch_headers": {},
-      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Luma Apache default automatically."
+      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Suno Apache default automatically."
     },
     {
       "family": "libqmi-fp6",
@@ -426,7 +426,7 @@
           "GPL-2.0"
         ]
       },
-      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Luma Apache default automatically."
+      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Suno Apache default automatically."
     },
     {
       "family": "linux-milos",
@@ -437,7 +437,7 @@
           "GPL-2.0"
         ]
       },
-      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Luma Apache default automatically."
+      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Suno Apache default automatically."
     },
     {
       "family": "linux-milos-fingerprint",
@@ -472,35 +472,35 @@
       "path": "patches/linux-qcomtee-control-v18/",
       "status": "upstream-license-not-established-by-this-audit",
       "observed_patch_headers": {},
-      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Luma Apache default automatically."
+      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Suno Apache default automatically."
     },
     {
       "family": "linux-qcomtee-control-v22",
       "path": "patches/linux-qcomtee-control-v22/",
       "status": "upstream-license-not-established-by-this-audit",
       "observed_patch_headers": {},
-      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Luma Apache default automatically."
+      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Suno Apache default automatically."
     },
     {
       "family": "linux-qcomtee-control-v23",
       "path": "patches/linux-qcomtee-control-v23/",
       "status": "upstream-license-not-established-by-this-audit",
       "observed_patch_headers": {},
-      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Luma Apache default automatically."
+      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Suno Apache default automatically."
     },
     {
       "family": "linux-qcomtee-control-v24",
       "path": "patches/linux-qcomtee-control-v24/",
       "status": "upstream-license-not-established-by-this-audit",
       "observed_patch_headers": {},
-      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Luma Apache default automatically."
+      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Suno Apache default automatically."
     },
     {
       "family": "linux-qcomtee-control-v25",
       "path": "patches/linux-qcomtee-control-v25/",
       "status": "upstream-license-not-established-by-this-audit",
       "observed_patch_headers": {},
-      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Luma Apache default automatically."
+      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Suno Apache default automatically."
     },
     {
       "family": "linux-qseecom",
@@ -514,52 +514,52 @@
           "GPL-2.0"
         ]
       },
-      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Luma Apache default automatically."
+      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Suno Apache default automatically."
     },
     {
       "family": "linux-qseecom-dedicated-heaps",
       "path": "patches/linux-qseecom-dedicated-heaps/",
       "status": "upstream-license-not-established-by-this-audit",
       "observed_patch_headers": {},
-      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Luma Apache default automatically."
+      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Suno Apache default automatically."
     },
     {
       "family": "linux-qseecom-qseelog",
       "path": "patches/linux-qseecom-qseelog/",
       "status": "upstream-license-not-established-by-this-audit",
       "observed_patch_headers": {},
-      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Luma Apache default automatically."
+      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Suno Apache default automatically."
     },
     {
       "family": "linux-qseecom-shmbridge",
       "path": "patches/linux-qseecom-shmbridge/",
       "status": "upstream-license-not-established-by-this-audit",
       "observed_patch_headers": {},
-      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Luma Apache default automatically."
+      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Suno Apache default automatically."
     },
     {
       "family": "linux-qseecom-stock-heaps",
       "path": "patches/linux-qseecom-stock-heaps/",
       "status": "upstream-license-not-established-by-this-audit",
       "observed_patch_headers": {},
-      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Luma Apache default automatically."
+      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Suno Apache default automatically."
     },
     {
       "family": "linux-zumapro",
       "path": "patches/linux-zumapro/",
       "status": "upstream-license-not-established-by-this-audit",
       "observed_patch_headers": {
-        "patches/linux-zumapro/0001-luma-tokay-embedded-diagnostic.patch": [
+        "patches/linux-zumapro/0001-Suno-tokay-embedded-diagnostic.patch": [
           "GPL-2.0-only"
         ],
-        "patches/linux-zumapro/0002-luma-tokay-persist-embedded-dtb.patch": [
+        "patches/linux-zumapro/0002-Suno-tokay-persist-embedded-dtb.patch": [
           "GPL-2.0-only"
         ],
-        "patches/linux-zumapro/0003-luma-tokay-copy-embedded-dtb.patch": [
+        "patches/linux-zumapro/0003-Suno-tokay-copy-embedded-dtb.patch": [
           "GPL-2.0-only"
         ]
       },
-      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Luma Apache default automatically."
+      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Suno Apache default automatically."
     },
     {
       "family": "lpac",
@@ -597,7 +597,7 @@
       "path": "patches/mutter/",
       "status": "upstream-license-not-established-by-this-audit",
       "observed_patch_headers": {},
-      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Luma Apache default automatically."
+      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Suno Apache default automatically."
     },
     {
       "family": "nautilus",
@@ -607,10 +607,10 @@
         "patches/nautilus/0140-filer-v71-phone-tap-opens-folder.patch": [
           "GPL-3.0-or-later"
         ],
-        "patches/nautilus/0013-luma-applications-location.patch": [
+        "patches/nautilus/0013-Suno-applications-location.patch": [
           "GPL-3.0-or-later"
         ],
-        "patches/nautilus/0015-luma-application-installer-drop.patch": [
+        "patches/nautilus/0015-Suno-application-installer-drop.patch": [
           "GPL-3.0-or-later"
         ],
         "patches/nautilus/0017-nautilus-implement-Atlas-islands-and-native-Columns-.patch": [
@@ -653,7 +653,7 @@
       "path": "patches/ostree/",
       "status": "documented",
       "observed_patch_headers": {
-        "patches/ostree/luma-test-aboot-overlay-native.py": [
+        "patches/ostree/Suno-test-aboot-overlay-native.py": [
           "Apache-2.0"
         ]
       },
@@ -666,7 +666,7 @@
         "document": "docs/devices.md",
         "line": 134
       },
-      "note": "The .patch files modify ostree sources and inherit their LGPL terms. luma-aboot-overlay-native-control.c is a build-time test program with no header of its own."
+      "note": "The .patch files modify ostree sources and inherit their LGPL terms. Suno-aboot-overlay-native-control.c is a build-time test program with no header of its own."
     },
     {
       "family": "phoc",
@@ -708,18 +708,18 @@
         "document": "docs/research/component-ledger.md",
         "line": 30
       },
-      "note": "Luma-owned theme assets have separate Apache-2.0 notices; preserve asset notices."
+      "note": "Suno-owned theme assets have separate Apache-2.0 notices; preserve asset notices."
     },
     {
       "family": "ptyxis",
       "path": "patches/ptyxis/",
       "status": "upstream-license-not-established-by-this-audit",
       "observed_patch_headers": {
-        "patches/ptyxis/0001-luma-terminal-native-kit.patch": [
+        "patches/ptyxis/0001-Suno-terminal-native-kit.patch": [
           "GPL-3.0-or-later"
         ]
       },
-      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Luma Apache default automatically."
+      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Suno Apache default automatically."
     },
     {
       "family": "qsee-supplicant",
@@ -768,7 +768,7 @@
         "GPL-2.0-or-later"
       ],
       "evidence": {
-        "document": "packaging/rpm/speech-dispatcher-luma.spec",
+        "document": "packaging/rpm/speech-dispatcher-Suno.spec",
         "field": "License"
       },
       "note": "Aggregate package expression, not a substitute for each modified file's upstream notice."
@@ -778,11 +778,11 @@
       "path": "patches/stevia/",
       "status": "upstream-license-not-established-by-this-audit",
       "observed_patch_headers": {
-        "patches/stevia/0001-luma-latinime-completer.patch": [
+        "patches/stevia/0001-Suno-latinime-completer.patch": [
           "GPL-3.0-or-later"
         ]
       },
-      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Luma Apache default automatically."
+      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Suno Apache default automatically."
     },
     {
       "family": "sushi",
@@ -793,7 +793,7 @@
           "GPL-2.0-or-later"
         ]
       },
-      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Luma Apache default automatically."
+      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Suno Apache default automatically."
     },
     {
       "family": "tiling-shell",
@@ -814,7 +814,7 @@
       "path": "patches/u-boot-zumapro/",
       "status": "upstream-license-not-established-by-this-audit",
       "observed_patch_headers": {},
-      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Luma Apache default automatically."
+      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Suno Apache default automatically."
     },
     {
       "family": "webkitgtk",
@@ -827,7 +827,7 @@
         "MIT AND LGPL-2.1-only AND BSD-3-Clause AND (Apache-2.0 OR GPL-3.0-or-later)"
       ],
       "evidence": {
-        "document": "packaging/rpm/webkitgtk-luma.spec",
+        "document": "packaging/rpm/webkitgtk-Suno.spec",
         "field": "License"
       },
       "note": "Aggregate package expression, not a substitute for each modified file's upstream notice."
@@ -837,7 +837,7 @@
       "path": "patches/weston/",
       "status": "upstream-license-not-established-by-this-audit",
       "observed_patch_headers": {},
-      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Luma Apache default automatically."
+      "note": "Keep patch copyright/author and upstream file notices. Determine the exact modified upstream file license before adding an annotation; do not apply the original-Suno Apache default automatically."
     },
     {
       "family": "wine",

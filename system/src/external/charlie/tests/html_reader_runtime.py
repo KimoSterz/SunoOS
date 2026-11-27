@@ -12,7 +12,7 @@ import time
 import gi
 gi.require_version('Gtk','4.0');gi.require_version('WebKit','6.0')
 from gi.repository import Gtk, GLib
-from charlie_luma.html_reader import reader
+from charlie_Suno.html_reader import reader
 
 requests=[]
 class Handler(BaseHTTPRequestHandler):

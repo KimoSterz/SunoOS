@@ -6,7 +6,7 @@ import St from 'gi://St';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 import * as MessageTray from 'resource:///org/gnome/shell/ui/messageTray.js';
-import {getNotificationTray} from 'resource:///org/gnome/shell/ui/lumaNotificationBeacon.js';
+import {getNotificationTray} from 'resource:///org/gnome/shell/ui/SunoNotificationBeacon.js';
 
 export const STATES = ['idle', 'pill-small', 'pill-big', 'card-reply', 'card-actions',
     'card-call', 'tray-full', 'tray-empty', 'quick-main', 'quick-wifi',
@@ -120,6 +120,6 @@ export function assertState(name, viewport) {
     const receipt = {name, viewport: [monitor.width, monitor.height], saved, resolved,
         bounds: {x, y, width, height},
         assertions, hardware_services_verified: false, temporal_privacy_verified: false};
-    console.log(`LUMA_NATIVE_STATE ${JSON.stringify(receipt)}`);
+    console.log(`SUNO_NATIVE_STATE ${JSON.stringify(receipt)}`);
     return receipt;
 }

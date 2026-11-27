@@ -36,7 +36,7 @@ function paint(actor) {
     if (!(actor instanceof St.Widget) || !actor.get_stage() || !actor.visible || !actor.mapped || actor.get_paint_opacity() === 0)
         return null;
     // Scrollbars and the 1px dividers between segments are not fills.
-    if (actor instanceof St.ScrollBar || actor.get_parent() instanceof St.ScrollBar || actor.has_style_class_name?.('luma-status-seam'))
+    if (actor instanceof St.ScrollBar || actor.get_parent() instanceof St.ScrollBar || actor.has_style_class_name?.('Suno-status-seam'))
         return null;
     const node = actor.get_theme_node();
     const out = {};
@@ -48,7 +48,7 @@ function paint(actor) {
 }
 async function setMode(mode) {
     new Gio.Settings({schema_id: 'org.gnome.desktop.interface'}).set_string('color-scheme', mode === 'dark' ? 'prefer-dark' : 'default');
-    new Gio.Settings({schema_id: 'org.project_luma.shell-state'}).set_string('surface-treatment', mode);
+    new Gio.Settings({schema_id: 'org.projectSuno.shell-state'}).set_string('surface-treatment', mode);
     await sleep(2500);
 }
 async function work() {
@@ -71,11 +71,11 @@ async function work() {
     // Everything inside the island except its own material, stroke, shadows
     // and wash layers: none of these may paint.
     const inner = () => descend(material).filter(a => a !== material).map(paint).filter(Boolean)
-        .filter(p => !/luma-shelf-(material|shadow|stroke)|luma-status-wash|luma-island-wash|luma-media-art/.test(p.classes));
+        .filter(p => !/Suno-shelf-(material|shadow|stroke)|Suno-status-wash|Suno-island-wash|Suno-media-art/.test(p.classes));
     const quick = Main.panel.statusArea.quickSettings;
-    const clock = descend(quick).find(a => a.has_style_class_name?.('luma-status-clock'));
-    const well = descend(material).find(a => a.has_style_class_name?.('luma-well'));
-    const wellItem = () => well && descend(well).find(a => (a.has_style_class_name?.('luma-well-item') || a.has_style_class_name?.('panel-button')) && a.mapped && a.width > 0);
+    const clock = descend(quick).find(a => a.has_style_class_name?.('Suno-status-clock'));
+    const well = descend(material).find(a => a.has_style_class_name?.('Suno-well'));
+    const wellItem = () => well && descend(well).find(a => (a.has_style_class_name?.('Suno-well-item') || a.has_style_class_name?.('panel-button')) && a.mapped && a.width > 0);
     const glyph = descend(quick).find(a => a.has_style_class_name?.('system-status-icon') && a.mapped);
     // What the Well shows: every icon, with its ink and size.
     for (const icon of descend(well ?? material).filter(a => a instanceof St.Icon && a.mapped)) {
@@ -95,7 +95,7 @@ async function work() {
             const hovered = inner();
             const whole = paint(material);
             check(`${mode}: hovering the ${name} paints no sub-highlight`, hovered.length === 0, JSON.stringify(hovered));
-            check(`${mode}: hovering the ${name} washes the whole island once`, !!whole?.boxShadow && material.has_style_class_name('luma-island-hover'),
+            check(`${mode}: hovering the ${name} washes the whole island once`, !!whole?.boxShadow && material.has_style_class_name('Suno-island-hover'),
                 JSON.stringify(whole));
             await shot(`island-${mode}-hover-${name.replace(/\W+/g, '-')}`, island);
         }
@@ -108,7 +108,7 @@ async function work() {
         await sleep(500);
         const focused = inner();
         check(`${mode}: keyboard focus draws no ring on an inner segment`, focused.length === 0, JSON.stringify(focused));
-        check(`${mode}: keyboard focus rings the whole island`, material.has_style_class_name('luma-island-focus') && !!paint(material)?.boxShadow,
+        check(`${mode}: keyboard focus rings the whole island`, material.has_style_class_name('Suno-island-focus') && !!paint(material)?.boxShadow,
             JSON.stringify(paint(material)));
         await shot(`island-${mode}-focus`, island);
         global.stage.set_key_focus(null);

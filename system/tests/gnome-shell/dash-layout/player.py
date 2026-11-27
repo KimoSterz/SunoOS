@@ -14,7 +14,7 @@ MPRIS = """<node><interface name="org.mpris.MediaPlayer2"><property name="Identi
 <property name="CanPause" type="b" access="read"/><property name="CanControl" type="b" access="read"/>
 <property name="CanSeek" type="b" access="read"/><property name="Position" type="x" access="read"/>
 <method name="PlayPause"/><method name="Next"/><method name="Previous"/></interface></node>"""
-values = {'Identity': S(os.environ.get('C_IDENTITY', 'Dash player')), 'DesktopEntry': S(os.environ.get('C_DESKTOP', 'org.projectluma.ShelfProbe01')),
+values = {'Identity': S(os.environ.get('C_IDENTITY', 'Dash player')), 'DesktopEntry': S(os.environ.get('C_DESKTOP', 'org.projectSuno.ShelfProbe01')),
           'CanRaise': B(True), 'PlaybackStatus': S('Playing'), 'CanGoNext': B(False), 'CanGoPrevious': B(False),
           'CanPlay': B(True), 'CanPause': B(True), 'CanControl': B(True), 'CanSeek': B(True), 'Position': GLib.Variant('x', 12000000),
           'Metadata': GLib.Variant('a{sv}', {'mpris:trackid': GLib.Variant('o', '/org/chromium/MediaPlayer2/TrackList/TrackUID1'),

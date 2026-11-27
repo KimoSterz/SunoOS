@@ -1,0 +1,14 @@
+[Desktop Entry]
+Type=Application
+Name=Suno Connect
+Comment=Your Suno account, its devices and your phones
+Exec=Suno-connect
+Icon=org.projectSuno.Connect
+Terminal=false
+Categories=Settings;
+StartupNotify=true
+X-GNOME-UsesNotifications=true
+# Suno TV Mode: Connect appears on the TV home (docs/developer-platform/tv-mode.md).
+X-Suno-TV=true
+X-Suno-TV-Tile=org.projectSuno.Connect-tv
+X-Suno-TV-Presentation=tv

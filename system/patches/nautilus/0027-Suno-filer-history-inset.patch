@@ -1,0 +1,31 @@
+--- a/src/resources/ui/nautilus-history-controls.blp
++++ b/src/resources/ui/nautilus-history-controls.blp
+@@ -7,6 +7,9 @@
+ 
+ template $NautilusHistoryControls: Adw.Bin {
+   child: Box {
++    valign: center;
++    margin-top: 4;
++    margin-bottom: 4;
+     spacing: 0;
+ 
+     styles [
+--- a/src/resources/style.css
++++ b/src/resources/style.css
+@@ -1427,7 +1427,6 @@
+ window.Suno-files-window headerbar.Suno-secondary-toolbar .Suno-search-field:checked {
+   background: @Suno_hover;
+ }
+-window.Suno-files-window headerbar.Suno-secondary-toolbar .Suno-history-controls image,
+ window.Suno-files-window headerbar.Suno-secondary-toolbar .Suno-search-field image,
+ window.Suno-files-window headerbar.Suno-secondary-toolbar .Suno-view-mode-controls image {
+   -gtk-icon-size: 15px;
+@@ -1444,3 +1443,8 @@
+   font-size: 11px;
+   font-weight: 500;
+ }
++
++/* Keep the history hit targets intact while reducing the arrow glyphs. */
++window.Suno-files-window headerbar.Suno-secondary-toolbar .Suno-history-controls image {
++  -gtk-icon-size: 13px;
++}

@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 # SPDX-License-Identifier: GPL-2.0-or-later
-# Test doubles for the dock badge oracle: luma-background (Background1), one
+# Test doubles for the dock badge oracle: Suno-background (Background1), one
 # connection per background agent (BackgroundAgent1), and a LauncherEntry
 # emitter on its own connection so it can "quit". Controlled over
-# org.luma.BadgeTest on the Background1 connection.
+# org.Suno.BadgeTest on the Background1 connection.
 import json
 import sys
 
@@ -14,13 +14,13 @@ FLAGS = (Gio.DBusConnectionFlags.AUTHENTICATION_CLIENT |
          Gio.DBusConnectionFlags.MESSAGE_BUS_CONNECTION)
 
 BG_XML = '''<node>
-<interface name="org.projectluma.Background1">
+<interface name="org.projectSuno.Background1">
   <method name="ListAgents"><arg name="agents" type="aa{sv}" direction="out"/></method>
   <signal name="AgentsChanged"/>
   <signal name="AgentChanged"><arg name="app_id" type="s"/><arg name="agent" type="a{sv}"/></signal>
   <property name="Version" type="u" access="read"/>
 </interface>
-<interface name="org.luma.BadgeTest">
+<interface name="org.Suno.BadgeTest">
   <method name="SetValues"><arg name="app" type="s" direction="in"/><arg name="json" type="s" direction="in"/></method>
   <method name="Launcher"><arg name="uri" type="s" direction="in"/><arg name="json" type="s" direction="in"/></method>
   <method name="QuitLauncher"/>
@@ -32,16 +32,16 @@ BG_XML = '''<node>
   <method name="StopAgent"><arg name="app" type="s" direction="in"/></method>
 </interface>
 </node>'''
-AGENT_XML = '''<node><interface name="org.projectluma.BackgroundAgent1">
+AGENT_XML = '''<node><interface name="org.projectSuno.BackgroundAgent1">
   <property name="AppId" type="s" access="read"/>
   <property name="Values" type="a{sv}" access="read"/>
 </interface></node>'''
 
 AGENTS = {
-    'org.projectluma.Messages': ['unread-count', 'badge'],
-    'org.projectluma.Phone': ['missed-calls', 'badge'],
+    'org.projectSuno.Messages': ['unread-count', 'badge'],
+    'org.projectSuno.Phone': ['missed-calls', 'badge'],
     # An agent that never declared `badge`: its values must be ignored.
-    'org.projectluma.Weather': ['temperature'],
+    'org.projectSuno.Weather': ['temperature'],
 }
 
 
@@ -64,7 +64,7 @@ class Agent:
     def start(self):
         self.conn = Gio.DBusConnection.new_for_address_sync(ADDRESS, FLAGS, None, None)
         info = Gio.DBusNodeInfo.new_for_xml(AGENT_XML).interfaces[0]
-        self.conn.register_object('/org/projectluma/BackgroundAgent1', info, None, self.get_property, None)
+        self.conn.register_object('/org/projectSuno/BackgroundAgent1', info, None, self.get_property, None)
         self.conn.call_sync('org.freedesktop.DBus', '/org/freedesktop/DBus', 'org.freedesktop.DBus',
                             'RequestName', GLib.Variant('(su)', (f'{self.app_id}.Agent', 4)),
                             None, Gio.DBusCallFlags.NONE, -1, None)
@@ -82,9 +82,9 @@ class Agent:
     def set(self, values):
         self.values = values
         if self.conn:
-            self.conn.emit_signal(None, '/org/projectluma/BackgroundAgent1', 'org.freedesktop.DBus.Properties',
+            self.conn.emit_signal(None, '/org/projectSuno/BackgroundAgent1', 'org.freedesktop.DBus.Properties',
                                   'PropertiesChanged', GLib.Variant('(sa{sv}as)', (
-                                      'org.projectluma.BackgroundAgent1', {'Values': self.packed()}, [])))
+                                      'org.projectSuno.BackgroundAgent1', {'Values': self.packed()}, [])))
 
 
 agents = {app: Agent(app, pub) for app, pub in AGENTS.items()}
@@ -126,7 +126,7 @@ def call(conn, sender, path, iface, method, params, invocation):
             if path == 'fdo':
                 conn.call_sync('org.freedesktop.Notifications', '/org/freedesktop/Notifications',
                                'org.freedesktop.Notifications', 'Notify',
-                               GLib.Variant('(susssasa{sv}i)', ('Luma', 0, app_id, title, 'body', [],
+                               GLib.Variant('(susssasa{sv}i)', ('Suno', 0, app_id, title, 'body', [],
                                                                 {'desktop-entry': GLib.Variant('s', app_id)}, -1)),
                                None, Gio.DBusCallFlags.NONE, 5000, None)
             else:
@@ -142,16 +142,16 @@ def call(conn, sender, path, iface, method, params, invocation):
                 launcher = None
         invocation.return_value(None)
     except Exception as error:  # report to the caller
-        invocation.return_dbus_error('org.luma.BadgeTest.Error', str(error))
+        invocation.return_dbus_error('org.Suno.BadgeTest.Error', str(error))
 
 
 def main():
     conn = Gio.bus_get_sync(Gio.BusType.SESSION, None)
     node = Gio.DBusNodeInfo.new_for_xml(BG_XML)
     for info in node.interfaces:
-        conn.register_object('/org/projectluma/Background1', info, call,
+        conn.register_object('/org/projectSuno/Background1', info, call,
                              lambda *a: GLib.Variant('u', 2), None)
-    Gio.bus_own_name_on_connection(conn, 'org.projectluma.Background1', 0, None, None)
+    Gio.bus_own_name_on_connection(conn, 'org.projectSuno.Background1', 0, None, None)
     print('fakes ready', flush=True)
     GLib.MainLoop().run()
 

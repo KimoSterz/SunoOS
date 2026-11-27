@@ -1,6 +1,6 @@
 {
   "_doc": "Calculator R2-AT: v70 .cak key geometry, type and blue-accent surfaces. The shadow extends the shared chip colours with the light treatment's far edge. Expression ink is distinct from keypad operator ink in dark mode.",
-  "lumaui": {
+  "SunoUI": {
     "calc": {
       "key_height": 58,
       "key_radius": 22,

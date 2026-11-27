@@ -17,8 +17,8 @@ manifest="$repo_root/config/android/images-$arch.env"
 # shellcheck disable=SC1090
 . "$manifest"
 
-cache=${LUMA_ANDROID_IMAGE_CACHE:-$repo_root/build/cache/android/$arch}
-output=${LUMA_ANDROID_PREPARED_IMAGES:-$repo_root/build/android/pinned/$arch/images}
+cache=${SUNO_ANDROID_IMAGE_CACHE:-$repo_root/build/cache/android/$arch}
+output=${SUNO_ANDROID_PREPARED_IMAGES:-$repo_root/build/android/pinned/$arch/images}
 
 for tool in mktemp sha256sum unzip wc; do
   command -v "$tool" >/dev/null 2>&1 || {
@@ -34,12 +34,12 @@ verify_archive() {
     printf '%s  %s\n' "$digest" "$path" | sha256sum -c - >/dev/null
 }
 
-system_archive="$cache/$LUMA_ANDROID_SYSTEM_FILENAME"
-vendor_archive="$cache/$LUMA_ANDROID_VENDOR_FILENAME"
-verify_archive "$system_archive" "$LUMA_ANDROID_SYSTEM_SHA256" \
-  "$LUMA_ANDROID_SYSTEM_SIZE"
-verify_archive "$vendor_archive" "$LUMA_ANDROID_VENDOR_SHA256" \
-  "$LUMA_ANDROID_VENDOR_SIZE"
+system_archive="$cache/$SUNO_ANDROID_SYSTEM_FILENAME"
+vendor_archive="$cache/$SUNO_ANDROID_VENDOR_FILENAME"
+verify_archive "$system_archive" "$SUNO_ANDROID_SYSTEM_SHA256" \
+  "$SUNO_ANDROID_SYSTEM_SIZE"
+verify_archive "$vendor_archive" "$SUNO_ANDROID_VENDOR_SHA256" \
+  "$SUNO_ANDROID_VENDOR_SIZE"
 
 if [ -r "$output/SHA256SUMS" ] && (
   cd "$output"

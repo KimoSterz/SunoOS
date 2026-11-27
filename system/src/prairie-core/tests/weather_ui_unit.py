@@ -10,7 +10,7 @@ import unittest
 from unittest.mock import Mock, patch
 
 ROOT = Path(__file__).resolve().parents[3]
-sys.path[:0] = [str(ROOT / 'src/prairie-core'), str(ROOT / 'src/luma-platform/appkit')]
+sys.path[:0] = [str(ROOT / 'src/prairie-core'), str(ROOT / 'src/Suno-platform/appkit')]
 from prairie_apps import weather
 from prairie_apps.weather import WeatherWindow
 from prairie_apps.weather_backend import PlaceStore
@@ -20,13 +20,13 @@ from gi.repository import Gtk
 
 class PreviewIdentityTests(unittest.TestCase):
     def test_launcher_override_reaches_the_application_identity(self):
-        production_id = 'org.projectluma.Weather'
+        production_id = 'org.projectSuno.Weather'
         self.assertEqual(weather.APP_ID, production_id)
         self.assertEqual(weather.WeatherApplication().get_application_id(), production_id)
         # The Prairie preview runner mutates APP_ID before calling main().
-        with patch.object(weather, 'APP_ID', production_id + '.LumaUIPreview'):
+        with patch.object(weather, 'APP_ID', production_id + '.SunoUIPreview'):
             application = weather.WeatherApplication()
-            self.assertEqual(application.get_application_id(), production_id + '.LumaUIPreview')
+            self.assertEqual(application.get_application_id(), production_id + '.SunoUIPreview')
             self.assertEqual(application.get_windows(), [])
             self.assertEqual(weather.ICON_NAME, production_id)
         self.assertEqual(weather.APP_ID, production_id)
@@ -35,11 +35,11 @@ class FixtureActionTests(unittest.TestCase):
     def test_every_desktop_state_is_captured_on_phone(self):
         # v71's phone has no sidebar, search or ☰ (Places is in the bar), so the sidebar's own
         # states and the compact window sizes are desktop-only; everything else is on the phone.
-        scenario = json.loads((ROOT / 'tools/lumaui-conform/scenarios/weather.json').read_text())
+        scenario = json.loads((ROOT / 'tools/SunoUI-conform/scenarios/weather.json').read_text())
         desktop_only = {'zip-search', 'no-match', 'added-city', 'places-drawer'}
         expected = {s['name'] for s in scenario['states'] if 'window_size' not in s} - desktop_only
         self.assertEqual(set(scenario['phone_states']), expected)
-        self.assertIn('luma-next-71.html', scenario['spec']['url'])
+        self.assertIn('Suno-next-71.html', scenario['spec']['url'])
 
     def test_fixture_select_activates_the_row_in_the_drawer(self):
         row = Mock()
@@ -51,7 +51,7 @@ class FixtureActionTests(unittest.TestCase):
         def activate(_signal, selected):
             window.selected = selected.place.uid
         window.sidebar.list.emit.side_effect = activate
-        with patch.dict('os.environ', {'LUMA_WEATHER_SELECT':'lis'}, clear=True):
+        with patch.dict('os.environ', {'SUNO_WEATHER_SELECT':'lis'}, clear=True):
             self.assertFalse(WeatherWindow._fixture_select(window))
         window.sidebar.list.select_row.assert_called_once_with(row)
         window.sidebar.list.emit.assert_called_once_with('row-activated', row)
@@ -65,7 +65,7 @@ class FixtureActionTests(unittest.TestCase):
         window.selected = 'oak'
         window.fixture = True
         window._fixture_started = False
-        with patch.dict('os.environ', {'LUMA_WEATHER_QUERY':'64105', 'LUMA_WEATHER_PICK':'1'}, clear=True), \
+        with patch.dict('os.environ', {'SUNO_WEATHER_QUERY':'64105', 'SUNO_WEATHER_PICK':'1'}, clear=True), \
              patch('prairie_apps.weather.GLib.timeout_add') as timer:
             WeatherWindow._loaded(window, 1, (place,), {}, '')
             self.assertEqual(timer.call_count, 1)

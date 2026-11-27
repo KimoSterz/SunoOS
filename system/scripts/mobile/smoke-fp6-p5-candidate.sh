@@ -9,7 +9,7 @@ repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 # shellcheck disable=SC1091
 . "$repo_root/config/mobile/fp6-physical/p5.env"
 
-output_dir=${LUMA_FP6_P5_OUTPUT:-$repo_root/build/mobile/fp6-physical/p5-candidate}
+output_dir=${SUNO_FP6_P5_OUTPUT:-$repo_root/build/mobile/fp6-physical/p5-candidate}
 manifest="$output_dir/manifest.env"
 bridge_manifest="$output_dir/board-support-sha256.txt"
 
@@ -82,20 +82,20 @@ check 'root partition GPT type retained' test "$ROOT_PARTITION_TYPE" = \
 check 'Fedora root marker' test ID=fedora = \
   "$(guestfish --ro --blocksize=4096 -a "$raw" run : mount-ro /dev/sda2 / : grep '^ID=' /etc/os-release)"
 check 'negative in-image authorization marker' test INSTALL_AUTHORIZED=false = \
-  "$(guestfish --ro --blocksize=4096 -a "$raw" run : mount-ro /dev/sda2 / : grep '^INSTALL_AUTHORIZED=' /etc/luma/p5-candidate.env)"
+  "$(guestfish --ro --blocksize=4096 -a "$raw" run : mount-ro /dev/sda2 / : grep '^INSTALL_AUTHORIZED=' /etc/Suno/p5-candidate.env)"
 check 'Milos module ABI present' bash -c \
   'guestfish --ro --blocksize=4096 -a "$1" run : mount-ro /dev/sda2 / : is-dir "/usr/lib/modules/$2" | grep -qx true' _ \
   "$raw" "$FP6_P5_MODULE_ABI"
 check 'SSH public key present' bash -c \
-  'guestfish --ro --blocksize=4096 -a "$1" run : mount-ro /dev/sda2 / : is-file /home/luma/.ssh/authorized_keys | grep -qx true' _ \
+  'guestfish --ro --blocksize=4096 -a "$1" run : mount-ro /dev/sda2 / : is-file /home/Suno/.ssh/authorized_keys | grep -qx true' _ \
   "$raw"
 check 'SSH rescue key owned by diagnostic account' bash -c \
-  'value=$(guestfish --ro --blocksize=4096 -a "$1" run : mount-ro /dev/sda2 / : stat /home/luma/.ssh/authorized_keys); test "$(printf "%s\n" "$value" | awk '\''$1 == "uid:" { print $2 }'\''):$(printf "%s\n" "$value" | awk '\''$1 == "gid:" { print $2 }'\'')" = 1000:1000' _ \
+  'value=$(guestfish --ro --blocksize=4096 -a "$1" run : mount-ro /dev/sda2 / : stat /home/Suno/.ssh/authorized_keys); test "$(printf "%s\n" "$value" | awk '\''$1 == "uid:" { print $2 }'\''):$(printf "%s\n" "$value" | awk '\''$1 == "gid:" { print $2 }'\'')" = 1000:1000' _ \
   "$raw"
 check 'SSH password authentication disabled' test 'AuthenticationMethods publickey' = \
-  "$(guestfish --ro --blocksize=4096 -a "$raw" run : mount-ro /dev/sda2 / : grep '^AuthenticationMethods ' /etc/ssh/sshd_config.d/40-luma-diagnostic.conf)"
+  "$(guestfish --ro --blocksize=4096 -a "$raw" run : mount-ro /dev/sda2 / : grep '^AuthenticationMethods ' /etc/ssh/sshd_config.d/40-Suno-diagnostic.conf)"
 check 'SSH rescue key has Fedora SELinux type' bash -c \
-  'guestfish --ro --blocksize=4096 -a "$1" run : mount-ro /dev/sda2 / : getxattr /home/luma/.ssh/authorized_keys security.selinux | tr -d "\000" | grep -aq ":ssh_home_t:s0$"' _ \
+  'guestfish --ro --blocksize=4096 -a "$1" run : mount-ro /dev/sda2 / : getxattr /home/Suno/.ssh/authorized_keys security.selinux | tr -d "\000" | grep -aq ":ssh_home_t:s0$"' _ \
   "$raw"
 check 'shadow file has Fedora SELinux type' bash -c \
   'guestfish --ro --blocksize=4096 -a "$1" run : mount-ro /dev/sda2 / : getxattr /etc/shadow security.selinux | tr -d "\000" | grep -aq ":shadow_t:s0$"' _ \
@@ -112,19 +112,19 @@ check 'systemd PAM module present' bash -c \
 check 'Plymouth control client present' bash -c \
   'guestfish --ro --blocksize=4096 -a "$1" run : mount-ro /dev/sda2 / : is-file /usr/bin/plymouth | grep -qx true' _ \
   "$raw"
-check 'Luma handheld Plymouth theme selected' test 'Theme=luma-loading-handheld' = \
+check 'Suno handheld Plymouth theme selected' test 'Theme=Suno-loading-handheld' = \
   "$(guestfish --ro --blocksize=4096 -a "$raw" run : mount-ro /dev/sda2 / : grep '^Theme=' /etc/plymouth/plymouthd.conf)"
-check 'Luma handheld Plymouth descriptor present' bash -c \
-  'guestfish --ro --blocksize=4096 -a "$1" run : mount-ro /dev/sda2 / : is-file /usr/share/plymouth/themes/luma-loading-handheld/luma-loading-handheld.plymouth | grep -qx true' _ \
+check 'Suno handheld Plymouth descriptor present' bash -c \
+  'guestfish --ro --blocksize=4096 -a "$1" run : mount-ro /dev/sda2 / : is-file /usr/share/plymouth/themes/Suno-loading-handheld/Suno-loading-handheld.plymouth | grep -qx true' _ \
   "$raw"
-check 'Luma handheld Plymouth script present' bash -c \
-  'guestfish --ro --blocksize=4096 -a "$1" run : mount-ro /dev/sda2 / : is-file /usr/share/plymouth/themes/luma-loading-handheld/luma-loading-handheld.script | grep -qx true' _ \
+check 'Suno handheld Plymouth script present' bash -c \
+  'guestfish --ro --blocksize=4096 -a "$1" run : mount-ro /dev/sda2 / : is-file /usr/share/plymouth/themes/Suno-loading-handheld/Suno-loading-handheld.script | grep -qx true' _ \
   "$raw"
-check 'Luma handheld boot wordmark present' bash -c \
-  'guestfish --ro --blocksize=4096 -a "$1" run : mount-ro /dev/sda2 / : is-file /usr/share/plymouth/themes/luma-loading-handheld/luma-wordmark.png | grep -qx true' _ \
+check 'Suno handheld boot wordmark present' bash -c \
+  'guestfish --ro --blocksize=4096 -a "$1" run : mount-ro /dev/sda2 / : is-file /usr/share/plymouth/themes/Suno-loading-handheld/Suno-wordmark.png | grep -qx true' _ \
   "$raw"
-check 'Luma canonical wordmark source present' bash -c \
-  'guestfish --ro --blocksize=4096 -a "$1" run : mount-ro /dev/sda2 / : is-file /usr/share/luma/boot/brand/luma-wordmark.svg | grep -qx true' _ \
+check 'Suno canonical wordmark source present' bash -c \
+  'guestfish --ro --blocksize=4096 -a "$1" run : mount-ro /dev/sda2 / : is-file /usr/share/Suno/boot/brand/Suno-wordmark.svg | grep -qx true' _ \
   "$raw"
 check 'Plymouth quit unit present' bash -c \
   'guestfish --ro --blocksize=4096 -a "$1" run : mount-ro /dev/sda2 / : is-file /usr/lib/systemd/system/plymouth-quit.service | grep -qx true' _ \
@@ -138,13 +138,13 @@ check 'Plymouth quit wait wired into multi-user startup' bash -c \
 check 'greetd display manager enabled' test /usr/lib/systemd/system/greetd.service = \
   "$(guestfish --ro --blocksize=4096 -a "$raw" run : mount-ro /dev/sda2 / : readlink /etc/systemd/system/display-manager.service)"
 check 'FP6 Bluetooth factory-address helper present' bash -c \
-  'guestfish --ro --blocksize=4096 -a "$1" run : mount-ro /dev/sda2 / : is-file /usr/libexec/luma-fp6-bluetooth-address | grep -qx true' _ \
+  'guestfish --ro --blocksize=4096 -a "$1" run : mount-ro /dev/sda2 / : is-file /usr/libexec/Suno-fp6-bluetooth-address | grep -qx true' _ \
   "$raw"
 check 'FP6 Bluetooth factory-address unit present' bash -c \
-  'guestfish --ro --blocksize=4096 -a "$1" run : mount-ro /dev/sda2 / : is-file /usr/lib/systemd/system/luma-fp6-bluetooth-address.service | grep -qx true' _ \
+  'guestfish --ro --blocksize=4096 -a "$1" run : mount-ro /dev/sda2 / : is-file /usr/lib/systemd/system/Suno-fp6-bluetooth-address.service | grep -qx true' _ \
   "$raw"
 check 'FP6 Bluetooth factory-address unit enabled' bash -c \
-  'guestfish --ro --blocksize=4096 -a "$1" run : mount-ro /dev/sda2 / : is-symlink /usr/lib/systemd/system/multi-user.target.wants/luma-fp6-bluetooth-address.service | grep -qx true' _ \
+  'guestfish --ro --blocksize=4096 -a "$1" run : mount-ro /dev/sda2 / : is-symlink /usr/lib/systemd/system/multi-user.target.wants/Suno-fp6-bluetooth-address.service | grep -qx true' _ \
   "$raw"
 for service in rmtfs sshd tqftpserv; do
   check "$service service enabled" bash -c \
@@ -160,7 +160,7 @@ for firmware in \
     "$raw" "$firmware"
 done
 check 'diagnostic login is not locked or empty' bash -c \
-  'value=$(guestfish --ro --blocksize=4096 -a "$1" run : mount-ro /dev/sda2 / : grep "^luma:" /etc/shadow); field=${value#*:}; field=${field%%:*}; [ -n "$field" ] && case "$field" in \!*|\*) false ;; *) true ;; esac' _ \
+  'value=$(guestfish --ro --blocksize=4096 -a "$1" run : mount-ro /dev/sda2 / : grep "^Suno:" /etc/shadow); field=${value#*:}; field=${field%%:*}; [ -n "$field" ] && case "$field" in \!*|\*) false ;; *) true ;; esac' _ \
   "$raw"
 
 statvfs=$(guestfish --ro --blocksize=4096 -a "$raw" \

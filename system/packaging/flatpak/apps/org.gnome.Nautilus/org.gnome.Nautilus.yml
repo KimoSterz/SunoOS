@@ -1,15 +1,15 @@
 {
   "id": "org.gnome.Nautilus",
-  "runtime": "org.projectluma.Platform",
+  "runtime": "org.projectSuno.Platform",
   "runtime-version": "44",
-  "sdk": "org.projectluma.Sdk",
+  "sdk": "org.projectSuno.Sdk",
   "command": "nautilus",
   "appstream-compose": false,
   "finish-args": [
-    "--talk-name=org.project_luma.ShellState1",
-    "--metadata=X-Luma=min-host-installer=82",
-    "--metadata=X-Luma=min-host-terminal=12",
-    "--metadata=X-Luma=app-data-schema=filer-shared-v1",
+    "--talk-name=org.projectSuno.ShellState1",
+    "--metadata=X-Suno=min-host-installer=82",
+    "--metadata=X-Suno=min-host-terminal=12",
+    "--metadata=X-Suno=app-data-schema=filer-shared-v1",
     "--share=ipc",
     "--socket=wayland",
     "--socket=fallback-x11",
@@ -27,9 +27,9 @@
     "--talk-name=org.gtk.vfs.*",
     "--talk-name=org.gtk.MountOperationHandler",
     "--talk-name=org.gnome.Mutter.ServiceChannel",
-    "--talk-name=org.projectluma.ApplicationInstaller2",
-    "--talk-name=org.project_luma.shell",
-    "--talk-name=org.projectluma.Terminal",
+    "--talk-name=org.projectSuno.ApplicationInstaller2",
+    "--talk-name=org.projectSuno.shell",
+    "--talk-name=org.projectSuno.Terminal",
     "--talk-name=org.gnome.NautilusPreviewer",
     "--own-name=org.freedesktop.FileManager1",
     "--add-policy=Tracker3.dbus:org.freedesktop.Tracker3.Miner.Files=tracker:Audio",
@@ -38,7 +38,7 @@
     "--add-policy=Tracker3.dbus:org.freedesktop.Tracker3.Miner.Files=tracker:Pictures",
     "--add-policy=Tracker3.dbus:org.freedesktop.Tracker3.Miner.Files=tracker:Music",
     "--add-policy=Tracker3.dbus:org.freedesktop.Tracker3.Miner.Files=tracker:Video",
-    "--talk-name=org.projectluma.ApplicationDirectory1"
+    "--talk-name=org.projectSuno.ApplicationDirectory1"
   ],
   "modules": [
     {
@@ -208,7 +208,7 @@
         "install -Dm644 nautilus-50.2.2/LUCIDE-LICENSE /app/share/licenses/org.gnome.Nautilus/LUCIDE-LICENSE",
         "rm /app/share/applications/nautilus-autorun-software.desktop",
         "glib-compile-schemas /app/share/glib-2.0/schemas",
-        "install -Dm644 -t /app/share/luma-app-media depot-media/*.png"
+        "install -Dm644 -t /app/share/Suno-app-media depot-media/*.png"
       ]
     }
   ]

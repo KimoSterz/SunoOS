@@ -62,7 +62,7 @@ fi
 [[ "$revision" =~ ^[0-9a-f]{40}$ ]] || die "revision must be a full 40-character commit hash: $revision"
 
 if [ -z "$repo" ]; then
-  mirror=${LUMA_OS_ROOT:-/mnt/luma-secondary/luma-build/os-release/fs}/git/ProjectLuma.git
+  mirror=${SUNO_OS_ROOT:-/mnt/Suno-secondary/Suno-build/os-release/fs}/git/projectSuno.git
   if [ -d "$mirror" ]; then repo=$mirror; else repo=$(git -C "$checkout" rev-parse --absolute-git-dir); fi
 fi
 git -C "$repo" cat-file -e "$revision^{commit}" 2>/dev/null ||
@@ -84,6 +84,6 @@ git -C "$work/src" -c advice.detachedHead=false checkout --quiet --detach "$revi
 
 # Checked the way collect-packages will check it, on the day it becomes
 # mandatory, so a drop that passes here is not refused there.
-LUMA_OS_SOURCE_CHECKS_FROM=0000-00-00 "$here/verify-drop.sh" "$drop" ||
+SUNO_OS_SOURCE_CHECKS_FROM=0000-00-00 "$here/verify-drop.sh" "$drop" ||
   die "verify-drop.sh refused $drop"
 printf 'hand-over-drop: %s is ready to hand over (SOURCE-CHECKS over %s)\n' "$drop" "$revision"

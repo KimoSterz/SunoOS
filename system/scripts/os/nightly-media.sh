@@ -17,45 +17,45 @@
 # --interim (owner request 2026-09-16, for a release that predates the
 # out-of-box checks): the medium is verified for what it already ships (no
 # credential, UEFI unattended install boots this build, the installer
-# renders) without LUMA_MEDIA_REQUIRED_CHECKS, the expected packages, the
+# renders) without SUNO_MEDIA_REQUIRED_CHECKS, the expected packages, the
 # enrollment expectation or the update path, and its index entry says
 # "interim": true. The next full run supersedes it.
 #
-# Run by luma-os-media.service, which luma-os-nightly.service starts on
+# Run by Suno-os-media.service, which Suno-os-nightly.service starts on
 # success; the image is already published by then, so media never hold up the
 # nightly. It takes the channel's current head (scripts/os/publish-channel.sh
 # published it) and does nothing when that release already has published media.
 #
-# 1. Build one medium, luma-<channel>-<build>.iso, carrying no credential
+# 1. Build one medium, Suno-<channel>-<build>.iso, carrying no credential
 #    (scripts/os/build-staff-media.sh, Atlas from config/os/media.env).
 # 2. Verify, each in a disposable UEFI VM (scripts/os/verify-media.sh):
 #      a fresh install from the medium is this build, carries the packages
 #        media.env names, holds no credential, offers the channel choice and
 #        passes every release-blocking out-of-box check in
-#        LUMA_MEDIA_REQUIRED_CHECKS (Viola is the default browser, update
+#        SUNO_MEDIA_REQUIRED_CHECKS (Viola is the default browser, update
 #        channels, the live Depot store, the install commands, Fedora cannot
-#        replace Luma packages), with no SELinux denials, plus verify-media.sh's
+#        replace Suno packages), with no SELinux denials, plus verify-media.sh's
 #        own checks (release, remote, key, image contract);
 #      the previous verified medium, installed fresh, picks Nightly, receives
 #        this build as a delta from the real origin, boots it, rolls back and
 #        returns to Official;
 #      scripts/os/verify-media-ui.sh: the interactive installer renders.
 # 3. Publish only when everything passed: the medium, its .sha256, latest.json
-#    and the stable luma-<channel>-latest.iso (a hard link to the newest
-#    medium) are served from $LUMA_OS_ROOT/publish/media/public/<channel> and
+#    and the stable Suno-<channel>-latest.iso (a hard link to the newest
+#    medium) are served from $SUNO_OS_ROOT/publish/media/public/<channel> and
 #    uploaded (scripts/os/sync-to-cdn.sh --only media-tree). Retention:
 #    at least seven days after replacement; count/budget cleanup applies only
 #    outside that protected window. A failure
 #    publishes nothing, the previous medium stays the latest, and the unit's
 #    OnFailure alert fires (scripts/os/alert.sh).
 #
-# Status: $LUMA_OS_ROOT/status/media-<channel>.json, updated at every step,
-# including timings and sizes. Evidence: $LUMA_OS_ROOT/media/<channel>/<build>/.
+# Status: $SUNO_OS_ROOT/status/media-<channel>.json, updated at every step,
+# including timings and sizes. Evidence: $SUNO_OS_ROOT/media/<channel>/<build>/.
 
 set -euo pipefail
 . "$(dirname -- "$0")/lib/common.sh"
 . "$(dirname -- "$0")/lib/media-transport.sh"
-luma_os_load_env "$luma_os_repo_root/config/os/media.env"
+Suno_os_load_env "$Suno_os_repo_root/config/os/media.env"
 
 channel=nightly
 publish=1
@@ -70,8 +70,8 @@ notes=
 nightly_date_arg=
 while [ "$#" -gt 0 ]; do
   case "$1" in
-    --arch) luma_os_select_architecture "${2:?}"; shift 2 ;;
-    --profile) export LUMA_OS_PROFILE=${2:?}; shift 2 ;;
+    --arch) Suno_os_select_architecture "${2:?}"; shift 2 ;;
+    --profile) export SUNO_OS_PROFILE=${2:?}; shift 2 ;;
     --channel) channel=${2:?}; shift 2 ;;
     --no-publish) publish=0; shift ;;
     --rebuild) rebuild=1; shift ;;
@@ -90,21 +90,21 @@ done
 if [ -n "$verify_existing" ]; then
   [ -n "$candidate" ] && [ "$publish" -eq 0 ] && [ "$interim" -eq 0 ] &&
     [ "$rebuild" -eq 0 ] && [ -z "$publish_verified" ] ||
-    luma_os_die '--verify-existing SHA256 requires --candidate and --no-publish, without --interim or --rebuild'
+    Suno_os_die '--verify-existing SHA256 requires --candidate and --no-publish, without --interim or --rebuild'
 fi
 if [ -n "$checks_revision" ]; then
   [ -n "$verify_existing" ] && [[ "$checks_revision" =~ ^[0-9a-f]{40}$ ]] ||
-    luma_os_die '--checks-revision requires --verify-existing and a full committed source revision'
-  git -c "safe.directory=$luma_os_repo_root" -C "$luma_os_repo_root" cat-file -e "$checks_revision^{commit}" ||
-    luma_os_die 'the verification revision is not available in this source checkout'
+    Suno_os_die '--checks-revision requires --verify-existing and a full committed source revision'
+  git -c "safe.directory=$Suno_os_repo_root" -C "$Suno_os_repo_root" cat-file -e "$checks_revision^{commit}" ||
+    Suno_os_die 'the verification revision is not available in this source checkout'
 fi
 if [ -n "$codec_address" ]; then
-  [ -n "$verify_existing" ] || luma_os_die '--resolve-codec-endpoint is only for an explicit candidate verification retry'
+  [ -n "$verify_existing" ] || Suno_os_die '--resolve-codec-endpoint is only for an explicit candidate verification retry'
 fi
-case " $LUMA_MEDIA_CHANNELS " in *" $channel "*) ;; *) luma_os_die "no media are made for channel $channel (config/os/media.env)" ;; esac
+case " $SUNO_MEDIA_CHANNELS " in *" $channel "*) ;; *) Suno_os_die "no media are made for channel $channel (config/os/media.env)" ;; esac
 
-luma_os_require_root
-luma_os_check_host
+Suno_os_require_root
+Suno_os_check_host
 set_status() {
   python3 - "$status" "$@" <<'PY'
 import json, sys, os
@@ -113,7 +113,7 @@ data = json.load(open(path)) if os.path.exists(path) else {}
 for pair in pairs:
     key, value = pair.split("=", 1)
     data[key] = json.loads(value)
-data["schema"] = "org.projectluma.os-media-status/v1"
+data["schema"] = "org.projectSuno.os-media-status/v1"
 tmp = path + ".new"
 json.dump(data, open(tmp, "w"), indent=2, sort_keys=True)
 open(tmp, "a").write("\n")
@@ -129,55 +129,55 @@ if [ -n "$candidate$publish_verified" ]; then
   # not yet published candidate is built and verified first (--candidate
   # --no-publish), and published with the update (--publish-verified).
   build_id=${candidate:-$publish_verified}
-  luma_os_load_build_env "$LUMA_OS_ROOT/builds/$build_id/build.env"
-  [ "$channel" = "$LUMA_OS_CHANNEL" ] || luma_os_die 'candidate channel differs from requested media channel'
-  ref=$(luma_os_channel_ref "$channel")
-  luma_os_load_env "$LUMA_OS_ROOT/builds/$build_id/export.env"
-  repo="$LUMA_OS_ROOT/ostree/candidate-repo"
-  head=$LUMA_EXPORT_CANDIDATE
-  version=$LUMA_OS_VERSION
-  ostree show --repo="$repo" "$head" >/dev/null 2>&1 || repo=$(luma_os_channel_repo "$channel")
+  Suno_os_load_build_env "$SUNO_OS_ROOT/builds/$build_id/build.env"
+  [ "$channel" = "$SUNO_OS_CHANNEL" ] || Suno_os_die 'candidate channel differs from requested media channel'
+  ref=$(Suno_os_channel_ref "$channel")
+  Suno_os_load_env "$SUNO_OS_ROOT/builds/$build_id/export.env"
+  repo="$SUNO_OS_ROOT/ostree/candidate-repo"
+  head=$SUNO_EXPORT_CANDIDATE
+  version=$SUNO_OS_VERSION
+  ostree show --repo="$repo" "$head" >/dev/null 2>&1 || repo=$(Suno_os_channel_repo "$channel")
 else
-  luma_os_select_architecture "$LUMA_OS_ARCH"
-  repo=$(luma_os_channel_repo "$channel")
-  ref=$(luma_os_channel_ref "$channel")
-  head=$(ostree rev-parse --repo="$repo" "$ref" 2>/dev/null) || luma_os_die "no published release on $ref"
-  version=$(python3 "$luma_os_repo_root/scripts/os/lib/ostree_metadata.py" version "$repo" "$head")
+  Suno_os_select_architecture "$SUNO_OS_ARCH"
+  repo=$(Suno_os_channel_repo "$channel")
+  ref=$(Suno_os_channel_ref "$channel")
+  head=$(ostree rev-parse --repo="$repo" "$ref" 2>/dev/null) || Suno_os_die "no published release on $ref"
+  version=$(python3 "$Suno_os_repo_root/scripts/os/lib/ostree_metadata.py" version "$repo" "$head")
   # A published medium reflects its signed image's capability profile, even
   # when the caller did not explicitly select the preview profile.
-  if declaration=$(ostree cat --repo="$repo" "$head" /usr/share/luma/desktop-capabilities.json 2>/dev/null); then
-    LUMA_OS_PROFILE=$(python3 -c '
+  if declaration=$(ostree cat --repo="$repo" "$head" /usr/share/Suno/desktop-capabilities.json 2>/dev/null); then
+    SUNO_OS_PROFILE=$(python3 -c '
 import json, sys
 value=json.load(sys.stdin)
-assert value["schema"] == "org.projectluma.desktop-capabilities/v1"
+assert value["schema"] == "org.projectSuno.desktop-capabilities/v1"
 assert value["architecture"] == sys.argv[1]
 print(value["profile"])
-' "$LUMA_OS_ARCH" <<<"$declaration") || luma_os_die 'published capability identity differs from requested media architecture'
-    export LUMA_OS_PROFILE
-    luma_os_select_architecture "$LUMA_OS_ARCH"
+' "$SUNO_OS_ARCH" <<<"$declaration") || Suno_os_die 'published capability identity differs from requested media architecture'
+    export SUNO_OS_PROFILE
+    Suno_os_select_architecture "$SUNO_OS_ARCH"
   else
-    [ "$LUMA_OS_ARCH" = x86_64 ] || luma_os_die 'ARM publication lacks its capability declaration'
-    export LUMA_OS_PROFILE=full
+    [ "$SUNO_OS_ARCH" = x86_64 ] || Suno_os_die 'ARM publication lacks its capability declaration'
+    export SUNO_OS_PROFILE=full
   fi
 fi
 # Resolve paths only after a candidate's recorded target has been loaded.
-media_root=$(luma_os_arch_path "$LUMA_OS_ROOT/media")
-status_root=$(luma_os_arch_path "$LUMA_OS_ROOT/status")
-locks_root=$(luma_os_arch_path "$LUMA_OS_ROOT/locks")
-logs_root=$(luma_os_arch_path "$LUMA_OS_ROOT/logs")
-install -d -m 0755 "$locks_root" "$status_root" "$logs_root" "$media_root/$channel" "$LUMA_OS_ROOT/publish/media"
+media_root=$(Suno_os_arch_path "$SUNO_OS_ROOT/media")
+status_root=$(Suno_os_arch_path "$SUNO_OS_ROOT/status")
+locks_root=$(Suno_os_arch_path "$SUNO_OS_ROOT/locks")
+logs_root=$(Suno_os_arch_path "$SUNO_OS_ROOT/logs")
+install -d -m 0755 "$locks_root" "$status_root" "$logs_root" "$media_root/$channel" "$SUNO_OS_ROOT/publish/media"
 exec 6>"$locks_root/media-$channel.lock"
-flock -n 6 || { luma_os_log "media for $LUMA_OS_ARCH/$channel are already being made"; exit 0; }
+flock -n 6 || { Suno_os_log "media for $SUNO_OS_ARCH/$channel are already being made"; exit 0; }
 status="$status_root/media-$channel.json"
-releases_root=$(luma_os_releases_path "$repo")
+releases_root=$(Suno_os_releases_path "$repo")
 build_id=${build_id:-${version##*-"$channel".}}
-[[ "$build_id" =~ ^[0-9]{8}\.[0-9]+$ ]] || luma_os_die "cannot tell the build id of $version"
+[[ "$build_id" =~ ^[0-9]{8}\.[0-9]+$ ]] || Suno_os_die "cannot tell the build id of $version"
 dir="$media_root/$channel/$build_id"
 if [ -n "$verify_existing" ]; then
-  python3 "$luma_os_repo_root/scripts/os/lib/media_reuse.py" \
-    "$dir/luma-$channel-$build_id.iso" "$verify_existing" "$channel" "$ref" \
-    "$head" "$version" "$build_id" "$LUMA_MEDIA_ATLAS_REVISION" "$LUMA_OS_RELEASE_KEY_FINGERPRINT" ||
-    luma_os_die 'the existing medium does not match the explicitly identified candidate'
+  python3 "$Suno_os_repo_root/scripts/os/lib/media_reuse.py" \
+    "$dir/Suno-$channel-$build_id.iso" "$verify_existing" "$channel" "$ref" \
+    "$head" "$version" "$build_id" "$SUNO_MEDIA_ATLAS_REVISION" "$SUNO_OS_RELEASE_KEY_FINGERPRINT" ||
+    Suno_os_die 'the existing medium does not match the explicitly identified candidate'
   prior="$dir/attempt-$(date -u +%Y%m%dT%H%M%SZ)"
   install -d -m 0755 "$prior"
   for evidence in result.json verify-install.log verify-update.log verify-ui.log; do
@@ -186,23 +186,23 @@ if [ -n "$verify_existing" ]; then
 fi
 if [ -z "$verify_existing" ] && [ "$rebuild" -eq 0 ] && [ -f "$dir/result.json" ] &&
    python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); sys.exit(0 if d.get("result") == "pass" and d.get("published") else 1)' "$dir/result.json"; then
-  luma_os_log "media for $version are already published"
+  Suno_os_log "media for $version are already published"
   exit 0
 fi
 
 if [ -n "$publish_verified" ]; then
-  [ -n "$notes" ] && [ -s "$notes" ] || luma_os_die 'publishing a verified medium needs its release notes (--notes)'
+  [ -n "$notes" ] && [ -s "$notes" ] || Suno_os_die 'publishing a verified medium needs its release notes (--notes)'
   python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); sys.exit(0 if d.get("result") == "pass" and d.get("commit") == sys.argv[2] else 1)' \
-    "$dir/result.json" "$head" 2>/dev/null || luma_os_die "no verified medium of $build_id ($head) to publish"
+    "$dir/result.json" "$head" 2>/dev/null || Suno_os_die "no verified medium of $build_id ($head) to publish"
 fi
 job_log="$logs_root/media-$channel-$build_id-$(date -u +%Y%m%dT%H%M%SZ).log"
-install -d -m 0755 "$LUMA_OS_ROOT/logs"
+install -d -m 0755 "$SUNO_OS_ROOT/logs"
 exec > >(tee -a "$job_log") 2>&1
-export LUMA_OS_JOB_LOG="$job_log"
+export SUNO_OS_JOB_LOG="$job_log"
 started=$SECONDS
 if [ -z "$publish_verified" ]; then
 rm -f "$status"
-set_status "state=\"starting\"" "architecture=$(jstr "$LUMA_OS_ARCH")" "profile=$(jstr "$LUMA_OS_PROFILE")" "channel=$(jstr "$channel")" "build_id=$(jstr "$build_id")" \
+set_status "state=\"starting\"" "architecture=$(jstr "$SUNO_OS_ARCH")" "profile=$(jstr "$SUNO_OS_PROFILE")" "channel=$(jstr "$channel")" "build_id=$(jstr "$build_id")" \
   "version=$(jstr "$version")" "commit=$(jstr "$head")" "started_utc=$(jstr "$(now)")" \
   "result=null" "published=false" "error=null" "log=$(jstr "$(basename "$job_log")")"
 fi
@@ -210,7 +210,7 @@ fail() {
   set_status "state=\"failed\"" "result=\"fail\"" "error=$(jstr "$1")" "completed_utc=$(jstr "$(now)")" \
     "duration_seconds=$((SECONDS - started))"
   [ -d "$dir" ] && cp "$status" "$dir/result.json" 2>/dev/null || true
-  luma_os_die "$1 (nothing published; the previous media stay the latest)"
+  Suno_os_die "$1 (nothing published; the previous media stay the latest)"
 }
 step() { set_status "state=$(jstr "$1")" "step_${1}_started_utc=$(jstr "$(now)")"; step_started=$SECONDS; }
 step_done() { set_status "step_${1}_seconds=$((SECONDS - step_started))"; }
@@ -218,35 +218,35 @@ step_done() { set_status "step_${1}_seconds=$((SECONDS - step_started))"; }
 if [ -z "$publish_verified" ]; then
 # Room: this build host's own older media first, then the pipeline's guard.
 mapfile -t old < <(find "$media_root/$channel" -mindepth 1 -maxdepth 1 -type d -regextype posix-extended \
-  -regex '.*/[0-9]{8}\.[0-9]+' ! -name "$build_id" -printf '%f\n' | sort -t. -k1,1n -k2,2n | head -n "-$((LUMA_MEDIA_LOCAL_KEEP - 1))")
+  -regex '.*/[0-9]{8}\.[0-9]+' ! -name "$build_id" -printf '%f\n' | sort -t. -k1,1n -k2,2n | head -n "-$((SUNO_MEDIA_LOCAL_KEEP - 1))")
 for id in "${old[@]}"; do
   # Media still served stay on this host: the served tree hard-links them.
   rm -rf -- "${media_root:?}/$channel/$id"
-  luma_os_log "removed local media of $id"
+  Suno_os_log "removed local media of $id"
 done
-luma_os_check_space 35 || fail 'not enough disk space for installer media'
+Suno_os_check_space 35 || fail 'not enough disk space for installer media'
 [ -n "$verify_existing" ] || rm -rf "$dir"
 install -d -m 0755 "$dir"
 
 # Atlas: the pinned revision from the pipeline mirror, and the RPM with its
 # pinned digest.
 step atlas
-atlas="$LUMA_OS_ROOT/tmp/media-atlas-${LUMA_MEDIA_ATLAS_REVISION:0:12}"
-if [ "$(git -C "$atlas" rev-parse HEAD 2>/dev/null)" != "$LUMA_MEDIA_ATLAS_REVISION" ]; then
+atlas="$SUNO_OS_ROOT/tmp/media-atlas-${SUNO_MEDIA_ATLAS_REVISION:0:12}"
+if [ "$(git -C "$atlas" rev-parse HEAD 2>/dev/null)" != "$SUNO_MEDIA_ATLAS_REVISION" ]; then
   rm -rf "$atlas"
-  git clone --quiet --no-checkout "$LUMA_OS_ROOT/git/ProjectLuma.git" "$atlas" || fail 'cannot clone the source mirror for Atlas'
-  git -C "$atlas" fetch --quiet origin "+refs/heads/$LUMA_MEDIA_ATLAS_BRANCH:refs/remotes/origin/atlas" ||
-    fail "the mirror has no $LUMA_MEDIA_ATLAS_BRANCH"
-  git -C "$atlas" merge-base --is-ancestor "$LUMA_MEDIA_ATLAS_REVISION" origin/atlas ||
-    fail "Atlas $LUMA_MEDIA_ATLAS_REVISION is not on $LUMA_MEDIA_ATLAS_BRANCH"
-  git -C "$atlas" checkout --quiet --detach "$LUMA_MEDIA_ATLAS_REVISION" || fail 'cannot check out the pinned Atlas revision'
+  git clone --quiet --no-checkout "$SUNO_OS_ROOT/git/projectSuno.git" "$atlas" || fail 'cannot clone the source mirror for Atlas'
+  git -C "$atlas" fetch --quiet origin "+refs/heads/$SUNO_MEDIA_ATLAS_BRANCH:refs/remotes/origin/atlas" ||
+    fail "the mirror has no $SUNO_MEDIA_ATLAS_BRANCH"
+  git -C "$atlas" merge-base --is-ancestor "$SUNO_MEDIA_ATLAS_REVISION" origin/atlas ||
+    fail "Atlas $SUNO_MEDIA_ATLAS_REVISION is not on $SUNO_MEDIA_ATLAS_BRANCH"
+  git -C "$atlas" checkout --quiet --detach "$SUNO_MEDIA_ATLAS_REVISION" || fail 'cannot check out the pinned Atlas revision'
 fi
-atlas_rpms="$LUMA_OS_ROOT/rpms/media/$LUMA_MEDIA_ATLAS_NEVRA"
-if [ "$(sha256sum "$atlas_rpms/$LUMA_MEDIA_ATLAS_NEVRA.rpm" 2>/dev/null | cut -d' ' -f1)" != "$LUMA_MEDIA_ATLAS_SHA256" ]; then
+atlas_rpms="$SUNO_OS_ROOT/rpms/media/$SUNO_MEDIA_ATLAS_NEVRA"
+if [ "$(sha256sum "$atlas_rpms/$SUNO_MEDIA_ATLAS_NEVRA.rpm" 2>/dev/null | cut -d' ' -f1)" != "$SUNO_MEDIA_ATLAS_SHA256" ]; then
   # Its own name: $candidate is the build id of --candidate.
-  atlas_rpm=$(find "$LUMA_OS_ROOT/../incoming" /srv/luma-build/incoming -name "$LUMA_MEDIA_ATLAS_NEVRA.rpm" 2>/dev/null |
-    while read -r file; do [ "$(sha256sum "$file" | cut -d' ' -f1)" = "$LUMA_MEDIA_ATLAS_SHA256" ] && echo "$file"; done | head -n 1)
-  [ -n "$atlas_rpm" ] || fail "no $LUMA_MEDIA_ATLAS_NEVRA.rpm with the pinned SHA-256 in incoming"
+  atlas_rpm=$(find "$SUNO_OS_ROOT/../incoming" /srv/Suno-build/incoming -name "$SUNO_MEDIA_ATLAS_NEVRA.rpm" 2>/dev/null |
+    while read -r file; do [ "$(sha256sum "$file" | cut -d' ' -f1)" = "$SUNO_MEDIA_ATLAS_SHA256" ] && echo "$file"; done | head -n 1)
+  [ -n "$atlas_rpm" ] || fail "no $SUNO_MEDIA_ATLAS_NEVRA.rpm with the pinned SHA-256 in incoming"
   rm -rf "$atlas_rpms"
   install -d -m 0755 "$atlas_rpms"
   install -m 0644 "$atlas_rpm" "$atlas_rpms/"
@@ -255,16 +255,16 @@ step_done atlas
 
 # The preview credential, only to prove the medium holds it nowhere.
 credential=
-[ -f "$LUMA_OS_SECRETS/dl-origin.env" ] && credential=$(sed -n 's/^DL_PREVIEW_CREDENTIAL_FILE=//p' "$LUMA_OS_SECRETS/dl-origin.env")
+[ -f "$SUNO_OS_SECRETS/dl-origin.env" ] && credential=$(sed -n 's/^DL_PREVIEW_CREDENTIAL_FILE=//p' "$SUNO_OS_SECRETS/dl-origin.env")
 forbid_args=()
 [ -n "$credential" ] && [ -r "$credential" ] && forbid_args=(--forbid-credential-file "$credential")
 
 # Packages every medium's system must carry, and that this release pins.
 expect_args=()
 release_packages="$releases_root/$version/packages.tsv"
-[ -z "$candidate" ] || release_packages="$LUMA_OS_ROOT/builds/$build_id/packages-installed.tsv"
-[ "$interim" -eq 1 ] && LUMA_MEDIA_EXPECT_PACKAGES=' '
-for package in ${LUMA_MEDIA_EXPECT_PACKAGES:-viola-browser-stable luma-charlie}; do
+[ -z "$candidate" ] || release_packages="$SUNO_OS_ROOT/builds/$build_id/packages-installed.tsv"
+[ "$interim" -eq 1 ] && SUNO_MEDIA_EXPECT_PACKAGES=' '
+for package in ${SUNO_MEDIA_EXPECT_PACKAGES:-viola-browser-stable Suno-charlie}; do
   grep -q "^$package[[:space:]]" "$release_packages" 2>/dev/null ||
     fail "release $version does not carry $package, which its media must"
   expect_args+=(--expect-package "$package")
@@ -273,29 +273,29 @@ done
 # release's source) on the system installed from the medium. In media.env a
 # "+" stands for a space inside one check's arguments.
 check_args=()
-[ "$interim" -eq 1 ] && LUMA_MEDIA_REQUIRED_CHECKS=
-for spec in $LUMA_MEDIA_REQUIRED_CHECKS; do
+[ "$interim" -eq 1 ] && SUNO_MEDIA_REQUIRED_CHECKS=
+for spec in $SUNO_MEDIA_REQUIRED_CHECKS; do
   check_args+=(--require-check "${spec//+/ }")
 done
 if [ -n "$candidate" ]; then
-  source_revision=$LUMA_SOURCE_REVISION
+  source_revision=$SUNO_SOURCE_REVISION
 else
   source_revision=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["source_revision"])' "$releases_root/$version/manifest.json") ||
     fail "no published release manifest for $version"
 fi
 if [ -n "$checks_revision" ]; then
-  git -c "safe.directory=$luma_os_repo_root" -C "$luma_os_repo_root" merge-base --is-ancestor "$source_revision" "$checks_revision" ||
+  git -c "safe.directory=$Suno_os_repo_root" -C "$Suno_os_repo_root" merge-base --is-ancestor "$source_revision" "$checks_revision" ||
     fail 'verification checks must descend from the candidate source'
   set_status "checks_source_revision=$(jstr "$checks_revision")"
 fi
 
-iso="$dir/luma-$channel-$build_id.iso"
+iso="$dir/Suno-$channel-$build_id.iso"
 step build
 if [ -z "$verify_existing" ]; then
-  "$luma_os_repo_root/scripts/os/build-staff-media.sh" --arch "$LUMA_OS_ARCH" --atlas-source "$atlas" --atlas-rpms "$atlas_rpms" \
+  "$Suno_os_repo_root/scripts/os/build-staff-media.sh" --arch "$SUNO_OS_ARCH" --atlas-source "$atlas" --atlas-rpms "$atlas_rpms" \
     --channel "$channel" ${candidate:+--candidate "$candidate"} --output "$iso" || fail 'building the medium failed'
 else
-  luma_os_log "rechecking existing medium $verify_existing; all install and UI checks still required"
+  Suno_os_log "rechecking existing medium $verify_existing; all install and UI checks still required"
   set_status "build_reused=true"
 fi
 step_done build
@@ -310,7 +310,7 @@ scope_args=(--expect-enrollment none "${check_args[@]}")
 [ -z "$codec_address" ] || set_status "codec_repository_dns_fixture=$(jstr "$codec_address")"
 [ "$interim" -eq 1 ] && scope_args=(--skip-release-checks)
 set_status "interim=$([ "$interim" -eq 1 ] && echo true || echo false)"
-"$luma_os_repo_root/scripts/os/verify-media.sh" --iso "$iso" "${forbid_args[@]}" \
+"$Suno_os_repo_root/scripts/os/verify-media.sh" --iso "$iso" "${forbid_args[@]}" \
   --expect-build-id "$build_id" "${expect_args[@]}" "${scope_args[@]}" >"$dir/verify-install.log" 2>&1 ||
   fail "a fresh install from the medium failed verification: $(failures_of "$dir/verify-install.log") (see verify-install.log)"
 step_done verify_install
@@ -321,31 +321,31 @@ step_done verify_install
 # medium has no predecessor.
 step verify_update
 previous=$(find "$media_root/$channel" -mindepth 2 -maxdepth 2 -regextype posix-extended \
-  -regex ".*/[0-9]{8}\.[0-9]+/luma-$channel-[0-9]{8}\.[0-9]+\.iso" ! -path "*/$build_id/*" -printf '%h\n' |
+  -regex ".*/[0-9]{8}\.[0-9]+/Suno-$channel-[0-9]{8}\.[0-9]+\.iso" ! -path "*/$build_id/*" -printf '%h\n' |
   while read -r d; do
     python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); sys.exit(0 if d.get("result") == "pass" else 1)' "$d/result.json" 2>/dev/null && basename "$d" || true
   done | sort -t. -k1,1n -k2,2n | tail -n 1)
 if [ -n "$candidate" ]; then
   # Before publication there is nothing on the origin to update to; the gate's
   # update, rollback and channel stages proved this build's update path.
-  luma_os_log "candidate medium: the update path was proved by the gate"
+  Suno_os_log "candidate medium: the update path was proved by the gate"
   set_status "update_verified_from=null"
 elif [ "$interim" -eq 1 ]; then
-  luma_os_log "interim medium: the update path is checked by the next full run"
+  Suno_os_log "interim medium: the update path is checked by the next full run"
   set_status "update_verified_from=null"
 elif [ -n "$previous" ]; then
-  "$luma_os_repo_root/scripts/os/verify-media.sh" --iso "$media_root/$channel/$previous/luma-$channel-$previous.iso" \
+  "$Suno_os_repo_root/scripts/os/verify-media.sh" --iso "$media_root/$channel/$previous/Suno-$channel-$previous.iso" \
     --checks-revision "$source_revision" --update-from-origin-to "$version" >"$dir/verify-update.log" 2>&1 ||
     fail "updating an install from the $previous medium to $version failed: $(failures_of "$dir/verify-update.log") (see verify-update.log)"
   set_status "update_verified_from=$(jstr "$previous")"
 else
-  luma_os_log "no earlier verified $channel medium on this host: the update path is checked from the next build on"
+  Suno_os_log "no earlier verified $channel medium on this host: the update path is checked from the next build on"
   set_status "update_verified_from=null"
 fi
 step_done verify_update
 
 step verify_ui
-/usr/bin/bash "$luma_os_repo_root/scripts/os/verify-media-ui.sh" --iso "$iso" >"$dir/verify-ui.log" 2>&1 ||
+/usr/bin/bash "$Suno_os_repo_root/scripts/os/verify-media-ui.sh" --iso "$iso" >"$dir/verify-ui.log" 2>&1 ||
   fail 'the interactive installer did not render from the medium (see verify-ui.log)'
 step_done verify_ui
 set_status "result=\"pass\""
@@ -353,11 +353,11 @@ set_status "result=\"pass\""
 if [ "$publish" -eq 0 ]; then
   set_status "state=\"verified\"" "completed_utc=$(jstr "$(now)")" "duration_seconds=$((SECONDS - started))"
   cp "$status" "$dir/result.json"
-  luma_os_log "media for $version verified; not published (--no-publish)"
+  Suno_os_log "media for $version verified; not published (--no-publish)"
   exit 0
 fi
 else
-  iso="$dir/luma-$channel-$build_id.iso"
+  iso="$dir/Suno-$channel-$build_id.iso"
   [ -s "$iso" ] && [ -s "$iso.sha256" ] || fail "the verified medium $iso is missing"
   interim=$(python3 -c 'import json,sys; print(1 if json.load(open(sys.argv[1])).get("interim") else 0)' "$dir/result.json")
   set_status "state=\"publishing\"" "publish_started_utc=$(jstr "$(now)")"
@@ -367,22 +367,22 @@ fi
 # directories, with the stable latest name and latest.json. Nightly media are
 # open (owner decision 2026-09-16): no credential, an unlisted public path.
 step publish
-served="$LUMA_OS_ROOT/publish/media"
-tree="$(luma_os_arch_path "$served/public")/$channel"
-latest="luma-$channel-latest.iso"
-base="https://dl.simplyluma.com/$(luma_os_arch_path "$LUMA_MEDIA_PUBLIC_PREFIX")/$channel"
+served="$SUNO_OS_ROOT/publish/media"
+tree="$(Suno_os_arch_path "$served/public")/$channel"
+latest="Suno-$channel-latest.iso"
+base="https://dl.simplyluma.com/$(luma_os_arch_path "$SUNO_MEDIA_PUBLIC_PREFIX")/$channel"
 install -d -m 0755 "$tree"
 name=$(basename "$iso")
 ln -f "$iso" "$tree/$name"
-luma_media_transport_link "$iso" "$tree/$name.download"
+Suno_media_transport_link "$iso" "$tree/$name.download"
 install -m 0644 "$iso.sha256" "$tree/$name.sha256"
 ln -f "$iso" "$tree/.$latest.new" && mv -f "$tree/.$latest.new" "$tree/$latest"
 install -m 0644 "$iso.sha256" "$tree/$latest.sha256"
-luma_media_transport_link "$iso" "$tree/$latest.download"
+Suno_media_transport_link "$iso" "$tree/$latest.download"
 # This medium's entry for the channel index (latest.json, below), kept beside
 # the medium so the index can list every medium the origin still serves.
 committed=$(ostree show --repo="$repo" "$head" | sed -n 's/^Date: *//p')
-# Release notes, signed beside the index (schema org.projectluma.os-release-notes/v1,
+# Release notes, signed beside the index (schema org.projectSuno.os-release-notes/v1,
 # scripts/os/lib/release_notes.py): notes/<build_id>.json and .minisig.
 notes_url=
 notes_summary=
@@ -390,20 +390,20 @@ if [ -n "$notes" ]; then
   install -d -m 0755 "$tree/notes"
   install -m 0644 "$notes" "$tree/notes/$build_id.json.new"
   notes_generated=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["generated_utc"])' "$notes")
-  LUMA_OS_TOOLS_MOUNTS="$LUMA_OS_KEYS/update-graph-minisign $tree" luma_os_tools sh -c '
+  SUNO_OS_TOOLS_MOUNTS="$SUNO_OS_KEYS/update-graph-minisign $tree" Suno_os_tools sh -c '
     set -e
-    minisign -S -s "$1/luma-update-graph.key" -m "$2" -x "$2.minisig" -t "$3" >/dev/null
-    minisign -V -p "$1/luma-update-graph.pub" -m "$2" -x "$2.minisig" >/dev/null
-  ' sh "$LUMA_OS_KEYS/update-graph-minisign" "$tree/notes/$build_id.json.new" \
-    "luma-release-notes channel=$channel build_id=$build_id generated_utc=$notes_generated" \
-    <"$LUMA_OS_SECRETS/update-graph-minisign.password" || fail 'signing the release notes failed'
+    minisign -S -s "$1/Suno-update-graph.key" -m "$2" -x "$2.minisig" -t "$3" >/dev/null
+    minisign -V -p "$1/Suno-update-graph.pub" -m "$2" -x "$2.minisig" >/dev/null
+  ' sh "$SUNO_OS_KEYS/update-graph-minisign" "$tree/notes/$build_id.json.new" \
+    "Suno-release-notes channel=$channel build_id=$build_id generated_utc=$notes_generated" \
+    <"$SUNO_OS_SECRETS/update-graph-minisign.password" || fail 'signing the release notes failed'
   mv -f "$tree/notes/$build_id.json.new.minisig" "$tree/notes/$build_id.json.minisig"
   mv -f "$tree/notes/$build_id.json.new" "$tree/notes/$build_id.json"
   notes_url="$base/notes/$build_id.json"
   notes_summary=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["summary"])' "$notes")
 fi
 python3 - "$tree/$name.json" "$channel" "$build_id" "$version" "$head" "$name" \
-  "$(cat "$iso.sha256")" "$(stat -c %s "$iso")" "$base" "$interim" "$committed" "$nightly_date_arg" "$notes_url" "$notes_summary" "${LUMA_DISPLAY_NAME:-}" "$luma_os_repo_root/scripts/os/lib" "$LUMA_OS_ARCH" "$LUMA_OS_PROFILE" <<'ENTRY'
+  "$(cat "$iso.sha256")" "$(stat -c %s "$iso")" "$base" "$interim" "$committed" "$nightly_date_arg" "$notes_url" "$notes_summary" "${SUNO_DISPLAY_NAME:-}" "$Suno_os_repo_root/scripts/os/lib" "$SUNO_OS_ARCH" "$SUNO_OS_PROFILE" <<'ENTRY'
 import json, sys, datetime, zoneinfo
 path, channel, build, version, commit, name, sha, size, base, interim, committed, nightly_arg, notes_url, notes_summary, display_arg, lib, architecture, profile = sys.argv[1:]
 sys.path.insert(0, lib)
@@ -443,20 +443,20 @@ ENTRY
 # Public historical entries and notes stay unchanged while protected. This does
 # not remove R2 objects; R2 publication separately retains its signed prior entries.
 retireable="$status_root/media-retireable-$channel.txt"
-python3 "$luma_os_repo_root/scripts/os/lib/media_retention.py" --tree "$tree" \
+python3 "$Suno_os_repo_root/scripts/os/lib/media_retention.py" --tree "$tree" \
   --ledger "$status_root/media-retention-$channel.json" --current "$build_id" \
-  --days "${LUMA_MEDIA_RETENTION_DAYS:-7}" >"$retireable" || fail 'preparing protected installer retention failed'
+  --days "${SUNO_MEDIA_RETENTION_DAYS:-7}" >"$retireable" || fail 'preparing protected installer retention failed'
 dl_max_gib=25
-[ -f "$LUMA_OS_SECRETS/dl-origin.env" ] &&
-  dl_max_gib=$(sed -n 's/^DL_MAX_GIB=//p' "$LUMA_OS_SECRETS/dl-origin.env" | tail -n 1) && [ -n "$dl_max_gib" ] || dl_max_gib=25
+[ -f "$SUNO_OS_SECRETS/dl-origin.env" ] &&
+  dl_max_gib=$(sed -n 's/^DL_MAX_GIB=//p' "$SUNO_OS_SECRETS/dl-origin.env" | tail -n 1) && [ -n "$dl_max_gib" ] || dl_max_gib=25
 builds_in() {
-  find "$tree" -maxdepth 1 -regextype posix-extended -regex ".*/luma-$channel-[0-9]{8}\.[0-9]+\.iso" -printf '%f\n' |
-    sed "s/^luma-$channel-//; s/\.iso$//" | sort -t. -k1,1n -k2,2n
+  find "$tree" -maxdepth 1 -regextype posix-extended -regex ".*/Suno-$channel-[0-9]{8}\.[0-9]+\.iso" -printf '%f\n' |
+    sed "s/^Suno-$channel-//; s/\.iso$//" | sort -t. -k1,1n -k2,2n
 }
 # Every build the origin still has a record of, downloadable or retired.
 entries_in() {
-  find "$tree" -maxdepth 1 -regextype posix-extended -regex ".*/luma-$channel-[0-9]{8}\.[0-9]+\.iso\.json" -printf '%f\n' |
-    sed "s/^luma-$channel-//; s/\.iso\.json$//" | sort -t. -k1,1n -k2,2n
+  find "$tree" -maxdepth 1 -regextype posix-extended -regex ".*/Suno-$channel-[0-9]{8}\.[0-9]+\.iso\.json" -printf '%f\n' |
+    sed "s/^Suno-$channel-//; s/\.iso\.json$//" | sort -t. -k1,1n -k2,2n
 }
 # Retiring a medium takes away the download, not the record of it: the entry
 # and the signed release notes are a few kilobytes and are what lets the
@@ -468,8 +468,8 @@ drop_oldest() {
     if grep -Fxq -- "$item" "$retireable"; then printf '%s\n' "$item"; break; fi
   done)
   [ -n "$oldest" ] && [ "$oldest" != "$build_id" ] || return 1
-  luma_media_transport_retire "$tree/luma-$channel-$oldest.iso"
-  python3 - "$tree/luma-$channel-$oldest.iso.json" <<'RETIRE' || true
+  Suno_media_transport_retire "$tree/Suno-$channel-$oldest.iso"
+  python3 - "$tree/Suno-$channel-$oldest.iso.json" <<'RETIRE' || true
 import datetime, json, sys
 path = sys.argv[1]
 try:
@@ -481,15 +481,15 @@ entry["iso_retired_utc"] = datetime.datetime.now(datetime.timezone.utc).strftime
 json.dump(entry, open(path, "w"), indent=2, sort_keys=True)
 open(path, "a").write("\n")
 RETIRE
-  luma_os_log "media retention: $oldest is no longer downloadable; its entry and notes stay"
+  Suno_os_log "media retention: $oldest is no longer downloadable; its entry and notes stay"
 }
 # Same-day replacements are real previous versions too. Do not remove their
 # installer, index record or signed notes merely because the labelled day matches.
-while [ "$(builds_in | wc -l)" -gt "$LUMA_MEDIA_KEEP" ]; do drop_oldest || break; done
+while [ "$(builds_in | wc -l)" -gt "$SUNO_MEDIA_KEEP" ]; do drop_oldest || break; done
 origin_bytes() {
   local local_bytes
-  local_bytes=$(du -scbL "$LUMA_OS_ROOT/webroot/current/os" "$served" 2>/dev/null | tail -n 1 | cut -f1)
-  echo $((local_bytes + ${LUMA_MEDIA_DL_OTHER_GIB:-0} * 1073741824))
+  local_bytes=$(du -scbL "$SUNO_OS_ROOT/webroot/current/os" "$served" 2>/dev/null | tail -n 1 | cut -f1)
+  echo $((local_bytes + ${SUNO_MEDIA_DL_OTHER_GIB:-0} * 1073741824))
 }
 while [ "$(origin_bytes)" -gt $((dl_max_gib * 1073741824)) ]; do drop_oldest || break; done
 [ "$(origin_bytes)" -le $((dl_max_gib * 1073741824)) ] ||
@@ -502,7 +502,7 @@ set_status "served_builds=$(builds_in | python3 -c 'import json,sys; print(json.
 # Each entry's nightly_date is the day the nightly closes out (America/Chicago)
 # and published_utc when it was published; date repeats published_utc for
 # readers of the first index.
-# schema org.projectluma.os-media-index/v1: channel, generated_utc, latest (the
+# schema org.projectSuno.os-media-index/v1: channel, generated_utc, latest (the
 # newest entry that can still be downloaded) and entries (every published build
 # the origin has a record of, newest first, each with iso_available saying
 # whether its medium is still there and url null when it is not; every other
@@ -512,12 +512,12 @@ set_status "served_builds=$(builds_in | python3 -c 'import json,sys; print(json.
 # sha256_url, size_bytes and sha256. Signed with the minisign update-graph key
 # (dl.simplyluma.com/os/keys/luma-update-graph.pub); the trusted comment binds
 # the channel and generated_utc.
-python3 - "$tree" "$channel" "$latest" "$base" "$(luma_os_releases_path "$(luma_os_channel_repo "$channel")")" "$LUMA_OS_ARCH" $(entries_in | sort -t. -k1,1nr -k2,2nr) <<'INDEX' || fail 'writing the media index failed'
+python3 - "$tree" "$channel" "$latest" "$base" "$(Suno_os_releases_path "$(Suno_os_channel_repo "$channel")")" "$SUNO_OS_ARCH" $(entries_in | sort -t. -k1,1nr -k2,2nr) <<'INDEX' || fail 'writing the media index failed'
 import datetime, glob, json, os, sys
 tree, channel, latest, base, releases_root, architecture, builds = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5], sys.argv[6], sys.argv[7:]
 entries = []
 for build in builds:
-    path = os.path.join(tree, f"luma-{channel}-{build}.iso.json")
+    path = os.path.join(tree, f"Suno-{channel}-{build}.iso.json")
     if os.path.exists(path):
         entry = json.load(open(path))
         if entry.get("arch", "x86_64") != architecture:
@@ -525,14 +525,14 @@ for build in builds:
         # Media published before release names (ADR-040) were all Prairie
         # Beta 0 nightlies.
         if "display_name" not in entry and entry.get("channel") == "nightly" and entry.get("nightly_date"):
-            entry["display_name"] = f"Luma (Prairie, Beta 0, Nightly {entry['nightly_date'].replace('-', '')})"
+            entry["display_name"] = f"Suno (Prairie, Beta 0, Nightly {entry['nightly_date'].replace('-', '')})"
         # Entries written before media retention kept records were only ever
         # written for media that were there.
         entry.setdefault("iso_available", True)
         # The record outlives the download: say so rather than offering a link
         # to a file the origin no longer has.
         if entry["iso_available"] and not os.path.exists(
-                os.path.join(tree, f"luma-{channel}-{build}.iso")):
+                os.path.join(tree, f"Suno-{channel}-{build}.iso")):
             entry["iso_available"] = False
             # Retention stamps the entry as it retires a medium; a medium that
             # went some other way is stamped here, so no entry ever says it is
@@ -566,7 +566,7 @@ for path in sorted(glob.glob(os.path.join(releases_root, "*", "manifest.json")))
                        "published_utc": manifest.get("published_utc"), "public": False,
                        "note": f"Superseded; see the {datetime.date.fromisoformat(newest['nightly_date']).strftime('%b %-d').replace('Sep ', 'Sept ')} nightly"})
 json.dump({
-    "schema": "org.projectluma.os-media-index/v1", "channel": channel, "arch": architecture,
+    "schema": "org.projectSuno.os-media-index/v1", "channel": channel, "arch": architecture,
     "generated_utc": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
     "latest_url": f"{base}/{latest}", "latest": newest, "entries": entries, "superseded": superseded,
 }, open(os.path.join(tree, "latest.json.new"), "w"), indent=2, sort_keys=True)
@@ -574,18 +574,18 @@ open(os.path.join(tree, "latest.json.new"), "a").write("\n")
 INDEX
 generated=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["generated_utc"])' "$tree/latest.json.new")
 media_signature_arch=
-[ "$LUMA_OS_ARCH" = x86_64 ] || media_signature_arch=" arch=$LUMA_OS_ARCH"
-minisign_dir="$LUMA_OS_KEYS/update-graph-minisign"
+[ "$SUNO_OS_ARCH" = x86_64 ] || media_signature_arch=" arch=$SUNO_OS_ARCH"
+minisign_dir="$SUNO_OS_KEYS/update-graph-minisign"
 # A new single-CPU producer must not replace another CPU's published entries.
 # Fetch the actual signed prior, not a possibly stale local media directory.
 # Qualified operators can pass their already-held shared lock descriptor.
-luma_os_require_tools curl stat flock
-media_publication_lock=${LUMA_MEDIA_PUBLICATION_LOCK:-$LUMA_OS_ROOT/locks/media-publication.lock}
-if [ -n "${LUMA_MEDIA_PUBLICATION_LOCK_FD:-}" ]; then
-  [[ "$LUMA_MEDIA_PUBLICATION_LOCK_FD" =~ ^[0-9]+$ ]] || fail 'invalid shared publication lock descriptor'
-  [ "$(stat -Lc '%d:%i' "/proc/self/fd/$LUMA_MEDIA_PUBLICATION_LOCK_FD")" = \
+Suno_os_require_tools curl stat flock
+media_publication_lock=${SUNO_MEDIA_PUBLICATION_LOCK:-$SUNO_OS_ROOT/locks/media-publication.lock}
+if [ -n "${SUNO_MEDIA_PUBLICATION_LOCK_FD:-}" ]; then
+  [[ "$SUNO_MEDIA_PUBLICATION_LOCK_FD" =~ ^[0-9]+$ ]] || fail 'invalid shared publication lock descriptor'
+  [ "$(stat -Lc '%d:%i' "/proc/self/fd/$SUNO_MEDIA_PUBLICATION_LOCK_FD")" = \
     "$(stat -Lc '%d:%i' "$media_publication_lock")" ] || fail 'shared publication lock descriptor names another file'
-  flock -n "$LUMA_MEDIA_PUBLICATION_LOCK_FD" || fail 'shared publication lock is not available'
+  flock -n "$SUNO_MEDIA_PUBLICATION_LOCK_FD" || fail 'shared publication lock is not available'
 else
   install -d "$(dirname "$media_publication_lock")"
   exec 7>"$media_publication_lock"
@@ -600,23 +600,23 @@ case "$prior_http" in
     curl --fail --silent --show-error --location --max-time 60 --max-filesize 4096 \
       --header 'Cache-Control: no-cache' "$base/latest.json.minisig" --output "$prior_index.minisig" ||
       fail 'reading the current media index signature failed'
-    LUMA_OS_TOOLS_MOUNTS="$minisign_dir/luma-update-graph.pub $tree $dir $luma_os_repo_root/scripts/os/lib" luma_os_tools sh -c '
+    SUNO_OS_TOOLS_MOUNTS="$minisign_dir/Suno-update-graph.pub $tree $dir $Suno_os_repo_root/scripts/os/lib" Suno_os_tools sh -c '
       set -e
       minisign -V -p "$1" -m "$2" -x "$2.minisig" >/dev/null
       python3 "$3/media_aggregate.py" check-preservation "$2" "$4" --channel "$5" --producer-arch "$6"
-    ' sh "$minisign_dir/luma-update-graph.pub" "$prior_index" "$luma_os_repo_root/scripts/os/lib" \
-      "$tree/latest.json.new" "$channel" "${LUMA_OS_ARCH:-x86_64}" ||
+    ' sh "$minisign_dir/Suno-update-graph.pub" "$prior_index" "$Suno_os_repo_root/scripts/os/lib" \
+      "$tree/latest.json.new" "$channel" "${SUNO_OS_ARCH:-x86_64}" ||
       fail 'media publication would discard another architecture; prepare the shared aggregate'
     ;;
   404) ;; # A genuinely new scoped channel has no previous publication.
   *) fail "reading the current media index returned HTTP $prior_http" ;;
 esac
-LUMA_OS_TOOLS_MOUNTS="$minisign_dir $tree" luma_os_tools sh -c '
+SUNO_OS_TOOLS_MOUNTS="$minisign_dir $tree" Suno_os_tools sh -c '
   set -e
-  minisign -S -s "$1/luma-update-graph.key" -m "$2" -x "$2.minisig" -t "$3" >/dev/null
-  minisign -V -p "$1/luma-update-graph.pub" -m "$2" -x "$2.minisig" >/dev/null
-' sh "$minisign_dir" "$tree/latest.json.new" "luma-media-index channel=$channel${media_signature_arch:-} generated_utc=$generated" \
-  <"$LUMA_OS_SECRETS/update-graph-minisign.password" || fail 'signing the media index failed'
+  minisign -S -s "$1/Suno-update-graph.key" -m "$2" -x "$2.minisig" -t "$3" >/dev/null
+  minisign -V -p "$1/Suno-update-graph.pub" -m "$2" -x "$2.minisig" >/dev/null
+' sh "$minisign_dir" "$tree/latest.json.new" "Suno-media-index channel=$channel${media_signature_arch:-} generated_utc=$generated" \
+  <"$SUNO_OS_SECRETS/update-graph-minisign.password" || fail 'signing the media index failed'
 # The shared lock spans signing and upload. Recheck the exact remote predecessor
 # immediately before changing metadata, even when local media state was stale.
 prior_http_check=$(curl --silent --show-error --location --max-time 60 --max-filesize 1048576 \
@@ -629,9 +629,9 @@ fi
 mv -f "$tree/latest.json.new.minisig" "$tree/latest.json.minisig"
 mv -f "$tree/latest.json.new" "$tree/latest.json"
 
-"$luma_os_repo_root/scripts/os/sync-to-cdn.sh" --apply --only media-tree || fail 'uploading the media failed'
+"$Suno_os_repo_root/scripts/os/sync-to-cdn.sh" --apply --only media-tree || fail 'uploading the media failed'
 step_done publish
 set_status "state=\"published\"" "published=true" "completed_utc=$(jstr "$(now)")" \
   "duration_seconds=$((SECONDS - started))" "latest_url=$(jstr "$base/$latest")" "url=$(jstr "$base/$name")"
 cp "$status" "$dir/result.json"
-luma_os_log "media for $version published in $((SECONDS - started))s: $base/$latest"
+Suno_os_log "media for $version published in $((SECONDS - started))s: $base/$latest"

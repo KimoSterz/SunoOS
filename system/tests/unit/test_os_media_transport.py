@@ -19,20 +19,20 @@ class MediaTransportTests(unittest.TestCase):
             root = Path(temp)
             tree = root / 'tree'
             tree.mkdir()
-            iso = root / 'luma-nightly-20261005.4.iso'
+            iso = root / 'Suno-nightly-20261005.4.iso'
             iso.write_bytes(b'checked ISO bytes')
             digest = hashlib.sha256(iso.read_bytes()).hexdigest()
             Path(str(iso) + '.sha256').write_text(digest + '\n')
-            script = 'set -eu; source "$1"; tree=$2; iso=$3; latest=luma-nightly-latest.iso\n' + fragment
+            script = 'set -eu; source "$1"; tree=$2; iso=$3; latest=Suno-nightly-latest.iso\n' + fragment
             subprocess.run(['bash', '-c', script, 'test', str(HELPER), str(tree), str(iso)], check=True)
             published = tree / iso.name
             alias = tree / (iso.name + '.download')
-            latest = tree / 'luma-nightly-latest.iso.download'
+            latest = tree / 'Suno-nightly-latest.iso.download'
             self.assertTrue(iso.samefile(alias))
             self.assertTrue(iso.samefile(latest))
             newer = root / 'new.iso'
             newer.write_bytes(b'new checked ISO')
-            subprocess.run(['bash', '-c', 'set -eu; source "$1"; luma_media_transport_link "$2" "$3"; luma_media_transport_retire "$4"',
+            subprocess.run(['bash', '-c', 'set -eu; source "$1"; Suno_media_transport_link "$2" "$3"; Suno_media_transport_retire "$4"',
                             'test', str(HELPER), str(newer), str(latest), str(published)], check=True)
             self.assertFalse(alias.exists())
             self.assertFalse(published.exists())
@@ -43,11 +43,11 @@ class MediaTransportTests(unittest.TestCase):
         generator = SOURCE.split("<<'ENTRY'\n", 1)[1].split('\nENTRY', 1)[0]
         with tempfile.TemporaryDirectory() as temp:
             path = Path(temp) / 'entry.json'
-            name = 'luma-nightly-20261005.4.iso'
+            name = 'Suno-nightly-20261005.4.iso'
             subprocess.run(['python3', '-', str(path), 'nightly', '20261005.4', 'test', 'c' * 64, name,
                             'a' * 64, '8192', 'https://example.test/media/nightly', '0',
                             '2026-10-05 12:00:00 +0000', '2026-10-05', 'https://example.test/notes.json',
-                            'Notes', 'Luma test', str(ROOT / 'scripts/os/lib'), 'x86_64', 'full'], input=generator, text=True, check=True)
+                            'Notes', 'Suno test', str(ROOT / 'scripts/os/lib'), 'x86_64', 'full'], input=generator, text=True, check=True)
             data = json.loads(path.read_text())
             self.assertEqual(data['arch'], 'x86_64')
             self.assertEqual(data['profile'], 'full')

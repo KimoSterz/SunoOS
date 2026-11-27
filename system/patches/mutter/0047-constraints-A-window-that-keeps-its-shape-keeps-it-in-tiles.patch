@@ -1,5 +1,5 @@
 From 0714fc5bb8e9acafcfad4ebc730caa87e7c17fda Mon Sep 17 00:00:00 2001
-From: Project Luma <engineering@projectluma.org>
+From: Project Suno <engineering@projectSuno.org>
 Date: Sun, 22 Nov 2026 22:42:05 -0500
 Subject: [PATCH] constraints: A window that keeps its shape keeps it in tiles
 
@@ -9,7 +9,7 @@ manager moves a window into filled the whole tile, and the client had
 to letterbox inside it. The shape is the app's to choose; tiling must
 not override it.
 
-A window is locked when it set a ratio through luma_window_shape_v1,
+A window is locked when it set a ratio through Suno_window_shape_v1,
 or, for an X11 client, when WM_NORMAL_HINTS give one aspect ratio
 (min_aspect == max_aspect). A range of ratios is a preference and
 still fills its tile.
@@ -53,12 +53,12 @@ index 7838c76..1f25d4c 100644
  }
  
 -/* The largest size inside *width x *height whose content keeps the aspect
-- * ratio a Wayland client set through luma_window_shape_v1. The content is
+- * ratio a Wayland client set through Suno_window_shape_v1. The content is
 - * the frame rectangle less the client's fixed chrome (frame_aspect.base_*).
 - */
 +/* A window whose shape is locked keeps it wherever Mutter or a tiling manager
 + * puts it: in tiles and when maximized, not only while it floats. Locked are
-+ * windows with a ratio set through luma_window_shape_v1, and X11 windows whose
++ * windows with a ratio set through Suno_window_shape_v1, and X11 windows whose
 + * WM_NORMAL_HINTS give a single aspect ratio (min_aspect == max_aspect); a
 + * range of ratios is a preference, not a lock, and still fills its tile. The
 + * ratio is for the content: the frame rectangle less a fixed base (the
@@ -180,7 +180,7 @@ index 7838c76..1f25d4c 100644
 + * A window a tiling manager puts in a tile with
 + * meta_window_move_resize_frame() and marks with
 + * meta_window_set_externally_tiled() fills the tile, unless it keeps its
-+ * shape (an aspect ratio set through luma_window_shape_v1, or a single X11
++ * shape (an aspect ratio set through Suno_window_shape_v1, or a single X11
 + * aspect ratio). Such a window takes the largest size with its ratio,
 + * centred in the tile, or, when that is below its minimum size, the smallest
 + * size with its ratio that is not, at the tile's origin. A tiling manager
@@ -221,7 +221,7 @@ index 7838c76..1f25d4c 100644
      }
  
 -  /* A window that keeps its content at an aspect ratio
--   * (luma_window_shape_v1) maximizes to the largest size with that ratio,
+-   * (Suno_window_shape_v1) maximizes to the largest size with that ratio,
 -   * centred in the area it would otherwise fill, rather than stretching its
 -   * content or leaving the client to letterbox a screen-sized window. */
 -  if (window->frame_aspect.set &&
@@ -351,7 +351,7 @@ index 7838c76..1f25d4c 100644
    target.width = MAX (MIN (rect->width, area.width), min_size.width);
    target.height = MAX (MIN (rect->height, area.height), min_size.height);
 -  /* Shrinking one side alone would undo an aspect ratio a client set through
--   * luma_window_shape_v1; keep it while it still fits the minimum size. */
+-   * Suno_window_shape_v1; keep it while it still fits the minimum size. */
 -  if (window->frame_aspect.set &&
 -      (target.width != rect->width || target.height != rect->height) &&
 +  /* Shrinking one side alone would undo a locked window's shape; keep it

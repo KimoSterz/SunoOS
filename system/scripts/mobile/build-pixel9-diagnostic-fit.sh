@@ -20,7 +20,7 @@ artifact_dir=$output_dir/artifacts
 root=$output_dir/initramfs-root
 tools_build=$output_dir/uboot-tools-build
 init_source=$repo_root/config/mobile/pixel9-physical/diagnostic-init
-jobs=${LUMA_PIXEL9_FIT_BUILD_JOBS:-4}
+jobs=${SUNO_PIXEL9_FIT_BUILD_JOBS:-4}
 
 die() {
   printf 'error: %s\n' "$*" >&2
@@ -28,9 +28,9 @@ die() {
 }
 
 case "$jobs" in
-  ''|*[!0-9]*) die 'LUMA_PIXEL9_FIT_BUILD_JOBS must be a positive integer' ;;
+  ''|*[!0-9]*) die 'SUNO_PIXEL9_FIT_BUILD_JOBS must be a positive integer' ;;
 esac
-[ "$jobs" -ge 1 ] || die 'LUMA_PIXEL9_FIT_BUILD_JOBS must be at least 1'
+[ "$jobs" -ge 1 ] || die 'SUNO_PIXEL9_FIT_BUILD_JOBS must be at least 1'
 [ "$(uname -s)" = Linux ] && [ "$(uname -m)" = aarch64 ] || \
   die 'the Pixel 9 diagnostic FIT must be built off-device on Linux/aarch64'
 
@@ -47,7 +47,7 @@ for tool in awk cpio file fdtget fdtput find gcc git install make \
 done
 
 uboot=$source_root/u-boot-zumapro
-source_manifest=$source_root/luma-source-manifest.env
+source_manifest=$source_root/Suno-source-manifest.env
 proof_manifest=$module_proof/manifest.env
 kernel=$module_proof/artifacts/Image
 dtb=$module_proof/artifacts/zumapro-tokay.dtb
@@ -92,7 +92,7 @@ mkdir -p "$artifact_dir" "$root/bin" "$tools_build"
 source_date_epoch=$(git -C "$uboot" show -s --format=%ct "$PIXEL9_UBOOT_COMMIT")
 export SOURCE_DATE_EPOCH="$source_date_epoch"
 export KBUILD_BUILD_TIMESTAMP="@$source_date_epoch"
-export KBUILD_BUILD_USER=luma
+export KBUILD_BUILD_USER=Suno
 export KBUILD_BUILD_HOST=pixel9-builder
 
 # Build mkimage from the same immutable U-Boot source used by the loader. No
@@ -157,7 +157,7 @@ cat >"$output_dir/payload.its" <<EOF
 /dts-v1/;
 
 / {
-  description = "Luma Pixel 9 volatile diagnostic";
+  description = "Suno Pixel 9 volatile diagnostic";
   #address-cells = <1>;
 
   images {
@@ -236,7 +236,7 @@ for spec in \
 done
 
 {
-  printf 'LUMA_PIXEL9_DIAGNOSTIC_FIT_VERSION=1\n'
+  printf 'SUNO_PIXEL9_DIAGNOSTIC_FIT_VERSION=1\n'
   printf 'SCOPE=offline-volatile-storage-unmounted-diagnostic\n'
   printf 'LINUX_COMMIT=%s\n' "$PIXEL9_LINUX_COMMIT"
   printf 'UBOOT_COMMIT=%s\n' "$PIXEL9_UBOOT_COMMIT"

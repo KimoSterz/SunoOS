@@ -4,7 +4,7 @@
 The window talks to one `ContactsSource`. `EdsSource` is the real one: the
 address book (eds_backend) for cards, Messages' stores for Together (read
 only), and `SharingStore` for what you share with each person. The fixture
-source (contacts_fixture, LUMA_CONTACTS_FIXTURE) serves the same calls from a
+source (contacts_fixture, SUNO_CONTACTS_FIXTURE) serves the same calls from a
 JSON file in memory, for conformance runs and tests.
 
 `SharingStore` is contained: a small JSON file keyed by contact UID,
@@ -43,7 +43,7 @@ class Me:
 
 
 class SharingStore:
-    """Per person, which contact details are shared through Luma Contacts."""
+    """Per person, which contact details are shared through Suno Contacts."""
 
     VERSION = 1
 
@@ -55,7 +55,7 @@ class SharingStore:
     @staticmethod
     def default_path() -> Path:
         data_home = Path(os.environ.get("XDG_DATA_HOME", Path.home() / ".local/share"))
-        return data_home / "luma/contacts/sharing.json"
+        return data_home / "Suno/contacts/sharing.json"
 
     def _load(self) -> None:
         if self._loaded:
@@ -121,7 +121,7 @@ class ContactsSource:
 
     lists: dict[str, str] = {}               # list key (a vCard category) → how it reads
     writes: frozenset[str] = frozenset()     # which of NEW_WRITES this source makes
-    #: A rehearsal (the fixture) says what v71's hand-offs Luma has no path for yet would do (a video call,
+    #: A rehearsal (the fixture) says what v71's hand-offs Suno has no path for yet would do (a video call,
     #: Nearby) in a toast; a real source offers a video call disabled and says Nearby is not there yet.
     rehearsal = False
 
@@ -210,8 +210,8 @@ class EdsSource(ContactsSource):
 
 
 def source_from_environment() -> ContactsSource:
-    """The fixture when LUMA_CONTACTS_FIXTURE names one, otherwise the real address book."""
-    fixture = os.environ.get("LUMA_CONTACTS_FIXTURE")
+    """The fixture when SUNO_CONTACTS_FIXTURE names one, otherwise the real address book."""
+    fixture = os.environ.get("SUNO_CONTACTS_FIXTURE")
     if fixture:
         from .contacts_fixture import FixtureSource
         return FixtureSource(Path(fixture))

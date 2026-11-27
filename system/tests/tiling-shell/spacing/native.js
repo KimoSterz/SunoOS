@@ -4,7 +4,7 @@ import GLib from 'gi://GLib';
 import Clutter from 'gi://Clutter';
 import Meta from 'gi://Meta';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
-const out = GLib.getenv('LUMA_SHELF_TEST_OUT');
+const out = GLib.getenv('SUNO_SHELF_TEST_OUT');
 const results = [];
 const sleep = ms => new Promise(resolve => GLib.timeout_add(GLib.PRIORITY_DEFAULT, ms, () => {resolve(); return GLib.SOURCE_REMOVE;}));
 const check = (name, ok, detail = '') => {results.push({name, ok: !!ok, detail}); console.log(`${ok ? 'PASS' : 'FAIL'} ${name} ${detail}`);};
@@ -13,10 +13,10 @@ async function work() {
     const extension = Main.extensionManager.lookup('tilingshell@ferrarodomenico.com')?.stateObj;
     check('Tiling Shell enabled', extension?._tilingManagers?.length > 0);
     if (!extension?._tilingManagers?.length) return;
-    const state = new Gio.Settings({schema_id: 'org.project_luma.shell-state'});
+    const state = new Gio.Settings({schema_id: 'org.projectSuno.shell-state'});
     const settings = extension.getSettings();
     check('coordinated resize off by default', !settings.get_boolean('resize-complementing-windows'));
-    const children = ['One', 'Two'].map(name => Gio.Subprocess.new(['python3', '/source/tests/gnome-shell/shelf-presentation/app.py', `org.projectluma.Spacing${name}`], Gio.SubprocessFlags.NONE));
+    const children = ['One', 'Two'].map(name => Gio.Subprocess.new(['python3', '/source/tests/gnome-shell/shelf-presentation/app.py', `org.projectSuno.Spacing${name}`], Gio.SubprocessFlags.NONE));
     try {
         let windows = [];
         for (let attempt = 0; attempt < 80; attempt++) {

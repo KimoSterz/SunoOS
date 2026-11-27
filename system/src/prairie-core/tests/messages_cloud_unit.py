@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Luma Cloud history is shown alongside, never written into, the local message store."""
+"""Suno Cloud history is shown alongside, never written into, the local message store."""
 from __future__ import annotations
 
 import tempfile

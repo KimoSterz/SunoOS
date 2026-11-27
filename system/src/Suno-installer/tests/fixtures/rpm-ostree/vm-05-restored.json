@@ -1,0 +1,130 @@
+{
+ "cached-update": null,
+ "deployments": [
+  {
+   "base-checksum": "58648876f1d8d7119ade5f8c0c376aef3e430d2340e4e43b9ea28fdfac3678e4",
+   "base-commit-meta": {
+    "org.projectSuno.base-image-digest": "",
+    "org.projectSuno.build-id": "",
+    "org.projectSuno.build-version": "",
+    "org.projectSuno.channel": "",
+    "org.projectSuno.image-tree": "",
+    "org.projectSuno.provenance-sha256": "",
+    "org.projectSuno.sbom-sha256": "",
+    "org.projectSuno.source-dirty": "",
+    "org.projectSuno.source-revision": "",
+    "ostree.bootable": true,
+    "version": "1.0.0-nightly.20260915.5"
+   },
+   "base-local-replacements": [
+    [
+     [
+      "Suno-application-installer-0.1.0-1.Suno.31.preview20260915.4~vmtest2.fc44.noarch",
+      "Suno-application-installer",
+      0,
+      "0.1.0",
+      "1.Suno.31.preview20260915.4~vmtest2.fc44",
+      "noarch"
+     ],
+     [
+      "Suno-application-installer-0.1.0-1.Suno.30.preview20260914.17.fc44.noarch",
+      "Suno-application-installer",
+      0,
+      "0.1.0",
+      "1.Suno.30.preview20260914.17.fc44",
+      "noarch"
+     ]
+    ]
+   ],
+   "base-removals": [],
+   "base-version": "1.0.0-nightly.20260915.5",
+   "booted": true,
+   "checksum": "b3dea06aa22f08649cbb1b0fa3ec1780c36d4c17989805e127c0f9afa5d7f300",
+   "id": "Suno-b3dea06aa22f08649cbb1b0fa3ec1780c36d4c17989805e127c0f9afa5d7f300.0",
+   "origin": "Suno:Suno/1/x86_64/nightly",
+   "osname": "Suno",
+   "packages": [],
+   "pinned": false,
+   "requested-base-local-replacements": [
+    "Suno-application-installer-0.1.0-1.Suno.31.preview20260915.4~vmtest2.fc44.noarch"
+   ],
+   "requested-base-removals": [],
+   "requested-local-packages": [],
+   "requested-packages": [],
+   "serial": 0,
+   "staged": false,
+   "timestamp": 1789488924,
+   "unlocked": "none",
+   "version": "1.0.0-nightly.20260915.5"
+  },
+  {
+   "base-checksum": "58648876f1d8d7119ade5f8c0c376aef3e430d2340e4e43b9ea28fdfac3678e4",
+   "base-commit-meta": {
+    "org.projectSuno.base-image-digest": "",
+    "org.projectSuno.build-id": "",
+    "org.projectSuno.build-version": "",
+    "org.projectSuno.channel": "",
+    "org.projectSuno.image-tree": "",
+    "org.projectSuno.provenance-sha256": "",
+    "org.projectSuno.sbom-sha256": "",
+    "org.projectSuno.source-dirty": "",
+    "org.projectSuno.source-revision": "",
+    "ostree.bootable": true,
+    "version": "1.0.0-nightly.20260915.5"
+   },
+   "base-local-replacements": [
+    [
+     [
+      "Suno-application-installer-0.1.0-1.Suno.31.preview20260915.4~vmtest2.fc44.noarch",
+      "Suno-application-installer",
+      0,
+      "0.1.0",
+      "1.Suno.31.preview20260915.4~vmtest2.fc44",
+      "noarch"
+     ],
+     [
+      "Suno-application-installer-0.1.0-1.Suno.30.preview20260914.17.fc44.noarch",
+      "Suno-application-installer",
+      0,
+      "0.1.0",
+      "1.Suno.30.preview20260914.17.fc44",
+      "noarch"
+     ]
+    ]
+   ],
+   "base-removals": [
+    [
+     "Suno-tide-0.1.0-2.Suno.14.surfacepreview20260913.1.fc44.noarch",
+     "Suno-tide",
+     0,
+     "0.1.0",
+     "2.Suno.14.surfacepreview20260913.1.fc44",
+     "noarch"
+    ]
+   ],
+   "base-version": "1.0.0-nightly.20260915.5",
+   "booted": false,
+   "checksum": "8026ff05a4103b0939066b6e65aebd1b2fc5811325be4dee7b6137c07ae08525",
+   "id": "Suno-8026ff05a4103b0939066b6e65aebd1b2fc5811325be4dee7b6137c07ae08525.0",
+   "origin": "Suno:Suno/1/x86_64/nightly",
+   "osname": "Suno",
+   "packages": [],
+   "pinned": false,
+   "requested-base-local-replacements": [
+    "Suno-application-installer-0.1.0-1.Suno.31.preview20260915.4~vmtest2.fc44.noarch"
+   ],
+   "requested-base-removals": [
+    "Suno-tide"
+   ],
+   "requested-local-packages": [],
+   "requested-packages": [],
+   "serial": 0,
+   "staged": false,
+   "timestamp": 1789488773,
+   "unlocked": "none",
+   "version": "1.0.0-nightly.20260915.5"
+  }
+ ],
+ "transaction": null,
+ "update-driver": null
+}

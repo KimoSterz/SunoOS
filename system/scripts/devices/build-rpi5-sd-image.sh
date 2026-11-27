@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
 #
-# Build the Raspberry Pi 5 SD card image from a Luma aarch64 installer ISO.
+# Build the Raspberry Pi 5 SD card image from a Suno aarch64 installer ISO.
 #
 #   MBR, disk identifier 0x4c554d41
-#   p1  FAT32 "LUMA_PI5", 512 MiB at 1 MiB: config.txt, Fedora U-Boot, the
+#   p1  FAT32 "SUNO_PI5", 512 MiB at 1 MiB: config.txt, Fedora U-Boot, the
 #       installer kernel's upstream device trees (CMA 256 MiB) for the
 #       firmware and for U-Boot (dtb/broadcom), the ISO's GRUB
 #       as EFI/BOOT/BOOTAA64.EFI, the card menu (EFI/BOOT/grub.cfg, grubenv),
 #       the installer kernel and initramfs
 #   p2  the ISO, byte for byte
 #
-# Card sources: src/luma-rpi5-platform/card. Device profile:
+# Card sources: src/Suno-rpi5-platform/card. Device profile:
 # devices/raspberrypi/rpi5.
 #
 # usage: build-rpi5-sd-image.sh --iso FILE --output DIR [--uboot-rpm FILE] [--head-only]
@@ -30,7 +30,7 @@ set -euo pipefail
 export TZ=UTC LC_ALL=C MTOOLS_SKIP_CHECK=1
 
 repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
-card_src="$repo_root/src/luma-rpi5-platform/card"
+card_src="$repo_root/src/Suno-rpi5-platform/card"
 
 # Fedora U-Boot, rpi_arm64 target.
 uboot_nevra=uboot-images-armv8-2026.10-1.fc45.noarch
@@ -40,7 +40,7 @@ uboot_bin_sha256=b552bd48c1745f565d424a5df7846283fbe66a244ea4e7c6f8a42c4e80a5ed5
 
 # Installer arguments; the profile's cmdline.args (boot.toml). Never console=.
 installer_args="clk_ignore_unused pd_ignore_unused"
-fat_label=LUMA_PI5
+fat_label=SUNO_PI5
 fat_mib=512
 disk_id=0x4c554d41
 
@@ -71,7 +71,7 @@ iso_bytes=$(stat -c %s "$iso")
 iso_name=$(basename "$iso" .iso)
 volid=$(blkid -p -o value -s LABEL "$iso")
 [[ "$volid" =~ ^[A-Za-z0-9._-]+$ ]] || fail "ISO volume ID '$volid' is unusable in inst.stage2=hd:LABEL="
-case "$iso_name" in luma-*) image_name="luma-rpi5-${iso_name#luma-}" ;; *) image_name="luma-rpi5-$iso_name" ;; esac
+case "$iso_name" in Suno-*) image_name="Suno-rpi5-${iso_name#Suno-}" ;; *) image_name="Suno-rpi5-$iso_name" ;; esac
 mkdir -p "$output"
 output=$(realpath -e "$output")
 epoch=${SOURCE_DATE_EPOCH:-$(git -C "$repo_root" log -1 --format=%ct HEAD)}
@@ -86,7 +86,7 @@ mkdir "$work/iso"
 mount -o loop,ro "$iso" "$work/iso"
 for file in images/pxeboot/vmlinuz images/pxeboot/initrd.img images/install.img \
             EFI/BOOT/grubaa64.efi EFI/BOOT/fonts/unicode.pf2; do
-  [ -f "$work/iso/$file" ] || fail "not a Luma aarch64 installer ISO: $file is missing"
+  [ -f "$work/iso/$file" ] || fail "not a Suno aarch64 installer ISO: $file is missing"
 done
 
 echo "ISO: $iso_name ($volid, $iso_bytes bytes)"
@@ -119,7 +119,7 @@ missing=()
 for module in "${modules[@]}"; do
   grep -q "usr/lib/modules/$release/$module" "$work/stage2.lst" || missing+=("$module")
 done
-repo="$work/iso/luma/repo"
+repo="$work/iso/Suno/repo"
 ref=$(ostree --repo="$repo" refs | grep -vx ostree-metadata || true)
 [ -n "$ref" ] && [ "$(printf '%s\n' "$ref" | wc -l)" = 1 ] || fail "ISO payload ref is ambiguous: $ref"
 compat_updates=no
@@ -184,7 +184,7 @@ install -m 0644 "$card_src/config-uboot.txt" "$fat/config.txt"
 # The installer runs Fedora's kernel, which needs U-Boot's tree: U-Boot loads
 # dtb/<fdtfile> from the card and applies its board fixups (MAC, serial).
 # Without that file it falls back to the firmware's tree, on which Fedora's
-# kernel hangs. A system installed with the Luma Raspberry Pi kernel needs the
+# kernel hangs. A system installed with the Suno Raspberry Pi kernel needs the
 # firmware layout instead (build-rpi5-disk-image.sh); this card is for
 # Fedora-kernel payloads.
 "$repo_root/scripts/devices/rpi5-board-dtbs.sh" --layout uboot --kernel-dtbs "$work/stage2/$dtbs" \

@@ -1,0 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
+[D-BUS Service]
+Name=org.projectSuno.SemanticBroker1
+SystemdService=Suno-semantic-broker.service

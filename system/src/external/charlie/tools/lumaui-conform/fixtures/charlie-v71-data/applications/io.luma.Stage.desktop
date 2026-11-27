@@ -1,7 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=Stage
-Icon=io.luma.Stage
-Exec=true %f
-MimeType=application/x-luma-stage;
-NoDisplay=true

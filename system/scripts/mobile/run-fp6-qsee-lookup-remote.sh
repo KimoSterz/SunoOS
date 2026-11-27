@@ -6,7 +6,7 @@
 
 set -Eeuo pipefail
 
-stage=/tmp/luma-qsee-lookup-v1
+stage=/tmp/Suno-qsee-lookup-v1
 expected_model='The Fairphone (Gen. 6)'
 expected_kernel=7.1.2
 expected_boot_size=27512832
@@ -40,7 +40,7 @@ cleanup() {
 			printf 'event=qsee_lookup_cleanup_error reason=module_still_loaded\n' >&2
 			cleanup_status=1
 		fi
-		if [[ -d $stage && ! -L $stage && $stage == /tmp/luma-qsee-lookup-v1 ]]; then
+		if [[ -d $stage && ! -L $stage && $stage == /tmp/Suno-qsee-lookup-v1 ]]; then
 			find "$stage" -depth -delete || cleanup_status=1
 		else
 			printf 'event=qsee_lookup_cleanup_error reason=stage_identity\n' >&2

@@ -17,12 +17,12 @@ gi.require_version('Adw', '1')
 gi.require_version('PangoCairo', '1.0')
 from gi.repository import Adw, Gdk, Gio, GLib, Gtk
 
-from luma_appkit import (
+from Suno_appkit import (
     ActionCenter, BarAction, BarTile, BarTiles, PanelChoices, PanelRow, SPACER, panel_list,
     AppWindow, Command, CommandGroup, CommandRegistry, ContentLitCard, EmptyState,
     SidebarRow, NavigationSidebar, PlaceSearch, ScrollView, attach_context_menu,
     SidebarFoot, SidebarToggle, Toast, ToastHost, Island, TypeLabel, add_style_sheet,
-    icons, install_appkit, install_lumaui, lumaui_tokens, apply_type,
+    icons, install_appkit, install_SunoUI, SunoUI_tokens, apply_type,
 )
 from . import weather_phone
 from .weather_backend import PlaceStore, cached_forecast, fetch_forecast, local_now, needs_refresh, new_place
@@ -37,7 +37,7 @@ from .weather_observation import fetch_alerts
 from .weather_observation_cache import cached_observation, current_observation
 from .clock_backend import uses_24_hour
 
-ICON_NAME = 'org.projectluma.Weather'
+ICON_NAME = 'org.projectSuno.Weather'
 
 
 def _formats_region() -> str | None:
@@ -89,8 +89,8 @@ class WeatherWindow(AppWindow):
         self.phone_state = weather_phone.PhoneState()
         if self.fixture:
             # Conformance states: which phone view, and the radar's quarter hour.
-            self.phone_state.view = os.environ.get('LUMA_WEATHER_VIEW', 'today')
-            self.phone_state.radar_step = int(os.environ.get('LUMA_WEATHER_RADAR_STEP', '0'))
+            self.phone_state.view = os.environ.get('SUNO_WEATHER_VIEW', 'today')
+            self.phone_state.radar_step = int(os.environ.get('SUNO_WEATHER_RADAR_STEP', '0'))
         self._radar = None
         self._radar_source = 0
         self.closed = False
@@ -123,7 +123,7 @@ class WeatherWindow(AppWindow):
         body = Gtk.Box(spacing=0, hexpand=True, vexpand=True)
         self.sidebar = NavigationSidebar(variant='resources')
         self.sidebar.set_name('wx-sidebar')
-        self.sidebar.set_size_request(250 - lumaui_tokens.SIDEBAR["gutter"], -1)
+        self.sidebar.set_size_request(250 - SunoUI_tokens.SIDEBAR["gutter"], -1)
         self.sidebar.list.connect('row-activated', self._activate_place)
         self.sidebar.list.connect('row-selected', self._select_place)
         self.foot = PlaceSearch(self.search_provider, on_pick=self._add_place, placeholder='Add a city or ZIP',
@@ -153,7 +153,7 @@ class WeatherWindow(AppWindow):
         overlay = Gtk.Overlay(child=self.sky)
         overlay.add_overlay(self.scroll)
         self.empty = EmptyState('No cities', 'Add a city to see its forecast.',
-                                'lumaui-cloud-symbolic')
+                                'SunoUI-cloud-symbolic')
         self.detail_stack = Gtk.Stack(hexpand=True, vexpand=True)
         self.detail_stack.add_named(self.empty, 'empty')
         self.detail_stack.add_named(overlay, 'forecast')
@@ -197,13 +197,13 @@ class WeatherWindow(AppWindow):
         stacked.add_setter(self.forecast_layout, 'stacked', True)
         self.add_breakpoint(stacked)
         compact = Adw.Breakpoint.new(Adw.BreakpointCondition.parse('max-width: 900px'))
-        compact.add_setter(self.sidebar, 'width-request', 210 - lumaui_tokens.SIDEBAR['gutter'])
+        compact.add_setter(self.sidebar, 'width-request', 210 - SunoUI_tokens.SIDEBAR['gutter'])
         compact.add_setter(self.forecast_layout, 'stacked', True)
         self.add_breakpoint(compact)
         # 720: ☰ appears (v71 `.wxwin .tbar .navbtn`), the sidebar still open; 700: it folds behind ☰.
         # TODO(v71-kit SidebarToggle as ☰ before the identity): K-NAV "AppWindow / SidebarToggle integration".
         toggled = Adw.Breakpoint.new(Adw.BreakpointCondition.parse('max-width: 720px'))
-        toggled.add_setter(self.sidebar, 'width-request', 210 - lumaui_tokens.SIDEBAR['gutter'])
+        toggled.add_setter(self.sidebar, 'width-request', 210 - SunoUI_tokens.SIDEBAR['gutter'])
         toggled.add_setter(self.toggle, 'visible', True)
         toggled.add_setter(self.forecast_layout, 'stacked', True)
         self.add_breakpoint(toggled)
@@ -305,7 +305,7 @@ class WeatherWindow(AppWindow):
             # A phone has no sidebar: its places are the bar's Places.
             self._open_places()
             return
-        if self.get_width() <= lumaui_tokens.PHONE_MAX_WIDTH and not self.sidebar.get_mapped():
+        if self.get_width() <= SunoUI_tokens.PHONE_MAX_WIDTH and not self.sidebar.get_mapped():
             self.toggle.toggle()
         self.foot.entry.grab_focus()
 
@@ -355,7 +355,7 @@ class WeatherWindow(AppWindow):
         if _tv_view(self) is not None:
             _tv_view(self).toast(f'Removed {removed.name}', lead='map-pin')
             return
-        where = self if self.get_width() <= lumaui_tokens.PHONE_MAX_WIDTH else self.host
+        where = self if self.get_width() <= SunoUI_tokens.PHONE_MAX_WIDTH else self.host
         Toast.show(where, f'Removed {removed.name}', kind='place', undo=self.undo_removal)
 
     def undo_removal(self):
@@ -386,7 +386,7 @@ class WeatherWindow(AppWindow):
         if _tv_view(self) is not None:
             _tv_view(self).toast(message, lead='map-pin' if kind == 'place' else 'circle-alert')
             return None
-        where = self if self.get_width() <= lumaui_tokens.PHONE_MAX_WIDTH else self.host
+        where = self if self.get_width() <= SunoUI_tokens.PHONE_MAX_WIDTH else self.host
         return Toast.show(where, message, kind=kind)
 
     def _read_cached(self):
@@ -440,19 +440,19 @@ class WeatherWindow(AppWindow):
             self._toast('Weather could not be loaded.', kind='error')
         if self.fixture and not self._fixture_started:
             self._fixture_started = True
-            panel = os.environ.get('LUMA_WEATHER_PANEL')
+            panel = os.environ.get('SUNO_WEATHER_PANEL')
             if panel in ('view', 'alerts', 'places'):
                 GLib.timeout_add(400, self._fixture_panel, panel)
-            if os.environ.get('LUMA_WEATHER_DRAWER') == '1':
+            if os.environ.get('SUNO_WEATHER_DRAWER') == '1':
                 GLib.timeout_add(300, self._fixture_drawer)
-            if os.environ.get('LUMA_WEATHER_SELECT'):
+            if os.environ.get('SUNO_WEATHER_SELECT'):
                 GLib.timeout_add(300, self._fixture_drawer)
                 GLib.timeout_add(450, self._fixture_select)
-            query = os.environ.get('LUMA_WEATHER_QUERY')
+            query = os.environ.get('SUNO_WEATHER_QUERY')
             if query:
                 self.foot.set_text(query)
                 GLib.timeout_add(300, self._fixture_search)
-            if os.environ.get('LUMA_WEATHER_SCROLL') == 'bottom':
+            if os.environ.get('SUNO_WEATHER_SCROLL') == 'bottom':
                 GLib.timeout_add(300, self._scroll_bottom)
         elif not self.fixture:
             for place in places:
@@ -460,7 +460,7 @@ class WeatherWindow(AppWindow):
         return False
 
     def _fixture_drawer(self):
-        if not self.closed and not self.phone and self.get_width() <= lumaui_tokens.PHONE_MAX_WIDTH and not self.sidebar.get_mapped():
+        if not self.closed and not self.phone and self.get_width() <= SunoUI_tokens.PHONE_MAX_WIDTH and not self.sidebar.get_mapped():
             self.toggle.toggle()
         return False
 
@@ -477,14 +477,14 @@ class WeatherWindow(AppWindow):
     def _fixture_select(self):
         if self.closed:
             return False
-        uid = os.environ.get('LUMA_WEATHER_SELECT')
+        uid = os.environ.get('SUNO_WEATHER_SELECT')
         row = self.sidebar.list.get_first_child()
         while row is not None:
             if row.place.uid == uid:
                 self.sidebar.list.select_row(row)
                 self.sidebar.list.emit('row-activated', row)
                 assert self.selected == uid, 'Weather fixture place selection failed'
-                if self.get_width() <= lumaui_tokens.PHONE_MAX_WIDTH and not self.phone:
+                if self.get_width() <= SunoUI_tokens.PHONE_MAX_WIDTH and not self.phone:
                     assert not self.toggle.shown, 'Weather fixture Places drawer did not close'
                 return False
             row = row.get_next_sibling()
@@ -494,7 +494,7 @@ class WeatherWindow(AppWindow):
         if not self.closed:
             self.foot.entry.grab_focus()
             self.foot.search_now()
-            if os.environ.get('LUMA_WEATHER_PICK') == '1':
+            if os.environ.get('SUNO_WEATHER_PICK') == '1':
                 GLib.timeout_add(50, self._fixture_pick)
         return False
 
@@ -626,7 +626,7 @@ class WeatherWindow(AppWindow):
         if self.closed or uid != self.selected:
             return False
         self.scroll.get_vadjustment().set_value(0)
-        if self.get_width() <= lumaui_tokens.PHONE_MAX_WIDTH and self.toggle.shown:
+        if self.get_width() <= SunoUI_tokens.PHONE_MAX_WIDTH and self.toggle.shown:
             self.toggle.toggle()
         return False
 
@@ -930,8 +930,8 @@ class WeatherWindow(AppWindow):
                                             p.latitude == saved.latitude and p.longitude == saved.longitude
                                             for saved in self.places))
         self.phone_search.entry.set_name('wx-phone-search')
-        self.phone_search.add_css_class('lumaui-panel-field')
-        self.phone_search.get_first_child().add_css_class('lumaui-panel-field-icon')
+        self.phone_search.add_css_class('SunoUI-panel-field')
+        self.phone_search.get_first_child().add_css_class('SunoUI-panel-field-icon')
         self.phone_search.set_margin_bottom(10)
         rows = [self.phone_search]
         for place in self.places:
@@ -1015,7 +1015,7 @@ class WeatherWindow(AppWindow):
     @staticmethod
     def _heading(icon, title):
         line = Gtk.Box(spacing=6)
-        if 'weather_heading' in lumaui_tokens.TYPE_SCALE:
+        if 'weather_heading' in SunoUI_tokens.TYPE_SCALE:
             apply_type(line, 'weather-heading')
         line.set_margin_bottom(10)
         line.append(icons.image(icon, pixel_size=13))
@@ -1030,9 +1030,9 @@ class WeatherApplication(Adw.Application):
     def do_startup(self):
         Adw.Application.do_startup(self)
         install_appkit()
-        install_lumaui()
+        install_SunoUI()
         if Gdk.Display.get_default():
-            add_style_sheet(os.environ.get('LUMA_WEATHER_STYLE_PATH', '/usr/share/prairie-core/weather.css'))
+            add_style_sheet(os.environ.get('SUNO_WEATHER_STYLE_PATH', '/usr/share/prairie-core/weather.css'))
 
     def do_activate(self):
         (self.props.active_window or WeatherWindow(self)).present()

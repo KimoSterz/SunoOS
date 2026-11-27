@@ -19,10 +19,10 @@ import gi
 gi.require_version('Gtk', '4.0')
 gi.require_version('Gdk', '4.0')
 from gi.repository import GLib, Gdk, Gtk
-from luma_appkit import AppWindow, MediaGrid, MediaTile
+from Suno_appkit import AppWindow, MediaGrid, MediaTile
 
 from prairie_apps.photos import (
-    LUMA_PLATFORM_AVAILABLE,
+    SUNO_PLATFORM_AVAILABLE,
     PhotosApplication,
     PhotosWindow,
 )
@@ -112,10 +112,10 @@ def main() -> int:
     parser.add_argument('--height', type=int, required=True)
     parser.add_argument('--expected-compact', choices=('true', 'false'), required=True)
     parser.add_argument('--expected-decorated', choices=('true', 'false'), required=True)
-    parser.add_argument('--require-luma-platform', action='store_true')
+    parser.add_argument('--require-Suno-platform', action='store_true')
     args = parser.parse_args()
 
-    with tempfile.TemporaryDirectory(prefix='luma-photos-smoke-') as temporary:
+    with tempfile.TemporaryDirectory(prefix='Suno-photos-smoke-') as temporary:
         root = Path(temporary)
         # The RPM uses a private bus/display; isolate every app store as well.
         for variable, folder in (('HOME', 'home'), ('XDG_DATA_HOME', 'data'),
@@ -124,8 +124,8 @@ def main() -> int:
             path = root / folder
             path.mkdir()
             os.environ[variable] = str(path)
-        os.environ['LUMA_PHOTOS_NON_UNIQUE'] = '1'
-        os.environ.pop('LUMA_PHOTOS_FIXTURE', None)
+        os.environ['SUNO_PHOTOS_NON_UNIQUE'] = '1'
+        os.environ.pop('SUNO_PHOTOS_FIXTURE', None)
         pictures = root / 'Pictures'
         pictures.mkdir()
         fixture = pictures / 'Generated fixture.png'
@@ -223,8 +223,8 @@ def main() -> int:
             if not phone:
                 assert window.search_item.entry is not None
             assert_square_grid(window)
-            if args.require_luma_platform:
-                assert LUMA_PLATFORM_AVAILABLE
+            if args.require_Suno_platform:
+                assert SUNO_PLATFORM_AVAILABLE
                 assert isinstance(window, AppWindow)
             expected_compact = args.expected_compact == 'true'
             print('photos-runtime-layout: '
@@ -272,7 +272,7 @@ def main() -> int:
     print('photos-runtime-smoke: '
           f'width={args.width} height={args.height} '
           f'compact={str(expected_compact).lower()} '
-          f'luma={str(LUMA_PLATFORM_AVAILABLE).lower()}')
+          f'Suno={str(SUNO_PLATFORM_AVAILABLE).lower()}')
     return 0
 
 

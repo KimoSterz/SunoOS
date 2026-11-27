@@ -36,11 +36,11 @@ export default async function ({Main, Scripting, shot}) {
     const log = [];
     const write = () => GLib.file_set_contents(`${OUT}/render.json`, JSON.stringify(log, null, 1));
     const cases = [
-        ['01-messages-on', 'org.projectluma.Messages.desktop', null],
-        ['02-messages-turned-off', 'org.projectluma.Messages.desktop', false],
-        ['03-weather-off', 'org.projectluma.Weather.desktop', null],
-        ['04-weather-turned-on', 'org.projectluma.Weather.desktop', true],
-        ['05-photos-no-agent', 'org.projectluma.Photos.desktop', null],
+        ['01-messages-on', 'org.projectSuno.Messages.desktop', null],
+        ['02-messages-turned-off', 'org.projectSuno.Messages.desktop', false],
+        ['03-weather-off', 'org.projectSuno.Weather.desktop', null],
+        ['04-weather-turned-on', 'org.projectSuno.Weather.desktop', true],
+        ['05-photos-no-agent', 'org.projectSuno.Photos.desktop', null],
     ];
     for (const [name, appId, toggle] of cases) {
       try {

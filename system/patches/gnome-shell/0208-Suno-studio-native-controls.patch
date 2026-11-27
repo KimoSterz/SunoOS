@@ -1,0 +1,27 @@
+From: Suno Shell Notifications
+Subject: [PATCH] Match reply send circle and quiet footer to Studio
+
+--- a/data/theme/Suno-shelf.css
++++ b/data/theme/Suno-shelf.css
+@@ -2972,3 +2972,10 @@
+ .quick-settings.Suno-studio-options .Suno-options-detail > .popup-menu-section.Suno-options-near-empty { padding: 0; background-color: transparent; box-shadow: none; }
+ .quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-detail .Suno-options-nearby { color: rgba(22,25,29,.76); }
+ .quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-detail .Suno-options-off { color: rgba(22,25,29,.56); }
++
++/* Native measured controls: Studio reply send circle and quiet footer. */
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .Suno-inline-reply-button { min-width: 0; }
++.quick-settings.Suno-studio-options .Suno-options-system { border-top: 1px solid rgba(255,255,255,.09); padding-top: 9px; box-shadow: none; }
++.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-system { border-top-color: rgba(22,25,29,.10); }
++.quick-settings.Suno-studio-options .Suno-options-battery-text { color: #e7e9e8; }
++.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-battery-text { color: #16191d; }
+--- a/js/ui/status/system.js
++++ b/js/ui/status/system.js
+@@ -464,7 +464,7 @@
+             const percentage = GLib.markup_escape_text(this._powerToggle.title ?? '', -1);
+             const suffix = remaining ? ` · ${remaining} ` +
+                 (proxy.State === UPower.DeviceState.CHARGING ? _('until full') : _('left')) : '';
+-            label.clutter_text.set_markup(`<span weight="650" alpha="65535">${percentage}</span>${GLib.markup_escape_text(suffix, -1)}`);
++            label.clutter_text.set_markup(`<span weight="650">${percentage}</span><span alpha="40632">${GLib.markup_escape_text(suffix, -1)}</span>`);
+             key.visible = this._powerToggle.visible;
+         };
+         this._powerToggle._proxy.connectObject('g-properties-changed', syncBattery, key);

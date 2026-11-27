@@ -1,6 +1,6 @@
 # Changelog
 
-## 2026-11-18 — v71 phone layout (lumaui-conform phone, light and dark)
+## 2026-11-18 — v71 phone layout (SunoUI-conform phone, light and dark)
 
 - The phone list runs to the top under its title island (ListFirst status_inset=False); rows,
   the Updates bundle (senders' marks), counts, flags and unread times take v71's sizes and inks.
@@ -38,7 +38,7 @@
 
 - Typing "e" in the inline reply no longer archives the conversation. One-key
   shortcuts (E, Delete) only act when focus is outside a text field.
-- Replaced the dense legacy server form with a Luma AppKit provider chooser,
+- Replaced the dense legacy server form with a Suno AppKit provider chooser,
   familiar provider identity rows and a focused per-provider setup surface.
 - Added presets and provider-specific app-password guidance for iCloud, Yahoo,
   Fastmail, Zoho and AOL, while retaining a complete Other IMAP fallback.
@@ -102,7 +102,7 @@
 - Replaced the ThinkPad's 0.2.6 Charlie overlay with this qualified RPM in the
   existing staged deployment, without rebooting, and launched the exact
   extracted 0.2.10 payload for immediate testing.
-- Lengthened the collapsed HTML overlay and faded it into Luma's dark menu
+- Lengthened the collapsed HTML overlay and faded it into Suno's dark menu
   shadow token so “Click to expand” remains legible over light, dark or busy
   email artwork.
 - Replaced the floating text-style “Show less” control with a full-width,
@@ -133,7 +133,7 @@
 
 ## 2026-09-15 — 0.2.7 background mail agent
 
-- Added `org.projectluma.Charlie --agent`, a windowless agent (ADR-033,
+- Added `org.projectSuno.Charlie --agent`, a windowless agent (ADR-033,
   category mail) that never loads GTK. It keeps one connection per enabled
   account, waits in IMAP IDLE (re-issued every 25 minutes) or polls every ten
   minutes, stores new Inbox mail so the window shows it without a sync, and
@@ -146,17 +146,17 @@
   Errors back off from one minute to thirty; a rejected sign-in stops that
   account with one "Sign in again" notification until accounts are reloaded.
   Network return, resume and unlock reconnect at once.
-- Follows the published luma-background contract (package release
-  1.luma.2): the agent exports `org.projectluma.BackgroundAgent1` with
-  `Wake` accepted only from `org.projectluma.Background1` and publishes
+- Follows the published Suno-background contract (package release
+  1.Suno.2): the agent exports `org.projectSuno.BackgroundAgent1` with
+  `Wake` accepted only from `org.projectSuno.Background1` and publishes
   `unread-count` and `unread-by-account` in `Values`. It runs on
-  `luma_appkit.background` when installed. Charlie installs its declaration in
-  `/usr/share/luma/background/` and ships no systemd unit or D-Bus activation
+  `Suno_appkit.background` when installed. Charlie installs its declaration in
+  `/usr/share/Suno/background/` and ships no systemd unit or D-Bus activation
   file: the service generates the unit, applies the person's decision and
   delivers wakes. An autostart entry (`--agent --autostart`) starts the agent
   only in sessions without the service, where it watches the network, resume
   and unlock itself.
-- The window asks luma-background for background activity when it opens with
+- The window asks Suno-background for background activity when it opens with
   an account or after one is added, tells a running agent to reload after
   account changes and to check from Check for Mail, and never starts it
   directly. The unused in-window notification path was removed.
@@ -192,7 +192,7 @@
 
 ## 2026-09-14 — 0.2.3 platform-icon correction
 
-- Baked Luma Icon Canvas's 240 px platform silhouette into Charlie's
+- Baked Suno Icon Canvas's 240 px platform silhouette into Charlie's
   freedesktop icon so hicolor consumers cannot expose the full-bleed source's
   square corners.
 - Added a source contract test for the named clip and radius and regenerated
@@ -216,7 +216,7 @@
 
 ## 2026-09-13 — 0.2.1 conversation polish candidate
 
-- Matched Luma Messages' left/right transcript language with responsive bounded
+- Matched Suno Messages' left/right transcript language with responsive bounded
   bubbles, header identity, full-span separation and HTML-only dark elevation.
 - Added rounded 340 px formatted previews with one document inset, a visible
   lower fade, expand-on-click, remote images and an eight-entry rendered cache.
@@ -249,19 +249,19 @@
   navigation at compact widths.
 - Aligned thread content with a permanent unread-state column, corrected the
   active-row jump, and restored AppKit's fixed avatar and account-dot measures.
-- Matched Luma toolbar typography, search spacing, transcript rhythm and reader
+- Matched Suno toolbar typography, search spacing, transcript rhythm and reader
   identity sizing across wide and compact layouts.
 - Added isolated width-qualified geometry and contract coverage for the
   responsive hierarchy.
 
 ## 2026-09-13 — 0.1.0 native integration candidate
 
-- Added the GTK 4/libadwaita/Luma AppKit wide, medium and one-pane layouts.
+- Added the GTK 4/libadwaita/Suno AppKit wide, medium and one-pane layouts.
 - Added a presentation-independent MIME/IMAP/SMTP/SQLite engine with local FTS.
 - Added transactional local read, flag, archive, trash and undo behavior.
 - Added Secret Service, locked-down WebKitGTK, attachment-save portal, mailto,
   replaceable notification and SearchProvider2 integration boundaries.
-- Added one reverse-DNS identity, approved Luma Mail artwork, AppStream/desktop
+- Added one reverse-DNS identity, approved Suno Mail artwork, AppStream/desktop
   metadata, Meson packaging, RPM packaging and runtime/contract tests.
 - Kept compact reader actions available through the AppKit command overflow.
 - Kept the Flutter Charlie installation and data completely separate.

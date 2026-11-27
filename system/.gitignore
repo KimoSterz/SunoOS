@@ -52,10 +52,10 @@ secrets/
 
 # macOS debug symbol bundles from local test builds
 *.dSYM/
-# Luma Emulator: build products, guest state, and generated keys.
+# Suno Emulator: build products, guest state, and generated keys.
 # Everything else the emulator owns lives under
-# ~/Library/Application Support/Luma Emulator, outside this repository.
-tools/luma-emulator/.build/
+# ~/Library/Application Support/Suno Emulator, outside this repository.
+tools/Suno-emulator/.build/
 xcuserdata/
 *.xcuserstate
 *.app/
@@ -97,4 +97,4 @@ id_ed25519
 
 # Private capture exports (source fixtures and artwork remain trackable)
 /src/external/charlie/docs/evidence/
-!src/luma-connect-sync/tests/vectors/privacy-pass/TEST-ONLY-token-key.pem
+!src/Suno-connect-sync/tests/vectors/privacy-pass/TEST-ONLY-token-key.pem

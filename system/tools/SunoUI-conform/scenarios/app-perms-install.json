@@ -1,0 +1,135 @@
+{
+ "app": "app-perms-install",
+ "title": "App permissions: the install sheet",
+ "about": "The install sheet (Valet, Suno-application-installer) against design-center 8bd4ccf mockups/app-perms/install.html. Pixel mode: the app PNGs are crops of the VM (2x) from the Valet fixture tests/fixtures/valet-app-perms.json (SUNO_VALET_STATE=kiln|polychrome|cli). The reference's inline actions are left out: Valet keeps Install and Cancel at the window's foot. Valet keeps its own header (spec section 1), so the verdict is over the permission blocks (accepted deviation valet-keeps-its-header). The reference's flat window fill is replaced with Valet's main-column surface as measured in the VM (dark rgb(28,27,31), light rgb(220,222,225)), so the comparison measures the sheet, not the window. Glyphs: the reference's Lucide SVGs at SunoUI's 1.6 stroke (Prairie's adaptation of every Lucide glyph), not Lucide's 2. The reference is captured at 2x (spec.scale) to match. Valet's lit header wash is the app's own material (review 3): its band, the window's top 380 px (LIT_HEADER wash_height), is left out of every score.",
+ "spec": {
+  "root": "design-center",
+  "url": "mockups/app-perms/install.html?app=kiln",
+  "window": "#stage",
+  "ready": "html[data-ready]",
+  "viewport": {
+   "width": 900,
+   "height": 900
+  },
+  "phone_url": "mockups/app-perms/install.html?app=kiln&posture=phone",
+  "phone_viewport": {
+   "width": 440,
+   "height": 1300
+  },
+  "init_script": "if (matchMedia('(prefers-color-scheme: light)').matches && !/[?&]mode=/.test(location.search)) history.replaceState(null, '', location.pathname + (location.search ? location.search + '&' : '?') + 'mode=light');",
+  "before": [
+   {
+    "eval": "(() => { document.querySelector('#w-valet').style.background = document.documentElement.dataset.mode === 'light' ? 'rgb(220, 222, 225)' : 'rgb(28, 27, 31)'; })()",
+    "wait": 100
+   },
+   {
+    "eval": "(() => { if (document.documentElement.dataset.posture === 'phone') document.querySelector('#w-valet').style.width = '430px'; })()",
+    "wait": 100
+   }
+  ],
+  "scale": 2
+ },
+ "states": [
+  {
+   "name": "kiln",
+   "about": "Kiln from Flathub, These folders suggested",
+   "window": "#stage",
+   "spec": [
+    {
+     "eval": "(() => { const k='kiln', cli=false, x=APX.APPS[k], w=document.getElementById('w-valet'), st=document.getElementById('stage'); w.style.setProperty('--a', x.a); w.style.setProperty('--b', x.b); if (document.documentElement.dataset.posture === 'desktop') st.innerHTML = `<header class=\"vthd\">${APX.head(k)}</header><div class=\"vtmid\">${APX.sheet(k, cli)}</div>`; else { st.innerHTML = APX.sheetPhone(k, document.documentElement.dataset.posture === 'tv' ? 72 : 88); if (document.documentElement.dataset.posture === 'tv') st.querySelector('.vlp-list .vlp-row.on')?.classList.add('tvf'); } })()",
+     "wait": 600
+    },
+    {
+     "eval": "(() => { document.querySelectorAll('#stage svg.i').forEach(s => s.setAttribute('stroke-width', '1.6')); })()",
+     "wait": 100
+    },
+    {
+     "eval": "(() => { const s = document.getElementById('stage'); s.style.position = 'relative'; if (document.getElementById('ap-wash')) return; const m = document.createElement('div'); m.id = 'ap-wash'; m.style.cssText = 'position:absolute;left:0;top:0;right:0;height:272px;pointer-events:none'; s.appendChild(m); })()",
+     "wait": 50
+    }
+   ]
+  },
+  {
+   "name": "polychrome",
+   "about": "Polychrome .deb with device rules",
+   "window": "#stage",
+   "spec": [
+    {
+     "eval": "(() => { const k='polychrome', cli=false, x=APX.APPS[k], w=document.getElementById('w-valet'), st=document.getElementById('stage'); w.style.setProperty('--a', x.a); w.style.setProperty('--b', x.b); if (document.documentElement.dataset.posture === 'desktop') st.innerHTML = `<header class=\"vthd\">${APX.head(k)}</header><div class=\"vtmid\">${APX.sheet(k, cli)}</div>`; else { st.innerHTML = APX.sheetPhone(k, document.documentElement.dataset.posture === 'tv' ? 72 : 88); if (document.documentElement.dataset.posture === 'tv') st.querySelector('.vlp-list .vlp-row.on')?.classList.add('tvf'); } })()",
+     "wait": 600
+    },
+    {
+     "eval": "(() => { document.querySelectorAll('#stage svg.i').forEach(s => s.setAttribute('stroke-width', '1.6')); })()",
+     "wait": 100
+    },
+    {
+     "eval": "(() => { const s = document.getElementById('stage'); s.style.position = 'relative'; if (document.getElementById('ap-wash')) return; const m = document.createElement('div'); m.id = 'ap-wash'; m.style.cssText = 'position:absolute;left:0;top:0;right:0;height:272px;pointer-events:none'; s.appendChild(m); })()",
+     "wait": 50
+    }
+   ]
+  },
+  {
+   "name": "cli",
+   "about": "Kiln after a command-line install: review",
+   "window": "#stage",
+   "spec": [
+    {
+     "eval": "(() => { const k='kiln', cli=true, x=APX.APPS[k], w=document.getElementById('w-valet'), st=document.getElementById('stage'); w.style.setProperty('--a', x.a); w.style.setProperty('--b', x.b); if (document.documentElement.dataset.posture === 'desktop') st.innerHTML = `<header class=\"vthd\">${APX.head(k)}</header><div class=\"vtmid\">${APX.sheet(k, cli)}</div>`; else { st.innerHTML = APX.sheetPhone(k, document.documentElement.dataset.posture === 'tv' ? 72 : 88); if (document.documentElement.dataset.posture === 'tv') st.querySelector('.vlp-list .vlp-row.on')?.classList.add('tvf'); } })()",
+     "wait": 600
+    },
+    {
+     "eval": "(() => { document.querySelectorAll('#stage svg.i').forEach(s => s.setAttribute('stroke-width', '1.6')); })()",
+     "wait": 100
+    },
+    {
+     "eval": "(() => { const s = document.getElementById('stage'); s.style.position = 'relative'; if (document.getElementById('ap-wash')) return; const m = document.createElement('div'); m.id = 'ap-wash'; m.style.cssText = 'position:absolute;left:0;top:0;right:0;height:272px;pointer-events:none'; s.appendChild(m); })()",
+     "wait": 50
+    }
+   ]
+  }
+ ],
+ "phone_states": [
+  "kiln",
+  "polychrome"
+ ],
+ "groups": [
+  {
+   "name": "fills",
+   "spec": "#stage .ap-opt, #stage .ap-tick, #stage .ap-sug, #stage .vtcan, #stage .ap-req, #stage .ap-cli, #stage .vlhero .vlic, #stage .vlp-list, #stage .cfsw, #stage .cfrd"
+  },
+  {
+   "name": "content",
+   "spec": "#stage .vthd, #stage .vlp-hd, #stage .vlp-facts, #stage .ap-sec, #stage .ap-cli, #stage .ap-never, #stage .vlp-h, #stage .vlp-list"
+  },
+  {
+   "name": "body",
+   "spec": "#stage .ap-sec > h6, #stage .ap-opt, #stage .vtcan, #stage .ap-req, #stage .ap-cli, #stage .ap-never, #stage .vlp-facts > div, #stage .vlp-h, #stage .vlp-list, #stage .vlp-hd"
+  },
+  {
+   "name": "art",
+   "spec": "#stage .vlic"
+  },
+  {
+   "name": "controls",
+   "spec": "#stage .cfsw, #stage .cfrd, #stage .vtcan, #stage .ap-tick, #stage .bt"
+  },
+  {
+   "name": "wash",
+   "spec": "#ap-wash"
+  }
+ ],
+ "pairs": [],
+ "text_aliases": {},
+ "pixel": {
+  "max_mean": 4.0,
+  "max_over10": 1.0,
+  "fills": "fills",
+  "max_fill_over10": 0.005,
+  "glyphs_as_text": true,
+  "mean_without_text": true,
+  "exclude_groups": [
+   "art",
+   "wash"
+  ]
+ }
+}

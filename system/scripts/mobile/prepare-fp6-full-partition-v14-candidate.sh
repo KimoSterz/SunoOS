@@ -11,11 +11,11 @@ umask 022
 stock_boot=${1:?usage: prepare-fp6-full-partition-v14-candidate.sh STOCK_BOOT V14_BOOT OUTPUT_DIR}
 v14_boot=${2:?missing v14 boot}
 output_dir=${3:?missing output directory}
-stock_sha=${LUMA_FP6_FULL_BASE_SHA256_OVERRIDE:-bea4915daf875a340a71677a4706263a1a39d0a5b01da468e517783c9ce4579f}
+stock_sha=${SUNO_FP6_FULL_BASE_SHA256_OVERRIDE:-bea4915daf875a340a71677a4706263a1a39d0a5b01da468e517783c9ce4579f}
 stock_size=100663296
-v14_sha=${LUMA_FP6_FULL_PAYLOAD_SHA256_OVERRIDE:-5e95ae02a8a4c33f0decc1745b7ac067be43663b1095f19ef4065602d0546720}
-v14_size=${LUMA_FP6_FULL_PAYLOAD_SIZE_OVERRIDE:-26566656}
-candidate_name=${LUMA_FP6_FULL_CANDIDATE_NAME:-boot-fp6-full-partition-matched-cma-v14.img}
+v14_sha=${SUNO_FP6_FULL_PAYLOAD_SHA256_OVERRIDE:-5e95ae02a8a4c33f0decc1745b7ac067be43663b1095f19ef4065602d0546720}
+v14_size=${SUNO_FP6_FULL_PAYLOAD_SIZE_OVERRIDE:-26566656}
+candidate_name=${SUNO_FP6_FULL_CANDIDATE_NAME:-boot-fp6-full-partition-matched-cma-v14.img}
 candidate=$output_dir/$candidate_name
 
 die() { printf 'error: %s\n' "$*" >&2; exit 1; }
@@ -53,7 +53,7 @@ candidate_footer_sha=$(tail -c 64 "$candidate" | sha256sum | awk '{print $1}')
 [ "$candidate_footer_sha" = "$stock_footer_sha" ] || die 'AVB footer differs'
 
 {
-	printf 'LUMA_FP6_FULL_PARTITION_MATCHED_CMA_VERSION=14\n'
+	printf 'SUNO_FP6_FULL_PARTITION_MATCHED_CMA_VERSION=14\n'
 	printf 'STOCK_BOOT_SHA256=%s\n' "$stock_sha"
 	printf 'STOCK_BOOT_SIZE=%s\n' "$stock_size"
 	printf 'V14_BOOT_SHA256=%s\n' "$v14_sha"

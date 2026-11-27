@@ -2,21 +2,21 @@
 +++ b/js/ui/notificationDaemon.js
 @@ -31,6 +31,8 @@
  
- const MESSAGES_REPLY_PATH = '/org/projectluma/Messages/Notifications';
- const MESSAGES_REPLY_IFACE = 'org.projectluma.Messages.NotificationReply1';
-+const ANDROID_REPLY_PATH = '/org/projectluma/Android/Notifications';
-+const ANDROID_REPLY_IFACE = 'org.projectluma.Android.NotificationReply1';
+ const MESSAGES_REPLY_PATH = '/org/projectSuno/Messages/Notifications';
+ const MESSAGES_REPLY_IFACE = 'org.projectSuno.Messages.NotificationReply1';
++const ANDROID_REPLY_PATH = '/org/projectSuno/Android/Notifications';
++const ANDROID_REPLY_IFACE = 'org.projectSuno.Android.NotificationReply1';
  const INLINE_REPLY_TIMEOUT_MS = 30_000;
  
  class FdoNotificationDaemon {
 @@ -312,10 +314,16 @@
          const appId = source.app?.get_id()?.replace(/\.desktop$/, '');
-         const path = hints['x-luma-inline-reply-path'];
-         const token = hints['x-luma-inline-reply-token'];
--        if (appId !== 'org.projectluma.Messages' ||
+         const path = hints['x-Suno-inline-reply-path'];
+         const token = hints['x-Suno-inline-reply-token'];
+-        if (appId !== 'org.projectSuno.Messages' ||
 +        // The forwarder attests the unique producer before this method runs.
 +        // Restrict the endpoint as well: never call an arbitrary hinted object.
-+        const isMessages = appId === 'org.projectluma.Messages' &&
++        const isMessages = appId === 'org.projectSuno.Messages' &&
 +            path === MESSAGES_REPLY_PATH;
 +        const isAndroid = typeof appId === 'string' &&
 +            /^waydroid\.[A-Za-z][A-Za-z0-9_]*(?:\.[A-Za-z][A-Za-z0-9_]*)+$/.test(appId) &&
@@ -41,7 +41,7 @@
              'icon-static',
              'persistence',
              'sound',
-+            'x-luma-android-inline-reply-v1',
++            'x-Suno-android-inline-reply-v1',
          ];
      }
  
@@ -53,8 +53,8 @@
              if (remoteName.endsWith('.NotReady')) {
 -                this._replyEntry.hint_text = _('Messages is not ready; try again');
 +                this._replyEntry.hint_text = _('App is not ready; try again');
-                 this._replyButton.remove_style_class_name('luma-inline-reply-send');
-                 this._replyButton._lumaGlyph = false;
+                 this._replyButton.remove_style_class_name('Suno-inline-reply-send');
+                 this._replyButton._SunoGlyph = false;
                  this._replyButton.label = _('Try again');
                  this._replyButton.accessible_name = _('Try again');
              } else {
@@ -65,7 +65,7 @@
                  this._setReplyUncertain();
              }
 @@ -1269,9 +1269,9 @@
-         this._replyButton._lumaGlyph = false;
+         this._replyButton._SunoGlyph = false;
          this._replyEntry.reactive = false;
          this._replyEntry.hint_text = _('Delivery uncertain');
 -        this._replyButton.label = _('Open Messages');

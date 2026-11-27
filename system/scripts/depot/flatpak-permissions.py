@@ -37,8 +37,8 @@ from pathlib import Path
 
 # Use the installed client's scope comparator so publication cannot silently
 # disagree about subfolders or read/write changes within a grouped permission.
-sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'src/luma-installer'))
-from luma_installer.depot_permissions import names_widen
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'src/Suno-installer'))
+from Suno_installer.depot_permissions import names_widen
 
 LEVELS = {"standard": 0, "sensitive": 1, "high": 2}
 EXIT_PERMISSIONS_GREW = 3

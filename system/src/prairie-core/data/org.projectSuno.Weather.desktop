@@ -1,0 +1,17 @@
+[Desktop Entry]
+Type=Application
+Name=Weather
+Comment=View forecasts for saved places
+Exec=prairie-weather
+Icon=org.projectSuno.Weather
+Terminal=false
+Categories=Utility;
+Keywords=Weather;Forecast;Temperature;Place;
+StartupNotify=true
+DBusActivatable=false
+X-Purism-FormFactor=Workstation;Mobile;
+X-GNOME-UsesNotifications=true
+# TV home opt-in, from the app's [tv] declaration (docs/developer-platform/tv-mode.md).
+X-Suno-TV=true
+X-Suno-TV-Tile=org.projectSuno.Weather-tv
+X-Suno-TV-Presentation=tv

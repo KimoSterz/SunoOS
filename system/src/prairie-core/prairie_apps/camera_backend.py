@@ -240,10 +240,10 @@ def new_photo_path(
     directory.mkdir(mode=0o700, parents=True, exist_ok=True)
 
     timestamp = (now or datetime.now().astimezone()).strftime("%Y%m%d-%H%M%S")
-    candidate = directory / f"Luma-{timestamp}{suffix}"
+    candidate = directory / f"Suno-{timestamp}{suffix}"
     sequence = 2
     while candidate.exists():
-        candidate = directory / f"Luma-{timestamp}-{sequence}{suffix}"
+        candidate = directory / f"Suno-{timestamp}-{sequence}{suffix}"
         sequence += 1
     return candidate
 

@@ -7,7 +7,7 @@
 set -euo pipefail
 umask 077
 
-release=7.1.2-luma-fp-ims-container1
+release=7.1.2-Suno-fp-ims-container1
 candidate_efi_sha=c87c25a24041a0541ac87aed3b346d9edb3673b2888e86243c0f2279f472fc8a
 candidate_image_sha=b38f57c13532333f40d0318a20db94e2fff65e0d09e14184c987fa9196e6cb45
 current_efi_sha=a69dbc085727ea4244cc0a3fce93553913e37dc6b48896c9969f7392f3346cb9

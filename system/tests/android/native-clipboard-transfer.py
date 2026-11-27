@@ -21,17 +21,17 @@ def main():
     parser.add_argument("--compiler", default=os.environ.get("CXX", "c++"))
     args = parser.parse_args()
     repo = Path(__file__).resolve().parents[2]
-    with tempfile.TemporaryDirectory(prefix="luma-clipboard-transfer-") as directory:
+    with tempfile.TemporaryDirectory(prefix="Suno-clipboard-transfer-") as directory:
         work = Path(directory)
         target = work / "hwcomposer"
         target.mkdir()
         for name in ("WaydroidClipboard.cpp", "WaydroidClipboard.h", "wayland-hwc.cpp", "wayland-hwc.h", "Android.bp"):
             shutil.copyfile(args.hardware_source / "hwcomposer" / name, target / name)
-        for patch in ("0015-luma-native-clipboard-caller-admission.patch", "0016-luma-bounded-native-clipboard-transfer.patch"):
+        for patch in ("0015-Suno-native-clipboard-caller-admission.patch", "0016-Suno-bounded-native-clipboard-transfer.patch"):
             subprocess.run(["patch", "--batch", "--fuzz=0", "-p1", "-d", str(work), "-i", str(repo / "patches/android-hardware-waydroid" / patch)], check=True)
-        header = repo / "patches/android-hardware-waydroid/native/luma-clipboard-transfer.h"
+        header = repo / "patches/android-hardware-waydroid/native/Suno-clipboard-transfer.h"
         assert (target / header.name).read_bytes() == header.read_bytes()
-        shutil.copyfile(repo / "patches/android-hardware-waydroid/native/luma-window-callbacks.h", target / "luma-window-callbacks.h")
+        shutil.copyfile(repo / "patches/android-hardware-waydroid/native/Suno-window-callbacks.h", target / "Suno-window-callbacks.h")
         production = (target / "WaydroidClipboard.cpp").read_text()
         # Substitute only the platform includes, never production statements.
         production = re.sub(r"^#include[^\n]*\n", "", production, flags=re.MULTILINE)

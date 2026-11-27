@@ -9,14 +9,14 @@ section: Publishing
 
 ## How updates reach people
 
-1. A release passes its checks and any review, and is signed into the Luma
+1. A release passes its checks and any review, and is signed into the Suno
    remote.
 2. The remote’s static deltas are regenerated from each app’s previous commit
    and from empty, so an update downloads one compressed file of what changed.
    Older commits are pruned from the remote; a device that far behind still
    updates, by fetching objects one by one.
 3. The catalog updates, so Depot shows the new version and its permissions.
-4. On Luma, Depot updates the apps it installed every six hours in the
+4. On Suno, Depot updates the apps it installed every six hours in the
    background. It skips a round when **Update apps automatically** is off (it is
    on by default), the connection is metered, power saving is on, or the battery
    is low. A running app is never stopped: it moves to the new version the next

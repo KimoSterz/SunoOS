@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """Check the vendor task profiles for a cgroup v2-only host.
 
-Waydroid on Luma gives Android one cgroup2 hierarchy. The v1 cpuset,
+Waydroid on Suno gives Android one cgroup2 hierarchy. The v1 cpuset,
 schedtune, blkio, cpu and memory controllers in Android's cgroups.json cannot
 be mounted there, so every profile that joins one of them or sets one of their
 attributes fails and logs, on each service start and process state change.
@@ -24,7 +24,7 @@ UPSTREAM = ["task_profiles.json", "task_profiles_28.json", "task_profiles_29.jso
             "task_profiles_30.json"]
 
 repo = Path(__file__).resolve().parents[2]
-patch = repo / "patches/android-device-waydroid/0006-luma-cgroup-v2-task-profiles.patch"
+patch = repo / "patches/android-device-waydroid/0006-Suno-cgroup-v2-task-profiles.patch"
 
 
 def added_file(text: str, name: str) -> str:

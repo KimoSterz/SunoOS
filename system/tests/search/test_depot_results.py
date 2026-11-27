@@ -4,9 +4,9 @@ import unittest
 from pathlib import Path
 from types import SimpleNamespace
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'src/luma-search'))
-from luma_search.depot import matches
-from luma_search.files import personal_candidate
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'src/Suno-search'))
+from Suno_search.depot import matches
+from Suno_search.files import personal_candidate
 
 
 def app(identifier, name, *, visibility='public'):

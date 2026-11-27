@@ -1,0 +1,3 @@
+[D-BUS Service]
+Name=org.projectSuno.Displays
+Exec=/usr/bin/org.projectSuno.Displays --gapplication-service

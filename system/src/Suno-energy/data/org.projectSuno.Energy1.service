@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=org.projectSuno.Energy1
+Exec=/usr/libexec/Suno-energy-service
+SystemdService=Suno-energy.service

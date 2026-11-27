@@ -12,7 +12,7 @@ import gi
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
 from gi.repository import Adw, Gio, GLib
-from luma_appkit import add_style_sheet, install_appkit, install_lumaui
+from Suno_appkit import add_style_sheet, install_appkit, install_SunoUI
 from prairie_apps.tasks import TasksWindow
 from prairie_apps.tasks_backend import TasksRepository, read_task
 
@@ -62,10 +62,10 @@ def children(widget):
 
 
 def main():
-    assert 'LUMA_TASKS_FIXTURE' not in os.environ
+    assert 'SUNO_TASKS_FIXTURE' not in os.environ
     # Use the exact production schema with a private, nonpersistent backend.
     with tempfile.TemporaryDirectory() as directory:
-        schema = Path(os.environ['LUMA_CREATOR_SCHEMA_FILE'])
+        schema = Path(os.environ['SUNO_CREATOR_SCHEMA_FILE'])
         Path(directory, schema.name).write_bytes(schema.read_bytes())
         subprocess.run(['glib-compile-schemas', '--strict', directory], check=True)
         os.environ['GSETTINGS_SCHEMA_DIR'] = directory
@@ -81,9 +81,9 @@ def main():
                          'Earlier comment ' + str(i), 'Acceptance user')
         seed.close()
         install_appkit()
-        install_lumaui()
-        add_style_sheet(os.environ['LUMA_TASKS_STYLE_PATH'])
-        app = Adw.Application(application_id='org.projectluma.Tasks.RealCommentAcceptance',
+        install_SunoUI()
+        add_style_sheet(os.environ['SUNO_TASKS_STYLE_PATH'])
+        app = Adw.Application(application_id='org.projectSuno.Tasks.RealCommentAcceptance',
                               flags=Gio.ApplicationFlags.NON_UNIQUE)
         app.register(None)
         try:

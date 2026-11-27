@@ -3,7 +3,7 @@
 
 Each account (Google Messages, WhatsApp, Signal, Telegram) is a message service
 (ADR-022) backed by one local helper process that speaks
-``luma-messages-bridge/1`` (docs/research/messages-bridge-protocol.md). This
+``Suno-messages-bridge/1`` (docs/research/messages-bridge-protocol.md). This
 module owns the account directories, the keyring items, the helper process, the
 provider Messages uses for the service, and sign-in.
 
@@ -37,20 +37,20 @@ from .messages_backend import MAX_ATTACHMENT_BYTES, AttachmentRecord, MessageSto
 from .messages_mms import MmsCapability
 from . import messages_outbound as outbound
 
-PROTOCOL = "luma-messages-bridge/1"
+PROTOCOL = "Suno-messages-bridge/1"
 CONVERSATION_ID = re.compile(r"[A-Za-z0-9._:@+=/-]{1,256}")
 ACCOUNT_ID = re.compile(r"[a-z]+-[0-9a-f]{16}")
 MAX_LINE = 16 * 1024 * 1024
 PENDING_LIFETIME = 3600
-# What a Luma conversation (ADR-051) says about itself, as the helper reports it.
-LUMA_FLAGS = ("encrypted", "request", "request_from", "verified", "safety_changed", "devices_changed", "removed",
+# What a Suno conversation (ADR-051) says about itself, as the helper reports it.
+SUNO_FLAGS = ("encrypted", "request", "request_from", "verified", "safety_changed", "devices_changed", "removed",
               "hidden", "account", "handle")
-# Commands Messages may send a Luma helper outside the bridge's own: identity,
+# Commands Messages may send a Suno helper outside the bridge's own: identity,
 # requests, blocks, reports, safety numbers and starting a conversation. None
 # of them delivers anything a person wrote.
-LUMA_COMMANDS = frozenset({"luma.identity", "luma.handle.check", "luma.handle.claim", "luma.people", "luma.requests",
-                           "luma.request.answer", "luma.block", "luma.blocks", "luma.report", "luma.safety", "luma.verify",
-                           "luma.devices", "luma.sync", "conversation.create", "status"})
+SUNO_COMMANDS = frozenset({"Suno.identity", "Suno.handle.check", "Suno.handle.claim", "Suno.people", "Suno.requests",
+                           "Suno.request.answer", "Suno.block", "Suno.blocks", "Suno.report", "Suno.safety", "Suno.verify",
+                           "Suno.devices", "Suno.sync", "conversation.create", "status"})
 log = logging.getLogger(__name__)
 
 
@@ -69,7 +69,7 @@ def sniff_image(head: bytes) -> str | None:
 
 
 def helper_directory() -> Path:
-    return Path(os.environ.get("LUMA_MESSAGES_HELPER_DIR", "/usr/libexec/luma-messages"))
+    return Path(os.environ.get("SUNO_MESSAGES_HELPER_DIR", "/usr/libexec/Suno-messages"))
 
 
 def accounts_directory() -> Path:
@@ -85,7 +85,7 @@ class Network:
     warning: str
     # Sign-in methods in the order Messages offers them.
     methods: tuple[str, ...]
-    # Added by Messages itself (Luma, for a signed-in Luma Connect device),
+    # Added by Messages itself (Suno, for a signed-in Suno Connect device),
     # never from the Add Account list, and never removed there.
     automatic: bool = False
 
@@ -96,20 +96,20 @@ NETWORKS = (
             "Google doesn't offer this officially. It signs in the way Messages for web does, and Google could change or stop it at any time.",
             ("cookies",)),
     Network("whatsapp", "WhatsApp",
-            "Link Luma as one of your WhatsApp devices, like WhatsApp on a computer.",
+            "Link Suno as one of your WhatsApp devices, like WhatsApp on a computer.",
             "WhatsApp doesn't allow third-party apps. It has warned or banned some accounts that use them, so consider this before linking an account you depend on.",
             ("qr", "code")),
     Network("signal", "Signal",
-            "Link Luma as one of your Signal devices. Messages from before linking stay on your phone.",
+            "Link Suno as one of your Signal devices. Messages from before linking stay on your phone.",
             "Signal doesn't make this app. It uses signal-cli, which needs updates to keep working.",
             ("qr",)),
     Network("telegram", "Telegram (unofficial client)",
             "Sign in with your phone number or by scanning a code in Telegram. Secret chats stay on the device that started them.",
             "This is an unofficial Telegram client built on Telegram's own TDLib.",
             ("qr", "phone")),
-    # ADR-051: conversations between Luma accounts, end-to-end encrypted.
-    Network("luma", "Luma",
-            "Conversations with people on Luma, encrypted on your devices.",
+    # ADR-051: conversations between Suno accounts, end-to-end encrypted.
+    Network("Suno", "Suno",
+            "Conversations with people on Suno, encrypted on your devices.",
             "", (), automatic=True),
 )
 
@@ -136,7 +136,7 @@ MEDIA_ERROR = re.compile(r"[a-z_]{1,32}")
 # up to six hours; opening its conversation or tapping it retries at once.
 MEDIA_RETRY_BASE = 60
 MEDIA_RETRY_CAP = 6 * 3600
-# What helpers before luma-messages-bridge media states wrote into a message
+# What helpers before Suno-messages-bridge media states wrote into a message
 # instead of a picture that didn't download.
 LEGACY_MEDIA_TEXT = re.compile(
     r"\[(A photo|A video|An audio message|An attachment)"
@@ -248,35 +248,35 @@ class AccountStore(MessageStore):
         """)
         self._connection.commit()
         self._add_media_wait_column()
-        self._add_luma_column()
+        self._add_Suno_column()
         self._adopt_legacy_media_text()
 
-    def _add_luma_column(self) -> None:
-        """Luma conversations (ADR-051) carry their request, verification and
+    def _add_Suno_column(self) -> None:
+        """Suno conversations (ADR-051) carry their request, verification and
         device-change state from the helper; other networks leave it empty."""
         columns = {row[1] for row in self._connection.execute("PRAGMA table_info(conversations)")}
-        if "luma" not in columns:
+        if "Suno" not in columns:
             try:
-                self._connection.execute("ALTER TABLE conversations ADD COLUMN luma TEXT NOT NULL DEFAULT ''")
+                self._connection.execute("ALTER TABLE conversations ADD COLUMN Suno TEXT NOT NULL DEFAULT ''")
             except sqlite3.OperationalError:
                 # Another connection may have completed this migration after
                 # the schema read. Other migration failures still propagate.
                 columns = {row[1] for row in self._connection.execute("PRAGMA table_info(conversations)")}
-                if "luma" not in columns:
+                if "Suno" not in columns:
                     raise
             self._connection.commit()
 
-    def luma_flags(self, conversation: str) -> dict:
-        row = self._connection.execute("SELECT luma FROM conversations WHERE id=?", (conversation,)).fetchone()
+    def Suno_flags(self, conversation: str) -> dict:
+        row = self._connection.execute("SELECT Suno FROM conversations WHERE id=?", (conversation,)).fetchone()
         try:
             flags = json.loads(row[0]) if row and row[0] else {}
         except ValueError:
             return {}
         return flags if isinstance(flags, dict) else {}
 
-    def luma_conversations(self) -> dict[str, dict]:
+    def Suno_conversations(self) -> dict[str, dict]:
         found = {}
-        for conversation, text in self._connection.execute("SELECT id, luma FROM conversations WHERE luma != ''"):
+        for conversation, text in self._connection.execute("SELECT id, Suno FROM conversations WHERE Suno != ''"):
             try:
                 flags = json.loads(text)
             except ValueError:
@@ -309,12 +309,12 @@ class AccountStore(MessageStore):
     def remember_conversation(self, conversation: dict) -> None:
         participants = [p for p in conversation.get("participants") or [] if isinstance(p, dict)][:1024]
         kind = "group" if conversation.get("kind") == "group" else "direct"
-        luma = conversation.get("luma")
-        flags = {key: luma[key] for key in LUMA_FLAGS if key in luma} if isinstance(luma, dict) else {}
+        Suno = conversation.get("Suno")
+        flags = {key: Suno[key] for key in SUNO_FLAGS if key in Suno} if isinstance(Suno, dict) else {}
         self._connection.execute(
-            """INSERT INTO conversations(id, kind, participants, archived, luma) VALUES(?,?,?,?,?)
+            """INSERT INTO conversations(id, kind, participants, archived, Suno) VALUES(?,?,?,?,?)
                ON CONFLICT(id) DO UPDATE SET kind=excluded.kind, participants=excluded.participants, archived=excluded.archived,
-               luma=excluded.luma""",
+               Suno=excluded.Suno""",
             (self.canonical_address(conversation["id"]), kind, json.dumps(participants), int(bool(conversation.get("archived"))),
              json.dumps(flags, sort_keys=True) if flags else ""),
         )
@@ -686,7 +686,7 @@ class AccountStore(MessageStore):
     def suspect_previews(self, limit: int = 50) -> list[tuple[str, str, str, str]]:
         """Pictures marked done whose file is a preview-sized image, asked about once each.
 
-        luma-messages-bridges before 0.7 saved a message's kilobyte preview as
+        Suno-messages-bridges before 0.7 saved a message's kilobyte preview as
         the picture and reported it done; the fixed helper fetches the full file
         when asked, and complete_media() puts it in place of the preview.
         """
@@ -827,7 +827,7 @@ class AccountStore(MessageStore):
     def correct_to_outgoing(self, uid: str, state: str) -> bool:
         """A message stored as someone else's that this account wrote on another device.
 
-        Helpers before luma-messages-bridges 0.7 reported messages sent from the
+        Helpers before Suno-messages-bridges 0.7 reported messages sent from the
         phone as incoming, so they counted as unread. Seeing one again fixes it.
         """
         cursor = self._connection.execute(
@@ -995,14 +995,14 @@ class KeyringLocked(Exception):
 
 
 class AccountSecrets:
-    """Session material in the Secret Service only (Luma never falls back to a file)."""
+    """Session material in the Secret Service only (Suno never falls back to a file)."""
 
     def __init__(self) -> None:
         import gi
         gi.require_version("Secret", "1")
         from gi.repository import Secret
         self.Secret = Secret
-        self.schema = Secret.Schema.new("org.projectluma.Messages.Account", Secret.SchemaFlags.NONE,
+        self.schema = Secret.Schema.new("org.projectSuno.Messages.Account", Secret.SchemaFlags.NONE,
                                         {"account": Secret.SchemaAttributeType.STRING})
 
     def get(self, account_id: str) -> str | None:
@@ -1048,7 +1048,7 @@ class BridgeProcess:
 
     def start(self) -> None:
         environment = {key: os.environ[key] for key in ("PATH", "LANG", "LC_ALL", "TZ", "HOME", "XDG_RUNTIME_DIR",
-                                                        "LUMA_MESSAGES_OUTBOUND", "SSL_CERT_FILE") if key in os.environ}
+                                                        "SUNO_MESSAGES_OUTBOUND", "SSL_CERT_FILE") if key in os.environ}
         credential_fd = None
         try:
             loader = type(self).credential_loader
@@ -1058,12 +1058,12 @@ class BridgeProcess:
                 if not isinstance(credential, dict):raise KeyringLocked("Invalid account credential")
                 encoded=json.dumps(credential,allow_nan=False).encode("utf-8")
                 if len(encoded)>65536:raise KeyringLocked("Account credential is too large")
-                credential_fd=os.memfd_create("luma-connect",os.MFD_CLOEXEC|os.MFD_ALLOW_SEALING)
+                credential_fd=os.memfd_create("Suno-connect",os.MFD_CLOEXEC|os.MFD_ALLOW_SEALING)
                 position=0
                 while position<len(encoded):position+=os.write(credential_fd,encoded[position:])
                 os.lseek(credential_fd,0,os.SEEK_SET)
                 fcntl.fcntl(credential_fd,fcntl.F_ADD_SEALS,fcntl.F_SEAL_WRITE|fcntl.F_SEAL_GROW|fcntl.F_SEAL_SHRINK|fcntl.F_SEAL_SEAL)
-                environment["LUMA_MESSAGES_ENROLMENT_FD"]=str(credential_fd)
+                environment["SUNO_MESSAGES_ENROLMENT_FD"]=str(credential_fd)
             self._process = subprocess.Popen(
                 [str(self.executable), "--data-dir", str(self.data_dir)], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE, cwd=self.data_dir, env=environment, start_new_session=True,
@@ -1199,7 +1199,7 @@ STATE_TEXT = {
     "needs_login": "Sign in to {network} again in Accounts.",
     "phone_offline": "{network} can't reach your phone. Make sure it's on and connected.",
     "elsewhere": "{network} is open somewhere else.",
-    "outdated": "Update Luma to keep using {network}.",
+    "outdated": "Update Suno to keep using {network}.",
     "error": "{network} ran into a problem. Messages will try again.",
     "connecting": "Connecting to {network}…",
     "keyring": "Unlock your keyring to use {network}.",
@@ -1352,7 +1352,7 @@ class AccountProvider:
             return
         allowed = bool(self.capabilities.get("media"))
         limit = int(self.capabilities.get("max_media_bytes") or 25 * 1024 * 1024)
-        reason = "" if allowed else f"{self.network.name} can't send files from Luma yet."
+        reason = "" if allowed else f"{self.network.name} can't send files from Suno yet."
         self.dispatch(lambda: (callback(MmsCapability(allowed, reason, "", limit, 10)), False)[1])
 
     # Whether this provider needs a person's token for every send (messages_outbound).
@@ -1504,24 +1504,24 @@ class AccountProvider:
             self._schedule_retry()
 
     def _session(self) -> str | None:
-        """The keyring item a helper is handed. A Luma helper seals its keys with a
+        """The keyring item a helper is handed. A Suno helper seals its keys with a
         key Messages makes and stores first, so nothing is ever sealed with a key
         the keyring does not already hold."""
         session = self.secrets.get(self.account.id)
         if not session and self.network.automatic:
             session = base64.b64encode(os.urandom(32)).decode()
-            self.secrets.set(self.account.id, "Luma Messages", session)
+            self.secrets.set(self.account.id, "Suno Messages", session)
             if self.secrets.get(self.account.id) != session:
                 raise KeyringLocked("the new key did not reach the keyring")
         return session
 
-    def luma_call(self, command: str, args: dict, *, timeout: float = 60) -> dict:
+    def Suno_call(self, command: str, args: dict, *, timeout: float = 60) -> dict:
         """Identity, requests, blocks, reports and safety numbers (ADR-051). Raises BridgeError."""
-        if command not in LUMA_COMMANDS or command in outbound.DELIVERY_COMMANDS or not self.network.automatic:
+        if command not in SUNO_COMMANDS or command in outbound.DELIVERY_COMMANDS or not self.network.automatic:
             raise BridgeError("unsupported", "That isn't something this account does.")
         process = self._process
         if process is None or self.status.get("network_state") != "connected":
-            raise BridgeError("not_connected", "Luma isn't connected right now.", True)
+            raise BridgeError("not_connected", "Suno isn't connected right now.", True)
         result = process.request(command, args, timeout=timeout)
         created = result.get("conversation") if command == "conversation.create" else None
         if isinstance(created, dict) and created.get("id"):
@@ -1714,9 +1714,9 @@ class AccountProvider:
 
     def _conversation(self, data: dict) -> None:
         store = self._db()
-        luma = data.get("luma") if isinstance(data.get("luma"), dict) else {}
-        if luma.get("hidden"):
-            # Declined, blocked or deleted in Luma: the conversation leaves this device.
+        Suno = data.get("Suno") if isinstance(data.get("Suno"), dict) else {}
+        if Suno.get("hidden"):
+            # Declined, blocked or deleted in Suno: the conversation leaves this device.
             if store.known_conversation(str(data.get("id", ""))):
                 store.delete_thread(store.canonical_address(str(data["id"])))
             store.remember_conversation(data)
@@ -2051,7 +2051,7 @@ class AccountProvider:
                     conversation = store.canonical_address(created["id"])
         except BridgeError as error:
             if self.network.automatic and not error.retryable and error.code not in {"not_connected", "timeout", "helper_exited"}:
-                # A username nobody has, someone not on Luma Messages, a block:
+                # A username nobody has, someone not on Suno Messages, a block:
                 # waiting will not change it, so the message says it failed.
                 log.info("%s conversation not started: %s", self.account.network, error.code)
                 store.update_state(uid, "failed")
@@ -2396,7 +2396,7 @@ def capture_browser_cookies(url: str, names: list[str], domains: list[str], *, o
     if not url.startswith("https://") or not names:
         raise CaptureError("The sign-in page isn't valid.")
     cancelled = cancelled or threading.Event()
-    profile = Path(tempfile.mkdtemp(prefix="luma-messages-signin-"))
+    profile = Path(tempfile.mkdtemp(prefix="Suno-messages-signin-"))
     os.chmod(profile, 0o700)
     (profile / "user.js").write_text(FIREFOX_PREFERENCES)
     process = subprocess.Popen([firefox, "--no-remote", "--new-instance", "--profile", str(profile), url],

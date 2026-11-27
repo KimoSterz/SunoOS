@@ -9,7 +9,7 @@ class SelectionCaptureTests(PhoneTests):
         import importlib.util
         from pathlib import Path
         from gi.repository import GLib
-        path=Path(__file__).resolve().parents[3]/'tools/lumaui-conform/harness/lumaui_conform_harness.py'
+        path=Path(__file__).resolve().parents[3]/'tools/SunoUI-conform/harness/SunoUI_conform_harness.py'
         spec=importlib.util.spec_from_file_location('capture_selection_test',path)
         module=importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)

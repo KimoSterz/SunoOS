@@ -7,7 +7,7 @@ import System from 'system';
 
 globalThis._ = s => s;
 const [uiDir, home] = ARGV;
-const {LumaFileIndex} = await import(Gio.File.new_for_path(`${uiDir}/lumaFileIndex.js`).get_uri());
+const {SunoFileIndex} = await import(Gio.File.new_for_path(`${uiDir}/SunoFileIndex.js`).get_uri());
 
 let failures = 0;
 const check = (ok, message) => {
@@ -16,11 +16,11 @@ const check = (ok, message) => {
         failures++;
 };
 const xdg = ['Desktop', 'Documents', 'Downloads', 'Music', 'Pictures', 'Videos'].map(n => `${home}/${n}`);
-const makeIndex = (privacy = null) => new LumaFileIndex({
+const makeIndex = (privacy = null) => new SunoFileIndex({
     home,
     xdgFolders: xdg,
     recentPath: `${home}/.local/share/recently-used.xbel`,
-    picksPath: `${home}/.local/state/luma/search-picks.json`,
+    picksPath: `${home}/.local/state/Suno/search-picks.json`,
     privacySettings: privacy,
 });
 const index = makeIndex();

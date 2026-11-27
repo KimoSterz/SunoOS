@@ -192,7 +192,7 @@ class HourFormatTests(unittest.TestCase):
     def test_clock_format_setting_beats_the_locale(self):
         """A C locale reports 24-hour; the system clock-format setting decides first."""
         from prairie_apps import clock_backend
-        with mock.patch.dict("os.environ", {"LUMA_CLOCK_HOUR_FORMAT": ""}), \
+        with mock.patch.dict("os.environ", {"SUNO_CLOCK_HOUR_FORMAT": ""}), \
                 mock.patch.object(clock_backend._locale, "nl_langinfo", return_value="%H:%M:%S"):
             with mock.patch.object(clock_backend, "_clock_format_setting", return_value="12h"):
                 self.assertFalse(clock_backend.uses_24_hour())

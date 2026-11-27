@@ -28,7 +28,7 @@ class ControlQualification:
         GLib.timeout_add(100, self.ready)
 
     def capture_stage(self, stage, then):
-        from luma_appkit.menus import _descendants
+        from Suno_appkit.menus import _descendants
         self.report.setdefault('frame_states', {})[stage] = {
             'active': self.window.is_active(),
             'toplevel': str(self.window.get_surface().get_state()),
@@ -95,7 +95,7 @@ class ControlQualification:
         return False
 
     def native_control(self, name):
-        from luma_appkit.menus import _descendants
+        from Suno_appkit.menus import _descendants
         return next((widget for widget in _descendants(self.window.title_bar)
                      if isinstance(widget, Gtk.Button) and widget.get_mapped()
                      and widget.has_css_class(name)), None)
@@ -222,10 +222,10 @@ class ControlQualification:
 
     def next_click(self):
         if self.index == len(self.positions):
-            from luma_appkit.menus import _descendants
+            from Suno_appkit.menus import _descendants
             identity = next((widget for widget in _descendants(self.window.title_bar)
                 if isinstance(widget, Gtk.MenuButton) and widget.get_mapped()
-                and widget.has_css_class('luma-identity-button')), None)
+                and widget.has_css_class('Suno-identity-button')), None)
             if identity is None:
                 self.finish('Native toolkit identity button is missing')
                 return
@@ -253,7 +253,7 @@ class ControlQualification:
         return False
 
     def identity_opened(self):
-        from luma_appkit.menus import _descendants
+        from Suno_appkit.menus import _descendants
         popup = self.identity.get_popover()
         labels = [widget.get_text() for widget in _descendants(popup)
                   if isinstance(widget, Gtk.Label) and widget.get_mapped()]

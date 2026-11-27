@@ -4,7 +4,7 @@ import Gio from 'gi://Gio';
 import System from 'system';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import {sleep} from 'resource:///org/gnome/shell/ui/scripting.js';
-const uuid = 'tiling-toggle@project-luma.local';
+const uuid = 'tiling-toggle@project-suno.local';
 async function until(predicate, message) {
     for (let i = 0; i < 100; i++) {
         if (predicate()) return;
@@ -21,16 +21,16 @@ export async function run() {
     global.settings.set_boolean('disable-user-extensions', false);
     if (!Main.extensionManager.enableExtension('tilingshell@ferrarodomenico.com') ||
         !Main.extensionManager.enableExtension(uuid)) throw new Error('Packaged extensions missing');
-    await until(() => !!toggle()?._lumaStudioRow, 'Packaged toggle did not enable and adopt');
+    await until(() => !!toggle()?._SunoStudioRow, 'Packaged toggle did not enable and adopt');
     print('NATIVE PACKAGED TILING START');
     for (let i = 0; i < 10; i++) {
-        const row = toggle()._lumaStudioRow;
+        const row = toggle()._SunoStudioRow;
         Main.extensionManager.disableExtension(uuid);
         await until(() => !toggle(), 'Packaged toggle did not disable');
         if (Main.panel.statusArea.quickSettings.menu._studioUtilities.get_children().includes(row))
             throw new Error('Destroyed toggle left a wrapper');
         Main.extensionManager.enableExtension(uuid);
-        await until(() => !!toggle()?._lumaStudioRow, 'Packaged toggle did not re-enable');
+        await until(() => !!toggle()?._SunoStudioRow, 'Packaged toggle did not re-enable');
     }
     for (let i = 0; i < 20; i++) {
         Main.screenShield.activate(false);
@@ -38,7 +38,7 @@ export async function run() {
         await sleep(150);
         System.gc();
         Main.screenShield._continueDeactivate(false);
-        await until(() => Main.sessionMode.currentMode === 'user' && !!toggle()?._lumaStudioRow, 'Unlock did not re-enable packaged toggle');
+        await until(() => Main.sessionMode.currentMode === 'user' && !!toggle()?._SunoStudioRow, 'Unlock did not re-enable packaged toggle');
         await until(() => Main.screenShield._dialog === null, 'Dialog teardown did not finish');
         System.gc();
     }

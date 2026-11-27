@@ -23,17 +23,17 @@ if not env.get('SSL_CERT_FILE'):
 # The sole dynamic image loader is SVG. PNG/JPEG/GIF are builtin, avoiding a
 # separate subprocess and preserving artwork decoding inside Flatpak.
 template = (base / 'pixbuf-loaders.cache').read_text()
-cache_dir = Path(env.get('XDG_CACHE_HOME', str(Path.home() / '.cache'))) / 'luma-messages/portable'
+cache_dir = Path(env.get('XDG_CACHE_HOME', str(Path.home() / '.cache'))) / 'Suno-messages/portable'
 cache_dir.mkdir(parents=True, exist_ok=True)
 import hashlib
 dependencies = hashlib.sha256((base / 'native-dependencies.json').read_bytes()).hexdigest()[:16]
-env['LUMA_MESSAGES_STYLE_PATH'] = str(base/'usr/share/prairie-core/messages.css')
+env['SUNO_MESSAGES_STYLE_PATH'] = str(base/'usr/share/prairie-core/messages.css')
 env['GST_PLUGIN_SYSTEM_PATH_1_0'] = str(base/'usr/lib64/gstreamer-1.0')
 env['GST_PLUGIN_PATH_1_0'] = ''
 env['GST_REGISTRY_1_0'] = str(cache_dir/('gst-'+dependencies+'.bin'))
 env['GST_REGISTRY_FORK'] = 'no'
-env['LUMA_MESSAGES_STANDALONE'] = '1'
-env['LUMA_MESSAGES_HELPER_DIR'] = str(base/'usr/libexec/luma-messages')
+env['SUNO_MESSAGES_STANDALONE'] = '1'
+env['SUNO_MESSAGES_HELPER_DIR'] = str(base/'usr/libexec/Suno-messages')
 cache_file = cache_dir / ('pixbuf-' + hashlib.sha256(str(base).encode()).hexdigest()[:16] + '.cache')
 cache_text = template.replace('@MESSAGES_ROOT@', str(base))
 if not cache_file.exists() or cache_file.read_text() != cache_text:

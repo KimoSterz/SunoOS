@@ -32,13 +32,13 @@ struct window { mutable std::recursive_mutex chromeMutex; bool has_prairie_title
 struct Rect{int x,y,width,height;};
 struct Geometry{Rect outer,content;};
 Geometry frame(window& w){std::scoped_lock l(w.chromeMutex);return {{0,0,w.content_width+16,w.content_height+54},{8,46,w.content_width,w.content_height}};}
-constexpr int LUMA_FRAME_ISLAND_RADIUS=12,WL_SHM_FORMAT_ARGB8888=0;
+constexpr int SUNO_FRAME_ISLAND_RADIUS=12,WL_SHM_FORMAT_ARGB8888=0;
 enum class SurfaceTreatment{Light,Dark};
-using LumaFrameMaterial=int;
+using SunoFrameMaterial=int;
 SurfaceTreatment read_surface_treatment(){return SurfaceTreatment::Dark;}
 const char* treatment_name(SurfaceTreatment){return "dark";}
-LumaFrameMaterial frame_material(window&){return 0;}
-uint32_t luma_frame_pixel_material(Geometry,int,int,int){return 0xff123456;}
+SunoFrameMaterial frame_material(window&){return 0;}
+uint32_t Suno_frame_pixel_material(Geometry,int,int,int){return 0xff123456;}
 int control_left(window&,int){return 0;}
 void draw_control(window&,int,int){}
 void draw_back(window&){} void draw_settings(window&){} void draw_app_icon(window&){} void draw_title(window&){}
@@ -55,7 +55,7 @@ void wl_surface_attach(void*,wl_buffer*,int,int){}void wl_surface_damage(void*,i
 suffix=r'''
 int main(){display d;window w;w.display=&d;redraw_titlebar(w);std::atomic<int> ready{0};auto paint=[&]{ready++;while(ready.load()!=2)std::this_thread::yield();for(int i=0;i<120;i++)redraw_titlebar(w);};std::thread a(paint),b(paint);a.join();b.join();wl_buffer_destroy(w.titlebar_buffer);munmap(w.titlebar_data,w.titlebar_data_size);for(auto*b:proxies){if(!b->destroyed.load())return 92;delete b;}if(proxies.size()!=241)return 93;puts("Actual redraw body: 241 proxy allocations each destroyed once; concurrent native mapped writes completed");}
 '''
-with tempfile.TemporaryDirectory(prefix='luma-frame-native-lock-') as temp:
+with tempfile.TemporaryDirectory(prefix='Suno-frame-native-lock-') as temp:
  root=pathlib.Path(temp)
  for name,render in [('positive',body),('unlocked-negative',body.replace('    std::scoped_lock chrome_lock(window.chromeMutex);\n','',1))]:
   cpp=root/(name+'.cpp');cpp.write_text(prefix+render+suffix);exe=root/name

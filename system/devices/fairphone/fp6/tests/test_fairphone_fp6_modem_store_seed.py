@@ -12,15 +12,15 @@ from pathlib import Path
 
 DEVICE = Path(__file__).resolve().parents[1]
 ROOT = DEVICE.parents[2]
-HOOK = ROOT / "scripts/mobile/fp6-initramfs/hooks-cleanup/60-luma-fp6-modem-store.sh"
+HOOK = ROOT / "scripts/mobile/fp6-initramfs/hooks-cleanup/60-Suno-fp6-modem-store.sh"
 BUILDER = ROOT / "scripts/mobile/build-fp6-boot-image.sh"
-SHELL = os.environ.get("LUMA_TEST_SH", "sh").split()
+SHELL = os.environ.get("SUNO_TEST_SH", "sh").split()
 MODEL = b"The Fairphone (Gen. 6)\0"
 MIB = 1024 * 1024
 FILES = {"modemst1": "modem_fs1", "modemst2": "modem_fs2", "fsc": "modem_fsc",
          "fsg": "modem_fsg", "study": "modem_study"}
 SIZES = {"modemst1": 10 * MIB, "modemst2": 10 * MIB, "fsc": 128 * 1024, "fsg": 3 * MIB, "study": 512 * 1024}
-UNIT = "luma-fp6-modem-store-label.service"
+UNIT = "Suno-fp6-modem-store-label.service"
 
 
 def pattern(label, size):
@@ -45,7 +45,7 @@ class ModemStoreSeed(unittest.TestCase):
         self.parts = {}
         for label, size in SIZES.items():
             self.partition(label, pattern(label, size))
-        self.var = self.root / "sysroot/var/lib/luma"
+        self.var = self.root / "sysroot/var/lib/Suno"
         self.store = self.var / "rmtfs"
 
     def tearDown(self):
@@ -66,7 +66,7 @@ class ModemStoreSeed(unittest.TestCase):
         log = self.root / "kmsg"
         log.unlink(missing_ok=True)
         subprocess.run([*SHELL, str(HOOK)], check=True, capture_output=True,
-                       env={**os.environ, "LUMA_FP6_TEST_ROOT": str(self.root), "LUMA_FP6_MODEM_STORE_LOG": str(log)})
+                       env={**os.environ, "SUNO_FP6_TEST_ROOT": str(self.root), "SUNO_FP6_MODEM_STORE_LOG": str(log)})
         return log.read_text() if log.exists() else ""
 
     def digests(self):
@@ -90,21 +90,21 @@ class ModemStoreSeed(unittest.TestCase):
             self.assertEqual(copy.read_bytes(), self.parts[label].read_bytes(), label)
             self.assertEqual(copy.stat().st_mode & 0o7777, 0o600, label)
         self.assertEqual((self.store / "modem_tunning").read_bytes(), b"")
-        manifest = json.loads((self.store / "luma-fp6-modem-store.json").read_text())
-        self.assertEqual(manifest["schema"], "org.projectluma.fp6-modem-store/v1")
+        manifest = json.loads((self.store / "Suno-fp6-modem-store.json").read_text())
+        self.assertEqual(manifest["schema"], "org.projectSuno.fp6-modem-store/v1")
         self.assertIs(manifest["partitions_written"], False)
         self.assertRegex(manifest["seeded_utc"], r"^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ$")
         self.assertEqual(manifest["sources"], {
             label: {"file": FILES[label], "bytes": SIZES[label], "sha256": before[label]} for label in FILES})
         self.assertEqual(sorted(p.name for p in self.store.iterdir()),
-                         sorted([*FILES.values(), "modem_tunning", "luma-fp6-modem-store.json"]))
+                         sorted([*FILES.values(), "modem_tunning", "Suno-fp6-modem-store.json"]))
         self.assertFalse((self.var / "rmtfs.new").exists())
 
     def test_manifest_reads_as_a_real_seed_to_the_store_service(self):
-        # luma-fp6-modem-store retires a store whose manifest records all-zero
+        # Suno-fp6-modem-store retires a store whose manifest records all-zero
         # modemst; it finds the entries with this pattern.
         self.run_hook()
-        text = (self.store / "luma-fp6-modem-store.json").read_text()
+        text = (self.store / "Suno-fp6-modem-store.json").read_text()
         zero = hashlib.sha256(bytes(10 * MIB)).hexdigest()
         for label in ("modemst1", "modemst2"):
             entry = re.search(r'"%s":\{[^}]*\}' % label, text).group(0)
@@ -117,11 +117,11 @@ class ModemStoreSeed(unittest.TestCase):
         unit = self.root / "run/systemd/system" / UNIT
         text = unit.read_text()
         before = re.search(r"^Before=(.*)$", text, re.M).group(1).split()
-        self.assertLessEqual({"rmtfs.service", "luma-fp6-modem-store.service", "luma-device-layer.service",
+        self.assertLessEqual({"rmtfs.service", "Suno-fp6-modem-store.service", "Suno-device-layer.service",
                               "sysinit.target"}, set(before))
-        self.assertIn("ConditionPathExists=/var/lib/luma/rmtfs.relabel", text)
-        self.assertIn("ExecStart=/usr/sbin/restorecon -RF /var/lib/luma/rmtfs", text)
-        self.assertIn("ExecStart=/usr/bin/rm -f /var/lib/luma/rmtfs.relabel", text)
+        self.assertIn("ConditionPathExists=/var/lib/Suno/rmtfs.relabel", text)
+        self.assertIn("ExecStart=/usr/sbin/restorecon -RF /var/lib/Suno/rmtfs", text)
+        self.assertIn("ExecStart=/usr/bin/rm -f /var/lib/Suno/rmtfs.relabel", text)
         link = self.root / "run/systemd/system/sysinit.target.wants" / UNIT
         self.assertEqual(os.readlink(link), f"../{UNIT}")
 
@@ -143,7 +143,7 @@ class ModemStoreSeed(unittest.TestCase):
         self.assertNothingSeeded()
 
     def test_one_intact_modemst_is_seeded(self):
-        # As luma-fp6-modem-store: only both erased counts as blank.
+        # As Suno-fp6-modem-store: only both erased counts as blank.
         self.parts["modemst2"].write_bytes(bytes(10 * MIB))
         self.assertIn("state=seeded", self.run_hook())
         self.assertEqual((self.store / "modem_fs2").read_bytes(), bytes(10 * MIB))
@@ -160,10 +160,10 @@ class ModemStoreSeed(unittest.TestCase):
         self.run_hook()
         unit = self.root / "run/systemd/system" / UNIT
         unit.unlink()
-        before = (self.store / "luma-fp6-modem-store.json").read_bytes()
+        before = (self.store / "Suno-fp6-modem-store.json").read_bytes()
         self.assertEqual(self.run_hook(), "")
         self.assertTrue(unit.is_file())
-        self.assertEqual((self.store / "luma-fp6-modem-store.json").read_bytes(), before)
+        self.assertEqual((self.store / "Suno-fp6-modem-store.json").read_bytes(), before)
         (self.var / "rmtfs.relabel").unlink()
         unit.unlink()
         self.run_hook()
@@ -208,8 +208,8 @@ class ModemStoreSeed(unittest.TestCase):
 
     def test_boot_image_carries_the_seed(self):
         builder = BUILDER.read_text()
-        self.assertIn('"$o/hooks-cleanup/60-luma-fp6-modem-store.sh"', builder)
-        self.assertIn('"hooks-cleanup/60-luma-fp6-modem-store.sh"', builder)
+        self.assertIn('"$o/hooks-cleanup/60-Suno-fp6-modem-store.sh"', builder)
+        self.assertIn('"hooks-cleanup/60-Suno-fp6-modem-store.sh"', builder)
         self.assertTrue(os.access(HOOK, os.X_OK))
 
 

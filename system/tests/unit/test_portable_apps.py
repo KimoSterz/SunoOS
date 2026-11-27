@@ -9,11 +9,11 @@ import tempfile
 import unittest
 import zipfile
 
-sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[2] / "src/luma-installer"))
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[2] / "src/Suno-installer"))
 
-from luma_installer import archive_app  # noqa: E402
-from luma_installer.errors import InstallerError  # noqa: E402
-from luma_installer.model import kind_for_path  # noqa: E402
+from Suno_installer import archive_app  # noqa: E402
+from Suno_installer.errors import InstallerError  # noqa: E402
+from Suno_installer.model import kind_for_path  # noqa: E402
 
 ELF_X86_64 = b"\x7fELF\x02\x01\x01" + b"\x00" * 9 + struct.pack("<HH", 2, 62) + b"\x00" * 100
 
@@ -94,7 +94,7 @@ class PortableApplications(unittest.TestCase):
 
     def test_an_unpacked_folder_is_reviewed_as_one_fingerprinted_file(self):
         import os
-        from luma_installer.inspectors import pack_folder
+        from Suno_installer.inspectors import pack_folder
         folder = self.root / "Charlie-1.0.1-Linux-x64"
         (folder / "lib").mkdir(parents=True)
         (folder / "charlie").write_bytes(ELF_X86_64); (folder / "charlie").chmod(0o755)

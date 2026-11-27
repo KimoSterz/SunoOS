@@ -7,14 +7,14 @@ import Shell from 'gi://Shell';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as ParentalControlsManager from 'resource:///org/gnome/shell/misc/parentalControlsManager.js';
 import * as Scripting from 'resource:///org/gnome/shell/ui/scripting.js';
-const out=GLib.getenv('LUMA_POLISH_OUTPUT'), results=[];
+const out=GLib.getenv('SUNO_POLISH_OUTPUT'), results=[];
 const pause=async(ms=180)=>await Scripting.sleep(ms);
 function check(name,ok,detail=''){results.push({name,ok:!!ok,detail});print(`${ok?'PASS':'FAIL'} ${name} ${detail}`);}
 async function until(predicate){for(let i=0;i<50;i++){if(predicate())return;await pause(100);}throw new Error('Timed out waiting for application registry');}
 function rect(actor){const [x,y]=actor.get_transformed_position(),[w,h]=actor.get_transformed_size();return{x,y,w,h};}
 async function shot(name){const stream=Gio.File.new_for_path(`${out}/${name}.png`).replace(null,false,Gio.FileCreateFlags.NONE,null);await new Shell.Screenshot().screenshot(false,stream);stream.close(null);}
 async function work(){
- const settings=new Gio.Settings({schema_id:'org.project_luma.shell-state'});
+ const settings=new Gio.Settings({schema_id:'org.projectSuno.shell-state'});
  const folders=Main.shelf.dockFolders;
  check('real dock folders controller exists',!!folders);
  check('untouched defaults include Applications',folders.uris.includes('applications:///'));
@@ -28,7 +28,7 @@ async function work(){
  // They are never installed in the owner's desktop or used for review screenshots.
  const extra=3*columns+(Math.min(3,columns-1)-initial%columns+columns)%columns;
  for(let i=0;i<extra;i++){
-  const path=`${GLib.get_user_data_dir()}/applications/org.projectluma.LayoutCheck${i}.desktop`;
+  const path=`${GLib.get_user_data_dir()}/applications/org.projectSuno.LayoutCheck${i}.desktop`;
   GLib.file_set_contents(path,`[Desktop Entry]\nType=Application\nName=Z Layout Check ${i} with a longer application name\nExec=/usr/bin/true\nIcon=utilities-terminal\nTerminal=false\n`);
  }
  await until(()=>model.items.length===initial+extra);
@@ -66,19 +66,19 @@ async function work(){
    const bounds=rect(cell),label=rect(cell.child.get_children()[1]);
    return label.y>=bounds.y&&label.y+label.h<=bounds.y+bounds.h;
   }));
-  check(`${treatment} Applications shortcut loads full-colour resource artwork`,folders._tiles.get(model.uri)._mark.gicon.to_string().includes('luma-dock-applications.svg'));
+  check(`${treatment} Applications shortcut loads full-colour resource artwork`,folders._tiles.get(model.uri)._mark.gicon.to_string().includes('Suno-dock-applications.svg'));
   const downloadTile=folders._tiles.get(Gio.File.new_for_path(downloads).get_uri());
-  check(`${treatment} Downloads shortcut uses matching resource artwork`,downloadTile._mark.gicon.to_string().includes('luma-dock-downloads.svg'));
+  check(`${treatment} Downloads shortcut uses matching resource artwork`,downloadTile._mark.gicon.to_string().includes('Suno-dock-downloads.svg'));
   await shot(`applications-drawer-${treatment}`);
   folders._surface.search.set_text('no-such-application-qualification');await pause();
   check(`${treatment} search filters without stale icons`,folders._itemActors().length===0);
   check(`${treatment} typing retains search focus`,folders._surface.search.contains(global.stage.get_key_focus()));
   await key(Clutter.KEY_Escape);check(`${treatment} Escape dismisses drawer`,!folders.openFolder);
  }
- folders.open(model);await pause();folders._surface.search.set_text('Luma Drawer Probe');await pause();
+ folders.open(model);await pause();folders._surface.search.set_text('Suno Drawer Probe');await pause();
  check('search finds the actual installed fixture application',folders._itemActors().length===1);
  await key(Clutter.KEY_Return);
- const probe=Shell.AppSystem.get_default().lookup_app('org.projectluma.DrawerProbe.desktop');
+ const probe=Shell.AppSystem.get_default().lookup_app('org.projectSuno.DrawerProbe.desktop');
  await until(()=>probe.get_windows().length>0);
  check('Enter launches the actual desktop application',probe.get_windows().length>0&&!folders.openFolder);
  for(const window of probe.get_windows())window.delete(global.get_current_time());

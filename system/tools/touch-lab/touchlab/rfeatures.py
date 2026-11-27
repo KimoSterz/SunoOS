@@ -8,7 +8,7 @@ is NaN, and the mask bits (m_*) say which signals are real, so one model
 family covers every surface class.
 
 Every feature at window H uses only what had arrived H ms after touch-down.
-contact_features() is written loop by loop to match plugins/luma-touch-roles.lua
+contact_features() is written loop by loop to match plugins/Suno-touch-roles.lua
 line for line; tests/test_roles.py runs both on the same contacts.
 """
 

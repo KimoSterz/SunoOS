@@ -87,7 +87,7 @@ using ::android::hardware::hidl_string;
 
 namespace {
 
-constexpr uint32_t kPrairieResizeMagic = 0x4c554d41;  // LUMA
+constexpr uint32_t kPrairieResizeMagic = 0x4c554d41;  // SUNO
 constexpr uint16_t kPrairieResizeVersion = 1;
 constexpr char kPrairieResizeSocket[] = "prairie-waydroid-task-v1";
 
@@ -286,8 +286,8 @@ xdg_toplevel_handle_configure(void *data, struct xdg_toplevel *,
     struct display *display = window->display;
 
     if (window->has_prairie_titlebar) {
-        if (width <= 1) width = window->content_width + 2 * LUMA_FRAME_GAP;
-        if (height <= 1) height = window->content_height + prairie::kTitlebarHeight + LUMA_FRAME_GAP;
+        if (width <= 1) width = window->content_width + 2 * SUNO_FRAME_GAP;
+        if (height <= 1) height = window->content_height + prairie::kTitlebarHeight + SUNO_FRAME_GAP;
     }
     if (width <= 1 || height <= 1) {
 		/* Compositor is deferring to us */
@@ -307,9 +307,9 @@ xdg_toplevel_handle_configure(void *data, struct xdg_toplevel *,
 
     if (window->has_prairie_titlebar && window->taskID != "none" &&
             window->taskID != "0") {
-        const int content_width = std::max(1, width - 2 * LUMA_FRAME_GAP);
+        const int content_width = std::max(1, width - 2 * SUNO_FRAME_GAP);
         const int content_height = std::max(1,
-            height - prairie::kTitlebarHeight - LUMA_FRAME_GAP);
+            height - prairie::kTitlebarHeight - SUNO_FRAME_GAP);
         if (maximized && !window->maximized) {
             window->restore_task_origin_x = window->task_origin_x;
             window->restore_task_origin_y = window->task_origin_y;
@@ -561,7 +561,7 @@ void window::minimize() {
 
 // Compositor logical units -> Android display pixels. Ceil so that the
 // hwcomposer's own ceil(px / scale) destination always covers the frame.
-static inline int luma_logical_to_px(const struct display *display, int logical) {
+static inline int Suno_logical_to_px(const struct display *display, int logical) {
     const double scale = (display && display->scale > 0) ? display->scale : 1.0;
     return std::max(1, static_cast<int>(ceil(logical * scale)));
 }
@@ -576,12 +576,12 @@ void window::request_task_resize(int width, int height) {
     // task origins are display pixels. Without this conversion the task is
     // under-sized by the fractional scale and the toplevel shows an empty
     // right/bottom margin that resizing cannot close.
-    const int px_width  = luma_logical_to_px(display, width);
-    const int px_height = luma_logical_to_px(display, height);
+    const int px_width  = Suno_logical_to_px(display, width);
+    const int px_height = Suno_logical_to_px(display, height);
     const int display_width  = display->width  > 0
-        ? luma_logical_to_px(display, display->width)  : px_width;
+        ? Suno_logical_to_px(display, display->width)  : px_width;
     const int display_height = display->height > 0
-        ? luma_logical_to_px(display, display->height) : px_height;
+        ? Suno_logical_to_px(display, display->height) : px_height;
 
     int left = 0, top = 0;
     if (!maximized) {
@@ -601,7 +601,7 @@ void window::request_task_resize(int width, int height) {
     task_origin_y = top;
     requested_content_width = width;
     requested_content_height = height;
-    ALOGI("Luma task %s configured %dx%d logical (%dx%d px)", taskID.c_str(),
+    ALOGI("Suno task %s configured %dx%d logical (%dx%d px)", taskID.c_str(),
           width, height, px_width, px_height);
 }
 
@@ -704,8 +704,8 @@ window::create(struct display *display, bool use_subsurfaces, std::string appID,
         assert(window->xdg_toplevel);
         xdg_toplevel_add_listener(window->xdg_toplevel, &xdg_toplevel_listener, window.get());
         if (window->has_prairie_titlebar)
-            xdg_toplevel_set_min_size(window->xdg_toplevel, 240 + 2 * LUMA_FRAME_GAP,
-                                     180 + prairie::kTitlebarHeight + LUMA_FRAME_GAP);
+            xdg_toplevel_set_min_size(window->xdg_toplevel, 240 + 2 * SUNO_FRAME_GAP,
+                                     180 + prairie::kTitlebarHeight + SUNO_FRAME_GAP);
     } else if (display->shell) {
         window->shell_surface =
             wl_shell_get_shell_surface(display->shell, window->surface);
@@ -1074,7 +1074,7 @@ static const struct wl_keyboard_listener keyboard_listener = {
 };
 
 // The host owns cursor artwork, scale and accessibility through the standard
-// cursor-shape protocol. No cursor bitmap/helper is maintained by Luma.
+// cursor-shape protocol. No cursor bitmap/helper is maintained by Suno.
 static void update_chrome_cursor(struct display* d) {
     if (!d->pointer || !d->cursor_shape_manager || !d->pointer_surface) return;
     if (!d->cursor_shape_device)
@@ -1083,7 +1083,7 @@ static void update_chrome_cursor(struct display* d) {
     uint32_t shape = WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_DEFAULT;
     auto* window = reinterpret_cast<struct window*>(wl_surface_get_user_data(d->pointer_surface));
     if (window && window->has_prairie_titlebar && d->pointer_surface == window->titlebar_surface) {
-        switch (luma_frame_resize_edge(prairie::frame(*window), d->pointer_x, d->pointer_y, window->maximized)) {
+        switch (Suno_frame_resize_edge(prairie::frame(*window), d->pointer_x, d->pointer_y, window->maximized)) {
             case 1: case 2: shape = WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_NS_RESIZE; break;
             case 4: case 8: shape = WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_EW_RESIZE; break;
             case 5: case 10: shape = WP_CURSOR_SHAPE_DEVICE_V1_SHAPE_NWSE_RESIZE; break;
@@ -1254,7 +1254,7 @@ pointer_handle_button(void *data, struct wl_pointer *,
             *window, display->pointer_x, display->pointer_y);
         if (target != prairie::TitlebarTarget::Content) {
             if (button == BTN_LEFT && state == WL_POINTER_BUTTON_STATE_PRESSED) {
-                const unsigned edge = luma_frame_resize_edge(prairie::frame(*window),
+                const unsigned edge = Suno_frame_resize_edge(prairie::frame(*window),
                     display->pointer_x, display->pointer_y, window->maximized);
                 if (edge) {
                     xdg_toplevel_resize(window->xdg_toplevel, display->seat, serial, edge);
@@ -1451,7 +1451,7 @@ touch_handle_down(void *data, struct wl_touch *,
         const int title_y = wl_fixed_to_int(y_w);
         const auto target = prairie::hit_test(*window, title_x, title_y);
         if (target != prairie::TitlebarTarget::Content) {
-            const unsigned edge = luma_frame_resize_edge(prairie::frame(*window),
+            const unsigned edge = Suno_frame_resize_edge(prairie::frame(*window),
                 title_x, title_y, window->maximized);
             if (edge)
                 xdg_toplevel_resize(window->xdg_toplevel, display->seat, serial, edge);

@@ -1,7 +1,7 @@
 #!/bin/bash
 # SPDX-License-Identifier: GPL-2.0-or-later
-# Render Settings with the Luma toolkit in Xvfb, against the mock
-# org.projectluma.Cast1 service.
+# Render Settings with the Suno toolkit in Xvfb, against the mock
+# org.projectSuno.Cast1 service.
 # $1: label (dark-* or light-*); remaining arguments: gnome-control-center
 # arguments (default: display cast).
 set -u

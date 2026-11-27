@@ -14,7 +14,7 @@ from contextlib import redirect_stdout
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[4]
-HELPER = ROOT / "src/luma-fp6-platform/root/usr/libexec/luma-fp6-cellular-link"
+HELPER = ROOT / "src/Suno-fp6-platform/root/usr/libexec/Suno-fp6-cellular-link"
 
 
 def load_helper():
@@ -26,7 +26,7 @@ def load_helper():
     saved = {name: sys.modules.get(name) for name in ("gi", "gi.repository")}
     sys.modules.update({"gi": gi, "gi.repository": repository})
     try:
-        loader = importlib.machinery.SourceFileLoader("luma_fp6_cellular_link_bearer", str(HELPER))
+        loader = importlib.machinery.SourceFileLoader("Suno_fp6_cellular_link_bearer", str(HELPER))
         spec = importlib.util.spec_from_loader(loader.name, loader)
         module = importlib.util.module_from_spec(spec)
         loader.exec_module(module)

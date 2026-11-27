@@ -3,7 +3,7 @@
 The current Titan development source is on
 `codex/project-titan-usb-20261029` in `SimplyLuma/luma`. Integrate this branch
 onto the receiving device's current source cohort before building. This is the
-shared Luma GNOME Shell with Mobile presentation, using the Desktop/Tablet
+shared Suno GNOME Shell with Mobile presentation, using the Desktop/Tablet
 services and native controls. The old GNOME Mobile 48 bake-off and Phosh renderer
 are separate historical paths.
 
@@ -13,7 +13,7 @@ switching or resetting the receiving agent's worktree:
 
 ```sh
 git fetch origin refs/heads/codex/project-titan-usb-20261029:refs/remotes/origin/codex/project-titan-usb-20261029
-git show origin/codex/project-titan-usb-20261029:src/luma-shell-presentation/presentation.js
+git show origin/codex/project-titan-usb-20261029:src/Suno-shell-presentation/presentation.js
 ```
 
 ## App startup
@@ -47,21 +47,21 @@ installed Shell 139, not a built 141 package.
 
 | Area | Maintained source |
 | --- | --- |
-| Home, dock, paging, widgets, shared search, gestures and app motion | `src/luma-shell-presentation/` |
+| Home, dock, paging, widgets, shared search, gestures and app motion | `src/Suno-shell-presentation/` |
 | Compact login, automatic hardware-keyboard/OSK behavior | `patches/gnome-shell/0290-compact-login-action-bar.patch`, `0291-shared-handheld-startup-and-input.patch` |
 | Notification island, full-screen Mobile tray, lock privacy and touch target | `patches/gnome-shell/0292-display-exclusions-and-notification-touch.patch`, `0293-mobile-lock-notification-island.patch`, `0294-notification-dismissal-policy.patch` |
-| Shared window geometry, safe areas and app action bars | `src/luma-platform/appkit/luma_appkit/`, `src/luma-platform/ui/` and maintained app/Mutter patches |
-| Live Weather/Calendar models and background refresh | `src/luma-home-widgets/`, `src/prairie-core/prairie_apps/weather*.py` |
-| Maintained native Terminal and shared command action bar | `src/luma-terminal/` |
-| Mode/state service | `src/luma-shell-state/` |
+| Shared window geometry, safe areas and app action bars | `src/Suno-platform/appkit/Suno_appkit/`, `src/Suno-platform/ui/` and maintained app/Mutter patches |
+| Live Weather/Calendar models and background refresh | `src/Suno-home-widgets/`, `src/prairie-core/prairie_apps/weather*.py` |
+| Maintained native Terminal and shared command action bar | `src/Suno-terminal/` |
+| Mode/state service | `src/Suno-shell-state/` |
 | Device display exclusions (schema 2 lists several panels by connector) | `config/mobile/display-geometry/` |
-| Keycap on-screen keyboard | `patches/gnome-shell/0294-keycap-keyboard.patch`, `src/luma-shell-presentation/keycap*`, `keycap` tokens; see `docs/mobile/keycap-keyboard.md` |
-| No window controls in Tablet and Mobile | `presentation_button_layout` in `src/luma-shell-state/`, LumaUI window controls |
-| Input, power and appearance defaults | `config/mobile/luma-shell-handheld.dconf` |
+| Keycap on-screen keyboard | `patches/gnome-shell/0294-keycap-keyboard.patch`, `src/Suno-shell-presentation/keycap*`, `keycap` tokens; see `docs/mobile/keycap-keyboard.md` |
+| No window controls in Tablet and Mobile | `presentation_button_layout` in `src/Suno-shell-state/`, SunoUI window controls |
+| Input, power and appearance defaults | `config/mobile/Suno-shell-handheld.dconf` |
 
-The converged nightly source pins Shell `1.luma.140`,
-Mutter `1.luma.17.keycap20261031.1`, developer platform `1.luma.121`,
-core apps `1.luma.126`, Tide `2.luma.38` and widgets `1.luma.3`. These identify requested
+The converged nightly source pins Shell `1.Suno.140`,
+Mutter `1.Suno.17.keycap20261031.1`, developer platform `1.Suno.121`,
+core apps `1.Suno.126`, Tide `2.Suno.38` and widgets `1.Suno.3`. These identify requested
 builds, not published or qualified RPMs. Preserve newer work already present in
 the receiving branch/device; the Titan's private development install includes
 newer unrelated platform UI work, so do not downgrade an installed package tuple
@@ -82,17 +82,17 @@ Settings to exit before opening.
 2. Build the current maintained Shell/Mutter, developer platform, core apps and
    widget sources for the target architecture, with matching GJS/GI dependencies.
    Entry points are `scripts/packages/build-gnome-shell.sh`, `build-mutter.sh`,
-   `build-luma-developer-platform.sh`, `build-prairie-core-apps.sh` and
-   `build-luma-home-widgets.sh`. Check each builder's architecture support;
+   `build-Suno-developer-platform.sh`, `build-prairie-core-apps.sh` and
+   `build-Suno-home-widgets.sh`. Check each builder's architecture support;
    never relabel an x86 package as ARM. The noarch shell-state service must also
    be present. For the shared Terminal action bar, build/install the maintained
-   `luma-terminal` with `scripts/packages/build-luma-terminal.sh` and its
-   `org.projectluma.Terminal.desktop` launcher; the Titan replaced legacy Ptyxis
+   `Suno-terminal` with `scripts/packages/build-Suno-terminal.sh` and its
+   `org.projectSuno.Terminal.desktop` launcher; the Titan replaced legacy Ptyxis
    through a local launcher alias. The Shell builder installs the presentation sources and all
    registered native patches, including 0293.
 3. Use a normal Wayland GNOME session with GDM where that device supports it.
-   The existing `scripts/mobile/luma-shell-session` and
-   `config/mobile/shell-bakeoff/greetd-luma.toml` describe the older greetd native
+   The existing `scripts/mobile/Suno-shell-session` and
+   `config/mobile/shell-bakeoff/greetd-Suno.toml` describe the older greetd native
    bring-up path; they are not a universal replacement for GDM. Avoid running
    two compositors/display managers on the same seat. Start with a working
    authenticated session before changing the default login path.
@@ -147,7 +147,7 @@ keys, user data, raw backups, captures, generated libraries/RPMs and diagnostic
 scripts are intentionally excluded. All product implementation belongs in the
 maintained source paths above, rather than copying the private override tree.
 
-Nightly integration also includes the e970f249b Keycap press/lock-screen follow-up; the combined Shell package is 1.luma.134.nightly20261030.1.
+Nightly integration also includes the e970f249b Keycap press/lock-screen follow-up; the combined Shell package is 1.Suno.134.nightly20261030.1.
 
 Native Tide/Connect source synchronization repairs and the matching Tide build
 are documented in [Tide server sync](tide-connect-sync.md).
@@ -185,7 +185,7 @@ Keep this limitation with the source/build handoff. The tested corrected kernel
 and rollback image are retained privately; no general release was published.
 
 Touch wake candidate: kernel patch0066 and the optional shared
-`scripts/mobile/touch-wake-policy.py` / `config/mobile/luma-touch-wake-policy.service`
+`scripts/mobile/touch-wake-policy.py` / `config/mobile/Suno-touch-wake-policy.service`
 use FT3383 hardware gesture detection and compositor display-power signals.
 Device profiles opt in with `wakeup-source`; unsupported devices are unchanged.
 The driver reports KEY_WAKEUP on a separate input device and retains low-power
@@ -204,7 +204,7 @@ this is not a whole-device battery-life measurement.
 2026-10-30 input/inventory follow-up: patch `0294-notification-dismissal-policy` restores descendant picking in
 the drawer and touch-down gesture eligibility. Clear all and swipes share the
 native card's incoming-call protection instead of excluding all critical alerts.
-Phone composition now selects Luma Monitor and enforces shared default-app
+Phone composition now selects Suno Monitor and enforces shared default-app
 exclusions for Tour, Help/Yelp, GNOME System Monitor, Reel and Darkroom. Desktop
 already excludes these; Creative offerings remain optional Depot installs.
 Visible Home pages cache unchanged content, and opening reveal work owns and

@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 # SPDX-License-Identifier: Apache-2.0
-"""Assemble a Flatpak runtime or runtime extension from Fedora and Luma RPMs.
+"""Assemble a Flatpak runtime or runtime extension from Fedora and Suno RPMs.
 
 This is the step Fedora's Koji performs when it builds org.fedoraproject.Platform:
 install a package set into an empty root with dnf, run the container.yaml
@@ -9,10 +9,10 @@ cleanup commands, map /usr to files/ and /etc to files/etc, run
 commit the tree. The mapping, metadata and OCI packaging are done by the exact
 code Fedora uses (flatpak_module_tools.ContainerBuilder and FlatpakBuilder).
 The only thing replaced is where packages come from: Koji tags become a Fedora
-44 mirror plus Luma's local package repository, which carries Luma's GTK 4,
+44 mirror plus Suno's local package repository, which carries Suno's GTK 4,
 libadwaita and developer platform at a higher priority than Fedora's builds.
 
-Run as root inside the luma-depot-tools container (it mounts /proc, /sys and
+Run as root inside the Suno-depot-tools container (it mounts /proc, /sys and
 /dev into the install root). Outputs, under --resultdir:
 
   <nvr>.<arch>.oci.tar            Fedora-compatible OCI Flatpak image
@@ -74,7 +74,7 @@ class ReleaseProfile:
         return "".join(ch for ch in runtime_version if ch.isdigit())
 
 
-class LumaBuildContext(BuildContext):
+class SunoBuildContext(BuildContext):
     def __init__(self, *, container_spec, nvr, fedora_release, mirror, local_repo,
                  runtime_packages, architecture=None):
         # local_repo stays None for the base class: flatpak-module-tools would
@@ -82,7 +82,7 @@ class LumaBuildContext(BuildContext):
         # container with --installroot, so the host path is used directly.
         super().__init__(profile=ReleaseProfile(), arch=Arch(rpm=architecture) if architecture else Arch(),
                          container_spec=container_spec, local_repo=None)
-        self._luma_repo = local_repo
+        self._Suno_repo = local_repo
         self._nvr = nvr
         arch = self.arch.rpm
         self._fedora = StaticRepo(
@@ -97,7 +97,7 @@ class LumaBuildContext(BuildContext):
 
     @property
     def runtime_archive(self):
-        raise NotImplementedError("Luma builds never look up a Koji runtime archive")
+        raise NotImplementedError("Suno builds never look up a Koji runtime archive")
 
     @property
     def runtime_package_repo(self):
@@ -112,20 +112,20 @@ class LumaBuildContext(BuildContext):
         return self._fedora
 
     def get_repos(self, *, for_container, local_repo_path=None):
-        # Lower number wins in dnf: Luma's own builds shadow Fedora's packages
+        # Lower number wins in dnf: Suno's own builds shadow Fedora's packages
         # of the same name whatever their version, so a Fedora update to GTK
-        # can never silently replace Luma's toolkit inside the runtime.
+        # can never silently replace Suno's toolkit inside the runtime.
         repos = [
             self._fedora.dnf_config(priority=50),
             self._updates.dnf_config(priority=50),
         ]
-        if self._luma_repo:
-            repos.append(StaticRepo("luma", f"file://{self._luma_repo}")
+        if self._Suno_repo:
+            repos.append(StaticRepo("Suno", f"file://{self._Suno_repo}")
                          .dnf_config(priority=10))
         return repos
 
 
-class LumaContainerBuilder(ContainerBuilder):
+class SunoContainerBuilder(ContainerBuilder):
     """Two differences from Fedora's ContainerBuilder.
 
     Packages are installed in one dnf transaction. Upstream installs
@@ -222,13 +222,13 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--containerspec", type=Path, required=True)
     parser.add_argument("--nvr", required=True,
-                        help="name-version-release label, e.g. luma-platform-44-20260915.1")
+                        help="name-version-release label, e.g. Suno-platform-44-20260915.1")
     parser.add_argument("--fedora-release", default="44")
     parser.add_argument("--architecture", choices=("x86_64", "aarch64"),
                         help="Runtime payload CPU; independent of the tools CPU")
     parser.add_argument("--mirror", default=FEDORA_MIRROR)
     parser.add_argument("--local-repo", type=Path, required=True,
-                        help="createrepo_c repository with Luma RPMs for this architecture")
+                        help="createrepo_c repository with Suno RPMs for this architecture")
     parser.add_argument("--runtime-rpmlist", type=Path,
                         help="rpmlist.json of the runtime an extension is built for")
     parser.add_argument("--workdir", type=Path, required=True)
@@ -255,7 +255,7 @@ def main() -> int:
     if args.private_min_free_bytes is not None:
         configure_private_reserve(oci_workdir / "repo", args.private_min_free_bytes)
 
-    context = LumaBuildContext(
+    context = SunoBuildContext(
         container_spec=spec,
         nvr=args.nvr,
         fedora_release=args.fedora_release,
@@ -264,7 +264,7 @@ def main() -> int:
         runtime_packages=runtime_packages,
         architecture=args.architecture,
     )
-    builder = LumaContainerBuilder(context, runtime_packages)
+    builder = SunoContainerBuilder(context, runtime_packages)
     executor = InnerExcutor(
         context=context,
         installroot=installroot,

@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://gitlab.com/simplyluma/luma/-/raw/main/devices/device.schema.json",
-  "title": "Luma device manifest (devices/<vendor>/<codename>/device.toml)",
+  "title": "Suno device manifest (devices/<vendor>/<codename>/device.toml)",
   "type": "object",
   "additionalProperties": false,
   "required": ["schema", "vendor", "codename", "name", "form_factor", "soc", "tier", "maintainers", "kernel", "boot", "firmware", "install"],
@@ -33,11 +33,11 @@
         ]}}
       ],
       "properties": {
-        "distribution": {"enum": ["fedora"], "description": "Boots the distribution's own kernel package, unmodified; no Luma kernel tag, source lock or .config."},
+        "distribution": {"enum": ["fedora"], "description": "Boots the distribution's own kernel package, unmodified; no Suno kernel tag, source lock or .config."},
         "nevr": {"type": "string", "pattern": "^kernel-[0-9]+\\.[0-9]+(\\.[0-9]+)?-[A-Za-z0-9._+]+$", "description": "The distribution kernel package the device was qualified with, as name-version-release."},
         "branch": {"$ref": "#/$defs/slug", "description": "Overrides the SoC's kernel branch."},
         "source_lock": {"$ref": "#/$defs/relpath"},
-        "tag": {"type": "string", "pattern": "^luma-[a-z0-9-]+-[A-Za-z0-9._+-]+$"},
+        "tag": {"type": "string", "pattern": "^Suno-[a-z0-9-]+-[A-Za-z0-9._+-]+$"},
         "release": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+(\\.[0-9]+)?[A-Za-z0-9._+-]*$"},
         "rpm_version_release": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+(\\.[0-9]+)?-[A-Za-z0-9._+-]+$"},
         "package": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._+-]*$", "description": "The RPM that ships this kernel to the device (packaging/rpm/<package>.spec). Its Version-Release must change whenever any kernel input does (scripts/devices/device-kernels.py check)."},
@@ -96,7 +96,7 @@
         "manifest": {"const": "firmware.manifest"},
         "manifest_sha256": {"$ref": "#/$defs/sha256"},
         "files": {"type": "integer", "minimum": 0},
-        "store": {"type": "string", "pattern": "^/(var/[A-Za-z0-9_./-]+|usr/lib/firmware|etc/luma/device-firmware)$"}
+        "store": {"type": "string", "pattern": "^/(var/[A-Za-z0-9_./-]+|usr/lib/firmware|etc/Suno/device-firmware)$"}
       }
     },
     "install": {
@@ -109,13 +109,13 @@
     },
     "updates": {
       "type": "object", "additionalProperties": false, "required": ["ostree_ref"],
-      "properties": {"ostree_ref": {"type": "string", "pattern": "^luma/[0-9]+/[a-z0-9_]+(/[a-z0-9-]+)?/[a-z0-9-]+$"}}
+      "properties": {"ostree_ref": {"type": "string", "pattern": "^Suno/[0-9]+/[a-z0-9_]+(/[a-z0-9-]+)?/[a-z0-9-]+$"}}
     },
     "device_repo": {
-      "description": "Signed rpm-md repository (Luma OS Release key) with only this device's packages, layered client-side onto the generic OS commit. Phones get it offline from the device kit on the first boot; rpm-ostree upgrades then follow url.",
+      "description": "Signed rpm-md repository (Suno OS Release key) with only this device's packages, layered client-side onto the generic OS commit. Phones get it offline from the device kit on the first boot; rpm-ostree upgrades then follow url.",
       "type": "object", "additionalProperties": false, "required": ["id", "url", "install"],
       "properties": {
-        "id": {"type": "string", "pattern": "^luma-[a-z0-9][a-z0-9_-]*$", "maxLength": 64},
+        "id": {"type": "string", "pattern": "^Suno-[a-z0-9][a-z0-9_-]*$", "maxLength": 64},
         "url": {"type": "string", "pattern": "^https://[A-Za-z0-9.-]+/[A-Za-z0-9._~/%-]*/$"},
         "replace": {"description": "Base packages replaced by the repository's builds (rpm-ostree override replace --from repo=id).", "type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/package"}},
         "remove": {"description": "Base packages removed (rpm-ostree override remove), such as the distribution kernel a device kernel package replaces.", "type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/package"}},
@@ -123,16 +123,16 @@
       }
     },
     "boot_update": {
-      "description": "The device's boot image ships in a device package and follows the deployment (luma-device-boot, luma-update): written to the inactive A/B slot, made active for one try, marked successful once its kernel runs; the bootloader falls back otherwise.",
+      "description": "The device's boot image ships in a device package and follows the deployment (Suno-device-boot, Suno-update): written to the inactive A/B slot, made active for one try, marked successful once its kernel runs; the bootloader falls back otherwise.",
       "type": "object", "additionalProperties": false, "required": ["package", "slots", "partitions"],
       "properties": {
         "package": {"description": "The package that carries the boot image with its kernel's modules; one of [device_repo] install.", "$ref": "#/$defs/package"},
-        "slots": {"description": "The slot tool luma-device-boot drives.", "enum": ["qbootctl"]},
-        "partitions": {"description": "The only partitions luma-device-boot may write, both slots of each.", "type": "array", "minItems": 2, "uniqueItems": true, "items": {"type": "string", "pattern": "^(boot|dtbo|init_boot|vendor_boot)_[ab]$"}}
+        "slots": {"description": "The slot tool Suno-device-boot drives.", "enum": ["qbootctl"]},
+        "partitions": {"description": "The only partitions Suno-device-boot may write, both slots of each.", "type": "array", "minItems": 2, "uniqueItems": true, "items": {"type": "string", "pattern": "^(boot|dtbo|init_boot|vendor_boot)_[ab]$"}}
       }
     },
     "kit": {
-      "description": "The device kit (scripts/devices/build-device-kit.py): boot image, offline device repository on the generic phone userdata image's LumaBoot, flash steps.",
+      "description": "The device kit (scripts/devices/build-device-kit.py): boot image, offline device repository on the generic phone userdata image's SunoBoot, flash steps.",
       "type": "object", "additionalProperties": false, "required": ["compatible", "flash"],
       "properties": {
         "compatible": {"description": "Device-tree compatible strings that identify this device; the first-boot layer refuses a kit none of them match.", "type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*,[A-Za-z0-9][A-Za-z0-9._+-]*$"}},

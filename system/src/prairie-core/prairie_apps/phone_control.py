@@ -100,8 +100,8 @@ class VoiceController:
         supplied = provider
         def discover():
             provider = None if supplied is _DISCOVER_PROVIDER else supplied
-            if supplied is _DISCOVER_PROVIDER and importlib.util.find_spec("luma_continuity") is not None:
-                from luma_continuity.call_provider import selected_provider
+            if supplied is _DISCOVER_PROVIDER and importlib.util.find_spec("Suno_continuity") is not None:
+                from Suno_continuity.call_provider import selected_provider
                 provider = selected_provider(dispatch=self.dispatch)
             return provider, inspect_phone_capability() if provider is None else PhoneCapability(False, "Connecting to phone…")
         self._task(discover, self._discovered)
@@ -113,7 +113,7 @@ class VoiceController:
             self.on_capability(capability)
         if self.provider is not None:
             from .phone_feedback import Ringer
-            self.ringer = Ringer("org.projectluma.Phone")
+            self.ringer = Ringer("org.projectSuno.Phone")
             self.provider.start(self._paired_changed)
         elif not capability.no_modem:
             self.monitor = IncomingCallMonitor(on_state=self._native_changed, on_ended=self._native_ended,

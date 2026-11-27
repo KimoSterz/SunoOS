@@ -21,9 +21,9 @@ while [ "$#" -gt 0 ]; do
     *) forward+=("$1"); shift ;;
   esac
 done
-[ -n "$workdir" ] || workdir=$(mktemp -d "${TMPDIR:-/tmp}/luma-pointer-modifiers.XXXXXX")
+[ -n "$workdir" ] || workdir=$(mktemp -d "${TMPDIR:-/tmp}/Suno-pointer-modifiers.XXXXXX")
 
-runtime=$(mktemp -d "${TMPDIR:-/tmp}/luma-pm-runtime.XXXXXX")
+runtime=$(mktemp -d "${TMPDIR:-/tmp}/Suno-pm-runtime.XXXXXX")
 chmod 0700 "$runtime"
 trap 'rm -rf "$runtime"' EXIT
 

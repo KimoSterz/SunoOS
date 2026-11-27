@@ -8,24 +8,24 @@ from pathlib import Path
 import gi
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
-gi.require_version("LumaUI", "1")
-from gi.repository import Adw, Gio, GLib, Gtk, LumaUI
-from luma_appkit import AppWindow, CommandRegistry, Island, NavigationSidebar, add_style_sheet, add_style_builder
+gi.require_version("SunoUI", "1")
+from gi.repository import Adw, Gio, GLib, Gtk, SunoUI
+from Suno_appkit import AppWindow, CommandRegistry, Island, NavigationSidebar, add_style_sheet, add_style_builder
 
-app = Adw.Application(application_id="org.projectluma.PresentationWindowFixture",
+app = Adw.Application(application_id="org.projectSuno.PresentationWindowFixture",
                       flags=Gio.ApplicationFlags.NON_UNIQUE)
 assert app.register(None)
-record = Path(GLib.get_user_state_dir()) / "luma/windows" / (app.get_application_id() + ".json")
+record = Path(GLib.get_user_state_dir()) / "Suno/windows" / (app.get_application_id() + ".json")
 record.parent.mkdir(parents=True, exist_ok=True)
 record.write_text(json.dumps({"width": 700, "height": 500, "maximized": False}))
 python = AppWindow(application=app, app_id=app.get_application_id(), title="Python document",
     icon_name="application-x-executable", commands=CommandRegistry(()))
 source = Path(os.environ["PRESENTATION_SOURCE"])
-python.add_css_class("luma-notes")
+python.add_css_class("Suno-notes")
 add_style_sheet(str(source / "src/prairie-core/style/notes.css"))
 # Reproduce the legacy Notes rule as well: the shared frame must protect its
 # inset even when an app still ships a composition reset at app priority.
-add_style_builder(lambda _appearance: '.luma-notes .luma-window-body { padding-top: 0; }')
+add_style_builder(lambda _appearance: '.Suno-notes .Suno-window-body { padding-top: 0; }')
 draft = Gtk.Entry(text="Unsaved draft")
 sidebar = NavigationSidebar(variant="destinations")
 page = Island()
@@ -34,9 +34,9 @@ panes = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
 panes.append(sidebar)
 panes.append(page)
 python.set_body(panes)
-native = LumaUI.ApplicationWindow.new(app, None)
+native = SunoUI.ApplicationWindow.new(app, None)
 native.add_css_class("messages-window")
-native.add_css_class("luma-fullscreen")
+native.add_css_class("Suno-fullscreen")
 add_style_sheet(str(source / "src/prairie-core/style/messages.css"))
 native_draft = Gtk.Entry(text="Native unsaved draft")
 native_sidebar = NavigationSidebar(variant="destinations")
@@ -50,13 +50,13 @@ python.set_phone_bleed(True)
 native.set_phone_bleed(True)
 python.set_status_bar_style("light")
 native.set_status_bar_style("light")
-assert python.lookup_action("luma-status-ink").get_state().unpack() == "light"
-assert native.lookup_action("luma-status-ink").get_state().unpack() == "light"
+assert python.lookup_action("Suno-status-ink").get_state().unpack() == "light"
+assert native.lookup_action("Suno-status-ink").get_state().unpack() == "light"
 python.present()
 native.present()
 proxy = Gio.DBusProxy.new_for_bus_sync(Gio.BusType.SESSION, Gio.DBusProxyFlags.NONE, None,
-    "org.project_luma.ShellState1", "/org/project_luma/ShellState1",
-    "org.project_luma.ShellState1", None)
+    "org.projectSuno.ShellState1", "/org/projectSuno/ShellState1",
+    "org.projectSuno.ShellState1", None)
 
 def settle(predicate):
     deadline = time.monotonic() + 4
@@ -76,8 +76,8 @@ for mode in ("tablet", "desktop", "mobile", "desktop"):
         and python.title_bar.get_visible() == decorated
         and native.get_title_bar().get_visible() == decorated
         and native.props.context.get_experience() == mode)
-    assert python.has_css_class("lumaui-tablet-mode") == (mode == "tablet")
-    assert native.has_css_class("lumaui-tablet-mode") == (mode == "tablet")
+    assert python.has_css_class("SunoUI-tablet-mode") == (mode == "tablet")
+    assert native.has_css_class("SunoUI-tablet-mode") == (mode == "tablet")
     assert draft.get_text() == "Unsaved draft"
     assert native_draft.get_text() == "Native unsaved draft"
     assert python.get_visible() and native.get_visible()
@@ -107,7 +107,7 @@ for mode in ("tablet", "desktop", "mobile", "desktop"):
                           area.get_y(), padding.top, margin.top, border.top, flush=True)
                     ancestor = ancestor.get_parent()
             raise
-        assert python.body.has_css_class("lumaui-frame-sidebar")
+        assert python.body.has_css_class("SunoUI-frame-sidebar")
         print("PASS Tablet sidebars and pages start below the transparent status strip")
         python.remember("draft-state", "changed in Tablet")
         saved = json.loads(record.read_text())
@@ -121,8 +121,8 @@ native.close()
 # remain below the status strip, including when only presentation changes.
 source = Path(os.environ["PRESENTATION_SOURCE"])
 sys.path.insert(0, str(source / "src/prairie-core"))
-os.environ["LUMA_WEATHER_FIXTURE"] = str(source / "tests/fixtures/weather-v70.json")
-from luma_appkit import add_style_sheet
+os.environ["SUNO_WEATHER_FIXTURE"] = str(source / "tests/fixtures/weather-v70.json")
+from Suno_appkit import add_style_sheet
 from prairie_apps.weather import WeatherWindow
 add_style_sheet(str(source / "src/prairie-core/style/weather.css"))
 weather = WeatherWindow(app)
@@ -143,9 +143,9 @@ weather.close()
 
 # Terminal is a host-installed AppKit client, including its D-Bus launch path.
 # Preserve its sessions while the shared mode service changes the frame.
-sys.path.insert(0,str(source/'src/luma-terminal'))
-from luma_terminal.terminal import TerminalWindow
-add_style_sheet(str(source/'src/luma-terminal/style/terminal.css'))
+sys.path.insert(0,str(source/'src/Suno-terminal'))
+from Suno_terminal.terminal import TerminalWindow
+add_style_sheet(str(source/'src/Suno-terminal/style/terminal.css'))
 fixture=json.loads((source/'tests/fixtures/term-v70.json').read_text())
 terminal=TerminalWindow(app,fixture=fixture)
 terminal.present()

@@ -1,4 +1,4 @@
-From: Project Luma <project-luma@local>
+From: Project Suno <project-suno@local>
 Subject: [PATCH] simple: ipa: add damped sensor-tuned continuous autofocus
 
 The first FP6 autofocus lane used a generic 5-95 percent sweep, moved the

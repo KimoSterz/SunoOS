@@ -5,7 +5,7 @@ import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as MessageTray from 'resource:///org/gnome/shell/ui/messageTray.js';
-import {getNotificationTray} from 'resource:///org/gnome/shell/ui/lumaNotificationBeacon.js';
+import {getNotificationTray} from 'resource:///org/gnome/shell/ui/SunoNotificationBeacon.js';
 import {sleep} from 'resource:///org/gnome/shell/ui/scripting.js';
 let count = 0;
 function check(value, name) {
@@ -23,10 +23,10 @@ export async function run() {
     Main.overview.hide();
     await sleep(700);
     const launcher = new Gio.SubprocessLauncher({flags: Gio.SubprocessFlags.NONE});
-    launcher.setenv('WAYLAND_DISPLAY', GLib.getenv('LUMA_NOTIFICATION_CLIENT_DISPLAY'), true);
+    launcher.setenv('WAYLAND_DISPLAY', GLib.getenv('SUNO_NOTIFICATION_CLIENT_DISPLAY'), true);
     launcher.setenv('GDK_BACKEND', 'wayland', true);
     launcher.setenv('GSK_RENDERER', 'cairo', true);
-    const process = launcher.spawnv(['python3', GLib.getenv('LUMA_NOTIFICATION_CLIENT')]);
+    const process = launcher.spawnv(['python3', GLib.getenv('SUNO_NOTIFICATION_CLIENT')]);
     const lip = getNotificationTray();
     const seat = global.stage.context.get_backend().get_default_seat();
     const pointer = seat.create_virtual_device(Clutter.InputDeviceType.POINTER_DEVICE);
@@ -58,7 +58,7 @@ export async function run() {
             await sleep(250);
         }
         function clientClicks() {
-            try { return Number(new TextDecoder().decode(GLib.file_get_contents(GLib.getenv('LUMA_NOTIFICATION_CLIENT_CLICKS'))[1])); }
+            try { return Number(new TextDecoder().decode(GLib.file_get_contents(GLib.getenv('SUNO_NOTIFICATION_CLIENT_CLICKS'))[1])); }
             catch { return 0; }
         }
         await click();

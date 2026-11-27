@@ -65,7 +65,7 @@ gpg_fingerprint=$(gpg --batch --homedir "$gpg_homedir" \
 [ -n "$gpg_fingerprint" ] || fail 'publishing key is not present in the supplied GPG home'
 
 mkdir -p "$publish_repo"
-exec 9>"$publish_repo/.luma-publish.lock"
+exec 9>"$publish_repo/.Suno-publish.lock"
 flock -n 9 || fail 'another Recent publication is active'
 
 if [ ! -f "$publish_repo/config" ]; then
@@ -77,7 +77,7 @@ case "$mode" in
   *) fail "publication repository must use archive mode, found: $mode" ;;
 esac
 ostree config --repo="$publish_repo" set core.collection-id \
-  "$LUMA_UPDATE_COLLECTION_ID"
+  "$SUNO_UPDATE_COLLECTION_ID"
 
 accepted_commit=$commit
 source_resolved=$(ostree rev-parse --repo="$source_repo" "$accepted_commit")
@@ -97,7 +97,7 @@ completed_utc=$(awk -F= '$1 == "completed_utc" { sub(/^[^=]*=/, ""); print }' \
 [[ "$completed_utc" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$ ]] ||
   fail 'build report has no valid completed_utc record'
 previous=$(ostree rev-parse --repo="$publish_repo" \
-  "$LUMA_UPDATE_REF" 2>/dev/null || true)
+  "$SUNO_UPDATE_REF" 2>/dev/null || true)
 
 # Publish the accepted package filesystem as a coherent base image.
 # Discard only the embedded ancestral RPMDB cache belonging to the builder;
@@ -116,14 +116,14 @@ commit=$(ostree commit --repo="$publish_repo" \
   --orphan \
   --parent="$accepted_commit" \
   --tree="ref=$normalized_tree" \
-  --bind-ref="$LUMA_UPDATE_REF" \
+  --bind-ref="$SUNO_UPDATE_REF" \
   --timestamp="$completed_utc" \
-  --subject="Project Luma Recent $source_revision" \
-  --add-metadata-string="org.projectluma.source-revision=$source_revision" \
-  --add-metadata-string="org.projectluma.accepted-deployment=$accepted_commit" \
-  --add-metadata-string="org.projectluma.image-sha256=$image_sha256" \
-  --add-metadata-string="org.projectluma.build-report-sha256=$report_sha256" \
-  --add-metadata-string="org.projectluma.export-policy=base-image-v2" \
+  --subject="Project Suno Recent $source_revision" \
+  --add-metadata-string="org.projectSuno.source-revision=$source_revision" \
+  --add-metadata-string="org.projectSuno.accepted-deployment=$accepted_commit" \
+  --add-metadata-string="org.projectSuno.image-sha256=$image_sha256" \
+  --add-metadata-string="org.projectSuno.build-report-sha256=$report_sha256" \
+  --add-metadata-string="org.projectSuno.export-policy=base-image-v2" \
   "${metadata_args[@]}")
 
 # Fail before signing or advancing any ref if normalization changed anything
@@ -138,7 +138,7 @@ fi
 ostree gpg-sign --repo="$publish_repo" --gpg-homedir="$gpg_homedir" \
   "$commit" "$gpg_fingerprint"
 
-if [ "${LUMA_UPDATE_SKIP_STATIC_DELTA:-0}" != 1 ]; then
+if [ "${SUNO_UPDATE_SKIP_STATIC_DELTA:-0}" != 1 ]; then
   if [ -n "$previous" ]; then
     ostree static-delta generate --repo="$publish_repo" \
       --from="$previous" --to="$commit"
@@ -149,35 +149,35 @@ if [ "${LUMA_UPDATE_SKIP_STATIC_DELTA:-0}" != 1 ]; then
 fi
 
 created_utc=$completed_utc
-release_dir="$publish_repo/luma/releases"
+release_dir="$publish_repo/Suno/releases"
 mkdir -p "$release_dir"
 manifest="$release_dir/$commit.json"
 MANIFEST_PATH="$manifest" \
-LUMA_MANIFEST_CHANNEL="$LUMA_UPDATE_CHANNEL" \
-LUMA_MANIFEST_REF="$LUMA_UPDATE_REF" \
-LUMA_MANIFEST_COMMIT="$commit" \
-LUMA_MANIFEST_ACCEPTED="$accepted_commit" \
-LUMA_MANIFEST_PREVIOUS="$previous" \
-LUMA_MANIFEST_SOURCE="$source_revision" \
-LUMA_MANIFEST_IMAGE="$image_sha256" \
-LUMA_MANIFEST_REPORT="$report_sha256" \
-LUMA_MANIFEST_CREATED="$created_utc" \
+SUNO_MANIFEST_CHANNEL="$SUNO_UPDATE_CHANNEL" \
+SUNO_MANIFEST_REF="$SUNO_UPDATE_REF" \
+SUNO_MANIFEST_COMMIT="$commit" \
+SUNO_MANIFEST_ACCEPTED="$accepted_commit" \
+SUNO_MANIFEST_PREVIOUS="$previous" \
+SUNO_MANIFEST_SOURCE="$source_revision" \
+SUNO_MANIFEST_IMAGE="$image_sha256" \
+SUNO_MANIFEST_REPORT="$report_sha256" \
+SUNO_MANIFEST_CREATED="$created_utc" \
 python3 - <<'PY'
 import json
 import os
 from pathlib import Path
 
 payload = {
-    "schema": "org.projectluma.update-release/v1",
-    "channel": os.environ["LUMA_MANIFEST_CHANNEL"],
-    "ref": os.environ["LUMA_MANIFEST_REF"],
-    "ostree_commit": os.environ["LUMA_MANIFEST_COMMIT"],
-    "accepted_deployment_commit": os.environ["LUMA_MANIFEST_ACCEPTED"],
-    "previous_commit": os.environ["LUMA_MANIFEST_PREVIOUS"] or None,
-    "source_revision": os.environ["LUMA_MANIFEST_SOURCE"],
-    "image_sha256": os.environ["LUMA_MANIFEST_IMAGE"],
-    "build_report_sha256": os.environ["LUMA_MANIFEST_REPORT"],
-    "created_utc": os.environ["LUMA_MANIFEST_CREATED"],
+    "schema": "org.projectSuno.update-release/v1",
+    "channel": os.environ["SUNO_MANIFEST_CHANNEL"],
+    "ref": os.environ["SUNO_MANIFEST_REF"],
+    "ostree_commit": os.environ["SUNO_MANIFEST_COMMIT"],
+    "accepted_deployment_commit": os.environ["SUNO_MANIFEST_ACCEPTED"],
+    "previous_commit": os.environ["SUNO_MANIFEST_PREVIOUS"] or None,
+    "source_revision": os.environ["SUNO_MANIFEST_SOURCE"],
+    "image_sha256": os.environ["SUNO_MANIFEST_IMAGE"],
+    "build_report_sha256": os.environ["SUNO_MANIFEST_REPORT"],
+    "created_utc": os.environ["SUNO_MANIFEST_CREATED"],
 }
 Path(os.environ["MANIFEST_PATH"]).write_text(
     json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8"
@@ -190,36 +190,36 @@ gpg --batch --yes --homedir "$gpg_homedir" --local-user "$gpg_fingerprint" \
 # change. Publication to the served webroot is a separate generation switch,
 # so clients never observe this repository while it is being mutated.
 if [ -n "$previous" ]; then
-  ostree reset --repo="$publish_repo" "$LUMA_UPDATE_REF" "$commit"
+  ostree reset --repo="$publish_repo" "$SUNO_UPDATE_REF" "$commit"
 else
-  ostree refs --repo="$publish_repo" --create="$LUMA_UPDATE_REF" "$commit"
+  ostree refs --repo="$publish_repo" --create="$SUNO_UPDATE_REF" "$commit"
 fi
 ostree summary --repo="$publish_repo" --update \
   --gpg-sign="$gpg_fingerprint" --gpg-homedir="$gpg_homedir" \
-  --add-metadata="org.projectluma.channel='recent'"
+  --add-metadata="org.projectSuno.channel='recent'"
 
 # Prove the exact files a client will consume: exported public key, signed
 # summary, signed commit, and advertised ref.
 verify_root=$(mktemp -d)
 trap 'rm -rf "$verify_root"' EXIT
-public_key="$verify_root/luma-recent.gpg"
+public_key="$verify_root/Suno-recent.gpg"
 gpg --batch --homedir "$gpg_homedir" --export "$gpg_fingerprint" >"$public_key"
 ostree init --repo="$verify_root/client" --mode=archive
 ostree remote add --repo="$verify_root/client" \
   --gpg-import="$public_key" \
   --set=gpg-verify=true --set=gpg-verify-summary=true \
-  --collection-id="$LUMA_UPDATE_COLLECTION_ID" \
-  verify "file://$publish_repo" "$LUMA_UPDATE_REF"
-ostree pull --repo="$verify_root/client" verify "$LUMA_UPDATE_REF"
+  --collection-id="$SUNO_UPDATE_COLLECTION_ID" \
+  verify "file://$publish_repo" "$SUNO_UPDATE_REF"
+ostree pull --repo="$verify_root/client" verify "$SUNO_UPDATE_REF"
 verified=$(ostree rev-parse --repo="$verify_root/client" \
-  "verify:$LUMA_UPDATE_REF")
+  "verify:$SUNO_UPDATE_REF")
 [ "$verified" = "$commit" ] || fail 'client verification resolved an unexpected commit'
 mkdir -m 0700 "$verify_root/verify-gpg"
 gpg --batch --homedir "$verify_root/verify-gpg" --import "$public_key" >/dev/null 2>&1
 gpg --batch --homedir "$verify_root/verify-gpg" \
   --verify "$manifest.asc" "$manifest" >/dev/null 2>&1
 
-install -D -m 0644 "$public_key" "$publish_repo/luma/luma-recent.gpg"
+install -D -m 0644 "$public_key" "$publish_repo/Suno/Suno-recent.gpg"
 printf 'channel=%s\nref=%s\ncommit=%s\naccepted_deployment=%s\nsource_revision=%s\nkey=%s\n' \
-  "$LUMA_UPDATE_CHANNEL" "$LUMA_UPDATE_REF" "$commit" \
+  "$SUNO_UPDATE_CHANNEL" "$SUNO_UPDATE_REF" "$commit" \
   "$accepted_commit" "$source_revision" "$gpg_fingerprint"

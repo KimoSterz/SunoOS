@@ -1,4 +1,4 @@
-From: Luma Developers
+From: Suno Developers
 Subject: [PATCH] Drag selection: whole zones of the current layout
 
 --- a/components/tilingsystem/tilingLayout.js
@@ -22,7 +22,7 @@ Subject: [PATCH] Drag selection: whole zones of the current layout
 -  getTileBelow(currPointerPos, reset) {
 -    let found = this._previews.find(
 -      (preview) => this._isHovered(currPointerPos, preview.rect)
-+  // Luma: a drag selects whole zones of this layout and never reshapes one.
++  // Suno: a drag selects whole zones of this layout and never reshapes one.
 +  // Zones keep the rectangle they were drawn with; selecting only hides the
 +  // zones the selection covers. (Upstream cut the zones a selection crossed
 +  // into new, undecorated pieces and kept them, so later hit tests and drops
@@ -39,7 +39,7 @@ Subject: [PATCH] Drag selection: whole zones of the current layout
 +  }
 +
 +  // The smallest rectangle of whole zones that contains `rect`.
-+  lumaWholeZones(rect) {
++  SunoWholeZones(rect) {
 +    const overlaps = (a, b) => Math.min(a.x + a.width, b.x + b.width) - Math.max(a.x, b.x) > 1 && Math.min(a.y + a.height, b.y + b.height) - Math.max(a.y, b.y) > 1;
 +    let result = rect.copy();
 +    for (let changed = true; changed; ) {
@@ -61,13 +61,13 @@ Subject: [PATCH] Drag selection: whole zones of the current layout
 +    return result;
 +  }
 +
-+  _lumaInside(zone, rect) {
++  _SunoInside(zone, rect) {
 +    return zone.x >= rect.x - 1 && zone.y >= rect.y - 1 && zone.x + zone.width <= rect.x + rect.width + 1 && zone.y + zone.height <= rect.y + rect.height + 1;
    }
  
    unhoverAllTiles() {
 -    const newPreviewsArray = [];
-+    this._lumaDropPieces();
++    this._SunoDropPieces();
      this._previews.forEach((preview) => {
 -      if (preview.restore(true)) {
 -        newPreviewsArray.push(preview);
@@ -87,8 +87,8 @@ Subject: [PATCH] Drag selection: whole zones of the current layout
 +  // Hide the zones the selection covers and show every other zone where it
 +  // was drawn. `rect` is grown to whole zones first.
 +  hoverTilesInRect(rect, _reset) {
-+    this._lumaDropPieces();
-+    const selection = this.lumaWholeZones(rect);
++    this._SunoDropPieces();
++    const selection = this.SunoWholeZones(rect);
      this._previews.forEach((preview) => {
 -      const [hasIntersection, rectangles] = this._subtractRectangles(
 -        preview.rect,
@@ -151,7 +151,7 @@ Subject: [PATCH] Drag selection: whole zones of the current layout
 -        newPreviewsArray.push(preview);
 -      }
 +      preview.restore(false);
-+      if (this._lumaInside(preview.originalRect, selection)) preview.close();
++      if (this._SunoInside(preview.originalRect, selection)) preview.close();
 +      else preview.open(void 0, true);
      });
 -    this._previews = newPreviewsArray;
@@ -227,7 +227,7 @@ Subject: [PATCH] Drag selection: whole zones of the current layout
 -      );
 -    }
 -    return [true, results];
-+  _lumaDropPieces() {
++  _SunoDropPieces() {
 +    const kept = [];
 +    this._previews.forEach((preview) => {
 +      if (preview.canRestore) {
@@ -259,7 +259,7 @@ Subject: [PATCH] Drag selection: whole zones of the current layout
 -      const ws = global.workspaceManager.get_workspace_by_index(i);
 -      if (!ws) continue;
 -      const innerGaps = buildMargin(Settings.get_inner_gaps());
--      const outerGaps = lumaOuterGaps(monitor.index);
+-      const outerGaps = SunoOuterGaps(monitor.index);
 -      const layout = GlobalState.get().getSelectedLayoutOfMonitor(
 -        monitor.index,
 -        ws.index()
@@ -276,10 +276,10 @@ Subject: [PATCH] Drag selection: whole zones of the current layout
 -      );
 -    }
 +    for (let i = 0; i < global.workspaceManager.get_n_workspaces(); i++)
-+      this._lumaLayoutFor(global.workspaceManager.get_workspace_by_index(i));
++      this._SunoLayoutFor(global.workspaceManager.get_workspace_by_index(i));
      this._tilingSuggestionsLayout = new TilingLayoutWithSuggestions(
        buildMargin(Settings.get_inner_gaps()),
-       lumaOuterGaps(monitor.index),
+       SunoOuterGaps(monitor.index),
 @@ -194,28 +175,12 @@ class TilingManager {
      this._signals.connect(
        Settings,
@@ -293,7 +293,7 @@ Subject: [PATCH] Drag selection: whole zones of the current layout
 -        );
 -        this._workspaceTilingLayout.get(ws)?.relayout({ layout });
 -      }
-+      () => this._lumaSyncLayouts()
++      () => this._SunoSyncLayouts()
      );
      this._signals.connect(
        GlobalState.get(),
@@ -307,7 +307,7 @@ Subject: [PATCH] Drag selection: whole zones of the current layout
 -        );
 -        this._workspaceTilingLayout.get(ws)?.relayout({ layout });
 -      }
-+      () => this._lumaSyncLayouts()
++      () => this._SunoSyncLayouts()
      );
      this._signals.connect(Settings, Settings.KEY_INNER_GAPS, () => {
        const innerGaps = buildMargin(Settings.get_inner_gaps());
@@ -324,7 +324,7 @@ Subject: [PATCH] Drag selection: whole zones of the current layout
 -          ws.index()
 -        );
 -        const innerGaps = buildMargin(Settings.get_inner_gaps());
--        const outerGaps = lumaOuterGaps(this._monitor.index);
+-        const outerGaps = SunoOuterGaps(this._monitor.index);
 -        this._debug("created new tiling layout for active workspace");
 -        this._workspaceTilingLayout.set(
 -          ws,
@@ -337,12 +337,12 @@ Subject: [PATCH] Drag selection: whole zones of the current layout
 -          )
 -        );
 -      }
-+      () => this._lumaLayoutFor(global.workspaceManager.get_active_workspace())
++      () => this._SunoLayoutFor(global.workspaceManager.get_active_workspace())
 +    );
 +    this._signals.connect(
 +      global.workspaceManager,
 +      "workspaces-reordered",
-+      () => this._lumaSyncLayouts()
++      () => this._SunoSyncLayouts()
      );
      this._signals.connect(
        global.workspaceManager,
@@ -351,7 +351,7 @@ Subject: [PATCH] Drag selection: whole zones of the current layout
      if (spanFlag && isMaximized) return false;
      const currentWs = window.get_workspace();
 -    const tilingLayout = this._workspaceTilingLayout.get(currentWs);
-+    const tilingLayout = this._lumaLayoutFor(currentWs);
++    const tilingLayout = this._SunoLayoutFor(currentWs);
      if (!tilingLayout) return false;
      const windowRectCopy = window.get_frame_rect().copy();
      const extWin = window;
@@ -359,31 +359,31 @@ Subject: [PATCH] Drag selection: whole zones of the current layout
        this._movingWindowTimerId = null;
      }
      this._signals.disconnect();
-+    this._lumaDragSignals?.disconnect();
-+    this._lumaDragSignals = null;
++    this._SunoDragSignals?.disconnect();
++    this._SunoDragSignals = null;
      this._isGrabbingWindow = false;
      this._snapAssistingInfo.update(void 0);
      this._edgeTilingManager.abortEdgeTiling();
 @@ -553,7 +504,7 @@ class TilingManager {
          continue;
-       if (window.windowType !== Meta.WindowType.NORMAL || window._lumaReflowKey === key)
+       if (window.windowType !== Meta.WindowType.NORMAL || window._SunoReflowKey === key)
          continue;
 -      const layout = this._workspaceTilingLayout.get(window.get_workspace());
-+      const layout = this._lumaLayoutFor(window.get_workspace());
++      const layout = this._SunoLayoutFor(window.get_workspace());
        if (!layout)
          continue;
-       window._lumaReflowMoves = (window._lumaReflowMoves ?? []).filter((t) => now - t < LUMA_REFLOW_WINDOW);
+       window._SunoReflowMoves = (window._SunoReflowMoves ?? []).filter((t) => now - t < SUNO_REFLOW_WINDOW);
 @@ -669,10 +620,51 @@ class TilingManager {
-       window._lumaTileGoneId = 0;
+       window._SunoTileGoneId = 0;
      }
    }
-+  // Luma: the layout this monitor shows on `ws`, looked up from the current
++  // Suno: the layout this monitor shows on `ws`, looked up from the current
 +  // selection every time it is used. Every workspace has its own drawn
 +  // layout; upstream only redrew the active workspace's when the selection or
 +  // the layouts changed, so the other workspaces kept dragging into the
 +  // layout they had when the Shell started (or a monitor's former layout
 +  // after the monitors changed).
-+  _lumaLayoutFor(ws) {
++  _SunoLayoutFor(ws) {
 +    if (!ws) return void 0;
 +    const layout = GlobalState.get().getSelectedLayoutOfMonitor(this._monitor.index, ws.index());
 +    let tilingLayout = this._workspaceTilingLayout.get(ws);
@@ -391,38 +391,38 @@ Subject: [PATCH] Drag selection: whole zones of the current layout
 +      tilingLayout = new TilingLayout(
 +        layout,
 +        buildMargin(Settings.get_inner_gaps()),
-+        lumaOuterGaps(this._monitor.index),
++        SunoOuterGaps(this._monitor.index),
 +        this._workArea,
 +        this._enableScaling ? getMonitorScalingFactor(this._monitor.index) : void 0
 +      );
 +      this._workspaceTilingLayout.set(ws, tilingLayout);
 +    } else if (tilingLayout.layout !== layout && tilingLayout.relayout({ layout })) {
 +      // The zones under a drag changed: drop the selection made in the old ones.
-+      this._lumaResetDragState();
++      this._SunoResetDragState();
 +    }
 +    return tilingLayout;
 +  }
 +
-+  _lumaSyncLayouts() {
++  _SunoSyncLayouts() {
 +    for (const ws of [...this._workspaceTilingLayout.keys()])
-+      this._lumaLayoutFor(ws);
++      this._SunoLayoutFor(ws);
 +  }
 +
 +  // Forget everything a drag picked on this monitor: the next motion picks
 +  // again from the zones under the pointer.
-+  _lumaResetDragState() {
-+    this._lumaSelection = null;
-+    this._lumaSpanAnchor = null;
++  _SunoResetDragState() {
++    this._SunoSelection = null;
++    this._SunoSpanAnchor = null;
 +    this._lastCursorPos = null;
 +    this._wasTilingSystemActivated = false;
 +    this._wasSpanMultipleTilesActivated = false;
 +  }
 +
    // Preview drags keep the real window and its assignment unchanged until drop.
-   lumaPreviewWindowAt(window, x, y) {
+   SunoPreviewWindowAt(window, x, y) {
      if (this._isGrabbingWindow || !window.get_compositor_private()) return null;
 -    const layout = this._workspaceTilingLayout.get(window.get_workspace());
-+    const layout = this._lumaLayoutFor(window.get_workspace());
++    const layout = this._SunoLayoutFor(window.get_workspace());
      if (!layout) return null;
      if (!layout.showing) layout.openAbove(window);
      const rect = layout.getTileBelow({ x, y }, true);
@@ -432,31 +432,31 @@ Subject: [PATCH] Drag selection: whole zones of the current layout
      }
 -    layout.hoverTilesInRect(rect, true);
 -    this.openSelectionTilePreview(rect, true, true, window);
--    return this._lumaCellTile(rect);
+-    return this._SunoCellTile(rect);
 +    const selection = layout.hoverTilesInRect(rect);
 +    this.openSelectionTilePreview(selection, true, true, window);
-+    return this._lumaCellTile(selection);
++    return this._SunoCellTile(selection);
    }
-   lumaCloseWindowPreview(window) {
+   SunoCloseWindowPreview(window) {
 -    this._workspaceTilingLayout.get(window.get_workspace())?.close();
-+    this._lumaLayoutFor(window.get_workspace())?.close();
++    this._SunoLayoutFor(window.get_workspace())?.close();
      this._selectedTilesPreview.close(true);
    }
  
    _onWindowGrabBegin(window, grabOp) {
-     this._lumaReleaseTile(window);
+     this._SunoReleaseTile(window);
      if (this._isGrabbingWindow) return;
-+    // Luma: a drag starts with nothing picked, whatever an earlier drag or
++    // Suno: a drag starts with nothing picked, whatever an earlier drag or
 +    // preview left behind, and from the real pointer: a touch seen before
 +    // this drag must not steer it (the touch pointer is shared and its last
 +    // position used to survive every drag).
-+    this._lumaResetDragState();
-+    this._lumaDragSignals?.disconnect();
-+    this._lumaDragSignals = new SignalHandling();
++    this._SunoResetDragState();
++    this._SunoDragSignals?.disconnect();
++    this._SunoDragSignals = new SignalHandling();
 +    TouchPointer.get().reset();
      TouchPointer.get().updateWindowPosition(window.get_frame_rect());
 -    this._signals.connect(
-+    this._lumaDragSignals.connect(
++    this._SunoDragSignals.connect(
        global.stage,
        "touch-event",
        (_source, event) => {
@@ -465,7 +465,7 @@ Subject: [PATCH] Drag selection: whole zones of the current layout
        }
      );
 -    this._signals.connect(
-+    this._lumaDragSignals.connect(
++    this._SunoDragSignals.connect(
        global.stage,
        "captured-event",
        (_source, event) => {
@@ -474,7 +474,7 @@ Subject: [PATCH] Drag selection: whole zones of the current layout
      );
      if (Settings.ENABLE_BLUR_SNAP_ASSISTANT || Settings.ENABLE_BLUR_SELECTED_TILEPREVIEW) {
 -      this._signals.connect(window, "position-changed", () => {
-+      this._lumaDragSignals.connect(window, "position-changed", () => {
++      this._SunoDragSignals.connect(window, "position-changed", () => {
          if (Settings.ENABLE_BLUR_SELECTED_TILEPREVIEW) {
            this._selectedTilesPreview.get_effect("blur")?.queue_repaint();
          }
@@ -483,7 +483,7 @@ Subject: [PATCH] Drag selection: whole zones of the current layout
      }
      const currentWs = window.get_workspace();
 -    const tilingLayout = this._workspaceTilingLayout.get(currentWs);
-+    const tilingLayout = this._lumaLayoutFor(currentWs);
++    const tilingLayout = this._SunoLayoutFor(currentWs);
      if (!tilingLayout) return GLib.SOURCE_REMOVE;
      this._edgeTilingManager.workspaceIndex = currentWs.index();
      if (!window.allows_resize() || !window.allows_move() || !this._isPointerInsideThisMonitor(window)) {
@@ -491,18 +491,18 @@ Subject: [PATCH] Drag selection: whole zones of the current layout
 -      // the same coordinates must rebuild it, even without modifier changes.
 -      this._lastCursorPos = null;
 -      this._wasTilingSystemActivated = false;
-+      // Luma: away from this monitor nothing of it is shown or picked; coming
++      // Suno: away from this monitor nothing of it is shown or picked; coming
 +      // back starts from the zones under the pointer.
-+      this._lumaResetDragState();
++      this._SunoResetDragState();
        tilingLayout.close();
        this._selectedTilesPreview.close(true);
        this._snapAssist.close(true);
 @@ -840,6 +839,8 @@ class TilingManager {
-     this._lumaSecondaryHeld = lumaSecondaryHeld;
-     this._lumaControlHeld = lumaControlHeld;
-     if (this._lumaTilingSuspended) {
-+      this._lumaSelection = null;
-+      this._lumaSpanAnchor = null;
+     this._SunoSecondaryHeld = SunoSecondaryHeld;
+     this._SunoControlHeld = SunoControlHeld;
+     if (this._SunoTilingSuspended) {
++      this._SunoSelection = null;
++      this._SunoSpanAnchor = null;
        tilingLayout.close();
        this._selectedTilesPreview.close(true);
        this._snapAssist.close(true);
@@ -510,8 +510,8 @@ Subject: [PATCH] Drag selection: whole zones of the current layout
      this._wasTilingSystemActivated = showTilingSystem;
      this._wasSpanMultipleTilesActivated = isSpanMultiTilesActivated;
      if (!showTilingSystem) {
-+      this._lumaSelection = null;
-+      this._lumaSpanAnchor = null;
++      this._SunoSelection = null;
++      this._SunoSpanAnchor = null;
        if (tilingLayout.showing) {
          tilingLayout.close();
          this._selectedTilesPreview.close(true);
@@ -519,19 +519,19 @@ Subject: [PATCH] Drag selection: whole zones of the current layout
      if (this._snapAssistingInfo.isSnapAssisting) {
        this._selectedTilesPreview.close(true);
        this._snapAssistingInfo.update(void 0);
-+      this._lumaSelection = null;
++      this._SunoSelection = null;
      }
 -    if (!changedSpanMultipleTiles && isPointInsideRect(currPointerPos, this._selectedTilesPreview.rect))
-+    // Luma: the selection is whole zones of this monitor's layout, in the
++    // Suno: the selection is whole zones of this monitor's layout, in the
 +    // layout's own coordinates: the zone under the pointer or, while
 +    // spanning, every zone in the box from the zone spanning started on to
 +    // it. Over a gap between zones the selection stays as it was.
 +    const zone = tilingLayout.getTileBelow(currPointerPos);
 +    if (!zone) return GLib.SOURCE_CONTINUE;
-+    if (!allowSpanMultipleTiles || !this._lumaSpanAnchor)
-+      this._lumaSpanAnchor = zone;
-+    const wanted = allowSpanMultipleTiles ? this._lumaSpanAnchor.union(zone) : zone;
-+    if (this._lumaSelection && this._selectedTilesPreview.showing && tilingLayout.lumaWholeZones(wanted).equal(this._lumaSelection))
++    if (!allowSpanMultipleTiles || !this._SunoSpanAnchor)
++      this._SunoSpanAnchor = zone;
++    const wanted = allowSpanMultipleTiles ? this._SunoSpanAnchor.union(zone) : zone;
++    if (this._SunoSelection && this._selectedTilesPreview.showing && tilingLayout.SunoWholeZones(wanted).equal(this._SunoSelection))
        return GLib.SOURCE_CONTINUE;
 -    let selectionRect = tilingLayout.getTileBelow(
 -      currPointerPos,
@@ -546,8 +546,8 @@ Subject: [PATCH] Drag selection: whole zones of the current layout
 -    }
 -    tilingLayout.hoverTilesInRect(selectionRect, !allowSpanMultipleTiles);
 -    this.openSelectionTilePreview(selectionRect, true, true, window);
-+    this._lumaSelection = tilingLayout.hoverTilesInRect(wanted);
-+    this.openSelectionTilePreview(this._lumaSelection, true, true, window);
++    this._SunoSelection = tilingLayout.hoverTilesInRect(wanted);
++    this.openSelectionTilePreview(this._SunoSelection, true, true, window);
      return GLib.SOURCE_CONTINUE;
    }
  
@@ -555,12 +555,12 @@ Subject: [PATCH] Drag selection: whole zones of the current layout
      this._isGrabbingWindow = false;
      this._grabStartPosition = null;
 -    this._signals.disconnect(window);
-+    this._lumaDragSignals?.disconnect();
-+    this._lumaDragSignals = null;
++    this._SunoDragSignals?.disconnect();
++    this._SunoDragSignals = null;
      TouchPointer.get().reset();
      const currentWs = window.get_workspace();
 -    const tilingLayout = this._workspaceTilingLayout.get(currentWs);
-+    const tilingLayout = this._lumaLayoutFor(currentWs);
++    const tilingLayout = this._SunoLayoutFor(currentWs);
      if (tilingLayout) tilingLayout.close();
      const desiredWindowRect = buildRectangle({
        x: this._selectedTilesPreview.innerX,
@@ -569,16 +569,16 @@ Subject: [PATCH] Drag selection: whole zones of the current layout
      this._selectedTilesPreview.close(true);
      this._snapAssist.close(true);
 -    this._lastCursorPos = null;
-+    this._lumaResetDragState();
-     if (this._lumaTilingSuspended) {
-       this._lumaTilingSuspended = false;
++    this._SunoResetDragState();
+     if (this._SunoTilingSuspended) {
+       this._SunoTilingSuspended = false;
        this._snapAssistingInfo.update(void 0);
 @@ -1064,7 +1067,7 @@ class TilingManager {
      }
-     const scaledRect = this._lumaInCells(TileUtils.apply_props(tile, this._lumaCellArea));
+     const scaledRect = this._SunoInCells(TileUtils.apply_props(tile, this._SunoCellArea));
      const currentWs = global.workspaceManager.get_active_workspace();
 -    const tilingLayout = this._workspaceTilingLayout.get(currentWs);
-+    const tilingLayout = this._lumaLayoutFor(currentWs);
++    const tilingLayout = this._SunoLayoutFor(currentWs);
      if (!tilingLayout) return;
      this._selectedTilesPreview.get_parent()?.set_child_above_sibling(this._selectedTilesPreview, null);
      this.openSelectionTilePreview(scaledRect, false, true, void 0);
@@ -587,16 +587,16 @@ Subject: [PATCH] Drag selection: whole zones of the current layout
    openSelectionTilePreview(position, isAboveLayout, ease, window) {
      const currentWs = global.workspaceManager.get_active_workspace();
 -    const tilingLayout = this._workspaceTilingLayout.get(currentWs);
-+    const tilingLayout = this._lumaLayoutFor(currentWs);
++    const tilingLayout = this._SunoLayoutFor(currentWs);
      if (!tilingLayout) return;
-     // Luma: a drawn tile reaches into the outer gap at the screen's edges;
+     // Suno: a drawn tile reaches into the outer gap at the screen's edges;
      // the preview shows the cell itself, so what it shows is where the
 @@ -1166,7 +1169,7 @@ class TilingManager {
  
    _easeWindowRectFromTile(tile, window, skipAnimation = false) {
      const currentWs = window.get_workspace();
 -    const tilingLayout = this._workspaceTilingLayout.get(currentWs);
-+    const tilingLayout = this._lumaLayoutFor(currentWs);
++    const tilingLayout = this._SunoLayoutFor(currentWs);
      if (!tilingLayout) return;
-     const cellArea = this._lumaCellArea;
-     const scaledRect = this._lumaInCells(TileUtils.apply_props(tile, cellArea), cellArea);
+     const cellArea = this._SunoCellArea;
+     const scaledRect = this._SunoInCells(TileUtils.apply_props(tile, cellArea), cellArea);

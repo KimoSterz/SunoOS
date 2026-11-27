@@ -4445,7 +4445,7 @@ index 0000000000000000000000000000000000000000..524a093bc642c96614762a1ab044f6ec
 +  input_files_base_dir = rebase_path(".", "//")
 +
 +  input_files = [
-+    "browser-tools-luma.js",
++    "browser-tools-Suno.js",
 +    "cast-capture.html",
 +    "cast-capture.js",
 +    "desktop-caption-controls.css",
@@ -4458,8 +4458,8 @@ index 0000000000000000000000000000000000000000..524a093bc642c96614762a1ab044f6ec
 +    "library.html",
 +    "little.html",
 +    "little.js",
-+    "luma-linux.css",
-+    "luma-tokens.css",
++    "Suno-linux.css",
++    "Suno-tokens.css",
 +    "mobile-simulator.css",
 +    "mobile-simulator.html",
 +    "mobile-simulator.js",
@@ -4468,9 +4468,9 @@ index 0000000000000000000000000000000000000000..524a093bc642c96614762a1ab044f6ec
 +    "pdf-viewer.html",
 +    "pdf-viewer.js",
 +    "settings.html",
-+    "settings-luma.css",
-+    "settings-luma-tokens.css",
-+    "settings-luma.js",
++    "settings-Suno.css",
++    "settings-Suno-tokens.css",
++    "settings-Suno.js",
 +    "sidebar-hover-card.js",
 +    "sidebar-reorder.js",
 +    "sidebar.css",
@@ -4497,16 +4497,16 @@ index 0000000000000000000000000000000000000000..524a093bc642c96614762a1ab044f6ec
 +  ]
 +  output_dir = "$root_gen_dir/chrome"
 +}
-diff --git a/chrome/browser/resources/viola/browser-tools-luma.js b/chrome/browser/resources/viola/browser-tools-luma.js
+diff --git a/chrome/browser/resources/viola/browser-tools-Suno.js b/chrome/browser/resources/viola/browser-tools-Suno.js
 new file mode 100644
 index 0000000000000000000000000000000000000000..1893c30689f3b7dc874aa1d515bfcdf8071da40e
 --- /dev/null
-+++ b/chrome/browser/resources/viola/browser-tools-luma.js
++++ b/chrome/browser/resources/viola/browser-tools-Suno.js
 @@ -0,0 +1,83 @@
 +// Generated resource template. Preserve Chromium controls, routes and labels.
 +(() => {
-+  if (window.__violaLumaToolsRefresh) { window.__violaLumaToolsRefresh(); return true; }
-+  const palettes = {"light":{"luma_card":"#ffffff","luma_chrome":"#f2f3f5","luma_chrome_secondary":"#e8eaee","luma_hairline":"rgba(17, 24, 39, 0.10)","luma_window":"#f1f2f3","luma_content":"#fbfbfa","luma_island":"#ffffff","luma_menu":"#f6f7f8","luma_menu_raised":"#ffffff","luma_menu_border":"rgba(35, 44, 52, 0.09)","luma_menu_shadow":"#0c1015","luma_ink":"#283038","luma_application_ink":"#283038","luma_muted":"#757e87","luma_faint":"#9da5ad","luma_border":"rgba(39, 48, 56, 0.095)","luma_border_faint":"rgba(42, 48, 56, 0.08)","luma_island_shadow":"rgba(25, 27, 31, 0.07)","luma_passive":"rgba(39, 48, 56, 0.04)","luma_hover":"rgba(39, 48, 56, 0.06)","luma_pressed":"rgba(39, 48, 56, 0.105)","luma_accent":"#527fae","luma_blue":"#527fae","luma_green":"#3b8967","luma_violet":"#865f9f","luma_amber":"#b17a3c","luma_destructive":"#b75048","luma_primary":"#527da9","luma_primary_ink":"#ffffff","luma_primary_hover":"#466f99","luma_line":"rgba(39, 48, 56, 0.095)","luma_fill":"rgba(39, 48, 56, 0.04)","luma_selected":"rgba(39, 48, 56, 0.105)","luma_line_faint":"rgba(42, 48, 56, 0.08)"},"dark":{"luma_window":"#21252b","luma_content":"#2a2e34","luma_island":"rgba(255, 255, 255, 0.035)","luma_ink":"#e4e8ea","luma_menu":"#252a30","luma_menu_raised":"#30363d","luma_menu_border":"rgba(255, 255, 255, 0.075)","luma_menu_shadow":"#0c1015","luma_muted":"#8b949c","luma_faint":"#69727b","luma_border":"rgba(255, 255, 255, 0.08)","luma_border_faint":"rgba(255, 255, 255, 0.065)","luma_island_shadow":"rgba(0, 0, 0, 0.22)","luma_passive":"rgba(255, 255, 255, 0.038)","luma_hover":"rgba(255, 255, 255, 0.06)","luma_pressed":"rgba(255, 255, 255, 0.108)","luma_accent":"#80a8d2","luma_blue":"#80a8d2","luma_green":"#65b58c","luma_violet":"#b58bd0","luma_amber":"#d19447","luma_destructive":"#e97870","luma_primary":"#30363c","luma_primary_ink":"#ffffff","luma_primary_hover":"#3a4149","luma_line":"rgba(255, 255, 255, 0.08)","luma_fill":"rgba(255, 255, 255, 0.038)","luma_selected":"rgba(255, 255, 255, 0.108)","luma_line_faint":"rgba(255, 255, 255, 0.065)"}};
++  if (window.__violaSunoToolsRefresh) { window.__violaSunoToolsRefresh(); return true; }
++  const palettes = {"light":{"Suno_card":"#ffffff","Suno_chrome":"#f2f3f5","Suno_chrome_secondary":"#e8eaee","Suno_hairline":"rgba(17, 24, 39, 0.10)","Suno_window":"#f1f2f3","Suno_content":"#fbfbfa","Suno_island":"#ffffff","Suno_menu":"#f6f7f8","Suno_menu_raised":"#ffffff","Suno_menu_border":"rgba(35, 44, 52, 0.09)","Suno_menu_shadow":"#0c1015","Suno_ink":"#283038","Suno_application_ink":"#283038","Suno_muted":"#757e87","Suno_faint":"#9da5ad","Suno_border":"rgba(39, 48, 56, 0.095)","Suno_border_faint":"rgba(42, 48, 56, 0.08)","Suno_island_shadow":"rgba(25, 27, 31, 0.07)","Suno_passive":"rgba(39, 48, 56, 0.04)","Suno_hover":"rgba(39, 48, 56, 0.06)","Suno_pressed":"rgba(39, 48, 56, 0.105)","Suno_accent":"#527fae","Suno_blue":"#527fae","Suno_green":"#3b8967","Suno_violet":"#865f9f","Suno_amber":"#b17a3c","Suno_destructive":"#b75048","Suno_primary":"#527da9","Suno_primary_ink":"#ffffff","Suno_primary_hover":"#466f99","Suno_line":"rgba(39, 48, 56, 0.095)","Suno_fill":"rgba(39, 48, 56, 0.04)","Suno_selected":"rgba(39, 48, 56, 0.105)","Suno_line_faint":"rgba(42, 48, 56, 0.08)"},"dark":{"Suno_window":"#21252b","Suno_content":"#2a2e34","Suno_island":"rgba(255, 255, 255, 0.035)","Suno_ink":"#e4e8ea","Suno_menu":"#252a30","Suno_menu_raised":"#30363d","Suno_menu_border":"rgba(255, 255, 255, 0.075)","Suno_menu_shadow":"#0c1015","Suno_muted":"#8b949c","Suno_faint":"#69727b","Suno_border":"rgba(255, 255, 255, 0.08)","Suno_border_faint":"rgba(255, 255, 255, 0.065)","Suno_island_shadow":"rgba(0, 0, 0, 0.22)","Suno_passive":"rgba(255, 255, 255, 0.038)","Suno_hover":"rgba(255, 255, 255, 0.06)","Suno_pressed":"rgba(255, 255, 255, 0.108)","Suno_accent":"#80a8d2","Suno_blue":"#80a8d2","Suno_green":"#65b58c","Suno_violet":"#b58bd0","Suno_amber":"#d19447","Suno_destructive":"#e97870","Suno_primary":"#30363c","Suno_primary_ink":"#ffffff","Suno_primary_hover":"#3a4149","Suno_line":"rgba(255, 255, 255, 0.08)","Suno_fill":"rgba(255, 255, 255, 0.038)","Suno_selected":"rgba(255, 255, 255, 0.108)","Suno_line_faint":"rgba(255, 255, 255, 0.065)"}};
 +  const scheme = matchMedia('(prefers-color-scheme: dark)');
 +  const styles = new WeakMap();
 +  const contrast = matchMedia('(forced-colors: active)');
@@ -4514,48 +4514,48 @@ index 0000000000000000000000000000000000000000..1893c30689f3b7dc874aa1d515bfcdf8
 +    if (contrast.matches) return ':host,body,input,button,select,textarea{font-family:Figtree,sans-serif!important}';
 +    const p = palettes[scheme.matches ? 'dark' : 'light'];
 +    const roles = {
-+      '--cr-primary-text-color':p.luma_ink,
-+      '--cr-secondary-text-color':p.luma_muted,
-+      '--cr-link-color':p.luma_accent,
-+      '--cr-focus-outline-color':p.luma_accent,
-+      '--cr-card-background-color':p.luma_menu_raised,
++      '--cr-primary-text-color':p.Suno_ink,
++      '--cr-secondary-text-color':p.Suno_muted,
++      '--cr-link-color':p.Suno_accent,
++      '--cr-focus-outline-color':p.Suno_accent,
++      '--cr-card-background-color':p.Suno_menu_raised,
 +      '--cr-card-border-radius':'10px',
-+      '--cr-card-shadow':`0 1px 2px ${p.luma_island_shadow}`,
-+      '--cr-toolbar-background-color':p.luma_window,
-+      '--cr-separator-color':p.luma_border,
-+      '--md-sys-color-primary':p.luma_accent,
-+      '--md-sys-color-on-primary':p.luma_primary_ink,
-+      '--md-sys-color-surface':p.luma_content,
-+      '--md-sys-color-on-surface':p.luma_ink,
-+      '--md-sys-color-on-surface-variant':p.luma_muted,
-+      '--md-sys-color-outline':p.luma_border,
-+      '--md-sys-color-outline-variant':p.luma_border,
-+      '--md-sys-color-surface-container':p.luma_menu_raised,
-+      '--md-sys-color-surface-container-low':p.luma_content,
-+      '--md-sys-color-surface-container-high':p.luma_window,
-+      '--cr-fallback-color-primary':p.luma_accent,
-+      '--cr-fallback-color-on-primary':p.luma_primary_ink,
-+      '--cr-fallback-color-surface':p.luma_content,
-+      '--cr-fallback-color-surface1':p.luma_menu_raised,
-+      '--cr-fallback-color-surface2':p.luma_window,
-+      '--cr-fallback-color-on-surface':p.luma_ink,
-+      '--cr-fallback-color-on-surface-variant':p.luma_muted,
-+      '--cr-dialog-background-color':p.luma_menu_raised,
++      '--cr-card-shadow':`0 1px 2px ${p.Suno_island_shadow}`,
++      '--cr-toolbar-background-color':p.Suno_window,
++      '--cr-separator-color':p.Suno_border,
++      '--md-sys-color-primary':p.Suno_accent,
++      '--md-sys-color-on-primary':p.Suno_primary_ink,
++      '--md-sys-color-surface':p.Suno_content,
++      '--md-sys-color-on-surface':p.Suno_ink,
++      '--md-sys-color-on-surface-variant':p.Suno_muted,
++      '--md-sys-color-outline':p.Suno_border,
++      '--md-sys-color-outline-variant':p.Suno_border,
++      '--md-sys-color-surface-container':p.Suno_menu_raised,
++      '--md-sys-color-surface-container-low':p.Suno_content,
++      '--md-sys-color-surface-container-high':p.Suno_window,
++      '--cr-fallback-color-primary':p.Suno_accent,
++      '--cr-fallback-color-on-primary':p.Suno_primary_ink,
++      '--cr-fallback-color-surface':p.Suno_content,
++      '--cr-fallback-color-surface1':p.Suno_menu_raised,
++      '--cr-fallback-color-surface2':p.Suno_window,
++      '--cr-fallback-color-on-surface':p.Suno_ink,
++      '--cr-fallback-color-on-surface-variant':p.Suno_muted,
++      '--cr-dialog-background-color':p.Suno_menu_raised,
 +      '--cr-dialog-border-radius':'12px',
-+      '--color-webui-dialog-background':p.luma_content,
-+      '--color-webui-dialog-container-background':p.luma_menu_raised,
++      '--color-webui-dialog-background':p.Suno_content,
++      '--color-webui-dialog-container-background':p.Suno_menu_raised,
 +    };
 +    return `:host,:root{${Object.entries(roles).map(([key,value])=>`${key}:${value}!important`).join(';')}}
 +      :host,body,input,button,select,textarea{font-family:Figtree,sans-serif!important}
-+      body{background:${p.luma_content}!important;color:${p.luma_ink}!important}
-+      :focus-visible{outline-color:${p.luma_accent}!important}`;
++      body{background:${p.Suno_content}!important;color:${p.Suno_ink}!important}
++      :focus-visible{outline-color:${p.Suno_accent}!important}`;
 +  };
 +  function apply(root) {
 +    if (!root?.querySelectorAll) return;
 +    let style = styles.get(root);
 +    if (!style) {
 +      style = document.createElement('style');
-+      style.id = 'viola-luma-browser-tool-theme';
++      style.id = 'viola-Suno-browser-tool-theme';
 +      styles.set(root,style);
 +      root.append(style);
 +      new MutationObserver(records => {
@@ -4580,7 +4580,7 @@ index 0000000000000000000000000000000000000000..1893c30689f3b7dc874aa1d515bfcdf8
 +    if (init.mode === 'open') queueMicrotask(()=>apply(root));
 +    return root;
 +  };
-+  window.__violaLumaToolsRefresh = refresh;
++  window.__violaSunoToolsRefresh = refresh;
 +  scheme.addEventListener('change',refresh);
 +  contrast.addEventListener('change',refresh);
 +  refresh();
@@ -5800,15 +5800,15 @@ index 0000000000000000000000000000000000000000..41c2e0573f62bcc611b4abcd31d37467
 +  $('#adopt').addEventListener('click', () => vela.send('little:adopt'));
 +  vela.send('ui:ready');
 +})();
-diff --git a/chrome/browser/resources/viola/luma-linux.css b/chrome/browser/resources/viola/luma-linux.css
+diff --git a/chrome/browser/resources/viola/Suno-linux.css b/chrome/browser/resources/viola/Suno-linux.css
 new file mode 100644
 index 0000000000000000000000000000000000000000..2c2e1dea5f38bf8f2e9bd1382dce0d065005be4e
 --- /dev/null
-+++ b/chrome/browser/resources/viola/luma-linux.css
++++ b/chrome/browser/resources/viola/Suno-linux.css
 @@ -0,0 +1,347 @@
 +/* Native Chromium Linux composition. Shared measurements and colors come
-+   only from luma-tokens.css; this file assigns Viola-specific semantic roles. */
-+#luma-page-toolbar,
++   only from Suno-tokens.css; this file assigns Viola-specific semantic roles. */
++#Suno-page-toolbar,
 +#app-identity,
 +#btn-sidebar-toggle,
 +#btn-new-tab,
@@ -5817,9 +5817,9 @@ index 0000000000000000000000000000000000000000..2c2e1dea5f38bf8f2e9bd1382dce0d06
 +body.platform-linux.native-chromium {
 +  --tab-h: 34px;
 +  --tab-gap: 2px;
-+  --tab-radius: var(--luma-radius-island);
++  --tab-radius: var(--Suno-radius-island);
 +  --ink: var(--f-ink) !important;
-+  --accent: var(--luma-accent) !important;
++  --accent: var(--Suno-accent) !important;
 +  --tint: var(--f-hover);
 +  --tint-strong: var(--f-sel);
 +  --tint-soft: var(--f-fill);
@@ -5827,9 +5827,9 @@ index 0000000000000000000000000000000000000000..2c2e1dea5f38bf8f2e9bd1382dce0d06
 +  --workspace-menu-border: var(--f-line);
 +  color: var(--f-ink);
 +  background: var(--f-window);
-+  font-family: var(--luma-font-family);
-+  font-size: var(--luma-font-body-size);
-+  font-weight: var(--luma-font-body-weight);
++  font-family: var(--Suno-font-family);
++  font-size: var(--Suno-font-body-size);
++  font-weight: var(--Suno-font-body-weight);
 +}
 +
 +body.platform-linux.native-chromium.overlay-mode,
@@ -5838,24 +5838,24 @@ index 0000000000000000000000000000000000000000..2c2e1dea5f38bf8f2e9bd1382dce0d06
 +  background: var(--f-window);
 +}
 +
-+body.platform-linux.native-chromium #luma-page-toolbar {
++body.platform-linux.native-chromium #Suno-page-toolbar {
 +  position: fixed;
 +  z-index: 40;
 +  display: flex;
 +  align-items: center;
-+  gap: var(--luma-space-1);
++  gap: var(--Suno-space-1);
 +  top: 42px;
-+  right: var(--luma-island-gap);
++  right: var(--Suno-island-gap);
 +  bottom: auto;
-+  left: calc(var(--sw) + var(--luma-island-gap));
++  left: calc(var(--sw) + var(--Suno-island-gap));
 +  height: 40px;
 +  min-width: 0;
 +  padding: 5px 7px;
 +  border: 1px solid var(--f-line);
 +  border-bottom-color: var(--f-line);
-+  border-radius: var(--luma-radius-island) var(--luma-radius-island) 0 0;
++  border-radius: var(--Suno-radius-island) var(--Suno-radius-island) 0 0;
 +  background: var(--f-island);
-+  box-shadow: 0 1px 2px var(--luma-shadow);
++  box-shadow: 0 1px 2px var(--Suno-shadow);
 +  pointer-events: auto;
 +  -webkit-app-region: drag;
 +}
@@ -5864,11 +5864,11 @@ index 0000000000000000000000000000000000000000..2c2e1dea5f38bf8f2e9bd1382dce0d06
 +body.platform-linux.native-chromium #sidebar {
 +  position: fixed;
 +  top: 42px;
-+  bottom: var(--luma-island-gap);
++  bottom: var(--Suno-island-gap);
 +  left: 0;
 +  width: var(--sw);
 +  height: auto;
-+  padding: var(--luma-space-6) var(--luma-space-5) 0;
++  padding: var(--Suno-space-6) var(--Suno-space-5) 0;
 +  color: var(--f-ink);
 +  background: transparent;
 +}
@@ -5889,22 +5889,22 @@ index 0000000000000000000000000000000000000000..2c2e1dea5f38bf8f2e9bd1382dce0d06
 +  top: 6px;
 +  left: 12px;
 +  height: 30px;
-+  padding: 0 var(--luma-space-3) 0 var(--luma-space-1);
++  padding: 0 var(--Suno-space-3) 0 var(--Suno-space-1);
 +  border: 0;
-+  border-radius: var(--luma-radius-island);
++  border-radius: var(--Suno-radius-island);
 +  display: flex;
 +  align-items: center;
-+  gap: var(--luma-space-2);
++  gap: var(--Suno-space-2);
 +  color: var(--f-ink);
 +  background: transparent;
-+  font: var(--luma-font-label-weight) var(--luma-font-label-size)/1 var(--luma-font-family);
++  font: var(--Suno-font-label-weight) var(--Suno-font-label-size)/1 var(--Suno-font-family);
 +  -webkit-app-region: no-drag;
 +}
 +body.platform-linux.native-chromium #app-identity:hover { background: var(--f-hover); }
 +body.platform-linux.native-chromium #app-identity:active { background: var(--f-sel); }
 +body.platform-linux.native-chromium .app-identity-icon {
-+  width: var(--luma-icon-large);
-+  height: var(--luma-icon-large);
++  width: var(--Suno-icon-large);
++  height: var(--Suno-icon-large);
 +  border-radius: 7px;
 +  display: grid;
 +  place-items: center;
@@ -5913,7 +5913,7 @@ index 0000000000000000000000000000000000000000..2c2e1dea5f38bf8f2e9bd1382dce0d06
 +  box-shadow: inset 0 0 0 1px rgba(255,255,255,.35), 0 1px 2px rgba(17,24,39,.18);
 +}
 +body.platform-linux.native-chromium .app-identity-icon svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.15; }
-+body.platform-linux.native-chromium .app-identity-chevron { width: var(--luma-icon-small); height: var(--luma-icon-small); fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; opacity: .6; }
++body.platform-linux.native-chromium .app-identity-chevron { width: var(--Suno-icon-small); height: var(--Suno-icon-small); fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; opacity: .6; }
 +
 +body.platform-linux.native-chromium #desktop-caption-controls {
 +  top: 7px;
@@ -5927,28 +5927,28 @@ index 0000000000000000000000000000000000000000..2c2e1dea5f38bf8f2e9bd1382dce0d06
 +body.platform-linux.native-chromium #desktop-caption-maximize { order: 2; }
 +body.platform-linux.native-chromium #desktop-caption-close { order: 3; }
 +body.platform-linux.native-chromium .desktop-caption {
-+  width: var(--luma-control-compact);
-+  height: var(--luma-control-compact);
++  width: var(--Suno-control-compact);
++  height: var(--Suno-control-compact);
 +  margin: 0;
-+  border-radius: var(--luma-radius-island);
++  border-radius: var(--Suno-radius-island);
 +}
 +body.platform-linux.native-chromium .desktop-caption:hover { background: var(--f-hover); }
 +body.platform-linux.native-chromium .desktop-caption:active { background: var(--f-sel); }
 +body.platform-linux.native-chromium #lights-spacer { display: none; }
 +
-+body.platform-linux.native-chromium #luma-page-toolbar > .icon-btn {
++body.platform-linux.native-chromium #Suno-page-toolbar > .icon-btn {
 +  position: relative;
 +  z-index: 62;
-+  flex: 0 0 var(--luma-control-compact);
++  flex: 0 0 var(--Suno-control-compact);
 +  pointer-events: auto;
-+  width: var(--luma-control-compact);
-+  height: var(--luma-control-compact);
-+  border-radius: var(--luma-radius-island);
++  width: var(--Suno-control-compact);
++  height: var(--Suno-control-compact);
++  border-radius: var(--Suno-radius-island);
 +  color: var(--f-muted);
 +  opacity: .68;
 +}
-+body.platform-linux.native-chromium #luma-page-toolbar > .icon-btn:hover { color: var(--f-ink); background: var(--f-hover); opacity: 1; }
-+body.platform-linux.native-chromium #luma-page-toolbar > .icon-btn:active { background: var(--f-sel); }
++body.platform-linux.native-chromium #Suno-page-toolbar > .icon-btn:hover { color: var(--f-ink); background: var(--f-hover); opacity: 1; }
++body.platform-linux.native-chromium #Suno-page-toolbar > .icon-btn:active { background: var(--f-sel); }
 +body.platform-linux.native-chromium #btn-sidebar-toggle,
 +body.platform-linux.native-chromium #btn-new-tab,
 +body.platform-linux.native-chromium #btn-settings .menu-mark { display: inline-flex; }
@@ -5962,10 +5962,10 @@ index 0000000000000000000000000000000000000000..2c2e1dea5f38bf8f2e9bd1382dce0d06
 +  right: auto;
 +  flex: 1 1 420px;
 +  min-width: 96px;
-+  height: var(--luma-control-compact);
++  height: var(--Suno-control-compact);
 +  max-width: 720px;
 +  margin: 0 auto;
-+  padding: 0 var(--luma-space-2) 0 var(--luma-space-4);
++  padding: 0 var(--Suno-space-2) 0 var(--Suno-space-4);
 +  border: 1px solid var(--f-line);
 +  border-radius: 999px;
 +  color: var(--f-ink);
@@ -5974,7 +5974,7 @@ index 0000000000000000000000000000000000000000..2c2e1dea5f38bf8f2e9bd1382dce0d06
 +  -webkit-app-region: no-drag;
 +}
 +body.platform-linux.native-chromium #addressbar:hover { background: var(--f-hover); }
-+body.platform-linux.native-chromium #addr-text { font-size: var(--luma-font-body-size); font-weight: var(--luma-font-label-weight); }
++body.platform-linux.native-chromium #addr-text { font-size: var(--Suno-font-body-size); font-weight: var(--Suno-font-label-weight); }
 +body.platform-linux.native-chromium #addr-lock,
 +body.platform-linux.native-chromium #addr-protection { color: var(--f-green); opacity: 1; }
 +body.platform-linux.native-chromium #addr-bookmark { display: inline-flex; color: var(--f-muted); }
@@ -5983,38 +5983,38 @@ index 0000000000000000000000000000000000000000..2c2e1dea5f38bf8f2e9bd1382dce0d06
 +
 +body.platform-linux.native-chromium #favorites {
 +  grid-template-columns: repeat(4, 42px);
-+  gap: var(--luma-space-3);
++  gap: var(--Suno-space-3);
 +  margin-top: 0;
 +}
 +body.platform-linux.native-chromium .fav {
 +  width: 42px;
 +  height: 42px;
 +  aspect-ratio: auto;
-+  border-radius: var(--luma-radius-island);
++  border-radius: var(--Suno-radius-island);
 +  background: var(--f-fill);
 +}
 +body.platform-linux.native-chromium .fav:hover { background: var(--f-hover); }
 +body.platform-linux.native-chromium .fav.active { background: var(--f-surface); box-shadow: inset 0 0 0 1px var(--f-line), 0 1px 2px rgba(20,24,30,.08); }
-+body.platform-linux.native-chromium #scroller { margin-top: var(--luma-space-6); }
++body.platform-linux.native-chromium #scroller { margin-top: var(--Suno-space-6); }
 +body.platform-linux.native-chromium .tab,
 +body.platform-linux.native-chromium #new-tab-row { color: var(--f-ink); }
 +body.platform-linux.native-chromium .tab:hover,
 +body.platform-linux.native-chromium #new-tab-row:hover { background: var(--f-hover); }
 +body.platform-linux.native-chromium .tab.active { background: var(--f-surface); box-shadow: inset 0 0 0 1px var(--f-line), 0 1px 2px rgba(20,24,30,.08); font-weight: 650; }
-+body.platform-linux.native-chromium .tab-group { border-radius: var(--luma-radius-island); background: var(--f-fill); }
++body.platform-linux.native-chromium .tab-group { border-radius: var(--Suno-radius-island); background: var(--f-fill); }
 +body.platform-linux.native-chromium #pinned-divider { background: var(--f-line); }
 +
-+body.platform-linux.native-chromium #notification-stack { margin-top: var(--luma-space-3); }
++body.platform-linux.native-chromium #notification-stack { margin-top: var(--Suno-space-3); }
 +body.platform-linux.native-chromium .notification-stack-header { color: var(--f-muted); text-transform: uppercase; letter-spacing: .09em; font-size: 9px; font-weight: 700; }
 +body.platform-linux.native-chromium .notification-card {
 +  color: var(--f-ink);
 +  background: var(--f-surface);
-+  border-radius: var(--luma-radius-window);
++  border-radius: var(--Suno-radius-window);
 +  box-shadow: inset 0 0 0 1px var(--f-line), 0 1px 2px rgba(20,24,30,.08);
 +}
 +body.platform-linux.native-chromium #media-bar,
 +body.platform-linux.native-chromium #workspace-button {
-+  border-radius: var(--luma-radius-island);
++  border-radius: var(--Suno-radius-island);
 +}
 +body.platform-linux.native-chromium #media-bar {
 +  color: var(--f-ink);
@@ -6025,24 +6025,24 @@ index 0000000000000000000000000000000000000000..2c2e1dea5f38bf8f2e9bd1382dce0d06
 +body.platform-linux.native-chromium #media-bar .m-btn:hover { background: var(--f-hover); }
 +body.platform-linux.native-chromium #media-bar #m-play { color: var(--f-surface); background: var(--f-ink); border-radius: 999px; }
 +body.platform-linux.native-chromium #workspace-button {
-+  height: var(--luma-control-standard);
++  height: var(--Suno-control-standard);
 +  color: var(--f-ink);
 +  background: var(--f-fill);
 +  box-shadow: inset 0 0 0 1px var(--f-line);
 +}
 +body.platform-linux.native-chromium #workspace-button:hover,
 +body.platform-linux.native-chromium #workspace-switcher.open #workspace-button { background: var(--f-hover); }
-+body.platform-linux.native-chromium #workspace-menu { background: var(--f-menu); border-radius: var(--luma-radius-window); }
++body.platform-linux.native-chromium #workspace-menu { background: var(--f-menu); border-radius: var(--Suno-radius-window); }
 +body.platform-linux.native-chromium #top-strip,
 +body.platform-linux.native-chromium #pane-ring { display: none !important; }
 +body.platform-linux.native-chromium #resize-handle { top: 0; bottom: 0; right: 0; }
 +
 +@media (max-width: 720px) {
 +  body.platform-linux.native-chromium { --sw: 210px; }
-+  body.platform-linux.native-chromium #sidebar { padding-right: var(--luma-space-4); padding-left: var(--luma-space-4); }
-+  body.platform-linux.native-chromium #favorites { grid-template-columns: repeat(4, 40px); gap: var(--luma-space-2); }
++  body.platform-linux.native-chromium #sidebar { padding-right: var(--Suno-space-4); padding-left: var(--Suno-space-4); }
++  body.platform-linux.native-chromium #favorites { grid-template-columns: repeat(4, 40px); gap: var(--Suno-space-2); }
 +  body.platform-linux.native-chromium .fav { width: 40px; height: 40px; }
-+  body.platform-linux.native-chromium #luma-page-toolbar { padding-inline: 5px; }
++  body.platform-linux.native-chromium #Suno-page-toolbar { padding-inline: 5px; }
 +  body.platform-linux.native-chromium #addr-cast,
 +  body.platform-linux.native-chromium #addr-copy { display: none !important; }
 +}
@@ -6064,15 +6064,15 @@ index 0000000000000000000000000000000000000000..2c2e1dea5f38bf8f2e9bd1382dce0d06
 +}
 +
 +/* Persistent Linux chrome is independent of the collapsible tab column. */
-+body.platform-linux.native-chromium.collapsed #luma-page-toolbar {
-+  left: var(--luma-island-gap);
++body.platform-linux.native-chromium.collapsed #Suno-page-toolbar {
++  left: var(--Suno-island-gap);
 +}
 +body.platform-linux.native-chromium.collapsed:not(.sidebar-peeking) {
 +  background: var(--f-window);
 +}
 +body.platform-linux.native-chromium.sidebar-peeking { background: transparent; }
-+body.platform-linux.native-chromium #luma-page-toolbar,
-+body.platform-linux.native-chromium #luma-page-toolbar * {
++body.platform-linux.native-chromium #Suno-page-toolbar,
++body.platform-linux.native-chromium #Suno-page-toolbar * {
 +  -webkit-app-region: no-drag;
 +}
 +body.platform-linux.native-chromium #btn-sidebar-toggle[aria-pressed="true"] {
@@ -6082,7 +6082,7 @@ index 0000000000000000000000000000000000000000..2c2e1dea5f38bf8f2e9bd1382dce0d06
 +body.platform-linux.native-chromium #sidebar {
 +  padding: 2px 9px 0;
 +  container-type: size;
-+  container-name: luma-sidebar;
++  container-name: Suno-sidebar;
 +}
 +body.platform-linux.native-chromium #favorites {
 +  grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -6114,7 +6114,7 @@ index 0000000000000000000000000000000000000000..2c2e1dea5f38bf8f2e9bd1382dce0d06
 +  flex-basis: 8px;
 +  border-radius: 50%;
 +  font-size: 0;
-+  background: var(--workspace-identity, var(--luma-accent));
++  background: var(--workspace-identity, var(--Suno-accent));
 +  box-shadow: none;
 +}
 +body.platform-linux.native-chromium .workspace-tab-section-name {
@@ -6139,7 +6139,7 @@ index 0000000000000000000000000000000000000000..2c2e1dea5f38bf8f2e9bd1382dce0d06
 +  border-radius: 999px;
 +  padding: 0 4px;
 +  background: var(--f-fill);
-+  box-shadow: 0 2px 5px var(--luma-shadow), inset 0 0 0 1px var(--f-line);
++  box-shadow: 0 2px 5px var(--Suno-shadow), inset 0 0 0 1px var(--f-line);
 +}
 +body.platform-linux.native-chromium .desktop-caption { border-radius: 999px; }
 +body.platform-linux.native-chromium #desktop-caption-minimize svg path { d: path('M3.5 5.5 7 9 10.5 5.5'); }
@@ -6147,120 +6147,120 @@ index 0000000000000000000000000000000000000000..2c2e1dea5f38bf8f2e9bd1382dce0d06
 +body.platform-linux.native-chromium #media-bar { display: flex; }
 +body.platform-linux.native-chromium #notification-stack[hidden],
 +body.platform-linux.native-chromium #media-bar[hidden] { display: none; }
-+@container luma-sidebar (height < 700px) {
++@container Suno-sidebar (height < 700px) {
 +  #media-preview, #media-preview-video { display: none !important; }
 +}
-+@container luma-sidebar (height < 560px) {
++@container Suno-sidebar (height < 560px) {
 +  .notification-card { display: none !important; }
 +}
-diff --git a/chrome/browser/resources/viola/luma-tokens.css b/chrome/browser/resources/viola/luma-tokens.css
+diff --git a/chrome/browser/resources/viola/Suno-tokens.css b/chrome/browser/resources/viola/Suno-tokens.css
 new file mode 100644
 index 0000000000000000000000000000000000000000..5009328a506c5a9a56efd51ab3d61d8969f5dc2f
 --- /dev/null
-+++ b/chrome/browser/resources/viola/luma-tokens.css
++++ b/chrome/browser/resources/viola/Suno-tokens.css
 @@ -0,0 +1,103 @@
 +/*
-+ * Generated semantic projection of Project Luma's canonical design tokens.
++ * Generated semantic projection of Project Suno's canonical design tokens.
 + * Source: config/shared/design-tokens.json, schema 2
 + * Source SHA-256: 03a3b0c63d54cf085b32669bbdfb0026881d7a34cf6e87a973074c6e7c381040
-+ * Refresh with scripts/sync-luma-design-tokens.js; do not tune values here.
++ * Refresh with scripts/sync-Suno-design-tokens.js; do not tune values here.
 + */
 +:root {
-+  --luma-space-1: 4px;
-+  --luma-space-2: 6px;
-+  --luma-space-3: 8px;
-+  --luma-space-4: 12px;
-+  --luma-space-5: 16px;
-+  --luma-space-6: 24px;
-+  --luma-island-gap: 9px;
-+  --luma-radius-window: 15px;
-+  --luma-radius-island: 10px;
-+  --luma-radius-menu: 12px;
-+  --luma-control-compact: 28px;
-+  --luma-control-standard: 36px;
-+  --luma-control-touch: 44px;
-+  --luma-icon-small: 14px;
-+  --luma-icon-standard: 18px;
-+  --luma-icon-large: 24px;
-+  --luma-font-family: Figtree, sans-serif;
-+  --luma-font-body-size: 13px;
-+  --luma-font-body-weight: 400;
-+  --luma-font-label-size: 13px;
-+  --luma-font-label-weight: 625;
-+  --luma-font-meta-size: 11px;
-+  --luma-font-meta-weight: 550;
-+  --luma-motion-fast: 120ms;
-+  --luma-motion-normal: 200ms;
-+  --luma-window: #f1f2f3;
-+  --luma-content: #fbfbfa;
-+  --luma-island: #ffffff;
-+  --luma-menu: #f6f7f8;
-+  --luma-menu-raised: #ffffff;
-+  --luma-ink: #1f2937;
-+  --luma-application-ink: #283038;
-+  --luma-muted: #757e87;
-+  --luma-faint: #9da5ad;
-+  --luma-border: rgba(39, 48, 56, 0.095);
-+  --luma-border-faint: rgba(42, 48, 56, 0.08);
-+  --luma-shadow: rgba(25, 27, 31, 0.07);
-+  --luma-passive: rgba(39, 48, 56, 0.04);
-+  --luma-hover: rgba(39, 48, 56, 0.06);
-+  --luma-pressed: rgba(39, 48, 56, 0.105);
-+  --luma-accent: #4878b8;
-+  --luma-green: #3b8967;
-+  --luma-destructive: #b75048;
++  --Suno-space-1: 4px;
++  --Suno-space-2: 6px;
++  --Suno-space-3: 8px;
++  --Suno-space-4: 12px;
++  --Suno-space-5: 16px;
++  --Suno-space-6: 24px;
++  --Suno-island-gap: 9px;
++  --Suno-radius-window: 15px;
++  --Suno-radius-island: 10px;
++  --Suno-radius-menu: 12px;
++  --Suno-control-compact: 28px;
++  --Suno-control-standard: 36px;
++  --Suno-control-touch: 44px;
++  --Suno-icon-small: 14px;
++  --Suno-icon-standard: 18px;
++  --Suno-icon-large: 24px;
++  --Suno-font-family: Figtree, sans-serif;
++  --Suno-font-body-size: 13px;
++  --Suno-font-body-weight: 400;
++  --Suno-font-label-size: 13px;
++  --Suno-font-label-weight: 625;
++  --Suno-font-meta-size: 11px;
++  --Suno-font-meta-weight: 550;
++  --Suno-motion-fast: 120ms;
++  --Suno-motion-normal: 200ms;
++  --Suno-window: #f1f2f3;
++  --Suno-content: #fbfbfa;
++  --Suno-island: #ffffff;
++  --Suno-menu: #f6f7f8;
++  --Suno-menu-raised: #ffffff;
++  --Suno-ink: #1f2937;
++  --Suno-application-ink: #283038;
++  --Suno-muted: #757e87;
++  --Suno-faint: #9da5ad;
++  --Suno-border: rgba(39, 48, 56, 0.095);
++  --Suno-border-faint: rgba(42, 48, 56, 0.08);
++  --Suno-shadow: rgba(25, 27, 31, 0.07);
++  --Suno-passive: rgba(39, 48, 56, 0.04);
++  --Suno-hover: rgba(39, 48, 56, 0.06);
++  --Suno-pressed: rgba(39, 48, 56, 0.105);
++  --Suno-accent: #4878b8;
++  --Suno-green: #3b8967;
++  --Suno-destructive: #b75048;
 +  /* Viola's renderer uses the same semantic names as the accepted UI pass. */
-+  --f-window: var(--luma-window);
-+  --f-surface: var(--luma-content);
-+  --f-island: var(--luma-island);
-+  --f-menu: var(--luma-menu);
-+  --f-menu-raised: var(--luma-menu-raised);
-+  --f-ink: var(--luma-application-ink);
-+  --f-muted: var(--luma-muted);
-+  --f-line: var(--luma-border);
-+  --f-fill: var(--luma-passive);
-+  --f-hover: var(--luma-hover);
-+  --f-sel: var(--luma-pressed);
++  --f-window: var(--Suno-window);
++  --f-surface: var(--Suno-content);
++  --f-island: var(--Suno-island);
++  --f-menu: var(--Suno-menu);
++  --f-menu-raised: var(--Suno-menu-raised);
++  --f-ink: var(--Suno-application-ink);
++  --f-muted: var(--Suno-muted);
++  --f-line: var(--Suno-border);
++  --f-fill: var(--Suno-passive);
++  --f-hover: var(--Suno-hover);
++  --f-sel: var(--Suno-pressed);
 +  --f-focus: #6989af;
-+  --f-green: var(--luma-green);
-+  --f-destructive: var(--luma-destructive);
++  --f-green: var(--Suno-green);
++  --f-destructive: var(--Suno-destructive);
 +}
 +
 +body.dark {
-+  --luma-window: #21252b;
-+  --luma-content: #2a2e34;
-+  --luma-island: rgba(255, 255, 255, 0.035);
-+  --luma-menu: #252a30;
-+  --luma-menu-raised: #30363d;
-+  --luma-ink: #e4e8ea;
-+  --luma-application-ink: #e4e8ea;
-+  --luma-muted: #8b949c;
-+  --luma-faint: #69727b;
-+  --luma-border: rgba(255, 255, 255, 0.08);
-+  --luma-border-faint: rgba(255, 255, 255, 0.065);
-+  --luma-shadow: rgba(0, 0, 0, 0.22);
-+  --luma-passive: rgba(255, 255, 255, 0.038);
-+  --luma-hover: rgba(255, 255, 255, 0.06);
-+  --luma-pressed: rgba(255, 255, 255, 0.108);
-+  --luma-accent: #5e91d2;
-+  --luma-green: #65b58c;
-+  --luma-destructive: #e97870;
++  --Suno-window: #21252b;
++  --Suno-content: #2a2e34;
++  --Suno-island: rgba(255, 255, 255, 0.035);
++  --Suno-menu: #252a30;
++  --Suno-menu-raised: #30363d;
++  --Suno-ink: #e4e8ea;
++  --Suno-application-ink: #e4e8ea;
++  --Suno-muted: #8b949c;
++  --Suno-faint: #69727b;
++  --Suno-border: rgba(255, 255, 255, 0.08);
++  --Suno-border-faint: rgba(255, 255, 255, 0.065);
++  --Suno-shadow: rgba(0, 0, 0, 0.22);
++  --Suno-passive: rgba(255, 255, 255, 0.038);
++  --Suno-hover: rgba(255, 255, 255, 0.06);
++  --Suno-pressed: rgba(255, 255, 255, 0.108);
++  --Suno-accent: #5e91d2;
++  --Suno-green: #65b58c;
++  --Suno-destructive: #e97870;
 +  /* Rebind the compatibility roles in this scope. Custom properties inherited
 +     from :root otherwise retain their already-computed light values. */
-+  --f-window: var(--luma-window);
-+  --f-surface: var(--luma-content);
-+  --f-island: var(--luma-island);
-+  --f-menu: var(--luma-menu);
-+  --f-menu-raised: var(--luma-menu-raised);
-+  --f-ink: var(--luma-application-ink);
-+  --f-muted: var(--luma-muted);
-+  --f-line: var(--luma-border);
-+  --f-fill: var(--luma-passive);
-+  --f-hover: var(--luma-hover);
-+  --f-sel: var(--luma-pressed);
++  --f-window: var(--Suno-window);
++  --f-surface: var(--Suno-content);
++  --f-island: var(--Suno-island);
++  --f-menu: var(--Suno-menu);
++  --f-menu-raised: var(--Suno-menu-raised);
++  --f-ink: var(--Suno-application-ink);
++  --f-muted: var(--Suno-muted);
++  --f-line: var(--Suno-border);
++  --f-fill: var(--Suno-passive);
++  --f-hover: var(--Suno-hover);
++  --f-sel: var(--Suno-pressed);
 +  --f-focus: #8ca9cb;
-+  --f-green: var(--luma-green);
-+  --f-destructive: var(--luma-destructive);
++  --f-green: var(--Suno-green);
++  --f-destructive: var(--Suno-destructive);
 +}
 diff --git a/chrome/browser/resources/viola/mobile-simulator.css b/chrome/browser/resources/viola/mobile-simulator.css
 new file mode 100644
@@ -8440,243 +8440,243 @@ index 0000000000000000000000000000000000000000..7c969deda29ee8ba00cbd17721ecf468
 +printButton.addEventListener('click', () => window.print());
 +
 +void openDocument();
-diff --git a/chrome/browser/resources/viola/settings-luma-tokens.css b/chrome/browser/resources/viola/settings-luma-tokens.css
+diff --git a/chrome/browser/resources/viola/settings-Suno-tokens.css b/chrome/browser/resources/viola/settings-Suno-tokens.css
 new file mode 100644
 index 0000000000000000000000000000000000000000..0339db0c3a50366a6da022282734dfad7795aefc
 --- /dev/null
-+++ b/chrome/browser/resources/viola/settings-luma-tokens.css
++++ b/chrome/browser/resources/viola/settings-Suno-tokens.css
 @@ -0,0 +1,79 @@
-+/* Generated from the installed Luma AppKit palette; do not hand tune.
-+ * Source digests: chromium-linux/luma-settings-palette.snapshot.json */
-+body.luma-settings {
-+  --luma-card: #ffffff;
-+  --luma-chrome: #f2f3f5;
-+  --luma-chrome-secondary: #e8eaee;
-+  --luma-hairline: rgba(17, 24, 39, 0.10);
-+  --luma-window: #f1f2f3;
-+  --luma-content: #fbfbfa;
-+  --luma-island: #ffffff;
-+  --luma-menu: #f6f7f8;
-+  --luma-menu-raised: #ffffff;
-+  --luma-menu-border: rgba(35, 44, 52, 0.09);
-+  --luma-menu-shadow: #0c1015;
-+  --luma-ink: #283038;
-+  --luma-application-ink: #283038;
-+  --luma-muted: #757e87;
-+  --luma-faint: #9da5ad;
-+  --luma-border: rgba(39, 48, 56, 0.095);
-+  --luma-border-faint: rgba(42, 48, 56, 0.08);
-+  --luma-island-shadow: rgba(25, 27, 31, 0.07);
-+  --luma-passive: rgba(39, 48, 56, 0.04);
-+  --luma-hover: rgba(39, 48, 56, 0.06);
-+  --luma-pressed: rgba(39, 48, 56, 0.105);
-+  --luma-accent: #527fae;
-+  --luma-blue: #527fae;
-+  --luma-green: #3b8967;
-+  --luma-violet: #865f9f;
-+  --luma-amber: #b17a3c;
-+  --luma-destructive: #b75048;
-+  --luma-primary: #527da9;
-+  --luma-primary-ink: #ffffff;
-+  --luma-primary-hover: #466f99;
-+  --luma-line: rgba(39, 48, 56, 0.095);
-+  --luma-fill: rgba(39, 48, 56, 0.04);
-+  --luma-selected: rgba(39, 48, 56, 0.105);
-+  --luma-line-faint: rgba(42, 48, 56, 0.08);
++/* Generated from the installed Suno AppKit palette; do not hand tune.
++ * Source digests: chromium-linux/Suno-settings-palette.snapshot.json */
++body.Suno-settings {
++  --Suno-card: #ffffff;
++  --Suno-chrome: #f2f3f5;
++  --Suno-chrome-secondary: #e8eaee;
++  --Suno-hairline: rgba(17, 24, 39, 0.10);
++  --Suno-window: #f1f2f3;
++  --Suno-content: #fbfbfa;
++  --Suno-island: #ffffff;
++  --Suno-menu: #f6f7f8;
++  --Suno-menu-raised: #ffffff;
++  --Suno-menu-border: rgba(35, 44, 52, 0.09);
++  --Suno-menu-shadow: #0c1015;
++  --Suno-ink: #283038;
++  --Suno-application-ink: #283038;
++  --Suno-muted: #757e87;
++  --Suno-faint: #9da5ad;
++  --Suno-border: rgba(39, 48, 56, 0.095);
++  --Suno-border-faint: rgba(42, 48, 56, 0.08);
++  --Suno-island-shadow: rgba(25, 27, 31, 0.07);
++  --Suno-passive: rgba(39, 48, 56, 0.04);
++  --Suno-hover: rgba(39, 48, 56, 0.06);
++  --Suno-pressed: rgba(39, 48, 56, 0.105);
++  --Suno-accent: #527fae;
++  --Suno-blue: #527fae;
++  --Suno-green: #3b8967;
++  --Suno-violet: #865f9f;
++  --Suno-amber: #b17a3c;
++  --Suno-destructive: #b75048;
++  --Suno-primary: #527da9;
++  --Suno-primary-ink: #ffffff;
++  --Suno-primary-hover: #466f99;
++  --Suno-line: rgba(39, 48, 56, 0.095);
++  --Suno-fill: rgba(39, 48, 56, 0.04);
++  --Suno-selected: rgba(39, 48, 56, 0.105);
++  --Suno-line-faint: rgba(42, 48, 56, 0.08);
 +}
-+body.luma-settings.dark {
-+  --luma-window: #21252b;
-+  --luma-content: #2a2e34;
-+  --luma-island: rgba(255, 255, 255, 0.035);
-+  --luma-ink: #e4e8ea;
-+  --luma-menu: #252a30;
-+  --luma-menu-raised: #30363d;
-+  --luma-menu-border: rgba(255, 255, 255, 0.075);
-+  --luma-menu-shadow: #0c1015;
-+  --luma-muted: #8b949c;
-+  --luma-faint: #69727b;
-+  --luma-border: rgba(255, 255, 255, 0.08);
-+  --luma-border-faint: rgba(255, 255, 255, 0.065);
-+  --luma-island-shadow: rgba(0, 0, 0, 0.22);
-+  --luma-passive: rgba(255, 255, 255, 0.038);
-+  --luma-hover: rgba(255, 255, 255, 0.06);
-+  --luma-pressed: rgba(255, 255, 255, 0.108);
-+  --luma-accent: #80a8d2;
-+  --luma-blue: #80a8d2;
-+  --luma-green: #65b58c;
-+  --luma-violet: #b58bd0;
-+  --luma-amber: #d19447;
-+  --luma-destructive: #e97870;
-+  --luma-primary: #30363c;
-+  --luma-primary-ink: #ffffff;
-+  --luma-primary-hover: #3a4149;
-+  --luma-line: rgba(255, 255, 255, 0.08);
-+  --luma-fill: rgba(255, 255, 255, 0.038);
-+  --luma-selected: rgba(255, 255, 255, 0.108);
-+  --luma-line-faint: rgba(255, 255, 255, 0.065);
++body.Suno-settings.dark {
++  --Suno-window: #21252b;
++  --Suno-content: #2a2e34;
++  --Suno-island: rgba(255, 255, 255, 0.035);
++  --Suno-ink: #e4e8ea;
++  --Suno-menu: #252a30;
++  --Suno-menu-raised: #30363d;
++  --Suno-menu-border: rgba(255, 255, 255, 0.075);
++  --Suno-menu-shadow: #0c1015;
++  --Suno-muted: #8b949c;
++  --Suno-faint: #69727b;
++  --Suno-border: rgba(255, 255, 255, 0.08);
++  --Suno-border-faint: rgba(255, 255, 255, 0.065);
++  --Suno-island-shadow: rgba(0, 0, 0, 0.22);
++  --Suno-passive: rgba(255, 255, 255, 0.038);
++  --Suno-hover: rgba(255, 255, 255, 0.06);
++  --Suno-pressed: rgba(255, 255, 255, 0.108);
++  --Suno-accent: #80a8d2;
++  --Suno-blue: #80a8d2;
++  --Suno-green: #65b58c;
++  --Suno-violet: #b58bd0;
++  --Suno-amber: #d19447;
++  --Suno-destructive: #e97870;
++  --Suno-primary: #30363c;
++  --Suno-primary-ink: #ffffff;
++  --Suno-primary-hover: #3a4149;
++  --Suno-line: rgba(255, 255, 255, 0.08);
++  --Suno-fill: rgba(255, 255, 255, 0.038);
++  --Suno-selected: rgba(255, 255, 255, 0.108);
++  --Suno-line-faint: rgba(255, 255, 255, 0.065);
 +}
-+body.luma-settings [data-luma-theme="aurora"] { --workspace-color: var(--luma-violet); }
-+body.luma-settings [data-luma-theme="sky"] { --workspace-color: var(--luma-blue); }
-+body.luma-settings [data-luma-theme="mint"] { --workspace-color: var(--luma-green); }
-+body.luma-settings [data-luma-theme="peach"] { --workspace-color: var(--luma-amber); }
-+body.luma-settings [data-luma-theme="rose"] { --workspace-color: var(--luma-destructive); }
-+body.luma-settings [data-luma-theme="lavender"] { --workspace-color: var(--luma-violet); }
-+body.luma-settings [data-luma-theme="sand"] { --workspace-color: var(--luma-amber); }
-+body.luma-settings [data-luma-theme="slate"] { --workspace-color: var(--luma-muted); }
-+body.luma-settings [data-luma-theme="midnight"] { --workspace-color: var(--luma-blue); }
-+body.luma-settings [data-luma-theme="graphite"] { --workspace-color: var(--luma-muted); }
-diff --git a/chrome/browser/resources/viola/settings-luma.css b/chrome/browser/resources/viola/settings-luma.css
++body.Suno-settings [data-Suno-theme="aurora"] { --workspace-color: var(--Suno-violet); }
++body.Suno-settings [data-Suno-theme="sky"] { --workspace-color: var(--Suno-blue); }
++body.Suno-settings [data-Suno-theme="mint"] { --workspace-color: var(--Suno-green); }
++body.Suno-settings [data-Suno-theme="peach"] { --workspace-color: var(--Suno-amber); }
++body.Suno-settings [data-Suno-theme="rose"] { --workspace-color: var(--Suno-destructive); }
++body.Suno-settings [data-Suno-theme="lavender"] { --workspace-color: var(--Suno-violet); }
++body.Suno-settings [data-Suno-theme="sand"] { --workspace-color: var(--Suno-amber); }
++body.Suno-settings [data-Suno-theme="slate"] { --workspace-color: var(--Suno-muted); }
++body.Suno-settings [data-Suno-theme="midnight"] { --workspace-color: var(--Suno-blue); }
++body.Suno-settings [data-Suno-theme="graphite"] { --workspace-color: var(--Suno-muted); }
+diff --git a/chrome/browser/resources/viola/settings-Suno.css b/chrome/browser/resources/viola/settings-Suno.css
 new file mode 100644
 index 0000000000000000000000000000000000000000..22585157192360f53a5abe0b806a4139e631f20f
 --- /dev/null
-+++ b/chrome/browser/resources/viola/settings-luma.css
++++ b/chrome/browser/resources/viola/settings-Suno.css
 @@ -0,0 +1,136 @@
-+@import url('luma-tokens.css');
-+@import url('settings-luma-tokens.css');
++@import url('Suno-tokens.css');
++@import url('settings-Suno-tokens.css');
 +
 +/* Browser-owned settings content. Native frame/menu geometry stays in AppKit. */
-+body.luma-settings {
++body.Suno-settings {
 +  color-scheme: light;
-+  --ink: var(--luma-ink);
-+  --muted: var(--luma-muted);
-+  --accent: var(--luma-accent);
-+  --canvas: var(--luma-content);
-+  --card: var(--luma-island);
-+  --hairline: var(--luma-border);
-+  --soft-shadow: 0 1px 2px var(--luma-island-shadow);
-+  --control-shadow: 0 1px 2px var(--luma-island-shadow);
-+  font-family: var(--luma-font-family);
++  --ink: var(--Suno-ink);
++  --muted: var(--Suno-muted);
++  --accent: var(--Suno-accent);
++  --canvas: var(--Suno-content);
++  --card: var(--Suno-island);
++  --hairline: var(--Suno-border);
++  --soft-shadow: 0 1px 2px var(--Suno-island-shadow);
++  --control-shadow: 0 1px 2px var(--Suno-island-shadow);
++  font-family: var(--Suno-font-family);
 +  line-height: 1.45;
 +  background: var(--canvas);
 +  color: var(--ink);
 +}
-+body.luma-settings.dark { color-scheme: dark; }
-+.luma-settings :is(p,.sub,.label,.page-intro,.library-copy,.recovery-key) { user-select:text; }
-+.luma-settings :focus-visible { outline:2px solid var(--accent); outline-offset:3px; }
-+.luma-settings nav {
++body.Suno-settings.dark { color-scheme: dark; }
++.Suno-settings :is(p,.sub,.label,.page-intro,.library-copy,.recovery-key) { user-select:text; }
++.Suno-settings :focus-visible { outline:2px solid var(--accent); outline-offset:3px; }
++.Suno-settings nav {
 +  width:208px; padding:24px 12px; gap:4px;
-+  background:var(--luma-window); border-right:1px solid var(--hairline);
++  background:var(--Suno-window); border-right:1px solid var(--hairline);
 +  overflow-y:auto; -webkit-app-region:no-drag;
 +}
-+.luma-settings .settings-brand { padding:0 12px 16px; font-size:16px; font-weight:700; }
-+.luma-settings .nav-section { margin:18px 12px 4px; font-size:11px; color:var(--muted); font-weight:600; }
-+.luma-settings nav .item { height:36px; min-height:36px; padding:8px 12px; opacity:1; color:var(--muted); border-radius:8px; }
-+.luma-settings nav .item:hover { background:var(--luma-hover); color:var(--ink); }
-+.luma-settings nav .item.active { background:var(--card); color:var(--ink); box-shadow:var(--soft-shadow),inset 0 0 0 1px var(--hairline); font-weight:650; }
-+.luma-settings main { min-width:0; padding:32px clamp(20px,4vw,56px) 64px; scrollbar-gutter:stable; }
-+.luma-settings main > * { max-width:840px; margin-left:auto; margin-right:auto; }
-+.luma-settings h1 { font-size:24px; line-height:1.25; letter-spacing:-.4px; margin-bottom:12px; }
-+.luma-settings h2 { margin-top:28px; margin-bottom:10px; font-size:13px; text-transform:none; letter-spacing:0; color:var(--ink); }
-+.luma-settings .page-intro { margin-top:0; margin-bottom:24px; line-height:1.5; }
-+.luma-settings .card { border-radius:var(--luma-radius-island); padding:0 16px; border:1px solid var(--hairline); background:var(--card); }
-+.luma-settings .setting { min-height:64px; padding:14px 0; gap:24px; }
-+.luma-settings .setting .label { font-weight:600; line-height:1.4; }
-+.luma-settings .setting .sub { font-size:12px; line-height:1.5; margin-top:4px; max-width:480px; color:var(--muted); }
-+.luma-settings :is(select,input[type=text],input[type=email],input[type=password],input[type=search]) {
-+  min-height:36px; font:inherit; color:var(--ink); background-color:var(--luma-content);
++.Suno-settings .settings-brand { padding:0 12px 16px; font-size:16px; font-weight:700; }
++.Suno-settings .nav-section { margin:18px 12px 4px; font-size:11px; color:var(--muted); font-weight:600; }
++.Suno-settings nav .item { height:36px; min-height:36px; padding:8px 12px; opacity:1; color:var(--muted); border-radius:8px; }
++.Suno-settings nav .item:hover { background:var(--Suno-hover); color:var(--ink); }
++.Suno-settings nav .item.active { background:var(--card); color:var(--ink); box-shadow:var(--soft-shadow),inset 0 0 0 1px var(--hairline); font-weight:650; }
++.Suno-settings main { min-width:0; padding:32px clamp(20px,4vw,56px) 64px; scrollbar-gutter:stable; }
++.Suno-settings main > * { max-width:840px; margin-left:auto; margin-right:auto; }
++.Suno-settings h1 { font-size:24px; line-height:1.25; letter-spacing:-.4px; margin-bottom:12px; }
++.Suno-settings h2 { margin-top:28px; margin-bottom:10px; font-size:13px; text-transform:none; letter-spacing:0; color:var(--ink); }
++.Suno-settings .page-intro { margin-top:0; margin-bottom:24px; line-height:1.5; }
++.Suno-settings .card { border-radius:var(--Suno-radius-island); padding:0 16px; border:1px solid var(--hairline); background:var(--card); }
++.Suno-settings .setting { min-height:64px; padding:14px 0; gap:24px; }
++.Suno-settings .setting .label { font-weight:600; line-height:1.4; }
++.Suno-settings .setting .sub { font-size:12px; line-height:1.5; margin-top:4px; max-width:480px; color:var(--muted); }
++.Suno-settings :is(select,input[type=text],input[type=email],input[type=password],input[type=search]) {
++  min-height:36px; font:inherit; color:var(--ink); background-color:var(--Suno-content);
 +  border:1px solid var(--hairline); border-radius:8px; padding:7px 12px; box-shadow:none; min-width:0;
 +}
-+.luma-settings select { padding-right:32px; max-width:100%; }
-+.luma-settings input::placeholder { color:var(--muted); }
-+.luma-settings :is(input,select):focus { outline:2px solid var(--accent); outline-offset:1px; box-shadow:none; }
-+.luma-settings button.action { min-height:36px; font:inherit; font-weight:600; border-radius:8px; padding:7px 13px; box-shadow:none; background:var(--luma-primary); color:var(--luma-primary-ink); }
-+.luma-settings button.action:hover { filter:none; background:var(--luma-primary-hover); }
-+.luma-settings button.action { border-color:var(--hairline); }
-+.luma-settings .swatch { border:1px solid var(--hairline); box-shadow:none; }
-+.luma-settings button.action.secondary { background:var(--luma-fill); color:var(--ink); border-color:var(--hairline); }
-+.luma-settings button.action.secondary:hover { background:var(--luma-hover); }
-+.luma-settings button.action.danger { background:transparent; color:var(--luma-destructive); border-color:var(--hairline); }
-+.luma-settings button.action.danger:hover { background:color-mix(in srgb,var(--luma-destructive) 10%,transparent); }
-+.luma-settings .seg { padding:3px; background:var(--luma-fill); border:1px solid var(--hairline); }
-+.luma-settings .seg button { min-height:30px; color:var(--ink); opacity:1; }
-+.luma-settings .seg button.on { background:var(--card); }
-+.luma-settings .account-form { grid-template-columns:1fr; max-width:440px; gap:16px; padding:16px 0; }
-+.luma-settings .account-form label { opacity:1; font-size:12px; font-weight:600; color:var(--ink); }
-+.luma-settings .account-form input { color:var(--ink); }
-+.luma-settings .account-form details summary { color:var(--muted); font-size:12px; }
-+.luma-settings .account-form details label { margin-top:12px; }
-+.luma-settings .account-actions { justify-content:flex-start; flex-wrap:wrap; padding:8px 0 20px; }
-+.luma-settings .account-actions button[data-action=forgot] { order:2; border:0; background:transparent; color:var(--accent); }
-+.luma-settings .account-avatar { background:var(--accent); border-radius:50%; }
-+.luma-settings :is(.status-pill,.identity-pill,.theme-icon,.recovery-key) { background:var(--luma-fill); color:var(--ink); box-shadow:none; }
-+.luma-settings .status-dot { background:var(--luma-green); }
-+.luma-settings .appearance-status { opacity:1; color:var(--muted); font-size:12px; }
-+.luma-settings .appearance-status.error { color:var(--luma-destructive); }
-+.luma-settings .swatch.on { outline-color:var(--accent); }
-+.luma-settings .metric { background:var(--card); box-shadow:var(--soft-shadow); border:1px solid var(--hairline); }
-+.luma-settings details.advanced summary { background:var(--luma-fill); box-shadow:none; border:1px solid var(--hairline); }
-+.luma-settings .emoji-picker { background:var(--card); }
-+.luma-settings .ext-detail-panel { background:var(--luma-fill)!important; box-shadow:none!important; }
-+.luma-settings .library-tools { position:sticky; top:-32px; padding:12px 0; background:var(--canvas); z-index:2; }
-+.luma-settings .library-actions { flex-wrap:wrap; justify-content:flex-end; }
-+.luma-settings .library-actions button { white-space:nowrap; }
-+.luma-settings .library-row .label { font-size:13px; }
-+.luma-settings .library-row .sub { font-size:11px; }
-+.luma-settings .library-favicon { width:16px; height:16px; flex:none; object-fit:contain; }
-+.luma-settings .download-track { background:var(--luma-fill); height:4px; }
-+.luma-settings .kbd-table td { padding:12px 0; border-color:var(--hairline); }
-+.luma-settings .kbd-table td:last-child { opacity:1; color:var(--muted); }
-+.luma-settings .setting > :first-child { min-width:0; }
-+.luma-settings .setting > :is(button,select,.seg) { flex-shrink:0; }
-+.luma-settings .empty-state { text-align:center; padding:44px 20px; color:var(--muted); }
-+.luma-settings .empty-state strong { display:block; margin-bottom:6px; color:var(--ink); font-size:15px; }
-+.luma-settings .settings-search { width:100%; margin-bottom:12px; }
-+.luma-settings input[type=checkbox] { accent-color:var(--accent); width:18px; height:18px; }
-+.luma-settings .range-value { width:130px; max-width:40vw; font-size:11px; line-height:1.4; }
-+.luma-settings .range-control { flex-wrap:wrap; justify-content:flex-end; }
-+.luma-settings .ext-actions { flex-wrap:wrap; }
-+.luma-settings [hidden] { display:none!important; }
-+.luma-settings .search-empty { padding:12px; color:var(--muted); }
++.Suno-settings select { padding-right:32px; max-width:100%; }
++.Suno-settings input::placeholder { color:var(--muted); }
++.Suno-settings :is(input,select):focus { outline:2px solid var(--accent); outline-offset:1px; box-shadow:none; }
++.Suno-settings button.action { min-height:36px; font:inherit; font-weight:600; border-radius:8px; padding:7px 13px; box-shadow:none; background:var(--Suno-primary); color:var(--Suno-primary-ink); }
++.Suno-settings button.action:hover { filter:none; background:var(--Suno-primary-hover); }
++.Suno-settings button.action { border-color:var(--hairline); }
++.Suno-settings .swatch { border:1px solid var(--hairline); box-shadow:none; }
++.Suno-settings button.action.secondary { background:var(--Suno-fill); color:var(--ink); border-color:var(--hairline); }
++.Suno-settings button.action.secondary:hover { background:var(--Suno-hover); }
++.Suno-settings button.action.danger { background:transparent; color:var(--Suno-destructive); border-color:var(--hairline); }
++.Suno-settings button.action.danger:hover { background:color-mix(in srgb,var(--Suno-destructive) 10%,transparent); }
++.Suno-settings .seg { padding:3px; background:var(--Suno-fill); border:1px solid var(--hairline); }
++.Suno-settings .seg button { min-height:30px; color:var(--ink); opacity:1; }
++.Suno-settings .seg button.on { background:var(--card); }
++.Suno-settings .account-form { grid-template-columns:1fr; max-width:440px; gap:16px; padding:16px 0; }
++.Suno-settings .account-form label { opacity:1; font-size:12px; font-weight:600; color:var(--ink); }
++.Suno-settings .account-form input { color:var(--ink); }
++.Suno-settings .account-form details summary { color:var(--muted); font-size:12px; }
++.Suno-settings .account-form details label { margin-top:12px; }
++.Suno-settings .account-actions { justify-content:flex-start; flex-wrap:wrap; padding:8px 0 20px; }
++.Suno-settings .account-actions button[data-action=forgot] { order:2; border:0; background:transparent; color:var(--accent); }
++.Suno-settings .account-avatar { background:var(--accent); border-radius:50%; }
++.Suno-settings :is(.status-pill,.identity-pill,.theme-icon,.recovery-key) { background:var(--Suno-fill); color:var(--ink); box-shadow:none; }
++.Suno-settings .status-dot { background:var(--Suno-green); }
++.Suno-settings .appearance-status { opacity:1; color:var(--muted); font-size:12px; }
++.Suno-settings .appearance-status.error { color:var(--Suno-destructive); }
++.Suno-settings .swatch.on { outline-color:var(--accent); }
++.Suno-settings .metric { background:var(--card); box-shadow:var(--soft-shadow); border:1px solid var(--hairline); }
++.Suno-settings details.advanced summary { background:var(--Suno-fill); box-shadow:none; border:1px solid var(--hairline); }
++.Suno-settings .emoji-picker { background:var(--card); }
++.Suno-settings .ext-detail-panel { background:var(--Suno-fill)!important; box-shadow:none!important; }
++.Suno-settings .library-tools { position:sticky; top:-32px; padding:12px 0; background:var(--canvas); z-index:2; }
++.Suno-settings .library-actions { flex-wrap:wrap; justify-content:flex-end; }
++.Suno-settings .library-actions button { white-space:nowrap; }
++.Suno-settings .library-row .label { font-size:13px; }
++.Suno-settings .library-row .sub { font-size:11px; }
++.Suno-settings .library-favicon { width:16px; height:16px; flex:none; object-fit:contain; }
++.Suno-settings .download-track { background:var(--Suno-fill); height:4px; }
++.Suno-settings .kbd-table td { padding:12px 0; border-color:var(--hairline); }
++.Suno-settings .kbd-table td:last-child { opacity:1; color:var(--muted); }
++.Suno-settings .setting > :first-child { min-width:0; }
++.Suno-settings .setting > :is(button,select,.seg) { flex-shrink:0; }
++.Suno-settings .empty-state { text-align:center; padding:44px 20px; color:var(--muted); }
++.Suno-settings .empty-state strong { display:block; margin-bottom:6px; color:var(--ink); font-size:15px; }
++.Suno-settings .settings-search { width:100%; margin-bottom:12px; }
++.Suno-settings input[type=checkbox] { accent-color:var(--accent); width:18px; height:18px; }
++.Suno-settings .range-value { width:130px; max-width:40vw; font-size:11px; line-height:1.4; }
++.Suno-settings .range-control { flex-wrap:wrap; justify-content:flex-end; }
++.Suno-settings .ext-actions { flex-wrap:wrap; }
++.Suno-settings [hidden] { display:none!important; }
++.Suno-settings .search-empty { padding:12px; color:var(--muted); }
 +@media(max-width:780px) {
-+  .luma-settings nav { width:172px; padding:20px 8px; }
-+  .luma-settings main { padding:24px 20px 48px; }
-+  .luma-settings .setting { flex-wrap:wrap; gap:12px; }
-+  .luma-settings .setting > :first-child { flex:1 1 100%; }
-+  .luma-settings .setting > .library-copy { flex:1 1 180px; }
-+  .luma-settings .setting > .library-favicon { flex:none; }
-+  .luma-settings .library-actions { justify-content:flex-start; }
-+  .luma-settings .browser-pref-controls { min-width:0; flex-basis:100%; }
-+  .luma-settings .library-tools { top:-24px; }
++  .Suno-settings nav { width:172px; padding:20px 8px; }
++  .Suno-settings main { padding:24px 20px 48px; }
++  .Suno-settings .setting { flex-wrap:wrap; gap:12px; }
++  .Suno-settings .setting > :first-child { flex:1 1 100%; }
++  .Suno-settings .setting > .library-copy { flex:1 1 180px; }
++  .Suno-settings .setting > .library-favicon { flex:none; }
++  .Suno-settings .library-actions { justify-content:flex-start; }
++  .Suno-settings .browser-pref-controls { min-width:0; flex-basis:100%; }
++  .Suno-settings .library-tools { top:-24px; }
 +}
 +@media(max-width:520px) {
-+  body.luma-settings { flex-direction:column; }
-+  .luma-settings nav { width:100%; max-height:176px; flex-direction:row; flex-wrap:wrap; padding:10px; gap:4px; border-right:0; border-bottom:1px solid var(--hairline); }
-+  .luma-settings nav .item { width:auto; }
-+  .luma-settings :is(.settings-brand,.nav-section) { display:none; }
-+  .luma-settings .settings-search { margin:0; }
-+  .luma-settings main { padding:20px 16px 40px; }
-+  .luma-settings .metric-grid { grid-template-columns:1fr; }
++  body.Suno-settings { flex-direction:column; }
++  .Suno-settings nav { width:100%; max-height:176px; flex-direction:row; flex-wrap:wrap; padding:10px; gap:4px; border-right:0; border-bottom:1px solid var(--hairline); }
++  .Suno-settings nav .item { width:auto; }
++  .Suno-settings :is(.settings-brand,.nav-section) { display:none; }
++  .Suno-settings .settings-search { margin:0; }
++  .Suno-settings main { padding:20px 16px 40px; }
++  .Suno-settings .metric-grid { grid-template-columns:1fr; }
 +}
 +
 +/* Keep Chromium's real select semantics while rendering its picker in the
 +   captured page, rather than a separate window on the private engine display. */
 +@supports (appearance: base-select) {
-+  .luma-settings select,
-+  .luma-settings select::picker(select) { appearance:base-select; }
-+  .luma-settings select { padding-right:12px; gap:12px; }
-+  .luma-settings select::picker(select) {
-+    color:var(--ink); background:var(--luma-menu); border:1px solid var(--luma-menu-border);
++  .Suno-settings select,
++  .Suno-settings select::picker(select) { appearance:base-select; }
++  .Suno-settings select { padding-right:12px; gap:12px; }
++  .Suno-settings select::picker(select) {
++    color:var(--ink); background:var(--Suno-menu); border:1px solid var(--Suno-menu-border);
 +    border-radius:10px; padding:6px; margin-top:4px;
-+    box-shadow:0 8px 24px var(--luma-island-shadow);
++    box-shadow:0 8px 24px var(--Suno-island-shadow);
 +    min-width:anchor-size(width); max-height:320px; overflow:auto;
 +    font:inherit;
 +  }
-+  .luma-settings select option { padding:8px 12px; border-radius:6px; gap:8px; }
-+  .luma-settings select option:hover,
-+  .luma-settings select option:focus-visible { background:var(--luma-hover); outline:none; }
-+  .luma-settings select option:checked { font-weight:600; }
-+  .luma-settings select option:disabled { opacity:.5; }
++  .Suno-settings select option { padding:8px 12px; border-radius:6px; gap:8px; }
++  .Suno-settings select option:hover,
++  .Suno-settings select option:focus-visible { background:var(--Suno-hover); outline:none; }
++  .Suno-settings select option:checked { font-weight:600; }
++  .Suno-settings select option:disabled { opacity:.5; }
 +}
-diff --git a/chrome/browser/resources/viola/settings-luma.js b/chrome/browser/resources/viola/settings-luma.js
+diff --git a/chrome/browser/resources/viola/settings-Suno.js b/chrome/browser/resources/viola/settings-Suno.js
 new file mode 100644
 index 0000000000000000000000000000000000000000..f5091a4fd060b6d70428a60969e0c012ae76f6dd
 --- /dev/null
-+++ b/chrome/browser/resources/viola/settings-luma.js
++++ b/chrome/browser/resources/viola/settings-Suno.js
 @@ -0,0 +1,114 @@
 +'use strict';
 +// Presentation and form behavior for the existing trusted Linux settings page.
 +// No new transport, account state, or browser data store is introduced here.
-+globalThis.LumaSettings = (() => {
++globalThis.SunoSettings = (() => {
 +  const enabled = () => globalThis.vela?.platform === 'linux';
 +  const groups = [
 +    ['Browser', ['General', 'Appearance', 'Workspaces', 'Profiles']],
@@ -8696,7 +8696,7 @@ index 0000000000000000000000000000000000000000..f5091a4fd060b6d70428a60969e0c012
 +  };
 +  function initialize() {
 +    if (!enabled()) return;
-+    document.body.classList.add('luma-settings');
++    document.body.classList.add('Suno-settings');
 +    const theme = matchMedia('(prefers-color-scheme: dark)');
 +    const update = () => document.body.classList.toggle('dark', theme.matches);
 +    theme.addEventListener('change', update);
@@ -8786,7 +8786,7 @@ index 0000000000000000000000000000000000000000..f5091a4fd060b6d70428a60969e0c012
 +  }
 +  return {enabled,initialize,navigation,enhance};
 +})();
-+LumaSettings.initialize();
++SunoSettings.initialize();
 diff --git a/chrome/browser/resources/viola/settings.html b/chrome/browser/resources/viola/settings.html
 new file mode 100644
 index 0000000000000000000000000000000000000000..67c56289ba2938c0f1b71820955f3b0fd2be8802
@@ -9074,13 +9074,13 @@ index 0000000000000000000000000000000000000000..67c56289ba2938c0f1b71820955f3b0f
 +    box-shadow:inset 0 0 0 .5px rgba(34,31,53,.08); font-size:11.5px;
 +  }
 +</style>
-+<link rel="stylesheet" href="settings-luma.css">
++<link rel="stylesheet" href="settings-Suno.css">
 +</head>
 +<body>
 +  <nav id="nav" aria-label="Settings sections"></nav>
 +  <main id="main"><p role="status">Loading settings…</p></main>
 +<script src="host-bootstrap.js"></script>
-+<script src="settings-luma.js"></script>
++<script src="settings-Suno.js"></script>
 +<script>
 +  const $ = (s) => document.querySelector(s);
 +  const ELECTRON_SECTIONS = ['General', 'Account & Sync', 'Appearance', 'Performance', 'Privacy', 'Media', 'Workspaces', 'Profiles', 'Extensions', 'Shortcuts'];
@@ -9163,10 +9163,10 @@ index 0000000000000000000000000000000000000000..67c56289ba2938c0f1b71820955f3b0f
 +
 +  function render() {
 +    const nav = $('#nav');
-+    const lumaNav = LumaSettings.navigation(nav, activeSections(), section, name => {
++    const SunoNav = SunoSettings.navigation(nav, activeSections(), section, name => {
 +      section = name; librarySearch = ''; history.replaceState(null, '', `#${encodeURIComponent(name)}`); render();
 +    });
-+    if (!lumaNav) {
++    if (!SunoNav) {
 +    nav.replaceChildren();
 +    for (const s of activeSections()) {
 +      const el = document.createElement('button');
@@ -9190,10 +9190,10 @@ index 0000000000000000000000000000000000000000..67c56289ba2938c0f1b71820955f3b0f
 +    container.replaceChildren(main);
 +    renderedSection = section;
 +    const result = ({ General: renderGeneral, 'Account & Sync': renderAccountSync, Appearance: renderAppearance, Performance: renderPerformance, Privacy: renderPrivacy, Media: renderMedia, Workspaces: renderWorkspaces, Profiles: renderProfiles, History: renderHistory, Bookmarks: renderBookmarks, Downloads: renderDownloads, Extensions: renderExtensions, Shortcuts: renderShortcuts, About: renderAbout })[section](main);
-+    LumaSettings.enhance(main);
++    SunoSettings.enhance(main);
 +    Promise.resolve(result).then(() => {
 +      if (!main.isConnected) return;
-+      LumaSettings.enhance(main);
++      SunoSettings.enhance(main);
 +      if (restoreSearch) {
 +        const input = main.querySelector('.library-search');
 +        input?.focus({preventScroll:true});
@@ -9353,7 +9353,7 @@ index 0000000000000000000000000000000000000000..67c56289ba2938c0f1b71820955f3b0f
 +      main.appendChild(card);
 +      appendHomepageSearchSettings(main);
 +      appendMiniViolaSettings(main);
-+      if (LumaSettings.enabled()) {
++      if (SunoSettings.enabled()) {
 +        main.querySelector('.page-intro').textContent = 'Make Viola work the way you do.';
 +        engine.remove();
 +        main.append(el('<h2>Browser data</h2>'),card);
@@ -9591,7 +9591,7 @@ index 0000000000000000000000000000000000000000..67c56289ba2938c0f1b71820955f3b0f
 +          card.querySelector('[data-action="forgot"]').style.visibility = mode === 'signin' ? '' : 'hidden';
 +          card.querySelector('[data-field="password"]').autocomplete = mode !== 'signin'
 +            ? 'new-password' : 'current-password';
-+          if (LumaSettings.enabled()) {
++          if (SunoSettings.enabled()) {
 +            card.querySelector('[data-action="create"]').textContent = mode === 'signup' ? 'Create account' : mode === 'reset' ? 'Reset password' : 'Sign in';
 +            card.querySelector('[data-field="password"]').placeholder = mode === 'signin' ? 'Your Viola password' : 'New password · at least 10 characters';
 +            card.querySelector('.sub').textContent = mode === 'reset'
@@ -9613,7 +9613,7 @@ index 0000000000000000000000000000000000000000..67c56289ba2938c0f1b71820955f3b0f
 +            syncStatusError = true; syncStatus = message;
 +            if (status) { status.textContent = message; status.classList.add('error'); }
 +          };
-+          if (LumaSettings.enabled()) {
++          if (SunoSettings.enabled()) {
 +            email.required = true;
 +            if (!email.reportValidity()) return;
 +            if (!password.value || (mode !== 'signin' && password.value.length < 10)) {
@@ -9639,7 +9639,7 @@ index 0000000000000000000000000000000000000000..67c56289ba2938c0f1b71820955f3b0f
 +          if (result?.ok) {
 +            emailSignup = { stage: 'verify', mode, email: result.email, recoveryKey: '' };
 +            render();
-+          } else if (LumaSettings.enabled()) {
++          } else if (SunoSettings.enabled()) {
 +            create.disabled = false; create.textContent = label;
 +            showError(syncStatus);
 +          } else {
@@ -9648,7 +9648,7 @@ index 0000000000000000000000000000000000000000..67c56289ba2938c0f1b71820955f3b0f
 +        };
 +        create.addEventListener('click', () => begin(emailSignup.mode || 'signin'));
 +        card.querySelector('[data-action="forgot"]').addEventListener('click', () => {
-+          if (LumaSettings.enabled()) {
++          if (SunoSettings.enabled()) {
 +            applyMode('reset');
 +            card.querySelector('[data-field="password"]').value = '';
 +            card.querySelector('[data-field="password"]').focus();
@@ -9670,7 +9670,7 @@ index 0000000000000000000000000000000000000000..67c56289ba2938c0f1b71820955f3b0f
 +      emailStatus.classList.toggle('error', syncStatusError);
 +      main.appendChild(emailStatus);
 +
-+      if (LumaSettings.enabled() && !google.configured) return;
++      if (SunoSettings.enabled() && !google.configured) return;
 +
 +      main.appendChild(el('<h2>Continue with Google</h2>'));
 +      const oauth = el(`<div class="card oauth-card">
@@ -9763,7 +9763,7 @@ index 0000000000000000000000000000000000000000..67c56289ba2938c0f1b71820955f3b0f
 +      <button class="action danger">Remove…</button>
 +    </div></div>`);
 +    removal.querySelector('button').addEventListener('click', async () => {
-+      if (LumaSettings.enabled() && !confirm('Sign out on this device? Local tabs and workspaces stay. You will need to sign in again to resume sync.')) return;
++      if (SunoSettings.enabled() && !confirm('Sign out on this device? Local tabs and workspaces stay. You will need to sign in again to resume sync.')) return;
 +      const result = await accountInvoke('account:remove');
 +      if (result?.canceled) return;
 +      syncStatusError = !result?.ok;
@@ -9809,8 +9809,8 @@ index 0000000000000000000000000000000000000000..67c56289ba2938c0f1b71820955f3b0f
 +  function renderAppearance(main) {
 +    main.appendChild(el('<h1>Appearance</h1>'));
 +    main.appendChild(el('<div class="page-intro">Shape Viola around the way you work. Everyday choices stay simple; exact sidebar geometry lives in Advanced Appearance.</div>'));
-+    if (LumaSettings.enabled()) {
-+      main.querySelector('.page-intro').textContent = 'Viola follows Luma’s light or dark appearance. Choose how your tabs and workspaces are arranged below.';
++    if (SunoSettings.enabled()) {
++      main.querySelector('.page-intro').textContent = 'Viola follows Suno’s light or dark appearance. Choose how your tabs and workspaces are arranged below.';
 +    }
 +
 +    main.appendChild(el('<h2>Layout</h2>'));
@@ -9933,7 +9933,7 @@ index 0000000000000000000000000000000000000000..67c56289ba2938c0f1b71820955f3b0f
 +      advancedCard.appendChild(reset);
 +    }
 +    main.appendChild(advanced);
-+    if (D.nativeChromium && LumaSettings.enabled()) {
++    if (D.nativeChromium && SunoSettings.enabled()) {
 +      const reset = el('<div class="setting"><div><div class="label">Restore sidebar defaults</div><div class="sub">Reset only the spacing and shape controls above. Your tabs and workspace colors stay as they are.</div></div><button class="action secondary">Restore defaults</button></div>');
 +      reset.querySelector('button').addEventListener('click', () => {
 +        for (const [key] of controls) set(key,D.appearance.limits[key].default);
@@ -9958,9 +9958,9 @@ index 0000000000000000000000000000000000000000..67c56289ba2938c0f1b71820955f3b0f
 +      swatch.setAttribute('aria-label', `${name}: ${theme.name}`);
 +      swatch.setAttribute('aria-pressed', String(theme.key === current));
 +      swatch.style.background = `linear-gradient(135deg,${theme.gradient[0]},${theme.gradient[theme.gradient.length - 1]})`;
-+      if (LumaSettings.enabled()) {
-+        swatch.dataset.lumaTheme = theme.key;
-+        swatch.style.background = 'var(--workspace-color, var(--luma-blue))';
++      if (SunoSettings.enabled()) {
++        swatch.dataset.SunoTheme = theme.key;
++        swatch.style.background = 'var(--workspace-color, var(--Suno-blue))';
 +      }
 +      swatch.addEventListener('click', () => onSelect(theme.key));
 +      swatches.appendChild(swatch);
@@ -10059,7 +10059,7 @@ index 0000000000000000000000000000000000000000..67c56289ba2938c0f1b71820955f3b0f
 +    });
 +    card.appendChild(analytics);
 +    main.appendChild(card);
-+    if (D.nativeChromium && LumaSettings.enabled()) {
++    if (D.nativeChromium && SunoSettings.enabled()) {
 +      main.querySelector('.page-intro').textContent = 'Control what websites can access and manage the data saved on this device.';
 +      const heading = el('<h2>Browsing & security</h2>');
 +      const tools = el('<div class="card"></div>');
@@ -10099,7 +10099,7 @@ index 0000000000000000000000000000000000000000..67c56289ba2938c0f1b71820955f3b0f
 +    main.appendChild(el(`<div class="page-intro">${D.nativeChromium
 +      ? 'Manage each workspace’s name, icon, and color. Migrated profile labels are preserved; native storage boundaries are described under Profiles.'
 +      : 'Manage workspace identity and browsing profiles here. Workspace colors now live together in Appearance.'}</div>`));
-+    if (LumaSettings.enabled()) main.querySelector('.page-intro').textContent = 'Keep projects and everyday browsing organized. Favorites are shared across workspaces.';
++    if (SunoSettings.enabled()) main.querySelector('.page-intro').textContent = 'Keep projects and everyday browsing organized. Favorites are shared across workspaces.';
 +    const card = el('<div class="card row-list"></div>');
 +    for (const sp of D.spaces) {
 +      const row = el(`<div class="setting"></div>`);
@@ -10295,7 +10295,7 @@ index 0000000000000000000000000000000000000000..67c56289ba2938c0f1b71820955f3b0f
 +    if (D.nativeChromium) {
 +      main.appendChild(el('<h1>Profiles</h1>'));
 +      main.appendChild(el('<div class="page-intro">Native profiles—not workspace labels—are the security boundary for cookies, passwords, permissions, cache, and extensions.</div>'));
-+      if (LumaSettings.enabled()) main.querySelector('.page-intro').textContent = 'Separate work and personal browsing. Each profile has its own logins, history, passwords and extensions.';
++      if (SunoSettings.enabled()) main.querySelector('.page-intro').textContent = 'Separate work and personal browsing. Each profile has its own logins, history, passwords and extensions.';
 +      const card = el('<div class="card"></div>');
 +      card.appendChild(el(`<div class="setting">
 +        <div><div class="label">Current native profile</div><div class="sub">Every workspace created in this window belongs to this isolated Chromium profile. To use another cookie, login, password, permission, cache, and extension boundary, switch or create a profile first, then create the workspace there.</div></div>
@@ -10307,7 +10307,7 @@ index 0000000000000000000000000000000000000000..67c56289ba2938c0f1b71820955f3b0f
 +      </div>`);
 +      profiles.querySelector('button').addEventListener('click', () => vela.send('profile:openManager'));
 +      card.appendChild(profiles);
-+      if (LumaSettings.enabled()) {
++      if (SunoSettings.enabled()) {
 +        card.querySelector('.label').textContent = 'Your browsing profile';
 +        card.querySelector('.sub').textContent = 'Workspaces in this profile share website logins. Use another profile when you want to keep those accounts separate.';
 +        card.querySelector('.identity-pill').textContent = 'Separate storage';
@@ -10415,7 +10415,7 @@ index 0000000000000000000000000000000000000000..67c56289ba2938c0f1b71820955f3b0f
 +    let card = el('<div class="card"></div>');
 +    let previousDay = '';
 +    for (const item of items.slice(0, 1000)) {
-+      if (LumaSettings.enabled()) {
++      if (SunoSettings.enabled()) {
 +        const date = item.last ? new Date(item.last) : null;
 +        const day = date && !Number.isNaN(date.valueOf()) ? date.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'}) : 'Earlier';
 +        if (day !== previousDay) {
@@ -10552,7 +10552,7 @@ index 0000000000000000000000000000000000000000..67c56289ba2938c0f1b71820955f3b0f
 +  async function renderExtensions(main) {
 +    main.appendChild(el('<h1>Extensions</h1>'));
 +    main.appendChild(el(`<div class="page-intro">Manage extensions for this profile without leaving Viola's unified settings surface.</div>`));
-+    if (D.nativeChromium && LumaSettings.enabled()) {
++    if (D.nativeChromium && SunoSettings.enabled()) {
 +      const tools = el('<div class="card"></div>');
 +      tools.append(browserToolRow('Find extensions', 'Browse the Chrome Web Store for extensions compatible with Viola.', 'extensionStore', 'Browse store'),
 +                   browserToolRow('Advanced extension controls', 'Inspect permissions, developer mode and extension diagnostics.', 'extensionsAdvanced'));
@@ -10690,7 +10690,7 @@ index 0000000000000000000000000000000000000000..67c56289ba2938c0f1b71820955f3b0f
 +      ['Screenshot full page', shortcut('S', { shift: true })],
 +      ['Back / forward', `${shortcut('[')} / ${shortcut(']')}`],
 +    ];
-+    if (D.nativeChromium && LumaSettings.enabled()) {
++    if (D.nativeChromium && SunoSettings.enabled()) {
 +      main.querySelector('.page-intro').textContent = 'Keyboard commands available in the Linux app. These work while you browse or use the address bar.';
 +      rows.splice(0, rows.length,
 +        ['New tab', 'Ctrl+T'], ['New window', 'Ctrl+N'],
@@ -13195,11 +13195,11 @@ index 0000000000000000000000000000000000000000..053ff6b26b2c87bd70353447cbcf9c47
 +  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: file: http: https: chrome-extension: chrome://favicon2 chrome://extension-icon chrome://theme; font-src 'self' data:; media-src 'self' data: blob: http: https:; worker-src 'self' blob:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; child-src 'none'; frame-src 'none';">
 +  <title>Viola</title>
 +  <link rel="stylesheet" href="sidebar.css" />
-+  <link rel="stylesheet" href="luma-tokens.css" />
-+  <link rel="stylesheet" href="luma-linux.css" />
++  <link rel="stylesheet" href="Suno-tokens.css" />
++  <link rel="stylesheet" href="Suno-linux.css" />
 +</head>
 +<body>
-+  <div id="luma-page-toolbar" role="toolbar" aria-label="Browser toolbar"></div>
++  <div id="Suno-page-toolbar" role="toolbar" aria-label="Browser toolbar"></div>
 +  <div id="top-strip"></div>
 +  <div id="sidebar-peek-hotspot" aria-hidden="true"></div>
 +  <div id="frame">
@@ -13475,7 +13475,7 @@ index 0000000000000000000000000000000000000000..0198a354fc44c0d99af5c93b06846421
 +  // even though DOM hit testing still finds them there.
 +  // Window chrome must not be a descendant of the collapsible sidebar.
 +  document.body.append($('#titlebar'));
-+  const toolbar = $('#luma-page-toolbar');
++  const toolbar = $('#Suno-page-toolbar');
 +  const nav = $('#nav-buttons');
 +  toolbar.append(
 +    $('#btn-sidebar-toggle'), $('#btn-back'), $('#btn-forward'), $('#btn-reload'),
@@ -15684,9 +15684,9 @@ index 0000000000000000000000000000000000000000..0198a354fc44c0d99af5c93b06846421
 +    const pixels = [];
 +    let sum = 0;
 +    for (let i = 0; i < data.length; i += 4) {
-+      const luma = data[i] * 0.2126 + data[i + 1] * 0.7152 + data[i + 2] * 0.0722;
-+      pixels.push(luma);
-+      sum += luma;
++      const Suno = data[i] * 0.2126 + data[i + 1] * 0.7152 + data[i + 2] * 0.0722;
++      pixels.push(Suno);
++      sum += Suno;
 +    }
 +    const brightness = sum / pixels.length;
 +    if (health.pixels) {
@@ -19554,7 +19554,7 @@ index 0000000000000000000000000000000000000000..17fa7d81d15ccb6087af732b1878f171
 +    return 0;
 +  }
 +#if BUILDFLAG(IS_LINUX)
-+  // Luma's narrow-window contract is window-local. Keeping the persisted
++  // Suno's narrow-window contract is window-local. Keeping the persisted
 +  // 252px preference while the renderer alone switched to 210px caused the
 +  // page WebContents and trusted toolbar to overlap in snapped tiles.
 +  const int window_width = GetWidget() ? GetWidget()->GetClientAreaBoundsInScreen().width()
@@ -26379,7 +26379,7 @@ index 0000000000000000000000000000000000000000..8793f4a57b3c0ba13c341b1b0e10b8a0
 +#if BUILDFLAG(IS_LINUX)
 +    frame->ExecuteJavaScript(
 +        base::UTF8ToUTF16(ui::ResourceBundle::GetSharedInstance()
-+                            .LoadDataResourceString(IDR_VIOLA_BROWSER_TOOLS_LUMA_JS)),
++                            .LoadDataResourceString(IDR_VIOLA_BROWSER_TOOLS_SUNO_JS)),
 +        base::BindOnce(&ViolaBrowserToolThemeObserver::OnThemeApplied,
 +                       weak_factory_.GetWeakPtr()));
 +#else
@@ -30001,9 +30001,9 @@ index 0000000000000000000000000000000000000000..8793f4a57b3c0ba13c341b1b0e10b8a0
 +                   base::ClampRound<int>(*height));
 +}
 +
-+class LumaMenuModelAdapter final : public views::MenuModelAdapter {
++class SunoMenuModelAdapter final : public views::MenuModelAdapter {
 + public:
-+  explicit LumaMenuModelAdapter(ui::MenuModel* model)
++  explicit SunoMenuModelAdapter(ui::MenuModel* model)
 +      : views::MenuModelAdapter(model), font_("Figtree, 11px") {}
 +
 + protected:
@@ -30019,7 +30019,7 @@ index 0000000000000000000000000000000000000000..8793f4a57b3c0ba13c341b1b0e10b8a0
 +  const gfx::FontList font_;
 +};
 +
-+void ApplyLumaMenuGeometry(views::MenuItemView *menu, bool root) {
++void ApplySunoMenuGeometry(views::MenuItemView *menu, bool root) {
 +  if (!menu || !menu->HasSubmenu()) {
 +    return;
 +  }
@@ -30035,7 +30035,7 @@ index 0000000000000000000000000000000000000000..8793f4a57b3c0ba13c341b1b0e10b8a0
 +    item->SetMenuItemBackground(views::MenuItemView::MenuItemBackground(
 +        ui::kColorMenuBackground, 10));
 +    item->SetSelectedColorId(ui::kColorMenuItemBackgroundSelected);
-+    ApplyLumaMenuGeometry(item, false);
++    ApplySunoMenuGeometry(item, false);
 +  }
 +}
 +
@@ -30120,9 +30120,9 @@ index 0000000000000000000000000000000000000000..8793f4a57b3c0ba13c341b1b0e10b8a0
 +  } else {
 +    screen_anchor = gfx::Rect(screen->GetCursorScreenPoint(), gfx::Size());
 +  }
-+  context_menu_adapter_ = std::make_unique<LumaMenuModelAdapter>(model);
++  context_menu_adapter_ = std::make_unique<SunoMenuModelAdapter>(model);
 +  std::unique_ptr<views::MenuItemView> menu = context_menu_adapter_->CreateMenu();
-+  ApplyLumaMenuGeometry(menu.get(), true);
++  ApplySunoMenuGeometry(menu.get(), true);
 +  context_menu_runner_ = std::make_unique<views::MenuRunner>(
 +      std::move(menu),
 +      views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU);

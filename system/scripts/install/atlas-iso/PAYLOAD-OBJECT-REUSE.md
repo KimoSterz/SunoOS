@@ -12,7 +12,7 @@ media or a release qualified, and no current release used this new path.
 
 ## Export-time custody
 
-Set `LUMA_OS_CAPTURE_PAYLOAD_BODIES=1` on either normal signed exporter to capture
+Set `SUNO_OS_CAPTURE_PAYLOAD_BODIES=1` on either normal signed exporter to capture
 `builds/ID/payload-object-bodies.json` as a candidate-cache index immediately
 after signing, while the candidate repository is hot and its writer lock is held. Capture runs complete
 OSTree verification, then records the compressed SHA256 and size of every object.
@@ -21,8 +21,8 @@ profile and ref. Its digest goes into the export log; retain that digest in the
 authenticated export custody record. Production private keys stay on the normal
 signing infrastructure.
 
-For a persistent candidate store, `LUMA_OS_PREVIOUS_BODY_INDEX` and
-`LUMA_OS_PREVIOUS_BODY_INDEX_SHA256` can reuse previous protected body records only
+For a persistent candidate store, `SUNO_OS_PREVIOUS_BODY_INDEX` and
+`SUNO_OS_PREVIOUS_BODY_INDEX_SHA256` can reuse previous protected body records only
 when device, inode, size, nanosecond mtime and ctime still match. Changed/new files
 are hashed again. This does not replace the complete OSTree verification. The exporter emits a `candidate-cache`
 index that can include other

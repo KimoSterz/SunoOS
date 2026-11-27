@@ -18,7 +18,7 @@ from datetime import datetime, timezone
 
 
 def data_root():
-    return Path(os.environ.get("XDG_DATA_HOME", str(Path.home() / ".local/share"))) / "luma/tasks"
+    return Path(os.environ.get("XDG_DATA_HOME", str(Path.home() / ".local/share"))) / "Suno/tasks"
 
 
 def atomic_json(path, value, *, once=False):

@@ -1,6 +1,6 @@
 # Image definitions
 
-[`luma-desktop/Containerfile`](luma-desktop/Containerfile) defines the Fedora Atomic
+[`Suno-desktop/Containerfile`](Suno-desktop/Containerfile) defines the Fedora Atomic
 desktop image used by the current OS build pipeline. Component RPM inputs,
 offline application baseline contracts and release pins are maintained in
 `config/desktop/` and `config/os/`.

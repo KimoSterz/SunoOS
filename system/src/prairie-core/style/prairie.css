@@ -3,36 +3,36 @@
 /* Prairie's applications draw what nothing else does — the camera's viewfinder,
  * the dialler's keys, the weather's temperature — in the kit's colours. */
 
-.prairie-day-separator { color: @luma_muted; font-size: 12px; }
+.prairie-day-separator { color: @Suno_muted; font-size: 12px; }
 .prairie-bubble {
   padding: 9px 12px;
   border-radius: 16px;
-  color: @luma_ink;
+  color: @Suno_ink;
 }
-.prairie-bubble.incoming { background: @luma_fill; }
-.prairie-bubble.outgoing { background: @luma_accent; color: @luma_content; }
+.prairie-bubble.incoming { background: @Suno_fill; }
+.prairie-bubble.outgoing { background: @Suno_accent; color: @Suno_content; }
 .prairie-composer {
   min-height: 48px;
   padding: 8px 10px;
-  background: @luma_window;
-  border-top: 1px solid @luma_line;
+  background: @Suno_window;
+  border-top: 1px solid @Suno_line;
 }
 .prairie-composer entry { min-height: 38px; }
-.camera-viewfinder { background: @luma_window; }
-.camera-viewfinder picture { background: @luma_window; }
+.camera-viewfinder { background: @Suno_window; }
+.camera-viewfinder picture { background: @Suno_window; }
 .camera-status {
   margin-top: 18px;
   padding: 8px 13px;
   border-radius: 9999px;
-  background: alpha(@luma_ink, 0.78);
-  color: @luma_content;
+  background: alpha(@Suno_ink, 0.78);
+  color: @Suno_content;
   font-weight: 650;
 }
 .camera-controls {
   margin-bottom: 22px;
   padding: 9px 14px;
   border-radius: 9999px;
-  background: alpha(@luma_ink, 0.74);
+  background: alpha(@Suno_ink, 0.74);
 }
 .prairie-camera.mobile .camera-controls { margin-bottom: 92px; }
 .camera-control-button {
@@ -40,19 +40,19 @@
   min-height: 48px;
   padding: 0;
   border-radius: 9999px;
-  background: alpha(@luma_content, 0.96);
-  color: @luma_ink;
+  background: alpha(@Suno_content, 0.96);
+  color: @Suno_ink;
 }
 .camera-shutter-button {
   min-width: 64px;
   min-height: 64px;
-  border: 4px solid alpha(@luma_content, 0.42);
+  border: 4px solid alpha(@Suno_content, 0.42);
 }
-.camera-device-label { color: @luma_content; font-weight: 700; min-width: 52px; }
+.camera-device-label { color: @Suno_content; font-weight: 700; min-width: 52px; }
 .camera-focus-reticle {
-  border: 3px solid alpha(@luma_content, 0.92);
+  border: 3px solid alpha(@Suno_content, 0.92);
   border-radius: 9999px;
-  box-shadow: 0 0 0 1px alpha(@luma_ink, 0.55);
+  box-shadow: 0 0 0 1px alpha(@Suno_ink, 0.55);
 }
 .phone-number { min-width: 260px; min-height: 44px; font-size: 22px; }
 .phone-key {
@@ -63,15 +63,15 @@
   font-weight: 600;
 }
 .phone-call { min-width: 92px; min-height: 52px; border-radius: 9999px; }
-.prairie-info-name { color: @luma_ink; font-size: 22px; font-weight: 700; }
-.prairie-info-label { color: @luma_muted; min-width: 88px; }
-.prairie-section-title { color: @luma_ink; font-size: 17px; font-weight: 700; }
+.prairie-info-name { color: @Suno_ink; font-size: 22px; font-weight: 700; }
+.prairie-info-label { color: @Suno_muted; min-width: 88px; }
+.prairie-section-title { color: @Suno_ink; font-size: 17px; font-weight: 700; }
 .prairie-note-editor { font-size: 17px; }
-.voice-record { min-width: 64px; min-height: 64px; border-radius: 9999px; color: @luma_content; background: @luma_accent; }
-.prairie-photo-tile { background: @luma_fill; }
-.photo-viewer { background: @luma_window; }
-.photo-info { color: @luma_content; padding: 8px 12px; border-radius: 10px; background: alpha(@luma_window, 0.72); }
-.clock-readout { color: @luma_ink; font-family: "IBM Plex Mono", monospace; font-size: 42px; font-variant-numeric: tabular-nums; }
-.weather-temperature { color: @luma_ink; font-size: 54px; font-weight: 600; }
-.weather-hour { min-width: 72px; padding: 10px; border: 1px solid @luma_line; border-radius: 12px; background: @luma_content; }
+.voice-record { min-width: 64px; min-height: 64px; border-radius: 9999px; color: @Suno_content; background: @Suno_accent; }
+.prairie-photo-tile { background: @Suno_fill; }
+.photo-viewer { background: @Suno_window; }
+.photo-info { color: @Suno_content; padding: 8px 12px; border-radius: 10px; background: alpha(@Suno_window, 0.72); }
+.clock-readout { color: @Suno_ink; font-family: "IBM Plex Mono", monospace; font-size: 42px; font-variant-numeric: tabular-nums; }
+.weather-temperature { color: @Suno_ink; font-size: 54px; font-weight: 600; }
+.weather-hour { min-width: 72px; padding: 10px; border: 1px solid @Suno_line; border-radius: 12px; background: @Suno_content; }
 .monospace, .numeric { font-family: "IBM Plex Mono", monospace; }

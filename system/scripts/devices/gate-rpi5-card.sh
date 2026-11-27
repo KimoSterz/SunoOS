@@ -3,7 +3,7 @@
 #
 # Gate a Raspberry Pi 5 card: boot the preinstalled card image in an aarch64
 # VM (HVF on Apple silicon, KVM on an aarch64 Linux host) and write
-# gate-result.json (org.projectluma.device-card-gate/v1).
+# gate-result.json (org.projectSuno.device-card-gate/v1).
 #
 #   gate-rpi5-card.sh (--image CARD.img[.xz] | --disk-url nbd://HOST:PORT) --key SSH_PRIVATE_KEY
 #                     --manifest CARD.manifest.txt --device-repo DIR --output gate-result.json
@@ -25,15 +25,15 @@
 #                       the generic ARM ref with the kernel override, and
 #                       names no Raspberry Pi hardware ref
 #   fresh-greenboot     greenboot's required checks pass, boot_success=1
-#   fresh-image-contract  Luma Pi kernel, no Fedora kernel, the card's Pi
+#   fresh-image-contract  Suno Pi kernel, no Fedora kernel, the card's Pi
 #                       packages, no hardware-targeted update.conf, the device
 #                       repository and key, offline apps, no failed units
-#   no-account          no user account; Luma's first-boot setup is on screen
+#   no-account          no user account; Suno's first-boot setup is on screen
 #                       and GNOME Initial Setup is not installed
 #   override-update     an rpm-ostree upgrade to a newer commit (a local child
 #                       of the generic commit with the same tree) reapplies the
 #                       override from the device repository; the VM reboots
-#                       into it on the Luma Pi kernel and greenboot passes
+#                       into it on the Suno Pi kernel and greenboot passes
 set -euo pipefail
 
 image="" disk_url="" key="" manifest="" device_repo="" expect_commit="" output="" work=""
@@ -66,7 +66,7 @@ locals="$locals $(printf '%s\n' "$override" | sed -n 's/.*replaced=\([^ ]*\).*/\
 ref=${origin#*:}
 [[ "$candidate" =~ ^[0-9a-f]{64}$ ]] || { echo "no commit in $manifest" >&2; exit 1; }
 [ -z "$expect_commit" ] || [ "$candidate" = "$expect_commit" ] || { echo "the card carries $candidate, not $expect_commit" >&2; exit 1; }
-[[ "$ref" =~ ^luma/[0-9]+/aarch64/$channel$ ]] || { echo "$origin is not the generic ARM $channel ref" >&2; exit 1; }
+[[ "$ref" =~ ^Suno/[0-9]+/aarch64/$channel$ ]] || { echo "$origin is not the generic ARM $channel ref" >&2; exit 1; }
 [ -n "$override" ] || { echo "the card has no kernel override" >&2; exit 1; }
 [ -f "$device_repo/repodata/repomd.xml" ] || { echo "$device_repo is not an rpm-md repository" >&2; exit 1; }
 
@@ -75,7 +75,7 @@ case "$(uname -s)" in
   Linux) accel=kvm; firmware=/usr/share/edk2/aarch64/QEMU_EFI-silent-pflash.raw ;;
 esac
 [ "$(uname -m)" = arm64 ] || [ "$(uname -m)" = aarch64 ] || { echo "run on an aarch64 host" >&2; exit 1; }
-work=${work:-$(mktemp -d "${TMPDIR:-/tmp}/luma-rpi5-gate.XXXXXX")}
+work=${work:-$(mktemp -d "${TMPDIR:-/tmp}/Suno-rpi5-gate.XXXXXX")}
 mkdir -p "$work"
 port=$((22000 + RANDOM % 2000))
 repo_port=$((24000 + RANDOM % 2000))
@@ -104,7 +104,7 @@ fresh = ok("fresh-install", "fresh-first-boot", "fresh-greenboot", "fresh-image-
 no_account = ok("no-account")
 update = ok("override-update")
 now = datetime.datetime.now(datetime.timezone.utc)
-gate = {"schema": "org.projectluma.device-card-gate/v1", "device": "raspberrypi,rpi5", "card": card,
+gate = {"schema": "org.projectSuno.device-card-gate/v1", "device": "raspberrypi,rpi5", "card": card,
         "channel": channel, "commit": commit, "version": version, "origin": origin, "kernel": kernel,
         "run_id": now.strftime("%Y%m%dT%H%M%SZ"), "completed_utc": now.strftime("%Y-%m-%dT%H:%M:%SZ"),
         "fresh": fresh, "no_account": no_account, "override_update": update,
@@ -126,7 +126,7 @@ print(d.get("base-checksum") or d["checksum"], d["origin"], ",".join(d.get("requ
       ",".join(sorted(x if isinstance(x, str) else str(x[0]) for x in d.get("base-removals") or [])) or "-", d["checksum"])' "$1"
 }
 override_ok() {  # ORIGIN REQUESTED REMOVALS
-  [ "$1" = "$origin" ] && [[ "$1" != *raspberrypi-rpi5* ]] && [[ ",$2," == *,kernel-luma-rpi,* ]] && [[ "$3" == *kernel-core* ]]
+  [ "$1" = "$origin" ] && [[ "$1" != *raspberrypi-rpi5* ]] && [[ ",$2," == *,kernel-Suno-rpi,* ]] && [[ "$3" == *kernel-core* ]]
 }
 
 # fresh-install: the card image on a 32 GiB sparse disk (the first boot grows
@@ -163,8 +163,8 @@ for _ in $(seq 1 90); do vm true 2>/dev/null && break; sleep 10; done
 vm true 2>/dev/null || fail_now fresh-first-boot "no SSH within 15 minutes (serial: $work/serial.log)"
 read -r base got_origin requested removals _ <<<"$(deployment booted)"
 [ "$base" = "$candidate" ] && override_ok "$got_origin" "$requested" "$removals" ||
-  fail_now fresh-first-boot "booted base $base origin $got_origin requested $requested removed $removals; expected $candidate on $origin with kernel-luma-rpi replacing Fedora's kernel"
-stage fresh-first-boot pass "booted $candidate from $origin; override: kernel-luma-rpi, removed ${removals//,/ }"
+  fail_now fresh-first-boot "booted base $base origin $got_origin requested $requested removed $removals; expected $candidate on $origin with kernel-Suno-rpi replacing Fedora's kernel"
+stage fresh-first-boot pass "booted $candidate from $origin; override: kernel-Suno-rpi, removed ${removals//,/ }"
 
 for _ in $(seq 1 60); do
   [ "$(vm systemctl is-active greenboot-healthcheck 2>/dev/null)" = activating ] || break; sleep 10
@@ -177,34 +177,34 @@ stage fresh-greenboot pass "greenboot judged the first boot healthy (boot_succes
 
 # Type=notify: active (running) after the login wait while the import goes on.
 for _ in $(seq 1 60); do
-  case "$(vm systemctl show -P SubState luma-app-baseline 2>/dev/null)" in start|running) sleep 10 ;; *) break ;; esac
+  case "$(vm systemctl show -P SubState Suno-app-baseline 2>/dev/null)" in start|running) sleep 10 ;; *) break ;; esac
 done
 contract=$(vm "kernel='$kernel' locals='$locals'" 'bash -s' <<'EOF'
 problems=()
 [ "$(uname -r)" = "$kernel" ] || problems+=("kernel $(uname -r), expected $kernel")
-for name in kernel-luma-rpi $locals; do rpm -q "$name" >/dev/null || problems+=("$name is not installed"); done
+for name in kernel-Suno-rpi $locals; do rpm -q "$name" >/dev/null || problems+=("$name is not installed"); done
 ! rpm -q kernel-core >/dev/null 2>&1 || problems+=("Fedora kernel-core is installed")
-if [ -e /etc/luma/update.conf ] && grep -Eq '^\s*(hardware_target\s*=\s*\S|ref_template\s*=.*raspberrypi)' /etc/luma/update.conf; then
+if [ -e /etc/Suno/update.conf ] && grep -Eq '^\s*(hardware_target\s*=\s*\S|ref_template\s*=.*raspberrypi)' /etc/Suno/update.conf; then
   problems+=("update.conf names a hardware target")
 fi
-grep -q '^baseurl=https://' /etc/yum.repos.d/luma-raspberrypi-rpi5.repo 2>/dev/null || problems+=("no Raspberry Pi 5 device repository")
-[ -s /etc/pki/rpm-gpg/RPM-GPG-KEY-luma-os-release ] || problems+=("no release key for the device repository")
+grep -q '^baseurl=https://' /etc/yum.repos.d/Suno-raspberrypi-rpi5.repo 2>/dev/null || problems+=("no Raspberry Pi 5 device repository")
+[ -s /etc/pki/rpm-gpg/RPM-GPG-KEY-Suno-os-release ] || problems+=("no release key for the device repository")
 # useradd creates the first account's home under /var/home: the policy must label it home_root_t.
 [ "$(matchpathcon -n /var/home 2>/dev/null)" = system_u:object_r:home_root_t:s0 ] || problems+=("policy labels /var/home $(matchpathcon -n /var/home 2>/dev/null)")
 [ "$(stat -c %C /var/home)" = system_u:object_r:home_root_t:s0 ] || problems+=("/var/home is $(stat -c %C /var/home)")
-grep -qx repo_gpgcheck=1 /etc/yum.repos.d/luma-raspberrypi-rpi5.repo || problems+=("device repository metadata is not signature-checked")
-if rpm -q luma-rpi5-platform >/dev/null 2>&1; then
+grep -qx repo_gpgcheck=1 /etc/yum.repos.d/Suno-raspberrypi-rpi5.repo || problems+=("device repository metadata is not signature-checked")
+if rpm -q Suno-rpi5-platform >/dev/null 2>&1; then
   # The no-sleep policy applies on Pi 5 boards only (the VM is linux,dummy-virt).
   if [ -r /proc/device-tree/compatible ] && tr '\0' '\n' </proc/device-tree/compatible | grep -q '^raspberrypi,5'; then
     [ "$(busctl call org.freedesktop.login1 /org/freedesktop/login1 org.freedesktop.login1.Manager CanSuspend)" = 's "no"' ] ||
       problems+=("logind still offers suspend")
   else
-    [ -f /usr/lib/systemd/system/luma-rpi5-no-sleep.service ] || problems+=("no no-sleep unit")
-    [ ! -e /run/systemd/sleep.conf.d/50-luma-rpi5-no-sleep.conf ] || problems+=("no-sleep policy applied off the Pi")
+    [ -f /usr/lib/systemd/system/Suno-rpi5-no-sleep.service ] || problems+=("no no-sleep unit")
+    [ ! -e /run/systemd/sleep.conf.d/50-Suno-rpi5-no-sleep.conf ] || problems+=("no-sleep policy applied off the Pi")
   fi
-  [ -f /usr/lib/systemd/system/luma-rpi5-firmware-sync.service ] || problems+=("no firmware-sync unit")
+  [ -f /usr/lib/systemd/system/Suno-rpi5-firmware-sync.service ] || problems+=("no firmware-sync unit")
 fi
-for unit in luma-app-baseline gdm; do
+for unit in Suno-app-baseline gdm; do
   [ "$(systemctl is-active $unit)" = active ] || problems+=("$unit is $(systemctl is-active $unit)")
 done
 failed=$(systemctl --failed --no-legend --plain | awk '{print $1}' | tr '\n' ' ')
@@ -223,16 +223,16 @@ problems=()
 users=$(awk -F: '$3 >= 1000 && $3 < 60000 {print $1}' /etc/passwd | tr '\n' ' ')
 [ -z "$users" ] || problems+=("accounts exist: $users")
 rpm -q gnome-initial-setup >/dev/null 2>&1 && problems+=("gnome-initial-setup is installed")
-rpm -q luma-setup >/dev/null || problems+=("luma-setup is not installed")
-for _ in $(seq 1 30); do pgrep -f 'libexec/luma-setup( |$)' >/dev/null && break; sleep 5; done
-pgrep -f 'libexec/luma-setup( |$)' >/dev/null || problems+=("luma-setup is not running")
+rpm -q Suno-setup >/dev/null || problems+=("Suno-setup is not installed")
+for _ in $(seq 1 30); do pgrep -f 'libexec/Suno-setup( |$)' >/dev/null && break; sleep 5; done
+pgrep -f 'libexec/Suno-setup( |$)' >/dev/null || problems+=("Suno-setup is not running")
 # The setup's first frame can take tens of seconds in a software-rendered VM, and the
 # Shell shows the desktop until then: the screenshot waits until it has run 45 s.
-setup=$(pgrep -f 'libexec/luma-setup( |$)' | head -n 1)
+setup=$(pgrep -f 'libexec/Suno-setup( |$)' | head -n 1)
 for _ in $(seq 1 18); do
   [ -n "$setup" ] && [ "$(ps -o etimes= -p "$setup" 2>/dev/null | tr -d ' ')" -ge 45 ] 2>/dev/null && break; sleep 5
 done
-if [ "${#problems[@]}" -eq 0 ]; then echo "PASS no account; luma-setup on screen"; else printf 'FAIL %s; ' "${problems[@]}"; echo; fi
+if [ "${#problems[@]}" -eq 0 ]; then echo "PASS no account; Suno-setup on screen"; else printf 'FAIL %s; ' "${problems[@]}"; echo; fi
 EOF
 )
 python3 - "$work/qmp.sock" "$work/first-boot.png" <<'PY' || true
@@ -253,11 +253,11 @@ python3 -m http.server --bind 127.0.0.1 --directory "$device_repo" "$repo_port" 
 http_pid=$!
 staged=$(vm "candidate='$candidate' ref='$ref' repo_port='$repo_port'" 'bash -s' <<'EOF' 2>&1
 set -e
-sed -i "s|^baseurl=.*|baseurl=http://10.0.2.2:$repo_port/|" /etc/yum.repos.d/luma-raspberrypi-rpi5.repo
+sed -i "s|^baseurl=.*|baseurl=http://10.0.2.2:$repo_port/|" /etc/yum.repos.d/Suno-raspberrypi-rpi5.repo
 new=$(unshare -m sh -c 'mount -o remount,rw /sysroot && ostree commit --repo=/ostree/repo --orphan \
   --tree=ref="$1" --parent="$1" -s "card gate update" --add-metadata-string=version=gate-update' _ "$candidate")
-unshare -m sh -c 'mount -o remount,rw /sysroot && ostree refs --repo=/ostree/repo --delete "luma:$1" &&
-  ostree refs --repo=/ostree/repo --create="luma:$1" "$2"' _ "$ref" "$new"
+unshare -m sh -c 'mount -o remount,rw /sysroot && ostree refs --repo=/ostree/repo --delete "Suno:$1" &&
+  ostree refs --repo=/ostree/repo --create="Suno:$1" "$2"' _ "$ref" "$new"
 rpm-ostree refresh-md >/dev/null
 rpm-ostree upgrade --cache-only >/tmp/upgrade.log 2>&1 || { tail -n 5 /tmp/upgrade.log; exit 1; }
 echo "$new"

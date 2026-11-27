@@ -11,7 +11,7 @@ ROOT=Path(__file__).resolve().parents[2]
 
 class MediaSourceBinding(unittest.TestCase):
     def test_old_media_override_selects_target_gate_only(self):
-        with tempfile.TemporaryDirectory(prefix='luma-clean-media-policy-') as tmp:
+        with tempfile.TemporaryDirectory(prefix='Suno-clean-media-policy-') as tmp:
             work=Path(tmp);repo=work/'git-fixture';repo.mkdir()
             def git(*args):
                 return subprocess.check_output(['git','-C',str(repo),*args],text=True).strip()
@@ -27,10 +27,10 @@ class MediaSourceBinding(unittest.TestCase):
             new=git('rev-parse','HEAD')
             media=(ROOT/'scripts/os/verify-media.sh').read_text()
             # Execute actual maintained clean-media archive call and actual check-selection code.
-            archive_call=next(line for line in media.splitlines()if line.startswith('luma_os_release_files '))
+            archive_call=next(line for line in media.splitlines()if line.startswith('Suno_os_release_files '))
             function=media.split('release_check() {',1)[1].split('\n  scp -q',1)[0]
             shell=work/'exercise.sh'
-            shell.write_text('set -euo pipefail\n. "$1/scripts/os/lib/common.sh"\nluma_os_repo_root=$2\nmedia_source=$3\nchecks_source=$4\nrelease_files=$5\nmedia_build_dir=\nLUMA_SOURCE_DIRTY=false\nLUMA_SOURCE_SNAPSHOT_SHA256=\n'+archive_call+'\nout=$6\nvm=$6\nresults=$6/results\nfailures=0\nselect_check() {\n'+function+'\n}\nselect_check target target\n')
+            shell.write_text('set -euo pipefail\n. "$1/scripts/os/lib/common.sh"\nSuno_os_repo_root=$2\nmedia_source=$3\nchecks_source=$4\nrelease_files=$5\nmedia_build_dir=\nSuno_SOURCE_DIRTY=false\nSuno_SOURCE_SNAPSHOT_SHA256=\n'+archive_call+'\nout=$6\nvm=$6\nresults=$6/results\nfailures=0\nselect_check() {\n'+function+'\n}\nselect_check target target\n')
             selected=work/'selected';selected.mkdir()
             result=subprocess.run(['bash',str(shell),str(ROOT),str(repo),old,new,str(work/'release-checks'),str(selected)],text=True,capture_output=True)
             self.assertEqual(result.returncode,0,result.stdout+result.stderr)

@@ -29,7 +29,7 @@ def transport(environment, timeout):
 def public_name(person):
     name = str(person.get('display_name') or '').strip()
     handle = str(person.get('handle') or '').strip().lstrip('@')
-    return name if name and '@' not in name else ('@' + handle if handle else 'Luma user')
+    return name if name and '@' not in name else ('@' + handle if handle else 'Suno user')
 
 
 class PeopleDirectory:
@@ -37,19 +37,19 @@ class PeopleDirectory:
         self.identity = load_identity(environment)
         self.http = http or transport(environment, 8)
         if self.identity is None:
-            raise ConnectError('Sign in to Luma Connect to find people on Luma.')
+            raise ConnectError('Sign in to Suno Connect to find people on Suno.')
         self.address = hub_url(self.identity.hub)
 
     def lookup(self, handle):
-        from .messages_luma import handle_from
+        from .messages_Suno import handle_from
         handle = handle_from(handle)
         if not handle:
-            raise ValueError('Enter a valid Luma username.')
+            raise ValueError('Enter a valid Suno username.')
         result = self.http.get_json(self.address + '/api/hub/sync/people/' + quote(handle, safe=''), token=self.identity.token)
         if result.get('blocked_by_you'):
             raise ConnectError('You blocked this person.')
         if not result.get('account'):
-            raise ConnectError('This person could not be found on Luma.')
+            raise ConnectError('This person could not be found on Suno.')
         return result
 
     def friends(self):
@@ -64,7 +64,7 @@ class PeopleDirectory:
             if kind == 'phone' and not (normalized.startswith('+') and normalized[1:].isdigit()):
                 continue
             if normalized:
-                hashes.append(hashlib.sha256(('luma-discovery-v1:' + normalized).encode()).hexdigest())
+                hashes.append(hashlib.sha256(('Suno-discovery-v1:' + normalized).encode()).hexdigest())
         if not hashes:
             return []
         return self.http.post_json(self.address + '/api/hub/sync/identity/discover', {'hashes': hashes}, token=self.identity.token).get('matches', [])
@@ -75,7 +75,7 @@ class CollaborationClient:
         self.identity = load_identity(environment)
         self.http = http or transport(environment, 12)
         if self.identity is None:
-            raise ConnectError('Sign in to Luma Connect to collaborate.')
+            raise ConnectError('Sign in to Suno Connect to collaborate.')
         self.address = hub_url(self.identity.hub)
 
     def get(self, suffix):
@@ -198,7 +198,7 @@ def sync_notes_collaboration(*, environment=None, http=None, store_path=None):
     from .notes_backend import NotesStore, NoteChangedError
     from .connect_sync import notes_store_path
     from .collaboration_ownership import profile_ready
-    if not profile_ready('org.projectluma.Notes', environment):
+    if not profile_ready('org.projectSuno.Notes', environment):
         return {'updated': 0, 'conflicts': 0, 'deferred_until_first_launch': True}
     client = CollaborationClient(environment, http)
     try:

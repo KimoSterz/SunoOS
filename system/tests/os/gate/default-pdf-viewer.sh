@@ -1,11 +1,11 @@
 #!/bin/bash
 # SPDX-License-Identifier: Apache-2.0
 #
-# Release gate checks: Viewer (luma-viewer) opens PDFs and images, a file
+# Release gate checks: Viewer (Suno-viewer) opens PDFs and images, a file
 # opened through the OpenURI portal (a double-click in Filer, which is
 # sandboxed) goes to its default without the "choose an application" prompt,
 # a person's own "Always Open" choice holds, and GNOME's Document Viewer
-# (Papers, Evince) is not part of Luma. Run as root inside a
+# (Papers, Evince) is not part of Suno. Run as root inside a
 # disposable VM installed from the candidate image or from a nightly medium.
 # Needs no display and no network. Prints one JSON line per check ({"check",
 # "result": "pass"|"fail"|"skip", "detail"}) and exits 1 if any check failed.
@@ -17,13 +17,13 @@
 # XDG_CURRENT_DESKTOP=GNOME plus what systemd's environment.d generators give
 # a user session (the launcher policy's XDG_DATA_DIRS).
 set -uo pipefail
-viewer=org.projectluma.Viewer.desktop
+viewer=org.projectSuno.Viewer.desktop
 pdf_types="application/pdf application/x-bzpdf application/x-gzpdf application/x-xzpdf application/x-ext-pdf"
 image_types="image/png image/jpeg image/gif image/bmp image/tiff image/webp image/avif image/heif image/svg+xml"
-fresh=luma-gate-pdf
-migrated=luma-gate-pdf-old
+fresh=Suno-gate-pdf
+migrated=Suno-gate-pdf-old
 failed=0
-work=$(mktemp -d /var/tmp/luma-gate-pdf.XXXXXX)
+work=$(mktemp -d /var/tmp/Suno-gate-pdf.XXXXXX)
 chmod 0755 "$work"
 
 emit() {
@@ -74,11 +74,11 @@ defaults_not_viewer() {
 }
 
 # 1. Viewer is installed and declares every PDF type.
-if ! rpm -q luma-viewer >/dev/null 2>&1; then
-  emit viewer-installed fail 'luma-viewer is not installed'
+if ! rpm -q Suno-viewer >/dev/null 2>&1; then
+  emit viewer-installed fail 'Suno-viewer is not installed'
   exit 1
 fi
-emit viewer-installed pass "$(rpm -q luma-viewer)"
+emit viewer-installed pass "$(rpm -q Suno-viewer)"
 declared=$(sed -n 's/^MimeType=//p' "/usr/share/applications/$viewer")
 missing=
 for type in $pdf_types; do
@@ -91,10 +91,10 @@ else emit viewer-declares-pdf-types fail "Viewer's desktop entry does not declar
 flatpaks=$(flatpak list --system --app --columns=application 2>/dev/null | grep -E '^org\.gnome\.(Papers|Evince)$' | tr '\n' ' ')
 if [ -z "$flatpaks" ]; then emit no-document-viewer-flatpak pass 'org.gnome.Papers and org.gnome.Evince are not installed'
 else emit no-document-viewer-flatpak fail "installed system Flatpaks: $flatpaks"; fi
-if grep -Fxq 'org.gnome.Papers luma-viewer' /usr/share/luma/system-flatpak-replacements.txt 2>/dev/null; then
+if grep -Fxq 'org.gnome.Papers Suno-viewer' /usr/share/Suno/system-flatpak-replacements.txt 2>/dev/null; then
   emit papers-on-replacement-list pass 'installs that still carry the Papers Flatpak lose it at boot'
 else
-  emit papers-on-replacement-list fail 'org.gnome.Papers is missing from /usr/share/luma/system-flatpak-replacements.txt'
+  emit papers-on-replacement-list fail 'org.gnome.Papers is missing from /usr/share/Suno/system-flatpak-replacements.txt'
 fi
 
 useradd -m "$fresh" || { emit fresh-account fail "useradd $fresh failed"; exit 1; }
@@ -120,30 +120,30 @@ else emit gio-mime-image-types fail "not $viewer:$bad"; fi
 # 4. An account from before: its personal list names Papers for PDFs and a
 #    browser for compressed PDFs, and keeps a deliberate PNG choice. The
 #    once-per-account step (enabled for every user) hands the first two back.
-if [ -L /usr/lib/systemd/user/default.target.wants/luma-default-apps-migration.service ]; then
-  emit migration-enabled pass 'luma-default-apps-migration.service is wanted by every user session'
+if [ -L /usr/lib/systemd/user/default.target.wants/Suno-default-apps-migration.service ]; then
+  emit migration-enabled pass 'Suno-default-apps-migration.service is wanted by every user session'
 else
-  emit migration-enabled fail 'luma-default-apps-migration.service is not enabled for user sessions'
+  emit migration-enabled fail 'Suno-default-apps-migration.service is not enabled for user sessions'
 fi
 useradd -m "$migrated" || { emit migrated-account fail "useradd $migrated failed"; exit 1; }
 home=$(getent passwd "$migrated" | cut -d: -f6)
 install -d -o "$migrated" -g "$migrated" "$home/.config" "$home/.local/share/applications"
 printf '[Desktop Entry]\nType=Application\nName=Gate Browser\nExec=true %%u\nCategories=Network;WebBrowser;\nMimeType=application/pdf;application/x-gzpdf;x-scheme-handler/https;\n' \
-  >"$home/.local/share/applications/luma-gate-browser.desktop"
+  >"$home/.local/share/applications/Suno-gate-browser.desktop"
 printf '[Desktop Entry]\nType=Application\nName=Gate Painter\nExec=true %%f\nCategories=Graphics;\nMimeType=image/png;\n' \
-  >"$home/.local/share/applications/luma-gate-painter.desktop"
-printf '[Default Applications]\napplication/pdf=org.gnome.Papers.desktop\napplication/x-gzpdf=luma-gate-browser.desktop\nimage/png=luma-gate-painter.desktop\n' \
+  >"$home/.local/share/applications/Suno-gate-painter.desktop"
+printf '[Default Applications]\napplication/pdf=org.gnome.Papers.desktop\napplication/x-gzpdf=Suno-gate-browser.desktop\nimage/png=Suno-gate-painter.desktop\n' \
   >"$home/.config/mimeapps.list"
 chown -R "$migrated:$migrated" "$home/.config" "$home/.local"
-out=$(as_session "$migrated" /usr/libexec/luma-default-apps-migration 2>&1)
+out=$(as_session "$migrated" /usr/libexec/Suno-default-apps-migration 2>&1)
 bad=$(defaults_not_viewer "$migrated" application/pdf application/x-gzpdf)
 png=$(as_session "$migrated" gio mime image/png 2>&1 | sed -n 's/^Default application for .*: //p' | head -n 1)
-if [ -z "$bad" ] && [ "$png" = luma-gate-painter.desktop ]; then
+if [ -z "$bad" ] && [ "$png" = Suno-gate-painter.desktop ]; then
   emit migration-hands-pdf-to-viewer pass "$out"
 else
   emit migration-hands-pdf-to-viewer fail "not Viewer:${bad:- none}; image/png=$png; $out"
 fi
-if [ -e "$home/.local/state/luma/default-apps-migration/viewer-1" ]; then
+if [ -e "$home/.local/state/Suno/default-apps-migration/viewer-1" ]; then
   emit migration-runs-once pass 'the account is stamped; later logins skip the step'
 else
   emit migration-runs-once fail 'no stamp after the migration ran'
@@ -185,7 +185,7 @@ xref = len(pdf)
 pdf += b"xref\n0 4\n0000000000 65535 f \n" + b"".join(b"%010d 00000 n \n" % o for o in offsets)
 pdf += b"trailer\n<< /Size 4 /Root 1 0 R >>\nstartxref\n%d\n%%%%EOF\n" % xref
 open(f"{home}/Document.pdf", "wb").write(pdf)
-open(f"{home}/Notes.txt", "w").write("Luma gate\n")
+open(f"{home}/Notes.txt", "w").write("Suno gate\n")
 PY
 chown "$fresh:" "$home/Screenshot.png" "$home/Document.pdf" "$home/Notes.txt"
 cat >"$work/open.py" <<'PY'
@@ -244,9 +244,9 @@ opens_directly portal-opens-pdf-in-viewer "$home/Document.pdf" "$viewer"
 opens_directly portal-opens-text-in-viewer "$home/Notes.txt" "$viewer"
 install -d -o "$fresh" -g "$fresh" "$home/.local/share/applications"
 printf '[Desktop Entry]\nType=Application\nName=Gate Painter\nExec=true %%f\nCategories=Graphics;\nMimeType=image/png;\n' \
-  >"$home/.local/share/applications/luma-gate-painter.desktop"
-chown "$fresh:" "$home/.local/share/applications/luma-gate-painter.desktop"
-as_session "$fresh" gio mime image/png luma-gate-painter.desktop >/dev/null 2>&1
-opens_directly portal-keeps-always-open-choice "$home/Screenshot.png" luma-gate-painter.desktop
+  >"$home/.local/share/applications/Suno-gate-painter.desktop"
+chown "$fresh:" "$home/.local/share/applications/Suno-gate-painter.desktop"
+as_session "$fresh" gio mime image/png Suno-gate-painter.desktop >/dev/null 2>&1
+opens_directly portal-keeps-always-open-choice "$home/Screenshot.png" Suno-gate-painter.desktop
 
 exit "$failed"

@@ -14,17 +14,17 @@ import package_releases  # noqa: E402
 class ActualToolkitSourceClosure(unittest.TestCase):
     def setUp(self):
         self.paths = package_releases.TOOLKIT_PATHS
-        self.assertIn('assets/icon-theme/Prairie/symbolic/actions/lumaui-*.svg', self.paths)
+        self.assertIn('assets/icon-theme/Prairie/symbolic/actions/SunoUI-*.svg', self.paths)
         self.assertNotIn('assets/icon-theme/Prairie', self.paths)
         self.temporary = tempfile.TemporaryDirectory()
         self.addCleanup(self.temporary.cleanup)
         self.root = Path(self.temporary.name)
         self.git('init', '-q')
-        for path in ('assets/icon-theme/Prairie/symbolic/actions/lumaui-first.svg',
+        for path in ('assets/icon-theme/Prairie/symbolic/actions/SunoUI-first.svg',
                      'assets/icon-theme/Prairie/application-manifest.json',
                      'assets/icon-theme/Prairie/scalable/apps/example.svg',
-                     'scripts/packages/build-luma-developer-platform.sh',
-                     'src/luma-platform/NOTICE', 'LICENSE.md', 'config/desktop/inputs.env'):
+                     'scripts/packages/build-Suno-developer-platform.sh',
+                     'src/Suno-platform/NOTICE', 'LICENSE.md', 'config/desktop/inputs.env'):
             self.write(path, 'original\n')
         self.git('add', '.')
         self.git('-c', 'user.name=Fixture', '-c', 'user.email=fixture@invalid',
@@ -54,22 +54,22 @@ class ActualToolkitSourceClosure(unittest.TestCase):
         self.assertEqual(self.guarded_diff(), 0)
 
     def test_modified_consumed_glyph_is_refused(self):
-        self.write('assets/icon-theme/Prairie/symbolic/actions/lumaui-first.svg', 'changed\n')
+        self.write('assets/icon-theme/Prairie/symbolic/actions/SunoUI-first.svg', 'changed\n')
         self.assertEqual(self.guarded_diff(), 1)
 
     def test_added_consumed_glyph_is_refused(self):
-        self.write('assets/icon-theme/Prairie/symbolic/actions/lumaui-added.svg', 'new\n')
+        self.write('assets/icon-theme/Prairie/symbolic/actions/SunoUI-added.svg', 'new\n')
         self.assertEqual(self.guarded_diff(), 1)
 
     def test_deleted_consumed_glyph_is_refused(self):
-        (self.root / 'assets/icon-theme/Prairie/symbolic/actions/lumaui-first.svg').unlink()
+        (self.root / 'assets/icon-theme/Prairie/symbolic/actions/SunoUI-first.svg').unlink()
         self.assertEqual(self.guarded_diff(), 1)
 
     def test_recipe_notice_and_license_remain_guarded(self):
         # config/desktop/inputs.env is compared by its provider pins
         # (package_releases.toolkit_differences).
-        for path in ('scripts/packages/build-luma-developer-platform.sh',
-                     'src/luma-platform/NOTICE', 'LICENSE.md'):
+        for path in ('scripts/packages/build-Suno-developer-platform.sh',
+                     'src/Suno-platform/NOTICE', 'LICENSE.md'):
             with self.subTest(path=path):
                 self.git('reset', '--hard', '-q', self.base)
                 self.write(path, 'changed\n')

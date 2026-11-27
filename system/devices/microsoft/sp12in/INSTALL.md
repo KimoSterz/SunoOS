@@ -5,7 +5,7 @@ X Plus X1P-42-100, retail SKU
 `Surface_Pro_12in_1st_Ed_with_Snapdragon_2110`. It does not target the Intel
 Surface Pro 12th Edition, Surface Pro 11, or a later 12-inch generation.
 
-No installable Luma Surface image has been qualified yet. The profile records
+No installable Suno Surface image has been qualified yet. The profile records
 source inputs; it is not a download or an instruction to install a generic ARM
 ISO. Hardware results must be recorded before calling this a supported device.
 
@@ -26,7 +26,7 @@ firmware variables or install a firmware update as part of a USB boot test.
 
 ## Updates: the generic ARM image plus the Surface device repository
 
-A Surface follows the one ARM OS commit (`luma/1/aarch64/<channel>`) like every
+A Surface follows the one ARM OS commit (`Suno/1/aarch64/<channel>`) like every
 other ARM computer. Its kernel, `kernel-surface-pro12` (vmlinuz, modules and
 `/usr/lib/modules/<release>/devicetree`, which OSTree writes into every boot
 entry), comes from the signed device repository
@@ -34,18 +34,18 @@ entry), comes from the signed device repository
 client-side rpm-ostree override: Fedora's kernel packages removed,
 `kernel-surface-pro12` layered (`rpm-ostree status` shows it). Every OS update
 rebuilds the override on the new commit and takes newer Surface kernels from
-that repository; `/etc/yum.repos.d/luma-microsoft-sp12in.repo` and
-`/etc/pki/rpm-gpg/RPM-GPG-KEY-luma-os-release` configure it. The device tree
+that repository; `/etc/yum.repos.d/Suno-microsoft-sp12in.repo` and
+`/etc/pki/rpm-gpg/RPM-GPG-KEY-Suno-os-release` configure it. The device tree
 (`microsoft,surface-pro-12in`) selects the Surface's per-device update holds,
 so a release held for the Surface never blocks other ARM devices.
 
-The owner's firmware stays on the Surface in `/etc/luma/device-firmware`. It
+The owner's firmware stays on the Surface in `/etc/Suno/device-firmware`. It
 is in the initramfs through `rpm-ostree initramfs-etc` and is found through
-the `firmware_class.path=/etc/luma/device-firmware` kernel argument. No
+the `firmware_class.path=/etc/Suno/device-firmware` kernel argument. No
 repository carries it.
 
 A Surface installed from a private per-device image
-(`luma/1/aarch64/microsoft-sp12in/<channel>`) moves once with
+(`Suno/1/aarch64/microsoft-sp12in/<channel>`) moves once with
 `scripts/devices/sp12in-join-generic.sh`. Run it with `--dry-run` first. It
 checks the device tree, the release key, the signed device repository and the
 firmware record, then stages the generic commit with the override and stops.

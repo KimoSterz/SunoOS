@@ -4,7 +4,7 @@
 # Build the Fairphone 6 kernel: the SimplyLuma/linux tag in
 # devices/fairphone/fp6/device.toml [kernel] with its patches applied, its
 # config with the config_fragments merged over it, cross-compiled as
-# luma/fp6/alpha1/BUILD.md in that tag describes (clang/LLVM/LLD 22.1.8 and
+# Suno/fp6/alpha1/BUILD.md in that tag describes (clang/LLVM/LLD 22.1.8 and
 # pahole 1.30 on Fedora 44).
 #
 # OUTPUT_DIR receives:
@@ -16,8 +16,8 @@
 #             the kernel's Android GPU admission entry, empty unless
 #             device.toml [kernel.android_gpu] admits these inputs
 #             (scripts/kernel/fp6-android-gpu-admission.py); shipped by
-#             kernel-modules-luma-fp6
-#   modules/  stripped modules_install tree (scripts/packages/build-kernel-modules-luma-fp6.sh --tree)
+#             kernel-modules-Suno-fp6
+#   modules/  stripped modules_install tree (scripts/packages/build-kernel-modules-Suno-fp6.sh --tree)
 #   obj/      the build tree; a second run with the same OUTPUT_DIR is incremental
 #
 # usage: build-fp6.sh [--source DIR] OUTPUT_DIR
@@ -79,7 +79,7 @@ version=$(make -s kernelversion)
 localversion=${release#"$version"}
 [ "$version$localversion" = "$release" ] || fail "kernel $version cannot have release $release"
 K=(make O="$obj" ARCH=arm64 LLVM=1 LOCALVERSION="$localversion"
-   KBUILD_BUILD_USER=luma KBUILD_BUILD_HOST=kernel-cross
+   KBUILD_BUILD_USER=Suno KBUILD_BUILD_HOST=kernel-cross
    KBUILD_BUILD_VERSION="${KBUILD_BUILD_VERSION:-2}"
    KBUILD_BUILD_TIMESTAMP="${KBUILD_BUILD_TIMESTAMP:-2026-11-09 00:00:00 UTC}")
 

@@ -1,5 +1,5 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Project Luma <engineering@projectluma.org>
+From: Project Suno <engineering@projectSuno.org>
 Date: Sat, 21 Nov 2026 03:00:00 -0600
 Subject: [PATCH] Notification pill: breathes once per notification
 
@@ -14,11 +14,11 @@ breath in flight is not restarted, an interrupted series carries on with
 the breaths left, and once they are spent the glow stays at its steady
 level.
 ---
-diff --git a/js/ui/lumaNotificationBeacon.js b/js/ui/lumaNotificationBeacon.js
+diff --git a/js/ui/SunoNotificationBeacon.js b/js/ui/SunoNotificationBeacon.js
 index a598528..416ee79 100644
---- a/js/ui/lumaNotificationBeacon.js
-+++ b/js/ui/lumaNotificationBeacon.js
-@@ -22,6 +22,8 @@ import {displayExclusions, statusInsets, surfaceInsets} from './lumaPresentation
+--- a/js/ui/SunoNotificationBeacon.js
++++ b/js/ui/SunoNotificationBeacon.js
+@@ -22,6 +22,8 @@ import {displayExclusions, statusInsets, surfaceInsets} from './SunoPresentation
  const MORPH_TIME = 460;
  const RETRACT_TIME = 6500;
  const PILL_MAX_WIDTH = 392;

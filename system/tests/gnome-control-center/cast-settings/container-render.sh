@@ -1,26 +1,26 @@
 #!/bin/bash
 # SPDX-License-Identifier: GPL-2.0-or-later
-# Install the pinned Luma toolkit and the candidate Settings (.16) in a
+# Install the pinned Suno toolkit and the candidate Settings (.16) in a
 # disposable Fedora 44 container on the Cast UI exec volume, then render
 # Settings › Displays › Cast (0014-0016 build). Also runs plain Displays and Apps as controls,
 # so a startup failure can be told apart from the Cast page.
 set -euo pipefail
-W=/mnt/luma-secondary/luma-cast-ui
-P="podman --root $W/fs/podman/storage --runroot /run/luma-cast-ui-podman-runroot --storage-opt overlay.imagestore=/var/lib/containers/storage"
-POOL=/mnt/luma-secondary/luma-build/os-release/fs/rpms/pool
+W=/mnt/Suno-secondary/Suno-cast-ui
+P="podman --root $W/fs/podman/storage --runroot /run/Suno-cast-ui-podman-runroot --storage-opt overlay.imagestore=/var/lib/containers/storage"
+POOL=/mnt/Suno-secondary/Suno-build/os-release/fs/rpms/pool
 G=$W/fs/gcc-rpmbuild
 S=$W/fs/settings-render
 rm -rf "$S"; mkdir -p "$S/rpms"
-cp $POOL/gtk4-4.22.4-1.luma.17.preview1.fc44.x86_64.rpm $POOL/libadwaita-1.9.3-1.luma.45.preview20260914.fc44.x86_64.rpm \
-   $POOL/google-figtree-fonts-2.0.3-1.luma.3.fc44.noarch.rpm $POOL/luma-shell-state-0.2.0-1.luma.26.preview20260911.fc44.noarch.rpm \
-   $POOL/prairie-icon-theme-0.1.0-1.luma.25.fc44.noarch.rpm \
-   /mnt/luma-secondary/luma-build/depot/fs/rpms/x86_64/luma-developer-platform-0.1.0-1.luma.62~preview.20260910.1.fc44.x86_64.rpm \
-   $G/RPMS/x86_64/gnome-control-center-50.4-1.luma.16.preview20260915.1.fc44.x86_64.rpm \
-   $G/RPMS/noarch/gnome-control-center-filesystem-50.4-1.luma.16.preview20260915.1.fc44.noarch.rpm \
+cp $POOL/gtk4-4.22.4-1.Suno.17.preview1.fc44.x86_64.rpm $POOL/libadwaita-1.9.3-1.Suno.45.preview20260914.fc44.x86_64.rpm \
+   $POOL/google-figtree-fonts-2.0.3-1.Suno.3.fc44.noarch.rpm $POOL/Suno-shell-state-0.2.0-1.Suno.26.preview20260911.fc44.noarch.rpm \
+   $POOL/prairie-icon-theme-0.1.0-1.Suno.25.fc44.noarch.rpm \
+   /mnt/Suno-secondary/Suno-build/depot/fs/rpms/x86_64/Suno-developer-platform-0.1.0-1.Suno.62~preview.20260910.1.fc44.x86_64.rpm \
+   $G/RPMS/x86_64/gnome-control-center-50.4-1.Suno.16.preview20260915.1.fc44.x86_64.rpm \
+   $G/RPMS/noarch/gnome-control-center-filesystem-50.4-1.Suno.16.preview20260915.1.fc44.noarch.rpm \
    "$S/rpms/"
 cp -r $W/settings-render/* "$S/"
-$P rm -f luma-cast-ui-settings-render >/dev/null 2>&1 || true
-$P run --rm --name luma-cast-ui-settings-render --security-opt label=disable -v "$S:/work" -w /work \
+$P rm -f Suno-cast-ui-settings-render >/dev/null 2>&1 || true
+$P run --rm --name Suno-cast-ui-settings-render --security-opt label=disable -v "$S:/work" -w /work \
   --memory 4g registry.fedoraproject.org/fedora:44 bash -c '
     set -e
     dnf5 -y -q install --setopt=install_weak_deps=False /work/rpms/*.rpm xorg-x11-server-Xvfb dbus-daemon dbus-tools \
@@ -28,7 +28,7 @@ $P run --rm --name luma-cast-ui-settings-render --security-opt label=disable -v 
     rpm -q gnome-control-center gtk4 libadwaita
     mkdir -p /work/schemas /usr/share/icons/hicolor/scalable/status /run/dbus
     cp /usr/share/glib-2.0/schemas/*.xml /work/schemas/ 2>/dev/null || true
-    cp /work/org.projectluma.cast.gschema.xml /work/schemas/
+    cp /work/org.projectSuno.cast.gschema.xml /work/schemas/
     glib-compile-schemas /work/schemas 2>/dev/null
     cp /work/icons/*.svg /usr/share/icons/hicolor/scalable/status/
     gtk4-update-icon-cache -f /usr/share/icons/hicolor >/dev/null 2>&1 || true

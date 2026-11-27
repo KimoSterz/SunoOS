@@ -104,7 +104,7 @@ class Provider:
 
 def main() -> int:
     root = Path(tempfile.mkdtemp(prefix="messages-thread-"))
-    os.environ.update(XDG_DATA_HOME=str(root / "data"), XDG_STATE_HOME=str(root / "state"), LUMA_MESSAGES_AGENT="0",
+    os.environ.update(XDG_DATA_HOME=str(root / "data"), XDG_STATE_HOME=str(root / "state"), SUNO_MESSAGES_AGENT="0",
                       PRAIRIE_EDS_MODE="disabled")
     from prairie_apps import messages, messages_photos as photos
     from prairie_apps.messages_accounts import Account, AccountStore
@@ -245,7 +245,7 @@ def main() -> int:
         # Clicking a picture opens the lightbox inside this window, never another application.
         launched = []
         from gi.repository import Gdk
-        from luma_appkit import Lightbox
+        from Suno_appkit import Lightbox
         with patch.object(Gio.AppInfo, "launch_default_for_uri", lambda *a: launched.append(a)), \
              patch.object(Gio.AppInfo, "get_default_for_type", lambda *a: launched.append(a)):
             photo_buttons = [w for w in descendants(window.message_box) if w.has_css_class("messages-photo-open")

@@ -14,19 +14,19 @@
 #include <linux/uaccess.h>
 #include <linux/wait.h>
 
-#include "luma-fp6-listener-abi.h"
+#include "Suno-fp6-listener-abi.h"
 
-#define LUMA_QSEECOMCOMPAT_REGISTER_LISTENER 0U
-#define LUMA_QSEECOMCOMPAT_LISTENER_SERVICE_UID 87U
-#define LUMA_LISTENER_FS_ID 10U
-#define LUMA_LISTENER_RPMB_ID 8192U
-#define LUMA_LISTENER_GPFS_ID 28672U
-#define LUMA_LISTENER_FS_SIZE (20U * 1024U)
-#define LUMA_LISTENER_RPMB_SIZE 20040U
-#define LUMA_LISTENER_GPFS_SIZE (504U * 1024U)
-#define LUMA_LISTENER_CALLBACK_TIMEOUT (30U * HZ)
+#define SUNO_QSEECOMCOMPAT_REGISTER_LISTENER 0U
+#define SUNO_QSEECOMCOMPAT_LISTENER_SERVICE_UID 87U
+#define SUNO_LISTENER_FS_ID 10U
+#define SUNO_LISTENER_RPMB_ID 8192U
+#define SUNO_LISTENER_GPFS_ID 28672U
+#define SUNO_LISTENER_FS_SIZE (20U * 1024U)
+#define SUNO_LISTENER_RPMB_SIZE 20040U
+#define SUNO_LISTENER_GPFS_SIZE (504U * 1024U)
+#define SUNO_LISTENER_CALLBACK_TIMEOUT (30U * HZ)
 
-struct luma_qsee_listener {
+struct Suno_qsee_listener {
 	struct qcomtee_object callback;
 	struct qcomtee_object *memory_object;
 	struct tee_shm *shm;
@@ -45,30 +45,30 @@ struct luma_qsee_listener {
 	s32 dispatch_status;
 };
 
-static struct luma_qsee_listener luma_qsee_listeners[] = {
-	{ .id = LUMA_LISTENER_FS_ID, .size = LUMA_LISTENER_FS_SIZE },
-	{ .id = LUMA_LISTENER_RPMB_ID, .size = LUMA_LISTENER_RPMB_SIZE },
-	{ .id = LUMA_LISTENER_GPFS_ID, .size = LUMA_LISTENER_GPFS_SIZE },
+static struct Suno_qsee_listener Suno_qsee_listeners[] = {
+	{ .id = SUNO_LISTENER_FS_ID, .size = SUNO_LISTENER_FS_SIZE },
+	{ .id = SUNO_LISTENER_RPMB_ID, .size = SUNO_LISTENER_RPMB_SIZE },
+	{ .id = SUNO_LISTENER_GPFS_ID, .size = SUNO_LISTENER_GPFS_SIZE },
 };
 
-static DECLARE_WAIT_QUEUE_HEAD(luma_listener_request_wait);
-static DEFINE_MUTEX(luma_listener_ioctl_lock);
-static bool luma_listener_device_registered;
-static bool luma_listeners_stopping;
-static struct qcomtee_object *luma_listener_service = NULL_QCOMTEE_OBJECT;
+static DECLARE_WAIT_QUEUE_HEAD(Suno_listener_request_wait);
+static DEFINE_MUTEX(Suno_listener_ioctl_lock);
+static bool Suno_listener_device_registered;
+static bool Suno_listeners_stopping;
+static struct qcomtee_object *Suno_listener_service = NULL_QCOMTEE_OBJECT;
 
-static void luma_listener_callback_release(struct qcomtee_object *object)
+static void Suno_listener_callback_release(struct qcomtee_object *object)
 {
 	/* Storage is owned by the static listener entry and released explicitly. */
 	(void)object;
 }
 
-static int luma_listener_callback_dispatch(
+static int Suno_listener_callback_dispatch(
 	struct qcomtee_object_invoke_ctx *oic,
 	struct qcomtee_object *object, u32 op, struct qcomtee_arg *args)
 {
-	struct luma_qsee_listener *listener = container_of(
-		object, struct luma_qsee_listener, callback);
+	struct Suno_qsee_listener *listener = container_of(
+		object, struct Suno_qsee_listener, callback);
 	long waited;
 	int i;
 
@@ -77,14 +77,14 @@ static int luma_listener_callback_dispatch(
 	    args[0].b.size != 4U * sizeof(u32) ||
 	    args[1].type != QCOMTEE_ARG_TYPE_OB ||
 	    args[1].b.size != sizeof(s32)) {
-		pr_err("luma-listener: callback shape rejected id=%u op=%u type0=%u size0=%zu contents_logged=0\n",
+		pr_err("Suno-listener: callback shape rejected id=%u op=%u type0=%u size0=%zu contents_logged=0\n",
 		       listener->id, op, args[0].type,
 		       args[0].type == QCOMTEE_ARG_TYPE_OB ? args[0].b.size : 0);
 		return -EINVAL;
 	}
 	for (i = 2; i <= 5; i++)
 		if (args[i].type != QCOMTEE_ARG_TYPE_OO) {
-			pr_err("luma-listener: callback object shape rejected id=%u op=%u index=%d type=%u contents_logged=0\n",
+			pr_err("Suno-listener: callback object shape rejected id=%u op=%u index=%d type=%u contents_logged=0\n",
 			       listener->id, op, i, args[i].type);
 			return -EINVAL;
 		}
@@ -100,12 +100,12 @@ static int luma_listener_callback_dispatch(
 	listener->responded = false;
 	listener->dispatch_status = 0;
 	mutex_unlock(&listener->lock);
-	wake_up_all(&luma_listener_request_wait);
+	wake_up_all(&Suno_listener_request_wait);
 
 	waited = wait_event_killable_timeout(
 		listener->response_wait,
 		READ_ONCE(listener->responded) || READ_ONCE(listener->stopping),
-		LUMA_LISTENER_CALLBACK_TIMEOUT);
+		SUNO_LISTENER_CALLBACK_TIMEOUT);
 	mutex_lock(&listener->lock);
 	if (waited <= 0 || listener->stopping || !listener->responded) {
 		listener->pending = false;
@@ -125,17 +125,17 @@ static int luma_listener_callback_dispatch(
 	return 0;
 }
 
-static struct qcomtee_object_operations luma_listener_callback_ops = {
-	.release = luma_listener_callback_release,
-	.dispatch = luma_listener_callback_dispatch,
+static struct qcomtee_object_operations Suno_listener_callback_ops = {
+	.release = Suno_listener_callback_release,
+	.dispatch = Suno_listener_callback_dispatch,
 };
 
-static struct luma_qsee_listener *luma_listener_find_pending(void)
+static struct Suno_qsee_listener *Suno_listener_find_pending(void)
 {
 	int i;
 
-	for (i = 0; i < ARRAY_SIZE(luma_qsee_listeners); i++) {
-		struct luma_qsee_listener *listener = &luma_qsee_listeners[i];
+	for (i = 0; i < ARRAY_SIZE(Suno_qsee_listeners); i++) {
+		struct Suno_qsee_listener *listener = &Suno_qsee_listeners[i];
 
 		mutex_lock(&listener->lock);
 		if (listener->pending && !listener->delivered &&
@@ -149,58 +149,58 @@ static struct luma_qsee_listener *luma_listener_find_pending(void)
 	return NULL;
 }
 
-static bool luma_listener_has_pending(void)
+static bool Suno_listener_has_pending(void)
 {
 	int i;
 
-	for (i = 0; i < ARRAY_SIZE(luma_qsee_listeners); i++)
-		if (READ_ONCE(luma_qsee_listeners[i].pending) &&
-		    !READ_ONCE(luma_qsee_listeners[i].delivered))
+	for (i = 0; i < ARRAY_SIZE(Suno_qsee_listeners); i++)
+		if (READ_ONCE(Suno_qsee_listeners[i].pending) &&
+		    !READ_ONCE(Suno_qsee_listeners[i].delivered))
 			return true;
 	return false;
 }
 
-static bool luma_listener_wait_ready(void)
+static bool Suno_listener_wait_ready(void)
 {
-	return READ_ONCE(luma_listeners_stopping) ||
-	       luma_listener_has_pending();
+	return READ_ONCE(Suno_listeners_stopping) ||
+	       Suno_listener_has_pending();
 }
 
-static struct luma_qsee_listener *luma_listener_by_id(u32 id)
+static struct Suno_qsee_listener *Suno_listener_by_id(u32 id)
 {
 	int i;
 
-	for (i = 0; i < ARRAY_SIZE(luma_qsee_listeners); i++)
-		if (luma_qsee_listeners[i].id == id)
-			return &luma_qsee_listeners[i];
+	for (i = 0; i < ARRAY_SIZE(Suno_qsee_listeners); i++)
+		if (Suno_qsee_listeners[i].id == id)
+			return &Suno_qsee_listeners[i];
 	return NULL;
 }
 
-static long luma_listener_ioctl(struct file *file, unsigned int command,
+static long Suno_listener_ioctl(struct file *file, unsigned int command,
 				unsigned long argument)
 {
-	struct luma_fp6_listener_message *message;
-	struct luma_qsee_listener *listener;
+	struct Suno_fp6_listener_message *message;
+	struct Suno_qsee_listener *listener;
 	long ret = 0;
 
 	(void)file;
 	if (!capable(CAP_SYS_ADMIN))
 		return -EPERM;
-	if (command != LUMA_FP6_LISTENER_IOC_WAIT &&
-	    command != LUMA_FP6_LISTENER_IOC_RESPOND)
+	if (command != SUNO_FP6_LISTENER_IOC_WAIT &&
+	    command != SUNO_FP6_LISTENER_IOC_RESPOND)
 		return -ENOTTY;
 	message = kzalloc(sizeof(*message), GFP_KERNEL);
 	if (!message)
 		return -ENOMEM;
 
-	mutex_lock(&luma_listener_ioctl_lock);
-	if (command == LUMA_FP6_LISTENER_IOC_WAIT) {
+	mutex_lock(&Suno_listener_ioctl_lock);
+	if (command == SUNO_FP6_LISTENER_IOC_WAIT) {
 		if (copy_from_user(message, (void __user *)argument,
 				   sizeof(*message))) {
 			ret = -EFAULT;
 			goto out;
 		}
-		if (message->abi_version != LUMA_FP6_LISTENER_ABI_VERSION ||
+		if (message->abi_version != SUNO_FP6_LISTENER_ABI_VERSION ||
 		    message->reserved || !message->payload_ptr) {
 			ret = -EINVAL;
 			goto out;
@@ -211,21 +211,21 @@ static long luma_listener_ioctl(struct file *file, unsigned int command,
 		 * the userspace task outside the freezer and can block system suspend
 		 * indefinitely. Freeze here, then resume waiting after thaw.
 		 */
-		ret = wait_event_freezable(luma_listener_request_wait,
-					   luma_listener_wait_ready());
+		ret = wait_event_freezable(Suno_listener_request_wait,
+					   Suno_listener_wait_ready());
 		if (ret)
 			goto out;
-		if (READ_ONCE(luma_listeners_stopping)) {
+		if (READ_ONCE(Suno_listeners_stopping)) {
 			ret = -ESHUTDOWN;
 			goto out;
 		}
-		listener = luma_listener_find_pending();
+		listener = Suno_listener_find_pending();
 		if (!listener) {
 			ret = -EAGAIN;
 			goto out;
 		}
 		mutex_lock(&listener->lock);
-		message->abi_version = LUMA_FP6_LISTENER_ABI_VERSION;
+		message->abi_version = SUNO_FP6_LISTENER_ABI_VERSION;
 		message->listener_id = listener->id;
 		message->sequence = listener->sequence;
 		message->buffer_size = listener->size;
@@ -253,12 +253,12 @@ static long luma_listener_ioctl(struct file *file, unsigned int command,
 			ret = -EFAULT;
 			goto out;
 		}
-		if (message->abi_version != LUMA_FP6_LISTENER_ABI_VERSION ||
+		if (message->abi_version != SUNO_FP6_LISTENER_ABI_VERSION ||
 		    message->reserved || !message->payload_ptr) {
 			ret = -EINVAL;
 			goto out;
 		}
-		listener = luma_listener_by_id(message->listener_id);
+		listener = Suno_listener_by_id(message->listener_id);
 		if (!listener || message->buffer_size != listener->size ||
 		    message->payload_capacity < listener->size) {
 			ret = -EINVAL;
@@ -284,30 +284,30 @@ static long luma_listener_ioctl(struct file *file, unsigned int command,
 			wake_up_all(&listener->response_wait);
 	}
 out:
-	mutex_unlock(&luma_listener_ioctl_lock);
+	mutex_unlock(&Suno_listener_ioctl_lock);
 	memzero_explicit(message, sizeof(*message));
 	kfree(message);
 	return ret;
 }
 
-static const struct file_operations luma_listener_fops = {
+static const struct file_operations Suno_listener_fops = {
 	.owner = THIS_MODULE,
-	.unlocked_ioctl = luma_listener_ioctl,
+	.unlocked_ioctl = Suno_listener_ioctl,
 #ifdef CONFIG_COMPAT
-	.compat_ioctl = luma_listener_ioctl,
+	.compat_ioctl = Suno_listener_ioctl,
 #endif
 	.llseek = noop_llseek,
 };
 
-static struct miscdevice luma_listener_miscdev = {
+static struct miscdevice Suno_listener_miscdev = {
 	.minor = MISC_DYNAMIC_MINOR,
-	.name = "luma-fp6-qsee-listener",
-	.fops = &luma_listener_fops,
+	.name = "Suno-fp6-qsee-listener",
+	.fops = &Suno_listener_fops,
 	.mode = 0600,
 };
 
-static int luma_listener_prepare_one(struct luma_focal_session *session,
-				     struct luma_qsee_listener *listener)
+static int Suno_listener_prepare_one(struct Suno_focal_session *session,
+				     struct Suno_qsee_listener *listener)
 {
 	struct qcomtee_arg args[4] = { 0 };
 	int ret, result = QCOMTEE_MSG_ERROR_UNAVAIL;
@@ -335,8 +335,8 @@ static int luma_listener_prepare_one(struct luma_focal_session *session,
 	/* The memory object now owns the allocation reference. */
 	ret = qcomtee_object_user_init(&listener->callback,
 				       QCOMTEE_OBJECT_TYPE_CB,
-				       &luma_listener_callback_ops,
-				       "luma-listener-%u", listener->id);
+				       &Suno_listener_callback_ops,
+				       "Suno-listener-%u", listener->id);
 	if (ret)
 		goto out_memory;
 	listener->callback_initialized = true;
@@ -357,17 +357,17 @@ static int luma_listener_prepare_one(struct luma_focal_session *session,
 	}
 	args[2].o = listener->memory_object;
 	args[2].type = QCOMTEE_ARG_TYPE_IO;
-	ret = luma_control_invoke(session->qcomtee, luma_listener_service,
-				  LUMA_QSEECOMCOMPAT_REGISTER_LISTENER,
+	ret = Suno_control_invoke(session->qcomtee, Suno_listener_service,
+				  SUNO_QSEECOMCOMPAT_REGISTER_LISTENER,
 				  args, &result);
 	if (ret || result) {
-		pr_err("luma-listener: registration rejected id=%u transport=%d result=%d contents_logged=0\n",
+		pr_err("Suno-listener: registration rejected id=%u transport=%d result=%d contents_logged=0\n",
 		       listener->id, ret, result);
 		ret = ret ?: -EREMOTEIO;
 		goto out_callback;
 	}
 	listener->registered = true;
-	pr_info("luma-listener: registered id=%u size=%zu transport=qseecomcompat contents_logged=0\n",
+	pr_info("Suno-listener: registered id=%u size=%zu transport=qseecomcompat contents_logged=0\n",
 		listener->id, listener->size);
 	return 0;
 
@@ -387,49 +387,49 @@ out_shm:
 	return ret;
 }
 
-static int luma_listener_register_all(struct luma_focal_session *session)
+static int Suno_listener_register_all(struct Suno_focal_session *session)
 {
 	struct qcomtee_object_invoke_ctx *oic;
 	int i, ret;
 
-	if (luma_listener_device_registered)
+	if (Suno_listener_device_registered)
 		return -EALREADY;
-	WRITE_ONCE(luma_listeners_stopping, false);
+	WRITE_ONCE(Suno_listeners_stopping, false);
 	oic = qcomtee_object_invoke_ctx_alloc(session->qcomtee->ctx);
 	if (!oic)
 		return -ENOMEM;
-	luma_listener_service = qcomtee_object_get_service(
+	Suno_listener_service = qcomtee_object_get_service(
 		oic, session->client_env,
-		LUMA_QSEECOMCOMPAT_LISTENER_SERVICE_UID);
+		SUNO_QSEECOMCOMPAT_LISTENER_SERVICE_UID);
 	kfree(oic);
-	if (luma_listener_service == NULL_QCOMTEE_OBJECT)
+	if (Suno_listener_service == NULL_QCOMTEE_OBJECT)
 		return -ENODEV;
-	pr_info("luma-listener: registration service accepted uid=%u\n",
-		LUMA_QSEECOMCOMPAT_LISTENER_SERVICE_UID);
-	ret = misc_register(&luma_listener_miscdev);
+	pr_info("Suno-listener: registration service accepted uid=%u\n",
+		SUNO_QSEECOMCOMPAT_LISTENER_SERVICE_UID);
+	ret = misc_register(&Suno_listener_miscdev);
 	if (ret)
 		goto out_service;
-	luma_listener_device_registered = true;
-	for (i = 0; i < ARRAY_SIZE(luma_qsee_listeners); i++) {
-		ret = luma_listener_prepare_one(session, &luma_qsee_listeners[i]);
+	Suno_listener_device_registered = true;
+	for (i = 0; i < ARRAY_SIZE(Suno_qsee_listeners); i++) {
+		ret = Suno_listener_prepare_one(session, &Suno_qsee_listeners[i]);
 		if (ret)
 			return ret;
 	}
 	return 0;
 
 out_service:
-	luma_control_put_sync(session->qcomtee, &luma_listener_service);
+	Suno_control_put_sync(session->qcomtee, &Suno_listener_service);
 	return ret;
 }
 
-static void luma_listener_stop_all(void)
+static void Suno_listener_stop_all(void)
 {
 	int i;
 
-	WRITE_ONCE(luma_listeners_stopping, true);
+	WRITE_ONCE(Suno_listeners_stopping, true);
 
-	for (i = 0; i < ARRAY_SIZE(luma_qsee_listeners); i++) {
-		struct luma_qsee_listener *listener = &luma_qsee_listeners[i];
+	for (i = 0; i < ARRAY_SIZE(Suno_qsee_listeners); i++) {
+		struct Suno_qsee_listener *listener = &Suno_qsee_listeners[i];
 
 		if (!listener->callback_initialized && !listener->shm)
 			continue;
@@ -438,19 +438,19 @@ static void luma_listener_stop_all(void)
 		mutex_unlock(&listener->lock);
 		wake_up_all(&listener->response_wait);
 	}
-	wake_up_all(&luma_listener_request_wait);
-	if (luma_listener_device_registered) {
-		misc_deregister(&luma_listener_miscdev);
-		luma_listener_device_registered = false;
+	wake_up_all(&Suno_listener_request_wait);
+	if (Suno_listener_device_registered) {
+		misc_deregister(&Suno_listener_miscdev);
+		Suno_listener_device_registered = false;
 	}
 }
 
-static void luma_listener_release_all(struct qcomtee *qcomtee)
+static void Suno_listener_release_all(struct qcomtee *qcomtee)
 {
 	int i;
 
-	for (i = ARRAY_SIZE(luma_qsee_listeners) - 1; i >= 0; i--) {
-		struct luma_qsee_listener *listener = &luma_qsee_listeners[i];
+	for (i = ARRAY_SIZE(Suno_qsee_listeners) - 1; i >= 0; i--) {
+		struct Suno_qsee_listener *listener = &Suno_qsee_listeners[i];
 
 		if (listener->callback_initialized) {
 			qcomtee_object_put(&listener->callback);
@@ -469,5 +469,5 @@ static void luma_listener_release_all(struct qcomtee *qcomtee)
 		listener->responded = false;
 		listener->stopping = false;
 	}
-	luma_control_put_sync(qcomtee, &luma_listener_service);
+	Suno_control_put_sync(qcomtee, &Suno_listener_service);
 }

@@ -1,0 +1,9 @@
+#!/bin/sh
+# Run the Leaf source against its separate SunoUI preview kit and app ID.
+set -eu
+here=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+unset SUNO_LEAF_FIXTURE SUNO_LEAF_STATE
+export SUNO_LEAF_PREVIEW=1
+export PYTHONPATH="$here/python:$HOME/Documents/wt/SunoUI-leaf/src/Suno-leaf"
+export SUNO_APPKIT_ICON_PATH="$here/python/icons"
+exec python3 -m Suno_leaf "$@"

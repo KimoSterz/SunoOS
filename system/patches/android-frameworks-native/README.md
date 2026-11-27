@@ -9,7 +9,7 @@ is changed, and no new service is introduced.
 
 The baseline is the resolved LineageOS 20 frameworks/native tree after official
 Waydroid patches, observed at `e8f70d446d3361b79fc2d96c07b21795a033921a`.
-Existing AOSP/LineageOS Apache-2.0 notices remain intact. Luma's additions are
+Existing AOSP/LineageOS Apache-2.0 notices remain intact. Suno's additions are
 Apache-2.0. Source preparation records the exact baseline and patch digest and
 retains dirty-tree/manifest drift refusal for both incremental and clean builds.
 

@@ -1,7 +1,7 @@
 # Connect Sync for apps: the device–Hub contract (ADR-057 §5, §8, §10)
 
 The single source both sides implement: the sync service on the device
-(`src/luma-connect-sync/luma_connect_sync/apps_api/`) and the Hub
+(`src/Suno-connect-sync/Suno_connect_sync/apps_api/`) and the Hub
 (website repo, `deploy/hub/connect-sync/`, whose README mirrors this file).
 Anything here that changes is a contract change: both sides move together.
 
@@ -71,11 +71,11 @@ proof of anything. They are user-writable text.
   no cookies, no token, no query string: every device reads the same files,
   so fetching them says nothing about which apps a device runs.
 - **Signature:** minisign, prehashed Ed25519 (`ED`, BLAKE2b-512 of the file),
-  by the Luma registry key, verified before a byte of the body is parsed
+  by the Suno registry key, verified before a byte of the body is parsed
   (the same verifier as the Depot catalogue, `depot_signature.py`). The
   trusted comment is `registry:<version>`. The public key ships in the
-  device package at `/usr/share/luma-connect-sync/registry.pub`; a root-owned
-  `/etc/luma-connect-sync/registry.pub` that no one else can write replaces it
+  device package at `/usr/share/Suno-connect-sync/registry.pub`; a root-owned
+  `/etc/Suno-connect-sync/registry.pub` that no one else can write replaces it
   (test devices, a private deployment). Tests use a throwaway key, and the
   production key is created by the release owner.
 - **Size:** at most 8 MiB; more is refused.
@@ -263,7 +263,7 @@ send `registry` get the old behaviour; the answer always carries `registry`.
   "day": "2026-11-24",
   "owner": "flatpak:0f3c…",
   "app": "io.github.nmcmil.OpenLator",
-  "context": {"class": "computer", "arch": "x86_64", "app_version": "1.4.2", "luma_version": "44.2026w48"},
+  "context": {"class": "computer", "arch": "x86_64", "app_version": "1.4.2", "Suno_version": "44.2026w48"},
   "estimate": {"field": "record_bytes", "bucket": 7}
 }
 ```
@@ -273,11 +273,11 @@ send `registry` get the old behaviour; the answer always carries `registry`.
 Two switches, both off by default, and both must be on:
 
 - **On the device, `apps.reports`.** It is read from
-  `/etc/luma-connect-sync/config.json` (an administrator's, used when it
-  exists) or else `/usr/share/luma-connect-sync/config.json` (the image's),
+  `/etc/Suno-connect-sync/config.json` (an administrator's, used when it
+  exists) or else `/usr/share/Suno-connect-sync/config.json` (the image's),
   as `{"apps": {"reports": true}}`. Only `true` turns it on. A file that
   isn't a root-owned regular file, in a root-owned folder that no one else
-  can write, counts as off. Luma ships no such file, so reports are off.
+  can write, counts as off. Suno ships no such file, so reports are off.
   With the switch off the device asks for no tokens and sends no reports;
   turning it off drops every report still waiting, and turning it on starts
   with the next day that ends.
@@ -364,7 +364,7 @@ device's reports for several apps compose.
 **What is not randomized, and what this does not protect against:**
 
 - **Sent as they are:** `owner`, `app`, `day` and `context`. `context` is
-  the device class, CPU architecture, the app's version and the Luma release
+  the device class, CPU architecture, the app's version and the Suno release
   week. A rare combination narrows the set of devices a report can come
   from.
 - **Linking a device's reports:** the context, the IP address (below) and
@@ -386,7 +386,7 @@ Field rules (the Hub answers `400` for anything else; unknown fields are refused
 | `context.class` | `computer`, `handheld` or `tv` |
 | `context.arch` | `x86_64` or `aarch64` |
 | `context.app_version` | `^[0-9A-Za-z.+~_-]{1,64}$` (`0` when unknown) |
-| `context.luma_version` | the release base and ISO week, `^[0-9A-Za-z]{1,16}(\.[0-9]{4}w[0-9]{2})?$` |
+| `context.Suno_version` | the release base and ISO week, `^[0-9A-Za-z]{1,16}(\.[0-9]{4}w[0-9]{2})?$` |
 | `estimate.field` | one of the 17 quantities above |
 | `estimate.bucket` | an integer from 0 to 15 |
 
@@ -409,7 +409,7 @@ Field rules (the Hub answers `400` for anything else; unknown fields are refused
 ## 7. What the Hub keeps from reports
 
 - No report rows. Each report is folded into per-(app, day, cell)
-  aggregates, where the cell is (class, arch, app_version, luma_version):
+  aggregates, where the cell is (class, arch, app_version, Suno_version):
   per estimate field the 16 bucket counts (from which the estimator above
   gives distributions) and the count of reports.
 - The count of reports is the number of devices with the app installed and
@@ -419,7 +419,7 @@ Field rules (the Hub answers `400` for anything else; unknown fields are refused
   monthly distinct count: reports aren't meant to be linked across days.
   Any cell with fewer than 10 reports is merged into "other", with
   complementary suppression so that no small cell can be recovered by
-  subtraction. Luma staff see every app; a developer sees their own apps
+  subtraction. Suno staff see every app; a developer sees their own apps
   only.
 - **IP addresses:** the metrics endpoint must not log, store or rate-limit
   by client address beyond the memory of one connection. Until reports go
@@ -428,7 +428,7 @@ Field rules (the Hub answers `400` for anything else; unknown fields are refused
 
 ## 8. Tests both sides keep
 
-- Device: `src/luma-connect-sync/tests/test_apps_api*.py` against
+- Device: `src/Suno-connect-sync/tests/test_apps_api*.py` against
   `tests/fake_hub.py`, which implements every route in this file.
 - Hub: `deploy/hub/connect-sync/*.test.mjs` with the same vectors:
   `tests/vectors/apps-registry/` (a signed registry and its test key) and

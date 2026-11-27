@@ -1,7 +1,7 @@
 ---
 type: fix
 component: Sound
-packages: [luma-audio-policy]
+packages: [Suno-audio-policy]
 highlight: false
 ---
 Summary: Sound captures end when their app quits

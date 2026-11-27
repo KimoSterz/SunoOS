@@ -109,10 +109,10 @@ def render_c_header(payload: bytes, expected_payload_sha256: str) -> bytes:
 
     lines = [
         "/* Generated from the audited FP6 QREL 16.95.0 stock HAL. */",
-        "#ifndef LUMA_FP6_FOCAL_CONFIG_H",
-        "#define LUMA_FP6_FOCAL_CONFIG_H",
+        "#ifndef SUNO_FP6_FOCAL_CONFIG_H",
+        "#define SUNO_FP6_FOCAL_CONFIG_H",
         "",
-        "static const u8 luma_focal_stock_config[] = {",
+        "static const u8 Suno_focal_stock_config[] = {",
     ]
     for offset in range(0, len(payload), 12):
         values = ", ".join(f"0x{byte:02x}" for byte in payload[offset : offset + 12])
@@ -120,8 +120,8 @@ def render_c_header(payload: bytes, expected_payload_sha256: str) -> bytes:
     lines.extend(
         [
             "};",
-            f"#define LUMA_FOCAL_STOCK_CONFIG_SIZE {len(payload)}U",
-            f'#define LUMA_FOCAL_STOCK_CONFIG_SHA256 "{expected_payload_sha256}"',
+            f"#define SUNO_FOCAL_STOCK_CONFIG_SIZE {len(payload)}U",
+            f'#define SUNO_FOCAL_STOCK_CONFIG_SHA256 "{expected_payload_sha256}"',
             "",
             "#endif",
             "",

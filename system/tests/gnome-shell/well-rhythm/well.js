@@ -1,5 +1,5 @@
 // The Well row and the shelf's hover rhythm (Shell patch 0151): one optical
-// glyph size across Luma's own Well items, an extension's indicator and the
+// glyph size across Suno's own Well items, an extension's indicator and the
 // system indicators, and one inset highlight box at rest, on hover and
 // pressed, for the Well, the clock, Quick Options and the dock tiles.
 //
@@ -48,9 +48,9 @@ function glyphs(root, label) {
         box: box(actor),
         // How the glyph is drawn: a theme symbolic, the silhouette shader, or
         // the one exception that keeps its own colours.
-        ink: actor.get_effects?.().some(e => e.constructor.name === 'LumaWellSilhouette') ? 'silhouette'
+        ink: actor.get_effects?.().some(e => e.constructor.name === 'SunoWellSilhouette') ? 'silhouette'
             : (actor instanceof St.Icon && (actor.icon_name ?? '').endsWith('-symbolic') ? 'symbolic'
-                : (actor.has_style_class_name?.('luma-well-colour-glyph') ? 'colour' : 'inherited')),
+                : (actor.has_style_class_name?.('Suno-well-colour-glyph') ? 'colour' : 'inherited')),
     }));
 }
 
@@ -82,12 +82,12 @@ export default async function ({Main, shot: rawShot}) {
 
     const well = shelf._well;
     const cluster = shelf._actionsMaterial;
-    const clock = cluster?._statusClock ?? descend(cluster).find(a => a.has_style_class_name?.('luma-status-clock'));
-    const controls = cluster?._statusControls ?? descend(cluster).find(a => a.has_style_class_name?.('luma-status-controls'));
-    const slots = descend(cluster).filter(a => a.has_style_class_name?.('luma-status-slot'));
-    const wellItems = descend(well).filter(a => a.has_style_class_name?.('luma-well-item'));
-    const extensions = descend(well).filter(a => a.has_style_class_name?.('luma-well-extension'));
-    const treatment = shelf._mediaIsland?._content?.style_class?.match(/luma-surface-(\w+)/)?.[1] ?? GLib.getenv('B_THEME');
+    const clock = cluster?._statusClock ?? descend(cluster).find(a => a.has_style_class_name?.('Suno-status-clock'));
+    const controls = cluster?._statusControls ?? descend(cluster).find(a => a.has_style_class_name?.('Suno-status-controls'));
+    const slots = descend(cluster).filter(a => a.has_style_class_name?.('Suno-status-slot'));
+    const wellItems = descend(well).filter(a => a.has_style_class_name?.('Suno-well-item'));
+    const extensions = descend(well).filter(a => a.has_style_class_name?.('Suno-well-extension'));
+    const treatment = shelf._mediaIsland?._content?.style_class?.match(/Suno-surface-(\w+)/)?.[1] ?? GLib.getenv('B_THEME');
     const scale = St.ThemeContext.get_for_stage(global.stage).scale_factor;
     const k = Math.max(1, ...global.stage.peek_stage_views().map(v => v.get_scale())) / scale;
 
@@ -100,7 +100,7 @@ export default async function ({Main, shot: rawShot}) {
         ...(controls ? [['quick options', controls]] : []),
     ];
     for (const [name, actor] of targets) {
-        const target = actor.has_style_class_name?.('luma-well-extension')
+        const target = actor.has_style_class_name?.('Suno-well-extension')
             ? descend(actor).find(a => a.has_style_class_name?.('panel-button')) ?? actor : actor;
         const parent = well.contains(actor) ? well : cluster;
         const outer = box(parent), inner = box(target);

@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-// Luma Connect Sync in the Shell (0384, lumaConnectSyncModel.js): the status
+// Suno Connect Sync in the Shell (0384, SunoConnectSyncModel.js): the status
 // cell only when there's something to say, each state's words and its one
 // action (cs.js STATES), banners for storage full and removed but never for
 // conflicts, the approval card's words, that cards stay until answered and
 // leave on every device once one answers, Not me never the default, and the
 // restoring tile that opens Valet instead of the app.
-// Run: gjs -m connect-sync-policy.js js/ui/lumaConnectSyncModel.js
+// Run: gjs -m connect-sync-policy.js js/ui/SunoConnectSyncModel.js
 const gjs = typeof globalThis.ARGV !== 'undefined';
 const args = gjs ? globalThis.ARGV : process.argv.slice(2);
 const print = gjs ? globalThis.print : console.log;
@@ -56,11 +56,11 @@ check(eq([q.title, q.sub, q.message, q.action], ['Storage full', '5 GB of 5 GB',
     'New changes stay on this device until there’s room.', 'Manage storage']), 'quota');
 const r = p(revoked);
 check(eq([r.title, r.sub, r.message, r.action], ['Removed from Sync', 'On Dell XPS 14 · today',
-    'This device no longer syncs. Everything on it stays. Sign in to Luma Connect again to rejoin.', 'Sign in again']),
+    'This device no longer syncs. Everything on it stays. Sign in to Suno Connect again to rejoin.', 'Sign in again']),
 'revoked');
 // Each action goes somewhere: the service or Settings.
 check(eq(M.ACTION['Sync now'], {method: 'SyncNow'}), 'Sync now calls SyncNow');
-check(M.ACTION['Sign in again'].app === 'org.projectluma.Connect.desktop', 'Sign in again opens the Luma Connect sign-in');
+check(M.ACTION['Sign in again'].app === 'org.projectSuno.Connect.desktop', 'Sign in again opens the Suno Connect sign-in');
 check(eq(M.actionTarget('Show versions', c.subject).route, ['sync', 'versions', 'kiln']), 'Show versions opens the app\'s versions');
 check(eq(M.ACTION['Manage storage'].route, ['sync']), 'Manage storage opens Sync settings');
 for (const view of [paused, c, q, r])
@@ -75,7 +75,7 @@ const kj = M.keyJoinBanner('d9', 'ThinkPad');
 check(kj.title === 'ThinkPad joined with your recovery key' && kj.body === 'If this wasn’t you, remove it now.', 'key-join banner words');
 check(eq(kj.actions, ['Remove…', 'It was me']) && eq(kj.route, ['sync', 'remove', 'd9']), 'key-join banner actions');
 check(M.banner(st('up_to_date'), conflict) === null, 'a conflict never posts a banner');
-check(M.banner(null, quota).source === 'Luma Connect', 'the banner names Luma Connect');
+check(M.banner(null, quota).source === 'Suno Connect', 'the banner names Suno Connect');
 
 // The approval card.
 const request = {id: 'j1', device: 'd2', name: 'ThinkPad', class: 'computer', code: '418207', created_at: 1};
@@ -112,17 +112,17 @@ check(JSON.stringify(M.actionTarget('Show new key…')) === JSON.stringify({rout
 check(M.appIdForDesktop('org.gnome.TextEditor.desktop') === 'org.gnome.TextEditor', 'desktop id');
 const t = M.tile({app: 'kiln', state: 'restoring', progress: 0.44});
 check(t && t.opacity === 140 && t.saturation === 0.5 && t.ring === 0.44 && t.caption === 'Restoring…', 'the tile');
-check(eq(t.launch, ['luma-installer', '--restore', 'kiln']), 'opening it shows its row in Valet');
+check(eq(t.launch, ['Suno-installer', '--restore', 'kiln']), 'opening it shows its row in Valet');
 check(M.tile({app: 'kiln', state: 'ready'}) === null, 'a ready app launches');
 check(M.tile({app: 'x', state: 'unavailable'}) === null, 'an unavailable app has no tile');
 check(M.openValet([], [{app: 'kiln', state: 'installing'}]), 'Valet opens when apps start arriving');
 check(!M.openValet([{app: 'kiln', state: 'installing'}], [{app: 'kiln', state: 'restoring'}]), 'only once');
 
 // St reads a negative margin as a huge width (the phone page laid out at 0 px): none in this patch's styles.
-const cssPath = path.replace(/js\/ui\/lumaConnectSyncModel\.js$/, 'data/theme/luma-shelf.css');
+const cssPath = path.replace(/js\/ui\/SunoConnectSyncModel\.js$/, 'data/theme/Suno-shelf.css');
 const css = gjs ? new TextDecoder().decode((await import('gi://GLib')).default.file_get_contents(cssPath)[1])
     : (await import('node:fs')).readFileSync(cssPath, 'utf8');
-const block = css.slice(css.indexOf('── Luma Connect Sync (design-center'));
+const block = css.slice(css.indexOf('── Suno Connect Sync (design-center'));
 check(block.length > 100 && !/margin[^;{}]*:\s*[^;{}]*-\d/.test(block), 'no negative margins in the Connect Sync styles');
 
 // Words never used (HANDOFF-UI.md).

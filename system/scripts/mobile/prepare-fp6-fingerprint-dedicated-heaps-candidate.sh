@@ -16,7 +16,7 @@ base_boot=${1:?usage: prepare-fp6-fingerprint-dedicated-heaps-candidate.sh SHMBR
 bundle=${2:?usage: prepare-fp6-fingerprint-dedicated-heaps-candidate.sh SHMBRIDGE_BOOT KERNEL_BUNDLE OUTPUT_DIR}
 output_dir=${3:?usage: prepare-fp6-fingerprint-dedicated-heaps-candidate.sh SHMBRIDGE_BOOT KERNEL_BUNDLE OUTPUT_DIR}
 overlay=$repo_root/config/mobile/fp6-fingerprint/milos-fairphone-fp6-qsee-dedicated-heaps.dtso
-candidate=$output_dir/boot-fp6-luma-fingerprint-dedicated-heaps-v10.img
+candidate=$output_dir/boot-fp6-Suno-fingerprint-dedicated-heaps-v10.img
 manifest=$bundle/manifest.env
 
 die() { printf 'error: %s\n' "$*" >&2; exit 1; }
@@ -134,9 +134,9 @@ child=/firmware/scm/qseecom-tee-heaps
   die 'global SCM unexpectedly owns the apps pool'
 ! fdtget "$enabled_dtb" /firmware/scm qcom,tzmem-whole-pool-shmbridge >/dev/null 2>&1 ||
   die 'global whole-pool SHM mode is unexpectedly enabled'
-[ "$(fdtget "$enabled_dtb" "$child" compatible)" = 'luma,qseecom-tee-heaps' ] ||
+[ "$(fdtget "$enabled_dtb" "$child" compatible)" = 'Suno,qseecom-tee-heaps' ] ||
   die 'QSEECom heap child compatible differs'
-fdtget "$enabled_dtb" "$child" luma,dedicated-heaps >/dev/null ||
+fdtget "$enabled_dtb" "$child" Suno,dedicated-heaps >/dev/null ||
   die 'dedicated-heaps opt-in is absent'
 [ "$(fdtget -t x "$enabled_dtb" "$child" memory-region)" = \
   "$ta_phandle $apps_phandle" ] || die 'QSEECom child pool ownership differs'
@@ -156,7 +156,7 @@ cmp "$enabled_dtb" "$work/candidate/dtb"
 
 candidate_sha=$(hash "$candidate")
 {
-  printf 'LUMA_FP6_FINGERPRINT_BOOT_CANDIDATE_VERSION=10\n'
+  printf 'SUNO_FP6_FINGERPRINT_BOOT_CANDIDATE_VERSION=10\n'
   printf 'SCOPE=fp6-fingerprint-dedicated-qseecom-heaps-boot-only\n'
   printf 'BASE_BOOT_SHA256=%s\n' "$FP6_FINGERPRINT_SHMBRIDGE_BOOT_SHA256"
   printf 'KERNEL_SHA256=%s\n' "$FP6_FINGERPRINT_DEDICATED_HEAPS_KERNEL_SHA256"

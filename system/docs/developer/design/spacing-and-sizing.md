@@ -1,19 +1,19 @@
 ---
 title: Spacing and sizing
-summary: A spacing scale for your own content, the window gutter, corner radii, control heights, touch targets, row heights and widths used across Luma.
+summary: A spacing scale for your own content, the window gutter, corner radii, control heights, touch targets, row heights and widths used across Suno.
 order: 5
 section: Design
 ---
 
 # Spacing and sizing
 
-All measurements are logical pixels at 100% scale. LumaUI components already
+All measurements are logical pixels at 100% scale. SunoUI components already
 size themselves; use these values for your own content so it sits naturally
 beside them.
 
 ## Spacing scale
 
-LumaUI has no spacing tokens. These steps match what its components use, so
+SunoUI has no spacing tokens. These steps match what its components use, so
 use them for your own layouts.
 
 | Step | Value | Typical use |
@@ -25,8 +25,8 @@ use them for your own layouts.
 | 5 | 16px | Between groups of content |
 | 6 | 24px | Around empty states and large content blocks |
 
-The 8px gutter around and between islands belongs to LumaUI
-(`--lumaui-window-gutter`); do not add to it.
+The 8px gutter around and between islands belongs to SunoUI
+(`--SunoUI-window-gutter`); do not add to it.
 
 Avoid values in between the steps. Spacing that separates groups should be
 visibly larger than spacing inside a group.
@@ -37,11 +37,11 @@ visibly larger than spacing inside a group.
 | --- | --- |
 | Window | 20px (square only in full screen) |
 | Island | 12px |
-| Buttons, inputs, menu rows | 10px, owned by LumaUI |
-| Application icon tile | About a quarter of the tile’s width, owned by LumaUI |
+| Buttons, inputs, menu rows | 10px, owned by SunoUI |
+| Application icon tile | About a quarter of the tile’s width, owned by SunoUI |
 | Avatar | Soft square, owned by `Avatar` |
 
-Do not set a radius on anything LumaUI draws. For your own content inside an
+Do not set a radius on anything SunoUI draws. For your own content inside an
 island, such as cards, use a radius smaller than the island’s 12px so corners
 nest.
 
@@ -50,7 +50,7 @@ nest.
 | Size | Height | Use |
 | --- | --- | --- |
 | Compact | 28px | Icon buttons, toolbar buttons, small text buttons, text fields |
-| Standard | 36px | Text buttons (`.luma-button`), dialog buttons, menu rows |
+| Standard | 36px | Text buttons (`.Suno-button`), dialog buttons, menu rows |
 | Touch | 44px | Minimum target with touch input |
 
 The title row is 46px; window controls are 30px squares.
@@ -71,4 +71,4 @@ Icon sizes are on the [icons](icons.md) page.
 | Empty-state text | At most 320px (260px compact) |
 | App template minimum window | 360 by 294px |
 
-LumaUI’s layout tiers change at 560px (phone below) and 900px (regular above).
+SunoUI’s layout tiers change at 560px (phone below) and 900px (regular above).

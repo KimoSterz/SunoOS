@@ -1,0 +1,480 @@
+From 5d344efea99a9339dd51c78c5ee677e66f217e97 Mon Sep 17 00:00:00 2001
+From: Project Suno <engineering@projectSuno.org>
+Date: Sat, 21 Nov 2026 21:58:25 -0500
+Subject: [PATCH] app-info: Identify Suno applications
+
+Applications Suno installs from package files run in the
+Suno_application.process SELinux domain under a category pair allocated
+to them, in their own app-Suno-NAME-PID.scope. Name them through Suno's
+resolver (org.projectSuno.AppPermissions1.Identify, the rules Mutter 0041
+uses) and treat them as sandboxed: permissions are stored under their ID
+and files they are given go through the document portal. One that cannot
+be named is refused instead of being treated as the host. Identify is
+asked only of the name's verified owner: the root-owned
+/usr/libexec/Suno-app-permissions in Suno-app-permissions.service, in the
+portal's own mount namespace.
+---
+ src/meson.build                 |   1 +
+ src/xdp-app-info-Suno-private.h |  25 +++++
+ src/xdp-app-info-Suno.c         | 177 ++++++++++++++++++++++++++++++++
+ src/xdp-app-info.c              |  12 +++
+ 4 files changed, 215 insertions(+)
+ create mode 100644 src/xdp-app-info-Suno-private.h
+ create mode 100644 src/xdp-app-info-Suno.c
+
+diff --git a/src/meson.build b/src/meson.build
+index 7e06400..c769215 100644
+--- a/src/meson.build
++++ b/src/meson.build
+@@ -72,6 +72,7 @@ xdp_utils_sources = enums_sources + files(
+   'xdp-app-info-registry.c',
+   'xdp-app-info-snap.c',
+   'xdp-app-info-linyaps.c',
++  'xdp-app-info-Suno.c',
+   'xdp-sealed-fd.c',
+   'xdp-usb-query.c',
+   'xdp-utils.c',
+diff --git a/src/xdp-app-info-Suno-private.h b/src/xdp-app-info-Suno-private.h
+new file mode 100644
+index 0000000..6280c01
+--- /dev/null
++++ b/src/xdp-app-info-Suno-private.h
+@@ -0,0 +1,25 @@
++/*
++ * Copyright © 2026 Project Suno
++ *
++ * SPDX-License-Identifier: LGPL-2.1-or-later
++ */
++
++#pragma once
++
++#include "xdp-app-info-private.h"
++
++struct _XdpAppInfoSunoClass
++{
++  XdpAppInfoClass parent_class;
++};
++
++#define XDP_TYPE_APP_INFO_SUNO (xdp_app_info_Suno_get_type())
++G_DECLARE_FINAL_TYPE (XdpAppInfoSuno,
++                      xdp_app_info_Suno,
++                      XDP, APP_INFO_SUNO,
++                      XdpAppInfo);
++
++XdpAppInfo * xdp_app_info_Suno_new (const char *sender,
++                                    int         pid,
++                                    int        *pidfd,
++                                    GError    **error);
+diff --git a/src/xdp-app-info-Suno.c b/src/xdp-app-info-Suno.c
+new file mode 100644
+index 0000000..6c17eb2
+--- /dev/null
++++ b/src/xdp-app-info-Suno.c
+@@ -0,0 +1,377 @@
++/*
++ * Copyright © 2026 Project Suno
++ *
++ * SPDX-License-Identifier: LGPL-2.1-or-later
++ *
++ * Applications Suno installs from package files (store trees, capsules,
++ * AppImages) run in their own sandbox under an SELinux category pair
++ * allocated to them, in the Suno_application.process domain, and in their
++ * own app-Suno-NAME-PID.scope. They are sandboxed applications: permissions
++ * are looked up and stored under their ID, and files they are given go
++ * through the document portal.
++ *
++ * The ID comes from Suno's one resolver, org.projectSuno.AppPermissions1
++ * Identify(pid) (Suno_installer.app_identity), which follows the same rules
++ * as the compositor (Mutter 0041): the level names the application's record,
++ * the scope names it when there is no level. It is the desktop-file ID of the
++ * launcher Suno wrote, org.projectSuno.Installed.ID, so a prompt shows that
++ * application's name and icon. A process in the domain that cannot be named
++ * is refused rather than treated as the host.
++ */
++
++#include "config.h"
++
++#include "xdp-app-info-Suno-private.h"
++
++#include <gio/gio.h>
++#include <gio/gunixfdlist.h>
++#include <stdlib.h>
++#include <string.h>
++#include <sys/stat.h>
++#include <unistd.h>
++
++#define SUNO_ENGINE_ID "org.projectSuno"
++#define SUNO_DOMAIN ":Suno_application.process:"
++#define SUNO_PERMISSIONS_NAME "org.projectSuno.AppPermissions1"
++#define SUNO_PERMISSIONS_PATH "/org/projectSuno/AppPermissions"
++#define SUNO_PERMISSIONS_PROGRAM "/usr/libexec/Suno-app-permissions"
++#define SUNO_PERMISSIONS_UNIT "Suno-app-permissions.service"
++
++struct _XdpAppInfoSuno
++{
++  XdpAppInfo parent;
++};
++
++G_DEFINE_FINAL_TYPE (XdpAppInfoSuno, xdp_app_info_Suno, XDP_TYPE_APP_INFO);
++
++static char *
++read_proc (int         pid,
++           const char *name)
++{
++  g_autofree char *path = g_strdup_printf ("/proc/%d/%s", pid, name);
++  char *contents = NULL;
++
++  if (!g_file_get_contents (path, &contents, NULL, NULL))
++    return NULL;
++
++  return contents;
++}
++
++/* In the Suno application domain, or started in a Suno launcher's scope. */
++static gboolean
++is_Suno_application (int pid)
++{
++  g_autofree char *label = read_proc (pid, "attr/current");
++  g_autofree char *cgroup = NULL;
++  g_auto(GStrv) lines = NULL;
++  size_t i;
++
++  if (label && strstr (label, SUNO_DOMAIN) != NULL)
++    return TRUE;
++
++  cgroup = read_proc (pid, "cgroup");
++  if (!cgroup)
++    return FALSE;
++
++  lines = g_strsplit (cgroup, "\n", -1);
++  for (i = 0; lines[i]; i++)
++    {
++      const char *leaf;
++
++      if (!g_str_has_prefix (lines[i], "0::"))
++        continue;
++      leaf = strrchr (lines[i], '/');
++      leaf = leaf ? leaf + 1 : lines[i] + 3;
++      if (g_str_has_prefix (leaf, "app-Suno-") && g_str_has_suffix (leaf, ".scope"))
++        return TRUE;
++    }
++
++  return FALSE;
++}
++
++/* The process a pidfd refers to, from /proc/self/fdinfo; 0 when it has gone. */
++static int
++pidfd_pid (int pidfd)
++{
++  g_autofree char *name = g_strdup_printf ("fdinfo/%d", pidfd);
++  g_autofree char *info = read_proc (getpid (), name);
++  const char *line;
++
++  if (!info || !(line = strstr (info, "\nPid:")))
++    return 0;
++  return atoi (line + strlen ("\nPid:"));
++}
++
++static gboolean
++same_link (int         pid,
++           const char *name)
++{
++  g_autofree char *theirs_path = g_strdup_printf ("/proc/%d/%s", pid, name);
++  g_autofree char *ours_path = g_strdup_printf ("/proc/self/%s", name);
++  g_autofree char *theirs = g_file_read_link (theirs_path, NULL);
++  g_autofree char *ours = g_file_read_link (ours_path, NULL);
++
++  return theirs && ours && g_str_equal (theirs, ours);
++}
++
++/* The process start time (field 22 of /proc/PID/stat), or NULL. */
++static char *
++start_time (guint32 pid)
++{
++  g_autofree char *stat_text = read_proc ((int) pid, "stat");
++  const char *rest;
++  g_auto(GStrv) fields = NULL;
++
++  if (!stat_text || !(rest = strrchr (stat_text, ')')))
++    return NULL;
++  fields = g_strsplit (rest + 2, " ", 0);
++  /* After the command: state is field 3, start time field 22. */
++  return g_strv_length (fields) > 19 ? g_strdup (fields[19]) : NULL;
++}
++
++/* The verified owner, kept until the name changes hands or its process is
++ * no longer the one that was checked, so a lookup costs one Identify call. */
++G_LOCK_DEFINE_STATIC (verified_owner);
++static char *verified_owner_name;
++static guint32 verified_owner_pid;
++static char *verified_owner_start;
++static guint verified_owner_watch;
++
++static void
++forget_verified_owner (GDBusConnection *connection,
++                       const char      *sender_name,
++                       const char      *object_path,
++                       const char      *interface_name,
++                       const char      *signal_name,
++                       GVariant        *parameters,
++                       gpointer         user_data)
++{
++  G_LOCK (verified_owner);
++  g_clear_pointer (&verified_owner_name, g_free);
++  g_clear_pointer (&verified_owner_start, g_free);
++  verified_owner_pid = 0;
++  G_UNLOCK (verified_owner);
++}
++
++/* The unique name of the installer's permission service, once its owner is
++ * shown to be that service by its process: the root-owned
++ * /usr/libexec/Suno-app-permissions, run by its own user unit, on this
++ * filesystem. Whoever else holds the name (a host program that took it
++ * first) is never asked to name an application. */
++static char *
++verified_permissions_owner (GDBusConnection  *bus,
++                            GError          **error)
++{
++  g_autoptr(GVariant) owner_reply = NULL;
++  g_autoptr(GVariant) credentials = NULL;
++  g_autoptr(GUnixFDList) fds = NULL;
++  g_autofree char *owner = NULL;
++  g_autofree char *cgroup = NULL;
++  g_autofree char *cmdline = NULL;
++  g_autofree char *cmdline_path = NULL;
++  g_autofree char *expected_unit = NULL;
++  g_autofree char *started = NULL;
++  g_autofree char *started_after = NULL;
++  g_autoptr(GVariant) values = NULL;
++  g_autoptr(GVariant) index_value = NULL;
++  struct stat program;
++  gsize length = 0;
++  guint32 owner_pid = 0;
++  int pidfd = -1;
++  gboolean verified;
++
++  G_LOCK (verified_owner);
++  if (verified_owner_watch == 0)
++    verified_owner_watch =
++      g_dbus_connection_signal_subscribe (bus, "org.freedesktop.DBus", "org.freedesktop.DBus",
++                                          "NameOwnerChanged", "/org/freedesktop/DBus",
++                                          SUNO_PERMISSIONS_NAME, G_DBUS_SIGNAL_FLAGS_NONE,
++                                          forget_verified_owner, NULL, NULL);
++  if (verified_owner_name != NULL)
++    {
++      g_autofree char *now = start_time (verified_owner_pid);
++
++      if (now && g_strcmp0 (now, verified_owner_start) == 0)
++        {
++          char *cached = g_strdup (verified_owner_name);
++
++          G_UNLOCK (verified_owner);
++          return cached;
++        }
++      g_clear_pointer (&verified_owner_name, g_free);
++      g_clear_pointer (&verified_owner_start, g_free);
++    }
++  G_UNLOCK (verified_owner);
++
++  g_dbus_connection_call_sync (bus, "org.freedesktop.DBus", "/org/freedesktop/DBus",
++                               "org.freedesktop.DBus", "StartServiceByName",
++                               g_variant_new ("(su)", SUNO_PERMISSIONS_NAME, 0),
++                               NULL, G_DBUS_CALL_FLAGS_NONE, 5000, NULL, NULL);
++  owner_reply = g_dbus_connection_call_sync (bus, "org.freedesktop.DBus", "/org/freedesktop/DBus",
++                                             "org.freedesktop.DBus", "GetNameOwner",
++                                             g_variant_new ("(s)", SUNO_PERMISSIONS_NAME),
++                                             G_VARIANT_TYPE ("(s)"), G_DBUS_CALL_FLAGS_NONE,
++                                             5000, NULL, error);
++  if (!owner_reply)
++    return NULL;
++  g_variant_get (owner_reply, "(s)", &owner);
++
++  credentials = g_dbus_connection_call_with_unix_fd_list_sync (bus, "org.freedesktop.DBus",
++                                                               "/org/freedesktop/DBus",
++                                                               "org.freedesktop.DBus",
++                                                               "GetConnectionCredentials",
++                                                               g_variant_new ("(s)", owner),
++                                                               G_VARIANT_TYPE ("(a{sv})"),
++                                                               G_DBUS_CALL_FLAGS_NONE, 5000,
++                                                               NULL, &fds, NULL, error);
++  if (!credentials)
++    return NULL;
++  values = g_variant_get_child_value (credentials, 0);
++  g_variant_lookup (values, "ProcessID", "u", &owner_pid);
++  index_value = g_variant_lookup_value (values, "ProcessFD", G_VARIANT_TYPE_HANDLE);
++  if (index_value && fds)
++    pidfd = g_unix_fd_list_get (fds, g_variant_get_handle (index_value), NULL);
++
++  /* Without a pidfd, the start time read before and after the checks is
++   * what shows the pid still names the same process. */
++  started = start_time (owner_pid);
++  cgroup = read_proc ((int) owner_pid, "cgroup");
++  expected_unit = g_strconcat ("/" SUNO_PERMISSIONS_UNIT, "\n", NULL);
++  cmdline_path = g_strdup_printf ("/proc/%u/cmdline", owner_pid);
++  if (!g_file_get_contents (cmdline_path, &cmdline, &length, NULL))
++    g_clear_pointer (&cmdline, g_free);
++
++  /* Suno-app-permissions is a Python script run through its "#!/usr/bin/python3"
++   * line: argv[0] is the interpreter, argv[1] the program. A shebang that adds
++   * an option (python3 -I) moves the program to argv[2]; change the two
++   * together. */
++  verified = owner_pid > 0 && started != NULL &&
++             (pidfd < 0 || pidfd_pid (pidfd) == (int) owner_pid) &&
++             cgroup != NULL && g_str_has_suffix (cgroup, expected_unit) &&
++             same_link ((int) owner_pid, "ns/mnt") &&
++             cmdline != NULL &&
++             (g_str_equal (cmdline, SUNO_PERMISSIONS_PROGRAM) ||
++              (strlen (cmdline) + 1 < length &&
++               g_str_equal (cmdline + strlen (cmdline) + 1, SUNO_PERMISSIONS_PROGRAM))) &&
++             stat (SUNO_PERMISSIONS_PROGRAM, &program) == 0 &&
++             S_ISREG (program.st_mode) && program.st_uid == 0 &&
++             (program.st_mode & 022) == 0;
++  started_after = start_time (owner_pid);
++  verified = verified && g_strcmp0 (started, started_after) == 0 &&
++             (pidfd < 0 || pidfd_pid (pidfd) == (int) owner_pid);
++  if (pidfd >= 0)
++    close (pidfd);
++
++  if (!verified)
++    {
++      g_set_error (error, G_IO_ERROR, G_IO_ERROR_PERMISSION_DENIED,
++                   "%s is not held by Suno's permission service", SUNO_PERMISSIONS_NAME);
++      return NULL;
++    }
++
++  G_LOCK (verified_owner);
++  g_free (verified_owner_name);
++  g_free (verified_owner_start);
++  verified_owner_name = g_strdup (owner);
++  verified_owner_start = g_strdup (started);
++  verified_owner_pid = owner_pid;
++  G_UNLOCK (verified_owner);
++
++  return g_steal_pointer (&owner);
++}
++
++static void
++xdp_app_info_Suno_class_init (XdpAppInfoSunoClass *klass)
++{
++}
++
++static void
++xdp_app_info_Suno_init (XdpAppInfoSuno *app_info_Suno)
++{
++}
++
++XdpAppInfo *
++xdp_app_info_Suno_new (const char *sender,
++                       int         pid,
++                       int        *pidfd,
++                       GError    **error)
++{
++  g_autoptr(GDBusConnection) bus = NULL;
++  g_autoptr(GVariant) reply = NULL;
++  g_autoptr(GError) local_error = NULL;
++  g_autofree char *instance = NULL;
++  g_autofree char *owner = NULL;
++  const char *test_app_info_kind;
++  const char *app_id = NULL;
++  const char *kind = NULL;
++
++  test_app_info_kind = g_getenv ("XDG_DESKTOP_PORTAL_TEST_APP_INFO_KIND");
++  if (test_app_info_kind && g_strcmp0 (test_app_info_kind, "Suno") != 0)
++    {
++      g_set_error (error, XDP_APP_INFO_ERROR, XDP_APP_INFO_ERROR_WRONG_APP_KIND,
++                   "Testing requested different AppInfo kind: %s",
++                   test_app_info_kind);
++      return NULL;
++    }
++
++  if (!is_Suno_application (pid))
++    {
++      g_set_error (error, XDP_APP_INFO_ERROR, XDP_APP_INFO_ERROR_WRONG_APP_KIND,
++                   "Not a Suno application");
++      return NULL;
++    }
++
++  bus = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, &local_error);
++  if (bus)
++    owner = verified_permissions_owner (bus, &local_error);
++  if (owner)
++    reply = g_dbus_connection_call_sync (bus,
++                                         owner,
++                                         SUNO_PERMISSIONS_PATH,
++                                         SUNO_PERMISSIONS_NAME,
++                                         "Identify",
++                                         g_variant_new ("(u)", (guint32) pid),
++                                         G_VARIANT_TYPE ("(ss)"),
++                                         G_DBUS_CALL_FLAGS_NONE,
++                                         5000,
++                                         NULL,
++                                         &local_error);
++  if (!reply)
++    {
++      g_set_error (error, G_IO_ERROR, G_IO_ERROR_PERMISSION_DENIED,
++                   "Suno could not name this application: %s",
++                   local_error ? local_error->message : "no reply");
++      return NULL;
++    }
++
++  g_variant_get (reply, "(&s&s)", &app_id, &kind);
++
++  /* A host process in a scope of that name (a shell started from a
++   * terminal Suno launched, say) is the host. */
++  if (g_strcmp0 (kind, "host") == 0)
++    {
++      g_set_error (error, XDP_APP_INFO_ERROR, XDP_APP_INFO_ERROR_WRONG_APP_KIND,
++                   "Not a Suno application");
++      return NULL;
++    }
++
++  if (g_strcmp0 (kind, "Suno") != 0 || app_id == NULL || *app_id == '\0' ||
++      !g_application_id_is_valid (app_id))
++    {
++      g_set_error (error, G_IO_ERROR, G_IO_ERROR_PERMISSION_DENIED,
++                   "Suno could not name this application");
++      return NULL;
++    }
++
++  instance = g_strdup_printf ("%d", pid);
++
++  return g_initable_new (XDP_TYPE_APP_INFO_SUNO,
++                         NULL,
++                         error,
++                         "engine", SUNO_ENGINE_ID,
++                         "flags", XDP_APP_INFO_FLAG_HAS_NETWORK,
++                         "id", app_id,
++                         "instance", instance,
++                         "sender", sender,
++                         NULL);
++}
+diff --git a/src/xdp-app-info.c b/src/xdp-app-info.c
+index a518c39..1518c3e 100644
+--- a/src/xdp-app-info.c
++++ b/src/xdp-app-info.c
+@@ -37,6 +37,7 @@
+ #include "xdp-app-info-flatpak-private.h"
+ #include "xdp-app-info-host-private.h"
+ #include "xdp-app-info-linyaps-private.h"
++#include "xdp-app-info-Suno-private.h"
+ #include "xdp-app-info-snap-private.h"
+ #include "xdp-enum-types.h"
+ #include "xdp-utils.h"
+@@ -358,6 +359,17 @@ xdp_app_info_new (const char  *sender,
+     }
+   g_clear_error (&local_error);
+ 
++  if (app_info == NULL)
++    app_info = xdp_app_info_Suno_new (sender, pid, &pidfd_owned, &local_error);
++
++  if (!app_info && !g_error_matches (local_error, XDP_APP_INFO_ERROR,
++                                     XDP_APP_INFO_ERROR_WRONG_APP_KIND))
++    {
++      g_propagate_error (error, g_steal_pointer (&local_error));
++      return NULL;
++    }
++  g_clear_error (&local_error);
++
+   if (app_info == NULL)
+     app_info = xdp_app_info_host_new (sender, pid, &pidfd_owned);
+ 

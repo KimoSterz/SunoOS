@@ -2,8 +2,8 @@
 import Clutter from 'gi://Clutter';
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
-import {breathe} from '../../../src/luma-shell-presentation/notificationPulse.js';
-import {peekNotificationLip} from 'resource:///org/gnome/shell/ui/lumaNotificationBeacon.js';
+import {breathe} from '../../../src/Suno-shell-presentation/notificationPulse.js';
+import {peekNotificationLip} from 'resource:///org/gnome/shell/ui/SunoNotificationBeacon.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 export async function testWidgets(p, check, sleep, shot, mode, source) {
     const run = arg => new Promise((resolve, reject) => {
@@ -58,7 +58,7 @@ export async function testWidgets(p, check, sleep, shot, mode, source) {
     };
     await click(p._clockButton);
     check('clock opens Quick Options, never GNOME calendar', menu.isOpen && !Main.panel.statusArea.dateMenu.menu.isOpen);
-    check('Tablet uses the identical Desktop menu, styles and controls', menu._mainPage === original.main && menu.box.style_class.split(/\s+/).filter(name => name !== 'lumaui-touch-options').sort().join(' ') === original.classes.split(/\s+/).sort().join(' ') &&
+    check('Tablet uses the identical Desktop menu, styles and controls', menu._mainPage === original.main && menu.box.style_class.split(/\s+/).filter(name => name !== 'SunoUI-touch-options').sort().join(' ') === original.classes.split(/\s+/).sort().join(' ') &&
         original.children.every(actor => actor.get_parent() === original.main));
     const [menuX, menuY] = menu.box.get_transformed_position();
     check('Quick Options is a bounded top-right popup', menuY < 100 && menuX+menu.box.width > Main.layoutManager.primaryMonitor.width-80 && menu.box.height < Main.layoutManager.primaryMonitor.height);
@@ -94,7 +94,7 @@ export async function testWidgets(p, check, sleep, shot, mode, source) {
     await sleep(1800);
     check('native Experience picker changes the actual presentation', p.mode === 'mobile' && p._options.title === 'Mobile' && !p._options.subtitle);
     await click(p._clockButton);
-    check('Mobile uses the same native Quick Options', menu.isOpen && menu._mainPage === original.main && menu.box.style_class.split(/\s+/).filter(name => name !== 'lumaui-touch-options').sort().join(' ') === original.classes.split(/\s+/).sort().join(' '));
+    check('Mobile uses the same native Quick Options', menu.isOpen && menu._mainPage === original.main && menu.box.style_class.split(/\s+/).filter(name => name !== 'SunoUI-touch-options').sort().join(' ') === original.classes.split(/\s+/).sort().join(' '));
     menu.close(); await run('remove');
     for (let i = 0; i < 50 && p._liveWidgets.snapshot.weather.title !== 'Weather'; i++) await sleep(100);
     check('removing saved city clears Weather', p._liveWidgets.snapshot.weather.title === 'Weather' && p._liveWidgets.snapshot.weather.value === '—');
@@ -121,10 +121,10 @@ export async function testWidgets(p, check, sleep, shot, mode, source) {
     await mode('mobile');
     check('explicit idle preference survives presentation changes', idle.get_uint('idle-delay') === 600);
     idle.reset('idle-delay');
-    new Gio.Settings({schema_id: 'org.project_luma.shell-state'}).reset('presentation-idle-default');
+    new Gio.Settings({schema_id: 'org.projectSuno.shell-state'}).reset('presentation-idle-default');
     const launcher = Gio.SubprocessLauncher.new(Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE);
-    launcher.setenv('PYTHONPATH', `${source}/src/luma-continuity:${source}/src/prairie-core:${source}/src/luma-platform/appkit`, true);
-    const child = launcher.spawnv(['python3', `${source}/src/luma-continuity/tests/native_cloud_recovery_smoke.py`]);
+    launcher.setenv('PYTHONPATH', `${source}/src/Suno-continuity:${source}/src/prairie-core:${source}/src/Suno-platform/appkit`, true);
+    const child = launcher.spawnv(['python3', `${source}/src/Suno-continuity/tests/native_cloud_recovery_smoke.py`]);
     await new Promise(resolve => child.communicate_utf8_async(null, null, (process, result) => {
         try {
             const [, out, err] = process.communicate_utf8_finish(result);

@@ -12,10 +12,10 @@ import GLib from 'gi://GLib';
 import Meta from 'gi://Meta';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
-const out = GLib.getenv('LUMA_CAST_OUT');
-const here = GLib.getenv('LUMA_CAST_HERE');
-const captureBin = GLib.getenv('LUMA_CAST_CAPTURE');
-const fixed = GLib.getenv('LUMA_CAST_EXPECT') !== 'stock';
+const out = GLib.getenv('SUNO_CAST_OUT');
+const here = GLib.getenv('SUNO_CAST_HERE');
+const captureBin = GLib.getenv('SUNO_CAST_CAPTURE');
+const fixed = GLib.getenv('SUNO_CAST_EXPECT') !== 'stock';
 const results = [];
 const cases = [];
 

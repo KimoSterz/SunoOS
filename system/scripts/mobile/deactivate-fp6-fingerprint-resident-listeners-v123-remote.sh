@@ -3,8 +3,8 @@
 set -Eeuo pipefail
 umask 077
 
-stage=/tmp/luma-fp-listeners-enroll-v123
-state=/var/lib/luma/fingerprint/qsee-state
+stage=/tmp/Suno-fp-listeners-enroll-v123
+state=/var/lib/Suno/fingerprint/qsee-state
 expected_module_sha=953cf2afecb41b59beec1b507c95590190608240bc483767a58bf97828c8205e
 expected_supplicant_sha=d979286aef1fecb23dd250192c6a062863ef999f38927b2e2ae329627af8154c
 

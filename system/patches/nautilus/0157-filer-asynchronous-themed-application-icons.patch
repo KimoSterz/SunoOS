@@ -1,4 +1,4 @@
-From: Project Luma contributors
+From: Project Suno contributors
 Subject: [PATCH] Filer: decode themed application icons off the UI thread
 
 --- a/src/nautilus-file.c
@@ -136,8 +136,8 @@ Subject: [PATCH] Filer: decode themed application icons off the UI thread
 @@ -521,6 +589,7 @@
      g_application_set_flags(G_APPLICATION(app),G_APPLICATION_NON_UNIQUE);
      g_autoptr(GError) error=NULL;g_assert_true(g_application_register(G_APPLICATION(app),NULL,&error));
-     g_test_add_func("/luma/icons/responsiveness",icon_responsiveness);
-+    g_test_add_func("/luma/icons/cold-themed-responsiveness",themed_icon_responsiveness);
-     g_test_add_func("/luma/review/navigation",review_navigation);
-     g_test_add_func("/luma/about/native-mutations",fixture);
-     g_test_add_func("/luma/navigation/system-warning",system_warning);
+     g_test_add_func("/Suno/icons/responsiveness",icon_responsiveness);
++    g_test_add_func("/Suno/icons/cold-themed-responsiveness",themed_icon_responsiveness);
+     g_test_add_func("/Suno/review/navigation",review_navigation);
+     g_test_add_func("/Suno/about/native-mutations",fixture);
+     g_test_add_func("/Suno/navigation/system-warning",system_warning);

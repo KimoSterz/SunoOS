@@ -30,7 +30,7 @@ def main():
     parser.add_argument('--x',type=int)
     parser.add_argument('--y',type=int)
     args=parser.parse_args()
-    uid=os.getuid();parent=os.getppid();user=pwd.getpwnam('luma-gate-browser-opens')
+    uid=os.getuid();parent=os.getppid();user=pwd.getpwnam('Suno-gate-browser-opens')
     assert os.geteuid()==uid==user.pw_uid and uid>=1000
     expected=identity(parent)
     assert expected[0]==uid and expected[2][0]==b'gnome-shell'
@@ -40,7 +40,7 @@ def main():
     actors=[v.decode() for v in expected[2] if v.startswith(b'--automation-script=')]
     assert len(actors)==1
     actor=Path(actors[0].split('=',1)[1])
-    assert actor.name=='browser-opens.js' and re.fullmatch(r'luma-gate-browser-opens\.[A-Za-z0-9]+',actor.parent.name) and actor.parent.parent==Path('/tmp')
+    assert actor.name=='browser-opens.js' and re.fullmatch(r'Suno-gate-browser-opens\.[A-Za-z0-9]+',actor.parent.name) and actor.parent.parent==Path('/tmp')
     assert actor.is_file() and not actor.is_symlink() and actor.stat().st_uid==uid
     if args.action in ('seat','monitor'):
         assert args.ready is not None and args.ready.parent==actor.parent/'out'

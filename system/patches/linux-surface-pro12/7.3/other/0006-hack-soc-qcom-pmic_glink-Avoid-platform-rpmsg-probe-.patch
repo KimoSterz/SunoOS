@@ -19,7 +19,7 @@ Signed-off-by: Abel Vesa <abel.vesa@oss.qualcomm.com>
  1 file changed, 13 insertions(+), 25 deletions(-)
 
 
-Luma rebase onto Linux 7.3: context adjusted; original provenance above.
+Suno rebase onto Linux 7.3: context adjusted; original provenance above.
 
 --- a/drivers/soc/qcom/pmic_glink.c
 +++ b/drivers/soc/qcom/pmic_glink.c

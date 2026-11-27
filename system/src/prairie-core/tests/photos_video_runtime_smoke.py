@@ -33,7 +33,7 @@ def main() -> int:
     if not args.fixture.is_file():
         raise FileNotFoundError(args.fixture)
 
-    with tempfile.TemporaryDirectory(prefix="luma-photos-video-") as temporary:
+    with tempfile.TemporaryDirectory(prefix="Suno-photos-video-") as temporary:
         root = Path(temporary)
         pictures = root / "Pictures"
         pictures.mkdir()

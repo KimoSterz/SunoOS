@@ -11,19 +11,19 @@ from .notes import NotesApplication, NotesWindow
 from .notes_account import HUB, NotesAccount, NotesKeyring
 from .connect_sync import ConnectError, HubResponseError
 from gi.repository import Adw, Gio, GLib, Gtk
-from luma_appkit import BarAction, Command, TextField, Toast
-from luma_appkit.action_center import make_control
+from Suno_appkit import BarAction, Command, TextField, Toast
+from Suno_appkit.action_center import make_control
 
 
 class StandaloneNotesApplication(NotesApplication):
     def __init__(self):
         super().__init__()
-        self.set_application_id('org.projectluma.Notes.Standalone')
+        self.set_application_id('org.projectSuno.Notes.Standalone')
         self.notes_independent_account = True
         data_home = Path(os.environ.get('XDG_DATA_HOME', ''))
         if not data_home.is_absolute():
             data_home = Path.home() / '.local/share'
-        self.local_directory = data_home / 'luma/notes'
+        self.local_directory = data_home / 'Suno/notes'
         self.notes_store_path = self.local_directory / 'notes.sqlite3'
         self.session = None
         self.view_local = False
@@ -73,7 +73,7 @@ class StandaloneNotesApplication(NotesApplication):
         directory = self.session.profile_directory(self.local_directory) if self.session and not self.view_local else self.local_directory
         directory.mkdir(mode=0o700, parents=True, exist_ok=True)
         self.notes_store_path = directory / 'notes.sqlite3'
-        os.environ['LUMA_NOTES_DATA_DIR'] = str(directory)
+        os.environ['SUNO_NOTES_DATA_DIR'] = str(directory)
 
     def do_activate(self):
         if not self.initialized:
@@ -82,7 +82,7 @@ class StandaloneNotesApplication(NotesApplication):
             super().do_activate()
 
     def account_commands(self, window):
-        commands = [Command('notes.account', 'Luma account…', lambda: self.show_account(window), 'user')]
+        commands = [Command('notes.account', 'Suno account…', lambda: self.show_account(window), 'user')]
         if self.session and not self.view_local:
             commands.append(Command('notes.sync', 'Sync now', lambda: self.sync_now(window), 'refresh-cw'))
         if self.session:
@@ -201,15 +201,15 @@ class StandaloneNotesApplication(NotesApplication):
         if self.dialog is not None:
             self.dialog.present(window)
             return
-        dialog = Adw.Dialog(title='Luma account', content_width=420)
+        dialog = Adw.Dialog(title='Suno account', content_width=420)
         box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=16,
                       margin_top=24, margin_bottom=24, margin_start=24, margin_end=24)
-        title = Gtk.Label(label=self.session.name if self.session else 'Connect Notes to Luma Hub', xalign=0)
+        title = Gtk.Label(label=self.session.name if self.session else 'Connect Notes to Suno Hub', xalign=0)
         title.add_css_class('title-2')
         box.append(title)
         description = Gtk.Label(wrap=True, xalign=0)
         description.set_label('Your account library is kept separately from notes on this computer. Signing out keeps the local copy.' if self.session else
-            'Sign in on Luma Hub, create a connection code, then enter it here. Notes on this computer stay in a separate local library.')
+            'Sign in on Suno Hub, create a connection code, then enter it here. Notes on this computer stay in a separate local library.')
         box.append(description)
         self.status = Gtk.Label(label=self.account_error or self.sync_status, wrap=True, xalign=0)
         self.status.set_name('notes-account-status')
@@ -231,12 +231,12 @@ class StandaloneNotesApplication(NotesApplication):
                 self._run(self.account.sign_out, lambda _value: self._switch(None), window)
             action('Sign out', sign_out)
         else:
-            field = TextField('Connection code', placeholder='Code from Luma Hub')
+            field = TextField('Connection code', placeholder='Code from Suno Hub')
             field.entry.set_name('notes-connection-code')
             box.append(field)
             def open_hub():
                 Gtk.UriLauncher.new(HUB + '/connect').launch(window, None, None, None)
-            action('Open Luma Hub', open_hub)
+            action('Open Suno Hub', open_hub)
             def connect():
                 if self.busy:
                     return

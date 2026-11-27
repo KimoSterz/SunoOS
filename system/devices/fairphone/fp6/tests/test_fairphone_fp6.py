@@ -34,7 +34,7 @@ class FairphoneFp6(unittest.TestCase):
     def test_guide_flashes_in_the_kit_order(self):
         release = self.kit_release()
         names = {
-            "userdata": "luma-nightly-<build>-aarch64-disk.sparse",
+            "userdata": "Suno-nightly-<build>-aarch64-disk.sparse",
             "kit": release["kit_image"].rsplit("/", 1)[1],
             "boot": release["boot_image"].rsplit("/", 1)[1],
             "dtbo": release["dtbo_image"].rsplit("/", 1)[1],
@@ -71,11 +71,11 @@ class FairphoneFp6(unittest.TestCase):
 
     def test_fuse_is_built_in(self):
         # rpm-ostree runs package scripts under rofiles-fuse, before
-        # kernel-modules-luma-fp6 (which would carry fuse.ko) is layered.
+        # kernel-modules-Suno-fp6 (which would carry fuse.ko) is layered.
         fragments = self.device["kernel"]["config_fragments"]
         text = "".join((ROOT / f).read_text() for f in fragments)
         self.assertRegex(text, r"(?m)^CONFIG_FUSE_FS=y$")
-        spec = (ROOT / "packaging" / "rpm" / "kernel-modules-luma-fp6.spec").read_text()
+        spec = (ROOT / "packaging" / "rpm" / "kernel-modules-Suno-fp6.spec").read_text()
         self.assertIn("test ! -e $m/kernel/fs/fuse/fuse.ko.zst", spec)
 
     def test_sensor_stack_is_built(self):
@@ -89,7 +89,7 @@ class FairphoneFp6(unittest.TestCase):
         text = "".join((ROOT / f).read_text() for f in fragments)
         for option in ("I2C_GPIO", "SPI_GPIO", "INV_ICM42600_SPI", "STK3310", "QMC6308", "DPS310"):
             self.assertRegex(text, rf"(?m)^CONFIG_{option}=m$")
-        spec = (ROOT / "packaging" / "rpm" / "kernel-modules-luma-fp6.spec").read_text()
+        spec = (ROOT / "packaging" / "rpm" / "kernel-modules-Suno-fp6.spec").read_text()
         self.assertIn("iio/light/stk3310", spec)
         build = (ROOT / "scripts" / "kernel" / "build-fp6.sh").read_text()
         self.assertIn("compose-fp6-dtb.sh", build)
@@ -102,7 +102,7 @@ class FairphoneFp6(unittest.TestCase):
         helpers = ("AMANDA", "FTP", "H323", "IRC", "NETBIOS_NS", "PPTP", "SANE", "SIP", "SNMP", "TFTP")
         for option in ("NFT_FIB_INET", *(f"NF_CONNTRACK_{h}" for h in helpers)):
             self.assertRegex(text, rf"(?m)^CONFIG_{option}=m$")
-        spec = (ROOT / "packaging" / "rpm" / "kernel-modules-luma-fp6.spec").read_text()
+        spec = (ROOT / "packaging" / "rpm" / "kernel-modules-Suno-fp6.spec").read_text()
         self.assertIn("nf_conntrack_netbios_ns", spec)
 
     def test_uses_the_shared_milos_kernel(self):
@@ -116,7 +116,7 @@ class FairphoneFp6(unittest.TestCase):
         initramfs = self.device["initramfs"]
         script = (ROOT / initramfs["init_functions"]).read_bytes()
         self.assertEqual(hashlib.sha256(script).hexdigest(), initramfs["init_functions_sha256"])
-        self.assertIn(b"luma_verify_firmware_store", script)
+        self.assertIn(b"Suno_verify_firmware_store", script)
         self.assertIn(self.device["firmware"]["store"].encode(), script)
         self.assertTrue((ROOT / "patches" / "ostree").is_dir())
         self.assertTrue((ROOT / "packaging" / "rpm" / "ostree-fp6.spec").is_file())

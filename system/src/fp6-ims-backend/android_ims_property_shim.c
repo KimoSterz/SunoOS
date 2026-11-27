@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /*
  * Fixed property view for the unmodified QREL 16.95.0 IMS daemon when it is
- * run in Luma's disposable Android service namespace.  These values describe
+ * run in Suno's disposable Android service namespace.  These values describe
  * the stock FP6 release and do not touch Android's persistent property area.
  */
 
@@ -109,7 +109,7 @@ int32_t AServiceManager_addService(void *binder, const char *instance) {
     return -38;
   result = real_add_service(binder, instance);
   dprintf(STDERR_FILENO,
-          "event=luma_ims_binder_add_service instance=%s status=%d\n",
+          "event=Suno_ims_binder_add_service instance=%s status=%d\n",
           instance ? instance : "(null)", result);
   return result;
 }
@@ -117,7 +117,7 @@ int32_t AServiceManager_addService(void *binder, const char *instance) {
 void android_set_abort_message(const char *message) {
   typedef void (*set_abort_message_fn)(const char *);
   static set_abort_message_fn real_set_abort_message;
-  dprintf(STDERR_FILENO, "event=luma_ims_abort_message detail=%s\n",
+  dprintf(STDERR_FILENO, "event=Suno_ims_abort_message detail=%s\n",
           message ? message : "(null)");
   if (!real_set_abort_message)
     real_set_abort_message =
@@ -128,11 +128,11 @@ void android_set_abort_message(const char *message) {
 
 /* The stock daemon keeps early diagnostics in an in-memory ring which is
  * normally drained by Android's crash/log service. Mirror those startup lines
- * to this disposable process' private stderr so Luma can diagnose the gate. */
-void luma_ims_print_log(int level, const char *source, int line,
+ * to this disposable process' private stderr so Suno can diagnose the gate. */
+void Suno_ims_print_log(int level, const char *source, int line,
                         const char *format, ...)
     __asm__("_ZN6ImsLog8printLogEiPKciS1_z");
-void luma_ims_print_log(int level, const char *source, int line,
+void Suno_ims_print_log(int level, const char *source, int line,
                         const char *format, ...) {
   va_list arguments;
   dprintf(STDERR_FILENO, "stock-ims level=%d source=%s line=%d message=",

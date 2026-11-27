@@ -183,7 +183,7 @@ static void assert_no_mappings(void)
 
 int main(void)
 {
-	const struct luma_qsee_ops ops = {
+	const struct Suno_qsee_ops ops = {
 		.open_device = fake_open,
 		.close_fd = fake_close,
 		.ioctl_call = fake_ioctl,
@@ -193,7 +193,7 @@ int main(void)
 	struct QSEECom_handle *handle = NULL;
 	char response[4] = {};
 
-	luma_qsee_set_test_ops(&ops);
+	Suno_qsee_set_test_ops(&ops);
 
 	CHECK(QSEECom_start_app(NULL, NULL, "focal64", 4096) == -1);
 	CHECK(errno == EINVAL);

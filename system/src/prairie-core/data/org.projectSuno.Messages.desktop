@@ -1,0 +1,15 @@
+[Desktop Entry]
+Name=Messages
+Comment=Send and receive messages
+Exec=prairie-messages
+MimeType=x-scheme-handler/sms;
+Icon=org.projectSuno.Messages
+Terminal=false
+Type=Application
+Categories=GNOME;GTK;Network;Chat;
+Keywords=SMS;Text;Chat;Message;
+StartupNotify=true
+DBusActivatable=false
+X-Purism-FormFactor=Workstation;Mobile;
+X-Suno-Status-Surface=deep
+X-GNOME-UsesNotifications=true

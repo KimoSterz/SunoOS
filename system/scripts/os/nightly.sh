@@ -22,7 +22,7 @@
 # after the build for a reason outside the image (the recorded provenance still
 # names the image's own source revision).
 #
-# Run by luma-os-nightly.service (config/os/systemd) on the build host. It:
+# Run by Suno-os-nightly.service (config/os/systemd) on the build host. It:
 #   * holds one lock, so runs never overlap (a second start exits at once);
 #   * refuses unless the dedicated volume and its disk have room, and prunes
 #     old builds it created first (scripts/os/prune.sh);
@@ -38,15 +38,15 @@
 set -euo pipefail
 . "$(dirname -- "$0")/lib/common.sh"
 
-branch=${LUMA_OS_SOURCE_BRANCH:-stage}
-base_policy=${LUMA_OS_NIGHTLY_BASE:-latest}
+branch=${SUNO_OS_SOURCE_BRANCH:-stage}
+base_policy=${SUNO_OS_NIGHTLY_BASE:-latest}
 publish=1
 resume=
 release_only=0
 while [ "$#" -gt 0 ]; do
   case "$1" in
-    --arch) luma_os_select_architecture "${2:?}"; shift 2 ;;
-    --profile) export LUMA_OS_PROFILE=${2:?}; shift 2 ;;
+    --arch) Suno_os_select_architecture "${2:?}"; shift 2 ;;
+    --profile) export SUNO_OS_PROFILE=${2:?}; shift 2 ;;
     --resume-build) resume=${2:?}; shift 2 ;;
     --release-only) resume=${2:?}; release_only=1; shift 2 ;;
     --source-branch) branch=${2:?}; shift 2 ;;
@@ -56,20 +56,20 @@ while [ "$#" -gt 0 ]; do
   esac
 done
 
-luma_os_require_root
+Suno_os_require_root
 if [ -n "$resume" ]; then
-  luma_os_load_build_env "$LUMA_OS_ROOT/builds/$resume/build.env"
+  Suno_os_load_build_env "$SUNO_OS_ROOT/builds/$resume/build.env"
 else
-  luma_os_select_architecture "$LUMA_OS_ARCH"
+  Suno_os_select_architecture "$SUNO_OS_ARCH"
 fi
-luma_os_check_host
-install -d -m 0700 "$LUMA_OS_ROOT/locks"
-nightly_status_root=$(luma_os_arch_path "$LUMA_OS_ROOT/status")
-nightly_logs_root=$(luma_os_arch_path "$LUMA_OS_ROOT/logs")
+Suno_os_check_host
+install -d -m 0700 "$SUNO_OS_ROOT/locks"
+nightly_status_root=$(Suno_os_arch_path "$SUNO_OS_ROOT/status")
+nightly_logs_root=$(Suno_os_arch_path "$SUNO_OS_ROOT/logs")
 install -d -m 0755 "$nightly_status_root" "$nightly_logs_root/nightly"
-exec 4>"$LUMA_OS_ROOT/locks/nightly.lock"
+exec 4>"$SUNO_OS_ROOT/locks/nightly.lock"
 if ! flock -n 4; then
-  luma_os_log 'another nightly run is active; not starting a second one'
+  Suno_os_log 'another nightly run is active; not starting a second one'
   exit 0
 fi
 
@@ -77,7 +77,7 @@ run_started=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 run_log="$nightly_logs_root/nightly/$(date -u +%Y%m%dT%H%M%SZ).log"
 exec > >(tee -a "$run_log") 2>&1
 status="$nightly_status_root/nightly.json"
-provenance="$luma_os_repo_root/scripts/os/lib/provenance.py"
+provenance="$Suno_os_repo_root/scripts/os/lib/provenance.py"
 
 set_status() {
   python3 "$provenance" status --output "$status" --merge "$@"
@@ -91,12 +91,12 @@ set_status --set "run_started_utc=$run_started" --set 'state="starting"' \
 
 fail_run() {
   local message=$1
-  set_status --set 'state="failed"' --set "error=$(luma_os_json_string "$message")" \
+  set_status --set 'state="failed"' --set "error=$(Suno_os_json_string "$message")" \
     --set "run_completed_utc=\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\""
   [ -z "${build_dir:-}" ] || cp "$status" "$build_dir/status.json" 2>/dev/null || true
-  luma_os_die "$message"
+  Suno_os_die "$message"
 }
-trap 'rc=$?; fstrim "$LUMA_OS_ROOT" >/dev/null 2>&1 || true; [ "$rc" -eq 0 ] || [ "$(python3 -c "import json;print(json.load(open(\"$status\")).get(\"state\"))" 2>/dev/null)" = failed ] || set_status --set "state=\"failed\"" --set "error=\"exit $rc\""' EXIT
+trap 'rc=$?; fstrim "$SUNO_OS_ROOT" >/dev/null 2>&1 || true; [ "$rc" -eq 0 ] || [ "$(python3 -c "import json;print(json.load(open(\"$status\")).get(\"state\"))" 2>/dev/null)" = failed ] || set_status --set "state=\"failed\"" --set "error=\"exit $rc\""' EXIT
 
 # Room first: prune what earlier runs left, hand freed blocks back to the
 # shared disk, then require room for the whole run on the volume and on the
@@ -109,33 +109,33 @@ trap 'rc=$?; fstrim "$LUMA_OS_ROOT" >/dev/null 2>&1 || true; [ "$rc" -eq 0 ] || 
 # candidate repository took 17 GiB before the gate started, so a resume asks
 # for that plus the gate's 30.
 if [ -n "$resume" ]; then
-  "$luma_os_repo_root/scripts/os/prune.sh" --apply --trim --keep-images 1000 || fail_run 'pruning old builds failed'
-  luma_os_check_space 45 || fail_run 'not enough disk space to resume a nightly'
+  "$Suno_os_repo_root/scripts/os/prune.sh" --apply --trim --keep-images 1000 || fail_run 'pruning old builds failed'
+  Suno_os_check_space 45 || fail_run 'not enough disk space to resume a nightly'
 else
-  "$luma_os_repo_root/scripts/os/prune.sh" --apply --trim --keep-images 0 || fail_run 'pruning old builds failed'
-  luma_os_check_space 42 || fail_run 'not enough disk space for a nightly'
+  "$Suno_os_repo_root/scripts/os/prune.sh" --apply --trim --keep-images 0 || fail_run 'pruning old builds failed'
+  Suno_os_check_space 42 || fail_run 'not enough disk space for a nightly'
 fi
 # Origin retention: remove from dl.simplyluma.com what the served generation no
 # longer names, before tonight's content is uploaded, so the origin stays
 # within its budget. sync-to-cdn.sh only prunes once the served summary has
 # been live for a day; a failure never blocks the build and is retried next run.
 if [ "$publish" -eq 1 ]; then
-  "$luma_os_repo_root/scripts/os/sync-to-cdn.sh" --apply --prune --only repo --only preview ||
-    luma_os_log "origin retention did not complete (exit $?); retried next run"
+  "$Suno_os_repo_root/scripts/os/sync-to-cdn.sh" --apply --prune --only repo --only preview ||
+    Suno_os_log "origin retention did not complete (exit $?); retried next run"
 fi
 
 if [ -n "$resume" ]; then
-  build_dir="$LUMA_OS_ROOT/builds/$resume"
+  build_dir="$SUNO_OS_ROOT/builds/$resume"
   [ -s "$build_dir/build.env" ] || fail_run "no completed build to resume: $resume"
   build_id=$resume
-  luma_os_load_build_env "$build_dir/build.env"
-  os="$luma_os_repo_root/scripts/os"
-  set_status --set "build_id=\"$build_id\"" --set "version=\"$LUMA_OS_VERSION\"" \
-    --set "source_revision=\"$LUMA_SOURCE_REVISION\"" --set "resumed=true" --set 'state="exporting"'
+  Suno_os_load_build_env "$build_dir/build.env"
+  os="$Suno_os_repo_root/scripts/os"
+  set_status --set "build_id=\"$build_id\"" --set "version=\"$SUNO_OS_VERSION\"" \
+    --set "source_revision=\"$SUNO_SOURCE_REVISION\"" --set "resumed=true" --set 'state="exporting"'
 else
 # Source: a clean checkout of the branch from the pipeline mirror.
-mirror="$LUMA_OS_ROOT/git/ProjectLuma.git"
-checkout="$(luma_os_arch_path "$LUMA_OS_ROOT/src")/nightly"
+mirror="$SUNO_OS_ROOT/git/projectSuno.git"
+checkout="$(Suno_os_arch_path "$SUNO_OS_ROOT/src")/nightly"
 install -d -m 0755 "$(dirname "$checkout")"
 if [ ! -d "$checkout/.git" ]; then
   git clone --quiet "$mirror" "$checkout" || fail_run 'cannot clone the source mirror'
@@ -157,23 +157,23 @@ if [ -f "$os/release-at-merge.py" ]; then
 fi
 # System apps (config/desktop/system-apps.txt) must be pinned at their newest
 # released build; an older pin fails the nightly before anything is built.
-python3 "$os/lib/system_apps_current.py" pins --source "$checkout" --pool "$LUMA_OS_ROOT/rpms/pool" \
-  --incoming "$LUMA_OS_ROOT/../incoming" >>"$run_log" 2>&1 ||
+python3 "$os/lib/system_apps_current.py" pins --source "$checkout" --pool "$SUNO_OS_ROOT/rpms/pool" \
+  --incoming "$SUNO_OS_ROOT/../incoming" >>"$run_log" 2>&1 ||
   fail_run "a system app is pinned older than its newest release: $(grep '^FAIL' "$run_log" | tail -n 1 | cut -c6-)"
-build_dir=$("$os/build-image.sh" --arch "$LUMA_OS_ARCH" --profile "$LUMA_OS_PROFILE" --source "$checkout" --base "$base_policy" | tail -n 1) ||
+build_dir=$("$os/build-image.sh" --arch "$SUNO_OS_ARCH" --profile "$SUNO_OS_PROFILE" --source "$checkout" --base "$base_policy" | tail -n 1) ||
   fail_run 'image build failed'
 build_id=$(basename "$build_dir")
-luma_os_load_build_env "$build_dir/build.env"
+Suno_os_load_build_env "$build_dir/build.env"
 image_bytes=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["image"]["size_bytes"])' "$build_dir/provenance.json")
-set_status --set "build_id=\"$build_id\"" --set "version=\"$LUMA_OS_VERSION\"" \
-  --set "image_bytes=$image_bytes" --set "build_completed_utc=\"$LUMA_BUILD_COMPLETED\"" --set 'state="exporting"'
+set_status --set "build_id=\"$build_id\"" --set "version=\"$SUNO_OS_VERSION\"" \
+  --set "image_bytes=$image_bytes" --set "build_completed_utc=\"$SUNO_BUILD_COMPLETED\"" --set 'state="exporting"'
 
 fi
 
 if [ "$release_only" -eq 1 ]; then
-  luma_os_load_env "$build_dir/export.env"
-  candidate=$LUMA_EXPORT_CANDIDATE
-  ostree show --repo="$LUMA_OS_ROOT/ostree/candidate-repo" "$candidate" >/dev/null 2>&1 ||
+  Suno_os_load_env "$build_dir/export.env"
+  candidate=$SUNO_EXPORT_CANDIDATE
+  ostree show --repo="$SUNO_OS_ROOT/ostree/candidate-repo" "$candidate" >/dev/null 2>&1 ||
     fail_run "the candidate of $build_id is no longer exported"
   python3 -c 'import json,sys; sys.exit(0 if json.load(open(sys.argv[1])).get("result") == "pass" else 1)' "$build_dir/gate-result.json" ||
     fail_run "$build_id did not pass the gate"
@@ -203,7 +203,7 @@ fi
 {
   # 1. The day this nightly closes out (America/Chicago): the build id's day,
   #    or the Central day it was built on when that is earlier.
-  nightly_date=$(python3 - "$build_id" "$LUMA_BUILD_COMPLETED" <<'PY'
+  nightly_date=$(python3 - "$build_id" "$SUNO_BUILD_COMPLETED" <<'PY'
 import datetime, sys, zoneinfo
 build, completed = sys.argv[1], sys.argv[2]
 id_day = datetime.date(int(build[0:4]), int(build[4:6]), int(build[6:8]))
@@ -211,45 +211,45 @@ built = datetime.datetime.fromisoformat(completed.replace("Z", "+00:00")).astime
 print(min(id_day, built).isoformat())
 PY
 ) || fail_run 'cannot tell the nightly date'
-  # The build fixed its label when it started (build.env LUMA_NIGHTLY_DATE,
+  # The build fixed its label when it started (build.env SUNO_NIGHTLY_DATE,
   # which the image's os-release names), and a rerun that replaces an earlier
   # day's failed nightly passes that day's label the same way.
-  [ -z "${LUMA_NIGHTLY_DATE:-}" ] || nightly_date=$LUMA_NIGHTLY_DATE
+  [ -z "${SUNO_NIGHTLY_DATE:-}" ] || nightly_date=$SUNO_NIGHTLY_DATE
   set_status --set 'state="release-notes"' --set "nightly_date=\"$nightly_date\""
   # 2. Release notes: every package changed since the previous published
   #    nightly must be covered by a fragment, or nothing is published.
-  channel_repo=$(luma_os_channel_repo nightly)
+  channel_repo=$(Suno_os_channel_repo nightly)
   previous_manifest= previous_source=
-  channel_metadata="$(luma_os_arch_path "$channel_repo/luma/channels")"
-  releases_root=$(luma_os_releases_path "$channel_repo")
+  channel_metadata="$(Suno_os_arch_path "$channel_repo/Suno/channels")"
+  releases_root=$(Suno_os_releases_path "$channel_repo")
   if [ -s "$channel_metadata/nightly.json" ]; then
     previous_version=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["version"])' "$channel_metadata/nightly.json")
     previous_build=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["build_id"])' "$channel_metadata/nightly.json")
     previous_source=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["source_revision"])' "$channel_metadata/nightly.json")
-    for candidate_manifest in "$releases_root/$previous_version/luma-packages.manifest" "$LUMA_OS_ROOT/builds/$previous_build/luma-packages.manifest"; do
+    for candidate_manifest in "$releases_root/$previous_version/Suno-packages.manifest" "$SUNO_OS_ROOT/builds/$previous_build/Suno-packages.manifest"; do
       [ -s "$candidate_manifest" ] && previous_manifest=$candidate_manifest && break
     done
     [ -n "$previous_manifest" ] || fail_run "the previous nightly's package set ($previous_build) is gone; release notes cannot be checked"
   fi
-  notes_repo=$luma_os_repo_root
-  git -c "safe.directory=$notes_repo" -C "$notes_repo" merge-base --is-ancestor "$LUMA_SOURCE_REVISION" HEAD 2>/dev/null ||
-    fail_run "the release notes source does not contain the build's source revision $LUMA_SOURCE_REVISION"
+  notes_repo=$Suno_os_repo_root
+  git -c "safe.directory=$notes_repo" -C "$notes_repo" merge-base --is-ancestor "$SUNO_SOURCE_REVISION" HEAD 2>/dev/null ||
+    fail_run "the release notes source does not contain the build's source revision $SUNO_SOURCE_REVISION"
   notes="$build_dir/release-notes.json"
-  python3 "$luma_os_repo_root/scripts/os/lib/release_notes.py" build --repo "$notes_repo" \
+  python3 "$Suno_os_repo_root/scripts/os/lib/release_notes.py" build --repo "$notes_repo" \
     --from "$previous_source" --to HEAD --previous-manifest "$previous_manifest" \
-    --manifest "$build_dir/luma-packages.manifest" --exceptions "$luma_os_repo_root/config/os/release-notes-exceptions.txt" \
-    --channel nightly --build-id "$build_id" --version "$LUMA_OS_VERSION" --nightly-date "$nightly_date" \
-    --display-name "${LUMA_DISPLAY_NAME:-}" --out "$notes" >"$build_dir/release-notes.log" 2>&1 ||
+    --manifest "$build_dir/Suno-packages.manifest" --exceptions "$Suno_os_repo_root/config/os/release-notes-exceptions.txt" \
+    --channel nightly --build-id "$build_id" --version "$SUNO_OS_VERSION" --nightly-date "$nightly_date" \
+    --display-name "${SUNO_DISPLAY_NAME:-}" --out "$notes" >"$build_dir/release-notes.log" 2>&1 ||
     fail_run "release notes are incomplete: $(grep '^FAIL' "$build_dir/release-notes.log" | head -n 3 | cut -c7- | paste -sd';' -); nothing published"
-  python3 "$luma_os_repo_root/scripts/os/lib/system_apps_current.py" notes --repo "$notes_repo" \
+  python3 "$Suno_os_repo_root/scripts/os/lib/system_apps_current.py" notes --repo "$notes_repo" \
     --from "$previous_source" --to HEAD --previous-manifest "$previous_manifest" \
-    --manifest "$build_dir/luma-packages.manifest" >>"$build_dir/release-notes.log" 2>&1 ||
+    --manifest "$build_dir/Suno-packages.manifest" >>"$build_dir/release-notes.log" 2>&1 ||
     fail_run "a system app update has no \"Updated ... to X.Y\" note: $(grep '^FAIL' "$build_dir/release-notes.log" | tail -n 1 | cut -c6-); nothing published"
 }
 if [ "$publish" -eq 1 ]; then
   # 3. The release medium of this exact candidate, verified before anything is public.
   set_status --set 'state="verifying-media"'
-  /usr/bin/bash "$luma_os_repo_root/scripts/os/nightly-media.sh" --channel nightly --candidate "$build_id" --no-publish ||
+  /usr/bin/bash "$Suno_os_repo_root/scripts/os/nightly-media.sh" --channel nightly --candidate "$build_id" --no-publish ||
     fail_run "the release medium did not pass its checks; nothing published"
   # 4. Publish the update and the medium together.
   set_status --set 'state="publishing"'
@@ -257,24 +257,24 @@ if [ "$publish" -eq 1 ]; then
   set_status --set 'published=true' --set 'state="serving"'
   # Retention and the delta contract before anything is served or uploaded.
   "$os/prune.sh" --apply >>"$run_log" 2>&1 || fail_run 'retention after publication failed'
-  install -m 0644 "$notes" "$(luma_os_releases_path "$(luma_os_channel_repo nightly)")/$LUMA_OS_VERSION/notes.json"
+  install -m 0644 "$notes" "$(Suno_os_releases_path "$(Suno_os_channel_repo nightly)")/$SUNO_OS_VERSION/notes.json"
   # The nightly graph: Hub's signing job owns graphs once it has its service
   # token; until then the nightly graph comes from the releases published here.
-  if [ ! -r "$LUMA_OS_SECRETS/hub-graph-service-token" ]; then
-    graph_source="$LUMA_OS_ROOT/tmp/nightly-graph-$build_id.json"
-    python3 "$luma_os_repo_root/scripts/os/lib/graph_from_releases.py" \
-      "$(luma_os_channel_repo nightly)" nightly "$LUMA_OS_ARCH" >"$graph_source" ||
+  if [ ! -r "$SUNO_OS_SECRETS/hub-graph-service-token" ]; then
+    graph_source="$SUNO_OS_ROOT/tmp/nightly-graph-$build_id.json"
+    python3 "$Suno_os_repo_root/scripts/os/lib/graph_from_releases.py" \
+      "$(Suno_os_channel_repo nightly)" nightly "$SUNO_OS_ARCH" >"$graph_source" ||
       fail_run 'rendering the nightly graph failed'
-    "$os/sign-update-graph.sh" --arch "$LUMA_OS_ARCH" --profile "$LUMA_OS_PROFILE" --channel nightly --source "$graph_source" --no-sync ||
+    "$os/sign-update-graph.sh" --arch "$SUNO_OS_ARCH" --profile "$SUNO_OS_PROFILE" --channel nightly --source "$graph_source" --no-sync ||
       fail_run 'signing the nightly graph failed'
     rm -f "$graph_source"
-  elif [ "$LUMA_OS_ARCH" != x86_64 ]; then
+  elif [ "$SUNO_OS_ARCH" != x86_64 ]; then
     # Existing scheduled signers target x86. A newly qualified ARM release
     # must obtain and validate its own architecture's graph before serving.
-    "$os/sign-update-graph.sh" --arch "$LUMA_OS_ARCH" --profile "$LUMA_OS_PROFILE" --channel nightly --no-sync ||
+    "$os/sign-update-graph.sh" --arch "$SUNO_OS_ARCH" --profile "$SUNO_OS_PROFILE" --channel nightly --no-sync ||
       fail_run 'signing the ARM nightly graph from Hub failed'
   fi
-  /usr/bin/bash "$luma_os_repo_root/scripts/os/nightly-media.sh" --channel nightly --publish-verified "$build_id" \
+  /usr/bin/bash "$Suno_os_repo_root/scripts/os/nightly-media.sh" --channel nightly --publish-verified "$build_id" \
     --notes "$notes" --nightly-date "$nightly_date" || fail_run 'publishing the release medium failed'
   "$os/stage-webroot.sh" || fail_run 'switching the served generation failed'
   sync_state=not-configured
@@ -285,20 +285,20 @@ if [ "$publish" -eq 1 ]; then
     [ "$rc" -eq 3 ] || fail_run "upload failed (exit $rc)"
   fi
   deltas=$(python3 -c 'import json,sys; print(json.dumps(json.load(open(sys.argv[1]))["deltas"]))' \
-    "$(luma_os_releases_path "$(luma_os_channel_repo nightly)")/$LUMA_OS_VERSION/manifest.json")
+    "$(Suno_os_releases_path "$(Suno_os_channel_repo nightly)")/$SUNO_OS_VERSION/manifest.json")
   set_status --set 'published=true' --set "upload=\"$sync_state\"" --set "deltas=$deltas" \
-    --set "repo_bytes=$(du -sb "$(luma_os_channel_repo nightly)" | awk '{ print $1 }')"
+    --set "repo_bytes=$(du -sb "$(Suno_os_channel_repo nightly)" | awk '{ print $1 }')"
 fi
 
 # 4. Device kernels (aarch64): a device kernel package newer in this tree than
 #    in its device repository is built and, after its phone gate, staged for
 #    that repository (scripts/os/nightly-device-kernels.sh). It never fails the
 #    OS nightly; status/device-kernels.json and the GATE lines say what waits.
-if [ "$LUMA_OS_ARCH" = aarch64 ]; then
-  /usr/bin/bash "$os/nightly-device-kernels.sh" --source "${checkout:-$luma_os_repo_root}" >>"$run_log" 2>&1
+if [ "$SUNO_OS_ARCH" = aarch64 ]; then
+  /usr/bin/bash "$os/nightly-device-kernels.sh" --source "${checkout:-$Suno_os_repo_root}" >>"$run_log" 2>&1
   grep '^GATE  device kernel' "$run_log" | tail -n 5 >&2 || true
 fi
 
 set_status --set 'state="succeeded"' --set "run_completed_utc=\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\""
 cp "$status" "$build_dir/status.json"
-luma_os_log "nightly $build_id ($LUMA_OS_VERSION) $candidate: gate $gate, published=$publish"
+Suno_os_log "nightly $build_id ($SUNO_OS_VERSION) $candidate: gate $gate, published=$publish"

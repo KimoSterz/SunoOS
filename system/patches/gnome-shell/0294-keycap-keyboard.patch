@@ -1,4 +1,4 @@
-From: Luma Developers
+From: Suno Developers
 Subject: [PATCH] Keycap on-screen keyboard
 
 The shared Keycap design and input tools (Stevia patch 0004) for the
@@ -14,19 +14,19 @@ diff --git a/data/gnome-shell-icons.gresource.xml b/data/gnome-shell-icons.greso
      <file preprocess="xml-stripblanks">scalable/status/keyboard-brightness-off-symbolic.svg</file>
      <file preprocess="xml-stripblanks">scalable/status/message-indicator-symbolic.svg</file>
      <file preprocess="xml-stripblanks">scalable/status/no-notifications-symbolic.svg</file>
-+    <file preprocess="xml-stripblanks">scalable/status/luma-keycap-arrow-big-up-symbolic.svg</file>
-+    <file preprocess="xml-stripblanks">scalable/status/luma-keycap-arrow-big-up-filled-symbolic.svg</file>
-+    <file preprocess="xml-stripblanks">scalable/status/luma-keycap-arrow-right-symbolic.svg</file>
-+    <file preprocess="xml-stripblanks">scalable/status/luma-keycap-chevron-down-symbolic.svg</file>
-+    <file preprocess="xml-stripblanks">scalable/status/luma-keycap-chevron-left-symbolic.svg</file>
-+    <file preprocess="xml-stripblanks">scalable/status/luma-keycap-chevron-right-symbolic.svg</file>
-+    <file preprocess="xml-stripblanks">scalable/status/luma-keycap-chevron-up-symbolic.svg</file>
-+    <file preprocess="xml-stripblanks">scalable/status/luma-keycap-clipboard-symbolic.svg</file>
-+    <file preprocess="xml-stripblanks">scalable/status/luma-keycap-corner-down-left-symbolic.svg</file>
-+    <file preprocess="xml-stripblanks">scalable/status/luma-keycap-delete-symbolic.svg</file>
-+    <file preprocess="xml-stripblanks">scalable/status/luma-keycap-move-symbolic.svg</file>
-+    <file preprocess="xml-stripblanks">scalable/status/luma-keycap-settings-2-symbolic.svg</file>
-+    <file preprocess="xml-stripblanks">scalable/status/luma-keycap-smile-symbolic.svg</file>
++    <file preprocess="xml-stripblanks">scalable/status/Suno-keycap-arrow-big-up-symbolic.svg</file>
++    <file preprocess="xml-stripblanks">scalable/status/Suno-keycap-arrow-big-up-filled-symbolic.svg</file>
++    <file preprocess="xml-stripblanks">scalable/status/Suno-keycap-arrow-right-symbolic.svg</file>
++    <file preprocess="xml-stripblanks">scalable/status/Suno-keycap-chevron-down-symbolic.svg</file>
++    <file preprocess="xml-stripblanks">scalable/status/Suno-keycap-chevron-left-symbolic.svg</file>
++    <file preprocess="xml-stripblanks">scalable/status/Suno-keycap-chevron-right-symbolic.svg</file>
++    <file preprocess="xml-stripblanks">scalable/status/Suno-keycap-chevron-up-symbolic.svg</file>
++    <file preprocess="xml-stripblanks">scalable/status/Suno-keycap-clipboard-symbolic.svg</file>
++    <file preprocess="xml-stripblanks">scalable/status/Suno-keycap-corner-down-left-symbolic.svg</file>
++    <file preprocess="xml-stripblanks">scalable/status/Suno-keycap-delete-symbolic.svg</file>
++    <file preprocess="xml-stripblanks">scalable/status/Suno-keycap-move-symbolic.svg</file>
++    <file preprocess="xml-stripblanks">scalable/status/Suno-keycap-settings-2-symbolic.svg</file>
++    <file preprocess="xml-stripblanks">scalable/status/Suno-keycap-smile-symbolic.svg</file>
      <file preprocess="xml-stripblanks">scalable/status/osk-caps-lock-symbolic.svg</file>
      <file preprocess="xml-stripblanks">scalable/status/osk-delete-symbolic.svg</file>
      <file preprocess="xml-stripblanks">scalable/status/osk-emoji-picker-symbolic.svg</file>
@@ -80,13 +80,13 @@ diff --git a/js/js-resources.gresource.xml b/js/js-resources.gresource.xml
 --- a/js/js-resources.gresource.xml
 +++ b/js/js-resources.gresource.xml
 @@ -169,6 +169,9 @@
-     <file>ui/lumaPresentation/launcherFolders.css</file>
-     <file>ui/lumaPresentation/launcher.svg</file>
-     <file>ui/lumaPresentation/frameTokens.js</file>
-+    <file>ui/lumaPresentation/keycap.js</file>
-+    <file>ui/lumaPresentation/keycapTokens.js</file>
-+    <file>ui/lumaPresentation/keycap.css</file>
-     <file>ui/lumaPresentation/switcherDrag.js</file>
+     <file>ui/SunoPresentation/launcherFolders.css</file>
+     <file>ui/SunoPresentation/launcher.svg</file>
+     <file>ui/SunoPresentation/frameTokens.js</file>
++    <file>ui/SunoPresentation/keycap.js</file>
++    <file>ui/SunoPresentation/keycapTokens.js</file>
++    <file>ui/SunoPresentation/keycap.css</file>
+     <file>ui/SunoPresentation/switcherDrag.js</file>
      <file>ui/shelfMetrics.js</file>
      <file>ui/shelfArrangement.js</file>
 diff --git a/js/misc/inputMethod.js b/js/misc/inputMethod.js
@@ -150,7 +150,7 @@ diff --git a/js/ui/keyboard.js b/js/ui/keyboard.js
  import * as PageIndicators from './pageIndicators.js';
  import * as PopupMenu from './popupMenu.js';
  import * as SwipeTracker from './swipeTracker.js';
-+import * as Keycap from './lumaPresentation/keycap.js';
++import * as Keycap from './SunoPresentation/keycap.js';
  
  export const KEYBOARD_ANIMATION_TIME = 150;
  const KEYBOARD_REST_TIME = KEYBOARD_ANIMATION_TIME * 2;
@@ -162,17 +162,17 @@ diff --git a/js/ui/keyboard.js b/js/ui/keyboard.js
 +
 +// Keycap (config/shared/design-tokens.json `keycap`): the shared keyboard
 +// design, also used by Stevia on Phosh images. Its sheet is generated from the
-+// tokens; its behaviour lives in lumaPresentation/keycap.js.
-+const KEYCAP_STYLESHEET = 'resource:///org/gnome/shell/ui/lumaPresentation/keycap.css';
++// tokens; its behaviour lives in SunoPresentation/keycap.js.
++const KEYCAP_STYLESHEET = 'resource:///org/gnome/shell/ui/SunoPresentation/keycap.css';
 +const KEYCAP_SCHEMA = 'org.gnome.shell.keyboard';
 +const KEYCAP_ICONS = {
-+    'osk-shift-symbolic': 'luma-keycap-arrow-big-up-symbolic',
-+    'osk-caps-lock-symbolic': 'luma-keycap-arrow-big-up-filled-symbolic',
-+    'osk-delete-symbolic': 'luma-keycap-delete-symbolic',
-+    'edit-clear-symbolic': 'luma-keycap-delete-symbolic',
-+    'osk-enter-symbolic': 'luma-keycap-corner-down-left-symbolic',
-+    'osk-hide-symbolic': 'luma-keycap-chevron-down-symbolic',
-+    'osk-emoji-picker-symbolic': 'luma-keycap-smile-symbolic',
++    'osk-shift-symbolic': 'Suno-keycap-arrow-big-up-symbolic',
++    'osk-caps-lock-symbolic': 'Suno-keycap-arrow-big-up-filled-symbolic',
++    'osk-delete-symbolic': 'Suno-keycap-delete-symbolic',
++    'edit-clear-symbolic': 'Suno-keycap-delete-symbolic',
++    'osk-enter-symbolic': 'Suno-keycap-corner-down-left-symbolic',
++    'osk-hide-symbolic': 'Suno-keycap-chevron-down-symbolic',
++    'osk-emoji-picker-symbolic': 'Suno-keycap-smile-symbolic',
 +};
 +const KEYCAP_PREFERENCES = [
 +    ['key-preview', N_('Key preview')],
@@ -194,9 +194,9 @@ diff --git a/js/ui/keyboard.js b/js/ui/keyboard.js
 +
 +function setKeycapVariantClass(actor) {
 +    for (const variant of ['light', 'dark'])
-+        actor.remove_style_class_name(`luma-keycap-${variant}`);
++        actor.remove_style_class_name(`Suno-keycap-${variant}`);
 +    if (keycapVariant)
-+        actor.add_style_class_name(`luma-keycap-${keycapVariant}`);
++        actor.add_style_class_name(`Suno-keycap-${keycapVariant}`);
 +}
 +
 +function monotonicMs() {
@@ -459,7 +459,7 @@ diff --git a/js/ui/keyboard.js b/js/ui/keyboard.js
 +            });
 +            child.add_child(new St.Label({
 +                text: label || commitString,
-+                style_class: 'luma-keycap-cap-label',
++                style_class: 'Suno-keycap-cap-label',
 +                x_expand: true,
 +                y_expand: true,
 +                x_align: Clutter.ActorAlign.CENTER,
@@ -467,7 +467,7 @@ diff --git a/js/ui/keyboard.js b/js/ui/keyboard.js
 +            }));
 +            child.add_child(new St.Label({
 +                text: hint,
-+                style_class: 'luma-keycap-hint',
++                style_class: 'Suno-keycap-hint',
 +                x_expand: true,
 +                y_expand: true,
 +                x_align: Clutter.ActorAlign.END,
@@ -541,7 +541,7 @@ diff --git a/js/ui/keyboard.js b/js/ui/keyboard.js
 +// they are needed and shared by every keyboard instance. Words the person
 +// kept or accepted are remembered in a small file of their own.
 +const HUNSPELL_DIRS = ['/usr/share/hunspell', '/usr/share/myspell'];
-+const LEARNED_FILE = GLib.build_filenamev([GLib.get_user_data_dir(), 'luma', 'keycap-words.json']);
++const LEARNED_FILE = GLib.build_filenamev([GLib.get_user_data_dir(), 'Suno', 'keycap-words.json']);
 +let sharedSuggester = null;
 +
 +function idle() {
@@ -818,7 +818,7 @@ diff --git a/js/ui/keyboard.js b/js/ui/keyboard.js
 +        const theme = St.ThemeContext.get_for_stage(global.stage).get_theme();
 +        if (!theme.get_custom_stylesheets().some(file => file.get_uri() === KEYCAP_STYLESHEET))
 +            theme.load_stylesheet(Gio.File.new_for_uri(KEYCAP_STYLESHEET));
-+        this.add_style_class_name('luma-keycap');
++        this.add_style_class_name('Suno-keycap');
 +        keycapVariant = variant;
 +        setKeycapVariantClass(this);
 +        if (this._preview)
@@ -1033,9 +1033,9 @@ diff --git a/js/ui/keyboard.js b/js/ui/keyboard.js
 +            button.connect('released', () => this._hidePreview());
 +
 +            if (parseInt(key.keyval, 16) === Clutter.KEY_Return || key.iconName === 'osk-enter-symbolic') {
-+                button.keyButton.add_style_class_name('luma-keycap-enter');
++                button.keyButton.add_style_class_name('Suno-keycap-enter');
 +                if (purpose === Clutter.InputContentPurpose.URL)
-+                    button.setDisplayIcon('luma-keycap-arrow-right-symbolic');
++                    button.setDisplayIcon('Suno-keycap-arrow-right-symbolic');
 +            }
 +
 +            if (commitString === ' ')
@@ -1144,7 +1144,7 @@ diff --git a/js/ui/keyboard.js b/js/ui/keyboard.js
      }
  
 +    _setupSpaceKey(button) {
-+        button.keyButton.add_style_class_name('luma-keycap-space');
++        button.keyButton.add_style_class_name('Suno-keycap-space');
 +        button.connect('pressed', () => (this._spaceSteps = 0));
 +        button.connect('drag', (_key, dx, dy) => {
 +            // A sideways swipe on space moves the caret instead of typing.
@@ -1379,7 +1379,7 @@ diff --git a/js/ui/keyboard.js b/js/ui/keyboard.js
 +        if (!this._preview) {
 +            // Painted only: tracked chrome would recompute the input region
 +            // on every key press.
-+            this._preview = new St.Label({style_class: 'luma-keycap-preview', visible: false});
++            this._preview = new St.Label({style_class: 'Suno-keycap-preview', visible: false});
 +            Main.layoutManager.uiGroup.add_child(this._preview);
 +        }
 +        Main.layoutManager.uiGroup.set_child_above_sibling(this._preview, null);
@@ -1404,13 +1404,13 @@ diff --git a/js/ui/keyboard.js b/js/ui/keyboard.js
 +    }
 +
 +    _createTools() {
-+        const tools = new St.BoxLayout({style_class: 'luma-keycap-tools', x_expand: true});
++        const tools = new St.BoxLayout({style_class: 'Suno-keycap-tools', x_expand: true});
 +        const add = (icon, name, callback) => {
 +            const button = new St.Button({
 +                accessible_name: name,
 +                can_focus: false,
 +                x_expand: true,
-+                child: new St.Icon({icon_name: `luma-keycap-${icon}-symbolic`}),
++                child: new St.Icon({icon_name: `Suno-keycap-${icon}-symbolic`}),
 +            });
 +            button.connect('clicked', callback);
 +            tools.add_child(button);
@@ -1424,10 +1424,10 @@ diff --git a/js/ui/keyboard.js b/js/ui/keyboard.js
 +            add('chevron-down', _('Hide keyboard'), () => this.close(true)),
 +        ];
 +        this._stripEnter = new St.Button({
-+            style_class: 'luma-keycap-strip-enter',
++            style_class: 'Suno-keycap-strip-enter',
 +            accessible_name: _('Enter'),
 +            can_focus: false,
-+            child: new St.Icon({icon_name: 'luma-keycap-corner-down-left-symbolic'}),
++            child: new St.Icon({icon_name: 'Suno-keycap-corner-down-left-symbolic'}),
 +        });
 +        this._stripEnter.connect('clicked', () => this._sendShortcut(Clutter.KEY_Return));
 +        tools.add_child(this._stripEnter);
@@ -1501,7 +1501,7 @@ diff --git a/js/ui/keyboard.js b/js/ui/keyboard.js
 +
 +    _createClipboardPanel() {
 +        const panel = new St.BoxLayout({
-+            style_class: 'luma-keycap-panel',
++            style_class: 'Suno-keycap-panel',
 +            orientation: Clutter.Orientation.VERTICAL,
 +            x_expand: true,
 +            y_expand: true,
@@ -1528,7 +1528,7 @@ diff --git a/js/ui/keyboard.js b/js/ui/keyboard.js
 +        if (clips.length === 0) {
 +            this._clipList.add_child(new St.Label({
 +                text: _('Copied text shows up here.'),
-+                style_class: 'luma-keycap-empty',
++                style_class: 'Suno-keycap-empty',
 +                x_align: Clutter.ActorAlign.CENTER,
 +                y_align: Clutter.ActorAlign.CENTER,
 +                x_expand: true,
@@ -1544,7 +1544,7 @@ diff --git a/js/ui/keyboard.js b/js/ui/keyboard.js
 +            });
 +            button.child.clutter_text.ellipsize = Pango.EllipsizeMode.END;
 +            if (Keycap.clipboardHistory.isPinned(text))
-+                button.add_style_class_name('luma-keycap-pinned');
++                button.add_style_class_name('Suno-keycap-pinned');
 +            this._holdable(button, () => this._pasteClip(text), () => this._clipMenu(button, text));
 +            this._clipList.add_child(button);
 +        }
@@ -1623,7 +1623,7 @@ diff --git a/js/ui/keyboard.js b/js/ui/keyboard.js
 +
 +    _createCursorPanel() {
 +        const panel = new St.BoxLayout({
-+            style_class: 'luma-keycap-panel',
++            style_class: 'Suno-keycap-panel',
 +            orientation: Clutter.Orientation.VERTICAL,
 +            x_expand: true,
 +            y_expand: true,
@@ -1651,10 +1651,10 @@ diff --git a/js/ui/keyboard.js b/js/ui/keyboard.js
 +            panel.add_child(box);
 +        };
 +        row([
-+            key('luma-keycap-chevron-left-symbolic', _('Left'), Clutter.KEY_Left),
-+            key('luma-keycap-chevron-up-symbolic', _('Up'), Clutter.KEY_Up),
-+            key('luma-keycap-chevron-down-symbolic', _('Down'), Clutter.KEY_Down),
-+            key('luma-keycap-chevron-right-symbolic', _('Right'), Clutter.KEY_Right),
++            key('Suno-keycap-chevron-left-symbolic', _('Left'), Clutter.KEY_Left),
++            key('Suno-keycap-chevron-up-symbolic', _('Up'), Clutter.KEY_Up),
++            key('Suno-keycap-chevron-down-symbolic', _('Down'), Clutter.KEY_Down),
++            key('Suno-keycap-chevron-right-symbolic', _('Right'), Clutter.KEY_Right),
 +        ]);
 +        row([
 +            key(_('Select all'), _('Select all'), Clutter.KEY_a, control),

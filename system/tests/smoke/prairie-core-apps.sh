@@ -31,14 +31,14 @@ check 'Photos launcher' test -x /usr/bin/prairie-photos
 check 'Weather launcher' test -x /usr/bin/prairie-weather
 check 'Clock launcher' test -x /usr/bin/prairie-clock
 check 'Clock alarm helper' test -x /usr/bin/prairie-clock-alarm
-check 'Clock alarm service activation' grep -Fxq 'Exec=/usr/bin/prairie-clock --gapplication-service' /usr/share/dbus-1/services/org.projectluma.Clock.service
+check 'Clock alarm service activation' grep -Fxq 'Exec=/usr/bin/prairie-clock --gapplication-service' /usr/share/dbus-1/services/org.projectSuno.Clock.service
 check 'Messages desktop entry command' grep -Fxq \
   'Exec=prairie-messages' \
-  /usr/share/applications/org.projectluma.Messages.desktop
+  /usr/share/applications/org.projectSuno.Messages.desktop
 check 'shared Prairie style' test -r /usr/share/prairie-core/prairie.css
 check 'Messages user service' test -r /usr/lib/systemd/user/prairie-messages-daemon.service
 check 'shared toolkit imports' python3 -c \
-  'from prairie_ui.context import PrairieContext; assert PrairieContext.from_environment({"LUMA_DEVICE_CLASS":"handheld"}).input_mode.value == "touch"'
+  'from prairie_ui.context import PrairieContext; assert PrairieContext.from_environment({"SUNO_DEVICE_CLASS":"handheld"}).input_mode.value == "touch"'
 check 'Messages module imports' python3 -c \
   'from prairie_apps.messages import MessagesApplication; assert MessagesApplication'
 check 'Camera module imports' python3 -c \
@@ -53,17 +53,17 @@ check 'functional backend modules import' python3 -c \
   'from prairie_apps.messages_backend import MessageStore, ModemMessagingTransport; from prairie_apps.phone_backend import CallStore, ModemVoiceTransport; from prairie_apps.audio_backend import list_recordings; from prairie_apps.clock_backend import ClockStore; from prairie_apps.weather_backend import PlaceStore'
 check 'Messages claims SMS URI ownership' grep -Fxq \
   'MimeType=x-scheme-handler/sms;' \
-  /usr/share/applications/org.projectluma.Messages.desktop
+  /usr/share/applications/org.projectSuno.Messages.desktop
 check 'Phone claims tel URI ownership' grep -Fxq \
   'MimeType=x-scheme-handler/tel;' \
-  /usr/share/applications/org.projectluma.Phone.desktop
+  /usr/share/applications/org.projectSuno.Phone.desktop
 check 'one app binary declares both form factors' grep -Fq \
   'X-Purism-FormFactor=Workstation;Mobile;' \
-  /usr/share/applications/org.projectluma.Messages.desktop
+  /usr/share/applications/org.projectSuno.Messages.desktop
 
 for app_id in Messages Phone Contacts Calendar Weather Tasks VoiceMemos Notes Photos Clock Camera; do
   check "${app_id} is a desktop-visible shared launcher" \
-    bash -c "grep -Fxq 'X-Purism-FormFactor=Workstation;Mobile;' '/usr/share/applications/org.projectluma.${app_id}.desktop' && ! grep -Eq '^(NoDisplay=true|OnlyShowIn=.*Mobile)' '/usr/share/applications/org.projectluma.${app_id}.desktop'"
+    bash -c "grep -Fxq 'X-Purism-FormFactor=Workstation;Mobile;' '/usr/share/applications/org.projectSuno.${app_id}.desktop' && ! grep -Eq '^(NoDisplay=true|OnlyShowIn=.*Mobile)' '/usr/share/applications/org.projectSuno.${app_id}.desktop'"
 done
 
 # desktop-file-validate belongs to the package build lane. Runtime images are

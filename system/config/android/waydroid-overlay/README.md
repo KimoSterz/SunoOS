@@ -4,7 +4,7 @@ Installed into `/var/lib/waydroid/overlay/` (Waydroid mounts it over the
 Android image when `mount_overlays = True`). Owner root, `0644`; scripts
 `0755`. Android reads them at container start.
 
-## `system/etc/luma-task-recovery.sh` + `system/etc/init/luma-task-recovery.rc`
+## `system/etc/Suno-task-recovery.sh` + `system/etc/init/Suno-task-recovery.rc`
 
 **Symptom:** an Android app (Reddit) reopened on the desktop over and over, a
 few minutes apart, after being closed. No launch request was ever sent: the

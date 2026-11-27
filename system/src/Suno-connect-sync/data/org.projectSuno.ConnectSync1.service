@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=org.projectSuno.ConnectSync1
+Exec=/usr/bin/Suno-connect-syncd
+SystemdService=Suno-connect-syncd.service

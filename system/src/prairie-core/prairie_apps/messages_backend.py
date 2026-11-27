@@ -916,9 +916,9 @@ MOBILE_DATA_MODE_REASON = (
 
 def mobile_data_mode() -> bool:
     """A modem that carries one data connection at a time (Pixel 9 Pro Fold)
-    has calls and texts off in its mobile data mode; luma-fold-mobile-mode
+    has calls and texts off in its mobile data mode; Suno-fold-mobile-mode
     publishes the mode here. Absent elsewhere."""
-    path = os.environ.get("LUMA_MOBILE_MODE_STATUS", "/run/luma/mobile-mode.json")
+    path = os.environ.get("SUNO_MOBILE_MODE_STATUS", "/run/Suno/mobile-mode.json")
     try:
         with open(path, encoding="utf-8") as status:
             data = json.load(status)
@@ -951,7 +951,7 @@ class ModemMessagingTransport:
         try:
             listing = self._runner(["mmcli", "-L"])
         except (OSError, subprocess.SubprocessError):
-            return MessagingCapability(False, "This device can't send texts. Connect your phone in Luma Connect to text from here.")
+            return MessagingCapability(False, "This device can't send texts. Connect your phone in Suno Connect to text from here.")
         def status_of(index: str) -> str | None:
             try:
                 return self._runner(["mmcli", "-m", index, "--output-keyvalue"])

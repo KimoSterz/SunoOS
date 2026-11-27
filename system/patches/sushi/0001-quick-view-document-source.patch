@@ -10,7 +10,7 @@
    <description>
      <p>
 -      Sushi is a file previewer for the GNOME desktop environment. It is an independent component that
-+      Quick View is Luma’s file previewer, based on GNOME Sushi. It is an independent component that
++      Quick View is Suno’s file previewer, based on GNOME Sushi. It is an independent component that
        integrates with GNOME Files (Nautilus).
      </p>
    </description>
@@ -354,7 +354,7 @@
 +            html = `<style>body{font:14px/1.62 sans-serif;max-width:640px;margin:auto;padding:30px 36px}h1{font-size:26px}h2{font-size:16px;margin-top:26px}pre{padding:12px;background:#8881;border:1px solid #8883;border-radius:10px;white-space:pre-wrap}code{font-family:monospace}td,th{padding:6px 10px;border-bottom:1px solid #8885}table{border-collapse:collapse}</style>${html}`;
 +        }
 +        // Fail closed: no document is loaded before the engine's resource filter exists.
-+        const directory = GLib.build_filenamev([GLib.get_user_cache_dir(), 'luma-quick-view', 'filters']);
++        const directory = GLib.build_filenamev([GLib.get_user_cache_dir(), 'Suno-quick-view', 'filters']);
 +        GLib.mkdir_with_parents(directory, 0o700);
 +        const store = new WebKit2.UserContentFilterStore({path: directory});
 +        const rules = [{trigger: {'url-filter': '.*', 'resource-type': ['image', 'style-sheet', 'script', 'font', 'raw', 'svg-document', 'media', 'popup']}, action: {type: 'block'}}];

@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 # SPDX-License-Identifier: MPL-2.0
-# Render fixture: org.projectluma.AudioDevices1 with canned receivers, so the
+# Render fixture: org.projectSuno.AudioDevices1 with canned receivers, so the
 # Shell's picker can be photographed in each state. Behaviour is tested
 # against the real service elsewhere; this only feeds the presenter.
 import sys
@@ -9,20 +9,20 @@ gi.require_version("Gio", "2.0")
 from gi.repository import Gio, GLib
 
 XML = open(sys.argv[1]).read()
-TEST_XML = """<node><interface name="org.projectluma.RenderTest">
+TEST_XML = """<node><interface name="org.projectSuno.RenderTest">
 <method name="SetScenario"><arg type="s" direction="in"/></method></interface></node>"""
 
 RECEIVERS = [
     dict(id="aa0000000001", name="Living Room", model="AudioAccessory5,1", kind="speaker", state="connected",
-         remembered=True, requires_password=False, supported=True, node_name="luma_airplay.aa0000000001", error=""),
+         remembered=True, requires_password=False, supported=True, node_name="Suno_airplay.aa0000000001", error=""),
     dict(id="aa0000000002", name="Kitchen", model="AudioAccessory6,1", kind="speaker", state="available",
-         remembered=False, requires_password=False, supported=True, node_name="luma_airplay.aa0000000002", error=""),
+         remembered=False, requires_password=False, supported=True, node_name="Suno_airplay.aa0000000002", error=""),
     dict(id="aa0000000003", name="Office Mac", model="Mac15,9", kind="computer", state="available",
-         remembered=False, requires_password=True, supported=True, node_name="luma_airplay.aa0000000003", error=""),
+         remembered=False, requires_password=True, supported=True, node_name="Suno_airplay.aa0000000003", error=""),
     dict(id="aa0000000004", name="Bedroom TV", model="AppleTV14,1", kind="tv", state="available",
-         remembered=False, requires_password=False, supported=True, node_name="luma_airplay.aa0000000004", error="denied"),
+         remembered=False, requires_password=False, supported=True, node_name="Suno_airplay.aa0000000004", error="denied"),
     dict(id="aa0000000005", name="Studio", model="AudioAccessory1,1", kind="speaker", state="unavailable",
-         remembered=True, requires_password=False, supported=True, node_name="luma_airplay.aa0000000005", error=""),
+         remembered=True, requires_password=False, supported=True, node_name="Suno_airplay.aa0000000005", error=""),
 ]
 state = {"scenario": "full", "browsing": False}
 
@@ -48,18 +48,18 @@ def on_call(connection, sender, path, interface, method, params, invocation):
         invocation.return_value(GLib.Variant("(aa{sv})", ([variant(r) for r in receivers()],)))
     elif method == "ConnectAirPlayReceiver":
         rid, password = params.unpack()
-        if rid == "aa0000000003" and password != "luma":
+        if rid == "aa0000000003" and password != "Suno":
             if password:
-                invocation.return_dbus_error("org.projectluma.AudioDevices1.Error.PasswordIncorrect",
+                invocation.return_dbus_error("org.projectSuno.AudioDevices1.Error.PasswordIncorrect",
                                              "The password for “Office Mac” isn’t right.")
             else:
-                invocation.return_dbus_error("org.projectluma.AudioDevices1.Error.PasswordRequired",
+                invocation.return_dbus_error("org.projectSuno.AudioDevices1.Error.PasswordRequired",
                                              "“Office Mac” needs a password.")
         else:
             invocation.return_value(None)
     elif method == "SetScenario":
         (state["scenario"],) = params.unpack()
-        connection.emit_signal(None, "/org/projectluma/AudioDevices", "org.projectluma.AudioDevices1",
+        connection.emit_signal(None, "/org/projectSuno/AudioDevices", "org.projectSuno.AudioDevices1",
                                "AirPlayReceiversChanged", None)
         invocation.return_value(None)
     elif method in ("GetOutputDevices",):
@@ -75,10 +75,10 @@ def get_property(connection, sender, path, interface, name):
 
 
 bus = Gio.bus_get_sync(Gio.BusType.SESSION, None)
-info = Gio.DBusNodeInfo.new_for_xml(XML).lookup_interface("org.projectluma.AudioDevices1")
-bus.register_object("/org/projectluma/AudioDevices", info, on_call, get_property, None)
-test = Gio.DBusNodeInfo.new_for_xml(TEST_XML).lookup_interface("org.projectluma.RenderTest")
-bus.register_object("/org/projectluma/RenderTest", test, on_call, None, None)
-Gio.bus_own_name_on_connection(bus, "org.projectluma.AudioDevices", Gio.BusNameOwnerFlags.NONE, None, None)
+info = Gio.DBusNodeInfo.new_for_xml(XML).lookup_interface("org.projectSuno.AudioDevices1")
+bus.register_object("/org/projectSuno/AudioDevices", info, on_call, get_property, None)
+test = Gio.DBusNodeInfo.new_for_xml(TEST_XML).lookup_interface("org.projectSuno.RenderTest")
+bus.register_object("/org/projectSuno/RenderTest", test, on_call, None, None)
+Gio.bus_own_name_on_connection(bus, "org.projectSuno.AudioDevices", Gio.BusNameOwnerFlags.NONE, None, None)
 print("fake audio devices ready", flush=True)
 GLib.MainLoop().run()

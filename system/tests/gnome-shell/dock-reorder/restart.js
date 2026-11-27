@@ -7,7 +7,7 @@ import GLib from 'gi://GLib';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as L from '../shelf-arrange/lib.js';
 
-const short = id => id.replace(/^org\.(projectluma|oracle)\./, '').replace(/\.desktop$/, '');
+const short = id => id.replace(/^org\.(projectSuno|oracle)\./, '').replace(/\.desktop$/, '');
 
 async function work() {
     await L.waitForShelf();

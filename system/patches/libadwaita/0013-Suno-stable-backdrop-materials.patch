@@ -1,0 +1,63 @@
+From f4bd83826c9f8b3ae17b18b0323a7c5ddae1fb86 Mon Sep 17 00:00:00 2001
+From: Project Suno <devnull@projectSuno.local>
+Date: Mon, 31 Aug 2026 22:35:00 -0500
+Subject: [PATCH] stylesheet: keep Suno materials stable in backdrop
+
+Do not let libadwaita's generic inactive-window opacity filter turn native
+Suno title and command surfaces into a pale frosted strip. Inactive product
+windows retain their semantic material, text contrast and island boundaries;
+window elevation remains the state cue.
+---
+ src/stylesheet/_common.scss | 37 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 37 insertions(+)
+
+diff --git a/src/stylesheet/_common.scss b/src/stylesheet/_common.scss
+index 9d610a7..f587001 100644
+--- a/src/stylesheet/_common.scss
++++ b/src/stylesheet/_common.scss
+@@ -102,6 +102,43 @@ window.Suno-app-window .Suno-window-title {
+   background-color: unquote("@Suno_selected");
+ }
+ 
++// Suno product surfaces remain materially stable while their window is in
++// the background. Generic libadwaita chrome intentionally fades its
++// windowhandle; applying that filter to an AppKit title identity produces a
++// pale band that reads as translucent glass rather than an inactive window.
++window.Suno-app-window headerbar.Suno-titlebar:backdrop {
++  background-color: unquote("@Suno_window");
++  color: unquote("@Suno_ink");
++}
++
++window.Suno-app-window headerbar.Suno-titlebar:backdrop > windowhandle {
++  filter: none;
++  transition: none;
++}
++
++window.Suno-app-window:backdrop toolbarview > .top-bar,
++window.Suno-app-window:backdrop toolbarview > .bottom-bar {
++  background-color: unquote("@Suno_window");
++  color: unquote("@Suno_ink");
++}
++
++window.Suno-app-window .Suno-command-bar:backdrop,
++window.Suno-app-window .Suno-island:backdrop {
++  background-color: unquote("@Suno_content");
++  border-color: unquote("@Suno_line");
++  color: unquote("@Suno_ink");
++  filter: none;
++  opacity: 1;
++}
++
++window.Suno-app-window .Suno-command-group:backdrop,
++window.Suno-app-window .Suno-command-group:backdrop > button,
++window.Suno-app-window .Suno-command-group:backdrop > menubutton > button {
++  color: unquote("@Suno_ink");
++  filter: none;
++  opacity: 1;
++}
++
+ @media (prefers-color-scheme: dark) {
+   .Suno-command-bar {
+     box-shadow: 0 2px 6px RGB(0 0 0 / 32%),
+-- 
+2.54.0

@@ -80,8 +80,8 @@ else:
     window.set_child(body)
 window.present(); settle()
 assert button.get_parent() is original_parent, 'generic HeaderBar action was reparented'
-assert not header.has_css_class('luma-command-host'), 'generic header became a synthetic command island'
-assert not body.has_css_class('luma-native-work-surface'), 'generic content received a global work island'
+assert not header.has_css_class('Suno-command-host'), 'generic header became a synthetic command island'
+assert not body.has_css_class('Suno-native-work-surface'), 'generic content received a global work island'
 assert body.get_overflow() == Gtk.Overflow.VISIBLE, 'generic content clipping changed'
 activated = []
 button.connect('clicked', lambda *_: activated.append(True))
@@ -103,14 +103,14 @@ assert closed == [True], 'native modal pointer activation failed'
 # Author-owned work styling and clipping survive adoption and replacement.
 authored = Gtk.Box()
 authored.set_overflow(Gtk.Overflow.HIDDEN)
-authored.add_css_class('luma-native-work-surface')
+authored.add_css_class('Suno-native-work-surface')
 if kind.startswith('adw'):
     window.set_content(authored)
 else:
     window.set_child(authored)
 settle()
 assert authored.get_overflow() == Gtk.Overflow.HIDDEN
-assert authored.has_css_class('luma-native-work-surface'), 'author work style stripped on adoption'
+assert authored.has_css_class('Suno-native-work-surface'), 'author work style stripped on adoption'
 replacement = Gtk.Box()
 if kind.startswith('adw'):
     window.set_content(replacement)
@@ -118,6 +118,6 @@ else:
     window.set_child(replacement)
 settle()
 assert authored.get_overflow() == Gtk.Overflow.HIDDEN, 'author clipping changed on detach'
-assert authored.has_css_class('luma-native-work-surface'), 'author work style stripped on detach'
+assert authored.has_css_class('Suno-native-work-surface'), 'author work style stripped on detach'
 window.destroy(); settle()
 print(f'{kind}: native ancestry, unclipped content, actual pointer, keyboard and modal PASS')

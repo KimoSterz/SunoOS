@@ -1,0 +1,16 @@
+[Unit]
+Description=Project Suno FP6 modem restart to apply a pending PDC activation
+After=rmtfs.service tqftpserv.service
+Before=ModemManager.service Suno-fp6-imsd.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/Suno-fp6-modem-restart
+TimeoutStartSec=30
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateNetwork=true
+ProtectHome=true
+ProtectSystem=strict
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_UNIX

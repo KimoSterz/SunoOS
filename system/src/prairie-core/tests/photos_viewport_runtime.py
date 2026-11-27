@@ -31,7 +31,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument('--width', type=int, default=1024)
     args = parser.parse_args()
-    with tempfile.TemporaryDirectory(prefix='luma-photos-viewport-') as temporary:
+    with tempfile.TemporaryDirectory(prefix='Suno-photos-viewport-') as temporary:
         root = Path(temporary)
         for variable, folder in (('HOME', 'home'), ('XDG_DATA_HOME', 'data'),
                                  ('XDG_CONFIG_HOME', 'config'), ('XDG_CACHE_HOME', 'cache'),
@@ -39,8 +39,8 @@ def main() -> None:
             path = root / folder
             path.mkdir()
             os.environ[variable] = str(path)
-        os.environ['LUMA_PHOTOS_NON_UNIQUE'] = '1'
-        os.environ.pop('LUMA_PHOTOS_FIXTURE', None)
+        os.environ['SUNO_PHOTOS_NON_UNIQUE'] = '1'
+        os.environ.pop('SUNO_PHOTOS_FIXTURE', None)
         pictures = root / 'Pictures'
         pictures.mkdir()
         (pictures / 'Generated fixture.png').write_bytes(_png(12, 8))

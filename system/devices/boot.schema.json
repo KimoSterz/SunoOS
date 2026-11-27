@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://gitlab.com/simplyluma/luma/-/raw/main/devices/boot.schema.json",
-  "title": "Luma device boot policy (devices/<vendor>/<codename>/boot.toml)",
+  "title": "Suno device boot policy (devices/<vendor>/<codename>/boot.toml)",
   "type": "object",
   "additionalProperties": false,
   "required": ["schema", "cmdline"],
@@ -36,13 +36,13 @@
         "algorithm": {"enum": ["NONE", "SHA256_RSA2048", "SHA256_RSA4096", "SHA256_RSA8192", "SHA512_RSA2048", "SHA512_RSA4096", "SHA512_RSA8192"]},
         "hash_algorithm": {"enum": ["sha256", "sha512"]},
         "rollback_index": {"type": "integer", "minimum": 0},
-        "vbmeta": {"enum": ["untouched", "disabled-verification", "luma-signed"]}
+        "vbmeta": {"enum": ["untouched", "disabled-verification", "Suno-signed"]}
       }
     },
     "dtbo": {
       "type": "object", "additionalProperties": false, "required": ["policy"],
       "properties": {
-        "policy": {"enum": ["blank", "stock", "luma", "none"]},
+        "policy": {"enum": ["blank", "stock", "Suno", "none"]},
         "size": {"type": "integer", "minimum": 1},
         "partitions": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^dtbo(_[ab])?$"}}
       }

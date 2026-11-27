@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Exercise Flatpak-style exported symlinks; no application is launched.
 set -euo pipefail
-[[ ${LUMA_NATIVE_SHELL_DISPOSABLE:-0} == 1 && $(id -u) == 0 ]]
+[[ ${SUNO_NATIVE_SHELL_DISPOSABLE:-0} == 1 && $(id -u) == 0 ]]
 root=$(cd "$(dirname "$0")" && pwd)
 work=${DEV_ARTIFACT_DIR:?}/installed-apps
 mkdir -p "$work"/{config/glib-2.0/settings,data/applications,runtime}
@@ -16,10 +16,10 @@ if ! dbus-send --system --print-reply --dest=org.freedesktop.DBus / org.freedesk
 fi
 rpm -q gnome-shell mutter > "$work/packages.txt"
 chown -R 1000:1000 "$work"
-runuser -u luma-media-test -- env XDG_RUNTIME_DIR="$work/runtime" XDG_CONFIG_HOME="$work/config" \
+runuser -u Suno-media-test -- env XDG_RUNTIME_DIR="$work/runtime" XDG_CONFIG_HOME="$work/config" \
     XDG_DATA_HOME="$work/data" GSETTINGS_BACKEND=keyfile LIBGL_ALWAYS_SOFTWARE=1 \
     XDG_DATA_DIRS="$work/user/flatpak/exports/share:$work/system/flatpak/exports/share:/usr/local/share:/usr/share" \
-    LUMA_MUTTER_ALLOW_SOFTWARE_BLUR=1 LUMA_INSTALLED_APPS_OUT="$work" \
+    SUNO_MUTTER_ALLOW_SOFTWARE_BLUR=1 SUNO_INSTALLED_APPS_OUT="$work" \
     dbus-run-session -- timeout 80 gnome-shell --headless --no-x11 \
     --virtual-monitor 1920x1080 --automation-script="$work/probe.js" > "$work/shell.log" 2>&1
 python3 - "$work/result.json" <<'PY'

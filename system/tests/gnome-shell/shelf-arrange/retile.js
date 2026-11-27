@@ -106,7 +106,7 @@ async function work() {
             {edge: 'bottom', anchor: 'end', islands: ['well', 'quick-options', 'clock', 'notifications']}], 100);
     }
     await L.sleep(1500);
-    const reflows = w => (w._lumaReflowMoves ?? []).length;
+    const reflows = w => (w._SunoReflowMoves ?? []).length;
     L.check('a burst of Dash changes: the re-tile follows, at most three times in two seconds',
         reflows(a) <= 3 && reflows(b) <= 3, `${reflows(a)} ${reflows(b)} (all moves ${moves.get(a)} ${moves.get(b)})`);
     const monitorOf = w => w.get_monitor();

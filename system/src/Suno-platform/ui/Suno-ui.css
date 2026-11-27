@@ -1,0 +1,221 @@
+@import url("Suno-empty-state-tokens.css");
+
+/* Status safe areas belong to the structural provider, above application
+ * composition. Legacy app padding resets must not cover system indicators.
+ * The window continues painting its own background through the status strip. */
+window.Suno-app-window.SunoUI-tablet-mode .Suno-window-body,
+window.Suno-app-window.SunoUI-tablet-mode .Suno-window-body.SunoUI-frame-sidebar {
+  padding: var(--SunoUI-tablet-frame-top) var(--SunoUI-tablet-frame-edge) var(--SunoUI-tablet-frame-edge);
+}
+window.Suno-app-window.SunoUI-tablet-mode .Suno-island {
+  padding-top: 0; border-radius: var(--SunoUI-tablet-frame-island-radius);
+}
+/* Phone clients use the whole surface, with one shared status inset. Keep
+ * frame ownership here too: an app's legacy island margin must not override
+ * it just because its composition stylesheet loads above the toolkit sheet. */
+window.Suno-app-window.SunoUI-phone-device:not(.SunoUI-tablet-mode) .Suno-window-body,
+window.Suno-app-window.SunoUI-phone-device:not(.SunoUI-tablet-mode) .Suno-window-body.SunoUI-frame-sidebar {
+  padding: 0;
+}
+window.Suno-app-window.SunoUI-phone-device:not(.SunoUI-tablet-mode) .Suno-island {
+  margin: 0; border-radius: 0; box-shadow: none;
+  padding-top: var(--SunoUI-phone-frame-status);
+}
+window.Suno-app-window.SunoUI-phone-device.SunoUI-bleed:not(.SunoUI-tablet-mode) .Suno-island {
+  padding-top: 0;
+}
+/* A legacy phone bleed request does not transfer Tablet safe-area ownership.
+ * Edge-to-edge clients explicitly opt in and inset their own interactive UI. */
+window.Suno-app-window.SunoUI-tablet-mode.SunoUI-edge-to-edge .Suno-window-body { padding: 0; }
+window.Suno-app-window.SunoUI-tablet-mode.SunoUI-edge-to-edge .Suno-island { border-radius: 0; }
+
+/* Frost and Glass select libadwaita's light colour scheme for legible ink,
+ * but that must never turn an application's title region into an opaque Light
+ * slab. The root window owns the one physical translucent material. Every
+ * structural descendant between it and the title contents must therefore be
+ * unpainted; stacking the same tint three times is visibly opaque.
+ *
+ * These select on the effective treatment alone. They used to require
+ * `Suno-translucent` as well, which is set only once a window has negotiated
+ * its own compositor blur region: a window that is in Glass but whose
+ * protocol handshake has not landed yet kept an opaque Light title region,
+ * which is one of the ways two windows on one desktop came out different
+ * colours. What the treatment paints is the treatment's business; whether a
+ * given surface also gets a live blur region is the compositor's.
+ *
+ * Include the effective treatment class in the selector deliberately. It
+ * outranks application composition sheets that provide an opaque Light
+ * fallback without naming Filer, Calculator, or any other consumer here. */
+window.Suno-treatment-frost toolbarview.Suno-window-toolbar-view,
+window.Suno-treatment-glass toolbarview.Suno-window-toolbar-view,
+window.Suno-treatment-frost toolbarview.Suno-window-toolbar-view > .top-bar,
+window.Suno-treatment-glass toolbarview.Suno-window-toolbar-view > .top-bar,
+window.Suno-treatment-frost toolbarview.Suno-window-toolbar-view > .bottom-bar,
+window.Suno-treatment-glass toolbarview.Suno-window-toolbar-view > .bottom-bar,
+window.Suno-treatment-frost toolbarview.Suno-window-toolbar-view > .top-bar.raised,
+window.Suno-treatment-glass toolbarview.Suno-window-toolbar-view > .top-bar.raised,
+window.Suno-treatment-frost toolbarview.Suno-window-toolbar-view > .bottom-bar.raised,
+window.Suno-treatment-glass toolbarview.Suno-window-toolbar-view > .bottom-bar.raised,
+window.Suno-treatment-frost headerbar.Suno-titlebar,
+window.Suno-treatment-glass headerbar.Suno-titlebar,
+window.Suno-treatment-frost toolbarview.Suno-window-toolbar-view:backdrop,
+window.Suno-treatment-glass toolbarview.Suno-window-toolbar-view:backdrop,
+window.Suno-treatment-frost toolbarview.Suno-window-toolbar-view > .top-bar:backdrop,
+window.Suno-treatment-glass toolbarview.Suno-window-toolbar-view > .top-bar:backdrop,
+window.Suno-treatment-frost toolbarview.Suno-window-toolbar-view > .bottom-bar:backdrop,
+window.Suno-treatment-glass toolbarview.Suno-window-toolbar-view > .bottom-bar:backdrop,
+window.Suno-treatment-frost headerbar.Suno-titlebar:backdrop,
+window.Suno-treatment-glass headerbar.Suno-titlebar:backdrop {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  transition: none;
+}
+
+window.Suno-treatment-frost toolbarview.Suno-window-toolbar-view > .top-bar:backdrop > windowhandle,
+window.Suno-treatment-glass toolbarview.Suno-window-toolbar-view > .top-bar:backdrop > windowhandle,
+window.Suno-treatment-frost headerbar.Suno-titlebar:backdrop > windowhandle,
+window.Suno-treatment-glass headerbar.Suno-titlebar:backdrop > windowhandle {
+  filter: none;
+  transition: none;
+}
+
+
+/* Islands are opaque, in every treatment. The window's own surface is the
+ * glass -- the frame, the title band and the gaps between islands -- and the
+ * content surfaces standing on it are paper. A month grid or a sidebar that
+ * the wallpaper shows through is not a material, it is unreadable text on
+ * unreadable text. The colours come from the treatment's token sheet, which
+ * now carries the light family's paper for these roles; this sheet only makes
+ * sure nothing below it repaints them translucent. */
+window.Suno-treatment-frost .Suno-island,
+window.Suno-treatment-glass .Suno-island,
+window.Suno-treatment-frost .Suno-island:backdrop,
+window.Suno-treatment-glass .Suno-island:backdrop {
+  background-color: @Suno_island;
+}
+
+window.Suno-treatment-frost .Suno-pane,
+window.Suno-treatment-glass .Suno-pane,
+window.Suno-treatment-frost .Suno-pane:backdrop,
+window.Suno-treatment-glass .Suno-pane:backdrop {
+  background-color: @Suno_content;
+}
+
+/* Text on a translucent surface is plain text: dark ink in the light family,
+ * and nothing else. A shadow or an outline behind a glyph is what a surface
+ * reaches for when it is too thin to carry its own text; the surface is thick
+ * enough now (see the veil in config/shared/design-tokens.json), so the
+ * rescue comes off everywhere rather than in the places somebody noticed. */
+window.Suno-treatment-frost,
+window.Suno-treatment-glass,
+window.Suno-treatment-frost *,
+window.Suno-treatment-glass * {
+  text-shadow: none;
+  -gtk-icon-shadow: none;
+}
+
+/* The C kit's own sheet. Chrome, panes, bars, buttons, groups, segments and
+ * sliders come from Suno-appkit-base.css, shared with the Python kit, so a
+ * C application and a Python application are the same application to look at.
+ * Only what the C widgets add beyond that lives here. */
+
+.Suno-action-title {
+  font-size: 13px;
+  font-weight: 650;
+  color: @Suno_ink;
+}
+
+.Suno-touch .Suno-action-bar button {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* Ink-filled controls (play, the primary button) print their label in the
+ * surface colour. On frost and glass the surface roles are translucent layers,
+ * so a label in one would let the dark plate through; it takes the paper the
+ * layers stand for instead. */
+window.Suno-treatment-frost .Suno-play,
+window.Suno-treatment-glass .Suno-play,
+window.Suno-treatment-frost .Suno-button.primary,
+window.Suno-treatment-glass .Suno-button.primary,
+window.Suno-treatment-frost button.Suno-media-play,
+window.Suno-treatment-glass button.Suno-media-play {
+  color: #fbfbfa;
+}
+
+/* Reorder hint (Suno-reorder-hint.c), inlined: a resource import fails wherever the
+ * library's resources are not registered (a Python SunoUI process). */
+/* Opt-in, geometry-stable reorder feedback. Scope validation and persistence
+ * belong to the application; the insertion marker never means “drop into”. */
+.Suno-reorder-list.Suno-reordering > row,
+.Suno-reorder-list.Suno-reordering > row:hover,
+.Suno-reorder-list.Suno-reordering > row:selected,
+.Suno-reorder-list.Suno-reordering > row:drop(active) {
+  background: transparent;
+  box-shadow: none;
+  outline: none;
+}
+.Suno-reorder-list.Suno-reordering > row.Suno-reorder-source { opacity: .35; }
+.Suno-reorder-list.Suno-reordering > row.Suno-reorder-before {
+  border-radius: 0;
+  box-shadow: inset 0 2px @accent_color;
+}
+.Suno-reorder-list.Suno-reordering > row.Suno-reorder-after {
+  border-radius: 0;
+  box-shadow: inset 0 -2px @accent_color;
+}
+
+/* MD3: data-bound arrangement/story timeline. The C kit owns these surfaces. */
+.Suno-timeline { background: @Suno_bar_surface; border-top: 1px solid @Suno_hairline; }
+.Suno-timeline .timeline-header { min-height: 40px; padding: 0 10px 0 16px; border-bottom: 1px solid @Suno_hairline; }
+.Suno-timeline .timeline-header label { color: @Suno_ink_secondary; font-size: 12.5px; font-variant-numeric: tabular-nums; }
+.Suno-timeline .timeline-header progressbar { min-width: 120px; }
+.Suno-timeline .timeline-tools { background: @Suno_well; border-radius: 11px; padding: 3px; }
+.Suno-timeline .timeline-key { min-width: 30px; min-height: 28px; padding: 0; border: none; border-radius: 8px; background: none; color: @Suno_ink_secondary; }
+.Suno-timeline .timeline-key.on { background: @Suno_control_fill; color: @Suno_ink; }
+.Suno-timeline .timeline-key:hover { background: @Suno_hover; }
+.Suno-timeline .timeline-key:focus-visible, .Suno-timeline .timeline-region:focus-visible,
+.Suno-timeline .timeline-ruler:focus-visible { outline: 2px solid @Suno_focus_ring; outline-offset: -2px; }
+.Suno-timeline .timeline-heads { background: @Suno_bar_surface; border-right: 1px solid @Suno_hairline; }
+.Suno-timeline .timeline-track-head { border-bottom: 1px solid @Suno_hairline; padding: 0 4px 0 8px; }
+.Suno-timeline .timeline-track-head label { color: @Suno_ink; font-size: 11px; font-weight: 600; }
+.Suno-timeline .timeline-track-head .lane-key { min-width: 20px; min-height: 22px; }
+.Suno-timeline.phone .timeline-track-head .lane-key { min-width: 16px; }
+.Suno-timeline .timeline-canvas { background: @Suno_bar_surface; }
+.Suno-timeline .timeline-ruler { border: none; border-radius: 0; border-bottom: 1px solid @Suno_hairline; background: none; }
+.Suno-timeline .timeline-tick { border-left: 1px solid @Suno_hairline; padding-left: 4px; color: @Suno_muted; font-size: 10.5px; font-variant-numeric: tabular-nums; }
+.Suno-timeline .timeline-marker { color: @Suno_media_toggle_on; font-size: 8px; }
+.Suno-timeline .timeline-loop { background: @Suno_media_toggle_on; }
+.Suno-timeline .timeline-track { border-bottom: 1px solid @Suno_hairline; background: @Suno_bar_surface; }
+.Suno-timeline .timeline-track.audio { background: @Suno_media_deck; }
+.Suno-timeline .timeline-region { border: 1px solid @Suno_hairline; border-radius: 8px; padding: 0 6px; background: @Suno_control_fill; color: @Suno_ink; font-size: 11px; font-weight: 600; }
+.Suno-timeline .timeline-region.midi { background: @Suno_media_toggle_on; color: @Suno_key; }
+.Suno-timeline .timeline-region.audio { background: @Suno_media_progress; color: @Suno_key; }
+.Suno-timeline .timeline-region.selected { outline: 2px solid @Suno_focus_ring; outline-offset: -2px; }
+.Suno-timeline .timeline-playhead { background: @Suno_media_recording; }
+@media (prefers-reduced-motion: reduce) { .Suno-timeline * { transition: none; } }
+
+/* ══ v71 (K-C): what only the C kit draws ═══════════════════════════════════════════════════════
+ * The v71 bar, its panels, held row, search and in-bar confirm, and the title island are styled by the
+ * shared sheets (Suno-appkit-bar.css, Suno-appkit-base.css): the C parts build Python's trees. Here only
+ * the C layer host's drawers (menus, sheets, the phone's confirm) in the bar's frame (v71: 16 gutter, 34
+ * up, 26 corners all round, no grabber, a light scrim), and the phone confirm's in-bar look. */
+.SunoUI-modal.drawer { border-radius: 26px; }
+.SunoUI-modal.drawer .SunoUI-drawer-handle { min-width: 0; min-height: 0; margin: 0; background: none; }
+.SunoUI-scrim.drawer { background: @Suno_scrim; }
+box.SunoUI-dialog.phone.drawer { padding: 18px 12px 12px; border-radius: 26px; }
+box.SunoUI-dialog.phone label.SunoUI-dialog-title { margin: 0; padding: 0 6px; font-size: 17px; }
+box.SunoUI-dialog.phone label.SunoUI-dialog-body { margin: 6px 0 0; padding: 0 6px; font-size: 14px; }
+box.SunoUI-dialog.phone box.SunoUI-dialog-buttons { margin-top: 16px; border-spacing: 8px; }
+box.SunoUI-dialog.phone box.SunoUI-dialog-buttons button { min-height: 48px; border-radius: 20px; font-size: 15px; }
+
+/* Compact physical phone screens attach their bars to the bottom edge.
+ * The shared kit supplies the pocket class from monitor geometry, never from
+ * a narrow desktop window. Gesture recognition does not require a blank strip. */
+.SunoUI-action-center.pocket.phone box.SunoUI-ac-bar,
+.SunoUI-action-center.pocket.phone box.SunoUI-ac-split > box.SunoUI-ac-bar {
+  margin: 0;
+  padding-bottom: var(--SunoUI-ac-phone-bar-padding);
+  border-radius: var(--SunoUI-ac-phone-bar-radius) var(--SunoUI-ac-phone-bar-radius) 0 0;
+}

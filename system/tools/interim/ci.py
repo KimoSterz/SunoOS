@@ -1,6 +1,6 @@
 #!/usr/bin/python3 -I
 # SPDX-License-Identifier: Apache-2.0
-"""Interim CI on luma-build while GitHub Actions is unavailable.
+"""Interim CI on Suno-build while GitHub Actions is unavailable.
 
   ci.py run --commit SHA [--base SHA]     source checks + package builds for SHA
   ci.py toolkit --commit SHA              an interim toolkit cohort built from SHA
@@ -15,7 +15,7 @@
     jobs whose `paths` filters match the change base..SHA, with the matrices
     their own selectors print (desktop-package-matrix.py, desktop-ui-matrix.py),
     each in a fresh checkout inside the workflow's pinned Fedora image, with
-    LUMA_RPM_BUILDER_DIRECT=1, under luma-heavy. A workflow or action edit
+    SUNO_RPM_BUILDER_DIRECT=1, under Suno-heavy. A workflow or action edit
     selects no build here (interim jobs use their own steps), except changed
     run steps of desktop-packages.yml.
 x86_64 jobs run here. aarch64 jobs are written out as pending; ci-arm.sh runs
@@ -46,14 +46,14 @@ import subprocess
 import sys
 from pathlib import Path
 
-REPO = Path(os.environ.get('LUMA_INTERIM_REPO', '/srv/dev-storage/git/luma.git'))
-ARTIFACTS = Path(os.environ.get('LUMA_INTERIM_ARTIFACTS', '/srv/dev-storage/projects/luma-interim/artifacts'))
-WORK = Path(os.environ.get('LUMA_INTERIM_WORK', '/srv/ssd-build/interim-ci'))
-GH_CACHE = Path(os.environ.get('LUMA_INTERIM_GH_CACHE', '/srv/dev-storage/projects/luma-interim/cache/gh'))
+REPO = Path(os.environ.get('SUNO_INTERIM_REPO', '/srv/dev-storage/git/Suno.git'))
+ARTIFACTS = Path(os.environ.get('SUNO_INTERIM_ARTIFACTS', '/srv/dev-storage/projects/Suno-interim/artifacts'))
+WORK = Path(os.environ.get('SUNO_INTERIM_WORK', '/srv/ssd-build/interim-ci'))
+GH_CACHE = Path(os.environ.get('SUNO_INTERIM_GH_CACHE', '/srv/dev-storage/projects/Suno-interim/cache/gh'))
 DNF_CACHE = WORK / 'dnf-cache'
 HERE = Path(__file__).resolve().parent
-CHECK_IMAGE = 'localhost/luma-interim-ci:2'
-NCPUS = os.environ.get('LUMA_INTERIM_NCPUS', '8')
+CHECK_IMAGE = 'localhost/Suno-interim-ci:2'
+NCPUS = os.environ.get('SUNO_INTERIM_NCPUS', '8')
 TOOLS = 'git podman cpio curl patch rpm-build rpmdevtools dnf5-plugins python3 findutils glibc-langpack-en'
 
 
@@ -62,7 +62,7 @@ def sh(*args, **kw):
 
 
 # scripts/os/release-at-merge.py INTERIM_BOT: the forge's release commits.
-RELEASER = ('Luma interim release', 'interim-release@luma-build.invalid')
+RELEASER = ('Suno interim release', 'interim-release@Suno-build.invalid')
 
 
 def check_view(src, commit, base):
@@ -116,7 +116,7 @@ def triggered(workflow, changed):
 
 
 def load(src, name):
-    import yaml  # luma-build has PyYAML; exec-job (ARM VM) does not need it
+    import yaml  # Suno-build has PyYAML; exec-job (ARM VM) does not need it
     return yaml.safe_load((src / '.github/workflows' / name).read_text())
 
 
@@ -195,10 +195,10 @@ def package_jobs(src, base, changed, full=False):
 
     def hit(name):
         n = norm(name)
-        return not full and any(key.startswith((n + '_', 'LUMA_' + n + '_')) for key in keys)
+        return not full and any(key.startswith((n + '_', 'SUNO_' + n + '_')) for key in keys)
     images = {'x86_64': values['FEDORA_RPM_BUILD_CONTAINER'], 'aarch64': values['FEDORA_RPM_BUILD_CONTAINER_AARCH64']}
     jobs = []
-    admit = 'python3 scripts/os/admit-desktop-toolkit.py --architecture "$LUMA_TARGET_ARCHITECTURE"'
+    admit = 'python3 scripts/os/admit-desktop-toolkit.py --architecture "$SUNO_TARGET_ARCHITECTURE"'
     # GitHub rebuilds the toolkit cohort for these paths (inputs.env among them). Interim CI
     # cannot build a cohort that a GitHub run must admit, so it proves the pinned cohort still
     # admits instead: the admission fails closed when a toolkit input really changed.
@@ -209,7 +209,7 @@ def package_jobs(src, base, changed, full=False):
             # A CPU whose interim cohort is still owed (pinned --partial): pending with the ARM jobs.
             owed = bool(interim) and arch not in interim['records']
             jobs.append({'name': f'desktop-toolkit/admission/{arch}', 'kind': 'check', 'arch': arch if owed else 'x86_64',
-                         'image': CHECK_IMAGE, 'env': {'LUMA_TARGET_ARCHITECTURE': arch},
+                         'image': CHECK_IMAGE, 'env': {'SUNO_TARGET_ARCHITECTURE': arch},
                          'steps': [{'name': f'Pinned toolkit cohort still admits ({arch}); a changed toolkit '
                                     'input needs a new cohort (a GitHub run, or ci.py toolkit and its pin)',
                                     'run': admit + ' --output /tmp/toolkit'}]})
@@ -223,7 +223,7 @@ def package_jobs(src, base, changed, full=False):
     if triggered(workflow, narrow) or any(hit(r) for r in recipes):
         for name, job in workflow['jobs'].items():
             include = job.get('strategy', {}).get('matrix', {}).get('include')
-            archs = [row['architecture'] for row in include] if include else [job['env']['LUMA_TARGET_ARCHITECTURE']]
+            archs = [row['architecture'] for row in include] if include else [job['env']['SUNO_TARGET_ARCHITECTURE']]
             for arch in archs:
                 ctx = {'matrix.architecture': arch}
                 steps, artifact = [], None
@@ -265,7 +265,7 @@ def package_jobs(src, base, changed, full=False):
             if row['toolkit']:
                 steps.append({'name': 'Admit already checked matching toolkit', 'run': admit})
             steps.append({'name': 'Build and check the selected component', 'run':
-                          f'test "$(rpm --eval \'%{{_arch}}\')" = "$LUMA_TARGET_ARCHITECTURE"\n{revision}\n'
+                          f'test "$(rpm --eval \'%{{_arch}}\')" = "$SUNO_TARGET_ARCHITECTURE"\n{revision}\n'
                           'export SOURCE_DATE_EPOCH=$(git -c safe.directory="$PWD" log -1 --format=%ct HEAD)\n'
                           f'bash {shlex.quote(row["recipe"])}'})
             if row['spec']:
@@ -281,8 +281,8 @@ def package_jobs(src, base, changed, full=False):
                          'build/SOURCE-REVISION']
             jobs.append({'name': f'desktop-components/{row["component"]}/{arch}', 'kind': 'build', 'arch': arch,
                          'image': images[arch], 'toolkit': row['toolkit'], 'steps': steps,
-                         'env': {'LUMA_TARGET_ARCHITECTURE': arch, 'LUMA_RPM_BUILDER_DIRECT': '1',
-                                 'LUMA_RPM_BUILDER_ARCHITECTURE': arch, 'RPM_BUILD_NCPUS': NCPUS},
+                         'env': {'SUNO_TARGET_ARCHITECTURE': arch, 'SUNO_RPM_BUILDER_DIRECT': '1',
+                                 'SUNO_RPM_BUILDER_ARCHITECTURE': arch, 'RPM_BUILD_NCPUS': NCPUS},
                          'artifact': f'desktop-{row["component"]}-{arch}', 'paths': paths})
 
     # Native desktop UI: desktop-ui-matrix.py selects the components, on both CPUs.
@@ -297,8 +297,8 @@ def package_jobs(src, base, changed, full=False):
             for arch in ('x86_64', 'aarch64'):
                 jobs.append({'name': f'desktop-ui/{component}/{arch}', 'kind': 'build', 'arch': arch,
                              'image': images[arch], 'toolkit': True,
-                             'env': {'LUMA_TARGET_ARCHITECTURE': arch, 'LUMA_RPM_BUILDER_DIRECT': '1',
-                                     'LUMA_DESKTOP_UI_COMPONENT': component, 'RPM_BUILD_NCPUS': NCPUS},
+                             'env': {'SUNO_TARGET_ARCHITECTURE': arch, 'SUNO_RPM_BUILDER_DIRECT': '1',
+                                     'SUNO_DESKTOP_UI_COMPONENT': component, 'RPM_BUILD_NCPUS': NCPUS},
                              'steps': [{'name': 'Admit already checked matching toolkit', 'run': admit},
                                        {'name': 'Build and check UI component',
                                         'run': f'{revision}\nbash scripts/os/build-desktop-ui.sh'}],
@@ -313,13 +313,13 @@ def toolkit_jobs(src):
     values = inputs_env(src)
     images = {'x86_64': values['FEDORA_RPM_BUILD_CONTAINER'], 'aarch64': values['FEDORA_RPM_BUILD_CONTAINER_AARCH64']}
     run = '\n'.join([
-        'python3 scripts/os/admit-desktop-toolkit.py --architecture "$LUMA_TARGET_ARCHITECTURE" --providers-only',
-        'dnf5 -y install build/packages/gtk4/RPMS/"$LUMA_TARGET_ARCHITECTURE"/gtk4-*.rpm build/packages/figtree-fonts/RPMS/noarch/*.rpm',
-        'bash scripts/packages/build-luma-developer-platform.sh',
+        'python3 scripts/os/admit-desktop-toolkit.py --architecture "$SUNO_TARGET_ARCHITECTURE" --providers-only',
+        'dnf5 -y install build/packages/gtk4/RPMS/"$SUNO_TARGET_ARCHITECTURE"/gtk4-*.rpm build/packages/figtree-fonts/RPMS/noarch/*.rpm',
+        'bash scripts/packages/build-Suno-developer-platform.sh',
         'git -c safe.directory="$PWD" rev-parse HEAD > build/SOURCE-REVISION'])
     return [{'name': f'desktop-toolkit/build/{arch}', 'kind': 'build', 'arch': arch, 'image': images[arch],
              'toolkit_cohort': True,
-             'env': {'LUMA_TARGET_ARCHITECTURE': arch, 'LUMA_RPM_BUILDER_DIRECT': '1', 'RPM_BUILD_NCPUS': NCPUS},
+             'env': {'SUNO_TARGET_ARCHITECTURE': arch, 'SUNO_RPM_BUILDER_DIRECT': '1', 'RPM_BUILD_NCPUS': NCPUS},
              'steps': [{'name': 'Reuse the pinned GitHub providers, build the platform', 'run': run}],
              'artifact': f'desktop-toolkit-{arch}',
              'paths': ['build/packages/**/RPMS/', 'build/packages/**/SRPMS/', 'build/packages/**/SHA256SUMS',
@@ -343,7 +343,7 @@ def cohort_record(out, record, job):
     if revision != record['commit']:
         raise SystemExit(f'refused: toolkit upload built {revision}, not {record["commit"]}')
     providers = stored / 'REUSED-TOOLKIT-PROVIDERS.json'
-    cohort = {'schema': 'org.projectluma.interim-toolkit-cohort/v1', 'commit': record['commit'], 'tree': record['tree'],
+    cohort = {'schema': 'org.projectSuno.interim-toolkit-cohort/v1', 'commit': record['commit'], 'tree': record['tree'],
               'architecture': job['arch'], 'job': job['name'], 'image': job['image'], 'env': job['env'],
               'steps': job['steps'], 'artifact': artifact, 'built': job['result'].get('finished'),
               'log': job['result'].get('log'),
@@ -407,18 +407,18 @@ def run_job(job, commit, origin, workdir, out):
            '-v', f'{jobdir}:{jobdir}', '-v', f'{DNF_CACHE}:/var/cache/libdnf5',
            '-v', f'{HERE}/gh:/opt/interim-gh/gh:ro', '-v', f'{HERE}/sync-noop:/opt/interim-gh/sync:ro',
            '-v', f'{GH_CACHE}:/opt/interim-gh/cache:ro',
-           '-e', f'JOB_SRC={src}', '-e', 'LUMA_INTERIM_GH_CACHE=/opt/interim-gh/cache']
+           '-e', f'JOB_SRC={src}', '-e', 'SUNO_INTERIM_GH_CACHE=/opt/interim-gh/cache']
     if ARTIFACTS.is_dir():  # interim toolkit cohorts, admitted read-only (ci-arm.sh copies the pinned one)
-        cmd += ['-v', f'{ARTIFACTS}:/opt/interim-artifacts:ro', '-e', 'LUMA_INTERIM_TOOLKIT=/opt/interim-artifacts']
+        cmd += ['-v', f'{ARTIFACTS}:/opt/interim-artifacts:ro', '-e', 'SUNO_INTERIM_TOOLKIT=/opt/interim-artifacts']
     for key, value in job.get('env', {}).items():
         cmd += ['-e', f'{key}={value}']
     cmd += [job['image'], 'bash', str(script)]
     env = None
-    if job['kind'] == 'build' and shutil.which('luma-heavy'):
-        cmd = ['luma-heavy', 'nice', '-n', '5'] + cmd
-        # Merge builds take luma-heavy's priority lane, as nightly jobs do: side builds
+    if job['kind'] == 'build' and shutil.which('Suno-heavy'):
+        cmd = ['Suno-heavy', 'nice', '-n', '5'] + cmd
+        # Merge builds take Suno-heavy's priority lane, as nightly jobs do: side builds
         # (agents' ad-hoc jobs) no longer win the lock while a merge waits.
-        env = dict(os.environ, LUMA_HEAVY_PRIORITY='1')
+        env = dict(os.environ, SUNO_HEAVY_PRIORITY='1')
     elif job['kind'] == 'build':
         cmd = ['nice', '-n', '5'] + cmd
     started = now()
@@ -498,7 +498,7 @@ def cmd_run(args):
         sh('git', 'clone', '-q', '--no-checkout', str(REPO), str(src))
         sh('git', '-C', str(src), 'checkout', '-q', '--detach', commit)
         changed = sh('git', '-C', str(src), 'diff', '--name-only', base, commit).split()
-        record = {'schema': 'org.projectluma.interim-ci/v1', 'commit': commit, 'base': base,
+        record = {'schema': 'org.projectSuno.interim-ci/v1', 'commit': commit, 'base': base,
                   'tree': sh('git', '-C', str(src), 'rev-parse', f'{commit}^{{tree}}').strip(),
                   'subject': sh('git', '-C', str(src), 'log', '-1', '--format=%s', commit).strip(),
                   'started': now(), 'changed': len(changed), 'jobs': []}
@@ -610,7 +610,7 @@ def cmd_toolkit(args):
         src = workdir / 'src'
         sh('git', 'clone', '-q', '--no-checkout', str(REPO), str(src))
         sh('git', '-C', str(src), 'checkout', '-q', '--detach', commit)
-        record = {'schema': 'org.projectluma.interim-ci/v1', 'commit': commit, 'base': None, 'kind': 'toolkit',
+        record = {'schema': 'org.projectSuno.interim-ci/v1', 'commit': commit, 'base': None, 'kind': 'toolkit',
                   'tree': sh('git', '-C', str(src), 'rev-parse', f'{commit}^{{tree}}').strip(),
                   'subject': sh('git', '-C', str(src), 'log', '-1', '--format=%s', commit).strip(),
                   'started': now(), 'jobs': toolkit_jobs(src)}

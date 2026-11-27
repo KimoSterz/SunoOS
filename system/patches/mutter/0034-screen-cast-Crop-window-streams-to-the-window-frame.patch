@@ -1,5 +1,5 @@
 From cec16c708eac3d14888dc5cadb72e6119a82a7c3 Mon Sep 17 00:00:00 2001
-From: Project Luma <engineering@projectluma.org>
+From: Project Suno <engineering@projectSuno.org>
 Date: Fri, 20 Nov 2026 17:47:09 -0500
 Subject: [PATCH] screen-cast: Crop window streams to the window frame
 

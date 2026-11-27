@@ -28,8 +28,8 @@ die() {
   exit 1
 }
 
-[ "${LUMA_PIXEL9_BOOT_AUTHORIZED:-0}" = 1 ] || \
-  die 'one-shot temporary-boot authorization is absent; set LUMA_PIXEL9_BOOT_AUTHORIZED=1'
+[ "${SUNO_PIXEL9_BOOT_AUTHORIZED:-0}" = 1 ] || \
+  die 'one-shot temporary-boot authorization is absent; set SUNO_PIXEL9_BOOT_AUTHORIZED=1'
 [ ! -e "$evidence_dir" ] || die "refusing to replace evidence: $evidence_dir"
 for tool in awk grep mkdir sed sha256sum tail tr wc "$fastboot_bin"; do
   command -v "$tool" >/dev/null 2>&1 || die "missing temporary-boot tool: $tool"
@@ -120,7 +120,7 @@ max_download_dec=$((max_download))
 
 mkdir -p "$evidence_dir"
 {
-  printf 'LUMA_PIXEL9_TEMPORARY_BOOT_ATTEMPT_VERSION=1\n'
+  printf 'SUNO_PIXEL9_TEMPORARY_BOOT_ATTEMPT_VERSION=1\n'
   printf 'DEVICE=tokay\n'
   printf 'CANDIDATE_BYTES=%s\n' "$candidate_bytes"
   printf 'CANDIDATE_SHA256=%s\n' "$candidate_sha"
@@ -138,7 +138,7 @@ printf 'Requesting RAM-only Tokay boot of SHA-256 %s\n' "$candidate_sha"
 "$fastboot_bin" boot "$candidate"
 
 {
-  printf 'LUMA_PIXEL9_TEMPORARY_BOOT_COMMAND_VERSION=1\n'
+  printf 'SUNO_PIXEL9_TEMPORARY_BOOT_COMMAND_VERSION=1\n'
   printf 'DEVICE=tokay\n'
   printf 'CANDIDATE_SHA256=%s\n' "$candidate_sha"
   printf 'TEMPORARY_BOOT_COMMAND_ACCEPTED=true\n'

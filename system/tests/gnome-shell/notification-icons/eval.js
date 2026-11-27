@@ -36,17 +36,17 @@ const SYMBOLIC_FILE = ['/usr/share/icons/Adwaita/symbolic/status/mail-unread-sym
 const AVATAR = '/gon/icons/capsule-chatgpt.png';
 
 const CASES = [
-    ['charlie', () => fdo({app: 'Charlie', icon: 'org.projectluma.Charlie', title: 'Kari Keefe', body: 'Re: Tech Central',
-        hints: {'desktop-entry': 'org.projectluma.Charlie'}})],
+    ['charlie', () => fdo({app: 'Charlie', icon: 'org.projectSuno.Charlie', title: 'Kari Keefe', body: 'Re: Tech Central',
+        hints: {'desktop-entry': 'org.projectSuno.Charlie'}})],
     ['charlie-symbolic', () => fdo({app: 'Charlie', icon: 'mail-message-new-symbolic', title: 'Kari Keefe', body: 'Re: Tech Central',
-        hints: {'desktop-entry': 'org.projectluma.Charlie', 'image-path': SYMBOLIC_FILE}})],
+        hints: {'desktop-entry': 'org.projectSuno.Charlie', 'image-path': SYMBOLIC_FILE}})],
     ['charlie-loose', () => fdo({app: 'Charlie', icon: 'mail-message-new-symbolic', title: 'Kari Keefe', body: 'Re: Tech Central',
         hints: {'desktop-entry': 'charlie'}})],
-    ['messages-avatar', () => fdo({app: 'Messages', icon: 'org.projectluma.Messages', title: 'Nora Feld', body: 'Ten minutes?',
-        hints: {'desktop-entry': 'org.projectluma.Messages', 'image-path': AVATAR}})],
+    ['messages-avatar', () => fdo({app: 'Messages', icon: 'org.projectSuno.Messages', title: 'Nora Feld', body: 'Ten minutes?',
+        hints: {'desktop-entry': 'org.projectSuno.Messages', 'image-path': AVATAR}})],
     ['flatpak', () => gtk('org.example.FlatpakApp', 'n1', 'Upload finished', 'Three files', 'media-playback-start-symbolic')],
     ['capsule', () => fdo({app: 'ChatGPT (Second)', icon: 'dialog-information-symbolic', title: 'Reply ready', body: 'Your answer is ready'})],
-    ['unknown-glyph', () => fdo({app: 'Luma test', icon: 'dialog-information-symbolic', title: 'Backup finished', body: 'No app named'})],
+    ['unknown-glyph', () => fdo({app: 'Suno test', icon: 'dialog-information-symbolic', title: 'Backup finished', body: 'No app named'})],
 ];
 
 const isGlyphName = g => g instanceof Gio.ThemedIcon && g.get_names().some(n => n.endsWith('-symbolic'));
@@ -61,7 +61,7 @@ export default async function ({Main, Scripting, shot}) {
     const pointer = seat.create_virtual_device(Clutter.InputDeviceType.POINTER_DEVICE);
     let flip = 0;
     const nudge = () => pointer.notify_absolute_motion(GLib.get_monotonic_time(), 40 + (flip++ % 2), 40);
-    const beaconOf = () => find(Main.layoutManager.uiGroup, a => has(a, 'luma-notification-beacon'))[0] ?? null;
+    const beaconOf = () => find(Main.layoutManager.uiGroup, a => has(a, 'Suno-notification-beacon'))[0] ?? null;
     const report = {beacon: [], tray: []};
     const procs = [];
     const clear = async () => {
@@ -89,16 +89,16 @@ export default async function ({Main, Scripting, shot}) {
     const bc = beaconOf();
     bc?.emit('clicked', 1);
     for (let i = 0; i < 15; i++) { nudge(); await sleep(100); }
-    const cards = find(Main.layoutManager.uiGroup, a => has(a, 'luma-notification-card') && a.mapped);
+    const cards = find(Main.layoutManager.uiGroup, a => has(a, 'Suno-notification-card') && a.mapped);
     for (const card of cards) {
-        const tile = find(card, a => has(a, 'luma-notification-tile'))[0];
+        const tile = find(card, a => has(a, 'Suno-notification-tile'))[0];
         const src = card._header?.sourceIcon, img = card._tileImage;
         report.tray.push({title: card.notification?.title, source: card.notification?.source?.title,
             app: card.notification?.source?.app?.get_id() ?? null, tile: tile?.style_class,
             shows: src?.visible ? 'app' : img?.visible ? 'image' : 'none',
             icon: describe(src?.visible ? src : img)});
     }
-    const trayActor = find(Main.layoutManager.uiGroup, a => has(a, 'luma-notification-tray') && a.mapped)[0];
+    const trayActor = find(Main.layoutManager.uiGroup, a => has(a, 'Suno-notification-tray') && a.mapped)[0];
     if (trayActor) {
         const [x, y, w, h] = geom(trayActor);
         await shot('tray', Math.max(0, x - 8), Math.max(0, y - 8), w + 16, h + 16);

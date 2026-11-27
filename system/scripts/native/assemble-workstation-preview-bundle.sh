@@ -25,8 +25,8 @@ esac
 rpm_paths=(
   "build/packages/gnome-shell/RPMS/x86_64/$GNOME_SHELL_NEVRA.rpm"
   "build/packages/gnome-shell/RPMS/noarch/$GNOME_SHELL_COMMON_NEVRA.rpm"
-  "build/packages/gnome-control-center/RPMS/x86_64/gnome-control-center-50.4-${GNOME_CONTROL_CENTER_LUMA_RELEASE}.fc44.x86_64.rpm"
-  "build/packages/gnome-control-center/RPMS/noarch/gnome-control-center-filesystem-50.4-${GNOME_CONTROL_CENTER_LUMA_RELEASE}.fc44.noarch.rpm"
+  "build/packages/gnome-control-center/RPMS/x86_64/gnome-control-center-50.4-${GNOME_CONTROL_CENTER_SUNO_RELEASE}.fc44.x86_64.rpm"
+  "build/packages/gnome-control-center/RPMS/noarch/gnome-control-center-filesystem-50.4-${GNOME_CONTROL_CENTER_SUNO_RELEASE}.fc44.noarch.rpm"
   "build/packages/gtk4/RPMS/x86_64/$GTK4_NEVRA.rpm"
   "build/packages/gtk3/RPMS/x86_64/$GTK3_NEVRA.rpm"
   "build/packages/libhandy/RPMS/x86_64/$LIBHANDY_NEVRA.rpm"
@@ -37,16 +37,16 @@ rpm_paths=(
   "build/packages/gnome-text-editor/RPMS/x86_64/$GNOME_TEXT_EDITOR_NEVRA.rpm"
   "build/packages/gnome-calendar/RPMS/x86_64/$GNOME_CALENDAR_NEVRA.rpm"
   "build/packages/tiling/RPMS/noarch/$TILING_SHELL_NEVRA.rpm"
-  "build/packages/tiling/RPMS/noarch/$LUMA_TILING_TOGGLE_NEVRA.rpm"
-  "build/packages/backgrounds/RPMS/noarch/$LUMA_BACKGROUNDS_NEVRA.rpm"
-  "build/packages/boot-theme/RPMS/noarch/$LUMA_BOOT_THEME_NEVRA.rpm"
+  "build/packages/tiling/RPMS/noarch/$SUNO_TILING_TOGGLE_NEVRA.rpm"
+  "build/packages/backgrounds/RPMS/noarch/$SUNO_BACKGROUNDS_NEVRA.rpm"
+  "build/packages/boot-theme/RPMS/noarch/$SUNO_BOOT_THEME_NEVRA.rpm"
   "build/packages/prairie-icon-theme/RPMS/noarch/$PRAIRIE_ICON_THEME_NEVRA.rpm"
   "build/packages/figtree-fonts/RPMS/noarch/$FIGTREE_NEVRA.rpm"
   "build/packages/prairie-core-apps/RPMS/noarch/$PRAIRIE_CORE_APPS_NEVRA.rpm"
-  "build/packages/luma-developer-platform/x86_64/RPMS/$LUMA_DEVELOPER_PLATFORM_X86_64_NEVRA.rpm"
-  "build/packages/luma-android-runtime/RPMS/noarch/$LUMA_ANDROID_RUNTIME_NEVRA.rpm"
-  "build/packages/luma-relay/RPMS/noarch/$LUMA_RELAY_NEVRA.rpm"
-  "build/packages/luma-application-installer/RPMS/noarch/$LUMA_APPLICATION_INSTALLER_NEVRA.rpm"
+  "build/packages/Suno-developer-platform/x86_64/RPMS/$SUNO_DEVELOPER_PLATFORM_X86_64_NEVRA.rpm"
+  "build/packages/Suno-android-runtime/RPMS/noarch/$SUNO_ANDROID_RUNTIME_NEVRA.rpm"
+  "build/packages/Suno-relay/RPMS/noarch/$SUNO_RELAY_NEVRA.rpm"
+  "build/packages/Suno-application-installer/RPMS/noarch/$SUNO_APPLICATION_INSTALLER_NEVRA.rpm"
   "build/packages/wine-relay-integration/RPMS/x86_64/$WINE_RELAY_EXPLORER_NEVRA.rpm"
   "build/packages/plymouth/RPMS/x86_64/$PLYMOUTH_NEVRA.rpm"
   "build/packages/plymouth/RPMS/x86_64/$PLYMOUTH_CORE_LIBS_NEVRA.rpm"
@@ -74,8 +74,8 @@ done
 install -m 0644 "$repo_root/config/desktop/dconf/profile/user" \
   "$output/config/dconf-profile-user"
 install -m 0644 \
-  "$repo_root/config/desktop/dconf/db/luma.d/00-luma-desktop" \
-  "$output/config/dconf-luma"
+  "$repo_root/config/desktop/dconf/db/Suno.d/00-Suno-desktop" \
+  "$output/config/dconf-Suno"
 install -m 0644 \
   "$repo_root/config/desktop/dconf/db/gdm.d/00-prairie-login" \
   "$output/config/dconf-gdm"
@@ -86,12 +86,12 @@ install -m 0755 "$repo_root/config/boot/apply-grub-policy.sh" \
 install -m 0755 "$repo_root/scripts/native/deploy-workstation-preview.sh" \
   "$output/deploy-workstation-preview.sh"
 
-source_revision=${LUMA_SOURCE_REVISION:-}
+source_revision=${SUNO_SOURCE_REVISION:-}
 if [[ -z $source_revision ]]; then
   source_revision=$(git -C "$repo_root" rev-parse --verify HEAD 2>/dev/null || true)
 fi
 [[ -n $source_revision ]] || {
-  printf 'error: set LUMA_SOURCE_REVISION when assembling from a source export\n' >&2
+  printf 'error: set SUNO_SOURCE_REVISION when assembling from a source export\n' >&2
   exit 1
 }
 
@@ -110,4 +110,4 @@ fi
   )
 } >"$output/manifest.txt"
 
-printf 'Luma Workstation preview bundle: %s\n' "$output"
+printf 'Suno Workstation preview bundle: %s\n' "$output"

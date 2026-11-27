@@ -24,7 +24,7 @@ def load_policy(path):
     if not stat.S_ISREG(info.st_mode) or info.st_uid != 0 or info.st_mode & 0o022:
         raise ValueError('Private metadata policy must be a protected root-owned regular file')
     data = json.loads(path.read_text())
-    if data.get('schema') != 'org.projectluma.private-rpm-permissions/v1':
+    if data.get('schema') != 'org.projectSuno.private-rpm-permissions/v1':
         raise ValueError('Unknown private RPM permission policy')
     return data['modes']
 

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""The Luma ARM disk image of a nightly, beside its installer ISO.
+"""The Suno ARM disk image of a nightly, beside its installer ISO.
 
 One generic disk image per ARM build (scripts/mobile/build-phone-userdata.sh):
-the build's aarch64 commit on LumaRoot and an empty LumaBoot that a device kit
+the build's aarch64 commit on SunoRoot and an empty SunoBoot that a device kit
 writes. It is published once, next to the ISO in media/aarch64/<channel>/, and
 the ISO's entry in that channel's signed latest.json names it under
 "disk_image", so a page links to latest.disk_image.download_url. The shared
@@ -22,11 +22,11 @@ import struct
 import sys
 from pathlib import Path
 
-NAME = re.compile(r'luma-[a-z]+-[0-9]{8}\.[0-9]+-aarch64-disk\.sparse')
+NAME = re.compile(r'Suno-[a-z]+-[0-9]{8}\.[0-9]+-aarch64-disk\.sparse')
 SHA = re.compile(r'[a-f0-9]{64}')
 RAW, FILL, DONT_CARE, CRC = 0xCAC1, 0xCAC2, 0xCAC3, 0xCAC4
-LAYOUT = {'sector_bytes': 4096, 'boot_label': 'LumaBoot', 'boot_volume_id': '032D-57AD',
-          'root_label': 'LumaRoot', 'root_uuid': '03797c05-cf87-4eda-adc4-6ce111baf2d3'}
+LAYOUT = {'sector_bytes': 4096, 'boot_label': 'SunoBoot', 'boot_volume_id': '032D-57AD',
+          'root_label': 'SunoRoot', 'root_uuid': '03797c05-cf87-4eda-adc4-6ce111baf2d3'}
 
 
 def unsparse(src, dst):
@@ -70,7 +70,7 @@ def sha256(path):
 def entry(image, base, gate):
     image = Path(image)
     if not NAME.fullmatch(image.name):
-        raise SystemExit(f'{image.name}: not a Luma ARM disk image name')
+        raise SystemExit(f'{image.name}: not a Suno ARM disk image name')
     if not base.startswith('https://') or not base.endswith('/'):
         raise SystemExit('BASE_URL must be an https directory URL')
     recorded = Path(f'{image}.sha256').read_text().split()

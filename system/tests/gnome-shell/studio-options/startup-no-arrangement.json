@@ -5,7 +5,7 @@
     "startup_only": true,
     "reset": [],
     "settings": {
-      "org/project-luma/shell-state": {
+      "org/project-suno/shell-state": {
         "shelf-arrangement": "[]"
       }
     },

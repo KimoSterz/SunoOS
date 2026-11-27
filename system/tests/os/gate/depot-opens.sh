@@ -32,9 +32,9 @@ while [ $# -gt 0 ]; do
     *) printf 'usage: %s [--attempts N] [--spacing SECONDS]\n' "$0" >&2; exit 2 ;;
   esac
 done
-user=luma-gate-depot-opens
+user=Suno-gate-depot-opens
 failed=0
-work=$(mktemp -d /tmp/luma-gate-depot-opens.XXXXXX)
+work=$(mktemp -d /tmp/Suno-gate-depot-opens.XXXXXX)
 chmod 0755 "$work"
 
 emit() {
@@ -53,12 +53,12 @@ trap cleanup EXIT
 
 # A candidate without Depot, without fwupd or without a Shell is not a
 # candidate this check has an opinion about: it skips, and the gate goes on.
-rpm -q luma-application-installer >/dev/null 2>&1 || {
-  emit depot-opens skip 'luma-application-installer is not in this image'
+rpm -q Suno-application-installer >/dev/null 2>&1 || {
+  emit depot-opens skip 'Suno-application-installer is not in this image'
   exit 0
 }
-[ -f /usr/share/applications/org.projectluma.Depot.desktop ] || {
-  emit depot-opens skip 'no org.projectluma.Depot.desktop to activate'
+[ -f /usr/share/applications/org.projectSuno.Depot.desktop ] || {
+  emit depot-opens skip 'no org.projectSuno.Depot.desktop to activate'
   exit 0
 }
 command -v gnome-shell >/dev/null 2>&1 || {
@@ -94,11 +94,11 @@ for _ in $(seq 30); do [ -d "/run/user/$uid" ] && break; sleep 1; done
 # install first-boot apps from the network here: the plan below is Depot's own
 # provisioning path with an app id no source offers, which exercises the code
 # that runs while a person launches Depot without downloading anything.
-install -d -o "$user" -g "$user" -m 0755 "/home/$user/.config/luma/depot"
+install -d -o "$user" -g "$user" -m 0755 "/home/$user/.config/Suno/depot"
 printf '{"install_events": false, "countme": false, "app_updates": false}\n' \
-  >"/home/$user/.config/luma/depot/settings.json"
-chown "$user:" "/home/$user/.config/luma/depot/settings.json"
-printf '{"applications": ["luma-gate-no-such-app"], "collections": []}\n' >"$work/first-boot-apps.json"
+  >"/home/$user/.config/Suno/depot/settings.json"
+chown "$user:" "/home/$user/.config/Suno/depot/settings.json"
+printf '{"applications": ["Suno-gate-no-such-app"], "collections": []}\n' >"$work/first-boot-apps.json"
 chmod 0644 "$work/first-boot-apps.json"
 
 cat >"$work/depot-opens.js" <<'JS'
@@ -112,7 +112,7 @@ import Shell from 'gi://Shell';
 const OUT = GLib.getenv('DEPOT_GATE_OUT') ?? '/tmp/depot-opens';
 const ATTEMPTS = parseInt(GLib.getenv('DEPOT_GATE_ATTEMPTS') ?? '4', 10);
 const SPACING = parseInt(GLib.getenv('DEPOT_GATE_SPACING') ?? '20', 10) * 1000;
-const PLAN = GLib.getenv('LUMA_FIRST_BOOT_APPS') ?? '';
+const PLAN = GLib.getenv('SUNO_FIRST_BOOT_APPS') ?? '';
 const WAIT = 20000;
 const REPAIR = 'Keep your application data';
 const results = [];
@@ -134,7 +134,7 @@ async function until(fn, ms) {
 }
 
 function depot() {
-    return Shell.AppSystem.get_default().lookup_app('org.projectluma.Depot.desktop');
+    return Shell.AppSystem.get_default().lookup_app('org.projectSuno.Depot.desktop');
 }
 
 async function closeDepot() {
@@ -184,7 +184,7 @@ function spawn(argv, environment = {}) {
 async function work() {
     const app = await until(() => depot(), 20000);
     check('the Shell knows Depot as an application', !!app,
-        app ? app.get_id() : 'lookup_app("org.projectluma.Depot.desktop") found nothing');
+        app ? app.get_id() : 'lookup_app("org.projectSuno.Depot.desktop") found nothing');
     if (!app) return;
 
     // As soon as the session is up, then again over the first minutes: the
@@ -197,7 +197,7 @@ async function work() {
 
     // The Updates view, which is its own desktop entry and the one people were
     // told to try when the window never came.
-    const updates = Shell.AppSystem.get_default().lookup_app('org.projectluma.SoftwareUpdate.desktop');
+    const updates = Shell.AppSystem.get_default().lookup_app('org.projectSuno.SoftwareUpdate.desktop');
     if (updates) {
         await launch('Depot opens on the Updates view from Software Update', () => updates.activate());
     } else {
@@ -208,7 +208,7 @@ async function work() {
     // window in the background, so a person's launch must still show it.
     if (PLAN) {
         await closeDepot();
-        const provision = spawn(['luma-depot', '--provision'], {LUMA_FIRST_BOOT_APPS: PLAN});
+        const provision = spawn(['Suno-depot', '--provision'], {SUNO_FIRST_BOOT_APPS: PLAN});
         await sleep(3000);
         await launch('Depot opens while first-boot app provisioning runs', () => depot().activate());
         provision.force_exit();
@@ -257,7 +257,7 @@ for _ in $(seq 30); do [ -S "/run/user/$uid/bus" ] && break; sleep 1; done
 ld_started=$(date +%s%N)
 if runuser -u "$user" -- env -C "/home/$user" HOME="/home/$user" XDG_RUNTIME_DIR="/run/user/$uid" \
     DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$uid/bus" \
-    timeout 300 flatpak run --command=true org.projectluma.Depot >/dev/null 2>&1; then
+    timeout 300 flatpak run --command=true org.projectSuno.Depot >/dev/null 2>&1; then
   emit flatpak-ld-cache pass "Flatpak's first run of Depot for a new account (its ld.so cache) took $(( ($(date +%s%N) - ld_started) / 1000000 )) ms"
 else
   emit flatpak-ld-cache fail "Flatpak could not run Depot for a new account within 300 s"
@@ -273,7 +273,7 @@ runuser -u "$user" -- env -C "/home/$user" \
   DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$uid/bus" \
   GSETTINGS_BACKEND=memory LIBGL_ALWAYS_SOFTWARE=1 \
   DEPOT_GATE_OUT="$out" DEPOT_GATE_ATTEMPTS="$attempts" DEPOT_GATE_SPACING="$spacing" \
-  LUMA_FIRST_BOOT_APPS="$work/first-boot-apps.json" \
+  SUNO_FIRST_BOOT_APPS="$work/first-boot-apps.json" \
   timeout -k 30 600 gnome-shell --headless --no-x11 --virtual-monitor 1280x800 \
   --automation-script="$work/depot-opens.js" >"$work/shell.log" 2>&1
 shell_status=$?
@@ -295,9 +295,9 @@ fi
 lifecycle=$(journalctl --no-pager --since "$since" MESSAGE_ID=9d41c6b70f2e4a58bd3e7c19a06f5b24 -o cat 2>/dev/null)
 shown=$(grep -c 'put its window on screen' <<<"$lifecycle")
 if [ "$shown" -ge 1 ]; then
-  emit depot-lifecycle-journal pass "$shown launches recorded for Luma Vitals ($(grep -c . <<<"$lifecycle") entries)"
+  emit depot-lifecycle-journal pass "$shown launches recorded for Suno Vitals ($(grep -c . <<<"$lifecycle") entries)"
 else
-  emit depot-lifecycle-journal fail "Depot logged no window for Luma Vitals: $(tr '\n' ' ' <<<"$lifecycle" | tail -c 300)"
+  emit depot-lifecycle-journal fail "Depot logged no window for Suno Vitals: $(tr '\n' ' ' <<<"$lifecycle" | tail -c 300)"
 fi
 if grep -q 'could not open its window' <<<"$lifecycle"; then
   emit depot-window-built pass 'a start that failed said so in the journal'
@@ -307,7 +307,7 @@ seconds=$(( $(date +%s) - started_at ))
 emit depot-opens-runtime pass \
   "$attempts launches ${spacing}s apart, the headless session included, took ${seconds}s of this stage"
 
-crashes=$(coredumpctl list --no-pager --since "$since" 2>/dev/null | grep -c 'luma-depot\|python3' || true)
+crashes=$(coredumpctl list --no-pager --since "$since" 2>/dev/null | grep -c 'Suno-depot\|python3' || true)
 if [ "${crashes:-0}" = 0 ]; then
   emit depot-no-crash pass 'no coredump from Depot during the launches'
 else

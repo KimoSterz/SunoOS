@@ -31,7 +31,7 @@ class UndoMetadataTests(unittest.TestCase):
             store.insert(index, place)
             expected = {**synced, 'places': [removed, synced['places'][0], unparsed]}
             self.assertEqual(json.loads(path.read_text()), expected)
-            backup = path.with_name('places.json.lumaui-backup')
+            backup = path.with_name('places.json.SunoUI-backup')
             self.assertEqual(backup.read_bytes(), original_bytes)
             self.assertEqual(backup.stat().st_mode & 0o777, 0o600)
 

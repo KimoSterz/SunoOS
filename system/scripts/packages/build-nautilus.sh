@@ -8,11 +8,11 @@ repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 . "$repo_root/config/desktop/inputs.env"
 
 # Build the complete Filer series at the revision pinned by this source tree.
-surface_candidate_release=$NAUTILUS_LUMA_RELEASE
+surface_candidate_release=$NAUTILUS_SUNO_RELEASE
 # An explicitly recorded private candidate can qualify a newer shared toolkit
 # before its successful installed checks promote the global image pin.
-platform_release=${LUMA_FILER_PLATFORM_RELEASE_OVERRIDE:-$LUMA_DEVELOPER_PLATFORM_RELEASE}
-[[ "$platform_release" =~ ^1\.luma\.[0-9]+(\.[A-Za-z0-9.-]+)?$ ]] || {
+platform_release=${SUNO_FILER_PLATFORM_RELEASE_OVERRIDE:-$SUNO_DEVELOPER_PLATFORM_RELEASE}
+[[ "$platform_release" =~ ^1\.Suno\.[0-9]+(\.[A-Za-z0-9.-]+)?$ ]] || {
   printf 'error: malformed Filer platform candidate release\n' >&2
   exit 1
 }
@@ -31,17 +31,17 @@ for tool in cpio git mktemp podman rpm2cpio sha256sum; do
 done
 
 [ "$(uname -s)" = Linux ] || {
-  printf 'error: build the Luma Filer RPM on a Fedora Linux builder\n' >&2
+  printf 'error: build the Suno Filer RPM on a Fedora Linux builder\n' >&2
   exit 1
 }
 
-architecture=${LUMA_TARGET_ARCHITECTURE:-$(uname -m)}
+architecture=${SUNO_TARGET_ARCHITECTURE:-$(uname -m)}
 case "$architecture" in
   x86_64) builder_container=$FEDORA_RPM_BUILD_CONTAINER ;;
   aarch64) builder_container=$FEDORA_RPM_BUILD_CONTAINER_AARCH64 ;;
   *) printf 'error: unsupported Filer architecture: %s\n' "$architecture" >&2; exit 1 ;;
 esac
-export LUMA_RPM_BUILDER_ARCHITECTURE=$architecture
+export SUNO_RPM_BUILDER_ARCHITECTURE=$architecture
 
 cache_dir="$repo_root/build/cache/srpm"
 output_dir="$repo_root/build/packages/nautilus"
@@ -75,7 +75,7 @@ mv "$work_dir/nautilus.spec" "$rpmbuild_dir/SPECS/"
 mv "$work_dir/nautilus-50.2.2.tar.xz" "$rpmbuild_dir/SOURCES/"
 mv "$work_dir/default-terminal.patch" "$rpmbuild_dir/SOURCES/"
 # Every numbered patch file goes to SOURCES; the spec decides the series and
-# luma_assert_patch_series below proves it matches, file by file.
+# Suno_assert_patch_series below proves it matches, file by file.
 for patch_file in "$repo_root"/patches/nautilus/0[0-9][0-9][0-9]-*.patch; do
   cp "$patch_file" "$rpmbuild_dir/SOURCES/"
 done
@@ -84,25 +84,25 @@ done
 
 
 
-# Filer links LumaUI parts (reorder hint, table header, mode switch, details
+# Filer links SunoUI parts (reorder hint, table header, mode switch, details
 # pane) from the platform release this tree's inputs.env names. A fresh
 # builder container has no platform, so supply the two RPMs explicitly.
-platform_rpm_dir="$repo_root/build/packages/luma-developer-platform/$architecture/RPMS"
+platform_rpm_dir="$repo_root/build/packages/Suno-developer-platform/$architecture/RPMS"
 platform_rpm=$(find "$platform_rpm_dir" -maxdepth 1 -type f \
-  -name "luma-developer-platform-0.1.0-${platform_release}*.${architecture}.rpm" \
+  -name "Suno-developer-platform-0.1.0-${platform_release}*.${architecture}.rpm" \
   -print -quit)
 platform_devel_rpm=$(find "$platform_rpm_dir" -maxdepth 1 -type f \
-  -name "luma-developer-platform-devel-0.1.0-${platform_release}*.${architecture}.rpm" \
+  -name "Suno-developer-platform-devel-0.1.0-${platform_release}*.${architecture}.rpm" \
   -print -quit)
 if [ -z "$platform_rpm" ] || [ -z "$platform_devel_rpm" ]; then
-  printf 'error: put luma-developer-platform and -devel %s for %s in %s first\n' \
+  printf 'error: put Suno-developer-platform and -devel %s for %s in %s first\n' \
     "$platform_release" "$architecture" "$platform_rpm_dir" >&2
   exit 1
 fi
 install -m 0644 "$platform_rpm" "$platform_devel_rpm" "$rpmbuild_dir/SOURCES/"
 # Private package-test appearance schema; no installed Shell build dependency.
-install -m 0644 "$repo_root/src/luma-shell-state/org.project_luma.shell-state.gschema.xml" "$rpmbuild_dir/SOURCES/"
-# Filer's stylesheet tests need the pinned Luma Figtree build (BuildRequires
+install -m 0644 "$repo_root/src/Suno-shell-state/org.projectSuno.shell-state.gschema.xml" "$rpmbuild_dir/SOURCES/"
+# Filer's stylesheet tests need the pinned Suno Figtree build (BuildRequires
 # google-figtree-fonts), which no Fedora repository carries.
 figtree_rpm="$repo_root/build/packages/figtree-fonts/RPMS/noarch/$FIGTREE_NEVRA.rpm"
 test -f "$figtree_rpm" || {
@@ -122,7 +122,7 @@ install -m 0644 "$figtree_rpm" "$rpmbuild_dir/SOURCES/"
 # A spec patch that applied as a no-op builds the stock package; the Release
 # says whether it applied (scripts/packages/spec-release.sh).
 . "$repo_root/scripts/packages/spec-release.sh"
-luma_assert_spec_release "$rpmbuild_dir/SPECS/nautilus.spec" \
+Suno_assert_spec_release "$rpmbuild_dir/SPECS/nautilus.spec" \
   "$surface_candidate_release" || exit 1
 . "$repo_root/scripts/packages/patch-series.sh"
 filer_held=("${filer_series_holds[@]}")
@@ -132,7 +132,7 @@ for patch_file in "$repo_root"/patches/nautilus/0[0-9][0-9][0-9]-*.patch; do
   [ "$((10#$patch_number))" -gt "$((10#$filer_series_last))" ] || continue
   filer_held+=("$patch_name:held after $filer_series_last: $filer_series_hold_reason")
 done
-luma_assert_patch_series nautilus "$rpmbuild_dir/SPECS/nautilus.spec" \
+Suno_assert_patch_series nautilus "$rpmbuild_dir/SPECS/nautilus.spec" \
   "$rpmbuild_dir/SOURCES" "${filer_held[@]}" || exit 1
 
 "$repo_root/scripts/packages/run-in-rpm-builder.sh" \
@@ -140,14 +140,14 @@ luma_assert_patch_series nautilus "$rpmbuild_dir/SPECS/nautilus.spec" \
   "$builder_container" '
     set -euo pipefail
     dnf5 -y install rpm-build dnf5-plugins
-    dnf5 -y install SOURCES/luma-developer-platform-0.1.0-*.rpm \
-      SOURCES/luma-developer-platform-devel-0.1.0-*.rpm \
+    dnf5 -y install SOURCES/Suno-developer-platform-0.1.0-*.rpm \
+      SOURCES/Suno-developer-platform-devel-0.1.0-*.rpm \
       SOURCES/google-figtree-fonts-*.rpm
-    # The Luma SDK is supplied as a just-built local candidate rather than an
+    # The Suno SDK is supplied as a just-built local candidate rather than an
     # enabled public repository. Assert it explicitly, then let builddep fetch
     # every repository-owned requirement; rpmbuild remains the final complete
     # BuildRequires gate.
-    rpm -q luma-developer-platform-devel >/dev/null
+    rpm -q Suno-developer-platform-devel >/dev/null
     dnf5 -y builddep --skip-unavailable SPECS/nautilus.spec
     rpmbuild -ba --noclean --define "_topdir $PWD" SPECS/nautilus.spec
     # Name any failed packaged-content assertion in the build log.
@@ -174,18 +174,18 @@ luma_assert_patch_series nautilus "$rpmbuild_dir/SPECS/nautilus.spec" \
     ! grep -Fq "slot.search-global" window.ui
     grep -Fq "class=\"GtkBox\" id=\"sidebar_resize_handle\"" window.ui
     grep -Fq "name=\"title-widget\"" window.ui
-    grep -Fq "luma-titlebar" window.ui
-    grep -Fq "luma-window-toolbar-view" window.ui
+    grep -Fq "Suno-titlebar" window.ui
+    grep -Fq "Suno-window-toolbar-view" window.ui
     ! grep -Fq " — Filer" window.ui
     # Shared Adw.HeaderBar owns automatic identity; no local imitation remains.
-    ! grep -Fq "luma-identity-button" window.ui
-    ! grep -Fq "luma-no-automatic-identity" window.ui
-    grep -Fq "luma-island" window.ui
+    ! grep -Fq "Suno-identity-button" window.ui
+    ! grep -Fq "Suno-no-automatic-identity" window.ui
+    grep -Fq "Suno-island" window.ui
     grep -aFq "org.gnome.Nautilus" ./usr/bin/nautilus
     grep -Fq "id=\"app_menu\"" window.ui
     grep -Fq ":minimize,maximize,close" window.ui
-    grep -Fq "luma-secondary-toolbar" toolbar.ui
-    grep -Fq "luma-compact-toolbar-button" toolbar.ui
+    grep -Fq "Suno-secondary-toolbar" toolbar.ui
+    grep -Fq "Suno-compact-toolbar-button" toolbar.ui
     grep -Fq "bind-property=\"compact\"" toolbar.ui
     # The v71 phone tier is bounded at559px (0139).
     grep -Fq "max-width: 559px" window.ui
@@ -193,7 +193,7 @@ luma_assert_patch_series nautilus "$rpmbuild_dir/SPECS/nautilus.spec" \
     ! grep -Fq "max-width: 1023px and min-width: 640px" window.ui
     ! grep -Fq "max-width: 682sp" window.ui
     ! grep -Fq "name=\"width-request\">174<" toolbar.ui
-    ! grep -Fq "luma-main-menu" toolbar.ui
+    ! grep -Fq "Suno-main-menu" toolbar.ui
     ! grep -Fq "name=\"tooltip-text\">Search<" toolbar.ui
     ! grep -Fq "name=\"tooltip-text\">Main Menu<" toolbar.ui
     grep -Fq "name=\"main-menu\"" window.ui
@@ -205,9 +205,9 @@ luma_assert_patch_series nautilus "$rpmbuild_dir/SPECS/nautilus.spec" \
       /org/gnome/nautilus/menu/nautilus-files-view-context-menus.ui >context-menus.ui
     grep -Fq "The distro-wide palette and generic controls" style.css
     grep -Fq "nautilus-column-view" style.css
-    grep -Fq "luma-column-header-icon" style.css
+    grep -Fq "Suno-column-header-icon" style.css
     grep -Fq "filer-sidebar-section" style.css
-    grep -Fq ".luma-files-window .luma-window-title" style.css
+    grep -Fq ".Suno-files-window .Suno-window-title" style.css
     strings ./usr/bin/nautilus >nautilus.strings
     grep -Fq "Column view of the current location" nautilus.strings
     grep -Fq "Share" nautilus.strings
@@ -218,24 +218,24 @@ luma_assert_patch_series nautilus "$rpmbuild_dir/SPECS/nautilus.spec" \
     grep -Fq "history_controls_stack" toolbar.ui
     grep -Fq ".nautilus-path-button label" style.css
     grep -Fq "transform: translate(0, 1px)" style.css
-    ! grep -Fq "statuspage.luma-empty-folder" style.css
-    grep -aFq "luma_empty_state_configure" ./usr/bin/nautilus
+    ! grep -Fq "statuspage.Suno-empty-folder" style.css
+    grep -aFq "Suno_empty_state_configure" ./usr/bin/nautilus
     grep -aFq "Nothing here this app can open" ./usr/bin/nautilus
-    grep -Fq ".luma-path-menu > button" style.css
-    grep -Fq "border-left: 1px solid @luma_line" style.css
-    ! grep -Fq "@define-color luma_files_" style.css
-    grep -Fq "background-color: @luma_content" style.css
+    grep -Fq ".Suno-path-menu > button" style.css
+    grep -Fq "border-left: 1px solid @Suno_line" style.css
+    ! grep -Fq "@define-color Suno_files_" style.css
+    grep -Fq "background-color: @Suno_content" style.css
     grep -Fq ".nautilus-grid-view gridview" style.css
     grep -Fq ".nautilus-list-view columnview" style.css
     grep -Fq "font-feature-settings: \"tnum\"" style.css
     grep -Fq "background-image: linear-gradient" style.css
-    grep -Fq ".luma-files-window.luma-treatment-light:not(.luma-native-file-chooser) headerbar.luma-titlebar" style.css
-    grep -Fq "luma-island-split" window.ui
+    grep -Fq ".Suno-files-window.Suno-treatment-light:not(.Suno-native-file-chooser) headerbar.Suno-titlebar" style.css
+    grep -Fq "Suno-island-split" window.ui
     grep -Fq "<property name=\"overflow\">1</property>" window.ui
     grep -Fq "<property name=\"margin-top\">0</property>" window.ui
-    grep -Fq ".luma-navigation-sidebar.lumaui-sidebar-destinations" style.css
+    grep -Fq ".Suno-navigation-sidebar.SunoUI-sidebar-destinations" style.css
     grep -Fq "Name=Filer" ./usr/share/applications/org.gnome.Nautilus.desktop
-    grep -aFq "luma-path-menu" ./usr/bin/nautilus
+    grep -aFq "Suno-path-menu" ./usr/bin/nautilus
     grep -aFq "gtk_scrolled_window_set_propagate_natural_width" ./usr/bin/nautilus
     # 0081: an empty folder is titled by its location.
     grep -aFq "%s is empty" ./usr/bin/nautilus
@@ -252,19 +252,19 @@ luma_assert_patch_series nautilus "$rpmbuild_dir/SPECS/nautilus.spec" \
     grep -aFq "EndFileDrag" ./usr/bin/nautilus
     grep -aFq "Installation unavailable" ./usr/bin/nautilus
     grep -aFq "personal-storage-only" ./usr/bin/nautilus
-    grep -aFq "org.projectluma.ApplicationInstaller2" ./usr/bin/nautilus
+    grep -aFq "org.projectSuno.ApplicationInstaller2" ./usr/bin/nautilus
     grep -aFq "RequestInstall" ./usr/bin/nautilus
     grep -Fq "applications-background-menu" context-menus.ui
     grep -Fq "applications-selection-menu" context-menus.ui
     grep -Fq "Show Application _File" context-menus.ui
-    # The LumaUI series (0057-0072) replaced the local title label, view
+    # The SunoUI series (0057-0072) replaced the local title label, view
     # picker, compact sidebar button, details tags and root notices with kit
     # parts; assert Filer links those parts instead.
-    for part in luma_table_header_for_column_view luma_mode_switch_new \
-        luma_details_pane_new luma_reorder_hint_begin \
-        luma_sidebar_toggle_new luma_application_window_frame_adopt \
-        luma_navigation_sidebar_adapt_live; do
-      grep -aFq "$part" ./usr/bin/nautilus || { echo "missing LumaUI part: $part" >&2; exit 1; }
+    for part in Suno_table_header_for_column_view Suno_mode_switch_new \
+        Suno_details_pane_new Suno_reorder_hint_begin \
+        Suno_sidebar_toggle_new Suno_application_window_frame_adopt \
+        Suno_navigation_sidebar_adapt_live; do
+      grep -aFq "$part" ./usr/bin/nautilus || { echo "missing SunoUI part: $part" >&2; exit 1; }
     done
     glib-compile-schemas ./usr/share/glib-2.0/schemas
     test "$(GSETTINGS_SCHEMA_DIR=./usr/share/glib-2.0/schemas \
@@ -295,4 +295,4 @@ install -m 0644 \
   find RPMS SRPMS -type f -name '*.rpm' -exec sha256sum {} + | sort >SHA256SUMS
 )
 
-printf 'Luma Files packages: %s\n' "$output_dir"
+printf 'Suno Files packages: %s\n' "$output_dir"

@@ -1,0 +1,11 @@
+[Unit]
+Description=Keep Suno's records from every Flatpak, every quarter of an hour
+Documentation=https://simplyluma.com/apps
+
+[Timer]
+OnStartupSec=2min
+OnUnitActiveSec=15min
+Unit=Suno-flatpak-guard.service
+
+[Install]
+WantedBy=timers.target

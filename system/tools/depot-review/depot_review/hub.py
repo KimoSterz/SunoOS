@@ -17,7 +17,7 @@ import urllib.request
 import uuid
 from pathlib import Path
 
-USER_AGENT = "luma-depot-review/1"
+USER_AGENT = "Suno-depot-review/1"
 
 
 class HubError(RuntimeError):

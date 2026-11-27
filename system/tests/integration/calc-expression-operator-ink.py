@@ -14,15 +14,15 @@ from gi.repository import Gdk, GLib, Gtk
 
 
 ROOT = Path(__file__).resolve().parents[2]
-PYTHON = ROOT / "src/luma-platform/appkit/luma_appkit/lumaui_tokens.py"
-HEADER = ROOT / "src/luma-platform/ui/luma-ui-tokens-private.h"
+PYTHON = ROOT / "src/Suno-platform/appkit/Suno_appkit/SunoUI_tokens.py"
+HEADER = ROOT / "src/Suno-platform/ui/Suno-ui-tokens-private.h"
 SHEETS = {
-    "light": ROOT / "src/luma-platform/appkit/luma-appkit-tokens.css",
-    "dark": ROOT / "src/luma-platform/appkit/luma-appkit-dark-tokens.css",
+    "light": ROOT / "src/Suno-platform/appkit/Suno-appkit-tokens.css",
+    "dark": ROOT / "src/Suno-platform/appkit/Suno-appkit-dark-tokens.css",
 }
 EXPECTED = {"light": "#2460b7", "dark": "#80b3fd"}
 
-spec = importlib.util.spec_from_file_location("lumaui_tokens", PYTHON)
+spec = importlib.util.spec_from_file_location("SunoUI_tokens", PYTHON)
 tokens = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(tokens)
 header = HEADER.read_text()
@@ -43,14 +43,14 @@ while GLib.MainContext.default().pending():
 
 for family, expected in EXPECTED.items():
     assert tokens.CALC_EXPRESSION_OPERATOR_INK[family] == expected
-    assert f'#define LUMA_UI_CALC_EXPRESSION_OPERATOR_INK_{family.upper()} "{expected}"' in header
+    assert f'#define SUNO_UI_CALC_EXPRESSION_OPERATOR_INK_{family.upper()} "{expected}"' in header
     sheet = SHEETS[family].read_text()
-    match = re.search(r"^@define-color luma_calc_expression_operator_ink ([^;]+);$", sheet, re.M)
+    match = re.search(r"^@define-color Suno_calc_expression_operator_ink ([^;]+);$", sheet, re.M)
     assert match and match.group(1) == expected
     provider = Gtk.CssProvider()
     provider.load_from_data(
-        f"@define-color luma_calc_expression_operator_ink {match.group(1)};\n"
-        ".calc-display .calc-expression-operator { color: @luma_calc_expression_operator_ink; }"
+        f"@define-color Suno_calc_expression_operator_ink {match.group(1)};\n"
+        ".calc-display .calc-expression-operator { color: @Suno_calc_expression_operator_ink; }"
     )
     Gtk.StyleContext.add_provider_for_display(display, provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
     while GLib.MainContext.default().pending():

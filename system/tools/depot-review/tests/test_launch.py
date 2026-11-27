@@ -56,11 +56,11 @@ class Launch(unittest.TestCase):
 
     def test_android_stays_off_in_the_review_vm(self):
         self.assertIn("waydroid-container.service", vm.REVIEW_MASKS)
-        self.assertIn("luma-android-initialize.service", vm.REVIEW_MASKS)
-        self.assertIn("luma-android-prewarm.timer", vm.REVIEW_USER_MASKS)
+        self.assertIn("Suno-android-initialize.service", vm.REVIEW_MASKS)
+        self.assertIn("Suno-android-prewarm.timer", vm.REVIEW_USER_MASKS)
         run = vm.android_off()
         self.assertIn("systemctl mask --runtime --now", run)
-        self.assertIn("systemctl --global mask --runtime luma-android-prewarm", run)
+        self.assertIn("systemctl --global mask --runtime Suno-android-prewarm", run)
         self.assertNotIn("--runtime", vm.android_off(runtime=False))
 
     def test_prepare_base_refuses(self):
@@ -71,8 +71,8 @@ class Launch(unittest.TestCase):
 
     def test_fresh_base_masks_android_from_the_first_boot(self):
         ks = vm.kickstart("ssh-ed25519 AAAA test", "ttyS0")
-        self.assertIn("systemctl mask luma-android-initialize.service waydroid-container.service", ks)
-        self.assertIn("systemctl --global mask luma-android-prewarm.timer", ks)
+        self.assertIn("systemctl mask Suno-android-initialize.service waydroid-container.service", ks)
+        self.assertIn("systemctl --global mask Suno-android-prewarm.timer", ks)
 
     def test_hung_first_run_ldconfig(self):
         self.assertTrue(vm.stuck_in_ldconfig("flatpak\nbwrap\nbwrap\nldconfig\n"))

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""Assemble a Linux x86_64 developer preview using a qualified LumaUI runtime.
+"""Assemble a Linux x86_64 developer preview using a qualified SunoUI runtime.
 
 Run under devctl. All tools and libraries go into the output; no host install.
-The runtime input must be an existing qualified portable LumaUI directory.
+The runtime input must be an existing qualified portable SunoUI directory.
 """
 import argparse
 import tomllib
@@ -32,7 +32,7 @@ p.add_argument('--arm-firmware-rpm',type=Path,help='Exact RPM containing --arm-f
 p.add_argument('--catalog', type=Path, required=True)
 p.add_argument('--mobile-display-update',type=Path,help='Checked Mobile display update manifest, RPM and matching source RPM')
 p.add_argument('--output', type=Path, required=True)
-p.add_argument('--release', action='store_true', help='Count published downloads as Try Luma; private previews default to test')
+p.add_argument('--release', action='store_true', help='Count published downloads as Try Suno; private previews default to test')
 mode = p.add_mutually_exclusive_group()
 mode.add_argument('--offline', action='store_true', help='Embed verified guest images in the AppImage')
 mode.add_argument('--sidecar-images', action='store_true', help='Keep private preview images beside the AppImage')
@@ -59,19 +59,19 @@ def copy(source, relative):
 # Reuse the qualified native closure, Python, schemas, fonts and license notices.
 copy(runtime / 'usr', 'usr')
 site = dest / 'usr/lib64/python3.14/site-packages'
-for name in ('prairie_apps', 'luma_appkit', 'sitecustomize.py'):
+for name in ('prairie_apps', 'Suno_appkit', 'sitecustomize.py'):
     path = site / name
     if path.is_dir(): shutil.rmtree(path)
     elif path.exists(): path.unlink()
-copy(REPO / 'src/luma-platform/appkit/luma_appkit', site.relative_to(dest) / 'luma_appkit')
-for glyph in (REPO / 'assets/icon-theme/Prairie/symbolic/actions').glob('lumaui-*.svg'):
-    copy(glyph, site.relative_to(dest) / 'luma_appkit/icons' / glyph.name)
-copy(REPO / 'src/luma-tester/luma_tester', site.relative_to(dest) / 'luma_tester')
+copy(REPO / 'src/Suno-platform/appkit/Suno_appkit', site.relative_to(dest) / 'Suno_appkit')
+for glyph in (REPO / 'assets/icon-theme/Prairie/symbolic/actions').glob('SunoUI-*.svg'):
+    copy(glyph, site.relative_to(dest) / 'Suno_appkit/icons' / glyph.name)
+copy(REPO / 'src/Suno-tester/Suno_tester', site.relative_to(dest) / 'Suno_tester')
 if a.release:
-    identity = site / 'luma_tester/__init__.py'
+    identity = site / 'Suno_tester/__init__.py'
     identity.write_text(identity.read_text().replace("DOWNLOAD_SOURCE = 'test'", "DOWNLOAD_SOURCE = 'tester'"))
-copy(REPO / 'src/luma-tester/luma_tester/io.luma.Tester.svg', 'usr/share/icons/hicolor/scalable/apps/io.luma.Tester.svg')
-copy(REPO / 'src/luma-tester/io.luma.Tester.desktop', 'usr/share/applications/io.luma.Tester.desktop')
+copy(REPO / 'src/Suno-tester/Suno_tester/io.Suno.Tester.svg', 'usr/share/icons/hicolor/scalable/apps/io.Suno.Tester.svg')
+copy(REPO / 'src/Suno-tester/io.Suno.Tester.desktop', 'usr/share/applications/io.Suno.Tester.desktop')
 copy(runtime / 'fonts.conf', 'fonts.conf')
 loaders = (runtime / 'pixbuf-loaders.cache').read_text()
 # Existing standalone runtime producers use an application-specific path token.
@@ -95,11 +95,11 @@ if a.mobile_display_update:
 copy(REPO / 'packaging/standalone/tester/README.md', 'README.md')
 copy(a.gvnc_source, 'sources/gtk-vnc.src.rpm')
 copy(a.gvnc_license, 'usr/share/licenses/gvnc/COPYING.LIB')
-copy(REPO / 'src/luma-tester/THIRD-PARTY.md', 'THIRD-PARTY.md')
+copy(REPO / 'src/Suno-tester/THIRD-PARTY.md', 'THIRD-PARTY.md')
 copy(REPO / 'docs/developer-platform/tester.md', 'DEVELOPING.md')
-copy(REPO / 'examples/tester-hello', 'examples/Hello Luma')
+copy(REPO / 'examples/tester-hello', 'examples/Hello Suno')
 
-# Keep the tool ABI/loader independent of the LumaUI ABI. ldd operates only on
+# Keep the tool ABI/loader independent of the SunoUI ABI. ldd operates only on
 # the explicitly selected installed distribution binaries/modules.
 tools = ['qemu-system-x86_64', 'qemu-img', 'ssh', 'ssh-keygen', 'rsync', 'xorriso']
 arm_qemu=a.arm_qemu or (Path(shutil.which('qemu-system-aarch64')) if shutil.which('qemu-system-aarch64') else None)
@@ -229,8 +229,8 @@ for line in set(packages.values()):
 (dest / 'tool-packages.json').write_text(json.dumps(packages, indent=2) + '\n')
 
 # Keep download manifests small, with explicit offline/sidecar options.
-sys.path.insert(0, str(REPO / 'src/luma-tester'))
-from luma_tester.core import digest, read_manifest
+sys.path.insert(0, str(REPO / 'src/Suno-tester'))
+from Suno_tester.core import digest, read_manifest
 for path in sorted(a.catalog.glob('*.json')):
     manifest = read_manifest(path)
     assert manifest['arch'] in ('x86_64','aarch64') and (manifest['arch']=='x86_64' or arm_qemu), 'ARM guests require the optional ARM tool closure.'
@@ -257,13 +257,13 @@ tester_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 unset PYTHONHOME PYTHONPATH LD_LIBRARY_PATH LD_PRELOAD LD_AUDIT
 exec "$tester_dir/usr/lib64/ld-linux-x86-64.so.2" --inhibit-cache --library-path "$tester_dir/usr/lib64" "$tester_dir/usr/bin/python3.14" "$tester_dir/bootstrap.py" "$@"
 ''')
-(dest / 'Try Luma').write_text('''#!/bin/sh
+(dest / 'Try Suno').write_text('''#!/bin/sh
 set -eu
 tester_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 if [ "$#" -eq 0 ]; then set -- gui; fi
-exec "$tester_dir/python" -m luma_tester "$@"
+exec "$tester_dir/python" -m Suno_tester "$@"
 ''')
-for name in ('python', 'Try Luma'): (dest / name).chmod(0o755)
+for name in ('python', 'Try Suno'): (dest / name).chmod(0o755)
 # Public bundle content must be readable when AppImage stores root ownership.
 for path in dest.rglob('*'):
     if not path.is_symlink():
@@ -271,7 +271,7 @@ for path in dest.rglob('*'):
 dest.chmod(0o755)
 receipt = {'schema': 1, 'host': 'linux-x86_64',
     'ui_graphics_closure': ui_graphics,
-    'app_version': tomllib.loads((REPO / 'src/luma-tester/pyproject.toml').read_text())['project']['version'],
+    'app_version': tomllib.loads((REPO / 'src/Suno-tester/pyproject.toml').read_text())['project']['version'],
     'download_source': 'tester' if a.release else 'test',
     'source_commit': subprocess.check_output(['git', '-C', str(REPO), 'rev-parse', 'HEAD'], text=True).strip(),
     'runtime_input': str(runtime), 'image_mode': 'offline' if a.offline else 'sidecar' if a.sidecar_images else 'download', 'files': []}

@@ -21,4 +21,4 @@ daemon's exact version.
   carrier, so the old teardown path runs) and a lease that expired during a
   long sleep (the renewal starts a fresh DHCP transaction). Written for
   upstream NetworkManager; drop it once upstream has an equivalent.
-- `0000-luma-fedora-spec.patch`: adds the patch and the `luma.N` release.
+- `0000-Suno-fedora-spec.patch`: adds the patch and the `Suno.N` release.

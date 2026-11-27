@@ -7,7 +7,7 @@ the same words, so review can compare the two: a package that reaches more
 than its listing declares fails checks.
 
 Flatpak apps are read through scripts/depot/flatpak-permissions.py, the same
-code that computes the permissions shown for Luma's own apps. Each key it
+code that computes the permissions shown for Suno's own apps. Each key it
 emits maps to one or more words here. Universal packages (.rpm/.deb, ADR-050)
 run in a capsule that sees the person's home folder and the network, so those
 two are always required, plus whatever the package installs into the system.
@@ -195,22 +195,22 @@ def flatpak_reach(metadata_text: str, runtime_text: str | None = None) -> dict:
 
 
 def reserved_namespace(app_id: str) -> bool:
-    """luma_installer.flatpak_guard.reserved_id: the same list of reserved namespaces."""
+    """Suno_installer.flatpak_guard.reserved_id: the same list of reserved namespaces."""
     import sys
-    sys.path.insert(0, str(_REPO / "src/luma-installer"))
-    from luma_installer.flatpak_guard import reserved_id
+    sys.path.insert(0, str(_REPO / "src/Suno-installer"))
+    from Suno_installer.flatpak_guard import reserved_id
     return reserved_id(app_id)
 
 
 def full_control_reasons(metadata: configparser.ConfigParser) -> list[str]:
-    """The installer's own test (luma_installer.flatpak_guard.full_control_reasons, the source of the
-    permission store's luma/full-control), on the bundle's metadata merged with its runtime's, for
-    the flatpak Luma ships today (``LUMA_FLATPAK=1`` in the environment: Luma's own)."""
+    """The installer's own test (Suno_installer.flatpak_guard.full_control_reasons, the source of the
+    permission store's Suno/full-control), on the bundle's metadata merged with its runtime's, for
+    the flatpak Suno ships today (``SUNO_FLATPAK=1`` in the environment: Suno's own)."""
     import os
     import sys
-    sys.path.insert(0, str(_REPO / "src/luma-installer"))
-    from luma_installer.flatpak_guard import full_control_reasons as installer_reasons
-    return installer_reasons(metadata, with_luma_flatpak=os.environ.get("LUMA_FLATPAK") == "1")
+    sys.path.insert(0, str(_REPO / "src/Suno-installer"))
+    from Suno_installer.flatpak_guard import full_control_reasons as installer_reasons
+    return installer_reasons(metadata, with_Suno_flatpak=os.environ.get("SUNO_FLATPAK") == "1")
 
 
 def package_reach(files: list[str], scripts: dict[str, str]) -> dict:
@@ -231,7 +231,7 @@ def package_reach(files: list[str], scripts: dict[str, str]) -> dict:
     for path in files:
         if path.startswith(("/lib/modules/", "/usr/lib/modules/", "/usr/src/")) or path.endswith(".ko") \
                 or path.endswith((".ko.xz", ".ko.zst")) or "/dkms" in path:
-            refusals.append(f"installs a kernel module ({path}); Luma doesn't accept kernel modules")
+            refusals.append(f"installs a kernel module ({path}); Suno doesn't accept kernel modules")
         elif path.startswith(("/usr/lib/systemd/system/", "/lib/systemd/system/", "/etc/systemd/system/")):
             add("System", "installs a system service " + Path(path).name)
         elif path.startswith(("/usr/lib/udev/rules.d/", "/lib/udev/rules.d/", "/etc/udev/rules.d/")):

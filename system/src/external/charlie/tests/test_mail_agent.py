@@ -14,9 +14,9 @@ import threading
 import time
 import unittest
 
-from charlie_luma import APP_ID
-from charlie_luma import mail_agent
-from charlie_luma.mail_agent import (
+from charlie_Suno import APP_ID
+from charlie_Suno import mail_agent
+from charlie_Suno.mail_agent import (
     AgentState,
     MailAgentCore,
     MailboxMark,
@@ -24,8 +24,8 @@ from charlie_luma.mail_agent import (
     backoff_delay,
     uids_after,
 )
-from charlie_luma.model import Account, ServerConfig
-from charlie_luma.store import MailStore
+from charlie_Suno.model import Account, ServerConfig
+from charlie_Suno.store import MailStore
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from fake_imap import FakeImapServer, client_context, make_certificates, make_message  # noqa: E402
@@ -445,7 +445,7 @@ class MailAgentTests(unittest.TestCase):
         self.assertEqual(self.publisher.get("unread-by-account"), {})
 
     def test_retained_gmail_agent_never_uses_saved_grant_or_connects(self):
-        from charlie_luma.mail_agent import CredentialsUnavailable
+        from charlie_Suno.mail_agent import CredentialsUnavailable
         self.start_server(oauth_token="retained-access")
         self.seed_account(provider="gmail")
         saved = json.dumps({"access_token":"retained-access", "refresh_token":"retained-refresh"})
@@ -544,7 +544,7 @@ class NotifierPrivacyTests(unittest.TestCase):
             self.calls.append((method, parameters.unpack() if parameters is not None else None))
 
     def notify_while(self, locked: bool, details: bool = False):
-        from charlie_luma.background import Notifier
+        from charlie_Suno.background import Notifier
 
         connection = self.Connection()
         notifier = Notifier(connection, APP_ID, "Charlie", lock_state=lambda: locked,
@@ -605,7 +605,7 @@ class BackgroundContractTests(unittest.TestCase):
             raise GLib.Error("no owner")
 
     def agent(self, service_owner: str | None):
-        from charlie_luma.background import Agent
+        from charlie_Suno.background import Agent
 
         class Probe(Agent):
             app_id = APP_ID
@@ -618,13 +618,13 @@ class BackgroundContractTests(unittest.TestCase):
 
     def wake(self, probe, sender: str, reason: str = "network", details=None):
         invocation = self.Invocation()
-        probe._handle_call(None, sender, "/org/projectluma/BackgroundAgent1", "org.projectluma.BackgroundAgent1",
+        probe._handle_call(None, sender, "/org/projectSuno/BackgroundAgent1", "org.projectSuno.BackgroundAgent1",
                            "Wake", GLib.Variant("(sa{sv})", (reason, details or {})), invocation)
         return invocation
 
     def test_wake_is_accepted_only_from_the_background_service(self):
         probe = self.agent(":1.7")
-        self.assertEqual(self.wake(probe, ":1.9").error, "org.projectluma.BackgroundAgent1.Error.NotAuthorized")
+        self.assertEqual(self.wake(probe, ":1.9").error, "org.projectSuno.BackgroundAgent1.Error.NotAuthorized")
         self.assertEqual(probe.woken, [])
         accepted = self.wake(probe, ":1.7", "schedule",
                              {"schedule": GLib.Variant("s", "digest"), "missed": GLib.Variant("b", True)})
@@ -632,9 +632,9 @@ class BackgroundContractTests(unittest.TestCase):
         self.assertEqual((probe.woken[0].reason, probe.woken[0].schedule, probe.woken[0].missed),
                          ("schedule", "digest", True))
         self.assertEqual(self.wake(probe, ":1.7", "unlock").error,
-                         "org.projectluma.BackgroundAgent1.Error.InvalidArgument")
+                         "org.projectSuno.BackgroundAgent1.Error.InvalidArgument")
         self.assertEqual(self.wake(self.agent(None), ":1.7").error,
-                         "org.projectluma.BackgroundAgent1.Error.NotAuthorized")
+                         "org.projectSuno.BackgroundAgent1.Error.NotAuthorized")
 
     def test_values_are_typed_as_the_kit_types_them(self):
         probe = self.agent(None)
@@ -652,15 +652,15 @@ class BackgroundContractTests(unittest.TestCase):
 
     def test_kit_module_is_loaded_by_path_without_its_package(self):
         with tempfile.TemporaryDirectory(prefix="charlie-kit-") as directory:
-            package = Path(directory) / "luma_appkit"
+            package = Path(directory) / "Suno_appkit"
             package.mkdir()
             (package / "__init__.py").write_text("raise ImportError('the agent must not import the kit package')\n")
             kit = (
                 "import gi\n"
                 "gi.require_version('Gio', '2.0')\n"
                 "from gi.repository import Gio, GLib\n"
-                'AGENT_INTERFACE = "org.projectluma.BackgroundAgent1"\n'
-                'AGENT_PATH = "/org/projectluma/BackgroundAgent1"\n'
+                'AGENT_INTERFACE = "org.projectSuno.BackgroundAgent1"\n'
+                'AGENT_PATH = "/org/projectSuno/BackgroundAgent1"\n'
                 "class Agent:\n"
                 "    def on_start(self): pass\n"
                 "    def on_wake(self, wake): pass\n"
@@ -671,17 +671,17 @@ class BackgroundContractTests(unittest.TestCase):
                 "def request_background(app_id, **options): pass\n"
             )
             (package / "background.py").write_text(kit)
-            script = ("import sys, charlie_luma.background as b\n"
-                      "print(b.KIT_BACKGROUND, b.AgentBase.__module__, 'luma_appkit' in sys.modules)\n")
+            script = ("import sys, charlie_Suno.background as b\n"
+                      "print(b.KIT_BACKGROUND, b.AgentBase.__module__, 'Suno_appkit' in sys.modules)\n")
             result = subprocess.run([sys.executable, "-c", script], cwd=ROOT, capture_output=True, text=True,
                                     env={**os.environ, "PYTHONPATH": f"{directory}:{ROOT}"}, check=True)
-            self.assertEqual(result.stdout.split(), ["True", "charlie_luma._kit_background", "False"])
+            self.assertEqual(result.stdout.split(), ["True", "charlie_Suno._kit_background", "False"])
 
-            (package / "background.py").write_text(kit.replace("/org/projectluma/BackgroundAgent1",
-                                                                "/org/projectluma/Background/Agent"))
+            (package / "background.py").write_text(kit.replace("/org/projectSuno/BackgroundAgent1",
+                                                                "/org/projectSuno/Background/Agent"))
             result = subprocess.run([sys.executable, "-c", script], cwd=ROOT, capture_output=True, text=True,
                                     env={**os.environ, "PYTHONPATH": f"{directory}:{ROOT}"}, check=True)
-            self.assertEqual(result.stdout.split(), ["False", "charlie_luma.background", "False"])
+            self.assertEqual(result.stdout.split(), ["False", "charlie_Suno.background", "False"])
 
             (package / "background.py").write_text(kit + "gi.require_version('Gtk', '4.0')\n")
             result = subprocess.run([sys.executable, "-c", script], cwd=ROOT, capture_output=True, text=True,
@@ -691,9 +691,9 @@ class BackgroundContractTests(unittest.TestCase):
 
 class AgentImportGraphTests(unittest.TestCase):
     def test_agent_never_loads_the_toolkit(self):
-        modules = ["charlie_luma.mail_agent"]
+        modules = ["charlie_Suno.mail_agent"]
         if GLib is not None:
-            modules.append("charlie_luma.background")
+            modules.append("charlie_Suno.background")
         script = (
             "import sys\n"
             + "".join(f"import {name}\n" for name in modules)
@@ -704,12 +704,12 @@ class AgentImportGraphTests(unittest.TestCase):
         loaded = set(result.stdout.split())
         forbidden = [name for name in loaded if name.startswith((
             "gi.repository.Gtk", "gi.repository.Gdk", "gi.repository.Adw", "gi.repository.WebKit",
-            "gi.repository.Gsk", "luma_appkit", "charlie_luma.application", "charlie_luma.html_reader"))]
+            "gi.repository.Gsk", "Suno_appkit", "charlie_Suno.application", "charlie_Suno.html_reader"))]
         self.assertEqual(forbidden, [])
-        self.assertIn("charlie_luma.mail_agent", loaded)
+        self.assertIn("charlie_Suno.mail_agent", loaded)
 
     def test_entry_point_routes_agent_before_importing_the_application(self):
-        for relative in ("data/org.projectluma.Charlie.in", "charlie_luma/__main__.py"):
+        for relative in ("data/org.projectSuno.Charlie.in", "charlie_Suno/__main__.py"):
             source = (ROOT / relative).read_text()
             self.assertLess(source.index('["--agent"]'), source.index("application import main"), relative)
 

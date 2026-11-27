@@ -1,10 +1,10 @@
 /* SPDX-License-Identifier: Apache-2.0
  *
- * <App>.exe for a `luma port windows` folder. Generic: it knows nothing about the app.
+ * <App>.exe for a `Suno port windows` folder. Generic: it knows nothing about the app.
  * Sets PATH / PYTHONHOME / PYTHONPATH relative to itself and runs
- *     bin\pythonw.exe -m luma_port_boot [args...]
- * (luma_port_boot reads app\luma-port-app.json for the module and env).
- * Build: clang --target=x86_64-w64-mingw32 -municode -mwindows -O2 luma-launcher.c
+ *     bin\pythonw.exe -m Suno_port_boot [args...]
+ * (Suno_port_boot reads app\Suno-port-app.json for the module and env).
+ * Build: clang --target=x86_64-w64-mingw32 -municode -mwindows -O2 Suno-launcher.c
  */
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -19,7 +19,7 @@ static void fail(const wchar_t *what)
   DWORD err = GetLastError();
   _snwprintf(msg, 1024, L"%ls (error %lu).\n\nKeep the whole folder together and run it from where you unzipped it.",
              what, (unsigned long) err);
-  MessageBoxW(NULL, msg, L"Luma port launcher", MB_ICONERROR | MB_OK);
+  MessageBoxW(NULL, msg, L"Suno port launcher", MB_ICONERROR | MB_OK);
 }
 
 int WINAPI wWinMain(HINSTANCE inst, HINSTANCE prev, PWSTR args, int show)
@@ -39,11 +39,11 @@ int WINAPI wWinMain(HINSTANCE inst, HINSTANCE prev, PWSTR args, int show)
   SetEnvironmentVariableW(L"PYTHONPATH", buf);
   SetEnvironmentVariableW(L"PYTHONNOUSERSITE", L"1");
   SetEnvironmentVariableW(L"PYTHONUTF8", L"1");
-  SetEnvironmentVariableW(L"LUMA_PORT_ROOT", root);
+  SetEnvironmentVariableW(L"SUNO_PORT_ROOT", root);
 
   _snwprintf(python, MAX_PATH * 4, L"%ls\\bin\\pythonw.exe", root);
   if (GetFileAttributesW(python) == INVALID_FILE_ATTRIBUTES) { fail(L"bin\\pythonw.exe is missing"); return 1; }
-  _snwprintf(cmd, BUF, L"\"%ls\" -m luma_port_boot %ls", python, args ? args : L"");
+  _snwprintf(cmd, BUF, L"\"%ls\" -m Suno_port_boot %ls", python, args ? args : L"");
 
   STARTUPINFOW si = { .cb = sizeof si };
   PROCESS_INFORMATION pi;

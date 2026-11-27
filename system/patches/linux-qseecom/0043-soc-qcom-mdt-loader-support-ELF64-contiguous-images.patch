@@ -1,4 +1,4 @@
-From: Project Luma <noreply@project-luma.local>
+From: Project Suno <noreply@project-suno.local>
 Date: Fri, 21 Aug 2026 13:25:45 -0500
 Subject: [PATCH] soc: qcom: mdt_loader: support ELF64 contiguous images
 
@@ -12,7 +12,7 @@ Add a separate, bounds-checked ELF64 path to qcom_mdt_get_image_size() and
 qcom_mdt_read_image(). Keep every remoteproc-facing helper on its existing
 ELF32 contract, and accept only little-endian AArch64 ELF64 images.
 
-Signed-off-by: Project Luma <noreply@project-luma.local>
+Signed-off-by: Project Suno <noreply@project-suno.local>
 ---
  drivers/soc/qcom/mdt_loader.c | 115 +++++++++++++++++++++++++++++++++--
  1 file changed, 109 insertions(+), 6 deletions(-)

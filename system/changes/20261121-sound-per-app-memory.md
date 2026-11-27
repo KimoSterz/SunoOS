@@ -1,7 +1,7 @@
 ---
 type: improvement
 component: Sound
-packages: [luma-audio-policy]
+packages: [Suno-audio-policy]
 highlight: false
 ---
 Summary: Apps remember their speaker

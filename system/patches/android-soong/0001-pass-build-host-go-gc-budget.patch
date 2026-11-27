@@ -1,4 +1,4 @@
-From: Project Luma <maintainers@projectluma.org>
+From: Project Suno <maintainers@projectSuno.org>
 Subject: [PATCH] Preserve explicit build-host Go garbage-collection tuning
 
 Blueprint launches soong_build with env -i. Preserve GOGC when the build

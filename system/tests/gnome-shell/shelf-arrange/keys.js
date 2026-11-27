@@ -182,7 +182,7 @@ async function work() {
         GLib.file_set_contents(file,
             '[Desktop Entry]\nType=Application\nName=' + title +
             `\nExec=python3 ${T}/typer.py org.oracle.${id} ${title} ${log}\n` +
-            'Icon=org.projectluma.Notes\nStartupNotify=true\n');
+            'Icon=org.projectSuno.Notes\nStartupNotify=true\n');
         const system = Shell.AppSystem.get_default();
         await L.until(() => system.lookup_app(`org.oracle.${id}.desktop`), 8000);
         return system.lookup_app(`org.oracle.${id}.desktop`);

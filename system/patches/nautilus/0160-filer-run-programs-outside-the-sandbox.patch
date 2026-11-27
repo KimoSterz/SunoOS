@@ -1,4 +1,4 @@
-From: Project Luma <engineering@projectluma.org>
+From: Project Suno <engineering@projectSuno.org>
 Subject: [PATCH] Filer: never run programs inside the sandbox
 
 Run and double-click on an executable started it inside Filer's Flatpak
@@ -6,7 +6,7 @@ sandbox, which has no FUSE: AppImages failed with "fuse: device not
 found" and other programs ran without the host's tools. In the sandbox,
 an AppImage now opens through OpenURI like any other file, which hands it
 to Valet without the chooser, and Valet runs it. Other programs go to the
-host Terminal service's RunProgram (org.projectluma.Terminal1), which
+host Terminal service's RunProgram (org.projectSuno.Terminal1), which
 checks that the caller is the signed Filer; Terminal runs them in a
 session in their folder. Open in Terminal uses Terminal1's Open (the same
 shape as org.freedesktop.Application.Open), where Terminal knows the
@@ -21,9 +21,9 @@ SPDX-License-Identifier: GPL-3.0-or-later
 +++ b/src/nautilus-dbus-launcher.c
 @@ -287,4 +287,4 @@
      nautilus_dbus_launcher_create_proxy (self->data[NAUTILUS_DBUS_LAUNCHER_CONSOLE],
-                                          "org.projectluma.Terminal", "/org/projectluma/Terminal",
+                                          "org.projectSuno.Terminal", "/org/projectSuno/Terminal",
 -                                         "org.freedesktop.Application");
-+                                         "org.projectluma.Terminal1");
++                                         "org.projectSuno.Terminal1");
  }
 --- a/src/nautilus-files-view.c
 +++ b/src/nautilus-files-view.c
@@ -56,7 +56,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
      return ACTIVATION_ACTION_OPEN_IN_APPLICATION;
  }
  
-+/* Luma: AppImage types per shared-mime-info (type 2 and the ISO type 1). */
++/* Suno: AppImage types per shared-mime-info (type 2 and the ISO type 1). */
 +static gboolean
 +file_is_appimage (NautilusFile *file)
 +{
@@ -91,7 +91,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 +/**
 + * nautilus_mime_run_on_host:
 + *
-+ * Luma: a sandboxed Filer runs a program the user opens through the host
++ * Suno: a sandboxed Filer runs a program the user opens through the host
 + * Terminal service. Terminal starts a session in the program's folder and
 + * runs it there. Only its RunProgram method runs programs, because there it
 + * can check that the caller is this signed Filer; its Open opens folders.
@@ -119,8 +119,8 @@ SPDX-License-Identifier: GPL-3.0-or-later
 +
 +    location = g_file_new_for_path (path);
 +    location_uri = g_file_get_uri (location);
-+    g_dbus_connection_call (bus, "org.projectluma.Terminal", "/org/projectluma/Terminal",
-+                            "org.projectluma.Terminal1", "RunProgram",
++    g_dbus_connection_call (bus, "org.projectSuno.Terminal", "/org/projectSuno/Terminal",
++                            "org.projectSuno.Terminal1", "RunProgram",
 +                            g_variant_new ("(s@a{sv})", location_uri, g_variant_new ("a{sv}", NULL)),
 +                            NULL, G_DBUS_CALL_FLAGS_NONE, 25000, NULL, run_on_host_done,
 +                            parent_window != NULL ? g_object_ref (parent_window) : NULL);
@@ -135,7 +135,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
          }
 +        else if (nautilus_application_is_sandboxed () && file_is_appimage (file))
 +        {
-+            /* Luma: Valet runs AppImages (OpenURI opens them there directly). */
++            /* Suno: Valet runs AppImages (OpenURI opens them there directly). */
 +            action = ACTIVATION_ACTION_OPEN_IN_APPLICATION;
 +        }
          g_free (executable_path);
@@ -193,7 +193,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
      g_autoptr (GError) error = NULL;
      g_autoptr (GAppInfo) app = NULL;
  
-+    /* Luma: the sandboxed Filer never executes a user's file or command in
++    /* Suno: the sandboxed Filer never executes a user's file or command in
 +     * its own sandbox, where it lacks the host's tools (FUSE for AppImages,
 +     * for one). Activation hands AppImages to Valet and other programs to
 +     * the host Terminal (nautilus_mime_run_on_host); scripts and dropping

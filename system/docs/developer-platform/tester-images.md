@@ -1,11 +1,11 @@
-# Luma Tester guest image contract
+# Suno Tester guest image contract
 
 The launcher and guest OS have separate builds. The source includes a Linux
 launcher, an x86_64 shared-image producer and portable/AppImage packagers.
 There is no published guest feed. An existing installer or hardware rootfs must not be relabeled as a
 qualified QEMU image. The older `prepare-fp6-twin.sh` starts from Fedora Cloud,
 and `enable-fp6-twin-ui.sh` installs experimental Phosh. Those are useful lab
-building blocks, not the complete current Luma Mobile guest.
+building blocks, not the complete current Suno Mobile guest.
 
 ## Producer requirements
 
@@ -29,7 +29,7 @@ The guest must include:
 - A bootable standalone qcow2 with Linux virtio block, network, input and GPU
   drivers and a matching BIOS (x86 only) or UEFI bootloader. ARM must boot the QEMU
   `virt` machine, rather than a device-specific kernel/DTB.
-- Real Luma shared UI, intended shell and apps, with recorded source/package build
+- Real Suno shared UI, intended shell and apps, with recorded source/package build
   identity. Mobile needs handheld presentation/input capabilities, portrait output
   support and appropriate scaling. Desktop uses its normal desktop session.
 - cloud-init enabled for the NoCloud datasource, OpenSSH server running, rsync,
@@ -41,13 +41,13 @@ The guest must include:
   the user systemd manager. App restarts use `systemd-run --user`, with no guessed
   socket paths. Authenticated `sudo systemctl --no-block poweroff` must work;
   mobile uses the ACPI power button for display sleep/wake.
-- The tester readiness extension from `extensions/luma-tester`. After session
+- The tester readiness extension from `extensions/Suno-tester`. After session
   startup and a completed compositor paint it writes
-  `$XDG_RUNTIME_DIR/luma-tester/ready.json`, containing `target`, `boot_id`,
+  `$XDG_RUNTIME_DIR/Suno-tester/ready.json`, containing `target`, `boot_id`,
   `width`, and `height`. The host checks the current boot and requires portrait
-  dimensions. Mobile additionally requires `renderer: luma-phosh`, its actual
-  `/opt/luma/phosh/libexec/phosh` process and native first-frame marker at
-  `/run/luma-display/home-ready`. An SSH port or a
+  dimensions. Mobile additionally requires `renderer: Suno-phosh`, its actual
+  `/opt/Suno/phosh/libexec/phosh` process and native first-frame marker at
+  `/run/Suno-display/home-ready`. An SSH port or a
   Wayland socket alone is insufficient. Use this image contract for `wait
   --graphical` and the GUI; no arbitrary readiness hooks run from manifests.
 
@@ -57,8 +57,8 @@ it down. This allows each tester seed to run on first boot. Do not run cleaning
 commands on your host. Export a self-contained sparse disk (outside Git):
 
 ```sh
-qemu-img convert -O qcow2 /path/to/stopped-build.qcow2 /path/to/luma-mobile-x86_64.qcow2
-src/luma-tester/luma-tester manifest /path/to/luma-mobile-x86_64.qcow2 \
+qemu-img convert -O qcow2 /path/to/stopped-build.qcow2 /path/to/Suno-mobile-x86_64.qcow2
+src/Suno-tester/Suno-tester manifest /path/to/Suno-mobile-x86_64.qcow2 \
   --output /path/to/mobile.json --id mobile-x86-your-build \
   --build 'YOUR_ACTUAL_BUILD_ID' --target mobile --arch x86_64 --boot uefi
 ```
@@ -94,13 +94,13 @@ Windows WHPX packaging and those host validations remain separate work.
 ## Source-owned guest producer
 
 `scripts/tester/build-guest.py` composes the preview in a private QEMU builder
-using the pinned Fedora Cloud base and the source-selected local Luma RPM cohort.
+using the pinned Fedora Cloud base and the source-selected local Suno RPM cohort.
 It builds the current shared apps from their normal RPM spec, including `%check`,
 then applies the desktop profile. It never installs those
 packages on the host or uses an existing personal VM disk.
 
 The current producer exports x86_64 Desktop only. The earlier GNOME handheld
-prototype was rejected as inaccurate and is no longer composed as Luma Mobile.
+prototype was rejected as inaccurate and is no longer composed as Suno Mobile.
 Mobile requires the actual phone Phosh/Phoc source and matching shared packages.
 ARM needs its
 own matching package cohort and a separately qualified producer path; selecting
@@ -109,7 +109,7 @@ an ARM argument does not convert x86 RPMs into an ARM image.
 ```sh
 scripts/tester/build-guest.py --target desktop --build-id your-build-id \
   --base /path/to/verified/Fedora-Cloud-Base-Generic-44-1.7.x86_64.qcow2 \
-  --rpm-pool /path/to/the/pinned/Luma/RPMs --output /path/to/private/output \
+  --rpm-pool /path/to/the/pinned/Suno/RPMs --output /path/to/private/output \
   --preflight
 ```
 
@@ -133,7 +133,7 @@ The current catalog contains `desktop.json`. A Mobile catalog entry must wait fo
 qualification of the actual phone renderer, Home/Library/Now surfaces and app
 workflow. A portrait desktop is insufficient. Each image keeps a private writable
 disk and developer key while sharing verified base files when their digests match.
-The guest identifies itself as **Luma Developer Preview**, with its actual build id.
+The guest identifies itself as **Suno Developer Preview**, with its actual build id.
 
 For a profile-only follow-up, `--parent-receipt /path/to/build-receipt.json` may
 reuse a prior producer image. The producer checks the parent image digest, exact

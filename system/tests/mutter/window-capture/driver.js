@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: Apache-2.0
 // gnome-shell --automation-script for the window-capture test (run.sh).
 // Windows painted one solid colour each; captures count their pixels
-// (capture.c). A Wayland window hides itself from capture through LumaUI's
-// luma_window_set_hidden_from_capture() (luma_window_capture_v1), an
-// Xwayland window through _LUMA_WINDOW_HIDDEN_FROM_CAPTURE, and a control
+// (capture.c). A Wayland window hides itself from capture through SunoUI's
+// Suno_window_set_hidden_from_capture() (Suno_window_capture_v1), an
+// Xwayland window through _SUNO_WINDOW_HIDDEN_FROM_CAPTURE, and a control
 // window never hides. Monitor, area and window screen casts through
 // org.gnome.Mutter.ScreenCast, and Shell screenshots, are checked on two
 // virtual monitors, with a dialog transient for the hidden window, the
 // overview's window clones, a move to the other monitor and minimizing.
-// LUMA_CAPTURE_MODE=perf measures what a monitor stream costs with no
+// SUNO_CAPTURE_MODE=perf measures what a monitor stream costs with no
 // hidden window, with one on the other monitor and with one on its monitor.
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
@@ -19,12 +19,12 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 Gio._promisify(Shell.Screenshot.prototype, 'screenshot');
 Gio._promisify(Shell.Screenshot.prototype, 'screenshot_area');
 
-const out = GLib.getenv('LUMA_CAPTURE_OUT');
-const here = GLib.getenv('LUMA_CAPTURE_HERE');
-const captureBin = GLib.getenv('LUMA_CAPTURE_BIN');
-const clientBin = GLib.getenv('LUMA_CAPTURE_CLIENT');
-const fixed = GLib.getenv('LUMA_CAPTURE_EXPECT') !== 'stock';
-const mode = GLib.getenv('LUMA_CAPTURE_MODE') || 'full';
+const out = GLib.getenv('SUNO_CAPTURE_OUT');
+const here = GLib.getenv('SUNO_CAPTURE_HERE');
+const captureBin = GLib.getenv('SUNO_CAPTURE_BIN');
+const clientBin = GLib.getenv('SUNO_CAPTURE_CLIENT');
+const fixed = GLib.getenv('SUNO_CAPTURE_EXPECT') !== 'stock';
+const mode = GLib.getenv('SUNO_CAPTURE_MODE') || 'full';
 const results = [];
 const records = [];
 const perf = [];
@@ -215,15 +215,15 @@ async function screenshot(label, area = null) {
 const ci = colour => COLOURS.indexOf(colour);
 const full = n => n >= AREA * 0.95;
 
-// Luma's share picker (Shell 0382): the hidden window's tile says so, the
+// Suno's share picker (Shell 0382): the hidden window's tile says so, the
 // control's does not, and screen tiles do not clone the hidden window. Only
-// with Luma's Shell, which has the picker.
+// with Suno's Shell, which has the picker.
 async function checkPicker(a, control) {
     let share;
     try {
-        share = await import('resource:///org/gnome/shell/ui/lumaShare.js');
+        share = await import('resource:///org/gnome/shell/ui/SunoShare.js');
     } catch {
-        trace('no Luma share picker in this Shell: picker checks skipped');
+        trace('no Suno share picker in this Shell: picker checks skipped');
         return;
     }
     const picker = new share.SharePicker({types: 1 | 2, displays: [],

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 // Screen sharing across a lock, and the shared window's ring, in a headless
-// Luma Shell with the real portal stack (run.sh).
+// Suno Shell with the real portal stack (run.sh).
 //
 // MODE=lock  Three windows are shared through the portal (client.py, one
 //            application each). The session locks and unlocks. While it is
@@ -31,8 +31,8 @@ import Meta from 'gi://Meta';
 import Shell from 'gi://Shell';
 import St from 'gi://St';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
-import * as Capture from 'resource:///org/gnome/shell/ui/lumaCapture.js';
-import * as LumaShare from 'resource:///org/gnome/shell/ui/lumaShare.js';
+import * as Capture from 'resource:///org/gnome/shell/ui/SunoCapture.js';
+import * as SunoShare from 'resource:///org/gnome/shell/ui/SunoShare.js';
 import * as ModalDialog from 'resource:///org/gnome/shell/ui/modalDialog.js';
 
 const OUT = GLib.getenv('LOCK_OUT');
@@ -160,9 +160,9 @@ async function openWindow(appId, title) {
     return window;
 }
 
-const share = () => LumaShare.getShare();
+const share = () => SunoShare.getShare();
 
-// Any Luma Share picker or other modal dialog the person could see.
+// Any Suno Share picker or other modal dialog the person could see.
 function dialogsOnScreen() {
     return Main.layoutManager.modalDialogGroup.get_children()
         .filter(d => d.visible && d.mapped && d.opacity > 0)
@@ -188,7 +188,7 @@ async function lockScenario() {
     global.backend.is_headless = () => false;
 
     const names = ['A', 'B', 'C'];
-    const apps = ['org.luma.test.Notes', 'org.luma.test.Photos', 'org.luma.test.Reel'];
+    const apps = ['org.Suno.test.Notes', 'org.Suno.test.Photos', 'org.Suno.test.Reel'];
     const windows = [];
     for (let i = 0; i < 3; i++) {
         const w = await openWindow(apps[i], `Shared ${names[i]}`);
@@ -272,7 +272,7 @@ async function lockScenario() {
     const restored = clientStep('R', 'start');
     // The one picker after unlock is the new request's (checked below); the
     // backend restored this one without asking.
-    const portalLog = readText(`${OUT}/luma-portal.log`);
+    const portalLog = readText(`${OUT}/Suno-portal.log`);
     check('the restored share started after unlock, without a picker',
         restored?.response === 0 && restored.t > tUnlock &&
         portalLog.includes('restored a previous choice') &&
@@ -305,7 +305,7 @@ async function lockScenario() {
 const sharesShown = () => share()._sessions.size + share()._edges.length;
 
 function lastMutterSession() {
-    const lines = readText(`${OUT}/luma-portal.log`).split('\n')
+    const lines = readText(`${OUT}/Suno-portal.log`).split('\n')
         .filter(l => l.includes('Mutter screen cast session '));
     return lines.at(-1)?.split('Mutter screen cast session ')[1]?.trim();
 }
@@ -319,7 +319,7 @@ async function shareOnce(tag, window) {
 }
 
 async function lifecycleScenario() {
-    const window = await openWindow('org.luma.test.Notes', 'Lifecycle');
+    const window = await openWindow('org.Suno.test.Notes', 'Lifecycle');
     const kill = (signal, pattern) => spawn(['pkill', `-${signal}`, '-f', pattern], 'pkill');
 
     check('E: a share shows its ring', await shareOnce('E', window));
@@ -328,16 +328,16 @@ async function lifecycleScenario() {
         await until('E gone', () => sharesShown() === 0, 8000), sharesShown());
 
     check('F: a share shows its ring', await shareOnce('F', window));
-    kill('KILL', 'luma_portal.service');
+    kill('KILL', 'Suno_portal.service');
     check('the portal backend killed: ring and pill go',
         await until('F gone', () => sharesShown() === 0, 8000), sharesShown());
 
     check('G: a share shows its ring', await shareOnce('G', window));
-    kill('TERM', 'luma_portal.service');
+    kill('TERM', 'Suno_portal.service');
     check('the portal backend stopped: ring and pill go',
         await until('G gone', () => sharesShown() === 0, 8000), sharesShown());
     await wait(1000);
-    check('a stopping backend says why', readText(`${OUT}/luma-portal.log`).includes('the backend is stopping'));
+    check('a stopping backend says why', readText(`${OUT}/Suno-portal.log`).includes('the backend is stopping'));
 
     check('H: a share shows its ring', await shareOnce('H', window));
     // Mutter ends the session on its own (only its owner may call Stop on
@@ -397,7 +397,7 @@ async function screensScenario() {
     });
     await wait(500);
     const request = await share()._describe({types: 1});
-    const picker = new LumaShare.SharePicker(request);
+    const picker = new SunoShare.SharePicker(request);
     picker._setMode('screens');
     await wait(2000);
     const scale = await shot('screens-picker');
@@ -443,7 +443,7 @@ async function readPng(path) {
 // application receives; Dismiss puts it away and the sharing mark brings it
 // back.
 async function pillScenario() {
-    await openWindow('org.luma.test.Notes', 'Behind the pill');
+    await openWindow('org.Suno.test.Notes', 'Behind the pill');
     spawn(['python3', `${HERE}/client.py`, 'S', '--types', '1', '--snapshot', '40'], 'client-S');
     await until('a picker', () => share()._picker);
     const picker = share()._picker;
@@ -531,7 +531,7 @@ function ringGeometry(window) {
 }
 
 async function ringScenario() {
-    const treatment = new Gio.Settings({schema_id: 'org.project_luma.shell-state'});
+    const treatment = new Gio.Settings({schema_id: 'org.projectSuno.shell-state'});
     // A flat background, so the halo's falloff can be measured against it.
     const backdrop = new St.Widget({style: 'background-color: #808080;'});
     backdrop.add_constraint(new Clutter.BindConstraint({source: global.stage,
@@ -540,7 +540,7 @@ async function ringScenario() {
         .find(child => child instanceof Meta.BackgroundGroup) ?? null;
     global.window_group.insert_child_above(backdrop, wallpaper);
 
-    const window = await openWindow('org.luma.test.Reel', 'Ring');
+    const window = await openWindow('org.Suno.test.Reel', 'Ring');
     window.move_resize_frame(true, 300, 220, 900, 560);
     await wait(800);
     // As the D-Bus wrapper hands it over: a dict of variants.

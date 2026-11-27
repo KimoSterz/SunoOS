@@ -1,5 +1,5 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Project Luma <engineering@projectluma.org>
+From: Project Suno <engineering@projectSuno.org>
 Date: Tue, 3 Nov 2026 02:58:56 -0600
 Subject: [PATCH] blur: hold the blurred backgrounds under a dimming modal
 
@@ -66,17 +66,17 @@ index 3b0e287..f1981de 100644
    int radius;
    float blur_sigma;
  
-+  /* Luma: the box the background was last copied from. */
++  /* Suno: the box the background was last copied from. */
 +  ClutterActorBox background_box;
 +
-   /* Luma: how many frames in a row the background could have been stale. */
+   /* Suno: how many frames in a row the background could have been stale. */
    int stale_frames;
-   /* Luma: counters a test reads, to see the case happen and stop happening. */
+   /* Suno: counters a test reads, to see the case happen and stop happening. */
 @@ -165,6 +168,11 @@ struct _ShellBlurEffect
  
  G_DEFINE_TYPE (ShellBlurEffect, shell_blur_effect, CLUTTER_TYPE_EFFECT)
  
-+/* Luma: actors (dimming modals) whose outside keeps its blurred backgrounds;
++/* Suno: actors (dimming modals) whose outside keeps its blurred backgrounds;
 + * see shell_blur_effect_hold_backgrounds().
 + */
 +static GPtrArray *hold_owners = NULL;
@@ -113,7 +113,7 @@ index 3b0e287..f1981de 100644
            break;
          }
  
-+      /* Luma: a held background keeps the last blur while the actor stays
++      /* Suno: a held background keeps the last blur while the actor stays
 +       * where it was copied from.
 +       */
 +      if (self->mode == SHELL_BLUR_MODE_BACKGROUND &&
@@ -131,7 +131,7 @@ index 3b0e287..f1981de 100644
 +            }
 +        }
 +
-       /* Luma: the background copy would be this surface's own last output,
+       /* Suno: the background copy would be this surface's own last output,
         * so keep the blur we have and ask for a frame that repaints what is
         * behind us. Without a blur to keep, or after MAX_STALE_FRAMES, take
 @@ -1051,6 +1095,8 @@ shell_blur_effect_paint_node (ClutterEffect           *effect,
@@ -159,7 +159,7 @@ index 3b0e287..f1981de 100644
 + * shell_blur_effect_hold_backgrounds:
 + * @owner: a full-screen modal, such as a dialog over a lightbox
 + *
-+ * Luma: until shell_blur_effect_release_backgrounds() is called with @owner
++ * Suno: until shell_blur_effect_release_backgrounds() is called with @owner
 + * (or @owner is disposed), background blurs outside @owner keep their last
 + * blurred background, as long as their actor's box on the framebuffer is the
 + * one it was copied from. What lies behind them does not change while a
@@ -187,7 +187,7 @@ index 3b0e287..f1981de 100644
 + * shell_blur_effect_release_backgrounds:
 + * @owner: an actor passed to shell_blur_effect_hold_backgrounds()
 + *
-+ * Luma: lets background blurs outside @owner copy their background again.
++ * Suno: lets background blurs outside @owner copy their background again.
 + */
 +void
 +shell_blur_effect_release_backgrounds (ClutterActor *owner)

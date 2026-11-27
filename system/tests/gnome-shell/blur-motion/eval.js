@@ -90,9 +90,9 @@ export default async function ({Main}) {
     const views = global.stage.peek_stage_views().map(v => {
         const l = v.get_layout(); return [l.x, l.y, l.width, l.height, v.get_scale()];
     });
-    log('state', {theme: GLib.getenv('M_THEME'), cache: GLib.getenv('LUMA_MUTTER_BLUR_CACHE'),
+    log('state', {theme: GLib.getenv('M_THEME'), cache: GLib.getenv('SUNO_MUTTER_BLUR_CACHE'),
         windows: windows.map(w => w.get_wm_class()), monitors, views});
-    const results = {theme: GLib.getenv('M_THEME'), cache: GLib.getenv('LUMA_MUTTER_BLUR_CACHE'), monitors, views, actions: {}};
+    const results = {theme: GLib.getenv('M_THEME'), cache: GLib.getenv('SUNO_MUTTER_BLUR_CACHE'), monitors, views, actions: {}};
     if (windows.length < 3) {
         log('missing windows', {count: windows.length});
         results.error = 'missing windows';

@@ -3,9 +3,9 @@
 # Signed browser launch gate using Depot's ordinary user-manager/Shell setup.
 set -uo pipefail
 here=$(cd -- "$(dirname -- "$0")" && pwd)
-user=luma-gate-browser-opens
+user=Suno-gate-browser-opens
 failed=0
-work=$(mktemp -d /tmp/luma-gate-browser-opens.XXXXXX)
+work=$(mktemp -d /tmp/Suno-gate-browser-opens.XXXXXX)
 chmod 0755 "$work"
 emit() {
   python3 -c 'import json,sys;print(json.dumps(dict(check=sys.argv[1],result=sys.argv[2],detail=sys.argv[3])))' "$1" "$2" "$3"
@@ -13,7 +13,7 @@ emit() {
   return 0
 }
 # Set by gate.sh for the first-boot (no-account) stage only.
-if [ -e /run/luma-gate-first-boot-setup ]; then
+if [ -e /run/Suno-gate-first-boot-setup ]; then
   rmdir "$work"
   emit signed-browser-graphical-launch skip 'first-boot setup has no user session; the fresh stage proves the signed launch'
   exit 0
@@ -62,7 +62,7 @@ cleanup() {
   fi
   if [ "$original_status" != 0 ] && [ "$created" = 1 ]; then
     journalctl -b --no-pager -n 100 "_UID=$uid" >"$work/launch-journal.log" 2>&1
-    printf 'LUMA_BROWSER_DIAGNOSTICS=%s UID=%s\n' "$work" "$uid"
+    printf 'SUNO_BROWSER_DIAGNOSTICS=%s UID=%s\n' "$work" "$uid"
   fi
   if [ "$created" = 1 ]; then
     loginctl disable-linger "$user" >/dev/null 2>&1 || { emit signed-browser-cleanup fail 'owned user linger could not be disabled'; cleanup_failed=1; }
@@ -118,12 +118,12 @@ install -d -o "$user" -g "$user" -m 0755 "$out"
 cat >"$work/page.py" <<'PY'
 import http.server,json,secrets,sys
 from pathlib import Path
-out=Path(sys.argv[1]); token=secrets.token_hex(24); path='/luma-browser-gate-'+token
+out=Path(sys.argv[1]); token=secrets.token_hex(24); path='/Suno-browser-gate-'+token
 class Handler(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path != path:
             self.send_error(404); return
-        body=('<!doctype html><title>Luma browser gate '+token+'</title><p>'+token+'</p>').encode()
+        body=('<!doctype html><title>Suno browser gate '+token+'</title><p>'+token+'</p>').encode()
         self.send_response(200);self.send_header('Content-Type','text/html');self.send_header('Content-Length',str(len(body)));self.end_headers();self.wfile.write(body)
         (out/'page-requested').write_text(json.dumps({'path':self.path,'user_agent':self.headers.get('User-Agent'),'token':token})+'\n')
     def log_message(self,*args): pass

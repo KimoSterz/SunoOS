@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """Assemble Charlie and its selected dependencies into a relocatable Linux directory.
 
-Inputs are a qualified Luma Platform, a GdkPixbuf build with builtin PNG/JPEG/GIF
+Inputs are a qualified Suno Platform, a GdkPixbuf build with builtin PNG/JPEG/GIF
 loaders, and an SVG loader. No application code is forked or patched.
 """
 import argparse
@@ -22,7 +22,7 @@ args = parser.parse_args()
 root = args.runtime_files.resolve()
 pixbuf = args.pixbuf_prefix.resolve()
 dest = args.output.resolve()
-assert (root / 'lib/python3.14/site-packages/luma_appkit').is_dir()
+assert (root / 'lib/python3.14/site-packages/Suno_appkit').is_dir()
 dest.mkdir(parents=True, exist_ok=False)
 
 def copy(source, relative):
@@ -37,7 +37,7 @@ def copy(source, relative):
 libraries = {p.name: p for p in (root / 'lib64').rglob('*.so*')}
 libraries.update({p.name: p for p in (pixbuf / 'lib64').glob('*.so*')})
 seeds = [root / 'bin/python3']
-for pattern in ('libgtk-4.so.*', 'libadwaita-1.so.*', 'libluma*.so.*',
+for pattern in ('libgtk-4.so.*', 'libadwaita-1.so.*', 'libSuno*.so.*',
                 'libgirepository*.so.*', 'libcairo*.so.*', 'librsvg*.so.*',
                 'libsecret-1.so.*'):
     seeds.extend((root / 'lib64').glob(pattern))
@@ -88,32 +88,32 @@ site = dest / 'usr/lib64/python3.14/site-packages'
 for path in list(site.iterdir()):
     if path.name not in ('gi', 'cairo') and not path.name.startswith(('PyGObject-', 'pycairo-')):
         shutil.rmtree(path) if path.is_dir() else path.unlink()
-copy(root / 'lib/python3.14/site-packages/luma_appkit',
-     'usr/lib64/python3.14/site-packages/luma_appkit')
-copy(REPO / 'src/external/charlie/charlie_luma', 'usr/lib64/python3.14/site-packages/charlie_luma')
+copy(root / 'lib/python3.14/site-packages/Suno_appkit',
+     'usr/lib64/python3.14/site-packages/Suno_appkit')
+copy(REPO / 'src/external/charlie/charlie_Suno', 'usr/lib64/python3.14/site-packages/charlie_Suno')
 copy(REPO / 'packaging/standalone/charlie/sitecustomize.py',
      'usr/lib64/python3.14/site-packages/sitecustomize.py')
-for path in (root / 'share/luma-appkit').glob('*.css'):
+for path in (root / 'share/Suno-appkit').glob('*.css'):
     shutil.copy2(path, site / path.name)
 for relative in ('share/glib-2.0/schemas', 'share/icons/Prairie', 'share/icons/Adwaita',
                  'share/icons/hicolor', 'share/fonts/google-figtree-fonts', 'share/licenses'):
     copy(root / relative, Path('usr') / relative)
 copy(REPO / 'src/external/charlie/data', 'usr/share/charlie')
-copy(REPO / 'src/external/charlie/data/icons/hicolor/scalable/apps/org.projectluma.Charlie.svg',
-     'usr/share/icons/hicolor/scalable/apps/org.projectluma.Charlie.svg')
-desktop = (REPO / 'src/external/charlie/data/org.projectluma.Charlie.desktop').read_text().replace('Exec=org.projectluma.Charlie', 'Exec=Charlie').replace('DBusActivatable=true', 'DBusActivatable=false')
-desktop = desktop.replace('[Desktop Entry]\n', '[Desktop Entry]\nStartupWMClass=org.projectluma.Charlie\n', 1)
+copy(REPO / 'src/external/charlie/data/icons/hicolor/scalable/apps/org.projectSuno.Charlie.svg',
+     'usr/share/icons/hicolor/scalable/apps/org.projectSuno.Charlie.svg')
+desktop = (REPO / 'src/external/charlie/data/org.projectSuno.Charlie.desktop').read_text().replace('Exec=org.projectSuno.Charlie', 'Exec=Charlie').replace('DBusActivatable=true', 'DBusActivatable=false')
+desktop = desktop.replace('[Desktop Entry]\n', '[Desktop Entry]\nStartupWMClass=org.projectSuno.Charlie\n', 1)
 (dest / 'usr/share/applications').mkdir(parents=True, exist_ok=True)
-(dest / 'usr/share/applications/org.projectluma.Charlie.desktop').write_text(desktop)
-subprocess.run(['desktop-file-validate', str(dest / 'usr/share/applications/org.projectluma.Charlie.desktop')], check=True)
-copy(REPO / 'packaging/standalone/charlie/org.projectluma.Charlie.metainfo.xml',
-     'usr/share/metainfo/org.projectluma.Charlie.metainfo.xml')
-copy(REPO / 'LICENSES', 'usr/share/licenses/luma-source')
+(dest / 'usr/share/applications/org.projectSuno.Charlie.desktop').write_text(desktop)
+subprocess.run(['desktop-file-validate', str(dest / 'usr/share/applications/org.projectSuno.Charlie.desktop')], check=True)
+copy(REPO / 'packaging/standalone/charlie/org.projectSuno.Charlie.metainfo.xml',
+     'usr/share/metainfo/org.projectSuno.Charlie.metainfo.xml')
+copy(REPO / 'LICENSES', 'usr/share/licenses/Suno-source')
 copy(REPO / 'src/external/charlie/LICENSE.md', 'usr/share/licenses/charlie/LICENSE.md')
 subprocess.run(['glib-compile-schemas', str(dest / 'usr/share/glib-2.0/schemas')], check=True)
 (dest / 'usr/share/icons/hicolor/icon-theme.cache').unlink(missing_ok=True)
-namespaces = ('Gtk-4.0', 'Gdk-4.0', 'Gsk-4.0', 'Adw-1', 'LumaUI-1', 'LumaSemantics-1',
-              'LumaAppearance-1', 'GLib-2.0', 'GObject-2.0', 'Gio-2.0', 'GModule-2.0',
+namespaces = ('Gtk-4.0', 'Gdk-4.0', 'Gsk-4.0', 'Adw-1', 'SunoUI-1', 'SunoSemantics-1',
+              'SunoAppearance-1', 'GLib-2.0', 'GObject-2.0', 'Gio-2.0', 'GModule-2.0',
               'GLibUnix-2.0', 'GioUnix-2.0', 'GdkPixbuf-2.0', 'Pango-1.0', 'PangoCairo-1.0',
               'PangoFT2-1.0', 'Graphene-1.0', 'cairo-1.0', 'freetype2-2.0', 'HarfBuzz-0.0',
               'GdkX11-4.0', 'GdkWayland-4.0', 'xlib-2.0', 'Secret-1')
@@ -140,7 +140,7 @@ exec "$charlie_dir/usr/lib64/ld-linux-x86-64.so.2" --inhibit-cache --library-pat
 (dest / 'Charlie').write_text('''#!/bin/sh
 set -eu
 charlie_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
-exec "$charlie_dir/python" -m charlie_luma "$@"
+exec "$charlie_dir/python" -m charlie_Suno "$@"
 ''')
 for name in ('python', 'Charlie'):
     (dest / name).chmod(0o755)

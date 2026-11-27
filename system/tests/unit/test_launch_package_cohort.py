@@ -16,11 +16,11 @@ class LaunchPackageCohortTests(unittest.TestCase):
     def test_native_frontends_and_platform_specs_match_image_pins(self):
         pins = inputs()
         for package, alias in (
-            ('luma-developer-platform', 'LUMA_DEVELOPER_PLATFORM_AARCH64_NEVRA'),
+            ('Suno-developer-platform', 'SUNO_DEVELOPER_PLATFORM_AARCH64_NEVRA'),
             ('prairie-core-apps', 'PRAIRIE_CORE_APPS_NEVRA'),
-            ('luma-monitor', 'LUMA_MONITOR_NEVRA'),
-            ('luma-terminal', 'LUMA_TERMINAL_NEVRA'),
-            ('luma-tide', 'LUMA_TIDE_NEVRA'),
+            ('Suno-monitor', 'SUNO_MONITOR_NEVRA'),
+            ('Suno-terminal', 'SUNO_TERMINAL_NEVRA'),
+            ('Suno-tide', 'SUNO_TIDE_NEVRA'),
         ):
             with self.subTest(package=package):
                 spec = (ROOT / 'packaging/rpm' / (package + '.spec')).read_text()
@@ -30,9 +30,9 @@ class LaunchPackageCohortTests(unittest.TestCase):
 
     def test_shell_patch_and_all_architecture_pins_match_builder_release(self):
         pins = inputs()
-        patch = (ROOT / 'patches/gnome-shell/0000-luma-fedora-spec.patch').read_text()
+        patch = (ROOT / 'patches/gnome-shell/0000-Suno-fedora-spec.patch').read_text()
         release = re.search(r'^\+Release:\s+(\S+)', patch, re.M)[1].replace('%{?dist}', '')
-        self.assertEqual(release, pins['GNOME_SHELL_LUMA_RELEASE'])
+        self.assertEqual(release, pins['GNOME_SHELL_SUNO_RELEASE'])
         for alias in ('GNOME_SHELL_NEVRA', 'GNOME_SHELL_AARCH64_NEVRA', 'GNOME_SHELL_COMMON_NEVRA'):
             self.assertIn('-' + release + '.fc44.', pins[alias])
 

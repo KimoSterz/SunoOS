@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #
-# Tools for the Luma OS release pipeline: repository metadata, minisign and
+# Tools for the Suno OS release pipeline: repository metadata, minisign and
 # object-storage sync. (Fedora does not package syft; SBOMs come from the
 # pinned upstream syft image, see scripts/os/generate-sbom.sh.) The build host stays free of packages;
 # every tool the pipeline needs beyond ostree, gpg, podman and libvirt runs in
@@ -29,4 +29,4 @@ RUN dnf5 -y --setopt=install_weak_deps=False install \
  && dnf5 clean all \
  && rm -rf /var/cache/libdnf5 /var/log/dnf5.log*
 
-LABEL org.projectluma.purpose="Luma OS release pipeline tools"
+LABEL org.projectSuno.purpose="Suno OS release pipeline tools"

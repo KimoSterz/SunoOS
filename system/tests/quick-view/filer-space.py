@@ -43,9 +43,9 @@ with tempfile.TemporaryDirectory(prefix='filer-space-') as temporary:
         GLib.Bytes.new(bytes([70, 150, 210, 255]) * 1024), 128)
     assert texture.save_to_png(str(image))
     socket = root / 'bus'
-    manifest = Path(os.environ['LUMA_FILER_MANIFEST']).read_text()
+    manifest = Path(os.environ['SUNO_FILER_MANIFEST']).read_text()
     assert '--talk-name=org.gnome.NautilusPreviewer' in manifest
-    assert '--talk-name=org.projectluma.QuickView' not in manifest
+    assert '--talk-name=org.projectSuno.QuickView' not in manifest
     bus = Gio.bus_get_sync(Gio.BusType.SESSION, None)
     bus.call_sync('org.freedesktop.DBus', '/org/freedesktop/DBus', 'org.freedesktop.DBus',
         'StartServiceByName', GLib.Variant('(su)', ('org.gnome.NautilusPreviewer', 0)),
@@ -59,7 +59,7 @@ with tempfile.TemporaryDirectory(prefix='filer-space-') as temporary:
         elif argument.startswith('--own-name='):
             policy.append(argument.replace('--own-name=', '--own=', 1))
     old_socket = root / 'old-bus'
-    old_policy = [argument.replace('--talk=org.gnome.NautilusPreviewer', '--talk=org.projectluma.QuickView')
+    old_policy = [argument.replace('--talk=org.gnome.NautilusPreviewer', '--talk=org.projectSuno.QuickView')
                   for argument in policy]
     old_proxy = subprocess.Popen(['xdg-dbus-proxy', os.environ['DBUS_SESSION_BUS_ADDRESS'], str(old_socket), *old_policy])
     try:
@@ -80,11 +80,11 @@ with tempfile.TemporaryDirectory(prefix='filer-space-') as temporary:
     finally:
         old_proxy.terminate(); old_proxy.wait(timeout=5)
     proxy = subprocess.Popen(['xdg-dbus-proxy', os.environ['DBUS_SESSION_BUS_ADDRESS'], str(socket), *policy])
-    log = open(os.environ.get('LUMA_PREVIEW_LOG', str(root / 'filer.log')), 'w')
+    log = open(os.environ.get('SUNO_PREVIEW_LOG', str(root / 'filer.log')), 'w')
     filer = None
     try:
         wait(socket.exists, 'Filtered bus did not start')
-        filer = subprocess.Popen([os.environ.get('LUMA_FILER_BINARY', 'nautilus'), '--select', str(image)],
+        filer = subprocess.Popen([os.environ.get('SUNO_FILER_BINARY', 'nautilus'), '--select', str(image)],
             env=environment, stdout=log, stderr=log)
         def filer_window():
             assert filer.poll() is None, 'Filer exited before mapping; inspect its log'

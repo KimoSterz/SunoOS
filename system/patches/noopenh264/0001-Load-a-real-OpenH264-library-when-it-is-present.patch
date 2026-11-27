@@ -1,5 +1,5 @@
 From 714c920402d31aa55d033c6a581a22489a72db18 Mon Sep 17 00:00:00 2001
-From: Project Luma <maintainers@projectluma.org>
+From: Project Suno <maintainers@projectSuno.org>
 Date: Thu, 19 Nov 2026 23:43:39 -0500
 Subject: [PATCH] Load a real OpenH264 library when it is present
 

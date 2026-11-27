@@ -15,7 +15,7 @@ allowed = '''
 import json,os
 from pathlib import Path
 from prairie_apps.photos_backend import default_database_path,_shared_library_mounted
-expected = Path(os.environ.get('HOST_XDG_DATA_HOME') or str(Path.home()/'.local/share'))/'luma-photos'
+expected = Path(os.environ.get('HOST_XDG_DATA_HOME') or str(Path.home()/'.local/share'))/'Suno-photos'
 database = default_database_path()
 assert database.name == 'library.sqlite3'
 assert database.parent.resolve() == expected.resolve()
@@ -35,10 +35,10 @@ else:
 '''
 
 results = []
-for app in ('org.projectluma.Photos', 'org.projectluma.Camera'):
+for app in ('org.projectSuno.Photos', 'org.projectSuno.Camera'):
     for code, extra, field in (
         (allowed, [], 'granted_library_accepted'),
-        (denied, ['--nofilesystem=xdg-data/luma-photos'], 'ungranted_library_refused'),
+        (denied, ['--nofilesystem=xdg-data/Suno-photos'], 'ungranted_library_refused'),
     ):
         result = subprocess.run(
             ['flatpak', 'run', '--system', '--command=python3', *extra, app, '-c', code],

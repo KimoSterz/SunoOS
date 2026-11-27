@@ -1,6 +1,6 @@
 {
   "_doc": "v71 media typography: Tide .feature b, .tnt b, .twin .hero h2, .hero .by and .stage h2/.by. Large and compact album heroes have explicit roles so other surfaces retain their existing scale.",
-  "lumaui": {
+  "SunoUI": {
     "type_scale": {
       "feature_title": {"size": 28, "weight": 700, "line_height": 1.05, "tracking_em": -0.035},
       "now_title": {"size": 22, "weight": 700, "line_height": 1.2, "tracking_em": -0.02},

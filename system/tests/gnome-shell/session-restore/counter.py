@@ -10,7 +10,7 @@ from gi.repository import Gio, Gtk  # noqa: E402
 
 class Counter(Gtk.Application):
     def __init__(self):
-        super().__init__(application_id="org.projectluma.ContinueCounter",
+        super().__init__(application_id="org.projectSuno.ContinueCounter",
                          flags=Gio.ApplicationFlags.DEFAULT_FLAGS)
         self.count = 0
 

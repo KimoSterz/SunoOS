@@ -7,7 +7,7 @@ let failed = 0;
 function check(name, value) {
     if (!value) { failed++; printerr(`FAIL ${name}`); }
 }
-const packageName = 'org.projectluma.FrameAcceptance';
+const packageName = 'org.projectSuno.FrameAcceptance';
 const id = `waydroid.${packageName}.desktop`;
 let calls = 0;
 let windows = [{get_wm_class: () => `waydroid.${packageName}`, skip_taskbar: false, is_attached_dialog: () => false}];

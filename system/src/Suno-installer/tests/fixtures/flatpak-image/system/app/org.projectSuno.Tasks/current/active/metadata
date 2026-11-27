@@ -1,0 +1,27 @@
+[Application]
+name=org.projectSuno.Tasks
+runtime=org.projectSuno.Platform/x86_64/44
+sdk=org.projectSuno.Sdk/x86_64/44
+command=prairie-tasks
+
+[Context]
+shared=ipc;network;
+sockets=fallback-x11;wayland;
+devices=dri;
+
+[Session Bus Policy]
+org.gnome.evolution.dataserver.Calendar8=talk
+org.projectSuno.ShellState1=talk
+org.gnome.evolution.dataserver.Sources5=talk
+org.projectSuno.ApplicationDirectory1=talk
+org.projectSuno.AppData1=talk
+org.projectSuno.Connect1=talk
+
+[Environment]
+SUNO_TASKS_STYLE_PATH=/app/share/prairie-core/tasks.css
+
+[X-Suno]
+app-data-schema=tasks-v1
+min-host-installer=64
+min-host-continuity=63
+min-host-core=97

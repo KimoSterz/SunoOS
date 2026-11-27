@@ -92,15 +92,15 @@ def build(args):
             path.parent.mkdir(parents=True, exist_ok=True)
             remove(path);path.symlink_to(value)
 
-        write('etc/try-luma/firstboot.py', Path(__file__).with_name('prepared-firstboot.py').read_text(), 0o755)
-        write('etc/systemd/system/try-luma-seed.service', '''[Unit]
-Description=Prepare this private Try Luma workspace
+        write('etc/try-Suno/firstboot.py', Path(__file__).with_name('prepared-firstboot.py').read_text(), 0o755)
+        write('etc/systemd/system/try-Suno-seed.service', '''[Unit]
+Description=Prepare this private Try Suno workspace
 After=local-fs.target
 Before=sshd.service gdm.service display-manager.service
 ConditionVirtualization=vm
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/python3 /etc/try-luma/firstboot.py
+ExecStart=/usr/bin/python3 /etc/try-Suno/firstboot.py
 TimeoutStartSec=300
 StandardOutput=journal+console
 StandardError=journal+console
@@ -108,27 +108,27 @@ RemainAfterExit=yes
 [Install]
 WantedBy=multi-user.target
 ''')
-        link('etc/systemd/system/multi-user.target.wants/try-luma-seed.service', '../try-luma-seed.service')
+        link('etc/systemd/system/multi-user.target.wants/try-Suno-seed.service', '../try-Suno-seed.service')
         link('etc/systemd/system/multi-user.target.wants/sshd.service', '/usr/lib/systemd/system/sshd.service')
-        write('etc/systemd/system/sshd.service.d/90-try-luma.conf', '[Unit]\nRequires=try-luma-seed.service\nAfter=try-luma-seed.service\n')
-        write('etc/systemd/system/gdm.service.d/90-try-luma.conf', '[Unit]\nRequires=try-luma-seed.service\nAfter=try-luma-seed.service\n')
+        write('etc/systemd/system/sshd.service.d/90-try-Suno.conf', '[Unit]\nRequires=try-Suno-seed.service\nAfter=try-Suno-seed.service\n')
+        write('etc/systemd/system/gdm.service.d/90-try-Suno.conf', '[Unit]\nRequires=try-Suno-seed.service\nAfter=try-Suno-seed.service\n')
         link('etc/systemd/system/systemd-firstboot.service', '/dev/null')
-        write('etc/gdm/custom.conf', '[daemon]\nAutomaticLoginEnable=True\nAutomaticLogin=luma\n')
+        write('etc/gdm/custom.conf', '[daemon]\nAutomaticLoginEnable=True\nAutomaticLogin=Suno\n')
         write('etc/machine-id', '', 0o444)
-        write('etc/luma-tester-target', 'desktop\n')
-        # luma-presentation-profile reads the launcher's experience from fw_cfg
+        write('etc/Suno-tester-target', 'desktop\n')
+        # Suno-presentation-profile reads the launcher's experience from fw_cfg
         # sysfs before GDM; load it explicitly instead of racing udev modalias.
-        write('etc/modules-load.d/try-luma-fw-cfg.conf', 'qemu_fw_cfg\n')
+        write('etc/modules-load.d/try-Suno-fw-cfg.conf', 'qemu_fw_cfg\n')
         # Previews render in software; keep the shell's real blur and
         # translucent materials instead of its no-GPU fallback surfaces.
-        write('etc/environment.d/60-try-luma-materials.conf', 'LUMA_MUTTER_ALLOW_SOFTWARE_BLUR=1\n')
-        write('etc/try-luma/image.json', json.dumps(dict(schema=1, arch=args.arch,
-            protocol='luma-unified-v1', source_iso_sha256=args.iso_sha256)) + '\n')
+        write('etc/environment.d/60-try-Suno-materials.conf', 'SUNO_MUTTER_ALLOW_SOFTWARE_BLUR=1\n')
+        write('etc/try-Suno/image.json', json.dumps(dict(schema=1, arch=args.arch,
+            protocol='Suno-unified-v1', source_iso_sha256=args.iso_sha256)) + '\n')
         for key in (deployment / 'etc/ssh').glob('ssh_host_*'):remove(key)
-        for relative in ('lib/try-luma', 'lib/cloud', 'lib/systemd/random-seed', 'lib/systemd/coredump',
-                         'log/journal', 'home/luma', 'roothome/.ssh', 'roothome/.bash_history'):
+        for relative in ('lib/try-Suno', 'lib/cloud', 'lib/systemd/random-seed', 'lib/systemd/coredump',
+                         'log/journal', 'home/Suno', 'roothome/.ssh', 'roothome/.bash_history'):
             remove(var / relative)
-        home = var / 'home/luma/.config'
+        home = var / 'home/Suno/.config'
         home.mkdir(parents=True)
         (home / 'gnome-initial-setup-done').write_text('yes\n')
         # GTK 4 enables the Inspector keybinding by default, so typing in a
@@ -136,7 +136,7 @@ WantedBy=multi-user.target
         # database; sandboxed apps without dconf access read their keyfile.
         debug = '[org/gtk/gtk4/settings/debug]\nenable-inspector-keybinding=false\n'
         keyfiles = output / 'dconf-user.d'; shutil.rmtree(keyfiles, ignore_errors=True); keyfiles.mkdir()
-        (keyfiles / '60-try-luma').write_text(debug)
+        (keyfiles / '60-try-Suno').write_text(debug)
         (home / 'dconf').mkdir()
         run(['dconf', 'compile', home / 'dconf/user', keyfiles])
         shutil.rmtree(keyfiles)
@@ -145,7 +145,7 @@ WantedBy=multi-user.target
             settings = home.parent / '.var/app' / app.name / 'config/glib-2.0/settings'
             settings.mkdir(parents=True)
             (settings / 'keyfile').write_text(debug)
-        account = next(line.split(':') for line in (deployment / 'etc/passwd').read_text().splitlines() if line.startswith('luma:'))
+        account = next(line.split(':') for line in (deployment / 'etc/passwd').read_text().splitlines() if line.startswith('Suno:'))
         # Export a complete user installation instead of leaving its first
         # creation to competing shell/app-discovery processes at login.
         user_repo = home.parent / '.local/share/flatpak/repo'
@@ -161,10 +161,10 @@ WantedBy=multi-user.target
         contexts = deployment / 'etc/selinux/targeted/contexts/files/file_contexts'
         # Relabel only paths this exporter changed. Unrelated target-policy
         # types (for example newer snapd types) need not exist in the host policy.
-        changed=['etc/try-luma','etc/gdm/custom.conf','etc/machine-id','etc/luma-tester-target',
-            'etc/environment.d/60-try-luma-materials.conf', 'etc/modules-load.d/try-luma-fw-cfg.conf',
-            'etc/systemd/system/try-luma-seed.service',
-            'etc/systemd/system/multi-user.target.wants/try-luma-seed.service',
+        changed=['etc/try-Suno','etc/gdm/custom.conf','etc/machine-id','etc/Suno-tester-target',
+            'etc/environment.d/60-try-Suno-materials.conf', 'etc/modules-load.d/try-Suno-fw-cfg.conf',
+            'etc/systemd/system/try-Suno-seed.service',
+            'etc/systemd/system/multi-user.target.wants/try-Suno-seed.service',
             'etc/systemd/system/multi-user.target.wants/sshd.service',
             'etc/systemd/system/sshd.service.d','etc/systemd/system/gdm.service.d',
             'etc/systemd/system/systemd-firstboot.service']
@@ -200,14 +200,14 @@ WantedBy=multi-user.target
         if home_mount is not None and os.path.ismount(home_mount):run(['umount', home_mount])
         if mounted:run(['umount', mount])
         run(['losetup', '-d', loop])
-    image = output / ('try-luma-' + args.arch + '.qcow2')
+    image = output / ('try-Suno-' + args.arch + '.qcow2')
     run(['qemu-img', 'convert', '-p', '-f', 'raw', '-O', 'qcow2', '-c', '-m', '2', raw, image])
     run(['qemu-img', 'check', image])
     info = json.loads(subprocess.check_output(['qemu-img', 'info', '--output=json', image], text=True))
     assert not info.get('backing-filename') and not info.get('snapshots')
     sha = hashlib.file_digest(image.open('rb'), 'sha256').hexdigest()
     receipt = dict(schema=1, qualified=False, arch=args.arch, source_iso_sha256=args.iso_sha256,
-        sha256=sha, bytes=image.stat().st_size, guest_protocol='luma-unified-v1', standalone=True)
+        sha256=sha, bytes=image.stat().st_size, guest_protocol='Suno-unified-v1', standalone=True)
     (output / 'BUILD.json').write_text(json.dumps(receipt, indent=2) + '\n')
     raw.unlink()
     for path in output.iterdir():os.chown(path, args.owner, args.group)

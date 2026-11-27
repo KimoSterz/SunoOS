@@ -24,7 +24,7 @@ with tempfile.TemporaryDirectory(prefix='photos-import-runtime-') as temporary:
     for kind in ('CACHE','DATA','CONFIG','STATE'):
         os.environ[f'XDG_{kind}_HOME']=str(Path(temporary)/kind.lower())
     os.environ['GSETTINGS_BACKEND']='memory'
-    os.environ['LUMA_PHOTOS_FIXTURE']=str(fixture)
+    os.environ['SUNO_PHOTOS_FIXTURE']=str(fixture)
     from prairie_apps import photos as p
 
     app=p.PhotosApplication();app.set_default();assert app.register(None)

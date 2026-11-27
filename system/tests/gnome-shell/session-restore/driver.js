@@ -16,9 +16,9 @@ import Mtk from 'gi://Mtk';
 import Shell from 'gi://Shell';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
-const out = GLib.getenv('LUMA_SESSION_OUT');
-const phase = GLib.getenv('LUMA_SESSION_PHASE');
-const modulePath = GLib.getenv('LUMA_SESSION_MODULE');
+const out = GLib.getenv('SUNO_SESSION_OUT');
+const phase = GLib.getenv('SUNO_SESSION_PHASE');
+const modulePath = GLib.getenv('SUNO_SESSION_MODULE');
 const results = [];
 const records = [];
 
@@ -93,11 +93,11 @@ async function savePhase(session) {
         wm.append_new_workspace(false, global.get_current_time());
 
     GLib.setenv('CONTINUE_DOCS', 'Doc A,Doc B,Doc C', true);
-    launch('org.projectluma.ContinueDocs.desktop');
+    launch('org.projectSuno.ContinueDocs.desktop');
     GLib.unsetenv('CONTINUE_DOCS');
-    const counter = launch('org.projectluma.ContinueCounter.desktop');
-    launch('org.projectluma.ContinueX11.desktop');
-    launch('org.projectluma.ContinueKeyed.desktop');
+    const counter = launch('org.projectSuno.ContinueCounter.desktop');
+    launch('org.projectSuno.ContinueX11.desktop');
+    launch('org.projectSuno.ContinueKeyed.desktop');
 
     const a = await windowTitled('Doc A');
     const b = await windowTitled('Doc B');
@@ -145,13 +145,13 @@ async function savePhase(session) {
     const snapshot = await session.finalSnapshot('logout');
     check('snapshot taken', snapshot && snapshot.windows.length === 8,
         `${snapshot?.windows.length} windows`);
-    const path = GLib.build_filenamev([GLib.get_user_state_dir(), 'luma', 'session', 'current.json']);
+    const path = GLib.build_filenamev([GLib.get_user_state_dir(), 'Suno', 'session', 'current.json']);
     const info = Gio.File.new_for_path(path).query_info('unix::mode', 0, null);
     check('snapshot is private', (info.get_attribute_uint32('unix::mode') & 0o077) === 0,
         (info.get_attribute_uint32('unix::mode') & 0o777).toString(8));
     GLib.file_set_contents(`${out}/snapshot.json`, JSON.stringify(snapshot, null, 1));
-    const keyedApp = snapshot.apps.find(app => app.app === 'org.projectluma.ContinueKeyed.desktop');
-    check('LumaUI app state in the snapshot', keyedApp?.state?.includes("'note:2'") &&
+    const keyedApp = snapshot.apps.find(app => app.app === 'org.projectSuno.ContinueKeyed.desktop');
+    check('SunoUI app state in the snapshot', keyedApp?.state?.includes("'note:2'") &&
         keyedApp.state.includes("'draft'") && keyedApp.state.includes('second note'), keyedApp?.state);
     check('window keys in the snapshot', snapshot.windows.filter(w => w.key?.startsWith('note:')).length === 2,
         snapshot.windows.map(w => w.key).join(', '));
@@ -188,7 +188,7 @@ async function restorePhase(session) {
     await sleep(2000);
     if (phase === 'late') {
         check('the late X11 window is reported, then placed when it comes',
-            session._lastResult?.unplaced?.includes('org.projectluma.ContinueX11.desktop'),
+            session._lastResult?.unplaced?.includes('org.projectSuno.ContinueX11.desktop'),
             JSON.stringify(session._lastResult?.unplaced));
         await windowTitled('X11 window', 90000);
         await sleep(2000);
@@ -206,7 +206,7 @@ async function restorePhase(session) {
     try {
         handed = JSON.parse(new TextDecoder().decode(GLib.file_get_contents(`${out}/keyed-restored.json`)[1]));
     } catch {}
-    check('LumaUI app got its own state back', handed?.reason === 'restore' &&
+    check('SunoUI app got its own state back', handed?.reason === 'restore' &&
         handed.windows.map(([k, st]) => `${k}=${st.text}`).sort().join(',') ===
         'note:1=first note,note:2=second note', JSON.stringify(handed));
     for (const e of expected.filter(x => x.title !== 'Notes')) {
@@ -246,7 +246,7 @@ async function remapPhase(session) {
     snapshot.device = 'another-device';
     session.restore(snapshot, 'continue');
     await waitRestore(session);
-    // Shares are of the work area the restore placed in; Luma's dock can
+    // Shares are of the work area the restore placed in; Suno's dock can
     // reserve or release its space afterwards.
     const area = session._lastResult?.workAreas?.[0] ??
         global.workspace_manager.get_active_workspace().get_work_area_for_monitor(0);
@@ -287,7 +287,7 @@ async function remapPhase(session) {
 async function continuePhase(session) {
     const snapshot = JSON.parse(new TextDecoder().decode(
         GLib.file_get_contents(`${out}/continued.json`)[1]));
-    launch('org.projectluma.ContinueCounter.desktop');
+    launch('org.projectSuno.ContinueCounter.desktop');
     const mine = await windowTitled('Counter 1');
     await place(mine, {x: 200, y: 200, width: 600, height: 400});
     const before = r(mine.get_frame_rect());
@@ -312,11 +312,11 @@ async function main() {
     trace(`started ${phase}`);
     await sleep(2000);
     try {
-        // The Luma Shell runs its own; a stock Shell gets the module under test.
-        let session = Main.lumaSession;
+        // The Suno Shell runs its own; a stock Shell gets the module under test.
+        let session = Main.SunoSession;
         if (!session) {
-            const {LumaSession} = await import(`file://${modulePath}`);
-            session = new LumaSession();
+            const {SunoSession} = await import(`file://${modulePath}`);
+            session = new SunoSession();
         }
         if (phase === 'save')
             await savePhase(session);

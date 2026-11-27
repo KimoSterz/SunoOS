@@ -15,7 +15,7 @@ cp $H/apps/*.desktop $HOME/.local/share/applications/
 cp $H/apps/*.svg $HOME/.local/share/icons/hicolor/scalable/apps/
 theme=${SEAL_THEME:-light}; scheme=default; [ "$theme" = dark ] && scheme=prefer-dark
 cat > $HOME/.config/glib-2.0/settings/keyfile <<KEY
-[org/project-luma/shell-state]
+[org/project-suno/shell-state]
 surface-treatment='$theme'
 reduce-transparency=false
 
@@ -32,7 +32,7 @@ experimental-features=['scale-monitor-framebuffer']
 [org/gnome/shell]
 welcome-dialog-last-shown-version='999'
 KEY
-export GSETTINGS_BACKEND=keyfile LIBGL_ALWAYS_SOFTWARE=1 LUMA_MUTTER_ALLOW_SOFTWARE_BLUR=1
+export GSETTINGS_BACKEND=keyfile LIBGL_ALWAYS_SOFTWARE=1 SUNO_MUTTER_ALLOW_SOFTWARE_BLUR=1
 export SEAL_EVAL=$H/eval.js
 if [ -n "${SEAL_OVERLAY:-}" ]; then
   export G_RESOURCE_OVERLAYS="/org/gnome/shell/ui=$SEAL_OVERLAY/js/ui:/org/gnome/shell/theme=$SEAL_OVERLAY/data/theme"

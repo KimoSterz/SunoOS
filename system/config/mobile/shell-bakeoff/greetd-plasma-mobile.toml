@@ -6,9 +6,9 @@ switch = true
 source_profile = true
 
 [initial_session]
-command = "/usr/local/bin/luma-plasma-mobile-session"
-user = "luma"
+command = "/usr/local/bin/Suno-plasma-mobile-session"
+user = "Suno"
 
 [default_session]
-command = "agreety --cmd /usr/local/bin/luma-plasma-mobile-session"
+command = "agreety --cmd /usr/local/bin/Suno-plasma-mobile-session"
 user = "greetd"

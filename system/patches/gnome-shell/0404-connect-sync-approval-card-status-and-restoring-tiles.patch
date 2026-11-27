@@ -1,17 +1,17 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Project Luma <engineering@projectluma.org>
+From: Project Suno <engineering@projectSuno.org>
 Date: Sun, 22 Nov 2026 03:00:00 -0600
-Subject: [PATCH] Luma Connect Sync: approval card, status cell and restoring
+Subject: [PATCH] Suno Connect Sync: approval card, status cell and restoring
  tiles
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-Reads org.projectluma.ConnectSync1 (luma-connect-sync, ADR-054).
+Reads org.projectSuno.ConnectSync1 (Suno-connect-sync, ADR-054).
 
 Approval card: when a device asks to join (ListJoinRequests on start,
 JoinRequested), every member shows a Shell-owned card at the top centre
-above windows: "LUMA CONNECT", the device's class glyph, "Approve
+above windows: "SUNO CONNECT", the device's class glyph, "Approve
 ThinkPad?", one sentence, the six digits in two wells, and Not me and
 Approve at equal width. Approve calls ApproveJoin(join, code), Not me
 DenyJoin. The card stays until the request leaves ListJoinRequests
@@ -22,17 +22,17 @@ a bottom sheet with 44 px buttons; TV: x1.5 with the focus on Not me.
 Status cell: one of the island's status slots (QuickSettings.setStatusCell,
 its own button) only for syncing (refresh-cw), paused (cloud-off) or
 attention (cloud-alert amber; cloud-off red when removed). A click opens
-a 312 px shell pop: "Luma Connect", the state's tile, title and line, the
+a 312 px shell pop: "Suno Connect", the state's tile, title and line, the
 progress bar while syncing, one sentence and at most one action (Sync now,
 Show versions, Manage storage, Sign in again), and Sync settings (Settings
 launch-panel ('users', ['sync']); Show versions ['sync', 'versions', APP];
-Sign in again opens Luma Connect's sign-in). Phone: the
+Sign in again opens Suno Connect's sign-in). Phone: the
 cell in the status bar's right group, the pop a bottom drawer
 (status.html ?posture=phone: grab handle, 44 px tile, the action and Sync
 settings as 44 px buttons side by side);
 TV: the top bar's status group and a sheet at TV scale at the top right (the
 TV quick panel has no page model). Storage full and Removed from Sync post
-one banner each from "Luma Connect"; conflicts never do. A device that joins
+one banner each from "Suno Connect"; conflicts never do. A device that joins
 with the recovery key (RecoveryJoined) posts one banner on every syncing
 device, "ThinkPad joined with your recovery key", with Remove… (Settings
 ['sync', 'remove', DEVICE]) and It was me; it stays until answered. On a TV
@@ -52,35 +52,35 @@ words stopped working" and Show new key… opens Settings ('users', ['sync',
 'newkey']).
 
 Restoring apps (GetRestore, RestoreChanged): an app's grid, dock and launcher
-drawer tile (lumaPresentation/appDrawer.js, in luma-shell-presentation) at
+drawer tile (SunoPresentation/appDrawer.js, in Suno-shell-presentation) at
 55% opacity and saturation 0.5 with a 3 px accent ring and "Restoring…";
-activating it runs `luma-installer --restore APP` instead of the app.
+activating it runs `Suno-installer --restore APP` instead of the app.
 Valet is opened once when restore rows first appear.
 
 Glyphs: Lucide cloud, cloud-off, cloud-alert, refresh-cw, laptop,
-smartphone and tv as luma-sync-*-symbolic in the Shell's icon resource.
-Copy and states: lumaConnectSyncModel.js (no gi imports; checked in %check
+smartphone and tv as Suno-sync-*-symbolic in the Shell's icon resource.
+Copy and states: SunoConnectSyncModel.js (no gi imports; checked in %check
 by connect-sync-policy.js).
 
 Design: design-center 38858a5, mockups/connect-sync (approve.html,
 status.html, restore.html; cs.css, cs.js).
 ---
  data/gnome-shell-icons.gresource.xml          |   9 +
- .../status/luma-sync-cloud-alert-symbolic.svg |   6 +
- .../status/luma-sync-cloud-off-symbolic.svg   |   6 +
- .../status/luma-sync-cloud-symbolic.svg       |   4 +
- .../status/luma-sync-key-round-symbolic.svg   |   5 +
- .../status/luma-sync-laptop-symbolic.svg      |   5 +
- .../luma-sync-loader-circle-symbolic.svg      |   4 +
- .../status/luma-sync-refresh-cw-symbolic.svg  |   7 +
- .../status/luma-sync-smartphone-symbolic.svg  |   5 +
- .../scalable/status/luma-sync-tv-symbolic.svg |   5 +
- data/theme/luma-shelf.css                     | 160 ++++
+ .../status/Suno-sync-cloud-alert-symbolic.svg |   6 +
+ .../status/Suno-sync-cloud-off-symbolic.svg   |   6 +
+ .../status/Suno-sync-cloud-symbolic.svg       |   4 +
+ .../status/Suno-sync-key-round-symbolic.svg   |   5 +
+ .../status/Suno-sync-laptop-symbolic.svg      |   5 +
+ .../Suno-sync-loader-circle-symbolic.svg      |   4 +
+ .../status/Suno-sync-refresh-cw-symbolic.svg  |   7 +
+ .../status/Suno-sync-smartphone-symbolic.svg  |   5 +
+ .../scalable/status/Suno-sync-tv-symbolic.svg |   5 +
+ data/theme/Suno-shelf.css                     | 160 ++++
  js/js-resources.gresource.xml                 |   3 +
  js/ui/appDisplay.js                           |  10 +
- js/ui/lumaConnectSync.js                      | 836 ++++++++++++++++++
- js/ui/lumaConnectSyncModel.js                 | 302 +++++++
- js/ui/lumaConnectSyncRestore.js               | 133 +++
+ js/ui/SunoConnectSync.js                      | 836 ++++++++++++++++++
+ js/ui/SunoConnectSyncModel.js                 | 302 +++++++
+ js/ui/SunoConnectSyncRestore.js               | 133 +++
  js/ui/main.js                                 |  13 +
  js/ui/panel.js                                |  31 +
  18 files changed, 1544 insertions(+)
@@ -91,25 +91,25 @@ index a259d13..167e1d2 100644
 +++ b/data/gnome-shell-icons.gresource.xml
 @@ -52,6 +52,15 @@
      <file preprocess="xml-stripblanks">scalable/status/background-app-ghost-symbolic.svg</file>
-     <file preprocess="xml-stripblanks">scalable/status/luma-grid-2x2-symbolic.svg</file>
-     <file preprocess="xml-stripblanks">scalable/status/luma-continue-layers-symbolic.svg</file>
-+    <file preprocess="xml-stripblanks">scalable/status/luma-sync-cloud-symbolic.svg</file>
-+    <file preprocess="xml-stripblanks">scalable/status/luma-sync-cloud-off-symbolic.svg</file>
-+    <file preprocess="xml-stripblanks">scalable/status/luma-sync-cloud-alert-symbolic.svg</file>
-+    <file preprocess="xml-stripblanks">scalable/status/luma-sync-refresh-cw-symbolic.svg</file>
-+    <file preprocess="xml-stripblanks">scalable/status/luma-sync-laptop-symbolic.svg</file>
-+    <file preprocess="xml-stripblanks">scalable/status/luma-sync-smartphone-symbolic.svg</file>
-+    <file preprocess="xml-stripblanks">scalable/status/luma-sync-key-round-symbolic.svg</file>
-+    <file preprocess="xml-stripblanks">scalable/status/luma-sync-loader-circle-symbolic.svg</file>
-+    <file preprocess="xml-stripblanks">scalable/status/luma-sync-tv-symbolic.svg</file>
+     <file preprocess="xml-stripblanks">scalable/status/Suno-grid-2x2-symbolic.svg</file>
+     <file preprocess="xml-stripblanks">scalable/status/Suno-continue-layers-symbolic.svg</file>
++    <file preprocess="xml-stripblanks">scalable/status/Suno-sync-cloud-symbolic.svg</file>
++    <file preprocess="xml-stripblanks">scalable/status/Suno-sync-cloud-off-symbolic.svg</file>
++    <file preprocess="xml-stripblanks">scalable/status/Suno-sync-cloud-alert-symbolic.svg</file>
++    <file preprocess="xml-stripblanks">scalable/status/Suno-sync-refresh-cw-symbolic.svg</file>
++    <file preprocess="xml-stripblanks">scalable/status/Suno-sync-laptop-symbolic.svg</file>
++    <file preprocess="xml-stripblanks">scalable/status/Suno-sync-smartphone-symbolic.svg</file>
++    <file preprocess="xml-stripblanks">scalable/status/Suno-sync-key-round-symbolic.svg</file>
++    <file preprocess="xml-stripblanks">scalable/status/Suno-sync-loader-circle-symbolic.svg</file>
++    <file preprocess="xml-stripblanks">scalable/status/Suno-sync-tv-symbolic.svg</file>
      <file preprocess="xml-stripblanks">scalable/status/check-symbolic.svg</file>
      <file preprocess="xml-stripblanks">scalable/status/keyboard-brightness-high-symbolic.svg</file>
      <file preprocess="xml-stripblanks">scalable/status/keyboard-brightness-medium-symbolic.svg</file>
-diff --git a/data/icons/scalable/status/luma-sync-cloud-alert-symbolic.svg b/data/icons/scalable/status/luma-sync-cloud-alert-symbolic.svg
+diff --git a/data/icons/scalable/status/Suno-sync-cloud-alert-symbolic.svg b/data/icons/scalable/status/Suno-sync-cloud-alert-symbolic.svg
 new file mode 100644
 index 0000000..e3ba26d
 --- /dev/null
-+++ b/data/icons/scalable/status/luma-sync-cloud-alert-symbolic.svg
++++ b/data/icons/scalable/status/Suno-sync-cloud-alert-symbolic.svg
 @@ -0,0 +1,6 @@
 +<!-- Lucide geometry, ISC; at Lucide's own 2 px stroke, with GTK 4.20+ symbolic stroke classes. -->
 +<svg xmlns="http://www.w3.org/2000/svg" class="lucide lucide-cloud-alert" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -117,11 +117,11 @@ index 0000000..e3ba26d
 +  <path d="M12 20h.01" class="transparent-fill foreground-stroke" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
 +  <path d="M17 18h.5a1 1 0 0 0 0-9h-1.79A7 7 0 1 0 7 17.708" class="transparent-fill foreground-stroke" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
 +</svg>
-diff --git a/data/icons/scalable/status/luma-sync-cloud-off-symbolic.svg b/data/icons/scalable/status/luma-sync-cloud-off-symbolic.svg
+diff --git a/data/icons/scalable/status/Suno-sync-cloud-off-symbolic.svg b/data/icons/scalable/status/Suno-sync-cloud-off-symbolic.svg
 new file mode 100644
 index 0000000..1980541
 --- /dev/null
-+++ b/data/icons/scalable/status/luma-sync-cloud-off-symbolic.svg
++++ b/data/icons/scalable/status/Suno-sync-cloud-off-symbolic.svg
 @@ -0,0 +1,6 @@
 +<!-- Lucide geometry, ISC; at Lucide's own 2 px stroke, with GTK 4.20+ symbolic stroke classes. -->
 +<svg xmlns="http://www.w3.org/2000/svg" class="lucide lucide-cloud-off" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -129,53 +129,53 @@ index 0000000..1980541
 +  <path d="M5.782 5.782A7 7 0 0 0 9 19h8.5a4.5 4.5 0 0 0 1.307-.193" class="transparent-fill foreground-stroke" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
 +  <path d="M21.532 16.5A4.5 4.5 0 0 0 17.5 10h-1.79A7.008 7.008 0 0 0 10 5.07" class="transparent-fill foreground-stroke" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
 +</svg>
-diff --git a/data/icons/scalable/status/luma-sync-cloud-symbolic.svg b/data/icons/scalable/status/luma-sync-cloud-symbolic.svg
+diff --git a/data/icons/scalable/status/Suno-sync-cloud-symbolic.svg b/data/icons/scalable/status/Suno-sync-cloud-symbolic.svg
 new file mode 100644
 index 0000000..1989129
 --- /dev/null
-+++ b/data/icons/scalable/status/luma-sync-cloud-symbolic.svg
++++ b/data/icons/scalable/status/Suno-sync-cloud-symbolic.svg
 @@ -0,0 +1,4 @@
 +<!-- Lucide geometry, ISC; at Lucide's own 2 px stroke, with GTK 4.20+ symbolic stroke classes. -->
 +<svg xmlns="http://www.w3.org/2000/svg" class="lucide lucide-cloud" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 +  <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" class="transparent-fill foreground-stroke" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
 +</svg>
-diff --git a/data/icons/scalable/status/luma-sync-key-round-symbolic.svg b/data/icons/scalable/status/luma-sync-key-round-symbolic.svg
+diff --git a/data/icons/scalable/status/Suno-sync-key-round-symbolic.svg b/data/icons/scalable/status/Suno-sync-key-round-symbolic.svg
 new file mode 100644
 index 0000000..403c696
 --- /dev/null
-+++ b/data/icons/scalable/status/luma-sync-key-round-symbolic.svg
++++ b/data/icons/scalable/status/Suno-sync-key-round-symbolic.svg
 @@ -0,0 +1,5 @@
 +<!-- Lucide geometry, ISC; at Lucide's own 2 px stroke, with GTK 4.20+ symbolic stroke classes. -->
 +<svg xmlns="http://www.w3.org/2000/svg" class="lucide lucide-key-round" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 +  <path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z" class="transparent-fill foreground-stroke" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
 +  <circle cx="16.5" cy="7.5" r=".5" class="foreground-fill foreground-stroke" stroke-width="2" />
 +</svg>
-diff --git a/data/icons/scalable/status/luma-sync-laptop-symbolic.svg b/data/icons/scalable/status/luma-sync-laptop-symbolic.svg
+diff --git a/data/icons/scalable/status/Suno-sync-laptop-symbolic.svg b/data/icons/scalable/status/Suno-sync-laptop-symbolic.svg
 new file mode 100644
 index 0000000..ca69bf4
 --- /dev/null
-+++ b/data/icons/scalable/status/luma-sync-laptop-symbolic.svg
++++ b/data/icons/scalable/status/Suno-sync-laptop-symbolic.svg
 @@ -0,0 +1,5 @@
 +<!-- Lucide geometry, ISC; at Lucide's own 2 px stroke, with GTK 4.20+ symbolic stroke classes. -->
 +<svg xmlns="http://www.w3.org/2000/svg" class="lucide lucide-laptop" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 +  <path d="M18 5a2 2 0 0 1 2 2v8.526a2 2 0 0 0 .212.897l1.068 2.127a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45l1.068-2.127A2 2 0 0 0 4 15.526V7a2 2 0 0 1 2-2z" class="transparent-fill foreground-stroke" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
 +  <path d="M20.054 15.987H3.946" class="transparent-fill foreground-stroke" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
 +</svg>
-diff --git a/data/icons/scalable/status/luma-sync-loader-circle-symbolic.svg b/data/icons/scalable/status/luma-sync-loader-circle-symbolic.svg
+diff --git a/data/icons/scalable/status/Suno-sync-loader-circle-symbolic.svg b/data/icons/scalable/status/Suno-sync-loader-circle-symbolic.svg
 new file mode 100644
 index 0000000..4131cf9
 --- /dev/null
-+++ b/data/icons/scalable/status/luma-sync-loader-circle-symbolic.svg
++++ b/data/icons/scalable/status/Suno-sync-loader-circle-symbolic.svg
 @@ -0,0 +1,4 @@
 +<!-- Lucide geometry, ISC; at Lucide's own 2 px stroke, with GTK 4.20+ symbolic stroke classes. -->
 +<svg xmlns="http://www.w3.org/2000/svg" class="lucide lucide-loader-circle" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 +  <path d="M21 12a9 9 0 1 1-6.219-8.56" class="transparent-fill foreground-stroke" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
 +</svg>
-diff --git a/data/icons/scalable/status/luma-sync-refresh-cw-symbolic.svg b/data/icons/scalable/status/luma-sync-refresh-cw-symbolic.svg
+diff --git a/data/icons/scalable/status/Suno-sync-refresh-cw-symbolic.svg b/data/icons/scalable/status/Suno-sync-refresh-cw-symbolic.svg
 new file mode 100644
 index 0000000..7fcdb19
 --- /dev/null
-+++ b/data/icons/scalable/status/luma-sync-refresh-cw-symbolic.svg
++++ b/data/icons/scalable/status/Suno-sync-refresh-cw-symbolic.svg
 @@ -0,0 +1,7 @@
 +<!-- Lucide geometry, ISC; at Lucide's own 2 px stroke, with GTK 4.20+ symbolic stroke classes. -->
 +<svg xmlns="http://www.w3.org/2000/svg" class="lucide lucide-refresh-cw" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -184,194 +184,194 @@ index 0000000..7fcdb19
 +  <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" class="transparent-fill foreground-stroke" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
 +  <path d="M8 16H3v5" class="transparent-fill foreground-stroke" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
 +</svg>
-diff --git a/data/icons/scalable/status/luma-sync-smartphone-symbolic.svg b/data/icons/scalable/status/luma-sync-smartphone-symbolic.svg
+diff --git a/data/icons/scalable/status/Suno-sync-smartphone-symbolic.svg b/data/icons/scalable/status/Suno-sync-smartphone-symbolic.svg
 new file mode 100644
 index 0000000..302f628
 --- /dev/null
-+++ b/data/icons/scalable/status/luma-sync-smartphone-symbolic.svg
++++ b/data/icons/scalable/status/Suno-sync-smartphone-symbolic.svg
 @@ -0,0 +1,5 @@
 +<!-- Lucide geometry, ISC; at Lucide's own 2 px stroke, with GTK 4.20+ symbolic stroke classes. -->
 +<svg xmlns="http://www.w3.org/2000/svg" class="lucide lucide-smartphone" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 +  <rect width="14" height="20" x="5" y="2" rx="2" ry="2" class="transparent-fill foreground-stroke" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
 +  <path d="M12 18h.01" class="transparent-fill foreground-stroke" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
 +</svg>
-diff --git a/data/icons/scalable/status/luma-sync-tv-symbolic.svg b/data/icons/scalable/status/luma-sync-tv-symbolic.svg
+diff --git a/data/icons/scalable/status/Suno-sync-tv-symbolic.svg b/data/icons/scalable/status/Suno-sync-tv-symbolic.svg
 new file mode 100644
 index 0000000..8507164
 --- /dev/null
-+++ b/data/icons/scalable/status/luma-sync-tv-symbolic.svg
++++ b/data/icons/scalable/status/Suno-sync-tv-symbolic.svg
 @@ -0,0 +1,5 @@
 +<!-- Lucide geometry, ISC; at Lucide's own 2 px stroke, with GTK 4.20+ symbolic stroke classes. -->
 +<svg xmlns="http://www.w3.org/2000/svg" class="lucide lucide-tv" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 +  <path d="m17 2-5 5-5-5" class="transparent-fill foreground-stroke" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
 +  <rect width="20" height="15" x="2" y="7" rx="2" class="transparent-fill foreground-stroke" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
 +</svg>
-diff --git a/data/theme/luma-shelf.css b/data/theme/luma-shelf.css
+diff --git a/data/theme/Suno-shelf.css b/data/theme/Suno-shelf.css
 index a1a877f..ae75eb6 100644
---- a/data/theme/luma-shelf.css
-+++ b/data/theme/luma-shelf.css
-@@ -3449,3 +3449,163 @@ StBoxLayout.luma-notification-tray.luma-surface-dark .luma-notification-tray-cou
+--- a/data/theme/Suno-shelf.css
++++ b/data/theme/Suno-shelf.css
+@@ -3449,3 +3449,163 @@ StBoxLayout.Suno-notification-tray.Suno-surface-dark .Suno-notification-tray-cou
  /* The dock's tile is already a plate (the overview icon's gradient and
   * shadow): an app icon without a plate of its own sits on that one. */
- .luma-shelf-dock-island #dash .dash-item-container .overview-tile .overview-icon .luma-app-icon-plate { background-color: transparent; }
+ .Suno-shelf-dock-island #dash .dash-item-container .overview-tile .overview-icon .Suno-app-icon-plate { background-color: transparent; }
 +
-+/* ── Luma Connect Sync (design-center 38858a5, mockups/connect-sync) ─────── */
++/* ── Suno Connect Sync (design-center 38858a5, mockups/connect-sync) ─────── */
 +/* Tones (cs.css): ok oklch(0.74 0.13 150) = #69c27e, warn oklch(0.8 0.14 75)
 + * = #f2af48, bad oklch(0.7 0.17 25) = #f66d67. */
-+.luma-sync-ok { color: #69c27e; }
-+.luma-sync-warn { color: #f2af48; }
-+.luma-sync-bad { color: #f66d67; }
-+.luma-status-cluster .luma-status-slot .system-status-icon.luma-sync-warn { color: #f2af48; }
-+.luma-status-cluster .luma-status-slot .system-status-icon.luma-sync-bad { color: #f66d67; }
++.Suno-sync-ok { color: #69c27e; }
++.Suno-sync-warn { color: #f2af48; }
++.Suno-sync-bad { color: #f66d67; }
++.Suno-status-cluster .Suno-status-slot .system-status-icon.Suno-sync-warn { color: #f2af48; }
++.Suno-status-cluster .Suno-status-slot .system-status-icon.Suno-sync-bad { color: #f66d67; }
 +
 +/* The status cell: one of the island's slots, its own button. */
-+.luma-sync-cell { padding: 0; border-radius: 8px; }
-+.luma-sync-cell:hover { background-color: rgba(255,255,255,.08); }
-+.luma-sync-cell-phone { margin: 0 6px; }
-+.luma-sync-cell-tv { margin: 0 18px 0 0; }
-+.luma-sync-cell-phone .luma-sync-glyph, .luma-sync-cell-tv .luma-sync-glyph { icon-size: 16px; }
++.Suno-sync-cell { padding: 0; border-radius: 8px; }
++.Suno-sync-cell:hover { background-color: rgba(255,255,255,.08); }
++.Suno-sync-cell-phone { margin: 0 6px; }
++.Suno-sync-cell-tv { margin: 0 18px 0 0; }
++.Suno-sync-cell-phone .Suno-sync-glyph, .Suno-sync-cell-tv .Suno-sync-glyph { icon-size: 16px; }
 +
 +/* The popover (cs.js pop(): .pop.k-qs .q2 with .cs-pop), the shell pop: 312 px.
 + * The menu content's own inset puts the title 6 px left of the rest (.q2h). */
-+.luma-sync-popover .popup-menu-content.luma-sync-pop,
-+.luma-sync-pop.luma-sync-sheet {
++.Suno-sync-popover .popup-menu-content.Suno-sync-pop,
++.Suno-sync-pop.Suno-sync-sheet {
 +  width: 298px; padding: 14px 4px 12px 10px; spacing: 0; border-radius: 26px; border: none;
 +  background-color: rgba(32,33,36,.86); color: #e7e9e8; font-family: Figtree;
 +  box-shadow: inset 0 0 0 1px rgba(255,255,255,.16); }
 +/* The message may run 12 px into the right inset: Pango sets the reference's one-line
 + * sentences a few pixels wider than Chromium. */
-+.luma-sync-pop-head { height: 20px; margin-right: 12px; }
-+.luma-sync-pop-title { font-size: 14.5px; font-weight: 650; letter-spacing: -0.145px; }
-+.luma-sync-line { margin: 18px 12px 0 6px; padding: 4px 2px; spacing: 12px; }
-+.luma-sync-tile { width: 36px; height: 36px; border-radius: 10px; background-color: rgba(255,255,255,.07); }
-+.luma-sync-tile-glyph { icon-size: 18px; color: #e7e9e8; }
-+.luma-sync-words { spacing: 1px; }
-+.luma-sync-title { font-size: 13px; font-weight: 650; }
-+.luma-sync-sub { font-size: 11.5px; color: rgba(231,233,232,.62); }
-+.luma-sync-prog { margin: 18px 12px 0 6px; height: 4px; border-radius: 2px; background-color: rgba(0,0,0,.2); }
-+.luma-sync-prog-fill { height: 4px; border-radius: 2px; background-color: #3584e4; }
-+.luma-sync-msg { margin: 20px 0 0 8px; font-size: 12px; color: rgba(231,233,232,.62); }
-+.luma-sync-row { margin: 18px 12px 0 6px; }
-+.luma-sync-action { height: 28px; padding: 0 12px; border-radius: 9px; font-size: 12px; font-weight: 650;
++.Suno-sync-pop-head { height: 20px; margin-right: 12px; }
++.Suno-sync-pop-title { font-size: 14.5px; font-weight: 650; letter-spacing: -0.145px; }
++.Suno-sync-line { margin: 18px 12px 0 6px; padding: 4px 2px; spacing: 12px; }
++.Suno-sync-tile { width: 36px; height: 36px; border-radius: 10px; background-color: rgba(255,255,255,.07); }
++.Suno-sync-tile-glyph { icon-size: 18px; color: #e7e9e8; }
++.Suno-sync-words { spacing: 1px; }
++.Suno-sync-title { font-size: 13px; font-weight: 650; }
++.Suno-sync-sub { font-size: 11.5px; color: rgba(231,233,232,.62); }
++.Suno-sync-prog { margin: 18px 12px 0 6px; height: 4px; border-radius: 2px; background-color: rgba(0,0,0,.2); }
++.Suno-sync-prog-fill { height: 4px; border-radius: 2px; background-color: #3584e4; }
++.Suno-sync-msg { margin: 20px 0 0 8px; font-size: 12px; color: rgba(231,233,232,.62); }
++.Suno-sync-row { margin: 18px 12px 0 6px; }
++.Suno-sync-action { height: 28px; padding: 0 12px; border-radius: 9px; font-size: 12px; font-weight: 650;
 +  color: #e7e9e8; background-color: rgba(255,255,255,.12); }
-+.luma-sync-action:hover, .luma-sync-action:focus { background-color: rgba(255,255,255,.17); }
-+.luma-sync-link { height: 28px; margin: 14px 0 0 4px; padding: 0 8px; border-radius: 8px;
++.Suno-sync-action:hover, .Suno-sync-action:focus { background-color: rgba(255,255,255,.17); }
++.Suno-sync-link { height: 28px; margin: 14px 0 0 4px; padding: 0 8px; border-radius: 8px;
 +  font-size: 12px; font-weight: 600; color: #e7e9e8; }
-+.luma-sync-link:hover, .luma-sync-link:focus { background-color: rgba(255,255,255,.08); }
++.Suno-sync-link:hover, .Suno-sync-link:focus { background-color: rgba(255,255,255,.08); }
 +/* Light surfaces: the desktop pop's light rule stands alone to outrank its dark rule. */
-+.luma-sync-popover .popup-menu-content.luma-sync-pop.luma-surface-light {
++.Suno-sync-popover .popup-menu-content.Suno-sync-pop.Suno-surface-light {
 +  background-color: #eceef1; color: #16191d; box-shadow: 0 4px 12px rgba(0,0,0,.2); }
-+.luma-sync-pop.luma-surface-light {
++.Suno-sync-pop.Suno-surface-light {
 +  background-color: #eceef1; color: #16191d; box-shadow: 0 4px 12px rgba(0,0,0,.2); }
-+.luma-surface-light .luma-sync-tile { background-color: rgba(20,22,26,.05); }
-+.luma-surface-light .luma-sync-tile-glyph { color: #16191d; }
-+.luma-surface-light .luma-sync-sub, .luma-surface-light .luma-sync-msg { color: rgba(22,25,29,.76); }
-+.luma-surface-light .luma-sync-prog { background-color: rgba(25,27,31,.055); }
-+.luma-surface-light .luma-sync-action { color: #16191d; background-color: rgba(20,22,26,.09); }
-+.luma-surface-light .luma-sync-action:hover, .luma-surface-light .luma-sync-action:focus { background-color: rgba(20,22,26,.14); }
-+.luma-surface-light .luma-sync-link { color: #16191d; }
-+.luma-surface-light .luma-sync-link:hover { background-color: rgba(25,27,31,.06); }
-+.luma-surface-light .luma-sync-tile-glyph.luma-sync-ok { color: #69c27e; }
-+.luma-surface-light .luma-sync-tile-glyph.luma-sync-warn { color: #f2af48; }
-+.luma-surface-light .luma-sync-tile-glyph.luma-sync-bad { color: #f66d67; }
-+.luma-sync-tile-glyph.luma-sync-ok { color: #69c27e; }
-+.luma-sync-tile-glyph.luma-sync-warn { color: #f2af48; }
-+.luma-sync-tile-glyph.luma-sync-bad { color: #f66d67; }
++.Suno-surface-light .Suno-sync-tile { background-color: rgba(20,22,26,.05); }
++.Suno-surface-light .Suno-sync-tile-glyph { color: #16191d; }
++.Suno-surface-light .Suno-sync-sub, .Suno-surface-light .Suno-sync-msg { color: rgba(22,25,29,.76); }
++.Suno-surface-light .Suno-sync-prog { background-color: rgba(25,27,31,.055); }
++.Suno-surface-light .Suno-sync-action { color: #16191d; background-color: rgba(20,22,26,.09); }
++.Suno-surface-light .Suno-sync-action:hover, .Suno-surface-light .Suno-sync-action:focus { background-color: rgba(20,22,26,.14); }
++.Suno-surface-light .Suno-sync-link { color: #16191d; }
++.Suno-surface-light .Suno-sync-link:hover { background-color: rgba(25,27,31,.06); }
++.Suno-surface-light .Suno-sync-tile-glyph.Suno-sync-ok { color: #69c27e; }
++.Suno-surface-light .Suno-sync-tile-glyph.Suno-sync-warn { color: #f2af48; }
++.Suno-surface-light .Suno-sync-tile-glyph.Suno-sync-bad { color: #f66d67; }
++.Suno-sync-tile-glyph.Suno-sync-ok { color: #69c27e; }
++.Suno-sync-tile-glyph.Suno-sync-warn { color: #f2af48; }
++.Suno-sync-tile-glyph.Suno-sync-bad { color: #f66d67; }
 +/* Phone: a bottom drawer, full width. TV: a page at TV scale (x1.5), top right. */
-+.luma-sync-sheet-shade { background-color: rgba(0,0,0,.32); }
++.Suno-sync-sheet-shade { background-color: rgba(0,0,0,.32); }
 +/* Phone: a bottom drawer (status.html ?posture=phone, cs.css .cs-drawer): 400 px, radius 28 at the
 + * top, a grab handle, a 44 px tile, and the action and Sync settings as 44 px buttons side by side. */
-+.luma-sync-pop.luma-sync-sheet.luma-sync-phone { width: auto; padding: 10px 20px 30px; border-radius: 28px 28px 0 0;
++.Suno-sync-pop.Suno-sync-sheet.Suno-sync-phone { width: auto; padding: 10px 20px 30px; border-radius: 28px 28px 0 0;
 +  background-color: #1d2026; box-shadow: none; color: #eceef1; }
-+.luma-sync-pop.luma-sync-sheet.luma-sync-phone.luma-surface-light { background-color: #f4f5f7; box-shadow: none; color: #1f2328; }
-+.luma-sync-phone .luma-sync-grab { width: 36px; height: 4px; margin-bottom: 16px; border-radius: 2px; background-color: rgba(236,238,241,.25); }
-+.luma-sync-phone.luma-surface-light .luma-sync-grab { background-color: rgba(31,35,40,.25); }
-+.luma-sync-phone .luma-sync-dh { font-size: 17px; font-weight: 650; }
-+.luma-sync-phone .luma-sync-line { margin: 16px 0 0; padding: 0; spacing: 14px; }
-+.luma-sync-phone .luma-sync-tile { width: 44px; height: 44px; border-radius: 12px; background-color: rgba(127,127,127,.16); }
-+.luma-sync-phone .luma-sync-words { spacing: 2px; }
-+.luma-sync-phone .luma-sync-title { font-size: 15px; font-weight: 650; }
-+.luma-sync-phone .luma-sync-sub { font-size: 13px; color: rgba(236,238,241,.62); }
-+.luma-sync-phone.luma-surface-light .luma-sync-sub, .luma-sync-phone.luma-surface-light .luma-sync-msg { color: rgba(31,35,40,.62); }
-+.luma-sync-phone .luma-sync-prog { margin: 16px 0 0; background-color: rgba(127,127,127,.2); }
-+.luma-sync-phone .luma-sync-msg { margin: 14px 0 0; font-size: 14px; color: rgba(236,238,241,.62); }
-+.luma-sync-dacts { margin-top: 20px; spacing: 10px; }
-+.luma-sync-daction { height: 44px; border-radius: 14px; font-size: 15px; font-weight: 650; color: #eceef1; background-color: rgba(127,127,127,.2); }
-+.luma-sync-phone.luma-surface-light .luma-sync-daction { color: #1f2328; }
-+.luma-sync-sheet.luma-sync-tv { width: 447px; margin: 72px 72px 0 0; padding: 21px 6px 18px 15px; border-radius: 39px; }
-+.luma-sync-tv .luma-sync-pop-head { height: 30px; margin-right: 18px; }
-+.luma-sync-tv .luma-sync-pop-title { font-size: 21.75px; }
-+.luma-sync-tv .luma-sync-line { margin: 27px 18px 0 9px; padding: 6px 3px; spacing: 18px; }
-+.luma-sync-tv .luma-sync-tile { width: 54px; height: 54px; border-radius: 15px; }
-+.luma-sync-tv .luma-sync-tile-glyph { icon-size: 27px; }
-+.luma-sync-tv .luma-sync-title { font-size: 19.5px; }
-+.luma-sync-tv .luma-sync-sub { font-size: 17.25px; }
-+.luma-sync-tv .luma-sync-prog { margin: 27px 18px 0 9px; height: 6px; border-radius: 3px; }
-+.luma-sync-tv .luma-sync-prog-fill { height: 6px; border-radius: 3px; }
-+.luma-sync-tv .luma-sync-msg { margin: 30px 0 0 12px; font-size: 18px; }
-+.luma-sync-tv .luma-sync-row { margin: 27px 18px 0 9px; }
-+.luma-sync-tv .luma-sync-action { height: 36px; padding: 0 15px; border: 3px solid transparent; border-radius: 13.5px; font-size: 18px; }
-+.luma-sync-tv .luma-sync-link { height: 36px; margin: 21px 0 0 6px; padding: 0 9px; border: 3px solid transparent; border-radius: 12px; font-size: 18px; }
-+.luma-sync-tv .luma-sync-action:focus, .luma-sync-tv .luma-sync-link:focus { border-color: #ffffff; }
++.Suno-sync-pop.Suno-sync-sheet.Suno-sync-phone.Suno-surface-light { background-color: #f4f5f7; box-shadow: none; color: #1f2328; }
++.Suno-sync-phone .Suno-sync-grab { width: 36px; height: 4px; margin-bottom: 16px; border-radius: 2px; background-color: rgba(236,238,241,.25); }
++.Suno-sync-phone.Suno-surface-light .Suno-sync-grab { background-color: rgba(31,35,40,.25); }
++.Suno-sync-phone .Suno-sync-dh { font-size: 17px; font-weight: 650; }
++.Suno-sync-phone .Suno-sync-line { margin: 16px 0 0; padding: 0; spacing: 14px; }
++.Suno-sync-phone .Suno-sync-tile { width: 44px; height: 44px; border-radius: 12px; background-color: rgba(127,127,127,.16); }
++.Suno-sync-phone .Suno-sync-words { spacing: 2px; }
++.Suno-sync-phone .Suno-sync-title { font-size: 15px; font-weight: 650; }
++.Suno-sync-phone .Suno-sync-sub { font-size: 13px; color: rgba(236,238,241,.62); }
++.Suno-sync-phone.Suno-surface-light .Suno-sync-sub, .Suno-sync-phone.Suno-surface-light .Suno-sync-msg { color: rgba(31,35,40,.62); }
++.Suno-sync-phone .Suno-sync-prog { margin: 16px 0 0; background-color: rgba(127,127,127,.2); }
++.Suno-sync-phone .Suno-sync-msg { margin: 14px 0 0; font-size: 14px; color: rgba(236,238,241,.62); }
++.Suno-sync-dacts { margin-top: 20px; spacing: 10px; }
++.Suno-sync-daction { height: 44px; border-radius: 14px; font-size: 15px; font-weight: 650; color: #eceef1; background-color: rgba(127,127,127,.2); }
++.Suno-sync-phone.Suno-surface-light .Suno-sync-daction { color: #1f2328; }
++.Suno-sync-sheet.Suno-sync-tv { width: 447px; margin: 72px 72px 0 0; padding: 21px 6px 18px 15px; border-radius: 39px; }
++.Suno-sync-tv .Suno-sync-pop-head { height: 30px; margin-right: 18px; }
++.Suno-sync-tv .Suno-sync-pop-title { font-size: 21.75px; }
++.Suno-sync-tv .Suno-sync-line { margin: 27px 18px 0 9px; padding: 6px 3px; spacing: 18px; }
++.Suno-sync-tv .Suno-sync-tile { width: 54px; height: 54px; border-radius: 15px; }
++.Suno-sync-tv .Suno-sync-tile-glyph { icon-size: 27px; }
++.Suno-sync-tv .Suno-sync-title { font-size: 19.5px; }
++.Suno-sync-tv .Suno-sync-sub { font-size: 17.25px; }
++.Suno-sync-tv .Suno-sync-prog { margin: 27px 18px 0 9px; height: 6px; border-radius: 3px; }
++.Suno-sync-tv .Suno-sync-prog-fill { height: 6px; border-radius: 3px; }
++.Suno-sync-tv .Suno-sync-msg { margin: 30px 0 0 12px; font-size: 18px; }
++.Suno-sync-tv .Suno-sync-row { margin: 27px 18px 0 9px; }
++.Suno-sync-tv .Suno-sync-action { height: 36px; padding: 0 15px; border: 3px solid transparent; border-radius: 13.5px; font-size: 18px; }
++.Suno-sync-tv .Suno-sync-link { height: 36px; margin: 21px 0 0 6px; padding: 0 9px; border: 3px solid transparent; border-radius: 12px; font-size: 18px; }
++.Suno-sync-tv .Suno-sync-action:focus, .Suno-sync-tv .Suno-sync-link:focus { border-color: #ffffff; }
 +
 +/* The approval card (cs.css .cs-appr): Shell-owned, top centre, 400 px. */
-+.luma-sync-appr { width: 400px; padding: 18px 20px; spacing: 0; border-radius: 22px; font-family: Figtree;
++.Suno-sync-appr { width: 400px; padding: 18px 20px; spacing: 0; border-radius: 22px; font-family: Figtree;
 +  background-color: rgba(32,33,36,.94); color: #eceef1; box-shadow: 0 30px 70px rgba(0,0,0,.55); }
-+.luma-sync-appr.luma-sync-light { background-color: #f1f2f3; color: #1f2328; box-shadow: 0 30px 70px rgba(0,0,0,.25); }
-+.luma-sync-appr-from { spacing: 7px; height: 16px; }
-+.luma-sync-appr-from-icon { icon-size: 16px; }
-+.luma-sync-appr-from-text { font-size: 10px; font-weight: 700; color: rgba(236,238,241,.55); }
-+.luma-sync-light .luma-sync-appr-from-text { color: rgba(31,35,40,.55); }
-+.luma-sync-appr-head { min-height: 41px; margin-top: 14px; spacing: 12px; }
-+.luma-sync-appr-tile { width: 40px; height: 40px; border-radius: 11px; background-color: rgba(255,255,255,.08); }
-+.luma-sync-light .luma-sync-appr-tile { background-color: rgba(0,0,0,.05); }
-+.luma-sync-appr-glyph { icon-size: 20px; }
-+.luma-sync-appr-title { height: 22px; font-size: 16px; font-weight: 700; }
-+.luma-sync-appr-sub { margin-top: 2px; font-size: 12px; color: rgba(236,238,241,.6); }
-+.luma-sync-light .luma-sync-appr-sub { color: rgba(31,35,40,.6); }
-+.luma-sync-appr-body { margin-top: 14px; font-size: 12.5px; color: rgba(236,238,241,.78); }
-+.luma-sync-light .luma-sync-appr-body { color: rgba(31,35,40,.78); }
-+.luma-sync-appr-code { margin-top: 12px; spacing: 8px; }
++.Suno-sync-appr.Suno-sync-light { background-color: #f1f2f3; color: #1f2328; box-shadow: 0 30px 70px rgba(0,0,0,.25); }
++.Suno-sync-appr-from { spacing: 7px; height: 16px; }
++.Suno-sync-appr-from-icon { icon-size: 16px; }
++.Suno-sync-appr-from-text { font-size: 10px; font-weight: 700; color: rgba(236,238,241,.55); }
++.Suno-sync-light .Suno-sync-appr-from-text { color: rgba(31,35,40,.55); }
++.Suno-sync-appr-head { min-height: 41px; margin-top: 14px; spacing: 12px; }
++.Suno-sync-appr-tile { width: 40px; height: 40px; border-radius: 11px; background-color: rgba(255,255,255,.08); }
++.Suno-sync-light .Suno-sync-appr-tile { background-color: rgba(0,0,0,.05); }
++.Suno-sync-appr-glyph { icon-size: 20px; }
++.Suno-sync-appr-title { height: 22px; font-size: 16px; font-weight: 700; }
++.Suno-sync-appr-sub { margin-top: 2px; font-size: 12px; color: rgba(236,238,241,.6); }
++.Suno-sync-light .Suno-sync-appr-sub { color: rgba(31,35,40,.6); }
++.Suno-sync-appr-body { margin-top: 14px; font-size: 12.5px; color: rgba(236,238,241,.78); }
++.Suno-sync-light .Suno-sync-appr-body { color: rgba(31,35,40,.78); }
++.Suno-sync-appr-code { margin-top: 12px; spacing: 8px; }
 +/* 48 px wells as the reference's line-height 1 (Pango's line for the mono face is taller). */
-+.luma-sync-appr-well { width: 55px; height: 43px; padding: 5px 12px 0; border-radius: 14px; font-family: monospace; font-size: 28px;
++.Suno-sync-appr-well { width: 55px; height: 43px; padding: 5px 12px 0; border-radius: 14px; font-family: monospace; font-size: 28px;
 +  font-weight: 600; background-color: rgba(255,255,255,.07); }
-+.luma-sync-light .luma-sync-appr-well { background-color: rgba(0,0,0,.05); }
-+.luma-sync-appr-buttons { margin-top: 16px; spacing: 8px; }
-+.luma-sync-appr-button { height: 36px; border-radius: 11px; font-size: 13px; font-weight: 650; color: #eceef1;
++.Suno-sync-light .Suno-sync-appr-well { background-color: rgba(0,0,0,.05); }
++.Suno-sync-appr-buttons { margin-top: 16px; spacing: 8px; }
++.Suno-sync-appr-button { height: 36px; border-radius: 11px; font-size: 13px; font-weight: 650; color: #eceef1;
 +  background-color: rgba(255,255,255,.1); }
-+.luma-sync-appr-button:hover { background-color: rgba(255,255,255,.15); }
-+.luma-sync-light .luma-sync-appr-button { color: #1f2328; background-color: rgba(0,0,0,.06); }
-+.luma-sync-light .luma-sync-appr-button:hover { background-color: rgba(0,0,0,.1); }
++.Suno-sync-appr-button:hover { background-color: rgba(255,255,255,.15); }
++.Suno-sync-light .Suno-sync-appr-button { color: #1f2328; background-color: rgba(0,0,0,.06); }
++.Suno-sync-light .Suno-sync-appr-button:hover { background-color: rgba(0,0,0,.1); }
 +/* Phone: a bottom sheet, full width, 44 px buttons. */
-+.luma-sync-appr-phone { width: auto; border-radius: 28px 28px 0 0; padding: 20px 20px 30px; }
-+.luma-sync-appr-phone .luma-sync-appr-button { height: 44px; }
++.Suno-sync-appr-phone { width: auto; border-radius: 28px 28px 0 0; padding: 20px 20px 30px; }
++.Suno-sync-appr-phone .Suno-sync-appr-button { height: 44px; }
 +/* TV: x1.5; the remote's focus is the reference's 3 px white ring at x1.5 (inside the button). */
-+.luma-sync-appr-tv { width: 600px; padding: 27px 30px; border-radius: 33px; }
-+.luma-sync-appr-tv .luma-sync-appr-from { spacing: 10.5px; height: 24px; }
-+.luma-sync-appr-tv .luma-sync-appr-from-icon { icon-size: 24px; }
-+.luma-sync-appr-tv .luma-sync-appr-from-text { font-size: 15px; }
-+.luma-sync-appr-tv .luma-sync-appr-head { min-height: 61px; margin-top: 21px; spacing: 18px; }
-+.luma-sync-appr-tv .luma-sync-appr-tile { width: 60px; height: 60px; border-radius: 16.5px; }
-+.luma-sync-appr-tv .luma-sync-appr-glyph { icon-size: 30px; }
-+.luma-sync-appr-tv .luma-sync-appr-title { height: 34px; font-size: 24px; }
-+.luma-sync-appr-tv .luma-sync-appr-sub { margin-top: 3px; font-size: 18px; }
-+.luma-sync-appr-tv .luma-sync-appr-body { margin-top: 21px; font-size: 18.75px; }
-+.luma-sync-appr-tv .luma-sync-appr-code { margin-top: 18px; spacing: 12px; }
-+.luma-sync-appr-tv .luma-sync-appr-well { width: 83px; height: 64px; padding: 8px 18px 0; border-radius: 21px; font-size: 42px; }
++.Suno-sync-appr-tv { width: 600px; padding: 27px 30px; border-radius: 33px; }
++.Suno-sync-appr-tv .Suno-sync-appr-from { spacing: 10.5px; height: 24px; }
++.Suno-sync-appr-tv .Suno-sync-appr-from-icon { icon-size: 24px; }
++.Suno-sync-appr-tv .Suno-sync-appr-from-text { font-size: 15px; }
++.Suno-sync-appr-tv .Suno-sync-appr-head { min-height: 61px; margin-top: 21px; spacing: 18px; }
++.Suno-sync-appr-tv .Suno-sync-appr-tile { width: 60px; height: 60px; border-radius: 16.5px; }
++.Suno-sync-appr-tv .Suno-sync-appr-glyph { icon-size: 30px; }
++.Suno-sync-appr-tv .Suno-sync-appr-title { height: 34px; font-size: 24px; }
++.Suno-sync-appr-tv .Suno-sync-appr-sub { margin-top: 3px; font-size: 18px; }
++.Suno-sync-appr-tv .Suno-sync-appr-body { margin-top: 21px; font-size: 18.75px; }
++.Suno-sync-appr-tv .Suno-sync-appr-code { margin-top: 18px; spacing: 12px; }
++.Suno-sync-appr-tv .Suno-sync-appr-well { width: 83px; height: 64px; padding: 8px 18px 0; border-radius: 21px; font-size: 42px; }
 +/* B3: a card before its code (approve.html?early): the halves as dots at 35%, a turning loader and words at 70%. */
-+.luma-sync-appr-wait { spacing: 6px; margin-left: 6px; }
-+.luma-sync-appr-wait-icon { icon-size: 14px; }
-+.luma-sync-appr-wait-text { font-size: 12.5px; font-weight: 500; }
-+.luma-sync-appr-tv .luma-sync-appr-wait { spacing: 9px; margin-left: 9px; }
-+.luma-sync-appr-tv .luma-sync-appr-wait-icon { icon-size: 21px; }
-+.luma-sync-appr-tv .luma-sync-appr-wait-text { font-size: 18.75px; }
-+.luma-sync-appr-tv .luma-sync-appr-buttons { margin-top: 24px; spacing: 12px; }
-+.luma-sync-appr-tv .luma-sync-appr-button { height: 44px; border: 5px solid transparent; border-radius: 16.5px; font-size: 19.5px; }
-+.luma-sync-appr-tv .luma-sync-appr-button:focus { border-color: #ffffff; }
++.Suno-sync-appr-wait { spacing: 6px; margin-left: 6px; }
++.Suno-sync-appr-wait-icon { icon-size: 14px; }
++.Suno-sync-appr-wait-text { font-size: 12.5px; font-weight: 500; }
++.Suno-sync-appr-tv .Suno-sync-appr-wait { spacing: 9px; margin-left: 9px; }
++.Suno-sync-appr-tv .Suno-sync-appr-wait-icon { icon-size: 21px; }
++.Suno-sync-appr-tv .Suno-sync-appr-wait-text { font-size: 18.75px; }
++.Suno-sync-appr-tv .Suno-sync-appr-buttons { margin-top: 24px; spacing: 12px; }
++.Suno-sync-appr-tv .Suno-sync-appr-button { height: 44px; border: 5px solid transparent; border-radius: 16.5px; font-size: 19.5px; }
++.Suno-sync-appr-tv .Suno-sync-appr-button:focus { border-color: #ffffff; }
 +
 +/* An app still restoring (restore.html .cs-tile): the ring in the accent. */
-+.luma-sync-restore-ring { color: -st-accent-color; }
-+.luma-sync-restore-caption { font-size: 11px; color: rgba(255,255,255,.6); }
++.Suno-sync-restore-ring { color: -st-accent-color; }
++.Suno-sync-restore-caption { font-size: 11px; color: rgba(255,255,255,.6); }
 +
 +
 diff --git a/js/js-resources.gresource.xml b/js/js-resources.gresource.xml
@@ -379,15 +379,15 @@ index 367a761..a189aa1 100644
 --- a/js/js-resources.gresource.xml
 +++ b/js/js-resources.gresource.xml
 @@ -131,6 +131,9 @@
-     <file>ui/lumaSealCopy.js</file>
-     <file>ui/lumaSealGlyph.js</file>
-     <file>ui/lumaShare.js</file>
-+    <file>ui/lumaConnectSync.js</file>
-+    <file>ui/lumaConnectSyncModel.js</file>
-+    <file>ui/lumaConnectSyncRestore.js</file>
-     <file>ui/lumaPermissionOffer.js</file>
-     <file>ui/lumaAppPermissions.js</file>
-     <file>ui/lumaAppPermissionsModel.js</file>
+     <file>ui/SunoSealCopy.js</file>
+     <file>ui/SunoSealGlyph.js</file>
+     <file>ui/SunoShare.js</file>
++    <file>ui/SunoConnectSync.js</file>
++    <file>ui/SunoConnectSyncModel.js</file>
++    <file>ui/SunoConnectSyncRestore.js</file>
+     <file>ui/SunoPermissionOffer.js</file>
+     <file>ui/SunoAppPermissions.js</file>
+     <file>ui/SunoAppPermissionsModel.js</file>
 diff --git a/js/ui/appDisplay.js b/js/ui/appDisplay.js
 index ec720ed..32b5990 100644
 --- a/js/ui/appDisplay.js
@@ -396,16 +396,16 @@ index ec720ed..32b5990 100644
  import * as SwipeTracker from './swipeTracker.js';
  import * as SystemActions from '../misc/systemActions.js';
  
-+import * as LumaSyncRestore from './lumaConnectSyncRestore.js';
++import * as SunoSyncRestore from './SunoConnectSyncRestore.js';
  import * as Main from './main.js';
- import * as LumaWindowMotion from './lumaWindowMotion.js';
+ import * as SunoWindowMotion from './SunoWindowMotion.js';
  
 @@ -2968,6 +2969,9 @@ export const AppIcon = GObject.registerClass({
          this._menu = null;
          this._menuManager = new PopupMenu.PopupMenuManager(this);
  
 +        // Still restoring from the person's other devices (Connect Sync).
-+        LumaSyncRestore.attach(this);
++        SunoSyncRestore.attach(this);
 +
          this._sessionApplications = SessionApplications.getDefault();
          this.app.connectObject('notify::state',
@@ -416,21 +416,21 @@ index ec720ed..32b5990 100644
      activate(button) {
 +        // An app still restoring opens its row in Valet, not a launch that
 +        // would find none of its data.
-+        if (LumaSyncRestore.redirect(this.app)) {
++        if (SunoSyncRestore.redirect(this.app)) {
 +            Main.overview.hide();
 +            return;
 +        }
          const event = Clutter.get_current_event();
          const modifiers = event ? event.get_state() : 0;
          const isMiddleButton = button && button === Clutter.BUTTON_MIDDLE;
-diff --git a/js/ui/lumaConnectSync.js b/js/ui/lumaConnectSync.js
+diff --git a/js/ui/SunoConnectSync.js b/js/ui/SunoConnectSync.js
 new file mode 100644
 index 0000000..59b750e
 --- /dev/null
-+++ b/js/ui/lumaConnectSync.js
++++ b/js/ui/SunoConnectSync.js
 @@ -0,0 +1,836 @@
 +// SPDX-License-Identifier: GPL-2.0-or-later
-+// Luma Connect Sync in the Shell (ADR-054; design-center 38858a5,
++// Suno Connect Sync in the Shell (ADR-054; design-center 38858a5,
 +// mockups/connect-sync: approve.html, status.html, cs.css, cs.js).
 +//
 +// - The approval card: when another device asks to join, every device that
@@ -448,7 +448,7 @@ index 0000000..59b750e
 +//   TV: in the top bar's status group, the popover a page at TV scale.
 +// - Banners: storage full and removed from Sync post one standard banner
 +//   each; conflicts never do.
-+// - Restoring apps: lumaConnectSyncRestore.js marks their tiles; Valet opens
++// - Restoring apps: SunoConnectSyncRestore.js marks their tiles; Valet opens
 +//   once when apps start arriving after a join.
 +import Clutter from 'gi://Clutter';
 +import GLib from 'gi://GLib';
@@ -460,14 +460,14 @@ index 0000000..59b750e
 +import * as Main from './main.js';
 +import * as MessageTray from './messageTray.js';
 +import * as PopupMenu from './popupMenu.js';
-+import * as SurfaceMaterials from './lumaSurfaceMaterials.js';
-+import * as Model from './lumaConnectSyncModel.js';
-+import * as Restore from './lumaConnectSyncRestore.js';
++import * as SurfaceMaterials from './SunoSurfaceMaterials.js';
++import * as Model from './SunoConnectSyncModel.js';
++import * as Restore from './SunoConnectSyncRestore.js';
 +
-+const BUS_NAME = 'org.projectluma.ConnectSync1';
-+const OBJECT_PATH = '/org/projectluma/ConnectSync1';
-+const INTERFACE = 'org.projectluma.ConnectSync1';
-+const CONNECT_ICON = 'org.projectluma.Connect';
++const BUS_NAME = 'org.projectSuno.ConnectSync1';
++const OBJECT_PATH = '/org/projectSuno/ConnectSync1';
++const INTERFACE = 'org.projectSuno.ConnectSync1';
++const CONNECT_ICON = 'org.projectSuno.Connect';
 +// While a card is up, the requests are read again this often, so a card
 +// answered on another device leaves even if its JoinCleared was missed.
 +const CARD_RECHECK_S = 20;
@@ -549,12 +549,12 @@ index 0000000..59b750e
 +class StatusCell {
 +    constructor(onActivate) {
 +        this.actor = new St.Button({
-+            style_class: 'luma-status-slot luma-sync-cell',
++            style_class: 'Suno-status-slot Suno-sync-cell',
 +            reactive: true, can_focus: true, track_hover: true, visible: false,
 +            y_align: Clutter.ActorAlign.CENTER,
 +        });
-+        this.actor._lumaSyncCell = true;
-+        this.actor.icon = icon(Model.ICON['refresh-cw'], 16, 'system-status-icon luma-sync-glyph');
++        this.actor._SunoSyncCell = true;
++        this.actor.icon = icon(Model.ICON['refresh-cw'], 16, 'system-status-icon Suno-sync-glyph');
 +        this.actor.icon.x_expand = true;
 +        this.actor.icon.x_align = Clutter.ActorAlign.CENTER;
 +        this.actor.set_child(this.actor.icon);
@@ -564,9 +564,9 @@ index 0000000..59b750e
 +    set(view) {
 +        this.actor.icon.icon_name = view.icon;
 +        for (const tone of ['ok', 'warn', 'bad'])
-+            this.actor.icon.remove_style_class_name(`luma-sync-${tone}`);
++            this.actor.icon.remove_style_class_name(`Suno-sync-${tone}`);
 +        if (view.tone)
-+            this.actor.icon.add_style_class_name(`luma-sync-${view.tone}`);
++            this.actor.icon.add_style_class_name(`Suno-sync-${view.tone}`);
 +        this.actor.accessible_name = view.title;
 +    }
 +}
@@ -578,45 +578,45 @@ index 0000000..59b750e
 +    // Phone (status.html ?posture=phone): a bottom drawer with a grab handle, a larger tile and
 +    // words, and the action and Sync settings side by side as 44 px buttons.
 +    if (phone) {
-+        box.add_child(new St.Widget({style_class: 'luma-sync-grab', x_align: Clutter.ActorAlign.CENTER}));
-+        box.add_child(new St.Label({style_class: 'luma-sync-dh', text: Model.POPOVER_TITLE}));
++        box.add_child(new St.Widget({style_class: 'Suno-sync-grab', x_align: Clutter.ActorAlign.CENTER}));
++        box.add_child(new St.Label({style_class: 'Suno-sync-dh', text: Model.POPOVER_TITLE}));
 +    } else if (header) {
-+        const head = new St.BoxLayout({style_class: 'luma-sync-pop-head'});
-+        head.add_child(new St.Label({style_class: 'luma-sync-pop-title', text: Model.POPOVER_TITLE, x_expand: true}));
++        const head = new St.BoxLayout({style_class: 'Suno-sync-pop-head'});
++        head.add_child(new St.Label({style_class: 'Suno-sync-pop-title', text: Model.POPOVER_TITLE, x_expand: true}));
 +        box.add_child(head);
 +    }
-+    const line = new St.BoxLayout({style_class: 'luma-sync-line'});
-+    const tile = new St.Bin({style_class: 'luma-sync-tile', y_align: Clutter.ActorAlign.CENTER});
-+    const glyph = icon(view.icon, phone ? 22 : 18, 'luma-sync-tile-glyph');
++    const line = new St.BoxLayout({style_class: 'Suno-sync-line'});
++    const tile = new St.Bin({style_class: 'Suno-sync-tile', y_align: Clutter.ActorAlign.CENTER});
++    const glyph = icon(view.icon, phone ? 22 : 18, 'Suno-sync-tile-glyph');
 +    if (view.tone)
-+        glyph.add_style_class_name(`luma-sync-${view.tone}`);
++        glyph.add_style_class_name(`Suno-sync-${view.tone}`);
 +    tile.set_child(glyph);
 +    line.add_child(tile);
-+    const words = new St.BoxLayout({orientation: Clutter.Orientation.VERTICAL, style_class: 'luma-sync-words',
++    const words = new St.BoxLayout({orientation: Clutter.Orientation.VERTICAL, style_class: 'Suno-sync-words',
 +        y_align: Clutter.ActorAlign.CENTER, x_expand: true});
-+    words.add_child(new St.Label({style_class: 'luma-sync-title', text: view.title}));
++    words.add_child(new St.Label({style_class: 'Suno-sync-title', text: view.title}));
 +    if (view.sub)
-+        words.add_child(new St.Label({style_class: 'luma-sync-sub', text: view.sub}));
++        words.add_child(new St.Label({style_class: 'Suno-sync-sub', text: view.sub}));
 +    line.add_child(words);
 +    box.add_child(line);
 +    if (view.progress !== null && view.progress !== undefined) {
-+        const track = new St.BoxLayout({style_class: 'luma-sync-prog', x_expand: true});
-+        const fill = new St.Widget({style_class: 'luma-sync-prog-fill', y_expand: true});
++        const track = new St.BoxLayout({style_class: 'Suno-sync-prog', x_expand: true});
++        const fill = new St.Widget({style_class: 'Suno-sync-prog-fill', y_expand: true});
 +        track.add_child(fill);
 +        track.connect('notify::width', () => fill.set_width(Math.round(track.width * view.progress)));
 +        box.add_child(track);
 +    }
 +    let focus = null;
 +    if (view.message) {
-+        const message = paragraph('luma-sync-msg', view.message, phone ? 20 : posture() === 'tv' ? 26.1 : 17.4);
++        const message = paragraph('Suno-sync-msg', view.message, phone ? 20 : posture() === 'tv' ? 26.1 : 17.4);
 +        box.add_child(message);
 +    }
 +    if (phone) {
-+        const row = new St.BoxLayout({style_class: 'luma-sync-dacts', x_expand: true});
++        const row = new St.BoxLayout({style_class: 'Suno-sync-dacts', x_expand: true});
 +        row.layout_manager.homogeneous = true;
 +        const labels = view.action ? [view.action, Model.SETTINGS_LINK] : [Model.SETTINGS_LINK];
 +        for (const text of labels) {
-+            const button = new St.Button({style_class: 'luma-sync-daction', label: text, can_focus: true, x_expand: true});
++            const button = new St.Button({style_class: 'Suno-sync-daction', label: text, can_focus: true, x_expand: true});
 +            button.connect('clicked', () => text === view.action ? onAction(view.action, view.subject ?? null) : onSettings());
 +            row.add_child(button);
 +            focus ??= button;
@@ -625,21 +625,21 @@ index 0000000..59b750e
 +        return focus;
 +    }
 +    if (view.action) {
-+        const row = new St.BoxLayout({style_class: 'luma-sync-row'});
-+        const button = new St.Button({style_class: 'luma-sync-action', label: view.action, can_focus: true});
++        const row = new St.BoxLayout({style_class: 'Suno-sync-row'});
++        const button = new St.Button({style_class: 'Suno-sync-action', label: view.action, can_focus: true});
 +        button.connect('clicked', () => onAction(view.action, view.subject ?? null));
 +        row.add_child(button);
 +        box.add_child(row);
 +        focus = button;
 +    }
-+    const more = new St.Button({style_class: 'luma-sync-link', label: Model.SETTINGS_LINK, can_focus: true,
++    const more = new St.Button({style_class: 'Suno-sync-link', label: Model.SETTINGS_LINK, can_focus: true,
 +        x_align: Clutter.ActorAlign.START});
 +    more.connect('clicked', () => onSettings());
 +    box.add_child(more);
 +    return focus ?? more;
 +}
 +
-+// Desktop: a shelf surface from the island (lumaShelfSurface.js places it);
++// Desktop: a shelf surface from the island (SunoShelfSurface.js places it);
 +// phone: a bottom drawer (status.html ?posture=phone); TV: a page at TV scale at the top right.
 +class StatusPopover {
 +    constructor(handlers) {
@@ -662,7 +662,7 @@ index 0000000..59b750e
 +    _fill(box, header = true) {
 +        return fillPopover(box, this._view, {
 +            header,
-+            phone: box === this._sheetBox && this._sheetBox?.has_style_class_name('luma-sync-phone'),
++            phone: box === this._sheetBox && this._sheetBox?.has_style_class_name('Suno-sync-phone'),
 +            onAction: (action, subject) => {
 +                this.close();
 +                this._handlers.onAction(action, subject);
@@ -692,8 +692,8 @@ index 0000000..59b750e
 +        if (this._menu?.sourceActor !== source) {
 +            this._menu?.destroy();
 +            this._menu = new PopupMenu.PopupMenu(source, 0.5, St.Side.BOTTOM);
-+            this._menu.actor.add_style_class_name('luma-sync-popover');
-+            this._menu.box.add_style_class_name('luma-sync-pop');
++            this._menu.actor.add_style_class_name('Suno-sync-popover');
++            this._menu.box.add_style_class_name('Suno-sync-pop');
 +            SurfaceMaterials.bindSurface(this._menu.box, {
 +                cornerRadii: 26 * St.ThemeContext.get_for_stage(global.stage).scale_factor,
 +                classActors: [this._menu.actor, this._menu.box],
@@ -708,9 +708,9 @@ index 0000000..59b750e
 +
 +    _openSheet(where) {
 +        if (!this._sheet) {
-+            this._sheet = new St.Widget({style_class: 'luma-sync-sheet-shade', reactive: true,
++            this._sheet = new St.Widget({style_class: 'Suno-sync-sheet-shade', reactive: true,
 +                layout_manager: new Clutter.BinLayout(), visible: false});
-+            this._sheetBox = new St.BoxLayout({style_class: 'luma-sync-pop luma-sync-sheet',
++            this._sheetBox = new St.BoxLayout({style_class: 'Suno-sync-pop Suno-sync-sheet',
 +                orientation: Clutter.Orientation.VERTICAL, reactive: true});
 +            this._sheet.add_child(this._sheetBox);
 +            SurfaceMaterials.bindSurface(this._sheetBox, {classActors: [this._sheetBox]});
@@ -733,9 +733,9 @@ index 0000000..59b750e
 +        const monitor = Main.layoutManager.primaryMonitor;
 +        this._sheet.set_position(monitor.x, monitor.y);
 +        this._sheet.set_size(monitor.width, monitor.height);
-+        this._sheetBox.remove_style_class_name('luma-sync-phone');
-+        this._sheetBox.remove_style_class_name('luma-sync-tv');
-+        this._sheetBox.add_style_class_name(where === 'tv' ? 'luma-sync-tv' : 'luma-sync-phone');
++        this._sheetBox.remove_style_class_name('Suno-sync-phone');
++        this._sheetBox.remove_style_class_name('Suno-sync-tv');
++        this._sheetBox.add_style_class_name(where === 'tv' ? 'Suno-sync-tv' : 'Suno-sync-phone');
 +        if (where === 'tv') {
 +            this._sheetBox.set({x_align: Clutter.ActorAlign.END, y_align: Clutter.ActorAlign.START,
 +                x_expand: true, y_expand: true});
@@ -798,38 +798,38 @@ index 0000000..59b750e
 +        this.request = request;
 +        const view = Model.card(request);
 +        this._where = posture();
-+        this.actor = new St.BoxLayout({style_class: `luma-sync-appr luma-sync-appr-${this._where}`,
++        this.actor = new St.BoxLayout({style_class: `Suno-sync-appr Suno-sync-appr-${this._where}`,
 +            orientation: Clutter.Orientation.VERTICAL, reactive: true});
 +        // Its own solid fill (cs.css .cs-appr), light or dark with the appearance.
 +        if (SurfaceMaterials.LIGHT_FAMILY.has(SurfaceMaterials.effectiveTreatment()))
-+            this.actor.add_style_class_name('luma-sync-light');
-+        const from = new St.BoxLayout({style_class: 'luma-sync-appr-from'});
++            this.actor.add_style_class_name('Suno-sync-light');
++        const from = new St.BoxLayout({style_class: 'Suno-sync-appr-from'});
 +        // The whole source line is at 55% (cs.css .cs-from), its icon too.
 +        from.add_child(new St.Icon({gicon: new Gio.ThemedIcon({name: CONNECT_ICON}),
-+            style_class: 'luma-sync-appr-from-icon', y_align: Clutter.ActorAlign.CENTER, opacity: 140}));
-+        from.add_child(spaced('luma-sync-appr-from-text', view.source.toLocaleUpperCase(),
++            style_class: 'Suno-sync-appr-from-icon', y_align: Clutter.ActorAlign.CENTER, opacity: 140}));
++        from.add_child(spaced('Suno-sync-appr-from-text', view.source.toLocaleUpperCase(),
 +            this._where === 'tv' ? 1.2 : 0.8));
 +        this.actor.add_child(from);
-+        const head = new St.BoxLayout({style_class: 'luma-sync-appr-head'});
-+        const tile = new St.Bin({style_class: 'luma-sync-appr-tile', y_align: Clutter.ActorAlign.CENTER});
-+        tile.set_child(new St.Icon({icon_name: view.icon, style_class: 'luma-sync-appr-glyph'}));
++        const head = new St.BoxLayout({style_class: 'Suno-sync-appr-head'});
++        const tile = new St.Bin({style_class: 'Suno-sync-appr-tile', y_align: Clutter.ActorAlign.CENTER});
++        tile.set_child(new St.Icon({icon_name: view.icon, style_class: 'Suno-sync-appr-glyph'}));
 +        head.add_child(tile);
 +        const words = new St.BoxLayout({orientation: Clutter.Orientation.VERTICAL,
 +            y_align: Clutter.ActorAlign.CENTER, x_expand: true});
-+        words.add_child(new St.Label({style_class: 'luma-sync-appr-title', text: view.title}));
-+        words.add_child(new St.Label({style_class: 'luma-sync-appr-sub', text: view.sub}));
++        words.add_child(new St.Label({style_class: 'Suno-sync-appr-title', text: view.title}));
++        words.add_child(new St.Label({style_class: 'Suno-sync-appr-sub', text: view.sub}));
 +        head.add_child(words);
 +        this.actor.add_child(head);
-+        this._body = paragraph('luma-sync-appr-body', view.body, this._where === 'tv' ? 27.19 : 18.13);
++        this._body = paragraph('Suno-sync-appr-body', view.body, this._where === 'tv' ? 27.19 : 18.13);
 +        this.actor.add_child(this._body);
-+        this._code = new St.BoxLayout({style_class: 'luma-sync-appr-code'});
++        this._code = new St.BoxLayout({style_class: 'Suno-sync-appr-code'});
 +        this._fillCode(view);
 +        this.actor.add_child(this._code);
 +        // Not me and Approve at equal width: neither is the default.
-+        const buttons = new St.BoxLayout({style_class: 'luma-sync-appr-buttons'});
++        const buttons = new St.BoxLayout({style_class: 'Suno-sync-appr-buttons'});
 +        buttons.layout_manager.homogeneous = true;
 +        this._buttons = view.buttons.map((label, index) => {
-+            const button = new St.Button({style_class: 'luma-sync-appr-button', label, can_focus: true,
++            const button = new St.Button({style_class: 'Suno-sync-appr-button', label, can_focus: true,
 +                x_expand: true});
 +            button.connect('clicked', () => answer(this, index === 1));
 +            buttons.add_child(button);
@@ -846,21 +846,21 @@ index 0000000..59b750e
 +    _fillCode(view) {
 +        this._code.destroy_all_children();
 +        const spacing = this._where === 'tv' ? 2.52 : 1.68;
-+        this._code.remove_style_class_name('luma-sync-appr-code-wait');
++        this._code.remove_style_class_name('Suno-sync-appr-code-wait');
 +        if (!view.early) {
 +            for (const group of view.code)
-+                this._code.add_child(spaced('luma-sync-appr-well', group, spacing));
++                this._code.add_child(spaced('Suno-sync-appr-well', group, spacing));
 +            return;
 +        }
-+        this._code.add_style_class_name('luma-sync-appr-code-wait');
++        this._code.add_style_class_name('Suno-sync-appr-code-wait');
 +        for (let i = 0; i < 2; i++) {
-+            const dots = spaced('luma-sync-appr-well', '···', spacing);
++            const dots = spaced('Suno-sync-appr-well', '···', spacing);
 +            dots.opacity = Math.round(0.35 * 255);
 +            this._code.add_child(dots);
 +        }
-+        const wait = new St.BoxLayout({style_class: 'luma-sync-appr-wait', y_align: Clutter.ActorAlign.CENTER,
++        const wait = new St.BoxLayout({style_class: 'Suno-sync-appr-wait', y_align: Clutter.ActorAlign.CENTER,
 +            opacity: Math.round(0.7 * 255)});
-+        const loader = new St.Icon({icon_name: Model.ICON['loader-circle'], style_class: 'luma-sync-appr-wait-icon',
++        const loader = new St.Icon({icon_name: Model.ICON['loader-circle'], style_class: 'Suno-sync-appr-wait-icon',
 +            y_align: Clutter.ActorAlign.CENTER});
 +        loader.set_pivot_point(0.5, 0.5);
 +        if (St.Settings.get().enable_animations) {
@@ -868,7 +868,7 @@ index 0000000..59b750e
 +                repeat_count: -1});
 +        }
 +        wait.add_child(loader);
-+        wait.add_child(new St.Label({style_class: 'luma-sync-appr-wait-text', text: view.waiting,
++        wait.add_child(new St.Label({style_class: 'Suno-sync-appr-wait-text', text: view.waiting,
 +            y_align: Clutter.ActorAlign.CENTER}));
 +        this._code.add_child(wait);
 +    }
@@ -1007,7 +1007,7 @@ index 0000000..59b750e
 +        try {
 +            const rows = await this._service.json('GetRestore');
 +            if (this._restoreRows !== null && Model.openValet(this._restoreRows, rows))
-+                this._spawn(['luma-installer', '--restore']);
++                this._spawn(['Suno-installer', '--restore']);
 +            this.setRestoreRows(rows);
 +        } catch (e) {
 +            log(`Connect Sync: GetRestore: ${e.message}`);
@@ -1024,11 +1024,11 @@ index 0000000..59b750e
 +
 +    // ── the cell
 +    _ensureCell() {
-+        if (this._cell?.actor && !this._cell.actor._lumaDestroyed)
++        if (this._cell?.actor && !this._cell.actor._SunoDestroyed)
 +            return;
 +        this._cell = new StatusCell(source => this._popover.toggle(source));
 +        this._cell.actor.connect('destroy', actor => {
-+            actor._lumaDestroyed = true;
++            actor._SunoDestroyed = true;
 +            this._popover.close();
 +            this._queuePlace();
 +        });
@@ -1058,7 +1058,7 @@ index 0000000..59b750e
 +        if (!parent && quick?.setStatusCell) {
 +            if (actor.get_parent() !== quick._statusSlots)
 +                quick.setStatusCell(actor);
-+            actor.set_style_class_name('luma-status-slot luma-sync-cell');
++            actor.set_style_class_name('Suno-status-slot Suno-sync-cell');
 +            return;
 +        }
 +        if (!parent)
@@ -1067,7 +1067,7 @@ index 0000000..59b750e
 +            actor.get_parent()?.remove_child(actor);
 +            parent.insert_child_at_index(actor, 0);
 +        }
-+        actor.set_style_class_name(`luma-sync-cell luma-sync-cell-${where}`);
++        actor.set_style_class_name(`Suno-sync-cell Suno-sync-cell-${where}`);
 +    }
 +
 +    _syncCell() {
@@ -1090,7 +1090,7 @@ index 0000000..59b750e
 +        if (what?.route) {
 +            openSettings(what.route);
 +        } else if (what?.app) {
-+            // The Luma Connect sign-in, as Settings' TV account page opens it.
++            // The Suno Connect sign-in, as Settings' TV account page opens it.
 +            Main.overview.hide();
 +            Shell.AppSystem.get_default().lookup_app(what.app)?.activate();
 +        } else if (what?.method)
@@ -1265,38 +1265,38 @@ index 0000000..59b750e
 +        this._service.destroy();
 +    }
 +}
-diff --git a/js/ui/lumaConnectSyncModel.js b/js/ui/lumaConnectSyncModel.js
+diff --git a/js/ui/SunoConnectSyncModel.js b/js/ui/SunoConnectSyncModel.js
 new file mode 100644
 index 0000000..096bf90
 --- /dev/null
-+++ b/js/ui/lumaConnectSyncModel.js
++++ b/js/ui/SunoConnectSyncModel.js
 @@ -0,0 +1,302 @@
 +// SPDX-License-Identifier: GPL-2.0-or-later
-+// What Luma Connect Sync shows in the Shell, without a Shell: the status
++// What Suno Connect Sync shows in the Shell, without a Shell: the status
 +// cell and its popover, the banners, the approval card's words and the
 +// restoring tile. No gi imports, so %check runs it under plain gjs.
 +// Design: design-center 38858a5, mockups/connect-sync (cs.js STATES).
-+// Behaviour: ADR-054; data: org.projectluma.ConnectSync1 GetState,
-+// ListJoinRequests and GetRestore (luma-connect-sync).
++// Behaviour: ADR-054; data: org.projectSuno.ConnectSync1 GetState,
++// ListJoinRequests and GetRestore (Suno-connect-sync).
 +
-+// Glyphs (data/icons/scalable/status/luma-sync-*-symbolic.svg, Lucide).
++// Glyphs (data/icons/scalable/status/Suno-sync-*-symbolic.svg, Lucide).
 +export const ICON = Object.freeze({
-+    cloud: 'luma-sync-cloud-symbolic',
-+    'cloud-off': 'luma-sync-cloud-off-symbolic',
-+    'cloud-alert': 'luma-sync-cloud-alert-symbolic',
-+    'refresh-cw': 'luma-sync-refresh-cw-symbolic',
-+    laptop: 'luma-sync-laptop-symbolic',
-+    smartphone: 'luma-sync-smartphone-symbolic',
-+    tv: 'luma-sync-tv-symbolic',
-+    'key-round': 'luma-sync-key-round-symbolic',
-+    'loader-circle': 'luma-sync-loader-circle-symbolic',
++    cloud: 'Suno-sync-cloud-symbolic',
++    'cloud-off': 'Suno-sync-cloud-off-symbolic',
++    'cloud-alert': 'Suno-sync-cloud-alert-symbolic',
++    'refresh-cw': 'Suno-sync-refresh-cw-symbolic',
++    laptop: 'Suno-sync-laptop-symbolic',
++    smartphone: 'Suno-sync-smartphone-symbolic',
++    tv: 'Suno-sync-tv-symbolic',
++    'key-round': 'Suno-sync-key-round-symbolic',
++    'loader-circle': 'Suno-sync-loader-circle-symbolic',
 +});
 +
 +// Tones: cs.css --cs-ok, --cs-warn, --cs-bad.
 +export const TONE = Object.freeze({ok: 'ok', warn: 'warn', bad: 'bad', none: ''});
 +
-+export const SOURCE = 'Luma Connect';
-+export const POPOVER_TITLE = 'Luma Connect';
++export const SOURCE = 'Suno Connect';
++export const POPOVER_TITLE = 'Suno Connect';
 +export const SETTINGS_LINK = 'Sync settings';
 +
 +// Settings' routes (gnome-control-center 0111): launch-panel ('users', [...]).
@@ -1312,7 +1312,7 @@ index 0000000..096bf90
 +    'Sync now': {method: 'SyncNow'},
 +    'Show versions': {route: ['sync', 'versions']},
 +    'Manage storage': {route: ROUTE.settings},
-+    'Sign in again': {app: 'org.projectluma.Connect.desktop'},
++    'Sign in again': {app: 'org.projectSuno.Connect.desktop'},
 +    // Settings asks for the password (polkit) and shows the new words, with their tick and Done.
 +    'Show new key…': {route: ROUTE.newKey},
 +});
@@ -1456,7 +1456,7 @@ index 0000000..096bf90
 +        return {kind: k, icon: ICON['cloud-off'], tone: TONE.bad, title: 'Removed from Sync',
 +            sub: a.by ? `On ${a.by} · ${when}` : `${when[0].toUpperCase()}${when.slice(1)}`,
 +            progress: null,
-+            message: 'This device no longer syncs. Everything on it stays. Sign in to Luma Connect again to rejoin.',
++            message: 'This device no longer syncs. Everything on it stays. Sign in to Suno Connect again to rejoin.',
 +            action: 'Sign in again'};
 +    }
 +    case 'newkey':
@@ -1564,7 +1564,7 @@ index 0000000..096bf90
 +        ring: Math.max(0, Math.min(1, fraction > 1 ? fraction / 100 : fraction)),
 +        caption: 'Restoring…',
 +        // Opening it before it's ready shows its row in Valet, not a broken launch.
-+        launch: ['luma-installer', '--restore', row.app],
++        launch: ['Suno-installer', '--restore', row.app],
 +    };
 +}
 +
@@ -1573,25 +1573,25 @@ index 0000000..096bf90
 +    const busy = r => (r ?? []).some(row => RESTORING.has(row.state));
 +    return !busy(previousRows) && busy(rows) && (previousRows ?? []).length === 0;
 +}
-diff --git a/js/ui/lumaConnectSyncRestore.js b/js/ui/lumaConnectSyncRestore.js
+diff --git a/js/ui/SunoConnectSyncRestore.js b/js/ui/SunoConnectSyncRestore.js
 new file mode 100644
 index 0000000..f90fceb
 --- /dev/null
-+++ b/js/ui/lumaConnectSyncRestore.js
++++ b/js/ui/SunoConnectSyncRestore.js
 @@ -0,0 +1,133 @@
 +// SPDX-License-Identifier: GPL-2.0-or-later
 +// An app still restoring from the person's other devices (ADR-054 §6,
 +// design-center 38858a5 restore.html .cs-tile): its launcher and dock tile
 +// at 55% opacity and saturation 0.5, a 3 px progress ring in the accent and
 +// "Restoring…" under its name. Opening it shows its row in Valet instead of
-+// a launch that would find no data. lumaConnectSync.js feeds the rows from
-+// org.projectluma.ConnectSync1 GetRestore.
++// a launch that would find no data. SunoConnectSync.js feeds the rows from
++// org.projectSuno.ConnectSync1 GetRestore.
 +import Clutter from 'gi://Clutter';
 +import GLib from 'gi://GLib';
 +import Graphene from 'gi://Graphene';
 +import St from 'gi://St';
 +
-+import * as Model from './lumaConnectSyncModel.js';
++import * as Model from './SunoConnectSyncModel.js';
 +
 +const _rows = new Map();
 +// cs.css .cs-ring: a 74 px ring around a 64 px icon.
@@ -1661,7 +1661,7 @@ index 0000000..f90fceb
 +    if (!view) {
 +        if (state) {
 +            artwork.opacity = 255;
-+            artwork.remove_effect_by_name('luma-restore-desaturate');
++            artwork.remove_effect_by_name('Suno-restore-desaturate');
 +            state.ring.destroy();
 +            state.caption?.destroy();
 +            tile.state = null;
@@ -1669,7 +1669,7 @@ index 0000000..f90fceb
 +        return;
 +    }
 +    if (!state) {
-+        const ring = new St.DrawingArea({style_class: 'luma-sync-restore-ring', reactive: false});
++        const ring = new St.DrawingArea({style_class: 'Suno-sync-restore-ring', reactive: false});
 +        ring.connect('repaint', () => drawRing(ring, tile.state?.fraction ?? 0));
 +        const parent = artwork.get_parent();
 +        const holder = new St.Widget({layout_manager: new Clutter.BinLayout(), x_align: artwork.x_align});
@@ -1680,15 +1680,15 @@ index 0000000..f90fceb
 +            scale_x: RING_SCALE, scale_y: RING_SCALE});
 +        let caption = null;
 +        if (tile.captionBox) {
-+            caption = new St.Label({style_class: 'luma-sync-restore-caption', text: view.caption,
++            caption = new St.Label({style_class: 'Suno-sync-restore-caption', text: view.caption,
 +                x_align: Clutter.ActorAlign.CENTER});
 +            tile.captionBox.add_child(caption);
 +        }
 +        state = tile.state = {ring, caption, fraction: 0};
 +    }
 +    artwork.opacity = view.opacity;
-+    if (!artwork.get_effect('luma-restore-desaturate'))
-+        artwork.add_effect_with_name('luma-restore-desaturate', new Clutter.DesaturateEffect({factor: view.saturation}));
++    if (!artwork.get_effect('Suno-restore-desaturate'))
++        artwork.add_effect_with_name('Suno-restore-desaturate', new Clutter.DesaturateEffect({factor: view.saturation}));
 +    state.fraction = view.ring;
 +    state.ring.queue_repaint();
 +}
@@ -1696,7 +1696,7 @@ index 0000000..f90fceb
 +const _tiles = new Set();
 +
 +// Any launcher tile: the app grid's and dock's AppIcon (appDisplay.js) and
-+// the launcher drawer's tile (lumaPresentation/appDrawer.js).
++// the launcher drawer's tile (SunoPresentation/appDrawer.js).
 +export function attachTile(owner, app, artwork, captionBox = null) {
 +    const tile = {owner, app, artwork, captionBox, state: null};
 +    _tiles.add(tile);
@@ -1716,19 +1716,19 @@ diff --git a/js/ui/main.js b/js/ui/main.js
 index cce73fb..5c57b21 100644
 --- a/js/ui/main.js
 +++ b/js/ui/main.js
-@@ -41,6 +41,7 @@ import * as LumaSession from './lumaSession.js';
- import * as LumaShare from './lumaShare.js';
- import * as LumaAppPermissions from './lumaAppPermissions.js';
- import * as LumaLayerShell from './lumaLayerShell.js';
-+import * as LumaConnectSync from './lumaConnectSync.js';
+@@ -41,6 +41,7 @@ import * as SunoSession from './SunoSession.js';
+ import * as SunoShare from './SunoShare.js';
+ import * as SunoAppPermissions from './SunoAppPermissions.js';
+ import * as SunoLayerShell from './SunoLayerShell.js';
++import * as SunoConnectSync from './SunoConnectSync.js';
  import * as NotificationDaemon from './notificationDaemon.js';
  import * as WindowAttentionHandler from './windowAttentionHandler.js';
  import * as Screenshot from './screenshot.js';
-@@ -77,6 +78,7 @@ export let lumaWindowCorners = null;
- export let lumaWindowWatch = null;
- export let lumaSession = null;
- export let lumaShare = null;
-+export let lumaConnectSync = null;
+@@ -77,6 +78,7 @@ export let SunoWindowCorners = null;
+ export let SunoWindowWatch = null;
+ export let SunoSession = null;
+ export let SunoShare = null;
++export let SunoConnectSync = null;
  export let runDialog = null;
  export let lookingGlass = null;
  export let welcomeDialog = null;
@@ -1736,14 +1736,14 @@ index cce73fb..5c57b21 100644
          }
      }
  
-+    // Luma Connect Sync (ADR-054): the approval card, the status cell and
++    // Suno Connect Sync (ADR-054): the approval card, the status cell and
 +    // the restoring tiles. Guarded: a failure here is a missing cell, never
 +    // a session that does not start.
 +    if (sessionMode.hasOverview && !sessionMode.isGreeter) {
 +        try {
-+            lumaConnectSync = new LumaConnectSync.ConnectSync();
++            SunoConnectSync = new SunoConnectSync.ConnectSync();
 +        } catch (e) {
-+            logError(e, 'Luma Connect Sync could not be shown');
++            logError(e, 'Suno Connect Sync could not be shown');
 +        }
 +    }
 +
@@ -1758,8 +1758,8 @@ index 7dfb0f1..be36276 100644
              this._statusControls.set_width(naturalWidth);
      }
  
-+    // A cell that answers its own clicks (Luma Connect Sync's state,
-+    // lumaConnectSync.js) goes first in the status slots, a slot like the
++    // A cell that answers its own clicks (Suno Connect Sync's state,
++    // SunoConnectSync.js) goes first in the status slots, a slot like the
 +    // others: a press on it never opens Quick Settings. False while the
 +    // island has no slots.
 +    setStatusCell(cell) {

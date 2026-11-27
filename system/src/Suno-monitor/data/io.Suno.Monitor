@@ -1,0 +1,3 @@
+#!/usr/bin/python3
+from Suno_monitor.application import main
+raise SystemExit(main())

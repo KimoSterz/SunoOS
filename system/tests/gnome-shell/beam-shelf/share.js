@@ -17,12 +17,12 @@ export default async function ({Main, shot}) {
     await sleep(2500);
     const mon = Main.layoutManager.primaryMonitor;
     const islands = () => Main.shelf._group.get_children().filter(c => c.visible).map(c => ({
-        island: c.style_class.split(' ').find(x => x.startsWith('luma-shelf-') && x !== 'luma-shelf-island'),
+        island: c.style_class.split(' ').find(x => x.startsWith('Suno-shelf-') && x !== 'Suno-shelf-island'),
         rect: rect(c)}));
     const where = actor => {
         for (let p = actor; p; p = p.get_parent()) {
-            if (p.has_style_class_name?.('luma-shelf-island') && !p.has_style_class_name('luma-shelf-root'))
-                return p.style_class.split(' ').find(x => x.startsWith('luma-shelf-') && x !== 'luma-shelf-island');
+            if (p.has_style_class_name?.('Suno-shelf-island') && !p.has_style_class_name('Suno-shelf-root'))
+                return p.style_class.split(' ').find(x => x.startsWith('Suno-shelf-') && x !== 'Suno-shelf-island');
         }
         return actor.get_stage() ? 'not in an island' : 'not on stage';
     };

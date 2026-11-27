@@ -47,15 +47,15 @@ gi.require_version("Graphene", "1.0")
 from gi.repository import Adw, Gdk, GdkPixbuf, Gio, GLib, Graphene, Gtk  # noqa: E402
 
 from prairie_apps import notes as notes_module  # noqa: E402
-from prairie_apps.notes_lumaui import NotesLumaWindow  # noqa: E402
+from prairie_apps.notes_SunoUI import NotesSunoWindow  # noqa: E402
 from prairie_apps.notes_attachments import attachments_directory, store_picture  # noqa: E402
 from prairie_apps.notes_backend import NotesStore, notes_data_directory  # noqa: E402
 from prairie_apps.notes_richtext import CARRIER, list_markers, number_label  # noqa: E402
 
 # Select the requested appearance on the private test bus, independently of
-# the user's desktop. The kit now loads its LumaUI families from this choice;
+# the user's desktop. The kit now loads its SunoUI families from this choice;
 # the old token-sheet environment variables alone do not choose those sheets.
-mock.patch("luma_appkit.widgets._prefers_dark",
+mock.patch("Suno_appkit.widgets._prefers_dark",
            lambda: os.environ.get("NOTES_TEST_APPEARANCE", "light") == "dark").start()
 context = GLib.MainContext.default()
 _application = None
@@ -156,7 +156,7 @@ class NotesWindowCase(unittest.TestCase):
 class ListTests(NotesWindowCase):
     # Production activation opens this composition. The legacy window remains
     # available for the existing command/rename compatibility tests below.
-    window_type = NotesLumaWindow
+    window_type = NotesSunoWindow
 
     def test_numbering_follows_the_list(self) -> None:
         blocks = [frozenset({"numbered"}), frozenset({"numbered"}), frozenset({"numbered", "indent-1"}),
@@ -422,7 +422,7 @@ class MenuTests(NotesWindowCase):
 
 
 class LayoutTests(NotesWindowCase):
-    window_type = NotesLumaWindow
+    window_type = NotesSunoWindow
 
     def test_the_page_starts_a_clear_gap_below_the_title(self) -> None:
         pump(0.2)
@@ -551,7 +551,7 @@ class PictureTests(NotesWindowCase):
                 break
         self.assertTrue(first.status.get_visible(), "the page follows the sync service's status file")
         self.assertEqual(first.status_label.get_label(),
-                         "Not synced · Your Luma storage for note images is full. Remove images from notes to free space.")
+                         "Not synced · Your Suno storage for note images is full. Remove images from notes to free space.")
         self.assertFalse(first.shrink_button.get_visible(), "nothing to press: removing pictures is the fix")
         self.assertIn("1.1\u00a0GB", first.status.get_tooltip_text() or "")
         self.assertTrue(second.status.get_visible())

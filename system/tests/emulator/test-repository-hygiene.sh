@@ -11,7 +11,7 @@ repo=$(CDPATH= cd -- "$here/../.." && pwd)
 
 printf '== repository hygiene\n'
 
-tracked=$(git -C "$repo" ls-files 'tools/luma-emulator' 'scripts/emulator' 'config/emulator' 'tests/emulator')
+tracked=$(git -C "$repo" ls-files 'tools/Suno-emulator' 'scripts/emulator' 'config/emulator' 'tests/emulator')
 
 printf '%s' "$tracked" | while read -r path; do :; done
 
@@ -30,7 +30,7 @@ check_no_tracked "no disk images are tracked" '\.(raw|qcow2|img|iso|vdi|vmdk|vhd
 check_no_tracked "no EFI variable stores are tracked" '\.(nvram|fd)$'
 check_no_tracked "no private keys are tracked" '(^|/)(id_|guest_)(rsa|ed25519|ecdsa)$|\.(pem|p12|pfx)$'
 check_no_tracked "no known_hosts is tracked" '(^|/)known_hosts$'
-check_no_tracked "no SwiftPM build tree is tracked" 'tools/luma-emulator/\.build/'
+check_no_tracked "no SwiftPM build tree is tracked" 'tools/Suno-emulator/\.build/'
 check_no_tracked "no application bundle is tracked" '\.app/'
 
 printf '== the emulator writes nothing into the repository at run time\n'
@@ -40,7 +40,7 @@ else
   fail "build/emulator is ignored" "git would track the emulator build output"
 fi
 for candidate in \
-  "tools/luma-emulator/.build" \
+  "tools/Suno-emulator/.build" \
   "config/emulator/provision/guest_ed25519" \
   "tests/emulator/known_hosts"
 do
@@ -52,7 +52,7 @@ do
 done
 
 printf '== no secrets or machine-specific paths are baked into the source\n'
-sources=$(git -C "$repo" ls-files 'tools/luma-emulator/**' 'scripts/emulator/**' 'config/emulator/**' 'tests/emulator/**')
+sources=$(git -C "$repo" ls-files 'tools/Suno-emulator/**' 'scripts/emulator/**' 'config/emulator/**' 'tests/emulator/**')
 leak=""
 for file in $sources; do
   case "$file" in
@@ -68,21 +68,21 @@ else
   fail "no keys or hard-coded home paths in emulator sources" "$leak"
 fi
 
-printf '== the emulator adds no dependency to any Luma package\n'
-if grep -rl "luma-emulator" "$repo/packaging" >/dev/null 2>&1; then
-  fail "no Luma package references the emulator" "found a reference under packaging/"
+printf '== the emulator adds no dependency to any Suno package\n'
+if grep -rl "Suno-emulator" "$repo/packaging" >/dev/null 2>&1; then
+  fail "no Suno package references the emulator" "found a reference under packaging/"
 else
-  pass "no Luma package references the emulator"
+  pass "no Suno package references the emulator"
 fi
-if grep -rl "luma-emulator" "$repo/config/desktop" "$repo/config/shared" >/dev/null 2>&1; then
+if grep -rl "Suno-emulator" "$repo/config/desktop" "$repo/config/shared" >/dev/null 2>&1; then
   fail "no composition input references the emulator" "found a reference in composition inputs"
 else
   pass "no composition input references the emulator"
 fi
 
-printf '== the emulator does not route Luma function through Android\n'
+printf '== the emulator does not route Suno function through Android\n'
 if grep -rniE 'waydroid|android' \
-     "$repo/tools/luma-emulator/Sources" \
+     "$repo/tools/Suno-emulator/Sources" \
      >/dev/null 2>&1; then
   fail "no Android or Waydroid dependency" "an Android reference appeared in emulator sources"
 else
@@ -97,8 +97,8 @@ fi
 printf '== shell sources are syntactically valid\n'
 for script in "$repo"/scripts/emulator/*.sh "$repo"/tests/emulator/*.sh \
               "$repo"/config/emulator/provision/provision.sh \
-              "$repo"/config/emulator/provision/luma-emulator-capture \
-              "$repo"/config/emulator/provision/luma-emulator-session; do
+              "$repo"/config/emulator/provision/Suno-emulator-capture \
+              "$repo"/config/emulator/provision/Suno-emulator-session; do
   [ -f "$script" ] || continue
   if bash -n "$script" 2>/dev/null; then
     pass "bash -n $(basename "$script")"
@@ -107,7 +107,7 @@ for script in "$repo"/scripts/emulator/*.sh "$repo"/tests/emulator/*.sh \
   fi
 done
 
-if python3 -c "import ast,sys; ast.parse(open('$repo/config/emulator/provision/luma-emulator-a11y.py').read())" 2>/dev/null; then
+if python3 -c "import ast,sys; ast.parse(open('$repo/config/emulator/provision/Suno-emulator-a11y.py').read())" 2>/dev/null; then
   pass "the accessibility helper parses"
 else
   fail "the accessibility helper parses" "syntax error"

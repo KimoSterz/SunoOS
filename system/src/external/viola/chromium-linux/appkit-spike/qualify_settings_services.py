@@ -96,7 +96,7 @@ def main():
             engine.request('Runtime.evaluate',{'expression':"vela.send('browser:openPage',{page:'sitePermissions'});true"},session=session)
             target = session_for('chrome://settings/content')
             wait(target,'document.documentElement.dataset.violaThemed === "true"')
-            assert evaluate(target,'!!document.querySelector("#viola-luma-browser-tool-theme")')
+            assert evaluate(target,'!!document.querySelector("#viola-Suno-browser-tool-theme")')
             assert evaluate(target,'!document.querySelector("#viola-engine-settings-rail")')
             services.wait_state(lambda state: state.get('activeUrl','').startswith('chrome://settings/content'))
             assert services.state['activeTabId'] == old

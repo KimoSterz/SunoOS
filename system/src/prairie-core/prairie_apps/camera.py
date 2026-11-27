@@ -21,7 +21,7 @@ from gi.repository import Adw, Gdk, Gio, GLib, GObject, Gst, Gtk  # noqa: E402
 # media boundary at import time before any window can construct a pipeline.
 Gst.init(None)
 
-from luma_appkit import (  # noqa: E402
+from Suno_appkit import (  # noqa: E402
     add_style_sheet,
     AppWindow,
     Command,
@@ -33,7 +33,7 @@ from luma_appkit import (  # noqa: E402
     PresentationMode,
     Toast,
     install_appkit,
-    install_lumaui,
+    install_SunoUI,
 )
 
 from .camera_backend import (
@@ -61,7 +61,7 @@ from .photos_backend import PhotoLibrary, PhotoRecord, default_database_path
 # compromise; requesting the maximum sensor resolution for the viewfinder is much
 # slower and is not how Android CameraX or AVFoundation structure preview.
 STILL_SETTLE_FRAMES = 24
-APPLICATION_ID = "org.projectluma.Camera"
+APPLICATION_ID = "org.projectSuno.Camera"
 # The scratch-preview launcher overrides APP_ID after importing this module.
 # Keep the production identity stable for icons and normal launches.
 APP_ID = APPLICATION_ID
@@ -74,14 +74,14 @@ def _install_camera_theme() -> None:
     if display is None or _camera_style_provider is not None:
         return
     # The kit owns this sheet, so it is reloaded when the surface
-    # treatment changes (luma_appkit.add_style_sheet). Loaded through a
+    # treatment changes (Suno_appkit.add_style_sheet). Loaded through a
     # provider of its own it was not: whatever the palette was when the
     # application started stayed on screen, so switching to Glass left
     # this application painting Light colours next to windows that had
     # followed, which is one of the ways two windows came out different.
     provider = add_style_sheet(
         os.environ.get(
-            "LUMA_CAMERA_STYLE_PATH", "/usr/share/prairie-core/camera.css"
+            "SUNO_CAMERA_STYLE_PATH", "/usr/share/prairie-core/camera.css"
         )
     )
     _camera_style_provider = provider
@@ -119,7 +119,7 @@ class CameraWindow(AppWindow):
         )
         self.add_css_class("prairie-camera")
         self.shell_surface = None if self._fixture else TransientShellSurface(
-            "org.projectluma.Camera.desktop"
+            "org.projectSuno.Camera.desktop"
         )
         if self.context.presentation is PresentationMode.FULLSCREEN:
             self.add_css_class("mobile")
@@ -135,7 +135,7 @@ class CameraWindow(AppWindow):
         # and Camera's own rows keep clear of the clock and the gesture chin.
         self.set_phone_bleed(True)
         if self.context.input_mode is InputMode.TOUCH:
-            self.add_css_class("luma-touch")
+            self.add_css_class("Suno-touch")
 
         self.state = self._fixture.state if self._fixture else CameraState()
         self._desktop = self.context.presentation is PresentationMode.WINDOWED
@@ -166,7 +166,7 @@ class CameraWindow(AppWindow):
         self._camera_discovery_future = None
         self._request_camera_access = None
         self._library_executor = ThreadPoolExecutor(
-            max_workers=1, thread_name_prefix="luma-camera-library"
+            max_workers=1, thread_name_prefix="Suno-camera-library"
         )
         # Handhelds release the CPU ISP when backgrounded. Desktop capture
         # remains live across focus changes, including during a recording.
@@ -288,7 +288,7 @@ class CameraWindow(AppWindow):
             return
         self._stop_camera()
         self._video_path = new_photo_path(suffix=".webm")
-        descriptor, filename = tempfile.mkstemp(prefix=".luma-recording-", suffix=".webm", dir=self._video_path.parent)
+        descriptor, filename = tempfile.mkstemp(prefix=".Suno-recording-", suffix=".webm", dir=self._video_path.parent)
         os.close(descriptor)
         self._video_temporary = Path(filename)
         try:
@@ -1190,7 +1190,7 @@ class CameraWindow(AppWindow):
         try:
             path = new_photo_path()
             descriptor, temporary_name = tempfile.mkstemp(
-                prefix=".luma-camera-", suffix=".partial", dir=path.parent
+                prefix=".Suno-camera-", suffix=".partial", dir=path.parent
             )
             temporary = Path(temporary_name)
             os.fchmod(descriptor, 0o600)
@@ -1376,13 +1376,13 @@ class CameraWindow(AppWindow):
 
 class CameraApplication(Adw.Application):
     def __init__(self) -> None:
-        app_id = APP_ID + ".Fixture" if "LUMA_CAMERA_FIXTURE" in os.environ else APP_ID
+        app_id = APP_ID + ".Fixture" if "SUNO_CAMERA_FIXTURE" in os.environ else APP_ID
         super().__init__(application_id=app_id)
 
     def do_startup(self) -> None:
         Adw.Application.do_startup(self)
         install_appkit()
-        install_lumaui()
+        install_SunoUI()
         _install_camera_theme()
         switch_action = Gio.SimpleAction.new("switch-camera", None)
         switch_action.connect("activate", self._on_switch_action)
@@ -1458,19 +1458,19 @@ class CameraApplication(Adw.Application):
 
         window = self.props.active_window
         if getattr(window, "_fixture", None):
-            from luma_appkit import Toast
+            from Suno_appkit import Toast
             Toast.show(window._surface.host, "Sample captures stay in this preview", kind="notified")
             return
         if not isinstance(window, CameraWindow):
             return
-        if os.environ.get("LUMA_CAMERA_PRIVATE_PREVIEW") == "1":
-            from luma_appkit import Toast
+        if os.environ.get("SUNO_CAMERA_PRIVATE_PREVIEW") == "1":
+            from Suno_appkit import Toast
             Toast.show(window._surface.host, "Captures stay in private review storage", kind="notified")
             return
-        from luma_appkit.application_directory import launch
+        from Suno_appkit.application_directory import launch
         files = ([Gio.File.new_for_path(str(window._last_capture_path))]
                  if window._last_capture_path is not None else [])
-        launch("org.projectluma.Photos.desktop", files,
+        launch("org.projectSuno.Photos.desktop", files,
                callback=lambda opened, error: None if opened else
                window._show_pipeline_error(f"Photos did not open: {error}"))
 
@@ -1482,12 +1482,12 @@ class CameraApplication(Adw.Application):
         import os
 
         if (getattr(self.props.active_window, "_fixture", None) or
-                os.environ.get("LUMA_CAMERA_PRIVATE_PREVIEW") == "1"):
+                os.environ.get("SUNO_CAMERA_PRIVATE_PREVIEW") == "1"):
             return
         window = self.props.active_window
         if not isinstance(window, CameraWindow) or window._last_capture_path is None:
             return
-        from luma_appkit.application_directory import launch
+        from Suno_appkit.application_directory import launch
         def finished(opened, error):
             if opened:
                 return
@@ -1495,7 +1495,7 @@ class CameraApplication(Adw.Application):
                                     body=f"{error}. The original photo remains unchanged in Photos.")
             dialog.add_response("close", "Close")
             dialog.present(window)
-        launch("org.projectluma.Darkroom.desktop",
+        launch("org.projectSuno.Darkroom.desktop",
                [Gio.File.new_for_path(str(window._last_capture_path))], callback=finished)
 
     def do_activate(self) -> None:

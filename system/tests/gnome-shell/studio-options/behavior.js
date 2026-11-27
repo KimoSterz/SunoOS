@@ -9,8 +9,8 @@ function read(path) {
     return new TextDecoder().decode(data);
 }
 function assert(ok, message) { if (!ok) throw Error(message); }
-const names = ['lumaNotificationBeacon', 'messageTray', 'messageList', 'notificationDaemon',
-    'lumaSurfaceMaterials', 'quickSettings', 'panel', 'status/system', 'status/doNotDisturb',
+const names = ['SunoNotificationBeacon', 'messageTray', 'messageList', 'notificationDaemon',
+    'SunoSurfaceMaterials', 'quickSettings', 'panel', 'status/system', 'status/doNotDisturb',
     'status/powerProfiles', 'status/bluetooth', 'status/network', 'status/volume'];
 for (const name of names) Reflect.parse(read(`js/ui/${name}.js`), {target: 'module'});
 let now = 0, sequence = 0;
@@ -33,7 +33,7 @@ const MessageTray = {NotificationLifecycleState: life, NotificationDestroyedReas
 const Main = {messageTray: {getSources: () => []}};
 const GObject = {registerClass: c => c};
 const St = {Bin: class {}, Widget: class {}};
-let moduleText = read('js/ui/lumaNotificationBeacon.js').replace(/^import .*;\n/gm, '').replace(/^export /gm, '');
+let moduleText = read('js/ui/SunoNotificationBeacon.js').replace(/^import .*;\n/gm, '').replace(/^export /gm, '');
 const {Lip, records} = new Function('GObject', 'St', 'MessageTray', 'Main', 'GLib',
     moduleText + '\nreturn {Lip: NotificationLip, records};')(GObject, St, MessageTray, Main, GLib);
 function reset() { now = 0; sequence = 0; pending.clear(); }
@@ -126,17 +126,17 @@ function securityTest() {
 const daemon = read('js/ui/notificationDaemon.js');
 const factoryText = daemon.slice(daemon.indexOf('    _createInlineReply(source,'), daemon.indexOf('    CloseNotification(id)'));
 const factory = new Function('Gio', 'GLib', 'MESSAGES_REPLY_PATH', 'MESSAGES_REPLY_IFACE', 'INLINE_REPLY_TIMEOUT_MS',
-    'return ({' + factoryText + '})._createInlineReply;')({}, {}, '/org/projectluma/Messages/Notifications',
-        'org.projectluma.Messages.NotificationReply1', 30000);
+    'return ({' + factoryText + '})._createInlineReply;')({}, {}, '/org/projectSuno/Messages/Notifications',
+        'org.projectSuno.Messages.NotificationReply1', 30000);
 function replyCapabilityTest() {
-    const path = '/org/projectluma/Messages/Notifications';
-    const hints = {'x-luma-inline-reply-path': path, 'x-luma-inline-reply-token': '0123456789abcdef0123456789abcdef'};
-    const source = {app: {get_id: () => 'org.projectluma.Messages.desktop'}};
+    const path = '/org/projectSuno/Messages/Notifications';
+    const hints = {'x-Suno-inline-reply-path': path, 'x-Suno-inline-reply-token': '0123456789abcdef0123456789abcdef'};
+    const source = {app: {get_id: () => 'org.projectSuno.Messages.desktop'}};
     const valid = factory(source, 7, ':1.99', hints);
     assert(valid && Object.isFrozen(valid) && valid.sender === ':1.99', 'reply capability must bind unique producer');
     for (const [s, owner, h] of [[source, null, hints], [source, 'org.example.Name', hints],
-        [source, ':1.99', {...hints, 'x-luma-inline-reply-path': '/wrong'}],
-        [source, ':1.99', {...hints, 'x-luma-inline-reply-token': 'bad'}],
+        [source, ':1.99', {...hints, 'x-Suno-inline-reply-path': '/wrong'}],
+        [source, ':1.99', {...hints, 'x-Suno-inline-reply-token': 'bad'}],
         [{app: {get_id: () => 'org.example.Impostor.desktop'}}, ':1.99', hints]])
         assert(factory(s, 7, owner, h) === null, 'invalid producer/path/token/app must not receive reply capability');
 }

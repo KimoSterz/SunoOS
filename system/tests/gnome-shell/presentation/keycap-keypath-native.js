@@ -85,7 +85,7 @@ function keyFor(text) {
         if (!key.keyButton || !key.mapped)
             continue;
         const labels = [key.keyButton.label, ...descendants(key, a => a instanceof St.Label &&
-            !a.has_style_class_name('luma-keycap-hint')).map(a => a.text)]
+            !a.has_style_class_name('Suno-keycap-hint')).map(a => a.text)]
             .filter(Boolean).map(label => label.toLowerCase());
         if (text === 'delete' ? key._iconName === 'osk-delete-symbolic'
             : text === 'shift' ? key._iconName === 'osk-shift-symbolic'
@@ -114,14 +114,14 @@ async function tap(text, hold = 50, gap = 40) {
 
 async function work() {
     const presentation = Main.presentation;
-    const settings = new Gio.Settings({schema_id: 'org.project_luma.shell-state'});
+    const settings = new Gio.Settings({schema_id: 'org.projectSuno.shell-state'});
     settings.set_string('presentation-mode', 'mobile');
     await until(() => presentation?.mode === 'mobile');
     monitor = Main.layoutManager.primaryMonitor;
     const scale = monitor.geometry_scale;
     check('Mobile presentation at phone scale', presentation?.mode === 'mobile' && scale === 3,
         `${monitor.width}x${monitor.height}@${scale}`);
-    GLib.unlink(GLib.build_filenamev([GLib.get_user_data_dir(), 'luma', 'keycap-words.json']));
+    GLib.unlink(GLib.build_filenamev([GLib.get_user_data_dir(), 'Suno', 'keycap-words.json']));
     new Gio.Settings({schema_id: 'org.gnome.shell.keyboard'}).set_boolean('auto-correct', false);
 
     // A stand-in feedbackd that D-Bus activates on the first key press.

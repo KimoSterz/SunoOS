@@ -1,0 +1,77 @@
+{
+  "app": "bar-tasks",
+  "title": "Bar entry (quick) against Tasks' New task bar",
+  "spec": {
+    "url": "mockups/Suno-next-70.html?app=tasks",
+    "window": "#w-tasks",
+    "exclude": [
+      "#w-tasks *:not(:has(#tk-bar)):not(#tk-bar):not(#tk-bar *)"
+    ]
+  },
+  "gtk": {
+    "module": "conform_bar",
+    "app_id": "org.projectSuno.SunoUIGallery",
+    "pythonpath": [
+      "src/Suno-platform/tools/SunoUI-gallery"
+    ],
+    "env": {
+      "SUNOUI_BAR_SURFACE": "tasks",
+      "SUNOUI_BAR_HOST": "224,46,948,694",
+      "SUNOUI_BAR_HOST_PHONE": "8,46,374,774"
+    }
+  },
+  "states": [
+    {
+      "name": "adding",
+      "about": "New task: the bar becomes the field and Done",
+      "spec": [
+        {
+          "click": "[data-tknew]"
+        }
+      ],
+      "gtk": [
+        {
+          "env": {
+            "SUNOUI_BAR_STATE": "adding"
+          }
+        }
+      ]
+    },
+    {
+      "name": "chips",
+      "about": "What Tasks understood from the words, as chips",
+      "spec": [
+        {
+          "click": "[data-tknew]"
+        },
+        {
+          "eval": "(()=>{const i=document.querySelector('[data-tkadd]'); i.value='Call Theo tomorrow 3pm'; i.dispatchEvent(new Event('input',{bubbles:true}));})()"
+        }
+      ],
+      "gtk": [
+        {
+          "env": {
+            "SUNOUI_BAR_STATE": "chips"
+          }
+        }
+      ]
+    }
+  ],
+  "phone_states": [
+    "adding",
+    "chips"
+  ],
+  "groups": [
+    {
+      "name": "quick entry bar",
+      "spec": "#tk-bar"
+    }
+  ],
+  "pairs": [
+    {
+      "spec": "#tk-bar",
+      "gtk": "bar",
+      "name": "quick entry bar"
+    }
+  ]
+}

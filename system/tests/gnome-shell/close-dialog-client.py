@@ -4,7 +4,7 @@
 import gi
 gi.require_version('Gtk', '4.0')
 from gi.repository import Gtk
-app = Gtk.Application(application_id='org.projectluma.NativeCloseDialogFixture')
+app = Gtk.Application(application_id='org.projectSuno.NativeCloseDialogFixture')
 def activate(application):
     window = Gtk.ApplicationWindow(application=application, title='Native Close Dialog Fixture')
     window.set_default_size(800, 550)

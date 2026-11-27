@@ -25,7 +25,7 @@ class InitialEFIDeployment(unittest.TestCase):
             config = ["config", "--repo=" + str(repo)]
             if policy is not None:
                 subprocess.run(["ostree", *config, "set", "sysroot.bootloader", policy], check=True)
-            # Represent the existing vendor configuration outside Luma's boot
+            # Represent the existing vendor configuration outside Suno's boot
             # directory. The real VM covers actual EFI discovery and deployment.
             ubuntu = Path(directory) / "boot/efi/EFI/ubuntu/grub.cfg"
             ubuntu.parent.mkdir(parents=True)
@@ -49,13 +49,13 @@ class InitialEFIDeployment(unittest.TestCase):
                     pass
             tree = ast.parse(PATCH.patched_pull_source(UPSTREAM).decode() if patched else UPSTREAM.decode())
             tree.body = [node for node in tree.body if getattr(node, "name", "") in
-                         ("safe_exec_program", "_luma_initial_efi_deploy", "DeployOSTreeTask")]
+                         ("safe_exec_program", "_Suno_initial_efi_deploy", "DeployOSTreeTask")]
             namespace = dict(Task=Task, STORAGE=SimpleNamespace(get_proxy=lambda _: SimpleNamespace(IsEFI=lambda: efi)),
                              BOOTLOADER="bootloader", execProgram=execute, PayloadInstallationError=RuntimeError,
-                             _=lambda text: text, _get_ref=lambda _: "test/ref", _get_stateroot=lambda _: "luma",
+                             _=lambda text: text, _get_ref=lambda _: "test/ref", _get_stateroot=lambda _: "Suno",
                              arch=SimpleNamespace(is_s390=lambda: False), log=SimpleNamespace(info=lambda *a: None))
             exec(compile(tree, "native-initial-deploy", "exec"), namespace)
-            task = namespace["DeployOSTreeTask"](SimpleNamespace(is_container=lambda: False, remote="luma"), directory)
+            task = namespace["DeployOSTreeTask"](SimpleNamespace(is_container=lambda: False, remote="Suno"), directory)
             error = None
             try:
                 task.run()
@@ -93,8 +93,8 @@ class PreservedEFIStartup(unittest.TestCase):
     def exercise(self, *, efi=True, preserve=True, result=0, raise_install=False, card=False):
         tree = ast.parse(PATCH.patched_pull_source(UPSTREAM).decode())
         tree.body = [node for node in tree.body if getattr(node, "name", "") in
-                     ("safe_exec_program", "_luma_firmware_order", "_luma_card_firmware",
-                      "_luma_install_bootupd")]
+                     ("safe_exec_program", "_Suno_firmware_order", "_Suno_card_firmware",
+                      "_Suno_install_bootupd")]
         order = ["000A", "0009", "0003"]
         calls = []
         def execute(command, argv, **kwargs):
@@ -119,10 +119,10 @@ class PreservedEFIStartup(unittest.TestCase):
                          log=SimpleNamespace(info=lambda *args: None))
         exec(compile(tree, "native-bootupd-install", "exec"), namespace)
         if card:
-            namespace["_luma_card_firmware"] = lambda: True
+            namespace["_Suno_card_firmware"] = lambda: True
         try:
             argv = ["backend", "install", "--auto", *(["--update-firmware"] if not preserve else []), "/"]
-            returned = namespace["_luma_install_bootupd"]("/sysroot", argv, preserve)
+            returned = namespace["_Suno_install_bootupd"]("/sysroot", argv, preserve)
         except RuntimeError:
             if not raise_install: raise
             returned = None
@@ -155,12 +155,12 @@ class PreservedEFIStartup(unittest.TestCase):
 
     def test_card_firmware_is_detected_from_the_pi5_device_tree_only(self):
         tree = ast.parse(PATCH.patched_pull_source(UPSTREAM).decode())
-        source = next(node for node in tree.body if getattr(node, "name", "") == "_luma_card_firmware")
+        source = next(node for node in tree.body if getattr(node, "name", "") == "_Suno_card_firmware")
         self.assertIn("/proc/device-tree/compatible", ast.unparse(source))
         namespace = {}
         exec(compile(ast.Module(body=[source], type_ignores=[]), "card", "exec"), namespace)
         if not Path("/proc/device-tree/compatible").exists():
-            self.assertFalse(namespace["_luma_card_firmware"]())
+            self.assertFalse(namespace["_Suno_card_firmware"]())
 
 
 if __name__ == "__main__":

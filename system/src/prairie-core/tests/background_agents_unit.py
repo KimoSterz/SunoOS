@@ -45,7 +45,7 @@ class ContractFileTests(unittest.TestCase):
     def test_every_agent_declares_the_same_contract_in_each_file(self):
         from prairie_apps.background_agent import CATEGORIES, WAKE_EVENTS
         for app in AGENT_APPS + ("Clock",):
-            app_id = f"org.projectluma.{app}"
+            app_id = f"org.projectSuno.{app}"
             with self.subTest(app=app):
                 manifest = tomllib.loads((DATA / f"{app_id}.toml").read_text())
                 background = manifest["background"]
@@ -62,22 +62,22 @@ class ContractFileTests(unittest.TestCase):
                 self.assertEqual(entry.get("X-GNOME-UsesNotifications"), "true",
                                  f"{app} notifies, so its desktop file must declare it")
                 for name in background["publishes"]:
-                    self.assertRegex(name, r"^(live-extension:org\.projectluma\.[A-Za-z.]+|[a-z][a-z0-9._-]{0,63})$")
+                    self.assertRegex(name, r"^(live-extension:org\.projectSuno\.[A-Za-z.]+|[a-z][a-z0-9._-]{0,63})$")
                 desktop_exec = desktop(HERE.parent / "data" / f"{app_id}.desktop")["Exec"].split()[0]
                 self.assertEqual(background["exec"].split()[0], desktop_exec,
-                                 "the agent's program is the app's own (luma-background requires it)")
+                                 "the agent's program is the app's own (Suno-background requires it)")
                 self.assertEqual(background["exec"].split()[1:], ["--agent"])
                 if app == "Clock":
                     continue
                 entry = desktop(DATA / f"{app_id}.Agent.desktop")
                 self.assertEqual(entry["Exec"], background["exec"] + " --autostart")
-                self.assertEqual(entry["X-Luma-Background-Agent"], f"{app_id}.Agent")
+                self.assertEqual(entry["X-Suno-Background-Agent"], f"{app_id}.Agent")
                 self.assertEqual(entry["NoDisplay"], "true")
                 # systemd's autostart generator skips entries that set a GNOME phase.
                 self.assertNotIn("X-GNOME-Autostart-Phase", entry)
 
     def test_apps_ship_no_agent_units_or_activation_files(self):
-        # luma-background generates units for allowed apps; a shipped unit or a
+        # Suno-background generates units for allowed apps; a shipped unit or a
         # D-Bus activation file naming one would let an agent run against the
         # person's decision.
         self.assertEqual(sorted(path.name for path in DATA.glob("*.service")), [])
@@ -88,14 +88,14 @@ class ContractFileTests(unittest.TestCase):
         self.assertEqual(autostart_command(True), ["prairie-clock", "--gapplication-service"])
 
     def test_the_old_hidden_window_autostart_is_gone(self):
-        self.assertFalse((HERE.parent / "data" / "org.projectluma.Messages-background.desktop").exists())
+        self.assertFalse((HERE.parent / "data" / "org.projectSuno.Messages-background.desktop").exists())
 
     def test_evolution_alarm_notify_is_held_off_while_the_calendar_agent_is_installed(self):
-        text = (DATA / "50-luma-calendar-reminders.conf").read_text()
-        self.assertIn("ConditionPathExists=!/usr/share/luma/background/org.projectluma.Calendar.toml", text)
+        text = (DATA / "50-Suno-calendar-reminders.conf").read_text()
+        self.assertIn("ConditionPathExists=!/usr/share/Suno/background/org.projectSuno.Calendar.toml", text)
 
     def test_sync_timer_counts_time_asleep(self):
-        timer = unit(HERE.parent / "data" / "luma-connect-sync.timer")["Timer"]
+        timer = unit(HERE.parent / "data" / "Suno-connect-sync.timer")["Timer"]
         self.assertEqual(timer["Persistent"], "true")
         self.assertIn("OnCalendar", timer)
         self.assertNotIn("OnUnitActiveSec", timer)
@@ -115,9 +115,9 @@ class NoGtkTests(unittest.TestCase):
 class InfoTests(unittest.TestCase):
     def test_names_come_from_the_app_id(self):
         from prairie_apps.background_agent import AgentInfo
-        info = AgentInfo("org.projectluma.Messages", "Messages", "communication", ("prairie-messages", "--agent"))
-        self.assertEqual(info.agent_id, "org.projectluma.Messages.Agent")
-        self.assertEqual(info.unit, "app-org.projectluma.Messages-agent.service")
+        info = AgentInfo("org.projectSuno.Messages", "Messages", "communication", ("prairie-messages", "--agent"))
+        self.assertEqual(info.agent_id, "org.projectSuno.Messages.Agent")
+        self.assertEqual(info.unit, "app-org.projectSuno.Messages-agent.service")
         with self.assertRaises(ValueError):
             AgentInfo("not an id", "x", "communication", ())
         with self.assertRaises(ValueError):
@@ -340,7 +340,7 @@ class MessagesAgentTests(unittest.TestCase):
         self.assertEqual([action for action, _ in options["actions"]], ["default", "react", "reply", "mark-read"])
         self.assertEqual(options["public_summary"], "Messages")
         self.assertNotIn("Sam", options["public_body"])
-        token = options["hints"]["x-luma-inline-reply-token"].get_string()
+        token = options["hints"]["x-Suno-inline-reply-token"].get_string()
         self.agent.notifier.key_for = lambda identifier: key if identifier == 7 else None
         self.assertEqual(self.agent._reply_target(7, token), ("gmessages-0123456789abcdef", "chat.one"))
         self.assertIsNone(self.agent._reply_target(7, "0" * 32))
@@ -409,7 +409,7 @@ class PublisherTests(unittest.TestCase):
         second = Gio.DBusConnection.new_for_address_sync(
             os.environ["DBUS_SESSION_BUS_ADDRESS"],
             Gio.DBusConnectionFlags.AUTHENTICATION_CLIENT | Gio.DBusConnectionFlags.MESSAGE_BUS_CONNECTION, None, None)
-        info = AgentInfo("org.projectluma.UnitTest", "Unit", "other", ("x",))
+        info = AgentInfo("org.projectSuno.UnitTest", "Unit", "other", ("x",))
         events, lost = [], []
         first = AgentPublisher(info, wake=events.append, kit=kit)
         other = AgentPublisher(info, lost=lost.append, kit=kit)
@@ -434,10 +434,10 @@ class PublisherTests(unittest.TestCase):
         def read(method, *args):
             result[method] = subprocess.run(
                 ["gdbus", "call", "--session", "--dest", info.agent_id, "--object-path",
-                 "/org/projectluma/BackgroundAgent1", "--method", method, *args],
+                 "/org/projectSuno/BackgroundAgent1", "--method", method, *args],
                 capture_output=True, text=True, timeout=20)
-        for method, args in (("org.freedesktop.DBus.Properties.GetAll", ("org.projectluma.BackgroundAgent1",)),
-                             ("org.projectluma.BackgroundAgent1.Wake", ("resume", "{}"))):
+        for method, args in (("org.freedesktop.DBus.Properties.GetAll", ("org.projectSuno.BackgroundAgent1",)),
+                             ("org.projectSuno.BackgroundAgent1.Wake", ("resume", "{}"))):
             reader = threading.Thread(target=read, args=(method, *args))
             reader.start()
             while reader.is_alive():
@@ -445,9 +445,9 @@ class PublisherTests(unittest.TestCase):
                 GLib.usleep(5_000)
         output = result["org.freedesktop.DBus.Properties.GetAll"].stdout
         self.assertIn("'Values': <{'unread-count': <int64 3>}>", output)
-        self.assertIn("'AppId': <'org.projectluma.UnitTest'>", output)
-        refused = result["org.projectluma.BackgroundAgent1.Wake"]
-        self.assertNotEqual(refused.returncode, 0, "only luma-background may wake an agent")
+        self.assertIn("'AppId': <'org.projectSuno.UnitTest'>", output)
+        refused = result["org.projectSuno.BackgroundAgent1.Wake"]
+        self.assertNotEqual(refused.returncode, 0, "only Suno-background may wake an agent")
         self.assertIn("NotAuthorized", refused.stderr)
         first.release()
         second.close_sync(None)
@@ -459,7 +459,7 @@ class PublisherTests(unittest.TestCase):
         from prairie_apps.background_agent import load_kit
         kit = load_kit()
         if kit is None:
-            self.skipTest("luma_appkit.background is not installed")
+            self.skipTest("Suno_appkit.background is not installed")
         self.exercise(kit)
 
 

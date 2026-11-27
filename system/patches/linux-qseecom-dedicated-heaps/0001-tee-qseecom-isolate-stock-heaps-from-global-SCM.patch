@@ -1,4 +1,4 @@
-From: Project Luma <noreply@project-luma.local>
+From: Project Suno <noreply@project-suno.local>
 Date: Fri, 21 Aug 2026 22:55:00 -0500
 Subject: [PATCH] tee: qseecom: isolate stock heaps from global SCM
 
@@ -98,7 +98,7 @@ allocation behavior.
 +
 +	tee_dev->dev.parent = scm->dev;
 +	node = of_get_compatible_child(scm->dev->of_node,
-+				       "luma,qseecom-tee-heaps");
++				       "Suno,qseecom-tee-heaps");
 +	tee_dev->dev.of_node = node;
 +
 +	ret = platform_device_add(tee_dev);
@@ -582,7 +582,7 @@ allocation behavior.
 +	int ret;
 +
 +	if (!dev->of_node ||
-+	    !of_property_read_bool(dev->of_node, "luma,dedicated-heaps"))
++	    !of_property_read_bool(dev->of_node, "Suno,dedicated-heaps"))
 +		return 0;
 +
 +	ret = qseecom_tee_get_heap(dev, "ta", &qtee->ta_mem_base,

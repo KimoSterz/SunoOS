@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
-const source = fs.readFileSync(new URL('../../../src/luma-shell-presentation/presentation.js', import.meta.url), 'utf8');
+const source = fs.readFileSync(new URL('../../../src/Suno-shell-presentation/presentation.js', import.meta.url), 'utf8');
 const pending = new Map();
 let serial = 0;
 const Main = {sessionMode: {isLocked: false, isGreeter: false}, screenShield: {}, panel: {

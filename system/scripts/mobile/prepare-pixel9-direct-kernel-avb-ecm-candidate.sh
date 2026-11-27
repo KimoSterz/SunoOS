@@ -45,7 +45,7 @@ for avb in "$avb_a" "$avb_b"; do
     [ -f "$avb/$required" ] || die "AVB proof is incomplete: $avb/$required"
   done
   for boundary in \
-    'LUMA_PIXEL9_DIRECT_KERNEL_AVB_WRAPPER_VERSION=1' \
+    'SUNO_PIXEL9_DIRECT_KERNEL_AVB_WRAPPER_VERSION=1' \
     'SCOPE=offline-stock-size-avb-parser-shape-experiment' \
     'DIAGNOSTIC_VARIANT=acm-ecm-v2' \
     'REPORT_TRANSPORTS=usb-acm,usb-ecm-http' \
@@ -92,7 +92,7 @@ grep -Fqx "PARTITION_SHA256=$candidate_sha" "$avb_a/manifest.env" ||
   die 'ACM+ECM candidate digest differs from its manifest'
 [ "$prior_bytes" = "$PIXEL9_STOCK_BOOT_IMAGE_BYTES" ] ||
   die 'accepted predecessor size differs from the stock partition size'
-grep -Fqx 'LUMA_PIXEL9_DIRECT_KERNEL_AVB_ACCEPTANCE_VERSION=1' "$prior_acceptance" ||
+grep -Fqx 'SUNO_PIXEL9_DIRECT_KERNEL_AVB_ACCEPTANCE_VERSION=1' "$prior_acceptance" ||
   die 'accepted predecessor record version differs'
 grep -Fqx 'CANDIDATE_KIND=direct-kernel-embedded-dtb-initramfs-stock-size-avb' "$prior_acceptance" ||
   die 'accepted predecessor kind differs'
@@ -119,7 +119,7 @@ install -m 0644 "$prior_acceptance" "$output_dir/prior-acceptance.env"
 install -m 0644 "$prior_reproducibility" "$output_dir/prior-reproducibility.env"
 
 {
-  printf 'LUMA_PIXEL9_DIRECT_KERNEL_AVB_ECM_CANDIDATE_VERSION=1\n'
+  printf 'SUNO_PIXEL9_DIRECT_KERNEL_AVB_ECM_CANDIDATE_VERSION=1\n'
   printf 'CANDIDATE_KIND=direct-kernel-embedded-dtb-initramfs-stock-size-avb-acm-ecm-v2\n'
   printf 'DIAGNOSTIC_VARIANT=acm-ecm-v2\n'
   printf 'REPORT_TRANSPORTS=usb-acm,usb-ecm-http\n'

@@ -17,7 +17,7 @@
 # that always fails, labelled with the candidate's own SELinux policy. It is
 # signed with a throwaway key generated here, in a throwaway repository under
 # DIR, and served only to the gate VM through a separate remote. It is never
-# signed with the Luma OS Release key and never enters a published repository.
+# signed with the Suno OS Release key and never enters a published repository.
 
 set -euo pipefail
 
@@ -53,17 +53,17 @@ chmod 0700 "$GNUPGHOME"
 export GNUPGHOME
 trap 'gpgconf --kill gpg-agent >/dev/null 2>&1 || true; rm -rf "$GNUPGHOME"' EXIT
 gpg --batch --passphrase '' --quick-generate-key \
-  'Luma gate forced failure (disposable test key)' ed25519 sign 1d
+  'Suno gate forced failure (disposable test key)' ed25519 sign 1d
 fingerprint=$(gpg --batch --with-colons --list-secret-keys | awk -F: '$1 == "fpr" { print $10; exit }')
 gpg --batch --export "$fingerprint" >"$work/gate-key.gpg"
 
 overlay="$work/overlay"
-check="$overlay/usr/lib/greenboot/check/required.d/00-luma-gate-forced-failure.sh"
+check="$overlay/usr/lib/greenboot/check/required.d/00-Suno-gate-forced-failure.sh"
 install -d -m 0755 "$(dirname "$check")"
 cat >"$check" <<'SCRIPT'
 #!/usr/bin/bash
 # Gate-only build: this deployment must be judged unhealthy.
-echo 'Luma gate: forced health-check failure' >&2
+echo 'Suno gate: forced health-check failure' >&2
 exit 1
 SCRIPT
 chmod 0755 "$check"
@@ -73,9 +73,9 @@ if [ -n "$into_repo" ]; then
     --bind-ref="$ref" \
     --tree="ref=$commit" --tree="dir=$overlay" \
     --owner-uid=0 --owner-gid=0 --selinux-policy-from-base \
-    --subject='Luma gate forced-failure build (never published)' \
+    --subject='Suno gate forced-failure build (never published)' \
     --add-metadata-string=version="$version" \
-    --add-metadata-string=org.projectluma.gate-forced-failure-of="$commit" \
+    --add-metadata-string=org.projectSuno.gate-forced-failure-of="$commit" \
     --gpg-sign="$fingerprint" --gpg-homedir="$GNUPGHOME")
 else
   ostree init --repo="$work/repo" --mode=archive
@@ -83,9 +83,9 @@ else
   failure=$(ostree commit --repo="$work/repo" --branch="$ref" \
     --tree="ref=$commit" --tree="dir=$overlay" \
     --owner-uid=0 --owner-gid=0 --selinux-policy-from-base \
-    --subject='Luma gate forced-failure build (never published)' \
+    --subject='Suno gate forced-failure build (never published)' \
     --add-metadata-string=version="$version" \
-    --add-metadata-string=org.projectluma.gate-forced-failure-of="$commit" \
+    --add-metadata-string=org.projectSuno.gate-forced-failure-of="$commit" \
     --gpg-sign="$fingerprint" --gpg-homedir="$GNUPGHOME")
   ostree summary --repo="$work/repo" --update --gpg-sign="$fingerprint" --gpg-homedir="$GNUPGHOME"
 fi

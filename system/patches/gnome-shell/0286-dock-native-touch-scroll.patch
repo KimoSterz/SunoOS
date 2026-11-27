@@ -1,4 +1,4 @@
-From: Project Luma <builds@project-luma.local>
+From: Project Suno <builds@project-suno.local>
 Subject: [PATCH] shell: scroll overflowing dock with a native one-finger pan
 
 diff --git a/js/ui/shelf.js b/js/ui/shelf.js
@@ -45,7 +45,7 @@ index 24c7a77..ad9af84 100644
 +        const finish = () => { this._dockPanAdjustment = null; };
 +        pan.connect('end', finish);
 +        pan.connect('cancel', finish);
-+        this._dockScroll.add_action_full('luma-dock-touch-pan', Clutter.EventPhase.CAPTURE, pan);
++        this._dockScroll.add_action_full('Suno-dock-touch-pan', Clutter.EventPhase.CAPTURE, pan);
 +        this._dockPan = pan;
 +    }
 +

@@ -14,7 +14,7 @@ route_mode=${2:-packed-dec1}
 duration=${3:-7}
 kernel_release=7.1.2
 module_sha=10b7aaea18a2df37c1ac6ad195db47e9f89f7c7249080e7ef30a8e1221d761d9
-module=/lib/modules/$kernel_release/updates/luma-fp6-microphone/snd-soc-wcd9378-sdw.ko
+module=/lib/modules/$kernel_release/updates/Suno-fp6-microphone/snd-soc-wcd9378-sdw.ko
 
 die() { printf 'error: %s\n' "$*" >&2; exit 1; }
 cset() { amixer -q -c 0 cset "name=$1" "$2"; }

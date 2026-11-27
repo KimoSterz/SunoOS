@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Messages' v70 surface, composed from LumaUI parts.
+"""Messages' v70 surface, composed from SunoUI parts.
 
 The service and message store remain the authority.  This module turns their
 records into the same view used by the in-memory conform fixture; it never
@@ -24,7 +24,7 @@ gi.require_version("Gsk", "4.0")
 gi.require_version("Graphene", "1.0")
 from gi.repository import Adw, Gdk, Gio, GLib, Graphene, Gsk, Gtk, Pango  # noqa: E402
 
-from luma_appkit import (  # noqa: E402
+from Suno_appkit import (  # noqa: E402
     ActionCenter, ActionEditor, AddRow, AppWindow, BarAction, BarChip, BarEntry, BarThumbnail,
     BarContext, ContactActions, ContentLitHeader, CornerPill,
     Card, CommandRegistry, DestructiveDialog, DetailsPane, DetailsRow, EmptyState, EventCard, FileCard,
@@ -33,15 +33,15 @@ from luma_appkit import (  # noqa: E402
     Person, PersonAvatar, PlaceCard, ScrollView, SidebarFoot, SongCard,
     SPACER, SwipeAction, SwipeRow, BarTile, BarTiles, StackedButton, StackedButtons, TitleIsland, Toast, ToastHost, VoiceClip, apply_type, icons,
 )
-from luma_appkit.action_bubble import FloatingMenu, MenuItem  # noqa: E402
-from luma_appkit.bar_items import BarSearch  # noqa: E402
-from luma_appkit.bar_panel import PanelField, PanelRow  # noqa: E402
-from luma_appkit.action_center import make_control  # noqa: E402
-from luma_appkit import lumaui  # noqa: E402
-from luma_appkit import lumaui_tokens as tokens  # noqa: E402
+from Suno_appkit.action_bubble import FloatingMenu, MenuItem  # noqa: E402
+from Suno_appkit.bar_items import BarSearch  # noqa: E402
+from Suno_appkit.bar_panel import PanelField, PanelRow  # noqa: E402
+from Suno_appkit.action_center import make_control  # noqa: E402
+from Suno_appkit import SunoUI  # noqa: E402
+from Suno_appkit import SunoUI_tokens as tokens  # noqa: E402
 
 
-APP_ID = "org.projectluma.Messages"
+APP_ID = "org.projectSuno.Messages"
 WIDGET_NAMES = (
     "msg-sidebar", "msg-foot", "msg-island", "msg-light", "msg-identity",
     "msg-corner", "msg-history", "msg-bar", "msg-details", "msg-intro",
@@ -103,7 +103,7 @@ def _unique_participants(participants: tuple[dict, ...]) -> dict[str, dict]:
 class _PhotoClip(Gtk.Box):
     """Keep a decoded photo inside the message bubble's rounded image edge."""
 
-    __gtype_name__ = "LumaMessagesPhotoClip"
+    __gtype_name__ = "SunoMessagesPhotoClip"
 
     def do_snapshot(self, snapshot: Gtk.Snapshot) -> None:
         bounds = Graphene.Rect().init(0, 0, self.get_width(), self.get_height())
@@ -253,10 +253,10 @@ class MessagesSurface:
         layered.add_overlay(self.body)
         layered.set_measure_overlay(self.body, True)
         self.empty = EmptyState('Your messages, together',
-                                'Link Google Messages, or connect with your Luma friends.',
+                                'Link Google Messages, or connect with your Suno friends.',
                                 icons.icon_name('message-square'),
                                 primary=('Link Google Messages', self._link_google),
-                                secondary=('Choose a Luma username', self._open_luma_account))
+                                secondary=('Choose a Suno username', self._open_Suno_account))
         self.empty.set_name('msg-empty')
         layered.add_overlay(self.empty)
         self.island.append(layered)
@@ -286,7 +286,7 @@ class MessagesSurface:
         self.split.set_content(Adw.NavigationPage(child=self.content, title="Conversation"))
         self.owner.set_body(self.split)
         # v71 phone: the title island replaces the header. ‹ (Conversations) | who | Call, Video;
-        # tap who and it grows into the conversation's options (luma-next-71 msgHead, .misl).
+        # tap who and it grows into the conversation's options (Suno-next-71 msgHead, .misl).
         self.title_island = TitleIsland(lead="back", lead_label="Conversations",
                                         on_lead=self._show_conversations,
                                         grow=self._island_body, grows="details")
@@ -360,9 +360,9 @@ class MessagesSurface:
         else:
             self.owner.accounts_dialog._show_networks()
 
-    def _open_luma_account(self) -> None:
+    def _open_Suno_account(self) -> None:
         if not self.fixture:
-            self.owner._show_luma_profile()
+            self.owner._show_Suno_profile()
 
     def _entries(self) -> list[dict]:
         if not self.fixture and getattr(self.owner, "_host_loading", False):
@@ -410,7 +410,7 @@ class MessagesSurface:
             preferences = {}
         for service in self.owner.services:
             for record in service.store.threads(self.query):
-                flags = self.owner._luma_flags(service, record)
+                flags = self.owner._Suno_flags(service, record)
                 pref = preferences.get(service.key(record.address), {})
                 try:
                     phone_key = normalize_address(record.address)
@@ -474,9 +474,9 @@ class MessagesSurface:
 
     def render_sidebar(self) -> None:
         if not self.fixture:
-            ready = self.owner._refresh_luma_identity()
-            registered = ready and bool((self.owner._luma_identity or {}).get("handle"))
-            self.empty.secondary_button.set_label("Your Luma username" if registered else "Choose a Luma username")
+            ready = self.owner._refresh_Suno_identity()
+            registered = ready and bool((self.owner._Suno_identity or {}).get("handle"))
+            self.empty.secondary_button.set_label("Your Suno username" if registered else "Choose a Suno username")
         entries = self._entries()
         if self.fixture and self.query:
             entries = [entry for entry in entries if self.query.casefold() in entry["search_text"]]
@@ -594,7 +594,7 @@ class MessagesSurface:
         while child := rows.get_first_child():
             rows.remove(child)
         rows.append(_label("New message", "label"))
-        rows.append(_label("Find Luma friends by username, with or without @. Phone numbers match your contacts or send texts.",
+        rows.append(_label("Find Suno friends by username, with or without @. Phone numbers match your contacts or send texts.",
                            "caption", wrap=True))
         self._new_candidates = self._recipients(query, limit=4 if self.fixture else 20)
         for candidate in self._new_candidates:
@@ -603,13 +603,13 @@ class MessagesSurface:
                            on_activate=lambda chosen=candidate: self._pick_recipient(chosen))
             row.add_css_class("messages-recipient")
             rows.append(row)
-        own = PanelRow("Your Luma username", icon="scan", subtitle="Show your code or share your link",
+        own = PanelRow("Your Suno username", icon="scan", subtitle="Show your code or share your link",
                        on_activate=self._show_own_code)
         own.set_name("msg-own-code")
         rows.append(own)
 
     def _recipients(self, query: str, *, limit: int = 20) -> list[dict]:
-        """Who New message offers: Studio's people in the fixture; contacts, a Luma @handle or a
+        """Who New message offers: Studio's people in the fixture; contacts, a Suno @handle or a
         typed number live (the controller resolves and opens them)."""
         query = query.casefold().strip()
         found: list[dict] = []
@@ -623,12 +623,12 @@ class MessagesSurface:
                               "handle": None, "subtitle": ("@" + person["handle"]) if person.get("handle")
                               else person.get("phone", "")})
             return found[:limit]
-        from . import messages_luma as luma
+        from . import messages_Suno as Suno
 
-        handle = luma.handle_from(query)
-        if handle and self.owner._luma_service() is not None:
+        handle = Suno.handle_from(query)
+        if handle and self.owner._Suno_service() is not None:
             found.append({"name": "@" + handle, "key": None, "address": "@" + handle, "handle": handle,
-                          "subtitle": "Luma · End-to-end encrypted"})
+                          "subtitle": "Suno · End-to-end encrypted"})
         contacts = tuple(contact for contact in self.owner.contacts if contact.phone and
                          (not query or query in contact.name.casefold() or query in contact.phone or
                           query in contact.organization.casefold()))[:limit]
@@ -664,8 +664,8 @@ class MessagesSurface:
             return
         from types import SimpleNamespace
         row = SimpleNamespace(address=chosen["address"], display_name=chosen["name"],
-                              luma_handle=chosen["handle"], person_key=chosen["key"],
-                              luma_service=self.owner._luma_service() if chosen["handle"] else None)
+                              Suno_handle=chosen["handle"], person_key=chosen["key"],
+                              Suno_service=self.owner._Suno_service() if chosen["handle"] else None)
         self._navigated = True
         self.owner._recipient_activated(None, row)
 
@@ -808,8 +808,8 @@ class MessagesSurface:
             return [("Encryption", "Text message, not encrypted")]
         if self.fixture:
             return [("Encryption", "End-to-end"), ("Safety code", "48213 90552 17608")]
-        from .messages_luma import is_luma
-        return [("Encryption", "End-to-end" if is_luma(entry["service"]) else "Provider managed")]
+        from .messages_Suno import is_Suno
+        return [("Encryption", "End-to-end" if is_Suno(entry["service"]) else "Provider managed")]
 
     def _conversation_photos(self, limit: int) -> list:
         entry = self.current
@@ -973,13 +973,13 @@ class MessagesSurface:
         security.append(icons.image("message-square" if entry["sms"] else "lock"))
         if entry["sms"]:
             security.append(_label("Text messages aren’t encrypted.", "small"))
-            invite = Gtk.Button(label=f"Invite {entry['name']} to Luma", has_frame=False)
-            invite.connect("clicked", lambda _button: self._invite_to_luma())
+            invite = Gtk.Button(label=f"Invite {entry['name']} to Suno", has_frame=False)
+            invite.connect("clicked", lambda _button: self._invite_to_Suno())
             security.append(invite)
         else:
-            from .messages_luma import is_luma
+            from .messages_Suno import is_Suno
             encryption_note = ("End-to-end encrypted. Only the people here can read this."
-                               if self.fixture or is_luma(entry["service"]) else
+                               if self.fixture or is_Suno(entry["service"]) else
                                "Encryption is managed by this service.")
             security.append(_label(encryption_note, "small", wrap=True, max_width_chars=72))
         intro.append(security)
@@ -1005,7 +1005,7 @@ class MessagesSurface:
                 sender.set_margin_start(48)
                 sender.set_margin_top(10)
                 sender.set_margin_bottom(1)
-                lumaui.hue_tint(sender, self._person(item["from"]).get("hue"))
+                SunoUI.hue_tint(sender, self._person(item["from"]).get("hue"))
                 self.history.append(sender)
             if run is None or not same_above:
                 # v71: one sender's consecutive messages are one block (MessageRun shapes the corners).
@@ -1099,7 +1099,7 @@ class MessagesSurface:
                 receipt.add_css_class("messages-receipt")
                 if item["status"] in {"read", "delivered", "sent"}:
                     mark = icons.image("check-check" if item["status"] in {"read", "delivered"} else "check")
-                    lumaui.hue_tint(mark, entry.get("hue"))
+                    SunoUI.hue_tint(mark, entry.get("hue"))
                     receipt.append(mark)
                 receipt.append(_label(item["status"].capitalize() + " " + item.get("at", ""), "small"))
                 self.history.append(receipt)
@@ -1232,7 +1232,7 @@ class MessagesSurface:
         return GLib.SOURCE_REMOVE
 
     def _thread_foot(self) -> int:
-        # A phone's one safe area (LumaUI) gives the thread its room above the bar;
+        # A phone's one safe area (SunoUI) gives the thread its room above the bar;
         # a window keeps v70's measured room under the floating bar.
         return 0 if self._phone_mode else 69
 
@@ -1540,7 +1540,7 @@ class MessagesSurface:
             body = _label(item["text"], "body", wrap=True)
             if item.get("markup"):
                 body.set_markup(item["markup"])
-            body.add_css_class("lumaui-message-text")
+            body.add_css_class("SunoUI-message-text")
             if item.get("reply") or item.get("quote"):
                 body.set_margin_top(6)
             if item.get("link"):
@@ -1695,10 +1695,10 @@ class MessagesSurface:
             self.bar_entry = None
             self.center.show_bar((
                 BarAction("shield-off", "Block", danger=True,
-                          on_activate=lambda: self.owner._answer_luma_request("block")),
-                BarAction("trash-2", "Delete", on_activate=lambda: self.owner._answer_luma_request("declined")),
+                          on_activate=lambda: self.owner._answer_Suno_request("block")),
+                BarAction("trash-2", "Delete", on_activate=lambda: self.owner._answer_Suno_request("declined")),
                 BarAction("check", "Accept", primary=True,
-                          on_activate=lambda: self.owner._answer_luma_request("accepted")),
+                          on_activate=lambda: self.owner._answer_Suno_request("accepted")),
             ), context=BarContext("message-square", "{} wants to message you", self.current["name"]))
             return
         if self.selected_message and self._phone_mode:
@@ -2287,29 +2287,29 @@ class MessagesSurface:
         else:
             self._notice("Voice recording isn't available yet.")
 
-    def _invite_to_luma(self) -> None:
+    def _invite_to_Suno(self) -> None:
         if self.fixture:
             self._notice("Invite sent: they can keep their number")
             return
-        service = self.owner._luma_service()
+        service = self.owner._Suno_service()
         if service is None:
-            self._notice("Set up Luma Messages before sharing your profile link")
+            self._notice("Set up Suno Messages before sharing your profile link")
             return
 
         def loaded(identity, error) -> None:
             if error is not None:
-                self._notice(getattr(error, "message", "Luma didn't answer."))
+                self._notice(getattr(error, "message", "Suno didn't answer."))
                 return
             link = str((identity or {}).get("profile_link") or "")
             if not link:
-                self.owner._show_luma_profile()
+                self.owner._show_Suno_profile()
                 return
             if self.bar_entry is not None:
-                self.bar_entry.set_text("Message me on Luma: " + link)
+                self.bar_entry.set_text("Message me on Suno: " + link)
                 self.bar_entry.focus()
                 self._notice("Review the invitation before sending")
 
-        self.owner.luma_call(service, "luma.identity", {}, loaded)
+        self.owner.Suno_call(service, "Suno.identity", {}, loaded)
 
     def _play_voice(self, item: dict) -> None:
         if self._voice_source:
@@ -2387,16 +2387,16 @@ class MessagesSurface:
             if not entry["sms"]:
                 facts.append(("Safety code", "48213 90552 17608"))
         elif messages:
-            from .messages_luma import is_luma
+            from .messages_Suno import is_Suno
             encryption = ("None (text message)" if entry["sms"] else
-                          "End-to-end" if is_luma(entry["service"]) else "Provider managed")
+                          "End-to-end" if is_Suno(entry["service"]) else "Provider managed")
             facts = [("Started", messages[0].get("day", "")),
                      ("Notifications", "Muted" if entry["muted"] else "On"),
                      ("Encryption", encryption)]
         self.details.add_facts(facts)
         if not self.fixture and entry["meta"].get("account") and not entry.get("request"):
             self.details.add_list((AddRow("Compare safety numbers", icon="shield-check",
-                                          on_activate=self.owner._show_luma_safety),))
+                                          on_activate=self.owner._show_Suno_safety),))
         if entry["group"]:
             self.details.add_section("People")
             rows = []
@@ -2477,8 +2477,8 @@ class MessagesSurface:
         if self.fixture:
             self._notice("Opening " + name + " in Contacts")
             return
-        from luma_appkit.application_directory import launch
-        launch('org.projectluma.Contacts.desktop', callback=lambda ok, error:
+        from Suno_appkit.application_directory import launch
+        launch('org.projectSuno.Contacts.desktop', callback=lambda ok, error:
                self._notice(error or 'Contacts is unavailable') if not ok else None)
 
     def _message_person(self, key: str) -> None:
@@ -2494,9 +2494,9 @@ class MessagesSurface:
                 self._notice("Starting a conversation with " + person["name"])
             return
         handle = person.get("handle")
-        service = self.owner._luma_service()
+        service = self.owner._Suno_service()
         if handle and service is not None:
-            self.owner.start_luma_conversation(service, handle,
+            self.owner.start_Suno_conversation(service, handle,
                                                 lambda error: error and self._notice(error.message))
             return
         self.new_message()
@@ -2634,7 +2634,7 @@ class MessagesSurface:
         self._composer()
 
     def new_message(self) -> None:
-        # This uses the controller's existing contact, phone and Luma account
+        # This uses the controller's existing contact, phone and Suno account
         # resolution. The fixture has only Studio's three sample choices.
         if self._phone_mode:
             self._show_conversations()
@@ -2670,7 +2670,7 @@ class MessagesSurface:
         search.set_margin_top(2)
         search.set_margin_bottom(8)
         content.append(search)
-        help_text = _label("Find Luma friends by username, with or without @. Phone numbers match your contacts or send texts.",
+        help_text = _label("Find Suno friends by username, with or without @. Phone numbers match your contacts or send texts.",
                            "caption", wrap=True)
         help_text.set_margin_start(10)
         help_text.set_margin_end(10)
@@ -2695,7 +2695,7 @@ class MessagesSurface:
                 row.add_css_class("handle")
             elif name == address and address.startswith("+"):
                 row.add_css_class("phone")
-            row.address, row.display_name, row.luma_handle, row.person_key = address, name, handle, key
+            row.address, row.display_name, row.Suno_handle, row.person_key = address, name, handle, key
             results.append(row)
 
         def changed(_entry):
@@ -2712,11 +2712,11 @@ class MessagesSurface:
                         continue
                     add(name, "@" + person["handle"], key, "@" + person["handle"])
                 return
-            from . import messages_luma as luma
+            from . import messages_Suno as Suno
 
-            handle = luma.handle_from(query)
-            if handle and self.owner._luma_service() is not None:
-                add("@" + handle, "Luma · End-to-end encrypted", None, "@" + handle, handle=handle)
+            handle = Suno.handle_from(query)
+            if handle and self.owner._Suno_service() is not None:
+                add("@" + handle, "Suno · End-to-end encrypted", None, "@" + handle, handle=handle)
             candidates = tuple(contact for contact in self.owner.contacts if contact.phone and
                                (not query or query in contact.name.casefold() or query in contact.phone or
                                 query in contact.organization.casefold()))[:20]
@@ -2737,7 +2737,7 @@ class MessagesSurface:
             if self.fixture:
                 self._notice("Starting a conversation with " + row.display_name)
                 return
-            row.luma_service = self.owner._luma_service() if row.luma_handle else None
+            row.Suno_service = self.owner._Suno_service() if row.Suno_handle else None
             self.owner._recipient_activated(results, row)
         results.connect("row-activated", picked)
         changed(search)
@@ -2747,7 +2747,7 @@ class MessagesSurface:
         divider.set_margin_top(4)
         divider.set_margin_bottom(4)
         content.append(divider)
-        own_code = NavigationRow("Your Luma username", subtitle="Show your code or share your link",
+        own_code = NavigationRow("Your Suno username", subtitle="Show your code or share your link",
                                  icon_widget=icons.image("scan"))
         own_code.set_name("msg-own-code")
         own_code.set_size_request(-1, 48)
@@ -2804,21 +2804,21 @@ class MessagesSurface:
 
     def _show_own_code(self) -> None:
         if not self.fixture:
-            service = self.owner._luma_service()
+            service = self.owner._Suno_service()
             if service is None:
-                self.owner._show_luma_profile()
+                self.owner._show_Suno_profile()
                 return
             self._close_new()
 
             def loaded(identity, error) -> None:
                 if error is not None:
-                    self._notice(getattr(error, "message", "Luma didn't answer."))
+                    self._notice(getattr(error, "message", "Suno didn't answer."))
                     return
                 identity = identity or {}
                 handle = str(identity.get("handle") or "")
                 link = str(identity.get("profile_link") or "")
                 if not handle or not link:
-                    self.owner._show_luma_profile()
+                    self.owner._show_Suno_profile()
                     return
                 from .messages_accounts_ui import qr_widget
                 card = Card(recessed=True)
@@ -2842,7 +2842,7 @@ class MessagesSurface:
                 self._own_code_card = card
                 self._present_own_code()
 
-            self.owner.luma_call(service, "luma.identity", {}, loaded)
+            self.owner.Suno_call(service, "Suno.identity", {}, loaded)
             return
         self._close_new()
         if getattr(self, "_own_code_card", None) is None:
@@ -2899,7 +2899,7 @@ class FixtureMessagesWindow(AppWindow):
     def __init__(self, application: Adw.Application) -> None:
         from .messages_fixture import FixtureMessageStore
 
-        path = Path(os.environ["LUMA_MESSAGES_FIXTURE"])
+        path = Path(os.environ["SUNO_MESSAGES_FIXTURE"])
         self.fixture_store = FixtureMessageStore(path)
         super().__init__(application=application, app_id=APP_ID + ".Fixture", title="Messages", icon_name=APP_ID,
                          commands=CommandRegistry(()),

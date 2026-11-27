@@ -7,8 +7,8 @@
 set -Eeuo pipefail
 umask 077
 
-stage=/tmp/luma-fp-listeners-enroll-v92
-state=/var/lib/luma/fingerprint/qsee-state
+stage=/tmp/Suno-fp-listeners-enroll-v92
+state=/var/lib/Suno/fingerprint/qsee-state
 expected_supplicant_sha=dd355adb58b1775752cc2ff1172b5e4ec2f5914429a9d0efbe7e8bd871e6085e
 
 fail() { printf 'event=fp6_enrollment_listeners_v92_deactivation_failed reason=%s\n' "$1" >&2; exit 1; }

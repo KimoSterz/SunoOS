@@ -1,11 +1,11 @@
 {
- "_doc": "v70 luma-next-70 ?app=contacts sample data, scraped from the mockup's rendered Contacts (2026-09-25). Paths are relative to this file. See prairie_apps/contacts_fixture.py.",
+ "_doc": "v70 Suno-next-70 ?app=contacts sample data, scraped from the mockup's rendered Contacts (2026-09-25). Paths are relative to this file. See prairie_apps/contacts_fixture.py.",
  "me": {
   "name": "Nick",
   "handle": "nick",
   "phone": "+1 (510) 555-0100",
   "email": "nick@simplyluma.com",
-  "organization": "Luma",
+  "organization": "Suno",
   "role": "Founder",
   "hue": 250,
   "link": "simplyluma.com/@nick"
@@ -18,14 +18,14 @@
   {
    "uid": "AC",
    "name": "Ada Chen",
-   "on_luma": true,
+   "on_Suno": true,
    "hue": 200,
    "handle": "ada"
   },
   {
    "uid": "AR",
    "name": "Alex Ruiz",
-   "on_luma": true,
+   "on_Suno": true,
    "hue": 262,
    "handle": "alexr",
    "email": "alex@example.test",
@@ -40,21 +40,21 @@
   {
    "uid": "BO",
    "name": "Ben Okoro",
-   "on_luma": true,
+   "on_Suno": true,
    "hue": 30,
    "handle": "benok"
   },
   {
    "uid": "CD",
    "name": "Carmen Díaz",
-   "on_luma": true,
+   "on_Suno": true,
    "hue": 350,
    "handle": "carmen"
   },
   {
    "uid": "MO",
    "name": "Dad",
-   "on_luma": false,
+   "on_Suno": false,
    "hue": 20,
    "phone": "+1 (510) 555-0142",
    "birthday": "June 2",
@@ -74,38 +74,38 @@
   {
    "uid": "EN",
    "name": "Eli Novak",
-   "on_luma": true,
+   "on_Suno": true,
    "hue": 230,
    "handle": "eli"
   },
   {
    "uid": "GP",
    "name": "Grace Park",
-   "on_luma": true,
+   "on_Suno": true,
    "hue": 300,
    "handle": "grace.p"
   },
   {
    "uid": "HS",
    "name": "Hana Sato",
-   "on_luma": true,
+   "on_Suno": true,
    "hue": 180,
    "handle": "hana"
   },
   {
    "uid": "JK",
    "name": "Jordan Kim",
-   "on_luma": true,
+   "on_Suno": true,
    "hue": 100,
    "handle": "jordan.k"
   },
   {
    "uid": "KM",
    "name": "Kofi Mensah",
-   "on_luma": true,
+   "on_Suno": true,
    "hue": 60,
    "handle": "kofi",
-   "organization": "Luma",
+   "organization": "Suno",
    "role": "Community",
    "lists": [
     "launch"
@@ -114,7 +114,7 @@
   {
    "uid": "CL",
    "name": "Lena Okafor",
-   "on_luma": true,
+   "on_Suno": true,
    "hue": 160,
    "handle": "lena",
    "phone": "+1 (510) 555-0181",
@@ -128,19 +128,19 @@
   {
    "uid": "MS2",
    "name": "Maya Singh",
-   "on_luma": true,
+   "on_Suno": true,
    "hue": 320,
    "handle": "maya"
   },
   {
    "uid": "NF",
    "name": "Nora Feld",
-   "on_luma": true,
+   "on_Suno": true,
    "hue": 45,
    "handle": "nora",
    "phone": "+1 (510) 555-0133",
    "email": "nora@example.test",
-   "organization": "Luma",
+   "organization": "Suno",
    "role": "Press",
    "birthday": "November 2",
    "address": "Berkeley, California",
@@ -158,19 +158,19 @@
   {
    "uid": "OH",
    "name": "Omar Haddad",
-   "on_luma": true,
+   "on_Suno": true,
    "hue": 140,
    "handle": "omar"
   },
   {
    "uid": "PR",
    "name": "Priya Raman",
-   "on_luma": true,
+   "on_Suno": true,
    "hue": 330,
    "handle": "priya",
    "phone": "+1 (415) 555-0199",
    "email": "priya@example.test",
-   "organization": "Luma",
+   "organization": "Suno",
    "role": "Design",
    "birthday": "March 14",
    "address": "Oakland, California",
@@ -189,7 +189,7 @@
   {
    "uid": "RA",
    "name": "Ruth Adler",
-   "on_luma": false,
+   "on_Suno": false,
    "hue": 10,
    "phone": "+1 (212) 555-0107",
    "birthday": "January 30",
@@ -200,11 +200,11 @@
   {
    "uid": "SK",
    "name": "Sam Kaur",
-   "on_luma": true,
+   "on_Suno": true,
    "hue": 200,
    "handle": "samk",
    "email": "sam@example.test",
-   "organization": "Luma",
+   "organization": "Suno",
    "role": "Engineering",
    "lists": [
     "launch"
@@ -219,7 +219,7 @@
   {
    "uid": "TH",
    "name": "Theo Marsh",
-   "on_luma": true,
+   "on_Suno": true,
    "hue": 350,
    "handle": "theo",
    "phone": "+1 (628) 555-0170",
@@ -237,7 +237,7 @@
   {
    "uid": "ZM",
    "name": "Zoe Martin",
-   "on_luma": true,
+   "on_Suno": true,
    "hue": 270,
    "handle": "zoe"
   }
@@ -266,7 +266,7 @@
     "kind": "conversation",
     "icon": "message-square",
     "title": "Dad",
-    "subtitle": "Saw the article about Luma. Proud of you kid. Call me this weekend",
+    "subtitle": "Saw the article about Suno. Proud of you kid. Call me this weekend",
     "when": "11:05 AM",
     "app": "Messages"
    },

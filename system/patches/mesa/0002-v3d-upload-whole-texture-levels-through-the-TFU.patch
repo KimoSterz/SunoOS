@@ -1,5 +1,5 @@
 From edad8ccd69cf2d96a1244933a11c0090cf11c8f4 Mon Sep 17 00:00:00 2001
-From: Project Luma <maintainers@projectluma.org>
+From: Project Suno <maintainers@projectSuno.org>
 Date: Mon, 2 Nov 2026 23:49:16 -0600
 Subject: [PATCH 2/2] v3d: upload whole texture levels through the TFU
 

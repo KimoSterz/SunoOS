@@ -78,7 +78,7 @@ fdtget "$dtb" "$ta" reusable >/dev/null || die 'TA pool not reusable'
 [ "$(fdtget "$dtb" /aliases qseecom_mem)" = "$apps" ] || die 'apps alias differs'
 [ "$(fdtget "$dtb" /aliases qseecom_ta_mem)" = "$ta" ] || die 'TA alias differs'
 fdtget "$dtb" /soc@0/qseecom@c1700000 qcom,appsbl-qseecom-support >/dev/null || die 'AppsBL marker absent'
-fdtget "$dtb" /firmware/scm/qseecom-tee-heaps luma,dedicated-heaps >/dev/null || die 'dedicated heaps absent'
+fdtget "$dtb" /firmware/scm/qseecom-tee-heaps Suno,dedicated-heaps >/dev/null || die 'dedicated heaps absent'
 ! fdtget "$dtb" /firmware/scm memory-region >/dev/null 2>&1 || die 'global SCM pool reintroduced'
 
 printf 'FP6 fingerprint matched-CMA candidate verified: %s\n' "$candidate"

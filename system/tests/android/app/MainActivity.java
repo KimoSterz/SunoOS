@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-package org.projectluma.androidtest;
+package org.projectSuno.androidtest;
 
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -33,7 +33,7 @@ public final class MainActivity extends Activity {
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
         TextView title = new TextView(this);
-        title.setText("Luma Android integration fixture");
+        title.setText("Suno Android integration fixture");
         layout.addView(title);
         editor = new EditText(this);
         editor.setContentDescription("Document contents");
@@ -44,16 +44,16 @@ public final class MainActivity extends Activity {
         button(layout, "Check privileged boundary", () -> BoundaryProbe.run(this));
         button(layout, "Check native clipboard boundary", () -> NativeClipboardProbe.run(this));
         button(layout, "Check native task boundary", () -> NativeTaskProbe.run(this));
-        button(layout, "Copy synthetic text to Luma", () -> {
+        button(layout, "Copy synthetic text to Suno", () -> {
             android.content.ClipboardManager clipboard =
                     (android.content.ClipboardManager)getSystemService(CLIPBOARD_SERVICE);
             clipboard.setPrimaryClip(android.content.ClipData.newPlainText(
-                    "Luma Android fixture", "luma-android-clipboard-fixture"));
+                    "Suno Android fixture", "Suno-android-clipboard-fixture"));
             receipt(this, "clipboard-copy", "synthetic-android-text");
         });
-        button(layout, "Check synthetic Luma clipboard",
+        button(layout, "Check synthetic Suno clipboard",
                 () -> checkSyntheticClipboard("clipboard-read"));
-        button(layout, "Check after switching to a Luma app", () -> {
+        button(layout, "Check after switching to a Suno app", () -> {
             receipt(this, "clipboard-host-switch-scheduled", "10 seconds");
             new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(
                     () -> checkSyntheticClipboard("clipboard-after-host-switch"), 10000);
@@ -121,7 +121,7 @@ public final class MainActivity extends Activity {
                 catch (InterruptedException error) { Thread.currentThread().interrupt(); return; }
             }
             if (nativeGuardArmed) receipt(this, "native-guard-timeout", "not-released");
-        }, "luma-native-guard-gate").start();
+        }, "Suno-native-guard-gate").start();
     }
 
     @Override public void onWindowFocusChanged(boolean focused) {
@@ -145,9 +145,9 @@ public final class MainActivity extends Activity {
         if (clip != null && clip.getItemCount() > 0) {
             CharSequence value = clip.getItemAt(0).coerceToText(this);
             // Never log arbitrary host clipboard contents.
-            if ("luma-host-clipboard-fixture".contentEquals(value == null ? "" : value)) {
+            if ("Suno-host-clipboard-fixture".contentEquals(value == null ? "" : value)) {
                 result = "matched-host-fixture";
-            } else if ("luma-android-clipboard-fixture".contentEquals(value == null ? "" : value)) {
+            } else if ("Suno-android-clipboard-fixture".contentEquals(value == null ? "" : value)) {
                 result = "retained-android-fixture";
             } else {
                 result = "unexpected-content";

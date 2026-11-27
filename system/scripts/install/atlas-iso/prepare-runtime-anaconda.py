@@ -12,7 +12,7 @@ from pathlib import Path
 
 UPSTREAM_SHA256 = "680c0688d7185db06bc97dd31913e8bcb7acce2bb113e8e3d40d64ca86c5f030"
 PULL_SHA256 = "614ac3f3061d959144e0a2e80919012c7254d44b1fab04daea35b2bef52f3f86"
-RESTORE = '''def _luma_restore_clock_floor():
+RESTORE = '''def _Suno_restore_clock_floor():
     # PID 1 already used this trusted image timestamp during boot. A later
     # successful RTC read or manual date must not invalidate the release key
     # during the native signed payload pull.
@@ -31,9 +31,9 @@ RESTORE = '''def _luma_restore_clock_floor():
 '''
 
 
-INITIAL_EFI_DEPLOY = '''def _luma_initial_efi_deploy(physroot, argv):
+INITIAL_EFI_DEPLOY = '''def _Suno_initial_efi_deploy(physroot, argv):
     # During initial deployment Anaconda has not bound /dev into the checkout
-    # or copied Luma's own bootloader files yet. Auto-detection can mistake an
+    # or copied Suno's own bootloader files yet. Auto-detection can mistake an
     # existing EFI/ubuntu/grub.cfg for ours, invoke grub2-probe too early and,
     # if it succeeds, overwrite the other system's configuration. Defer only
     # this first deployment's bootloader write; Anaconda configures our loader
@@ -62,7 +62,7 @@ INITIAL_EFI_DEPLOY = '''def _luma_initial_efi_deploy(physroot, argv):
 '''
 
 
-INSTALL_BOOTUPD = '''def _luma_firmware_order():
+INSTALL_BOOTUPD = '''def _Suno_firmware_order():
     rc, output = execProgram("efibootmgr", [])
     if rc:
         raise BootloaderInstallationError("Could not read the current EFI startup order")
@@ -74,9 +74,9 @@ INSTALL_BOOTUPD = '''def _luma_firmware_order():
     return [item.upper() for item in order]
 
 
-def _luma_card_firmware():
+def _Suno_card_firmware():
     # Raspberry Pi 5: U-Boot on the SD card is the EFI firmware and saves EFI
-    # variables to the card (ubootefi.var). A persisted Luma entry would start
+    # variables to the card (ubootefi.var). A persisted Suno entry would start
     # the installed shim directly, skipping the card's menu, which is what
     # starts the installed system on this board.
     try:
@@ -87,22 +87,22 @@ def _luma_card_firmware():
     return any(name in (b"raspberrypi,5-model-b", b"raspberrypi,5-model-b-d0") for name in compatible)
 
 
-def _luma_install_bootupd(sysroot, argv, keep_boot_order):
-    if _luma_card_firmware():
+def _Suno_install_bootupd(sysroot, argv, keep_boot_order):
+    if _Suno_card_firmware():
         log.info("Card-booted firmware: leaving EFI boot entries unchanged")
         return execWithRedirect("bootupctl", [a for a in argv if a != "--update-firmware"], root=sysroot)
-    # A named Luma entry avoids shim's generic fallback, which can rebuild and
+    # A named Suno entry avoids shim's generic fallback, which can rebuild and
     # reorder every vendor's entries on first boot. Register our entry normally,
     # then retain all existing priorities and append any newly created entry.
     preserve = keep_boot_order and STORAGE.get_proxy(BOOTLOADER).IsEFI()
-    previous = _luma_firmware_order() if preserve else None
+    previous = _Suno_firmware_order() if preserve else None
     if preserve and "--update-firmware" not in argv:
         argv = [*argv, "--update-firmware"]
     try:
         return execWithRedirect("bootupctl", argv, root=sysroot)
     finally:
         if previous is not None:
-            current = _luma_firmware_order()
+            current = _Suno_firmware_order()
             order = [entry for entry in previous if entry in current]
             order.extend(entry for entry in current if entry not in order)
             safe_exec_program("efibootmgr", ["--bootorder", ",".join(order)])
@@ -120,7 +120,7 @@ def patched_source(data):
     before = "    execWithRedirect(cmd, args)\n"
     if text.count(before) != 1:
         raise ValueError("unsupported Anaconda hardware-clock call")
-    text = text.replace(before, "    try:\n        execWithRedirect(cmd, args)\n    finally:\n        _luma_restore_clock_floor()\n", 1)
+    text = text.replace(before, "    try:\n        execWithRedirect(cmd, args)\n    finally:\n        _Suno_restore_clock_floor()\n", 1)
     ast.parse(text)
     return text.encode()
 
@@ -132,11 +132,11 @@ def patched_pull_source(data):
     before = "from pyanaconda.modules.common.task import Task, sync_run_task\n"
     if text.count(before) != 1:
         raise ValueError("unsupported Anaconda signed-pull imports")
-    text = text.replace(before, before + "from pyanaconda.timezone import _luma_restore_clock_floor\n", 1)
+    text = text.replace(before, before + "from pyanaconda.timezone import _Suno_restore_clock_floor\n", 1)
     before = "        try:\n            repo.pull_with_options(self._data.remote,\n"
     if text.count(before) != 1:
         raise ValueError("unsupported Anaconda signed-pull boundary")
-    text = text.replace(before, "        try:\n            _luma_restore_clock_floor()\n            repo.pull_with_options(self._data.remote,\n", 1)
+    text = text.replace(before, "        try:\n            _Suno_restore_clock_floor()\n            repo.pull_with_options(self._data.remote,\n", 1)
     before = "class DeployOSTreeTask(Task):\n"
     if text.count(before) != 1:
         raise ValueError("unsupported Anaconda initial deployment owner")
@@ -148,7 +148,7 @@ def patched_pull_source(data):
     if text.count(before) != 1:
         raise ValueError("unsupported Anaconda initial deployment boundary")
     text = text.replace(before, '''            log.info("ostree admin deploy starting")
-            _luma_initial_efi_deploy(
+            _Suno_initial_efi_deploy(
                 self._physroot,
 ''', 1)
     before = '''        rc = execWithRedirect(
@@ -156,7 +156,7 @@ def patched_pull_source(data):
 '''
     if text.count(before) != 1:
         raise ValueError("unsupported Anaconda bootupd installation boundary")
-    text = text.replace(before, '''        rc = _luma_install_bootupd(
+    text = text.replace(before, '''        rc = _Suno_install_bootupd(
             self._sysroot,
 ''', 1)
     before = '''            root=self._sysroot

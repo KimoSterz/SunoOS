@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
 #
-# Headless test of luma_window_shape_v1 and of the configure that ends an
+# Headless test of Suno_window_shape_v1 and of the configure that ends an
 # interactive resize (patches/mutter 0032, 0033). Runs GNOME Shell on a
 # virtual 1920x1080 monitor with the Mutter under test and drives real
 # pointer drags (driver.js). Needs Fedora 44 with gnome-shell and that
 # Mutter, gtk4-devel, wayland-devel, libadwaita, gtk3, python3-gobject,
 # mesa-dri-drivers and dbus-daemon; no GPU, display server or logind session.
 #
-#   run.sh OUTDIR [luma|stock] [none|tilingshell]
+#   run.sh OUTDIR [Suno|stock] [none|tilingshell]
 #
 # "stock" expects a Mutter without the protocol: the kit call must be a
 # silent no-op and nothing else may change. "tilingshell" enables Tiling
@@ -20,20 +20,20 @@ set -euo pipefail
 here=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 repo=$(CDPATH= cd -- "$here/../../.." && pwd)
 out=$1
-expect=${2:-luma}
+expect=${2:-Suno}
 tiler=${3:-none}
 mkdir -p "$out/build" "$out/runtime" "$out/config/glib-2.0/settings" "$out/data"
 chmod 0700 "$out/runtime"
 rm -f "$out"/*.png "$out"/*.log "$out/result.json"
 
-protocol=$repo/src/luma-platform/protocols/luma-window-shape-v1.xml
-wayland-scanner client-header "$protocol" "$out/build/luma-window-shape-v1-client-protocol.h"
-wayland-scanner private-code "$protocol" "$out/build/luma-window-shape-v1-client-protocol.c"
-# The client is built from the kit's own luma-window-shape.c.
-gcc -O1 -Wall -Wextra -Werror -Wno-unused-parameter -DLUMA_HAVE_WAYLAND \
-  -I"$out/build" -I"$repo/src/luma-platform/ui" \
-  "$here/client.c" "$repo/src/luma-platform/ui/luma-window-shape.c" \
-  "$out/build/luma-window-shape-v1-client-protocol.c" \
+protocol=$repo/src/Suno-platform/protocols/Suno-window-shape-v1.xml
+wayland-scanner client-header "$protocol" "$out/build/Suno-window-shape-v1-client-protocol.h"
+wayland-scanner private-code "$protocol" "$out/build/Suno-window-shape-v1-client-protocol.c"
+# The client is built from the kit's own Suno-window-shape.c.
+gcc -O1 -Wall -Wextra -Werror -Wno-unused-parameter -DSuno_HAVE_WAYLAND \
+  -I"$out/build" -I"$repo/src/Suno-platform/ui" \
+  "$here/client.c" "$repo/src/Suno-platform/ui/Suno-window-shape.c" \
+  "$out/build/Suno-window-shape-v1-client-protocol.c" \
   $(pkg-config --cflags --libs gtk4 wayland-client) -o "$out/build/client"
 
 cat >"$out/config/glib-2.0/settings/keyfile" <<'KEYFILE'
@@ -66,9 +66,9 @@ env -u DISPLAY -u WAYLAND_DISPLAY \
   XDG_RUNTIME_DIR="$out/runtime" XDG_CONFIG_HOME="$out/config" \
   XDG_DATA_HOME="$out/data" GSETTINGS_BACKEND=keyfile LIBGL_ALWAYS_SOFTWARE=1 \
   GTK_A11Y=none NO_AT_BRIDGE=1 MUTTER_DEBUG=wayland \
-  LUMA_SHAPE_OUT="$out" LUMA_SHAPE_HERE="$here" \
-  LUMA_SHAPE_CLIENT="$out/build/client" LUMA_SHAPE_EXPECT="$expect" \
-  LUMA_SHAPE_TILER="$tiler" \
+  SUNO_SHAPE_OUT="$out" SUNO_SHAPE_HERE="$here" \
+  SUNO_SHAPE_CLIENT="$out/build/client" SUNO_SHAPE_EXPECT="$expect" \
+  SUNO_SHAPE_TILER="$tiler" \
   dbus-run-session -- timeout 600 gnome-shell --headless \
   --virtual-monitor 1920x1080 --automation-script="$here/driver.js" \
   >"$out/shell.log" 2>&1 || status=$?

@@ -1,4 +1,4 @@
-From: Project Luma <builds@project-luma.local>
+From: Project Suno <builds@project-suno.local>
 Subject: [PATCH] keyboard: a field focused by a tap opens the keyboard
 
 Mutter shows the on-screen keyboard for a text-input-v3 client only when
@@ -20,7 +20,7 @@ touchscreen, are unchanged.
 
 --- a/js/ui/keyboard.js
 +++ b/js/ui/keyboard.js
-@@ -26,6 +26,9 @@ import {tv as TV_TOKENS} from './lumaPresentation/tvTokens.js';
+@@ -26,6 +26,9 @@ import {tv as TV_TOKENS} from './SunoPresentation/tvTokens.js';
  export const KEYBOARD_ANIMATION_TIME = 150;
  const KEYBOARD_REST_TIME = KEYBOARD_ANIMATION_TIME * 2;
  const KEY_LONG_PRESS_TIME = 250;

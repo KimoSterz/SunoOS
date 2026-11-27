@@ -27,7 +27,7 @@ the authorized operator must:
    public byte/hash checks. Preserve the existing x86 `*-latest.iso` alias.
 2. Seal, sign and verify the prepared aggregate through the normal isolated
    signer. Its trusted comment is exactly
-   `luma-media-index channel=<channel> generated_utc=<timestamp>`; the aggregate
+   `Suno-media-index channel=<channel> generated_utc=<timestamp>`; the aggregate
    has no architecture suffix. Original scoped signatures remain unchanged.
 3. Reacquire the shared canonical publication lock and compare the current
    canonical index's full hash with `canonical_prior_sha256` in the preparation
@@ -56,9 +56,9 @@ predecessor and refuses to discard or change another CPU's entries. A stale loca
 x86 media tree therefore cannot silently erase ARM downloads. The producer holds
 a shared publication lock across the final predecessor check, signing and upload,
 and compares the remote predecessor again before changing metadata. Configure
-`LUMA_MEDIA_PUBLICATION_LOCK` to the same canonical publication lock in every
+`SUNO_MEDIA_PUBLICATION_LOCK` to the same canonical publication lock in every
 architecture/release operator. An operator that already holds it may pass that
-open descriptor in `LUMA_MEDIA_PUBLICATION_LOCK_FD`; the script validates the
+open descriptor in `SUNO_MEDIA_PUBLICATION_LOCK_FD`; the script validates the
 descriptor's device/inode and acquires its existing lock without reopening it.
 
 The default path is local to a release root; it does not establish a cross-root
@@ -77,10 +77,10 @@ next publication. Until both operators are configured and independently checked,
 this source change does not establish live publication serialization.
 
 OS repository publishers can also inherit locks from an outer operator through
-`LUMA_OS_PUBLICATION_LOCK_FDS`, a JSON object mapping configured channel names
+`SUNO_OS_PUBLICATION_LOCK_FDS`, a JSON object mapping configured channel names
 (`nightly`, `beta`, `stable`) and optionally `repository` to distinct open integer
 descriptors of at least 3. Every supplied descriptor must name the same regular
-file device/inode as `LUMA_OS_ROOT/locks/publish-<key>.lock`; validation locks the
+file device/inode as `SUNO_OS_ROOT/locks/publish-<key>.lock`; validation locks the
 inherited open file description rather than reopening its path. Unknown or
 duplicate keys, repeated descriptors and mismatched or closed descriptors fail.
 Missing entries retain normal lock acquisition. Without a map, the existing

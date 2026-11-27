@@ -1,4 +1,4 @@
 #!/bin/sh
-# Interim CI: job containers share luma-build's page cache, so a real sync waits for every
+# Interim CI: job containers share Suno-build's page cache, so a real sync waits for every
 # dirty page of every host disk (minutes on the busy HDD). GitHub runners sync instantly.
 exit 0

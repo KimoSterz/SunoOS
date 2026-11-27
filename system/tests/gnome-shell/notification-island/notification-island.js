@@ -14,7 +14,7 @@ import Shell from 'gi://Shell';
 import St from 'gi://St';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as MessageTray from 'resource:///org/gnome/shell/ui/messageTray.js';
-import {getNotificationTray} from 'resource:///org/gnome/shell/ui/lumaNotificationBeacon.js';
+import {getNotificationTray} from 'resource:///org/gnome/shell/ui/SunoNotificationBeacon.js';
 
 const OUT = GLib.getenv('NI_OUT') ?? '/tmp/notification-island';
 const results = [];
@@ -35,7 +35,7 @@ const extents = a => { const e = a.get_transformed_extents(); return {x: e.get_x
 
 async function setMode(mode) {
     new Gio.Settings({schema_id: 'org.gnome.desktop.interface'}).set_string('color-scheme', mode === 'dark' ? 'prefer-dark' : 'default');
-    new Gio.Settings({schema_id: 'org.project_luma.shell-state'}).set_string('surface-treatment', mode);
+    new Gio.Settings({schema_id: 'org.projectSuno.shell-state'}).set_string('surface-treatment', mode);
     await sleep(2500);
 }
 
@@ -123,7 +123,7 @@ async function work() {
         await sleep(700);
         check(`${mode}: with no notifications there is no island`, !island.visible);
         await shelfCrop(`${mode}-0`);
-        send('Build finished', 'luma-shell 50.3 passed every check.');
+        send('Build finished', 'Suno-shell 50.3 passed every check.');
         await sleep(700);
         check(`${mode}: one notification, one island, no count`, island.visible && !beacon._count.visible);
         await shelfCrop(`${mode}-1`);
@@ -201,7 +201,7 @@ async function work() {
 
     // The island is a managed shelf island with the ADR-044 id.
     check('the island is the shelf\'s "notifications" island', shelf.getIsland('notifications') === island &&
-        island.islandId === 'notifications' && island.name === 'lumaShelfIsland-notifications',
+        island.islandId === 'notifications' && island.name === 'SunoShelfIsland-notifications',
         `${island.islandId} ${island.name}`);
 
     // Reduced motion: it fades, and neither grows nor slides.

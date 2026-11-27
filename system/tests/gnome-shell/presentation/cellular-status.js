@@ -4,8 +4,8 @@
 import {
     cellularStatus, modemStatus, signalLevel,
     FailedReason, ModemState, Registration, NO_SERVICE_ICON, NO_SIM_ICON,
-} from '../../../src/luma-shell-presentation/cellularStatus.js';
-import {statusGlyph} from '../../../src/luma-shell-presentation/layout.js';
+} from '../../../src/Suno-shell-presentation/cellularStatus.js';
+import {statusGlyph} from '../../../src/Suno-shell-presentation/layout.js';
 
 const out = globalThis.print ?? console.log;
 function assert(value, message) { if (!value) throw Error(message); }
@@ -90,17 +90,17 @@ is(cellularStatus([
 ]), 'signal', 'network-cellular-signal-weak-symbolic', 'a registered modem outranks a searching one');
 
 // The three states never share a glyph on the handheld status bar, where
-// GNOME's signal names are redrawn and the Luma glyphs are left as they are.
+// GNOME's signal names are redrawn and the Suno glyphs are left as they are.
 const drawn = status => statusGlyph(status.icon) ?? status.icon;
 const glyphs = new Set();
 for (const [quality] of levels)
     glyphs.add(drawn(modemStatus({state: ModemState.REGISTERED, sim: SIM, registration: Registration.HOME, quality})));
 assert(glyphs.size === 5, 'five signal glyphs');
 for (const glyph of glyphs)
-    assert(glyph.startsWith('luma-status-signal-'), `${glyph} is a signal glyph`);
+    assert(glyph.startsWith('Suno-status-signal-'), `${glyph} is a signal glyph`);
 assert(!glyphs.has(NO_SERVICE_ICON) && !glyphs.has(NO_SIM_ICON) &&
     NO_SERVICE_ICON !== NO_SIM_ICON, 'no service and no SIM are their own glyphs');
 assert(statusGlyph(NO_SERVICE_ICON) === null && statusGlyph(NO_SIM_ICON) === null,
-    'the Luma glyphs are drawn as they are');
+    'the Suno glyphs are drawn as they are');
 
 out('cellular status ok');

@@ -1,22 +1,22 @@
-# Shared Project Luma application baseline.
+# Shared Project Suno application baseline.
 #
 # These are product roles expressed as Fedora package names, not architecture-
 # specific NEVRAs. Desktop and phone composition must resolve the same roles
-# for their native architecture. Downstream Luma RPMs replace the stock Fedora
+# for their native architecture. Downstream Suno RPMs replace the stock Fedora
 # packages for components listed in config/desktop/packages.txt.
 
-# Luma-owned adaptive applications
+# Suno-owned adaptive applications
 prairie-core-apps
-luma-messages-e2ee
+Suno-messages-e2ee
 prairie-icon-theme
-luma-developer-platform
-luma-android-runtime
-luma-application-installer
-luma-apk-metadata
+Suno-developer-platform
+Suno-android-runtime
+Suno-application-installer
+Suno-apk-metadata
 nautilus
-luma-calculator
-luma-terminal
-luma-tide
+Suno-calculator
+Suno-terminal
+Suno-tide
 gnome-control-center
 
 # Shared typography used by every Prairie core app
@@ -24,5 +24,5 @@ google-figtree-fonts
 ibm-plex-mono-fonts
 
 # Shared Fedora applications
-luma-monitor
+Suno-monitor
 gnome-software

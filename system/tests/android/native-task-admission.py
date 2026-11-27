@@ -132,12 +132,12 @@ def main():
     args = parser.parse_args()
     repo = Path(__file__).resolve().parents[2]
     relative = Path('interfaces/task/1.0/default')
-    with tempfile.TemporaryDirectory(prefix='luma-native-task-') as directory:
+    with tempfile.TemporaryDirectory(prefix='Suno-native-task-') as directory:
         work = Path(directory)
         shutil.copytree(args.hardware_source / relative, work / relative)
         original = (work / relative / 'WaydroidTask.cpp').read_text()
         subprocess.run(['patch', '--batch', '--fuzz=0', '-p1', '-d', str(work), '-i',
-                        str(repo / 'patches/android-hardware-waydroid/0017-luma-native-task-caller-admission.patch')], check=True)
+                        str(repo / 'patches/android-hardware-waydroid/0017-Suno-native-task-caller-admission.patch')], check=True)
         patched = (work / relative / 'WaydroidTask.cpp').read_text()
         header = (work / relative / 'WaydroidTask.h').read_text()
         assert all(name not in patched + header for name in ['mActivityTaskManager', 'mPlatform'])

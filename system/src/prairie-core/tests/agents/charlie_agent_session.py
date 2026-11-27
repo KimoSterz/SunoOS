@@ -2,9 +2,9 @@
 # SPDX-License-Identifier: Apache-2.0
 """Charlie's background mail agent in a real user session (ADR-033).
 
-    charlie_agent_session.py --evidence DIR --charlie-tests /path/to/native-charlie-luma/tests
+    charlie_agent_session.py --evidence DIR --charlie-tests /path/to/native-charlie-Suno/tests
 
-Needs luma-charlie installed. With Charlie's test IMAP server as a session
+Needs Suno-charlie installed. With Charlie's test IMAP server as a session
 service and one account whose password is in the session's Secret Service:
 starts at login from its autostart entry inside its unit and slice; loads no
 GTK; one agent however it is started; new mail notifies with sender and subject
@@ -24,9 +24,9 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from session import Failure, Session, mib  # noqa: E402
 
-APP = "org.projectluma.Charlie"
-AGENT = "org.projectluma.Charlie.Agent"
-UNIT = "app-org.projectluma.Charlie-agent.service"  # replaced in main() for the unmanaged fallback
+APP = "org.projectSuno.Charlie"
+AGENT = "org.projectSuno.Charlie.Agent"
+UNIT = "app-org.projectSuno.Charlie-agent.service"  # replaced in main() for the unmanaged fallback
 HERE = Path(__file__).resolve().parent
 
 
@@ -58,16 +58,16 @@ def main() -> int:
         return pids[0] if len(pids) == 1 else 0
 
     try:
-        session.systemctl("stop", UNIT, "luma-test-imap", check=False)
-        session.run("systemd-run", "--user", "--quiet", "--unit=luma-test-imap", sys.executable,
+        session.systemctl("stop", UNIT, "Suno-test-imap", check=False)
+        session.run("systemd-run", "--user", "--quiet", "--unit=Suno-test-imap", sys.executable,
                     str(HERE / "charlie_imap_service.py"), "--charlie-tests", str(options.charlie_tests),
                     "--state", str(state))
         server = session.wait(lambda: (state / "server.json").exists() and json.loads((state / "server.json").read_text()),
                               "IMAP server", 30)
         session.systemctl("set-environment", f"SSL_CERT_FILE={server['ca']}")
-        from charlie_luma.model import Account, ServerConfig
-        from charlie_luma.secrets import SecretStore
-        from charlie_luma.store import MailStore
+        from charlie_Suno.model import Account, ServerConfig
+        from charlie_Suno.secrets import SecretStore
+        from charlie_Suno.store import MailStore
         data = Path.home() / ".local/share/charlie"
         data.mkdir(parents=True, exist_ok=True, mode=0o700)
         store = MailStore(data / "mail.db")
@@ -97,7 +97,7 @@ def main() -> int:
         # 2. Single instance.
         for arguments in (("--agent",), ("--agent", "--autostart")):
             for _ in range(3):
-                session.run("org.projectluma.Charlie", *arguments, timeout=40, check=False)
+                session.run("org.projectSuno.Charlie", *arguments, timeout=40, check=False)
         session.step("single instance", agent_pid() == pid and flags().get("logins", 0) >= 1)
 
         # 3. New mail notifies.
@@ -106,7 +106,7 @@ def main() -> int:
         record = session.wait_notification(lambda r: r["body"] == "Compiler notes", "new mail notification", 60, mark)
         actions = dict(zip(record["actions"][0::2], record["actions"][1::2]))
         session.step("new mail notifies with sender and subject", record["summary"] == "Grace Hopper"
-                     and record["hints"].get("desktop-entry") == "org.projectluma.Charlie"
+                     and record["hints"].get("desktop-entry") == "org.projectSuno.Charlie"
                      and record["hints"].get("category") == "email.arrived" and "mark-read" in actions,
                      summary=record["summary"], actions=actions)
         session.wait(lambda: session.values(AGENT).get("unread-count") == 2, "unread count 2", 20)
@@ -156,7 +156,7 @@ def main() -> int:
     finally:
         session.restore_logind()
         session.systemctl("thaw", UNIT, check=False)
-        session.systemctl("stop", UNIT, "luma-test-imap", check=False)
+        session.systemctl("stop", UNIT, "Suno-test-imap", check=False)
         session.systemctl("unset-environment", "SSL_CERT_FILE", check=False)
     summary = session.summary("charlie", extra)
     print(json.dumps({"passed": summary["passed"], **extra}))

@@ -1,4 +1,4 @@
-From: Project Luma <luma@local>
+From: Project Suno <Suno@local>
 Subject: [PATCH] media: i2c: add FP6 S5KKD1SP front camera
 
 --- a/drivers/media/i2c/Kconfig

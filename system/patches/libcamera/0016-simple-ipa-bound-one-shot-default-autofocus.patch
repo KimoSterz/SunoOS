@@ -1,4 +1,4 @@
-From: Project Luma <project-luma@local>
+From: Project Suno <project-suno@local>
 Subject: [PATCH] simple: ipa: bound default autofocus and avoid autonomous rescans
 
 The early Simple IPA autofocus implementation defaults to continuous mode,

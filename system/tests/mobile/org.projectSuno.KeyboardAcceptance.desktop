@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Suno Keyboard Acceptance
+Exec=/tmp/Suno-keyboard-acceptance
+Icon=input-keyboard-symbolic
+Terminal=false
+StartupNotify=true
+Categories=Utility;

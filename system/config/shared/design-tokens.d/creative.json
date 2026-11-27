@@ -1,8 +1,8 @@
 {
-  "_doc": "LumaUI creative family (KB-D): the creative suite's workspace, floating panels, tool bar, layer tree and property fields (v70 .su*). Merged into lumaui by the generator: metrics become --lumaui-creative-*, colours @luma_creative_*.",
-  "lumaui": {
+  "_doc": "SunoUI creative family (KB-D): the creative suite's workspace, floating panels, tool bar, layer tree and property fields (v70 .su*). Merged into SunoUI by the generator: metrics become --SunoUI-creative-*, colours @Suno_creative_*.",
+  "SunoUI": {
     "creative": {
-      "_source": "luma-next-70.html .suwin/.suwork/.supanel/.supill/.sutools/.sulyr/.susec/.sufld/.suselect/.sualign, #vw-pal",
+      "_source": "Suno-next-70.html .suwin/.suwork/.supanel/.supill/.sutools/.sulyr/.susec/.sufld/.suselect/.sualign, #vw-pal",
       "panel_inset": 10,
       "panel_left_width": 244,
       "panel_right_width": 268,

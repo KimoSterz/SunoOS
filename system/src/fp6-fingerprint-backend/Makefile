@@ -47,7 +47,7 @@ fp6-fingerprint-enroll: fp6_fingerprint_enroll.c enrollment_protocol.c \
 		enrollment_protocol.h gatekeeper_protocol.c gatekeeper_protocol.h \
 		focal_protocol.c focal_protocol.h focal_driver_control.c \
 		focal_driver_control.h \
-		../fp6-fingerprint-qcomtee/luma-fp6-enrollment-abi.h \
+		../fp6-fingerprint-qcomtee/Suno-fp6-enrollment-abi.h \
 		../fp6-fingerprint-qsee-bridge/qseecom_bridge.c \
 		../fp6-fingerprint-qsee-bridge/QSEEComAPI.h \
 		../fp6-fingerprint-qsee-bridge/qseecom_bridge_internal.h
@@ -59,16 +59,16 @@ fp6-fingerprint-enroll: fp6_fingerprint_enroll.c enrollment_protocol.c \
 
 enrollment-client: fp6-fingerprint-enroll
 
-luma-fp6-wake-input: luma_fp6_wake_input.c
-	$(CC) $(CFLAGS) $(WARNINGS) -o $@ luma_fp6_wake_input.c
+Suno-fp6-wake-input: Suno_fp6_wake_input.c
+	$(CC) $(CFLAGS) $(WARNINGS) -o $@ Suno_fp6_wake_input.c
 
-wake-input: luma-fp6-wake-input
+wake-input: Suno-fp6-wake-input
 
 clean:
 	rm -f test-focal-protocol test-focal-driver-control test-gatekeeper-protocol \
 		test-enrollment-protocol \
-		fp6-fingerprint-probe fp6-fingerprint-enroll luma-fp6-wake-input
+		fp6-fingerprint-probe fp6-fingerprint-enroll Suno-fp6-wake-input
 	rm -rf test-focal-protocol.dSYM test-focal-driver-control.dSYM \
 		test-gatekeeper-protocol.dSYM test-enrollment-protocol.dSYM \
 		fp6-fingerprint-probe.dSYM fp6-fingerprint-enroll.dSYM \
-		luma-fp6-wake-input.dSYM
+		Suno-fp6-wake-input.dSYM

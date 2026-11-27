@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # Compose the Fairphone 6 boot DTB: the kernel-built milos-fairphone-fp6.dtb
-# with the overlays of the kernel tag's luma/fp6/alpha1/dtb applied by that
+# with the overlays of the kernel tag's Suno/fp6/alpha1/dtb applied by that
 # directory's compose-dtb.sh (devices/fairphone/fp6/device.toml [kernel]
 # dtb_overlays). compose-dtb.sh pins the Alpha 1 base DTB; this runs it
 # unchanged except for that pin, so a kernel with DTS patches gets the same

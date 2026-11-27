@@ -37,17 +37,17 @@ def validate(profile,root):
     runtime_rows=extract(root/'runtime-input.tar',mirror,8*G,100000,frozenset(['repo','repo/objects','repo/tmp','repo/state','repo/refs','repo/refs/heads','repo/refs/remotes','repo/refs/mirrors','site']))
     assert (mirror/'INPUTS.json').stat().st_size<=32*1024**2
     descriptor=json.loads((mirror/'INPUTS.json').read_bytes())
-    assert descriptor['schema']=='org.projectluma.depot.runtime-input/v1'
+    assert descriptor['schema']=='org.projectSuno.depot.runtime-input/v1'
     assert descriptor['profile']==profile
     inventory=descriptor['files'];assert inventory=={k:v for k,v in runtime_rows.items() if k!='INPUTS.json'}
-    allowed={'repo/config','repo/summary','repo/summary.sig','site/luma.flatpakrepo'}|{'repo/refs/heads/'+r for r in profile['refs']}
+    allowed={'repo/config','repo/summary','repo/summary.sig','site/Suno.flatpakrepo'}|{'repo/refs/heads/'+r for r in profile['refs']}
     objects=[]
     for path,row in inventory.items():
         if path in allowed:continue
         assert re.fullmatch(r'repo/objects/[0-9a-f]{2}/[0-9a-f]{62}\.(filez|dirtree|dirmeta|commit|commitmeta)',path),path
         if not path.endswith('.commitmeta'):objects.append(row)
     assert len(objects)==profile['reachable_object_count'] and sum(r['bytes'] for r in objects)==profile['reachable_stored_bytes']
-    for relative,key in [('repo/summary','summary_sha256'),('repo/summary.sig','summary_signature_sha256'),('site/luma.flatpakrepo','flatpakrepo_sha256')]:assert digest(mirror/relative)==profile[key]
+    for relative,key in [('repo/summary','summary_sha256'),('repo/summary.sig','summary_signature_sha256'),('site/Suno.flatpakrepo','flatpakrepo_sha256')]:assert digest(mirror/relative)==profile[key]
     for ref,commit in profile['refs'].items():assert (mirror/'repo/refs/heads'/ref).read_text().strip()==commit
     config=configparser.ConfigParser(interpolation=None);config.read(mirror/'repo/config')
     assert config['core']['mode']=='archive-z2' and config['core']['repo_version']=='1'
@@ -74,7 +74,7 @@ def main():
     ap=argparse.ArgumentParser();ap.add_argument('profile',type=Path);ap.add_argument('transport',type=Path);ap.add_argument('root',type=Path);a=ap.parse_args()
     profile=json.loads(a.profile.read_bytes());transport=json.loads(a.transport.read_bytes())
     assert profile['source']=='bdaf62fd08989b790decfac941a6947f8f72273a' and profile['architecture']=='aarch64'
-    assert transport['schema']=='org.projectluma.depot.native-filer-transport/v1'
+    assert transport['schema']=='org.projectSuno.depot.native-filer-transport/v1'
     # The launcher downloads only these fully reviewed bodies. Unrendered preparation refuses.
     for key,name,bound in [('runtime_archive','runtime-input.tar',8*G),('filer_archive','filer-input.tar',256*1024**2)]:
         row=transport[key];assert isinstance(row,dict) and re.fullmatch('[0-9a-f]{64}',row.get('sha256') or '') and type(row.get('bytes')) is int and 0<row['bytes']<=bound

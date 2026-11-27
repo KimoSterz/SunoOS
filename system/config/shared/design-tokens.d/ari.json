@@ -1,6 +1,6 @@
 {
   "_doc": "Approved R2-AT ari-06 app surface metrics and type roles; v71 overrides: receipt header11/16/10, receipt title1.35, reply width min(88%,680), reply reading1.5. Shared components retain their own tokens.",
-  "lumaui": {
+  "SunoUI": {
     "ari": {
       "user": {
         "padding_y": 10,

@@ -1,6 +1,6 @@
 {
   "_doc": "Reusable dialing keys and call text from v71 Phone .pnkeys/.pnbig/.pncc.",
-  "lumaui": {
+  "SunoUI": {
     "dial_key": {
       "size": 76,
       "phone_size": 80,

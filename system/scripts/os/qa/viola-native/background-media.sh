@@ -14,12 +14,12 @@
 # received. Prints one JSON line per check and exits non-zero on any failure.
 set -u
 fixture=${1:?usage: background-media.sh FIXTURE.webm [HOST_DIR] [ENGINE]}
-host=${2:-/usr/share/viola-browser/luma-host}
+host=${2:-/usr/share/viola-browser/Suno-host}
 engine=${3:-/opt/viola/browser/chrome}
-user=luma-qa-background-media
+user=Suno-qa-background-media
 [ "$(id -u)" = 0 ] || { echo 'run as root in a disposable VM' >&2; exit 2; }
 [ -f "$fixture" ] && [ -f "$host/headless_qa.py" ] && [ -x "$engine" ] || { echo 'missing fixture, host or engine' >&2; exit 2; }
-work=$(mktemp -d /var/tmp/luma-qa-background-media.XXXXXX)
+work=$(mktemp -d /var/tmp/Suno-qa-background-media.XXXXXX)
 created=0
 cleanup() {
   if [ "$created" = 1 ]; then
@@ -89,5 +89,5 @@ check('engine-exit', report.get('engine_exit_code') == 0, str(report.get('engine
 raise SystemExit(1 if failed else 0)
 PY
 status=$?
-[ "$status" = 0 ] && rm -rf "$work" || echo "LUMA_QA_DIAGNOSTICS=$work" >&2
+[ "$status" = 0 ] && rm -rf "$work" || echo "SUNO_QA_DIAGNOSTICS=$work" >&2
 exit "$status"

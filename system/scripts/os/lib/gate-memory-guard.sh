@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
 #
-# Gate check for luma-vitals-memory-guard, run as root inside a gate VM:
+# Gate check for Suno-vitals-memory-guard, run as root inside a gate VM:
 #
 #   gate-memory-guard.sh USER [DEADLINE_SECONDS]
 #
@@ -18,7 +18,7 @@
 set -uo pipefail
 user=${1:?usage: gate-memory-guard.sh USER [DEADLINE_SECONDS]}
 deadline_s=${2:-600}
-unit=luma-gate-runaway
+unit=Suno-gate-runaway
 
 id -u "$user" >/dev/null 2>&1 || { echo "FAIL no such user: $user"; exit 1; }
 ucmd() { systemctl --user -M "$user@" "$@"; }
@@ -41,7 +41,7 @@ swapon --show
 # race: zram then holds every swapped page at full size, RAM ran out while
 # swap was still far below oomd's limit, and in 20260916.8 the kernel's OOM
 # killer ended the runaway first (in .5 and .7 oomd did, by a second or two).
-cat >/var/tmp/luma-gate-runaway.py <<'PY'
+cat >/var/tmp/Suno-gate-runaway.py <<'PY'
 import os, time
 hog = []
 while True:
@@ -50,12 +50,12 @@ while True:
     hog.append(chunk)
     time.sleep(0.25)
 PY
-chmod 0644 /var/tmp/luma-gate-runaway.py
+chmod 0644 /var/tmp/Suno-gate-runaway.py
 
 since=$(date '+%Y-%m-%d %H:%M:%S')
 ucmd reset-failed "$unit" >/dev/null 2>&1 || true
 systemd-run --user -M "$user@" --unit="$unit" --slice=app.slice \
-  /usr/bin/python3 /var/tmp/luma-gate-runaway.py ||
+  /usr/bin/python3 /var/tmp/Suno-gate-runaway.py ||
   { echo "FAIL could not start the runaway"; exit 1; }
 
 end=$((SECONDS + deadline_s))
@@ -77,7 +77,7 @@ echo "runaway ended after ${elapsed}s, result: ${result:-unknown}"
 echo "systemd-oomd: ${oomd:-none}"
 echo "kernel OOM killer: ${kernel:-none}"
 ucmd reset-failed "$unit" >/dev/null 2>&1 || true
-rm -f /var/tmp/luma-gate-runaway.py
+rm -f /var/tmp/Suno-gate-runaway.py
 sleep 5
 
 ok=1
@@ -85,9 +85,9 @@ ok=1
 shell_after=$(pgrep -u "$user" -x gnome-shell | head -n 1)
 echo "gnome-shell pid after: ${shell_after:-none}"
 [ "$shell_after" = "$shell_before" ] || { echo "FAIL GNOME Shell did not survive (before $shell_before, after ${shell_after:-none})"; ok=0; }
-LUMA_GREENBOOT_FORCE_TRIAL=1 /usr/lib/greenboot/check/required.d/20-luma-shell-responsive.sh ||
+SUNO_GREENBOOT_FORCE_TRIAL=1 /usr/lib/greenboot/check/required.d/20-Suno-shell-responsive.sh ||
   { echo "FAIL GNOME Shell stopped answering"; ok=0; }
-LUMA_GREENBOOT_FORCE_TRIAL=1 /usr/lib/greenboot/check/required.d/10-luma-display-manager.sh ||
+SUNO_GREENBOOT_FORCE_TRIAL=1 /usr/lib/greenboot/check/required.d/10-Suno-display-manager.sh ||
   { echo "FAIL the display manager session did not survive"; ok=0; }
 failed=$(systemctl list-units --state=failed --no-legend --plain)
 [ -z "$failed" ] || { echo "FAIL failed system units: $(tr '\n' ' ' <<<"$failed")"; ok=0; }

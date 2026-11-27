@@ -194,9 +194,9 @@ class ReplySender:
 
 
 class ReplyEndpoint:
-    PATH = "/org/projectluma/Messages/Notifications"
-    INTERFACE = "org.projectluma.Messages.NotificationReply1"
-    XML = '''<node><interface name="org.projectluma.Messages.NotificationReply1">
+    PATH = "/org/projectSuno/Messages/Notifications"
+    INTERFACE = "org.projectSuno.Messages.NotificationReply1"
+    XML = '''<node><interface name="org.projectSuno.Messages.NotificationReply1">
       <method name="Reply"><arg type="u" direction="in"/><arg type="s" direction="in"/>
         <arg type="s" direction="in"/><arg type="s" direction="in"/>
         <arg type="s" direction="out"/><arg type="s" direction="out"/></method>

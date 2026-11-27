@@ -1,7 +1,7 @@
-From: Project Luma <luma@local>
+From: Project Suno <Suno@local>
 Subject: [PATCH] Isolate desktop extensions in the mobile bake-off
 
-Luma's installed user extensions target the desktop Shell ABI. Loading those
+Suno's installed user extensions target the desktop Shell ABI. Loading those
 extensions into the private GNOME Mobile 48 candidate both contaminates the
 bake-off and can fail on changed mobile APIs. Skip user extensions only in the
 explicitly marked greetd candidate session, leaving all settings untouched.
@@ -19,10 +19,10 @@ index 1e5a73c..21842fb 100644
  
 -        if (!global.settings.get_boolean(DISABLE_USER_EXTENSIONS_KEY))
 +        // Keep the isolated mobile bake-off neutral: desktop extensions target
-+        // the installed Luma Shell ABI and must not be loaded into Shell 48.
-+        // Their settings remain untouched and take effect again in Luma Shell.
++        // the installed Suno Shell ABI and must not be loaded into Shell 48.
++        // Their settings remain untouched and take effect again in Suno Shell.
 +        if (!global.settings.get_boolean(DISABLE_USER_EXTENSIONS_KEY) &&
-+            GLib.getenv('LUMA_GREETD_SESSION') !== '1')
++            GLib.getenv('SUNO_GREETD_SESSION') !== '1')
              extensions = extensions.concat(global.settings.get_strv(ENABLED_EXTENSIONS_KEY));
  
          extensions.sort((a, b) => this._compareExtensions(this.lookup(a), this.lookup(b)));

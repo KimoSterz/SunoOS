@@ -8,7 +8,7 @@
 set -Eeuo pipefail
 umask 077
 
-release=7.1.2-luma-fp-ims1
+release=7.1.2-Suno-fp-ims1
 candidate_efi=/boot/linux-binderfs-ims1.efi
 candidate_image=/boot/vmlinuz-binderfs-ims1
 candidate_efi_sha=8a97eed2c3a4f9d125f49a8d2c98f267900f805bd046215fe585edbb2c8c12b8
@@ -45,7 +45,7 @@ grep -qx 'default pmos.conf' /boot/loader/loader.conf || die 'proven default is 
   die 'a BinderFS candidate entry already exists'
 
 sed \
-  -e 's/^title .*/title Luma FP6 BinderFS compatibility candidate (three-attempt gate)/' \
+  -e 's/^title .*/title Suno FP6 BinderFS compatibility candidate (three-attempt gate)/' \
   -e 's#^linux .*#linux linux-binderfs-ims1.efi#' \
   "$proven_entry" >"$candidate_entry.new"
 chmod 0700 "$candidate_entry.new"

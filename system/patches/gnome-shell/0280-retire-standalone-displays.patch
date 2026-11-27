@@ -1,7 +1,7 @@
 Subject: [PATCH] Remove automatic Displays activation and retain Settings confirmation
 
---- a/js/ui/lumaDisplayArrival.js
-+++ b/js/ui/lumaDisplayArrival.js
+--- a/js/ui/SunoDisplayArrival.js
++++ b/js/ui/SunoDisplayArrival.js
 @@ -1,71 +1,9 @@
  // SPDX-License-Identifier: GPL-2.0-or-later
 -// Ask how to use displays that have never been arranged together.
@@ -20,7 +20,7 @@ Subject: [PATCH] Remove automatic Displays activation and retain Settings confir
 -const SETTLE_SECONDS = 4;
 -// A session that starts on a new arrangement is asked once it is up.
 -const STARTUP_SECONDS = 10;
--const DISPLAYS = 'org.projectluma.Displays';
+-const DISPLAYS = 'org.projectSuno.Displays';
 -
 -export class DisplayArrival {
 -    constructor() {
@@ -51,8 +51,8 @@ Subject: [PATCH] Remove automatic Displays activation and retain Settings confir
 -        if (Main.layoutManager.monitors.length < 2)
 -            return;
 -        // D-Bus activation starts Displays as its own service, not as a child
--        // of the Shell. A Luma without Displays installed simply isn't asked.
--        Gio.DBus.session.call(DISPLAYS, '/org/projectluma/Displays',
+-        // of the Shell. A Suno without Displays installed simply isn't asked.
+-        Gio.DBus.session.call(DISPLAYS, '/org/projectSuno/Displays',
 -            'org.freedesktop.Application', 'ActivateAction',
 -            new GLib.Variant('(sava{sv})', ['arrival', [], {}]),
 -            null, Gio.DBusCallFlags.NONE, -1, null,
@@ -84,30 +84,30 @@ Subject: [PATCH] Remove automatic Displays activation and retain Settings confir
 @@ -33,7 +33,6 @@
  import * as LoginManager from '../misc/loginManager.js';
  import * as LookingGlass from './lookingGlass.js';
- import * as LumaSearch from './lumaSearch.js';
--import * as LumaDisplayArrival from './lumaDisplayArrival.js';
- import * as LumaWindowCorners from './lumaWindowCorners.js';
- import * as LumaWindowWatch from './lumaWindowWatch.js';
- import * as LumaShare from './lumaShare.js';
+ import * as SunoSearch from './SunoSearch.js';
+-import * as SunoDisplayArrival from './SunoDisplayArrival.js';
+ import * as SunoWindowCorners from './SunoWindowCorners.js';
+ import * as SunoWindowWatch from './SunoWindowWatch.js';
+ import * as SunoShare from './SunoShare.js';
 @@ -71,7 +70,6 @@
  export let stickyDockManager = null;
  export let overview = null;
- export let lumaSearch = null;
--export let lumaDisplayArrival = null;
- export let lumaWindowCorners = null;
- export let lumaWindowWatch = null;
- export let lumaShare = null;
+ export let SunoSearch = null;
+-export let SunoDisplayArrival = null;
+ export let SunoWindowCorners = null;
+ export let SunoWindowWatch = null;
+ export let SunoShare = null;
 @@ -260,13 +258,6 @@
      }
      if (sessionMode.hasOverview) {
          try {
--            lumaDisplayArrival = new LumaDisplayArrival.DisplayArrival();
+-            SunoDisplayArrival = new SunoDisplayArrival.DisplayArrival();
 -        } catch (error) {
 -            logError(error, 'Failed to watch for new display arrangements');
 -        }
 -    }
 -    if (sessionMode.hasOverview) {
 -        try {
-             lumaWindowCorners = new LumaWindowCorners.WindowCorners();
-             lumaWindowWatch = new LumaWindowWatch.WindowWatch();
+             SunoWindowCorners = new SunoWindowCorners.WindowCorners();
+             SunoWindowWatch = new SunoWindowWatch.WindowWatch();
          } catch (error) {

@@ -8,7 +8,7 @@ light   build, update yesterday's install, boot to a session, smoke the change
 medium  light, plus sign-in and unlock, the keyboard and each core app once
 full    fresh install from the ISO, update and rollback, on both CPUs
 
-Every changed pinned package (luma-packages.manifest) and every changed image
+Every changed pinned package (Suno-packages.manifest) and every changed image
 input that ships without a package (config/, scripts/os/, the installer) is
 classified; the highest tier wins, and an unrecognised package counts as
 medium. Prints the tier, then the reasons.
@@ -23,20 +23,20 @@ TIERS = ('light', 'medium', 'full')
 
 # Boot, update and install machinery, and the system the image is built from.
 FULL_PACKAGES = ('kernel*', 'grub2*', 'shim*', 'ostree*', 'rpm-ostree*', 'bootc*', 'dracut*',
-                 'systemd*', 'selinux-policy*', 'luma-installer*', 'luma-os-*')
+                 'systemd*', 'selinux-policy*', 'Suno-installer*', 'Suno-os-*')
 MEDIUM_PACKAGES = ('gnome-shell*', 'mutter*', 'gtk3*', 'gtk4*', 'libadwaita*', 'libhandy*',
-                   'gdm*', 'luma-keyring*', 'luma-android-runtime*', 'luma-shell-state*',
+                   'gdm*', 'Suno-keyring*', 'Suno-android-runtime*', 'Suno-shell-state*',
                    'gnome-settings-daemon*', 'gnome-control-center*', 'ibus*', 'mesa*',
-                   'luma-display-config*', 'luma-developer-platform*', 'luma-ari*',
-                   'luma-android-images*', 'fwupd*')
-LIGHT_PACKAGES = ('prairie-*', 'luma-tide*', 'luma-terminal*', 'luma-monitor*', 'luma-search*',
-                  'luma-home-widgets*', 'luma-agenda*', 'viola-*', 'nautilus*', 'gnome-calculator*',
+                   'Suno-display-config*', 'Suno-developer-platform*', 'Suno-ari*',
+                   'Suno-android-images*', 'fwupd*')
+LIGHT_PACKAGES = ('prairie-*', 'Suno-tide*', 'Suno-terminal*', 'Suno-monitor*', 'Suno-search*',
+                  'Suno-home-widgets*', 'Suno-agenda*', 'viola-*', 'nautilus*', 'gnome-calculator*',
                   'gnome-calendar*', 'gnome-text-editor*', 'google-*-fonts*', '*-fonts',
-                  'luma-application-installer*', 'gnome-shell-extension-*')
+                  'Suno-application-installer*', 'gnome-shell-extension-*')
 
 # Only paths that reach the image without a package release. Packaged
 # source (src/, patches/, assets/, packaging/) is judged by its package.
-FULL_PATHS = ('config/os/*', 'scripts/os/*', 'src/luma-installer/*')
+FULL_PATHS = ('config/os/*', 'scripts/os/*', 'src/Suno-installer/*')
 MEDIUM_PATHS = ('config/desktop/*', 'config/shared/*', 'config/depot/*')
 PIN_PATHS = ('config/desktop/packages.txt', 'config/desktop/inputs.env')
 

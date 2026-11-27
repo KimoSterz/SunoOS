@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-#include "luma-task-resize.h"
+#include "Suno-task-resize.h"
 #include <cassert>
 #include <vector>
 #include <iostream>
@@ -7,16 +7,16 @@
 int main() {
     using namespace std::chrono_literals;
     for (double scale : {1.0, 1.25, 1.5, 2.0}) {
-        int px = luma::logical_to_pixels(641, scale);
+        int px = Suno::logical_to_pixels(641, scale);
         assert(px >= 641 * scale && px < 641 * scale + 1);
     }
-    assert(luma::logical_to_pixels(640, 1.25) == 800);
-    assert(luma::logical_to_pixels(641, 1.25) == 802);
+    assert(Suno::logical_to_pixels(640, 1.25) == 800);
+    assert(Suno::logical_to_pixels(641, 1.25) == 802);
     std::mutex mutex;
     std::condition_variable changed;
-    std::vector<luma::TaskResize> received;
+    std::vector<Suno::TaskResize> received;
     bool release = false;
-    luma::TaskResizeQueue queue([&](const luma::TaskResize& size) {
+    Suno::TaskResizeQueue queue([&](const Suno::TaskResize& size) {
         queue.observe_bounds(size);
         std::unique_lock<std::mutex> lock(mutex);
         received.push_back(size);
@@ -68,8 +68,8 @@ int main() {
     }
     // An activity may miss a host resize during relaunch. Retry twice without
     // requiring another frame/input event, then sleep rather than spin forever.
-    std::vector<luma::TaskResize> retries;
-    luma::TaskResizeQueue recovery([&](const luma::TaskResize& size) {
+    std::vector<Suno::TaskResize> retries;
+    Suno::TaskResizeQueue recovery([&](const Suno::TaskResize& size) {
         std::lock_guard<std::mutex> lock(mutex);
         retries.push_back(size); changed.notify_all();
     }, 40ms);
@@ -111,7 +111,7 @@ int main() {
     // An in-flight stale generation cannot retry after a newer configure.
     bool entered = false, unblock = false;
     std::vector<int> widths;
-    luma::TaskResizeQueue generation([&](const luma::TaskResize& size) {
+    Suno::TaskResizeQueue generation([&](const Suno::TaskResize& size) {
         std::unique_lock<std::mutex> lock(mutex);
         widths.push_back(size.right); changed.notify_all();
         if (size.right == 600) {

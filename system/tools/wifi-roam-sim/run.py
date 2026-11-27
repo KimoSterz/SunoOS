@@ -190,15 +190,15 @@ def setup(scenario, out, ctl):
 
 
 def profile_args(kind):
-    base = ('nmcli con add type wifi ifname wlan4 con-name test ssid LumaTest '
+    base = ('nmcli con add type wifi ifname wlan4 con-name test ssid SunoTest '
             'wifi.cloned-mac-address permanent ipv4.method auto ipv4.never-default yes '
             'ipv6.method disabled connection.autoconnect yes ')
     if kind == 'psk':
-        return base + 'wifi-sec.key-mgmt wpa-psk wifi-sec.psk lumatest123'
+        return base + 'wifi-sec.key-mgmt wpa-psk wifi-sec.psk Sunotest123'
     if kind == 'wpa2only':
-        return base + 'wifi-sec.key-mgmt wpa-psk wifi-sec.psk lumatest123 wifi-sec.pmf disable'
+        return base + 'wifi-sec.key-mgmt wpa-psk wifi-sec.psk Sunotest123 wifi-sec.pmf disable'
     if kind == 'sae':
-        return base + 'wifi-sec.key-mgmt sae wifi-sec.psk lumatest123'
+        return base + 'wifi-sec.key-mgmt sae wifi-sec.psk Sunotest123'
     raise ValueError(kind)
 
 

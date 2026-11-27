@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """The Accounts dialog in Messages (ADR-022, ADR-023).
 
-Lists where messages come from (this device, Luma Connect phones, network
+Lists where messages come from (this device, Suno Connect phones, network
 accounts) and adds, reconnects and removes network accounts. Sign-in follows the
 steps the account's helper asks for.
 """
@@ -20,7 +20,7 @@ from gi.repository import Adw, Gio, GLib, Gtk, Pango  # noqa: E402
 from .messages_accounts import AccountLogin, Accounts, NETWORKS, available_networks, network  # noqa: E402
 from .qr_code import matrix as qr_matrix  # noqa: E402
 from .messages_dialog import MessagesDialog
-from luma_appkit import DestructiveDialog
+from Suno_appkit import DestructiveDialog
 
 METHOD_LABELS = {
     "qr": "Link with a QR code",
@@ -137,17 +137,17 @@ class AccountsDialog(MessagesDialog):
         box.append(here)
         phones = [service for service in services if service.provider is not None and not service.native and not getattr(service, "account", None)]
         if phones:
-            group = Adw.PreferencesGroup(title="Luma Connect phones",
-                                         description="Phones paired in Luma Connect that allowed texts. Pair or remove them there.")
+            group = Adw.PreferencesGroup(title="Suno Connect phones",
+                                         description="Phones paired in Suno Connect that allowed texts. Pair or remove them there.")
             for service in phones:
                 row = self._row(service.label, self._service_state(service), "phone-symbolic")
-                button = Gtk.Button(label="Open Luma Connect", valign=Gtk.Align.CENTER)
+                button = Gtk.Button(label="Open Suno Connect", valign=Gtk.Align.CENTER)
                 button.connect("clicked", lambda *_: self._open_connect())
                 row.add_suffix(button)
                 group.add(row)
             box.append(group)
         accounts = Adw.PreferencesGroup(title="Accounts",
-                                        description="Chats from other networks, signed in on this device. Nothing passes through a Luma server.")
+                                        description="Chats from other networks, signed in on this device. Nothing passes through a Suno server.")
         linked = [service for service in services if getattr(service, "account", None)]
         stopped = next((service.provider.outbound_disabled() for service in linked
                         if callable(getattr(service.provider, "outbound_disabled", None))), None)
@@ -175,10 +175,10 @@ class AccountsDialog(MessagesDialog):
                 again.connect("clicked", lambda _b, s=service: self._reconnect(s))
                 row.add_suffix(again)
             if network(account.network).automatic:
-                # Luma comes with this device's Luma Connect sign-in; it has a
+                # Suno comes with this device's Suno Connect sign-in; it has a
                 # profile rather than a Remove button.
                 profile = Gtk.Button(label="Profile", valign=Gtk.Align.CENTER)
-                profile.connect("clicked", lambda *_: (self.close(), self.window._show_luma_profile()))
+                profile.connect("clicked", lambda *_: (self.close(), self.window._show_Suno_profile()))
                 row.add_suffix(profile)
                 accounts.add(row)
                 continue
@@ -212,9 +212,9 @@ class AccountsDialog(MessagesDialog):
         return service.transport.inspect().reason or {"connecting": "Connecting…", "offline": "Offline"}.get(state, "Not connected")
 
     def _open_connect(self) -> None:
-        from luma_appkit.application_directory import launch
-        from luma_appkit import Toast
-        launch("org.projectluma.Connect.desktop", callback=lambda opened, error:
+        from Suno_appkit.application_directory import launch
+        from Suno_appkit import Toast
+        launch("org.projectSuno.Connect.desktop", callback=lambda opened, error:
                None if opened else Toast.show(self.window.host, error, kind="error"))
 
     def _show_networks(self) -> None:
@@ -228,7 +228,7 @@ class AccountsDialog(MessagesDialog):
         group = Adw.PreferencesGroup(title="Add an account")
         for item in NETWORKS:
             if item.automatic:
-                continue  # added by Messages itself (Luma), never from here
+                continue  # added by Messages itself (Suno), never from here
             row = Adw.ActionRow(title=GLib.markup_escape_text(item.name), subtitle=GLib.markup_escape_text(
                 item.description if item in installed else "Not installed on this device."))
             row.set_subtitle_lines(3)
@@ -299,7 +299,7 @@ class AccountsDialog(MessagesDialog):
             if data.get("kind") == "emoji":
                 code.add_css_class("messages-login-emoji")
                 box.append(code)
-                box.append(_label(f"On your phone, open {item.name} and tap this emoji to link Luma.", justify=Gtk.Justification.CENTER, xalign=0.5))
+                box.append(_label(f"On your phone, open {item.name} and tap this emoji to link Suno.", justify=Gtk.Justification.CENTER, xalign=0.5))
             else:
                 box.append(code)
                 box.append(_label(CODE_INSTRUCTIONS.get(item.id, f"Enter this code in {item.name} on your phone."), justify=Gtk.Justification.CENTER, xalign=0.5))
@@ -396,6 +396,6 @@ class AccountsDialog(MessagesDialog):
             self.window.remove_account_service(service)
             self.window._show_accounts()
         DestructiveDialog.ask(self.window, title=f"Remove {name}?",
-                              body=f"Luma signs out of {name} on this device and deletes its chats from this device. They stay in {name} on your other devices.",
+                              body=f"Suno signs out of {name} on this device and deletes its chats from this device. They stay in {name} on your other devices.",
                               action='Remove',
                               on_confirm=removed, on_cancel=self.window._show_accounts)

@@ -1,32 +1,32 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: LGPL-2.1-or-later
 #
-# Compose a Luma installer ISO whose interface is Atlas.
+# Compose a Suno installer ISO whose interface is Atlas.
 #
 # Fedora 44's Silverblue ISO runs Anaconda's GTK interface and carries no web
 # UI, Cockpit or browser, so Atlas cannot be dropped onto it. Instead this
 # builds the installer runtime the way Fedora builds its own boot.iso: lorax
 # (the same 44.6 release) from Fedora 44's release repository, plus a local
-# repository holding luma-installer-atlas and the pinned runtime kernel
+# repository holding Suno-installer-atlas and the pinned runtime kernel
 # (config/install/atlas/runtime-kernel.env, since the release repository is
 # frozen at the GA kernel). Anaconda 44.30 switches to its web
 # UI whenever /usr/share/cockpit/anaconda-webui exists, and Atlas provides it.
 # mkksiso then copies stage 2 into memory at boot (rd.live.ram=1, so the
-# medium can be ejected before "Luma is ready.") and adds the payload
+# medium can be ejected before "Suno is ready.") and adds the payload
 # repository to the ISO when one is carried.
 #
 # Channels and payload (ADR-030, sections 4, 5 and 9; constants in
-# config/install/atlas/luma-os-channels.env):
-#   - The medium installs luma/1/x86_64/<channel>: from the OSTree repository
-#     on the medium when it carries that ref, otherwise from Luma's HTTPS
+# config/install/atlas/Suno-os-channels.env):
+#   - The medium installs Suno/1/x86_64/<channel>: from the OSTree repository
+#     on the medium when it carries that ref, otherwise from Suno's HTTPS
 #     repository. The installer kickstart decides at boot.
-#   - GPG verification is always on. The Luma OS Release public key is the
+#   - GPG verification is always on. The Suno OS Release public key is the
 #     only key in the installer runtime's OSTree keyring; there is no option
 #     to turn verification off.
-#   - The installed system's origin is luma:luma/1/x86_64/<channel> on the
-#     luma remote, whose url is mirrorlist=file:///etc/luma/update-mirrorlist;
+#   - The installed system's origin is Suno:Suno/1/x86_64/<channel> on the
+#     Suno remote, whose url is mirrorlist=file:///etc/Suno/update-mirrorlist;
 #     that root-only list holds the HTTPS repository URL, and
-#     /etc/luma/update-channel.conf records the channel.
+#     /etc/Suno/update-channel.conf records the channel.
 #   - beta and nightly are served only to enrolled devices, so media for them
 #     must carry the payload. Until Hub enrolls devices one by one, staff media
 #     for those channels may carry one per-batch preview credential
@@ -41,26 +41,26 @@
 #       [--channel stable|beta|nightly]   (default nightly: staff media)
 #       [--runtime-tmpfs-gib N]          RAM for transient Lorax root; admit N+2 GiB
 #       [--payload-repo DIR]              OSTree repository to carry on the medium
-#       [--release-key PATH]              default /etc/pki/ostree/luma-release.gpg
+#       [--release-key PATH]              default /etc/pki/ostree/Suno-release.gpg
 #       [--preview-credential-file FILE]  beta or nightly staff media only: one line,
 #                                         the batch's base64url preview credential
 #       [--display-name NAME]             the release's os-release PRETTY_NAME, e.g.
-#                                         "Luma (Prairie, Beta 0, Nightly 20260916)": names the
+#                                         "Suno (Prairie, Beta 0, Nightly 20260916)": names the
 #                                         boot menu entries ("Install NAME") and, without
-#                                         --volid, the volume label (Luma-Prairie-Beta-0-20260916)
+#                                         --volid, the volume label (Suno-Prairie-Beta-0-20260916)
 #       [--volid LABEL] [--product NAME] [--version VERSION] [--release-repo URL]
 #
-#   Test media only (a stand-in payload, never a Luma release):
+#   Test media only (a stand-in payload, never a Suno release):
 #       --test-payload-url URL --test-payload-ref REF --test-payload-key PATH
 #   The stand-in is pulled with GPG verification against its own key; the
-#   installed system is still given the Luma remote, key, origin and channel,
-#   so everything after the pull is what a Luma install gets.
+#   installed system is still given the Suno remote, key, origin and channel,
+#   so everything after the pull is what a Suno install gets.
 #
 # Examples:
 #   Staff media carrying tonight's nightly:
-#     --channel nightly --payload-repo /srv/luma-os/repo
+#     --channel nightly --payload-repo /srv/Suno-os/repo
 #   Public media that download stable:
-#     --channel stable --display-name "Luma (Version 1, Prairie)"
+#     --channel stable --display-name "Suno (Version 1, Prairie)"
 #   VM test media (Fedora Silverblue stand-in, verified with Fedora's key):
 #     --test-payload-url https://ostree.example/fedora --test-payload-ref fedora/44/x86_64/silverblue \
 #     --test-payload-key /etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-44-primary --release-key TEST_KEY
@@ -70,24 +70,24 @@ set -euo pipefail
 here=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 repo_root=$(CDPATH= cd -- "$here/../../.." && pwd)
 # shellcheck disable=SC1091
-. "$repo_root/config/install/atlas/luma-os-channels.env"
+. "$repo_root/config/install/atlas/Suno-os-channels.env"
 
 fail() { printf 'error: %s\n' "$*" >&2; exit 1; }
 
 rpms="" work="" output="" boot_rpms="" boot_manifest=""
-channel=$LUMA_OS_DEFAULT_CHANNEL
+channel=$SUNO_OS_DEFAULT_CHANNEL
 payload_repo=""
-release_key=$LUMA_OS_RELEASE_KEY
+release_key=$SUNO_OS_RELEASE_KEY
 test_url="" test_ref="" test_key=""
 credential_file=""
-architecture=${LUMA_TARGET_ARCHITECTURE:-x86_64}
+architecture=${SUNO_TARGET_ARCHITECTURE:-x86_64}
 runtime_tmpfs_gib=${ATLAS_RUNTIME_TMPFS_GIB:-}
 # The installer runtime's product version is the OS major version the medium
-# installs (luma/<major>/x86_64); release names come from --display-name.
-product="Luma" version=$(printf '%s' "$LUMA_OS_REF_PREFIX" | cut -d/ -f2)
+# installs (Suno/<major>/x86_64); release names come from --display-name.
+product="Suno" version=$(printf '%s' "$SUNO_OS_REF_PREFIX" | cut -d/ -f2)
 volid="" display_name=""
 release_repo=""
-tools_image="localhost/luma-atlas-iso-tools:44"
+tools_image="localhost/Suno-atlas-iso-tools:44"
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
@@ -111,7 +111,7 @@ while [ "$#" -gt 0 ]; do
     --version) version=$2; shift 2 ;;
     --release-repo) release_repo=$2; shift 2 ;;
     --nogpg|--no-gpg|--gpg-verify)
-      fail "$1 is not an option: Luma media always verify the payload with GPG" ;;
+      fail "$1 is not an option: Suno media always verify the payload with GPG" ;;
     *) fail "unknown argument $1" ;;
   esac
 done
@@ -120,7 +120,7 @@ case "$architecture" in x86_64|aarch64) ;; *) fail "unsupported architecture: $a
 if [ -n "$runtime_tmpfs_gib" ]; then
   [[ "$runtime_tmpfs_gib" =~ ^[1-9][0-9]?$ ]] || fail 'runtime tmpfs GiB must be a positive integer below 100'
 fi
-LUMA_OS_REF_PREFIX="${LUMA_OS_REF_PREFIX%/*}/$architecture"
+SUNO_OS_REF_PREFIX="${SUNO_OS_REF_PREFIX%/*}/$architecture"
 [ -n "$release_repo" ] || release_repo="https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/$architecture/os/"
 # Lorax has a supported target architecture override. Keep DNF, compression
 # and image utilities native; only target RPM scriptlets use host binfmt.
@@ -142,7 +142,7 @@ for value in rpms work output boot_rpms boot_manifest; do
   [ -n "${!value}" ] || fail "--$value is required"
 done
 [ "$(id -u)" = 0 ] || fail 'lorax needs root; run as root'
-case "$version" in ''|*[!0-9]*) fail "cannot read the OS major version from LUMA_OS_REF_PREFIX=$LUMA_OS_REF_PREFIX" ;; esac
+case "$version" in ''|*[!0-9]*) fail "cannot read the OS major version from SUNO_OS_REF_PREFIX=$SUNO_OS_REF_PREFIX" ;; esac
 if [ -n "$display_name" ]; then
   # Shown in GRUB and isolinux menu titles: one line, no quoting characters.
   case "$display_name" in
@@ -153,8 +153,8 @@ if [ -n "$display_name" ]; then
   [ "${#display_name}" -le 80 ] || fail "--display-name is longer than 80 characters"
 fi
 if [ -z "$volid" ] && [ -n "$display_name" ]; then
-  # Luma (Prairie, Beta 0, Nightly 20260916) -> Luma-Prairie-Beta-0-20260916
-  # Luma (Version 1, Prairie)                -> Luma-1-Prairie-x86_64
+  # Suno (Prairie, Beta 0, Nightly 20260916) -> Suno-Prairie-Beta-0-20260916
+  # Suno (Version 1, Prairie)                -> Suno-1-Prairie-x86_64
   volid=$(printf '%s\n' "$display_name" | tr -cs 'A-Za-z0-9' '\n' |
     grep -vx -e '' -e Nightly -e Version | paste -sd- -)
   [ "${#volid}" -le 25 ] && volid="$volid-$architecture"
@@ -163,17 +163,17 @@ fi
 [ -n "$volid" ] || volid="$product-$version-Install-$architecture"
 [ "${#volid}" -le 32 ] || fail "volume label $volid is longer than 32 characters"
 case "$volid" in *[!A-Za-z0-9_-]*) fail "volume label $volid may only use letters, digits, _ and -" ;; esac
-ls "$rpms"/luma-installer-atlas-*.noarch.rpm >/dev/null 2>&1 || fail "no luma-installer-atlas RPM in $rpms"
+ls "$rpms"/Suno-installer-atlas-*.noarch.rpm >/dev/null 2>&1 || fail "no Suno-installer-atlas RPM in $rpms"
 
-case " $LUMA_OS_CHANNELS " in *" $channel "*) ;; *) fail "--channel must be one of: $LUMA_OS_CHANNELS" ;; esac
-ref="$LUMA_OS_REF_PREFIX/$channel"
+case " $SUNO_OS_CHANNELS " in *" $channel "*) ;; *) fail "--channel must be one of: $SUNO_OS_CHANNELS" ;; esac
+ref="$SUNO_OS_REF_PREFIX/$channel"
 
-[ -s "$release_key" ] || fail "the Luma OS Release public key is missing: $release_key (pass --release-key)"
-case "$LUMA_OS_URL" in *[[:space:]]*) fail "LUMA_OS_URL contains whitespace" ;; https://?*) ;; *) fail "LUMA_OS_URL must be an HTTPS URL: $LUMA_OS_URL" ;; esac
-case "$LUMA_OS_MIRRORLIST" in
-  /etc/luma/*/*|/etc/luma/) fail "LUMA_OS_MIRRORLIST must be a file directly in /etc/luma: $LUMA_OS_MIRRORLIST" ;;
-  /etc/luma/[A-Za-z0-9._-]*) ;;
-  *) fail "LUMA_OS_MIRRORLIST must be a file directly in /etc/luma: $LUMA_OS_MIRRORLIST" ;;
+[ -s "$release_key" ] || fail "the Suno OS Release public key is missing: $release_key (pass --release-key)"
+case "$SUNO_OS_URL" in *[[:space:]]*) fail "SUNO_OS_URL contains whitespace" ;; https://?*) ;; *) fail "SUNO_OS_URL must be an HTTPS URL: $SUNO_OS_URL" ;; esac
+case "$SUNO_OS_MIRRORLIST" in
+  /etc/Suno/*/*|/etc/Suno/) fail "SUNO_OS_MIRRORLIST must be a file directly in /etc/Suno: $SUNO_OS_MIRRORLIST" ;;
+  /etc/Suno/[A-Za-z0-9._-]*) ;;
+  *) fail "SUNO_OS_MIRRORLIST must be a file directly in /etc/Suno: $SUNO_OS_MIRRORLIST" ;;
 esac
 
 test_media=0
@@ -186,7 +186,7 @@ if [ -n "$test_url$test_ref$test_key" ]; then
   test_media=1
 fi
 
-case " $LUMA_OS_PREVIEW_CHANNELS " in
+case " $SUNO_OS_PREVIEW_CHANNELS " in
   *" $channel "*)
     if [ -z "$payload_repo" ] && [ "$test_media" = 0 ]; then
       fail "$channel is a preview channel: its repository needs a per-device credential, so the medium must carry the payload (--payload-repo)"
@@ -194,12 +194,12 @@ case " $LUMA_OS_PREVIEW_CHANNELS " in
 esac
 
 if [ -n "$credential_file" ]; then
-  case " $LUMA_OS_PREVIEW_CHANNELS " in
+  case " $SUNO_OS_PREVIEW_CHANNELS " in
     *" $channel "*) ;;
-    *) fail "--preview-credential-file is only for the preview channels ($LUMA_OS_PREVIEW_CHANNELS), not $channel" ;;
+    *) fail "--preview-credential-file is only for the preview channels ($SUNO_OS_PREVIEW_CHANNELS), not $channel" ;;
   esac
   [ -f "$credential_file" ] && [ -r "$credential_file" ] || fail "cannot read the preview credential file $credential_file"
-  # One line of 16-256 base64url characters (luma-update's credential format),
+  # One line of 16-256 base64url characters (Suno-update's credential format),
   # checked without printing it.
   [ "$(wc -l < "$credential_file" | tr -d ' ')" -le 1 ] &&
     tr -d '\n' < "$credential_file" | grep -Eqx '[A-Za-z0-9_-]{16,256}' ||
@@ -208,14 +208,14 @@ fi
 
 mkdir -p "$work"
 work=$(realpath "$work")
-rm -rf "$work/lorax-out" "$work/tmp" "$work/luma-rpms" "$work/templates" "$work/keys" "$work/secret" "$work/lorax-templates"
+rm -rf "$work/lorax-out" "$work/tmp" "$work/Suno-rpms" "$work/templates" "$work/keys" "$work/secret" "$work/lorax-templates"
 rm -f "$work/logs/container.log"
-# The local repository (--source file:///w/luma-rpms, the second source, so
+# The local repository (--source file:///w/Suno-rpms, the second source, so
 # lorax-repo-1) is rebuilt every run, but dnf keeps its metadata in the shared
 # cache and can reuse it: a previous run's package list (an older Atlas RPM)
 # then resolves against files that are gone. Keep only the release cache.
 rm -rf "$work"/runtime-rpm-cache/lorax-repo-1-*
-mkdir -p "$work/tmp" "$work/luma-rpms" "$work/templates" "$work/logs" "$work/keys" "$work/runtime-rpm-cache"
+mkdir -p "$work/tmp" "$work/Suno-rpms" "$work/templates" "$work/logs" "$work/keys" "$work/runtime-rpm-cache"
 
 # The preview credential: normalized to one line without a newline, root-only,
 # and removed from the work tree however the build ends.
@@ -251,9 +251,9 @@ if [ "$tools_architecture" != "$architecture" ]; then
     --build-arg "TARGET_ARCH=$architecture" --tag "$final_tools_image" --file "$here/Containerfile" "$here"
 fi
 
-cp "$rpms"/luma-installer-atlas-*.noarch.rpm "$work/luma-rpms/"
+cp "$rpms"/Suno-installer-atlas-*.noarch.rpm "$work/Suno-rpms/"
 python3 "$here/prepare-boot-rpms.py" --inputs "$repo_root/config/desktop/inputs.env" \
-  --manifest "$boot_manifest" --pool "$boot_rpms" --output "$work/luma-rpms" --arch "$architecture"
+  --manifest "$boot_manifest" --pool "$boot_rpms" --output "$work/Suno-rpms" --arch "$architecture"
 
 # The installer runtime's kernel: the one the installed system runs, not
 # Fedora 44's frozen GA kernel (see config/install/atlas/runtime-kernel.env).
@@ -276,11 +276,11 @@ for package in $ATLAS_RUNTIME_KERNEL_PACKAGES; do
   fi
   [ "$(sha256sum <"$kernel_cache/$kernel_rpm" | cut -d' ' -f1)" = "$sum" ] ||
     fail "$kernel_rpm does not match its sha256 pin"
-  cp "$kernel_cache/$kernel_rpm" "$work/luma-rpms/"
+  cp "$kernel_cache/$kernel_rpm" "$work/Suno-rpms/"
 done
 printf 'installer runtime kernel %s.%s (pinned)\n' \
     "$ATLAS_RUNTIME_KERNEL_NVR" "$ATLAS_RUNTIME_KERNEL_ARCH"
-cp "$here/luma-atlas-runtime.tmpl" "$work/templates/"
+cp "$here/Suno-atlas-runtime.tmpl" "$work/templates/"
 cp "$repo_root/scripts/boot/check-grub-fonts.py" "$work/templates/"
 cp "$repo_root/config/install/atlas/interactive-defaults.ks" "$work/templates/interactive-defaults.ks"
 cp "$release_key" "$work/keys/release.key"
@@ -301,18 +301,18 @@ clock_epoch=$(date -u +%s)
   printf 'architecture=%s\ntools_architecture=%s\n' "$architecture" "$tools_architecture"
   printf 'clock_epoch=%s\n' "$clock_epoch"
   printf 'channel=%s\n' "$channel"
-  printf 'channels=%s\n' "$LUMA_OS_CHANNELS"
-  printf 'remote=%s\n' "$LUMA_OS_REMOTE"
-  printf 'https_url=%s\n' "$LUMA_OS_URL"
-  printf 'mirrorlist=%s\n' "$LUMA_OS_MIRRORLIST"
-  printf 'preview_channels=%s\n' "$LUMA_OS_PREVIEW_CHANNELS"
-  printf 'preview_url_prefix=%s\n' "$LUMA_OS_PREVIEW_URL_PREFIX"
-  printf 'preview_record=%s\n' "$LUMA_OS_PREVIEW_RECORD"
-  printf 'collection_id=%s\n' "$LUMA_OS_COLLECTION_ID"
+  printf 'channels=%s\n' "$SUNO_OS_CHANNELS"
+  printf 'remote=%s\n' "$SUNO_OS_REMOTE"
+  printf 'https_url=%s\n' "$SUNO_OS_URL"
+  printf 'mirrorlist=%s\n' "$SUNO_OS_MIRRORLIST"
+  printf 'preview_channels=%s\n' "$SUNO_OS_PREVIEW_CHANNELS"
+  printf 'preview_url_prefix=%s\n' "$SUNO_OS_PREVIEW_URL_PREFIX"
+  printf 'preview_record=%s\n' "$SUNO_OS_PREVIEW_RECORD"
+  printf 'collection_id=%s\n' "$SUNO_OS_COLLECTION_ID"
   printf 'ref=%s\n' "$ref"
-  printf 'stateroot=%s\n' "$LUMA_OS_STATEROOT"
-  printf 'medium_repo=%s\n' "$LUMA_OS_MEDIUM_REPO"
-  printf 'target_key=%s\n' "$LUMA_OS_TARGET_KEY"
+  printf 'stateroot=%s\n' "$SUNO_OS_STATEROOT"
+  printf 'medium_repo=%s\n' "$SUNO_OS_MEDIUM_REPO"
+  printf 'target_key=%s\n' "$SUNO_OS_TARGET_KEY"
   printf 'volid=%s\n' "$volid"
   printf 'test_payload_url=%s\n' "$test_url"
   printf 'test_payload_ref=%s\n' "$test_ref"
@@ -331,9 +331,9 @@ if [ -n "$payload_repo" ]; then
   payload_repo=$(realpath "$payload_repo")
   [ -f "$payload_repo/config" ] && [ -d "$payload_repo/objects" ] || fail "$payload_repo is not an OSTree repository"
   # mkksiso adds the directory by its base name, so mount the repository
-  # at /add/<first component of LUMA_OS_MEDIUM_REPO>/<rest>.
-  payload_mount=(--volume "$payload_repo:/add/$LUMA_OS_MEDIUM_REPO:ro")
-  payload_add="-a /add/${LUMA_OS_MEDIUM_REPO%%/*}"
+  # at /add/<first component of SUNO_OS_MEDIUM_REPO>/<rest>.
+  payload_mount=(--volume "$payload_repo:/add/$SUNO_OS_MEDIUM_REPO:ro")
+  payload_add="-a /add/${SUNO_OS_MEDIUM_REPO%%/*}"
 fi
 
 # DRACUT_NO_XATTR: inside a container the kernel refuses copying SELinux
@@ -386,12 +386,12 @@ podman run --rm --umask=0022 "${runtime_mount[@]}" "${builder_security[@]}" --ar
 
   if [ -n '$payload_repo' ]; then
     # The carried payload must be exactly what an online install would get:
-    # the channel's ref, a signed summary and a signed commit, the Luma
+    # the channel's ref, a signed summary and a signed commit, the Suno
     # collection id.
-    repo=/add/$LUMA_OS_MEDIUM_REPO
+    repo=/add/$SUNO_OS_MEDIUM_REPO
     collection=\$(ostree --repo=\$repo config get core.collection-id 2>/dev/null || true)
-    [ \"\$collection\" = '$LUMA_OS_COLLECTION_ID' ] ||
-      { echo \"error: payload collection id is '\$collection', not $LUMA_OS_COLLECTION_ID\" >&2; exit 1; }
+    [ \"\$collection\" = '$SUNO_OS_COLLECTION_ID' ] ||
+      { echo \"error: payload collection id is '\$collection', not $SUNO_OS_COLLECTION_ID\" >&2; exit 1; }
     ostree --repo=\$repo rev-parse '$ref' >/dev/null ||
       { echo 'error: the payload repository has no $ref' >&2; exit 1; }
     rm -rf /w/tmp/verify && ostree init --repo=/w/tmp/verify --mode=archive
@@ -399,14 +399,14 @@ podman run --rm --umask=0022 "${runtime_mount[@]}" "${builder_security[@]}" --ar
     ostree config --repo=/w/tmp/verify set core.min-free-space-percent 0
     ostree remote add --repo=/w/tmp/verify --gpg-import=/w/keys/release.gpg \
         --set=gpg-verify=true --set=gpg-verify-summary=true \
-        --collection-id='$LUMA_OS_COLLECTION_ID' check file://\$repo
+        --collection-id='$SUNO_OS_COLLECTION_ID' check file://\$repo
     ostree pull --repo=/w/tmp/verify --commit-metadata-only check '$ref'
     echo \"payload $ref \$(ostree --repo=\$repo rev-parse '$ref') verified\"
     rm -rf /w/tmp/verify
   fi
 
   while read -r nevra digest header; do
-    actual=\$(rpm -qp --qf '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH} %{SHA256HEADER}' /w/luma-rpms/\$nevra.rpm)
+    actual=\$(rpm -qp --qf '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH} %{SHA256HEADER}' /w/Suno-rpms/\$nevra.rpm)
     [ \"\$actual\" = \"\$nevra \$header\" ] || { echo \"error: boot RPM header mismatch: \$nevra\" >&2; exit 1; }
   done < /w/boot-packages.manifest
   # The HDD work tree can inherit a shared-development default ACL and SGID.
@@ -415,26 +415,26 @@ podman run --rm --umask=0022 "${runtime_mount[@]}" "${builder_security[@]}" --ar
   lorax_scratch=\$(python3 /s/prepare-runtime-temp.py --scratch-parent '$lorax_tmp')
   printf 'Lorax disposable scratch: %s\\n' \"\$lorax_scratch\"
   python3 /s/prepare-lorax-boot.py /usr/share/lorax /w/lorax-templates '$architecture'
-  createrepo_c --quiet /w/luma-rpms
+  createrepo_c --quiet /w/Suno-rpms
   boot_install_args=()
   while read -r nevra digest header; do
     boot_install_args+=(--installpkgs \"\$nevra\")
   done < /w/boot-packages.manifest
   python3 /s/run-lorax.py $lorax_config_args --buildarch '$architecture' --product '$product' --version '$version' --release 44 --isfinal \
         --volid '$volid' --nomacboot --noupgrade \
-        --source '$release_repo' --source file:///w/luma-rpms \
-        --installpkgs luma-installer-atlas --installpkgs slitherer \
+        --source '$release_repo' --source file:///w/Suno-rpms \
+        --installpkgs Suno-installer-atlas --installpkgs slitherer \
         --installpkgs cockpit-ws --installpkgs cockpit-bridge \
         \"\${boot_install_args[@]}\" \
         --sharedir /w/lorax-templates \
-        --add-template /w/templates/luma-atlas-runtime.tmpl \
-        --add-template-var luma_atlas_ks=/w/templates/interactive-defaults.ks \
-        --add-template-var luma_atlas_media=/w/templates/media.env \
-        --add-template-var luma_atlas_release_key=/w/keys/release.gpg \
-        --add-template-var luma_atlas_pull_key=/w/keys/pull.gpg \
-        --add-template-var luma_atlas_clock_epoch=$clock_epoch \
-        --add-template-var luma_atlas_runtime_kernel=$ATLAS_RUNTIME_KERNEL_NVR.$ATLAS_RUNTIME_KERNEL_ARCH \
-        --add-template-var luma_atlas_preview_credential=$credential_var \
+        --add-template /w/templates/Suno-atlas-runtime.tmpl \
+        --add-template-var Suno_atlas_ks=/w/templates/interactive-defaults.ks \
+        --add-template-var Suno_atlas_media=/w/templates/media.env \
+        --add-template-var Suno_atlas_release_key=/w/keys/release.gpg \
+        --add-template-var Suno_atlas_pull_key=/w/keys/pull.gpg \
+        --add-template-var Suno_atlas_clock_epoch=$clock_epoch \
+        --add-template-var Suno_atlas_runtime_kernel=$ATLAS_RUNTIME_KERNEL_NVR.$ATLAS_RUNTIME_KERNEL_ARCH \
+        --add-template-var Suno_atlas_preview_credential=$credential_var \
         --cachedir /w/runtime-rpm-cache --tmp \"\$lorax_scratch\" --logfile /w/logs/lorax.log \
         /w/lorax-out
   if grep -q 'dracut-install: ERROR' /w/logs/program.log; then
@@ -470,57 +470,57 @@ podman run --rm --umask=0022 "${runtime_mount[@]}" "${builder_security[@]}" --ar
   (cd /w/tmp/clock-initrd && xz -dc /w/lorax-out/images/pxeboot/initrd.img |
       cpio --extract --make-directories --preserve-modification-time --no-absolute-filenames --quiet usr/lib/clock-epoch)
   test \"\$(stat -c %Y /w/tmp/clock-initrd/usr/lib/clock-epoch)\" = '$clock_epoch'
-  for file in luma-loading.plymouth luma-loading.script luma-wordmark.png luma-loading-dot.png; do
-    grep -Fq \"usr/share/plymouth/themes/luma-loading/\$file\" /w/logs/initrd-contents.txt || {
-      echo \"error: installer initramfs lacks Luma loader file: \$file\" >&2; exit 1;
+  for file in Suno-loading.plymouth Suno-loading.script Suno-wordmark.png Suno-loading-dot.png; do
+    grep -Fq \"usr/share/plymouth/themes/Suno-loading/\$file\" /w/logs/initrd-contents.txt || {
+      echo \"error: installer initramfs lacks Suno loader file: \$file\" >&2; exit 1;
     }
   done
-  python3 /w/templates/check-grub-fonts.py /w/lorax-out/boot/grub2/themes/luma
+  python3 /w/templates/check-grub-fonts.py /w/lorax-out/boot/grub2/themes/Suno
   # The runtime must hold exactly the files this medium was built with.
   rm -rf /w/tmp/stage2 && mkdir -p /w/tmp/stage2
   unsquashfs -no-progress -d /w/tmp/stage2 /w/lorax-out/images/install.img \
-      usr/share/anaconda/interactive-defaults.ks usr/share/luma-installer-atlas usr/share/ostree usr/lib/clock-epoch \
-      usr/share/plymouth/plymouthd.defaults usr/share/plymouth/themes/luma-loading \
+      usr/share/anaconda/interactive-defaults.ks usr/share/Suno-installer-atlas usr/share/ostree usr/lib/clock-epoch \
+      usr/share/plymouth/plymouthd.defaults usr/share/plymouth/themes/Suno-loading \
       usr/lib/systemd/system/plymouth-reboot.service usr/lib/systemd/system/reboot.target.wants/plymouth-reboot.service \
       usr/lib/systemd/system/plymouth-quit.service.d usr/lib/systemd/system/plymouth-quit-wait.service.d \
       usr/lib64/python3.14/site-packages/pyanaconda/display.py \
       usr/lib64/python3.14/site-packages/pyanaconda/timezone.py \
       usr/lib64/python3.14/site-packages/pyanaconda/modules/payloads/payload/rpm_ostree/installation.py \
       usr/share/anaconda/window-manager/glib-2.0/schemas usr/share/dconf/profile/gnomekiosk >/dev/null
-  grep -Fxq 'Theme=luma-loading' /w/tmp/stage2/usr/share/plymouth/plymouthd.defaults
-  test -s /w/tmp/stage2/usr/share/plymouth/themes/luma-loading/luma-loading.script
-  grep -Fxq first-frame /w/tmp/stage2/usr/share/luma-installer-atlas/plymouth-handoff-policy
-  test -s /w/tmp/stage2/usr/share/luma-installer-atlas/loader-background.svg
-  test -s /w/tmp/stage2/usr/share/luma-installer-atlas/kiosk-background.dconf
-  grep -Fxq 'file-db:/usr/share/luma-installer-atlas/kiosk-background.dconf' /w/tmp/stage2/usr/share/dconf/profile/gnomekiosk
+  grep -Fxq 'Theme=Suno-loading' /w/tmp/stage2/usr/share/plymouth/plymouthd.defaults
+  test -s /w/tmp/stage2/usr/share/plymouth/themes/Suno-loading/Suno-loading.script
+  grep -Fxq first-frame /w/tmp/stage2/usr/share/Suno-installer-atlas/plymouth-handoff-policy
+  test -s /w/tmp/stage2/usr/share/Suno-installer-atlas/loader-background.svg
+  test -s /w/tmp/stage2/usr/share/Suno-installer-atlas/kiosk-background.dconf
+  grep -Fxq 'file-db:/usr/share/Suno-installer-atlas/kiosk-background.dconf' /w/tmp/stage2/usr/share/dconf/profile/gnomekiosk
   grep -Fxq 'file-db:/usr/share/gnome-kiosk/gnomekiosk.dconf.compiled' /w/tmp/stage2/usr/share/dconf/profile/gnomekiosk
   for owner in plymouth-quit plymouth-quit-wait; do
-    grep -Fxq 'ConditionKernelCommandLine=!rhgb' /w/tmp/stage2/usr/lib/systemd/system/\$owner.service.d/50-luma-atlas-handoff.conf
+    grep -Fxq 'ConditionKernelCommandLine=!rhgb' /w/tmp/stage2/usr/lib/systemd/system/\$owner.service.d/50-Suno-atlas-handoff.conf
   done
-  grep -Fq '_luma_release_boot_splash()' /w/tmp/stage2/usr/lib64/python3.14/site-packages/pyanaconda/display.py
+  grep -Fq '_Suno_release_boot_splash()' /w/tmp/stage2/usr/lib64/python3.14/site-packages/pyanaconda/display.py
   python3 /s/prepare-runtime-anaconda.py --verify /w/tmp/stage2
   test -s /w/tmp/stage2/usr/share/anaconda/window-manager/glib-2.0/schemas/gschemas.compiled
   grep -Fq 'plymouthd --mode=reboot' /w/tmp/stage2/usr/lib/systemd/system/plymouth-reboot.service
   test \"\$(readlink /w/tmp/stage2/usr/lib/systemd/system/reboot.target.wants/plymouth-reboot.service)\" = ../plymouth-reboot.service
   cmp /w/templates/interactive-defaults.ks /w/tmp/stage2/usr/share/anaconda/interactive-defaults.ks
-  cmp /w/templates/media.env /w/tmp/stage2/usr/share/luma-installer-atlas/media.env
-  grep -Fxq 'mirrorlist=$LUMA_OS_MIRRORLIST' /w/tmp/stage2/usr/share/luma-installer-atlas/media.env
-  grep -Fxq 'https_url=$LUMA_OS_URL' /w/tmp/stage2/usr/share/luma-installer-atlas/media.env
+  cmp /w/templates/media.env /w/tmp/stage2/usr/share/Suno-installer-atlas/media.env
+  grep -Fxq 'mirrorlist=$SUNO_OS_MIRRORLIST' /w/tmp/stage2/usr/share/Suno-installer-atlas/media.env
+  grep -Fxq 'https_url=$SUNO_OS_URL' /w/tmp/stage2/usr/share/Suno-installer-atlas/media.env
   # The kickstart writes the mirror list and never a URL into the remote.
   grep -Fq 'mirrorlist_url = \"mirrorlist=file://\" + mirrorlist' /w/tmp/stage2/usr/share/anaconda/interactive-defaults.ks
-  grep -Fq 'Retired by the Luma installer' /w/tmp/stage2/usr/share/anaconda/interactive-defaults.ks
+  grep -Fq 'Retired by the Suno installer' /w/tmp/stage2/usr/share/anaconda/interactive-defaults.ks
   grep -Fq 'usr/lib/bootc/kargs.d' /w/tmp/stage2/usr/share/anaconda/interactive-defaults.ks
-  cmp /w/keys/release.gpg /w/tmp/stage2/usr/share/luma-installer-atlas/luma-release.gpg
-  [ \"\$(ls /w/tmp/stage2/usr/share/ostree/trusted.gpg.d)\" = luma-release.gpg ] ||
+  cmp /w/keys/release.gpg /w/tmp/stage2/usr/share/Suno-installer-atlas/Suno-release.gpg
+  [ \"\$(ls /w/tmp/stage2/usr/share/ostree/trusted.gpg.d)\" = Suno-release.gpg ] ||
     { echo 'error: the runtime OSTree keyring holds more than the pull key' >&2; exit 1; }
-  cmp /w/keys/pull.gpg /w/tmp/stage2/usr/share/ostree/trusted.gpg.d/luma-release.gpg
+  cmp /w/keys/pull.gpg /w/tmp/stage2/usr/share/ostree/trusted.gpg.d/Suno-release.gpg
   test \"\$(stat -c %Y /w/tmp/stage2/usr/lib/clock-epoch)\" = '$clock_epoch'
   rm -rf /w/tmp/stage2
   if [ '$credential_var' != none ]; then
     # The credential is root-only in the installer and nowhere else in it.
     rm -rf /w/tmp/stage2-all
     unsquashfs -no-progress -no-xattrs -d /w/tmp/stage2-all /w/lorax-out/images/install.img >/dev/null
-    carried=/w/tmp/stage2-all/usr/share/luma-installer-atlas/preview-credential
+    carried=/w/tmp/stage2-all/usr/share/Suno-installer-atlas/preview-credential
     [ \"\$(stat -c '%a %u %g' \$carried)\" = '600 0 0' ] ||
       { echo 'error: the installer copy of the preview credential is not root:root 0600' >&2; exit 1; }
     cmp -s /w/secret/preview-credential \$carried ||
@@ -530,8 +530,8 @@ podman run --rm --umask=0022 "${runtime_mount[@]}" "${builder_security[@]}" --ar
     rm -rf /w/tmp/stage2-all
   else
     unsquashfs -no-progress -d /w/tmp/stage2 /w/lorax-out/images/install.img \
-        usr/share/luma-installer-atlas/preview-credential >/dev/null 2>&1 || :
-    [ ! -e /w/tmp/stage2/usr/share/luma-installer-atlas/preview-credential ] ||
+        usr/share/Suno-installer-atlas/preview-credential >/dev/null 2>&1 || :
+    [ ! -e /w/tmp/stage2/usr/share/Suno-installer-atlas/preview-credential ] ||
       { echo 'error: this medium was not given a preview credential but its installer holds one' >&2; exit 1; }
     rm -rf /w/tmp/stage2
   fi
@@ -555,8 +555,8 @@ podman run --rm --umask=0022 "${builder_security[@]}" --arch "$architecture" --p
   xorriso -osirrox on -indev /w/output.iso.partial \
     -extract /EFI/BOOT/grub.cfg /w/tmp/iso-boot-proof/efi-grub.cfg >/dev/null 2>&1
   python3 /s/prepare-lorax-boot.py --verify-iso /w/tmp/iso-boot-proof '$architecture'
-  python3 /w/templates/check-grub-fonts.py /w/tmp/iso-boot-proof/grub2/themes/luma
-  cmp /w/lorax-out/boot/grub2/themes/luma/theme.txt /w/tmp/iso-boot-proof/grub2/themes/luma/theme.txt
+  python3 /w/templates/check-grub-fonts.py /w/tmp/iso-boot-proof/grub2/themes/Suno
+  cmp /w/lorax-out/boot/grub2/themes/Suno/theme.txt /w/tmp/iso-boot-proof/grub2/themes/Suno/theme.txt
   # The firmware's embedded FAT menu must match the visible ISO menu too.
   python3 /s/extract-iso-efi.py /w/output.iso.partial /w/tmp/iso-boot-proof/efiboot.img
   mcopy -i /w/tmp/iso-boot-proof/efiboot.img ::/EFI/BOOT/grub.cfg /w/tmp/iso-boot-proof/embedded-grub.cfg
@@ -578,7 +578,7 @@ mv "$work/output.iso.partial" "$output"
   printf 'architecture=%s\ntools_architecture=%s\n' "$architecture" "$tools_architecture"
   printf 'final_tools_architecture=%s\n' "$architecture"
   printf 'channel=%s\nref=%s\nremote=%s\nurl=%s\nremote_url=mirrorlist=file://%s\nmirrorlist=%s\n' \
-    "$channel" "$ref" "$LUMA_OS_REMOTE" "$LUMA_OS_URL" "$LUMA_OS_MIRRORLIST" "$LUMA_OS_MIRRORLIST"
+    "$channel" "$ref" "$SUNO_OS_REMOTE" "$SUNO_OS_URL" "$SUNO_OS_MIRRORLIST" "$SUNO_OS_MIRRORLIST"
   printf 'payload=%s\n' "$( [ -n "$payload_repo" ] && echo medium || { [ "$test_media" = 1 ] && echo "test $test_ref"; } || echo online)"
   printf 'release_key_fingerprint=%s\n' "$(cat "$work/keys/release.fingerprint")"
   printf 'pull_key_fingerprint=%s\n' "$(cat "$work/keys/pull.fingerprint")"

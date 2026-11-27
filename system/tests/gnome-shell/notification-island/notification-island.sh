@@ -16,13 +16,13 @@ color-scheme='prefer-dark'
 enable-animations=true
 
 [org/gnome/shell]
-enabled-extensions=['tilingshell@ferrarodomenico.com', 'tiling-toggle@project-luma.local']
+enabled-extensions=['tilingshell@ferrarodomenico.com', 'tiling-toggle@project-suno.local']
 disable-user-extensions=false
 welcome-dialog-last-shown-version='999'
 K
 } > $HOME/.config/glib-2.0/settings/keyfile
 [ -n "${NI_OVERLAY:-}" ] && export G_RESOURCE_OVERLAYS="/org/gnome/shell/ui=$NI_OVERLAY/js/ui:/org/gnome/shell/theme=$NI_OVERLAY/data/theme"
-export GSETTINGS_BACKEND=keyfile LIBGL_ALWAYS_SOFTWARE=1 LUMA_MUTTER_ALLOW_SOFTWARE_BLUR=1
+export GSETTINGS_BACKEND=keyfile LIBGL_ALWAYS_SOFTWARE=1 SUNO_MUTTER_ALLOW_SOFTWARE_BLUR=1
 rm -rf "$NI_OUT"; mkdir -p "$NI_OUT"
 mkdir -p /run/dbus
 dbus-send --system --print-reply --dest=org.freedesktop.DBus / org.freedesktop.DBus.Peer.Ping >/dev/null 2>&1 ||

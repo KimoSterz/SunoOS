@@ -97,7 +97,7 @@ def audio_graph(objects: list[dict]) -> dict:
 
 
 def collect(connection: str) -> dict:
-    result = {"schema": "org.projectluma.audio-support-report/v1",
+    result = {"schema": "org.projectSuno.audio-support-report/v1",
               "captured_utc": datetime.now(timezone.utc).isoformat(),
               "speaker_connection": connection, "kernel": platform.release(),
               "changed_audio_settings": False, "recorded_audio": False,
@@ -151,7 +151,7 @@ def main() -> int:
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
     output = args.output or Path.cwd() / (
-        "luma-audio-report-" + datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ") + ".json")
+        "Suno-audio-report-" + datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ") + ".json")
     try:
         save(output, collect(args.speaker_connection))
     except OSError as error:

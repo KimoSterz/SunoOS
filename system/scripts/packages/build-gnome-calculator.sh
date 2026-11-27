@@ -15,7 +15,7 @@ for tool in cpio mktemp patch podman rpm2cpio sha256sum; do
 done
 
 if [ "$(uname -s)" != Linux ] || [ "$(uname -m)" != x86_64 ]; then
-  printf 'error: build the Luma Calculator RPM on the canonical Linux/x86_64 builder\n' >&2
+  printf 'error: build the Suno Calculator RPM on the canonical Linux/x86_64 builder\n' >&2
   exit 1
 fi
 
@@ -56,7 +56,7 @@ mkdir -p "$extract_dir" "$rpmbuild_dir/BUILD" "$rpmbuild_dir/BUILDROOT" \
 mv "$extract_dir/gnome-calculator.spec" "$rpmbuild_dir/SPECS/"
 find "$extract_dir" -maxdepth 1 -type f -exec mv -t "$rpmbuild_dir/SOURCES" {} +
 install -m 0644 \
-  "$repo_root/patches/gnome-calculator/0001-luma-calculator-aesthetic-v1.patch" \
+  "$repo_root/patches/gnome-calculator/0001-Suno-calculator-aesthetic-v1.patch" \
   "$rpmbuild_dir/SOURCES/"
 install -m 0644 \
   "$repo_root/patches/gnome-calculator/0002-prairie-basic-product.patch" \
@@ -71,22 +71,22 @@ install -m 0644 \
   "$repo_root/patches/gnome-calculator/0005-prairie-readout-input-boundary.patch" \
   "$rpmbuild_dir/SOURCES/"
 install -m 0644 \
-  "$repo_root/patches/gnome-calculator/0006-luma-appkit-convergence.patch" \
+  "$repo_root/patches/gnome-calculator/0006-Suno-appkit-convergence.patch" \
   "$rpmbuild_dir/SOURCES/"
 install -m 0644 \
-  "$repo_root/patches/gnome-calculator/0007-luma-shared-component-boundaries.patch" \
+  "$repo_root/patches/gnome-calculator/0007-Suno-shared-component-boundaries.patch" \
   "$rpmbuild_dir/SOURCES/"
 install -m 0644 \
-  "$repo_root/patches/gnome-calculator/0008-luma-preserve-island-elevation-overflow.patch" \
+  "$repo_root/patches/gnome-calculator/0008-Suno-preserve-island-elevation-overflow.patch" \
   "$rpmbuild_dir/SOURCES/"
 install -m 0644 \
-  "$repo_root/patches/gnome-calculator/0009-luma-advanced-mode-and-readout.patch" \
+  "$repo_root/patches/gnome-calculator/0009-Suno-advanced-mode-and-readout.patch" \
   "$rpmbuild_dir/SOURCES/"
 
 (
   cd "$rpmbuild_dir/SPECS"
   patch --batch --forward -p1 \
-    <"$repo_root/patches/gnome-calculator/0000-luma-fedora-spec.patch"
+    <"$repo_root/patches/gnome-calculator/0000-Suno-fedora-spec.patch"
 )
 
 "$repo_root/scripts/packages/run-in-rpm-builder.sh" \
@@ -114,8 +114,8 @@ install -m 0644 \
       /org/gnome/calculator/style.css >style.css
     gresource extract ./usr/bin/gnome-calculator \
       /org/gnome/calculator/buttons-basic.ui >buttons-basic.ui
-    grep -Fq "luma-calculator-titlebar" math-window.ui
-    ! grep -Fq "luma-calculator-actionbar" math-window.ui
+    grep -Fq "Suno-calculator-titlebar" math-window.ui
+    ! grep -Fq "Suno-calculator-actionbar" math-window.ui
     ! grep -Fq "HistoryView" math-window.ui
     ! grep -Fq "MathConverter" math-window.ui
     ! grep -Fq "Mode Selection" math-window.ui
@@ -126,12 +126,12 @@ install -m 0644 \
     grep -Fq "change-sign" buttons-basic.ui
     grep -Fq "<property name=\"column-span\">2</property>" buttons-basic.ui
     grep -Fq "result-button" buttons-basic.ui
-    grep -Fq "Project Luma calculator composition" style.css
+    grep -Fq "Project Suno calculator composition" style.css
     grep -Fq "button.operator-button" style.css
     grep -Fq "button.result-button" style.css
     grep -Fq "result-medium" style.css
     grep -Fq "result-small" style.css
-    grep -Fq "luma-identity-button" math-window.ui
+    grep -Fq "Suno-identity-button" math-window.ui
     grep -Fq "org.gnome.Calculator" math-window.ui
     grep -Fq "app.new-window" math-window.ui
     grep -Fq "win.number-format" math-window.ui
@@ -146,8 +146,8 @@ install -m 0644 \
     grep -Fq "<property name=\"vexpand\">true</property>" math-display.ui
     grep -Fq "display-result" style.css
     grep -Fq "background-color: @sidebar_bg_color" style.css
-    grep -Fq "Shared Luma Application Kit composition" style.css
-    grep -Fq "luma-island" math-window.ui
+    grep -Fq "Shared Suno Application Kit composition" style.css
+    grep -Fq "Suno-island" math-window.ui
     grep -Fq "<property name=\"overflow\">0</property>" math-window.ui
     grep -Fq "padding: 0 8px 0 12px" style.css
     ! grep -Fq "0 20px 38px -15px" style.css
@@ -163,7 +163,7 @@ install -m 0644 \
   "$rpmbuild_dir/RPMS/x86_64/$GNOME_CALCULATOR_NEVRA.rpm" \
   "$stable_rpms/"
 install -m 0644 \
-  "$rpmbuild_dir/SRPMS/gnome-calculator-50.0-${GNOME_CALCULATOR_LUMA_RELEASE}.fc44.src.rpm" \
+  "$rpmbuild_dir/SRPMS/gnome-calculator-50.0-${GNOME_CALCULATOR_SUNO_RELEASE}.fc44.src.rpm" \
   "$stable_srpms/"
 
 (
@@ -171,4 +171,4 @@ install -m 0644 \
   find RPMS SRPMS -type f -name '*.rpm' -exec sha256sum {} + | sort >SHA256SUMS
 )
 
-printf 'Luma Calculator packages: %s\n' "$output_dir"
+printf 'Suno Calculator packages: %s\n' "$output_dir"

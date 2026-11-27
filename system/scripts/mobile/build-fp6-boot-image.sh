@@ -8,22 +8,22 @@
 #
 # The added archive holds scripts/mobile/fp6-native-init-functions.sh as
 # /init_functions.sh (which leaves /boot on the root filesystem, where ostree
-# writes its boot entries, instead of mounting LumaBoot there), and the shared
+# writes its boot entries, instead of mounting SunoBoot there), and the shared
 # OSTree boot resolver
-# (scripts/mobile/common/initramfs): /usr/lib/luma/ostree-boot.sh and
-# /hooks-extra/50-luma-ostree-default.sh, which point /ostree/root.<slot> at
+# (scripts/mobile/common/initramfs): /usr/lib/Suno/ostree-boot.sh and
+# /hooks-extra/50-Suno-ostree-default.sh, which point /ostree/root.<slot> at
 # ostree's default deployment on every boot. ostree=/ostree/root.a names the
 # slot link; the bootloader appends androidboot.slot_suffix. One boot image
 # serves every nightly, rpm-ostree upgrade and rollback; it changes only with
 # the kernel or the initramfs.
 #
-# It also holds /hooks-cleanup/60-luma-fp6-modem-store.sh
+# It also holds /hooks-cleanup/60-Suno-fp6-modem-store.sh
 # (scripts/mobile/fp6-initramfs): on the first start, which is `fastboot boot`,
 # it copies the modem storage partitions into the private rmtfs store before
 # any normal boot lets the bootloader erase modemst.
 #
 # --kernel replaces the Alpha 1 kernel with a build of scripts/kernel/build-fp6.sh
-# (its Image.gz); kernel-modules-luma-fp6 must come from the same build. --dtb
+# (its Image.gz); kernel-modules-Suno-fp6 must come from the same build. --dtb
 # replaces the Alpha 1 DTB with that build's composed dtb.
 #
 # usage: build-fp6-boot-image.sh --alpha-boot FILE [--kernel FILE [--dtb FILE]] --output FILE
@@ -35,7 +35,7 @@ set -euo pipefail
 repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 device="$repo_root/devices/fairphone/fp6"
 shared="$repo_root/scripts/mobile/common/initramfs"
-modem_store="$repo_root/scripts/mobile/fp6-initramfs/hooks-cleanup/60-luma-fp6-modem-store.sh"
+modem_store="$repo_root/scripts/mobile/fp6-initramfs/hooks-cleanup/60-Suno-fp6-modem-store.sh"
 fail() { printf 'build-fp6-boot-image: %s\n' "$*" >&2; exit 1; }
 # The generic phone userdata image's filesystems (scripts/mobile/build-phone-userdata.sh).
 root_uuid=03797c05-cf87-4eda-adc4-6ce111baf2d3
@@ -53,7 +53,7 @@ while [ "$#" -gt 0 ]; do
 done
 [ -n "$alpha" ] && [ -n "$output" ] || fail "missing arguments"
 [ -z "$dtb" ] || [ -n "$kernel" ] || fail "--dtb needs the --kernel of the same build"
-for f in "$shared/luma-ostree-boot.sh" "$shared/hooks-extra/50-luma-ostree-default.sh"; do
+for f in "$shared/Suno-ostree-boot.sh" "$shared/hooks-extra/50-Suno-ostree-default.sh"; do
   [ -f "$f" ] || fail "missing $f (the shared OSTree boot resolver)"
 done
 [ -f "$modem_store" ] || fail "missing $modem_store (the modem store seed)"
@@ -103,9 +103,9 @@ fi
 # The added archive: later files in the ramdisk replace earlier ones.
 o="$work/overlay"
 install -D -m 0644 "$script" "$o/init_functions.sh"
-install -D -m 0644 "$shared/luma-ostree-boot.sh" "$o/usr/lib/luma/ostree-boot.sh"
-install -D -m 0755 "$shared/hooks-extra/50-luma-ostree-default.sh" "$o/hooks-extra/50-luma-ostree-default.sh"
-install -D -m 0755 "$modem_store" "$o/hooks-cleanup/60-luma-fp6-modem-store.sh"
+install -D -m 0644 "$shared/Suno-ostree-boot.sh" "$o/usr/lib/Suno/ostree-boot.sh"
+install -D -m 0755 "$shared/hooks-extra/50-Suno-ostree-default.sh" "$o/hooks-extra/50-Suno-ostree-default.sh"
+install -D -m 0755 "$modem_store" "$o/hooks-cleanup/60-Suno-fp6-modem-store.sh"
 # 00755: GNU chmod keeps a directory's setgid bit (inherited from TMPDIR) under 0755.
 find "$o" -type d -exec chmod 00755 {} +
 find "$o" -exec touch -h -d @0 {} +
@@ -167,12 +167,12 @@ while i < len(data):
     i = (start + size + 3) & ~3
 script = open(sys.argv[2], "rb").read()
 assert files["init_functions.sh"][1] == script, "init_functions.sh"
-assert "etc/luma-fp6-ostree" in files
-for name in ("hooks-extra/50-luma-ostree-default.sh", "hooks-cleanup/60-luma-fp6-modem-store.sh",
+assert "etc/Suno-fp6-ostree" in files
+for name in ("hooks-extra/50-Suno-ostree-default.sh", "hooks-cleanup/60-Suno-fp6-modem-store.sh",
              "usr/lib/ostree/ostree-prepare-root"):
     assert files[name][0] & 0o111, name
-assert files["usr/lib/luma/ostree-boot.sh"][1], "ostree-boot.sh"
-assert files["hooks-cleanup/60-luma-fp6-modem-store.sh"][1] == open(sys.argv[3], "rb").read(), "modem store seed"
+assert files["usr/lib/Suno/ostree-boot.sh"][1], "ostree-boot.sh"
+assert files["hooks-cleanup/60-Suno-fp6-modem-store.sh"][1] == open(sys.argv[3], "rb").read(), "modem store seed"
 PY
 python3 "$avbtool" verify_image --image "$work/boot.img" >/dev/null
 [ "$(stat -c %s "$work/boot.img")" = "$partition_size" ] || fail "the image is not the boot partition's size"

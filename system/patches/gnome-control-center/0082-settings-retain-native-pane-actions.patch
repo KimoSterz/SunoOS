@@ -1,7 +1,7 @@
-Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
+Subject: [PATCH] Keep native Settings actions and failures inside Suno panes
 
---- a/shell/cc-luma-discovery.c
-+++ b/shell/cc-luma-discovery.c
+--- a/shell/cc-Suno-discovery.c
++++ b/shell/cc-Suno-discovery.c
 @@ -92,6 +92,11 @@
      if (!*(char *) i->data || json_node_get_value_type (json_object_get_member (values, i->data)) != G_TYPE_BOOLEAN) return FALSE;
    return TRUE;
@@ -15,41 +15,41 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
  {
    if (!id) return -1;
 @@ -108,9 +113,9 @@
-   if (cc_luma_fixture_is_live (model))
+   if (cc_Suno_fixture_is_live (model))
      {
        /* The owner takes the whole list; the model follows what it reports. */
--      g_autoptr (JsonNode) next = json_node_copy (cc_luma_fixture_get (model, "sa"));
-+      g_autoptr (JsonNode) next = deep_copy (cc_luma_fixture_get (model, "sa"));
+-      g_autoptr (JsonNode) next = json_node_copy (cc_Suno_fixture_get (model, "sa"));
++      g_autoptr (JsonNode) next = deep_copy (cc_Suno_fixture_get (model, "sa"));
        json_node_set_boolean (json_array_get_element (json_array_get_array_element (json_node_get_array (next), index), 1), enabled);
--      if (!cc_luma_fixture_write (model, "sa", next, error)) return FALSE;
-+      return cc_luma_fixture_write (model, "sa", next, error);
+-      if (!cc_Suno_fixture_write (model, "sa", next, error)) return FALSE;
++      return cc_Suno_fixture_write (model, "sa", next, error);
      }
    json_node_set_boolean (json_array_get_element (json_array_get_array_element (apps, index), 1), enabled);
    return TRUE;
 @@ -137,7 +142,7 @@
-   if (cc_luma_fixture_is_live (model))
+   if (cc_Suno_fixture_is_live (model))
      {
        g_autoptr (JsonNode) next = json_node_init_array (json_node_alloc (), order);
--      if (!cc_luma_fixture_write (model, "sa", next, error)) return FALSE;
-+      return cc_luma_fixture_write (model, "sa", next, error);
+-      if (!cc_Suno_fixture_write (model, "sa", next, error)) return FALSE;
++      return cc_Suno_fixture_write (model, "sa", next, error);
      }
    while (json_array_get_length (apps)) json_array_remove_element (apps, 0);
    for (guint i = 0; i < json_array_get_length (order); i++) json_array_add_element (apps, json_node_copy (json_array_get_element (order, i)));
 @@ -164,7 +169,7 @@
- static gboolean place_write (CcLumaFixture *model, const char *uri, gboolean enabled, GError **error)
+ static gboolean place_write (CcSunoFixture *model, const char *uri, gboolean enabled, GError **error)
  {
-   if (!cc_luma_fixture_is_live (model)) return TRUE;
--  g_autoptr (JsonNode) next = json_node_copy (cc_luma_fixture_get (model, "sl"));
-+  g_autoptr (JsonNode) next = deep_copy (cc_luma_fixture_get (model, "sl"));
+   if (!cc_Suno_fixture_is_live (model)) return TRUE;
+-  g_autoptr (JsonNode) next = json_node_copy (cc_Suno_fixture_get (model, "sl"));
++  g_autoptr (JsonNode) next = deep_copy (cc_Suno_fixture_get (model, "sl"));
    json_object_set_boolean_member (json_node_get_object (next), uri, enabled);
-   return cc_luma_fixture_write (model, "sl", next, error);
+   return cc_Suno_fixture_write (model, "sl", next, error);
  }
---- a/shell/cc-luma-fixture.c
-+++ b/shell/cc-luma-fixture.c
+--- a/shell/cc-Suno-fixture.c
++++ b/shell/cc-Suno-fixture.c
 @@ -20,7 +20,7 @@
    gpointer ready_data;
  };
- G_DEFINE_TYPE (CcLumaFixture, cc_luma_fixture, G_TYPE_OBJECT)
+ G_DEFINE_TYPE (CcSunoFixture, cc_Suno_fixture, G_TYPE_OBJECT)
 -enum { CHANGED, N_SIGNALS };
 +enum { CHANGED, WRITE_ERROR, N_SIGNALS };
  static guint fixture_signals[N_SIGNALS];
@@ -62,77 +62,77 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
 +  fixture_signals[WRITE_ERROR] = g_signal_new ("write-error", G_TYPE_FROM_CLASS (klass), G_SIGNAL_RUN_LAST,
 +                                             0, NULL, NULL, NULL, G_TYPE_NONE, 1, G_TYPE_ERROR);
  }
- static void cc_luma_fixture_init (CcLumaFixture *self) {}
+ static void cc_Suno_fixture_init (CcSunoFixture *self) {}
  
 @@ -611,7 +613,7 @@
    if (!self->live) return TRUE;
-   if (!cc_luma_fixture_key_verified (self, key))
+   if (!cc_Suno_fixture_key_verified (self, key))
      {
--      g_set_error (error, CC_LUMA_WRITE_DELEGATED, 0, "%s changes in its GNOME panel", key);
-+      g_set_error (error, CC_LUMA_WRITE_DELEGATED, 0, "This setting is not supported yet: %s", key);
+-      g_set_error (error, CC_SUNO_WRITE_DELEGATED, 0, "%s changes in its GNOME panel", key);
++      g_set_error (error, CC_SUNO_WRITE_DELEGATED, 0, "This setting is not supported yet: %s", key);
        return FALSE;
      }
-   if (!cc_luma_fixture_writable (self, key) || !self->writer)
+   if (!cc_Suno_fixture_writable (self, key) || !self->writer)
 @@ -633,6 +635,11 @@
- cc_luma_fixture_changed (CcLumaFixture *self)
+ cc_Suno_fixture_changed (CcSunoFixture *self)
  {
    if (!self->changed_idle) self->changed_idle = g_idle_add (emit_changed, self);
 +}
-+void cc_luma_fixture_report_write_error (CcLumaFixture *self, const GError *error)
++void cc_Suno_fixture_report_write_error (CcSunoFixture *self, const GError *error)
 +{
 +  if (!self || !error || g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) return;
 +  g_signal_emit (self, fixture_signals[WRITE_ERROR], 0, error);
  }
  /* Adapters publish what the system reports: no writer, no type check against
   * a previous value (the first report creates the key). */
---- a/shell/cc-luma-fixture.h
-+++ b/shell/cc-luma-fixture.h
+--- a/shell/cc-Suno-fixture.h
++++ b/shell/cc-Suno-fixture.h
 @@ -52,6 +52,9 @@
- gboolean cc_luma_fixture_writable (CcLumaFixture *self, const char *key);
- gboolean cc_luma_fixture_write (CcLumaFixture *self, const char *key, JsonNode *value, GError **error);
- void cc_luma_fixture_changed (CcLumaFixture *self);
+ gboolean cc_Suno_fixture_writable (CcSunoFixture *self, const char *key);
+ gboolean cc_Suno_fixture_write (CcSunoFixture *self, const char *key, JsonNode *value, GError **error);
+ void cc_Suno_fixture_changed (CcSunoFixture *self);
 +/* Accepted asynchronous writes can fail later. Surface the service error
 + * in the existing view, without claiming success or switching panels. */
-+void cc_luma_fixture_report_write_error (CcLumaFixture *self, const GError *error);
- void cc_luma_fixture_publish (CcLumaFixture *self, const char *key, JsonNode *value);
- void cc_luma_fixture_publish_data (CcLumaFixture *self, const char *name, JsonNode *value);
- void cc_luma_fixture_publish_boolean (CcLumaFixture *self, const char *key, gboolean value);
++void cc_Suno_fixture_report_write_error (CcSunoFixture *self, const GError *error);
+ void cc_Suno_fixture_publish (CcSunoFixture *self, const char *key, JsonNode *value);
+ void cc_Suno_fixture_publish_data (CcSunoFixture *self, const char *name, JsonNode *value);
+ void cc_Suno_fixture_publish_boolean (CcSunoFixture *self, const char *key, gboolean value);
 @@ -65,9 +68,8 @@
- gboolean cc_luma_fixture_page_ready (CcLumaFixture *self, const char *page);
+ gboolean cc_Suno_fixture_page_ready (CcSunoFixture *self, const char *page);
  /* An image an owner reports (a wallpaper file) under the id pages ask for. */
- void cc_luma_fixture_publish_asset (CcLumaFixture *self, const char *id, const char *path);
--/* Live writes Luma hasn't proven against a real owner yet are handed to the
+ void cc_Suno_fixture_publish_asset (CcSunoFixture *self, const char *id, const char *path);
+-/* Live writes Suno hasn't proven against a real owner yet are handed to the
 - * page's GNOME panel instead: the writer fails with this domain and the view
 - * opens the panel for the page. */
 +/* Unqualified live writes refuse with this legacy error domain. The view
 + * displays a normal unsupported-change error and keeps its own pane. */
- #define CC_LUMA_WRITE_DELEGATED (g_quark_from_static_string ("cc-luma-write-delegated"))
- void cc_luma_fixture_verify_key (CcLumaFixture *self, const char *key);
- gboolean cc_luma_fixture_key_verified (CcLumaFixture *self, const char *key);
---- a/shell/cc-luma-keyboard.c
-+++ b/shell/cc-luma-keyboard.c
+ #define CC_SUNO_WRITE_DELEGATED (g_quark_from_static_string ("cc-Suno-write-delegated"))
+ void cc_Suno_fixture_verify_key (CcSunoFixture *self, const char *key);
+ gboolean cc_Suno_fixture_key_verified (CcSunoFixture *self, const char *key);
+--- a/shell/cc-Suno-keyboard.c
++++ b/shell/cc-Suno-keyboard.c
 @@ -59,11 +59,12 @@
  {
    g_set_error_literal (error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT, "Invalid Settings keyboard action"); return FALSE;
  }
--static gboolean replace_sources (CcLumaFixture *model, JsonNode *node)
-+static gboolean replace_sources (CcLumaFixture *model, JsonNode *node, GError **error)
+-static gboolean replace_sources (CcSunoFixture *model, JsonNode *node)
++static gboolean replace_sources (CcSunoFixture *model, JsonNode *node, GError **error)
  {
    /* The generic fixture setter intentionally edits scalars only. This
     * validated keyboard helper owns just the layout array, as provider
     * reordering owns its own array; it cannot replace other preferences. */
-+  if (cc_luma_fixture_is_live (model)) return cc_luma_fixture_write (model, "srcs", node, error);
-   JsonArray *current = json_node_get_array (cc_luma_fixture_get (model, "srcs"));
++  if (cc_Suno_fixture_is_live (model)) return cc_Suno_fixture_write (model, "srcs", node, error);
+   JsonArray *current = json_node_get_array (cc_Suno_fixture_get (model, "srcs"));
    JsonArray *next = json_node_get_array (node);
    while (json_array_get_length (current)) json_array_remove_element (current, json_array_get_length (current) - 1);
 @@ -93,6 +94,7 @@
  {
-   if (!cc_luma_keyboard_validate (model) || index_of (model, layout) < 0) return invalid (error);
+   if (!cc_Suno_keyboard_validate (model) || index_of (model, layout) < 0) return invalid (error);
    g_autoptr(JsonNode) node = json_node_init_string (json_node_alloc (), layout);
-+  if (cc_luma_fixture_is_live (model)) return cc_luma_fixture_write (model, "src", node, error);
-   return cc_luma_fixture_set (model, "src", node, error);
++  if (cc_Suno_fixture_is_live (model)) return cc_Suno_fixture_write (model, "src", node, error);
+   return cc_Suno_fixture_set (model, "src", node, error);
  }
- gboolean cc_luma_keyboard_set_choice (CcLumaFixture *model, const char *key, const char *choice, GError **error)
+ gboolean cc_Suno_keyboard_set_choice (CcSunoFixture *model, const char *key, const char *choice, GError **error)
 @@ -107,7 +109,7 @@
    if (index_of (model, layout) >= 0) return TRUE;
    g_autoptr(JsonNode) node = copy_sources (model);
@@ -140,7 +140,7 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
 -  return replace_sources (model, node);
 +  return replace_sources (model, node, error);
  }
- gboolean cc_luma_keyboard_remove (CcLumaFixture *model, const char *layout, GError **error)
+ gboolean cc_Suno_keyboard_remove (CcSunoFixture *model, const char *layout, GError **error)
  {
 @@ -119,7 +121,8 @@
    g_autoptr(JsonNode) node = copy_sources (model);
@@ -148,10 +148,10 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
    g_autoptr(JsonNode) next = was_selected ? json_node_copy (json_array_get_element (json_node_get_array (node), 0)) : NULL;
 -  replace_sources (model, node);
 +  if (!replace_sources (model, node, error)) return FALSE;
-+  if (cc_luma_fixture_is_live (model)) return TRUE;
-   return !was_selected || cc_luma_fixture_set (model, "src", next, error);
++  if (cc_Suno_fixture_is_live (model)) return TRUE;
+   return !was_selected || cc_Suno_fixture_set (model, "src", next, error);
  }
- gboolean cc_luma_keyboard_move (CcLumaFixture *model, guint from, guint to, GError **error)
+ gboolean cc_Suno_keyboard_move (CcSunoFixture *model, guint from, guint to, GError **error)
 @@ -134,5 +137,5 @@
      guint original = i == to ? from : from < to && i >= from && i < to ? i + 1 : from > to && i > to && i <= from ? i - 1 : i;
      json_array_add_element (result, json_node_copy (json_array_get_element (sources, original)));
@@ -159,8 +159,8 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
 -  return replace_sources (model, node);
 +  return replace_sources (model, node, error);
  }
---- a/shell/cc-luma-live-accounts.c
-+++ b/shell/cc-luma-live-accounts.c
+--- a/shell/cc-Suno-live-accounts.c
++++ b/shell/cc-Suno-live-accounts.c
 @@ -1,9 +1,8 @@
  /* SPDX-License-Identifier: GPL-2.0-or-later */
  /* Live Online Accounts, read as panels/online-accounts reads them: the
@@ -171,7 +171,7 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
 + * add (goa_provider_get_all). The view uses the provider's native account
 + * dialogs directly, retaining its own pane. acct-fm and acct-nc (v70's two
   * sample accounts) have no live counterpart and stay on the panel. */
- #include "cc-luma-live.h"
+ #include "cc-Suno-live.h"
  #define GOA_API_IS_SUBJECT_TO_CHANGE
 @@ -109,6 +108,7 @@
        JsonArray *pair = json_array_new ();
@@ -181,48 +181,48 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
        json_array_add_array_element (list, pair);
      }
    g_autoptr (JsonNode) node = json_node_init_array (json_node_alloc (), list);
---- a/shell/cc-luma-live-airplane.c
-+++ b/shell/cc-luma-live-airplane.c
+--- a/shell/cc-Suno-live-airplane.c
++++ b/shell/cc-Suno-live-airplane.c
 @@ -56,7 +56,7 @@
    g_autoptr (GError) error = NULL;
    g_autoptr (GVariant) out = g_dbus_proxy_call_finish (G_DBUS_PROXY (source), result, &error);
    if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) return;
 -  if (error) g_warning ("Settings: could not change airplane mode: %s", error->message);
-+  if (error) cc_luma_fixture_report_write_error (((Radio *) data)->model, error);
++  if (error) cc_Suno_fixture_report_write_error (((Radio *) data)->model, error);
    publish (data);
  }
  static gboolean
 @@ -94,6 +94,7 @@
    r->model = model;
    r->cancel = g_cancellable_new ();
-   cc_luma_fixture_own_key (model, "airplane");
-+  cc_luma_fixture_verify_key (model, "airplane");
+   cc_Suno_fixture_own_key (model, "airplane");
++  cc_Suno_fixture_verify_key (model, "airplane");
    g_dbus_proxy_new_for_bus (G_BUS_TYPE_SESSION, G_DBUS_PROXY_FLAGS_NONE, NULL,
                              "org.gnome.SettingsDaemon.Rfkill", "/org/gnome/SettingsDaemon/Rfkill",
                              "org.gnome.SettingsDaemon.Rfkill", r->cancel, proxy_ready, r);
---- a/shell/cc-luma-live-app-options.c
-+++ b/shell/cc-luma-live-app-options.c
+--- a/shell/cc-Suno-live-app-options.c
++++ b/shell/cc-Suno-live-app-options.c
 @@ -132,8 +132,16 @@
        self->media = g_settings_new (MEDIA);
        g_signal_connect_swapped (self->media, "changed", G_CALLBACK (publish), self);
      }
--  for (guint i = 0; i < G_N_ELEMENTS (defaults); i++) cc_luma_fixture_own_key (model, defaults[i].key);
--  for (guint i = 0; self->media && i < G_N_ELEMENTS (media); i++) cc_luma_fixture_own_key (model, media[i].key);
+-  for (guint i = 0; i < G_N_ELEMENTS (defaults); i++) cc_Suno_fixture_own_key (model, defaults[i].key);
+-  for (guint i = 0; self->media && i < G_N_ELEMENTS (media); i++) cc_Suno_fixture_own_key (model, media[i].key);
 +  for (guint i = 0; i < G_N_ELEMENTS (defaults); i++)
 +    {
-+      cc_luma_fixture_own_key (model, defaults[i].key);
-+      cc_luma_fixture_verify_key (model, defaults[i].key);
++      cc_Suno_fixture_own_key (model, defaults[i].key);
++      cc_Suno_fixture_verify_key (model, defaults[i].key);
 +    }
 +  for (guint i = 0; self->media && i < G_N_ELEMENTS (media); i++)
 +    {
-+      cc_luma_fixture_own_key (model, media[i].key);
-+      cc_luma_fixture_verify_key (model, media[i].key);
++      cc_Suno_fixture_own_key (model, media[i].key);
++      cc_Suno_fixture_verify_key (model, media[i].key);
 +    }
    self->monitor = g_app_info_monitor_get ();
    g_signal_connect_swapped (self->monitor, "changed", G_CALLBACK (publish), self);
-   cc_luma_live_desk_dump_watch (model);
---- a/shell/cc-luma-live-applications.c
-+++ b/shell/cc-luma-live-applications.c
+   cc_Suno_live_desk_dump_watch (model);
+--- a/shell/cc-Suno-live-applications.c
++++ b/shell/cc-Suno-live-applications.c
 @@ -12,8 +12,9 @@
   *     bg     portal "background" (Flatpak/Snap apps)
   *     wall, shot, cam, mic, loc  portal wallpaper, screenshot, devices and
@@ -232,23 +232,23 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
 + * The page launches desktop apps directly, clears verified Flatpak caches,
 + * and opens Depot explicitly for package management. App identity and sizes
 + * are read from their owners; unsupported version/source fields stay hidden. */
- #include "cc-luma-live.h"
- #include "cc-luma-live-apps.h"
+ #include "cc-Suno-live.h"
+ #include "cc-Suno-live-apps.h"
  #include <gio/gdesktopappinfo.h>
 @@ -266,6 +267,7 @@
            if (!table_value (self, portal[p].table, portal[p].entry) && !portal[p].always) continue;
            g_autofree char *key = g_strconcat ("perm_", a->id, portal[p].perm, NULL);
-           cc_luma_fixture_own_key (self->model, key);
-+          cc_luma_fixture_verify_key (self->model, key);
-           cc_luma_fixture_publish_boolean (self->model, key, !value || !value[0] || g_strcmp0 (value[0], portal[p].off) != 0);
+           cc_Suno_fixture_own_key (self->model, key);
++          cc_Suno_fixture_verify_key (self->model, key);
+           cc_Suno_fixture_publish_boolean (self->model, key, !value || !value[0] || g_strcmp0 (value[0], portal[p].off) != 0);
            json_array_add_string_element (allowed, portal[p].perm);
          }
 @@ -409,6 +411,8 @@
    g_autoptr (GSettingsSchema) search = source ? g_settings_schema_source_lookup (source, "org.gnome.desktop.search-providers", TRUE) : NULL;
    g_autoptr (GSettingsSchema) notif = source ? g_settings_schema_source_lookup (source, NOTIF_SCHEMA, TRUE) : NULL;
    self->model = g_object_ref (model);
-+  g_object_set_data (G_OBJECT (model), "cc-luma-apps-refresh", read_apps);
-+  g_object_set_data (G_OBJECT (model), "cc-luma-apps-state", self);
++  g_object_set_data (G_OBJECT (model), "cc-Suno-apps-refresh", read_apps);
++  g_object_set_data (G_OBJECT (model), "cc-Suno-apps-state", self);
    self->cancel = g_cancellable_new ();
    self->by_id = g_hash_table_new (g_str_hash, g_str_equal);
    self->notif = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_object_unref);
@@ -257,7 +257,7 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
    g_autoptr (GVariant) reply = g_dbus_connection_call_finish (G_DBUS_CONNECTION (source), result, &error);
    if (!reply && !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 -    g_warning ("Settings live: the permission store did not take the change: %s", error->message);
-+    cc_luma_fixture_report_write_error (data, error);
++    cc_Suno_fixture_report_write_error (data, error);
 +  g_object_unref (data);
  }
  
@@ -275,13 +275,13 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
  {
    Apps *self = state;
    self->stopped = TRUE;
-+  g_object_set_data (G_OBJECT (self->model), "cc-luma-apps-refresh", NULL);
-+  g_object_set_data (G_OBJECT (self->model), "cc-luma-apps-state", NULL);
++  g_object_set_data (G_OBJECT (self->model), "cc-Suno-apps-refresh", NULL);
++  g_object_set_data (G_OBJECT (self->model), "cc-Suno-apps-state", NULL);
    g_cancellable_cancel (self->cancel);
    g_clear_handle_id (&self->rescan, g_source_remove);
    if (self->store_signal) g_dbus_connection_signal_unsubscribe (self->bus, self->store_signal);
---- a/shell/cc-luma-live-apps.c
-+++ b/shell/cc-luma-live-apps.c
+--- a/shell/cc-Suno-live-apps.c
++++ b/shell/cc-Suno-live-apps.c
 @@ -61,14 +61,22 @@
    JsonNode *known = batch ? batch : json_object_get_member (data, "CFAPPINFO");
    JsonNode *entry = known && JSON_NODE_HOLDS_OBJECT (known) ? json_object_get_member (json_node_get_object (known), id) : NULL;
@@ -306,21 +306,21 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
        if (about && *about) json_object_set_string_member (app, "description", about);
        if (batch)
          {
---- a/shell/cc-luma-live-datetime.c
-+++ b/shell/cc-luma-live-datetime.c
+--- a/shell/cc-Suno-live-datetime.c
++++ b/shell/cc-Suno-live-datetime.c
 @@ -111,7 +111,7 @@
    g_autoptr (GError) error = NULL;
    g_autoptr (GVariant) out = g_dbus_proxy_call_finish (G_DBUS_PROXY (source), result, &error);
    if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) return;
 -  if (error) g_message ("Settings: could not change the time settings: %s", error->message);
-+  if (error) cc_luma_fixture_report_write_error (((Clock *) data)->model, error);
++  if (error) cc_Suno_fixture_report_write_error (((Clock *) data)->model, error);
    publish (data);
  }
  
 @@ -121,11 +121,24 @@
    Clock *c = state;
    GType type = value && JSON_NODE_HOLDS_VALUE (value) ? json_node_get_value_type (value) : G_TYPE_INVALID;
-   if (cc_luma_gs_table_covers (c->table, key)) return cc_luma_gs_table_write (c->table, key, value, error);
+   if (cc_Suno_gs_table_covers (c->table, key)) return cc_Suno_gs_table_write (c->table, key, value, error);
 -  if (!g_str_equal (key, "autoTime") && !g_str_equal (key, "zone")) return FALSE;
 +  if (!g_str_equal (key, "autoTime") && !g_str_equal (key, "zone") && !g_str_equal (key, "manualTime")) return FALSE;
    if (!c->timedated)
@@ -346,34 +346,34 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
 @@ -156,8 +169,14 @@
    c->model = model;
    c->cancel = g_cancellable_new ();
-   c->table = cc_luma_gs_table_new (model, rows, G_N_ELEMENTS (rows));
-+  cc_luma_gs_table_verify (c->table, (const char * const[]) { "autoZone", "h24", "wday", "date", "secs", "wnum", NULL });
-+  cc_luma_fixture_own_key (model, "manualTime");
-+  cc_luma_fixture_verify_key (model, "manualTime");
-   cc_luma_fixture_own_key (model, "autoTime");
-   cc_luma_fixture_own_key (model, "zone");
+   c->table = cc_Suno_gs_table_new (model, rows, G_N_ELEMENTS (rows));
++  cc_Suno_gs_table_verify (c->table, (const char * const[]) { "autoZone", "h24", "wday", "date", "secs", "wnum", NULL });
++  cc_Suno_fixture_own_key (model, "manualTime");
++  cc_Suno_fixture_verify_key (model, "manualTime");
+   cc_Suno_fixture_own_key (model, "autoTime");
+   cc_Suno_fixture_own_key (model, "zone");
 +  /* These keys have native owners with value and permission checks. */
 +  for (const char * const *k = (const char * const[]) { "autoTime", "zone", NULL }; *k; k++)
-+    cc_luma_fixture_verify_key (model, *k);
++    cc_Suno_fixture_verify_key (model, *k);
    g_dbus_proxy_new_for_bus (G_BUS_TYPE_SYSTEM, G_DBUS_PROXY_FLAGS_NONE, NULL, "org.freedesktop.timedate1",
                              "/org/freedesktop/timedate1", "org.freedesktop.timedate1", c->cancel, proxy_ready, c);
    return c;
---- a/shell/cc-luma-live-gsettings.c
-+++ b/shell/cc-luma-live-gsettings.c
+--- a/shell/cc-Suno-live-gsettings.c
++++ b/shell/cc-Suno-live-gsettings.c
 @@ -263,6 +263,14 @@
    return table && key && g_hash_table_contains (table->keys, key);
  }
  
 +void
-+cc_luma_gs_table_verify (CcLumaGsTable *table, const char * const *keys)
++cc_Suno_gs_table_verify (CcSunoGsTable *table, const char * const *keys)
 +{
 +  for (guint i = 0; keys && keys[i]; i++)
-+    if (cc_luma_gs_table_covers (table, keys[i]))
-+      cc_luma_fixture_verify_key (table->model, keys[i]);
++    if (cc_Suno_gs_table_covers (table, keys[i]))
++      cc_Suno_fixture_verify_key (table->model, keys[i]);
 +}
 +
  gboolean
- cc_luma_gs_table_write (CcLumaGsTable *table, const char *key, JsonNode *value, GError **error)
+ cc_Suno_gs_table_write (CcSunoGsTable *table, const char *key, JsonNode *value, GError **error)
  {
 @@ -280,6 +288,11 @@
    if (!variant)
@@ -388,12 +388,12 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
      }
    if (!g_settings_set_value (b->settings, b->row->name, variant))
 @@ -485,6 +498,16 @@
- gsettings_start (CcLumaFixture *model)
+ gsettings_start (CcSunoFixture *model)
  {
-   CcLumaGsTable *table = cc_luma_gs_table_new (model, rows, G_N_ELEMENTS (rows));
+   CcSunoGsTable *table = cc_Suno_gs_table_new (model, rows, G_N_ELEMENTS (rows));
 +  /* Reviewed native mappings only; unknown and unbound rows stay unqualified.
 +   * The owner still enforces the schema range and policy locks on every write. */
-+  cc_luma_gs_table_verify (table, (const char * const[]) {
++  cc_Suno_gs_table_verify (table, (const char * const[]) {
 +    "night", "nightWhen", "nightFrom", "nightTo", "nightT",
 +    "autoBright", "dim", "autoSaver", "susBat", "susBatD", "susAc", "susAcD", "pbtn", "blank", "pct",
 +    "acc", "overamp", "mBtn", "mSpeed", "mAccel", "mNat", "mScrollSpeed",
@@ -402,21 +402,21 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
 +    "vAlert", "vAlertHow", "blink", "sticky", "slow", "bounce", "kbdA11y", "mkeys", "locate", "hold",
 +    "hover", "cross", "invert", "zoomF", "zoomX", NULL });
    /* Mouse & Touchpad's tab is the page's own state, not a setting. */
-   cc_luma_fixture_publish_string (model, "mtab", "mouse");
-   cc_luma_fixture_own_key (model, "mtab");
---- a/shell/cc-luma-live-gsettings.h
-+++ b/shell/cc-luma-live-gsettings.h
+   cc_Suno_fixture_publish_string (model, "mtab", "mouse");
+   cc_Suno_fixture_own_key (model, "mtab");
+--- a/shell/cc-Suno-live-gsettings.h
++++ b/shell/cc-Suno-live-gsettings.h
 @@ -38,6 +38,8 @@
- gboolean cc_luma_gs_table_write (CcLumaGsTable *table, const char *key, JsonNode *value, GError **error);
- gboolean cc_luma_gs_table_covers (CcLumaGsTable *table, const char *key);
- void cc_luma_gs_table_free (CcLumaGsTable *table);
+ gboolean cc_Suno_gs_table_write (CcSunoGsTable *table, const char *key, JsonNode *value, GError **error);
+ gboolean cc_Suno_gs_table_covers (CcSunoGsTable *table, const char *key);
+ void cc_Suno_gs_table_free (CcSunoGsTable *table);
 +/* Explicit qualification: missing schemas/keys remain unowned and unverified. */
-+void cc_luma_gs_table_verify (CcLumaGsTable *table, const char * const *keys);
++void cc_Suno_gs_table_verify (CcSunoGsTable *table, const char * const *keys);
  /* Model keys of the Mouse & Touchpad, Keyboard and Accessibility pages
   * that no GSettings key means exactly (NULL-terminated). */
- extern const char * const cc_luma_gs_unowned_keys[];
---- a/shell/cc-luma-live-keyboard.c
-+++ b/shell/cc-luma-live-keyboard.c
+ extern const char * const cc_Suno_gs_unowned_keys[];
+--- a/shell/cc-Suno-live-keyboard.c
++++ b/shell/cc-Suno-live-keyboard.c
 @@ -3,8 +3,8 @@
   * named as the keyboard panel names them through GnomeXkbInfo), the one in
   * use (the Shell's most recently used), the accents and compose keys from
@@ -426,8 +426,8 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
 + * layout's keycaps from its xkb keymap. Native list edits preserve source
 + * type/identity and special-key edits preserve unrelated xkb-options. */
  #define GNOME_DESKTOP_USE_UNSTABLE_API
- #include "cc-luma-live-gsettings.h"
- #include "cc-luma-keyboard.h"
+ #include "cc-Suno-live-gsettings.h"
+ #include "cc-Suno-keyboard.h"
 @@ -115,6 +115,12 @@
    g_auto (GStrv) options = g_settings_get_strv (self->settings, "xkb-options");
    JsonArray *list = json_array_new ();
@@ -453,15 +453,15 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
    self->xkb = gnome_xkb_info_new ();
    self->context = xkb_context_new (XKB_CONTEXT_NO_FLAGS);
    g_signal_connect (self->settings, "changed", G_CALLBACK (changed), self);
--  cc_luma_fixture_own_key (model, "altKey");
--  cc_luma_fixture_own_key (model, "compose");
+-  cc_Suno_fixture_own_key (model, "altKey");
+-  cc_Suno_fixture_own_key (model, "compose");
 +  const char *owned[] = { "altKey", "compose", "srcs", "src" };
 +  for (guint i = 0; i < G_N_ELEMENTS (owned); i++) {
-+    cc_luma_fixture_own_key (model, owned[i]);
-+    cc_luma_fixture_verify_key (model, owned[i]);
++    cc_Suno_fixture_own_key (model, owned[i]);
++    cc_Suno_fixture_verify_key (model, owned[i]);
 +  }
    publish (self);
-   self->gate = cc_luma_ready_gate_new (model, "keyboard", cc_luma_keyboard_validate);
+   self->gate = cc_Suno_ready_gate_new (model, "keyboard", cc_Suno_keyboard_validate);
    return self;
  }
  
@@ -568,19 +568,19 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
  
 -/* The layout list's changes open GNOME's keyboard panel; the special keys
 - * write xkb-options (live only once VM-verified). */
-+/* Native list edits and special-key writes keep the Luma keyboard pane. */
- const CcLumaAdapter cc_luma_adapter_keyboard = {
++/* Native list edits and special-key writes keep the Suno keyboard pane. */
+ const CcSunoAdapter cc_Suno_adapter_keyboard = {
    "keyboard", (const char * const[]) { "keyboard", NULL }, keyboard_start, keyboard_write, keyboard_stop
  };
---- a/shell/cc-luma-live-network.c
-+++ b/shell/cc-luma-live-network.c
+--- a/shell/cc-Suno-live-network.c
++++ b/shell/cc-Suno-live-network.c
 @@ -52,6 +52,7 @@
- void cc_luma_live_verify_network_keys (CcLumaFixture *model)
+ void cc_Suno_live_verify_network_keys (CcSunoFixture *model)
  {
    const char *keys[] = { "wifi", "autoJoin", "allUsers", "metered",
 +                        "hotspot", "hsName", "hsPass", "hsBand", "eth",
                          "CFNETS.join", "CFNETS.disconnect", "CFKNOWN.forget", NULL };
-   for (guint i = 0; keys[i]; i++) cc_luma_fixture_verify_key (model, keys[i]);
+   for (guint i = 0; keys[i]; i++) cc_Suno_fixture_verify_key (model, keys[i]);
  }
 @@ -602,7 +603,8 @@
  report (Net *n, GError *error)
@@ -588,7 +588,7 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
    if (n->stopped || g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) return;
 -  if (error) notice (n, error->message, TRUE);
 +  if (error)
-+    { notice (n, error->message, TRUE); cc_luma_fixture_report_write_error (n->model, error); }
++    { notice (n, error->message, TRUE); cc_Suno_fixture_report_write_error (n->model, error); }
    queue_refresh (n);
  }
  /* A one-shot scan follows adapter readiness and radio On. NM also scans on
@@ -645,25 +645,25 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
    if (g_str_equal (key, "wifi"))
      {
        if (!wifi_device (n) && json_node_get_boolean (value)) return fail (error, "This computer has no Wi‑Fi");
---- a/shell/cc-luma-live-notifications.c
-+++ b/shell/cc-luma-live-notifications.c
+--- a/shell/cc-Suno-live-notifications.c
++++ b/shell/cc-Suno-live-notifications.c
 @@ -69,6 +69,7 @@
    g_hash_table_insert (self->apps, g_strdup (id), settings);
    g_autofree char *key = g_strconcat ("na.", id, NULL);
-   cc_luma_fixture_own_key (self->model, key);
-+  cc_luma_fixture_verify_key (self->model, key);
+   cc_Suno_fixture_own_key (self->model, key);
++  cc_Suno_fixture_verify_key (self->model, key);
  }
  
  static int
---- a/shell/cc-luma-live-power.c
-+++ b/shell/cc-luma-live-power.c
+--- a/shell/cc-Suno-live-power.c
++++ b/shell/cc-Suno-live-power.c
 @@ -371,6 +371,9 @@
    self->devices = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_object_unref);
-   cc_luma_fixture_own_key (model, "pmode");
-   cc_luma_fixture_own_key (model, "charge");
+   cc_Suno_fixture_own_key (model, "pmode");
+   cc_Suno_fixture_own_key (model, "charge");
 +  /* These keys have native owners with value and permission checks. */
 +  for (const char * const *k = (const char * const[]) { "pmode", "charge", NULL }; *k; k++)
-+    cc_luma_fixture_verify_key (model, *k);
++    cc_Suno_fixture_verify_key (model, *k);
    g_dbus_proxy_new_for_bus (G_BUS_TYPE_SYSTEM, G_DBUS_PROXY_FLAGS_DO_NOT_AUTO_START, NULL, UPOWER,
                              "/org/freedesktop/UPower/devices/DisplayDevice", DEVICE_IFACE, self->cancel, proxy_ready, self);
    g_dbus_proxy_new_for_bus (G_BUS_TYPE_SYSTEM, G_DBUS_PROXY_FLAGS_DO_NOT_AUTO_START, NULL, UPOWER,
@@ -672,33 +672,33 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
      {
        Power *self = data;
 -      g_warning ("Power: %s", error->message);
-+      cc_luma_fixture_report_write_error (self->model, error);
++      cc_Suno_fixture_report_write_error (self->model, error);
        schedule (self); /* show what the system kept */
      }
  }
---- a/shell/cc-luma-live-printers.c
-+++ b/shell/cc-luma-live-printers.c
+--- a/shell/cc-Suno-live-printers.c
++++ b/shell/cc-Suno-live-printers.c
 @@ -7,6 +7,7 @@
   *   and print-color-mode-default, each only when the printer reports it. */
- #include "cc-luma-live.h"
- #include "cc-luma-live-printers.h"
-+#include <luma-ui.h>
- #include "cc-luma-live-admin.h"
- #include "cc-luma-live-apps.h"
+ #include "cc-Suno-live.h"
+ #include "cc-Suno-live-printers.h"
++#include <Suno-ui.h>
+ #include "cc-Suno-live-admin.h"
+ #include "cc-Suno-live-apps.h"
  #include "panels/printers/pp-cups.h"
 @@ -227,7 +228,11 @@
    self->cups = pp_cups_new ();
    self->cancel = g_cancellable_new ();
    const char *keys[] = { "prDef", "prPaper", "prDuplex", "prProf" };
--  for (guint i = 0; i < G_N_ELEMENTS (keys); i++) cc_luma_fixture_own_key (model, keys[i]);
+-  for (guint i = 0; i < G_N_ELEMENTS (keys); i++) cc_Suno_fixture_own_key (model, keys[i]);
 +  for (guint i = 0; i < G_N_ELEMENTS (keys); i++)
 +    {
-+      cc_luma_fixture_own_key (model, keys[i]);
-+      cc_luma_fixture_verify_key (model, keys[i]);
++      cc_Suno_fixture_own_key (model, keys[i]);
++      cc_Suno_fixture_verify_key (model, keys[i]);
 +    }
-   g_object_set_data (G_OBJECT (model), "cc-luma-live-printers", self);
-   g_object_set_data (G_OBJECT (model), CC_LUMA_LIVE_PRINTER_COMMAND, printer_command);
-   cc_luma_live_desk_dump_watch (model);
+   g_object_set_data (G_OBJECT (model), "cc-Suno-live-printers", self);
+   g_object_set_data (G_OBJECT (model), CC_SUNO_LIVE_PRINTER_COMMAND, printer_command);
+   cc_Suno_live_desk_dump_watch (model);
 @@ -240,7 +245,11 @@
  option_set (gboolean success, gpointer data)
  {
@@ -707,7 +707,7 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
 +  if (!success)
 +    {
 +      g_autoptr (GError) error = g_error_new_literal (G_IO_ERROR, G_IO_ERROR_FAILED, "The printer did not accept this option");
-+      cc_luma_fixture_report_write_error (self->model, error);
++      cc_Suno_fixture_report_write_error (self->model, error);
 +    }
    refresh (self); /* show what CUPS has */
    printers_unref (self);
@@ -720,7 +720,7 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
 +  if (!job->ok)
 +    {
 +      g_autoptr (GError) error = g_error_new (G_IO_ERROR, G_IO_ERROR_FAILED, "%s did not become the default printer", job->queue);
-+      cc_luma_fixture_report_write_error (job->self->model, error);
++      cc_Suno_fixture_report_write_error (job->self->model, error);
 +    }
    refresh (job->self);
  }
@@ -759,7 +759,7 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
 +{
 +  g_autoptr (GtkWidget) parent = g_weak_ref_get (&command->parent);
 +  if (parent && gtk_widget_get_root (parent) && !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
-+    luma_toast_show (parent, ok ? command->success : error ? error->message : "The printer refused this action", ok ? "done" : "error");
++    Suno_toast_show (parent, ok ? command->success : error ? error->message : "The printer refused this action", ok ? "done" : "error");
 +  if (!command->self->stopped) refresh (command->self);
 +  command_free (command);
  }
@@ -813,7 +813,7 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
 +{
 +  if (GTK_IS_BUTTON (widget) && gtk_button_get_label (GTK_BUTTON (widget)))
 +    {
-+      gtk_widget_add_css_class (widget, "lumaui-text-button");
++      gtk_widget_add_css_class (widget, "SunoUI-text-button");
 +      gtk_widget_add_css_class (widget, "fill");
 +    }
 +  for (GtkWidget *child = gtk_widget_get_first_child (widget); child; child = gtk_widget_get_next_sibling (child))
@@ -851,8 +851,8 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
        return TRUE;
      }
    g_set_error (error, G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED, "Unknown printer command");
---- a/shell/cc-luma-live-privacy.c
-+++ b/shell/cc-luma-live-privacy.c
+--- a/shell/cc-Suno-live-privacy.c
++++ b/shell/cc-Suno-live-privacy.c
 @@ -46,8 +46,13 @@
    GDBusConnection *bus;
    GCancellable *cancel;
@@ -885,17 +885,17 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
        g_autoptr (GVariant) perms = g_variant_get_child_value (reply, 0);
 @@ -122,6 +129,10 @@
            /* Apps no longer installed have no row on GNOME's pages either. */
-           if (!info || !*id || !cc_luma_live_publish_app (p->model, id, G_APP_INFO (info))) continue;
+           if (!info || !*id || !cc_Suno_live_publish_app (p->model, id, G_APP_INFO (info))) continue;
            json_object_set_boolean_member (apps, id, allowed);
 +          g_hash_table_insert (p->app_ids[s], g_strdup (id), g_strdup (app));
 +          g_autofree char *key = g_strconcat (stores[s].key, ".", id, NULL);
-+          cc_luma_fixture_own_key (p->model, key);
-+          cc_luma_fixture_verify_key (p->model, key);
++          cc_Suno_fixture_own_key (p->model, key);
++          cc_Suno_fixture_verify_key (p->model, key);
          }
      }
    else if (!g_error_matches (error, G_DBUS_ERROR, G_DBUS_ERROR_SERVICE_UNKNOWN) &&
 @@ -132,13 +143,14 @@
-   cc_luma_fixture_publish (p->model, stores[s].key, node);
+   cc_Suno_fixture_publish (p->model, stores[s].key, node);
    p->read[s] = TRUE;
    check_ready (p);
 +  privacy_unref (p);
@@ -945,7 +945,7 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
 +  g_autoptr (GVariant) reply = g_dbus_connection_call_finish (G_DBUS_CONNECTION (source), result, &error);
 +  if (!request->p->stopped && !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 +    {
-+      if (!reply) cc_luma_fixture_report_write_error (request->p->model, error);
++      if (!reply) cc_Suno_fixture_report_write_error (request->p->model, error);
 +      /* Success and refusal both refresh from the service; never keep a guessed value. */
 +      read_store (request->p, request->store);
 +    }
@@ -987,7 +987,7 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
  invalid:
    g_set_error (error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT, "%s can’t take that value", key);
 @@ -218,8 +272,11 @@
- privacy_start (CcLumaFixture *model)
+ privacy_start (CcSunoFixture *model)
  {
    Privacy *p = g_new0 (Privacy, 1);
 -  p->model = model;
@@ -996,7 +996,7 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
    p->cancel = g_cancellable_new ();
 +  for (guint s = 0; s < G_N_ELEMENTS (stores); s++)
 +    p->app_ids[s] = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
-   p->table = cc_luma_gs_table_new (model, rows, G_N_ELEMENTS (rows));
+   p->table = cc_Suno_gs_table_new (model, rows, G_N_ELEMENTS (rows));
    p->saver = installed (SAVER);
    p->privacy = installed (PRIVACY);
 @@ -232,14 +289,14 @@
@@ -1021,7 +1021,7 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
 @@ -249,7 +306,25 @@
    g_clear_object (&p->saver);
    g_clear_object (&p->privacy);
-   cc_luma_gs_table_free (p->table);
+   cc_Suno_gs_table_free (p->table);
 +  for (guint s = 0; s < G_N_ELEMENTS (stores); s++) g_hash_table_unref (p->app_ids[s]);
 +  g_object_unref (p->model);
    g_free (p);
@@ -1043,14 +1043,14 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
 +  privacy_unref (p);
 +}
 +
- const CcLumaAdapter cc_luma_adapter_privacy = { ADAPTER, pages, privacy_start, privacy_write, privacy_stop };
---- a/shell/cc-luma-live-search.c
-+++ b/shell/cc-luma-live-search.c
+ const CcSunoAdapter cc_Suno_adapter_privacy = { ADAPTER, pages, privacy_start, privacy_write, privacy_stop };
+--- a/shell/cc-Suno-live-search.c
++++ b/shell/cc-Suno-live-search.c
 @@ -176,6 +176,7 @@
      {
        self->search = g_settings_new ("org.gnome.desktop.search-providers");
-       cc_luma_fixture_own_key (model, "sa");
-+      cc_luma_fixture_verify_key (model, "sa");
+       cc_Suno_fixture_own_key (model, "sa");
++      cc_Suno_fixture_verify_key (model, "sa");
        g_autoptr (GTask) task = g_task_new (NULL, self->cancel, discovered, self);
        g_task_run_in_thread (task, discover);
      }
@@ -1071,85 +1071,85 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
  
  /* A new "sa": the providers in their new order, each on or off. */
 @@ -266,7 +274,7 @@
-   if (!cc_luma_search_locations_set_finish (G_SETTINGS (source), result, &error) &&
+   if (!cc_Suno_search_locations_set_finish (G_SETTINGS (source), result, &error) &&
        !g_cancellable_is_cancelled (write->cancel))
      {
 -      g_warning ("Settings live: search folder not changed: %s", error->message);
-+      cc_luma_fixture_report_write_error (write->self->model, error);
++      cc_Suno_fixture_report_write_error (write->self->model, error);
        publish_places (write->self); /* show what Tracker has */
      }
    g_object_unref (write->cancel);
---- a/shell/cc-luma-live-sharing.c
-+++ b/shell/cc-luma-live-sharing.c
+--- a/shell/cc-Suno-live-sharing.c
++++ b/shell/cc-Suno-live-sharing.c
 @@ -193,7 +193,7 @@
    g_autoptr (GError) error = NULL;
    g_autoptr (GVariant) out = g_dbus_proxy_call_finish (G_DBUS_PROXY (source), result, &error);
    if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) return;
 -  if (error) g_message ("Settings: sharing: %s", error->message);
-+  if (error) cc_luma_fixture_report_write_error (((Share *) data)->model, error);
++  if (error) cc_Suno_fixture_report_write_error (((Share *) data)->model, error);
    publish_sharing (data);
  }
  
 @@ -267,6 +267,9 @@
    s->media_ok = rygel != NULL;
    const char *owned[] = { "rdTab", "fileShare", "media2", "fsPass", "rdCtl" };
-   for (guint i = 0; i < G_N_ELEMENTS (owned); i++) cc_luma_fixture_own_key (model, owned[i]);
+   for (guint i = 0; i < G_N_ELEMENTS (owned); i++) cc_Suno_fixture_own_key (model, owned[i]);
 +  /* These keys have native owners with value and permission checks. */
 +  for (const char * const *k = (const char * const[]) { "rdTab", "fileShare", "media2", "fsPass", "rdCtl", NULL }; *k; k++)
-+    cc_luma_fixture_verify_key (model, *k);
-   cc_luma_fixture_publish_string (model, "rdTab", "share");
++    cc_Suno_fixture_verify_key (model, *k);
+   cc_Suno_fixture_publish_string (model, "rdTab", "share");
    if (s->files) g_signal_connect_swapped (s->files, "changed", G_CALLBACK (publish_sharing), s);
    if (s->rdp) g_signal_connect_swapped (s->rdp, "changed", G_CALLBACK (publish_rdp), s);
---- a/shell/cc-luma-live-shelf.c
-+++ b/shell/cc-luma-live-shelf.c
+--- a/shell/cc-Suno-live-shelf.c
++++ b/shell/cc-Suno-live-shelf.c
 @@ -141,7 +141,11 @@
        self->free_placement = has_key (self->schema, "shelf-free-placement");
        self->arrangement = has_key (self->schema, "shelf-arrangement");
        g_signal_connect_swapped (self->settings, "changed", G_CALLBACK (publish), self);
--      for (guint i = 0; owned[i]; i++) cc_luma_fixture_own_key (model, owned[i]);
+-      for (guint i = 0; owned[i]; i++) cc_Suno_fixture_own_key (model, owned[i]);
 +      for (guint i = 0; owned[i]; i++)
 +        {
-+          cc_luma_fixture_own_key (model, owned[i]);
-+          cc_luma_fixture_verify_key (model, owned[i]);
++          cc_Suno_fixture_own_key (model, owned[i]);
++          cc_Suno_fixture_verify_key (model, owned[i]);
 +        }
        publish_catalog (self);
        publish (self);
      }
---- a/shell/cc-luma-live-sound.c
-+++ b/shell/cc-luma-live-sound.c
+--- a/shell/cc-Suno-live-sound.c
++++ b/shell/cc-Suno-live-sound.c
 @@ -234,6 +234,7 @@
      {
        g_autofree char *key = g_strconcat ("lv.", (char *) m->data, NULL);
-       cc_luma_fixture_own_key (self->model, key);
-+      cc_luma_fixture_verify_key (self->model, key);
+       cc_Suno_fixture_own_key (self->model, key);
++      cc_Suno_fixture_verify_key (self->model, key);
      }
    g_list_free (members);
  
 @@ -274,6 +275,8 @@
     * of an input that is no longer offered. Do not delegate these writes. */
-   cc_luma_fixture_verify_key (model, "inDev");
-   cc_luma_fixture_verify_key (model, "inVol");
-+  cc_luma_fixture_verify_key (model, "out");
-+  cc_luma_fixture_verify_key (model, "cfg");
-   self->control = gvc_mixer_control_new ("Luma Settings");
+   cc_Suno_fixture_verify_key (model, "inDev");
+   cc_Suno_fixture_verify_key (model, "inVol");
++  cc_Suno_fixture_verify_key (model, "out");
++  cc_Suno_fixture_verify_key (model, "cfg");
+   self->control = gvc_mixer_control_new ("Suno Settings");
    g_signal_connect (self->control, "state-changed", G_CALLBACK (state_changed), self);
    g_signal_connect (self->control, "output-added", G_CALLBACK (output_added), self);
---- a/shell/cc-luma-live-system.c
-+++ b/shell/cc-luma-live-system.c
+--- a/shell/cc-Suno-live-system.c
++++ b/shell/cc-Suno-live-system.c
 @@ -228,6 +228,8 @@
  rename_denied (gpointer data)
  {
    NameJob *job = data;
 +  g_autoptr (GError) error = g_error_new_literal (G_IO_ERROR, G_IO_ERROR_PERMISSION_DENIED, "The computer name was not changed because permission was not granted");
-+  cc_luma_fixture_report_write_error (job->a->model, error);
++  cc_Suno_fixture_report_write_error (job->a->model, error);
    publish_host (job->a); /* show the name the system kept */
  }
  
 @@ -266,6 +268,7 @@
    a->cancel = g_cancellable_new ();
    a->pending = 3; /* session, switcheroo, facts (hostnamed gates separately) */
-   cc_luma_fixture_own_key (model, "devName");
-+  cc_luma_fixture_verify_key (model, "devName");
+   cc_Suno_fixture_own_key (model, "devName");
++  cc_Suno_fixture_verify_key (model, "devName");
    g_dbus_proxy_new_for_bus (G_BUS_TYPE_SYSTEM, G_DBUS_PROXY_FLAGS_NONE, NULL, "org.freedesktop.hostname1",
                              "/org/freedesktop/hostname1", "org.freedesktop.hostname1", a->cancel, hostnamed_ready, a);
    g_dbus_proxy_new_for_bus (G_BUS_TYPE_SESSION, G_DBUS_PROXY_FLAGS_DO_NOT_AUTO_START, NULL, "org.gnome.SessionManager",
@@ -1158,7 +1158,7 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
      {
        if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) return;
 -      g_warning ("Settings: Secure Shell: %s", error->message);
-+      cc_luma_fixture_report_write_error (((Ssh *) data)->model, error);
++      cc_Suno_fixture_report_write_error (((Ssh *) data)->model, error);
      }
    ssh_read (data);
  }
@@ -1169,7 +1169,7 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
 -    ssh_read (c->s); /* not authorised: show the unit's state again */
 +    {
 +      if (!error) g_set_error_literal (&error, G_IO_ERROR, G_IO_ERROR_PERMISSION_DENIED, "Secure Shell permission was not granted");
-+      cc_luma_fixture_report_write_error (c->s->model, error);
++      cc_Suno_fixture_report_write_error (c->s->model, error);
 +      ssh_read (c->s); /* not authorised: show the unit's state again */
 +    }
    g_object_unref (source);
@@ -1180,26 +1180,26 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
        if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
          {
 -          g_warning ("Settings: %s: %s", SSH_PERMISSION, error->message);
-+          cc_luma_fixture_report_write_error (c->s->model, error);
++          cc_Suno_fixture_report_write_error (c->s->model, error);
            ssh_read (c->s);
          }
        g_free (c);
 @@ -430,6 +437,7 @@
    s->model = model;
    s->cancel = g_cancellable_new ();
-   cc_luma_fixture_own_key (model, "ssh");
-+  cc_luma_fixture_verify_key (model, "ssh");
+   cc_Suno_fixture_own_key (model, "ssh");
++  cc_Suno_fixture_verify_key (model, "ssh");
    ssh_read (s);
    s->poll = g_timeout_add_seconds (10, ssh_poll, s);
    return s;
---- a/shell/cc-luma-live-users.c
-+++ b/shell/cc-luma-live-users.c
+--- a/shell/cc-Suno-live-users.c
++++ b/shell/cc-Suno-live-users.c
 @@ -25,7 +25,7 @@
  } People;
  
  typedef void (*AdminAction) (People *p, gpointer data);
 -typedef struct { People *p; AdminAction action; gpointer data; GDestroyNotify free; } Pending;
-+typedef struct { People *p; CcLumaFixture *model; AdminAction action; gpointer data; GDestroyNotify free; } Pending;
++typedef struct { People *p; CcSunoFixture *model; AdminAction action; gpointer data; GDestroyNotify free; } Pending;
  
  static ActUser *
  self_user (People *p)
@@ -1217,7 +1217,7 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
          {
 -          g_message ("Settings: users: not authorised%s%s", error ? ": " : "", error ? error->message : "");
 +          if (!error) error = g_error_new_literal (G_IO_ERROR, G_IO_ERROR_PERMISSION_DENIED, "This change needs administrator permission");
-+          cc_luma_fixture_report_write_error (pending->model, error);
++          cc_Suno_fixture_report_write_error (pending->model, error);
            publish (pending->p); /* redraw what the system still has */
          }
      }
@@ -1226,7 +1226,7 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
      {
        if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 -        g_warning ("Settings: users: %s: %s", USER_ACCOUNTS_PERMISSION, error->message);
-+        cc_luma_fixture_report_write_error (pending->model, error);
++        cc_Suno_fixture_report_write_error (pending->model, error);
        pending_free (pending);
        return;
      }
@@ -1242,13 +1242,13 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
  static void
  delete_done (GObject *source, GAsyncResult *result, gpointer data)
  {
-+  g_autoptr (CcLumaFixture) model = data;
++  g_autoptr (CcSunoFixture) model = data;
    g_autoptr (GError) error = NULL;
    if (!act_user_manager_delete_user_finish (ACT_USER_MANAGER (source), result, &error) &&
 -      !g_error_matches (error, ACT_USER_MANAGER_ERROR, ACT_USER_MANAGER_ERROR_PERMISSION_DENIED))
 -    g_warning ("Settings: could not remove the account: %s", error->message);
 +      !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
-+    cc_luma_fixture_report_write_error (model, error);
++    cc_Suno_fixture_report_write_error (model, error);
  }
  
  /* As cc-user-page.c remove_local_user_response. */
@@ -1265,14 +1265,14 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
  create_done (GObject *source, GAsyncResult *result, gpointer data)
  {
    g_autoptr (GError) error = NULL;
-+  g_autoptr (CcLumaFixture) model = data;
++  g_autoptr (CcSunoFixture) model = data;
    ActUser *u = act_user_manager_create_user_finish (ACT_USER_MANAGER (source), result, &error);
    if (!u)
      {
 -      if (!g_error_matches (error, ACT_USER_MANAGER_ERROR, ACT_USER_MANAGER_ERROR_PERMISSION_DENIED))
 -        g_warning ("Settings: could not add the account: %s", error->message);
 +      if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
-+        cc_luma_fixture_report_write_error (model, error);
++        cc_Suno_fixture_report_write_error (model, error);
        return;
      }
    if (act_user_is_loaded (u)) added_loaded (u, NULL, NULL);
@@ -1313,18 +1313,18 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
    p->cancel = g_cancellable_new ();
    p->manager = g_object_ref (act_user_manager_get_default ());
 -  const char *keys[] = { "myName", "autoLogin", "pUser", "pType", "pAuto", "users.reset", "users.remove", "users.add" };
--  for (guint i = 0; i < G_N_ELEMENTS (keys); i++) cc_luma_fixture_own_key (model, keys[i]);
+-  for (guint i = 0; i < G_N_ELEMENTS (keys); i++) cc_Suno_fixture_own_key (model, keys[i]);
 +  const char *keys[] = { "myName", "myPicture", "autoLogin", "pUser", "pType", "pAuto", "users.reset", "users.remove", "users.add" };
 +  for (guint i = 0; i < G_N_ELEMENTS (keys); i++)
 +    {
-+      cc_luma_fixture_own_key (model, keys[i]);
-+      cc_luma_fixture_verify_key (model, keys[i]);
++      cc_Suno_fixture_own_key (model, keys[i]);
++      cc_Suno_fixture_verify_key (model, keys[i]);
 +    }
    g_signal_connect_swapped (p->manager, "notify::is-loaded", G_CALLBACK (manager_loaded), p);
    g_signal_connect (p->manager, "user-added", G_CALLBACK (user_added), p);
    g_signal_connect_swapped (p->manager, "user-removed", G_CALLBACK (publish), p);
---- a/shell/cc-luma-live-windows.c
-+++ b/shell/cc-luma-live-windows.c
+--- a/shell/cc-Suno-live-windows.c
++++ b/shell/cc-Suno-live-windows.c
 @@ -51,11 +51,21 @@
  }
  
@@ -1351,8 +1351,8 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
 @@ -78,6 +88,7 @@
    self->model = g_object_ref (model);
    self->cancel = g_cancellable_new ();
-   self->table = cc_luma_gs_table_new (model, rows, G_N_ELEMENTS (rows));
-+  cc_luma_gs_table_verify (self->table, (const char * const[]) { "edges", "hot", "ws", "wsN", "wsMon", "swi", NULL });
+   self->table = cc_Suno_gs_table_new (model, rows, G_N_ELEMENTS (rows));
++  cc_Suno_gs_table_verify (self->table, (const char * const[]) { "edges", "hot", "ws", "wsN", "wsMon", "swi", NULL });
    if (shell && g_settings_schema_has_key (shell, "enabled-extensions") && g_settings_schema_has_key (shell, "disabled-extensions"))
      self->tiling = tiling_settings ();
    if (self->tiling)
@@ -1363,15 +1363,15 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
 +      if (g_settings_schema_has_key (shell, "disable-user-extensions"))
 +        g_signal_connect_swapped (self->shell, "changed::disable-user-extensions", G_CALLBACK (publish_tiling), self);
        g_signal_connect_swapped (self->tiling, "changed", G_CALLBACK (publish_tiling), self);
-       cc_luma_fixture_own_key (model, "tile");
-       cc_luma_fixture_own_key (model, "gap");
-       cc_luma_fixture_own_key (model, "edgeTile");
-+      cc_luma_fixture_verify_key (model, "tile");
-+      cc_luma_fixture_verify_key (model, "gap");
-+      cc_luma_fixture_verify_key (model, "edgeTile");
+       cc_Suno_fixture_own_key (model, "tile");
+       cc_Suno_fixture_own_key (model, "gap");
+       cc_Suno_fixture_own_key (model, "edgeTile");
++      cc_Suno_fixture_verify_key (model, "tile");
++      cc_Suno_fixture_verify_key (model, "gap");
++      cc_Suno_fixture_verify_key (model, "edgeTile");
        publish_tiling (self);
      }
-   cc_luma_live_publish_dock (model);
+   cc_Suno_live_publish_dock (model);
 @@ -117,10 +133,14 @@
    if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
      {
@@ -1379,11 +1379,11 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
 -        g_warning ("Settings live: GNOME Shell did not switch tiling: %s", error ? error->message : "refused");
 +        {
 +          if (!error) g_set_error_literal (&error, G_IO_ERROR, G_IO_ERROR_FAILED, "Tiling could not be changed");
-+          cc_luma_fixture_report_write_error (request->model, error);
++          cc_Suno_fixture_report_write_error (request->model, error);
 +        }
        g_auto (GStrv) enabled = g_settings_get_strv (request->shell, "enabled-extensions");
        g_auto (GStrv) disabled = g_settings_get_strv (request->shell, "disabled-extensions");
-       cc_luma_fixture_publish_boolean (request->model, "tile",
+       cc_Suno_fixture_publish_boolean (request->model, "tile",
 +        !extensions_paused (request->shell) &&
          g_strv_contains ((const char * const *) enabled, TILING_UUID) &&
          !g_strv_contains ((const char * const *) disabled, TILING_UUID) &&
@@ -1401,18 +1401,18 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
        return FALSE;
      }
    /* The same call the Quick Options tiling toggle makes. */
---- a/shell/cc-luma-shell.c
-+++ b/shell/cc-luma-shell.c
+--- a/shell/cc-Suno-shell.c
++++ b/shell/cc-Suno-shell.c
 @@ -4,6 +4,10 @@
- #include "cc-luma-view.h"
+ #include "cc-Suno-view.h"
  #include "cc-panel-loader.h"
  #include "cc-shell.h"
 +#include "panels/system/users/cc-password-dialog.h"
 +#include <act/act.h>
 +#include <unistd.h>
-+#include <luma-ui.h>
++#include <Suno-ui.h>
  
- struct _CcLumaShell
+ struct _CcSunoShell
  {
 @@ -295,9 +299,38 @@
    g_object_class_override_property (object_class, PROP_ACTIVE_PANEL, "active-panel");
@@ -1421,7 +1421,7 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
 +static void style_native_dialog (GtkWidget *widget)
 +{
 +  if (GTK_IS_BUTTON (widget) && gtk_button_get_label (GTK_BUTTON (widget))) {
-+    gtk_widget_add_css_class (widget, "lumaui-text-button");
++    gtk_widget_add_css_class (widget, "SunoUI-text-button");
 +    gtk_widget_add_css_class (widget, "fill");
 +  }
 +  for (GtkWidget *child = gtk_widget_get_first_child (widget); child; child = gtk_widget_get_next_sibling (child))
@@ -1430,11 +1430,11 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
 +
 +static void password_action (GSimpleAction *action, GVariant *parameter, gpointer data)
 +{
-+  CcLumaShell *self = data;
++  CcSunoShell *self = data;
 +  if (!self->view || !gtk_widget_get_root (self->view)) return;
 +  ActUser *user = act_user_manager_get_user_by_id (act_user_manager_get_default (), getuid ());
 +  if (!user || !act_user_is_loaded (user)) {
-+    luma_toast_show (self->view, "Your account is not available yet.", "error");
++    Suno_toast_show (self->view, "Your account is not available yet.", "error");
 +    return;
 +  }
 +  CcPasswordDialog *dialog = cc_password_dialog_new (user);
@@ -1443,21 +1443,21 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
 +}
 +
  static void
- cc_luma_shell_init (CcLumaShell *self)
+ cc_Suno_shell_init (CcSunoShell *self)
  {
 +  g_autoptr (GSimpleActionGroup) actions = g_simple_action_group_new ();
 +  g_autoptr (GSimpleAction) password = g_simple_action_new ("password", NULL);
 +  g_signal_connect (password, "activate", G_CALLBACK (password_action), self);
 +  g_action_map_add_action (G_ACTION_MAP (actions), G_ACTION (password));
-+  gtk_widget_insert_action_group (GTK_WIDGET (self), "luma-settings-native", G_ACTION_GROUP (actions));
++  gtk_widget_insert_action_group (GTK_WIDGET (self), "Suno-settings-native", G_ACTION_GROUP (actions));
    static gsize hooked = 0;
    if (g_once_init_enter (&hooked))
      {
---- a/shell/cc-luma-view-application-options.c
-+++ b/shell/cc-luma-view-application-options.c
+--- a/shell/cc-Suno-view-application-options.c
++++ b/shell/cc-Suno-view-application-options.c
 @@ -1,5 +1,11 @@
  /* SPDX-License-Identifier: GPL-2.0-or-later */
- #include "cc-luma-rows.h"
+ #include "cc-Suno-rows.h"
 +#include <gio/gdesktopappinfo.h>
 +#include <fcntl.h>
 +#include <dirent.h>
@@ -1475,7 +1475,7 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
 + * notification child's normalized id or a fixture application name. */
 +static JsonObject *app_info (View *v)
 +{
-+  JsonNode *all = json_object_get_member (cc_luma_fixture_get_data (v->model), "CFAPPINFO");
++  JsonNode *all = json_object_get_member (cc_Suno_fixture_get_data (v->model), "CFAPPINFO");
 +  JsonNode *entry = all && JSON_NODE_HOLDS_OBJECT (all) && g_str_has_prefix (v->page, "app:")
 +    ? json_object_get_member (json_node_get_object (all), v->page + 4) : NULL;
 +  return entry && JSON_NODE_HOLDS_OBJECT (entry) ? json_node_get_object (entry) : NULL;
@@ -1483,7 +1483,7 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
 +
 +static void app_open (GtkButton *button, View *v)
 +{
-+  JsonObject *entry = cc_luma_fixture_is_live (v->model) ? app_info (v) : NULL;
++  JsonObject *entry = cc_Suno_fixture_is_live (v->model) ? app_info (v) : NULL;
 +  const char *id = entry ? json_object_get_string_member_with_default (entry, "desktopId", NULL) : NULL;
 +  g_autoptr (GDesktopAppInfo) info = id ? g_desktop_app_info_new (id) : NULL;
 +  g_autoptr (GError) error = NULL;
@@ -1494,7 +1494,7 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
 +      g_autoptr (GdkAppLaunchContext) context = gdk_display_get_app_launch_context (gtk_widget_get_display (v->root));
 +      g_app_info_launch (G_APP_INFO (info), NULL, G_APP_LAUNCH_CONTEXT (context), &error);
 +    }
-+  if (error) cc_luma_view_report_error (v, error);
++  if (error) cc_Suno_view_report_error (v, error);
 +}
 +
 +/* Walk cache directories by directory descriptor. Every descendant opens
@@ -1573,31 +1573,31 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
 +  g_autoptr (GError) error = NULL;
 +  gboolean ok = g_task_propagate_boolean (G_TASK (result), &error);
 +  if (!v || !gtk_widget_get_root (GTK_WIDGET (source))) return;
-+  if (!ok) cc_luma_view_report_error (v, error);
++  if (!ok) cc_Suno_view_report_error (v, error);
 +  else
 +    {
-+      luma_toast_show (GTK_WIDGET (source), "Cache cleared", "done");
-+      void (*refresh_apps) (gpointer) = g_object_get_data (G_OBJECT (v->model), "cc-luma-apps-refresh");
-+      gpointer apps = g_object_get_data (G_OBJECT (v->model), "cc-luma-apps-state");
++      Suno_toast_show (GTK_WIDGET (source), "Cache cleared", "done");
++      void (*refresh_apps) (gpointer) = g_object_get_data (G_OBJECT (v->model), "cc-Suno-apps-refresh");
++      gpointer apps = g_object_get_data (G_OBJECT (v->model), "cc-Suno-apps-state");
 +      if (refresh_apps && apps) refresh_apps (apps); /* resample actual storage; never manufacture a size */
 +    }
-+  cc_luma_view_queue_refresh (v);
++  cc_Suno_view_queue_refresh (v);
 +}
 +
  static void app_clear_cache (GtkButton *button, View *v)
  {
--  if (cc_luma_view_delegated (v)) return; /* live: GNOME's Apps panel clears it */
--  if (g_str_has_prefix (v->page, "app:")) luma_toast_show (v->root, "Cache cleared", "done");
+-  if (cc_Suno_view_delegated (v)) return; /* live: GNOME's Apps panel clears it */
+-  if (g_str_has_prefix (v->page, "app:")) Suno_toast_show (v->root, "Cache cleared", "done");
 -  /* cfclearcache is fixture-only feedback: CFSZ is unchanged in v70. Live
 -   * cache/data deletion belongs to the actual app store, never this fixture. */
 -}
 -static void app_open (GtkButton *button, View *v)
 -{
--  if (cc_luma_view_delegated (v)) return; /* live: GNOME's Apps panel opens it */
+-  if (cc_Suno_view_delegated (v)) return; /* live: GNOME's Apps panel opens it */
 -  g_autoptr(GError) error = g_error_new (G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED,
 -    "Native app launch is not connected for Settings page: %s", v->page);
--  cc_luma_view_report_error (v, error);
-+  if (!cc_luma_fixture_is_live (v->model)) { luma_toast_show (v->root, "Cache cleared", "done"); return; }
+-  cc_Suno_view_report_error (v, error);
++  if (!cc_Suno_fixture_is_live (v->model)) { Suno_toast_show (v->root, "Cache cleared", "done"); return; }
 +  JsonObject *entry = app_info (v);
 +  const char *id = entry ? json_object_get_string_member_with_default (entry, "flatpakId", NULL) : NULL;
 +  gboolean valid = id && *id && strlen (id) <= 255 && strstr (id, "..") == NULL;
@@ -1606,7 +1606,7 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
 +  if (!valid)
 +    {
 +      g_autoptr (GError) error = g_error_new_literal (G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED, "This app does not expose a separate cache");
-+      cc_luma_view_report_error (v, error);
++      cc_Suno_view_report_error (v, error);
 +      return;
 +    }
 +  g_autoptr (GTask) task = g_task_new (v->root, NULL, cache_done, NULL);
@@ -1619,38 +1619,38 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
 +  JsonObject *entry = app_info (v);
 +  const char *id = entry ? json_object_get_string_member_with_default (entry, "flatpakId", NULL) : NULL;
 +  if (!id && entry) id = json_object_get_string_member_with_default (entry, "desktopId", NULL);
-+  g_autoptr (GDesktopAppInfo) depot = g_desktop_app_info_new ("org.projectluma.Depot.desktop");
++  g_autoptr (GDesktopAppInfo) depot = g_desktop_app_info_new ("org.projectSuno.Depot.desktop");
 +  g_autoptr (GError) error = NULL;
 +  if (!id || !depot)
 +    error = g_error_new_literal (G_IO_ERROR, G_IO_ERROR_NOT_FOUND, "Depot is not available to manage this app");
 +  else
 +    {
 +      g_autofree char *escaped = g_uri_escape_string (id, NULL, FALSE);
-+      g_autofree char *uri = g_strconcat ("luma-depot://app/", escaped, NULL);
++      g_autofree char *uri = g_strconcat ("Suno-depot://app/", escaped, NULL);
 +      GList uris = { .data = uri };
 +      g_autoptr (GdkAppLaunchContext) context = gdk_display_get_app_launch_context (gtk_widget_get_display (v->root));
 +      g_app_info_launch_uris (G_APP_INFO (depot), &uris, G_APP_LAUNCH_CONTEXT (context), &error);
 +    }
-+  if (error) cc_luma_view_report_error (v, error);
++  if (error) cc_Suno_view_report_error (v, error);
  }
- static void app_uninstall_confirmed (LumaDestructiveDialog *dialog, gboolean data, GtkWidget *root)
+ static void app_uninstall_confirmed (SunoDestructiveDialog *dialog, gboolean data, GtkWidget *root)
  {
    View *v = g_object_get_data (G_OBJECT (root), "cf-view");
    const char *page = g_object_get_data (G_OBJECT (dialog), "cf-app-page");
    guint64 *generation = g_object_get_data (G_OBJECT (dialog), "cf-app-generation");
 -  if (!v || !generation || *generation != v->generation || !gtk_widget_get_root (root) ||
-+  if (!v || cc_luma_fixture_is_live (v->model) || !generation || *generation != v->generation || !gtk_widget_get_root (root) ||
++  if (!v || cc_Suno_fixture_is_live (v->model) || !generation || *generation != v->generation || !gtk_widget_get_root (root) ||
        g_strcmp0 (v->page, page) || !g_str_has_prefix (page, "app:") || system_app (page + 4)) return;
-   const char *name = cc_luma_fixture_app_name (v->model, page + 4);
+   const char *name = cc_Suno_fixture_app_name (v->model, page + 4);
    g_autofree char *message = g_strdup_printf ("%s uninstalled%s", name,
 @@ -573,7 +716,7 @@
  }
  static void app_uninstall (GtkButton *button, View *v)
  {
--  if (cc_luma_view_delegated (v)) return; /* live: GNOME's Apps panel uninstalls */
-+  if (cc_luma_fixture_is_live (v->model)) { app_manage_in_depot (v); return; }
+-  if (cc_Suno_view_delegated (v)) return; /* live: GNOME's Apps panel uninstalls */
++  if (cc_Suno_fixture_is_live (v->model)) { app_manage_in_depot (v); return; }
    if (!g_str_has_prefix (v->page, "app:") || system_app (v->page + 4)) return;
-   const char *name = cc_luma_fixture_app_name (v->model, v->page + 4);
+   const char *name = cc_Suno_fixture_app_name (v->model, v->page + 4);
    g_autofree char *title = g_strdup_printf ("Uninstall %s?", name);
 @@ -656,7 +799,8 @@
    else
@@ -1662,63 +1662,63 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
        gtk_widget_set_name (row_button (row), "cf-app-uninstall");
      }
  }
---- a/shell/cc-luma-view-discovery.c
-+++ b/shell/cc-luma-view-discovery.c
+--- a/shell/cc-Suno-view-discovery.c
++++ b/shell/cc-Suno-view-discovery.c
 @@ -440,7 +440,10 @@
  }
  static void add_place (GtkButton *button, View *v)
  {
--  if (cc_luma_view_delegated (v)) return; /* live: GNOME's Search panel adds folders (not yet proven here) */
-+  if (cc_luma_fixture_is_live (v->model) && !v->search_locations) {
+-  if (cc_Suno_view_delegated (v)) return; /* live: GNOME's Search panel adds folders (not yet proven here) */
++  if (cc_Suno_fixture_is_live (v->model) && !v->search_locations) {
 +    g_autoptr (GError) error = g_error_new_literal (G_IO_ERROR, G_IO_ERROR_NOT_INITIALIZED, "The search indexer is not available");
-+    cc_luma_view_report_error (v, error); return;
++    cc_Suno_view_report_error (v, error); return;
 +  }
    GtkRoot *parent = gtk_widget_get_root (v->root);
    if (!GTK_IS_WINDOW (parent)) {
      g_autoptr (GError) error = g_error_new_literal (G_IO_ERROR, G_IO_ERROR_NOT_INITIALIZED, "Folder chooser needs a Settings window");
 @@ -471,6 +474,14 @@
  }
- void cc_luma_view_search_places_render (View *v)
+ void cc_Suno_view_search_places_render (View *v)
  {
-+  if (cc_luma_fixture_is_live (v->model) && !v->search_locations) {
++  if (cc_Suno_fixture_is_live (v->model) && !v->search_locations) {
 +    g_autoptr (GError) error = NULL;
-+    g_autoptr (GSettings) settings = cc_luma_search_locations_new (&error);
-+    g_autofree char *backup = g_build_filename (g_get_user_data_dir (), "luma", "settings", "backups", NULL);
-+    if (!settings || !cc_luma_view_bind_search_locations (v->root, settings, backup, &error)) {
-+      cc_luma_view_report_error (v, error);
++    g_autoptr (GSettings) settings = cc_Suno_search_locations_new (&error);
++    g_autofree char *backup = g_build_filename (g_get_user_data_dir (), "Suno", "settings", "backups", NULL);
++    if (!settings || !cc_Suno_view_bind_search_locations (v->root, settings, backup, &error)) {
++      cc_Suno_view_report_error (v, error);
 +    }
 +  }
    cf_header (v, "Folders to search", "Filer and search look inside these", NULL);
    GtkBox *card = cf_group (v, NULL, NULL);
-   JsonObject *places = json_node_get_object (cc_luma_fixture_get (v->model, "sl"));
---- a/shell/cc-luma-view-hardware.c
-+++ b/shell/cc-luma-view-hardware.c
+   JsonObject *places = json_node_get_object (cc_Suno_fixture_get (v->model, "sl"));
+--- a/shell/cc-Suno-view-hardware.c
++++ b/shell/cc-Suno-view-hardware.c
 @@ -38,14 +38,12 @@
  
  static void add_printer (GtkButton *button, View *v)
  {
--  if (cc_luma_view_delegated (v)) return; /* live: GNOME's Printers panel adds (not yet proven here) */
+-  if (cc_Suno_view_delegated (v)) return; /* live: GNOME's Printers panel adds (not yet proven here) */
    if (live_command (v, "add")) return;
-   luma_toast_show (v->root, "Looking for printers on Studio North…", "opening");
+   Suno_toast_show (v->root, "Looking for printers on Studio North…", "opening");
  }
  
  static void test_page (GtkButton *button, View *v)
  {
--  if (cc_luma_view_delegated (v)) return; /* live: GNOME's Printers panel prints it */
+-  if (cc_Suno_view_delegated (v)) return; /* live: GNOME's Printers panel prints it */
    JsonObject *p = printer (v);
    g_autofree char *text = g_strdup_printf ("Test page sent to %s", p ? json_object_get_string_member (p, "n") : "");
-   if (cc_luma_fixture_is_live (v->model))
+   if (cc_Suno_fixture_is_live (v->model))
 @@ -53,7 +51,7 @@
        g_autoptr (GError) error = NULL;
-       if (!cc_luma_live_printer_command (v->model, "test", v->root, &error)) { cc_luma_view_report_error (v, error); return; }
+       if (!cc_Suno_live_printer_command (v->model, "test", v->root, &error)) { cc_Suno_view_report_error (v, error); return; }
      }
--  luma_toast_show (v->root, text, "sent");
-+  luma_toast_show (v->root, cc_luma_fixture_is_live (v->model) ? "Printing test page…" : text, "sent");
+-  Suno_toast_show (v->root, text, "sent");
++  Suno_toast_show (v->root, cc_Suno_fixture_is_live (v->model) ? "Printing test page…" : text, "sent");
  }
  
  static void removed (GObject *dialog, gboolean option, GtkWidget *root)
 @@ -62,18 +60,29 @@
-   if (v && cc_luma_fixture_is_live (v->model))
+   if (v && cc_Suno_fixture_is_live (v->model))
      {
        g_autoptr (GError) error = NULL;
 +      JsonObject *current = printer (v);
@@ -1726,21 +1726,21 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
 +      if (!current || g_strcmp0 (queue, json_object_get_string_member_with_default (current, "queue", NULL)) != 0)
 +        {
 +          error = g_error_new_literal (G_IO_ERROR, G_IO_ERROR_NOT_FOUND, "The selected printer changed. Open its removal confirmation again.");
-+          cc_luma_view_report_error (v, error);
++          cc_Suno_view_report_error (v, error);
 +          return;
 +        }
-       if (!cc_luma_live_printer_command (v->model, "remove", root, &error)) { cc_luma_view_report_error (v, error); return; }
+       if (!cc_Suno_live_printer_command (v->model, "remove", root, &error)) { cc_Suno_view_report_error (v, error); return; }
      }
--  luma_toast_show (root, "Printer removed", "deleted");
-+  luma_toast_show (root, v && cc_luma_fixture_is_live (v->model) ? "Removing printer…" : "Printer removed", "deleted");
+-  Suno_toast_show (root, "Printer removed", "deleted");
++  Suno_toast_show (root, v && cc_Suno_fixture_is_live (v->model) ? "Removing printer…" : "Printer removed", "deleted");
  }
  
  static void remove_printer (GtkButton *button, View *v)
  {
--  if (cc_luma_view_delegated (v)) return; /* live: GNOME's Printers panel removes */
+-  if (cc_Suno_view_delegated (v)) return; /* live: GNOME's Printers panel removes */
    JsonObject *p = printer (v);
    g_autofree char *title = g_strdup_printf ("Remove %s?", p ? json_object_get_string_member (p, "n") : "");
-   GObject *dialog = G_OBJECT (luma_destructive_dialog_ask (v->root, title, "You can add it again later.", "Remove", "trash-2", NULL));
+   GObject *dialog = G_OBJECT (Suno_destructive_dialog_ask (v->root, title, "You can add it again later.", "Remove", "trash-2", NULL));
 -  if (dialog) g_signal_connect_object (dialog, "confirmed", G_CALLBACK (removed), v->root, 0);
 +  if (dialog)
 +    {
@@ -1750,13 +1750,13 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
  }
  
  static void printers (View *v)
---- a/shell/cc-luma-view-keyboard.c
-+++ b/shell/cc-luma-view-keyboard.c
+--- a/shell/cc-Suno-view-keyboard.c
++++ b/shell/cc-Suno-view-keyboard.c
 @@ -5,7 +5,6 @@
  {
    View *v = g_object_get_data (G_OBJECT (root), "cf-view");
    if (!v || !g_str_equal (v->page, "keyboard")) return;
--  if (cc_luma_view_delegated (v)) return; /* live: GNOME's keyboard panel changes the list */
+-  if (cc_Suno_view_delegated (v)) return; /* live: GNOME's keyboard panel changes the list */
    const char *layout = g_object_get_data (G_OBJECT (button), "cf-layout");
    g_autoptr(GError) error = NULL;
    gboolean done = g_object_get_data (G_OBJECT (button), "cf-remove") ?
@@ -1764,48 +1764,48 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
  {
    View *v = g_object_get_data (G_OBJECT (root), "cf-view");
    if (!v) return;
--  if (cc_luma_view_delegated (v)) return; /* live: GNOME's keyboard panel adds layouts */
-   GtkWidget *menu = luma_floating_menu_new ("Add a layout");
-   JsonObject *catalog = json_object_get_object_member (json_object_get_object_member (cc_luma_fixture_get_data (v->model), "CFKB"), "L");
+-  if (cc_Suno_view_delegated (v)) return; /* live: GNOME's keyboard panel adds layouts */
+   GtkWidget *menu = Suno_floating_menu_new ("Add a layout");
+   JsonObject *catalog = json_object_get_object_member (json_object_get_object_member (cc_Suno_fixture_get_data (v->model), "CFKB"), "L");
    g_autoptr(GList) labels = json_object_get_members (catalog);
    const char *more[] = { "Español", "Italiano", "日本語", "한국어" };
-+  JsonObject *kb = json_object_get_object_member (cc_luma_fixture_get_data (v->model), "CFKB");
-+  if (cc_luma_fixture_is_live (v->model) && json_object_has_member (kb, "available")) {
++  JsonObject *kb = json_object_get_object_member (cc_Suno_fixture_get_data (v->model), "CFKB");
++  if (cc_Suno_fixture_is_live (v->model) && json_object_has_member (kb, "available")) {
 +    catalog = json_object_get_object_member (kb, "available");
 +    g_clear_pointer (&labels, g_list_free); labels = json_object_get_members (catalog);
 +  }
    g_autoptr(GPtrArray) names = g_ptr_array_new ();
    for (GList *p = labels; p; p = p->next) g_ptr_array_add (names, p->data);
 -  for (guint i = 0; i < G_N_ELEMENTS (more); i++) g_ptr_array_add (names, (gpointer) more[i]);
-+  if (!cc_luma_fixture_is_live (v->model))
++  if (!cc_Suno_fixture_is_live (v->model))
 +    for (guint i = 0; i < G_N_ELEMENTS (more); i++) g_ptr_array_add (names, (gpointer) more[i]);
-   JsonArray *sources = json_node_get_array (cc_luma_fixture_get (v->model, "srcs"));
+   JsonArray *sources = json_node_get_array (cc_Suno_fixture_get (v->model, "srcs"));
    for (guint i = 0; i < names->len; i++) {
      const char *name = g_ptr_array_index (names, i);
 @@ -66,7 +70,6 @@
  {
    View *v = g_object_get_data (G_OBJECT (root), "cf-view");
    if (!v) return FALSE;
--  if (cc_luma_view_delegated (v)) return FALSE; /* live: GNOME's keyboard panel reorders */
-   JsonArray *sources = json_node_get_array (cc_luma_fixture_get (v->model, "srcs"));
+-  if (cc_Suno_view_delegated (v)) return FALSE; /* live: GNOME's keyboard panel reorders */
+   JsonArray *sources = json_node_get_array (cc_Suno_fixture_get (v->model, "srcs"));
    const char *from_name = g_value_get_string (value);
    const char *to_name = g_object_get_data (G_OBJECT (target), "cf-layout");
---- a/shell/cc-luma-view-people.c
-+++ b/shell/cc-luma-view-people.c
+--- a/shell/cc-Suno-view-people.c
++++ b/shell/cc-Suno-view-people.c
 @@ -2,6 +2,10 @@
  /* Online Accounts and Wellbeing (You). v70 CFP, drawn with the row builders.
   * Everything here is fixture-only: no account service, no screen-time daemon. */
- #include "cc-luma-rows.h"
+ #include "cc-Suno-rows.h"
 +#define GOA_API_IS_SUBJECT_TO_CHANGE
 +#include <goa/goa.h>
 +#define GOA_BACKEND_API_IS_SUBJECT_TO_CHANGE
 +#include <goabackend/goabackend.h>
  
- gboolean cc_luma_view_people_page (const char *page)
+ gboolean cc_Suno_view_people_page (const char *page)
  {
 @@ -42,8 +46,106 @@
    g_autofree char *message = g_strdup_printf ("Opens %s sign-in", name ? name : "");
-   luma_toast_show (v->root, message, "done");
+   Suno_toast_show (v->root, message, "done");
  }
 -/* Live: goa-daemon's accounts and the providers it can add. Opening,
 - * connecting and removing are GNOME's panel's (the shell delegates). */
@@ -1836,8 +1836,8 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
 +    g_object_set_data (root, "cf-account-request", NULL);
 +    if (error && !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED) &&
 +        !g_error_matches (error, GOA_ERROR, GOA_ERROR_DIALOG_DISMISSED))
-+      cc_luma_view_report_error (v, error);
-+    cc_luma_view_queue_refresh (v);
++      cc_Suno_view_report_error (v, error);
++    cc_Suno_view_queue_refresh (v);
 +  }
 +  account_request_free (r);
 +}
@@ -1909,16 +1909,16 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
 +  goa_client_new (r->cancel, account_client_done, r);
 +}
 +
- static gboolean live (View *v) { return v->model && cc_luma_fixture_is_live (v->model); }
+ static gboolean live (View *v) { return v->model && cc_Suno_fixture_is_live (v->model); }
  static JsonArray *live_data (View *v, const char *name)
  {
 @@ -53,9 +155,12 @@
  static void live_open (GtkButton *button, GtkWidget *root)
  {
    View *v = g_object_get_data (G_OBJECT (root), "cf-view");
--  if (v) cc_luma_view_delegated (v);
+-  if (v) cc_Suno_view_delegated (v);
 -}
--static void live_connect (GtkButton *button, View *v) { cc_luma_view_delegated (v); }
+-static void live_connect (GtkButton *button, View *v) { cc_Suno_view_delegated (v); }
 +  if (v) account_request (v, g_object_get_data (G_OBJECT (button), "cf-account-id"), FALSE);
 +}
 +static void live_connect (GtkButton *button, View *v)
@@ -1947,8 +1947,8 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
        g_autofree char *name = g_strdup_printf ("cf-connect-%u", i);
        gtk_box_prepend (GTK_BOX (row), cf_lead_icon (json_array_get_string_element (pair, 1)));
        gtk_widget_set_name (row_button (row), name);
---- a/shell/cc-luma-view-privacy.c
-+++ b/shell/cc-luma-view-privacy.c
+--- a/shell/cc-Suno-view-privacy.c
++++ b/shell/cc-Suno-view-privacy.c
 @@ -95,27 +95,78 @@
          !live (v) && location && g_str_equal (id, "maps") ? "Last used today" : NULL, cf_lead_image (v, id));
      }
@@ -1963,8 +1963,8 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
 +  g_autoptr (GObject) root = g_weak_ref_get (&cleanup->root);
 +  View *v = root ? g_object_get_data (root, "cf-view") : NULL;
 +  if (!v || cleanup->generation != v->generation || !g_str_equal (v->page, "p-files")) return;
-+  if (error) cc_luma_view_report_error (v, error);
-+  else luma_toast_show (GTK_WIDGET (root), cleanup->message, "done");
++  if (error) cc_Suno_view_report_error (v, error);
++  else Suno_toast_show (GTK_WIDGET (root), cleanup->message, "done");
 +}
 +static void cleanup_finished (GObject *source, GAsyncResult *result, gpointer data)
 +{
@@ -1983,23 +1983,23 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
 +                          "org.gnome.SettingsDaemon.Housekeeping", cleanup->method, NULL, NULL,
 +                          G_DBUS_CALL_FLAGS_NONE, 60000, NULL, cleanup_finished, cleanup);
 +}
- static void confirmed (LumaDestructiveDialog *dialog, gboolean checked, GtkWidget *root)
+ static void confirmed (SunoDestructiveDialog *dialog, gboolean checked, GtkWidget *root)
  {
    View *v = g_object_get_data (G_OBJECT (root), "cf-view");
    guint64 *generation = g_object_get_data (G_OBJECT (dialog), "cf-privacy-generation");
    if (!v || !generation || *generation != v->generation || !g_str_equal (v->page, "p-files") || !gtk_widget_get_root (root)) return;
--  luma_toast_show (root, g_object_get_data (G_OBJECT (dialog), "cf-privacy-message"), "done");
+-  Suno_toast_show (root, g_object_get_data (G_OBJECT (dialog), "cf-privacy-message"), "done");
 -}
 -static void clear_history (GtkButton *button, View *v);
 -static void empty_trash (GtkButton *button, View *v);
 -static void ask (View *v, const char *title, const char *body, const char *caption, const char *message)
 +  const char *message = g_object_get_data (G_OBJECT (dialog), "cf-privacy-message");
 +  const char *method = g_object_get_data (G_OBJECT (dialog), "cf-privacy-method");
-+  if (!live (v)) { luma_toast_show (root, message, "done"); return; }
++  if (!live (v)) { Suno_toast_show (root, message, "done"); return; }
 +  if (!method) {
 +    g_autoptr (GError) error = NULL;
-+    if (gtk_recent_manager_purge_items (gtk_recent_manager_get_default (), &error) < 0) cc_luma_view_report_error (v, error);
-+    else luma_toast_show (root, message, "done");
++    if (gtk_recent_manager_purge_items (gtk_recent_manager_get_default (), &error) < 0) cc_Suno_view_report_error (v, error);
++    else Suno_toast_show (root, message, "done");
 +    return;
 +  }
 +  PrivacyCleanup *cleanup = g_new0 (PrivacyCleanup, 1);
@@ -2009,7 +2009,7 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
 +}
 +static void ask (View *v, const char *title, const char *body, const char *caption, const char *message, const char *method)
  {
-   LumaDestructiveDialog *dialog = luma_destructive_dialog_ask (v->root, title, body, caption, "trash-2", NULL);
+   SunoDestructiveDialog *dialog = Suno_destructive_dialog_ask (v->root, title, body, caption, "trash-2", NULL);
    guint64 *generation = g_new (guint64, 1); *generation = v->generation;
    g_object_set_data_full (G_OBJECT (dialog), "cf-privacy-generation", generation, g_free);
    g_object_set_data_full (G_OBJECT (dialog), "cf-privacy-message", g_strdup (message), g_free);
@@ -2017,9 +2017,9 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
    g_signal_connect_object (dialog, "confirmed", G_CALLBACK (confirmed), v->root, 0);
  }
 -/* Live: clearing and emptying are done by GNOME's panel (not proven here). */
--static void clear_history (GtkButton *button, View *v) { if (live (v) && cc_luma_view_delegated (v)) return; ask (v, "Clear recent files?", "The files stay where they are. Only the list is cleared.", "Clear", "Recent files cleared"); }
--static void empty_trash (GtkButton *button, View *v) { if (live (v) && cc_luma_view_delegated (v)) return; ask (v, "Empty the trash?", "214 items, 1.2 GB. They can’t be brought back.", "Empty trash", "Trash emptied"); }
--static void clear_temp (GtkButton *button, View *v) { if (live (v) && cc_luma_view_delegated (v)) return; luma_toast_show (v->root, "380 MB of temporary files deleted", "done"); }
+-static void clear_history (GtkButton *button, View *v) { if (live (v) && cc_Suno_view_delegated (v)) return; ask (v, "Clear recent files?", "The files stay where they are. Only the list is cleared.", "Clear", "Recent files cleared"); }
+-static void empty_trash (GtkButton *button, View *v) { if (live (v) && cc_Suno_view_delegated (v)) return; ask (v, "Empty the trash?", "214 items, 1.2 GB. They can’t be brought back.", "Empty trash", "Trash emptied"); }
+-static void clear_temp (GtkButton *button, View *v) { if (live (v) && cc_Suno_view_delegated (v)) return; Suno_toast_show (v->root, "380 MB of temporary files deleted", "done"); }
 +static void clear_history (GtkButton *button, View *v)
 +{
 +  ask (v, "Clear recent files?", "The files stay where they are. Only the list is cleared.", "Clear", "Recent files cleared", NULL);
@@ -2038,34 +2038,34 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
                       const char *caption, gboolean danger, GCallback callback)
  {
 @@ -137,8 +188,8 @@
-   if (cc_luma_view_flag (v, "trash") || cc_luma_view_flag (v, "temp")) cf_pk (v, rows, "trashAge", "After", NULL, age);
+   if (cc_Suno_view_flag (v, "trash") || cc_Suno_view_flag (v, "temp")) cf_pk (v, rows, "trashAge", "After", NULL, age);
    command (v, rows, "cf-emptytrash", "Empty the trash", live (v) ? NULL : "1.2 GB in 214 items", "Empty…", TRUE, G_CALLBACK (empty_trash));
    command (v, rows, "cf-cleartemp", "Delete temporary files", live (v) ? NULL : "380 MB", "Delete…", FALSE, G_CALLBACK (clear_temp));
 -  /* Feedback follows the fixture exactly. This never opens Housekeeping,
 -   * RecentManager, a trash store or an installed application's data. */
 +  /* Fixture mode remains isolated. Live cleanup follows the native usage
-+   * panel APIs, after confirmation, without replacing the Luma pane. */
++   * panel APIs, after confirmation, without replacing the Suno pane. */
  }
  static void diagnostics (View *v)
  {
---- a/shell/cc-luma-view-private.h
-+++ b/shell/cc-luma-view-private.h
+--- a/shell/cc-Suno-view-private.h
++++ b/shell/cc-Suno-view-private.h
 @@ -160,5 +160,6 @@
- GtkWidget *cc_luma_view_switch (View *v, const char *key);
- GtkWidget *cc_luma_view_switch_full (View *v, const char *key, gboolean big);
- void cc_luma_view_choose (View *v, const char *key, const char *value);
+ GtkWidget *cc_Suno_view_switch (View *v, const char *key);
+ GtkWidget *cc_Suno_view_switch_full (View *v, const char *key, gboolean big);
+ void cc_Suno_view_choose (View *v, const char *key, const char *value);
 -/* Live: TRUE when this page's actions go to its GNOME panel (and opens it). */
 +/* Live: block a remaining fixture-only action and report it in this view.
 + * Native callbacks do not use this guard. Never switches Settings panels. */
- gboolean cc_luma_view_delegated (View *v);
---- a/shell/cc-luma-view-system.c
-+++ b/shell/cc-luma-view-system.c
+ gboolean cc_Suno_view_delegated (View *v);
+--- a/shell/cc-Suno-view-system.c
++++ b/shell/cc-Suno-view-system.c
 @@ -1,6 +1,6 @@
  /* SPDX-License-Identifier: GPL-2.0-or-later */
  /* The account page and the System section. v70 CFP, drawn with the row builders.
 - * Everything here acts on the fixture only: sheets and dialogs end in a toast. */
 + * Live actions use their system owners; fixture feedback stays contained. */
- #include "cc-luma-rows.h"
+ #include "cc-Suno-rows.h"
  #include <gio/gdesktopappinfo.h>
  
 @@ -300,30 +300,112 @@
@@ -2090,10 +2090,10 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
 + * view targets have no account service and never load a native user panel. */
 +static void live_password_clicked (GtkButton *button, View *v)
 +{
-+  if (!gtk_widget_activate_action (v->root, "luma-settings-native.password", NULL))
++  if (!gtk_widget_activate_action (v->root, "Suno-settings-native.password", NULL))
 +    {
 +      g_autoptr (GError) error = g_error_new_literal (G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED, "Password changes are not available in this Settings session");
-       cc_luma_view_report_error (v, error);
+       cc_Suno_view_report_error (v, error);
      }
  }
  
@@ -2101,10 +2101,10 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
 -static void live_datetime_panel (GtkButton *b, View *v) { open_panel (v, "system", "datetime"); }
 -
 -/* Writes not yet proven on a real owner open the page's GNOME panel
-- * (cc-luma-live.c's verified list); TRUE when the panel took over. */
+- * (cc-Suno-live.c's verified list); TRUE when the panel took over. */
 -static gboolean live_delegated (View *v, const char *key)
 -{
--  return !cc_luma_fixture_key_verified (v->model, key) && cc_luma_view_delegated (v);
+-  return !cc_Suno_fixture_key_verified (v->model, key) && cc_Suno_view_delegated (v);
 +static void live_picture_chosen (GObject *source, GAsyncResult *result, gpointer data)
 +{
 +  g_autoptr (GtkWidget) root = data;
@@ -2115,7 +2115,7 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
 +  if (!file)
 +    {
 +      if (!g_error_matches (error, GTK_DIALOG_ERROR, GTK_DIALOG_ERROR_DISMISSED) &&
-+          !g_error_matches (error, GTK_DIALOG_ERROR, GTK_DIALOG_ERROR_CANCELLED)) cc_luma_view_report_error (v, error);
++          !g_error_matches (error, GTK_DIALOG_ERROR, GTK_DIALOG_ERROR_CANCELLED)) cc_Suno_view_report_error (v, error);
 +      return;
 +    }
 +  g_autofree char *path = g_file_get_path (file);
@@ -2123,7 +2123,7 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
 +  if (!picture)
 +    {
 +      if (!error) error = g_error_new_literal (G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED, "Choose a picture stored on this computer");
-+      cc_luma_view_report_error (v, error);
++      cc_Suno_view_report_error (v, error);
 +      return;
 +    }
 +  g_autoptr (JsonNode) value = json_node_init_string (json_node_alloc (), path);
@@ -2145,7 +2145,7 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
 +                        live_picture_chosen, g_object_ref (v->root));
 +}
 +
-+static void live_time_done (LumaBarItem *item, GtkWidget *root)
++static void live_time_done (SunoBarItem *item, GtkWidget *root)
 +{
 +  View *v = view_of (root);
 +  GtkCalendar *calendar = g_object_get_data (G_OBJECT (item), "cf-calendar");
@@ -2153,51 +2153,51 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
 +  GtkSpinButton *minute = g_object_get_data (G_OBJECT (item), "cf-minute");
 +  if (!v || !calendar || !hour || !minute) return;
 +  g_autoptr (GDateTime) day = gtk_calendar_get_date (calendar);
-+  g_autoptr (GTimeZone) zone = g_time_zone_new_identifier (cc_luma_view_text (v, "zone"));
++  g_autoptr (GTimeZone) zone = g_time_zone_new_identifier (cc_Suno_view_text (v, "zone"));
 +  g_autoptr (GDateTime) chosen = zone ? g_date_time_new (zone, g_date_time_get_year (day), g_date_time_get_month (day),
 +    g_date_time_get_day_of_month (day), gtk_spin_button_get_value_as_int (hour), gtk_spin_button_get_value_as_int (minute), 0) : NULL;
 +  if (!chosen || g_date_time_to_unix (chosen) < 0)
 +    {
 +      g_autoptr (GError) error = g_error_new_literal (G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT, "Choose a valid date and time from 1970 onwards");
-+      cc_luma_view_report_error (v, error);
++      cc_Suno_view_report_error (v, error);
 +      return;
 +    }
 +  g_autoptr (JsonNode) value = json_node_init_int (json_node_alloc (), g_date_time_to_unix (chosen) * G_USEC_PER_SEC);
-+  if (live_write (v, "manualTime", value)) luma_action_center_hide_bar (v->center);
++  if (live_write (v, "manualTime", value)) Suno_action_center_hide_bar (v->center);
 +}
 +
 +static void live_datetime_panel (GtkButton *button, View *v)
 +{
-+  if (cc_luma_view_flag (v, "autoTime"))
++  if (cc_Suno_view_flag (v, "autoTime"))
 +    {
 +      g_autoptr (GError) error = g_error_new_literal (G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED, "Turn off automatic date and time before setting it manually");
-+      cc_luma_view_report_error (v, error);
++      cc_Suno_view_report_error (v, error);
 +      return;
 +    }
-+  g_autoptr (GTimeZone) zone = g_time_zone_new_identifier (cc_luma_view_text (v, "zone"));
++  g_autoptr (GTimeZone) zone = g_time_zone_new_identifier (cc_Suno_view_text (v, "zone"));
 +  g_autoptr (GDateTime) now = zone ? g_date_time_new_now (zone) : g_date_time_new_now_local ();
-+  LumaActionEditor *editor = LUMA_ACTION_EDITOR (luma_action_editor_new ("Set date and time", "clock"));
-+  luma_action_editor_set_summary (editor, cc_luma_view_text (v, "zone"), NULL);
-+  luma_action_editor_set_body (editor, gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
++  SunoActionEditor *editor = SUNO_ACTION_EDITOR (Suno_action_editor_new ("Set date and time", "clock"));
++  Suno_action_editor_set_summary (editor, cc_Suno_view_text (v, "zone"), NULL);
++  Suno_action_editor_set_body (editor, gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
 +  g_signal_connect_object (editor, "discarded", G_CALLBACK (editor_discarded), v->root, 0);
-+  luma_action_center_set_editor (v->center, editor);
++  Suno_action_center_set_editor (v->center, editor);
 +  GtkWidget *calendar = gtk_calendar_new ();
 +  GtkWidget *hour = gtk_spin_button_new_with_range (0, 23, 1);
 +  GtkWidget *minute = gtk_spin_button_new_with_range (0, 59, 1);
 +  gtk_calendar_select_day (GTK_CALENDAR (calendar), now);
 +  gtk_spin_button_set_value (GTK_SPIN_BUTTON (hour), g_date_time_get_hour (now));
 +  gtk_spin_button_set_value (GTK_SPIN_BUTTON (minute), g_date_time_get_minute (now));
-+  luma_action_editor_add_field (editor, "Date", calendar);
-+  luma_action_editor_add_field (editor, "Hour (0–23)", hour);
-+  luma_action_editor_add_field (editor, "Minute", minute);
-+  g_autoptr (LumaBarItem) primary = luma_bar_item_new_action ("check", "Save", NULL);
-+  luma_bar_item_set_primary (primary, TRUE);
++  Suno_action_editor_add_field (editor, "Date", calendar);
++  Suno_action_editor_add_field (editor, "Hour (0–23)", hour);
++  Suno_action_editor_add_field (editor, "Minute", minute);
++  g_autoptr (SunoBarItem) primary = Suno_bar_item_new_action ("check", "Save", NULL);
++  Suno_bar_item_set_primary (primary, TRUE);
 +  g_object_set_data (G_OBJECT (primary), "cf-calendar", calendar);
 +  g_object_set_data (G_OBJECT (primary), "cf-hour", hour);
 +  g_object_set_data (G_OBJECT (primary), "cf-minute", minute);
 +  g_signal_connect_object (primary, "activated", G_CALLBACK (live_time_done), v->root, 0);
-+  luma_action_editor_set_primary (editor, primary);
-+  luma_action_center_grow (v->center);
++  Suno_action_editor_set_primary (editor, primary);
++  Suno_action_center_grow (v->center);
  }
  
  static gboolean live_write (View *v, const char *key, JsonNode *value)
@@ -2216,9 +2216,9 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
    View *v = view_of (root);
 -  if (!v || live_delegated (v, "users.add")) return;
 +  if (!v) return;
-   LumaActionEditor *editor = LUMA_ACTION_EDITOR (luma_action_editor_new ("Add someone", "user-plus"));
-   luma_action_editor_set_summary (editor, "They get their own files, settings and apps.", NULL);
-   luma_action_editor_set_body (editor, gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
+   SunoActionEditor *editor = SUNO_ACTION_EDITOR (Suno_action_editor_new ("Add someone", "user-plus"));
+   Suno_action_editor_set_summary (editor, "They get their own files, settings and apps.", NULL);
+   Suno_action_editor_set_body (editor, gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
 @@ -578,9 +660,9 @@
    cf_header (v, "Users", meta, NULL);
    cf_hero (v, identity (v, live_avatar (v, name, "me-picture", 64), "cf-id",
@@ -2228,31 +2228,31 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
    GtkBox *g = cf_group (v, "Your account", NULL);
 -  bt_lead (v, g, "key-round", "Password", NULL, "Change…", FALSE, G_CALLBACK (live_users_panel), "cf-pw");
 +  bt_lead (v, g, "key-round", "Password", NULL, "Change…", FALSE, G_CALLBACK (live_password_clicked), "cf-pw");
-   if (cc_luma_view_flag (v, "me.local"))
+   if (cc_Suno_view_flag (v, "me.local"))
      cf_sw (v, g, "autoLogin", "Sign in automatically", "Anyone who turns on this computer gets in", lead ("lock-open"));
    cf_vl (v, g, "Account type", admin ? "Administrator" : "Standard", admin ? "Can install apps and change anything" : NULL,
 @@ -607,7 +689,10 @@
- static void live_removed (LumaDestructiveDialog *dialog, gboolean checked, GtkWidget *root)
+ static void live_removed (SunoDestructiveDialog *dialog, gboolean checked, GtkWidget *root)
  {
    View *v = view_of (root);
 -  if (!v) return;
 +  const char *user = g_object_get_data (G_OBJECT (dialog), "cf-remove-user");
 +  guint64 *generation = g_object_get_data (G_OBJECT (dialog), "cf-remove-generation");
 +  if (!v || !generation || *generation != v->generation || !g_str_equal (v->page, "user-priya") ||
-+      g_strcmp0 (cc_luma_view_text (v, "pUser"), user) != 0) return;
++      g_strcmp0 (cc_Suno_view_text (v, "pUser"), user) != 0) return;
    g_autoptr (JsonNode) keep = json_node_init_boolean (json_node_alloc (), checked);
-   if (live_write (v, "users.remove", keep)) cc_luma_view_navigate (v, "users");
+   if (live_write (v, "users.remove", keep)) cc_Suno_view_navigate (v, "users");
  }
 @@ -615,10 +700,14 @@
  static void live_remove_clicked (GtkButton *button, View *v)
  {
-   JsonObject *o = live_person (v, cc_luma_view_text (v, "pUser"));
+   JsonObject *o = live_person (v, cc_Suno_view_text (v, "pUser"));
 -  if (!o || live_delegated (v, "users.remove")) return;
 +  if (!o) return;
    g_autofree char *title = g_strdup_printf ("Remove %s?", json_object_get_string_member_with_default (o, "name", ""));
-   LumaDestructiveDialog *dialog = luma_destructive_dialog_ask (v->root, title,
+   SunoDestructiveDialog *dialog = Suno_destructive_dialog_ask (v->root, title,
      "Their account goes. Choose whether their files stay in /home.", "Remove", "user-minus", "Keep their files");
-+  g_object_set_data_full (G_OBJECT (dialog), "cf-remove-user", g_strdup (cc_luma_view_text (v, "pUser")), g_free);
++  g_object_set_data_full (G_OBJECT (dialog), "cf-remove-user", g_strdup (cc_Suno_view_text (v, "pUser")), g_free);
 +  guint64 *generation = g_new (guint64, 1);
 +  *generation = v->generation;
 +  g_object_set_data_full (G_OBJECT (dialog), "cf-remove-generation", generation, g_free);
@@ -2261,7 +2261,7 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
  
 @@ -626,9 +715,9 @@
  {
-   JsonObject *o = live_person (v, cc_luma_view_text (v, "pUser"));
+   JsonObject *o = live_person (v, cc_Suno_view_text (v, "pUser"));
    g_autoptr (JsonNode) go = json_node_init_boolean (json_node_alloc (), TRUE);
 -  if (!o || live_delegated (v, "users.reset") || !live_write (v, "users.reset", go)) return;
 +  if (!o || !live_write (v, "users.reset", go)) return;
@@ -2275,78 +2275,78 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
  {
    /* cc-user-page.c spawn_malcontent_control. */
    g_autoptr (GError) error = NULL;
--  if (cc_luma_view_delegated (v)) return; /* the users panel opens Parental Controls */
-   const char *argv[] = { "malcontent-control", "--user", cc_luma_view_text (v, "pUser"), NULL };
+-  if (cc_Suno_view_delegated (v)) return; /* the users panel opens Parental Controls */
+   const char *argv[] = { "malcontent-control", "--user", cc_Suno_view_text (v, "pUser"), NULL };
    if (!g_spawn_async (NULL, (char **) argv, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, &error))
-     cc_luma_view_report_error (v, error);
---- a/shell/cc-luma-view.c
-+++ b/shell/cc-luma-view.c
+     cc_Suno_view_report_error (v, error);
+--- a/shell/cc-Suno-view.c
++++ b/shell/cc-Suno-view.c
 @@ -1548,6 +1548,7 @@
  /* Phone width changes some pages' anatomy (v70 #w-settings.phone rules). */
- static void phone_applied (View *v) { if (!v->phone) { v->phone = TRUE; cc_luma_view_queue_refresh (v); } }
- static void phone_unapplied (View *v) { if (v->phone) { v->phone = FALSE; cc_luma_view_queue_refresh (v); } }
-+static void live_write_error (CcLumaFixture *model, const GError *error, GtkWidget *root);
- static GtkWidget *new_view (CcLumaFixture *model, const char *page, CcLumaLiveLock *live_lock, CcLumaLivePermission *live_permission, GError **error)
+ static void phone_applied (View *v) { if (!v->phone) { v->phone = TRUE; cc_Suno_view_queue_refresh (v); } }
+ static void phone_unapplied (View *v) { if (v->phone) { v->phone = FALSE; cc_Suno_view_queue_refresh (v); } }
++static void live_write_error (CcSunoFixture *model, const GError *error, GtkWidget *root);
+ static GtkWidget *new_view (CcSunoFixture *model, const char *page, CcSunoLiveLock *live_lock, CcSunoLivePermission *live_permission, GError **error)
  {
    GtkWidget *scroll, *clamp;
 @@ -1634,7 +1635,10 @@
    g_signal_connect_object (v->center, "state-changed", G_CALLBACK (center_changed), v->root, 0);
    render (v);
-   if (v->model && cc_luma_fixture_is_live (v->model))
--    v->model_changed = g_signal_connect_swapped (v->model, "changed", G_CALLBACK (cc_luma_view_queue_refresh), v);
+   if (v->model && cc_Suno_fixture_is_live (v->model))
+-    v->model_changed = g_signal_connect_swapped (v->model, "changed", G_CALLBACK (cc_Suno_view_queue_refresh), v);
 +    {
-+      v->model_changed = g_signal_connect_swapped (v->model, "changed", G_CALLBACK (cc_luma_view_queue_refresh), v);
++      v->model_changed = g_signal_connect_swapped (v->model, "changed", G_CALLBACK (cc_Suno_view_queue_refresh), v);
 +      g_signal_connect_object (v->model, "write-error", G_CALLBACK (live_write_error), v->root, 0);
 +    }
-   if (v->live_lock) cc_luma_live_lock_start (v);
-   if (v->live_permission) cc_luma_live_permission_start (v);
+   if (v->live_lock) cc_Suno_live_lock_start (v);
+   if (v->live_permission) cc_Suno_live_permission_start (v);
    if (v->image_error)
 @@ -1647,6 +1651,14 @@
-   if (g_str_equal (page, "bluetooth")) cc_luma_view_bluetooth_start (v);
+   if (g_str_equal (page, "bluetooth")) cc_Suno_view_bluetooth_start (v);
    return v->root;
  }
-+static void live_write_error (CcLumaFixture *model, const GError *error, GtkWidget *root)
++static void live_write_error (CcSunoFixture *model, const GError *error, GtkWidget *root)
 +{
 +  View *v = g_object_get_data (G_OBJECT (root), "cf-view");
 +  if (!v) return;
-+  cc_luma_view_report_error (v, error);
-+  cc_luma_view_queue_refresh (v);
++  cc_Suno_view_report_error (v, error);
++  cc_Suno_view_queue_refresh (v);
 +}
 +
- GtkWidget *cc_luma_view_new (CcLumaFixture *model, const char *page, GError **error)
+ GtkWidget *cc_Suno_view_new (CcSunoFixture *model, const char *page, GError **error)
  {
    return new_view (model, page, NULL, NULL, error);
 @@ -1742,14 +1754,14 @@
-   if (error && error->domain == CC_LUMA_WRITE_DELEGATED)
+   if (error && error->domain == CC_SUNO_WRITE_DELEGATED)
      {
-       cc_luma_view_queue_refresh (v); /* put the control back */
+       cc_Suno_view_queue_refresh (v); /* put the control back */
 -      if (v->delegate) v->delegate (v->root, v->page, v->delegate_data);
 -      return;
      }
    g_clear_error (&v->image_error);
 -  v->image_error = g_error_copy (error);
-+  v->image_error = error && error->domain == CC_LUMA_WRITE_DELEGATED ?
++  v->image_error = error && error->domain == CC_SUNO_WRITE_DELEGATED ?
 +    g_error_new_literal (G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED,
 +                         "This change is not supported yet.") : g_error_copy (error);
    if (v->error_handler) v->error_handler (v->root, v->image_error, v->error_data);
 -  else if ((v->live_lock || v->live_permission) && gtk_widget_get_root (v->root))
--    luma_toast_show (v->root, error->message, "error");
-+  else if ((cc_luma_fixture_is_live (v->model) || v->live_lock || v->live_permission) && gtk_widget_get_root (v->root))
-+    luma_toast_show (v->root, v->image_error->message, "error");
+-    Suno_toast_show (v->root, error->message, "error");
++  else if ((cc_Suno_fixture_is_live (v->model) || v->live_lock || v->live_permission) && gtk_widget_get_root (v->root))
++    Suno_toast_show (v->root, v->image_error->message, "error");
  }
  
- void cc_luma_view_set_page_handler (GtkWidget *root, CcLumaViewPageFunc handler, gpointer data)
+ void cc_Suno_view_set_page_handler (GtkWidget *root, CcSunoViewPageFunc handler, gpointer data)
 @@ -2030,6 +2042,11 @@
- gboolean cc_luma_view_delegated (View *v)
+ gboolean cc_Suno_view_delegated (View *v)
  {
-   if (!v->model || !cc_luma_fixture_is_live (v->model)) return FALSE;
+   if (!v->model || !cc_Suno_fixture_is_live (v->model)) return FALSE;
 -  if (v->delegate) v->delegate (v->root, v->page, v->delegate_data);
 +  /* Legacy guards stop fixture-only actions in a live view. They must never
 +   * replace that view or let the fixture manufacture success. Native actions
 +   * remove this guard only when their owning service is connected. */
 +  g_autoptr (GError) error = g_error_new_literal (G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED,
 +                                                "This action is not available yet.");
-+  cc_luma_view_report_error (v, error);
++  cc_Suno_view_report_error (v, error);
    return TRUE;
  }
 --- a/shell/meson.build
@@ -2354,14 +2354,14 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
 @@ -373,6 +373,8 @@
  fixture_view_sources += ['../panels/privacy/screen/cc-screen-page.c']
  fixture_view_sources += ['../panels/privacy/camera/cc-camera-page.c', '../panels/privacy/location/cc-location-page.c']
- fixture_view_deps = [json_glib_dep, gio_dep, gtk_dep, libadwaita_dep, dependency('luma-ui-1'), dependency('luma-appearance-1'), m_dep]
+ fixture_view_deps = [json_glib_dep, gio_dep, gtk_dep, libadwaita_dep, dependency('Suno-ui-1'), dependency('Suno-appearance-1'), m_dep]
 +fixture_view_deps += [goa_dep, dependency('goa-backend-1.0', version: goa_req_version)]
 +fixture_view_deps += [dependency('gio-unix-2.0')]
- live_pointer_test = executable('test-luma-live-pointer',
-   ['test-luma-live-pointer.c', 'cc-luma-live-gsettings.c'] + fixture_view_sources + generated_sources,
+ live_pointer_test = executable('test-Suno-live-pointer',
+   ['test-Suno-live-pointer.c', 'cc-Suno-live-gsettings.c'] + fixture_view_sources + generated_sources,
    include_directories: top_inc, dependencies: fixture_view_deps)
---- a/shell/test-luma-view.c
-+++ b/shell/test-luma-view.c
+--- a/shell/test-Suno-view.c
++++ b/shell/test-Suno-view.c
 @@ -1358,8 +1358,10 @@
      g_signal_emit_by_name (find_button_caption (dialog, "Empty trash"), "clicked"); wait_dialog_closed (window);
      g_assert_true (has_text (window, "Trash emptied"));
@@ -2369,11 +2369,11 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
 -    g_signal_emit_by_name (old_cleanup, "clicked"); drain ();
 -    g_assert_true (has_text (window, "380 MB of temporary files deleted"));
 +    g_signal_emit_by_name (old_cleanup, "clicked"); wait_ms (100);
-+    dialog = find_type (window, LUMA_TYPE_DESTRUCTIVE_DIALOG); g_assert_nonnull (dialog);
++    dialog = find_type (window, SUNO_TYPE_DESTRUCTIVE_DIALOG); g_assert_nonnull (dialog);
 +    g_signal_emit_by_name (find_button_caption (dialog, "Delete"), "clicked"); wait_dialog_closed (window);
 +    g_assert_true (has_text (window, "Temporary files deleted"));
-     cc_luma_view_navigate (v, "p-dev"); wait_ms (100);
-     LumaToast *prior_toast = LUMA_TOAST (find_type (window, LUMA_TYPE_TOAST)); g_assert_nonnull (prior_toast);
+     cc_Suno_view_navigate (v, "p-dev"); wait_ms (100);
+     SunoToast *prior_toast = SUNO_TOAST (find_type (window, SUNO_TYPE_TOAST)); g_assert_nonnull (prior_toast);
      g_signal_emit_by_name (old_cleanup, "clicked"); drain (); g_object_unref (old_cleanup);
 @@ -2196,12 +2198,75 @@
    }
@@ -2389,7 +2389,7 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
 +  RetainedFailure *r = data;
 +  r->errors++; r->domain = error->domain; r->code = error->code;
 +}
-+static gboolean rejected_write (CcLumaFixture *model, const char *key, JsonNode *value, gpointer data, GError **error)
++static gboolean rejected_write (CcSunoFixture *model, const char *key, JsonNode *value, gpointer data, GError **error)
 +{
 +  ((RetainedFailure *) data)->writes++;
 +  g_set_error_literal (error, G_IO_ERROR, G_IO_ERROR_PERMISSION_DENIED, "The setting is locked by policy.");
@@ -2398,17 +2398,17 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
 +static void live_failure_keeps_pane (void)
 +{
 +  g_autoptr (JsonParser) parser = json_parser_new ();
-+  g_assert_true (json_parser_load_from_file (parser, g_getenv ("LUMA_SETTINGS_TEST_FIXTURE"), NULL));
-+  g_autoptr (CcLumaFixture) model = cc_luma_fixture_new_live (json_parser_get_root (parser));
++  g_assert_true (json_parser_load_from_file (parser, g_getenv ("SUNO_SETTINGS_TEST_FIXTURE"), NULL));
++  g_autoptr (CcSunoFixture) model = cc_Suno_fixture_new_live (json_parser_get_root (parser));
 +  RetainedFailure r = { 0 };
-+  cc_luma_fixture_set_writer (model, rejected_write, &r);
-+  cc_luma_fixture_set_page_ready_func (model, always_ready, NULL);
-+  cc_luma_fixture_own_key (model, "devName");
-+  g_autofree char *before = g_strdup (json_node_get_string (cc_luma_fixture_get (model, "devName")));
++  cc_Suno_fixture_set_writer (model, rejected_write, &r);
++  cc_Suno_fixture_set_page_ready_func (model, always_ready, NULL);
++  cc_Suno_fixture_own_key (model, "devName");
++  g_autofree char *before = g_strdup (json_node_get_string (cc_Suno_fixture_get (model, "devName")));
 +  GtkWidget *window = gtk_window_new ();
-+  GtkWidget *view = cc_luma_view_new (model, "sharing", NULL);
-+  cc_luma_view_set_delegate (view, unexpected_delegate, &r);
-+  cc_luma_view_set_error_handler (view, retained_error, &r);
++  GtkWidget *view = cc_Suno_view_new (model, "sharing", NULL);
++  cc_Suno_view_set_delegate (view, unexpected_delegate, &r);
++  cc_Suno_view_set_error_handler (view, retained_error, &r);
 +  gtk_window_set_child (GTK_WINDOW (window), view);
 +  gtk_window_present (GTK_WINDOW (window)); wait_ms (100);
 +  GtkWidget *field = find_name (view, "cf-devName");
@@ -2418,7 +2418,7 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
 +  g_assert_cmpuint (r.errors, ==, 1);
 +  g_assert_cmpint (r.code, ==, G_IO_ERROR_NOT_SUPPORTED);
 +  g_assert_cmpuint (r.writes, ==, 0);
-+  cc_luma_fixture_verify_key (model, "devName");
++  cc_Suno_fixture_verify_key (model, "devName");
 +  field = find_name (view, "cf-devName");
 +  gtk_editable_set_text (GTK_EDITABLE (field), "Denied change");
 +  g_signal_emit_by_name (field, "activate"); drain ();
@@ -2426,18 +2426,18 @@ Subject: [PATCH] Keep native Settings actions and failures inside Luma panes
 +  g_assert_cmpint (r.code, ==, G_IO_ERROR_PERMISSION_DENIED);
 +  g_assert_cmpuint (r.writes, ==, 1);
 +  View *v = g_object_get_data (G_OBJECT (view), "cf-view");
-+  g_assert_true (cc_luma_view_delegated (v)); /* a remaining fixture-only action is blocked */
++  g_assert_true (cc_Suno_view_delegated (v)); /* a remaining fixture-only action is blocked */
 +  g_assert_cmpuint (r.errors, ==, 3);
 +  g_autoptr (GError) async_error = g_error_new_literal (G_IO_ERROR, G_IO_ERROR_PERMISSION_DENIED,
 +                                                      "The service refused the change.");
-+  cc_luma_fixture_report_write_error (model, async_error);
++  cc_Suno_fixture_report_write_error (model, async_error);
 +  drain ();
 +  g_assert_cmpuint (r.errors, ==, 4);
 +  g_assert_cmpint (r.code, ==, G_IO_ERROR_PERMISSION_DENIED);
 +  g_assert_cmpuint (r.delegates, ==, 0);
-+  g_assert_cmpstr (cc_luma_view_get_page (view), ==, "sharing");
++  g_assert_cmpstr (cc_Suno_view_get_page (view), ==, "sharing");
 +  g_assert_true (gtk_window_get_child (GTK_WINDOW (window)) == view);
-+  g_assert_cmpstr (json_node_get_string (cc_luma_fixture_get (model, "devName")), ==, before);
++  g_assert_cmpstr (json_node_get_string (cc_Suno_fixture_get (model, "devName")), ==, before);
 +  gtk_window_destroy (GTK_WINDOW (window)); drain ();
 +}
 +

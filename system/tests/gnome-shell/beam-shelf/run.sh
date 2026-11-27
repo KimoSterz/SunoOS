@@ -1,5 +1,5 @@
 #!/bin/bash
-# Beam oracle run (inside luma-shell-oracle). B_TAG B_THEME(light|dark|frost|glass) B_EDGE B_SCALE B_OVERLAY B_EVAL B_MONITORS B_ANIM(true|false) B_EXTRA_KEYS
+# Beam oracle run (inside Suno-shell-oracle). B_TAG B_THEME(light|dark|frost|glass) B_EDGE B_SCALE B_OVERLAY B_EVAL B_MONITORS B_ANIM(true|false) B_EXTRA_KEYS
 set -u
 T=beam-${B_TAG:-a}
 export XDG_RUNTIME_DIR=/tmp/$T-run; rm -rf $XDG_RUNTIME_DIR; mkdir -m 700 -p $XDG_RUNTIME_DIR
@@ -8,7 +8,7 @@ cp /oracle/dock-parity/fonts/*.ttf $HOME/.local/share/fonts/
 theme=${B_THEME:-light}; scheme=default; [ "$theme" = dark ] || [ "$theme" = glass ] && scheme=prefer-dark
 [ "$theme" = glass ] && scheme=default
 cat > $HOME/.config/glib-2.0/settings/keyfile <<KEY
-[org/project-luma/shell-state]
+[org/project-suno/shell-state]
 reduce-transparency=false
 shelf-edge='${B_EDGE:-bottom}'
 shelf-edge-mode='floating'
@@ -33,7 +33,7 @@ printf '[Desktop Entry]\nType=Application\nName=Claude\nExec=python3 /oracle/liv
 printf '[Desktop Entry]\nType=Application\nName=Third\nExec=python3 /oracle/live-island/harness/win.py org.oracle.Third Third\nIcon=org.gnome.Settings\n' > $HOME/.local/share/applications/org.oracle.Third.desktop
 printf '[Desktop Entry]\nType=Application\nName=Second\nExec=python3 /oracle/live-island/harness/win.py org.oracle.Second Second\nIcon=org.gnome.Nautilus\n' > $HOME/.local/share/applications/org.oracle.Second.desktop
 [ -d /oracle/live-island/schemas89 ] && export GSETTINGS_SCHEMA_DIR=/oracle/live-island/schemas89
-export GSETTINGS_BACKEND=keyfile LIBGL_ALWAYS_SOFTWARE=1 LUMA_MUTTER_ALLOW_SOFTWARE_BLUR=1
+export GSETTINGS_BACKEND=keyfile LIBGL_ALWAYS_SOFTWARE=1 SUNO_MUTTER_ALLOW_SOFTWARE_BLUR=1
 export ORACLE_OUT=/oracle/beam/out-${B_TAG:-a} ORACLE_EVAL=${B_EVAL:-/oracle/beam/harness/eval.js} ORACLE_SETTLE=${ORACLE_SETTLE:-9000}
 [ "${B_OVERLAY:-}" != none ] && export G_RESOURCE_OVERLAYS="/org/gnome/shell/ui=${B_OVERLAY:-/oracle/beam/overlay}/js/ui:/org/gnome/shell/theme=${B_OVERLAY:-/oracle/beam/overlay}/data/theme"
 rm -rf "$ORACLE_OUT"; mkdir -p "$ORACLE_OUT"

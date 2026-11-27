@@ -28,8 +28,8 @@ class HostInterface:
 
     def _call(self, connection, sender, _path, _interface, method, args, invocation):
         try:
-            from luma_installer.app_data_broker import authenticate
-            if authenticate(connection, sender) != 'org.projectluma.Clock': raise PermissionError('Only installed Luma Clock can change its alarms.')
+            from Suno_installer.app_data_broker import authenticate
+            if authenticate(connection, sender) != 'org.projectSuno.Clock': raise PermissionError('Only installed Suno Clock can change its alarms.')
             if method == 'GetPlan':
                 data = self.service.store._read()
                 result = {'alarms': data.get('alarms', []), 'timers': data.get('timers', []), 'snoozes': self.service.state.snoozes, 'ringing': self.service.ringing, 'revision': revision(data)}
@@ -54,7 +54,7 @@ class HostInterface:
 
 def host_available():
     # Other Linux desktops retain Clock's supported Background/Notification
-    # portal scheduler. Luma's fixed host service is used where it is installed.
+    # portal scheduler. Suno's fixed host service is used where it is installed.
     try:
         bus = Gio.bus_get_sync(Gio.BusType.SESSION, None)
         active = bus.call_sync('org.freedesktop.DBus', '/org/freedesktop/DBus', 'org.freedesktop.DBus', 'NameHasOwner', GLib.Variant('(s)', (BUS,)), GLib.VariantType.new('(b)'), Gio.DBusCallFlags.NONE, 3000, None).unpack()[0]

@@ -30,7 +30,7 @@ cc -O0 -g -D_GNU_SOURCE -I"$script" -I"$upstream/src/libply" -I"$output" \
   "$repo_root/tests/fixtures/boot/interpreter.c" \
   "$script"/{script,script-debug,script-execute,script-object,script-parse,script-scan,script-lib-math,script-lib-string}.c \
   "$libply" -Wl,-rpath,"${libply%/*}" -lm -o "$output/interpreter"
-for presentation in luma-loading luma-loading-handheld; do
+for presentation in Suno-loading Suno-loading-handheld; do
   "$output/interpreter" "$repo_root/tests/fixtures/boot/renderer.script" \
     "$repo_root/assets/boot/$presentation.script" \
     "$repo_root/tests/fixtures/boot/assertions.script"
@@ -43,7 +43,7 @@ import importlib.util,itertools,subprocess,sys
 root,output=map(Path,sys.argv[1:])
 spec=importlib.util.spec_from_file_location('compiler',root/'scripts/boot/compile-theme.py')
 compiler=importlib.util.module_from_spec(spec);spec.loader.exec_module(compiler)
-template=(root/'assets/boot/luma-theme.script.in').read_text()
+template=(root/'assets/boot/Suno-theme.script.in').read_text()
 count=0
 for values in itertools.product(*compiler.CHOICES.values()):
     profile=dict(zip(compiler.CHOICES,values))

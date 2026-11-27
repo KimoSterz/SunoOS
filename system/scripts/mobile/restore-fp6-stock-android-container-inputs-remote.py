@@ -20,36 +20,36 @@ import sys
 
 IMAGES = {
     "system": (
-        Path("/var/tmp/luma-stock-qrel1695-images/system_a.img"),
-        Path("/var/tmp/luma-stock-qrel1695-system"),
+        Path("/var/tmp/Suno-stock-qrel1695-images/system_a.img"),
+        Path("/var/tmp/Suno-stock-qrel1695-system"),
         "c817290357023c4831e31aaf26ef2ec9ffc984c43c98ab6902deb19739746122",
     ),
     "vendor": (
-        Path("/var/tmp/luma-stock-qrel1695-images/vendor_a.img"),
-        Path("/var/tmp/luma-stock-qrel1695-vendor"),
+        Path("/var/tmp/Suno-stock-qrel1695-images/vendor_a.img"),
+        Path("/var/tmp/Suno-stock-qrel1695-vendor"),
         "4159a51642c7f6462012891197a237ad86768a1f55853c6ab3b38d6ff2b144b4",
     ),
     "system_ext": (
-        Path("/var/tmp/luma-stock-qrel1695-images/system_ext_a.img"),
-        Path("/var/tmp/luma-stock-qrel1695-system_ext"),
+        Path("/var/tmp/Suno-stock-qrel1695-images/system_ext_a.img"),
+        Path("/var/tmp/Suno-stock-qrel1695-system_ext"),
         "71e9c5b743ec957562788340ffae8cdfea758c586da858421950525079bacb09",
     ),
     "product": (
-        Path("/var/tmp/luma-stock-qrel1695-images/product_a.img"),
-        Path("/var/tmp/luma-stock-qrel1695-product"),
+        Path("/var/tmp/Suno-stock-qrel1695-images/product_a.img"),
+        Path("/var/tmp/Suno-stock-qrel1695-product"),
         "c5b458671c560dda0da70c8e2c5e9c1ea0e01b11d6f45c3f8009dc5964b15937",
     ),
     "odm": (
-        Path("/var/tmp/luma-stock-qrel1695-images/odm_a.img"),
-        Path("/var/tmp/luma-stock-qrel1695-odm"),
+        Path("/var/tmp/Suno-stock-qrel1695-images/odm_a.img"),
+        Path("/var/tmp/Suno-stock-qrel1695-odm"),
         "3d31463d172b485f866e25340887e36b96986bb5c2255bff9a6b7777277bb831",
     ),
 }
-APEX_ROOT = Path("/var/tmp/luma-stock-qrel1695-apex-runtime1")
+APEX_ROOT = Path("/var/tmp/Suno-stock-qrel1695-apex-runtime1")
 APEX_INVENTORY = APEX_ROOT / "metadata/activated-apex-inventory.json"
 APEX_INVENTORY_SHA256 = "4c0812666bb23251111a0f23b10db404a489c078e1ac7fdaa8975c1448a74869"
 APEX_SEAL = APEX_ROOT / "metadata/HASHES.sha256"
-MANAGER_ROOT = Path("/var/tmp/luma-stock-qrel1695-manager-boundary1")
+MANAGER_ROOT = Path("/var/tmp/Suno-stock-qrel1695-manager-boundary1")
 MANAGERS = {
     "servicemanager": "69d4beaf4fb0cdd93ec9efd86ecc2fa3a06786024c6b6e475dc87434318e8552",
     "hwservicemanager": "03728b6e2d1b5de38aa281b4485767c677dd7eb5a623adfb326ca41cac5f8f91",
@@ -131,7 +131,7 @@ def main() -> int:
     if "androidboot.slot_suffix=_b" not in cmdline.split():
         die("device is not running slot b")
     release = os.uname().release
-    if release not in {"7.1.2-luma-fp-ims1", "7.1.2-luma-fp-ims-container1"}:
+    if release not in {"7.1.2-Suno-fp-ims1", "7.1.2-Suno-fp-ims-container1"}:
         die(f"unexpected kernel: {release}")
 
     for name, expected in MANAGERS.items():

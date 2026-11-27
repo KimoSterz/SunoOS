@@ -4,10 +4,10 @@ import pathlib
 import sys
 import unittest
 
-sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[2] / "src/luma-installer"))
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[2] / "src/Suno-installer"))
 
-from luma_installer import capsule_runtime  # noqa: E402
-from luma_installer.desktop import desktop_mime_types  # noqa: E402
+from Suno_installer import capsule_runtime  # noqa: E402
+from Suno_installer.desktop import desktop_mime_types  # noqa: E402
 
 
 class CapsuleRuntime(unittest.TestCase):

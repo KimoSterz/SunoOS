@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""Luma's release identity: the one place every name and version is rendered.
+"""Suno's release identity: the one place every name and version is rendered.
 
 The identity is config/os/release.env (codename, stage, stage number, major
 version) plus two facts of the build: its channel and, for a nightly, the day
@@ -9,10 +9,10 @@ download index, the update graph and the release notes, calls this module.
 
 Display names (owner decision 2026-09-17, ADR-040):
 
-  nightly of a beta stage   Luma (Prairie, Beta 0, Nightly 20260916)
-  beta release              Luma (Prairie, Beta 1)   Luma (Prairie, Beta 1.1)
-  final release             Luma (Version 1, Prairie)
-  nightly after final       Luma (Version 1, Prairie, Nightly 20261102)
+  nightly of a beta stage   Suno (Prairie, Beta 0, Nightly 20260916)
+  beta release              Suno (Prairie, Beta 1)   Suno (Prairie, Beta 1.1)
+  final release             Suno (Version 1, Prairie)
+  nightly after final       Suno (Version 1, Prairie, Nightly 20261102)
 
 Machine versions are unchanged, so every installed client keeps ordering them:
 1.0.0-nightly.<build id>, 1.0.0-beta.<stage number>, 1.0.0.
@@ -69,11 +69,11 @@ def load(path: str = CONTRACT) -> Identity:
     values = read_contract(path)
     try:
         identity = Identity(
-            name=values["LUMA_OS_NAME"], os_id=values["LUMA_OS_ID"],
-            product_version=values["LUMA_OS_PRODUCT_VERSION"], version_id=values["LUMA_OS_VERSION_ID"],
-            major=values["LUMA_OS_MAJOR"], codename=values["LUMA_OS_CODENAME"],
-            stage=values["LUMA_OS_STAGE"], stage_number=values.get("LUMA_OS_STAGE_NUMBER", ""),
-            fedora_release=values["LUMA_OS_FEDORA_RELEASE"],
+            name=values["SUNO_OS_NAME"], os_id=values["SUNO_OS_ID"],
+            product_version=values["SUNO_OS_PRODUCT_VERSION"], version_id=values["SUNO_OS_VERSION_ID"],
+            major=values["SUNO_OS_MAJOR"], codename=values["SUNO_OS_CODENAME"],
+            stage=values["SUNO_OS_STAGE"], stage_number=values.get("SUNO_OS_STAGE_NUMBER", ""),
+            fedora_release=values["SUNO_OS_FEDORA_RELEASE"],
         )
     except KeyError as error:
         raise ValueError(f"release contract has no {error.args[0]}") from None
@@ -82,7 +82,7 @@ def load(path: str = CONTRACT) -> Identity:
 
 
 def validate(identity: Identity) -> None:
-    if identity.name != "Luma":
+    if identity.name != "Suno":
         raise ValueError(f"invalid OS name: {identity.name}")
     if not re.fullmatch(r"[a-z][a-z0-9]*", identity.codename):
         raise ValueError(f"invalid codename: {identity.codename}")
@@ -91,7 +91,7 @@ def validate(identity: Identity) -> None:
     if not re.fullmatch(r"\d+", identity.major) or identity.product_version.split(".")[0] != identity.major:
         raise ValueError(f"major version {identity.major} does not match {identity.product_version}")
     # os-release VERSION_ID names the release line and never changes within it
-    # (a beta, a nightly and the final release of Luma 1 are all VERSION_ID=1),
+    # (a beta, a nightly and the final release of Suno 1 are all VERSION_ID=1),
     # so tools that key on it (sysext matching, CPE, dnf) see one release.
     if identity.version_id != identity.major:
         raise ValueError(f"VERSION_ID must be the major version {identity.major}, not {identity.version_id}")
@@ -123,15 +123,15 @@ def check_channel(identity: Identity, channel: str) -> None:
     if channel not in CHANNELS:
         raise ValueError(f"unknown channel: {channel}")
     if channel == "beta" and identity.stage != "beta":
-        raise ValueError("a beta release needs LUMA_OS_STAGE=beta")
+        raise ValueError("a beta release needs SUNO_OS_STAGE=beta")
     if channel == "beta" and identity.stage_number in ("0", ""):
-        raise ValueError("Beta 0 is published only as nightlies; set LUMA_OS_STAGE_NUMBER for a beta release")
+        raise ValueError("Beta 0 is published only as nightlies; set SUNO_OS_STAGE_NUMBER for a beta release")
     if channel == "stable" and identity.stage != "final":
-        raise ValueError("a stable release needs LUMA_OS_STAGE=final")
+        raise ValueError("a stable release needs SUNO_OS_STAGE=final")
 
 
 def version_text(identity: Identity, channel: str, nightly_date: str = "") -> str:
-    """os-release VERSION: the name without "Luma" and without parentheses."""
+    """os-release VERSION: the name without "Suno" and without parentheses."""
     check_channel(identity, channel)
     if identity.stage == "beta":
         parts = [identity.codename_display, f"Beta {identity.stage_number}"]
@@ -146,7 +146,7 @@ def version_text(identity: Identity, channel: str, nightly_date: str = "") -> st
 
 def stage_text(identity: Identity) -> str:
     """VERSION of the release line's current stage, without a channel or build:
-    "Prairie, Beta 0", "Version 1, Prairie". luma-release ships it; an image
+    "Prairie, Beta 0", "Version 1, Prairie". Suno-release ships it; an image
     build replaces it with the build's own name."""
     if identity.stage == "beta":
         return f"{identity.codename_display}, Beta {identity.stage_number}"
@@ -158,7 +158,7 @@ def display_name(identity: Identity, channel: str, nightly_date: str = "") -> st
 
 
 def machine_version(identity: Identity, channel: str, build_id: str) -> str:
-    """The ordered version luma-update, the graph and OSTree compare (unchanged)."""
+    """The ordered version Suno-update, the graph and OSTree compare (unchanged)."""
     check_channel(identity, channel)
     if channel == "nightly":
         if not re.fullmatch(r"\d{8}\.\d+", build_id):
@@ -204,42 +204,42 @@ def os_release_fields(identity: Identity, channel: str, build_id: str, nightly: 
         # systemd's os-release: development for nightlies and betas.
         ("RELEASE_TYPE", "stable" if identity.stage == "final" and channel == "stable" else "development"),
         ("BUILD_ID", build_id),
-        ("IMAGE_ID", "luma-desktop"),
+        ("IMAGE_ID", "Suno-desktop"),
         ("IMAGE_VERSION", build_id),
         ("VARIANT", "Desktop"),
         ("VARIANT_ID", "desktop"),
         ("ANSI_COLOR", "0;38;2;60;110;180"),
-        # Icon name of the system logo (luma-logos, ADR-040): Settings › About
+        # Icon name of the system logo (Suno-logos, ADR-040): Settings › About
         # and every other presenter of the system's mark read it from here.
-        ("LOGO", "luma-logo"),
-        ("CPE_NAME", f"cpe:/o:projectluma:luma:{identity.version_id}"),
-        ("DEFAULT_HOSTNAME", "luma"),
-        ("VENDOR_NAME", "Project Luma"),
+        ("LOGO", "Suno-logo"),
+        ("CPE_NAME", f"cpe:/o:projectSuno:Suno:{identity.version_id}"),
+        ("DEFAULT_HOSTNAME", "Suno"),
+        ("VENDOR_NAME", "Project Suno"),
         ("VENDOR_URL", "https://simplyluma.com"),
         ("HOME_URL", "https://simplyluma.com"),
         ("DOCUMENTATION_URL", "https://simplyluma.com/help"),
         ("SUPPORT_URL", "https://simplyluma.com/support"),
         ("BUG_REPORT_URL", "https://simplyluma.com/support"),
         ("PLATFORM_ID", f"platform:f{identity.fedora_release}"),
-        ("LUMA_RELEASE_CHANNEL", channel),
-        ("LUMA_RELEASE_STAGE", identity.stage),
+        ("SUNO_RELEASE_CHANNEL", channel),
+        ("SUNO_RELEASE_STAGE", identity.stage),
     ]
     if identity.stage_number:
-        fields.append(("LUMA_RELEASE_STAGE_NUMBER", identity.stage_number))
+        fields.append(("SUNO_RELEASE_STAGE_NUMBER", identity.stage_number))
     if channel == "nightly":
-        fields.append(("LUMA_NIGHTLY_DATE", label_day(nightly)))
+        fields.append(("SUNO_NIGHTLY_DATE", label_day(nightly)))
     fields += [
-        ("LUMA_BUILD_DATE", build_date),
-        ("LUMA_FEDORA_RELEASE", identity.fedora_release),
+        ("SUNO_BUILD_DATE", build_date),
+        ("SUNO_FEDORA_RELEASE", identity.fedora_release),
     ]
     return fields
 
 
 def package_os_release_fields(identity: Identity) -> list:
-    """os-release as the luma-release package ships it: the stage's name and
+    """os-release as the Suno-release package ships it: the stage's name and
     everything tools need, but nothing that names a build (no BUILD_ID,
     IMAGE_VERSION, channel or nightly date). Presenters that find no
-    IMAGE_VERSION ask luma-update for the booted build's name."""
+    IMAGE_VERSION ask Suno-update for the booted build's name."""
     version = stage_text(identity)
     fields = [
         ("NAME", identity.name),
@@ -250,25 +250,25 @@ def package_os_release_fields(identity: Identity) -> list:
         ("VERSION_CODENAME", identity.codename),
         ("PRETTY_NAME", f"{identity.name} ({version})"),
         ("RELEASE_TYPE", "stable" if identity.stage == "final" else "development"),
-        ("IMAGE_ID", "luma-desktop"),
+        ("IMAGE_ID", "Suno-desktop"),
         ("VARIANT", "Desktop"),
         ("VARIANT_ID", "desktop"),
         ("ANSI_COLOR", "0;38;2;60;110;180"),
-        ("LOGO", "luma-logo"),
-        ("CPE_NAME", f"cpe:/o:projectluma:luma:{identity.version_id}"),
-        ("DEFAULT_HOSTNAME", "luma"),
-        ("VENDOR_NAME", "Project Luma"),
+        ("LOGO", "Suno-logo"),
+        ("CPE_NAME", f"cpe:/o:projectSuno:Suno:{identity.version_id}"),
+        ("DEFAULT_HOSTNAME", "Suno"),
+        ("VENDOR_NAME", "Project Suno"),
         ("VENDOR_URL", "https://simplyluma.com"),
         ("HOME_URL", "https://simplyluma.com"),
         ("DOCUMENTATION_URL", "https://simplyluma.com/help"),
         ("SUPPORT_URL", "https://simplyluma.com/support"),
         ("BUG_REPORT_URL", "https://simplyluma.com/support"),
         ("PLATFORM_ID", f"platform:f{identity.fedora_release}"),
-        ("LUMA_RELEASE_STAGE", identity.stage),
+        ("SUNO_RELEASE_STAGE", identity.stage),
     ]
     if identity.stage_number:
-        fields.append(("LUMA_RELEASE_STAGE_NUMBER", identity.stage_number))
-    fields.append(("LUMA_FEDORA_RELEASE", identity.fedora_release))
+        fields.append(("SUNO_RELEASE_STAGE_NUMBER", identity.stage_number))
+    fields.append(("SUNO_FEDORA_RELEASE", identity.fedora_release))
     return fields
 
 
@@ -292,7 +292,7 @@ def main(argv=None) -> int:
             command.add_argument("--build-date", required=True)
     package = sub.add_parser("package-os-release")
     package.add_argument("--contract", default=CONTRACT)
-    package.add_argument("--system-release", action="store_true", help="print /usr/lib/luma-release instead")
+    package.add_argument("--system-release", action="store_true", help="print /usr/lib/Suno-release instead")
     day = sub.add_parser("nightly-date")
     day.add_argument("--build-id", required=True)
     day.add_argument("--built", required=True)

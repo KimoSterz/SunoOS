@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""Write a device package's boot image declaration for luma-device-boot.
+"""Write a device package's boot image declaration for Suno-device-boot.
 
 From devices/<vendor>/<codename>/device.toml ([boot_update], [kit] compatible,
 [kernel] release) and boot.toml (partition, partition_size), plus the boot
 image of the same kernel build, this writes OUTPUT_DIR/boot.bin and
 OUTPUT_DIR/device-boot.json, which the package installs as
-/usr/lib/luma/device-boot/<vendor>-<codename>/. The result is checked with
-luma-device-boot's own parser (src/luma-update/luma_update/device_boot.py).
+/usr/lib/Suno/device-boot/<vendor>-<codename>/. The result is checked with
+Suno-device-boot's own parser (src/Suno-update/Suno_update/device_boot.py).
 
 An Android boot image must start with ANDROID!; with --kernel-sha256 (the
 kernel build's IMAGE_SHA256) its kernel must be that build's.
@@ -28,8 +28,8 @@ import tomllib
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT / "src" / "luma-update"))
-from luma_update import device_boot  # noqa: E402
+sys.path.insert(0, str(ROOT / "src" / "Suno-update"))
+from Suno_update import device_boot  # noqa: E402
 
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
 

@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Bounded native Qualcomm IMS registration/incoming-call oracle for FP6.
 
-This is a single-owner diagnostic, not a production daemon.  It stops Luma's
+This is a single-owner diagnostic, not a production daemon.  It stops Suno's
 userspace SIP client, enables only the modem IMS registration bit, observes
 coarse IMSA/QMI Voice state, restores the prior semantic state, and forces a
-fresh Luma registration.  Subscriber identities and QMI payloads are never
+fresh Suno registration.  Subscriber identities and QMI payloads are never
 printed or persisted.
 """
 
@@ -29,9 +29,9 @@ from gi.repository import GLib, Qmi, Qrtr  # noqa: E402
 
 asyncio.set_event_loop_policy(GLibEventLoopPolicy())
 
-EXPECTED_KERNEL = "7.1.2-luma-fp-ims1"
-SERVICE = "luma-fp6-imsd.service"
-DROPIN = Path("/run/systemd/system/luma-fp6-imsd.service.d/90-baseband-oracle.conf")
+EXPECTED_KERNEL = "7.1.2-Suno-fp-ims1"
+SERVICE = "Suno-fp6-imsd.service"
+DROPIN = Path("/run/systemd/system/Suno-fp6-imsd.service.d/90-baseband-oracle.conf")
 
 
 def run(*args: str, check: bool = True) -> subprocess.CompletedProcess[str]:
@@ -182,7 +182,7 @@ def recent_fault_count(started: int) -> int:
     return sum(journal.count(pattern) for pattern in patterns)
 
 
-def clear_luma_xfrm() -> None:
+def clear_Suno_xfrm() -> None:
     states = run("ip", "xfrm", "state").stdout
     policies = run("ip", "xfrm", "policy").stdout
     state_count = len(re.findall(r"^src\s+\S+\s+dst\s+\S+$", states, re.MULTILINE))
@@ -196,7 +196,7 @@ def clear_luma_xfrm() -> None:
     run("ip", "xfrm", "policy", "flush")
 
 
-def force_fresh_luma(started: int) -> bool:
+def force_fresh_Suno(started: int) -> bool:
     started = int(time.time())
     DROPIN.parent.mkdir(mode=0o755, parents=True, exist_ok=True)
     DROPIN.write_text("[Service]\nEnvironment=RESUME=0\n", encoding="utf-8")
@@ -297,7 +297,7 @@ async def oracle(args) -> int:
 
         run("systemctl", "stop", SERVICE)
         userspace_stopped = True
-        clear_luma_xfrm()
+        clear_Suno_xfrm()
         environment = os.environ.copy()
         if args.interface:
             environment["DEV"] = args.interface
@@ -371,13 +371,13 @@ async def oracle(args) -> int:
         await release(device, imsa)
         await release(device, ims)
         if userspace_stopped:
-            restore_fresh = force_fresh_luma(started)
+            restore_fresh = force_fresh_Suno(started)
         faults = recent_fault_count(started)
         print(
             "event=baseband-ims-oracle phase=cleanup"
             f" registered={str(registered).lower()}"
             f" incoming_indication={str(incoming_seen).lower()}"
-            f" luma_fresh_registration={str(restore_fresh).lower()}"
+            f" Suno_fresh_registration={str(restore_fresh).lower()}"
             f" faults={faults} identifiers=0",
             flush=True,
         )
@@ -389,7 +389,7 @@ def main() -> int:
     parser.add_argument("--interface")
     parser.add_argument("--duration", type=int, default=150)
     parser.add_argument("--registration-timeout", type=int, default=90)
-    parser.add_argument("--ready-file", default="/run/luma-baseband-ims-oracle.ready")
+    parser.add_argument("--ready-file", default="/run/Suno-baseband-ims-oracle.ready")
     parser.add_argument("--full-openimsd", action="store_true")
     args = parser.parse_args()
     if not 10 <= args.duration <= 300:

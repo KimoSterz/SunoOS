@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=org.projectSuno.ShellState1
+Exec=/usr/libexec/Suno-shell-state-service
+SystemdService=Suno-shell-state.service

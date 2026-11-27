@@ -26,7 +26,7 @@ def main():
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[2]
     original = (args.blueprint / 'bootstrap/command.go').read_text()
-    with tempfile.TemporaryDirectory(prefix='luma-blueprint-budget-') as directory:
+    with tempfile.TemporaryDirectory(prefix='Suno-blueprint-budget-') as directory:
         work = Path(directory)
         (work / 'bootstrap').mkdir()
         source = work / 'bootstrap/command.go'

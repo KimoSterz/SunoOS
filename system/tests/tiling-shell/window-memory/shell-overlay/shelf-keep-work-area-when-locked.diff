@@ -1,4 +1,4 @@
---- a/js/ui/shelf.js (gnome-shell 50.3-1.luma.99…83)
+--- a/js/ui/shelf.js (gnome-shell 50.3-1.Suno.99…83)
 +++ b/js/ui/shelf.js
 @@ -599,6 +599,12 @@
                  this._surface.ease({opacity: 255, duration: 110,
@@ -9,7 +9,7 @@
 +    _keepsWorkArea() {
 +        return this._isDesktopSession() ||
 +            (!Main.sessionMode.isGreeter && Main.sessionMode.currentMode === 'unlock-dialog' &&
-+             GLib.getenv('LUMA_DEVICE_CLASS') !== 'handheld' && this._workAreaTracked);
++             GLib.getenv('SUNO_DEVICE_CLASS') !== 'handheld' && this._workAreaTracked);
      }
  
      _isDesktopSession() {

@@ -16,7 +16,7 @@ index b35e7d1..d8d6996 100644
  }
  
 +static void
-+refresh_luma_file_rail (NautilusSidebar *sidebar)
++refresh_Suno_file_rail (NautilusSidebar *sidebar)
 +{
 +    /* Mount and bookmark updates replace Nautilus's live row children. The
 +     * shared adapter keeps their actions and DnD, but needs to arrange the
@@ -26,7 +26,7 @@ index b35e7d1..d8d6996 100644
 +                                                 ADW_TYPE_OVERLAY_SPLIT_VIEW);
 +    if (split != NULL)
 +    {
-+        luma_navigation_sidebar_adapt_live (ADW_OVERLAY_SPLIT_VIEW (split),
++        Suno_navigation_sidebar_adapt_live (ADW_OVERLAY_SPLIT_VIEW (split),
 +                                            GTK_WIDGET (sidebar), "rail");
 +    }
 +}
@@ -38,7 +38,7 @@ index b35e7d1..d8d6996 100644
              nautilus_sidebar_set_location (sidebar, restore);
              g_free (original_uri);
          }
-+        refresh_luma_file_rail (sidebar);
++        refresh_Suno_file_rail (sidebar);
          return;
      }
  
@@ -46,7 +46,7 @@ index b35e7d1..d8d6996 100644
          g_object_unref (restore);
          g_free (original_uri);
      }
-+    refresh_luma_file_rail (sidebar);
++    refresh_Suno_file_rail (sidebar);
  }
  
  void

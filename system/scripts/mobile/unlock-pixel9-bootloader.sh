@@ -29,8 +29,8 @@ die() {
   exit 1
 }
 
-[ "${LUMA_PIXEL9_UNLOCK_AUTHORIZED:-0}" = 1 ] || \
-  die 'one-shot unlock authorization is absent; set LUMA_PIXEL9_UNLOCK_AUTHORIZED=1'
+[ "${SUNO_PIXEL9_UNLOCK_AUTHORIZED:-0}" = 1 ] || \
+  die 'one-shot unlock authorization is absent; set SUNO_PIXEL9_UNLOCK_AUTHORIZED=1'
 [ ! -e "$evidence_dir" ] || die "refusing to replace evidence: $evidence_dir"
 for tool in awk grep head mkdir sed sha256sum sleep tail tr wc "$adb_bin" "$fastboot_bin"; do
   command -v "$tool" >/dev/null 2>&1 || die "missing unlock tool: $tool"
@@ -80,7 +80,7 @@ esac
 
 mkdir -p "$evidence_dir"
 {
-  printf 'LUMA_PIXEL9_UNLOCK_ATTEMPT_VERSION=1\n'
+  printf 'SUNO_PIXEL9_UNLOCK_ATTEMPT_VERSION=1\n'
   printf 'DEVICE=tokay\n'
   printf 'MODEL=Pixel 9\n'
   printf 'CANDIDATE_SHA256=%s\n' "$candidate_sha"
@@ -118,7 +118,7 @@ printf 'Pixel 9 unlock confirmation is now required on the phone. This erases al
 
 [ "$(getvar unlocked)" = yes ] || die 'bootloader did not report unlocked after confirmation'
 {
-  printf 'LUMA_PIXEL9_UNLOCK_COMPLETION_VERSION=1\n'
+  printf 'SUNO_PIXEL9_UNLOCK_COMPLETION_VERSION=1\n'
   printf 'DEVICE=tokay\n'
   printf 'BOOTLOADER_UNLOCKED=true\n'
   printf 'USERDATA_WIPE_EXPECTED=true\n'

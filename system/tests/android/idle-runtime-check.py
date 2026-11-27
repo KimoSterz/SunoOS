@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""Check that a running, unused Android stays quiet on a Luma machine.
+"""Check that a running, unused Android stays quiet on a Suno machine.
 
-Run as root on a booted Luma VM or computer with Android started and nobody
+Run as root on a booted Suno VM or computer with Android started and nobody
 using it:
 
     python3 tests/android/idle-runtime-check.py --minutes 30 --notify
@@ -77,9 +77,9 @@ def journal_lines(since: str) -> int:
     result = subprocess.run(["journalctl", "-q", "--no-pager", "-o", "cat", "--since", since,
                              "_TRANSPORT=kernel", "+",
                              "_SYSTEMD_UNIT=waydroid-container.service", "+",
-                             "_SYSTEMD_UNIT=luma-waydroid-graphics-watchdog.service", "+",
-                             "_SYSTEMD_USER_UNIT=luma-android-session.service", "+",
-                             "_SYSTEMD_USER_UNIT=luma-android.service"],
+                             "_SYSTEMD_UNIT=Suno-waydroid-graphics-watchdog.service", "+",
+                             "_SYSTEMD_USER_UNIT=Suno-android-session.service", "+",
+                             "_SYSTEMD_USER_UNIT=Suno-android.service"],
                             capture_output=True, check=False, timeout=120)
     return result.stdout.count(b"\n")
 
@@ -95,7 +95,7 @@ def notify() -> bool:
     # A framework that dies while posting fails the command; the window below
     # still records the restart.
     result = subprocess.run([*LXC, "-u", "2000", "-g", "2000", "--", "/system/bin/sh", "-c",
-                             ANDROID_PATH + "cmd notification post -S bigtext luma-idle-check "
+                             ANDROID_PATH + "cmd notification post -S bigtext Suno-idle-check "
                              "'Idle check' 'Android idle runtime check'"],
                             capture_output=True, check=False, timeout=60)
     return result.returncode == 0

@@ -2,18 +2,18 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
-const source=fs.readFileSync(new URL('../../../src/luma-shell-presentation/tabletTasks.js',import.meta.url),'utf8');
+const source=fs.readFileSync(new URL('../../../src/Suno-shell-presentation/tabletTasks.js',import.meta.url),'utf8');
 const hooks=new Map(), keys=[];
 const gesture={set_begin_threshold(n){this.threshold=n;},connect(name,callback){hooks.set(name,callback);}};
 const keyboard={notify_keyval(...args){keys.push(args.slice(1));},run_dispose(){this.disposed=true;}};
 let android=false;
-const window={get_wm_class:()=>android?'waydroid.app':'org.projectluma.Tide',get_title:()=>''};
+const window={get_wm_class:()=>android?'waydroid.app':'org.projectSuno.Tide',get_title:()=>''};
 const stage={add_action_full(_name,_phase,g){this.action=g;},remove_action(g){assert.equal(g,this.action);this.removed=true;},
  context:{get_backend:()=>({get_default_seat:()=>({create_virtual_device:()=>keyboard})})}};
 const global={stage,display:{focus_window:window}};
 const Main={actionMode:1,sessionMode:{isLocked:false,isGreeter:false}};
 const context=vm.createContext({global,Main,GLib:{get_monotonic_time:()=>1},
- Shell:{ActionMode:{NORMAL:1},WindowTracker:{get_default:()=>({get_window_app:()=>({get_id:()=>android?'waydroid.app.desktop':'org.projectluma.Tide.desktop'})})}},
+ Shell:{ActionMode:{NORMAL:1},WindowTracker:{get_default:()=>({get_window_app:()=>({get_id:()=>android?'waydroid.app.desktop':'org.projectSuno.Tide.desktop'})})}},
  Clutter:{PanGesture:function(){return gesture;},PanAxis:{X:1},EventPhase:{CAPTURE:1},InputDeviceType:{KEYBOARD_DEVICE:1},
  KEY_Alt_L:'Alt',KEY_Left:'Left',KEY_Escape:'Escape',KeyState:{PRESSED:1,RELEASED:0}}});
 vm.runInContext(source.slice(source.indexOf('export class HandheldBackNavigation'),source.indexOf('export class HandheldMotion')).replace('export class','this.Back=class'),context);

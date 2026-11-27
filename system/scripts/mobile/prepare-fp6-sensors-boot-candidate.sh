@@ -15,7 +15,7 @@ repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 base_boot=${1:?usage: prepare-fp6-sensors-boot-candidate.sh V5_BOOT SENSOR_BUNDLE [OUTPUT_DIR]}
 bundle=${2:?usage: prepare-fp6-sensors-boot-candidate.sh V5_BOOT SENSOR_BUNDLE [OUTPUT_DIR]}
 output_dir=${3:-$repo_root/build/mobile/fp6-physical/fp6-sensors-boot-v1}
-candidate=$output_dir/boot-fp6-luma-sensors-v1.img
+candidate=$output_dir/boot-fp6-Suno-sensors-v1.img
 bundle_manifest=$bundle/manifest.env
 dtb=$bundle/milos-fairphone-fp6.dtb
 
@@ -52,7 +52,7 @@ if grep -Evq '^[A-Z0-9_]+=[A-Za-z0-9._,-]+$' "$bundle_manifest"; then
 fi
 # shellcheck disable=SC1090
 . "$bundle_manifest"
-[ "${LUMA_FP6_SENSORS_BUILD_VERSION:-}" = 2 ] || die 'bundle version differs'
+[ "${SUNO_FP6_SENSORS_BUILD_VERSION:-}" = 2 ] || die 'bundle version differs'
 [ "${UPSTREAM_COMMIT:-}" = "$FP6_SENSORS_UPSTREAM_COMMIT" ] || die 'upstream commit differs'
 [ "${KERNEL_RELEASE:-}" = 7.1.2 ] || die 'kernel release differs'
 [ "${BASE_KERNEL_SHA256:-}" = "$FP6_SENSORS_BASE_KERNEL_SHA256" ] || die 'base kernel differs'
@@ -95,13 +95,13 @@ cmp "$base_dir/ramdisk" "$candidate_dir/ramdisk"
 candidate_sha256=$(hash "$candidate")
 hash_pinned=true
 if [ "$FP6_SENSORS_V1_BOOT_SHA256" = UNPACKAGED ]; then
-  [ "${LUMA_ALLOW_UNPINNED_FP6_SENSORS_V1:-}" = 1 ] || die 'sensor candidate hash is not pinned'
+  [ "${SUNO_ALLOW_UNPINNED_FP6_SENSORS_V1:-}" = 1 ] || die 'sensor candidate hash is not pinned'
   hash_pinned=false
 else
   [ "$candidate_sha256" = "$FP6_SENSORS_V1_BOOT_SHA256" ] || die 'sensor candidate checksum differs'
 fi
 {
-  printf 'LUMA_FP6_SENSORS_BOOT_CANDIDATE_VERSION=1\n'
+  printf 'SUNO_FP6_SENSORS_BOOT_CANDIDATE_VERSION=1\n'
   printf 'SCOPE=fp6-motion-environment-sensors\n'
   printf 'BASE_BOOT_SHA256=%s\n' "$FP6_SENSORS_BASE_BOOT_SHA256"
   printf 'KERNEL_SHA256=%s\n' "$FP6_SENSORS_BASE_KERNEL_SHA256"

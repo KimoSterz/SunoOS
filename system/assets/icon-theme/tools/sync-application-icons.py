@@ -24,7 +24,7 @@ def generate(source, ratio, precomposed=False):
         for key, value in node.attrib.items():
             if key.rsplit('}', 1)[-1].startswith('on') or ('href' in key and not value.startswith('#')):
                 raise ValueError('External resources and event handlers are prohibited')
-    if any(n.get('id') == 'lumaTile' for n in root.iter()):
+    if any(n.get('id') == 'SunoTile' for n in root.iter()):
         raise ValueError('The source must be unwrapped authoring artwork')
     # The approved icon-family art carries its own inset tile, corner clip and
     # shadow. Preserve that geometry instead of wrapping it in a second tile.
@@ -33,11 +33,11 @@ def generate(source, ratio, precomposed=False):
     defs = root.find(f'{{{NS}}}defs')
     if defs is None:
         defs = ET.SubElement(root, f'{{{NS}}}defs')
-    clip = ET.SubElement(defs, f'{{{NS}}}clipPath', {'id': 'lumaTile'})
+    clip = ET.SubElement(defs, f'{{{NS}}}clipPath', {'id': 'SunoTile'})
     side = box[2]
     ET.SubElement(clip, f'{{{NS}}}rect', {'width': f'{side:g}', 'height': f'{side:g}',
                    'rx': f'{side * ratio:g}', 'ry': f'{side * ratio:g}'})
-    group = ET.Element(f'{{{NS}}}g', {'clip-path': 'url(#lumaTile)'})
+    group = ET.Element(f'{{{NS}}}g', {'clip-path': 'url(#SunoTile)'})
     for child in list(root):
         if child.tag.rsplit('}', 1)[-1] not in {'title', 'desc', 'metadata', 'defs'}:
             root.remove(child)
@@ -70,7 +70,7 @@ def main():
             else:
                 target.write_bytes(output)
         # An application that bundles its own hicolor identity ships the
-        # approved artwork itself, unwrapped: Luma's application-icon component
+        # approved artwork itself, unwrapped: Suno's application-icon component
         # adds the tile, so a second baked clip would round the corners twice.
         # The theme's own scalable/apps copy stays clipped for the native
         # rasterizers that draw outside App Kit. Listing the bundled paths here

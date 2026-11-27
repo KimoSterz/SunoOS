@@ -1,0 +1,12 @@
+enable Suno-clock-restore.service
+enable Suno-clock-save.timer
+enable Suno-fp6-audio-route.service
+enable Suno-fp6-bluetooth-address.service
+enable Suno-fp6-boot-success.service
+enable Suno-fp6-camera-gpu-guard.service
+enable Suno-fp6-cellular-link.service
+enable Suno-fp6-modem-quiesce.service
+enable Suno-fp6-primary-gw-session.service
+enable Suno-fp6-imsd.service
+enable rmtfs.service
+enable tqftpserv.service

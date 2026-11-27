@@ -1,7 +1,7 @@
 ---
 type: fix
 component: Applications
-packages: [prairie-core-apps, luma-home-widgets]
+packages: [prairie-core-apps, Suno-home-widgets]
 highlight: false
 ---
 Summary: Time and temperature follow system settings

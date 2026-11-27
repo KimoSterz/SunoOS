@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=Clock
+Icon=org.projectSuno.Clock
+Exec=true
+NoDisplay=true

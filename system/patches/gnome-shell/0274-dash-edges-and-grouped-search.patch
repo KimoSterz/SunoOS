@@ -1,5 +1,5 @@
---- a/js/ui/lumaFileIndex.js
-+++ b/js/ui/lumaFileIndex.js
+--- a/js/ui/SunoFileIndex.js
++++ b/js/ui/SunoFileIndex.js
 @@ -21,6 +21,15 @@
  const PRIVACY_SCHEMA = 'org.gnome.desktop.privacy';
  
@@ -34,8 +34,8 @@
                  terms, context, RESULT_LIMIT);
          }
          for (const item of ranked)
---- a/js/ui/lumaNotificationBeacon.js
-+++ b/js/ui/lumaNotificationBeacon.js
+--- a/js/ui/SunoNotificationBeacon.js
++++ b/js/ui/SunoNotificationBeacon.js
 @@ -92,6 +92,7 @@
          St.ThemeContext.get_for_stage(global.stage).connectObject('notify::scale-factor', () => this._render(), this);
          global.stage.connectObject('notify::key-focus', () => this._engagementChanged(), this);
@@ -132,11 +132,11 @@
 +++ b/js/ui/search.js
 @@ -27,7 +27,7 @@
  // gives D-Bus providers a short pause so fast typing does not flood them.
- const LUMA_LOCAL_SEARCH_DELAY_MS = 0;
- const LUMA_REMOTE_SEARCH_DELAY_MS = 90;
--const LUMA_MAX_MERGED_ROWS = 14;
-+const LUMA_MAX_MERGED_ROWS = 24;
- const LUMA_MAX_SETTING_ROWS = 4;
+ const SUNO_LOCAL_SEARCH_DELAY_MS = 0;
+ const SUNO_REMOTE_SEARCH_DELAY_MS = 90;
+-const SUNO_MAX_MERGED_ROWS = 14;
++const SUNO_MAX_MERGED_ROWS = 24;
+ const SUNO_MAX_SETTING_ROWS = 4;
  // Mail, messages and people match on their contents, so they could fill
  // the list; a few rows are enough, below apps, settings and files.
 @@ -835,8 +835,7 @@
@@ -148,11 +148,11 @@
 +        // Rank results within each category before applying section limits.
          if (this._compact) {
              this._merged = new St.BoxLayout({
-                 style_class: 'list-search-results luma-search-merged',
+                 style_class: 'list-search-results Suno-search-merged',
 @@ -977,6 +976,7 @@
              });
          }
-         display._lumaRank = this._rankFor(providerDisplay, display, index);
+         display._SunoRank = this._rankFor(providerDisplay, display, index);
 +        display._resultsViewProvider = providerDisplay.provider;
          if (display.get_parent())
              display.get_parent().remove_child(display);
@@ -163,33 +163,33 @@
      _sortMergedRows() {
 -        const rows = this._merged.get_children();
 -        const settingBest = Math.max(-Infinity, ...rows
--            .filter(row => row._lumaRank.kind === 'setting')
--            .map(row => row._lumaRank.score));
--        const groupScore = row => row._lumaRank.kind === 'setting' ? settingBest : row._lumaRank.score;
+-            .filter(row => row._SunoRank.kind === 'setting')
+-            .map(row => row._SunoRank.score));
+-        const groupScore = row => row._SunoRank.kind === 'setting' ? settingBest : row._SunoRank.score;
 -        rows.sort((a, b) => (groupScore(b) - groupScore(a)) ||
-+        this._merged.get_children().filter(row => row._lumaSection).forEach(row => row.destroy());
-+        const rows = this._merged.get_children().filter(row => row._lumaRank);
-+        const sectionOf = row => row._resultsViewProvider?.id === 'org.projectluma.Depot.desktop'
++        this._merged.get_children().filter(row => row._SunoSection).forEach(row => row.destroy());
++        const rows = this._merged.get_children().filter(row => row._SunoRank);
++        const sectionOf = row => row._resultsViewProvider?.id === 'org.projectSuno.Depot.desktop'
 +            ? 'Depot' : ({app: 'Apps', setting: 'Settings', file: 'Files',
 +                mail: 'Mail', message: 'Messages', contact: 'People', calendar: 'Calendar',
-+                music: 'Music', photo: 'Photos', place: 'Places'}[row._lumaRank.kind] ?? 'Other');
++                music: 'Music', photo: 'Photos', place: 'Places'}[row._SunoRank.kind] ?? 'Other');
 +        const order = ['Apps', 'Settings', 'Files', 'Depot', 'People', 'Messages', 'Mail', 'Calendar', 'Music', 'Photos', 'Places', 'Other'];
 +        rows.sort((a, b) => order.indexOf(sectionOf(a)) - order.indexOf(sectionOf(b)) ||
-             Ranking.compareRanked(a._lumaRank, b._lumaRank));
+             Ranking.compareRanked(a._SunoRank, b._SunoRank));
 -        rows.forEach((row, position) => this._merged.set_child_at_index(row, position));
 +        let position = 0, previous = null;
 +        for (const row of rows) {
 +            const section = sectionOf(row);
 +            if (section !== previous) {
-+                const heading = new St.Label({text: section, style_class: 'luma-search-section',
++                const heading = new St.Label({text: section, style_class: 'Suno-search-section',
 +                    style: 'padding: 12px 12px 4px; font-size: 12px; font-weight: 600;',
 +                    can_focus: false, reactive: false});
-+                heading._lumaSection = section;
++                heading._SunoSection = section;
 +                this._merged.add_child(heading);
 +                this._merged.set_child_at_index(heading, position++);
 +                previous = section;
 +            }
-+            row._lumaSectionName = section;
++            row._SunoSectionName = section;
 +            this._merged.set_child_at_index(row, position++);
 +        }
          this._syncMergedLimit();
@@ -198,7 +198,7 @@
 @@ -1003,7 +1019,7 @@
                  this._merged.remove_child(row);
          }
-         providerDisplay._lumaRows = [];
+         providerDisplay._SunoRows = [];
 -        this._syncMergedLimit();
 +        this._sortMergedRows();
      }
@@ -210,15 +210,15 @@
          let shown = 0;
 -        for (const row of this._merged.get_children()) {
 +        const sectionCounts = new Map();
-+        for (const row of this._merged.get_children().filter(row => row._lumaRank)) {
-             let visible = shown < LUMA_MAX_MERGED_ROWS;
-             if (row._lumaRank.kind === 'setting') {
++        for (const row of this._merged.get_children().filter(row => row._SunoRank)) {
+             let visible = shown < SUNO_MAX_MERGED_ROWS;
+             if (row._SunoRank.kind === 'setting') {
                  const key = Ranking.foldText(row.metaInfo.name);
 @@ -1035,10 +1052,18 @@
                  if (visible)
-                     contentShown.set(row._lumaRank.kind, count + 1);
+                     contentShown.set(row._SunoRank.kind, count + 1);
              }
-+            const section = row._lumaSectionName;
++            const section = row._SunoSectionName;
 +            const count = sectionCounts.get(section) ?? 0;
 +            visible &&= count < ({Apps: 5, Settings: 4, Files: 6, Depot: 4}[section] ?? 3);
 +            if (visible) sectionCounts.set(section, count + 1);
@@ -227,9 +227,9 @@
                  shown++;
          }
 +        const children = this._merged.get_children();
-+        for (const heading of children.filter(row => row._lumaSection))
-+            heading.visible = children.some(row => row._lumaRank && row.visible &&
-+                row._lumaSectionName === heading._lumaSection);
++        for (const heading of children.filter(row => row._SunoSection))
++            heading.visible = children.some(row => row._SunoRank && row.visible &&
++                row._SunoSectionName === heading._SunoSection);
      }
  
      _reloadRemoteProviders() {
@@ -238,7 +238,7 @@
  
          if (this._compact) {
 -            newDefaultResult = this._merged.get_children().find(row => row.visible) ?? null;
-+            newDefaultResult = this._merged.get_children().find(row => row._lumaRank && row.visible) ?? null;
++            newDefaultResult = this._merged.get_children().find(row => row._SunoRank && row.visible) ?? null;
              if (newDefaultResult !== this._defaultResult) {
                  this._setSelected(this._defaultResult, false);
                  this._setSelected(newDefaultResult, this._highlightDefault);

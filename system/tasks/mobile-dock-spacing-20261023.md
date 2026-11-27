@@ -4,7 +4,7 @@
 - Status: approved candidate; draft integration pending simulator shell baseline.
 - Scope: five equal dock slots, Search tile shape, fallback browser apparent size.
 
-The candidate is isolated in 0044-luma-uniform-dock-layout.patch. Its required
+The candidate is isolated in 0044-Suno-uniform-dock-layout.patch. Its required
 v71 Mobile simulator baseline is newer than public main; see
 `docs/developer-platform/mobile-dock-integration.md` for the prerequisite,
 pre-patch file hashes and builder instructions. No prerequisite shell changes,

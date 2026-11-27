@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
 
-# Replace only the DTB in Luma's proven camera-enabled FP6 boot image.  The
+# Replace only the DTB in Suno's proven camera-enabled FP6 boot image.  The
 # kernel and ramdisk remain byte-identical.  This script never contacts a
 # phone, installs firmware, or writes a partition.
 
@@ -15,7 +15,7 @@ repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 base_boot=${1:?usage: prepare-fp6-audio-boot-candidate.sh BASE_BOOT AUDIO_DTB [OUTPUT_DIR]}
 audio_dtb=${2:?usage: prepare-fp6-audio-boot-candidate.sh BASE_BOOT AUDIO_DTB [OUTPUT_DIR]}
 output_dir=${3:-$repo_root/build/mobile/fp6-physical/fp6-audio-speaker-boot-v1}
-candidate=$output_dir/boot-fp6-luma-audio-speaker-v1.img
+candidate=$output_dir/boot-fp6-Suno-audio-speaker-v1.img
 
 for tool in cmp file install mkbootimg mktemp python3 sha256sum unpack_bootimg; do
   command -v "$tool" >/dev/null 2>&1 || {
@@ -85,7 +85,7 @@ cmp "$base_dir/ramdisk" "$candidate_dir/ramdisk"
 cmp "$audio_dtb" "$candidate_dir/dtb"
 
 {
-  printf 'LUMA_FP6_AUDIO_BOOT_CANDIDATE_VERSION=1\n'
+  printf 'SUNO_FP6_AUDIO_BOOT_CANDIDATE_VERSION=1\n'
   printf 'SCOPE=senary-mi2s-aw88261-playback\n'
   printf 'BASE_BOOT_SHA256=%s\n' "$FP6_AUDIO_BASE_BOOT_SHA256"
   printf 'DTB_SHA256=%s\n' "$FP6_AUDIO_SPEAKER_DTB_SHA256"

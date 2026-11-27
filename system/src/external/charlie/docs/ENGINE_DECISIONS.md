@@ -15,12 +15,12 @@ does not import sockets or wait on network work.
 | Flutter persistence | SQLite 3 with WAL, transactions and FTS5 | Public domain; Fedora SQLite/Python |
 | Flutter secure storage plugin | libsecret through GObject Introspection | LGPL-2.1-or-later; Fedora/libsecret |
 | Flutter Gmail authentication | Python standard-library OAuth 2.0 authorization-code PKCE + loopback handoff; XOAUTH2 over `imaplib`/`smtplib` | Ported behavior; PSF licence runtime |
-| Flutter desktop shell and window plugins | GTK 4, libadwaita and Luma AppKit | LGPL and Apache-2.0; Luma image |
+| Flutter desktop shell and window plugins | GTK 4, libadwaita and Suno AppKit | LGPL and Apache-2.0; Suno image |
 | App-local HTML rendering | WebKitGTK 6 locked-down reader | LGPL/BSD; Fedora WebKitGTK |
 | Private app search UI only | GNOME Shell SearchProvider2 plus local FTS | GNOME public D-Bus contract |
 
 No third-party source is vendored. The application source is Apache-2.0. The
-Mail artwork comes from Luma Icon Canvas v3 asset `05-mail.svg`. Charlie's
+Mail artwork comes from Suno Icon Canvas v3 asset `05-mail.svg`. Charlie's
 packaged SVG adds only the canvas's 240px platform-silhouette clip because
 freedesktop hicolor consumers do not apply Icon Canvas's web presentation mask;
 the PNGs are mechanical rasterizations of that clipped source.
@@ -29,7 +29,7 @@ the PNGs are mechanical rasterizations of that clipped source.
 
 - Flutter, its GTK 3 embedder and all app-drawn window chrome
 - JVM/JNI bridge and JVM runtime dependency
-- tray/AppIndicator behavior (Luma has no tray)
+- tray/AppIndicator behavior (Suno has no tray)
 - private contact storage and app-local system-service substitutes
 - any implicit access to the existing Flutter Charlie profile
 

@@ -57,9 +57,9 @@ mv "$sync_root/gtk-4.22.4" "$sync_root/gtk4"
 (
   cd "$sync_root/gtk4"
   git apply "$sync_root/srpm/0001-gtkapplication-wayland-null-check.patch"
-  git apply "$repo_root/patches/gtk4/0001-luma-calm-window-shadow.patch"
-  git apply "$repo_root/patches/gtk4/0002-luma-native-window-elevation.patch"
-  git apply "$repo_root/patches/gtk4/0003-luma-native-headerbar-chrome.patch"
+  git apply "$repo_root/patches/gtk4/0001-Suno-calm-window-shadow.patch"
+  git apply "$repo_root/patches/gtk4/0002-Suno-native-window-elevation.patch"
+  git apply "$repo_root/patches/gtk4/0003-Suno-native-headerbar-chrome.patch"
 )
 
 mkdir -p "$source_root" "$(dirname -- "$build_root")"
@@ -70,7 +70,7 @@ install -m 0644 "$sync_root/srpm/gtk4.spec" "$preview_root/gtk4.spec"
 # tree for warm Ninja builds, but explicitly invalidate GTK's resource target
 # whenever that generated light theme changes; tarball mtimes alone are not a
 # reliable dependency signal after the first build.
-theme_stamp="$preview_root/.luma-light-theme.sha256"
+theme_stamp="$preview_root/.Suno-light-theme.sha256"
 theme_checksum=$(sha256sum \
   "$source_root/gtk/theme/Default/_common.scss" \
   "$source_root/gtk/theme/Default/Default-light.css" | sha256sum | cut -d' ' -f1)

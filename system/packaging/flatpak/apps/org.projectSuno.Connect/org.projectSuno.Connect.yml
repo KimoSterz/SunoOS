@@ -1,0 +1,49 @@
+{
+  "id": "org.projectSuno.Connect",
+  "runtime": "org.projectSuno.Platform",
+  "runtime-version": "44",
+  "sdk": "org.projectSuno.Sdk",
+  "command": "Suno-connect",
+  "finish-args": [
+    "--talk-name=org.projectSuno.Shell.Keyboard",
+    "--talk-name=org.projectSuno.Shell.Remote",
+    "--talk-name=org.projectSuno.ShellState1",
+    "--metadata=X-Suno=min-host-installer=57",
+    "--metadata=X-Suno=app-data-schema=connect-host-v1",
+    "--share=ipc",
+    "--socket=wayland",
+    "--socket=fallback-x11",
+    "--device=dri",
+    "--talk-name=org.projectSuno.Connect1",
+    "--talk-name=org.projectSuno.AppData1",
+    "--metadata=X-Suno=min-host-continuity=65"
+  ],
+  "modules": [
+    {
+      "name": "connect-ui",
+      "buildsystem": "simple",
+      "build-commands": [
+        "install -d /app/lib/python3.14/site-packages/Suno_continuity /app/bin",
+        "install -Dm644 src/Suno-continuity/Suno_continuity/__init__.py /app/lib/python3.14/site-packages/Suno_continuity/__init__.py",
+        "install -Dm644 src/Suno-continuity/Suno_continuity/application.py /app/lib/python3.14/site-packages/Suno_continuity/application.py",
+        "install -Dm644 src/Suno-continuity/Suno_continuity/cloud_sync.py /app/lib/python3.14/site-packages/Suno_continuity/cloud_sync.py",
+        "install -Dm644 src/Suno-continuity/Suno_continuity/connect_cloud_contract.py /app/lib/python3.14/site-packages/Suno_continuity/connect_cloud_contract.py",
+        "install -Dm644 src/Suno-continuity/Suno_continuity/connect_view.py /app/lib/python3.14/site-packages/Suno_continuity/connect_view.py",
+        "install -Dm644 src/Suno-continuity/Suno_continuity/phone_contract.py /app/lib/python3.14/site-packages/Suno_continuity/phone_contract.py",
+        "install -Dm644 src/Suno-continuity/Suno_continuity/companion_contract.py /app/lib/python3.14/site-packages/Suno_continuity/companion_contract.py",
+        "python3 -m compileall -q -f -j0 --invalidation-mode checked-hash /app/lib/python3.14/site-packages",
+        "install -Dm755 src/Suno-continuity/bin/Suno-connect /app/bin/Suno-connect-real",
+        "printf '#!/bin/sh\\nexec python3 -m Suno_appkit.migration_startup Suno-connect-real \"$@\"\\n' > /app/bin/Suno-connect",
+        "chmod 755 /app/bin/Suno-connect",
+        "install -Dm644 src/Suno-continuity/data/org.projectSuno.Connect.desktop /app/share/applications/org.projectSuno.Connect.desktop",
+        "cp -a src/Suno-continuity/data/icons /app/share/",
+        "install -d /app/share/Suno-tv && mv /app/share/icons/hicolor/scalable/apps/org.projectSuno.Connect-tv.svg /app/share/Suno-tv/",
+        "install -Dm644 depot.metainfo.xml /app/share/metainfo/org.projectSuno.Connect.metainfo.xml",
+        "install -Dm644 LICENSE.md /app/share/licenses/org.projectSuno.Connect/LICENSE.md",
+        "install -Dm644 depot-icon.svg /app/share/icons/hicolor/scalable/apps/org.projectSuno.Connect.svg",
+        "install -Dm644 depot-media/b64764c47c1618212201ea1c6ba465e94fa3b098588fd5cf56c3c5a65f6ce247.png /app/share/Suno-app-media/b64764c47c1618212201ea1c6ba465e94fa3b098588fd5cf56c3c5a65f6ce247.png"
+      ]
+    }
+  ],
+  "appstream-compose": false
+}

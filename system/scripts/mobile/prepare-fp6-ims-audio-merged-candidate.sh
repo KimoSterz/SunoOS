@@ -20,12 +20,12 @@ current_boot=${1:?usage: prepare-fp6-ims-audio-merged-candidate.sh CURRENT_IMS_F
 audio_boot=${2:?missing accepted audio-v5 boot image}
 output_dir=${3:?missing output directory}
 
-expected_current_boot_sha=${LUMA_FP6_IMS_AUDIO_CURRENT_BOOT_SHA256:-481f0a3e0533395cab125697e89ecc0e2dfd8b6261f45300a0775040ace3e51a}
-expected_audio_boot_sha=${LUMA_FP6_IMS_AUDIO_V5_BOOT_SHA256:-77819b90457e55809708aac1bc01d4d5d063f1bc274c1a4b0f9de716bfe94e01}
-expected_kernel_sha=${LUMA_FP6_IMS_AUDIO_KERNEL_SHA256:-04eae4ebf26ad68b4a543dd50cae3cb6c9400729bb15e73290b678a1dfeb4ce1}
-expected_ramdisk_sha=${LUMA_FP6_IMS_AUDIO_RAMDISK_SHA256:-096bbb1cadd09efd89b6f50d45c4a8ece83023663d7084872203394166b99e7a}
-expected_current_dtb_sha=${LUMA_FP6_IMS_AUDIO_CURRENT_DTB_SHA256:-3eea76e3e41ef0b6fafc3e06c137c59f5b82640bea596f1511cdcf690c7c8f3d}
-expected_audio_dtb_sha=${LUMA_FP6_IMS_AUDIO_V5_DTB_SHA256:-cd942c35f96d13c8ea22bcb9bab611abb8cf2a34fec9c95d2e17a56baa617c02}
+expected_current_boot_sha=${SUNO_FP6_IMS_AUDIO_CURRENT_BOOT_SHA256:-481f0a3e0533395cab125697e89ecc0e2dfd8b6261f45300a0775040ace3e51a}
+expected_audio_boot_sha=${SUNO_FP6_IMS_AUDIO_V5_BOOT_SHA256:-77819b90457e55809708aac1bc01d4d5d063f1bc274c1a4b0f9de716bfe94e01}
+expected_kernel_sha=${SUNO_FP6_IMS_AUDIO_KERNEL_SHA256:-04eae4ebf26ad68b4a543dd50cae3cb6c9400729bb15e73290b678a1dfeb4ce1}
+expected_ramdisk_sha=${SUNO_FP6_IMS_AUDIO_RAMDISK_SHA256:-096bbb1cadd09efd89b6f50d45c4a8ece83023663d7084872203394166b99e7a}
+expected_current_dtb_sha=${SUNO_FP6_IMS_AUDIO_CURRENT_DTB_SHA256:-3eea76e3e41ef0b6fafc3e06c137c59f5b82640bea596f1511cdcf690c7c8f3d}
+expected_audio_dtb_sha=${SUNO_FP6_IMS_AUDIO_V5_DTB_SHA256:-cd942c35f96d13c8ea22bcb9bab611abb8cf2a34fec9c95d2e17a56baa617c02}
 expected_full_size=100663296
 
 fingerprint_overlay=$repo_root/config/mobile/fp6-fingerprint/milos-fairphone-fp6-fingerprint-base-0382-lab.dtso
@@ -35,8 +35,8 @@ qsee_heaps_overlay=$repo_root/config/mobile/fp6-fingerprint/milos-fairphone-fp6-
 qsee_log_overlay=$repo_root/config/mobile/fp6-fingerprint/milos-fairphone-fp6-qsee-log.dtso
 appsbl_overlay=$repo_root/config/mobile/fp6-fingerprint/milos-fairphone-fp6-qsee-appsbl-contract.dtso
 
-candidate=$output_dir/boot-fp6-luma-ims-audio-v1-full.img
-slim_candidate=$output_dir/boot-fp6-luma-ims-audio-v1.img
+candidate=$output_dir/boot-fp6-Suno-ims-audio-v1-full.img
+slim_candidate=$output_dir/boot-fp6-Suno-ims-audio-v1.img
 merged_dtb=$output_dir/milos-fairphone-fp6-ims-audio-v1.dtb
 
 die() { printf 'error: %s\n' "$*" >&2; exit 1; }
@@ -245,8 +245,8 @@ ta_phandle=$(fdtget -t x "$merged_dtb" "$ta" phandle)
 [ "$(fdtget "$merged_dtb" /aliases qseecom_mem)" = "$apps" ] || die 'QSEE apps alias differs'
 [ "$(fdtget "$merged_dtb" /aliases qseecom_ta_mem)" = "$ta" ] || die 'QSEE TA alias differs'
 [ "$(fdtget "$merged_dtb" /aliases qcom_qseecom)" = "$qsee" ] || die 'QSEE node alias differs'
-fdtget "$merged_dtb" /firmware/scm/qseecom-tee-heaps luma,dedicated-heaps >/dev/null || die 'dedicated heaps marker absent'
-fdtget "$merged_dtb" /firmware/scm luma,qsee-log-diagnostic >/dev/null || die 'QSEE diagnostic marker absent'
+fdtget "$merged_dtb" /firmware/scm/qseecom-tee-heaps Suno,dedicated-heaps >/dev/null || die 'dedicated heaps marker absent'
+fdtget "$merged_dtb" /firmware/scm Suno,qsee-log-diagnostic >/dev/null || die 'QSEE diagnostic marker absent'
 ! fdtget "$merged_dtb" /firmware/scm memory-region >/dev/null 2>&1 || die 'global SCM pool reintroduced'
 
 # Physically accepted microphone-v5 audio graph checks.
@@ -275,7 +275,7 @@ candidate_footer_sha=$(tail -c 64 "$candidate" | sha256sum | awk '{print $1}')
 [ "$candidate_footer_sha" = "$current_footer_sha" ] || die 'AVB footer changed'
 
 {
-  printf 'LUMA_FP6_IMS_AUDIO_MERGED_VERSION=1\n'
+  printf 'SUNO_FP6_IMS_AUDIO_MERGED_VERSION=1\n'
   printf 'CURRENT_FULL_BOOT_SHA256=%s\n' "$expected_current_boot_sha"
   printf 'AUDIO_V5_BOOT_SHA256=%s\n' "$expected_audio_boot_sha"
   printf 'KERNEL_SHA256=%s\n' "$expected_kernel_sha"

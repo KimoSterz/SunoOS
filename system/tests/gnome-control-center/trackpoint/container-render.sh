@@ -18,7 +18,7 @@ podman run --rm --security-opt label=disable -v "$S:/work" -w /work --memory 4g 
     rpm -q gnome-control-center gtk4 libadwaita prairie-icon-theme google-figtree-fonts
     mkdir -p /etc/dconf/profile /etc/dconf/db
     cp /work/dconf/profile/user /etc/dconf/profile/user
-    cp -r /work/dconf/db/luma.d /etc/dconf/db/
+    cp -r /work/dconf/db/Suno.d /etc/dconf/db/
     dconf update
     # Settings keeps a system bus connection in its object storage.
     mkdir -p /run/dbus; rm -f /run/dbus/system_bus_socket /run/dbus/pid

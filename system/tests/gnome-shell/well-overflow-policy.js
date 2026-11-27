@@ -3,7 +3,7 @@
 // they fit, the overflow exists only when it hides two or more apps and
 // shows their faces, and a browser's status icon or notification belongs to
 // the web app it speaks for, else to the browser -- never a mix of the two.
-// Run: gjs -m well-overflow-policy.js js/ui/lumaWellModel.js js/ui/lumaWell.js \
+// Run: gjs -m well-overflow-policy.js js/ui/SunoWellModel.js js/ui/SunoWell.js \
 //        js/ui/notificationDaemon.js
 // (node well-overflow-policy.js ... works too).
 const gjs = typeof globalThis.ARGV !== 'undefined';
@@ -90,7 +90,7 @@ const installed = [
     {id: SLACK, name: 'Slack', wmClass: 'crx_bnmkfklbkkhblogaoicfbffmkkdakgfn', exec: '/opt/google/chrome/google-chrome'},
     {id: 'com.rhyme.viola.desktop', name: 'Viola', exec: '/usr/bin/viola-browser', categories: 'Network;WebBrowser;'},
     {id: VIOLA_NOTES, name: 'Notes', wmClass: 'crx_aghbiahbpaijignceidepookljebhfak', exec: '/usr/bin/viola-browser'},
-    {id: 'org.projectluma.Notes.desktop', name: 'Notes', exec: 'notes'},
+    {id: 'org.projectSuno.Notes.desktop', name: 'Notes', exec: 'notes'},
     {id: 'nm-applet.desktop', name: 'Network', exec: 'nm-applet'},
 ];
 const catalog = {
@@ -146,10 +146,10 @@ assert(M.notificationApp(catalog.lookup('nm-applet.desktop'), 'chatgpt.com\n\nx'
     'only a browser\'s notifications are re-homed');
 
 // ── The Shell uses the model ──────────────────────────────────────────
-assert(/from '\.\/lumaWellModel\.js'/.test(well) && !/^export function arrange/m.test(well),
+assert(/from '\.\/SunoWellModel\.js'/.test(well) && !/^export function arrange/m.test(well),
     'the Well arranges with the model');
 assert(!well.includes('view-app-grid-symbolic'), 'the overflow is not a generic grid square');
-assert(/luma-well-stack-face/.test(well) && /_stackCount/.test(well), 'the overflow shows stacked faces and a count');
+assert(/Suno-well-stack-face/.test(well) && /_stackCount/.test(well), 'the overflow shows stacked faces and a count');
 assert(/statusItemApp\(/.test(well) && /facesAsApp/.test(well), 'a status item\'s name and face come from one app');
 assert(/GetConnectionUnixProcessID/.test(well), 'a browser status icon is placed by its owner\'s process');
 assert(/capacity: this\._capacity\(\)/.test(well), 'the Well passes its capacity to the model');

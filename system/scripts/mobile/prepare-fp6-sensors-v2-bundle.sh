@@ -31,7 +31,7 @@ done
 
 # shellcheck disable=SC1090
 . "$base/manifest.env"
-[ "${LUMA_FP6_SENSORS_BUILD_VERSION:-}" = 1 ] || die 'base bundle version differs'
+[ "${SUNO_FP6_SENSORS_BUILD_VERSION:-}" = 1 ] || die 'base bundle version differs'
 [ "${UPSTREAM_COMMIT:-}" = "$FP6_SENSORS_UPSTREAM_COMMIT" ] || die 'base upstream commit differs'
 [ "${SENSOR_PATCH_SHA256:-}" = "$FP6_SENSORS_PATCH_SHA256" ] || die 'base sensor patch differs'
 [ "${KERNEL_UNCHANGED:-}" = true ] && [ "${RAM_BOOT_ONLY:-}" = true ] || die 'base provenance differs'
@@ -53,10 +53,10 @@ for index in "${!base_files[@]}"; do
 done
 [ "$(hash "$base/milos-fairphone-fp6.dtb")" = "$FP6_SENSORS_DTB_SHA256" ] || die 'base DTB differs'
 
-unset LUMA_FP6_SENSORS_BUILD_VERSION UPSTREAM_COMMIT SENSOR_PATCH_SHA256 KERNEL_UNCHANGED RAM_BOOT_ONLY PHONE_ACCESSED PARTITION_WRITTEN
+unset SUNO_FP6_SENSORS_BUILD_VERSION UPSTREAM_COMMIT SENSOR_PATCH_SHA256 KERNEL_UNCHANGED RAM_BOOT_ONLY PHONE_ACCESSED PARTITION_WRITTEN
 # shellcheck disable=SC1090
 . "$fix/manifest.env"
-[ "${LUMA_FP6_ICM42630_FIX_VERSION:-}" = 1 ] || die 'ICM-42630 fix version differs'
+[ "${SUNO_FP6_ICM42630_FIX_VERSION:-}" = 1 ] || die 'ICM-42630 fix version differs'
 [ "${BASE_KERNEL_SHA256:-}" = "$FP6_SENSORS_BASE_KERNEL_SHA256" ] || die 'fix kernel differs'
 [ "${ICM42630_PATCH_SHA256:-}" = "$FP6_SENSORS_ICM42630_PATCH_SHA256" ] || die 'ICM-42630 patch differs'
 [ "${CONFIG_SHA256:-}" = "$FP6_SENSORS_CONFIG_SHA256" ] || die 'fix config differs'
@@ -74,7 +74,7 @@ install -m 0644 "$fix/modules/inv-icm42600.ko" "$output/modules/inv-icm42600.ko"
 install -m 0644 "$fix/modules/inv-icm42600-spi.ko" "$output/modules/inv-icm42600-spi.ko"
 
 {
-  printf 'LUMA_FP6_SENSORS_BUILD_VERSION=2\n'
+  printf 'SUNO_FP6_SENSORS_BUILD_VERSION=2\n'
   printf 'UPSTREAM_COMMIT=%s\n' "$FP6_SENSORS_UPSTREAM_COMMIT"
   printf 'KERNEL_RELEASE=7.1.2\n'
   printf 'BASE_KERNEL_SHA256=%s\n' "$FP6_SENSORS_BASE_KERNEL_SHA256"

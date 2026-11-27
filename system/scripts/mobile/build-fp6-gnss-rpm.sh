@@ -96,7 +96,7 @@ for rpm_file in $(find "$topdir/RPMS" "$topdir/SRPMS" -type f -name '*.rpm' | so
 done
 
 {
-  printf 'LUMA_FP6_GNSS_BUILD_VERSION=1\n'
+  printf 'SUNO_FP6_GNSS_BUILD_VERSION=1\n'
   printf 'COMPONENT=%s\n' "$component"
   printf 'SOURCE_REPOSITORY=%s\n' "$source_repo"
   printf 'SOURCE_COMMIT=%s\n' "$source_commit"

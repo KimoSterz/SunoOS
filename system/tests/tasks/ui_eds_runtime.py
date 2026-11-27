@@ -6,10 +6,10 @@ import json
 import sys
 import time
 from datetime import date, timedelta
-assert os.environ.get("LUMA_TASKS_ISOLATED_TEST") == "1"
+assert os.environ.get("SUNO_TASKS_ISOLATED_TEST") == "1"
 root = Path(__file__).resolve().parents[2]
-sys.path[:0] = [str(root / "src/prairie-core"), str(root / "src/luma-platform/appkit")]
-os.environ.pop("LUMA_TASKS_FIXTURE", None)
+sys.path[:0] = [str(root / "src/prairie-core"), str(root / "src/Suno-platform/appkit")]
+os.environ.pop("SUNO_TASKS_FIXTURE", None)
 from prairie_apps.tasks import TasksApplication
 from prairie_apps.tasks_backend import TasksRepository
 from gi.repository import GLib
@@ -48,7 +48,7 @@ window.source.load()
 assert window.source.data["tasks"][0]["flag"] is True
 assert window.source.data["tasks"][0]["who"] == ["me", "local@example.com"]
 assert window.source.records[key].assignee == ""
-backup_files = list((Path(os.environ["XDG_DATA_HOME"]) / "luma/tasks/backups").glob("*.json"))
+backup_files = list((Path(os.environ["XDG_DATA_HOME"]) / "Suno/tasks/backups").glob("*.json"))
 assert len(backup_files) == 2
 backup_bytes = {p: p.read_bytes() for p in backup_files}
 local_backup = next(p for p in backup_files if p.name == "local-original.json")

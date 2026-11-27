@@ -1,13 +1,13 @@
 # Platforms and device profiles
 
-Luma uses a shared OS platform and application codebase across desktop, tablet and mobile. Architecture and hardware differences belong in configuration, packaging and narrowly scoped upstream patches rather than duplicated app repositories.
+Suno uses a shared OS platform and application codebase across desktop, tablet and mobile. Architecture and hardware differences belong in configuration, packaging and narrowly scoped upstream patches rather than duplicated app repositories.
 
 - `config/desktop/`: desktop package inputs and composition.
 - `devices/` and `socs/`: one strict manifest per supported device and shared SoC-family configuration; see [devices.md](devices.md).
 - `config/mobile/` and `scripts/mobile/`: mobile userspace, boot and device work.
 - `patches/linux-*`, `patches/gnome-mobile/`, `patches/phosh/` and `patches/phoc/`: kernel and mobile integration where required.
 - `packaging/`: component recipes and architecture constraints.
-- `src/luma-platform/`: shared UI and application services.
+- `src/Suno-platform/`: shared UI and application services.
 
 x86_64 and AArch64 need separately built artifacts. Phone boot images, firmware and kernel support are device-specific; never flash an image merely because another device has the same CPU architecture. Device configuration in this source tree includes development and bring-up work and is not a supported-device certification.
 

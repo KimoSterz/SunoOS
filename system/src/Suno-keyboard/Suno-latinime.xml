@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<component>
+  <name>org.projectSuno.IBus.Latin</name>
+  <description>Suno native mobile input</description>
+  <exec>/usr/libexec/Suno-ibus-latinime</exec>
+  <version>1.0</version>
+  <author>Project Suno</author>
+  <license>Apache-2.0</license>
+  <homepage>https://project-luma.local</homepage>
+  <textdomain>project-suno</textdomain>
+  <engines>
+    <engine>
+      <name>Suno-latin</name>
+      <language>en</language>
+      <license>Apache-2.0</license>
+      <author>Project Suno</author>
+      <layout>us</layout>
+      <longname>Suno Keyboard</longname>
+      <description>Predictive Suno mobile keyboard</description>
+      <icon>input-keyboard-symbolic</icon>
+      <rank>100</rank>
+    </engine>
+  </engines>
+</component>

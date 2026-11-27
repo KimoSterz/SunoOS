@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
-import {homeLayout} from '../../../src/luma-shell-presentation/layout.js';
-import {reconcileGrid, fits} from '../../../src/luma-shell-presentation/grid.js';
+import {homeLayout} from '../../../src/Suno-shell-presentation/layout.js';
+import {reconcileGrid, fits} from '../../../src/Suno-shell-presentation/grid.js';
 function assert(ok, message) { if (!ok) throw new Error(message); }
 const definitions = [{id: 'weather', kind: 'widget', w: 2, h: 2, minW: 2, minH: 2},
     ...Array.from({length: 60}, (_, i) => ({id: `app${i}`, kind: 'app', w: 1, h: 1}))];

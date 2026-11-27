@@ -18,8 +18,8 @@ import stat
 import sys
 import time
 
-MARKER = '.luma-private-import.json'
-SCHEMA = 'org.projectluma.private-import-directory/v1'
+MARKER = '.Suno-private-import.json'
+SCHEMA = 'org.projectSuno.private-import-directory/v1'
 ACL_NAMES = ('system.posix_acl_access', 'system.posix_acl_default')
 
 

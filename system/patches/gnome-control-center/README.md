@@ -1,6 +1,6 @@
 # GNOME Control Center downstream patches
 
-Luma carries two narrow presentation patches against Fedora 44's
+Suno carries two narrow presentation patches against Fedora 44's
 `gnome-control-center-50.4-1.fc44` source package. It does not rename schemas,
 change stored values, or remove either choice.
 
@@ -41,93 +41,93 @@ and let the shared application identity expose the same three menu actions via
 GtkApplication's native menu model. No panel/backend/schema changes are made.
 The native search field consumes the corrected Adw41 shared class selector.
 
-`0014-luma-background-activity-page.patch` (ADR-033) adds **Settings › Apps ›
+`0014-Suno-background-activity-page.patch` (ADR-033) adds **Settings › Apps ›
 Background Activity**: every app with a background agent, its switch, state,
 memory, when it last ran, what it is for, when it starts, and Stop Now, read
-from and changed only through `luma-background`
-(`org.projectluma.Background1`). Turning off an essential app asks first and
-says what the person will miss. The new page file is Luma-authored and, like
-the files it joins, GPL-2.0-or-later. Release `1.luma.15.preview20260915.1`.
+from and changed only through `Suno-background`
+(`org.projectSuno.Background1`). Turning off an essential app asks first and
+says what the person will miss. The new page file is Suno-authored and, like
+the files it joins, GPL-2.0-or-later. Release `1.Suno.15.preview20260915.1`.
 
-`0015-luma-sound-new-devices-and-network-outputs.patch` (ADR-032) is the
+`0015-Suno-sound-new-devices-and-network-outputs.patch` (ADR-032) is the
 audio-policy Sound panel patch, renumbered from `work/audio-policy`'s 0014 and
 regenerated on top of 0014 Background Activity (its hunks applied unchanged):
 the Output Device list leaves out outputs PipeWire's discovery modules create
 on their own unless one is in use, and a New Output Devices group binds the
-`org.projectluma.audio-devices` settings (hidden without luma-audio-policy).
+`org.projectSuno.audio-devices` settings (hidden without Suno-audio-policy).
 
-`0016-luma-cast-settings-page.patch` (ADR-034) adds **Settings › Displays ›
+`0016-Suno-cast-settings-page.patch` (ADR-034) adds **Settings › Displays ›
 Cast**: Silence Notifications, Sound and Allow Screens That Connect Directly
-bound to `org.projectluma.cast` (shipped by luma-cast), and Remembered Screens
-from `org.projectluma.Cast1` with pin and Forget. `gnome-control-center display
+bound to `org.projectSuno.cast` (shipped by Suno-cast), and Remembered Screens
+from `org.projectSuno.Cast1` with pin and Forget. `gnome-control-center display
 cast` opens it directly; the Shell's Cast Settings item uses that. Without
-luma-cast the page says casting isn't available.
+Suno-cast the page says casting isn't available.
 
-0014, 0015 and 0016 together were release `1.luma.16.preview20260915.1`, which
-supersedes .15. `1.luma.17.preview20260916.1` drops the "Ask Before Using" row
-from 0015: luma-audio-policy 1.luma.3 never asks about output devices. The render harness is `tests/gnome-control-center/cast-settings/`.
+0014, 0015 and 0016 together were release `1.Suno.16.preview20260915.1`, which
+supersedes .15. `1.Suno.17.preview20260916.1` drops the "Ask Before Using" row
+from 0015: Suno-audio-policy 1.Suno.3 never asks about output devices. The render harness is `tests/gnome-control-center/cast-settings/`.
 
-`0017-luma-about-names-luma.patch` (ADR-040) makes **Settings › About** name
-Luma: the logo comes from os-release `LOGO` (the spec no longer passes
-`-Ddistributor_logo`; with `LOGO=luma-logo` About asks the icon theme for
-`luma-logo-text-dark`, `luma-logo-text`, `luma-logo-dark`, `luma-logo` at 192 px,
-all shipped by luma-logos in hicolor), the Support GNOME / Donate group is gone,
+`0017-Suno-about-names-Suno.patch` (ADR-040) makes **Settings › About** name
+Suno: the logo comes from os-release `LOGO` (the spec no longer passes
+`-Ddistributor_logo`; with `LOGO=Suno-logo` About asks the icon theme for
+`Suno-logo-text-dark`, `Suno-logo-text`, `Suno-logo-dark`, `Suno-logo` at 192 px,
+all shipped by Suno-logos in hicolor), the Support GNOME / Donate group is gone,
 and System Details drops the GNOME Version and Windowing System rows. The OS
-name is os-release `PRETTY_NAME` exactly ("Luma (Prairie, Beta 0, Nightly
+name is os-release `PRETTY_NAME` exactly ("Suno (Prairie, Beta 0, Nightly
 20260916)") in About, System Details › OS Name and the copied report; the build
 is the OS Build row (`IMAGE_VERSION`, else `BUILD_ID`, hidden when neither is
-set). Release `1.luma.18.preview20260916.1` added it with a luma-update
-`BootedVersion` overlay; `1.luma.19.preview20260917.1` removes that overlay.
+set). Release `1.Suno.18.preview20260916.1` added it with a Suno-update
+`BootedVersion` overlay; `1.Suno.19.preview20260917.1` removes that overlay.
 
-`0018-luma-device-name-static-slug.patch`: **About › Device Name** sets the
+`0018-Suno-device-name-static-slug.patch`: **About › Device Name** sets the
 pretty hostname to what was typed and the static hostname to its lower-case
 slug, at most 63 bytes ("Nick’s ThinkPad" -> `nicks-thinkpad`); a name with no
 host name form keeps the current static hostname instead of `localhost`. The
 spec's `%check` runs upstream's `test-hostname`, which gains that case. Release
-`1.luma.19.preview20260917.1`.
+`1.Suno.19.preview20260917.1`.
 
-`0019-luma-about-legacy-os-release.patch`: images from before release names
-(os-release `ID=luma` without `LOGO` or `VERSION_CODENAME`, `PRETTY_NAME="Luma
-1.0"`) get `luma-logo` as the logo, and the OS name switches from `PRETTY_NAME`
-to luma-update's `BootedName` when it starts "Luma (". The same name switch
-applies without `IMAGE_VERSION` (luma-release's own os-release, "Luma (Prairie,
-Beta 0)", layered on an older image; release `1.luma.21.preview20260917.3`). An
+`0019-Suno-about-legacy-os-release.patch`: images from before release names
+(os-release `ID=Suno` without `LOGO` or `VERSION_CODENAME`, `PRETTY_NAME="Suno
+1.0"`) get `Suno-logo` as the logo, and the OS name switches from `PRETTY_NAME`
+to Suno-update's `BootedName` when it starts "Suno (". The same name switch
+applies without `IMAGE_VERSION` (Suno-release's own os-release, "Suno (Prairie,
+Beta 0)", layered on an older image; release `1.Suno.21.preview20260917.3`). An
 image's own os-release (`VERSION_CODENAME` and `IMAGE_VERSION`) shows
-`PRETTY_NAME` and makes no D-Bus call. Release `1.luma.20.preview20260917.2`
+`PRETTY_NAME` and makes no D-Bus call. Release `1.Suno.20.preview20260917.2`
 added the patch.
 
 The About render harness is `tests/gnome-control-center/about-release-name/`:
 `container-render.sh DIR` (DIR/rpms holds the candidate Settings and the
-image's toolkit, icon theme and luma-logos) renders About and System Details in
+image's toolkit, icon theme and Suno-logos) renders About and System Details in
 light and dark at 1x and 2x against a nightly os-release and a real hostnamed,
-checks the hicolor icon cache lists the `luma-logo` names, and sets Device Name
+checks the hicolor icon cache lists the `Suno-logo` names, and sets Device Name
 to "ThinkPad", a name over 63 bytes and "Nick’s ThinkPad", printing what
 hostnamed stored.
 
-`0021-luma-mouse-trackpoint-page.patch`: the **Mouse & Touchpad** tab and
+`0021-Suno-mouse-trackpoint-page.patch`: the **Mouse & Touchpad** tab and
 page GNOME calls "Pointing Stick" are "TrackPoint", and the page opens with
 "The small pointer control in the middle of your keyboard." "Pointing Stick
 Acceleration" is "Acceleration", the info text names the TrackPoint, and the
 panel's search keywords gain "TrackPoint" and "Pointing stick". The page keeps
 its controls and still appears only when a pointing stick is present. The
 spec's `%check` greps the compiled page and desktop file for the new strings.
-Release `1.luma.23.preview20260918.1`.
+Release `1.Suno.23.preview20260918.1`.
 
-`0022-luma-dash-allow-free-placement.patch`: "Allow free placement" in the Dash panel's Shape group (shell-state `shelf-free-placement`, shown only when the schema has it), and the "Quick controls on right" switch removed: the order of the clock and the quick controls is set by arranging the islands.
+`0022-Suno-dash-allow-free-placement.patch`: "Allow free placement" in the Dash panel's Shape group (shell-state `shelf-free-placement`, shown only when the schema has it), and the "Quick controls on right" switch removed: the order of the clock and the quick controls is set by arranging the islands.
 
-`0023-luma-dash-span-and-float-follow-islands.patch`: without islands the Dash is one full-length bar per edge (Shell .119), so Span full edge is insensitive and says so, Float outer edges stays available, and the preview draws the full bar. Since .26 the switch then shows On ("Always on when islands are off") without storing it; the stored choice returns with islands.
+`0023-Suno-dash-span-and-float-follow-islands.patch`: without islands the Dash is one full-length bar per edge (Shell .119), so Span full edge is insensitive and says so, Float outer edges stays available, and the preview draws the full bar. Since .26 the switch then shows On ("Always on when islands are off") without storing it; the stored choice returns with islands.
 
-`0026-mouse-Scroll-Speed-for-the-mouse-and-the-touchpad.patch`: a **Scroll Speed** row in the Mouse section and in the touchpad's Scrolling section, styled like Pointer Speed (Slow…Fast) with a reset button that is available when the speed is not the default. It binds `org.projectluma.peripherals.mouse`/`.touchpad` `scroll-speed` (shipped by Mutter 0019); the slider runs over log2 of the stored multiple so the middle is exactly 1.0, and the rows hide when the schema is missing. `%check` requires both rows in the built UI and runs the three mapping tests in `panels/mouse/test-scroll-speed.c`.
+`0026-mouse-Scroll-Speed-for-the-mouse-and-the-touchpad.patch`: a **Scroll Speed** row in the Mouse section and in the touchpad's Scrolling section, styled like Pointer Speed (Slow…Fast) with a reset button that is available when the speed is not the default. It binds `org.projectSuno.peripherals.mouse`/`.touchpad` `scroll-speed` (shipped by Mutter 0019); the slider runs over log2 of the stored multiple so the middle is exactly 1.0, and the rows hide when the schema is missing. `%check` requires both rows in the built UI and runs the three mapping tests in `panels/mouse/test-scroll-speed.c`.
 
 `0066-settings-use-shared-device-identity.patch` removes the two local copies of
 phone detection. Window navigation and page anatomy now ask
-`luma_ui_mobile_form_factor()`, including the composed handheld identity.
+`Suno_ui_mobile_form_factor()`, including the composed handheld identity.
 The old checks selected desktop navigation on an ARM handheld and requested
 396 pixels from a 360-pixel Wayland output, causing a compositor protocol error.
 The regression checks handheld identity, desktop identity and the explicit
 presentation override. Runtime validation uses shared toolkit commit
 35dc1549c6870c84d14e21b4b53af39f3b7dda26. Candidate package release
-1.luma.40.mobile20261002.1 is not promoted: production RPM, matching platform
+1.Suno.40.mobile20261002.1 is not promoted: production RPM, matching platform
 package, composition and physical-device gates remain open. The package builder
 also now copies the already-declared 0060–0065 patches and this patch.
 
@@ -138,12 +138,12 @@ requests continue through the existing command-line route; desktop startup
 still opens Wi-Fi. The actual ARM/Wayland launch is checked at 360 × 800,
 without a fixture model or presentation override.
 
-`0068-settings-native-session-identity.patch` lets the default Luma-native
+`0068-settings-native-session-identity.patch` lets the default Suno-native
 application start independently of `XDG_CURRENT_DESKTOP`; its native service
-adapters own availability. Explicit `LUMA_SETTINGS_LEGACY=1` retains the
+adapters own availability. Explicit `SUNO_SETTINGS_LEGACY=1` retains the
 upstream GNOME-only gate. The main Settings desktop entry follows that scope;
 panel desktop entries, backend schemas and permission boundaries stay intact.
-Candidate `1.luma.40.mobile20261002.2` adds a packaged `%check` which runs the
+Candidate `1.Suno.40.mobile20261002.2` adds a packaged `%check` which runs the
 actual binary's `--list` across seven session identities in both modes and
 checks the main launcher's visibility in four fresh processes. The same check
 is available at `tests/gnome-control-center/session-identity/check.py`.
@@ -164,7 +164,7 @@ native checks pass with the fix. Fresh packaged/display acceptance remains open.
 uses the mode ID for selected/accessibility state. Actual native appearance
 checks retain saved Light and exercise Dark-to-Light switching; the previous
 Light-first source fails the new order assertion. Release42 includes0069 and
-0070 and passed all fourteen Luma native package suites against platform91.
+0070 and passed all fourteen Suno native package suites against platform91.
 The first-profile dark preference belongs to packaged desktop defaults;
 opening Settings does not overwrite a saved light selection.
 
@@ -175,18 +175,18 @@ The live display adapter still owns temporary preview, persistent Keep, and
 safe rollback. Regression tracking is in
 `docs/operations/user-reported-regressions.md`.
 
-`0090-lumaui-tv-opt-in-and-panel-set.patch` (TV Mode, docs/developer-platform/tv-mode.md):
-Settings opts in to the TV home (`X-Luma-TV`, `X-Luma-TV-Tile=org.gnome.Settings-tv`,
-`X-Luma-TV-Presentation=tv`; the wide tile is `tools/wide-tile.py` of the v4 Settings icon,
+`0090-SunoUI-tv-opt-in-and-panel-set.patch` (TV Mode, docs/developer-platform/tv-mode.md):
+Settings opts in to the TV home (`X-Suno-TV`, `X-Suno-TV-Tile=org.gnome.Settings-tv`,
+`X-Suno-TV-Presentation=tv`; the wide tile is `tools/wide-tile.py` of the v4 Settings icon,
 installed as `hicolor/scalable/apps/org.gnome.Settings-tv.svg`). In TV posture
-(`luma_ui_tv_posture()`, followed live) the sidebar lists the TV set in the TV mockup's
+(`Suno_ui_tv_posture()`, followed live) the sidebar lists the TV set in the TV mockup's
 order: Wi‑Fi, Bluetooth, Display, Sound, Appearance, Idle & Sleep, Apps, Remotes, a
 separator, Accessibility, Account, About. Every other page stays and still opens by deep
 link or search; nothing is removed outside TV posture. The drawn page names its parts for
-LumaUI (`luma_ui_set_part`: header, back, hero, group, card, row), which only TV posture
-draws differently (LumaUI's floating island); the page wash is not drawn on a TV. Joining
+SunoUI (`Suno_ui_set_part`: header, back, hero, group, card, row), which only TV posture
+draws differently (SunoUI's floating island); the page wash is not drawn on a TV. Joining
 a secured network: the password field gets the TV keyboard's "Join" action
-(`luma_ui_set_keyboard_action`) and Enter joins; a scan's redraw waits while the password
+(`Suno_ui_set_keyboard_action`) and Enter joins; a scan's redraw waits while the password
 is being typed; the network owner reports the outcome (`joinDone`/`joinFailed`) and, in TV
 posture only, a refused password stops the attempt (no shell prompt over the TV), reopens
 the field with the password selected and says so in a toast, and a join says "Connected
@@ -196,12 +196,12 @@ user secret agent (the login keyring is locked under automatic sign-in and its p
 cover the TV); re-joining a saved network with a new password updates that profile
 (autoconnect on) instead of adding another. OK on a saved secured network opens it in place
 (Join with the saved password or a new one, Forget). Updates has no Settings page (About links to Depot), so the island leaves it out.
-Requires luma-developer-platform with LumaUI API level 6.
+Requires Suno-developer-platform with SunoUI API level 6.
 
-`0091-lumaui-tv-pages.patch`: the TV-only pages and rows, each bound to the owner that
+`0091-SunoUI-tv-pages.patch`: the TV-only pages and rows, each bound to the owner that
 already keeps the value. Idle & Sleep (`tv-idle`): "Show the idle view after"
 (Automatic / 5 / 10 / 20 minutes / Never) is shell-state `tv-idle-delay`, followed live by
-LumaUI's `TvIdle`; "Turn the TV off after" (1 / 4 / 8 hours / Never) is
+SunoUI's `TvIdle`; "Turn the TV off after" (1 / 4 / 8 hours / Never) is
 `org.gnome.desktop.session idle-delay`. Remotes (`tv-remotes`): the connected input device
 from BlueZ as the hero (name, battery), "Pointer speed" (the mouse speed Mouse & Touchpad
 shows, read 0–10) and "Pair a remote" into Bluetooth. Display gains Fit › Screen edges
@@ -210,29 +210,29 @@ only. Rows without an owner are hidden: Idle view (only Glance exists), Wake wit
 remote, HDMI-CEC, Match the video's frame rate, HDR, Hold OK for options, Sound's Night
 mode. Deep links `gnome-control-center tv-idle|tv-remotes` open the pages in any posture.
 
-`0092-lumaui-tv-saved-network-actions.patch`: in TV posture, OK on a saved secured network
+`0092-SunoUI-tv-saved-network-actions.patch`: in TV posture, OK on a saved secured network
 grows its row with its actions: Connect (with the saved password), Change password (the row
 shows a password field, focused with the TV keyboard's Join; empty is refused) and Forget
 (the destructive question, a TV sheet on Cancel). Outside TV posture nothing changes.
 
-`0093-lumaui-tv-account-appearance-sound.patch`: TV posture only. Account opens `tv-account`,
-the Luma account as Luma Connect keeps it (`org.projectluma.Connect1` GetState, followed by
+`0093-SunoUI-tv-account-appearance-sound.patch`: TV posture only. Account opens `tv-account`,
+the Suno account as Suno Connect keeps it (`org.projectSuno.Connect1` GetState, followed by
 StateChanged; adapter `tv-account`): signed in, the hero is the account's name and email with
-Syncing and devices and Sign out opening Luma Connect; signed out or locked, Sign in opens Luma
+Syncing and devices and Sign out opening Suno Connect; signed out or locked, Sign in opens Suno
 Connect (`account_qr_hook` is where QR sign-in goes); no daemon, the hero says Connect is not
-installed. Appearance names its accents and wallpapers as LumaUI chips (`chips`, `swatch`,
+installed. Appearance names its accents and wallpapers as SunoUI chips (`chips`, `swatch`,
 `chip`), lays the wallpapers out as 200-unit 16:9 chips 16 apart, and leaves out Light and Dark
 (the TV is always dark; the mockup's page has none). Sound's hero is the output itself (icon,
 name, volume) like every TV hero, with the outputs (when there is more than one) and Volume as
-rows. Requires LumaUI API level 8 (page parts `chips`, `chip`, `swatch`).
+rows. Requires SunoUI API level 8 (page parts `chips`, `chip`, `swatch`).
 
-`0094-lumaui-tv-about-board-facts.patch`: About on boards that hostnamed names no vendor for
+`0094-SunoUI-tv-about-board-facts.patch`: About on boards that hostnamed names no vendor for
 (a Raspberry Pi, most Arm boards) shows the device tree's model line as Model, and an Arm
 processor without a model name in /proc/cpuinfo is named from its core part number and count
 ("Cortex-A76 × 4"), so the page has the desktop's rows in the desktop's order. x86 and
 anything that already reports both are unchanged.
 
-`0095-lumaui-tv-wifi-nearby-in-place.patch`: a performance fix for every posture. Each Wi-Fi
+`0095-SunoUI-tv-wifi-nearby-in-place.patch`: a performance fix for every posture. Each Wi-Fi
 scan report rebuilt the whole Wi-Fi page: every widget was destroyed and drawn again, the page
 re-laid out, and the focused row (and, on a TV, the remote's place) lost, several times a
 minute. The page now keeps a signature of everything it drew apart from the Nearby list; while
@@ -244,7 +244,7 @@ what is shown is unchanged. Test: `/settings/view/nearby-in-place` (kept rows ar
 widgets; the page reads exactly as one drawn afresh).
 
 
-`0096-lumaui-tv-page-words-and-one-display-fixture.patch`: in TV posture, the pages the island
+`0096-SunoUI-tv-page-words-and-one-display-fixture.patch`: in TV posture, the pages the island
 lists (Wi-Fi, Bluetooth, Display, Sound, Appearance, Apps, Accessibility, About) take the TV
 mockup's title and one-line description in their header ("Display", "The picture on this TV.");
 the page's live summary no longer replaces that line on a TV. Subpages and every other posture
@@ -256,7 +256,7 @@ from the fixture when it has them, else v70's ThinkPad. In TV posture a header w
 stacks its title and line as one with does (a wrapping line measured unconstrained made the head
 taller than its words).
 
-`0097-lumaui-one-image-decode-per-file.patch`: image and wallpaper pictures
+`0097-SunoUI-one-image-decode-per-file.patch`: image and wallpaper pictures
 share one running decode per file and size (pages rebuild on every owner
 report, and each rebuild used to start another decode of the same image), and
 a picture up to 1024 px of a file over 1 MiB decodes from the freedesktop
@@ -264,48 +264,48 @@ thumbnail, made once if missing. On a Raspberry Pi 5 five threads decoded the
 6016x3384 wallpaper for a 240x135 card; Settings Wi-Fi key-to-frame p95
 736 -> 300 ms.
 
-`0098-lumaui-page-wash-300px-and-hidden-on-tv.patch`: the page wash was a
+`0098-SunoUI-page-wash-300px-and-hidden-on-tv.patch`: the page wash was a
 page-sized GtkDrawingArea, so every redraw rasterized and uploaded a cairo
 surface of the whole page (on TV an empty one); it is now 300 px tall and
 hidden on TV. Pi 5 4K Settings: cairo upload share 10% -> 1%, page-switch
 key-to-frame p50 ~200 -> 169 ms.
 
-`0100-lumaui-phone-search-keeps-bar.patch`: on a phone each keystroke in the
+`0100-SunoUI-phone-search-keeps-bar.patch`: on a phone each keystroke in the
 bar search re-emitted the list-first "showing" signal and rebuilt the action
 bar around the focused entry from inside its "changed" handler. The stack now
 moves only when its side changes and the bar is shown or hidden only when its
 state differs (5 bar rebuilds for a 4-letter query before, 1 after, in a
-LumaUI harness of the same wiring). `cc_luma_window_search` also runs the
+SunoUI harness of the same wiring). `cc_Suno_window_search` also runs the
 search on a phone.
 
-`0101-lumaui-mobile-network-with-a-modem.patch`: the LumaUI window listed no
+`0101-SunoUI-mobile-network-with-a-modem.patch`: the SunoUI window listed no
 route to the wwan panel. A live adapter watches ModemManager's objects on the
 system bus without starting it and reports a modem the panel supports (the
 capability test of `cc_wwan_panel_static_init_func`); Mobile Network is listed
 after Wi-Fi only then, and the sidebar follows a modem coming or going. Before
 the panel opens, the NMClient and MMManager it reads from the object storage
 are created, as GNOME's window does at startup, so the `wwan` deep link works
-too. Test: `luma-settings-live-modem` against a stand-in ModemManager.
+too. Test: `Suno-settings-live-modem` against a stand-in ModemManager.
 
-`0102-lumaui-phone-panel-status-inset.patch`: on a phone the window bleeds
-under the status bar and a LumaUI page sets its title island below it, but a
+`0102-SunoUI-phone-panel-status-inset.patch`: on a phone the window bleeds
+under the status bar and a SunoUI page sets its title island below it, but a
 page still drawn by its GNOME panel (Mobile Network, Printers) put its header
 bar in the status bar row. The panel host keeps the status inset
-(`--lumaui-phone-frame-status`) on a phone, however the panel was opened.
+(`--SunoUI-phone-frame-status`) on a phone, however the panel was opened.
 
 `0103-wwan-mobile-data-on-by-default.patch`: with no NetworkManager profile
 bound to the SIM, the Mobile Data switch said off while the FP6 cellular link
 treats that state as on. The switch now reports on there. Turning data off
 with no profile saves the carrier's first listed APN, bound to the SIM with
 autoconnect off and marked as the switch's own
-(`org.projectluma.mobile-data.switch-only`), which the link reads as off;
+(`org.projectSuno.mobile-data.switch-only`), which the link reads as off;
 turning data on removes that profile so the link carries data again instead of
 NetworkManager activating an APN the link did not choose. Profiles saved from
 Access Point Names are unchanged. New APN profiles belong to the person
 (`connection.permissions` user:<name>): a phone's session holds
 `settings.modify.own` but not `settings.modify.system`. Roaming stays off.
 
-`0104-lumaui-phone-requested-page-leaves-list.patch`: on a phone a page asked
+`0104-SunoUI-phone-requested-page-leaves-list.patch`: on a phone a page asked
 for from outside was pushed over the list only when the page changed, so
 `gnome-control-center wwan` after Back from Mobile Network left the list
 showing. The command line and the launch-panel action now show the requested
@@ -323,50 +323,50 @@ stored without a key. One notification from the application (FDO
 person already set are untouched, and the compositor still refuses a trigger
 another shortcut owns.
 
-`0106-lumaui-sound-volume-mixer.patch`: **Sound › Volume mixer**
+`0106-SunoUI-sound-volume-mixer.patch`: **Sound › Volume mixer**
 (`sound-mixer`), the Settings side of the Shell's mixer (gnome-shell 0350):
 the default output, System sounds and every app with a sound stream, each
 with its volume, a live level, mute and (apps) the output it plays on. Apps
-come from `org.projectluma.AudioDevices1` version 2 (`GetApplications`,
+come from `org.projectSuno.AudioDevices1` version 2 (`GetApplications`,
 `ApplicationsChanged`, `SetApplication{Volume,Mute,Output}`, `GetOutputs`);
 the output is the Sound page's own GVC controls (`vol`, and a new `mute` key
 on the sound adapter). Outputs are named as the device rows name them, by
 node name (`CFSINKS`: "Line Out", "Built-in Audio"). A wide page draws a
 column per strip, the output's well first; a phone or a TV draws the same
-strips as rows. The slider is LumaUI's scale and the level LumaUI's
-`LumaAudioMeter`; a row lays the meter along its slider where the kit has
-`luma_audio_meter_set_horizontal`. Levels are watched (`WatchLevels`) only
+strips as rows. The slider is SunoUI's scale and the level SunoUI's
+`SunoAudioMeter`; a row lays the meter along its slider where the kit has
+`Suno_audio_meter_set_horizontal`. Levels are watched (`WatchLevels`) only
 while the page is mapped in a window that is not suspended, and unwatched
 on leaving; volume writes keep one call per app in flight. The row in Sound's
 More group replaces Volume by app in live mode while the service runs at
 version 2 (`mixer` flag); fixtures keep Volume by app.
 
-`0107-lumaui-apps-openh264-switch.patch`: **Apps › OpenH264 video codec**,
+`0107-SunoUI-apps-openh264-switch.patch`: **Apps › OpenH264 video codec**,
 the control Cisco's binary license asks for where the person manages it: a
 switch with Cisco's attribution ("OpenH264 Video Codec provided by Cisco
 Systems, Inc.") and a row that opens Cisco's terms
 (`https://www.openh264.org/BINARY_LICENSE.txt`). The `h264` key is what
-`luma-openh264 status` reports (`cc-luma-live-openh264.c`); a change runs
-`pkexec /usr/bin/luma-openh264 enable|disable`, which luma-openh264's polkit
+`Suno-openh264 status` reports (`cc-Suno-live-openh264.c`); a change runs
+`pkexec /usr/bin/Suno-openh264 enable|disable`, which Suno-openh264's polkit
 rule allows for the active local session, then reads the status again.
-Without luma-openh264 the rows are left out; the Apps page does not wait for
+Without Suno-openh264 the rows are left out; the Apps page does not wait for
 the status.
 
-`0108-lumaui-sound-volume-mixer-rows.patch`: **Sound › Volume mixer as
+`0108-SunoUI-sound-volume-mixer-rows.patch`: **Sound › Volume mixer as
 playing rows**, the Settings side of the Shell's Sound page. It replaces
 0106's channel strips. The hero is the Sound page's: a tile for each output
-of `org.projectluma.AudioDevices1` version 3 (`GetOutputs`: `label`,
+of `org.projectSuno.AudioDevices1` version 3 (`GetOutputs`: `label`,
 `detail`, a glyph by `kind`), four to a line and wrapping (two on a phone),
 the default one raised; a press makes another the default through the sound
 adapter's `out` key (`CFSINKS` maps a node name to that key's id). Under
 them the output's volume and its level in the slider's column, a
-`LumaAudioMeter` without zones (32 segments 5 px tall, 3 px apart, 2 px
-round). "Playing now" is a Settings group with a LumaUI `LumaMediaRow` for
+`SunoAudioMeter` without zones (32 segments 5 px tall, 3 px apart, 2 px
+round). "Playing now" is a Settings group with a SunoUI `SunoMediaRow` for
 each app the service marks `listed`: artwork and badge, the title, "App ·
 artist" or "App · Paused at 14:02", the transport its player offers
 (`ApplicationPlayPause`, `ApplicationNext`, `ApplicationPrevious`), volume
 and mute, a press on the artwork (`RaiseApplication`), a 28-segment level,
-and the output picker on the row's chip: LumaUI's menu, "Main output
+and the output picker on the row's chip: SunoUI's menu, "Main output
 (Speakers)" first, then every output (`SetApplicationOutput`); the chip is
 raised while the app is sent elsewhere. "Other sounds" are Settings slider
 rows, in the same kind of group, for the entries marked `other` (System
@@ -382,23 +382,23 @@ applications and levels as JSON, with `icon_asset` and `art_asset` naming
 the fixture's artwork): a fixture with it is drawn from it and asks nothing
 of the bus; one without it asks whatever owns the service's name.
 
-`0110-lumaui-apps-permissions-every-format.patch` (ADR-052 step 3): one page
-per app for every format from `org.projectluma.AppPermissions1` (adapter
+`0110-SunoUI-apps-permissions-every-format.patch` (ADR-052 step 3): one page
+per app for every format from `org.projectSuno.AppPermissions1` (adapter
 `appperm`, CFAPPPERM): Files (three levels, folders as chips), Devices,
 Network and background, On screen (drawn by 0109 when it is in the build,
-through a weak `cc_luma_view_on_screen_render`), Used recently, Remove with
+through a weak `cc_Suno_view_on_screen_render`), Used recently, Remove with
 the stray-document sheet; and Apps › Apps that can use all your files.
 Without the service an app's page keeps its older rows. Release .79.
 
-`0111-lumaui-luma-connect-sync.patch` (ADR-054; design-center 38858a5,
-`mockups/connect-sync`): **Luma account › Sync** ("‹ Luma Connect"), read from
-luma-connect-syncd (`org.projectluma.ConnectSync1`) by a new adapter, `sync`,
+`0111-SunoUI-Suno-connect-sync.patch` (ADR-054; design-center 38858a5,
+`mockups/connect-sync`): **Suno account › Sync** ("‹ Suno Connect"), read from
+Suno-connect-syncd (`org.projectSuno.ConnectSync1`) by a new adapter, `sync`,
 as CFSYNC (`GetState`, `ListApps`, `ListDevices`, again on `StateChanged` and
 `AppsChanged`; an unchanged reading redraws nothing). The hero has the state tile, the state and its
 line, the main switch and the storage bar ("1.8 GB of 5 GB", by kind beside
-it, not on a phone); under it "Only your devices can read what syncs. Luma
+it, not on a phone); under it "Only your devices can read what syncs. Suno
 can't." What syncs has a switch per ADR-054 category (`SetCategory`); App
-data the four biggest apps with "size · state", "Uses Luma Connect" and
+data the four biggest apps with "size · state", "Uses Suno Connect" and
 Delete synced data (`DeleteAppData`, polkit) for apps on the Sync API, and
 "All N apps" (page `sync-apps`); Devices a class icon, "Class · synced …" and
 Remove… with its confirm (`RemoveDevice`, polkit; a new recovery key comes
@@ -417,10 +417,10 @@ first (`SetEnabled(false)`, polkit). The Shell's links open the page with
 `('users', ['sync'])` and the join sheet with `('users', ['sync', 'join'])`.
 A phone draws the sheet as a bottom drawer with stacked 44 px actions; a TV
 at 1.5 times with the remote on Cancel. Fixtures carry CFSYNC
-(`tests/fixtures/settings-connect-sync.json`) and may name `luma-v4-*`
-artwork; `LUMA_SETTINGS_SYNC_SHEET=show|ticked|confirm|join|enter|key` shows
-one sheet alone for conform. Test: luma-settings-connect-sync (words; a
-stand-in luma-connect-syncd on a private bus: the tick gates Continue, Cancel
+(`tests/fixtures/settings-connect-sync.json`) and may name `Suno-v4-*`
+artwork; `SUNO_SETTINGS_SYNC_SHEET=show|ticked|confirm|join|enter|key` shows
+one sheet alone for conform. Test: Suno-settings-connect-sync (words; a
+stand-in Suno-connect-syncd on a private bus: the tick gates Continue, Cancel
 leaves Sync off, three words gate Turn on Sync, SetCategory). Needs
 the platform with Prairie cloud-off, cloud-alert and laptop.
 
@@ -434,72 +434,72 @@ key row; Show new key… (`RevealRecoveryKey`, polkit) opens the new words,
 and Done waits for "I've saved my new recovery key and thrown away the old
 one" (`AcknowledgeRecoveryKey`). `join_requests_held` adds a line under
 Devices. `('users', ['sync', 'newkey'])` opens the new key. Fixture:
-`LUMA_SETTINGS_SYNC_SHEET=wait|tampered|newkey|newkey-ticked`,
-`LUMA_SETTINGS_SYNC_STATE=newkey`, `LUMA_SETTINGS_SYNC_HELD=N`; needs
+`SUNO_SETTINGS_SYNC_SHEET=wait|tampered|newkey|newkey-ticked`,
+`SUNO_SETTINGS_SYNC_STATE=newkey`, `SUNO_SETTINGS_SYNC_HELD=N`; needs
 Prairie loader-circle.
 
 Review 1 (design-center daccee5): the hero says Off / Waiting for approval
 with the switch off; a removed device shows Removed from Sync with Sign in
-again… (Luma Connect's sign-in, then the join sheet) and the rest of the page
+again… (Suno Connect's sign-in, then the join sheet) and the rest of the page
 dimmed to 45% and inert; Not approved has Use recovery key instead and Ask
 again (`RequestJoin`); the read-only key has its own words and Done; Show
 versions opens Sync › {App} (page `sync-versions`, `('users', ['sync',
 'versions', APP])`) with the copies `ListConflicts` keeps and Use this one…
 (`UseVersion`, after a confirm); `('users', ['sync', 'remove', DEVICE])` opens
 that device's Remove confirm (the recovery-key banner's Remove…). Words and
-codes go only to a `luma-connect-syncd.service` owner of the bus name (wire
+codes go only to a `Suno-connect-syncd.service` owner of the bus name (wire
 format 2).
 
-`0112-lumaui-settings-list-first-at-phone-width.patch`: the window chose its
+`0112-SunoUI-settings-list-first-at-phone-width.patch`: the window chose its
 layout once, from the device identity, so a computer's window at phone width
 (a phone shell, a narrow tile, a 400 px VM) kept the two panes, and their
 minimum width held it wider than the screen. On a computer the window now has
 a breakpoint under the phone tier (560 px, or the two panes' own minimum width
 where that is wider): under it the sidebar and the island move into a
-`LumaListFirst` (list, push, Back); wider, `set_frame` lays out the two panes
+`SunoListFirst` (list, push, Back); wider, `set_frame` lays out the two panes
 as before. Narrowing shows the page the window was on; a window opened narrow
 shows the list unless a page was asked for. A TV keeps its frame.
-`test-luma-window` covers open narrow, push/Back, widen, narrow again and a
+`test-Suno-window` covers open narrow, push/Back, widen, narrow again and a
 1180 px open.
 
-`0114-lumaui-settings-reopens-its-page.patch`: Settings adopts LumaRestore
-(ADR-055). Its LumaUI window has the restore key `settings` and saves the page
+`0114-SunoUI-settings-reopens-its-page.patch`: Settings adopts SunoRestore
+(ADR-055). Its SunoUI window has the restore key `settings` and saves the page
 it shows; restored or continued, the window opens on that page.
 
-`0116-lumaui-app-page-windows-group.patch` (on 0110): the app page's Windows
+`0116-SunoUI-app-page-windows-group.patch` (on 0110): the app page's Windows
 group after On screen, "Reopen with your windows". Off adds the app's desktop
-ID to `org.projectluma.session excluded-apps` (restore after restart and
-Continue); an app with `X-Luma-Continue=false` (read from a Flatpak's deployed
+ID to `org.projectSuno.session excluded-apps` (restore after restart and
+Continue); an app with `X-Suno-Continue=false` (read from a Flatpak's deployed
 entry too) shows the row off and disabled. Fixture keys on the app's entry:
 `reopen`, `reopen_self`.
 
-`0109-lumaui-apps-display-over-other-apps.patch`: what apps may draw outside
+`0109-SunoUI-apps-display-over-other-apps.patch`: what apps may draw outside
 their windows (layer-shell surfaces; Mutter 0043–0045, gnome-shell 0393),
-read from the Shell's `org.projectluma.LayerShell1` (`Apps`, `Surfaces`,
+read from the Shell's `org.projectSuno.LayerShell1` (`Apps`, `Surfaces`,
 `OverlayApps`) by a new adapter, `layer`, as `CFLAYER`. An app's page gets an
 **On screen** group above Allowed to: Display over other apps, Add a panel,
 Desktop background and Take the keyboard, each with its usage ("Used today",
-"Never used"); usage and tile are violet (LumaUI token `overlay`) only while
+"Never used"); usage and tile are violet (SunoUI token `overlay`) only while
 the capability is in use. **Apps › Display over other apps** lists the apps
 allowed to draw overlays and those that asked and were refused; apps that
 never asked are not listed; `launch-panel` `('applications', ['overlay-apps'])`
 and `gnome-control-center applications overlay-apps` open it. Every switch calls `SetCapability`, which stores
-the choice (permission store table `luma`, entry `display-over-apps`) and
+the choice (permission store table `Suno`, entry `display-over-apps`) and
 applies it at once. Desktop background replaces Change wallpaper and Take the
 keyboard replaces Keyboard shortcuts: the one switch also writes the portal's
 `wallpaper` entry (sandboxed apps) and GNOME Shell's `shortcuts-inhibitor`
 entry, and shows on when either allows it. Without the interface nothing is
 drawn and the old rows stay. The `layers-2` and `panel-top` glyphs are
-Prairie's (platform 1.luma.154). Test:
-`luma-settings-layer-shell`; conform: `settings-overlay-perms`.
+Prairie's (platform 1.Suno.154). Test:
+`Suno-settings-layer-shell`; conform: `settings-overlay-perms`.
 
-`0113-lumaui-windows-reopen-after-restart.patch`: Windows & Workspaces gets a
+`0113-SunoUI-windows-reopen-after-restart.patch`: Windows & Workspaces gets a
 Windows group with "Reopen windows after restart" (Lucide `rotate-ccw`),
-bound to `org.projectluma.session` `reopen-windows`, the shell's session
+bound to `org.projectSuno.session` `reopen-windows`, the shell's session
 restore (ADR-055, gnome-shell 0392). Without that schema the group is left
 out. Control center .78.
 
-`0115-lumaui-sync-continue-group.patch` (on 0111): Luma Connect › Sync gets the
+`0115-SunoUI-sync-continue-group.patch` (on 0111): Suno Connect › Sync gets the
 device-local Continue group between What syncs and App data: "Offer windows
 from my other devices" (`continue-offer`), "Let my other devices continue from
 this <device>" (`continue-share`; off withdraws this device's record through

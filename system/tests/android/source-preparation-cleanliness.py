@@ -23,7 +23,7 @@ def functions(source):
 
 class Cleanliness(unittest.TestCase):
     def setUp(self):
-        self.temp = tempfile.TemporaryDirectory(prefix='luma-source-cleanliness-')
+        self.temp = tempfile.TemporaryDirectory(prefix='Suno-source-cleanliness-')
         self.addCleanup(self.temp.cleanup)
         self.base = Path(self.temp.name)
         self.bin = self.base / 'bin'
@@ -98,10 +98,10 @@ official_input_sha() {
         self.assertEqual(self.check_tree(FAIL_REPO='1').returncode, 2)
 
     def test_explicit_concurrency_is_bounded(self):
-        self.assertEqual(self.check_tree(LUMA_ANDROID_VERIFY_JOBS='8').returncode, 0)
+        self.assertEqual(self.check_tree(SUNO_ANDROID_VERIFY_JOBS='8').returncode, 0)
         self.assertEqual((self.base / 'jobs').read_text(), '8')
         for value in ('0', '9', '-1', 'anything'):
-            self.assertEqual(self.check_tree(LUMA_ANDROID_VERIFY_JOBS=value).returncode, 2)
+            self.assertEqual(self.check_tree(SUNO_ANDROID_VERIFY_JOBS=value).returncode, 2)
 
     def test_every_destructive_and_incremental_caller_propagates_failure(self):
         self.assertEqual(self.source.count('tree_is_clean || {'), 4)

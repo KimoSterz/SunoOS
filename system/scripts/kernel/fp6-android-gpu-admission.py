@@ -2,10 +2,10 @@
 # SPDX-License-Identifier: Apache-2.0
 """Android GPU admission of the Fairphone 6 kernel.
 
-luma-android-runtime admits a running FP6 kernel for GPU-rendered Android only
+Suno-android-runtime admits a running FP6 kernel for GPU-rendered Android only
 when the sha256 of /sys/kernel/notes is listed in
-/usr/share/luma/android/hardware/fairphone-fp6-kernel-notes.d/. That list is
-not edited by hand: kernel-modules-luma-fp6 ships one entry, written here at
+/usr/share/Suno/android/hardware/fairphone-fp6-kernel-notes.d/. That list is
+not edited by hand: kernel-modules-Suno-fp6 ships one entry, written here at
 kernel build time, for the kernel it belongs to.
 
 devices/fairphone/fp6/device.toml [kernel.android_gpu] is the record:
@@ -213,7 +213,7 @@ def emit(source: Path, vmlinux: Path, output: Path,
     _, admitted, reasons = expected(kernel, record, root)
     notes = kernel_notes_sha256(vmlinux)
     lines = [
-        "# Fairphone 6 kernel admitted for GPU-rendered Android (luma-android-runtime).",
+        "# Fairphone 6 kernel admitted for GPU-rendered Android (Suno-android-runtime).",
         f"# Written by scripts/kernel/fp6-android-gpu-admission.py for {kernel['release']},",
         f"# kernel inputs {record['kernel_inputs']}.",
     ]

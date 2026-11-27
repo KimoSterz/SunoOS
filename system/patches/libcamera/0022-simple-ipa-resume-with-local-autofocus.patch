@@ -1,4 +1,4 @@
-From: Project Luma <project-luma@local>
+From: Project Suno <project-suno@local>
 Subject: [PATCH] simple: ipa: resume autofocus with a bounded local search
 
 Touch clients without an AfTrigger binding briefly enter manual mode and then

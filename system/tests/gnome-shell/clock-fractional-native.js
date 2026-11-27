@@ -99,7 +99,7 @@ export async function run() {
                 check(item.ink.y >= frameY - 1 && item.ink.y + item.ink.height <= frameY + frameHeight + 1,
                     `${scale}: ${item.text} ink must fit its clock surface`);
             print(`CLOCK_FRACTIONAL ${JSON.stringify({scale, poster, shelf, frameY, frameHeight})}`);
-            const output = GLib.getenv('LUMA_CLOCK_QA_OUT');
+            const output = GLib.getenv('SUNO_CLOCK_QA_OUT');
             if (output) {
                 const directory = Gio.File.new_for_path(output);
                 if (!directory.query_exists(null)) directory.make_directory_with_parents(null);

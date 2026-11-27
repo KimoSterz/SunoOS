@@ -31,7 +31,7 @@ def main():
     provenance=json.loads(args.provenance.read_text())
     if not provenance.get('inputs') or not provenance.get('sources'):
         parser.error('Pinned input checksums and corresponding sources are required.')
-    path=Path(__file__).resolve().parents[2]/'tools/luma-port/mac/build'
+    path=Path(__file__).resolve().parents[2]/'tools/Suno-port/mac/build'
     loader=importlib.machinery.SourceFileLoader('mac_backend',str(path))
     spec=importlib.util.spec_from_loader(loader.name,loader)
     backend=importlib.util.module_from_spec(spec);loader.exec_module(backend)

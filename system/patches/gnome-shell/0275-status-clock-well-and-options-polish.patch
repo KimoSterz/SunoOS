@@ -1,5 +1,5 @@
---- a/js/ui/lumaClockLayout.js
-+++ b/js/ui/lumaClockLayout.js
+--- a/js/ui/SunoClockLayout.js
++++ b/js/ui/SunoClockLayout.js
 @@ -28,12 +28,20 @@
      _metrics() {
          return this.get_children().filter(actor => actor.visible).map(actor => {
@@ -28,7 +28,7 @@
 +++ b/js/ui/panel.js
 @@ -1375,6 +1375,9 @@
              // Studio Desktop: the time large, a small AM/PM beside it.
-             this._statusAmPm = new St.Label({style_class: 'luma-status-ampm',
+             this._statusAmPm = new St.Label({style_class: 'Suno-status-ampm',
                  y_align: Clutter.ActorAlign.END, visible: false});
 +            this._statusAmPm.clutter_text.single_line_mode = true;
 +            this._statusAmPm.clutter_text.ellipsize = Pango.EllipsizeMode.NONE;
@@ -36,8 +36,8 @@
              this._statusTimeRow = new BaselineClockRow({x_align: Clutter.ActorAlign.START});
              this._statusTimeRow.add_child(this._statusTime);
              this._statusTimeRow.add_child(this._statusAmPm);
---- a/js/ui/lumaWell.js
-+++ b/js/ui/lumaWell.js
+--- a/js/ui/SunoWell.js
++++ b/js/ui/SunoWell.js
 @@ -120,9 +120,13 @@
      }
  
@@ -59,11 +59,11 @@
          return this.indicator.menu?.numMenuItems ? this.indicator.menu : null;
      }
  
--    // The 16px glyph: the theme's symbolic variant, else a glyph Luma ships
+-    // The 16px glyph: the theme's symbolic variant, else a glyph Suno ships
 -    // for the app, else the host's own rendering of the icon, drawn as its
 -    // shape in ink. Colours never show.
 -    makeGlyph() {
--        const box = new St.Bin({style_class: 'luma-well-glyph', y_align: Clutter.ActorAlign.CENTER});
+-        const box = new St.Bin({style_class: 'Suno-well-glyph', y_align: Clutter.ActorAlign.CENTER});
 -        const effect = new Silhouette();
 -        const applyInk = () => {
 -            if (box.get_stage())
@@ -71,7 +71,7 @@
 +    // Preserve real app artwork: flattening an opaque status pixmap into a
 +    // silhouette produces a featureless square, not an application icon.
 +    makeGlyph(size = GLYPH_SIZE) {
-+        const box = new St.Bin({style_class: 'luma-well-glyph',
++        const box = new St.Bin({style_class: 'Suno-well-glyph',
 +            width: size, height: size, y_align: Clutter.ActorAlign.CENTER});
 +        let host = null;
 +        const sync = () => {
@@ -102,7 +102,7 @@
 -        const host = this.indicator._icon;
 -        const sync = () => {
 -            const name = this.sni?.icon?.name;
--            const candidates = [name ? `${name}-symbolic` : null, `luma-tray-${this.key}-symbolic`].filter(Boolean);
+-            const candidates = [name ? `${name}-symbolic` : null, `Suno-tray-${this.key}-symbolic`].filter(Boolean);
 -            const symbolic = candidates.find(candidate => iconTheme.has_icon(candidate));
 -            let glyph;
 -            if (symbolic) {
@@ -111,13 +111,13 @@
 -                // A pixmap the application sent: the host has already turned it into image content.
 -                glyph = new Clutter.Actor({content: host.content, width: GLYPH_SIZE, height: GLYPH_SIZE,
 -                    content_gravity: Clutter.ContentGravity.RESIZE_ASPECT});
--                glyph.add_effect_with_name('luma-well-silhouette', effect);
+-                glyph.add_effect_with_name('Suno-well-silhouette', effect);
 -            } else if (host?.gicon || (name && iconTheme.has_icon(name))) {
 -                glyph = new St.Icon({gicon: host?.gicon ?? null, icon_name: host?.gicon ? null : name, icon_size: GLYPH_SIZE});
--                glyph.add_effect_with_name('luma-well-silhouette', effect);
+-                glyph.add_effect_with_name('Suno-well-silhouette', effect);
 -            } else if (this.tray) {
 -                glyph = new Clutter.Clone({source: host, width: GLYPH_SIZE, height: GLYPH_SIZE});
--                glyph.add_effect_with_name('luma-well-silhouette', effect);
+-                glyph.add_effect_with_name('Suno-well-silhouette', effect);
 -            } else {
 -                glyph = new St.Icon({icon_name: 'application-x-executable-symbolic', icon_size: GLYPH_SIZE});
 -            }
@@ -159,18 +159,18 @@
 @@ -381,7 +368,7 @@
              layout_manager: new Clutter.BoxLayout({orientation: Clutter.Orientation.VERTICAL})});
          this.source = source;
-         const plate = new St.Bin({style_class: 'luma-well-tile-plate', x_align: Clutter.ActorAlign.CENTER,
+         const plate = new St.Bin({style_class: 'Suno-well-tile-plate', x_align: Clutter.ActorAlign.CENTER,
 -            child: source.makeGlyph()});
 +            child: source.makeGlyph(24)});
          this.add_child(plate);
-         this.add_child(new St.Label({text: source.name, style_class: 'luma-well-tile-name',
+         this.add_child(new St.Label({text: source.name, style_class: 'Suno-well-tile-name',
              x_align: Clutter.ActorAlign.CENTER}));
 @@ -413,7 +400,9 @@
          this._items = new Map();
          this.arrowSide = St.Side.BOTTOM;
-         this._insertion = new St.Widget({style_class: 'luma-well-insertion', visible: false});
--        this._chip = new St.Button({style_class: 'luma-well-count', can_focus: true, y_align: Clutter.ActorAlign.CENTER});
-+        this._chip = new St.Button({style_class: 'luma-well-count', can_focus: true,
+         this._insertion = new St.Widget({style_class: 'Suno-well-insertion', visible: false});
+-        this._chip = new St.Button({style_class: 'Suno-well-count', can_focus: true, y_align: Clutter.ActorAlign.CENTER});
++        this._chip = new St.Button({style_class: 'Suno-well-count', can_focus: true,
 +            child: new St.Icon({icon_name: 'view-app-grid-symbolic', icon_size: 16}),
 +            y_align: Clutter.ActorAlign.CENTER});
          this._chip.connect('clicked', () => this._togglePopover());
@@ -187,61 +187,61 @@
 @@ -825,9 +813,8 @@
          const box = this._popover.box;
          box.destroy_all_children();
-         const head = new St.BoxLayout({style_class: 'luma-well-popover-head'});
+         const head = new St.BoxLayout({style_class: 'Suno-well-popover-head'});
 -        head.add_child(new St.Label({text: _('In the Background').toUpperCase(), x_expand: true,
 +        head.add_child(new St.Label({text: _('Background apps'), x_expand: true,
-             style_class: 'luma-well-popover-title'}));
--        head.add_child(new St.Label({text: `${this._rest.length}`, style_class: 'luma-well-popover-title luma-well-popover-count'}));
+             style_class: 'Suno-well-popover-title'}));
+-        head.add_child(new St.Label({text: `${this._rest.length}`, style_class: 'Suno-well-popover-title Suno-well-popover-count'}));
          box.add_child(head);
          const layout = new Clutter.GridLayout({column_homogeneous: true, row_spacing: 0, column_spacing: 0});
-         const grid = new St.Widget({style_class: 'luma-well-grid', layout_manager: layout});
+         const grid = new St.Widget({style_class: 'Suno-well-grid', layout_manager: layout});
 @@ -835,7 +822,7 @@
              layout.attach(new WellTile(this, source), index % 4, Math.floor(index / 4), 1, 1));
          box.add_child(grid);
-         box.add_child(new St.Widget({style_class: 'luma-well-popover-rule'}));
+         box.add_child(new St.Widget({style_class: 'Suno-well-popover-rule'}));
 -        box.add_child(new St.Label({text: _('Drag into the bar to keep one visible'),
 +        box.add_child(new St.Label({text: _('Drag an app to the bar to keep it visible'),
-             style_class: 'luma-well-popover-hint'}));
+             style_class: 'Suno-well-popover-hint'}));
      }
  
 --- a/js/ui/quickSettings.js
 +++ b/js/ui/quickSettings.js
 @@ -1432,7 +1432,7 @@
-         item._menuButton.child.child.icon_name = 'lumaui-chevron-right-symbolic';
+         item._menuButton.child.child.icon_name = 'SunoUI-chevron-right-symbolic';
          item.menu._studioTitle = _('Window layouts');
          item.menu._studioRadio = item;
--        item.add_effect_with_name('luma-control-clip', new LumaRoundedClip(16));
+-        item.add_effect_with_name('Suno-control-clip', new SunoRoundedClip(16));
 +
          row.add_child(item);
          this._studioUtilities.add_child(row);
-         item._lumaStudioRow = row;
+         item._SunoStudioRow = row;
 @@ -1477,7 +1477,7 @@
              box.insert_child_below(item._valueLabel, item._menuSlot);
              item._valueLabel.y_align = Clutter.ActorAlign.CENTER;
-             item._menuButton.add_style_class_name('luma-options-level-key');
--            item._menuButton.add_effect_with_name('luma-control-clip', new LumaRoundedClip(10));
+             item._menuButton.add_style_class_name('Suno-options-level-key');
+-            item._menuButton.add_effect_with_name('Suno-control-clip', new SunoRoundedClip(10));
 +
          }
          volume.menu._studioTitle = _('Sound output');
-         volume._menuButton.child.child.icon_name = 'luma-headphones-symbolic';
+         volume._menuButton.child.child.icon_name = 'Suno-headphones-symbolic';
 @@ -1495,7 +1495,7 @@
-         const auto = new St.Button({style_class: 'luma-options-level-key', label: _('Auto'),
+         const auto = new St.Button({style_class: 'Suno-options-level-key', label: _('Auto'),
              can_focus: true, toggle_mode: true, accessible_name: _('Automatic brightness')});
          powerSettings.bind('ambient-enabled', auto, 'checked', Gio.SettingsBindFlags.DEFAULT);
--        auto.add_effect_with_name('luma-control-clip', new LumaRoundedClip(10));
+-        auto.add_effect_with_name('Suno-control-clip', new SunoRoundedClip(10));
 +
          brightness._menuSlot.child = auto;
          brightness._menuButton.hide();
          auto.connect('destroy', () => powerSettings.run_dispose());
 @@ -1506,7 +1506,7 @@
          for (const item of [indicators._network?._wirelessToggle, indicators._bluetooth?.quickSettingsItems[0]]) {
-             move(item, radios, 'luma-options-radio');
+             move(item, radios, 'Suno-options-radio');
              if (!item) continue;
--            item.add_effect_with_name('luma-control-clip', new LumaRoundedClip(16));
+-            item.add_effect_with_name('Suno-control-clip', new SunoRoundedClip(16));
 +
              item.x_expand = true;
              item.setPill(false);
-             item._menuButton.child.child.icon_name = 'lumaui-chevron-right-symbolic';
+             item._menuButton.child.child.icon_name = 'SunoUI-chevron-right-symbolic';
 --- a/js/ui/shelf.js
 +++ b/js/ui/shelf.js
 @@ -939,6 +939,16 @@
@@ -261,59 +261,59 @@
          // A scroll view allocates the dash at least the viewport's width, so
          // a dash that lost an item never reports a narrower width; its box
          // does report the item leaving.
---- a/data/theme/luma-shelf.css
-+++ b/data/theme/luma-shelf.css
+--- a/data/theme/Suno-shelf.css
++++ b/data/theme/Suno-shelf.css
 @@ -3180,3 +3180,53 @@
- .quick-settings.luma-studio-options .luma-options-utility .quick-toggle-icon { box-shadow: none; icon-shadow: none; }
+ .quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle-icon { box-shadow: none; icon-shadow: none; }
  
- .quick-settings.luma-studio-options .luma-options-pages { padding: 0 10px; }
+ .quick-settings.Suno-studio-options .Suno-options-pages { padding: 0 10px; }
 +
-+.popup-menu-content.quick-settings.luma-studio-options {
++.popup-menu-content.quick-settings.Suno-studio-options {
 +  width: 340px; min-width: 340px; max-width: 340px;
 +}
-+.quick-settings.luma-studio-options .luma-options-radio { width: 166px; }
-+.quick-settings.luma-studio-options .quick-toggle-has-menu.luma-options-radio,
-+.quick-settings.luma-studio-options .quick-toggle-has-menu.luma-options-radio:checked,
-+.quick-settings.luma-studio-options.luma-surface-light .quick-toggle-has-menu.luma-options-radio,
-+.quick-settings.luma-studio-options.luma-surface-light .quick-toggle-has-menu.luma-options-radio:checked,
-+.quick-settings.luma-studio-options.luma-surface-frost .quick-toggle-has-menu.luma-options-radio,
-+.quick-settings.luma-studio-options.luma-surface-frost .quick-toggle-has-menu.luma-options-radio:checked,
-+.quick-settings.luma-studio-options.luma-surface-glass .quick-toggle-has-menu.luma-options-radio,
-+.quick-settings.luma-studio-options.luma-surface-glass .quick-toggle-has-menu.luma-options-radio:checked {
++.quick-settings.Suno-studio-options .Suno-options-radio { width: 166px; }
++.quick-settings.Suno-studio-options .quick-toggle-has-menu.Suno-options-radio,
++.quick-settings.Suno-studio-options .quick-toggle-has-menu.Suno-options-radio:checked,
++.quick-settings.Suno-studio-options.Suno-surface-light .quick-toggle-has-menu.Suno-options-radio,
++.quick-settings.Suno-studio-options.Suno-surface-light .quick-toggle-has-menu.Suno-options-radio:checked,
++.quick-settings.Suno-studio-options.Suno-surface-frost .quick-toggle-has-menu.Suno-options-radio,
++.quick-settings.Suno-studio-options.Suno-surface-frost .quick-toggle-has-menu.Suno-options-radio:checked,
++.quick-settings.Suno-studio-options.Suno-surface-glass .quick-toggle-has-menu.Suno-options-radio,
++.quick-settings.Suno-studio-options.Suno-surface-glass .quick-toggle-has-menu.Suno-options-radio:checked {
 +  box-shadow: none;
 +}
 +/* Native rounded controls own their paint. Their child buttons stay clear;
 + * no offscreen alpha mask is needed for a small, already-rounded button. */
-+.quick-settings.luma-studio-options .luma-options-radio .quick-toggle,
-+.quick-settings.luma-studio-options .luma-options-radio .quick-toggle:checked,
-+.quick-settings.luma-studio-options .luma-options-radio .quick-toggle:hover,
-+.quick-settings.luma-studio-options .luma-options-radio .quick-toggle:active {
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle,
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle:checked,
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle:hover,
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle:active {
 +  background-color: transparent; border: none; box-shadow: none;
 +}
-+.quick-settings.luma-studio-options .luma-options-radio .quick-toggle-menu-button {
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-menu-button {
 +  margin: 4px 6px 4px 2px; min-width: 28px; padding: 0; border-radius: 10px;
 +}
-+.quick-settings.luma-studio-options .luma-options-pages { padding: 0; }
-+.quick-settings.luma-studio-options .luma-options-page-scroll {
++.quick-settings.Suno-studio-options .Suno-options-pages { padding: 0; }
++.quick-settings.Suno-studio-options .Suno-options-page-scroll {
 +  padding: 6px; background-color: transparent; border-radius: 12px;
 +}
-+.quick-settings.luma-studio-options.luma-surface-light .luma-options-page-scroll {
++.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-page-scroll {
 +  background-color: transparent;
 +}
-+.quick-settings.luma-studio-options .luma-options-detail > .popup-menu-section,
-+.quick-settings.luma-studio-options .luma-options-detail .luma-options-list {
++.quick-settings.Suno-studio-options .Suno-options-detail > .popup-menu-section,
++.quick-settings.Suno-studio-options .Suno-options-detail .Suno-options-list {
 +  padding: 0; spacing: 6px;
 +}
-+.quick-settings.luma-studio-options .luma-options-detail .luma-sheet-row {
++.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-row {
 +  min-height: 40px; padding: 8px 10px; margin: 0; border-radius: 10px;
 +}
-+.quick-settings.luma-studio-options .luma-options-detail .luma-sheet-row-copy { spacing: 3px; }
-+.luma-well, .luma-status-light .luma-well {
++.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-row-copy { spacing: 3px; }
++.Suno-well, .Suno-status-light .Suno-well {
 +  background-color: transparent; border: none; box-shadow: none;
 +}
-+.luma-well-count { min-width: 28px; min-height: 28px; padding: 2px; background-color: transparent; }
-+.luma-well-count:hover, .luma-well-count:focus { background-color: rgba(128,128,128,.16); }
-+.luma-well-popover-head { height: 28px; padding: 0 10px; }
-+.luma-well-popover-title { font-size: 12px; font-weight: 650; letter-spacing: 0; }
-+.luma-well-tile-plate { width: 32px; height: 32px; background-color: transparent; }
-+.luma-well-tile-plate .luma-well-glyph { width: 24px; height: 24px; }
++.Suno-well-count { min-width: 28px; min-height: 28px; padding: 2px; background-color: transparent; }
++.Suno-well-count:hover, .Suno-well-count:focus { background-color: rgba(128,128,128,.16); }
++.Suno-well-popover-head { height: 28px; padding: 0 10px; }
++.Suno-well-popover-title { font-size: 12px; font-weight: 650; letter-spacing: 0; }
++.Suno-well-tile-plate { width: 32px; height: 32px; background-color: transparent; }
++.Suno-well-tile-plate .Suno-well-glyph { width: 24px; height: 24px; }

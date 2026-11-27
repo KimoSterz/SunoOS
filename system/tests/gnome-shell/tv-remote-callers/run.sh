@@ -3,7 +3,7 @@
 # A headless Shell with the TV Remote service from source (tvInput.js,
 # callerWindow.js) and real callers: host windows, a host program without a
 # window, and Flatpak-style sandboxes behind xdg-dbus-proxy. Run as an ordinary
-# user in a disposable container with the Luma Shell, bubblewrap and
+# user in a disposable container with the Suno Shell, bubblewrap and
 # xdg-dbus-proxy installed and the source at TVR_SOURCE (default /source).
 set -eu
 S=${TVR_SOURCE:-/source}
@@ -13,7 +13,7 @@ rm -rf "$HOME" "$XDG_RUNTIME_DIR" /tmp/tvr-schemas /tmp/tvr-sandbox.*
 mkdir -p "$HOME/.config/glib-2.0/settings" "$XDG_RUNTIME_DIR" "$TVR_OUT" /tmp/tvr-schemas
 chmod 700 "$XDG_RUNTIME_DIR"
 cp /usr/share/glib-2.0/schemas/*.xml /tmp/tvr-schemas/
-cp "$S/src/luma-shell-state/"*.gschema.xml /tmp/tvr-schemas/
+cp "$S/src/Suno-shell-state/"*.gschema.xml /tmp/tvr-schemas/
 glib-compile-schemas /tmp/tvr-schemas 2>/dev/null
 printf '[org/gnome/shell]\nwelcome-dialog-last-shown-version=%s\n' "'999'" > "$HOME/.config/glib-2.0/settings/keyfile"
 # A native app the window tracker knows by its desktop ID.
@@ -21,7 +21,7 @@ mkdir -p "$HOME/.local/share/applications"
 printf '[Desktop Entry]\nType=Application\nName=Native TV app\nExec=true\nStartupWMClass=org.example.NativeTv\n' \
   > "$HOME/.local/share/applications/org.example.NativeTv.desktop"
 export GSETTINGS_SCHEMA_DIR=/tmp/tvr-schemas GSETTINGS_BACKEND=keyfile
-export LIBGL_ALWAYS_SOFTWARE=1 LUMA_MUTTER_ALLOW_SOFTWARE_BLUR=1 GDK_BACKEND=wayland
+export LIBGL_ALWAYS_SOFTWARE=1 SUNO_MUTTER_ALLOW_SOFTWARE_BLUR=1 GDK_BACKEND=wayland
 export DBUS_SYSTEM_BUS_ADDRESS=unix:path=/tmp/tvr-run/system-bus
 dbus-daemon --session --fork --nopidfile --address="$DBUS_SYSTEM_BUS_ADDRESS"
 rm -f "$TVR_OUT/checks.json"

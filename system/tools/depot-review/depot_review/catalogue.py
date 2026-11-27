@@ -122,7 +122,7 @@ def upload(config: Config, local: Path) -> None:
 def read_back(config: Config, data: bytes, signature: bytes) -> None:
     for suffix, expected in (("", data), (".minisig", signature)):
         request = urllib.request.Request(config.catalogue_url + suffix + f"?v={int(time.time())}",
-                                         headers={"User-Agent": "luma-depot-review/1", "Cache-Control": "no-cache"})
+                                         headers={"User-Agent": "Suno-depot-review/1", "Cache-Control": "no-cache"})
         with urllib.request.urlopen(request, timeout=60) as response:
             if response.read() != expected:
                 raise RuntimeError(f"public catalogue{suffix} differs from what was signed")
@@ -149,7 +149,7 @@ def publish(config: Config, hub: Hub, r2, force: bool = False) -> dict | None:
     document = mirror.walk(document)
     # The Hub stamps each response; only a change in content earns a new signature.
     stable = {k: v for k, v in document.items() if k not in VOLATILE}
-    document["signed"] = {"by": "Luma Depot", "key": config.catalogue_pub.name,
+    document["signed"] = {"by": "Suno Depot", "key": config.catalogue_pub.name,
                           "source_sha256": hashlib.sha256(json.dumps(stable, sort_keys=True).encode()).hexdigest()}
     source = document["signed"]["source_sha256"]
     if not force and state.get("source_sha256") == source:

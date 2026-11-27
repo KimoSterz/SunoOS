@@ -1,4 +1,4 @@
-# Fedora 44 host tools required by the canonical Luma package builders.
+# Fedora 44 host tools required by the canonical Suno package builders.
 # Keep this list minimal: build dependencies belong in pinned containers.
 coreutils
 cockpit-machines

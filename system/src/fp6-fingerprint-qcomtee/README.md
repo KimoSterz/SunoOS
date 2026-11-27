@@ -18,4 +18,4 @@ QSEEComCompat service contract:
 It deliberately refuses `focal64`, enrollment, authentication, sensor capture,
 template creation, or any TA command. The object transport implementation is
 built from pinned upstream `qualcomm/quic-teec` source rather than copied into
-the Luma tree.
+the Suno tree.

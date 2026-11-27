@@ -1,4 +1,4 @@
-"""Messages network accounts (ADR-023) against a fake luma-messages-bridge/1 helper."""
+"""Messages network accounts (ADR-023) against a fake Suno-messages-bridge/1 helper."""
 import json
 import os
 from pathlib import Path
@@ -136,12 +136,12 @@ class ProviderTest(AccountsCase):
         self.assertEqual(store.thread("chat.one")[0].state, "received")
         self.assertTrue(provider.sms_transport().inspect().available)
 
-        outgoing = store.add("chat.one", "Sent from Luma", direction="outgoing", state="sending")
+        outgoing = store.add("chat.one", "Sent from Suno", direction="outgoing", state="sending")
         result = provider.send_message(outgoing.uid, store.authorize_send(outgoing.uid))
         self.assertEqual(result["state"], "sent")
         wait(lambda: store.message(outgoing.uid).state == "sent" and store.message(outgoing.uid).transport_id, "confirmed")
         sent = [json.loads(line) for line in (self.accounts.directory(account.id) / "sent.jsonl").read_text().splitlines()]
-        self.assertEqual([(s["conversation"], s["client_id"], s["text"]) for s in sent], [("chat.one", outgoing.uid, "Sent from Luma")])
+        self.assertEqual([(s["conversation"], s["client_id"], s["text"]) for s in sent], [("chat.one", outgoing.uid, "Sent from Suno")])
         self.assertEqual(len(store.thread("chat.one")), 2, "the confirmation is not imported twice")
 
         provider._process.request("fake.incoming", {"id": "m9", "text": "Are you there?"})

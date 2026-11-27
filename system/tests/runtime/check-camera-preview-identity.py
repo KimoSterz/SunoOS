@@ -19,7 +19,7 @@ gi.require_version('Adw', '1')
 from gi.repository import Adw, Gio, GLib, Gtk
 
 runtime = Path(os.environ['XDG_RUNTIME_DIR'])
-assert str(runtime).startswith('/tmp/lumaui-camera-test.'), 'requires the private Camera test runner'
+assert str(runtime).startswith('/tmp/SunoUI-camera-test.'), 'requires the private Camera test runner'
 bus_address = os.environ['DBUS_SESSION_BUS_ADDRESS']
 assert ';' not in bus_address and bus_address.split(',')[0] == f'unix:path={runtime}/bus'
 assert os.environ['XDG_DATA_HOME'] == str(runtime / 'data')
@@ -27,7 +27,7 @@ for variable, folder in (('XDG_CONFIG_HOME', 'config'), ('XDG_CACHE_HOME', 'cach
                          ('XDG_STATE_HOME', 'state')):
     assert os.environ[variable] == str(runtime / folder)
 assert os.environ['GSETTINGS_BACKEND'] == 'memory'
-assert (os.environ.get('WAYLAND_DISPLAY') == 'lumaui-camera-fixture-test'
+assert (os.environ.get('WAYLAND_DISPLAY') == 'SunoUI-camera-fixture-test'
         or (os.environ.get('GDK_BACKEND') == 'x11'
             and os.environ.get('DISPLAY', '').startswith(':')))
 launcher = Path(sys.argv[1]).resolve(strict=True)
@@ -47,8 +47,8 @@ assert len(commands) == 1, 'expected one Prairie preview launcher hook'
 code = commands[0][3].replace('$app', 'camera')
 assert 'm.APP_ID' in code and 'm.main()' in code
 production_id = camera.APPLICATION_ID
-assert production_id == camera.APP_ID == 'org.projectluma.Camera'
-preview_id = production_id + '.LumaUIPreview'
+assert production_id == camera.APP_ID == 'org.projectSuno.Camera'
+preview_id = production_id + '.SunoUIPreview'
 activations = []
 production = Gio.Application(application_id=production_id)
 production.connect('activate', lambda *_: activations.append('production'))
@@ -106,7 +106,7 @@ def identity_probe():
 
 
 with patch.dict(os.environ, {}, clear=False), patch.object(camera, 'main', identity_probe):
-    os.environ.pop('LUMA_CAMERA_FIXTURE', None)
+    os.environ.pop('SUNO_CAMERA_FIXTURE', None)
     try:
         exec(compile(code, str(launcher), 'exec'), {})
     except SystemExit as result:
@@ -114,7 +114,7 @@ with patch.dict(os.environ, {}, clear=False), patch.object(camera, 'main', ident
 camera.APP_ID = production_id
 assert camera.APPLICATION_ID == production_id
 with patch.dict(os.environ):
-    os.environ.pop('LUMA_CAMERA_FIXTURE', None)
+    os.environ.pop('SUNO_CAMERA_FIXTURE', None)
     assert camera.CameraApplication().get_application_id() == production_id
 assert probed == [preview_id] and not activations
 print(f'Camera preview identity: PASS launcher={launcher} production={production_id} '

@@ -1,6 +1,6 @@
 {
-  "_source": "Simulator v71 luma-next-71.html lines977\u2013980; cloud and snow use rain sky. Content sky colors are independent of chrome theme. Typography and instrument colors: v71 lines984-1000,4969-4982,5259-5261. Defaults inherit body line-height1.45.",
-  "lumaui": {
+  "_source": "Simulator v71 Suno-next-71.html lines977\u2013980; cloud and snow use rain sky. Content sky colors are independent of chrome theme. Typography and instrument colors: v71 lines984-1000,4969-4982,5259-5261. Defaults inherit body line-height1.45.",
+  "SunoUI": {
     "colors": {
       "light": {
         "sky_card_night": "rgba(255,255,255,0.07)",

@@ -12,20 +12,20 @@ import tempfile
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-POLICY = 'usr/share/luma-installer-atlas/plymouth-handoff-policy'
+POLICY = 'usr/share/Suno-installer-atlas/plymouth-handoff-policy'
 DROPIN = '''[Unit]
 # Anaconda's graphical viewer releases Plymouth after its first real frame.
 # Text/basic-graphics/rescue startup keeps the upstream quit behavior.
 ConditionKernelCommandLine=!rhgb
 '''
-RELEASE = '''def _luma_release_boot_splash():
-    # Luma installer-only policy. Restore native console behavior for TUI/RDP
+RELEASE = '''def _Suno_release_boot_splash():
+    # Suno installer-only policy. Restore native console behavior for TUI/RDP
     # and graphical-startup failures; do not hide exceptional diagnostics.
-    if os.path.isfile("/usr/share/luma-installer-atlas/plymouth-handoff-policy"):
+    if os.path.isfile("/usr/share/Suno-installer-atlas/plymouth-handoff-policy"):
         try:
             util.execWithRedirect("plymouth", ["quit"])
         except OSError as error:
-            log.warning("Luma boot splash could not be released: %s", error)
+            log.warning("Suno boot splash could not be released: %s", error)
 
 
 '''
@@ -76,10 +76,10 @@ def prepare(root):
         'def do_startup_wl_actions(timeout, headless=False, headless_resolution=None):':
             RELEASE + 'def do_startup_wl_actions(timeout, headless=False, headless_resolution=None):',
         '    if headless:\n        # headless (remote connection) - stay on VT1':
-            '    if headless:\n        _luma_release_boot_splash()\n        # headless (remote connection) - stay on VT1',
+            '    if headless:\n        _Suno_release_boot_splash()\n        # headless (remote connection) - stay on VT1',
         '    # with Wayland running we can initialize the UI interface\n    anaconda.initialize_interface()':
             '    # with Wayland running we can initialize the UI interface\n'
-            '    if anaconda.tui_mode:\n        _luma_release_boot_splash()\n'
+            '    if anaconda.tui_mode:\n        _Suno_release_boot_splash()\n'
             '    anaconda.initialize_interface()',
     }
     replacements["env_add={'XDG_DATA_DIRS': xdg_data_dirs}"] = (
@@ -109,10 +109,10 @@ def prepare(root):
             ['user-db:user', kiosk_defaults] or
             not (root / kiosk_defaults.removeprefix('file-db:/')).is_file()):
         raise ValueError('unsupported native GNOME Kiosk dconf profile')
-    brand = root / 'usr/share/luma/boot/brand/luma-wordmark.svg'
+    brand = root / 'usr/share/Suno/boot/brand/Suno-wordmark.svg'
     wordmark = ET.fromstring(brand.read_bytes())
     if wordmark.get('viewBox') != '0 0 2219 715':
-        raise ValueError('unsupported Luma wordmark geometry')
+        raise ValueError('unsupported Suno wordmark geometry')
     # A native Kiosk background covers its first frame while the viewer loads.
     # It uses the verified boot package's brand geometry; no polling cover or
     # second resident application is introduced.
@@ -130,13 +130,13 @@ def prepare(root):
     for name in ('plymouth-quit.service', 'plymouth-quit-wait.service'):
         directory = units / f'{name}.d'
         directory.mkdir(exist_ok=True)
-        (directory / '50-luma-atlas-handoff.conf').write_text(DROPIN)
+        (directory / '50-Suno-atlas-handoff.conf').write_text(DROPIN)
     (root / POLICY).write_text('first-frame\n')
-    (root / 'usr/share/luma-installer-atlas/loader-background.svg').write_bytes(ET.tostring(svg))
+    (root / 'usr/share/Suno-installer-atlas/loader-background.svg').write_bytes(ET.tostring(svg))
     materialize_background_schemas(schemas, schema_inputs)
     (schemas / 'org.gnome.desktop.background.gschema.override').write_text('''[org.gnome.desktop.background]
-picture-uri='file:///usr/share/luma-installer-atlas/loader-background.svg'
-picture-uri-dark='file:///usr/share/luma-installer-atlas/loader-background.svg'
+picture-uri='file:///usr/share/Suno-installer-atlas/loader-background.svg'
+picture-uri-dark='file:///usr/share/Suno-installer-atlas/loader-background.svg'
 picture-options='centered'
 primary-color='#21252b'
 secondary-color='#21252b'
@@ -147,19 +147,19 @@ color-shading-type='solid'
     # forces grey/none even when schema defaults resolve our SVG. Add native
     # installer defaults ahead of that database, preserving user overrides and
     # every unrelated Kiosk default. No installed desktop profile is changed.
-    database = root / 'usr/share/luma-installer-atlas/kiosk-background.dconf'
-    with tempfile.TemporaryDirectory(prefix='luma-kiosk-defaults-') as temporary:
+    database = root / 'usr/share/Suno-installer-atlas/kiosk-background.dconf'
+    with tempfile.TemporaryDirectory(prefix='Suno-kiosk-defaults-') as temporary:
         source = Path(temporary)
         (source / '00-background').write_text('''[org/gnome/desktop/background]
-picture-uri='file:///usr/share/luma-installer-atlas/loader-background.svg'
-picture-uri-dark='file:///usr/share/luma-installer-atlas/loader-background.svg'
+picture-uri='file:///usr/share/Suno-installer-atlas/loader-background.svg'
+picture-uri-dark='file:///usr/share/Suno-installer-atlas/loader-background.svg'
 picture-options='centered'
 primary-color='#21252b'
 secondary-color='#21252b'
 color-shading-type='solid'
 ''')
         subprocess.run(['dconf', 'compile', str(database), str(source)], check=True)
-    profile.write_text('user-db:user\nfile-db:/usr/share/luma-installer-atlas/kiosk-background.dconf\n'
+    profile.write_text('user-db:user\nfile-db:/usr/share/Suno-installer-atlas/kiosk-background.dconf\n'
                        + kiosk_defaults + '\n')
     print('Installer native first-frame splash and Kiosk background prepared')
 

@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=Contacts
+Icon=org.projectSuno.Contacts
+Exec=true
+NoDisplay=true

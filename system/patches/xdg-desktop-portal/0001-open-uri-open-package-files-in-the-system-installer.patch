@@ -1,4 +1,4 @@
-From: Project Luma <noreply@projectluma.org>
+From: Project Suno <noreply@projectSuno.org>
 Subject: [PATCH] open-uri: open package files in the system installer directly
 
 OpenURI and OpenFile show the application chooser for every file type
@@ -9,7 +9,7 @@ in a sandboxed file manager therefore always asked which application
 should open them, although the system ships exactly one installer for
 them and makes it the default.
 
-/usr/share/luma/open-directly.list ([Open Directly], content type =
+/usr/share/Suno/open-directly.list ([Open Directly], content type =
 desktop id) now names content types that open in a system handler
 without the chooser. While the named handler is the default for the
 type, and its desktop entry's real path is in /usr/share/applications
@@ -27,7 +27,7 @@ request to ask and the per-type always-ask setting still win.
    return FALSE;
 +}
 +
-+/* Luma: the operating system lists, in LUMA_OPEN_DIRECTLY_POLICY, content
++/* Suno: the operating system lists, in SUNO_OPEN_DIRECTLY_POLICY, content
 + * types that open in a named system handler without the application chooser
 + * (package files in Valet, the installer). While that handler is the default
 + * for the type, a file of that type opens in it directly. The installer only
@@ -41,12 +41,12 @@ request to ask and the per-type always-ask setting still win.
 + * never skips the chooser, and an application's request to ask, or
 + * always-ask for the type, still wins.
 + */
-+#define LUMA_OPEN_DIRECTLY_POLICY "/usr/share/luma/open-directly.list"
-+#define LUMA_OPEN_DIRECTLY_GROUP "Open Directly"
-+#define LUMA_SYSTEM_APPLICATIONS_DIR "/usr/share/applications/"
++#define SUNO_OPEN_DIRECTLY_POLICY "/usr/share/Suno/open-directly.list"
++#define SUNO_OPEN_DIRECTLY_GROUP "Open Directly"
++#define SUNO_SYSTEM_APPLICATIONS_DIR "/usr/share/applications/"
 +
 +static gboolean
-+luma_opens_directly (const char *app_id,
++Suno_opens_directly (const char *app_id,
 +                     const char *content_type)
 +{
 +  g_autoptr(GKeyFile) policy = NULL;
@@ -61,11 +61,11 @@ request to ask and the per-type always-ask setting still win.
 +    return FALSE;
 +
 +  policy = g_key_file_new ();
-+  if (!g_key_file_load_from_file (policy, LUMA_OPEN_DIRECTLY_POLICY,
++  if (!g_key_file_load_from_file (policy, SUNO_OPEN_DIRECTLY_POLICY,
 +                                  G_KEY_FILE_NONE, NULL))
 +    return FALSE;
 +
-+  handler = g_key_file_get_string (policy, LUMA_OPEN_DIRECTLY_GROUP,
++  handler = g_key_file_get_string (policy, SUNO_OPEN_DIRECTLY_GROUP,
 +                                   content_type, NULL);
 +  if (handler == NULL)
 +    return FALSE;
@@ -85,10 +85,10 @@ request to ask and the per-type always-ask setting still win.
 +
 +  real_path = realpath (filename, NULL);
 +  if (real_path == NULL ||
-+      !g_str_has_prefix (real_path, LUMA_SYSTEM_APPLICATIONS_DIR))
++      !g_str_has_prefix (real_path, SUNO_SYSTEM_APPLICATIONS_DIR))
 +    return FALSE;
 +
-+  name = real_path + strlen (LUMA_SYSTEM_APPLICATIONS_DIR);
++  name = real_path + strlen (SUNO_SYSTEM_APPLICATIONS_DIR);
 +  if (*name == '\0' || strchr (name, '/') != NULL)
 +    return FALSE;
 +
@@ -101,9 +101,9 @@ request to ask and the per-type always-ask setting still win.
        skip_app_chooser = TRUE;
      }
  
-+  /* Luma: package files open in the system installer that claims them */
++  /* Suno: package files open in the system installer that claims them */
 +  if (!skip_app_chooser && default_app != NULL &&
-+      luma_opens_directly (default_app, content_type))
++      Suno_opens_directly (default_app, content_type))
 +    {
 +      reason = "Allowing to skip app chooser: system installer";
 +      skip_app_chooser = TRUE;
@@ -127,35 +127,35 @@ request to ask and the per-type always-ask setting still win.
  """
  
  
-+# Luma: /usr/share/luma/open-directly.list names, per content type, a system
++# Suno: /usr/share/Suno/open-directly.list names, per content type, a system
 +# handler that opens it without the chooser while it is the default.
-+luma_policy = Path("/usr/share/luma/open-directly.list")
++Suno_policy = Path("/usr/share/Suno/open-directly.list")
 +
-+luma_installer_desktop = b"""[Desktop Entry]
++Suno_installer_desktop = b"""[Desktop Entry]
 +Type=Application
 +Name=Test Installer
 +Exec=true %f
 +MimeType=application/x-rpm;application/vnd.debian.binary-package;
 +"""
 +
-+luma_archiver_desktop = b"""[Desktop Entry]
++Suno_archiver_desktop = b"""[Desktop Entry]
 +Type=Application
 +Name=Test Archiver
 +Exec=true %f
 +MimeType=application/x-rpm;application/vnd.debian.binary-package;
 +"""
 +
-+luma_defaults_list = b"""[Default Applications]
-+application/vnd.debian.binary-package=luma-user-installer.desktop;
++Suno_defaults_list = b"""[Default Applications]
++application/vnd.debian.binary-package=Suno-user-installer.desktop;
 +"""
 +
 +# Two other handlers, so that without the policy the chooser would be shown.
-+luma_mimeinfo_cache = b"""application/x-rpm=luma-test-archiver.desktop;luma-user-installer.desktop;
-+application/vnd.debian.binary-package=luma-user-installer.desktop;luma-test-archiver.desktop;
++Suno_mimeinfo_cache = b"""application/x-rpm=Suno-test-archiver.desktop;Suno-user-installer.desktop;
++application/vnd.debian.binary-package=Suno-user-installer.desktop;Suno-test-archiver.desktop;
 +"""
 +
 +# The first bytes of an RPM and of a Debian package.
-+luma_package_data = {
++Suno_package_data = {
 +    "package.rpm": b"\xed\xab\xee\xdb\x03\x00\x00\x00" + bytes(88),
 +    "package.deb": b"!<arch>\ndebian-binary   " + bytes(64),
 +}
@@ -165,18 +165,18 @@ request to ask and the per-type always-ask setting still win.
  def xdg_data_home_files():
      return {
 -        "applications/defaults.list": defaults_list,
-+        "applications/defaults.list": defaults_list + luma_defaults_list.split(b"\n", 1)[1],
++        "applications/defaults.list": defaults_list + Suno_defaults_list.split(b"\n", 1)[1],
          "applications/furrfix.desktop": furrfix_desktop,
          "applications/furrfix2.desktop": furrfix_desktop,
 -        "applications/mimeinfo.cache": mimeinfo_cache,
-+        "applications/luma-test-archiver.desktop": luma_archiver_desktop,
-+        "applications/luma-user-installer.desktop": luma_installer_desktop,
-+        "applications/mimeinfo.cache": mimeinfo_cache + luma_mimeinfo_cache,
++        "applications/Suno-test-archiver.desktop": Suno_archiver_desktop,
++        "applications/Suno-user-installer.desktop": Suno_installer_desktop,
++        "applications/mimeinfo.cache": mimeinfo_cache + Suno_mimeinfo_cache,
      }
 +
 +
 +@pytest.fixture
-+def luma_open_directly():
++def Suno_open_directly():
 +    """The policy file and a trusted installer, at their real system paths.
 +
 +    Those paths are the trust boundary, so this needs a disposable root
@@ -184,23 +184,23 @@ request to ask and the per-type always-ask setting still win.
 +    Tests run in parallel and share the one policy file, so each holds a lock
 +    while it uses it. The installer entry is the test's own and is the default
 +    for RPMs in the test's own configuration directory. Debian packages name
-+    luma-user-installer, which is in the test's data home and so untrusted.
++    Suno-user-installer, which is in the test's data home and so untrusted.
 +    """
 +    system = Path("/usr/share/applications")
-+    if not os.access(system, os.W_OK) or not os.access(luma_policy.parent.parent, os.W_OK):
++    if not os.access(system, os.W_OK) or not os.access(Suno_policy.parent.parent, os.W_OK):
 +        pytest.skip("needs writable system data directories")
-+    luma_policy.parent.mkdir(exist_ok=True)
-+    name = f"luma-test-installer-{os.getpid()}-{os.urandom(4).hex()}.desktop"
++    Suno_policy.parent.mkdir(exist_ok=True)
++    name = f"Suno-test-installer-{os.getpid()}-{os.urandom(4).hex()}.desktop"
 +    path = system / name
-+    with open(luma_policy.parent / ".open-directly-test.lock", "w") as lock:
++    with open(Suno_policy.parent / ".open-directly-test.lock", "w") as lock:
 +        fcntl.flock(lock, fcntl.LOCK_EX)
-+        if luma_policy.exists():
-+            pytest.skip(f"{luma_policy} already exists")
-+        path.write_bytes(luma_installer_desktop)
-+        luma_policy.write_text(
++        if Suno_policy.exists():
++            pytest.skip(f"{Suno_policy} already exists")
++        path.write_bytes(Suno_installer_desktop)
++        Suno_policy.write_text(
 +            "[Open Directly]\n"
 +            f"application/x-rpm={name}\n"
-+            "application/vnd.debian.binary-package=luma-user-installer.desktop\n"
++            "application/vnd.debian.binary-package=Suno-user-installer.desktop\n"
 +        )
 +        config = Path(os.environ["XDG_CONFIG_HOME"]) / "mimeapps.list"
 +        config.write_text(f"[Default Applications]\napplication/x-rpm={name};\n")
@@ -208,7 +208,7 @@ request to ask and the per-type always-ask setting still win.
 +            yield path
 +        finally:
 +            path.unlink(missing_ok=True)
-+            luma_policy.unlink(missing_ok=True)
++            Suno_policy.unlink(missing_ok=True)
  
  
  @pytest.fixture
@@ -217,10 +217,10 @@ request to ask and the per-type always-ask setting still win.
          assert path == "file://" + file_host_path.absolute().as_posix()
          assert file_doc_path != file_host_path.absolute().as_posix()
 +
-+    def open_luma_package(self, dbus_con, name, ask=False):
++    def open_Suno_package(self, dbus_con, name, ask=False):
 +        openuri_intf = xdp.get_portal_iface(dbus_con, "OpenURI")
 +        file_path = Path.home() / name
-+        file_path.write_bytes(luma_package_data[name])
++        file_path.write_bytes(Suno_package_data[name])
 +        fd = os.open(file_path.absolute().as_posix(), os.O_RDONLY)
 +        try:
 +            request = xdp.Request(dbus_con, openuri_intf)
@@ -236,28 +236,28 @@ request to ask and the per-type always-ask setting still win.
 +        assert response.response == 0
 +        return xdp.get_mock_iface(dbus_con).GetMethodCalls("ChooseApplication")
 +
-+    def test_luma_system_installer_opens_directly(
-+        self, luma_open_directly, portals, dbus_con
++    def test_Suno_system_installer_opens_directly(
++        self, Suno_open_directly, portals, dbus_con
 +    ):
-+        assert self.open_luma_package(dbus_con, "package.rpm") == []
++        assert self.open_Suno_package(dbus_con, "package.rpm") == []
 +
-+    def test_luma_system_installer_respects_ask(
-+        self, luma_open_directly, portals, dbus_con
++    def test_Suno_system_installer_respects_ask(
++        self, Suno_open_directly, portals, dbus_con
 +    ):
-+        method_calls = self.open_luma_package(dbus_con, "package.rpm", ask=True)
++        method_calls = self.open_Suno_package(dbus_con, "package.rpm", ask=True)
 +        assert len(method_calls) == 1
 +        _, args = method_calls[-1]
 +        assert args[4]["content_type"] == "application/x-rpm"
 +
-+    def test_luma_system_installer_respects_always_ask(
-+        self, luma_open_directly, portals, dbus_con
++    def test_Suno_system_installer_respects_always_ask(
++        self, Suno_open_directly, portals, dbus_con
 +    ):
 +        self.enable_paranoid_mode(dbus_con, "application/x-rpm")
-+        assert len(self.open_luma_package(dbus_con, "package.rpm")) == 1
++        assert len(self.open_Suno_package(dbus_con, "package.rpm")) == 1
 +
-+    def test_luma_user_installer_still_asks(self, luma_open_directly, portals, dbus_con):
++    def test_Suno_user_installer_still_asks(self, Suno_open_directly, portals, dbus_con):
 +        # The same claim from outside the system directory is ignored.
-+        method_calls = self.open_luma_package(dbus_con, "package.deb")
++        method_calls = self.open_Suno_package(dbus_con, "package.deb")
 +        assert len(method_calls) == 1
 +        _, args = method_calls[-1]
 +        assert args[4]["content_type"] == "application/vnd.debian.binary-package"

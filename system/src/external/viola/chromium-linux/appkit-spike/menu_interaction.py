@@ -2,7 +2,7 @@
 """AppKit candidate: distinguish pointer hover from keyboard menu selection."""
 from pathlib import Path
 from gi.repository import Gdk, Gtk
-from luma_appkit import add_style_sheet
+from Suno_appkit import add_style_sheet
 
 _provider = None
 

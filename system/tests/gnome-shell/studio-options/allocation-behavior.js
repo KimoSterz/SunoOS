@@ -4,7 +4,7 @@
 const Gio = imports.gi.Gio;
 const root = ARGV[0];
 if (!root) throw Error('usage: gjs allocation-behavior.js APPLIED_SOURCE');
-const [, bytes] = Gio.File.new_for_path(`${root}/js/ui/lumaNotificationBeacon.js`).load_contents(null);
+const [, bytes] = Gio.File.new_for_path(`${root}/js/ui/SunoNotificationBeacon.js`).load_contents(null);
 let source = new TextDecoder().decode(bytes).replace(/^import .*;\n/gm, '').replace(/^export /gm, '');
 function assert(ok, message) { if (!ok) throw Error(message); }
 let nextId = 0;

@@ -3,20 +3,20 @@
 
 # Migrate an FP6 with boot-cleared modemst partitions to upstream rmtfs's
 # persistent file backend. Factory partitions are copied read-only; every
-# modem write is confined to a root-only directory on Luma's userdata.
+# modem write is confined to a root-only directory on Suno's userdata.
 
 set -Eeuo pipefail
 umask 077
 
-qmicli=/usr/libexec/luma-fp6-qmicli-pdc
+qmicli=/usr/libexec/Suno-fp6-qmicli-pdc
 rmtfs=/usr/bin/rmtfs
-platform=/usr/lib/firmware/luma/fp6-carrier-pdc/dsds-la-milos.mbn
-tmo=/tmp/luma-rmtfs-migration-tmo.mbn
+platform=/usr/lib/firmware/Suno/fp6-carrier-pdc/dsds-la-milos.mbn
+tmo=/tmp/Suno-rmtfs-migration-tmo.mbn
 remoteproc=/sys/class/remoteproc/remoteproc1
-store=/var/lib/luma/rmtfs
-stage=/var/lib/luma/rmtfs.new
-dropin=/etc/systemd/system/rmtfs.service.d/50-luma-file-store.conf
-log=/run/luma-fp6-rmtfs-migration.log
+store=/var/lib/Suno/rmtfs
+stage=/var/lib/Suno/rmtfs.new
+dropin=/etc/systemd/system/rmtfs.service.d/50-Suno-file-store.conf
+log=/run/Suno-fp6-rmtfs-migration.log
 zero_sha=e5b844cc57f57094ea4585e235f36c78c1cd222262bb89d53c94dcb4d6b3e55d
 fsg_sha=a776c844c220fa278479f63b3dd0ea6ebdd12bc5267af02592dd895dd76494ab
 fsc_sha=fa43239bcee7b97ca62f007cc68487560a39e19f74f3dde7486db3f98df8e471
@@ -28,7 +28,7 @@ rmtfs_pid=
 modem_running=true
 promoted=false
 
-event() { printf 'event=luma_fp6_rmtfs_file_store %s\n' "$*"; }
+event() { printf 'event=Suno_fp6_rmtfs_file_store %s\n' "$*"; }
 fail() { event "state=failed reason=$1 identifiers_logged=0" >&2; exit 1; }
 hash() { sha256sum "$1" | awk '{print $1}'; }
 compact_ids() {
@@ -125,9 +125,9 @@ cleanup() {
   if [[ $(cat "$remoteproc/state" 2>/dev/null) == offline ]]; then
     printf start >"$remoteproc/state" 2>/dev/null
   fi
-  systemctl start --no-block luma-fp6-carrier-pdc.service \
-    luma-fp6-primary-gw-session.service ModemManager.service \
-    luma-fp6-cellular-link.service luma-fp6-imsd.service 2>/dev/null
+  systemctl start --no-block Suno-fp6-carrier-pdc.service \
+    Suno-fp6-primary-gw-session.service ModemManager.service \
+    Suno-fp6-cellular-link.service Suno-fp6-imsd.service 2>/dev/null
   rm -f "$log" "$tmo"
   return "$status"
 }
@@ -136,7 +136,7 @@ trap cleanup EXIT INT TERM HUP
 [[ $(id -u) -eq 0 ]] || fail not_root
 [[ $(tr -d '\0' </sys/firmware/devicetree/base/model) == 'The Fairphone (Gen. 6)' ]] || fail model
 grep -qw androidboot.slot_suffix=_b /proc/cmdline || fail slot
-[[ $(uname -r) == 7.1.2-luma-fp-ims1 ]] || fail kernel
+[[ $(uname -r) == 7.1.2-Suno-fp-ims1 ]] || fail kernel
 [[ $(hash "$qmicli") == 1b4adcd3d949e8d0f68065ba0022bbc35fe4462717deaaeae0ec244557f76b9c ]] || fail qmicli_hash
 [[ $(hash "$rmtfs") == 31d266711b5fae801162cd31bd2d14331515a6005aa6e5128a2f4bdbcd3bb5d5 ]] || fail rmtfs_hash
 [[ $(hash "$platform") == 281cf305a5bcd98b709a0446f9733d1859cb423a791b2af17ab9776ffeaf0400 ]] || fail platform_hash
@@ -149,9 +149,9 @@ grep -qw androidboot.slot_suffix=_b /proc/cmdline || fail slot
 [[ ! -e $store && ! -e $stage ]] || fail store_exists
 [[ ! -e $dropin ]] || fail dropin_exists
 
-systemctl stop luma-fp6-imsd.service luma-fp6-cellular-link.service \
-  ModemManager.service luma-fp6-primary-gw-session.service \
-  luma-fp6-carrier-pdc.service tqftpserv.service rmtfs.service
+systemctl stop Suno-fp6-imsd.service Suno-fp6-cellular-link.service \
+  ModemManager.service Suno-fp6-primary-gw-session.service \
+  Suno-fp6-carrier-pdc.service tqftpserv.service rmtfs.service
 stop_modem
 
 install -d -m 0700 "$stage"
@@ -225,19 +225,19 @@ install -d -m 0755 "$(dirname "$dropin")"
 cat >"$dropin" <<'EOF'
 [Service]
 ExecStart=
-ExecStart=/usr/bin/rmtfs -o /var/lib/luma/rmtfs -s
+ExecStart=/usr/bin/rmtfs -o /var/lib/Suno/rmtfs -s
 EOF
 chmod 0644 "$dropin"
-restorecon -RF /var/lib/luma "$dropin" 2>/dev/null || true
+restorecon -RF /var/lib/Suno "$dropin" 2>/dev/null || true
 systemctl daemon-reload
 systemctl start rmtfs.service tqftpserv.service
 start_modem
 [[ $(active_id < <("$qmicli" -d qrtr://0 --device-open-qmi --pdc-list-configs=platform)) == "$platform_id" ]] || fail platform_final
 [[ $(active_id < <("$qmicli" -d qrtr://0 --device-open-qmi --pdc-list-configs=software)) == "$tmo_id" ]] || fail tmo_final
 
-systemctl start luma-fp6-carrier-pdc.service
-systemctl start luma-fp6-primary-gw-session.service
-systemctl start ModemManager.service luma-fp6-cellular-link.service luma-fp6-imsd.service
+systemctl start Suno-fp6-carrier-pdc.service
+systemctl start Suno-fp6-primary-gw-session.service
+systemctl start ModemManager.service Suno-fp6-cellular-link.service Suno-fp6-imsd.service
 
 trap - EXIT INT TERM HUP
 rm -f "$log" "$tmo"

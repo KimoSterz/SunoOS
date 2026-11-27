@@ -1,7 +1,7 @@
 ---
 type: security
 component: Desktop
-packages: [luma-developer-platform]
+packages: [Suno-developer-platform]
 highlight: false
 ---
 Summary: Only the real shell can read live activity from apps

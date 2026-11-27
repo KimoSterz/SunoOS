@@ -41,7 +41,7 @@ import sys
 import urllib.parse
 from pathlib import Path
 
-STATE_DIR = Path("/var/lib/luma/rcs")
+STATE_DIR = Path("/var/lib/Suno/rcs")
 RESPONSE_PATH = STATE_DIR / "ts43-response.json"
 # TS.43 runs EAP-AKA across two HTTP round trips, and HTTP is stateless: the
 # server correlates the challenge with the response through a session cookie.

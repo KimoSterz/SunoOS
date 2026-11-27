@@ -1,13 +1,13 @@
 # SPDX-License-Identifier: Apache-2.0
 
-"""What a person controls about Luma Connect on this device.
+"""What a person controls about Suno Connect on this device.
 
 Every switch says, before it is flipped, exactly what happens — and does only
 that. The rule behind all of them: turning something off never deletes
 anything from this device or from another device. At most it takes back from
-Luma Cloud what this device alone put there.
+Suno Cloud what this device alone put there.
 
-This module is the one place those words and those effects live, so the Luma
+This module is the one place those words and those effects live, so the Suno
 Connect app, the command line and tests all read the same promise.
 """
 
@@ -32,22 +32,22 @@ class Service:
 
 SERVICES = (
     Service("calendar", "Calendar",
-            "Your Luma calendar stays in step with your other devices and Luma Cloud.",
-            "Your Luma events are copied into the Personal calendar on this device, then the Luma "
-            "calendar is disconnected here. Nothing is deleted from Luma Cloud or your other devices."),
+            "Your Suno calendar stays in step with your other devices and Suno Cloud.",
+            "Your Suno events are copied into the Personal calendar on this device, then the Suno "
+            "calendar is disconnected here. Nothing is deleted from Suno Cloud or your other devices."),
     Service("notes", "Notes",
-            "Notes on this device are kept in Luma Cloud.",
-            "Notes from this device are removed from Luma Cloud. They stay on this device, and your "
+            "Notes on this device are kept in Suno Cloud.",
+            "Notes from this device are removed from Suno Cloud. They stay on this device, and your "
             "other devices keep theirs."),
     Service("contacts", "Contacts",
-            "Your Luma contacts stay in step with your other devices and Luma Cloud.",
-            "Your Luma contacts are copied into Personal on this device, then the Luma address book "
-            "is disconnected here. Nothing is deleted from Luma Cloud or your other devices."),
+            "Your Suno contacts stay in step with your other devices and Suno Cloud.",
+            "Your Suno contacts are copied into Personal on this device, then the Suno address book "
+            "is disconnected here. Nothing is deleted from Suno Cloud or your other devices."),
     Service("photos", "Photos",
-            "Photos from this device go to Luma Cloud, and photos from your other devices arrive in "
-            "Pictures › Luma Hub.",
+            "Photos from this device go to Suno Cloud, and photos from your other devices arrive in "
+            "Pictures › Suno Hub.",
             "This device stops sending and receiving photos. Photos only this device had are hidden "
-            "in Luma Cloud and kept for recovery. Nothing is deleted here or on your other devices."),
+            "in Suno Cloud and kept for recovery. Nothing is deleted here or on your other devices."),
     Service("world-clocks", "Clocks",
             "Cities you add in Clock appear on your other devices.",
             "This device stops sharing clocks. Its cities stay as they are, here and elsewhere."),
@@ -58,14 +58,14 @@ SERVICES = (
     # is sealed at rest on the Hub for now, and end-to-end encryption is a
     # launch requirement (docs/decisions/021-message-sync-privacy.md).
     Service("messages", "Messages",
-            "Your text and picture messages from this device are kept in Luma Cloud and appear on your "
+            "Your text and picture messages from this device are kept in Suno Cloud and appear on your "
             "other devices. This device sends its history once, then new messages as they arrive.",
-            "This device stops sending and receiving messages. Nothing is deleted from Luma Cloud or your "
+            "This device stops sending and receiving messages. Nothing is deleted from Suno Cloud or your "
             "other devices, and the messages on this device stay.", default=False),
     Service("calls", "Call history",
             "Calls made and received on this device are listed on your other devices. Call audio is never "
-            "sent to Luma Cloud.",
-            "This device stops sending and receiving call history. Nothing is deleted from Luma Cloud or "
+            "sent to Suno Cloud.",
+            "This device stops sending and receiving call history. Nothing is deleted from Suno Cloud or "
             "your other devices, and the history on this device stays.", default=False),
     Service("leaf-books", "Books",
             "Where you are in each book, and your highlights, notes and bookmarks, follow you to your other "
@@ -131,7 +131,7 @@ def forget_state(state: dict, scope: str, service: str) -> None:
 
 
 def disconnect_calendar(state: dict, scope: str) -> str:
-    """Copy the Luma calendar into Personal on this device, then remove it here."""
+    """Copy the Suno calendar into Personal on this device, then remove it here."""
     from .calendar_backend import CalendarUnavailable, export_ics, import_ics, list_sources, remove_calendar
     record = state.get(f"{scope}|calendar", {})
     try:
@@ -140,15 +140,15 @@ def disconnect_calendar(state: dict, scope: str) -> str:
         return "calendar service unavailable; nothing changed on this device"
     uid = record.get("source_uid")
     if not uid or uid not in sources:
-        return "no Luma calendar on this device"
+        return "no Suno calendar on this device"
     text = export_ics(uid)
     copied = import_ics("system-calendar", text) if "BEGIN:VEVENT" in text and "system-calendar" in sources else 0
     remove_calendar(uid)
-    return f"copied {copied} event(s) into Personal and disconnected the Luma calendar"
+    return f"copied {copied} event(s) into Personal and disconnected the Suno calendar"
 
 
 def stop_units() -> None:
-    for unit in ("luma-connect-sync-watch.service", "luma-connect-sync.path", "luma-connect-sync.timer"):
+    for unit in ("Suno-connect-sync-watch.service", "Suno-connect-sync.path", "Suno-connect-sync.timer"):
         try:
             subprocess.run(["systemctl", "--user", "stop", unit], capture_output=True, timeout=15)
         except (OSError, subprocess.SubprocessError):

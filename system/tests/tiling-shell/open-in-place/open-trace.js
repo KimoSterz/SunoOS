@@ -48,7 +48,7 @@ const sameFrame = (a, b) => a.every((v, i) => Math.abs(v - b[i]) <= 2);
 
 function refresh() {
     ext = Main.extensionManager.lookup(UUID)?.stateObj;
-    mem = ext?._lumaWindowMemory ?? mem;
+    mem = ext?._SunoWindowMemory ?? mem;
     return mem;
 }
 
@@ -217,19 +217,19 @@ async function main() {
     const display = () => GLib.getenv('DISPLAY') ?? ':0';
     const clients = [
         {key: 'gtk4-wayland', label: 'GTK4 (Wayland)', strict: true,
-            argv: ['python3', APP, 'org.projectluma.Reel', 'Reel', '#5e35b1', '--adw'], env: {GDK_BACKEND: 'wayland'},
-            match: w => w.get_gtk_application_id() === 'org.projectluma.Reel', tile: {x: 0.5, y: 0, width: 0.5, height: 1}},
+            argv: ['python3', APP, 'org.projectSuno.Reel', 'Reel', '#5e35b1', '--adw'], env: {GDK_BACKEND: 'wayland'},
+            match: w => w.get_gtk_application_id() === 'org.projectSuno.Reel', tile: {x: 0.5, y: 0, width: 0.5, height: 1}},
         // Takes 400 ms to lay out at any size but its first, like a heavy app
         // relayouting: shown by the hold's safety timeout at the wrong size
         // unless its first size is already the tile.
         {key: 'gtk4-wayland-slow', label: 'GTK4 (Wayland), slow to lay out again', strict: true,
-            argv: ['python3', APP, 'org.projectluma.Tide', 'Tide', '#2e7d32', '--adw', '--slow-relayout', '400'], env: {GDK_BACKEND: 'wayland'},
-            match: w => w.get_gtk_application_id() === 'org.projectluma.Tide', tile: {x: 0, y: 0, width: 0.5, height: 0.5}},
+            argv: ['python3', APP, 'org.projectSuno.Tide', 'Tide', '#2e7d32', '--adw', '--slow-relayout', '400'], env: {GDK_BACKEND: 'wayland'},
+            match: w => w.get_gtk_application_id() === 'org.projectSuno.Tide', tile: {x: 0, y: 0, width: 0.5, height: 0.5}},
         {key: 'gtk4-wayland-max', label: 'GTK4 (Wayland), maximized', strict: true,
-            argv: ['python3', APP, 'org.projectluma.Write', 'Write', '#6d4c41', '--adw'], env: {GDK_BACKEND: 'wayland'},
-            match: w => w.get_gtk_application_id() === 'org.projectluma.Write', tile: 'max'},
+            argv: ['python3', APP, 'org.projectSuno.Write', 'Write', '#6d4c41', '--adw'], env: {GDK_BACKEND: 'wayland'},
+            match: w => w.get_gtk_application_id() === 'org.projectSuno.Write', tile: 'max'},
         {key: 'gtk4-xwayland', label: 'GTK4 (XWayland)', strict: true,
-            argv: ['python3', APP, 'org.projectluma.XNotes', 'XNotes', '#00838f'], env: {GDK_BACKEND: 'x11', DISPLAY: display()},
+            argv: ['python3', APP, 'org.projectSuno.XNotes', 'XNotes', '#00838f'], env: {GDK_BACKEND: 'x11', DISPLAY: display()},
             match: w => w.get_client_type() === Meta.WindowClientType.X11 && /xnotes/i.test(`${w.get_gtk_application_id()} ${w.get_wm_class()}`),
             tile: {x: 0, y: 0, width: 0.5, height: 1}},
         {key: 'x11-plain', label: 'Plain X11 client (server-side frame)', strict: true,
@@ -238,12 +238,12 @@ async function main() {
             tile: {x: 0.5, y: 0.5, width: 0.5, height: 0.5}},
         {key: 'electron-wayland', label: 'Chromium/Electron (Wayland)', slow: true,
             argv: ['chromium-browser', '--no-sandbox', '--ozone-platform=wayland', '--user-data-dir=/tmp/ot-chromium-w', '--no-first-run',
-                '--disable-gpu', '--class=org.projectluma.ChromiumApp', '--app=data:text/html,<body style="background:%23d97757"><h1>App</h1>'],
+                '--disable-gpu', '--class=org.projectSuno.ChromiumApp', '--app=data:text/html,<body style="background:%23d97757"><h1>App</h1>'],
             env: {}, match: w => w.get_client_type() === Meta.WindowClientType.WAYLAND && /chrom/i.test(`${w.get_wm_class()} ${w.get_gtk_application_id()} ${w.get_sandboxed_app_id()}`),
             tile: {x: 0, y: 0, width: 0.5, height: 1}},
         {key: 'electron-x11', label: 'Chromium/Electron (XWayland)', slow: true,
             argv: ['chromium-browser', '--no-sandbox', '--ozone-platform=x11', '--user-data-dir=/tmp/ot-chromium-x', '--no-first-run',
-                '--disable-gpu', '--class=org.projectluma.ChromiumX', '--app=data:text/html,<body style="background:%23d97757"><h1>App</h1>'],
+                '--disable-gpu', '--class=org.projectSuno.ChromiumX', '--app=data:text/html,<body style="background:%23d97757"><h1>App</h1>'],
             env: {DISPLAY: display()}, match: w => w.get_client_type() === Meta.WindowClientType.X11 && /chrom/i.test(`${w.get_wm_class()} ${w.get_wm_class_instance()}`),
             tile: {x: 0.5, y: 0, width: 0.5, height: 1}},
     ];

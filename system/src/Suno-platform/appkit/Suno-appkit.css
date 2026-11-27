@@ -1,0 +1,248 @@
+/* SPDX-License-Identifier: Apache-2.0 */
+
+/* Chrome, islands, buttons, groups, segments, sidebar rows, status bars and
+ * sliders are defined once in Suno-appkit-base.css and shared with the C kit.
+ * This sheet keeps only what is specific to the Python kit's own widgets:
+ * menus, popovers, dialogs, avatars, empty states, rename fields. */
+
+@import url("Suno-appkit-tokens.css");
+
+.Suno-connected-buttons.violet { background: alpha(@Suno_violet, .06); box-shadow: inset 0 0 0 1px alpha(@Suno_violet,.18); }
+.Suno-connected-buttons.amber { background: alpha(@Suno_amber, .06); box-shadow: inset 0 0 0 1px alpha(@Suno_amber,.18); }
+.Suno-connected-buttons.blue { background: alpha(@Suno_blue, .06); box-shadow: inset 0 0 0 1px alpha(@Suno_blue,.18); }
+.Suno-save-status { color: @Suno_muted; font-size: 11px; font-weight: 500; }
+.Suno-save-status.error { color: @Suno_destructive; }
+.Suno-inline-rename {
+  min-height: 28px; padding: 0 6px; border: 1px solid @Suno_accent;
+  border-radius: 7px; background: @Suno_fill; box-shadow: none;
+}
+.Suno-dialog-popover > contents {
+  padding: 10px; border: 1px solid @Suno_menu_border; border-radius: 12px;
+  background: @Suno_menu; color: @Suno_ink;
+  box-shadow: 0 12px 34px alpha(@Suno_island_shadow, .16);
+}
+.Suno-dialog-popover entry {
+  min-height: 34px; border: 1px solid @Suno_line_faint;
+  border-radius: 8px; background: @Suno_fill; color: @Suno_ink;
+}
+.Suno-quick-action {
+  min-height: 62px; padding: 7px 5px; border: 0; border-right: 1px solid @Suno_line_faint;
+  border-radius: 0; background: transparent; color: @Suno_ink; font-size: 11px; font-weight: 600;
+}
+.Suno-quick-action:last-child { border-right: 0; }
+.Suno-quick-action:hover { background: @Suno_menu_raised; }
+
+/* Navigation, identity, empty and status components.
+ *
+ * These styles were lost in the same integration that dropped their widget
+ * implementations, so the classes the widgets add resolved to nothing. They are
+ * restored verbatim from the revision that carried them and use only tokens the
+ * light and dark token files both still define. */
+.Suno-section-label {
+  /* The design's sidebar heading and section heading are one thing: an 18px
+   * band with 4px above it, set in the meta size. It was 11px here, which is
+   * the label size — two steps of the ramp apart, and enough to make every
+   * heading in every application read as a title. Its colour is the ledger's
+   * section_label (ADR-043): 46% of the ink measured 2.50:1 on a light
+   * sidebar and 2.78:1 on glass; this holds 4.5:1 in every mode. */
+  min-height: 14px;
+  padding: 4px 8px 0;
+  color: @Suno_section_label;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .11em;
+}
+@import url("Suno-empty-state-tokens.css");
+/* A person's identity mark. Three sizes: the row (26), the default (32) and
+ * the hero a detail view opens with (72). `large` is the call screen's own
+ * size and stays as it is. The tone is chosen from the name by the kit, so the
+ * same person is the same colour in Contacts, Messages and Phone. */
+.Suno-avatar {
+  min-width: 32px; min-height: 32px; border-radius: 10px;
+  background: @Suno_fill; color: @Suno_ink;
+}
+.Suno-avatar.compact { min-width: 24px; min-height: 24px; border-radius: 10px; }
+.Suno-avatar.hero { min-width: 76px; min-height: 76px; border-radius: 10px; }
+.Suno-avatar.large { min-width: 88px; min-height: 88px; border-radius: 23px; }
+.Suno-avatar-initials { font-size: 11px; font-weight: 700; }
+.Suno-avatar.compact .Suno-avatar-initials { font-size: 11px; }
+.Suno-avatar.hero .Suno-avatar-initials { font-size: 21px; font-weight: 700; }
+.Suno-avatar.large .Suno-avatar-initials { font-size: 28px; }
+/* A list row's identity, as Messages' conversations draw it. */
+.Suno-avatar.medium { min-width: 40px; min-height: 40px; border-radius: 12px; }
+.Suno-avatar.medium .Suno-avatar-initials { font-size: 15px; font-weight: 650; letter-spacing: .01em; }
+/* Glyphs for a number, a business or a group: drawn in the tone, sized to the tile. */
+.Suno-avatar-glyph { color: inherit; -gtk-icon-size: 16px; }
+.Suno-avatar.compact .Suno-avatar-glyph { -gtk-icon-size: 13px; }
+.Suno-avatar.medium .Suno-avatar-glyph { -gtk-icon-size: 20px; }
+.Suno-avatar.hero .Suno-avatar-glyph { -gtk-icon-size: 36px; }
+.Suno-avatar.large .Suno-avatar-glyph { -gtk-icon-size: 42px; }
+.Suno-avatar.kind-photo { background: none; }
+.Suno-avatar.tone-blue { background: alpha(@Suno_blue,.26); color: mix(@Suno_blue,@Suno_ink,.08); }
+.Suno-avatar.tone-green { background: alpha(@Suno_green,.26); color: mix(@Suno_green,@Suno_ink,.08); }
+.Suno-avatar.tone-violet { background: alpha(@Suno_violet,.26); color: mix(@Suno_violet,@Suno_ink,.08); }
+.Suno-avatar.tone-amber { background: alpha(@Suno_amber,.30); color: mix(@Suno_amber,@Suno_ink,.08); }
+
+/* A labelled value. 104px label column, then the value; the row lifts on
+ * hover the way every other selectable line in the kit does. */
+.Suno-field-row {
+  min-height: 26px;
+  padding: 4px 8px;
+  border-radius: 10px;
+}
+.Suno-field-row:hover { background: @Suno_hover; }
+.Suno-field-label { min-width: 104px; color: @Suno_muted; font-size: 13px; font-weight: 650; }
+.Suno-field-value { color: @Suno_ink; font-size: 13px; font-weight: 400; }
+.Suno-field-value.numeric { font-variant-numeric: tabular-nums; }
+.Suno-navigation-sidebar.compact { min-width: 178px; }
+.Suno-navigation-list { padding: 6px; background: transparent; }
+/* Only the heading rows are cleared here. GTK takes a property from the last
+ * provider at a priority that sets it, whatever the specificity elsewhere, so
+ * a bare `row { background }` in this sheet silently beat the base sheet's
+ * hover and selected fills: no regular sidebar showed which view was open. */
+.Suno-navigation-list > row.Suno-navigation-section { background: transparent; }
+/* The design's sidebar heading: an 18px band (the label's own 14 + 4 above
+ * it) straight above its rows, its text on the rows' 8px inset. */
+.Suno-navigation-section { min-height: 0; padding: 0; }
+/* Between groups, a hairline 7px in from the rows' edges with 5px either
+ * side of it, drawn by the kit's rule widget (NavigationSidebar). */
+.Suno-navigation-rule { min-height: 1px; margin: 5px 7px; background: @Suno_line; }
+
+.Suno-navigation-row box { min-width: 0; }
+
+/* A row's subtitle (a time, a count, a detail) is secondary to its title. */
+.Suno-navigation-row .Suno-navigation-subtitle {
+  color: @Suno_muted; font-size: 11px; font-variant-numeric: tabular-nums;
+}
+
+/* Opt-in content headings use the current semantic meta size. Existing
+ * sidebar/inspector callers retain their original band and inset. */
+.Suno-section-label.content {
+  min-height: 0; padding: 0; color: @Suno_muted; font-size: 11px; line-height: 13px;
+}
+
+/* Compact grouped navigation. Width is the widget's 178px outer request;
+ * do not add a second content minimum inside the native island stroke. */
+.Suno-navigation-sidebar.compact { min-width: 0; }
+.Suno-navigation-sidebar.compact .Suno-navigation-section { min-height: 0; padding: 0; }
+.Suno-navigation-sidebar.compact .Suno-section-label { font-size: 11px; }
+.Suno-navigation-sidebar.compact .Suno-navigation-section.separated {
+  margin-top: 5px; padding-top: 5px; border-top: 1px solid @Suno_line;
+}
+.Suno-navigation-sidebar.compact .Suno-navigation-row:selected {
+  background: @Suno_selected;
+}
+
+/* The menu is the toolkit's: every GtkPopoverMenu takes the context-menu
+   contract from the libadwaita stylesheet (patch 0024), including the kit's
+   custom rows (.Suno-menu-row, .two-line, .Suno-menu-destructive). Nothing
+   about a menu is styled here. */
+
+/* Opt-in compact palettes; native buttons retain their keyboard and state API. */
+.Suno-connected-buttons.compact {
+  padding: 2px; border-radius: 10px; background: @Suno_fill; box-shadow: none;
+}
+.Suno-connected-buttons.compact > button {
+  min-width: 26px; min-height: 24px; padding: 0; margin: 0; border: 0;
+  border-radius: 7px; background: transparent; color: @Suno_muted; box-shadow: none;
+}
+.Suno-connected-buttons.compact > button:hover { background: @Suno_hover; color: @Suno_ink; }
+.Suno-connected-buttons.compact > button:checked { background: @Suno_state; color: @Suno_state_ink; }
+.Suno-connected-buttons.compact > button image { -gtk-icon-size: 14px; }
+button.Suno-color-swatch, .Suno-connected-buttons.compact > button.Suno-color-swatch {
+  min-width: 22px; min-height: 22px; padding: 0; margin: 0; border: 0;
+  border-radius: 999px; background: transparent; color: @Suno_ink; box-shadow: none;
+}
+button.Suno-color-swatch:checked { background: transparent; color: @Suno_ink; }
+.Suno-connected-buttons.compact.touch-targets > button,
+button.Suno-color-swatch.touch-targets {
+  min-width: 44px; min-height: 44px;
+}
+/* SunoUI: sidebar (v70 ?app=contacts, ?app=memos). The sidebar stands on the
+ * window's frame, not in an island: no fill, ring or shadow of its own. Its
+ * rows sit 10px from the window edge and from the content island (the body's
+ * 9px gutter plus --SunoUI-sidebar-edge), 50px tall with a 34px round face;
+ * the selected row is a raised chip; a heading carries a hairline beside its
+ * label. Every number is a SunoUI.sidebar token. */
+.Suno-navigation-sidebar.Suno-sidebar-surface {
+  padding: var(--SunoUI-sidebar-padding-top) var(--SunoUI-sidebar-edge) var(--SunoUI-sidebar-edge);
+  background: none; border: none; box-shadow: none;
+}
+.Suno-sidebar-surface .Suno-navigation-list { padding: 0; background: none; }
+.Suno-sidebar-surface .Suno-navigation-list > row.Suno-navigation-row {
+  min-height: var(--SunoUI-sidebar-row-content-height);
+  padding: var(--SunoUI-sidebar-row-padding-y) var(--SunoUI-sidebar-row-padding-x);
+  border-radius: var(--SunoUI-sidebar-row-radius);
+  font-weight: normal;
+}
+/* The line's own spacing is 9; CSS adds to it. */
+.Suno-sidebar-surface .Suno-navigation-line { border-spacing: calc(var(--SunoUI-sidebar-row-gap) - 9px); }
+.Suno-sidebar-surface .Suno-navigation-title {
+  font-size: var(--SunoUI-sidebar-title-size); font-weight: var(--SunoUI-sidebar-title-weight);
+}
+.Suno-sidebar-surface .Suno-navigation-subtitle {
+  color: @Suno_frame_muted; /* on the frame: v70 light Solid's darker inks */ font-size: var(--SunoUI-sidebar-subtitle-size); font-weight: normal;
+}
+.Suno-sidebar-surface .Suno-navigation-list > row.Suno-navigation-row:selected {
+  background: @Suno_chip; color: @Suno_ink; font-weight: normal;
+  box-shadow: inset 0 1px 0 @Suno_chip_highlight, 0 0 0 1px @Suno_chip_ring, 0 1px 2px @Suno_chip_shadow, 0 3px 8px -3px @Suno_chip_drop;
+}
+.Suno-sidebar-surface .Suno-navigation-face {
+  min-width: var(--SunoUI-sidebar-face); min-height: var(--SunoUI-sidebar-face);
+  border-radius: 999px; background: @Suno_control_fill;
+}
+.Suno-sidebar-surface .Suno-navigation-face > .Suno-navigation-icon { color: @Suno_frame_ink_secondary; }
+.Suno-sidebar-surface .Suno-navigation-line > .Suno-avatar {
+  min-width: var(--SunoUI-sidebar-face); min-height: var(--SunoUI-sidebar-face);
+}
+.Suno-sidebar-surface .Suno-navigation-list > row.Suno-navigation-section {
+  min-height: 0; padding: 0; background: none; box-shadow: none;
+  margin: var(--SunoUI-sidebar-heading-top) var(--SunoUI-sidebar-heading-inset) var(--SunoUI-sidebar-heading-bottom);
+}
+.Suno-sidebar-surface .Suno-navigation-heading-line { border-spacing: var(--SunoUI-sidebar-heading-gap); }
+.Suno-sidebar-surface .Suno-navigation-heading {
+  color: @Suno_frame_muted;
+  font-size: var(--SunoUI-sidebar-heading-size); font-weight: var(--SunoUI-sidebar-heading-weight);
+}
+.Suno-sidebar-surface .Suno-navigation-heading-rule { min-height: 1px; background: @Suno_line; }
+
+.Suno-navigation-list .Suno-navigation-row.thumbnail {
+  min-height: 38px; padding: 6px; margin-bottom: 2px;
+}
+.Suno-navigation-row.thumbnail .Suno-navigation-icon {
+  min-width: 38px; min-height: 38px; -gtk-icon-size: 38px;
+}
+.Suno-navigation-row.thumbnail .Suno-navigation-title { font-size: 11px; font-weight: 600; }
+.Suno-navigation-row.thumbnail .Suno-navigation-subtitle {
+  color: @Suno_muted; font-size: 9px; font-weight: 550; font-variant-numeric: tabular-nums;
+}
+.Suno-navigation-list .Suno-navigation-row.thumbnail:selected { background: @Suno_pressed; }
+
+/* The lightbox: a picture enlarged inside its window. It is dark in every
+   treatment, as photographs are best seen, with light controls over it. */
+.Suno-lightbox-backdrop { background: alpha(@Suno_media_scrim, .9); }
+.Suno-lightbox-round {
+  min-width: 40px; min-height: 40px; margin: 14px; padding: 0;
+  border-radius: 999px; border: 0;
+  background: alpha(@Suno_on_media, .12); color: @Suno_on_media_ink;
+  -gtk-icon-size: 18px;
+}
+.Suno-lightbox-round:hover { background: alpha(@Suno_on_media, .22); }
+.Suno-lightbox-round:active { background: alpha(@Suno_on_media, .3); }
+.Suno-lightbox-round:focus-visible { outline: 2px solid alpha(@Suno_on_media, .85); outline-offset: 2px; }
+.Suno-lightbox-bar {
+  min-height: 56px; margin: 0 12px 12px; padding: 8px 10px 8px 16px;
+  border-radius: 16px; background: alpha(@Suno_media_surface, .82); color: @Suno_on_media_ink;
+  box-shadow: inset 0 0 0 1px alpha(@Suno_on_media, .08);
+}
+.Suno-lightbox-title { font-size: 13px; font-weight: 650; color: @Suno_on_media_ink; }
+.Suno-lightbox-subtitle { font-size: 11px; font-weight: 500; color: alpha(@Suno_on_media_ink, .66); font-feature-settings: "tnum"; }
+.Suno-lightbox-action {
+  min-height: 32px; padding: 0 12px; border: 0; border-radius: 10px;
+  background: alpha(@Suno_on_media, .1); color: @Suno_on_media_ink; font-size: 12px; font-weight: 600;
+}
+.Suno-lightbox-action:hover { background: alpha(@Suno_on_media, .18); }
+.Suno-lightbox-action:disabled { opacity: .4; }
+.Suno-lightbox-action:focus-visible { outline: 2px solid alpha(@Suno_on_media, .85); outline-offset: 1px; }
+.Suno-lightbox-status-text { color: alpha(@Suno_on_media_ink, .86); font-size: 14px; font-weight: 500; }
+.Suno-lightbox-status spinner, .Suno-lightbox-status .spinner { color: @Suno_on_media_ink; }

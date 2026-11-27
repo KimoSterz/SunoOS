@@ -93,7 +93,7 @@ async function work() {
 
     // --- Material.
     await set('shelf-material', 'glass');
-    L.check('Material: every group row carries it', shelf._groups.every(g => g.row.has_style_class_name('luma-shelf-material-glass')));
+    L.check('Material: every group row carries it', shelf._groups.every(g => g.row.has_style_class_name('Suno-shelf-material-glass')));
     await resetKeys(['shelf-material']);
 
     // --- Dock and status visibility.

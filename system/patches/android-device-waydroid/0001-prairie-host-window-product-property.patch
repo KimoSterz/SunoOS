@@ -9,13 +9,13 @@ index de8cf1d..f6aceea 100644
 +# Prairie's Wayland client owns desktop/tablet window chrome. Suppress both
 +# legacy app-side captions and WindowManager Shell decorations so Android
 +# content has one move/resize/control surface instead of nested decorations.
-+ro.luma.host_window_chrome=true
++ro.Suno.host_window_chrome=true
 +# Input compatibility is scoped per application instead of one short list.
-+ro.luma.per_app_touch=1
-+# Luma owns the final media volume; avoid a second attenuator by default.
++ro.Suno.per_app_touch=1
++# Suno owns the final media volume; avoid a second attenuator by default.
 +# Existing user volume settings remain intact across image updates.
 +ro.config.media_vol_default=15
-+# Luma owns pause/background policy. Keep Android jobs and notifications alive
++# Suno owns pause/background policy. Keep Android jobs and notifications alive
 +# when the last task closes; the host applies an explicit idle-freeze override.
 +persist.waydroid.suspend=false
 +

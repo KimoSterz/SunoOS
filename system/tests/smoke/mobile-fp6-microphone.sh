@@ -23,7 +23,7 @@ patch_dir=$repo_root/patches/linux-milos
 
 bash -n "$installer" "$repacker" "$live_repacker" "$inspector" "$relinker" "$amic3_builder" "$amic3_repacker" "$amic3_stager" "$amic3_dapm_builder" "$amic3_dapm_repacker" "$amic3_route_tester"
 sh -n "$builder"
-PYTHONPYCACHEPREFIX=${TMPDIR:-/tmp}/luma-fp6-microphone-pycache \
+PYTHONPYCACHEPREFIX=${TMPDIR:-/tmp}/Suno-fp6-microphone-pycache \
   python3 -m py_compile "$stimulus"
 
 grep -Fxq 'FP6_MICROPHONE_BASE_BOOT_SHA256=44e8e2a04d960ea33cd7bee3e52251d20ce0b70432a2368408e08978042117a7' "$env_file"
@@ -72,7 +72,7 @@ grep -Fq 'FREQUENCY_HZ = 997' "$stimulus"
 grep -Fq 'nonzero_after_startup > RATE' "$stimulus"
 grep -Fq 'target > max(shoulders * 3.0, 1.0)' "$stimulus"
 grep -Fq 'analyze_parser.add_argument("--search-tone", action="store_true")' "$stimulus"
-grep -Fq 'LUMA_FP6_AMIC3_ROUTING_BUILD_VERSION=1' "$amic3_builder"
+grep -Fq 'SUNO_FP6_AMIC3_ROUTING_BUILD_VERSION=1' "$amic3_builder"
 grep -Fq 'M=sound/soc/codecs modules' "$amic3_builder"
 grep -Fq 'qcom/milos-fairphone-fp6.dtb' "$amic3_builder"
 grep -Fq 'RAM_BOOT_ONLY=true' "$amic3_builder"
@@ -80,7 +80,7 @@ grep -Fq 'PHONE_ACCESSED=false' "$amic3_builder"
 grep -Fq 'PARTITION_WRITTEN=false' "$amic3_builder"
 grep -Fq 'cmp "$base_boot" "$roundtrip"' "$amic3_repacker"
 grep -Fq 'KERNEL_UNCHANGED=true' "$amic3_repacker"
-grep -Fq 'LUMA_ALLOW_UNPINNED_FP6_MICROPHONE_V4' "$amic3_repacker"
+grep -Fq 'SUNO_ALLOW_UNPINNED_FP6_MICROPHONE_V4' "$amic3_repacker"
 grep -Fq 'RAM_BOOT_ONLY=true' "$amic3_repacker"
 grep -Fq 'PARTITION_WRITTEN=false' "$amic3_repacker"
 if grep -Eiq '^[[:space:]]*(adb|fastboot|scp|ssh)([[:space:]]|$)' "$amic3_repacker"; then
@@ -97,7 +97,7 @@ if grep -Eiq '^[[:space:]]*(insmod|modprobe|rmmod|systemctl|reboot|fastboot)([[:
   printf 'FAIL: AMIC3 stager must not load, restart, reboot, or access fastboot\n' >&2
   exit 1
 fi
-grep -Fq 'LUMA_FP6_AMIC3_DAPM_BUILD_VERSION=1' "$amic3_dapm_builder"
+grep -Fq 'SUNO_FP6_AMIC3_DAPM_BUILD_VERSION=1' "$amic3_dapm_builder"
 grep -Fq 'qcom/milos-fairphone-fp6.dtb' "$amic3_dapm_builder"
 grep -Fq 'MODULE_UNCHANGED=true' "$amic3_dapm_builder"
 grep -Fq 'RAM_BOOT_ONLY=true' "$amic3_dapm_builder"
@@ -105,7 +105,7 @@ grep -Fq 'PHONE_ACCESSED=false' "$amic3_dapm_builder"
 grep -Fq 'PARTITION_WRITTEN=false' "$amic3_dapm_builder"
 grep -Fq 'cmp "$base_boot" "$roundtrip"' "$amic3_dapm_repacker"
 grep -Fq 'FP6_MICROPHONE_V4_BOOT_SHA256' "$amic3_dapm_repacker"
-grep -Fq 'LUMA_ALLOW_UNPINNED_FP6_MICROPHONE_V5' "$amic3_dapm_repacker"
+grep -Fq 'SUNO_ALLOW_UNPINNED_FP6_MICROPHONE_V5' "$amic3_dapm_repacker"
 grep -Fq 'KERNEL_UNCHANGED=true' "$amic3_dapm_repacker"
 grep -Fq 'RAMDISK_UNCHANGED=true' "$amic3_dapm_repacker"
 grep -Fq 'RAM_BOOT_ONLY=true' "$amic3_dapm_repacker"
@@ -154,7 +154,7 @@ fi
 
 grep -Fq 'cmp "$base_boot" "$roundtrip"' "$live_repacker"
 grep -Fq 'FP6_MICROPHONE_V3_RELINKED_KERNEL_SHA256' "$live_repacker"
-grep -Fq 'LUMA_ALLOW_UNPINNED_FP6_MICROPHONE_V3' "$live_repacker"
+grep -Fq 'SUNO_ALLOW_UNPINNED_FP6_MICROPHONE_V3' "$live_repacker"
 grep -Fq 'CANDIDATE_HASH_PINNED=' "$live_repacker"
 grep -Fq 'MODULE_BTF_MISMATCH_FALLBACK=true' "$live_repacker"
 grep -Fq 'cmp "$base_dir/ramdisk" "$candidate_dir/ramdisk"' "$live_repacker"

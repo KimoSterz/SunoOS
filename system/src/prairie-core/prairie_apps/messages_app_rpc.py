@@ -29,7 +29,7 @@ MAX_OUTPUT = 4 * 1024 * 1024
 READS = frozenset({'message', 'thread', 'threads', 'draft', 'draft_attachments',
     'draft_reply', 'quote_for', 'reactions', 'incoming_revision', 'external_revision',
     'has_incoming', 'canonical_address', 'is_transport_deleted', 'sender', 'receipt',
-    'luma_flags', 'luma_conversations', 'conversation_kind', 'conversation_participants',
+    'Suno_flags', 'Suno_conversations', 'conversation_kind', 'conversation_participants',
     'conversation_phone', 'known_conversation', 'media_parts', 'media_part',
     'own_reaction', 'uid_for_transport', 'transport_for_uid'})
 WRITES = frozenset({'add', 'set_display_name', 'set_draft', 'delete_draft',
@@ -115,7 +115,7 @@ def authenticate_caller(connection, sender):
             GLib.VariantType.new('(u)'), Gio.DBusCallFlags.NONE, 5000, None).unpack()[0]
     uid, pid = credential('GetConnectionUnixUser'), credential('GetConnectionUnixProcessID')
     if uid == 0 or uid != os.getuid(): raise PermissionError('Foreign Messages caller')
-    from luma_installer.app_data_broker import _start
+    from Suno_installer.app_data_broker import _start
     before = _start(pid)
     try:
         Path(f'/proc/{pid}/root/.flatpak-info').stat()
@@ -151,11 +151,11 @@ class ApplicationMailbox:
         self.closed = False
         self.native_error = False
 
-    APP = 'org.projectluma.Messages'
+    APP = 'org.projectSuno.Messages'
 
     @staticmethod
     def authenticate(connection, sender):
-        from luma_installer.app_data_broker import authenticate
+        from Suno_installer.app_data_broker import authenticate
         if authenticate(connection, sender) != ApplicationMailbox.APP:
             raise PermissionError('This mailbox belongs to Messages')
         return ApplicationMailbox.APP
@@ -289,8 +289,8 @@ class ApplicationMailbox:
                 if not self.native_error and self.agent.agent is not None:
                     self.native_error = True
                     def notify_error():
-                        self.agent.agent.connection.emit_signal(None, '/org/projectluma/Messages/Agent',
-                            'org.projectluma.Messages.Agent1', 'MailboxError', GLib.Variant('(s)',
+                        self.agent.agent.connection.emit_signal(None, '/org/projectSuno/Messages/Agent',
+                            'org.projectSuno.Messages.Agent1', 'MailboxError', GLib.Variant('(s)',
                             ('An MMS could not be imported. Its original remains in the carrier service.',)))
                         return GLib.SOURCE_REMOVE
                     GLib.idle_add(notify_error)
@@ -363,7 +363,7 @@ class ApplicationMailbox:
         # secrets or an identity-directory mount.
         self.phones = {}
         try:
-            from luma_continuity.message_provider import message_services
+            from Suno_continuity.message_provider import message_services
         except ImportError:
             return
         for provider in message_services(store_factory=MessageStore, dispatch=GLib.idle_add):
@@ -419,7 +419,7 @@ class ApplicationMailbox:
                 elif name == 'login.error': clean = {'message': str(value.get('message', ''))[:4096]}
                 elif name in {'starting', 'browser.waiting'}: clean = {}
                 else: return
-                connection.emit_signal(sender, '/org/projectluma/Messages/Agent', 'org.projectluma.Messages.Agent1',
+                connection.emit_signal(sender, '/org/projectSuno/Messages/Agent', 'org.projectSuno.Messages.Agent1',
                     'LoginStep', GLib.Variant('(sss)', (session, name, payload(clean))))
                 if name == 'login.done': self.agent.reload()
                 if name in {'login.done', 'login.error'}: self.cancel_login(sender)
@@ -449,7 +449,7 @@ class ApplicationMailbox:
             if not self.slots.acquire(blocking=False):
                 raise RuntimeError('The mailbox is busy; try again')
         except Exception:
-            invocation.return_dbus_error('org.projectluma.Messages.Agent1.Error.Refused', 'The mailbox request was refused')
+            invocation.return_dbus_error('org.projectSuno.Messages.Agent1.Error.Refused', 'The mailbox request was refused')
             return True
         values = parameters.unpack()
         incoming_fd = None
@@ -473,7 +473,7 @@ class ApplicationMailbox:
         except Exception:
             if incoming_fd is not None: os.close(incoming_fd)
             self.slots.release()
-            invocation.return_dbus_error('org.projectluma.Messages.Agent1.Error.InvalidInput', 'Invalid mailbox request')
+            invocation.return_dbus_error('org.projectSuno.Messages.Agent1.Error.InvalidInput', 'Invalid mailbox request')
             return True
         def work():
             descriptor = None
@@ -501,9 +501,9 @@ class ApplicationMailbox:
                     result = provider.outbound_disabled()
                 elif method == 'ApplicationInfo':
                     from .messages_accounts import available_networks
-                    from .messages_luma import setup_problem
+                    from .messages_Suno import setup_problem
                     result = {'networks': [n.id for n in available_networks(self.agent.helper_dir)],
-                              'luma_problem': setup_problem(helper_dir=self.agent.helper_dir)}
+                              'Suno_problem': setup_problem(helper_dir=self.agent.helper_dir)}
                 else:
                     from .connect_messages import cloud_messages
                     result = cloud_messages()
@@ -516,7 +516,7 @@ class ApplicationMailbox:
             def finish():
                 try:
                     if error:
-                        invocation.return_dbus_error('org.projectluma.Messages.Agent1.Error.Failed', error)
+                        invocation.return_dbus_error('org.projectSuno.Messages.Agent1.Error.Failed', error)
                     elif descriptor is not None:
                         fds = Gio.UnixFDList.new(); handle = fds.append(descriptor)
                         invocation.return_value_with_unix_fd_list(GLib.Variant('(h)', (handle,)), fds)
@@ -533,7 +533,7 @@ class ApplicationMailbox:
         except RuntimeError:
             if incoming_fd is not None: os.close(incoming_fd)
             self.slots.release()
-            invocation.return_dbus_error('org.projectluma.Messages.Agent1.Error.Unavailable', 'The mailbox is closing')
+            invocation.return_dbus_error('org.projectSuno.Messages.Agent1.Error.Unavailable', 'The mailbox is closing')
         return True
 
     def close(self):

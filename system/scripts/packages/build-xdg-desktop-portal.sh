@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
 #
-# Fedora's xdg-desktop-portal with Luma's OpenURI policy for package files
+# Fedora's xdg-desktop-portal with Suno's OpenURI policy for package files
 # (patches/xdg-desktop-portal). Rebuilt from the SRPM pinned in
 # config/desktop/inputs.env, with the upstream OpenURI integration tests as
 # %check.
@@ -24,14 +24,14 @@ done
   exit 1
 }
 
-architecture=${LUMA_TARGET_ARCHITECTURE:-$(uname -m)}
+architecture=${SUNO_TARGET_ARCHITECTURE:-$(uname -m)}
 case "$architecture" in
   x86_64) builder_container=$FEDORA_RPM_BUILD_CONTAINER ;;
   aarch64) builder_container=$FEDORA_RPM_BUILD_CONTAINER_AARCH64 ;;
   *) printf 'error: unsupported %s architecture: %s\n' "$package" "$architecture" >&2; exit 1 ;;
 esac
-export LUMA_RPM_BUILDER_ARCHITECTURE=$architecture
-nevr=$package-$XDG_DESKTOP_PORTAL_VERSION-$XDG_DESKTOP_PORTAL_LUMA_RELEASE.fc44
+export SUNO_RPM_BUILDER_ARCHITECTURE=$architecture
+nevr=$package-$XDG_DESKTOP_PORTAL_VERSION-$XDG_DESKTOP_PORTAL_SUNO_RELEASE.fc44
 
 cache_dir="$repo_root/build/cache/srpm"
 output_dir="$repo_root/build/packages/$package/$architecture"
@@ -54,18 +54,18 @@ mv "$extract_dir/$package.spec" "$rpmbuild_dir/SPECS/"
 find "$extract_dir" -maxdepth 1 -type f -exec mv -t "$rpmbuild_dir/SOURCES" {} +
 install -m 0644 "$repo_root/scripts/packages/check-rpm-directory-modes.py" "$rpmbuild_dir/SOURCES/"
 for patch in "$repo_root"/patches/$package/0[0-9][0-9][0-9]-*.patch; do
-  case $patch in */0000-luma-fedora-spec.patch) continue ;; esac
+  case $patch in */0000-Suno-fedora-spec.patch) continue ;; esac
   install -m 0644 "$patch" "$rpmbuild_dir/SOURCES/"
 done
 (
   cd "$rpmbuild_dir/SPECS"
-  GIT_CEILING_DIRECTORIES="$rpmbuild_dir" git apply "$repo_root/patches/$package/0000-luma-fedora-spec.patch"
+  GIT_CEILING_DIRECTORIES="$rpmbuild_dir" git apply "$repo_root/patches/$package/0000-Suno-fedora-spec.patch"
 )
 # A spec patch that applied as a no-op builds the stock package; the Release
 # says whether it applied (scripts/packages/spec-release.sh).
 . "$repo_root/scripts/packages/spec-release.sh"
-luma_assert_spec_release "$rpmbuild_dir/SPECS/$package.spec" \
-  "$XDG_DESKTOP_PORTAL_LUMA_RELEASE" || exit 1
+Suno_assert_spec_release "$rpmbuild_dir/SPECS/$package.spec" \
+  "$XDG_DESKTOP_PORTAL_SUNO_RELEASE" || exit 1
 
 "$repo_root/scripts/packages/run-in-rpm-builder.sh" \
   "$rpmbuild_dir" "$builder_container" '
@@ -74,7 +74,7 @@ luma_assert_spec_release "$rpmbuild_dir/SPECS/$package.spec" \
     dnf5 -y install rpm-build dnf5-plugins cpio
     dnf5 -y builddep SPECS/'"$package"'.spec
     rpmbuild -ba --define "_topdir $PWD" SPECS/'"$package"'.spec
-    # The Luma patch is in the source package and the binaries were built.
+    # The Suno patch is in the source package and the binaries were built.
     rpm -qpl "SRPMS/'"$nevr"'.src.rpm" |
       grep -qxF 0001-open-uri-open-package-files-in-the-system-installer.patch
     rpm -qpl "SRPMS/'"$nevr"'.src.rpm" |
@@ -84,9 +84,9 @@ luma_assert_spec_release "$rpmbuild_dir/SPECS/$package.spec" \
     rpm -qpl "SRPMS/'"$nevr"'.src.rpm" |
       grep -qxF 0004-audio-capture-portal.patch
     rpm -qpl "SRPMS/'"$nevr"'.src.rpm" |
-      grep -qxF 0005-app-info-identify-luma-applications.patch
+      grep -qxF 0005-app-info-identify-Suno-applications.patch
     rpm -qpl "SRPMS/'"$nevr"'.src.rpm" |
-      grep -qxF 0006-luma-sync-portal-forwarder.patch
+      grep -qxF 0006-Suno-sync-portal-forwarder.patch
     test -f "RPMS/$architecture/'"$nevr"'.${architecture}.rpm"
     # The portal reads its impl files as the user: no build-workspace modes.
     while IFS= read -r rpm_path; do
@@ -97,12 +97,12 @@ luma_assert_spec_release "$rpmbuild_dir/SPECS/$package.spec" \
     verify_dir=$(mktemp -d "$PWD/verify.XXXXXX")
     ( cd "$verify_dir" &&
       rpm2cpio "$OLDPWD/RPMS/$architecture/'"$nevr"'.${architecture}.rpm" | cpio -idm --quiet )
-    grep -qaF /usr/share/luma/open-directly.list "$verify_dir/usr/libexec/xdg-desktop-portal"
+    grep -qaF /usr/share/Suno/open-directly.list "$verify_dir/usr/libexec/xdg-desktop-portal"
     grep -qaF org.freedesktop.impl.portal.AudioCapture "$verify_dir/usr/libexec/xdg-desktop-portal"
     test -f "$verify_dir/usr/share/dbus-1/interfaces/org.freedesktop.portal.AudioCapture.xml"
-    grep -qaF org.projectluma.AppPermissions1 "$verify_dir/usr/libexec/xdg-desktop-portal"
-    grep -qaF org.projectluma.impl.portal.Sync "$verify_dir/usr/libexec/xdg-desktop-portal"
-    test -f "$verify_dir/usr/share/dbus-1/interfaces/org.projectluma.portal.Sync.xml"
+    grep -qaF org.projectSuno.AppPermissions1 "$verify_dir/usr/libexec/xdg-desktop-portal"
+    grep -qaF org.projectSuno.impl.portal.Sync "$verify_dir/usr/libexec/xdg-desktop-portal"
+    test -f "$verify_dir/usr/share/dbus-1/interfaces/org.projectSuno.portal.Sync.xml"
     rm -rf "$verify_dir"
   '
 
@@ -112,4 +112,4 @@ find "$rpmbuild_dir/RPMS" -type f -name '*.rpm' ! -name '*-debuginfo-*' ! -name 
   -exec install -m 0644 {} "$output_dir/RPMS/" \;
 install -m 0644 "$rpmbuild_dir/SRPMS/$nevr.src.rpm" "$output_dir/SRPMS/"
 ( cd "$output_dir" && find RPMS SRPMS -type f -name '*.rpm' -exec sha256sum {} + | sort >SHA256SUMS )
-printf 'Luma %s packages: %s\n' "$package" "$output_dir"
+printf 'Suno %s packages: %s\n' "$package" "$output_dir"

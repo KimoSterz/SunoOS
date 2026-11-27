@@ -1,5 +1,5 @@
 #!/bin/bash
-# lumaSession's D-Bus callers are held by the broker's pidfd (headless Shell).
+# SunoSession's D-Bus callers are held by the broker's pidfd (headless Shell).
 # PASS: a live caller is identified; one that exits, or whose pid is reused,
 # mid-check (after readable reads, or left unreaped) is refused; one whose
 # details can't be read is refused; a broker without ProcessFD still answers;

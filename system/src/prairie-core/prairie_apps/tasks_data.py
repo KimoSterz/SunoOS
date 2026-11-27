@@ -157,7 +157,7 @@ class TasksData:
                                      else c["author"], "c", c["text"], comment_time(c["created"], now=datetime.combine(self.today, datetime.min.time()))]
                                     for c in fields.get("comments", [])])
             tasks[-1]["flag"] = bool(fields.get("flag", False))
-            if "who" in fields and not record.source_uid.startswith("luma-shared:"):
+            if "who" in fields and not record.source_uid.startswith("Suno-shared:"):
                 tasks[-1]["who"] = list(fields["who"])
                 for person in fields["who"]:
                     people.setdefault(person, {"n": "You" if person == "me" else person})
@@ -167,7 +167,7 @@ class TasksData:
         return deepcopy(self.data)
 
     def _source_hue(self, uid):
-        if uid.startswith('luma-shared:'):
+        if uid.startswith('Suno-shared:'):
             value = self.repository.source_color(uid)
         else:
             if self.repository.registry is None:
@@ -289,7 +289,7 @@ class TasksData:
                 task['start_time'] = start_clock.strftime('%-I:%M %p') if start_clock else ''
                 task['start_day'] = task.get('due') if start_clock else None
             return lambda: task.update(before)
-        if set(changes) <= {"flag", "who"} and ("who" not in changes or not self.records[task_id].source_uid.startswith("luma-shared:")):
+        if set(changes) <= {"flag", "who"} and ("who" not in changes or not self.records[task_id].source_uid.startswith("Suno-shared:")):
             return self.local.edit(task_id, changes)
         unsupported = set(changes) - {"t", "due", "time", "start_time", "repeat", "pri", "done", "who", "notes"}
         if unsupported:
@@ -317,7 +317,7 @@ class TasksData:
                 return lambda: self.repository.undo(undo)
             elif field == "who":
                 if len(value) > 1: raise ValueError("This task store supports one assignee.")
-                if value == ["me"] and record.source_uid.startswith('luma-shared:'):
+                if value == ["me"] and record.source_uid.startswith('Suno-shared:'):
                     converted['assignee'] = self.repository.shared[record.source_uid]['account']
                 else:
                     converted["assignee"] = self.repository.me if value == ["me"] else next(iter(value), "")

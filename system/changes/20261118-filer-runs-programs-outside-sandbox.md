@@ -1,7 +1,7 @@
 ---
 type: fix
 component: Filer
-packages: [nautilus, nautilus-extensions, luma-terminal]
+packages: [nautilus, nautilus-extensions, Suno-terminal]
 highlight: false
 ---
 Summary: Programs start from Filer

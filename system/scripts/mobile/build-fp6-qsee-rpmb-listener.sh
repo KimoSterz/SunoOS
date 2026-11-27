@@ -24,7 +24,7 @@ git clone --quiet "$mink_url" "$work_dir/minkipc"
 git -C "$work_dir/minkipc" checkout --quiet "$mink_commit"
 source_date_epoch=$(git -C "$work_dir/qsee-supplicant" show -s --format=%ct "$qsee_commit")
 export SOURCE_DATE_EPOCH=$source_date_epoch
-repro_cflags="-O2 -g -ffile-prefix-map=$work_dir=/usr/src/luma-qsee-rpmb -fdebug-prefix-map=$work_dir=/usr/src/luma-qsee-rpmb"
+repro_cflags="-O2 -g -ffile-prefix-map=$work_dir=/usr/src/Suno-qsee-rpmb -fdebug-prefix-map=$work_dir=/usr/src/Suno-qsee-rpmb"
 
 source_dir=$work_dir/minkipc/listeners/librpmbservice
 while read -r expected name; do

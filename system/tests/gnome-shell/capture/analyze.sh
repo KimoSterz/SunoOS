@@ -1,7 +1,7 @@
 #!/bin/bash
 # analyze.sh RUN [CONTAINER]: after matrix.sh, decode recordings and compare captures.
 # Writes evidence/RUN/analysis.txt and frame PNGs beside each recording.
-RUN=${1:?run}; C=${2:-luma-shell-oracle}; E=/oracle/capture/evidence/$RUN
+RUN=${1:?run}; C=${2:-Suno-shell-oracle}; E=/oracle/capture/evidence/$RUN
 podman exec $C bash -c "
 set -u
 cd $E
@@ -51,4 +51,4 @@ with open(f'{E}/analysis.txt', 'a') as fh:
     for o in out:
         fh.write(json.dumps(o) + '\n')
 PY
-cat /root/luma-shell-oracle/capture/evidence/$RUN/analysis.txt
+cat /root/Suno-shell-oracle/capture/evidence/$RUN/analysis.txt

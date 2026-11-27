@@ -48,8 +48,8 @@ env -u DISPLAY -u WAYLAND_DISPLAY \
   XDG_RUNTIME_DIR="$out/runtime" XDG_CONFIG_HOME="$out/config" \
   XDG_DATA_HOME="$out/data" GSETTINGS_BACKEND=keyfile LIBGL_ALWAYS_SOFTWARE=1 \
   GTK_A11Y=none NO_AT_BRIDGE=1 MUTTER_DEBUG=wayland \
-  LUMA_LAYER_OUT="$out" LUMA_LAYER_CLIENT="$out/build/layer-test-client" \
-  LUMA_LAYER_NORMAL="$here/normal.py" \
+  SUNO_LAYER_OUT="$out" SUNO_LAYER_CLIENT="$out/build/layer-test-client" \
+  SUNO_LAYER_NORMAL="$here/normal.py" \
   dbus-run-session -- timeout 600 gnome-shell --headless --no-x11 \
   --virtual-monitor 1920x1080 --automation-script="$here/driver.js" \
   >"$out/shell.log" 2>&1 || status=$?

@@ -16,7 +16,7 @@ repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 base_boot=${1:?usage: prepare-fp6-fingerprint-qsee-pool-candidate.sh ELF64_BOOT OUTPUT_DIR}
 output_dir=${2:?usage: prepare-fp6-fingerprint-qsee-pool-candidate.sh ELF64_BOOT OUTPUT_DIR}
 overlay=$repo_root/config/mobile/fp6-fingerprint/milos-fairphone-fp6-qsee-pool.dtso
-candidate=$output_dir/boot-fp6-luma-fingerprint-qsee-pool-low32-v6.img
+candidate=$output_dir/boot-fp6-Suno-fingerprint-qsee-pool-low32-v6.img
 
 die() { printf 'error: %s\n' "$*" >&2; exit 1; }
 hash() { sha256sum "$1" | awk '{print $1}'; }
@@ -111,7 +111,7 @@ cmp "$enabled_dtb" "$work/candidate/dtb"
 
 candidate_sha=$(hash "$candidate")
 {
-  printf 'LUMA_FP6_FINGERPRINT_BOOT_CANDIDATE_VERSION=6\n'
+  printf 'SUNO_FP6_FINGERPRINT_BOOT_CANDIDATE_VERSION=6\n'
   printf 'SCOPE=fp6-fingerprint-qsee-pool-low32\n'
   printf 'BASE_BOOT_SHA256=%s\n' "$FP6_FINGERPRINT_MDT_ELF64_BOOT_SHA256"
   printf 'KERNEL_SHA256=%s\n' "$FP6_FINGERPRINT_MDT_ELF64_KERNEL_SHA256"

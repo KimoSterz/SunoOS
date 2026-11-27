@@ -1,4 +1,4 @@
-# Luma OS icons — Chamfer family
+# Suno OS icons — Chamfer family
 
 Approved reference: 0001 Folder, option B (folder-b.svg). Preserve that file as the material and construction master. User selected B on 2026-09-05. 0007 B revision 2 is approved; 0005 reuses 0001 unchanged.
 

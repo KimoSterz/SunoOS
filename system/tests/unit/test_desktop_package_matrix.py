@@ -47,16 +47,16 @@ class NativeMatrix(unittest.TestCase):
         self.assertEqual(matrix.matrix(ROOT, {matrix.REGISTRY}), matrix.matrix(ROOT))
 
     def test_installer_is_canonical_noarch_and_uses_checked_toolkit(self):
-        rows = matrix.matrix(ROOT, {'src/luma-installer/luma_installer/retired_apps.py'})['include']
+        rows = matrix.matrix(ROOT, {'src/Suno-installer/Suno_installer/retired_apps.py'})['include']
         self.assertEqual([(row['component'], row['architecture']) for row in rows],
                          [('application-installer', 'x86_64')])
         self.assertTrue(rows[0]['toolkit'])
-        self.assertEqual(rows[0]['spec'], 'packaging/rpm/luma-application-installer.spec')
+        self.assertEqual(rows[0]['spec'], 'packaging/rpm/Suno-application-installer.spec')
 
     def test_ari_and_policy_keep_both_native_architectures(self):
         for path, group, toolkit in (
-                ('src/luma-ari/ari/service.py', 'ari', True),
-                ('src/luma-desktop-launcher-policy/default-apps/file', 'desktop-launcher-policy', False)):
+                ('src/Suno-ari/ari/service.py', 'ari', True),
+                ('src/Suno-desktop-launcher-policy/default-apps/file', 'desktop-launcher-policy', False)):
             with self.subTest(group=group):
                 rows = matrix.matrix(ROOT, {path})['include']
                 self.assertEqual({row['component'] for row in rows}, {group})
@@ -65,7 +65,7 @@ class NativeMatrix(unittest.TestCase):
                 self.assertTrue(all(row['spec'] for row in rows))
 
     def test_installer_includes_bundled_depot_and_catalog_fixture_changes(self):
-        for path in ('src/luma-depot/luma_depot/window.py', 'tests/fixtures/depot-v70.json'):
+        for path in ('src/Suno-depot/Suno_depot/window.py', 'tests/fixtures/depot-v70.json'):
             rows = matrix.matrix(ROOT, {path})['include']
             self.assertEqual({row['component'] for row in rows}, {'application-installer'})
 
@@ -77,7 +77,7 @@ class NativeMatrix(unittest.TestCase):
             (root / 'config/desktop').mkdir()
             (root / 'config/desktop/inputs.env').write_text((ROOT / 'config/desktop/inputs.env').read_text())
             for architectures in ([], ['sparc'], ['x86_64', 'x86_64'], 'x86_64'):
-                registry = {'schema': 'org.projectluma.desktop-build-groups/v1', 'groups': {
+                registry = {'schema': 'org.projectSuno.desktop-build-groups/v1', 'groups': {
                     'invalid': {'recipe': 'unused', 'paths': [], 'architectures': architectures}}}
                 (root / matrix.REGISTRY).write_text(json.dumps(registry))
                 with self.subTest(architectures=architectures), self.assertRaises(ValueError):
@@ -110,7 +110,7 @@ class NativeMatrix(unittest.TestCase):
 
     def test_theme_and_shell_state_source_changes_select_canonical_noarch(self):
         for path, group in (
-                ('src/luma-shell-state/gtk.css', 'shell-state'),
+                ('src/Suno-shell-state/gtk.css', 'shell-state'),
                 ('assets/icon-theme/Prairie/index.theme', 'icon-theme'),
                 ('packaging/gsettings/90-prairie.gschema.override', 'icon-theme')):
             rows = matrix.matrix(ROOT, {path})['include']
@@ -119,10 +119,10 @@ class NativeMatrix(unittest.TestCase):
 
     def test_paths_only_addition_preserves_all_execution_bytes(self):
         current = (ROOT / matrix.WORKFLOW).read_text()
-        additions = ["      - 'src/luma-shell-state/**'\n",
+        additions = ["      - 'src/Suno-shell-state/**'\n",
                      "      - 'assets/icon-theme/**'\n",
                      "      - 'packaging/gsettings/90-prairie.gschema.override'\n",
-                     "      - 'packaging/rpm/luma-shell-state.spec'\n",
+                     "      - 'packaging/rpm/Suno-shell-state.spec'\n",
                      "      - 'packaging/rpm/prairie-icon-theme.spec'\n"]
         previous = current
         for line in additions:
@@ -189,15 +189,15 @@ class NativeMatrix(unittest.TestCase):
         values = dict(line.split('=', 1) for line in (ROOT / 'config/desktop/inputs.env').read_text().splitlines()
                       if line and not line.startswith('#') and '=' in line)
         for key, expected in [
-                ('GNOME_SHELL_LUMA_RELEASE', set()),
+                ('GNOME_SHELL_SUNO_RELEASE', set()),
                 ('PRAIRIE_ICON_THEME_RELEASE', {'icon-theme', 'ari'}),
-                ('IIO_SENSOR_PROXY_LUMA_RELEASE', {'iio-sensor-proxy'}),
-                ('XDG_DESKTOP_PORTAL_LUMA_RELEASE', {'xdg-desktop-portal'}),
-                ('LUMA_DESKTOP_LAUNCHER_POLICY_NEVRA', {'desktop-launcher-policy'}),
-                ('NETWORKMANAGER_LUMA_RELEASE', {'networkmanager'}),
-                ('WPA_SUPPLICANT_LUMA_RELEASE', {'wpa-supplicant'}),
-                ('LUMA_APPLICATION_INSTALLER_RELEASE', {'application-installer', 'ari'}),
-                ('LUMA_DEVELOPER_PLATFORM_RELEASE', {'application-installer', 'ari'})]:
+                ('IIO_SENSOR_PROXY_SUNO_RELEASE', {'iio-sensor-proxy'}),
+                ('XDG_DESKTOP_PORTAL_SUNO_RELEASE', {'xdg-desktop-portal'}),
+                ('SUNO_DESKTOP_LAUNCHER_POLICY_NEVRA', {'desktop-launcher-policy'}),
+                ('NETWORKMANAGER_SUNO_RELEASE', {'networkmanager'}),
+                ('WPA_SUPPLICANT_SUNO_RELEASE', {'wpa-supplicant'}),
+                ('SUNO_APPLICATION_INSTALLER_RELEASE', {'application-installer', 'ari'}),
+                ('SUNO_DEVELOPER_PLATFORM_RELEASE', {'application-installer', 'ari'})]:
             previous = {**values, key: 'prior'}
             rows = matrix.matrix(ROOT, {'config/desktop/inputs.env'}, previous_inputs=previous)['include']
             with self.subTest(key=key):
@@ -205,6 +205,6 @@ class NativeMatrix(unittest.TestCase):
         previous = {**values, 'UNKNOWN_PROVIDER': 'old'}
         self.assertEqual(matrix.matrix(ROOT, {'config/desktop/inputs.env'}, previous_inputs=previous), matrix.matrix(ROOT))
         # A shared builder change still checks every group alongside a narrow pin change.
-        previous = {**values, 'GNOME_SHELL_LUMA_RELEASE': 'prior'}
+        previous = {**values, 'GNOME_SHELL_SUNO_RELEASE': 'prior'}
         self.assertEqual(matrix.matrix(ROOT, {'config/desktop/inputs.env', 'scripts/packages/run-in-rpm-builder.sh'},
                                       previous_inputs=previous), matrix.matrix(ROOT))

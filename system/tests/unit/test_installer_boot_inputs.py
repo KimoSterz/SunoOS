@@ -20,7 +20,7 @@ LORAX = module('atlas_lorax_boot', 'scripts/install/atlas-iso/prepare-lorax-boot
 RUNNER = module('atlas_lorax_runner', 'scripts/install/atlas-iso/run-lorax.py')
 KERNEL = module('atlas_runtime_kernel', 'scripts/install/atlas-iso/check-runtime-kernel.py')
 PRESENTATION = module('atlas_runtime_presentation', 'scripts/install/atlas-iso/prepare-runtime-presentation.py')
-FONT = module('luma_grub_font', 'scripts/boot/check-grub-fonts.py')
+FONT = module('Suno_grub_font', 'scripts/boot/check-grub-fonts.py')
 
 class InstallerBootInputs(unittest.TestCase):
     def test_foreign_transaction_requires_target_packages_and_isolated_root(self):
@@ -213,7 +213,7 @@ menuentry 'Rescue' { linux @KERNELPATH@ @ROOT@ inst.rescue
     def test_final_iso_requires_native_menu_set_and_resolved_theme(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
-            menu = 'set theme=/boot/grub2/themes/luma/theme.txt\nlinux /vmlinuz inst.stage2=hd:LABEL=Luma\n'
+            menu = 'set theme=/boot/grub2/themes/Suno/theme.txt\nlinux /vmlinuz inst.stage2=hd:LABEL=Suno\n'
             (root / 'efi-grub.cfg').write_text(menu)
             LORAX.verify_iso(root, 'aarch64')
             with self.assertRaises(FileNotFoundError):
@@ -235,7 +235,7 @@ menuentry 'Rescue' { linux @KERNELPATH@ @ROOT@ inst.rescue
     def test_real_grub_grammar_rejects_compound_if_even_with_zero_status(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
-            prefix = 'set theme=/boot/grub2/themes/luma/theme.txt\n'
+            prefix = 'set theme=/boot/grub2/themes/Suno/theme.txt\n'
             (root / 'efi-grub.cfg').write_text(prefix + LORAX.THEME)
             LORAX.verify_iso(root, 'aarch64')
             broken = 'if loadfont /font.pf2 && [ x != y ]; then\n terminal_output gfxterm\nfi\n'
@@ -261,9 +261,9 @@ enum="org.gnome.desktop.GDesktopBackgroundStyle"><default>'scaled'</default></ke
             (system_schema/'org.gnome.desktop.enums.xml').write_text(
                 '<schemalist><enum id="org.gnome.desktop.GDesktopBackgroundStyle">'
                 '<value nick="scaled" value="1"/></enum></schemalist>')
-            brand = root/'usr/share/luma/boot/brand'; brand.mkdir(parents=True)
-            (brand/'luma-wordmark.svg').write_text('<svg viewBox="0 0 2219 715"/>')
-            (root/'usr/share/luma-installer-atlas').mkdir()
+            brand = root/'usr/share/Suno/boot/brand'; brand.mkdir(parents=True)
+            (brand/'Suno-wordmark.svg').write_text('<svg viewBox="0 0 2219 715"/>')
+            (root/'usr/share/Suno-installer-atlas').mkdir()
             profile = root/'usr/share/dconf/profile/gnomekiosk'; profile.parent.mkdir(parents=True)
             profile.write_text('user-db:user\nfile-db:/usr/share/gnome-kiosk/gnomekiosk.dconf.compiled\n')
             defaults = root/'usr/share/gnome-kiosk/gnomekiosk.dconf.compiled'; defaults.parent.mkdir(parents=True)
@@ -274,10 +274,10 @@ enum="org.gnome.desktop.GDesktopBackgroundStyle"><default>'scaled'</default></ke
                 self.assertEqual(compile_schemas.call_args_list[0].args[0][:2], ['glib-compile-schemas', '--strict'])
                 self.assertEqual(compile_schemas.call_args_list[1].args[0][:2], ['dconf', 'compile'])
             self.assertEqual(profile.read_text().splitlines(), ['user-db:user',
-                'file-db:/usr/share/luma-installer-atlas/kiosk-background.dconf',
+                'file-db:/usr/share/Suno-installer-atlas/kiosk-background.dconf',
                 'file-db:/usr/share/gnome-kiosk/gnomekiosk.dconf.compiled'])
             self.assertEqual(defaults.read_bytes(), b'preserved kiosk defaults')
-            art = PRESENTATION.ET.fromstring((root/'usr/share/luma-installer-atlas/loader-background.svg').read_bytes())
+            art = PRESENTATION.ET.fromstring((root/'usr/share/Suno-installer-atlas/loader-background.svg').read_bytes())
             self.assertEqual(art.get('viewBox'), '0 0 142 75')
             self.assertEqual(art.get('width'), '142')
             self.assertIn("picture-options='centered'", (schemas/'org.gnome.desktop.background.gschema.override').read_text())
@@ -297,11 +297,11 @@ enum="org.gnome.desktop.GDesktopBackgroundStyle"><default>'scaled'</default></ke
                     calls.clear(); namespace['setup_display'](Anaconda())
                     self.assertEqual(calls, [('plymouth', ['quit']), 'initialize'] if tui else ['initialize'])
             for unit in ('plymouth-quit.service', 'plymouth-quit-wait.service'):
-                self.assertIn('ConditionKernelCommandLine=!rhgb', (units/f'{unit}.d/50-luma-atlas-handoff.conf').read_text())
+                self.assertIn('ConditionKernelCommandLine=!rhgb', (units/f'{unit}.d/50-Suno-atlas-handoff.conf').read_text())
             display.write_text(upstream.replace('anaconda.initialize_interface()', 'anaconda.start_unknown_ui()'))
             with self.assertRaisesRegex(ValueError, 'unsupported Anaconda'):
                 PRESENTATION.prepare(root)
-            self.assertNotIn('_luma_release_boot_splash', display.read_text())
+            self.assertNotIn('_Suno_release_boot_splash', display.read_text())
             display.write_text(upstream)
             profile.write_text('user-db:user\nfile-db:/unexpected-owner\n')
             with self.assertRaisesRegex(ValueError, 'unsupported native GNOME Kiosk'):
@@ -327,7 +327,7 @@ enum="org.gnome.desktop.GDesktopBackgroundStyle"><default>'scaled'</default></ke
                                      '<value nick="scaled" value="1"/></enum></schemalist>')
             # Reproduce the previous helper: background alone, unresolved enum.
             (schemas/background).write_bytes((source/background).read_bytes())
-            (schemas/enums).symlink_to('/missing-luma-test-runtime-schema.xml')
+            (schemas/enums).symlink_to('/missing-Suno-test-runtime-schema.xml')
             old = subprocess.run(['glib-compile-schemas', '--strict', str(schemas)],
                                  capture_output=True, text=True)
             self.assertNotEqual(old.returncode, 0)

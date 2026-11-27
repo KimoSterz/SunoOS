@@ -9,11 +9,11 @@
 set -Eeuo pipefail
 umask 077
 
-archive=/tmp/luma-fp6-fingerprint-matched-cma-v14-modules.tar.zst
-release=7.1.2-luma-fp-cma1
+archive=/tmp/Suno-fp6-fingerprint-matched-cma-v14-modules.tar.zst
+release=7.1.2-Suno-fp-cma1
 module_root=/usr/lib/modules
 target=$module_root/$release
-staging=$module_root/.luma-fp-cma1-stage.$$
+staging=$module_root/.Suno-fp-cma1-stage.$$
 expected_archive_sha=afa92aa49698e6c99cef241880ce148ea56cbc69f4f127297a00107d4350a153
 expected_archive_size=170002536
 expected_module_count=418

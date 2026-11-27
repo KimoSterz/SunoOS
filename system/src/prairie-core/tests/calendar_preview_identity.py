@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """Closed identity probe. Run ONLY with dbus-run-session and Xvfb on the host.
 
-dbus-run-session -- xvfb-run -a env LUMA_CALENDAR_PRIVATE_BUS=1 PYTHONPATH=<worktree paths> \
+dbus-run-session -- xvfb-run -a env SUNO_CALENDAR_PRIVATE_BUS=1 PYTHONPATH=<worktree paths> \
     python3 src/prairie-core/tests/calendar_preview_identity.py
 
 The stand-in production service lives on that private bus. Neither application
@@ -17,13 +17,13 @@ import select
 import subprocess
 import sys
 
-PRODUCTION = "org.projectluma.Calendar"
-PREVIEW = PRODUCTION + ".LumaUIPreview"
+PRODUCTION = "org.projectSuno.Calendar"
+PREVIEW = PRODUCTION + ".SunoUIPreview"
 
 
 def require_private_bus():
-    if os.environ.get("LUMA_CALENDAR_PRIVATE_BUS") != "1":
-        raise RuntimeError("Run inside dbus-run-session with LUMA_CALENDAR_PRIVATE_BUS=1")
+    if os.environ.get("SUNO_CALENDAR_PRIVATE_BUS") != "1":
+        raise RuntimeError("Run inside dbus-run-session with SUNO_CALENDAR_PRIVATE_BUS=1")
     address = os.environ.get("DBUS_SESSION_BUS_ADDRESS", "")
     live_bus = f"/run/user/{os.getuid()}/bus"
     if not address or live_bus in address:
@@ -67,8 +67,8 @@ def probe():
     require_private_bus()
     require_test_display()
     root = Path(__file__).resolve().parents[3]
-    os.environ["LUMA_CALENDAR_FIXTURE"] = str(root / "tests/fixtures/calendar-v70.json")
-    os.environ["LUMA_CALENDAR_STYLE_PATH"] = str(root / "src/prairie-core/style/calendar.css")
+    os.environ["SUNO_CALENDAR_FIXTURE"] = str(root / "tests/fixtures/calendar-v70.json")
+    os.environ["SUNO_CALENDAR_STYLE_PATH"] = str(root / "src/prairie-core/style/calendar.css")
     from gi.repository import Gio, GLib
     from prairie_apps import calendar
 
@@ -84,8 +84,8 @@ def probe():
         assert production.get_application_id() == PRODUCTION
         assert production.register(None) and production.get_is_remote(), "Stand-in owner was not recognized"
 
-        # Exact override used by sync-lumaui-preview.sh's Prairie launcher.
-        calendar.APP_ID = getattr(calendar, "APP_ID", "org.projectluma.calendar") + ".LumaUIPreview"
+        # Exact override used by sync-SunoUI-preview.sh's Prairie launcher.
+        calendar.APP_ID = getattr(calendar, "APP_ID", "org.projectSuno.calendar") + ".SunoUIPreview"
         preview = calendar.CalendarApplication()
         assert preview.get_application_id() == PREVIEW
         assert preview.register(None) and not preview.get_is_remote(), "Preview reached the production service"

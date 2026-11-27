@@ -16,24 +16,24 @@
 #include <sys/mman.h>
 #include <unistd.h>
 
-#define LUMA_QSEE_IMPL_ID 5u
-#define LUMA_QSEE_APP_NAME_MAX 64u
-#define LUMA_QSEE_BUFFER_MAX (4u * 1024u * 1024u)
-#define LUMA_QSEE_HANDLE_MAGIC UINT64_C(0x4c554d4151534545)
+#define SUNO_QSEE_IMPL_ID 5u
+#define SUNO_QSEE_APP_NAME_MAX 64u
+#define SUNO_QSEE_BUFFER_MAX (4u * 1024u * 1024u)
+#define SUNO_QSEE_HANDLE_MAGIC UINT64_C(0x4c554d4151534545)
 
-struct luma_qsee_shm {
+struct Suno_qsee_shm {
 	int id;
 	void *address;
 	size_t size;
 };
 
-struct luma_qsee_handle {
+struct Suno_qsee_handle {
 	/* This must remain first: it is the published QSEECom ABI. */
 	struct QSEECom_handle public;
 	uint64_t magic;
 	int tee_fd;
 	uint32_t session;
-	struct luma_qsee_shm shared;
+	struct Suno_qsee_shm shared;
 	pthread_mutex_t command_lock;
 };
 
@@ -66,7 +66,7 @@ static int real_unmap_memory(void *address, size_t length)
 	return munmap(address, length);
 }
 
-static const struct luma_qsee_ops real_ops = {
+static const struct Suno_qsee_ops real_ops = {
 	.open_device = real_open_device,
 	.close_fd = real_close_fd,
 	.ioctl_call = real_ioctl_call,
@@ -74,10 +74,10 @@ static const struct luma_qsee_ops real_ops = {
 	.unmap_memory = real_unmap_memory,
 };
 
-static const struct luma_qsee_ops *active_ops = &real_ops;
+static const struct Suno_qsee_ops *active_ops = &real_ops;
 
-#ifdef LUMA_QSEE_TEST
-void luma_qsee_set_test_ops(const struct luma_qsee_ops *ops)
+#ifdef SUNO_QSEE_TEST
+void Suno_qsee_set_test_ops(const struct Suno_qsee_ops *ops)
 {
 	active_ops = ops ? ops : &real_ops;
 }
@@ -89,22 +89,22 @@ static int fail(int error)
 	return -1;
 }
 
-static int alloc_shm(const struct luma_qsee_ops *ops, int tee_fd, size_t size,
-		     struct luma_qsee_shm *memory)
+static int alloc_shm(const struct Suno_qsee_ops *ops, int tee_fd, size_t size,
+		     struct Suno_qsee_shm *memory)
 {
 	struct tee_ioctl_shm_alloc_data allocation = { .size = size };
 	void *address;
 	int shm_fd;
 	int saved_errno;
 
-	if (!size || size > LUMA_QSEE_BUFFER_MAX)
+	if (!size || size > SUNO_QSEE_BUFFER_MAX)
 		return fail(EINVAL);
 
 	shm_fd = ops->ioctl_call(tee_fd, TEE_IOC_SHM_ALLOC, &allocation);
 	if (shm_fd < 0)
 		return -1;
 	if (allocation.id < 0 || allocation.size < size ||
-	    allocation.size > LUMA_QSEE_BUFFER_MAX) {
+	    allocation.size > SUNO_QSEE_BUFFER_MAX) {
 		ops->close_fd(shm_fd);
 		return fail(EOVERFLOW);
 	}
@@ -124,8 +124,8 @@ static int alloc_shm(const struct luma_qsee_ops *ops, int tee_fd, size_t size,
 	return 0;
 }
 
-static void free_shm(const struct luma_qsee_ops *ops,
-		     struct luma_qsee_shm *memory)
+static void free_shm(const struct Suno_qsee_ops *ops,
+		     struct Suno_qsee_shm *memory)
 {
 	if (memory->address && memory->address != MAP_FAILED)
 		ops->unmap_memory(memory->address, memory->size);
@@ -134,7 +134,7 @@ static void free_shm(const struct luma_qsee_ops *ops,
 	memory->size = 0;
 }
 
-static int open_qseecom_device(const struct luma_qsee_ops *ops,
+static int open_qseecom_device(const struct Suno_qsee_ops *ops,
 			       unsigned int *next_index)
 {
 	struct tee_ioctl_version_data version;
@@ -153,14 +153,14 @@ static int open_qseecom_device(const struct luma_qsee_ops *ops,
 			continue;
 		memset(&version, 0, sizeof(version));
 		if (!ops->ioctl_call(fd, TEE_IOC_VERSION, &version) &&
-		    version.impl_id == LUMA_QSEE_IMPL_ID)
+		    version.impl_id == SUNO_QSEE_IMPL_ID)
 			return fd;
 		ops->close_fd(fd);
 	}
 	return fail(ENODEV);
 }
 
-static int open_named_session(const struct luma_qsee_ops *ops, int tee_fd,
+static int open_named_session(const struct Suno_qsee_ops *ops, int tee_fd,
 			      const char *application, uint32_t *session_id)
 {
 	uint64_t request_storage[(sizeof(struct tee_ioctl_open_session_arg) +
@@ -168,7 +168,7 @@ static int open_named_session(const struct luma_qsee_ops *ops, int tee_fd,
 	struct tee_ioctl_open_session_arg *request = (void *)request_storage;
 	struct tee_ioctl_param *params = request->params;
 	struct tee_ioctl_buf_data data;
-	struct luma_qsee_shm name = {};
+	struct Suno_qsee_shm name = {};
 	size_t length = strlen(application) + 1;
 	int result;
 
@@ -199,16 +199,16 @@ static bool valid_application_name(const char *name)
 
 	if (!name)
 		return false;
-	length = strnlen(name, LUMA_QSEE_APP_NAME_MAX);
-	return length > 0 && length < LUMA_QSEE_APP_NAME_MAX &&
+	length = strnlen(name, SUNO_QSEE_APP_NAME_MAX);
+	return length > 0 && length < SUNO_QSEE_APP_NAME_MAX &&
 	       !strchr(name, '/');
 }
 
 int QSEECom_start_app(struct QSEECom_handle **clnt_handle, const char *path,
 		      const char *fname, uint32_t sb_size)
 {
-	const struct luma_qsee_ops *ops = active_ops;
-	struct luma_qsee_handle *handle;
+	const struct Suno_qsee_ops *ops = active_ops;
+	struct Suno_qsee_handle *handle;
 	unsigned int next_index = 0;
 	int session_errno = 0;
 	int saved_errno;
@@ -216,7 +216,7 @@ int QSEECom_start_app(struct QSEECom_handle **clnt_handle, const char *path,
 	/* Loading is intentionally delegated to the separately confined loader. */
 	(void)path;
 	if (!clnt_handle || *clnt_handle || !valid_application_name(fname) ||
-	    !sb_size || sb_size > LUMA_QSEE_BUFFER_MAX)
+	    !sb_size || sb_size > SUNO_QSEE_BUFFER_MAX)
 		return fail(EINVAL);
 
 	handle = calloc(1, sizeof(*handle));
@@ -253,7 +253,7 @@ int QSEECom_start_app(struct QSEECom_handle **clnt_handle, const char *path,
 	}
 
 	handle->public.ion_sbuffer = handle->shared.address;
-	handle->magic = LUMA_QSEE_HANDLE_MAGIC;
+	handle->magic = SUNO_QSEE_HANDLE_MAGIC;
 	*clnt_handle = &handle->public;
 	return 0;
 
@@ -269,15 +269,15 @@ error:
 
 int QSEECom_shutdown_app(struct QSEECom_handle **public_handle)
 {
-	const struct luma_qsee_ops *ops = active_ops;
-	struct luma_qsee_handle *handle;
+	const struct Suno_qsee_ops *ops = active_ops;
+	struct Suno_qsee_handle *handle;
 	int close_result;
 	int saved_errno;
 
 	if (!public_handle || !*public_handle)
 		return fail(EINVAL);
-	handle = (struct luma_qsee_handle *)*public_handle;
-	if (handle->magic != LUMA_QSEE_HANDLE_MAGIC)
+	handle = (struct Suno_qsee_handle *)*public_handle;
+	if (handle->magic != SUNO_QSEE_HANDLE_MAGIC)
 		return fail(EINVAL);
 
 	handle->magic = 0;
@@ -297,21 +297,21 @@ int QSEECom_shutdown_app(struct QSEECom_handle **public_handle)
 int QSEECom_send_cmd(struct QSEECom_handle *public_handle, void *send_buf,
 		     uint32_t sbuf_len, void *rcv_buf, uint32_t rbuf_len)
 {
-	const struct luma_qsee_ops *ops = active_ops;
+	const struct Suno_qsee_ops *ops = active_ops;
 	uint64_t invoke_storage[(sizeof(struct tee_ioctl_invoke_arg) +
 				2 * sizeof(struct tee_ioctl_param) + 7) / 8] = {};
 	struct tee_ioctl_invoke_arg *invoke = (void *)invoke_storage;
 	struct tee_ioctl_param *params = invoke->params;
 	struct tee_ioctl_buf_data data;
-	struct luma_qsee_handle *handle = (void *)public_handle;
-	struct luma_qsee_shm request = {};
-	struct luma_qsee_shm response = {};
+	struct Suno_qsee_handle *handle = (void *)public_handle;
+	struct Suno_qsee_shm request = {};
+	struct Suno_qsee_shm response = {};
 	int result = -1;
 	int saved_errno;
 
-	if (!handle || handle->magic != LUMA_QSEE_HANDLE_MAGIC || !send_buf ||
+	if (!handle || handle->magic != SUNO_QSEE_HANDLE_MAGIC || !send_buf ||
 	    !rcv_buf || !sbuf_len || !rbuf_len ||
-	    sbuf_len > LUMA_QSEE_BUFFER_MAX || rbuf_len > LUMA_QSEE_BUFFER_MAX)
+	    sbuf_len > SUNO_QSEE_BUFFER_MAX || rbuf_len > SUNO_QSEE_BUFFER_MAX)
 		return fail(EINVAL);
 
 	if (pthread_mutex_lock(&handle->command_lock))

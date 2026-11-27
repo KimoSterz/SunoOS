@@ -1,10 +1,10 @@
 # GNOME Calendar downstream patch
 
-Project Luma carries two isolated patches against Fedora 44's exact
+Project Suno carries two isolated patches against Fedora 44's exact
 `gnome-calendar-50.0-1.fc44` source package. Its SHA-256 is
 `63b0ec56f2340b538dc7248385ae721d28e6ef9bf144e70f5dd39562c0746ba6`.
 
-`0001-luma-calendar-aesthetic-v1.patch` retains Calendar's application ID,
+`0001-Suno-calendar-aesthetic-v1.patch` retains Calendar's application ID,
 Evolution Data Server integration, user-owned calendar colors, actions,
 shortcuts, Month and Week views, search, event creation and editing, accounts,
 menus, schemas, and adaptive behavior. It changes only application composition
@@ -36,8 +36,8 @@ the existing control, now located in the content action header and still wired
 to F9. The action header reuses the original widgets and actions rather than
 duplicating them.
 
-`0002-luma-title-label-metrics.patch` applies the shared semantic
-`luma-title-label` class to Calendar's existing centered title. The actual
+`0002-Suno-title-label-metrics.patch` applies the shared semantic
+`Suno-title-label` class to Calendar's existing centered title. The actual
 Figtree line-box correction is owned once by the downstream libadwaita package,
 so Calendar does not duplicate global title metrics.
 

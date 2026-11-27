@@ -1,7 +1,7 @@
 ---
 type: feature
 component: Updates
-packages: [luma-update]
+packages: [Suno-update]
 highlight: false
 ---
 Summary: Phone kernels update with the system

@@ -1,4 +1,4 @@
-From: Project Luma <project-luma@local>
+From: Project Suno <project-suno@local>
 Subject: [PATCH] simple: ipa: smooth quantized gain transitions
 
 Some phone sensors expose very coarse analogue-gain steps. The IMX896's first

@@ -1,7 +1,7 @@
 ---
 type: fix
 component: Streamy
-packages: [luma-streamy]
+packages: [Suno-streamy]
 highlight: false
 ---
 Summary: Streamy quits cleanly

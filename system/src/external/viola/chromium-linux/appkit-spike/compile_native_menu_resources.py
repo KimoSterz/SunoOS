@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: GPL-3.0-only
-"""Compile the existing qualified Luma GTK menu source on the Linux builder.
+"""Compile the existing qualified Suno GTK menu source on the Linux builder.
 
 An owned disposable container provides sassc. No installed system package,
-shared Luma checkout, or existing build container is modified.
+shared Suno checkout, or existing build container is modified.
 """
 import argparse
 import hashlib
@@ -28,8 +28,8 @@ def main():
     data = args.patch.read_bytes()
     digest = hashlib.sha256(data).hexdigest()
     if digest != args.expected_sha256:
-        raise RuntimeError('Qualified Luma source patch hash mismatch')
-    marker = '+++ b/gtk/theme/Default/_luma-menu.scss\n'
+        raise RuntimeError('Qualified Suno source patch hash mismatch')
+    marker = '+++ b/gtk/theme/Default/_Suno-menu.scss\n'
     section = data.decode().split(marker, 1)[1].split('\ndiff --git', 1)[0]
     lines = section.splitlines()
     match = re.fullmatch(r'@@ -0,0 \+1,(\d+) @@', lines[0])
@@ -41,9 +41,9 @@ def main():
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=False)
     (output / 'source.patch').write_bytes(data)
-    (output / '_luma-menu.scss').write_text(source)
+    (output / '_Suno-menu.scss').write_text(source)
     for mode in ('light', 'dark'):
-        (output / (mode + '.scss')).write_text('$variant: ' + mode + ";\n@import 'luma-menu';\n")
+        (output / (mode + '.scss')).write_text('$variant: ' + mode + ";\n@import 'Suno-menu';\n")
     with (output / 'build.log').open('w') as log:
         subprocess.run(['podman', 'run', '--rm', '--name', 'viola-native-menu-resources-' + str(os.getpid()),
             '-v', str(output) + ':/work:Z', IMAGE, 'sh', '-c',
@@ -52,7 +52,7 @@ def main():
             stdout=log, stderr=subprocess.STDOUT, check=True)
     manifest = {'classification': 'private toolkit resource candidate; existing native menu source unchanged',
                 'source': str(args.patch.resolve()), 'sha256': digest,
-                'source_license': 'LGPL-2.1-or-later (Luma GTK source patch)',
+                'source_license': 'LGPL-2.1-or-later (Suno GTK source patch)',
                 'builder_image': IMAGE, 'compiler_packages': (output / 'compiler-packages.txt').read_text().splitlines(),
                 'compiled': {}}
     for mode in ('light', 'dark'):

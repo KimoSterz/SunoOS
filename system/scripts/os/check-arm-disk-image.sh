@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
 #
-# Gate for the Luma ARM disk image (scripts/mobile/build-phone-userdata.sh)
+# Gate for the Suno ARM disk image (scripts/mobile/build-phone-userdata.sh)
 # before it is published beside the nightly ISO. Checks, read-only:
-#   layout       GPT with 4096-byte sectors: p1 LumaBoot (EFI type, 1 MiB,
-#                480 MiB), p2 LumaRoot (Linux filesystem)
+#   layout       GPT with 4096-byte sectors: p1 SunoBoot (EFI type, 1 MiB,
+#                480 MiB), p2 SunoRoot (Linux filesystem)
 #   boot         p1 FAT, volume ID 032D-57AD, and empty: no device content
-#   root         p2 ext4, UUID 03797c05-..., label LumaRoot, clean
-#   commit       one deployment of COMMIT with origin luma:REF, no hardware
+#   root         p2 ext4, UUID 03797c05-..., label SunoRoot, clean
+#   commit       one deployment of COMMIT with origin Suno:REF, no hardware
 #                target, /ostree/root.a and root.b on it, device-kit.conf
-#                naming LumaBoot, bootloader-update.service masked,
-#                luma-grow-root.service wanted by local-fs.target and no
-#                rpm repository enabled but Luma's
+#                naming SunoBoot, bootloader-update.service masked,
+#                Suno-grow-root.service wanted by local-fs.target and no
+#                rpm repository enabled but Suno's
 #   generic      no device packages in the deployment
 #   labels       physical root, /var/home and /var/lib/systemd labeled
 #                (scripts/mobile/common/label-ostree-physical-root.py --check)
@@ -22,8 +22,8 @@
 # scripts/os/lib/arm_disk_image.py entry reads. Root on Linux; work in TMPDIR.
 set -euo pipefail
 repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
-if [ -z "${LUMA_DISK_CHECK_NS:-}" ]; then
-  LUMA_DISK_CHECK_NS=1 exec unshare --mount --propagation private bash "$0" "$@"
+if [ -z "${SUNO_DISK_CHECK_NS:-}" ]; then
+  SUNO_DISK_CHECK_NS=1 exec unshare --mount --propagation private bash "$0" "$@"
 fi
 image=${1:?usage: check-arm-disk-image.sh IMAGE COMMIT [--record FILE]}; commit=${2:?commit}; record=""
 [ "${3:-}" = --record ] && record=${4:?record file}
@@ -47,9 +47,9 @@ layout() {
 import json, sys
 t = json.load(sys.stdin)["partitiontable"]; p = t["partitions"]
 ok = (t["label"] == "gpt" and t.get("sectorsize") == 4096 and len(p) == 2
-      and p[0].get("name") == "LumaBoot" and p[0]["type"] == "C12A7328-F81F-11D2-BA4B-00A0C93EC93B"
+      and p[0].get("name") == "SunoBoot" and p[0]["type"] == "C12A7328-F81F-11D2-BA4B-00A0C93EC93B"
       and p[0]["start"] == 256 and p[0]["size"] == 480 * 256
-      and p[1].get("name") == "LumaRoot" and p[1]["type"] == "0FC63DAF-8483-4772-8E79-3D69D8477DE4")
+      and p[1].get("name") == "SunoRoot" and p[1]["type"] == "0FC63DAF-8483-4772-8E79-3D69D8477DE4")
 print(" ".join("%s:%d+%d" % (x.get("name"), x["start"], x["size"]) for x in p), "sector", t.get("sectorsize"))
 sys.exit(0 if ok else 1)
 EOF
@@ -62,33 +62,33 @@ boot() {
 }
 root() {
   [ "$(blkid -o value -s TYPE "${loop}p2")" = ext4 ] && [ "$(blkid -o value -s UUID "${loop}p2")" = "$root_uuid" ] &&
-    [ "$(blkid -o value -s LABEL "${loop}p2")" = LumaRoot ] || { why="not ext4 $root_uuid LumaRoot"; return 1; }
+    [ "$(blkid -o value -s LABEL "${loop}p2")" = SunoRoot ] || { why="not ext4 $root_uuid SunoRoot"; return 1; }
   e2fsck -fn "${loop}p2" >"$work/fsck.log" 2>&1 || { why="e2fsck: $(tail -1 "$work/fsck.log")"; return 1; }
   mkdir -p "$work/root"; mount -o ro,noload "${loop}p2" "$work/root"
 }
 deployment() {
   local r=$work/root d
-  d=("$r"/ostree/deploy/luma/deploy/*.0); [ "${#d[@]}" = 1 ] || { why="${#d[@]} deployments"; return 1; }
+  d=("$r"/ostree/deploy/Suno/deploy/*.0); [ "${#d[@]}" = 1 ] || { why="${#d[@]} deployments"; return 1; }
   deploy=${d[0]}
   [ "$(basename "$deploy")" = "$commit.0" ] || { why="deployment $(basename "$deploy")"; return 1; }
   ref=$(sed -n 's/^refspec=//p' "$deploy.origin")
-  [[ "$ref" =~ ^luma:luma/[0-9]+/aarch64/[a-z0-9-]+$ ]] || { why="origin $ref"; return 1; }
+  [[ "$ref" =~ ^Suno:Suno/[0-9]+/aarch64/[a-z0-9-]+$ ]] || { why="origin $ref"; return 1; }
   [ "$(ostree --repo="$r/ostree/repo" rev-parse "$ref")" = "$commit" ] || { why="$ref is not $commit"; return 1; }
-  [ -z "$(ostree --repo="$r/ostree/repo" show --print-metadata-key=org.projectluma.hardware-target "$commit" 2>/dev/null)" ] || { why="hardware target set"; return 1; }
+  [ -z "$(ostree --repo="$r/ostree/repo" show --print-metadata-key=org.projectSuno.hardware-target "$commit" 2>/dev/null)" ] || { why="hardware target set"; return 1; }
   for s in a b; do [ "$(readlink -f "$r/ostree/root.$s")" = "$(readlink -f "$deploy")" ] || { why="root.$s"; return 1; }; done
-  grep -qx "source=UUID=$boot_id" "$deploy/etc/luma/device-kit.conf" || { why="device-kit.conf"; return 1; }
+  grep -qx "source=UUID=$boot_id" "$deploy/etc/Suno/device-kit.conf" || { why="device-kit.conf"; return 1; }
   [ -f "$deploy/etc/systemd/system/bootloader-update.service" ] && [ ! -s "$deploy/etc/systemd/system/bootloader-update.service" ] || { why="bootloader-update.service is not masked"; return 1; }
-  ! grep -lx 'enabled=1' "$deploy"/etc/yum.repos.d/*.repo 2>/dev/null | grep -qv '/luma-[^/]*$' || { why="a non-Luma rpm repository is enabled"; return 1; }
-  grep -qx 'ExecStart=/usr/lib/systemd/systemd-growfs /sysroot' "$deploy/etc/systemd/system/luma-grow-root.service" 2>/dev/null &&
-    [ "$(readlink "$deploy/etc/systemd/system/local-fs.target.wants/luma-grow-root.service")" = ../luma-grow-root.service ] &&
-    [ -x "$deploy/usr/lib/systemd/systemd-growfs" ] || { why="luma-grow-root.service"; return 1; }
+  ! grep -lx 'enabled=1' "$deploy"/etc/yum.repos.d/*.repo 2>/dev/null | grep -qv '/Suno-[^/]*$' || { why="a non-Suno rpm repository is enabled"; return 1; }
+  grep -qx 'ExecStart=/usr/lib/systemd/systemd-growfs /sysroot' "$deploy/etc/systemd/system/Suno-grow-root.service" 2>/dev/null &&
+    [ "$(readlink "$deploy/etc/systemd/system/local-fs.target.wants/Suno-grow-root.service")" = ../Suno-grow-root.service ] &&
+    [ -x "$deploy/usr/lib/systemd/systemd-growfs" ] || { why="Suno-grow-root.service"; return 1; }
   why="$ref"
 }
 generic() {
   local names found
   names=$(rpm --root "$deploy" --dbpath /usr/share/rpm -qa --qf '%{NAME}\n' 2>/dev/null || true)
   [ "$(echo "$names" | grep -c .)" -ge 100 ] || { why="cannot read the deployment's package database"; return 1; }
-  found=$(echo "$names" | grep -E '^(luma-(fp6|rpi5|rpi|pixel|titan|hibreak)-|kernel-luma-(rpi|fp6))' | paste -sd' ' || true)
+  found=$(echo "$names" | grep -E '^(Suno-(fp6|rpi5|rpi|pixel|titan|hibreak)-|kernel-Suno-(rpi|fp6))' | paste -sd' ' || true)
   why=${found:-"no device packages in $(echo "$names" | grep -c .)"}; [ -z "$found" ]
 }
 labels() {
@@ -98,10 +98,10 @@ labels() {
   why="$(getfattr --absolute-names -n security.selinux --only-values "$work/root/ostree" 2>/dev/null | tr -d '\0')"
 }
 clock() {
-  local f=$work/root/ostree/deploy/luma/var/lib/systemd/timesync/clock built t
+  local f=$work/root/ostree/deploy/Suno/var/lib/systemd/timesync/clock built t
   [ -f "$f" ] || { why="missing"; return 1; }
   t=$(stat -c %Y "$f")
-  built=$(ostree --repo="$work/root/ostree/repo" show --print-metadata-key=org.projectluma.build-timestamp "$commit" 2>/dev/null | tr -dc 0-9 || true)
+  built=$(ostree --repo="$work/root/ostree/repo" show --print-metadata-key=org.projectSuno.build-timestamp "$commit" 2>/dev/null | tr -dc 0-9 || true)
   [ -n "$built" ] || built=$(date -d "$(ostree --repo="$work/root/ostree/repo" show "$commit" | sed -n 's/^Date: *//p')" +%s)
   why="$(date -u -d "@$t" +%FT%TZ)"; [ "$t" -ge "$built" ] && [ "$t" -le "$(date +%s)" ]
 }
@@ -119,7 +119,7 @@ if [ -n "$record" ]; then
     python3 -c '
 import datetime, json, sys
 checks = {n: {"result": r, "detail": d} for n, r, d in (l.rstrip("\n").split("\t", 2) for l in sys.stdin)}
-json.dump({"schema": "org.projectluma.arm-disk-image-gate/v1", "commit": sys.argv[1], "result": sys.argv[2],
+json.dump({"schema": "org.projectSuno.arm-disk-image-gate/v1", "commit": sys.argv[1], "result": sys.argv[2],
            "image": sys.argv[3], "checks": checks,
            "completed_utc": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")},
           open(sys.argv[4], "w"), indent=2); print(file=open(sys.argv[4], "a"))' "$commit" "$verdict" "$(basename "$image")" "$record"

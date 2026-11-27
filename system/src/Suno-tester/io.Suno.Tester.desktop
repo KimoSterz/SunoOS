@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Try Suno
+Comment=Explore and develop for Suno Mobile and Desktop
+Exec=Suno-tester gui
+Icon=io.Suno.Tester
+Terminal=false
+Categories=Development;Emulator;
+StartupNotify=true
+StartupWMClass=io.Suno.Tester

@@ -58,7 +58,7 @@ class Boundary(unittest.TestCase):
         self.assertIn('Refused',str(rejected.exception)); self.assertEqual(self.displays,[])
 
     def test_other_app_admission_never_creates_display(self):
-        self.start(lambda *args:'org.projectluma.Notes')
+        self.start(lambda *args:'org.projectSuno.Notes')
         with self.assertRaises(GLib.Error):self.call('Acquire')
         self.assertEqual(self.displays,[])
 

@@ -45,7 +45,7 @@ class NewTabControlsTest(unittest.TestCase):
         footer.state = {'media': {'tabId': 'video-a'}}
         gesture = SimpleNamespace(set_state=lambda _: None)
         footer.open_media_menu(gesture, 1, 10, 10)
-        self.assertTrue(menus[-1].has_css_class('luma-menu-app'))
+        self.assertTrue(menus[-1].has_css_class('Suno-menu-app'))
         menus[-1]._invoke((0,))
         self.assertEqual(len(queued), 1)
         queued.pop()()

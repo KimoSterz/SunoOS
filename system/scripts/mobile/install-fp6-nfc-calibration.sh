@@ -39,7 +39,7 @@ sync "$destination/hwreg.bin" "$destination/swreg.bin"
 [ "$(hash "$destination/hwreg.bin")" = "$hw_hash" ] || die 'installed HW hash differs'
 [ "$(hash "$destination/swreg.bin")" = "$sw_hash" ] || die 'installed SW hash differs'
 
-printf 'LUMA_FP6_NFC_CALIBRATION_INSTALL_VERSION=1\n'
+printf 'SUNO_FP6_NFC_CALIBRATION_INSTALL_VERSION=1\n'
 printf 'SOURCE=owner-stock-vendor-image\n'
 printf 'REDISTRIBUTABLE=false\n'
 printf 'FILES_INSTALLED=2\n'

@@ -42,5 +42,5 @@ else
   echo "chunk hashes pass; install zstd to test the reconstructed archive streams" >&2
 fi
 
-echo "Project Luma recovery release verification: OK"
+echo "Project Suno recovery release verification: OK"
 

@@ -27,23 +27,23 @@ for command in awk cat date env grep head journalctl mmcli rpm sed seq sleep \
   command -v "$command" >/dev/null 2>&1 || die "missing tool: $command"
 done
 
-[ "$(rpm -q --qf '%{EVR}' libqmi)" = 1.39.1-0.1.luma1.fc44 ] ||
+[ "$(rpm -q --qf '%{EVR}' libqmi)" = 1.39.1-0.1.Suno1.fc44 ] ||
   die 'installed libqmi differs'
-[ "$(rpm -q --qf '%{EVR}' libqmi-utils)" = 1.39.1-0.1.luma1.fc44 ] ||
+[ "$(rpm -q --qf '%{EVR}' libqmi-utils)" = 1.39.1-0.1.Suno1.fc44 ] ||
   die 'installed libqmi-utils differs'
-[ "$(rpm -q --qf '%{EVR}' ModemManager)" = 1.25.95-0.1.luma1.fc44 ] ||
+[ "$(rpm -q --qf '%{EVR}' ModemManager)" = 1.25.95-0.1.Suno1.fc44 ] ||
   die 'installed ModemManager differs'
-[ "$(rpm -q --qf '%{EVR}' ModemManager-glib)" = 1.25.95-0.1.luma1.fc44 ] ||
+[ "$(rpm -q --qf '%{EVR}' ModemManager-glib)" = 1.25.95-0.1.Suno1.fc44 ] ||
   die 'installed ModemManager-glib differs'
 [ "$(systemctl is-active ModemManager.service)" = active ] ||
   die 'ModemManager is not active'
 
 # Keep the display free to blank while preventing automatic system suspend
 # from removing the modem halfway through the bounded acquisition window.
-if [ "${LUMA_FP6_GNSS_SLEEP_INHIBITED:-false}" != true ]; then
+if [ "${SUNO_FP6_GNSS_SLEEP_INHIBITED:-false}" != true ]; then
   exec systemd-inhibit --what=sleep --mode=block \
-    --why='Luma bounded FP6 GNSS fix acceptance' \
-    env LUMA_FP6_GNSS_SLEEP_INHIBITED=true "$0" "$duration"
+    --why='Suno bounded FP6 GNSS fix acceptance' \
+    env SUNO_FP6_GNSS_SLEEP_INHIBITED=true "$0" "$duration"
 fi
 
 modem_list=$(timeout 10 mmcli -L 2>/dev/null || true)
@@ -69,7 +69,7 @@ mmcli -m "$modem_index" --location-enable-gps-raw \
   --location-enable-gps-nmea >/dev/null
 mmcli -m "$modem_index" --location-set-gps-refresh-rate=5 >/dev/null
 
-printf 'LUMA_FP6_GNSS_FIX_TEST_VERSION=1\n'
+printf 'SUNO_FP6_GNSS_FIX_TEST_VERSION=1\n'
 printf 'SLEEP_INHIBITED=true\n'
 printf 'COORDINATES_PRINTED=false\n'
 printf 'COORDINATES_PERSISTED=false\n'

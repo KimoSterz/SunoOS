@@ -4,7 +4,7 @@
 # a VM. The payload, trust, remote, origin and channel handling are Atlas's
 # own: this file only answers the questions a person answers in Atlas (disk,
 # account) and includes the media's installer kickstart, which chooses the
-# carried payload, pulls it with GPG verification against the Luma OS Release
+# carried payload, pulls it with GPG verification against the Suno OS Release
 # key, and writes the HTTPS remote, key, origin and channel.
 #
 # GATE-ONLY lines let the host reach the disposable VM; they are never part of
@@ -14,7 +14,7 @@ text
 lang en_US.UTF-8
 keyboard us
 timezone UTC --utc
-# No --hostname: the medium's own default name (luma, ADR-040) is what the
+# No --hostname: the medium's own default name (Suno, ADR-040) is what the
 # identity check verifies.
 network --bootproto=dhcp --device=link --activate
 zerombr

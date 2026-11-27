@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: GPL-3.0-only
 """Viola on a TV: what its bar holds, and the remote's ways to it.
 
-In TV posture LumaUI's ActionCenter is the bar on demand (luma_appkit
+In TV posture SunoUI's ActionCenter is the bar on demand (Suno_appkit
 action_center_tv; design: handoffs viola-find-20261124/TV-HANDOFF.md). Viola
 decides only what the bar holds and when it comes up:
 
@@ -14,19 +14,19 @@ decides only what the bar holds and when it comes up:
 from urllib.parse import urlsplit
 
 from gi.repository import Gdk, GLib, Gtk, Pango
-from luma_appkit import BarAction, lumaui_tokens
-from luma_appkit.action_center import BarWidget, RULE
-from luma_appkit.bar_panel import PanelRow, panel_list
-from luma_appkit import icons
+from Suno_appkit import BarAction, SunoUI_tokens
+from Suno_appkit.action_center import BarWidget, RULE
+from Suno_appkit.bar_panel import PanelRow, panel_list
+from Suno_appkit import icons
 
-HOLD_MS = lumaui_tokens.TV['focus']['hold_ms']
+HOLD_MS = SunoUI_tokens.TV['focus']['hold_ms']
 
 
 def tv_sheet(opaque):
     """Viola's own parts in the TV bar, in TV units (the kit draws the bar and its items)."""
-    from luma_appkit.tv_stage import tv_material
+    from Suno_appkit.tv_stage import tv_material
     m = lambda name: tv_material(name, opaque=opaque)  # noqa: E731
-    c = '.lumaui-action-center.lumaui-tv-demand'
+    c = '.SunoUI-action-center.SunoUI-tv-demand'
     key = (f"background-image: linear-gradient(180deg, {m('key_top')}, {m('key_bottom')}); color: {m('key_ink')};"
            f" box-shadow: inset 0 1.5tv 0 {m('key_glint')}, 0 0 0 1.5tv {m('key_rim')}, 0 3tv 10tv {m('key_drop')};")
     return f"""
@@ -45,17 +45,17 @@ def tv_sheet(opaque):
   box-shadow: inset 0 0 0 2.5tv currentColor; font-size: 17tv; font-weight: 750; }}
 {c} label.viola-tv-zoom {{ min-width: 90tv; font-size: 22tv; font-weight: 650; color: {m('ink')}; font-feature-settings: "tnum"; }}
 /* Find on page on a TV: the field fills the row; Previous and Next keep their words; a divider before ✕. */
-{c} box.lumaui-ac-row.viola-find entry.viola-find-field {{ min-height: 76tv; padding: 0 26tv; border-spacing: 16tv;
+{c} box.SunoUI-ac-row.viola-find entry.viola-find-field {{ min-height: 76tv; padding: 0 26tv; border-spacing: 16tv;
   border-radius: 22tv; margin: 0; }}
-{c} box.lumaui-ac-row.viola-find entry.viola-find-field > image {{ -gtk-icon-size: 32tv; opacity: 0.7; }}
-{c} box.lumaui-ac-row.viola-find entry.viola-find-field text {{ font-size: 30tv; font-weight: 600; }}
-{c} box.lumaui-ac-row.viola-find entry.viola-find-field text > placeholder {{ font-weight: 500; color: {m('ink_3')}; }}
-{c} box.lumaui-ac-row.viola-find entry.viola-find-field:focus-within text > placeholder {{ color: oklch(0.2 0.006 265 / 0.55); }}
-{c} box.lumaui-ac-row.viola-find entry.viola-find-field.lumaui-tv-typing text {{ caret-color: oklch(0.75 0.14 250); }}
-{c} box.lumaui-ac-row.viola-find label.viola-find-count {{ font-size: 26tv; font-weight: 600; color: {m('ink_3')}; }}
-{c} box.lumaui-ac-row.viola-find label.viola-find-count.none {{ color: {m('ink_2')}; }}
-{c} box.lumaui-ac-row.viola-find entry:focus-within:not(.lumaui-tv-typing) label.viola-find-count {{ color: oklch(0.2 0.006 265 / 0.62); }}
-{c} box.lumaui-ac-row.viola-find button:disabled {{ opacity: 0.35; filter: none; }}
+{c} box.SunoUI-ac-row.viola-find entry.viola-find-field > image {{ -gtk-icon-size: 32tv; opacity: 0.7; }}
+{c} box.SunoUI-ac-row.viola-find entry.viola-find-field text {{ font-size: 30tv; font-weight: 600; }}
+{c} box.SunoUI-ac-row.viola-find entry.viola-find-field text > placeholder {{ font-weight: 500; color: {m('ink_3')}; }}
+{c} box.SunoUI-ac-row.viola-find entry.viola-find-field:focus-within text > placeholder {{ color: oklch(0.2 0.006 265 / 0.55); }}
+{c} box.SunoUI-ac-row.viola-find entry.viola-find-field.SunoUI-tv-typing text {{ caret-color: oklch(0.75 0.14 250); }}
+{c} box.SunoUI-ac-row.viola-find label.viola-find-count {{ font-size: 26tv; font-weight: 600; color: {m('ink_3')}; }}
+{c} box.SunoUI-ac-row.viola-find label.viola-find-count.none {{ color: {m('ink_2')}; }}
+{c} box.SunoUI-ac-row.viola-find entry:focus-within:not(.SunoUI-tv-typing) label.viola-find-count {{ color: oklch(0.2 0.006 265 / 0.62); }}
+{c} box.SunoUI-ac-row.viola-find button:disabled {{ opacity: 0.35; filter: none; }}
 """
 
 
@@ -75,7 +75,7 @@ class TvAddress(Gtk.Button):
     def __init__(self, on_activate):
         super().__init__(hexpand=True, valign=Gtk.Align.CENTER)
         self.add_css_class('viola-tv-address')
-        self.add_css_class('lumaui-bar-button')
+        self.add_css_class('SunoUI-bar-button')
         line = Gtk.Box(spacing=0)
         self.tile = Gtk.Overlay()
         self.tile.add_css_class('viola-tv-favicon')
@@ -125,15 +125,15 @@ class TvTabs(Gtk.Button):
 
     def __init__(self, count, on_activate):
         super().__init__(valign=Gtk.Align.CENTER)
-        self.add_css_class('lumaui-bar-button')
+        self.add_css_class('SunoUI-bar-button')
         self.add_css_class('viola-tv-tabs')
         line = Gtk.Box()
-        line.add_css_class('lumaui-bar-button-content')
+        line.add_css_class('SunoUI-bar-button-content')
         self.count = Gtk.Label(label=str(count))
         self.count.add_css_class('viola-tv-tab-count')
         line.append(self.count)
         words = Gtk.Label(label='Tabs')
-        words.add_css_class('lumaui-bar-button-label')
+        words.add_css_class('SunoUI-bar-button-label')
         line.append(words)
         self.set_child(line)
         self.update_property([Gtk.AccessibleProperty.LABEL], [f'Tabs, {count} open'])
@@ -148,11 +148,11 @@ class TvChrome:
         self.host = chrome.host
         self.address = TvAddress(self.edit_address)
         self.zoom = Gtk.Label(label='100%')
-        self.zoom.add_css_class('lumaui-tv-quiet')
+        self.zoom.add_css_class('SunoUI-tv-quiet')
         self.zoom.add_css_class('viola-tv-zoom')
         self.hold_source = 0
         self.loading = False
-        from luma_appkit.tv_stage import add_tv_style
+        from Suno_appkit.tv_stage import add_tv_style
         add_tv_style(tv_sheet)
         keys = Gtk.EventControllerKey(propagation_phase=Gtk.PropagationPhase.CAPTURE)
         keys.connect('key-pressed', self.key_pressed)
@@ -165,7 +165,7 @@ class TvChrome:
 
     @property
     def active(self):
-        # A runtime whose LumaUI has no TV mode yet keeps the desktop bar.
+        # A runtime whose SunoUI has no TV mode yet keeps the desktop bar.
         return bool(getattr(self.center, 'tv_demand', False))
 
     def items(self, state):

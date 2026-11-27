@@ -31,8 +31,8 @@ class SplitExports(unittest.TestCase):
         self.git('remote', 'add', 'origin', 'https://example.invalid/canonical.git')
         self.manifest = self.repo / 'config/release/split-projects.json'
         self.manifest.parent.mkdir(parents=True)
-        self.project = dict(name='luma-test', branch='products/luma-test',
-                            remote_env='LUMA_TEST_REMOTE', paths=['app'])
+        self.project = dict(name='Suno-test', branch='products/Suno-test',
+                            remote_env='SUNO_TEST_REMOTE', paths=['app'])
         self.save_manifest()
         (self.repo / 'app').mkdir()
         (self.repo / 'app' / 'main.py').write_text('print("qualified source")\n')
@@ -68,8 +68,8 @@ class SplitExports(unittest.TestCase):
         two, = (self.root/'two').rglob('*.tar.gz')
         self.assertEqual(one.read_bytes(), two.read_bytes())
         with tarfile.open(one) as archive:
-            self.assertEqual(set(archive.getnames()), {'app', 'app/main.py', 'LUMA-SOURCE.json'})
-            receipt = json.load(archive.extractfile('LUMA-SOURCE.json'))
+            self.assertEqual(set(archive.getnames()), {'app', 'app/main.py', 'SUNO-SOURCE.json'})
+            receipt = json.load(archive.extractfile('SUNO-SOURCE.json'))
         self.assertEqual(receipt['canonical_commit'], self.commit)
         self.assertEqual(receipt['selection_manifest_sha256'], digest)
     def test_cli_dirty_selection_cannot_publish_an_unselected_private_file(self):
@@ -103,8 +103,8 @@ class SplitExports(unittest.TestCase):
         with tarfile.open(archive_path) as archive:
             self.assertEqual(archive.extractfile('main.py').read(),b'print("qualified source")\n')
             self.assertEqual(archive.extractfile('packaging/app.conf').read(),b'product-owned\n')
-            self.assertEqual(archive.extractfile('.luma-integration/packaging/app.conf').read(),b'os-owned\n')
-            self.assertEqual(json.load(archive.extractfile('LUMA-SOURCE.json'))['source_root'],'app')
+            self.assertEqual(archive.extractfile('.Suno-integration/packaging/app.conf').read(),b'os-owned\n')
+            self.assertEqual(json.load(archive.extractfile('SUNO-SOURCE.json'))['source_root'],'app')
     def test_source_root_must_be_a_selected_directory(self):
         self.project.update(source_root='private.txt',paths=['private.txt'])
         with self.assertRaisesRegex(SystemExit,'directory'):
@@ -126,7 +126,7 @@ class SplitExports(unittest.TestCase):
             self.assertIn(name,archive.getnames())
             self.assertNotIn('private.txt',archive.getnames())
     def test_existing_receipt_cannot_be_overwritten(self):
-        (self.repo/'app/LUMA-SOURCE.json').write_text('original provenance\n')
+        (self.repo/'app/SUNO-SOURCE.json').write_text('original provenance\n')
         self.project['source_root']='app'
         source=self.seal_manifest()
         projects,digest=exports.committed_projects(source)
@@ -155,14 +155,14 @@ class SplitExports(unittest.TestCase):
             exports.publish_tree(self.project, tree, self.commit, self.project['branch'])
     def test_remote_access_failure_does_not_create_orphan(self):
         tree=self.root/'tree'; tree.mkdir()
-        with patch.dict(os.environ, {'LUMA_TEST_REMOTE': str(self.root/'absent.git')}), self.assertRaisesRegex(SystemExit, 'access failure'):
+        with patch.dict(os.environ, {'SUNO_TEST_REMOTE': str(self.root/'absent.git')}), self.assertRaisesRegex(SystemExit, 'access failure'):
             exports.publish_tree(self.project, tree, self.commit, self.project['branch'])
-        self.assertNotEqual(self.git('symbolic-ref', 'HEAD', cwd=tree.parent/'repository').strip(), 'refs/heads/products/luma-test')
+        self.assertNotEqual(self.git('symbolic-ref', 'HEAD', cwd=tree.parent/'repository').strip(), 'refs/heads/products/Suno-test')
     def test_new_remote_branch_is_real_and_existing_history_is_retained(self):
         remote=self.root/'product.git'
         self.git('init','--bare','-q',str(remote))
         tips=[]
-        with patch.dict(os.environ, {'LUMA_TEST_REMOTE': str(remote)}), contextlib.redirect_stdout(None):
+        with patch.dict(os.environ, {'SUNO_TEST_REMOTE': str(remote)}), contextlib.redirect_stdout(None):
             for n in range(2):
                 parent=self.root/str(n); parent.mkdir()
                 tree=parent/'tree'; tree.mkdir()
@@ -178,7 +178,7 @@ class SplitExports(unittest.TestCase):
         (tree/'directory/inside').write_text('nested source\n')
         (tree/'file-link').symlink_to('file')
         (tree/'directory-link').symlink_to('directory',target_is_directory=True)
-        with patch.dict(os.environ,{'LUMA_TEST_REMOTE':str(remote)}),contextlib.redirect_stdout(None):
+        with patch.dict(os.environ,{'SUNO_TEST_REMOTE':str(remote)}),contextlib.redirect_stdout(None):
             exports.publish_tree(self.project,tree,self.commit,self.project['branch'])
         for name,target in [('file-link','file'),('directory-link','directory')]:
             entry=self.git('ls-tree',self.project['branch'],'--',name,cwd=remote)
@@ -187,7 +187,7 @@ class SplitExports(unittest.TestCase):
     def test_existing_directory_symlink_does_not_block_next_publication(self):
         remote=self.root/'product.git'; self.git('init','--bare','-q',str(remote))
         tips=[]
-        with patch.dict(os.environ,{'LUMA_TEST_REMOTE':str(remote)}),contextlib.redirect_stdout(None):
+        with patch.dict(os.environ,{'SUNO_TEST_REMOTE':str(remote)}),contextlib.redirect_stdout(None):
             for n in range(2):
                 parent=self.root/str(n); parent.mkdir()
                 tree=parent/'tree'; tree.mkdir()

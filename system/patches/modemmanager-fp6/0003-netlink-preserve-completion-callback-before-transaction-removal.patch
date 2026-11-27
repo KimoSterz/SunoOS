@@ -1,4 +1,4 @@
-From: Project Luma <codex@project-luma.local>
+From: Project Suno <codex@project-suno.local>
 Date: Fri, 28 Aug 2026 15:20:00 -0500
 Subject: [PATCH] netlink: preserve completion callback before transaction removal
 

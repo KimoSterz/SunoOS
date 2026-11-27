@@ -21,7 +21,7 @@ recovery_pid=
 modem_running=true
 normal_services=false
 
-event() { printf 'event=luma_fp6_modem_recovery %s\n' "$*"; }
+event() { printf 'event=Suno_fp6_modem_recovery %s\n' "$*"; }
 fail() { event state=failed reason="$1" >&2; exit 1; }
 hash() { sha256sum "$1" | cut -d' ' -f1; }
 wait_modem() {
@@ -54,8 +54,8 @@ start_modem() {
 cleanup() {
   local status=$?
   set +e
-  if [[ $status -ne 0 && -r /run/luma-fp6-modem-recovery.log ]]; then
-    sed -n '1,120p' /run/luma-fp6-modem-recovery.log >&2
+  if [[ $status -ne 0 && -r /run/Suno-fp6-modem-recovery.log ]]; then
+    sed -n '1,120p' /run/Suno-fp6-modem-recovery.log >&2
   fi
   if [[ $modem_running == true ]]; then
     printf stop >"$remoteproc/state" 2>/dev/null
@@ -73,8 +73,8 @@ cleanup() {
     printf start >"$remoteproc/state" 2>/dev/null
     modem_running=true
   fi
-  systemctl start ModemManager.service luma-fp6-cellular-link.service 2>/dev/null
-  find /run/luma-fp6-modem-recovery.log -delete 2>/dev/null
+  systemctl start ModemManager.service Suno-fp6-cellular-link.service 2>/dev/null
+  find /run/Suno-fp6-modem-recovery.log -delete 2>/dev/null
   find "$recovery" "$qmicli" "$platform" -delete 2>/dev/null
   return "$status"
 }
@@ -84,7 +84,7 @@ trap cleanup EXIT INT TERM HUP
 [[ $(tr -d '\0' </sys/firmware/devicetree/base/model) == 'The Fairphone (Gen. 6)' ]] || fail model
 grep -qw androidboot.slot_suffix=_b /proc/cmdline || fail slot
 case $(uname -r) in
-  7.1.2-luma-fp-cma1|7.1.2-luma-fp-ims1) ;;
+  7.1.2-Suno-fp-cma1|7.1.2-Suno-fp-ims1) ;;
   *) fail kernel ;;
 esac
 [[ $(hash "$recovery") == 6c1d2211f68bcb3a2bca01f170c5b5b60d522c3aa1bfe52741f3431c161268dc ]] || fail recovery_hash
@@ -97,12 +97,12 @@ esac
 [[ $(hash /dev/disk/by-partlabel/fsg) == "$fsg_sha" ]] || fail fsg_hash
 [[ $(cat "$remoteproc/name") == modem && $(cat "$remoteproc/state") == running ]] || fail modem_state
 
-systemctl stop luma-fp6-cellular-link.service ModemManager.service
+systemctl stop Suno-fp6-cellular-link.service ModemManager.service
 systemctl stop tqftpserv.service rmtfs.service
 stop_modem
-: >/run/luma-fp6-modem-recovery.log
-chmod 0600 /run/luma-fp6-modem-recovery.log
-"$recovery" -r -P -s -R >/run/luma-fp6-modem-recovery.log 2>&1 &
+: >/run/Suno-fp6-modem-recovery.log
+chmod 0600 /run/Suno-fp6-modem-recovery.log
+"$recovery" -r -P -s -R >/run/Suno-fp6-modem-recovery.log 2>&1 &
 recovery_pid=$!
 sleep 1
 kill -0 "$recovery_pid" 2>/dev/null || fail recovery_start
@@ -154,7 +154,7 @@ start_modem
 "$qmicli" -d qrtr://0 --device-open-qmi --pdc-list-configs=platform | grep -q 'Status:      Active' || fail platform_not_active
 "$qmicli" -d qrtr://0 --device-open-qmi --pdc-list-configs=software |
   grep -q '^Total configurations: 0$' || fail software_not_empty
-systemctl start ModemManager.service luma-fp6-cellular-link.service
+systemctl start ModemManager.service Suno-fp6-cellular-link.service
 modem_state=
 for _ in $(seq 1 60); do
   if [[ $(mmcli -L 2>/dev/null | grep -c '/Modem/' || true) -eq 1 ]]; then
@@ -168,6 +168,6 @@ done
 [[ $modem_state != failed ]] || fail modemmanager_failed
 
 trap - EXIT INT TERM HUP
-find /run/luma-fp6-modem-recovery.log -delete
+find /run/Suno-fp6-modem-recovery.log -delete
 find "$recovery" "$qmicli" "$platform" -delete
 event state=accepted platform=DSDS-LA-Milos software=none identifiers_logged=0

@@ -7,11 +7,11 @@
 -    /* v71 on a phone: the two-row bar (place, Search, Grid/List; then
 +    /* Shared picker at every width: the two-row bar (place, Search, Grid/List; then
       * Cancel and Open "name"). */
--    LumaActionCenter *phone_bar;
--    LumaBarItem *phone_search;
+-    SunoActionCenter *phone_bar;
+-    SunoBarItem *phone_search;
 -    GtkWidget *phone_accept;
-+    LumaActionCenter *action_center;
-+    LumaBarItem *search_item;
++    SunoActionCenter *action_center;
++    SunoBarItem *search_item;
 +    GtkWidget *accept_control;
      gboolean phone;
  };
@@ -26,20 +26,20 @@
  
      if (self->slot != NULL)
 @@ -778,7 +778,7 @@
-         gtk_widget_remove_css_class (GTK_WIDGET (self), "luma-touch");
+         gtk_widget_remove_css_class (GTK_WIDGET (self), "Suno-touch");
  }
  
 -/* ── v71: the picker on a phone ────────────────────────────────────────────
 +/* ── Shared picker action center at every width ────────────────────────────────────────────
   * Full screen over the asking app, the bar two rows: where you're looking
   * (it grows Recent, Places and what to show), Search and Grid/List; under it
-  * Cancel and Open "name" (or Choose "folder", or Save). Composed from LumaUI-1
+  * Cancel and Open "name" (or Choose "folder", or Save). Composed from SunoUI-1
 @@ -882,7 +882,7 @@
  chooser_run_search (gpointer data)
  {
      NautilusFileChooser *self = NAUTILUS_FILE_CHOOSER (data);
--    const char *text = self->phone_search != NULL ? luma_bar_item_search_get_text (self->phone_search) : NULL;
-+    const char *text = self->search_item != NULL ? luma_bar_item_search_get_text (self->search_item) : NULL;
+-    const char *text = self->phone_search != NULL ? Suno_bar_item_search_get_text (self->phone_search) : NULL;
++    const char *text = self->search_item != NULL ? Suno_bar_item_search_get_text (self->search_item) : NULL;
      if (text == NULL || *text == '\0')
      {
          g_action_group_change_action_state (nautilus_window_slot_get_action_group (self->slot),
@@ -58,49 +58,49 @@
 +    gtk_window_set_default_widget (GTK_WINDOW (self), NULL);
      GFile *location = nautilus_window_slot_get_location (self->slot);
      g_autofree char *place = location != NULL ? g_file_get_basename (location) : g_strdup (_("Home"));
-     g_autoptr (LumaBarItem) where = luma_bar_item_new_action ("folder", place, NULL);
-     luma_bar_item_set_keep_label (where, TRUE);
-+    luma_bar_item_set_dropdown (where, TRUE, FALSE);
-     luma_bar_item_set_tooltip (where, _("Where you're looking"));
-     luma_bar_item_set_panel (where, "place", chooser_place_panel, self, NULL);
-     g_autoptr (LumaBarItem) spacer = luma_bar_item_new_spacer ();
-     g_autoptr (LumaBarItem) view = luma_bar_item_new_action ("layout-grid", NULL, "picker.view");
-     luma_bar_item_set_tooltip (view, _("Grid or list"));
--    LumaBarItem *items[] = { where, spacer, self->phone_search, view };
--    luma_action_center_show_bar (self->phone_bar, items, G_N_ELEMENTS (items), NULL);
+     g_autoptr (SunoBarItem) where = Suno_bar_item_new_action ("folder", place, NULL);
+     Suno_bar_item_set_keep_label (where, TRUE);
++    Suno_bar_item_set_dropdown (where, TRUE, FALSE);
+     Suno_bar_item_set_tooltip (where, _("Where you're looking"));
+     Suno_bar_item_set_panel (where, "place", chooser_place_panel, self, NULL);
+     g_autoptr (SunoBarItem) spacer = Suno_bar_item_new_spacer ();
+     g_autoptr (SunoBarItem) view = Suno_bar_item_new_action ("layout-grid", NULL, "picker.view");
+     Suno_bar_item_set_tooltip (view, _("Grid or list"));
+-    SunoBarItem *items[] = { where, spacer, self->phone_search, view };
+-    Suno_action_center_show_bar (self->phone_bar, items, G_N_ELEMENTS (items), NULL);
 +    g_autoptr (GPtrArray) items = g_ptr_array_new ();
-+    g_autoptr (LumaBarItem) back = luma_bar_item_new_action ("chevron-left", NULL, "slot.back");
-+    g_autoptr (LumaBarItem) forward = luma_bar_item_new_action ("chevron-right", NULL, "slot.forward");
-+    luma_bar_item_set_tooltip (back, _("Back"));
-+    luma_bar_item_set_tooltip (forward, _("Forward"));
++    g_autoptr (SunoBarItem) back = Suno_bar_item_new_action ("chevron-left", NULL, "slot.back");
++    g_autoptr (SunoBarItem) forward = Suno_bar_item_new_action ("chevron-right", NULL, "slot.forward");
++    Suno_bar_item_set_tooltip (back, _("Back"));
++    Suno_bar_item_set_tooltip (forward, _("Forward"));
 +    if (!self->phone) { g_ptr_array_add (items, back); g_ptr_array_add (items, forward); }
 +    g_ptr_array_add (items, where);
 +    g_ptr_array_add (items, spacer);
 +    g_ptr_array_add (items, self->search_item);
 +    g_ptr_array_add (items, view);
-+    g_autoptr (LumaBarItem) new_folder = luma_bar_item_new_action ("folder-plus", NULL, "view.new-folder");
-+    luma_bar_item_set_tooltip (new_folder, _("New Folder"));
++    g_autoptr (SunoBarItem) new_folder = Suno_bar_item_new_action ("folder-plus", NULL, "view.new-folder");
++    Suno_bar_item_set_tooltip (new_folder, _("New Folder"));
 +    if (gtk_widget_get_visible (self->new_folder_button)) g_ptr_array_add (items, new_folder);
-+    luma_bar_item_search_set_collapsed (self->search_item, self->phone);
-+    luma_action_center_show_bar (self->action_center, (LumaBarItem *const *) items->pdata, items->len, NULL);
++    Suno_bar_item_search_set_collapsed (self->search_item, self->phone);
++    Suno_action_center_show_bar (self->action_center, (SunoBarItem *const *) items->pdata, items->len, NULL);
  
      /* Row 2: Cancel and the key, sharing the width. */
      g_autofree char *words = chooser_accept_words (self);
 @@ -951,12 +967,14 @@
-     luma_bar_item_set_keep_label (cancel, TRUE);
-     luma_bar_item_set_keep_label (accept, TRUE);
+     Suno_bar_item_set_keep_label (cancel, TRUE);
+     Suno_bar_item_set_keep_label (accept, TRUE);
      GtkWidget *foot = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 6);
 -    gtk_box_set_homogeneous (GTK_BOX (foot), TRUE);
 +    gtk_box_set_homogeneous (GTK_BOX (foot), self->phone);
 +    gtk_widget_set_halign (foot, self->phone ? GTK_ALIGN_FILL : GTK_ALIGN_END);
      gtk_widget_set_hexpand (foot, TRUE);
-     gtk_box_append (GTK_BOX (foot), luma_bar_item_create_control (cancel, "bar"));
--    self->phone_accept = luma_bar_item_create_control (accept, "bar");
+     gtk_box_append (GTK_BOX (foot), Suno_bar_item_create_control (cancel, "bar"));
+-    self->phone_accept = Suno_bar_item_create_control (accept, "bar");
 -    gtk_box_append (GTK_BOX (foot), self->phone_accept);
--    luma_action_center_set_foot (self->phone_bar, foot);
-+    self->accept_control = luma_bar_item_create_control (accept, "bar");
+-    Suno_action_center_set_foot (self->phone_bar, foot);
++    self->accept_control = Suno_bar_item_create_control (accept, "bar");
 +    gtk_box_append (GTK_BOX (foot), self->accept_control);
-+    luma_action_center_set_foot (self->action_center, foot);
++    Suno_action_center_set_foot (self->action_center, foot);
 +    gtk_window_set_default_widget (GTK_WINDOW (self), self->accept_control);
  }
  
@@ -108,12 +108,12 @@
 @@ -965,36 +983,61 @@
                           NautilusFileChooser *self)
  {
-     self->phone = tier == LUMA_TIER_PHONE;
+     self->phone = tier == SUNO_TIER_PHONE;
 -    gtk_widget_set_visible (self->bottom_toolbar, !self->phone);
 -    if (self->phone)
 -        chooser_update_phone_bar (self);
 -    else if (self->phone_bar != NULL)
--        luma_action_center_hide_bar (self->phone_bar);
+-        Suno_action_center_hide_bar (self->phone_bar);
 -}
 -
 -static void
@@ -159,19 +159,19 @@
 +            gtk_shortcut_new (gtk_shortcut_trigger_parse_string (keys[i].key),
 +                             gtk_named_action_new (keys[i].action)));
 +    gtk_widget_add_controller (GTK_WIDGET (self), GTK_EVENT_CONTROLLER (shortcuts));
-     luma_layer_host_install (GTK_WINDOW (self));
--    self->phone_bar = LUMA_ACTION_CENTER (luma_action_center_new (NULL));
+     Suno_layer_host_install (GTK_WINDOW (self));
+-    self->phone_bar = SUNO_ACTION_CENTER (Suno_action_center_new (NULL));
 -    gtk_widget_set_name (GTK_WIDGET (self->phone_bar), "picker-action-center");
--    luma_action_center_attach (self->phone_bar, GTK_WIDGET (self));
--    self->phone_search = luma_bar_item_new_search (_("Search"));
--    luma_bar_item_search_set_collapsed (self->phone_search, TRUE);
+-    Suno_action_center_attach (self->phone_bar, GTK_WIDGET (self));
+-    self->phone_search = Suno_bar_item_new_search (_("Search"));
+-    Suno_bar_item_search_set_collapsed (self->phone_search, TRUE);
 -    g_signal_connect (self->phone_search, "search-changed", G_CALLBACK (on_picker_search_changed), self);
 -    g_signal_connect_object (self->slot, "notify::location", G_CALLBACK (chooser_update_phone_bar),
-+    self->action_center = LUMA_ACTION_CENTER (luma_action_center_new (NULL));
++    self->action_center = SUNO_ACTION_CENTER (Suno_action_center_new (NULL));
 +    gtk_widget_set_name (GTK_WIDGET (self->action_center), "picker-action-center");
-+    luma_action_center_attach (self->action_center, GTK_WIDGET (self));
-+    self->search_item = luma_bar_item_new_search (_("Search"));
-+    luma_bar_item_search_set_collapsed (self->search_item, TRUE);
++    Suno_action_center_attach (self->action_center, GTK_WIDGET (self));
++    self->search_item = Suno_bar_item_new_search (_("Search"));
++    Suno_bar_item_search_set_collapsed (self->search_item, TRUE);
 +    g_signal_connect (self->search_item, "search-changed", G_CALLBACK (on_picker_search_changed), self);
 +    g_signal_connect_object (self->slot, "notify::location", G_CALLBACK (chooser_update_bar),
                               self, G_CONNECT_SWAPPED);
@@ -181,7 +181,7 @@
 +    g_signal_connect_object (self->filters_dropdown, "notify::model", G_CALLBACK (chooser_update_bar), self, G_CONNECT_SWAPPED);
 +    g_signal_connect_object (self->filters_dropdown, "notify::selected", G_CALLBACK (chooser_update_bar), self, G_CONNECT_SWAPPED);
 +    chooser_update_bar (self);
-     g_signal_connect_object (luma_width_watch_get (GTK_WIDGET (self)), "tier-changed",
+     g_signal_connect_object (Suno_width_watch_get (GTK_WIDGET (self)), "tier-changed",
                               G_CALLBACK (on_chooser_tier_changed), self, 0);
  }
 @@ -1069,7 +1112,7 @@
@@ -215,7 +215,7 @@
      gtk_widget_set_visible (self->compact_back_button, compact_chrome_visible);
 @@ -807,3 +811,13 @@
      gtk_box_append (GTK_BOX (self->information_button_host),
-                     luma_details_pane_info_button (pane));
+                     Suno_details_pane_info_button (pane));
  }
 +
 +/* Keep Nautilus' address editor and its native activation/cancel semantics,
@@ -232,7 +232,7 @@
 @@ -46,4 +46,6 @@
                                         NautilusWindowSlot *window_slot);
  void nautilus_toolbar_set_information_pane (NautilusToolbar *self,
-                                              LumaDetailsPane *pane);
+                                              SunoDetailsPane *pane);
 +void nautilus_toolbar_set_location_entry_only (NautilusToolbar *self, gboolean enabled);
 +
  G_END_DECLS
@@ -242,7 +242,7 @@
          undo_label = g_strdup (_("_Undo"));
      }
      undo_menu_item = g_menu_item_new (undo_label, "win.undo");
-+    g_autoptr (GIcon) undo_icon = g_themed_icon_new ("lumaui-undo-2-symbolic");
++    g_autoptr (GIcon) undo_icon = g_themed_icon_new ("SunoUI-undo-2-symbolic");
 +    g_menu_item_set_icon (undo_menu_item, undo_icon);
      g_menu_append_item (updated_section, undo_menu_item);
      action = g_action_map_lookup_action (G_ACTION_MAP (window), "undo");
@@ -251,7 +251,7 @@
          redo_label = g_strdup (_("_Redo"));
      }
      redo_menu_item = g_menu_item_new (redo_label, "win.redo");
-+    g_autoptr (GIcon) redo_icon = g_themed_icon_new ("lumaui-redo-symbolic");
++    g_autoptr (GIcon) redo_icon = g_themed_icon_new ("SunoUI-redo-symbolic");
 +    g_menu_item_set_icon (redo_menu_item, redo_icon);
      g_menu_append_item (updated_section, redo_menu_item);
      action = g_action_map_lookup_action (G_ACTION_MAP (window), "redo");
@@ -261,7 +261,7 @@
  }
  
 +/* Preserve native tab closing, drag/reorder, overflow and context actions;
-+ * shared LumaUI owns the surrounding command-row surface. */
++ * shared SunoUI owns the surrounding command-row surface. */
 +static void
 +on_tab_strip_revealed (AdwTabBar *tabs, GParamSpec *property, GtkWidget *strip)
 +{
@@ -276,17 +276,17 @@
 +    g_return_if_fail (host != NULL);
 +    g_object_ref (tabs);
 +    adw_toolbar_view_remove (host, tabs);
-+    GtkWidget *strip = luma_action_center_new (NULL);
-+    luma_action_center_set_toolbar (LUMA_ACTION_CENTER (strip), TRUE);
++    GtkWidget *strip = Suno_action_center_new (NULL);
++    Suno_action_center_set_toolbar (SUNO_ACTION_CENTER (strip), TRUE);
 +    gtk_widget_set_name (strip, "filer-tab-strip");
 +    gtk_widget_set_margin_start (strip, 8);
 +    gtk_widget_set_margin_end (strip, 8);
 +    gtk_widget_set_margin_top (strip, 8);
 +    gtk_widget_set_margin_bottom (strip, 4);
 +    gtk_widget_set_hexpand (tabs, TRUE);
-+    g_autoptr (LumaBarItem) native_tabs = luma_bar_item_new_widget (tabs);
-+    LumaBarItem *items[] = { native_tabs };
-+    luma_action_center_show_bar (LUMA_ACTION_CENTER (strip), items, G_N_ELEMENTS (items), NULL);
++    g_autoptr (SunoBarItem) native_tabs = Suno_bar_item_new_widget (tabs);
++    SunoBarItem *items[] = { native_tabs };
++    Suno_action_center_show_bar (SUNO_ACTION_CENTER (strip), items, G_N_ELEMENTS (items), NULL);
 +    /* The tab row precedes the current-location heading, as before. */
 +    g_object_ref (window->location_row);
 +    adw_toolbar_view_remove (host, window->location_row);
@@ -315,18 +315,18 @@
                label: _("_Cancel");
                use-underline: true;
                action-name: "window.close";
--              styles ["lumaui-text-button", "raised"]
+-              styles ["SunoUI-text-button", "raised"]
 +              valign: center;
-+              styles ["lumaui-text-button", "raised", "small"]
++              styles ["SunoUI-text-button", "raised", "small"]
              }
              [accept-button]
              Button accept_button {
                label: "_Select";
                use-underline: true;
                action-name: "chooser.accept";
--              styles ["lumaui-text-button", "key"]
+-              styles ["SunoUI-text-button", "key"]
 +              valign: center;
-+              styles ["lumaui-text-button", "key", "small"]
++              styles ["SunoUI-text-button", "key", "small"]
              }
              [filter-dropdown]
              DropDown filters_dropdown {
@@ -336,7 +336,7 @@
      item {
        label: _("New _Folder");
        action: "view.new-folder";
-+      icon: "lumaui-folder-plus-symbolic";
++      icon: "SunoUI-folder-plus-symbolic";
        accel: "<control><shift>n";
        hidden-when: "action-disabled";
      }
@@ -345,16 +345,16 @@
        label: _("New _Window");
        action: "app.clone-window";
 -      verb-icon: "window-new-symbolic";
-+      icon: "lumaui-app-window-symbolic";
-+      verb-icon: "lumaui-app-window-symbolic";
++      icon: "SunoUI-app-window-symbolic";
++      verb-icon: "SunoUI-app-window-symbolic";
      }
  
      item {
        label: _("New _Tab");
        action: "win.new-tab";
 -      verb-icon: "tab-new-symbolic";
-+      icon: "lumaui-plus-symbolic";
-+      verb-icon: "lumaui-plus-symbolic";
++      icon: "SunoUI-plus-symbolic";
++      verb-icon: "SunoUI-plus-symbolic";
      }
    }
  
@@ -362,27 +362,27 @@
      item {
        label: _("Home");
        action: "win.go-home";
-+      icon: "lumaui-house-symbolic";
++      icon: "SunoUI-house-symbolic";
      }
  
      item {
        label: _("Recent");
        action: "slot.open-location";
-+      icon: "lumaui-history-symbolic";
++      icon: "SunoUI-history-symbolic";
        target: "'recent:///'";
      }
  
      item {
        label: _("Starred");
        action: "slot.open-location";
-+      icon: "lumaui-star-symbolic";
++      icon: "SunoUI-star-symbolic";
        target: "'starred:///'";
      }
  
      item {
        label: _("Applications");
        action: "slot.open-location";
-+      icon: "lumaui-layout-grid-symbolic";
++      icon: "SunoUI-layout-grid-symbolic";
        target: "'applications:///'";
      }
    }
@@ -414,7 +414,7 @@
      item {
        label: _("Show _Hidden Files");
        action: "view.show-hidden-files";
-+      icon: "lumaui-eye-symbolic";
++      icon: "SunoUI-eye-symbolic";
        accel: "<control>h";
      }
    }
@@ -422,13 +422,13 @@
      item {
        label: _("_Undo");
        action: "win.undo";
-+      icon: "lumaui-undo-2-symbolic";
++      icon: "SunoUI-undo-2-symbolic";
      }
  
      item {
        label: _("_Redo");
        action: "win.redo";
-+      icon: "lumaui-redo-symbolic";
++      icon: "SunoUI-redo-symbolic";
      }
    }
  
@@ -436,31 +436,31 @@
      item {
        label: _("_Preferences");
        action: "app.preferences";
-+      icon: "lumaui-settings-symbolic";
++      icon: "SunoUI-settings-symbolic";
      }
  
      item {
        label: _("_Keyboard Shortcuts");
        action: "app.shortcuts";
-+      icon: "lumaui-keyboard-symbolic";
++      icon: "SunoUI-keyboard-symbolic";
      }
  
      item {
        label: _("_Help");
        action: "app.help";
-+      icon: "lumaui-circle-help-symbolic";
++      icon: "SunoUI-circle-help-symbolic";
      }
  
      item {
        label: _("_About Filer");
        action: "app.about";
-+      icon: "lumaui-info-symbolic";
++      icon: "SunoUI-info-symbolic";
      }
  
      item {
        label: _("_Quit Filer");
        action: "app.quit";
-+      icon: "lumaui-log-out-symbolic";
++      icon: "SunoUI-log-out-symbolic";
        accel: "<control>q";
      }
    }
@@ -468,13 +468,13 @@
      item {
        label: _("_New Tab");
        action: "win.new-tab";
-+      icon: "lumaui-plus-symbolic";
++      icon: "SunoUI-plus-symbolic";
      }
  
      item {
        label: _("Re_store Closed Tab");
        action: "win.restore-tab";
-+      icon: "lumaui-history-symbolic";
++      icon: "SunoUI-history-symbolic";
      }
    }
  
@@ -482,21 +482,21 @@
      item {
        label: _("Move Tab to New _Window");
        action: "win.tab-move-new-window";
-+      icon: "lumaui-app-window-symbolic";
++      icon: "SunoUI-app-window-symbolic";
      }
  
      item {
        /* Translators: use “Move Tab _Right” for RTL languages */
        label: _("Move Tab _Left");
        action: "win.tab-move-left";
-+      icon: "lumaui-chevron-left-symbolic";
++      icon: "SunoUI-chevron-left-symbolic";
      }
  
      item {
        /* Translators: use “Move Tab _Left” for RTL languages */
        label: _("Move Tab _Right");
        action: "win.tab-move-right";
-+      icon: "lumaui-chevron-right-symbolic";
++      icon: "SunoUI-chevron-right-symbolic";
      }
    }
  
@@ -504,18 +504,18 @@
      item {
        label: _("_Close Tab");
        action: "win.close-current-view";
-+      icon: "lumaui-x-symbolic";
++      icon: "SunoUI-x-symbolic";
      }
  
      item {
        label: _("Close _Other Tabs");
        action: "win.close-other-tabs";
-+      icon: "lumaui-x-symbolic";
++      icon: "SunoUI-x-symbolic";
      }
    }
  }
---- a/test/automated/display/test-luma-empty-picker.c
-+++ b/test/automated/display/test-luma-empty-picker.c
+--- a/test/automated/display/test-Suno-empty-picker.c
++++ b/test/automated/display/test-Suno-empty-picker.c
 @@ -2,6 +2,9 @@
  #include <nautilus-application.h>
  #include <nautilus-file-chooser.h>
@@ -524,7 +524,7 @@
 +#include <nautilus-location-entry.h>
 +#include <nautilus-window-slot.h>
  #include <nautilus-tag-manager.h>
- #include <luma-ui.h>
+ #include <Suno-ui.h>
  #include <glib/gstdio.h>
 @@ -41,11 +44,52 @@
                            gtk_widget_get_width(widget), gtk_widget_get_height(widget));
@@ -574,7 +574,7 @@
 +        g_autoptr(GIcon) icon=g_icon_deserialize(value);
 +        g_assert_true(G_IS_THEMED_ICON(icon));
 +        const char *const *names=g_themed_icon_get_names(G_THEMED_ICON(icon));
-+        g_assert_true(g_str_has_prefix(names[0],"lumaui-"));
++        g_assert_true(g_str_has_prefix(names[0],"SunoUI-"));
 +        g_assert_true(gtk_icon_theme_has_icon(theme,names[0]));
 +    }
  }
@@ -585,11 +585,11 @@
          g_assert_true(g_file_set_contents(path, "fixture", -1, NULL));
      }
 +    /* Native Shell appearance owns the surface treatment. */
-+    g_autoptr(GSettings) appearance=g_settings_new("org.project_luma.shell-state");
++    g_autoptr(GSettings) appearance=g_settings_new("org.projectSuno.shell-state");
      const int widths[] = {360, 500, 1024, 1440};
 -    /* The canonical Shell policy owns native appearance. Direct Adw force flags
 -     * are overridden by that policy and can produce mislabeled Light captures. */
--    g_autoptr(GSettings) appearance = g_settings_new("org.project_luma.shell-state");
+-    g_autoptr(GSettings) appearance = g_settings_new("org.projectSuno.shell-state");
      for (int dark = 0; dark < 2; dark++) {
 -        g_assert_true(g_settings_set_string(appearance, "surface-treatment", dark ? "dark" : "light"));
 +        g_assert_true(g_settings_set_string(appearance,"surface-treatment",dark ? "dark" : "light"));
@@ -600,17 +600,17 @@
 @@ -115,12 +159,19 @@
                  g_assert_nonnull(header);
                  g_assert_cmpstr(adw_header_bar_get_decoration_layout(ADW_HEADER_BAR(header)), ==, ":close");
-                 g_assert_false(gtk_widget_has_css_class(header, "luma-no-automatic-identity"));
+                 g_assert_false(gtk_widget_has_css_class(header, "Suno-no-automatic-identity"));
 -                /* The primary action uses the actual shared native key-button
 -                 * contract, rather than the retired blue compatibility style. */
-                 g_assert_true(gtk_widget_has_css_class(accept, "lumaui-text-button"));
+                 g_assert_true(gtk_widget_has_css_class(accept, "SunoUI-text-button"));
 -                g_assert_true(gtk_widget_has_css_class(accept, "key"));
 +                g_assert_true(gtk_widget_has_css_class(accept, "small"));
                  g_assert_false(gtk_widget_has_css_class(accept, "suggested-action"));
--                g_assert_false(gtk_widget_has_css_class(accept, "luma-button"));
+-                g_assert_false(gtk_widget_has_css_class(accept, "Suno-button"));
 +                GtkWidget *response=gtk_window_get_default_widget(GTK_WINDOW(window));
 +                g_assert_nonnull(response);
-+                g_assert_true(gtk_widget_has_css_class(response,"lumaui-bar-button"));
++                g_assert_true(gtk_widget_has_css_class(response,"SunoUI-bar-button"));
 +                g_assert_true(gtk_widget_has_css_class(response,"primary"));
 +                g_assert_cmpstr(gtk_actionable_get_action_name(GTK_ACTIONABLE(response)),==,"chooser.accept");
 +                g_assert_true(gtk_widget_is_visible(response));
@@ -677,7 +677,7 @@
 +    AdwTabView *tabs=ADW_TAB_VIEW(find_type(GTK_WIDGET(filer),ADW_TYPE_TAB_VIEW));
 +    AdwTabBar *native_tabs=ADW_TAB_BAR(find_type(GTK_WIDGET(filer),ADW_TYPE_TAB_BAR));
 +    g_assert_cmpint(adw_tab_view_get_n_pages(tabs),==,2);
-+    g_assert_nonnull(gtk_widget_get_ancestor(GTK_WIDGET(native_tabs),LUMA_TYPE_ACTION_CENTER));
++    g_assert_nonnull(gtk_widget_get_ancestor(GTK_WIDGET(native_tabs),SUNO_TYPE_ACTION_CENTER));
 +    g_assert_true(adw_tab_view_reorder_page(tabs,adw_tab_view_get_selected_page(tabs),0));
 +    settle();
 +    capture(GTK_WIDGET(filer),"filer-tabs-dark.png");
@@ -713,11 +713,11 @@
  }
 +/* More than one shared bar can exist: native tabs and file actions. Select
 + * the actual semantic owner rather than the first decoration class match. */
-+static LumaActionCenter *file_action_center(GtkWidget *widget)
++static SunoActionCenter *file_action_center(GtkWidget *widget)
 +{
-+    if(LUMA_IS_ACTION_CENTER(widget) && !g_strcmp0(gtk_widget_get_name(widget),"filer-action-center"))return LUMA_ACTION_CENTER(widget);
++    if(SUNO_IS_ACTION_CENTER(widget) && !g_strcmp0(gtk_widget_get_name(widget),"filer-action-center"))return SUNO_ACTION_CENTER(widget);
 +    for(GtkWidget *child=gtk_widget_get_first_child(widget);child;child=gtk_widget_get_next_sibling(child)) {
-+        LumaActionCenter *found=file_action_center(child);if(found)return found;
++        SunoActionCenter *found=file_action_center(child);if(found)return found;
 +    }
 +    return NULL;
 +}
@@ -728,9 +728,9 @@
      gtk_window_set_default_size(GTK_WINDOW(window),402,740);spin(300);
      nautilus_window_open_location_full(window,home,0,selection);spin(600);
      g_list_free_full(selection,g_object_unref);
--    LumaActionCenter *center=LUMA_ACTION_CENTER(find_css(GTK_WIDGET(window),"lumaui-action-center"));
-+    LumaActionCenter *center=file_action_center(GTK_WIDGET(window));
+-    SunoActionCenter *center=SUNO_ACTION_CENTER(find_css(GTK_WIDGET(window),"SunoUI-action-center"));
++    SunoActionCenter *center=file_action_center(GTK_WIDGET(window));
 +    g_assert_nonnull(center);
      GtkWidget *details=NULL,*copy=NULL;
      for(guint i=0;i<6;i++) {
-         GtkWidget *control=luma_action_center_get_bar_control(center,i);
+         GtkWidget *control=Suno_action_center_get_bar_control(center,i);

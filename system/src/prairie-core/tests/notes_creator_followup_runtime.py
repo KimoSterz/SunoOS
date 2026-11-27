@@ -14,8 +14,8 @@ import gi
 gi.require_version('Gtk', '4.0'); gi.require_version('Adw', '1')
 from gi.repository import Gdk, Gio, GLib, Graphene, Gtk
 from prairie_apps.notes import NotesApplication
-from prairie_apps.notes_lumaui import NotesLumaWindow
-from luma_appkit import Island, Toast
+from prairie_apps.notes_SunoUI import NotesSunoWindow
+from Suno_appkit import Island, Toast
 
 
 def pump(seconds=.1):
@@ -30,7 +30,7 @@ class CreatorNotesTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.app = NotesApplication()
-        cls.app.set_application_id('org.projectluma.Notes.CreatorRuntime')
+        cls.app.set_application_id('org.projectSuno.Notes.CreatorRuntime')
         cls.app.set_flags(Gio.ApplicationFlags.NON_UNIQUE)
         cls.app.register(None)
 
@@ -44,8 +44,8 @@ class CreatorNotesTests(unittest.TestCase):
         self.env.start()
         # Each test owns the SQLite library; an external device watcher must
         # not consume another test's temporary directory during teardown.
-        with mock.patch.object(NotesLumaWindow, '_watch_store'):
-            self.window = NotesLumaWindow(self.app)
+        with mock.patch.object(NotesSunoWindow, '_watch_store'):
+            self.window = NotesSunoWindow(self.app)
         self.window.set_default_size(1180, 740)
         self.window.present(); pump(.3)
         self.window.create_note(); pump()
@@ -120,15 +120,15 @@ class CreatorNotesTests(unittest.TestCase):
         w.slash_menu._key(None, Gdk.KEY_Return, 0, 0); pump()
         fields = []
         def visit(widget):
-            from luma_appkit import TextField
+            from Suno_appkit import TextField
             if isinstance(widget, TextField): fields.append(widget)
             for child in self._children(widget): visit(child)
         visit(w.layer_host)
         display = next(f for f in fields if f.label.get_text() == 'Text to display')
         address = next(f for f in fields if f.label.get_text() == 'Link address')
-        display.text = 'Luma'; address.text = 'https://simplyluma.com'
+        display.text = 'Suno'; address.text = 'https://simplyluma.com'
         address.entry.emit('activate'); pump(); w._flush_save()
-        self.assertEqual(w.current.body, 'Luma')
+        self.assertEqual(w.current.body, 'Suno')
         self.assertTrue(any(r['style']=='link' and r['href']=='https://simplyluma.com' for r in w.current.runs))
         # The picture chooser alone is controlled; image import, attachment
         # bytes, TextChildAnchor and formatting are the production handlers.
@@ -275,7 +275,7 @@ class CreatorNotesTests(unittest.TestCase):
             def __init__(self, **kwargs): pass
             def save(self, parent, cancellable, callback): callback(self, None)
             def save_finish(self, result): return Gio.File.new_for_path(str(destination))
-        with mock.patch('prairie_apps.notes_lumaui.Gtk.FileDialog', ChosenDestination):
+        with mock.patch('prairie_apps.notes_SunoUI.Gtk.FileDialog', ChosenDestination):
             w._export_note(w.current)
         for _ in range(100):
             pump(.02)
@@ -294,7 +294,7 @@ class CreatorNotesTests(unittest.TestCase):
             def __init__(self, **kwargs): pass
             def save(self, parent, cancellable, callback): callback(self, None)
             def save_finish(self, result): return Gio.File.new_for_path(str(destination))
-        with mock.patch('prairie_apps.notes_lumaui.Gtk.FileDialog', ChosenDestination):
+        with mock.patch('prairie_apps.notes_SunoUI.Gtk.FileDialog', ChosenDestination):
             w._export_note(w.current)
         for _ in range(100):
             pump(.02)
@@ -307,19 +307,19 @@ class CreatorNotesTests(unittest.TestCase):
 
     def test_markdown_copy_reaches_an_actual_registered_file_receiver(self):
         import json
-        from luma_appkit import ShareTarget
+        from Suno_appkit import ShareTarget
         w = self.window; w.buffer.set_text('Receiver contents'); w._flush_save()
         subject = w.current
         directory = Path(self.directory.name)
         receipt = directory/'receipt.json'
         helper = directory/'receiver.py'
         helper.write_text("import json,sys\nfrom pathlib import Path\np=Path(sys.argv[1]);Path(sys.argv[2]).write_text(json.dumps({'file':str(p),'text':p.read_text()}))\n")
-        desktop = directory/'org.projectluma.NotesTestReceiver.desktop'
+        desktop = directory/'org.projectSuno.NotesTestReceiver.desktop'
         desktop.write_text(f'[Desktop Entry]\nType=Application\nName=Notes test receiver\nExec=/usr/bin/python3 {helper} %f {receipt}\nMimeType=text/markdown;\nTerminal=false\n')
         receiver = Gio.DesktopAppInfo.new_from_filename(str(desktop))
         self.assertTrue(receiver.supports_files())
-        with mock.patch('prairie_apps.notes_lumaui.Gio.DesktopAppInfo.new', return_value=receiver):
-            w._send_copy_to_app(subject, ShareTarget('receiver','Notes test receiver','org.projectluma.NotesTestReceiver'))
+        with mock.patch('prairie_apps.notes_SunoUI.Gio.DesktopAppInfo.new', return_value=receiver):
+            w._send_copy_to_app(subject, ShareTarget('receiver','Notes test receiver','org.projectSuno.NotesTestReceiver'))
             for _ in range(100):
                 pump(.03)
                 if receipt.is_file(): break

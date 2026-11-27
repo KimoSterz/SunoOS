@@ -12,11 +12,11 @@ export function init(){GLib.timeout_add(GLib.PRIORITY_DEFAULT,2000,()=>{checks()
 export async function run(){await new Promise(()=>{});}
 async function capture(name){const f=Gio.File.new_for_path(GLib.build_filenamev([GLib.get_home_dir(),name+'.png']));const out=f.replace(null,false,Gio.FileCreateFlags.NONE,null);await new Shell.Screenshot().screenshot(false,out);out.close(null);}
 async function checks(){
- const s=new Gio.Settings({schema_id:'org.project_luma.shell-state'});
+ const s=new Gio.Settings({schema_id:'org.projectSuno.shell-state'});
  new Gio.Settings({schema_id:'org.gnome.desktop.interface'}).set_boolean('enable-animations',false);
- const scale=Number(GLib.getenv('LUMA_STATUS_SCALE')??1);St.ThemeContext.get_for_stage(global.stage).scale_factor=scale;
+ const scale=Number(GLib.getenv('SUNO_STATUS_SCALE')??1);St.ThemeContext.get_for_stage(global.stage).scale_factor=scale;
  const shelf=Main.shelf;if(!shelf)throw new Error('No native Shelf');
- if(GLib.getenv('LUMA_STATUS_RTL')==='1')shelf.text_direction=Clutter.TextDirection.RTL;
+ if(GLib.getenv('SUNO_STATUS_RTL')==='1')shelf.text_direction=Clutter.TextDirection.RTL;
  const apps=Shell.AppSystem.get_default().get_installed().filter(a=>a.should_show()).slice(0,24).map(a=>a.get_id());
  if(apps.length<12)throw new Error('Insufficient installed apps for real overflow test');
  global.settings.set_strv('favorite-apps',apps);
@@ -24,7 +24,7 @@ async function checks(){
  s.set_string('shelf-surface-mode','separate');s.set_boolean('shelf-span-full',false);s.set_string('status-frame-scope','split');s.set_string('status-frame','fill');
  let cases=0;
  for(const padding of (DASH_TILE_SIZE===44?[12]:[4,12,24]))for(const edge of ['bottom','top','left','right'])for(const material of ['dark','light','frost','glass']){
-  if(GLib.getenv('LUMA_DOCK_FOCUS')==='1'&&(padding!==12||edge!=='bottom'||material!=='dark'))continue;
+  if(GLib.getenv('SUNO_DOCK_FOCUS')==='1'&&(padding!==12||edge!=='bottom'||material!=='dark'))continue;
   s.set_int('shelf-padding',padding);s.set_string('shelf-edge',edge);s.set_string('shelf-material',material);
   await Scripting.sleep(350);
   const monitor=Main.layoutManager.primaryMonitor;

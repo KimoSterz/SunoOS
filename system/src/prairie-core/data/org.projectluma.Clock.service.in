@@ -1,3 +1,0 @@
-[D-BUS Service]
-Name=org.projectluma.Clock
-Exec=@bindir@/prairie-clock --gapplication-service

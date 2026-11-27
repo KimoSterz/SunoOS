@@ -12,12 +12,12 @@ umask 077
 boot_link=/dev/disk/by-partlabel/boot_b
 boot_partition=
 expected_partition_sha=2eb1c71fe073c8624ed6f1a4f1267744cd7c8281b52c4f64eca65b9f9050a1e6
-kernel=${LUMA_CONTAINER_KERNEL:-/var/tmp/luma-fp6-stock-android-binderfs-compat1/bundle/Image.gz}
-expected_kernel_sha=${LUMA_CONTAINER_KERNEL_SHA256:-d1476dbea625aeb22d5d2a27df3a928cd9a2a13bd72a80bfda8507d376df0153}
-output_root=${LUMA_CONTAINER_BOOT_OUTPUT_ROOT:-/var/tmp/luma-fp6-stock-android-binderfs-boot1}
-candidate_name=${LUMA_CONTAINER_BOOT_CANDIDATE_NAME:-boot-fp6-luma-binderfs-ram1.img}
-change_scope=${LUMA_CONTAINER_BOOT_CHANGE_SCOPE:-kernel_only_binderfs}
-running_config_gate=${LUMA_CONTAINER_RUNNING_CONFIG_GATE:-binderfs_absent}
+kernel=${SUNO_CONTAINER_KERNEL:-/var/tmp/Suno-fp6-stock-android-binderfs-compat1/bundle/Image.gz}
+expected_kernel_sha=${SUNO_CONTAINER_KERNEL_SHA256:-d1476dbea625aeb22d5d2a27df3a928cd9a2a13bd72a80bfda8507d376df0153}
+output_root=${SUNO_CONTAINER_BOOT_OUTPUT_ROOT:-/var/tmp/Suno-fp6-stock-android-binderfs-boot1}
+candidate_name=${SUNO_CONTAINER_BOOT_CANDIDATE_NAME:-boot-fp6-Suno-binderfs-ram1.img}
+change_scope=${SUNO_CONTAINER_BOOT_CHANGE_SCOPE:-kernel_only_binderfs}
+running_config_gate=${SUNO_CONTAINER_RUNNING_CONFIG_GATE:-binderfs_absent}
 candidate=$output_root/$candidate_name
 manifest=$output_root/manifest.env
 work=
@@ -35,7 +35,7 @@ trap cleanup EXIT INT TERM HUP
 [[ $(tr -d '\0' </sys/firmware/devicetree/base/model) == 'The Fairphone (Gen. 6)' ]] ||
   die 'device identity mismatch'
 grep -qw 'androidboot.slot_suffix=_b' /proc/cmdline || die 'device is not running slot b'
-[[ $(uname -r) == 7.1.2-luma-fp-ims1 ]] || die 'accepted ims1 kernel is not running'
+[[ $(uname -r) == 7.1.2-Suno-fp-ims1 ]] || die 'accepted ims1 kernel is not running'
 case $running_config_gate in
   binderfs_absent)
     zcat /proc/config.gz | grep -Fx '# CONFIG_ANDROID_BINDERFS is not set' >/dev/null ||
@@ -62,7 +62,7 @@ for command in cmp dd find mkbootimg python3 sha256sum stat unpack_bootimg; do
 done
 
 install -d -m 0700 "$output_root"
-work=$(mktemp -d /var/tmp/luma-binderfs-boot-work.XXXXXXXX)
+work=$(mktemp -d /var/tmp/Suno-binderfs-boot-work.XXXXXXXX)
 install -d -m 0700 "$work/base" "$work/roundtrip-check" "$work/candidate-check"
 dd if="$boot_partition" of="$work/boot-b-partition.img" bs=4M status=none
 unpack_bootimg --boot_img "$work/boot-b-partition.img" --out "$work/base" \

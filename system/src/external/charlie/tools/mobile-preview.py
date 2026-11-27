@@ -12,7 +12,7 @@ import os
 from pathlib import Path
 
 KIT_COMMIT = "c4f01891403a82915efc8de348c14d09be4c31f4"
-EXECUTABLE = "/usr/bin/org.projectluma.Charlie"
+EXECUTABLE = "/usr/bin/org.projectSuno.Charlie"
 
 
 def preview_environment(bundle: Path, inherited: dict[str, str]) -> dict[str, str]:
@@ -20,9 +20,9 @@ def preview_environment(bundle: Path, inherited: dict[str, str]) -> dict[str, st
     manifest = json.loads((bundle / "manifest.json").read_text())
     if manifest.get("kit_commit") != KIT_COMMIT or manifest.get("architecture") != "aarch64":
         raise ValueError("Charlie requires the authorized c4f018914 ARM mobile preview toolkit")
-    sdk = bundle / "shared/src/luma-platform/appkit"
+    sdk = bundle / "shared/src/Suno-platform/appkit"
     kit = bundle / "kit/usr"
-    if not (sdk / "luma_appkit/__init__.py").is_file() or not (kit / "lib64").is_dir():
+    if not (sdk / "Suno_appkit/__init__.py").is_file() or not (kit / "lib64").is_dir():
         raise ValueError("Existing sealed toolkit payload is incomplete")
     # These are the shared environment entries of the existing bundle's run.py.
     # Charlie itself is imported exclusively from its normal installed package.
@@ -31,7 +31,7 @@ def preview_environment(bundle: Path, inherited: dict[str, str]) -> dict[str, st
         PYTHONPATH=str(sdk),
         LD_LIBRARY_PATH=str(kit / "lib64"),
         GI_TYPELIB_PATH=str(kit / "lib64/girepository-1.0"),
-        LUMA_APPKIT_ICON_PATH=":".join(map(str, (
+        SUNO_APPKIT_ICON_PATH=":".join(map(str, (
             sdk / "icons", bundle / "shared/assets/icon-theme/Prairie/scalable/apps",
             bundle / "shared/assets/icon-theme/Prairie/symbolic/actions"))),
         XDG_DATA_DIRS=f"{kit / 'share'}:/usr/local/share:/usr/share",
@@ -47,7 +47,7 @@ def main() -> None:
     environment = preview_environment(arguments.bundle, dict(os.environ))
     if arguments.describe:
         keys = ("PYTHONPATH", "LD_LIBRARY_PATH", "GI_TYPELIB_PATH",
-                "LUMA_APPKIT_ICON_PATH", "XDG_DATA_DIRS")
+                "SUNO_APPKIT_ICON_PATH", "XDG_DATA_DIRS")
         print(json.dumps({"executable": EXECUTABLE, "kit_commit": KIT_COMMIT,
                           "environment": {key: environment[key] for key in keys}}, indent=2))
         return

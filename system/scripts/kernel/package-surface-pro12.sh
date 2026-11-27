@@ -40,9 +40,9 @@ for row in receipt['files']:
 PYREPLAY
 python3 "$repo/scripts/kernel/build-cache.py" verify --repository "$repo" --build "$build_dir" --base-config "$base_config"
 mkdir -p "$output"/{SOURCES,SPECS,BUILD,BUILDROOT,RPMS,SRPMS,tmp}
-git -C "$repo" archive --format=tar.gz --prefix=luma-surface-sources/ HEAD \
+git -C "$repo" archive --format=tar.gz --prefix=Suno-surface-sources/ HEAD \
   config/kernel patches/linux-surface-pro12 scripts/kernel packaging/rpm/kernel-surface-pro12.spec \
-  LICENSE.md LICENSES > "$output/SOURCES/luma-surface-sources.tar.gz"
+  LICENSE.md LICENSES > "$output/SOURCES/Suno-surface-sources.tar.gz"
 for archive in linux-7.3.tar.xz surface-overlay-c570db8.tar.gz; do
   cp --reflink=auto "$cache/$archive" "$output/SOURCES/$archive"
 done
@@ -55,8 +55,8 @@ rpmbuild -bs --target aarch64 --define "_topdir $output" --define 'dist .fc44' \
   "$output/SPECS/kernel-surface-pro12.spec" > "$output/source-package.log" 2>&1
 rpmbuild -bb --target aarch64 --define "_topdir $output" --define "_tmppath $output/tmp" \
   --define 'dist .fc44' --define '_smp_mflags -j6' \
-  --define '_luma_cross_compile aarch64-linux-gnu-' \
-  --define "_luma_prepared_source $source_dir" --define "_luma_prepared_output $build_dir" \
+  --define '_Suno_cross_compile aarch64-linux-gnu-' \
+  --define "_Suno_prepared_source $source_dir" --define "_Suno_prepared_output $build_dir" \
   "$output/SPECS/kernel-surface-pro12.spec" > "$output/binary-package.log" 2>&1
 python3 - "$output" "$lock" "$repo" <<'PY'
 import hashlib,json,pathlib,subprocess,sys
@@ -76,7 +76,7 @@ for p in files:
     with p.open('rb') as f: sha=hashlib.file_digest(f,'sha256').hexdigest()
     identity=subprocess.check_output(['rpm','-qp','--nosignature','--qf','%{NAME} %{VERSION} %{RELEASE} %{ARCH} %{SHA256HEADER}',str(p)],text=True)
     rows.append({'file':str(p.relative_to(out)),'sha256':sha,'identity':identity})
-receipt={'schema':'org.projectluma.device-kernel-package/v1',
+receipt={'schema':'org.projectSuno.device-kernel-package/v1',
          'source_revision':subprocess.check_output(['git','-C',str(repo),'rev-parse','HEAD'],text=True).strip(),
          'source_lock_sha256':hashlib.sha256(lock.read_bytes()).hexdigest(),'files':rows}
 (out/'PACKAGES.json').write_text(json.dumps(receipt,indent=2)+'\n')

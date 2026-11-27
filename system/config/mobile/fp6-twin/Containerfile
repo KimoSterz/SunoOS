@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
-# Exact official Fedora 44 container digest shared with Luma's isolated RPM
+# Exact official Fedora 44 container digest shared with Suno's isolated RPM
 # builder. This container supplies development tools only; it is not the twin
 # guest image and cannot become a phone artifact.
 FROM registry.fedoraproject.org/fedora@sha256:69b1219730fe52d6cbb0874cbc1a36dd43b722354a603f6cdf73acbff8dd7c59

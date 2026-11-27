@@ -10,21 +10,21 @@
 #   depot-out-of-box.sh [--quick]
 #
 # Depot runs as the person, so every Depot check runs its real modules
-# (luma_installer.depot_catalog, depot_flatpak; luma_depot.native) as a fresh
+# (Suno_installer.depot_catalog, depot_flatpak; Suno_depot.native) as a fresh
 # unprivileged user. --quick skips the two installs (about 1.2 GB of runtimes).
 #
-# Check 3 needs luma-application-installer carrying commit e29fb914
-# ("Let a developer's Flatpak listing say Luma's image ships the same app");
+# Check 3 needs Suno-application-installer carrying commit e29fb914
+# ("Let a developer's Flatpak listing say Suno's image ships the same app");
 # when the installed build predates it, it fails and says so.
 set -uo pipefail
 quick=0
 [ "${1:-}" = --quick ] && quick=1
-user=luma-gate-depot
+user=Suno-gate-depot
 failed=0
-work=$(mktemp -d /tmp/luma-gate-depot.XXXXXX)
+work=$(mktemp -d /tmp/Suno-gate-depot.XXXXXX)
 chmod 0755 "$work"
 declare -A originally_installed=()
-for app in org.projectluma.Notes com.transmissionbt.Transmission; do
+for app in org.projectSuno.Notes com.transmissionbt.Transmission; do
   if flatpak info --system "$app" >/dev/null 2>&1; then
     originally_installed[$app]=1
   fi
@@ -52,14 +52,14 @@ py_check() {
 cleanup() {
   loginctl disable-linger "$user" >/dev/null 2>&1 || true
   loginctl terminate-user "$user" >/dev/null 2>&1 || true
-  for app in org.projectluma.Notes com.transmissionbt.Transmission; do
+  for app in org.projectSuno.Notes com.transmissionbt.Transmission; do
     if [ "${originally_installed[$app]:-0}" != 1 ]; then
       flatpak uninstall --system -y --noninteractive "$app" >/dev/null 2>&1 || true
     fi
     runuser -u "$user" -- flatpak uninstall --user -y --noninteractive "$app" >/dev/null 2>&1 || true
   done
   flatpak uninstall --system -y --noninteractive --unused >/dev/null 2>&1 || true
-  rm -f /etc/polkit-1/rules.d/10-luma-gate-depot.rules
+  rm -f /etc/polkit-1/rules.d/10-Suno-gate-depot.rules
   loginctl disable-linger "$user" >/dev/null 2>&1 || true
   userdel -r "$user" >/dev/null 2>&1 || true
   rm -rf "$work"
@@ -72,29 +72,29 @@ for _ in $(seq 60); do [ -S "/run/user/$(id -u "$user")/bus" ] && break; sleep 1
 loginctl enable-linger "$user" >/dev/null 2>&1
 for _ in $(seq 20); do [ -d "/run/user/$(id -u "$user")" ] && break; sleep 0.5; done
 # Depot and the counter must not count a gate VM as a person's installation.
-install -d -o "$user" -g "$user" "/home/$user/.config/luma/depot"
-printf '{"install_events": false, "countme": false, "app_updates": false}\n' >"/home/$user/.config/luma/depot/settings.json"
-chown "$user:" "/home/$user/.config/luma/depot/settings.json"
+install -d -o "$user" -g "$user" "/home/$user/.config/Suno/depot"
+printf '{"install_events": false, "countme": false, "app_updates": false}\n' >"/home/$user/.config/Suno/depot/settings.json"
+chown "$user:" "/home/$user/.config/Suno/depot/settings.json"
 # On a desktop the person's active session authorizes a system Flatpak install;
 # a gate user has no session, so allow exactly Flatpak's actions for it, until cleanup.
-cat >/etc/polkit-1/rules.d/10-luma-gate-depot.rules <<EOF
+cat >/etc/polkit-1/rules.d/10-Suno-gate-depot.rules <<EOF
 polkit.addRule(function(action, subject) {
   if (subject.user == "$user" && action.id.indexOf("org.freedesktop.Flatpak.") == 0) return polkit.Result.YES;
 });
 EOF
 
-if installer=$(rpm -q luma-application-installer 2>/dev/null); then
+if installer=$(rpm -q Suno-application-installer 2>/dev/null); then
   emit installer-build pass "$installer"
 else
-  emit installer-build fail "luma-application-installer is not installed"
+  emit installer-build fail "Suno-application-installer is not installed"
 fi
 
 # --- 1. the signed catalog ----------------------------------------------------------------
 cat >"$work/catalog.py" <<'PY'
 import tempfile, urllib.request
 from pathlib import Path
-from luma_installer import depot_catalog
-from luma_installer.depot_signature import SignatureError, verify_file
+from Suno_installer import depot_catalog
+from Suno_installer.depot_signature import SignatureError, verify_file
 
 with tempfile.TemporaryDirectory() as tmp:
     catalog = depot_catalog.fetch_catalog(cache=Path(tmp) / 'catalog-4.json')
@@ -105,7 +105,7 @@ print(f'{depot_catalog.CATALOG_URL}: verified with {depot_catalog.PUBLIC_KEY_PAT
       f'generated {catalog.generated_at}, {len(catalog.applications)} applications, {catalog.skipped} skipped')
 
 def get(url):
-    request = urllib.request.Request(url, headers={'User-Agent': 'Luma-Depot/4 gate'})
+    request = urllib.request.Request(url, headers={'User-Agent': 'Suno-Depot/4 gate'})
     with urllib.request.urlopen(request, timeout=20) as stream:
         return stream.read()
 content = bytearray(get(depot_catalog.CATALOG_URL))
@@ -125,12 +125,12 @@ cat >"$work/remotes.py" <<'PY'
 import gi
 gi.require_version('Flatpak', '1.0')
 from gi.repository import Flatpak
-from luma_installer import depot_flatpak
+from Suno_installer import depot_flatpak
 
 system = Flatpak.Installation.new_system(None)
 remotes = {r.get_name(): r for r in system.list_remotes(None)}
 problems = []
-for name in ('luma', 'flathub'):
+for name in ('Suno', 'flathub'):
     remote = remotes.get(name)
     if remote is None:
         problems.append(f'{name}: not configured system-wide')
@@ -152,21 +152,21 @@ py_check depot-sources-system-wide remotes.py
 # --- 3. Viola is already installed through its actual native or signed app owner -----------
 cat >"$work/viola.py" <<'PY'
 import json, urllib.request
-from luma_installer import depot_catalog, depot_flatpak
-from luma_depot.native import (NativeCatalogue, installed_flatpak_refs, inventory,
+from Suno_installer import depot_catalog, depot_flatpak
+from Suno_depot.native import (NativeCatalogue, installed_flatpak_refs, inventory,
                               identity_for_installed, installed_source)
 
 catalog = depot_catalog.fetch_catalog()
 entry = next((a for a in catalog.applications if a.id == 'viola'), None)
 if entry is None:
     raise SystemExit('the signed catalog has no Viola listing')
-if entry.luma_system is None:
-    request = urllib.request.Request(depot_catalog.CATALOG_URL, headers={'User-Agent': 'Luma-Depot/4 gate'})
+if entry.Suno_system is None:
+    request = urllib.request.Request(depot_catalog.CATALOG_URL, headers={'User-Agent': 'Suno-Depot/4 gate'})
     with urllib.request.urlopen(request, timeout=20) as stream:
         row = next(a for a in json.load(stream)['applications'] if a['id'] == 'viola')
-    if row.get('sources', {}).get('luma_system'):
-        raise SystemExit('the installed luma-application-installer predates e29fb914: it ignores '
-                         "Viola's sources.luma_system (viola-browser-stable) and would offer the Flatpak")
+    if row.get('sources', {}).get('Suno_system'):
+        raise SystemExit('the installed Suno-application-installer predates e29fb914: it ignores '
+                         "Viola's sources.Suno_system (viola-browser-stable) and would offer the Flatpak")
     raise SystemExit('the Viola listing names no image package')
 apps = [a for a in NativeCatalogue().snapshot().apps if a.slug == 'viola']
 if len(apps) != 1:
@@ -174,7 +174,7 @@ if len(apps) != 1:
 app = apps[0]
 state = (app.system_state, app.installable, app.availability, app.source_title)
 print(f'Viola: system_state={app.system_state} installable={app.installable} '
-      f'availability={app.availability!r} source={app.source_title!r} package={entry.luma_system.package}')
+      f'availability={app.availability!r} source={app.source_title!r} package={entry.Suno_system.package}')
 refs = installed_flatpak_refs()
 pair = refs.get(entry.source_id)
 if pair is not None:
@@ -182,23 +182,23 @@ if pair is not None:
     # A bundled canonical app owns its updates even when the protected native
     # engine is also present. Prove the actual signed owner and launch identity;
     # installable describes backend support, not whether the UI offers Get.
-    if entry.repository != 'luma' or ref.get_origin() != 'luma':
-        raise SystemExit('Installed Viola is not owned by the Luma app source')
-    depot_flatpak.validate_remote(installation.get_remote_by_name('luma', None), 'luma')
+    if entry.repository != 'Suno' or ref.get_origin() != 'Suno':
+        raise SystemExit('Installed Viola is not owned by the Suno app source')
+    depot_flatpak.validate_remote(installation.get_remote_by_name('Suno', None), 'Suno')
     source = depot_flatpak.resolve(installation, entry.source_id, ref.get_arch(),
                                   branch=ref.get_branch())
     if (ref.format_ref(), ref.get_commit()) != (source.ref, source.commit):
         raise SystemExit('Installed Viola differs from the authenticated app source')
-    if app.system_state or not app.installable or app.source_title != 'Luma':
+    if app.system_state or not app.installable or app.source_title != 'Suno':
         raise SystemExit(f'Depot did not retain the installed app owner: {state}')
     if not any(identity_for_installed(record) == app.app_id
                and installed_source(record, refs) == entry.source_id for record in inventory()):
         raise SystemExit('Depot does not associate the installed Viola launcher with its app owner')
-    print(f'Already installed from Luma: {source.ref} {source.commit}; canonical launcher retained')
-elif app.system_state != 'installed' or app.installable or app.source_title != 'Luma':
-    raise SystemExit(f'Viola is not shown as included with Luma: {state}')
+    print(f'Already installed from Suno: {source.ref} {source.commit}; canonical launcher retained')
+elif app.system_state != 'installed' or app.installable or app.source_title != 'Suno':
+    raise SystemExit(f'Viola is not shown as included with Suno: {state}')
 PY
-py_check depot-viola-included-with-luma viola.py
+py_check depot-viola-included-with-Suno viola.py
 
 # --- 4. install and uninstall through Depot's path -------------------------------------------
 # Each install runs Depot's resolve -> transaction (commit and remote checks) -> run,
@@ -209,7 +209,7 @@ install_check() {
 import gi
 gi.require_version('Flatpak', '1.0')
 from gi.repository import Flatpak
-from luma_installer import depot_flatpak, depot_inventory
+from Suno_installer import depot_flatpak, depot_inventory
 
 app_id = '$app_id'
 installation, remote = depot_flatpak.installation_for(app_id)
@@ -253,13 +253,13 @@ PY
   py_check "$name" "$name.py"
 }
 if [ "$quick" = 1 ]; then
-  emit depot-install-luma-source skip "--quick"
+  emit depot-install-Suno-source skip "--quick"
   emit depot-install-flathub skip "--quick"
 else
-  # Notes: a 330 kB app on the Luma remote (org.projectluma.Platform//44) that
+  # Notes: a 330 kB app on the Suno remote (org.projectSuno.Platform//44) that
   # the catalog lists. Sticky Notes was withdrawn from the catalog on
   # 2026-09-18, so Depot rightly no longer installs it.
-  install_check depot-install-luma-source org.projectluma.Notes
+  install_check depot-install-Suno-source org.projectSuno.Notes
   # Transmission: a 6 MB Flathub app in Depot's catalog (org.gnome.Platform//50).
   install_check depot-install-flathub com.transmissionbt.Transmission
 fi

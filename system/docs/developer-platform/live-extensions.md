@@ -28,7 +28,7 @@ and substitutes a generic label while the session is locked.
 
 GNOME Shell is the first system host. It authenticates through its owned D-Bus
 name and executable identity, renders the compact desktop capsule itself, and
-opens the verified publishing application when activated. Portrait Luma Go
+opens the verified publishing application when activated. Portrait Suno Go
 does not reuse the center-panel capsule because that space is reserved for the
 camera cutout; the mobile activity surface remains a separately tracked visual
 acceptance gate over the same broker data.

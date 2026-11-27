@@ -354,7 +354,7 @@ check("MET payload: twenty-five local hours, daily groups, UV, no visibility, bo
 
 # ── The cache ────────────────────────────────────────────────────────────
 
-with tempfile.TemporaryDirectory(prefix="luma-weather-test-") as directory:
+with tempfile.TemporaryDirectory(prefix="Suno-weather-test-") as directory:
     root = Path(directory)
     os.environ["XDG_DATA_HOME"] = str(root / "data")
     os.environ["HOME"] = str(root / "home")

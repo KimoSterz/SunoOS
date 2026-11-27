@@ -1,7 +1,7 @@
-# Charlie for Luma
+# Charlie for Suno
 
-Charlie is the native adaptive mail candidate for Project Luma. The interface
-uses GTK 4, libadwaita and `luma_appkit`; the presentation-independent engine
+Charlie is the native adaptive mail candidate for Project Suno. The interface
+uses GTK 4, libadwaita and `Suno_appkit`; the presentation-independent engine
 uses Python's MIME, IMAP, SMTP and SQLite libraries. WebKitGTK 6 is restricted
 to sandboxed HTML message bodies.
 
@@ -17,10 +17,10 @@ Charlie's data.
 
 ```sh
 PYTHONPATH=. python3 -m unittest discover -s tests -p 'test_*.py' -v
-PYTHONPATH=. python3 -m charlie_luma
+PYTHONPATH=. python3 -m charlie_Suno
 ```
 
-On Luma, run against the host toolkit rather than inside a container so the
+On Suno, run against the host toolkit rather than inside a container so the
 real frame, islands and semantic palette are exercised.
 
 ## Package
@@ -34,7 +34,7 @@ The script creates an isolated RPM work tree under `.build/rpmbuild` unless
 
 ## Safety boundaries
 
-- App ID: `org.projectluma.Charlie`
+- App ID: `org.projectSuno.Charlie`
 - Local data: `$XDG_DATA_HOME/charlie` (normally `~/.local/share/charlie`)
 - Credentials: Secret Service only; never SQLite, arguments or logs
 - No tray, JVM, Flutter, Electron, telemetry or private contact store

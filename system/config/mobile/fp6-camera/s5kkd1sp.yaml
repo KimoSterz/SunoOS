@@ -3,7 +3,7 @@
 # White points and CCMs are numeric calibration data decoded from the stock
 # com.qti.tuned.tsp_s5kkd1_fp6.bin profile (sha256 7770f9...; retained in
 # artifacts/fp6-stock-front-calibration). They remain a bring-up baseline until
-# Luma's own chart calibration. Do not add Af until the AW86016 actuator and
+# Suno's own chart calibration. Do not add Af until the AW86016 actuator and
 # front focus capability are implemented and physically verified.
 %YAML 1.1
 ---

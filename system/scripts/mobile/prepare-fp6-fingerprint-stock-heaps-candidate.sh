@@ -16,7 +16,7 @@ base_boot=${1:?usage: prepare-fp6-fingerprint-stock-heaps-candidate.sh SHMBRIDGE
 bundle=${2:?usage: prepare-fp6-fingerprint-stock-heaps-candidate.sh SHMBRIDGE_BOOT KERNEL_BUNDLE OUTPUT_DIR}
 output_dir=${3:?usage: prepare-fp6-fingerprint-stock-heaps-candidate.sh SHMBRIDGE_BOOT KERNEL_BUNDLE OUTPUT_DIR}
 overlay=$repo_root/config/mobile/fp6-fingerprint/milos-fairphone-fp6-qsee-stock-heaps.dtso
-candidate=$output_dir/boot-fp6-luma-fingerprint-stock-heaps-v8.img
+candidate=$output_dir/boot-fp6-Suno-fingerprint-stock-heaps-v8.img
 manifest=$bundle/manifest.env
 
 die() { printf 'error: %s\n' "$*" >&2; exit 1; }
@@ -142,7 +142,7 @@ cmp "$enabled_dtb" "$work/candidate/dtb"
 
 candidate_sha=$(hash "$candidate")
 {
-  printf 'LUMA_FP6_FINGERPRINT_BOOT_CANDIDATE_VERSION=8\n'
+  printf 'SUNO_FP6_FINGERPRINT_BOOT_CANDIDATE_VERSION=8\n'
   printf 'SCOPE=fp6-fingerprint-stock-heaps-boot-only\n'
   printf 'BASE_BOOT_SHA256=%s\n' "$FP6_FINGERPRINT_SHMBRIDGE_BOOT_SHA256"
   printf 'KERNEL_SHA256=%s\n' "$FP6_FINGERPRINT_STOCK_HEAPS_KERNEL_SHA256"

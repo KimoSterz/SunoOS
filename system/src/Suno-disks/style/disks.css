@@ -1,0 +1,97 @@
+/* Disks-only swatches. All colours come from the kit's treatment tokens. */
+.disks-tone-blue { color: @Suno_storage_tone_blue; }
+.disks-tone-violet { color: @Suno_storage_tone_violet; }
+.disks-tone-amber { color: @Suno_storage_tone_amber; }
+.disks-tone-green { color: @Suno_storage_tone_green; }
+.disks-tone-pink { color: @Suno_storage_tone_pink; }
+.disks-tone-slate { color: @Suno_storage_tone_slate; }
+.disks-tone-free { color: @Suno_ink_secondary; }
+.disks-health-pill {
+  min-height: var(--SunoUI-ac-tool-button);
+  padding: 0 var(--SunoUI-pill-padding-x);
+  border-radius: var(--SunoUI-pill-radius);
+  background: @Suno_fill;
+  border: 0;
+  box-shadow: none;
+}
+.disks-health-ok { color: @Suno_good; background: alpha(@Suno_good, .13); }
+.disks-health-ok label.disks-health-label { color: @Suno_good; }
+.disks-health-warn, .disks-health-fail { color: @Suno_amber; background: alpha(@Suno_amber, .14); }
+.disks-health-warn label.disks-health-label,
+.disks-health-fail label.disks-health-label { color: @Suno_amber; }
+.disks-health-none { color: @Suno_muted; }
+.disks-fact-row { padding: var(--SunoUI-details-fact-padding-y) 0; border-top: 1px solid @Suno_hairline; }
+.disks-fact-row.first { border-top: 0; }
+label.disks-fact-label { color: @Suno_muted; }
+label.disks-fact-value { color: @Suno_ink; }
+label.disks-fact-warning { color: @Suno_amber; }
+label.disks-card-value { color: @Suno_ink; }
+label.disks-fact-heading { color: @Suno_ink_secondary; }
+.disks-volume-tag { color: @Suno_muted; background: @Suno_fill; padding: 3px 8px; border-radius: var(--SunoUI-foot-heading-button-radius); }
+.disks-usage trough { background: @Suno_fill; border: 0; border-radius: var(--SunoUI-pill-radius); }
+.disks-usage progress { border: 0; border-radius: var(--SunoUI-pill-radius); }
+.disks-usage-blue progress { background: @Suno_storage_tone_blue; }
+.disks-usage-violet progress { background: @Suno_storage_tone_violet; }
+.disks-usage-pink progress { background: @Suno_storage_tone_pink; }
+.disks-usage-amber progress { background: @Suno_storage_tone_amber; }
+.disks-usage-green progress { background: @Suno_storage_tone_green; }
+.disks-usage-slate progress { background: @Suno_muted; }
+.disks-volume-row { padding: 0; border-radius: var(--SunoUI-details-row-radius); }
+button.disks-volume-row:not(.disks-volume-on) {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+label.disks-volume-name { color: @Suno_ink; }
+label.disks-volume-secondary { color: @Suno_ink_secondary; }
+label.disks-volume-where { color: @Suno_muted; }
+.disks-volume-row-phone { border-radius: var(--SunoUI-card-radius); }
+button.disks-volume-row.disks-volume-on label.disks-volume-secondary { color: @Suno_ink; }
+.disks-uuid { background: transparent; border: 0; box-shadow: none; color: @Suno_accent; padding: 0; }
+.disks-map { background: @Suno_well; border-radius: var(--SunoUI-msg-radius); }
+.disks-map-hit { min-width: 0; border: 0; border-radius: var(--SunoUI-toast-radius); box-shadow: none; padding: 0; color: @Suno_ink; }
+.disks-map-hit.disks-tone-blue { background: @Suno_storage_map_background_blue; }
+.disks-map-hit.disks-tone-violet { background: @Suno_storage_map_background_violet; }
+.disks-map-hit.disks-tone-pink { background: @Suno_storage_map_background_pink; }
+.disks-map-hit.disks-tone-amber { background: @Suno_storage_map_background_amber; }
+.disks-map-hit.disks-tone-green { background: @Suno_storage_map_background_green; }
+.disks-map-hit.disks-tone-slate { background: @Suno_storage_map_background_slate; }
+.disks-map-hit.disks-tone-free { background: @Suno_well; }
+.disks-map-hit.selected { box-shadow: inset 0 0 0 2px @Suno_ink; }
+label.disks-map-name { color: @Suno_ink; }
+label.disks-map-size { color: @Suno_ink_secondary; }
+.disks-protect-row {
+  padding: 10px 12px;
+  border-radius: var(--SunoUI-details-radius);
+  background: @Suno_well;
+  box-shadow: inset 0 0 0 1px @Suno_well_ring, inset 0 1px 2px @Suno_well_shade,
+              inset 0 1px 0 @Suno_well_lip;
+}
+.disks-smart-heading { padding: 6px 4px; }
+.disks-smart-row { padding: var(--SunoUI-details-fact-padding-y) 4px; border-top: 1px solid @Suno_hairline; }
+label.disks-smart-ok, label.disks-smart-watch {
+  padding: 0 var(--SunoUI-media-tile-badge-padding-x);
+  border-radius: var(--SunoUI-status-radius);
+}
+label.disks-smart-ok { color: @Suno_good; background: alpha(@Suno_good, .12); }
+label.disks-smart-watch { color: @Suno_amber; background: alpha(@Suno_amber, .14); }
+.disks-sheet {
+  background: @Suno_float_surface;
+  border-radius: var(--SunoUI-dialog-radius);
+  box-shadow: 0 0 0 1px @Suno_float_ring, 0 12px 32px -8px @Suno_float_shadow,
+              0 2px 6px @Suno_float_shadow_near, inset 0 1px 0 @Suno_float_highlight;
+}
+
+/* v71 phone: a dialog grows the bar (.dskpan). Layout and tokens only. */
+.disks-panel { padding: 6px 6px 4px; }
+.disks-sheet-footer > button { min-height: 48px; }
+.disks-system-note {
+  margin: 4px 6px 6px;
+  padding: 10px 12px;
+  border-radius: var(--SunoUI-details-radius);
+  background: @Suno_well;
+}
+.disks-system-note image { color: @Suno_muted; }
+.disks-system-note label { color: @Suno_ink_secondary; }
+
+.disks-panel-subtitle label { color: @Suno_ink_secondary; }

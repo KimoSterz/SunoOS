@@ -1,9 +1,9 @@
-From: Luma Developers
+From: Suno Developers
 Subject: [PATCH] Applications and Downloads folders with a searchable app drawer
 
-diff --git a/js/ui/lumaDockFolders.js b/js/ui/lumaDockFolders.js
---- a/js/ui/lumaDockFolders.js
-+++ b/js/ui/lumaDockFolders.js
+diff --git a/js/ui/SunoDockFolders.js b/js/ui/SunoDockFolders.js
+--- a/js/ui/SunoDockFolders.js
++++ b/js/ui/SunoDockFolders.js
 @@ -33,6 +33,7 @@
  import St from 'gi://St';
  
@@ -11,7 +11,7 @@ diff --git a/js/ui/lumaDockFolders.js b/js/ui/lumaDockFolders.js
 +import * as ParentalControlsManager from '../misc/parentalControlsManager.js';
  import * as Main from './main.js';
  import * as PopupMenu from './popupMenu.js';
- import * as SurfaceMaterials from './lumaSurfaceMaterials.js';
+ import * as SurfaceMaterials from './SunoSurfaceMaterials.js';
 @@ -67,6 +68,7 @@
  const STACK_BODY_MAX = 288;      // eight rows
  const GRID_BODY_MAX = 352;       // eight cells, so switching does not move it
@@ -101,7 +101,7 @@ diff --git a/js/ui/lumaDockFolders.js b/js/ui/lumaDockFolders.js
              this._actions.set(id, button);
          }
  
-+        this.search = new St.Entry({style_class: 'search-entry luma-dockf-search',
++        this.search = new St.Entry({style_class: 'search-entry Suno-dockf-search',
 +            hint_text: _('Search applications'), can_focus: true, visible: false});
 +        this.search.set_primary_icon(new St.Icon({icon_name: 'edit-find-symbolic', icon_size: 16}));
 +        this.search.clutter_text.connect('text-changed', () => {
@@ -113,7 +113,7 @@ diff --git a/js/ui/lumaDockFolders.js b/js/ui/lumaDockFolders.js
 +            if (item) this._controller._activate(item);
 +        });
 +        this._surface.add_child(this.search);
-         this._scroll = new St.ScrollView({style_class: 'luma-dockf-scroll',
+         this._scroll = new St.ScrollView({style_class: 'Suno-dockf-scroll',
              hscrollbar_policy: St.PolicyType.NEVER,
              vscrollbar_policy: St.PolicyType.AUTOMATIC,
 @@ -678,8 +734,14 @@
@@ -126,13 +126,13 @@ diff --git a/js/ui/lumaDockFolders.js b/js/ui/lumaDockFolders.js
 +        const metrics = this._controller.applicationMetrics();
 +        this._views.visible = !apps;
 +        this.search.visible = apps;
-+        if (apps) this.add_style_class_name('luma-dockf-applications');
-+        else this.remove_style_class_name('luma-dockf-applications');
++        if (apps) this.add_style_class_name('Suno-dockf-applications');
++        else this.remove_style_class_name('Suno-dockf-applications');
 +        this._surface.width = apps ? metrics.width : (view === 'grid' ? GRID_WIDTH : STACK_WIDTH) * scaleFactor();
 +        this._scroll.style = `max-height: ${apps ? metrics.height : view === 'grid' ? GRID_BODY_MAX : STACK_BODY_MAX}px;`;
          this._body.layout_manager.orientation = Clutter.Orientation.VERTICAL;
          if (view === 'grid')
-             this._body.add_style_class_name('luma-dockf-grid');
+             this._body.add_style_class_name('Suno-dockf-grid');
 @@ -695,7 +757,7 @@
              ? `${count} · ${ngettext('%d new', '%d new', newCount).format(newCount)}`
              : count;
@@ -211,14 +211,14 @@ diff --git a/js/ui/lumaDockFolders.js b/js/ui/lumaDockFolders.js
 +        if (model.isApplications) {
 +            this._surface._meta.text = ngettext('%d application', '%d applications', model.count).format(model.count);
 +            if (!items.length) body.add_child(new St.Label({text: query ? _('No applications match your search') : _('No applications installed'),
-+                style_class: 'luma-dockf-empty'}));
++                style_class: 'Suno-dockf-empty'}));
 +        }
          if (view === 'grid') {
              let row = null;
              items.forEach((item, index) => {
 -                if (index % GRID_COLUMNS === 0) {
 +                if (index % columns === 0) {
-                     row = new St.BoxLayout({style_class: 'luma-dockf-grid-row', x_expand: true});
+                     row = new St.BoxLayout({style_class: 'Suno-dockf-grid-row', x_expand: true});
                      body.add_child(row);
                  }
                  const cell = new FolderCell(item);
@@ -287,7 +287,7 @@ diff --git a/js/ui/lumaDockFolders.js b/js/ui/lumaDockFolders.js
          const next = items[clamp(at + step, 0, items.length - 1)];
          next?.grab_key_focus();
 @@ -1717,7 +1820,7 @@
-         title.add_style_class_name('luma-menu-title');
+         title.add_style_class_name('Suno-menu-title');
          menu.addMenuItem(title);
          const view = this.viewFor(tile.model);
 -        for (const [id, label] of [['stack', _('Stack')], ['grid', _('Grid')]]) {
@@ -295,20 +295,20 @@ diff --git a/js/ui/lumaDockFolders.js b/js/ui/lumaDockFolders.js
              const item = menu.addAction(label, () => {
                  this._setViewFor(tile.model, id);
                  if (this.openFolder === tile.model)
-diff --git a/data/theme/luma-shelf.css b/data/theme/luma-shelf.css
---- a/data/theme/luma-shelf.css
-+++ b/data/theme/luma-shelf.css
+diff --git a/data/theme/Suno-shelf.css b/data/theme/Suno-shelf.css
+--- a/data/theme/Suno-shelf.css
++++ b/data/theme/Suno-shelf.css
 @@ -3268,3 +3268,13 @@
- .quick-settings.luma-studio-options.luma-surface-glass .luma-options-detail .luma-options-list {
+ .quick-settings.Suno-studio-options.Suno-surface-glass .Suno-options-detail .Suno-options-list {
    spacing: 8px; padding: 0; background-color: transparent; border: none; box-shadow: none;
  }
 +
 +/* Application folders use the same drawer, with space for app artwork. */
-+.luma-dockf-search { margin: 0 16px 12px; padding: 8px 12px; font-size: 14px; }
-+.luma-dockf-search { color: #e7e9e8; background-color: rgba(255,255,255,.08); border-color: rgba(255,255,255,.18); }
-+.luma-surface-light .luma-dockf-search { color: #16191d; background-color: rgba(22,25,29,.05); border-color: rgba(22,25,29,.18); }
-+.luma-surface-light .luma-dockf-search .hint-text { color: rgba(22,25,29,.56); }
-+.luma-dockf-search:focus { border-color: #72a7ed; }
-+.luma-dockf-applications .luma-dockf-thumb-large { background-color: transparent; border-width: 0; }
-+.luma-dockf-applications .luma-dockf-cell-meta { height: 0; padding: 0; margin: 0; }
-+.luma-dockf-empty { padding: 32px 16px; text-align: center; }
++.Suno-dockf-search { margin: 0 16px 12px; padding: 8px 12px; font-size: 14px; }
++.Suno-dockf-search { color: #e7e9e8; background-color: rgba(255,255,255,.08); border-color: rgba(255,255,255,.18); }
++.Suno-surface-light .Suno-dockf-search { color: #16191d; background-color: rgba(22,25,29,.05); border-color: rgba(22,25,29,.18); }
++.Suno-surface-light .Suno-dockf-search .hint-text { color: rgba(22,25,29,.56); }
++.Suno-dockf-search:focus { border-color: #72a7ed; }
++.Suno-dockf-applications .Suno-dockf-thumb-large { background-color: transparent; border-width: 0; }
++.Suno-dockf-applications .Suno-dockf-cell-meta { height: 0; padding: 0; margin: 0; }
++.Suno-dockf-empty { padding: 32px 16px; text-align: center; }

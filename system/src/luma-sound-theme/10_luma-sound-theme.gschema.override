@@ -1,4 +1,0 @@
-# SPDX-License-Identifier: MPL-2.0
-# Luma's sound theme: the freedesktop sounds, without the volume change pop.
-[org.gnome.desktop.sound]
-theme-name='luma'

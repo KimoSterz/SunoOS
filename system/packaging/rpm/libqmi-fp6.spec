@@ -1,6 +1,6 @@
 Name: libqmi
 Version: 1.39.1
-Release: 0.3.luma1%{?dist}
+Release: 0.3.Suno1%{?dist}
 Summary: Qualcomm QMI library with the FP6 GNSS client-identification API
 License: LGPL-2.1-or-later
 URL: https://gitlab.freedesktop.org/mobile-broadband/libqmi/
@@ -82,12 +82,12 @@ cp -a src/qmicli/qmicli %{buildroot}%{_datadir}/bash-completion/completions/
 %{_mandir}/man1/*
 
 %changelog
-* Wed Aug 26 2026 Project Luma <codex@project-luma.local> - 1.39.1-0.3.luma1
+* Wed Aug 26 2026 Project Suno <codex@project-suno.local> - 1.39.1-0.3.Suno1
 - Preserve GMappedFile-owned storage while preparing PDC upload chunks
 - Let qmicli select platform or software for bounded PDC config loads
 
-* Wed Aug 26 2026 Project Luma <codex@project-luma.local> - 1.39.1-0.2.luma1
+* Wed Aug 26 2026 Project Suno <codex@project-suno.local> - 1.39.1-0.2.Suno1
 - Let qmicli select platform or software for bounded PDC config loads
 
-* Thu Aug 20 2026 Project Luma <codex@project-luma.local> - 1.39.1-0.1.luma1
+* Thu Aug 20 2026 Project Suno <codex@project-suno.local> - 1.39.1-0.1.Suno1
 - Pin upstream client-identification API required by the FP6 GNSS engine

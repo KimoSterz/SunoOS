@@ -2,11 +2,11 @@
 # SPDX-License-Identifier: Apache-2.0
 # merge-branch.sh [--pr N] [--arm-later] [--checks-only] [--full] [--detach] [--resume MERGE] BRANCH
 #
-# Merge queue on luma-build for gitlab.com/simplyluma/luma (source of truth since
+# Merge queue on Suno-build for gitlab.com/simplyluma/luma (source of truth since
 # 2026-11-26). gitlab-sync.sh pulls GitLab branches into the interim repo; its
 # post-receive hook pushes main and tags back to GitLab, which marks the MR merged.
 # --pr N is the GitLab merge request number (!N). Merges BRANCH of the
-# interim repo (/srv/dev-storage/git/luma.git) into its main with a merge commit
+# interim repo (/srv/dev-storage/git/Suno.git) into its main with a merge commit
 # (never a squash, so toolkit pins stay ancestors) and the rules GitHub enforced.
 # Releases are assigned at merge (docs/decisions/056-release-at-merge.md): on the
 # merge commit, scripts/os/release-at-merge.py commit writes main's release plus
@@ -29,12 +29,12 @@
 # The merge commit waits at refs/interim/merge/BRANCH until main is moved.
 set -euo pipefail
 unset XDG_RUNTIME_DIR DBUS_SESSION_BUS_ADDRESS
-[ "${LUMA_VIA_GITLAB:-}" = 1 ] || { echo "REFUSED: merges moved to GitLab - open a merge request at https://gitlab.com/simplyluma/luma/-/merge_requests and use its merge job" >&2; exit 1; }
+[ "${SUNO_VIA_GITLAB:-}" = 1 ] || { echo "REFUSED: merges moved to GitLab - open a merge request at https://gitlab.com/simplyluma/luma/-/merge_requests and use its merge job" >&2; exit 1; }
 HERE=$(cd "$(dirname "$0")" && pwd)
-REPO=${LUMA_INTERIM_REPO:-/srv/dev-storage/git/luma.git}
-ROOT=/srv/dev-storage/projects/luma-interim
-WORK=${LUMA_INTERIM_WORK:-/srv/ssd-build/interim-ci}
-ART=${LUMA_INTERIM_ARTIFACTS:-$ROOT/artifacts}
+REPO=${SUNO_INTERIM_REPO:-/srv/dev-storage/git/Suno.git}
+ROOT=/srv/dev-storage/projects/Suno-interim
+WORK=${SUNO_INTERIM_WORK:-/srv/ssd-build/interim-ci}
+ART=${SUNO_INTERIM_ARTIFACTS:-$ROOT/artifacts}
 NAME="Nick McMillen" EMAIL=153555205+nmcmil@users.noreply.github.com  # the identity agents commit with
 pr= arm_later=0 checks_only=0 detach=0 resume= full=0
 args=("$@")
@@ -54,14 +54,14 @@ done
 branch=${1:?usage: merge-branch.sh [--pr N] [--arm-later] [--checks-only] [--detach] BRANCH}
 say() { echo "$(date -u +%FT%TZ) $*"; }
 die() { say "REFUSED: $*"; exit 1; }
-[ -d "$REPO" ] && mountpoint -q /srv/dev-storage || die "run on luma-build (no $REPO)"
+[ -d "$REPO" ] && mountpoint -q /srv/dev-storage || die "run on Suno-build (no $REPO)"
 grep -qxF "$branch" "$HERE/deny-branches" 2>/dev/null && die "$branch is on tools/interim/deny-branches"
 [ -e "$ROOT/FROZEN" ] && die "interim merges are frozen ($ROOT/FROZEN: GitHub re-sync)"
 
 if [ $detach = 1 ]; then
   log=$ROOT/logs/merge-$(printf '%s' "$branch" | tr '/' '_')-$(date -u +%Y%m%dT%H%M%SZ).log
   rest=(); for a in "${args[@]}"; do [ "$a" = --detach ] || rest+=("$a"); done
-  (systemd-run --scope --quiet --unit="luma-interim-merge-$(date +%s)" \
+  (systemd-run --scope --quiet --unit="Suno-interim-merge-$(date +%s)" \
      setsid nohup "$0" "${rest[@]}" > "$log" 2>&1 < /dev/null &) > /dev/null 2>&1
   echo "$log"; exit 0
 fi
@@ -80,7 +80,7 @@ head=$(git rev-parse --verify -q "origin/$branch^{commit}") || die "no branch $b
 git merge-base --is-ancestor "$head" origin/main && die "$branch (${head:0:8}) is already in main"
 title="Merge branch '$branch' into 'main'"
 export GIT_AUTHOR_NAME="$NAME" GIT_COMMITTER_NAME="$NAME" GIT_AUTHOR_EMAIL="$EMAIL" GIT_COMMITTER_EMAIL="$EMAIL"
-podman image exists localhost/luma-interim-ci:2 || nice -n 10 ionice -c3 podman build -q -t localhost/luma-interim-ci:2 -f "$HERE/Containerfile" "$HERE"
+podman image exists localhost/Suno-interim-ci:2 || nice -n 10 ionice -c3 podman build -q -t localhost/Suno-interim-ci:2 -f "$HERE/Containerfile" "$HERE"
 
 merge_onto() { # merge_onto MAIN: the branch merged onto MAIN and its release commit, checked out
   git -c advice.detachedHead=false checkout -q --detach "$1"
@@ -101,14 +101,14 @@ merge_onto() { # merge_onto MAIN: the branch merged onto MAIN and its release co
 cohort=
 cohort_onto() {
   local rel; rel=$(git rev-parse HEAD)
-  [ "$(git log -1 --format=%ae)" = interim-release@luma-build.invalid ] || return 0
-  git diff --name-only HEAD^ HEAD | grep -qE '^(packaging/rpm/(luma-developer-platform|google-figtree-fonts)\.spec|patches/(gtk4|libadwaita)/0000-luma-fedora-spec\.patch)$' || return 0
+  [ "$(git log -1 --format=%ae)" = interim-release@Suno-build.invalid ] || return 0
+  git diff --name-only HEAD^ HEAD | grep -qE '^(packaging/rpm/(Suno-developer-platform|google-figtree-fonts)\.spec|patches/(gtk4|libadwaita)/0000-Suno-fedora-spec\.patch)$' || return 0
   if [ -n "$cohort" ] && python3 -B -c 'import sys; sys.path.insert(0, "scripts/os/lib"); import package_releases as pr
 sys.exit(1 if any(pr.toolkit_differences(".", sys.argv[1], {})) else 0)' "$cohort"; then
     say "toolkit sources unchanged since cohort ${cohort:0:8}; keeping it"
   else
     cohort=$rel
-    LUMA_INTERIM_MERGE= git push -q -f origin "$rel:refs/interim/cohort/$branch"
+    SUNO_INTERIM_MERGE= git push -q -f origin "$rel:refs/interim/cohort/$branch"
     if [ -f "$ART/$rel/ci.json" ]; then
       say "toolkit cohort run for ${rel:0:8} exists; using it"
     else
@@ -120,8 +120,8 @@ sys.exit(1 if any(pr.toolkit_differences(".", sys.argv[1], {})) else 0)' "$cohor
   [ $arm_later = 1 ] && flags+=(--partial)
   python3 -I "$HERE/ci.py" cohort-pin "${flags[@]}" > "$W/cohort.log" 2>&1 \
     || { cat "$W/cohort.log"; tail -20 "$W/toolkit.log" 2>/dev/null; die "toolkit cohort ${cohort:0:8} not pinnable (aarch64: tools/interim/ci-arm.sh ${cohort:0:12}, or pass --arm-later)"; }
-  GIT_AUTHOR_NAME="Luma interim release" GIT_AUTHOR_EMAIL=interim-release@luma-build.invalid \
-  GIT_COMMITTER_NAME="Luma interim release" GIT_COMMITTER_EMAIL=interim-release@luma-build.invalid \
+  GIT_AUTHOR_NAME="Suno interim release" GIT_AUTHOR_EMAIL=interim-release@Suno-build.invalid \
+  GIT_COMMITTER_NAME="Suno interim release" GIT_COMMITTER_EMAIL=interim-release@Suno-build.invalid \
     git commit -q -a -m "ci: admit the interim toolkit cohort (${cohort:0:12})" \
       -m "Release-through: $(git log -1 --format=%B "$rel" | sed -n 's/^Release-through: //p')"
   say "toolkit cohort ${cohort:0:8} pinned: $(cat "$W/cohort.log")"
@@ -129,7 +129,7 @@ sys.exit(1 if any(pr.toolkit_differences(".", sys.argv[1], {})) else 0)' "$cohor
 
 merge_of() { # merge_of COMMIT: the merge commit (COMMIT, or the merge under its release and cohort commits)
   local c; c=$(git rev-parse "$1")
-  while [ "$(git log -1 --format=%ae "$c")" = interim-release@luma-build.invalid ]; do c=$(git rev-parse "$c^1"); done
+  while [ "$(git log -1 --format=%ae "$c")" = interim-release@Suno-build.invalid ]; do c=$(git rev-parse "$c^1"); done
   echo "$c"
 }
 
@@ -137,13 +137,13 @@ rules() { # rules BASE MERGE: rules 1-3 in the pinned Fedora image the Source ch
   local base=$1 merge=$2 toolkit=0 changed
   local change; change=$(merge_of "$merge")
   changed=$(git diff --name-only "$base" "$merge")
-  grep -qE '^(scripts/os/admit-desktop-toolkit.py|config/os/desktop-toolkit-cohort.json|scripts/os/lib/package_releases.py|config/os/desktop-toolkit-provider-driver-equivalence.json|scripts/os/build-desktop-toolkit.sh|scripts/packages/build-(gtk4|libadwaita|luma-developer-platform|figtree-fonts).sh|patches/(gtk4|libadwaita)/|src/luma-platform/|packaging/rpm/(luma-developer-platform|google-figtree-fonts).spec)' <<< "$changed" && toolkit=1
-  grep -qE '^(GTK4|LIBADWAITA|FIGTREE|LUMA_DEVELOPER_PLATFORM)_' <(git diff "$base" "$merge" -- config/desktop/inputs.env | sed -n 's/^[-+]//p') && toolkit=1
+  grep -qE '^(scripts/os/admit-desktop-toolkit.py|config/os/desktop-toolkit-cohort.json|scripts/os/lib/package_releases.py|config/os/desktop-toolkit-provider-driver-equivalence.json|scripts/os/build-desktop-toolkit.sh|scripts/packages/build-(gtk4|libadwaita|Suno-developer-platform|figtree-fonts).sh|patches/(gtk4|libadwaita)/|src/Suno-platform/|packaging/rpm/(Suno-developer-platform|google-figtree-fonts).spec)' <<< "$changed" && toolkit=1
+  grep -qE '^(GTK4|LIBADWAITA|FIGTREE|SUNO_DEVELOPER_PLATFORM)_' <(git diff "$base" "$merge" -- config/desktop/inputs.env | sed -n 's/^[-+]//p') && toolkit=1
   podman run --rm --security-opt label=disable --pull=never -v "$W:$W" -w "$W/src" \
     -v "$HERE/gh:/opt/interim-gh/gh:ro" -v "$HERE/sync-noop:/opt/interim-gh/sync:ro" -v "$ROOT/cache/gh:/opt/interim-gh/cache:ro" \
-    -v "$ART:/opt/interim-artifacts:ro" -e LUMA_INTERIM_TOOLKIT=/opt/interim-artifacts \
-    -e LUMA_INTERIM_GH_CACHE=/opt/interim-gh/cache -e PATH=/opt/interim-gh:/usr/bin:/bin -e TOOLKIT=$toolkit \
-    -e BASE="$base" -e HEAD_REV="$change" localhost/luma-interim-ci:2 bash -c '
+    -v "$ART:/opt/interim-artifacts:ro" -e SUNO_INTERIM_TOOLKIT=/opt/interim-artifacts \
+    -e SUNO_INTERIM_GH_CACHE=/opt/interim-gh/cache -e PATH=/opt/interim-gh:/usr/bin:/bin -e TOOLKIT=$toolkit \
+    -e BASE="$base" -e HEAD_REV="$change" localhost/Suno-interim-ci:2 bash -c '
       set -uo pipefail; git config --global --add safe.directory "*"; fail=0
       step() { echo "== $1"; shift; if "$@"; then echo "PASS rule"; else echo "FAIL rule"; fail=1; fi; }
       if [ -f scripts/os/release-at-merge.py ]; then
@@ -176,7 +176,7 @@ verdict() { # verdict MERGE: refuse unless CI allows main to move; sets owed
   case "$status" in
     pass) ;;
     pending)
-      [ "$x86_owed" = 0 ] || die "CI pending on luma-build jobs: $owed"
+      [ "$x86_owed" = 0 ] || die "CI pending on Suno-build jobs: $owed"
       [ $checks_only = 1 ] && { say "CHECKS-ONLY: ${1:0:8} checks and x86_64 package builds (with %check) pass; aarch64 owed: $owed; main not moved"; exit 0; }
       [ $arm_later = 1 ] || die "aarch64 jobs owed ($owed). Run tools/interim/ci-arm.sh ${1:0:12} on the Mac, then merge-branch.sh --resume ${1:0:12} $branch; or pass --arm-later" ;;
     *) die "CI $status for ${1:0:8} (record: $ART/$1/ci.json)" ;;
@@ -206,7 +206,7 @@ while :; do
   fi
   say "main ${base:0:8}, $branch ${head:0:8}, merge commit ${merge:0:8}$([ "$(merge_of "$merge")" = "$merge" ] || echo " (release commit over $(git rev-parse --short=8 "$(merge_of "$merge")"))") ($(git diff --name-only "$base" "$merge" | wc -l) files)"
   rules "$base" "$merge"
-  LUMA_INTERIM_MERGE= git push -q -f origin "$merge:refs/interim/merge/$branch"
+  SUNO_INTERIM_MERGE= git push -q -f origin "$merge:refs/interim/merge/$branch"
   # checks (--checks-only) also builds the touched packages on x86_64, so their %check runs
   # before the merge; only main stays put.
   ciargs=(--commit "$merge" --base "$base"); [ $full = 1 ] && ciargs+=(--full)
@@ -228,7 +228,7 @@ while :; do
   first=$merge base=$now
 done
 # Move main (the repo's hook accepts only this path, and only fast-forward).
-LUMA_INTERIM_MERGE=1 git push -q origin "$merge:refs/heads/main" || die "main push refused"
+SUNO_INTERIM_MERGE=1 git push -q origin "$merge:refs/heads/main" || die "main push refused"
 printf '%s\t%s\t%s\t%s\t%s\t%s\n' "$(date -u +%FT%TZ)" "$merge" "$branch" "$head" "${pr:--}" "${owed:-none}" >> "$ROOT/merged.tsv"
 # Keep the server tools checkout on main.
 [ -d "$ROOT/tools/.git" ] && git -C "$ROOT/tools" pull -q --ff-only origin main || true

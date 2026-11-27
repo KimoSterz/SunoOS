@@ -10,7 +10,7 @@
 # gstreamer1-plugins-base-devel, cairo-devel and Xwayland; no GPU, display
 # server or logind session.
 #
-#   run.sh OUTDIR [luma|stock]
+#   run.sh OUTDIR [Suno|stock]
 #
 # "stock" expects a Mutter whose window streams crop to the whole buffer.
 # Per window the capture writes NAME-buffer.png (the buffer) and
@@ -20,7 +20,7 @@ set -euo pipefail
 
 here=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 out=$1
-expect=${2:-luma}
+expect=${2:-Suno}
 mkdir -p "$out/build" "$out/runtime" "$out/config/glib-2.0/settings" "$out/data"
 chmod 0700 "$out/runtime"
 rm -f "$out"/*.png "$out"/*.log "$out"/*.stop "$out/result.json"
@@ -47,15 +47,15 @@ env -u DISPLAY -u WAYLAND_DISPLAY \
   XDG_RUNTIME_DIR="$out/runtime" XDG_CONFIG_HOME="$out/config" \
   XDG_DATA_HOME="$out/data" GSETTINGS_BACKEND=keyfile LIBGL_ALWAYS_SOFTWARE=1 \
   GTK_A11Y=none NO_AT_BRIDGE=1 \
-  LUMA_CAST_OUT="$out" LUMA_CAST_HERE="$here" \
-  LUMA_CAST_CAPTURE="$out/build/capture" LUMA_CAST_EXPECT="$expect" \
+  SUNO_CAST_OUT="$out" SUNO_CAST_HERE="$here" \
+  SUNO_CAST_CAPTURE="$out/build/capture" SUNO_CAST_EXPECT="$expect" \
   dbus-run-session -- sh -c '
-    pipewire >"$LUMA_CAST_OUT/pipewire.log" 2>&1 &
+    pipewire >"$SUNO_CAST_OUT/pipewire.log" 2>&1 &
     sleep 1
-    wireplumber >"$LUMA_CAST_OUT/wireplumber.log" 2>&1 &
+    wireplumber >"$SUNO_CAST_OUT/wireplumber.log" 2>&1 &
     sleep 1
     exec timeout 900 gnome-shell --headless --virtual-monitor 2880x1620 \
-      --automation-script="$LUMA_CAST_HERE/driver.js"' \
+      --automation-script="$SUNO_CAST_HERE/driver.js"' \
   >"$out/shell.log" 2>&1 || status=$?
 
 python3 - "$out/result.json" "$status" <<'PY'

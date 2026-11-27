@@ -1,5 +1,5 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Project Luma <engineering@projectluma.org>
+From: Project Suno <engineering@projectSuno.org>
 Date: Sat, 21 Nov 2026 13:00:00 -0500
 Subject: [PATCH] Layer-shell surfaces in the Shell
 
@@ -9,13 +9,13 @@ everything the Shell draws. While the screen shield is up every layer
 surface is hidden.
 
 Grants for the four layer-shell capabilities are read from the permission
-store (table luma, entry display-over-apps) before any app connects,
+store (table Suno, entry display-over-apps) before any app connects,
 handed to Mutter and followed as they change. A surface Mutter fades for
 covering too much of its output gets a name tag the Shell draws: the app's
-icon and name in a pill just outside its top-left corner, in the LumaUI
+icon and name in a pill just outside its top-left corner, in the SunoUI
 overlay colour.
 
-org.projectluma.LayerShell1 at /org/projectluma/LayerShell reports the
+org.projectSuno.LayerShell1 at /org/projectSuno/LayerShell reports the
 surfaces on screen, the apps showing overlays or faded, each app's grants,
 use and offers, signals clamps and use, and sets a capability or stops an
 app's overlays. The status indicator and the offer here are unstyled
@@ -23,27 +23,27 @@ placeholders built on it.
 ---
  js/js-resources.gresource.xml |   3 +
  js/ui/layout.js               |  10 +
- js/ui/lumaLayerShell.js       | 421 ++++++++++++++++++++++++++++++++++
- js/ui/lumaLayerShellModel.js  | 145 ++++++++++++
+ js/ui/SunoLayerShell.js       | 421 ++++++++++++++++++++++++++++++++++
+ js/ui/SunoLayerShellModel.js  | 145 ++++++++++++
  js/ui/main.js                 |   3 +
  5 files changed, 582 insertions(+)
- create mode 100644 js/ui/lumaLayerShell.js
- create mode 100644 js/ui/lumaLayerShellModel.js
+ create mode 100644 js/ui/SunoLayerShell.js
+ create mode 100644 js/ui/SunoLayerShellModel.js
 
 diff --git a/js/js-resources.gresource.xml b/js/js-resources.gresource.xml
 index 7b99618..dd70305 100644
 --- a/js/js-resources.gresource.xml
 +++ b/js/js-resources.gresource.xml
 @@ -98,6 +98,9 @@
-     <file>ui/lumaFocusVisible.js</file>
-     <file>ui/lumaWell.js</file>
-     <file>ui/lumaWellModel.js</file>
-+    <file>ui/lumaLayerShell.js</file>
-+    <file>ui/lumaLayerShellModel.js</file>
-+    <file>ui/lumaLayerShellTokens.js</file>
-     <file>ui/lumaDockBadgeModel.js</file>
-     <file>ui/lumaDockBadges.js</file>
-     <file>ui/lumaDockFolders.js</file>
+     <file>ui/SunoFocusVisible.js</file>
+     <file>ui/SunoWell.js</file>
+     <file>ui/SunoWellModel.js</file>
++    <file>ui/SunoLayerShell.js</file>
++    <file>ui/SunoLayerShellModel.js</file>
++    <file>ui/SunoLayerShellTokens.js</file>
+     <file>ui/SunoDockBadgeModel.js</file>
+     <file>ui/SunoDockBadges.js</file>
+     <file>ui/SunoDockFolders.js</file>
 diff --git a/js/ui/layout.js b/js/ui/layout.js
 index 71d4978..362912a 100644
 --- a/js/ui/layout.js
@@ -53,7 +53,7 @@ index 71d4978..362912a 100644
          global.stage.remove_child(global.window_group);
          this.uiGroup.add_child(global.window_group);
 +
-+        // Layer-shell overlay surfaces (lumaLayerShell.js) go right above the
++        // Layer-shell overlay surfaces (SunoLayerShell.js) go right above the
 +        // windows, full-screen ones included. Everything the Shell draws --
 +        // its panel and shelf, notifications, Quick Options, on-screen
 +        // displays, dialogs, the lock screen -- is added after and stays above.
@@ -79,11 +79,11 @@ index 71d4978..362912a 100644
  
          this._trackedActors.forEach(this._updateActorVisibility.bind(this));
      }
-diff --git a/js/ui/lumaLayerShell.js b/js/ui/lumaLayerShell.js
+diff --git a/js/ui/SunoLayerShell.js b/js/ui/SunoLayerShell.js
 new file mode 100644
 index 0000000..5e779d6
 --- /dev/null
-+++ b/js/ui/lumaLayerShell.js
++++ b/js/ui/SunoLayerShell.js
 @@ -0,0 +1,421 @@
 +// SPDX-License-Identifier: GPL-2.0-or-later
 +// Layer-shell surfaces (wlr-layer-shell, Mutter 0043-0045) in the Shell.
@@ -93,13 +93,13 @@ index 0000000..5e779d6
 +//   everything the Shell draws.
 +// - While the screen shield is up every layer surface is hidden: not shown,
 +//   no input, never the keyboard.
-+// - What each app may do is four capabilities (lumaLayerShellModel.js), read
++// - What each app may do is four capabilities (SunoLayerShellModel.js), read
 +//   from the permission store, handed to Mutter and followed as they change.
 +// - A surface Mutter fades for covering too much of its output gets a name
 +//   tag the Shell draws: the app's icon and name in a pill just outside its
 +//   top-left corner (design-center 858103d, mockups/overlay-perms/faded.html).
-+// - org.projectluma.LayerShell1 (IFACE) on the Shell's session bus name,
-+//   object /org/projectluma/LayerShell, carries the rest for the status
++// - org.projectSuno.LayerShell1 (IFACE) on the Shell's session bus name,
++//   object /org/projectSuno/LayerShell, carries the rest for the status
 +//   indicator, the offer and Settings. The indicator and the offer here are
 +//   unstyled placeholders built on it, for tests until their design lands.
 +import Clutter from 'gi://Clutter';
@@ -111,13 +111,13 @@ index 0000000..5e779d6
 +
 +import * as Main from './main.js';
 +import * as MessageTray from './messageTray.js';
-+import * as Model from './lumaLayerShellModel.js';
-+import {OVERLAY} from './lumaLayerShellTokens.js';
++import * as Model from './SunoLayerShellModel.js';
++import {OVERLAY} from './SunoLayerShellTokens.js';
 +
 +const IFACE = `<node>
 +  <!-- Capabilities are bits: 1 background, 2 panel, 4 overlay, 8 keyboard.
 +       Layers: 0 background, 1 bottom, 2 top, 3 overlay. -->
-+  <interface name="org.projectluma.LayerShell1">
++  <interface name="org.projectSuno.LayerShell1">
 +    <!-- Every app layer surface on screen or held back by its grants:
 +         (app ID, namespace, layer, capabilities it is using, faded by the
 +         40% limit, held waiting for a grant, mapped since: Unix seconds). -->
@@ -196,7 +196,7 @@ index 0000000..5e779d6
 +    _init(appId) {
 +        const {name, gicon} = appInfo(appId);
 +        super._init({
-+            name: 'lumaLayerNameTag',
++            name: 'SunoLayerNameTag',
 +            height: TAG_HEIGHT,
 +            style: `spacing: 7px; padding: 0 10px 0 5px; border-radius: 13px;
 +                background-color: rgba(18, 19, 22, 0.86);
@@ -233,7 +233,7 @@ index 0000000..5e779d6
 +class OverlayIndicator extends St.BoxLayout {
 +    _init(onStop) {
 +        super._init({
-+            name: 'lumaLayerOverlayIndicator',
++            name: 'SunoLayerOverlayIndicator',
 +            reactive: true,
 +            style: 'spacing: 6px; padding: 6px; background-color: rgba(0, 0, 0, 0.6);',
 +        });
@@ -295,7 +295,7 @@ index 0000000..5e779d6
 +            () => this._onSurfacesChanged());
 +
 +        this._dbus = Gio.DBusExportedObject.wrapJSObject(IFACE, this);
-+        this._dbus.export(Gio.DBus.session, '/org/projectluma/LayerShell');
++        this._dbus.export(Gio.DBus.session, '/org/projectSuno/LayerShell');
 +
 +        Gio.DBus.session.signal_subscribe(STORE_NAME,
 +            STORE_IFACE, 'Changed', STORE_PATH, null, Gio.DBusSignalFlags.NONE,
@@ -317,7 +317,7 @@ index 0000000..5e779d6
 +        this._syncHidden();
 +    }
 +
-+    // org.projectluma.LayerShell1
++    // org.projectSuno.LayerShell1
 +
 +    get Surfaces() {
 +        return this._compositor.get_layer_shell_surfaces().deepUnpack();
@@ -506,11 +506,11 @@ index 0000000..5e779d6
 +        logError(e, 'Failed to set up layer-shell surfaces');
 +    }
 +}
-diff --git a/js/ui/lumaLayerShellModel.js b/js/ui/lumaLayerShellModel.js
+diff --git a/js/ui/SunoLayerShellModel.js b/js/ui/SunoLayerShellModel.js
 new file mode 100644
 index 0000000..378ff13
 --- /dev/null
-+++ b/js/ui/lumaLayerShellModel.js
++++ b/js/ui/SunoLayerShellModel.js
 @@ -0,0 +1,145 @@
 +// SPDX-License-Identifier: GPL-2.0-or-later
 +// What apps may do with the layer shell (bars, launchers, overlays), without
@@ -533,7 +533,7 @@ index 0000000..378ff13
 +// capability. Settings shows and switches the
 +// same rows (gnome-control-center 0109).
 +
-+export const TABLE = 'luma';
++export const TABLE = 'Suno';
 +export const ID = 'display-over-apps';
 +
 +// The same bits as Meta.LayerShellCapabilities.
@@ -628,7 +628,7 @@ index 0000000..378ff13
 +        !rowOf(permissions).includes(`asked-${NAMES[cap]}`);
 +}
 +
-+// What D-Bus (org.projectluma.LayerShell1.Apps) says about one row.
++// What D-Bus (org.projectSuno.LayerShell1.Apps) says about one row.
 +export function describe(permissions) {
 +    const {granted, refused} = grantsFor(permissions);
 +    let used = 0;
@@ -661,11 +661,11 @@ diff --git a/js/ui/main.js b/js/ui/main.js
 index 79f9fd1..cce73fb 100644
 --- a/js/ui/main.js
 +++ b/js/ui/main.js
-@@ -40,6 +40,7 @@ import * as LumaWindowWatch from './lumaWindowWatch.js';
- import * as LumaSession from './lumaSession.js';
- import * as LumaShare from './lumaShare.js';
- import * as LumaAppPermissions from './lumaAppPermissions.js';
-+import * as LumaLayerShell from './lumaLayerShell.js';
+@@ -40,6 +40,7 @@ import * as SunoWindowWatch from './SunoWindowWatch.js';
+ import * as SunoSession from './SunoSession.js';
+ import * as SunoShare from './SunoShare.js';
+ import * as SunoAppPermissions from './SunoAppPermissions.js';
++import * as SunoLayerShell from './SunoLayerShell.js';
  import * as NotificationDaemon from './notificationDaemon.js';
  import * as WindowAttentionHandler from './windowAttentionHandler.js';
  import * as Screenshot from './screenshot.js';
@@ -674,7 +674,7 @@ index 79f9fd1..cce73fb 100644
  
      layoutManager.init();
 +    if (!sessionMode.isGreeter)
-+        LumaLayerShell.init();
++        SunoLayerShell.init();
      overview.init();
      // The Shelf adopts the overview's Dash, so it exists only in sessions that
      // have an overview. Initial setup has none: building the Shelf there threw

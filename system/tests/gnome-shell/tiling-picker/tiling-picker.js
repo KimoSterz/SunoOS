@@ -37,7 +37,7 @@ function panelColour(actor) {
         if (typeof a.get_theme_node !== 'function' || !a.get_stage())
             continue;
         const bg = a.get_theme_node().get_background_color();
-        if (bg.alpha > 200 || a.has_style_class_name?.('luma-quick-options') || a.has_style_class_name?.('popup-menu-content'))
+        if (bg.alpha > 200 || a.has_style_class_name?.('Suno-quick-options') || a.has_style_class_name?.('popup-menu-content'))
             return {colour: over(bg, BACKDROP), owner: a.style_class};
     }
     return {colour: BACKDROP, owner: 'wallpaper'};
@@ -45,7 +45,7 @@ function panelColour(actor) {
 
 async function setMode(mode) {
     new Gio.Settings({schema_id: 'org.gnome.desktop.interface'}).set_string('color-scheme', mode === 'dark' ? 'prefer-dark' : 'default');
-    new Gio.Settings({schema_id: 'org.project_luma.shell-state'}).set_string('surface-treatment', mode);
+    new Gio.Settings({schema_id: 'org.projectSuno.shell-state'}).set_string('surface-treatment', mode);
     await sleep(2500);
 }
 
@@ -71,9 +71,9 @@ async function work() {
         await sleep(1200);
         tiling.menu.open();
         await sleep(1500);
-        const previews = descend(tiling.menu.actor ?? tiling.menu.box).filter(a => a.has_style_class_name?.('luma-tiling-preview'));
+        const previews = descend(tiling.menu.actor ?? tiling.menu.box).filter(a => a.has_style_class_name?.('Suno-tiling-preview'));
         const shown = previews.filter(p => p.get_stage() && p.mapped && p.visible && p.width > 10 && p.height > 10);
-        const labels = descend(tiling.menu.actor ?? tiling.menu.box).filter(a => a.has_style_class_name?.('luma-tiling-display-name'));
+        const labels = descend(tiling.menu.actor ?? tiling.menu.box).filter(a => a.has_style_class_name?.('Suno-tiling-display-name'));
         check(`${mode}: the bounded layout gallery is on the stage`, previews.length > 0 && previews.length <= 6 && shown.length === previews.length,
             `${shown.length}/${previews.length} shown under ${labels.length} display headings`);
         if (!shown.length) { tiling.menu.close(); quick.menu.close(); continue; }
@@ -83,7 +83,7 @@ async function work() {
         const {colour: panel, owner} = panelColour(first);
         let worst = Infinity, worstDetail = '';
         for (const p of shown) {
-            const tile = descend(p).find(a => a.has_style_class_name?.('luma-tiling-preview-tile'));
+            const tile = descend(p).find(a => a.has_style_class_name?.('Suno-tiling-preview-tile'));
             if (!tile) { worst = 0; worstDetail = 'no tiles'; break; }
             const node = tile.get_theme_node();
             const edge = over(node.get_border_color(0), panel);

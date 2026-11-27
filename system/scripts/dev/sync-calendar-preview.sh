@@ -27,7 +27,7 @@ preview_root="$repo_root/build/dev/calendar-preview"
 source_root="$preview_root/builds/gnome-calendar/sources/gnome-calendar"
 build_root="$preview_root/builds/gnome-calendar/build"
 stage_root="$preview_root/builds/stage"
-guest_prefix=/var/home/luma/.local/share/project-luma/calendar-preview/runtime
+guest_prefix=/var/home/Suno/.local/share/project-suno/calendar-preview/runtime
 mkdir -p "$preview_root"
 sync_root=$(mktemp -d "$preview_root/sync.XXXXXX")
 
@@ -60,8 +60,8 @@ mv "$sync_root/gnome-calendar-50.0" "$sync_root/gnome-calendar"
 (
   cd "$sync_root/gnome-calendar"
   export GIT_CEILING_DIRECTORIES="$preview_root"
-  git apply "$repo_root/patches/gnome-calendar/0001-luma-calendar-aesthetic-v1.patch"
-  git apply "$repo_root/patches/gnome-calendar/0002-luma-title-label-metrics.patch"
+  git apply "$repo_root/patches/gnome-calendar/0001-Suno-calendar-aesthetic-v1.patch"
+  git apply "$repo_root/patches/gnome-calendar/0002-Suno-title-label-metrics.patch"
 )
 
 # Preserve Meson's dependency graph. Fresh SRPM extraction changes every mtime,
@@ -91,7 +91,7 @@ fi
 
 # Blueprint batch compilation is exposed to Ninja as directory outputs. Track
 # source content and touch only resource manifests when the templates change.
-blueprint_stamp=builds/gnome-calendar/build/.luma-blueprints.sha256
+blueprint_stamp=builds/gnome-calendar/build/.Suno-blueprints.sha256
 blueprint_checksum=$(
   find builds/gnome-calendar/sources/gnome-calendar/src -type f -name "*.blp" -print0 |
     sort -z |

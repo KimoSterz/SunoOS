@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # SPDX-License-Identifier: Apache-2.0
 """TV Settings' backends: the shell-state keys it writes, the shell piece that applies Screen
-edges, and LumaUI's idle hook following the idle delay."""
+edges, and SunoUI's idle hook following the idle delay."""
 
 from __future__ import annotations
 
@@ -14,10 +14,10 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-SCHEMA = REPO_ROOT / "src/luma-shell-state/org.project_luma.shell-state.gschema.xml"
-EDGES = REPO_ROOT / "src/luma-shell-presentation/tvScreenEdges.js"
-TV = REPO_ROOT / "src/luma-shell-presentation/tv.js"
-SPEC = (REPO_ROOT / "patches/gnome-shell/0000-luma-fedora-spec.patch").read_text()
+SCHEMA = REPO_ROOT / "src/Suno-shell-state/org.projectSuno.shell-state.gschema.xml"
+EDGES = REPO_ROOT / "src/Suno-shell-presentation/tvScreenEdges.js"
+TV = REPO_ROOT / "src/Suno-shell-presentation/tv.js"
+SPEC = (REPO_ROOT / "patches/gnome-shell/0000-Suno-fedora-spec.patch").read_text()
 BUILD = (REPO_ROOT / "scripts/packages/build-gnome-shell.sh").read_text()
 PATCH = (REPO_ROOT / "patches/gnome-shell/0326-tv-screen-edges.patch").read_text()
 
@@ -52,9 +52,9 @@ class SchemaKeys(unittest.TestCase):
 
 class ScreenEdges(unittest.TestCase):
     def test_shell_piece_is_registered(self):
-        self.assertIn("<file>ui/lumaPresentation/tvScreenEdges.js</file>", PATCH)
+        self.assertIn("<file>ui/SunoPresentation/tvScreenEdges.js</file>", PATCH)
         self.assertIn("0326-tv-screen-edges.patch", SPEC)
-        self.assertIn("cp %{SOURCE9048} js/ui/lumaPresentation/tvScreenEdges.js", SPEC)
+        self.assertIn("cp %{SOURCE9048} js/ui/SunoPresentation/tvScreenEdges.js", SPEC)
         self.assertIn("tvScreenEdges.js", BUILD)
         self.assertIn("0326-tv-screen-edges.patch", BUILD)
 
@@ -76,7 +76,7 @@ class ScreenEdges(unittest.TestCase):
 
 class IdleHook(unittest.TestCase):
     def test_tv_idle_reads_the_key(self):
-        text = (REPO_ROOT / "src/luma-platform/appkit/luma_appkit/tv_idle.py").read_text()
+        text = (REPO_ROOT / "src/Suno-platform/appkit/Suno_appkit/tv_idle.py").read_text()
         self.assertIn('get_int("tv-idle-delay")', text)
         self.assertIn('changed::tv-idle-delay', text)
         self.assertRegex(text, r"delay <= 0")

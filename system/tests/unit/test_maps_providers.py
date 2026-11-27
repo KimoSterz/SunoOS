@@ -9,16 +9,16 @@ from urllib.parse import urlsplit
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT / "src/luma-maps"))
+sys.path.insert(0, str(ROOT / "src/Suno-maps"))
 
-from luma_maps.providers import load  # noqa: E402
+from Suno_maps.providers import load  # noqa: E402
 
 
 class MapsProviderTests(unittest.TestCase):
     def test_shipped_raster_tile_url_contains_tile_coordinates(self):
         with tempfile.TemporaryDirectory() as config_home, \
                 patch.dict("os.environ", {"XDG_CONFIG_HOME": config_home,
-                                          "LUMA_MAPS_PROVIDERS": str(ROOT / "src/luma-maps/data/providers.toml")}):
+                                          "SUNO_MAPS_PROVIDERS": str(ROOT / "src/Suno-maps/data/providers.toml")}):
             provider = load().tile("osm-mapnik")
         self.assertIsNotNone(provider)
         template = provider.url_template

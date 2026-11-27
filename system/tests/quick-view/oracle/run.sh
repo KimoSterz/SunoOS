@@ -1,7 +1,7 @@
 #!/bin/bash
 # SPDX-License-Identifier: GPL-2.0-or-later
-# Quick View oracle, inside a Fedora 44 container with the Luma Shell, Mutter,
-# GTK 3, Filer, luma-shell-state and the candidate luma-quick-view installed.
+# Quick View oracle, inside a Fedora 44 container with the Suno Shell, Mutter,
+# GTK 3, Filer, Suno-shell-state and the candidate Suno-quick-view installed.
 #   QV_LAYOUT=desk|stacked|hidpi QV_THEME=light|dark QV_OUT=/path run.sh
 set -u
 here=$(cd "$(dirname "$0")" && pwd)
@@ -24,8 +24,8 @@ export HOME=/tmp/$tag-home; rm -rf "$HOME"; mkdir -p "$HOME/.config/glib-2.0/set
 export QV_OUT=${QV_OUT:-$here/out/$tag} QV_FIXTURES=$HOME/Quick\ View QV_LAYOUT=$layout QV_THEME=$theme
 find "$QV_OUT" -mindepth 1 -delete 2>/dev/null; mkdir -p "$QV_OUT"
 python3 "$here/fixtures.py" "$QV_FIXTURES"
-scheme=default gtk=Luma
-[ "$theme" = dark ] && scheme=prefer-dark gtk=Luma-dark
+scheme=default gtk=Suno
+[ "$theme" = dark ] && scheme=prefer-dark gtk=Suno-dark
 cat > "$HOME/.config/glib-2.0/settings/keyfile" <<KEY
 [org/gnome/desktop/interface]
 color-scheme='$scheme'
@@ -43,7 +43,7 @@ case $layout in
   hidpi) monitors="--virtual-monitor 2880x1800 --virtual-monitor 1920x1080" ;;
   *) monitors="--virtual-monitor 5120x1440 --virtual-monitor 1920x1200" ;;
 esac
-export GSETTINGS_BACKEND=keyfile LIBGL_ALWAYS_SOFTWARE=1 LUMA_MUTTER_ALLOW_SOFTWARE_BLUR=1 NO_AT_BRIDGE=1
+export GSETTINGS_BACKEND=keyfile LIBGL_ALWAYS_SOFTWARE=1 SUNO_MUTTER_ALLOW_SOFTWARE_BLUR=1 NO_AT_BRIDGE=1
 timeout ${QV_TIMEOUT:-900} dbus-run-session -- gnome-shell --headless --no-x11 $monitors \
   --automation-script="$here/probe.js" > "$QV_OUT/shell.log" 2>&1
 echo "exit $?"

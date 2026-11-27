@@ -1,8 +1,8 @@
-From: Project Luma <builds@project-luma.local>
+From: Project Suno <builds@project-suno.local>
 Subject: [PATCH] status/volume: per-app mixer in the Sound output page
 
 The Sound output page lists, under the outputs, System sounds and every
-app with a sound stream, from org.projectluma.AudioDevices1 version 2
+app with a sound stream, from org.projectSuno.AudioDevices1 version 2
 (GetApplications, ApplicationsChanged). Each app is the volume level
 itself (the shared filled slider) with the app's icon and name on the
 track, a live meter along its foot, a mute key and an output key; the
@@ -15,7 +15,7 @@ shared with the TV quick panel. Views hold() it while on screen. Meters
 are watched (WatchLevels) only while the Sound output page is mapped and
 unwatched when it leaves the screen, so a closed panel runs no monitor
 stream. The service's level probes record as
-org.projectluma.AudioDevices; like pavucontrol they are not an app
+org.projectSuno.AudioDevices; like pavucontrol they are not an app
 using the microphone, so the input indicator, the microphone strip and
 the status well skip them. Output choices are named as the device list
 names them (port and card from Gvc).
@@ -58,14 +58,14 @@ index 17db40a..1138f79 100644
          this._pageHost.add_child(this._pageScroll);
 +        // A page's settings link stays under the scrolled list, never in it,
 +        // so a long page never cuts it at the surface's edge.
-+        this._pageFoot = new St.BoxLayout({style_class: 'luma-options-page-foot luma-options-detail',
++        this._pageFoot = new St.BoxLayout({style_class: 'Suno-options-page-foot Suno-options-detail',
 +            orientation: Clutter.Orientation.VERTICAL, x_expand: true, visible: false});
 +        this._pageHost.add_child(this._pageFoot);
          this.box.add_child(this._pageHost);
          global.stage.connectObject('notify::key-focus', () => {
              const focus = global.stage.key_focus;
 @@ -1568,7 +1573,7 @@ export const QuickSettingsMenu = class extends PopupMenu.PopupMenu {
-             micIcon.icon_name = muted ? 'luma-mic-off-symbolic' : 'luma-mic-symbolic';
+             micIcon.icon_name = muted ? 'Suno-mic-off-symbolic' : 'Suno-mic-symbolic';
              micTitle.text = muted ? _('Microphone muted') : _('Microphone in use');
              mute.label = muted ? _('Unmute') : _('Mute');
 -            const apps = input._control?.get_source_outputs?.() ?? [];
@@ -74,7 +74,7 @@ index 17db40a..1138f79 100644
              micApp.visible = !!micApp.text;
          };
 @@ -1621,13 +1626,17 @@ export const QuickSettingsMenu = class extends PopupMenu.PopupMenu {
-                 this.box.remove_style_class_name('lumaui-mode-detail');
+                 this.box.remove_style_class_name('SunoUI-mode-detail');
              this._mainPage?.hide(); this._pageHost.show();
              this._pageScroll.vadjustment.value = 0;
 +            this._pinPageLink(menu);
@@ -88,7 +88,7 @@ index 17db40a..1138f79 100644
 +            const foot = this._pageFoot.visible ? this._pageFoot.get_preferred_height(-1)[1] / scale : 0;
 +            const maxHeight = Math.max(96, Math.min(420, (workArea?.height ?? 600) / scale - 160) - foot);
 +            // A compact (phone) page is the whole drawer, which scrolls itself.
-+            this._pageScroll.set_style(this.box.has_style_class_name('lumaui-compact-options')
++            this._pageScroll.set_style(this.box.has_style_class_name('SunoUI-compact-options')
 +                ? null : `max-height: ${maxHeight}px;`);
              this._pageHeading.text = menu._studioTitle ?? item.title ?? menu._titleLabel.text;
              const radio = menu._studioRadio;
@@ -98,34 +98,34 @@ index 17db40a..1138f79 100644
          } else if (this._activeMenu === menu) {
              this._activeMenu = null;
 +            this._pinPageLink(null);
-             this.box.remove_style_class_name('lumaui-mode-detail');
+             this.box.remove_style_class_name('SunoUI-mode-detail');
              this._pageRadioBinding?.unbind(); this._pageRadioBinding = null;
              this._pageHost.hide(); this._mainPage?.show();
 @@ -1655,6 +1665,24 @@ export const QuickSettingsMenu = class extends PopupMenu.PopupMenu {
          }
      }
  
-+    // The open page's settings link (addSettingsAction's luma-sheet-link)
++    // The open page's settings link (addSettingsAction's Suno-sheet-link)
 +    // moves into the page's foot while it is open, then back to its menu.
 +    _pinPageLink(menu) {
 +        const pinned = this._pageFoot.get_first_child();
 +        if (pinned) {
 +            this._pageFoot.remove_child(pinned);
-+            pinned._lumaPageMenu?.box.add_child(pinned);
-+            delete pinned._lumaPageMenu;
++            pinned._SunoPageMenu?.box.add_child(pinned);
++            delete pinned._SunoPageMenu;
 +        }
-+        const link = menu?.box.get_children().findLast(c => c.has_style_class_name?.('luma-sheet-link') && c.visible);
++        const link = menu?.box.get_children().findLast(c => c.has_style_class_name?.('Suno-sheet-link') && c.visible);
 +        if (link) {
 +            menu.box.remove_child(link);
-+            link._lumaPageMenu = menu;
++            link._SunoPageMenu = menu;
 +            this._pageFoot.add_child(link);
 +        }
 +        this._pageFoot.visible = !!link;
 +    }
 +
-     _updateLumaHeader() {
+     _updateSunoHeader() {
          const now = GLib.DateTime.new_now_local();
-         this._lumaTime.text = now.format(Shell.util_translate_time_string('%A'));
+         this._SunoTime.text = now.format(Shell.util_translate_time_string('%A'));
 diff --git a/js/ui/status/volume.js b/js/ui/status/volume.js
 index 638f2c1..3ffd019 100644
 --- a/js/ui/status/volume.js
@@ -142,7 +142,7 @@ index 638f2c1..3ffd019 100644
  import * as ShellEntry from '../shellEntry.js';
  
  import {QuickSheetRow, QuickSlider, SystemIndicator} from '../quickSettings.js';
-+import {FillSlider} from '../lumaPresentation/fillSlider.js';
++import {FillSlider} from '../SunoPresentation/fillSlider.js';
  
  const ALLOW_AMPLIFIED_VOLUME_KEY = 'allow-volume-above-100-percent';
  const UNMUTE_DEFAULT_VOLUME = 0.25;
@@ -198,11 +198,11 @@ index 638f2c1..3ffd019 100644
 +// The per-app mixer needs interface version 2.
 +const MIXER_VERSION = 2;
 +const SYSTEM_SOUNDS_ID = '@system';
-+const SYSTEM_SOUNDS_ICON = 'lumaui-bell-symbolic';
++const SYSTEM_SOUNDS_ICON = 'SunoUI-bell-symbolic';
 +const MIXER_MAX_VOLUME = 1.5;
 +
 +// Recording streams that only measure levels. They are not an app using the
-+// microphone: GNOME's and PulseAudio's mixers, and the meters of Luma's own
++// microphone: GNOME's and PulseAudio's mixers, and the meters of Suno's own
 +// sound service, which the mixer below opens.
 +const LEVEL_METER_APPLICATION_IDS = [
 +    'org.gnome.VolumeControl',
@@ -241,12 +241,12 @@ index 638f2c1..3ffd019 100644
 +export function outputIconName(output) {
 +    const hint = `${output?.icon ?? ''} ${output?.name ?? ''}`.toLowerCase();
 +    if (/headphone|headset|earbud/.test(hint))
-+        return 'lumaui-headphones-symbolic';
++        return 'SunoUI-headphones-symbolic';
 +    if (/display|hdmi|video|monitor|\btv\b/.test(hint))
-+        return 'lumaui-monitor-symbolic';
++        return 'SunoUI-monitor-symbolic';
 +    if (hint.includes(AIRPLAY_OUTPUT_PREFIX) || /network|raop|tunnel/.test(hint))
 +        return NETWORK_SPEAKER_ICON;
-+    return 'lumaui-speaker-symbolic';
++    return 'SunoUI-speaker-symbolic';
 +}
 +
 +/**
@@ -371,7 +371,7 @@ index 638f2c1..3ffd019 100644
 +                this.outputs = unpackEntries(outputs);
 +            }
 +        } catch (error) {
-+            console.warn(`Luma mixer: ${error.message}`);
++            console.warn(`Suno mixer: ${error.message}`);
 +        }
 +        this.emit('changed');
 +        this._syncLevelWatch();
@@ -447,7 +447,7 @@ index 638f2c1..3ffd019 100644
 +        try {
 +            await this._proxy.SetApplicationVolumeAsync(id, volume);
 +        } catch (error) {
-+            console.warn(`Luma mixer volume: ${error.message}`);
++            console.warn(`Suno mixer volume: ${error.message}`);
 +        } finally {
 +            this._volumeInFlight.delete(id);
 +        }
@@ -456,12 +456,12 @@ index 638f2c1..3ffd019 100644
 +
 +    setMuted(id, muted) {
 +        this._proxy.SetApplicationMuteAsync(id, muted).catch(
-+            error => console.warn(`Luma mixer mute: ${error.message}`));
++            error => console.warn(`Suno mixer mute: ${error.message}`));
 +    }
 +
 +    setOutput(id, name) {
 +        this._proxy.SetApplicationOutputAsync(id, name).catch(
-+            error => console.warn(`Luma mixer output: ${error.message}`));
++            error => console.warn(`Suno mixer output: ${error.message}`));
 +    }
 +
 +    // The service's watch follows the rows: one list, renewed when it changes.
@@ -491,7 +491,7 @@ index 638f2c1..3ffd019 100644
 +        } catch (error) {
 +            if (serial === this._watchSerial)
 +                this._watchedTargets = '';
-+            console.warn(`Luma mixer levels: ${error.message}`);
++            console.warn(`Suno mixer levels: ${error.message}`);
 +        }
 +    }
 +});
@@ -517,7 +517,7 @@ index 638f2c1..3ffd019 100644
 +}, class AppMixerRow extends St.BoxLayout {
 +    _init(mixer, app) {
 +        super._init({
-+            style_class: 'luma-app-mixer-app',
++            style_class: 'Suno-app-mixer-app',
 +            orientation: Clutter.Orientation.VERTICAL,
 +            x_expand: true,
 +            // Said, not inherited: the slider fills its track (y_expand) and
@@ -530,7 +530,7 @@ index 638f2c1..3ffd019 100644
 +        this._app = {};
 +
 +        this.slider = new FillSlider(0);
-+        this.slider.add_style_class_name('lumaui-filled-slider');
++        this.slider.add_style_class_name('SunoUI-filled-slider');
 +        this.slider.y_expand = true;
 +        this.slider.maximum_value = 1;
 +        this._sliderChangedId = this.slider.connect('notify::value',
@@ -550,26 +550,26 @@ index 638f2c1..3ffd019 100644
 +
 +        // The app's own icon, in colour; System sounds' bell is symbolic.
 +        this._icon = new St.Icon({
-+            style_class: 'luma-app-mixer-icon',
++            style_class: 'Suno-app-mixer-icon',
 +            y_align: Clutter.ActorAlign.CENTER,
 +        });
 +        this._name = new St.Label({
-+            style_class: 'luma-app-mixer-name',
++            style_class: 'Suno-app-mixer-name',
 +            y_align: Clutter.ActorAlign.CENTER,
 +        });
 +        this._name.clutter_text.ellipsize = Pango.EllipsizeMode.END;
 +        this._route = new St.Label({
-+            style_class: 'luma-app-mixer-route',
++            style_class: 'Suno-app-mixer-route',
 +            y_align: Clutter.ActorAlign.CENTER,
 +            visible: false,
 +        });
 +        this._route.clutter_text.ellipsize = Pango.EllipsizeMode.END;
 +        this._value = new St.Label({
-+            style_class: 'luma-quick-level-value',
++            style_class: 'Suno-quick-level-value',
 +            y_align: Clutter.ActorAlign.CENTER,
 +        });
 +        const foreground = new St.BoxLayout({
-+            style_class: 'lumaui-level-foreground',
++            style_class: 'SunoUI-level-foreground',
 +            reactive: false,
 +            x_expand: true,
 +            y_expand: true,
@@ -581,7 +581,7 @@ index 638f2c1..3ffd019 100644
 +        foreground.add_child(this._value);
 +
 +        const track = new St.Widget({
-+            style_class: 'lumaui-level-track',
++            style_class: 'SunoUI-level-track',
 +            layout_manager: new Clutter.BinLayout(),
 +            x_expand: true,
 +            y_align: Clutter.ActorAlign.CENTER,
@@ -589,9 +589,9 @@ index 638f2c1..3ffd019 100644
 +        track.add_child(sliderBin);
 +        track.add_child(foreground);
 +
-+        this._muteIcon = new St.Icon({style_class: 'luma-quick-disclosure-icon'});
++        this._muteIcon = new St.Icon({style_class: 'Suno-quick-disclosure-icon'});
 +        this._mute = new St.Button({
-+            style_class: 'luma-options-level-key luma-app-mixer-mute',
++            style_class: 'Suno-options-level-key Suno-app-mixer-mute',
 +            child: this._muteIcon,
 +            can_focus: true,
 +            y_align: Clutter.ActorAlign.CENTER,
@@ -600,16 +600,16 @@ index 638f2c1..3ffd019 100644
 +            () => this._mixer.setMuted(this.id, !this._app.muted));
 +
 +        // The output key is a picker: where it plays and a chevron, on a key.
-+        this._outputIcon = new St.Icon({style_class: 'luma-app-mixer-output-icon'});
++        this._outputIcon = new St.Icon({style_class: 'Suno-app-mixer-output-icon'});
 +        this._outputChevron = new St.Icon({
-+            style_class: 'luma-app-mixer-output-chevron',
-+            icon_name: 'lumaui-chevron-down-symbolic',
++            style_class: 'Suno-app-mixer-output-chevron',
++            icon_name: 'SunoUI-chevron-down-symbolic',
 +        });
-+        const picker = new St.BoxLayout({style_class: 'luma-app-mixer-output-face'});
++        const picker = new St.BoxLayout({style_class: 'Suno-app-mixer-output-face'});
 +        picker.add_child(this._outputIcon);
 +        picker.add_child(this._outputChevron);
 +        this._outputKey = new St.Button({
-+            style_class: 'luma-options-level-key luma-app-mixer-output',
++            style_class: 'Suno-options-level-key Suno-app-mixer-output',
 +            child: picker,
 +            can_focus: true,
 +            y_align: Clutter.ActorAlign.CENTER,
@@ -623,13 +623,13 @@ index 638f2c1..3ffd019 100644
 +        line.add_child(this._outputKey);
 +        // The same classes as the volume level, so the row is that level.
 +        this.add_child(new St.Bin({
-+            style_class: 'luma-options-slider lumaui-filled-level luma-app-mixer-level',
++            style_class: 'Suno-options-slider SunoUI-filled-level Suno-app-mixer-level',
 +            child: line,
 +            x_expand: true,
 +        }));
 +
 +        this._outputs = new St.BoxLayout({
-+            style_class: 'luma-app-mixer-outputs',
++            style_class: 'Suno-app-mixer-outputs',
 +            orientation: Clutter.Orientation.VERTICAL,
 +            visible: false,
 +        });
@@ -643,16 +643,16 @@ index 638f2c1..3ffd019 100644
 +    // Dark ink on the light surfaces, as Quick Options' own levels.
 +    _syncInk() {
 +        let surface = this.get_parent();
-+        while (surface && !surface.has_style_class_name?.('luma-quick-options'))
++        while (surface && !surface.has_style_class_name?.('Suno-quick-options'))
 +            surface = surface.get_parent();
-+        const light = !!surface && (surface.has_style_class_name('luma-surface-light') ||
-+            surface.has_style_class_name('luma-surface-glass'));
-+        if (light === this.slider.has_style_class_name('lumaui-light-level'))
++        const light = !!surface && (surface.has_style_class_name('Suno-surface-light') ||
++            surface.has_style_class_name('Suno-surface-glass'));
++        if (light === this.slider.has_style_class_name('SunoUI-light-level'))
 +            return;
 +        if (light)
-+            this.slider.add_style_class_name('lumaui-light-level');
++            this.slider.add_style_class_name('SunoUI-light-level');
 +        else
-+            this.slider.remove_style_class_name('lumaui-light-level');
++            this.slider.remove_style_class_name('SunoUI-light-level');
 +        this.slider.queue_repaint();
 +    }
 +
@@ -670,18 +670,18 @@ index 638f2c1..3ffd019 100644
 +            this.slider.unblock_signal_handler(this._sliderChangedId);
 +        }
 +        if (app.muted)
-+            this.slider.add_style_class_name('lumaui-muted-level');
++            this.slider.add_style_class_name('SunoUI-muted-level');
 +        else
-+            this.slider.remove_style_class_name('lumaui-muted-level');
++            this.slider.remove_style_class_name('SunoUI-muted-level');
 +        this._syncValue();
 +        this._muteIcon.icon_name = app.muted
-+            ? 'lumaui-volume-x-symbolic' : 'lumaui-volume-2-symbolic';
++            ? 'SunoUI-volume-x-symbolic' : 'SunoUI-volume-2-symbolic';
 +        this._mute.checked = !!app.muted;
 +        this._mute.accessible_name = (app.muted ? _('Unmute %s') : _('Mute %s')).format(app.name);
 +        if (!app.playing)
-+            this.add_style_class_name('luma-app-mixer-idle');
++            this.add_style_class_name('Suno-app-mixer-idle');
 +        else
-+            this.remove_style_class_name('luma-app-mixer-idle');
++            this.remove_style_class_name('Suno-app-mixer-idle');
 +        this.syncOutputs();
 +    }
 +
@@ -717,7 +717,7 @@ index 638f2c1..3ffd019 100644
 +        this._outputIcon.icon_name = outputIconName(current);
 +        this._outputKey.checked = this._outputs.visible;
 +        this._outputChevron.icon_name = this._outputs.visible
-+            ? 'lumaui-chevron-up-symbolic' : 'lumaui-chevron-down-symbolic';
++            ? 'SunoUI-chevron-up-symbolic' : 'SunoUI-chevron-down-symbolic';
 +        this._outputKey.visible = outputs.length > 1 || !!own;
 +        this._outputKey.accessible_name = _('Output for %s').format(this._app.name);
 +        this._route.text = own ? `· ${this._mixer.describeOutput(own).title}` : '';
@@ -737,7 +737,7 @@ index 638f2c1..3ffd019 100644
 +        this._outputs.visible = open;
 +        this._outputKey.checked = open;
 +        this._outputChevron.icon_name = open
-+            ? 'lumaui-chevron-up-symbolic' : 'lumaui-chevron-down-symbolic';
++            ? 'SunoUI-chevron-up-symbolic' : 'SunoUI-chevron-down-symbolic';
 +        if (open)
 +            this._fillOutputs();
 +        else
@@ -783,7 +783,7 @@ index 638f2c1..3ffd019 100644
 +class AppMixerSection extends St.BoxLayout {
 +    _init(mixer, presence) {
 +        super._init({
-+            style_class: 'luma-app-mixer',
++            style_class: 'Suno-app-mixer',
 +            orientation: Clutter.Orientation.VERTICAL,
 +            x_expand: true,
 +            y_expand: false,
@@ -795,11 +795,11 @@ index 638f2c1..3ffd019 100644
 +        this._shown = false;
 +
 +        this.add_child(new St.Label({
-+            style_class: 'luma-app-mixer-heading',
++            style_class: 'Suno-app-mixer-heading',
 +            text: _('Apps'),
 +        }));
 +        this._list = new St.BoxLayout({
-+            style_class: 'luma-app-mixer-list',
++            style_class: 'Suno-app-mixer-list',
 +            orientation: Clutter.Orientation.VERTICAL,
 +            x_expand: true,
 +        });
@@ -904,7 +904,7 @@ index 638f2c1..3ffd019 100644
 +        // Every app with a sound stream, under the outputs.
 +        this.appMixer = getAppMixer();
 +        const mixerSection = new PopupMenu.PopupMenuSection();
-+        mixerSection.actor.add_style_class_name('luma-app-mixer-section');
++        mixerSection.actor.add_style_class_name('Suno-app-mixer-section');
 +        const mixer = new AppMixerSection(this.appMixer, this.menu.actor);
 +        mixerSection.actor.add_child(mixer);
 +        this.menu.addMenuItem(mixerSection, 2);

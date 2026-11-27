@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
-# Shared helpers for the Luma Emulator test suite.
+# Shared helpers for the Suno Emulator test suite.
 
 set -uo pipefail
 
-: "${LUMA_EMULATOR_BIN:?LUMA_EMULATOR_BIN must point at the built luma-emulator}"
+: "${SUNO_EMULATOR_BIN:?SUNO_EMULATOR_BIN must point at the built Suno-emulator}"
 
 passes=0
 failures=0
@@ -75,7 +75,7 @@ summary() {
 }
 
 guest_is_ready() {
-  [ "$("$LUMA_EMULATOR_BIN" health --json 2>/dev/null |
+  [ "$("$SUNO_EMULATOR_BIN" health --json 2>/dev/null |
     python3 -c 'import json,sys
 try: print(json.load(sys.stdin).get("health",""))
 except Exception: print("")' 2>/dev/null)" = ready ]

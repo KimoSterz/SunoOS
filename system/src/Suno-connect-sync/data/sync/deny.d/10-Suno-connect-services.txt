@@ -1,0 +1,17 @@
+# Suno's own apps whose data already syncs through a Suno Connect service
+# (Notes, Calendar and Contacts, Photos, collections, Messages), or that sync
+# through the Connect Sync API later (Viola, ADR-054 §3). Their folders are not
+# copied, so nothing syncs twice.
+org.projectSuno.Notes
+org.projectSuno.Tasks
+org.projectSuno.Calendar
+org.projectSuno.Contacts
+org.projectSuno.Photos
+org.projectSuno.Clock
+org.projectSuno.Weather
+org.projectSuno.Leaf
+org.projectSuno.Tide
+org.projectSuno.Messages
+org.projectSuno.Phone
+org.projectSuno.Connect
+com.rhyme.viola

@@ -40,8 +40,8 @@ mkdir -m 0700 "$work/gnupg"
 cat >"$work/key.batch" <<'EOF'
 Key-Type: RSA
 Key-Length: 2048
-Name-Real: Project Luma Ephemeral Recent Test
-Name-Email: recent-test@projectluma.invalid
+Name-Real: Project Suno Ephemeral Recent Test
+Name-Email: recent-test@projectSuno.invalid
 Expire-Date: 1d
 %no-protection
 %commit
@@ -73,7 +73,7 @@ ostree commit --repo="$work/source" --branch=source/test \
   --add-metadata='rpmostree.replaced-base-packages=@a(vv) []' \
   --add-metadata='rpmostree.replaced-base-remote-packages=@a{sv} {}' \
   --add-metadata-string=rpmostree.state-sha512=builder-state \
-  --add-metadata="rpmostree.rpmdb.pkglist=[('luma-test', '0', '1.0', '1', 'noarch')]" \
+  --add-metadata="rpmostree.rpmdb.pkglist=[('Suno-test', '0', '1.0', '1', 'noarch')]" \
   --add-metadata='ostree.bootable=true' \
   --add-metadata-string=ostree.linux=kernel-test \
   --add-metadata='ostree.composefs.v0=[byte 0x01, 0x02]' \
@@ -102,7 +102,7 @@ printf 'source_revision=%s\nsource_state=clean\n' \
   "$source_revision" >"$work/build-report.txt"
 printf 'completed_utc=2026-08-28T12:00:00Z\n' >>"$work/build-report.txt"
 
-LUMA_UPDATE_SKIP_STATIC_DELTA=1 \
+SUNO_UPDATE_SKIP_STATIC_DELTA=1 \
   "$repo_root/scripts/update/promote-ostree-commit.sh" \
     --source-repo "$work/source" --commit "$first" \
     --repo "$work/published" --build-report "$work/build-report.txt" \
@@ -110,7 +110,7 @@ LUMA_UPDATE_SKIP_STATIC_DELTA=1 \
     --source-revision "$source_revision" \
     --gpg-key "$key" --gpg-homedir "$work/gnupg" >/dev/null
 
-first_published=$(ostree rev-parse --repo="$work/published" "$LUMA_UPDATE_REF")
+first_published=$(ostree rev-parse --repo="$work/published" "$SUNO_UPDATE_REF")
 test "$first_published" != "$first"
 python3 "$metadata_policy" verify "$work/published" "$first" "$first_published"
 # Root checksums protect file modes/symlinks/xattrs as well as visible contents.
@@ -119,7 +119,7 @@ if ostree ls --repo="$work/published" "$first_published" /usr/lib/sysimage/rpm-o
   exit 1
 fi
 test "$(ostree show --repo="$work/published" \
-  --print-metadata-key=org.projectluma.export-policy "$first_published")" = "'base-image-v2'"
+  --print-metadata-key=org.projectSuno.export-policy "$first_published")" = "'base-image-v2'"
 # Changing a filesystem after acceptance must be rejected by the export guard.
 mkdir "$work/tampered-tree"
 printf 'tampered\n' >"$work/tampered-tree/release"
@@ -138,7 +138,7 @@ fi
 # A rejected export may import immutable objects, but cannot change the advertised
 # ref or signed summary. This uses the real publisher failure path.
 summary_before=$(sha256sum "$work/published/summary")
-if LUMA_UPDATE_SKIP_STATIC_DELTA=1 \
+if SUNO_UPDATE_SKIP_STATIC_DELTA=1 \
   "$repo_root/scripts/update/promote-ostree-commit.sh" \
     --source-repo "$work/source" --commit "$unknown" \
     --repo "$work/published" --build-report "$work/build-report.txt" \
@@ -148,7 +148,7 @@ if LUMA_UPDATE_SKIP_STATIC_DELTA=1 \
   printf 'error: publisher accepted unsupported layer metadata\n' >&2
   exit 1
 fi
-test "$(ostree rev-parse --repo="$work/published" "$LUMA_UPDATE_REF")" = "$first_published"
+test "$(ostree rev-parse --repo="$work/published" "$SUNO_UPDATE_REF")" = "$first_published"
 test "$(sha256sum "$work/published/summary")" = "$summary_before"
 # Already-normalized base commits are valid inputs; no local-layer marker needed.
 python3 "$metadata_policy" verify "$work/published" "$first_published" "$first_published"
@@ -156,18 +156,18 @@ test "$(ostree show --repo="$work/published" \
   --print-metadata-key=rpmostree.test "$first_published")" = "'preserved'"
 test -s "$work/published/summary"
 test -s "$work/published/summary.sig"
-test -s "$work/published/luma/releases/$first_published.json"
-test -s "$work/published/luma/releases/$first_published.json.asc"
-test -s "$work/published/luma/luma-recent.gpg"
+test -s "$work/published/Suno/releases/$first_published.json"
+test -s "$work/published/Suno/releases/$first_published.json.asc"
+test -s "$work/published/Suno/Suno-recent.gpg"
 
 printf 'second\n' >"$work/tree/release"
 ostree commit --repo="$work/source" --branch=source/test \
   --add-metadata='rpmostree.spec=@a{sv} {}' \
-  --add-metadata="rpmostree.rpmdb.pkglist=[('luma-test', '0', '2.0', '1', 'noarch')]" \
+  --add-metadata="rpmostree.rpmdb.pkglist=[('Suno-test', '0', '2.0', '1', 'noarch')]" \
   --tree="dir=$work/tree" --subject='Recent transaction test 2 (legacy layer)' >/dev/null
 second=$(ostree rev-parse --repo="$work/source" source/test)
 sed -i 's/2026-08-28T12:00:00Z/2026-08-28T12:01:00Z/' "$work/build-report.txt"
-LUMA_UPDATE_SKIP_STATIC_DELTA=1 \
+SUNO_UPDATE_SKIP_STATIC_DELTA=1 \
   "$repo_root/scripts/update/promote-ostree-commit.sh" \
     --source-repo "$work/source" --commit "$second" \
     --repo "$work/published" --build-report "$work/build-report.txt" \
@@ -175,10 +175,10 @@ LUMA_UPDATE_SKIP_STATIC_DELTA=1 \
     --source-revision "$source_revision" \
     --gpg-key "$key" --gpg-homedir "$work/gnupg" >/dev/null
 
-second_published=$(ostree rev-parse --repo="$work/published" "$LUMA_UPDATE_REF")
+second_published=$(ostree rev-parse --repo="$work/published" "$SUNO_UPDATE_REF")
 test "$second_published" != "$second"
-python3 - "$work/published/luma/releases/$second_published.json" \
-  "$first_published" "$second" "$LUMA_UPDATE_CHANNEL" "$LUMA_UPDATE_REF" <<'PY'
+python3 - "$work/published/Suno/releases/$second_published.json" \
+  "$first_published" "$second" "$SUNO_UPDATE_CHANNEL" "$SUNO_UPDATE_REF" <<'PY'
 import json
 import sys
 
@@ -194,6 +194,6 @@ PY
   --repo "$work/published" --webroot "$work/webroot" >/dev/null
 test -L "$work/webroot/current"
 test "$(ostree rev-parse --repo="$work/webroot/current" \
-  "$LUMA_UPDATE_REF")" = "$second_published"
+  "$SUNO_UPDATE_REF")" = "$second_published"
 
 printf 'Recent signed OSTree transaction: PASS\n'

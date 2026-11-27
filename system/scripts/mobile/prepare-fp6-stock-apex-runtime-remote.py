@@ -22,25 +22,25 @@ import sys
 import zipfile
 
 
-OUTPUT = Path("/var/tmp/luma-stock-qrel1695-apex-runtime2")
+OUTPUT = Path("/var/tmp/Suno-stock-qrel1695-apex-runtime2")
 EXPECTED_IMAGES = {
-    Path("/var/tmp/luma-stock-qrel1695-images/system_a.img"):
+    Path("/var/tmp/Suno-stock-qrel1695-images/system_a.img"):
         "c817290357023c4831e31aaf26ef2ec9ffc984c43c98ab6902deb19739746122",
-    Path("/var/tmp/luma-stock-qrel1695-images/vendor_a.img"):
+    Path("/var/tmp/Suno-stock-qrel1695-images/vendor_a.img"):
         "4159a51642c7f6462012891197a237ad86768a1f55853c6ab3b38d6ff2b144b4",
-    Path("/var/tmp/luma-stock-qrel1695-images/system_ext_a.img"):
+    Path("/var/tmp/Suno-stock-qrel1695-images/system_ext_a.img"):
         "71e9c5b743ec957562788340ffae8cdfea758c586da858421950525079bacb09",
-    Path("/var/tmp/luma-stock-qrel1695-images/product_a.img"):
+    Path("/var/tmp/Suno-stock-qrel1695-images/product_a.img"):
         "c5b458671c560dda0da70c8e2c5e9c1ea0e01b11d6f45c3f8009dc5964b15937",
-    Path("/var/tmp/luma-stock-qrel1695-images/odm_a.img"):
+    Path("/var/tmp/Suno-stock-qrel1695-images/odm_a.img"):
         "3d31463d172b485f866e25340887e36b96986bb5c2255bff9a6b7777277bb831",
 }
 APEX_DIRS = (
-    ("system", Path("/var/tmp/luma-stock-qrel1695-system/system/apex")),
-    ("system_ext", Path("/var/tmp/luma-stock-qrel1695-system_ext/apex")),
-    ("product", Path("/var/tmp/luma-stock-qrel1695-product/apex")),
-    ("vendor", Path("/var/tmp/luma-stock-qrel1695-vendor/apex")),
-    ("odm", Path("/var/tmp/luma-stock-qrel1695-odm/apex")),
+    ("system", Path("/var/tmp/Suno-stock-qrel1695-system/system/apex")),
+    ("system_ext", Path("/var/tmp/Suno-stock-qrel1695-system_ext/apex")),
+    ("product", Path("/var/tmp/Suno-stock-qrel1695-product/apex")),
+    ("vendor", Path("/var/tmp/Suno-stock-qrel1695-vendor/apex")),
+    ("odm", Path("/var/tmp/Suno-stock-qrel1695-odm/apex")),
 )
 
 

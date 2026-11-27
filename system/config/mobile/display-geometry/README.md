@@ -1,7 +1,7 @@
 # Display exclusions
 
-A device profile can install its JSON as `/usr/share/luma/display-geometry.json`.
-An owner override at `/etc/luma/display-geometry.json` takes precedence. Displays
+A device profile can install its JSON as `/usr/share/Suno/display-geometry.json`.
+An owner override at `/etc/Suno/display-geometry.json` takes precedence. Displays
 without metadata keep their existing insets.
 
 Schema 1 specifies one panel: its connector (optional), native pixel dimensions

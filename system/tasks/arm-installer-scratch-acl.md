@@ -1,11 +1,11 @@
 # Task: arm-installer-scratch-acl
 
 - Status: verified; ready for integration
-- Owner: luma-dev-2, Codex arm_apps_reuse assist
-- Project: luma-os
+- Owner: Suno-dev-2, Codex arm_apps_reuse assist
+- Project: Suno-os
 - Branch: agent/1003/arm-installer-scratch-acl
 - Base: 5719fbd72233f4d82c47292138b422dff99bd615
-- Worktree: /srv/dev/worktrees/luma-os/arm-installer-scratch-acl
+- Worktree: /srv/dev/worktrees/Suno-os/arm-installer-scratch-acl
 - Integration owner: arm-desktop coordinator
 
 ## Scope

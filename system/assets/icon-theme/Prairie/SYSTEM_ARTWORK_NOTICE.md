@@ -6,7 +6,7 @@ and construction notes are retained in the SRPM's `system-artwork.tar` under
 `artwork/system-20260907`. Production staging reads those repository sources,
 not a Downloads folder or a running Design Center.
 
-Luma integration changes lookup names and theme metadata only. Transparent
+Suno integration changes lookup names and theme metadata only. Transparent
 padding, path geometry, gradients, masks, internal references and shadows are
 unchanged. Approved aliases remain byte-identical. The empty Trash icon also
 serves its pre-existing Applications-context dock alias. The previous full
@@ -21,7 +21,7 @@ do not establish an exact Lucide release for every incorporated glyph; none is
 invented here. Upstream reference packs and screenshots are not imported.
 
 Original artwork authorship and redistribution authorization have not been
-certified by this package integration. `LicenseRef-Luma-System-Artwork-Pending`
+certified by this package integration. `LicenseRef-Suno-System-Artwork-Pending`
 records this unresolved part of the private candidate; it is not a grant of
 rights. Resolve that record before public distribution or Stage promotion.
 Existing application artwork and existing ISC/MIT/Apache-2.0 notices retain

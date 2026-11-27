@@ -1,7 +1,7 @@
 ---
 type: fix
 component: First boot
-packages: [luma-application-installer]
+packages: [Suno-application-installer]
 highlight: false
 ---
 Summary: Fixed bundled app permissions after installation

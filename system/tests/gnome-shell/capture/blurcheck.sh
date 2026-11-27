@@ -3,7 +3,7 @@
 # island in every screenshot with the same island in a frame of the screen
 # recording (the screen's own pixels). The recording is VP8, so a match is a
 # small mean difference, not zero; the bug made islands differ by tens.
-D=${1:?dir with results.json}; C=${2:-luma-shell-oracle}
+D=${1:?dir with results.json}; C=${2:-Suno-shell-oracle}
 podman exec -i $C bash -s "$D" <<'SH'
 set -u
 cd "$1"

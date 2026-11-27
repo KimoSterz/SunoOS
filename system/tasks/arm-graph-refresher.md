@@ -1,7 +1,7 @@
 # Task: arm-graph-refresher
 
 - Status: implemented and focused checks passed; source review ready
-- Owner: luma-dev-2 / arm_server_qualification delegated agent
+- Owner: Suno-dev-2 / arm_server_qualification delegated agent
 - Worktree: /srv/dev/accounts/second/experiments/arm-desktop/task-hdd/arm-server-qualification-admission/arm-graph-refresher
 - Branch: agent/1003/arm-graph-refresher
 - Base: 71f0f720a (includes architecture/device client changes51b0f7830)

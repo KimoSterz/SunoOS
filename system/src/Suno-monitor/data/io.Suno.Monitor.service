@@ -1,0 +1,3 @@
+[D-BUS Service]
+Name=io.Suno.Monitor
+Exec=/usr/bin/io.Suno.Monitor

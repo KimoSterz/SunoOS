@@ -21,7 +21,7 @@ class EngineLifecycleTest(unittest.TestCase):
             self.assertEqual(native_frame_profile_flags(path), [])
             approved = Path(directory) / 'approved.json'
             approved.write_text(json.dumps({
-                'schema': 'org.projectluma.viola.native-engine-profile/v1',
+                'schema': 'org.projectSuno.viola.native-engine-profile/v1',
                 'role': 'desktop-arm-preview', 'frame_transport': 'shm'}))
             path.write_bytes(approved.read_bytes())
             self.assertEqual(native_frame_profile_flags(path), ['--viola-native-shm-frame-probe'])

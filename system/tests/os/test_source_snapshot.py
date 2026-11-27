@@ -16,7 +16,7 @@ REV = 'a' * 40
 
 class SourceSnapshotTests(unittest.TestCase):
     def setUp(self):
-        self.temp = tempfile.TemporaryDirectory(prefix='luma-private-source-test-')
+        self.temp = tempfile.TemporaryDirectory(prefix='Suno-private-source-test-')
         self.addCleanup(self.temp.cleanup)
         self.base = Path(self.temp.name)
         self.root = self.base / 'source'

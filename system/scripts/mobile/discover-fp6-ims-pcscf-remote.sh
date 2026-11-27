@@ -3,40 +3,40 @@
 
 # Open one isolated IMS WDS session and retrieve the operator PCO without
 # exposing its network values. The caller supplies a hash-locked diagnostic
-# qmicli/libqmi pair in /tmp/luma-qmi-v2.
+# qmicli/libqmi pair in /tmp/Suno-qmi-v2.
 
 set -Eeuo pipefail
 umask 077
 
-q=/tmp/luma-qmi-v2/qmicli
-lib=/tmp/luma-qmi-v2/libqmi-glib.so.5
+q=/tmp/Suno-qmi-v2/qmicli
+lib=/tmp/Suno-qmi-v2/libqmi-glib.so.5
 ims_profile=${IMS_PROFILE_ID:-}
 
-event() { printf 'event=luma_fp6_ims_pcscf %s\n' "$*"; }
+event() { printf 'event=Suno_fp6_ims_pcscf %s\n' "$*"; }
 fail() { event state=failed reason="$1" >&2; exit 1; }
 cleanup() {
   local status=$?
   set +e
-  systemctl start ModemManager.service luma-fp6-cellular-link.service 2>/dev/null
+  systemctl start ModemManager.service Suno-fp6-cellular-link.service 2>/dev/null
   return "$status"
 }
 trap cleanup EXIT INT TERM HUP
 
 [[ $(id -u) -eq 0 ]] || fail not_root
 [[ $ims_profile =~ ^[1-9][0-9]*$ ]] || fail ims_profile
-[[ $(uname -r) == 7.1.2-luma-fp-ims1 ]] || fail kernel
+[[ $(uname -r) == 7.1.2-Suno-fp-ims1 ]] || fail kernel
 grep -qw androidboot.slot_suffix=_b /proc/cmdline || fail slot
 [[ $(sha256sum "$q" | cut -d' ' -f1) == 65df04cc6a5c60f25e68f1a7def8b596e167dd089206be49c281abca615add1b ]] || fail qmicli_hash
 [[ $(sha256sum "$lib" | cut -d' ' -f1) == f736cabf9ba566d5dba68e6d0b4e91f7a0939457101c8abe5cb4ca8e85443da9 ]] || fail libqmi_hash
 
-systemctl stop luma-fp6-cellular-link.service ModemManager.service
-export LD_LIBRARY_PATH=/tmp/luma-qmi-v2
+systemctl stop Suno-fp6-cellular-link.service ModemManager.service
+export LD_LIBRARY_PATH=/tmp/Suno-qmi-v2
 "$q" --verbose -d qrtr://0 \
   --wds-bind-mux-data-port='mux-id=2,ep-type=embedded,ep-iface-number=1' \
   --wds-start-network="3gpp-profile=$ims_profile,ip-type=ipv6" \
-  --wds-get-current-settings >/run/luma-ims-current-settings.txt 2>&1 || fail compound_query
-chmod 0600 /run/luma-ims-current-settings.txt
-python3 - /run/luma-ims-current-settings.txt /run/imsd-pcscf.env /etc/imsd.env <<'PY'
+  --wds-get-current-settings >/run/Suno-ims-current-settings.txt 2>&1 || fail compound_query
+chmod 0600 /run/Suno-ims-current-settings.txt
+python3 - /run/Suno-ims-current-settings.txt /run/imsd-pcscf.env /etc/imsd.env <<'PY'
 import ipaddress
 import re
 import sys
@@ -69,7 +69,7 @@ except (FileNotFoundError, ValueError):
 with open(sys.argv[2], "w", encoding="ascii") as stream:
     stream.write(f"PCSCF={selected}\n")
     stream.write("PCSCF_CANDIDATES=" + ",".join(map(str, addresses)) + "\n")
-    stream.write("AUDIO_USER=luma\n")
+    stream.write("AUDIO_USER=Suno\n")
     # Match the stock QREL registration surface. Some IMS cores use the UE
     # model/build token when deciding whether an MMTEL binding is terminating-
     # capable; this is the truthful build ID of the vendor firmware supporting
@@ -82,7 +82,7 @@ with open(sys.argv[2], "w", encoding="ascii") as stream:
 PY
 chmod 0600 /run/imsd-pcscf.env
 install -m 0600 -o root -g root /run/imsd-pcscf.env /etc/imsd.env
-address_count=$(python3 - /run/luma-ims-current-settings.txt <<'PY'
+address_count=$(python3 - /run/Suno-ims-current-settings.txt <<'PY'
 import re, sys
 text = open(sys.argv[1], encoding="utf-8").read()
 match = re.search(r'type\s+=\s+0x2e\s+<<<<<<\s+length\s+=\s+\d+\s+<<<<<<\s+value\s+=\s+([0-9A-F:]+)', text, re.MULTILINE)

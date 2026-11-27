@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 // Source decision gate, not compositor/pixel evidence. Run under GJS with the
-// exact extracted packaged js/ui/lumaWindowCorners.js as the sole argument.
+// exact extracted packaged js/ui/SunoWindowCorners.js as the sole argument.
 import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
 import Adw from 'gi://Adw';
 
 if (ARGV.length !== 1)
-    throw new Error('Usage: gjs -m first-commit.js lumaWindowCorners.js');
+    throw new Error('Usage: gjs -m first-commit.js SunoWindowCorners.js');
 // Ensure the actual current process has libadwaita mapped, without a display.
 if (Adw.get_major_version() < 1)
     throw new Error('libadwaita fixture unavailable');
@@ -48,12 +48,12 @@ for (const first of [
 ]) {
     const window = makeWindow(first);
     check(!wantsMask(window), 'Unsettled first commit must retain client shape');
-    check(window._lumaRoundsItself === undefined,
+    check(window._SunoRoundsItself === undefined,
         'Unsettled first commit incorrectly cached decoration ownership');
     window.pid = selfPid;
     window.frame = {width: 600, height: 400};
     check(!wantsMask(window), 'Self-rounded libadwaita window got a second mask');
-    check(window._lumaRoundsItself === true, 'Real libadwaita mapping was not recognized');
+    check(window._SunoRoundsItself === true, 'Real libadwaita mapping was not recognized');
 }
 // Known but unreadable process retains the existing conservative mask fallback.
 check(wantsMask(makeWindow({pid: 2147483647, frame: {width: 600, height: 400}})),
@@ -64,7 +64,7 @@ for (const changes of [
 ]) {
     const window = makeWindow({pid: selfPid, frame: {width: 600, height: 400}, ...changes});
     check(!wantsMask(window), 'Existing window exclusion regressed');
-    check(window._lumaRoundsItself === undefined, 'Excluded window was probed');
+    check(window._SunoRoundsItself === undefined, 'Excluded window was probed');
 }
 // A service-channel client's PID is the D-Bus peer: for a Flatpak (Filer)
 // that is the instance's xdg-dbus-proxy. Its app-flatpak scope holds the app.

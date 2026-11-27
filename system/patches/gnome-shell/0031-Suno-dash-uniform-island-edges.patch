@@ -1,0 +1,119 @@
+From: Project Suno
+Subject: [PATCH] Dash: equal material bounds and physical edge corners
+
+--- a/js/ui/shelf.js
++++ b/js/ui/shelf.js
+@@ -73,6 +73,25 @@
+     return {x, y, width, height, vertical, available, reserve: protrude && span};
+ }
+ 
++// Corner order is CSS top-left, top-right, bottom-right, bottom-left.
++// Square the union of physical edges touched by this material. Island order
++// is supplied in physical coordinates, so RTL cannot reverse screen contact.
++export function dashCornerRadii(edge, protrude, touchesStart, touchesEnd) {
++    const radius = [15, 15, 15, 15];
++    const square = side => {
++        const corners = {top: [0, 1], right: [1, 2], bottom: [2, 3], left: [3, 0]};
++        corners[side].forEach(index => radius[index] = 0);
++    };
++    if (protrude)
++        square(edge);
++    const vertical = edge === 'left' || edge === 'right';
++    if (touchesStart)
++        square(vertical ? 'top' : 'left');
++    if (touchesEnd)
++        square(vertical ? 'bottom' : 'right');
++    return radius;
++}
++
+ const ShelfGroupLayout = GObject.registerClass(
+ class ShelfGroupLayout extends Clutter.LayoutManager {
+     _measure(container) {
+@@ -128,6 +147,10 @@
+             style_class: `Suno-shelf-island ${styleClass}`,
+             layout_manager: new Clutter.BinLayout(),
+         });
++        // The painted material, stroke and shadows must share the complete
++        // island allocation, not the natural height of its clock/buttons.
++        child.set({x_expand: true, y_expand: true,
++            x_align: Clutter.ActorAlign.FILL, y_align: Clutter.ActorAlign.FILL});
+         this._content = child;
+         this._shadows = [];
+ 
+@@ -156,6 +179,12 @@
+         }));
+         this.add_child(stroke);
+         this._stroke = stroke;
++    }
++
++    setCornerRadii(radii) {
++        const style = `border-radius: ${radii.map(value => `${value}px`).join(' ')};`;
++        for (const actor of [this._content, this._stroke, ...this._shadows])
++            actor.set_style(style);
+     }
+ 
+     setSurfaceVisible(visible, castShadows) {
+@@ -463,10 +492,22 @@
+ 
+         this._adoptPanelActors();
+         const visibleIslands = this._group.get_children().filter(actor => actor.visible);
++        const physicalIslands = [...visibleIslands];
++        if (!this._vertical && this._group.text_direction === Clutter.TextDirection.RTL)
++            physicalIslands.reverse();
++        const flushEnds = this._span && !this._floatEnds;
++        this._surface.setCornerRadii(surfaceMode === 'connected'
++            ? dashCornerRadii(this._edge, this._protrude, flushEnds, flushEnds)
++            : [0, 0, 0, 0]);
+         for (const island of this._group.get_children()) {
+             island.remove_style_class_name('Suno-shelf-divider-after');
+             if (surfaceMode === 'connected' && island !== visibleIslands.at(-1))
+                 island.add_style_class_name('Suno-shelf-divider-after');
++            island.setCornerRadii(surfaceMode === 'separate'
++                ? dashCornerRadii(this._edge, this._protrude,
++                    flushEnds && island === physicalIslands[0],
++                    flushEnds && island === physicalIslands.at(-1))
++                : [0, 0, 0, 0]);
+             island._vertical = this._vertical;
+             island.setSurfaceVisible(surfaceMode === 'separate', castShadows);
+         }
+--- a/data/theme/Suno-shelf.css
++++ b/data/theme/Suno-shelf.css
+@@ -214,26 +214,6 @@
+   background-color: transparent;
+   border-radius: 0;
+ }
+-.Suno-shelf-root.Suno-shelf-connected.Suno-shelf-attached.Suno-shelf-bottom > .Suno-shelf-material,
+-.Suno-shelf-root.Suno-shelf-connected.Suno-shelf-attached.Suno-shelf-bottom > .Suno-shelf-shadow,
+-.Suno-shelf-root.Suno-shelf-connected.Suno-shelf-attached.Suno-shelf-bottom > .Suno-shelf-stroke {
+-  border-radius: 15px 15px 0 0;
+-}
+-.Suno-shelf-root.Suno-shelf-connected.Suno-shelf-attached.Suno-shelf-top > .Suno-shelf-material,
+-.Suno-shelf-root.Suno-shelf-connected.Suno-shelf-attached.Suno-shelf-top > .Suno-shelf-shadow,
+-.Suno-shelf-root.Suno-shelf-connected.Suno-shelf-attached.Suno-shelf-top > .Suno-shelf-stroke {
+-  border-radius: 0 0 15px 15px;
+-}
+-.Suno-shelf-root.Suno-shelf-connected.Suno-shelf-attached.Suno-shelf-left > .Suno-shelf-material,
+-.Suno-shelf-root.Suno-shelf-connected.Suno-shelf-attached.Suno-shelf-left > .Suno-shelf-shadow,
+-.Suno-shelf-root.Suno-shelf-connected.Suno-shelf-attached.Suno-shelf-left > .Suno-shelf-stroke {
+-  border-radius: 0 15px 15px 0;
+-}
+-.Suno-shelf-root.Suno-shelf-connected.Suno-shelf-attached.Suno-shelf-right > .Suno-shelf-material,
+-.Suno-shelf-root.Suno-shelf-connected.Suno-shelf-attached.Suno-shelf-right > .Suno-shelf-shadow,
+-.Suno-shelf-root.Suno-shelf-connected.Suno-shelf-attached.Suno-shelf-right > .Suno-shelf-stroke {
+-  border-radius: 15px 0 0 15px;
+-}
+ .Suno-shelf-vertical .Suno-shelf-dock-island #dash .dash-item-container .overview-tile,
+ .Suno-shelf-vertical .Suno-shelf-dock-island #dash .dash-item-container .show-apps {
+   margin: 2.5px 0;
+@@ -277,11 +257,6 @@
+   font-size: 11px;
+ }
+ 
+-.Suno-shelf-root.Suno-shelf-connected.Suno-shelf-flush > .Suno-shelf-material,
+-.Suno-shelf-root.Suno-shelf-connected.Suno-shelf-flush > .Suno-shelf-shadow,
+-.Suno-shelf-root.Suno-shelf-connected.Suno-shelf-flush > .Suno-shelf-stroke {
+-  border-radius: 0;
+-}
+ 
+ .Suno-shelf-horizontal .Suno-shelf-divider-after > .Suno-shelf-material {
+   border-right: 1px solid rgba(255, 255, 255, 0.12);

@@ -12,9 +12,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, "/usr/lib/python3.14/site-packages")
-from luma_update import minisign  # noqa: E402
+from Suno_update import minisign  # noqa: E402
 
-rig = Path("/var/lib/luma-update-test")
+rig = Path("/var/lib/Suno-update-test")
 channel, spec = sys.argv[1], json.loads(sys.argv[2])
 now = datetime.now(timezone.utc)
 stamp = now.strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -29,7 +29,7 @@ for item in spec:
     releases.append(release)
 graph = {"schema_version": 1, "channel": channel, "arch": "x86_64", "generated_at": stamp, "releases": releases}
 data = json.dumps(graph, indent=2).encode()
-_, signature = minisign.sign_for_tests((rig / "minisign.secret").read_bytes(), b"LUMARIG1", data,
+_, signature = minisign.sign_for_tests((rig / "minisign.secret").read_bytes(), b"SUNORIG1", data,
                                        f"timestamp:{int(time.time())}\tfile:{channel}.json\thashed")
 (rig / "graph").mkdir(exist_ok=True)
 (rig / "graph" / f"{channel}.json").write_bytes(data)

@@ -1,4 +1,4 @@
-From: Project Luma <luma@local>
+From: Project Suno <Suno@local>
 Subject: [PATCH] Use GioUnix for DesktopAppInfo on Fedora 44
 
 GDesktopAppInfo moved from the Gio introspection namespace to GioUnix. Use

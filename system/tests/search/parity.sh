@@ -1,6 +1,6 @@
 #!/bin/bash
-# The Shell (JS) and luma-search (Python) ranking twins give identical scores.
-# tests/search/parity.sh path/to/lumaSearchRanking.js
+# The Shell (JS) and Suno-search (Python) ranking twins give identical scores.
+# tests/search/parity.sh path/to/SunoSearchRanking.js
 set -euo pipefail
 here=$(cd "$(dirname "$0")" && pwd)
 js=$(node "$here/ranking.mjs" "$1" --dump)

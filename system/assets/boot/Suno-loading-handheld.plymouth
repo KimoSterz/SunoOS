@@ -1,0 +1,12 @@
+[Plymouth Theme]
+Name=Suno Loading Handheld
+Description=Project Suno quiet handheld boot surface
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/Suno-loading-handheld
+ScriptFile=/usr/share/plymouth/themes/Suno-loading-handheld/Suno-loading-handheld.script
+
+# The dracut Plymouth module uses these to include the prompt font.
+Font=Figtree Medium
+TitleFont=Figtree Bold

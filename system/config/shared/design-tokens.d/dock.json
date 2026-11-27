@@ -1,6 +1,6 @@
 {
-  "_doc": "LumaUI dock: an island tiled with insets (Dock, DockTile) and the sidebar's pane. Merged into lumaui by the generator: --lumaui-dock-*, LUMA_UI_DOCK_*. tile_radius is the kit's card radius (radius.island, Settings' grouped cards); an island hosting a dock is tile_radius + gap round, so the radii stay concentric. fit_max_pct caps a content-fitted tile (or group) at that share of the dock along its split. The header is a band one step toward the island from the well (colors: dock_header, its hairline dock_header_line; frost and glass take the light values over their own well), header_padding_y above and below the title row; status_dot is set_status's mark.",
-  "lumaui": {
+  "_doc": "SunoUI dock: an island tiled with insets (Dock, DockTile) and the sidebar's pane. Merged into SunoUI by the generator: --SunoUI-dock-*, SUNO_UI_DOCK_*. tile_radius is the kit's card radius (radius.island, Settings' grouped cards); an island hosting a dock is tile_radius + gap round, so the radii stay concentric. fit_max_pct caps a content-fitted tile (or group) at that share of the dock along its split. The header is a band one step toward the island from the well (colors: dock_header, its hairline dock_header_line; frost and glass take the light values over their own well), header_padding_y above and below the title row; status_dot is set_status's mark.",
+  "SunoUI": {
     "dock": {
       "gap": 8,
       "tile_radius": 10,

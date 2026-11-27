@@ -1,23 +1,23 @@
 # Native application convergence
 
-Luma presents one operating-system design language without pretending that
+Suno presents one operating-system design language without pretending that
 every application has the same implementation. The ownership boundary is the
 application toolkit, not a login script or a stylesheet copied into a user's
 home directory.
 
 ## Coverage tiers
 
-### Luma applications
+### Suno applications
 
-Luma-owned applications use Luma AppKit. AppKit owns their responsive
+Suno-owned applications use Suno AppKit. AppKit owns their responsive
 composition, title row, work islands, commands, focus behavior, materials,
-active/backdrop elevation, and desktop-to-handheld adaptation. A Luma
+active/backdrop elevation, and desktop-to-handheld adaptation. A Suno
 application must not locally redraw a shared AppKit component.
 
 ### Curated system applications
 
 Applications selected as part of the operating system use native packages
-built against Luma's host toolkit whenever exact toolkit convergence matters.
+built against Suno's host toolkit whenever exact toolkit convergence matters.
 The shared GTK 4, libadwaita, GTK 3 theme, Prairie icons, Figtree metrics,
 window-control order, appearance settings, and portals give these applications
 one native frame and material vocabulary while retaining their upstream
@@ -37,7 +37,7 @@ runtime and application remain responsible for internal widgets. Qt,
 Electron, games, and applications with custom client-side chrome keep their
 own supported presentation.
 
-Luma does not inject `GTK_THEME`, mount host libraries over a sandbox runtime,
+Suno does not inject `GTK_THEME`, mount host libraries over a sandbox runtime,
 write user CSS, mutate widgets after launch, or wrap an application merely to
 imitate AppKit. Those techniques are brittle, can break accessibility, and
 misrepresent the application's security boundary.
@@ -54,30 +54,30 @@ receives that surface.
 The toolkit cannot infer whether children inside that surface represent a
 sidebar, document, inspector, canvas, or intentionally edge-to-edge region, so
 it does not try. A window that composes its own islands says so by carrying
-`luma-app-window`: the toolkit then dresses the frame, the identity and the
+`Suno-app-window`: the toolkit then dresses the frame, the identity and the
 window controls exactly as it does for Filer and Calculator, and leaves the
-content to the Application Kit's islands, which carry `luma-island`. That is
-the contract every native Luma application is written against; see
-`application-kit.md`. `luma-no-native-surfaces` remains only for a renderer
+content to the Application Kit's islands, which carry `Suno-island`. That is
+the contract every native Suno application is written against; see
+`application-kit.md`. `Suno-no-native-surfaces` remains only for a renderer
 that owns every pixel of its window, and is never selected from an
 application-name list.
 
 ## Acceptance
 
-- Active and inactive Luma windows have distinct, stable elevation without a
+- Active and inactive Suno windows have distinct, stable elevation without a
   false divider below the title row.
 - Native GTK 4/libadwaita applications use the shared 42px header geometry,
-  Figtree, Prairie symbols, right-side connected controls, Luma material, and
+  Figtree, Prairie symbols, right-side connected controls, Suno material, and
   one application identity derived from their real application metadata and
   action model.
-- GTK 3 applications use the packaged Luma theme, the same system settings,
+- GTK 3 applications use the packaged Suno theme, the same system settings,
   the same single native application-identity contract, and the toolkit-owned
   native window/work-surface classes.
-- Ordinary GTK 4 and libadwaita application windows receive the shared Luma
+- Ordinary GTK 4 and libadwaita application windows receive the shared Suno
   frame and one top-level work surface without any per-application allowlist,
   launcher wrapper, or widget mutation after launch.
 - Explicit AppKit identity widgets suppress the compatibility identity, and
-  `luma-no-automatic-identity` is the documented source-level escape class for
+  `Suno-no-automatic-identity` is the documented source-level escape class for
   applications whose title structure cannot safely host one.
 - Toolkit identities follow the application-window lifecycle: header bars
   created before a builder assigns `GtkWindow:application` receive the same
@@ -88,7 +88,7 @@ application-name list.
   required. Transient dialogs and custom-rendered chrome remain outside this
   compatibility treatment.
 - The bundled Text Editor is a native package using the host toolkit; its
-  Fedora system Flatpak is absent from a composed Luma image.
+  Fedora system Flatpak is absent from a composed Suno image.
 - User-installed Flatpaks are never removed or globally overridden.
 - No result is described as full AppKit conformance unless its real source
   owns the responsive and semantic component structure.

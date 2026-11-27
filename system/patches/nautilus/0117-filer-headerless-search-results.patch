@@ -15,15 +15,15 @@ index f1e9f18..2350d3d 100644
      NautilusListBase parent_instance;
  
      GtkColumnView *view_ui;
-+    LumaColumnViewHeader *luma_header;
++    SunoColumnViewHeader *Suno_header;
      GtkWidget *search_heading;
-     LumaTypeLabel *search_heading_title;
-     LumaCountBadge *search_heading_count;
+     SunoTypeLabel *search_heading_title;
+     SunoCountBadge *search_heading_count;
 @@ -756,6 +757,8 @@ nautilus_list_view_setup_directory (NautilusListBase  *list_base,
      {
          gtk_widget_remove_css_class (GTK_WIDGET (self), "search-results");
      }
-+    luma_column_view_header_set_visible (self->luma_header,
++    Suno_column_view_header_set_visible (self->Suno_header,
 +                                         self->search_directory == NULL);
  
      if (self->search_directory != NULL)
@@ -32,9 +32,9 @@ index f1e9f18..2350d3d 100644
  
      setup_view_columns (self);
      gtk_widget_set_name (GTK_WIDGET (self->view_ui), "filer-list");
--    luma_table_header_for_column_view (self->view_ui);
-+    self->luma_header = luma_table_header_for_column_view (self->view_ui);
-     luma_selection_apply (GTK_WIDGET (self->view_ui));
+-    Suno_table_header_for_column_view (self->view_ui);
++    self->Suno_header = Suno_table_header_for_column_view (self->view_ui);
+     Suno_selection_apply (GTK_WIDGET (self->view_ui));
  
      column_view_sorter = gtk_column_view_get_sorter (self->view_ui);
 -- 

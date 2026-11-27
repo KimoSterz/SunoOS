@@ -10,8 +10,8 @@ repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 # shellcheck disable=SC1091
 . "$repo_root/config/mobile/gnome-mobile-source.env"
 
-workdir=${LUMA_GNOME_MOBILE_WORKDIR:-$PWD/gnome-mobile-bakeoff}
-jobs=${LUMA_GNOME_MOBILE_JOBS:-2}
+workdir=${SUNO_GNOME_MOBILE_WORKDIR:-$PWD/gnome-mobile-bakeoff}
+jobs=${SUNO_GNOME_MOBILE_JOBS:-2}
 src=$workdir/src
 stage=$workdir/stage
 pcdir=$workdir/build-pc

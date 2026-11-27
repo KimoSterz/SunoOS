@@ -1,0 +1,16 @@
+# Suno Connect's background agent (ADR-033): the Connect daemon keeps paired phones
+# linked and the account current while Suno Connect is closed. The daemon is a
+# separate system-installed program, so exec names it by its absolute path.
+# Installed as /usr/share/Suno/background/org.projectSuno.Connect.toml.
+schema_version = "0.2"
+
+[application]
+id = "org.projectSuno.Connect"
+name = "Suno Connect"
+
+[background]
+agent = "org.projectSuno.Connect.Agent"
+exec = "/usr/bin/Suno-connect-daemon --agent"
+category = "communication"
+wake = ["login", "network", "resume"]
+publishes = ["enabled", "phones", "phones-reachable", "account", "hub-sync", "live-extension:org.projectSuno.Connect.Devices"]

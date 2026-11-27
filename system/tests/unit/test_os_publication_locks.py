@@ -28,10 +28,10 @@ class PublicationLocks(unittest.TestCase):
         return {name: self.streams[name].fileno() for name in (names or self.streams)}
 
     def shell(self, mapping=None, extra=''):
-        env = os.environ.copy(); env.update(LUMA_OS_ROOT=str(self.root), PYTHONDONTWRITEBYTECODE='1')
-        env.pop('LUMA_TARGET_ARCHITECTURE', None); env.pop('LUMA_OS_PUBLICATION_LOCK_FDS', None)
-        if mapping is not None: env['LUMA_OS_PUBLICATION_LOCK_FDS'] = json.dumps(mapping)
-        script = 'set -euo pipefail; source "$1/scripts/os/lib/common.sh"; '+extra+'; luma_os_publication_lock'
+        env = os.environ.copy(); env.update(SUNO_OS_ROOT=str(self.root), PYTHONDONTWRITEBYTECODE='1')
+        env.pop('SUNO_TARGET_ARCHITECTURE', None); env.pop('SUNO_OS_PUBLICATION_LOCK_FDS', None)
+        if mapping is not None: env['SUNO_OS_PUBLICATION_LOCK_FDS'] = json.dumps(mapping)
+        script = 'set -euo pipefail; source "$1/scripts/os/lib/common.sh"; '+extra+'; Suno_os_publication_lock'
         return subprocess.run(['bash', '-c', script, 'test', str(ROOT)], env=env,
                               pass_fds=tuple(stream.fileno() for stream in self.streams.values()),
                               text=True, capture_output=True, timeout=10)
@@ -56,7 +56,7 @@ class PublicationLocks(unittest.TestCase):
     def test_partial_map_channel_fd6_is_not_overwritten_by_repository(self):
         fd = self.streams['nightly'].fileno()
         fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        extra = f'exec 6>&{fd}; export LUMA_OS_PUBLICATION_LOCK_FDS=\'{{"nightly":6}}\''
+        extra = f'exec 6>&{fd}; export SUNO_OS_PUBLICATION_LOCK_FDS=\'{{"nightly":6}}\''
         result = self.shell(extra=extra)
         self.assertEqual(result.returncode, 0, result.stderr)
 
@@ -109,7 +109,7 @@ class PublicationLocks(unittest.TestCase):
         self.assertIn('validation failed', result.stderr)
 
     def test_second_call_fails_explicitly_instead_of_leaking_or_reopening_fds(self):
-        result = self.shell(self.mapping(), 'luma_os_publication_lock')
+        result = self.shell(self.mapping(), 'Suno_os_publication_lock')
         self.assertNotEqual(result.returncode, 0)
         self.assertIn('already acquired', result.stderr)
 

@@ -6,7 +6,7 @@ Invented data only. Renders the real Messages window headless and crops each
 reacted message together with the message before it, so a reviewer sees where
 the reactions sit, what they overlap and what they come close to:
 
-    LUMA_VISUAL_MODE=dark xvfb-run -a -s "-screen 0 1200x1700x24" \\
+    SUNO_VISUAL_MODE=dark xvfb-run -a -s "-screen 0 1200x1700x24" \\
         messages_reactions_visual.py OUTPUT_DIR [--label before|after]
 
 The window is rendered straight to a texture, so every crop is exactly the
@@ -33,7 +33,7 @@ gi.require_version("Adw", "1")
 gi.require_version("Graphene", "1.0")
 from gi.repository import Gio, GLib, Graphene, Gtk  # noqa: E402
 
-MODE = os.environ.get("LUMA_VISUAL_MODE", "light")
+MODE = os.environ.get("SUNO_VISUAL_MODE", "light")
 NOW = int(time.time())
 
 # (direction, body, reactions as (person, emoji), crop name)
@@ -80,11 +80,11 @@ def main() -> int:
     label = sys.argv[sys.argv.index("--label") + 1] if "--label" in sys.argv else "after"
     root = Path(tempfile.mkdtemp(prefix="messages-reactions-"))
     os.environ.update(XDG_DATA_HOME=str(root / "data"), XDG_STATE_HOME=str(root / "state"),
-                      XDG_CONFIG_HOME=str(root / "config"), PRAIRIE_EDS_MODE="disabled", LUMA_MESSAGES_AGENT="0")
-    gi.require_version("LumaAppearance", "1")
-    from gi.repository import LumaAppearance
-    patch.object(LumaAppearance.SurfacePolicy, "get_has_selection", lambda self: True).start()
-    patch.object(LumaAppearance.SurfacePolicy, "get_effective", lambda self: MODE).start()
+                      XDG_CONFIG_HOME=str(root / "config"), PRAIRIE_EDS_MODE="disabled", SUNO_MESSAGES_AGENT="0")
+    gi.require_version("SunoAppearance", "1")
+    from gi.repository import SunoAppearance
+    patch.object(SunoAppearance.SurfacePolicy, "get_has_selection", lambda self: True).start()
+    patch.object(SunoAppearance.SurfacePolicy, "get_effective", lambda self: MODE).start()
     from prairie_apps import messages
     from prairie_apps.messages_accounts import Account, AccountStore
     from prairie_apps.messages_backend import MessagingCapability

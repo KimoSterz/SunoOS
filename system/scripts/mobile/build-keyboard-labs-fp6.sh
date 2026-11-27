@@ -52,7 +52,7 @@ podman run --rm --arch arm64 \
 printf '%s  %s\n' "$WVKBD_LAB_BINARY_SHA256" "$work_dir/wvkbd-mobintl" |
   sha256sum --check --status
 
-container=luma-keyboard-labs-fp6-$$
+container=Suno-keyboard-labs-fp6-$$
 cleanup() {
   podman rm -f "$container" >/dev/null 2>&1 || true
   rm -rf "$work_dir"
@@ -67,7 +67,7 @@ podman create --name "$container" --arch arm64 \
   ' >/dev/null
 podman start --attach "$container"
 
-kde_bundle="$work_dir/luma-keyboard-kde-f44-aarch64.tar.zst"
+kde_bundle="$work_dir/Suno-keyboard-kde-f44-aarch64.tar.zst"
 podman export "$container" | zstd -T0 -5 -o "$kde_bundle"
 
 rm -rf "$output_dir"
@@ -79,7 +79,7 @@ install -m 0644 "$kde_bundle" "$output_dir/"
 (
   cd "$output_dir"
   sha256sum squeekboard sm.puri.Squeekboard.gschema.xml wvkbd-mobintl \
-    luma-keyboard-kde-f44-aarch64.tar.zst >SHA256SUMS
+    Suno-keyboard-kde-f44-aarch64.tar.zst >SHA256SUMS
 )
 
 printf 'FP6 keyboard lab artifacts: %s\n' "$output_dir"

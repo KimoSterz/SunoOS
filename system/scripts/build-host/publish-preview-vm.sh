@@ -3,20 +3,20 @@
 
 set -euo pipefail
 
-build_root=${LUMA_BUILD_ROOT:-/srv/luma-build}
-protected_vm=${LUMA_PROTECTED_VM:-viola-windows-builder}
-vm_name=${LUMA_PREVIEW_VM_NAME:-luma-preview}
-memory_mib=${LUMA_PREVIEW_MEMORY_MIB:-8192}
-vcpus=${LUMA_PREVIEW_VCPUS:-4}
-qemu_user=${LUMA_LIBVIRT_QEMU_USER:-qemu}
-qemu_group=${LUMA_LIBVIRT_QEMU_GROUP:-qemu}
+build_root=${SUNO_BUILD_ROOT:-/srv/Suno-build}
+protected_vm=${SUNO_PROTECTED_VM:-viola-windows-builder}
+vm_name=${SUNO_PREVIEW_VM_NAME:-Suno-preview}
+memory_mib=${SUNO_PREVIEW_MEMORY_MIB:-8192}
+vcpus=${SUNO_PREVIEW_VCPUS:-4}
+qemu_user=${SUNO_LIBVIRT_QEMU_USER:-qemu}
+qemu_group=${SUNO_LIBVIRT_QEMU_GROUP:-qemu}
 
 if [ "$(id -u)" -ne 0 ]; then
   printf 'error: publish-preview-vm must run as root\n' >&2
   exit 1
 fi
 if [ "$#" -ne 1 ]; then
-  printf 'usage: %s /srv/luma-build/path/to/standalone.qcow2\n' "$0" >&2
+  printf 'usage: %s /srv/Suno-build/path/to/standalone.qcow2\n' "$0" >&2
   exit 2
 fi
 
@@ -77,7 +77,7 @@ vm_dir="$build_root/vm/$vm_name"
 target_image="$vm_dir/$vm_name.qcow2"
 # The build account owns preview bookkeeping while QEMU's dedicated group
 # receives traversal only. The disk itself remains qemu:qemu mode 0600.
-install -d -o luma-build -g "$qemu_group" -m 0750 "$vm_dir"
+install -d -o Suno-build -g "$qemu_group" -m 0750 "$vm_dir"
 if [ -e "$target_image" ]; then
   printf 'error: preview target already exists: %s\n' "$target_image" >&2
   exit 1
@@ -97,7 +97,7 @@ restorecon -RF "$build_root/vm"
 virt-install \
   --connect qemu:///system \
   --name "$vm_name" \
-  --description 'Project Luma current Stage web preview; isolated from production builds' \
+  --description 'Project Suno current Stage web preview; isolated from production builds' \
   --machine q35 \
   --cpu host-passthrough \
   --vcpus "$vcpus",sockets=1,cores="$vcpus",threads=1 \

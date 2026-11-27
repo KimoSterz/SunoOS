@@ -1,24 +1,24 @@
-# Luma installer defaults: Anaconda reads this file when no kickstart is given,
+# Suno installer defaults: Anaconda reads this file when no kickstart is given,
 # which is how the Atlas web UI (and any interactive install) gets its payload.
 # A kickstart on the boot line would make the install "automated", which the
 # web UI refuses, so the payload lives here and every choice stays with the
 # person at the installer.
 #
 # The file is the same on every medium. What differs (channel, carried
-# payload, test payload) is in /usr/share/luma-installer-atlas/media.env,
+# payload, test payload) is in /usr/share/Suno-installer-atlas/media.env,
 # written into the installer runtime by
-# scripts/install/atlas-iso/build-installer-iso.sh, next to the Luma OS
+# scripts/install/atlas-iso/build-installer-iso.sh, next to the Suno OS
 # Release public key. The installer runtime trusts only that key for the OSTree
 # pull, so GPG verification cannot be switched off from here (ADR-030 §9).
 
 # Choose where the payload comes from: the OSTree repository on the install
-# medium when it carries the channel's ref (fast, offline), otherwise Luma's
+# medium when it carries the channel's ref (fast, offline), otherwise Suno's
 # HTTPS repository. Anaconda runs %pre before it reads the rest of this file,
 # so the %include below sees the choice.
 %pre --interpreter=/usr/bin/bash --erroronfail
 set -euo pipefail
-media=/usr/share/luma-installer-atlas/media.env
-out=/run/luma-atlas
+media=/usr/share/Suno-installer-atlas/media.env
+out=/run/Suno-atlas
 mkdir -p "$out"
 # media.env is key=value lines written at build time; read it without
 # evaluating it.
@@ -73,18 +73,18 @@ printf 'ostreesetup --osname=%s --remote=%s --url=%s --ref=%s\n' \
     "${m[stateroot]}" "${m[remote]}" "$url" "$pull_ref" > "$out/payload.ks"
 # Whether the medium carries a staff preview credential; never its value.
 enrolled=false
-[ -s /usr/share/luma-installer-atlas/preview-credential ] && enrolled=true
+[ -s /usr/share/Suno-installer-atlas/preview-credential ] && enrolled=true
 python3 -c 'import json, sys; d = dict(zip(["channel", "source", "url", "ref"], sys.argv[1:5])); d["preview_enrolled"] = sys.argv[5] == "true"; print(json.dumps(d))' \
     "${m[channel]}" "$source" "$url" "$pull_ref" "$enrolled" > "$out/payload.json"
 echo "atlas: installing ${m[ref]} from $source ($url)"
 %end
 
-%include /run/luma-atlas/payload.ks
+%include /run/Suno-atlas/payload.ks
 firewall --use-system-defaults
 
 %post --erroronfail
 cp /etc/skel/.bash* /root
-# Luma always starts at its login screen, however the install was driven.
+# Suno always starts at its login screen, however the install was driven.
 systemctl set-default graphical.target
 %end
 
@@ -93,7 +93,7 @@ systemctl set-default graphical.target
 # script applies it to the installed system's display manager. The username is
 # validated again here; nothing else is read from the file.
 %post --nochroot --erroronfail
-intent=/run/luma-atlas/autologin
+intent=/run/Suno-atlas/autologin
 conf="$ANA_INSTALL_PATH/etc/gdm/custom.conf"
 if [ -s "$intent" ]; then
     user=$(head -n 1 "$intent")
@@ -115,26 +115,26 @@ fi
 %end
 
 # With "Sign me in automatically", saved passwords unlock at each automatic
-# sign-in: the installed system's luma-keyring makes a random keyring key for
+# sign-in: the installed system's Suno-keyring makes a random keyring key for
 # the account, seals it (systemd-creds, bound to the TPM2 where there is one)
 # and wraps it with a key derived from the password typed at the Account step
 # (Argon2id), so the password still recovers it on other hardware. The login
 # keyring is made with the key at the first sign-in. The password itself is
 # only ever in the installer's memory and is removed here whatever happens.
-# Without a machine ID or a luma-keyring that can do this, the first sign-in
+# Without a machine ID or a Suno-keyring that can do this, the first sign-in
 # asks for it once instead.
 %post --nochroot --interpreter=/usr/bin/bash
-intent=/run/luma-atlas/keyring-enrol
+intent=/run/Suno-atlas/keyring-enrol
 root=${ANA_INSTALL_PATH:-/mnt/sysroot}
-user=$(head -n 1 /run/luma-atlas/autologin 2>/dev/null) || user=
+user=$(head -n 1 /run/Suno-atlas/autologin 2>/dev/null) || user=
 case "$user" in ''|*[!a-z0-9_-]*|[!a-z_]*) user= ;; esac
 if [ -s "$intent" ] && [ -n "$user" ]; then
-    sealer=$(compgen -G "$root/usr/lib/python3*/site-packages/luma_keyring/autounlock.py" | head -n 1)
+    sealer=$(compgen -G "$root/usr/lib/python3*/site-packages/Suno_keyring/autounlock.py" | head -n 1)
     if ! grep -Eqx '[0-9a-f]{32}' "$root/etc/machine-id" 2>/dev/null; then
         echo "atlas: no machine ID yet; saved passwords are set up at the first sign-in"
     elif [ -z "$sealer" ]; then
         echo "atlas: this system cannot enrol saved passwords; they are set up at the first sign-in"
-    elif chroot "$root" /usr/libexec/luma-keyring --enrol "$user" < "$intent"; then
+    elif chroot "$root" /usr/libexec/Suno-keyring --enrol "$user" < "$intent"; then
         chroot "$root" /usr/bin/sh -c 'h=$(getent passwd "$1" | cut -d: -f6) && restorecon -RF "$h/.local/state"' sh "$user" 2>/dev/null || :
         echo "atlas: saved passwords of $user unlock at automatic sign-in"
     else
@@ -147,7 +147,7 @@ exit 0
 
 # The installed system's name (ADR-040, device names): "Nick’s ThinkPad"
 # (nicks-thinkpad), from the account created here and the computer's model,
-# by the installed system's own luma-device-name helper. A name the kickstart
+# by the installed system's own Suno-device-name helper. A name the kickstart
 # set is never replaced. With no account yet (first-login setup), or a system
 # that predates the helper, the name is left unset (placeholders removed) and
 # the system names itself at the first login. Existing machines are never
@@ -155,9 +155,9 @@ exit 0
 %post --nochroot --erroronfail --interpreter=/usr/bin/bash
 set -uo pipefail
 root=${ANA_INSTALL_PATH:-/mnt/sysroot}
-helper="$root/usr/libexec/luma-os/luma-device-name"
+helper="$root/usr/libexec/Suno-os/Suno-device-name"
 if [ -f "$helper" ]; then
-    python3 "$helper" install --root "$root" 2>&1 | sed 's/^luma-device-name: /atlas: /' || :
+    python3 "$helper" install --root "$root" 2>&1 | sed 's/^Suno-device-name: /atlas: /' || :
     exit 0
 fi
 file="$root/etc/hostname"
@@ -165,7 +165,7 @@ current=$(head -n 1 "$file" 2>/dev/null | tr -d '[:space:]') || current=
 case "$current" in
     '')
         echo "atlas: the new system is named at the first login" ;;
-    localhost|localhost.localdomain|localhost-live|fedora|fedora.localdomain|luma)
+    localhost|localhost.localdomain|localhost-live|fedora|fedora.localdomain|Suno)
         rm -f "$file"
         echo "atlas: removed the placeholder name $current; the new system is named at the first login" ;;
     *)
@@ -174,7 +174,7 @@ esac
 exit 0
 %end
 
-# What Atlas asked is not asked again: first-boot setup (luma-setup) reads
+# What Atlas asked is not asked again: first-boot setup (Suno-setup) reads
 # this and leaves out Hello, starting from the language and keyboard set here.
 # The time zone, the account and more apps are asked at first boot.
 %post --nochroot --interpreter=/usr/bin/python3
@@ -196,12 +196,12 @@ except OSError:
 layout = (x11.get("XkbLayout") or read("etc/vconsole.conf").get("KEYMAP", "")).split(",")[0]
 variant = (x11.get("XkbVariant") or "").split(",")[0]
 if locale and layout:
-    folder = os.path.join(root, "var/lib/luma-setup")
+    folder = os.path.join(root, "var/lib/Suno-setup")
     os.makedirs(folder, mode=0o755, exist_ok=True)
     with open(os.path.join(folder, "installer.json"), "w", encoding="utf-8") as handle:
         json.dump({"answered": ["hello"], "locale": locale,
                    "layout": layout + ("+" + variant if variant else "")}, handle)
-    subprocess.run(["chroot", root, "/usr/sbin/restorecon", "-RF", "/var/lib/luma-setup"], check=False)
+    subprocess.run(["chroot", root, "/usr/sbin/restorecon", "-RF", "/var/lib/Suno-setup"], check=False)
     print(f"atlas: first-boot setup starts from {locale} and the {layout} keyboard")
 %end
 
@@ -209,22 +209,22 @@ if locale and layout:
 # Apply it after Anaconda's tasks to the actual OSTree deployment /etc, and
 # retain the representative city's offline tzdata coordinates for Clock/Weather.
 %post --nochroot --erroronfail
-/usr/libexec/luma-installer-atlas/atlas-media apply-location "$ANA_INSTALL_PATH"
+/usr/libexec/Suno-installer-atlas/atlas-media apply-location "$ANA_INSTALL_PATH"
 %end
 
 # Atlas's "Get more apps" (ADR-028 Depot, section 14). Only collection ids the
 # Atlas catalog knows are written; Depot's first-boot provisioning reads the
-# file and installs from the Luma remote. The installer downloads nothing.
+# file and installs from the Suno remote. The installer downloads nothing.
 %post --nochroot --erroronfail
 python3 - <<'PY'
 import json
 import os
 import subprocess
 
-intent = "/run/luma-atlas/first-boot-apps.json"
-catalog = "/usr/share/luma-installer-atlas/app-collections.json"
+intent = "/run/Suno-atlas/first-boot-apps.json"
+catalog = "/usr/share/Suno-installer-atlas/app-collections.json"
 root = os.environ.get("ANA_INSTALL_PATH", "/mnt/sysroot")
-target = os.path.join(root, "etc/luma/first-boot-apps.json")
+target = os.path.join(root, "etc/Suno/first-boot-apps.json")
 
 try:
     with open(intent, encoding="utf-8") as handle:
@@ -245,32 +245,32 @@ with open(temporary, "w", encoding="utf-8") as handle:
     handle.write("\n")
 os.chmod(temporary, 0o644)
 os.replace(temporary, target)
-subprocess.run(["chroot", root, "/usr/sbin/restorecon", "-F", "/etc/luma", "/etc/luma/first-boot-apps.json"], check=False)
+subprocess.run(["chroot", root, "/usr/sbin/restorecon", "-F", "/etc/Suno", "/etc/Suno/first-boot-apps.json"], check=False)
 print("atlas: first-boot apps recorded:", collections)
 PY
 %end
 
 # ADR-030 §9: whatever the install came from, the installed system updates
-# online from its first boot. Its origin is luma:luma/1/x86_64/<channel> on
-# the luma remote, verified with the Luma OS Release key, and the channel is
-# recorded for luma-update.
+# online from its first boot. Its origin is Suno:Suno/1/x86_64/<channel> on
+# the Suno remote, verified with the Suno OS Release key, and the channel is
+# recorded for Suno-update.
 #
-# The remote uses the image's mirror-list layout (luma-update 1.0.0-1.luma.3):
-# /etc/ostree/remotes.d/luma.conf always says
-# url=mirrorlist=file:///etc/luma/update-mirrorlist, a world-readable file
-# with no secret in it, and /etc/luma/update-mirrorlist (root, 0600) holds the
+# The remote uses the image's mirror-list layout (Suno-update 1.0.0-1.Suno.3):
+# /etc/ostree/remotes.d/Suno.conf always says
+# url=mirrorlist=file:///etc/Suno/update-mirrorlist, a world-readable file
+# with no secret in it, and /etc/Suno/update-mirrorlist (root, 0600) holds the
 # repository URL. The installer writes the medium's HTTPS URL there and never
 # puts a URL in the remote file. Preview channels (beta, nightly) are served
 # only with a credential. Until Hub enrolls devices one by one, staff media for
 # a preview channel may carry one per-batch credential
 # (build-installer-iso.sh --preview-credential-file), kept root-only in the
-# installer at /usr/share/luma-installer-atlas/preview-credential. When it is
+# installer at /usr/share/Suno-installer-atlas/preview-credential. When it is
 # there, the mirror list gets the preview URL with the credential in it, and
-# /etc/luma/update-preview-credential (root, 0600) gets luma-update's
+# /etc/Suno/update-preview-credential (root, 0600) gets Suno-update's
 # enrollment record, as EnrollPreview writes it. Leaving the channel through
-# luma-update resets the mirror list to the public URL and removes the record.
+# Suno-update resets the mirror list to the public URL and removes the record.
 # The credential is never printed: logs say only "preview credential
-# installed". Media without it leave enrollment to luma-update after first
+# installed". Media without it leave enrollment to Suno-update after first
 # boot.
 %post --nochroot --erroronfail --interpreter=/usr/bin/python3
 import glob
@@ -282,9 +282,9 @@ import subprocess
 import sys
 import time
 
-MEDIA = "/usr/share/luma-installer-atlas/media.env"
-KEY = "/usr/share/luma-installer-atlas/luma-release.gpg"
-CREDENTIAL = "/usr/share/luma-installer-atlas/preview-credential"
+MEDIA = "/usr/share/Suno-installer-atlas/media.env"
+KEY = "/usr/share/Suno-installer-atlas/Suno-release.gpg"
+CREDENTIAL = "/usr/share/Suno-installer-atlas/preview-credential"
 PHYSICAL_ROOT = "/mnt/sysimage"
 
 
@@ -350,7 +350,7 @@ os.chmod(target_key, 0o644)
 # The mirror list: the medium's repository URL, root-only, written atomically
 # (a private temporary file in the same directory, flushed, then renamed).
 mirrorlist = media["mirrorlist"]
-if not re.fullmatch(r"/etc/luma/[A-Za-z0-9._-]+", mirrorlist):
+if not re.fullmatch(r"/etc/Suno/[A-Za-z0-9._-]+", mirrorlist):
     fail("invalid mirror list path " + mirrorlist)
 url = media["https_url"]
 shown_url = url
@@ -374,9 +374,9 @@ write_private(os.path.join(root, mirrorlist.lstrip("/")), url + "\n")
 
 if credential is not None:
     record = media["preview_record"]
-    if not re.fullmatch(r"/etc/luma/[A-Za-z0-9._-]+", record):
+    if not re.fullmatch(r"/etc/Suno/[A-Za-z0-9._-]+", record):
         fail("invalid preview enrollment record path")
-    # luma-update's enrollment record (docs/os/luma-update.md, EnrollPreview).
+    # Suno-update's enrollment record (docs/os/Suno-update.md, EnrollPreview).
     # "source" tells it this credential came with the staff medium and is shared
     # by the batch.
     write_private(os.path.join(root, record.lstrip("/")), json.dumps({
@@ -412,7 +412,7 @@ for extra in existing[1:]:
     os.unlink(extra)
 
 
-def luma_section(text):
+def Suno_section(text):
     """The lines of the remote's group, without its header."""
     lines, inside = [], False
     for line in text.splitlines():
@@ -427,7 +427,7 @@ def luma_section(text):
 if existing:
     text = open(remote_file, encoding="utf-8").read()
     keys = {}
-    for line in luma_section(text):
+    for line in Suno_section(text):
         if "=" in line and not line.startswith("#"):
             key, value = line.split("=", 1)
             keys.setdefault(key.strip(), value.strip())
@@ -461,16 +461,16 @@ if not current or current.group(1) != wanted:
     if not media.get("test_payload_url"):
         fail(f"the deployment's origin is {current.group(1) if current else 'missing'}, not {wanted}")
     # Test media install a stand-in payload; the origin still names the
-    # channel so the update path is what a Luma install gets.
+    # channel so the update path is what a Suno install gets.
     text = re.sub(r"(?m)^refspec=.*$", "refspec=" + wanted, text) if current else text + f"\n[origin]\nrefspec={wanted}\n"
     write(origins[0], text)
     print(f"atlas: test payload {current.group(1) if current else ''} recorded as {wanted}")
 
-# The channel, for luma-update.
-write(os.path.join(root, "etc/luma/update-channel.conf"), f"channel={channel}\n")
+# The channel, for Suno-update.
+write(os.path.join(root, "etc/Suno/update-channel.conf"), f"channel={channel}\n")
 
 subprocess.run(["chroot", root, "/usr/sbin/restorecon", "-F", "-R",
-                "/etc/ostree/remotes.d", media["target_key"], "/etc/luma"], check=False)
+                "/etc/ostree/remotes.d", media["target_key"], "/etc/Suno"], check=False)
 print(f"atlas: updates follow {wanted} from {shown_url} (through {mirrorlist})")
 %end
 
@@ -490,7 +490,7 @@ import re
 import subprocess
 
 PHYSICAL_ROOT = "/mnt/sysimage"
-MARK = "# Retired by the Luma installer: / is composefs and is mounted from the kernel command line.\n"
+MARK = "# Retired by the Suno installer: / is composefs and is mounted from the kernel command line.\n"
 
 root = os.environ.get("ANA_INSTALL_PATH", "/mnt/sysroot")
 fstab = os.path.join(root, "etc/fstab")
@@ -538,7 +538,7 @@ print("atlas: commented out the / entry in /etc/fstab (composefs root)")
 %end
 
 # Kernel arguments the release declares in /usr/lib/bootc/kargs.d (for
-# example efi_pstore.pstore_disable=0 from luma-vitals-crash-evidence).
+# example efi_pstore.pstore_disable=0 from Suno-vitals-crash-evidence).
 # bootc reads that directory when it installs; Anaconda's ostreesetup does
 # not, so without this a fresh install boots without them. Each *.toml is
 # read with tomllib as bootc does: `kargs` is a list of arguments, and
@@ -644,21 +644,21 @@ print("atlas: boot entry options: " + " ".join(after))
 %post --nochroot --erroronfail --interpreter=/usr/bin/python3
 import os
 
-CREDENTIAL = "/usr/share/luma-installer-atlas/preview-credential"
+CREDENTIAL = "/usr/share/Suno-installer-atlas/preview-credential"
 root = os.environ.get("ANA_INSTALL_PATH", "/mnt/sysroot")
 
 if not os.path.exists(CREDENTIAL):
     raise SystemExit(0)
 
 SCRIPT = r'''#!/usr/bin/python3
-# Written by the Luma installer. Removes a staff medium's preview credential
+# Written by the Suno installer. Removes a staff medium's preview credential
 # from the installation logs on the first boot, then removes itself.
 import glob, json, os, sys
-root = os.environ.get("LUMA_ATLAS_SCRUB_ROOT", "/")
+root = os.environ.get("SUNO_ATLAS_SCRUB_ROOT", "/")
 def at(path):
     return os.path.join(root, path.lstrip("/"))
 try:
-    with open(at("/etc/luma/update-preview-credential"), encoding="utf-8") as handle:
+    with open(at("/etc/Suno/update-preview-credential"), encoding="utf-8") as handle:
         credential = json.load(handle)["credential"].encode("ascii")
 except (OSError, ValueError, KeyError, AttributeError, UnicodeEncodeError):
     credential = None
@@ -672,7 +672,7 @@ for path in paths if credential else []:
     if credential not in data:
         continue
     stat = os.stat(path)
-    temporary = path + ".luma-scrub"
+    temporary = path + ".Suno-scrub"
     descriptor = os.open(temporary, os.O_WRONLY | os.O_CREAT | os.O_TRUNC | os.O_NOFOLLOW, 0o600)
     with os.fdopen(descriptor, "wb") as handle:
         handle.write(data.replace(credential, b"<preview credential removed>"))
@@ -687,9 +687,9 @@ for path in paths if credential else []:
     print("removed the preview credential from " + path[len(root.rstrip("/")):])
 if left:
     sys.exit("the preview credential is still in " + ", ".join(left))
-for path in ("/etc/systemd/system/multi-user.target.wants/luma-atlas-scrub-install-logs.service",
-             "/etc/systemd/system/luma-atlas-scrub-install-logs.service",
-             "/etc/luma/atlas-scrub-install-logs"):
+for path in ("/etc/systemd/system/multi-user.target.wants/Suno-atlas-scrub-install-logs.service",
+             "/etc/systemd/system/Suno-atlas-scrub-install-logs.service",
+             "/etc/Suno/atlas-scrub-install-logs"):
     try:
         os.unlink(at(path))
     except FileNotFoundError:
@@ -700,11 +700,11 @@ UNIT = """[Unit]
 Description=Remove the staff media preview credential from the installation logs
 After=local-fs.target
 Before=systemd-user-sessions.service display-manager.service
-ConditionPathExists=/etc/luma/atlas-scrub-install-logs
+ConditionPathExists=/etc/Suno/atlas-scrub-install-logs
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/python3 /etc/luma/atlas-scrub-install-logs
+ExecStart=/usr/bin/python3 /etc/Suno/atlas-scrub-install-logs
 
 [Install]
 WantedBy=multi-user.target
@@ -720,17 +720,17 @@ def write(path, text, mode):
     os.replace(temporary, path)
 
 
-write(os.path.join(root, "etc/luma/atlas-scrub-install-logs"), SCRIPT, 0o700)
-unit = os.path.join(root, "etc/systemd/system/luma-atlas-scrub-install-logs.service")
+write(os.path.join(root, "etc/Suno/atlas-scrub-install-logs"), SCRIPT, 0o700)
+unit = os.path.join(root, "etc/systemd/system/Suno-atlas-scrub-install-logs.service")
 write(unit, UNIT, 0o644)
 wants = os.path.join(root, "etc/systemd/system/multi-user.target.wants")
 os.makedirs(wants, mode=0o755, exist_ok=True)
-link = os.path.join(wants, "luma-atlas-scrub-install-logs.service")
+link = os.path.join(wants, "Suno-atlas-scrub-install-logs.service")
 if not os.path.islink(link):
-    os.symlink("/etc/systemd/system/luma-atlas-scrub-install-logs.service", link)
+    os.symlink("/etc/systemd/system/Suno-atlas-scrub-install-logs.service", link)
 import subprocess
 subprocess.run(["chroot", root, "/usr/sbin/restorecon", "-F",
-                "/etc/luma/atlas-scrub-install-logs", "/etc/systemd/system/luma-atlas-scrub-install-logs.service",
-                "/etc/systemd/system/multi-user.target.wants/luma-atlas-scrub-install-logs.service"], check=False)
+                "/etc/Suno/atlas-scrub-install-logs", "/etc/systemd/system/Suno-atlas-scrub-install-logs.service",
+                "/etc/systemd/system/multi-user.target.wants/Suno-atlas-scrub-install-logs.service"], check=False)
 print("atlas: first-boot log check for the preview credential installed")
 %end

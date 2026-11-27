@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
 
-# One bounded physical acceptance test: lock the active local Luma/Phosh
+# One bounded physical acceptance test: lock the active local Suno/Phosh
 # session, require a secure match-on-chip authentication, then clear the idle
 # hint before asking logind and Phosh to wake/unlock that exact session. No PIN,
 # HAT, template, or raw image is logged.
@@ -10,11 +10,11 @@ set -Eeuo pipefail
 umask 077
 
 smoke=/tmp/run-fp6-stock-biometric-service-smoke-v1-remote.sh
-stage=/tmp/luma-qcomtee-stage-rpmb-lazy-v1
-client=/tmp/qcomtee-smoke-src/adapter/libluma-fingerprint-enrollment-client.so
-wake_input=/tmp/luma-fp6-wake-input
-log=/tmp/luma-fp6-lockscreen-auth.events
-expected_kernel=7.1.2-luma-fp-cma1
+stage=/tmp/Suno-qcomtee-stage-rpmb-lazy-v1
+client=/tmp/qcomtee-smoke-src/adapter/libSuno-fingerprint-enrollment-client.so
+wake_input=/tmp/Suno-fp6-wake-input
+log=/tmp/Suno-fp6-lockscreen-auth.events
+expected_kernel=7.1.2-Suno-fp-cma1
 expected_listener_sha=e871f3e7e13e5030945baed60038cb029badd6d69afb5bc6e342c5c343338389
 expected_client_sha=5b7f6f48c36bfadefec76fb3c2cf578d193962d802feef538c2a812beeee1303
 expected_wake_input_sha=20ed28fe084294c161e9d263342b2af67d225471abec079092e4bf951b17245e
@@ -42,14 +42,14 @@ listener_pid=$(cat "$stage/listener.pid")
 
 mapfile -t sessions < <(
   loginctl list-sessions --no-legend |
-    awk '$2 == 1000 && $3 == "luma" && $4 == "seat0" && $6 == "user" {print $1}'
+    awk '$2 == 1000 && $3 == "Suno" && $4 == "seat0" && $6 == "user" {print $1}'
 )
 [[ ${#sessions[@]} -eq 1 ]] || fail local_session_identity
 session=${sessions[0]}
 [[ $(loginctl show-session "$session" -p Active --value) == yes ]] || fail session_inactive
-pgrep -u luma -x phosh >/dev/null || fail phosh_missing
+pgrep -u Suno -x phosh >/dev/null || fail phosh_missing
 phosh_bus=(
-  sudo -n -u luma env
+  sudo -n -u Suno env
   XDG_RUNTIME_DIR=/run/user/1000
   DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus
   gdbus call --session --dest org.gnome.ScreenSaver
@@ -69,12 +69,12 @@ printf 'event=fp6_lockscreen_locked session=local-phosh authentication=pending\n
 chmod 0600 "$log"
 status=0
 env \
-  LUMA_FP6_ENROLLMENT_STAGE="$stage" \
-  LUMA_FP6_LISTENER_DAEMON_SHA256="$expected_listener_sha" \
-  LUMA_STOCK_ENROLLMENT_CLIENT="$client" \
-  LUMA_STOCK_ENROLLMENT_CLIENT_SHA256="$expected_client_sha" \
-  LUMA_STOCK_PERSIST_FINGERPRINT=1 \
-  LUMA_STOCK_BIOMETRIC_CLIENT_MODE=authenticate \
+  SUNO_FP6_ENROLLMENT_STAGE="$stage" \
+  SUNO_FP6_LISTENER_DAEMON_SHA256="$expected_listener_sha" \
+  SUNO_STOCK_ENROLLMENT_CLIENT="$client" \
+  SUNO_STOCK_ENROLLMENT_CLIENT_SHA256="$expected_client_sha" \
+  SUNO_STOCK_PERSIST_FINGERPRINT=1 \
+  SUNO_STOCK_BIOMETRIC_CLIENT_MODE=authenticate \
   "$smoke" fingerprint 2>&1 | tee "$log" || status=${PIPESTATUS[0]}
 [[ $status -eq 0 ]] || fail "authentication_exit_$status"
 grep -Fqx 'event=fp6_stock_authentication_pass match=secure_match_on_chip raw_images=0' \
@@ -88,7 +88,7 @@ grep -Fqx 'event=stock_fingerprint_authentication_verified template=match_on_chi
 # emit the session's real Unlock signal.  Verify the state after a settling
 # window so a transient modeset cannot be mistaken for a successful wake.
 "$wake_input"
-sudo -n -u luma env \
+sudo -n -u Suno env \
   XDG_RUNTIME_DIR=/run/user/1000 \
   DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus \
   gdbus emit --session --object-path /org/gnome/ScreenSaver \

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /*
  * One-property bridge for running the unmodified QREL biometric services in
- * Luma's disposable Android service namespace.  The caller must independently
+ * Suno's disposable Android service namespace.  The caller must independently
  * verify that listeners 10, 8192, and 28672 are active before loading it.
  */
 
@@ -186,7 +186,7 @@ int32_t AServiceManager_addService(void *binder, const char *instance) {
     return -38;
   result = real_add_service(binder, instance);
   dprintf(STDERR_FILENO,
-          "event=luma_binder_add_service instance=%s status=%d\n",
+          "event=Suno_binder_add_service instance=%s status=%d\n",
           instance ? instance : "(null)", result);
   return result;
 }

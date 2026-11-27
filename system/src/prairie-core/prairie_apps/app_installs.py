@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: Apache-2.0
 
-"""Which install of an app Luma Connect syncs with: the system package or the Flatpak.
+"""Which install of an app Suno Connect syncs with: the system package or the Flatpak.
 
-A Luma app installed from the operating system keeps its data under
+A Suno app installed from the operating system keeps its data under
 `$XDG_DATA_HOME` (normally `~/.local/share`). The same app installed as a
 Flatpak keeps it under `~/.var/app/<app id>/data`, because the sandbox sets
 `XDG_DATA_HOME` there. Connect sync runs outside any sandbox and has to read and
@@ -46,13 +46,13 @@ import os
 from dataclasses import dataclass
 from pathlib import Path
 
-NOTES = "org.projectluma.Notes"
-WEATHER = "org.projectluma.Weather"
-CLOCK = "org.projectluma.Clock"
-LEAF = "org.projectluma.Leaf"
-TIDE = "org.projectluma.Tide"
-TASKS = "org.projectluma.Tasks"
-CONTACTS = "org.projectluma.Contacts"
+NOTES = "org.projectSuno.Notes"
+WEATHER = "org.projectSuno.Weather"
+CLOCK = "org.projectSuno.Clock"
+LEAF = "org.projectSuno.Leaf"
+TIDE = "org.projectSuno.Tide"
+TASKS = "org.projectSuno.Tasks"
+CONTACTS = "org.projectSuno.Contacts"
 SYNCED_APPS = (NOTES, WEATHER, CLOCK, LEAF, TIDE, TASKS, CONTACTS)
 
 SYSTEM = "system"
@@ -171,9 +171,9 @@ def resolve(app_id: str, environment: dict[str, str] | None = None) -> Install:
     # Only an administrator-owned OS role contract can override native entries;
     # a user export/catalogue cannot impersonate that transition.
     try:
-        from luma_installer.native_app_roles import required, installed
+        from Suno_installer.native_app_roles import required, installed
     except ImportError:
-        required = None  # traditional Linux without Luma's host owner
+        required = None  # traditional Linux without Suno's host owner
     if required is not None and required(app_id):
         import gi
         gi.require_version('Flatpak', '1.0')

@@ -29,7 +29,7 @@ def admitted_upstream(srpm):
         if hashlib.file_digest(stream, 'sha256').hexdigest() != SRPM_SHA256:
             raise ValueError('Filer upstream source RPM digest mismatch')
     names = ('nautilus-50.2.2.tar.xz', 'default-terminal.patch')
-    with tempfile.TemporaryDirectory(prefix='luma-filer-upstream-') as temporary:
+    with tempfile.TemporaryDirectory(prefix='Suno-filer-upstream-') as temporary:
         # rpm2cpio receives only the verified file; cpio extracts only these
         # exact archive-root members, never arbitrary package paths/scripts.
         result = subprocess.run(['rpm2cpio', str(srpm.resolve())], check=True,

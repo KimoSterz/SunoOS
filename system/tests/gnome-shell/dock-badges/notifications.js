@@ -13,14 +13,14 @@ const APP_PATH = '/org/gnome/desktop/notifications/application/';
 // desktop id -> how that app posts: 'fdo' (org.freedesktop.Notifications with
 // a desktop-entry hint) or 'gtk' (org.gtk.Notifications from the app itself).
 const APPS = [
-    ['org.projectluma.Messages', 'fdo'],
-    ['org.projectluma.Phone', 'fdo'],
-    ['org.projectluma.Calendar', 'fdo'],
-    ['org.projectluma.Clock', 'fdo'],
-    ['org.projectluma.Connect', 'fdo'],
-    ['org.projectluma.Weather', 'gtk'],
-    ['org.projectluma.Tide', 'gtk'],
-    ['org.projectluma.Depot', 'gtk'],
+    ['org.projectSuno.Messages', 'fdo'],
+    ['org.projectSuno.Phone', 'fdo'],
+    ['org.projectSuno.Calendar', 'fdo'],
+    ['org.projectSuno.Clock', 'fdo'],
+    ['org.projectSuno.Connect', 'fdo'],
+    ['org.projectSuno.Weather', 'gtk'],
+    ['org.projectSuno.Tide', 'gtk'],
+    ['org.projectSuno.Depot', 'gtk'],
 ];
 
 function settingsFor(appId) {

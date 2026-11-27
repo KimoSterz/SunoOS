@@ -40,9 +40,9 @@ int main(int argc, char **argv) {
         GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
     for (unsigned sidebar = 0; sidebar < 2; sidebar++) {
         GtkWidget *window = gtk_window_new();
-        gtk_widget_add_css_class(window, "luma-files-window");
+        gtk_widget_add_css_class(window, "Suno-files-window");
         GtkWidget *surface = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
-        gtk_widget_add_css_class(surface, sidebar ? "luma-sidebar-surface" : "luma-content-surface");
+        gtk_widget_add_css_class(surface, sidebar ? "Suno-sidebar-surface" : "Suno-content-surface");
         gtk_window_set_child(GTK_WINDOW(window), surface);
         GMenu *model = g_menu_new();
         g_menu_append(model, "Open", "win.open");

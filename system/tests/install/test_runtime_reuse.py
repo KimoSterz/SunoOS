@@ -25,15 +25,15 @@ class RuntimeReuse(unittest.TestCase):
     def test_replacement_removes_only_old_repo_and_maps_real_new_repo(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            (root / 'luma').mkdir()
+            (root / 'Suno').mkdir()
             (root / 'repo').mkdir()
-            (root / 'luma/repo').symlink_to(root / 'repo', target_is_directory=True)
+            (root / 'Suno/repo').symlink_to(root / 'repo', target_is_directory=True)
             command = ['xorriso', '-indev', 'old.iso', '-outdev', 'new.iso',
-                       '-boot_image', 'any', 'replay', '-map', str(root / 'luma'), 'luma']
+                       '-boot_image', 'any', 'replay', '-map', str(root / 'Suno'), 'Suno']
             actual = wrapper.replace_payload_command(command)
-            self.assertEqual(actual[-6:], ['-rm_r', '/luma/repo', '--', '-map',
-                                          str(root / 'repo'), '/luma/repo'])
-            self.assertNotIn(str(root / 'luma'), actual)
+            self.assertEqual(actual[-6:], ['-rm_r', '/Suno/repo', '--', '-map',
+                                          str(root / 'repo'), '/Suno/repo'])
+            self.assertNotIn(str(root / 'Suno'), actual)
 
     def test_ambiguous_map_rejected(self):
         with self.assertRaises(ValueError):
@@ -123,7 +123,7 @@ class RuntimeReuse(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / '.discinfo'
             for arch in ('x86_64', 'aarch64'):
-                path.write_text('epoch\nLuma\n' + arch + '\n')
+                path.write_text('epoch\nSuno\n' + arch + '\n')
                 wrapper.check_target_discinfo(path, arch)
                 other = 'aarch64' if arch == 'x86_64' else 'x86_64'
                 with self.assertRaisesRegex(ValueError, 'target architecture'):
@@ -186,10 +186,10 @@ class RuntimeReuse(unittest.TestCase):
             root = Path(directory)
             tree = root / 'tree'
             (tree / 'usr/lib').mkdir(parents=True)
-            (tree / 'usr/share/luma-installer-atlas').mkdir(parents=True)
+            (tree / 'usr/share/Suno-installer-atlas').mkdir(parents=True)
             clock = tree / 'usr/lib/clock-epoch'
             clock.touch(); os.utime(clock, (1000, 1000))
-            (tree / 'usr/share/luma-installer-atlas/media.env').write_text('clock_epoch=1000\nvolid=RETAINED\n')
+            (tree / 'usr/share/Suno-installer-atlas/media.env').write_text('clock_epoch=1000\nvolid=RETAINED\n')
             (tree / 'unrelated').write_text('same bytes')
             os.setxattr(tree / 'unrelated', 'user.runtime-fixture', b'preserved')
             old = root / 'old'; old.mkdir()
@@ -212,7 +212,7 @@ class RuntimeReuse(unittest.TestCase):
             self.assertEqual((rebuilt / 'unrelated').read_text(), 'same bytes')
             self.assertEqual(os.getxattr(rebuilt / 'unrelated', 'user.runtime-fixture'), b'preserved')
             self.assertEqual(int((rebuilt / 'usr/lib/clock-epoch').stat().st_mtime), 2000)
-            self.assertEqual((rebuilt / 'usr/share/luma-installer-atlas/media.env').read_text(),
+            self.assertEqual((rebuilt / 'usr/share/Suno-installer-atlas/media.env').read_text(),
                              'clock_epoch=2000\nvolid=RETAINED\n')
             initrd = overrides['/images/pxeboot/initrd.img'].read_bytes()
             self.assertTrue(initrd.startswith(b'original-initramfs-prefix'))

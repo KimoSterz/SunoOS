@@ -108,7 +108,7 @@ class ResponsiveQualification:
         try:
             w = self.window
             sheet = w.responsive.share_sheet
-            assert sheet.get_mapped() and sheet.has_css_class('lumaui-share')
+            assert sheet.get_mapped() and sheet.has_css_class('SunoUI-share')
             assert sheet.document.subtitle == w.state['activeUrl']
             capture(w, self.output / f'share-{self.width}.png', paintable=self.paintable)
             sheet.action_buttons['copy-link'].emit('clicked')
@@ -147,11 +147,11 @@ class ResponsiveQualification:
             assert len(w.responsive.tabs()) == self.pin_count
             assert w.state['activeTabId'] == self.pin_tab
             row = w.sidebar.favorites[self.pin_tab]
-            assert row.get_mapped() and row.has_css_class('lumaui-selected')
-            assert row.has_css_class('lumaui-card')
-            assert w.address_field.has_css_class('lumaui-bar-entry')
+            assert row.get_mapped() and row.has_css_class('SunoUI-selected')
+            assert row.has_css_class('SunoUI-card')
+            assert w.address_field.has_css_class('SunoUI-bar-entry')
             assert row.get_width() < w.sidebar.get_width() / 2
-            assert w.bookmark.get_child().get_icon_name() == 'lumaui-pin-symbolic'
+            assert w.bookmark.get_child().get_icon_name() == 'SunoUI-pin-symbolic'
             assert w.bookmark.get_tooltip_text() == 'Unpin from top'
             capture(w, self.output / 'pinned-1180.png', paintable=self.paintable)
             w.bookmark.emit('clicked')
@@ -169,7 +169,7 @@ class ResponsiveQualification:
                 return GLib.SOURCE_CONTINUE
             assert len(w.responsive.tabs()) == self.pin_count
             assert w.state['activeTabId'] == self.pin_tab
-            assert w.sidebar.rows[self.pin_tab].has_css_class('lumaui-selected')
+            assert w.sidebar.rows[self.pin_tab].has_css_class('SunoUI-selected')
             self.pin_verified = True
             self.report['pin_toggle_preserves_tab'] = True
             self.report['share_copies_actual_url'] = True

@@ -188,7 +188,7 @@ class MigrationTests(unittest.TestCase):
 class AutostartEntryTests(unittest.TestCase):
     def test_entry_starts_the_service_and_is_removed_again(self):
         with tempfile.TemporaryDirectory() as root:
-            path = Path(root) / "autostart/org.projectluma.Clock.desktop"
+            path = Path(root) / "autostart/org.projectSuno.Clock.desktop"
             self.assertTrue(write_autostart_entry(True, path=path, command=["/usr/bin/prairie-clock", "--gapplication-service"]))
             keyfile = GLib.KeyFile()
             keyfile.load_from_file(str(path), GLib.KeyFileFlags.NONE)
@@ -410,13 +410,13 @@ class ServiceTests(unittest.TestCase):
         self.assertIsNone(service.system_wake)
         self.assertIsNone(service.inhibitor)
 
-    def test_with_luma_background_running_the_agent_clock_writes_no_autostart_of_its_own(self):
+    def test_with_Suno_background_running_the_agent_clock_writes_no_autostart_of_its_own(self):
         self.store.save_alarm(Alarm(A, "", 8, 0))
         service = self.service(sandboxed=False)
         with mock.patch.object(service, "_background_managed", return_value=True):
             service.start()
         self.assertEqual(self.portal.requests, [])
-        entry = Path(os.environ["XDG_CONFIG_HOME"]) / "autostart/org.projectluma.Clock.desktop"
+        entry = Path(os.environ["XDG_CONFIG_HOME"]) / "autostart/org.projectSuno.Clock.desktop"
         self.assertFalse(entry.exists())
 
     def test_a_once_alarm_rings_snoozes_rings_again_and_then_lets_go(self):
@@ -542,7 +542,7 @@ class ServiceTests(unittest.TestCase):
         service.start()
         self.assertEqual(service.background, BACKGROUND_UNAVAILABLE)
 
-        entry = Path(os.environ["XDG_CONFIG_HOME"]) / "autostart/org.projectluma.Clock.desktop"
+        entry = Path(os.environ["XDG_CONFIG_HOME"]) / "autostart/org.projectSuno.Clock.desktop"
         entry.unlink(missing_ok=True)
         (clock_alarms.scheduler_path(self.store)).unlink()
         host = self.service(sandboxed=False, portal=FakePortal(error=failure))
@@ -604,7 +604,7 @@ class SessionInhibitorBusTests(unittest.TestCase):
         self.assertEqual((logind["what"], logind["who"], logind["why"], logind["mode"]),
                          ("sleep:idle", "Clock", "An alarm is ringing", "block"))
         session = next(e for e in taken if e["event"] == "gsm-inhibit")
-        self.assertEqual((session["app_id"], session["flags"]), ("org.projectluma.Clock", 12))
+        self.assertEqual((session["app_id"], session["flags"]), ("org.projectSuno.Clock", 12))
         self.assertTrue(inhibitor.held)
         inhibitor.release()
         released = self.wait_for(lambda: {e["event"] for e in self.events()} >= {"logind-released", "gsm-uninhibit"}

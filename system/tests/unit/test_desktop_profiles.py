@@ -26,9 +26,9 @@ class DesktopProfiles(unittest.TestCase):
         preview = t.packages(ROOT, 'aarch64', profile_name='arm-preview')
         self.assertEqual(preview, [p for p in full if not t.excluded(t.package_name(p), selection)])
         names = {t.package_name(p) for p in preview}
-        self.assertTrue({'luma-relay', 'luma-application-installer', 'luma-apk-metadata', 'prairie-core-apps'}.issubset(names))
-        self.assertTrue({'luma-android-runtime', 'luma-android-images'}.issubset(names))
-        for name in ['wine-luma-relay-explorer', 'luma-cast', 'luma-cast-googlecast', 'luma-cast-backend-common', 'luma-cast-dlna', 'luma-cast-miracast']:
+        self.assertTrue({'Suno-relay', 'Suno-application-installer', 'Suno-apk-metadata', 'prairie-core-apps'}.issubset(names))
+        self.assertTrue({'Suno-android-runtime', 'Suno-android-images'}.issubset(names))
+        for name in ['wine-Suno-relay-explorer', 'Suno-cast', 'Suno-cast-googlecast', 'Suno-cast-backend-common', 'Suno-cast-dlna', 'Suno-cast-miracast']:
             self.assertNotIn(name, names)
 
     def test_preview_filters_fedora_packages_and_shared_roles(self):
@@ -38,8 +38,8 @@ class DesktopProfiles(unittest.TestCase):
             self.assertNotIn(name, fedora)
         self.assertIn('greenboot', fedora)
         roles = t.roles(ROOT, 'aarch64', 'arm-preview')
-        self.assertIn('luma-android-runtime', roles)
-        self.assertIn('luma-application-installer', roles)
+        self.assertIn('Suno-android-runtime', roles)
+        self.assertIn('Suno-application-installer', roles)
         self.assertIn('prairie-core-apps', roles)
 
     def test_preview_is_explicit_and_arm_only(self):
@@ -47,15 +47,15 @@ class DesktopProfiles(unittest.TestCase):
             t.packages(ROOT, 'x86_64', profile_name='arm-preview')
         with self.assertRaises(ValueError):
             t.packages(ROOT, 'aarch64', profile_name='unknown')
-        self.assertEqual(t.contract(ROOT, 'aarch64', 'arm-preview')['LUMA_OS_PROFILE'], 'arm-preview')
+        self.assertEqual(t.contract(ROOT, 'aarch64', 'arm-preview')['SUNO_OS_PROFILE'], 'arm-preview')
 
     def test_preflight_and_cli_reject_unsupported_profile(self):
         for args in [('--arch', 'x86_64', '--profile', 'arm-preview'), ('--arch', 'aarch64', '--profile', 'unknown')]:
             result = subprocess.run(['python3', 'scripts/os/preflight-desktop.py', *args, '--package-dir', str(ROOT)], cwd=ROOT, capture_output=True)
             self.assertEqual(result.returncode, 2)
-        env = {**os.environ, 'LUMA_OS_PROFILE': 'arm-preview'}
+        env = {**os.environ, 'SUNO_OS_PROFILE': 'arm-preview'}
         result = subprocess.run(['python3', 'scripts/os/lib/desktop_target.py', '--arch', 'aarch64', 'roles'], cwd=ROOT, env=env, text=True, capture_output=True, check=True)
-        self.assertIn('luma-android-runtime', result.stdout.splitlines())
+        self.assertIn('Suno-android-runtime', result.stdout.splitlines())
 
     def test_phone_capability_adds_the_phone_stack_on_arm_only(self):
         phone = t.lines(ROOT / 'config/os/phone-packages.txt')
@@ -70,10 +70,10 @@ class DesktopProfiles(unittest.TestCase):
                          dict(desktop=True, android_apps=True, windows_apps=False, casting=False, phone=True))
 
     def test_shell_environment_passes_profile_and_rejects_x86(self):
-        env = {**os.environ, 'LUMA_TARGET_ARCHITECTURE': 'aarch64', 'LUMA_OS_PROFILE': 'arm-preview'}
-        result = subprocess.run(['bash', '-ec', '. scripts/os/lib/common.sh; luma_os_desktop_packages'], cwd=ROOT, env=env, text=True, capture_output=True, check=True)
+        env = {**os.environ, 'SUNO_TARGET_ARCHITECTURE': 'aarch64', 'SUNO_OS_PROFILE': 'arm-preview'}
+        result = subprocess.run(['bash', '-ec', '. scripts/os/lib/common.sh; Suno_os_desktop_packages'], cwd=ROOT, env=env, text=True, capture_output=True, check=True)
         self.assertEqual(result.stdout.splitlines(), t.packages(ROOT, 'aarch64', profile_name='arm-preview'))
-        env['LUMA_TARGET_ARCHITECTURE'] = 'x86_64'
+        env['SUNO_TARGET_ARCHITECTURE'] = 'x86_64'
         self.assertNotEqual(subprocess.run(['bash', '-ec', '. scripts/os/lib/common.sh'], cwd=ROOT, env=env, capture_output=True).returncode, 0)
 
     def test_hardware_target_adds_only_its_packages_and_kernel(self):
@@ -83,28 +83,28 @@ class DesktopProfiles(unittest.TestCase):
         added = {t.package_name(p) for p in pi} - {t.package_name(p) for p in generic}
         self.assertEqual(added, set(device['packages']))
         self.assertTrue(set(generic) < set(pi))
-        self.assertEqual(device['kernel'], 'kernel-luma-rpi')
+        self.assertEqual(device['kernel'], 'kernel-Suno-rpi')
         for arch in t.ARCHITECTURES:
             names = {t.package_name(p) for p in t.packages(ROOT, arch)}
             self.assertFalse(names & t.device_package_names(ROOT), arch)
 
     def test_hardware_target_has_its_own_ref_and_architecture(self):
         values = t.contract(ROOT, 'aarch64', 'arm-preview', 'raspberrypi,rpi5')
-        self.assertEqual(values['LUMA_OS_REF_PREFIX'], 'luma/1/aarch64/raspberrypi-rpi5')
-        self.assertEqual(values['LUMA_OS_HARDWARE_TARGET'], 'raspberrypi,rpi5')
-        self.assertEqual(values['LUMA_OS_KERNEL_PACKAGE'], 'kernel-luma-rpi')
-        self.assertNotIn('LUMA_OS_HARDWARE_TARGET', t.contract(ROOT, 'aarch64', 'arm-preview'))
+        self.assertEqual(values['SUNO_OS_REF_PREFIX'], 'Suno/1/aarch64/raspberrypi-rpi5')
+        self.assertEqual(values['SUNO_OS_HARDWARE_TARGET'], 'raspberrypi,rpi5')
+        self.assertEqual(values['SUNO_OS_KERNEL_PACKAGE'], 'kernel-Suno-rpi')
+        self.assertNotIn('SUNO_OS_HARDWARE_TARGET', t.contract(ROOT, 'aarch64', 'arm-preview'))
         for arch, target in (('x86_64', 'raspberrypi,rpi5'), ('aarch64', 'fairphone,fp6'), ('aarch64', 'unknown')):
             with self.subTest(arch=arch, target=target), self.assertRaises(ValueError):
                 t.packages(ROOT, arch, hardware_target=target)
 
     def test_shell_environment_passes_the_hardware_target(self):
-        env = {**os.environ, 'LUMA_TARGET_ARCHITECTURE': 'aarch64', 'LUMA_OS_PROFILE': 'arm-preview',
-               'LUMA_OS_HARDWARE_TARGET': 'raspberrypi,rpi5'}
-        result = subprocess.run(['bash', '-ec', '. scripts/os/lib/common.sh; echo "$LUMA_OS_REF_PREFIX"; luma_os_desktop_packages'],
+        env = {**os.environ, 'SUNO_TARGET_ARCHITECTURE': 'aarch64', 'SUNO_OS_PROFILE': 'arm-preview',
+               'SUNO_OS_HARDWARE_TARGET': 'raspberrypi,rpi5'}
+        result = subprocess.run(['bash', '-ec', '. scripts/os/lib/common.sh; echo "$SUNO_OS_REF_PREFIX"; Suno_os_desktop_packages'],
                                 cwd=ROOT, env=env, text=True, capture_output=True, check=True)
         lines = result.stdout.splitlines()
-        self.assertEqual(lines[0], 'luma/1/aarch64/raspberrypi-rpi5')
+        self.assertEqual(lines[0], 'Suno/1/aarch64/raspberrypi-rpi5')
         self.assertEqual(lines[1:], t.packages(ROOT, 'aarch64', profile_name='arm-preview', hardware_target='raspberrypi,rpi5'))
 
 if __name__ == '__main__':

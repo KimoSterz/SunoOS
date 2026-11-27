@@ -1,7 +1,7 @@
 # Calendar and Tasks standalone dependencies
 
-The bundles contain selected Luma Platform libraries: GTK, libadwaita, LumaUI,
-LumaSemantics, AppKit, Python, PyGObject, cairo, GLib, libsecret and Evolution
+The bundles contain selected Suno Platform libraries: GTK, libadwaita, SunoUI,
+SunoSemantics, AppKit, Python, PyGObject, cairo, GLib, libsecret and Evolution
 Data Server client libraries, with their native dependencies. EDS server
 processes and desktop Online Accounts remain host services. Included notices
 are retained under `usr/share/licenses`; consult each component's license.
@@ -10,7 +10,7 @@ The Freedesktop Platform 25.08 runtime is shared. Its source is maintained by
 the Freedesktop SDK project. The application release includes a native file
 inventory and corresponding dependency source inputs.
 
-GTK and libadwaita use the upstream source RPMs, Luma patches and build recipes
+GTK and libadwaita use the upstream source RPMs, Suno patches and build recipes
 pinned in `config/desktop/inputs.env`, `scripts/packages/build-gtk4.sh` and
 `scripts/packages/build-libadwaita.sh`. The source receipt distinguishes these
 custom builds from their upstream RPM inputs.
@@ -25,4 +25,4 @@ The source URLs and build options are documented in
 `scripts/standalone/build-tide-loaders.sh`.
 
 Native libraries can be replaced in the portable directory's `usr/lib64`.
-The application, shared UI and packaging source remain in the Luma repository.
+The application, shared UI and packaging source remain in the Suno repository.

@@ -20,13 +20,13 @@ def main():
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[2]
     original = (args.android_make / 'core/envsetup.mk').read_text()
-    with tempfile.TemporaryDirectory(prefix='luma-image-host-tools-') as directory:
+    with tempfile.TemporaryDirectory(prefix='Suno-image-host-tools-') as directory:
         work = Path(directory)
         (work / 'core').mkdir()
         source = work / 'core/envsetup.mk'
         source.write_text(original)
         subprocess.run(['git', 'apply', '--unsafe-paths', '--directory=' + str(work),
-                        str(root / 'patches/android-make/0001-luma-native-image-host-tools.patch')],
+                        str(root / 'patches/android-make/0001-Suno-native-image-host-tools.patch')],
                        cwd=work, check=True)
         def run(text, host, cross, flag):
             unit = work / 'policy.mk'
@@ -37,7 +37,7 @@ probe:
 ''')
             environment = dict(PATH=os.defpath, LANG='C.UTF-8', HOST_OS=host,
                 HOST_CROSS_OS=cross, HOST_CROSS_ARCH='x86', HOST_CROSS_2ND_ARCH='x86_64',
-                BUILD_HOST_static='', LUMA_ANDROID_IMAGE_HOST_ONLY=flag)
+                BUILD_HOST_static='', SUNO_ANDROID_IMAGE_HOST_ONLY=flag)
             return subprocess.check_output(['make', '--no-print-directory', '-rR', '-f', str(unit), 'probe'],
                 cwd=work, env=environment, text=True, timeout=10).strip().split('|')
         patched = source.read_text()

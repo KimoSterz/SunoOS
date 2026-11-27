@@ -62,7 +62,7 @@ class Home:
         installation = self.system_flatpak if system else self.home / ".local/share/flatpak"
         metadata = installation / "app" / app_id / "current/active/metadata"
         metadata.parent.mkdir(parents=True, exist_ok=True)
-        metadata.write_text(f"[Application]\nname={app_id}\nruntime=org.projectluma.Platform/x86_64/44\n")
+        metadata.write_text(f"[Application]\nname={app_id}\nruntime=org.projectSuno.Platform/x86_64/44\n")
         if export:
             entry = installation / "exports/share/applications" / f"{app_id}.desktop"
             entry.parent.mkdir(parents=True, exist_ok=True)
@@ -157,7 +157,7 @@ class ResolveTests(unittest.TestCase):
         import gi
         gi.require_version('Flatpak', '1.0')
         from gi.repository import Flatpak
-        from luma_installer import native_app_roles
+        from Suno_installer import native_app_roles
         self.h.system_app(NOTES)
         data = self.h.flatpak_app(NOTES, system=True)
         (data / 'kept-note').write_text('sandbox edits survive removal')
@@ -178,7 +178,7 @@ class ResolveTests(unittest.TestCase):
         import gi
         gi.require_version('Flatpak', '1.0')
         from gi.repository import Flatpak
-        from luma_installer import native_app_roles
+        from Suno_installer import native_app_roles
         self.h.system_app(NOTES)
         data = self.h.flatpak_app(NOTES, system=True)
         ref = SimpleNamespace(get_name=lambda: NOTES, format_ref=lambda:'app/'+NOTES+'/x86_64/beta')
@@ -268,7 +268,7 @@ class NotesTests(unittest.TestCase):
 
     def library(self, data_home: Path, titles):
         from prairie_apps.notes_backend import NotesStore
-        path = data_home / "luma/notes/notes.sqlite3"
+        path = data_home / "Suno/notes/notes.sqlite3"
         path.parent.mkdir(parents=True, exist_ok=True)
         store = NotesStore(path)
         for title in titles:
@@ -280,7 +280,7 @@ class NotesTests(unittest.TestCase):
     def test_the_snapshot_reads_the_flatpak_library(self):
         data = self.h.flatpak_app(NOTES)
         self.library(data, ["From the Flatpak"])
-        self.assertEqual(self.sync.notes_store_path(self.h.env), data / "luma/notes/notes.sqlite3")
+        self.assertEqual(self.sync.notes_store_path(self.h.env), data / "Suno/notes/notes.sqlite3")
         payload = self.sync.notes_snapshot("device", environment=self.h.env)
         self.assertEqual([item["title"] for item in payload["items"]], ["From the Flatpak"])
 
@@ -302,7 +302,7 @@ class NotesTests(unittest.TestCase):
         self.assertIn(("notes", ["Native one", "Native two"]), sent)
 
         # The system Notes goes; the Flatpak comes, with a library of its own.
-        (native / "luma/notes/notes.sqlite3").rename(native / "luma/notes/moved.sqlite3")
+        (native / "Suno/notes/notes.sqlite3").rename(native / "Suno/notes/moved.sqlite3")
         data = self.h.flatpak_app(NOTES)
         self.library(data, ["Flatpak only"])
         sent.clear()
@@ -311,12 +311,12 @@ class NotesTests(unittest.TestCase):
         self.sync.push(environment=self.h.env, transport=transport, contacts_loader=lambda: (), out=io.StringIO(), force=True)
         self.assertFalse([entry for entry in sent if entry[0] == "notes"])
         before = json.loads(self.sync.state_file(self.h.env).read_text())
-        self.assertEqual(before["https://hub.test|device|notes"]["path"], str(native / "luma/notes/notes.sqlite3"))
+        self.assertEqual(before["https://hub.test|device|notes"]["path"], str(native / "Suno/notes/notes.sqlite3"))
         # Explicit unit fixture for a completed host handoff. Actual signed
         # migration and marker publication are qualified by Installer's tests.
-        ready = self.h.home / ".local/state/luma/app-migration/org.projectluma.Notes.ready.json"
+        ready = self.h.home / ".local/state/Suno/app-migration/org.projectSuno.Notes.ready.json"
         ready.parent.mkdir(mode=0o700, parents=True)
-        ready.write_text(json.dumps({"schema": "org.projectluma.app-data-ready/v1",
+        ready.write_text(json.dumps({"schema": "org.projectSuno.app-data-ready/v1",
             "app_id": NOTES, "result": "PASS", "receipt_sha256": "a" * 64}))
         ready.chmod(0o600)
         with self.assertRaises(ConnectError) as refused:
@@ -327,7 +327,7 @@ class NotesTests(unittest.TestCase):
                        force=True)
         self.assertIn(("notes", ["Flatpak only"]), sent)
         state = json.loads(self.sync.state_file(self.h.env).read_text())
-        self.assertEqual(state["https://hub.test|device|notes"]["path"], str(data / "luma/notes/notes.sqlite3"))
+        self.assertEqual(state["https://hub.test|device|notes"]["path"], str(data / "Suno/notes/notes.sqlite3"))
 
 
 class TideTests(unittest.TestCase):
@@ -337,7 +337,7 @@ class TideTests(unittest.TestCase):
             h = Home(Path(root))
             data = h.flatpak_app(TIDE)
             found = library(h.env)
-            self.assertEqual(found, (data / "luma-tide/library.db", FlatpakRuntime(TIDE)))
+            self.assertEqual(found, (data / "Suno-tide/library.db", FlatpakRuntime(TIDE)))
 
 
 if __name__ == "__main__":

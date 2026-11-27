@@ -8,9 +8,9 @@
 set -euo pipefail
 umask 077
 
-stage=/var/tmp/luma-fp6-stock-android-binderfs-compat1
+stage=/var/tmp/Suno-fp6-stock-android-binderfs-compat1
 bundle=$stage/bundle
-release=7.1.2-luma-fp-ims1
+release=7.1.2-Suno-fp-ims1
 candidate_efi_sha=8a97eed2c3a4f9d125f49a8d2c98f267900f805bd046215fe585edbb2c8c12b8
 candidate_image_sha=d1476dbea625aeb22d5d2a27df3a928cd9a2a13bd72a80bfda8507d376df0153
 candidate_config_sha=7eb084e3a201a11e69676aad4c93b9588e72f15dc9ef86d5d5c56ee13fc0f448
@@ -54,7 +54,7 @@ require_hash "$bundle/linux.efi" "$candidate_efi_sha"
 require_hash "$bundle/Image.gz" "$candidate_image_sha"
 require_hash "$bundle/config" "$candidate_config_sha"
 require_hash "$bundle/manifest.env" "$candidate_manifest_sha"
-grep -qx 'KERNEL_RELEASE=7.1.2-luma-fp-ims1' "$bundle/manifest.env" || die 'release manifest differs'
+grep -qx 'KERNEL_RELEASE=7.1.2-Suno-fp-ims1' "$bundle/manifest.env" || die 'release manifest differs'
 grep -qx 'RELEASE_MODE=ims1-compatible' "$bundle/manifest.env" || die 'release mode differs'
 grep -qx "MODULE_TREE_SHA256=$candidate_modules_sha" "$bundle/manifest.env" || die 'module manifest differs'
 grep -qx 'ANDROID_BINDERFS_BUILTIN=true' "$bundle/manifest.env" || die 'BinderFS manifest gate failed'
@@ -78,7 +78,7 @@ require_hash /boot/linux-binderfs-ims1.efi "$candidate_efi_sha"
 [[ $(grep -c '^title ' /boot/loader/entries/pmos.conf) -eq 1 ]] || die 'rollback title field differs'
 [[ $(grep -c '^linux ' /boot/loader/entries/pmos.conf) -eq 1 ]] || die 'rollback Linux field differs'
 sed \
-  -e 's/^title .*/title Luma FP6 BinderFS compatibility candidate (three-attempt gate)/' \
+  -e 's/^title .*/title Suno FP6 BinderFS compatibility candidate (three-attempt gate)/' \
   -e 's#^linux .*#linux linux-binderfs-ims1.efi#' \
   /boot/loader/entries/pmos.conf >"$candidate_entry.new"
 chmod 0700 "$candidate_entry.new"

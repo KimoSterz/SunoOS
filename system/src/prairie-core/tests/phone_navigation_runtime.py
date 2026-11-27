@@ -10,7 +10,7 @@ from gi.repository import Gio, GLib
 
 fixture = Path(__file__).resolve().parent / 'fixtures/phone-v70.json'
 assert fixture.is_file(), 'The private Phone navigation fixture is required'
-os.environ['LUMA_PHONE_FIXTURE'] = str(fixture)
+os.environ['SUNO_PHONE_FIXTURE'] = str(fixture)
 from prairie_apps.phone import PhoneApplication, PhoneWindow
 
 
@@ -24,7 +24,7 @@ def settle():
 class NavigationWorkflow(unittest.TestCase):
     def test_lists_and_recent_sidebar_across_widths(self):
         app = PhoneApplication()
-        app.set_application_id('org.projectluma.Phone.NavigationTest')
+        app.set_application_id('org.projectSuno.Phone.NavigationTest')
         app.set_flags(Gio.ApplicationFlags.NON_UNIQUE)
         app.register(None)
         try:

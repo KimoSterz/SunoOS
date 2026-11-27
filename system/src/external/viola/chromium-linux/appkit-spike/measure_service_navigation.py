@@ -19,7 +19,7 @@ class Fixture(BaseHTTPRequestHandler):
     def do_GET(self):
         if urlsplit(self.path).path == '/late-icon.svg':
             # Reuse the packaged native globe to test a late favicon update.
-            body = (Path(__file__).parent / 'assets/org.projectluma.Viola.NativeIntegration.svg').read_bytes()
+            body = (Path(__file__).parent / 'assets/org.projectSuno.Viola.NativeIntegration.svg').read_bytes()
             self.send_response(200)
             self.send_header('Content-Type', 'image/svg+xml')
             self.send_header('Content-Length', str(len(body)))

@@ -1,15 +1,15 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Windows start-up for a `luma port` app: `python -m luma_port_boot [args]`.
+"""Windows start-up for a `Suno port` app: `python -m Suno_port_boot [args]`.
 
 The launcher (<App>.exe or <App>.cmd) sets PATH, PYTHONHOME and PYTHONPATH. This
 module does the rest before anything imports GTK, then runs the app the way it runs
-on Luma (`python -m <module>`):
+on Suno (`python -m <module>`):
 
 - GI_TYPELIB_PATH, XDG_DATA_DIRS, GSETTINGS_SCHEMA_DIR inside the folder;
-- the manifest's env (luma-port-app.json, e.g. LUMA_CHARLIE_FIXTURE=v71);
+- the manifest's env (Suno-port-app.json, e.g. SUNO_CHARLIE_FIXTURE=v71);
 - a gdk-pixbuf loaders.cache for this folder, written once to %LOCALAPPDATA%;
-- LUMA_FONT_DIRS at share/fonts/luma (Figtree, IBM Plex Mono as Luma OS ships them), then hands over to
-  the kit's shared boot path, luma_appkit.platform_boot (private GDI fonts, a fresh Pango font map, Luma
+- SUNO_FONT_DIRS at share/fonts/Suno (Figtree, IBM Plex Mono as Suno OS ships them), then hands over to
+  the kit's shared boot path, Suno_appkit.platform_boot (private GDI fonts, a fresh Pango font map, Suno
   OS's GTK settings), which runs `python -m <module>`;
 - under pythonw (no console), stdout/stderr and any crash go to last-run.log there.
 """
@@ -28,7 +28,7 @@ ROOT = APP.parent
 
 def _state_dir(app_id: str) -> Path:
     base = os.environ.get("LOCALAPPDATA") or str(Path.home() / "AppData" / "Local")
-    path = Path(base) / "LumaPort" / app_id
+    path = Path(base) / "SunoPort" / app_id
     path.mkdir(parents=True, exist_ok=True)
     return path
 
@@ -47,33 +47,33 @@ def _pixbuf_cache(state: Path) -> None:
             cache.write_bytes(out)
             stamp.write_text(str(ROOT), encoding="utf-8")
         except (OSError, subprocess.CalledProcessError) as error:
-            print(f"luma port: no pixbuf loader cache ({error})", file=sys.stderr)
+            print(f"Suno port: no pixbuf loader cache ({error})", file=sys.stderr)
             return
     os.environ["GDK_PIXBUF_MODULE_FILE"] = str(cache)
 
 
 def _fonts_and_diagnostics() -> None:
-    """Fonts go through the kit's one boot path (luma_appkit.platform_boot, shared with mac/android):
+    """Fonts go through the kit's one boot path (Suno_appkit.platform_boot, shared with mac/android):
     this only points it at the bundled faces and logs what Pango can see, for remote debugging."""
-    os.environ["LUMA_FONT_DIRS"] = os.pathsep.join(
-        [str(ROOT / "share" / "fonts" / "luma"), *filter(None, [os.environ.get("LUMA_FONT_DIRS")])])
-    from luma_appkit import platform_boot
+    os.environ["SUNO_FONT_DIRS"] = os.pathsep.join(
+        [str(ROOT / "share" / "fonts" / "Suno"), *filter(None, [os.environ.get("SUNO_FONT_DIRS")])])
+    from Suno_appkit import platform_boot
 
     registered = platform_boot.register_fonts()   # AddFontResourceExW(FR_PRIVATE) on Windows; idempotent
-    print(f"luma port: {len(registered)} private faces registered", flush=True)
+    print(f"Suno port: {len(registered)} private faces registered", flush=True)
     try:
         from gi.repository import PangoCairo
 
         have = {f.get_name() for f in PangoCairo.FontMap.get_default().list_families()}
-        print("luma port: Luma faces Pango sees: "
+        print("Suno port: Suno faces Pango sees: "
               + (", ".join(sorted(n for n in have if n.startswith(("Figtree", "IBM Plex", "Newsreader")))) or "none"),
               flush=True)
     except (ImportError, ValueError) as error:
-        print(f"luma port: pango check skipped ({error})", flush=True)
+        print(f"Suno port: pango check skipped ({error})", flush=True)
 
 
 def main() -> int:
-    meta = json.loads((APP / "luma-port-app.json").read_text(encoding="utf-8"))
+    meta = json.loads((APP / "Suno-port-app.json").read_text(encoding="utf-8"))
     state = _state_dir(meta["app_id"])
     if sys.stdout is None or sys.stderr is None or os.path.basename(sys.executable).lower().startswith("pythonw"):
         log = open(state / "last-run.log", "w", encoding="utf-8", buffering=1)
@@ -84,8 +84,8 @@ def main() -> int:
     env["GI_TYPELIB_PATH"] = str(ROOT / "lib" / "girepository-1.0")
     env["XDG_DATA_DIRS"] = os.pathsep.join([str(share), *filter(None, [env.get("XDG_DATA_DIRS")])])
     env["GSETTINGS_SCHEMA_DIR"] = str(share / "glib-2.0" / "schemas")
-    env.setdefault("LUMA_PORT", "windows")
-    env.setdefault("LUMA_APPKIT_ICON_PATH", str(share / "icons" / "Prairie" / "symbolic" / "actions"))
+    env.setdefault("SUNO_PORT", "windows")
+    env.setdefault("SUNO_APPKIT_ICON_PATH", str(share / "icons" / "Prairie" / "symbolic" / "actions"))
     for key, value in meta.get("env", {}).items():
         # {app}: the folder with the app's packages and data/; {root}: the whole runtime folder.
         env.setdefault(key, value.replace("{app}", str(APP)).replace("{root}", str(ROOT)))
@@ -97,8 +97,8 @@ def main() -> int:
     except Exception:  # noqa: BLE001 - a font problem must not stop the app
         traceback.print_exc()
 
-    print(f"luma port: {meta['name']} {meta['version']} from {ROOT}; python -m {meta['module']}", flush=True)
-    from luma_appkit import platform_boot
+    print(f"Suno port: {meta['name']} {meta['version']} from {ROOT}; python -m {meta['module']}", flush=True)
+    from Suno_appkit import platform_boot
     try:
         platform_boot.main([meta["module"], *sys.argv[1:]])   # tune_gtk, then python -m <module>
     except SystemExit as exit_:

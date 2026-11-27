@@ -78,7 +78,7 @@ else:
 
     from gi.repository import Gio
     app = (Toolkit.Application if toolkit == "adw" else Gtk.Application)(
-        application_id=f"org.projectluma.WindowShapeOther.{name}",
+        application_id=f"org.projectSuno.WindowShapeOther.{name}",
         flags=Gio.ApplicationFlags.NON_UNIQUE)
     app.connect("activate", activate)
     app.run([])

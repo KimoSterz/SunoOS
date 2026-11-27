@@ -15,13 +15,13 @@ class SignInPanelTest(unittest.TestCase):
     def test_sign_in_sends_both_fields_once_and_forgets_the_password(self):
         answers = []
         panel = SignInPanel(PROMPT, lambda *answer: answers.append(answer))
-        panel.username.set_text('luma')
+        panel.username.set_text('Suno')
         panel.password.set_text('test')
         self.assertFalse(panel.password.entry.get_visibility())
         panel.submit()
         panel.submit()
         panel.cancel()
-        self.assertEqual(answers, [('a1', True, 'luma', 'test')])
+        self.assertEqual(answers, [('a1', True, 'Suno', 'test')])
         self.assertEqual(panel.password.text, '')
 
     def test_cancel_and_escape_answer_not_supplied(self):
@@ -49,9 +49,9 @@ class SignInAnswerTest(unittest.TestCase):
 
     def test_sign_in_answers_the_engine_and_folds(self):
         chrome, sent, center = self.chrome()
-        ResponsiveChrome.answer_signin(chrome, 'a1', True, 'luma', 'test')
+        ResponsiveChrome.answer_signin(chrome, 'a1', True, 'Suno', 'test')
         self.assertEqual(sent, [('permission:respond', {'id': 'a1', 'decision': 'signin',
-                                                        'username': 'luma', 'password': 'test'})])
+                                                        'username': 'Suno', 'password': 'test'})])
         self.assertEqual(chrome.signin_answered, 'a1')
         self.assertIsNone(center.grown)
 

@@ -73,7 +73,7 @@ class LocalStoreTests(unittest.TestCase):
         with patch.dict(os.environ, {"XDG_DATA_HOME": self.directory.name}):
             backup_source("source", ["first", "second"])
             backup_source("source", ["changed"])
-        files = list((Path(self.directory.name) / 'luma/tasks/backups').glob('*.json'))
+        files = list((Path(self.directory.name) / 'Suno/tasks/backups').glob('*.json'))
         self.assertEqual(len(files), 1)
         self.assertEqual(json.loads(files[0].read_text())["components"], ["first", "second"])
         self.assertEqual(files[0].stat().st_mode & 0o777, 0o600)

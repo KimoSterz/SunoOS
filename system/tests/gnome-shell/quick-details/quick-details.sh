@@ -9,7 +9,7 @@ export QD_OUT=${1:-/tmp/quick-details}
 export XDG_RUNTIME_DIR=/tmp/qd-run; rm -rf $XDG_RUNTIME_DIR; mkdir -m 700 -p $XDG_RUNTIME_DIR
 export HOME=/tmp/qd-home; rm -rf $HOME; mkdir -p $HOME/.config/glib-2.0/settings
 cat > $HOME/.config/glib-2.0/settings/keyfile <<'K'
-[org/project-luma/shell-state]
+[org/project-suno/shell-state]
 surface-treatment='light'
 shelf-edge='bottom'
 shelf-surface-mode='separate'
@@ -19,11 +19,11 @@ status-controls-right=true
 color-scheme='default'
 
 [org/gnome/shell]
-enabled-extensions=['tilingshell@ferrarodomenico.com', 'tiling-toggle@project-luma.local']
+enabled-extensions=['tilingshell@ferrarodomenico.com', 'tiling-toggle@project-suno.local']
 disable-user-extensions=false
 welcome-dialog-last-shown-version='999'
 K
-export GSETTINGS_BACKEND=keyfile LIBGL_ALWAYS_SOFTWARE=1 LUMA_MUTTER_ALLOW_SOFTWARE_BLUR=1
+export GSETTINGS_BACKEND=keyfile LIBGL_ALWAYS_SOFTWARE=1 SUNO_MUTTER_ALLOW_SOFTWARE_BLUR=1
 rm -rf "$QD_OUT"; mkdir -p "$QD_OUT"
 mkdir -p /run/dbus
 dbus-send --system --print-reply --dest=org.freedesktop.DBus / org.freedesktop.DBus.Peer.Ping >/dev/null 2>&1 ||

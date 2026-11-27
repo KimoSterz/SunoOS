@@ -3,7 +3,7 @@
 #
 # Print "<tag> <digest>" for the newest Fedora Silverblue 44 x86_64 bootable
 # container published under the contract repository
-# (LUMA_OS_BASE_IMAGE_REPOSITORY), e.g.
+# (SUNO_OS_BASE_IMAGE_REPOSITORY), e.g.
 #   44.20260914.0-x86_64 sha256:d5dd...
 # The nightly build uses it with --base latest and records the digest in the
 # build's provenance; the pinned digest in config/os/release.env changes only
@@ -12,9 +12,9 @@
 set -euo pipefail
 . "$(dirname -- "$0")/lib/common.sh"
 
-repository=${LUMA_OS_BASE_IMAGE_REPOSITORY#quay.io/}
-[ "$repository" != "$LUMA_OS_BASE_IMAGE_REPOSITORY" ] ||
-  luma_os_die "only quay.io base repositories are supported: $LUMA_OS_BASE_IMAGE_REPOSITORY"
+repository=${SUNO_OS_BASE_IMAGE_REPOSITORY#quay.io/}
+[ "$repository" != "$SUNO_OS_BASE_IMAGE_REPOSITORY" ] ||
+  Suno_os_die "only quay.io base repositories are supported: $SUNO_OS_BASE_IMAGE_REPOSITORY"
 curl --fail --silent --show-error --max-time 60 \
   "https://quay.io/api/v1/repository/$repository/tag/?onlyActiveTags=true&limit=100&filter_tag_name=like:${LUMA_OS_FEDORA_RELEASE}." |
 python3 -c '
@@ -33,4 +33,4 @@ for tag in json.load(sys.stdin).get("tags", []):
 if best is None:
     sys.exit("no " + architecture + " tag found for Fedora " + release)
 print(best[1], best[2])
-' "$LUMA_OS_FEDORA_RELEASE" "$LUMA_OS_ARCH"
+' "$SUNO_OS_FEDORA_RELEASE" "$SUNO_OS_ARCH"

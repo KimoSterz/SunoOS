@@ -16,7 +16,7 @@ class FixtureTests(unittest.TestCase):
         with patch("pathlib.Path.mkdir", side_effect=AssertionError("fixture mkdir")), \
                 patch("prairie_apps.notes_fixture.sqlite3.connect", wraps=original) as connect, \
                 patch("prairie_apps.notes_backend.notes_data_directory", side_effect=AssertionError("real store")):
-            store = source_from_environment({"LUMA_NOTES_FIXTURE": str(FIXTURE)})
+            store = source_from_environment({"SUNO_NOTES_FIXTURE": str(FIXTURE)})
             try:
                 connect.assert_called_once_with(":memory:")
                 self.assertEqual(len(store.list_notes()), 11)
@@ -51,7 +51,7 @@ class FixtureTests(unittest.TestCase):
     def test_invalid_fixture_never_falls_back_to_real_data(self):
         with patch("prairie_apps.notes_fixture.NotesStore", side_effect=AssertionError("real store")):
             with self.assertRaises(FileNotFoundError):
-                source_from_environment({"LUMA_NOTES_FIXTURE": str(FIXTURE.parent / "missing.json")})
+                source_from_environment({"SUNO_NOTES_FIXTURE": str(FIXTURE.parent / "missing.json")})
 
     def test_image_paths_cannot_escape_the_fixture(self):
         parser = DocumentParser(FIXTURE.parent)

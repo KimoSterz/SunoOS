@@ -15,12 +15,12 @@ index afe4ed8..eea2f85 100644
 @@ -116,7 +116,8 @@ struct _NautilusWindow
      GtkWidget *location_row;
      GtkWidget *trail_host;
-     LumaSidebarToggle *sidebar_toggle;
--    LumaNavigationTrailBar *location_trail;
+     SunoSidebarToggle *sidebar_toggle;
+-    SunoNavigationTrailBar *location_trail;
 +    GtkWidget *location_title;
 +    GtkWidget *location_meta;
      GtkWidget *information_host;
-     LumaDetailsPane *information_pane;
+     SunoDetailsPane *information_pane;
  
 @@ -322,7 +323,40 @@ action_show_current_location_menu (GSimpleAction *action,
  }
@@ -92,9 +92,9 @@ index afe4ed8..eea2f85 100644
      }
 -    /* History belongs to the action center; the location heading in v70
 -     * does not carry a second Back affordance. */
--    luma_navigation_trail_bar_set_place (window->location_trail,
+-    Suno_navigation_trail_bar_set_place (window->location_trail,
 -                                          NULL, title != NULL ? title : _("Files"));
--    luma_navigation_trail_bar_clear_meta (window->location_trail);
+-    Suno_navigation_trail_bar_clear_meta (window->location_trail);
 -    if (relative != NULL && *relative != '\0')
 +    if (parent != NULL && (g_file_equal (parent, home) || relative != NULL))
      {
@@ -130,7 +130,7 @@ index afe4ed8..eea2f85 100644
 -    if (path_meta != NULL)
 +    else if (parent != NULL)
      {
--        luma_navigation_trail_bar_add_meta (window->location_trail, path_meta, NULL);
+-        Suno_navigation_trail_bar_add_meta (window->location_trail, path_meta, NULL);
 +        g_autofree char *name = g_file_get_basename (parent);
 +        append_location_crumb (window, name, parent);
      }
@@ -140,18 +140,18 @@ index afe4ed8..eea2f85 100644
          return;
      }
      g_autofree char *count_meta = g_strdup_printf (ngettext ("%u item", "%u items", count), count);
--    luma_navigation_trail_bar_add_meta (window->location_trail, count_meta, NULL);
+-    Suno_navigation_trail_bar_add_meta (window->location_trail, count_meta, NULL);
 -}
 -
 -static void
--on_trail_back (LumaNavigationTrailBar *trail,
+-on_trail_back (SunoNavigationTrailBar *trail,
 -               NautilusWindow         *window)
 -{
 -    gtk_widget_activate_action (GTK_WIDGET (window), "slot.up", NULL);
 +    if (gtk_widget_get_first_child (window->location_meta) != NULL)
 +    {
 +        GtkWidget *dot = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
-+        gtk_widget_add_css_class (dot, "lumaui-trail-dot");
++        gtk_widget_add_css_class (dot, "SunoUI-trail-dot");
 +        gtk_widget_set_valign (dot, GTK_ALIGN_CENTER);
 +        gtk_box_append (GTK_BOX (window->location_meta), dot);
 +    }
@@ -192,8 +192,8 @@ index afe4ed8..eea2f85 100644
                      GTK_WIDGET (window->sidebar_toggle));
      g_signal_connect_swapped (window, "notify::width",
                                G_CALLBACK (on_window_width_changed), window);
--    window->location_trail = LUMA_NAVIGATION_TRAIL_BAR (
--        luma_navigation_trail_bar_new (TRUE));
+-    window->location_trail = SUNO_NAVIGATION_TRAIL_BAR (
+-        Suno_navigation_trail_bar_new (TRUE));
 -    gtk_widget_set_name (GTK_WIDGET (window->location_trail), "filer-location");
 -    gtk_box_append (GTK_BOX (window->trail_host),
 -                    GTK_WIDGET (window->location_trail));
@@ -223,8 +223,8 @@ index afe4ed8..eea2f85 100644
 +    gtk_box_append (GTK_BOX (location), window->location_meta);
 +    gtk_box_append (GTK_BOX (window->trail_host), location);
      gtk_widget_set_name (window->location_row, "filer-location-row");
-     window->information_pane = LUMA_DETAILS_PANE (
-         luma_details_pane_new (_("Information"), FALSE));
+     window->information_pane = SUNO_DETAILS_PANE (
+         Suno_details_pane_new (_("Information"), FALSE));
 diff --git a/src/resources/style.css b/src/resources/style.css
 index c2d1e22..437e5f1 100644
 --- a/src/resources/style.css
@@ -234,21 +234,21 @@ index c2d1e22..437e5f1 100644
  }
  
 +/* Filer's location title and ancestor path are one app-specific heading. */
-+.luma-files-window #filer-location-title {
-+  font-size: var(--lumaui-t-title-1-size);
-+  font-weight: var(--lumaui-t-title-1-weight);
-+  letter-spacing: var(--lumaui-t-title-1-tracking);
-+  color: @luma_ink;
++.Suno-files-window #filer-location-title {
++  font-size: var(--SunoUI-t-title-1-size);
++  font-weight: var(--SunoUI-t-title-1-weight);
++  letter-spacing: var(--SunoUI-t-title-1-tracking);
++  color: @Suno_ink;
 +}
 +
-+.luma-files-window #filer-location-meta,
-+.luma-files-window #filer-location-meta button {
-+  font-size: var(--lumaui-t-meta-size);
-+  font-weight: var(--lumaui-t-meta-weight);
-+  color: @luma_muted;
++.Suno-files-window #filer-location-meta,
++.Suno-files-window #filer-location-meta button {
++  font-size: var(--SunoUI-t-meta-size);
++  font-weight: var(--SunoUI-t-meta-weight);
++  color: @Suno_muted;
 +}
 +
-+.luma-files-window #filer-location-meta button {
++.Suno-files-window #filer-location-meta button {
 +  min-width: 0;
 +  min-height: 0;
 +  padding: 0;
@@ -258,12 +258,12 @@ index c2d1e22..437e5f1 100644
 +  box-shadow: none;
 +}
 +
-+.luma-files-window #filer-location-meta button:hover {
-+  color: @luma_ink;
++.Suno-files-window #filer-location-meta button:hover {
++  color: @Suno_ink;
 +}
 +
  /* Filer uses a deliberate two-row native title composition. */
- .luma-files-window:not(.luma-native-file-chooser) headerbar.luma-titlebar {
+ .Suno-files-window:not(.Suno-native-file-chooser) headerbar.Suno-titlebar {
    min-height: 42px;
 -- 
 2.55.0

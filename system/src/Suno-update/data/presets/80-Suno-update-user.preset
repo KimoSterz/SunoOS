@@ -1,0 +1,3 @@
+# SPDX-License-Identifier: Apache-2.0
+enable Suno-update-notifier.path
+enable Suno-update-notifier.timer

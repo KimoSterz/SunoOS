@@ -1,5 +1,5 @@
 [Unit]
-Description=Project Luma incoming message service
+Description=Project Suno incoming message service
 After=dbus.service
 
 [Service]

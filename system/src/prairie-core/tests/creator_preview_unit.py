@@ -57,12 +57,12 @@ class TaskTimeTests(unittest.TestCase):
     def test_never_clears_imported_dates_and_preserves_exception_identity_and_undo(self):
         from prairie_apps.tasks_backend import _modules, patch_task, read_task, value
         _, _, ical = _modules()
-        original = ical.Component.new_from_string('BEGIN:VTODO\r\nUID:imported-repeat\r\nSUMMARY:Keep title\r\nDUE:20261006\r\nRRULE:FREQ=WEEKLY;BYDAY=TU;COUNT=12\r\nRDATE:20261007\r\nEXDATE:20261013\r\nX-LUMA-REPEAT-ANCHOR:20261006\r\nRECURRENCE-ID:20261006\r\nX-OWNER:keep\r\nBEGIN:VALARM\r\nACTION:DISPLAY\r\nDESCRIPTION:Reminder\r\nTRIGGER:-PT15M\r\nEND:VALARM\r\nEND:VTODO\r\n')
+        original = ical.Component.new_from_string('BEGIN:VTODO\r\nUID:imported-repeat\r\nSUMMARY:Keep title\r\nDUE:20261006\r\nRRULE:FREQ=WEEKLY;BYDAY=TU;COUNT=12\r\nRDATE:20261007\r\nEXDATE:20261013\r\nX-SUNO-REPEAT-ANCHOR:20261006\r\nRECURRENCE-ID:20261006\r\nX-OWNER:keep\r\nBEGIN:VALARM\r\nACTION:DISPLAY\r\nDESCRIPTION:Reminder\r\nTRIGGER:-PT15M\r\nEND:VALARM\r\nEND:VTODO\r\n')
         before = original.as_ical_string()
         updated = patch_task(original, {'repeat': ''})
         task = read_task(updated, 'personal')
         self.assertFalse(task.recurring)
-        for name in ('RRULE', 'RDATE', 'EXDATE', 'X-LUMA-REPEAT-ANCHOR'):
+        for name in ('RRULE', 'RDATE', 'EXDATE', 'X-SUNO-REPEAT-ANCHOR'):
             self.assertEqual(value(updated, name), '')
         self.assertEqual(task.recurrence_id, '20261006')
         self.assertEqual(task.due, date(2026, 10, 6))

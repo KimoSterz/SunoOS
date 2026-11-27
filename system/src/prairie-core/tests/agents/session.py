@@ -23,8 +23,8 @@ gi.require_version("Gio", "2.0")
 from gi.repository import Gio, GLib  # noqa: E402
 
 HERE = Path(__file__).resolve().parent
-AGENT_INTERFACE = "org.projectluma.BackgroundAgent1"
-AGENT_PATH = "/org/projectluma/BackgroundAgent1"
+AGENT_INTERFACE = "org.projectSuno.BackgroundAgent1"
+AGENT_PATH = "/org/projectSuno/BackgroundAgent1"
 
 
 class Failure(AssertionError):
@@ -36,9 +36,9 @@ ESSENTIAL_CATEGORIES = {"communication", "calendar", "alarms"}
 
 class Session:
     def __init__(self, evidence: Path) -> None:
-        # With luma-background installed the service starts agents in the units
+        # With Suno-background installed the service starts agents in the units
         # it generates; without it the autostart entries are the fallback.
-        self.managed = Path("/usr/libexec/luma-background-service").exists()
+        self.managed = Path("/usr/libexec/Suno-background-service").exists()
         self.evidence = evidence
         self.evidence.mkdir(parents=True, exist_ok=True)
         self.notifications = evidence / "notifications.jsonl"
@@ -67,22 +67,22 @@ class Session:
 
     @staticmethod
     def agent_slice(category: str) -> str:
-        return "luma-background-essential.slice" if category in ESSENTIAL_CATEGORIES else "luma-background-deferrable.slice"
+        return "Suno-background-essential.slice" if category in ESSENTIAL_CATEGORIES else "Suno-background-deferrable.slice"
 
     def limits_step(self, unit: str, category: str, memory_max_mib: int = 128) -> None:
         if not self.managed:
-            self.note(f"unmanaged fallback: {unit} runs without luma-background's limits")
+            self.note(f"unmanaged fallback: {unit} runs without Suno-background's limits")
             return
         environment = self.unit_property(unit, "Environment")
-        self.step("runs under luma-background's generated unit and limits",
+        self.step("runs under Suno-background's generated unit and limits",
                   self.unit_property(unit, "Slice") == self.agent_slice(category)
                   and self.unit_property(unit, "MemoryMax") == str(memory_max_mib * 1048576)
-                  and self.unit_property(unit, "CPUWeight") == "20" and "LUMA_BACKGROUND_MANAGED=1" in environment,
+                  and self.unit_property(unit, "CPUWeight") == "20" and "SUNO_BACKGROUND_MANAGED=1" in environment,
                   unit_file=self.unit_property(unit, "FragmentPath"), **self.memory(unit))
 
     def launch_window(self, app_id: str, name: str, *argv: str, env: dict | None = None) -> str:
-        """Start an app's window the way the shell does, in a unit named for the app (luma-background identifies it)."""
-        unit = f"app-luma-{app_id}@{name}.service"
+        """Start an app's window the way the shell does, in a unit named for the app (Suno-background identifies it)."""
+        unit = f"app-Suno-{app_id}@{name}.service"
         self.systemctl("stop", unit, check=False)
         settings = [f"--setenv={key}={value}" for key, value in (env or {}).items()]
         self.run("systemd-run", "--user", "--quiet", "--collect", f"--unit={unit}", *settings,
@@ -194,7 +194,7 @@ class Session:
                          GLib.Variant("(ss)", (AGENT_INTERFACE, prop)))[0]
 
     def values(self, name: str) -> dict:
-        """An agent's published values (org.projectluma.BackgroundAgent1.Values)."""
+        """An agent's published values (org.projectSuno.BackgroundAgent1.Values)."""
         try:
             return dict(self.agent_property(name, "Values"))
         except GLib.Error:
@@ -205,11 +205,11 @@ class Session:
         return [line for line in output.splitlines() if text in line][-3:]
 
     def invoke(self, notification_id: int, action: str) -> None:
-        self.call("org.projectluma.Test", "/org/projectluma/Test", "org.projectluma.Test.Notifications", "Invoke",
+        self.call("org.projectSuno.Test", "/org/projectSuno/Test", "org.projectSuno.Test.Notifications", "Invoke",
                   GLib.Variant("(us)", (notification_id, action)))
 
     def lock(self, locked: bool) -> None:
-        self.call("org.projectluma.Test", "/org/projectluma/Test", "org.projectluma.Test.Notifications", "Lock",
+        self.call("org.projectSuno.Test", "/org/projectSuno/Test", "org.projectSuno.Test.Notifications", "Lock",
                   GLib.Variant("(b)", (locked,)))
 
     # -- notifications -----------------------------------------------------------
@@ -242,7 +242,7 @@ class Session:
         raise Failure(f"timed out: {what}")
 
     # -- session events -------------------------------------------------------------
-    SESSION_TARGET = "luma-test-session.target"
+    SESSION_TARGET = "Suno-test-session.target"
 
     def login(self) -> None:
         """What a GNOME/Phosh login does: the session target binds graphical-session.target and

@@ -28,7 +28,7 @@ class CameraPortal:
 
     def access(self, callback):
         self.bus = Gio.bus_get_sync(Gio.BusType.SESSION, None)
-        token = 'luma_camera_' + uuid.uuid4().hex
+        token = 'Suno_camera_' + uuid.uuid4().hex
         sender = self.bus.get_unique_name().lstrip(':').replace('.', '_')
         self.request = f'{PATH}/request/{sender}/{token}'
 

@@ -1,0 +1,10 @@
+/* Viewer composes SunoUI parts; the kit owns their appearance. */
+#vw-stage { margin: 0; }
+/* Native selectable text lies over the document pixels. */
+.vw-live-text { color: alpha(@Suno_ink, 0); }
+.vw-detected-text { background: alpha(@Suno_blue, .14); color: alpha(@Suno_ink, 0); }
+
+.vw-document-field { background: alpha(@Suno_blue, .14); color: @Suno_blue; }
+.vw-document-field > placeholder { color: @Suno_blue; }
+.vw-comparison-glyph { color: @SunoUI_black; }
+.vw-comparison-label { color: @Suno_ink_secondary; }

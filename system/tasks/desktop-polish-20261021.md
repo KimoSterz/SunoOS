@@ -1,6 +1,6 @@
 # Desktop updates — 2026-10-21
 
-Status: source qualified and drawer appearance approved; Nightly release preparation active. Owner: luma-dev-2. Source task: desktop-polish-20261021.
+Status: source qualified and drawer appearance approved; Nightly release preparation active. Owner: Suno-dev-2. Source task: desktop-polish-20261021.
 
 Nightly 20261020.1 is published. This is a separate update batch; no new image
 has been published from these changes.
@@ -85,7 +85,7 @@ correct license expression. The owner approved this appearance before Nightly pr
 Release admission found Filer's new Terminal action lacked a signed native-host
 requirement. Its Flatpak metadata now requires Terminal7 and installer71. The
 maintained compatibility registry maps Terminal to its fixed RPM owner; older
-installers explain that Luma must be updated first, while a missing or older
+installers explain that Suno must be updated first, while a missing or older
 Terminal keeps the existing app. The host regression reproduces the missing
 registry entry before the fix and passes afterwards; the signed manifest's
 matching service declarations have a separate cross-component check.

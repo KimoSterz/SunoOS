@@ -1,0 +1,270 @@
+semantics_test = executable(
+  'test-Suno-semantics',
+  'test-semantics.c',
+  dependencies: semantics_dep,
+)
+test('semantics', semantics_test)
+
+if gio_unix_dep.found()
+  sync_test = executable('test-Suno-sync', 'test-Suno-sync.c', dependencies: sync_dep)
+  test('Suno-sync', sync_test, env: ['G_DEBUG=fatal-criticals'], timeout: 60)
+  if build_introspection
+    test('Suno-sync-gi', find_program('python3'),
+      args: [meson.current_source_dir() / 'test-Suno-sync-gi.py'],
+      depends: [sync_lib, sync_gir[1]],
+      env: ['G_DEBUG=fatal-criticals', 'GI_TYPELIB_PATH=' + meson.project_build_root() / 'sync',
+            'LD_LIBRARY_PATH=' + meson.project_build_root() / 'sync'])
+  endif
+endif
+
+background_agent_test = executable(
+  'test-Suno-background-agent',
+  'test-background-agent.c',
+  dependencies: semantics_dep,
+)
+test('background-agent', background_agent_test, env: ['G_DEBUG=fatal-criticals'])
+
+context_test = executable(
+  'test-Suno-context',
+  'test-context.c',
+  dependencies: ui_dep,
+)
+test('context', context_test)
+
+adopted_context_test = executable('test-adopted-context', 'test-adopted-context.c', dependencies: ui_dep)
+test('adopted-context', adopted_context_test,
+  env: ['G_DEBUG=fatal-criticals', 'GSETTINGS_BACKEND=memory', 'GTK_A11Y=none',
+        'SUNO_DEVICE_CLASS=desktop', 'SUNO_PRESENTATION_MODE=windowed',
+        'SUNO_INPUT_MODE=pointer'], timeout: 30)
+
+media_fader_test = executable(
+  'test-Suno-media-fader',
+  'test-media-fader.c',
+  dependencies: ui_dep,
+)
+test('media-fader', media_fader_test, env: ['G_DEBUG=fatal-criticals'])
+
+audio_meter_test = executable('test-Suno-audio-meter', 'test-audio-meter.c', dependencies: ui_dep)
+test('SunoUI-audio-meter', audio_meter_test, env: ['G_DEBUG=fatal-criticals', 'GSETTINGS_BACKEND=memory'])
+volume_slider_test = executable('test-Suno-volume-slider', 'test-volume-slider.c', dependencies: ui_dep)
+test('SunoUI-volume-slider', volume_slider_test, env: ['G_DEBUG=fatal-criticals', 'GSETTINGS_BACKEND=memory'])
+mixer_strip_test = executable('test-Suno-mixer-strip', 'test-mixer-strip.c', dependencies: ui_dep)
+# Keys move focus between strips: alone on the display, or another test's window takes it.
+test('SunoUI-mixer-strip', mixer_strip_test, is_parallel: false, env: ['G_DEBUG=fatal-criticals', 'GSETTINGS_BACKEND=memory'])
+media_row_test = executable('test-Suno-media-row', 'test-media-row.c', dependencies: ui_dep)
+# Focus and key presses: alone on the display, as the mixer strip's.
+test('SunoUI-media-row', media_row_test, is_parallel: false, env: ['G_DEBUG=fatal-criticals', 'GSETTINGS_BACKEND=memory'])
+
+media_transport_lcd_test = executable(
+  'test-Suno-media-transport-lcd',
+  'test-media-transport-lcd.c',
+  dependencies: ui_dep,
+)
+test('media-transport-lcd', media_transport_lcd_test, env: ['G_DEBUG=fatal-criticals'])
+
+c1_test = executable('test-SunoUI-c1', 'test-SunoUI-c1.c', dependencies: ui_dep)
+test('SunoUI-c1', c1_test, env: ['G_DEBUG=fatal-criticals', 'GSETTINGS_BACKEND=memory'])
+timeline_test = executable('test-Suno-timeline', 'test-timeline.c', dependencies: ui_dep)
+test('timeline', timeline_test, env: ['G_DEBUG=fatal-criticals'])
+
+scaffold_test = executable('test-Suno-scaffold', 'test-scaffold.c', dependencies: ui_dep)
+test('scaffold', scaffold_test, env: ['G_DEBUG=fatal-criticals'])
+
+application_icon_test = executable('test-Suno-application-icon', 'test-application-icon.c', dependencies: ui_dep)
+test('application-icon', application_icon_test, env: ['G_DEBUG=fatal-criticals'])
+
+window_frame_test = executable(
+  'test-Suno-window-frame', 'test-window-frame.c',
+  dependencies: meson.get_compiler('c').find_library('m'),
+)
+test('window-frame', window_frame_test)
+
+welcome_test = executable('test-Suno-welcome', 'test-welcome-view.c', dependencies: ui_dep)
+test('welcome', welcome_test, env: ['G_DEBUG=fatal-criticals'])
+
+application_menu_test = executable('test-Suno-application-menu', 'test-application-menu.c', dependencies: ui_dep)
+test('application-menu', application_menu_test, env: ['G_DEBUG=fatal-criticals'])
+
+native_app_updates_test = executable('test-native-app-updates', 'test-native-app-updates.c', dependencies: ui_dep)
+test('native-app-updates', native_app_updates_test,
+  env: ['G_DEBUG=fatal-criticals', 'GSETTINGS_BACKEND=memory'], timeout: 90)
+
+empty_state_test = executable('test-Suno-empty-state', 'test-empty-state.c', dependencies: ui_dep)
+test('empty-state', empty_state_test, env: ['G_DEBUG=fatal-criticals'])
+
+save_sheet_test = executable('test-Suno-save-sheet', 'test-save-sheet.c', dependencies: ui_dep)
+test('save-sheet', save_sheet_test, env: ['G_DEBUG=fatal-criticals'])
+
+reorder_hint_test = executable('test-Suno-reorder-hint', 'test-reorder-hint.c', dependencies: ui_dep)
+test('reorder-hint', reorder_hint_test, env: ['G_DEBUG=fatal-criticals'])
+
+subdir('appearance-schemas')
+appearance_test = executable('test-Suno-surface-policy', 'test-surface-policy.c',
+  dependencies: appearance_dep)
+test('surface-policy', appearance_test, depends: appearance_test_schemas,
+  env: ['G_DEBUG=fatal-criticals', 'GSETTINGS_BACKEND=memory',
+        'GSETTINGS_SCHEMA_DIR=' + appearance_test_schema_dir])
+
+surface_backdrop_test = executable(
+  'test-Suno-surface-backdrop',
+  'test-surface-backdrop.c',
+  dependencies: ui_dep,
+)
+test(
+  'surface-backdrop',
+  surface_backdrop_test,
+  env: ['G_DEBUG=fatal-criticals', 'GSETTINGS_BACKEND=memory'],
+)
+
+window_shape_test = executable(
+  'test-Suno-window-shape',
+  'test-window-shape.c',
+  dependencies: ui_dep,
+)
+test(
+  'window-shape',
+  window_shape_test,
+  env: ['G_DEBUG=fatal-criticals'],
+)
+
+window_capture_test = executable(
+  'test-Suno-window-capture',
+  'test-window-capture.c',
+  dependencies: ui_dep,
+)
+test(
+  'window-capture',
+  window_capture_test,
+  env: ['G_DEBUG=fatal-criticals'],
+)
+
+restore_test = executable(
+  'test-Suno-restore',
+  'test-restore.c',
+  dependencies: ui_dep,
+)
+test(
+  'restore',
+  restore_test,
+  env: ['G_DEBUG=fatal-criticals'],
+)
+
+# SunoUI parts (ADR-052): a part's C test joins once it exists, and the parity
+# test compares every C part's widget tree with its Python twin's.
+fs = import('fs')
+SunoUI_part_tests = [
+  'ui-kit', 'media-lcd-controls', 'layer-host', 'mode-switch', 'corner-pill', 'sidebar-foot', 'sidebar-toggle',
+  'badges', 'toast', 'destructive-dialog', 'stacked-button', 'details-pane', 'table-header',
+  'action-center', 'cards', 'file-card', 'selection-bubble', 'navigation-trail-bar',
+  'menu-drawer', 'contact', 'text-field', 'place-search', 'message-bubble', 'type-label',
+  'creative-workspace', 'creative-tools', 'creative-layers', 'creative-properties', 'arrange-view', 'color-picker', 'controls', 'progress-line', 'title-island', 'list-first', 'tab-bar',
+  'phone-sheet',
+]
+foreach stem : SunoUI_part_tests
+  if fs.exists('test-SunoUI-' + stem + '.c')
+    exe = executable('test-SunoUI-' + stem, 'test-SunoUI-' + stem + '.c', dependencies: ui_dep)
+    test('SunoUI-' + stem, exe, env: ['G_DEBUG=fatal-criticals', 'GSETTINGS_BACKEND=memory'])
+  endif
+endforeach
+
+python3 = find_program('python3', required: false)
+if python3.found()
+  test('mobile-identity', python3,
+    args: [meson.current_source_dir() / 'test-mobile-identity.py'],
+    depends: [ui_lib, ui_gir[1]],
+    env: ['PYTHONPATH=' + meson.project_source_root() / 'appkit',
+          'GI_TYPELIB_PATH=' + meson.project_build_root() / 'ui' + ':' + meson.project_build_root() / 'semantics' + ':' + meson.project_build_root() / 'appearance',
+          'LD_LIBRARY_PATH=' + meson.project_build_root() / 'ui' + ':' + meson.project_build_root() / 'semantics' + ':' + meson.project_build_root() / 'appearance'])
+  test('hidden-width-watch', python3,
+    args: [meson.current_source_dir() / 'test-hidden-width-watch.py'],
+    depends: [ui_lib, ui_gir[1]],
+    env: ['PYTHONPATH=' + meson.project_source_root() / 'appkit',
+          'GI_TYPELIB_PATH=' + meson.project_build_root() / 'ui' + ':' + meson.project_build_root() / 'semantics' + ':' + meson.project_build_root() / 'appearance',
+          'LD_LIBRARY_PATH=' + meson.project_build_root() / 'ui' + ':' + meson.project_build_root() / 'semantics' + ':' + meson.project_build_root() / 'appearance'])
+  test('first-frame-width', python3,
+    args: [meson.current_source_dir() / 'test-first-frame-width.py'],
+    env: ['PYTHONPATH=' + meson.project_source_root() / 'appkit',
+          'G_DEBUG=fatal-criticals', 'GSETTINGS_BACKEND=memory', 'GTK_A11Y=none'])
+  test('SunoUI-creative-python', python3,
+    args: [meson.current_source_dir() / 'test-creative-python.py'],
+    depends: [ui_lib, ui_gir[1]],
+    env: ['PYTHONPATH=' + meson.project_source_root() / 'appkit', 'G_DEBUG=fatal-criticals', 'GSETTINGS_BACKEND=memory',
+          'GI_TYPELIB_PATH=' + meson.project_build_root() / 'ui' + ':' + meson.project_build_root() / 'semantics' + ':' + meson.project_build_root() / 'appearance',
+          'LD_LIBRARY_PATH=' + meson.project_build_root() / 'ui' + ':' + meson.project_build_root() / 'semantics' + ':' + meson.project_build_root() / 'appearance'])
+  test('SunoUI-bar-dismiss-python', python3,
+    args: [meson.current_source_dir() / 'test-SunoUI-bar-dismiss.py'],
+    depends: [ui_lib, ui_gir[1]],
+    env: ['PYTHONPATH=' + meson.project_source_root() / 'appkit', 'G_DEBUG=fatal-criticals', 'GSETTINGS_BACKEND=memory',
+          'GI_TYPELIB_PATH=' + meson.project_build_root() / 'ui' + ':' + meson.project_build_root() / 'semantics' + ':' + meson.project_build_root() / 'appearance',
+          'LD_LIBRARY_PATH=' + meson.project_build_root() / 'ui' + ':' + meson.project_build_root() / 'semantics' + ':' + meson.project_build_root() / 'appearance'])
+  test('SunoUI-menus-python', python3,
+    args: [meson.current_source_dir() / 'test-SunoUI-menus.py'],
+    depends: [ui_lib, ui_gir[1]],
+    env: ['PYTHONPATH=' + meson.project_source_root() / 'appkit', 'G_DEBUG=fatal-criticals', 'GSETTINGS_BACKEND=memory',
+          'GI_TYPELIB_PATH=' + meson.project_build_root() / 'ui' + ':' + meson.project_build_root() / 'semantics' + ':' + meson.project_build_root() / 'appearance',
+          'LD_LIBRARY_PATH=' + meson.project_build_root() / 'ui' + ':' + meson.project_build_root() / 'semantics' + ':' + meson.project_build_root() / 'appearance'])
+  # Real pointer events through X: alone on the display, or another test's window takes them.
+  test('SunoUI-bar-dismiss-pointer-python', python3, is_parallel: false,
+    args: [meson.current_source_dir() / 'test-SunoUI-bar-dismiss-pointer.py'],
+    depends: [ui_lib, ui_gir[1]],
+    env: ['PYTHONPATH=' + meson.project_source_root() / 'appkit', 'G_DEBUG=fatal-criticals', 'GSETTINGS_BACKEND=memory',
+          'GI_TYPELIB_PATH=' + meson.project_build_root() / 'ui' + ':' + meson.project_build_root() / 'semantics' + ':' + meson.project_build_root() / 'appearance',
+          'LD_LIBRARY_PATH=' + meson.project_build_root() / 'ui' + ':' + meson.project_build_root() / 'semantics' + ':' + meson.project_build_root() / 'appearance'])
+  test('SunoUI-dock-pointer-python', python3, is_parallel: false,
+    args: [meson.current_source_dir() / 'test-SunoUI-dock-pointer.py'],
+    depends: [ui_lib, ui_gir[1]],
+    env: ['PYTHONPATH=' + meson.project_source_root() / 'appkit', 'G_DEBUG=fatal-criticals', 'GSETTINGS_BACKEND=memory',
+          'GI_TYPELIB_PATH=' + meson.project_build_root() / 'ui' + ':' + meson.project_build_root() / 'semantics' + ':' + meson.project_build_root() / 'appearance',
+          'LD_LIBRARY_PATH=' + meson.project_build_root() / 'ui' + ':' + meson.project_build_root() / 'semantics' + ':' + meson.project_build_root() / 'appearance'])
+  test('SunoUI-editor-parts-python', python3,
+    args: [meson.current_source_dir() / 'test-SunoUI-editor-parts.py'],
+    depends: [ui_lib, ui_gir[1]],
+    env: ['PYTHONPATH=' + meson.project_source_root() / 'appkit', 'G_DEBUG=fatal-criticals', 'GSETTINGS_BACKEND=memory',
+          'GI_TYPELIB_PATH=' + meson.project_build_root() / 'ui' + ':' + meson.project_build_root() / 'semantics' + ':' + meson.project_build_root() / 'appearance',
+          'LD_LIBRARY_PATH=' + meson.project_build_root() / 'ui' + ':' + meson.project_build_root() / 'semantics' + ':' + meson.project_build_root() / 'appearance'])
+  test('SunoUI-mixer-python', python3,
+    args: [meson.current_source_dir() / 'test-SunoUI-mixer.py'],
+    depends: [ui_lib, ui_gir[1]],
+    env: ['PYTHONPATH=' + meson.project_source_root() / 'appkit', 'G_DEBUG=fatal-criticals', 'GSETTINGS_BACKEND=memory',
+          'GI_TYPELIB_PATH=' + meson.project_build_root() / 'ui' + ':' + meson.project_build_root() / 'semantics' + ':' + meson.project_build_root() / 'appearance',
+          'LD_LIBRARY_PATH=' + meson.project_build_root() / 'ui' + ':' + meson.project_build_root() / 'semantics' + ':' + meson.project_build_root() / 'appearance'])
+  test('SunoUI-level-tap-python', python3, is_parallel: false,
+    args: [meson.current_source_dir() / 'test-SunoUI-level-tap.py'],
+    depends: [ui_lib, ui_gir[1]],
+    env: ['PYTHONPATH=' + meson.project_source_root() / 'appkit', 'G_DEBUG=fatal-criticals', 'GSETTINGS_BACKEND=memory',
+          'GI_TYPELIB_PATH=' + meson.project_build_root() / 'ui' + ':' + meson.project_build_root() / 'semantics' + ':' + meson.project_build_root() / 'appearance',
+          'LD_LIBRARY_PATH=' + meson.project_build_root() / 'ui' + ':' + meson.project_build_root() / 'semantics' + ':' + meson.project_build_root() / 'appearance'],
+    timeout: 60)
+  test('SunoUI-media-row-python', python3,
+    args: [meson.current_source_dir() / 'test-SunoUI-media-row.py'],
+    depends: [ui_lib, ui_gir[1]],
+    env: ['PYTHONPATH=' + meson.project_source_root() / 'appkit', 'G_DEBUG=fatal-criticals', 'GSETTINGS_BACKEND=memory',
+          'GI_TYPELIB_PATH=' + meson.project_build_root() / 'ui' + ':' + meson.project_build_root() / 'semantics' + ':' + meson.project_build_root() / 'appearance',
+          'LD_LIBRARY_PATH=' + meson.project_build_root() / 'ui' + ':' + meson.project_build_root() / 'semantics' + ':' + meson.project_build_root() / 'appearance'])
+  test('SunoUI-dock-header-python', python3,
+    args: [meson.current_source_dir() / 'test-SunoUI-dock-header.py'],
+    depends: [ui_lib, ui_gir[1]],
+    env: ['PYTHONPATH=' + meson.project_source_root() / 'appkit', 'G_DEBUG=fatal-criticals', 'GSETTINGS_BACKEND=memory',
+          'GI_TYPELIB_PATH=' + meson.project_build_root() / 'ui' + ':' + meson.project_build_root() / 'semantics' + ':' + meson.project_build_root() / 'appearance',
+          'LD_LIBRARY_PATH=' + meson.project_build_root() / 'ui' + ':' + meson.project_build_root() / 'semantics' + ':' + meson.project_build_root() / 'appearance'])
+  test('SunoUI-icon-names-python', python3,
+    args: [meson.current_source_dir() / 'test-SunoUI-icon-names.py'],
+    depends: [ui_lib, ui_gir[1]],
+    env: ['PYTHONPATH=' + meson.project_source_root() / 'appkit', 'G_DEBUG=fatal-criticals', 'GSETTINGS_BACKEND=memory',
+          'GI_TYPELIB_PATH=' + meson.project_build_root() / 'ui' + ':' + meson.project_build_root() / 'semantics' + ':' + meson.project_build_root() / 'appearance',
+          'LD_LIBRARY_PATH=' + meson.project_build_root() / 'ui' + ':' + meson.project_build_root() / 'semantics' + ':' + meson.project_build_root() / 'appearance'])
+  test('SunoUI-tokens', python3, args: [meson.project_source_root() / 'ui/gen-SunoUI-tokens.py', '--check'])
+  test('SunoUI-c-parity', python3,
+    args: [meson.current_source_dir() / 'SunoUI-c-parity.py'],
+    depends: [ui_lib, ui_gir[1]],
+    # Both twins resolve the same bundled assets, independent of the builder's active icon theme.
+    env: ['G_DEBUG=fatal-criticals', 'GSETTINGS_BACKEND=memory',
+          'SUNO_APPKIT_ICON_PATH=' + meson.project_source_root() / 'appkit/Suno_appkit/icons',
+          'GI_TYPELIB_PATH=' + meson.project_build_root() / 'ui' + ':' + meson.project_build_root() / 'semantics' + ':' + meson.project_build_root() / 'appearance',
+          'LD_LIBRARY_PATH=' + meson.project_build_root() / 'ui' + ':' + meson.project_build_root() / 'semantics' + ':' + meson.project_build_root() / 'appearance'],
+    timeout: 300)
+endif
+
+# The floating island (TV posture) with a second sidebar app built from libadwaita rows.
+tv_island_test = executable('test-tv-island', 'test-tv-island.c', dependencies: ui_dep)
+test('tv-island', tv_island_test, env: ['G_DEBUG=fatal-criticals', 'GSETTINGS_BACKEND=memory', 'GTK_A11Y=none'], timeout: 60)

@@ -23,10 +23,10 @@ def main():
         parser.error("the built binary and installed main desktop entry must exist")
     failures = []
     checks = 0
-    desktops = (None, "", "Phosh", "Luma", "GNOME", "Luma:GNOME", "KDE")
+    desktops = (None, "", "Phosh", "Suno", "GNOME", "Suno:GNOME", "KDE")
     with tempfile.TemporaryDirectory(prefix="settings-session-identity-") as tmp:
         base = os.environ.copy()
-        for key in ("LUMA_SETTINGS_FIXTURE", "LUMA_SETTINGS_PAGE", "LUMA_SETTINGS_LEGACY",
+        for key in ("SUNO_SETTINGS_FIXTURE", "SUNO_SETTINGS_PAGE", "SUNO_SETTINGS_LEGACY",
                     "DISPLAY", "WAYLAND_DISPLAY", "XDG_CURRENT_DESKTOP"):
             base.pop(key, None)
         base["PATH"] = str(args.binary.resolve().parent) + os.pathsep + base.get("PATH", "")
@@ -36,10 +36,10 @@ def main():
             for desktop in desktops:
                 env = base.copy()
                 if legacy:
-                    env["LUMA_SETTINGS_LEGACY"] = "1"
+                    env["SUNO_SETTINGS_LEGACY"] = "1"
                 if desktop is not None:
                     env["XDG_CURRENT_DESKTOP"] = desktop
-                expected = not legacy or desktop in ("GNOME", "Luma:GNOME")
+                expected = not legacy or desktop in ("GNOME", "Suno:GNOME")
                 result = subprocess.run([str(args.binary.resolve()), "--list"], env=env,
                                         text=True, capture_output=True, timeout=30)
                 checks += 1
@@ -57,7 +57,7 @@ def main():
                 "from gi.repository import GioUnix; "
                 "app=GioUnix.DesktopAppInfo.new_from_filename(sys.argv[1]); "
                 "assert app is not None; print(int(app.should_show()))")
-        for desktop in (None, "Phosh", "Luma", "GNOME"):
+        for desktop in (None, "Phosh", "Suno", "GNOME"):
             env = base.copy()
             if desktop is not None:
                 env["XDG_CURRENT_DESKTOP"] = desktop

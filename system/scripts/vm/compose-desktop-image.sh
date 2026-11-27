@@ -19,61 +19,61 @@ case "$output_image" in
   *) output_image="$PWD/$output_image" ;;
 esac
 output_dir=$(dirname -- "$output_image")
-vm_name="luma-compose-$(date -u +%Y%m%dT%H%M%SZ)"
-vm_dir=${LUMA_VM_DIR:-/var/lib/libvirt/images/luma}
-qemu_user=${LUMA_LIBVIRT_QEMU_USER:-qemu}
-qemu_group=${LUMA_LIBVIRT_QEMU_GROUP:-qemu}
+vm_name="Suno-compose-$(date -u +%Y%m%dT%H%M%SZ)"
+vm_dir=${SUNO_VM_DIR:-/var/lib/libvirt/images/Suno}
+qemu_user=${SUNO_LIBVIRT_QEMU_USER:-qemu}
+qemu_group=${SUNO_LIBVIRT_QEMU_GROUP:-qemu}
 work_disk="$vm_dir/$vm_name.qcow2"
-guest_key="$repo_root/build/provisioning/luma-m0-guest"
-guest_password_file="$repo_root/build/provisioning/luma-m0-password"
+guest_key="$repo_root/build/provisioning/Suno-m0-guest"
+guest_password_file="$repo_root/build/provisioning/Suno-m0-password"
 gnome_shell_rpm="$repo_root/build/packages/gnome-shell/RPMS/x86_64/$GNOME_SHELL_NEVRA.rpm"
 gnome_shell_common_rpm="$repo_root/build/packages/gnome-shell/RPMS/noarch/$GNOME_SHELL_COMMON_NEVRA.rpm"
-gcc_rpm="$repo_root/build/packages/gnome-control-center/RPMS/x86_64/gnome-control-center-50.4-${GNOME_CONTROL_CENTER_LUMA_RELEASE}.fc44.x86_64.rpm"
-gcc_filesystem_rpm="$repo_root/build/packages/gnome-control-center/RPMS/noarch/gnome-control-center-filesystem-50.4-${GNOME_CONTROL_CENTER_LUMA_RELEASE}.fc44.noarch.rpm"
+gcc_rpm="$repo_root/build/packages/gnome-control-center/RPMS/x86_64/gnome-control-center-50.4-${GNOME_CONTROL_CENTER_SUNO_RELEASE}.fc44.x86_64.rpm"
+gcc_filesystem_rpm="$repo_root/build/packages/gnome-control-center/RPMS/noarch/gnome-control-center-filesystem-50.4-${GNOME_CONTROL_CENTER_SUNO_RELEASE}.fc44.noarch.rpm"
 gtk4_rpm="$repo_root/build/packages/gtk4/RPMS/x86_64/$GTK4_NEVRA.rpm"
 gtk3_rpm="$repo_root/build/packages/gtk3/RPMS/x86_64/$GTK3_NEVRA.rpm"
 libhandy_rpm="$repo_root/build/packages/libhandy/RPMS/x86_64/$LIBHANDY_NEVRA.rpm"
 libadwaita_rpm="$repo_root/build/packages/libadwaita/RPMS/x86_64/$LIBADWAITA_NEVRA.rpm"
 nautilus_rpm="$repo_root/build/packages/nautilus/RPMS/x86_64/$NAUTILUS_NEVRA.rpm"
 nautilus_extensions_rpm="$repo_root/build/packages/nautilus/RPMS/x86_64/$NAUTILUS_EXTENSIONS_NEVRA.rpm"
-terminal_rpm="$repo_root/build/packages/luma-terminal/RPMS/noarch/$LUMA_TERMINAL_NEVRA.rpm"
-calculator_rpm="$repo_root/build/packages/luma-calculator/RPMS/noarch/$LUMA_CALCULATOR_NEVRA.rpm"
-disks_rpm="$repo_root/build/packages/luma-disks/RPMS/noarch/$LUMA_DISKS_NEVRA.rpm"
+terminal_rpm="$repo_root/build/packages/Suno-terminal/RPMS/noarch/$SUNO_TERMINAL_NEVRA.rpm"
+calculator_rpm="$repo_root/build/packages/Suno-calculator/RPMS/noarch/$SUNO_CALCULATOR_NEVRA.rpm"
+disks_rpm="$repo_root/build/packages/Suno-disks/RPMS/noarch/$SUNO_DISKS_NEVRA.rpm"
 tiling_shell_rpm="$repo_root/build/packages/tiling/RPMS/noarch/$TILING_SHELL_NEVRA.rpm"
-tiling_toggle_rpm="$repo_root/build/packages/tiling/RPMS/noarch/$LUMA_TILING_TOGGLE_NEVRA.rpm"
-backgrounds_rpm="$repo_root/build/packages/backgrounds/RPMS/noarch/$LUMA_BACKGROUNDS_NEVRA.rpm"
-boot_theme_rpm="$repo_root/build/packages/boot-theme/RPMS/noarch/$LUMA_BOOT_THEME_NEVRA.rpm"
+tiling_toggle_rpm="$repo_root/build/packages/tiling/RPMS/noarch/$SUNO_TILING_TOGGLE_NEVRA.rpm"
+backgrounds_rpm="$repo_root/build/packages/backgrounds/RPMS/noarch/$SUNO_BACKGROUNDS_NEVRA.rpm"
+boot_theme_rpm="$repo_root/build/packages/boot-theme/RPMS/noarch/$SUNO_BOOT_THEME_NEVRA.rpm"
 plymouth_rpm_dir="$repo_root/build/packages/plymouth/RPMS/x86_64"
 prairie_icon_theme_rpm="$repo_root/build/packages/prairie-icon-theme/RPMS/noarch/$PRAIRIE_ICON_THEME_NEVRA.rpm"
-launcher_policy_rpm="$repo_root/build/packages/luma-desktop-launcher-policy/RPMS/noarch/$LUMA_DESKTOP_LAUNCHER_POLICY_NEVRA.rpm"
-homebrew_rpm="$repo_root/build/packages/luma-homebrew/RPMS/noarch/$LUMA_HOMEBREW_NEVRA.rpm"
+launcher_policy_rpm="$repo_root/build/packages/Suno-desktop-launcher-policy/RPMS/noarch/$SUNO_DESKTOP_LAUNCHER_POLICY_NEVRA.rpm"
+homebrew_rpm="$repo_root/build/packages/Suno-homebrew/RPMS/noarch/$SUNO_HOMEBREW_NEVRA.rpm"
 figtree_rpm="$repo_root/build/packages/figtree-fonts/RPMS/noarch/$FIGTREE_NEVRA.rpm"
-luma_developer_platform_rpm="$repo_root/build/packages/luma-developer-platform/x86_64/RPMS/$LUMA_DEVELOPER_PLATFORM_X86_64_NEVRA.rpm"
+Suno_developer_platform_rpm="$repo_root/build/packages/Suno-developer-platform/x86_64/RPMS/$SUNO_DEVELOPER_PLATFORM_X86_64_NEVRA.rpm"
 prairie_core_apps_rpm="$repo_root/build/packages/prairie-core-apps/RPMS/noarch/$PRAIRIE_CORE_APPS_NEVRA.rpm"
-messages_e2ee_rpm="$repo_root/build/packages/luma-messages-e2ee/RPMS/x86_64/$LUMA_MESSAGES_E2EE_NEVRA.rpm"
-luma_developer_platform_rpm="$repo_root/build/packages/luma-developer-platform/x86_64/RPMS/$LUMA_DEVELOPER_PLATFORM_X86_64_NEVRA.rpm"
-luma_quick_view_rpm="$repo_root/build/packages/luma-quick-view/RPMS/x86_64/$LUMA_QUICK_VIEW_NEVRA.rpm"
-luma_monitor_rpm="$repo_root/build/packages/luma-monitor/RPMS/noarch/$LUMA_MONITOR_NEVRA.rpm"
-luma_tide_rpm="$repo_root/build/packages/luma-tide/RPMS/noarch/$LUMA_TIDE_NEVRA.rpm"
-luma_display_config_rpm="$repo_root/build/packages/luma-display-config/RPMS/noarch/$LUMA_DISPLAY_CONFIG_NEVRA.rpm"
-luma_ari_rpm="$repo_root/build/packages/luma-ari/RPMS/noarch/$LUMA_ARI_NEVRA.rpm"
-luma_ari_runtime_rpm="$repo_root/build/packages/luma-ari-runtime/x86_64/RPMS/$LUMA_ARI_RUNTIME_NEVRA.rpm"
-shell_state_rpm="$repo_root/build/packages/luma-shell-state/RPMS/noarch/$LUMA_SHELL_STATE_NEVRA.rpm"
-android_runtime_rpm="$repo_root/build/packages/luma-android-runtime/RPMS/noarch/$LUMA_ANDROID_RUNTIME_NEVRA.rpm"
-shell_state_rpm="$repo_root/build/packages/luma-shell-state/RPMS/noarch/$LUMA_SHELL_STATE_NEVRA.rpm"
-search_rpm="$repo_root/build/packages/luma-search/RPMS/noarch/$LUMA_SEARCH_NEVRA.rpm"
-luma_mods_rpm="$repo_root/build/packages/luma-mods/RPMS/noarch/$LUMA_MODS_NEVRA.rpm"
-luma_update_rpm="$repo_root/build/packages/luma-update/RPMS/noarch/$LUMA_UPDATE_NEVRA.rpm"
-relay_rpm="$repo_root/build/packages/luma-relay/RPMS/noarch/$LUMA_RELAY_NEVRA.rpm"
-application_installer_rpm="$repo_root/build/packages/luma-application-installer/RPMS/noarch/$LUMA_APPLICATION_INSTALLER_NEVRA.rpm"
-apk_metadata_rpm="$repo_root/build/packages/luma-apk-metadata/x86_64/$LUMA_APK_METADATA_X86_64_NEVRA.rpm"
+messages_e2ee_rpm="$repo_root/build/packages/Suno-messages-e2ee/RPMS/x86_64/$SUNO_MESSAGES_E2EE_NEVRA.rpm"
+Suno_developer_platform_rpm="$repo_root/build/packages/Suno-developer-platform/x86_64/RPMS/$SUNO_DEVELOPER_PLATFORM_X86_64_NEVRA.rpm"
+Suno_quick_view_rpm="$repo_root/build/packages/Suno-quick-view/RPMS/x86_64/$SUNO_QUICK_VIEW_NEVRA.rpm"
+Suno_monitor_rpm="$repo_root/build/packages/Suno-monitor/RPMS/noarch/$SUNO_MONITOR_NEVRA.rpm"
+Suno_tide_rpm="$repo_root/build/packages/Suno-tide/RPMS/noarch/$SUNO_TIDE_NEVRA.rpm"
+Suno_display_config_rpm="$repo_root/build/packages/Suno-display-config/RPMS/noarch/$SUNO_DISPLAY_CONFIG_NEVRA.rpm"
+Suno_ari_rpm="$repo_root/build/packages/Suno-ari/RPMS/noarch/$SUNO_ARI_NEVRA.rpm"
+Suno_ari_runtime_rpm="$repo_root/build/packages/Suno-ari-runtime/x86_64/RPMS/$SUNO_ARI_RUNTIME_NEVRA.rpm"
+shell_state_rpm="$repo_root/build/packages/Suno-shell-state/RPMS/noarch/$SUNO_SHELL_STATE_NEVRA.rpm"
+android_runtime_rpm="$repo_root/build/packages/Suno-android-runtime/RPMS/noarch/$SUNO_ANDROID_RUNTIME_NEVRA.rpm"
+shell_state_rpm="$repo_root/build/packages/Suno-shell-state/RPMS/noarch/$SUNO_SHELL_STATE_NEVRA.rpm"
+search_rpm="$repo_root/build/packages/Suno-search/RPMS/noarch/$SUNO_SEARCH_NEVRA.rpm"
+Suno_mods_rpm="$repo_root/build/packages/Suno-mods/RPMS/noarch/$SUNO_MODS_NEVRA.rpm"
+Suno_update_rpm="$repo_root/build/packages/Suno-update/RPMS/noarch/$SUNO_UPDATE_NEVRA.rpm"
+relay_rpm="$repo_root/build/packages/Suno-relay/RPMS/noarch/$SUNO_RELAY_NEVRA.rpm"
+application_installer_rpm="$repo_root/build/packages/Suno-application-installer/RPMS/noarch/$SUNO_APPLICATION_INSTALLER_NEVRA.rpm"
+apk_metadata_rpm="$repo_root/build/packages/Suno-apk-metadata/x86_64/$SUNO_APK_METADATA_X86_64_NEVRA.rpm"
 wine_relay_explorer_rpm="$repo_root/build/packages/wine-relay-integration/RPMS/x86_64/$WINE_RELAY_EXPLORER_NEVRA.rpm"
 defined=0
 passed=0
 
-luma_repo_dir="$repo_root/build/luma-package-repository"
-luma_repo_archive="$repo_root/build/luma-package-repository.tar"
-luma_repo_definition="$repo_root/config/desktop/luma-desktop.repo"
+Suno_repo_dir="$repo_root/build/Suno-package-repository"
+Suno_repo_archive="$repo_root/build/Suno-package-repository.tar"
+Suno_repo_definition="$repo_root/config/desktop/Suno-desktop.repo"
 
 for tool in getent python3 scp sha256sum ssh sudo tar virt-install virsh; do
   command -v "$tool" >/dev/null 2>&1 || {
@@ -96,12 +96,12 @@ for path in "$base_image" "$guest_key" "$guest_password_file" \
   "$nautilus_extensions_rpm" "$calculator_rpm" "$terminal_rpm" "$disks_rpm" \
   "$tiling_shell_rpm" \
   "$tiling_toggle_rpm" "$backgrounds_rpm" "$prairie_icon_theme_rpm" "$launcher_policy_rpm" "$homebrew_rpm" \
-  "$boot_theme_rpm" "$figtree_rpm" "$luma_developer_platform_rpm" \
-  "$prairie_core_apps_rpm" "$messages_e2ee_rpm" "$luma_tide_rpm" "$luma_display_config_rpm" "$luma_ari_rpm" "$luma_ari_runtime_rpm" "$luma_monitor_rpm" "$luma_quick_view_rpm" "$search_rpm" "$shell_state_rpm" "$luma_mods_rpm" "$relay_rpm" \
+  "$boot_theme_rpm" "$figtree_rpm" "$Suno_developer_platform_rpm" \
+  "$prairie_core_apps_rpm" "$messages_e2ee_rpm" "$Suno_tide_rpm" "$Suno_display_config_rpm" "$Suno_ari_rpm" "$Suno_ari_runtime_rpm" "$Suno_monitor_rpm" "$Suno_quick_view_rpm" "$search_rpm" "$shell_state_rpm" "$Suno_mods_rpm" "$relay_rpm" \
   "$application_installer_rpm" \
   "$apk_metadata_rpm" \
-  "$luma_update_rpm" \
-  "$luma_repo_definition" \
+  "$Suno_update_rpm" \
+  "$Suno_repo_definition" \
   "$wine_relay_explorer_rpm"; do
   if [ ! -f "$path" ]; then
     printf 'error: required desktop-composition input is missing: %s\n' "$path" >&2
@@ -120,14 +120,14 @@ if [ -e "$output_image" ]; then
   exit 1
 fi
 
-# Luma packages are installed from an rpm-md repository rather than from local
+# Suno packages are installed from an rpm-md repository rather than from local
 # file paths, so the composed base commit records their origin and they stay
 # replaceable after the image ships. Build it before anything touches libvirt:
 # a pin that has not been built must fail here, not inside the guest.
-# See docs/design/luma-package-repository.md.
-"$repo_root/scripts/vm/build-luma-package-repository.sh" "$luma_repo_dir"
-rm -f -- "$luma_repo_archive"
-tar -cf "$luma_repo_archive" -C "$luma_repo_dir" .
+# See docs/design/Suno-package-repository.md.
+"$repo_root/scripts/vm/build-Suno-package-repository.sh" "$Suno_repo_dir"
+rm -f -- "$Suno_repo_archive"
+tar -cf "$Suno_repo_archive" -C "$Suno_repo_dir" .
 
 mkdir -p "$output_dir"
 sudo install -d -m 0755 "$vm_dir"
@@ -187,7 +187,7 @@ sudo restorecon -F "$work_disk" >/dev/null 2>&1 || true
 sudo virt-install \
   --connect qemu:///system \
   --name "$vm_name" \
-  --description 'Project Luma deterministic desktop image composition worker' \
+  --description 'Project Suno deterministic desktop image composition worker' \
   --machine q35 \
   --cpu host-passthrough \
   --vcpus 4,sockets=1,cores=4,threads=1 \
@@ -206,7 +206,7 @@ sudo virt-install \
   --noautoconsole
 defined=1
 
-LUMA_VM_NAME="$vm_name" LUMA_GUEST_KEY="$guest_key" \
+SUNO_VM_NAME="$vm_name" SUNO_GUEST_KEY="$guest_key" \
   "$repo_root/scripts/vm/guest-ssh.sh" true
 
 guest_ip=$(sudo virsh domifaddr "$vm_name" --source lease |
@@ -226,10 +226,10 @@ scp -q \
   "$nautilus_extensions_rpm" "$calculator_rpm" "$terminal_rpm" "$disks_rpm" \
   "$tiling_shell_rpm" \
   "$tiling_toggle_rpm" "$backgrounds_rpm" "$prairie_icon_theme_rpm" "$launcher_policy_rpm" "$homebrew_rpm" \
-  "$figtree_rpm" "$luma_developer_platform_rpm" "$prairie_core_apps_rpm" "$messages_e2ee_rpm" \
-  "$shell_state_rpm" "$search_rpm" "$luma_tide_rpm" "$luma_display_config_rpm" "$luma_ari_rpm" "$luma_ari_runtime_rpm" "$luma_monitor_rpm" "$luma_quick_view_rpm" \
-  "$luma_mods_rpm" \
-  "$luma_update_rpm" \
+  "$figtree_rpm" "$Suno_developer_platform_rpm" "$prairie_core_apps_rpm" "$messages_e2ee_rpm" \
+  "$shell_state_rpm" "$search_rpm" "$Suno_tide_rpm" "$Suno_display_config_rpm" "$Suno_ari_rpm" "$Suno_ari_runtime_rpm" "$Suno_monitor_rpm" "$Suno_quick_view_rpm" \
+  "$Suno_mods_rpm" \
+  "$Suno_update_rpm" \
   "$android_runtime_rpm" \
   "$relay_rpm" \
   "$application_installer_rpm" \
@@ -246,21 +246,21 @@ scp -q \
   "$plymouth_rpm_dir/$PLYMOUTH_SYSTEM_THEME_NEVRA.rpm" \
   "$plymouth_rpm_dir/$PLYMOUTH_THEME_SPINNER_NEVRA.rpm" \
   "$repo_root/config/desktop/dconf/profile/user" \
-  "$repo_root/config/desktop/dconf/db/luma.d/00-luma-desktop" \
+  "$repo_root/config/desktop/dconf/db/Suno.d/00-Suno-desktop" \
   "$repo_root/config/desktop/dconf/db/gdm.d/00-prairie-login" \
   "$repo_root/config/shared/application-packages.txt" \
   "$repo_root/config/shared/excluded-background-packages.txt" \
   "$repo_root/config/os/removed-packages.txt" \
   "$repo_root/config/desktop/system-flatpak-replacements.txt" \
   "$repo_root/config/desktop/inputs.env" \
-  "$luma_repo_definition" \
+  "$Suno_repo_definition" \
   "$repo_root/config/desktop/useradd" \
   "$repo_root/config/boot/plymouthd.conf" \
   "$repo_root/config/desktop/fprintd-no-idle-exit.conf" \
   "$repo_root/config/desktop/waydroid-container-ordering.conf" \
-  "$repo_root/config/desktop/wireplumber/60-luma-bluetooth-roles.conf" \
+  "$repo_root/config/desktop/wireplumber/60-Suno-bluetooth-roles.conf" \
   "$repo_root/scripts/vm/provision-desktop-image.sh" \
-  "luma@$guest_ip:/tmp/"
+  "Suno@$guest_ip:/tmp/"
 
 # Desktop-only application roles travel under a distinct name so they cannot be
 # confused with the shared role list that mobile composition also consumes.
@@ -270,7 +270,7 @@ scp -q \
   -o StrictHostKeyChecking=no \
   -o UserKnownHostsFile=/dev/null \
   "$repo_root/config/desktop/application-packages.txt" \
-  "luma@$guest_ip:/tmp/desktop-application-packages.txt"
+  "Suno@$guest_ip:/tmp/desktop-application-packages.txt"
 
 # Both files are named settings.ini in the tree (mirroring their /etc
 # destinations), so each needs its own rename on the way to a flat /tmp.
@@ -280,14 +280,14 @@ scp -q \
   -o StrictHostKeyChecking=no \
   -o UserKnownHostsFile=/dev/null \
   "$repo_root/config/desktop/gtk-3.0/settings.ini" \
-  "luma@$guest_ip:/tmp/gtk-3.0-settings.ini"
+  "Suno@$guest_ip:/tmp/gtk-3.0-settings.ini"
 scp -q \
   -i "$guest_key" \
   -o BatchMode=yes \
   -o StrictHostKeyChecking=no \
   -o UserKnownHostsFile=/dev/null \
   "$repo_root/config/desktop/gtk-4.0/settings.ini" \
-  "luma@$guest_ip:/tmp/gtk-4.0-settings.ini"
+  "Suno@$guest_ip:/tmp/gtk-4.0-settings.ini"
 
 # /tmp is cleared during the first boot into the staged rpm-ostree deployment.
 # Keep the one post-boot helper in /var/tmp, whose defined purpose includes
@@ -298,22 +298,22 @@ scp -q \
   -o StrictHostKeyChecking=no \
   -o UserKnownHostsFile=/dev/null \
   "$repo_root/config/boot/apply-grub-policy.sh" \
-  "luma@$guest_ip:/var/tmp/apply-grub-policy.sh"
+  "Suno@$guest_ip:/var/tmp/apply-grub-policy.sh"
 
 # The package repository is too large for the guest's tmpfs /tmp and must land
-# on disk: the provisioner unpacks it into /var/lib/luma/package-repository,
+# on disk: the provisioner unpacks it into /var/lib/Suno/package-repository,
 # where it stays as part of the composed image.
 scp -q \
   -i "$guest_key" \
   -o BatchMode=yes \
   -o StrictHostKeyChecking=no \
   -o UserKnownHostsFile=/dev/null \
-  "$luma_repo_archive" \
-  "luma@$guest_ip:/var/tmp/luma-package-repository.tar"
+  "$Suno_repo_archive" \
+  "Suno@$guest_ip:/var/tmp/Suno-package-repository.tar"
 
 guest_password=$(<"$guest_password_file")
 printf '%s\n' "$guest_password" |
-  LUMA_VM_NAME="$vm_name" LUMA_GUEST_KEY="$guest_key" \
+  SUNO_VM_NAME="$vm_name" SUNO_GUEST_KEY="$guest_key" \
   "$repo_root/scripts/vm/guest-ssh.sh" \
     sudo -S -- bash /tmp/provision-desktop-image.sh
 
@@ -331,18 +331,18 @@ wait_for_shutoff 180
 sudo restorecon -F "$work_disk" >/dev/null 2>&1 || true
 sudo virsh start "$vm_name" >/dev/null
 
-LUMA_VM_NAME="$vm_name" LUMA_GUEST_KEY="$guest_key" LUMA_GUEST_TIMEOUT=420 \
+SUNO_VM_NAME="$vm_name" SUNO_GUEST_KEY="$guest_key" SUNO_GUEST_TIMEOUT=420 \
   "$repo_root/scripts/vm/guest-ssh.sh" true
 
 # The boot-theme payload becomes visible only after the staged rpm-ostree
 # deployment has booted. Apply its boot-filesystem policy from that deployment,
 # never from the pre-reboot base tree.
 printf '%s\n' "$guest_password" |
-  LUMA_VM_NAME="$vm_name" LUMA_GUEST_KEY="$guest_key" \
+  SUNO_VM_NAME="$vm_name" SUNO_GUEST_KEY="$guest_key" \
   "$repo_root/scripts/vm/guest-ssh.sh" \
     sudo -S -- bash /var/tmp/apply-grub-policy.sh
 
-LUMA_VM_NAME="$vm_name" LUMA_GUEST_KEY="$guest_key" \
+SUNO_VM_NAME="$vm_name" SUNO_GUEST_KEY="$guest_key" \
   "$repo_root/scripts/vm/guest-ssh.sh" \
     rm -f -- /var/tmp/apply-grub-policy.sh
 
@@ -352,27 +352,27 @@ scp -q \
   -o StrictHostKeyChecking=no \
   -o UserKnownHostsFile=/dev/null \
   "$repo_root/tests/smoke/desktop.sh" \
-  "luma@$guest_ip:/var/tmp/luma-desktop-smoke.sh"
+  "Suno@$guest_ip:/var/tmp/Suno-desktop-smoke.sh"
 scp -q \
   -i "$guest_key" \
   -o BatchMode=yes \
   -o StrictHostKeyChecking=no \
   -o UserKnownHostsFile=/dev/null \
   "$repo_root/config/desktop/inputs.env" \
-  "luma@$guest_ip:/var/tmp/luma-desktop-inputs.env"
+  "Suno@$guest_ip:/var/tmp/Suno-desktop-inputs.env"
 
 # The acceptance suite inspects the EFI/boot policy as well as ordinary
 # product files. Run the complete, immutable test payload with the authority
 # required to read those root-owned boot artifacts.
 printf '%s\n' "$guest_password" |
-  LUMA_VM_NAME="$vm_name" LUMA_GUEST_KEY="$guest_key" \
+  SUNO_VM_NAME="$vm_name" SUNO_GUEST_KEY="$guest_key" \
   "$repo_root/scripts/vm/guest-ssh.sh" \
-    sudo -S -- bash /var/tmp/luma-desktop-smoke.sh
+    sudo -S -- bash /var/tmp/Suno-desktop-smoke.sh
 
 # Bind the distributable disk to the one deployment that actually passed the
 # post-reboot acceptance suite. The publisher refuses an image without this
 # sidecar and never guesses from directory ordering inside an offline disk.
-LUMA_VM_NAME="$vm_name" LUMA_GUEST_KEY="$guest_key" \
+SUNO_VM_NAME="$vm_name" SUNO_GUEST_KEY="$guest_key" \
   "$repo_root/scripts/vm/guest-ssh.sh" \
     rpm-ostree status --json >"$output_image.deployment.json"
 python3 - "$output_image.deployment.json" <<'PY'
@@ -389,12 +389,12 @@ if not re.fullmatch(r"[0-9a-f]{64}", booted[0].get("checksum", "")):
     raise SystemExit("accepted image reports an invalid booted deployment checksum")
 PY
 
-LUMA_VM_NAME="$vm_name" LUMA_GUEST_KEY="$guest_key" \
+SUNO_VM_NAME="$vm_name" SUNO_GUEST_KEY="$guest_key" \
   "$repo_root/scripts/vm/guest-ssh.sh" \
-    rm -f -- /var/tmp/luma-desktop-smoke.sh /var/tmp/luma-desktop-inputs.env
+    rm -f -- /var/tmp/Suno-desktop-smoke.sh /var/tmp/Suno-desktop-inputs.env
 
 printf '%s\n' "$guest_password" |
-  LUMA_VM_NAME="$vm_name" LUMA_GUEST_KEY="$guest_key" \
+  SUNO_VM_NAME="$vm_name" SUNO_GUEST_KEY="$guest_key" \
   "$repo_root/scripts/vm/guest-ssh.sh" \
     sudo -S -- rpm-ostree cleanup -r
 
@@ -409,4 +409,4 @@ sudo mv "$work_disk" "$output_image"
 sudo chown "$(id -u):$(id -g)" "$output_image"
 sha256sum "$output_image" >"$output_image.sha256"
 passed=1
-printf 'Luma desktop image composed: %s\n' "$output_image"
+printf 'Suno desktop image composed: %s\n' "$output_image"

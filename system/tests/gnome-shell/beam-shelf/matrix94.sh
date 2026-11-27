@@ -1,10 +1,10 @@
 #!/bin/bash
 # Shell 0136 evidence: preview close/resize frames, menus light/dark 1x/2x, Open at Login from the menu,
 # and the shelf placement regression for dock menus. Pass B_OVERLAY_DEFAULT (overlay or none) and B_EVIDENCE.
-H=/root/luma-shell-oracle/beam/harness
+H=/root/Suno-shell-oracle/beam/harness
 source <(sed -n "/^one()/,/^}/p" $H/matrix.sh)
 E=${B_EVIDENCE:?}; mkdir -p $E
-export B_CONTAINER=${B_CONTAINER:-luma-beam-sound}
+export B_CONTAINER=${B_CONTAINER:-Suno-beam-sound}
 one d94-preview-dark-1x-motion dark bottom 1 B_EVAL=/oracle/beam/harness/dock94.js B_MOTION=1 B_ONLY=preview B_TIMEOUT=220 &
 one d94-preview-light-2x-motion light bottom 2 B_EVAL=/oracle/beam/harness/dock94.js B_MOTION=1 B_ONLY=preview B_TIMEOUT=240 &
 wait

@@ -1,7 +1,7 @@
 ---
 type: security
 component: Terminal
-packages: [luma-terminal, nautilus]
+packages: [Suno-terminal, nautilus]
 highlight: false
 ---
 Summary: Apps can no longer run programs through Terminal

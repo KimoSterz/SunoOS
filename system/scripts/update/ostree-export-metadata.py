@@ -9,7 +9,7 @@ from pathlib import Path
 
 # rpm-ostree's client-layer reader interprets the parent as the base when either
 # clientlayer=true or the legacy spec is present. These describe the builder's
-# local transaction, not the accepted filesystem that Luma publishes as a base.
+# local transaction, not the accepted filesystem that Suno publishes as a base.
 CLIENT_KEYS = frozenset({
     "rpmostree.clientlayer", "rpmostree.clientlayer_version", "rpmostree.spec",
     "rpmostree.packages", "rpmostree.modules", "rpmostree.removed-base-packages",
@@ -18,9 +18,9 @@ CLIENT_KEYS = frozenset({
 })
 REPLACED_KEYS = frozenset({
     "ostree.ref-binding", "ostree.collection-binding",
-    "org.projectluma.source-revision", "org.projectluma.accepted-deployment",
-    "org.projectluma.image-sha256", "org.projectluma.build-report-sha256",
-    "org.projectluma.export-policy",
+    "org.projectSuno.source-revision", "org.projectSuno.accepted-deployment",
+    "org.projectSuno.image-sha256", "org.projectSuno.build-report-sha256",
+    "org.projectSuno.export-policy",
 })
 
 

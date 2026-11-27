@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""Build the Try Luma macOS QEMU system emulators: upstream release + VNC display-rate patch.
+"""Build the Try Suno macOS QEMU system emulators: upstream release + VNC display-rate patch.
 
 QEMU's VNC server refreshes every 30 ms and backs off to 3 s when idle, which caps
 the embedded viewer near 32 fps and delays guest-initiated updates. The patch polls
@@ -24,7 +24,7 @@ def main():
     a = p.parse_args()
     if sys.platform != 'darwin' or os.uname().machine != 'arm64':
         p.error('Build on an Apple Silicon Mac.')
-    brew = Path(os.environ.get('LUMA_PORT_BREW', '/opt/homebrew'))
+    brew = Path(os.environ.get('SUNO_PORT_BREW', '/opt/homebrew'))
     work = a.work.resolve(); work.mkdir(parents=True, exist_ok=True)
     (work / '.metadata_never_index').touch()
     tarball = a.tarball or work / f'qemu-{VERSION}.tar.xz'

@@ -116,7 +116,7 @@ class DeviceTree(unittest.TestCase):
         self.assertRejected("differs from initramfs.init_functions_sha256")
 
     def test_initramfs_ostree_package_must_match_its_source_pins(self):
-        self.edit(self.fp6 / "device.toml", "1.luma.2.fc44", "1.luma.9.fc44")
+        self.edit(self.fp6 / "device.toml", "1.Suno.2.fc44", "1.Suno.9.fc44")
         self.assertRejected("initramfs.ostree_package does not match")
 
     def test_selinux_must_stay_enforcing(self):
@@ -140,20 +140,20 @@ class DeviceTree(unittest.TestCase):
         self.assertRejected("must match the directory path")
 
     def test_kernel_tag_names_the_device_and_release(self):
-        self.edit(self.fp6 / "device.toml", 'tag = "luma-fp6-', 'tag = "luma-fp5-')
-        self.assertRejected("kernel.tag must start with 'luma-kernel-' or 'luma-fp6-'")
+        self.edit(self.fp6 / "device.toml", 'tag = "Suno-fp6-', 'tag = "Suno-fp5-')
+        self.assertRejected("kernel.tag must start with 'Suno-kernel-' or 'Suno-fp6-'")
 
-    def test_new_device_kernel_is_a_luma_tag(self):
+    def test_new_device_kernel_is_a_Suno_tag(self):
         with mock.patch.object(check_devices, "TRANSITIONAL_KERNELS", set()):
             errors = self.errors()
         refused = "source locks and kernel patches in this repository are refused"
         for device in ("fairphone/fp6", "microsoft/sp12in", "raspberrypi/rpi5"):
             self.assertTrue(any(e.startswith(f"devices/{device}/") and refused in e for e in errors), errors)
-        self.assertTrue(any("kernel.tag must start with 'luma-kernel-'" in e for e in errors), errors)
+        self.assertTrue(any("kernel.tag must start with 'Suno-kernel-'" in e for e in errors), errors)
 
     def test_source_locked_kernel_stays_experimental(self):
         self.edit(self.root / "devices/raspberrypi/rpi5/device.toml", 'tier = "experimental"', 'tier = "community"')
-        self.assertRejected("a source-locked kernel is not on the Luma base")
+        self.assertRejected("a source-locked kernel is not on the Suno base")
 
     def test_new_kernel_patch_directory_is_refused(self):
         (self.root / "patches/linux-barbet").mkdir()
@@ -177,13 +177,13 @@ class DeviceTree(unittest.TestCase):
         self.distribution_kernel(release="7.2.12-200.fc44.aarch64")
         self.assertRejected("kernel.release must be '7.2.11-200.fc44.aarch64'")
 
-    def test_distribution_kernel_refuses_luma_kernel_keys(self):
-        for extra in ('config = "config/kernel/rpi5.config"\n', 'tag = "luma-rpi5-a1-7.2.11-200.fc44.aarch64"\n'):
+    def test_distribution_kernel_refuses_Suno_kernel_keys(self):
+        for extra in ('config = "config/kernel/rpi5.config"\n', 'tag = "Suno-rpi5-a1-7.2.11-200.fc44.aarch64"\n'):
             with self.subTest(extra=extra):
                 self.distribution_kernel(extra=extra)
                 self.assertRejected("kernel")
 
-    def test_luma_kernel_still_needs_its_config(self):
+    def test_Suno_kernel_still_needs_its_config(self):
         surface = self.root / "devices/microsoft/sp12in/device.toml"
         self.edit(surface, 'config = "config/kernel/surface-pro12.config"\n', '')
         self.assertRejected("kernel")

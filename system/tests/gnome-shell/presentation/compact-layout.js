@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
-import {homeLayout} from '../../../src/luma-shell-presentation/layout.js';
-import {reconcileGrid, overlaps} from '../../../src/luma-shell-presentation/grid.js';
-import {readDisplayGeometry, readDisplayProfiles, selectDisplayProfile, displayExclusions, statusInsets, avoidDisplayExclusions, surfaceInsets} from '../../../src/luma-shell-presentation/safeAreas.js';
+import {homeLayout} from '../../../src/Suno-shell-presentation/layout.js';
+import {reconcileGrid, overlaps} from '../../../src/Suno-shell-presentation/grid.js';
+import {readDisplayGeometry, readDisplayProfiles, selectDisplayProfile, displayExclusions, statusInsets, avoidDisplayExclusions, surfaceInsets} from '../../../src/Suno-shell-presentation/safeAreas.js';
 function assert(value, message) { if (!value) throw Error(message); }
 const layout=homeLayout(360,400,'tablet',50,{cellHeight:60});
 assert(layout.iconColumns===5 && layout.otherRows===4 && layout.iconSize===44,'Titan must fit five by four with cell-sized icons');

@@ -1,11 +1,11 @@
-From: Project Luma <engineering@projectluma.org>
+From: Project Suno <engineering@projectSuno.org>
 Subject: [PATCH] Filer: Tasks' sidebar instead of the icon rail
 
 The places sidebar was the kit's 88 px "rail": each place drawn as an
 icon over a wrapped label. Draw it as Tasks' sidebar, the kit's
 "destinations" NavigationSidebar: 224 px on the window frame, with the
 kit's classes on the sidebar, its lists and Nautilus' live rows, so
-LumaUI owns the row height, inset, gap, hover and selection. GTK's
+SunoUI owns the row height, inset, gap, hover and selection. GTK's
 navigation-sidebar look (its 11 px top padding and inset separators)
 is no longer used. The kit takes the list's selection bleed back from
 the scroller; Filer's scroller and Trash list sit one box deeper, so
@@ -38,18 +38,18 @@ index b9af2e0..7e8f79e 100644
 -    gtk_label_set_ellipsize (GTK_LABEL (self->label_widget), PANGO_ELLIPSIZE_NONE);
 -    gtk_label_set_wrap (GTK_LABEL (self->label_widget), TRUE);
 +
-+    /* The kit's SidebarRow (Tasks' rows): its classes, so LumaUI draws the
++    /* The kit's SidebarRow (Tasks' rows): its classes, so SunoUI draws the
 +     * row; the line's gap is the kit's, not the template's margins. */
 +    GtkWidget *line = gtk_widget_get_parent (self->label_widget);
-+    gtk_widget_add_css_class (GTK_WIDGET (self), "luma-navigation-row");
-+    gtk_widget_add_css_class (GTK_WIDGET (self), "lumaui-row");
++    gtk_widget_add_css_class (GTK_WIDGET (self), "Suno-navigation-row");
++    gtk_widget_add_css_class (GTK_WIDGET (self), "SunoUI-row");
 +    gtk_widget_add_css_class (GTK_WIDGET (self), "lead-icon");
-+    gtk_widget_add_css_class (line, "luma-navigation-line");
-+    gtk_widget_add_css_class (line, "lumaui-row-line");
-+    gtk_widget_add_css_class (self->start_icon_widget, "lumaui-row-lead");
++    gtk_widget_add_css_class (line, "Suno-navigation-line");
++    gtk_widget_add_css_class (line, "SunoUI-row-line");
++    gtk_widget_add_css_class (self->start_icon_widget, "SunoUI-row-lead");
 +    gtk_widget_add_css_class (self->start_icon_widget, "lead-icon");
 +    gtk_widget_set_margin_end (self->start_icon_widget, 0);
-+    gtk_widget_add_css_class (self->label_widget, "lumaui-row-title");
++    gtk_widget_add_css_class (self->label_widget, "SunoUI-row-title");
 +    gtk_widget_set_margin_end (self->label_widget, 0);
  
      self->file = NULL;
@@ -93,12 +93,12 @@ index 1bc9a5f..52a3158 100644
      {
 -        header = gtk_label_new (heading);
 -        gtk_label_set_xalign (GTK_LABEL (header), 0.0f);
--        gtk_widget_add_css_class (header, "luma-sidebar-section-heading");
+-        gtk_widget_add_css_class (header, "Suno-sidebar-section-heading");
 -        if (before != NULL)
 -        {
 -            GtkWidget *group = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
 -            GtkWidget *divider = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
--            gtk_widget_add_css_class (divider, "luma-navigation-divider");
+-            gtk_widget_add_css_class (divider, "Suno-navigation-divider");
 -            gtk_box_append (GTK_BOX (group), divider);
 -            gtk_box_append (GTK_BOX (group), header);
 -            header = group;
@@ -107,7 +107,7 @@ index 1bc9a5f..52a3158 100644
 +        gtk_label_set_xalign (GTK_LABEL (label), 0.0f);
 +        gtk_label_set_ellipsize (GTK_LABEL (label), PANGO_ELLIPSIZE_END);
 +        gtk_widget_set_hexpand (label, TRUE);
-+        gtk_widget_add_css_class (label, "luma-navigation-heading");
++        gtk_widget_add_css_class (label, "Suno-navigation-heading");
 +        header = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
 +        gtk_widget_add_css_class (header, "filer-sidebar-section");
 +        gtk_box_append (GTK_BOX (header), label);
@@ -119,7 +119,7 @@ index 1bc9a5f..52a3158 100644
  }
  
 -static void
--refresh_luma_file_sidebar (NautilusSidebar *sidebar)
+-refresh_Suno_file_sidebar (NautilusSidebar *sidebar)
 +/* Tasks' sidebar, the kit's "destinations" variant: 224 px on the frame. */
 +#define FILER_SIDEBAR_WIDTH 224
 +
@@ -138,19 +138,19 @@ index 1bc9a5f..52a3158 100644
 -    if (split != NULL)
 +    if (split == NULL)
      {
--        luma_navigation_sidebar_adapt_live (ADW_OVERLAY_SPLIT_VIEW (split),
+-        Suno_navigation_sidebar_adapt_live (ADW_OVERLAY_SPLIT_VIEW (split),
 -                                            GTK_WIDGET (sidebar), "rail");
 +        return;
      }
 +    AdwOverlaySplitView *view = ADW_OVERLAY_SPLIT_VIEW (split);
-+    luma_navigation_sidebar_adapt_live (view, GTK_WIDGET (sidebar), "narrow");
++    Suno_navigation_sidebar_adapt_live (view, GTK_WIDGET (sidebar), "narrow");
 +    gtk_widget_set_size_request (adw_overlay_split_view_get_sidebar (view), FILER_SIDEBAR_WIDTH, -1);
 +    adw_overlay_split_view_set_min_sidebar_width (view, FILER_SIDEBAR_WIDTH);
 +    adw_overlay_split_view_set_max_sidebar_width (view, FILER_SIDEBAR_WIDTH);
 +}
 +
 +static void
-+refresh_luma_file_sidebar (NautilusSidebar *sidebar)
++refresh_Suno_file_sidebar (NautilusSidebar *sidebar)
 +{
 +    nautilus_sidebar_adapt_to_split (sidebar);
  }
@@ -169,16 +169,16 @@ index 1bc9a5f..52a3158 100644
                                      GTK_POLICY_AUTOMATIC);
  
      /* list box */
-+    /* The kit's NavigationSidebar classes (Tasks): LumaUI draws the sidebar,
++    /* The kit's NavigationSidebar classes (Tasks): SunoUI draws the sidebar,
 +     * its rows and headings; GTK's own navigation-sidebar look is not used. */
-+    gtk_widget_add_css_class (GTK_WIDGET (sidebar), "luma-navigation-sidebar");
-+    gtk_widget_add_css_class (GTK_WIDGET (sidebar), "luma-sidebar-surface");
-+    gtk_widget_add_css_class (GTK_WIDGET (sidebar), "lumaui-sidebar-variant");
-+    gtk_widget_add_css_class (GTK_WIDGET (sidebar), "lumaui-sidebar-destinations");
++    gtk_widget_add_css_class (GTK_WIDGET (sidebar), "Suno-navigation-sidebar");
++    gtk_widget_add_css_class (GTK_WIDGET (sidebar), "Suno-sidebar-surface");
++    gtk_widget_add_css_class (GTK_WIDGET (sidebar), "SunoUI-sidebar-variant");
++    gtk_widget_add_css_class (GTK_WIDGET (sidebar), "SunoUI-sidebar-destinations");
      sidebar->list_box = gtk_list_box_new ();
 -    gtk_widget_add_css_class (sidebar->list_box, "navigation-sidebar");
--    gtk_widget_add_css_class (sidebar->list_box, "luma-navigation-sidebar");
-+    gtk_widget_add_css_class (sidebar->list_box, "luma-navigation-list");
+-    gtk_widget_add_css_class (sidebar->list_box, "Suno-navigation-sidebar");
++    gtk_widget_add_css_class (sidebar->list_box, "Suno-navigation-list");
  
      gtk_list_box_set_header_func (GTK_LIST_BOX (sidebar->list_box),
                                    list_box_header_func, sidebar, NULL);
@@ -187,9 +187,9 @@ index 1bc9a5f..52a3158 100644
  
      sidebar->trash_list_box = gtk_list_box_new ();
 -    gtk_widget_add_css_class (sidebar->trash_list_box, "navigation-sidebar");
--    gtk_widget_add_css_class (sidebar->trash_list_box, "luma-navigation-sidebar");
-+    gtk_widget_add_css_class (sidebar->trash_list_box, "luma-navigation-list");
-     gtk_widget_add_css_class (sidebar->trash_list_box, "luma-trash-list");
+-    gtk_widget_add_css_class (sidebar->trash_list_box, "Suno-navigation-sidebar");
++    gtk_widget_add_css_class (sidebar->trash_list_box, "Suno-navigation-list");
+     gtk_widget_add_css_class (sidebar->trash_list_box, "Suno-trash-list");
      gtk_list_box_set_selection_mode (GTK_LIST_BOX (sidebar->trash_list_box), GTK_SELECTION_SINGLE);
      gtk_list_box_set_activate_on_single_click (GTK_LIST_BOX (sidebar->trash_list_box), TRUE);
 @@ -4464,6 +4480,42 @@ nautilus_sidebar_set_location (NautilusSidebar *sidebar,
@@ -253,7 +253,7 @@ index 759175f..7c5cae3 100644
 @@ -2665,6 +2665,9 @@ nautilus_window_constructed (GObject *self)
       * sidebar); on a phone the title island's ☰ opens the places. The toggle
       * stays as the one owner of the sidebar's open state, unshown. */
-     luma_sidebar_toggle_set_control_visible (window->sidebar_toggle, FALSE);
+     Suno_sidebar_toggle_set_control_visible (window->sidebar_toggle, FALSE);
 +    /* Its empty host would still take the header bar's start spacing and push
 +     * the window's identity off the kit's inset. */
 +    gtk_widget_set_visible (window->sidebar_toggle_desktop_host, FALSE);
@@ -266,7 +266,7 @@ index 759175f..7c5cae3 100644
  
 -    /* v71: the 88 px vertical icon-and-label rail (the kit's "rail"; the wider
 -     * "rail-wide" of .63 is not v71 and not on the foundation kit). */
--    luma_navigation_sidebar_adapt_live (ADW_OVERLAY_SPLIT_VIEW (window->split_view),
+-    Suno_navigation_sidebar_adapt_live (ADW_OVERLAY_SPLIT_VIEW (window->split_view),
 -                                        GTK_WIDGET (window->places_sidebar), "rail");
 +    /* Tasks' sidebar: one-line icon and label rows, always shown beside the content. */
 +    nautilus_sidebar_adapt_to_split (window->places_sidebar);
@@ -280,54 +280,54 @@ index 9e9b285..0b9b84c 100644
 @@ -48,11 +48,9 @@
    background-image: none;
  }
- .luma-files-window #filer-location-scope image { -gtk-icon-size: 0px; }
--.luma-files-window row.luma-live-rail-row { padding-left: 3px; padding-right: 3px; }
+ .Suno-files-window #filer-location-scope image { -gtk-icon-size: 0px; }
+-.Suno-files-window row.Suno-live-rail-row { padding-left: 3px; padding-right: 3px; }
  
  /* Filer uses a deliberate two-row native title composition. */
- .luma-files-window:not(.luma-native-file-chooser) headerbar.luma-titlebar {
+ .Suno-files-window:not(.Suno-native-file-chooser) headerbar.Suno-titlebar {
 -  min-height: 42px;
-   background-color: @luma_window;
+   background-color: @Suno_window;
    background-image: none;
-   color: @luma_ink;
+   color: @Suno_ink;
 @@ -333,43 +331,32 @@
-     background-color: @luma_window;
+     background-color: @Suno_window;
    }
  
--  .luma-files-window .luma-sidebar-surface,
--  .luma-files-window .luma-sidebar-surface .navigation-sidebar {
--    background-color: @luma_content;
--    color: @luma_ink;
+-  .Suno-files-window .Suno-sidebar-surface,
+-  .Suno-files-window .Suno-sidebar-surface .navigation-sidebar {
+-    background-color: @Suno_content;
+-    color: @Suno_ink;
 -  }
 -
--  .luma-files-window .luma-sidebar-surface {
+-  .Suno-files-window .Suno-sidebar-surface {
 -    border: none;
 +  /* Places is Tasks' sidebar (the kit's destinations variant, on the
 +   * frame). Its rows sit in a revealer, so the line's gap is restated; a
 +   * section heading is Tasks' "Lists": a hairline the sidebar's full width. */
-+  .luma-files-window .luma-navigation-sidebar.lumaui-sidebar-destinations row.lumaui-row > revealer > box.lumaui-row-line {
-+    border-spacing: var(--lumaui-nav-destinations-row-gap);
++  .Suno-files-window .Suno-navigation-sidebar.SunoUI-sidebar-destinations row.SunoUI-row > revealer > box.SunoUI-row-line {
++    border-spacing: var(--SunoUI-nav-destinations-row-gap);
    }
 -
 -  /* The shared island boundary owns the complete perimeter.  The older
 -   * sidebar divider reset is intentionally more specific, so restore the
 -   * semantic island stroke at that same source-owned specificity. */
--  .luma-files-window .luma-sidebar-surface.luma-island {
--    border: 1px solid @luma_line;
-+  .luma-files-window .luma-navigation-sidebar.lumaui-sidebar-destinations row.lumaui-row image.lead-icon {
-+    -gtk-icon-size: var(--lumaui-nav-destinations-icon);
+-  .Suno-files-window .Suno-sidebar-surface.Suno-island {
+-    border: 1px solid @Suno_line;
++  .Suno-files-window .Suno-navigation-sidebar.SunoUI-sidebar-destinations row.SunoUI-row image.lead-icon {
++    -gtk-icon-size: var(--SunoUI-nav-destinations-icon);
    }
 -
 -
--  .luma-files-window .luma-sidebar-surface:dir(rtl) {
+-  .Suno-files-window .Suno-sidebar-surface:dir(rtl) {
 -    border: none;
-+  .luma-files-window .luma-navigation-sidebar.lumaui-sidebar-destinations list.luma-navigation-list > box.filer-sidebar-section {
-+    margin: var(--lumaui-nav-destinations-action-heading-top) 0 var(--lumaui-nav-destinations-action-heading-bottom);
-+    padding: var(--lumaui-nav-destinations-action-heading-padding-top) var(--lumaui-sidebar-edge) 0 var(--lumaui-nav-destinations-action-heading-padding-start);
-+    border-top: 1px solid @luma_line;
++  .Suno-files-window .Suno-navigation-sidebar.SunoUI-sidebar-destinations list.Suno-navigation-list > box.filer-sidebar-section {
++    margin: var(--SunoUI-nav-destinations-action-heading-top) 0 var(--SunoUI-nav-destinations-action-heading-bottom);
++    padding: var(--SunoUI-nav-destinations-action-heading-padding-top) var(--SunoUI-sidebar-edge) 0 var(--SunoUI-nav-destinations-action-heading-padding-start);
++    border-top: 1px solid @Suno_line;
    }
 -
 -
--  .luma-files-window .luma-sidebar-section-heading {
+-  .Suno-files-window .Suno-sidebar-section-heading {
 -    min-height: 18px;
 -    padding: 4px 8px 0;
 -    color: alpha(currentColor, 0.52);
@@ -336,22 +336,22 @@ index 9e9b285..0b9b84c 100644
 -    letter-spacing: 0.11em;
 +  /* The kit pads the list by the selection bleed and takes it back from the
 +   * scroller; Filer's scroller (and the Trash list) sit one box deeper. */
-+  .luma-files-window .luma-navigation-sidebar.lumaui-sidebar-destinations > box > scrolledwindow,
-+  .luma-files-window .luma-navigation-sidebar.lumaui-sidebar-destinations > box > list.luma-trash-list {
-+    margin-left: calc(-1 * var(--lumaui-sidebar-selection-bleed));
-+    margin-right: calc(-1 * var(--lumaui-sidebar-selection-bleed));
++  .Suno-files-window .Suno-navigation-sidebar.SunoUI-sidebar-destinations > box > scrolledwindow,
++  .Suno-files-window .Suno-navigation-sidebar.SunoUI-sidebar-destinations > box > list.Suno-trash-list {
++    margin-left: calc(-1 * var(--SunoUI-sidebar-selection-bleed));
++    margin-right: calc(-1 * var(--SunoUI-sidebar-selection-bleed));
    }
 -
 -
 -
 -
--  .luma-files-window .navigation-sidebar.luma-trash-list {
+-  .Suno-files-window .navigation-sidebar.Suno-trash-list {
 -    padding: 0 6px 6px;
-+  .luma-files-window .luma-navigation-sidebar.lumaui-sidebar-destinations label.luma-navigation-heading {
-+    color: @luma_frame_muted;
-+    font-size: var(--lumaui-sidebar-heading-size);
-+    font-weight: var(--lumaui-sidebar-heading-weight);
-+    line-height: var(--lumaui-sidebar-heading-line-height);
++  .Suno-files-window .Suno-navigation-sidebar.SunoUI-sidebar-destinations label.Suno-navigation-heading {
++    color: @Suno_frame_muted;
++    font-size: var(--SunoUI-sidebar-heading-size);
++    font-weight: var(--SunoUI-sidebar-heading-weight);
++    line-height: var(--SunoUI-sidebar-heading-line-height);
    }
  
  
@@ -359,7 +359,7 @@ index 9e9b285..0b9b84c 100644
  
  
  
--window.luma-files-window .luma-sidebar-section-heading {
+-window.Suno-files-window .Suno-sidebar-section-heading {
 -  padding: 4px 8px 0;
 -  color: alpha(currentColor, 0.46);
 -}

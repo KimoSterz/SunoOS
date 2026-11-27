@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 // The TV app switcher and closing apps: its rules, the remote in it, and the
 // wiring that opens it from Home pressed twice and closes apps the desktop's way.
-// Run: gjs -m tv-app-switcher-policy.js js/ui/lumaPresentation/tvAppSwitcherModel.js \
-//        js/ui/lumaPresentation/tvTokens.js js/ui/lumaPresentation/tvAppSwitcher.js \
-//        js/ui/lumaPresentation/tv.js js/ui/lumaPresentation/tvInput.js
+// Run: gjs -m tv-app-switcher-policy.js js/ui/SunoPresentation/tvAppSwitcherModel.js \
+//        js/ui/SunoPresentation/tvTokens.js js/ui/SunoPresentation/tvAppSwitcher.js \
+//        js/ui/SunoPresentation/tv.js js/ui/SunoPresentation/tvInput.js
 // (node tv-app-switcher-policy.js ... works too).
 const gjs = typeof globalThis.ARGV !== 'undefined';
 const args = gjs ? globalThis.ARGV : process.argv.slice(2);

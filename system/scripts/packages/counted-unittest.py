@@ -46,7 +46,7 @@ def self_test() -> int:
         "empty directory": ({}, 1, 1),
         "below the floor": ({"test_a.py": "import unittest\nclass T(unittest.TestCase):\n    def test_a(self): pass\n"}, 2, 1),
         "failing test": ({"test_a.py": "import unittest\nclass T(unittest.TestCase):\n    def test_a(self): self.fail('x')\n"}, 1, 1),
-        "import error": ({"test_a.py": "import no_such_module_for_luma_self_test\n"}, 1, 1),
+        "import error": ({"test_a.py": "import no_such_module_for_Suno_self_test\n"}, 1, 1),
         "all skipped": ({"test_a.py": "import unittest\nclass T(unittest.TestCase):\n    @unittest.skip('x')\n    def test_a(self): pass\n"}, 1, 1),
         "passing suite": ({"test_a.py": "import unittest\nclass T(unittest.TestCase):\n    def test_a(self): pass\n"}, 1, 0),
     }

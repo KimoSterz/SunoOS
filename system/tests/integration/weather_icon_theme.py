@@ -20,7 +20,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('mode', choices=('staged', 'installed'))
 parser.add_argument('path', type=Path, help='stage/python/icons or prefix/share/icons')
 args = parser.parse_args()
-manifest = json.loads((ROOT / 'assets/icon-theme/Prairie/upstream/lucide/lumaui-manifest.json').read_text())
+manifest = json.loads((ROOT / 'assets/icon-theme/Prairie/upstream/lucide/SunoUI-manifest.json').read_text())
 entries = {entry['lucide']: entry for entry in manifest['icons']}
 for name in NAMES:
     entry = entries[name]
@@ -32,7 +32,7 @@ for name in NAMES:
     origin = ET.fromstring(source_svg)
     assert origin.attrib['viewBox'] == '0 0 24 24'
     assert origin.attrib['width'] == origin.attrib['height'] == '24'
-    adapted = ROOT / 'assets/icon-theme/Prairie/symbolic/actions' / f'lumaui-{name}-symbolic.svg'
+    adapted = ROOT / 'assets/icon-theme/Prairie/symbolic/actions' / f'SunoUI-{name}-symbolic.svg'
     adapted_svg = adapted.read_bytes()
     assert hashlib.sha256(adapted_svg).hexdigest() == entry['gtk_symbolic_sha256']
     symbolic = ET.fromstring(adapted_svg)
@@ -51,7 +51,7 @@ else:
     theme.add_search_path(str(args.path))
     theme.set_theme_name('Prairie')
 for name in NAMES:
-    icon = f'lumaui-{name}-symbolic'
+    icon = f'SunoUI-{name}-symbolic'
     assert theme.has_icon(icon), (args.mode, icon, theme.get_search_path())
     paintable = theme.lookup_icon(icon, None, 24, 1, Gtk.TextDirection.NONE, 0)
     file = paintable.get_file()

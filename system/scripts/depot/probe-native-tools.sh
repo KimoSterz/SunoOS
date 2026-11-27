@@ -17,10 +17,10 @@ if [ "${1:-}" != --user ]; then
   bash "$source_root/scripts/depot/install-tools-packages.sh"
   dnf5 -q -y install shadow-utils dbus-daemon dbus-tools
   # This is a new disposable container account, with no signing/API/SSH keys.
-  useradd --create-home --uid 1000 luma-ci
-  chown luma-ci:luma-ci /home/luma-ci
-  install -d -o luma-ci -g luma-ci "$DEPOT_ROOT" "$DEPOT_ROOT/tmp" "$DEPOT_ROOT/logs"
-  exec runuser -u luma-ci -- env HOME=/home/luma-ci DEPOT_ROOT="$DEPOT_ROOT" \
+  useradd --create-home --uid 1000 Suno-ci
+  chown Suno-ci:Suno-ci /home/Suno-ci
+  install -d -o Suno-ci -g Suno-ci "$DEPOT_ROOT" "$DEPOT_ROOT/tmp" "$DEPOT_ROOT/logs"
+  exec runuser -u Suno-ci -- env HOME=/home/Suno-ci DEPOT_ROOT="$DEPOT_ROOT" \
     DEPOT_ARCH="$DEPOT_ARCH" TMPDIR="$DEPOT_ROOT/tmp" \
     FLATPAK_USER_DIR="$DEPOT_ROOT/flatpak-user" \
     bash "$source_root/scripts/depot/probe-native-tools.sh" --user

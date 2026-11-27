@@ -1,0 +1,434 @@
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/* SunoUI floating controls, dark appearance. Grouping actors have no fill. */
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options {
+    width: 338px; padding: 18px 16px 14px; border-radius: 26px;
+    background-color: rgba(32,33,36,.78);
+    background-gradient-direction: none;
+    border: 1px solid rgba(255,255,255,.06); color: #eef0f4; font-family: Figtree;
+    box-shadow: 0 24px 60px -24px rgba(0,0,0,.5);
+}
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .Suno-options-main { spacing: 18px; background-color: transparent; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .Suno-quick-header { padding: 0 2px 0 4px; spacing: 8px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .Suno-quick-when { spacing: 8px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .Suno-quick-time { font-size: 18px; font-weight: 680; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .Suno-quick-date { font-size: 13px; color: rgba(238,240,244,.65); padding-top: 4px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .Suno-quick-battery { spacing: 6px; background-color: transparent; padding: 0; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .Suno-quick-battery-icon { icon-size: 14px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .Suno-quick-battery-label { font-size: 12px; color: rgba(238,240,244,.6); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .Suno-options-levels { spacing: 10px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .Suno-options-slider { padding: 0; spacing: 6px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-level-track { height: 34px; border-radius: 12px; background-color: transparent; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-filled-level .slider-bin { padding: 0; min-height: 34px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-filled-level .slider { height: 34px; min-height: 34px; -barlevel-height: 34px; -barlevel-background-color: rgba(255,255,255,.055); -barlevel-active-background-color: rgba(255,255,255,.185); -barlevel-overdrive-color: rgba(255,255,255,.185); -barlevel-border-width: 0; -slider-handle-radius: 0; -slider-handle-border-width: 0; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-filled-level .Suno-quick-level-value { font-size: 11.5px; color: rgba(238,240,244,.45); min-width: 0; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-filled-level .icon-button StIcon { icon-size: 16px; color: rgba(238,240,244,.65); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .Suno-options-level-key { width: 34px; height: 34px; min-width: 0; min-height: 0; padding: 0; background-color: transparent; box-shadow: none; border: 0; color: rgba(238,240,244,.55); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .Suno-options-level-key:checked { background-color: transparent; color: #61b3f2; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .Suno-options-radios { spacing: 8px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .Suno-options-radio { min-height: 54px; border-radius: 18px; padding: 0; background-color: rgba(255,255,255,.06); box-shadow: none; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .Suno-options-radio:checked { background-color: rgba(255,255,255,.1); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .Suno-options-radio .quick-toggle { padding: 0 2px 0 10px; background-color: transparent; border: 0; box-shadow: none; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .Suno-options-radio .quick-toggle > StBoxLayout { spacing: 10px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .Suno-options-radio .quick-toggle-title { font-size: 13px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .Suno-options-radio .quick-toggle-subtitle { font-size: 11.5px; color: rgba(238,240,244,.6); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-connection-light { icon-size: 17px; padding: 8.5px; border-radius: 99px; background-color: rgba(255,255,255,.09); color: rgba(238,240,244,.65); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .Suno-options-radio:checked .SunoUI-connection-light { background-color: #318bd5; color: white; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .Suno-options-radio .quick-toggle-menu-button { width: 26px; padding: 0; background-color: transparent; box-shadow: none; border: 0; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .Suno-options-toggles { spacing: 14px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-toggle-row { spacing: 8px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-round-toggle, .popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-round-toggle:checked,
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-round-toggle .quick-toggle, .popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-round-toggle .quick-toggle:checked { background-color: transparent; border: 0; padding: 2px 0; box-shadow: none; min-height: 0; }
+/* Tiling and Cast are menu toggles carrying the pill classes (0164): the
+ * pill's 8px bottom margin and its 10/999px corners would make them sit
+ * higher and rounder than the plain toggles in the same row. */
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-round-toggle,
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-round-toggle .quick-toggle { margin: 0; border-radius: 14px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-round-toggle .quick-toggle-icon { icon-size: 18px; padding: 13px; border-radius: 99px; background-color: rgba(255,255,255,.07); color: rgba(238,240,244,.65); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-round-toggle:checked .quick-toggle-icon { background-color: #318bd5; color: white; box-shadow: 0 4px 12px -4px rgba(49,139,213,.7); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-round-toggle .quick-toggle > StBoxLayout,
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-round-toggle > StBoxLayout { spacing: 8px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-round-toggle .quick-toggle-title { font-size: 11px; font-weight: 550; text-align: center; color: rgba(238,240,244,.48); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-round-toggle:checked .quick-toggle-title { color: #eef0f4; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .Suno-options-system { padding: 12px 0 0; border-top: 1px solid rgba(255,255,255,.09); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .Suno-quick-actions { spacing: 4px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .Suno-quick-action { width: 40px; height: 34px; padding: 0; background-color: transparent; border: 0; box-shadow: none; color: rgba(238,240,244,.48); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .Suno-quick-action StIcon { icon-size: 17px; }
+
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-round-toggle .quick-toggle-icon { min-width: 0; min-height: 0; width: 18px; height: 18px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-round-toggle .quick-toggle-title { max-width: 76px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-level-foreground { padding: 0; spacing: 0; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-level-foreground .Suno-quick-level-value { text-align: right; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .Suno-quick-header { border: 0; box-shadow: none; padding-bottom: 0; }
+
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-round-toggle .quick-toggle-icon { min-width: 44px; min-height: 44px; width: 44px; height: 44px; padding: 0; icon-size: 18px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .Suno-options-main > .Suno-options-radio { background-color: transparent; box-shadow: none; border: 0; }
+/* Explicit dimensions replace the old fixed 32px utility rows and 308px cap. */
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options { min-width: 338px; max-width: 338px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .Suno-options-levels, .popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .Suno-options-radios, .popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .Suno-options-toggles { margin: 0; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .Suno-options-slider > StBoxLayout { spacing: 6px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-connection-light { min-width: 34px; min-height: 34px; width: 34px; height: 34px; padding: 0; icon-size: 17px; }
+.Suno-quick-options-popup { -arrow-background-color: transparent; -arrow-border-color: transparent; -arrow-border-width: 0; -arrow-rise: 0; }
+/* The native shadow carrier must not paint an opaque second background. */
+.Suno-quick-options-popup .Suno-popup-shadow { background-color: rgba(0,0,0,.001); border: 0; box-shadow: 0 8px 24px -4px rgba(0,0,0,.24); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-mode-picker { min-height: 34px; height: 34px; margin: 0; padding: 0 8px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-mode-picker .quick-toggle { min-height: 34px; height: 34px; padding: 0; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-mode-picker .quick-toggle-icon { width: 18px; height: 18px; icon-size: 16px; border: 0; background-color: transparent; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-mode-picker .quick-toggle-title { font-size: 13px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-mode-picker .quick-toggle-subtitle { font-size: 12px; padding-top: 0; }
+
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-round-toggle,
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-round-toggle .quick-toggle { height: auto; min-height: 66px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-round-toggle > StBoxLayout,
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-round-toggle .quick-toggle > StBoxLayout { height: auto; min-height: 66px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-level-foreground .icon-button { margin-left: 12px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-level-foreground .Suno-quick-level-value { margin-right: 12px; }
+
+/* Touch presentations retain the same native controls with larger hit areas. */
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.SunoUI-touch-options .SunoUI-level-track,
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.SunoUI-touch-options .SunoUI-filled-level .slider-bin,
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.SunoUI-touch-options .SunoUI-filled-level .slider { height: 46px; min-height: 46px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.SunoUI-touch-options .SunoUI-round-toggle .quick-toggle-icon { width: 52px; height: 52px; min-width: 52px; min-height: 52px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.SunoUI-touch-options .SunoUI-round-toggle,
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.SunoUI-touch-options .SunoUI-round-toggle .quick-toggle { height: auto; min-height: 74px; }
+
+/* Light and Glass retain their opaque native panel palette. */
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-light { background-color: #f1f2f3; color: #161b20; border-color: rgba(25,27,31,.12); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-light .Suno-quick-date, .popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-light .Suno-quick-battery-label, .popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-light .quick-toggle-subtitle,
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-light .quick-toggle-title, .popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-light .Suno-quick-level-value { color: rgba(22,25,29,.65); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-light .SunoUI-round-toggle .quick-toggle-icon { background-color: rgba(20,22,26,.07); color: rgba(22,25,29,.7); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-light .SunoUI-round-toggle:checked .quick-toggle-icon { background-color: #318bd5; color: white; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-light .Suno-options-radio { background-color: rgba(20,22,26,.05); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-light .Suno-options-radio:checked { background-color: white; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-light .Suno-quick-action, .popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-light .Suno-options-level-key { color: rgba(22,25,29,.65); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-glass { background-color: #f1f2f3; color: #161b20; border-color: rgba(25,27,31,.12); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-glass .Suno-quick-date, .popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-glass .Suno-quick-battery-label, .popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-glass .quick-toggle-subtitle,
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-glass .quick-toggle-title, .popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-glass .Suno-quick-level-value { color: rgba(22,25,29,.65); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-glass .SunoUI-round-toggle .quick-toggle-icon { background-color: rgba(20,22,26,.07); color: rgba(22,25,29,.7); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-glass .SunoUI-round-toggle:checked .quick-toggle-icon { background-color: #318bd5; color: white; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-glass .Suno-options-radio { background-color: rgba(20,22,26,.05); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-glass .Suno-options-radio:checked { background-color: white; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-glass .Suno-quick-action, .popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-glass .Suno-options-level-key { color: rgba(22,25,29,.65); }
+
+/* The native surface owner carries this role; separate grouping rows stay clear. */
+.SunoUI-floating-island > .Suno-shelf-shadow-far { box-shadow: none; }
+.SunoUI-floating-island > .Suno-shelf-shadow-middle { box-shadow: 0 8px 24px -4px rgba(0,0,0,.24); }
+.SunoUI-floating-island > .Suno-shelf-shadow-near { box-shadow: 0 2px 6px rgba(0,0,0,.18); }
+.Suno-notification-lip > .Suno-lip-surface.Suno-surface-dark,
+.Suno-notification-lip > .Suno-lip-surface.Suno-surface-frost {
+    background-color: rgba(32,33,36,.65); background-gradient-direction: none;
+}
+.app-menu .popup-menu-content.Suno-surface-dark,
+.background-menu .popup-menu-content.Suno-surface-dark,
+.Suno-dash-menu .popup-menu-content.Suno-surface-dark {
+    background-color: rgba(32,33,36,.65); background-gradient-direction: none;
+    border-color: rgba(255,255,255,.06);
+}
+/* The shadow carrier casts a shadow; the real surface is its only fill. */
+.popup-menu-boxpointer.SunoUI-floating-owner > .Suno-popup-shadow {
+    background-color: rgba(0,0,0,.001);
+}
+.Suno-shelf-material.SunoUI-floating-material.SunoUI-floating-reduced,
+.popup-menu-content.SunoUI-floating-material.SunoUI-floating-reduced,
+.Suno-dockf-surface.SunoUI-floating-material.SunoUI-floating-reduced,
+.Suno-lip-surface.SunoUI-floating-material.SunoUI-floating-reduced,
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.SunoUI-floating-reduced {
+    background-color: #202124; background-gradient-direction: none;
+}
+
+/* The role exists only on the binding's one primary paint actor. */
+.SunoUI-floating-material.Suno-surface-dark,
+.SunoUI-floating-material.Suno-surface-frost {
+    background-color: rgba(32,33,36,.65); background-gradient-direction: none;
+}
+.Suno-dockf-surface.SunoUI-floating-material.Suno-surface-dark,
+.Suno-dockf-surface.SunoUI-floating-material.Suno-surface-frost,
+.datemenu-popover.SunoUI-floating-material.Suno-surface-dark,
+.datemenu-popover.SunoUI-floating-material.Suno-surface-frost { background-color: rgba(32,33,36,.65); }
+.SunoUI-floating-material.SunoUI-floating-reduced { background-color: #202124; }
+/* The date menu is the calendar column alone (0330): no gap for a notification column. */
+.datemenu-calendar-column:ltr, .datemenu-calendar-column:rtl { margin-left: 0; margin-right: 0; }
+/* The calendar panel (0331): the month and Today when another month is on show; today is the filled
+   accent, the chosen day a ring (a border: St paints no inset shadow on a clear fill), hover the tint alone, a focused day a fainter ring.
+   Below it, what is coming up (or the chosen day), then Open Calendar. */
+.datemenu-popover #calendarArea .calendar .calendar-month-header .calendar-month-label { width: auto; padding: 8px 10px; text-align: left; background-color: transparent; font-size: 1.1em; }
+.datemenu-popover #calendarArea .calendar .calendar-day { width: 34px; height: 34px; margin: 1px; }
+.datemenu-popover #calendarArea .calendar .calendar-day-heading { margin: 2px 1px; }
+.datemenu-popover #calendarArea .calendar .calendar-show-today { height: 2.2em; padding: 0 12px; border-radius: 999px; font-weight: bold; color: -st-accent-color; }
+.datemenu-popover #calendarArea .calendar .calendar-day:hover,
+.datemenu-popover #calendarArea .calendar .calendar-day:selected:hover,
+.datemenu-popover #calendarArea .calendar .calendar-show-today:hover,
+.datemenu-popover #calendarArea .events-button .event-box:hover,
+.datemenu-popover #calendarArea .events-button .events-more-button:hover,
+.datemenu-popover #calendarArea .events-button .events-open-button:hover { background-color: rgba(255,255,255,.12); }
+.datemenu-popover.Suno-surface-light #calendarArea .calendar .calendar-day:hover,
+.datemenu-popover.Suno-surface-light #calendarArea .calendar .calendar-day:selected:hover,
+.datemenu-popover.Suno-surface-light #calendarArea .calendar .calendar-show-today:hover,
+.datemenu-popover.Suno-surface-light #calendarArea .events-button .event-box:hover,
+.datemenu-popover.Suno-surface-light #calendarArea .events-button .events-more-button:hover,
+.datemenu-popover.Suno-surface-light #calendarArea .events-button .events-open-button:hover { background-color: rgba(20,22,26,.07); }
+.datemenu-popover #calendarArea .calendar .calendar-day:selected { background-color: transparent; border: 2px solid -st-accent-color; }
+.datemenu-popover #calendarArea .calendar .calendar-day:focus { box-shadow: none !important; border: 2px solid st-transparentize(-st-accent-color, 0.5); }
+.datemenu-popover #calendarArea .calendar .calendar-day:selected:focus { border-color: -st-accent-color; }
+.datemenu-popover #calendarArea .calendar .calendar-day.calendar-today,
+.datemenu-popover #calendarArea .calendar .calendar-day.calendar-today:selected { background-color: -st-accent-color; color: -st-accent-fg-color; border-width: 0; box-shadow: none; }
+.datemenu-popover #calendarArea .calendar .calendar-day.calendar-today:hover { background-color: st-lighten(-st-accent-color, 4%); }
+.datemenu-popover #calendarArea .calendar .calendar-day.calendar-today:focus { box-shadow: none !important; border: 2px solid st-transparentize(-st-accent-fg-color, 0.4); }
+.datemenu-popover #calendarArea .events-button .events-box,
+.datemenu-popover #calendarArea .events-button .events-box .events-list { spacing: 2px; }
+.datemenu-popover #calendarArea .events-button .events-box .events-title { padding: 6px 8px 2px; font-size: 0.85em; font-weight: bold; }
+.datemenu-popover #calendarArea .events-button .events-box .events-list .event-box { padding: 6px 8px; border-radius: 10px; }
+.datemenu-popover #calendarArea .events-button .event-box > StBoxLayout { spacing: 10px; }
+.datemenu-popover #calendarArea .events-button .event-color { width: 3px; border-radius: 2px; background-color: -st-accent-color; }
+.datemenu-popover #calendarArea .events-button .event-location { font-size: 0.85em; }
+.datemenu-popover #calendarArea .events-button .events-box .events-list .event-placeholder { padding: 6px 8px; font-style: normal; }
+.datemenu-popover #calendarArea .events-button .events-more-button { padding: 6px 8px; border-radius: 10px; font-weight: bold; color: -st-accent-color; }
+.datemenu-popover #calendarArea .events-button .events-open-button { margin-top: 4px; padding: 8px; border-radius: 10px; font-weight: bold; }
+.datemenu-popover #calendarArea .events-button .events-open-box { spacing: 8px; }
+.datemenu-popover #calendarArea .events-button .events-open-icon { icon-size: 16px; }
+
+/* Content owns row height at large text scales and in narrow viewports. */
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-toggle-row { height: auto; min-height: 70px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-round-toggle, .popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-round-toggle .quick-toggle { width: auto; min-width: 0; height: auto; min-height: 66px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-round-toggle > StBoxLayout, .popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-round-toggle .quick-toggle > StBoxLayout { height: auto; min-height: 66px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.SunoUI-touch-options .SunoUI-toggle-row { height: auto; min-height: 78px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.SunoUI-touch-options .SunoUI-round-toggle, .popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.SunoUI-touch-options .SunoUI-round-toggle .quick-toggle { height: auto; min-height: 74px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.SunoUI-touch-options .SunoUI-round-toggle > StBoxLayout, .popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.SunoUI-touch-options .SunoUI-round-toggle .quick-toggle > StBoxLayout { height: auto; min-height: 74px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.SunoUI-touch-options .Suno-options-slider { height: 46px; min-height: 46px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.SunoUI-touch-options .Suno-options-level-key, .popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.SunoUI-touch-options .Suno-quick-disclosure-slot { width: 46px; height: 46px; min-height: 46px; }
+
+/* The native rim carries interaction emphasis; keep the material calm. */
+.SunoUI-floating-island > .Suno-shelf-material.Suno-surface-dark.Suno-island-hover {
+    box-shadow: inset 0 0 0 200px rgba(255,255,255,.015);
+}
+.SunoUI-floating-island > .Suno-shelf-material.Suno-surface-dark.Suno-island-press {
+    box-shadow: inset 0 0 0 200px rgba(255,255,255,.025);
+}
+
+/* Existing controls and hit targets, rearranged within the native footer. */
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-footer-mode.SunoUI-mode-picker { min-width: 0; padding: 0 2px; margin: 0; background-color: transparent; border: 0; box-shadow: none; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-footer-mode .quick-toggle { padding: 0; background-color: transparent; border: 0; box-shadow: none; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-footer-mode .quick-toggle-title { font-size: 12px; font-weight: 550; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-footer-mode .quick-toggle-subtitle { color: transparent; font-size: 0; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-footer-mode .quick-toggle-menu-button { width: 20px; padding: 0; background-color: transparent; border: 0; box-shadow: none; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .Suno-quick-footer { spacing: 8px; }
+/* Detail pages keep their one outer material, without an inset dark panel. */
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.SunoUI-mode-detail { padding: 8px 8px 14px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.SunoUI-mode-detail .Suno-options-page { spacing: 4px; padding: 0; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.SunoUI-mode-detail .Suno-options-page-header { padding: 0; margin: 0; spacing: 4px; min-height: 30px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.SunoUI-mode-detail .Suno-options-back { width: 28px; height: 28px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.SunoUI-mode-detail .Suno-options-page-title { font-size: 12.5px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.SunoUI-mode-detail .Suno-options-page-scroll { padding: 0; background-color: transparent; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.SunoUI-mode-detail .Suno-options-pages,
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.SunoUI-mode-detail .Suno-options-detail { padding: 0; spacing: 0; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.SunoUI-mode-detail .popup-menu-item { padding: 0 8px; margin: 0; min-height: 32px; border-radius: 9px; background-color: transparent; box-shadow: none; border: 1px solid transparent; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.SunoUI-mode-detail .popup-menu-item:hover { background-color: rgba(255,255,255,.035); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.SunoUI-mode-detail .popup-menu-item:focus { background-color: rgba(255,255,255,.035); border-color: rgba(255,255,255,.18); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.SunoUI-mode-detail .popup-menu-item:active { background-color: rgba(255,255,255,.055); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.SunoUI-mode-detail.SunoUI-touch-options .popup-menu-item { min-height: 44px; }
+
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-footer-mode { width: auto; min-width: 0; max-width: none; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-footer-mode .quick-toggle { width: auto; min-width: 0; max-width: none; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-footer-mode > StBoxLayout { spacing: 2px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .Suno-options-radio { border: 1px solid rgba(255,255,255,.06); }
+
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-footer-mode.Suno-options-radio { border: 0; }
+
+/* A joined row owns the sole paint layer. Its segments stay transparent. */
+.Suno-shelf-root.Suno-shelf-connected > .Suno-shelf-group > .Suno-shelf-island > .Suno-shelf-material {
+    background-color: transparent; background-gradient-direction: none;
+}
+.Suno-shelf-root.Suno-shelf-separate > .Suno-shelf-group { background-color: transparent; }
+
+/* Preserve the native no-transparency/accessibility fallback. */
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.SunoUI-floating-reduced { background-color: #202124; }
+
+/* Native context menus and notification tray share the neutral material. */
+.app-menu .popup-menu-content.Suno-surface-dark,
+.app-menu.Suno-surface-dark .popup-menu-content,
+.app-menu .popup-menu-content.Suno-surface-frost,
+.app-menu.Suno-surface-frost .popup-menu-content,
+.background-menu .popup-menu-content.Suno-surface-dark,
+.background-menu.Suno-surface-dark .popup-menu-content,
+.background-menu .popup-menu-content.Suno-surface-frost,
+.background-menu.Suno-surface-frost .popup-menu-content,
+.Suno-dash-menu .popup-menu-content.Suno-surface-dark,
+.Suno-dash-menu.Suno-surface-dark .popup-menu-content,
+.Suno-dash-menu .popup-menu-content.Suno-surface-frost,
+.Suno-dash-menu.Suno-surface-frost .popup-menu-content,
+.Suno-notification-lip.Suno-surface-dark > .Suno-lip-surface,
+.Suno-notification-lip.Suno-surface-frost > .Suno-lip-surface {
+    background-color: rgba(32,33,36,.78);
+    background-gradient-direction: none;
+    border-color: rgba(255,255,255,.16);
+    box-shadow: 0 8px 24px -4px rgba(0,0,0,.24);
+}
+
+/* The experience control shares the surrounding secondary text color. */
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-footer-mode .quick-toggle-icon,
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-footer-mode .quick-toggle-title,
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-footer-mode .quick-toggle-menu-button { color: rgba(230, 233, 240, .62); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-light .SunoUI-footer-mode .quick-toggle-icon,
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-light .SunoUI-footer-mode .quick-toggle-title,
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-light .SunoUI-footer-mode .quick-toggle-menu-button,
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-glass .SunoUI-footer-mode .quick-toggle-icon,
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-glass .SunoUI-footer-mode .quick-toggle-title,
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-glass .SunoUI-footer-mode .quick-toggle-menu-button { color: rgba(32, 38, 49, .62); }
+
+/* Search uses the dock's single material owner, never a stack of gray panes. */
+.Suno-search-dialog .Suno-search-field.Suno-search-material,
+.Suno-search-dialog .Suno-search-intro.Suno-search-material,
+.Suno-search-dialog #searchResults.Suno-search-material {
+    border-radius: 24px;
+    border: 1px solid rgba(255,255,255,.16);
+    background-gradient-direction: none;
+    box-shadow: 0 8px 24px -4px rgba(0,0,0,.24);
+}
+.Suno-search-dialog .Suno-search-material.Suno-surface-dark,
+.Suno-search-dialog #searchResults.Suno-search-material.Suno-surface-dark {
+    background-color: rgba(32,33,36,.65); color: #fafafa;
+}
+.Suno-search-dialog .Suno-search-material.Suno-surface-light,
+.Suno-search-dialog #searchResults.Suno-search-material.Suno-surface-light {
+    background-color: #f1f2f3; color: #161b20; border-color: rgba(25,27,31,.12);
+}
+.Suno-search-dialog .Suno-search-material.Suno-surface-glass,
+.Suno-search-dialog #searchResults.Suno-search-material.Suno-surface-glass {
+    background-color: rgba(250,250,251,.85); color: #161b20; border-color: rgba(37,46,54,.12);
+}
+.Suno-search-dialog .Suno-search-field.Suno-search-material:focus { border-color: rgba(145,193,242,.85); }
+.Suno-search-dialog .Suno-search-material.Suno-surface-dark .Suno-search-entry,
+.Suno-search-dialog .Suno-search-material.Suno-surface-dark .Suno-search-intro-title,
+.Suno-search-dialog .Suno-search-material.Suno-surface-dark .Suno-search-result-title { color: #fafafa; }
+.Suno-search-dialog .Suno-search-material.Suno-surface-dark .Suno-search-intro-subtitle,
+.Suno-search-dialog .Suno-search-material.Suno-surface-dark .Suno-search-entry .search-entry-icon,
+.Suno-search-dialog .Suno-search-material.Suno-surface-dark .Suno-search-escape,
+.Suno-search-dialog .Suno-search-material.Suno-surface-dark .Suno-search-result-description,
+.Suno-search-dialog .Suno-search-material.Suno-surface-dark .Suno-search-result-kind,
+.Suno-search-dialog .Suno-search-material.Suno-surface-dark .Suno-search-section,
+.Suno-search-dialog .Suno-search-material.Suno-surface-dark .search-statustext { color: #e1e4ea; }
+.Suno-search-dialog .Suno-search-intro-title { text-align: center; }
+.Suno-search-dialog .Suno-search-intro-subtitle { text-align: center; }
+.Suno-search-dialog .Suno-search-result:hover,
+.Suno-search-dialog .Suno-search-result:focus,
+.Suno-search-dialog .Suno-search-result:selected { box-shadow: inset 0 0 0 1px rgba(145,193,242,.45); }
+/* The shared renderer turns off blur and marks these owners for opaque paint. */
+.Suno-search-dialog .Suno-search-material.SunoUI-floating-reduced,
+.Suno-search-dialog #searchResults.Suno-search-material.SunoUI-floating-reduced { background-color: #202124; }
+.high-contrast .Suno-search-dialog .Suno-search-material,
+.high-contrast .Suno-search-dialog #searchResults.Suno-search-material { border-color: white; box-shadow: none; }
+
+/* Per-app mixer (Sound output page): each app is the volume level itself, with
+/* A detail page's settings link, pinned under its scrolled list (quickSettings.js _pinPageLink). */
+.quick-settings.Suno-studio-options .Suno-options-page-foot { padding: 0 12px; }
+/* The list fades where it continues past the scroll view's edge, above the pinned link. */
+.quick-settings.Suno-studio-options .Suno-options-page-scroll.Suno-options-page-scroll { -st-vfade-offset: 28px; }
+/* The app rows' icon and name share the device rows' columns above them
+/* The output key is a picker on a key at rest: where the app plays and a chevron. */
+
+/* ── Sound page (soundPage.js, mediaRow.js): the master volume, the outputs as
+ * chips and what is playing, one SunoUI media row per app. Lengths are the
+ * media row's tokens (config/shared/design-tokens.d/media-row.json). ── */
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .Suno-options-page-scroll.SunoUI-plain-page, .popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .Suno-options-page-scroll.SunoUI-plain-page:rtl { padding: 0; border-radius: 0; background-color: transparent; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .Suno-options-page-scroll.SunoUI-plain-page .Suno-options-pages { padding: 0; }
+/* A plain page sets its own rhythm: the header 10px above its first part, its back key
+ * hanging 6px outside the page's edge. */
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.SunoUI-plain-open { padding: 11px 10px 14px; width: 350px; min-width: 350px; max-width: 350px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .Suno-options-page.SunoUI-plain { spacing: 10px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .Suno-options-page.SunoUI-plain .Suno-options-page-header { margin-bottom: 0; spacing: 4px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .Suno-options-page.SunoUI-plain .Suno-options-page-meta { margin-right: 7px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .Suno-options-page.SunoUI-plain .Suno-options-page-scroll { margin: 0 6px; }
+/* In a drawer the sheet keeps its own padding: nothing hangs. */
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.SunoUI-touch-options.SunoUI-plain-open { padding: 11px 17px 14px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.SunoUI-touch-options .Suno-options-page.SunoUI-plain .Suno-options-page-scroll { margin: 0; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.SunoUI-touch-options .Suno-options-page.SunoUI-plain .Suno-options-page-meta { margin-right: 4px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .Suno-options-page-meta { font-size: 12px; color: rgba(238,240,244,.5); margin-right: 4px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-light .Suno-options-page-meta,
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-glass .Suno-options-page-meta { color: rgba(22,25,29,.5); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-sound-page { spacing: 10px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-sound-master .SunoUI-sound-master-icon { icon-size: 16px; margin-left: 12px; color: rgba(238,240,244,.65); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-light .SunoUI-sound-master .SunoUI-sound-master-icon,
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-glass .SunoUI-sound-master .SunoUI-sound-master-icon { color: rgba(22,25,29,.65); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-sound-outputs { spacing-rows: 6px; spacing-columns: 6px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-sound-chip { height: 30px; padding: 0 11px 0 9px; border-radius: 11px; font-size: 12px; font-weight: 600; color: rgba(238,240,244,.82); background-color: rgba(0,0,0,.2); border: 1px solid rgba(0,0,0,.28); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-light .SunoUI-sound-chip,
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-glass .SunoUI-sound-chip { color: rgba(22,25,29,.78); background-color: rgba(22,25,29,.05); border-color: rgba(22,25,29,.075); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-sound-chip:rtl { padding: 0 9px 0 11px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-sound-chip:hover, .popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-sound-chip:focus { color: #eef0f4; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-light .SunoUI-sound-chip:hover, .popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-sound-chip:focus,
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-glass .SunoUI-sound-chip:hover, .popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-sound-chip:focus { color: #16191d; }
+/* The current output and the play key are raised: the sheet's one raised recipe (radio tiles, level keys);
+ * a round key takes its ring in one colour (St seams a circle whose sides differ). */
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-sound-chip.on { color: #eef0f4; background-color: #353a42; border: 1px solid rgba(255,255,255,.10); border-top-color: rgba(255,255,255,.16); border-bottom-color: rgba(0,0,0,.25); box-shadow: 0 2px 3px rgba(0,0,0,.15); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-light .SunoUI-sound-chip.on,
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-glass .SunoUI-sound-chip.on { color: #16191d; background-color: #fff; border: 1px solid rgba(0,0,0,.08); box-shadow: 0 1px 2px rgba(0,0,0,.12); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-sound-chip-content { spacing: 7px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-sound-chip-icon { icon-size: 15px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-sound-chip.on .SunoUI-sound-chip-icon { color: -st-accent-color; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-sound-label { margin: 2px 4px 1px 6px; font-size: 12px; font-weight: 650; color: rgba(238,240,244,.82); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-light .SunoUI-sound-label,
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-glass .SunoUI-sound-label { color: rgba(22,25,29,.78); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-sound-nothing { margin: 2px 6px; font-size: 12px; color: rgba(238,240,244,.5); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-light .SunoUI-sound-nothing,
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-glass .SunoUI-sound-nothing { color: rgba(22,25,29,.5); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-sound-well { padding: 5px; border-radius: 16px; background-color: rgba(0,0,0,.2); border: 1px solid rgba(0,0,0,.28); -st-vfade-offset: 18px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-light .SunoUI-sound-well,
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-glass .SunoUI-sound-well { background-color: rgba(22,25,29,.05); border-color: rgba(22,25,29,.075); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-sound-list { spacing: 2px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-sound-playing { spacing: 2px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-sound-link { height: 21px; padding: 0 8px; border-radius: 8px; font-size: 12px; font-weight: 600; color: -st-accent-color; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-sound-link:hover, .popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-sound-link:focus { background-color: rgba(255,255,255,.07); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-light .SunoUI-sound-link:hover, .popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-sound-link:focus,
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-glass .SunoUI-sound-link:hover, .popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-sound-link:focus { background-color: rgba(20,22,26,.06); }
+/* The media row, compact: 40 | 1fr | auto, 11 px apart. */
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-media-row { spacing: 11px; padding: 6px 4px 6px 6px; min-height: 48px; border-radius: 12px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-media-row:rtl { padding: 6px 6px 6px 4px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-media-row:focus { background-color: rgba(255,255,255,.07); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-light .SunoUI-media-row:focus,
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-glass .SunoUI-media-row:focus { background-color: rgba(20,22,26,.06); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-media-row-art { border-radius: 9px; box-shadow: 0 2px 6px rgba(0,0,0,.35); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-media-row-art.tile { background-color: #f3f2ef; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-media-row-tile-icon { icon-size: 24px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-media-row-badge { border-radius: 7px; border: 2px solid rgb(38,39,43); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-light .SunoUI-media-row-badge,
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-glass .SunoUI-media-row-badge { border-color: rgb(233,234,237); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-media-row-badge-icon { icon-size: 17px; border-radius: 5px; }
+/* The line hangs 2 px into the title's box, as drawn (mediaRow.js lifts it 1 px more); the slider keeps its place. */
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-media-row-words { spacing: 0; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-media-row-title { font-size: 12.5px; font-weight: 650; color: #eef0f4; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-light .SunoUI-media-row-title,
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-glass .SunoUI-media-row-title { color: #16191d; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-media-row-line { font-size: 11px; color: rgba(238,240,244,.57); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-light .SunoUI-media-row-line,
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-glass .SunoUI-media-row-line { color: rgba(22,25,29,.78); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-media-row-slider { height: 16px; min-height: 16px; margin: 2px 0 0 0; -barlevel-height: 4px; -barlevel-background-color: rgba(0,0,0,.32); -barlevel-active-background-color: -st-accent-color; -barlevel-overdrive-color: -st-accent-color; -barlevel-overdrive-separator-width: 0; -slider-handle-radius: 6px; -slider-handle-border-width: 1px; -slider-handle-border-color: rgba(0,0,0,.22); color: #fff; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-light .SunoUI-media-row-slider,
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-glass .SunoUI-media-row-slider { -barlevel-background-color: rgba(22,25,29,.12); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-media-row-slider:rtl { margin: 2px 0 0 0; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-media-row.muted .SunoUI-media-row-slider { -barlevel-active-background-color: rgba(238,240,244,.3); color: rgba(238,240,244,.6); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-light .SunoUI-media-row.muted .SunoUI-media-row-slider,
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-glass .SunoUI-media-row.muted .SunoUI-media-row-slider { -barlevel-active-background-color: rgba(22,25,29,.28); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-media-row-play { width: 30px; height: 30px; border-radius: 16px; color: #eef0f4; background-color: #353a42; border: 1px solid rgba(255,255,255,.10); box-shadow: 0 2px 3px rgba(0,0,0,.15); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-light .SunoUI-media-row-play,
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-glass .SunoUI-media-row-play { color: #16191d; background-color: #fff; border-color: rgba(25,27,31,.12); box-shadow: 0 2px 3px rgba(25,27,31,.10); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-media-row-play:hover, .popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-media-row-play:focus { background-color: #3e444d; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-light .SunoUI-media-row-play:hover, .popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-media-row-play:focus,
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-glass .SunoUI-media-row-play:hover, .popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-media-row-play:focus { background-color: #f4f5f7; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-media-row-play-icon { icon-size: 14px; color: #eef0f4; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-light .SunoUI-media-row-play-icon,
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-glass .SunoUI-media-row-play-icon { color: #16191d; }
+/* Under a finger: rows at least 56 px with a 44 px key. */
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-media-row.touch { min-height: 48px; padding: 8px 6px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.SunoUI-touch-options .SunoUI-sound-chip { height: 38px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-media-row.touch .SunoUI-media-row-play { width: 42px; height: 42px; border-radius: 22px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-media-row.touch .SunoUI-media-row-play-icon { icon-size: 18px; }
+/* "More…": every output as a row, in the same well. */
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-sound-all { spacing: 1px; padding: 4px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-sound-output { min-height: 34px; padding: 5px 10px 5px 9px; border-radius: 12px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-sound-output:hover, .popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-sound-output:focus { background-color: rgba(255,255,255,.07); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-light .SunoUI-sound-output:hover, .popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-light .SunoUI-sound-output:focus,
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-glass .SunoUI-sound-output:hover, .popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-glass .SunoUI-sound-output:focus { background-color: rgba(20,22,26,.06); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-sound-output-content { spacing: 10px; }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-sound-output .SunoUI-sound-chip-icon { color: rgba(238,240,244,.82); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-light .SunoUI-sound-output .SunoUI-sound-chip-icon,
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options.Suno-surface-glass .SunoUI-sound-output .SunoUI-sound-chip-icon { color: rgba(22,25,29,.78); }
+.popup-menu-content.quick-settings.Suno-studio-options.SunoUI-shell-options .SunoUI-sound-output-check { icon-size: 15px; color: -st-accent-color; }

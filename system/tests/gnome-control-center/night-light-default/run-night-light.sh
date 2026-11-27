@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Render Settings > Displays > Night Light in Xvfb with a brand-new $HOME (no
 # dconf user value for night-light-temperature exists), so the slider's start
-# position is whatever Luma's shipped package default resolves to.
+# position is whatever Suno's shipped package default resolves to.
 set -u
 OUT=${OUT:-/work/out}; mkdir -p "$OUT"
 TAG=${1:-night-light}

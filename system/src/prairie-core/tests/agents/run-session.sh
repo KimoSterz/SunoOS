@@ -13,17 +13,17 @@ export XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR:-/run/user/$(id -u)}
 export DBUS_SESSION_BUS_ADDRESS=${DBUS_SESSION_BUS_ADDRESS:-unix:path=$XDG_RUNTIME_DIR/bus}
 mkdir -p "$EVIDENCE"
 systemctl --user reset-failed >/dev/null 2>&1 || true
-systemctl --user stop luma-test-notifications >/dev/null 2>&1 || true
+systemctl --user stop Suno-test-notifications >/dev/null 2>&1 || true
 if true; then
-  systemd-run --user --quiet --unit=luma-test-notifications \
-    --setenv=LUMA_TEST_NOTIFICATIONS="$EVIDENCE/notifications.jsonl" python3 "$HERE/notification_stub.py"
+  systemd-run --user --quiet --unit=Suno-test-notifications \
+    --setenv=SUNO_TEST_NOTIFICATIONS="$EVIDENCE/notifications.jsonl" python3 "$HERE/notification_stub.py"
 fi
-if ! systemctl --user is-active -q luma-test-keyring; then
-  systemd-run --user --quiet --unit=luma-test-keyring sh -c 'printf luma-test | exec gnome-keyring-daemon --foreground --unlock --components=secrets'
+if ! systemctl --user is-active -q Suno-test-keyring; then
+  systemd-run --user --quiet --unit=Suno-test-keyring sh -c 'printf Suno-test | exec gnome-keyring-daemon --foreground --unlock --components=secrets'
 fi
-if ! systemctl --user is-active -q luma-test-display; then
+if ! systemctl --user is-active -q Suno-test-display; then
   # A display for windows the agents open (Calendar from a reminder, Phone from a call).
-  systemd-run --user --quiet --unit=luma-test-display Xvfb :90 -screen 0 1280x800x24 -nolisten tcp
+  systemd-run --user --quiet --unit=Suno-test-display Xvfb :90 -screen 0 1280x800x24 -nolisten tcp
 fi
 systemctl --user set-environment DISPLAY=:90 GSK_RENDERER=cairo
 sleep 2

@@ -8,8 +8,8 @@
 set -Eeuo pipefail
 umask 077
 
-name=luma-stock-android-c1
-state=/var/lib/luma/stock-android-container1
+name=Suno-stock-android-c1
+state=/var/lib/Suno/stock-android-container1
 config=/var/lib/lxc/$name/config
 manifest=$state/manifest.json
 expected_config_sha=db477c4d10c1511d1444c91a093fe8c4cca3a506a263f5177b33c26b23c1ae6f
@@ -21,7 +21,7 @@ hash() { sha256sum "$1" | cut -d' ' -f1; }
 [[ $(id -u) -eq 0 ]] || die 'run as root on the FP6'
 [[ $(tr -d '\0' </sys/firmware/devicetree/base/model) == 'The Fairphone (Gen. 6)' ]] ||
   die 'device identity mismatch'
-[[ $(uname -r) == 7.1.2-luma-fp-ims1 ]] || die 'unexpected kernel release'
+[[ $(uname -r) == 7.1.2-Suno-fp-ims1 ]] || die 'unexpected kernel release'
 grep -qw 'androidboot.slot_suffix=_b' /proc/cmdline || die 'device is not on slot b'
 [[ $(lxc-info -P /var/lib/lxc -n "$name" -sH 2>/dev/null || printf STOPPED) == STOPPED ]] ||
   die 'container is active'
@@ -31,7 +31,7 @@ grep -qw 'androidboot.slot_suffix=_b' /proc/cmdline || die 'device is not on slo
   die 'C1 manifest identity mismatch'
 
 for partition in system vendor system_ext product odm; do
-  lower=/var/tmp/luma-stock-qrel1695-$partition
+  lower=/var/tmp/Suno-stock-qrel1695-$partition
   overlay=$state/overlays/$partition
   upper=$overlay/upper
   work=$overlay/work

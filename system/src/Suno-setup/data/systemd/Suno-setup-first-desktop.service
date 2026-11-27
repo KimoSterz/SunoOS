@@ -1,0 +1,14 @@
+[Unit]
+Description=Suno setup: apps and Suno Connect after the first sign-in, in the background
+ConditionPathExists=/var/lib/Suno-setup/welcome/%u
+ConditionPathExists=!%S/Suno-setup/welcome-done
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=oneshot
+ExecStartPre=/usr/bin/sleep 3
+ExecStart=/usr/libexec/Suno-setup --first-session desktop
+
+[Install]
+WantedBy=graphical-session.target

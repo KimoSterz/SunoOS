@@ -7,12 +7,12 @@ repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 # shellcheck disable=SC1091
 . "$repo_root/config/mobile/fp6-twin/inputs.env"
 
-build_dir=${LUMA_TWIN_BUILD_DIR:-$repo_root/build/mobile/fp6-twin}
+build_dir=${SUNO_TWIN_BUILD_DIR:-$repo_root/build/mobile/fp6-twin}
 downloads_dir="$build_dir/downloads"
 base_image="$downloads_dir/$FEDORA_CLOUD_IMAGE"
-disk="$build_dir/luma-fp6-twin.qcow2"
-seed="$build_dir/luma-fp6-twin-seed.iso"
-ssh_key="$build_dir/luma-fp6-twin-ed25519"
+disk="$build_dir/Suno-fp6-twin.qcow2"
+seed="$build_dir/Suno-fp6-twin-seed.iso"
+ssh_key="$build_dir/Suno-fp6-twin-ed25519"
 user_data="$build_dir/user-data"
 meta_data="$build_dir/meta-data"
 manifest="$build_dir/manifest.txt"
@@ -58,11 +58,11 @@ if [ "$actual" != "$FEDORA_CLOUD_SHA256" ]; then
 fi
 
 if [ ! -f "$ssh_key" ]; then
-  ssh-keygen -q -t ed25519 -N '' -C luma-fp6-twin -f "$ssh_key"
+  ssh-keygen -q -t ed25519 -N '' -C Suno-fp6-twin -f "$ssh_key"
 fi
 
 public_key=$(<"$ssh_key.pub")
-sed "s|__LUMA_TWIN_SSH_PUBLIC_KEY__|$public_key|" \
+sed "s|__SUNO_TWIN_SSH_PUBLIC_KEY__|$public_key|" \
   "$repo_root/config/mobile/fp6-twin/user-data.in" >"$user_data"
 install -m 0644 "$repo_root/config/mobile/fp6-twin/meta-data" "$meta_data"
 
@@ -85,7 +85,7 @@ if [ ! -f "$disk" ]; then
 fi
 
 {
-  printf 'LUMA_TWIN_MANIFEST_VERSION=1\n'
+  printf 'SUNO_TWIN_MANIFEST_VERSION=1\n'
   printf 'FEDORA_CLOUD_RELEASE=%s\n' "$FEDORA_CLOUD_RELEASE"
   printf 'FEDORA_CLOUD_COMPOSE=%s\n' "$FEDORA_CLOUD_COMPOSE"
   printf 'FEDORA_CLOUD_IMAGE=%s\n' "$FEDORA_CLOUD_IMAGE"

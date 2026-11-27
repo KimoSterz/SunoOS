@@ -37,17 +37,17 @@ Subject: [PATCH] Settings: stage display edits and confirm one preview
 +gboolean cc_display_config_apply_preview (CcDisplayConfig *self,
 +                                          gboolean persist,
 +                                          GError **error);
---- a/shell/cc-luma-live-displays.c
-+++ b/shell/cc-luma-live-displays.c
+--- a/shell/cc-Suno-live-displays.c
++++ b/shell/cc-Suno-live-displays.c
 @@ -21,7 +21,9 @@
  typedef struct {
-   CcLumaFixture *model;
+   CcSunoFixture *model;
    CcDisplayConfigManager *manager;
 -  gboolean selected;
 +  gboolean selected, preview;
 +  CcDisplayConfig *draft, *original;
 +  guint timer, remaining, refresh;
-   CcLumaReadyGate *gate;
+   CcSunoReadyGate *gate;
  } Displays;
  
 @@ -170,11 +172,14 @@
@@ -60,14 +60,14 @@ Subject: [PATCH] Settings: stage display edits and confirm one preview
    char ids[MAX_DISPLAYS][8];
    guint n = displays_of (config, monitors, ids);
    if (!n) return;
-+  cc_luma_fixture_publish_boolean (self->model, "display.pending", self->draft != NULL);
-+  cc_luma_fixture_publish_boolean (self->model, "display.preview", self->preview);
-+  cc_luma_fixture_publish_int (self->model, "display.remaining", self->remaining);
++  cc_Suno_fixture_publish_boolean (self->model, "display.pending", self->draft != NULL);
++  cc_Suno_fixture_publish_boolean (self->model, "display.preview", self->preview);
++  cc_Suno_fixture_publish_int (self->model, "display.remaining", self->remaining);
    JsonObject *displays = json_object_new ();
    for (guint i = 0; i < n; i++) json_object_set_object_member (displays, ids[i], catalog (config, monitors[i]));
    g_autoptr (JsonNode) node = json_node_init_object (json_node_alloc (), displays);
 @@ -204,7 +209,39 @@
-   cc_luma_fixture_publish_double (self->model, "arr.off", isfinite (offset) ? CLAMP (offset, -.2, 1.2) : .5);
+   cc_Suno_fixture_publish_double (self->model, "arr.off", isfinite (offset) ? CLAMP (offset, -.2, 1.2) : .5);
  }
  
 -static void changed (CcDisplayConfigManager *manager, Displays *self) { publish (self); }
@@ -96,7 +96,7 @@ Subject: [PATCH] Settings: stage display edits and confirm one preview
 +    self->timer = 0;
 +    g_autoptr(GError) error = NULL;
 +    if (!discard (self, &error)) {
-+      cc_luma_fixture_publish_string (self->model, "display.error", error->message);
++      cc_Suno_fixture_publish_string (self->model, "display.error", error->message);
 +      /* Retry a refused rollback instead of silently accepting the preview. */
 +      self->remaining = 1; self->timer = g_timeout_add_seconds (1, preview_tick, self);
 +    }
@@ -106,20 +106,20 @@ Subject: [PATCH] Settings: stage display edits and confirm one preview
 +}
  
  static gpointer
- displays_start (CcLumaFixture *model)
+ displays_start (CcSunoFixture *model)
 @@ -213,8 +250,12 @@
    self->model = g_object_ref (model);
    self->manager = cc_display_config_manager_new ();
    g_signal_connect (self->manager, "changed", G_CALLBACK (changed), self);
 -  const char *keys[] = { "join", "dsel", "arr.side", "arr.off" };
 +  const char *keys[] = { "join", "dsel", "arr.side", "arr.off", "display.apply", "display.keep", "display.revert" };
-   for (guint i = 0; i < G_N_ELEMENTS (keys); i++) cc_luma_fixture_own_key (model, keys[i]);
+   for (guint i = 0; i < G_N_ELEMENTS (keys); i++) cc_Suno_fixture_own_key (model, keys[i]);
 +  for (guint i = 4; i < G_N_ELEMENTS (keys); i++) {
-+    cc_luma_fixture_publish_boolean (model, keys[i], FALSE);
-+    cc_luma_fixture_verify_key (model, keys[i]);
++    cc_Suno_fixture_publish_boolean (model, keys[i], FALSE);
++    cc_Suno_fixture_verify_key (model, keys[i]);
 +  }
    publish (self);
-   self->gate = cc_luma_ready_gate_new (model, "displays", cc_luma_displays_validate);
+   self->gate = cc_Suno_ready_gate_new (model, "displays", cc_Suno_displays_validate);
    return self;
 @@ -339,10 +380,28 @@
  {
@@ -176,42 +176,42 @@ Subject: [PATCH] Settings: stage display edits and confirm one preview
 +  if (self->refresh) g_source_remove (self->refresh);
 +  if (self->timer) g_source_remove (self->timer);
 +  g_clear_object (&self->draft); g_clear_object (&self->original);
-   cc_luma_ready_gate_free (self->gate);
+   cc_Suno_ready_gate_free (self->gate);
    g_signal_handlers_disconnect_by_data (self->manager, self);
    g_object_unref (self->manager);
---- a/shell/cc-luma-view-displays.c
-+++ b/shell/cc-luma-view-displays.c
+--- a/shell/cc-Suno-view-displays.c
++++ b/shell/cc-Suno-view-displays.c
 @@ -196,6 +196,32 @@
    }
    display_bar (v); return G_SOURCE_CONTINUE;
  }
-+static void live_display_action (LumaBarItem *item, GtkWidget *root)
++static void live_display_action (SunoBarItem *item, GtkWidget *root)
 +{
 +  View *v = g_object_get_data (G_OBJECT (root), "cf-view"); if (!v) return;
 +  g_autoptr(JsonNode) value = json_node_init_boolean (json_node_alloc (), TRUE);
 +  g_autoptr(GError) error = NULL;
-+  if (!cc_luma_fixture_set (v->model, g_object_get_data (G_OBJECT (item), "cf-display-action"), value, &error))
-+    cc_luma_view_report_error (v, error);
-+  cc_luma_view_queue_refresh (v);
++  if (!cc_Suno_fixture_set (v->model, g_object_get_data (G_OBJECT (item), "cf-display-action"), value, &error))
++    cc_Suno_view_report_error (v, error);
++  cc_Suno_view_queue_refresh (v);
 +}
 +static void live_display_bar (View *v)
 +{
-+  if (!cc_luma_view_flag (v, "display.pending")) { luma_action_center_hide_bar (v->center); return; }
-+  gboolean preview = cc_luma_view_flag (v, "display.preview");
-+  JsonNode *remaining = cc_luma_fixture_get (v->model, "display.remaining");
++  if (!cc_Suno_view_flag (v, "display.pending")) { Suno_action_center_hide_bar (v->center); return; }
++  gboolean preview = cc_Suno_view_flag (v, "display.preview");
++  JsonNode *remaining = cc_Suno_fixture_get (v->model, "display.remaining");
 +  g_autofree char *message = preview ? g_strdup_printf ("Keep these settings? Going back in %d s", (int) json_node_get_int (remaining)) : g_strdup ("Display changes are ready to apply");
-+  g_autoptr(LumaBarItem) context = luma_bar_item_new_chip (message, NULL, FALSE);
-+  g_autoptr(LumaBarItem) cancel = luma_bar_item_new_action (NULL, preview ? "Revert" : "Cancel", NULL);
-+  g_autoptr(LumaBarItem) apply = luma_bar_item_new_action (NULL, preview ? "Keep" : "Apply", NULL);
-+  luma_bar_item_set_primary (apply, TRUE);
++  g_autoptr(SunoBarItem) context = Suno_bar_item_new_chip (message, NULL, FALSE);
++  g_autoptr(SunoBarItem) cancel = Suno_bar_item_new_action (NULL, preview ? "Revert" : "Cancel", NULL);
++  g_autoptr(SunoBarItem) apply = Suno_bar_item_new_action (NULL, preview ? "Keep" : "Apply", NULL);
++  Suno_bar_item_set_primary (apply, TRUE);
 +  g_object_set_data (G_OBJECT (cancel), "cf-display-action", "display.revert");
 +  g_object_set_data (G_OBJECT (apply), "cf-display-action", preview ? "display.keep" : "display.apply");
 +  g_signal_connect_object (cancel, "activated", G_CALLBACK (live_display_action), v->root, 0);
 +  g_signal_connect_object (apply, "activated", G_CALLBACK (live_display_action), v->root, 0);
-+  LumaBarItem *items[] = { context, cancel, apply };
-+  luma_action_center_show_bar (v->center, items, G_N_ELEMENTS (items), NULL);
++  SunoBarItem *items[] = { context, cancel, apply };
++  Suno_action_center_show_bar (v->center, items, G_N_ELEMENTS (items), NULL);
 +}
- static void display_finished (LumaBarItem *item, GtkWidget *root)
+ static void display_finished (SunoBarItem *item, GtkWidget *root)
  {
    View *v = g_object_get_data (G_OBJECT (root), "cf-view"); if (!v) return;
 @@ -225,15 +251,8 @@
@@ -222,31 +222,31 @@ Subject: [PATCH] Settings: stage display edits and confirm one preview
 -   * "Keep these display settings?" with its own countdown and revert; a
 -   * second keep-or-go-back bar here would ask twice (VM run
 -   * 20260929T070512-ld5-writes). */
--  if (cc_luma_fixture_is_live (v->model)) {
--    if (cc_luma_fixture_set (v->model, key, value, error)) return TRUE;
+-  if (cc_Suno_fixture_is_live (v->model)) {
+-    if (cc_Suno_fixture_set (v->model, key, value, error)) return TRUE;
 -    g_message ("Displays: %s not set: %s", key, error && *error ? (*error)->message : "no reason given");
 -    return FALSE;
 -  }
-+  if (cc_luma_fixture_is_live (v->model))
-+    return cc_luma_fixture_set (v->model, key, value, error);
++  if (cc_Suno_fixture_is_live (v->model))
++    return cc_Suno_fixture_set (v->model, key, value, error);
    if (g_str_has_suffix (key, ".bright") || g_str_has_suffix (key, ".prof") || g_str_has_suffix (key, ".primary")) {
-     CcLumaDisplayDraft *immediate = cc_luma_display_draft_new (v->model);
-     gboolean changed = cc_luma_display_draft_set (immediate, key, value, error);
+     CcSunoDisplayDraft *immediate = cc_Suno_display_draft_new (v->model);
+     gboolean changed = cc_Suno_display_draft_set (immediate, key, value, error);
 @@ -293,6 +312,7 @@
  }
- void cc_luma_view_displays_render (View *v)
+ void cc_Suno_view_displays_render (View *v)
  {
 +  gtk_widget_set_sensitive (GTK_WIDGET (v->body), TRUE);
-   gboolean mirror = g_str_equal (cc_luma_view_text (v, "join"), "mirror"), live = cc_luma_fixture_is_live (v->model);
-   JsonObject *displays = json_object_get_object_member (cc_luma_fixture_get_data (v->model), "CFDISP");
+   gboolean mirror = g_str_equal (cc_Suno_view_text (v, "join"), "mirror"), live = cc_Suno_fixture_is_live (v->model);
+   JsonObject *displays = json_object_get_object_member (cc_Suno_fixture_get_data (v->model), "CFDISP");
    guint count = live ? json_object_get_size (displays) : 2;
 @@ -382,4 +402,8 @@
    card = cf_group (v, NULL, NULL);
-   cf_nv (v, card, "nightlight", "Night Light", "Warmer colors at night, easier on the eyes", cc_luma_view_flag (v, "night") ? "On" : "Off", cf_lead_icon ("moon"));
-   cc_luma_dev_prune (v);
+   cf_nv (v, card, "nightlight", "Night Light", "Warmer colors at night, easier on the eyes", cc_Suno_view_flag (v, "night") ? "On" : "Off", cf_lead_icon ("moon"));
+   cc_Suno_dev_prune (v);
 -}
 +  if (live) {
-+    if (cc_luma_view_flag (v, "display.preview")) gtk_widget_set_sensitive (GTK_WIDGET (v->body), FALSE);
++    if (cc_Suno_view_flag (v, "display.preview")) gtk_widget_set_sensitive (GTK_WIDGET (v->body), FALSE);
 +    live_display_bar (v);
 +  }
 +}
@@ -254,26 +254,26 @@ Subject: [PATCH] Settings: stage display edits and confirm one preview
 +++ b/shell/meson.build
 @@ -421,3 +421,14 @@
      c_args: ['-DTEST_NM_SERVICE="' + meson.project_source_root() / 'tests/network/nm-utils/test-networkmanager-service.py' + '"'])
-   test('luma-settings-network', network_adapter_test, env: ['G_DEBUG=fatal-warnings'])
+   test('Suno-settings-network', network_adapter_test, env: ['G_DEBUG=fatal-warnings'])
  endif
 +
 +# Real wire serialization and rollback against an isolated synthetic Mutter.
-+display_preview_test = executable('test-luma-display-preview',
-+  ['test-luma-display-preview.c', 'cc-luma-live-gsettings.c', 'cc-luma-fixture.c',
-+   'cc-luma-displays.c', 'cc-luma-device-options.c', '../panels/display/cc-display-config.c',
++display_preview_test = executable('test-Suno-display-preview',
++  ['test-Suno-display-preview.c', 'cc-Suno-live-gsettings.c', 'cc-Suno-fixture.c',
++   'cc-Suno-displays.c', 'cc-Suno-device-options.c', '../panels/display/cc-display-config.c',
 +   '../panels/display/cc-display-config-manager.c', '../panels/display/cc-display-arrangement.c'],
 +  include_directories: [top_inc, common_inc],
 +  dependencies: [json_glib_dep, gio_dep, gtk_dep, m_dep, gnome_desktop_dep])
-+test('luma-settings-display-preview', find_program('dbus-run-session'),
-+  args: ['--', find_program('python3'), files('test-luma-display-preview.py'), display_preview_test],
++test('Suno-settings-display-preview', find_program('dbus-run-session'),
++  args: ['--', find_program('python3'), files('test-Suno-display-preview.py'), display_preview_test],
 +  timeout: 30, env: ['GSETTINGS_BACKEND=memory', 'GTK_A11Y=none', 'G_DEBUG=fatal-criticals'])
 --- /dev/null
-+++ b/shell/test-luma-display-preview.c
++++ b/shell/test-Suno-display-preview.c
 @@ -0,0 +1,39 @@
 +/* SPDX-License-Identifier: GPL-2.0-or-later */
 +/* Real DisplayConfig serialization against a private synthetic Mutter owner. */
-+#include "cc-luma-live-displays.c"
-+void cc_luma_live_ready (CcLumaFixture *model, const char *adapter) { cc_luma_fixture_changed (model); }
++#include "cc-Suno-live-displays.c"
++void cc_Suno_live_ready (CcSunoFixture *model, const char *adapter) { cc_Suno_fixture_changed (model); }
 +static void spin (void) { gint64 end = g_get_monotonic_time () + 300000; do { while (g_main_context_iteration (NULL, FALSE)); g_usleep (1000); } while (g_get_monotonic_time () < end); }
 +static void edit (Displays *self, const char *key, const char *text)
 +{
@@ -291,7 +291,7 @@ Subject: [PATCH] Settings: stage display edits and confirm one preview
 +{
 +  g_autoptr(JsonParser) parser = json_parser_new ();
 +  g_assert_true (json_parser_load_from_data (parser, "{\"settings\":{},\"data\":{},\"pages\":[]}", -1, NULL));
-+  g_autoptr(CcLumaFixture) model = cc_luma_fixture_new_live (json_parser_get_root (parser));
++  g_autoptr(CcSunoFixture) model = cc_Suno_fixture_new_live (json_parser_get_root (parser));
 +  Displays *self = displays_start (model); spin ();
 +  edit (self, "d.int.scale", "125"); edit (self, "d.int.rot", "Portrait right");
 +  edit (self, "d.int.hz", "75 Hz"); edit (self, "d.ext.pos", "100,500");
@@ -310,7 +310,7 @@ Subject: [PATCH] Settings: stage display edits and confirm one preview
 +  return 0;
 +}
 --- /dev/null
-+++ b/shell/test-luma-display-preview.py
++++ b/shell/test-Suno-display-preview.py
 @@ -0,0 +1,51 @@
 +#!/usr/bin/python3
 +# SPDX-License-Identifier: GPL-2.0-or-later

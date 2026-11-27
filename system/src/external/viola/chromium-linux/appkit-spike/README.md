@@ -1,10 +1,10 @@
 # Viola native application host
 
-This host supplies Viola’s Luma window, sidebar, floating page action bar,
+This host supplies Viola’s Suno window, sidebar, floating page action bar,
 menus, address suggestions, downloads and Mini windows. It drives the retained
 Chromium engine through the existing private pipe and native frame transport.
 The native RPM supplies required host services; the signed independent Flatpak
-application owns activation on installed Luma systems.
+application owns activation on installed Suno systems.
 
 The desktop, compact and phone presentations use the shared AppKit components.
 The pointer-and-rings application artwork is the existing supplied Viola icon.

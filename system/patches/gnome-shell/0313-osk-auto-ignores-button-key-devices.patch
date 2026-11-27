@@ -1,4 +1,4 @@
-From: Project Luma <builds@project-luma.local>
+From: Project Suno <builds@project-suno.local>
 Subject: [PATCH] keyboard: only full keyboards suppress the automatic OSK
 
 libinput reports every evdev device with keys as a keyboard, so a phone's

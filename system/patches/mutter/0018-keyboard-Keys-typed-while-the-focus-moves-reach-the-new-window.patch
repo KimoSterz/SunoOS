@@ -1,4 +1,4 @@
-From: Project Luma <engineering@projectluma.org>
+From: Project Suno <engineering@projectSuno.org>
 Date: Sun, 20 Sep 2026 17:00:00 -0500
 Subject: [PATCH] keyboard: Keys typed while the focus moves reach the new window
 
@@ -44,7 +44,7 @@ index 94b4cb8..de0b039 100644
  {
    MetaDisplayPrivate *priv = meta_display_get_instance_private (display);
  
-+  /* Luma: a grab starting or ending (a modal, the lock screen, the
++  /* Suno: a grab starting or ending (a modal, the lock screen, the
 +   * overview) ends any keyboard focus handover at once. Keys held for it go
 +   * to whoever has the keyboard now, the shell included; none are dropped. */
 +  {
@@ -66,7 +66,7 @@ index b4bf668..683599a 100644
        meta_keybindings_process_event (display, window, event))
      return CLUTTER_EVENT_STOP;
  
-+  /* Luma: a key typed while the keyboard moves from one client window to
++  /* Suno: a key typed while the keyboard moves from one client window to
 +   * another is held for the new window. Nothing is held while the shell has
 +   * the keyboard (a grab, a modal, the lock screen, an entry with the key
 +   * focus); a key that is not held first lets any held keys go, in order,
@@ -84,10 +84,10 @@ index b4bf668..683599a 100644
        if (IS_KEY_EVENT (event_type) && !stage_has_key_focus (display))
 -        return CLUTTER_EVENT_PROPAGATE;
 +        {
-+          /* Luma: measuring where a key goes during a handover. */
++          /* Suno: measuring where a key goes during a handover. */
 +          if (g_getenv ("MUTTER_DEBUG_KEY_HANDOVER"))
 +            {
-+              g_message ("[luma-keys] key event kept by the shell, which "
++              g_message ("[Suno-keys] key event kept by the shell, which "
 +                         "holds the key focus, at %" G_GINT64_FORMAT " us",
 +                         g_get_monotonic_time ());
 +            }
@@ -104,7 +104,7 @@ index b4bf668..683599a 100644
 +    {
 +      if (IS_KEY_EVENT (event_type) && g_getenv ("MUTTER_DEBUG_KEY_HANDOVER"))
 +        {
-+          g_message ("[luma-keys] key event kept by a shell grab at %"
++          g_message ("[Suno-keys] key event kept by a shell grab at %"
 +                     G_GINT64_FORMAT " us", g_get_monotonic_time ());
 +        }
 +      return CLUTTER_EVENT_PROPAGATE;
@@ -132,7 +132,7 @@ index 0000000..647f796
 +++ b/src/tests/key-handover-test.c
 @@ -0,0 +1,204 @@
 +/*
-+ * Copyright (C) 2026 Project Luma
++ * Copyright (C) 2026 Project Suno
 + *
 + * This program is free software; you can redistribute it and/or
 + * modify it under the terms of the GNU General Public License as
@@ -140,7 +140,7 @@ index 0000000..647f796
 + * License, or (at your option) any later version.
 + */
 +
-+/* Luma: the keyboard focus handover rules (meta-key-handover.c). Prints one
++/* Suno: the keyboard focus handover rules (meta-key-handover.c). Prints one
 + * TAP line per test; the %check counts the "ok" lines. */
 +
 +#include "config.h"
@@ -342,7 +342,7 @@ index 0000000..f705f5e
 +++ b/src/wayland/meta-key-handover.c
 @@ -0,0 +1,86 @@
 +/*
-+ * Copyright (C) 2026 Project Luma
++ * Copyright (C) 2026 Project Suno
 + *
 + * This program is free software; you can redistribute it and/or
 + * modify it under the terms of the GNU General Public License as
@@ -434,7 +434,7 @@ index 0000000..a82c5cb
 +++ b/src/wayland/meta-key-handover.h
 @@ -0,0 +1,54 @@
 +/*
-+ * Copyright (C) 2026 Project Luma
++ * Copyright (C) 2026 Project Suno
 + *
 + * This program is free software; you can redistribute it and/or
 + * modify it under the terms of the GNU General Public License as
@@ -446,7 +446,7 @@ index 0000000..a82c5cb
 +
 +#include <glib.h>
 +
-+/* Luma: the rules for keys typed while the keyboard focus moves between
++/* Suno: the rules for keys typed while the keyboard focus moves between
 + * windows, kept apart from the rest of Mutter so they can be tested alone. */
 +
 +typedef enum
@@ -504,7 +504,7 @@ index 27b101c..f5d2b78 100644
    MetaWaylandXkbInfo xkb_info;
    GSettings *settings;
  
-+  /* Luma: the keys typed while the keyboard focus is on its way to another
++  /* Suno: the keys typed while the keyboard focus is on its way to another
 +   * window. See meta_wayland_keyboard_hold_for_handover(). */
 +  struct {
 +    MetaWaylandSurface *surface;
@@ -531,7 +531,7 @@ index 27b101c..f5d2b78 100644
 +                                const char          *why);
 +
 +
-+/* Luma: how long, and how many keys, a handover may hold. A person typing
++/* Suno: how long, and how many keys, a handover may hold. A person typing
 + * fast enough to run into a handover types a few letters; past this the
 + * keys are not part of the switch any more and go, in order, to whoever
 + * has the keyboard. They are never dropped. */
@@ -604,7 +604,7 @@ index 27b101c..f5d2b78 100644
 +{
 +  if (handover_debug ())
 +    {
-+      g_message ("[luma-keys] key %u (%s) %s at %" G_GINT64_FORMAT " us",
++      g_message ("[Suno-keys] key %u (%s) %s at %" G_GINT64_FORMAT " us",
 +                 clutter_event_get_event_code (event),
 +                 clutter_event_type (event) == CLUTTER_KEY_PRESS ? "press" : "release",
 +                 keyboard->focus_surface ? "sent to the focused window"
@@ -635,7 +635,7 @@ index 27b101c..f5d2b78 100644
    set_pointer_modifiers_client (keyboard, NULL);
  }
  
-+/* Luma: where the keyboard focus is going, if it is not there yet. Mutter
++/* Suno: where the keyboard focus is going, if it is not there yet. Mutter
 + * decides which window is focused at once, but the focus reaches the
 + * client's surface later -- the client has to be told, and the surface only
 + * takes the focus when the compositor next updates it. A key that arrives
@@ -764,7 +764,7 @@ index 27b101c..f5d2b78 100644
 +                                         (GDestroyNotify) clutter_event_free,
 +                                         keyboard);
 +
-+  g_message ("[luma-keys] delivered %u of %u key event(s) typed while the "
++  g_message ("[Suno-keys] delivered %u of %u key event(s) typed while the "
 +             "keyboard focus was moving, %.1f ms later, to %s: %s",
 +             delivered, held, waited_ms,
 +             destination == META_KEY_HANDOVER_TO_CLIENT ?
@@ -853,7 +853,7 @@ index 27b101c..f5d2b78 100644
 +
 +      if (handover_debug ())
 +        {
-+          g_message ("[luma-keys] key %u (%s) not held: grab %s, key focus on "
++          g_message ("[Suno-keys] key %u (%s) not held: grab %s, key focus on "
 +                     "%s, keyboard focus %s, at %" G_GINT64_FORMAT " us", key,
 +                     is_press ? "press" : "release",
 +                     state.stage_has_grab ? "yes" : "no",
@@ -907,7 +907,7 @@ index 27b101c..f5d2b78 100644
 +
 +  if (handover_debug ())
 +    {
-+      g_message ("[luma-keys] holding key %u (%s) %.1f ms into a handover",
++      g_message ("[Suno-keys] holding key %u (%s) %.1f ms into a handover",
 +                 key, is_press ? "press" : "release",
 +                 (g_get_monotonic_time () - keyboard->handover.since_us) / 1000.0);
 +    }
@@ -940,7 +940,7 @@ index 27b101c..f5d2b78 100644
              }
          }
 +
-+      /* Luma: the window has the focus now, so it gets the keys that were
++      /* Suno: the window has the focus now, so it gets the keys that were
 +       * typed on the way. */
 +      flush_handover (keyboard);
 +    }
@@ -956,7 +956,7 @@ index 27b101c..f5d2b78 100644
 +      MetaDisplay *display = display_from_keyboard (keyboard);
 +      MetaWindow *window = display ? meta_display_get_focus_window (display) : NULL;
 +
-+      g_message ("[luma-keys] keyboard focus is now %s (focus window %s) at %"
++      g_message ("[Suno-keys] keyboard focus is now %s (focus window %s) at %"
 +                 G_GINT64_FORMAT " us",
 +                 surface ? "a surface" : "nothing",
 +                 window ? meta_window_get_title (window) : "none",
@@ -989,7 +989,7 @@ index 7b7dff8..2034446 100644
            meta_wayland_tablet_seat_can_popup (seat->tablet_seat, serial));
  }
  
-+/* Luma: a key typed during a handover is the new window's. */
++/* Suno: a key typed during a handover is the new window's. */
 +gboolean
 +meta_wayland_seat_maybe_hold_key (MetaWaylandSeat    *seat,
 +                                  const ClutterEvent *event)
@@ -1043,7 +1043,7 @@ index 6b9e0df..657466d 100644
 + * @compositor: the wayland compositor
 + * @event: a key event
 + *
-+ * Luma: holds a key typed while the keyboard focus is moving to another
++ * Suno: holds a key typed while the keyboard focus is moving to another
 + * window, to be given to that window once it has the focus. Returns %TRUE
 + * when the key was held, and the event goes no further.
 + */
@@ -1057,7 +1057,7 @@ index 6b9e0df..657466d 100644
 +  return meta_wayland_seat_maybe_hold_key (compositor->seat, event);
 +}
 +
-+/* Luma: ends a keyboard focus handover now, handing the keys held for it to
++/* Suno: ends a keyboard focus handover now, handing the keys held for it to
 + * whoever has the keyboard. */
 +void
 +meta_wayland_compositor_release_held_keys (MetaWaylandCompositor *compositor,

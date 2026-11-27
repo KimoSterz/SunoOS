@@ -1,7 +1,7 @@
-From: Project Luma <codex@local>
+From: Project Suno <codex@local>
 Subject: [PATCH] shell: pin private Mutter 16 typelibs during bootstrap
 
-The bake-off deliberately coinstalls Mutter 16 with Luma desktop's Mutter 18.
+The bake-off deliberately coinstalls Mutter 16 with Suno desktop's Mutter 18.
 ES module dependencies are resolved before dependencies.js can execute its
 gi.require() calls, so unversioned imports select the newer system namespaces
 and register ClutterActor twice. Pin the bootstrap namespaces to the ABI this

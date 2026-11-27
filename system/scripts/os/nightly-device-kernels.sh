@@ -4,17 +4,17 @@
 # Nightly step 4 (aarch64): device kernels. A device whose kernel package in
 # this tree is newer than what its device repository serves
 # (scripts/devices/device-kernels.py plan) gets it built here, once per
-# release, into $LUMA_OS_ROOT/device-kernels/<vendor>-<codename>/<package>-<evr>/.
+# release, into $SUNO_OS_ROOT/device-kernels/<vendor>-<codename>/<package>-<evr>/.
 #
 # A device kernel writes boot partitions on every device that installs it, so
 # it is staged for the device repository only after the phone gate passed for
-# that exact build: $LUMA_OS_ROOT/device-gates/<vendor>-<codename>/<package>-<evr>.pass
+# that exact build: $SUNO_OS_ROOT/device-gates/<vendor>-<codename>/<package>-<evr>.pass
 # (docs/kernel.md, "Device kernel updates"). With the gate passed and the
-# current published repository at $LUMA_OS_ROOT/device-repos/<id>, the signed
-# candidate repository is written to $LUMA_OS_ROOT/device-repos/<id>.candidate
+# current published repository at $SUNO_OS_ROOT/device-repos/<id>, the signed
+# candidate repository is written to $SUNO_OS_ROOT/device-repos/<id>.candidate
 # for the upload to dl.
 #
-# Writes $LUMA_OS_ROOT/status/device-kernels.json. Never fails the OS nightly:
+# Writes $SUNO_OS_ROOT/status/device-kernels.json. Never fails the OS nightly:
 # a device kernel that cannot be built is reported and waits.
 #
 # usage: nightly-device-kernels.sh --source CHECKOUT
@@ -22,7 +22,7 @@ set -uo pipefail
 
 [ "${1:-}" = --source ] && [ -d "${2:-}" ] || { sed -n 's/^# usage: /usage: /p' "$0" >&2; exit 2; }
 source_dir=$(realpath -e "$2")
-root=${LUMA_OS_ROOT:?}
+root=${SUNO_OS_ROOT:?}
 tool="$source_dir/scripts/devices/device-kernels.py"
 status="$root/status/device-kernels.json"
 mkdir -p "$root/status" "$root/device-kernels" "$root/device-gates"

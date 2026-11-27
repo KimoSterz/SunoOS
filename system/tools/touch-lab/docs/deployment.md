@@ -1,6 +1,6 @@
 # Deploying a model in libinput
 
-Checked on the XPS 14 (Luma nightly 20261117.1: libinput 1.31.3, mutter 50.4)
+Checked on the XPS 14 (Suno nightly 20261117.1: libinput 1.31.3, mutter 50.4)
 and on a kernel replay of the same touchpad (UHID, kernel 6.19, libinput 1.31.3).
 
 ## What libinput 1.31 offers
@@ -35,9 +35,9 @@ and on a kernel replay of the same touchpad (UHID, kernel 6.19, libinput 1.31.3)
 ## The plugin
 
 `touchlab export-plugin` (or `touchlab train`) writes
-`50-luma-touch-roles.lua` for `/usr/lib64/libinput/plugins/`, generated from
-`plugins/luma-touch-roles.lua.in` and a model file, and
-`50-luma-touch-roles.quirks` for the force pads.
+`50-Suno-touch-roles.lua` for `/usr/lib64/libinput/plugins/`, generated from
+`plugins/Suno-touch-roles.lua.in` and a model file, and
+`50-Suno-touch-roles.quirks` for the force pads.
 
 1. **Model:** two stages of multi-class boosted trees (six roles) as plain
    Lua tables; a dozen-line evaluator walks them. The window (25, 50, 100,
@@ -102,7 +102,7 @@ daemon (a second device, a grab, added latency).
 - **2, collect:** run the recorder, do a guided pass, use the laptop with the
   shortcuts for a week.
 - **3, train:** copy sessions and labels to the build host's private storage
-  (`/srv/dev-storage/projects/luma-touch-lab/private/`, mode 0700), run
+  (`/srv/dev-storage/projects/Suno-touch-lab/private/`, mode 0700), run
   `touchlab features`, train per horizon, and check it against libinput and
   the firmware with the report's agreement table.
 - **4, ship:** generate the Lua plugin, run it in shadow mode on the XPS, then

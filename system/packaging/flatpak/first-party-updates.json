@@ -1,18 +1,18 @@
 {
-  "schema": "org.projectluma.first-party-update-registry/v1",
+  "schema": "org.projectSuno.first-party-update-registry/v1",
   "runtime_major": 44,
   "applications": [
     {
-      "id": "org.projectluma.Ari",
+      "id": "org.projectSuno.Ari",
       "title": "Ari",
       "catalog_id": "ari",
       "producer": "ari",
-      "source_tree": "src/luma-ari",
+      "source_tree": "src/Suno-ari",
       "native_packages": [
-        "luma-ari"
+        "Suno-ari"
       ],
       "native_desktop_ids": [
-        "org.projectluma.Ari.desktop"
+        "org.projectSuno.Ari.desktop"
       ],
       "target_delivery": "signed-flatpak-app",
       "channels": [
@@ -21,18 +21,18 @@
       ],
       "default_channel": "beta",
       "required_host_services": [
-        "org.projectluma.Ari1"
+        "org.projectSuno.Ari1"
       ],
       "host_interface_version": 1,
       "qualification": "pending-installed-update-rollback-and-migration",
-      "recipe": "packaging/flatpak/apps/org.projectluma.Ari/org.projectluma.Ari.yml",
+      "recipe": "packaging/flatpak/apps/org.projectSuno.Ari/org.projectSuno.Ari.yml",
       "minimum_host_packages": {
-        "luma-ari": 21,
-        "luma-application-installer": 57
+        "Suno-ari": 21,
+        "Suno-application-installer": 57
       }
     },
     {
-      "id": "org.projectluma.Calendar",
+      "id": "org.projectSuno.Calendar",
       "title": "Calendar",
       "catalog_id": "calendar",
       "producer": "prairie-core",
@@ -41,7 +41,7 @@
         "prairie-core-apps"
       ],
       "native_desktop_ids": [
-        "org.projectluma.Calendar.desktop"
+        "org.projectSuno.Calendar.desktop"
       ],
       "target_delivery": "signed-flatpak-app",
       "channels": [
@@ -51,19 +51,19 @@
       "default_channel": "beta",
       "required_host_services": [
         "EvolutionDataServer",
-        "LumaConnect",
-        "org.projectluma.ApplicationDirectory1"
+        "SunoConnect",
+        "org.projectSuno.ApplicationDirectory1"
       ],
       "host_interface_version": 1,
       "qualification": "pending-installed-update-rollback-and-migration",
       "entrypoint": "prairie-calendar",
-      "recipe": "packaging/flatpak/apps/org.projectluma.Calendar/org.projectluma.Calendar.yml",
+      "recipe": "packaging/flatpak/apps/org.projectSuno.Calendar/org.projectSuno.Calendar.yml",
       "minimum_host_packages": {
-        "luma-application-installer": 60
+        "Suno-application-installer": 60
       }
     },
     {
-      "id": "org.projectluma.Camera",
+      "id": "org.projectSuno.Camera",
       "title": "Camera",
       "catalog_id": "camera",
       "producer": "prairie-core",
@@ -72,7 +72,7 @@
         "prairie-core-apps"
       ],
       "native_desktop_ids": [
-        "org.projectluma.Camera.desktop"
+        "org.projectSuno.Camera.desktop"
       ],
       "target_delivery": "signed-flatpak-app",
       "channels": [
@@ -81,27 +81,27 @@
       ],
       "default_channel": "beta",
       "required_host_services": [
-        "org.projectluma.ApplicationDirectory1"
+        "org.projectSuno.ApplicationDirectory1"
       ],
       "host_interface_version": 1,
       "qualification": "pending-installed-update-rollback-and-migration",
       "entrypoint": "prairie-camera",
-      "recipe": "packaging/flatpak/apps/org.projectluma.Camera/org.projectluma.Camera.yml",
+      "recipe": "packaging/flatpak/apps/org.projectSuno.Camera/org.projectSuno.Camera.yml",
       "minimum_host_packages": {
-        "luma-application-installer": 60
+        "Suno-application-installer": 60
       }
     },
     {
-      "id": "org.projectluma.Charlie",
+      "id": "org.projectSuno.Charlie",
       "title": "Charlie",
       "catalog_id": "charlie",
       "producer": "charlie",
       "source_tree": "src/external/charlie",
       "native_packages": [
-        "luma-charlie"
+        "Suno-charlie"
       ],
       "native_desktop_ids": [
-        "org.projectluma.Charlie.desktop"
+        "org.projectSuno.Charlie.desktop"
       ],
       "target_delivery": "signed-flatpak-app",
       "channels": [
@@ -111,22 +111,22 @@
       "default_channel": "beta",
       "required_host_services": [
         "EvolutionDataServer",
-        "LumaAccounts"
+        "SunoAccounts"
       ],
       "host_interface_version": 1,
       "qualification": "pending-installed-update-rollback-and-migration",
-      "recipe": "packaging/flatpak/apps/org.projectluma.Charlie/org.projectluma.Charlie.yml",
+      "recipe": "packaging/flatpak/apps/org.projectSuno.Charlie/org.projectSuno.Charlie.yml",
       "minimum_host_packages": {
-        "luma-application-installer": 59
+        "Suno-application-installer": 59
       },
       "host_interface": {
-        "mail": "org.projectluma.MailHost1",
+        "mail": "org.projectSuno.MailHost1",
         "minimum_charlie_release": 6
       },
       "data_schema": "charlie-shared-mailbox-v1"
     },
     {
-      "id": "org.projectluma.Clock",
+      "id": "org.projectSuno.Clock",
       "title": "Clock",
       "catalog_id": "clock",
       "producer": "prairie-core",
@@ -135,7 +135,7 @@
         "prairie-core-apps"
       ],
       "native_desktop_ids": [
-        "org.projectluma.Clock.desktop"
+        "org.projectSuno.Clock.desktop"
       ],
       "target_delivery": "signed-flatpak-app",
       "channels": [
@@ -144,29 +144,29 @@
       ],
       "default_channel": "beta",
       "required_host_services": [
-        "org.projectluma.ApplicationDirectory1"
+        "org.projectSuno.ApplicationDirectory1"
       ],
       "host_interface_version": 1,
       "qualification": "pending-installed-update-rollback-and-migration",
       "entrypoint": "prairie-clock",
-      "recipe": "packaging/flatpak/apps/org.projectluma.Clock/org.projectluma.Clock.yml",
+      "recipe": "packaging/flatpak/apps/org.projectSuno.Clock/org.projectSuno.Clock.yml",
       "minimum_host_packages": {
-        "luma-application-installer": 60,
+        "Suno-application-installer": 60,
         "prairie-core-apps": 93,
-        "luma-background": 5
+        "Suno-background": 5
       }
     },
     {
-      "id": "org.projectluma.Connect",
-      "title": "Luma Connect",
+      "id": "org.projectSuno.Connect",
+      "title": "Suno Connect",
       "catalog_id": "connect",
       "producer": "connect",
-      "source_tree": "src/luma-continuity",
+      "source_tree": "src/Suno-continuity",
       "native_packages": [
-        "luma-continuity"
+        "Suno-continuity"
       ],
       "native_desktop_ids": [
-        "org.projectluma.Connect.desktop"
+        "org.projectSuno.Connect.desktop"
       ],
       "target_delivery": "signed-flatpak-app",
       "channels": [
@@ -175,18 +175,18 @@
       ],
       "default_channel": "beta",
       "required_host_services": [
-        "LumaConnect"
+        "SunoConnect"
       ],
       "host_interface_version": 1,
       "qualification": "pending-installed-update-rollback-and-migration",
-      "recipe": "packaging/flatpak/apps/org.projectluma.Connect/org.projectluma.Connect.yml",
+      "recipe": "packaging/flatpak/apps/org.projectSuno.Connect/org.projectSuno.Connect.yml",
       "minimum_host_packages": {
-        "luma-continuity": 63,
-        "luma-application-installer": 57
+        "Suno-continuity": 63,
+        "Suno-application-installer": 57
       }
     },
     {
-      "id": "org.projectluma.Contacts",
+      "id": "org.projectSuno.Contacts",
       "title": "Contacts",
       "catalog_id": "contacts",
       "producer": "prairie-core",
@@ -195,7 +195,7 @@
         "prairie-core-apps"
       ],
       "native_desktop_ids": [
-        "org.projectluma.Contacts.desktop"
+        "org.projectSuno.Contacts.desktop"
       ],
       "target_delivery": "signed-flatpak-app",
       "channels": [
@@ -205,30 +205,30 @@
       "default_channel": "beta",
       "required_host_services": [
         "EvolutionDataServer",
-        "LumaConnect",
-        "org.projectluma.ApplicationDirectory1"
+        "SunoConnect",
+        "org.projectSuno.ApplicationDirectory1"
       ],
       "host_interface_version": 1,
       "qualification": "pending-installed-update-rollback-and-migration",
       "entrypoint": "prairie-contacts",
-      "recipe": "packaging/flatpak/apps/org.projectluma.Contacts/org.projectluma.Contacts.yml",
+      "recipe": "packaging/flatpak/apps/org.projectSuno.Contacts/org.projectSuno.Contacts.yml",
       "minimum_host_packages": {
-        "luma-application-installer": 64,
-        "luma-continuity": 63,
+        "Suno-application-installer": 64,
+        "Suno-continuity": 63,
         "prairie-core-apps": 97
       }
     },
     {
-      "id": "org.projectluma.Darkroom",
+      "id": "org.projectSuno.Darkroom",
       "title": "Darkroom",
       "catalog_id": "darkroom",
       "producer": "darkroom",
-      "source_tree": "src/luma-darkroom",
+      "source_tree": "src/Suno-darkroom",
       "native_packages": [
-        "luma-darkroom"
+        "Suno-darkroom"
       ],
       "native_desktop_ids": [
-        "org.projectluma.Darkroom.desktop"
+        "org.projectSuno.Darkroom.desktop"
       ],
       "target_delivery": "signed-flatpak-app",
       "channels": [
@@ -239,9 +239,9 @@
       "required_host_services": [],
       "host_interface_version": 1,
       "qualification": "pending-installed-update-rollback-and-migration",
-      "recipe": "packaging/flatpak/apps/org.projectluma.Darkroom/org.projectluma.Darkroom.yml",
+      "recipe": "packaging/flatpak/apps/org.projectSuno.Darkroom/org.projectSuno.Darkroom.yml",
       "minimum_host_packages": {
-        "luma-application-installer": 57
+        "Suno-application-installer": 57
       }
     },
     {
@@ -263,28 +263,28 @@
       ],
       "default_channel": "beta",
       "required_host_services": [
-        "LumaFileIntegration",
-        "org.projectluma.ApplicationDirectory1"
+        "SunoFileIntegration",
+        "org.projectSuno.ApplicationDirectory1"
       ],
       "host_interface_version": 1,
       "qualification": "pending-installed-update-rollback-and-migration",
       "recipe": "packaging/flatpak/apps/org.gnome.Nautilus/org.gnome.Nautilus.yml",
       "canonical_native_builder": "scripts/packages/build-nautilus.sh",
       "minimum_host_packages": {
-        "luma-application-installer": 82
+        "Suno-application-installer": 82
       }
     },
     {
-      "id": "org.projectluma.Imager",
+      "id": "org.projectSuno.Imager",
       "title": "Imager",
       "catalog_id": "imager",
       "producer": "imager",
-      "source_tree": "src/luma-imager",
+      "source_tree": "src/Suno-imager",
       "native_packages": [
-        "luma-imager"
+        "Suno-imager"
       ],
       "native_desktop_ids": [
-        "org.projectluma.Imager.desktop"
+        "org.projectSuno.Imager.desktop"
       ],
       "target_delivery": "signed-flatpak-app",
       "channels": [
@@ -295,22 +295,22 @@
       "required_host_services": [],
       "host_interface_version": 1,
       "qualification": "pending-installed-update-rollback-and-migration",
-      "recipe": "packaging/flatpak/apps/org.projectluma.Imager/org.projectluma.Imager.yml",
+      "recipe": "packaging/flatpak/apps/org.projectSuno.Imager/org.projectSuno.Imager.yml",
       "minimum_host_packages": {
-        "luma-application-installer": 57
+        "Suno-application-installer": 57
       }
     },
     {
-      "id": "org.projectluma.Leaf",
+      "id": "org.projectSuno.Leaf",
       "title": "Leaf",
       "catalog_id": "leaf",
       "producer": "leaf",
-      "source_tree": "src/luma-leaf",
+      "source_tree": "src/Suno-leaf",
       "native_packages": [
-        "luma-leaf"
+        "Suno-leaf"
       ],
       "native_desktop_ids": [
-        "org.projectluma.Leaf.desktop"
+        "org.projectSuno.Leaf.desktop"
       ],
       "target_delivery": "signed-flatpak-app",
       "channels": [
@@ -319,17 +319,17 @@
       ],
       "default_channel": "beta",
       "required_host_services": [
-        "org.projectluma.ApplicationDirectory1"
+        "org.projectSuno.ApplicationDirectory1"
       ],
       "host_interface_version": 1,
       "qualification": "pending-installed-update-rollback-and-migration",
-      "recipe": "packaging/flatpak/apps/org.projectluma.Leaf/org.projectluma.Leaf.yml",
+      "recipe": "packaging/flatpak/apps/org.projectSuno.Leaf/org.projectSuno.Leaf.yml",
       "minimum_host_packages": {
-        "luma-application-installer": 60
+        "Suno-application-installer": 60
       }
     },
     {
-      "id": "org.projectluma.Messages",
+      "id": "org.projectSuno.Messages",
       "title": "Messages",
       "catalog_id": "messages",
       "producer": "prairie-core",
@@ -338,7 +338,7 @@
         "prairie-core-apps"
       ],
       "native_desktop_ids": [
-        "org.projectluma.Messages.desktop"
+        "org.projectSuno.Messages.desktop"
       ],
       "target_delivery": "signed-flatpak-app",
       "channels": [
@@ -347,31 +347,31 @@
       ],
       "default_channel": "beta",
       "required_host_services": [
-        "LumaMessages",
-        "LumaConnect",
-        "org.projectluma.ApplicationDirectory1"
+        "SunoMessages",
+        "SunoConnect",
+        "org.projectSuno.ApplicationDirectory1"
       ],
       "host_interface_version": 1,
       "qualification": "pending-installed-update-rollback-and-migration",
       "entrypoint": "prairie-messages",
-      "recipe": "packaging/flatpak/apps/org.projectluma.Messages/org.projectluma.Messages.yml",
+      "recipe": "packaging/flatpak/apps/org.projectSuno.Messages/org.projectSuno.Messages.yml",
       "minimum_host_packages": {
-        "luma-application-installer": 60,
+        "Suno-application-installer": 60,
         "prairie-core-apps": 93,
-        "luma-background": 5
+        "Suno-background": 5
       }
     },
     {
-      "id": "org.projectluma.Mods",
+      "id": "org.projectSuno.Mods",
       "title": "Mods",
       "catalog_id": "mods",
       "producer": "mods",
-      "source_tree": "src/luma-mods",
+      "source_tree": "src/Suno-mods",
       "native_packages": [
-        "luma-mods"
+        "Suno-mods"
       ],
       "native_desktop_ids": [
-        "org.projectluma.Mods.desktop"
+        "org.projectSuno.Mods.desktop"
       ],
       "target_delivery": "signed-flatpak-app",
       "channels": [
@@ -380,28 +380,28 @@
       ],
       "default_channel": "beta",
       "required_host_services": [
-        "org.projectluma.ModProfiles1",
-        "org.projectluma.ModTransactions1"
+        "org.projectSuno.ModProfiles1",
+        "org.projectSuno.ModTransactions1"
       ],
       "host_interface_version": 1,
       "qualification": "pending-installed-update-rollback-and-migration",
-      "recipe": "packaging/flatpak/apps/org.projectluma.Mods/org.projectluma.Mods.yml",
+      "recipe": "packaging/flatpak/apps/org.projectSuno.Mods/org.projectSuno.Mods.yml",
       "minimum_host_packages": {
-        "luma-application-installer": 57,
-        "luma-mods": 24
+        "Suno-application-installer": 57,
+        "Suno-mods": 24
       }
     },
     {
-      "id": "io.luma.Monitor",
+      "id": "io.Suno.Monitor",
       "title": "Monitor",
       "catalog_id": "monitor",
       "producer": "monitor",
-      "source_tree": "src/luma-monitor",
+      "source_tree": "src/Suno-monitor",
       "native_packages": [
-        "luma-monitor"
+        "Suno-monitor"
       ],
       "native_desktop_ids": [
-        "io.luma.Monitor.desktop"
+        "io.Suno.Monitor.desktop"
       ],
       "target_delivery": "signed-flatpak-app",
       "channels": [
@@ -410,18 +410,18 @@
       ],
       "default_channel": "beta",
       "required_host_services": [
-        "LumaSemanticBroker"
+        "SunoSemanticBroker"
       ],
       "host_interface_version": 1,
       "qualification": "pending-installed-update-rollback-and-migration",
-      "recipe": "packaging/flatpak/apps/io.luma.Monitor/io.luma.Monitor.yml",
+      "recipe": "packaging/flatpak/apps/io.Suno.Monitor/io.Suno.Monitor.yml",
       "minimum_host_packages": {
-        "luma-monitor": 17,
-        "luma-application-installer": 57
+        "Suno-monitor": 17,
+        "Suno-application-installer": 57
       }
     },
     {
-      "id": "org.projectluma.Notes",
+      "id": "org.projectSuno.Notes",
       "title": "Notes",
       "catalog_id": "notes",
       "producer": "prairie-core",
@@ -430,7 +430,7 @@
         "prairie-core-apps"
       ],
       "native_desktop_ids": [
-        "org.projectluma.Notes.desktop"
+        "org.projectSuno.Notes.desktop"
       ],
       "target_delivery": "signed-flatpak-app",
       "channels": [
@@ -439,20 +439,20 @@
       ],
       "default_channel": "beta",
       "required_host_services": [
-        "org.projectluma.ApplicationDirectory1"
+        "org.projectSuno.ApplicationDirectory1"
       ],
       "host_interface_version": 1,
       "qualification": "pending-installed-update-rollback-and-migration",
       "entrypoint": "prairie-notes",
-      "recipe": "packaging/flatpak/apps/org.projectluma.Notes/org.projectluma.Notes.yml",
+      "recipe": "packaging/flatpak/apps/org.projectSuno.Notes/org.projectSuno.Notes.yml",
       "minimum_host_packages": {
-        "luma-application-installer": 64,
-        "luma-continuity": 63,
+        "Suno-application-installer": 64,
+        "Suno-continuity": 63,
         "prairie-core-apps": 97
       }
     },
     {
-      "id": "org.projectluma.Phone",
+      "id": "org.projectSuno.Phone",
       "title": "Phone",
       "catalog_id": "phone",
       "producer": "prairie-core",
@@ -461,7 +461,7 @@
         "prairie-core-apps"
       ],
       "native_desktop_ids": [
-        "org.projectluma.Phone.desktop"
+        "org.projectSuno.Phone.desktop"
       ],
       "target_delivery": "signed-flatpak-app",
       "channels": [
@@ -470,23 +470,23 @@
       ],
       "default_channel": "beta",
       "required_host_services": [
-        "LumaCalls",
+        "SunoCalls",
         "ModemManager",
-        "LumaConnect",
-        "org.projectluma.ApplicationDirectory1"
+        "SunoConnect",
+        "org.projectSuno.ApplicationDirectory1"
       ],
       "host_interface_version": 1,
       "qualification": "pending-installed-update-rollback-and-migration",
       "entrypoint": "prairie-phone",
-      "recipe": "packaging/flatpak/apps/org.projectluma.Phone/org.projectluma.Phone.yml",
+      "recipe": "packaging/flatpak/apps/org.projectSuno.Phone/org.projectSuno.Phone.yml",
       "minimum_host_packages": {
-        "luma-application-installer": 64,
-        "luma-continuity": 63,
+        "Suno-application-installer": 64,
+        "Suno-continuity": 63,
         "prairie-core-apps": 97
       }
     },
     {
-      "id": "org.projectluma.Photos",
+      "id": "org.projectSuno.Photos",
       "title": "Photos",
       "catalog_id": "photos",
       "producer": "prairie-core",
@@ -495,7 +495,7 @@
         "prairie-core-apps"
       ],
       "native_desktop_ids": [
-        "org.projectluma.Photos.desktop"
+        "org.projectSuno.Photos.desktop"
       ],
       "target_delivery": "signed-flatpak-app",
       "channels": [
@@ -504,18 +504,18 @@
       ],
       "default_channel": "beta",
       "required_host_services": [
-        "org.projectluma.ApplicationDirectory1"
+        "org.projectSuno.ApplicationDirectory1"
       ],
       "host_interface_version": 1,
       "qualification": "pending-installed-update-rollback-and-migration",
       "entrypoint": "prairie-photos",
-      "recipe": "packaging/flatpak/apps/org.projectluma.Photos/org.projectluma.Photos.yml",
+      "recipe": "packaging/flatpak/apps/org.projectSuno.Photos/org.projectSuno.Photos.yml",
       "minimum_host_packages": {
-        "luma-application-installer": 60
+        "Suno-application-installer": 60
       }
     },
     {
-      "id": "org.projectluma.Tasks",
+      "id": "org.projectSuno.Tasks",
       "title": "Tasks",
       "catalog_id": "tasks",
       "producer": "prairie-core",
@@ -524,7 +524,7 @@
         "prairie-core-apps"
       ],
       "native_desktop_ids": [
-        "org.projectluma.Tasks.desktop"
+        "org.projectSuno.Tasks.desktop"
       ],
       "target_delivery": "signed-flatpak-app",
       "channels": [
@@ -534,30 +534,30 @@
       "default_channel": "beta",
       "required_host_services": [
         "EvolutionDataServer",
-        "LumaConnect",
-        "org.projectluma.ApplicationDirectory1"
+        "SunoConnect",
+        "org.projectSuno.ApplicationDirectory1"
       ],
       "host_interface_version": 1,
       "qualification": "pending-installed-update-rollback-and-migration",
       "entrypoint": "prairie-tasks",
-      "recipe": "packaging/flatpak/apps/org.projectluma.Tasks/org.projectluma.Tasks.yml",
+      "recipe": "packaging/flatpak/apps/org.projectSuno.Tasks/org.projectSuno.Tasks.yml",
       "minimum_host_packages": {
-        "luma-application-installer": 64,
-        "luma-continuity": 63,
+        "Suno-application-installer": 64,
+        "Suno-continuity": 63,
         "prairie-core-apps": 97
       }
     },
     {
-      "id": "org.projectluma.Tide",
+      "id": "org.projectSuno.Tide",
       "title": "Tide",
       "catalog_id": "tide",
       "producer": "tide",
-      "source_tree": "src/luma-tide",
+      "source_tree": "src/Suno-tide",
       "native_packages": [
-        "luma-tide"
+        "Suno-tide"
       ],
       "native_desktop_ids": [
-        "org.projectluma.Tide.desktop"
+        "org.projectSuno.Tide.desktop"
       ],
       "target_delivery": "signed-flatpak-app",
       "channels": [
@@ -566,26 +566,26 @@
       ],
       "default_channel": "beta",
       "required_host_services": [
-        "org.projectluma.ApplicationDirectory1"
+        "org.projectSuno.ApplicationDirectory1"
       ],
       "host_interface_version": 1,
       "qualification": "pending-installed-update-rollback-and-migration",
-      "recipe": "packaging/flatpak/apps/org.projectluma.Tide/org.projectluma.Tide.yml",
+      "recipe": "packaging/flatpak/apps/org.projectSuno.Tide/org.projectSuno.Tide.yml",
       "minimum_host_packages": {
-        "luma-application-installer": 60
+        "Suno-application-installer": 60
       }
     },
     {
-      "id": "org.projectluma.Viewer",
+      "id": "org.projectSuno.Viewer",
       "title": "Viewer",
       "catalog_id": "viewer",
       "producer": "viewer",
-      "source_tree": "src/luma-viewer",
+      "source_tree": "src/Suno-viewer",
       "native_packages": [
-        "luma-viewer"
+        "Suno-viewer"
       ],
       "native_desktop_ids": [
-        "org.projectluma.Viewer.desktop"
+        "org.projectSuno.Viewer.desktop"
       ],
       "target_delivery": "signed-flatpak-app",
       "channels": [
@@ -594,13 +594,13 @@
       ],
       "default_channel": "beta",
       "required_host_services": [
-        "org.projectluma.ApplicationDirectory1"
+        "org.projectSuno.ApplicationDirectory1"
       ],
       "host_interface_version": 1,
       "qualification": "pending-installed-update-rollback-and-migration",
-      "recipe": "packaging/flatpak/apps/org.projectluma.Viewer/org.projectluma.Viewer.yml",
+      "recipe": "packaging/flatpak/apps/org.projectSuno.Viewer/org.projectSuno.Viewer.yml",
       "minimum_host_packages": {
-        "luma-application-installer": 60
+        "Suno-application-installer": 60
       }
     },
     {
@@ -622,20 +622,20 @@
       ],
       "default_channel": "beta",
       "required_host_services": [
-        "org.projectluma.AppData1",
-        "org.projectluma.ViolaHost1",
-        "org.projectluma.ApplicationDirectory1"
+        "org.projectSuno.AppData1",
+        "org.projectSuno.ViolaHost1",
+        "org.projectSuno.ApplicationDirectory1"
       ],
       "host_interface_version": 33,
       "qualification": "pending-installed-update-rollback-and-migration",
       "recipe": "packaging/flatpak/apps/com.rhyme.viola/com.rhyme.viola.yml",
       "minimum_host_packages": {
-        "luma-application-installer": 61,
+        "Suno-application-installer": 61,
         "viola-browser-stable": 35
       }
     },
     {
-      "id": "org.projectluma.VoiceMemos",
+      "id": "org.projectSuno.VoiceMemos",
       "title": "Voice Memos",
       "catalog_id": "voice-memos",
       "producer": "prairie-core",
@@ -644,7 +644,7 @@
         "prairie-core-apps"
       ],
       "native_desktop_ids": [
-        "org.projectluma.VoiceMemos.desktop"
+        "org.projectSuno.VoiceMemos.desktop"
       ],
       "target_delivery": "signed-flatpak-app",
       "channels": [
@@ -653,18 +653,18 @@
       ],
       "default_channel": "beta",
       "required_host_services": [
-        "org.projectluma.ApplicationDirectory1"
+        "org.projectSuno.ApplicationDirectory1"
       ],
       "host_interface_version": 1,
       "qualification": "pending-installed-update-rollback-and-migration",
       "entrypoint": "prairie-voice-memos",
-      "recipe": "packaging/flatpak/apps/org.projectluma.VoiceMemos/org.projectluma.VoiceMemos.yml",
+      "recipe": "packaging/flatpak/apps/org.projectSuno.VoiceMemos/org.projectSuno.VoiceMemos.yml",
       "minimum_host_packages": {
-        "luma-application-installer": 60
+        "Suno-application-installer": 60
       }
     },
     {
-      "id": "org.projectluma.Weather",
+      "id": "org.projectSuno.Weather",
       "title": "Weather",
       "catalog_id": "weather",
       "producer": "prairie-core",
@@ -673,7 +673,7 @@
         "prairie-core-apps"
       ],
       "native_desktop_ids": [
-        "org.projectluma.Weather.desktop"
+        "org.projectSuno.Weather.desktop"
       ],
       "target_delivery": "signed-flatpak-app",
       "channels": [
@@ -682,21 +682,21 @@
       ],
       "default_channel": "beta",
       "required_host_services": [
-        "org.projectluma.ApplicationDirectory1"
+        "org.projectSuno.ApplicationDirectory1"
       ],
       "host_interface_version": 1,
       "qualification": "pending-installed-update-rollback-and-migration",
       "entrypoint": "prairie-weather",
-      "recipe": "packaging/flatpak/apps/org.projectluma.Weather/org.projectluma.Weather.yml",
+      "recipe": "packaging/flatpak/apps/org.projectSuno.Weather/org.projectSuno.Weather.yml",
       "minimum_host_packages": {
-        "luma-application-installer": 60
+        "Suno-application-installer": 60
       }
     },
     {
-      "id": "org.projectluma.Write",
+      "id": "org.projectSuno.Write",
       "title": "Write",
       "producer": "creative-external",
-      "source_tree": "packaging/flatpak/apps/org.projectluma.Write",
+      "source_tree": "packaging/flatpak/apps/org.projectSuno.Write",
       "native_packages": [],
       "native_desktop_ids": [],
       "target_delivery": "signed-flatpak-app",
@@ -707,7 +707,7 @@
       "default_channel": "beta",
       "required_host_services": [],
       "host_interface_version": 1,
-      "recipe": "packaging/flatpak/apps/org.projectluma.Write/org.projectluma.Write.yml",
+      "recipe": "packaging/flatpak/apps/org.projectSuno.Write/org.projectSuno.Write.yml",
       "qualification": "pending-installed-update-rollback-and-migration",
       "minimum_host_packages": {},
       "data_schema": "write-preferences-v1",
@@ -715,7 +715,7 @@
       "source_commit": "0cc01c320916d294e28d32c04a5157232eaea376"
     },
     {
-      "id": "org.projectluma.Grid",
+      "id": "org.projectSuno.Grid",
       "title": "Grid",
       "producer": "grid",
       "source_tree": "src/external/grid",
@@ -728,18 +728,18 @@
       ],
       "default_channel": "beta",
       "required_host_services": [
-        "org.projectluma.AppData1"
+        "org.projectSuno.AppData1"
       ],
       "host_interface_version": 1,
-      "recipe": "packaging/flatpak/apps/org.projectluma.Grid/org.projectluma.Grid.yml",
+      "recipe": "packaging/flatpak/apps/org.projectSuno.Grid/org.projectSuno.Grid.yml",
       "qualification": "pending-installed-update-rollback-and-migration",
       "minimum_host_packages": {
-        "luma-application-installer": 64
+        "Suno-application-installer": 64
       },
       "data_schema": "grid-documents-preferences-v1"
     },
     {
-      "id": "org.projectluma.Stage",
+      "id": "org.projectSuno.Stage",
       "title": "Stage",
       "producer": "stage",
       "source_tree": "src/external/stage",
@@ -752,18 +752,18 @@
       ],
       "default_channel": "beta",
       "required_host_services": [
-        "org.projectluma.AppData1"
+        "org.projectSuno.AppData1"
       ],
       "host_interface_version": 1,
-      "recipe": "packaging/flatpak/apps/org.projectluma.Stage/org.projectluma.Stage.yml",
+      "recipe": "packaging/flatpak/apps/org.projectSuno.Stage/org.projectSuno.Stage.yml",
       "qualification": "pending-installed-update-rollback-and-migration",
       "minimum_host_packages": {
-        "luma-application-installer": 64
+        "Suno-application-installer": 64
       },
       "data_schema": "stage-preferences-v1"
     },
     {
-      "id": "org.projectluma.Session",
+      "id": "org.projectSuno.Session",
       "title": "Session",
       "producer": "session",
       "source_tree": "src/external/session",
@@ -776,21 +776,21 @@
       ],
       "default_channel": "beta",
       "required_host_services": [
-        "org.projectluma.AppData1"
+        "org.projectSuno.AppData1"
       ],
       "host_interface_version": 1,
-      "recipe": "packaging/flatpak/apps/org.projectluma.Session/org.projectluma.Session.yml",
+      "recipe": "packaging/flatpak/apps/org.projectSuno.Session/org.projectSuno.Session.yml",
       "qualification": "pending-installed-update-rollback-and-migration",
       "minimum_host_packages": {
-        "luma-application-installer": 63
+        "Suno-application-installer": 63
       },
       "data_schema": "session-instruments-preferences-v1"
     },
     {
-      "id": "org.projectluma.Reel",
+      "id": "org.projectSuno.Reel",
       "title": "Reel",
       "producer": "reel",
-      "source_tree": "src/luma-reel",
+      "source_tree": "src/Suno-reel",
       "native_packages": [],
       "native_desktop_ids": [],
       "target_delivery": "signed-flatpak-app",
@@ -800,26 +800,26 @@
       ],
       "default_channel": "beta",
       "required_host_services": [
-        "org.projectluma.AppData1"
+        "org.projectSuno.AppData1"
       ],
       "host_interface_version": 1,
-      "recipe": "packaging/flatpak/apps/org.projectluma.Reel/org.projectluma.Reel.yml",
+      "recipe": "packaging/flatpak/apps/org.projectSuno.Reel/org.projectSuno.Reel.yml",
       "qualification": "pending-installed-update-rollback-and-migration",
       "minimum_host_packages": {
-        "luma-application-installer": 63
+        "Suno-application-installer": 63
       },
       "data_schema": "reel-profile-preferences-v1"
     },
     {
-      "id": "org.projectluma.Depot",
+      "id": "org.projectSuno.Depot",
       "title": "Depot",
       "producer": "application-installer",
-      "source_tree": "src/luma-depot",
+      "source_tree": "src/Suno-depot",
       "native_packages": [
-        "luma-application-installer"
+        "Suno-application-installer"
       ],
       "native_desktop_ids": [
-        "org.projectluma.Depot.desktop"
+        "org.projectSuno.Depot.desktop"
       ],
       "target_delivery": "signed-flatpak-app",
       "channels": [
@@ -828,16 +828,16 @@
       ],
       "default_channel": "beta",
       "required_host_services": [
-        "LumaInstaller",
-        "LumaAppData",
-        "LumaDepotHost",
-        "LumaUpdate"
+        "SunoInstaller",
+        "SunoAppData",
+        "SunoDepotHost",
+        "SunoUpdate"
       ],
       "host_interface_version": 1,
-      "recipe": "packaging/flatpak/apps/org.projectluma.Depot/org.projectluma.Depot.yml",
+      "recipe": "packaging/flatpak/apps/org.projectSuno.Depot/org.projectSuno.Depot.yml",
       "qualification": "pending-installed-update-rollback-and-migration",
       "minimum_host_packages": {
-        "luma-application-installer": 57
+        "Suno-application-installer": 57
       }
     }
   ],
@@ -847,7 +847,7 @@
       "packages": [
         "gnome-shell",
         "mutter",
-        "luma-shell-state"
+        "Suno-shell-state"
       ],
       "delivery": "signed-os-deployment",
       "reason": "Compositor and session ABI form one deployment."
@@ -855,12 +855,12 @@
     {
       "id": "host-services",
       "packages": [
-        "luma-application-installer",
-        "luma-update",
-        "luma-portal",
-        "luma-calls",
-        "luma-continuity",
-        "luma-messages-e2ee"
+        "Suno-application-installer",
+        "Suno-update",
+        "Suno-portal",
+        "Suno-calls",
+        "Suno-continuity",
+        "Suno-messages-e2ee"
       ],
       "delivery": "signed-os-deployment",
       "reason": "Privileged brokers remain host-owned; app clients bind supported interface versions."
@@ -876,7 +876,7 @@
     {
       "id": "speech-modules",
       "packages": [
-        "luma-natural-voices",
+        "Suno-natural-voices",
         "speech-dispatcher"
       ],
       "delivery": "signed-os-deployment",

@@ -16,7 +16,7 @@ false, and cleanup/monitoring remain. Package-script syntax and diff checks pass
 The package verifier rejects the campaign title, body and URL in the resulting
 binary. Full RPM build and target-device qualification remain with the builder.
 
-Build gnome-settings-daemon 50.1-1.luma.3 for both architectures, then promote
+Build gnome-settings-daemon 50.1-1.Suno.3 for both architectures, then promote
 verified artifacts and pins. Existing running services require a restart or next
 login to discard the old reminder timer. This source change does not publish OS
 updates to existing installations.

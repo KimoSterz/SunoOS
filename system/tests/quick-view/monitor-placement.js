@@ -2,7 +2,7 @@
 // Run against the patched Sushi source: node monitor-placement.js SUSHI_ROOT
 //
 // The preview is sized by mainWindow.js and placed by the compositor. This
-// models Luma's Mutter 50.4: a new Wayland window with a transient parent is
+// models Suno's Mutter 50.4: a new Wayland window with a transient parent is
 // centred horizontally over the parent, a third of the spare height from its
 // top (src/core/place.c, meta_window_place), and Mutter patch 0013 clamps that
 // position into the work area of the parent's monitor. Stock Mutter leaves

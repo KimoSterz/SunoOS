@@ -19,7 +19,7 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE previous, WCHAR *command_line,
     window_class.cbSize = sizeof(window_class);
     window_class.hInstance = instance;
     window_class.lpfnWndProc = DefWindowProcW;
-    window_class.lpszClassName = L"LumaRelayNotificationSmoke";
+    window_class.lpszClassName = L"SunoRelayNotificationSmoke";
     if (!RegisterClassExW(&window_class)) return 1;
     window = CreateWindowExW(0, window_class.lpszClassName, L"Relay notification smoke",
                              WS_OVERLAPPED, 0, 0, 1, 1, NULL, NULL, instance, NULL);

@@ -1,6 +1,6 @@
-diff --git a/js/ui/lumaGrid.js b/js/ui/lumaGrid.js
---- a/js/ui/lumaGrid.js
-+++ b/js/ui/lumaGrid.js
+diff --git a/js/ui/SunoGrid.js b/js/ui/SunoGrid.js
+--- a/js/ui/SunoGrid.js
++++ b/js/ui/SunoGrid.js
 @@ -599,12 +599,20 @@
          });
          const home = Main.presentation?._home;

@@ -1,4 +1,4 @@
-From: Project Luma <project-luma@local>
+From: Project Suno <project-suno@local>
 Subject: [PATCH] software_isp: scale the full sensor before CPU debayer
 
 The CPU debayer currently satisfies a smaller output request by taking an

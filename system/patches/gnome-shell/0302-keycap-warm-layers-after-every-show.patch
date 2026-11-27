@@ -1,4 +1,4 @@
-From: Luma Developers
+From: Suno Developers
 Subject: [PATCH] Keycap: draw every layer into its cache after each show
 
 On the Fold the first switch from Shift to lowercase after each keyboard

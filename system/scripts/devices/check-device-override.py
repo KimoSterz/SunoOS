@@ -6,7 +6,7 @@ A device whose kernel comes from its device repository as an rpm-ostree
 override ([device_repo] remove + install, the Surface Pro 12-inch) breaks on a
 new OS commit when the commit no longer carries a package the override
 removes, when the commit lacks something a layered package requires, or when
-the commit's luma-update would refuse the device. Each of those is checked
+the commit's Suno-update would refuse the device. Each of those is checked
 here against the commit itself, without a device, so the nightly can hold
 only that device class (scripts/os/device-hold-chain.sh --check) instead of
 all of ARM.
@@ -118,10 +118,10 @@ def main(argv=None) -> int:
                 q = rpm_query(db, "-q", "--whatprovides", cap)
                 result(q.returncode == 0, f"{name} requires {req}: {q.stdout.strip().splitlines()[0] if q.returncode == 0 else 'not in the commit'}")
 
-        # The commit's luma-update admits this device on the generic stream.
-        hw = ostree_find(args.repo, args.commit, "/usr/lib", "luma_update/hardware.py")
+        # The commit's Suno-update admits this device on the generic stream.
+        hw = ostree_find(args.repo, args.commit, "/usr/lib", "Suno_update/hardware.py")
         if hw is None:
-            result(False, "commit carries luma-update (luma_update/hardware.py)")
+            result(False, "commit carries Suno-update (Suno_update/hardware.py)")
         else:
             ostree_cat(args.repo, args.commit, hw, tmp / "hardware.py")
             spec = importlib.util.spec_from_file_location("commit_hardware", tmp / "hardware.py")
@@ -129,7 +129,7 @@ def main(argv=None) -> int:
             spec.loader.exec_module(module)
             entry = next((row for key, row in module.DEVICES.items() if key == target), None)
             result(entry is not None and entry[3] is False,
-                   f"commit's luma-update lets {target} follow the generic stream"
+                   f"commit's Suno-update lets {target} follow the generic stream"
                    + ("" if entry is not None else " (unknown target)"))
     print(("PASS" if not failures else "FAIL") + f"  {args.device} override on {args.commit[:12]}: "
           + ("ready" if not failures else f"{failures} check(s) failed"))

@@ -107,7 +107,7 @@ def export(repo, site, output, profile, deadline):
     identity(site)
     if digest(site) != profile['flatpakrepo_sha256']:
         raise ValueError('Public descriptor differs')
-    selected['site/luma.flatpakrepo'] = site
+    selected['site/Suno.flatpakrepo'] = site
     pins = {name: identity(path) for name, path in selected.items()}
     output.mkdir(mode=0o700)
     for name in ('system.posix_acl_access', 'system.posix_acl_default'):
@@ -153,7 +153,7 @@ def export(repo, site, output, profile, deadline):
         for ref, head in sorted(profile['refs'].items()):
             name = 'repo/refs/heads/'+ref
             inventory[name] = add_bytes(stream, name, (head+'\n').encode())
-        body = json.dumps(dict(schema='org.projectluma.depot.runtime-input/v1', profile=profile,
+        body = json.dumps(dict(schema='org.projectSuno.depot.runtime-input/v1', profile=profile,
                               files=inventory), sort_keys=True).encode()+b'\n'
         add_bytes(stream, 'INPUTS.json', body)
     if heads() != profile['refs'] or any(identity(selected[name]) != pin for name, pin in pins.items()):

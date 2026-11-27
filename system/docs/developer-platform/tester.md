@@ -1,8 +1,8 @@
-# Develop with Luma Tester
+# Develop with Suno Tester
 
-Luma Tester runs a complete guest OS in QEMU. One Linux launcher handles mobile
+Suno Tester runs a complete guest OS in QEMU. One Linux launcher handles mobile
 and desktop, with separate image manifests for each architecture and build.
-Start with a trusted **Luma simulator/developer image**, not a Fairphone disk,
+Start with a trusted **Suno simulator/developer image**, not a Fairphone disk,
 rootfs tarball, Android APK, or desktop installer ISO. There is no public guest
 feed in this first implementation; image preparation is documented in
 [tester-images.md](tester-images.md).
@@ -14,10 +14,10 @@ own qualification.
 
 ## Portable Linux preview
 
-The portable directory includes LumaUI, Python, QEMU, SSH and rsync. Guest images
+The portable directory includes SunoUI, Python, QEMU, SSH and rsync. Guest images
 can be downloaded, delivered separately, or embedded for offline use. Open
-**Luma Tester** inside it. Mark the AppImage executable before opening. Without
-FUSE, use `./Luma-Tester-0.3.0-linux-x86_64.AppImage --appimage-extract-and-run`.
+**Suno Tester** inside it. Mark the AppImage executable before opening. Without
+FUSE, use `./Suno-Tester-0.3.0-linux-x86_64.AppImage --appimage-extract-and-run`.
 Use the included README for package-specific commands. These are Linux x86_64
 builds; ARM guest execution and macOS/Windows packages need separate qualification.
 
@@ -30,7 +30,7 @@ If only one qualified image is available, the launcher uses it. Cross-architectu
 execution requires emulation and can be slower. The CLI accepts a particular
 manifest when you need an explicit simulator or reference image.
 
-For a portable Linux build, run `"/path/to/Luma Tester" install-desktop` to add
+For a portable Linux build, run `"/path/to/Suno Tester" install-desktop` to add
 its persistent executable and icon to your user Applications menu and dock.
 For an AppImage without FUSE, insert `--appimage-extract-and-run` before
 `install-desktop`. Register it again after moving the executable.
@@ -50,15 +50,15 @@ downloads from cached launches. Private previews and QA use test attribution.
 
 ## Start a session
 
-Install the [host requirements](../../src/luma-tester/README.md), then run:
+Install the [host requirements](../../src/Suno-tester/README.md), then run:
 
 ```sh
-src/luma-tester/luma-tester gui
+src/Suno-tester/Suno-tester gui
 ```
 
-Choose **Try Luma** or **Develop for Luma**. Both open the same workspace:
+Choose **Try Suno** or **Develop for Suno**. Both open the same workspace:
 choose **Mobile** or **Desktop** in the sidebar, choose an image from the **Images** menu, then **Start**.
-The sidebar uses compact LumaUI destination rows. Unavailable devices are marked
+The sidebar uses compact SunoUI destination rows. Unavailable devices are marked
 **Soon** and open an explicit no-build state. Presets appear as sidebar items;
 the section’s **+** opens a native modal for saving the current configuration.
 The floating bottom action bar provides **Pause**, **Resume**, and graceful **Shut Down**. Mobile
@@ -68,10 +68,10 @@ windows the sidebar opens over the content using the toolbar's navigation button
 The launcher
 chooses a native architecture image from its catalog when available. On first use
 it downloads/verifies the disk and creates a private key and writable overlay;
-subsequent runs keep that workspace. The guest appears inside the LumaUI window. Its live display uses a private Unix
+subsequent runs keep that workspace. The guest appears inside the SunoUI window. Its live display uses a private Unix
 socket; pointer, keyboard and scrolling operate the actual guest. Ctrl+Alt
 returns focus to launcher controls.
-The composed Desktop image identifies its virtual monitor as **Luma Desktop**
+The composed Desktop image identifies its virtual monitor as **Suno Desktop**
 and defaults to **1920 × 1080 at 100% scale**. Its aspect-only display identity
 does not claim a physical monitor size. Change resolution or scaling in the
 guest's display settings; those preferences remain in that session's overlay.
@@ -79,7 +79,7 @@ Mobile requests a single 432×960 portrait output; the image's compositor must h
 virtual output and use the handheld device class. The image determines scaling.
 
 Use **Add Image** to import a trusted developer manifest, or set
-`LUMA_TESTER_CATALOG` to a directory of qualified manifests. The image picker
+`SUNO_TESTER_CATALOG` to a directory of qualified manifests. The image picker
 separates the latest qualified included image, installed/local images and
 images available to download. It does not substitute an installer ISO for a
 ready-to-run developer disk. A public developer-disk feed remains separate from
@@ -87,7 +87,7 @@ Hub's current installer catalog.
 
 Switch **Try / Developer** at the top of the sidebar at any time. The running
 VM and its disk stay the same. Developer reveals **SSH access**, **Copy Agent
-Prompt**, **Shared Folders** and **Devices**. Enable SSH, start Luma, then copy
+Prompt**, **Shared Folders** and **Devices**. Enable SSH, start Suno, then copy
 the prompt into your local coding agent. Its separate private key can be revoked
 by turning SSH access off; internal launcher control has a different key.
 The enabled SSH section expands inline with the host, forwarded port, username
@@ -108,7 +108,7 @@ The guest filesystem may need expansion after increasing an existing disk.
 
 Closing Tester requests a graceful guest shutdown and preserves its disk, key,
 selected build and workspace mode. Reopening returns to that workspace. **Snapshots
-→ +** saves a named disk checkpoint while Luma stays open. Capture briefly pauses
+→ +** saves a named disk checkpoint while Suno stays open. Capture briefly pauses
 a running VM and resumes it; an already-paused VM stays paused. The sidebar also
 updates when another tool creates a checkpoint. Restore while stopped. Snapshots
 save crash-consistent disk contents, not RAM, UEFI variables or shared host folders.
@@ -120,28 +120,28 @@ VirtIO hardware to avoid corrupt software scanout tiles; VirGL-capable guests
 retain the normal accelerated renderer. GPU-only visual effects may differ in
 the CPU fallback. Physical phone timing and GPU behavior still need device tests.
 
-From a terminal, use an alias or installed `luma-tester` command:
+From a terminal, use an alias or installed `Suno-tester` command:
 
 ```sh
-luma-tester doctor /path/to/mobile.json
-luma-tester prepare /path/to/mobile.json
-luma-tester start /path/to/mobile.json --memory 4096 --cpus 4
+Suno-tester doctor /path/to/mobile.json
+Suno-tester prepare /path/to/mobile.json
+Suno-tester start /path/to/mobile.json --memory 4096 --cpus 4
 ```
 
 `start` stays in the foreground for the guest lifetime. In a second terminal:
 
 ```sh
-luma-tester wait /path/to/mobile.json --graphical --timeout 300
-luma-tester ssh /path/to/mobile.json uname -m
-luma-tester status /path/to/mobile.json
-luma-tester pause /path/to/mobile.json
-luma-tester resume /path/to/mobile.json
-luma-tester home /path/to/mobile.json
-luma-tester screenshot /path/to/mobile.json /tmp/luma-screen.ppm
-luma-tester stop /path/to/mobile.json
+Suno-tester wait /path/to/mobile.json --graphical --timeout 300
+Suno-tester ssh /path/to/mobile.json uname -m
+Suno-tester status /path/to/mobile.json
+Suno-tester pause /path/to/mobile.json
+Suno-tester resume /path/to/mobile.json
+Suno-tester home /path/to/mobile.json
+Suno-tester screenshot /path/to/mobile.json /tmp/Suno-screen.ppm
+Suno-tester stop /path/to/mobile.json
 ```
 
-`--embedded` exposes a private Unix display socket for the LumaUI client.
+`--embedded` exposes a private Unix display socket for the SunoUI client.
 The ordinary CLI `start` still opens QEMU's own GTK window for diagnostics.
 `--headless` removes the window and keeps QMP screenshots and SSH available.
 The embedded display uses a private Unix VNC socket. GPU graphics uses VirGL
@@ -163,12 +163,12 @@ Sync preserves permissions and safe symlinks, and never deletes guest files.
 Host paths are not mounted into the guest.
 
 ```sh
-luma-tester sync /path/to/mobile.json ./my-app
-luma-tester ssh /path/to/mobile.json ls Projects/app
-luma-tester dev /path/to/mobile.json ./my-app -- python3 -m my_app
+Suno-tester sync /path/to/mobile.json ./my-app
+Suno-tester ssh /path/to/mobile.json ls Projects/app
+Suno-tester dev /path/to/mobile.json ./my-app -- python3 -m my_app
 ```
 
-`dev` waits for SSH and the painted graphical session, syncs, then starts `luma-tester-app.service` in the guest user
+`dev` waits for SSH and the painted graphical session, syncs, then starts `Suno-tester-app.service` in the guest user
 manager. It scans source metadata once per second and repeats sync/restart after
 changes. Ctrl+C stops the watcher; the guest and app stay available for inspection.
 This is a process restart, not in-process hot reload. Watcher sync does not remove
@@ -182,14 +182,14 @@ its D-Bus environment into `systemd --user`. This is part of the image contract;
 do not guess a Wayland socket or run the app as root. Inspect app output with:
 
 ```sh
-luma-tester ssh /path/to/mobile.json journalctl --user -u luma-tester-app -n 80 --no-pager
-luma-tester ssh /path/to/mobile.json systemctl --user show-environment
+Suno-tester ssh /path/to/mobile.json journalctl --user -u Suno-tester-app -n 80 --no-pager
+Suno-tester ssh /path/to/mobile.json systemctl --user show-environment
 ```
 
 For the included `examples/tester-hello`, run `dev ... -- python3 main.py` and
 edit `message.txt`. Give mobile apps a declared minimum width that fits the
 432-pixel viewport; an oversized minimum can prevent the compositor from
-maximizing them. The guest includes the Luma SDK CLI (`luma --help`).
+maximizing them. The guest includes the Suno SDK CLI (`Suno --help`).
 
 For an app with its own file watcher, use `sync` plus that app's existing reload
 mechanism. Source synchronization does not rebuild RPMs, native code or Flatpaks.
@@ -201,7 +201,7 @@ the relevant **guest** service. Do not replace your host GTK or compositor.
 Give Claude, Codex, or another local tool this document and the paths to your app
 and selected manifest. The same CLI works without GTK or a browser tool:
 
-> Work in this app checkout. Use Luma Tester with the supplied manifest. Check
+> Work in this app checkout. Use Suno Tester with the supplied manifest. Check
 > `doctor`, start the guest if needed, wait for SSH, then sync and run the app using
 > `dev`. Use guest journal output and QMP screenshots to verify changes. Keep host
 > files, production profiles and guest data intact. Test at mobile and desktop
@@ -219,7 +219,7 @@ sessions use TCG: useful for ABI/packaging checks, with no promise of interactiv
 speed or comparable performance. Native x86 mobile userspace can offer fast
 layout iteration while ARM validates architecture-specific behavior. The image
 must actually contain the same shared platform, mobile shell and apps intended
-for Luma; a portrait window alone does not establish parity.
+for Suno; a portrait window alone does not establish parity.
 
 QEMU provides virtual virtio devices and a generic ARM `virt` or x86 `q35` board.
 It does not emulate Fairphone/Pixel SoCs. Real hardware is still needed for modem,
@@ -245,9 +245,9 @@ Desktop is initially selected when its image is available, including on ARM
 hosts. Mobile remains an explicit experience choice.
 
 The workspace keeps two independent choices: an experience profile and a guest
-CPU architecture. The existing OS/AppKit contract uses `LUMA_DEVICE_CLASS`
-(`desktop`, `tablet`, `handheld`), `LUMA_PRESENTATION_MODE` (`windowed` or
-`fullscreen-mobile`), and `LUMA_INPUT_MODE` (`pointer` or `touch`). The native
+CPU architecture. The existing OS/AppKit contract uses `SUNO_DEVICE_CLASS`
+(`desktop`, `tablet`, `handheld`), `SUNO_PRESENTATION_MODE` (`windowed` or
+`fullscreen-mobile`), and `SUNO_INPUT_MODE` (`pointer` or `touch`). The native
 phone simulator sets `handheld`, `fullscreen-mobile`, and `touch`; it starts
 Phosh/Phoc from the phone source, including its actual Home and keyboard.
 Application layout still responds to its available logical window size.
@@ -301,18 +301,18 @@ guest disk, not UEFI variables or host shared folders.
 The CLI supports the same workflow:
 
 ```sh
-luma-tester import-iso ./luma-arm64.iso --arch aarch64
-luma-tester start /path/printed/by/import-iso.json --experience tv
+Suno-tester import-iso ./Suno-arm64.iso --arch aarch64
+Suno-tester start /path/printed/by/import-iso.json --experience tv
 ```
 
 #### Proposed OS experience hint
 
-The Tester passes a QEMU fw_cfg string named `opt/luma/experience` with one of
+The Tester passes a QEMU fw_cfg string named `opt/Suno/experience` with one of
 `desktop`, `mobile`, `tablet`, `tv` or `home` (Smart Home). A Linux guest can read
-`/sys/firmware/qemu_fw_cfg/by_name/opt/luma/experience/raw` when fw_cfg sysfs is
+`/sys/firmware/qemu_fw_cfg/by_name/opt/Suno/experience/raw` when fw_cfg sysfs is
 available. This is a requested interface, independent of CPU architecture,
 physical-device identity and image checksum. The Tester does not change
-`/etc/luma-device-class`, patch the ISO or claim the OS already implements these
+`/etc/Suno-device-class`, patch the ISO or claim the OS already implements these
 modes. The OS can later use the hint for initial setup, with an installed user
 choice or Quick Settings override taking precedence. That OS policy and its
 physical-device persistence are separate work. Presets retain the experience
@@ -360,7 +360,7 @@ DPI, refresh rate, cutouts, colour calibration or identical physical font size.
 
 The guest compositor must support Tester virtual modes. The scoped
 `scripts/tester/patches/phoc-dynamic-virtual-modes.patch` enables them only with
-`LUMA_TESTER_DYNAMIC_MODES=1`. The virtual Mobile session opts in; physical phone
+`SUNO_TESTER_DYNAMIC_MODES=1`. The virtual Mobile session opts in; physical phone
 sessions retain their normal panel mode whitelist. A transition verifies actual
 Wayland output geometry, then saves configuration; failed modes restore the
 previous output and do not claim success. Applications and the VM keep running.
@@ -369,30 +369,30 @@ Configurations are included in saved presets and reapplied after the next boot.
 For automation:
 
 ```sh
-luma-tester --state ./workspace device ./mobile.json --profile pixel-xl
-luma-tester --state ./workspace device ./mobile.json --profile fold --posture folded
-luma-tester --state ./workspace device ./mobile.json --profile duo --rotation 90
-luma-tester --state ./workspace device ./mobile.json --profile custom --width 900 --height 1200 --scale 2
+Suno-tester --state ./workspace device ./mobile.json --profile pixel-xl
+Suno-tester --state ./workspace device ./mobile.json --profile fold --posture folded
+Suno-tester --state ./workspace device ./mobile.json --profile duo --rotation 90
+Suno-tester --state ./workspace device ./mobile.json --profile custom --width 900 --height 1200 --scale 2
 ```
 
-In the guest, watch `$XDG_RUNTIME_DIR/luma-tester/device.json` for atomic changes.
+In the guest, watch `$XDG_RUNTIME_DIR/Suno-tester/device.json` for atomic changes.
 It contains schema1, profile, pixel and logical dimensions, UI scale, rotation,
 posture, hinge angle, keyboard type, visible regions and the optional occluded
 hinge rectangle. Regions/hinge use output pixels in the rotated coordinate space;
 divide by scale for logical coordinates. The session bus also broadcasts
-`org.project_luma.Tester.Device1.Changed` on `/org/project_luma/Tester/Device` with
+`org.projectSuno.Tester.Device1.Changed` on `/org/projectSuno/Tester/Device` with
 the JSON state. Subscribe before reading the file to avoid missing a transition.
 
 The viewer masks Duo's hinge and excludes it from touch. Existing apps reflow to
 the real output size. Hinge-aware layouts must read the region contract; current
-Luma does not yet expose this simulator state through a standard OS fold sensor
+Suno does not yet expose this simulator state through a standard OS fold sensor
 API. Book changes the hinge-angle/posture contract without inventing an occluded
 strip on a continuous folding panel. It does not emulate the physical sensor.
 
 ### Published ARM Mobile and virtual boot
 
 The [Mobile download](https://simplyluma.com/download/mobile) already supplies the
-ARM64 Luma system. Alpha1's `luma-mobile-alpha1-fp6-userdata.sparse.zst` expands to
+ARM64 Suno system. Alpha1's `Suno-mobile-alpha1-fp6-userdata.sparse.zst` expands to
 a16GiB Android sparse userdata image, paired with a Fairphone6 boot image and
 vendor firmware. It is a physical-device distribution rather than a generic UEFI
 VM disk. QEMU's `virt` platform has its own virtual device tree, PCI/VirtIO devices
@@ -438,7 +438,7 @@ Run `python3 scripts/tester/build-macos.py --output /path/to/output
 --source-commit COMMIT` on an Apple Silicon Mac. The native producer uses Homebrew
 Python3.14, GTK4, libadwaita, PyGObject, Cairo, gobject-introspection, Meson/Ninja,
 librsvg, gtk-vnc, QEMU and xorriso, plus Apple's command-line tools.
-It builds the shared LumaUI C libraries, bundles the Python/GTK/GVnc/QEMU runtime
+It builds the shared SunoUI C libraries, bundles the Python/GTK/GVnc/QEMU runtime
 and both guest firmware profiles, relocates every non-system dylib, verifies
 ad-hoc signatures, and creates a DMG with file hashes and build receipts.
 The installed app does not require Homebrew. VM images are selected/downloaded
@@ -448,10 +448,10 @@ Linux graphics acceleration is independent of this CPU acceleration.
 Developer ID signing and notarization require their own release infrastructure.
 Intel Mac host packaging is not produced by this Apple Silicon recipe. Native
 window, control, firmware and live-checkpoint checks do not establish a complete
-Luma OS boot/install qualification; qualify the actual selected OS image too.
+Suno OS boot/install qualification; qualify the actual selected OS image too.
 
-Prepared previews sign in automatically. The local username is `luma` and the
-password is `TryLuma`, also shown under **Preview login** in the sidebar in Try
+Prepared previews sign in automatically. The local username is `Suno` and the
+password is `TrySuno`, also shown under **Preview login** in the sidebar in Try
 and Developer modes. Use it for desktop app-installation authorization prompts.
 SSH accepts keys only. Fresh previews disable automatic locking and idle sleep;
 later settings changes in a saved workspace are preserved.

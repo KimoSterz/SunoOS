@@ -1,4 +1,4 @@
-From: Luma Developers <dev@projectluma.org>
+From: Suno Developers <dev@projectSuno.org>
 Subject: [PATCH] status: use the shared filled camera privacy glyph
 
 Keep native camera-use monitoring and visibility bindings intact.
@@ -10,9 +10,9 @@ Keep native camera-use monitoring and visibility bindings intact.
  
          this._indicator = this._addIndicator();
 -        this._indicator.icon_name = 'camera-web-symbolic';
-+        this._indicator.icon_name = 'lumaui-camera-active-symbolic';
++        this._indicator.icon_name = 'SunoUI-camera-active-symbolic';
          this._indicator.add_style_class_name('privacy-indicator');
-+        this._indicator.add_style_class_name('luma-camera-privacy-indicator');
++        this._indicator.add_style_class_name('Suno-camera-privacy-indicator');
  
          this._cameraMonitor = new Shell.CameraMonitor();
          this._cameraMonitor.bind_property('cameras-in-use', this._indicator,

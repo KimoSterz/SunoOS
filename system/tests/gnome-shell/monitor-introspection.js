@@ -64,6 +64,6 @@ for (const method of ['GetMonitorApplicationsAsync', 'RequestMonitorQuitAsync'])
     assert(call.error && !call.result && quit === 1, 'Denied caller has no side effects');
 }
 assert(order.join() === 'activate,quit', 'Denied calls never activate an app');
-assert(source.includes("new DBusSenderChecker(['io.luma.Monitor'])"), 'Dedicated Monitor name checker');
-assert(!source.slice(source.indexOf('const APP_ALLOWLIST'), source.indexOf('const INTROSPECT')).includes('io.luma.Monitor'), 'Portal permissions unchanged');
+assert(source.includes("new DBusSenderChecker(['io.Suno.Monitor'])"), 'Dedicated Monitor name checker');
+assert(!source.slice(source.indexOf('const APP_ALLOWLIST'), source.indexOf('const INTROSPECT')).includes('io.Suno.Monitor'), 'Portal permissions unchanged');
 print('PASS Monitor shell identities, stale/unknown selection, graceful quit, denied calls');

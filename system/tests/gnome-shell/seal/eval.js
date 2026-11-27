@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-// Seal evidence harness: drives Luma's administrator prompt in a headless
+// Seal evidence harness: drives Suno's administrator prompt in a headless
 // Shell against real polkitd, the real polkit agent helper, the Fedora
 // with-fingerprint PAM stack and fprintd with libfprint's virtual reader.
 // Cases are chosen with SEAL_ONLY (comma separated).
@@ -9,7 +9,7 @@ import GLib from 'gi://GLib';
 import St from 'gi://St';
 
 const OUT = GLib.getenv('SEAL_OUT');
-const PASSWORD = 'luma-test';
+const PASSWORD = 'Suno-test';
 const FINGER = 'nick-right-index';
 const log = (m, o) => console.log(`[seal] ${m} ${JSON.stringify(o ?? {})}`);
 const sleep = ms => new Promise(r => GLib.timeout_add(GLib.PRIORITY_DEFAULT, ms, () => {
@@ -222,7 +222,7 @@ export default async function ({Main, shot}) {
         await sleep(900);
     };
 
-    const usb = () => request('org.projectluma.Imager', 'org.freedesktop.udisks2.open-device', {
+    const usb = () => request('org.projectSuno.Imager', 'org.freedesktop.udisks2.open-device', {
         message: {text: 'Authentication is required to open $(drive) for writing', domain: 'udisks2'},
         details: {drive: 'USB DISK 3.0 (/dev/sda)', device: '/dev/sda'},
     });
@@ -294,7 +294,7 @@ export default async function ({Main, shot}) {
         await reader(`SCAN ${FINGER}`);
         const matched = await waitFor('recognized', () => statusText(d) === 'Fingerprint recognized.', 8000, 5);
         const empty = d._entry.get_text() === '';
-        const green = d._finger.has_style_class_name('luma-seal-finger-matched');
+        const green = d._finger.has_style_class_name('Suno-seal-finger-matched');
         await shotCard(`fingerprint-match-${theme}`, d);
         const answer = await promise;
         return {first, layout, matchedAfterMs: matched.ms, empty, green, answer,
@@ -304,7 +304,7 @@ export default async function ({Main, shot}) {
     // 4. Depot installs for everyone; an unknown finger is refused, then the
     //    password still works.
     await run('miss', async () => {
-        const {d, first, promise} = await openPrompt('depot', request('org.projectluma.Depot', 'org.freedesktop.Flatpak.app-install'));
+        const {d, first, promise} = await openPrompt('depot', request('org.projectSuno.Depot', 'org.freedesktop.Flatpak.app-install'));
         await waitFor('reader listening', () => d._finger.visible);
         await settle(d);
         await shotCard(`depot-idle-${theme}`, d);
@@ -312,7 +312,7 @@ export default async function ({Main, shot}) {
         await waitFor('not recognized', () => statusText(d) === 'Fingerprint not recognized.', 8000, 5);
         await sleep(380);
         await shotCard(`fingerprint-miss-${theme}`, d);
-        const red = d._finger.has_style_class_name('luma-seal-finger-miss');
+        const red = d._finger.has_style_class_name('Suno-seal-finger-miss');
         await type(PASSWORD);
         await key(Clutter.KEY_Return, 0);
         await waitFor('accepted', () => statusText(d) === 'Password accepted.', 8000, 10);
@@ -413,14 +413,14 @@ export default async function ({Main, shot}) {
             pass: emptyEnterIgnored && JSON.stringify(order) === JSON.stringify(expected)};
     });
 
-    // 9. An unknown process asks for an action Luma has no words for.
+    // 9. An unknown process asks for an action Suno has no words for.
     await run('unknown', async () => {
         const {d, first, promise} = await openPrompt('unknown', request(null, 'org.freedesktop.hostname1.set-static-hostname'));
         await waitFor('reader listening', () => d._finger.visible);
         await settle(d);
         const layout = measure(d);
         await shotCard(`unknown-app-${theme}`, d);
-        const neutral = !d._appIcon && d._who.has_style_class_name('luma-seal-system');
+        const neutral = !d._appIcon && d._who.has_style_class_name('Suno-seal-system');
         await type(PASSWORD);
         await key(Clutter.KEY_Return, 0);
         await waitFor('accepted', () => statusText(d) === 'Password accepted.', 8000, 10);

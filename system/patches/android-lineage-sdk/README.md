@@ -22,7 +22,7 @@ activation sends the original PendingIntent and respects `FLAG_AUTO_CANCEL`.
 The Android main looper owns notification map updates and callback handling.
 
 The matching host transport lives in
-`src/luma-android/luma_android/waydroid_notifications.py`. It admits Binder
+`src/Suno-android/Suno_android/waydroid_notifications.py`. It admits Binder
 kernel UID 1000 before reading a parcel, for the current user-zero Waydroid
 system service. This is not an admission rule for a future UID-remapped runtime.
 APKs receive neither a host D-Bus connection nor arbitrary host commands.
@@ -48,7 +48,7 @@ implementation and end-to-end acceptance.
 listener's kernel PID as well as UID1000. The Android callback checks the
 captured host UID policy before unmarshalling; the main looper owns each reply
 action and its original mutable PendingIntent. One free-form RemoteInput can be
-represented by Luma's entry. Authentication-required, immutable, multiple-input
+represented by Suno's entry. Authentication-required, immutable, multiple-input
 and unsupported reply actions retain the app-open flow and are never exposed
 as ordinary buttons that send an empty reply. No network-delivery guarantee is
 inferred from a successful PendingIntent handoff.

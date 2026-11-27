@@ -10,7 +10,7 @@ import St from 'gi://St';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as PrairieLogin from 'resource:///org/gnome/shell/ui/prairieLogin.js';
 import * as Osd from 'resource:///org/gnome/shell/ui/osdWindow.js';
-import {SHELF_SURFACE_GAP} from 'resource:///org/gnome/shell/ui/lumaShelfSurface.js';
+import {SHELF_SURFACE_GAP} from 'resource:///org/gnome/shell/ui/SunoShelfSurface.js';
 import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
 import * as Scripting from 'resource:///org/gnome/shell/ui/scripting.js';
 
@@ -33,7 +33,7 @@ function baseline(label) {
 // A test-owned status-notifier input uses the normal native Well adapter.
 // It does not replace any product layout, menu or activation method.
 const NativeNotifier=GObject.registerClass({Signals:{status:{},label:{},ready:{},icon:{}}},class NativeNotifier extends GObject.Object {
-    _init(){super._init();this.uniqueId='luma-shell104-probe';this.id=this.uniqueId;this.title='Native app action';this.status='Active';this.icon={name:'application-x-executable'};this.activations=0;}
+    _init(){super._init();this.uniqueId='Suno-shell104-probe';this.id=this.uniqueId;this.title='Native app action';this.status='Active';this.icon={name:'application-x-executable'};this.activations=0;}
     activate(){this.activations++;}
 });
 const ClockLayout=GObject.registerClass(class ClockLayout extends Clutter.LayoutManager {
@@ -44,13 +44,13 @@ const ClockLayout=GObject.registerClass(class ClockLayout extends Clutter.Layout
     }
 });
 async function shot(name) {
-    const path=GLib.build_filenamev([GLib.getenv('LUMA_STATUS_LOCK_CAPTURE'),name+'.png']);
+    const path=GLib.build_filenamev([GLib.getenv('SUNO_STATUS_LOCK_CAPTURE'),name+'.png']);
     const stream=Gio.File.new_for_path(path).replace(null,false,Gio.FileCreateFlags.NONE,null);
     await new Shell.Screenshot().screenshot(false,stream);stream.close(null);
 }
 export async function run() {
     const iface=new Gio.Settings({schema_id:'org.gnome.desktop.interface'});
-    const appearance=new Gio.Settings({schema_id:'org.project_luma.shell-state'});
+    const appearance=new Gio.Settings({schema_id:'org.projectSuno.shell-state'});
     iface.set_boolean('enable-animations',false);
     const context=St.ThemeContext.get_for_stage(global.stage);
     const q=Main.panel.statusArea.quickSettings;
@@ -70,14 +70,14 @@ export async function run() {
     tray._icon=tray.get_first_child();
     tray.menu.addAction('Application action',()=>{});
     tray.show();
-    Main.panel.addToStatusArea('lumaShell104NativeProbe',tray);
+    Main.panel.addToStatusArea('SunoShell104NativeProbe',tray);
     Main.shelf._sync();
     Main.shelf._well.setPinned(tray._indicator.uniqueId,true);
     const clock=new PrairieLogin.Clock();
     const layout=new ClockLayout();layout.cardWidth=480;
     const host=new St.Widget({layout_manager:layout,width:1366,height:800});
     host.add_child(clock);Main.uiGroup.add_child(host);
-    const red=GLib.getenv('LUMA_STATUS_LOCK_RED')==='1';
+    const red=GLib.getenv('SUNO_STATUS_LOCK_RED')==='1';
     const themes=red?['dark']:['light','dark','frost','glass'];
     for(const theme of themes) for(const scale of red?[1]:[1,2])
     for(const rtl of red?[false]:[false,true]) for(const format of red?['12h']:['12h','24h']) {

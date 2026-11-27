@@ -16,7 +16,7 @@ Messages widgets and scoped content CSS now use the target's compact search,
 conversation rows, avatar dimensions, header controls, message widths, attachment
 card, quoted reply, reaction badge, and composer. Existing toolkit islands,
 frame, menu styling, and shared tokens are unchanged. New colors reference only
-existing `@luma_…` tokens. RTL content margins mirror correctly. Pointer controls
+existing `@Suno_…` tokens. RTL content margins mirror correctly. Pointer controls
 use the target's dimensions; touch controls retain 44px hit areas, including
 draft attachment removal and reply cancellation.
 

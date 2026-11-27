@@ -1,11 +1,11 @@
-# Luma boot policy
+# Suno boot policy
 
 `grub` and `plymouth` are separate surfaces with separate ownership:
 
-The installed UEFI entry is named **Luma** by bootupd, which reads the target's
+The installed UEFI entry is named **Suno** by bootupd, which reads the target's
 `/etc/system-release`. Shim's fallback/recovery path reads its own UCS-2LE
 `BOOTX64.CSV` (or architecture counterpart), so image finalization runs the
-packaged `luma-prepare-efi-identity` against the image root before installation.
+packaged `Suno-prepare-efi-identity` against the image root before installation.
 It changes only the Fedora shim record's label and comment, retaining its
 loader, arguments, `EFI/fedora` path, and signed executable bytes. It never
 opens firmware variables, removes an existing entry, or touches other vendors.
@@ -23,7 +23,7 @@ the approved brand geometry, or Plymouth's native display scale selection.
 
 - GRUB keeps Fedora's BLS deployment and rollback entries intact. Atomic
   Fedora's OSTree-generated configuration delegates its dynamic `blscfg`
-  invocation to `luma.cfg`. Fedora Atomic's OSTree entries do not carry the
+  invocation to `Suno.cfg`. Fedora Atomic's OSTree entries do not carry the
   upstream `--show-default` metadata, so both the primary view and **Show
   advanced startup options** use the real, unfiltered rollback-preserving BLS
   inventory. The light menu automatically starts the default after three
@@ -31,19 +31,19 @@ the approved brand geometry, or Plymouth's native display scale selection.
   `fwsetup --is-supported` succeeds,
   **Boot device and firmware settings** opens the real firmware chooser.
 - On bootupd installs, which is every image-built install, GRUB stays hidden.
-  `luma-boot-theme` ships `09_luma_hidden_menu.cfg` into bootupd's static
+  `Suno-boot-theme` ships `09_Suno_hidden_menu.cfg` into bootupd's static
   configuration, so the firmware logo stays on screen from power-on to
   Plymouth. bootupd writes that configuration only at install, so
-  `luma-boot-hidden-menu` adds the piece to computers that update: at boot, and
-  from luma-update right after staging. It changes only its own section and
+  `Suno-boot-hidden-menu` adds the piece to computers that update: at boot, and
+  from Suno-update right after staging. It changes only its own section and
   skips a `grub.cfg` whose menu timing an administrator changed. Esc, F8 or a held Shift during the one-second hidden countdown opens
-  the menu, and `menu_show_once_timeout` still forces it. `luma.cfg` switches
+  the menu, and `menu_show_once_timeout` still forces it. `Suno.cfg` switches
   to its graphical terminal only when the menu is drawn. See
   `docs/changes/2026-09-16-flicker-free-boot.md` for the boot timeline and what
   is hardware-bound (Lunar Lake's `xe` blanks once at probe).
 - Plymouth owns the graphical handoff after the kernel starts. Desktop adds
-  `rhgb quiet`, and Luma's plymouth selects the packaged `luma-loading`
-  presentation in `/usr/share/plymouth/plymouthd.defaults`: Luma's Ink surface
+  `rhgb quiet`, and Suno's plymouth selects the packaged `Suno-loading`
+  presentation in `/usr/share/plymouth/plymouthd.defaults`: Suno's Ink surface
   with the centred wordmark and four-dot loader. `/etc/plymouth/plymouthd.conf`
   is a template with no settings, so nothing in `/etc` (a package reinstall, a
   client-side plymouth override, OSTree's merge) can take the splash away; an
@@ -51,34 +51,34 @@ the approved brand geometry, or Plymouth's native display scale selection.
 
   The firmware draws its own logo (the vendor's, published through the ACPI
   BGRT table) before any of our code runs, and GRUB's hidden menu keeps it on
-  screen until Plymouth starts. `luma-loading` begins on exactly that screen:
-  Luma's Plymouth (`patches/plymouth/0002-script-firmware-background.patch`)
+  screen until Plymouth starts. `Suno-loading` begins on exactly that screen:
+  Suno's Plymouth (`patches/plymouth/0002-script-firmware-background.patch`)
   gives script themes the firmware logo, placed by two-step's own rules, and
-  the Luma wordmark comes up at the bottom of that screen, holds for 1.0 s, and
-  then over 0.9 s the vendor logo fades while the wordmark rises into the Luma
+  the Suno wordmark comes up at the bottom of that screen, holds for 1.0 s, and
+  then over 0.9 s the vendor logo fades while the wordmark rises into the Suno
   lockup and the loader comes up under it. There is no black frame and the
   vendor logo does not move. Timing follows Plymouth's clock
   (`Plymouth.GetTime`, patch 0003). Where the firmware
   published no logo, or on an unpatched Plymouth, the splash starts directly
-  on the Luma surface; shutdown and reboot always do.
+  on the Suno surface; shutdown and reboot always do.
 
-  Disk-unlock prompts keep the wordmark and put a Luma field under it: the
+  Disk-unlock prompts keep the wordmark and put a Suno field under it: the
   prompt text, a padlock, the field with bullets (or the typed answer for
   questions) and a Caps Lock indicator, all rendered for the profile's surface
-  at package build with `luma-firmware`'s geometry. Offline update screens
+  at package build with `Suno-firmware`'s geometry. Offline update screens
   (`plymouth change-mode --updates` and friends) show Plymouth's title,
   "Do not turn off your computer" and a progress bar with its percentage under
   the wordmark.
 
-  `luma-firmware`, which keeps the vendor logo for the whole boot with Luma's
+  `Suno-firmware`, which keeps the vendor logo for the whole boot with Suno's
   loader and a bottom wordmark, stays packaged and complete for administrators
   who select it. Its images are rendered from the brand SVGs at package build
   by `scripts/boot/render-firmware-theme.py`, at the pixel size Plymouth draws
   them; `tests/smoke/boot-firmware-theme.sh` checks the render is reproducible
   and correctly sized.
 
-  `luma-loading` remains packaged, and handhelds, which have no firmware logo
-  to inherit, keep `luma-loading-handheld`: mobile composition writes its own
+  `Suno-loading` remains packaged, and handhelds, which have no firmware logo
+  to inherit, keep `Suno-loading-handheld`: mobile composition writes its own
   image-owned `plymouthd.conf` selecting it. Both keep Plymouth's standard
   detail view and native exceptional prompts available for diagnostics and
   recovery.
@@ -90,7 +90,7 @@ does not depend on display-width guessing or per-user settings.
 that the running system is OSTree-booted and that the Atomic-generated
 configuration consumes it. It refuses mutable Workstation systems, whose
 Fedora-generated GRUB configuration remains byte-for-byte authoritative. On
-Atomic systems it retains the original as `grub.cfg.pre-luma-advanced` before
+Atomic systems it retains the original as `grub.cfg.pre-Suno-advanced` before
 replacing only the generated file's dynamic `blscfg` call with a source
 statement; BLS remains live and authoritative. It deliberately does not run
 `grub2-mkconfig`, which
@@ -103,12 +103,12 @@ runtime mutation.
 
 Image-built machines receive `/etc/plymouth/plymouthd.conf` from the image,
 and OSTree's three-way `/etc` merge replaces it on update for as long as it is
-unmodified. Machines provisioned before the image pipeline had Luma's setting
+unmodified. Machines provisioned before the image pipeline had Suno's setting
 written over Fedora's file, so to OSTree it is a local edit and would be kept
-forever. For those, `luma-boot-theme` ships the current desktop setting and
+forever. For those, `Suno-boot-theme` ships the current desktop setting and
 the SHA-256 of every earlier one (`plymouthd.conf.previous`), and the static
-one-shot `luma-boot-splash-migrate.service` compares them early in each boot:
-an exact match is still Luma's own and is replaced atomically with the current
+one-shot `Suno-boot-splash-migrate.service` compares them early in each boot:
+an exact match is still Suno's own and is replaced atomically with the current
 file; anything else -- an administrator's edit, a handheld's setting, a link,
 no file -- is left alone. It is idempotent and has nothing to do once the file
 is current. When `config/boot/plymouthd.conf` changes again, append the
@@ -116,14 +116,14 @@ outgoing digest to `plymouthd.conf.previous`; the smoke test fails if any
 version in history is neither current nor listed.
 
 Each default is applied at most once: the helper records the default it has
-reconciled the machine with in `/etc/plymouth/.luma-boot-splash-default`, so
-an administrator who later picks an earlier Luma setting again keeps it.
+reconciled the machine with in `/etc/plymouth/.Suno-boot-splash-default`, so
+an administrator who later picks an earlier Suno setting again keeps it.
 
 The splash itself is drawn from the initramfs. Image-built initramfs images
 carry the image's setting. On machines with local initramfs regeneration
 (`rpm-ostree initramfs --enable`), rpm-ostree builds the next deployment's
 initramfs from the running system's `/etc`, before the new deployment's helper
-has run; the `46luma-boot-splash` dracut module asks the helper
+has run; the `46Suno-boot-splash` dracut module asks the helper
 (`--check`) at that point and, where the file is about to be moved, gives the
 initramfs the current default and its theme. The first boot of the update
 already shows the new splash.

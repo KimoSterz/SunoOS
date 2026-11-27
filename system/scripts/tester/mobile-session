@@ -1,12 +1,12 @@
 #!/bin/sh
 # SPDX-License-Identifier: Apache-2.0
 set -eu
-export LUMA_TESTER_DYNAMIC_MODES=1
-export LUMA_DEVICE_CLASS=handheld LUMA_PRESENTATION_MODE=fullscreen-mobile LUMA_INPUT_MODE=touch
+export SUNO_TESTER_DYNAMIC_MODES=1
+export SUNO_DEVICE_CLASS=handheld SUNO_PRESENTATION_MODE=fullscreen-mobile SUNO_INPUT_MODE=touch
 export XDG_CURRENT_DESKTOP=Phosh XDG_SESSION_DESKTOP=phosh XDG_SESSION_TYPE=wayland
-export XDG_DATA_DIRS=/opt/luma/phosh/share:/usr/local/share:/usr/share
-export XDG_CONFIG_DIRS=/etc/xdg:/opt/luma/phosh/etc/xdg
-export GI_TYPELIB_PATH=/opt/luma/phosh/lib64/girepository-1.0
+export XDG_DATA_DIRS=/opt/Suno/phosh/share:/usr/local/share:/usr/share
+export XDG_CONFIG_DIRS=/etc/xdg:/opt/Suno/phosh/etc/xdg
+export GI_TYPELIB_PATH=/opt/Suno/phosh/lib64/girepository-1.0
 # Phosh's text-input surface uses the compositor's native input method. The
 # common desktop base also carries IBus; don't route phone fields through it.
 export GTK_IM_MODULE=wayland
@@ -24,4 +24,4 @@ if [ -z "${WLR_RENDERER:-}" ]; then
         esac
     done
 fi
-exec /opt/luma/phosh/bin/phosh-session
+exec /opt/Suno/phosh/bin/phosh-session

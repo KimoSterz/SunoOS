@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 // The per-app mixer's model (0350, 0360): available only with
-// org.projectluma.AudioDevices1 version 3, its meters run only while a view
+// org.projectSuno.AudioDevices1 version 3, its meters run only while a view
 // watches them, and the service's level meters never count as an app using
 // the microphone. The Sound page itself is sound-page-policy.js.
 // Run: gjs -m app-mixer-policy.js js/ui/status/volume.js js/ui/quickSettings.js \
-//   js/ui/panel.js js/ui/lumaPresentation/fillSlider.js
+//   js/ui/panel.js js/ui/SunoPresentation/fillSlider.js
 // (node app-mixer-policy.js ... works too).
 const gjs = typeof globalThis.ARGV !== 'undefined';
 const args = gjs ? globalThis.ARGV : process.argv.slice(2);
@@ -62,13 +62,13 @@ assert(/_input\?\.getRecordingOutputs\?\.\(\)/.test(panel),
     'the status well names recording apps only');
 
 // System sounds and the shared level.
-assert(/const SYSTEM_SOUNDS_ICON = 'lumaui-bell-symbolic';/.test(volume), 'System sounds uses the bell');
+assert(/const SYSTEM_SOUNDS_ICON = 'SunoUI-bell-symbolic';/.test(volume), 'System sounds uses the bell');
 assert(/'meter': GObject\.ParamSpec\.double/.test(fillSlider), 'FillSlider draws a meter');
-assert(/has_style_class_name\('lumaui-muted-level'\)/.test(fillSlider), 'FillSlider draws muted quietly');
+assert(/has_style_class_name\('SunoUI-muted-level'\)/.test(fillSlider), 'FillSlider draws muted quietly');
 // A page's settings link is pinned under the scrolled list.
 assert(/_pinPageLink\(menu\) \{/.test(quickSettings) && /this\._pinPageLink\(menu\);/.test(quickSettings) &&
     /this\._pinPageLink\(null\);/.test(quickSettings), 'a page pins its settings link while open');
-assert(/\(menu\._lumaPlainPage \? tallest : Math\.min\(420, tallest\)\) - foot/.test(quickSettings),
+assert(/\(menu\._SunoPlainPage \? tallest : Math\.min\(420, tallest\)\) - foot/.test(quickSettings),
     'a list page stops at 420 px; a plain page may use the work area');
 
 print('app-mixer-policy: PASS');

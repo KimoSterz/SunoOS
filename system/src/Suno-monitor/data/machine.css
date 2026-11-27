@@ -1,0 +1,39 @@
+/* Monitor roles consume App Kit colors/chrome; no global toolkit overrides. */
+.Suno-monitor .monitor-table { background: transparent; font-size: 13px; font-weight: 550; }
+.Suno-monitor .monitor-table header { min-height: 26px; }
+.Suno-monitor .monitor-table row { min-height: 29px; }
+.Suno-monitor .monitor-table row:nth-child(even) { background: alpha(@Suno_ink, .03); }
+.Suno-monitor .monitor-table row:selected { background: @Suno_selected; }
+.Suno-monitor .monitor-table cell { padding: 0 8px; }
+.Suno-monitor .monitor-table label { font-feature-settings: 'tnum'; }
+.Suno-monitor .monitor-footer { border-top: 1px solid @Suno_border; padding: 10px 12px; }
+.Suno-monitor .monitor-graph { background: @Suno_fill; border: 1px solid @Suno_border; border-radius: 6px; }
+.Suno-monitor .monitor-figure { min-height: 58px; border-left: 1px solid @Suno_border; padding: 0 16px; }
+.Suno-monitor .monitor-figure-label { color: @Suno_muted; font-size: 11px; font-weight: 700; letter-spacing: 1px; }
+.Suno-monitor .monitor-figure-value { font-size: 19px; font-weight: 650; font-feature-settings: 'tnum'; }
+.Suno-monitor .monitor-cores { border-top: 1px solid @Suno_border; padding-top: 8px; }
+.Suno-monitor .monitor-core-number { font-size: 9px; color: @Suno_muted; }
+.Suno-monitor .monitor-cores progressbar trough { min-height: 6px; background: @Suno_border; }
+.Suno-monitor .monitor-cores progressbar progress { min-height: 6px; background: @Suno_ink; }
+.Suno-monitor.compact .monitor-figure { padding: 0 8px; }
+.Suno-monitor.compact .monitor-figure-value { font-size: 15px; }
+
+.Suno-monitor .monitor-table header button { min-height: 26px; padding: 0 8px; font-size: 11px; font-weight: 700; letter-spacing: 0.88px; }
+
+/* This machine: one row per capability, same weights and tints as the table. */
+.Suno-monitor .monitor-capability { padding: 11px 14px; }
+.Suno-monitor .monitor-capabilities > box:nth-child(even) { background: alpha(@Suno_ink, .03); }
+.Suno-monitor .monitor-capability-title { font-size: 13px; font-weight: 650; }
+.Suno-monitor .monitor-capability-promise { font-size: 12px; color: @Suno_muted; }
+.Suno-monitor .monitor-capability-note { font-size: 12px; padding-top: 2px; }
+.Suno-monitor .monitor-capability-broken { color: @Suno_destructive; }
+.Suno-monitor .monitor-capability-unproven { color: @Suno_amber; }
+.Suno-monitor .monitor-state { font-size: 11px; font-weight: 700; letter-spacing: 0.88px; min-width: 132px; }
+.Suno-monitor .monitor-state-working { color: @Suno_green; }
+.Suno-monitor .monitor-state-broken { color: @Suno_destructive; }
+.Suno-monitor .monitor-state-unproven { color: @Suno_amber; }
+/* Nothing is wrong with a capability this machine does not have, so it is the
+   quietest thing on screen rather than another colour competing for attention. */
+.Suno-monitor .monitor-state-absent { color: @Suno_muted; font-weight: 550; letter-spacing: 0; }
+.Suno-monitor.compact .monitor-capability { padding: 10px 10px; }
+.Suno-monitor.compact .monitor-state { min-width: 0; }

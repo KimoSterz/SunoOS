@@ -1,4 +1,0 @@
-#!/usr/bin/python3
-# SPDX-License-Identifier: GPL-3.0-or-later
-from luma_android.waydroid_hardware import main
-raise SystemExit(main())

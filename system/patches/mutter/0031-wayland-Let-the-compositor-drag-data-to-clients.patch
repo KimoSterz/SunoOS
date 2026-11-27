@@ -1,5 +1,5 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Project Luma <engineering@projectluma.org>
+From: Project Suno <engineering@projectSuno.org>
 Date: Thu, 19 Nov 2026 14:00:00 -0600
 Subject: [PATCH] wayland: Let the compositor drag data to clients
 
@@ -53,7 +53,7 @@ index 000000000..88a0a1743
 +++ b/src/meta/meta-data-drag.h
 @@ -0,0 +1,100 @@
 +/*
-+ * Copyright (C) 2026 Project Luma
++ * Copyright (C) 2026 Project Suno
 + *
 + * This program is free software; you can redistribute it and/or
 + * modify it under the terms of the GNU General Public License as
@@ -159,7 +159,7 @@ index 000000000..e37df0b31
 +++ b/src/wayland/meta-data-drag-private.h
 @@ -0,0 +1,43 @@
 +/*
-+ * Copyright (C) 2026 Project Luma
++ * Copyright (C) 2026 Project Suno
 + *
 + * This program is free software; you can redistribute it and/or
 + * modify it under the terms of the GNU General Public License as
@@ -208,7 +208,7 @@ index 000000000..d1920efde
 +++ b/src/wayland/meta-data-drag.c
 @@ -0,0 +1,941 @@
 +/*
-+ * Copyright (C) 2026 Project Luma
++ * Copyright (C) 2026 Project Suno
 + *
 + * This program is free software; you can redistribute it and/or
 + * modify it under the terms of the GNU General Public License as

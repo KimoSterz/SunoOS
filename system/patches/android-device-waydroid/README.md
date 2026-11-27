@@ -3,7 +3,7 @@
 This patch applies to `device/waydroid/waydroid` `lineage-20` at commit
 `2234f4b75220be7065546a2a23f9a4091b8c77d4`.
 
-It declares `ro.luma.host_window_chrome=true` in the Prairie desktop/tablet
+It declares `ro.Suno.host_window_chrome=true` in the Prairie desktop/tablet
 Waydroid product so Android framework and SystemUI omit their internal
 freeform captions. The property is read-only and baked into the image; it is
 not a per-session toggle or boot-time script.
@@ -21,7 +21,7 @@ shared storage. It also lets the software codecs set a thread's scheduling
 policy: Mesa does that while mapping a decoded frame, and the codec seccomp
 filter killed the process on the first video frame.
 
-`0003` ships `LumaInputMethod` (hardware/waydroid `0022`). At boot it selects
+`0003` ships `SunoInputMethod` (hardware/waydroid `0022`). At boot it selects
 itself in place of Android's keyboard where the composer offers host text input
 (unless the person chose another keyboard), and gives Android's keyboard back
 where it does not, such as a nested compositor without `zwp_text_input_v3`.
@@ -29,16 +29,16 @@ where it does not, such as a nested compositor without `zwp_text_input_v3`.
 ## Patch order
 
 1. `0001-prairie-host-window-product-property.patch`
-2. `0002-luma-codec-services-match-the-image.patch`
-3. `0003-luma-input-method.patch`
+2. `0002-Suno-codec-services-match-the-image.patch`
+3. `0003-Suno-input-method.patch`
 
 `0004` applies the host's presentation as Android's forced display density.
 `ro.sf.lcd_density` is set once per boot, from the presentation Android boots
 into; when the host presentation changes afterwards (a Fold posture, phone to
-tablet, docking), luma-android publishes `persist.luma.forced_density` and an
-init trigger runs `luma-forced-density` as system, which sets or resets
+tablet, docking), Suno-android publishes `persist.Suno.forced_density` and an
+init trigger runs `Suno-forced-density` as system, which sets or resets
 WindowManager's forced density. It replaces only an override it applied
-(`persist.luma.density_override`), so a display size chosen in Android's
+(`persist.Suno.density_override`), so a display size chosen in Android's
 settings is kept.
 
 `0005` ships microG (Apache-2.0) as privileged system apps: GmsCore
@@ -59,12 +59,12 @@ microG works without setup: `/system/etc/com.google.android.gms/settings.xml`
 turns on device registration, cloud messaging, device attestation (which also
 gates Play Integrity) and the companion's licensing, billing, asset delivery
 and split installs; every runtime permission microG requests is a default
-grant; `luma-microg-defaults` runs once to allow its overlay and
+grant; `Suno-microg-defaults` runs once to allow its overlay and
 cross-profile app-ops, and grants the runtime permissions on a device whose
 `/data` predates microG. Users can change each in microG's settings.
 
 `0006` installs `/vendor/etc/task_profiles.json` for a cgroup v2-only host.
-Waydroid on Luma gives Android one delegated cgroup2 hierarchy; the v1 cpuset,
+Waydroid on Suno gives Android one delegated cgroup2 hierarchy; the v1 cpuset,
 schedtune, blkio, cpu and memory controllers in Android's `cgroups.json` cannot
 be mounted (EPERM in a cgroup namespace, no v1 cpuset filesystem, no
 schedtune), so the 36 profiles that join them, set their attributes or use the

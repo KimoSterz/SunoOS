@@ -1,7 +1,7 @@
 ---
 type: fix
 component: Android apps
-packages: [luma-android-runtime]
+packages: [Suno-android-runtime]
 highlight: false
 ---
 Summary: Android apps fill a TV screen at TV size

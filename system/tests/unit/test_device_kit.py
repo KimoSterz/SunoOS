@@ -27,7 +27,7 @@ class KitManifest(unittest.TestCase):
         doc = kit.kit_document(device, names, "20261107.1")
         self.assertEqual(doc["device"], "fairphone/fp6")
         self.assertEqual(doc["compatible"], ["fairphone,fp6"])
-        self.assertEqual(doc["repo"]["id"], "luma-fairphone-fp6")
+        self.assertEqual(doc["repo"]["id"], "Suno-fairphone-fp6")
         self.assertIn("libcxx", doc["packages"])
         with self.assertRaises(kit.KitError):
             kit.kit_document(device, names[1:], "1")
@@ -60,7 +60,7 @@ class KitManifest(unittest.TestCase):
         self.assertIn(f"root_uuid={kit.ROOT_UUID}", text)
         self.assertIn(f"boot_uuid={kit.BOOT_UUID}", text)
         self.assertIn("start=256, size=480MiB", text)
-        self.assertEqual((kit.LUMABOOT_OFFSET, kit.LUMABOOT_SIZE), (256 * 4096, 480 << 20))
+        self.assertEqual((kit.SUNOBOOT_OFFSET, kit.SUNOBOOT_SIZE), (256 * 4096, 480 << 20))
         self.assertNotIn("wireplumber", text)
 
     def test_userdata_image_grows_its_root_online(self):
@@ -69,21 +69,21 @@ class KitManifest(unittest.TestCase):
         unit = "ExecStart=/usr/lib/systemd/systemd-growfs /sysroot"
         self.assertIn(unit, text)
         self.assertIn(unit, check)
-        self.assertIn("Before=local-fs.target luma-device-layer.service shutdown.target", text)
-        self.assertIn('local-fs.target.wants/luma-grow-root.service', text)
+        self.assertIn("Before=local-fs.target Suno-device-layer.service shutdown.target", text)
+        self.assertIn('local-fs.target.wants/Suno-grow-root.service', text)
         self.assertIn(': >"$deploy/etc/systemd/system/bootloader-update.service"', text)
         self.assertIn("sed -i 's/^enabled=1$/enabled=0/' \"$repo_file\"", text)
-        self.assertIn("a non-Luma rpm repository is enabled", check)
+        self.assertIn("a non-Suno rpm repository is enabled", check)
 
     def test_login_screen_keeps_the_handheld_power_defaults(self):
         def keys(name):
             lines = (ROOT / "config/mobile" / name).read_text().splitlines()
             return {line for line in lines if line.startswith(("power-button-action=", "sleep-inactive-", "idle-delay=", "color-scheme=", "power-static="))}
-        greeter = keys("luma-greeter-handheld.dconf")
+        greeter = keys("Suno-greeter-handheld.dconf")
         self.assertEqual(len(greeter), 6)
-        self.assertEqual(greeter, keys("luma-shell-handheld.dconf"))
-        spec = (ROOT / "packaging/rpm/luma-fp6-platform.spec").read_text()
-        self.assertIn("%{_sysconfdir}/dconf/db/gdm.d/10-luma-handheld", spec)
+        self.assertEqual(greeter, keys("Suno-shell-handheld.dconf"))
+        spec = (ROOT / "packaging/rpm/Suno-fp6-platform.spec").read_text()
+        self.assertIn("%{_sysconfdir}/dconf/db/gdm.d/10-Suno-handheld", spec)
 
 
 class SparseImages(unittest.TestCase):

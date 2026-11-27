@@ -6,11 +6,11 @@ switch = true
 source_profile = true
 
 # One-shot physical-compositor keyboard comparison. The live config is restored
-# to Luma immediately after greetd starts this authenticated initial session.
+# to Suno immediately after greetd starts this authenticated initial session.
 [initial_session]
-command = "/usr/local/bin/luma-wkeys-direct-session"
-user = "luma"
+command = "/usr/local/bin/Suno-wkeys-direct-session"
+user = "Suno"
 
 [default_session]
-command = "agreety --cmd /usr/local/bin/luma-shell-session"
+command = "agreety --cmd /usr/local/bin/Suno-shell-session"
 user = "greetd"

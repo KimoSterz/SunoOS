@@ -1,0 +1,206 @@
+/* SPDX-License-Identifier: Apache-2.0
+ *
+ * Open with. Three bands: a fixed head, a scrolling body, a fixed foot.
+ *
+ * Colour comes from the appkit tokens, so the dark treatment is not a second
+ * copy of this sheet with different numbers in it. Two values could not come
+ * from the old token set and had to be added to it: Suno_accent_ink and
+ * Suno_accent_soft. Mixing the accent toward black is what makes accent text
+ * read on a light ground and what makes it vanish on a dark one, so the dark
+ * treatment lifts toward white instead. That is a system-wide fact about the
+ * palette, not a local fix, which is why it lives in the tokens.
+ */
+
+.ow-dialog {
+  background-color: @Suno_content;
+  border-radius: 14px;
+}
+
+/* ── Head ─────────────────────────────────────────────────────────────── */
+
+.ow-head {
+  padding: 13px 15px;
+  border-bottom: 1px solid @Suno_line_faint;
+}
+.ow-file-name { font-size: 13.5px; font-weight: 600; color: @Suno_ink; }
+.ow-file-kind { font-size: 11.5px; color: @Suno_muted; }
+
+.ow-search {
+  min-height: 32px;
+  padding: 0 11px;
+  border-radius: 9px;
+  border: 1px solid @Suno_line;
+  background-color: @Suno_island;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: @Suno_ink;
+}
+.ow-search > text > placeholder { color: @Suno_faint; }
+/* The toolkit's default focus ring here is amber, which reads as a warning on
+ * a field that is merely focused. Focus is the accent, as everywhere else. */
+.ow-search:focus-within {
+  border-color: @Suno_accent;
+  outline: 2px solid alpha(@Suno_accent, 0.45);
+  outline-offset: -1px;
+}
+.ow-list:focus-visible, .ow-row:focus-visible {
+  outline: 2px solid @Suno_accent;
+  outline-offset: -2px;
+}
+
+.ow-close {
+  min-width: 28px; min-height: 28px;
+  padding: 0;
+  border-radius: 8px;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  color: @Suno_muted;
+}
+.ow-close:hover { background-color: @Suno_hover; }
+
+/* ── Body ─────────────────────────────────────────────────────────────── */
+
+.ow-body { padding: 6px 10px 12px; }
+.ow-caption {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  color: @Suno_faint;
+  padding: 11px 10px 5px;
+}
+.ow-list { background: none; }
+
+.ow-row {
+  padding: 7px 10px;
+  border-radius: 10px;
+  min-height: 0;
+}
+.ow-row:hover { background-color: @Suno_hover; }
+.ow-name { font-size: 13.5px; font-weight: 600; color: @Suno_ink; }
+.ow-detail { font-size: 11.5px; color: @Suno_muted; margin-top: 1px; }
+
+/* A handful of destinations, the same species as a sidebar: a solid accent
+ * fill is right here. This is not the hover-plus-inset-bar treatment that
+ * content lists use, and the two must not drift into each other. */
+.ow-row:selected { background-color: @Suno_accent; }
+.ow-row:selected .ow-name { color: #ffffff; }
+.ow-row:selected .ow-detail { color: alpha(#ffffff, 0.82); }
+
+.ow-chip {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  border-radius: 5px;
+  padding: 2px 6px;
+  color: @Suno_accent_ink;
+  background-color: @Suno_accent_soft;
+}
+.ow-row:selected .ow-chip {
+  color: #ffffff;
+  background-color: alpha(#ffffff, 0.24);
+}
+
+.ow-empty {
+  padding: 28px 10px;
+  font-size: 12.5px;
+  color: @Suno_muted;
+}
+
+/* ── Foot ─────────────────────────────────────────────────────────────── */
+
+.ow-foot {
+  padding: 12px 15px;
+  border-top: 1px solid @Suno_line_faint;
+}
+
+/* The escape hatch, not a third decision: a link, not a button. */
+.ow-browse {
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: @Suno_accent_link;
+}
+.ow-browse:hover { color: @Suno_accent_link; text-decoration: underline; }
+
+.ow-secondary, .ow-primary {
+  padding: 8px 16px;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.ow-secondary {
+  background-color: @Suno_island;
+  border: 1px solid @Suno_line;
+  color: @Suno_ink;
+  box-shadow: none;
+}
+.ow-secondary:hover { background-color: @Suno_hover; }
+
+/* The low-commitment action is the accent one. Swapping these is how people
+ * end up with defaults they never chose. */
+.ow-primary {
+  background-color: @Suno_accent;
+  color: #ffffff;
+  border: 0;
+  box-shadow: none;
+}
+.ow-primary:hover { background-color: @Suno_primary_hover; }
+.ow-primary:disabled, .ow-secondary:disabled { opacity: 0.5; }
+
+/* ── Share sound (capture_picker.py) ──────────────────────────────────────
+ * Suno Share's card (the Shell's Suno-share.css): the asking app with the
+ * sharing badge, a centred question and what happens, the choices on one
+ * rounded block, and an equal Cancel and Share pair. Colour is the kit's
+ * tokens; violet is Share's sharing colour, nothing else uses it. */
+@define-color ac_sharing #7d5cf0;
+
+window.ac-dialog { background-color: @Suno_content; border-radius: 24px; }
+.ac-card { padding: 26px 24px 20px; }
+
+.ac-who { margin-bottom: 14px; }
+/* A 26 violet circle with the sound glyph, ringed 3 in the card's fill. */
+.ac-badge {
+  min-width: 20px; min-height: 20px; margin: 0 -7px -7px 0;
+  border-radius: 999px; border: 3px solid @Suno_content;
+  background-color: @ac_sharing; color: #ffffff;
+}
+.ac-badge image { -gtk-icon-size: 12px; color: #ffffff; }
+
+.ac-title { font-size: 17px; font-weight: 750; letter-spacing: -0.31px; color: @Suno_ink; }
+.ac-body { margin-top: 6px; padding: 0 16px; font-size: 13.5px; color: @Suno_muted; }
+
+/* The choices: rounded blocks of rows on the control fill, as Share's options. */
+.ac-scroll { margin-top: 18px; }
+list.ac-list { padding: 4px; border-radius: 14px; background-color: @Suno_hover; }
+list.ac-list > row.ac-row {
+  min-height: 40px; padding: 7px 10px; border-radius: 10px;
+  background-color: transparent; color: @Suno_ink;
+}
+list.ac-list > row.ac-row:hover { background-color: @Suno_hover; }
+list.ac-list > row.ac-row:focus-visible { outline: 2px solid @Suno_focus_ring; outline-offset: -2px; }
+.ac-name { font-size: 13px; font-weight: 650; color: @Suno_ink; }
+.ac-line { margin-top: 1px; font-size: 11.5px; color: @Suno_muted; }
+.ac-all-tile { min-width: 28px; min-height: 28px; border-radius: 8px; background-color: @Suno_hover; color: @Suno_ink_secondary; }
+.ac-all-tile image { -gtk-icon-size: 16px; }
+/* SunoUI's meter, a short mono bar beside the name; SunoUI's checkbox ends the row. */
+box.SunoUI-audio-meter.ac-meter { margin-right: 2px; }
+box.SunoUI-audio-meter.ac-meter > .SunoUI-meter-track { color: @Suno_line; }
+.ac-caption { margin: 14px 10px 6px; font-size: 11.5px; font-weight: 650; color: @Suno_muted; }
+.ac-empty { margin: 4px 10px 0; font-size: 12.5px; color: @Suno_muted; }
+
+/* Suno Share's pair: two equal 42 buttons; Share is ink on the card. */
+.ac-actions { margin-top: 18px; }
+.ac-actions > button {
+  min-height: 42px; padding: 0; border-radius: 12px; border: none; box-shadow: none;
+  font-size: 13.5px; font-weight: 700;
+}
+.ac-actions > button.ac-cancel { background-color: @Suno_hover; color: @Suno_ink; }
+.ac-actions > button.ac-cancel:hover { background-color: alpha(@Suno_ink, 0.11); }
+.ac-actions > button.ac-share { background-color: @Suno_ink; color: @Suno_content; }
+.ac-actions > button.ac-share:hover { background-color: alpha(@Suno_ink, 0.88); }
+.ac-actions > button.ac-share:disabled { background-color: alpha(@Suno_ink, 0.40); color: @Suno_content; }
+.ac-actions > button:focus-visible { outline: 2px solid @Suno_focus_ring; outline-offset: 2px; }

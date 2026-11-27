@@ -14,31 +14,31 @@ index 437e5f1..382c0a8 100644
 @@ -385,13 +385,13 @@
  /* Native Grid presentation. Selection and focus decorate the real GtkGridView
   * child; file models, thumbnails, captions, and zoom remain Nautilus-owned. */
- .luma-files-window .nautilus-grid-view gridview {
+ .Suno-files-window .nautilus-grid-view gridview {
 -  padding: 12px;
 -  border-spacing: 8px;
 +  padding: 2px 20px 96px;
 +  border-spacing: 6px 4px;
  }
  
- .luma-files-window .nautilus-grid-view.phone-layout gridview {
+ .Suno-files-window .nautilus-grid-view.phone-layout gridview {
 -  padding-left: 10px;
 -  padding-right: 10px;
 +  padding-left: 8px;
 +  padding-right: 8px;
  }
  
- .luma-files-window .nautilus-grid-view gridview > child,
+ .Suno-files-window .nautilus-grid-view gridview > child,
 @@ -399,6 +399,10 @@
    border-radius: 10px;
  }
  
-+.luma-files-window .nautilus-grid-view .nautilus-view-cell {
++.Suno-files-window .nautilus-grid-view .nautilus-view-cell {
 +  padding: 0;
 +}
 +
- .luma-files-window .nautilus-grid-view gridview > child.activatable:hover {
-   background-color: @luma_hover;
+ .Suno-files-window .nautilus-grid-view gridview > child.activatable:hover {
+   background-color: @Suno_hover;
  }
 -- 
 2.55.0

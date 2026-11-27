@@ -1,10 +1,10 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Project Luma <engineering@projectluma.org>
+From: Project Suno <engineering@projectSuno.org>
 Date: Thu, 17 Sep 2026 21:00:00 -0500
 Subject: [PATCH] compositor: Cache the blurred backdrop and repaint only what
  changed
 
-In Frost and Glass every Luma application window asks for a background
+In Frost and Glass every Suno application window asks for a background
 blur. Each time anything was drawn inside a blurred window's sampled area
 (another window dragged over or beside it, a cursor-sized client update),
 the redraw was widened to that window's whole sampled area: every window
@@ -26,7 +26,7 @@ longer allocates per frame.
 The cache is rebuilt from a full repaint whenever the surface moves,
 resizes, changes view scale or blur radius, or was culled on a frame that
 changed its backdrop. Offscreen paints (screenshots, casts, effects) keep
-the previous path unchanged. LUMA_MUTTER_BLUR_CACHE=0 turns the cache off
+the previous path unchanged. SUNO_MUTTER_BLUR_CACHE=0 turns the cache off
 for A/B measurements. MUTTER_DEBUG=render logs each blurred paint (cached or
 rebuilt, fresh pixels).
 ---
@@ -195,9 +195,9 @@ index 1a81bdc..1dfc3b0 100644
 +
 +  if (G_UNLIKELY (enabled < 0))
 +    {
-+      /* LUMA_MUTTER_BLUR_CACHE=0 restores the uncached path, for A/B frame
++      /* SUNO_MUTTER_BLUR_CACHE=0 restores the uncached path, for A/B frame
 +       * time measurements and as a field kill switch. */
-+      enabled = g_strcmp0 (g_getenv ("LUMA_MUTTER_BLUR_CACHE"), "0") != 0;
++      enabled = g_strcmp0 (g_getenv ("SUNO_MUTTER_BLUR_CACHE"), "0") != 0;
 +      if (!enabled)
 +        g_message ("Background blur backdrop cache disabled by environment");
 +    }
@@ -543,11 +543,11 @@ index 1a81bdc..1dfc3b0 100644
 +  "  if (cogl_color_out.a > 0.0)                                             \n"
 +  "    {                                                                     \n"
 +  "      vec3 color = cogl_color_out.rgb / cogl_color_out.a;                 \n"
-+  "      float luma = dot (color, vec3 (0.299, 0.587, 0.114));               \n"
++  "      float Suno = dot (color, vec3 (0.299, 0.587, 0.114));               \n"
 +  "      float grain =                                                     \n"
 +  "        blur_framebuffer_random_noise (floor (gl_FragCoord.xy)) - 0.5;   \n"
 +  "                                                                          \n"
-+  "      color = mix (vec3 (luma), color, blur_framebuffer_saturation);      \n"
++  "      color = mix (vec3 (Suno), color, blur_framebuffer_saturation);      \n"
 +  "      color += vec3 (grain * blur_framebuffer_noise);                     \n"
 +  "      color = clamp (color, vec3 (0.0), vec3 (1.0));                      \n"
 +  "                                                                          \n"

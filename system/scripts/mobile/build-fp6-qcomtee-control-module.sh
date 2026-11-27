@@ -14,10 +14,10 @@ output_dir=${2:?missing output directory}
 source_tree=$build_root/lab/root/work/linux
 work_tree=$build_root/lab/root/work/linux-qcomtee-control-v18
 overlay=$repo_root/src/fp6-fingerprint-qcomtee/qcomtee-control.c
-patch_file=$repo_root/patches/linux-qcomtee-control-v18/0001-qcomtee-add-bounded-luma-control-identity-hook.patch
-kernel_release=7.1.2-luma-fp-cma1
-localversion=-luma-fp-cma1
-jobs=${LUMA_KERNEL_BUILD_JOBS:-8}
+patch_file=$repo_root/patches/linux-qcomtee-control-v18/0001-qcomtee-add-bounded-Suno-control-identity-hook.patch
+kernel_release=7.1.2-Suno-fp-cma1
+localversion=-Suno-fp-cma1
+jobs=${SUNO_KERNEL_BUILD_JOBS:-8}
 expected_config_sha=a403b3cb247d3f2ce358f8debcc3b93d3c1949813488da8e12ac81540cee519c
 expected_kernel_sha=101fafec6d1d661b1b159d69e43c14d1289ca03f0944af4d5593b10662524572
 expected_symvers_sha=95305a0ce0ee9993a71ccd5075e38ae7b6de942a9adbf90c8d9a81f3d606aeea
@@ -29,8 +29,8 @@ expected_patch_sha=24d490ef7ac4bf53fd660efa7bc89d50c42993e47b2a082788e3bd55f7206
 die() { printf 'error: %s\n' "$*" >&2; exit 1; }
 hash() { sha256sum "$1" | awk '{print $1}'; }
 
-case "$jobs" in ''|*[!0-9]*) die 'LUMA_KERNEL_BUILD_JOBS must be numeric' ;; esac
-[ "$jobs" -ge 1 ] || die 'LUMA_KERNEL_BUILD_JOBS must be positive'
+case "$jobs" in ''|*[!0-9]*) die 'SUNO_KERNEL_BUILD_JOBS must be numeric' ;; esac
+[ "$jobs" -ge 1 ] || die 'SUNO_KERNEL_BUILD_JOBS must be positive'
 [ "$(id -u)" -eq 0 ] || die 'run as root in the isolated builder'
 [ "$(uname -s)" = Linux ] && [ "$(uname -m)" = aarch64 ] ||
   die 'builder must be Linux/aarch64'
@@ -84,7 +84,7 @@ vermagic=$(modinfo -F vermagic "$output_dir/qcomtee-control.ko")
   die 'module signature algorithm differs'
 
 {
-  printf 'LUMA_FP6_QCOMTEE_CONTROL_BUILD_VERSION=18\n'
+  printf 'SUNO_FP6_QCOMTEE_CONTROL_BUILD_VERSION=18\n'
   printf 'KERNEL_RELEASE=%s\n' "$kernel_release"
   printf 'BASE_CONFIG_SHA256=%s\n' "$expected_config_sha"
   printf 'BASE_KERNEL_SHA256=%s\n' "$expected_kernel_sha"

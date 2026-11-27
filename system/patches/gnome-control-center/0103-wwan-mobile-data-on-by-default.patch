@@ -1,5 +1,5 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Project Luma <engineering@projectluma.org>
+From: Project Suno <engineering@projectSuno.org>
 Date: Fri, 13 Nov 2026 22:22:02 -0600
 Subject: [PATCH] Mobile Network: mobile data is on until it is turned off
 
@@ -8,7 +8,7 @@ said off, while the phone's own cellular link treats that state as on
 and connects. The switch now reports on in that state. Turning data off
 with no profile saves the carrier's first listed APN bound to the SIM
 with autoconnect off, marked as the switch's own (user data
-org.projectluma.mobile-data.switch-only), instead of asking for an APN
+org.projectSuno.mobile-data.switch-only), instead of asking for an APN
 first; the cellular link reads it as off. Turning data on again removes
 that profile, so the cellular link carries data again rather than
 NetworkManager activating an APN it did not choose. A profile saved from
@@ -32,7 +32,7 @@ index 30b12c0..f8576cf 100644
                  NM_SETTING_CONNECTION_UUID, uuid,
                  NM_SETTING_CONNECTION_TYPE, NM_SETTING_GSM_SETTING_NAME,
                  NULL);
-+  /* Luma: the APN is the person's, as the SIM's data switch is. A profile of
++  /* Suno: the APN is the person's, as the SIM's data switch is. A profile of
 +   * their own needs only NetworkManager's settings.modify.own, which a phone's
 +   * session holds; a system-wide one was refused there (Insufficient
 +   * privileges), so the Mobile Data switch could not be turned off. */
@@ -44,7 +44,7 @@ index 30b12c0..f8576cf 100644
  cc_wwan_data_init (CcWwanData *self)
  {
    self->home_only = TRUE;
-+  /* Luma: a SIM's mobile data is on until the person turns it off. Without a
++  /* Suno: a SIM's mobile data is on until the person turns it off. Without a
 +   * NetworkManager profile bound to the SIM the device's own cellular link
 +   * connects it, so the switch says on, and the first APN saved keeps it on. */
 +  self->data_enabled = TRUE;
@@ -55,12 +55,12 @@ index 30b12c0..f8576cf 100644
    return FALSE;
  }
  
-+/* Luma: on a phone the device's own cellular link carries mobile data while no
++/* Suno: on a phone the device's own cellular link carries mobile data while no
 + * profile bound to the SIM says otherwise. Turning data off saves a profile
 + * whose only job is that answer, marked here; turning data on again removes it
 + * rather than activate it, so NetworkManager does not take the data bearer over
 + * with an APN the link did not choose. A profile the person saved stays theirs. */
-+#define LUMA_SWITCH_ONLY_KEY "org.projectluma.mobile-data.switch-only"
++#define SUNO_SWITCH_ONLY_KEY "org.projectSuno.mobile-data.switch-only"
 +
 +void
 +cc_wwan_data_mark_switch_only (CcWwanData *self)
@@ -78,7 +78,7 @@ index 30b12c0..f8576cf 100644
 +      user = NM_SETTING_USER (nm_setting_user_new ());
 +      nm_connection_add_setting (connection, NM_SETTING (user));
 +    }
-+  nm_setting_user_set_data (user, LUMA_SWITCH_ONLY_KEY, "yes", NULL);
++  nm_setting_user_set_data (user, SUNO_SWITCH_ONLY_KEY, "yes", NULL);
 +}
 +
 +gboolean
@@ -93,7 +93,7 @@ index 30b12c0..f8576cf 100644
 +    return FALSE;
 +  remote = self->default_apn->remote_connection;
 +  user = NM_SETTING_USER (nm_connection_get_setting (NM_CONNECTION (remote), NM_TYPE_SETTING_USER));
-+  if (!user || g_strcmp0 (nm_setting_user_get_data (user, LUMA_SWITCH_ONLY_KEY), "yes") != 0)
++  if (!user || g_strcmp0 (nm_setting_user_get_data (user, SUNO_SWITCH_ONLY_KEY), "yes") != 0)
 +    return FALSE;
 +  nm_remote_connection_delete_async (remote, NULL, NULL, NULL);
 +  wwan_data_apn_reset (self->default_apn);
@@ -122,7 +122,7 @@ index 6644c45..cc2cf89 100644
  gboolean       cc_wwan_data_set_default_apn       (CcWwanData          *self,
                                                     CcWwanDataApn       *apn);
  CcWwanDataApn *cc_wwan_data_get_default_apn       (CcWwanData          *self);
-+/* Luma: a profile saved only to hold the Mobile Data switch off. */
++/* Suno: a profile saved only to hold the Mobile Data switch off. */
 +void           cc_wwan_data_mark_switch_only      (CcWwanData          *self);
 +gboolean       cc_wwan_data_forget_switch_only    (CcWwanData          *self);
  gboolean       cc_wwan_data_get_enabled           (CcWwanData          *self);
@@ -136,7 +136,7 @@ index 6fbbc6f..9dc2c96 100644
  
    active = adw_switch_row_get_active (data_row);
  
-+  /* Luma: on again after the switch alone turned data off: the cellular link
++  /* Suno: on again after the switch alone turned data off: the cellular link
 +   * carries it once that profile is gone. Off with nothing saved is marked. */
 +  if (data_row == self->data_enable_row && active && cc_wwan_data_forget_switch_only (self->wwan_data))
 +    return;
@@ -150,7 +150,7 @@ index 6fbbc6f..9dc2c96 100644
  
    if (cc_wwan_data_get_default_apn (self->wwan_data) == NULL)
      {
-+      /* Luma: data is on while no profile is bound to the SIM. Turning it off
++      /* Suno: data is on while no profile is bound to the SIM. Turning it off
 +       * binds the carrier's first listed APN with autoconnect off, so the
 +       * answer persists without asking for an APN to switch something off. */
 +      GListModel *apns = cc_wwan_data_get_apn_list (self->wwan_data);

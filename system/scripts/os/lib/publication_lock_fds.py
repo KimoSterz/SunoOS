@@ -52,7 +52,7 @@ def main():
     parser.add_argument('--channels', nargs='+', required=True)
     args = parser.parse_args()
     try:
-        result = validate(os.environ['LUMA_OS_PUBLICATION_LOCK_FDS'], args.root, args.channels)
+        result = validate(os.environ['SUNO_OS_PUBLICATION_LOCK_FDS'], args.root, args.channels)
     except (ValueError, KeyError, OSError) as error:
         sys.exit('invalid inherited publication locks: '+str(error))
     for channel, fd in result.items():

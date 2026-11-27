@@ -4,20 +4,20 @@
 # Start the unmodified QREL 16.95.0 Qualcomm IMS daemon in a disposable,
 # headless Android namespace.  The gate is intentionally observational: it
 # exposes Binder and QRTR, but no GPU, TEE, partition, eUICC, or block devices.
-# Luma's IMS services are restored with a fresh registration on every exit.
+# Suno's IMS services are restored with a fresh registration on every exit.
 
 set -Eeuo pipefail
 umask 077
 
 self=$(readlink -f "$0")
-property_shim=${LUMA_STOCK_IMS_PROPERTY_SHIM:-/tmp/luma-stock-ims/libluma-ims-properties.so}
-manager_shim=${LUMA_STOCK_IMS_MANAGER_SHIM:-/tmp/luma-stock-ims/libluma-ims-servicemanager-access.so}
-hwmanager_shim=${LUMA_STOCK_IMS_HWMANAGER_SHIM:-/tmp/luma-stock-ims/libluma-ims-hwservicemanager-access.so}
-socket_launcher=${LUMA_STOCK_IMS_SOCKET_LAUNCHER:-/tmp/luma-stock-ims/luma-android-ims-socket-launcher}
-hold_seconds=${LUMA_STOCK_IMS_HOLD_SECONDS:-20}
+property_shim=${SUNO_STOCK_IMS_PROPERTY_SHIM:-/tmp/Suno-stock-ims/libSuno-ims-properties.so}
+manager_shim=${SUNO_STOCK_IMS_MANAGER_SHIM:-/tmp/Suno-stock-ims/libSuno-ims-servicemanager-access.so}
+hwmanager_shim=${SUNO_STOCK_IMS_HWMANAGER_SHIM:-/tmp/Suno-stock-ims/libSuno-ims-hwservicemanager-access.so}
+socket_launcher=${SUNO_STOCK_IMS_SOCKET_LAUNCHER:-/tmp/Suno-stock-ims/Suno-android-ims-socket-launcher}
+hold_seconds=${SUNO_STOCK_IMS_HOLD_SECONDS:-20}
 
 expected_model='The Fairphone (Gen. 6)'
-expected_kernel=7.1.2-luma-fp-ims1
+expected_kernel=7.1.2-Suno-fp-ims1
 expected_imsd_sha=0c87d60c7627e693e0e92ec182a83277e697bd86f194ebe2f8194c26f41979bb
 expected_servicemanager_sha=626eaac3336fcf91e3510aaf920d7fa7882733ba1648ab9a432b0532a1570c70
 expected_service_sha=63d064e0ae4796608374a3ac757a9c05a5c8766a9a802cf7e79e784dda26cafb
@@ -30,13 +30,13 @@ expected_hwmanager_shim_sha=d3cd4616f8906b6093a2e210042b561760a807b4f025b1ba7870
 expected_socat_sha=19c49d4cbcc1e410cda71df3f41d225b07184691ebbe7d231753f404ac0470aa
 expected_socket_launcher_sha=929f94535c0568e48b346d522f584dbc30df7e5088e200ffd210642a57eab0eb
 expected_dcm_bridge_sha=cc0656f0a31faf1456c296699a577dbf2a47eef6a39b0514c7fa9fa66e26d4ee
-dcm_bridge=/tmp/luma-fp6-imsdcm-bridge-v10
+dcm_bridge=/tmp/Suno-fp6-imsdcm-bridge-v10
 
-stock_system=/var/tmp/luma-stock-qrel1695-system/system
-stock_vendor=/var/tmp/luma-stock-qrel1695-vendor
-stock_system_ext=/var/tmp/luma-stock-qrel1695-system_ext
-stock_product=/var/tmp/luma-stock-qrel1695-product
-stock_runtime=/var/tmp/luma-stock-qrel1695-runtime-apex
+stock_system=/var/tmp/Suno-stock-qrel1695-system/system
+stock_vendor=/var/tmp/Suno-stock-qrel1695-vendor
+stock_system_ext=/var/tmp/Suno-stock-qrel1695-system_ext
+stock_product=/var/tmp/Suno-stock-qrel1695-product
+stock_runtime=/var/tmp/Suno-stock-qrel1695-runtime-apex
 
 fail() {
   printf 'event=fp6_stock_ims_smoke_v1_failed reason=%s\n' "$1" >&2
@@ -118,28 +118,28 @@ grep -qw 'androidboot.slot_suffix=_b' /proc/cmdline || fail slot
 [[ $(sha256sum "$dcm_bridge" | cut -d' ' -f1) == "$expected_dcm_bridge_sha" ]] || fail dcm_bridge_hash
 ! pgrep -x servicemanager >/dev/null || fail servicemanager_already_running
 ! pgrep -x imsdaemon >/dev/null || fail imsdaemon_already_running
-systemctl is-active --quiet luma-fp6-imsd.service || fail luma_imsd_not_active
-systemctl is-active --quiet luma-imsdcm-live.service || fail luma_imsdcm_not_active
-systemctl is-active --quiet luma-fp6-cellular-link.service || fail cellular_link_not_active
+systemctl is-active --quiet Suno-fp6-imsd.service || fail Suno_imsd_not_active
+systemctl is-active --quiet Suno-imsdcm-live.service || fail Suno_imsdcm_not_active
+systemctl is-active --quiet Suno-fp6-cellular-link.service || fail cellular_link_not_active
 
-marker="luma-stock-ims-$(cat /proc/sys/kernel/random/uuid)"
+marker="Suno-stock-ims-$(cat /proc/sys/kernel/random/uuid)"
 printf '<6>%s\n' "$marker" >/dev/kmsg
 started_cutover=$(date +%s)
 
-root=$(mktemp -d /var/tmp/luma-stock-ims-root.XXXXXX)
+root=$(mktemp -d /var/tmp/Suno-stock-ims-root.XXXXXX)
 chmod 0755 "$root"
 mounted=false
 manager_pid=
 hwmanager_pid=
 imsdaemon_pid=
 log_sink_pid=
-luma_stopped=false
-dropin=/run/systemd/system/luma-fp6-imsd.service.d/90-luma-stock-smoke.conf
+Suno_stopped=false
+dropin=/run/systemd/system/Suno-fp6-imsd.service.d/90-Suno-stock-smoke.conf
 
-restore_luma() {
+restore_Suno() {
   local restore_status=0
   set +e
-  if [[ $luma_stopped == true ]]; then
+  if [[ $Suno_stopped == true ]]; then
     if ! mmcli -L 2>/dev/null | grep -q '/Modem/'; then
       systemctl restart ModemManager.service
       for _ in $(seq 1 120); do
@@ -148,32 +148,32 @@ restore_luma() {
       done
     fi
     mmcli -L 2>/dev/null | grep -q '/Modem/' || restore_status=1
-    systemctl restart luma-fp6-cellular-link.service
+    systemctl restart Suno-fp6-cellular-link.service
     for _ in $(seq 1 160); do
-      systemctl is-active --quiet luma-fp6-cellular-link.service && break
+      systemctl is-active --quiet Suno-fp6-cellular-link.service && break
       sleep 0.25
     done
-    if ! systemctl is-active --quiet luma-imsdcm-live.service; then
-      systemd-run --quiet --unit=luma-imsdcm-live.service --property=Type=exec \
+    if ! systemctl is-active --quiet Suno-imsdcm-live.service; then
+      systemd-run --quiet --unit=Suno-imsdcm-live.service --property=Type=exec \
         --property=User=root --property=Restart=no "$dcm_bridge" 3600 ||
         restore_status=1
       for _ in $(seq 1 40); do
-        systemctl is-active --quiet luma-imsdcm-live.service && break
+        systemctl is-active --quiet Suno-imsdcm-live.service && break
         sleep 0.1
       done
     fi
-    systemctl is-active --quiet luma-imsdcm-live.service || restore_status=1
+    systemctl is-active --quiet Suno-imsdcm-live.service || restore_status=1
     install -d -m 0755 "${dropin%/*}"
     printf '[Service]\nEnvironment=RESUME=0\n' >"$dropin"
     systemctl daemon-reload
-    systemctl start luma-imsdcm-live.service
-    systemctl restart luma-fp6-imsd.service
+    systemctl start Suno-imsdcm-live.service
+    systemctl restart Suno-fp6-imsd.service
     for _ in $(seq 1 160); do
-      journalctl -u luma-fp6-imsd.service --since "@$started_cutover" --no-pager 2>/dev/null |
+      journalctl -u Suno-fp6-imsd.service --since "@$started_cutover" --no-pager 2>/dev/null |
         grep -Fq 'REGISTERED (fresh)' && break
       sleep 0.25
     done
-    journalctl -u luma-fp6-imsd.service --since "@$started_cutover" --no-pager 2>/dev/null |
+    journalctl -u Suno-fp6-imsd.service --since "@$started_cutover" --no-pager 2>/dev/null |
       grep -Fq 'REGISTERED (fresh)' || restore_status=1
     rm -f "$dropin"
     rmdir "${dropin%/*}" 2>/dev/null || true
@@ -196,7 +196,7 @@ cleanup() {
   [[ -z $log_sink_pid ]] || wait "$log_sink_pid" 2>/dev/null || true
   [[ $mounted != true ]] || umount -R "$root" 2>/dev/null || true
   [[ ! -d $root ]] || find "$root" -depth -delete 2>/dev/null || true
-  if ! restore_luma; then
+  if ! restore_Suno; then
     printf 'event=fp6_stock_ims_restore_failed\n' >&2
     status=1
   fi
@@ -207,18 +207,18 @@ trap cleanup EXIT INT TERM HUP
 mount --make-rprivate /
 mount -t tmpfs -o mode=0755,size=96m tmpfs "$root"
 mounted=true
-mkdir -p "$root"/{system,vendor,system_ext,product,apex/com.android.runtime,dev,proc,sys,data,linkerconfig,luma-adapter}
-chmod 0755 "$root"/{system,vendor,system_ext,product,apex,apex/com.android.runtime,dev,proc,sys,data,linkerconfig,luma-adapter}
+mkdir -p "$root"/{system,vendor,system_ext,product,apex/com.android.runtime,dev,proc,sys,data,linkerconfig,Suno-adapter}
+chmod 0755 "$root"/{system,vendor,system_ext,product,apex,apex/com.android.runtime,dev,proc,sys,data,linkerconfig,Suno-adapter}
 bind_ro "$stock_system" "$root/system"
 bind_ro "$stock_vendor" "$root/vendor"
 bind_ro "$stock_system_ext" "$root/system_ext"
 bind_ro "$stock_product" "$root/product"
 bind_ro "$stock_runtime" "$root/apex/com.android.runtime"
-touch "$root/luma-adapter/libluma-ims-properties.so" "$root/luma-adapter/libluma-ims-servicemanager-access.so" \
-  "$root/luma-adapter/libluma-ims-hwservicemanager-access.so"
-bind_ro "$property_shim" "$root/luma-adapter/libluma-ims-properties.so"
-bind_ro "$manager_shim" "$root/luma-adapter/libluma-ims-servicemanager-access.so"
-bind_ro "$hwmanager_shim" "$root/luma-adapter/libluma-ims-hwservicemanager-access.so"
+touch "$root/Suno-adapter/libSuno-ims-properties.so" "$root/Suno-adapter/libSuno-ims-servicemanager-access.so" \
+  "$root/Suno-adapter/libSuno-ims-hwservicemanager-access.so"
+bind_ro "$property_shim" "$root/Suno-adapter/libSuno-ims-properties.so"
+bind_ro "$manager_shim" "$root/Suno-adapter/libSuno-ims-servicemanager-access.so"
+bind_ro "$hwmanager_shim" "$root/Suno-adapter/libSuno-ims-hwservicemanager-access.so"
 
 mount -t tmpfs -o mode=0755,size=8m tmpfs "$root/dev"
 mkdir -p "$root/dev/socket"
@@ -248,9 +248,9 @@ for _ in $(seq 1 20); do
 done
 [[ -S $root/dev/socket/logdw ]] || fail log_sink_not_ready
 
-ld_library_path=/luma-adapter:/apex/com.android.runtime/lib64/bionic:/vendor/lib64:/vendor/lib64/hw:/system/lib64:/system_ext/lib64:/product/lib64
+ld_library_path=/Suno-adapter:/apex/com.android.runtime/lib64/bionic:/vendor/lib64:/vendor/lib64/hw:/system/lib64:/system_ext/lib64:/product/lib64
 env -i LD_LIBRARY_PATH="$ld_library_path" /usr/sbin/chroot "$root" /system/bin/sh -c \
-  'export LD_PRELOAD=/luma-adapter/libluma-ims-servicemanager-access.so:/luma-adapter/libluma-ims-properties.so; exec /system/bin/servicemanager' \
+  'export LD_PRELOAD=/Suno-adapter/libSuno-ims-servicemanager-access.so:/Suno-adapter/libSuno-ims-properties.so; exec /system/bin/servicemanager' \
   >"$root/data/servicemanager.log" 2>&1 &
 manager_pid=$!
 
@@ -258,7 +258,7 @@ manager_ready=false
 for _ in $(seq 1 30); do
   kill -0 "$manager_pid" 2>/dev/null || fail servicemanager_exited
   if timeout 2 env -i LD_LIBRARY_PATH="$ld_library_path" /usr/sbin/chroot "$root" /system/bin/sh -c \
-    'export LD_PRELOAD=/luma-adapter/libluma-ims-properties.so; exec /system/bin/service list' \
+    'export LD_PRELOAD=/Suno-adapter/libSuno-ims-properties.so; exec /system/bin/service list' \
     >"$root/data/service-list.txt" 2>"$root/data/service-list.err"; then
     manager_ready=true
     break
@@ -272,7 +272,7 @@ if [[ $manager_ready != true ]]; then
 fi
 
 env -i LD_LIBRARY_PATH="$ld_library_path" /usr/sbin/chroot "$root" /system/bin/sh -c \
-  'export LD_PRELOAD=/luma-adapter/libluma-ims-hwservicemanager-access.so:/luma-adapter/libluma-ims-properties.so; exec /system_ext/bin/hwservicemanager' \
+  'export LD_PRELOAD=/Suno-adapter/libSuno-ims-hwservicemanager-access.so:/Suno-adapter/libSuno-ims-properties.so; exec /system_ext/bin/hwservicemanager' \
   >"$root/data/hwservicemanager.log" 2>&1 &
 hwmanager_pid=$!
 for _ in $(seq 1 30); do
@@ -285,10 +285,10 @@ if ! kill -0 "$hwmanager_pid" 2>/dev/null; then
 fi
 hidl_probe_status=0
 timeout 4 env -i LD_LIBRARY_PATH="$ld_library_path" /usr/sbin/chroot "$root" /system/bin/sh -c \
-  'export LD_PRELOAD=/luma-adapter/libluma-ims-properties.so; exec /system/bin/lshal --neat --types b' \
+  'export LD_PRELOAD=/Suno-adapter/libSuno-ims-properties.so; exec /system/bin/lshal --neat --types b' \
   >"$root/data/lshal.txt" 2>"$root/data/lshal.err" || hidl_probe_status=$?
 grep -Fq 'android.hidl.manager@1.0::IServiceManager/default' "$root/data/lshal.txt" || {
-  printf 'event=luma_hidl_client_probe exit=%s manager_listed=false\n' "$hidl_probe_status" >&2
+  printf 'event=Suno_hidl_client_probe exit=%s manager_listed=false\n' "$hidl_probe_status" >&2
   sed -n '1,100p' "$root/data/lshal.err" | sanitize_runtime >&2 || true
   sed -n '1,160p' "$root/data/hwservicemanager.log" | sanitize_runtime >&2 || true
   dmesg | sed -n "/$marker/,\$p" | grep -Ei 'binder|hwbinder|transaction' |
@@ -300,11 +300,11 @@ printf 'event=stock_ims_servicemanagers_ready aidl=true hidl=true hidl_client_pr
 
 # Only the two processes which compete with the stock daemon are paused.  The
 # cellular bearer and ModemManager remain online throughout the bounded gate.
-systemctl stop luma-fp6-imsd.service luma-imsdcm-live.service
-luma_stopped=true
-! systemctl is-active --quiet luma-fp6-imsd.service || fail luma_imsd_stop
-! systemctl is-active --quiet luma-imsdcm-live.service || fail luma_imsdcm_stop
-systemctl is-active --quiet luma-fp6-cellular-link.service || fail cellular_link_lost
+systemctl stop Suno-fp6-imsd.service Suno-imsdcm-live.service
+Suno_stopped=true
+! systemctl is-active --quiet Suno-fp6-imsd.service || fail Suno_imsd_stop
+! systemctl is-active --quiet Suno-imsdcm-live.service || fail Suno_imsdcm_stop
+systemctl is-active --quiet Suno-fp6-cellular-link.service || fail cellular_link_lost
 
 "$socket_launcher" "$root" </dev/null >"$root/data/imsdaemon.log" 2>&1 &
 imsdaemon_pid=$!
@@ -320,7 +320,7 @@ factory_ready=false
 for _ in $(seq 1 120); do
   kill -0 "$imsdaemon_pid" 2>/dev/null || break
   timeout 2 env -i LD_LIBRARY_PATH="$ld_library_path" /usr/sbin/chroot "$root" /system/bin/sh -c \
-    'export LD_PRELOAD=/luma-adapter/libluma-ims-properties.so; exec /system/bin/service list' \
+    'export LD_PRELOAD=/Suno-adapter/libSuno-ims-properties.so; exec /system/bin/service list' \
     >"$root/data/service-list-ims.txt" 2>/dev/null || true
   if grep -Fq 'vendor.qti.ims.factoryaidlservice.IImsFactory/default' "$root/data/service-list-ims.txt"; then
     factory_ready=true

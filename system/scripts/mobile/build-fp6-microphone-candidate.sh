@@ -18,8 +18,8 @@ module_symvers=${4:?usage: build-fp6-microphone-candidate.sh KERNEL_ARCHIVE CAME
 minirootfs=${5:?usage: build-fp6-microphone-candidate.sh KERNEL_ARCHIVE CAMERA_PATCH_ARCHIVE KERNEL_CONFIG MODULE_SYMVERS ALPINE_MINIROOTFS BTF_PATCH OUTPUT_DIR}
 btf_patch=${6:?usage: build-fp6-microphone-candidate.sh KERNEL_ARCHIVE CAMERA_PATCH_ARCHIVE KERNEL_CONFIG MODULE_SYMVERS ALPINE_MINIROOTFS BTF_PATCH OUTPUT_DIR}
 output_dir=${7:?usage: build-fp6-microphone-candidate.sh KERNEL_ARCHIVE CAMERA_PATCH_ARCHIVE KERNEL_CONFIG MODULE_SYMVERS ALPINE_MINIROOTFS BTF_PATCH OUTPUT_DIR}
-jobs=${LUMA_KERNEL_BUILD_JOBS:-4}
-resume=${LUMA_KERNEL_BUILD_RESUME:-false}
+jobs=${SUNO_KERNEL_BUILD_JOBS:-4}
+resume=${SUNO_KERNEL_BUILD_RESUME:-false}
 build_timestamp='2026-08-19 00:00:00 UTC'
 
 kernel_release=7.1.2
@@ -32,12 +32,12 @@ btf_patch_sha=e396b277b238ecf8868218d71da7a17da784c671655501211af50a5e6d8e43e7
 
 case "$jobs" in
   ''|*[!0-9]*)
-    printf 'error: LUMA_KERNEL_BUILD_JOBS must be a positive integer\n' >&2
+    printf 'error: SUNO_KERNEL_BUILD_JOBS must be a positive integer\n' >&2
     exit 1
     ;;
 esac
 [ "$jobs" -ge 1 ] || {
-  printf 'error: LUMA_KERNEL_BUILD_JOBS must be at least 1\n' >&2
+  printf 'error: SUNO_KERNEL_BUILD_JOBS must be at least 1\n' >&2
   exit 1
 }
 [ "$(id -u)" -eq 0 ] || {
@@ -69,7 +69,7 @@ fi
 case "$resume" in
   true|false) ;;
   *)
-    printf 'error: LUMA_KERNEL_BUILD_RESUME must be true or false\n' >&2
+    printf 'error: SUNO_KERNEL_BUILD_RESUME must be true or false\n' >&2
     exit 1
     ;;
 esac
@@ -338,7 +338,7 @@ tool_versions=$(chroot "$rootfs" /bin/sh -c \
   exit 1
 }
 {
-  printf 'LUMA_FP6_MICROPHONE_BUILD_VERSION=2\n'
+  printf 'SUNO_FP6_MICROPHONE_BUILD_VERSION=2\n'
   printf 'KERNEL_RELEASE=%s\n' "$kernel_release"
   printf 'BUILD_HOST_PROFILE=lima-rosetta-cross-x86_64\n'
   printf 'RESUMED_AFTER_BUILDER_RESOURCE_FAILURE=%s\n' "$resume"

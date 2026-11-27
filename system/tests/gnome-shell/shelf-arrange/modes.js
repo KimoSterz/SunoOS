@@ -24,7 +24,7 @@ async function work() {
         await L.sleep(700);
         L.check(`${mode}: arrange mode draws its card`, shelf._arrange._card?.mapped);
         const card = shelf._arrange._card;
-        L.check(`${mode}: the card takes the treatment's surface`, card.has_style_class_name(`luma-surface-${mode}`) ||
+        L.check(`${mode}: the card takes the treatment's surface`, card.has_style_class_name(`Suno-surface-${mode}`) ||
             mode === 'glass' || mode === 'frost', card.style_class);
         const c = L.rectOf(shelf.partActorFor('clock'));
         await L.move(...L.centre(c), 100);

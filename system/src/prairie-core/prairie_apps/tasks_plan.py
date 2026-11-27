@@ -18,8 +18,8 @@ gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 from gi.repository import Adw, Graphene, Gtk, Pango  # noqa: E402
 
-from luma_appkit import BarAction, icons  # noqa: E402
-from luma_appkit.action_center import make_control  # noqa: E402
+from Suno_appkit import BarAction, icons  # noqa: E402
+from Suno_appkit.action_center import make_control  # noqa: E402
 
 from .tasks_data import day_label  # noqa: E402
 from .tasks_widgets import column, face, line, list_dot, named, text  # noqa: E402

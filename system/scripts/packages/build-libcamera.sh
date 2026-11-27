@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
 #
-# Build Luma's libcamera: Fedora 44's package (sources from
+# Build Suno's libcamera: Fedora 44's package (sources from
 # its source RPM, pinned by digest) with packaging/rpm's spec and the patches
 # in patches/libcamera-fedora. Native builds only (meson, no cross).
 
@@ -16,14 +16,14 @@ fedora_srpm=libcamera-$version-2.fc44.src.rpm
 fedora_srpm_url=https://kojipkgs.fedoraproject.org/packages/libcamera/$version/2.fc44/src/$fedora_srpm
 fedora_srpm_sha256=7d82bfc0ee14188b79ae052fddbce8e4bceba3ab1425313301e34db6c351be2d
 
-architecture=${LUMA_TARGET_ARCHITECTURE:-$(uname -m)}
+architecture=${SUNO_TARGET_ARCHITECTURE:-$(uname -m)}
 [ "$architecture" = "$(uname -m)" ] || { printf 'error: build libcamera natively\n' >&2; exit 1; }
 case "$architecture" in
   x86_64) builder_container=$FEDORA_RPM_BUILD_CONTAINER ;;
   aarch64) builder_container=$FEDORA_RPM_BUILD_CONTAINER_AARCH64 ;;
   *) printf 'error: unsupported build architecture: %s\n' "$architecture" >&2; exit 1 ;;
 esac
-export LUMA_RPM_BUILDER_ARCHITECTURE=$architecture
+export SUNO_RPM_BUILDER_ARCHITECTURE=$architecture
 
 output_dir="$repo_root/build/packages/libcamera"
 mkdir -p "$(dirname "$output_dir")"

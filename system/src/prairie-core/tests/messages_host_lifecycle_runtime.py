@@ -14,7 +14,7 @@ from unittest.mock import patch
 import gi
 gi.require_version('Gtk', '4.0'); gi.require_version('Adw', '1')
 from gi.repository import Gio, GLib
-from luma_appkit import EmptyState
+from Suno_appkit import EmptyState
 from prairie_apps.messages import MessagesApplication, MessagesWindow, APPLICATION_ID
 
 
@@ -41,7 +41,7 @@ def main():
                 window.set_default_size(width, height); settle()
                 state = window.body.get_first_child()
                 assert isinstance(state, EmptyState)
-                assert window.get_content() is not state, 'Repair must retain the Luma frame'
+                assert window.get_content() is not state, 'Repair must retain the Suno frame'
                 assert window.title_bar.get_mapped()
                 assert state.primary_button.get_mapped() and state.primary_button.get_sensitive()
                 assert app.pending_address == '+12025550123'
@@ -63,7 +63,7 @@ def main():
     owner = SimpleNamespace(agent=SimpleNamespace(connection=Connection()), close=lambda: closed.append(True),
                             _notice=notices.append)
     MessagesWindow.quit(owner)
-    assert calls == [('org.projectluma.Background1', 'org.projectluma.Background1', 'StopNow', (APPLICATION_ID,))]
+    assert calls == [('org.projectSuno.Background1', 'org.projectSuno.Background1', 'StopNow', (APPLICATION_ID,))]
     assert owner.quitting and closed == [True] and not notices
     class RefusedConnection:
         def call_sync(self, *args): raise GLib.Error('Refused')

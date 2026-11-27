@@ -21,12 +21,12 @@ class PreparedExportTests(unittest.TestCase):
         self.directory = Path(self.temp.name) / 'build'
         self.directory.mkdir()
         self.values = {
-            'LUMA_BUILD_ID': '20261026.1', 'LUMA_OS_ARCH': 'aarch64',
-            'LUMA_OS_REF_PREFIX': 'luma/1/aarch64', 'LUMA_OS_PROFILE': 'arm-preview',
-            'LUMA_OS_VERSION': '1.0.0-nightly.20261026.1', 'LUMA_OS_CHANNEL': 'nightly',
-            'LUMA_SOURCE_REVISION': 'a' * 40, 'LUMA_SOURCE_DIRTY': 'false',
-            'LUMA_SOURCE_SNAPSHOT_SHA256': '', 'LUMA_RELEASE_CHECKS_SHA256': '',
-            'LUMA_IMAGE_ID': 'b' * 64, 'LUMA_BASE_IMAGE': 'example.invalid/base@sha256:' + 'c' * 64,
+            'SUNO_BUILD_ID': '20261026.1', 'SUNO_OS_ARCH': 'aarch64',
+            'SUNO_OS_REF_PREFIX': 'Suno/1/aarch64', 'SUNO_OS_PROFILE': 'arm-preview',
+            'SUNO_OS_VERSION': '1.0.0-nightly.20261026.1', 'SUNO_OS_CHANNEL': 'nightly',
+            'SUNO_SOURCE_REVISION': 'a' * 40, 'SUNO_SOURCE_DIRTY': 'false',
+            'SUNO_SOURCE_SNAPSHOT_SHA256': '', 'SUNO_RELEASE_CHECKS_SHA256': '',
+            'SUNO_IMAGE_ID': 'b' * 64, 'SUNO_BASE_IMAGE': 'example.invalid/base@sha256:' + 'c' * 64,
         }
         self.inventory = 'example\t0\t1\t1\taarch64\n'
         for name in export.FILES:
@@ -35,8 +35,8 @@ class PreparedExportTests(unittest.TestCase):
         (self.directory / 'image-modes.txt').write_text('4111 /usr/bin/sudo\n')
         self.write_env()
         self.provenance = {
-            'build_id': self.values['LUMA_BUILD_ID'], 'architecture': 'aarch64',
-            'version': self.values['LUMA_OS_VERSION'], 'channel': 'nightly',
+            'build_id': self.values['SUNO_BUILD_ID'], 'architecture': 'aarch64',
+            'version': self.values['SUNO_OS_VERSION'], 'channel': 'nightly',
             'source': {'revision': 'a' * 40, 'dirty': False}, 'image': {'id': 'b' * 64},
             'installed_packages': {'inventory_sha256': export.sha(self.directory / 'packages-installed.tsv')},
             'sbom': {'sha256': export.sha(self.directory / 'sbom.spdx.json')},
@@ -55,7 +55,7 @@ class PreparedExportTests(unittest.TestCase):
 
     def capture(self, candidate='e' * 64, parent=''):
         return export.receipt(self.directory, candidate, self.tree, parent,
-                              'luma/1/aarch64/nightly', '7.2.11.aarch64', 'f' * 64)
+                              'Suno/1/aarch64/nightly', '7.2.11.aarch64', 'f' * 64)
 
     def save_receipt(self):
         self.write_json('export-prepared.json', self.doc)
@@ -88,16 +88,16 @@ class PreparedExportTests(unittest.TestCase):
     def test_environment_cannot_choose_signing_paths_or_duplicate_fields(self):
         path = self.directory / 'build.env'
         body = path.read_text()
-        for line in ('LUMA_OS_KEYS=/attacker\n', 'LUMA_BUILD_ID=20261026.1\n'):
+        for line in ('SUNO_OS_KEYS=/attacker\n', 'SUNO_BUILD_ID=20261026.1\n'):
             path.write_text(body + line)
             with self.subTest(line=line), self.assertRaises(ValueError):
                 export.build_env(path)
         path.write_text(body)
 
     def test_private_source_is_not_eligible_for_remote_signing(self):
-        for key, value in [('LUMA_SOURCE_DIRTY', 'true'),
-                           ('LUMA_SOURCE_SNAPSHOT_SHA256', '0' * 64),
-                           ('LUMA_RELEASE_CHECKS_SHA256', '0' * 64)]:
+        for key, value in [('SUNO_SOURCE_DIRTY', 'true'),
+                           ('SUNO_SOURCE_SNAPSHOT_SHA256', '0' * 64),
+                           ('SUNO_RELEASE_CHECKS_SHA256', '0' * 64)]:
             old = self.values[key]
             self.values[key] = value
             self.write_env()
@@ -124,22 +124,22 @@ class PreparedExportTests(unittest.TestCase):
         tree.mkdir(exist_ok=True)
         (tree / 'payload').write_text('actual native test payload\n')
         metadata = {
-            'version': self.values['LUMA_OS_VERSION'],
-            'org.projectluma.build-id': '20261026.1',
-            'org.projectluma.build-version': self.values['LUMA_OS_VERSION'],
-            'org.projectluma.channel': 'nightly',
-            'org.projectluma.source-revision': 'a' * 40,
-            'org.projectluma.source-dirty': 'false',
-            'org.projectluma.architecture': 'aarch64',
-            'org.projectluma.base-image-digest': 'sha256:' + 'c' * 64,
-            'org.projectluma.provenance-sha256': export.sha(self.directory / 'provenance.json'),
-            'org.projectluma.sbom-sha256': export.sha(self.directory / 'sbom.spdx.json'),
-            'org.projectluma.image-tree': self.tree,
+            'version': self.values['SUNO_OS_VERSION'],
+            'org.projectSuno.build-id': '20261026.1',
+            'org.projectSuno.build-version': self.values['SUNO_OS_VERSION'],
+            'org.projectSuno.channel': 'nightly',
+            'org.projectSuno.source-revision': 'a' * 40,
+            'org.projectSuno.source-dirty': 'false',
+            'org.projectSuno.architecture': 'aarch64',
+            'org.projectSuno.base-image-digest': 'sha256:' + 'c' * 64,
+            'org.projectSuno.provenance-sha256': export.sha(self.directory / 'provenance.json'),
+            'org.projectSuno.sbom-sha256': export.sha(self.directory / 'sbom.spdx.json'),
+            'org.projectSuno.image-tree': self.tree,
         }
         metadata.update(overrides or {})
         args = ['ostree', 'commit', '--repo=' + str(repo), '--orphan',
                 '--tree=dir=' + str(tree), '--subject=native export test',
-                '--bind-ref=luma/1/aarch64/nightly',
+                '--bind-ref=Suno/1/aarch64/nightly',
                 '--add-metadata=rpmostree.rpmdb.pkglist=@a(sssss) [(\'example\', \'0\', \'1\', \'1\', \'aarch64\')]']
         if parent:
             args.append('--parent=' + parent)
@@ -152,9 +152,9 @@ class PreparedExportTests(unittest.TestCase):
         repo, candidate = self.make_commit()
         doc = self.capture(candidate=candidate)
         self.assertEqual(export.verify_commit(repo, self.directory, doc)['result'], 'PASS_NATIVE_CANDIDATE_METADATA')
-        for overrides in ({'org.projectluma.architecture': 'x86_64'},
-                          {'org.projectluma.source-revision': '0' * 40},
-                          {'org.projectluma.provenance-sha256': '0' * 64}):
+        for overrides in ({'org.projectSuno.architecture': 'x86_64'},
+                          {'org.projectSuno.source-revision': '0' * 40},
+                          {'org.projectSuno.provenance-sha256': '0' * 64}):
             _repo, other = self.make_commit(overrides)
             with self.subTest(overrides=overrides), self.assertRaises(ValueError):
                 export.verify_commit(repo, self.directory, self.capture(candidate=other))

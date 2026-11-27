@@ -5,25 +5,25 @@ set -euo pipefail
 
 script_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 repo_root=$(CDPATH= cd -- "$script_dir/../.." && pwd)
-build_root=${LUMA_BUILD_ROOT:-/srv/luma-build}
-build_user=${LUMA_BUILD_USER:-luma-build}
-protected_vm=${LUMA_PROTECTED_VM:-viola-windows-builder}
+build_root=${SUNO_BUILD_ROOT:-/srv/Suno-build}
+build_user=${SUNO_BUILD_USER:-Suno-build}
+protected_vm=${SUNO_PROTECTED_VM:-viola-windows-builder}
 signing_home="$build_root/signing/recent-development-gnupg"
 signing_fingerprint="$build_root/config/recent-signing-fingerprint"
 tls_root="$build_root/secrets/recent-tls"
-service_config_root=/etc/luma
+service_config_root=/etc/Suno
 service_tls_root="$service_config_root/recent-tls"
 webroot="$build_root/updates/webroot"
 staging_repo="$build_root/updates/staging/repo"
 change_log="$build_root/bootstrap/system-changes.log"
-tunnel_user=luma-update-tunnel
-nginx_config_source="$repo_root/config/build-host/luma-recent-nginx.conf"
-nginx_unit_source="$repo_root/config/build-host/luma-recent-http.service"
-tls_ext_source="$repo_root/config/build-host/luma-recent-server.ext"
+tunnel_user=Suno-update-tunnel
+nginx_config_source="$repo_root/config/build-host/Suno-recent-nginx.conf"
+nginx_unit_source="$repo_root/config/build-host/Suno-recent-http.service"
+tls_ext_source="$repo_root/config/build-host/Suno-recent-server.ext"
 
 fail() { printf 'error: %s\n' "$*" >&2; exit 1; }
 [ "$(id -u)" -eq 0 ] || fail 'Recent bootstrap must run as root'
-[ "$build_root" = /srv/luma-build ] || fail 'reviewed Recent paths are bound to /srv/luma-build'
+[ "$build_root" = /srv/Suno-build ] || fail 'reviewed Recent paths are bound to /srv/Suno-build'
 for path in "$nginx_config_source" "$nginx_unit_source" "$tls_ext_source"; do
   [ -r "$path" ] || fail "required Recent input is unavailable: $path"
 done
@@ -77,7 +77,7 @@ mapfile -t signing_keys < <(
 if [ "${#signing_keys[@]}" -eq 0 ]; then
   runuser -u "$build_user" -- env GNUPGHOME="$signing_home" \
     gpg --batch --passphrase '' --quick-generate-key \
-      'Project Luma Recent Development <recent-development@projectluma.invalid>' \
+      'Project Suno Recent Development <recent-development@projectSuno.invalid>' \
       ed25519 sign 1y
   mapfile -t signing_keys < <(
     runuser -u "$build_user" -- env GNUPGHOME="$signing_home" \
@@ -92,9 +92,9 @@ chown "$build_uid:$build_gid" "$signing_fingerprint"
 chmod 0644 "$signing_fingerprint"
 runuser -u "$build_user" -- env GNUPGHOME="$signing_home" \
   gpg --batch --export "${signing_keys[0]}" \
-  >"$build_root/config/luma-recent-development.gpg"
-chown "$build_uid:$build_gid" "$build_root/config/luma-recent-development.gpg"
-chmod 0644 "$build_root/config/luma-recent-development.gpg"
+  >"$build_root/config/Suno-recent-development.gpg"
+chown "$build_uid:$build_gid" "$build_root/config/Suno-recent-development.gpg"
+chmod 0644 "$build_root/config/Suno-recent-development.gpg"
 
 tls_files=(ca.key ca.crt server.key server.crt)
 missing_tls=0
@@ -112,7 +112,7 @@ if [ "$missing_tls" -eq "${#tls_files[@]}" ]; then
     -out "$tls_stage/ca.key"
   openssl req -x509 -new -sha256 -days 365 \
     -key "$tls_stage/ca.key" \
-    -subj '/CN=Project Luma Recent Development CA' \
+    -subj '/CN=Project Suno Recent Development CA' \
     -out "$tls_stage/ca.crt"
   openssl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:P-256 \
     -out "$tls_stage/server.key"
@@ -140,7 +140,7 @@ install -o root -g nginx -m 0644 "$tls_root/server.crt" \
 install -o root -g nginx -m 0640 "$tls_root/server.key" \
   "$service_tls_root/server.key"
 install -o root -g root -m 0644 "$nginx_unit_source" \
-  /etc/systemd/system/luma-recent-http.service
+  /etc/systemd/system/Suno-recent-http.service
 install -o root -g root -m 0755 "$script_dir/publish-current-recent.sh" \
   "$build_root/bin/publish-current-recent.sh"
 install -o root -g root -m 0755 "$script_dir/register-recent-client.sh" \
@@ -169,7 +169,7 @@ fi
 restorecon -RF "$webroot" "$tls_root" "$service_tls_root"
 systemctl daemon-reload
 if [ -L "$webroot/current" ]; then
-  systemctl enable --now luma-recent-http.service
+  systemctl enable --now Suno-recent-http.service
   recent_ready=0
   for _ in $(seq 1 20); do
     if curl --fail --silent --cacert "$tls_root/ca.crt" \

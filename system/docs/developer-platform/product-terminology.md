@@ -1,4 +1,4 @@
-# Luma product terminology
+# Suno product terminology
 
 Use these names in user-facing text, accessibility labels, settings and design
 documentation. Product naming is independent of upstream technical identifiers.

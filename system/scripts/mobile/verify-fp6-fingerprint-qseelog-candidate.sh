@@ -58,7 +58,7 @@ cmp "$work/base/ramdisk" "$work/candidate/ramdisk"
 ! cmp -s "$work/base/dtb" "$work/candidate/dtb" || die 'DTB did not change'
 
 dtb=$work/candidate/dtb
-fdtget "$dtb" /firmware/scm luma,qsee-log-diagnostic >/dev/null ||
+fdtget "$dtb" /firmware/scm Suno,qsee-log-diagnostic >/dev/null ||
   die 'QSEE-log diagnostic opt-in is absent'
 [ "$(fdtget -t x "$dtb" /reserved-memory/qseecom-ta-pool size)" = \
   '0 1000000' ] || die 'TA pool size differs'
@@ -67,7 +67,7 @@ fdtget "$dtb" /firmware/scm luma,qsee-log-diagnostic >/dev/null ||
 ta_phandle=$(fdtget -t x "$dtb" /reserved-memory/qseecom-ta-pool phandle)
 apps_phandle=$(fdtget -t x "$dtb" /reserved-memory/qseecom-apps-pool phandle)
 child=/firmware/scm/qseecom-tee-heaps
-[ "$(fdtget "$dtb" "$child" compatible)" = 'luma,qseecom-tee-heaps' ] ||
+[ "$(fdtget "$dtb" "$child" compatible)" = 'Suno,qseecom-tee-heaps' ] ||
   die 'QSEECom heap child compatible differs'
 [ "$(fdtget -t x "$dtb" "$child" memory-region)" = \
   "$ta_phandle $apps_phandle" ] || die 'QSEECom child pool ownership differs'

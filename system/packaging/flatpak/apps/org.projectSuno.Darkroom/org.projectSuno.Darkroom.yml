@@ -1,0 +1,39 @@
+# SPDX-License-Identifier: Apache-2.0
+# Sealed sources required by the canonical first-party producer.
+{
+  "id": "org.projectSuno.Darkroom",
+  "runtime": "org.projectSuno.Platform",
+  "runtime-version": "44",
+  "sdk": "org.projectSuno.Sdk",
+  "command": "Suno-darkroom",
+  "finish-args": [
+    "--metadata=X-Suno=app-data-schema=darkroom-v1",
+    "--share=ipc",
+    "--socket=wayland",
+    "--socket=fallback-x11",
+    "--device=dri",
+    "--env=SUNO_DARKROOM_STYLE_PATH=/app/share/Suno-darkroom/darkroom.css"
+  ],
+  "modules": [
+    {
+      "name": "darkroom",
+      "buildsystem": "simple",
+      "build-commands": [
+        "install -d /app/lib/python3.14/site-packages /app/bin",
+        "cp -a src/Suno-darkroom/Suno_darkroom /app/lib/python3.14/site-packages/",
+        "install -Dm755 src/Suno-darkroom/bin/Suno-darkroom /app/bin/Suno-darkroom",
+        "install -Dm644 src/Suno-darkroom/data/org.projectSuno.Darkroom.desktop /app/share/applications/org.projectSuno.Darkroom.desktop",
+        "install -Dm644 depot-icon.svg /app/share/icons/hicolor/scalable/apps/org.projectSuno.Darkroom.svg",
+        "sed -i 's/^Icon=.*/Icon=org.projectSuno.Darkroom/' /app/share/applications/org.projectSuno.Darkroom.desktop",
+        "install -Dm644 depot.metainfo.xml /app/share/metainfo/org.projectSuno.Darkroom.metainfo.xml",
+        "install -Dm644 LICENSE.md /app/share/licenses/org.projectSuno.Darkroom/LICENSE.md",
+        "install -Dm644 src/Suno-darkroom/style/darkroom.css /app/share/Suno-darkroom/darkroom.css",
+        "install -d /app/lib/python3.14/site-packages/data/icons",
+        "cp -a src/Suno-darkroom/data/icons/. /app/lib/python3.14/site-packages/data/icons/",
+        "python3 -m compileall -q -f -j0 --invalidation-mode checked-hash /app/lib/python3.14/site-packages",
+        "install -d /app/share/dbus-1/services",
+        "printf '[D-BUS Service]\\nName=org.projectSuno.Darkroom\\nExec=/app/bin/Suno-darkroom\\n' > /app/share/dbus-1/services/org.projectSuno.Darkroom.service"
+      ]
+    }
+  ]
+}

@@ -1,5 +1,5 @@
-From: Project Luma <builds@project-luma.local>
-Subject: [PATCH] shell: keep Dark Style and explicit Luma appearance in sync
+From: Project Suno <builds@project-suno.local>
+Subject: [PATCH] shell: keep Dark Style and explicit Suno appearance in sync
 
 --- a/js/ui/status/darkMode.js
 +++ b/js/ui/status/darkMode.js
@@ -7,7 +7,7 @@ Subject: [PATCH] shell: keep Dark Style and explicit Luma appearance in sync
  import GObject from 'gi://GObject';
  
  import * as Main from '../main.js';
-+import * as SurfaceMaterials from '../lumaSurfaceMaterials.js';
++import * as SurfaceMaterials from '../SunoSurfaceMaterials.js';
  
  import {QuickToggle, SystemIndicator} from '../quickSettings.js';
  
@@ -16,7 +16,7 @@ Subject: [PATCH] shell: keep Dark Style and explicit Luma appearance in sync
              schema_id: 'org.gnome.desktop.interface',
          });
 +        const schema = Gio.SettingsSchemaSource.get_default()?.lookup(
-+            'org.project_luma.shell-state', true);
++            'org.projectSuno.shell-state', true);
 +        this._surfaceSettings = schema?.has_key('surface-treatment')
 +            ? new Gio.Settings({settings_schema: schema}) : null;
 +        this._surfaceSettings?.connect('changed::surface-treatment', () => this._sync());
@@ -39,8 +39,8 @@ Subject: [PATCH] shell: keep Dark Style and explicit Luma appearance in sync
          Main.layoutManager.screenTransition.run();
 -        this._settings.set_string('color-scheme',
 -            this.checked ? 'default' : 'prefer-dark');
-+        // An explicit Luma treatment overrides GNOME's color-scheme. Update
-+        // both preferences so Shell, Luma apps and other GTK apps agree.
++        // An explicit Suno treatment overrides GNOME's color-scheme. Update
++        // both preferences so Shell, Suno apps and other GTK apps agree.
 +        // Capture the target first: settings signals may sync checked now.
 +        this._surfaceSettings?.set_string('surface-treatment', dark ? 'dark' : 'light');
 +        this._settings.set_string('color-scheme', dark ? 'prefer-dark' : 'default');

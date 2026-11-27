@@ -2,13 +2,13 @@
 import Clutter from 'gi://Clutter';
 import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
-import {findItem} from '../../../src/luma-shell-presentation/grid.js';
+import {findItem} from '../../../src/Suno-shell-presentation/grid.js';
 
 export async function testEditor(presentation, mode, check, sleep) {
     const seat = Clutter.get_default_backend().get_default_seat();
     const touch = seat.create_virtual_device(Clutter.InputDeviceType.TOUCHSCREEN_DEVICE);
     const keyboard = seat.create_virtual_device(Clutter.InputDeviceType.KEYBOARD_DEVICE);
-    const settings = new Gio.Settings({schema_id: 'org.project_luma.shell-state'});
+    const settings = new Gio.Settings({schema_id: 'org.projectSuno.shell-state'});
     const time = () => GLib.get_monotonic_time();
     const start = async (id, centre = false) => {
         const item = findItem(presentation._grid, id);

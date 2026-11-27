@@ -12,7 +12,7 @@ Catcrafts `milos-linux` `combined-stable` at
 
 The driver requests two calibration payloads:
 `samsung/s3nrn4v/hwreg.bin` and `samsung/s3nrn4v/swreg.bin`. Those payloads are
-not in Project Luma and their hashes remain unset in
+not in Project Suno and their hashes remain unset in
 `config/mobile/fp6-nfc.env`. Enumeration without those files is not reader-mode
 acceptance, and reader-mode acceptance would not imply NFC writing, secure
 element access, payments, or card emulation.

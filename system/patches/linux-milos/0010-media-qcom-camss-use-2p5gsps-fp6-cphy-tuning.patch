@@ -1,4 +1,4 @@
-From: Project Luma <luma@projectluma.dev>
+From: Project Suno <Suno@projectSuno.dev>
 Subject: [PATCH] media: qcom: camss: use 2.5 Gsps FP6 C-PHY tuning
 
 The IMX896 output PLL runs at a 2.4 Gsps C-PHY symbol rate.  The original

@@ -31,6 +31,6 @@ while [ "$attempt" -lt 20 ]; do
   sleep 0.25
 done
 
-printf 'luma-plymouth-release: verified PID %s did not release DRM after SIGTERM\n' \
+printf 'Suno-plymouth-release: verified PID %s did not release DRM after SIGTERM\n' \
   "$pid" >&2
 exit 1

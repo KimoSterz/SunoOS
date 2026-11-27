@@ -29,7 +29,7 @@ export function check(name, ok, detail = '') {
     return !!ok;
 }
 export const descend = (a, out = []) => { out.push(a); a.get_children?.().forEach(c => descend(c, out)); return out; };
-export const settings = () => new Gio.Settings({schema_id: 'org.project_luma.shell-state'});
+export const settings = () => new Gio.Settings({schema_id: 'org.projectSuno.shell-state'});
 
 Gio._promisify(Shell.Screenshot.prototype, 'screenshot_stage_to_content');
 Gio._promisify(Shell.Screenshot, 'composite_to_stream');

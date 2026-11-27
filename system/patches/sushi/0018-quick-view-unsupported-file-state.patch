@@ -154,9 +154,9 @@
          this._fullButton.get_accessible().set_name('Full screen');
          this._fullButton.set_valign(Gtk.Align.CENTER);
 @@ -466,6 +467,7 @@
-             paneStyle.add_class('luma-preview-media-pane');
+             paneStyle.add_class('Suno-preview-media-pane');
          else
-             paneStyle.remove_class('luma-preview-media-pane');
+             paneStyle.remove_class('Suno-preview-media-pane');
 +        this._fullButton.set_visible(renderer.canFullscreen);
          this._openButton.set_visible(!!this._hasHandler && !renderer.hideOpen);
          if (renderer.viewSwitch) {

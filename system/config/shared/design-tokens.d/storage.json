@@ -1,6 +1,6 @@
 {
-  "_source": "Simulator v71 luma-next-71.html: DSKC line10312; map color-mix(in oklab) lines2073-2078. Base tone roles independent of theme. Background/used roles are precomputed Oklab mixes: dark28%tone+72%solid island #25282d and70%tone alpha; light25%tone+75%white and55%tone+45%white. No runtime or app-local color conversion.",
-  "lumaui": {
+  "_source": "Simulator v71 Suno-next-71.html: DSKC line10312; map color-mix(in oklab) lines2073-2078. Base tone roles independent of theme. Background/used roles are precomputed Oklab mixes: dark28%tone+72%solid island #25282d and70%tone alpha; light25%tone+75%white and55%tone+45%white. No runtime or app-local color conversion.",
+  "SunoUI": {
     "colors": {
       "light": {
         "storage_tone_blue": "oklch(0.70000000 0.13000000 250.00000000)",

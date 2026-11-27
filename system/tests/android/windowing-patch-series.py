@@ -16,20 +16,20 @@ ROOT = Path(__file__).resolve().parents[2]
 REVISION = "85f31a9103b84faba24eb7cbca47750d12e64e4b"
 SERIES = ["0001-prairie-native-android-window-chrome.patch",
           "0002-prairie-host-pointer-policy.patch",
-          "0003-luma-appkit-content-island.patch",
-          "0004-luma-surface-treatment-frame.patch",
-          "0007-lumaui-current-inset-frame.patch",
-          "0008-luma-desktop-window-behavior-recovery.patch",
-          "0009-luma-frame-buffer-thread-ownership.patch",
-          "0010-luma-authoritative-task-removal.patch",
-          "0011-luma-mandatory-initial-task-resize.patch",
-          "0012-luma-shared-composer-rpc-threadpool.patch",
-          "0013-luma-software-buffer-allocation-bounds.patch",
-          "0014-luma-configure-invalidation-lock-order.patch",
-          "0015-luma-native-clipboard-caller-admission.patch",
-          "0016-luma-bounded-native-clipboard-transfer.patch",
-          "0017-luma-native-task-caller-admission.patch",
-          "0018-luma-bound-task-channel-io.patch"]
+          "0003-Suno-appkit-content-island.patch",
+          "0004-Suno-surface-treatment-frame.patch",
+          "0007-SunoUI-current-inset-frame.patch",
+          "0008-Suno-desktop-window-behavior-recovery.patch",
+          "0009-Suno-frame-buffer-thread-ownership.patch",
+          "0010-Suno-authoritative-task-removal.patch",
+          "0011-Suno-mandatory-initial-task-resize.patch",
+          "0012-Suno-shared-composer-rpc-threadpool.patch",
+          "0013-Suno-software-buffer-allocation-bounds.patch",
+          "0014-Suno-configure-invalidation-lock-order.patch",
+          "0015-Suno-native-clipboard-caller-admission.patch",
+          "0016-Suno-bounded-native-clipboard-transfer.patch",
+          "0017-Suno-native-task-caller-admission.patch",
+          "0018-Suno-bound-task-channel-io.patch"]
 
 
 def check_linkage(work):
@@ -47,7 +47,7 @@ def check_linkage(work):
     caller = work / "task-removal-caller.cpp"
     caller.write_text("#include <cstdint>\n" + declaration +
                       "\nint main() { cancel_task_resize(32); }\n")
-    queue = '#include "hwcomposer/luma-task-resize.h"\nnamespace {\n' +         'luma::TaskResizeQueue& task_resize_queue() {\n' +         ' static luma::TaskResizeQueue queue([](const luma::TaskResize&) {});\n' +         ' return queue;\n}\n'
+    queue = '#include "hwcomposer/Suno-task-resize.h"\nnamespace {\n' +         'Suno::TaskResizeQueue& task_resize_queue() {\n' +         ' static Suno::TaskResizeQueue queue([](const Suno::TaskResize&) {});\n' +         ' return queue;\n}\n'
     def link(name, external):
         provider = work / f"{name}.cpp"
         provider.write_text(queue + ("}\n" + body if external else body + "\n}\n"))
@@ -95,7 +95,7 @@ def check_configure_lock_order(work):
 
 
 def check(archive, link_check=False):
-    with tempfile.TemporaryDirectory(prefix="luma-windowing-series-") as temporary:
+    with tempfile.TemporaryDirectory(prefix="Suno-windowing-series-") as temporary:
         work = Path(temporary)
         prefix = f"android_hardware_waydroid-{REVISION}/"
         with tarfile.open(archive) as source:
@@ -116,20 +116,20 @@ def check(archive, link_check=False):
             subprocess.run(["git", "-C", str(work), "apply", "--binary", "--check", str(patch)], check=True)
             subprocess.run(["git", "-C", str(work), "apply", "--binary", str(patch)], check=True)
             print(f"applied {name}: {hashlib.sha256(patch.read_bytes()).hexdigest()}")
-        for header in ("luma-window-frame.h", "luma-frame-tokens.h", "luma-frame-glyphs.h"):
-            if (work / "hwcomposer" / header).read_bytes() != (ROOT / "src/luma-platform/compat" / header).read_bytes():
+        for header in ("Suno-window-frame.h", "Suno-frame-tokens.h", "Suno-frame-glyphs.h"):
+            if (work / "hwcomposer" / header).read_bytes() != (ROOT / "src/Suno-platform/compat" / header).read_bytes():
                 raise ValueError(f"Effective HWC header differs from shared platform: {header}")
-        if (work / "hwcomposer/luma-task-resize.h").read_bytes() != (ROOT / "patches/android-hardware-waydroid/native/luma-task-resize.h").read_bytes():
+        if (work / "hwcomposer/Suno-task-resize.h").read_bytes() != (ROOT / "patches/android-hardware-waydroid/native/Suno-task-resize.h").read_bytes():
             raise ValueError("Effective HWC resize worker differs from tested production source")
         if (work / "hwcomposer/fonts/OFL.txt").read_bytes() != (ROOT / "patches/android-hardware-waydroid/native/Figtree-OFL.txt").read_bytes():
             raise ValueError("Effective Figtree copyright/OFL differs from pinned source")
-        if (work / "hwcomposer/luma-window-callbacks.h").read_bytes() != (ROOT / "patches/android-hardware-waydroid/native/luma-window-callbacks.h").read_bytes():
+        if (work / "hwcomposer/Suno-window-callbacks.h").read_bytes() != (ROOT / "patches/android-hardware-waydroid/native/Suno-window-callbacks.h").read_bytes():
             raise ValueError("Effective callback lifetime registry differs from native tested source")
-        if (work / "hwcomposer/luma-task-lifetime.h").read_bytes() != (ROOT / "patches/android-hardware-waydroid/native/luma-task-lifetime.h").read_bytes():
+        if (work / "hwcomposer/Suno-task-lifetime.h").read_bytes() != (ROOT / "patches/android-hardware-waydroid/native/Suno-task-lifetime.h").read_bytes():
             raise ValueError("Effective authoritative task removal differs from native tested source")
-        if (work / "hwcomposer/luma-rgb-copy-bounds.h").read_bytes() != (ROOT / "patches/android-hardware-waydroid/native/luma-rgb-copy-bounds.h").read_bytes():
+        if (work / "hwcomposer/Suno-rgb-copy-bounds.h").read_bytes() != (ROOT / "patches/android-hardware-waydroid/native/Suno-rgb-copy-bounds.h").read_bytes():
             raise ValueError("Effective software copy bounds differ from native tested production source")
-        if (work / "hwcomposer/luma-clipboard-transfer.h").read_bytes() != (ROOT / "patches/android-hardware-waydroid/native/luma-clipboard-transfer.h").read_bytes():
+        if (work / "hwcomposer/Suno-clipboard-transfer.h").read_bytes() != (ROOT / "patches/android-hardware-waydroid/native/Suno-clipboard-transfer.h").read_bytes():
             raise ValueError("Effective clipboard transfer differs from tested production source")
         check_configure_lock_order(work)
         if link_check:

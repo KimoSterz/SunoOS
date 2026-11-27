@@ -5,8 +5,8 @@
 # and a virtual 2560x1440 monitor side by side, each with its own layout.
 # Real pointer drags (driver.js) cross between them; at every stop the zones
 # drawn, the selection and the final drop must be exactly the layout of the
-# monitor under the pointer. Needs a Luma OS tree, or Fedora 44 with the
-# Luma gnome-shell, mutter and Tiling Shell installed, plus gtk4,
+# monitor under the pointer. Needs a Suno OS tree, or Fedora 44 with the
+# Suno gnome-shell, mutter and Tiling Shell installed, plus gtk4,
 # python3-gobject, mesa-dri-drivers and dbus-daemon; no GPU, display server
 # or logind session.
 #
@@ -18,7 +18,7 @@
 # workspaces on every monitor, two of them listed, three monitors' entries,
 # the other monitor numbered before the main one). WORKSPACE is the index of
 # the workspace the drags run on. Without arguments the matrix below runs.
-# LUMA_XM_THREE=1 adds a laptop panel that is then closed. Each case writes
+# SUNO_XM_THREE=1 adds a laptop panel that is then closed. Each case writes
 # shell.log and result.json to OUTDIR/<case>; the exit status is the number
 # of failing cases.
 set -uo pipefail
@@ -52,10 +52,10 @@ for c in "${cases[@]}"; do
   mkdir -p "$out/runtime" "$out/config/glib-2.0/settings" "$out/data"
   chmod 0700 "$out/runtime"
   side_first=0
-  # The OS defaults first (dconf luma.d uses the keyfile syntax), as a fresh
-  # Luma account has them, then the test's own keys.
+  # The OS defaults first (dconf Suno.d uses the keyfile syntax), as a fresh
+  # Suno account has them, then the test's own keys.
   keyfile=$out/config/glib-2.0/settings/keyfile
-  cat /etc/dconf/db/luma.d/* >"$keyfile" 2>/dev/null || :
+  cat /etc/dconf/db/Suno.d/* >"$keyfile" 2>/dev/null || :
   cat >>"$keyfile" <<'KEYFILE'
 
 [org/gnome/shell]
@@ -76,17 +76,17 @@ num-workspaces=4
 KEYFILE
   fi
   monitors="--virtual-monitor 3440x1440 --virtual-monitor 2560x1440"
-  [ "${LUMA_XM_THREE:-0}" = 1 ] && monitors="$monitors --virtual-monitor 1920x1200"
+  [ "${SUNO_XM_THREE:-0}" = 1 ] && monitors="$monitors --virtual-monitor 1920x1200"
   # shellcheck disable=SC2086
   env -u DISPLAY -u WAYLAND_DISPLAY \
     XDG_RUNTIME_DIR="$out/runtime" XDG_CONFIG_HOME="$out/config" \
     XDG_DATA_HOME="$out/data" GSETTINGS_BACKEND=keyfile LIBGL_ALWAYS_SOFTWARE=1 \
     GTK_A11Y=none NO_AT_BRIDGE=1 \
-    LUMA_XM_OUT="$out" LUMA_XM_MAIN_SCALE="$main" LUMA_XM_SIDE_SCALE="$side" \
-    LUMA_XM_SIDE_LAYOUT="$layout" LUMA_XM_WS="$ws" LUMA_XM_SIDE_FIRST="$side_first" \
-    LUMA_XM_TRACE="${LUMA_XM_TRACE:-0}" LUMA_XM_FAST="${LUMA_XM_FAST:-0}" \
-    LUMA_XM_RECONFIG="${LUMA_XM_RECONFIG:-0}" LUMA_XM_SPAN_KEY="${LUMA_XM_SPAN_KEY:-}" \
-    LUMA_XM_APP="$repo/tests/gnome-shell/shelf-presentation/app.py" \
+    SUNO_XM_OUT="$out" SUNO_XM_MAIN_SCALE="$main" SUNO_XM_SIDE_SCALE="$side" \
+    SUNO_XM_SIDE_LAYOUT="$layout" SUNO_XM_WS="$ws" SUNO_XM_SIDE_FIRST="$side_first" \
+    SUNO_XM_TRACE="${SUNO_XM_TRACE:-0}" SUNO_XM_FAST="${SUNO_XM_FAST:-0}" \
+    SUNO_XM_RECONFIG="${SUNO_XM_RECONFIG:-0}" SUNO_XM_SPAN_KEY="${SUNO_XM_SPAN_KEY:-}" \
+    SUNO_XM_APP="$repo/tests/gnome-shell/shelf-presentation/app.py" \
     dbus-run-session -- timeout 300 gnome-shell --headless --no-x11 $monitors \
     --automation-script="$here/driver.js" >"$out/shell.log" 2>&1
   python3 - "$out/result.json" "$c" <<'PY' || failed=$((failed + 1))

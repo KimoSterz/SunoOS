@@ -3,7 +3,7 @@
 # Render the TV home's backdrop: the prism wallpaper blurred right out, ahead of
 # time, so the shell shows a still image instead of a live blur (a live
 # backdrop blur costs a full-screen blit per frame on small GPUs). The recipe is
-# the Design Center mockup's (luma-tv-empty.html .bg and .shade): the wallpaper
+# the Design Center mockup's (Suno-tv-empty.html .bg and .shade): the wallpaper
 # covers the screen plus 120 on every side, blur 80, saturate 1.25, brightness
 # 0.62, then a shade of black 0.18 at the top fading out by 30% and black 0.35
 # at the bottom from 55%. 1920x1080; it is blurred, so it scales to any screen.
@@ -11,7 +11,7 @@
 set -euo pipefail
 repo=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 source=${1:-$repo/assets/wallpapers/prism.png}
-output=${2:-$repo/src/luma-shell-presentation/tv-backdrop.jpg}
+output=${2:-$repo/src/Suno-shell-presentation/tv-backdrop.jpg}
 work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
 # Blur at a quarter of the size (sigma 80 -> 20): the same result, much faster.

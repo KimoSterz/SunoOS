@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /*
- * Narrow access bridge for Luma's disposable Android Binder namespace.
+ * Narrow access bridge for Suno's disposable Android Binder namespace.
  * Fedora does not carry Android's SELinux policy, so Android servicemanager
  * cannot evaluate its service_manager class.  Permit only the three Binder
  * registry operations used in the isolated namespace; deny everything else.
@@ -47,12 +47,12 @@ int selinux_status_open(int fallback) {
 int selinux_status_updated(void) { return 0; }
 
 int getcon(char **context) {
-  return allocate_context(context, "u:r:luma_biometric_servicemanager:s0");
+  return allocate_context(context, "u:r:Suno_biometric_servicemanager:s0");
 }
 
 int getpidcon(pid_t pid, char **context) {
   (void)pid;
-  return allocate_context(context, "u:r:luma_biometric_client:s0");
+  return allocate_context(context, "u:r:Suno_biometric_client:s0");
 }
 
 void freecon(char *context) { free(context); }
@@ -61,21 +61,21 @@ struct selabel_handle *selinux_android_service_context_handle(void) {
   return (struct selabel_handle *)&service_context_handle;
 }
 
-void luma_set_requesting_sid(void *binder, int requesting)
+void Suno_set_requesting_sid(void *binder, int requesting)
     __asm__("_ZN7android7BBinder16setRequestingSidEb");
-void luma_set_requesting_sid(void *binder, int requesting) {
+void Suno_set_requesting_sid(void *binder, int requesting) {
   (void)binder;
   (void)requesting;
   dprintf(STDERR_FILENO,
-          "event=luma_servicemanager_requesting_sid enabled=false\n");
+          "event=Suno_servicemanager_requesting_sid enabled=false\n");
 }
 
-const char *luma_get_calling_sid(const void *thread_state)
+const char *Suno_get_calling_sid(const void *thread_state)
     __asm__("_ZNK7android14IPCThreadState13getCallingSidEv");
-const char *luma_get_calling_sid(const void *thread_state) {
+const char *Suno_get_calling_sid(const void *thread_state) {
   (void)thread_state;
   /* Access checks are still enforced by the service-name allowlist below. */
-  return "u:r:luma_biometric_client:s0";
+  return "u:r:Suno_biometric_client:s0";
 }
 
 /*
@@ -84,7 +84,7 @@ const char *luma_get_calling_sid(const void *thread_state) {
  * contexts.  Mainline Fedora deliberately has no Android SELinux security
  * context provider, so the kernel rejects every otherwise-valid transaction
  * with -EOPNOTSUPP before servicemanager can inspect it.  This library is
- * loaded only into Luma's disposable, private servicemanager.  Register that
+ * loaded only into Suno's disposable, private servicemanager.  Register that
  * one manager with the legacy ABI, which provides the same context-manager
  * routing without requesting Android transaction labels.
  */
@@ -100,7 +100,7 @@ int ioctl(int descriptor, unsigned long request, ...) {
     /* Let libbinder execute its own legacy fallback and bookkeeping. */
     *__errno() = 22; /* EINVAL */
     dprintf(STDERR_FILENO,
-            "event=luma_servicemanager_context_manager abi=extended result=-1 fallback=legacy\n");
+            "event=Suno_servicemanager_context_manager abi=extended result=-1 fallback=legacy\n");
     return -1;
   }
 
@@ -124,7 +124,7 @@ int selinux_check_access(const char *source_context,
   (void)target_context;
   (void)audit_data;
   dprintf(STDERR_FILENO,
-          "event=luma_servicemanager_access class=%s permission=%s\n",
+          "event=Suno_servicemanager_access class=%s permission=%s\n",
           target_class ? target_class : "(null)",
           permission ? permission : "(null)");
   if (!same_string(target_class, "service_manager"))
@@ -156,11 +156,11 @@ static int allowed_service(const char *name) {
 int selabel_lookup(struct selabel_handle *handle, char **context,
                    const char *key, int type) {
   static const char registry_context[] =
-      "u:object_r:luma_biometric_service:s0";
+      "u:object_r:Suno_biometric_service:s0";
   char *copy;
   (void)handle;
   (void)type;
-  dprintf(STDERR_FILENO, "event=luma_servicemanager_lookup service=%s\n",
+  dprintf(STDERR_FILENO, "event=Suno_servicemanager_lookup service=%s\n",
           key ? key : "(null)");
   if (!context || !allowed_service(key))
     return -1;

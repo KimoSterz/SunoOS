@@ -3,7 +3,7 @@
 """Exercise Depot's signed app removal without removing its native engine.
 
 Run only on the fresh disposable OS gate. Restore the authenticated offline
-bundle through the existing luma remote, never through a new bundle origin or
+bundle through the existing Suno remote, never through a new bundle origin or
 another baseline handoff. The completion marker and user data must survive.
 """
 from pathlib import Path
@@ -21,12 +21,12 @@ import tempfile
 import gi
 gi.require_version('Flatpak', '1.0')
 from gi.repository import Flatpak, Gio
-from luma_installer.depot_flatpak import removal_transaction, validate_remote
-from luma_installer.native_app_roles import installed, required, verify_deployed_commit
+from Suno_installer.depot_flatpak import removal_transaction, validate_remote
+from Suno_installer.native_app_roles import installed, required, verify_deployed_commit
 
-APP = 'org.projectluma.Leaf'
-BASELINE = Path('/usr/share/luma/app-baseline')
-MARKER = Path('/var/lib/luma/app-baseline/installed-v1.json')
+APP = 'org.projectSuno.Leaf'
+BASELINE = Path('/usr/share/Suno/app-baseline')
+MARKER = Path('/var/lib/Suno/app-baseline/installed-v1.json')
 
 
 def command(*args):
@@ -44,7 +44,7 @@ def expected_identities(manifest):
     for row in manifest['bundles']:
         key = row['ref']
         require(key not in expected, 'The signed baseline contains duplicate refs.')
-        expected[key] = {'commit': row['commit'], 'origin': 'luma'}
+        expected[key] = {'commit': row['commit'], 'origin': 'Suno'}
     require(expected, 'The signed baseline is empty.')
     return expected
 
@@ -91,7 +91,7 @@ def ordinary_refs(ordinary, pre_account=False):
     # No login user exists yet. This owned disposable HOME avoids opening or
     # creating any system account profile; the query still uses the real
     # system Flatpak installation after dropping to the actual nobody UID.
-    with tempfile.TemporaryDirectory(prefix='luma-gate-readability-', dir='/var/tmp') as home:
+    with tempfile.TemporaryDirectory(prefix='Suno-gate-readability-', dir='/var/tmp') as home:
         os.chown(home, ordinary.pw_uid, ordinary.pw_gid)
         return json.loads(command(
             'runuser', '-u', ordinary.pw_name, '--', 'env',
@@ -110,20 +110,20 @@ def main():
     require(os.geteuid() == 0, 'The disposable system-installation gate requires root.')
     require(required(APP), 'The OS must assign Leaf its signed application role.')
     # Invoke only the image owner's read-only validator, not its handoff/main.
-    owner = runpy.run_path('/usr/libexec/luma-app-baseline',
-                          run_name='luma_gate_baseline_contract')
+    owner = runpy.run_path('/usr/libexec/Suno-app-baseline',
+                          run_name='Suno_gate_baseline_contract')
     manifest = owner['validate'](BASELINE, platform.machine())
     require(MARKER.is_file() and not MARKER.is_symlink(),
             'The actual first-boot baseline must have completed before removal.')
     marker_before = fingerprint(MARKER)
     completion = owner['document'](MARKER)
-    require(completion.get('schema') == 'org.projectluma.app-baseline-completion/v1'
+    require(completion.get('schema') == 'org.projectSuno.app-baseline-completion/v1'
             and completion.get('baseline_manifest_sha256') == fingerprint(BASELINE / 'manifest.json')['sha256'],
             'The durable completion marker does not identify this baseline.')
-    require(Path('/usr/share/luma/first-party-app-roles.json').read_bytes()
+    require(Path('/usr/share/Suno/first-party-app-roles.json').read_bytes()
             == (BASELINE / 'roles.json').read_bytes(), 'The deployed OS role contract changed.')
     installation = Flatpak.Installation.new_system(None)
-    validate_remote(installation.get_remote_by_name('luma', None), 'luma')
+    validate_remote(installation.get_remote_by_name('Suno', None), 'Suno')
 
     def refs():
         installation.drop_caches(None)
@@ -176,10 +176,10 @@ def main():
         # Exact normal first-boot install callback, without rerunning handoff.
         repository = installation.get_path().get_child('repo').get_path()
         command('flatpak', 'build-import-bundle', '--no-update-summary',
-                '--ref=luma:' + leaf_key, repository, str(bundle))
+                '--ref=Suno:' + leaf_key, repository, str(bundle))
         verify_deployed_commit(installation, actual, commit=row['commit'], exact_ref=leaf_key)
         command('flatpak', 'install', '--system', '--noninteractive', '--no-pull',
-                '--no-deps', '--no-related', 'luma', leaf_key)
+                '--no-deps', '--no-related', 'Suno', leaf_key)
 
     # This one owned diagnostic data file catches a transaction accidentally
     # using delete-data; existing app profiles are neither opened nor removed.
@@ -190,7 +190,7 @@ def main():
         created.append(parent)
         parent = parent.parent
     data.mkdir(parents=True, exist_ok=True)
-    fd, name = tempfile.mkstemp(prefix='.luma-gate-preserve-', dir=data)
+    fd, name = tempfile.mkstemp(prefix='.Suno-gate-preserve-', dir=data)
     diagnostic = Path(name)
     with os.fdopen(fd, 'wb') as stream:
         stream.write(os.urandom(32))

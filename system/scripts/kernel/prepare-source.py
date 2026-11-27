@@ -28,7 +28,7 @@ def relative(value: str) -> str:
 
 
 def validate(lock: dict) -> None:
-    if lock.get('schema') != 'org.projectluma.kernel-source/v1':
+    if lock.get('schema') != 'org.projectSuno.kernel-source/v1':
         raise ValueError('Unknown kernel source schema')
     if set(lock['sources']) != {'linux', 'overlay'}:
         raise ValueError('Kernel source lock requires linux and overlay archives')
@@ -94,7 +94,7 @@ def prepare(lock_path: Path, cache: Path, output: Path, repository: Path, offlin
             raise ValueError(f'Patch hash/path mismatch: {row["path"]}')
         subprocess.run(['git', 'apply', '--check', str(patch)], cwd=trees['linux'], check=True)
         subprocess.run(['git', 'apply', str(patch)], cwd=trees['linux'], check=True)
-    receipt = {'schema': 'org.projectluma.prepared-kernel/v1',
+    receipt = {'schema': 'org.projectSuno.prepared-kernel/v1',
                'lock_sha256': digest(lock_path), 'release': lock['release'],
                'linux': str(trees['linux']), 'patch_count': len(lock['patches'])}
     (output / 'PREPARED.json').write_text(json.dumps(receipt, indent=2) + '\n')

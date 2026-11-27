@@ -36,7 +36,7 @@ def native_frame_profile_flags(path=NATIVE_ENGINE_PROFILE):
         raise ValueError('Native engine profile is too large')
     profile = json.loads(data)
     if profile != {
-            'schema': 'org.projectluma.viola.native-engine-profile/v1',
+            'schema': 'org.projectSuno.viola.native-engine-profile/v1',
             'role': 'desktop-arm-preview',
             'frame_transport': 'shm'}:
         raise ValueError('Unsupported native engine profile')
@@ -106,7 +106,7 @@ class EnginePipe:
              str(executable)] + ([] if native_frame_probe else ['--headless=new']) + [
              # Chromium's hidden native windows use GTK3; the visible host
              # owns GTK4. The implicit GTK4 backend crashes during startup
-             # on Luma's patched toolkit in both released engines.
+             # on Suno's patched toolkit in both released engines.
              '--enable-gpu', '--gtk-version=3',
              '--ozone-platform=wayland', '--remote-debugging-pipe',
              '--no-first-run', '--disable-default-apps',

@@ -11,7 +11,7 @@ import re
 import time
 import urllib.request
 
-SCHEMA = 'org.projectluma.public-media-readback/v1'
+SCHEMA = 'org.projectSuno.public-media-readback/v1'
 ORIGIN = 'https://media.simplyluma.com'
 
 
@@ -46,7 +46,7 @@ def validate_profile(value):
 
 def read_iso(target, expected, opener=urllib.request.urlopen, clock=time.monotonic):
     request = urllib.request.Request(target['url'], headers={
-        'Cache-Control': 'no-cache', 'User-Agent': 'Luma-keyless-media-readback/1'})
+        'Cache-Control': 'no-cache', 'User-Agent': 'Suno-keyless-media-readback/1'})
     started = clock()
     count = 0
     value = hashlib.sha256()

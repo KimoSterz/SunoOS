@@ -4,19 +4,19 @@ import Clutter from 'gi://Clutter';
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
-import {getBadgeSource} from 'resource:///org/gnome/shell/ui/lumaDockBadges.js';
+import {getBadgeSource} from 'resource:///org/gnome/shell/ui/SunoDockBadges.js';
 import {wait, test, setAgent, launcher, geometry, writeJson, dockBox, shellState, iconFor, deviceShot} from 'file:///oracle/t/lib.js';
 
-const L = n => `org.projectluma.${n}.desktop`;
+const L = n => `org.projectSuno.${n}.desktop`;
 const MODE = GLib.getenv('MODE') ?? 'matrix';
 
 function sampleBadges() {
     launcher(L('Calendar'), {urgent: true});
     launcher(L('Contacts'), {'count': 9, 'count-visible': true});
     launcher(L('Maps'), {'count': 12, 'count-visible': true});
-    setAgent('org.projectluma.Messages', {'unread-count': 1, 'badge': 1});
+    setAgent('org.projectSuno.Messages', {'unread-count': 1, 'badge': 1});
     launcher(L('Notes'), {'count': 128, 'count-visible': true});
-    setAgent('org.projectluma.Phone', {'missed-calls': 99, 'badge': 99});
+    setAgent('org.projectSuno.Phone', {'missed-calls': 99, 'badge': 99});
     // The last icon: its badge reaches past the dock's content.
     launcher(L('Write'), {'count': 128, 'count-visible': true});
 }
@@ -77,7 +77,7 @@ async function interact(shot) {
     out.hoverLift = {artwork: before.artwork.y - out.hover.artwork.y, badge: before.badge.y - out.hover.badge.y};
     await shot('interact-hover', ...dockBox());
     // A new message while hovered: no pop.
-    setAgent('org.projectluma.Messages', {'unread-count': 2, 'badge': 2});
+    setAgent('org.projectSuno.Messages', {'unread-count': 2, 'badge': 2});
     await wait(80);
     out.popWhileHovered = icon._badge._popTimeline !== null && icon._badge._popTimeline !== undefined;
     await wait(500);
@@ -153,52 +153,52 @@ async function behaviour(shot) {
     expect('app quitting clears its LauncherEntry badges', text(L('Notes')) === 'none' && text(L('Maps')) === 'none', `${text(L('Notes'))} ${text(L('Maps'))}`);
 
     // Agents.
-    setAgent('org.projectluma.Messages', {'unread-count': 3, 'badge': 3});
+    setAgent('org.projectSuno.Messages', {'unread-count': 3, 'badge': 3});
     await wait(500);
     expect('agent badge shows', text(L('Messages')) === '3', text(L('Messages')));
     expect('accessible name', iconFor(L('Messages')).accessible_name === 'Messages, 3 unread', iconFor(L('Messages')).accessible_name);
     launcher(L('Messages'), {'count': 50, 'count-visible': true});
     await wait(400);
     expect('agent wins over LauncherEntry', text(L('Messages')) === '3', text(L('Messages')));
-    setAgent('org.projectluma.Messages', {'unread-count': 5, 'badge': 5});
+    setAgent('org.projectSuno.Messages', {'unread-count': 5, 'badge': 5});
     await wait(90);
     const popping = iconFor(L('Messages'))._badge;
     const scaleMid = popping.scale_x;
     expect('pop on increase', !!popping._popTimeline && scaleMid !== 1, scaleMid);
     await wait(500);
     expect('pop settles at 1', popping.scale_x === 1 && !popping._popTimeline, popping.scale_x);
-    setAgent('org.projectluma.Messages', {'unread-count': 4, 'badge': 4});
+    setAgent('org.projectSuno.Messages', {'unread-count': 4, 'badge': 4});
     await wait(60);
     expect('no pop on decrease', !popping._popTimeline && popping.scale_x === 1 && text(L('Messages')) === '4', `${popping.scale_x} ${text(L('Messages'))}`);
-    setAgent('org.projectluma.Messages', {'unread-count': 0, 'badge': 0});
+    setAgent('org.projectSuno.Messages', {'unread-count': 0, 'badge': 0});
     await wait(400);
     expect('agent zero owns the badge (LauncherEntry ignored)', text(L('Messages')) === 'none', text(L('Messages')));
     expect('name without badge', iconFor(L('Messages')).accessible_name === 'Messages', iconFor(L('Messages')).accessible_name);
-    setAgent('org.projectluma.Messages', {'unread-count': 0});
+    setAgent('org.projectSuno.Messages', {'unread-count': 0});
     await wait(400);
     expect('agent without a badge value falls to LauncherEntry', text(L('Messages')) === '50', text(L('Messages')));
-    setAgent('org.projectluma.Messages', {'unread-count': 2, 'badge': 2});
-    setAgent('org.projectluma.Phone', {'missed-calls': 1, 'badge': 'dot'});
-    setAgent('org.projectluma.Weather', {'badge': 7});
+    setAgent('org.projectSuno.Messages', {'unread-count': 2, 'badge': 2});
+    setAgent('org.projectSuno.Phone', {'missed-calls': 1, 'badge': 'dot'});
+    setAgent('org.projectSuno.Weather', {'badge': 7});
     await wait(500);
     expect('agent dot', text(L('Phone')) === 'dot', text(L('Phone')));
     expect('Calendar-style name for a dot', iconFor(L('Phone')).accessible_name === 'Phone, new activity', iconFor(L('Phone')).accessible_name);
     expect('agent that does not declare badge is ignored', text(L('Weather')) === 'none', text(L('Weather')));
 
     // Settings switch key.
-    shell.set_strv('dock-badges-disabled-apps', ['org.projectluma.Phone']);
+    shell.set_strv('dock-badges-disabled-apps', ['org.projectSuno.Phone']);
     await wait(500);
     expect('badge off removes it', text(L('Phone')) === 'none' && !iconFor(L('Phone'))._badge.visible, text(L('Phone')));
-    expect('badge off stops listening', !source._agents.has('org.projectluma.Phone'));
-    setAgent('org.projectluma.Phone', {'missed-calls': 2, 'badge': 2});
+    expect('badge off stops listening', !source._agents.has('org.projectSuno.Phone'));
+    setAgent('org.projectSuno.Phone', {'missed-calls': 2, 'badge': 2});
     await wait(300);
     expect('no badge while off', text(L('Phone')) === 'none', text(L('Phone')));
     shell.set_strv('dock-badges-disabled-apps', []);
     await wait(800);
-    expect('badge on listens again', text(L('Phone')) === '2' && source._agents.has('org.projectluma.Phone'), text(L('Phone')));
+    expect('badge on listens again', text(L('Phone')) === '2' && source._agents.has('org.projectSuno.Phone'), text(L('Phone')));
 
     // Agent stops: its badge clears.
-    test('StopAgent', 'org.projectluma.Phone');
+    test('StopAgent', 'org.projectSuno.Phone');
     await wait(800);
     expect('agent gone clears its badge', text(L('Phone')) === 'none', text(L('Phone')));
 

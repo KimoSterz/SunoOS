@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-// Screen sharing evidence, driven inside a headless Luma Shell.
+// Screen sharing evidence, driven inside a headless Suno Shell.
 //
 // Every request goes through the real stack: client.py asks
-// org.freedesktop.portal.ScreenCast, xdg-desktop-portal asks luma-portal,
-// luma-portal asks this Shell's picker and then Mutter. Input is a virtual
+// org.freedesktop.portal.ScreenCast, xdg-desktop-portal asks Suno-portal,
+// Suno-portal asks this Shell's picker and then Mutter. Input is a virtual
 // keyboard and pointer, so the keyboard and the double-click are exercised the
 // way a person exercises them, not by calling the picker's methods.
 //
@@ -24,7 +24,7 @@ import Mtk from 'gi://Mtk';
 import Shell from 'gi://Shell';
 import St from 'gi://St';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
-import * as Capture from 'resource:///org/gnome/shell/ui/lumaCapture.js';
+import * as Capture from 'resource:///org/gnome/shell/ui/SunoCapture.js';
 
 const OUT = GLib.getenv('ORACLE_OUT') ?? '/oracle/out';
 const HERE = GLib.getenv('SHARE_HARNESS') ?? '/oracle/t';
@@ -138,7 +138,7 @@ async function click(actor, settle = 250) {
 
 // ── The picker's state, as a person and a screen reader see it ───────────
 
-const share = () => Main.lumaShare;
+const share = () => Main.SunoShare;
 const picker = () => share()?._picker ?? null;
 
 function pickerState() {
@@ -366,7 +366,7 @@ async function escapeCancels() {
 // caller has none, which is what the other scenarios show.
 async function resolvedRequester(suffix = '') {
     await settle();
-    spawn(['python3', `${HERE}/client.py`, `s5${suffix}`, '3', '--direct', 'org.luma.test.Viola'], 'client-s5');
+    spawn(['python3', `${HERE}/client.py`, `s5${suffix}`, '3', '--direct', 'org.Suno.test.Viola'], 'client-s5');
     check(`S5${suffix} picker opened`, await until('picker', () => picker()?.mapped));
     await wait(1200);
     await shot(`02-picker-resolved${suffix}`);
@@ -413,7 +413,7 @@ async function streamExperiment() {
     add(new Capture.CaptureHidden({style: 'background-color: #ff00ff;'}), 80, 80);
     add(new Capture.CaptureHidden({style: 'border: 6px solid #ff00ff;'}), 300, 80);
     add(new St.Widget({style: 'background-color: #00ff00;'}), 520, 80);
-    const surface = new Capture.ShelfSurface('pill', 20, {prefix: 'luma-share'});
+    const surface = new Capture.ShelfSurface('pill', 20, {prefix: 'Suno-share'});
     surface.setContent(new St.Widget({style: 'background-color: #ff00ff;', x_expand: true, y_expand: true}));
     add(surface, 740, 80);
     const held = new Capture.CaptureHidden({layout_manager: new Clutter.BinLayout()});
@@ -473,7 +473,7 @@ function cpuMs() {
 }
 
 function scrimAllocations() {
-    const effect = picker()?._scrim?.get_effect('luma-share-blur');
+    const effect = picker()?._scrim?.get_effect('Suno-share-blur');
     return effect?.get_framebuffer_allocations?.() ?? null;
 }
 
@@ -563,9 +563,9 @@ async function work() {
     log(`mode ${MODE}, scale ${St_scale()}`);
     check('the picker is part of this Shell', Boolean(share()));
     for (const [id, title, live] of [
-        ['org.luma.test.Photos', 'Library', false],
-        ['org.luma.test.Notes', 'Prairie', false],
-        ['org.luma.test.Reel', 'Prairie 0.1, launch film', true],
+        ['org.Suno.test.Photos', 'Library', false],
+        ['org.Suno.test.Notes', 'Prairie', false],
+        ['org.Suno.test.Reel', 'Prairie 0.1, launch film', true],
     ]) {
         spawn(['python3', `${HERE}/window.py`, id, title, ...(live ? ['--live'] : [])], 'windows');
         await until(`window ${title}`, () => windowByTitle(title), 30000);

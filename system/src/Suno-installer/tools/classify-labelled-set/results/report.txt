@@ -1,0 +1,63 @@
+Labelled set: 953 requests (fedora 308, ubuntu 645); 10 names missing from the release; 0 unlabelled.
+Agreement: 938/953 = 98.43% (fedora 302/308, ubuntu 636/645). Gate: >= 98 %.
+Counting the labeller's alternative kind too: 938/953 = 98.43%.
+Applications classified as system modules or system tools: 0 (gate: 0).
+Non-system packages silently classified as system modules or system tools: 0 (gate: 0).
+Packages with a launcher put in a workspace or device add-on: 0 (gate: 0).
+Read from the package file (not only indices): 951/953.
+Choices (the person picks): 126; agreeing (label among the candidates): 122.
+Agreement with ADR-052's literal rules (the ADR column where a label disputes them): 924/953 = 96.96%.
+Rows where the label differs from ADR-052's literal rules: 34; the classifier follows the label in 13.
+
+Label distribution: workspace 599, system-module 142, application 128, device-add-on 53, system-tool 25, source 3, device-request 3
+Disagreements by (label -> classifier): system-module->workspace 3, system-tool->application 3, device-add-on->workspace 2, workspace->application 2, system-module->choice 2, workspace->device-add-on 1, system-tool->choice 1, workspace->choice 1
+
+Disagreements:
+  ubuntu:init: label system-module, classifier workspace [ADR rules: workspace] [label note: a meta for the host's init; its member is host-provided, so nothing of its own is judged]
+      - transitional: no files of its own, brings systemd-sysv
+      - a typed package command: the workspace
+  ubuntu:librsvg2-common: label workspace, classifier device-add-on
+      - loads native code into the session: device-wide only as an image-signed system module after a yes, otherwise refused (/usr/lib/x86_64-linux-gnu/gdk-pixbuf-2.0/2.10.0/loaders/libpixbufloader-svg.so)
+  ubuntu:fuse3: label system-tool, classifier choice (workspace|system-module)
+      - maintenance or boot-image hook /usr/share/initramfs-tools/hooks/fuse stays inert (fuse3)
+      - a mount helper: /sbin/mount.fuse (fuse3)
+      - system parts beside what a person uses directly: the person chooses
+  ubuntu:wireshark: label system-tool, classifier application
+      - launcher org.wireshark.Wireshark.desktop runs a program from the package (wireshark)
+      - its commands (wireshark) start in its sandbox
+  ubuntu:rpi-imager: label system-tool, classifier application [ADR rules: application] [label note: ADR names rpi-imager a system tool, but it has no exec.path, setuid or pkexec launcher; it uses udisks2]
+      - launcher org.raspberrypi.rpi-imager.desktop runs a program from the package (rpi-imager)
+      - its commands (rpi-imager) start in its sandbox
+  ubuntu:ubuntu-restricted-extras: label device-add-on, classifier workspace
+      - transitional: no files of its own, brings ubuntu-restricted-addons
+      - a typed package command: the workspace
+  ubuntu:ttf-mscorefonts-installer: label device-add-on, classifier workspace [label note: fonts are downloaded by its maintainer script]
+      - dependency daemon stays inert; the host's is used: system service apt-news.service (ubuntu-pro-client)
+      - a typed package command: the workspace
+  ubuntu:imagemagick: label workspace, classifier application [ADR rules: application] [label note: mainly command-line; the display viewer's launcher makes it an application by rule 6]
+      - transitional: no files of its own, brings imagemagick-6.q16
+      - launcher display-im6.q16.desktop runs a program from the package (imagemagick-6.q16)
+  ubuntu:wireguard-tools: label system-module, classifier choice (workspace|system-tool)
+      - optional service wg-quick@.service (wireguard-tools) stays inert in the workspace; to run it, install wireguard-tools as a system module
+      - administration commands (wg) beside no sbin location: the person chooses
+  fedora:xdg-desktop-portal: label system-module, classifier workspace [ADR rules: workspace] [label note: the portal frontend: session infrastructure with user units only]
+      - a desktop component (/usr/share/dbus-1/services/org.freedesktop.impl.portal.PermissionStore.service): it changes the desktop for everyone
+      - the image carries it; this copy serves the workspace
+  fedora:dnf5-plugins: label workspace, classifier application
+      - maintenance or boot-image hook /usr/lib/systemd/system/dnf-makecache.service stays inert (dnf5)
+      - data or plugins for the application dnf5: added to that application's tree
+  fedora:fedora-release-workstation: label system-module, classifier workspace [ADR rules: workspace] [label note: an empty variant package; its content is in base packages]
+      - transitional: no files of its own, brings fedora-release-common
+      - a typed package command: the workspace
+  fedora:mediawriter: label system-tool, classifier application [ADR rules: application] [label note: ADR names disk writers (rpi-imager, Etcher) as system tools; they use udisks2, which rule 2 does not detect]
+      - launcher org.fedoraproject.MediaWriter.desktop runs a program from the package (mediawriter)
+      - its commands (mediawriter) start in its sandbox
+  fedora:wine: label workspace, classifier choice (application|system-module) [label note: class moot: substituted by Suno's Windows runtime]
+      - the distribution's wine becomes Suno's Windows runtime, announced
+      - meta-package: no files of its own; members classified one by one (15)
+      - optional service winbind.service (samba-winbind) stays inert in the workspace; to run it, install samba-winbind as a system module
+  fedora:wireguard-tools: label system-module, classifier choice (workspace|system-tool)
+      - optional service wg-quick@.service (wireguard-tools) stays inert in the workspace; to run it, install wireguard-tools as a system module
+      - administration commands (wg) beside no sbin location: the person chooses
+
+Missing from the release: ubuntu:qmk, ubuntu:dolphin-emu, ubuntu:telegram-desktop, fedora:akmod-nvidia, fedora:epel-release, fedora:iotop, fedora:thunar, fedora:hexchat, fedora:pandoc, fedora:java-21-openjdk

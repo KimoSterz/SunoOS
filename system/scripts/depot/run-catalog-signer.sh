@@ -6,7 +6,7 @@
 #   run-catalog-signer.sh [--dry-run]
 #
 # The Hub is the only source of Depot listings (admin.simplyluma.com, Depot >
-# Apps); nothing in this repository authors one. luma-depot-review.service runs
+# Apps); nothing in this repository authors one. Suno-depot-review.service runs
 # the same signer every minute (tools/depot-review, depot_review/catalog4.py);
 # this is the manual run. sign-catalog.py fetches the Hub's schema 4 and schema 3
 # snapshots with the Hub service token, copies listing pictures the site lacks
@@ -24,7 +24,7 @@ set -euo pipefail
 dry_run=0
 [ "${1:-}" = --dry-run ] && dry_run=1
 token=${DEPOT_HUB_TOKEN:-$DEPOT_KEYS/secrets/hub-pipeline.token}
-lock=${DEPOT_PUBLICATION_LOCK:-/srv/luma-build/depot-publication.lock}
+lock=${DEPOT_PUBLICATION_LOCK:-/srv/Suno-build/depot-publication.lock}
 here=$(cd -- "$(dirname -- "$0")" && pwd)
 
 exec 9>>"$lock"
@@ -44,24 +44,24 @@ fi
 # On the host: it needs the Hub, and the origin key never enters a container.
 python3 -I "$here/sign-catalog.py" \
   --token-file "$token" \
-  --key "$DEPOT_KEYS/minisign/luma-depot-catalog.key" \
-  --public-key "$DEPOT_KEYS/minisign/luma-depot-catalog.pub" \
+  --key "$DEPOT_KEYS/minisign/Suno-depot-catalog.key" \
+  --public-key "$DEPOT_KEYS/minisign/Suno-depot-catalog.pub" \
   --site "$site" "${upload[@]}"
 [ "$dry_run" = 1 ] && exit 0
 
-# The firmware block list (org.projectluma.firmware-blocklist/v1, read by
-# luma_installer/depot_firmware.py), signed with the same key and served beside
+# The firmware block list (org.projectSuno.firmware-blocklist/v1, read by
+# Suno_installer/depot_firmware.py), signed with the same key and served beside
 # the catalog. Bump generated_at with every change: Depot keeps the newest
 # verified copy.
-blocklist="$depot_repo_root/src/luma-installer/data/firmware-blocklist.json"
+blocklist="$depot_repo_root/src/Suno-installer/data/firmware-blocklist.json"
 served="$DEPOT_ROOT/site/catalog/firmware-blocklist.json"
 if [ -f "$blocklist" ] && { [ ! -f "$served.minisig" ] || ! cmp -s "$blocklist" "$served"; }; then
   work=$(mktemp -d)
   install -m 0644 "$blocklist" "$work/firmware-blocklist.json"
-  generated=$(python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); assert d["schema"] == "org.projectluma.firmware-blocklist/v1" and isinstance(d["entries"], list); print(d["generated_at"])' "$blocklist")
-  minisign -S -s "$DEPOT_KEYS/minisign/luma-depot-catalog.key" -m "$work/firmware-blocklist.json" \
+  generated=$(python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); assert d["schema"] == "org.projectSuno.firmware-blocklist/v1" and isinstance(d["entries"], list); print(d["generated_at"])' "$blocklist")
+  minisign -S -s "$DEPOT_KEYS/minisign/Suno-depot-catalog.key" -m "$work/firmware-blocklist.json" \
     -x "$work/firmware-blocklist.json.minisig" -t "firmware-blocklist generated $generated" </dev/null >/dev/null
-  minisign -V -q -p "$DEPOT_KEYS/minisign/luma-depot-catalog.pub" -m "$work/firmware-blocklist.json" \
+  minisign -V -q -p "$DEPOT_KEYS/minisign/Suno-depot-catalog.pub" -m "$work/firmware-blocklist.json" \
     -x "$work/firmware-blocklist.json.minisig"
   install -d -m 0755 "$(dirname -- "$served")"
   install -m 0644 "$work/firmware-blocklist.json.minisig" "$served.minisig.next"

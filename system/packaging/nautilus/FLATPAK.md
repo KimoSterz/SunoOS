@@ -17,7 +17,7 @@ or mounting privileges. Existing dconf settings and the explicitly shared
 GTK/Nautilus bookmark configuration survive independent updates and rollback.
 GTK portals continue to mediate requests from other sandboxed applications.
 
-The dependencies absent from the Luma SDK follow Nautilus's own distributed
+The dependencies absent from the Suno SDK follow Nautilus's own distributed
 Flatpak recipe: inih r62, Exiv2 0.28.3, gexiv2 0.16.0, gnome-desktop 44.5,
 gnome-autoar 0.4.5 and libportal 0.9.1. Exact official archive URLs and SHA256
 digests are part of the app recipe. All are built with `/app` paths; runtime

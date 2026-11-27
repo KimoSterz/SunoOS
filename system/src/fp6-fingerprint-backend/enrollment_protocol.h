@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 
-#ifndef LUMA_FP6_ENROLLMENT_PROTOCOL_H
-#define LUMA_FP6_ENROLLMENT_PROTOCOL_H
+#ifndef SUNO_FP6_ENROLLMENT_PROTOCOL_H
+#define SUNO_FP6_ENROLLMENT_PROTOCOL_H
 
 #include "focal_protocol.h"
 

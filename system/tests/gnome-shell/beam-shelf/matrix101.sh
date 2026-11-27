@@ -1,9 +1,9 @@
 #!/bin/bash
 # Window motion evidence. B_OVERLAY_DEFAULT (overlay or none), B_EVIDENCE.
-H=/root/luma-shell-oracle/beam/harness
+H=/root/Suno-shell-oracle/beam/harness
 source <(sed -n "/^one()/,/^}/p" $H/matrix.sh)
 E=${B_EVIDENCE:?}; mkdir -p $E
-export B_CONTAINER=${B_CONTAINER:-luma-beam-sound}
+export B_CONTAINER=${B_CONTAINER:-Suno-beam-sound}
 M=/oracle/beam/harness/motion.js
 one mo-dark-bottom-1x-strips dark bottom 1 B_EVAL=$M B_STRIP=1 B_TIMEOUT=260
 one mo-light-left-1x-strips light left 1 B_EVAL=$M B_STRIP=1 B_TIMEOUT=260

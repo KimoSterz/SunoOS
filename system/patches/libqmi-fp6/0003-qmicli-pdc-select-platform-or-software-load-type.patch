@@ -1,5 +1,5 @@
 From 574320c36d2e4de390f64b31d92a598f1b433f63 Mon Sep 17 00:00:00 2001
-From: Project Luma <codex@project-luma.local>
+From: Project Suno <codex@project-suno.local>
 Date: Wed, 26 Aug 2026 20:25:00 -0500
 Subject: [PATCH] qmicli: pdc: type loads and preserve mapped storage
 
@@ -10,7 +10,7 @@ type through every chunk of the upload. Also stop freeing the borrowed
 GMappedFile contents pointer: doing so crashes qmicli before the first chunk
 can be sent.
 
-Signed-off-by: Project Luma <codex@project-luma.local>
+Signed-off-by: Project Suno <codex@project-suno.local>
 ---
  src/qmicli/qmicli-pdc.c | 29 +++++++++++++++++++++--------
  1 file changed, 21 insertions(+), 8 deletions(-)

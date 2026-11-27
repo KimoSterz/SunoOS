@@ -20,11 +20,11 @@ gi.require_version('Adw', '1')
 gi.require_version('WebKit', '6.0')
 gi.require_version('GdkPixbuf', '2.0')
 from gi.repository import Gtk, GLib, Gio, WebKit, GdkPixbuf
-from luma_appkit import EmptyState, SidebarRow, Toolbar
-from charlie_luma.application import CharlieApplication, AccountWindow, HtmlMessagePreview
-from charlie_luma.account_ui import AccountEditorWindow
-from charlie_luma.model import Account, Message
-from charlie_luma.html_reader import reader
+from Suno_appkit import EmptyState, SidebarRow, Toolbar
+from charlie_Suno.application import CharlieApplication, AccountWindow, HtmlMessagePreview
+from charlie_Suno.account_ui import AccountEditorWindow
+from charlie_Suno.model import Account, Message
+from charlie_Suno.html_reader import reader
 
 HTML = '<h1>RENDERED EMAIL</h1><p>Private local message content.</p><table style="width:100%;background:#cc3300"><tr><td style="height:120px">RED PANEL</td></tr></table><table><tr><td>Actual HTML body</td></tr></table>'
 
@@ -60,7 +60,7 @@ def snapshot(view, name):
     wait(lambda: result, 'WebKit native snapshot did not finish')
     assert not isinstance(result[0], GLib.Error), str(result[0])
     texture = result[0]
-    destination = Path(os.environ.get('LUMA_CREATOR_REVIEW_CAPTURE', tempfile.gettempdir()))
+    destination = Path(os.environ.get('SUNO_CREATOR_REVIEW_CAPTURE', tempfile.gettempdir()))
     destination.mkdir(parents=True, exist_ok=True)
     output = destination / (name + '.png')
     assert texture.save_to_png(str(output)), 'WebKit snapshot not written'
@@ -77,8 +77,8 @@ def snapshot(view, name):
 
 with tempfile.TemporaryDirectory(prefix='charlie-creator-private-') as directory:
     os.environ.update(XDG_DATA_HOME=directory, XDG_CONFIG_HOME=directory, XDG_CACHE_HOME=directory,
-                      LUMA_CHARLIE_FIXTURE='v71', CHARLIE_TEST_WIDTH='1440', CHARLIE_TEST_HEIGHT='900')
-    schema = Path(os.environ['LUMA_CREATOR_SCHEMA_FILE'])
+                      SUNO_CHARLIE_FIXTURE='v71', CHARLIE_TEST_WIDTH='1440', CHARLIE_TEST_HEIGHT='900')
+    schema = Path(os.environ['SUNO_CREATOR_SCHEMA_FILE'])
     schema_dir = Path(directory) / 'schema'; schema_dir.mkdir()
     (schema_dir/schema.name).write_bytes(schema.read_bytes())
     subprocess.run(['glib-compile-schemas', str(schema_dir)], check=True)
@@ -147,7 +147,7 @@ with tempfile.TemporaryDirectory(prefix='charlie-creator-private-') as directory
                 editor=application.account_editor
                 assert isinstance(editor,AccountEditorWindow)
                 assert editor.stack.get_visible_child_name()=='providers'
-                assert editor.back.has_css_class('lumaui-title-island-lead'), 'provider back is legacy GTK frame'
+                assert editor.back.has_css_class('SunoUI-title-island-lead'), 'provider back is legacy GTK frame'
                 provider=editor.provider_list.get_row_at_index(0)
                 editor._provider_activated(editor.provider_list,provider);pump()
                 assert editor.oauth_button.get_label() == 'Google sign-in unavailable'

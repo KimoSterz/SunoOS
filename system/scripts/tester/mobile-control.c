@@ -6,7 +6,7 @@
 #include <gmodule.h>
 
 static const char xml[] =
-  "<node><interface name='org.project_luma.Tester1'>"
+  "<node><interface name='org.projectSuno.Tester1'>"
   "<method name='ShowHome'/></interface></node>";
 static GDBusNodeInfo *info;
 
@@ -57,7 +57,7 @@ finish_home (gpointer data)
     g_dbus_method_invocation_return_value (pending->invocation, NULL);
   else
     g_dbus_method_invocation_return_dbus_error (pending->invocation,
-      "org.project_luma.Tester1.NotReady", "Native phone Home is unavailable.");
+      "org.projectSuno.Tester1.NotReady", "Native phone Home is unavailable.");
   g_object_unref (pending->home);
   g_object_unref (pending->invocation);
   g_free (pending);
@@ -94,7 +94,7 @@ method_call (GDBusConnection *connection, const char *sender, const char *path,
   (void) parameters; (void) data;
   if (!g_str_equal (method, "ShowHome")) {
     g_dbus_method_invocation_return_dbus_error (invocation,
-      "org.project_luma.Tester1.UnknownMethod", "Unknown simulator action.");
+      "org.projectSuno.Tester1.UnknownMethod", "Unknown simulator action.");
     return;
   }
   GType type = g_type_from_name ("PhoshHome");
@@ -114,7 +114,7 @@ method_call (GDBusConnection *connection, const char *sender, const char *path,
   if (!home || !folded) {
     g_clear_object (&home);
     g_dbus_method_invocation_return_dbus_error (invocation,
-      "org.project_luma.Tester1.NotReady", "The pinned native Home action is unavailable.");
+      "org.projectSuno.Tester1.NotReady", "The pinned native Home action is unavailable.");
     return;
   }
   PendingHome *pending = g_new0 (PendingHome, 1);
@@ -133,7 +133,7 @@ bus_acquired (GDBusConnection *connection, const char *name, gpointer data)
   GError *error = NULL;
   info = g_dbus_node_info_new_for_xml (xml, &error);
   if (info)
-    g_dbus_connection_register_object (connection, "/org/project_luma/Tester",
+    g_dbus_connection_register_object (connection, "/org/projectSuno/Tester",
       info->interfaces[0], &vtable, NULL, NULL, &error);
   if (error) {
     g_warning ("Tester control interface: %s", error->message);
@@ -145,8 +145,8 @@ G_MODULE_EXPORT void
 gtk_module_init (gint *argc, gchar ***argv)
 {
   (void) argc; (void) argv;
-  if (g_strcmp0 (g_getenv ("LUMA_TESTER_CONTROL"), "1") == 0 &&
+  if (g_strcmp0 (g_getenv ("SUNO_TESTER_CONTROL"), "1") == 0 &&
       g_strcmp0 (g_get_prgname (), "phosh") == 0)
-    g_bus_own_name (G_BUS_TYPE_SESSION, "org.project_luma.Tester",
+    g_bus_own_name (G_BUS_TYPE_SESSION, "org.projectSuno.Tester",
       G_BUS_NAME_OWNER_FLAGS_NONE, bus_acquired, NULL, NULL, NULL, NULL);
 }

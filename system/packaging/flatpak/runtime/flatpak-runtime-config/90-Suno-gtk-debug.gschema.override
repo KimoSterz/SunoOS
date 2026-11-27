@@ -1,0 +1,4 @@
+# GTK 4 enables the inspector shortcuts by default; Suno apps do not offer
+# them to people typing. The host sets the same default (dconf Suno.d).
+[org.gtk.gtk4.Settings.Debug]
+enable-inspector-keybinding=false

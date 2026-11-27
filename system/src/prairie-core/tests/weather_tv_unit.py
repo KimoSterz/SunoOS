@@ -6,7 +6,7 @@ import sys
 import unittest
 
 ROOT = Path(__file__).resolve().parents[3]
-sys.path[:0] = [str(ROOT / 'src/prairie-core'), str(ROOT / 'src/luma-platform/appkit')]
+sys.path[:0] = [str(ROOT / 'src/prairie-core'), str(ROOT / 'src/Suno-platform/appkit')]
 
 from prairie_apps.weather_backend import parse_forecast  # noqa: E402
 from prairie_apps.weather_data import snapshot_from_forecast  # noqa: E402

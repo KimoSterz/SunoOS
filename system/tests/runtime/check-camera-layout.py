@@ -4,7 +4,7 @@
 
 The composition check covers the actual window, dial geometry and menu anchors,
 shutter/session sizes, and phone breakpoints. Reference screenshots are produced
-by lumaui-conform on the server. The former output-directory/--light arguments
+by SunoUI-conform on the server. The former output-directory/--light arguments
 remain harmless for older callers; four-theme paint is checked by the gate.
 """
 from pathlib import Path

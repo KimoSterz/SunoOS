@@ -72,7 +72,7 @@ done
 grep -Fq 'firmware_request_nowarn' "$source_tree/drivers/nfc/s3fwrn5/nci.c" ||
   die 'missing-calibration fallback implementation is absent'
 
-make_args=(ARCH=arm64 LLVM=1 LOCALVERSION= KBUILD_BUILD_USER=luma
+make_args=(ARCH=arm64 LLVM=1 LOCALVERSION= KBUILD_BUILD_USER=Suno
   KBUILD_BUILD_HOST=isolated KBUILD_BUILD_TIMESTAMP="$build_timestamp"
   KBUILD_BUILD_VERSION=1-postmarketos-qcom-milos
   "KCFLAGS=-ffile-prefix-map=$source_tree=. -fdebug-prefix-map=$source_tree=. -fmacro-prefix-map=$source_tree=.")
@@ -145,7 +145,7 @@ if find "$output_dir" -type f \( -name hwreg.bin -o -name swreg.bin \) -print | 
 fi
 
 {
-  printf 'LUMA_FP6_NFC_BUILD_VERSION=1\n'
+  printf 'SUNO_FP6_NFC_BUILD_VERSION=1\n'
   printf 'SCOPE=fp6-nfc-reader-diagnostic\n'
   printf 'UPSTREAM_COMMIT=%s\n' "$FP6_NFC_UPSTREAM_COMBINED_COMMIT"
   printf 'KERNEL_RELEASE=7.1.2\n'

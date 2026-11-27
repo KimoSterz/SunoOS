@@ -17,16 +17,16 @@ if [ "${1:-}" != --user ]; then
   python3 -B "$CI_SOURCE/scripts/depot/native-filer-inputs.py" \
     "$CI_SOURCE/config/depot/native-arm-filer-inputs.json" \
     "$CI_SOURCE/config/depot/native-arm-filer-transport.json" "$CI_INPUTS" > "$CI_OUT/INPUTS-VERIFIED.json"
-  useradd --create-home --uid 1000 luma-ci
-  install -d -o luma-ci -g luma-ci "$DEPOT_ROOT" "$DEPOT_ROOT/tmp" "$DEPOT_ROOT/logs" "$DEPOT_ROOT/site" "$DEPOT_ROOT/inputs"
+  useradd --create-home --uid 1000 Suno-ci
+  install -d -o Suno-ci -g Suno-ci "$DEPOT_ROOT" "$DEPOT_ROOT/tmp" "$DEPOT_ROOT/logs" "$DEPOT_ROOT/site" "$DEPOT_ROOT/inputs"
   install -d "$DEPOT_ROOT/repo" "$DEPOT_ROOT/inputs/filer"
   mount --bind "$CI_INPUTS/runtime/repo" "$DEPOT_ROOT/repo"
   mount -o remount,bind,ro "$DEPOT_ROOT/repo"
   mount --bind "$CI_INPUTS/filer" "$DEPOT_ROOT/inputs/filer"
   mount -o remount,bind,ro "$DEPOT_ROOT/inputs/filer"
-  install -m 0444 "$CI_INPUTS/runtime/site/luma.flatpakrepo" "$DEPOT_ROOT/site/luma.flatpakrepo"
-  chown -R luma-ci:luma-ci "$CI_OUT"
-  exec runuser -u luma-ci -- env HOME=/home/luma-ci PRODUCT_SOURCE="$PRODUCT_SOURCE" \
+  install -m 0444 "$CI_INPUTS/runtime/site/Suno.flatpakrepo" "$DEPOT_ROOT/site/Suno.flatpakrepo"
+  chown -R Suno-ci:Suno-ci "$CI_OUT"
+  exec runuser -u Suno-ci -- env HOME=/home/Suno-ci PRODUCT_SOURCE="$PRODUCT_SOURCE" \
     CI_SOURCE="$CI_SOURCE" CI_OUT="$CI_OUT" CI_INPUTS="$CI_INPUTS" DEPOT_ROOT="$DEPOT_ROOT" \
     DEPOT_ARCH="$DEPOT_ARCH" DEPOT_TOOLS_ARCH="$DEPOT_TOOLS_ARCH" DEPOT_INSIDE_TOOLS="$DEPOT_INSIDE_TOOLS" \
     DEPOT_KEYS="$DEPOT_KEYS" DEPOT_BUILD_JOBS="$DEPOT_BUILD_JOBS" DEPOT_BUILD_MIN_FREE_BYTES="$DEPOT_BUILD_MIN_FREE_BYTES" \
@@ -55,13 +55,13 @@ python3 - "$CI_SOURCE/config/depot/native-arm-filer-inputs.json" "$DEPOT_ROOT" "
 import json,pathlib,subprocess,sys
 profile=json.load(open(sys.argv[1]));root=pathlib.Path(sys.argv[2]);out=pathlib.Path(sys.argv[3]);actual={}
 for kind in ('Platform','Sdk'):
-    actual[kind]=subprocess.check_output(['flatpak','info','--user','--show-commit','org.projectluma.'+kind+'//44'],text=True).strip()
-    assert actual[kind]==profile['refs']['runtime/org.projectluma.'+kind+'/aarch64/44']
+    actual[kind]=subprocess.check_output(['flatpak','info','--user','--show-commit','org.projectSuno.'+kind+'//44'],text=True).strip()
+    assert actual[kind]==profile['refs']['runtime/org.projectSuno.'+kind+'/aarch64/44']
 actual['linter']=subprocess.check_output(['flatpak','info','--user','--show-commit','org.flatpak.Builder'],text=True).strip()
 (out/'INSTALLED-INPUTS.json').write_text(json.dumps(actual,indent=2)+'\n')
 PY
 # A real SDK process checks affinity before any application compiler is started.
-flatpak build-init --arch=aarch64 "$DEPOT_ROOT/affinity-probe" org.projectluma.NativeFilerAffinityProbe org.projectluma.Sdk org.projectluma.Platform 44
+flatpak build-init --arch=aarch64 "$DEPOT_ROOT/affinity-probe" org.projectSuno.NativeFilerAffinityProbe org.projectSuno.Sdk org.projectSuno.Platform 44
 flatpak build "$DEPOT_ROOT/affinity-probe" /usr/bin/python3 -B -I -c \
   'import os,platform,json,subprocess; a=sorted(os.sched_getaffinity(0)); assert platform.machine()=="aarch64" and 1<=len(a)<=4 and int(subprocess.check_output(["nproc"]))==len(a); print(json.dumps(dict(machine=platform.machine(),affinity=a,nproc=len(a))))' > "$CI_OUT/SDK-AFFINITY.json"
 python3 - "$CI_OUT" <<'PY'

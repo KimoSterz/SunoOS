@@ -4,8 +4,8 @@
 set -euo pipefail
 repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 . "$repo_root/config/desktop/inputs.env"
-architecture=${LUMA_TARGET_ARCHITECTURE:-$(uname -m)}
-desktop_profile=${LUMA_VIOLA_DESKTOP_PROFILE:-}
+architecture=${SUNO_TARGET_ARCHITECTURE:-$(uname -m)}
+desktop_profile=${SUNO_VIOLA_DESKTOP_PROFILE:-}
 case "$desktop_profile:$architecture" in
   :*|arm-preview:aarch64) ;;
   *) printf 'error: unsupported Viola desktop profile/architecture\n' >&2; exit 1 ;;
@@ -25,43 +25,43 @@ if [ "$desktop_profile" = arm-preview ] && [ "$engine_release" -lt 32 ]; then
   printf 'error: the desktop preview profile requires the shared-memory-capable engine\n' >&2
   exit 1
 fi
-engine=${LUMA_VIOLA_ENGINE_ARCHIVE:?Supply the admitted engine archive for the selected architecture}
+engine=${SUNO_VIOLA_ENGINE_ARCHIVE:?Supply the admitted engine archive for the selected architecture}
 [ -f "$engine" ] && [ ! -L "$engine" ]
 printf '%s  %s\n' "$engine_sha" "$engine" | sha256sum -c -
-export LUMA_RPM_BUILDER_ARCHITECTURE=$architecture
+export SUNO_RPM_BUILDER_ARCHITECTURE=$architecture
 out="$repo_root/build/packages/viola-browser-stable"
 mkdir -p "$(dirname "$out")"
 work=$(mktemp -d "$out.work.XXXXXX")
 trap 'rm -rf "$work"' EXIT INT TERM
 rpmroot="$work/rpmbuild"
 mkdir -p "$rpmroot"/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
-host="$work/viola-luma-host"
-mkdir -p "$host/appkit-spike" "$host/luma-package"
+host="$work/viola-Suno-host"
+mkdir -p "$host/appkit-spike" "$host/Suno-package"
 base="$repo_root/src/external/viola/chromium-linux"
 native_release=$(awk '$1 == "%global" && $2 == "native_release" {print $3}' "$repo_root/packaging/rpm/viola-browser-stable.spec")
 [[ "$native_release" =~ ^[1-9][0-9]{0,5}$ ]]
 [ "$(rpmspec --target "$architecture" -q --srpm --qf '%{NAME}\n' "$repo_root/packaging/rpm/viola-browser-stable.spec")" = viola-browser-stable ]
-manifest="$base/luma-package/native-$native_release-host.sha256"
+manifest="$base/Suno-package/native-$native_release-host.sha256"
 (cd "$base/appkit-spike" && sha256sum -c "$manifest")
 while IFS= read -r member; do
   case "$member" in ''|/*|../*|*/../*|*/..) exit 1 ;; esac
   [ -f "$base/appkit-spike/$member" ] && [ ! -L "$base/appkit-spike/$member" ]
   install -D -m 0644 "$base/appkit-spike/$member" "$host/appkit-spike/$member"
 done < <(cut -c67- "$manifest")
-cp -R "$base/luma-package/." "$host/luma-package/"
+cp -R "$base/Suno-package/." "$host/Suno-package/"
 source_revision=$(git -c safe.directory="$repo_root" -C "$repo_root" rev-parse HEAD)
 [[ "$source_revision" =~ ^[0-9a-f]{40}$ ]]
-printf '%s\n' "$source_revision" > "$host/luma-package/luma-source-revision"
+printf '%s\n' "$source_revision" > "$host/Suno-package/Suno-source-revision"
 # Generic/mobile package builds omit the desktop's explicit transport choice.
 # Carry the selected bytes in Source1 so the SRPM records this build input.
 if [ "$desktop_profile" = arm-preview ]; then
-  cp "$host/luma-package/desktop-arm-preview-frame-profile.json" \
-    "$host/luma-package/native-engine-profile.json"
+  cp "$host/Suno-package/desktop-arm-preview-frame-profile.json" \
+    "$host/Suno-package/native-engine-profile.json"
 fi
 find "$host" -type d -name __pycache__ -prune -exec rm -rf {} +
 epoch=${SOURCE_DATE_EPOCH:-$(git -c safe.directory="$repo_root" -C "$repo_root" log -1 --format=%ct HEAD)}
 tar -C "$work" --sort=name --mtime="@$epoch" --owner=0 --group=0 --numeric-owner \
-  -cf - viola-luma-host | gzip -n > "$rpmroot/SOURCES/viola-luma-host-0.2.10-native$native_release.tar.gz"
+  -cf - viola-Suno-host | gzip -n > "$rpmroot/SOURCES/viola-Suno-host-0.2.10-native$native_release.tar.gz"
 cp --reflink=auto "$engine" "$rpmroot/SOURCES/viola-native-engine-0.2.10-native$engine_release.tar.zst"
 install -m 0644 "$repo_root/packaging/rpm/viola-browser-stable.spec" "$rpmroot/SPECS/"
 "$repo_root/scripts/packages/run-in-rpm-builder.sh" "$rpmroot" "$builder" '

@@ -12,7 +12,7 @@ class MemoryAdmissionTests(unittest.TestCase):
     def run_guard(self, profile=None, state="shut off", available_gib=48):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            (root / "src/ProjectLuma").mkdir(parents=True)
+            (root / "src/projectSuno").mkdir(parents=True)
             (root / "logs").mkdir()
             commands = root / "bin"
             commands.mkdir()
@@ -29,14 +29,14 @@ class MemoryAdmissionTests(unittest.TestCase):
                 path.chmod(0o755)
             arguments = root / "arguments"
             env = dict(os.environ, PATH=f"{commands}:{os.environ['PATH']}",
-                       LUMA_BUILD_ROOT=str(root), TEST_VM_STATE=state,
+                       SUNO_BUILD_ROOT=str(root), TEST_VM_STATE=state,
                        TEST_AVAILABLE=str(available_gib * 1024**3),
                        TEST_ARGUMENTS=str(arguments))
-            env.pop("LUMA_BUILD_MEMORY_PROFILE", None)
+            env.pop("SUNO_BUILD_MEMORY_PROFILE", None)
             if profile is not None:
-                env["LUMA_BUILD_MEMORY_PROFILE"] = profile
+                env["SUNO_BUILD_MEMORY_PROFILE"] = profile
             result = subprocess.run(
-                ["bash", str(ROOT / "scripts/build-host/luma-build-run"), "true"],
+                ["bash", str(ROOT / "scripts/build-host/Suno-build-run"), "true"],
                 env=env, capture_output=True, text=True)
             return result, arguments.read_text() if arguments.exists() else ""
 

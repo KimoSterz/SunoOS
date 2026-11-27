@@ -10,12 +10,12 @@
 set -Eeuo pipefail
 umask 077
 
-stage=/tmp/luma-fingerprint-enrollment-v84
-phase=/sys/bus/platform/devices/qcomtee/luma_focal_phase
+stage=/tmp/Suno-fingerprint-enrollment-v84
+phase=/sys/bus/platform/devices/qcomtee/Suno_focal_phase
 firmware_path=/sys/module/firmware_class/parameters/path
-marker=luma-fingerprint-enrollment-v84-baseline
+marker=Suno-fingerprint-enrollment-v84-baseline
 expected_model='The Fairphone (Gen. 6)'
-expected_kernel=7.1.2-luma-fp-cma1
+expected_kernel=7.1.2-Suno-fp-cma1
 expected_boot_sha=c6acad3a30d944d59648258eef383c33a3b51ac1148a98ef24256ee4dee61dd8
 expected_config_sha=5bddfee4390b0f66de5709b99282e79ee3787a01749d5cc8d28ea82d6bbed7fe
 expected_qcomtee_sha=69862031f8b461d92ec8c2ae9de05abec793861d9c95f5516b744e50a62a2213
@@ -119,10 +119,10 @@ printf '<6>%s\n' "$marker" >/dev/kmsg
 
 "$stage/fp6-focal-driver-stage" prepare
 driver_prepared=true
-insmod "$stage/qcomtee-enrollment.ko" luma_focal_enroll_service=1
+insmod "$stage/qcomtee-enrollment.ko" Suno_focal_enroll_service=1
 qcomtee_loaded=true
-[[ -c /dev/luma-fp6-fingerprint ]] || fail enrollment_device_missing
-[[ $(stat -c %a /dev/luma-fp6-fingerprint) == 600 ]] || fail enrollment_device_mode
+[[ -c /dev/Suno-fp6-fingerprint ]] || fail enrollment_device_missing
+[[ $(stat -c %a /dev/Suno-fp6-fingerprint) == 600 ]] || fail enrollment_device_mode
 [[ $(cat "$phase") == secure-prepared ]] || fail secure_prepare_state
 "$stage/fp6-focal-driver-stage" prepare-probe
 if ! printf '%s\n' probe >"$phase"; then
@@ -136,11 +136,11 @@ printf '%s\n' enumerate >"$phase" || fail enumeration_phase
 [[ $(cat "$phase") == complete ]] || fail enumeration_state
 
 new_dmesg=$(dmesg | sed -n "/$marker/,\$p")
-grep -Fq 'luma-focal: root-only enrollment transport registered payload_contents_logged=0 raw_images=0' <<<"$new_dmesg" || fail transport_registration
-grep -Eq 'luma-focal: enumeration accepted count=[0-9]+ raw_images=0 templates_written=0' <<<"$new_dmesg" || fail enumeration_acceptance
-! grep -Eq 'luma-focal: command=0x(1013|1018|2000|2001|2008)' <<<"$new_dmesg" || fail forbidden_biometric_command
+grep -Fq 'Suno-focal: root-only enrollment transport registered payload_contents_logged=0 raw_images=0' <<<"$new_dmesg" || fail transport_registration
+grep -Eq 'Suno-focal: enumeration accepted count=[0-9]+ raw_images=0 templates_written=0' <<<"$new_dmesg" || fail enumeration_acceptance
+! grep -Eq 'Suno-focal: command=0x(1013|1018|2000|2001|2008)' <<<"$new_dmesg" || fail forbidden_biometric_command
 [[ -z $(critical_faults <<<"$new_dmesg") ]] || fail critical_fault
 
 success=true
 trap - EXIT INT TERM HUP
-printf 'event=fp6_enrollment_v84_active slot=b kernel=%s device=/dev/luma-fp6-fingerprint mode=600 qcomtee_loaded=true candidate_focal_loaded=true driver_prepared=true raw_images=0 templates_written=0\n' "$expected_kernel"
+printf 'event=fp6_enrollment_v84_active slot=b kernel=%s device=/dev/Suno-fp6-fingerprint mode=600 qcomtee_loaded=true candidate_focal_loaded=true driver_prepared=true raw_images=0 templates_written=0\n' "$expected_kernel"

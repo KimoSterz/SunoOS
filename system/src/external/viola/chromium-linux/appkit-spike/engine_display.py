@@ -138,8 +138,8 @@ class EngineDisplay:
         from gi.repository import Gio, GLib
         self.remote_connection = Gio.bus_get_sync(Gio.BusType.SESSION, None)
         try:
-            result = self.remote_connection.call_sync('org.projectluma.ViolaHost1',
-                '/org/projectluma/ViolaHost1', 'org.projectluma.ViolaHost1', 'Acquire',
+            result = self.remote_connection.call_sync('org.projectSuno.ViolaHost1',
+                '/org/projectSuno/ViolaHost1', 'org.projectSuno.ViolaHost1', 'Acquire',
                 None, GLib.VariantType.new('(s)'), Gio.DBusCallFlags.NONE,
                 (2 * STARTUP_LIMIT + 30) * 1000, None).unpack()[0]
             if len(result) > 1024:
@@ -150,7 +150,7 @@ class EngineDisplay:
                 raise ValueError('The private display handle is invalid.')
             self.remote_handle = handle
             socket_path = Path(record['wayland_display'])
-            root = Path('/run/user') / str(os.getuid()) / 'luma-viola'
+            root = Path('/run/user') / str(os.getuid()) / 'Suno-viola'
             if (socket_path.parent.parent != root
                     or not re.fullmatch('display-[a-z0-9_]{8}', socket_path.parent.name)
                     or not re.fullmatch('viola-engine-[0-9a-f]{32}', socket_path.name)):
@@ -233,8 +233,8 @@ class EngineDisplay:
             self.remote_connection = self.remote_handle = None
             if handle:
                 try:
-                    connection.call_sync('org.projectluma.ViolaHost1', '/org/projectluma/ViolaHost1',
-                        'org.projectluma.ViolaHost1', 'Release', GLib.Variant('(s)', (handle,)),
+                    connection.call_sync('org.projectSuno.ViolaHost1', '/org/projectSuno/ViolaHost1',
+                        'org.projectSuno.ViolaHost1', 'Release', GLib.Variant('(s)', (handle,)),
                         None, Gio.DBusCallFlags.NONE, 10000, None)
                 except GLib.Error:
                     pass  # The host also reclaims the display on sender loss.

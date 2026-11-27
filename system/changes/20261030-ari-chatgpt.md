@@ -1,7 +1,7 @@
 ---
 type: feature
 component: Ari
-packages: [luma-ari]
+packages: [Suno-ari]
 highlight: true
 ---
 Summary: Ari can sign in to your AI account and act in apps

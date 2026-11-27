@@ -10,7 +10,7 @@ from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parents[2]
-SCRIPT = ROOT / "config/mobile/fp6-physical/overlay/usr/libexec/luma-fp6-cellular-link"
+SCRIPT = ROOT / "config/mobile/fp6-physical/overlay/usr/libexec/Suno-fp6-cellular-link"
 
 # The device script is imported straight from the overlay, so it needs a `gi`
 # to import against.  The stub used to be pushed into sys.modules at module
@@ -40,8 +40,8 @@ def setUpModule() -> None:
         _PREVIOUS_MODULES[name] = sys.modules.get(name)
         sys.modules[name] = replacement
     spec = importlib.util.spec_from_loader(
-        "luma_fp6_cellular_link",
-        importlib.machinery.SourceFileLoader("luma_fp6_cellular_link", str(SCRIPT)),
+        "Suno_fp6_cellular_link",
+        importlib.machinery.SourceFileLoader("Suno_fp6_cellular_link", str(SCRIPT)),
     )
     module = importlib.util.module_from_spec(spec)
     _PREVIOUS_MODULES[spec.name] = sys.modules.get(spec.name)
@@ -61,11 +61,11 @@ def tearDownModule() -> None:
 
 class CellularLinkTests(unittest.TestCase):
     def setUp(self):
-        # CellularLink() reads /etc/luma/fp6-cellular-link.conf. Point it at a
+        # CellularLink() reads /etc/Suno/fp6-cellular-link.conf. Point it at a
         # path that cannot exist so the tests read the same empty configuration
         # on a build host, a developer laptop and an FP6.
         patcher = mock.patch.object(
-            MODULE, "CONFIG", Path("/nonexistent/luma/fp6-cellular-link.conf")
+            MODULE, "CONFIG", Path("/nonexistent/Suno/fp6-cellular-link.conf")
         )
         self.config = patcher.start()
         self.addCleanup(patcher.stop)
@@ -166,7 +166,7 @@ class CellularLinkTests(unittest.TestCase):
         """Return the mmcli calls made when no usable data bearer exists yet.
 
         The modem reports a default-attach bearer on fast.t-mobile.com; `apn`
-        is what Luma has been configured with, "" meaning nothing configured.
+        is what Suno has been configured with, "" meaning nothing configured.
         """
         link = MODULE.CellularLink()
         link.apn = apn
@@ -202,7 +202,7 @@ class CellularLinkTests(unittest.TestCase):
 
     def test_configured_apn_overrides_the_modem_reported_attach_apn(self):
         # A carrier can expose a generic parent-network attach APN while the
-        # MVNO needs its own for user traffic, so an explicit Luma setting
+        # MVNO needs its own for user traffic, so an explicit Suno setting
         # wins.  Asserted here because the reverse precedence once shipped and
         # is not observable from the outside: nothing in the mmcli output says
         # the carrier rejected an APN.

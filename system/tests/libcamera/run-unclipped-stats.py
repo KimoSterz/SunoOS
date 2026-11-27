@@ -20,7 +20,7 @@ build = args.build_directory or source / 'output'
 statistics = (source / 'src/libcamera/software_isp/swstats_cpu.cpp').read_text()
 start = statistics.index('static constexpr unsigned int kAwbSaturationThreshold')
 end = statistics.index('void SwStatsCpu::statsBGGR8Line0')
-with tempfile.TemporaryDirectory(prefix='luma-camera-stats-', dir=os.environ.get('DEV_ARTIFACT_DIR')) as directory:
+with tempfile.TemporaryDirectory(prefix='Suno-camera-stats-', dir=os.environ.get('DEV_ARTIFACT_DIR')) as directory:
     output = Path(directory)
     (output / 'statistics-macros.h').write_text(statistics[start:end])
     start = statistics.index('void SwStatsCpu::finishFrame(')

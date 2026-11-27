@@ -1,0 +1,14 @@
+[Desktop Entry]
+Type=Application
+Name=Terminal
+Comment=Run commands and work in a shell
+Exec=python3 -m Suno_terminal %U
+Icon=org.projectSuno.Terminal
+Terminal=false
+Categories=System;TerminalEmulator;
+StartupNotify=true
+DBusActivatable=true
+# TV home opt-in (docs/developer-platform/tv-mode.md): its TV presentation is Suno_terminal/tv.py.
+X-Suno-TV=true
+X-Suno-TV-Tile=org.projectSuno.Terminal-tv
+X-Suno-TV-Presentation=tv

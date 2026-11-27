@@ -1,8 +1,8 @@
 # Leaf standalone dependencies
 
 The application includes selected Python, PyGObject, cairo, GTK, libadwaita,
-LumaUI, LumaSemantics, AppKit, GLib, libsecret, fonts and icons from the qualified
-Luma Platform. Component notices remain in `usr/share/licenses`. The shared
+SunoUI, SunoSemantics, AppKit, GLib, libsecret, fonts and icons from the qualified
+Suno Platform. Component notices remain in `usr/share/licenses`. The shared
 GNOME Platform 50 supplies WebKit, JavaScriptCore and their process sandbox.
 Their sources follow the GNOME/Flathub runtime's source publication.
 
@@ -31,4 +31,4 @@ models and OS account services are not bundled.
 These inputs are available from Fedora Koji. The speech components retain
 their GPL notices; corresponding source RPMs accompany the release together
 with the other included dependencies. Application and packaging source remain
-in the Luma repository at the release tag.
+in the Suno repository at the release tag.

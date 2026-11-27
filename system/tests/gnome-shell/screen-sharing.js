@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-// What the packaged screen sharing picker must be (js/ui/lumaShare.js).
-// Run: gjs -m screen-sharing.js path/to/lumaShare.js path/to/luma-share.css
+// What the packaged screen sharing picker must be (js/ui/SunoShare.js).
+// Run: gjs -m screen-sharing.js path/to/SunoShare.js path/to/Suno-share.css
 //
 // The module cannot be imported on its own -- it pulls in main.js and the
 // whole shell -- so this reads the packaged source. That is the point: these
@@ -46,7 +46,7 @@ hasnt('the picker never records a monitor itself', 'RecordMonitor');
 hasnt('the picker never records a window itself', 'RecordWindow');
 
 // Only the portal backend may reach the picker.
-has('only the portal backend may ask', 'org.freedesktop.impl.portal.desktop.luma');
+has('only the portal backend may ask', 'org.freedesktop.impl.portal.desktop.Suno');
 has('the caller is checked by name owner', 'GetNameOwner');
 has('a stranger is refused', 'ACCESS_DENIED');
 
@@ -71,14 +71,14 @@ has('the same 14px scrim blur as the prompt', 'SCRIM_BLUR = 14');
 
 // ── Reuse, not a second copy ──────────────────────────────────────────────
 has('windows use the dock preview renderer',
-    "import {PreviewThumbnail} from './lumaDockWindows.js'");
+    "import {PreviewThumbnail} from './SunoDockWindows.js'");
 has('the edge and pill use Capture-hidden actors',
-    "import {CaptureHidden, ShelfSurface} from './lumaCapture.js'");
+    "import {CaptureHidden, ShelfSurface} from './SunoCapture.js'");
 has('the pill uses the one shelf placement helper',
-    "import {placeShelfBar} from './lumaShelfSurface.js'");
+    "import {placeShelfBar} from './SunoShelfSurface.js'");
 has('monitors are named once, with Cast',
-    "import {listDisplays} from './lumaCast.js'");
-has('notifications follow Cast’s own setting', "'org.projectluma.cast'");
+    "import {listDisplays} from './SunoCast.js'");
+has('notifications follow Cast’s own setting', "'org.projectSuno.cast'");
 has('a screen tile clones only what is on its monitor', '_onMonitor(actor)');
 has('a screen tile takes its own display', 'displays?.find(d => d.index === index)');
 has('a screen tile shows the display mode', "display?.mode ?? [monitor.width, monitor.height]");
@@ -115,14 +115,14 @@ has('Space selects', `case Clutter.KEY_KP_Space:
 // The edges draw their violet in a child: a CaptureHidden actor's own
 // background or border is painted in its paint node and reaches every
 // screen stream; only children are held back.
-has('the edges draw their violet in a child', "this.add_child(edgeFace('luma-share-screen-edge'))");
+has('the edges draw their violet in a child', "this.add_child(edgeFace('Suno-share-screen-edge'))");
 has('the window ring is drawn in children too', 'this.add_child(piece);');
-// The ring follows the window's own outline: Luma's radius for that window,
+// The ring follows the window's own outline: Suno's radius for that window,
 // concentric at every offset, and its halo fades out inside the ring's actor.
 has('the ring follows the window radius', 'windowCornerRadius(this._window)');
 has('the halo ends inside the actor', 'RING_MARGIN = Math.ceil(RING_LINE + HALO_FADE + 1)');
 hasnt('no edge is styled on the CaptureHidden actor itself',
-    "super._init({style_class: 'luma-share-screen-edge'");
+    "super._init({style_class: 'Suno-share-screen-edge'");
 // layout.js rejects unknown chrome parameters; this one threw in
 // SessionStarted, so a shared screen got neither edge nor pill.
 hasnt('no input-region parameter, which this Shell rejects', 'affectsInputRegion');
@@ -137,13 +137,13 @@ has('tiles are sized after they are on the stage', `row.add_child(tile);
 has('violet is the sharing colour', '#7d5cf0', css);
 hasnt('sharing is never Capture’s red', '#d4595c', css);
 has('the card follows the appearance mode',
-    '.luma-share-card.luma-surface-dark', css);
+    '.Suno-share-card.Suno-surface-dark', css);
 has('the window ring is a 2.5 violet line', 'const RING_LINE = 2.5;');
 has('the ring is the sharing violet', 'const RING_VIOLET = [125, 92, 240];');
 has('the screen edge is 3 violet inside the monitor', 'border: 3px solid #7d5cf0', css);
 has('the chosen ring is violet',
-    '.luma-share-tile-frame.luma-share-tile-chosen', css);
-has('a 40 pill', '.luma-share-pill { height: 40px; }', css);
+    '.Suno-share-tile-frame.Suno-share-tile-chosen', css);
+has('a 40 pill', '.Suno-share-pill { height: 40px; }', css);
 has('equal buttons at 42', 'height: 42px', css);
 
 if (failures > 0) {

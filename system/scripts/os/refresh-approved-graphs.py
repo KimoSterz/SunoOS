@@ -62,10 +62,10 @@ def main():
     protected(control); protected(state)
     verifier=module(control/'scripts/depot/seal-signing-control.py','refresh_seal')
     verifier.verify(control,control_sha)
-    verifier.verify(state,state_sha,'org.projectluma.signing-inputs/v1')
+    verifier.verify(state,state_sha,'org.projectSuno.signing-inputs/v1')
     checks=module(control/'scripts/os/lib/approved_graph.py','approved_graph')
     cfg=json.loads((state/'approved.json').read_text())
-    if cfg['schema']!='org.projectluma.approved-graph-refresh/v1':
+    if cfg['schema']!='org.projectSuno.approved-graph-refresh/v1':
         raise ValueError('Unsupported approved state')
     paths=module(control/'scripts/os/lib/desktop_paths.py','desktop_paths')
     architecture=paths.architecture(cfg.get('architecture','x86_64'))
@@ -76,7 +76,7 @@ def main():
     targets.profile(control,architecture,profile)
     selected=cfg['channels'][channel]
     pipeline=Path(cfg['pipeline_root']); keys=Path(cfg['keys_root'])
-    public_key=keys/'update-graph-minisign/luma-update-graph.pub'
+    public_key=keys/'update-graph-minisign/Suno-update-graph.pub'
     for path in (pipeline,keys,public_key,Path(cfg['storage_config'])): protected(path)
     if digest(public_key)!=cfg['public_key_sha256']:
         raise ValueError('Graph signing key differs from installed client trust')
@@ -85,10 +85,10 @@ def main():
     image=cfg['tools_image']
     if not re.fullmatch('[a-f0-9]{64}',image): raise ValueError('Unpinned graph tools image')
     environment={'PATH':'/usr/sbin:/usr/bin:/sbin:/bin','HOME':'/root','LANG':'C.UTF-8',
-                 'PYTHONDONTWRITEBYTECODE':'1','LUMA_OS_ROOT':str(pipeline),'LUMA_OS_KEYS':str(keys),
-                 'TMPDIR':str(pipeline/'tmp'),'LUMA_OS_GRAPH_TOOLS_IMAGE':image,
+                 'PYTHONDONTWRITEBYTECODE':'1','SUNO_OS_ROOT':str(pipeline),'SUNO_OS_KEYS':str(keys),
+                 'TMPDIR':str(pipeline/'tmp'),'SUNO_OS_GRAPH_TOOLS_IMAGE':image,
                  'CONTAINERS_STORAGE_CONF':cfg['storage_config'],
-                 'LUMA_TARGET_ARCHITECTURE':architecture,'LUMA_OS_PROFILE':profile}
+                 'SUNO_TARGET_ARCHITECTURE':architecture,'SUNO_OS_PROFILE':profile}
     def verify(data_dir,name):
         for path in (data_dir,data_dir/name,data_dir/(name+'.minisig')):protected(path)
         subprocess.run(['podman','run','--rm','--pull=never','--network=none','--read-only',
@@ -107,7 +107,7 @@ def main():
     approved=json.loads(approved_path.read_text())
     bucket.validate_graph(approved,channel)
     normal_repo=Path(subprocess.check_output(['/usr/bin/bash','-c',
-        '. "$1"; luma_os_channel_repo "$2"','approved-refresh',
+        '. "$1"; Suno_os_channel_repo "$2"','approved-refresh',
         str(control/'scripts/os/lib/common.sh'),channel],env=environment,text=True).strip())
     repo=Path(selected['repository_path'])
     if repo!=normal_repo: raise ValueError('Approved source differs from the normal channel repository')
@@ -138,7 +138,7 @@ def main():
                 relative='objects/'+release['commit'][:2]+'/'+release['commit'][2:]+suffix
                 expected=repo/relative;protected(expected)
                 request=urllib.request.Request(public_repository_url+'/'+relative,
-                    headers={'Cache-Control':'no-cache','User-Agent':'Luma-approved-graph-refresh/1'})
+                    headers={'Cache-Control':'no-cache','User-Agent':'Suno-approved-graph-refresh/1'})
                 with urllib.request.urlopen(request,timeout=20) as response:
                     actual=response.read(16*1024*1024+1)
                 if len(actual)>16*1024*1024 or actual!=expected.read_bytes():
@@ -159,7 +159,7 @@ def main():
                     for suffix in ('','.minisig'):
                         name=channel+'.json'+suffix
                         request=urllib.request.Request('https://dl.simplyluma.com/'+prefix+'/'+name,
-                                  headers={'Cache-Control':'no-cache','User-Agent':'Luma-approved-graph-refresh/1'})
+                                  headers={'Cache-Control':'no-cache','User-Agent':'Suno-approved-graph-refresh/1'})
                         with urllib.request.urlopen(request,timeout=20) as response:
                             data=response.read(1024*1024+1)
                         if len(data)>1024*1024: raise ValueError('Oversized public graph')
@@ -248,7 +248,7 @@ def main():
                     for path in files:
                         temp=directory/('.'+path.name+'.refresh')
                         temp.write_bytes(path.read_bytes());temp.chmod(0o644);os.replace(temp,directory/path.name)
-            receipt={'schema':'org.projectluma.approved-graph-refresh-receipt/v1','channel':channel,'architecture':architecture,'hardware_target':hardware_target,'profile':profile,
+            receipt={'schema':'org.projectSuno.approved-graph-refresh-receipt/v1','channel':channel,'architecture':architecture,'hardware_target':hardware_target,'profile':profile,
                      'generated_at':actual['generated_at'],'control_sha256':control_sha,'state_sha256':state_sha,
                      'files':{p.name:digest(p) for p in files},'public_signature_and_readback':'PASS'}
             receipt_dir=bucket.directory(workspace);receipt_dir.mkdir(mode=0o700,parents=True,exist_ok=True)

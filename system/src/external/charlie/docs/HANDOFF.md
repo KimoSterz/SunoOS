@@ -1,19 +1,19 @@
 # Charlie integration guide
 
-Charlie combines a native GTK 4/libadwaita/Luma AppKit interface with a Python
+Charlie combines a native GTK 4/libadwaita/Suno AppKit interface with a Python
 mail engine. This guide describes the component source and integration boundaries;
 it is not a certification that every account provider or hardware profile has
 been qualified.
 
 ## Source and services
 
-- `charlie_luma/` owns the application, mail engine, local message store, account
+- `charlie_Suno/` owns the application, mail engine, local message store, account
   configuration, and HTML reader.
-- `luma-app.toml` declares the application runtime integration.
+- `Suno-app.toml` declares the application runtime integration.
 - [Engine decisions](ENGINE_DECISIONS.md) records upstream and implementation
   choices; [independent application integration](INDEPENDENT-APP.md) describes
   the retained mail-host service boundary.
-- The shared UI comes from the Luma Application Kit; the app adapts between
+- The shared UI comes from the Suno Application Kit; the app adapts between
   mailbox/thread/reader panes and compact navigation.
 
 ## Accounts and privacy

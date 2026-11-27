@@ -1,4 +1,4 @@
-From: Luma Developers
+From: Suno Developers
 Subject: [PATCH] Keycap: cached key grid, pressed cap drawn over it, nothing new on a first press
 
 On the Fold a press frame still cost about 18 ms of redraw with a median of
@@ -264,9 +264,9 @@ diff --git a/js/ui/keyboard.js b/js/ui/keyboard.js
 +        if (this._pressLayer)
 +            return;
 +        const layer = new Clutter.Actor({reactive: false, opacity: 0});
-+        this._pressCover = new St.Widget({style_class: 'luma-keycap-press-cover'});
++        this._pressCover = new St.Widget({style_class: 'Suno-keycap-press-cover'});
 +        this._pressClone = new Clutter.Clone();
-+        this._tint = new St.Widget({style_class: 'luma-keycap-press'});
++        this._tint = new St.Widget({style_class: 'Suno-keycap-press'});
 +        for (const actor of [this._pressCover, this._pressClone, this._tint])
 +            layer.add_child(actor);
 +        setKeycapVariantClass(this._pressCover);
@@ -285,7 +285,7 @@ diff --git a/js/ui/keyboard.js b/js/ui/keyboard.js
              return;
 -        const uiGroup = Main.layoutManager.uiGroup;
 -        if (!this._tint) {
--            this._tint = new St.Widget({style_class: 'luma-keycap-press', opacity: 0});
+-            this._tint = new St.Widget({style_class: 'Suno-keycap-press', opacity: 0});
 -            setKeycapVariantClass(this._tint);
 -            uiGroup.insert_child_above(this._tint, Main.layoutManager.keyboardBox);
 -        }
@@ -335,11 +335,11 @@ diff --git a/js/ui/keyboard.js b/js/ui/keyboard.js
                  this._previewLayer = new Clutter.Actor({reactive: false});
                  Main.layoutManager.uiGroup.add_child(this._previewLayer);
              }
--            label = new St.Label({style_class: 'luma-keycap-preview', text, opacity: 0});
+-            label = new St.Label({style_class: 'Suno-keycap-preview', text, opacity: 0});
 +            // Drawn directly, not through St.Label's offscreen text cache:
 +            // showing and moving a preview then renders nothing offscreen
 +            // (each re-render of that cache cost about a dozen GPU batches).
-+            label = new St.Label({style_class: 'luma-keycap-preview', text, opacity: 0,
++            label = new St.Label({style_class: 'Suno-keycap-preview', text, opacity: 0,
 +                offscreen_redirect: 0});
              setKeycapVariantClass(label);
              this._previewLayer.add_child(label);

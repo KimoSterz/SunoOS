@@ -14,9 +14,9 @@ from pathlib import Path
 import re
 import stat
 
-SCHEMA = 'org.projectluma.targeted-desktop-gate/v1'
+SCHEMA = 'org.projectSuno.targeted-desktop-gate/v1'
 CHANGED = frozenset(('gnome-shell', 'gnome-shell-common',
-                     'luma-developer-platform', 'luma-developer-platform-sdk',
+                     'Suno-developer-platform', 'Suno-developer-platform-sdk',
                      'prairie-icon-theme'))
 CHECKS = frozenset(('update', 'var-data-after-update', 'manual-rollback',
                     'var-data-after-rollback', 'return-to-candidate',
@@ -103,11 +103,11 @@ def validate(gate, candidate, head, architecture, provenance_sha256, *, owner_ui
     changed = {key[0] for key in a.keys() | b.keys() if a.get(key) != b.get(key)}
     require(changed and changed <= CHANGED and a.keys() == b.keys(),
             'Changes to installer, kernel, updater, boot recovery or another package require full qualification')
-    old_luma, new_luma = old['luma_packages']['packages'], new['luma_packages']['packages']
+    old_Suno, new_Suno = old['Suno_packages']['packages'], new['Suno_packages']['packages']
     def unchanged(rows):
         return sorted((row for row in rows if not any(row['nevra'].startswith(n+'-')
                        for n in CHANGED)), key=lambda row: row['nevra'])
-    require(unchanged(old_luma) == unchanged(new_luma), 'Unrelated Luma RPM body/header changed')
+    require(unchanged(old_Suno) == unchanged(new_Suno), 'Unrelated Suno RPM body/header changed')
     for name in ('guest', 'media-boot', 'changed-components', 'runtime-reuse', 'app-export'):
         doc = docs[name]
         require(doc.get('result') == 'PASS' and

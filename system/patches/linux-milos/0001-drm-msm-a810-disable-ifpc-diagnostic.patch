@@ -1,4 +1,4 @@
-From: Project Luma <luma@project-luma.org>
+From: Project Suno <Suno@project-suno.org>
 Date: Fri, 14 Aug 2026 18:00:00 +0000
 Subject: [PATCH] drm/msm/a810: disable IFPC for the FP6 diagnostic build
 

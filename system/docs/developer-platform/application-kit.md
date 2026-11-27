@@ -1,6 +1,6 @@
 # The Application Kit
 
-One kit, in one place. This document is the contract every Luma application is
+One kit, in one place. This document is the contract every Suno application is
 written against, and the one a person or a model should be handed before
 building a new application. If something here disagrees with an application,
 the application is wrong.
@@ -9,13 +9,13 @@ the application is wrong.
 
 There are exactly two parties, and the line between them does not move.
 
-**The toolkit draws the frame.** Luma's patched GTK 4 and libadwaita draw the
+**The toolkit draws the frame.** Suno's patched GTK 4 and libadwaita draw the
 window frame, its elevation, the title row, the identity in the top-left
 corner (the application's name and icon, resolved from its desktop entry, with
 its menu), the window controls in the top-right, the 9px gutter, and the
 island — its 10px radius, its inset ring and its two-layer shadow. They do this
 for every window on the system, including Filer, Calculator and Calendar,
-which is why a native Luma application cannot be allowed a second answer.
+which is why a native Suno application cannot be allowed a second answer.
 
 **The kit draws what is inside an island.** Toolbars, buttons, connected groups,
 segments, sidebar rows, status bars, groups, sliders, fields, avatars, empty
@@ -26,19 +26,19 @@ An application draws neither. It composes.
 
 ## Opting in
 
-A window becomes a Luma window by carrying two classes:
+A window becomes a Suno window by carrying two classes:
 
-- `luma-app-window` on the window;
-- `luma-titlebar` on its `AdwHeaderBar`.
+- `Suno-app-window` on the window;
+- `Suno-titlebar` on its `AdwHeaderBar`.
 
-That is the whole contract. `AppWindow` (Python) and `LumaApplicationWindow`
+That is the whole contract. `AppWindow` (Python) and `SunoApplicationWindow`
 (C) do this for you, and add nothing of their own to the frame. Islands are
-`Island` / `luma_pane_new()`, which carry `luma-island`; the toolkit does the
+`Island` / `Suno_pane_new()`, which carry `Suno-island`; the toolkit does the
 rest.
 
 The identity's menu comes from the application: `AppWindow` builds a
 `GMenuModel` from the command registry and installs it with
-`set_menubar()`; a C application calls `luma_application_window_set_menu_model()`
+`set_menubar()`; a C application calls `Suno_application_window_set_menu_model()`
 which does the same. The identity's name and icon come from the desktop entry
 and cannot be overridden — the corner of a window says what the dock says.
 
@@ -55,16 +55,16 @@ background, gradient or shadow over this region.
 
 An application with an edge-to-edge background, such as Weather's sky, opts in
 with `AppWindow.set_edge_to_edge(True)` or
-`luma_application_window_set_edge_to_edge()`. Phone presentation also uses
-`set_phone_bleed(True)` / `luma_application_window_set_phone_bleed()`.
+`Suno_application_window_set_edge_to_edge()`. Phone presentation also uses
+`set_phone_bleed(True)` / `Suno_application_window_set_phone_bleed()`.
 Phone bleed alone retains the shared Tablet safe area. An explicitly
 edge-to-edge application's background reaches the bezel;
 its foreground content reserves `status_inset` (C:
-`luma_application_window_get_status_inset()`) plus the normal content gap.
+`Suno_application_window_get_status_inset()`) plus the normal content gap.
 This inset must follow presentation changes even when the width stays constant.
 
 `set_status_bar_style("light" | "dark" | "auto")` declares the required status
-ink; the C equivalent is `luma_application_window_set_status_bar_style()`.
+ink; the C equivalent is `Suno_application_window_set_status_bar_style()`.
 It describes foreground contrast and never paints a bar. The shell receives
 the declaration through the window's standard GTK action group.
 
@@ -74,21 +74,21 @@ Colour is named, never written. The vocabulary is the toolkit's:
 
 | Token | Design name | Meaning |
 | --- | --- | --- |
-| `@luma_window` | ground | the window's ground, seen in the gutter |
-| `@luma_content` | surface | an island's surface |
-| `@luma_ink` | ink | text and glyphs |
-| `@luma_muted` | muted | secondary text |
-| `@luma_faint` | faint | placeholder and disabled |
-| `@luma_line` | `--f-line` | rules, rings and hairlines |
-| `@luma_fill` | `--f-fill` | a quiet fill: segments, notes, inputs |
-| `@luma_hover` | `--f-hover` | the pointer's fill |
-| `@luma_selected` | `--f-sel` | the selected row's fill |
-| `@luma_accent` | accent | the one accent |
-| `@luma_blue` `@luma_green` `@luma_violet` `@luma_amber` | tones | identity and category tones |
-| `@luma_destructive` | danger | destructive actions |
+| `@Suno_window` | ground | the window's ground, seen in the gutter |
+| `@Suno_content` | surface | an island's surface |
+| `@Suno_ink` | ink | text and glyphs |
+| `@Suno_muted` | muted | secondary text |
+| `@Suno_faint` | faint | placeholder and disabled |
+| `@Suno_line` | `--f-line` | rules, rings and hairlines |
+| `@Suno_fill` | `--f-fill` | a quiet fill: segments, notes, inputs |
+| `@Suno_hover` | `--f-hover` | the pointer's fill |
+| `@Suno_selected` | `--f-sel` | the selected row's fill |
+| `@Suno_accent` | accent | the one accent |
+| `@Suno_blue` `@Suno_green` `@Suno_violet` `@Suno_amber` | tones | identity and category tones |
+| `@Suno_destructive` | danger | destructive actions |
 
-`@luma_border`, `@luma_passive` and `@luma_pressed` are aliases of
-`@luma_line`, `@luma_fill` and `@luma_selected`, kept so existing sheets keep
+`@Suno_border`, `@Suno_passive` and `@Suno_pressed` are aliases of
+`@Suno_line`, `@Suno_fill` and `@Suno_selected`, kept so existing sheets keep
 resolving. New sheets use the toolkit's names.
 
 A literal colour in an application's stylesheet is a defect.
@@ -98,41 +98,41 @@ A literal colour in an application's stylesheet is a defect.
 An application's stylesheet must not contain rules for any of these; each is a
 second answer to a question the toolkit or the kit has settled:
 
-- `windowcontrols`, `headerbar`, `.luma-titlebar`, `.luma-identity-*`
-- `.luma-window-body`, `.luma-island`, `.luma-pane` — their radius, ring,
+- `windowcontrols`, `headerbar`, `.Suno-titlebar`, `.Suno-identity-*`
+- `.Suno-window-body`, `.Suno-island`, `.Suno-pane` — their radius, ring,
   shadow, margin or padding
 - a `border-radius` on the window itself
 - a `box-shadow` on anything that is an island
 - a `@define-color`
 - a hex or `rgba()` colour
 
-`tests/unit/test_luma_design_contract.py` enforces the kit's side of this;
+`tests/unit/test_Suno_design_contract.py` enforces the kit's side of this;
 the applications' side is enforced by the same test as they are brought
 across.
 
 ## Consuming the kit
 
 The kit is a package, not a directory to copy. Applications build against
-`luma-developer-platform-devel` — `pkg-config luma-ui-1` for C, the installed
-`luma_appkit` module for Python — and pin the release they were verified
-against. A copy of `src/luma-platform` inside an application's repository is
+`Suno-developer-platform-devel` — `pkg-config Suno-ui-1` for C, the installed
+`Suno_appkit` module for Python — and pin the release they were verified
+against. A copy of `src/Suno-platform` inside an application's repository is
 a fork, and a fork is how the twelve applications came to disagree.
 
 Native shared navigation (candidate2026-09-05): a source-owned native list
-may opt into `navigation-sidebar luma-navigation-sidebar`. It inherits the
+may opt into `navigation-sidebar Suno-navigation-sidebar`. It inherits the
 Filer selection palette,32px minimum rows,14px symbols,6px list inset and
-`luma-navigation-divider` spacing. Row content must wrap rather than forcing
-translated labels to clip. `luma-sidebar-search` styles a real GtkSearchEntry.
-An explicit `luma-sibling-islands` window provides its outer titlebar through
-the existing `luma-window-title-row` object-data contract; native pane header
+`Suno-navigation-divider` spacing. Row content must wrap rather than forcing
+translated labels to clip. `Suno-sidebar-search` styles a real GtkSearchEntry.
+An explicit `Suno-sibling-islands` window provides its outer titlebar through
+the existing `Suno-window-title-row` object-data contract; native pane header
 ownership then remains stable when adaptive panes collapse. Applications
 retain their native navigation stack and actions. Islands use real widget
 `overflow: hidden` to clip their child surfaces to the shared radius.
 
 Follow-up shared workflow contract0031: source-owned chooser windows opt into
-`luma-app-window`, explicit `luma-titlebar` and `luma-window-body`, with real
-clipped `luma-island luma-island-quiet` children. A quiet island owns the single
-outer material around native boxed preference rows. `luma-controls-quiet`
+`Suno-app-window`, explicit `Suno-titlebar` and `Suno-window-body`, with real
+clipped `Suno-island Suno-island-quiet` children. A quiet island owns the single
+outer material around native boxed preference rows. `Suno-controls-quiet`
 retains native control behavior and gives suggested actions inverse ink/content
 colors. Shared navigation owns the row inset; native PlacesSidebar revealers
 inside opted-in rows do not add another inset. Applications can supply their
@@ -174,7 +174,7 @@ must supply real data and interactions; no example cards ship in the presentatio
 
 ### Shared Home widgets
 
-Weather and Calendar use `src/luma-home-widgets`, extracted from Mobile's native
+Weather and Calendar use `src/Suno-home-widgets`, extracted from Mobile's native
 widget implementation. One shared model owns cache safety, freshness, units,
 events, monitors, widget definitions and app launch IDs. Native St and GTK3 views
 render those fields using generated shared design tokens. Shells own placement

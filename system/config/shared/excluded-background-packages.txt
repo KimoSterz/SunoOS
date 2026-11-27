@@ -1,5 +1,5 @@
-# Fedora bundled wallpaper packs excluded from every Luma image.
-# Personal pictures and the luma-backgrounds package are not affected.
+# Fedora bundled wallpaper packs excluded from every Suno image.
+# Personal pictures and the Suno-backgrounds package are not affected.
 f44-backgrounds-base
 f44-backgrounds-gnome
 desktop-backgrounds-gnome

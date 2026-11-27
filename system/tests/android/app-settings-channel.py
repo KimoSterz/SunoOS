@@ -21,25 +21,25 @@ PREFIX = r'''
 #include <iostream>
 #include <string>
 #include <vector>
-#include "luma-app-settings-channel.h"
+#include "Suno-app-settings-channel.h"
 #ifndef TEMP_FAILURE_RETRY
 #define TEMP_FAILURE_RETRY(x) (x)
 #endif
 namespace android {
 struct String16 { std::string value; explicit String16(const char* s):value(s){} };
 struct Parcel {
- void writeInterfaceToken(const String16& s){assert(s.value=="org.projectluma.android.IAppSettings");}
+ void writeInterfaceToken(const String16& s){assert(s.value=="org.projectSuno.android.IAppSettings");}
  void writeString16(const String16& s){assert(s.value=="com.example.game");}
 };
 struct IBinder {static constexpr int FLAG_ONEWAY=1;};
 struct Host {int calls=0; void transact(int code,const Parcel&,void*,int flags){assert(code==1&&flags==1);++calls;}} host;
-struct Manager {int calls=0; Host* checkService(const String16& s){assert(s.value=="lumaappsettings");++calls;return &host;}} manager;
+struct Manager {int calls=0; Host* checkService(const String16& s){assert(s.value=="Sunoappsettings");++calls;return &host;}} manager;
 Manager* defaultServiceManager(){return &manager;}
 }
 '''
 TEST = r'''
 int main(){
- using namespace luma::app_settings;
+ using namespace Suno::app_settings;
  using Clock=std::chrono::steady_clock;
  Request good{};good.magic=magic;good.version=version;strcpy(good.package,"com.example.game");
  for(int scenario=0;scenario<9;++scenario){
@@ -78,11 +78,11 @@ def main():
     end = source.index('\n    }\n}', start)
     body = source[start:end]
     repo = Path(__file__).resolve().parents[2]
-    with tempfile.TemporaryDirectory(prefix='luma-settings-channel-') as directory:
+    with tempfile.TemporaryDirectory(prefix='Suno-settings-channel-') as directory:
         unit = Path(directory)/'channel.cpp'
         binary = Path(directory)/'channel'
         def compile_body(value):
-            unit.write_text(PREFIX+'\nvoid handle(int client){using namespace luma::app_settings; do {\n'+value+'\n} while(false);}\n'+TEST)
+            unit.write_text(PREFIX+'\nvoid handle(int client){using namespace Suno::app_settings; do {\n'+value+'\n} while(false);}\n'+TEST)
             subprocess.run(['c++','-std=c++17','-O1','-Wall','-Wextra','-Werror',
                 '-I',str(repo/'patches/android-hardware-waydroid/native'),str(unit),'-o',str(binary)],check=True)
         def execute(uid):

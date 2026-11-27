@@ -2,12 +2,12 @@
  * SPDX-License-Identifier: Apache-2.0
  *
  * Narrow ABI subset of AOSP hardware/qcom/keymaster/QSEEComAPI.h at
- * 73a9f7a89a41c13486e925d6709fdf7a0d9665aa.  Luma deliberately exposes
+ * 73a9f7a89a41c13486e925d6709fdf7a0d9665aa.  Suno deliberately exposes
  * only the three symbols imported by the archived FP6 FocalTech HAL.
  */
 
-#ifndef LUMA_FP6_QSEECOM_API_H
-#define LUMA_FP6_QSEECOM_API_H
+#ifndef SUNO_FP6_QSEECOM_API_H
+#define SUNO_FP6_QSEECOM_API_H
 
 #include <stdint.h>
 

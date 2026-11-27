@@ -16,15 +16,15 @@ here = Path(__file__).resolve().parent
 stamp = datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')
 suffix = f'wire-{a.protocol}-{stamp}'
 subprocess.run(['python3', str(here / 'stage-startup.py'), '--suffix', suffix], check=True)
-overlay = Path.home() / '.local/share/luma-shell-live' / f'notifications-startup-0205-{suffix}'
-fixture = overlay / 'ui/lumaStudioVisualFixtures.js'
+overlay = Path.home() / '.local/share/Suno-shell-live' / f'notifications-startup-0205-{suffix}'
+fixture = overlay / 'ui/SunoStudioVisualFixtures.js'
 shutil.copyfile(here / 'visual-fixtures.js', fixture)
 manifest = overlay / 'STARTUP-TEST.json'
 receipt = json.loads(manifest.read_text())
 receipt.update(protocol=a.protocol, fixture_module=True, production=False, activated=False)
 receipt['source_sha256'][str(fixture.relative_to(overlay))] = hashlib.sha256(fixture.read_bytes()).hexdigest()
 manifest.write_text(json.dumps(receipt, indent=2) + '\n')
-out = Path('/var/home/nick/Documents/LumaDesign/reports/notifications-quick-options') / f'wire-{a.protocol}-{stamp}'
+out = Path('/var/home/nick/Documents/SunoDesign/reports/notifications-quick-options') / f'wire-{a.protocol}-{stamp}'
 out.mkdir(parents=True)
 scenario = here / ('protocol-scenario.json' if a.protocol == 'fdo' else 'gtk-protocol-scenario.json')
 command = ['python3', str(here / 'capture.py'), str(scenario), 'dark', '0', str(out), str(overlay)]

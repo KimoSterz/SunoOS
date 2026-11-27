@@ -1,7 +1,7 @@
 ---
 type: feature
 component: Terminal
-packages: [luma-terminal, luma-developer-platform]
+packages: [Suno-terminal, Suno-developer-platform]
 highlight: false
 ---
 Summary: Terminal on a TV

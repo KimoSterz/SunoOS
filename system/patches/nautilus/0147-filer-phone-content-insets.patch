@@ -1,4 +1,4 @@
-From: Luma UI maintainers <noreply@projectluma.org>
+From: Suno UI maintainers <noreply@projectSuno.org>
 Subject: [PATCH] Release desktop content margins on phone
 
 --- a/src/nautilus-window.c

@@ -1,3 +1,0 @@
-[D-BUS Service]
-Name=org.projectluma.Ari
-Exec=/usr/bin/org.projectluma.Ari --gapplication-service

@@ -3,7 +3,7 @@ import importlib.util, tempfile, subprocess
 from unittest.mock import patch
 import types, sys
 p=Path(sys.argv[1]);spec=importlib.util.spec_from_file_location('reserve',p);m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
-with tempfile.TemporaryDirectory(prefix='luma-private-reserve-') as d:
+with tempfile.TemporaryDirectory(prefix='Suno-private-reserve-') as d:
  root=Path(d);repo=root/'repo'
  try:m.configure(repo,m.MINIMUM-1)
  except ValueError:pass

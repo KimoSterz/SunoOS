@@ -27,12 +27,12 @@ tide_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 exec "$tide_dir/Tide" "$@"
 ''')
 (appdir / 'AppRun').chmod(0o755)
-shutil.copy2(appdir / 'usr/share/applications/org.projectluma.Tide.desktop', appdir)
-shutil.copy2(appdir / 'usr/share/icons/hicolor/scalable/apps/org.projectluma.Tide.svg', appdir)
+shutil.copy2(appdir / 'usr/share/applications/org.projectSuno.Tide.desktop', appdir)
+shutil.copy2(appdir / 'usr/share/icons/hicolor/scalable/apps/org.projectSuno.Tide.svg', appdir)
 payload = args.output / 'payload.squashfs'
 subprocess.run(['mksquashfs', str(appdir), str(payload), '-noappend', '-no-xattrs', '-all-root', '-comp', 'zstd',
                 '-Xcompression-level', '15', '-processors', '2'], check=True)
-version = (REPO / 'src/luma-tide/luma_tide/__init__.py').read_text().split('__version__ = ')[1].splitlines()[0].strip('"\'')
+version = (REPO / 'src/Suno-tide/Suno_tide/__init__.py').read_text().split('__version__ = ')[1].splitlines()[0].strip('"\'')
 image = args.output / f'Tide-{version}-x86_64.AppImage'
 with image.open('wb') as target:
     for source in (args.runtime, payload):

@@ -23,7 +23,7 @@ COST = float(os.environ.get('COST', '0.05'))
 ROOT = Path(tempfile.mkdtemp(prefix='notes-host-startup-'))
 os.environ.update(HOME=str(ROOT), XDG_DATA_HOME=str(ROOT / 'data'), XDG_CONFIG_HOME=str(ROOT / 'config'),
                   XDG_CACHE_HOME=str(ROOT / 'cache'), XDG_STATE_HOME=str(ROOT / 'state'),
-                  FLATPAK_ID='org.projectluma.Notes')
+                  FLATPAK_ID='org.projectSuno.Notes')
 
 import gi  # noqa: E402
 gi.require_version('Gtk', '4.0'); gi.require_version('Adw', '1')

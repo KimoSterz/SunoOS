@@ -1,5 +1,5 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Project Luma <luma@local>
+From: Project Suno <Suno@local>
 Date: Wed, 26 Aug 2026 13:00:00 -0500
 Subject: [PATCH] gpfs: preserve object tail on offset-zero header writes
 

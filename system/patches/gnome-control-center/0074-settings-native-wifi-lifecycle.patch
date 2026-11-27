@@ -1,11 +1,11 @@
-From: Project Luma
-Subject: [PATCH] Keep native Wi-Fi actions and failures in Luma UI
+From: Project Suno
+Subject: [PATCH] Keep native Wi-Fi actions and failures in Suno UI
 
 GPL-2.0-or-later; extends the existing GNOME Control Center/libnm owner.
 
-diff --git a/shell/cc-luma-live-network.c b/shell/cc-luma-live-network.c
---- a/shell/cc-luma-live-network.c
-+++ b/shell/cc-luma-live-network.c
+diff --git a/shell/cc-Suno-live-network.c b/shell/cc-Suno-live-network.c
+--- a/shell/cc-Suno-live-network.c
++++ b/shell/cc-Suno-live-network.c
 @@ -13,7 +13,7 @@
  #define ADAPTER "network"
  static const char * const pages[] = { "wifi", "wifi-net", "wifi-known", "hotspot", "network", NULL };
@@ -14,7 +14,7 @@ diff --git a/shell/cc-luma-live-network.c b/shell/cc-luma-live-network.c
 +                                      "hsBand", "eth", "vpn", "CFNETS.join", "CFNETS.disconnect", "CFKNOWN.forget", NULL };
  
  typedef struct {
-   CcLumaFixture *model;
+   CcSunoFixture *model;
 @@ -22,7 +22,8 @@
    GCancellable *cancel;
    GHashTable *watched;
@@ -36,15 +36,15 @@ diff --git a/shell/cc-luma-live-network.c b/shell/cc-luma-live-network.c
 +static void notice (Net *n, const char *message, gboolean error)
 +{
 +  if (n->stopped) return;
-+  cc_luma_fixture_publish_string (n->model, "netError", error ? message : "");
-+  cc_luma_fixture_publish_string (n->model, "netStatus", error ? "" : message);
++  cc_Suno_fixture_publish_string (n->model, "netError", error ? message : "");
++  cc_Suno_fixture_publish_string (n->model, "netStatus", error ? "" : message);
 +}
 +/* These writes are exercised against the native NM owner and UI by %check. */
-+void cc_luma_live_verify_network_keys (CcLumaFixture *model)
++void cc_Suno_live_verify_network_keys (CcSunoFixture *model)
 +{
 +  const char *keys[] = { "wifi", "autoJoin", "allUsers", "metered",
 +                        "CFNETS.join", "CFNETS.disconnect", "CFKNOWN.forget", NULL };
-+  for (guint i = 0; keys[i]; i++) cc_luma_fixture_verify_key (model, keys[i]);
++  for (guint i = 0; keys[i]; i++) cc_Suno_fixture_verify_key (model, keys[i]);
 +}
  
  /* ── Reading ─────────────────────────────────────────────────────────── */
@@ -94,7 +94,7 @@ diff --git a/shell/cc-luma-live-network.c b/shell/cc-luma-live-network.c
 +  json_object_set_boolean_member (extra, "present", dev != NULL);
 +  json_object_set_boolean_member (extra, "hardwareEnabled", nm_client_wireless_hardware_get_enabled (n->client));
 +  NMDeviceState state = dev ? nm_device_get_state (NM_DEVICE (dev)) : NM_DEVICE_STATE_UNKNOWN;
-+  cc_luma_fixture_publish_boolean (n->model, "wifiConnecting", state > NM_DEVICE_STATE_DISCONNECTED && state < NM_DEVICE_STATE_ACTIVATED);
++  cc_Suno_fixture_publish_boolean (n->model, "wifiConnecting", state > NM_DEVICE_STATE_DISCONNECTED && state < NM_DEVICE_STATE_ACTIVATED);
    want_secrets (n, current, FALSE);
    if (network && active_ap)
      {
@@ -399,14 +399,14 @@ diff --git a/shell/cc-luma-live-network.c b/shell/cc-luma-live-network.c
 +  net_unref (n);
  }
  static gpointer
- net_start (CcLumaFixture *model)
+ net_start (CcSunoFixture *model)
  {
    Net *n = g_new0 (Net, 1);
 +  n->refs = 1;
    n->model = model;
    n->cancel = g_cancellable_new ();
    n->watched = g_hash_table_new_full (g_direct_hash, g_direct_equal, g_object_unref, NULL);
-   for (guint i = 0; owned[i]; i++) cc_luma_fixture_own_key (model, owned[i]);
+   for (guint i = 0; owned[i]; i++) cc_Suno_fixture_own_key (model, owned[i]);
    g_dbus_proxy_new_for_bus (G_BUS_TYPE_SYSTEM, G_DBUS_PROXY_FLAGS_NONE, NULL, "org.freedesktop.hostname1",
 -                            "/org/freedesktop/hostname1", "org.freedesktop.hostname1", n->cancel, hostnamed_ready, n);
 -  nm_client_new_async (n->cancel, client_ready, n);
@@ -430,73 +430,73 @@ diff --git a/shell/cc-luma-live-network.c b/shell/cc-luma-live-network.c
 +  net_unref (n);
  }
  
- const CcLumaAdapter cc_luma_adapter_network = { ADAPTER, pages, net_start, net_write, net_stop };
-diff --git a/shell/cc-luma-view.c b/shell/cc-luma-view.c
---- a/shell/cc-luma-view.c
-+++ b/shell/cc-luma-view.c
+ const CcSunoAdapter cc_Suno_adapter_network = { ADAPTER, pages, net_start, net_write, net_stop };
+diff --git a/shell/cc-Suno-view.c b/shell/cc-Suno-view.c
+--- a/shell/cc-Suno-view.c
++++ b/shell/cc-Suno-view.c
 @@ -198,6 +198,7 @@
-     if (!gtk_switch_get_active (widget)) cc_luma_view_bluetooth_stop (v);
+     if (!gtk_switch_get_active (widget)) cc_Suno_view_bluetooth_stop (v);
      return;
    }
-+  if (g_str_equal (key, "wifi") && cc_luma_fixture_is_live (v->model)) return;
-   if (!cc_luma_view_flag (v, "wifi"))
++  if (g_str_equal (key, "wifi") && cc_Suno_fixture_is_live (v->model)) return;
+   if (!cc_Suno_view_flag (v, "wifi"))
      {
        g_clear_pointer (&v->joining, g_free);
 @@ -461,7 +462,7 @@
-         { luma_toast_show (v->root, error->message, "error"); return; }
+         { Suno_toast_show (v->root, error->message, "error"); return; }
        if (g_str_equal (v->page, "wifi-net")) { g_free (v->page); v->page = g_strdup ("wifi"); }
-       cc_luma_view_queue_refresh (v);
--      luma_toast_show (v->root, "Network forgotten", "deleted");
+       cc_Suno_view_queue_refresh (v);
+-      Suno_toast_show (v->root, "Network forgotten", "deleted");
 +      /* The native owner publishes success only after Delete completes. */
        return;
      }
-   CcLumaNetworkUndo *undo = cc_luma_fixture_forget_with_undo (v->model, name, &error);
+   CcSunoNetworkUndo *undo = cc_Suno_fixture_forget_with_undo (v->model, name, &error);
 @@ -477,7 +478,7 @@
  static void forget_clicked (GtkButton *button, GtkWidget *root)
  {
    View *v = g_object_get_data (G_OBJECT (root), "cf-view");
--  if (!v || cc_luma_view_delegated (v)) return; /* live: GNOME's Wi-Fi panel forgets */
-+  if (!v || (!cc_luma_fixture_key_verified (v->model, "CFKNOWN.forget") && cc_luma_view_delegated (v))) return;
+-  if (!v || cc_Suno_view_delegated (v)) return; /* live: GNOME's Wi-Fi panel forgets */
++  if (!v || (!cc_Suno_fixture_key_verified (v->model, "CFKNOWN.forget") && cc_Suno_view_delegated (v))) return;
    const char *name = g_object_get_data (G_OBJECT (button), "cf-network");
    g_autofree char *title = g_strdup_printf ("Forget %s?", name);
-   LumaDestructiveDialog *dialog = luma_destructive_dialog_ask (v->root, title,
+   SunoDestructiveDialog *dialog = Suno_destructive_dialog_ask (v->root, title,
 @@ -585,7 +586,7 @@
  }
  static void hidden_clicked (GtkButton *button, View *v)
  {
--  if (button && cc_luma_view_delegated (v)) return; /* live: GNOME's Wi-Fi panel joins */
-+  if (button && !cc_luma_fixture_key_verified (v->model, "CFNETS.join") && cc_luma_view_delegated (v)) return;
-   LumaActionEditor *editor = new_editor (v, "Join a hidden network", "wifi", "Type its name exactly as it was set up.", "Cancel");
+-  if (button && cc_Suno_view_delegated (v)) return; /* live: GNOME's Wi-Fi panel joins */
++  if (button && !cc_Suno_fixture_key_verified (v->model, "CFNETS.join") && cc_Suno_view_delegated (v)) return;
+   SunoActionEditor *editor = new_editor (v, "Join a hidden network", "wifi", "Type its name exactly as it was set up.", "Cancel");
    GtkWidget *name = gtk_entry_new (), *password = gtk_entry_new ();
    gtk_entry_set_placeholder_text (GTK_ENTRY (name), "Type here");
 @@ -691,6 +692,7 @@
  }
  static void connect_network (View *v, const char *name)
  {
-+  if (cc_luma_fixture_is_live (v->model)) { live_join (v, name, NULL, FALSE); return; }
++  if (cc_Suno_fixture_is_live (v->model)) { live_join (v, name, NULL, FALSE); return; }
    if (v->connection) g_source_remove (v->connection);
    g_free (v->connecting);
    v->connecting = g_strdup (name);
 @@ -705,7 +707,7 @@
    const char *name = g_object_get_data (G_OBJECT (item), "cf-network");
    gboolean password_required = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (item), "cf-password-required"));
-   if (!cc_luma_view_flag (v, "wifi")) return;
--  if (cc_luma_view_delegated (v)) return; /* live: GNOME's Wi-Fi panel joins */
-+  if (!cc_luma_fixture_key_verified (v->model, "CFNETS.join") && cc_luma_view_delegated (v)) return;
+   if (!cc_Suno_view_flag (v, "wifi")) return;
+-  if (cc_Suno_view_delegated (v)) return; /* live: GNOME's Wi-Fi panel joins */
++  if (!cc_Suno_fixture_key_verified (v->model, "CFNETS.join") && cc_Suno_view_delegated (v)) return;
    if (!password_required) { connect_network (v, name); return; }
    char *next = g_strcmp0 (v->joining, name) ? g_strdup (name) : NULL;
    g_free (v->joining); v->joining = next;
 @@ -720,8 +722,8 @@
  {
-   if (v->joining && cc_luma_fixture_is_live (v->model))
+   if (v->joining && cc_Suno_fixture_is_live (v->model))
      {
 -      /* The form's first child is its password field (nearby_row). */
 -      GtkWidget *password = gtk_widget_get_first_child (gtk_widget_get_parent (GTK_WIDGET (button)));
 +      GtkWidget *password = named_widget (v->root, "cf-join-password");
 +      if (!GTK_IS_EDITABLE (password)) return;
        const char *text = gtk_editable_get_text (GTK_EDITABLE (password));
-       if (!*text) { luma_toast_show (v->root, "Type the password", "error"); return; }
-       if (live_join (v, v->joining, text, FALSE)) { g_clear_pointer (&v->joining, g_free); cc_luma_view_queue_refresh (v); }
+       if (!*text) { Suno_toast_show (v->root, "Type the password", "error"); return; }
+       if (live_join (v, v->joining, text, FALSE)) { g_clear_pointer (&v->joining, g_free); cc_Suno_view_queue_refresh (v); }
 @@ -758,34 +760,6 @@
    return bars;
  }
@@ -564,8 +564,8 @@ diff --git a/shell/cc-luma-view.c b/shell/cc-luma-view.c
  }
 +static void network_notice (View *v)
 +{
-+  const char *error = cc_luma_view_text (v, "netError");
-+  const char *status = cc_luma_view_text (v, "netStatus");
++  const char *error = cc_Suno_view_text (v, "netError");
++  const char *status = cc_Suno_view_text (v, "netStatus");
 +  if (!*error && !*status) return;
 +  GtkWidget *row = cf_row (cf_group (v, NULL, NULL), cf_lead_icon (*error ? "circle-alert" : "wifi"),
 +                            *error ? error : status, NULL, NULL, FALSE);
@@ -575,23 +575,23 @@ diff --git a/shell/cc-luma-view.c b/shell/cc-luma-view.c
 +{
 +  g_autoptr (GError) error = NULL;
 +  g_autoptr (JsonNode) value = json_node_init_boolean (json_node_alloc (), TRUE);
-+  if (!cc_luma_fixture_write (v->model, "CFNETS.disconnect", value, &error))
-+    luma_toast_show (v->root, error->message, "error");
++  if (!cc_Suno_fixture_write (v->model, "CFNETS.disconnect", value, &error))
++    Suno_toast_show (v->root, error->message, "error");
 +}
  static void wifi (View *v)
  {
-   gboolean enabled = cc_luma_view_flag (v, "wifi");
-+  JsonObject *wifi_data = json_object_get_object_member (cc_luma_fixture_get_data (v->model), "CFWIFI");
-+  gboolean present = !cc_luma_fixture_is_live (v->model) || (wifi_data && json_object_get_boolean_member_with_default (wifi_data, "present", FALSE));
+   gboolean enabled = cc_Suno_view_flag (v, "wifi");
++  JsonObject *wifi_data = json_object_get_object_member (cc_Suno_fixture_get_data (v->model), "CFWIFI");
++  gboolean present = !cc_Suno_fixture_is_live (v->model) || (wifi_data && json_object_get_boolean_member_with_default (wifi_data, "present", FALSE));
 +  gboolean hardware = !wifi_data || json_object_get_boolean_member_with_default (wifi_data, "hardwareEnabled", TRUE);
-+  gboolean connecting = cc_luma_view_flag (v, "wifiConnecting");
-   const char *network = cc_luma_view_text (v, "net");
-   JsonArray *nets = json_object_get_array_member (cc_luma_fixture_get_data (v->model), "CFNETS");
-   JsonArray *known = json_object_get_array_member (cc_luma_fixture_get_data (v->model), "CFKNOWN");
++  gboolean connecting = cc_Suno_view_flag (v, "wifiConnecting");
+   const char *network = cc_Suno_view_text (v, "net");
+   JsonArray *nets = json_object_get_array_member (cc_Suno_fixture_get_data (v->model), "CFNETS");
+   JsonArray *known = json_object_get_array_member (cc_Suno_fixture_get_data (v->model), "CFKNOWN");
 @@ -871,15 +866,20 @@
    JsonObject *current = NULL;
    GtkWidget *hero_body;
-   cc_luma_view_header (v, "Wi‑Fi", meta, "wifi");
+   cc_Suno_view_header (v, "Wi‑Fi", meta, "wifi");
 +  network_notice (v);
    for (guint i = 0; enabled && i < json_array_get_length (nets); i++)
      {
@@ -614,7 +614,7 @@ diff --git a/shell/cc-luma-view.c b/shell/cc-luma-view.c
 @@ -998,6 +998,7 @@
    const char *ipv4 = live_detail (v, "current", "ipv4", "192.168.10.24");
    const char *ipv6 = live_detail (v, "current", "ipv6", "fe80::9a3b:2cff:fe41:7d10");
-   cc_luma_view_header (v, *net ? net : "Network", live_detail (v, "current", "summary", "Connected · WPA3 · 5 GHz"), NULL);
+   cc_Suno_view_header (v, *net ? net : "Network", live_detail (v, "current", "summary", "Connected · WPA3 · 5 GHz"), NULL);
 +  network_notice (v);
    settings = cf_group (v, NULL, NULL);
    gtk_widget_set_name (cf_sw (v, settings, "autoJoin", "Join automatically", NULL, NULL), "cf-auto-join");
@@ -623,7 +623,7 @@ diff --git a/shell/cc-luma-view.c b/shell/cc-luma-view.c
    cf_vl (v, addresses, "Router", live_detail (v, "current", "router", "192.168.10.1"), NULL, TRUE, NULL, NULL);
    cf_vl (v, addresses, "DNS", live_detail (v, "current", "dns", "Automatic"), NULL, FALSE, NULL, NULL);
    actions = cf_group (v, NULL, NULL);
-+  if (cc_luma_fixture_is_live (v->model)) {
++  if (cc_Suno_fixture_is_live (v->model)) {
 +    GtkWidget *row = cf_bt (v, actions, "Disconnect", "Keep the saved password", "Disconnect", FALSE, G_CALLBACK (wifi_disconnected));
 +    gtk_widget_set_name (row, "cf-wifi-disconnect");
 +  }
@@ -633,7 +633,7 @@ diff --git a/shell/cc-luma-view.c b/shell/cc-luma-view.c
 @@ -1027,7 +1032,10 @@
    g_autofree char *meta = g_strdup_printf ("%u networks", json_array_get_length (known));
    GtkBox *rows;
-   cc_luma_view_header (v, "Known networks", meta, NULL);
+   cc_Suno_view_header (v, "Known networks", meta, NULL);
 +  network_notice (v);
    rows = cf_group (v, NULL, NULL);
 +  if (!json_array_get_length (known))
@@ -670,27 +670,27 @@ diff --git a/shell/cc-luma-view.c b/shell/cc-luma-view.c
    if (bluetooth_focus && gtk_widget_is_ancestor (bluetooth_focus, v->root)) gtk_widget_grab_focus (bluetooth_focus);
    island_drawn (v);
    v->rendering = FALSE;
-diff --git a/shell/cc-luma-live.c b/shell/cc-luma-live.c
---- a/shell/cc-luma-live.c
-+++ b/shell/cc-luma-live.c
+diff --git a/shell/cc-Suno-live.c b/shell/cc-Suno-live.c
+--- a/shell/cc-Suno-live.c
++++ b/shell/cc-Suno-live.c
 @@ -100,6 +100,7 @@
    live->owners = g_hash_table_new (g_str_hash, g_str_equal);
-   g_object_set_data_full (G_OBJECT (model), "cc-luma-live", live, (GDestroyNotify) live_free);
-   cc_luma_fixture_set_writer (model, live_write, live);
-+  cc_luma_live_verify_network_keys (model);
-   cc_luma_fixture_set_page_ready_func (model, page_ready, live);
+   g_object_set_data_full (G_OBJECT (model), "cc-Suno-live", live, (GDestroyNotify) live_free);
+   cc_Suno_fixture_set_writer (model, live_write, live);
++  cc_Suno_live_verify_network_keys (model);
+   cc_Suno_fixture_set_page_ready_func (model, page_ready, live);
    /* Writes proven against a real owner (VM, 28 Sep): Appearance's mode and
     * wallpaper, Night Light, the proxy and a VPN's switch. Every other change
-diff --git a/shell/cc-luma-live.h b/shell/cc-luma-live.h
---- a/shell/cc-luma-live.h
-+++ b/shell/cc-luma-live.h
+diff --git a/shell/cc-Suno-live.h b/shell/cc-Suno-live.h
+--- a/shell/cc-Suno-live.h
++++ b/shell/cc-Suno-live.h
 @@ -20,6 +20,7 @@
- } CcLumaAdapter;
+ } CcSunoAdapter;
  
- CcLumaFixture *cc_luma_live_model_new (GError **error);
-+void cc_luma_live_verify_network_keys (CcLumaFixture *model);
+ CcSunoFixture *cc_Suno_live_model_new (GError **error);
++void cc_Suno_live_verify_network_keys (CcSunoFixture *model);
  /* TRUE in fixture mode; in live mode when all of the page's adapters are ready. */
- gboolean cc_luma_live_page_ready (CcLumaFixture *model, const char *page);
+ gboolean cc_Suno_live_page_ready (CcSunoFixture *model, const char *page);
  /* An adapter reports its first complete reading. */
 diff --git a/shell/meson.build b/shell/meson.build
 --- a/shell/meson.build
@@ -700,43 +700,43 @@ diff --git a/shell/meson.build b/shell/meson.build
      'GSETTINGS_SCHEMA_DIR=' + meson.current_build_dir() / 'test-fixture-schemas'])
  
 +if host_is_linux
-+  live_network_test = executable('test-luma-live-network', ['test-luma-live-network.c', 'cc-luma-live-network.c', '../panels/network/qrcodegen.c'] + fixture_view_sources + generated_sources,
++  live_network_test = executable('test-Suno-live-network', ['test-Suno-live-network.c', 'cc-Suno-live-network.c', '../panels/network/qrcodegen.c'] + fixture_view_sources + generated_sources,
 +    include_directories: top_inc, dependencies: fixture_view_deps + [network_manager_deps[0]],
 +    c_args: ['-DTEST_NM_SERVICE="' + meson.project_source_root() / 'tests/network/nm-utils/test-networkmanager-service.py' + '"'])
-+  test('luma-settings-live-network', live_network_test, timeout: 45,
++  test('Suno-settings-live-network', live_network_test, timeout: 45,
 +    env: ['GTK_A11Y=none', 'G_DEBUG=fatal-criticals', 'GSETTINGS_BACKEND=memory',
 +      'GSETTINGS_SCHEMA_DIR=' + meson.current_build_dir() / 'test-fixture-schemas'])
 +endif
 +
- fixture_view_test = executable('test-luma-view', ['test-luma-view.c'] + fixture_view_sources, dependencies: fixture_view_deps,
-   c_args: ['-DLUMA_SHELL_SRCDIR="' + meson.current_source_dir() + '"'])
- apps_list_test = executable('test-luma-apps-list', ['test-luma-apps-list.c'] + fixture_view_sources, dependencies: fixture_view_deps)
-diff --git a/shell/test-luma-live-network.c b/shell/test-luma-live-network.c
+ fixture_view_test = executable('test-Suno-view', ['test-Suno-view.c'] + fixture_view_sources, dependencies: fixture_view_deps,
+   c_args: ['-DSuno_SHELL_SRCDIR="' + meson.current_source_dir() + '"'])
+ apps_list_test = executable('test-Suno-apps-list', ['test-Suno-apps-list.c'] + fixture_view_sources, dependencies: fixture_view_deps)
+diff --git a/shell/test-Suno-live-network.c b/shell/test-Suno-live-network.c
 new file mode 100644
 --- /dev/null
-+++ b/shell/test-luma-live-network.c
++++ b/shell/test-Suno-live-network.c
 @@ -0,0 +1,152 @@
 +/* SPDX-License-Identifier: GPL-2.0-or-later */
 +/* Native UI and production adapter. Private NM boundary in %check; optional
 + * disposable-VM mode uses its real NetworkManager and a virt_wifi interface. */
-+#include "cc-luma-live.h"
-+#include "cc-luma-view.h"
++#include "cc-Suno-live.h"
++#include "cc-Suno-view.h"
 +#include <NetworkManager.h>
-+#include <luma-ui.h>
++#include <Suno-ui.h>
 +#include <adwaita.h>
 +#include <sys/prctl.h>
 +#include <signal.h>
-+extern const CcLumaAdapter cc_luma_adapter_network;
-+void cc_luma_live_verify_network_keys (CcLumaFixture *model);
++extern const CcSunoAdapter cc_Suno_adapter_network;
++void cc_Suno_live_verify_network_keys (CcSunoFixture *model);
 +static gboolean ready;
 +static guint delegates;
-+void cc_luma_live_ready (CcLumaFixture *model, const char *adapter) { ready = TRUE; }
++void cc_Suno_live_ready (CcSunoFixture *model, const char *adapter) { ready = TRUE; }
 +static void spin (guint ms) {
 +  gint64 end = g_get_monotonic_time () + ms * 1000;
 +  do { while (g_main_context_iteration (NULL, FALSE)); g_usleep (1000); } while (g_get_monotonic_time () < end);
 +}
-+static gboolean write_owner (CcLumaFixture *model, const char *key, JsonNode *value, gpointer state, GError **error) {
-+  return cc_luma_adapter_network.write (state, key, value, error);
++static gboolean write_owner (CcSunoFixture *model, const char *key, JsonNode *value, gpointer state, GError **error) {
++  return cc_Suno_adapter_network.write (state, key, value, error);
 +}
 +static gboolean delegate (GtkWidget *root, const char *page, gpointer data) { delegates++; return TRUE; }
 +static GtkWidget *named (GtkWidget *root, const char *name) {
@@ -753,13 +753,13 @@ new file mode 100644
 +  if (GTK_IS_BUTTON (root) && !g_strcmp0 (gtk_button_get_label (GTK_BUTTON (root)), label)) return root;
 +  for (GtkWidget *c=gtk_widget_get_first_child(root);c;c=gtk_widget_get_next_sibling(c)) { GtkWidget *w=button_label(c,label);if(w)return w; }return NULL;
 +}
-+static const char *text(CcLumaFixture *m,const char *k) { JsonNode *n=cc_luma_fixture_get(m,k);return n?json_node_get_string(n):""; }
-+static gboolean saved(CcLumaFixture *m,const char *ssid) {
-+  JsonArray *list=json_object_get_array_member(cc_luma_fixture_get_data(m),"CFKNOWN");
++static const char *text(CcSunoFixture *m,const char *k) { JsonNode *n=cc_Suno_fixture_get(m,k);return n?json_node_get_string(n):""; }
++static gboolean saved(CcSunoFixture *m,const char *ssid) {
++  JsonArray *list=json_object_get_array_member(cc_Suno_fixture_get_data(m),"CFKNOWN");
 +  for(guint i=0;i<json_array_get_length(list);i++)if(!g_strcmp0(json_array_get_string_element(list,i),ssid))return TRUE;return FALSE;
 +}
 +static void capture(GtkWidget *window,const char *name) {
-+  const char *dir=g_getenv("LUMA_CONNECTIVITY_EVIDENCE_DIR");if(!dir)return;
++  const char *dir=g_getenv("SUNO_CONNECTIVITY_EVIDENCE_DIR");if(!dir)return;
 +  g_autoptr(GdkPaintable) paintable=gtk_widget_paintable_new(window);GtkSnapshot *snapshot=gtk_snapshot_new();
 +  gdk_paintable_snapshot(paintable,snapshot,gtk_widget_get_width(window),gtk_widget_get_height(window));
 +  g_autoptr(GskRenderNode) node=gtk_snapshot_free_to_node(snapshot);g_assert_nonnull(node);
@@ -777,14 +777,14 @@ new file mode 100644
 +  g_autoptr(GVariant) settings=nm_connection_to_dbus(c,NM_CONNECTION_SERIALIZE_ALL);
 +  g_autoptr(GVariant) out=call(bus,NM_DBUS_PATH_SETTINGS,NM_DBUS_INTERFACE_SETTINGS,"AddConnection",g_variant_new("(@a{sa{sv}})",g_variant_ref(settings)));
 +}
-+static void command(CcLumaFixture *m,const char *key,const char *value) {
++static void command(CcSunoFixture *m,const char *key,const char *value) {
 +  g_autoptr(GError) error=NULL;g_autoptr(JsonNode) node=json_node_init_string(json_node_alloc(),value);
-+  g_assert_true(cc_luma_fixture_write(m,key,node,&error));g_assert_no_error(error);
++  g_assert_true(cc_Suno_fixture_write(m,key,node,&error));g_assert_no_error(error);
 +}
 +static void child_setup(gpointer unused) { prctl(PR_SET_PDEATHSIG,SIGTERM); }
 +int main(int argc,char **argv) {
 +  g_test_init(&argc,&argv,NULL);
-+  gboolean real=g_getenv("LUMA_CONNECTIVITY_VM")!=NULL;
++  gboolean real=g_getenv("SUNO_CONNECTIVITY_VM")!=NULL;
 +  g_autoptr(GSubprocess) private=NULL,service=NULL;
 +  if(!real) {
 +    g_autoptr(GSubprocessLauncher) launcher=g_subprocess_launcher_new(G_SUBPROCESS_FLAGS_STDOUT_PIPE);
@@ -797,46 +797,46 @@ new file mode 100644
 +    spin(500);
 +  }
 +  g_autoptr(GError) error=NULL;g_autoptr(GDBusConnection) bus=g_bus_get_sync(G_BUS_TYPE_SYSTEM,NULL,&error);g_assert_no_error(error);
-+  const char *ssid=real?"VirtWifi":"Luma audit network";
++  const char *ssid=real?"VirtWifi":"Suno audit network";
 +  if(!real) {
 +    g_autoptr(GVariant) dev=call(bus,NM_DBUS_PATH,"org.freedesktop.NetworkManager.LibnmGlibTest","AddWifiDevice",g_variant_new("(s)","audit-wifi"));
 +    g_autoptr(GVariant) ap=call(bus,NM_DBUS_PATH,"org.freedesktop.NetworkManager.LibnmGlibTest","AddWifiAp",g_variant_new("(sss)","audit-wifi",ssid,"52:54:00:00:00:01"));
 +  }
-+  add_profile(bus,"Luma audit saved","Luma audit first");add_profile(bus,"Luma audit saved","Luma audit duplicate");
-+  if(!real)add_profile(bus,"Luma audit refused","Luma audit refuse-delete");
++  add_profile(bus,"Suno audit saved","Suno audit first");add_profile(bus,"Suno audit saved","Suno audit duplicate");
++  if(!real)add_profile(bus,"Suno audit refused","Suno audit refuse-delete");
 +  g_autoptr(JsonParser) parser=json_parser_new();g_assert_true(json_parser_load_from_data(parser,"{\"version\":1,\"settings\":{\"bt\":false,\"proxy\":\"off\"},\"data\":{},\"pages\":[{\"id\":\"wifi\"},{\"id\":\"wifi-known\"},{\"id\":\"wifi-net\"},{\"id\":\"hotspot\"}]}",-1,NULL));
-+  g_autoptr(CcLumaFixture) model=cc_luma_fixture_new_live(json_parser_get_root(parser));
-+  gpointer state=cc_luma_adapter_network.start(model);cc_luma_fixture_set_writer(model,write_owner,state);cc_luma_live_verify_network_keys(model);
++  g_autoptr(CcSunoFixture) model=cc_Suno_fixture_new_live(json_parser_get_root(parser));
++  gpointer state=cc_Suno_adapter_network.start(model);cc_Suno_fixture_set_writer(model,write_owner,state);cc_Suno_live_verify_network_keys(model);
 +  for(guint i=0;i<100&&!ready;i++)spin(20);g_assert_true(ready);
-+  g_assert_true(cc_luma_fixture_key_verified(model,"CFKNOWN.forget"));g_assert_true(cc_luma_fixture_key_verified(model,"CFNETS.join"));
-+  g_assert_true(saved(model,"Luma audit saved"));
-+  gtk_init();luma_init();luma_ui_add_style_resource("/org/gnome/Settings/gtk/luma-settings.css", GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-+  GtkWidget *view=cc_luma_view_new(model,"wifi-known",&error);g_assert_no_error(error);g_assert_nonnull(view);cc_luma_view_set_delegate(view,delegate,NULL);
-+  g_autoptr(GtkApplication) application=gtk_application_new("org.projectluma.NativeNetworkAudit", G_APPLICATION_NON_UNIQUE);
++  g_assert_true(cc_Suno_fixture_key_verified(model,"CFKNOWN.forget"));g_assert_true(cc_Suno_fixture_key_verified(model,"CFNETS.join"));
++  g_assert_true(saved(model,"Suno audit saved"));
++  gtk_init();Suno_init();Suno_ui_add_style_resource("/org/gnome/Settings/gtk/Suno-settings.css", GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
++  GtkWidget *view=cc_Suno_view_new(model,"wifi-known",&error);g_assert_no_error(error);g_assert_nonnull(view);cc_Suno_view_set_delegate(view,delegate,NULL);
++  g_autoptr(GtkApplication) application=gtk_application_new("org.projectSuno.NativeNetworkAudit", G_APPLICATION_NON_UNIQUE);
 +  g_assert_true(g_application_register(G_APPLICATION(application),NULL,&error));g_assert_no_error(error);
-+  GtkWidget *window=luma_application_window_new(application, NULL);gtk_window_set_default_size(GTK_WINDOW(window),900,700);luma_application_window_set_body(LUMA_APPLICATION_WINDOW(window),view);gtk_window_present(GTK_WINDOW(window));spin(250);
-+  GtkWidget *forget=network_button(view,"Luma audit saved",TRUE);g_assert_nonnull(forget);g_assert_true(gtk_widget_has_css_class(forget,"lumaui-text-button"));
++  GtkWidget *window=Suno_application_window_new(application, NULL);gtk_window_set_default_size(GTK_WINDOW(window),900,700);Suno_application_window_set_body(SUNO_APPLICATION_WINDOW(window),view);gtk_window_present(GTK_WINDOW(window));spin(250);
++  GtkWidget *forget=network_button(view,"Suno audit saved",TRUE);g_assert_nonnull(forget);g_assert_true(gtk_widget_has_css_class(forget,"SunoUI-text-button"));
 +  g_signal_emit_by_name(forget,"clicked");spin(150);g_assert_cmpuint(delegates,==,0);
 +  GtkWidget *dialog=NULL;GQueue queue=G_QUEUE_INIT;g_queue_push_tail(&queue,window);
-+  while(!g_queue_is_empty(&queue)){GtkWidget *w=g_queue_pop_head(&queue);if(LUMA_IS_DESTRUCTIVE_DIALOG(w)){dialog=w;break;}for(GtkWidget *c=gtk_widget_get_first_child(w);c;c=gtk_widget_get_next_sibling(c))g_queue_push_tail(&queue,c);}
++  while(!g_queue_is_empty(&queue)){GtkWidget *w=g_queue_pop_head(&queue);if(SUNO_IS_DESTRUCTIVE_DIALOG(w)){dialog=w;break;}for(GtkWidget *c=gtk_widget_get_first_child(w);c;c=gtk_widget_get_next_sibling(c))g_queue_push_tail(&queue,c);}
 +  g_queue_clear(&queue);g_assert_nonnull(dialog);
-+  capture(window,"wifi-forget-confirmation");luma_destructive_dialog_close(LUMA_DESTRUCTIVE_DIALOG(dialog));spin(100);g_assert_true(saved(model,"Luma audit saved"));
-+  forget=network_button(view,"Luma audit saved",TRUE);g_assert_nonnull(forget);g_signal_emit_by_name(forget,"clicked");spin(80);
-+  GtkWidget *confirm=button_label(window,"Forget");g_assert_nonnull(confirm);g_signal_emit_by_name(confirm,"clicked");g_assert_cmpstr(text(model,"netStatus"),==,"Forgetting network…");g_assert_true(saved(model,"Luma audit saved"));
-+  spin(600);g_assert_false(saved(model,"Luma audit saved"));g_assert_cmpstr(text(model,"netStatus"),==,"Network forgotten");capture(window,"wifi-forgotten");
++  capture(window,"wifi-forget-confirmation");Suno_destructive_dialog_close(SUNO_DESTRUCTIVE_DIALOG(dialog));spin(100);g_assert_true(saved(model,"Suno audit saved"));
++  forget=network_button(view,"Suno audit saved",TRUE);g_assert_nonnull(forget);g_signal_emit_by_name(forget,"clicked");spin(80);
++  GtkWidget *confirm=button_label(window,"Forget");g_assert_nonnull(confirm);g_signal_emit_by_name(confirm,"clicked");g_assert_cmpstr(text(model,"netStatus"),==,"Forgetting network…");g_assert_true(saved(model,"Suno audit saved"));
++  spin(600);g_assert_false(saved(model,"Suno audit saved"));g_assert_cmpstr(text(model,"netStatus"),==,"Network forgotten");capture(window,"wifi-forgotten");
 +  g_print("PASS native forget dialog cancel, duplicate saved-profile deletion and owner readback\n");
 +  if(!real) {
-+    command(model,"CFKNOWN.forget","Luma audit refused");spin(500);g_assert_true(saved(model,"Luma audit refused"));g_assert_nonnull(strstr(text(model,"netError"),"Synthetic deletion denied"));g_assert_cmpstr(text(model,"netStatus"),==,"");capture(window,"wifi-delete-error");
-+    g_print("PASS deletion denial remains saved and is visible in Luma UI\n");
++    command(model,"CFKNOWN.forget","Suno audit refused");spin(500);g_assert_true(saved(model,"Suno audit refused"));g_assert_nonnull(strstr(text(model,"netError"),"Synthetic deletion denied"));g_assert_cmpstr(text(model,"netStatus"),==,"");capture(window,"wifi-delete-error");
++    g_print("PASS deletion denial remains saved and is visible in Suno UI\n");
 +  }
-+  cc_luma_view_go(view,"wifi");spin(200);GtkWidget *near=network_button(view,ssid,FALSE);g_assert_nonnull(near);g_signal_emit_by_name(near,"clicked");spin(200);g_assert_cmpuint(delegates,==,0);
++  cc_Suno_view_go(view,"wifi");spin(200);GtkWidget *near=network_button(view,ssid,FALSE);g_assert_nonnull(near);g_signal_emit_by_name(near,"clicked");spin(200);g_assert_cmpuint(delegates,==,0);
 +  if(!real) {
 +    GtkWidget *password=named(view,"cf-join-password");g_assert_nonnull(password);gtk_editable_set_text(GTK_EDITABLE(password),"audit password");g_assert_true(gtk_widget_grab_focus(password));gtk_editable_set_position(GTK_EDITABLE(password),3);
-+    cc_luma_fixture_changed(model);spin(200);password=named(view,"cf-join-password");g_assert_nonnull(password);g_assert_cmpstr(gtk_editable_get_text(GTK_EDITABLE(password)),==,"audit password");g_assert_cmpint(gtk_editable_get_position(GTK_EDITABLE(password)),==,3);
++    cc_Suno_fixture_changed(model);spin(200);password=named(view,"cf-join-password");g_assert_nonnull(password);g_assert_cmpstr(gtk_editable_get_text(GTK_EDITABLE(password)),==,"audit password");g_assert_cmpint(gtk_editable_get_position(GTK_EDITABLE(password)),==,3);
 +    capture(window,"wifi-password-preserved");
 +    const guint widths[] = {360,500,1024,1366};
 +    for (guint dark=0;dark<2;dark++) {
-+      g_autoptr(GSettings) appearance=g_settings_new("org.project_luma.shell-state");
++      g_autoptr(GSettings) appearance=g_settings_new("org.projectSuno.shell-state");
 +      g_assert_true(g_settings_set_string(appearance,"surface-treatment",dark?"dark":"light"));spin(100);
 +      g_assert_cmpint(adw_style_manager_get_dark(adw_style_manager_get_default()),==,dark);
 +      for (guint i=0;i<G_N_ELEMENTS(widths);i++) {
@@ -851,19 +851,19 @@ new file mode 100644
 +        g_autofree char *shot=g_strdup_printf("wifi-join-%u-%s",widths[i],dark?"dark":"light");capture(window,shot);
 +      }
 +    }
-+    g_print("PASS native join stays in Luma UI and refresh preserves password and cursor\n");
++    g_print("PASS native join stays in Suno UI and refresh preserves password and cursor\n");
 +  } else {
 +    /* Real NM on virt_wifi: no physical-radio or DHCP reachability claim. */
 +    spin(1500);g_assert_true(saved(model,"VirtWifi"));
 +    g_autoptr(JsonNode) on=json_node_init_boolean(json_node_alloc(),TRUE),off=json_node_init_boolean(json_node_alloc(),FALSE);
-+    g_assert_true(cc_luma_fixture_write(model,"CFNETS.disconnect",on,&error));g_assert_no_error(error);spin(600);
-+    g_assert_true(cc_luma_fixture_write(model,"wifi",off,&error));g_assert_no_error(error);spin(600);g_assert_false(json_node_get_boolean(cc_luma_fixture_get(model,"wifi")));
-+    g_assert_true(cc_luma_fixture_write(model,"wifi",on,&error));g_assert_no_error(error);spin(800);g_assert_true(json_node_get_boolean(cc_luma_fixture_get(model,"wifi")));
++    g_assert_true(cc_Suno_fixture_write(model,"CFNETS.disconnect",on,&error));g_assert_no_error(error);spin(600);
++    g_assert_true(cc_Suno_fixture_write(model,"wifi",off,&error));g_assert_no_error(error);spin(600);g_assert_false(json_node_get_boolean(cc_Suno_fixture_get(model,"wifi")));
++    g_assert_true(cc_Suno_fixture_write(model,"wifi",on,&error));g_assert_no_error(error);spin(800);g_assert_true(json_node_get_boolean(cc_Suno_fixture_get(model,"wifi")));
 +    command(model,"CFKNOWN.forget","VirtWifi");spin(600);g_assert_false(saved(model,"VirtWifi"));capture(window,"wifi-real-owner-final");
 +    g_print("PASS VM real NM join profile, disconnect, radio Off/On and persistent forget\n");
 +  }
-+  gtk_window_destroy(GTK_WINDOW(window));spin(100);cc_luma_adapter_network.stop(state);spin(100);
-+  for(guint i=0;i<40;i++){state=cc_luma_adapter_network.start(model);cc_luma_adapter_network.stop(state);}spin(400);g_print("PASS 40 startup-close cancellation races\n");
++  gtk_window_destroy(GTK_WINDOW(window));spin(100);cc_Suno_adapter_network.stop(state);spin(100);
++  for(guint i=0;i<40;i++){state=cc_Suno_adapter_network.start(model);cc_Suno_adapter_network.stop(state);}spin(400);g_print("PASS 40 startup-close cancellation races\n");
 +  if(service){g_output_stream_close(g_subprocess_get_stdin_pipe(service),NULL,NULL);g_assert_true(g_subprocess_wait_check(service,NULL,&error));g_assert_no_error(error);}
 +  if(private){g_subprocess_send_signal(private,SIGTERM);g_assert_true(g_subprocess_wait(private,NULL,NULL));}
 +  return 0;
@@ -885,7 +885,7 @@ diff --git a/tests/network/nm-utils/test-networkmanager-service.py b/tests/netwo
 +    def Delete(self, success, failure):
 +        # Owned fault injection; native deletion must await owner completion.
 +        identity = self.settings['connection']['id']
-+        if identity == 'Luma audit refuse-delete':
++        if identity == 'Suno audit refuse-delete':
 +            failure(PermissionDeniedException('Synthetic deletion denied'))
 +            return
 +        def complete():
@@ -894,7 +894,7 @@ diff --git a/tests/network/nm-utils/test-networkmanager-service.py b/tests/netwo
 +            self.remove_from_connection()
 +            success()
 +            return False
-+        if identity.startswith('Luma audit '):
++        if identity.startswith('Suno audit '):
 +            GLib.timeout_add(250, complete)
 +        else:
 +            complete()

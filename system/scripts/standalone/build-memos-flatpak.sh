@@ -8,24 +8,24 @@ fi
 portable=$(realpath "$1")
 output=$(realpath -m "$2")
 mkdir "$output"
-flatpak build-init "$output/app" org.projectluma.VoiceMemos org.gnome.Platform org.gnome.Platform 50
+flatpak build-init "$output/app" org.projectSuno.VoiceMemos org.gnome.Platform org.gnome.Platform 50
 mkdir -p "$output/app/files/bin" "$output/app/files/memos" "$output/app/files/share"
 cp -a "$portable/." "$output/app/files/memos/"
 for directory in applications metainfo; do
     cp -a "$portable/usr/share/$directory" "$output/app/files/share/"
 done
-sed -i 's/^Exec=VoiceMemos/Exec=org.projectluma.VoiceMemos/' "$output/app/files/share/applications/org.projectluma.VoiceMemos.desktop"
+sed -i 's/^Exec=VoiceMemos/Exec=org.projectSuno.VoiceMemos/' "$output/app/files/share/applications/org.projectSuno.VoiceMemos.desktop"
 mkdir -p "$output/app/files/share/icons/hicolor/scalable/apps"
-cp "$portable/usr/share/icons/hicolor/scalable/apps/org.projectluma.VoiceMemos.svg" "$output/app/files/share/icons/hicolor/scalable/apps/"
-cat > "$output/app/files/bin/org.projectluma.VoiceMemos" <<'LAUNCHER'
+cp "$portable/usr/share/icons/hicolor/scalable/apps/org.projectSuno.VoiceMemos.svg" "$output/app/files/share/icons/hicolor/scalable/apps/"
+cat > "$output/app/files/bin/org.projectSuno.VoiceMemos" <<'LAUNCHER'
 #!/bin/sh
 cd /
 exec /app/memos/VoiceMemos "$@"
 LAUNCHER
-chmod +x "$output/app/files/bin/org.projectluma.VoiceMemos"
-flatpak build-finish --command=org.projectluma.VoiceMemos --share=ipc \
+chmod +x "$output/app/files/bin/org.projectSuno.VoiceMemos"
+flatpak build-finish --command=org.projectSuno.VoiceMemos --share=ipc \
     --socket=wayland --socket=fallback-x11 --device=dri \
     --socket=pulseaudio '--filesystem=xdg-music/Voice Memos:create' "$output/app"
 flatpak build-export --arch=x86_64 "$output/repo" "$output/app" standalone
 flatpak build-bundle "$output/repo" "$output/VoiceMemos-0.1.1-x86_64.flatpak" \
-    org.projectluma.VoiceMemos standalone --runtime-repo=https://dl.flathub.org/repo/flathub.flatpakrepo
+    org.projectSuno.VoiceMemos standalone --runtime-repo=https://dl.flathub.org/repo/flathub.flatpakrepo

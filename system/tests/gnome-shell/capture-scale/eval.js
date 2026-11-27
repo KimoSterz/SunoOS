@@ -23,7 +23,7 @@ export default async function ({Main, shot}) {
     await call('ApplyMonitorsConfig', new GLib.Variant('(uua(iiduba(ssa{sv}))a{sv})', [serial, 1, logical, {}]));
     await sleep(4000);
     const ui = Main.screenshotUI;
-    const Capture = await import('resource:///org/gnome/shell/ui/lumaCapture.js');
+    const Capture = await import('resource:///org/gnome/shell/ui/SunoCapture.js');
     const mons = Main.layoutManager.monitors.map(m => [m.x, m.y, m.width, m.height]);
     log('layout', {mons, views: global.stage.peek_stage_views().map(v => v.get_scale())});
     const dir = `${home}/Pictures/Screenshots`;
@@ -171,7 +171,7 @@ export default async function ({Main, shot}) {
     }
     // The Options menu with Nick's shelf, on the primary (external) monitor.
     {
-        const st = new Gio.Settings({schema_id: 'org.project_luma.shell-state'});
+        const st = new Gio.Settings({schema_id: 'org.projectSuno.shell-state'});
         st.set_string('shelf-edge-mode', 'protruding'); st.set_boolean('shelf-float-ends', false);
         st.set_int('shelf-padding', 10); st.set_string('surface-treatment', 'dark');
         await sleep(1500);

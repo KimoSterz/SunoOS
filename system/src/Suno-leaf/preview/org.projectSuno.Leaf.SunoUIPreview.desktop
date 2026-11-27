@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Leaf (SunoUI preview)
+Comment=Leaf rebuilt on SunoUI
+Exec=/var/home/nick/.local/share/Suno-dev/SunoUI-leaf/bin/run
+Icon=org.projectSuno.Leaf
+Terminal=false
+Categories=Office;Viewer;
+StartupNotify=true
+StartupWMClass=org.projectSuno.Leaf.SunoUIPreview

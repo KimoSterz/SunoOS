@@ -35,23 +35,23 @@ index 4337664..fc0f69e 100644
 +    {
 +        if (g_ascii_strcasecmp (extension, "stage") == 0)
 +        {
-+            app_icon = "io.luma.Stage";
++            app_icon = "io.Suno.Stage";
 +        }
 +        else if (g_ascii_strcasecmp (extension, "grid") == 0)
 +        {
-+            app_icon = "io.luma.Grid";
++            app_icon = "io.Suno.Grid";
 +        }
 +        else if (g_ascii_strcasecmp (extension, "write") == 0)
 +        {
-+            app_icon = "io.luma.Write";
++            app_icon = "io.Suno.Write";
 +        }
 +        else if (g_ascii_strcasecmp (extension, "md") == 0)
 +        {
-+            app_icon = "org.projectluma.Notes";
++            app_icon = "org.projectSuno.Notes";
 +        }
 +        else if (g_ascii_strcasecmp (extension, "ogg") == 0)
 +        {
-+            app_icon = "org.projectluma.VoiceMemos";
++            app_icon = "org.projectSuno.VoiceMemos";
 +        }
 +    }
 +

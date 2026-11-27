@@ -14,7 +14,7 @@ repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 control_boot=${1:?usage: prepare-fp6-camera-boot-candidate.sh CONTROL_BOOT CAMERA_DTB [OUTPUT_DIR]}
 camera_dtb=${2:?usage: prepare-fp6-camera-boot-candidate.sh CONTROL_BOOT CAMERA_DTB [OUTPUT_DIR]}
 output_dir=${3:-$repo_root/build/mobile/fp6-physical/fp6-camera-catcrafts1}
-candidate=$output_dir/boot-fp6-luma-camera-catcrafts1.img
+candidate=$output_dir/boot-fp6-Suno-camera-catcrafts1.img
 
 for tool in cmp file install mkbootimg mktemp python3 sha256sum unpack_bootimg; do
   command -v "$tool" >/dev/null 2>&1 || {
@@ -81,7 +81,7 @@ cmp "$control_dir/ramdisk" "$candidate_dir/ramdisk"
 cmp "$camera_dtb" "$candidate_dir/dtb"
 
 {
-  printf 'LUMA_FP6_CAMERA_BOOT_CANDIDATE_VERSION=2\n'
+  printf 'SUNO_FP6_CAMERA_BOOT_CANDIDATE_VERSION=2\n'
   printf 'SCOPE=imx896-dw9784-ov13b10-s5kkd1sp\n'
   printf 'CONTROL_BOOT_SHA256=%s\n' "$FP6_CAMERA_CONTROL_BOOT_SHA256"
   printf 'DTB_SHA256=%s\n' "$(sha256sum "$camera_dtb" | awk '{print $1}')"

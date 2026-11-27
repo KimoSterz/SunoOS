@@ -31,7 +31,7 @@ SENSOR_PATCH = """\
 """
 DEVICE_TOML = """\
 [kernel]
-tag = "luma-fp6-test-1"
+tag = "Suno-fp6-test-1"
 release = "1"
 config = "c"
 dtb = "qcom/x.dtb"
@@ -78,7 +78,7 @@ class Fp6AndroidGpuAdmission(unittest.TestCase):
 
     def test_runtime_ships_no_hand_edited_list(self):
         self.assertFalse((ROOT / "config" / "android" / "hardware" / "fairphone-fp6-kernel-notes.sha256").exists())
-        spec_text = (ROOT / "packaging" / "rpm" / "kernel-modules-luma-fp6.spec").read_text()
+        spec_text = (ROOT / "packaging" / "rpm" / "kernel-modules-Suno-fp6.spec").read_text()
         self.assertIn("fairphone-fp6-kernel-notes.d/%{kver}.sha256", spec_text)
         build = (ROOT / "scripts" / "kernel" / "build-fp6.sh").read_text()
         self.assertIn("fp6-android-gpu-admission.py", build)
@@ -139,11 +139,11 @@ class Fp6AndroidGpuAdmission(unittest.TestCase):
             self.assertTrue(admission.stamp(device, root)[0])
 
             # A GPU input change (new tag) falls out until qualified again.
-            device.write_text(device.read_text().replace('tag = "luma-fp6-test-1"', 'tag = "luma-fp6-test-2"'))
+            device.write_text(device.read_text().replace('tag = "Suno-fp6-test-1"', 'tag = "Suno-fp6-test-2"'))
             self.assertFalse(admission.stamp(device, root)[0])
 
             # A tree that does not really carry the required patch is refused.
-            device.write_text(device.read_text().replace('tag = "luma-fp6-test-2"', 'tag = "luma-fp6-test-1"'))
+            device.write_text(device.read_text().replace('tag = "Suno-fp6-test-2"', 'tag = "Suno-fp6-test-1"'))
             self.assertTrue(admission.stamp(device, root)[0])
             (source / "drivers" / "gpu" / "drm" / "msm" / "gmu.c").write_text("rate 200\n")
             with self.assertRaises(admission.AdmissionError):

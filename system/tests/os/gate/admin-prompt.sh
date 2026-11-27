@@ -25,12 +25,12 @@
 #
 # CASE is pkexec (`pkexec true`), flatpak-system (Depot's system Flatpak
 # install through flatpak-system-helper) or udisks-open (included UDisks2
-# opening only the owned LUMAGATEUSB fixture for writing, without writing data).
+# opening only the owned SUNOGATEUSB fixture for writing, without writing data).
 # setup, pending and finish print one JSON line per check
 # ({"check", "result": "pass"|"fail", "detail"}).
 set -uo pipefail
-user=luma-gate-admin
-state=/var/tmp/luma-gate-admin-prompt
+user=Suno-gate-admin
+state=/var/tmp/Suno-gate-admin-prompt
 phase=${1:-}
 case_name=${2:-}
 
@@ -38,7 +38,7 @@ emit() {
   python3 -c 'import json, sys; print(json.dumps({"check": sys.argv[1], "result": sys.argv[2], "detail": sys.argv[3][-900:]}))' "$1" "$2" "$3"
 }
 helpers() { pgrep -f 'polkit-agent-helper-1' 2>/dev/null | wc -l; }
-unit() { printf 'luma-gate-prompt-%s' "$1"; }
+unit() { printf 'Suno-gate-prompt-%s' "$1"; }
 as_user_systemctl() { systemctl --user -M "$user@" "$@"; }
 
 case "$phase" in
@@ -61,7 +61,7 @@ c.read(path)
 if not c.has_section("daemon"):
     c.add_section("daemon")
 c.set("daemon", "AutomaticLoginEnable", "True")
-c.set("daemon", "AutomaticLogin", "luma-gate-admin")
+c.set("daemon", "AutomaticLogin", "Suno-gate-admin")
 c.set("daemon", "InitialSetupEnable", "False")
 with open(path, "w") as f:
     c.write(f)
@@ -115,7 +115,7 @@ import time
 
 BUS = 'org.freedesktop.UDisks2'
 ROOT = '/org/freedesktop/UDisks2'
-SERIAL = 'LUMAGATEUSB'
+SERIAL = 'SUNOGATEUSB'
 SIZE = 64 * 1024 * 1024
 
 
@@ -161,7 +161,7 @@ def main():
         if target is None:
             time.sleep(0.5)
     if target is None:
-        raise RuntimeError('UDisks sees no owned LUMAGATEUSB drive')
+        raise RuntimeError('UDisks sees no owned SUNOGATEUSB drive')
     if select_gate_block(snapshot()) != target:
         raise RuntimeError('gate USB changed before the authorization request')
     path, device = target

@@ -9,23 +9,23 @@ from urllib.parse import parse_qs, urlsplit
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT / "src/luma-maps"))
+sys.path.insert(0, str(ROOT / "src/Suno-maps"))
 
-from luma_maps.providers import SearchProvider  # noqa: E402
-from luma_maps.search import PlaceSearch  # noqa: E402
+from Suno_maps.providers import SearchProvider  # noqa: E402
+from Suno_maps.search import PlaceSearch  # noqa: E402
 
 
 class PhotonRequestTests(unittest.TestCase):
     def test_fractional_viewport_zoom_is_sent_as_an_integer(self):
         provider = SearchProvider("https://photon.example/api", "", "", 350, 1, False)
-        search = PlaceSearch(provider, "LumaMaps/test")
+        search = PlaceSearch(provider, "SunoMaps/test")
         requests = []
 
         def respond(request, timeout):
             requests.append(request)
             return io.BytesIO(b'{"features": []}')
 
-        with patch("luma_maps.search.urllib.request.urlopen", side_effect=respond):
+        with patch("Suno_maps.search.urllib.request.urlopen", side_effect=respond):
             outcome = search._fetch("710", (45.5152, -122.6784, 12.4))
 
         self.assertFalse(outcome.error)

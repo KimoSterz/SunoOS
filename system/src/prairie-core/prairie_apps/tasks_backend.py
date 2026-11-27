@@ -156,7 +156,7 @@ def read_task(component, source_uid):
     comments = []
     for prop in properties(component):
         if _name(prop) == "COMMENT":
-            comments.append(Comment(prop.get_comment(), prop.get_parameter_as_string("X-LUMA-AUTHOR") or "", prop.get_parameter_as_string("X-LUMA-CREATED") or ""))
+            comments.append(Comment(prop.get_comment(), prop.get_parameter_as_string("X-SUNO-AUTHOR") or "", prop.get_parameter_as_string("X-SUNO-CREATED") or ""))
         if _name(prop) == "RELATED-TO":
             relation = prop.get_parameter_as_string("RELTYPE") or "PARENT"
             if relation == "DEPENDS-ON": waiting = prop.get_value_as_string()
@@ -169,7 +169,7 @@ def read_task(component, source_uid):
     return Task(component.get_uid(), source_uid, component.get_summary() or "Untitled", _time(component.get_due()),
                 value(component, "STATUS") == "COMPLETED" or value(component, "PERCENT-COMPLETE") == "100",
                 description.get_description() if description else "", int(value(component, "PRIORITY") or 0),
-                value(component, "X-LUMA-SECTION"), parent, waiting, assignee, assignee_name,
+                value(component, "X-SUNO-SECTION"), parent, waiting, assignee, assignee_name,
                 value(component, "RRULE"), value(component, "X-APPLE-SORT-ORDER"),
                 _time(completed_prop.get_completed()) if completed_prop else None, component.as_ical_string(), tuple(comments), value(component, "RECURRENCE-ID"), _time(component.get_dtstart()))
 
@@ -203,7 +203,7 @@ def patch_task(component, changes):
     result = component.clone()
     for field, content in changes.items():
         if field in ("title", "notes", "section", "order"):
-            name = {"title": "SUMMARY", "notes": "DESCRIPTION", "section": "X-LUMA-SECTION", "parent": "RELATED-TO", "order": "X-APPLE-SORT-ORDER"}[field]
+            name = {"title": "SUMMARY", "notes": "DESCRIPTION", "section": "X-SUNO-SECTION", "parent": "RELATED-TO", "order": "X-APPLE-SORT-ORDER"}[field]
             if field == "title" and not content.strip(): raise ValueError("Enter a task title.")
             replace_property(result, name, [f"{name}:{_escape(content)}"] if content else [])
         elif field == "repeat":
@@ -212,7 +212,7 @@ def patch_task(component, changes):
                 parsed = ical.Recurrence.new_from_string(content)
                 if parsed is None or parsed.get_freq() == ical.RecurrenceFrequency.NO_RECURRENCE: raise ValueError("Enter a valid recurrence rule.")
             replace_property(result, "RRULE", ["RRULE:" + content] if content else [])
-            replace_property(result, "X-LUMA-REPEAT-ANCHOR", [])
+            replace_property(result, "X-SUNO-REPEAT-ANCHOR", [])
             if not content:
                 # Never means no future occurrences, including imported date
                 # additions. Keep RECURRENCE-ID: it identifies an EDS exception,
@@ -259,7 +259,7 @@ def next_recurring_due(before):
     _, _, ical = _modules()
     due = before.get_due()
     if due is None: raise ValueError("Set a due date before completing a repeating task.")
-    anchor = value(before, "X-LUMA-REPEAT-ANCHOR")
+    anchor = value(before, "X-SUNO-REPEAT-ANCHOR")
     start = ical.Time.new_from_string(anchor) if anchor else due.clone()
     if due.get_timezone(): start.set_timezone(due.get_timezone())
     excluded = {p.get_exdate().as_ical_string() for p in properties(before) if _name(p) == "EXDATE"}
@@ -344,16 +344,16 @@ class TasksRepository:
                     view.start()
                 ok, components = client.get_object_list_sync("#t", None)
                 if not ok: raise RuntimeError("Could not read tasks")
-                metadata = next((c for c in components if value(c, "X-LUMA-KIND") == "PROJECT"), None)
+                metadata = next((c for c in components if value(c, "X-SUNO-KIND") == "PROJECT"), None)
                 self.metadata[uid] = metadata
-                records = [read_task(component, uid) for component in components if value(component, "X-LUMA-KIND") != "PROJECT"]
-                sections = tuple(json.loads(value(metadata, "X-LUMA-SECTIONS") or "[]")) if metadata else ()
-                members = tuple(tuple(m) for m in json.loads(value(metadata, "X-LUMA-MEMBERS") or "[]")) if metadata else ()
+                records = [read_task(component, uid) for component in components if value(component, "X-SUNO-KIND") != "PROJECT"]
+                sections = tuple(json.loads(value(metadata, "X-SUNO-SECTIONS") or "[]")) if metadata else ()
+                members = tuple(tuple(m) for m in json.loads(value(metadata, "X-SUNO-MEMBERS") or "[]")) if metadata else ()
                 sections = tuple(dict.fromkeys(sections + tuple(t.section for t in records if t.section)))
                 members = tuple(dict.fromkeys(members + tuple((t.assignee, t.assignee_name) for t in records if t.assignee)))
                 previous = sources[-1]
                 sources[-1] = TaskList(previous.uid, previous.name, previous.location, previous.writable, previous.default, sections, members,
-                                      bool(sections or members or (metadata and value(metadata, "X-LUMA-SHARED") == "TRUE")))
+                                      bool(sections or members or (metadata and value(metadata, "X-SUNO-SHARED") == "TRUE")))
                 tasks.extend(records)
                 self.cache[uid] = tuple(records)
             except Exception as error:
@@ -519,13 +519,13 @@ class TasksRepository:
         if next_due is None: return self.edit(task, {"completed": True}), "Completed · repeat finished"
         copy = patch_task(before, {"completed": True})
         copy.set_uid(str(uuid.uuid4()))
-        for name in ("RRULE", "RDATE", "EXDATE", "RECURRENCE-ID", "X-LUMA-REPEAT-ANCHOR"):
+        for name in ("RRULE", "RDATE", "EXDATE", "RECURRENCE-ID", "X-SUNO-REPEAT-ANCHOR"):
             replace_property(copy, name, [])
         successor = {"due": _time(next_due), "completed": False}
         if isinstance(task.start, datetime) and isinstance(task.due, datetime):
             successor['start'] = _time(next_due).astimezone() - (task.due.astimezone() - task.start.astimezone())
         after = patch_task(before, successor)
-        replace_property(after, "X-LUMA-REPEAT-ANCHOR", ["X-LUMA-REPEAT-ANCHOR:" + start.as_ical_string()])
+        replace_property(after, "X-SUNO-REPEAT-ANCHOR", ["X-SUNO-REPEAT-ANCHOR:" + start.as_ical_string()])
         # Keep local recurrence wall time and its timezone across DST.
         after.set_due(next_due)
         original_due = before.get_first_property(ical.PropertyKind.DUE_PROPERTY)
@@ -601,8 +601,8 @@ class TasksRepository:
         before = self._get(*task.key)
         after = before.clone()
         prop = ical.Property.new_from_string("COMMENT:" + _escape(text.strip()))
-        prop.set_parameter_from_string("X-LUMA-AUTHOR", author or "Me")
-        prop.set_parameter_from_string("X-LUMA-CREATED", datetime.now(timezone.utc).isoformat())
+        prop.set_parameter_from_string("X-SUNO-AUTHOR", author or "Me")
+        prop.set_parameter_from_string("X-SUNO-CREATED", datetime.now(timezone.utc).isoformat())
         after.add_property(prop)
         self._write(task.source_uid, after)
         return Undo(task.source_uid, before.as_ical_string(), self._get(*task.key).as_ical_string())
@@ -619,8 +619,8 @@ class TasksRepository:
             if not re.fullmatch(r"[^\s@;:,]+@[^\s@;:,]+", email): raise ValueError("Each member needs an email address.")
         existing = self.metadata.get(source_uid)
         component = self._get(source_uid, existing.get_uid()) if existing else ical.Component.new_from_string(
-            "BEGIN:VTODO\r\nUID:luma-project-settings\r\nSUMMARY:Project settings\r\nSTATUS:COMPLETED\r\nX-LUMA-KIND:PROJECT\r\nEND:VTODO\r\n")
-        for name, content in (("X-LUMA-SECTIONS", json.dumps(sections)), ("X-LUMA-MEMBERS", json.dumps(members)), ("X-LUMA-SHARED", "TRUE" if shared else "FALSE")):
+            "BEGIN:VTODO\r\nUID:Suno-project-settings\r\nSUMMARY:Project settings\r\nSTATUS:COMPLETED\r\nX-SUNO-KIND:PROJECT\r\nEND:VTODO\r\n")
+        for name, content in (("X-SUNO-SECTIONS", json.dumps(sections)), ("X-SUNO-MEMBERS", json.dumps(members)), ("X-SUNO-SHARED", "TRUE" if shared else "FALSE")):
             replace_property(component, name, [name + ":" + _escape(content)])
         if existing: self._write(source_uid, component)
         else: self._create(source_uid, component)
@@ -683,7 +683,7 @@ class TasksRepository:
                 child = component.get_next_component(ical.ComponentKind.ANY_COMPONENT)
             return int(component.isa()), props, tuple(sorted(children))
         snapshot = tuple(sorted(durable(c) for c in components))
-        moved = tuple(c for c in components if value(c, 'X-LUMA-KIND') != 'PROJECT')
+        moved = tuple(c for c in components if value(c, 'X-SUNO-KIND') != 'PROJECT')
         created = []
         try:
             if destination:

@@ -64,8 +64,8 @@ async function work() {
     L.check('the windows that stayed are still exactly in their tiles',
         JSON.stringify([frame(left), frame(right)]) === JSON.stringify(held),
         `${JSON.stringify([frame(left), frame(right)])} vs ${JSON.stringify(held)}`);
-    L.check('no hold is left running', (tm._lumaTileChecks?.size ?? 0) === 0,
-        `${tm._lumaTileChecks?.size}`);
+    L.check('no hold is left running', (tm._SunoTileChecks?.size ?? 0) === 0,
+        `${tm._SunoTileChecks?.size}`);
 
     // Pushed out of its tile while held: put back.
     const want = frame(left);
@@ -80,22 +80,22 @@ async function work() {
     // Anything that is not a window is refused, and says so.
     let threw = null;
     try {
-        tm._lumaHoldTile(left.get_compositor_private(), want, 50, 'oracle');
+        tm._SunoHoldTile(left.get_compositor_private(), want, 50, 'oracle');
     } catch (e) {
         threw = `${e}`;
     }
     L.check('a window actor is refused, not called as a window', threw === null, `${threw}`);
     let threw2 = null;
     try {
-        tm._lumaHoldTile({assignedTile: {}, minimized: false}, want, 50, 'oracle');
-        tm._lumaReleaseTile({});
+        tm._SunoHoldTile({assignedTile: {}, minimized: false}, want, 50, 'oracle');
+        tm._SunoReleaseTile({});
     } catch (e) {
         threw2 = `${e}`;
     }
     L.check('a plain object is refused too', threw2 === null, `${threw2}`);
     await L.sleep(400);
-    L.check('the refusals started no hold', (tm._lumaTileChecks?.size ?? 0) === 0,
-        `${tm._lumaTileChecks?.size}`);
+    L.check('the refusals started no hold', (tm._SunoTileChecks?.size ?? 0) === 0,
+        `${tm._SunoTileChecks?.size}`);
     for (const w of [left, right])
         w.delete(global.get_current_time());
     await L.sleep(600);

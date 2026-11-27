@@ -28,7 +28,7 @@ class Classify(unittest.TestCase):
         self.assertEqual(checks.outcome(out), "needs_changes")
 
     def test_internal_problem_alone_is_attention(self):
-        out = [checks.check("vm:launch (x86_64)", False, "Luma looks at this by hand.", internal=True)]
+        out = [checks.check("vm:launch (x86_64)", False, "Suno looks at this by hand.", internal=True)]
         self.assertEqual(checks.outcome(out), "attention")
 
     def test_infrastructure_beside_internal_is_couldnt_run(self):
@@ -39,7 +39,7 @@ class Classify(unittest.TestCase):
         self.assertEqual(checks.outcome([checks.check("runtime", True, "ok")]), "passed")
 
     def test_vm_steps_keep_the_infrastructure_flag(self):
-        run = {"steps": [{"step": "boot", "ok": True, "message": "Luma started."},
+        run = {"steps": [{"step": "boot", "ok": True, "message": "Suno started."},
                          {"step": "launch", "ok": False, "message": "The screen was off.", "internal": True,
                           "infrastructure": True, "reason": "screen_off"}]}
         out = service.vm_checks(run, "x86_64")
@@ -62,7 +62,7 @@ class Classify(unittest.TestCase):
                          checks.COULDNT_RUN)
         no_room = service.failure_report(capacity.NoCapacity("memory", "no room"))
         self.assertEqual((no_room["status"], no_room["checks"][0]["reason"]), (checks.COULDNT_RUN, "memory"))
-        # Anything else is a real problem for Luma to look at, not a retry.
+        # Anything else is a real problem for Suno to look at, not a retry.
         self.assertEqual(service.failure_report(KeyError("app_id"))["status"], "attention")
 
 
@@ -125,7 +125,7 @@ class Slot(unittest.TestCase):
 
     def test_frozen_host_is_no_capacity(self):
         with self.assertRaises(capacity.NoCapacity) as raised:
-            with self.slot(busy=lambda: "luma-heavy.slice is frozen by the thermal guard"):
+            with self.slot(busy=lambda: "Suno-heavy.slice is frozen by the thermal guard"):
                 pass
         self.assertEqual(raised.exception.reason, "busy")
 

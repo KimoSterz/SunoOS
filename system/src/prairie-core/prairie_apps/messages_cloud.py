@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: Apache-2.0
-"""A read-only 'Luma Cloud' history source for Messages.
+"""A read-only 'Suno Cloud' history source for Messages.
 
 Rows come from the Connect cloud-history cache (other devices' messages, pulled
-by luma-connect-sync). They are merged into what Messages shows and never
+by Suno-connect-sync). They are merged into what Messages shows and never
 written into this device's message store or any provider. A row this device
 already has (same id, or same direction/body within a couple of seconds) is
 shown once, from the local store: a connected phone's live copy always wins.
@@ -18,14 +18,14 @@ from .connect_messages import _hub_id, cloud_messages
 from .messages_backend import MessageRecord, ThreadRecord, normalize_address
 
 CLOUD_STATUS = "cloud"
-CLOUD_LABEL = "From Luma Cloud"
+CLOUD_LABEL = "From Suno Cloud"
 _MATCH_SECONDS = 2
 
 
 def cache_path(environment: dict[str, str] | None = None) -> Path:
     environment = os.environ if environment is None else environment
     data = environment.get("XDG_DATA_HOME") or str(Path(environment.get("HOME", str(Path.home()))) / ".local/share")
-    return Path(data) / "luma/connect/cloud-history.db"
+    return Path(data) / "Suno/connect/cloud-history.db"
 
 
 class CloudHistory:

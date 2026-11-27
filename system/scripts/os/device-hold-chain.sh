@@ -13,8 +13,8 @@
 #       pending after H hours (default 24) stays held; the next publish keeps it on its last good release.
 #
 # One ARM OS commit serves every ARM device; a device-specific check (Fairphone 6 audio, a modem, a camera)
-# holds only that device class. Run with the publication environment (LUMA_OS_ROOT, keys, LUMA_OS_ARCH,
-# LUMA_OS_PROFILE) as for publish-channel.sh. --lock FILE serializes with the graph refresher (flock).
+# holds only that device class. Run with the publication environment (SUNO_OS_ROOT, keys, SUNO_OS_ARCH,
+# SUNO_OS_PROFILE) as for publish-channel.sh. --lock FILE serializes with the graph refresher (flock).
 # Logs '== <time> ...' lines; ends DEVICE-HOLDS-<PHASE>-DONE, or DEVICE-HOLDS-FAILED.
 set -uo pipefail
 here=$(cd -- "$(dirname -- "$0")" && pwd)
@@ -33,9 +33,9 @@ while [ $# -gt 0 ]; do
 done
 log() { echo "== $(date -u +%FT%TZ) $*"; }
 die() { log "DEVICE-HOLDS-FAILED: $*"; exit 1; }
-[ -n "$arch" ] && [ -n "$channel" ] && [ -n "${LUMA_OS_ROOT:-}" ] || die "--arch, --channel and LUMA_OS_ROOT are required"
-repo=$LUMA_OS_ROOT/publish/public-repo
-hold_cli() { python3 "$here/device-hold.py" "$@" --arch "$arch" --channel "$channel" --root "$LUMA_OS_ROOT"; }
+[ -n "$arch" ] && [ -n "$channel" ] && [ -n "${SUNO_OS_ROOT:-}" ] || die "--arch, --channel and SUNO_OS_ROOT are required"
+repo=$SUNO_OS_ROOT/publish/public-repo
+hold_cli() { python3 "$here/device-hold.py" "$@" --arch "$arch" --channel "$channel" --root "$SUNO_OS_ROOT"; }
 newest() {
   python3 - "$repo" "$arch" "$channel" "$here/lib" <<'PY'
 import glob, json, sys
@@ -53,7 +53,7 @@ resign() {
   [ -z "$lock" ] || { exec 9>"$lock"; flock -w 600 9 || die "graph refresh lock busy"; }
   python3 "$here/lib/graph_from_releases.py" "$repo" "$channel" "$arch" > "$src" || die "graph render"
   python3 -c 'import json,sys; g=json.load(open(sys.argv[1])); [print("  ", r["version"], ",".join(h["hardware_target"] for h in r.get("device_holds", [])) or "-") for r in g["releases"][-3:]]' "$src"
-  bash "$here/sign-update-graph.sh" --arch "$arch" --profile "$LUMA_OS_PROFILE" --channel "$channel" --source "$src" --no-sync || die "graph sign"
+  bash "$here/sign-update-graph.sh" --arch "$arch" --profile "$SUNO_OS_PROFILE" --channel "$channel" --source "$src" --no-sync || die "graph sign"
   bash "$here/stage-webroot.sh" --keep 1 | tail -1 || die "stage-webroot"
   bash "$here/sync-to-cdn.sh" --apply --only graph | tail -1 || die "sync graph"
   [ -z "$lock" ] || flock -u 9

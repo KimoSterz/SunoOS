@@ -95,7 +95,7 @@ runuser -u "$builder_user" -- install -m 0644 "$core" "$output_dir/modules/inv-i
 runuser -u "$builder_user" -- install -m 0644 "$spi" "$output_dir/modules/inv-icm42600-spi.ko"
 manifest_tmp=$(mktemp)
 {
-  printf 'LUMA_FP6_ICM42630_FIX_VERSION=1\n'
+  printf 'SUNO_FP6_ICM42630_FIX_VERSION=1\n'
   printf 'KERNEL_RELEASE=7.1.2\n'
   printf 'BASE_KERNEL_SHA256=%s\n' "$kernel_sha"
   printf 'SENSOR_PATCH_SHA256=%s\n' "$sensor_patch_sha"

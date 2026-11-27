@@ -7,7 +7,7 @@ ui=$1
 filler=${2:-100000}
 here=$(cd "$(dirname "$0")" && pwd)
 # LocalSearch never indexes under /tmp, so the synthetic home lives elsewhere.
-base=${LUMA_SEARCH_TEST_BASE:-/var/lib/luma-search-test}
+base=${SUNO_SEARCH_TEST_BASE:-/var/lib/Suno-search-test}
 mkdir -p "$base"
 export HOME=$(mktemp -d "$base/home.XXXXXX")
 export XDG_RUNTIME_DIR=$HOME/.run XDG_CACHE_HOME=$HOME/.cache XDG_DATA_HOME=$HOME/.local/share

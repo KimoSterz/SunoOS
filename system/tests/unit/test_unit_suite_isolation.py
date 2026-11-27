@@ -15,7 +15,7 @@ writing `sys.modules` where import alone is enough to change the suite.
 
 It also fails on a skip with no stated reason.  A skipped test still prints
 OK, so a suite that skips everything is indistinguishable from one that
-checked everything: `test_luma_menu_contract` reported "OK (skipped=10)" for
+checked everything: `test_Suno_menu_contract` reported "OK (skipped=10)" for
 weeks while proving nothing.
 """
 

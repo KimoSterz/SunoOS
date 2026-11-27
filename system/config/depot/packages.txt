@@ -3,13 +3,13 @@
 # These are checked against their source specs and retained for Depot builds.
 # They are not composed into the desktop image; that reads config/desktop/packages.txt.
 
-luma-canvas-preview-0.1.0-8.luma.1.creator20261004.1.fc44.noarch
-luma-darkroom-0.1.0-1.luma.11.creator20261004.1.fc44.noarch
-luma-grid-preview-0.1.0-9.creator20261004.1.fc44.x86_64
-luma-reel-0.1.0-1.luma.9.creator20261004.1.fc44.noarch
-luma-session-0.1.0-1.luma.19.creator20261004.1.fc44.x86_64
-luma-session-instruments-1.0-1.luma.2.fc44.noarch
-sfizz-1.2.3-1.luma.1.fc44.x86_64
-luma-stage-preview-0.1.0-33.creator20261004.1.fc44.x86_64
-luma-tide-0.1.0-2.luma.40.fc44.noarch
-luma-write-0.1.0-1.luma.13.creator20261004.1.fc44.x86_64
+Suno-canvas-preview-0.1.0-8.Suno.1.creator20261004.1.fc44.noarch
+Suno-darkroom-0.1.0-1.Suno.11.creator20261004.1.fc44.noarch
+Suno-grid-preview-0.1.0-9.creator20261004.1.fc44.x86_64
+Suno-reel-0.1.0-1.Suno.9.creator20261004.1.fc44.noarch
+Suno-session-0.1.0-1.Suno.19.creator20261004.1.fc44.x86_64
+Suno-session-instruments-1.0-1.Suno.2.fc44.noarch
+sfizz-1.2.3-1.Suno.1.fc44.x86_64
+Suno-stage-preview-0.1.0-33.creator20261004.1.fc44.x86_64
+Suno-tide-0.1.0-2.Suno.40.fc44.noarch
+Suno-write-0.1.0-1.Suno.13.creator20261004.1.fc44.x86_64

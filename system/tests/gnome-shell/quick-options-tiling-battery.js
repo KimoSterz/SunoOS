@@ -24,12 +24,12 @@ const [quick, system, extension] = ARGV.map(read);
 for (const source of [quick, system, extension])
     new Function(script(source));
 
-const start = system.indexOf('export function lumaBatteryStatus(');
+const start = system.indexOf('export function SunoBatteryStatus(');
 const end = system.indexOf('\n}', start) + 2;
 if (start < 0 || end < 2)
     throw new Error('Actual battery formatter missing');
 const formatBattery = new Function('UPower', '_',
-    script(system.slice(start, end)) + '\nreturn lumaBatteryStatus;')(UPower, text => text);
+    script(system.slice(start, end)) + '\nreturn SunoBatteryStatus;')(UPower, text => text);
 const S = UPower.DeviceState;
 const cases = [
     [{State: S.FULLY_CHARGED, Percentage: 100, TimeToEmpty: 5971 * 3600}, 'Fully charged'],

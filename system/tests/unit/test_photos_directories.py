@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'src/prairie-core'))
 from prairie_apps.user_directories import photos_directory
 from prairie_apps.photos_backend import PhotoLibrary
-spec = importlib.util.spec_from_loader('migration', __import__('importlib.machinery').machinery.SourceFileLoader('migration', str(ROOT / 'src/prairie-core/bin/luma-migrate-photos-directory')))
+spec = importlib.util.spec_from_loader('migration', __import__('importlib.machinery').machinery.SourceFileLoader('migration', str(ROOT / 'src/prairie-core/bin/Suno-migrate-photos-directory')))
 migration = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(migration)
 
@@ -25,11 +25,11 @@ class PhotosDirectories(unittest.TestCase):
             private = home / 'private-config'; private.mkdir()
             (host / 'user-dirs.dirs').write_text('XDG_PICTURES_DIR="$HOME/Family photographs"\n')
             (private / 'user-dirs.dirs').write_text('XDG_PICTURES_DIR="$HOME/Unrelated private folder"\n')
-            for app in ('org.projectluma.Camera', 'org.projectluma.Photos'):
+            for app in ('org.projectSuno.Camera', 'org.projectSuno.Photos'):
                 env = {'HOME': str(home), 'FLATPAK_ID': app,
                        'HOST_XDG_CONFIG_HOME': str(host), 'XDG_CONFIG_HOME': str(private)}
                 self.assertEqual(photos_directory(env), home / 'Family photographs')
-                env['FLATPAK_ID'] = 'org.projectluma.Notes'
+                env['FLATPAK_ID'] = 'org.projectSuno.Notes'
                 self.assertEqual(photos_directory(env), home / 'Unrelated private folder')
 
     def test_xdg_config_and_explicit_override(self):
@@ -87,7 +87,7 @@ class PhotosDirectories(unittest.TestCase):
 
 
     def test_bookmark_labels_uris_repeat_and_rollback(self):
-        with tempfile.TemporaryDirectory(prefix='luma home ') as temp:
+        with tempfile.TemporaryDirectory(prefix='Suno home ') as temp:
             home = Path(temp); config = home / '.config'; config.mkdir()
             old = home / 'Pictures'; old.mkdir(); new = home / 'Photos'
             original = (f'{old.as_uri()} Pictures\n'
@@ -122,7 +122,7 @@ class PhotosDirectories(unittest.TestCase):
             home = Path(temp); config = home / '.config'; config.mkdir()
             old = home / 'Pictures'; old.mkdir()
             migration.migrate(home, config)
-            journal = config / 'luma-photos-directory-migration.json'
+            journal = config / 'Suno-photos-directory-migration.json'
             state = json.loads(journal.read_text())
             del state['bookmarks']
             journal.write_text(json.dumps(state))

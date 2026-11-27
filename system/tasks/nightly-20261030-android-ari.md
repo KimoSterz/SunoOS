@@ -1,8 +1,8 @@
 # October 30 nightly: Android and Ari, x86 and ARM
 
-- Owner: luma-dev-2; Android integration conversation, now owning this coordinated build.
+- Owner: Suno-dev-2; Android integration conversation, now owning this coordinated build.
 - Branch: codex/nightly-20261030-android-ari
-- Worktree: /srv/dev/worktrees/luma-os/nightly-20261030-android-ari
+- Worktree: /srv/dev/worktrees/Suno-os/nightly-20261030-android-ari
 - Status: source integration and bounded build preflight.
 - Authorization: Nick requested GitHub integration, reconciliation of open PRs and complete x86_64/AArch64 nightly builds, explicitly including Android and the new Ari features. Avoid redundant checks and rebuild loops. No unrelated private APK/account content may enter source or images.
 
@@ -104,7 +104,7 @@ excludes separate Office/Creative products; service test follows the actual
 packaged baseline entrypoint. Updated matrix consumer tests passed19 cases;
 baseline tests passed8. No skipped package tests or waived failures were used.
 
-Root HDD release alias: /srv/luma-build/nightly-20261030. Protected source v2 is
+Root HDD release alias: /srv/Suno-build/nightly-20261030. Protected source v2 is
 e95b48cec before OS compose, with its prior source record retained. The final
 Shell/Filer source update is still needed before compose. Core107/Tide36 build
 is job1a221ab6 using a short private builder path,6GiB admission and a4GiB actual
@@ -140,7 +140,7 @@ already authenticated Platform120 producer41165040069; actual default
 admission passed both CPUs in b3393997, without rebuilding toolkit/UI again.
 
 Runtime assembly is active in normal194b455b, private root
-/srv/luma-build/nightly-20261030/runtime-{x86_64,aarch64}. x86 Platform assembled;
+/srv/Suno-build/nightly-20261030/runtime-{x86_64,aarch64}. x86 Platform assembled;
 SDK is installing its RPM closure. The assembler now explicitly selects target
 CPU independently of native release-tools CPU, passing --forcearch to DNF;
 actual ARM payload verification remains pending. WebKit was fully archived and

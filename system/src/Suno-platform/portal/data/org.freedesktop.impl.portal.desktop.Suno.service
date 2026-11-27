@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=org.freedesktop.impl.portal.desktop.Suno
+Exec=/usr/libexec/Suno-portal-appchooser
+SystemdService=Suno-portal-appchooser.service

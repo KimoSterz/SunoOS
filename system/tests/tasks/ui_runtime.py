@@ -5,13 +5,13 @@ import os
 import sys
 import time
 import threading
-assert os.environ.get("LUMA_TASKS_ISOLATED_TEST") == "1"
+assert os.environ.get("SUNO_TASKS_ISOLATED_TEST") == "1"
 root = Path(__file__).resolve().parents[2]
-sys.path[:0] = [str(root / "src/prairie-core"), str(root / "src/luma-platform/appkit")]
-os.environ["LUMA_TASKS_FIXTURE"] = str(root / "tests/fixtures/tasks-v70.json")
+sys.path[:0] = [str(root / "src/prairie-core"), str(root / "src/Suno-platform/appkit")]
+os.environ["SUNO_TASKS_FIXTURE"] = str(root / "tests/fixtures/tasks-v70.json")
 from prairie_apps.tasks import TasksApplication
 from gi.repository import GLib
-fixture = Path(os.environ["LUMA_TASKS_FIXTURE"])
+fixture = Path(os.environ["SUNO_TASKS_FIXTURE"])
 before = fixture.read_bytes()
 app = TasksApplication()
 assert app.register(None)
@@ -266,7 +266,7 @@ wait(lambda: window.view == "launch" and not window.busy, "Shared list")
 anchor = find_named(window, "tk-share")
 assert anchor is not None
 window._share(anchor)
-from luma_appkit import MenuSection
+from Suno_appkit import MenuSection
 sections = [row.widget for row in window._sharing_menu._rows if isinstance(row, MenuSection)]
 assert len(sections) == 5, "Four people and the invitation field are required"
 wait(lambda: all(w.get_mapped() and w.get_width() > 0 for w in sections), "Phone sharing sections survive reparenting")

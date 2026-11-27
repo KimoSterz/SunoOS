@@ -23,13 +23,13 @@ const flatpakPath=GLib.getenv('BROWSER_GATE_FLATPAK_DEPLOYMENT');
 const deployment=flatpakPath?JSON.parse(new TextDecoder().decode(GLib.file_get_contents(flatpakPath)[1])):null;
 if (deployment && deployment.scope!=='EXACT_SIGNED_FLATPAK_INSTALLATION_NOT_RUNTIME_ACCEPTANCE')
     throw Error('Signed Flatpak fixture deployment is absent');
-const stateRoot=deployment?deployment.state_root:`${home}/.local/state/viola-luma/sessions`;
+const stateRoot=deployment?deployment.state_root:`${home}/.local/state/viola-Suno/sessions`;
 let result = {scope: deployment?'SIGNED_FLATPAK_NATIVE_CPU_MECHANISM_NOT_OS_ACCEPTANCE':'NATIVE_PACKAGE_MECHANISM_NOT_SIGNED_FLATPAK_OR_OS_ACCEPTANCE', ok: false};
 if (deployment) result.signed_deployment=deployment;
 export const METRICS = {};
 
 async function probe() {
-    print("LUMA_NATIVE_PHASE probe-entered");
+    print("SUNO_NATIVE_PHASE probe-entered");
     try {
         Main.overview.hide();
         const launcher = new Gio.SubprocessLauncher({flags:
@@ -75,9 +75,9 @@ async function probe() {
         // External URI activation intentionally opens Mini Viola. Launch the
         // normal primary window and navigate its address bar with real input.
         child = hostLauncher.spawnv(deployment?['/usr/bin/flatpak','run','--user',deployment.app_ref]:['/usr/bin/python3',
-            '/usr/share/viola-browser/luma-host/integrated_window.py',
+            '/usr/share/viola-browser/Suno-host/integrated_window.py',
             '--engine', '/opt/viola/browser/chrome',
-            '--profile', `${home}/.local/share/viola-luma/profile`,
+            '--profile', `${home}/.local/share/viola-Suno/profile`,
             '--work-root', stateRoot, '--interactive', '--start-url', url]);
         const pid = Number(child.get_identifier());
         const output = child.wait_async(null).then(() => ['', '']);
@@ -201,8 +201,8 @@ async function probe() {
 // Use GNOME's automation lifecycle after its own performance helper maps;
 // scheduling from init() bypasses the compositor's readiness barrier.
 export function init() {
-    print('LUMA_NATIVE_PHASE init-entered');
-    Main.layoutManager.connect('startup-complete', () => print('LUMA_NATIVE_PHASE startup-complete'));
+    print('SUNO_NATIVE_PHASE init-entered');
+    Main.layoutManager.connect('startup-complete', () => print('SUNO_NATIVE_PHASE startup-complete'));
     GLib.timeout_add(GLib.PRIORITY_DEFAULT, 20000, () => {
         const diagnostic = {
             scope: 'COMPOSITOR_STARTUP_DIAGNOSTIC_NOT_BROWSER_ACCEPTANCE',
@@ -213,7 +213,7 @@ export function init() {
             windows: global.get_window_actors().map(a => ({pid:a.meta_window.get_pid(),title:a.meta_window.get_title()})),
         };
         GLib.file_set_contents(`${out}/startup-diagnostic.json`, JSON.stringify(diagnostic, null, 2));
-        print(`LUMA_NATIVE_PHASE startup-diagnostic ${JSON.stringify(diagnostic)}`);
+        print(`SUNO_NATIVE_PHASE startup-diagnostic ${JSON.stringify(diagnostic)}`);
         return GLib.SOURCE_REMOVE;
     });
 }

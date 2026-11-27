@@ -78,22 +78,22 @@ export async function run({includeInstalledViola = true} = {}) {
     launcher.setenv('WAYLAND_DISPLAY', GLib.getenv('WAYLAND_DISPLAY') || 'wayland-0', true);
     launcher.setenv('GDK_BACKEND', 'wayland', true);
     print(`Candidate client environment DISPLAY=${GLib.getenv('DISPLAY')} WAYLAND=${GLib.getenv('WAYLAND_DISPLAY')}`);
-    const fixture = launcher.spawnv(['/usr/bin/python3', '/var/tmp/luma-auth-native-20261005/pin-fixture.py']);
+    const fixture = launcher.spawnv(['/usr/bin/python3', '/var/tmp/Suno-auth-native-20261005/pin-fixture.py']);
     try {
         const window = await waitFor(() => global.get_window_actors().map(actor => actor.meta_window)
             .find(win => win.get_gtk_application_id() === 'org.example.CreatorPin.Integration'), 'real GTK fixture window');
         print(`Native fixture metadata GTK=${window.get_gtk_application_id()} WM=${window.get_wm_class()}`);
         const app = Shell.WindowTracker.get_default().get_window_app(window);
-        await menuAndDrop(app, 'luma-creator-pin-fixture.desktop', true);
+        await menuAndDrop(app, 'Suno-creator-pin-fixture.desktop', true);
         if (includeInstalledViola) {
         launcher.unsetenv('LD_LIBRARY_PATH');
         launcher.unsetenv('GI_TYPELIB_PATH');
-        launcher.set_stderr_file_path('/var/tmp/luma-auth-native-20261005/viola-native-stderr.log');
-        const violaCommand = GLib.getenv('LUMA_PIN_VIOLA_EXEC') || '/usr/bin/viola-browser';
+        launcher.set_stderr_file_path('/var/tmp/Suno-auth-native-20261005/viola-native-stderr.log');
+        const violaCommand = GLib.getenv('SUNO_PIN_VIOLA_EXEC') || '/usr/bin/viola-browser';
         const viola = launcher.spawnv([violaCommand, 'about:blank']);
         try {
             const violaWindow = await waitFor(() => global.get_window_actors().map(actor => actor.meta_window)
-                .find(win => win.get_gtk_application_id() === 'org.projectluma.Viola.NativeIntegration'), 'real installed Viola window');
+                .find(win => win.get_gtk_application_id() === 'org.projectSuno.Viola.NativeIntegration'), 'real installed Viola window');
             print(`Native Viola metadata GTK=${violaWindow.get_gtk_application_id()} WM=${violaWindow.get_wm_class()}`);
             await menuAndDrop(Shell.WindowTracker.get_default().get_window_app(violaWindow), 'viola-browser.desktop', true);
         } catch (error) {

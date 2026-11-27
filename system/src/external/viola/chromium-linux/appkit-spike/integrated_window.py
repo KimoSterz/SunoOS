@@ -20,11 +20,11 @@ import gi
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
 from gi.repository import Adw, Gdk, Gio, GLib, Gtk, Pango
-from luma_appkit import AppWindow, Command, CommandGroup, CommandRegistry, ConnectedButtonGroup, IconButton, Island, LayerHost, Toolbar, install_appkit
+from Suno_appkit import AppWindow, Command, CommandGroup, CommandRegistry, ConnectedButtonGroup, IconButton, Island, LayerHost, Toolbar, install_appkit
 from browser_services import BrowserServices
 from engine_pipe import EnginePipe
 from frame_receiver import FrameReceiver
-from luma_appkit.bar_tokens import Well
+from Suno_appkit.bar_tokens import Well
 from gpu_page import GpuPage
 from measure_service_navigation import Fixture
 from native_menu import NativeMenu
@@ -37,7 +37,7 @@ from browser_favicons import BrowserFavicons
 # shared portal update monitor. The installed native application retains its
 # existing desktop and activation identity.
 APP_ID = ('com.rhyme.viola' if os.environ.get('FLATPAK_ID') == 'com.rhyme.viola'
-          else 'org.projectluma.Viola.NativeIntegration')
+          else 'org.projectSuno.Viola.NativeIntegration')
 
 
 class IntegratedWindow(AppWindow):
@@ -137,15 +137,15 @@ class IntegratedWindow(AppWindow):
         focus.connect('enter', self._address_focus)
         self.address.add_controller(focus)
         self.address_field = Well(orientation=Gtk.Orientation.HORIZONTAL, spacing=2)
-        self.address_field.add_css_class('lumaui-bar-entry')
+        self.address_field.add_css_class('SunoUI-bar-entry')
         self.address_field.add_css_class('viola-address')
         self.address_field.append(self.address)
-        self.bookmark = self.button('lumaui-pin-symbolic', 'Pin to top', lambda: self.responsive.toggle_pin())
+        self.bookmark = self.button('SunoUI-pin-symbolic', 'Pin to top', lambda: self.responsive.toggle_pin())
         self.address_field.append(self.bookmark)
         address_clamp = Adw.Clamp(maximum_size=720, tightening_threshold=720, hexpand=True,
                                  child=self.address_field)
         self.toolbar.append(address_clamp)
-        self.new_tab = self.button('luma-plus-symbolic', 'New tab', self._new_tab)
+        self.new_tab = self.button('Suno-plus-symbolic', 'New tab', self._new_tab)
         self.toolbar.append(self.new_tab)
         self.menu_button = self.button('view-more-horizontal-symbolic', 'Browser menu', self._browser_menu)
         self.toolbar.append(self.menu_button)
@@ -160,7 +160,7 @@ class IntegratedWindow(AppWindow):
         self.toolbar.set_sensitive(False)
         # Capture host commands before the page's DOM/IME event controllers.
         # Actions and shortcut spellings still come from the AppKit registry.
-        from luma_appkit.menus import accelerator
+        from Suno_appkit.menus import accelerator
         shortcuts = Gtk.ShortcutController(scope=Gtk.ShortcutScope.LOCAL)
         shortcuts.set_propagation_phase(Gtk.PropagationPhase.CAPTURE)
         for group in commands.groups:
@@ -471,14 +471,14 @@ class IntegratedWindow(AppWindow):
         self.address_suggestions.refresh_icon()
         pinned = any(tab['id'] == state.get('activeTabId') for tab in state.get('favorites', []))
         icon = self.bookmark.get_child()
-        if icon.get_icon_name() != 'lumaui-pin-symbolic':
-            icon.set_from_icon_name('lumaui-pin-symbolic')
+        if icon.get_icon_name() != 'SunoUI-pin-symbolic':
+            icon.set_from_icon_name('SunoUI-pin-symbolic')
         tooltip = 'Unpin from top' if pinned else 'Pin to top'
         if self.bookmark.get_tooltip_text() != tooltip:
             self.bookmark.set_tooltip_text(tooltip)
             self.bookmark.update_property([Gtk.AccessibleProperty.LABEL], [tooltip])
-        if self.bookmark.has_css_class('lumaui-selected') != pinned:
-            (self.bookmark.add_css_class if pinned else self.bookmark.remove_css_class)('lumaui-selected')
+        if self.bookmark.has_css_class('SunoUI-selected') != pinned:
+            (self.bookmark.add_css_class if pinned else self.bookmark.remove_css_class)('SunoUI-selected')
         if self.mini:
             self.mini_presentation.render(state)
         else:
@@ -559,9 +559,9 @@ def main():
     data = run / 'data'
     applications = data / 'applications'
     applications.mkdir(parents=True)
-    icon = Path(__file__).resolve().parent / 'assets/org.projectluma.Viola.NativeIntegration.svg'
+    icon = Path(__file__).resolve().parent / 'assets/org.projectSuno.Viola.NativeIntegration.svg'
     if not icon.is_file():
-        raise RuntimeError('The existing Luma browser artwork is required')
+        raise RuntimeError('The existing Suno browser artwork is required')
     (applications / (APP_ID + '.desktop')).write_text(
         '[Desktop Entry]\nType=Application\nName=Viola\nIcon=' + str(icon) + '\nExec=false\nNoDisplay=true\n')
     if not args.profile:

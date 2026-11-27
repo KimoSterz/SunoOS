@@ -7,7 +7,7 @@
 set -euo pipefail
 
 repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
-build_dir=${LUMA_FP6_PHYSICAL_BUILD_DIR:-$repo_root/build/mobile/fp6-physical}
+build_dir=${SUNO_FP6_PHYSICAL_BUILD_DIR:-$repo_root/build/mobile/fp6-physical}
 inventory_dir=${1:-}
 
 if [ -z "$inventory_dir" ]; then

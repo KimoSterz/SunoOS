@@ -6,7 +6,7 @@
 #
 #   lint-app.sh APP_ID MANIFEST BUILD_DIR REPO OUT_DIR
 #
-# Luma is not Flathub: a few checks encode Flathub policy rather than
+# Suno is not Flathub: a few checks encode Flathub policy rather than
 # correctness (its own runtimes list, screenshots mirrored into Flathub's
 # media store). packaging/flatpak/lint-exceptions.json names each exception
 # with its reason; every other error fails the build.

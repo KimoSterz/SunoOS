@@ -7,91 +7,91 @@ repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 # shellcheck source=/dev/null
 source "$repo_root/config/android/waydroid-source.env"
 
-source_root=${LUMA_WAYDROID_SOURCE_ROOT:-$repo_root/build/android/lineage-20}
+source_root=${SUNO_WAYDROID_SOURCE_ROOT:-$repo_root/build/android/lineage-20}
 patch_file="$repo_root/patches/android-hardware-waydroid/0001-prairie-native-android-window-chrome.patch"
 pointer_patch="$repo_root/patches/android-hardware-waydroid/0002-prairie-host-pointer-policy.patch"
-frame_patch="$repo_root/patches/android-hardware-waydroid/0003-luma-appkit-content-island.patch"
-treatment_patch="$repo_root/patches/android-hardware-waydroid/0004-luma-surface-treatment-frame.patch"
-lumaui_frame_patch="$repo_root/patches/android-hardware-waydroid/0007-lumaui-current-inset-frame.patch"
-window_behavior_patch="$repo_root/patches/android-hardware-waydroid/0008-luma-desktop-window-behavior-recovery.patch"
+frame_patch="$repo_root/patches/android-hardware-waydroid/0003-Suno-appkit-content-island.patch"
+treatment_patch="$repo_root/patches/android-hardware-waydroid/0004-Suno-surface-treatment-frame.patch"
+SunoUI_frame_patch="$repo_root/patches/android-hardware-waydroid/0007-SunoUI-current-inset-frame.patch"
+window_behavior_patch="$repo_root/patches/android-hardware-waydroid/0008-Suno-desktop-window-behavior-recovery.patch"
 framework_patch="$repo_root/patches/android-frameworks-base/0001-prairie-host-owned-window-chrome.patch"
-framework_status_bar_patch="$repo_root/patches/android-frameworks-base/0002-luma-host-status-bar-inset.patch"
-framework_orientation_patch="$repo_root/patches/android-frameworks-base/0003-luma-handheld-app-orientation.patch"
-native_patch="$repo_root/patches/android-frameworks-native/0001-luma-task-layer-ownership.patch"
-native_density_patch="$repo_root/patches/android-frameworks-native/0002-luma-read-display-density-when-queried.patch"
+framework_status_bar_patch="$repo_root/patches/android-frameworks-base/0002-Suno-host-status-bar-inset.patch"
+framework_orientation_patch="$repo_root/patches/android-frameworks-base/0003-Suno-handheld-app-orientation.patch"
+native_patch="$repo_root/patches/android-frameworks-native/0001-Suno-task-layer-ownership.patch"
+native_density_patch="$repo_root/patches/android-frameworks-native/0002-Suno-read-display-density-when-queried.patch"
 device_patch="$repo_root/patches/android-device-waydroid/0001-prairie-host-window-product-property.patch"
-codec_patch="$repo_root/patches/android-device-waydroid/0002-luma-codec-services-match-the-image.patch"
-input_method_patch="$repo_root/patches/android-device-waydroid/0003-luma-input-method.patch"
-forced_density_patch="$repo_root/patches/android-device-waydroid/0004-luma-forced-display-density.patch"
-microg_patch="$repo_root/patches/android-device-waydroid/0005-luma-microg.patch"
-task_profiles_patch="$repo_root/patches/android-device-waydroid/0006-luma-cgroup-v2-task-profiles.patch"
-jelly_patch="$repo_root/patches/android-jelly/0001-luma-consume-handled-app-redirects.patch"
-vendor_extra_patch="$repo_root/patches/android-vendor-extra/0001-luma-idempotent-pc-feature-mask.patch"
-libhidl_patch="$repo_root/patches/android-system-libhidl/0001-luma-copy-service-manager-under-lock.patch"
+codec_patch="$repo_root/patches/android-device-waydroid/0002-Suno-codec-services-match-the-image.patch"
+input_method_patch="$repo_root/patches/android-device-waydroid/0003-Suno-input-method.patch"
+forced_density_patch="$repo_root/patches/android-device-waydroid/0004-Suno-forced-display-density.patch"
+microg_patch="$repo_root/patches/android-device-waydroid/0005-Suno-microg.patch"
+task_profiles_patch="$repo_root/patches/android-device-waydroid/0006-Suno-cgroup-v2-task-profiles.patch"
+jelly_patch="$repo_root/patches/android-jelly/0001-Suno-consume-handled-app-redirects.patch"
+vendor_extra_patch="$repo_root/patches/android-vendor-extra/0001-Suno-idempotent-pc-feature-mask.patch"
+libhidl_patch="$repo_root/patches/android-system-libhidl/0001-Suno-copy-service-manager-under-lock.patch"
 hardware_root="$source_root/hardware/waydroid"
 framework_root="$source_root/frameworks/base"
 device_root="$source_root/device/waydroid/waydroid"
 waydroid_patch_script="$source_root/vendor/extra/waydroid-patches/apply-patches.sh"
-mesa_tool_root=${LUMA_ANDROID_MESA_TOOLS:-$source_root/prebuilts/mesa-tools}
+mesa_tool_root=${SUNO_ANDROID_MESA_TOOLS:-$source_root/prebuilts/mesa-tools}
 expected_font_sha=26ad3db9b31ff7dde67a91ff515d022d2f495cd506590699cf264f0bfe6fb714
-build_jobs=${LUMA_BUILD_JOBS:-}
-soong_gc=${LUMA_ANDROID_SOONG_GOGC:-20}
+build_jobs=${SUNO_BUILD_JOBS:-}
+soong_gc=${SUNO_ANDROID_SOONG_GOGC:-20}
 soong_gc_patch="$repo_root/patches/android-soong/0001-pass-build-host-go-gc-budget.patch"
 soong_cpu_patch="$repo_root/patches/android-soong/0002-pass-build-host-go-parallel-budget.patch"
 blueprint_cpu_patch="$repo_root/patches/android-blueprint/0001-honor-host-go-concurrency.patch"
-make_host_patch="$repo_root/patches/android-make/0001-luma-native-image-host-tools.patch"
-property_admission_patch="$repo_root/patches/android-system-core/0001-luma-property-writer-admission.patch"
-chrome_ownership_patch="$repo_root/patches/android-hardware-waydroid/0009-luma-frame-buffer-thread-ownership.patch"
-task_lifetime_patch="$repo_root/patches/android-hardware-waydroid/0010-luma-authoritative-task-removal.patch"
-initial_resize_patch="$repo_root/patches/android-hardware-waydroid/0011-luma-mandatory-initial-task-resize.patch"
-rpc_threadpool_patch="$repo_root/patches/android-hardware-waydroid/0012-luma-shared-composer-rpc-threadpool.patch"
-buffer_bounds_patch="$repo_root/patches/android-hardware-waydroid/0013-luma-software-buffer-allocation-bounds.patch"
-configure_lock_patch="$repo_root/patches/android-hardware-waydroid/0014-luma-configure-invalidation-lock-order.patch"
-native_clipboard_patch="$repo_root/patches/android-hardware-waydroid/0015-luma-native-clipboard-caller-admission.patch"
-clipboard_transfer_patch="$repo_root/patches/android-hardware-waydroid/0016-luma-bounded-native-clipboard-transfer.patch"
-task_admission_patch="$repo_root/patches/android-hardware-waydroid/0017-luma-native-task-caller-admission.patch"
-task_channel_patch="$repo_root/patches/android-hardware-waydroid/0018-luma-bound-task-channel-io.patch"
-app_settings_patch="$repo_root/patches/android-hardware-waydroid/0019-luma-native-app-settings-action.patch"
-desktop_canvas_patch="$repo_root/patches/android-hardware-waydroid/0020-luma-logical-desktop-canvas.patch"
-handheld_fill_patch="$repo_root/patches/android-hardware-waydroid/0021-luma-handheld-task-window-fill.patch"
-text_input_patch="$repo_root/patches/android-hardware-waydroid/0022-luma-host-text-input.patch"
-video_layer_patch="$repo_root/patches/android-hardware-waydroid/0023-luma-video-layer-conversion.patch"
-touch_density_patch="$repo_root/patches/android-hardware-waydroid/0024-luma-touch-presentation-density.patch"
-lineage_task_lifetime_patch="$repo_root/patches/android-lineage-sdk/0001-luma-authoritative-task-removal.patch"
-lineage_notification_patch="$repo_root/patches/android-lineage-sdk/0002-luma-notification-lifecycle.patch"
-lineage_admission_patch="$repo_root/patches/android-lineage-sdk/0003-luma-platform-caller-admission.patch"
-lineage_clipboard_patch="$repo_root/patches/android-lineage-sdk/0004-luma-native-clipboard-reconnect.patch"
-lineage_reply_patch="$repo_root/patches/android-lineage-sdk/0005-luma-native-notification-replies.patch"
-lineage_icon_patch="$repo_root/patches/android-lineage-sdk/0006-luma-unmasked-adaptive-icons.patch"
-lineage_bridge_patch="$repo_root/patches/android-lineage-sdk/0007-luma-host-bridge-refusals-stay-local.patch"
-target_arch=${LUMA_WAYDROID_TARGET_ARCH:-x86_64}
+make_host_patch="$repo_root/patches/android-make/0001-Suno-native-image-host-tools.patch"
+property_admission_patch="$repo_root/patches/android-system-core/0001-Suno-property-writer-admission.patch"
+chrome_ownership_patch="$repo_root/patches/android-hardware-waydroid/0009-Suno-frame-buffer-thread-ownership.patch"
+task_lifetime_patch="$repo_root/patches/android-hardware-waydroid/0010-Suno-authoritative-task-removal.patch"
+initial_resize_patch="$repo_root/patches/android-hardware-waydroid/0011-Suno-mandatory-initial-task-resize.patch"
+rpc_threadpool_patch="$repo_root/patches/android-hardware-waydroid/0012-Suno-shared-composer-rpc-threadpool.patch"
+buffer_bounds_patch="$repo_root/patches/android-hardware-waydroid/0013-Suno-software-buffer-allocation-bounds.patch"
+configure_lock_patch="$repo_root/patches/android-hardware-waydroid/0014-Suno-configure-invalidation-lock-order.patch"
+native_clipboard_patch="$repo_root/patches/android-hardware-waydroid/0015-Suno-native-clipboard-caller-admission.patch"
+clipboard_transfer_patch="$repo_root/patches/android-hardware-waydroid/0016-Suno-bounded-native-clipboard-transfer.patch"
+task_admission_patch="$repo_root/patches/android-hardware-waydroid/0017-Suno-native-task-caller-admission.patch"
+task_channel_patch="$repo_root/patches/android-hardware-waydroid/0018-Suno-bound-task-channel-io.patch"
+app_settings_patch="$repo_root/patches/android-hardware-waydroid/0019-Suno-native-app-settings-action.patch"
+desktop_canvas_patch="$repo_root/patches/android-hardware-waydroid/0020-Suno-logical-desktop-canvas.patch"
+handheld_fill_patch="$repo_root/patches/android-hardware-waydroid/0021-Suno-handheld-task-window-fill.patch"
+text_input_patch="$repo_root/patches/android-hardware-waydroid/0022-Suno-host-text-input.patch"
+video_layer_patch="$repo_root/patches/android-hardware-waydroid/0023-Suno-video-layer-conversion.patch"
+touch_density_patch="$repo_root/patches/android-hardware-waydroid/0024-Suno-touch-presentation-density.patch"
+lineage_task_lifetime_patch="$repo_root/patches/android-lineage-sdk/0001-Suno-authoritative-task-removal.patch"
+lineage_notification_patch="$repo_root/patches/android-lineage-sdk/0002-Suno-notification-lifecycle.patch"
+lineage_admission_patch="$repo_root/patches/android-lineage-sdk/0003-Suno-platform-caller-admission.patch"
+lineage_clipboard_patch="$repo_root/patches/android-lineage-sdk/0004-Suno-native-clipboard-reconnect.patch"
+lineage_reply_patch="$repo_root/patches/android-lineage-sdk/0005-Suno-native-notification-replies.patch"
+lineage_icon_patch="$repo_root/patches/android-lineage-sdk/0006-Suno-unmasked-adaptive-icons.patch"
+lineage_bridge_patch="$repo_root/patches/android-lineage-sdk/0007-Suno-host-bridge-refusals-stay-local.patch"
+target_arch=${SUNO_WAYDROID_TARGET_ARCH:-x86_64}
 case "$target_arch" in
   x86_64) target_product=waydroid_x86_64 ;;
   aarch64) target_product=waydroid_arm64_only ;;
-  *) printf 'error: LUMA_WAYDROID_TARGET_ARCH must be x86_64 or aarch64\n' >&2; exit 1 ;;
+  *) printf 'error: SUNO_WAYDROID_TARGET_ARCH must be x86_64 or aarch64\n' >&2; exit 1 ;;
 esac
-incremental=${LUMA_WAYDROID_INCREMENTAL:-0}
+incremental=${SUNO_WAYDROID_INCREMENTAL:-0}
 prepare_script="$repo_root/scripts/android/prepare-prairie-waydroid-tree.sh"
 
 case "$incremental" in
   0|1) ;;
   *)
-    printf 'error: LUMA_WAYDROID_INCREMENTAL must be 0 or 1\n' >&2
+    printf 'error: SUNO_WAYDROID_INCREMENTAL must be 0 or 1\n' >&2
     exit 1
     ;;
 esac
 
 if [[ -n $build_jobs && ! $build_jobs =~ ^[1-9][0-9]*$ ]]; then
-  printf 'error: LUMA_BUILD_JOBS must be a positive integer\n' >&2
+  printf 'error: SUNO_BUILD_JOBS must be a positive integer\n' >&2
   exit 1
 fi
 [[ "$soong_gc" =~ ^[1-9][0-9]*$ ]] || {
-  printf 'error: LUMA_ANDROID_SOONG_GOGC must be a positive percentage\n' >&2
+  printf 'error: SUNO_ANDROID_SOONG_GOGC must be a positive percentage\n' >&2
   exit 1
 }
 export GOGC="$soong_gc"
 # This entry point produces Android runtime images/components, not host SDKs.
-export LUMA_ANDROID_IMAGE_HOST_ONLY=1
+export SUNO_ANDROID_IMAGE_HOST_ONLY=1
 build_job_args=()
 if [[ -n $build_jobs ]]; then
   build_job_args+=("-j$build_jobs")
@@ -119,7 +119,7 @@ test -x "$mesa_tool_root/mesa_clc" || {
 }
 # Mesa runs its host compilers only from the identical source version.
 grep -Fqx "MESA_VERSION=$(cat "$source_root/external/mesa/VERSION")" "$mesa_tool_root/BUILD-INFO" 2>/dev/null || {
-  printf 'error: Mesa host tools do not match external/mesa; build them with scripts/android/build-mesa-host-tools.sh and set LUMA_ANDROID_MESA_TOOLS\n' >&2
+  printf 'error: Mesa host tools do not match external/mesa; build them with scripts/android/build-mesa-host-tools.sh and set SUNO_ANDROID_MESA_TOOLS\n' >&2
   exit 1
 }
 
@@ -142,11 +142,11 @@ if [ "$incremental" = 1 ]; then
 else
   "$prepare_script" --reset
   test "$(git -C "$hardware_root" rev-parse HEAD)" = \
-    "$LUMA_WAYDROID_HARDWARE_REVISION"
+    "$SUNO_WAYDROID_HARDWARE_REVISION"
   test "$(git -C "$framework_root" rev-parse HEAD)" = \
-    "$LUMA_ANDROID_FRAMEWORKS_BASE_REVISION"
+    "$SUNO_ANDROID_FRAMEWORKS_BASE_REVISION"
   test "$(git -C "$device_root" rev-parse HEAD)" = \
-    "$LUMA_WAYDROID_DEVICE_REVISION"
+    "$SUNO_WAYDROID_DEVICE_REVISION"
   dirty_projects=$(cd "$source_root" && repo forall -c \
     'test -z "$(git status --porcelain)" || printf "%s\n" "$REPO_PATH"')
   test -z "$dirty_projects" || {
@@ -165,8 +165,8 @@ fi
 if [ "$incremental" = 0 ]; then
   (
     cd "$source_root"
-    GIT_COMMITTER_NAME='Project Luma Build' \
-      GIT_COMMITTER_EMAIL='build@projectluma.invalid' \
+    GIT_COMMITTER_NAME='Project Suno Build' \
+      GIT_COMMITTER_EMAIL='build@projectSuno.invalid' \
       TERM=${TERM:-xterm} \
       bash "$waydroid_patch_script"
   )
@@ -194,7 +194,7 @@ if [ "$incremental" = 0 ]; then
   git -C "$hardware_root" apply "$pointer_patch"
   git -C "$hardware_root" apply "$frame_patch"
   git -C "$hardware_root" apply "$treatment_patch"
-  git -C "$hardware_root" apply "$lumaui_frame_patch"
+  git -C "$hardware_root" apply "$SunoUI_frame_patch"
   git -C "$hardware_root" apply "$window_behavior_patch"
   git -C "$hardware_root" apply "$chrome_ownership_patch"
   git -C "$hardware_root" apply "$task_lifetime_patch"
@@ -212,14 +212,14 @@ if [ "$incremental" = 0 ]; then
   git -C "$hardware_root" apply --binary "$text_input_patch"
   git -C "$hardware_root" apply "$video_layer_patch"
   git -C "$hardware_root" apply "$touch_density_patch"
-  cmp "$repo_root/patches/android-hardware-waydroid/native/luma-clipboard-transfer.h" "$hardware_root/hwcomposer/luma-clipboard-transfer.h"
-  cmp "$repo_root/patches/android-hardware-waydroid/native/luma-rgb-copy-bounds.h" "$hardware_root/hwcomposer/luma-rgb-copy-bounds.h"
-  cmp "$repo_root/patches/android-hardware-waydroid/native/luma-task-lifetime.h" "$hardware_root/hwcomposer/luma-task-lifetime.h"
-  cmp "$repo_root/patches/android-hardware-waydroid/native/luma-window-callbacks.h" "$hardware_root/hwcomposer/luma-window-callbacks.h"
-  cmp "$repo_root/patches/android-hardware-waydroid/native/luma-task-resize.h" "$hardware_root/hwcomposer/luma-task-resize.h"
+  cmp "$repo_root/patches/android-hardware-waydroid/native/Suno-clipboard-transfer.h" "$hardware_root/hwcomposer/Suno-clipboard-transfer.h"
+  cmp "$repo_root/patches/android-hardware-waydroid/native/Suno-rgb-copy-bounds.h" "$hardware_root/hwcomposer/Suno-rgb-copy-bounds.h"
+  cmp "$repo_root/patches/android-hardware-waydroid/native/Suno-task-lifetime.h" "$hardware_root/hwcomposer/Suno-task-lifetime.h"
+  cmp "$repo_root/patches/android-hardware-waydroid/native/Suno-window-callbacks.h" "$hardware_root/hwcomposer/Suno-window-callbacks.h"
+  cmp "$repo_root/patches/android-hardware-waydroid/native/Suno-task-resize.h" "$hardware_root/hwcomposer/Suno-task-resize.h"
   cmp "$repo_root/patches/android-hardware-waydroid/native/Figtree-OFL.txt" "$hardware_root/hwcomposer/fonts/OFL.txt"
-  for header in luma-window-frame.h luma-frame-tokens.h luma-frame-glyphs.h; do
-    cmp "$repo_root/src/luma-platform/compat/$header" "$hardware_root/hwcomposer/$header"
+  for header in Suno-window-frame.h Suno-frame-tokens.h Suno-frame-glyphs.h; do
+    cmp "$repo_root/src/Suno-platform/compat/$header" "$hardware_root/hwcomposer/$header"
   done
   git -C "$framework_root" apply "$framework_patch"
   git -C "$framework_root" apply "$framework_status_bar_patch"
@@ -276,7 +276,7 @@ cd "$source_root"
 set +u
 source build/envsetup.sh
 lunch "lineage_${target_product}-userdebug"
-if [ "${LUMA_BUILD_WAYDROID_IMAGES:-0}" = 1 ]; then
+if [ "${SUNO_BUILD_WAYDROID_IMAGES:-0}" = 1 ]; then
   m "${build_job_args[@]}" systemimage vendorimage
 else
   m "${build_job_args[@]}" \
@@ -317,11 +317,11 @@ install -m 0644 \
   "$output/vendor/lib64/hw/"
 # shellcheck source=write-checksums.sh
 source "$repo_root/scripts/android/write-checksums.sh"
-if [ "${LUMA_BUILD_WAYDROID_IMAGES:-0}" = 1 ]; then
+if [ "${SUNO_BUILD_WAYDROID_IMAGES:-0}" = 1 ]; then
   install -d -m 0755 "$output/images"
   install -m 0644 "$product_root/system.img" "$output/images/system.img"
   install -m 0644 "$product_root/vendor.img" "$output/images/vendor.img"
-  luma_android_write_checksums "$output/images" system.img vendor.img
+  Suno_android_write_checksums "$output/images" system.img vendor.img
 fi
-luma_android_write_checksums "$output"
+Suno_android_write_checksums "$output"
 printf 'Prairie Waydroid windowing components: %s\n' "$output"

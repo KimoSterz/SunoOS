@@ -1,0 +1,15 @@
+# Messages' background agent (ADR-033): network accounts stay connected and new
+# messages are announced while Messages is closed.
+# Installed as /usr/share/Suno/background/org.projectSuno.Messages.toml for Suno-background.
+schema_version = "0.2"
+
+[application]
+id = "org.projectSuno.Messages"
+name = "Messages"
+
+[background]
+agent = "org.projectSuno.Messages.Agent"
+exec = "prairie-messages --agent"
+category = "communication"
+wake = ["login", "network", "resume"]
+publishes = ["unread-count", "unread-conversations", "accounts", "badge", "live-extension:org.projectSuno.Messages.Unread"]

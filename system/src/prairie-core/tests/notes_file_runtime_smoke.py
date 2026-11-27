@@ -131,7 +131,7 @@ with tempfile.TemporaryDirectory() as directory:
 
     assert not (root / "data").exists()
     # Closing with changes asks with the kit's save sheet, on this window.
-    from luma_appkit import SaveSheet
+    from Suno_appkit import SaveSheet
     window._close_file()
     sheet = window.presented_sheet
     assert isinstance(sheet, SaveSheet) and not sheet_untitled(sheet)

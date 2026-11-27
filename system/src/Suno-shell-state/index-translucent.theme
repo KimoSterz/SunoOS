@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=X-GNOME-Metatheme
+Name=Suno-translucent
+Comment=Project Suno Frost and Glass fallback for toolkits with no translucent renderer
+Encoding=UTF-8
+
+[X-GNOME-Metatheme]
+GtkTheme=Suno-translucent
+IconTheme=Prairie
+CursorTheme=Adwaita
+ButtonLayout=:minimize,maximize,close

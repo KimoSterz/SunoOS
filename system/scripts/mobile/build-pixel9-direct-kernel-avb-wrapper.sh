@@ -95,7 +95,7 @@ initramfs_kernel_compression=$(sed -n 's/^INITRAMFS_KERNEL_COMPRESSION=//p' "$in
 embedded_initramfs_sha=$(sed -n 's/^EMBEDDED_INITRAMFS_SHA256=//p' "$inner_manifest")
 kernel_bytes=$(sed -n 's/^KERNEL_BYTES=//p' "$inner_manifest")
 kernel_sha=$(sed -n 's/^KERNEL_SHA256=//p' "$inner_manifest")
-grep -Fqx 'LUMA_PIXEL9_DIRECT_KERNEL_WRAPPER_VERSION=1' "$inner_manifest" ||
+grep -Fqx 'SUNO_PIXEL9_DIRECT_KERNEL_WRAPPER_VERSION=1' "$inner_manifest" ||
   die 'direct-wrapper manifest version differs'
 [ -n "$diagnostic_variant" ] || die 'direct-wrapper diagnostic variant is absent'
 [ -n "$report_transports" ] || die 'direct-wrapper report transports are absent'
@@ -157,7 +157,7 @@ python3 "$avbtool" add_hash_footer \
   --algorithm SHA256_RSA4096 \
   --key "$key" \
   --rollback_index "$PIXEL9_STOCK_BOOT_ROLLBACK_INDEX" \
-  --append_to_release_string ' Luma; AOSP test key; RAM only'
+  --append_to_release_string ' Suno; AOSP test key; RAM only'
 python3 "$avbtool" info_image --image "$candidate" >"$info"
 (
   cd "$output_dir"
@@ -185,7 +185,7 @@ for boundary in \
 done
 
 {
-  printf 'LUMA_PIXEL9_DIRECT_KERNEL_AVB_WRAPPER_VERSION=1\n'
+  printf 'SUNO_PIXEL9_DIRECT_KERNEL_AVB_WRAPPER_VERSION=1\n'
   printf 'SCOPE=offline-stock-size-avb-parser-shape-experiment\n'
   printf 'DIAGNOSTIC_VARIANT=%s\n' "$diagnostic_variant"
   printf 'REPORT_TRANSPORTS=%s\n' "$report_transports"

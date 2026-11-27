@@ -1,12 +1,12 @@
-From: Project Luma <noreply@projectluma.org>
+From: Project Suno <noreply@projectSuno.org>
 Subject: [PATCH] open-uri: open files in the default chosen for their type
 
 OpenURI and OpenFile showed the application chooser for every file
 type whose default was not a system installer named in
-/usr/share/luma/open-directly.list, until one application had been
+/usr/share/Suno/open-directly.list, until one application had been
 picked three times from the same caller. A screenshot or a PDF
 double-clicked in a sandboxed file manager therefore asked which
-application to use on a fresh install, although Luma names Viewer the
+application to use on a fresh install, although Suno names Viewer the
 default for both, and "Always Open" in the chooser had no effect: it
 records the choice as the default in $XDG_CONFIG_HOME/mimeapps.list,
 which the portal never read for files.
@@ -20,15 +20,15 @@ do an application's request to ask and always-ask for the type.
 ---
 --- a/src/open-uri.c
 +++ b/src/open-uri.c
-@@ -572,6 +572,95 @@ luma_opens_directly (const char *app_id,
+@@ -572,6 +572,95 @@ Suno_opens_directly (const char *app_id,
    return TRUE;
  }
  
-+/* Luma: a default someone chose. "Always Open" in Luma's application chooser
-+ * (luma-portal) and Settings record the person's choice with
++/* Suno: a default someone chose. "Always Open" in Suno's application chooser
++ * (Suno-portal) and Settings record the person's choice with
 + * g_app_info_set_as_default_for_type(), in [Default Applications] of
 + * $XDG_CONFIG_HOME/mimeapps.list; the operating system names its defaults in
-+ * /etc/xdg/gnome-mimeapps.list (luma-desktop-launcher-policy). While the
++ * /etc/xdg/gnome-mimeapps.list (Suno-desktop-launcher-policy). While the
 + * type's default is named in a mimeapps list of the person's configuration
 + * directory or of a system configuration directory, the file opens in it
 + * directly. Defaults GIO falls back to (the first application that claims
@@ -37,7 +37,7 @@ do an application's request to ask and always-ask for the type.
 + * type still win.
 + */
 +static gboolean
-+luma_mimeapps_names_default (const char *dir,
++Suno_mimeapps_names_default (const char *dir,
 +                             const char *name,
 +                             const char *content_type,
 +                             const char *desktop_id)
@@ -67,7 +67,7 @@ do an application's request to ask and always-ask for the type.
 +}
 +
 +static gboolean
-+luma_default_was_chosen (const char *app_id,
++Suno_default_was_chosen (const char *app_id,
 +                         const char *content_type)
 +{
 +  g_autofree char *desktop_id = NULL;
@@ -105,7 +105,7 @@ do an application's request to ask and always-ask for the type.
 +
 +  for (guint i = 0; i < dirs->len; i++)
 +    for (guint j = 0; j < names->len; j++)
-+      if (luma_mimeapps_names_default (g_ptr_array_index (dirs, i),
++      if (Suno_mimeapps_names_default (g_ptr_array_index (dirs, i),
 +                                       g_ptr_array_index (names, j),
 +                                       content_type, desktop_id))
 +        return TRUE;
@@ -120,9 +120,9 @@ do an application's request to ask and always-ask for the type.
        use_default_app = TRUE;
      }
  
-+  /* Luma: the default the person or the operating system chose for the type */
++  /* Suno: the default the person or the operating system chose for the type */
 +  if (!skip_app_chooser && default_app != NULL &&
-+      luma_default_was_chosen (default_app, content_type))
++      Suno_default_was_chosen (default_app, content_type))
 +    {
 +      reason = "Allowing to skip app chooser: chosen default";
 +      skip_app_chooser = TRUE;
@@ -139,23 +139,23 @@ do an application's request to ask and always-ask for the type.
  
  
 +@pytest.fixture
-+def luma_system_config_dir(monkeypatch):
++def Suno_system_config_dir(monkeypatch):
 +    """A system configuration directory, as /etc/xdg is, for the portal."""
-+    directory = Path(os.environ["XDG_CONFIG_HOME"]).parent / "luma-system-config"
++    directory = Path(os.environ["XDG_CONFIG_HOME"]).parent / "Suno-system-config"
 +    directory.mkdir()
 +    monkeypatch.setenv("XDG_CONFIG_DIRS", directory.as_posix())
 +    return directory
 +
 +
  @pytest.fixture
- def luma_open_directly():
+ def Suno_open_directly():
      """The policy file and a trusted installer, at their real system paths.
 @@ -562,3 +571,44 @@ class TestOpenURI:
          assert len(method_calls) == 1
          _, args = method_calls[-1]
          assert args[4]["content_type"] == "application/vnd.debian.binary-package"
 +
-+    def open_luma_text(self, dbus_con):
++    def open_Suno_text(self, dbus_con):
 +        openuri_intf = xdp.get_portal_iface(dbus_con, "OpenURI")
 +        file_path = Path.home() / "chosen.txt"
 +        file_path.write_text("chosen")
@@ -171,27 +171,27 @@ do an application's request to ask and always-ask for the type.
 +        assert response.response == 0
 +        return xdp.get_mock_iface(dbus_con).GetMethodCalls("ChooseApplication")
 +
-+    def choose_luma_default(self, desktop_id, directory=None):
++    def choose_Suno_default(self, desktop_id, directory=None):
 +        config = Path(directory or os.environ["XDG_CONFIG_HOME"]) / "mimeapps.list"
 +        config.write_text(f"[Default Applications]\ntext/plain={desktop_id};\n")
 +
-+    def test_luma_chosen_default_opens_directly(self, portals, dbus_con):
++    def test_Suno_chosen_default_opens_directly(self, portals, dbus_con):
 +        # "Always Open" records the choice in the person's mimeapps.list.
-+        self.choose_luma_default("furrfix2.desktop")
-+        assert self.open_luma_text(dbus_con) == []
++        self.choose_Suno_default("furrfix2.desktop")
++        assert self.open_Suno_text(dbus_con) == []
 +
-+    def test_luma_data_dir_default_still_asks(self, portals, dbus_con):
++    def test_Suno_data_dir_default_still_asks(self, portals, dbus_con):
 +        # A default from a data directory's defaults.list was not chosen.
-+        assert len(self.open_luma_text(dbus_con)) == 1
++        assert len(self.open_Suno_text(dbus_con)) == 1
 +
-+    def test_luma_chosen_default_respects_always_ask(self, portals, dbus_con):
-+        self.choose_luma_default("furrfix2.desktop")
++    def test_Suno_chosen_default_respects_always_ask(self, portals, dbus_con):
++        self.choose_Suno_default("furrfix2.desktop")
 +        self.enable_paranoid_mode(dbus_con, "text/plain")
-+        assert len(self.open_luma_text(dbus_con)) == 1
++        assert len(self.open_Suno_text(dbus_con)) == 1
 +
-+    def test_luma_system_default_opens_directly(
-+        self, luma_system_config_dir, portals, dbus_con
++    def test_Suno_system_default_opens_directly(
++        self, Suno_system_config_dir, portals, dbus_con
 +    ):
 +        # The operating system's default, from a system configuration directory.
-+        self.choose_luma_default("furrfix2.desktop", luma_system_config_dir)
-+        assert self.open_luma_text(dbus_con) == []
++        self.choose_Suno_default("furrfix2.desktop", Suno_system_config_dir)
++        assert self.open_Suno_text(dbus_con) == []

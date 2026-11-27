@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-// Quick View placement and render oracle: a headless Luma Shell automation
+// Quick View placement and render oracle: a headless Suno Shell automation
 // script. It lays out mixed-scale monitors, opens Filer on each monitor in
 // turn, presses Space on a real file selection, and checks where the
 // compositor put the preview. Right steps through every file kind (screenshots

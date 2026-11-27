@@ -7,12 +7,12 @@
     {
       "source": "radio-off.svg",
       "sha256": "2bcb9ee5ebae0f7d7ac5714efb87eae12741901406f0934d61c965c54a5b0b47",
-      "output": "luma-cellular-no-service-symbolic.svg"
+      "output": "Suno-cellular-no-service-symbolic.svg"
     },
     {
       "source": "card-sim.svg",
       "sha256": "fc6b93ad0a5947e3c3002c4e9c1bdd4718c3727606fe0543048426bfe3e7787c",
-      "output": "luma-cellular-no-sim-symbolic.svg"
+      "output": "Suno-cellular-no-sim-symbolic.svg"
     }
   ]
 }

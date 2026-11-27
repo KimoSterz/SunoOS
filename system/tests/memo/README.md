@@ -1,6 +1,6 @@
 # Memos v70 port
 
-Memos uses the LumaUI window, islands, sidebar foot, corner pill, Share sheet,
+Memos uses the SunoUI window, islands, sidebar foot, corner pill, Share sheet,
 menus, action centre and media transport. The kit's `AudioWaveform` draws both the deck and
 the compact list waveforms from real peak values. Memos owns the timed transcript,
 recording timer and in-memory Studio fixture.
@@ -34,7 +34,7 @@ The runtime check constructs an unshown GTK window in fixture mode and exercises
 search, playback state, speed, recording, pause, rename and Trash/Undo without
 writing a real recording.
 
-Visual acceptance is `bash ~/Documents/.luma-dev/bin/lumaui-conform memos --all`
+Visual acceptance is `bash ~/Documents/.Suno-dev/bin/SunoUI-conform memos --all`
 from this worktree. The scenario includes the selected memo, search, music,
 filter menu, favourites, deleted empty state, More, Share, speed and recording.
 The four variant reports must all say PASS before a preview is installed.

@@ -5,10 +5,10 @@ import time
 from pathlib import Path
 
 root = Path(__file__).resolve().parents[3]
-os.environ.update(LUMA_WEATHER_FIXTURE=str(root / 'tests/fixtures/weather-v70.json'),
-                  LUMA_WEATHER_FIXTURE_MINUTE='640', LUMA_WEATHER_SELECTED='oak',
-                  LUMA_WEATHER_STYLE_PATH=str(root / 'src/prairie-core/style/weather.css'),
-                  LUMA_POSTURE='tv', LUMA_TV_IDLE_MS='600000', GSETTINGS_BACKEND='memory')
+os.environ.update(SUNO_WEATHER_FIXTURE=str(root / 'tests/fixtures/weather-v70.json'),
+                  SUNO_WEATHER_FIXTURE_MINUTE='640', SUNO_WEATHER_SELECTED='oak',
+                  SUNO_WEATHER_STYLE_PATH=str(root / 'src/prairie-core/style/weather.css'),
+                  SUNO_POSTURE='tv', SUNO_TV_IDLE_MS='600000', GSETTINGS_BACKEND='memory')
 import gi  # noqa: E402
 gi.require_version('Gtk', '4.0')
 from gi.repository import Gdk, GLib, Gtk  # noqa: E402
@@ -51,7 +51,7 @@ def key(w, keyval, state=0):
 
 
 app = WeatherApplication()
-app.set_application_id('org.projectluma.Weather.TvTest')
+app.set_application_id('org.projectSuno.Weather.TvTest')
 assert app.register(None)
 w = WeatherWindow(app)
 w.set_default_size(1920, 1080)

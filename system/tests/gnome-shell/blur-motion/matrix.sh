@@ -8,4 +8,4 @@ for run in light:1 frost:1 glass:1 frost:0 glass:0; do
   podman exec -e M_TAG=$theme-cache$cache -e M_THEME=$theme -e M_CACHE=$cache \
     ${M_EXTRA_ENV:+-e "$M_EXTRA_ENV"} "$C" bash /oracle/blur-motion/harness/run.sh
 done
-python3 "$(dirname "$0")/compare.py" "${M_OUT_ROOT:-/root/luma-shell-oracle/blur-motion}" "$@"
+python3 "$(dirname "$0")/compare.py" "${M_OUT_ROOT:-/root/Suno-shell-oracle/blur-motion}" "$@"

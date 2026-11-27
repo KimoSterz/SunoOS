@@ -135,7 +135,7 @@ cross-compilation inputs are installed.
 
 Source-version generation supports the following explicit upstream controls;
 use them when building from a verified source export without Chromium's Git
-metadata. Do not substitute a surrounding Luma repository's Git identity.
+metadata. Do not substitute a surrounding Suno repository's Git identity.
 
 ```sh
 . /path/to/chromium-engine/upstream.env
@@ -189,7 +189,7 @@ rendering, input, resize or window lifecycle qualification.
 
 ## Recorded build sequence
 
-Use the maintained `gclient` checkout workflow outside a containing Luma Git
+Use the maintained `gclient` checkout workflow outside a containing Suno Git
 checkout. Pin `src` to `CHROMIUM_COMMIT` and synchronize DEPS before patching.
 The source control and Linux x64 compiler archive identities are recorded in
 `toolchain-inputs.json`; the upstream hooks remain authoritative for the other

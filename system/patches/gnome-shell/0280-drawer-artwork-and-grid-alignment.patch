@@ -1,9 +1,9 @@
-From: Luma Developers
+From: Suno Developers
 Subject: [PATCH] Align application drawer cells and use matching blue shortcut artwork
 
-diff --git a/js/ui/lumaDockFolders.js b/js/ui/lumaDockFolders.js
---- a/js/ui/lumaDockFolders.js
-+++ b/js/ui/lumaDockFolders.js
+diff --git a/js/ui/SunoDockFolders.js b/js/ui/SunoDockFolders.js
+--- a/js/ui/SunoDockFolders.js
++++ b/js/ui/SunoDockFolders.js
 @@ -404,7 +404,11 @@
      }
  
@@ -13,7 +13,7 @@ diff --git a/js/ui/lumaDockFolders.js b/js/ui/lumaDockFolders.js
 +        const artwork = model?.isApplications ? 'applications'
 +            : downloads && model?.file?.get_path() === downloads ? 'downloads' : null;
 +        const gicon = artwork ? new Gio.FileIcon({file: Gio.File.new_for_uri(
-+            `resource:///org/gnome/shell/theme/luma-dock-${artwork}.svg`)}) : model?.gicon ?? null;
++            `resource:///org/gnome/shell/theme/Suno-dock-${artwork}.svg`)}) : model?.gicon ?? null;
          const key = gicon ? gicon.to_string() : 'folder';
          if (this._key === key)
              return;
@@ -23,14 +23,14 @@ diff --git a/js/ui/lumaDockFolders.js b/js/ui/lumaDockFolders.js
          this._views.visible = !apps;
 +        this._meta.visible = !apps;
          this.search.visible = apps;
-         if (apps) this.add_style_class_name('luma-dockf-applications');
-         else this.remove_style_class_name('luma-dockf-applications');
+         if (apps) this.add_style_class_name('Suno-dockf-applications');
+         else this.remove_style_class_name('Suno-dockf-applications');
 @@ -818,7 +823,7 @@
              line_alignment: Pango.Alignment.CENTER});
          box.add_child(name);
          const meta = metaFor(item);
--        const caption = new St.Label({style_class: 'luma-dockf-cell-meta', text: meta,
-+        const caption = new St.Label({style_class: 'luma-dockf-cell-meta', text: meta, visible: !item.app,
+-        const caption = new St.Label({style_class: 'Suno-dockf-cell-meta', text: meta,
++        const caption = new St.Label({style_class: 'Suno-dockf-cell-meta', text: meta, visible: !item.app,
              x_align: Clutter.ActorAlign.FILL});
          caption.clutter_text.set({ellipsize: Pango.EllipsizeMode.END,
              line_wrap: true, line_wrap_mode: Pango.WrapMode.WORD_CHAR,
@@ -65,54 +65,54 @@ diff --git a/js/ui/lumaDockFolders.js b/js/ui/lumaDockFolders.js
              }
          } else {
              for (const item of items) {
-diff --git a/data/theme/luma-shelf.css b/data/theme/luma-shelf.css
---- a/data/theme/luma-shelf.css
-+++ b/data/theme/luma-shelf.css
+diff --git a/data/theme/Suno-shelf.css b/data/theme/Suno-shelf.css
+--- a/data/theme/Suno-shelf.css
++++ b/data/theme/Suno-shelf.css
 @@ -3274,3 +3274,13 @@
- .luma-dockf-applications .luma-dockf-thumb-large { background-color: transparent; border-width: 0; }
- .luma-dockf-applications .luma-dockf-cell-meta { height: 0; padding: 0; margin: 0; }
- .luma-dockf-empty { padding: 32px 16px; text-align: center; }
+ .Suno-dockf-applications .Suno-dockf-thumb-large { background-color: transparent; border-width: 0; }
+ .Suno-dockf-applications .Suno-dockf-cell-meta { height: 0; padding: 0; margin: 0; }
+ .Suno-dockf-empty { padding: 32px 16px; text-align: center; }
 +
 +/* A single title line and a quiet gap before search; app counts remain in the model. */
-+.luma-dockf-applications .luma-dockf-head {
++.Suno-dockf-applications .Suno-dockf-head {
 +  height: 48px; padding: 8px 12px 4px 16px; spacing: 10px; border-bottom-width: 0;
 +}
-+.luma-dockf-applications .luma-dockf-head-name { font-size: 16px; }
-+.luma-dockf-applications .luma-dockf-search { margin: 4px 16px 16px; }
-+.luma-dockf-applications .luma-dockf-cell-name { height: 34px; }
++.Suno-dockf-applications .Suno-dockf-head-name { font-size: 16px; }
++.Suno-dockf-applications .Suno-dockf-search { margin: 4px 16px 16px; }
++.Suno-dockf-applications .Suno-dockf-cell-name { height: 34px; }
 +
-+.luma-dockf-applications .luma-dockf-grid { padding: 12px; spacing: 8px; }
++.Suno-dockf-applications .Suno-dockf-grid { padding: 12px; spacing: 8px; }
 diff --git a/data/gnome-shell-theme.gresource.xml b/data/gnome-shell-theme.gresource.xml
 --- a/data/gnome-shell-theme.gresource.xml
 +++ b/data/gnome-shell-theme.gresource.xml
 @@ -13,6 +13,8 @@
-     <file>luma-share.css</file>
-     <file>luma-cast.css</file>
-     <file>luma-shelf.css</file>
-+    <file>luma-dock-applications.svg</file>
-+    <file>luma-dock-downloads.svg</file>
+     <file>Suno-share.css</file>
+     <file>Suno-cast.css</file>
+     <file>Suno-shelf.css</file>
++    <file>Suno-dock-applications.svg</file>
++    <file>Suno-dock-downloads.svg</file>
      <file>gnome-shell-start.svg</file>
      <file>pad-osd.css</file>
      <file>prairie-daybreak.svg</file>
-diff --git a/data/theme/luma-dock-applications.svg b/data/theme/luma-dock-applications.svg
+diff --git a/data/theme/Suno-dock-applications.svg b/data/theme/Suno-dock-applications.svg
 new file mode 100644
 --- /dev/null
-+++ b/data/theme/luma-dock-applications.svg
++++ b/data/theme/Suno-dock-applications.svg
 @@ -0,0 +1,6 @@
 +<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
 +<!-- SPDX-License-Identifier: CC-BY-SA-4.0
-+     Blue plate adapted from the original Luma Prairie Filer artwork.
-+     Copyright original Project Luma contributors. -->
++     Blue plate adapted from the original Suno Prairie Filer artwork.
++     Copyright original Project Suno contributors. -->
 +<defs><linearGradient id="fla-pl" x1="0.2" y1="0" x2="0.8" y2="1"><stop offset="0" stop-color="#4d93ff" /><stop offset="1" stop-color="#2257e2" /></linearGradient><radialGradient id="fla-plh" cx="0.26" cy="0.12" r="0.8"><stop offset="0" stop-color="#fff" stop-opacity="0.2" /><stop offset="0.55" stop-color="#fff" stop-opacity="0.05" /><stop offset="1" stop-color="#fff" stop-opacity="0" /></radialGradient><clipPath id="fla-clip"><rect x="82" y="82" width="860" height="860" rx="202" /></clipPath><filter id="fla-amb" x="-50%" y="-50%" width="200%" height="200%" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="56" /></filter><linearGradient id="fla-front" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fdfeff" /><stop offset="0.55" stop-color="#f1f5fc" /><stop offset="1" stop-color="#e1e9f7" /></linearGradient><filter id="fla-sd" x="-30%" y="-30%" width="160%" height="170%" color-interpolation-filters="sRGB"><feDropShadow dx="3" dy="8" stdDeviation="9" flood-color="#0b2a86" flood-opacity="0.22" /></filter></defs><g id="dock-size" transform="translate(512 512) scale(1.12) translate(-512 -512)">
 +<g id="plate"><rect x="82" y="82" width="860" height="860" rx="202" fill="url(#fla-pl)" /><rect x="82" y="82" width="860" height="860" rx="202" fill="url(#fla-plh)" /></g><g id="ambient-shadow" clip-path="url(#fla-clip)"><ellipse cx="530" cy="780" rx="330" ry="120" fill="#0b2a86" opacity="0.55" filter="url(#fla-amb)" /></g><g filter="url(#fla-sd)"><rect x="270" y="282" width="128" height="128" rx="30" fill="#a7badf" /><rect x="270" y="270" width="128" height="128" rx="30" fill="url(#fla-front)" stroke="#fff" stroke-opacity=".35" stroke-width="2" /><rect x="448" y="282" width="128" height="128" rx="30" fill="#a7badf" /><rect x="448" y="270" width="128" height="128" rx="30" fill="url(#fla-front)" stroke="#fff" stroke-opacity=".35" stroke-width="2" /><rect x="626" y="282" width="128" height="128" rx="30" fill="#a7badf" /><rect x="626" y="270" width="128" height="128" rx="30" fill="url(#fla-front)" stroke="#fff" stroke-opacity=".35" stroke-width="2" /><rect x="270" y="460" width="128" height="128" rx="30" fill="#a7badf" /><rect x="270" y="448" width="128" height="128" rx="30" fill="url(#fla-front)" stroke="#fff" stroke-opacity=".35" stroke-width="2" /><rect x="448" y="460" width="128" height="128" rx="30" fill="#a7badf" /><rect x="448" y="448" width="128" height="128" rx="30" fill="url(#fla-front)" stroke="#fff" stroke-opacity=".35" stroke-width="2" /><rect x="626" y="460" width="128" height="128" rx="30" fill="#a7badf" /><rect x="626" y="448" width="128" height="128" rx="30" fill="url(#fla-front)" stroke="#fff" stroke-opacity=".35" stroke-width="2" /><rect x="270" y="638" width="128" height="128" rx="30" fill="#a7badf" /><rect x="270" y="626" width="128" height="128" rx="30" fill="url(#fla-front)" stroke="#fff" stroke-opacity=".35" stroke-width="2" /><rect x="448" y="638" width="128" height="128" rx="30" fill="#a7badf" /><rect x="448" y="626" width="128" height="128" rx="30" fill="url(#fla-front)" stroke="#fff" stroke-opacity=".35" stroke-width="2" /><rect x="626" y="638" width="128" height="128" rx="30" fill="#a7badf" /><rect x="626" y="626" width="128" height="128" rx="30" fill="url(#fla-front)" stroke="#fff" stroke-opacity=".35" stroke-width="2" /></g></g></svg>
-diff --git a/data/theme/luma-dock-downloads.svg b/data/theme/luma-dock-downloads.svg
+diff --git a/data/theme/Suno-dock-downloads.svg b/data/theme/Suno-dock-downloads.svg
 new file mode 100644
 --- /dev/null
-+++ b/data/theme/luma-dock-downloads.svg
++++ b/data/theme/Suno-dock-downloads.svg
 @@ -0,0 +1,6 @@
 +<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
 +<!-- SPDX-License-Identifier: CC-BY-SA-4.0
-+     Blue plate adapted from the original Luma Prairie Filer artwork.
-+     Copyright original Project Luma contributors. -->
++     Blue plate adapted from the original Suno Prairie Filer artwork.
++     Copyright original Project Suno contributors. -->
 +<defs><linearGradient id="fla-pl" x1="0.2" y1="0" x2="0.8" y2="1"><stop offset="0" stop-color="#4d93ff" /><stop offset="1" stop-color="#2257e2" /></linearGradient><radialGradient id="fla-plh" cx="0.26" cy="0.12" r="0.8"><stop offset="0" stop-color="#fff" stop-opacity="0.2" /><stop offset="0.55" stop-color="#fff" stop-opacity="0.05" /><stop offset="1" stop-color="#fff" stop-opacity="0" /></radialGradient><clipPath id="fla-clip"><rect x="82" y="82" width="860" height="860" rx="202" /></clipPath><filter id="fla-amb" x="-50%" y="-50%" width="200%" height="200%" color-interpolation-filters="sRGB"><feGaussianBlur stdDeviation="56" /></filter><linearGradient id="fla-front" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fdfeff" /><stop offset="0.55" stop-color="#f1f5fc" /><stop offset="1" stop-color="#e1e9f7" /></linearGradient><filter id="fla-sd" x="-30%" y="-30%" width="160%" height="170%" color-interpolation-filters="sRGB"><feDropShadow dx="3" dy="8" stdDeviation="9" flood-color="#0b2a86" flood-opacity="0.22" /></filter></defs><g id="dock-size" transform="translate(512 512) scale(1.12) translate(-512 -512)">
 +<g id="plate"><rect x="82" y="82" width="860" height="860" rx="202" fill="url(#fla-pl)" /><rect x="82" y="82" width="860" height="860" rx="202" fill="url(#fla-plh)" /></g><g id="ambient-shadow" clip-path="url(#fla-clip)"><ellipse cx="530" cy="780" rx="330" ry="120" fill="#0b2a86" opacity="0.55" filter="url(#fla-amb)" /></g><g filter="url(#fla-sd)"><path d="M484 258 Q472 258 472 270 V482 H382 Q363 482 377 498 L498 628 Q512 643 526 628 L647 498 Q661 482 642 482 H552 V270 Q552 258 540 258 Z" transform="translate(0 12)" fill="#a7badf" /><path d="M484 258 Q472 258 472 270 V482 H382 Q363 482 377 498 L498 628 Q512 643 526 628 L647 498 Q661 482 642 482 H552 V270 Q552 258 540 258 Z" fill="url(#fla-front)" /><path d="M292 630 V712 Q292 746 326 746 H698 Q732 746 732 712 V630" transform="translate(0 12)" fill="none" stroke="#a7badf" stroke-width="52" stroke-linecap="round" stroke-linejoin="round" /><path d="M292 630 V712 Q292 746 326 746 H698 Q732 746 732 712 V630" transform="translate(0 0)" fill="none" stroke="url(#fla-front)" stroke-width="52" stroke-linecap="round" stroke-linejoin="round" /></g></g></svg>

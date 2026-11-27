@@ -14,7 +14,7 @@ a = p.parse_args()
 out = Path(os.environ['DEV_ARTIFACT_DIR'])
 image = a.appimage.resolve()
 env = dict(os.environ, GSETTINGS_BACKEND='memory', XDG_CACHE_HOME=str(out / 'cache'))
-for name in ('PYTHONPATH', 'GI_TYPELIB_PATH', 'LD_LIBRARY_PATH', 'LUMA_TESTER_CATALOG'):
+for name in ('PYTHONPATH', 'GI_TYPELIB_PATH', 'LD_LIBRARY_PATH', 'SUNO_TESTER_CATALOG'):
     env.pop(name, None)
 with (out / 'appimage.log').open('w') as log:
     child = subprocess.Popen([image, '--appimage-extract-and-run', '--state', str(out / 'state'), 'gui'],
@@ -24,13 +24,13 @@ with (out / 'appimage.log').open('w') as log:
         window = None
         while time.monotonic() < deadline:
             assert child.poll() is None, 'AppImage exited before showing its window.'
-            found = subprocess.run(['xdotool', 'search', '--onlyvisible', '--name', '^Try Luma$'],
+            found = subprocess.run(['xdotool', 'search', '--onlyvisible', '--name', '^Try Suno$'],
                                    text=True, capture_output=True)
             if found.returncode == 0:
                 window = found.stdout.splitlines()[-1]
                 break
             time.sleep(0.25)
-        assert window, 'AppImage did not show its real LumaUI window.'
+        assert window, 'AppImage did not show its real SunoUI window.'
         time.sleep(1)
         subprocess.run(['import', '-window', window, str(out / 'appimage-welcome.png')], check=True)
         subprocess.run(['xdotool', 'windowfocus', window], check=True)
@@ -40,11 +40,11 @@ with (out / 'appimage.log').open('w') as log:
         if child.poll() is None:
             child.terminate()
             child.wait(timeout=15)
-manifest = next((out / 'cache/luma-tester/portable').glob('*/desktop.json'))
+manifest = next((out / 'cache/Suno-tester/portable').glob('*/desktop.json'))
 with (out / 'doctor.json').open('w') as log:
     subprocess.run([image, '--appimage-extract-and-run', 'doctor', manifest], env=env,
                    stdout=log, stderr=subprocess.PIPE, check=True, timeout=45)
 report = json.loads((out / 'doctor.json').read_text())
 (out / 'qualification.json').write_text(json.dumps({'passed': True, 'appimage': str(image),
     'gui_opened': True, 'keyboard_quit': True, 'doctor': report}, indent=2) + '\n')
-print('PASS AppImage extraction, real LumaUI entry point, keyboard quit and bundled tool discovery.')
+print('PASS AppImage extraction, real SunoUI entry point, keyboard quit and bundled tool discovery.')

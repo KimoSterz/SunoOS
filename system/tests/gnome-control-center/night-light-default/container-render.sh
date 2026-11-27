@@ -1,14 +1,14 @@
 #!/bin/bash
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Headless verification for the Night Light Color Temperature default
-# (config/desktop/dconf/db/luma.d/00-luma-desktop, installed by
-# image/luma-desktop/scripts/configure-system.sh and compiled with
+# (config/desktop/dconf/db/Suno.d/00-Suno-desktop, installed by
+# image/Suno-desktop/scripts/configure-system.sh and compiled with
 # `dconf update`, exactly as it is in the real image).
 #
-# Installs stock Fedora 44 gnome-control-center (Luma does not patch the
+# Installs stock Fedora 44 gnome-control-center (Suno does not patch the
 # Night Light panel, so the distro build is representative) in a disposable
 # container, lays down the same /etc/dconf/profile/user and
-# /etc/dconf/db/luma.d/00-luma-desktop the image build installs, runs
+# /etc/dconf/db/Suno.d/00-Suno-desktop the image build installs, runs
 # `dconf update`, then renders Settings > Displays > Night Light in Xvfb
 # with a fresh $HOME (no user dconf value) and checks the Color Temperature
 # slider starts at its far-left (4700K) end.
@@ -21,13 +21,13 @@ test_dir="$repo_root/tests/gnome-control-center/night-light-default"
 
 work_root="$repo_root/build/tests/night-light-default"
 rm -rf "$work_root"
-mkdir -p "$work_root/out" "$work_root/dconf/profile" "$work_root/dconf/db/luma.d"
+mkdir -p "$work_root/out" "$work_root/dconf/profile" "$work_root/dconf/db/Suno.d"
 cp "$test_dir"/drive_night_light.py "$test_dir"/run-night-light.sh "$work_root/"
 cp "$test_dir/check-shipped-override.sh" "$work_root/"
 cp "$repo_root/config/desktop/dconf/profile/user" "$work_root/dconf/profile/user"
-cp "$repo_root/config/desktop/dconf/db/luma.d/00-luma-desktop" "$work_root/dconf/db/luma.d/00-luma-desktop"
+cp "$repo_root/config/desktop/dconf/db/Suno.d/00-Suno-desktop" "$work_root/dconf/db/Suno.d/00-Suno-desktop"
 
-podman run --rm --name luma-night-light-default-render \
+podman run --rm --name Suno-night-light-default-render \
   --security-opt label=disable \
   -v "$work_root:/work" -w /work \
   --memory 4g \
@@ -41,9 +41,9 @@ podman run --rm --name luma-night-light-default-render \
 
     echo "== shipped-override check (against the real image dconf layout)"
     install -D -m 0644 /work/dconf/profile/user /etc/dconf/profile/user
-    install -D -m 0644 /work/dconf/db/luma.d/00-luma-desktop /etc/dconf/db/luma.d/00-luma-desktop
+    install -D -m 0644 /work/dconf/db/Suno.d/00-Suno-desktop /etc/dconf/db/Suno.d/00-Suno-desktop
     dconf update
-    bash /work/check-shipped-override.sh /etc/dconf/db/luma.d/00-luma-desktop
+    bash /work/check-shipped-override.sh /etc/dconf/db/Suno.d/00-Suno-desktop
 
     mkdir -p /run/dbus
     rm -f /run/dbus/system_bus_socket /run/dbus/pid

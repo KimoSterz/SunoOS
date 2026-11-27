@@ -4,7 +4,7 @@ from pathlib import Path
 from types import SimpleNamespace
 import unittest
 
-path = Path(__file__).resolve().parents[2] / 'src/luma-platform/appkit/luma_appkit/pen_cursor.py'
+path = Path(__file__).resolve().parents[2] / 'src/Suno-platform/appkit/Suno_appkit/pen_cursor.py'
 spec = importlib.util.spec_from_file_location('pen_cursor', path)
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)

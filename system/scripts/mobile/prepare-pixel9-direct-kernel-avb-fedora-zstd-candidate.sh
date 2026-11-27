@@ -76,7 +76,7 @@ for proof in "$proof_a" "$proof_b"; do
 		[ -f "$proof/$relative" ] || die "Fedora/Zstandard kernel proof is incomplete: $proof/$relative"
 	done
 	for boundary in \
-		'LUMA_PIXEL9_DIRECT_KERNEL_PROOF_VERSION=1' \
+		'SUNO_PIXEL9_DIRECT_KERNEL_PROOF_VERSION=1' \
 		'DIAGNOSTIC_VARIANT=fedora-zstd-userspace-copy-dtb-v7' \
 		'REPORT_TRANSPORTS=usb-ecm-http' \
 		"LINUX_COMMIT=$PIXEL9_LINUX_COMMIT" \
@@ -108,7 +108,7 @@ for avb in "$avb_a" "$avb_b"; do
 		[ -f "$avb/$required" ] || die "Fedora/Zstandard AVB proof is incomplete: $avb/$required"
 	done
 	for boundary in \
-		'LUMA_PIXEL9_DIRECT_KERNEL_AVB_WRAPPER_VERSION=1' \
+		'SUNO_PIXEL9_DIRECT_KERNEL_AVB_WRAPPER_VERSION=1' \
 		'SCOPE=offline-stock-size-avb-parser-shape-experiment' \
 		'DIAGNOSTIC_VARIANT=fedora-zstd-userspace-copy-dtb-v7' \
 		'REPORT_TRANSPORTS=usb-ecm-http' \
@@ -185,7 +185,7 @@ done
 
 accepted_sha=$(manifest_value PRIOR_CANDIDATE_SHA256 "$rejected_reproducibility")
 accepted_result_sha=$(manifest_value PRIOR_ACCEPTANCE_SHA256 "$rejected_reproducibility")
-grep -Fqx 'LUMA_PIXEL9_DIRECT_KERNEL_AVB_UFS_ACCEPTANCE_VERSION=1' "$accepted_acceptance" || die 'accepted UFS result version differs'
+grep -Fqx 'SUNO_PIXEL9_DIRECT_KERNEL_AVB_UFS_ACCEPTANCE_VERSION=1' "$accepted_acceptance" || die 'accepted UFS result version differs'
 grep -Fqx "CANDIDATE_SHA256=$accepted_sha" "$accepted_acceptance" || die 'accepted UFS digest differs from v6 provenance'
 [ "$(sha256sum "$accepted_acceptance" | awk '{print $1}')" = "$accepted_result_sha" ] || die 'accepted UFS record digest differs from v6 provenance'
 for boundary in \
@@ -220,7 +220,7 @@ install -m 0644 "$rejected_proof_manifest" "$output_dir/rejected-v6-proof.env"
 install -m 0644 "$fedora_lock" "$output_dir/fedora44-ram-userspace-rpms.lock"
 
 {
-	printf 'LUMA_PIXEL9_DIRECT_KERNEL_AVB_FEDORA_ZSTD_CANDIDATE_VERSION=1\n'
+	printf 'SUNO_PIXEL9_DIRECT_KERNEL_AVB_FEDORA_ZSTD_CANDIDATE_VERSION=1\n'
 	printf 'CANDIDATE_KIND=direct-kernel-embedded-copied-dtb-fedora44-zstd-userspace-stock-size-avb-ecm-v7\n'
 	printf 'DIAGNOSTIC_VARIANT=fedora-zstd-userspace-copy-dtb-v7\n'
 	printf 'REPORT_VERSION=4\n'

@@ -1,0 +1,22 @@
+[Application]
+name=org.projectSuno.Charlie
+runtime=org.projectSuno.Platform/x86_64/44
+sdk=org.projectSuno.Sdk/x86_64/44
+command=org.projectSuno.Charlie
+
+[Context]
+shared=ipc;network;
+sockets=fallback-x11;wayland;
+devices=dri;
+filesystems=xdg-data/charlie;
+
+[Session Bus Policy]
+org.projectSuno.ShellState1=talk
+org.projectSuno.Background1=talk
+org.projectSuno.MailHost1=talk
+org.projectSuno.AppData1=talk
+
+[X-Suno]
+app-data-schema=charlie-shared-mailbox-v1
+min-host-installer=59
+min-host-charlie=6

@@ -1,0 +1,580 @@
+# SPDX-License-Identifier: Apache-2.0
+"""App and runtime updates that travel with a Suno update.
+
+Suno updates through rpm-ostree; first-party apps are system Flatpaks from
+the ``Suno`` remote. One update brings both:
+
+``prefetch``  Suno-system-app-updates-prefetch.service, started by
+              Suno-updated once it has staged a Suno update. Downloads the
+              pending ``Suno`` app and runtime updates of the system
+              installation without deploying them (``flatpak update
+              --no-deploy``) and records them, with the commits they move
+              from and to, for the staged deployment.
+``deploy``    Suno-system-app-updates.service, at boot before the display
+              manager. On the first boot of that deployment, deploys what was
+              downloaded from the local repository only (``--no-pull``).
+              Booting any other deployment deploys nothing.
+``refresh``   Suno-system-app-refresh.service, in the session before
+              each of Depot's background app updates (every six hours).
+              Updates the ``Suno`` apps and runtimes of the system
+              installation in place, whether or not the catalogue lists
+              them. Waits for the offline app baseline to finish first, and
+              defers on the conditions Depot's background update defers on.
+``pending``   Suno-depot-app-updates-login.service, at sign-in. Starts
+              Depot's background app update (and with it ``refresh``) at
+              once when an app Depot updates, or a ``Suno`` app or runtime
+              of the system installation, has an update waiting.
+
+An update that asks for more (a permission added or widened, as Depot judges
+it), an app the person took back to its previous version, and an app whose
+signed metadata needs a newer host than the booted one are left for Depot,
+where the person reviews them. Flatpak deploys each update atomically; a
+running app keeps its version until it is opened again. Nothing here changes a remote, a key or a
+deployment of the OS, and no failure stops a boot.
+"""
+from __future__ import annotations
+
+import configparser
+import json
+import os
+from pathlib import Path
+import pwd
+import re
+import subprocess
+import sys
+import tempfile
+import time
+
+REMOTE = 'Suno'
+INSTALLATION = Path(os.environ.get('SUNO_SYSTEM_FLATPAK', '/var/lib/flatpak'))
+STATE = Path(os.environ.get('SUNO_SYSTEM_APP_UPDATES_STATE', '/var/lib/Suno/system-app-updates'))
+SCHEMA = 'org.projectSuno.system-app-updates/v1'
+#: A record older than this belongs to a deployment nobody booted; Depot has long caught up.
+KEEP_SECONDS = 30 * 86400
+PULL_SECONDS = 3 * 3600
+#: The boot unit's own TimeoutStartSec is longer; this one leaves time to record what happened.
+DEPLOY_SECONDS = 100
+DEPOT_UNIT = 'Suno-depot-app-updates.service'
+#: How long the session waits for a first-boot baseline import still running.
+BASELINE_WAIT_SECONDS = 20 * 60
+POLL_SECONDS = 15
+
+COMMIT = re.compile(r'[0-9a-f]{64}')
+REF = re.compile(r'(app|runtime)/[A-Za-z0-9_][A-Za-z0-9_.-]*/(x86_64|aarch64)/[A-Za-z0-9_][A-Za-z0-9_.-]*')
+
+
+def log(message: str) -> None:
+    print(f'Suno-system-app-updates: {message}', file=sys.stderr, flush=True)
+
+
+def _run(runner, argv, timeout=60):
+    try:
+        result = runner(list(argv), capture_output=True, text=True, timeout=timeout, check=False)
+    except (OSError, subprocess.TimeoutExpired) as error:
+        return None, str(error)
+    if result.returncode:
+        return None, (result.stderr or '').strip()[-400:]
+    return result.stdout, ''
+
+
+# ── the OS deployments ──────────────────────────────────────────────────
+
+def _identity(deployment: dict) -> str:
+    """A deployment's OS commit: its base when packages are added on top, else its own."""
+    value = deployment.get('base-checksum') or deployment.get('checksum') or ''
+    return value if isinstance(value, str) and COMMIT.fullmatch(value) else ''
+
+
+def deployments(runner=subprocess.run) -> list[dict]:
+    out, error = _run(runner, ('rpm-ostree', 'status', '--json'), timeout=60)
+    if out is None:
+        log(f'cannot read the deployments: {error}')
+        return []
+    try:
+        found = json.loads(out).get('deployments', [])
+    except (ValueError, AttributeError):
+        return []
+    return [d for d in found if isinstance(d, dict)]
+
+
+def staged_identity(found: list[dict]) -> str:
+    staged = next((d for d in found if d.get('staged')), None)
+    if staged is None and found and not found[0].get('booted'):
+        staged = found[0]  # finalized already: the next boot's default
+    return _identity(staged) if staged else ''
+
+
+def booted_identity(found: list[dict]) -> str:
+    booted = next((d for d in found if d.get('booted')), None)
+    return _identity(booted) if booted else ''
+
+
+# ── the system installation ────────────────────────────────────────────
+
+def remote_trusted(installation: Path = INSTALLATION) -> bool:
+    """The Suno remote exists at its compiled address, enabled, with commit and summary signatures checked."""
+    from .depot_flatpak import REMOTES
+    parser = configparser.RawConfigParser(strict=False, interpolation=None)
+    try:
+        parser.read(installation / 'repo/config', encoding='utf-8')
+    except (configparser.Error, OSError, UnicodeDecodeError):
+        return False
+    section = f'remote "{REMOTE}"'
+    if not parser.has_section(section):
+        return False
+    value = dict(parser.items(section))
+    return (value.get('url', '') in REMOTES[REMOTE].urls
+            and value.get('gpg-verify', 'true').strip().lower() == 'true'
+            and value.get('gpg-verify-summary', 'false').strip().lower() == 'true'
+            and value.get('xa.disable', 'false').strip().lower() != 'true')
+
+
+def _read_commit(path: Path) -> str:
+    try:
+        value = path.read_text(encoding='ascii').strip()
+    except (OSError, UnicodeDecodeError):
+        return ''
+    return value if COMMIT.fullmatch(value) else ''
+
+
+def installed_commit(ref: str, installation: Path = INSTALLATION) -> str:
+    """The deployed commit: the name of the directory ``active`` points to."""
+    kind, name, arch, branch = ref.split('/')
+    try:
+        target = os.readlink(installation / kind / name / arch / branch / 'active')
+    except OSError:
+        return ''
+    return target if COMMIT.fullmatch(target) else ''
+
+
+def installed_metadata(ref: str, installation: Path = INSTALLATION) -> str:
+    kind, name, arch, branch = ref.split('/')
+    try:
+        return (installation / kind / name / arch / branch / 'active/metadata').read_text(encoding='utf-8')
+    except (OSError, UnicodeDecodeError):
+        return ''
+
+
+def local_commit(ref: str, installation: Path = INSTALLATION, runner=subprocess.run) -> str:
+    """What the local repository holds for the remote's ref: what ``--no-pull`` deploys."""
+    found = _read_commit(installation / 'repo/refs/remotes' / REMOTE / ref)
+    if found:
+        return found
+    out, _error = _run(runner, ('ostree', f'--repo={installation / "repo"}', 'rev-parse', f'{REMOTE}:{ref}'))
+    value = (out or '').strip()
+    return value if COMMIT.fullmatch(value) else ''
+
+
+def commit_metadata(commit: str, installation: Path = INSTALLATION, runner=subprocess.run) -> str:
+    out, _error = _run(runner, ('ostree', f'--repo={installation / "repo"}', 'cat', commit, '/metadata'))
+    return out or ''
+
+
+def pending_refs(runner=subprocess.run, *, quiet=False) -> list[str] | None:
+    """The system installation's refs with a newer commit on the Suno remote; None when it can't be read."""
+    out, error = _run(runner, ('flatpak', 'remote-ls', '--system', '--updates', '--columns=ref', REMOTE), timeout=300)
+    if out is None:
+        if not quiet:
+            log(f'cannot list the updates on {REMOTE}: {error}')
+        return None
+    return sorted({line.strip() for line in out.splitlines() if REF.fullmatch(line.strip())})
+
+
+def remote_info(ref: str, what: str, runner=subprocess.run) -> str:
+    out, _error = _run(runner, ('flatpak', 'remote-info', '--system', f'--show-{what}', REMOTE, ref), timeout=120)
+    return (out or '').strip() if what == 'commit' else (out or '')
+
+
+# ── what Depot leaves for the person ───────────────────────────────────
+
+def asks_for_more(before: str, after: str, app_id: str) -> bool:
+    """Depot's rule: an update that adds or widens a permission waits; one that can't be compared waits too."""
+    from . import depot_permissions
+    try:
+        old = depot_permissions.from_metadata(before, app_id, strict=True)
+        new = depot_permissions.from_metadata(after, app_id, strict=True)
+    except ValueError:
+        return True
+    if not before or not after:
+        return True
+    return depot_permissions.widens(depot_permissions.diff(old, new))
+
+
+def needs_newer_host(metadata: str) -> bool:
+    from .app_host_compatibility import require_host_compatibility
+    from .depot_flatpak import SourceUnavailable
+    try:
+        require_host_compatibility(metadata)
+    except SourceUnavailable:
+        return True
+    return False
+
+
+def people(passwd=None) -> list[dict]:
+    """Each sign-in account's environment, for reading its Depot settings and history."""
+    found = []
+    for entry in (pwd.getpwall() if passwd is None else passwd):
+        if 1000 <= entry.pw_uid < 60000 and entry.pw_dir and os.path.isdir(entry.pw_dir):
+            found.append({'HOME': entry.pw_dir})
+    return found
+
+
+def updates_off(environments) -> bool:
+    """Someone turned automatic app updates off in Depot: their apps update when they choose."""
+    from .depot_counting import load_settings
+    return any(not load_settings(environment).app_updates for environment in environments)
+
+
+def taken_back(environments) -> set[str]:
+    """Flatpak ids of apps someone went back to the previous version of (Depot pauses those)."""
+    from . import depot_app_history
+    paused = set()
+    for environment in environments:
+        try:
+            paused |= set(depot_app_history.load(environment).paused)
+        except (OSError, ValueError):
+            continue
+    if not paused:
+        return set()
+    try:
+        from .depot_catalog import local_catalog
+        sources = {'catalog:' + entry.id: entry.source_id for entry in local_catalog().applications
+                   if entry.backend == 'flatpak'}
+    except Exception:  # noqa: BLE001 - without a catalogue, the ids themselves
+        sources = {}
+    return {sources.get(app_id, app_id) for app_id in paused}
+
+
+def sort_out(refs, *, runner, installation: Path, paused: set[str], check_host: bool):
+    """Split refs into updates to take (runtimes first) and ones left for Depot, with the reason."""
+    wanted, held = [], []
+    for ref in refs:
+        kind, name = ref.split('/')[:2]
+        before = installed_commit(ref, installation)
+        after = remote_info(ref, 'commit', runner)
+        if not before or not COMMIT.fullmatch(after) or before == after:
+            continue
+        if kind == 'app' and name in paused:
+            held.append({'ref': ref, 'reason': 'taken-back'})
+            continue
+        if kind == 'app':
+            metadata = remote_info(ref, 'metadata', runner)
+            if asks_for_more(installed_metadata(ref, installation), metadata, name):
+                held.append({'ref': ref, 'reason': 'asks-for-more'})
+                continue
+            if check_host and needs_newer_host(metadata):
+                held.append({'ref': ref, 'reason': 'needs-newer-host'})
+                continue
+        wanted.append({'ref': ref, 'from': before, 'to': after})
+    # Runtimes first, so an app's new runtime is in place before the app.
+    wanted.sort(key=lambda entry: (entry['ref'].startswith('app/'), entry['ref']))
+    return wanted, held
+
+
+# ── the record ─────────────────────────────────────────────────────────
+
+def manifest_path(state: Path = STATE) -> Path:
+    return state / 'manifest.json'
+
+
+def load(state: Path = STATE) -> dict | None:
+    path = manifest_path(state)
+    try:
+        if path.is_symlink() or path.stat().st_size > 1048576:
+            return None
+        doc = json.loads(path.read_text(encoding='utf-8'))
+    except (OSError, ValueError):
+        return None
+    if (not isinstance(doc, dict) or doc.get('schema') != SCHEMA
+            or not COMMIT.fullmatch(str(doc.get('deployment', '')))
+            or not isinstance(doc.get('refs'), list)):
+        return None
+    refs = [r for r in doc['refs'] if isinstance(r, dict) and REF.fullmatch(str(r.get('ref', '')))
+            and COMMIT.fullmatch(str(r.get('from', ''))) and COMMIT.fullmatch(str(r.get('to', '')))]
+    return {**doc, 'refs': refs}
+
+
+def save(doc: dict, state: Path = STATE) -> None:
+    state.mkdir(parents=True, exist_ok=True, mode=0o755)
+    data = (json.dumps(doc, sort_keys=True, indent=2) + '\n').encode()
+    fd, temporary = tempfile.mkstemp(prefix='.manifest-', dir=state)
+    try:
+        with os.fdopen(fd, 'wb') as stream:
+            stream.write(data)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.chmod(temporary, 0o644)
+        os.replace(temporary, manifest_path(state))
+    finally:
+        if os.path.exists(temporary):
+            os.unlink(temporary)
+
+
+def forget(state: Path = STATE) -> None:
+    try:
+        manifest_path(state).unlink()
+    except FileNotFoundError:
+        pass
+
+
+# ── prefetch ───────────────────────────────────────────────────────────
+
+def prefetch(*, runner=subprocess.run, installation: Path = INSTALLATION, state: Path = STATE,
+             environments=None, now=time.time) -> dict:
+    found = deployments(runner)
+    deployment = staged_identity(found)
+    if not deployment or deployment == booted_identity(found):
+        forget(state)
+        return {'result': 'nothing-staged'}
+    if not remote_trusted(installation):
+        forget(state)
+        return {'result': 'remote-not-trusted'}
+    environments = people() if environments is None else environments
+    if updates_off(environments):
+        forget(state)
+        return {'result': 'app-updates-off'}
+    refs = pending_refs(runner)
+    if refs is None:
+        return {'result': 'unavailable'}
+    # The staged deployment is the host these apps will run on: its own boot checks that.
+    wanted, held = sort_out(refs, runner=runner, installation=installation,
+                            paused=taken_back(environments), check_host=False)
+    # One ref at a time, recorded as each lands: a restart part-way still brings what arrived.
+    doc = {'schema': SCHEMA, 'deployment': deployment, 'prepared_unix': int(now()), 'refs': [], 'held': held}
+    save(doc, state)
+    if wanted:
+        log(f'downloading {len(wanted)} update(s) for the staged Suno update')
+    for entry in wanted:
+        _out, error = _run(runner, ('flatpak', 'update', '--system', '--noninteractive', '--assumeyes',
+                                    '--no-deploy', entry['ref']), timeout=PULL_SECONDS)
+        if error:
+            log(f'{entry["ref"]} was not downloaded: {error}')
+        if local_commit(entry['ref'], installation, runner) == entry['to']:
+            doc['refs'].append(entry)
+            save(doc, state)
+    ready = doc['refs']
+    return {'result': 'prepared', 'refs': len(ready), 'held': len(held), 'missed': len(wanted) - len(ready)}
+
+
+# ── deploy (boot) ──────────────────────────────────────────────────────
+
+def deploy(*, runner=subprocess.run, installation: Path = INSTALLATION, state: Path = STATE, now=time.time) -> dict:
+    doc = load(state)
+    if doc is None:
+        forget(state)
+        return {'result': 'none'}
+    found = deployments(runner)
+    booted = booted_identity(found)
+    if not booted:
+        return {'result': 'unknown-deployment'}  # rpm-ostree didn't answer: try again next boot
+    if booted != doc['deployment']:
+        # Another deployment booted: the previous one chosen for this boot, or a rollback.
+        # Nothing is deployed. The record waits while its deployment can still boot.
+        alive = any(_identity(d) == doc['deployment'] for d in found)
+        if not alive or now() - int(doc.get('prepared_unix', 0) or 0) > KEEP_SECONDS:
+            forget(state)
+            return {'result': 'dropped'}
+        return {'result': 'waiting'}
+    ready, skipped = [], []
+    for entry in doc['refs']:
+        ref = entry['ref']
+        if installed_commit(ref, installation) != entry['from']:
+            skipped.append({'ref': ref, 'reason': 'changed'})  # Depot updated it, or it went away
+            continue
+        if local_commit(ref, installation, runner) != entry['to']:
+            skipped.append({'ref': ref, 'reason': 'not-downloaded'})
+            continue
+        if ref.startswith('app/'):
+            metadata = commit_metadata(entry['to'], installation, runner)
+            name = ref.split('/')[1]
+            if asks_for_more(installed_metadata(ref, installation), metadata, name):
+                skipped.append({'ref': ref, 'reason': 'asks-for-more'})
+                continue
+            if needs_newer_host(metadata):
+                skipped.append({'ref': ref, 'reason': 'needs-newer-host'})
+                continue
+        ready.append(entry)
+    # One attempt per deployment: whatever is left, Depot updates in the session.
+    forget(state)
+    if not ready:
+        return {'result': 'nothing-to-deploy', 'skipped': skipped}
+    log(f'deploying {len(ready)} update(s) downloaded with this Suno update')
+    _out, error = _run(runner, ('flatpak', 'update', '--system', '--noninteractive', '--assumeyes', '--no-pull',
+                                *(entry['ref'] for entry in ready)), timeout=DEPLOY_SECONDS)
+    if error:
+        log(f'not everything was deployed: {error}')
+    deployed = [entry['ref'] for entry in ready if installed_commit(entry['ref'], installation) == entry['to']]
+    return {'result': 'deployed', 'deployed': deployed,
+            'failed': [entry['ref'] for entry in ready if entry['ref'] not in deployed], 'skipped': skipped}
+
+
+# ── refresh (session) ──────────────────────────────────────────────────
+
+def baseline_settled(*, read=None, wait=BASELINE_WAIT_SECONDS, poll=POLL_SECONDS,
+                     sleep=time.sleep, clock=time.monotonic) -> bool:
+    """The first-boot baseline import is not running, waiting up to ``wait`` seconds for it to end."""
+    from .app_baseline_progress import INSTALLING, read as status
+    read = status if read is None else read
+    deadline = clock() + wait
+    while True:
+        doc = read()
+        if doc is None or doc.get('state') != INSTALLING:
+            return True
+        if clock() >= deadline:
+            return False
+        sleep(poll)
+
+
+def deferred(environments) -> str:
+    """Why Depot's background update would wait now: off, a metered connection, power saving, a low battery."""
+    from . import depot_autoupdate
+    from gi.repository import Gio, GLib
+    from Suno_depot.system_updates import battery_low
+    try:
+        metered = Gio.NetworkMonitor.get_default().get_network_metered()
+    except (AttributeError, GLib.Error):
+        metered = False
+    try:
+        power_saver = Gio.PowerProfileMonitor.dup_default().get_power_saver_enabled()
+    except (AttributeError, GLib.Error):
+        power_saver = False
+    return depot_autoupdate.plan((), {'notified': []}, enabled=not updates_off(environments),
+                                 metered=metered, power_saver=power_saver,
+                                 low_battery=battery_low(depot_autoupdate.LOW_BATTERY_PERCENT)).skipped_reason
+
+
+def flatpak_update(ref: str, expected: str, before: str, installation: Path = INSTALLATION) -> str:
+    """Update one system ref through libflatpak, as the signed-in person; '' or why it did not run.
+
+    flatpak's system helper refuses a pinned commit from anyone but root, so this updates to the
+    newest commit and, like Depot, refuses in the ready check unless that is the commit compared,
+    the installed one is still ``before`` and every operation comes from the verified Suno remote.
+    No interaction: polkit is never asked to prompt."""
+    import gi
+    gi.require_version('Flatpak', '1.0')
+    from gi.repository import Flatpak, GLib
+    from .depot_flatpak import validate_remote
+    system = Flatpak.Installation.new_system(None)
+    tx = Flatpak.Transaction.new_for_installation(system, None)
+    tx.set_no_interaction(True)
+    tx.connect('add-new-remote', lambda *_args: False)
+
+    def ready(prepared):
+        operations = prepared.get_operations()
+        own = [op for op in operations if op.get_ref() == ref]
+        if len(own) != 1 or own[0].get_commit() != expected or installed_commit(ref, installation) != before:
+            return False
+        if any(op.get_remote() != REMOTE for op in operations):
+            return False
+        try:
+            validate_remote(system.get_remote_by_name(REMOTE, None), REMOTE)
+        except Exception:  # noqa: BLE001 - any doubt about the remote: nothing runs
+            return False
+        return True
+    tx.connect('ready', ready)
+    try:
+        tx.add_update(ref, None, None)
+        tx.run(None)
+    except GLib.Error as error:
+        return error.message
+    return ''
+
+
+def refresh(*, runner=subprocess.run, installation: Path = INSTALLATION, environments=None,
+            settled=baseline_settled, waits=deferred, update=flatpak_update) -> dict:
+    """Update the system installation's Suno apps and runtimes now, without a restart.
+
+    Only refs already installed move, each only to the commit that was compared. The offline
+    baseline never updates an existing deployment and the OS update's boot deploy skips a ref
+    that moved since it was downloaded, so neither undoes what lands here.
+    """
+    if not settled():
+        return {'result': 'baseline-installing'}
+    if not remote_trusted(installation):
+        return {'result': 'remote-not-trusted'}
+    environments = people() if environments is None else environments
+    reason = waits(environments)
+    if reason:
+        return {'result': 'deferred', 'reason': reason}
+    refs = pending_refs(runner)
+    if refs is None:
+        return {'result': 'unavailable'}
+    wanted, held = sort_out(refs, runner=runner, installation=installation,
+                            paused=taken_back(environments), check_host=True)
+    if not wanted:
+        return {'result': 'up-to-date', 'held': held}
+    log(f'updating {len(wanted)} app(s) and runtime(s) from {REMOTE}')
+    updated, failed = [], []
+    for entry in wanted:
+        try:
+            error = update(entry['ref'], entry['to'], entry['from'], installation)
+        except Exception as problem:  # noqa: BLE001 - one ref's failure never stops the others
+            error = f'{type(problem).__name__}: {problem}'
+        if installed_commit(entry['ref'], installation) == entry['to']:
+            updated.append(entry['ref'])
+        else:
+            failed.append(entry['ref'])
+            log(f'{entry["ref"]} was not updated: {error or "the installed commit did not change"}')
+    return {'result': 'updated', 'updated': updated, 'failed': failed, 'held': held}
+
+
+# ── at sign-in ─────────────────────────────────────────────────────────
+
+def _remote_configured(scope: str, runner) -> bool:
+    out, _error = _run(runner, ('flatpak', 'remotes', scope, '--columns=name'))
+    return out is not None and REMOTE in {line.strip() for line in out.splitlines()}
+
+
+def waiting_for_depot(runner=subprocess.run) -> list[str] | None:
+    """Apps Depot updates that have an update on the Suno remote; None when it can't be read (offline)."""
+    from .depot_flatpak import _catalogued
+    managed = {source for source, remote, _branch in _catalogued().values() if remote == REMOTE}
+    waiting, readable = set(), False
+    for scope in ('--system', '--user'):
+        if not _remote_configured(scope, runner):
+            continue
+        out, _error = _run(runner, ('flatpak', 'remote-ls', scope, '--updates', '--app', '--columns=application',
+                                    REMOTE), timeout=120)
+        if out is None:
+            continue
+        readable = True
+        waiting |= {line.strip() for line in out.splitlines() if line.strip() in managed}
+    return sorted(waiting) if readable else None
+
+
+def pending(*, runner=subprocess.run, attempts=40, wait=POLL_SECONDS, sleep=time.sleep) -> dict:
+    for attempt in range(attempts):
+        waiting = waiting_for_depot(runner)
+        if waiting is not None:
+            break
+        if attempt + 1 < attempts:
+            # The network often comes up after sign-in; on a first sign-in, once Wi-Fi is set up.
+            sleep(wait)
+    else:
+        return {'result': 'unavailable'}
+    system = pending_refs(runner, quiet=True) or []
+    waiting = sorted(set(waiting) | {ref.split('/')[1] for ref in system})
+    if not waiting:
+        return {'result': 'up-to-date'}
+    _out, error = _run(runner, ('systemctl', '--user', 'start', '--no-block', DEPOT_UNIT))
+    return {'result': 'started' if not error else 'not-started', 'apps': waiting}
+
+
+def main(argv=None) -> int:
+    argv = list(sys.argv[1:] if argv is None else argv)
+    action = argv[0] if argv else ''
+    actions = {'prefetch': prefetch, 'deploy': deploy, 'refresh': refresh, 'pending': pending}
+    if action not in actions:
+        print('usage: Suno-system-app-updates prefetch|deploy|refresh|pending', file=sys.stderr)
+        return 2
+    try:
+        outcome = actions[action]()
+    except Exception as error:  # noqa: BLE001 - never fail a boot, a sign-in or a session over app updates
+        log(f'{action} did not finish: {type(error).__name__}: {error}')
+        return 0
+    print(json.dumps(outcome, sort_keys=True))
+    return 0
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())

@@ -1,4 +1,4 @@
-// Beam search oracle: types queries into Luma Search in a headless Shell,
+// Beam search oracle: types queries into Suno Search in a headless Shell,
 // records the merged result rows, first-result latency and a Ctrl+Enter
 // reveal, and crops screenshots. Output in $ORACLE_OUT.
 import Gio from 'gi://Gio';
@@ -36,7 +36,7 @@ function labelChecks(dialog) {
     const bar = scroll.get_children().find(c => c.constructor.name.includes('ScrollBar') && c.vertical && c.visible);
     const barLeft = bar ? bar.get_transformed_position()[0] : sx + sw;
     const problems = [];
-    for (const row of dialog._results._merged.get_children().filter(r => r.visible && r._lumaRank)) {
+    for (const row of dialog._results._merged.get_children().filter(r => r.visible && r._SunoRank)) {
         const label = row._kindLabel;
         if (!label?.mapped || label.opacity === 0)
             continue;
@@ -70,18 +70,18 @@ async function shot(name, actor) {
 
 function rows(dialog) {
     const merged = dialog._results._merged;
-    return merged.get_children().filter(r => r.visible && r._lumaRank).map(r => ({
+    return merged.get_children().filter(r => r.visible && r._SunoRank).map(r => ({
         title: r.metaInfo.name,
         detail: r.metaInfo.description ?? '',
         kind: r._kindLabel?.text ?? '',
-        score: r._lumaRank?.score,
+        score: r._SunoRank?.score,
         provider: r.provider.id,
     }));
 }
 
 async function work() {
     GLib.mkdir_with_parents(OUT, 0o755);
-    const search = Main.lumaSearch;
+    const search = Main.SunoSearch;
     const dialog = search._dialog;
     const summary = {queries: {}, errors: [], scale: null};
     const summaryScale = SCALE !== 1 ? await applyScale(SCALE) : 1;
@@ -119,7 +119,7 @@ async function work() {
     await sleep(1200);
     const selected = dialog._results._defaultResult;
     summary.revealTarget = selected?.metaInfo?.id ?? null;
-    selected?.setLumaSelected?.(true);
+    selected?.setSunoSelected?.(true);
     await sleep(300);
     await shot('beam-depot-selected', dialog._island);
     dialog._results.revealDefault();

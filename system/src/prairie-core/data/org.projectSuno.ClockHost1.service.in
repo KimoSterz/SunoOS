@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=org.projectSuno.ClockHost1
+Exec=/usr/bin/false
+SystemdService=app-org.projectSuno.Clock-agent.service

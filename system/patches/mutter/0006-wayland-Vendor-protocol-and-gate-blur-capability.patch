@@ -1,5 +1,5 @@
 From 181a61efe2888384a7e97468ec670ba92c1740ed Mon Sep 17 00:00:00 2001
-From: Project Luma <maintainers@projectluma.org>
+From: Project Suno <maintainers@projectSuno.org>
 Date: Mon, 7 Sep 2026 18:35:02 -0500
 Subject: [PATCH] wayland: Vendor protocol and gate blur capability
 
@@ -17,7 +17,7 @@ index d5af53949..80b48bc08 100644
    ['cursor-shape', 'staging', 1, ],
    ['drm-lease', 'staging', 1, ],
 -  ['ext-background-effect', 'staging', 1, ],
-+  # Luma's Fedora 44 base predates wayland-protocols 1.48. The exact
++  # Suno's Fedora 44 base predates wayland-protocols 1.48. The exact
 +  # standardized v1 XML is supplied as a package source and installed into
 +  # this private protocol directory during %prep.
 +  ['ext-background-effect-v1', 'private', ],
@@ -64,7 +64,7 @@ index bcfec89f7..2bd444871 100644
 +   * measured software-renderer preview. Clients still discover the real
 +   * protocol and effect; this does not substitute a simulated backdrop. */
 +  if (meta_backend_is_rendering_hardware_accelerated (backend) ||
-+      g_strcmp0 (g_getenv ("LUMA_MUTTER_ALLOW_SOFTWARE_BLUR"), "1") == 0)
++      g_strcmp0 (g_getenv ("SUNO_MUTTER_ALLOW_SOFTWARE_BLUR"), "1") == 0)
 +    capabilities |= EXT_BACKGROUND_EFFECT_MANAGER_V1_CAPABILITY_BLUR;
    ext_background_effect_manager_v1_send_capabilities (
      resource,

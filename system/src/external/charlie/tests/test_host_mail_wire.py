@@ -3,8 +3,8 @@ import base64
 from dataclasses import asdict
 import json
 import unittest
-from charlie_luma.host_mail_wire import encode, decode, validate, MAX_WIRE, MAX_ATTACHMENTS
-from charlie_luma.model import Account, ServerConfig, Draft
+from charlie_Suno.host_mail_wire import encode, decode, validate, MAX_WIRE, MAX_ATTACHMENTS
+from charlie_Suno.model import Account, ServerConfig, Draft
 
 class MailWireTests(unittest.TestCase):
     def test_account_credentials_never_become_account_fields(self):
@@ -58,7 +58,7 @@ class MailWireTests(unittest.TestCase):
         with self.assertRaises(ValueError): decode("[]")
 
     def test_all_existing_provider_presets_admit_their_account_types(self):
-        from charlie_luma.accounts import PROVIDERS
+        from charlie_Suno.accounts import PROVIDERS
         for provider in PROVIDERS:
             a = asdict(Account("mail-123", "A", "a@example.org", provider.key)); c = asdict(ServerConfig("imap.example.org", smtp_host="smtp.example.org"))
             self.assertEqual(validate("SaveAccount", {"account": a, "config": c, "password": "p"})["account"].provider, provider.key)

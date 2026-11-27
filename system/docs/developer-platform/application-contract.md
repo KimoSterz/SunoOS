@@ -1,6 +1,6 @@
-# Luma application contract 0.2
+# Suno application contract 0.2
 
-Luma applications remain ordinary Linux applications. The Luma contract does
+Suno applications remain ordinary Linux applications. The Suno contract does
 not introduce a new archive, runtime, repository, or installer format. It
 combines open, independently useful standards with stricter product rules:
 
@@ -10,16 +10,16 @@ combines open, independently useful standards with stricter product rules:
   services;
 - **AppStream** and a freedesktop desktop file provide portable identity and
   presentation;
-- **Luma UI and Semantics** provide the adaptive desktop/mobile and
+- **Suno UI and Semantics** provide the adaptive desktop/mobile and
   machine-readable interaction contracts;
-- the **Luma SDK** checks identity, policy, lifecycle, provenance, and evidence.
+- the **Suno SDK** checks identity, policy, lifecycle, provenance, and evidence.
 
-The same Flatpak can run on another conforming Linux desktop. Luma metadata is
-additive and namespaced; it must not make the application Luma-only.
+The same Flatpak can run on another conforming Linux desktop. Suno metadata is
+additive and namespaced; it must not make the application Suno-only.
 
 ## One identity
 
-The reverse-DNS ID in `luma-app.toml` is canonical. The SDK rejects drift
+The reverse-DNS ID in `Suno-app.toml` is canonical. The SDK rejects drift
 between that ID, the Flatpak `id`, AppStream component and desktop
 launchable IDs, desktop filename, icon filename and lookup key. The desktop command must
 also match the Flatpak command. This avoids duplicate launchers, split
@@ -55,8 +55,8 @@ delete files merely because a manifest says they exist.
 
 ## Status is derived, never claimed
 
-`luma lint` proves that a project is structurally coherent. It does not award a
-store badge. `luma release-check` additionally requires:
+`Suno lint` proves that a project is structurally coherent. It does not award a
+store badge. `Suno release-check` additionally requires:
 
 - immutable source revisions and checksums for remote Flatpak sources;
 - an ISO-dated evidence record bound to the same app ID and source revision;
@@ -76,11 +76,11 @@ never earns Native.
 ## Generated project
 
 ```sh
-luma new "Example" --id org.example.Example --destination example
+Suno new "Example" --id org.example.Example --destination example
 cd example
-luma lint luma-app.toml
-luma inspect luma-app.toml
-luma test luma-app.toml
+Suno lint Suno-app.toml
+Suno inspect Suno-app.toml
+Suno test Suno-app.toml
 ```
 
 The generated tree includes a JSON Flatpak manifest, AppStream metadata,
@@ -93,7 +93,7 @@ test lanes, emits the SBOM/report, pins network sources to immutable commits or
 hashes, and runs:
 
 ```sh
-luma release-check luma-app.toml
+Suno release-check Suno-app.toml
 ```
 
 Changing booleans without independently verified build/test artifacts is not

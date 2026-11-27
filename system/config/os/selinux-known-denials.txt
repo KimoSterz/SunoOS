@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: CC-BY-4.0
-# SELinux denials from Fedora's own base policy that a fresh Luma install
-# logs and that Luma does not cause. scripts/os/verify-media.sh fails a medium
+# SELinux denials from Fedora's own base policy that a fresh Suno install
+# logs and that Suno does not cause. scripts/os/verify-media.sh fails a medium
 # on any other denial.
 # Each entry needs a reason and an expiry, and is reviewed when it expires.
 #
@@ -14,7 +14,7 @@ tuned_t chcon mac_admin capability2 0 2026-11-27 Exact tuned_t/chcon/mac_admin o
 # snapd-selinux policy runs these domains permissive (permissive=1): logged,
 # not blocking. "*" matches USER_AVC records, which name no command.
 snappy_mount_t snap-update-ns search dir 1 2026-11-27 Fedora snapd-selinux: snap-update-ns reads the CUPS configuration directory while building a snap's mount namespace. Reviewed 2026-10-09 against signed Nightly 20261009.4 media: all 33 install-hurdles checks passed, including stock Snap Firefox install and execution; exact permissive audit tuple previously renewed until October 14; see the October 20 review below.
-snappy_mount_t snap-update-ns mounton dir 1 2026-11-27 Fedora snapd-selinux: snap-update-ns bind-mounts over /usr/share/man (man_t) inside the snap's private mount namespace; permissive domain, nothing is blocked. Seen on 20260925.1 and 20260926.1 from the install-hurdles snap install; no Luma package runs snap-update-ns or labels man_t. Reviewed 2026-10-09 against signed Nightly 20261009.4 media: all 33 install-hurdles checks passed, including stock Snap Firefox install and execution; exact permissive audit tuple previously renewed until October 14; see the October 20 review below.
+snappy_mount_t snap-update-ns mounton dir 1 2026-11-27 Fedora snapd-selinux: snap-update-ns bind-mounts over /usr/share/man (man_t) inside the snap's private mount namespace; permissive domain, nothing is blocked. Seen on 20260925.1 and 20260926.1 from the install-hurdles snap install; no Suno package runs snap-update-ns or labels man_t. Reviewed 2026-10-09 against signed Nightly 20261009.4 media: all 33 install-hurdles checks passed, including stock Snap Firefox install and execution; exact permissive audit tuple previously renewed until October 14; see the October 20 review below.
 snappy_t snapd search dir 1 2026-11-27 Fedora snapd-selinux: snapd looks into the CUPS configuration directory. Reviewed 2026-10-09 against signed Nightly 20261009.4 media: all 33 install-hurdles checks passed, including stock Snap Firefox install and execution; exact permissive audit tuple previously renewed until October 14; see the October 20 review below.
 snappy_t snapd getattr file 1 2026-11-27 Fedora snapd-selinux: snapd stats a CUPS runtime file. Reviewed 2026-10-09 against signed Nightly 20261009.4 media: all 33 install-hurdles checks passed, including stock Snap Firefox install and execution; exact permissive audit tuple previously renewed until October 14; see the October 20 review below.
 snappy_t * start system 1 2026-11-27 Fedora snapd-selinux: snapd asks systemd to start a snap's units (USER_AVC). Reviewed 2026-10-07 against signed ISO20 stock Fedora bytes, prefixture defaults and retained September passing observations; earlier renewal expired October 14; see the October 20 review below.

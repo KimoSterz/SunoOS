@@ -9,7 +9,7 @@ set -euo pipefail
 
 expected_model='The Fairphone (Gen. 6)'
 expected_kernel=7.1.2
-module_root=/usr/lib/modules/7.1.2/updates/luma-fp6-microphone
+module_root=/usr/lib/modules/7.1.2/updates/Suno-fp6-microphone
 
 die() {
   printf 'error: %s\n' "$*" >&2

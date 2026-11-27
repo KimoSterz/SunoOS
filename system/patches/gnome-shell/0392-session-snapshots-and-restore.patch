@@ -1,22 +1,22 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Project Luma <engineering@projectluma.org>
+From: Project Suno <engineering@projectSuno.org>
 Date: Mon, 23 Nov 2026 04:00:00 -0600
 Subject: [PATCH] Session snapshots and restore
 
 The windows a person had open survive log-out, restarts, shutdown and
 crashes, and can continue on another device (ADR-055).
 
-lumaSession.js takes a snapshot of every application window in stacking
+SunoSession.js takes a snapshot of every application window in stacking
 order: app, key, monitor (with its vendor, product and serial), workspace,
 frame and floating rectangles (absolute and as a share of the work area),
-state, minimized, always on top, focus, and the state LumaUI apps give.
+state, minimized, always on top, focus, and the state SunoUI apps give.
 It is taken on lock, suspend (under a sleep delay inhibitor), lid close,
 log-out and shutdown, and at most once a minute while windows change, into
-$XDG_STATE_HOME/luma/session (0700, files 0600). After the log-out
+$XDG_STATE_HOME/Suno/session (0700, files 0600). After the log-out
 snapshot nothing more is written, so the windows closing as the session
 ends don't replace it.
 
-At login, the last snapshot is restored once (org.projectluma.session
+At login, the last snapshot is restored once (org.projectSuno.session
 reopen-windows). Each app is started; each window is placed in its first
 configure, before Mutter places or shows it, from its key, title or
 order; apps that don't reopen their own windows are asked for more.
@@ -25,19 +25,19 @@ and the focused window focused. Another monitor layout maps windows by
 monitor identity, then role, then position, keeping their share of the
 work area. A partial restore says what it couldn't do.
 
-org.projectluma.Session1 on org.projectluma.Session: TakeRestore,
+org.projectSuno.Session1 on org.projectSuno.Session: TakeRestore,
 SetWindowKey and SaveState for apps (each caller only for its own app and
 windows), Snapshot, GetSnapshot and Restore for unsandboxed system callers.
 ---
  data/meson.build                         |    2 +
- data/org.projectluma.session.gschema.xml |   26 +
+ data/org.projectSuno.session.gschema.xml |   26 +
  js/js-resources.gresource.xml            |    1 +
  js/ui/endSessionDialog.js                |    5 +
- js/ui/lumaSession.js                     | 1029 ++++++++++++++++++++++
+ js/ui/SunoSession.js                     | 1029 ++++++++++++++++++++++
  js/ui/main.js                            |   12 +
  6 files changed, 1075 insertions(+)
- create mode 100644 data/org.projectluma.session.gschema.xml
- create mode 100644 js/ui/lumaSession.js
+ create mode 100644 data/org.projectSuno.session.gschema.xml
+ create mode 100644 js/ui/SunoSession.js
 
 diff --git a/data/meson.build b/data/meson.build
 index 9f7e8cf..56d3685 100644
@@ -45,23 +45,23 @@ index 9f7e8cf..56d3685 100644
 +++ b/data/meson.build
 @@ -112,6 +112,8 @@ schema = configure_file(
  install_data('00_org.gnome.shell.gschema.override', install_dir: schemadir)
- # Luma Capture: the screenshot tool's Options (org.project_luma.capture).
- install_data('org.project_luma.capture.gschema.xml', install_dir: schemadir)
+ # Suno Capture: the screenshot tool's Options (org.projectSuno.capture).
+ install_data('org.projectSuno.capture.gschema.xml', install_dir: schemadir)
 +# Session snapshots and restore (ADR-055).
-+install_data('org.projectluma.session.gschema.xml', install_dir: schemadir)
- # Luma Capture: the helper that lets the floating thumbnail be dragged into apps.
- install_data('luma-capture-drag.js', install_dir: libexecdir, rename: 'luma-capture-drag',
++install_data('org.projectSuno.session.gschema.xml', install_dir: schemadir)
+ # Suno Capture: the helper that lets the floating thumbnail be dragged into apps.
+ install_data('Suno-capture-drag.js', install_dir: libexecdir, rename: 'Suno-capture-drag',
    install_mode: 'rwxr-xr-x')
-diff --git a/data/org.projectluma.session.gschema.xml b/data/org.projectluma.session.gschema.xml
+diff --git a/data/org.projectSuno.session.gschema.xml b/data/org.projectSuno.session.gschema.xml
 new file mode 100644
 index 0000000..0d47b91
 --- /dev/null
-+++ b/data/org.projectluma.session.gschema.xml
++++ b/data/org.projectSuno.session.gschema.xml
 @@ -0,0 +1,26 @@
 +<?xml version="1.0" encoding="UTF-8"?>
 +<!-- SPDX-License-Identifier: GPL-2.0-or-later -->
 +<schemalist>
-+  <schema id="org.projectluma.session" path="/org/projectluma/session/">
++  <schema id="org.projectSuno.session" path="/org/projectSuno/session/">
 +    <key name="reopen-windows" type="b">
 +      <default>true</default>
 +      <summary>Reopen windows after restart</summary>
@@ -75,7 +75,7 @@ index 0000000..0d47b91
 +    <key name="continue-share" type="b">
 +      <default>true</default>
 +      <summary>Let other devices continue from this one</summary>
-+      <description>Keep an end-to-end encrypted copy of this session in Luma Connect Sync for the account's other devices.</description>
++      <description>Keep an end-to-end encrypted copy of this session in Suno Connect Sync for the account's other devices.</description>
 +    </key>
 +    <key name="excluded-apps" type="as">
 +      <default>[]</default>
@@ -89,13 +89,13 @@ index 8a298ea..7b99618 100644
 --- a/js/js-resources.gresource.xml
 +++ b/js/js-resources.gresource.xml
 @@ -94,6 +94,7 @@
-     <file>ui/lumaDisplayArrival.js</file>
-     <file>ui/lumaWindowCorners.js</file>
-     <file>ui/lumaWindowWatch.js</file>
-+    <file>ui/lumaSession.js</file>
-     <file>ui/lumaFocusVisible.js</file>
-     <file>ui/lumaWell.js</file>
-     <file>ui/lumaWellModel.js</file>
+     <file>ui/SunoDisplayArrival.js</file>
+     <file>ui/SunoWindowCorners.js</file>
+     <file>ui/SunoWindowWatch.js</file>
++    <file>ui/SunoSession.js</file>
+     <file>ui/SunoFocusVisible.js</file>
+     <file>ui/SunoWell.js</file>
+     <file>ui/SunoWellModel.js</file>
 diff --git a/js/ui/endSessionDialog.js b/js/ui/endSessionDialog.js
 index ee26bff..2897068 100644
 --- a/js/ui/endSessionDialog.js
@@ -114,16 +114,16 @@ index ee26bff..2897068 100644
          this._stopAltCapture();
 +        // The windows close once the session ends: save them first, and
 +        // nothing after (ADR-055).
-+        await Main.lumaSession?.finalSnapshot(
++        await Main.SunoSession?.finalSnapshot(
 +            signal === 'ConfirmedLogout' ? 'logout' : 'shutdown').catch(logError);
          this._dbusImpl.emit_signal(signal, null);
      }
  
-diff --git a/js/ui/lumaSession.js b/js/ui/lumaSession.js
+diff --git a/js/ui/SunoSession.js b/js/ui/SunoSession.js
 new file mode 100644
 index 0000000..502e3a9
 --- /dev/null
-+++ b/js/ui/lumaSession.js
++++ b/js/ui/SunoSession.js
 @@ -0,0 +1,1029 @@
 +// SPDX-License-Identifier: GPL-2.0-or-later
 +// The session survives log-out, restarts and crashes, and follows the person
@@ -131,13 +131,13 @@ index 0000000..502e3a9
 +//
 +// A snapshot is every application window in stacking order: its app, key,
 +// monitor, workspace, frame and floating rectangles (absolute and as a share
-+// of the monitor's work area), state, focus, and the state LumaUI apps give
++// of the monitor's work area), state, focus, and the state SunoUI apps give
 +// for it. Restoring starts the apps and places each window in its first
 +// configure (MetaWindow::configure), before Mutter places or shows it; when
 +// the windows are there, stacking, minimized windows, the workspace and
-+// focus follow. Snapshots live in $XDG_STATE_HOME/luma/session (0700/0600).
++// focus follow. Snapshots live in $XDG_STATE_HOME/Suno/session (0700/0600).
 +//
-+//   journalctl --user -b -g luma-session
++//   journalctl --user -b -g Suno-session
 +
 +import Gio from 'gi://Gio';
 +import GLib from 'gi://GLib';
@@ -149,7 +149,7 @@ index 0000000..502e3a9
 +import * as MessageTray from './messageTray.js';
 +
 +export const FORMAT = 1;
-+const SCHEMA = 'org.projectluma.session';
++const SCHEMA = 'org.projectSuno.session';
 +const PERIODIC_MS = 60 * 1000;
 +const SETTLE_MS = 3000;
 +const RESTORE_WAIT_MS = 20 * 1000;
@@ -160,7 +160,7 @@ index 0000000..502e3a9
 +const CONTINUE_TTL_S = 72 * 3600;
 +
 +const SessionIface = `<node>
-+  <interface name="org.projectluma.Session1">
++  <interface name="org.projectSuno.Session1">
 +    <method name="TakeRestore">
 +      <arg type="s" name="app_id" direction="in"/>
 +      <arg type="s" name="reason" direction="out"/>
@@ -198,15 +198,15 @@ index 0000000..502e3a9
 +  </interface>
 +</node>`;
 +
-+const BUS_NAME = 'org.projectluma.Session';
-+const OBJECT_PATH = '/org/projectluma/Session';
++const BUS_NAME = 'org.projectSuno.Session';
++const OBJECT_PATH = '/org/projectSuno/Session';
 +
 +function log(message) {
-+    console.log(`[luma-session] ${message}`);
++    console.log(`[Suno-session] ${message}`);
 +}
 +
 +export function stateDir() {
-+    return GLib.build_filenamev([GLib.get_user_state_dir(), 'luma', 'session']);
++    return GLib.build_filenamev([GLib.get_user_state_dir(), 'Suno', 'session']);
 +}
 +
 +function machineId() {
@@ -421,7 +421,7 @@ index 0000000..502e3a9
 +        try {
 +            const [, bytes] = GLib.file_get_contents(`/proc/${pid}/cgroup`);
 +            const text = new TextDecoder().decode(bytes);
-+            const match = text.match(/app-(?:gnome|flatpak|luma)-(.+?)-[0-9a-z]+\.scope/);
++            const match = text.match(/app-(?:gnome|flatpak|Suno)-(.+?)-[0-9a-z]+\.scope/);
 +            if (match)
 +                appId = decodeScope(match[1]).replace(/\.desktop$/, '');
 +        } catch {}
@@ -434,7 +434,7 @@ index 0000000..502e3a9
 +    return norm(a) !== '' && norm(a) === norm(b);
 +}
 +
-+export class LumaSession {
++export class SunoSession {
 +    constructor() {
 +        this._settings = null;
 +        try {
@@ -591,7 +591,7 @@ index 0000000..502e3a9
 +            id: GLib.uuid_string_random(),
 +            device: this._device,
 +            deviceName: GLib.get_host_name(),
-+            deviceClass: GLib.getenv('LUMA_DEVICE_CLASS') || 'computer',
++            deviceClass: GLib.getenv('SUNO_DEVICE_CLASS') || 'computer',
 +            taken: Math.floor(Date.now() / 1000),
 +            expires: Math.floor(Date.now() / 1000) + CONTINUE_TTL_S,
 +            reason,
@@ -616,7 +616,7 @@ index 0000000..502e3a9
 +                    Gio.FileCopyFlags.OVERWRITE, null, null);
 +            writePrivate(current, JSON.stringify(snapshot));
 +        } catch (e) {
-+            logError(e, '[luma-session] could not save the session');
++            logError(e, '[Suno-session] could not save the session');
 +            return null;
 +        }
 +        this._dirty = false;
@@ -745,7 +745,7 @@ index 0000000..502e3a9
 +        try {
 +            writePrivate(path, JSON.stringify(snapshot));
 +        } catch (e) {
-+            logError(e, '[luma-session] could not mark the session restored');
++            logError(e, '[Suno-session] could not mark the session restored');
 +            return;
 +        }
 +        this.restore(snapshot, 'restore');
@@ -800,7 +800,7 @@ index 0000000..502e3a9
 +            if (state)
 +                this._pendingRestore.set(id.replace(/\.desktop$/, '').toLowerCase(),
 +                    {reason: mode, state});
-+            restoring.apps.set(id, {app, slots: appSlots, lumaui: Boolean(state), launched: 0});
++            restoring.apps.set(id, {app, slots: appSlots, SunoUI: Boolean(state), launched: 0});
 +            try {
 +                if (app.state === Shell.AppState.STOPPED) {
 +                    app.launch(0, -1, Shell.AppLaunchGpu.APP_PREF);
@@ -948,7 +948,7 @@ index 0000000..502e3a9
 +    _openMoreWindows(slot) {
 +        const restoring = this._restoring;
 +        const entry = restoring?.apps.get(slot.app);
-+        if (!entry || entry.lumaui)
++        if (!entry || entry.SunoUI)
 +            return;
 +        if (entry.moreId)
 +            GLib.source_remove(entry.moreId);
@@ -1057,7 +1057,7 @@ index 0000000..502e3a9
 +        return Shell.AppSystem.get_default().lookup_app(id)?.get_name() ?? id.replace(/\.desktop$/, '');
 +    }
 +
-+    // --- org.projectluma.Session1 ----------------------------------------
++    // --- org.projectSuno.Session1 ----------------------------------------
 +
 +    async TakeRestoreAsync([appId], invocation) {
 +        try {
@@ -1159,19 +1159,19 @@ index 9cccec0..79f9fd1 100644
 --- a/js/ui/main.js
 +++ b/js/ui/main.js
 @@ -37,6 +37,7 @@ import * as LookingGlass from './lookingGlass.js';
- import * as LumaSearch from './lumaSearch.js';
- import * as LumaWindowCorners from './lumaWindowCorners.js';
- import * as LumaWindowWatch from './lumaWindowWatch.js';
-+import * as LumaSession from './lumaSession.js';
- import * as LumaShare from './lumaShare.js';
- import * as LumaAppPermissions from './lumaAppPermissions.js';
+ import * as SunoSearch from './SunoSearch.js';
+ import * as SunoWindowCorners from './SunoWindowCorners.js';
+ import * as SunoWindowWatch from './SunoWindowWatch.js';
++import * as SunoSession from './SunoSession.js';
+ import * as SunoShare from './SunoShare.js';
+ import * as SunoAppPermissions from './SunoAppPermissions.js';
  import * as NotificationDaemon from './notificationDaemon.js';
 @@ -73,6 +74,7 @@ export let overview = null;
- export let lumaSearch = null;
- export let lumaWindowCorners = null;
- export let lumaWindowWatch = null;
-+export let lumaSession = null;
- export let lumaShare = null;
+ export let SunoSearch = null;
+ export let SunoWindowCorners = null;
+ export let SunoWindowWatch = null;
++export let SunoSession = null;
+ export let SunoShare = null;
  export let runDialog = null;
  export let lookingGlass = null;
 @@ -289,6 +291,16 @@ async function _initializeUI() {
@@ -1182,7 +1182,7 @@ index 9cccec0..79f9fd1 100644
 +    // lock it saves on.
 +    if (!sessionMode.isGreeter && sessionMode.hasOverview) {
 +        try {
-+            lumaSession = new LumaSession.LumaSession();
++            SunoSession = new SunoSession.SunoSession();
 +        } catch (error) {
 +            logError(error, 'Failed to start session restore');
 +        }

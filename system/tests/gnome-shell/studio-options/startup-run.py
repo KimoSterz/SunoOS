@@ -23,7 +23,7 @@ parser.add_argument('--tests', nargs='+', help='specific owned native checks to 
 args = parser.parse_args()
 here = Path(__file__).resolve().parent
 stamp = datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')
-out = Path('/var/home/nick/Documents/LumaDesign/reports/notifications-quick-options') / ('startup-0205-' + stamp)
+out = Path('/var/home/nick/Documents/SunoDesign/reports/notifications-quick-options') / ('startup-0205-' + stamp)
 out.mkdir(parents=True)
 if not args.methods_only:
     subprocess.run(['python3', str(here / 'stage-startup.py'), '--suffix', stamp], check=True)
@@ -39,14 +39,14 @@ for label, scenario, overlay in [
         receipt = prior.get('receipt') or {}
         if prior['returncode'] == 0 or receipt.get('responsive') or not receipt.get('startup_cpu'):
             raise RuntimeError('baseline receipt does not evidence the reported startup failure')
-        if 'org/project-luma/shell-state' not in receipt.get('settings', {}):
+        if 'org/project-suno/shell-state' not in receipt.get('settings', {}):
             raise RuntimeError('baseline receipt has the wrong saved-arrangement path')
         results[label] = dict(prior, preserved_evidence=str(args.baseline_result))
         print('PRESERVED NATIVE BASELINE', args.baseline_result, flush=True)
         continue
     target = out / label
     command = ['python3', str(here / 'capture.py'), str(here / scenario), 'dark', '0',
-               str(target), str(Path.home() / '.local/share/luma-shell-live' / (overlay + '-' + stamp))]
+               str(target), str(Path.home() / '.local/share/Suno-shell-live' / (overlay + '-' + stamp))]
     print('ISOLATED STARTUP', label, flush=True)
     result = subprocess.run(command, text=True, capture_output=True)
     print(result.stdout, end='', flush=True)
@@ -74,7 +74,7 @@ if args.startup_only:
 module_spec = importlib.util.spec_from_file_location('private_capture', here / 'capture.py')
 private_capture = importlib.util.module_from_spec(module_spec)
 module_spec.loader.exec_module(private_capture)
-with tempfile.TemporaryDirectory(prefix='luma-startup-method-tests.') as private:
+with tempfile.TemporaryDirectory(prefix='Suno-startup-method-tests.') as private:
     runtime_env = {k: v for k, v in os.environ.items() if k not in
                    ['DISPLAY', 'WAYLAND_DISPLAY', 'DBUS_SESSION_BUS_ADDRESS', 'DBUS_SYSTEM_BUS_ADDRESS']
                    and not k.startswith('XDG_')}
@@ -97,7 +97,7 @@ with tempfile.TemporaryDirectory(prefix='luma-startup-method-tests.') as private
             time.sleep(.3)
             runtime_env.update(DBUS_SESSION_BUS_ADDRESS=f'unix:path={private}/bus',
                                DBUS_SYSTEM_BUS_ADDRESS=f'unix:path={private}/sysbus')
-            source = '/var/home/nick/Documents/.luma-dev/notifications-quick-options/edited'
+            source = '/var/home/nick/Documents/.Suno-dev/notifications-quick-options/edited'
             for test in ['behavior.js', 'allocation-behavior.js', 'network-behavior.js',
                          'reply-behavior.js', 'system-behavior.js', 'output-behavior.js',
                          'power-title-behavior.js', 'native-hotspot-profile.js']:

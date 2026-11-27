@@ -1,11 +1,11 @@
 #!/bin/bash
-# Stage 1 (tools container, privileged): turn the Luma commit into a live root.
+# Stage 1 (tools container, privileged): turn the Suno commit into a live root.
 set -euo pipefail
-REF=luma/0.5/x86_64/desktop-preview
+REF=Suno/0.5/x86_64/desktop-preview
 L=/w/live
 R=$L/rootfs
 rm -rf $L && mkdir -p $L
-ostree --repo=/w/luma-repo checkout $REF $R
+ostree --repo=/w/Suno-repo checkout $REF $R
 # An OSTree commit keeps default configuration under /usr/etc; a booted
 # deployment merges it into /etc. A live root has no deployment, so move it.
 mv $R/usr/etc $R/etc
@@ -14,7 +14,7 @@ chmod 1777 $R/var/tmp
 chmod 1777 $R/tmp
 KVER=$(ls $R/usr/lib/modules | head -1)
 echo "kernel $KVER"
-# The live initramfs needs dracut's live modules, which an installed Luma
+# The live initramfs needs dracut's live modules, which an installed Suno
 # does not carry. Copy them into this live root only.
 for m in 70dmsquash-live 70img-lib 70overlayfs; do
   [ -d $R/usr/lib/dracut/modules.d/$m ] || cp -a /usr/lib/dracut/modules.d/$m $R/usr/lib/dracut/modules.d/
@@ -26,9 +26,9 @@ mkdir -p $L/boot && cp $R/boot/initrd-live.img $L/boot/initrd.img && cp $R/usr/l
 rm -f $R/boot/initrd-live.img
 # The live person: no password, signed in automatically, allowed to sudo.
 mkdir -p $R/var/home
-chroot $R useradd -m -d /var/home/liveuser -c "Luma Live" -G wheel liveuser
+chroot $R useradd -m -d /var/home/liveuser -c "Suno Live" -G wheel liveuser
 chroot $R passwd -d liveuser
-printf '%s\n' 'liveuser ALL=(ALL) NOPASSWD: ALL' > $R/etc/sudoers.d/luma-live && chmod 0440 $R/etc/sudoers.d/luma-live
+printf '%s\n' 'liveuser ALL=(ALL) NOPASSWD: ALL' > $R/etc/sudoers.d/Suno-live && chmod 0440 $R/etc/sudoers.d/Suno-live
 mkdir -p $R/etc/gdm
 if [ -f $R/etc/gdm/custom.conf ] && grep -q '^\[daemon\]' $R/etc/gdm/custom.conf; then
   sed -i '/^\[daemon\]/a AutomaticLoginEnable=True\nAutomaticLogin=liveuser' $R/etc/gdm/custom.conf
@@ -37,7 +37,7 @@ else
 fi
 mkdir -p $R/var/home/liveuser/.config && echo yes > $R/var/home/liveuser/.config/gnome-initial-setup-done
 chroot $R chown -R liveuser:liveuser /var/home/liveuser
-echo luma-live > $R/etc/hostname
+echo Suno-live > $R/etc/hostname
 # Nothing from a real machine: no machine id, no SSH host keys.
 : > $R/etc/machine-id
 rm -f $R/etc/ssh/ssh_host_*

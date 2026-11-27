@@ -1,6 +1,6 @@
 #!/bin/bash
 # Capture oracle run, inside a container with /oracle mounted (the shared
-# luma-shell-oracle with an overlay, or a Fedora container with the built RPMs
+# Suno-shell-oracle with an overlay, or a Fedora container with the built RPMs
 # and C_OVERLAY=none). C_TAG C_THEME(light|dark|frost|glass) C_EDGE C_SCALE
 # C_ONLY C_MONITORS C_ANIM C_KEEP_HOME C_OVERLAY C_A11Y
 set -u
@@ -17,7 +17,7 @@ printf 'XDG_DESKTOP_DIR="$HOME/Desktop"\nXDG_PICTURES_DIR="$HOME/Pictures"\nXDG_
 theme=${C_THEME:-light}; scheme=default; [ "$theme" = dark ] && scheme=prefer-dark
 if [ -z "${C_KEEP_HOME:-}" ]; then
 cat > $HOME/.config/glib-2.0/settings/keyfile <<KEY
-[org/project-luma/shell-state]
+[org/project-suno/shell-state]
 reduce-transparency=false
 shelf-edge='${C_EDGE:-bottom}'
 shelf-edge-mode='floating'
@@ -49,8 +49,8 @@ printf '[Desktop Entry]\nType=Application\nName=Opener\nExec=/oracle/capture/har
 printf '[Default Applications]\nimage/png=oracle-opener.desktop\nvideo/webm=oracle-opener.desktop\nvideo/mp4=oracle-opener.desktop\n' > $HOME/.config/mimeapps.list
 export GSETTINGS_SCHEMA_DIR=${C_SCHEMAS:-/oracle/capture/schemas}
 [ "${C_OVERLAY:-}" = none ] && unset GSETTINGS_SCHEMA_DIR
-[ -n "${C_DRAG_HELPER:-}" ] && export LUMA_CAPTURE_DRAG_HELPER=$C_DRAG_HELPER LUMA_CAPTURE_DEBUG=${C_DEBUG:-1}
-export GSETTINGS_BACKEND=keyfile LIBGL_ALWAYS_SOFTWARE=1 LUMA_MUTTER_ALLOW_SOFTWARE_BLUR=1
+[ -n "${C_DRAG_HELPER:-}" ] && export SUNO_CAPTURE_DRAG_HELPER=$C_DRAG_HELPER SUNO_CAPTURE_DEBUG=${C_DEBUG:-1}
+export GSETTINGS_BACKEND=keyfile LIBGL_ALWAYS_SOFTWARE=1 SUNO_MUTTER_ALLOW_SOFTWARE_BLUR=1
 export ORACLE_OUT=/oracle/capture/out-${C_TAG:-a} ORACLE_EVAL=${C_EVAL:-/oracle/capture/harness/eval.js} ORACLE_SETTLE=${ORACLE_SETTLE:-9000}
 [ "${C_OVERLAY:-}" != none ] && export G_RESOURCE_OVERLAYS="/org/gnome/shell/ui=${C_OVERLAY:-/oracle/capture/overlay}/js/ui:/org/gnome/shell/theme=${C_OVERLAY:-/oracle/capture/overlay}/data/theme"
 [ -n "${C_KEEP_HOME:-}" ] || rm -rf "$ORACLE_OUT"

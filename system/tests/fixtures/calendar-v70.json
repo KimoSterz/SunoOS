@@ -72,7 +72,7 @@
         "NF",
         "SK"
       ],
-      "loc": "Luma Hub",
+      "loc": "Suno Hub",
       "id": 1
     },
     {
@@ -86,7 +86,7 @@
         "NF",
         "SK"
       ],
-      "loc": "Luma Hub",
+      "loc": "Suno Hub",
       "id": 2
     },
     {
@@ -100,7 +100,7 @@
         "NF",
         "SK"
       ],
-      "loc": "Luma Hub",
+      "loc": "Suno Hub",
       "id": 3
     },
     {
@@ -114,7 +114,7 @@
         "NF",
         "SK"
       ],
-      "loc": "Luma Hub",
+      "loc": "Suno Hub",
       "id": 4
     },
     {
@@ -128,7 +128,7 @@
         "NF",
         "SK"
       ],
-      "loc": "Luma Hub",
+      "loc": "Suno Hub",
       "id": 5
     },
     {
@@ -142,7 +142,7 @@
         "NF",
         "SK"
       ],
-      "loc": "Luma Hub",
+      "loc": "Suno Hub",
       "id": 6
     },
     {
@@ -156,7 +156,7 @@
         "NF",
         "SK"
       ],
-      "loc": "Luma Hub",
+      "loc": "Suno Hub",
       "id": 7
     },
     {
@@ -170,7 +170,7 @@
         "NF",
         "SK"
       ],
-      "loc": "Luma Hub",
+      "loc": "Suno Hub",
       "id": 8
     },
     {
@@ -184,7 +184,7 @@
         "NF",
         "SK"
       ],
-      "loc": "Luma Hub",
+      "loc": "Suno Hub",
       "id": 9
     },
     {
@@ -198,7 +198,7 @@
         "NF",
         "SK"
       ],
-      "loc": "Luma Hub",
+      "loc": "Suno Hub",
       "id": 10
     },
     {
@@ -212,7 +212,7 @@
         "NF",
         "SK"
       ],
-      "loc": "Luma Hub",
+      "loc": "Suno Hub",
       "id": 11
     },
     {
@@ -226,7 +226,7 @@
         "NF",
         "SK"
       ],
-      "loc": "Luma Hub",
+      "loc": "Suno Hub",
       "id": 12
     },
     {
@@ -240,7 +240,7 @@
         "NF",
         "SK"
       ],
-      "loc": "Luma Hub",
+      "loc": "Suno Hub",
       "id": 13
     },
     {
@@ -254,7 +254,7 @@
         "NF",
         "SK"
       ],
-      "loc": "Luma Hub",
+      "loc": "Suno Hub",
       "id": 14
     },
     {
@@ -268,7 +268,7 @@
         "NF",
         "SK"
       ],
-      "loc": "Luma Hub",
+      "loc": "Suno Hub",
       "id": 15
     },
     {
@@ -282,7 +282,7 @@
         "NF",
         "SK"
       ],
-      "loc": "Luma Hub",
+      "loc": "Suno Hub",
       "id": 16
     },
     {
@@ -296,7 +296,7 @@
         "NF",
         "SK"
       ],
-      "loc": "Luma Hub",
+      "loc": "Suno Hub",
       "id": 17
     },
     {
@@ -310,7 +310,7 @@
         "NF",
         "SK"
       ],
-      "loc": "Luma Hub",
+      "loc": "Suno Hub",
       "id": 18
     },
     {
@@ -324,7 +324,7 @@
         "NF",
         "SK"
       ],
-      "loc": "Luma Hub",
+      "loc": "Suno Hub",
       "id": 19
     },
     {
@@ -338,7 +338,7 @@
         "NF",
         "SK"
       ],
-      "loc": "Luma Hub",
+      "loc": "Suno Hub",
       "id": 20
     },
     {
@@ -578,7 +578,7 @@
       "o": 23,
       "s": 0,
       "e": 0,
-      "t": "Luma 1.0 launch",
+      "t": "Suno 1.0 launch",
       "cal": "work",
       "all": true,
       "people": [

@@ -1,4 +1,4 @@
-From: Project Luma <builds@project-luma.local>
+From: Project Suno <builds@project-suno.local>
 Subject: [PATCH] main: the handheld power button on the greeter
 
 The handheld power button (a short press blanks or wakes the display)
@@ -15,9 +15,9 @@ needs the handheld device class, so desktops are unchanged.
 @@ -27,6 +27,7 @@
  import * as Panel from './panel.js';
  import * as Shelf from './shelf.js';
- import * as Presentation from './lumaPresentation/presentation.js';
-+import {HandheldPowerButton} from './lumaPresentation/powerButton.js';
- import * as LumaStickyDock from './lumaStickyDock.js';
+ import * as Presentation from './SunoPresentation/presentation.js';
++import {HandheldPowerButton} from './SunoPresentation/powerButton.js';
+ import * as SunoStickyDock from './SunoStickyDock.js';
  import * as RunDialog from './runDialog.js';
  import * as WelcomeDialog from './welcomeDialog.js';
 @@ -64,6 +65,7 @@

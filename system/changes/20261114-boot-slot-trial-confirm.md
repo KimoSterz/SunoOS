@@ -1,7 +1,7 @@
 ---
 type: fix
 component: Updates
-packages: [luma-update]
+packages: [Suno-update]
 highlight: false
 ---
 Summary: A new phone kernel must start before it is kept

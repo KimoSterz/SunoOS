@@ -9,10 +9,10 @@ set -euo pipefail
 
 source_module=${1:-}
 expected_sha=${2:-}
-overlay_root=${LUMA_WAYDROID_OVERLAY_ROOT:-/var/lib/waydroid/overlay}
+overlay_root=${SUNO_WAYDROID_OVERLAY_ROOT:-/var/lib/waydroid/overlay}
 destination=$overlay_root/vendor/lib64/hw/hwcomposer.waydroid.so
-backup_root=/var/lib/waydroid/luma-preview-backups
-result_file=${LUMA_WAYDROID_PREVIEW_RESULT:-/tmp/luma-hwc-preview.result}
+backup_root=/var/lib/waydroid/Suno-preview-backups
+result_file=${SUNO_WAYDROID_PREVIEW_RESULT:-/tmp/Suno-hwc-preview.result}
 
 if [[ ${EUID:-$(id -u)} -ne 0 ]]; then
   printf 'error: preview deployment must run as root\n' >&2
@@ -72,7 +72,7 @@ if [[ $container_state == RUNNING ]]; then
 
   # Desktop/tablet keep Mutter as the pointer and input-method owner. Handheld
   # compositions intentionally retain Android's touch keyboard policy.
-  device_class=$(cat /etc/luma-device-class 2>/dev/null || printf desktop)
+  device_class=$(cat /etc/Suno-device-class 2>/dev/null || printf desktop)
   if [[ $device_class == desktop ]]; then
     lxc-attach -P /var/lib/waydroid/lxc -n waydroid --clear-env -- \
       /system/bin/settings put secure show_ime_with_hard_keyboard 0

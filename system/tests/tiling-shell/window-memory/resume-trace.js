@@ -53,7 +53,7 @@ async function until(fn, ms = 8000, label = 'condition') {
 }
 function refresh() {
     ext = Main.extensionManager.lookup(UUID)?.stateObj;
-    mem = ext?._lumaWindowMemory ?? mem;
+    mem = ext?._SunoWindowMemory ?? mem;
     return mem;
 }
 const frameOf = w => { const r = w.get_frame_rect(); return [r.x, r.y, r.width, r.height]; };
@@ -235,7 +235,7 @@ function summarize(label, wins, trace, target) {
 // ---- scenario ------------------------------------------------------------
 
 async function work() {
-    mem = await until(() => refresh()?._lumaWindowMemory ?? refresh(), 10000, 'window memory');
+    mem = await until(() => refresh()?._SunoWindowMemory ?? refresh(), 10000, 'window memory');
     refresh();
     check('Tiling Shell is running with window memory', !!mem);
     if (!mem) return;
@@ -260,11 +260,11 @@ async function work() {
     log(`docked layout: ${Main.layoutManager.monitors.map(m => `${m.width}x${m.height}+${m.x}+${m.y}@${m.geometry_scale}`).join(' ')}`);
 
     const chromium = await spawn(['chromium-browser', '--no-sandbox', '--ozone-platform=wayland', '--user-data-dir=/tmp/wm-chromium', '--no-first-run',
-        '--disable-gpu', '--class=org.projectluma.ChromiumApp', '--app=data:text/html,<body style="background:%23d97757"><h1>Claude stand-in</h1>'],
+        '--disable-gpu', '--class=org.projectSuno.ChromiumApp', '--app=data:text/html,<body style="background:%23d97757"><h1>Claude stand-in</h1>'],
     {}, w => /chrom/i.test(`${w.get_wm_class()} ${w.get_sandboxed_app_id()} ${w.get_wm_class_instance()}`));
-    const notes = await spawn(['python3', APP, 'org.projectluma.Notes', 'Notes', '#2d6cdf'], {GDK_BACKEND: 'wayland'},
-        w => w.get_gtk_application_id() === 'org.projectluma.Notes');
-    const xnotes = await spawn(['python3', APP, 'org.projectluma.XNotes', 'XNotes', '#00838f'], {GDK_BACKEND: 'x11', DISPLAY: GLib.getenv('DISPLAY') ?? ':0'},
+    const notes = await spawn(['python3', APP, 'org.projectSuno.Notes', 'Notes', '#2d6cdf'], {GDK_BACKEND: 'wayland'},
+        w => w.get_gtk_application_id() === 'org.projectSuno.Notes');
+    const xnotes = await spawn(['python3', APP, 'org.projectSuno.XNotes', 'XNotes', '#00838f'], {GDK_BACKEND: 'x11', DISPLAY: GLib.getenv('DISPLAY') ?? ':0'},
         w => w.get_client_type() === Meta.WindowClientType.X11);
     check('three clients started', chromium && notes && xnotes, `${!!chromium} ${!!notes} ${!!xnotes}`);
     const wins = [chromium, notes, xnotes].filter(Boolean);
@@ -400,7 +400,7 @@ async function sweep(label, uw, panel) {
     for (const [x, y, w, h] of [[5000, -700, 1100, 860], [200, 100, 900, 700]]) {
         const stopAll = allWindowsTracer();
         const win = await spawn(['chromium-browser', '--no-sandbox', '--ozone-platform=x11', `--user-data-dir=/tmp/wm-chromium-x-${x}`, '--no-first-run',
-            '--disable-gpu', `--window-position=${Math.round(x * xscale)},${Math.round(y * xscale)}`, `--window-size=${Math.round(w * xscale)},${Math.round(h * xscale)}`, '--class=org.projectluma.ChromiumX',
+            '--disable-gpu', `--window-position=${Math.round(x * xscale)},${Math.round(y * xscale)}`, `--window-size=${Math.round(w * xscale)},${Math.round(h * xscale)}`, '--class=org.projectSuno.ChromiumX',
             '--app=data:text/html,<body style="background:%23444">x11</body>'], {DISPLAY: x11},
         w2 => w2.get_client_type() === Meta.WindowClientType.X11 && /chrom/i.test(`${w2.get_wm_class()} ${w2.get_wm_class_instance()}`));
         await sleep(1500);
@@ -415,8 +415,8 @@ async function sweep(label, uw, panel) {
     // A Wayland app asking for a size bigger than the monitor.
     {
         const stopAll = allWindowsTracer();
-        const win = await spawn(['python3', APP, 'org.projectluma.Huge', 'Huge', '#6a1b9a', '--size', '7000x2600'], {GDK_BACKEND: 'wayland'},
-            w => w.get_gtk_application_id() === 'org.projectluma.Huge');
+        const win = await spawn(['python3', APP, 'org.projectSuno.Huge', 'Huge', '#6a1b9a', '--size', '7000x2600'], {GDK_BACKEND: 'wayland'},
+            w => w.get_gtk_application_id() === 'org.projectSuno.Huge');
         await sleep(800);
         const rows = stopAll().get(win) ?? [];
         const bad = rows.filter(r => !r.ok);
@@ -440,7 +440,7 @@ async function sweep(label, uw, panel) {
     check(`${label}: every app-requested position and size is shown fully inside one work area from its first frame`, failures.length === 0,
         failures.join('; '));
     // The person may still put a window partly off screen.
-    const notes = mainWindowOf('org.projectluma.Notes');
+    const notes = mainWindowOf('org.projectSuno.Notes');
     if (notes) {
         global.display.emit('grab-op-begin', notes, Meta.GrabOp.KEYBOARD_MOVING);
         notes.move_frame(true, 1200, 400);

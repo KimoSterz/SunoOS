@@ -1,6 +1,6 @@
 # Recording other apps' sound
 
-Luma apps record another app's sound (a game, a browser tab, a music player)
+Suno apps record another app's sound (a game, a browser tab, a music player)
 through the Audio Capture portal, `org.freedesktop.portal.AudioCapture`. The
 app never gets the PipeWire socket. The person chooses in the Share sound
 picker which apps it may hear, or all sound except its own; the app gets a
@@ -8,11 +8,11 @@ PipeWire remote that can see one node carrying that sound and nothing else.
 A new stream of a chosen app (the next song, a restarted game) joins the node
 by itself.
 
-Use `luma_appkit.audio_capture`; it hides the portal's request and session
+Use `Suno_appkit.audio_capture`; it hides the portal's request and session
 objects and stays stable if the interface changes upstream.
 
 ```python
-from luma_appkit.audio_capture import ALL_SOUND, APPLICATIONS, request_audio_capture
+from Suno_appkit.audio_capture import ALL_SOUND, APPLICATIONS, request_audio_capture
 
 def ready(capture, error):
     if error is not None:
@@ -50,10 +50,10 @@ reached through the session bus like every portal. Do not add
 
 ## How it works
 
-- `xdg-desktop-portal` (Luma patch 0004) owns sessions, restore tokens and the
+- `xdg-desktop-portal` (Suno patch 0004) owns sessions, restore tokens and the
   restricted remote (core, node factory and the capture node only).
-- `luma-portal` shows the picker and asks `luma-audio-devices`
-  (`org.projectluma.AudioDevices1.CreateCapture`) for the node.
-- WirePlumber (`luma/app-audio.lua`) owns the node, links the chosen apps'
+- `Suno-portal` shows the picker and asks `Suno-audio-devices`
+  (`org.projectSuno.AudioDevices1.CreateCapture`) for the node.
+- WirePlumber (`Suno/app-audio.lua`) owns the node, links the chosen apps'
   streams into it as they appear, and links a portal remote's recording
   stream only to a capture issued to the same app.

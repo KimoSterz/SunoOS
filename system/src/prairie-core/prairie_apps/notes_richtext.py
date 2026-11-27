@@ -36,7 +36,7 @@ from .notes_attachments import (  # noqa: E402
 
 # What a picture the sync host would not take says, quietly, on the picture.
 SYNC_NOTICES = {
-    STORAGE_FULL: "Not synced · Your Luma storage for note images is full. Remove images from notes to free space.",
+    STORAGE_FULL: "Not synced · Your Suno storage for note images is full. Remove images from notes to free space.",
     TOO_LARGE: "Not synced · This picture is too large to sync.",
 }
 
@@ -152,7 +152,7 @@ class NotesTextView(Gtk.TextView):
     """A text view that draws list markers beside the text and keeps pictures
     as wide as the text column allows."""
 
-    __gtype_name__ = "LumaNotesTextView"
+    __gtype_name__ = "SunoNotesTextView"
 
     def __init__(self, **properties) -> None:
         super().__init__(**properties)
@@ -197,7 +197,7 @@ class NotePicture(Gtk.Widget):
     text column decides how wide it is and not the other way round.
     """
 
-    __gtype_name__ = "LumaNotePicture"
+    __gtype_name__ = "SunoNotePicture"
 
     def __init__(self, page: "RichTextPage", name: str, width: int = 0) -> None:
         super().__init__()
@@ -867,8 +867,8 @@ class RichTextPage:
             self.set_collaborator(key, name='', hue=0)
 
     def draw_collaborators(self, snapshot):
-        from luma_appkit import snapshot_document_caret
-        from luma_appkit.lumaui_tokens import DOCUMENT_CARET
+        from Suno_appkit import snapshot_document_caret
+        from Suno_appkit.SunoUI_tokens import DOCUMENT_CARET
         text_size = self.view.get_pango_context().get_font_description().get_size() / Pango.SCALE
         visible = self.view.get_visible_rect()
         label_bounds = (visible.x, visible.x + visible.width)
@@ -887,8 +887,8 @@ class RichTextPage:
         color = view.get_color()
         bottom = visible.y + visible.height
         if self._quotes:
-            from luma_appkit import snapshot_document_quote
-            from luma_appkit.lumaui_tokens import DOCUMENT_TEXT
+            from Suno_appkit import snapshot_document_quote
+            from Suno_appkit.SunoUI_tokens import DOCUMENT_TEXT
             for line in self._quotes:
                 first = self._line_start(line)
                 top, height = view.get_line_yrange(first)
@@ -907,7 +907,7 @@ class RichTextPage:
             top, height = view.get_line_yrange(self._line_start(line))
             if top + height < visible.y or top > bottom:
                 continue
-            found, border = view.get_style_context().lookup_color('luma_border')
+            found, border = view.get_style_context().lookup_color('Suno_border')
             if not found:
                 border = color
             thickness = max(1, view.get_scale_factor())
@@ -925,8 +925,8 @@ class RichTextPage:
             if location.y > bottom:
                 break
             if text in ("circle", "circle-check"):
-                from luma_appkit import snapshot_document_check
-                from luma_appkit.lumaui_tokens import DOCUMENT_CHECK
+                from Suno_appkit import snapshot_document_check
+                from Suno_appkit.SunoUI_tokens import DOCUMENT_CHECK
                 size = DOCUMENT_CHECK['size']
                 snapshot_document_check(snapshot, view,
                     view.get_left_margin() + LEVEL_INDENT * level + DOCUMENT_CHECK['marker_offset'],
@@ -1040,7 +1040,7 @@ class RichTextPage:
         if self.file_widget_factory is not None:
             widget = self.file_widget_factory(metadata)
         else:
-            from luma_appkit import FileCard
+            from Suno_appkit import FileCard
             widget = FileCard(str(file_path(metadata['src'])), name=metadata['name'], size=metadata['size'])
         anchor = self.buffer.create_child_anchor(at)
         self.view.add_child_at_anchor(widget, anchor)
@@ -1386,7 +1386,7 @@ class RichTextPage:
 
     def link_tag(self, href: str) -> Gtk.TextTag:
         tag = self.buffer.create_tag(None, underline=Pango.Underline.SINGLE)
-        tag.luma_link_href = href
+        tag.Suno_link_href = href
         self.link_tags.append(tag)
         return tag
 
@@ -1420,7 +1420,7 @@ class RichTextPage:
             for first, last in _tag_ranges(self.buffer, tag):
                 a, b = plain(first), plain(last)
                 if a < b:
-                    runs.append({"start": a, "end": b, "style": "link", "href": tag.luma_link_href})
+                    runs.append({"start": a, "end": b, "style": "link", "href": tag.Suno_link_href})
         for picture in self.pictures:
             found = self._anchor_iter(picture.anchor) if picture.anchor else None
             if found is None:

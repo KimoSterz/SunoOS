@@ -1,9 +1,9 @@
-From: Project Luma <engineering@projectluma.org>
+From: Project Suno <engineering@projectSuno.org>
 Date: Mon, 21 Sep 2026 12:30:00 -0500
 Subject: [PATCH] mouse: Scroll Speed for the mouse and the touchpad
 
 Scrolling distance could not be changed anywhere: libinput has no
-option for it and GNOME never offered one. Luma's compositor now scales
+option for it and GNOME never offered one. Suno's compositor now scales
 scrolling per kind of device, and Mouse & Touchpad gets a Scroll Speed
 slider in the Mouse section and in the touchpad's Scrolling section,
 styled like Pointer Speed (Slow to Fast) with a reset button that is
@@ -12,7 +12,7 @@ available whenever the speed is not the default.
 The slider runs over the base-2 logarithm of the stored multiple
 (0.25 to 4.0), so Slow and Fast are equally far from the middle, and
 the middle snaps to exactly 1.0, which the compositor treats as
-unchanged. The settings, org.projectluma.peripherals.mouse and
+unchanged. The settings, org.projectSuno.peripherals.mouse and
 .touchpad scroll-speed, come from Mutter; when they are not installed
 the rows are hidden.
 ---
@@ -154,7 +154,7 @@ index 4786870..27926e3 100644
    GSettings         *mouse_settings;
    GSettings         *touchpad_settings;
    GSettings         *pointingstick_settings;
-+  /* Luma scroll speed, read by the compositor; NULL when not installed. */
++  /* Suno scroll speed, read by the compositor; NULL when not installed. */
 +  GSettings         *mouse_scroll_settings;
 +  GSettings         *touchpad_scroll_settings;
  
@@ -284,8 +284,8 @@ index 4786870..27926e3 100644
    self->mouse_settings = g_settings_new ("org.gnome.desktop.peripherals.mouse");
    self->touchpad_settings = g_settings_new ("org.gnome.desktop.peripherals.touchpad");
    self->pointingstick_settings = g_settings_new ("org.gnome.desktop.peripherals.pointingstick");
-+  self->mouse_scroll_settings = maybe_new_settings ("org.projectluma.peripherals.mouse");
-+  self->touchpad_scroll_settings = maybe_new_settings ("org.projectluma.peripherals.touchpad");
++  self->mouse_scroll_settings = maybe_new_settings ("org.projectSuno.peripherals.mouse");
++  self->touchpad_scroll_settings = maybe_new_settings ("org.projectSuno.peripherals.touchpad");
  
    device_manager = gsd_device_manager_get ();
    g_signal_connect_object (device_manager, "device-added",

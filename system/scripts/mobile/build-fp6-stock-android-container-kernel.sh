@@ -12,24 +12,24 @@ umask 022
 
 repo_root=${1:?usage: build-fp6-stock-android-container-kernel.sh REPO_ROOT OUTPUT_DIR}
 output_dir=${2:?missing output directory}
-release_mode=${LUMA_FP6_CONTAINER_KERNEL_RELEASE_MODE:-isolated}
+release_mode=${SUNO_FP6_CONTAINER_KERNEL_RELEASE_MODE:-isolated}
 case $release_mode in
   isolated)
-    kernel_release=7.1.2-luma-fp-ims-container1
-    localversion=-luma-fp-ims-container1
+    kernel_release=7.1.2-Suno-fp-ims-container1
+    localversion=-Suno-fp-ims-container1
     ;;
   ims1-compatible)
     # Keep the physically accepted release identity so the existing FP6 early
     # boot/module lookup contract remains unchanged. BinderFS is built in and
     # does not add or replace a loadable module.
-    kernel_release=7.1.2-luma-fp-ims1
-    localversion=-luma-fp-ims1
+    kernel_release=7.1.2-Suno-fp-ims1
+    localversion=-Suno-fp-ims1
     ;;
   *) printf 'error: unsupported release mode: %s\n' "$release_mode" >&2; exit 1 ;;
 esac
 build_timestamp='2026-08-27 00:00:00 UTC'
-jobs=${LUMA_KERNEL_BUILD_JOBS:-8}
-work_root=${LUMA_KERNEL_WORK_ROOT:-/var/tmp/luma-fp6-stock-android-container-kernel}
+jobs=${SUNO_KERNEL_BUILD_JOBS:-8}
+work_root=${SUNO_KERNEL_WORK_ROOT:-/var/tmp/Suno-fp6-stock-android-container-kernel}
 
 source_archive=$repo_root/build/mobile/fp6-physical/fp6-camera-source-archives/linux-v7.1.2-milos.tar.gz
 camera_archive=$repo_root/build/mobile/fp6-physical/fp6-camera-source-archives/fp6-camera-patches-52f06aa.tar.gz
@@ -191,7 +191,7 @@ tar --sort=name --mtime="$build_timestamp" --owner=0 --group=0 --numeric-owner \
   zstd -q -19 -T0 -o "$bundle/modules-$kernel_release.tar.zst"
 
 {
-  printf 'LUMA_FP6_STOCK_ANDROID_CONTAINER_KERNEL_VERSION=2\n'
+  printf 'SUNO_FP6_STOCK_ANDROID_CONTAINER_KERNEL_VERSION=2\n'
   printf 'KERNEL_RELEASE=%s\n' "$kernel_release"
   printf 'RELEASE_MODE=%s\n' "$release_mode"
   printf 'SOURCE_ARCHIVE_SHA256=%s\n' "$source_archive_sha"

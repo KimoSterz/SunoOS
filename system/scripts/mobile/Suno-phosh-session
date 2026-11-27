@@ -1,0 +1,20 @@
+#!/bin/sh
+# SPDX-License-Identifier: Apache-2.0
+
+set -eu
+
+device_class=handheld
+if [ -r /etc/Suno-device-class ]; then
+  IFS= read -r marker </etc/Suno-device-class || true
+  case "$marker" in
+    desktop|tablet|handheld) device_class=$marker ;;
+  esac
+fi
+
+export SUNO_DEVICE_CLASS=${SUNO_DEVICE_CLASS:-$device_class}
+export SUNO_PRESENTATION_MODE=${SUNO_PRESENTATION_MODE:-fullscreen-mobile}
+export SUNO_INPUT_MODE=${SUNO_INPUT_MODE:-touch}
+
+# The renderer and every application it launches inherit these capabilities.
+# environment.d supplies the same stable device class to session user services.
+exec /opt/Suno/phosh/bin/phosh-session "$@"

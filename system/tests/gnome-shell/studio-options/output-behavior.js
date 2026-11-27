@@ -18,7 +18,7 @@ const production = new Function('Gio', '_', `return ({${methods}});`)
 function assert(ok, message) { if (!ok) throw Error(message); }
 function selectionTest() {
     const origins = ['Bluetooth', 'Built in', 'HDMI'];
-    const rows = origins.map(origin => ({_lumaOrigin: origin,
+    const rows = origins.map(origin => ({_SunoOrigin: origin,
         setCurrent(value) { this.current = value; }, setState(value) { this.state = value; }}));
     const actor = {_deviceItems: new Map(rows.map((row, id) => [id, row])),
         _syncLevelDetail(id) { this.detailId = id; },
@@ -37,16 +37,16 @@ function iconsTest() {
         ['speaker', 'fixture', 'analog-output-headphones', 'headphones'],
         ['speaker', 'alsa_output.fixture.hdmi-stereo', '', 'monitor'],
         ['speaker', 'alsa_output.fixture.analog-stereo', '', 'speaker'],
-        ['speaker', 'luma-airplay-fixture', '', 'speaker'],
+        ['speaker', 'Suno-airplay-fixture', '', 'speaker'],
     ]) {
         const stream = {get_name: () => name, get_form_factor: () => form,
             get_ports: () => port ? [port] : [], get_port: () => ({port})};
         const actor = {_control: {get_stream_from_device: () => stream}, _findHeadphones: production._findHeadphones};
         const icon = production._deviceIcon.call(actor, {});
-        assert(icon.name === `lumaui-${expected}-symbolic`, 'output must use its existing classification and Lucide role');
+        assert(icon.name === `SunoUI-${expected}-symbolic`, 'output must use its existing classification and Lucide role');
     }
     const fallback = production._deviceIcon.call({_control: {get_stream_from_device: () => null}}, {});
-    assert(fallback.name === 'lumaui-speaker-symbolic', 'unresolved output must keep a visible speaker role');
+    assert(fallback.name === 'SunoUI-speaker-symbolic', 'unresolved output must keep a visible speaker role');
 }
 if (ARGV.includes('--self-test')) {
     const original = production._setActiveDevice;

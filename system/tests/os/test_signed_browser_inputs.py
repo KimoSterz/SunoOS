@@ -21,16 +21,16 @@ class SignedBrowserInputTest(unittest.TestCase):
         refs = {ref: 'a' * 64 for ref in MODULE.REFS}
         files = {'repo/config': b'[core]\nrepo_version=1\nmode=archive-z2\n',
                  'repo/summary': b'synthetic summary', 'repo/summary.sig': b'synthetic signature',
-                 'site/luma.flatpakrepo': b'synthetic descriptor'}
+                 'site/Suno.flatpakrepo': b'synthetic descriptor'}
         files.update({'repo/refs/heads/' + ref: (commit + '\n').encode() for ref, commit in refs.items()})
         if extra:
             files.update(extra)
         profile = {'source': MODULE.SOURCE, 'architecture': 'aarch64', 'refs': refs,
                    'reachable_object_count': 0, 'reachable_stored_bytes': 0}
         for name, key in [('repo/summary', 'summary_sha256'), ('repo/summary.sig', 'summary_signature_sha256'),
-                          ('site/luma.flatpakrepo', 'flatpakrepo_sha256')]:
+                          ('site/Suno.flatpakrepo', 'flatpakrepo_sha256')]:
             profile[key] = hashlib.sha256(files[name]).hexdigest()
-        document = {'schema': 'org.projectluma.depot.runtime-input/v1', 'profile': profile,
+        document = {'schema': 'org.projectSuno.depot.runtime-input/v1', 'profile': profile,
                     'files': {name: {'bytes': len(body), 'sha256': hashlib.sha256(body).hexdigest()}
                               for name, body in files.items()}}
         if mutate:
@@ -60,7 +60,7 @@ class SignedBrowserInputTest(unittest.TestCase):
             self.assertFalse((root / 'mirror').exists())
 
     def test_wider_ref_set_and_inventory_change_refused(self):
-        mutations = [lambda d: d['profile']['refs'].update({'runtime/org.projectluma.Sdk/aarch64/44': 'b' * 64}),
+        mutations = [lambda d: d['profile']['refs'].update({'runtime/org.projectSuno.Sdk/aarch64/44': 'b' * 64}),
                      lambda d: d['files']['repo/summary'].update({'sha256': 'b' * 64}),
                      lambda d: d['profile'].update({'source': 'b' * 40})]
         for mutation in mutations:

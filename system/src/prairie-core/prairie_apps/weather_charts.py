@@ -10,11 +10,11 @@ import math
 import cairo
 from gi.repository import Gtk, Gdk, Gsk, Graphene, Pango, PangoCairo
 
-from luma_appkit import lumaui_tokens, type_font
+from Suno_appkit import SunoUI_tokens, type_font
 from .weather_gradient import gradient_stops
 
 
-def color(widget: Gtk.Widget, role: str, fallback: str = "luma_sky_card_ink", *, fallback_opacity=1):
+def color(widget: Gtk.Widget, role: str, fallback: str = "Suno_sky_card_ink", *, fallback_opacity=1):
     style = widget.get_style_context()
     found, value = style.lookup_color(role)
     if not found:
@@ -43,16 +43,16 @@ class WeatherSky(Gtk.Widget):
         # Named palette roles are kept separate from app geometry. The keeper
         # can supply exact values without changes to this renderer.
         fallbacks = {
-            "day": ("luma_blue", "luma_accent", "luma_accent_ink"),
-            "dusk": ("luma_violet", "luma_destructive", "luma_amber"),
-            "night": ("lumaui_shade_night", "lumaui_shade_deep", "luma_menu"),
-            "rain": ("luma_faint", "luma_muted", "luma_state"),
-            "cloud": ("luma_faint", "luma_muted", "luma_state"),
-            "snow": ("luma_faint", "luma_muted", "luma_state"),
+            "day": ("Suno_blue", "Suno_accent", "Suno_accent_ink"),
+            "dusk": ("Suno_violet", "Suno_destructive", "Suno_amber"),
+            "night": ("SunoUI_shade_night", "SunoUI_shade_deep", "Suno_menu"),
+            "rain": ("Suno_faint", "Suno_muted", "Suno_state"),
+            "cloud": ("Suno_faint", "Suno_muted", "Suno_state"),
+            "snow": ("Suno_faint", "Suno_muted", "Suno_state"),
         }[self.sky]
         colors = []
         for index, at in enumerate((0, .5 if self.sky == "dusk" else .6, 1)):
-            c = color(self, f"luma_weather_sky_{self.sky}_{index + 1}", fallbacks[index])
+            c = color(self, f"Suno_weather_sky_{self.sky}_{index + 1}", fallbacks[index])
             colors.append((at, (c.red, c.green, c.blue, c.alpha)))
         stops = []
         for at, rgba in gradient_stops(colors):
@@ -77,7 +77,7 @@ class WeatherHours(Gtk.Box):
             return
         stops = []
         for at, alpha in ((0, 1), (max(0, 1 - 40 / width), 1), (1, 0)):
-            value = color(self, "luma_sky_card_ink")
+            value = color(self, "Suno_sky_card_ink")
             value.alpha = alpha
             stop = Gsk.ColorStop()
             stop.offset, stop.color = at, value
@@ -116,7 +116,7 @@ class ForecastDay(Gtk.Box):
     def do_snapshot(self, snapshot):
         Gtk.Box.do_snapshot(self, snapshot)
         if not self.first:
-            divider = color(self, "luma_sky_card_ink")
+            divider = color(self, "Suno_sky_card_ink")
             divider.alpha *= .12
             snapshot.append_color(divider,
                                   Graphene.Rect().init(0, 0, self.get_width(), 1))
@@ -148,14 +148,14 @@ class ForecastGraphic(Gtk.DrawingArea):
         circle = Gsk.RoundedRect()
         circle.init_from_rect(bounds, radius)
         shadow = Gsk.Shadow()
-        shadow.color = color(self, "luma_weather_sun_glow", "luma_amber", fallback_opacity=.9)
+        shadow.color = color(self, "Suno_weather_sun_glow", "Suno_amber", fallback_opacity=.9)
         shadow.dx = shadow.dy = 0
         # GSK halves the shadow radius for its Gaussian sigma; v70's filter sigma is6.
         shadow.radius = 12 * scale
         snapshot.push_clip(Graphene.Rect().init(0, 0, width, height))
         snapshot.push_shadow([shadow])
         snapshot.push_rounded_clip(circle)
-        snapshot.append_color(color(self, "luma_sky_card_ink"), bounds)
+        snapshot.append_color(color(self, "Suno_sky_card_ink"), bounds)
         snapshot.pop()
         snapshot.pop()
         snapshot.pop()
@@ -163,17 +163,17 @@ class ForecastGraphic(Gtk.DrawingArea):
     def _track(self, context, width, height):
         context.set_line_width(5)
         context.set_line_cap(cairo.LINE_CAP_ROUND)
-        ink(context, color(self, "luma_weather_range_track", "luma_media_shadow", fallback_opacity=.22))
+        ink(context, color(self, "Suno_weather_range_track", "Suno_media_shadow", fallback_opacity=.22))
         context.move_to(2.5, height / 2)
         context.line_to(max(2.5, width - 2.5), height / 2)
         context.stroke()
 
     def _marker(self, context, x, y, radius=4.5):
         if self.kind in ("range", "index"):
-            ink(context, color(self, "luma_weather_marker_outline", "luma_media_shadow", fallback_opacity=.25))
+            ink(context, color(self, "Suno_weather_marker_outline", "Suno_media_shadow", fallback_opacity=.25))
             context.arc(x, y, radius + 2, 0, 2 * math.pi)
             context.fill()
-        ink(context, color(self, "luma_sky_card_ink"))
+        ink(context, color(self, "Suno_sky_card_ink"))
         context.arc(x, y, radius, 0, 2 * math.pi)
         context.fill()
 
@@ -186,11 +186,11 @@ class ForecastGraphic(Gtk.DrawingArea):
             if self.kind == "index":
                 start, end = 0, 1
             gradient = cairo.LinearGradient(start * width, 0, end * width, 0)
-            roles = ("luma_blue", "luma_amber", "luma_destructive") if self.kind == "range" else (
-                "luma_green", "luma_amber", "luma_amber", "luma_destructive", "luma_violet")
+            roles = ("Suno_blue", "Suno_amber", "Suno_destructive") if self.kind == "range" else (
+                "Suno_green", "Suno_amber", "Suno_amber", "Suno_destructive", "Suno_violet")
             colors = []
             for i, role in enumerate(roles):
-                c = color(self, f"luma_weather_{self.kind}_{i + 1}", role)
+                c = color(self, f"Suno_weather_{self.kind}_{i + 1}", role)
                 colors.append((i / (len(roles) - 1), (c.red, c.green, c.blue, c.alpha)))
             for at, rgba in gradient_stops(colors):
                 gradient.add_color_stop_rgba(at, *rgba)
@@ -215,30 +215,30 @@ class ForecastGraphic(Gtk.DrawingArea):
             scale = min(width / 160, height / 72)
             context.translate((width - 160 * scale) / 2, (height - 72 * scale) / 2)
             context.scale(scale, scale)
-            ink(context, color(self, "luma_sky_card_ink"), .35)
+            ink(context, color(self, "Suno_sky_card_ink"), .35)
             context.set_line_width(1.5)
             context.set_dash((3, 4))
             context.move_to(8, 64)
             context.curve_to(56, -2.67, 104, -2.67, 152, 64)
             context.stroke()
             context.set_dash(())
-            ink(context, color(self, "luma_sky_card_ink"), .25)
+            ink(context, color(self, "Suno_sky_card_ink"), .25)
             context.set_line_width(1)
             context.move_to(0, 64)
             context.line_to(160, 64)
             context.stroke()
         elif self.kind == "wind":
             context.scale(width / 80, height / 80)
-            ink(context, color(self, "luma_sky_card_ink"), .25)
+            ink(context, color(self, "Suno_sky_card_ink"), .25)
             context.set_line_width(1.5)
             context.set_dash((2, 4))
             context.arc(40, 40, 34, 0, 2 * math.pi)
             context.stroke()
             context.set_dash(())
             layout = PangoCairo.create_layout(context)
-            role = "weather-compass" if "weather_compass" in lumaui_tokens.TYPE_SCALE else "caption"
+            role = "weather-compass" if "weather_compass" in SunoUI_tokens.TYPE_SCALE else "caption"
             layout.set_font_description(type_font(role))
-            ink(context, color(self, "luma_sky_card_ink_secondary"))
+            ink(context, color(self, "Suno_sky_card_ink_secondary"))
             for i, text in enumerate(("N", "E", "S", "W")):
                 layout.set_text(text, -1)
                 tw, th = layout.get_pixel_size()
@@ -249,7 +249,7 @@ class ForecastGraphic(Gtk.DrawingArea):
                 context.translate(40, 40)
                 context.rotate(math.radians(self.value + 180))
                 context.translate(-40, -40)
-                ink(context, color(self, "luma_sky_card_ink"))
+                ink(context, color(self, "Suno_sky_card_ink"))
                 context.move_to(40, 16)
                 for point in ((45, 40), (40, 36), (35, 40)):
                     context.line_to(*point)
@@ -286,9 +286,9 @@ class WeatherRadar(Gtk.DrawingArea):
         scale = max(width / fw, height / fh)
         context.translate((width - fw * scale) / 2, (height - fh * scale) / 2)
         context.scale(scale, scale)
-        ink(context, color(self, "luma_weather_radar_ground", "lumaui_shade_deep"))
+        ink(context, color(self, "Suno_weather_radar_ground", "SunoUI_shade_deep"))
         context.paint()
-        ink(context, color(self, "luma_sky_card_ink"), .07)
+        ink(context, color(self, "Suno_sky_card_ink"), .07)
         context.set_line_width(6)
         for i in range(9):
             context.move_to(i * 45, 0)
@@ -297,10 +297,10 @@ class WeatherRadar(Gtk.DrawingArea):
             context.line_to(360, i * 52 - 20)
         context.stroke()
         dx, dy = -80 + self.step * 18, self.step * 6
-        roles = {1: ("luma_green", .5), 2: ("luma_amber", .65), 3: ("luma_destructive", .8)}
+        roles = {1: ("Suno_green", .5), 2: ("Suno_amber", .65), 3: ("Suno_destructive", .8)}
         for x, y, rx, ry, level in self.cells:
             role, alpha = roles[level]
-            c = color(self, f"luma_weather_radar_{level}", role)
+            c = color(self, f"Suno_weather_radar_{level}", role)
             # A soft edge stands in for v71's 6 px blur.
             context.save()
             context.translate(x + dx, y + dy)
@@ -313,14 +313,14 @@ class WeatherRadar(Gtk.DrawingArea):
             context.arc(0, 0, 1 + 6 / max(rx, ry), 0, 2 * math.pi)
             context.fill()
             context.restore()
-        ink(context, color(self, "luma_sky_card_ink"))
+        ink(context, color(self, "Suno_sky_card_ink"))
         context.arc(200, 200, 9, 0, 2 * math.pi)
         context.fill()
-        ink(context, color(self, "luma_blue"))
+        ink(context, color(self, "Suno_blue"))
         context.set_line_width(4)
         context.arc(200, 200, 7, 0, 2 * math.pi)
         context.stroke()
-        ink(context, color(self, "luma_sky_card_ink"))
+        ink(context, color(self, "Suno_sky_card_ink"))
         context.arc(200, 200, 5, 0, 2 * math.pi)
         context.fill()
         layout = PangoCairo.create_layout(context)

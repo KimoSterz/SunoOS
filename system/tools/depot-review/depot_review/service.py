@@ -97,7 +97,7 @@ def media_facts(config: Config, hub: Hub, listing: dict, job: Path) -> dict:
     return out
 
 
-def luma_ids(config: Config) -> set[str]:
+def Suno_ids(config: Config) -> set[str]:
     ids = set(json.loads((config.source / "packaging/flatpak/apps/titles.json").read_text()))
     repo = config.depot_root / "repo"
     if (repo / "config").exists():
@@ -142,7 +142,7 @@ def review(config: Config, hub: Hub | None, submission: dict, job: Path, package
         facts = inspect_upload(config, Path(package["path"]), package.get("format", ""), job / f"work-{package['arch']}")
         (job / f"facts-{package['arch']}.json").write_text(json.dumps(facts, indent=1))
         all_facts.append(facts)
-        reserved_ids = luma_ids(config) | set(submission.get("reserved_ids") or [])
+        reserved_ids = Suno_ids(config) | set(submission.get("reserved_ids") or [])
         report_checks += checks.package_checks(facts, package, submission, policy, reserved_ids)
     holder = owners(config).get(submission.get("app_id") or "")
     if holder and developer_of(submission) and holder != developer_of(submission):
@@ -224,7 +224,7 @@ def failure_report(error: BaseException) -> dict:
         reason = getattr(error, "reason", "") or type(error).__name__
         item = checks.infrastructure("pipeline", reason, detail=detail)
     else:
-        item = checks.check("pipeline", False, "Depot couldn't finish checking this. Luma will look at it; "
+        item = checks.check("pipeline", False, "Depot couldn't finish checking this. Suno will look at it; "
                             "you don't need to do anything.", detail=detail, internal=True)
     return {"status": checks.outcome([item]), "checks": [item], "_screenshots": {}}
 

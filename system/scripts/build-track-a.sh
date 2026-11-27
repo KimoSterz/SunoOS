@@ -26,7 +26,7 @@ cache_dir="$repo_root/build/cache"
 ostree_repo="$cache_dir/track-a-ostree/repo-archive"
 blueprint="$repo_root/build/provisioning/track-a-blueprint.toml"
 report="$output_dir/build-report.txt"
-http_port=${LUMA_OSTREE_HTTP_PORT:-18080}
+http_port=${SUNO_OSTREE_HTTP_PORT:-18080}
 mkdir -p "$output_dir" "$cache_dir/track-a-ostree" "$cache_dir/image-builder" "$cache_dir/rpmmd"
 
 if [ ! -f "$ostree_repo/config" ]; then
@@ -103,7 +103,7 @@ sudo image-builder build \
   --cache "$cache_dir/image-builder" \
   --rpmmd-cache "$cache_dir/rpmmd" \
   --output-dir "$output_dir" \
-  --output-name luma-track-a-baseline \
+  --output-name Suno-track-a-baseline \
   --progress verbose \
   --with-buildlog \
   --with-manifest \

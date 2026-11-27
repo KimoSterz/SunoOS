@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
 #
-# Regenerate the Luma remote's signed summary, AppStream branches and static
-# deltas, then write the descriptor files (luma.flatpakrepo, .flatpakref, keys).
+# Regenerate the Suno remote's signed summary, AppStream branches and static
+# deltas, then write the descriptor files (Suno.flatpakrepo, .flatpakref, keys).
 #
 #   update-remote.sh
 #
@@ -28,10 +28,10 @@ depot_in_signer python3 -B scripts/depot/retire-remote-apps.py \
 depot_log "updating summary, appstream and static deltas"
 depot_in_signer flatpak build-update-repo \
   --gpg-sign="$fingerprint" --gpg-homedir="$DEPOT_KEYS/gnupg" \
-  --title="Luma" \
-  --comment="Apps made for Luma, for every Linux desktop" \
+  --title="Suno" \
+  --comment="Apps made for Suno, for every Linux desktop" \
   --homepage="https://simplyluma.com/apps" \
-  --icon="$DEPOT_PUBLIC_URL/media/luma-remote.svg" \
+  --icon="$DEPOT_PUBLIC_URL/media/Suno-remote.svg" \
   --default-branch=beta \
   --generate-static-deltas --static-delta-jobs=4 \
   --static-delta-ignore-ref='*.Sdk' --static-delta-ignore-ref='*.Locale' \
@@ -41,13 +41,13 @@ depot_in_signer flatpak build-update-repo \
 
 depot_log "writing descriptor files under $site"
 catalog_key=()
-[ -f "$DEPOT_KEYS/minisign/luma-depot-catalog.pub" ] &&
-  catalog_key=(--catalog-key "$DEPOT_KEYS/minisign/luma-depot-catalog.pub")
+[ -f "$DEPOT_KEYS/minisign/Suno-depot-catalog.pub" ] &&
+  catalog_key=(--catalog-key "$DEPOT_KEYS/minisign/Suno-depot-catalog.pub")
 depot_in_signer python3 scripts/depot/generate-remote-files.py \
   --repo "$depot_repo" --site "$site" \
-  --gpg-key "$DEPOT_KEYS/luma-depot.gpg" --gpg-key-armored "$DEPOT_KEYS/luma-depot.asc" \
+  --gpg-key "$DEPOT_KEYS/Suno-depot.gpg" --gpg-key-armored "$DEPOT_KEYS/Suno-depot.asc" \
   "${catalog_key[@]}" \
-  --remote-icon assets/icon-theme/Prairie/scalable/apps/org.projectluma.Depot.svg \
+  --remote-icon assets/icon-theme/Prairie/scalable/apps/org.projectSuno.Depot.svg \
   --titles packaging/flatpak/apps/titles.json \
   --releases "$DEPOT_ROOT/releases" \
   --base-url "$DEPOT_PUBLIC_URL"

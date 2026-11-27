@@ -13,7 +13,7 @@ cat >"$test_root/bin/ssh" <<'MOCK_SSH'
 set -eu
 cat >/dev/null
 cat <<'REPORT'
-LUMA_FP6_CONTROL_ACCEPTANCE_VERSION=1
+SUNO_FP6_CONTROL_ACCEPTANCE_VERSION=1
 PHONE_ACCESSED=true
 MUTATING_OPERATIONS=none
 P5_AUTHORIZED=false
@@ -67,10 +67,10 @@ REPORT
 MOCK_SSH
 chmod +x "$test_root/bin/ssh"
 
-LUMA_SSH="$test_root/bin/ssh" \
-LUMA_FP6_SSH_TARGET=user@fixture \
-LUMA_FP6_CONTROL_INVENTORY_DIR="$test_root/output" \
-LUMA_FP6_CONTROL_TIMESTAMP=fixture \
+SUNO_SSH="$test_root/bin/ssh" \
+SUNO_FP6_SSH_TARGET=user@fixture \
+SUNO_FP6_CONTROL_INVENTORY_DIR="$test_root/output" \
+SUNO_FP6_CONTROL_TIMESTAMP=fixture \
   "$repo_root/scripts/mobile/inventory-fp6-control.sh" >/dev/null
 
 grep -qx 'IDENTITY=fp6-confirmed' "$test_root/output/summary.env"

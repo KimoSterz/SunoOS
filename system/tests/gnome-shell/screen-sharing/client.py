@@ -3,7 +3,7 @@
 """A host application asking to share the screen, the way a browser does.
 
 It speaks to the real org.freedesktop.portal.ScreenCast frontend, so the
-request goes xdg-desktop-portal -> luma-portal -> the Shell's picker -> Mutter,
+request goes xdg-desktop-portal -> Suno-portal -> the Shell's picker -> Mutter,
 exactly as an application's would. It records what came back and, once
 streaming, pulls frames from the PipeWire node through the remote the portal
 opened for it -- which is what the application actually receives, so it is
@@ -70,7 +70,7 @@ safe = "".join(c if c.isalnum() else "_" for c in tag)
 def token():
     global counter
     counter += 1
-    return f"luma{safe}{counter}"
+    return f"Suno{safe}{counter}"
 
 
 def request(method, params_before, options, then):
@@ -172,9 +172,9 @@ def create():
 
 def direct_call():
     """The backend directly, with an app id, to show a resolved requester."""
-    impl = "org.freedesktop.impl.portal.desktop.luma"
+    impl = "org.freedesktop.impl.portal.desktop.Suno"
     iface = "org.freedesktop.impl.portal.ScreenCast"
-    handle = f"/org/freedesktop/portal/desktop/session/luma/{safe}"
+    handle = f"/org/freedesktop/portal/desktop/session/Suno/{safe}"
     bus.call_sync(impl, PATH, iface, "CreateSession",
                   GLib.Variant("(oosa{sv})",
                                ("/r/1", handle, direct, {})),

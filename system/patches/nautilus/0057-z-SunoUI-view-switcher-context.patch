@@ -1,0 +1,22 @@
+--- a/src/resources/style.css
++++ b/src/resources/style.css
+@@ -1192,19 +1192,6 @@
+ window.Suno-files-window .Suno-view-controls button:checked image,
+ window.Suno-files-window .Suno-view-mode-controls button:checked image {
+   color: @Suno_content;
+-}
+-
+-/* ADR-043: the selected view is a state, not the toolbar's emphasis. It takes
+- * the shared state slate from libadwaita (0039), in every appearance mode. */
+-window.Suno-files-window .Suno-view-controls button:checked,
+-window.Suno-files-window .Suno-view-mode-controls button:checked {
+-  background-color: var(--Suno-state);
+-  color: var(--Suno-state-ink);
+-}
+-
+-window.Suno-files-window .Suno-view-controls button:checked image,
+-window.Suno-files-window .Suno-view-mode-controls button:checked image {
+-  color: var(--Suno-state-ink);
+ }
+ 
+ /* Reviewed against the desktop Filer simulator: compact native list rows,

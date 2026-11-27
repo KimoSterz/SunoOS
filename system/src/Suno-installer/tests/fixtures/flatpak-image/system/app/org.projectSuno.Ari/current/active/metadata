@@ -1,0 +1,19 @@
+[Application]
+name=org.projectSuno.Ari
+runtime=org.projectSuno.Platform/x86_64/44
+sdk=org.projectSuno.Sdk/x86_64/44
+command=org.projectSuno.Ari
+
+[Context]
+shared=ipc;
+sockets=fallback-x11;wayland;
+devices=dri;
+
+[Session Bus Policy]
+org.projectSuno.ShellState1=talk
+org.projectSuno.Ari1=talk
+
+[X-Suno]
+app-data-schema=ari-host-v1
+min-host-installer=57
+min-host-ari=21

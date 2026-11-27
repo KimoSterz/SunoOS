@@ -23,7 +23,7 @@ import tempfile
 
 BASE = 'https://dl.simplyluma.com'
 FINGERPRINTS = frozenset({'069E001599679B49042FE40885FCC398C02A8BEE'})
-RUNTIMES = ('org.projectluma.Platform','org.projectluma.Platform.GL.default','org.projectluma.Platform.Locale')
+RUNTIMES = ('org.projectSuno.Platform','org.projectSuno.Platform.GL.default','org.projectSuno.Platform.Locale')
 
 
 def run(*args, **kwargs):
@@ -35,14 +35,14 @@ def selected_applications(entries, shipping=None):
     if not by_id or len(by_id)!=len(entries) or any(not entry.get('recipe') for entry in entries):
         raise ValueError('Every maintained app needs a unique identity and producer.')
     if shipping is None:return set(by_id)
-    if shipping.get('schema')!='org.projectluma.os-app-baseline/v1':
+    if shipping.get('schema')!='org.projectSuno.os-app-baseline/v1':
         raise ValueError('Unsupported OS app selection contract.')
     names=shipping.get('applications')
     if not isinstance(names,list) or not names or any(not isinstance(name,str) for name in names):
         raise ValueError('OS app selection is empty or malformed.')
     if len(set(names))!=len(names) or set(names)-by_id.keys():
         raise ValueError('OS app selection contains duplicates or unmaintained identities.')
-    optional={'org.projectluma.Write','org.projectluma.Grid','org.projectluma.Stage','org.projectluma.Session','org.projectluma.Reel','org.projectluma.Darkroom'}
+    optional={'org.projectSuno.Write','org.projectSuno.Grid','org.projectSuno.Stage','org.projectSuno.Session','org.projectSuno.Reel','org.projectSuno.Darkroom'}
     if set(names)&optional:
         raise ValueError('Office and creative applications are outside the OS baseline.')
     return set(names)
@@ -86,7 +86,7 @@ def source_identity(path, *, directory=False):
 def prepare_reuse(root, architecture, public, manifest_sha256):
     if not re.fullmatch('[0-9a-f]{64}',manifest_sha256 or ''):
         raise ValueError('Reuse requires the previously admitted manifest SHA256.')
-    pins={name:source_identity(root/name) for name in ('manifest.json','shipping.json','roles.json','luma-depot.gpg')}
+    pins={name:source_identity(root/name) for name in ('manifest.json','shipping.json','roles.json','Suno-depot.gpg')}
     root_pin=source_identity(root,directory=True)
     with (root/'manifest.json').open('rb') as stream:
         if hashlib.file_digest(stream,'sha256').hexdigest()!=manifest_sha256:
@@ -94,12 +94,12 @@ def prepare_reuse(root, architecture, public, manifest_sha256):
     # Use the same shipping/roles/key/ref/size/type validator as OS admission.
     # Full hashes are checked for each reused body, rather than reading every
     # unrelated old bundle. The caller's prior admission pin supplies custody.
-    path=Path(__file__).resolve().parents[2]/'image/luma-desktop/rootfs/usr/libexec/luma-app-baseline'
-    loader=importlib.machinery.SourceFileLoader('luma_baseline_reuse_validator',str(path))
+    path=Path(__file__).resolve().parents[2]/'image/Suno-desktop/rootfs/usr/libexec/Suno-app-baseline'
+    loader=importlib.machinery.SourceFileLoader('Suno_baseline_reuse_validator',str(path))
     spec=importlib.util.spec_from_loader(loader.name,loader)
     validator=importlib.util.module_from_spec(spec);loader.exec_module(validator)
     document=validator.validate(root,architecture,hash_bundles=False,historical=True)
-    if (root/'luma-depot.gpg').read_bytes()!=public:
+    if (root/'Suno-depot.gpg').read_bytes()!=public:
         raise ValueError('Reusable baseline has a different authenticated signing key.')
     cache={'root':root,'root_pin':root_pin,'pins':pins,
            'rows':{row['ref']:row for row in document['bundles']}}
@@ -213,9 +213,9 @@ def produce(repo,site,registry,output,arch,shipping=None,minimum_free_bytes=0,re
     refs=['runtime/'+name+'/'+arch+'/44' for name in RUNTIMES]+['app/'+name+'/'+arch+'/beta' for name in sorted(ids)]
     heads={ref:run('ostree','rev-parse','--repo='+str(repo),ref).strip() for ref in refs}
     if any(not re.fullmatch('[0-9a-f]{64}',commit) for commit in heads.values()):raise ValueError('Invalid baseline source commit.')
-    public=(site/'keys/luma-depot.gpg').read_bytes()
+    public=(site/'keys/Suno-depot.gpg').read_bytes()
     if len(public)>65536:raise ValueError('Invalid baseline public key.')
-    with tempfile.TemporaryDirectory(prefix='luma-baseline-verify-') as temporary:
+    with tempfile.TemporaryDirectory(prefix='Suno-baseline-verify-') as temporary:
         tmp=Path(temporary);key=tmp/'key.gpg';key.write_bytes(public)
         keyhome=tmp/'keyhome';keyhome.mkdir(mode=0o700)
         text=run('gpg','--batch','--no-options','--homedir',str(keyhome),'--with-colons','--show-keys',str(key))
@@ -255,7 +255,7 @@ def produce(repo,site,registry,output,arch,shipping=None,minimum_free_bytes=0,re
             else:
                 require_capacity(output,minimum_free_bytes,ref_logical_bytes(repo,heads[ref]))
                 options=['flatpak','build-bundle','--arch='+arch,'--repo-url='+BASE+'/repo',
-                         '--runtime-repo='+BASE+'/luma.flatpakrepo','--gpg-keys='+str(key)]
+                         '--runtime-repo='+BASE+'/Suno.flatpakrepo','--gpg-keys='+str(key)]
                 if kind=='runtime':options.append('--runtime')
                 # Large runtime bundles can exceed ten minutes on build storage.
                 # Keep lightweight admission commands on their shorter default.
@@ -270,12 +270,12 @@ def produce(repo,site,registry,output,arch,shipping=None,minimum_free_bytes=0,re
             row={'ref':ref,'commit':heads[ref],'sha256':sha,'bytes':target.stat().st_size,'file':sha+'.flatpak'}
             target.rename(output/row['file']);rows.append(row)
         if reuse is not None:check_reuse_source(reuse)
-        (output/'luma-depot.gpg').write_bytes(public)
-        roles=(json.dumps({'schema':'org.projectluma.first-party-app-roles/v1',
+        (output/'Suno-depot.gpg').write_bytes(public)
+        roles=(json.dumps({'schema':'org.projectSuno.first-party-app-roles/v1',
                           'roles':{name:'signed-system-flatpak' for name in sorted(ids)}},sort_keys=True,indent=2)+'\n').encode()
         (output/'roles.json').write_bytes(roles)
         if shipping:(output/'shipping.json').write_bytes(shipping.read_bytes())
-        document={'schema':'org.projectluma.offline-app-baseline/v1','architecture':arch,'default_channel':'beta',
+        document={'schema':'org.projectSuno.offline-app-baseline/v1','architecture':arch,'default_channel':'beta',
                   'public_key_sha256':hashlib.sha256(public).hexdigest(),'role_contract_sha256':hashlib.sha256(roles).hexdigest(),
                   'selection_scope':'os-shipping' if shipping else 'complete-maintained-catalog',
                   'shipping_contract_sha256':hashlib.sha256(shipping.read_bytes()).hexdigest() if shipping else None,

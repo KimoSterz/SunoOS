@@ -1,11 +1,11 @@
-// lumaSession's callerIdentity holds the caller by the broker's pidfd: a
+// SunoSession's callerIdentity holds the caller by the broker's pidfd: a
 // live caller is identified; a caller that exits mid-check, or whose pid is
 // taken by another process (pid reuse), is refused; one whose details can't
 // be read is refused on purpose; a broker without ProcessFD still answers.
 // Writes CALLER_OUT.
 import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
-import {callerIdentity} from 'resource:///org/gnome/shell/ui/lumaSession.js';
+import {callerIdentity} from 'resource:///org/gnome/shell/ui/SunoSession.js';
 
 const out = GLib.getenv('CALLER_OUT');
 const lines = [];

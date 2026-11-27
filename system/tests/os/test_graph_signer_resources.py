@@ -25,19 +25,19 @@ class Resources(unittest.TestCase):
             self.assertEqual({x.name for x in p.iterdir()},{'sealed_module.py'})
     def invocation(self,mode):
         text=SOURCE.read_text()
-        function=text[text.index('luma_os_graph_tools() {'):text.index('# Validation and the previous-generation')]
+        function=text[text.index('Suno_os_graph_tools() {'):text.index('# Validation and the previous-generation')]
         with tempfile.TemporaryDirectory() as directory:
             p=Path(directory);(p/'keys').mkdir(mode=0o700);(p/'empty-hooks').mkdir();(p/'data').mkdir()
-            for name in ('luma-update-graph.pub','luma-update-graph.key'):
+            for name in ('Suno-update-graph.pub','Suno-update-graph.key'):
                 (p/'keys'/name).write_text('SYNTHETIC NON-KEY FIXTURE\n');(p/'keys'/name).chmod(0o600)
             setup='''set -euo pipefail
 work=$1
 minisign_dir=$work/keys
 graph_tools_image=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-luma_os_die() { echo "$*" >&2; exit 1; }
-luma_os_podman() { printf '%s\\0' "$@" >"$work/args"; }
+Suno_os_die() { echo "$*" >&2; exit 1; }
+Suno_os_podman() { printf '%s\\0' "$@" >"$work/args"; }
 '''
-            subprocess.run(['bash','-c',setup+function+'\nluma_os_graph_tools "$2" "$work/data" minisign -V\n','test',str(p),mode],check=True)
+            subprocess.run(['bash','-c',setup+function+'\nSuno_os_graph_tools "$2" "$work/data" minisign -V\n','test',str(p),mode],check=True)
             return (p/'args').read_bytes().decode().split('\0')[:-1]
     def test_signing_has_kdf_headroom(self):
         args=self.invocation('sign')
@@ -47,10 +47,10 @@ luma_os_podman() { printf '%s\\0' "$@" >"$work/args"; }
         self.assertIn('--memory=1g',args);self.assertIn('--memory-swap=1250m',args)
     def test_verification_receives_no_private_key(self):
         args=self.invocation('verify')
-        self.assertFalse(any('luma-update-graph.key' in x for x in args));self.assertIn('--network=none',args)
+        self.assertFalse(any('Suno-update-graph.key' in x for x in args));self.assertIn('--network=none',args)
     def test_signing_private_key_remains_readonly(self):
         args=self.invocation('sign')
-        keys=[x for x in args if 'luma-update-graph.key' in x]
+        keys=[x for x in args if 'Suno-update-graph.key' in x]
         self.assertEqual(len(keys),1);self.assertTrue(keys[0].endswith(':ro'));self.assertIn('--read-only',args)
 
 if __name__=='__main__':unittest.main()

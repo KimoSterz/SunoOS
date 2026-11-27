@@ -1,0 +1,277 @@
+/* SPDX-License-Identifier: Apache-2.0 */
+/* The save changes sheet (Suno-save-sheet.c). Colours are AppKit tokens only:
+ * @Suno_sheet is the opaque sheet surface in every treatment (frost and glass
+ * included); @Suno_destructive_text, @Suno_destructive_text_dim and
+ * @Suno_ember_dot are measured on it. Parsed again whenever the tokens change. */
+
+.Suno-save-scrim {
+  background-color: rgba(8, 10, 14, 0.5);
+  opacity: 0;
+  transition: opacity 180ms ease;
+}
+.Suno-save-scrim.open { opacity: 1; }
+
+/* The desktop's sheet; in the bar's frame (below) the card is drawn as the phone confirm. */
+.Suno-save-sheet:not(.Suno-sheet-frame) {
+  padding: 22px 20px 14px;
+  border-radius: 0 0 20px 20px;
+  background-color: @Suno_sheet;
+  color: @Suno_ink;
+  box-shadow: inset 0 0 0 1px @Suno_line,
+              0 6px 16px rgba(0, 0, 0, 0.26),
+              0 30px 70px -24px rgba(0, 0, 0, 0.55);
+  transform: translateY(-14px);
+  opacity: 0;
+  transition: transform 240ms cubic-bezier(0.2, 0.8, 0.2, 1), opacity 160ms ease;
+}
+.Suno-save-scrim.open .Suno-save-sheet:not(.Suno-sheet-frame) { transform: none; opacity: 1; }
+
+/* The document, wearing the dot every edited document wears. */
+.Suno-save-page,
+.Suno-save-page-behind {
+  border-radius: 7px 14px 7px 7px;
+  background-color: mix(@Suno_sheet, @Suno_ink, 0.07);
+  box-shadow: inset 0 0 0 1px @Suno_line;
+}
+.Suno-save-page-behind { background-color: mix(@Suno_sheet, @Suno_ink, 0.04); }
+.Suno-save-fold { border-radius: 0 7px 0 7px; background-color: mix(@Suno_sheet, @Suno_ink, 0.18); }
+.Suno-save-rule { background-color: alpha(@Suno_ink, 0.22); }
+.Suno-save-dot {
+  border-radius: 999px;
+  background-color: @Suno_ember_dot;
+  box-shadow: 0 0 0 2.5px @Suno_sheet;
+}
+
+.Suno-save-title {
+  margin-top: 8px;
+  font-size: 16px;
+  font-weight: 750;
+  letter-spacing: -0.26px;
+  line-height: 1.3;
+}
+.Suno-save-body {
+  margin-top: 6px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: @Suno_muted;
+}
+
+.Suno-save-field {
+  min-height: 40px;
+  padding: 0 6px 0 12px;
+  border-radius: 11px;
+  background-color: alpha(@Suno_ink, 0.07);
+  box-shadow: inset 0 0 0 1px @Suno_line;
+}
+.Suno-save-field:focus-within { box-shadow: inset 0 0 0 1.5px @Suno_ink; }
+.Suno-save-field.error { box-shadow: inset 0 0 0 1.5px @Suno_destructive_text; }
+.Suno-save-field > label { font-size: 12.5px; font-weight: 650; color: @Suno_muted; }
+.Suno-save-field entry,
+.Suno-save-field entry:focus-within {
+  min-height: 32px;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  outline: none;
+  color: @Suno_ink;
+  font-size: 13.5px;
+  font-weight: 600;
+}
+.Suno-save-field dropdown > button {
+  min-height: 32px;
+  padding: 0 4px;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  color: @Suno_ink;
+  font-size: 13.5px;
+  font-weight: 600;
+}
+.Suno-save-error {
+  margin-top: 6px;
+  padding: 0 4px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: @Suno_destructive_text;
+}
+
+.Suno-save-list {
+  border-radius: 12px;
+  background-color: alpha(@Suno_ink, 0.07);
+  box-shadow: inset 0 0 0 1px @Suno_line;
+}
+.Suno-save-list > viewport > box { padding: 4px; }
+.Suno-save-row { min-height: 18px; padding: 7px 9px; font-size: 13px; font-weight: 650; }
+.Suno-save-row + .Suno-save-row { border-top: 1px solid @Suno_line; }
+.Suno-save-stake { font-size: 11.5px; font-weight: 500; color: @Suno_muted; }
+
+.Suno-save-sheet button.Suno-save-primary,
+.Suno-save-sheet button.Suno-save-secondary {
+  min-height: 40px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 12px;
+  font-size: 13.5px;
+  font-weight: 700;
+  box-shadow: none;
+  transition: filter 140ms ease;
+}
+.Suno-save-sheet button.Suno-save-primary { background-color: @Suno_ink; color: @Suno_sheet; }
+.Suno-save-sheet button.Suno-save-primary:hover { filter: brightness(1.12); }
+.Suno-save-sheet button.Suno-save-primary:disabled { opacity: 0.6; }
+.Suno-save-sheet button.Suno-save-secondary { background-color: alpha(@Suno_ink, 0.07); color: @Suno_ink; }
+.Suno-save-sheet button.Suno-save-secondary:hover { background-color: alpha(@Suno_ink, 0.1); }
+.Suno-save-sheet button.Suno-save-primary:focus-visible,
+.Suno-save-sheet button.Suno-save-secondary:focus-visible {
+  outline: 2px solid @Suno_ink;
+  outline-offset: 2px;
+}
+
+/* The destructive choice: red text, never a fill. 4.5:1 at rest, hovered
+ * and pressed, measured on @Suno_sheet. */
+.Suno-save-sheet button.Suno-save-discard {
+  min-height: 30px;
+  margin-top: 12px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  box-shadow: none;
+  color: @Suno_destructive_text;
+  font-size: 13px;
+  font-weight: 650;
+}
+.Suno-save-sheet button.Suno-save-discard:hover { background-color: alpha(@Suno_destructive_text, 0.12); }
+.Suno-save-sheet button.Suno-save-discard:active { background-color: alpha(@Suno_destructive_text, 0.18); }
+.Suno-save-sheet button.Suno-save-discard:focus-visible {
+  outline: 2px solid @Suno_destructive_text;
+  outline-offset: 1px;
+}
+.Suno-save-discard .Suno-save-shortcut {
+  font-size: 11px;
+  font-weight: 600;
+  color: @Suno_destructive_text_dim;
+}
+
+/* ── In the bar's frame: a phone, a landscape phone, a tablet, the Fold ──
+ * The sheet rises from the bar's place (v71, kept in v73): 16 a side, 34 up,
+ * 26 round, over the light scrim, no grabber; its head and body scroll over
+ * the pinned buttons (Suno-sheet-private.h places and moves it). Every framed
+ * card is the phone confirm's object: the frame gives it SunoUI-dialog, whose
+ * float surface, ring, shadows and highlight (Suno-appkit-base.css) it wears;
+ * only the frame's shape is set here. */
+.Suno-save-scrim.frame,
+.Suno-save-scrim.frame.open {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  opacity: 1;
+  transition: none;
+}
+.Suno-sheet-dim,
+.SunoUI-scrim.Suno-sheet-dim,
+.SunoUI-scrim.Suno-sheet-dim.shown { background-color: alpha(black, 0.28); opacity: 1; transition: none; }
+
+.Suno-sheet-frame,
+.Suno-save-scrim .Suno-save-sheet.Suno-sheet-frame,
+.Suno-save-scrim.open .Suno-save-sheet.Suno-sheet-frame,
+box.SunoUI-dialog.phone.drawer.Suno-sheet-frame,
+.SunoUI-modal.drawer.Suno-sheet-frame,
+.SunoUI-modal.drawer.shown.Suno-sheet-frame {
+  min-width: 0;
+  margin: 0;
+  padding: 20px 0 12px;
+  border: none;
+  border-radius: 26px;
+  transform: none;
+  opacity: 1;
+  transition: none;
+}
+.Suno-sheet-frame scrolledwindow.Suno-sheet-frame-body,
+.Suno-sheet-frame scrolledwindow.Suno-sheet-frame-body > viewport { background: none; }
+.Suno-sheet-frame box.Suno-sheet-frame-content { padding: 0 12px; }
+
+.Suno-sheet-frame label.Suno-save-title,
+.Suno-sheet-frame label.SunoUI-dialog-title {
+  margin: 0;
+  padding: 0 6px;
+  font-size: 17px;
+  font-weight: 650;
+  letter-spacing: -0.17px;
+  line-height: 22px; /* 17 × 1.3, whole px */
+  color: @Suno_ink;
+}
+.Suno-sheet-frame label.Suno-save-body,
+.Suno-sheet-frame label.SunoUI-dialog-body {
+  margin: 6px 0 0;
+  padding: 0 6px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px; /* 14 × 1.45, whole px */
+  color: @Suno_ink_secondary;
+}
+.Suno-sheet-frame label.Suno-save-error { margin: 8px 0 0; padding: 0 6px; font-size: 13px; }
+.Suno-sheet-frame checkbutton.SunoUI-dialog-option { margin: 12px 6px 0; }
+
+/* The bar's one button look: 48 tall, 20 round, 15/600. */
+.Suno-sheet-frame box.Suno-sheet-frame-foot { margin-top: 16px; padding: 0 12px; }
+.Suno-sheet-frame box.Suno-sheet-frame-foot box.Suno-sheet-frame-row { margin: 0; padding: 0; border-spacing: 8px; }
+.Suno-sheet-frame box.Suno-sheet-frame-foot button {
+  min-height: 48px;
+  margin: 0;
+  padding: 0 12px;
+  border: none;
+  border-radius: 20px;
+  font-size: 15px;
+  font-weight: 600;
+  outline: 0 solid transparent;
+  box-shadow: none;
+  filter: none;
+}
+.Suno-sheet-frame box.Suno-sheet-frame-foot button label { font-size: 15px; font-weight: 600; }
+.Suno-sheet-frame box.Suno-sheet-frame-foot button.Suno-sheet-key {
+  color: @Suno_key_ink;
+  background-color: @Suno_key;
+  background-image: linear-gradient(to bottom, @Suno_key, @Suno_key_end);
+  box-shadow: inset 0 1px 0 @Suno_key_highlight, 0 0 0 1px @Suno_key_ring, 0 1px 2px @Suno_key_shadow;
+}
+.Suno-sheet-frame box.Suno-sheet-frame-foot button.Suno-sheet-fill {
+  color: @Suno_ink;
+  background-color: @Suno_control_fill;
+  background-image: none;
+}
+.Suno-sheet-frame box.Suno-sheet-frame-foot button.Suno-sheet-fill:hover { background-color: @Suno_control_fill_hover; }
+.Suno-sheet-frame box.Suno-sheet-frame-foot button.Suno-sheet-danger {
+  color: @Suno_danger_fill_ink;
+  background-color: @Suno_danger_fill;
+  background-image: linear-gradient(to bottom, @Suno_danger_fill, @Suno_danger_fill_end);
+  box-shadow: inset 0 1px 0 alpha(white, 0.2), 0 0 0 1px alpha(black, 0.18), 0 1px 2px alpha(black, 0.2);
+}
+/* A third choice: a quiet row, never filled and never the default. */
+.Suno-sheet-frame box.Suno-sheet-frame-foot button.Suno-sheet-quiet,
+.Suno-sheet-frame box.Suno-sheet-frame-foot button.Suno-sheet-quiet-destructive {
+  min-height: 44px;
+  margin-top: 8px;
+  background: none;
+  color: @Suno_ink_secondary;
+}
+.Suno-sheet-frame box.Suno-sheet-frame-foot button.Suno-sheet-quiet-destructive {
+  margin-top: 12px;
+  color: @Suno_destructive_text;
+}
+.Suno-sheet-frame box.Suno-sheet-frame-foot button.Suno-sheet-quiet:hover { background-color: alpha(@Suno_ink, 0.06); }
+.Suno-sheet-frame box.Suno-sheet-frame-foot button.Suno-sheet-quiet-destructive:hover { background-color: alpha(@Suno_destructive_text, 0.1); }
+.Suno-sheet-frame box.Suno-sheet-frame-foot button:active { filter: brightness(0.95); }
+/* No ring for a touch; the keyboard's focus still shows. */
+.Suno-sheet-frame box.Suno-sheet-frame-foot button:focus-visible { outline: 2px solid @Suno_focus_ring; outline-offset: 2px; }
+
+@media (prefers-contrast: more) {
+  .Suno-save-sheet:not(.Suno-sheet-frame) { box-shadow: inset 0 0 0 2px @Suno_ink, 0 6px 16px rgba(0, 0, 0, 0.4); }
+  .Suno-save-field, .Suno-save-list { box-shadow: inset 0 0 0 1px @Suno_ink; }
+  .Suno-save-sheet button.Suno-save-secondary { box-shadow: inset 0 0 0 1px @Suno_ink; }
+  .Suno-save-sheet button.Suno-save-discard { text-decoration: underline; }
+  .Suno-sheet-frame box.Suno-sheet-frame-foot button.Suno-sheet-fill { box-shadow: inset 0 0 0 1px @Suno_ink; }
+  .Suno-sheet-frame box.Suno-sheet-frame-foot button.Suno-sheet-quiet-destructive { text-decoration: underline; }
+}

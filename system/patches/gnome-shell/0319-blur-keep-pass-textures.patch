@@ -1,5 +1,5 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Project Luma <engineering@projectluma.org>
+From: Project Suno <engineering@projectSuno.org>
 Date: Tue, 3 Nov 2026 02:52:22 -0600
 Subject: [PATCH] blur: keep the blur pass textures; drop two copies per blur
 
@@ -33,7 +33,7 @@ index 9bb7ae0..3b0e287 100644
  "    cogl_color_out *= 1.0 - smoothstep(-0.5, 0.5, d);                       \n"
  "  }                                                                      \n";
  
-+/* Luma: the two gaussian passes, as in mutter's ClutterBlur (private to
++/* Suno: the two gaussian passes, as in mutter's ClutterBlur (private to
 + * mutter), so the effect can keep their textures between frames.
 + */
 +static const gchar *gaussian_blur_glsl_declarations =
@@ -82,7 +82,7 @@ index 9bb7ae0..3b0e287 100644
    CacheFlags cache_flags;
  
    FramebufferData background_fb;
-+  /* Luma: the vertical and horizontal pass results, kept between frames.
++  /* Suno: the vertical and horizontal pass results, kept between frames.
 +   * brightness_fb only holds the pipeline that draws the result.
 +   */
 +  FramebufferData vblur_fb;
@@ -96,7 +96,7 @@ index 9bb7ae0..3b0e287 100644
    int radius;
 +  float blur_sigma;
  
-   /* Luma: how many frames in a row the background could have been stale. */
+   /* Suno: how many frames in a row the background could have been stale. */
    int stale_frames;
 @@ -182,6 +230,48 @@ create_brightness_pipeline (void)
    return cogl_pipeline_copy (brightness_pipeline);
@@ -201,7 +201,7 @@ index 9bb7ae0..3b0e287 100644
                                      });
  }
  
-+/* Luma: the blur draws into textures it keeps while the actor's size and
++/* Suno: the blur draws into textures it keeps while the actor's size and
 + * downscale stay the same. A ClutterBlurNode allocated three new textures
 + * and pipelines on every paint (a background blur paints every frame), and
 + * its result went through a further copy into brightness_fb before reaching
@@ -417,7 +417,7 @@ index 9bb7ae0..3b0e287 100644
 -    }
  }
  
- /* Luma: copying the framebuffer under the actor ends the GPU's pass over the
+ /* Suno: copying the framebuffer under the actor ends the GPU's pass over the
 @@ -924,6 +1063,8 @@ shell_blur_effect_paint_node (ClutterEffect           *effect,
                paint_background (self, blur_node, paint_context, &source_actor_box);
                break;
@@ -456,7 +456,7 @@ index 9bb7ae0..3b0e287 100644
      case SHELL_BLUR_MODE_BACKGROUND:
      default:
 -      /* Do nothing */
-+      /* Luma: the background blur samples its copy, not actor_fb. */
++      /* Suno: the background blur samples its copy, not actor_fb. */
 +      clear_framebuffer_data (&self->actor_fb);
        break;
      }

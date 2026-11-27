@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: Apache-2.0 */
-#include "luma-window-callbacks.h"
+#include "Suno-window-callbacks.h"
 #include <atomic>
 #include <cassert>
 #include <cstdio>
@@ -11,7 +11,7 @@ struct Window {
     ~Window(){destroyed++;}
 };
 int main() {
-    luma::WindowCallbacks<Window> callbacks;
+    Suno::WindowCallbacks<Window> callbacks;
     std::atomic<int> destroyed{0};
     auto owner=std::make_shared<Window>(destroyed);
     void* first=callbacks.attach(owner);assert(first);
@@ -29,7 +29,7 @@ int main() {
     auto refused=std::make_shared<Window>(destroyed);assert(!callbacks.attach(refused));
     for(void*t:tokens){assert(callbacks.retire(t));}
     active.clear();refused.reset();assert(destroyed==4099);
-    struct Reentrant {luma::WindowCallbacks<Reentrant>* registry;void* token{};~Reentrant(){registry->retire(token);}};
-    luma::WindowCallbacks<Reentrant> reentrant;auto target=std::make_shared<Reentrant>();target->registry=&reentrant;target->token=reentrant.attach(target);auto held=reentrant.acquire(target->token);target.reset();held.reset();
+    struct Reentrant {Suno::WindowCallbacks<Reentrant>* registry;void* token{};~Reentrant(){registry->retire(token);}};
+    Suno::WindowCallbacks<Reentrant> reentrant;auto target=std::make_shared<Reentrant>();target->registry=&reentrant;target->token=reentrant.attach(target);auto held=reentrant.acquire(target->token);target.reset();held.reset();
     puts("PASS: retired/unknown/ABA/capacity refusal; in-flight owner delays teardown; concurrent retirement; destructor registry reentry");
 }

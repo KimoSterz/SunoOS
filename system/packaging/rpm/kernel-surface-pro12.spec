@@ -7,15 +7,15 @@
 %global __requires_exclude_from ^/usr/lib/modules/.*$
 # modules_install strips before signing/compressing; RPM must not strip again.
 %global __spec_install_post %{nil}
-%global kver 7.3.0-3.luma.surface12.fc44.aarch64
+%global kver 7.3.0-3.Suno.surface12.fc44.aarch64
 Name: kernel-surface-pro12
 Version: 7.3.0
-Release: 3.luma.surface12%{?dist}
+Release: 3.Suno.surface12%{?dist}
 Summary: Linux for Surface Pro 12-inch first edition Snapdragon
 License: GPL-2.0-only AND BSD-3-Clause AND Apache-2.0
 URL: https://www.kernel.org
 ExclusiveArch: aarch64
-Source0: luma-surface-sources.tar.gz
+Source0: Suno-surface-sources.tar.gz
 Source1: linux-7.3.tar.xz
 Source2: surface-overlay-c570db8.tar.gz
 Source3: fedora-base.config
@@ -45,22 +45,22 @@ This package is selected only by that experimental device profile. It does
 not obsolete Fedora kernels or establish physical hardware qualification.
 
 %prep
-%setup -q -n luma-surface-sources
-%if ! 0%{?_luma_prepared_source:1}
+%setup -q -n Suno-surface-sources
+%if ! 0%{?_Suno_prepared_source:1}
 python3 scripts/kernel/prepare-source.py --offline \
     --lock config/kernel/surface-pro12-7.3.json \
     --cache %{_sourcedir} --output prepared
 %endif
 
 %build
-export ARCH=arm64 CROSS_COMPILE="%{?_luma_cross_compile}"
-export KBUILD_BUILD_USER=luma KBUILD_BUILD_HOST=builder KBUILD_BUILD_VERSION=1
+export ARCH=arm64 CROSS_COMPILE="%{?_Suno_cross_compile}"
+export KBUILD_BUILD_USER=Suno KBUILD_BUILD_HOST=builder KBUILD_BUILD_VERSION=1
 export KBUILD_BUILD_TIMESTAMP='2026-10-22 00:00:00 UTC'
-source_dir="%{?_luma_prepared_source}%{!?_luma_prepared_source:$PWD/prepared/linux/linux-7.3}"
-output_dir="%{?_luma_prepared_output}%{!?_luma_prepared_output:$PWD/kernel-build}"
+source_dir="%{?_Suno_prepared_source}%{!?_Suno_prepared_source:$PWD/prepared/linux/linux-7.3}"
+output_dir="%{?_Suno_prepared_output}%{!?_Suno_prepared_output:$PWD/kernel-build}"
 # Optional prepared paths are a build cache, not alternate source inputs.
 # The package driver verifies their source/config receipt before setting them.
-%if 0%{?_luma_prepared_source:1}
+%if 0%{?_Suno_prepared_source:1}
 python3 scripts/kernel/build-cache.py verify --repository "$PWD" --build "$output_dir" --base-config %{SOURCE3}
 %else
 bash scripts/kernel/configure-surface-pro12.sh "$source_dir" "$output_dir" %{SOURCE3}
@@ -69,9 +69,9 @@ python3 scripts/kernel/build-cache.py record --repository "$PWD" --build "$outpu
 %endif
 
 %install
-export ARCH=arm64 CROSS_COMPILE="%{?_luma_cross_compile}"
-source_dir="%{?_luma_prepared_source}%{!?_luma_prepared_source:$PWD/prepared/linux/linux-7.3}"
-output_dir="%{?_luma_prepared_output}%{!?_luma_prepared_output:$PWD/kernel-build}"
+export ARCH=arm64 CROSS_COMPILE="%{?_Suno_cross_compile}"
+source_dir="%{?_Suno_prepared_source}%{!?_Suno_prepared_source:$PWD/prepared/linux/linux-7.3}"
+output_dir="%{?_Suno_prepared_output}%{!?_Suno_prepared_output:$PWD/kernel-build}"
 make -C "$source_dir" O="$output_dir" %{?_smp_mflags} \
     INSTALL_MOD_PATH=%{buildroot}/usr INSTALL_MOD_STRIP=1 DEPMOD=true modules_install
 install -m 0644 "$output_dir/arch/arm64/boot/Image" %{buildroot}/usr/lib/modules/%{kver}/vmlinuz
@@ -85,7 +85,7 @@ install -m 0644 "$output_dir/arch/arm64/boot/dts/qcom/x1p42100-microsoft-sp12in.
     %{buildroot}/usr/lib/modules/%{kver}/devicetree
 rm -f %{buildroot}/usr/lib/modules/%{kver}/build %{buildroot}/usr/lib/modules/%{kver}/source
 install -D -m 0644 config/kernel/surface-pro12-7.3.json \
-    %{buildroot}/usr/share/luma/kernel/source-lock.json
+    %{buildroot}/usr/share/Suno/kernel/source-lock.json
 
 # Carry upstream license texts in the binary as well as corresponding source.
 install -d -m 0755 %{buildroot}/usr/share/licenses/%{name}
@@ -119,4 +119,4 @@ PY
 %defattr(0644,root,root,0755)
 %license /usr/share/licenses/%{name}
 /usr/lib/modules/%{kver}
-/usr/share/luma/kernel/source-lock.json
+/usr/share/Suno/kernel/source-lock.json

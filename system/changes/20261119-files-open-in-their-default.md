@@ -1,7 +1,7 @@
 ---
 type: fix
 component: Filer
-packages: [xdg-desktop-portal, luma-desktop-launcher-policy]
+packages: [xdg-desktop-portal, Suno-desktop-launcher-policy]
 highlight: false
 ---
 Summary: Files open in their default app right away

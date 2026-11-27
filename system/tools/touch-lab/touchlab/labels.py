@@ -44,7 +44,7 @@ MARK_WINDOW_NS = 3_000_000_000
 
 def data_root() -> str:
     base = os.environ.get("XDG_DATA_HOME") or os.path.expanduser("~/.local/share")
-    return os.path.join(base, "luma-touch-lab")
+    return os.path.join(base, "Suno-touch-lab")
 
 
 def boot_id() -> str:

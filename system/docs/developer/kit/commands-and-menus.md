@@ -7,7 +7,7 @@ section: Kit
 
 # Commands and menus
 
-A command is something your app can do. In a Luma app every command is defined
+A command is something your app can do. In a Suno app every command is defined
 once, with one stable ID, and every way of reaching it (the identity menu, a
 context menu, a toolbar button, a keyboard shortcut, an accessibility action, a
 semantic action) points at that one definition. They can never disagree about
@@ -16,7 +16,7 @@ what the command is called, whether it is available, or what it does.
 ## Define commands once
 
 ```python
-from luma_appkit import Command, CommandGroup, CommandRegistry
+from Suno_appkit import Command, CommandGroup, CommandRegistry
 
 commands = CommandRegistry((
     CommandGroup(None, (
@@ -79,19 +79,19 @@ through their menu.
 
 ### The identity menu
 
-`AppWindow` turns the registry into the menu LumaUI shows under your app’s
+`AppWindow` turns the registry into the menu SunoUI shows under your app’s
 identity, and installs it as the application menubar. Keep it to app-wide
 commands: new
 window or document, open, settings, keyboard shortcuts, about, quit. Put
 object-specific commands in context menus and toolbars.
 
-The identity menu is a LumaUI `Menu`, so check marks, descriptions, submenus
+The identity menu is a SunoUI `Menu`, so check marks, descriptions, submenus
 and destructive rows work there as they do everywhere else. It is built once,
 when the window is created, from the commands visible at that moment: keep
 app-wide commands visible and use `enabled` for availability.
 
 In C, build a `GMenu` whose items target your `app.` actions and pass it to
-`luma_application_window_set_menu_model()`; see
+`Suno_application_window_set_menu_model()`; see
 [your first app in C](../getting-started/first-app-c.md).
 
 ### Context menus
@@ -99,7 +99,7 @@ In C, build a `GMenu` whose items target your `app.` actions and pass it to
 Every surface owns its menu. Attach a registry to each widget that has one:
 
 ```python
-from luma_appkit import attach_context_menu
+from Suno_appkit import attach_context_menu
 
 row_commands = CommandRegistry((
     CommandGroup(None, (
@@ -124,15 +124,15 @@ Build a fresh menu each time the button is pressed:
 
 ```python
 from gi.repository import Gtk
-from luma_appkit import command_popover
+from Suno_appkit import command_popover
 
 more = Gtk.Button(icon_name="view-more-symbolic", tooltip_text="More")
 more.update_property([Gtk.AccessibleProperty.LABEL], ["More"])
 more.connect("clicked", lambda button: command_popover(view_commands).present_for(button))
 ```
 
-The menu is a `GtkPopoverMenu` whose rows LumaUI draws, so it looks exactly
-like every other menu in a Luma app, and its enabled and checked states are
+The menu is a `GtkPopoverMenu` whose rows SunoUI draws, so it looks exactly
+like every other menu in a Suno app, and its enabled and checked states are
 current every time it opens.
 
 A menu from `command_popover()` is built for one press: it lets go of its
@@ -155,7 +155,7 @@ CommandGroup(None, (
 
 ## Shortcuts
 
-Write shortcuts as tuples with Linux names: `("Ctrl", "Shift", "S")`. LumaUI
+Write shortcuts as tuples with Linux names: `("Ctrl", "Shift", "S")`. SunoUI
 converts them with `accelerator()` and shows them as keycaps in menus.
 Mac-style names such as `⌘` or `cmd` are mapped to `Ctrl`, but write Linux names
 in your source.
@@ -196,4 +196,4 @@ Never take a shortcut the shell uses (anything with **Super**).
 - Menus grow for long translations; never truncate a label to keep a width.
 
 The complete visual contract for menus (sizes, rows, headings, separators,
-destructive rows, keycaps) is owned by LumaUI, so you never style a menu.
+destructive rows, keycaps) is owned by SunoUI, so you never style a menu.

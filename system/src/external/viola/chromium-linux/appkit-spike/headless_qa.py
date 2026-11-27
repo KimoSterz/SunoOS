@@ -69,7 +69,7 @@ def main():
     environment['XDG_RUNTIME_DIR'] = environment.get('XDG_RUNTIME_DIR', '/run/user/' + str(os.getuid()))
     environment['WAYLAND_DISPLAY'] = 'viola-qa-' + str(os.getpid())
     environment.pop('DISPLAY', None)
-    # Luma's desktop tiling belongs to its shell, which is absent from this
+    # Suno's desktop tiling belongs to its shell, which is absent from this
     # bare private Mutter. Configure the fixture's own keyfile backend only.
     environment['GSETTINGS_BACKEND'] = 'keyfile'
     environment['XDG_CONFIG_HOME'] = str(run / 'config')
@@ -183,8 +183,8 @@ call('ApplyMonitorsConfig',params)
             # The private bus has no desktop appearance portal. Select the
             # actual installed dark kit sheet and native Adw dark mode for
             # this explicit reference fixture, not in normal launches.
-            application_environment['LUMA_APPKIT_STYLE_PATH'] = environment.get(
-                'LUMA_APPKIT_STYLE_PATH', '/usr/share/luma-appkit/luma-appkit-dark.css')
+            application_environment['SUNO_APPKIT_STYLE_PATH'] = environment.get(
+                'SUNO_APPKIT_STYLE_PATH', '/usr/share/Suno-appkit/Suno-appkit-dark.css')
             application_environment['VIOLA_QA_APPEARANCE'] = 'dark'
             if args.qualify_controls:
                 application_environment['VIOLA_QA_CAPTURE_STAGE'] = args.control_capture_stage

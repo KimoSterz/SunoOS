@@ -3,13 +3,13 @@
 Measures compositor frame time while a Frost or Glass window moves, for the
 Mutter background blur backdrop cache (`patches/mutter/0015`). Runs on the
 build server in a Fedora container with the built Mutter, GNOME Shell and
-LumaUI RPMs, with this directory copied to `/oracle/blur-motion/harness`.
+SunoUI RPMs, with this directory copied to `/oracle/blur-motion/harness`.
 
 - `blurwin.py`: a translucent GTK 4 window that requests a background blur
-  through `LumaUI.SurfaceBackdrop`.
+  through `SunoUI.SurfaceBackdrop`.
 - `run.sh`: one headless Shell with virtual monitors at the owner's layout
   (2880x1800 at 1.25 plus 5120x1440). `M_THEME` picks the appearance mode,
-  `M_CACHE=0` turns the backdrop cache off (`LUMA_MUTTER_BLUR_CACHE=0`), which
+  `M_CACHE=0` turns the backdrop cache off (`SUNO_MUTTER_BLUR_CACHE=0`), which
   is the previous code path.
 - `eval.js`: three blurred windows (one maximized on the ultrawide, two
   overlapping on the panel). Records the update time of every frame, per view,

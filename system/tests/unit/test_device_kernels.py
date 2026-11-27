@@ -17,7 +17,7 @@ DEVICE = '''schema = 1
 vendor = "acme"
 codename = "phone"
 [kernel]
-tag = "luma-kernel-1"
+tag = "Suno-kernel-1"
 release = "7.2.1"
 config = "in/kernel/tree"
 patches = ["patches/linux-acme/0001-fix.patch"]
@@ -27,7 +27,7 @@ dtb = "acme.dtb"
 url = "https://example.invalid/acme/"
 install = ["kernel-modules-acme"]
 '''
-SPEC = "Name: kernel-modules-acme\nVersion: 7.2.1\nRelease: 1.luma.%s%%{?dist}\n"
+SPEC = "Name: kernel-modules-acme\nVersion: 7.2.1\nRelease: 1.Suno.%s%%{?dist}\n"
 BOARD = '''schema = 1
 vendor = "acme"
 codename = "board"
@@ -39,7 +39,7 @@ config = "config/kernel/board.config"
 package = "kernel-acme-board"
 dtb = "acme/board.dtb"
 '''
-BOARD_SPEC = "Name: kernel-acme-board\nVersion: 7.3.0\nRelease: %s.luma%%{?dist}\n"
+BOARD_SPEC = "Name: kernel-acme-board\nVersion: 7.3.0\nRelease: %s.Suno%%{?dist}\n"
 
 
 class DeviceKernels(unittest.TestCase):
@@ -51,7 +51,7 @@ class DeviceKernels(unittest.TestCase):
         self.put("devices/acme/phone/device.toml", DEVICE)
         self.put("patches/linux-acme/0001-fix.patch", "diff --git a/x b/x\n")
         self.put("packaging/rpm/kernel-modules-acme.spec", SPEC % 1)
-        self.put("config/desktop/packages.txt", "luma-vitals-0.1.0-1.luma.17.fc44.noarch\n")
+        self.put("config/desktop/packages.txt", "Suno-vitals-0.1.0-1.Suno.17.fc44.noarch\n")
         self.commit("base")
 
     def git(self, *args):
@@ -104,28 +104,28 @@ class DeviceKernels(unittest.TestCase):
         self.put("packaging/rpm/kernel-acme-board.spec", BOARD_SPEC % spec_release)
 
     def test_a_board_kernel_code_change_must_change_its_uname(self):
-        self.put_board("CONFIG_A=y\n", "7.3.0-1.luma.board", 1)
+        self.put_board("CONFIG_A=y\n", "7.3.0-1.Suno.board", 1)
         self.commit("board")
-        self.put_board("CONFIG_A=m\n", "7.3.0-1.luma.board", 2)
+        self.put_board("CONFIG_A=m\n", "7.3.0-1.Suno.board", 2)
         self.commit("code change, same uname")
         errors = self.check()
         self.assertEqual(len(errors), 1)
-        self.assertIn("[kernel] release (the uname) is still 7.3.0-1.luma.board", errors[0])
-        self.put_board("CONFIG_A=m\n", "7.3.0-2.luma.board", 3)
+        self.assertIn("[kernel] release (the uname) is still 7.3.0-1.Suno.board", errors[0])
+        self.put_board("CONFIG_A=m\n", "7.3.0-2.Suno.board", 3)
         self.commit("uname changed too")
         self.assertEqual(self.check(), [])
 
     def test_a_board_kernel_repackage_may_keep_its_uname(self):
-        self.put_board("CONFIG_A=y\n", "7.3.0-1.luma.board", 1)
+        self.put_board("CONFIG_A=y\n", "7.3.0-1.Suno.board", 1)
         self.commit("board")
-        self.put("devices/acme/board/device.toml", BOARD.replace("@RELEASE@", "7.3.0-1.luma.board")
+        self.put("devices/acme/board/device.toml", BOARD.replace("@RELEASE@", "7.3.0-1.Suno.board")
                  .replace('rpm_version_release = "7.3.0-1"', 'rpm_version_release = "7.3.0-2"'))
         self.put("packaging/rpm/kernel-acme-board.spec", BOARD_SPEC % 2)
         self.commit("repackage")
         self.assertEqual(self.check(), [])
 
     def test_plan_builds_what_the_device_repository_lacks(self):
-        served = {"kernel-modules-acme": ["7.2.1-1.luma.1.fc44"]}
+        served = {"kernel-modules-acme": ["7.2.1-1.Suno.1.fc44"]}
         rows = dk.plan(self.root, fetch=lambda url, package: served[package])
         self.assertEqual(rows[0]["action"], "current")
         self.put("packaging/rpm/kernel-modules-acme.spec", SPEC % 2)
@@ -133,7 +133,7 @@ class DeviceKernels(unittest.TestCase):
         self.assertEqual((rows[0]["ships"], rows[0]["action"]), ("device-repo", "build"))
 
     def test_plan_leaves_image_pinned_kernels_to_the_image(self):
-        self.put("config/desktop/packages.txt", "kernel-modules-acme-7.2.1-1.luma.1.fc44.aarch64\n")
+        self.put("config/desktop/packages.txt", "kernel-modules-acme-7.2.1-1.Suno.1.fc44.aarch64\n")
         self.assertEqual(dk.plan(self.root, fetch=lambda *_: [])[0]["ships"], "image")
 
     def test_an_unpublished_device_repository_serves_nothing(self):

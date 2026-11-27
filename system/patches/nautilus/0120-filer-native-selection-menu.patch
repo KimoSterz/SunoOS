@@ -12,35 +12,35 @@ index 7d206be..deab44c 100644
 --- a/src/nautilus-window.c
 +++ b/src/nautilus-window.c
 @@ -143,6 +143,7 @@ struct _NautilusWindow
-     LumaBarItem *action_search_item;
+     SunoBarItem *action_search_item;
      char *action_search_placeholder;
-     LumaBarItem *action_modes_item;
-+    LumaBarItem *action_more_item;
-     LumaModeSwitch *action_modes;
+     SunoBarItem *action_modes_item;
++    SunoBarItem *action_more_item;
+     SunoModeSwitch *action_modes;
      gboolean action_bar_selected;
      guint action_search_timer;
-@@ -784,12 +785,12 @@ on_bar_more (LumaBarItem *item,
+@@ -784,12 +785,12 @@ on_bar_more (SunoBarItem *item,
      if (anchor == NULL)
          return;
-     LumaFloatingMenu *menu = LUMA_FLOATING_MENU (luma_floating_menu_new (_("More")));
--    luma_floating_menu_add_item (menu, _("Open in…"), "app-window", NULL, NULL,
-+    luma_floating_menu_add_item (menu, _("Open in"), "app-window", NULL, NULL,
+     SunoFloatingMenu *menu = SUNO_FLOATING_MENU (Suno_floating_menu_new (_("More")));
+-    Suno_floating_menu_add_item (menu, _("Open in…"), "app-window", NULL, NULL,
++    Suno_floating_menu_add_item (menu, _("Open in"), "app-window", NULL, NULL,
                                   "view.open-with-other-application", FALSE);
-     luma_floating_menu_add_separator (menu);
--    luma_floating_menu_add_item (menu, _("Rename…"), "pencil", NULL, NULL,
-+    luma_floating_menu_add_item (menu, _("Rename"), "pencil", NULL, NULL,
+     Suno_floating_menu_add_separator (menu);
+-    Suno_floating_menu_add_item (menu, _("Rename…"), "pencil", NULL, NULL,
++    Suno_floating_menu_add_item (menu, _("Rename"), "pencil", NULL, NULL,
                                   "view.rename", FALSE);
--    luma_floating_menu_add_item (menu, _("Move to…"), "folder-input", NULL, NULL,
-+    luma_floating_menu_add_item (menu, _("Move to"), "folder-input", NULL, NULL,
+-    Suno_floating_menu_add_item (menu, _("Move to…"), "folder-input", NULL, NULL,
++    Suno_floating_menu_add_item (menu, _("Move to"), "folder-input", NULL, NULL,
                                   "view.move-to", FALSE);
-     luma_floating_menu_add_item (menu, _("Compress"), "file-archive", NULL, NULL,
+     Suno_floating_menu_add_item (menu, _("Compress"), "file-archive", NULL, NULL,
                                   "view.compress", FALSE);
 @@ -828,6 +829,7 @@ update_action_center (NautilusWindow *window)
          g_signal_connect (items[0], "dismissed", G_CALLBACK (on_bar_selection_dismissed), window);
          g_signal_connect (items[4], "activated", G_CALLBACK (on_bar_information), window);
          g_signal_connect (items[5], "activated", G_CALLBACK (on_bar_more), window);
 +        g_set_object (&window->action_more_item, items[5]);
-         luma_action_center_show_bar (window->action_center, items, G_N_ELEMENTS (items), NULL);
+         Suno_action_center_show_bar (window->action_center, items, G_N_ELEMENTS (items), NULL);
          for (guint i = 0; i < G_N_ELEMENTS (items); i++)
              g_object_unref (items[i]);
 @@ -835,6 +837,7 @@ update_action_center (NautilusWindow *window)
@@ -48,9 +48,9 @@ index 7d206be..deab44c 100644
      }
  
 +    g_clear_object (&window->action_more_item);
-     LumaBarItem *back = luma_bar_item_new_action ("chevron-left", NULL, "slot.back");
-     LumaBarItem *forward = luma_bar_item_new_action ("chevron-right", NULL, "slot.forward");
-     luma_bar_item_set_tooltip (back, _("Back"));
+     SunoBarItem *back = Suno_bar_item_new_action ("chevron-left", NULL, "slot.back");
+     SunoBarItem *forward = Suno_bar_item_new_action ("chevron-right", NULL, "slot.forward");
+     Suno_bar_item_set_tooltip (back, _("Back"));
 @@ -1953,6 +1956,7 @@ nautilus_window_finalize (GObject *object)
      g_clear_object (&window->action_search_item);
      g_clear_pointer (&window->action_search_placeholder, g_free);

@@ -27,10 +27,10 @@ index fc0f69e..584b836 100644
 -    if (app_icon != NULL && display != NULL &&
 -        gtk_icon_theme_has_icon (gtk_icon_theme_get_for_display (display), app_icon))
 +    GtkIconTheme *theme = display != NULL ? gtk_icon_theme_get_for_display (display) : NULL;
-+    if (g_strcmp0 (app_icon, "io.luma.Write") == 0 && theme != NULL &&
++    if (g_strcmp0 (app_icon, "io.Suno.Write") == 0 && theme != NULL &&
 +        !gtk_icon_theme_has_icon (theme, app_icon))
 +    {
-+        app_icon = "org.projectluma.Write";
++        app_icon = "org.projectSuno.Write";
 +    }
 +    if (app_icon != NULL && theme != NULL && gtk_icon_theme_has_icon (theme, app_icon))
      {
@@ -83,17 +83,17 @@ index 307d443..7573c83 100644
 --- a/src/resources/style.css
 +++ b/src/resources/style.css
 @@ -409,6 +409,12 @@
-   font-weight: var(--lumaui-t-label-weight);
+   font-weight: var(--SunoUI-t-label-weight);
  }
  
-+.luma-files-window .nautilus-grid-view .filer-grid-play {
-+  color: @luma_ink;
-+  background-color: @luma_content;
++.Suno-files-window .nautilus-grid-view .filer-grid-play {
++  color: @Suno_ink;
++  background-color: @Suno_content;
 +  border-radius: 999px;
 +}
 +
  /* Native List presentation. GtkColumnView remains the one column/sort model. */
- .luma-files-window .nautilus-list-view columnview {
+ .Suno-files-window .nautilus-list-view columnview {
    padding-left: 12px;
 -- 
 2.55.0

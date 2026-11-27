@@ -8,11 +8,11 @@ import unittest
 from unittest.mock import Mock
 
 root=Path(__file__).resolve().parents[2]
-spec=importlib.util.spec_from_file_location('viewer_annotations',root/'src/luma-viewer/luma_viewer/annotations.py')
+spec=importlib.util.spec_from_file_location('viewer_annotations',root/'src/Suno-viewer/Suno_viewer/annotations.py')
 import sys
 annotations=importlib.util.module_from_spec(spec);sys.modules[spec.name]=annotations;spec.loader.exec_module(annotations)
 def function(file,name,scope):
- tree=ast.parse((root/'src/luma-viewer/luma_viewer'/file).read_text())
+ tree=ast.parse((root/'src/Suno-viewer/Suno_viewer'/file).read_text())
  node=next(n for n in ast.walk(tree) if isinstance(n,ast.FunctionDef) and n.name==name)
  exec(compile(ast.fix_missing_locations(ast.Module(body=[node],type_ignores=[])),file,'exec'),scope)
  return scope[name]

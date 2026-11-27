@@ -2,14 +2,14 @@
 
 The x86_64 Flatpak and AppImage package Notes from `src/prairie-core/prairie_apps`
 in [SimplyLuma/luma](https://gitlab.com/simplyluma/luma). Both include selected
-GTK, LumaUI, AppKit, Python and Secret Service dependencies. They do not require
-the complete Luma Platform or the Luma desktop's account service.
+GTK, SunoUI, AppKit, Python and Secret Service dependencies. They do not require
+the complete Suno Platform or the Suno desktop's account service.
 
 ## Install
 
 ```sh
 flatpak install --user ./Notes-0.1.0-x86_64.flatpak
-flatpak run org.projectluma.Notes//standalone
+flatpak run org.projectSuno.Notes//standalone
 ```
 
 Flatpak downloads the shared Freedesktop 25.08 runtime from Flathub if needed.
@@ -24,7 +24,7 @@ Credentials are never saved to an unencrypted token file.
 
 ## Accounts and sync
 
-Open **Luma account…** from Notes' action menu, open the Hub in your browser,
+Open **Suno account…** from Notes' action menu, open the Hub in your browser,
 sign in and enter its one-time connection code. Notes receives a device
 credential restricted to Notes, rather than your password or a general account
 credential. Sign-out revokes this device and removes its keyring entry.
@@ -43,7 +43,7 @@ instead of guessing their document structure.
 
 ## Build
 
-Use a qualified Luma Platform and the standalone GdkPixbuf/SVG loaders described
+Use a qualified Suno Platform and the standalone GdkPixbuf/SVG loaders described
 in `DEPENDENCIES.md`. On a host with `readelf`, schema compilation, Flatpak and
 squashfs tools:
 
@@ -58,5 +58,5 @@ bash scripts/standalone/build-notes-flatpak.sh Notes flatpak
 
 Install Freedesktop 25.08 in the selected Flatpak installation before packaging.
 Publication bundles are signed separately through the publisher's signing
-infrastructure. The application uses `org.projectluma.Notes.Standalone` on the
+infrastructure. The application uses `org.projectSuno.Notes.Standalone` on the
 session bus so it can run alongside the native OS Notes application.

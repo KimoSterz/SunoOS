@@ -12,8 +12,8 @@ import sys
 import time
 import uuid
 
-NAME = 'org.projectluma.NotificationReplyFixture'
-CONTROL_PATH = '/org/projectluma/NotificationReplyFixture'
+NAME = 'org.projectSuno.NotificationReplyFixture'
+CONTROL_PATH = '/org/projectSuno/NotificationReplyFixture'
 
 
 def server():
@@ -22,8 +22,8 @@ def server():
     import dbus.mainloop.glib
     from gi.repository import GLib
     from types import SimpleNamespace
-    from luma_android.notification_bridge import Notification, NotificationBridge
-    from luma_android.notification_reply_dbus import export_reply_endpoint
+    from Suno_android.notification_bridge import Notification, NotificationBridge
+    from Suno_android.notification_reply_dbus import export_reply_endpoint
     dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
     bus = dbus.SessionBus()
     bridge = NotificationBridge(SimpleNamespace(notify=lambda *_: 42, close=lambda *_: None))
@@ -65,7 +65,7 @@ def server():
 
 def main():
     from gi.repository import Gio, GLib
-    from luma_android.notification_reply_dbus import INTERFACE, PATH
+    from Suno_android.notification_reply_dbus import INTERFACE, PATH
     connection = Gio.bus_get_sync(Gio.BusType.SESSION)
     def bus_call(method, values):
         return connection.call_sync('org.freedesktop.DBus', '/org/freedesktop/DBus',

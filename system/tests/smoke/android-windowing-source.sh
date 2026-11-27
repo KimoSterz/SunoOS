@@ -18,27 +18,27 @@ done
 # Host chrome must own both the visible caption and Android's nested positioner.
 grep -Fq 'HOST_OWNS_WINDOW_CHROME' "$framework_patch"
 grep -Fq '!HOST_OWNS_WINDOW_CHROME' "$framework_patch"
-grep -Fq 'persist.luma.host_window_chrome' "$framework_patch"
-grep -Fq '|| SystemProperties.getBoolean("ro.luma.host_window_chrome"' \
+grep -Fq 'persist.Suno.host_window_chrome' "$framework_patch"
+grep -Fq '|| SystemProperties.getBoolean("ro.Suno.host_window_chrome"' \
   "$framework_patch"
-if grep -Fq '&& !SystemProperties.getBoolean("ro.luma.host_window_chrome"' \
+if grep -Fq '&& !SystemProperties.getBoolean("ro.Suno.host_window_chrome"' \
   "$framework_patch"; then
   printf 'error: host chrome must suppress, not redirect to, legacy DecorCaptionView\n' >&2
   exit 1
 fi
-grep -Fq 'ro.luma.host_window_chrome=true' "$device_patch"
+grep -Fq 'ro.Suno.host_window_chrome=true' "$device_patch"
 
-# Touch presentations reserve Luma's top bar as Android's status bar inset.
-status_bar_patch="$repo_root/patches/android-frameworks-base/0002-luma-host-status-bar-inset.patch"
-grep -Fq 'persist.luma.status_bar_px' "$status_bar_patch"
-grep -Fq 'persist.luma.nav_bar_px' "$status_bar_patch"
-grep -Fq 'SystemBarUtils.getLumaHostStatusBarHeight() == 0' "$status_bar_patch"
+# Touch presentations reserve Suno's top bar as Android's status bar inset.
+status_bar_patch="$repo_root/patches/android-frameworks-base/0002-Suno-host-status-bar-inset.patch"
+grep -Fq 'persist.Suno.status_bar_px' "$status_bar_patch"
+grep -Fq 'persist.Suno.nav_bar_px' "$status_bar_patch"
+grep -Fq 'SystemBarUtils.getSunoHostStatusBarHeight() == 0' "$status_bar_patch"
 grep -Fq '"$framework_status_bar_patch"' "$builder"
 grep -Fq 'FRAMEWORK_STATUS_BAR_PATCH_SHA' "$prepare"
 
 # Handheld tasks honour app orientation requests and follow the rotated display.
-orientation_patch="$repo_root/patches/android-frameworks-base/0003-luma-handheld-app-orientation.patch"
-grep -Fq 'windowingMode == WINDOWING_MODE_FREEFORM && isLumaHandheld()' "$orientation_patch"
+orientation_patch="$repo_root/patches/android-frameworks-base/0003-Suno-handheld-app-orientation.patch"
+grep -Fq 'windowingMode == WINDOWING_MODE_FREEFORM && isSunoHandheld()' "$orientation_patch"
 grep -Fq '"$framework_orientation_patch"' "$builder"
 grep -Fq 'FRAMEWORK_ORIENTATION_PATCH_SHA' "$prepare"
 
@@ -58,14 +58,14 @@ grep -Fq 'right_blue = (right_pixel & 0xff) * coverage / 255' \
 
 # Old numbered patches are historical inputs, not the effective UI. Verify
 # current frame/scheduler production code below rather than old circle constants.
-current_frame_patch="$repo_root/patches/android-hardware-waydroid/0007-lumaui-current-inset-frame.patch"
-behavior_patch="$repo_root/patches/android-hardware-waydroid/0008-luma-desktop-window-behavior-recovery.patch"
+current_frame_patch="$repo_root/patches/android-hardware-waydroid/0007-SunoUI-current-inset-frame.patch"
+behavior_patch="$repo_root/patches/android-hardware-waydroid/0008-Suno-desktop-window-behavior-recovery.patch"
 test -s "$current_frame_patch"
 test -s "$behavior_patch"
-grep -Fq 'property_get("persist.luma.device_class"' "$hardware_patch"
+grep -Fq 'property_get("persist.Suno.device_class"' "$hardware_patch"
 test -x "$builder"
 test -x "$prepare"
-grep -Fq 'LUMA_WAYDROID_INCREMENTAL' "$builder"
+grep -Fq 'SUNO_WAYDROID_INCREMENTAL' "$builder"
 grep -Fq '"$prepare_script" --reset' "$builder"
 grep -Fq 'TREE_SNAPSHOT=' "$prepare"
 grep -Fq 'prepared Android tree drifted; refusing automatic reset' "$prepare"
@@ -75,8 +75,8 @@ grep -Fq 'prairie::redraw_shadow(*window)' "$hardware_patch"
 
 # The release lane can emit a coherent image pair; individual framework and
 # SystemUI files are retained only for inspection and never treated as an image.
-grep -Fq 'LUMA_BUILD_WAYDROID_IMAGES' "$builder"
-grep -Fq 'LUMA_BUILD_JOBS' "$builder"
+grep -Fq 'SUNO_BUILD_WAYDROID_IMAGES' "$builder"
+grep -Fq 'SUNO_BUILD_JOBS' "$builder"
 grep -Fq 'build_job_args+=("-j$build_jobs")' "$builder"
 grep -Fq 'systemimage vendorimage' "$builder"
 grep -Fq 'command -v meson' "$builder"
@@ -95,16 +95,16 @@ test -x "$deployer"
 grep -Fq 'sha256sum --check --strict SHA256SUMS' "$deployer"
 grep -Fq 'prairie-windowing/x86_64/images' "$deployer"
 grep -Fq 'systemctl is-active --quiet waydroid-container.service' "$deployer"
-grep -Fq 'LUMA_WAYDROID_IMAGE_DIR:-/etc/waydroid-extra/images' "$deployer"
+grep -Fq 'SUNO_WAYDROID_IMAGE_DIR:-/etc/waydroid-extra/images' "$deployer"
 grep -Fq 'backup=$(mktemp -d "$image_target/.prairie-previous.XXXXXX")' "$deployer"
 grep -Fq 'restorecon -RF "$image_target"' "$deployer"
 grep -Fq 'waydroid init -f' "$deployer"
 
-frame_patch="$repo_root/patches/android-hardware-waydroid/0003-luma-appkit-content-island.patch"
+frame_patch="$repo_root/patches/android-hardware-waydroid/0003-Suno-appkit-content-island.patch"
 test -s "$frame_patch"
-treatment_patch="$repo_root/patches/android-hardware-waydroid/0004-luma-surface-treatment-frame.patch"
+treatment_patch="$repo_root/patches/android-hardware-waydroid/0004-Suno-surface-treatment-frame.patch"
 test -s "$treatment_patch"
-grep -Fq 'persist.luma.surface_treatment' "$treatment_patch"
+grep -Fq 'persist.Suno.surface_treatment' "$treatment_patch"
 grep -Fq 'SurfaceTreatment::Glass' "$treatment_patch"
 grep -Fq 'scale_premultiplied' "$treatment_patch"
 grep -Fq 'HARDWARE_FRAME_PATCH_SHA' "$prepare"
@@ -117,7 +117,7 @@ grep -Fq 'waydroid_arm64_only' "$builder"
 frame_test=$(mktemp)
 trap 'rm -f "$frame_test"' EXIT
 "${CC:-cc}" -std=c17 -O2 -Wall -Wextra -Werror \
-  "$repo_root/src/luma-platform/tests/test-window-frame.c" -lm -o "$frame_test"
+  "$repo_root/src/Suno-platform/tests/test-window-frame.c" -lm -o "$frame_test"
 "$frame_test"
 queue_test=$(mktemp)
 trap 'rm -f "$frame_test" "$queue_test"' EXIT

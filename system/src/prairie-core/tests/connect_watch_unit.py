@@ -248,7 +248,7 @@ class SharingAccessTests(unittest.TestCase):
             side_effect=lambda _directory: self.enabled.copy()))
         stack.enter_context(mock.patch('prairie_apps.collaboration_ownership.profile_ready',
             side_effect=lambda app, _environment=None: self.notes_ready
-                if app == 'org.projectluma.Notes' else self.tasks_ready))
+                if app == 'org.projectSuno.Notes' else self.tasks_ready))
         # EDS is outside this authentication fixture. Both personal snapshot
         # POSTs still travel through the real production urllib transport.
         stack.enter_context(mock.patch('prairie_apps.connect_contacts.sync_contacts',

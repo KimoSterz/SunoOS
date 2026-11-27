@@ -6,10 +6,10 @@ import unittest
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT / "src/luma-maps"))
+sys.path.insert(0, str(ROOT / "src/Suno-maps"))
 
-from luma_maps.camera import camera_for_places, fixture_view_for_places, nearby_cluster  # noqa: E402
-from luma_maps.store import Place  # noqa: E402
+from Suno_maps.camera import camera_for_places, fixture_view_for_places, nearby_cluster  # noqa: E402
+from Suno_maps.store import Place  # noqa: E402
 
 
 class MapCameraTests(unittest.TestCase):

@@ -1,4 +1,4 @@
-From: Project Luma <noreply@projectluma.org>
+From: Project Suno <noreply@projectSuno.org>
 Subject: [PATCH] request: run disconnect off the main loop
 
 Backport of upstream a337e718702d ("request: run disconnect off the main

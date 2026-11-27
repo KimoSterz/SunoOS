@@ -1,7 +1,7 @@
 ---
 type: feature
 component: Connect Sync
-packages: [luma-connect-sync]
+packages: [Suno-connect-sync]
 highlight: false
 ---
 Summary: Apps can keep their data in sync

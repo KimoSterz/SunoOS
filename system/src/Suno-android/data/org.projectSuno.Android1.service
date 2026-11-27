@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=org.projectSuno.Android1
+Exec=/usr/bin/Suno-androidd
+SystemdService=Suno-android.service

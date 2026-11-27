@@ -1,4 +1,4 @@
-From: Project Luma <noreply@project-luma.local>
+From: Project Suno <noreply@project-suno.local>
 Date: Sat, 22 Aug 2026 12:00:00 -0500
 Subject: [PATCH] firmware: qcom: scm: add opt-in QSEE log buffer
 
@@ -8,7 +8,7 @@ Mainline does not expose that diagnostic boundary, leaving secure-world
 application-start failures collapsed to a generic SCM error.
 
 Add a deliberately opt-in, read-only diagnostic path. When the SCM node has
-the luma,qsee-log-diagnostic property, allocate the downstream-compatible
+the Suno,qsee-log-diagnostic property, allocate the downstream-compatible
 32 KiB buffer from the existing TZ memory allocator, register it through the
 exact downstream ABI, and expose the raw ring as a root-readable binary sysfs
 attribute. The buffer has boot lifetime because Qualcomm provides no
@@ -92,7 +92,7 @@ sent by this path.
 +	int ret;
 +
 +	if (!of_property_read_bool(scm->dev->of_node,
-+				   "luma,qsee-log-diagnostic"))
++				   "Suno,qsee-log-diagnostic"))
 +		return 0;
 +
 +	scm->qsee_log_size = QSEECOM_QSEE_LOG_SIZE;

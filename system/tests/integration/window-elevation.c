@@ -44,7 +44,7 @@ int main(int argc, char **argv) {
   gtk_window_present(GTK_WINDOW(window)); settle();
   const char *modes[] = {"light", "dark", "frost", "glass"};
   for (guint i = 0; i < G_N_ELEMENTS(modes); i++) {
-    g_autofree char *klass = g_strdup_printf("luma-treatment-%s", modes[i]);
+    g_autofree char *klass = g_strdup_printf("Suno-treatment-%s", modes[i]);
     gtk_widget_add_css_class(window, klass); settle();
     for (int backdrop = 0; backdrop < 2; backdrop++) {
       if (backdrop) gtk_widget_set_state_flags(window, GTK_STATE_FLAG_BACKDROP, FALSE);
@@ -52,10 +52,10 @@ int main(int argc, char **argv) {
       g_autofree char *name = g_strdup_printf("%s-%s", modes[i], backdrop ? "backdrop" : "focused");
       capture(window, argv[1], name);
     }
-    gtk_widget_add_css_class(window, "luma-no-frame-shadow"); settle();
+    gtk_widget_add_css_class(window, "Suno-no-frame-shadow"); settle();
     g_autofree char *off = g_strdup_printf("%s-disabled", modes[i]);
     capture(window, argv[1], off);
-    gtk_widget_remove_css_class(window, "luma-no-frame-shadow");
+    gtk_widget_remove_css_class(window, "Suno-no-frame-shadow");
     for (guint state = 0; state < 3; state++) {
       const char *states[] = {"maximized", "tiled", "fullscreen"};
       gtk_widget_add_css_class(window, states[state]); settle();

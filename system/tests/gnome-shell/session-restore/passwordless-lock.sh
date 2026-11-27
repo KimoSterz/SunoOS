@@ -1,7 +1,7 @@
 #!/bin/bash
 # SPDX-License-Identifier: Apache-2.0
 # passwordless-lock.sh OUT: as root in the Shell dev container. For a user
-# with a password and one without (lumalock-password, lumalock-none), the
+# with a password and one without (Sunolock-password, Sunolock-none), the
 # headless Shell under fake-logind is locked by `loginctl lock-sessions`,
 # `loginctl lock-session` and ScreenSaver.Lock (Super+L); activity keeps it
 # locked; a click asks for the password, or enters when there is none.
@@ -10,7 +10,7 @@ out=$1; here=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 rm -rf "$out"; mkdir -p "$out" /run/systemd/seats
 [ -S /run/dbus/system_bus_socket ] || { rm -f /run/dbus/pid; mkdir -p /run/dbus; dbus-daemon --system --fork; }
 for kind in password none; do
-  user=lumalock-$kind
+  user=Sunolock-$kind
   id "$user" >/dev/null 2>&1 || useradd -m "$user"
   if [ "$kind" = password ]; then
     printf '%s:%s\n' "$user" "$(head -c 18 /dev/urandom | base64)" | chpasswd

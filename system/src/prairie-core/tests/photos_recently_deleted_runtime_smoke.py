@@ -42,7 +42,7 @@ def settle(seconds: float = 0.5) -> None:
 
 
 def main() -> int:
-    with tempfile.TemporaryDirectory(prefix="luma-photos-deleted-") as temporary:
+    with tempfile.TemporaryDirectory(prefix="Suno-photos-deleted-") as temporary:
         root = Path(temporary)
         pictures = root / "Pictures"
         pictures.mkdir()

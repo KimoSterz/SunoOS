@@ -5,8 +5,8 @@ import os
 import sys
 import time
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "src/prairie-core"))
-assert os.environ.get("LUMA_TASKS_ISOLATED_TEST") == "1", "Refusing to modify real EDS data"
-assert "/luma-tasks-test-" in os.environ.get("XDG_DATA_HOME", ""), "Need isolated data directory"
+assert os.environ.get("SUNO_TASKS_ISOLATED_TEST") == "1", "Refusing to modify real EDS data"
+assert "/Suno-tasks-test-" in os.environ.get("XDG_DATA_HOME", ""), "Need isolated data directory"
 from prairie_apps.tasks_backend import TasksRepository, read_task, _modules
 from datetime import date
 from gi.repository import GLib

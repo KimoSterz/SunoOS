@@ -18,7 +18,7 @@ import unittest
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[3]
-sys.path[:0] = [str(ROOT / 'src/prairie-core'), str(ROOT / 'src/luma-platform/appkit')]
+sys.path[:0] = [str(ROOT / 'src/prairie-core'), str(ROOT / 'src/Suno-platform/appkit')]
 from gi.repository import Gio, GLib
 from prairie_apps import weather
 
@@ -26,7 +26,7 @@ from prairie_apps import weather
 def production_sentinel():
     """Own the production name in a separate process on this private bus."""
     activations = []
-    application = Gio.Application(application_id='org.projectluma.Weather')
+    application = Gio.Application(application_id='org.projectSuno.Weather')
     application.connect('activate', lambda *_: activations.append('production'))
     if not application.register(None) or application.get_is_remote():
         raise RuntimeError('Private production sentinel did not own its name')
@@ -48,17 +48,17 @@ class PrivateBusIdentityTests(unittest.TestCase):
         private_bus = os.environ.get('DBUS_SESSION_BUS_ADDRESS', '')
         self.assertTrue(private_bus)
         self.assertNotEqual(private_bus, os.environ['WEATHER_ORIGINAL_BUS'])
-        production_id = 'org.projectluma.Weather'
-        preview_id = production_id + '.LumaUIPreview'
+        production_id = 'org.projectSuno.Weather'
+        preview_id = production_id + '.SunoUIPreview'
         self.assertEqual(weather.APP_ID, production_id)
         sentinel = subprocess.Popen([sys.executable, __file__, '--sentinel'],
                                     stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                     stderr=subprocess.PIPE, text=True)
         try:
             self.assertEqual(sentinel.stdout.readline().strip(), 'PRODUCTION-NAME-OWNED')
-            # Same override as sync-lumaui-preview.sh's generated Prairie runner.
+            # Same override as sync-SunoUI-preview.sh's generated Prairie runner.
             with patch.object(weather, 'APP_ID', getattr(weather, 'APP_ID', production_id)
-                              + '.LumaUIPreview'):
+                              + '.SunoUIPreview'):
                 preview = weather.WeatherApplication()
                 self.assertEqual(preview.get_application_id(), preview_id)
                 self.assertTrue(preview.register(None))

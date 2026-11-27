@@ -1,4 +1,4 @@
-From: Project Luma <luma@local>
+From: Project Suno <Suno@local>
 Subject: [PATCH] power: supply: qcom_battmgr: derive SM8350 power_now from voltage and current
 
 The SM8350-protocol firmware's BATT_POWER_NOW property has no defined

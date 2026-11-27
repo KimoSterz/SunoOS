@@ -1,0 +1,3 @@
+[D-BUS Service]
+Name=org.projectSuno.Depot
+Exec=/usr/bin/Suno-depot --gapplication-service

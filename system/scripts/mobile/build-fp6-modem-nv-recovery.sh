@@ -42,7 +42,7 @@ install -m 0700 "$output_dir/source/rmtfs" "$output_dir/rmtfs-fp6-nv-recovery"
 strings "$output_dir/rmtfs-fp6-nv-recovery" | grep -Fqx '/boot/modem_study'
 strings "$output_dir/rmtfs-fp6-nv-recovery" | grep -Fqx '[storage] bounded blank-NV recovery enabled for '\''%s'\'''
 {
-  printf 'LUMA_FP6_MODEM_NV_RECOVERY_BUILD_VERSION=1\n'
+  printf 'SUNO_FP6_MODEM_NV_RECOVERY_BUILD_VERSION=1\n'
   printf 'UPSTREAM_VERSION=1.1.1\n'
   printf 'ARCHITECTURE=aarch64\n'
   printf 'SOURCE_SHA512=%s\n' "$source_sha512"

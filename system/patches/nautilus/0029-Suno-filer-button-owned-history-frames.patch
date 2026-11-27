@@ -1,0 +1,26 @@
+--- a/src/resources/style.css
++++ b/src/resources/style.css
+@@ -1453,3 +1453,23 @@
+ window.Suno-files-window headerbar.Suno-secondary-toolbar .Suno-view-mode-controls button image {
+   -gtk-icon-size: 13px;
+ }
++
++/* Match the simulator's button-owned frames, never the container allocation. */
++window.Suno-files-window headerbar.Suno-secondary-toolbar .Suno-history-controls {
++  border: none;
++  box-shadow: none;
++}
++window.Suno-files-window headerbar.Suno-secondary-toolbar .Suno-history-controls button {
++  min-width: 26px;
++  min-height: 26px;
++  border: 1px solid @Suno_line;
++  box-shadow: none;
++}
++window.Suno-files-window headerbar.Suno-secondary-toolbar .Suno-history-controls button:first-child {
++  border-radius: 10px 0 0 10px;
++}
++window.Suno-files-window headerbar.Suno-secondary-toolbar .Suno-history-controls button:last-child {
++  border-left-width: 0;
++  border-radius: 0 10px 10px 0;
++  box-shadow: none;
++}

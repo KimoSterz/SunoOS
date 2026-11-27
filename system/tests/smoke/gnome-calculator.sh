@@ -12,8 +12,8 @@ repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 fail() { printf 'Calculator smoke test: FAIL: %s\n' "$1" >&2; exit 1; }
 
 patch_dir="$repo_root/patches/gnome-calculator"
-spec_patch="$patch_dir/0000-luma-fedora-spec.patch"
-product="$patch_dir/0009-luma-advanced-mode-and-readout.patch"
+spec_patch="$patch_dir/0000-Suno-fedora-spec.patch"
+product="$patch_dir/0009-Suno-advanced-mode-and-readout.patch"
 build_script="$repo_root/scripts/packages/build-gnome-calculator.sh"
 
 for required in "$spec_patch" "$product" "$build_script"; do
@@ -21,11 +21,11 @@ for required in "$spec_patch" "$product" "$build_script"; do
 done
 
 # The package carries the patch, and the release moved with it.
-grep -Fq '+Patch1008:      0009-luma-advanced-mode-and-readout.patch' "$spec_patch" || \
+grep -Fq '+Patch1008:      0009-Suno-advanced-mode-and-readout.patch' "$spec_patch" || \
   fail 'the spec does not apply the advanced-mode patch'
-grep -Fq '+Release:        1.luma.9%{?dist}' "$spec_patch" || \
+grep -Fq '+Release:        1.Suno.9%{?dist}' "$spec_patch" || \
   fail 'the release was not bumped for this change'
-grep -Fq '0009-luma-advanced-mode-and-readout.patch' "$build_script" || \
+grep -Fq '0009-Suno-advanced-mode-and-readout.patch' "$build_script" || \
   fail 'the build script does not install the advanced-mode patch'
 
 # Basic is the default view and Advanced is a real one, chosen by a setting the

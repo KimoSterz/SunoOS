@@ -1,0 +1,8 @@
+{
+  "schema": "org.Suno.mod-profile/v0.1",
+  "mod_id": "org.projectSuno.mod.green-dock",
+  "version": "1.0.0",
+  "values": {
+    "org.Suno.shell.dock.appearance": {"surface": "green-glow"}
+  }
+}

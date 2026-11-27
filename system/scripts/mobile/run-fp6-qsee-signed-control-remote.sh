@@ -8,8 +8,8 @@
 set -Eeuo pipefail
 umask 077
 
-base=/tmp/luma-fingerprint-identity-v9-base.sh
-inner=/tmp/luma-qsee-signed-control-inner.sh
+base=/tmp/Suno-fingerprint-identity-v9-base.sh
+inner=/tmp/Suno-qsee-signed-control-inner.sh
 expected_base_sha=1a1f7c881a2e1190b5dcc5bac187e35f13861a7bd59346c32d1e5eee5519635b
 expected_inner_sha=6a1e69b52b1172041deb1d9af7e90eb26cc7f9c1e7080444f0f2925ebd9c5b2e
 
@@ -31,7 +31,7 @@ trap cleanup EXIT INT TERM HUP
 [[ ! -e $inner ]] || fail inner_preexists
 
 sed \
-  -e 's#/tmp/luma-fingerprint-identity-v9#/tmp/luma-qsee-signed-control#g' \
+  -e 's#/tmp/Suno-fingerprint-identity-v9#/tmp/Suno-qsee-signed-control#g' \
   -e 's#bc12893e0403245e2ea4a1cb6a4801c1efdba515d6f726be18f2e55f1752ab33#d4930b0c74a61402b3e6360ef81f9ce0c1eaf72501085eeb9be4ce046c7b30d9#g' \
   -e 's#/reserved-memory/qseecom-ta-pool#/reserved-memory/qseecom_ta_region#g' \
   -e 's#/reserved-memory/qseecom-apps-pool#/reserved-memory/qseecom_region#g' \

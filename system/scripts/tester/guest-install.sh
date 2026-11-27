@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Runs only inside the disposable builder guest, via the producer's SSH key.
 set -euo pipefail
-work=/var/tmp/luma-tester-build
+work=/var/tmp/Suno-tester-build
 cd "$work"
 [ -f /etc/cloud/cloud.cfg ]
 grep -qx 'ID=fedora' /etc/os-release
@@ -24,9 +24,9 @@ dnf -y --setopt=install_weak_deps=False install --allowerasing rpms/*.rpm \
 if ! rpm -q "$(cat expected-apps)" >/dev/null 2>&1; then
   build="$work/app-rpmbuild"
   mkdir -p "$build"/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
-  cp prairie-core-apps.tar.gz luma-continuity.tar.gz "$build/SOURCES/"
+  cp prairie-core-apps.tar.gz Suno-continuity.tar.gz "$build/SOURCES/"
   cp source/LICENSE.md "$build/SOURCES/"
-  cp source/src/luma-shell-state/org.project_luma.shell-state.gschema.xml "$build/SOURCES/"
+  cp source/src/Suno-shell-state/org.projectSuno.shell-state.gschema.xml "$build/SOURCES/"
   cp source/packaging/rpm/prairie-core-apps.spec "$build/SPECS/"
   dnf -y --setopt=install_weak_deps=False builddep "$build/SPECS/prairie-core-apps.spec"
   rpmbuild -ba --define "_topdir $build" "$build/SPECS/prairie-core-apps.spec"

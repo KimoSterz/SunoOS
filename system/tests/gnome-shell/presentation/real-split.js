@@ -7,15 +7,15 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 export async function testRealSplit(p, check, sleep, shot, source, platform) {
     const infos = new Map();
     for (const name of ['Photos', 'Notes']) {
-        const path = `${GLib.get_user_data_dir()}/applications/org.projectluma.${name}.desktop`;
-        const env = `env PYTHONPATH=${source}/src/luma-platform/appkit:${source}/src/prairie-core GI_TYPELIB_PATH=${platform}/ui:${platform}/semantics:${platform}/appearance LD_LIBRARY_PATH=${platform}/ui:${platform}/semantics:${platform}/appearance LUMA_PHOTOS_STYLE_PATH=${source}/src/prairie-core/style/photos.css LUMA_NOTES_STYLE_PATH=${source}/src/prairie-core/style/notes.css`;
+        const path = `${GLib.get_user_data_dir()}/applications/org.projectSuno.${name}.desktop`;
+        const env = `env PYTHONPATH=${source}/src/Suno-platform/appkit:${source}/src/prairie-core GI_TYPELIB_PATH=${platform}/ui:${platform}/semantics:${platform}/appearance LD_LIBRARY_PATH=${platform}/ui:${platform}/semantics:${platform}/appearance SUNO_PHOTOS_STYLE_PATH=${source}/src/prairie-core/style/photos.css SUNO_NOTES_STYLE_PATH=${source}/src/prairie-core/style/notes.css`;
         GLib.file_set_contents(path, `[Desktop Entry]\nType=Application\nName=${name}\nIcon=application-x-executable\nExec=${env} python3 -m prairie_apps.${name.toLowerCase()}\n`);
         infos.set(name, GioUnix.DesktopAppInfo.new_from_filename(path));
     }
     const mapped = async name => {
         for (let n = 0; n < 100; n++) {
             const window = global.get_window_actors().map(actor => actor.meta_window)
-                .find(window => window.get_gtk_application_id() === `org.projectluma.${name}`);
+                .find(window => window.get_gtk_application_id() === `org.projectSuno.${name}`);
             if (window) return window;
             await sleep(100);
         }

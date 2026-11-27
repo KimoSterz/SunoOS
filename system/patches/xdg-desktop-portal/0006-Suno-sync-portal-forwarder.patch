@@ -1,0 +1,1542 @@
+From: Project Suno <noreply@projectSuno.org>
+Subject: [PATCH] Suno-sync: add the org.projectSuno.portal.Sync forwarder
+
+Connect Sync for apps (Project Suno ADR-057 §3.1): an app keeps its own
+records and assets the same on every device of the person's account. The
+frontend is a thin forwarder without generated code: GDBus checks each call
+against data/org.projectSuno.portal.Sync.xml, the portal's authorization
+names the caller, the host is refused, and the call goes with its file
+descriptors to org.projectSuno.impl.portal.Sync on
+org.projectSuno.ConnectSync1 (Suno-connect-syncd), prefixed with
+{app_id, kind, pidfd, sender}. The implementation checks the pidfd itself
+and answers only this process. Its errors pass through when they are the
+interface's own (org.projectSuno.portal.Sync.Error.*), anything else is
+Failed, and an answer of the wrong type is refused. Changed, AssetChanged
+and StatusChanged from the implementation name the app connection they are
+for and are sent to that unique name only. Calls go to, and signals are taken
+from, the owner of org.projectSuno.ConnectSync1 only when its process runs in
+Suno-connect-syncd.service, addressed by that checked unique name, so a
+connection that grabs the name while the service is down gets nothing.
+The unit is read through the ProcessFD that GetConnectionCredentials hands
+over, and the process must still be alive afterwards, so a recycled PID
+can't pass. Every bus call is asynchronous, the owner check and D-Bus
+activation included: calls wait in a queue while the implementation is
+found, signals from a sender not yet checked wait for the check, and after a
+failed activation or check calls fail at once for 2 s, doubling up to 60 s,
+until the name changes hands. Forwarding runs on the main context with at
+most 8 calls in flight per app connection, so one app can't hold the
+portal's threads or its main loop.
+
+Tests: tests/test_Suno_sync.py with a dbusmock implementation template.
+---
+diff --git a/data/meson.build b/data/meson.build
+index 5e0ad02..4c6f3f1 100644
+--- a/data/meson.build
++++ b/data/meson.build
+@@ -40,6 +40,13 @@ portal_sources = files(
+   'org.freedesktop.portal.Wallpaper.xml',
+ )
+ 
++# Project Suno: Connect Sync for apps (ADR-057). The frontend is a forwarder
++# without generated code; the implementation (org.projectSuno.impl.portal.Sync)
++# is Suno-connect-syncd's and ships its interface file.
++Suno_portal_sources = files(
++  'org.projectSuno.portal.Sync.xml',
++)
++
+ portal_host_sources = files(
+   'org.freedesktop.host.portal.Registry.xml',
+ )
+@@ -76,6 +83,6 @@ background_monitor_sources = files(
+   'org.freedesktop.background.Monitor.xml',
+ )
+ 
+-install_data([portal_sources, portal_host_sources, portal_impl_sources],
++install_data([portal_sources, portal_host_sources, portal_impl_sources, Suno_portal_sources],
+     install_dir: datadir / 'dbus-1' / 'interfaces',
+ )
+diff --git a/data/org.projectSuno.portal.Sync.xml b/data/org.projectSuno.portal.Sync.xml
+new file mode 100644
+index 0000000..4ac656e
+--- /dev/null
++++ b/data/org.projectSuno.portal.Sync.xml
+@@ -0,0 +1,159 @@
++<?xml version="1.0"?>
++<!--
++ SPDX-License-Identifier: LGPL-2.1-or-later
++
++ Connect Sync for apps (Project Suno ADR-057 §3).
++-->
++<!--
++    org.projectSuno.portal.Sync:
++    @short_description: An app's own data, the same on every device of the person's Suno account
++
++    Zones (short labels), records (a name and an opaque value with a version),
++    assets (descriptors) and advisory leases. Every call answers at once from
++    the device: reads come from its local mirror, writes are durable before
++    they return and leave when Sync can send them. There are no other
++    people, no device addresses and no way to send anything but the app's
++    own records.
++
++    The frontend names the caller from its sandbox and passes the call, with
++    any file descriptors, to org.projectSuno.impl.portal.Sync on
++    org.projectSuno.ConnectSync1 (Suno-connect-syncd), which checks the
++    caller again and answers. Callers the portal names as the host are
++    refused. Changed, AssetChanged and StatusChanged reach only the
++    connection of the app they belong to, after it called Subscribe.
++
++    Errors are org.projectSuno.portal.Sync.Error.{Invalid, TooLarge,
++    BadDescriptor, TimedOut, NotFound, Refused, Quota, RateLimited, Failed,
++    NotSupported}.
++
++    This documentation describes version 1 of this interface.
++-->
++<node>
++  <interface name="org.projectSuno.portal.Sync">
++    <method name="GetStatus">
++      <arg type="a{sv}" name="status" direction="out"/>
++    </method>
++    <method name="Subscribe">
++      <arg type="as" name="zones" direction="in"/>
++    </method>
++    <method name="Save">
++      <arg type="s" name="zone" direction="in"/>
++      <arg type="a(says)" name="records" direction="in"/>
++      <arg type="a{sv}" name="options" direction="in"/>
++      <arg type="aa{sv}" name="results" direction="out"/>
++    </method>
++    <method name="Delete">
++      <arg type="s" name="zone" direction="in"/>
++      <arg type="a(ss)" name="records" direction="in"/>
++      <arg type="a{sv}" name="options" direction="in"/>
++      <arg type="aa{sv}" name="results" direction="out"/>
++    </method>
++    <method name="FetchChanges">
++      <arg type="s" name="zone" direction="in"/>
++      <arg type="s" name="token" direction="in"/>
++      <arg type="a{sv}" name="options" direction="in"/>
++      <arg type="aa{sv}" name="records" direction="out"/>
++      <arg type="s" name="next_token" direction="out"/>
++      <arg type="b" name="more" direction="out"/>
++    </method>
++    <method name="Get">
++      <arg type="s" name="zone" direction="in"/>
++      <arg type="s" name="name" direction="in"/>
++      <arg type="b" name="found" direction="out"/>
++      <arg type="a{sv}" name="record" direction="out"/>
++    </method>
++    <method name="List">
++      <arg type="s" name="zone" direction="in"/>
++      <arg type="s" name="after" direction="in"/>
++      <arg type="u" name="limit" direction="in"/>
++      <arg type="aa{sv}" name="records" direction="out"/>
++      <arg type="s" name="next" direction="out"/>
++    </method>
++    <method name="PutAsset">
++      <arg type="s" name="zone" direction="in"/>
++      <arg type="s" name="record" direction="in"/>
++      <arg type="s" name="name" direction="in"/>
++      <arg type="h" name="fd" direction="in"/>
++      <arg type="s" name="base" direction="in"/>
++      <arg type="a{sv}" name="options" direction="in"/>
++      <arg type="a{sv}" name="result" direction="out"/>
++    </method>
++    <method name="RemoveAsset">
++      <arg type="s" name="zone" direction="in"/>
++      <arg type="s" name="record" direction="in"/>
++      <arg type="s" name="name" direction="in"/>
++      <arg type="s" name="base" direction="in"/>
++      <arg type="a{sv}" name="result" direction="out"/>
++    </method>
++    <method name="OpenAsset">
++      <arg type="s" name="zone" direction="in"/>
++      <arg type="s" name="record" direction="in"/>
++      <arg type="s" name="name" direction="in"/>
++      <arg type="s" name="version" direction="in"/>
++      <arg type="s" name="state" direction="out"/>
++      <arg type="a{sv}" name="info" direction="out"/>
++    </method>
++    <method name="RequestAsset">
++      <arg type="s" name="zone" direction="in"/>
++      <arg type="s" name="record" direction="in"/>
++      <arg type="s" name="name" direction="in"/>
++      <arg type="s" name="state" direction="out"/>
++      <arg type="a{sv}" name="info" direction="out"/>
++    </method>
++    <method name="PinAsset">
++      <arg type="s" name="zone" direction="in"/>
++      <arg type="s" name="record" direction="in"/>
++      <arg type="s" name="name" direction="in"/>
++      <arg type="b" name="pinned" direction="in"/>
++      <arg type="s" name="state" direction="out"/>
++      <arg type="a{sv}" name="info" direction="out"/>
++    </method>
++    <method name="EvictAsset">
++      <arg type="s" name="zone" direction="in"/>
++      <arg type="s" name="record" direction="in"/>
++      <arg type="s" name="name" direction="in"/>
++      <arg type="s" name="state" direction="out"/>
++      <arg type="a{sv}" name="info" direction="out"/>
++    </method>
++    <method name="Lease">
++      <arg type="s" name="zone" direction="in"/>
++      <arg type="s" name="record" direction="in"/>
++      <arg type="u" name="seconds" direction="in"/>
++      <arg type="b" name="take_over" direction="in"/>
++      <arg type="a{sv}" name="lease" direction="out"/>
++    </method>
++    <method name="Release">
++      <arg type="s" name="zone" direction="in"/>
++      <arg type="s" name="record" direction="in"/>
++      <arg type="a{sv}" name="lease" direction="out"/>
++    </method>
++    <method name="GetLease">
++      <arg type="s" name="zone" direction="in"/>
++      <arg type="s" name="record" direction="in"/>
++      <arg type="a{sv}" name="lease" direction="out"/>
++    </method>
++    <method name="ResolveSiblings">
++      <arg type="s" name="zone" direction="in"/>
++      <arg type="s" name="record" direction="in"/>
++      <arg type="s" name="keep" direction="in"/>
++      <arg type="a{sv}" name="result" direction="out"/>
++    </method>
++    <method name="DeleteZone">
++      <arg type="s" name="zone" direction="in"/>
++    </method>
++    <signal name="Changed">
++      <arg type="s" name="zone"/>
++      <arg type="a{sv}" name="details"/>
++    </signal>
++    <signal name="AssetChanged">
++      <arg type="s" name="zone"/>
++      <arg type="s" name="record"/>
++      <arg type="s" name="name"/>
++      <arg type="a{sv}" name="progress"/>
++    </signal>
++    <signal name="StatusChanged">
++      <arg type="a{sv}" name="status"/>
++    </signal>
++    <property name="version" type="u" access="read"/>
++  </interface>
++</node>
+diff --git a/src/Suno-sync-portal.c b/src/Suno-sync-portal.c
+new file mode 100644
+index 0000000..14cd102
+--- /dev/null
++++ b/src/Suno-sync-portal.c
+@@ -0,0 +1,898 @@
++/*
++ * Copyright © 2026 Project Suno
++ *
++ * SPDX-License-Identifier: LGPL-2.1-or-later
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2.1 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General Public
++ * License along with this library. If not, see <http://www.gnu.org/licenses/>.
++ */
++
++/*
++ * org.projectSuno.portal.Sync: a thin forwarder (Project Suno ADR-057 §3.1).
++ *
++ * GDBus checks each call against the interface's introspection data. The
++ * portal's authorization names the caller (XdpAppInfo); this file refuses
++ * the host and passes every call, with its file descriptors, to
++ * org.projectSuno.impl.portal.Sync, prefixed with the caller:
++ * {app_id: s, kind: s, pidfd: h, sender: s}. The implementation checks the
++ * pidfd again itself and answers only this process. Signals from the
++ * implementation name the app connection they are for and are sent to that
++ * connection only, never broadcast.
++ *
++ * The other direction is checked too: a call or a signal goes to, or comes
++ * from, the owner of org.projectSuno.ConnectSync1 only when that connection
++ * runs in Suno-connect-syncd.service (its process's cgroup, read through
++ * the ProcessFD that GetConnectionCredentials hands over), so whoever grabs
++ * the name while the service is down receives nothing. Every bus call here is
++ * asynchronous, the check and D-Bus activation included: calls wait in a
++ * queue while the implementation is found, and after a failed activation the
++ * portal answers "unavailable" at once for a while instead of asking again.
++ * Calls are forwarded from the main context with at most a few in flight per
++ * app connection, so one app can't hold the portal's threads or its loop.
++ */
++
++#include "config.h"
++
++#include "Suno-sync-portal.h"
++
++#include <gio/gio.h>
++#include <gio/gunixfdlist.h>
++#include <errno.h>
++#include <signal.h>
++#include <string.h>
++#include <sys/syscall.h>
++#include <unistd.h>
++
++#include "xdp-app-info.h"
++#include "xdp-context.h"
++#include "xdp-utils.h"
++
++#define SYNC_IFACE "org.projectSuno.portal.Sync"
++#define SYNC_IMPL_NAME "org.projectSuno.ConnectSync1"
++#define SYNC_IMPL_PATH "/org/projectSuno/ConnectSync1/Apps"
++#define SYNC_IMPL_IFACE "org.projectSuno.impl.portal.Sync"
++#define SYNC_ERROR SYNC_IFACE ".Error"
++#define SYNC_VERSION 1
++/* Longer than the implementation's own deadlines (10 s, 130 s for PutAsset). */
++#define SYNC_CALL_TIMEOUT_MS (30 * 1000)
++#define SYNC_ASSET_TIMEOUT_MS (150 * 1000)
++#define SYNC_IMPL_UNIT "Suno-connect-syncd.service"
++#define SYNC_MAX_IN_FLIGHT 8
++/* While the implementation can't be found or started, calls fail at once for this long, doubling up to the max. */
++#define SYNC_BACKOFF_FIRST_S 2
++#define SYNC_BACKOFF_MAX_S 60
++#define SYNC_MAX_PENDING_SIGNALS 64
++
++typedef struct _SunoSync SunoSync;
++typedef struct _SunoSyncClass SunoSyncClass;
++
++struct _SunoSync
++{
++  GDBusInterfaceSkeleton parent_instance;
++
++  GDBusConnection *connection;
++  guint signal_ids[4];
++
++  GMutex lock;
++  char *verified_impl;        /* the unique name checked to run in Suno-connect-syncd.service */
++  GHashTable *in_flight;      /* app connection -> calls being forwarded */
++
++  /* Main context only. */
++  GQueue waiting;             /* Forward *: calls waiting for the implementation to be found */
++  GQueue pending_signals;     /* PendingSignal *: signals from a sender not yet checked */
++  gboolean resolving;
++  gboolean activated;         /* this search already asked the bus to start the service */
++  guint generation;           /* bumped whenever the name changes hands */
++  guint resolve_generation;
++  gint64 retry_after;         /* monotonic µs: until then calls fail at once */
++  guint backoff_s;
++};
++
++static SunoSync *the_sync = NULL;
++
++struct _SunoSyncClass
++{
++  GDBusInterfaceSkeletonClass parent_class;
++};
++
++GType Suno_sync_get_type (void) G_GNUC_CONST;
++G_DEFINE_TYPE (SunoSync, Suno_sync, G_TYPE_DBUS_INTERFACE_SKELETON)
++G_DEFINE_AUTOPTR_CLEANUP_FUNC (SunoSync, g_object_unref)
++
++static GDBusNodeInfo *sync_node_info = NULL;
++
++static GDBusInterfaceInfo *
++sync_interface_info (void)
++{
++  if (g_once_init_enter_pointer (&sync_node_info))
++    {
++      g_autoptr(GBytes) xml = NULL;
++      g_autoptr(GError) error = NULL;
++      GDBusNodeInfo *info;
++
++      xml = g_resources_lookup_data ("/org/freedesktop/portal/desktop/org.projectSuno.portal.Sync.xml",
++                                     G_RESOURCE_LOOKUP_FLAGS_NONE, &error);
++      if (xml == NULL)
++        g_error ("The Sync portal's introspection data is missing: %s", error->message);
++      info = g_dbus_node_info_new_for_xml (g_bytes_get_data (xml, NULL), &error);
++      if (info == NULL)
++        g_error ("The Sync portal's introspection data is invalid: %s", error->message);
++      g_once_init_leave_pointer (&sync_node_info, info);
++    }
++
++  return g_dbus_node_info_lookup_interface (sync_node_info, SYNC_IFACE);
++}
++
++/* The app's kind as the implementation names it. Anything it doesn't know it refuses. */
++static const char *
++caller_kind (XdpAppInfo *app_info)
++{
++  const char *engine = xdp_app_info_get_engine (app_info);
++
++  if (g_strcmp0 (engine, "org.flatpak") == 0)
++    return "flatpak";
++  if (g_strcmp0 (engine, "org.projectSuno") == 0)
++    return "Suno-app";
++  if (g_strcmp0 (engine, "io.snapcraft") == 0)
++    return "snap";
++  if (g_strcmp0 (engine, "cn.org.linyaps") == 0)
++    return "linyaps";
++  return "unknown";
++}
++
++/* Where an `h` argument sits in each method's in-arguments (after the caller), or -1. */
++static int
++fd_argument (const char *method)
++{
++  if (g_strcmp0 (method, "PutAsset") == 0)
++    return 3;
++  return -1;
++}
++
++static void
++return_impl_error (GDBusMethodInvocation *invocation,
++                   GError                *error)
++{
++  g_autofree char *remote = NULL;
++
++  if (g_dbus_error_is_remote_error (error))
++    remote = g_dbus_error_get_remote_error (error);
++
++  if (remote != NULL && g_str_has_prefix (remote, SYNC_ERROR "."))
++    {
++      g_dbus_error_strip_remote_error (error);
++      g_dbus_method_invocation_return_dbus_error (invocation, remote, error->message);
++      return;
++    }
++
++  g_debug ("Sync: the implementation failed: %s", error->message);
++  g_dbus_method_invocation_return_dbus_error (invocation, SYNC_ERROR ".Failed",
++                                              "Sync for apps isn't available right now");
++}
++
++/* ------------------------------------------------------------------ is the implementation the real one? */
++
++typedef struct
++{
++  char *sender;
++  char *signal_name;
++  GVariant *parameters;
++} PendingSignal;
++
++static void
++pending_signal_free (PendingSignal *p)
++{
++  g_free (p->sender);
++  g_free (p->signal_name);
++  g_variant_unref (p->parameters);
++  g_free (p);
++}
++
++static void forward_send (SunoSync *sync, gpointer f, const char *impl);
++static void forward_fail (gpointer f);
++static void deliver_signal (SunoSync *sync, const char *sender, const char *signal_name, GVariant *parameters);
++static void resolve_start (SunoSync *sync);
++
++/* The process a pidfd refers to runs in SYNC_IMPL_UNIT. The pid comes from the pidfd's fdinfo and the process must
++ * still be alive after its cgroup was read, so a recycled PID can't pass. */
++static gboolean
++pidfd_runs_in_impl_unit (int pidfd)
++{
++  g_autofree char *info_path = g_strdup_printf ("/proc/self/fdinfo/%d", pidfd);
++  g_autofree char *info = NULL;
++  g_autofree char *path = NULL;
++  g_autofree char *contents = NULL;
++  g_auto(GStrv) lines = NULL;
++  const char *last = NULL;
++  const char *line;
++  long pid = 0;
++
++  if (pidfd < 0 || !g_file_get_contents (info_path, &info, NULL, NULL))
++    return FALSE;
++  line = strstr (info, "\nPid:");
++  if (line == NULL)
++    return FALSE;
++  pid = strtol (line + strlen ("\nPid:"), NULL, 10);
++  if (pid <= 0)
++    return FALSE;
++  path = g_strdup_printf ("/proc/%ld/cgroup", pid);
++  if (!g_file_get_contents (path, &contents, NULL, NULL))
++    return FALSE;
++  if (syscall (SYS_pidfd_send_signal, pidfd, 0, NULL, 0) != 0)
++    return FALSE;
++  lines = g_strsplit (contents, "\n", -1);
++  for (guint i = 0; lines[i] != NULL; i++)
++    if (*lines[i] != '\0')
++      last = lines[i];
++  return last != NULL && g_str_has_suffix (last, "/" SYNC_IMPL_UNIT);
++}
++
++static gboolean
++trust_any_impl (void)
++{
++  /* The portal's own test suite runs a stand-in implementation; only there, and only when it asks, is the unit
++   * not checked. */
++  return g_getenv ("XDG_DESKTOP_PORTAL_TEST_APP_INFO_KIND") != NULL &&
++         g_strcmp0 (g_getenv ("SUNO_SYNC_TEST_TRUST_ANY_IMPL"), "1") == 0;
++}
++
++static char *
++cached_impl (SunoSync *sync)
++{
++  char *cached;
++
++  g_mutex_lock (&sync->lock);
++  cached = g_strdup (sync->verified_impl);
++  g_mutex_unlock (&sync->lock);
++  return cached;
++}
++
++/* The search is over: answer every waiting call and pending signal, from the verified name or with an error. */
++static void
++resolve_finish (SunoSync *sync,
++                const char *name,
++                gboolean back_off)
++{
++  gpointer f;
++  PendingSignal *p;
++
++  if (sync->generation != sync->resolve_generation)
++    {
++      /* The name changed hands while we looked: look again (that search holds its own reference). */
++      sync->resolving = FALSE;
++      resolve_start (sync);
++      g_object_unref (sync);
++      return;
++    }
++  sync->resolving = FALSE;
++  if (name != NULL)
++    {
++      g_mutex_lock (&sync->lock);
++      g_free (sync->verified_impl);
++      sync->verified_impl = g_strdup (name);
++      g_mutex_unlock (&sync->lock);
++      sync->backoff_s = 0;
++      sync->retry_after = 0;
++    }
++  else if (back_off)
++    {
++      sync->backoff_s = sync->backoff_s ? MIN (sync->backoff_s * 2, SYNC_BACKOFF_MAX_S) : SYNC_BACKOFF_FIRST_S;
++      sync->retry_after = g_get_monotonic_time () + (gint64) sync->backoff_s * G_USEC_PER_SEC;
++      g_debug ("Sync: the implementation isn't available; calls fail for %u s", sync->backoff_s);
++    }
++
++  while ((f = g_queue_pop_head (&sync->waiting)) != NULL)
++    {
++      if (name != NULL)
++        forward_send (sync, f, name);
++      else
++        forward_fail (f);
++    }
++  while ((p = g_queue_pop_head (&sync->pending_signals)) != NULL)
++    {
++      if (name != NULL && g_strcmp0 (p->sender, name) == 0)
++        deliver_signal (sync, p->sender, p->signal_name, p->parameters);
++      pending_signal_free (p);
++    }
++  g_object_unref (sync);
++}
++
++static void get_name_owner (SunoSync *sync);
++
++static void
++on_credentials (GObject      *source,
++                GAsyncResult *result,
++                gpointer      user_data)
++{
++  SunoSync *sync = user_data;
++  g_autoptr(GUnixFDList) fds = NULL;
++  g_autoptr(GError) error = NULL;
++  g_autoptr(GVariant) reply = NULL;
++  g_autoptr(GVariant) dict = NULL;
++  g_autoptr(GVariant) handle = NULL;
++  g_autofree char *name = g_object_steal_data (G_OBJECT (sync), "Suno-sync-candidate");
++  gboolean verified = FALSE;
++
++  reply = g_dbus_connection_call_with_unix_fd_list_finish (G_DBUS_CONNECTION (source), &fds, result, &error);
++  if (reply != NULL)
++    {
++      dict = g_variant_get_child_value (reply, 0);
++      handle = g_variant_lookup_value (dict, "ProcessFD", G_VARIANT_TYPE_HANDLE);
++      if (handle != NULL && fds != NULL)
++        {
++          g_autofd int pidfd = g_unix_fd_list_get (fds, g_variant_get_handle (handle), NULL);
++
++          verified = pidfd_runs_in_impl_unit (pidfd);
++        }
++      else
++        {
++          g_debug ("Sync: the bus gave no ProcessFD for %s", name);
++        }
++    }
++  else
++    {
++      g_debug ("Sync: no credentials for %s: %s", name, error->message);
++    }
++
++  if (!verified && trust_any_impl ())
++    verified = TRUE;
++  if (!verified)
++    g_warning ("Sync: %s owns %s but doesn't run in %s; nothing is forwarded to it", name, SYNC_IMPL_NAME,
++               SYNC_IMPL_UNIT);
++  resolve_finish (sync, verified ? name : NULL, !verified);
++}
++
++static void
++on_started (GObject      *source,
++            GAsyncResult *result,
++            gpointer      user_data)
++{
++  SunoSync *sync = user_data;
++  g_autoptr(GError) error = NULL;
++  g_autoptr(GVariant) reply = g_dbus_connection_call_finish (G_DBUS_CONNECTION (source), result, &error);
++
++  if (reply == NULL)
++    {
++      g_debug ("Sync: the implementation couldn't be started: %s", error->message);
++      resolve_finish (sync, NULL, TRUE);
++      return;
++    }
++  get_name_owner (sync);
++}
++
++static void
++on_name_owner (GObject      *source,
++               GAsyncResult *result,
++               gpointer      user_data)
++{
++  SunoSync *sync = user_data;
++  g_autoptr(GVariant) reply = g_dbus_connection_call_finish (G_DBUS_CONNECTION (source), result, NULL);
++  const char *name;
++
++  if (reply == NULL)
++    {
++      if (sync->activated)
++        {
++          resolve_finish (sync, NULL, TRUE);
++          return;
++        }
++      /* No owner: start the service by D-Bus activation, without waiting for it here. */
++      sync->activated = TRUE;
++      g_dbus_connection_call (sync->connection, "org.freedesktop.DBus", "/org/freedesktop/DBus",
++                              "org.freedesktop.DBus", "StartServiceByName",
++                              g_variant_new ("(su)", SYNC_IMPL_NAME, 0), G_VARIANT_TYPE ("(u)"),
++                              G_DBUS_CALL_FLAGS_NONE, 25000, NULL, on_started, sync);
++      return;
++    }
++  g_variant_get (reply, "(&s)", &name);
++  g_object_set_data_full (G_OBJECT (sync), "Suno-sync-candidate", g_strdup (name), g_free);
++  g_dbus_connection_call_with_unix_fd_list (sync->connection, "org.freedesktop.DBus", "/org/freedesktop/DBus",
++                                            "org.freedesktop.DBus", "GetConnectionCredentials",
++                                            g_variant_new ("(s)", name), G_VARIANT_TYPE ("(a{sv})"),
++                                            G_DBUS_CALL_FLAGS_NONE, 5000, NULL, NULL, on_credentials, sync);
++}
++
++static void
++get_name_owner (SunoSync *sync)
++{
++  g_dbus_connection_call (sync->connection, "org.freedesktop.DBus", "/org/freedesktop/DBus",
++                          "org.freedesktop.DBus", "GetNameOwner", g_variant_new ("(s)", SYNC_IMPL_NAME),
++                          G_VARIANT_TYPE ("(s)"), G_DBUS_CALL_FLAGS_NONE, 5000, NULL, on_name_owner, sync);
++}
++
++/* Find and check the current owner of SYNC_IMPL_NAME, starting the service when no one owns it. Main context only;
++ * one search at a time, holding a reference until resolve_finish. */
++static void
++resolve_start (SunoSync *sync)
++{
++  if (sync->resolving)
++    return;
++  sync->resolving = TRUE;
++  sync->activated = FALSE;
++  sync->resolve_generation = sync->generation;
++  g_object_ref (sync);
++  get_name_owner (sync);
++}
++
++static void
++on_impl_owner_changed (GDBusConnection *connection,
++                       const char      *sender_name,
++                       const char      *object_path,
++                       const char      *interface_name,
++                       const char      *signal_name,
++                       GVariant        *parameters,
++                       gpointer         user_data)
++{
++  SunoSync *sync = user_data;
++  const char *name, *new_owner;
++
++  g_variant_get (parameters, "(&s&s&s)", &name, NULL, &new_owner);
++  if (g_strcmp0 (name, SYNC_IMPL_NAME) != 0)
++    return;
++  g_mutex_lock (&sync->lock);
++  g_clear_pointer (&sync->verified_impl, g_free);
++  g_mutex_unlock (&sync->lock);
++  sync->generation++;
++  if (*new_owner != '\0')
++    {
++      /* Someone took the name: it may be the service, back. Check it on the next call rather than waiting out
++       * the back-off. */
++      sync->backoff_s = 0;
++      sync->retry_after = 0;
++    }
++}
++
++/* ------------------------------------------------------------------ forwarding */
++
++typedef struct
++{
++  SunoSync *sync;
++  GDBusMethodInvocation *invocation;
++  char *method;
++  char *sender;
++  GVariant *args;
++  GUnixFDList *fds;
++  gboolean asset;
++} Forward;
++
++static void
++forward_free (Forward *f)
++{
++  g_mutex_lock (&f->sync->lock);
++  {
++    guint count = GPOINTER_TO_UINT (g_hash_table_lookup (f->sync->in_flight, f->sender));
++    if (count <= 1)
++      g_hash_table_remove (f->sync->in_flight, f->sender);
++    else
++      g_hash_table_insert (f->sync->in_flight, g_strdup (f->sender), GUINT_TO_POINTER (count - 1));
++  }
++  g_mutex_unlock (&f->sync->lock);
++  g_clear_object (&f->invocation);
++  g_free (f->method);
++  g_free (f->sender);
++  g_clear_pointer (&f->args, g_variant_unref);
++  g_clear_object (&f->fds);
++  g_object_unref (f->sync);
++  g_free (f);
++}
++
++static void
++forward_done (GObject      *source,
++              GAsyncResult *result,
++              gpointer      user_data)
++{
++  Forward *f = user_data;
++  g_autoptr(GUnixFDList) reply_fds = NULL;
++  g_autoptr(GError) error = NULL;
++  g_autoptr(GVariant) reply = NULL;
++  GDBusInterfaceInfo *info = sync_interface_info ();
++  GDBusMethodInfo *method = g_dbus_interface_info_lookup_method (info, f->method);
++  g_autoptr(GString) signature = g_string_new ("(");
++
++  reply = g_dbus_connection_call_with_unix_fd_list_finish (G_DBUS_CONNECTION (source), &reply_fds, result, &error);
++  if (reply == NULL)
++    {
++      return_impl_error (f->invocation, error);
++      forward_free (f);
++      return;
++    }
++  /* The answer must have the type the interface promises; anything else is the implementation's bug. */
++  for (guint i = 0; method != NULL && method->out_args != NULL && method->out_args[i] != NULL; i++)
++    g_string_append (signature, method->out_args[i]->signature);
++  g_string_append_c (signature, ')');
++  if (method == NULL || g_strcmp0 (g_variant_get_type_string (reply), signature->str) != 0)
++    {
++      g_warning ("Sync: the implementation answered %s with %s", f->method, g_variant_get_type_string (reply));
++      g_dbus_method_invocation_return_dbus_error (f->invocation, SYNC_ERROR ".Failed",
++                                                  "Sync for apps answered unexpectedly");
++      forward_free (f);
++      return;
++    }
++  g_dbus_method_invocation_return_value_with_unix_fd_list (f->invocation, g_steal_pointer (&reply), reply_fds);
++  forward_free (f);
++}
++
++static void
++forward_send (SunoSync *sync,
++              gpointer  data,
++              const char *impl)
++{
++  Forward *f = data;
++
++  /* To the verified unique name, never the well-known one: a name that changes hands between the check and the
++   * call can't receive it. */
++  g_dbus_connection_call_with_unix_fd_list (sync->connection, impl, SYNC_IMPL_PATH, SYNC_IMPL_IFACE, f->method,
++                                            g_steal_pointer (&f->args), NULL, G_DBUS_CALL_FLAGS_NONE,
++                                            f->asset ? SYNC_ASSET_TIMEOUT_MS : SYNC_CALL_TIMEOUT_MS, f->fds, NULL,
++                                            forward_done, f);
++}
++
++static void
++forward_fail (gpointer data)
++{
++  Forward *f = data;
++
++  g_dbus_method_invocation_return_dbus_error (f->invocation, SYNC_ERROR ".Failed",
++                                              "Sync for apps isn't available right now");
++  forward_free (f);
++}
++
++static gboolean
++forward_start (gpointer user_data)
++{
++  Forward *f = user_data;
++  SunoSync *sync = f->sync;
++  g_autofree char *impl = cached_impl (sync);
++
++  if (impl != NULL)
++    {
++      forward_send (sync, f, impl);
++      return G_SOURCE_REMOVE;
++    }
++  if (g_get_monotonic_time () < sync->retry_after)
++    {
++      forward_fail (f);
++      return G_SOURCE_REMOVE;
++    }
++  g_queue_push_tail (&sync->waiting, f);
++  resolve_start (sync);
++  return G_SOURCE_REMOVE;
++}
++
++static void
++sync_method_call (GDBusConnection       *connection,
++                  const char            *sender,
++                  const char            *object_path,
++                  const char            *interface_name,
++                  const char            *method_name,
++                  GVariant              *parameters,
++                  GDBusMethodInvocation *invocation,
++                  gpointer               user_data)
++{
++  SunoSync *sync = the_sync;
++  XdpAppInfo *app_info = xdp_invocation_get_app_info (invocation);
++  GUnixFDList *in_fds = g_dbus_message_get_unix_fd_list (g_dbus_method_invocation_get_message (invocation));
++  g_autoptr(GUnixFDList) out_fds = g_unix_fd_list_new ();
++  g_autoptr(GError) error = NULL;
++  g_auto(GVariantBuilder) caller = G_VARIANT_BUILDER_INIT (G_VARIANT_TYPE_VARDICT);
++  g_auto(GVariantBuilder) args = G_VARIANT_BUILDER_INIT (G_VARIANT_TYPE_TUPLE);
++  const char *app_id;
++  int pidfd = -1;
++  int fd_arg;
++  gsize i, n;
++  guint count;
++  Forward *f;
++
++  if (app_info == NULL || xdp_app_info_is_host (app_info))
++    {
++      g_dbus_method_invocation_return_dbus_error (invocation, SYNC_ERROR ".Refused",
++                                                  "Only apps can use Sync for apps");
++      return;
++    }
++
++  app_id = xdp_app_info_get_id (app_info);
++  if (app_id == NULL || *app_id == '\0' || !xdp_is_valid_app_id (app_id))
++    {
++      g_dbus_method_invocation_return_dbus_error (invocation, SYNC_ERROR ".Refused",
++                                                  "The caller has no valid app ID");
++      return;
++    }
++
++  g_mutex_lock (&sync->lock);
++  count = GPOINTER_TO_UINT (g_hash_table_lookup (sync->in_flight, sender));
++  if (count >= SYNC_MAX_IN_FLIGHT)
++    {
++      g_mutex_unlock (&sync->lock);
++      g_dbus_method_invocation_return_dbus_error (invocation, SYNC_ERROR ".RateLimited",
++                                                  "in_flight: too many calls at once");
++      return;
++    }
++  g_hash_table_insert (sync->in_flight, g_strdup (sender), GUINT_TO_POINTER (count + 1));
++  g_mutex_unlock (&sync->lock);
++
++  f = g_new0 (Forward, 1);
++  f->sync = g_object_ref (sync);
++  f->invocation = g_object_ref (invocation);
++  f->method = g_strdup (method_name);
++  f->sender = g_strdup (sender);
++
++  g_variant_builder_add (&caller, "{sv}", "app_id", g_variant_new_string (app_id));
++  g_variant_builder_add (&caller, "{sv}", "kind", g_variant_new_string (caller_kind (app_info)));
++  g_variant_builder_add (&caller, "{sv}", "sender", g_variant_new_string (sender));
++
++  g_object_get (app_info, "pidfd", &pidfd, NULL);
++  if (pidfd >= 0)
++    {
++      int index = g_unix_fd_list_append (out_fds, pidfd, &error);
++
++      if (index < 0)
++        {
++          g_dbus_method_invocation_return_gerror (invocation, error);
++          forward_free (f);
++          return;
++        }
++      g_variant_builder_add (&caller, "{sv}", "pidfd", g_variant_new_handle (index));
++    }
++
++  g_variant_builder_add_value (&args, g_variant_builder_end (&caller));
++
++  fd_arg = fd_argument (method_name);
++  n = g_variant_n_children (parameters);
++  for (i = 0; i < n; i++)
++    {
++      g_autoptr(GVariant) child = g_variant_get_child_value (parameters, i);
++
++      if ((int) i == fd_arg)
++        {
++          g_autofd int fd = -1;
++          int index;
++
++          fd = xdp_get_portal_call_fd (in_fds, g_variant_get_handle (child), &error);
++          if (fd < 0)
++            {
++              g_dbus_method_invocation_return_dbus_error (invocation, SYNC_ERROR ".BadDescriptor",
++                                                          error->message);
++              forward_free (f);
++              return;
++            }
++          index = g_unix_fd_list_append (out_fds, fd, &error);
++          if (index < 0)
++            {
++              g_dbus_method_invocation_return_gerror (invocation, error);
++              forward_free (f);
++              return;
++            }
++          g_variant_builder_add_value (&args, g_variant_new_handle (index));
++        }
++      else
++        {
++          g_variant_builder_add_value (&args, child);
++        }
++    }
++
++  f->args = g_variant_ref_sink (g_variant_builder_end (&args));
++  f->fds = g_steal_pointer (&out_fds);
++  f->asset = fd_arg >= 0;
++  /* The forward runs on the main context and answers asynchronously: no portal thread waits for Sync. */
++  g_main_context_invoke (NULL, forward_start, f);
++}
++
++static GVariant *
++sync_get_property (GDBusConnection  *connection,
++                   const char       *sender,
++                   const char       *object_path,
++                   const char       *interface_name,
++                   const char       *property_name,
++                   GError          **error,
++                   gpointer          user_data)
++{
++  if (g_strcmp0 (property_name, "version") == 0)
++    return g_variant_new_uint32 (SYNC_VERSION);
++
++  g_set_error (error, G_DBUS_ERROR, G_DBUS_ERROR_UNKNOWN_PROPERTY,
++               "No such property: %s", property_name);
++  return NULL;
++}
++
++static const GDBusInterfaceVTable sync_vtable = {
++  .method_call = sync_method_call,
++  .get_property = sync_get_property,
++};
++
++static GDBusInterfaceInfo *
++sync_skeleton_get_info (GDBusInterfaceSkeleton *skeleton)
++{
++  return sync_interface_info ();
++}
++
++static GDBusInterfaceVTable *
++sync_skeleton_get_vtable (GDBusInterfaceSkeleton *skeleton)
++{
++  return (GDBusInterfaceVTable *) &sync_vtable;
++}
++
++static GVariant *
++sync_skeleton_get_properties (GDBusInterfaceSkeleton *skeleton)
++{
++  g_auto(GVariantBuilder) builder = G_VARIANT_BUILDER_INIT (G_VARIANT_TYPE ("a{sv}"));
++
++  g_variant_builder_add (&builder, "{sv}", "version", g_variant_new_uint32 (SYNC_VERSION));
++  return g_variant_builder_end (&builder);
++}
++
++static void
++sync_skeleton_flush (GDBusInterfaceSkeleton *skeleton)
++{
++}
++
++/* A signal from the implementation: (destination, rest…). Sent to that app connection only. */
++static void
++on_impl_signal (GDBusConnection *connection,
++                const char      *sender_name,
++                const char      *object_path,
++                const char      *interface_name,
++                const char      *signal_name,
++                GVariant        *parameters,
++                gpointer         user_data)
++{
++  if (g_dbus_interface_info_lookup_signal (sync_interface_info (), signal_name) == NULL ||
++      g_variant_n_children (parameters) < 1)
++    return;
++
++  /* Only from the connection checked to run in Suno-connect-syncd.service. A signal from a sender not checked yet
++   * waits for the check (asynchronous, like everything here) and goes out only if that sender passes. */
++  {
++    SunoSync *sync = user_data;
++    g_autofree char *verified = cached_impl (sync);
++
++    if (verified == NULL)
++      {
++        PendingSignal *p = g_new0 (PendingSignal, 1);
++
++        if (g_queue_get_length (&sync->pending_signals) >= SYNC_MAX_PENDING_SIGNALS)
++          pending_signal_free (g_queue_pop_head (&sync->pending_signals));
++        p->sender = g_strdup (sender_name);
++        p->signal_name = g_strdup (signal_name);
++        p->parameters = g_variant_ref (parameters);
++        g_queue_push_tail (&sync->pending_signals, p);
++        if (g_get_monotonic_time () >= sync->retry_after)
++          resolve_start (sync);
++        return;
++      }
++    if (g_strcmp0 (verified, sender_name) != 0)
++      return;
++    deliver_signal (sync, sender_name, signal_name, parameters);
++  }
++}
++
++static void
++deliver_signal (SunoSync   *sync,
++                const char *sender_name,
++                const char *signal_name,
++                GVariant   *parameters)
++{
++  g_autoptr(GVariant) destination = NULL;
++  g_auto(GVariantBuilder) rest = G_VARIANT_BUILDER_INIT (G_VARIANT_TYPE_TUPLE);
++  g_autoptr(GError) error = NULL;
++  GDBusInterfaceInfo *info = sync_interface_info ();
++  GDBusSignalInfo *signal = g_dbus_interface_info_lookup_signal (info, signal_name);
++  g_autoptr(GString) signature = g_string_new ("(");
++  g_autoptr(GVariant) out = NULL;
++  const char *name;
++  gsize i, n;
++
++  if (signal == NULL)
++    return;
++
++  destination = g_variant_get_child_value (parameters, 0);
++  if (!g_variant_is_of_type (destination, G_VARIANT_TYPE_STRING))
++    return;
++  name = g_variant_get_string (destination, NULL);
++  if (!g_dbus_is_unique_name (name))
++    return;
++
++  n = g_variant_n_children (parameters);
++  for (i = 1; i < n; i++)
++    g_variant_builder_add_value (&rest, g_variant_get_child_value (parameters, i));
++  out = g_variant_ref_sink (g_variant_builder_end (&rest));
++
++  for (i = 0; signal->args != NULL && signal->args[i] != NULL; i++)
++    g_string_append (signature, signal->args[i]->signature);
++  g_string_append_c (signature, ')');
++  if (g_strcmp0 (g_variant_get_type_string (out), signature->str) != 0)
++    {
++      g_warning ("Sync: the implementation sent %s with %s", signal_name, g_variant_get_type_string (out));
++      return;
++    }
++
++  if (!g_dbus_connection_emit_signal (sync->connection, name, DESKTOP_DBUS_PATH, SYNC_IFACE,
++                                      signal_name, out, &error))
++    g_debug ("Sync: couldn't send %s to %s: %s", signal_name, name, error->message);
++}
++
++static void
++Suno_sync_dispose (GObject *object)
++{
++  SunoSync *sync = (SunoSync *) object;
++  gsize i;
++
++  for (i = 0; i < G_N_ELEMENTS (sync->signal_ids); i++)
++    {
++      if (sync->signal_ids[i] != 0)
++        g_dbus_connection_signal_unsubscribe (sync->connection, sync->signal_ids[i]);
++      sync->signal_ids[i] = 0;
++    }
++  g_clear_object (&sync->connection);
++  g_clear_pointer (&sync->verified_impl, g_free);
++  g_clear_pointer (&sync->in_flight, g_hash_table_unref);
++  g_queue_clear_full (&sync->pending_signals, (GDestroyNotify) pending_signal_free);
++  if (the_sync == sync)
++    the_sync = NULL;
++
++  G_OBJECT_CLASS (Suno_sync_parent_class)->dispose (object);
++}
++
++static void
++Suno_sync_init (SunoSync *sync)
++{
++  g_mutex_init (&sync->lock);
++  g_queue_init (&sync->waiting);
++  g_queue_init (&sync->pending_signals);
++  sync->in_flight = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
++}
++
++static void
++Suno_sync_class_init (SunoSyncClass *klass)
++{
++  GObjectClass *object_class = G_OBJECT_CLASS (klass);
++  GDBusInterfaceSkeletonClass *skeleton_class = G_DBUS_INTERFACE_SKELETON_CLASS (klass);
++
++  object_class->dispose = Suno_sync_dispose;
++  skeleton_class->get_info = sync_skeleton_get_info;
++  skeleton_class->get_vtable = sync_skeleton_get_vtable;
++  skeleton_class->get_properties = sync_skeleton_get_properties;
++  skeleton_class->flush = sync_skeleton_flush;
++}
++
++void
++init_Suno_sync (XdpContext *context)
++{
++  g_autoptr(SunoSync) sync = NULL;
++  const char *signals[] = { "Changed", "AssetChanged", "StatusChanged" };
++  gsize i;
++
++  sync = g_object_new (Suno_sync_get_type (), NULL);
++  sync->connection = g_object_ref (xdp_context_get_connection (context));
++
++  /* GDBus resolves SYNC_IMPL_NAME to its owner: only the service holding that name can reach apps. */
++  for (i = 0; i < G_N_ELEMENTS (signals); i++)
++    sync->signal_ids[i] = g_dbus_connection_signal_subscribe (sync->connection,
++                                                              SYNC_IMPL_NAME,
++                                                              SYNC_IMPL_IFACE,
++                                                              signals[i],
++                                                              SYNC_IMPL_PATH,
++                                                              NULL,
++                                                              G_DBUS_SIGNAL_FLAGS_NONE,
++                                                              on_impl_signal,
++                                                              sync, NULL);
++  sync->signal_ids[3] = g_dbus_connection_signal_subscribe (sync->connection, "org.freedesktop.DBus",
++                                                            "org.freedesktop.DBus", "NameOwnerChanged",
++                                                            "/org/freedesktop/DBus", SYNC_IMPL_NAME,
++                                                            G_DBUS_SIGNAL_FLAGS_NONE, on_impl_owner_changed,
++                                                            sync, NULL);
++  the_sync = sync;
++
++  xdp_context_take_and_export_portal (context,
++                                      G_DBUS_INTERFACE_SKELETON (g_steal_pointer (&sync)),
++                                      XDP_CONTEXT_EXPORT_FLAGS_NONE);
++}
+diff --git a/src/Suno-sync-portal.h b/src/Suno-sync-portal.h
+new file mode 100644
+index 0000000..08fb0ab
+--- /dev/null
++++ b/src/Suno-sync-portal.h
+@@ -0,0 +1,11 @@
++/*
++ * Copyright © 2026 Project Suno
++ *
++ * SPDX-License-Identifier: LGPL-2.1-or-later
++ */
++
++#pragma once
++
++#include "xdp-types.h"
++
++void init_Suno_sync (XdpContext *context);
+diff --git a/src/meson.build b/src/meson.build
+index f93eebe..5968eac 100644
+--- a/src/meson.build
++++ b/src/meson.build
+@@ -56,7 +56,7 @@ built_resources = enums_sources + gnome.compile_resources(
+ sd_escape_sources = files('sd-escape.c')
+ 
+ xdp_method_info_built_sources = configure_file(
+-  command: [find_program('generate-method-info.py'), portal_sources],
++  command: [find_program('generate-method-info.py'), portal_sources, Suno_portal_sources],
+   capture: true,
+   output: 'xdp-method-info-generated.c',
+ )
+@@ -102,6 +102,7 @@ xdg_desktop_portal_sources = files(
+   'open-uri.c',
+   'pipewire.c',
+   'audio-capture.c',
++  'Suno-sync-portal.c',
+   'power-profile-monitor.c',
+   'print.c',
+   'proxy-resolver.c',
+diff --git a/src/xdg-desktop-portal.gresource.xml b/src/xdg-desktop-portal.gresource.xml
+index dfaf11b..d94fe68 100644
+--- a/src/xdg-desktop-portal.gresource.xml
++++ b/src/xdg-desktop-portal.gresource.xml
+@@ -4,5 +4,6 @@
+     <file alias="org.freedesktop.portal.FileChooser.xml">data/org.freedesktop.portal.FileChooser.xml</file>
+     <file alias="org.freedesktop.portal.OpenURI.xml">data/org.freedesktop.portal.OpenURI.xml</file>
+     <file alias="org.freedesktop.portal.Print.xml">data/org.freedesktop.portal.Print.xml</file>
++    <file alias="org.projectSuno.portal.Sync.xml">data/org.projectSuno.portal.Sync.xml</file>
+   </gresource>
+ </gresources>
+diff --git a/src/xdp-context.c b/src/xdp-context.c
+index 0daf11c..8472d47 100644
+--- a/src/xdp-context.c
++++ b/src/xdp-context.c
+@@ -45,6 +45,7 @@
+ #include "remote-desktop.h"
+ #include "screen-cast.h"
+ #include "audio-capture.h"
++#include "Suno-sync-portal.h"
+ #include "screenshot.h"
+ #include "secret.h"
+ #include "settings.h"
+@@ -410,6 +411,7 @@ xdp_context_register (XdpContext       *context,
+   init_dynamic_launcher (context);
+   init_screen_cast (context);
+   init_audio_capture (context);
++  init_Suno_sync (context);
+   init_remote_desktop (context);
+   init_clipboard (context);
+   init_input_capture (context);
+diff --git a/tests/meson.build b/tests/meson.build
+index 97499e6..67d4a2b 100644
+--- a/tests/meson.build
++++ b/tests/meson.build
+@@ -95,6 +95,7 @@ pytest_files = [
+   'test_inhibit.py',
+   'test_inputcapture.py',
+   'test_location.py',
++  'test_Suno_sync.py',
+   'test_notification.py',
+   'test_openuri.py',
+   'test_permission_store.py',
+@@ -123,6 +124,7 @@ template_files = [
+   'templates/inhibit.py',
+   'templates/inputcapture.py',
+   'templates/lockdown.py',
++  'templates/Sunosync.py',
+   'templates/notification.py',
+   'templates/print.py',
+   'templates/remotedesktop.py',
+diff --git a/tests/templates/Sunosync.py b/tests/templates/Sunosync.py
+new file mode 100644
+index 0000000..c026d21
+--- /dev/null
++++ b/tests/templates/Sunosync.py
+@@ -0,0 +1,128 @@
++# SPDX-License-Identifier: LGPL-2.1-or-later
++#
++# This file is formatted with Python Black
++# mypy: disable-error-code="misc"
++#
++# A stand-in for Suno-connect-syncd's org.projectSuno.impl.portal.Sync: it
++# answers with what the frontend passed it, so tests can check the forwarding.
++
++from tests.templates.xdp_utils import init_logger
++
++import dbus
++import dbus.service
++import os
++import tempfile
++import time
++
++
++BUS_NAME = "org.projectSuno.ConnectSync1"
++MAIN_OBJ = "/org/projectSuno/ConnectSync1/Apps"
++SYSTEM_BUS = False
++MAIN_IFACE = "org.projectSuno.impl.portal.Sync"
++
++logger = init_logger(__name__)
++
++
++def load(mock, parameters={}):
++    logger.debug(f"Loading parameters: {parameters}")
++
++
++def _caller(caller):
++    pidfd_ok = False
++    if "pidfd" in caller:
++        fd = caller["pidfd"].take()
++        try:
++            with open(f"/proc/self/fdinfo/{fd}") as f:
++                pidfd_ok = any(line.startswith("Pid:") and int(line.split()[1]) > 0 for line in f)
++        finally:
++            os.close(fd)
++    return {
++        "app_id": dbus.String(caller["app_id"]),
++        "kind": dbus.String(caller["kind"]),
++        "sender": dbus.String(caller["sender"]),
++        "pidfd_ok": dbus.Boolean(pidfd_ok),
++    }
++
++
++def _record(name, value=b""):
++    return dbus.Dictionary(
++        {
++            "name": dbus.String(name),
++            "version": dbus.String("0" * 32),
++            "value": dbus.ByteArray(value),
++            "flags": dbus.UInt32(0),
++        },
++        signature="sv",
++    )
++
++
++@dbus.service.method(MAIN_IFACE, in_signature="a{sv}", out_signature="a{sv}")
++def GetStatus(self, caller):
++    time.sleep(0.2)     # slow enough that concurrent calls pile up in the frontend (its per-app cap is tested)
++    return dbus.Dictionary({"status": dbus.String("available"), **_caller(caller)}, signature="sv")
++
++
++@dbus.service.method(MAIN_IFACE, in_signature="a{sv}as", out_signature="")
++def Subscribe(self, caller, zones):
++    pass
++
++
++@dbus.service.method(MAIN_IFACE, in_signature="a{sv}sa(says)a{sv}", out_signature="aa{sv}")
++def Save(self, caller, zone, records, options):
++    seen = _caller(caller)
++    return [
++        dbus.Dictionary(
++            {
++                "name": dbus.String(name),
++                "outcome": dbus.String("saved"),
++                "record": _record(name, bytes(value)),
++                "zone": dbus.String(zone),
++                "app_id": seen["app_id"],
++            },
++            signature="sv",
++        )
++        for name, value, _base in records
++    ]
++
++
++@dbus.service.method(MAIN_IFACE, in_signature="a{sv}sa(ss)a{sv}", out_signature="aa{sv}")
++def Delete(self, caller, zone, records, options):
++    raise dbus.exceptions.DBusException(
++        "quota: record_bytes: full", name="org.projectSuno.portal.Sync.Error.Quota"
++    )
++
++
++@dbus.service.method(MAIN_IFACE, in_signature="a{sv}ssu", out_signature="aa{sv}s")
++def List(self, caller, zone, after, limit):
++    raise dbus.exceptions.DBusException("internal detail", name="org.example.Internal")
++
++
++@dbus.service.method(MAIN_IFACE, in_signature="a{sv}ssa{sv}", out_signature="aa{sv}")
++def FetchChanges(self, caller, zone, token, options):
++    # The wrong answer type: the frontend must not pass it on.
++    return []
++
++
++@dbus.service.method(MAIN_IFACE, in_signature="a{sv}ssshsa{sv}", out_signature="a{sv}")
++def PutAsset(self, caller, zone, record, name, fd, base, options):
++    fd = fd.take()
++    try:
++        data = os.pread(fd, 1 << 20, 0)
++    finally:
++        os.close(fd)
++    return dbus.Dictionary(
++        {"name": dbus.String(record), "outcome": dbus.String("saved"), "record": _record(record, data)},
++        signature="sv",
++    )
++
++
++@dbus.service.method(MAIN_IFACE, in_signature="a{sv}ssss", out_signature="sa{sv}")
++def OpenAsset(self, caller, zone, record, name, version):
++    with tempfile.TemporaryFile() as f:
++        f.write(b"asset-bytes:" + name.encode())
++        f.flush()
++        fd = os.dup(f.fileno())
++    return (
++        dbus.String("here"),
++        dbus.Dictionary({"fd": dbus.types.UnixFd(fd), "size": dbus.Int64(12 + len(name))}, signature="sv"),
++    )
+diff --git a/tests/test_Suno_sync.py b/tests/test_Suno_sync.py
+new file mode 100644
+index 0000000..06e5c16
+--- /dev/null
++++ b/tests/test_Suno_sync.py
+@@ -0,0 +1,187 @@
++# SPDX-License-Identifier: LGPL-2.1-or-later
++#
++# This file is formatted with Python Black
++#
++# org.projectSuno.portal.Sync (Project Suno ADR-057 §3.1): a forwarder to
++# Suno-connect-syncd that names the caller and sends signals to its app only.
++
++import tests.xdp_utils as xdp
++
++import dbus
++import os
++import pytest
++import time
++from gi.repository import GLib
++
++IFACE = "org.projectSuno.portal.Sync"
++ERROR = "org.projectSuno.portal.Sync.Error"
++
++
++@pytest.fixture
++def required_templates():
++    return {"Sunosync": {}}
++
++
++@pytest.fixture
++def xdp_overwrite_env():
++    # The stand-in implementation doesn't run in Suno-connect-syncd.service; the tests that use it say so.
++    return {"SUNO_SYNC_TEST_TRUST_ANY_IMPL": "1"}
++
++
++def sync_iface(dbus_con):
++    obj = dbus_con.get_object("org.freedesktop.portal.Desktop", "/org/freedesktop/portal/desktop")
++    return dbus.Interface(obj, IFACE)
++
++
++def host(xdp_app_info):
++    return isinstance(xdp_app_info, xdp.AppInfoHost)
++
++
++class TestSunoSync:
++    def test_version(self, portals, dbus_con):
++        obj = dbus_con.get_object("org.freedesktop.portal.Desktop", "/org/freedesktop/portal/desktop")
++        props = dbus.Interface(obj, "org.freedesktop.DBus.Properties")
++        assert props.Get(IFACE, "version") == 1
++
++    def test_caller_is_named_by_the_portal(self, portals, dbus_con, xdp_app_info):
++        intf = sync_iface(dbus_con)
++        if host(xdp_app_info):
++            with pytest.raises(dbus.exceptions.DBusException) as excinfo:
++                intf.GetStatus()
++            assert excinfo.value.get_dbus_name() == f"{ERROR}.Refused"
++            return
++        status = intf.GetStatus()
++        assert status["app_id"] == xdp_app_info.app_id
++        assert status["kind"] == "flatpak"
++        assert status["sender"] == dbus_con.get_unique_name()
++
++    def test_arguments_pass_through(self, portals, dbus_con, xdp_app_info):
++        if host(xdp_app_info):
++            pytest.skip("host callers are refused")
++        intf = sync_iface(dbus_con)
++        results = intf.Save(
++            "saves",
++            [("slot1", dbus.ByteArray(b"level 3"), ""), ("slot2", dbus.ByteArray(b""), "f" * 32)],
++            {"on_conflict": "fail"},
++        )
++        assert [str(r["name"]) for r in results] == ["slot1", "slot2"]
++        assert bytes(results[0]["record"]["value"]) == b"level 3"
++        assert results[0]["zone"] == "saves"
++        assert results[0]["app_id"] == xdp_app_info.app_id
++
++    def test_malformed_calls_never_reach_the_implementation(self, portals, dbus_con, xdp_app_info):
++        obj = dbus_con.get_object("org.freedesktop.portal.Desktop", "/org/freedesktop/portal/desktop")
++        with pytest.raises(dbus.exceptions.DBusException) as excinfo:
++            obj.Save("saves", ["not a record"], {}, dbus_interface=IFACE, signature="sasa{sv}")
++        assert "InvalidArgs" in excinfo.value.get_dbus_name()
++
++    def test_descriptors_go_both_ways(self, portals, dbus_con, xdp_app_info):
++        if host(xdp_app_info):
++            pytest.skip("host callers are refused")
++        intf = sync_iface(dbus_con)
++        fd = os.memfd_create("asset")
++        os.write(fd, b"save state")
++        try:
++            result = intf.PutAsset("saves", "slot1", "state", dbus.types.UnixFd(fd), "", {})
++        finally:
++            os.close(fd)
++        assert bytes(result["record"]["value"]) == b"save state"
++        state, info = intf.OpenAsset("saves", "slot1", "thumb", "")
++        assert state == "here"
++        out = info["fd"].take()
++        try:
++            assert os.pread(out, 100, 0) == b"asset-bytes:thumb"
++        finally:
++            os.close(out)
++
++    def test_errors(self, portals, dbus_con, xdp_app_info):
++        if host(xdp_app_info):
++            pytest.skip("host callers are refused")
++        intf = sync_iface(dbus_con)
++        with pytest.raises(dbus.exceptions.DBusException) as excinfo:
++            intf.Delete("saves", [("slot1", "")], {})
++        assert excinfo.value.get_dbus_name() == f"{ERROR}.Quota"
++        assert "record_bytes" in excinfo.value.get_dbus_message()
++        with pytest.raises(dbus.exceptions.DBusException) as excinfo:
++            intf.List("saves", "", 10)
++        assert excinfo.value.get_dbus_name() == f"{ERROR}.Failed"
++        assert "internal detail" not in excinfo.value.get_dbus_message()
++        with pytest.raises(dbus.exceptions.DBusException) as excinfo:
++            intf.FetchChanges("saves", "", {})
++        assert excinfo.value.get_dbus_name() == f"{ERROR}.Failed"
++
++    def test_signals_reach_only_their_app(self, portals, dbus_con, xdp_app_info):
++        if host(xdp_app_info):
++            pytest.skip("host callers are refused")
++        mock = dbus.Interface(
++            dbus_con.get_object("org.projectSuno.ConnectSync1", "/org/projectSuno/ConnectSync1/Apps"),
++            "org.freedesktop.DBus.Mock",
++        )
++        received = []
++        dbus_con.add_signal_receiver(
++            lambda zone, details: received.append(str(zone)),
++            signal_name="Changed",
++            dbus_interface=IFACE,
++        )
++        impl = "org.projectSuno.impl.portal.Sync"
++        mock.EmitSignal(impl, "Changed", "ssa{sv}", [":1.9999", "not-for-us", dbus.Dictionary({}, signature="sv")])
++        mock.EmitSignal(impl, "Changed", "ssa{sv}", [dbus_con.get_unique_name(), "saves", dbus.Dictionary({}, signature="sv")])
++        mock.EmitSignal(impl, "Changed", "ssa{sv}", ["org.not.unique", "named", dbus.Dictionary({}, signature="sv")])
++        xdp.wait_for(lambda: "saves" in received)
++        context = GLib.MainContext.default()
++        end = time.monotonic() + 0.5
++        while time.monotonic() < end:
++            context.iteration(False)
++        assert received == ["saves"]
++
++    @pytest.mark.parametrize("xdp_overwrite_env", [{}])
++    def test_an_impl_outside_its_service_gets_nothing(self, portals, dbus_con, xdp_app_info):
++        """Whoever owns org.projectSuno.ConnectSync1 without running in Suno-connect-syncd.service gets no call."""
++        if host(xdp_app_info):
++            pytest.skip("host callers are refused")
++        intf = sync_iface(dbus_con)
++        with pytest.raises(dbus.exceptions.DBusException) as excinfo:
++            intf.Save("saves", [("slot1", dbus.ByteArray(b"secret"), "")], {})
++        assert excinfo.value.get_dbus_name() == f"{ERROR}.Failed"
++        mock = dbus.Interface(
++            dbus_con.get_object("org.projectSuno.ConnectSync1", "/org/projectSuno/ConnectSync1/Apps"),
++            "org.freedesktop.DBus.Mock",
++        )
++        assert not mock.GetMethodCalls("Save")
++
++    def test_one_app_cannot_hold_the_portal(self, portals, dbus_con, xdp_app_info):
++        """Calls are forwarded asynchronously with a cap per app connection: the 9th concurrent call is refused."""
++        if host(xdp_app_info):
++            pytest.skip("host callers are refused")
++        intf = sync_iface(dbus_con)
++        replies, errors = [], []
++        for _ in range(12):
++            intf.GetStatus(reply_handler=replies.append, error_handler=errors.append)
++        xdp.wait_for(lambda: len(replies) + len(errors) == 12)
++        assert len(replies) >= 8
++        assert errors, "more than 8 calls at once from one app are refused"
++        assert all(e.get_dbus_name() == f"{ERROR}.RateLimited" for e in errors)
++
++    @pytest.mark.parametrize("required_templates", [{}])
++    def test_no_implementation_fails_fast_and_backs_off(self, portals, dbus_con, xdp_app_info):
++        """With nothing owning the name and activation failing, a call fails; the next ones fail at once (back-off)
++        and the portal keeps answering everything else meanwhile."""
++        if host(xdp_app_info):
++            pytest.skip("host callers are refused")
++        intf = sync_iface(dbus_con)
++        with pytest.raises(dbus.exceptions.DBusException) as excinfo:
++            intf.GetStatus()
++        assert excinfo.value.get_dbus_name() == f"{ERROR}.Failed"
++        start = time.monotonic()
++        replies, errors = [], []
++        for _ in range(4):
++            intf.GetStatus(reply_handler=replies.append, error_handler=errors.append)
++        props = dbus.Interface(
++            dbus_con.get_object("org.freedesktop.portal.Desktop", "/org/freedesktop/portal/desktop"),
++            "org.freedesktop.DBus.Properties",
++        )
++        assert props.Get(IFACE, "version") == 1
++        xdp.wait_for(lambda: len(replies) + len(errors) == 4)
++        assert time.monotonic() - start < 2.0
++        assert not replies
++        assert all(e.get_dbus_name() == f"{ERROR}.Failed" for e in errors)

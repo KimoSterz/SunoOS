@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 import unittest
 
-from charlie_luma.accounts import (
+from charlie_Suno.accounts import (
     PROVIDERS,
     account_id_for_address,
     provider_by_key,

@@ -10,7 +10,7 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[3]
 loader = importlib.machinery.SourceFileLoader(
-    'luma_os_app_baseline', str(REPO/'image/luma-desktop/rootfs/usr/libexec/luma-app-baseline'))
+    'Suno_os_app_baseline', str(REPO/'image/Suno-desktop/rootfs/usr/libexec/Suno-app-baseline'))
 spec = importlib.util.spec_from_loader(loader.name, loader)
 baseline = importlib.util.module_from_spec(spec)
 loader.exec_module(baseline)
@@ -20,7 +20,7 @@ def admit(root, shipping, architecture=None):
     manifest = baseline.validate(root, architecture or platform.machine())
     if baseline.digest(root/'shipping.json') != baseline.digest(shipping):
         raise ValueError('The app baseline does not match this OS source selection.')
-    return {'schema':'org.projectluma.os-app-input/v1',
+    return {'schema':'org.projectSuno.os-app-input/v1',
             'manifest_sha256':baseline.digest(root/'manifest.json'),
             'architecture':manifest['architecture'],
             'applications':sum(row['ref'].startswith('app/') for row in manifest['bundles']),

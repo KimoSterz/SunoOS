@@ -1,5 +1,5 @@
 From 3f2ac0e303329205c837e60e3e88e18181fd6e25 Mon Sep 17 00:00:00 2001
-From: Luma Project <luma@project.invalid>
+From: Suno Project <Suno@project.invalid>
 Date: Fri, 21 Aug 2026 17:30:00 -0500
 Subject: [PATCH] firmware: qcom: log bounded SHM bridge and QSEE load state
 

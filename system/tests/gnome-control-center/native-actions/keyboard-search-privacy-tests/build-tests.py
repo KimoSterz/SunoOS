@@ -27,28 +27,28 @@ def compile_file(path, template, name):
     subprocess.run(['gcc', '-I'+str(source/'shell'), *command], cwd=build, check=True)
     return obj
 objects = {}
-for name in ('cc-luma-live-keyboard', 'cc-luma-keyboard', 'cc-luma-discovery'):
+for name in ('cc-Suno-live-keyboard', 'cc-Suno-keyboard', 'cc-Suno-discovery'):
     objects[name] = compile_file(source/'shell'/(name+'.c'), name+'.c', name)
-for name, replaced in (('test-native-privacy', 'cc-luma-view-privacy'),
-                       ('test-native-search-folders', 'cc-luma-view-discovery')):
-    obj = compile_file(tests/(name+'.c'), 'test-luma-view.c', name)
+for name, replaced in (('test-native-privacy', 'cc-Suno-view-privacy'),
+                       ('test-native-search-folders', 'cc-Suno-view-discovery')):
+    obj = compile_file(tests/(name+'.c'), 'test-Suno-view.c', name)
     link = shlex.split(subprocess.check_output(
-        ['ninja', '-C', str(build), '-t', 'commands', 'shell/test-luma-view'], text=True).splitlines()[-1])
+        ['ninja', '-C', str(build), '-t', 'commands', 'shell/test-Suno-view'], text=True).splitlines()[-1])
     link[link.index('-o')+1] = str(output/name)
-    link[link.index('shell/test-luma-view.p/test-luma-view.c.o')] = str(obj)
-    link.remove('shell/test-luma-view.p/'+replaced+'.c.o')
+    link[link.index('shell/test-Suno-view.p/test-Suno-view.c.o')] = str(obj)
+    link.remove('shell/test-Suno-view.p/'+replaced+'.c.o')
     subprocess.run(link, cwd=build, check=True)
 for name in ('test-native-keyboard', 'test-search-write-failure'):
-    obj = compile_file(tests/(name+'.c'), 'test-luma-view.c', name)
-    link = ['gcc', str(obj), 'shell/test-luma-view.p/cc-luma-fixture.c.o']
+    obj = compile_file(tests/(name+'.c'), 'test-Suno-view.c', name)
+    link = ['gcc', str(obj), 'shell/test-Suno-view.p/cc-Suno-fixture.c.o']
     if name == 'test-native-keyboard':
-        link += [str(objects['cc-luma-live-keyboard']), str(objects['cc-luma-keyboard']),
-                 'shell/test-luma-view.p/cc-luma-device-options.c.o',
-                 'shell/test-luma-view.p/cc-luma-displays.c.o',
-                 'shell/test-luma-live-desk.p/cc-luma-live-gsettings.c.o']
+        link += [str(objects['cc-Suno-live-keyboard']), str(objects['cc-Suno-keyboard']),
+                 'shell/test-Suno-view.p/cc-Suno-device-options.c.o',
+                 'shell/test-Suno-view.p/cc-Suno-displays.c.o',
+                 'shell/test-Suno-live-desk.p/cc-Suno-live-gsettings.c.o']
         packages = ['gtk4', 'json-glib-1.0', 'gnome-desktop-4', 'xkbcommon']
     else:
-        link += [str(objects['cc-luma-discovery'])]
+        link += [str(objects['cc-Suno-discovery'])]
         packages = ['gtk4', 'json-glib-1.0']
     link += ['-lm', '-o', str(output/name)] + shlex.split(subprocess.check_output(
         ['pkg-config', '--libs', *packages], text=True))

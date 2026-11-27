@@ -45,9 +45,9 @@ def main() -> int:
         for key, folder in (("XDG_DATA_HOME", "data"), ("XDG_CONFIG_HOME", "config"),
                             ("XDG_CACHE_HOME", "cache"), ("XDG_STATE_HOME", "state")):
             os.environ[key] = str(Path(private) / folder)
-        os.environ["LUMA_CLOCK_FIXTURE"] = str(fixture)
-        os.environ.pop("LUMA_CLOCK_CAPTURE_TIME", None)
-        app = Adw.Application(application_id="org.projectluma.ClockFixtureProgressTest",
+        os.environ["SUNO_CLOCK_FIXTURE"] = str(fixture)
+        os.environ.pop("SUNO_CLOCK_CAPTURE_TIME", None)
+        app = Adw.Application(application_id="org.projectSuno.ClockFixtureProgressTest",
                               flags=Gio.ApplicationFlags.NON_UNIQUE)
         assert app.register(None)
         window = ClockWindow(app)

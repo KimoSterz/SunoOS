@@ -15,12 +15,12 @@ class ImportedTreeBindingTests(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory(); self.addCleanup(self.tmp.cleanup)
         self.root = Path(self.tmp.name); self.source = self.root/'source'; self.target = self.root/'target'
         for repo in (self.source,self.target):
-            subprocess.run(['ostree','init','--repo='+str(repo),'--mode=archive','--collection-id=org.projectluma.OS'],check=True)
+            subprocess.run(['ostree','init','--repo='+str(repo),'--mode=archive','--collection-id=org.projectSuno.OS'],check=True)
         tree=self.root/'tree';tree.mkdir();(tree/'payload').write_text('Actual native import boundary fixture\n')
         self.raw=subprocess.check_output(['ostree','commit','--repo='+str(self.source),'--orphan','--no-bindings','--tree=dir='+str(tree),'--subject=raw importer tree'],text=True).strip()
     def commit(self, bound):
         args=['ostree','commit','--repo='+str(self.source),'--orphan','--tree=ref='+self.raw,'--subject=candidate']
-        args += ['--bind-ref=luma/1/aarch64/nightly'] if bound else ['--no-bindings']
+        args += ['--bind-ref=Suno/1/aarch64/nightly'] if bound else ['--no-bindings']
         return subprocess.check_output(args,text=True).strip()
     def test_importer_unbound_tree_then_strict_bound_candidate(self):
         candidate=self.commit(True)

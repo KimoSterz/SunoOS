@@ -10,7 +10,7 @@ import Shell from 'gi://Shell';
 import St from 'gi://St';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as NetworkAgent from 'resource:///org/gnome/shell/ui/components/networkAgent.js';
-import * as NotificationLip from 'resource:///org/gnome/shell/ui/lumaNotificationBeacon.js';
+import * as NotificationLip from 'resource:///org/gnome/shell/ui/SunoNotificationBeacon.js';
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 import * as QuickSettings from 'resource:///org/gnome/shell/ui/quickSettings.js';
 import * as Scripting from 'resource:///org/gnome/shell/ui/scripting.js';
@@ -25,7 +25,7 @@ export function init() { print('NATIVE INIT LOADED'); }
 
 export async function run() {
     const iface = new Gio.Settings({schema_id: 'org.gnome.desktop.interface'});
-    const appearance = new Gio.Settings({schema_id: 'org.project_luma.shell-state'});
+    const appearance = new Gio.Settings({schema_id: 'org.projectSuno.shell-state'});
     const a11y = new Gio.Settings({schema_id: 'org.gnome.desktop.a11y.interface'});
     appearance.reset('surface-treatment');
     iface.set_boolean('enable-animations', false);
@@ -33,8 +33,8 @@ export async function run() {
     await pause();
 
     const launcher = new Gio.SubprocessLauncher({flags: Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE});
-    launcher.setenv('PYTHONPATH', '/var/tmp/luma-native-memory-20261005/payload/usr/lib/python3.14/site-packages', true);
-    const process = launcher.spawnv(['/usr/bin/python3', '/var/tmp/luma-native-memory-20261005/native-vitals-notification-20261005.py']);
+    launcher.setenv('PYTHONPATH', '/var/tmp/Suno-native-memory-20261005/payload/usr/lib/python3.14/site-packages', true);
+    const process = launcher.spawnv(['/usr/bin/python3', '/var/tmp/Suno-native-memory-20261005/native-vitals-notification-20261005.py']);
     const output = await new Promise((resolve, reject) => process.communicate_utf8_async(null, null, (proc, result) => {
         try { resolve(proc.communicate_utf8_finish(result)); } catch (error) { reject(error); }
     }));
@@ -46,7 +46,7 @@ export async function run() {
     check(!!record, 'the real native notification store receives the verified OOM notice');
     const lip = NotificationLip.peekNotificationLip();
     check(lip?._current === record && lip.mapped && lip._card?.mapped,
-        'the actual Luma notification owner maps the verified OOM card');
+        'the actual Suno notification owner maps the verified OOM card');
     check(lip._card.width > 100 && lip._card.height > 30,
         'the native OOM card has a usable allocation');
     record.destroy();
@@ -116,8 +116,8 @@ export async function run() {
         component._handleRequest(scheme, connection, '802-11-wireless-security', [], 0);
         const dialog = component._dialogs[scheme]; await pause();
         const surface = dialog.dialogLayout._dialog;
-        check(surface.has_style_class_name('luma-system-prompt'), `${scheme}: shared prompt owns presentation`);
-        const expected = scheme === 'prefer-dark' ? 'luma-surface-dark' : 'luma-surface-light';
+        check(surface.has_style_class_name('Suno-system-prompt'), `${scheme}: shared prompt owns presentation`);
+        const expected = scheme === 'prefer-dark' ? 'Suno-surface-dark' : 'Suno-surface-light';
         check(surface.has_style_class_name(expected), `${scheme}: actual appearance binding follows mode`);
         const secret = dialog._content.secrets[0];
         check(secret.entry instanceof St.PasswordEntry, `${scheme}: password stays in native masked entry`);
@@ -131,7 +131,7 @@ export async function run() {
         check(entryBox.get_width() > 150 && entryBox.get_height() >= 36,
             `${scheme}: native password field has usable allocation`);
         a11y.set_boolean('high-contrast', true); await pause();
-        check(surface.has_style_class_name('luma-prompt-high-contrast'), `${scheme}: high contrast follows native setting`);
+        check(surface.has_style_class_name('Suno-prompt-high-contrast'), `${scheme}: high contrast follows native setting`);
         a11y.set_boolean('high-contrast', false); await pause();
         if (scheme === 'prefer-light') {
             dialog._onOk(); await pause();

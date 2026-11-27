@@ -1,6 +1,6 @@
 ---
 title: Troubleshooting
-summary: Fixes for common problems, from typelib and import errors to unstyled windows, missing identity menus, broken shortcuts, portal failures, dark mode, luma lint errors and Flatpak builds.
+summary: Fixes for common problems, from typelib and import errors to unstyled windows, missing identity menus, broken shortcuts, portal failures, dark mode, Suno lint errors and Flatpak builds.
 order: 2
 section: Knowledge base
 ---
@@ -11,15 +11,15 @@ Each entry gives the symptom, the usual cause and the fix.
 
 ## Running your app
 
-### `ImportError: Typelib file for namespace 'LumaUI', version '1' not found`
+### `ImportError: Typelib file for namespace 'SunoUI', version '1' not found`
 
 **Cause:** the platform package is not installed, or GObject introspection
 cannot find its typelibs.
 
-**Fix:** on Luma the platform is preinstalled; check with
-`rpm -q luma-developer-platform`. When running against a LumaUI you built yourself,
-set `GI_TYPELIB_PATH` to the directory containing `LumaUI-1.typelib` and
-`LD_LIBRARY_PATH` to the directory with `libluma-ui-1.so.0`.
+**Fix:** on Suno the platform is preinstalled; check with
+`rpm -q Suno-developer-platform`. When running against a SunoUI you built yourself,
+set `GI_TYPELIB_PATH` to the directory containing `SunoUI-1.typelib` and
+`LD_LIBRARY_PATH` to the directory with `libSuno-ui-1.so.0`.
 
 ### `ImportError: Typelib file for namespace 'cairo', version '1.0' not found`
 
@@ -28,44 +28,44 @@ minimal containers.
 
 **Fix:** install `gobject-introspection` (Fedora) alongside `python3-gobject`.
 
-### `ModuleNotFoundError: No module named 'luma_appkit'`
+### `ModuleNotFoundError: No module named 'Suno_appkit'`
 
-**Cause:** Python is not finding LumaUI’s Python package, often because you run
+**Cause:** Python is not finding SunoUI’s Python package, often because you run
 a different Python than the system one, or inside a virtual environment that
 hides system packages. The package is not on PyPI, so `pip install` cannot
 supply it.
 
 **Fix:** use `/usr/bin/python3`, or create the virtual environment with
-`--system-site-packages`. PyGObject and LumaUI are system packages.
+`--system-site-packages`. PyGObject and SunoUI are system packages.
 
-### An old version of LumaUI is imported
+### An old version of SunoUI is imported
 
-**Cause:** a copy of `luma_appkit` in `~/.local/lib/python3.*/site-packages`
+**Cause:** a copy of `Suno_appkit` in `~/.local/lib/python3.*/site-packages`
 shadows the installed package.
 
-**Fix:** run `python3 -c "import luma_appkit; print(luma_appkit.__file__)"`. It
+**Fix:** run `python3 -c "import Suno_appkit; print(Suno_appkit.__file__)"`. It
 should print a path under `/usr/lib`. Remove the stray copy, and never vendor
-LumaUI into your project.
+SunoUI into your project.
 
-### My window has no Luma styling
+### My window has no Suno styling
 
 **Cause:** `install_appkit()` was not called, or it was called before GTK had a
 display.
 
 **Fix:** call `install_appkit()` at the top of `do_activate` (or use
-`add_style_sheet()`, which calls it). In C, call `luma_init()` after
+`add_style_sheet()`, which calls it). In C, call `Suno_init()` after
 `g_application_run()` has started, for example in your `activate` handler.
 
-### The window has a plain title bar, not the Luma title row
+### The window has a plain title bar, not the Suno title row
 
-**Cause:** the window is not LumaUI’s window, or LumaUI was never loaded. LumaUI
+**Cause:** the window is not SunoUI’s window, or SunoUI was never loaded. SunoUI
 draws the frame, title row, identity and controls only on an `AppWindow` or
-`LumaApplicationWindow`, after `install_appkit()` or `luma_init()` has run.
+`SunoApplicationWindow`, after `install_appkit()` or `Suno_init()` has run.
 
 **Fix:** create the window with `AppWindow` (Python) or
-`luma_application_window_new()` (C), and load LumaUI as described above. Inside
-Flatpak, build on the `org.projectluma.Platform` runtime so LumaUI is present.
-See [why my app looks different outside Luma](faq.md#why-does-my-app-look-different-outside-luma).
+`Suno_application_window_new()` (C), and load SunoUI as described above. Inside
+Flatpak, build on the `org.projectSuno.Platform` runtime so SunoUI is present.
+See [why my app looks different outside Suno](faq.md#why-does-my-app-look-different-outside-Suno).
 
 ### The corner shows the wrong name or a generic icon
 
@@ -83,7 +83,7 @@ found.
 ### The identity menu is empty or missing a command
 
 **Cause:** in Python, the identity menu is built when the window is created,
-from commands visible at that moment. In C, `luma_application_window_set_menu_model()`
+from commands visible at that moment. In C, `Suno_application_window_set_menu_model()`
 was not called.
 
 **Fix:** keep app-wide commands always visible and use `enabled` for
@@ -123,15 +123,15 @@ handler. See [commands and menus](../kit/commands-and-menus.md#menu-buttons).
 square background over the island.
 
 **Fix:** use `IslandSplitView` or `IslandOverlaySplitView` in Python, or
-`LumaAdaptiveScaffold` in C. Do not set backgrounds on the island itself; use
-`@luma_content` or transparent backgrounds for children.
+`SunoAdaptiveScaffold` in C. Do not set backgrounds on the island itself; use
+`@Suno_content` or transparent backgrounds for children.
 
 ### Controls are stretched to the height of their bar
 
 **Cause:** a `Gtk.Box` gives each child its full height.
 
 **Fix:** use `Toolbar`, or call `centre_controls(bar)` (Python) or
-`luma_ui_centre_controls(bar)` (C) after filling the bar.
+`Suno_ui_centre_controls(bar)` (C) after filling the bar.
 
 ### Colors are wrong after switching to dark
 
@@ -148,7 +148,7 @@ See [my colors are wrong in dark mode](faq.md#my-colors-are-wrong-in-dark-mode).
 
 **Causes and fixes:**
 
-- No portal service is running. On Luma it always is. In a bare container or a
+- No portal service is running. On Suno it always is. In a bare container or a
   minimal session, start `xdg-desktop-portal` and a backend such as
   `xdg-desktop-portal-gtk`.
 - You created the dialog without a parent window. Pass your window to
@@ -170,7 +170,7 @@ what the portals remember for your app while you test, run
 application with a valid ID and installed desktop entry. Inside Flatpak no extra
 permission is needed.
 
-## `luma lint` errors
+## `Suno lint` errors
 
 | Error | Fix |
 | --- | --- |
@@ -181,15 +181,15 @@ permission is needed.
 | `desktop file Exec command must match the Flatpak command` | Make the first word of `Exec=` equal the manifest `command` |
 | `desktop file Icon must match application.id` | Set `Icon=<app-id>` |
 | `application icon filename must use application.id` | Rename the icon to `<app-id>.svg` |
-| `AppStream metadata must declare org.projectluma.ApplicationContract=0.2` | Add the `<custom>` value shown in [project layout](../getting-started/project-layout.md#appstream-metainfo) |
-| `Flatpak permission is too broad for a Luma Native candidate: --filesystem=...` | Use a portal instead; see [portals first](../permissions-and-privacy.md#portals-first) |
+| `AppStream metadata must declare org.projectSuno.ApplicationContract=0.2` | Add the `<custom>` value shown in [project layout](../getting-started/project-layout.md#appstream-metainfo) |
+| `Flatpak permission is too broad for a Suno Native candidate: --filesystem=...` | Use a portal instead; see [portals first](../permissions-and-privacy.md#portals-first) |
 | `Flatpak D-Bus permission may not contain a wildcard` | Name each bus name exactly |
 | `responsive.test_widths must include 360` | Add `360`, `500` and `1024` |
 | `lifecycle.uninstall_choices must include 'keep-data'` | Add both `keep-data` and `remove-app-data` |
-| `conformance.evidence does not exist` | Create the evidence file; `luma new` generates one |
+| `conformance.evidence does not exist` | Create the evidence file; `Suno new` generates one |
 | `YAML Flatpak manifests require the SDK's PyYAML dependency` | Install `python3-pyyaml`, or use a JSON manifest |
 
-## `luma release-check` errors
+## `Suno release-check` errors
 
 | Error | Fix |
 | --- | --- |
@@ -202,22 +202,22 @@ permission is needed.
 
 ## Flatpak builds
 
-### The build cannot find `org.projectluma.Platform//44`
+### The build cannot find `org.projectSuno.Platform//44`
 
-**Cause:** the Luma remote is not added, or you are building for an
+**Cause:** the Suno remote is not added, or you are building for an
 architecture the remote does not carry yet (it serves `x86_64` only for now).
 
 **Fix:** add the remote with
-`flatpak remote-add --if-not-exists luma https://dl.simplyluma.com/luma.flatpakrepo`
-and pass `--install-deps-from=luma` to `flatpak-builder`, or install the runtime
-yourself with `flatpak install luma org.projectluma.Platform//44 org.projectluma.Sdk//44`.
+`flatpak remote-add --if-not-exists Suno https://dl.simplyluma.com/luma.flatpakrepo`
+and pass `--install-deps-from=Suno` to `flatpak-builder`, or install the runtime
+yourself with `flatpak install Suno org.projectSuno.Platform//44 org.projectSuno.Sdk//44`.
 
 ### The build works on my machine but not from a clean checkout
 
 **Causes and fixes:**
 
 - A source is not pinned, or downloads something during the build. Pin every
-  source and vendor dependencies. `luma release-check` reports unpinned
+  source and vendor dependencies. `Suno release-check` reports unpinned
   sources.
 - A file is ignored by Git but present on your machine. Build from a clean clone
   of the commit you tag.
@@ -230,5 +230,5 @@ yourself with `flatpak install luma org.projectluma.Platform//44 org.projectluma
   `GLib.get_user_data_dir()`, `get_user_config_dir()` and `get_user_cache_dir()`.
 - It spawns host programs. It cannot, by design; do the work in the app or use a
   portal.
-- It depends on a host file such as `/etc/luma-device-class`. Use the
-  environment and LumaUI’s context instead.
+- It depends on a host file such as `/etc/Suno-device-class`. Use the
+  environment and SunoUI’s context instead.

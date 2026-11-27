@@ -44,40 +44,40 @@ key_fingerprint=$(gpg --batch --show-keys --with-colons "$public_key" 2>/dev/nul
   awk -F: '$1 == "fpr" { print $10; exit }')
 [ -n "$key_fingerprint" ] || fail 'public key is not a valid OpenPGP keyring'
 
-install -D -m 0644 "$public_key" /etc/pki/ostree/luma-recent.gpg
+install -D -m 0644 "$public_key" /etc/pki/ostree/Suno-recent.gpg
 ostree remote add --sysroot=/ --force \
-  --gpg-import=/etc/pki/ostree/luma-recent.gpg \
+  --gpg-import=/etc/pki/ostree/Suno-recent.gpg \
   --set=gpg-verify=true --set=gpg-verify-summary=true \
-  --collection-id="$LUMA_UPDATE_COLLECTION_ID" \
-  "$LUMA_UPDATE_REMOTE" "$url" "$LUMA_UPDATE_REF"
+  --collection-id="$SUNO_UPDATE_COLLECTION_ID" \
+  "$SUNO_UPDATE_REMOTE" "$url" "$SUNO_UPDATE_REF"
 
 # Fetch and verify metadata before persisting the enrollment contract.
-ostree remote refs --repo=/ostree/repo "$LUMA_UPDATE_REMOTE" |
-  grep -Fxq "$LUMA_UPDATE_REMOTE:$LUMA_UPDATE_REF" ||
+ostree remote refs --repo=/ostree/repo "$SUNO_UPDATE_REMOTE" |
+  grep -Fxq "$SUNO_UPDATE_REMOTE:$SUNO_UPDATE_REF" ||
   fail 'the signed remote does not advertise the Recent ref'
 
-install -d -m 0755 /etc/luma
-channel_tmp=$(mktemp /etc/luma/update-channel.conf.XXXXXX)
+install -d -m 0755 /etc/Suno
+channel_tmp=$(mktemp /etc/Suno/update-channel.conf.XXXXXX)
 trap 'rm -f "$channel_tmp"' EXIT
 {
-  printf 'channel=%s\n' "$LUMA_UPDATE_CHANNEL"
-  printf 'remote=%s\n' "$LUMA_UPDATE_REMOTE"
-  printf 'ref=%s\n' "$LUMA_UPDATE_REF"
+  printf 'channel=%s\n' "$SUNO_UPDATE_CHANNEL"
+  printf 'remote=%s\n' "$SUNO_UPDATE_REMOTE"
+  printf 'ref=%s\n' "$SUNO_UPDATE_REF"
 } >"$channel_tmp"
 chmod 0644 "$channel_tmp"
-mv "$channel_tmp" /etc/luma/update-channel.conf
+mv "$channel_tmp" /etc/Suno/update-channel.conf
 trap - EXIT
 
-# A fresh Fedora Atomic machine does not have the Luma client unit until the
+# A fresh Fedora Atomic machine does not have the Suno client unit until the
 # first Recent deployment boots. Persist the normal enablement symlink now;
-# when enrollment starts from an existing Luma deployment, also start it.
-if systemctl cat luma-recent-update.timer >/dev/null 2>&1; then
-  systemctl enable --now luma-recent-update.timer
+# when enrollment starts from an existing Suno deployment, also start it.
+if systemctl cat Suno-recent-update.timer >/dev/null 2>&1; then
+  systemctl enable --now Suno-recent-update.timer
 else
   install -d -m 0755 /etc/systemd/system/timers.target.wants
-  ln -sfn /usr/lib/systemd/system/luma-recent-update.timer \
-    /etc/systemd/system/timers.target.wants/luma-recent-update.timer
+  ln -sfn /usr/lib/systemd/system/Suno-recent-update.timer \
+    /etc/systemd/system/timers.target.wants/Suno-recent-update.timer
 fi
-rpm-ostree rebase "$LUMA_UPDATE_REMOTE:$LUMA_UPDATE_REF"
+rpm-ostree rebase "$SUNO_UPDATE_REMOTE:$SUNO_UPDATE_REF"
 printf 'Recent enrolled; signed deployment staged. Reboot when ready.\n'
-printf 'key=%s\nref=%s\n' "$key_fingerprint" "$LUMA_UPDATE_REF"
+printf 'key=%s\nref=%s\n' "$key_fingerprint" "$SUNO_UPDATE_REF"

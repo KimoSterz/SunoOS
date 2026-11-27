@@ -47,8 +47,8 @@ fdtget "$dtb" "$ta" no-map >/dev/null || die 'TA no-map absent'
 ! fdtget "$dtb" "$ta" reusable >/dev/null 2>&1 || die 'TA unexpectedly reusable'
 fdtget "$dtb" "$qsee" qcom,appsbl-qseecom-support >/dev/null || die 'AppsBL marker absent'
 fdtget "$dtb" "$qsee" qcom,commonlib64-loaded-by-uefi >/dev/null || die 'commonlib64 marker absent'
-fdtget "$dtb" /firmware/scm/qseecom-tee-heaps luma,dedicated-heaps >/dev/null || die 'dedicated heaps absent'
-fdtget "$dtb" /firmware/scm luma,qsee-log-diagnostic >/dev/null || die 'QSEE log absent'
+fdtget "$dtb" /firmware/scm/qseecom-tee-heaps Suno,dedicated-heaps >/dev/null || die 'dedicated heaps absent'
+fdtget "$dtb" /firmware/scm Suno,qsee-log-diagnostic >/dev/null || die 'QSEE log absent'
 ! fdtget "$dtb" /firmware/scm memory-region >/dev/null 2>&1 || die 'global SCM pool reintroduced'
 
 printf 'FP6 fingerprint stock-node-name candidate verified: %s\n' "$candidate"

@@ -1,4 +1,4 @@
-From: Project Luma <project-luma@local>
+From: Project Suno <project-suno@local>
 Subject: [PATCH] media: i2c: s5kkd1sp: apply exposure and gain controls
 
 The initial FP6 driver advertised exposure and analogue-gain controls with no

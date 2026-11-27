@@ -1,0 +1,95 @@
+From: Project Suno <maintainers@projectSuno.org>
+Subject: [PATCH] shell: paint elevation on artwork, never its square bin
+
+IconGrid.BaseIcon is a Shell.SquareBin named overview-icon. A box shadow on
+that node is therefore a square surface regardless of the alpha channel in the
+application artwork it contains. Tag the real St.Icon returned by each Shelf
+icon factory, clear every paint answer on both container nodes, and apply the
+quiet elevation through St's alpha-aware icon-shadow property instead.
+
+This keeps the accessible button and focus state intact without manufacturing
+a second tile behind the application icon.
+
+---
+ data/theme/Suno-shelf.css | 45 ++++++++++++++++++++++++++++++++++++++++
+ js/ui/dash.js             |  8 +++++++-
+ 2 files changed, 52 insertions(+), 1 deletion(-)
+
+diff --git a/js/ui/dash.js b/js/ui/dash.js
+--- a/js/ui/dash.js
++++ b/js/ui/dash.js
+@@ -32,6 +32,12 @@ class DashIcon extends AppDisplay.AppIcon {
+             'notify::pressed', () => this._syncShelfArtwork(), this);
+     }
+ 
++    _createIcon(iconSize) {
++        const artwork = super._createIcon(iconSize);
++        artwork.add_style_class_name('Suno-shelf-artwork');
++        return artwork;
++    }
++
+     _syncShelfArtwork() {
+         const edge = Main.overview.dash._shelfEdge;
+         if (!edge)
+@@ -287,7 +293,7 @@ class ShowAppsIcon extends DashItemContainer {
+         this._iconActor = new St.Icon({
+             icon_name: 'view-app-grid-symbolic',
+             icon_size: size,
+-            style_class: 'show-apps-icon',
++            style_class: 'show-apps-icon Suno-shelf-artwork',
+             track_hover: true,
+         });
+         return this._iconActor;
+diff --git a/data/theme/Suno-shelf.css b/data/theme/Suno-shelf.css
+--- a/data/theme/Suno-shelf.css
++++ b/data/theme/Suno-shelf.css
+@@ -564,3 +564,47 @@
+ .Suno-status-hover {
+   transition-duration: 0ms;
+   box-shadow: none; }
++
++/* BaseIcon's overview-icon is a Shell.SquareBin, not the application artwork.
++ * Neither that bin nor its button may paint a tile in the production Shelf. */
++.Suno-shelf-dock-island #dash .dash-item-container .overview-tile,
++.Suno-shelf-dock-island #dash .dash-item-container .overview-tile:hover,
++.Suno-shelf-dock-island #dash .dash-item-container .overview-tile:focus,
++.Suno-shelf-dock-island #dash .dash-item-container .overview-tile:active,
++.Suno-shelf-dock-island #dash .dash-item-container .overview-tile:checked,
++.Suno-shelf-dock-island #dash .dash-item-container .show-apps,
++.Suno-shelf-dock-island #dash .dash-item-container .show-apps:hover,
++.Suno-shelf-dock-island #dash .dash-item-container .show-apps:focus,
++.Suno-shelf-dock-island #dash .dash-item-container .show-apps:active,
++.Suno-shelf-dock-island #dash .dash-item-container .show-apps:checked {
++  background-color: transparent !important;
++  background-gradient-start: transparent !important;
++  background-gradient-end: transparent !important;
++  border: none !important;
++  box-shadow: none !important; }
++
++.Suno-shelf-dock-island #dash .dash-item-container .overview-icon,
++.Suno-shelf-dock-island #dash .dash-item-container .overview-tile:hover .overview-icon,
++.Suno-shelf-dock-island #dash .dash-item-container .overview-tile:focus .overview-icon,
++.Suno-shelf-dock-island #dash .dash-item-container .overview-tile:active .overview-icon,
++.Suno-shelf-dock-island #dash .dash-item-container .overview-tile:checked .overview-icon,
++.Suno-shelf-dock-island #dash .dash-item-container .show-apps:hover .overview-icon,
++.Suno-shelf-dock-island #dash .dash-item-container .show-apps:focus .overview-icon,
++.Suno-shelf-dock-island #dash .dash-item-container .show-apps:active .overview-icon,
++.Suno-shelf-dock-island #dash .dash-item-container .show-apps:checked .overview-icon {
++  background-color: transparent !important;
++  background-gradient-start: transparent !important;
++  background-gradient-end: transparent !important;
++  border: none !important;
++  box-shadow: none !important; }
++
++/* St.Icon computes icon-shadow from the artwork alpha channel, so elevation
++ * follows each installed icon instead of exposing its square allocation. */
++.Suno-shelf-dock-island #dash .Suno-shelf-artwork {
++  icon-shadow: 0 2px 4px rgba(12,17,24,0.34); }
++.Suno-shelf-dock-island #dash .overview-tile:hover .Suno-shelf-artwork,
++.Suno-shelf-dock-island #dash .show-apps:hover .Suno-shelf-artwork {
++  icon-shadow: 0 4px 7px rgba(12,17,24,0.40); }
++.Suno-shelf-dock-island #dash .overview-tile:focus .Suno-shelf-artwork,
++.Suno-shelf-dock-island #dash .show-apps:focus .Suno-shelf-artwork {
++  icon-shadow: 0 0 4px rgba(82,127,174,0.82); }
+-- 
+2.54.0

@@ -61,7 +61,7 @@ except ImportError:  # pragma: no cover - the platform always has it
 # MET Norway's terms require an identifying User-Agent with a way to reach us,
 # and visible attribution. The attribution line is in About; this is the
 # identification. Anything generic gets the whole project rate-limited.
-USER_AGENT = "ProjectLuma-Weather/1.0 (+https://project-luma.local/contact)"
+USER_AGENT = "projectSuno-Weather/1.0 (+https://project-luma.local/contact)"
 FORECAST_ENDPOINT = "https://api.met.no/weatherapi/locationforecast/2.0/complete"
 SUN_ENDPOINT = "https://api.met.no/weatherapi/sunrise/3.0/sun"
 ATTRIBUTION = "Forecast data from the Norwegian Meteorological Institute."
@@ -205,7 +205,7 @@ class PlaceStore:
                 raise ValueError('The saved weather preferences are invalid. Nothing was changed.')
             document['preferences'] = {**preferences, 'units': units}
         if original is not None:
-            backup = self.path.with_name(self.path.name + ".lumaui-backup")
+            backup = self.path.with_name(self.path.name + ".SunoUI-backup")
             try:
                 fd = os.open(backup, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
             except FileExistsError:

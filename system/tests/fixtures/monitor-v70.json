@@ -84,7 +84,7 @@
       "th": 24,
       "procs": [
         [
-          "luma-photos",
+          "Suno-photos",
           3502,
           4.1,
           690
@@ -110,7 +110,7 @@
       "th": 18,
       "procs": [
         [
-          "luma-terminal",
+          "Suno-terminal",
           3301,
           0.3,
           120
@@ -148,7 +148,7 @@
       "th": 11,
       "procs": [
         [
-          "luma-filer",
+          "Suno-filer",
           3120,
           1.1,
           210
@@ -174,7 +174,7 @@
       "th": 14,
       "procs": [
         [
-          "luma-depot",
+          "Suno-depot",
           3620,
           0.6,
           230
@@ -201,7 +201,7 @@
       "awake": true,
       "procs": [
         [
-          "luma-tide",
+          "Suno-tide",
           3208,
           2.1,
           380
@@ -227,7 +227,7 @@
       "th": 12,
       "procs": [
         [
-          "luma-write",
+          "Suno-write",
           3160,
           0.6,
           380
@@ -247,7 +247,7 @@
       "th": 18,
       "procs": [
         [
-          "luma-messages",
+          "Suno-messages",
           3809,
           0.4,
           260
@@ -267,7 +267,7 @@
       "th": 5,
       "procs": [
         [
-          "luma-charlie",
+          "Suno-charlie",
           3802,
           0.2,
           190
@@ -287,7 +287,7 @@
       "th": 13,
       "procs": [
         [
-          "luma-calendar",
+          "Suno-calendar",
           2959,
           0,
           120
@@ -298,8 +298,8 @@
   "groups": [
     {
       "id": "sys",
-      "n": "Luma system",
-      "why": "The desktop, sound, networking and the other parts that make Luma run",
+      "n": "Suno system",
+      "why": "The desktop, sound, networking and the other parts that make Suno run",
       "total": 38,
       "p": [
         [
@@ -343,7 +343,7 @@
           4
         ],
         [
-          "luma-shelf",
+          "Suno-shelf",
           3131,
           "nick",
           0.4,

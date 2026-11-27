@@ -1,17 +1,17 @@
 #!/bin/bash
 # SPDX-License-Identifier: Apache-2.0
 # tiling-picker.sh OUT: headless Shell on three monitors with Tiling Shell and
-# the Luma tiling toggle, running tiling-picker.js. TP_OVERLAY=dir loads
+# the Suno tiling toggle, running tiling-picker.js. TP_OVERLAY=dir loads
 # dir/extension.js and dir/stylesheet.css over the installed toggle.
 set -u
 T=$(cd "$(dirname "$0")" && pwd)
 export TP_OUT=${1:-/tmp/tiling-picker}
-X=/usr/share/gnome-shell/extensions/tiling-toggle@project-luma.local
+X=/usr/share/gnome-shell/extensions/tiling-toggle@project-suno.local
 if [ -n "${TP_OVERLAY:-}" ]; then cp "$TP_OVERLAY"/extension.js "$TP_OVERLAY"/stylesheet.css $X/; fi
 export XDG_RUNTIME_DIR=/tmp/tp-run; rm -rf $XDG_RUNTIME_DIR; mkdir -m 700 -p $XDG_RUNTIME_DIR
 export HOME=/tmp/tp-home; rm -rf $HOME; mkdir -p $HOME/.config/glib-2.0/settings
 cat > $HOME/.config/glib-2.0/settings/keyfile <<'K'
-[org/project-luma/shell-state]
+[org/project-suno/shell-state]
 surface-treatment='light'
 shelf-edge='bottom'
 shelf-surface-mode='separate'
@@ -21,11 +21,11 @@ status-controls-right=true
 color-scheme='default'
 
 [org/gnome/shell]
-enabled-extensions=['tilingshell@ferrarodomenico.com', 'tiling-toggle@project-luma.local']
+enabled-extensions=['tilingshell@ferrarodomenico.com', 'tiling-toggle@project-suno.local']
 disable-user-extensions=false
 welcome-dialog-last-shown-version='999'
 K
-export GSETTINGS_BACKEND=keyfile LIBGL_ALWAYS_SOFTWARE=1 LUMA_MUTTER_ALLOW_SOFTWARE_BLUR=1
+export GSETTINGS_BACKEND=keyfile LIBGL_ALWAYS_SOFTWARE=1 SUNO_MUTTER_ALLOW_SOFTWARE_BLUR=1
 rm -rf "$TP_OUT"; mkdir -p "$TP_OUT"
 mkdir -p /run/dbus
 dbus-send --system --print-reply --dest=org.freedesktop.DBus / org.freedesktop.DBus.Peer.Ping >/dev/null 2>&1 ||

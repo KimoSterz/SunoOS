@@ -68,7 +68,7 @@ def protected(path):
             raise ValueError(f'publisher path must be a root-owned non-writable directory: {parent}')
     return path
 
-def verify(root, digest, schema='org.projectluma.signing-control/v1'):
+def verify(root, digest, schema='org.projectSuno.signing-control/v1'):
     root = protected(root)
     content = (root / MANIFEST).read_bytes()
     if hashlib.sha256(content).hexdigest() != digest:
@@ -113,17 +113,17 @@ def seal(source, target, inputs=False, graph=False):
         # The same sealed OS publisher stages public keys and invokes the
         # normal origin sync; neither may fall back to a mutable checkout.
         source / 'config/os/media.env',
-        source / 'config/os/keys/luma-update-graph.pub',
+        source / 'config/os/keys/Suno-update-graph.pub',
         source / 'image/os-tools/Containerfile']) if graph else list(source.rglob('*')) if inputs else list((source / 'scripts/depot').rglob('*')) + [
         source / 'config/desktop/inputs.env',
         source / 'packaging/flatpak/apps/titles.json',
-        source / 'assets/icon-theme/Prairie/scalable/apps/org.projectluma.Depot.svg',
-        source / 'src/luma-installer/luma_installer/__init__.py',
-        source / 'src/luma-installer/luma_installer/depot_permissions.py',
+        source / 'assets/icon-theme/Prairie/scalable/apps/org.projectSuno.Depot.svg',
+        source / 'src/Suno-installer/Suno_installer/__init__.py',
+        source / 'src/Suno-installer/Suno_installer/depot_permissions.py',
         # The catalogue signer validates legacy documents with the same
         # parser clients use. Keep those imports inside the sealed control.
-        source / 'src/luma-installer/luma_installer/depot_catalog.py',
-        source / 'src/luma-installer/luma_installer/depot_signature.py']
+        source / 'src/Suno-installer/Suno_installer/depot_catalog.py',
+        source / 'src/Suno-installer/Suno_installer/depot_signature.py']
     records = {}
     for path in sorted(selected):
         if '__pycache__' in path.parts: continue
@@ -155,7 +155,7 @@ def seal(source, target, inputs=False, graph=False):
         mode = 0o500 if st.st_mode & 0o111 else 0o400
         dest.chmod(mode)
         records[rel.as_posix()] = {'sha256': digest, 'mode': mode, 'bytes': before.st_size}
-    schema = 'org.projectluma.signing-inputs/v1' if inputs else 'org.projectluma.signing-control/v1'
+    schema = 'org.projectSuno.signing-inputs/v1' if inputs else 'org.projectSuno.signing-control/v1'
     directories = {}
     for directory in target.rglob('*'):
         if directory.is_dir():
@@ -192,7 +192,7 @@ def main():
     if args.operation in ('seal', 'seal-inputs', 'seal-graph'):
         print(seal(args.root.absolute(), args.value, args.operation == 'seal-inputs', args.operation == 'seal-graph'))
     else:
-        verify(args.root, args.value, 'org.projectluma.signing-inputs/v1' if args.operation == 'verify-inputs' else 'org.projectluma.signing-control/v1')
+        verify(args.root, args.value, 'org.projectSuno.signing-inputs/v1' if args.operation == 'verify-inputs' else 'org.projectSuno.signing-control/v1')
         print('publisher snapshot verified')
 
 if __name__ == '__main__': main()

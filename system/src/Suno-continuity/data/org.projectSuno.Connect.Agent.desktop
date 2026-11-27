@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Suno Connect
+Comment=Keeps your phone linked while Suno Connect is closed
+Exec=Suno-connect-daemon --agent --autostart
+Icon=org.projectSuno.Connect
+NoDisplay=true
+X-GNOME-Autostart-enabled=true
+X-GNOME-AutoRestart=false
+# Before Suno-background is installed. With it, this start exits at once and the
+# service starts the agent under its limits.
+X-Suno-Background-Agent=org.projectSuno.Connect.Agent

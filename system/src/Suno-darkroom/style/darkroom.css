@@ -1,0 +1,70 @@
+/* Darkroom-only photographic surfaces. Shared SunoUI parts keep their kit CSS. */
+.dr-library { padding: var(--SunoUI-sidebar-inset); padding-bottom: var(--SunoUI-details-body-padding-bottom); }
+.SunoUI-creative-workspace.dr-library-workspace { background-color: @Suno_content; }
+.dr-library-workspace .dr-stage { background-color: @Suno_content; }
+.dr-window-subtitle { color: @Suno_muted; }
+.dr-library-title { padding: 0; margin: 0; background: none; box-shadow: none; color: @Suno_ink; }
+.dr-library > label { margin-bottom: var(--SunoUI-details-section-gap); }
+.dr-tile-meta { padding: var(--SunoUI-sidebar-row-padding-y); color: @Suno_muted; }
+.dr-pick { color: @Suno_good; }
+.dr-reject { color: @Suno_destructive; }
+.dr-rating { color: @Suno_muted; }
+.dr-bar-thumb { border-radius: 7px; }
+.dr-rating-star { min-width: 0; min-height: 0; padding: 0; background: none; box-shadow: none; color: @Suno_faint; }
+.dr-rating-star.on { color: @Suno_amber; }
+.dr-labels { margin: 0; padding: 0 8px; }
+.dr-label { min-width: 16px; min-height: 16px; padding: 0; border-radius: 50%; background: @Suno_faint; box-shadow: none; }
+.dr-tile-meta .dr-label { min-width: var(--SunoUI-media-tile-library-gap); min-height: var(--SunoUI-media-tile-library-gap); }
+.dr-label.red { background: @Suno_destructive; }
+.dr-label.amber { background: @Suno_amber; }
+.dr-label.green { background: @Suno_green; }
+.dr-label.blue { background: @Suno_blue; }
+.dr-label.on { outline: var(--SunoUI-sidebar-edge) solid @Suno_ink; outline-offset: var(--SunoUI-sidebar-edge); }
+.dr-info-picture { min-height: var(--SunoUI-details-photo-radius); }
+.dr-keywords { margin: var(--SunoUI-details-section-label-gap); }
+.dr-keywords label { padding: var(--SunoUI-sidebar-row-padding-y); border-radius: var(--SunoUI-sidebar-row-radius); background: @Suno_fill; }
+.dr-stage { background: @Suno_media_surface; }
+.dr-edit-work { background: @Suno_media_surface; }
+.dr-canvas { background: @Suno_media_surface; color: @Suno_on_media; }
+.dr-compare-label { padding: var(--SunoUI-sidebar-row-padding-y) var(--SunoUI-sidebar-heading-gap); border-radius: var(--SunoUI-sidebar-row-radius); background: alpha(@Suno_media_scrim, 0.55); color: @Suno_on_media; }
+.dr-split-handle { min-width: var(--SunoUI-foot-height); min-height: var(--SunoUI-foot-height); padding: 0; border-radius: var(--SunoUI-foot-height); background: @Suno_on_media; color: @Suno_media_surface; }
+.dr-filmstrip { background: @Suno_island; }
+.dr-filmstrip .dr-strip-photo { margin: var(--SunoUI-media-tile-ring-offset) var(--SunoUI-media-tile-library-gap); padding: 0; border-radius: var(--SunoUI-media-tile-library-radius); background: none; box-shadow: none; }
+.dr-filmstrip .dr-strip-photo picture { border-radius: var(--SunoUI-media-tile-library-radius); }
+.dr-filmstrip .dr-strip-photo.on { outline: var(--SunoUI-media-tile-ring-width) solid @Suno_creative_selection; outline-offset: var(--SunoUI-media-tile-ring-offset); }
+.dr-filmstrip .dr-strip-photo.rej { opacity: var(--SunoUI-media-tile-dim-opacity); }
+.dr-inspector-body { padding: var(--SunoUI-sidebar-inset); }
+.dr-histogram { padding: var(--SunoUI-sidebar-inset); border-bottom: var(--SunoUI-sidebar-edge) solid @Suno_line_faint; }
+.dr-looks, .dr-ratios, .dr-masks { margin: var(--SunoUI-sidebar-row-padding-y); }
+.dr-look { background: none; box-shadow: none; padding: var(--SunoUI-sidebar-row-padding-y); }
+.dr-look.on, .dr-ratios button:checked, .dr-masks button.on { background: @Suno_chip; color: @Suno_ink; }
+
+/* The library is a compact floating collection list, not a frame sidebar. */
+#dr-left { margin-left: 16px; }
+#dr-left box.SunoUI-creative-panel-card { min-width: 244px; background: @Suno_creative_panel_surface; }
+#dr-navigation.SunoUI-sidebar-destinations { padding: 0 8px 8px; margin: 0; background: none; }
+#dr-navigation.SunoUI-sidebar-destinations .Suno-navigation-list > row.SunoUI-row {
+  min-height: 30px; padding: 0 6px; margin: 0; border-radius: 8px;
+}
+#dr-navigation.SunoUI-sidebar-destinations .Suno-navigation-list > row.Suno-navigation-section {
+  margin: 10px 4px 4px; min-height: 16px;
+}
+#dr-navigation.SunoUI-sidebar-destinations row.SunoUI-row label.SunoUI-row-title { font-weight: 400; color: @Suno_ink_secondary; }
+#dr-navigation.SunoUI-sidebar-destinations row.SunoUI-row:selected { background: @Suno_chip; }
+#dr-navigation.SunoUI-sidebar-destinations row.SunoUI-row:selected label.SunoUI-row-title { color: @Suno_ink; }
+#dr-navigation.SunoUI-sidebar-destinations row.SunoUI-row image.lead-icon { color: @Suno_muted; }
+#dr-navigation.SunoUI-sidebar-destinations row.SunoUI-row:selected image.lead-icon { color: @Suno_muted; }
+
+.dr-library { padding-top: 18px; }
+.dr-library > label.dr-library-title { margin-bottom: 0; }
+.dr-library > label:not(.dr-library-title) { margin-bottom: 14px; }
+
+#dr-right box.SunoUI-creative-panel-card { min-width: 280px; }
+#dr-right .dr-histogram { padding: 6px 12px 4px; }
+#dr-right .dr-inspector-body { padding: 0 6px 8px; }
+#dr-right .dr-crop-inspector { padding-top: 12px; }
+#dr-right .dr-crop-inspector .dr-ratios { margin-bottom: 19px; }
+#dr-right .dr-crop-inspector .dr-crop-angle { margin-bottom: 34px; }
+#dr-bar .SunoUI-bar-subject { min-width: 116px; }
+#dr-bar .dr-rating { padding: 0 6px; }
+#dr-bar button.SunoUI-bar-button.icon { min-width: 36px; min-height: 36px; }

@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 
-#ifndef LUMA_FP6_FOCAL_DRIVER_CONTROL_H
-#define LUMA_FP6_FOCAL_DRIVER_CONTROL_H
+#ifndef SUNO_FP6_FOCAL_DRIVER_CONTROL_H
+#define SUNO_FP6_FOCAL_DRIVER_CONTROL_H
 
 #include <stddef.h>
 #include <stdint.h>

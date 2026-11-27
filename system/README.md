@@ -1,8 +1,8 @@
-<p align="center"><img src="website/public/brand/luma-wordmark.svg" alt="Luma" height="56"></p>
+<p align="center"><img src="website/public/brand/Suno-wordmark.svg" alt="Suno" height="56"></p>
 
 <p align="center">An operating system and everyday apps that work together.</p>
 
-Luma is an operating system with a shared application platform, adaptive interfaces, and integrated desktop services. This repository contains the OS source, bundled apps, downstream patches, packaging, and device profiles.
+Suno is an operating system with a shared application platform, adaptive interfaces, and integrated desktop services. This repository contains the OS source, bundled apps, downstream patches, packaging, and device profiles.
 
 [Website](https://simplyluma.com) · [Downloads](https://simplyluma.com/download) · [Build guide](BUILDING.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
 
@@ -10,7 +10,7 @@ Luma is an operating system with a shared application platform, adaptive interfa
 
 | Area | Source |
 | --- | --- |
-| Shared UI, semantics, application SDK and portals | [`src/luma-platform`](src/luma-platform) |
+| Shared UI, semantics, application SDK and portals | [`src/Suno-platform`](src/Suno-platform) |
 | Notes, Calendar, Tasks, Contacts, Messages, Phone and other shared apps | [`src/prairie-core`](src/prairie-core) |
 | Tide, Leaf, Viewer, Monitor, Ari and system services | [`src`](src) |
 | Charlie mail and Viola browser integration | [`src/external`](src/external) |
@@ -42,4 +42,4 @@ This is the initial public source baseline associated with build **20261008.8**.
 
 ## Licensing and credits
 
-Original Luma code is Apache-2.0, documentation is CC-BY-4.0, and original media is CC-BY-SA-4.0 unless a file specifies otherwise. Third-party and derived material retains its own license and notices. See [LICENSE.md](LICENSE.md), [LICENSES](LICENSES), and [third-party sources](THIRD-PARTY-SOURCES.md).
+Original Suno code is Apache-2.0, documentation is CC-BY-4.0, and original media is CC-BY-SA-4.0 unless a file specifies otherwise. Third-party and derived material retains its own license and notices. See [LICENSE.md](LICENSE.md), [LICENSES](LICENSES), and [third-party sources](THIRD-PARTY-SOURCES.md).

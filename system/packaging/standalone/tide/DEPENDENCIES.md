@@ -1,11 +1,11 @@
 # Tide standalone dependencies
 
-Tide uses selected libraries from the Luma Platform rather than distributing the
-complete platform. Its application source remains `src/luma-tide` in
+Tide uses selected libraries from the Suno Platform rather than distributing the
+complete platform. Its application source remains `src/Suno-tide` in
 [SimplyLuma/luma](https://gitlab.com/simplyluma/luma).
 
 Included components retain their notices in `usr/share/licenses`: Python,
-PyGObject, cairo, GTK, libadwaita, LumaUI, LumaSemantics, AppKit, GLib,
+PyGObject, cairo, GTK, libadwaita, SunoUI, SunoSemantics, AppKit, GLib,
 GStreamer and selected audio plugins, FFmpeg, libsecret, font and icon assets,
 and their native dependencies. Mutagen is GPL-2.0-or-later. Consult each
 component's license for its terms.

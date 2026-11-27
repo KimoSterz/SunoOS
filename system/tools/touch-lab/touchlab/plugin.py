@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """Generate the libinput Lua plugin (and its quirks) from a trained role model.
 
-The plugin is plugins/luma-touch-roles.lua.in with the model tables, the
+The plugin is plugins/Suno-touch-roles.lua.in with the model tables, the
 tree evaluator and the list of force pads filled in. Force pads need a
 quirk next to it: libinput 1.31 disables ABS_MT_PRESSURE on pressure pads
 before any plugin sees a frame (tp_init_pressurepad), so the quirk takes
@@ -18,7 +18,7 @@ from . import gbdt, surfaces
 from .rfeatures import NAMES
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-TEMPLATE = os.path.join(os.path.dirname(HERE), "plugins", "luma-touch-roles.lua.in")
+TEMPLATE = os.path.join(os.path.dirname(HERE), "plugins", "Suno-touch-roles.lua.in")
 BUS_IDS = {"i2c": 0x18, "usb": 0x03, "bluetooth": 0x05, "ps2": 0x11, "rmi": 0x1D, "spi": 0x1C}
 
 
@@ -53,11 +53,11 @@ def force_pads_lua(pads) -> str:
 
 
 def quirks_file(pads) -> str:
-    out = ["# Luma touch roles: let the role plugin read force on pressure pads.",
+    out = ["# Suno touch roles: let the role plugin read force on pressure pads.",
            "# libinput keeps ignoring pressure on these pads; only the plugin uses it.", ""]
     for b, v, p, s in pads:
         bus = {v_: k for k, v_ in BUS_IDS.items()}.get(b, "i2c")
-        out += [f"[Luma touch roles: {s}]", f"MatchBus={bus}", f"MatchVendor=0x{v:04X}", f"MatchProduct=0x{p:04X}",
+        out += [f"[Suno touch roles: {s}]", f"MatchBus={bus}", f"MatchVendor=0x{v:04X}", f"MatchProduct=0x{p:04X}",
                 "AttrInputProp=-INPUT_PROP_PRESSUREPAD", "AttrPressureRange=0:0", "AttrPalmPressureThreshold=0",
                 "AttrThumbPressureThreshold=0", ""]
     return "\n".join(out)
@@ -91,7 +91,7 @@ def build(models: dict, quirk_dirs: list[str] | None = None) -> tuple[str, str]:
 def write(models: dict, out_dir: str, quirk_dirs: list[str] | None = None) -> list[str]:
     os.makedirs(out_dir, exist_ok=True)
     src, quirks = build(models, quirk_dirs)
-    paths = [os.path.join(out_dir, "50-luma-touch-roles.lua"), os.path.join(out_dir, "50-luma-touch-roles.quirks")]
+    paths = [os.path.join(out_dir, "50-Suno-touch-roles.lua"), os.path.join(out_dir, "50-Suno-touch-roles.quirks")]
     for path, text in zip(paths, (src, quirks)):
         with open(path, "w", encoding="utf-8") as fh:
             fh.write(text)

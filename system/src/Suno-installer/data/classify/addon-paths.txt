@@ -1,0 +1,251 @@
+# Device add-on paths (ADR-052 Amendment 1, section 2, "Classification",
+# rules 4 and 5). Read by Suno_installer/classify.py.
+#
+# A package whose own files (documentation, licences, translations and
+# metadata aside) all lie under these paths is a device add-on, installed by
+# the scope of its section; codecs, drivers and session add-ons may carry
+# their own libraries and tools beside them (at most half of the files).
+# TeX's fonts are not fonts here: they are TeX's data, in the workspace.
+#
+# [data]     data-only add-ons (icon, GTK and cursor themes, dictionaries,
+#            sounds, wallpapers): for the person, under ~/.local/share,
+#            after a file-type check
+# [fonts]    font files: for the person, in ~/.local/share/fonts
+# [codecs]   GStreamer and FFmpeg codecs: add-ons in that release's trees
+#            and workspace
+# [drivers]  scanner (SANE) backends: like codecs, add-ons in that release's
+#            trees and workspace, loaded by the applications' libsane
+# [application] "pattern application": plugin folders of one application that is not
+#            Suno's own desktop (Thunar, Caja, Nemo, Dolphin): the package is that
+#            application's add-on, added to its tree (kind application, add_on_of)
+# [session]  native code loaded into the session (input-method engines,
+#            Files and Shell extensions, portal backends). Toolkit modules
+#            (GTK, GIO, pixbuf loaders, Qt platform plugins) are not: they load into
+#            applications, which have their own trees, so a typed request for
+#            one is a workspace package:
+#            device-wide only as an image-signed system module after an
+#            interactive yes, otherwise refused with the reason
+#
+# One fnmatch pattern per line, matched against absolute paths; "*" also
+# matches "/". /usr/lib*/ covers the multiarch and lib64 directories.
+
+[data]
+/usr/share/icons/*
+/usr/share/themes/*
+/usr/share/hunspell/*
+/usr/share/hunspell-bdic/*
+/usr/share/myspell/*
+/usr/share/hyphen/*
+/usr/share/mythes/*
+/usr/share/dict/*
+/var/lib/dictionaries-common/*
+/usr/share/aspell/*
+/usr/lib*/aspell/*
+/var/lib/aspell/*
+/usr/share/sounds/*
+/usr/share/backgrounds/*
+/usr/share/wallpapers/*
+/usr/share/gnome-background-properties/*
+/usr/share/gtksourceview-*/styles/*
+/usr/share/locale-langpack/*
+/usr/share/gnome/help-langpack/*
+/usr/share/X11/xkb/*
+/usr/lib/locale/*
+/usr/share/i18n/*
+# desktop themes and branding (colour schemes, Plasma themes, window decorations' data)
+/usr/share/color-schemes/*
+/usr/share/plasma/look-and-feel/*
+/usr/share/plasma/desktoptheme/*
+/usr/share/aurorae/*
+/usr/share/lxqt/themes/*
+/usr/share/lxqt/graphics/*
+/usr/share/lxqt/palettes/*
+/usr/share/lxqt/wallpapers/*
+/usr/share/konsole/*.colorscheme
+
+[fonts]
+/etc/X11/fontpath.d/*
+/usr/share/fonts/*
+/usr/share/fontconfig/conf.avail/*
+/etc/fonts/conf.avail/*
+/etc/fonts/conf.d/*
+/usr/share/X11/fonts/*
+/etc/X11/fonts/*
+/usr/share/fonts/X11/*
+/var/lib/defoma/*
+
+[codecs]
+# Plugin packs for open plugin standards, loaded by any host (ADR rule 4)
+/usr/lib*/ladspa/*
+/usr/lib/*/ladspa/*
+/usr/lib*/lv2/*
+/usr/lib/*/lv2/*
+/usr/lib*/dssi/*
+/usr/lib/*/dssi/*
+/usr/lib*/frei0r-1/*
+/usr/lib/*/frei0r-1/*
+/usr/lib*/alsa-lib/*
+/usr/lib/*/alsa-lib/*
+/usr/lib*/gstreamer-1.0/*
+/usr/lib*/libavcodec.so*
+/usr/lib*/libavformat.so*
+/usr/lib*/libopenh264.so*
+/usr/lib*/libdvdcss.so*
+/usr/lib*/libfdk-aac.so*
+/usr/lib*/mozilla/plugins/*
+# video decode drivers (VA-API, VDPAU)
+/usr/lib*/dri/*_drv_video.so
+/usr/lib/*/dri/*_drv_video.so
+/usr/lib*/vdpau/*
+/usr/lib/*/vdpau/*
+
+[drivers]
+/usr/lib*/sane/*
+/usr/lib/*/sane/*
+/etc/sane.d/*
+
+[session]
+/usr/lib*/gtk-*/*/immodules/*
+/usr/lib/*/gtk-*/*/immodules/*
+/usr/lib*/qt*/plugins/platforminputcontexts/*
+/usr/lib/*/qt*/plugins/platforminputcontexts/*
+# thumbnailers, panel plugins and file-manager plugins of the desktop
+/usr/share/thumbnailers/*
+/usr/lib*/xfce4/panel/plugins/*
+/usr/lib*/xfce4/panel-plugins/*
+/usr/lib/*/xfce4/panel/plugins/*
+/usr/share/xfce4/panel/plugins/*
+/usr/lib*/qt*/plugins/kf*/kio/*
+/usr/lib*/qt*/plugins/kf*/thumbcreator/*
+/usr/lib*/qt*/plugins/kf*/propertiesdialog/*
+/usr/lib/*/qt*/plugins/kf*/propertiesdialog/*
+/usr/lib/*/qt*/plugins/kf*/kio/*
+/usr/lib/*/qt*/plugins/kf*/thumbcreator/*
+# Plasma widgets, widget styles, window decorations and settings modules of the desktop
+/usr/share/plasma/plasmoids/*
+/usr/lib*/qt*/plugins/plasma/applets/*
+/usr/lib/*/qt*/plugins/plasma/applets/*
+/usr/lib*/qt*/plugins/plasma/kcms/*
+/usr/lib/*/qt*/plugins/plasma/kcms/*
+/usr/lib*/qt*/plugins/styles/*
+/usr/lib/*/qt*/plugins/styles/*
+/usr/lib*/qt*/plugins/org.kde.kdecoration*/*
+/usr/lib/*/qt*/plugins/org.kde.kdecoration*/*
+/usr/lib*/qt*/qml/org/kde/plasma/*
+# KDE's desktop daemon (kded) modules
+/usr/lib*/qt*/plugins/kf*/kded/*
+/usr/lib/*/qt*/plugins/kf*/kded/*
+# Secret Service providers
+/usr/share/dbus-1/services/org.freedesktop.secrets.service
+# input methods, Files and Shell extensions, portal backends
+/usr/lib*/ibus/*
+/usr/lib*/ibus-*
+/usr/libexec/ibus-engine-*
+/usr/share/ibus/component/*
+/usr/share/ibus-*
+/usr/lib*/fcitx5/*
+/usr/share/fcitx5/*
+/usr/lib*/fcitx/*
+/usr/share/fcitx/*
+/usr/lib*/nautilus/extensions-*
+/usr/share/nautilus-python/extensions/*
+/usr/share/gnome-shell/extensions/*
+/usr/share/xdg-desktop-portal/portals/*
+/usr/libexec/xdg-desktop-portal-*
+/usr/lib/systemd/user/xdg-desktop-portal-*
+/usr/share/dbus-1/services/org.freedesktop.impl.portal.*
+
+[application]
+/usr/lib*/thunarx-*/* thunar
+/usr/lib/*/thunarx-*/* thunar
+/usr/lib*/caja/extensions-* caja
+/usr/lib/*/caja/extensions-* caja
+/usr/lib*/nemo/extensions-* nemo
+/usr/lib/*/nemo/extensions-* nemo
+/usr/lib*/qt*/plugins/dolphin/* dolphin
+/usr/lib/*/qt*/plugins/dolphin/* dolphin
+/usr/lib*/qt*/plugins/kf*/kfileitemaction/* dolphin
+/usr/lib/*/qt*/plugins/kf*/kfileitemaction/* dolphin
+
+[system]
+# Plugin, module and configuration folders of system daemons: a package with files here
+# goes with its daemon (ADR rule 4: a module of a system module). '=': directly in that folder.
+/usr/lib/nginx/modules/*
+/usr/lib*/nginx/modules/*
+/usr/share/nginx/modules-available/*
+/usr/lib/apache2/modules/*
+/etc/apache2/mods-available/*
+/usr/lib*/httpd/modules/*
+/etc/httpd/conf.modules.d/*
+/usr/lib/*/samba/vfs/*
+/usr/lib*/samba/vfs/*
+/usr/lib/*/samba/ldb/*
+/usr/lib*/samba/ldb/*
+/usr/lib*/libvirt/connection-driver/*
+/usr/lib/*/libvirt/connection-driver/*
+/usr/lib*/libvirt/storage-backend/*
+/usr/lib/*/libvirt/storage-backend/*
+/usr/lib*/libvirt/storage-file/*
+/usr/lib/*/libvirt/storage-file/*
+/usr/share/libvirt/networks/*
+/usr/share/libvirt/nwfilter/*
+/etc/libvirt/qemu/networks/*
+/etc/libvirt/nwfilter/*
+/usr/lib*/vdr/*
+/usr/lib/vdr/*
+/etc/sysconfig/vdr-plugins.d/*
+/usr/share/munin/plugins/*
+/etc/munin/plugin-conf.d/*
+/usr/lib*/sssd/*
+/usr/lib/*/sssd/*
+/usr/lib*/libnfsidmap/*
+/usr/lib/*/libnfsidmap/*
+=/usr/lib*/pgsql/*.so
+/usr/share/pgsql/extension/*
+/usr/lib/postgresql/*/lib/*
+/usr/share/postgresql/*/extension/*
+/etc/news/*
+/usr/libexec/news/*
+/usr/libexec/initial-setup/*
+/usr/share/initial-setup/*
+# web-server configuration of a web application (it goes with that server)
+/etc/apache2/conf-available/*
+/etc/apache2/sites-available/*
+/etc/httpd/conf.d/*
+/etc/nginx/conf.d/*
+/etc/nginx/sites-available/*
+/etc/lighttpd/conf-available/*
+/etc/*/apache.conf
+/etc/*/apache2.conf
+/etc/*/lighttpd.conf
+
+[system-names]
+# Package names that are system modules by convention: Debian's CUPS printer drivers.
+printer-driver-*
+
+[session-roles]
+# A user unit, session service or autostart entry fills a session role the host shell fills
+# when its name or its package's description matches (lower case): a desktop component.
+*notification-daemon*
+*notification daemon*
+*notification server*
+org.freedesktop.*notifications*.service
+*ssh-agent*
+*ssh agent*
+*keyring-daemon*
+*global shortcut*
+*globalaccel*
+*authentication agent*
+*polkit*agent*
+
+[window-managers]
+# Code of standalone window managers, their decorators and plugins: a desktop component.
+/usr/bin/compiz
+/usr/bin/compiz-manager
+/usr/bin/emerald
+/usr/lib*/compiz/*.so
+/usr/lib/*/compiz/*.so
+/usr/lib*/emerald/*.so
+/usr/lib/*/emerald/*.so
+/usr/lib*/qt*/plugins/org.kde.kdecoration*/*
+/usr/lib/*/qt*/plugins/org.kde.kdecoration*/*

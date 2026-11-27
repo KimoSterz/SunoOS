@@ -6,12 +6,12 @@ import unittest
 from unittest import mock
 
 from gi.repository import Adw, Graphene, Gtk
-import notes_lumaui_runtime as base
-from prairie_apps.notes_lumaui import _descendants
-from luma_appkit import ScrollView
+import notes_SunoUI_runtime as base
+from prairie_apps.notes_SunoUI import _descendants
+from Suno_appkit import ScrollView
 
 if os.environ.get("NOTES_REVIEW_DARK") == "1":
-    mock.patch("luma_appkit.widgets._prefers_dark", lambda: True).start()
+    mock.patch("Suno_appkit.widgets._prefers_dark", lambda: True).start()
 
 
 def capture(widget, name):

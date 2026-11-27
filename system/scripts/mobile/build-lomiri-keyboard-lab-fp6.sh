@@ -22,7 +22,7 @@ if [ "$(uname -s)" != Linux ] || [ "$(uname -m)" != x86_64 ]; then
 fi
 
 work_dir=$(mktemp -d "$output_dir.work.XXXXXX")
-container=luma-lomiri-keyboard-110-$$
+container=Suno-lomiri-keyboard-110-$$
 cleanup() {
   podman rm -f "$container" >/dev/null 2>&1 || true
   rm -rf "$work_dir"

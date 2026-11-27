@@ -71,25 +71,25 @@ def library(environment: dict[str, str] | None = None) -> tuple[Path, str | Flat
     """
     env = os.environ if environment is None else environment
     candidates: list[tuple[Path, str]] = []
-    override = env.get("LUMA_TIDE_LIBRARY", "")
+    override = env.get("SUNO_TIDE_LIBRARY", "")
     if override:
         path = Path(override)
         if path.is_file() and not _remote_capable(path):
             raise TideSyncError("The selected Tide library does not support music servers.")
-        return path, env.get("LUMA_TIDE_PYTHONPATH", "")
+        return path, env.get("SUNO_TIDE_PYTHONPATH", "")
     from .app_installs import FLATPAK, TIDE, resolve
     installation = resolve(TIDE, environment)
     if installation.kind == FLATPAK:
-        return installation.data_home / "luma-tide" / "library.db", FlatpakRuntime(TIDE)
-    native = _data_home(environment) / "luma-tide" / "library.db"
+        return installation.data_home / "Suno-tide" / "library.db", FlatpakRuntime(TIDE)
+    native = _data_home(environment) / "Suno-tide" / "library.db"
     if native.is_file():
         return native, ""
     candidates.append((native, ""))
-    development = _data_home(environment) / "luma-dev"
+    development = _data_home(environment) / "Suno-dev"
     try:
         for root in development.iterdir():
-            database = root / "data" / "luma-tide" / "library.db"
-            if database.is_file() and (root / "src" / "luma_tide" / "model.py").is_file():
+            database = root / "data" / "Suno-tide" / "library.db"
+            if database.is_file() and (root / "src" / "Suno_tide" / "model.py").is_file():
                 candidates.append((database, str(root / "src")))
     except OSError:
         pass
@@ -103,8 +103,8 @@ _MODEL_SCRIPT = r"""
 import json, os, sys
 from pathlib import Path
 request = json.load(sys.stdin)
-from luma_tide.model import LibraryStore
-path = (Path(os.environ["XDG_DATA_HOME"]) / "luma-tide/library.db"
+from Suno_tide.model import LibraryStore
+path = (Path(os.environ["XDG_DATA_HOME"]) / "Suno-tide/library.db"
         if request.get("sandbox") else Path(request["database"]))
 store = LibraryStore(path)
 if request["op"] == "add":
@@ -149,7 +149,7 @@ _KEYRING_SCRIPT = r"""
 import json, sys
 request = json.load(sys.stdin)
 try:
-    from luma_tide.credentials import SecretServiceStore
+    from Suno_tide.credentials import SecretServiceStore
     store = SecretServiceStore()
     operation = request["op"]
     result = None
@@ -226,7 +226,7 @@ def keyring_clear(reference: str, code: str | FlatpakRuntime = "") -> None:
 
 def source_marker(environment: dict[str, str] | None = None) -> Path:
     found = library(environment)
-    database = found[0] if found else _data_home(environment) / "luma-tide" / "library.db"
+    database = found[0] if found else _data_home(environment) / "Suno-tide" / "library.db"
     return database.with_name("sources-changed")
 
 
@@ -297,12 +297,12 @@ def sync_tide(*, address: str, token: str, http, state: dict, scope: str,
     from .app_installs import NONE, TIDE, resolve
 
     installation = resolve(TIDE, environment)
-    if installation.kind == NONE and not (environment or os.environ).get("LUMA_TIDE_LIBRARY"):
+    if installation.kind == NONE and not (environment or os.environ).get("SUNO_TIDE_LIBRARY"):
         return "music sources: Tide is not installed, skipped"
     found = library(environment)
     if found is None:
         # A receiving device need not launch Tide before its first sync.
-        found = (_data_home(environment) / "luma-tide" / "library.db", "")
+        found = (_data_home(environment) / "Suno-tide" / "library.db", "")
     database, code = found
     if not database.is_file() or not _remote_capable(database):
         _model(database, code, {"op": "init"})

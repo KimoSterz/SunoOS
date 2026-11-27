@@ -1,0 +1,27 @@
+diff --git a/src/resources/ui/nautilus-window.blp b/src/resources/ui/nautilus-window.blp
+--- a/src/resources/ui/nautilus-window.blp
++++ b/src/resources/ui/nautilus-window.blp
+@@ -255,6 +255,7 @@ template $NautilusWindow: Adw.ApplicationWindow {
+ 
+           styles [
+             "Suno-files-workspace",
++            "Suno-island-split",
+           ]
+ 
+           sidebar: Adw.ToolbarView sidebar_action_surface {
+@@ -262,6 +263,7 @@ template $NautilusWindow: Adw.ApplicationWindow {
+             margin-top: 9;
+             margin-bottom: 9;
+             margin-start: 9;
++            overflow: hidden;
+ 
+             styles [
+               "Suno-sidebar-surface",
+@@ -304,6 +306,7 @@ template $NautilusWindow: Adw.ApplicationWindow {
+             margin-bottom: 9;
+             margin-start: 9;
+             margin-end: 9;
++            overflow: hidden;
+ 
+             styles [
+               "Suno-content-surface",

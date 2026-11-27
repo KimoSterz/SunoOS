@@ -7,7 +7,7 @@
 
 Name: ModemManager
 Version: 1.25.95
-Release: 0.2.luma2%{?dist}
+Release: 0.2.Suno2%{?dist}
 Summary: Mobile broadband manager with bounded FP6 GNSS support
 License: GPL-2.0-or-later
 URL: https://gitlab.freedesktop.org/mobile-broadband/ModemManager
@@ -172,9 +172,9 @@ cp -a cli/mmcli-completion %{buildroot}%{_datadir}/bash-completion/completions/m
 %{_datadir}/vala/vapi/libmm-glib.*
 
 %changelog
-* Fri Aug 28 2026 Project Luma <codex@project-luma.local> - 1.25.95-0.2.luma2
+* Fri Aug 28 2026 Project Suno <codex@project-suno.local> - 1.25.95-0.2.Suno2
 - Preserve netlink completion callbacks across transaction removal
 - Decode each netlink error from its own message header
 
-* Thu Aug 20 2026 Project Luma <codex@project-luma.local> - 1.25.95-0.1.luma1
+* Thu Aug 20 2026 Project Suno <codex@project-suno.local> - 1.25.95-0.1.Suno1
 - Add the bounded FP6 AFW-gated GNSS and position-report path

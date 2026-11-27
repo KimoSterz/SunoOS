@@ -1,6 +1,6 @@
 # Native Android image packages
 
-`luma-android-images` installs a matching system/vendor pair under
+`Suno-android-images` installs a matching system/vendor pair under
 `/usr/share/waydroid-extra/images`. Each package targets x86_64 or AArch64;
 its producer architecture must match the RPM architecture. The runtime package
 provides host installation, application windows and desktop integration.
@@ -11,7 +11,7 @@ and vendor NOTICE files and the Figtree license. Its checks bind installed image
 bytes to those records and verify that the Java/native window interface and
 VINTF versions correspond. They do not establish device behavior or app compatibility.
 
-The accompanying materials archive contains Luma's pinned Android patches,
+The accompanying materials archive contains Suno's pinned Android patches,
 build references and observed build receipts. It is private candidate provenance;
 it is not a complete corresponding-source offer for every upstream component.
 Public distribution requires the maintained licensing/source-offer and release

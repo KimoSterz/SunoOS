@@ -1,4 +1,4 @@
-From: Project Luma <maintainers@projectluma.org>
+From: Project Suno <maintainers@projectSuno.org>
 Subject: [PATCH] Filer: cache Applications and hide file metadata columns
 
 --- a/src/nautilus-applications-directory.c
@@ -109,13 +109,13 @@ Subject: [PATCH] Filer: cache Applications and hide file metadata columns
 +    {
 +        catalogue_bus = g_object_ref (self->host_bus);
 +        g_dbus_connection_signal_subscribe (catalogue_bus,
-+            "org.projectluma.ApplicationDirectory1", "org.projectluma.ApplicationDirectory1", "Changed",
-+            "/org/projectluma/ApplicationDirectory1", NULL, G_DBUS_SIGNAL_FLAGS_NONE,
++            "org.projectSuno.ApplicationDirectory1", "org.projectSuno.ApplicationDirectory1", "Changed",
++            "/org/projectSuno/ApplicationDirectory1", NULL, G_DBUS_SIGNAL_FLAGS_NONE,
 +            on_host_applications_changed, NULL, NULL);
 +    }
      if (self->host_bus != NULL)
          self->host_subscription = g_dbus_connection_signal_subscribe (self->host_bus,
-             "org.projectluma.ApplicationDirectory1", "org.projectluma.ApplicationDirectory1", "Changed",
+             "org.projectSuno.ApplicationDirectory1", "org.projectSuno.ApplicationDirectory1", "Changed",
 @@ -529,6 +592,11 @@
  {
      if (g_file_test ("/.flatpak-info", G_FILE_TEST_IS_REGULAR))
@@ -131,7 +131,7 @@ Subject: [PATCH] Filer: cache Applications and hide file metadata columns
 --- a/src/nautilus-list-view.c
 +++ b/src/nautilus-list-view.c
 @@ -196,6 +196,16 @@
-     /* Luma keeps starring in actions, never as a list column.
+     /* Suno keeps starring in actions, never as a list column.
       * Discard stale per-folder column preferences as well. */
      g_hash_table_remove (visible_columns_hash, "starred");
 +    NautilusFile *directory_file = nautilus_list_base_get_directory_as_file (NAUTILUS_LIST_BASE (self));
@@ -147,8 +147,8 @@ Subject: [PATCH] Filer: cache Applications and hide file metadata columns
      if (self->phone_layout && self->search_directory == NULL)
      {
          /* Temporary phone columns do not rewrite saved desktop preferences. */
---- a/test/automated/display/test-luma-column-header-menu.c
-+++ b/test/automated/display/test-luma-column-header-menu.c
+--- a/test/automated/display/test-Suno-column-header-menu.c
++++ b/test/automated/display/test-Suno-column-header-menu.c
 @@ -1,5 +1,6 @@
  /* SPDX-License-Identifier: GPL-3.0-or-later */
  #include <nautilus-application.h>
@@ -183,7 +183,7 @@ Subject: [PATCH] Filer: cache Applications and hide file metadata columns
 +{
 +    g_autolist (NautilusFile) files = nautilus_directory_get_file_list (directory);
 +    for (GList *l = files; l != NULL; l = l->next)
-+        if (g_strcmp0 (nautilus_file_get_name (l->data), "org.projectluma.CacheProbe.desktop") == 0)
++        if (g_strcmp0 (nautilus_file_get_name (l->data), "org.projectSuno.CacheProbe.desktop") == 0)
 +            return TRUE;
 +    return FALSE;
 +}
@@ -194,7 +194,7 @@ Subject: [PATCH] Filer: cache Applications and hide file metadata columns
 +    g_autofree char *apps = g_build_filename (g_get_user_data_dir (), "applications", NULL);
 +    g_assert_cmpint (g_mkdir_with_parents (apps, 0700), ==, 0);
 +    /* Exercise a real desktop catalogue, not a mock enumeration result. */
-+    g_autofree char *entry = g_build_filename (apps, "org.projectluma.CacheProbe.desktop", NULL);
++    g_autofree char *entry = g_build_filename (apps, "org.projectSuno.CacheProbe.desktop", NULL);
 +    g_assert_true (g_file_set_contents (entry,
 +        "[Desktop Entry]\nType=Application\nName=Catalogue probe\nExec=/bin/true\nIcon=application-x-executable\n", -1, NULL));
 +    g_autoptr (NautilusDirectory) first = load_applications ("applications:///cache-probe-first");

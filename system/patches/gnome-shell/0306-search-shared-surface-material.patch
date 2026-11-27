@@ -1,16 +1,16 @@
-From: Project Luma <builds@project-luma.local>
+From: Project Suno <builds@project-suno.local>
 Subject: [PATCH] shell: share dock materials with search surfaces
 
---- a/js/ui/lumaSearch.js
-+++ b/js/ui/lumaSearch.js
+--- a/js/ui/SunoSearch.js
++++ b/js/ui/SunoSearch.js
 @@ -11,6 +11,7 @@
  import * as ModalDialog from './modalDialog.js';
  import * as Search from './search.js';
  import * as ShellEntry from './shellEntry.js';
-+import * as SurfaceMaterials from './lumaSurfaceMaterials.js';
++import * as SurfaceMaterials from './SunoSurfaceMaterials.js';
  
- const LumaSearchDialog = GObject.registerClass(
- class LumaSearchDialog extends ModalDialog.ModalDialog {
+ const SunoSearchDialog = GObject.registerClass(
+ class SunoSearchDialog extends ModalDialog.ModalDialog {
 @@ -43,7 +44,7 @@
          this.accessible_name = _('Search this machine');
          this._lightbox._radialEffect = false;
@@ -30,13 +30,13 @@ Subject: [PATCH] shell: share dock materials with search surfaces
 +            label.clutter_text.line_wrap = true;
 +        }
          const suggestions = new St.BoxLayout({
-             style_class: 'luma-search-suggestions',
+             style_class: 'Suno-search-suggestions',
              x_align: Clutter.ActorAlign.CENTER,
          });
 -        for (const suggestion of [_('Reel'), _('dark'), _('cursor size'), _('Nora'), _('wallpaper'), _('Retro')]) {
 +        for (const suggestion of [_('Settings'), _('Files'), _('Weather')]) {
              const button = new St.Button({
-                 style_class: 'luma-search-suggestion',
+                 style_class: 'Suno-search-suggestion',
                  label: suggestion,
 @@ -167,6 +173,15 @@
          this._results.connect('result-activated', () => this.close());
@@ -46,7 +46,7 @@ Subject: [PATCH] shell: share dock materials with search surfaces
 +        // The field and the visible intro/results each own one dock material.
 +        // Rows remain transparent; no nested blur or wrapper background.
 +        this._surfaceBindings = [this._fieldIsland, this._intro, this._results].map(actor => {
-+            actor.add_style_class_name('luma-search-material');
++            actor.add_style_class_name('Suno-search-material');
 +            const binding = SurfaceMaterials.bindSurface(actor, {cornerRadii: 24});
 +            binding.setFloatingRecipe({radius: 24, saturation: 1.5});
 +            return binding;

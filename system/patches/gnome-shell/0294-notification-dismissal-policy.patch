@@ -4,8 +4,8 @@ Allow horizontal arbitration after touch-down; may-recognize has no movement
 yet. Match NotificationMessage.canClose for swipe and Clear all: critical
 connection errors can be dismissed, while active incoming calls remain protected.
 ---
---- a/js/ui/lumaNotificationBeacon.js
-+++ b/js/ui/lumaNotificationBeacon.js
+--- a/js/ui/SunoNotificationBeacon.js
++++ b/js/ui/SunoNotificationBeacon.js
 @@ -584,6 +584,10 @@
              context.log_pick(new Clutter.ActorBox({x1: 0, y1: 0,
                  x2: this.width, y2: Math.max(this.height, 44 * scale)}), this);
@@ -19,13 +19,13 @@ connection errors can be dismissed, while active incoming calls remain protected
          this.set_allocation(box);
 @@ -658,7 +662,7 @@
          header.add_child(this._dndButton);
-         this._clear = new St.Button({label: _('Clear all'), style_class: 'luma-lip-clear', can_focus: true});
+         this._clear = new St.Button({label: _('Clear all'), style_class: 'Suno-lip-clear', can_focus: true});
          this._clear.connect('clicked', () => {
 -            for (const n of this._records) if (n.urgency !== MessageTray.Urgency.CRITICAL) n.destroy(MessageTray.NotificationDestroyedReason.DISMISSED);
 +            for (const n of [...this._records]) if (!MessageList.isIncomingCallNotification(n)) n.destroy(MessageTray.NotificationDestroyedReason.DISMISSED);
          });
          header.add_child(this._clear); column.add_child(header);
-         this._list = new St.BoxLayout({style_class: 'luma-lip-list', orientation: Clutter.Orientation.VERTICAL});
+         this._list = new St.BoxLayout({style_class: 'Suno-lip-list', orientation: Clutter.Orientation.VERTICAL});
 @@ -713,7 +717,7 @@
      _syncTray() {
          if (!this.isOpen || !this._list) return;

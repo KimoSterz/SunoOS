@@ -4,7 +4,7 @@
 
 Available width is deliberately absent here. Layout class belongs to
 AdwBreakpoint in each window. Presentation and input are capabilities supplied
-by Luma Shell through the activation environment and must never be inferred
+by Suno Shell through the activation environment and must never be inferred
 from the width of a window.
 """
 
@@ -14,12 +14,12 @@ import os
 from dataclasses import dataclass
 from enum import Enum
 
-from luma_appkit.context import InputMode, PresentationMode
+from Suno_appkit.context import InputMode, PresentationMode
 from pathlib import Path
 from typing import Mapping
 
 
-DEVICE_CLASS_MARKER = Path("/etc/luma-device-class")
+DEVICE_CLASS_MARKER = Path("/etc/Suno-device-class")
 DEVICE_CLASSES = frozenset({"desktop", "tablet", "handheld"})
 
 
@@ -39,7 +39,7 @@ class PrairieContext:
         env = os.environ if environment is None else environment
         device_class = _device_class(env)
 
-        presentation_value = env.get("LUMA_PRESENTATION_MODE", "").strip().lower()
+        presentation_value = env.get("SUNO_PRESENTATION_MODE", "").strip().lower()
         if presentation_value:
             presentation = PresentationMode(presentation_value)
         elif device_class == "handheld":
@@ -47,7 +47,7 @@ class PrairieContext:
         else:
             presentation = PresentationMode.WINDOWED
 
-        input_value = env.get("LUMA_INPUT_MODE", "").strip().lower()
+        input_value = env.get("SUNO_INPUT_MODE", "").strip().lower()
         if input_value:
             input_mode = InputMode(input_value)
         elif device_class == "handheld":
@@ -59,7 +59,7 @@ class PrairieContext:
 
 
 def _device_class(environment: Mapping[str, str]) -> str:
-    explicit = environment.get("LUMA_DEVICE_CLASS", "").strip().lower()
+    explicit = environment.get("SUNO_DEVICE_CLASS", "").strip().lower()
     if explicit in DEVICE_CLASSES:
         return explicit
 

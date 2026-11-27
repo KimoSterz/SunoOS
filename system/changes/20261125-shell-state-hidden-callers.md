@@ -1,7 +1,7 @@
 ---
 type: security
 component: Desktop
-packages: [luma-shell-state]
+packages: [Suno-shell-state]
 highlight: false
 ---
 Summary: Desktop settings refuse programs that hide what they are

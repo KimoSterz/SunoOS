@@ -35,7 +35,7 @@ function permissionsTest() {
     actor._sync();
     assert(!actor.visible && rows.length === 4 && bindings.length === 4, 'a denied Power page must have no visible actions');
     rows.forEach((row, index) => {
-        assert(row.icon === `lumaui-${icons[index]}-symbolic` && bindings[index].property === permissions[index],
+        assert(row.icon === `SunoUI-${icons[index]}-symbolic` && bindings[index].property === permissions[index],
             'each action must keep its own icon and permission binding');
         row.visible = true; row.listeners['notify::visible']();
         assert(actor.visible, 'an external permission change must update the footer');

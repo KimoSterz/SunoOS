@@ -4,7 +4,7 @@
 # Build flatpak-runtime-config, the one package a Flatpak runtime needs that
 # Fedora publishes only in its Koji Flatpak tags, not in the Everything
 # repository. The spec is Fedora's (packaging/flatpak/runtime/flatpak-runtime-config/)
-# with Luma's component data. Output: build/packages/flatpak-runtime-config/RPMS/<arch>.
+# with Suno's component data. Output: build/packages/flatpak-runtime-config/RPMS/<arch>.
 set -euo pipefail
 . "$(dirname -- "$0")/lib.sh"
 . "$depot_repo_root/config/desktop/inputs.env"
@@ -14,7 +14,7 @@ case "$DEPOT_ARCH" in
   aarch64) builder=$FEDORA_RPM_BUILD_CONTAINER_AARCH64 ;;
   *) depot_die "unsupported runtime config architecture: $DEPOT_ARCH" ;;
 esac
-export LUMA_RPM_BUILDER_ARCHITECTURE=$DEPOT_ARCH
+export SUNO_RPM_BUILDER_ARCHITECTURE=$DEPOT_ARCH
 
 source_dir="$depot_repo_root/packaging/flatpak/runtime/flatpak-runtime-config"
 output_dir="$depot_repo_root/build/packages/flatpak-runtime-config"

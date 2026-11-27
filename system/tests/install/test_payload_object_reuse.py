@@ -15,7 +15,7 @@ spec = importlib.util.spec_from_file_location('payload_reuse', ROOT / 'scripts/i
 reuse = importlib.util.module_from_spec(spec); spec.loader.exec_module(reuse)
 wrapper_spec=importlib.util.spec_from_file_location('payload_wrapper',ROOT/'scripts/install/atlas-iso/run-mkksiso.py')
 wrapper=importlib.util.module_from_spec(wrapper_spec);wrapper_spec.loader.exec_module(wrapper)
-REF = 'luma/1/aarch64/nightly'
+REF = 'Suno/1/aarch64/nightly'
 C = 'a' * 64
 
 
@@ -32,7 +32,7 @@ def manifest(repo, candidate=C):
 
 
 def fixture(repo):
-    for name in ('objects', 'refs/heads/luma/1/aarch64'):
+    for name in ('objects', 'refs/heads/Suno/1/aarch64'):
         (repo/name).mkdir(parents=True, exist_ok=True)
     (repo/'config').write_text('[core]\nmode=archive-z2\nrepo_version=1\n')
     (repo/'summary').write_bytes(b'new summary')
@@ -64,7 +64,7 @@ class PayloadReuse(unittest.TestCase):
                 if change=='private':bad['metadata_roots'].append('keys')
                 if change=='parent':bad['config']+='parent=/secret\n'
                 if change=='traversal':bad['objects']['objects/../private']=dict(bytes=1,sha256='f'*64)
-                if change=='heads':bad['heads']['luma/1/aarch64/device/nightly']='f'*64
+                if change=='heads':bad['heads']['Suno/1/aarch64/device/nightly']='f'*64
                 if change=='architecture':bad['architecture']='x86_64'
                 with self.subTest(change=change),self.assertRaises(ValueError):reuse.plan(m,bad)
 
@@ -90,14 +90,14 @@ class PayloadReuse(unittest.TestCase):
             extra.unlink()
             with self.assertRaisesRegex(ValueError,'object set'):reuse.verify_object_inventory(oldrepo,old)
             extra.write_bytes(original)
-            donor=root/'donor.iso';self.run_iso('-outdev',donor,'-map',oldrepo,'/luma/repo')
+            donor=root/'donor.iso';self.run_iso('-outdev',donor,'-map',oldrepo,'/Suno/repo')
             newrepo=root/'new/repo';shutil.copytree(oldrepo,newrepo);(newrepo/extra.relative_to(oldrepo)).unlink();(newrepo/extra.parent.relative_to(oldrepo)).rmdir();(newrepo/'refs/heads/ostree-metadata').unlink()
             (newrepo/f'objects/aa/{"a"*62}.commitmeta').write_bytes(b'replacement signature')
             (newrepo/'summary').write_bytes(b'fresh summary');(newrepo/'objects/aa').chmod(0o700);new=manifest(newrepo)
             options=root/'commands';op=reuse.write_options(newrepo,old,new,options)
             self.assertEqual(op['remove'],[extra.relative_to(oldrepo).as_posix()])
             out=root/'new.iso';self.run_iso('-indev',donor,'-outdev',out,'-options_from_file',options)
-            extracted=root/'extracted';self.run_iso('-osirrox','on','-indev',out,'-extract','/luma/repo',extracted)
+            extracted=root/'extracted';self.run_iso('-osirrox','on','-indev',out,'-extract','/Suno/repo',extracted)
             reuse.verify_iso_inventory(out,new)
             actual={p.relative_to(extracted).as_posix():p.read_bytes() for p in extracted.rglob('*') if p.is_file()}
             expected={p.relative_to(newrepo).as_posix():p.read_bytes() for p in newrepo.rglob('*') if p.is_file()}
@@ -141,7 +141,7 @@ class PayloadReuse(unittest.TestCase):
     def test_shared_candidate_cache_cannot_be_used_as_payload_custody(self):
         with tempfile.TemporaryDirectory() as d:
             repo=Path(d)/'repo';fixture(repo)
-            foreign=repo/'refs/heads/luma/1/x86_64/nightly'
+            foreign=repo/'refs/heads/Suno/1/x86_64/nightly'
             foreign.parent.mkdir(parents=True);foreign.write_text('e'*64+'\n')
             before=foreign.read_bytes()
             cache=reuse.capture_index(repo,'b'*40,C,'aarch64','arm-preview',REF,scope='candidate-cache')
@@ -176,7 +176,7 @@ class PayloadReuse(unittest.TestCase):
             def commit():
                 c=run('ostree','--repo='+str(repo),'commit','--branch='+REF,'--tree=dir='+str(tree),'--gpg-sign='+fpr,'--gpg-homedir='+str(home)).strip()
                 run('ostree','--repo='+str(repo),'summary','--update','--gpg-sign='+fpr,'--gpg-homedir='+str(home));return c
-            oldcommit=commit();old=manifest(repo,oldcommit);donor=r/'old.iso';self.run_iso('-outdev',donor,'-map',repo,'/luma/repo')
+            oldcommit=commit();old=manifest(repo,oldcommit);donor=r/'old.iso';self.run_iso('-outdev',donor,'-map',repo,'/Suno/repo')
             old_index=reuse.capture_index(repo,'b'*40,oldcommit,'aarch64','arm-preview',REF)
             donor_receipt=reuse.verify_iso_inventory(donor,old);receipt_path=r/'donor-receipt.json';reuse.save_private(receipt_path,donor_receipt)
             receipt_sha=reuse.digest(receipt_path)
@@ -191,7 +191,7 @@ class PayloadReuse(unittest.TestCase):
             new_index=reuse.load_pinned(cli_index,cli_pin,reuse.INDEX_SCHEMA)
             # Exercise the exporter cache -> selected signed payload boundary
             # with a real shared repository and full OSTree fsck on both sides.
-            foreign_ref='luma/1/x86_64/nightly'
+            foreign_ref='Suno/1/x86_64/nightly'
             run('ostree','--repo='+str(repo),'refs','--create='+foreign_ref,oldcommit)
             foreign_before=(repo/'refs/heads'/foreign_ref).read_bytes()
             cache_path=r/'shared-cache.json'
@@ -238,9 +238,9 @@ class PayloadReuse(unittest.TestCase):
 
             actual_manifest,operation=reuse.authenticated_plan(donor,receipt_path,receipt_sha,repo,index_path,index_sha,options)
             self.assertEqual(actual_manifest['objects'],new['objects']);self.assertTrue(operation['reuse'])
-            payload=r/'luma';payload.mkdir();(payload/'repo').symlink_to(repo,target_is_directory=True)
+            payload=r/'Suno';payload.mkdir();(payload/'repo').symlink_to(repo,target_is_directory=True)
             out=r/'new.iso'
-            command=wrapper.replace_payload_command(['xorriso','-indev',str(donor),'-outdev',str(out),'-map',str(payload),'luma'],payload_options=options)
+            command=wrapper.replace_payload_command(['xorriso','-indev',str(donor),'-outdev',str(out),'-map',str(payload),'Suno'],payload_options=options)
             subprocess.run(command+['-commit','--','-end'],check=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
             final_receipt=reuse.verify_iso_inventory(out,actual_manifest)
             self.assertEqual(final_receipt['iso_sha256'],reuse.digest(out))
@@ -255,7 +255,7 @@ class PayloadReuse(unittest.TestCase):
             with self.assertRaisesRegex(ValueError,'donor ISO'):
                 reuse.authenticated_plan(donor,receipt_path,receipt_sha,repo,index_path,index_sha,r/'bad-plan')
 
-            extracted=r/'extracted';self.run_iso('-osirrox','on','-indev',out,'-extract','/luma/repo',extracted)
+            extracted=r/'extracted';self.run_iso('-osirrox','on','-indev',out,'-extract','/Suno/repo',extracted)
             run('ostree','--repo='+str(extracted),'fsck','--all')
             client=r/'client';run('ostree','--repo='+str(client),'init','--mode=archive')
             run('ostree','--repo='+str(client),'remote','add','--gpg-import='+str(key),'--set=gpg-verify-summary=true','fixture',extracted.as_uri())

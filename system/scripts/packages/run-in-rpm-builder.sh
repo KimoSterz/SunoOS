@@ -17,10 +17,10 @@ mkdir -p "$build_root" && : >"$build_root/.trackerignore"
 host_workdir=$(realpath "$1")
 builder_image=$2
 builder_command=$3
-builder_name=${LUMA_RPM_BUILDER_NAME:-luma-rpm-builder-f44}
-builder_architecture=${LUMA_RPM_BUILDER_ARCHITECTURE:-}
-builder_mode=${LUMA_RPM_BUILDER_MODE:-cached}
-disable_selinux_label=${LUMA_RPM_BUILDER_DISABLE_SELINUX_LABEL:-0}
+builder_name=${SUNO_RPM_BUILDER_NAME:-Suno-rpm-builder-f44}
+builder_architecture=${SUNO_RPM_BUILDER_ARCHITECTURE:-}
+builder_mode=${SUNO_RPM_BUILDER_MODE:-cached}
+disable_selinux_label=${SUNO_RPM_BUILDER_DISABLE_SELINUX_LABEL:-0}
 
 case "$builder_architecture" in
   ''|x86_64|aarch64) ;;
@@ -37,7 +37,7 @@ esac
 case "$disable_selinux_label" in
   0|1) ;;
   *)
-    printf 'error: LUMA_RPM_BUILDER_DISABLE_SELINUX_LABEL must be 0 or 1\n' >&2
+    printf 'error: SUNO_RPM_BUILDER_DISABLE_SELINUX_LABEL must be 0 or 1\n' >&2
     exit 1
     ;;
 esac
@@ -54,7 +54,7 @@ container_workdir="/build/${host_workdir#"$build_root"/}"
 
 # Native CI workers already run inside the pinned Fedora job container. The
 # architecture check is mandatory: a label cannot turn an x86 compiler into ARM.
-if [ "${LUMA_RPM_BUILDER_DIRECT:-0}" = 1 ]; then
+if [ "${SUNO_RPM_BUILDER_DIRECT:-0}" = 1 ]; then
   actual_architecture=$(rpm --eval '%{_arch}')
   expected_architecture=${builder_architecture:-$(uname -m)}
   [ "$actual_architecture" = "$expected_architecture" ] || {
@@ -67,7 +67,7 @@ fi
 
 # Local package validation can use an existing Fedora development container
 # when nested image-loader sandboxes are unavailable in the pinned builder.
-if [ -n "${LUMA_RPM_BUILDER_EXISTING:-}" ]; then
+if [ -n "${SUNO_RPM_BUILDER_EXISTING:-}" ]; then
   # Newly staged host files need the same shared label as ordinary builders.
   if [ "$disable_selinux_label" = 0 ] && command -v getenforce >/dev/null 2>&1 && \
       [ "$(getenforce)" = Enforcing ]; then
@@ -76,8 +76,8 @@ if [ -n "${LUMA_RPM_BUILDER_EXISTING:-}" ]; then
   # Builder commands read the target architecture (their verification
   # unpacks RPMS/<architecture>); pass it as the other modes do.
   podman exec --user root --workdir "$host_workdir" \
-    --env "LUMA_RPM_BUILDER_ARCHITECTURE=${builder_architecture:-x86_64}" \
-    "$LUMA_RPM_BUILDER_EXISTING" /bin/bash -lc "$builder_command"
+    --env "SUNO_RPM_BUILDER_ARCHITECTURE=${builder_architecture:-x86_64}" \
+    "$SUNO_RPM_BUILDER_EXISTING" /bin/bash -lc "$builder_command"
   exit
 fi
 
@@ -107,7 +107,7 @@ if [ "$builder_mode" = build ]; then
     printf 'error: one-shot RPM builds require normal SELinux labelling\n' >&2
     exit 1
   }
-  control_dir=$(mktemp -d "$host_workdir/.luma-builder.XXXXXX")
+  control_dir=$(mktemp -d "$host_workdir/.Suno-builder.XXXXXX")
   trap 'rm -rf "$control_dir"' EXIT
   printf '%s\n' "$builder_command" > "$control_dir/command.sh"
   python3 - "$control_dir" "$build_root" "$container_workdir" <<'PY'
@@ -206,9 +206,9 @@ if ! podman container exists "$builder_name"; then
     "${architecture_options[@]}" \
     "${security_options[@]}" \
     --name "$builder_name" \
-    --hostname luma-rpm-builder \
+    --hostname Suno-rpm-builder \
     --volume "$volume_spec" \
-    --env HOME=/tmp/luma-rpm-home \
+    --env HOME=/tmp/Suno-rpm-home \
     "$builder_image" \
     sleep infinity >/dev/null
 fi
@@ -218,7 +218,7 @@ if [ "$(podman inspect --format '{{.State.Running}}' "$builder_name")" != true ]
 fi
 
 podman exec \
-  --env "LUMA_RPM_BUILDER_ARCHITECTURE=$builder_architecture" \
+  --env "SUNO_RPM_BUILDER_ARCHITECTURE=$builder_architecture" \
   --workdir "$container_workdir" \
   "$builder_name" \
   /bin/bash -lc "$builder_command"

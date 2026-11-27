@@ -6,8 +6,8 @@ import threading
 import time
 import unittest
 from gi.repository import GLib
-from charlie_luma.application import CharlieApplication
-from charlie_luma.model import Account, ServerConfig
+from charlie_Suno.application import CharlieApplication
+from charlie_Suno.model import Account, ServerConfig
 
 class Client:
     def __init__(self, account): self.account = account; self.calls = []; self.closed = threading.Event()
@@ -22,7 +22,7 @@ class HostApplicationTests(unittest.TestCase):
         self.reloads = []; self.background = []; self.client = Client(self.account)
         self.app = SimpleNamespace(host_client=self.client, store=None, secrets=None, call_mail_agent=self.reloads.append, ensure_mail_agent=lambda: self.background.append(True))
     def test_google_entry_refuses_without_host_call_and_completes_on_glib(self):
-        from charlie_luma.oauth import GoogleOAuthUnavailable
+        from charlie_Suno.oauth import GoogleOAuthUnavailable
         complete = []
         future = CharlieApplication.begin_google_sign_in(self.app,
             lambda account, error: complete.append((account, error)))
@@ -55,7 +55,7 @@ class HostApplicationTests(unittest.TestCase):
 
 class AsyncAccountTests(unittest.TestCase):
     def test_glib_heartbeat_and_failure_completion_while_native_owner_is_blocked(self):
-        from charlie_luma.host_mail_client import Engine
+        from charlie_Suno.host_mail_client import Engine
         for operation in ('SaveAccount', 'RemoveAccount'):
             with self.subTest(operation=operation):
                 entered = threading.Event(); release = threading.Event(); closed = threading.Event()

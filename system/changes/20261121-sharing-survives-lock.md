@@ -1,7 +1,7 @@
 ---
 type: fix
 component: Desktop
-packages: [mutter, mutter-common, gnome-shell, gnome-shell-common, luma-portal]
+packages: [mutter, mutter-common, gnome-shell, gnome-shell-common, Suno-portal]
 highlight: false
 ---
 Summary: Screen sharing survives locking the screen

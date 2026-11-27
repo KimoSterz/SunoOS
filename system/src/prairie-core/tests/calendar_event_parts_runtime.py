@@ -12,10 +12,10 @@ import time
 
 root = Path(__file__).resolve().parents[3]
 os.environ['PRAIRIE_EDS_MODE'] = 'disabled'
-os.environ['LUMA_CALENDAR_FIXTURE'] = str(root / 'tests/fixtures/calendar-v70.json')
-os.environ['LUMA_CALENDAR_STYLE_PATH'] = str(root / 'src/prairie-core/style/calendar.css')
-os.environ['LUMA_CALENDAR_SELECTED_EVENT'] = '27'
-os.environ['LUMA_CALENDAR_TZID'] = 'UTC'
+os.environ['SUNO_CALENDAR_FIXTURE'] = str(root / 'tests/fixtures/calendar-v70.json')
+os.environ['SUNO_CALENDAR_STYLE_PATH'] = str(root / 'src/prairie-core/style/calendar.css')
+os.environ['SUNO_CALENDAR_SELECTED_EVENT'] = '27'
+os.environ['SUNO_CALENDAR_TZID'] = 'UTC'
 os.environ['GSK_RENDERER'] = 'cairo'
 state = tempfile.mkdtemp(prefix='calendar-event-parts-')
 for name in ('XDG_DATA_HOME', 'XDG_CONFIG_HOME', 'XDG_STATE_HOME', 'XDG_CACHE_HOME'):
@@ -65,7 +65,7 @@ for width in (360, 500, 720, 1024, 1180):
     assert first_ok and date_ok
     assert abs(date_bounds.get_x() - first_bounds.get_x() - first_bounds.get_width() - 12) <= 1
     assert weekday.get_width() <= weekday.measure(Gtk.Orientation.HORIZONTAL, -1)[1] + 1, (width, 'weekday consumes spare width')
-    found, now_ink = win.get_style_context().lookup_color('luma_calendar_now')
+    found, now_ink = win.get_style_context().lookup_color('Suno_calendar_now')
     assert found and now_ink.red > now_ink.blue, (width, 'current-time marker lost its fixed red ink')
     win.quick.set_text('Lunch with Priya Fri 1pm')
     win.preview_quick(win.quick.text)

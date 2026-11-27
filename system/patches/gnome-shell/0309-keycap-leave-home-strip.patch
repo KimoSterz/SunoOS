@@ -1,4 +1,4 @@
-From: Project Luma <builds@project-luma.local>
+From: Project Suno <builds@project-suno.local>
 Subject: [PATCH] shell: leave the home strip to the home gesture
 
 --- a/js/ui/keyboard.js

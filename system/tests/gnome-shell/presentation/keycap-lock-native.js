@@ -58,7 +58,7 @@ proto.foregroundServiceDeterminesUsername = () => false;
 Object.defineProperty(proto, 'hasPendingMessages', {get: () => false, configurable: true});
 
 async function work() {
-    const settings = new Gio.Settings({schema_id: 'org.project_luma.shell-state'});
+    const settings = new Gio.Settings({schema_id: 'org.projectSuno.shell-state'});
     settings.set_string('presentation-mode', 'mobile');
     await until(() => Main.presentation?.mode === 'mobile');
     const monitor = Main.layoutManager.primaryMonitor;
@@ -128,7 +128,7 @@ async function work() {
 
     // Type the password on the on-screen keyboard and press Enter.
     const keyFor = text => keyboard._currentPage.get_children().find(key => key.keyButton && key.mapped &&
-        (text === 'enter' ? key.keyButton.has_style_class_name('luma-keycap-enter')
+        (text === 'enter' ? key.keyButton.has_style_class_name('Suno-keycap-enter')
             : key.character?.toLowerCase() === text));
     keyboard._setActiveLevel('default');
     keyboard._latched = true;

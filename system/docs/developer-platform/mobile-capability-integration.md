@@ -1,6 +1,6 @@
 # Mobile capability integration
 
-Stevia recognizes Luma, Luma-dark and Luma-light while preserving HighContrast
+Stevia recognizes Suno, Suno-dark and Suno-light while preserving HighContrast
 and the upstream fallback. The complete dark stylesheet is included in the
 existing ARM keyboard builder.
 

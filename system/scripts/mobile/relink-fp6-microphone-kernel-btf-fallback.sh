@@ -91,7 +91,7 @@ install -m 0644 \
   "$source_tree/arch/arm64/boot/dts/qcom/milos-fairphone-fp6.dtb" \
   "$output_dir/milos-fairphone-fp6.dtb"
 {
-  printf 'LUMA_FP6_MICROPHONE_RELINK_VERSION=1\n'
+  printf 'SUNO_FP6_MICROPHONE_RELINK_VERSION=1\n'
   printf 'KERNEL_RELEASE=7.1.2\n'
   printf 'INPUT_IMAGE_SHA256=%s\n' "$old_image_sha"
   printf 'IMAGE_SHA256=%s\n' "$new_image_sha"

@@ -35,10 +35,10 @@ pin = json.loads(Path('config/os/desktop-toolkit-cohort.json').read_text())
 artifacts = {arch: (row['id'], row['sha256']) for arch, row in pin['artifacts'].items()}
 run, source = pin['run'], pin['source']
 # Interim cohort (GitHub Actions unavailable): built by tools/interim/ci.py
-# toolkit from a release commit, on luma-build (x86_64) and in its ARM VM
+# toolkit from a release commit, on Suno-build (x86_64) and in its ARM VM
 # (aarch64), the providers reused from the pinned GitHub run above and the
 # platform rebuilt. Admitted only from interim CI's own run directory
-# (LUMA_INTERIM_TOOLKIT, mounted read-only), through the record digests pinned
+# (SUNO_INTERIM_TOOLKIT, mounted read-only), through the record digests pinned
 # as "interim": {"commit": SHA, "records": {arch: sha256}}. The next GitHub
 # cohort pin drops it.
 interim = pin.get('interim')
@@ -97,8 +97,8 @@ elif not a.providers_only and not interim_mode:
             a.run_id = own
 if interim_mode:
     import shutil
-    root = Path(os.environ.get('LUMA_INTERIM_TOOLKIT', ''))
-    assert os.environ.get('LUMA_INTERIM_TOOLKIT') and root.is_dir(), 'interim toolkit cohort: interim CI artifacts not mounted (LUMA_INTERIM_TOOLKIT)'
+    root = Path(os.environ.get('SUNO_INTERIM_TOOLKIT', ''))
+    assert os.environ.get('SUNO_INTERIM_TOOLKIT') and root.is_dir(), 'interim toolkit cohort: interim CI artifacts not mounted (SUNO_INTERIM_TOOLKIT)'
     source = interim['commit']
     assert len(source) == 40 and all(c in '0123456789abcdef' for c in source)
     assert a.architecture in interim['records'], f'no interim {a.architecture} toolkit cohort pinned yet'
@@ -107,7 +107,7 @@ if interim_mode:
     digest = hashlib.sha256(body).hexdigest()
     assert digest == interim['records'][a.architecture], 'interim toolkit record digest mismatch'
     cohort = json.loads(body)
-    assert cohort['schema'] == 'org.projectluma.interim-toolkit-cohort/v1', 'interim toolkit record schema'
+    assert cohort['schema'] == 'org.projectSuno.interim-toolkit-cohort/v1', 'interim toolkit record schema'
     assert cohort['commit'] == source and cohort['architecture'] == a.architecture, 'interim toolkit record identity mismatch'
     ci = json.loads((run_dir / 'ci.json').read_text())
     jobs = [job for job in ci['jobs'] if job['name'] == cohort['job']]
@@ -220,7 +220,7 @@ rpms = {path.resolve() for path in a.output.glob('packages/**/*.rpm')}
 assert rpms and rpms == covered, 'uncovered toolkit RPM or missing checksum entry'
 if a.providers_only:
     import shutil
-    platform = a.output / 'packages/luma-developer-platform'
+    platform = a.output / 'packages/Suno-developer-platform'
     if platform.exists():
         shutil.rmtree(platform)
     (a.output / 'SOURCE-REVISION').unlink()

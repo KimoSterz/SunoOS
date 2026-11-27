@@ -1,4 +1,4 @@
-From: Project Luma <builds@project-luma.local>
+From: Project Suno <builds@project-suno.local>
 Subject: [PATCH] keyboard: a window placed again by the keyboard keeps it open
 
 On Mobile and Tablet the keyboard shrinks the work area as it opens, and

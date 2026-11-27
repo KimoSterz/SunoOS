@@ -12,22 +12,22 @@ B = lambda v: GLib.Variant('b', v)
 now = datetime.datetime.now(datetime.timezone.utc)
 iso = lambda d: d.isoformat()
 
-BROKER = """<node><interface name="org.projectluma.SemanticBroker1">
+BROKER = """<node><interface name="org.projectSuno.SemanticBroker1">
 <method name="ListLiveExtensions"><arg type="aa{sv}" direction="out"/></method>
 <signal name="LiveExtensionsChanged"/></interface></node>"""
-ext = {'id': S('timer.tea'), 'app_id': S('org.projectluma.Clock'), 'category': S('timer'),
+ext = {'id': S('timer.tea'), 'app_id': S('org.projectSuno.Clock'), 'category': S('timer'),
        'title': S('Tea'), 'subtitle': S('4:12 left'), 'schema_version': S('0.1'), 'privacy': S('private'),
        'progress': GLib.Variant('d', -1.0), 'starts_at': S(iso(now - datetime.timedelta(minutes=1))),
        'expires_at': S(iso(now + datetime.timedelta(hours=2)))}
-item = {'application_id': S('org.projectluma.Clock'), 'publication_id': S('p-timer.tea'),
+item = {'application_id': S('org.projectSuno.Clock'), 'publication_id': S('p-timer.tea'),
         'extension': GLib.Variant('a{sv}', ext)}
 if os.environ.get('SA_LIVE', '1') == '1':
-    bus.register_object('/org/projectluma/SemanticBroker1', Gio.DBusNodeInfo.new_for_xml(BROKER).interfaces[0],
+    bus.register_object('/org/projectSuno/SemanticBroker1', Gio.DBusNodeInfo.new_for_xml(BROKER).interfaces[0],
                         lambda c, s, p, i, m, params, inv: inv.return_value(GLib.Variant('(aa{sv})', ([item],))), None, None)
-    Gio.bus_own_name_on_connection(bus, 'org.projectluma.SemanticBroker1', 0, None, None)
+    Gio.bus_own_name_on_connection(bus, 'org.projectSuno.SemanticBroker1', 0, None, None)
     # Say so, for a Shell that is already running.
-    GLib.timeout_add(800, lambda: bus.emit_signal(None, '/org/projectluma/SemanticBroker1',
-        'org.projectluma.SemanticBroker1', 'LiveExtensionsChanged', None) and False)
+    GLib.timeout_add(800, lambda: bus.emit_signal(None, '/org/projectSuno/SemanticBroker1',
+        'org.projectSuno.SemanticBroker1', 'LiveExtensionsChanged', None) and False)
 
 def png(path, w, h):
     rows = b''
@@ -55,7 +55,7 @@ if os.environ.get('SA_MEDIA', '1') == '1':
 <property name="CanPause" type="b" access="read"/><property name="CanControl" type="b" access="read"/>
 <property name="Position" type="x" access="read"/>
 <method name="PlayPause"/><method name="Next"/><method name="Previous"/></interface></node>"""
-    values = {'Identity': S('Tide'), 'DesktopEntry': S('org.projectluma.Tide'), 'CanRaise': B(True),
+    values = {'Identity': S('Tide'), 'DesktopEntry': S('org.projectSuno.Tide'), 'CanRaise': B(True),
               'PlaybackStatus': S('Playing'), 'CanGoNext': B(True), 'CanGoPrevious': B(True),
               'CanPlay': B(True), 'CanPause': B(True), 'CanControl': B(True), 'Position': GLib.Variant('x', 0),
               'Metadata': GLib.Variant('a{sv}', {'mpris:trackid': GLib.Variant('o', '/t/1'), 'xesam:title': S('Harvest Moon'),

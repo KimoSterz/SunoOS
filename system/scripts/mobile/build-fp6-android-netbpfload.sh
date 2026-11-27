@@ -2,12 +2,12 @@
 set -euo pipefail
 
 repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)
-source_file=$repo_root/src/fp6-android-netbpfload/luma_netbpfload.cpp
+source_file=$repo_root/src/fp6-android-netbpfload/Suno_netbpfload.cpp
 ndk_root=${ANDROID_NDK_ROOT:-/Users/nick/Library/Android/sdk/ndk/28.2.13676358}
 toolchain=$ndk_root/toolchains/llvm/prebuilt/darwin-x86_64
 compiler=$toolchain/bin/aarch64-linux-android35-clang++
-stock_lib=${LUMA_STOCK_LIBBPF_ANDROID:-/tmp/luma-c1-netbpfload-inputs/libbpf_android.so}
-output=${LUMA_NETBPFLOAD_OUTPUT:-$repo_root/artifacts/fp6-android-netbpfload/luma-netbpfload}
+stock_lib=${SUNO_STOCK_LIBBPF_ANDROID:-/tmp/Suno-c1-netbpfload-inputs/libbpf_android.so}
+output=${SUNO_NETBPFLOAD_OUTPUT:-$repo_root/artifacts/fp6-android-netbpfload/Suno-netbpfload}
 
 [[ -f $source_file && ! -L $source_file ]] || {
   echo "missing source: $source_file" >&2

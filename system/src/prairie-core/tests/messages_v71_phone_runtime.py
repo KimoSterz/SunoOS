@@ -15,10 +15,10 @@ gi.require_version("Gtk", "4.0")
 from gi.repository import Adw, Gio, GLib, Gtk  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[3]
-sys.path.insert(0, str(ROOT / "src/luma-platform/appkit"))
+sys.path.insert(0, str(ROOT / "src/Suno-platform/appkit"))
 sys.path.insert(0, str(ROOT / "src/prairie-core"))
 
-from luma_appkit import MessageRun, install_appkit, install_lumaui  # noqa: E402
+from Suno_appkit import MessageRun, install_appkit, install_SunoUI  # noqa: E402
 from prairie_apps.messages import install_messages_theme  # noqa: E402
 from prairie_apps.messages_port import FixtureMessagesWindow  # noqa: E402
 
@@ -50,11 +50,11 @@ def press(window: Gtk.Widget, name: str) -> None:
 
 
 def main() -> int:
-    assert os.environ.get("LUMA_MESSAGES_FIXTURE"), "set LUMA_MESSAGES_FIXTURE to the v70 JSON"
-    app = Adw.Application(application_id="org.projectluma.Messages.V71Phone", flags=Gio.ApplicationFlags.NON_UNIQUE)
+    assert os.environ.get("SUNO_MESSAGES_FIXTURE"), "set SUNO_MESSAGES_FIXTURE to the v70 JSON"
+    app = Adw.Application(application_id="org.projectSuno.Messages.V71Phone", flags=Gio.ApplicationFlags.NON_UNIQUE)
     assert app.register(None)
     install_appkit()
-    install_lumaui()
+    install_SunoUI()
     install_messages_theme()
     window = FixtureMessagesWindow(app)
     window.set_default_size(360, 820)
@@ -66,7 +66,7 @@ def main() -> int:
     assert view._phone_mode and not view.split.get_show_content()
     assert view.list_center.state == "bar" and not view.foot.get_visible()
     assert not view.title_island.get_visible()
-    assert not window.has_css_class("lumaui-bleed"), "list should keep the standard status inset"
+    assert not window.has_css_class("SunoUI-bleed"), "list should keep the standard status inset"
     assert view.sidebar.list.get_selected_row() is None, "a phone list shows no selected row"
     assert view.sidebar.phone_title_label.get_visible()
     assert view.sidebar.phone_title_label.get_label() == "Messages"
@@ -93,7 +93,7 @@ def main() -> int:
     assert view.current["id"] == "theo" and view.split.get_show_content()
     assert view.title_island.get_visible() and view.title_island.title == "Theo Marsh"
     assert not view.header.get_visible()
-    assert window.has_css_class("lumaui-bleed"), "conversation light should reach the phone status area"
+    assert window.has_css_class("SunoUI-bleed"), "conversation light should reach the phone status area"
 
     # The title island grows into the conversation's options; Pin redraws it in place.
     press(window, "msg-info")

@@ -1,8 +1,8 @@
 # Devices
 
-Luma Mobile runs on many phones from one source tree. Each device is a small,
+Suno Mobile runs on many phones from one source tree. Each device is a small,
 strict manifest; everything a device shares with others lives in its SoC
-family; the kernel is one Luma kernel in its own repository
+family; the kernel is one Suno kernel in its own repository
 ([kernel.md](kernel.md)). This page explains the layout,
 the support tiers and how to add a device.
 
@@ -26,17 +26,17 @@ socs/
 A device directory holds exactly those five entries. Anything else fails CI.
 
 **Kernels** are in [SimplyLuma/linux](https://gitlab.com/simplyluma/linux): one
-base branch on the current upstream stable series (`luma-7.2`) and one branch
+base branch on the current upstream stable series (`Suno-7.2`) and one branch
 per SoC family carrying only patches on top of it. Each release merges every
 family onto the base and builds one arm64 kernel for all ARM devices, tagged
-`luma-kernel-<kernel release>`. `device.toml` points at that tag; kernel
+`Suno-kernel-<kernel release>`. `device.toml` points at that tag; kernel
 patches never live in this repository. See [kernel.md](kernel.md).
 
 Devices from before the one kernel (Fairphone 6, Raspberry Pi 5, Surface Pro
 12-inch) keep their current kernels until they move. The Fairphone 6 tag,
-`luma-fp6-<release>-<kernel release>` on `milos`, names the published boot
+`Suno-fp6-<release>-<kernel release>` on `milos`, names the published boot
 image and the SHA-256 of its kernel, DTB, `.config` and modules; its
-`.config`, overlays and build steps are in `luma/fp6/<release>/`.
+`.config`, overlays and build steps are in `Suno/fp6/<release>/`.
 
 **Distribution kernels.** A device that boots its distribution's stock
 kernel, unmodified, has no tag, source lock or `.config`. Its `[kernel]`
@@ -60,32 +60,32 @@ phone on the same chip inherits all of it, so its `device.toml` and
 `boot.toml` only state what is different about that phone.
 
 **Firmware** never enters git. `firmware.manifest` is the same file the OS
-keeps next to the firmware on the phone (`/var/lib/luma/device-firmware`): a
+keeps next to the firmware on the phone (`/var/lib/Suno/device-firmware`): a
 header with the file count, then one tab-separated row per directory (`D`),
 file (`F`, with SHA-256) or relative alias (`L`). `device.toml` records the
 manifest's own SHA-256. A device whose store is in `/var` checks it before boot
-with `luma_verify_firmware_store`
+with `Suno_verify_firmware_store`
 ([`scripts/mobile/fp6-native-init-functions.sh`](../scripts/mobile/fp6-native-init-functions.sh)):
-the boot image carries that SHA-256 in `/etc/luma-firmware-manifest.sha256`,
+the boot image carries that SHA-256 in `/etc/Suno-firmware-manifest.sha256`,
 written by
 [`scripts/mobile/common/firmware-store-anchor.py`](../scripts/mobile/common/firmware-store-anchor.py),
-and the store must hold that manifest as `luma-firmware.manifest` and exactly
+and the store must hold that manifest as `Suno-firmware.manifest` and exactly
 the rows it lists, root-owned, with the header's file count.
 
 ## Support tiers
 
 | Tier | What it means | What it needs |
 |---|---|---|
-| `supported` | Luma publishes install images, OS and hardware updates for it, has the device, tests every release on it, and treats a regression as a release blocker. | The `community` needs, a maintainer on the Luma team, at least one entry in `releases`, an update ref. |
-| `community` | On the Luma kernel base and looked after by a named outside maintainer. Luma reviews changes but does not test releases on it or block on it. | A kernel tag on the Luma base, a maintainer who answers issues, device tests. |
+| `supported` | Suno publishes install images, OS and hardware updates for it, has the device, tests every release on it, and treats a regression as a release blocker. | The `community` needs, a maintainer on the Suno team, at least one entry in `releases`, an update ref. |
+| `community` | On the Suno kernel base and looked after by a named outside maintainer. Suno reviews changes but does not test releases on it or block on it. | A kernel tag on the Suno base, a maintainer who answers issues, device tests. |
 | `experimental` | Bring-up. It may not boot, may lose features between releases, and may be removed if nobody maintains it. Never offered to people who did not go looking for it. Gets OS and app updates only. | A maintainer. May run SELinux permissive; every other tier must boot with `enforcing=1`. |
 
-A device on a vendor kernel, a source lock or any tree other than the Luma
+A device on a vendor kernel, a source lock or any tree other than the Suno
 base stays `experimental`, as do the devices of a family that did not rebase
 onto a new base in time (for that cycle). The three devices from before the
 one kernel keep their tiers while they move. The website lists a device as
 Alpha only once it passes the gate in [kernel.md](kernel.md#alpha-listing-gate).
-Adopted devices (Luma builds, signs and publishes the kernel and device
+Adopted devices (Suno builds, signs and publishes the kernel and device
 repository) are described in [kernel.md](kernel.md#adopted-devices).
 
 A device moves up a tier by pull request, with the evidence (which releases
@@ -96,15 +96,15 @@ drops to `experimental` until someone takes it over.
 
 1. Check whether its SoC family exists under `socs/`. If it does not, add
    `socs/<vendor>/<family>/soc.toml` (`repository` SimplyLuma/linux, `branch`
-   the family) and ask for the family branch in SimplyLuma/linux; Luma
+   the family) and ask for the family branch in SimplyLuma/linux; Suno
    creates it at the current base. Name families after the upstream kernel's
    name for the chip, lower case.
 2. Open a pull request against the family branch with your kernel work,
-   rebased onto the current Luma base: real commits with authorship,
+   rebased onto the current Suno base: real commits with authorship,
    `Signed-off-by` and SPDX lines intact, source device trees (mainline or
    upstreamable, never decompiled), the family's config fragment. Send what
    you can upstream. Rules: [kernel.md](kernel.md#contributing-kernel-work).
-   Point `device.toml` `[kernel] tag` at the `luma-kernel-…` release that
+   Point `device.toml` `[kernel] tag` at the `Suno-kernel-…` release that
    carries it.
 3. Create `devices/<vendor>/<codename>/` with the five entries. The codename is
    the one the vendor and upstream kernel use, lower case. Copy the Fairphone
@@ -116,7 +116,7 @@ drops to `experimental` until someone takes it over.
    built from source in this tree, never as binaries in the boot image or
    the kit. Qualcomm phones take `qbootctl` (A/B slots) and `tqftpserv` (files
    for the modem and other remote processors) from
-   [`luma-qcom-userspace`](../packaging/rpm/luma-qcom-userspace.spec): list
+   [`Suno-qcom-userspace`](../packaging/rpm/Suno-qcom-userspace.spec): list
    them in `[device_repo] install`.
 6. Add the directory to `.github/CODEOWNERS` with its maintainers.
 7. Write device tests for anything the shared checks cannot see: install
@@ -149,7 +149,7 @@ python3 -m venv /tmp/devices && /tmp/devices/bin/pip install jsonschema==4.23.0
 - the install guide flashes or erases a partition the device must preserve;
 - a device or SoC directory has no owner in `.github/CODEOWNERS`;
 - a device outside the transition list uses a kernel source lock or
-  `[kernel] patches`, a tag other than `luma-kernel-…`, or a SoC whose
+  `[kernel] patches`, a tag other than `Suno-kernel-…`, or a SoC whose
   kernel repository is not SimplyLuma/linux;
 - a source-locked kernel is above `experimental`;
 - a new `patches/linux-*` directory appears.
@@ -162,15 +162,15 @@ It then runs every device's own tests.
 - Signing keys, tokens or other secrets.
 - Anything identifying a particular phone or person: IMEI, ICCID, serial
   numbers, Wi-Fi names, backups.
-- Code that writes an IMEI or other radio identity. Luma only ever preserves
+- Code that writes an IMEI or other radio identity. Suno only ever preserves
   the identity the phone already has.
 
 ## Fairphone 6 corresponding source
 
-The Fairphone 6 boot image (`luma-mobile-alpha1-fp6-boot.bin`, SHA-256
+The Fairphone 6 boot image (`Suno-mobile-alpha1-fp6-boot.bin`, SHA-256
 `6b93fa90…`) is built from:
 
-- Kernel, DTB and modules: [SimplyLuma/linux `luma-fp6-alpha1-7.1.2-luma-fp-ims1.gmu2.selinux1`](https://gitlab.com/simplyluma/linux/-/tree/luma-fp6-alpha1-7.1.2-luma-fp-ims1.gmu2.selinux1)
+- Kernel, DTB and modules: [SimplyLuma/linux `Suno-fp6-alpha1-7.1.2-Suno-fp-ims1.gmu2.selinux1`](https://gitlab.com/simplyluma/linux/-/tree/luma-fp6-alpha1-7.1.2-luma-fp-ims1.gmu2.selinux1)
   (GPL-2.0-only), based on milos-mainline/linux `dfe0125e`.
 - Initramfs: three concatenated cpio archives. The kernel unpacks them in
   order, and a later file replaces an earlier one.
@@ -180,13 +180,13 @@ The Fairphone 6 boot image (`luma-mobile-alpha1-fp6-boot.bin`, SHA-256
      [`linux-postmarketos-qcom-milos` 7.1.2](https://gitlab.postmarketos.org/postmarketOS/pmaports/-/tree/5689eb3c5174/device/testing/linux-postmarketos-qcom-milos)
      (GPL-2.0-only), and userspace from the matching Alpine and postmarketOS
      edge packages.
-  3. The Luma overlay:
+  3. The Suno overlay:
      - `/init_functions.sh` is
        [`scripts/mobile/fp6-native-init-functions.sh`](../scripts/mobile/fp6-native-init-functions.sh),
        byte for byte. It is postmarketOS's 3.12.0 `init_functions.sh` plus 119
        added lines (the firmware store check and the OSTree root setup), and
        stays GPL-2.0-or-later.
-     - `/usr/lib/ostree/ostree-prepare-root` is from `ostree-2026.5-1.luma.2.fc44`,
+     - `/usr/lib/ostree/ostree-prepare-root` is from `ostree-2026.5-1.Suno.2.fc44`,
        built by [`scripts/packages/build-ostree-fp6.sh`](../scripts/packages/build-ostree-fp6.sh)
        from the upstream revisions pinned in
        [`config/mobile/fp6-ostree-source.json`](../config/mobile/fp6-ostree-source.json)
@@ -198,6 +198,6 @@ The Fairphone 6 boot image (`luma-mobile-alpha1-fp6-boot.bin`, SHA-256
        composefs 1.0.8-5, openssl 3.5.9-1, libffi 3.5.2-2, pcre2 10.47-1.fc44.1,
        libselinux 3.11-2, systemd 259.9-1 and zlib-ng 2.3.3-3. Their sources are
        the matching packages at [src.fedoraproject.org](https://src.fedoraproject.org/).
-     - Kernel modules for `7.1.2-luma-fp-ims1.gmu2.selinux1` are from the
-       kernel tag above. The boot theme (`luma-loading-handheld`, Figtree) is
-       Luma's own artwork.
+     - Kernel modules for `7.1.2-Suno-fp-ims1.gmu2.selinux1` are from the
+       kernel tag above. The boot theme (`Suno-loading-handheld`, Figtree) is
+       Suno's own artwork.

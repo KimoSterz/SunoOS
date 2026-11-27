@@ -1,5 +1,5 @@
 {
-  "source": "Studio v70 Filer sample, luma-next-70.html lines 4895-4933",
+  "source": "Studio v70 Filer sample, Suno-next-70.html lines 4895-4933",
   "initial": {"root": "Home", "path": ["Projects", "Launch"], "view": "grid", "sort": {"key": "name", "direction": 1}, "selection": null, "information": false},
   "places": [
     ["recent", "Recent", "clock"], ["home", "Home", "house"],
@@ -30,7 +30,7 @@
     "Projects": [["Archive 2025", "folder"], ["Launch", "folder"], ["Personal site", "folder"], ["Taxes 2026", "folder"]],
     "Documents": [["Letters", "folder"], ["Lease 2026.pdf", "pdf"], ["Reading list.md", "md"]],
     "Pictures": [["Screenshots", "folder"], ["Terrace.webp", "img"], ["Studio morning.webp", "img"]],
-    "Downloads": [["Luma-1.0-nightly.iso", "iso"], ["kiln-2.4.1.flatpakref", "pkg"], ["Invoice 0923.pdf", "pdf"]],
+    "Downloads": [["Suno-1.0-nightly.iso", "iso"], ["kiln-2.4.1.flatpakref", "pkg"], ["Invoice 0923.pdf", "pdf"]],
     "Desktop": [["Screenshot 21.40.png", "img"]],
     "Music": [["Pet Sounds", "folder"], ["Demos", "folder"]],
     "Personal site": [["index.html", "md"], ["styles.css", "md"]],
@@ -40,8 +40,8 @@
     "Screens": [["filer.webp", "img"], ["photos.webp", "img"]],
     "Website": [["hero.webp", "img"], ["copy.md", "md"]],
     "Fonts": [["Figtree.ttf", "md"], ["Instrument Serif.otf", "md"]],
-    "Fable SSD": [["Home", "folder"], ["Luma", "folder"]],
-    "Luma": [["Apps", "folder"], ["Wallpapers", "folder"]],
+    "Fable SSD": [["Home", "folder"], ["Suno", "folder"]],
+    "Suno": [["Apps", "folder"], ["Wallpapers", "folder"]],
     "Archive": [["Archive 2025", "folder"], ["Photo backups", "folder"]]
   },
   "file_details": {
@@ -49,9 +49,9 @@
   },
   "search_snippets": {
     "launch-plan.md": "Freeze strings on the 10th. Launch day is October 14: film at 9, download at 10, press all day.",
-    "press-release.write": "Luma 1.0 launches October 14 as a free download for any PC.",
-    "why-letter.pdf": "Why we built Luma: a computer that feels calm again.",
-    "boilerplate.md": "Luma is a desktop operating system. It launches October 14.",
+    "press-release.write": "Suno 1.0 launches October 14 as a free download for any PC.",
+    "why-letter.pdf": "Why we built Suno: a computer that feels calm again.",
+    "boilerplate.md": "Suno is a desktop operating system. It launches October 14.",
     "copy.md": "Your computer, calm again. Launch film and download on the 14th."
   },
   "search_order": ["Press kit", "press-photo-1.webp", "press-release.write", "launch-plan.md"]

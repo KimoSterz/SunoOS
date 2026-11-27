@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Cloudflare Worker for dl.simplyluma.com (ADR-028 sections 9 and 12).
 # Deploy: npx wrangler deploy (see docs/depot/publishing-runbook.md).
-name = "luma-depot-dl"
+name = "Suno-depot-dl"
 main = "src/worker.js"
 compatibility_date = "2026-09-01"
 routes = [{ pattern = "dl.simplyluma.com", custom_domain = true }]

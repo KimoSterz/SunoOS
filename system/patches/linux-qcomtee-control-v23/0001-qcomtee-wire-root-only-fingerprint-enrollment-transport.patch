@@ -1,66 +1,66 @@
 --- a/drivers/tee/qcomtee/qcomtee-control.c
 +++ b/drivers/tee/qcomtee/qcomtee-control.c
 @@ -109,6 +109,8 @@
- MODULE_PARM_DESC(luma_focal_challenge,
+ MODULE_PARM_DESC(Suno_focal_challenge,
  		 "initialize focal64, enumerate, and close one pre-enroll challenge");
  
-+static bool luma_focal_enroll_service;
++static bool Suno_focal_enroll_service;
 +
- static bool luma_keymaster_lookup;
- module_param_named(luma_keymaster_lookup, luma_keymaster_lookup, bool, 0400);
- MODULE_PARM_DESC(luma_keymaster_lookup,
+ static bool Suno_keymaster_lookup;
+ module_param_named(Suno_keymaster_lookup, Suno_keymaster_lookup, bool, 0400);
+ MODULE_PARM_DESC(Suno_keymaster_lookup,
 @@ -1337,6 +1337,11 @@
  
  	if (ret)
- 		session->stage = LUMA_FOCAL_STAGE_FAILED;
-+	if (!ret && luma_focal_enroll_service &&
-+	    session->stage == LUMA_FOCAL_STAGE_COMPLETE) {
-+		mutex_unlock(&luma_focal_session_lock);
+ 		session->stage = SUNO_FOCAL_STAGE_FAILED;
++	if (!ret && Suno_focal_enroll_service &&
++	    session->stage == SUNO_FOCAL_STAGE_COMPLETE) {
++		mutex_unlock(&Suno_focal_session_lock);
 +		return count;
 +	}
- 	cleanup_ret = luma_focal_release_locked(true);
+ 	cleanup_ret = Suno_focal_release_locked(true);
  	if (!ret && cleanup_ret) {
- 		session->stage = LUMA_FOCAL_STAGE_FAILED;
+ 		session->stage = SUNO_FOCAL_STAGE_FAILED;
 @@ -1610,6 +1615,8 @@
- 	luma_control_put_sync(qcomtee, controller);
+ 	Suno_control_put_sync(qcomtee, controller);
  	return ret;
  }
 +
 +#include "qcomtee-enroll-extension.inc"
  
- void luma_qcomtee_control_identity(struct qcomtee *qcomtee, struct device *dev)
+ void Suno_qcomtee_control_identity(struct qcomtee *qcomtee, struct device *dev)
  {
 @@ -1625,7 +1632,8 @@
  	bool staged = false;
  	int ret, result = QCOMTEE_MSG_ERROR_UNAVAIL;
- 	const char *app = luma_keymaster_lookup ? LUMA_KEYMASTER_APP :
--		(luma_focal_identity || luma_focal_enumerate ||
-+		(luma_focal_identity || luma_focal_enumerate ||
-+		 luma_focal_enroll_service ||
- 		 luma_focal_challenge) ?
- 		LUMA_FINGERPRINT_APP : LUMA_CONTROL_APP;
- 	u32 loader_uid = luma_standard_identity ?
+ 	const char *app = Suno_keymaster_lookup ? SUNO_KEYMASTER_APP :
+-		(Suno_focal_identity || Suno_focal_enumerate ||
++		(Suno_focal_identity || Suno_focal_enumerate ||
++		 Suno_focal_enroll_service ||
+ 		 Suno_focal_challenge) ?
+ 		SUNO_FINGERPRINT_APP : SUNO_CONTROL_APP;
+ 	u32 loader_uid = Suno_standard_identity ?
 @@ -1632,6 +1639,13 @@
- 		LUMA_CONTROL_STANDARD_APP_LOADER_UID :
- 		LUMA_CONTROL_APP_LOADER_UID;
+ 		SUNO_CONTROL_STANDARD_APP_LOADER_UID :
+ 		SUNO_CONTROL_APP_LOADER_UID;
  
-+	if (luma_focal_enroll_service) {
-+		luma_focal_enumerate = true;
-+		ret = luma_enrollment_register();
++	if (Suno_focal_enroll_service) {
++		Suno_focal_enumerate = true;
++		ret = Suno_enrollment_register();
 +		if (ret)
 +			return;
 +	}
 +
- 	if (!luma_control_identity && !luma_standard_identity &&
- 	    !luma_focal_identity && !luma_focal_enumerate &&
- 	    !luma_focal_challenge &&
+ 	if (!Suno_control_identity && !Suno_standard_identity &&
+ 	    !Suno_focal_identity && !Suno_focal_enumerate &&
+ 	    !Suno_focal_challenge &&
 @@ -1849,6 +1863,9 @@
  	bool remove_attribute = false;
  	int ret = 0;
  
-+	if (luma_focal_enroll_service)
-+		luma_enrollment_unregister();
++	if (Suno_focal_enroll_service)
++		Suno_enrollment_unregister();
 +
- 	mutex_lock(&luma_focal_session_lock);
- 	if (luma_focal_session.attribute_created &&
- 	    luma_focal_session.dev == dev) {
+ 	mutex_lock(&Suno_focal_session_lock);
+ 	if (Suno_focal_session.attribute_created &&
+ 	    Suno_focal_session.dev == dev) {

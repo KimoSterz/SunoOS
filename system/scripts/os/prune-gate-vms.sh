@@ -5,7 +5,7 @@
 #
 #   prune-gate-vms.sh [--apply] [--keep N]
 #
-# gate.sh keeps $LUMA_OS_ROOT/vm/gate-<build>-<run> (about 13 GB of qcow2) and
+# gate.sh keeps $SUNO_OS_ROOT/vm/gate-<build>-<run> (about 13 GB of qcow2) and
 # its SSH key whenever a gate fails. The old rule removed them only after two
 # days, so two failed nightlies in a row filled the release volume on
 # 2026-09-21 and the third could not start. The nightly needs 42 GiB free and
@@ -19,8 +19,8 @@
 # directories named gate-<build>-<YYYYMMDDTHHMMSSZ> are considered; anything
 # else under vm/ is reported and left alone. Default is a dry run.
 #
-# Environment (for the test harness): LUMA_OS_ROOT, LUMA_OS_GATE_KEY_ROOT
-# (default /root/.ssh), LUMA_OS_VIRSH (default virsh).
+# Environment (for the test harness): SUNO_OS_ROOT, SUNO_OS_GATE_KEY_ROOT
+# (default /root/.ssh), SUNO_OS_VIRSH (default virsh).
 
 set -euo pipefail
 
@@ -35,9 +35,9 @@ while [ "$#" -gt 0 ]; do
 done
 case "$keep" in '' | *[!0-9]*) printf 'error: --keep needs a number\n' >&2; exit 2 ;; esac
 
-root=${LUMA_OS_ROOT:-/mnt/luma-secondary/luma-build/os-release/fs}
-key_root=${LUMA_OS_GATE_KEY_ROOT:-/root/.ssh}
-virsh=${LUMA_OS_VIRSH:-virsh}
+root=${SUNO_OS_ROOT:-/mnt/Suno-secondary/Suno-build/os-release/fs}
+key_root=${SUNO_OS_GATE_KEY_ROOT:-/root/.ssh}
+virsh=${SUNO_OS_VIRSH:-virsh}
 vm="$root/vm"
 lock="$root/locks/gate.lock"
 
@@ -48,7 +48,7 @@ log() { printf '%s os-release: gate retention: %s\n' "$(date -u +%Y-%m-%dT%H:%M:
 # Domains that are not shut off, by the run id their names end with.
 declare -A live_run=()
 while read -r domain; do
-  case "$domain" in luma-os-gate-*) ;; *) continue ;; esac
+  case "$domain" in Suno-os-gate-*) ;; *) continue ;; esac
   state=$("$virsh" domstate "$domain" 2>/dev/null || echo unknown)
   [ "$state" = 'shut off' ] && continue
   live_run[${domain##*-}]=$domain
@@ -89,7 +89,7 @@ for entry in "${sets[@]}"; do
     size=$(du -sh "$dir" 2>/dev/null | cut -f1)
     if [ "$apply" -eq 1 ]; then
       rm -rf -- "$dir"
-      [ ! -d "$key_root/luma-os-gate-$run" ] || rm -rf -- "$key_root/luma-os-gate-$run"
+      [ ! -d "$key_root/Suno-os-gate-$run" ] || rm -rf -- "$key_root/Suno-os-gate-$run"
       log "removed ${size:-?}: $dir"
     else
       log "would remove ${size:-?}: $dir"

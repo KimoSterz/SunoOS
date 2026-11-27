@@ -9,7 +9,7 @@ set -euo pipefail
 umask 077
 
 entry=/boot/loader/entries/pmos-binderfs-ims1+3.conf
-archive=/var/lib/luma/fp6-stock-android-container-kernel/ignored-bls-compat1
+archive=/var/lib/Suno/fp6-stock-android-container-kernel/ignored-bls-compat1
 proven_entry_sha=20efc7d275f0e3784226cd9b43d80a4222240db744d4f2be7d54ee5888563446
 candidate_efi_sha=8a97eed2c3a4f9d125f49a8d2c98f267900f805bd046215fe585edbb2c8c12b8
 candidate_image_sha=d1476dbea625aeb22d5d2a27df3a928cd9a2a13bd72a80bfda8507d376df0153

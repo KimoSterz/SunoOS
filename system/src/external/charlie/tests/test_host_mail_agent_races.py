@@ -13,10 +13,10 @@ from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
-from charlie_luma.account_lifecycle import account_lock
-from charlie_luma.host_mail_owner import MailOwner
-from charlie_luma.mail_agent import MailAgentCore
-from charlie_luma.model import Account, ServerConfig
+from charlie_Suno.account_lifecycle import account_lock
+from charlie_Suno.host_mail_owner import MailOwner
+from charlie_Suno.mail_agent import MailAgentCore
+from charlie_Suno.model import Account, ServerConfig
 
 
 class SharedSecrets:
@@ -74,8 +74,8 @@ class MailAgentRaceTests(unittest.TestCase):
         self.values = self.manager.dict()
         self.secrets = SharedSecrets(self.values)
         self.store_path = Path(self.temporary.name) / 'mail.db'
-        with patch('charlie_luma.host_mail_owner.default_store_path', return_value=self.store_path), \
-             patch('charlie_luma.host_mail_owner.SecretStore', return_value=self.secrets):
+        with patch('charlie_Suno.host_mail_owner.default_store_path', return_value=self.store_path), \
+             patch('charlie_Suno.host_mail_owner.SecretStore', return_value=self.secrets):
             self.owner = MailOwner()
         self.addCleanup(self.owner.close)
         self.pool = ThreadPoolExecutor(max_workers=2)

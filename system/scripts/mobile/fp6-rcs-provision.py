@@ -15,7 +15,7 @@ Feasibility rests on two facts established before this was written:
     pub.3gppnetwork.org (TLS subject: AT&T Services, CN=xdmar.wireless.att.com),
     so RCS on this carrier is GSMA Universal Profile over IMS rather than a
     closed vendor service with no client entry point.
-  * Luma already holds a working protected IMS registration on this line, which
+  * Suno already holds a working protected IMS registration on this line, which
     is the hard prerequisite RCS builds on.
 
 Privacy model, matching the rest of the FP6 work: subscriber identity is read
@@ -46,15 +46,15 @@ import urllib.parse
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-STATE_DIR = Path("/var/lib/luma/rcs")
+STATE_DIR = Path("/var/lib/Suno/rcs")
 CONFIG_PATH = STATE_DIR / "rcs-config.xml"
 
 # RCC.14 2.3. client_vendor is a 4-character vendor code and client_version is
 # limited to 15 characters. These are deliberately truthful: a carrier ACS may
 # refuse an unrecognised client, and that refusal is itself the result we want
 # from Stage 0. Do not substitute another vendor's identifiers to get past it.
-CLIENT_VENDOR = "LUMA"
-CLIENT_VERSION = "LUMA-1.0"
+CLIENT_VENDOR = "SUNO"
+CLIENT_VERSION = "SUNO-1.0"
 RCS_VERSION = "UP2.4"
 RCS_PROFILE = "UP_2.4"
 TERMINAL_VENDOR = "Fairphone"

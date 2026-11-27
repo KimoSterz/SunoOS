@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 # SPDX-License-Identifier: Apache-2.0
-"""Moving Personal events into the Luma calendar, against a stub CalDAV server.
+"""Moving Personal events into the Suno calendar, against a stub CalDAV server.
 
 No Evolution Data Server and no network: the calendar service and the server
 are small in-memory fakes, and the clock is fake so a timeout costs nothing.
@@ -21,7 +21,7 @@ from prairie_apps import connect_calendar
 
 SCOPE = "https://hub.example|1834aa7c-6ea0-437e-ba62-146b761ca162"
 KEY = f"{SCOPE}|calendar"
-LUMA = "luma-connect-1834aa7c6ea0"
+SUNO = "Suno-connect-1834aa7c6ea0"
 URL = "https://hub.example/dav/u1/luma/"
 
 
@@ -57,13 +57,13 @@ class World:
 
         module = types.ModuleType("prairie_apps.calendar_backend")
         module.CalendarUnavailable = type("CalendarUnavailable", (RuntimeError,), {})
-        module.list_sources = lambda: (Source("system-calendar", True), Source(LUMA))
+        module.list_sources = lambda: (Source("system-calendar", True), Source(SUNO))
         module.export_ics = lambda uid: calendar(*world.personal.values())
         module.set_default_calendar = lambda uid: None
-        module.create_calendar = lambda *a, **k: LUMA
+        module.create_calendar = lambda *a, **k: SUNO
 
         def import_ics(uid, text):
-            assert uid == LUMA, uid
+            assert uid == SUNO, uid
             world.imports += 1
             if world.uploads:
                 for found in connect_calendar._event_uids(text):
@@ -89,12 +89,12 @@ class World:
                 data = f"<C:calendar-data>{escape(text)}</C:calendar-data>"
             elif method != "PROPFIND":
                 raise AssertionError(f"unexpected {method}")
-            responses.append(f"<D:response><D:href>/dav/u1/luma/{href}</D:href><D:propstat><D:prop>"
+            responses.append(f"<D:response><D:href>/dav/u1/Suno/{href}</D:href><D:propstat><D:prop>"
                              f'<D:getetag>"1"</D:getetag>{data}</D:prop>'
                              "<D:status>HTTP/1.1 200 OK</D:status></D:propstat></D:response>")
         return 207, ('<?xml version="1.0"?><D:multistatus xmlns:D="DAV:" '
                      'xmlns:C="urn:ietf:params:xml:ns:caldav">'
-                     f"<D:response><D:href>/dav/u1/luma/</D:href></D:response>{''.join(responses)}"
+                     f"<D:response><D:href>/dav/u1/Suno/</D:href></D:response>{''.join(responses)}"
                      "</D:multistatus>").encode()
 
     # -- time -----------------------------------------------------------------
@@ -119,7 +119,7 @@ def run(world: World, state: dict, data: Path) -> str:
 
 
 def fresh_state() -> dict:
-    return {KEY: {"source_uid": LUMA, "url": URL, "username": "u1"}}
+    return {KEY: {"source_uid": SUNO, "url": URL, "username": "u1"}}
 
 
 failures = 0
@@ -130,7 +130,7 @@ def case(name):
     def wrap(function):
         global failures, ran
         ran += 1
-        with tempfile.TemporaryDirectory(prefix="luma-connect-calendar-test-") as directory:
+        with tempfile.TemporaryDirectory(prefix="Suno-connect-calendar-test-") as directory:
             try:
                 function(Path(directory))
                 print(f"PASS {name}")
@@ -156,7 +156,7 @@ def already_uploaded(data):
     assert state[KEY].get("migrated") is True, (status, state)
     assert world.personal == {}, f"Personal still holds {sorted(world.personal)}"
     assert "moved 2 event(s)" in status, status
-    # Re-sent once, so the Luma calendar holds Personal's current version of
+    # Re-sent once, so the Suno calendar holds Personal's current version of
     # each event before Personal's copy is removed.
     assert world.imports == 1, world.imports
 

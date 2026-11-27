@@ -16,10 +16,10 @@ args = parser.parse_args()
 source, build = args.source.resolve(), args.build.resolve()
 commands = json.loads((build / 'compile_commands.json').read_text())
 
-with tempfile.TemporaryDirectory(prefix='luma-settings-native-actions-') as directory:
-    for test, production in (('test-cache.c', 'cc-luma-view-application-options.c'),
-                             ('test-app-launch.c', 'cc-luma-view-application-options.c'),
-                             ('test-manual-time.c', 'cc-luma-live-datetime.c')):
+with tempfile.TemporaryDirectory(prefix='Suno-settings-native-actions-') as directory:
+    for test, production in (('test-cache.c', 'cc-Suno-view-application-options.c'),
+                             ('test-app-launch.c', 'cc-Suno-view-application-options.c'),
+                             ('test-manual-time.c', 'cc-Suno-live-datetime.c')):
         row = next(item for item in commands if item['file'].endswith('/' + production))
         command = shlex.split(row['command'])
         if command[0].endswith('ccache'):

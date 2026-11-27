@@ -22,7 +22,7 @@ class SnapshotTests(unittest.TestCase):
     def test_app_without_debug_and_catalogue(self):
         self.assertEqual(len(self.validate([REF, "appstream/x86_64", "appstream2/x86_64"], BASE)), 1)
     def test_foreign_wrong_arch_branch_and_other_runtime(self):
-        for ref in (DEBUG.replace(APP, "org.evil.Other"), DEBUG.replace("x86_64", "aarch64"), DEBUG.replace("beta", "stable"), "runtime/org.projectluma.Sdk/x86_64/44", f"runtime/{APP}.Locale/x86_64/beta"):
+        for ref in (DEBUG.replace(APP, "org.evil.Other"), DEBUG.replace("x86_64", "aarch64"), DEBUG.replace("beta", "stable"), "runtime/org.projectSuno.Sdk/x86_64/44", f"runtime/{APP}.Locale/x86_64/beta"):
             with self.subTest(ref=ref), self.assertRaises(ValueError): self.validate([REF, ref])
     def test_duplicate_multiple_app_and_unmaintained_branch(self):
         for refs in ([REF, REF], [REF, REF.replace("beta", "stable")], [REF.replace("beta", "future")], [REF.replace("beta", "extra/beta")]):

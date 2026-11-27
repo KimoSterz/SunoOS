@@ -22,7 +22,7 @@ gi.require_version("Gdk", "4.0")
 gi.require_version("GdkX11", "4.0")
 from gi.repository import Gdk, Gio, GLib, Gtk
 
-from charlie_luma.application import CharlieApplication
+from charlie_Suno.application import CharlieApplication
 
 x11 = ctypes.CDLL(ctypes.util.find_library("X11"))
 xtst = ctypes.CDLL(ctypes.util.find_library("Xtst"))
@@ -101,7 +101,7 @@ def main() -> int:
     with tempfile.TemporaryDirectory(prefix="charlie-keys-") as directory:
         os.environ.update(XDG_DATA_HOME=directory, XDG_CONFIG_HOME=directory,
                           XDG_CACHE_HOME=directory)
-        os.environ.update(LUMA_CHARLIE_FIXTURE="v71", LUMA_CHARLIE_OPEN="deck",
+        os.environ.update(SUNO_CHARLIE_FIXTURE="v71", SUNO_CHARLIE_OPEN="deck",
                           CHARLIE_TEST_WIDTH="500", CHARLIE_TEST_HEIGHT="828")
         application = CharlieApplication(data_home=Path(directory))
         application.did_initial_sync = True
@@ -155,7 +155,7 @@ def main() -> int:
             return GLib.SOURCE_REMOVE
 
         GLib.timeout_add(600, exercise)
-        status = application.run(["org.projectluma.Charlie"])
+        status = application.run(["org.projectSuno.Charlie"])
         if failure:
             raise failure[0]
         print("single-key shortcuts: typing is safe; list keys archive and trash")

@@ -1,4 +1,4 @@
-From: Project Luma <noreply@projectluma.org>
+From: Project Suno <noreply@projectSuno.org>
 Subject: [PATCH] audio-capture: add the Audio Capture portal
 
 org.freedesktop.portal.AudioCapture lets an application record the sound
@@ -413,7 +413,7 @@ index 0000000..39161ce
 @@ -0,0 +1,1033 @@
 +/*
 + * Copyright © 2017-2018 Red Hat, Inc
-+ * Copyright © 2026 Project Luma
++ * Copyright © 2026 Project Suno
 + *
 + * SPDX-License-Identifier: LGPL-2.1-or-later
 + *
@@ -1451,7 +1451,7 @@ index 0000000..080693f
 +++ b/src/audio-capture.h
 @@ -0,0 +1,25 @@
 +/*
-+ * Copyright © 2026 Project Luma
++ * Copyright © 2026 Project Suno
 + *
 + * SPDX-License-Identifier: LGPL-2.1-or-later
 + *

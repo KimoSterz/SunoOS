@@ -1,5 +1,5 @@
 From 5380b03c1cb03d3a77531442555894c4ca0fac6d Mon Sep 17 00:00:00 2001
-From: Project Luma <codex@project-luma.local>
+From: Project Suno <codex@project-suno.local>
 Date: Wed, 26 Aug 2026 21:10:00 -0500
 Subject: [PATCH] profile: enable using a protected stdin identifier
 

@@ -2,14 +2,14 @@ diff --git a/src/nautilus-window.c b/src/nautilus-window.c
 index 9b2e4bc..2913303 100644
 --- a/src/nautilus-window.c
 +++ b/src/nautilus-window.c
-@@ -1120,6 +1120,7 @@ filer_details_panel (LumaBarItem *item,
+@@ -1120,6 +1120,7 @@ filer_details_panel (SunoBarItem *item,
      NautilusWindow *window = NAUTILUS_WINDOW (user_data);
-     LumaDetailsPane *pane = LUMA_DETAILS_PANE (luma_details_pane_new (_("Details"), FALSE));
+     SunoDetailsPane *pane = SUNO_DETAILS_PANE (Suno_details_pane_new (_("Details"), FALSE));
      gtk_widget_set_name (GTK_WIDGET (pane), "filer-details-panel");
-+    luma_details_pane_set_embedded (pane, TRUE);
-     luma_details_pane_set_closable (pane, FALSE);
++    Suno_details_pane_set_embedded (pane, TRUE);
+     Suno_details_pane_set_closable (pane, FALSE);
      filer_fill_details (window, pane);
-     luma_details_pane_show (pane, TRUE);
+     Suno_details_pane_show (pane, TRUE);
 diff --git a/test/automated/test-properties-about.c b/test/automated/test-properties-about.c
 index 7e28452..1545cc3 100644
 --- a/test/automated/test-properties-about.c
@@ -24,7 +24,7 @@ index 7e28452..1545cc3 100644
  #include "nautilus-file.h"
  #include "nautilus-tag-manager.h"
  #include "nautilus-resources.h"
-+#include <luma-ui.h>
++#include <Suno-ui.h>
  
  static void spin (guint milliseconds)
  {
@@ -62,20 +62,20 @@ index 7e28452..1545cc3 100644
 +    AdwDialog *unexpected=adw_application_window_get_visible_dialog(ADW_APPLICATION_WINDOW(window));
 +    if(ADW_IS_ALERT_DIALOG(unexpected))g_test_message("Unexpected dialog: %s / %s",adw_alert_dialog_get_heading(ADW_ALERT_DIALOG(unexpected)),adw_alert_dialog_get_body(ADW_ALERT_DIALOG(unexpected)));
 +    g_assert_null(unexpected);
-+    GtkWidget *island=find_css(GTK_WIDGET(window),"lumaui-title-island");
++    GtkWidget *island=find_css(GTK_WIDGET(window),"SunoUI-title-island");
 +    g_assert_nonnull(island);
 +    g_assert_true(gtk_widget_get_mapped(island));
-+    GtkWidget *title=find_css(island,"lumaui-title-island-title");
-+    GtkWidget *lead=find_css(island,"lumaui-title-island-lead");
++    GtkWidget *title=find_css(island,"SunoUI-title-island-title");
++    GtkWidget *lead=find_css(island,"SunoUI-title-island-lead");
 +    for(guint i=0;i<3;i++)
 +    {
 +        g_signal_emit_by_name(title,"clicked");spin(400);
-+        g_assert_true(luma_title_island_get_grown(LUMA_TITLE_ISLAND(island)));
++        g_assert_true(Suno_title_island_get_grown(SUNO_TITLE_ISLAND(island)));
 +        GtkWidget *sidebar=required(GTK_WIDGET(window),"places_sidebar");
 +        g_assert_true(gtk_widget_is_ancestor(sidebar,island));
 +        g_assert_true(gtk_widget_get_mapped(sidebar));
 +        g_signal_emit_by_name(lead,"clicked");spin(400);
-+        g_assert_false(luma_title_island_get_grown(LUMA_TITLE_ISLAND(island)));
++        g_assert_false(Suno_title_island_get_grown(SUNO_TITLE_ISLAND(island)));
 +        g_assert_false(gtk_widget_is_ancestor(sidebar,island));
 +    }
 +    gtk_window_set_default_size(GTK_WINDOW(window),1180,740);spin(400);
@@ -96,10 +96,10 @@ index 7e28452..1545cc3 100644
 +    g_action_group_change_action_state(slot_actions,"search-visible",g_variant_new_boolean(FALSE));spin(300);
 +    g_assert_true(gtk_widget_get_mapped(island));
 +    gtk_window_set_default_size(GTK_WINDOW(window),1180,740);spin(300);
-+    LumaDetailsPane *info=LUMA_DETAILS_PANE(required(GTK_WIDGET(window),"filer-information"));
-+    g_assert_nonnull(luma_details_pane_get_subject(info));
-+    g_assert_true(luma_details_pane_show(info,TRUE));spin(400);
-+    GtkWidget *sheet=find_css(GTK_WIDGET(info),"lumaui-details");
++    SunoDetailsPane *info=SUNO_DETAILS_PANE(required(GTK_WIDGET(window),"filer-information"));
++    g_assert_nonnull(Suno_details_pane_get_subject(info));
++    g_assert_true(Suno_details_pane_show(info,TRUE));spin(400);
++    GtkWidget *sheet=find_css(GTK_WIDGET(info),"SunoUI-details");
 +    graphene_rect_t pane_box, files_box;
 +    g_assert_true(gtk_widget_compute_bounds(sheet,GTK_WIDGET(window),&pane_box));
 +    g_assert_true(gtk_widget_compute_bounds(required(GTK_WIDGET(window),"filer-island"),GTK_WIDGET(window),&files_box));
@@ -121,7 +121,7 @@ index 7e28452..1545cc3 100644
 +    g_object_unref(paintable);
 +    g_assert_cmpfloat(pane_box.origin.x-(files_box.origin.x+files_box.size.width),>=,8);
 +    g_assert_cmpfloat(gtk_widget_get_width(GTK_WIDGET(window))-(pane_box.origin.x+pane_box.size.width),>=,8);
-+    luma_details_pane_show(info,FALSE);spin(100);
++    Suno_details_pane_show(info,FALSE);spin(100);
 +    g_autofree char *path=g_build_filename(g_get_home_dir(),"review.txt",NULL);
 +    g_assert_true(g_file_set_contents(path,"Review fixture",-1,NULL));
 +    g_autoptr(GFile) location=g_file_new_for_path(path);
@@ -130,25 +130,25 @@ index 7e28452..1545cc3 100644
 +    gtk_window_set_default_size(GTK_WINDOW(window),402,740);spin(300);
 +    nautilus_window_open_location_full(window,home,0,selection);spin(600);
 +    g_list_free_full(selection,g_object_unref);
-+    LumaActionCenter *center=LUMA_ACTION_CENTER(find_css(GTK_WIDGET(window),"lumaui-action-center"));
++    SunoActionCenter *center=SUNO_ACTION_CENTER(find_css(GTK_WIDGET(window),"SunoUI-action-center"));
 +    GtkWidget *details=NULL,*copy=NULL;
 +    for(guint i=0;i<6;i++) {
-+        GtkWidget *control=luma_action_center_get_bar_control(center,i);
++        GtkWidget *control=Suno_action_center_get_bar_control(center,i);
 +        if(!control)continue;
 +        if(!g_strcmp0(gtk_widget_get_tooltip_text(control),"Details"))details=control;
 +        if(!g_strcmp0(gtk_widget_get_tooltip_text(control),"Copy"))copy=control;
 +    }
 +    g_assert_nonnull(details);g_assert_nonnull(copy);
 +    g_signal_emit_by_name(details,"clicked");spin(400);
-+    g_assert_cmpstr(luma_action_center_get_grown(center),==,"details");
++    g_assert_cmpstr(Suno_action_center_get_grown(center),==,"details");
 +    GtkWidget *panel=required(GTK_WIDGET(window),"filer-details-panel");
-+    g_assert_false(luma_details_pane_get_is_drawer(LUMA_DETAILS_PANE(panel)));
++    g_assert_false(Suno_details_pane_get_is_drawer(SUNO_DETAILS_PANE(panel)));
 +    g_assert_true(gtk_widget_get_mapped(copy));
 +    g_assert_true(gtk_widget_compute_bounds(copy,GTK_WIDGET(window),&files_box));
 +    g_assert_true(gtk_widget_compute_bounds(panel,GTK_WIDGET(window),&pane_box));
 +    g_assert_cmpfloat(files_box.origin.y,>=,pane_box.origin.y+pane_box.size.height);
 +    g_signal_emit_by_name(details,"clicked");spin(300);
-+    g_assert_null(luma_action_center_get_grown(center));
++    g_assert_null(Suno_action_center_get_grown(center));
 +    gtk_window_destroy(GTK_WINDOW(window));spin(100);
 +    g_remove(path);
 +}
@@ -160,7 +160,7 @@ index 7e28452..1545cc3 100644
      g_autoptr(NautilusApplication) app=nautilus_application_new();
      g_application_set_flags(G_APPLICATION(app),G_APPLICATION_NON_UNIQUE);
      g_autoptr(GError) error=NULL;g_assert_true(g_application_register(G_APPLICATION(app),NULL,&error));
-+    g_test_add_func("/luma/review/navigation",review_navigation);
-     g_test_add_func("/luma/about/native-mutations",fixture);
-     g_test_add_func("/luma/navigation/system-warning",system_warning);
++    g_test_add_func("/Suno/review/navigation",review_navigation);
+     g_test_add_func("/Suno/about/native-mutations",fixture);
+     g_test_add_func("/Suno/navigation/system-warning",system_warning);
      return g_test_run();

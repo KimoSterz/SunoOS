@@ -1,45 +1,45 @@
 ---
-title: The luma command
-summary: Reference for the SDK command line, luma new, lint, inspect, test, release-check, live-preview and semantic, with usage, output and exit codes.
+title: The Suno command
+summary: Reference for the SDK command line, Suno new, lint, inspect, test, release-check, live-preview and semantic, with usage, output and exit codes.
 order: 8
 section: Kit
 ---
 
-# The `luma` command
+# The `Suno` command
 
-The `luma` command (also installed as `luma-sdk`) comes with the
-`luma-developer-platform-sdk` package, which is installed on Luma and included
-in the `org.projectluma.Sdk//44` Flatpak SDK. It is not published on PyPI. It
+The `Suno` command (also installed as `Suno-sdk`) comes with the
+`Suno-developer-platform-sdk` package, which is installed on Suno and included
+in the `org.projectSuno.Sdk//44` Flatpak SDK. It is not published on PyPI. It
 creates projects and checks them against the
-[application contract](../getting-started/luma-app-toml.md). It is version
+[application contract](../getting-started/Suno-app-toml.md). It is version
 **0.1.0 (preview)**.
 
 ```text
-usage: luma [-h] [--version]
+usage: Suno [-h] [--version]
             {new,lint,inspect,test,release-check,live-preview,semantic} ...
 ```
 
 | Command | What `--help` says |
 | --- | --- |
 | `new` | create a responsive GTK application |
-| `lint` | validate a Luma application contract |
+| `lint` | validate a Suno application contract |
 | `inspect` | inspect platform and conformance metadata |
 | `test` | run the local conformance contract matrix |
-| `release-check` | verify evidence required for Luma Native status |
+| `release-check` | verify evidence required for Suno Native status |
 | `live-preview` | preview a Live Extension contract |
 | `semantic` | inspect and exercise the live Semantic Broker (developer only) |
 
 `lint`, `inspect`, `test` and `release-check` take an optional manifest path
-and default to `luma-app.toml` in the current directory. A wrong or missing
+and default to `Suno-app.toml` in the current directory. A wrong or missing
 argument prints the usage line and exits with code 2.
 
-## `luma new`
+## `Suno new`
 
 ```text
-usage: luma new [-h] --id APP_ID [--destination DESTINATION] name
+usage: Suno new [-h] --id APP_ID [--destination DESTINATION] name
 ```
 
-Creates a project from the Python template: `luma-app.toml`, a desktop entry,
+Creates a project from the Python template: `Suno-app.toml`, a desktop entry,
 AppStream metainfo, a starter SVG icon, JSON and YAML Flatpak manifests, a
 `run-app` launcher, `src/main.py`, a README, and an evidence file with every
 gate `false`. On success it prints `Created <name> at <destination>`.
@@ -51,13 +51,13 @@ gate `false`. On success it prints `Created <name> at <destination>`.
 
 What the template contains today, so you are not surprised:
 
-- `src/main.py` uses `LumaUI` through introspection (`LumaUI.ActionBar`,
-  `LumaUI.AdaptiveScaffold`) inside a plain `Adw.ApplicationWindow`. It does
-  not use the Python kit’s `AppWindow`, so it does not get the full Luma window.
+- `src/main.py` uses `SunoUI` through introspection (`SunoUI.ActionBar`,
+  `SunoUI.AdaptiveScaffold`) inside a plain `Adw.ApplicationWindow`. It does
+  not use the Python kit’s `AppWindow`, so it does not get the full Suno window.
   For a kit-based start, replace it with the code in
   [your first app in Python](../getting-started/first-app-python.md).
 - The Flatpak manifest targets `org.gnome.Platform//50` and builds
-  `luma-developer-platform` from source as a module; see
+  `Suno-developer-platform` from source as a module; see
   [runtimes and distributions](../platform/runtimes-and-distributions.md#the-gnome-runtime-in-the-sdk-template).
   The YAML manifest is shorter than the JSON one and does not install the
   desktop entry, metainfo or icon.
@@ -65,29 +65,29 @@ What the template contains today, so you are not surprised:
   as your app ID, in the desktop entry `Exec`, the manifest `command` and the
   install commands.
 
-## `luma lint`
+## `Suno lint`
 
 ```text
-usage: luma lint [-h] [manifest]
+usage: Suno lint [-h] [manifest]
 ```
 
 Validates the static application contract: identity agreement between
-`luma-app.toml`, the Flatpak manifest, metainfo, desktop entry and icon; required
+`Suno-app.toml`, the Flatpak manifest, metainfo, desktop entry and icon; required
 widths, inputs and presentations; the Flatpak permission policy; portals;
 lifecycle; and that the entry point and evidence file exist. The full rule list
-is in [`luma-app.toml`](../getting-started/luma-app-toml.md).
+is in [`Suno-app.toml`](../getting-started/Suno-app-toml.md).
 
 | Exit | Output |
 | --- | --- |
-| 0 | `Luma application contract passed: <path>` |
+| 0 | `Suno application contract passed: <path>` |
 | 1 | One `error: ...` line per problem, on standard error |
 
 Run it in CI on every commit.
 
-## `luma inspect`
+## `Suno inspect`
 
 ```text
-usage: luma inspect [-h] [manifest]
+usage: Suno inspect [-h] [manifest]
 ```
 
 Prints a JSON report with your `application`, `platform`, `responsive`,
@@ -97,10 +97,10 @@ still open, and `errors`. Exit code 0 when there are no contract errors,
 otherwise 1. A new project reports `Development`, with every unmet evidence gate
 listed.
 
-## `luma test`
+## `Suno test`
 
 ```text
-usage: luma test [-h] [manifest]
+usage: Suno test [-h] [manifest]
 ```
 
 Prints the width and input matrix your app must pass, one line per combination
@@ -109,7 +109,7 @@ not open your app. On success it prints:
 
 ```text
 Static adaptive and semantic contracts passed.
-Runtime screenshot, keyboard, screen-reader, and portal lanes require the Luma SDK image.
+Runtime screenshot, keyboard, screen-reader, and portal lanes require the Suno SDK image.
 ```
 
 On failure it prints the `error:` lines and exits with code 1. The runtime
@@ -117,10 +117,10 @@ lanes (screenshots at each width, keyboard-only use, screen reader, portals)
 are not run by this command. Run them yourself or in CI and record the results
 in the evidence file.
 
-## `luma release-check`
+## `Suno release-check`
 
 ```text
-usage: luma release-check [-h] [manifest]
+usage: Suno release-check [-h] [manifest]
 ```
 
 Everything `lint` checks, plus the release evidence: a schema 0.2 contract; an
@@ -132,15 +132,15 @@ and test report files; `git` sources pinned to a commit; and `archive` or
 
 | Exit | Output |
 | --- | --- |
-| 0 | `Luma Native candidate evidence passed: <path>` |
-| 1 | `error:` lines, then `This project is structurally valid but has not earned Luma Native status.` |
+| 0 | `Suno Native candidate evidence passed: <path>` |
+| 1 | `error:` lines, then `This project is structurally valid but has not earned Suno Native status.` |
 
 Passing this command does not award a Depot tier. Review decides the tier.
 
-## `luma live-preview`
+## `Suno live-preview`
 
 ```text
-usage: luma live-preview [-h] activity
+usage: Suno live-preview [-h] activity
 ```
 
 Reads a Live Extension payload from the JSON file `activity`, checks it (a
@@ -160,23 +160,23 @@ shows “Private activity” when `privacy` is `sensitive` or `secret`. Problems
 print `error:` lines and exit with code 1. This is a text preview; it does not
 render anything.
 
-## `luma semantic`
+## `Suno semantic`
 
 ```text
-usage: luma semantic [-h] {list,get,request,revoke,invoke,audit} ...
+usage: Suno semantic [-h] {list,get,request,revoke,invoke,audit} ...
 ```
 
 ```text
-luma semantic list
-luma semantic get publication_id
-luma semantic request --scope SCOPE [--scope SCOPE ...] [--duration DURATION] application_id
-luma semantic revoke application_id
-luma semantic invoke [--parameter PARAMETER] publication_id object_id action_id
-luma semantic audit [--limit LIMIT]
+Suno semantic list
+Suno semantic get publication_id
+Suno semantic request --scope SCOPE [--scope SCOPE ...] [--duration DURATION] application_id
+Suno semantic revoke application_id
+Suno semantic invoke [--parameter PARAMETER] publication_id object_id action_id
+Suno semantic audit [--limit LIMIT]
 ```
 
 A developer client for the live [Semantic Broker](semantics-and-actions.md) on
-Luma. It runs itself inside a managed systemd user scope as the Semantic
+Suno. It runs itself inside a managed systemd user scope as the Semantic
 Inspector so the broker can identify it, and it goes through the same consent
 dialog and confirmations as any client; it has no bypass.
 
@@ -191,6 +191,6 @@ dialog and confirmations as any client; it has no bypass.
 
 Output is JSON. Broker errors print an `error:` line and exit with code 2.
 
-## `luma --version`
+## `Suno --version`
 
-Prints `luma-sdk 0.1.0`.
+Prints `Suno-sdk 0.1.0`.

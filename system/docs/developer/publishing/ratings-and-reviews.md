@@ -7,7 +7,7 @@ section: Publishing
 
 # Ratings and reviews
 
-Ratings and reviews live in Depot on Luma.
+Ratings and reviews live in Depot on Suno.
 
 > **Status: not live yet.** Depot has a place for ratings
 > and reviews, and the Hub service behind them is built, but it is not
@@ -17,17 +17,17 @@ Ratings and reviews live in Depot on Luma.
 
 ## How reviews work
 
-- **One review per Luma Connect account per app**, with a rating from 1 to 5
+- **One review per Suno Connect account per app**, with a rating from 1 to 5
   stars, an optional title (up to 100 characters) and an optional body (up to
   4,000). People can edit or delete their review.
 - Each review is tied to the **app version** it was written against, so you
   and readers can see whether it describes the current release.
-- Posting needs a Luma Connect account with a **verified email**. On Luma,
-  Depot posts through the device’s Luma Connect sign-in; on the web, people
+- Posting needs a Suno Connect account with a **verified email**. On Suno,
+  Depot posts through the device’s Suno Connect sign-in; on the web, people
   sign in at `hub.simplyluma.com`. Browsing, searching and installing never
   need an account.
-- A review posted from Depot on a Luma device where the app is installed
-  carries an **“Installed on Luma”** label. A review from the web never does.
+- A review posted from Depot on a Suno device where the app is installed
+  carries an **“Installed on Suno”** label. A review from the web never does.
 - A review from an account less than **24 hours** old waits for moderation
   before it appears.
 - Only `public` and `unlisted` apps take reviews.
@@ -58,7 +58,7 @@ changing a rating.
 ## Reporting
 
 Anyone signed in can report a review once, with a reason. You cannot report
-your own. Reports go to Luma’s moderators, who can hide or remove a review. As
+your own. Reports go to Suno’s moderators, who can hide or remove a review. As
 a developer, report reviews that:
 
 - contain personal information, harassment or hate;

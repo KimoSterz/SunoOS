@@ -1,12 +1,12 @@
 # SPDX-License-Identifier: Apache-2.0
 [Unit]
-Description=Luma Mobile simulator display readiness
+Description=Suno Mobile simulator display readiness
 After=mobi.phosh.Shell.service
 PartOf=graphical-session.target
 
 [Service]
 Type=oneshot
-ExecStart=/usr/libexec/luma-tester-mobile-ready
+ExecStart=/usr/libexec/Suno-tester-mobile-ready
 TimeoutStartSec=190
 RemainAfterExit=yes
 

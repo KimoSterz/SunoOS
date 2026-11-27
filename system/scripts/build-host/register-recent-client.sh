@@ -3,7 +3,7 @@
 
 set -euo pipefail
 
-build_root=${LUMA_BUILD_ROOT:-/srv/luma-build}
+build_root=${SUNO_BUILD_ROOT:-/srv/Suno-build}
 client_name=
 public_key=
 usage() {
@@ -39,12 +39,12 @@ if [ -s "$authorized" ] && ssh-keygen -lf "$authorized" -E sha256 |
   printf 'Recent client already registered: %s %s\n' "$client_name" "$fingerprint"
   exit 0
 fi
-printf '%s %s %s luma-recent:%s\n' \
+printf '%s %s %s Suno-recent:%s\n' \
   'restrict,port-forwarding,permitopen="127.0.0.1:8443"' \
   "$key_type" "$key_body" "$client_name" >>"$authorized"
 printf '%s\t%s\t%s\n' \
   "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$client_name" "$fingerprint" >>"$registry"
-tunnel_user=luma-update-tunnel
+tunnel_user=Suno-update-tunnel
 chown "$tunnel_user:$tunnel_user" "$authorized" "$registry"
 chmod 0600 "$authorized" "$registry"
 printf 'Recent client registered: %s %s\n' "$client_name" "$fingerprint"

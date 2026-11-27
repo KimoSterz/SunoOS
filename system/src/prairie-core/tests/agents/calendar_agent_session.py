@@ -25,9 +25,9 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from session import Failure, Session, mib  # noqa: E402
 
-AGENT = "org.projectluma.Calendar.Agent"
-APP = "org.projectluma.Calendar"
-UNIT = "app-org.projectluma.Calendar-agent.service"  # replaced in main() for the unmanaged fallback
+AGENT = "org.projectSuno.Calendar.Agent"
+APP = "org.projectSuno.Calendar"
+UNIT = "app-org.projectSuno.Calendar-agent.service"  # replaced in main() for the unmanaged fallback
 
 
 def agent_pid(session: Session) -> int:
@@ -54,7 +54,7 @@ def main() -> int:
     try:
         from prairie_apps import calendar_backend as backend
         session.systemctl("stop", UNIT, check=False)
-        session.systemctl("set-environment", "LUMA_CALENDAR_SNOOZE_MINUTES=1")
+        session.systemctl("set-environment", "SUNO_CALENDAR_SNOOZE_MINUTES=1")
         for source in backend.list_sources():
             if source.name.startswith(("Agent test", "Probe")):
                 backend.remove_calendar(source.uid)
@@ -83,7 +83,7 @@ def main() -> int:
         actions = dict(zip(record["actions"][0::2], record["actions"][1::2]))
         session.step("reminder shows with the event's time and place", "Room 2" in record["body"]
                      and record["body"].startswith("In ") and {"default", "snooze", "dismiss"} <= set(actions)
-                     and record["hints"].get("desktop-entry") == "org.projectluma.Calendar"
+                     and record["hints"].get("desktop-entry") == "org.projectSuno.Calendar"
                      and record["hints"].get("resident") is True,
                      body=record["body"], actions=actions)
         published = session.wait(lambda: session.values(AGENT).get("active-reminders"), "active reminders published", 10)
@@ -94,7 +94,7 @@ def main() -> int:
         session.invoke(record["id"], "snooze")
         session.wait(lambda: session.values(AGENT).get("snoozed-reminders") == 1, "snoozed", 10)
         again = session.wait_notification(lambda r: r["summary"] == "Stand-up", "snoozed reminder returns", 110, mark)
-        session.step("snooze brings the reminder back", again["hints"].get("x-luma-snoozed") is True, body=again["body"])
+        session.step("snooze brings the reminder back", again["hints"].get("x-Suno-snoozed") is True, body=again["body"])
 
         # 4. Dismiss withdraws it.
         session.invoke(again["id"], "dismiss")
@@ -132,7 +132,7 @@ def main() -> int:
         else:
             session.run("pkill", "-f", "[p]rairie-calendar --agent", check=False)
             session.wait(lambda: not session.has_owner(AGENT), "agent stopped", 20)
-            session.run("systemd-run", "--user", "--quiet", "--collect", "--unit=luma-test-calendar-restart",
+            session.run("systemd-run", "--user", "--quiet", "--collect", "--unit=Suno-test-calendar-restart",
                         "prairie-calendar", "--agent")
         session.wait(lambda: session.has_owner(AGENT), "restarted", 30)
         time.sleep(10)
@@ -154,12 +154,12 @@ def main() -> int:
             session.invoke(fresh["id"], "default")
             opened = session.wait(lambda: session.processes("--event-uid="), "Calendar started with the event", 20)
             session.step("Open starts Calendar on that event", True, command=session.cmdline(opened[0]))
-        session.wait(lambda: session.has_owner("org.projectluma.Calendar"), "Calendar window running", 40)
+        session.wait(lambda: session.has_owner("org.projectSuno.Calendar"), "Calendar window running", 40)
         window = [p for p in session.processes("prairie-calendar") if "--agent" not in session.cmdline(p)]
         cgroups = {p: Path(f"/proc/{p}/cgroup").read_text().strip().rsplit("/", 1)[-1] for p in window}
         session.step("Calendar window opened from the reminder, in its own scope, not the agent's unit",
                      bool(window) and not set(window) & set(session.unit_pids(UNIT))
-                     and all(group.startswith("app-luma-org.projectluma.Calendar-") for group in cgroups.values()),
+                     and all(group.startswith("app-Suno-org.projectSuno.Calendar-") for group in cgroups.values()),
                      cgroups=cgroups)
         session.run("pkill", "-f", "[p]rairie-calendar --event-uid", check=False)
 
@@ -185,8 +185,8 @@ def main() -> int:
     finally:
         session.restore_logind()
         session.systemctl("thaw", UNIT, check=False)
-        session.systemctl("stop", "luma-test-calendar-restart", check=False)
-        session.systemctl("unset-environment", "LUMA_CALENDAR_SNOOZE_MINUTES", check=False)
+        session.systemctl("stop", "Suno-test-calendar-restart", check=False)
+        session.systemctl("unset-environment", "SUNO_CALENDAR_SNOOZE_MINUTES", check=False)
     summary = session.summary("calendar", extra)
     print(json.dumps({"passed": summary["passed"], **extra}))
     return 0 if summary["passed"] else 1

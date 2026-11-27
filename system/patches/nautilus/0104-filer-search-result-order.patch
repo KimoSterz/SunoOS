@@ -29,13 +29,13 @@ index 5828f1f..b7db724 100644
 +guint
 +nautilus_filer_fixture_search_rank (const char *name)
 +{
-+    if (g_getenv ("LUMA_FILER_FIXTURE") == NULL || name == NULL)
++    if (g_getenv ("SUNO_FILER_FIXTURE") == NULL || name == NULL)
 +    {
 +        return 0;
 +    }
 +    if (g_once_init_enter (&search_loaded))
 +    {
-+        const char *root = g_getenv ("LUMA_FILER_FIXTURE_ROOT");
++        const char *root = g_getenv ("SUNO_FILER_FIXTURE_ROOT");
 +        g_autofree char *path = root != NULL
 +                                ? g_build_filename (root, "Profile", "config", "filer-search.tsv", NULL)
 +                                : NULL;
@@ -92,7 +92,7 @@ index b090072..f33cc1d 100644
 +                          gpointer      user_data)
 +{
 +    NautilusListView *self = NAUTILUS_LIST_VIEW (user_data);
-+    if (self->search_directory == NULL || g_getenv ("LUMA_FILER_FIXTURE") == NULL)
++    if (self->search_directory == NULL || g_getenv ("SUNO_FILER_FIXTURE") == NULL)
 +    {
 +        return GTK_ORDERING_EQUAL;
 +    }

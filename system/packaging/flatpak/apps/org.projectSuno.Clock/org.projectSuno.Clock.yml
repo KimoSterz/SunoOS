@@ -1,0 +1,48 @@
+# SPDX-License-Identifier: Apache-2.0
+{
+  "appstream-compose": false,
+  "id": "org.projectSuno.Clock",
+  "runtime": "org.projectSuno.Platform",
+  "runtime-version": "44",
+  "sdk": "org.projectSuno.Sdk",
+  "command": "prairie-clock",
+  "finish-args": [
+    "--talk-name=org.projectSuno.ShellState1",
+    "--env=SUNO_CLOCK_STYLE_PATH=/app/share/prairie-core/clock.css",
+    "--metadata=X-Suno=app-data-schema=clock-v1",
+    "--metadata=X-Suno=min-host-installer=60",
+    "--share=ipc",
+    "--socket=wayland",
+    "--socket=fallback-x11",
+    "--device=dri",
+    "--share=network",
+    "--talk-name=org.projectSuno.AppData1",
+    "--talk-name=org.projectSuno.Background1",
+    "--talk-name=org.projectSuno.ClockHost1",
+    "--metadata=X-Suno=min-host-core=93",
+    "--metadata=X-Suno=min-host-background=5",
+    "--talk-name=org.projectSuno.ApplicationDirectory1"
+  ],
+  "modules": [
+    {
+      "name": "clock",
+      "buildsystem": "simple",
+      "build-commands": [
+        "install -d /app/lib/python3.14/site-packages /app/bin /app/share/prairie-core",
+        "cp -a --no-preserve=ownership src/prairie-core/prairie_apps /app/lib/python3.14/site-packages/",
+        "python3 -m compileall -q -f -j0 --invalidation-mode checked-hash /app/lib/python3.14/site-packages",
+        "install -Dm755 src/prairie-core/bin/prairie-clock /app/bin/prairie-clock-real",
+        "printf '#!/bin/sh\\nexec python3 -m Suno_appkit.migration_startup prairie-clock-real \"$@\"\\n' > /app/bin/prairie-clock",
+        "chmod 755 /app/bin/prairie-clock",
+        "install -Dm644 src/prairie-core/data/org.projectSuno.Clock.desktop /app/share/applications/org.projectSuno.Clock.desktop",
+        "install -d /app/share/dbus-1/services",
+        "sed 's|@bindir@|/app/bin|g' src/prairie-core/data/org.projectSuno.Clock.service.in > /app/share/dbus-1/services/org.projectSuno.Clock.service",
+        "install -Dm644 depot-icon.svg /app/share/icons/hicolor/scalable/apps/org.projectSuno.Clock.svg",
+        "cp -a --no-preserve=ownership src/prairie-core/style/. /app/share/prairie-core/",
+        "install -Dm644 depot.metainfo.xml /app/share/metainfo/org.projectSuno.Clock.metainfo.xml",
+        "install -Dm644 depot-media/70b1cdb41fcf7de849c9e52375081477e135cc1b4aa17449b2f87c7b1e1bab49.png /app/share/Suno-app-media/70b1cdb41fcf7de849c9e52375081477e135cc1b4aa17449b2f87c7b1e1bab49.png",
+        "install -Dm644 LICENSE.md /app/share/licenses/org.projectSuno.Clock/LICENSE.md"
+      ]
+    }
+  ]
+}

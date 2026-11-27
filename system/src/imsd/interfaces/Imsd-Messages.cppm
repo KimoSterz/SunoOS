@@ -57,7 +57,7 @@ export namespace imsd::msg {
         // registers a fresh random UUID here, NOT the IMSI (oracle capture
         // 2026-07-21, journal/ims.md s53) — one of the residual diffs from our
         // earlier REGISTER while inbound attempts were still diverted to
-        // voicemail without an INVITE reaching Luma. Empty falls back to the
+        // voicemail without an INVITE reaching Suno. Empty falls back to the
         // IMSI: the pre-oracle shape, which old state files resumed from and
         // the byte-pinned tests encode.
         std::string contactUser;
@@ -125,7 +125,7 @@ export namespace imsd::msg {
     // REGISTER Contact media-feature tags. GSMA IR.92 requires BOTH the
     // RFC 3840 `audio` tag and the MMTEL ICSI for a VoLTE registration. The
     // former advertises the media capability used by RFC 3841 target
-    // selection; the latter advertises the IMS communication service. Luma
+    // selection; the latter advertises the IMS communication service. Suno
     // previously sent only the ICSI. That incomplete Contact could originate
     // calls but gave a terminating proxy no `audio` contact predicate to
     // select, making it a standards-backed candidate for the observed
@@ -138,7 +138,7 @@ export namespace imsd::msg {
     // terminating SMS over IMS to a stack with no SMSoIP handling yet,
     // silently losing texts. Exact tag parity including smsip + nw-init-ussi
     // was tested live (2026-07-20, stored binding echo-verified), but no MT
-    // INVITE reached Luma in that gate; do not infer routing success from the
+    // INVITE reached Suno in that gate; do not infer routing success from the
     // binding echo.
     // The binding user-part every Contact we emit carries (see
     // Context::contactUser).
@@ -518,7 +518,7 @@ export namespace imsd::msg {
         }
         // TS 24.229 5.1.2A: the UE inserts P-Access-Network-Info into any
         // request for a dialog, any subsequent request (except ACK/CANCEL) and
-        // any RESPONSE within a dialog except CANCEL responses. Luma published
+        // any RESPONSE within a dialog except CANCEL responses. Suno published
         // it on REGISTER/SUBSCRIBE/originating INVITE but on NO terminating
         // response, so on an incoming call the network learned the UE's serving
         // access at registration time and never at call time. A terminating

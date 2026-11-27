@@ -29,38 +29,38 @@ for key, directory in [('FLATPAK_USER_DIR', 'flatpak'), ('XDG_DATA_HOME', 'data'
     path = out / directory
     path.mkdir(mode=0o700)
     os.environ[key] = str(path)
-os.environ['LUMA_DEPOT_DATA_DIRECTORY'] = str(root / 'src/luma-installer/data')
-sys.path[:0] = [str(root / 'src/luma-installer'), str(root / 'src/luma-depot')]
+os.environ['SUNO_DEPOT_DATA_DIRECTORY'] = str(root / 'src/Suno-installer/data')
+sys.path[:0] = [str(root / 'src/Suno-installer'), str(root / 'src/Suno-depot')]
 
 import gi  # noqa: E402
 gi.require_version('Flatpak', '1.0')
 from gi.repository import Flatpak, Gio  # noqa: E402
-from luma_depot import native  # noqa: E402
-from luma_installer import depot_flatpak  # noqa: E402
+from Suno_depot import native  # noqa: E402
+from Suno_installer import depot_flatpak  # noqa: E402
 
 
 def command(*argv):
     subprocess.run(argv, check=True)
 
 
-command('flatpak', 'remote-add', '--user', 'luma',
-        str(root / 'src/luma-installer/data/luma.flatpakrepo'))
+command('flatpak', 'remote-add', '--user', 'Suno',
+        str(root / 'src/Suno-installer/data/Suno.flatpakrepo'))
 manifest = json.loads((args.baseline / 'manifest.json').read_text())
 baselines = []
 repo = str(out / 'flatpak/repo')
-for app in ('org.gnome.Nautilus', 'org.projectluma.Ari'):
+for app in ('org.gnome.Nautilus', 'org.projectSuno.Ari'):
     row = next(r for r in manifest['bundles'] if r['ref'] == f'app/{app}/x86_64/beta')
     bundle = (args.baseline / row['file']).resolve()
     assert bundle.parent == args.baseline.resolve()
     assert hashlib.sha256(bundle.read_bytes()).hexdigest() == row['sha256']
     command('flatpak', 'install', '--user', '--noninteractive', '--no-deps', '--no-related',
-            'luma', app + '//beta')
+            'Suno', app + '//beta')
     command('flatpak', 'build-import-bundle', '--no-update-summary', repo, str(bundle))
     # Trust the remote key shipped in source, not a key supplied by the fixture.
-    command('ostree', 'show', '--repo=' + repo, '--gpg-verify-remote=luma', row['commit'])
+    command('ostree', 'show', '--repo=' + repo, '--gpg-verify-remote=Suno', row['commit'])
     # Offline-cache setup only: activate the authenticated retained baseline.
     command('ostree', 'refs', '--repo=' + repo, '--force',
-            '--create=luma:' + row['ref'], row['commit'])
+            '--create=Suno:' + row['ref'], row['commit'])
     command('flatpak', 'update', '--user', '--noninteractive', '--no-deps', '--no-related',
             '--no-pull', '--commit=' + row['commit'], app + '//beta')
     baselines.append(row)
@@ -75,13 +75,13 @@ def refs():
 
 for row in baselines:
     ref = refs()[row['ref'].split('/')[1]]
-    assert ref.get_commit() == row['commit'] and ref.get_origin() == 'luma'
+    assert ref.get_commit() == row['commit'] and ref.get_origin() == 'Suno'
 provider = native.NativeInstallation()
 # Only the installation selection is replaced; discovery, signature policy,
 # immutable permission comparison and transactions use the production backend.
 with patch.object(native, '_installations', return_value=(installation,)):
     updates = provider._check_updates(None)
-assert set(updates) == {'org.gnome.Nautilus', 'org.projectluma.Ari'}
+assert set(updates) == {'org.gnome.Nautilus', 'org.projectSuno.Ari'}
 for info in updates.values():
     assert info['commit'] != info['installed_commit']
     assert not any(change.change in ('added', 'widened') for change in info['changes'])
@@ -91,7 +91,7 @@ state = out / 'config/nautilus/fixture-state'
 state.parent.mkdir()
 state.write_bytes(b'preserve-existing-state\n')
 state_sha = hashlib.sha256(state.read_bytes()).hexdigest()
-source = depot_flatpak.resolve(installation, app, 'x86_64', None, 'luma', 'beta')
+source = depot_flatpak.resolve(installation, app, 'x86_64', None, 'Suno', 'beta')
 tx = depot_flatpak.transaction(installation, source, update=True,
                                 expected_installed_commit=prior.get_commit())
 tx.set_disable_dependencies(True)
@@ -100,7 +100,7 @@ tx.run(None)
 installation.drop_caches(None)
 updated = refs()[app]
 assert updated.get_commit() == updates[app]['commit']
-assert updated.get_branch() == 'beta' and updated.get_origin() == 'luma'
+assert updated.get_branch() == 'beta' and updated.get_origin() == 'Suno'
 assert hashlib.sha256(state.read_bytes()).hexdigest() == state_sha
 rollback = depot_flatpak.revert_transaction(installation, updated, prior.get_commit())
 rollback.set_disable_dependencies(True)

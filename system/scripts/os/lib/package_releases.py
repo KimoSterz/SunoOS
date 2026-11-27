@@ -21,20 +21,20 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 PIN_FILES = ('config/desktop/inputs.env', 'config/desktop/packages.txt', 'config/depot/packages.txt')
-EXTRA = {'luma-developer-platform': (['src/luma-platform/'], 'packaging/rpm/luma-developer-platform.spec')}
+EXTRA = {'Suno-developer-platform': (['src/Suno-platform/'], 'packaging/rpm/Suno-developer-platform.spec')}
 # Sources a patch series' build copies in from outside patches/<dir>/ (no build group owns them).
-SERIES_EXTRA = {'gnome-shell': ['src/luma-shell-presentation/', 'scripts/packages/build-gnome-shell.sh']}
+SERIES_EXTRA = {'gnome-shell': ['src/Suno-shell-presentation/', 'scripts/packages/build-gnome-shell.sh']}
 # A release commit carries these trailers; Release-through names the last
 # main commit whose source changes it released.
 THROUGH = 'Release-through'
 # Values derived from a package's release outside its spec and pins, written
-# with it: {package: (path, pattern whose group 1 precedes the luma number)}.
-DERIVED = {'luma-application-installer': ('src/luma-installer/luma_installer/app_host_compatibility.py',
+# with it: {package: (path, pattern whose group 1 precedes the Suno number)}.
+DERIVED = {'Suno-application-installer': ('src/Suno-installer/Suno_installer/app_host_compatibility.py',
                                           re.compile(r'^(SUPPORTED_INSTALLER_RELEASE\s*=\s*)\d+$', re.M)),
            # Filer builds from this complete successor of its series spec patch
            # (scripts/packages/build-nautilus.sh), so it carries the same Release.
            'nautilus': ('packaging/nautilus/filer-spec-complete.patch',
-                        re.compile(r'^(\+Release:\s*\d+\.luma\.)\d+(?=%\{\?dist\}\s*$)', re.M))}
+                        re.compile(r'^(\+Release:\s*\d+\.Suno\.)\d+(?=%\{\?dist\}\s*$)', re.M))}
 TOKEN = re.compile(r'@RELEASE(?::([A-Za-z0-9._+-]+))?@')
 ARCH = r'(?:x86_64|aarch64|noarch|src)'
 NEVRA = re.compile(r'^(?P<name>.+)-(?P<version>(?:\d+:)?[^-]+)-(?P<release>[^-]+?)(?P<dist>\.fc\d+)?\.(?P<arch>' + ARCH + r')$')
@@ -107,7 +107,7 @@ def git(root: Path, *args: str) -> str:
 class Package:
     name: str              # RPM source package name, as @RELEASE:name@ and pins use it
     release_file: str
-    series: bool           # a patches/<dir>/0000-luma-fedora-spec.patch
+    series: bool           # a patches/<dir>/0000-Suno-fedora-spec.patch
     paths: list[str]
     group: str | None = None   # config/os/desktop-build-groups.json group
     binaries: set[str] = field(default_factory=set)
@@ -145,17 +145,17 @@ def plain(release: str) -> str:
 
 
 def bump(release: str) -> str | None:
-    """The next Luma release, or None when the shape is not one this can count.
+    """The next Suno release, or None when the shape is not one this can count.
 
-    1.luma.30 -> 1.luma.31; 1.luma.4.creator20261004.1 -> 1.luma.5 (the
-    suffix goes; 5 sorts above 4.anything); 2.luma1 -> 2.luma2;
-    %autorelease -e luma.4 -> %autorelease -e luma.5."""
+    1.Suno.30 -> 1.Suno.31; 1.Suno.4.creator20261004.1 -> 1.Suno.5 (the
+    suffix goes; 5 sorts above 4.anything); 2.Suno1 -> 2.Suno2;
+    %autorelease -e Suno.4 -> %autorelease -e Suno.5."""
     dist = '%{?dist}' if release.endswith('%{?dist}') else ''
     value = plain(release)
-    auto = re.fullmatch(r'(%autorelease -e luma\.)(\d+)', value)
+    auto = re.fullmatch(r'(%autorelease -e Suno\.)(\d+)', value)
     if auto:
         return f'{auto.group(1)}{int(auto.group(2)) + 1}'
-    match = re.match(r'^(?P<head>(?:[^%]*?\.)?luma\.?)(?P<n>\d+)(?=$|[.~])', value)
+    match = re.match(r'^(?P<head>(?:[^%]*?\.)?Suno\.?)(?P<n>\d+)(?=$|[.~])', value)
     if not match or '%' in value:
         return None
     return f"{match.group('head')}{int(match.group('n')) + 1}{dist}"
@@ -173,11 +173,11 @@ def _spec_binaries(text: str, name: str) -> set[str]:
 def packages(tree: Tree) -> dict[str, Package]:
     """Every package whose release this tree assigns, by RPM name.
 
-    - each patch series (patches/<dir>/0000-luma-fedora-spec.patch), plus the
+    - each patch series (patches/<dir>/0000-Suno-fedora-spec.patch), plus the
       other paths of the build group that builds it and SERIES_EXTRA (the
       Shell's presentation sources);
     - each build group (config/os/desktop-build-groups.json) with a spec;
-    - luma-developer-platform (src/luma-platform/);
+    - Suno-developer-platform (src/Suno-platform/);
     - every other packaging/rpm spec: the spec, the scripts/packages/build-*.sh
       that name it and the src/ and patches/ folders those scripts copy, unless
       a package above owns the folder.
@@ -186,7 +186,7 @@ def packages(tree: Tree) -> dict[str, Package]:
     groups = json.loads(tree.read('config/os/desktop-build-groups.json') or '{"groups": {}}')['groups']
     for path in tree.files('patches/'):
         parts = path.split('/')
-        if len(parts) == 3 and parts[2] == '0000-luma-fedora-spec.patch':
+        if len(parts) == 3 and parts[2] == '0000-Suno-fedora-spec.patch':
             text = tree.read(path) or ''
             found[parts[1]] = Package(parts[1], path, True, [f'patches/{parts[1]}/', *SERIES_EXTRA.get(parts[1], [])],
                                       version=version_of(text, True))
@@ -225,7 +225,7 @@ def packages(tree: Tree) -> dict[str, Package]:
                 for folder in re.findall(r'\$\{?repo_root\}?/((?:src|patches)/[A-Za-z0-9._+-]+)', body):
                     folder += '/'
                     if folder not in owned and folder not in paths and \
-                            not (folder.startswith('patches/') and tree.read(folder + '0000-luma-fedora-spec.patch')):
+                            not (folder.startswith('patches/') and tree.read(folder + '0000-Suno-fedora-spec.patch')):
                         paths.append(folder)
         package = _spec_package(tree, spec, paths)
         if package:
@@ -322,7 +322,7 @@ def rewrite(path: str, text: str, assigned: dict[str, str], found: dict[str, Pac
         match = _field(text, 'Release', owner.series)
         if match:
             text = text[:match.start('value')] + assigned[owner.name] + text[match.end('value'):]
-    if path.startswith('packaging/rpm/') or re.fullmatch(r'patches/[^/]+/0000-luma-fedora-spec\.patch', path):
+    if path.startswith('packaging/rpm/') or re.fullmatch(r'patches/[^/]+/0000-Suno-fedora-spec\.patch', path):
         def token(match: re.Match) -> str:
             name = match.group(1) or (owner.name if owner else None)
             if name not in final:
@@ -345,7 +345,7 @@ def rewrite(path: str, text: str, assigned: dict[str, str], found: dict[str, Pac
     if path in PIN_FILES:
         text = rewrite_pins(text, assigned, found, current)
     for name, (derived, pattern) in DERIVED.items():
-        number = re.fullmatch(r'\d+\.luma\.(\d+)', plain(assigned[name])) if path == derived and name in assigned else None
+        number = re.fullmatch(r'\d+\.Suno\.(\d+)', plain(assigned[name])) if path == derived and name in assigned else None
         if number:
             text = pattern.sub(lambda match: match.group(1) + number.group(1), text)
     return text
@@ -361,7 +361,7 @@ def rewrite_pins(text: str, assigned: dict[str, str], found: dict[str, Package],
 
     def moved(package_name: str, release: str) -> str | None:
         """The new release for one this package was pinned at, or None. An
-        %autorelease -e luma.N package is pinned as <number>.luma.N."""
+        %autorelease -e Suno.N package is pinned as <number>.Suno.N."""
         old, new = moves[package_name]
         if release == old:
             return new
@@ -413,10 +413,10 @@ def rewrite_pins(text: str, assigned: dict[str, str], found: dict[str, Package],
         if variable and hit:
             for package in hit:
                 stems.setdefault(package, set()).add(variable.group(1))
-    # NAME_RELEASE / NAME_LUMA_RELEASE: a bare release, or name-version-release,
+    # NAME_RELEASE / NAME_SUNO_RELEASE: a bare release, or name-version-release,
     # for the package whose NEVRA variables share its NAME_ prefix.
     for index, line in enumerate(lines):
-        match = re.match(r'^(?P<var>(?P<stem>[A-Z0-9_]+?)(?:_LUMA)?_RELEASE)=(?P<value>\S+)$', line)
+        match = re.match(r'^(?P<var>(?P<stem>[A-Z0-9_]+?)(?:_SUNO)?_RELEASE)=(?P<value>\S+)$', line)
         if not match:
             continue
         for package in moves:
@@ -464,12 +464,12 @@ def rewrite_tree(source: Tree, assigned: dict[str, str]):
 # The toolkit cohort's recipes and sources (scripts/os/admit-desktop-toolkit.py).
 TOOLKIT_PATHS = ['scripts/os/build-desktop-toolkit.sh',
                  'scripts/packages/build-gtk4.sh', 'scripts/packages/build-libadwaita.sh',
-                 'scripts/packages/build-luma-developer-platform.sh', 'scripts/packages/build-figtree-fonts.sh',
+                 'scripts/packages/build-Suno-developer-platform.sh', 'scripts/packages/build-figtree-fonts.sh',
                  'scripts/packages/run-in-rpm-builder.sh', 'scripts/packages/fetch-source-rpm.sh',
-                 'patches/gtk4', 'patches/libadwaita', 'src/luma-platform',
-                 'packaging/rpm/luma-developer-platform.spec', 'scripts/fonts',
+                 'patches/gtk4', 'patches/libadwaita', 'src/Suno-platform',
+                 'packaging/rpm/Suno-developer-platform.spec', 'scripts/fonts',
                  'packaging/fontconfig', 'packaging/rpm/google-figtree-fonts.spec',
-                 'assets/icon-theme/Prairie/symbolic/actions/lumaui-*.svg', 'LICENSE.md',
+                 'assets/icon-theme/Prairie/symbolic/actions/SunoUI-*.svg', 'LICENSE.md',
                  'scripts/packages/spec-release.sh', 'tests/toolkit-native']
 TOOLKIT_PROVIDER_PATHS = ['scripts/packages/build-gtk4.sh', 'scripts/packages/build-libadwaita.sh',
                           'scripts/packages/build-figtree-fonts.sh', 'scripts/packages/run-in-rpm-builder.sh',
@@ -498,7 +498,7 @@ def toolkit_differences(root: Path, commit: str, assigned: dict[str, str],
         return dict(line.split('=', 1) for line in (body or '').splitlines()
                     if line and not line.startswith('#') and '=' in line)
     prefixes = ('GTK4_', 'LIBADWAITA_', 'FIGTREE_', 'FEDORA_RPM_BUILD_CONTAINER') + \
-        (() if providers_only else ('LUMA_DEVELOPER_PLATFORM_',))
+        (() if providers_only else ('SUNO_DEVELOPER_PLATFORM_',))
     prior = values(read('config/desktop/inputs.env'))
     current = values((root / 'config/desktop/inputs.env').read_text())
     keys = [key for key in prior if key.startswith(prefixes)]

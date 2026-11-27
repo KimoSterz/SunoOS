@@ -1,4 +1,4 @@
-From: Project Luma <builds@project-luma.local>
+From: Project Suno <builds@project-suno.local>
 Subject: [PATCH] keyboard: settings and hide in a phone's thumb gap
 
 On a phone held upright the keyboard keeps a 72 px thumb gap below the keys
@@ -34,7 +34,7 @@ their side, Desktop and TV keep their insets and strips as before.
 +    // suggestions, and the gap is not an empty band.
 +    _createControls() {
 +        const controls = new St.BoxLayout({
-+            style_class: 'luma-keycap-tools luma-keycap-controls',
++            style_class: 'Suno-keycap-tools Suno-keycap-controls',
 +            x_expand: true,
 +            visible: false,
 +        });
@@ -44,7 +44,7 @@ their side, Desktop and TV keep their insets and strips as before.
 +                accessible_name: name,
 +                can_focus: false,
 +                style: `min-width: ${size}px; min-height: ${size}px;`,
-+                child: new St.Icon({icon_name: `luma-keycap-${icon}-symbolic`}),
++                child: new St.Icon({icon_name: `Suno-keycap-${icon}-symbolic`}),
 +            });
 +            button.connect('clicked', callback);
 +            return button;

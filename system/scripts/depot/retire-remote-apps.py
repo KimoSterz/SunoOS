@@ -10,7 +10,7 @@ import json
 import re
 import subprocess
 
-RETIRED = {"org.projectluma.Displays": "Display controls are in Settings."}
+RETIRED = {"org.projectSuno.Displays": "Display controls are in Settings."}
 
 
 def retire(repo, fingerprint, homedir):

@@ -1,5 +1,5 @@
 {
-  "schema": "org.projectluma.public-package-license-expressions/v1",
+  "schema": "org.projectSuno.public-package-license-expressions/v1",
   "source_snapshot_sha256": "6fd2a4fccad0a356c8659c70c75ae5a014cbaa56852170ac56472276290a594a",
   "note": "Package aggregate licenses include fetched upstream dependency licenses, not blanket relicensing instructions. LicenseRef labels need their existing project descriptions preserved; removed Office/Creative/Imager recipes should be omitted from the OS monorepo. SPDX exceptions require exception texts as well as license texts. Source file notices remain controlling.",
   "license_and_exception_identifiers": [
@@ -28,8 +28,8 @@
     "LGPL-2.1-or-later",
     "LLVM-exception",
     "LicenseRef-LJSpeech-Public-Domain",
-    "LicenseRef-Luma-Project-Asset",
-    "LicenseRef-Luma-System-Artwork-Pending",
+    "LicenseRef-Suno-Project-Asset",
+    "LicenseRef-Suno-System-Artwork-Pending",
     "LicenseRef-Waydroid-Android-Image",
     "MIT",
     "MPL-1.1",
@@ -49,7 +49,7 @@
         "prairie-icon-theme"
       ],
       "license_expressions": [
-        "CC-BY-SA-4.0 AND Apache-2.0 AND ISC AND MIT AND LicenseRef-Luma-System-Artwork-Pending"
+        "CC-BY-SA-4.0 AND Apache-2.0 AND ISC AND MIT AND LicenseRef-Suno-System-Artwork-Pending"
       ]
     },
     {
@@ -89,7 +89,7 @@
       ]
     },
     {
-      "source_path": "packaging/rpm/speech-dispatcher-luma.spec",
+      "source_path": "packaging/rpm/speech-dispatcher-Suno.spec",
       "package_names": [
         "speech-dispatcher"
       ],
@@ -112,7 +112,7 @@
       ]
     },
     {
-      "source_path": "packaging/rpm/webkitgtk-luma.spec",
+      "source_path": "packaging/rpm/webkitgtk-Suno.spec",
       "package_names": [
         "webkitgtk"
       ],
@@ -135,27 +135,27 @@
       ]
     },
     {
-      "source_path": "packaging/rpm/gnome-shell-extension-luma-energy.spec",
+      "source_path": "packaging/rpm/gnome-shell-extension-Suno-energy.spec",
       "package_names": [
-        "gnome-shell-extension-luma-energy"
+        "gnome-shell-extension-Suno-energy"
       ],
       "license_expressions": [
         "MPL-2.0"
       ]
     },
     {
-      "source_path": "packaging/rpm/gnome-shell-extension-luma-handheld.spec",
+      "source_path": "packaging/rpm/gnome-shell-extension-Suno-handheld.spec",
       "package_names": [
-        "gnome-shell-extension-luma-handheld"
+        "gnome-shell-extension-Suno-handheld"
       ],
       "license_expressions": [
         "Apache-2.0"
       ]
     },
     {
-      "source_path": "packaging/rpm/gnome-shell-extension-luma-tiling-toggle.spec",
+      "source_path": "packaging/rpm/gnome-shell-extension-Suno-tiling-toggle.spec",
       "package_names": [
-        "gnome-shell-extension-luma-tiling-toggle"
+        "gnome-shell-extension-Suno-tiling-toggle"
       ],
       "license_expressions": [
         "Apache-2.0"
@@ -199,124 +199,124 @@
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-agenda.spec",
+      "source_path": "packaging/rpm/Suno-agenda.spec",
       "package_names": [
-        "luma-agenda"
+        "Suno-agenda"
       ],
       "license_expressions": [
         "Apache-2.0"
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-android-images-reference.spec",
+      "source_path": "packaging/rpm/Suno-android-images-reference.spec",
       "package_names": [
-        "luma-android-images"
+        "Suno-android-images"
       ],
       "license_expressions": [
         "LicenseRef-Waydroid-Android-Image"
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-android-images.spec",
+      "source_path": "packaging/rpm/Suno-android-images.spec",
       "package_names": [
-        "luma-android-images"
+        "Suno-android-images"
       ],
       "license_expressions": [
         "LicenseRef-Waydroid-Android-Image"
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-android-runtime.spec",
+      "source_path": "packaging/rpm/Suno-android-runtime.spec",
       "package_names": [
-        "luma-android-runtime"
+        "Suno-android-runtime"
       ],
       "license_expressions": [
         "Apache-2.0"
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-apk-metadata.spec",
+      "source_path": "packaging/rpm/Suno-apk-metadata.spec",
       "package_names": [
-        "luma-apk-metadata"
+        "Suno-apk-metadata"
       ],
       "license_expressions": [
         "Apache-2.0 AND MIT AND Unicode-3.0"
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-appimage-compat.spec",
+      "source_path": "packaging/rpm/Suno-appimage-compat.spec",
       "package_names": [
-        "luma-appimage-compat"
+        "Suno-appimage-compat"
       ],
       "license_expressions": [
         "MPL-2.0"
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-application-installer.spec",
+      "source_path": "packaging/rpm/Suno-application-installer.spec",
       "package_names": [
-        "luma-application-installer"
+        "Suno-application-installer"
       ],
       "license_expressions": [
         "Apache-2.0"
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-ari-runtime.spec",
+      "source_path": "packaging/rpm/Suno-ari-runtime.spec",
       "package_names": [
-        "luma-ari-runtime"
+        "Suno-ari-runtime"
       ],
       "license_expressions": [
         "MIT"
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-ari.spec",
+      "source_path": "packaging/rpm/Suno-ari.spec",
       "package_names": [
-        "luma-ari"
+        "Suno-ari"
       ],
       "license_expressions": [
         "Apache-2.0"
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-audio-policy.spec",
+      "source_path": "packaging/rpm/Suno-audio-policy.spec",
       "package_names": [
-        "luma-audio-policy"
+        "Suno-audio-policy"
       ],
       "license_expressions": [
         "MPL-2.0 AND CC-BY-SA-4.0"
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-background.spec",
+      "source_path": "packaging/rpm/Suno-background.spec",
       "package_names": [
-        "luma-background"
+        "Suno-background"
       ],
       "license_expressions": [
         "MPL-2.0"
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-backgrounds.spec",
+      "source_path": "packaging/rpm/Suno-backgrounds.spec",
       "package_names": [
-        "luma-backgrounds"
+        "Suno-backgrounds"
       ],
       "license_expressions": [
-        "LicenseRef-Luma-Project-Asset"
+        "LicenseRef-Suno-Project-Asset"
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-boot-theme.spec",
+      "source_path": "packaging/rpm/Suno-boot-theme.spec",
       "package_names": [
-        "luma-boot-theme"
+        "Suno-boot-theme"
       ],
       "license_expressions": [
         "Apache-2.0 AND MPL-2.0 AND OFL-1.1"
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-cage.spec",
+      "source_path": "packaging/rpm/Suno-cage.spec",
       "package_names": [
         "cage"
       ],
@@ -325,171 +325,171 @@
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-calculator.spec",
+      "source_path": "packaging/rpm/Suno-calculator.spec",
       "package_names": [
-        "luma-calculator"
+        "Suno-calculator"
       ],
       "license_expressions": [
         "MPL-2.0"
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-calls.spec",
+      "source_path": "packaging/rpm/Suno-calls.spec",
       "package_names": [
-        "luma-calls"
+        "Suno-calls"
       ],
       "license_expressions": [
         "Apache-2.0"
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-charlie.spec",
+      "source_path": "packaging/rpm/Suno-charlie.spec",
       "package_names": [
-        "luma-charlie"
+        "Suno-charlie"
       ],
       "license_expressions": [
         "Apache-2.0"
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-continuity.spec",
+      "source_path": "packaging/rpm/Suno-continuity.spec",
       "package_names": [
-        "luma-continuity"
+        "Suno-continuity"
       ],
       "license_expressions": [
         "Apache-2.0"
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-darkroom.spec",
+      "source_path": "packaging/rpm/Suno-darkroom.spec",
       "package_names": [
-        "luma-darkroom"
+        "Suno-darkroom"
       ],
       "license_expressions": [
         "Apache-2.0 AND ISC"
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-desktop-launcher-policy.spec",
+      "source_path": "packaging/rpm/Suno-desktop-launcher-policy.spec",
       "package_names": [
-        "luma-desktop-launcher-policy"
+        "Suno-desktop-launcher-policy"
       ],
       "license_expressions": [
         "Apache-2.0"
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-developer-platform.spec",
+      "source_path": "packaging/rpm/Suno-developer-platform.spec",
       "package_names": [
-        "luma-developer-platform"
+        "Suno-developer-platform"
       ],
       "license_expressions": [
         "Apache-2.0"
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-disks.spec",
+      "source_path": "packaging/rpm/Suno-disks.spec",
       "package_names": [
-        "luma-disks"
+        "Suno-disks"
       ],
       "license_expressions": [
         "MPL-2.0"
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-display-config.spec",
+      "source_path": "packaging/rpm/Suno-display-config.spec",
       "package_names": [
-        "luma-display-config"
+        "Suno-display-config"
       ],
       "license_expressions": [
         "Apache-2.0"
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-energy.spec",
+      "source_path": "packaging/rpm/Suno-energy.spec",
       "package_names": [
-        "luma-energy"
+        "Suno-energy"
       ],
       "license_expressions": [
         "MPL-2.0"
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-greetd-session.spec",
+      "source_path": "packaging/rpm/Suno-greetd-session.spec",
       "package_names": [
-        "luma-greetd-session"
+        "Suno-greetd-session"
       ],
       "license_expressions": [
         "GPL-3.0-only AND Apache-2.0 AND MIT"
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-greeter.spec",
+      "source_path": "packaging/rpm/Suno-greeter.spec",
       "package_names": [
-        "luma-greeter"
+        "Suno-greeter"
       ],
       "license_expressions": [
         "Apache-2.0"
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-homebrew.spec",
+      "source_path": "packaging/rpm/Suno-homebrew.spec",
       "package_names": [
-        "luma-homebrew"
+        "Suno-homebrew"
       ],
       "license_expressions": [
         "Apache-2.0"
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-imsd.spec",
+      "source_path": "packaging/rpm/Suno-imsd.spec",
       "package_names": [
-        "luma-imsd"
+        "Suno-imsd"
       ],
       "license_expressions": [
         "GPL-3.0-only AND Apache-2.0"
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-install-commands.spec",
+      "source_path": "packaging/rpm/Suno-install-commands.spec",
       "package_names": [
-        "luma-install-commands"
+        "Suno-install-commands"
       ],
       "license_expressions": [
         "MPL-2.0"
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-installer-atlas.spec",
+      "source_path": "packaging/rpm/Suno-installer-atlas.spec",
       "package_names": [
-        "luma-installer-atlas"
+        "Suno-installer-atlas"
       ],
       "license_expressions": [
         "LGPL-2.1-or-later AND MIT AND OFL-1.1"
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-keyring.spec",
+      "source_path": "packaging/rpm/Suno-keyring.spec",
       "package_names": [
-        "luma-keyring"
+        "Suno-keyring"
       ],
       "license_expressions": [
         "MPL-2.0"
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-leaf.spec",
+      "source_path": "packaging/rpm/Suno-leaf.spec",
       "package_names": [
-        "luma-leaf"
+        "Suno-leaf"
       ],
       "license_expressions": [
         "Apache-2.0 AND MIT AND ISC"
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-logos.spec",
+      "source_path": "packaging/rpm/Suno-logos.spec",
       "package_names": [
-        "luma-logos"
+        "Suno-logos"
       ],
       "license_expressions": [
         "Apache-2.0",
@@ -497,79 +497,79 @@
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-maps.spec",
+      "source_path": "packaging/rpm/Suno-maps.spec",
       "package_names": [
-        "luma-maps"
+        "Suno-maps"
       ],
       "license_expressions": [
         "Apache-2.0"
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-media-bridge.spec",
+      "source_path": "packaging/rpm/Suno-media-bridge.spec",
       "package_names": [
-        "luma-media-bridge"
+        "Suno-media-bridge"
       ],
       "license_expressions": [
         "Apache-2.0"
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-messages-bridges.spec",
+      "source_path": "packaging/rpm/Suno-messages-bridges.spec",
       "package_names": [
-        "luma-messages-bridges"
+        "Suno-messages-bridges"
       ],
       "license_expressions": [
         "AGPL-3.0-or-later AND GPL-3.0-or-later AND MPL-2.0 AND Apache-2.0 AND MIT AND BSD-3-Clause AND BSD-2-Clause AND ISC"
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-messages-e2ee.spec",
+      "source_path": "packaging/rpm/Suno-messages-e2ee.spec",
       "package_names": [
-        "luma-messages-e2ee"
+        "Suno-messages-e2ee"
       ],
       "license_expressions": [
         "MPL-2.0 AND (MIT OR Apache-2.0) AND MIT AND Apache-2.0 AND Unicode-3.0 AND BSD-3-Clause AND (Unlicense OR MIT) AND (BSD-2-Clause OR Apache-2.0 OR MIT)"
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-mod-recovery-drill.spec",
+      "source_path": "packaging/rpm/Suno-mod-recovery-drill.spec",
       "package_names": [
-        "luma-mod-recovery-drill"
+        "Suno-mod-recovery-drill"
       ],
       "license_expressions": [
         "Apache-2.0"
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-mods.spec",
+      "source_path": "packaging/rpm/Suno-mods.spec",
       "package_names": [
-        "luma-mods"
+        "Suno-mods"
       ],
       "license_expressions": [
         "Apache-2.0"
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-monitor.spec",
+      "source_path": "packaging/rpm/Suno-monitor.spec",
       "package_names": [
-        "luma-monitor"
+        "Suno-monitor"
       ],
       "license_expressions": [
         "Apache-2.0"
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-natural-voices.spec",
+      "source_path": "packaging/rpm/Suno-natural-voices.spec",
       "package_names": [
-        "luma-natural-voices"
+        "Suno-natural-voices"
       ],
       "license_expressions": [
         "Apache-2.0 AND GPL-3.0-or-later AND LGPL-2.1-or-later AND BSD-2-Clause AND MIT AND LicenseRef-LJSpeech-Public-Domain"
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-phoc.spec",
+      "source_path": "packaging/rpm/Suno-phoc.spec",
       "package_names": [
         "phoc"
       ],
@@ -578,108 +578,108 @@
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-phosh.spec",
+      "source_path": "packaging/rpm/Suno-phosh.spec",
       "package_names": [
-        "luma-phosh"
+        "Suno-phosh"
       ],
       "license_expressions": [
         "GPL-3.0-or-later"
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-portal.spec",
+      "source_path": "packaging/rpm/Suno-portal.spec",
       "package_names": [
-        "luma-portal"
+        "Suno-portal"
       ],
       "license_expressions": [
         "Apache-2.0"
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-quick-view.spec",
+      "source_path": "packaging/rpm/Suno-quick-view.spec",
       "package_names": [
-        "luma-quick-view"
+        "Suno-quick-view"
       ],
       "license_expressions": [
         "GPL-2.0-or-later"
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-relay.spec",
+      "source_path": "packaging/rpm/Suno-relay.spec",
       "package_names": [
-        "luma-relay"
+        "Suno-relay"
       ],
       "license_expressions": [
         "Apache-2.0"
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-release.spec",
+      "source_path": "packaging/rpm/Suno-release.spec",
       "package_names": [
-        "luma-release"
+        "Suno-release"
       ],
       "license_expressions": [
         "Apache-2.0 AND MIT"
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-search.spec",
+      "source_path": "packaging/rpm/Suno-search.spec",
       "package_names": [
-        "luma-search"
+        "Suno-search"
       ],
       "license_expressions": [
         "Apache-2.0"
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-shell-state.spec",
+      "source_path": "packaging/rpm/Suno-shell-state.spec",
       "package_names": [
-        "luma-shell-state"
+        "Suno-shell-state"
       ],
       "license_expressions": [
         "Apache-2.0"
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-sound-theme.spec",
+      "source_path": "packaging/rpm/Suno-sound-theme.spec",
       "package_names": [
-        "luma-sound-theme"
+        "Suno-sound-theme"
       ],
       "license_expressions": [
         "MPL-2.0"
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-sticky-notes.spec",
+      "source_path": "packaging/rpm/Suno-sticky-notes.spec",
       "package_names": [
-        "luma-sticky-notes"
+        "Suno-sticky-notes"
       ],
       "license_expressions": [
         "Apache-2.0"
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-terminal.spec",
+      "source_path": "packaging/rpm/Suno-terminal.spec",
       "package_names": [
-        "luma-terminal"
+        "Suno-terminal"
       ],
       "license_expressions": [
         "MPL-2.0"
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-tide.spec",
+      "source_path": "packaging/rpm/Suno-tide.spec",
       "package_names": [
-        "luma-tide"
+        "Suno-tide"
       ],
       "license_expressions": [
         "Apache-2.0"
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-update.spec",
+      "source_path": "packaging/rpm/Suno-update.spec",
       "package_names": [
-        "luma-update"
+        "Suno-update"
       ],
       "license_expressions": [
         "Apache-2.0",
@@ -687,18 +687,18 @@
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-viewer.spec",
+      "source_path": "packaging/rpm/Suno-viewer.spec",
       "package_names": [
-        "luma-viewer"
+        "Suno-viewer"
       ],
       "license_expressions": [
         "Apache-2.0"
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-vitals.spec",
+      "source_path": "packaging/rpm/Suno-vitals.spec",
       "package_names": [
-        "luma-vitals"
+        "Suno-vitals"
       ],
       "license_expressions": [
         "Apache-2.0 AND MPL-2.0",
@@ -706,9 +706,9 @@
       ]
     },
     {
-      "source_path": "packaging/rpm/luma-wifi-guard.spec",
+      "source_path": "packaging/rpm/Suno-wifi-guard.spec",
       "package_names": [
-        "luma-wifi-guard"
+        "Suno-wifi-guard"
       ],
       "license_expressions": [
         "Apache-2.0"

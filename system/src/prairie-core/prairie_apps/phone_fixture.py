@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """GTK-free, read-only Phone conformance data and presentation helpers.
 
-LUMA_PHONE_FIXTURE names a JSON file. This source reads that file and its
+SUNO_PHONE_FIXTURE names a JSON file. This source reads that file and its
 explicitly referenced local photos only. It never imports an address book,
 store, call transport, audio adapter or cloud provider. Shared parts still being built are tracked in the Phone kit requests.
 """
@@ -41,7 +41,7 @@ class PhonePerson:
     online: bool = False
     photo: str = ""
     face: tuple[float, ...] = ()
-    luma_account: str = ""
+    Suno_account: str = ""
 
 
 def matching_person(people: tuple[PhonePerson, ...], value: str) -> PhonePerson | None:
@@ -58,7 +58,7 @@ def visible_people(people: tuple[PhonePerson, ...], query: str) -> tuple[PhonePe
     numeric = bool(number) and not any(character.isalpha() for character in text)
     return tuple(sorted((person for person in people if not text
                          or text in person.name.casefold()
-                         or (person.luma_account and text.lstrip("@") in person.handle.casefold())
+                         or (person.Suno_account and text.lstrip("@") in person.handle.casefold())
                          or (numeric and number in digits(person.phone))),
                         key=lambda person: person.name.casefold()))
 
@@ -72,7 +72,7 @@ def search_people(people: tuple[PhonePerson, ...], query: str, limit: int = 5) -
     return tuple(person for person in people
                  if any(word.startswith(text) for word in person.name.casefold().split())
                  or person.name.casefold().startswith(text)
-                 or (person.luma_account and person.handle.casefold().startswith(text.lstrip("@")))
+                 or (person.Suno_account and person.handle.casefold().startswith(text.lstrip("@")))
                  or (len(number) > 2 and number in digits(person.phone)))[:limit]
 
 
@@ -180,5 +180,5 @@ class FixtureSource:
 
 def source_from_environment(environ: Mapping[str, str] | None = None) -> FixtureSource | None:
     environment = os.environ if environ is None else environ
-    path = environment.get("LUMA_PHONE_FIXTURE")
+    path = environment.get("SUNO_PHONE_FIXTURE")
     return FixtureSource(Path(path)) if path else None

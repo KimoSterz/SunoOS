@@ -1,7 +1,7 @@
 ---
 type: fix
 component: Installer
-packages: [luma-installer-atlas]
+packages: [Suno-installer-atlas]
 highlight: false
 ---
 Summary: Fixed Continue failing after manually assigning partitions

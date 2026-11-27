@@ -1,10 +1,10 @@
 # Nautilus downstream patch
 
-Project Luma carries a narrow interface patch set against Fedora 44's
+Project Suno carries a narrow interface patch set against Fedora 44's
 `nautilus-50.2.2-2.fc44` source package.
 
 Nautilus normally exposes **Search Everywhere** in the sidebar header and
-**Search Current Folder** in the content toolbar. Luma removes the sidebar
+**Search Current Folder** in the content toolbar. Suno removes the sidebar
 button and makes the existing toolbar button invoke Nautilus's existing
 `slot.search-global` action. Its tooltip becomes **Search** and it uses the
 standard find icon. The search engine, results, keyboard shortcuts, schemas,
@@ -29,16 +29,16 @@ The v1 aesthetic patch gives the normal light Files window two native rows: a
 dedicated full-width title `AdwHeaderBar` and the existing functional Nautilus
 toolbar directly below it. The toolbar keeps the original actions and receives
 the existing application menu through a typed `GMenuModel` property. A single
-packaged application stylesheet defines Luma's neutral palette and accent
+packaged application stylesheet defines Suno's neutral palette and accent
 tokens once, then applies component geometry without a user stylesheet,
 runtime injection, `!important`, or icon replacement. Dark mode is outside the
 v1 scope and remains upstream.
 
-The fourth patch establishes **Filer** as Project Luma's user-facing file
+The fourth patch establishes **Filer** as Project Suno's user-facing file
 manager identity. It deliberately retains the `nautilus` executable,
 `org.gnome.Nautilus` application ID, D-Bus interfaces, schemas, extension ABI,
 upstream icon, and internal symbol names for compatibility. The About dialog
-names Project Luma as the downstream developer and prominently identifies
+names Project Suno as the downstream developer and prominently identifies
 GNOME Files/Nautilus as the source, while retaining the GNOME contributors,
 links, and GPL/LGPL licensing.
 
@@ -99,12 +99,12 @@ Prairie 82px outline folder resource, quiet sentence-case copy, exact 15px
 cluster gap, and 26px optical bottom padding. Search, Trash, Starred, Recent,
 and Network empty states retain their distinct upstream content and treatment.
 
-The eleventh patch originally applied the shared semantic `luma-title-label`
+The eleventh patch originally applied the shared semantic `Suno-title-label`
 class to Filer's centered identity title. Patch eighteen removes that obsolete
 center title after the running simulator established the top-left identity as
 the sole title-row label.
 
-The twelfth patch establishes Filer as the reference implementation of Luma's
+The twelfth patch establishes Filer as the reference implementation of Suno's
 responsive contract. It replaces upstream's 682sp narrow mode with independent
 640px compact and 1024px medium app-surface breakpoints, preserves the custom
 window title at every windowed width, and keeps the native
@@ -148,15 +148,15 @@ binary shipped on desktop and mobile; there is no handheld Filer fork.
 The fifteenth patch connects package installation to Applications without
 making that virtual registry writable. Exactly one recognized local package
 dropped on the Applications background advertises a copy/install action and is
-sent as a URI to `org.projectluma.ApplicationInstaller2`. All validation,
+sent as a URI to `org.projectSuno.ApplicationInstaller2`. All validation,
 confirmation, staging, and package-manager work remains in the separately
-packaged Luma installer. Filer never parses the package, invokes a compatibility
+packaged Suno installer. Filer never parses the package, invokes a compatibility
 runtime, copies package bytes, or acquires installation privilege; every other
 inbound drop remains rejected.
 
 The sixteenth patch completes Filer's production application composition
 without creating a second file-manager path. The real Nautilus application
-menu moves into the shared top-left Luma identity trigger, standard toolkit
+menu moves into the shared top-left Suno identity trigger, standard toolkit
 window controls retain their actions, and
 the duplicate toolbar menu disappears. The native Search action becomes a
 compact icon control, Grid/List remain real connected view actions, and View
@@ -185,7 +185,7 @@ and Ctrl+1/Ctrl+2/Ctrl+3 shortcuts. The shared island geometry and elevation
 are supplied by downstream libadwaita; Filer CSS retains only file-manager
 composition and view-specific row/detail styling.
 
-The eighteenth patch uses the running Luma simulator as an executable geometry
+The eighteenth patch uses the running Suno simulator as an executable geometry
 oracle and tightens that native implementation to its production contract. It
 sets the fresh-profile Places island to 178px, adds genuine section headings at
 the Nautilus sidebar model boundary, and preserves bookmarks as part of Places
@@ -205,17 +205,17 @@ leading identity trigger remains the one application-menu host. Native
 `GtkWindowControls` remain functional and consume the connected control-island
 treatment from shared libadwaita instead of carrying Filer-specific shapes.
 
-`0039-luma-menu-surface-ownership.patch` removes generic viewport background
+`0039-Suno-menu-surface-ownership.patch` removes generic viewport background
 selectors that leaked Filer island paint into GtkPopoverMenu. The toolkit remains
 the menu owner; no application-local menu appearance overrides are added.
 
-`0040-luma-shared-empty-panes.patch` keeps Nautilus's directory, filter,
+`0040-Suno-shared-empty-panes.patch` keeps Nautilus's directory, filter,
 selection, portal and save state machines while presenting their empty and
 filtered-empty states through the shared Developer Platform adapter. Open and
 Save remain the existing native portal chooser, including overwrite handling
 and application-supplied filters.
 
-`0042-luma-native-picker-chrome.patch` is staged directly after 0040 for the
+`0042-Suno-native-picker-chrome.patch` is staged directly after 0040 for the
 picker-only Filer 50 release. Open omits the Save-only filename/purpose island;
 Save retains its real filename entry and validation. The native header uses the
 shared automatic application identity, close-only dialog controls and the
@@ -225,7 +225,7 @@ The chooser keeps its existing portal actions, GAction/GMenuModel choices,
 keyboard path, localization and accessibility relationships. It adds no
 application-local context-menu, checkbox or radio styling.
 
-`0044-luma-initialize-shared-surface.patch` follows 0042 in the combined Filer
+`0044-Suno-initialize-shared-surface.patch` follows 0042 in the combined Filer
 50 package. It initializes the linked Developer Platform immediately after
 native application startup and before the first Filer window is created, so
 Frost and Glass backdrop binding is available on ordinary non-empty folders as
@@ -233,8 +233,8 @@ well as chooser and empty-state paths. The 0044 identity deliberately avoids
 the reserved paused 0041 filename treatment and 0043 image-preview treatment;
 neither paused feature is included in Filer 50.
 
-`0045-luma-root-toolbar-material-ownership.patch` marks only Filer's outer
-`AdwToolbarView` with the shared `luma-window-toolbar-view` structural role.
+`0045-Suno-root-toolbar-material-ownership.patch` marks only Filer's outer
+`AdwToolbarView` with the shared `Suno-window-toolbar-view` structural role.
 This lets Developer Platform clear libadwaita's generated top-bar paint in
 Frost and Glass while preserving the nested sidebar and content toolbar views
 as independently painted islands.
@@ -246,14 +246,14 @@ from executing anything inside its own sandbox. Run and double-click on an
 executable AppImage open it through OpenURI like any other file, which hands it
 to Valet without the chooser (`open-directly.list`); Valet runs it. Other
 programs go to the host Terminal service with the same `Open` call as Open in
-Terminal, and Terminal 1.luma.10 or later runs them in a session in their
+Terminal, and Terminal 1.Suno.10 or later runs them in a session in their
 folder. Scripts and dropping files onto a program have no host route and do
 nothing in the sandbox. The native build is unchanged.
 
 `0162-filer-standard-sidebar.patch` replaces the 88 px icon-over-label rail
 with Tasks' sidebar, the kit's `destinations` NavigationSidebar (224 px on
 the frame): the sidebar, its lists and Nautilus' live rows carry the kit's
-classes, so LumaUI draws row metrics, hover and selection; headings are
+classes, so SunoUI draws row metrics, hover and selection; headings are
 Tasks' title-case heading under a full-width hairline; inside a place, that
 place stays selected. The title row is the kit's 46 px. Actions and DnD are
 Nautilus' own. On a phone the title island grows into every place.

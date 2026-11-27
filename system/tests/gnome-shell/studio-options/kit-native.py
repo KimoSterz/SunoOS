@@ -14,7 +14,7 @@ import tempfile
 p = argparse.ArgumentParser(description=__doc__)
 p.add_argument('--tree', type=Path, default=Path(__file__).resolve().parents[3])
 p.add_argument('--out', type=Path, required=True)
-p.add_argument('--pattern', default='test_luma_appkit*.py')
+p.add_argument('--pattern', default='test_Suno_appkit*.py')
 a = p.parse_args()
 if a.out.exists():
     raise RuntimeError('refusing to overwrite kit evidence')
@@ -38,14 +38,14 @@ receipt = {'testsRun': result.testsRun, 'failures': [test.id() for test, _ in re
 assert result.testsRun > 0, 'empty kit run is not success'
 sys.exit(0 if result.wasSuccessful() else 1)
 '''
-with tempfile.TemporaryDirectory(prefix='luma-owned-kit-native.') as private:
+with tempfile.TemporaryDirectory(prefix='Suno-owned-kit-native.') as private:
     isolation = []
     for kind in ['config', 'data', 'cache', 'state', 'runtime']:
         directory = Path(private) / kind
         directory.mkdir(mode=0o700)
         key = 'XDG_RUNTIME_DIR' if kind == 'runtime' else f'XDG_{kind.upper()}_HOME'
         isolation.append(f'{key}={directory}')
-    command = ['toolbox', 'run', '-c', 'luma-dev-f44', 'env',
+    command = ['toolbox', 'run', '-c', 'Suno-dev-f44', 'env',
                '-u', 'DISPLAY', '-u', 'WAYLAND_DISPLAY',
                '-u', 'DBUS_SESSION_BUS_ADDRESS', '-u', 'DBUS_SYSTEM_BUS_ADDRESS',
                *isolation, 'GDK_BACKEND=x11', 'GSETTINGS_BACKEND=memory', 'PYTHONDONTWRITEBYTECODE=1',

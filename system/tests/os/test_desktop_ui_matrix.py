@@ -17,11 +17,11 @@ class SelectionTests(unittest.TestCase):
     def test_shell_test(self):
         self.assertEqual(m.select(['tests/gnome-shell/clock.js']), ['gnome-shell'])
     def test_shared_provider(self):
-        for path in ['config/desktop/inputs.env', 'src/luma-platform/foo.c', 'scripts/packages/build-gtk4.sh', 'scripts/os/build-desktop-ui.sh']:
+        for path in ['config/desktop/inputs.env', 'src/Suno-platform/foo.c', 'scripts/packages/build-gtk4.sh', 'scripts/os/build-desktop-ui.sh']:
             with self.subTest(path=path):
                 self.assertEqual(m.select([path]), m.COMPONENTS)
     def test_unrelated(self):
-        self.assertEqual(m.select(['BUILDING.md', 'scripts/os/build-staff-media.sh', 'scripts/packages/build-luma-messages-bridges.sh']), [])
+        self.assertEqual(m.select(['BUILDING.md', 'scripts/os/build-staff-media.sh', 'scripts/packages/build-Suno-messages-bridges.sh']), [])
     def test_selector_only(self):
         self.assertEqual(m.select(['.github/workflows/desktop-ui.yml', 'scripts/os/desktop-ui-matrix.py', 'tests/os/test_desktop_ui_matrix.py']), [])
     def test_multiple(self):

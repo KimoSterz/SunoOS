@@ -4,8 +4,8 @@
 set -Eeuo pipefail
 umask 077
 
-stage=/tmp/luma-fingerprint-enrollment-v110
-phase=/sys/bus/platform/devices/qcomtee/luma_focal_phase
+stage=/tmp/Suno-fingerprint-enrollment-v110
+phase=/sys/bus/platform/devices/qcomtee/Suno_focal_phase
 firmware_path=/sys/module/firmware_class/parameters/path
 expected_firmware_path=/lib/firmware/postmarketos
 expected_qcomtee_sha=474c28baf59b8386cf95a2e3c9ab15ebb2241f60c65c22f3bb4c3511cf70886e
@@ -27,7 +27,7 @@ grep -qw focaltech_fp /proc/modules || fail focal_missing
 [[ $(sha256sum "$stage/qcomtee-enrollment.ko" | cut -d' ' -f1) == "$expected_qcomtee_sha" ]] || fail qcomtee_hash
 [[ $(sha256sum "$stage/fp6-focal-driver-stage" | cut -d' ' -f1) == "$expected_helper_sha" ]] || fail helper_hash
 [[ $(sha256sum "$stage/focaltech_fp.ko" | cut -d' ' -f1) == "$expected_focal_sha" ]] || fail focal_hash
-[[ -c /dev/luma-fp6-fingerprint ]] || fail enrollment_device_missing
+[[ -c /dev/Suno-fp6-fingerprint ]] || fail enrollment_device_missing
 
 if [[ $(cat "$phase") == complete ]]; then
   printf '%s\n' abort >"$phase" 2>/dev/null || [[ $(cat "$phase") == failed ]]
@@ -41,7 +41,7 @@ modprobe focaltech_fp
 installed_focal=$(modinfo -n focaltech_fp)
 [[ $(sha256sum "$installed_focal" | cut -d' ' -f1) == "$expected_installed_focal_sha" ]] || fail installed_focal_hash
 [[ -c /dev/focaltech_fp ]] || fail restored_device_missing
-[[ ! -e /dev/luma-fp6-fingerprint ]] || fail enrollment_device_retained
+[[ ! -e /dev/Suno-fp6-fingerprint ]] || fail enrollment_device_retained
 [[ $(cat "$firmware_path") == "$expected_firmware_path" ]] || fail firmware_restore
 ! grep -qw qcomtee /proc/modules || fail qcomtee_retained
 

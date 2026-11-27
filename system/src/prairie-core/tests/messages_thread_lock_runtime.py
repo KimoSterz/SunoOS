@@ -14,11 +14,11 @@ gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 from gi.repository import Adw, Gio, GLib
 ROOT = Path(__file__).resolve().parents[3]
-sys.path[:0] = [str(ROOT / "src/prairie-core"), str(ROOT / "src/luma-platform/appkit")]
-from luma_appkit import install_appkit, install_lumaui
+sys.path[:0] = [str(ROOT / "src/prairie-core"), str(ROOT / "src/Suno-platform/appkit")]
+from Suno_appkit import install_appkit, install_SunoUI
 from prairie_apps.messages import install_messages_theme
 from prairie_apps.messages_accounts import AccountStore
-from prairie_apps.messages_app_port import LumaUIMessagesWindow
+from prairie_apps.messages_app_port import SunoUIMessagesWindow
 from prairie_apps.messages_preferences import ConversationPreferences
 
 
@@ -32,12 +32,12 @@ def until(predicate, timeout=5):
 
 
 def main():
-    assert os.environ.get("LUMA_MESSAGES_FIXTURE")
-    app = Adw.Application(application_id="org.projectluma.Messages.LockTest",
+    assert os.environ.get("SUNO_MESSAGES_FIXTURE")
+    app = Adw.Application(application_id="org.projectSuno.Messages.LockTest",
                           flags=Gio.ApplicationFlags.NON_UNIQUE)
     assert app.register(None)
-    install_appkit(); install_lumaui(); install_messages_theme()
-    window = LumaUIMessagesWindow(app); window.present()
+    install_appkit(); install_SunoUI(); install_messages_theme()
+    window = SunoUIMessagesWindow(app); window.present()
     until(lambda: window.get_mapped())
     # Measure opening a thread in an already displayed window, not cold glyph
     # loading/first software-rendered frame initialization.

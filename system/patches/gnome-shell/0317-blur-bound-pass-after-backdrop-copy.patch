@@ -1,5 +1,5 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Project Luma <engineering@projectluma.org>
+From: Project Suno <engineering@projectSuno.org>
 Date: Tue, 3 Nov 2026 02:00:00 -0600
 Subject: [PATCH] blur: bound the pass after a backdrop copy; downscale thin
  surfaces
@@ -49,7 +49,7 @@ index b83db53..9bb7ae0 100644
 +  /* Keep downscaling until the blur radius is below the threshold, as long
 +   * as the downscaled texture keeps a few pixels per side.
 +   *
-+   * Luma: this followed Firefox and stopped once either side was 256 pixels
++   * Suno: this followed Firefox and stopped once either side was 256 pixels
 +   * or less, so a dock island 67 pixels tall was blurred at full size with
 +   * the whole radius: two passes of about 1.3 ms each for 1300x67 pixels on a
 +   * Raspberry Pi 5. Halving the copy and the radius blurs the same way (it is
@@ -67,7 +67,7 @@ index b83db53..9bb7ae0 100644
      }
  }
  
-+/* Luma: copying the framebuffer under the actor ends the GPU's pass over the
++/* Suno: copying the framebuffer under the actor ends the GPU's pass over the
 + * frame there; a tiling GPU stores the frame drawn so far and loads it back to
 + * go on. The pass that follows covers everything drawn until the next copy or
 + * the end of the frame, and without a scissor that is the whole framebuffer
@@ -113,7 +113,7 @@ index b83db53..9bb7ae0 100644
 +  return clip_node;
 +}
 +
- /* Luma: after this many frames in a row, take the blit rather than the cache,
+ /* Suno: after this many frames in a row, take the blit rather than the cache,
   * so a surface whose redraw clip never covers it still follows the screen
   * instead of freezing on its last blur.
 @@ -850,6 +901,9 @@ shell_blur_effect_paint_node (ClutterEffect           *effect,

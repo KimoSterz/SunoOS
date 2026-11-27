@@ -18,7 +18,7 @@ Signed-off-by: Abel Vesa <abel.vesa@oss.qualcomm.com>
  2 files changed, 6 insertions(+), 4 deletions(-)
 
 
-Luma rebase onto Linux 7.3: context adjusted; original provenance above.
+Suno rebase onto Linux 7.3: context adjusted; original provenance above.
 
 --- a/drivers/pci/pcie/aspm.c
 +++ b/drivers/pci/pcie/aspm.c

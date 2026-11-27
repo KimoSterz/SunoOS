@@ -2,8 +2,8 @@
 # Private qualification only; no shared repository publication.
 Name:           python-authlib
 Version:        1.7.2
-Release:        0.1.luma.experiment%{?dist}
-Summary:        Maintained OAuth client support for Luma Connect
+Release:        0.1.Suno.experiment%{?dist}
+Summary:        Maintained OAuth client support for Suno Connect
 License:        BSD-3-Clause
 URL:            https://github.com/authlib/authlib
 Source0:        https://github.com/authlib/authlib/archive/refs/tags/v%{version}.tar.gz#/authlib-v%{version}-upstream.tar.gz
@@ -26,7 +26,7 @@ compatibility. Private dependency qualification, not a composed replacement.
 %package -n python3-authlib
 Summary:        %{summary}
 %description -n python3-authlib
-Maintained upstream Python implementation for private Luma Connect qualification.
+Maintained upstream Python implementation for private Suno Connect qualification.
 
 %prep
 %autosetup -n authlib-%{version}

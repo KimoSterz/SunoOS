@@ -9,7 +9,7 @@ standing surfaces -- the Shelf islands (dock, clock, live chips), Quick
 Options, the calendar, Shell popup menus, and the dock's labels, previews and
 folders -- are the same material, so Quick Options and an application's
 context menu match exactly. The Shell theme states that veil once, in one rule
-per treatment in luma-shelf.css.
+per treatment in Suno-shelf.css.
 
 This fails when:
 
@@ -21,7 +21,7 @@ This fails when:
 * nothing was read (a check that parsed no rules passes for the wrong reason).
 
 Modes:
-  check-shell-veil.py CSS...          packaged sheets (luma-shelf.css and
+  check-shell-veil.py CSS...          packaged sheets (Suno-shelf.css and
                                       gnome-shell-light.css, from the theme
                                       GResource); run by the Shell build
   check-shell-veil.py --patches DIR   the veil as the patch series adds it,
@@ -45,12 +45,12 @@ MARKER = "The glass veil: the one definition."
 
 # Every surface the one rule must paint, per treatment. {t} is the treatment.
 SURFACES = (
-    ".luma-shelf-material.luma-surface-{t}",
-    ".popup-menu.luma-surface-{t} .popup-menu-content",
-    ".popup-menu.luma-surface-{t} .popup-menu-content.luma-quick-options",
-    ".dash-label.luma-surface-{t}",
-    ".luma-dock-preview.luma-surface-{t}",
-    ".luma-dockf-surface.luma-surface-{t}",
+    ".Suno-shelf-material.Suno-surface-{t}",
+    ".popup-menu.Suno-surface-{t} .popup-menu-content",
+    ".popup-menu.Suno-surface-{t} .popup-menu-content.Suno-quick-options",
+    ".dash-label.Suno-surface-{t}",
+    ".Suno-dock-preview.Suno-surface-{t}",
+    ".Suno-dockf-surface.Suno-surface-{t}",
 )
 
 COLOUR = re.compile(
@@ -134,7 +134,7 @@ def check(sheets, tokens, require_exclusive=True):
                 for selector in selectors:
                     compound = re.split(r"[\s>+~]+", selector)[-1]
                     classes = set(re.findall(r"\.([\w-]+)", compound))
-                    if {"luma-shelf-material", f"luma-surface-{t}"} <= classes:
+                    if {"Suno-shelf-material", f"Suno-surface-{t}"} <= classes:
                         covered.add(selector)
                 if covered and (
                         "background-color" in decls or "background" in decls):
@@ -145,7 +145,7 @@ def check(sheets, tokens, require_exclusive=True):
         for name, line, selectors, decls in parsed:
             shadow = decls.get("text-shadow")
             if shadow and shadow != "none" and any(
-                    f"luma-surface-{t}" in s for s in selectors):
+                    f"Suno-surface-{t}" in s for s in selectors):
                 failures.append(f"{name}:{line}: text-shadow on a {t} surface: {shadow}")
     return failures
 
@@ -163,7 +163,7 @@ def veil_from_patches(directory: pathlib.Path):
             if raw.startswith("+++ "):
                 current = raw[4:].strip()
                 continue
-            if current and current.endswith("data/theme/luma-shelf.css") and \
+            if current and current.endswith("data/theme/Suno-shelf.css") and \
                     raw.startswith("+"):
                 added.append(raw[1:])
         text = "\n".join(added)
@@ -184,8 +184,8 @@ def good_sheet(frost="rgba(248, 249, 250, 0.90)", glass="rgba(250, 250, 251, 0.8
         sels = [s.format(t=t) for s in SURFACES if s.format(t=t) != drop]
         parts.append(",\n".join(sels) +
                      f" {{\n  background-color: {v};\n  text-shadow: {shadow}; }}\n")
-    return (".luma-shelf-material.luma-surface-light { background-color: #eef0f2; }\n"
-            "/* " + MARKER + " .dash-label.luma-surface-glass "
+    return (".Suno-shelf-material.Suno-surface-light { background-color: #eef0f2; }\n"
+            "/* " + MARKER + " .dash-label.Suno-surface-glass "
             "{ background-color: red; } */\n" + "".join(parts))
 
 
@@ -198,30 +198,30 @@ def self_test() -> int:
          [("a.css", good_sheet(frost="rgba(246, 247, 249, 0.90)"))], False),
         ("a second rule painting a dock label",
          [("a.css", good_sheet()),
-          ("b.css", ".dash-label.luma-surface-glass {\n  background-color: "
+          ("b.css", ".dash-label.Suno-surface-glass {\n  background-color: "
                     "rgba(250, 250, 251, 0.80); }\n")], False),
         ("a second rule using the background shorthand",
          [("a.css", good_sheet() +
-           ".popup-menu.luma-surface-frost .popup-menu-content { background: #fff; }\n")],
+           ".popup-menu.Suno-surface-frost .popup-menu-content { background: #fff; }\n")],
          False),
         ("a specific status cluster overriding the common material",
          [("a.css", good_sheet() +
-           ".luma-shelf-actions-island > "
-           ".luma-shelf-material.luma-status-cluster.luma-surface-glass "
+           ".Suno-shelf-actions-island > "
+           ".Suno-shelf-material.Suno-status-cluster.Suno-surface-glass "
            "{ background-color: red; }\n")], False),
         ("a control inside a material can paint its own background",
          [("a.css", good_sheet() +
-           ".luma-shelf-material.luma-surface-glass .button "
+           ".Suno-shelf-material.Suno-surface-glass .button "
            "{ background-color: red; }\n")], True),
         ("the shared rule no longer naming Quick Options",
          [("a.css", good_sheet(
-             drop=".popup-menu.luma-surface-glass .popup-menu-content.luma-quick-options"))],
+             drop=".popup-menu.Suno-surface-glass .popup-menu-content.Suno-quick-options"))],
          False),
         ("a text shadow on the veil", [("a.css", good_sheet(shadow="0 1px 2px black"))],
          False),
         ("a text shadow elsewhere on a glass surface",
          [("a.css", good_sheet() +
-           ".luma-surface-glass .luma-status-time { text-shadow: 0 1px 1px #000; }\n")],
+           ".Suno-surface-glass .Suno-status-time { text-shadow: 0 1px 1px #000; }\n")],
          False),
         ("an empty sheet", [("a.css", "")], False),
     ]
@@ -237,7 +237,7 @@ def self_test() -> int:
         d = pathlib.Path(tmp)
         body = "".join("+" + line + "\n" for line in good_sheet().splitlines())
         (d / "0001-a.patch").write_text(
-            "--- a/data/theme/luma-shelf.css\n+++ b/data/theme/luma-shelf.css\n"
+            "--- a/data/theme/Suno-shelf.css\n+++ b/data/theme/Suno-shelf.css\n"
             "@@ -1,0 +1,20 @@\n" + body, encoding="utf-8")
         count, block = veil_from_patches(d)
         found = block is not None and not check([block], SELF_TEST_TOKENS,
@@ -245,7 +245,7 @@ def self_test() -> int:
         print(f"{'ok  ' if found else 'FAIL'} the veil read out of a patch")
         bad += not found
         (d / "0002-b.patch").write_text(
-            "--- a/data/theme/luma-shelf.css\n+++ b/data/theme/luma-shelf.css\n"
+            "--- a/data/theme/Suno-shelf.css\n+++ b/data/theme/Suno-shelf.css\n"
             "@@ -1,0 +1,20 @@\n" + body.replace("0.85)", "0.62)"), encoding="utf-8")
         count, block = veil_from_patches(d)
         caught = count == 2 and bool(check([block], SELF_TEST_TOKENS,

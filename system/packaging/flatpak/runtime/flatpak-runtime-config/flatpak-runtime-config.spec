@@ -1,13 +1,13 @@
-# Luma copy of https://src.fedoraproject.org/rpms/flatpak-runtime-config
+# Suno copy of https://src.fedoraproject.org/rpms/flatpak-runtime-config
 # branch f44, commit d947a4c82b7a6bfc6079c1848ebee17f9dccc622 (MIT).
-# Changes: Release, Luma component data instead of Fedora's, changelog.
+# Changes: Release, Suno component data instead of Fedora's, changelog.
 # package notes require setting RPM-specific environment variables,
 # incompatible with flatpak-builder
 %undefine _package_note_flags
 
 Name:           flatpak-runtime-config
 Version:        44
-Release:        1.luma.3%{?dist}
+Release:        1.Suno.3%{?dist}
 Summary:        Configuration files that live inside the flatpak runtime
 Source1:        50-flatpak.conf
 Source2:        sitecustomize.py
@@ -20,9 +20,9 @@ Source3:        defaults.json.in
 #Source9: org.fedoraproject.KDE6Sdk.appdata.xml
 Source10:       05-flatpak-fontpath.conf
 Source11:       app.sh
-Source20:       org.projectluma.Platform.appdata.xml
-Source21:       org.projectluma.Sdk.appdata.xml
-Source22:       90-luma-gtk-debug.gschema.override
+Source20:       org.projectSuno.Platform.appdata.xml
+Source21:       org.projectSuno.Sdk.appdata.xml
+Source22:       90-Suno-gtk-debug.gschema.override
 
 License:        MIT
 
@@ -67,7 +67,7 @@ install -t $RPM_BUILD_ROOT%{_sysconfdir}/fonts/conf.d -p -m 0644 %{SOURCE1}
 install -t $RPM_BUILD_ROOT%{_sysconfdir}/fonts/conf.d -p -m 0644 %{SOURCE10}
 
 install -D -p -m 0644 %{SOURCE22} \
-  $RPM_BUILD_ROOT%{_datadir}/glib-2.0/schemas/90-luma-gtk-debug.gschema.override
+  $RPM_BUILD_ROOT%{_datadir}/glib-2.0/schemas/90-Suno-gtk-debug.gschema.override
 
 # profile.d to set up command paths
 install -D -t $RPM_BUILD_ROOT%{_sysconfdir}/profile.d -p -m 0644 %{SOURCE11}
@@ -79,7 +79,7 @@ for d in %{python3_sitelib} ; do
 done
 
 # Install appdata for both the Platform and the Sdk
-# Luma installs the component data for its own runtime and SDK only.
+# Suno installs the component data for its own runtime and SDK only.
 mkdir -p $RPM_BUILD_ROOT%{_datadir}/metainfo
 install -t $RPM_BUILD_ROOT%{_datadir}/metainfo -p -m 0644 %{SOURCE20}
 install -t $RPM_BUILD_ROOT%{_datadir}/metainfo -p -m 0644 %{SOURCE21}
@@ -155,16 +155,16 @@ done
 %{_sysconfdir}/fonts/conf.d/*
 %{_sysconfdir}/ld.so.conf.d/app.conf
 %{_sysconfdir}/profile.d/app.sh
-%{_datadir}/glib-2.0/schemas/90-luma-gtk-debug.gschema.override
+%{_datadir}/glib-2.0/schemas/90-Suno-gtk-debug.gschema.override
 
 %changelog
-* Tue Nov 17 2026 Project Luma <maintainers@projectluma.org> - 44-1.luma.3
+* Tue Nov 17 2026 Project Suno <maintainers@projectSuno.org> - 44-1.Suno.3
 - GTK 4 inspector shortcuts off by default (schema override)
 
-* Fri Oct 23 2026 Project Luma <maintainers@projectluma.org> - 44-1.luma.2
+* Fri Oct 23 2026 Project Suno <maintainers@projectSuno.org> - 44-1.Suno.2
 - Set consistent configuration file and directory permissions
 
-* Tue Sep 15 2026 Project Luma <maintainers@projectluma.org> - 44-1.luma.1
-- Rebuild Fedora's flatpak-runtime-config 44 (dist-git d947a4c8) for the Luma
-  Platform runtime; ship component data for org.projectluma.Platform and Sdk
+* Tue Sep 15 2026 Project Suno <maintainers@projectSuno.org> - 44-1.Suno.1
+- Rebuild Fedora's flatpak-runtime-config 44 (dist-git d947a4c8) for the Suno
+  Platform runtime; ship component data for org.projectSuno.Platform and Sdk
 

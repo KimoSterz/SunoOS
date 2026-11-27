@@ -17,19 +17,19 @@ probes=$repo_root/scripts/mobile/generate-fp6-audio-probes.py
 overlay=$repo_root/config/mobile/fp6-physical/overlay
 ucm_card="$overlay/usr/share/alsa/ucm2/conf.d/milos/Fairphone (Gen. 6).conf"
 ucm_hifi=$overlay/usr/share/alsa/ucm2/Fairphone/fp6/HiFi.conf
-wireplumber=$overlay/etc/wireplumber/wireplumber.conf.d/51-luma-fp6-audio.conf
-route_helper=$overlay/usr/libexec/luma-fp6-audio-route
-route_service=$overlay/usr/libexec/luma-fp6-audio-route-service
-route_unit=$overlay/usr/lib/systemd/system/luma-fp6-audio-route.service
-route_bus_service=$overlay/usr/share/dbus-1/system-services/org.projectluma.AudioRoute1.service
-route_bus_policy=$overlay/usr/share/dbus-1/system.d/org.projectluma.AudioRoute1.conf
-microphone_route_helper=$overlay/usr/libexec/luma-fp6-microphone-route
+wireplumber=$overlay/etc/wireplumber/wireplumber.conf.d/51-Suno-fp6-audio.conf
+route_helper=$overlay/usr/libexec/Suno-fp6-audio-route
+route_service=$overlay/usr/libexec/Suno-fp6-audio-route-service
+route_unit=$overlay/usr/lib/systemd/system/Suno-fp6-audio-route.service
+route_bus_service=$overlay/usr/share/dbus-1/system-services/org.projectSuno.AudioRoute1.service
+route_bus_policy=$overlay/usr/share/dbus-1/system.d/org.projectSuno.AudioRoute1.conf
+microphone_route_helper=$overlay/usr/libexec/Suno-fp6-microphone-route
 ledger=$repo_root/docs/research/fp6-linux-hardware-readiness.md
 packages=$repo_root/config/mobile/packages.txt
 ui_packages=$repo_root/config/mobile/ui-packages.txt
 
 bash -n "$builder" "$installer" "$repacker" "$stager" "$route_helper" "$microphone_route_helper"
-PYTHONPYCACHEPREFIX=${TMPDIR:-/tmp}/luma-fp6-audio-pycache \
+PYTHONPYCACHEPREFIX=${TMPDIR:-/tmp}/Suno-fp6-audio-pycache \
   python3 -m py_compile "$probes" "$route_service"
 
 grep -Fq 'FP6_AUDIO_BASE_BOOT_SHA256=90f23847432289fd823a89b329e5305744abcd3cc07d83a455eff1e242072a63' "$env_file"
@@ -69,7 +69,7 @@ grep -Fxq 'alsa-ucm-utils-1.2.16-1.fc44' "$ui_packages"
 grep -Fxq 'alsa-utils-1.2.16-1.fc44' "$ui_packages"
 
 grep -Fq 'Senary MI2S Playback' "$dt_patch"
-grep -Fq 'LUMA_ALLOW_FP6_BOUNDED_AUDIO_BUILD' "$builder"
+grep -Fq 'SUNO_ALLOW_FP6_BOUNDED_AUDIO_BUILD' "$builder"
 grep -Fq 'make -j1' "$builder"
 grep -Fq 'original-audio-modules-7.1.2' "$installer"
 grep -Fq 'api.alsa.disable-mmap = true' "$wireplumber"
@@ -85,12 +85,12 @@ grep -Fq "'Amplifier L Profile Set'" "$route_helper"
 grep -Fq $'\tearpiece)' "$route_helper"
 grep -Fq 'fail_quiet' "$route_helper"
 grep -Fq "printf 'route=speaker" "$route_helper"
-grep -Fq 'BusName=org.projectluma.AudioRoute1' "$route_unit"
-grep -Fq 'SystemdService=luma-fp6-audio-route.service' "$route_bus_service"
+grep -Fq 'BusName=org.projectSuno.AudioRoute1' "$route_unit"
+grep -Fq 'SystemdService=Suno-fp6-audio-route.service' "$route_bus_service"
 grep -Fq '<policy group="audio">' "$route_bus_policy"
 grep -Fq 'ROUTES = frozenset({"speaker", "earpiece"})' "$route_service"
 ! grep -Fq 'sudo' "$route_service"
-grep -Fq 'luma-fp6-microphone-route {primary|array|status}' "$microphone_route_helper"
+grep -Fq 'Suno-fp6-microphone-route {primary|array|status}' "$microphone_route_helper"
 grep -Fq "set_control 'TX SMIC MUX1' SWR_MIC4" "$microphone_route_helper"
 grep -Fq "set_control 'TX_AIF1_CAP Mixer DEC1' 1" "$microphone_route_helper"
 grep -Fq 'array_supported' "$microphone_route_helper"

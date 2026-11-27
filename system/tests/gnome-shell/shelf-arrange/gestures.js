@@ -28,7 +28,7 @@ const titleOf = () => global.display.focus_window?.title ?? 'none';
 
 async function work() {
     await L.waitForShelf();
-    const state = new Gio.Settings({schema_id: 'org.project_luma.shell-state'});
+    const state = new Gio.Settings({schema_id: 'org.projectSuno.shell-state'});
 
     // Shared defaults with initialization recorded once.
     L.check('three fingers switch desktops', state.get_int('touchpad-workspace-fingers') === 3,
@@ -47,7 +47,7 @@ async function work() {
     state.set_int('touchpad-workspace-fingers', 3);
     await L.sleep(300);
 
-    const appSwitch = Main.wm._lumaAppSwitch;
+    const appSwitch = Main.wm._SunoAppSwitch;
     L.check('the app switch gesture exists', !!appSwitch);
     if (!appSwitch)
         return;
@@ -106,7 +106,7 @@ async function work() {
     L.check('a swipe let go where it started changes nothing', titleOf() === before,
         `${before} -> ${titleOf()}`);
     L.check('no clones are left behind after a swipe taken back',
-        !Main.uiGroup.get_children().some(a_ => a_.name === 'lumaAppSwitchGroup'));
+        !Main.uiGroup.get_children().some(a_ => a_.name === 'SunoAppSwitchGroup'));
     L.check('the windows are visible again after a swipe taken back',
         global.get_window_actors().every(actor => actor.visible || actor.meta_window.minimized));
 
@@ -115,7 +115,7 @@ async function work() {
     L.check('a swipe through switches to the app used before this one',
         titleOf() === 'SwipeTwo', `${titleOf()}`);
     L.check('no clones are left behind after a swipe through',
-        !Main.uiGroup.get_children().some(a_ => a_.name === 'lumaAppSwitchGroup'));
+        !Main.uiGroup.get_children().some(a_ => a_.name === 'SunoAppSwitchGroup'));
     L.check('every window is visible again after a swipe through',
         global.get_window_actors().every(actor => actor.visible || actor.meta_window.minimized));
 

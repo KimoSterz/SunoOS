@@ -1,8 +1,8 @@
 # Three-finger desktop gestures
 
-- Owner: luma-dev-2
+- Owner: Suno-dev-2
 - Branch: fix/three-finger-desktops
-- Worktree: /srv/dev/worktrees/luma-os/three-finger-desktops-pr
+- Worktree: /srv/dev/worktrees/Suno-os/three-finger-desktops-pr
 - Status: validated source; PR preparation
 
 Use the existing shared touchpad gesture path for three-finger desktop switching.

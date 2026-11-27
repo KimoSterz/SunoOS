@@ -20,10 +20,10 @@ import tempfile
 from urllib.parse import urlsplit
 
 KEY = 'RWRDS3jtjw9qdvQCeGSjoTFyrfbPMTjDcFHlKOy7Gr9Ot+nH0ASjW48c'
-SCHEMA = 'org.projectluma.os-media-index/v1'
+SCHEMA = 'org.projectSuno.os-media-index/v1'
 SHA = re.compile(r'[a-f0-9]{64}')
 NAME = re.compile(r'[A-Za-z0-9][A-Za-z0-9._-]{0,199}')
-DISK = re.compile(r'luma-[a-z]+-[0-9]{8}\.[0-9]+-aarch64-disk\.sparse')
+DISK = re.compile(r'Suno-[a-z]+-[0-9]{8}\.[0-9]+-aarch64-disk\.sparse')
 
 
 def require(condition, message):
@@ -56,7 +56,7 @@ def verified(path, comment, return_signature=False):
     require(len(signature_body) <= 4096, 'Signature exceeds website bound')
     # Verify the exact captured bytes, even if a mutable download cache changes
     # its source path concurrently. No key material enters this verifier.
-    with tempfile.TemporaryDirectory(prefix='luma-media-verify-') as directory:
+    with tempfile.TemporaryDirectory(prefix='Suno-media-verify-') as directory:
         payload, proof = Path(directory) / 'payload', Path(directory) / 'signature'
         payload.write_bytes(body)
         proof.write_bytes(signature_body)
@@ -207,7 +207,7 @@ def check_other_architectures(previous, candidate, channel, producer_arch):
 
 def check_prior(receipt, current_canonical_body):
     """Operator calls under the shared lock immediately before metadata write."""
-    require(receipt.get('schema') == 'org.projectluma.media-aggregate-preparation/v1',
+    require(receipt.get('schema') == 'org.projectSuno.media-aggregate-preparation/v1',
             'Wrong aggregate preparation receipt')
     require(digest(current_canonical_body) == receipt.get('canonical_prior_sha256'),
             'Canonical index changed; prepare again instead of replacing another publication')
@@ -215,17 +215,17 @@ def check_prior(receipt, current_canonical_body):
 
 def prepare(args):
     old_body = verified(args.canonical, lambda body:
-                        f"luma-media-index channel={args.channel} generated_utc={json.loads(body)['generated_utc']}")
+                        f"Suno-media-index channel={args.channel} generated_utc={json.loads(body)['generated_utc']}")
     suffix = ' arch=aarch64' if args.incoming_arch == 'aarch64' else ''
     new_body = verified(args.incoming, lambda body:
-                        f"luma-media-index channel={args.channel}{suffix} generated_utc={json.loads(body)['generated_utc']}")
+                        f"Suno-media-index channel={args.channel}{suffix} generated_utc={json.loads(body)['generated_utc']}")
     canonical, incoming = json.loads(old_body), json.loads(new_body)
 
     def notes(build, existing):
         directory = args.canonical.parent if existing else args.incoming.parent
         path = directory / 'notes' / (build + '.json')
         body, signature = verified(path, lambda body:
-                        f"luma-release-notes channel={args.channel} build_id={build} generated_utc={json.loads(body)['generated_utc']}",
+                        f"Suno-release-notes channel={args.channel} build_id={build} generated_utc={json.loads(body)['generated_utc']}",
                         return_signature=True)
         doc = json.loads(body)
         require(doc.get('channel') == args.channel and doc.get('build_id') == build,
@@ -240,11 +240,11 @@ def prepare(args):
     require(len(body) <= 1024 * 1024, 'Aggregate exceeds website JSON byte bound')
     args.output.mkdir(mode=0o700)
     (args.output / 'latest.json').write_bytes(body)
-    receipt = {'status': 'PREPARED_UNSIGNED_ALIASES_PENDING', 'schema': 'org.projectluma.media-aggregate-preparation/v1',
+    receipt = {'status': 'PREPARED_UNSIGNED_ALIASES_PENDING', 'schema': 'org.projectSuno.media-aggregate-preparation/v1',
                'canonical_url': args.canonical_url, 'canonical_prior_sha256': digest(old_body),
                'incoming_url': args.incoming_url, 'incoming_sha256': digest(new_body),
                'aggregate_sha256': digest(body), 'ignored_nonpublic': ignored, 'aliases': aliases,
-               'trusted_comment': f'luma-media-index channel={args.channel} generated_utc={args.generated_utc}',
+               'trusted_comment': f'Suno-media-index channel={args.channel} generated_utc={args.generated_utc}',
                'publication_requirements': ['materialize and verify all exact aliases', 'sign and verify prepared index',
                                              'reacquire normal publication lock', 'compare current canonical bytes with canonical_prior_sha256 before mutation',
                                              'publish metadata last and read back signature/website routes']}

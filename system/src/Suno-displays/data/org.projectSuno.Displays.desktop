@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Displays
+Comment=Arrange your displays and name the arrangements you use
+Exec=org.projectSuno.Displays
+Icon=org.projectSuno.Displays
+Terminal=false
+Categories=Settings;HardwareSettings;GTK;
+StartupNotify=true
+DBusActivatable=true
+Keywords=Monitor;Screen;Display;Arrange;Mirror;Extend;Resolution;Refresh;Rotate;Projector;TV;

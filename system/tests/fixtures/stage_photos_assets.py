@@ -14,7 +14,7 @@ import shutil
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--studio', type=Path,
-                        default=Path.home() / 'Documents/LumaDesign/studio')
+                        default=Path.home() / 'Documents/SunoDesign/studio')
     args = parser.parse_args()
     here = Path(__file__).resolve().parent
     manifest = json.loads((here / 'photos-v70-assets.json').read_text())

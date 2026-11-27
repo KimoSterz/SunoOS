@@ -9,8 +9,8 @@ set -euo pipefail
 umask 022
 
 expected_kernel=7.1.2
-install_root=/usr/lib/modules/$expected_kernel/updates/luma-fp6-nfc
-state_root=/var/lib/luma/fp6-nfc
+install_root=/usr/lib/modules/$expected_kernel/updates/Suno-fp6-nfc
+state_root=/var/lib/Suno/fp6-nfc
 bundle=${1:?usage: install-fp6-nfc-modules.sh BUNDLE_DIR}
 manifest=$bundle/manifest.env
 
@@ -29,7 +29,7 @@ if grep -Evq '^[A-Z0-9_]+=[A-Za-z0-9._,-]+$' "$manifest"; then
 fi
 # shellcheck disable=SC1090
 . "$manifest"
-[ "${LUMA_FP6_NFC_BUILD_VERSION:-}" = 1 ] || die 'bundle version differs'
+[ "${SUNO_FP6_NFC_BUILD_VERSION:-}" = 1 ] || die 'bundle version differs'
 [ "${UPSTREAM_COMMIT:-}" = af49850e65bdf5dc6f4a14fb9e8e5c5814522d33 ] || die 'upstream differs'
 [ "${KERNEL_RELEASE:-}" = "$expected_kernel" ] || die 'bundle kernel differs'
 [ "${DTB_SHA256:-}" = 4428113f5f454f1ae56afe497000ca1330cd594629d4c4589028c19ecb3c895c ] || die 'DTB differs'
@@ -86,7 +86,7 @@ depmod "$expected_kernel"
 for file in "${files[@]}"; do
   selected=$(modinfo -n "$file")
   [ "$(readlink -f "$selected")" = "$(readlink -f "$install_root/modules/$file.ko")" ] ||
-    die "modprobe did not select the Luma overlay for $file: $selected"
+    die "modprobe did not select the Suno overlay for $file: $selected"
 done
 rollback_install=false
 trap - EXIT

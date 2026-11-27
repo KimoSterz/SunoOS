@@ -74,7 +74,7 @@ rpm -qpl "${binary_rpms[0]}" | grep -qx '/usr/lib64/lpac/driver/driver_apdu_qmi_
   die 'binary RPM lacks the QRTR APDU driver'
 
 {
-  printf 'LUMA_FP6_ESIM_BUILD_VERSION=1\n'
+  printf 'SUNO_FP6_ESIM_BUILD_VERSION=1\n'
   printf 'SOURCE_REPOSITORY=%s\n' "$FP6_ESIM_LPAC_REPO"
   printf 'SOURCE_COMMIT=%s\n' "$FP6_ESIM_LPAC_COMMIT"
   printf 'SOURCE_ARCHIVE_SHA256=%s\n' "$(sha256sum "$topdir/SOURCES/$archive" | awk '{print $1}')"

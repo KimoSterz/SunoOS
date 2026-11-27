@@ -5,7 +5,7 @@
 import GLib from 'gi://GLib';
 import Clutter from 'gi://Clutter';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
-import {getNotificationTray} from 'resource:///org/gnome/shell/ui/lumaNotificationBeacon.js';
+import {getNotificationTray} from 'resource:///org/gnome/shell/ui/SunoNotificationBeacon.js';
 import * as L from './lib.js';
 
 const arrange = () => Main.shelf._arrange;
@@ -57,7 +57,7 @@ async function work() {
     L.check('Ctrl+Alt+Shift+Right moves the dock group along the bottom', g && g.edge === 'bottom' && g.anchor !== 'start', JSON.stringify(g));
     await L.key(Clutter.KEY_Tab, [], 400);
     L.check('Tab selects the next island', arrange()._selected && arrange()._selected !== 'dock', arrange()._selected);
-    L.check('the selection draws the focus ring', !!arrange()._selectedMaterial?.has_style_class_name('luma-island-focus'));
+    L.check('the selection draws the focus ring', !!arrange()._selectedMaterial?.has_style_class_name('Suno-island-focus'));
     await L.key(Clutter.KEY_Escape, [], 800);
     L.check('Esc leaves arrange mode', !arrange().active);
     L.check('"Islands arranged" was spoken', spoken.includes('Islands arranged'), JSON.stringify(spoken.slice(-1)));

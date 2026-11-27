@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
 #
-# Create the Luma remote's OSTree repository (idempotent).
+# Create the Suno remote's OSTree repository (idempotent).
 #
 # archive mode is what static HTTP hosting serves; every object is a separate
 # compressed file, so the CDN can cache objects forever and only the summary

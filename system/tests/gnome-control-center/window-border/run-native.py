@@ -22,9 +22,9 @@ for key, value in {"RPM_ARCH": platform.machine(), "RPM_PACKAGE_NAME": "gnome-co
 
 # Compile the focused test against the same native view objects and dependencies.
 commands = subprocess.check_output(
-    ["ninja", "-t", "commands", "shell/test-luma-view"], cwd=build, text=True).splitlines()
+    ["ninja", "-t", "commands", "shell/test-Suno-view"], cwd=build, text=True).splitlines()
 compile_command = next(shlex.split(command) for command in commands
-                       if "../shell/test-luma-view.c" in command and " -c " in command)
+                       if "../shell/test-Suno-view.c" in command and " -c " in command)
 compile_command[compile_command.index("-o") + 1] = str(output / "border-view.o")
 compile_command[compile_command.index("-MF") + 1] = str(output / "border-view.d")
 compile_command[compile_command.index("-c") + 1] = str(Path(__file__).with_name("test-native-view.c"))
@@ -32,7 +32,7 @@ subprocess.run(compile_command, cwd=build, check=True)
 link_command = shlex.split(commands[-1])
 link_command[link_command.index("-o") + 1] = str(output / "test-border-view")
 link_command = [str(output / "border-view.o") if argument ==
-                "shell/test-luma-view.p/test-luma-view.c.o" else argument for argument in link_command]
+                "shell/test-Suno-view.p/test-Suno-view.c.o" else argument for argument in link_command]
 subprocess.run(link_command, cwd=build, check=True)
 
 flags = shlex.split(subprocess.check_output(
@@ -40,8 +40,8 @@ flags = shlex.split(subprocess.check_output(
 qualification = repo / "tests/gnome-control-center/native-actions/qualification-tests"
 subprocess.run(["gcc", "-g", "-O0", "-Wall", "-Wno-deprecated-declarations",
                 "-I" + str(source / "shell"), str(qualification / "test-native-windows.c"),
-                str(source / "shell/cc-luma-live-gsettings.c"),
-                str(source / "shell/cc-luma-fixture.c"), "-o", str(output / "test-border-backend")]
+                str(source / "shell/cc-Suno-live-gsettings.c"),
+                str(source / "shell/cc-Suno-fixture.c"), "-o", str(output / "test-border-backend")]
                + flags + ["-lm"], check=True)
 schemas = output / "data/gnome-shell/extensions/tilingshell@ferrarodomenico.com/schemas"
 schemas.mkdir(parents=True, exist_ok=True)
@@ -56,8 +56,8 @@ os.environ.update(GSETTINGS_SCHEMA_DIR=str(schemas), GSETTINGS_BACKEND="memory",
                   DBUS_SYSTEM_BUS_ADDRESS="unix:path=" + str(output / "no-system-bus"),
                   G_DEBUG="fatal-warnings")
 subprocess.run(["dbus-run-session", "--", str(output / "test-border-backend")], check=True)
-os.environ.update(LUMA_SETTINGS_TEST_FIXTURE=str(repo / "tests/fixtures/settings-v70.json"),
-                  LUMA_BORDER_TEST_OUT=str(output), G_DEBUG="fatal-criticals", GTK_A11Y="none",
+os.environ.update(SUNO_SETTINGS_TEST_FIXTURE=str(repo / "tests/fixtures/settings-v70.json"),
+                  SUNO_BORDER_TEST_OUT=str(output), G_DEBUG="fatal-criticals", GTK_A11Y="none",
                   GSK_RENDERER="cairo", GIO_USE_VFS="local")
 os.environ.pop("WAYLAND_DISPLAY", None)
 subprocess.run(["xvfb-run", "-a", "--server-args=-screen 0 1600x1200x24",

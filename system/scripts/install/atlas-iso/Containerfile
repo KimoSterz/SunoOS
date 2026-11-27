@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: LGPL-2.1-or-later
-# Tools for composing and testing the Luma installer ISO with Atlas.
+# Tools for composing and testing the Suno installer ISO with Atlas.
 # lorax is pinned to the version Fedora 44's own installer images were made with.
 ARG BASE_IMAGE=registry.fedoraproject.org/fedora:44
 FROM ${BASE_IMAGE}
@@ -8,7 +8,7 @@ ARG TARGET_ARCH=x86_64
 # rpm macro, and rpm applies it inside lorax's install root too: the runtime
 # then has no Anaconda catalogues and Anaconda offers English only.
 RUN rm -f /etc/rpm/macros.image-language-conf && \
-    printf '%%_install_langs all\n' > /etc/rpm/macros.luma-atlas-install-langs
+    printf '%%_install_langs all\n' > /etc/rpm/macros.Suno-atlas-install-langs
 RUN case "$TARGET_ARCH" in \
       x86_64) vm_packages="qemu-system-x86-core edk2-ovmf" ;; \
       aarch64) vm_packages="qemu-system-aarch64-core edk2-aarch64" ;; \

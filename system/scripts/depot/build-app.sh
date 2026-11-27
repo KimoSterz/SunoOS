@@ -6,7 +6,7 @@
 #   build-app.sh packaging/flatpak/apps/<app-id>/<app-id>.yml [BRANCH]
 #
 # BRANCH defaults to beta. The build runs in the tools container against the
-# org.projectluma.Sdk installed from the local remote, so it links against the
+# org.projectSuno.Sdk installed from the local remote, so it links against the
 # exact runtime that is published. Results under $DEPOT_ROOT/out/apps/<app-id>/:
 #
 #   repo/                 archive repo holding app/<app-id>/<arch>/<BRANCH>

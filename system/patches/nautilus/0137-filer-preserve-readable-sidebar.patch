@@ -14,15 +14,15 @@ diff --git a/src/nautilus-sidebar.c b/src/nautilus-sidebar.c
  }
  
  static void
--refresh_luma_file_rail (NautilusSidebar *sidebar)
-+refresh_luma_file_sidebar (NautilusSidebar *sidebar)
+-refresh_Suno_file_rail (NautilusSidebar *sidebar)
++refresh_Suno_file_sidebar (NautilusSidebar *sidebar)
  {
      /* Mount and bookmark updates replace Nautilus's live row children. The
       * shared adapter keeps their actions and DnD, but needs to arrange the
 @@ -776,7 +776,7 @@
      if (split != NULL)
      {
-         luma_navigation_sidebar_adapt_live (ADW_OVERLAY_SPLIT_VIEW (split),
+         Suno_navigation_sidebar_adapt_live (ADW_OVERLAY_SPLIT_VIEW (split),
 -                                            GTK_WIDGET (sidebar), "rail");
 +                                            GTK_WIDGET (sidebar), "narrow");
      }
@@ -32,8 +32,8 @@ diff --git a/src/nautilus-sidebar.c b/src/nautilus-sidebar.c
              nautilus_sidebar_set_location (sidebar, restore);
              g_free (original_uri);
          }
--        refresh_luma_file_rail (sidebar);
-+        refresh_luma_file_sidebar (sidebar);
+-        refresh_Suno_file_rail (sidebar);
++        refresh_Suno_file_sidebar (sidebar);
          return;
      }
  
@@ -41,8 +41,8 @@ diff --git a/src/nautilus-sidebar.c b/src/nautilus-sidebar.c
          g_object_unref (restore);
          g_free (original_uri);
      }
--    refresh_luma_file_rail (sidebar);
-+    refresh_luma_file_sidebar (sidebar);
+-    refresh_Suno_file_rail (sidebar);
++    refresh_Suno_file_sidebar (sidebar);
  }
  
  void

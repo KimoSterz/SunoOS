@@ -1,4 +1,4 @@
-From: Project Luma <builds@project-luma.local>
+From: Project Suno <builds@project-suno.local>
 Subject: [PATCH] gdm: keep the focus off the poster's hidden user list
 
 The screen shield calls LoginDialog.activate() each time the greeter's

@@ -18,7 +18,7 @@ import stat
 ARTIFACTS = ('.config', 'arch/arm64/boot/Image',
              'arch/arm64/boot/dts/qcom/x1p42100-microsoft-sp12in.dtb',
              'System.map', 'modules.order', 'include/config/kernel.release')
-RECEIPT = '.luma-compiled.json'
+RECEIPT = '.Suno-compiled.json'
 
 
 def sha(path):
@@ -61,7 +61,7 @@ def snapshot(repository, build, base):
     release = json.loads(lock.read_text())['release']
     if (build/'include/config/kernel.release').read_text().strip() != release:
         raise ValueError('Prepared kernel release differs from source lock')
-    return {'schema': 'org.projectluma.local-kernel-cache/v1',
+    return {'schema': 'org.projectSuno.local-kernel-cache/v1',
             'source_lock_sha256': sha(lock),
             'config_fragment_sha256': sha(repository/'config/kernel/surface-pro12.config'),
             'base_config_sha256': sha(base),

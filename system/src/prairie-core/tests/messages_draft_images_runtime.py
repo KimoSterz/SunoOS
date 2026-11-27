@@ -9,15 +9,15 @@ import time
 from types import SimpleNamespace
 
 ROOT = Path(__file__).resolve().parents[3]
-sys.path[:0] = [str(ROOT / 'src/luma-platform/appkit'), str(ROOT / 'src/prairie-core')]
+sys.path[:0] = [str(ROOT / 'src/Suno-platform/appkit'), str(ROOT / 'src/prairie-core')]
 import gi
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
 gi.require_version('Graphene', '1.0')
 from gi.repository import Adw, Gdk, Gio, GLib, Graphene, Gtk
-from luma_appkit import install_appkit, install_lumaui
+from Suno_appkit import install_appkit, install_SunoUI
 from prairie_apps.messages import install_messages_theme
-from prairie_apps.messages_app_port import LumaUIMessagesWindow
+from prairie_apps.messages_app_port import SunoUIMessagesWindow
 from prairie_apps.messages_backend import MessageStore
 from prairie_apps.messages_mms import MmsCapability
 from prairie_apps.messages_preferences import ConversationPreferences
@@ -38,16 +38,16 @@ def wait(predicate):
     pump()
 
 
-app = Adw.Application(application_id='org.projectluma.Messages.DraftImagesTest',
+app = Adw.Application(application_id='org.projectSuno.Messages.DraftImagesTest',
                       flags=Gio.ApplicationFlags.NON_UNIQUE)
 assert app.register(None)
 if (ROOT / 'src/prairie-core/style/messages.css').is_file():
-    os.environ.setdefault('LUMA_MESSAGES_STYLE_PATH', str(ROOT / 'src/prairie-core/style/messages.css'))
-install_appkit(); install_lumaui(); install_messages_theme()
+    os.environ.setdefault('SUNO_MESSAGES_STYLE_PATH', str(ROOT / 'src/prairie-core/style/messages.css'))
+install_appkit(); install_SunoUI(); install_messages_theme()
 with tempfile.TemporaryDirectory(prefix='message-drafts-') as temporary:
     directory = Path(temporary)
     for width in (1180, 420):
-        window = LumaUIMessagesWindow(app)
+        window = SunoUIMessagesWindow(app)
         window.set_default_size(width, 740)
         window.present(); pump()
         surface = window.surface
@@ -117,18 +117,18 @@ with tempfile.TemporaryDirectory(prefix='message-drafts-') as temporary:
         surface.bar_entry.widget.view.get_clipboard().set('Pasted text')
         surface.bar_entry.widget.view.emit('paste-clipboard')
         wait(lambda: surface.bar_entry.text == 'Pasted text')
-        original_service = window._luma_service
-        window._luma_service = lambda: SimpleNamespace(provider=SimpleNamespace(status={"state": "ready"}))
-        window._luma_identity_asked = True
-        window._luma_identity = {"handle": "drafttester"}
+        original_service = window._Suno_service
+        window._Suno_service = lambda: SimpleNamespace(provider=SimpleNamespace(status={"state": "ready"}))
+        window._Suno_identity_asked = True
+        window._Suno_identity = {"handle": "drafttester"}
         surface.render_sidebar()
-        assert surface.empty.secondary_button.get_label() == 'Your Luma username'
+        assert surface.empty.secondary_button.get_label() == 'Your Suno username'
         assert surface._recipients('hivecoworking')[0]['handle'] == 'hivecoworking'
         assert surface._recipients('@hivecoworking')[0]['handle'] == 'hivecoworking'
         assert all(not result['handle'] for result in surface._recipients('12025550123'))
-        window._luma_identity = {}
+        window._Suno_identity = {}
         surface.render_sidebar()
-        assert surface.empty.secondary_button.get_label() == 'Choose a Luma username'
-        window._luma_service = original_service
+        assert surface.empty.secondary_button.get_label() == 'Choose a Suno username'
+        window._Suno_service = original_service
         window.close(); fixture_store.close(); pump()
 print('Messages image drafts: picker staging, clipboard paste, removal, caption preservation, attachment-only Send and text paste passed at desktop/narrow widths')

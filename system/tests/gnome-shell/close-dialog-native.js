@@ -12,13 +12,13 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as CloseDialog from 'resource:///org/gnome/shell/ui/closeDialog.js';
 import * as Dialog from 'resource:///org/gnome/shell/ui/dialog.js';
 import * as Scripting from 'resource:///org/gnome/shell/ui/scripting.js';
-import * as SurfaceMaterials from 'resource:///org/gnome/shell/ui/lumaSurfaceMaterials.js';
+import * as SurfaceMaterials from 'resource:///org/gnome/shell/ui/SunoSurfaceMaterials.js';
 const sleep = ms => Scripting.sleep(ms);
 const failures = [];
 let count = 0;
 function check(value, message) { count++; print(`${value ? 'PASS' : 'FAIL'} close-dialog: ${message}`); if (!value) failures.push(message); }
 async function capture(name) {
-    const path = GLib.getenv('LUMA_CLOSE_EVIDENCE');
+    const path = GLib.getenv('SUNO_CLOSE_EVIDENCE');
     if (!path) return;
     const stream = Gio.File.new_for_path(`${path}/${name}.png`).replace(null, false, Gio.FileCreateFlags.NONE, null);
     try { await new Shell.Screenshot().screenshot(false, stream); } finally { stream.close(null); }
@@ -26,7 +26,7 @@ async function capture(name) {
 export async function run() {
     const iface = new Gio.Settings({schema_id: 'org.gnome.desktop.interface'});
     const a11y = new Gio.Settings({schema_id: 'org.gnome.desktop.a11y.interface'});
-    const appearance = new Gio.Settings({schema_id: 'org.project_luma.shell-state'});
+    const appearance = new Gio.Settings({schema_id: 'org.projectSuno.shell-state'});
     iface.set_boolean('enable-animations', false); Main.overview.hide();
     GLib.setenv('WAYLAND_DISPLAY', 'wayland-close-native', true);
     GLib.setenv('GDK_BACKEND', 'wayland', true);
@@ -45,7 +45,7 @@ export async function run() {
             appearance.set_string('surface-treatment', treatment);
             iface.set_string('color-scheme', treatment === 'dark' ? 'prefer-dark' : 'prefer-light');
             await sleep(200); observed = null;
-            process = Gio.Subprocess.new(['python3', GLib.getenv('LUMA_CLOSE_CLIENT')], Gio.SubprocessFlags.NONE);
+            process = Gio.Subprocess.new(['python3', GLib.getenv('SUNO_CLOSE_CLIENT')], Gio.SubprocessFlags.NONE);
             let actor;
             for (let i = 0; i < 50 && !actor; i++) {
                 await sleep(100);
@@ -64,9 +64,9 @@ export async function run() {
             await sleep(250);
             check(surface.mapped && surface.width > 250 && surface.height > 120, `${treatment}: actual dialog mapped allocation`);
             check(owner instanceof Dialog.Dialog, `${treatment}: existing shared Dialog owner`);
-            check(surface.has_style_class_name('close-dialog') && surface.has_style_class_name('luma-system-prompt'), `${treatment}: native unresponsive dialog receives shared material`);
+            check(surface.has_style_class_name('close-dialog') && surface.has_style_class_name('Suno-system-prompt'), `${treatment}: native unresponsive dialog receives shared material`);
             const effective = SurfaceMaterials.effectiveTreatment();
-            const expectedClasses = effective === 'frost' ? ['luma-surface-dark', 'luma-surface-smoke'] : [`luma-surface-${effective}`];
+            const expectedClasses = effective === 'frost' ? ['Suno-surface-dark', 'Suno-surface-smoke'] : [`Suno-surface-${effective}`];
             print(`ACTUAL close-dialog requested=${treatment} effective=${effective} classes=${surface.style_class}`);
             check(expectedClasses.every(name => surface.has_style_class_name(name)), `${treatment}: actual native appearance binding (${effective})`);
             const [force,wait] = owner.buttonLayout.get_children();
@@ -77,7 +77,7 @@ export async function run() {
             check(force.height >= 36 && wait.height === force.height, `${treatment}: consistent native action geometry`);
             check(actor.get_first_child().get_effect('gnome-shell-frozen-window') !== null, `${treatment}: native frozen-window dimming`);
             a11y.set_boolean('high-contrast', true); await sleep(150);
-            check(surface.has_style_class_name('luma-prompt-high-contrast'), `${treatment}: native high-contrast binding`);
+            check(surface.has_style_class_name('Suno-prompt-high-contrast'), `${treatment}: native high-contrast binding`);
             a11y.set_boolean('high-contrast', false); await sleep(150); await capture(`close-${treatment}`);
             const before = responses.length;
             if (index === 0 || index === 3) {

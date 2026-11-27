@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Luma Search ranking vectors against the Python twin (luma-search).
+"""Suno Search ranking vectors against the Python twin (Suno-search).
 
 python3 tests/search/test_ranking_vectors.py [--dump]
 """
@@ -11,13 +11,13 @@ import time
 import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT / "src/luma-search"))
+sys.path.insert(0, str(ROOT / "src/Suno-search"))
 
-from luma_search import ranking as R  # noqa: E402
+from Suno_search import ranking as R  # noqa: E402
 
 VECTORS = json.loads((Path(__file__).with_name("ranking-vectors.json")).read_text())
 SETTINGS = json.loads((Path(__file__).with_name("settings-cases.json")).read_text())
-PAGES = json.loads((ROOT / "src/luma-search/settings-pages.json").read_text())["pages"]
+PAGES = json.loads((ROOT / "src/Suno-search/settings-pages.json").read_text())["pages"]
 CONTEXT = dict(home=VECTORS["home"], now=VECTORS["now"], xdg_folders=frozenset(VECTORS["xdg"]))
 
 

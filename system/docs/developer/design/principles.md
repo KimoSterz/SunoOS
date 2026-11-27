@@ -1,16 +1,16 @@
 ---
 title: Design principles
-summary: The ideas behind every Luma app, what they mean in practice, and how the design guidelines are organized.
+summary: The ideas behind every Suno app, what they mean in practice, and how the design guidelines are organized.
 order: 1
 section: Design
 ---
 
 # Design principles
 
-These guidelines describe how a Luma app looks, behaves and reads. Depot
-reviews Luma tier apps against them, and any app that follows them will feel at
-home on Luma. LumaUI implements most of them for you; the guidelines explain
-the choices so you can make good ones where LumaUI stops.
+These guidelines describe how a Suno app looks, behaves and reads. Depot
+reviews Suno tier apps against them, and any app that follows them will feel at
+home on Suno. SunoUI implements most of them for you; the guidelines explain
+the choices so you can make good ones where SunoUI stops.
 
 ## 1. Calm
 
@@ -29,7 +29,7 @@ presentation decides chrome, and input decides target sizes. A small screen
 rearranges; it never removes.
 
 *In practice:* design the 360px layout and the wide layout together, and check
-the widths where LumaUI changes tier: under 560px is phone, 560 to 900px is
+the widths where SunoUI changes tier: under 560px is phone, 560 to 900px is
 compact, and over 900px is regular. See [adaptive layouts](../kit/adaptive-layouts.md).
 
 ## 3. Structure you can see
@@ -44,12 +44,12 @@ the trailing side, and never nest islands. See [windows and islands](windows-and
 
 ## 4. One answer to each question
 
-LumaUI draws the frame and the components, so every Luma app answers “what
+SunoUI draws the frame and the components, so every Suno app answers “what
 does a button look like” the same way, and a change to the shared design
 reaches every app that uses it. An app that redraws a shared component gives people a second
 answer and makes the whole system feel less trustworthy.
 
-*In practice:* use LumaUI components and tokens; if LumaUI is missing
+*In practice:* use SunoUI components and tokens; if SunoUI is missing
 something, ask for the component instead of drawing a local version.
 
 ## 5. Every command, every way

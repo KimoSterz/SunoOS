@@ -13,9 +13,9 @@ from calendar_responsive import capture_window
 require_private_bus()
 require_test_display()
 assert os.environ.get("PRAIRIE_EDS_MODE") == "disabled"
-assert os.environ.get("LUMA_CALENDAR_FIXTURE")
+assert os.environ.get("SUNO_CALENDAR_FIXTURE")
 width, theme, output = int(sys.argv[1]), sys.argv[2], Path(sys.argv[3])
-for name in ("LUMA_APPKIT_STYLE_PATH", "LUMA_APPKIT_TOKENS_PATH"):
+for name in ("SUNO_APPKIT_STYLE_PATH", "SUNO_APPKIT_TOKENS_PATH"):
     assert Path(os.environ[name]).is_file()
 from prairie_apps import calendar as app
 from gi.repository import Adw, GLib, Gtk

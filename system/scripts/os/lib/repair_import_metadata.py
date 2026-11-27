@@ -23,7 +23,7 @@ gi.require_version('OSTree', '1.0')
 from gi.repository import Gio, OSTree
 from repair_modes import open_repo, read_expected, verify as verify_modes
 
-SCHEMA = 'org.projectluma.image-import-metadata/v1'
+SCHEMA = 'org.projectSuno.image-import-metadata/v1'
 STORAGE_ATTRIBUTES = ('trusted.overlay.', 'user.overlay.', 'user.fuseoverlayfs.',
                       'trusted.fuseoverlayfs.', 'user.containers.override_stat',
                       'user.ostreemeta')

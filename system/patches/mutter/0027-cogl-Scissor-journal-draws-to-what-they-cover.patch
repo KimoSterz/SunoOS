@@ -1,5 +1,5 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Project Luma <engineering@projectluma.org>
+From: Project Suno <engineering@projectSuno.org>
 Date: Tue, 3 Nov 2026 02:00:00 -0600
 Subject: [PATCH] cogl: Scissor journal draws to what they cover
 

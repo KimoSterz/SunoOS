@@ -12,7 +12,7 @@
 # the clicks are XTEST clicks at the rows' places in a fixed 1000x1100 screen.
 set -u
 TAG=${1:-light}; OUT=${OUT:-/oracle/out/settings}; mkdir -p "$OUT"
-APP=${APP:-Messages}; OTHER=${OTHER:-org.projectluma.Notes}; APP_ID=${APP_ID:-org.projectluma.Messages}
+APP=${APP:-Messages}; OTHER=${OTHER:-org.projectSuno.Notes}; APP_ID=${APP_ID:-org.projectSuno.Messages}
 ROW_X=${ROW_X:-570}; ROW_Y=${ROW_Y:-412}          # the app's row in the list
 SWITCH_X=${SWITCH_X:-807}; SWITCH_Y=${SWITCH_Y:-197}  # Badge App Icon's switch
 export HOME=/tmp/settings-home-$TAG XDG_RUNTIME_DIR=/tmp/settings-run-$TAG

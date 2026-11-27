@@ -2,9 +2,9 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Run only as root in a disposable container with matching Shell/Mutter RPMs.
 set -eu
-[ "${LUMA_NATIVE_SHELL_DISPOSABLE:-0}" = 1 ] && [ "$(id -u)" = 0 ] && [ "$(id -u luma-media-test)" = 1000 ]
+[ "${SUNO_NATIVE_SHELL_DISPOSABLE:-0}" = 1 ] && [ "$(id -u)" = 0 ] && [ "$(id -u Suno-media-test)" = 1000 ]
 root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
-work=$(mktemp -d /var/tmp/luma-notification-outside-XXXXXX)
+work=$(mktemp -d /var/tmp/Suno-notification-outside-XXXXXX)
 mkdir -p "$work/overlay/ui" "$work/config" "$work/data" "$work/runtime"
 chmod 700 "$work/runtime"
 cp "$root/tests/gnome-shell/notification-outside-native.js" "$work/probe.js"
@@ -12,7 +12,7 @@ cp "$root/tests/gnome-shell/notification-outside-client.py" "$work/client.py"
 # Optional production-module candidate overlay, keeping all other installed
 # Shell modules intact. Omit this argument for a packaged native acceptance run.
 if [ "$#" -gt 0 ]; then
- cp "$1" "$work/overlay/ui/lumaNotificationBeacon.js"
+ cp "$1" "$work/overlay/ui/SunoNotificationBeacon.js"
 fi
 cat > "$work/overlay/ui/init.js" <<'JS'
 import GLib from 'gi://GLib';
@@ -36,7 +36,7 @@ imports._promiseNative.setMainLoopHook(() => {
         }).catch(failed);
     });
     GLib.timeout_add_once(GLib.PRIORITY_DEFAULT, 5000, () => {
-        import(`file://${GLib.getenv('LUMA_NOTIFICATION_PROBE')}`).then(async test => {
+        import(`file://${GLib.getenv('SUNO_NOTIFICATION_PROBE')}`).then(async test => {
             await test.run();
             global.context.terminate();
         }).catch(failed);
@@ -52,13 +52,13 @@ fi
 chown -R 1000:1000 "$work"
 ulimit -c 0
 printf 'Native notification evidence: %s\n' "$work"
-runuser -u luma-media-test -- env XDG_RUNTIME_DIR="$work/runtime" \
+runuser -u Suno-media-test -- env XDG_RUNTIME_DIR="$work/runtime" \
  XDG_CONFIG_HOME="$work/config" XDG_DATA_HOME="$work/data" \
  XDG_CURRENT_DESKTOP=GNOME GSETTINGS_BACKEND=memory \
- LIBGL_ALWAYS_SOFTWARE=1 LUMA_MUTTER_ALLOW_SOFTWARE_BLUR=1 GTK_A11Y=none \
+ LIBGL_ALWAYS_SOFTWARE=1 SUNO_MUTTER_ALLOW_SOFTWARE_BLUR=1 GTK_A11Y=none \
  LD_LIBRARY_PATH=/usr/lib64/gnome-shell GI_TYPELIB_PATH=/usr/lib64/gnome-shell \
- LUMA_NOTIFICATION_PROBE="$work/probe.js" LUMA_NOTIFICATION_CLIENT="$work/client.py" \
- LUMA_NOTIFICATION_CLIENT_CLICKS="$work/clicks" LUMA_NOTIFICATION_CLIENT_DISPLAY=wayland-notification-outside \
+ SUNO_NOTIFICATION_PROBE="$work/probe.js" SUNO_NOTIFICATION_CLIENT="$work/client.py" \
+ SUNO_NOTIFICATION_CLIENT_CLICKS="$work/clicks" SUNO_NOTIFICATION_CLIENT_DISPLAY=wayland-notification-outside \
  G_RESOURCE_OVERLAYS="/org/gnome/shell=$work/overlay" \
  dbus-run-session -- timeout 70 /usr/bin/gnome-shell --headless --wayland --no-x11 \
  --virtual-monitor=1366x800 --wayland-display=wayland-notification-outside > "$work/native.log" 2>&1

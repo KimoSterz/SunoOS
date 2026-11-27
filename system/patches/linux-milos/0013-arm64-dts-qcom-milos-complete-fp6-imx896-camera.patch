@@ -1,7 +1,7 @@
-From: Project Luma <luma@projectluma.dev>
+From: Project Suno <Suno@projectSuno.dev>
 Subject: [PATCH] arm64: dts: qcom: milos: complete FP6 IMX896 camera
 
-Bring Luma's earlier diagnostic IMX896 node in line with the physically
+Bring Suno's earlier diagnostic IMX896 node in line with the physically
 validated CatCrafts main-camera stack. Describe the C-PHY bus and 1.2 GHz
 V4L2 link frequency, use the rail names consumed by the upstream-style
 driver, compensate for the sensor table's H+V mirror, and connect the

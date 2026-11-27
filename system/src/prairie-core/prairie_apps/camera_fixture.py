@@ -137,10 +137,10 @@ def format_time(seconds: float) -> str:
 
 
 def fixture_from_environment() -> CameraFixture | None:
-    path = os.environ.get("LUMA_CAMERA_FIXTURE")
+    path = os.environ.get("SUNO_CAMERA_FIXTURE")
     if path is None:
         return None
     if not path:
-        raise ValueError("LUMA_CAMERA_FIXTURE must name a fixture file")
-    overrides = json.loads(os.environ.get("LUMA_CAMERA_FIXTURE_STATE", "{}"))
+        raise ValueError("SUNO_CAMERA_FIXTURE must name a fixture file")
+    overrides = json.loads(os.environ.get("SUNO_CAMERA_FIXTURE_STATE", "{}"))
     return CameraFixture(Path(path), overrides=overrides)

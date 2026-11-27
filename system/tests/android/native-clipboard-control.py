@@ -14,7 +14,7 @@ if (args.service == "task") != (args.expect == "fixture-label"):
 if args.seed_fixture and (args.service != "clipboard" or args.expect != "android-fixture"):
     parser.error("Seeding is only supported for the fixed Android clipboard token")
 import json,pathlib,shlex,subprocess
-package='org.projectluma.androidtest'
+package='org.projectSuno.androidtest'
 base=['lxc-attach','-P','/var/lib/waydroid/lxc','-n','waydroid','--clear-env','--']
 def android(*args):return subprocess.check_output([*base,'/system/bin/'+args[0],*args[1:]],text=True,stderr=subprocess.PIPE,timeout=20).strip()
 subprocess.run(['gdbus','call','--system','--dest','id.waydro.Container','--object-path','/ContainerManager','--method','id.waydro.ContainerManager.Unfreeze'],check=True,stdout=subprocess.DEVNULL,timeout=15)
@@ -40,7 +40,7 @@ for line in init_environment.splitlines():
         environment[fields[1]]=fields[2]
 assert 'BOOTCLASSPATH' in environment
 environment['CLASSPATH']=apk+':/system/framework/org.lineageos.platform.jar'
-command=[*base[:-1],'--uid=1000','--gid=1000','--','/system/bin/env',*[key+'='+value for key,value in sorted(environment.items())],'/system/bin/app_process','/system/bin','org.projectluma.androidtest.'+('NativeTaskProbe' if args.service=='task' else 'NativeClipboardProbe'),'seed' if args.seed_fixture else 'read']
+command=[*base[:-1],'--uid=1000','--gid=1000','--','/system/bin/env',*[key+'='+value for key,value in sorted(environment.items())],'/system/bin/app_process','/system/bin','org.projectSuno.androidtest.'+('NativeTaskProbe' if args.service=='task' else 'NativeClipboardProbe'),'seed' if args.seed_fixture else 'read']
 result=subprocess.run(command,text=True,capture_output=True,timeout=30)
 if result.returncode:
     raise RuntimeError('Trusted synthetic app_process control failed with exit '+str(result.returncode))

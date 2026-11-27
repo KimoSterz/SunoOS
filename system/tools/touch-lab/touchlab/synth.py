@@ -454,7 +454,7 @@ def build_session(out_dir: str, *, seed: int = 7, trials_per: int = 4, free_minu
     os.makedirs(sdir, exist_ok=True)
     tp = "event6"
     meta = {
-        "format": "luma-touch-lab/1", "recorder_version": 1, "synthetic": True, "session": sid,
+        "format": "Suno-touch-lab/1", "recorder_version": 1, "synthetic": True, "session": sid,
         "boot_id": boot, "started": "2026-11-18T12:00:00+0000",
         "clock": {"realtime_minus_monotonic_ns": 1_763_467_200_000_000_000 - t_base_ns,
                   "boottime_minus_monotonic_ns": 0},

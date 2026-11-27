@@ -65,7 +65,7 @@ async function run() {
         q.endPull(); await sleep(400);
         q.menu.close(PopupAnimation.NONE);
         check('Teardown releases effect and pending reveal', !q._panelReveal &&
-            !q.menu._boxPointer.get_effect('luma-panel-reveal'));
+            !q.menu._boxPointer.get_effect('Suno-panel-reveal'));
     } finally {
         global.stage.disconnect(paintId); touch.run_dispose(); q.open();
     }

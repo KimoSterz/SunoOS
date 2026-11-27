@@ -30,12 +30,12 @@ driver_patch_dir=$repo_root/patches/linux-milos-fingerprint
 # source/patch inputs, exact configuration, toolchain, and build timestamp.
 base_config_sha=67b55b06313dac5f69d6939459fb58791cef4f656cbf7564a881b17c2fdab4c0
 build_timestamp='2026-08-19 00:00:00 UTC'
-jobs=${LUMA_KERNEL_BUILD_JOBS:-4}
-resume=${LUMA_FINGERPRINT_BUILD_RESUME:-false}
-tzmem_mode=${LUMA_FINGERPRINT_TZMEM_MODE:-generic}
-stock_heaps=${LUMA_FINGERPRINT_STOCK_HEAPS:-false}
-dedicated_heaps=${LUMA_FINGERPRINT_DEDICATED_HEAPS:-false}
-qseelog=${LUMA_FINGERPRINT_QSEELOG:-false}
+jobs=${SUNO_KERNEL_BUILD_JOBS:-4}
+resume=${SUNO_FINGERPRINT_BUILD_RESUME:-false}
+tzmem_mode=${SUNO_FINGERPRINT_TZMEM_MODE:-generic}
+stock_heaps=${SUNO_FINGERPRINT_STOCK_HEAPS:-false}
+dedicated_heaps=${SUNO_FINGERPRINT_DEDICATED_HEAPS:-false}
+qseelog=${SUNO_FINGERPRINT_QSEELOG:-false}
 
 die() {
   printf 'error: %s\n' "$*" >&2
@@ -58,9 +58,9 @@ hash_patchset() {
 }
 
 case "$jobs" in
-  ''|*[!0-9]*) die 'LUMA_KERNEL_BUILD_JOBS must be a positive integer' ;;
+  ''|*[!0-9]*) die 'SUNO_KERNEL_BUILD_JOBS must be a positive integer' ;;
 esac
-[ "$jobs" -ge 1 ] || die 'LUMA_KERNEL_BUILD_JOBS must be at least 1'
+[ "$jobs" -ge 1 ] || die 'SUNO_KERNEL_BUILD_JOBS must be at least 1'
 [ "$(id -u)" -eq 0 ] || die 'run as root on the isolated builder'
 [ "$(uname -s)" = Linux ] && [ "$(uname -m)" = aarch64 ] ||
   die 'run only on an off-device Linux/aarch64 builder'
@@ -72,14 +72,14 @@ fi
 [ -d "$source_tree" ] || die 'exact camera/audio source tree is missing'
 [ -f "$source_tree/arch/arm64/boot/vmlinuz" ] || die 'base kernel is missing'
 [ ! -e "$output_dir" ] || die "refuse to overwrite output: $output_dir"
-case "$resume" in true|false) ;; *) die 'LUMA_FINGERPRINT_BUILD_RESUME must be true or false' ;; esac
+case "$resume" in true|false) ;; *) die 'SUNO_FINGERPRINT_BUILD_RESUME must be true or false' ;; esac
 case "$tzmem_mode" in
   generic|shmbridge) ;;
-  *) die 'LUMA_FINGERPRINT_TZMEM_MODE must be generic or shmbridge' ;;
+  *) die 'SUNO_FINGERPRINT_TZMEM_MODE must be generic or shmbridge' ;;
 esac
-case "$stock_heaps" in true|false) ;; *) die 'LUMA_FINGERPRINT_STOCK_HEAPS must be true or false' ;; esac
-case "$dedicated_heaps" in true|false) ;; *) die 'LUMA_FINGERPRINT_DEDICATED_HEAPS must be true or false' ;; esac
-case "$qseelog" in true|false) ;; *) die 'LUMA_FINGERPRINT_QSEELOG must be true or false' ;; esac
+case "$stock_heaps" in true|false) ;; *) die 'SUNO_FINGERPRINT_STOCK_HEAPS must be true or false' ;; esac
+case "$dedicated_heaps" in true|false) ;; *) die 'SUNO_FINGERPRINT_DEDICATED_HEAPS must be true or false' ;; esac
+case "$qseelog" in true|false) ;; *) die 'SUNO_FINGERPRINT_QSEELOG must be true or false' ;; esac
 [ "$stock_heaps" = false ] || [ "$tzmem_mode" = shmbridge ] ||
   die 'stock QSEECOM heaps require SHM-Bridge mode'
 [ "$dedicated_heaps" = false ] || [ "$stock_heaps" = true ] ||
@@ -158,7 +158,7 @@ if [ "$qseelog" = true ]; then
     die 'QSEE-log patchset digest differs'
 fi
 
-stage=$inputs/luma-fingerprint
+stage=$inputs/Suno-fingerprint
 mkdir -p "$stage/qsee" "$stage/focaltech" "$stage/shmbridge" \
   "$stage/stock-heaps" "$stage/dedicated-heaps" "$stage/qseelog"
 for patch in "$qsee_patch_dir"/*.patch; do
@@ -210,34 +210,34 @@ chroot "$rootfs" /bin/sh -eu -c "
   pahole --version | grep -Fx 'v1.31'
   cd /work/linux
   if [ '$resume' = false ]; then
-    for patch in /work/inputs/luma-fingerprint/qsee/*.patch; do
+    for patch in /work/inputs/Suno-fingerprint/qsee/*.patch; do
       git apply --check \"\$patch\"
       git apply \"\$patch\"
     done
-    for patch in /work/inputs/luma-fingerprint/focaltech/*.patch; do
+    for patch in /work/inputs/Suno-fingerprint/focaltech/*.patch; do
       git apply --check \"\$patch\"
       git apply \"\$patch\"
     done
     if [ '$tzmem_mode' = shmbridge ]; then
-      for patch in /work/inputs/luma-fingerprint/shmbridge/*.patch; do
+      for patch in /work/inputs/Suno-fingerprint/shmbridge/*.patch; do
         git apply --check \"\$patch\"
         git apply \"\$patch\"
       done
     fi
     if [ '$stock_heaps' = true ]; then
-      for patch in /work/inputs/luma-fingerprint/stock-heaps/*.patch; do
+      for patch in /work/inputs/Suno-fingerprint/stock-heaps/*.patch; do
         git apply --check "\$patch"
         git apply "\$patch"
       done
     fi
     if [ '$dedicated_heaps' = true ]; then
-      for patch in /work/inputs/luma-fingerprint/dedicated-heaps/*.patch; do
+      for patch in /work/inputs/Suno-fingerprint/dedicated-heaps/*.patch; do
         git apply --check "\$patch"
         git apply "\$patch"
       done
     fi
     if [ '$qseelog' = true ]; then
-      for patch in /work/inputs/luma-fingerprint/qseelog/*.patch; do
+      for patch in /work/inputs/Suno-fingerprint/qseelog/*.patch; do
         git apply --check "\$patch"
         git apply "\$patch"
       done
@@ -254,19 +254,19 @@ chroot "$rootfs" /bin/sh -eu -c "
     if ! grep -Fq 'QSEECOM_TZ_CMD_LISTENER_REGISTER_SMCINVOKE' \
         drivers/firmware/qcom/qcom_scm.c; then
       git apply --check \
-        /work/inputs/luma-fingerprint/qsee/0042-firmware-qcom-scm-try-modern-listener-registration.patch
+        /work/inputs/Suno-fingerprint/qsee/0042-firmware-qcom-scm-try-modern-listener-registration.patch
       git apply \
-        /work/inputs/luma-fingerprint/qsee/0042-firmware-qcom-scm-try-modern-listener-registration.patch
+        /work/inputs/Suno-fingerprint/qsee/0042-firmware-qcom-scm-try-modern-listener-registration.patch
     fi
     if ! grep -Fq 'mdt64_header_valid' drivers/soc/qcom/mdt_loader.c; then
       git apply --check \
-        /work/inputs/luma-fingerprint/qsee/0043-soc-qcom-mdt-loader-support-ELF64-contiguous-images.patch
+        /work/inputs/Suno-fingerprint/qsee/0043-soc-qcom-mdt-loader-support-ELF64-contiguous-images.patch
       git apply \
-        /work/inputs/luma-fingerprint/qsee/0043-soc-qcom-mdt-loader-support-ELF64-contiguous-images.patch
+        /work/inputs/Suno-fingerprint/qsee/0043-soc-qcom-mdt-loader-support-ELF64-contiguous-images.patch
     fi
     if [ '$tzmem_mode' = shmbridge ] && \
         ! grep -Fq 'qseecom: bounded app load' drivers/firmware/qcom/qcom_scm.c; then
-      for patch in /work/inputs/luma-fingerprint/shmbridge/*.patch; do
+      for patch in /work/inputs/Suno-fingerprint/shmbridge/*.patch; do
         git apply --check \"\$patch\"
         git apply \"\$patch\"
       done
@@ -276,7 +276,7 @@ chroot "$rootfs" /bin/sh -eu -c "
           drivers/firmware/qcom/qcom_tzmem.c && \
         ! grep -Fq 'dedicated QSEECOM heaps active' \
           drivers/tee/qseecom/core.c; then
-      for patch in /work/inputs/luma-fingerprint/stock-heaps/*.patch; do
+      for patch in /work/inputs/Suno-fingerprint/stock-heaps/*.patch; do
         git apply --check "\$patch"
         git apply "\$patch"
       done
@@ -284,7 +284,7 @@ chroot "$rootfs" /bin/sh -eu -c "
     if [ '$dedicated_heaps' = true ] && \
         ! grep -Fq 'dedicated QSEECOM heaps active' \
           drivers/tee/qseecom/core.c; then
-      for patch in /work/inputs/luma-fingerprint/dedicated-heaps/*.patch; do
+      for patch in /work/inputs/Suno-fingerprint/dedicated-heaps/*.patch; do
         git apply --check "\$patch"
         git apply "\$patch"
       done
@@ -292,7 +292,7 @@ chroot "$rootfs" /bin/sh -eu -c "
     if [ '$qseelog' = true ] && \
         ! grep -Fq 'root-only QSEE diagnostic log registered' \
           drivers/firmware/qcom/qcom_scm.c; then
-      for patch in /work/inputs/luma-fingerprint/qseelog/*.patch; do
+      for patch in /work/inputs/Suno-fingerprint/qseelog/*.patch; do
         git apply --check "\$patch"
         git apply "\$patch"
       done
@@ -353,7 +353,7 @@ chroot "$rootfs" /bin/sh -eu -c "
   grep -qx 'CONFIG_FINGER_FOCAL=m' .config
   grep -qx '# CONFIG_DMA_CMA is not set' .config
   test \"\$(make ARCH=arm64 LLVM=1 LOCALVERSION= -s kernelrelease)\" = 7.1.2
-  kernel_stamp=arch/arm64/boot/.luma-fingerprint-qsee-patchset
+  kernel_stamp=arch/arm64/boot/.Suno-fingerprint-qsee-patchset
   kernel_stamp_value='$FP6_FINGERPRINT_QSEECOM_PATCHSET_SHA256:$shmbridge_patchset_sha:$stock_heaps_patchset_sha:$dedicated_heaps_patchset_sha:$qseelog_patchset_sha:'\$(sha256sum .config | cut -d' ' -f1)
   reuse_kernel=false
   if [ '$resume' = true ] && test -s arch/arm64/boot/vmlinuz && \
@@ -405,7 +405,7 @@ for module in focaltech_fp.ko qseecomtee.ko; do
 done
 
 {
-  printf 'LUMA_FP6_FINGERPRINT_BUILD_VERSION=1\n'
+  printf 'SUNO_FP6_FINGERPRINT_BUILD_VERSION=1\n'
   printf 'KERNEL_RELEASE=7.1.2\n'
   printf 'BASE_IMAGE_SHA256=%s\n' "$base_image_sha"
   printf 'BASE_IMAGE_SHA256_RECORDED=%s\n' "$base_image_sha_recorded"

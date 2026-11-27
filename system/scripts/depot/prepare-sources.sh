@@ -12,9 +12,9 @@
 # the manifest, so a mirror cannot substitute other code). NAME must match the
 # last path component of the manifest's git URL (Write, Grid, Designer, ...).
 #
-# NAME=Luma is special: the operating-system repository is large, so only the
-# paths an app needs (src/luma-reel and LICENSE.md) are sent, as
-# sources/archives/Luma-<commit>.tar.gz; build-app.sh then pins its sha256.
+# NAME=Suno is special: the operating-system repository is large, so only the
+# paths an app needs (src/Suno-reel and LICENSE.md) are sent, as
+# sources/archives/Suno-<commit>.tar.gz; build-app.sh then pins its sha256.
 #
 # Without DEPOT_BUILD_SSH the files are written under $DEPOT_ROOT/sources
 # locally.
@@ -36,16 +36,16 @@ for pair in "$@"; do
   name=${pair%%=*}
   path=${pair#*=}
   manifest=$(grep -rl "url: https://github.com/ProjectLuma/$name.git" "$depot_repo_root/packaging/flatpak/apps" | head -n 1)
-  [ -n "$manifest" ] || depot_die "no manifest uses ProjectLuma/$name"
+  [ -n "$manifest" ] || depot_die "no manifest uses projectSuno/$name"
   commit=$(awk -v u="https://github.com/ProjectLuma/$name.git" \
     '$0 ~ "url: " u {found=1; next} found && /commit:/ {print $2; exit}' "$manifest")
   git -C "$path" cat-file -e "$commit^{commit}" || depot_die "$path lacks commit $commit"
 
-  if [ "$name" = Luma ]; then
-    archive="$tmp/Luma-$commit.tar.gz"
-    git -C "$path" archive --format=tar --prefix=luma/ "$commit" src/luma-reel LICENSE.md | gzip -n >"$archive"
-    copy_remote "$archive" "$DEPOT_ROOT/sources/archives/Luma-$commit.tar.gz"
-    depot_log "Luma $commit: archive of src/luma-reel and LICENSE.md"
+  if [ "$name" = Suno ]; then
+    archive="$tmp/Suno-$commit.tar.gz"
+    git -C "$path" archive --format=tar --prefix=Suno/ "$commit" src/Suno-reel LICENSE.md | gzip -n >"$archive"
+    copy_remote "$archive" "$DEPOT_ROOT/sources/archives/Suno-$commit.tar.gz"
+    depot_log "Suno $commit: archive of src/Suno-reel and LICENSE.md"
     continue
   fi
 

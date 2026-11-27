@@ -1,17 +1,17 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Project Luma <engineering@projectluma.org>
+From: Project Suno <engineering@projectSuno.org>
 Date: Sun, 22 Nov 2026 13:30:00 -0600
 Subject: [PATCH] Icon mask: cut the corner at the actor's corner, in its
  pixels
 
-LumaIconMask measured its corner radius in the offscreen texture's
+SunoIconMask measured its corner radius in the offscreen texture's
 coordinates, but that texture is the actor's paint volume, which Clutter
 enlarges beyond the actor (a 34 px notification tile draws into 37 px). A
 radius of 10/34 was then cut 1.5 px outside the tile around a larger
 circle, and art with its own rounder corner showed instead: the
 notification tile, the dock and the shelf's media and status icons never
 got the corner they asked for. The mask now maps texture coordinates back
-to the actor's pixels, as LumaRoundedClip already did (the same mapping,
+to the actor's pixels, as SunoRoundedClip already did (the same mapping,
 now shared), and takes its radius as a fraction of the actor's shorter
 side with a one-pixel antialiased edge.
 ---
@@ -33,7 +33,7 @@ index 69573f2..8ea1c07 100644
  
 +// radius is a fraction of the actor's shorter side. The offscreen texture is
 +// the actor's paint volume, enlarged beyond the actor on every side, so the
-+// texture coordinates are mapped back to actor pixels (as LumaRoundedClip
++// texture coordinates are mapped back to actor pixels (as SunoRoundedClip
 +// does) and the corner is cut at the actor's corner, not the texture's.
  const ICON_MASK_DECLARATIONS = `
  uniform float radius;
@@ -85,10 +85,10 @@ index 69573f2..8ea1c07 100644
 +    return true;
 +}
 +
- export const LumaIconMask = GObject.registerClass(
- class LumaIconMask extends Shell.GLSLEffect {
+ export const SunoIconMask = GObject.registerClass(
+ class SunoIconMask extends Shell.GLSLEffect {
      vfunc_build_pipeline() {
-@@ -41,6 +72,7 @@ class LumaIconMask extends Shell.GLSLEffect {
+@@ -41,6 +72,7 @@ class SunoIconMask extends Shell.GLSLEffect {
      }
  
      vfunc_paint_target(node, paintContext) {
@@ -96,7 +96,7 @@ index 69573f2..8ea1c07 100644
          smoothOffscreenSampling(this);
          super.vfunc_paint_target(node, paintContext);
      }
-@@ -71,21 +103,9 @@ class LumaRoundedClip extends Shell.GLSLEffect {
+@@ -71,21 +103,9 @@ class SunoRoundedClip extends Shell.GLSLEffect {
      }
  
      vfunc_paint_target(node, paintContext) {

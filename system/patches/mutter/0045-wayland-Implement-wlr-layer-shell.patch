@@ -1,5 +1,5 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Project Luma <engineering@projectluma.org>
+From: Project Suno <engineering@projectSuno.org>
 Date: Sat, 21 Nov 2026 13:01:43 -0500
 Subject: [PATCH] wayland: Implement wlr-layer-shell
 
@@ -424,9 +424,9 @@ index d4548d8..daff5ba 100644
    'wayland/meta-window-wayland.h',
  ]
 @@ -1092,6 +1094,7 @@ wayland_protocols = [
-   # Luma tree), installed into this private protocol directory in %prep.
-   ['luma-window-capture-v1', 'private', ],
-   ['luma-window-shape-v1', 'private', ],
+   # Suno tree), installed into this private protocol directory in %prep.
+   ['Suno-window-capture-v1', 'private', ],
+   ['Suno-window-shape-v1', 'private', ],
 +  ['wlr-layer-shell-unstable-v1', 'private', ],
    ['pointer-constraints', 'unstable', 1, ],
    ['pointer-gestures', 'unstable', 1, ],
@@ -527,7 +527,7 @@ index 0000000..96280b3
 +/*
 + * wlr-layer-shell-unstable-v1 for Mutter.
 + *
-+ * Copyright (C) 2026 Project Luma
++ * Copyright (C) 2026 Project Suno
 + *
 + * Ported from Linux Mint's Muffin (src/wayland/meta-wayland-layer-shell.c,
 + * Copyright (C) 2024 Linux Mint, GPL-2.0-or-later) and informed by
@@ -1987,7 +1987,7 @@ index 0000000..96280b3
 +                    gboolean           finished,
 +                    ClutterActor      *actor)
 +{
-+  ClutterEffect *effect = clutter_actor_get_effect (actor, "luma-layer-fade");
++  ClutterEffect *effect = clutter_actor_get_effect (actor, "Suno-layer-fade");
 +
 +  if (finished && effect &&
 +      clutter_desaturate_effect_get_factor (CLUTTER_DESATURATE_EFFECT (effect)) <= 0.0)
@@ -2029,17 +2029,17 @@ index 0000000..96280b3
 +  clutter_actor_set_opacity (actor, dimmed ? LAYER_FADED_OPACITY : 255);
 +  clutter_actor_restore_easing_state (actor);
 +
-+  effect = clutter_actor_get_effect (actor, "luma-layer-fade");
++  effect = clutter_actor_get_effect (actor, "Suno-layer-fade");
 +  if (!effect)
 +    {
 +      effect = clutter_desaturate_effect_new (0.0);
-+      clutter_actor_add_effect_with_name (actor, "luma-layer-fade", effect);
++      clutter_actor_add_effect_with_name (actor, "Suno-layer-fade", effect);
 +    }
 +  from = clutter_desaturate_effect_get_factor (CLUTTER_DESATURATE_EFFECT (effect));
 +
-+  clutter_actor_remove_transition (actor, "luma-layer-fade");
++  clutter_actor_remove_transition (actor, "Suno-layer-fade");
 +  transition = clutter_property_transition_new_for_actor (actor,
-+                                                          "@effects.luma-layer-fade.factor");
++                                                          "@effects.Suno-layer-fade.factor");
 +  clutter_timeline_set_duration (CLUTTER_TIMELINE (transition), LAYER_FADE_MS);
 +  clutter_timeline_set_progress_mode (CLUTTER_TIMELINE (transition),
 +                                      CLUTTER_EASE_OUT_CUBIC);
@@ -2048,7 +2048,7 @@ index 0000000..96280b3
 +                             dimmed ? 1.0 - LAYER_FADED_SATURATION : 0.0);
 +  g_signal_connect_object (transition, "stopped",
 +                           G_CALLBACK (remove_fade_effect), actor, 0);
-+  clutter_actor_add_transition (actor, "luma-layer-fade", transition);
++  clutter_actor_add_transition (actor, "Suno-layer-fade", transition);
 +  g_object_unref (transition);
 +}
 +
@@ -3420,7 +3420,7 @@ index 0000000..96416a5
 +/*
 + * wlr-layer-shell-unstable-v1 for Mutter.
 + *
-+ * Copyright (C) 2026 Project Luma
++ * Copyright (C) 2026 Project Suno
 + *
 + * Ported from Linux Mint's Muffin (src/wayland/meta-wayland-layer-shell.c,
 + * Copyright (C) 2024 Linux Mint, GPL-2.0-or-later) and informed by
@@ -3506,8 +3506,8 @@ index daf4152..f13bab8 100644
 +++ b/src/wayland/meta-wayland-versions.h
 @@ -73,3 +73,4 @@
  #define META_EXT_BACKGROUND_EFFECT_V1_VERSION 1
- #define META_LUMA_WINDOW_SHAPE_V1_VERSION 1
- #define META_LUMA_WINDOW_CAPTURE_V1_VERSION 1
+ #define META_SUNO_WINDOW_SHAPE_V1_VERSION 1
+ #define META_SUNO_WINDOW_CAPTURE_V1_VERSION 1
 +#define META_ZWLR_LAYER_SHELL_V1_VERSION 5
 diff --git a/src/wayland/meta-wayland.c b/src/wayland/meta-wayland.c
 index 3231993..6751340 100644

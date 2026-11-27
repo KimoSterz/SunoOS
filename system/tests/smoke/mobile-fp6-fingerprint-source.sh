@@ -107,14 +107,14 @@ grep -Fq 'class_create(FF_DRV_NAME)' "$driver_patch_dir/0002-Input-focaltech-por
 listener_extension=$repo_root/src/fp6-fingerprint-qcomtee/qcomtee-listener-extension.inc
 [ -f "$listener_extension" ]
 grep -Fq '#include <linux/freezer.h>' "$listener_extension"
-grep -Fq 'wait_event_freezable(luma_listener_request_wait' "$listener_extension"
-! grep -Fq 'wait_event_killable(luma_listener_request_wait' "$listener_extension"
+grep -Fq 'wait_event_freezable(Suno_listener_request_wait' "$listener_extension"
+! grep -Fq 'wait_event_killable(Suno_listener_request_wait' "$listener_extension"
 
-wake_source=$repo_root/src/fp6-fingerprint-backend/luma_fp6_wake_input.c
+wake_source=$repo_root/src/fp6-fingerprint-backend/Suno_fp6_wake_input.c
 backend_makefile=$repo_root/src/fp6-fingerprint-backend/Makefile
 [ -f "$wake_source" ]
 grep -Fq 'UI_SET_KEYBIT, KEY_WAKEUP' "$wake_source"
-grep -Fq 'wake-input: luma-fp6-wake-input' "$backend_makefile"
+grep -Fq 'wake-input: Suno-fp6-wake-input' "$backend_makefile"
 
 overlay=$repo_root/config/mobile/fp6-fingerprint/milos-fairphone-fp6-fingerprint.dtso
 [ "$(sha256_file "$overlay")" = "$FP6_FINGERPRINT_DISABLED_OVERLAY_SHA256" ]
@@ -425,8 +425,8 @@ kernel_builder=$repo_root/scripts/mobile/build-fp6-fingerprint-candidate.sh
 boot_builder=$repo_root/scripts/mobile/prepare-fp6-fingerprint-boot-candidate.sh
 grep -Fq '0042-firmware-qcom-scm-try-modern-listener-registration.patch' "$kernel_builder"
 grep -Fq '0043-soc-qcom-mdt-loader-support-ELF64-contiguous-images.patch' "$kernel_builder"
-grep -Fq '.luma-fingerprint-qsee-patchset' "$kernel_builder"
-grep -Fq 'LUMA_FINGERPRINT_TZMEM_MODE' "$kernel_builder"
+grep -Fq '.Suno-fingerprint-qsee-patchset' "$kernel_builder"
+grep -Fq 'SUNO_FINGERPRINT_TZMEM_MODE' "$kernel_builder"
 grep -Fq 'QCOM_TZMEM_MODE_SHMBRIDGE' "$kernel_builder"
 grep -Fq 'FP6_FINGERPRINT_ENUMERATION_KERNEL_SHA256' "$kernel_builder"
 grep -Fq 'scripts/config --disable DMA_CMA' "$kernel_builder"
@@ -547,7 +547,7 @@ grep -Fq 'qcom_tzmem_pool_new_on_device' "$dedicated_heaps_patch"
 grep -Fq 'dedicated QSEECOM heaps active' "$dedicated_heaps_patch"
 grep -Fq 'qseecom_tee_configure_tzmem_pool(qtee, &pool_config, true)' "$dedicated_heaps_patch"
 ! grep -Fq '/delete-property/ memory-region;' "$dedicated_heaps_overlay"
-grep -Fq 'compatible = "luma,qseecom-tee-heaps";' "$dedicated_heaps_overlay"
+grep -Fq 'compatible = "Suno,qseecom-tee-heaps";' "$dedicated_heaps_overlay"
 grep -Fq 'memory-region-names = "ta", "apps";' "$dedicated_heaps_overlay"
 grep -Fq 'The separately authorized v10 boot-only physical gate passed.' "$doc"
 grep -Fq 'bc12893e0403245e2ea4a1cb6a4801c1efdba515d6f726be18f2e55f1752ab33' "$doc"
@@ -562,7 +562,7 @@ grep -Fq 'qsee-app-loader" focal64' "$identity_v9_runner"
 grep -Fq 'case $listener_id in' "$identity_v9_runner"
 grep -Fq 'biometric_commands=0' "$identity_v9_runner"
 ! grep -Eq '(fastboot|reboot|fingerprint enroll|fingerprint auth)' "$identity_v9_runner"
-grep -Fq 'LUMA_FINGERPRINT_DEDICATED_HEAPS' "$kernel_builder"
+grep -Fq 'SUNO_FINGERPRINT_DEDICATED_HEAPS' "$kernel_builder"
 grep -Fq 'DEDICATED_HEAPS_ENABLED=%s' "$kernel_builder"
 [ -x "$dedicated_heaps_composer" ]
 [ -x "$dedicated_heaps_verifier" ]
@@ -598,17 +598,17 @@ qseelog_patchset_sha=$(
 [ "$(sha256_file "$qseelog_decoder")" = "$FP6_FINGERPRINT_QSEELOG_DECODER_SHA256" ]
 [ -x "$qseelog_composer" ]
 [ -x "$qseelog_decoder" ]
-grep -Fq 'luma,qsee-log-diagnostic' "$qseelog_patch"
+grep -Fq 'Suno,qsee-log-diagnostic' "$qseelog_patch"
 grep -Fq 'attr.mode = 0400' "$qseelog_patch"
 grep -Fq 'QCOM_SCM_ARGS(2, QCOM_SCM_RW, QCOM_SCM_VAL)' "$qseelog_patch"
 grep -Fq 'TRUSTLET_LOAD_ENABLED=false' "$qseelog_composer"
 grep -Fq 'TA_LOAD_ATTEMPTED=false' "$qseelog_composer"
 ! grep -Eq '(fastboot|ssh |qsee-app-loader|focal64)' "$qseelog_composer"
 ! grep -Eq '(fastboot|ssh |qsee-app-loader|focal64)' "$qseelog_verifier"
-grep -Fq 'luma,qsee-log-diagnostic' "$qseelog_verifier"
+grep -Fq 'Suno,qsee-log-diagnostic' "$qseelog_verifier"
 grep -Fq 'expected exactly {QSEE_LOG_SIZE} bytes' "$qseelog_decoder"
 
-grep -Fq 'boot-fp6-luma-fingerprint-loader-elf64-v3.img' "$boot_builder"
+grep -Fq 'boot-fp6-Suno-fingerprint-loader-elf64-v3.img' "$boot_builder"
 grep -Fq 'FP6_FINGERPRINT_LISTENER_V2_BOOT_SHA256' "$boot_builder"
 grep -Fq 'DTB_UNCHANGED=true' "$boot_builder"
 grep -Fq 'TRUSTLET_LOAD_ENABLED=false' "$boot_builder"
@@ -716,7 +716,7 @@ grep -Fq 'scripts/config --enable DMA_CMA' "$matched_cma_builder"
 grep -Fq 'vmlinuz.efi modules' "$matched_cma_builder"
 grep -Fq 'modules_install' "$matched_cma_builder"
 grep -Fq 'COMPLETE_MATCHING_MODULE_TREE=true' "$matched_cma_builder"
-grep -Fq '7.1.2-luma-fp-cma1' "$matched_cma_builder"
+grep -Fq '7.1.2-Suno-fp-cma1' "$matched_cma_builder"
 grep -Fq 'fdtput -d "$matched_dtb" "$apps" no-map' "$matched_cma_composer"
 grep -Fq 'fdtput "$matched_dtb" "$apps" reusable' "$matched_cma_composer"
 grep -Fq 'MATCHED_INITRAMFS_MODULES=true' "$matched_cma_composer"

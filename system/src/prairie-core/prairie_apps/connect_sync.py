@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
-"""Device-side exporter that pushes Contacts and Notes to the Luma Connect Hub.
+"""Device-side exporter that pushes Contacts and Notes to the Suno Connect Hub.
 
 The exporter is read-only against the device's own sources of truth: contacts
 come from Evolution Data Server through :mod:`prairie_apps.eds_backend` and
@@ -41,7 +41,7 @@ from .eds_backend import inspect_eds_inventory, load_contacts
 from .app_installs import NOTES, app_environment
 from .notes_backend import NotesStore, notes_data_directory
 
-USER_AGENT = "ProjectLuma-Connect/1"
+USER_AGENT = "projectSuno-Connect/1"
 REQUEST_TIMEOUT = 20.0
 MAX_ITEMS = 5000
 MAX_NOTE_BODY_BYTES = 256 * 1024
@@ -148,7 +148,7 @@ class DeviceIdentity:
 def connect_data_directory(environment: dict[str, str] | None = None) -> Path:
     env = os.environ if environment is None else environment
     default = Path(env.get("HOME", str(Path.home()))) / ".local" / "share"
-    return Path(env.get("XDG_DATA_HOME", default)) / "luma" / "connect"
+    return Path(env.get("XDG_DATA_HOME", default)) / "Suno" / "connect"
 
 
 def device_file(environment: dict[str, str] | None = None) -> Path:
@@ -496,7 +496,7 @@ def enrol(*, code: str, hub: str, name: str = "", environment: dict[str, str] | 
     )
     path = save_identity(identity, environment)
     print(f"Enrolled as {identity.device_id} with {address}.", file=stream)
-    for unit in ("luma-connect-sync.path", "luma-connect-sync.timer", "luma-connect-sync-watch.service"):
+    for unit in ("Suno-connect-sync.path", "Suno-connect-sync.timer", "Suno-connect-sync-watch.service"):
         try:
             subprocess.run(["systemctl", "--user", "start", unit], capture_output=True, timeout=15)
         except (OSError, subprocess.SubprocessError):
@@ -622,7 +622,7 @@ def _push_once(*, hub: str, dry_run: bool, environment: dict[str, str] | None, t
     if identity is None:
         raise ConnectError(
             "This device is not enrolled with a Connect hub. Run: "
-            "luma-connect-sync enrol --code CODE --hub https://your-hub"
+            "Suno-connect-sync enrol --code CODE --hub https://your-hub"
         )
     address = hub_url(hub or identity.hub)
     observed_at = _observed_at()
@@ -731,7 +731,7 @@ def _push_once(*, hub: str, dry_run: bool, environment: dict[str, str] | None, t
         if service == "notes" and notes_delta is not None:
             snapshots.append((service, fields, None))
             continue
-        # Contacts travel over CardDAV once the Luma address book exists; a
+        # Contacts travel over CardDAV once the Suno address book exists; a
         # snapshot as well would count every synced card as this device's own.
         if service == "contacts" and state.get(f"{scope}|contacts-dav", {}).get("source_uid"):
             continue
@@ -758,7 +758,7 @@ def _push_once(*, hub: str, dry_run: bool, environment: dict[str, str] | None, t
             f"Refusing to sync notes: this device's notes were synced from {previous_store}, but the "
             f"Notes app in use now keeps its library at {notes_store}. Sending it would replace the "
             f"{previous_count} note(s) synced before. Move your notes into the app you use, or run "
-            "luma-connect-sync push --force to send that library as this device's notes."))
+            "Suno-connect-sync push --force to send that library as this device's notes."))
     if dry_run:
         print(f"Dry run against {address}; nothing was sent.", file=stream)
         print(f"  device: {identity.device_id}", file=stream)
@@ -802,7 +802,7 @@ def _push_once(*, hub: str, dry_run: bool, environment: dict[str, str] | None, t
             if error.status == 401:
                 raise AuthorisationError(
                     "The hub rejected this device's token (401). It was revoked or replaced. "
-                    f"Re-enrol: luma-connect-sync enrol --code CODE --hub {address} --force"
+                    f"Re-enrol: Suno-connect-sync enrol --code CODE --hub {address} --force"
                 ) from None
             _note_backoff(state, scope, error, environment)
             problems.append(ConnectError(f"The hub refused the {service} snapshot: {error}"))
@@ -835,7 +835,7 @@ def _push_once(*, hub: str, dry_run: bool, environment: dict[str, str] | None, t
 def _reauthorise(address: str) -> AuthorisationError:
     return AuthorisationError(
         "The hub rejected this device's token (401). It was revoked or replaced. "
-        f"Re-enrol: luma-connect-sync enrol --code CODE --hub {address} --force")
+        f"Re-enrol: Suno-connect-sync enrol --code CODE --hub {address} --force")
 
 
 def _collaboration_refusal(http, identity: DeviceIdentity, address: str, label: str) -> ConnectError:
@@ -849,7 +849,7 @@ def _collaboration_refusal(http, identity: DeviceIdentity, address: str, label: 
     """
     _account(http, identity, address)
     return ConnectError(
-        f'{label} couldn’t sync with Luma Connect. '
+        f'{label} couldn’t sync with Suno Connect. '
         'This computer is still connected.')
 
 
@@ -1038,13 +1038,13 @@ def watch(*, environment: dict[str, str] | None = None, http=None, out=None, sle
             raise
         except PartialSyncError as error:
             if error.observed_revision is None:
-                print(f"luma-connect-sync: {error}; retrying in {int(delay)}s", file=sys.stderr)
+                print(f"Suno-connect-sync: {error}; retrying in {int(delay)}s", file=sys.stderr)
                 delay = 5.0 if sleep(delay) else min(delay * 2, 300.0)
                 continue
             after = max(after, error.observed_revision)
             retry_pending = True
             delay = 5.0
-            print(f"luma-connect-sync: {error}; other services remain live; retry on the next event or idle poll.", file=sys.stderr)
+            print(f"Suno-connect-sync: {error}; other services remain live; retry on the next event or idle poll.", file=sys.stderr)
             waiting = float(_load_state(environment).get(f"{scope}|backoff-until", 0) or 0) - time.time()
             if waiting > 0:
                 sleep(waiting)  # Preserve actual Hub-wide Retry-After quiet.
@@ -1054,10 +1054,10 @@ def watch(*, environment: dict[str, str] | None = None, http=None, out=None, sle
             state = _load_state(environment)
             _note_backoff(state, scope, error, environment)
             quiet = max(delay, float(state.get(f"{scope}|backoff-until", 0) or 0) - time.time())
-            print(f"luma-connect-sync: {error}; retrying in {int(quiet)}s", file=sys.stderr)
+            print(f"Suno-connect-sync: {error}; retrying in {int(quiet)}s", file=sys.stderr)
             delay = 5.0 if sleep(quiet) else min(delay * 2, 300.0)
         except ConnectError as error:
-            print(f"luma-connect-sync: {error}; retrying in {int(delay)}s", file=sys.stderr)
+            print(f"Suno-connect-sync: {error}; retrying in {int(delay)}s", file=sys.stderr)
             delay = 5.0 if sleep(delay) else min(delay * 2, 300.0)
     return 0
 
@@ -1180,7 +1180,7 @@ def profile_changes(*, name: str | None = None, reset_name: bool = False, email:
 def _profile_call(method: str, *, changes: dict | None, environment: dict[str, str] | None, http) -> dict:
     identity = load_identity(environment)
     if identity is None:
-        raise ConnectError("This device is not signed in to Luma Connect.")
+        raise ConnectError("This device is not signed in to Suno Connect.")
     http = http or HubClient()
     address = hub_url(identity.hub)
     url = f"{address}/api/hub/sync/profile"
@@ -1222,7 +1222,7 @@ def set_service(service: str, on: bool, *, environment: dict[str, str] | None = 
         raise ConnectError(f"Unknown service {service!r}. Choose one of: {', '.join(SERVICE_IDS)}.")
     identity = load_identity(environment)
     if identity is None:
-        raise ConnectError("This device is not signed in to Luma Connect.")
+        raise ConnectError("This device is not signed in to Suno Connect.")
     http = http or HubClient()
     address = hub_url(identity.hub)
     scope = f"{address}|{identity.device_id}"
@@ -1247,7 +1247,7 @@ def set_service(service: str, on: bool, *, environment: dict[str, str] | None = 
             _save_state(state, environment)
             if service in ("messages", "calls"):
                 # Only the local cache of other devices' history goes; nothing
-                # in Luma Cloud or in this device's own Messages/Phone stores.
+                # in Suno Cloud or in this device's own Messages/Phone stores.
                 from .connect_messages import forget_cloud_history
                 forget_cloud_history(service, environment)
         enabled[service] = on
@@ -1260,12 +1260,12 @@ def set_service(service: str, on: bool, *, environment: dict[str, str] | None = 
 
 
 def sign_out(*, device_id: str = "", environment: dict[str, str] | None = None, http=None, out=None) -> str:
-    """Sign a device out of Luma Connect. For this device, keep every local file."""
+    """Sign a device out of Suno Connect. For this device, keep every local file."""
     from .connect_services import disconnect_calendar, stop_units
     stream = sys.stdout if out is None else out
     identity = load_identity(environment)
     if identity is None:
-        raise ConnectError("This device is not signed in to Luma Connect.")
+        raise ConnectError("This device is not signed in to Suno Connect.")
     http = http or HubClient()
     address = hub_url(identity.hub)
     target = device_id or identity.device_id
@@ -1299,8 +1299,8 @@ def sign_out(*, device_id: str = "", environment: dict[str, str] | None = None, 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="luma-connect-sync",
-        description="Push this device's Contacts and Notes to a Luma Connect Hub.",
+        prog="Suno-connect-sync",
+        description="Push this device's Contacts and Notes to a Suno Connect Hub.",
     )
     commands = parser.add_subparsers(dest="command", required=True)
     enrolment = commands.add_parser("enrol", help="register this device with a hub, once")
@@ -1320,7 +1320,7 @@ def build_parser() -> argparse.ArgumentParser:
     switching.add_argument("name", help="calendar, notes, contacts, photos, world-clocks, weather-places, tide-sources, messages or calls")
     switching.add_argument("state", choices=("on", "off"))
     commands.add_parser("invite", help="print a one-time code that connects another device to this account")
-    profiling = commands.add_parser("profile", help="your Luma account's name, email and phone number")
+    profiling = commands.add_parser("profile", help="your Suno account's name, email and phone number")
     profiling.add_argument("--json", action="store_true", help="machine-readable output")
     profile_commands = profiling.add_subparsers(dest="profile_command")
     changing = profile_commands.add_parser("set", help="change your name, email, phone number or phone discoverability")
@@ -1338,7 +1338,7 @@ def build_parser() -> argparse.ArgumentParser:
     changing.add_argument("--stdin", action="store_true",
                           help="read the changes as a JSON object from standard input, keeping them out of the process list")
     changing.add_argument("--json", action="store_true", dest="set_json", help="machine-readable output")
-    leaving = commands.add_parser("sign-out", help="sign this device (or another) out of Luma Connect")
+    leaving = commands.add_parser("sign-out", help="sign this device (or another) out of Suno Connect")
     leaving.add_argument("--device", default="", help="another device's id; default is this device")
     pushing.add_argument("--force", action="store_true",
                          help="send every snapshot even if it has not changed")
@@ -1378,7 +1378,7 @@ def main(argv: list[str] | None = None) -> int:
         if arguments.command == "invite":
             identity = load_identity()
             if identity is None:
-                raise ConnectError("This device is not signed in to Luma Connect.")
+                raise ConnectError("This device is not signed in to Suno Connect.")
             address = hub_url(identity.hub)
             try:
                 reply = HubClient().post_json(f"{address}/api/hub/sync/invite", {}, token=identity.token)
@@ -1387,7 +1387,7 @@ def main(argv: list[str] | None = None) -> int:
                     raise _reauthorise(address) from None
                 raise ConnectError(f"The hub could not issue a code: {error}") from None
             print(f"{reply['code']}  (single use, expires in 10 minutes)")
-            print(f"On the other device: luma-connect-sync enrol --hub {address} --code {reply['code']}")
+            print(f"On the other device: Suno-connect-sync enrol --hub {address} --code {reply['code']}")
             return 0
         if arguments.command == "profile":
             if arguments.profile_command == "set":
@@ -1410,10 +1410,10 @@ def main(argv: list[str] | None = None) -> int:
         return push(hub=arguments.hub, dry_run=arguments.dry_run, force=arguments.force,
                     settle=max(0.0, arguments.settle))
     except AuthorisationError as error:
-        print(f"luma-connect-sync: {error}", file=sys.stderr)
+        print(f"Suno-connect-sync: {error}", file=sys.stderr)
         return EXIT_REENROL
     except ConnectError as error:
-        print(f"luma-connect-sync: {error}", file=sys.stderr)
+        print(f"Suno-connect-sync: {error}", file=sys.stderr)
         return EXIT_RETRY
     except KeyboardInterrupt:
         return 130

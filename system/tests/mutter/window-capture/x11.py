@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
 """An Xwayland window for the window-capture test: one solid colour, hidden
-from capture through the _LUMA_WINDOW_HIDDEN_FROM_CAPTURE property, the X11
-counterpart of luma_window_capture_v1.
+from capture through the _SUNO_WINDOW_HIDDEN_FROM_CAPTURE property, the X11
+counterpart of Suno_window_capture_v1.
 
   x11.py TITLE RRGGBB
 """
@@ -45,7 +45,7 @@ xlib.XOpenDisplay.argtypes = [ctypes.c_char_p]
 # A connection of its own: any client may set a property on any window.
 xdisplay = xlib.XOpenDisplay(None)
 xid = GdkX11.X11Window.get_xid(window.get_window())
-atom = xlib.XInternAtom(xdisplay, b"_LUMA_WINDOW_HIDDEN_FROM_CAPTURE", 0)
+atom = xlib.XInternAtom(xdisplay, b"_SUNO_WINDOW_HIDDEN_FROM_CAPTURE", 0)
 value = (ctypes.c_long * 1)(1)
 xlib.XChangeProperty(xdisplay, xid, atom, 6, 32, 0, value, 1)  # XA_CARDINAL, PropModeReplace
 xlib.XFlush(xdisplay)

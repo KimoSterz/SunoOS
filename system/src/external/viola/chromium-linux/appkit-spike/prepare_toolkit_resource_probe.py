@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-only
-"""Prepare private GTK/libadwaita resources from existing Luma menu source.
+"""Prepare private GTK/libadwaita resources from existing Suno menu source.
 
 This diagnoses missing compiled menu styles. It does not install a stylesheet
 provider into an app or modify system packages. The native theme resource is
@@ -34,7 +34,7 @@ def main():
         expected = provenance.get('compiled', {}).get('menu-' + mode + '.css')
         if expected != hashlib.sha256(content.encode()).hexdigest():
             raise ValueError('Native menu artifact does not match its compiler provenance')
-        if '.luma-menu-keycap' not in content or '.luma-menu-submenu-heading' not in content:
+        if '.Suno-menu-keycap' not in content or '.Suno-menu-submenu-heading' not in content:
             raise ValueError('Compiled native menu contract is incomplete')
     report = {'classification': 'private native toolkit resource candidate; not system deployment',
               'appearance': args.appearance,
@@ -45,14 +45,14 @@ def main():
                  'gtk/Default-dark.css': '/org/gtk/libgtk/theme/Default/Default-dark.css'}
     for relative, resource in resources.items():
         baseline = Gio.resources_lookup_data(resource, 0).get_data().decode()
-        if '.luma-menu-keycap' in baseline:
+        if '.Suno-menu-keycap' in baseline:
             raise RuntimeError('Installed toolkit already contains menu keycaps: ' + resource)
         # This bounded visual candidate has an explicit appearance. GLib
         # named-color declarations are global; nesting them in a media rule
         # does not provide an independently scoped dark token table.
         addition = (menus[args.appearance] if relative.startswith('adw/')
                     else menus['dark' if '-dark' in relative else 'light'])
-        content = baseline + '\n/* Existing Luma native menu resource candidate. */\n' + addition
+        content = baseline + '\n/* Existing Suno native menu resource candidate. */\n' + addition
         output = args.output / relative
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text(content)

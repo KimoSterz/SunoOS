@@ -1,6 +1,6 @@
 {
   "_doc": "v71 phone apps (K-ROWS, kit requests camera-03 and phone-13): the camera's capture yellow (oklch .88 .15 90, always on the dark media palette); the call green on every phone in both modes (.pnbig.voice oklch .63 .17 150 with its .7 glow, the quick call .62 .16 150); a fully round radius; the video call panel's 30.",
-  "lumaui": {
+  "SunoUI": {
     "radius": {
       "round": 999
     },

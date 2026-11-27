@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[2]
 
 class OriginGraphsTests(unittest.TestCase):
     def exercise(self, tamper=False, repo=False, profile=None):
-        with tempfile.TemporaryDirectory(prefix='luma-origin-graphs-') as folder:
+        with tempfile.TemporaryDirectory(prefix='Suno-origin-graphs-') as folder:
             work = Path(folder)
             generation = work / 'generation'
             paths = ['nightly.json', 'nightly.json.minisig',
@@ -42,7 +42,7 @@ class OriginGraphsTests(unittest.TestCase):
             transport = bin_dir / 'rsync'
             transport.write_text('#!/usr/bin/env python3\nimport json, os, sys, time\nwith open(os.environ["RSYNC_CALLS"], "a") as f: f.write(json.dumps(sys.argv[1:]) + "\\n")\n'
                                  # The origin space report (sync-origin.sh origin_space_check): plenty of room.
-                                 'if sys.argv[-2].endswith(":.luma-origin/space"): open(sys.argv[-1], "w").write("%d %d %d\\n" % (2**40, 2**41, time.time()))\n')
+                                 'if sys.argv[-2].endswith(":.Suno-origin/space"): open(sys.argv[-1], "w").write("%d %d %d\\n" % (2**40, 2**41, time.time()))\n')
             transport.chmod(0o755)
             requests = []
             class Handler(SimpleHTTPRequestHandler):
@@ -72,7 +72,7 @@ class OriginGraphsTests(unittest.TestCase):
             self.assertEqual(set(requests), {'/os/repo/summary'} if repo else {'/os/graph/' + path for path in paths})
             # Uploads only: the free-space dry run and the space report fetch are not uploads.
             result.transport_calls = [call for call in map(json.loads, (work / 'calls.jsonl').read_text().splitlines())
-                                      if '--dry-run' not in call and not call[-2].endswith(':.luma-origin/space')]
+                                      if '--dry-run' not in call and not call[-2].endswith(':.Suno-origin/space')]
             return result
 
     def test_verifies_legacy_architecture_and_device_graphs(self):

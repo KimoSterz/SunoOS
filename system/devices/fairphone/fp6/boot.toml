@@ -37,7 +37,7 @@ rollback_index = 1783209600
 vbmeta = "untouched"
 
 [dtbo]
-# Luma ships its own complete DTB in the boot image. Stock overlays written
+# Suno ships its own complete DTB in the boot image. Stock overlays written
 # for Android must not apply to it, so both dtbo slots are flashed blank.
 policy = "blank"
 size = 31457280

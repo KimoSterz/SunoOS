@@ -1,0 +1,15 @@
+Suno for Raspberry Pi 5 (installer: @ISO_NAME@)
+
+This card starts the Suno installer, and after installing, the Suno installed
+on NVMe or USB. Keep it in the Pi.
+
+Partition 1 (SUNO_PI5, this one): config.txt, U-Boot, device trees, GRUB and
+the installer kernel. Partition 2: the unmodified Suno installer ISO.
+
+The installer on this card may be older than the current Suno release.
+Install, then update from Settings; the installed system updates itself.
+
+Choose a different menu entry for the next boot from a running Suno:
+  sudo Suno-rpi5-boot-next install     (reinstall)
+  sudo Suno-rpi5-boot-next rescue
+The GRUB menu on HDMI cannot be driven with a USB keyboard.

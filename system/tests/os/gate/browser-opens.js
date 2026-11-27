@@ -63,10 +63,10 @@ async function launch(url, requirePage) {
     // A real graphical user session owns this target. The isolated QA Shell
     // needs an explicit session lifetime so installed portal services can start.
     const session=await capture(launcher.spawnv(['/usr/bin/systemd-run','--user','--quiet',
-        '--unit=luma-gate-browser-graphical-session','--service-type=exec',
+        '--unit=Suno-gate-browser-graphical-session','--service-type=exec',
         '--property=BindsTo=graphical-session.target','--property=After=graphical-session.target',
         '/usr/bin/sleep','infinity']));
-    if (!session.ok && !await capture(launcher.spawnv(['/usr/bin/systemctl','--user','is-active','--quiet','luma-gate-browser-graphical-session.service'])).then(r=>r.ok))
+    if (!session.ok && !await capture(launcher.spawnv(['/usr/bin/systemctl','--user','is-active','--quiet','Suno-gate-browser-graphical-session.service'])).then(r=>r.ok))
         throw new Error(`graphical QA session did not start: ${session.stderr}`);
     const target=await capture(launcher.spawnv(['/usr/bin/systemctl','--user','is-active','graphical-session.target']));
     if (!target.ok || target.stdout.trim() !== 'active') throw new Error('QA graphical-session target is not active');

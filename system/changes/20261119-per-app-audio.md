@@ -1,7 +1,7 @@
 ---
 type: feature
 component: Sound
-packages: [luma-audio-policy]
+packages: [Suno-audio-policy]
 highlight: true
 ---
 Summary: Added per-app volume, output and level meters

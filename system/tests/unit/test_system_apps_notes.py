@@ -27,8 +27,8 @@ class PullRequestNotes(unittest.TestCase):
         self._dir = tempfile.TemporaryDirectory()
         self.repo = pathlib.Path(self._dir.name)
         self.write('config/desktop/system-apps.txt', 'viola-browser-stable  Viola  /nonexistent\n')
-        self.write('config/desktop/packages.txt', f'# pins\nluma-tide-0.1.0-2.luma.39.fc44.x86_64\n{OLD}\n')
-        self.write('config/desktop/inputs.env', f'LUMA_VIOLA_NEVRA={OLD}\n')
+        self.write('config/desktop/packages.txt', f'# pins\nSuno-tide-0.1.0-2.Suno.39.fc44.x86_64\n{OLD}\n')
+        self.write('config/desktop/inputs.env', f'SUNO_VIOLA_NEVRA={OLD}\n')
         self.write('packaging/rpm/viola-browser-stable.spec', SPEC.format(native=40))
         self.write('changes/README.md', 'fragments\n')
         self.git('init', '-q')
@@ -100,7 +100,7 @@ class PullRequestNotes(unittest.TestCase):
 
     def test_other_changes_pass(self):
         self.write('config/desktop/packages.txt',
-                   (self.repo / 'config/desktop/packages.txt').read_text().replace('2.luma.39', '2.luma.40'))
+                   (self.repo / 'config/desktop/packages.txt').read_text().replace('2.Suno.39', '2.Suno.40'))
         self.write('packaging/rpm/viola-browser-stable.spec',
                    SPEC.format(native=40).replace('Viola.\n', 'The Viola browser.\n'))
         self.commit('unrelated')

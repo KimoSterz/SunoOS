@@ -5,7 +5,7 @@
 
 This is a bring-up bridge for the exact Fedora 44 AArch64 Mutter build shipped
 in the P5 image.  It never edits the system library in place.  The long-term,
-source-level equivalent lives in patches/mutter/0001-luma-handheld-scales.patch.
+source-level equivalent lives in patches/mutter/0001-Suno-handheld-scales.patch.
 """
 
 import argparse

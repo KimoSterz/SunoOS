@@ -1,7 +1,7 @@
 ---
 type: feature
 component: TV Mode
-packages: [luma-developer-platform]
+packages: [Suno-developer-platform]
 highlight: true
 ---
 Summary: TV apps open in about half a second

@@ -1,3 +1,0 @@
-[D-BUS Service]
-Name=org.projectluma.Update
-Exec=/usr/libexec/luma-update-notifier --gapplication-service

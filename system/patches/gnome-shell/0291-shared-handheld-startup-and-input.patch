@@ -1,11 +1,11 @@
-From: Luma Developers
+From: Suno Developers
 Subject: [PATCH] Start shared Home on handhelds and follow physical input capabilities
 
 --- a/js/ui/main.js
 +++ b/js/ui/main.js
 @@ -56,10 +56,6 @@
  import * as Util from '../misc/util.js';
- import * as LumaSurfaceMaterials from './lumaSurfaceMaterials.js';
+ import * as SunoSurfaceMaterials from './SunoSurfaceMaterials.js';
  
 -const WELCOME_DIALOG_LAST_SHOWN_VERSION = 'welcome-dialog-last-shown-version';
 -// Make sure to mention the point release, otherwise it will show every time
@@ -19,7 +19,7 @@ Subject: [PATCH] Start shared Home on handhelds and follow physical input capabi
      // during start-up, GDM gave up, and a machine without an account never
      // reached a login screen.
 -    if (!sessionMode.isGreeter && sessionMode.hasOverview &&
--        GLib.getenv('LUMA_DEVICE_CLASS') !== 'handheld') {
+-        GLib.getenv('SUNO_DEVICE_CLASS') !== 'handheld') {
 +    if (!sessionMode.isGreeter && sessionMode.hasOverview) {
          // Guarded for the same reason as the note stack below: a Shelf that
          // cannot be built is a missing dock, never a missing session.
@@ -33,7 +33,7 @@ Subject: [PATCH] Start shared Home on handhelds and follow physical input capabi
 -        openWelcomeDialog();
 -        global.settings.set_string(WELCOME_DIALOG_LAST_SHOWN_VERSION, Config.PACKAGE_VERSION);
 -    }
-+    // Luma first-user setup owns onboarding; the upstream tour must not
++    // Suno first-user setup owns onboarding; the upstream tour must not
 +    // cover the shared Home when an existing account changes compositor.
  }
  

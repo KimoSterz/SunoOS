@@ -12,11 +12,11 @@ index 6262520..478c250 100644
 --- a/src/resources/style.css
 +++ b/src/resources/style.css
 @@ -44,6 +44,7 @@
-   background-color: @luma_content;
+   background-color: @Suno_content;
  }
- .luma-files-window #filer-location-scope image { -gtk-icon-size: 0px; }
-+.luma-files-window box.lumaui-bar-chip { min-width: 243px; }
- .luma-files-window row.luma-live-rail-row { padding-left: 3px; padding-right: 3px; }
+ .Suno-files-window #filer-location-scope image { -gtk-icon-size: 0px; }
++.Suno-files-window box.SunoUI-bar-chip { min-width: 243px; }
+ .Suno-files-window row.Suno-live-rail-row { padding-left: 3px; padding-right: 3px; }
  
  /* Filer uses a deliberate two-row native title composition. */
 -- 

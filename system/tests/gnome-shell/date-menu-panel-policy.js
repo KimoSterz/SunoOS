@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 // The date menu's calendar panel: the events list shows what is coming up
 // (at most four rows, then "N more"), or the chosen day; choosing that day
-// again goes back to today; rows open the event in Luma Calendar. The month on
+// again goes back to today; rows open the event in Suno Calendar. The month on
 // show pages without choosing a day, and the calendar server sends each
 // event's place and colour.
 // Run: gjs -m date-menu-panel-policy.js js/ui/dateMenu.js js/ui/calendar.js \
@@ -41,8 +41,8 @@ assert(/style_class: 'event-box',\s*can_focus: true/.test(events),
 assert(/accessible_name: \[event\.summary, time, event\.location\]/.test(events),
     'a row says its title, time and place');
 assert(/lookup_app\(CALENDAR_APP_ID\)/.test(events) &&
-    /const CALENDAR_APP_ID = 'org\.projectluma\.Calendar\.desktop';/.test(menu),
-    'Calendar is Luma Calendar');
+    /const CALENDAR_APP_ID = 'org\.projectSuno\.Calendar\.desktop';/.test(menu),
+    'Calendar is Suno Calendar');
 assert(/this\.emit\('activated'\)/.test(events) &&
     /_eventsItem\.connect\('activated', \(\) => this\.menu\.close\(\)\)/.test(menu),
     'opening Calendar closes the menu');

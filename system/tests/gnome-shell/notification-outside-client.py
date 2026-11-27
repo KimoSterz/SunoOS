@@ -14,7 +14,7 @@ clicks = 0
 def clicked(button):
     global clicks
     clicks += 1
-    Path(os.environ['LUMA_NOTIFICATION_CLIENT_CLICKS']).write_text(str(clicks))
+    Path(os.environ['SUNO_NOTIFICATION_CLIENT_CLICKS']).write_text(str(clicks))
 
 def activate(application):
     window = Gtk.ApplicationWindow(application=application, title='Notification outside-click probe')

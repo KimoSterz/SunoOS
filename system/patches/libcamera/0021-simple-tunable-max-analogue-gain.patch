@@ -1,4 +1,4 @@
-From: Project Luma <project-luma@local>
+From: Project Suno <project-suno@local>
 Subject: [PATCH] simple: ipa: allow tuning to cap analogue gain
 
 Sensor control ranges describe electrical capability, not necessarily a useful

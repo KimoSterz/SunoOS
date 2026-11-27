@@ -1,5 +1,5 @@
 // The packaged Beam ranking module, run by gjs (the Shell's engine).
-// gjs -m tests/search/ranking-gjs.js lumaSearchRanking.js ranking-vectors.json
+// gjs -m tests/search/ranking-gjs.js SunoSearchRanking.js ranking-vectors.json
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import System from 'system';

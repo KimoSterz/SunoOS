@@ -21,8 +21,8 @@
 
 &{/firmware/scm} {
 	qseecom-tee-heaps {
-		compatible = "luma,qseecom-tee-heaps";
-		luma,dedicated-heaps;
+		compatible = "Suno,qseecom-tee-heaps";
+		Suno,dedicated-heaps;
 		memory-region = <&qseecom_ta_pool>, <&qseecom_apps_pool>;
 		memory-region-names = "ta", "apps";
 	};

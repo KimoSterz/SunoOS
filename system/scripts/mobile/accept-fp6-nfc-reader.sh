@@ -15,7 +15,7 @@ esac
 expected_model='The Fairphone (Gen. 6)'
 expected_kernel=7.1.2
 expected_i2c_hash=df905d9ad4240b708a11c029af98344fa7d7ea23284ef0eb21f1655c6e67746a
-module=/lib/modules/7.1.2/updates/luma-fp6-nfc/modules/s3fwrn5_i2c.ko
+module=/lib/modules/7.1.2/updates/Suno-fp6-nfc/modules/s3fwrn5_i2c.ko
 
 [ "$(id -u)" -eq 0 ] || {
   printf 'error: run as root on the FP6\n' >&2
@@ -57,7 +57,7 @@ cleanup() {
 }
 trap cleanup EXIT INT TERM
 
-printf 'LUMA_FP6_NFC_READER_ACCEPTANCE_VERSION=1\n'
+printf 'SUNO_FP6_NFC_READER_ACCEPTANCE_VERSION=1\n'
 printf 'BOOT_ID=%s\n' "$(cat /proc/sys/kernel/random/boot_id)"
 printf 'POLL_MODE=initiator-read-only\n'
 printf 'IDENTIFIERS_EXPOSED=false\n'

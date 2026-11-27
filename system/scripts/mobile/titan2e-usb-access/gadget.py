@@ -11,8 +11,8 @@ from pathlib import Path
 import subprocess
 import time
 
-NAME = "luma-titan-admin"
-SERIAL = "luma-titan2e-project-titan"
+NAME = "Suno-titan-admin"
+SERIAL = "Suno-titan2e-project-titan"
 DEVICE_MAC = "02:54:49:54:41:01"
 HOST_MAC = "02:54:49:54:41:02"
 IFNAME_TEMPLATE = "titanusb%d"
@@ -97,7 +97,7 @@ def start():
             put(gadget / name, value)
         strings = gadget / "strings/0x409"
         strings.mkdir()
-        for name, value in (("manufacturer", "Luma"), ("product", "Titan USB administration"),
+        for name, value in (("manufacturer", "Suno"), ("product", "Titan USB administration"),
                             ("serialnumber", SERIAL)):
             put(strings / name, value)
         config = gadget / "configs/c.1"

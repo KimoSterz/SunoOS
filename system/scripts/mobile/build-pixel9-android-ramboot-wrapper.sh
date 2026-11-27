@@ -127,7 +127,7 @@ cmp -s "$uboot" "$roundtrip/kernel" || die 'round-tripped U-Boot bytes differ'
 cmp -s "$fit" "$roundtrip/ramdisk" || die 'round-tripped FIT bytes differ'
 
 {
-  printf 'LUMA_PIXEL9_ANDROID_RAMBOOT_WRAPPER_VERSION=1\n'
+  printf 'SUNO_PIXEL9_ANDROID_RAMBOOT_WRAPPER_VERSION=1\n'
   printf 'SCOPE=offline-v4-downloaded-boot-wrapper\n'
   printf 'OBSERVED_BUILD_ID=%s\n' "$PIXEL9_OBSERVED_BUILD_ID"
   printf 'FACTORY_SHA256=%s\n' "$PIXEL9_FACTORY_IMAGE_SHA256"

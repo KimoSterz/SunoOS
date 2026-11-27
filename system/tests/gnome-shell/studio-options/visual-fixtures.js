@@ -8,7 +8,7 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as MessageTray from 'resource:///org/gnome/shell/ui/messageTray.js';
 import * as Quick from 'resource:///org/gnome/shell/ui/quickSettings.js';
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
-import {getNotificationTray} from 'resource:///org/gnome/shell/ui/lumaNotificationBeacon.js';
+import {getNotificationTray} from 'resource:///org/gnome/shell/ui/SunoNotificationBeacon.js';
 export function reset() {
     delete getNotificationTray()._engaged;
     Main.panel.statusArea.quickSettings.menu.close(); getNotificationTray().close();
@@ -17,12 +17,12 @@ export function reset() {
 export function notify(kind = 'reply', quiet = false) {
     const app = kind === 'actions' ? 'Depot' : kind === 'call' ? 'Phone' : 'Messages';
     const appId = kind === 'actions' ? 'app-store' : kind === 'call' ? 'phone' : 'messages';
-    const source = new MessageTray.Source({title: app, icon: new Gio.FileIcon({file: Gio.File.new_for_path(`/var/home/nick/Documents/LumaDesign/studio/icons/luma-v3-${appId}.svg`)})});
+    const source = new MessageTray.Source({title: app, icon: new Gio.FileIcon({file: Gio.File.new_for_path(`/var/home/nick/Documents/SunoDesign/studio/icons/Suno-v3-${appId}.svg`)})});
     Main.messageTray.add(source);
     const n = new MessageTray.Notification({source, title: kind === 'actions' ? 'Updates are ready' : 'Priya Raman',
         body: kind === 'actions' ? 'Viola and 3 other apps can update tonight.' : kind === 'call' ? 'Incoming voice call' : 'Pushed the new shelf build. Want to try it before dinner?',
         urgency: kind === 'call' ? MessageTray.Urgency.CRITICAL : MessageTray.Urgency.NORMAL,
-        gicon: kind === 'actions' ? null : new Gio.FileIcon({file: Gio.File.new_for_path('/var/home/nick/Documents/.luma-dev/notifications-quick-options/fixtures/priya.png')})});
+        gicon: kind === 'actions' ? null : new Gio.FileIcon({file: Gio.File.new_for_path('/var/home/nick/Documents/.Suno-dev/notifications-quick-options/fixtures/priya.png')})});
     if (kind === 'reply') n.inlineReply = {send: async () => ['fixture-only', 'sent']};
     if (kind === 'call' || kind === 'actions') for (const [label, id] of (kind === 'call' ? [['Accept', 'accept'], ['Decline', 'decline']] : [['Update', 'update'], ['Later', 'later']])) {
         const action = n.addAction(label, () => {}); action.id = id;
@@ -40,7 +40,7 @@ export function pill(big = false) {
 export function tray(empty = false) { if (!empty) pill(); getNotificationTray().open(); }
 function sampleMenu(menu, rows) {
     menu.box.get_children().forEach(c => c.hide());
-    const box = new St.BoxLayout({orientation: Clutter.Orientation.VERTICAL, style_class: 'luma-options-fixture-groups'});
+    const box = new St.BoxLayout({orientation: Clutter.Orientation.VERTICAL, style_class: 'Suno-options-fixture-groups'});
     menu.box.add_child(box);
     let section;
     for (const row of rows) {
@@ -49,17 +49,17 @@ function sampleMenu(menu, rows) {
         if (title === '#link') { menu.addSettingsAction(state, icon); continue; }
         if (title === '#nearby') {
             section = null;
-            const heading = new PopupMenu.PopupBaseMenuItem({reactive: false, style_class: 'luma-options-nearby'});
+            const heading = new PopupMenu.PopupBaseMenuItem({reactive: false, style_class: 'Suno-options-nearby'});
             heading.add_child(new St.Label({text: 'Nearby', x_expand: true}));
-            heading.add_child(new St.Label({text: state ?? 'Looking', style_class: 'luma-options-fixture-looking'}));
+            heading.add_child(new St.Label({text: state ?? 'Looking', style_class: 'Suno-options-fixture-looking'}));
             box.add_child(heading); continue;
         }
         if (title === '#empty') {
-            const empty = new PopupMenu.PopupMenuItem(state, {reactive: false, style_class: 'luma-options-off'});
+            const empty = new PopupMenu.PopupMenuItem(state, {reactive: false, style_class: 'Suno-options-off'});
             empty.label.clutter_text.line_wrap = true; box.add_child(empty); continue;
         }
         if (!section) {
-            section = new PopupMenu.PopupMenuSection(); section.actor.add_style_class_name('luma-options-list');
+            section = new PopupMenu.PopupMenuSection(); section.actor.add_style_class_name('Suno-options-list');
             box.add_child(section.actor);
         }
         if (title === '#switch') {
@@ -75,24 +75,24 @@ let configured = false;
 export function controls() {
     const q = Main.panel.statusArea.quickSettings, menu = q.menu;
     if (!configured) {
-        const radios = menu._mainPage.get_children().find(c => c.has_style_class_name('luma-options-radios'));
+        const radios = menu._mainPage.get_children().find(c => c.has_style_class_name('Suno-options-radios'));
         if (!q._network?._wirelessToggle) {
-            const wifi = new Quick.QuickMenuToggle({title: 'Wi-Fi', subtitle: 'Studio North', iconName: 'luma-wifi-symbolic', toggleMode: true});
+            const wifi = new Quick.QuickMenuToggle({title: 'Wi-Fi', subtitle: 'Studio North', iconName: 'Suno-wifi-symbolic', toggleMode: true});
             menu.addItem(wifi); wifi.get_parent().remove_child(wifi); radios.insert_child_at_index(wifi, 0);
-            wifi.add_style_class_name('luma-options-radio');wifi.x_expand = true;wifi.checked = true;
+            wifi.add_style_class_name('Suno-options-radio');wifi.x_expand = true;wifi.checked = true;
             wifi.menu._studioTitle = 'Wi-Fi';wifi.menu._studioRadio = wifi;
-            wifi._menuButton.child.child.icon_name = 'luma-chevron-right-symbolic';
+            wifi._menuButton.child.child.icon_name = 'Suno-chevron-right-symbolic';
             q._fixtureWifi = wifi;
         } else q._fixtureWifi = q._network._wirelessToggle;
-        q._fixtureWifi.title = 'Wi-Fi'; q._fixtureWifi.visible = true; q._fixtureWifi.checked = true; q._fixtureWifi.subtitle = 'Studio North'; q._fixtureWifi.iconName = 'luma-wifi-symbolic';
-        const bt = q._bluetooth.quickSettingsItems[0]; bt.visible = true; bt.checked = true; bt.subtitle = '2 devices'; bt.iconName = 'luma-bluetooth-symbolic';
+        q._fixtureWifi.title = 'Wi-Fi'; q._fixtureWifi.visible = true; q._fixtureWifi.checked = true; q._fixtureWifi.subtitle = 'Studio North'; q._fixtureWifi.iconName = 'Suno-wifi-symbolic';
+        const bt = q._bluetooth.quickSettingsItems[0]; bt.visible = true; bt.checked = true; bt.subtitle = '2 devices'; bt.iconName = 'Suno-bluetooth-symbolic';
         for (const i of [q._nightLight, q._powerProfiles]) i.quickSettingsItems[0].visible = true;
         q._nightLight.quickSettingsItems[0].checked = true;
-        q._powerProfiles.quickSettingsItems[0].iconName = 'luma-leaf-symbolic';
+        q._powerProfiles.quickSettingsItems[0].iconName = 'Suno-leaf-symbolic';
         q._powerProfiles.quickSettingsItems[0].checked = false;
-        q._darkMode.quickSettingsItems[0].checked = !menu.box.has_style_class_name('luma-surface-light');
+        q._darkMode.quickSettingsItems[0].checked = !menu.box.has_style_class_name('Suno-surface-light');
         const output = q._volumeOutput.quickSettingsItems[0], brightness = q._brightness.quickSettingsItems[0];
-        output.visible = true; output.menuEnabled = true; output._menuButton.child.child.icon_name = 'luma-headphones-symbolic'; output.iconName = 'luma-volume-2-symbolic'; output.slider.value = .62; output._valueLabel.text = '62%';
+        output.visible = true; output.menuEnabled = true; output._menuButton.child.child.icon_name = 'Suno-headphones-symbolic'; output.iconName = 'Suno-volume-2-symbolic'; output.slider.value = .62; output._valueLabel.text = '62%';
         brightness._menuSlot.child.checked = true;
         brightness.visible = true; brightness.slider.value = .72; brightness._valueLabel.text = '72%';
         const footer = q._system.quickSettingsItems[0];
@@ -100,17 +100,17 @@ export function controls() {
         footer._identitySlot.child.child.get_last_child().clutter_text.set_markup('<span weight="650">74%</span><span alpha="40632"> · 5 h 40 min left</span>');
         footer._shutdownItem._items.push({visible: true});
         footer._shutdownItem.visible = true;
-        const lock = new St.Button({can_focus: true, style_class: 'luma-quick-action', child: new St.Icon({icon_name: 'luma-lock-symbolic', icon_size: 16})});
+        const lock = new St.Button({can_focus: true, style_class: 'Suno-quick-action', child: new St.Icon({icon_name: 'Suno-lock-symbolic', icon_size: 16})});
         footer._actions.insert_child_at_index(lock, 1);
         q._fixtureWifi.menu._fixtureRows = sampleMenu(q._fixtureWifi.menu, [
-            ['Studio North', 'Connected', 'luma-wifi-symbolic', true], ["Nick’s Phone", 'Hotspot', 'luma-wifi-symbolic'], ['Studio Guest', 'Secured', 'luma-wifi-symbolic'], null,
-            ['#switch', 'Airplane mode', 'lumaui-plane-symbolic'], ['#switch', 'Hotspot', 'lumaui-hotspot-symbolic', 'Share this connection'],
+            ['Studio North', 'Connected', 'Suno-wifi-symbolic', true], ["Nick’s Phone", 'Hotspot', 'Suno-wifi-symbolic'], ['Studio Guest', 'Secured', 'Suno-wifi-symbolic'], null,
+            ['#switch', 'Airplane mode', 'SunoUI-plane-symbolic'], ['#switch', 'Hotspot', 'SunoUI-hotspot-symbolic', 'Share this connection'],
             ['#link', 'Wi-Fi settings', 'gnome-wifi-panel.desktop']]);
-        bt.menu._fixtureRows = sampleMenu(bt.menu, [['Fable Buds', 'Playing sound · 82%', 'luma-headphones-symbolic'],
-            ['Studio Keys', 'Connected · 64%', 'lumaui-keyboard-symbolic'], ['Arc Mouse', 'Not connected', 'lumaui-mouse-symbolic'],
-            ['#nearby', 'Looking'], ['Nova Keyboard', 'Tap to pair', 'lumaui-keyboard-symbolic'], ['#link', 'Bluetooth settings', 'gnome-bluetooth-panel.desktop']]);
-        output.menu._fixtureRows = sampleMenu(output.menu, [['Fable Buds', 'Bluetooth', 'luma-headphones-symbolic', true], ['Speakers', 'Built in', 'luma-speaker-symbolic'], ['Studio Display', 'HDMI', 'luma-monitor-symbolic'], ['#link', 'Sound settings', 'gnome-sound-panel.desktop']]);
-        footer.menu._fixtureRows = sampleMenu(footer.menu, [['Sleep', '', 'lumaui-moon-symbolic'], ['Restart…', '', 'lumaui-rotate-cw-symbolic'], ['Power off…', '', 'lumaui-power-symbolic'], ['Sign out…', '', 'lumaui-log-out-symbolic'], ['#link', 'Power settings', 'gnome-power-panel.desktop']]);
+        bt.menu._fixtureRows = sampleMenu(bt.menu, [['Fable Buds', 'Playing sound · 82%', 'Suno-headphones-symbolic'],
+            ['Studio Keys', 'Connected · 64%', 'SunoUI-keyboard-symbolic'], ['Arc Mouse', 'Not connected', 'SunoUI-mouse-symbolic'],
+            ['#nearby', 'Looking'], ['Nova Keyboard', 'Tap to pair', 'SunoUI-keyboard-symbolic'], ['#link', 'Bluetooth settings', 'gnome-bluetooth-panel.desktop']]);
+        output.menu._fixtureRows = sampleMenu(output.menu, [['Fable Buds', 'Bluetooth', 'Suno-headphones-symbolic', true], ['Speakers', 'Built in', 'Suno-speaker-symbolic'], ['Studio Display', 'HDMI', 'Suno-monitor-symbolic'], ['#link', 'Sound settings', 'gnome-sound-panel.desktop']]);
+        footer.menu._fixtureRows = sampleMenu(footer.menu, [['Sleep', '', 'SunoUI-moon-symbolic'], ['Restart…', '', 'SunoUI-rotate-cw-symbolic'], ['Power off…', '', 'SunoUI-power-symbolic'], ['Sign out…', '', 'SunoUI-log-out-symbolic'], ['#link', 'Power settings', 'gnome-power-panel.desktop']]);
         configured = true;
     }
     menu.open();
@@ -135,10 +135,10 @@ export function diagnose(quick = false) {
             font: node?.get_font?.()?.to_string(), text: a.text,
             children: a.get_children().filter(c => c.visible).map(tree)};
     }
-    log(`LUMA_LAYOUT ${JSON.stringify(tree(root))}`);
+    log(`SUNO_LAYOUT ${JSON.stringify(tree(root))}`);
 }
 export function inventoryRecords() {
-    const source = new MessageTray.Source({title: 'Calendar', icon: new Gio.FileIcon({file: Gio.File.new_for_path('/var/home/nick/Documents/LumaDesign/studio/icons/luma-v3-calendar.svg')})});
+    const source = new MessageTray.Source({title: 'Calendar', icon: new Gio.FileIcon({file: Gio.File.new_for_path('/var/home/nick/Documents/SunoDesign/studio/icons/Suno-v3-calendar.svg')})});
     Main.messageTray.add(source);
     const calendar = new MessageTray.Notification({source, title: 'Launch walkthrough', body: 'Today at 7:30 PM · Studio'});
     calendar.addAction('Snooze', () => {}); calendar.acknowledged = true;
@@ -194,7 +194,7 @@ export function wireDismissed() {
 }
 
 function gtkWireSource() {
-    const sources = Main.messageTray.getSources().filter(s => s._appId === 'org.projectluma.ShellWireGTK');
+    const sources = Main.messageTray.getSources().filter(s => s._appId === 'org.projectSuno.ShellWireGTK');
     if (sources.length !== 1) throw Error(`GTK disposable source missing or duplicated: ${sources.length}`);
     return sources[0];
 }

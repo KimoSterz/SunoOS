@@ -54,7 +54,7 @@ def login_step(dialog):
     return page.get_child().get_content().get_child().get_child().get_child().get_name()
 
 
-out = Path(os.environ['LUMA_MESSAGES_CONNECT_UI_OUTPUT']); out.mkdir(parents=True, exist_ok=True)
+out = Path(os.environ['SUNO_MESSAGES_CONNECT_UI_OUTPUT']); out.mkdir(parents=True, exist_ok=True)
 results = []
 app = MessagesApplication(); assert app.register(None)
 for width in (920, 360):
@@ -64,7 +64,7 @@ for width in (920, 360):
         helpers = root / 'libexec'; helpers.mkdir()
         (helpers / 'whatsapp').write_text(f'#!/bin/sh\nexec {sys.executable} {FAKE} "$@"\n'); (helpers / 'whatsapp').chmod(0o755)
         app.accounts, app.helper_directory, app.account_secrets = Accounts(root / 'accounts'), helpers, FakeSecrets()
-        os.environ['LUMA_PRESENTATION_MODE'] = 'fullscreen-mobile' if width == 360 else 'windowed'
+        os.environ['SUNO_PRESENTATION_MODE'] = 'fullscreen-mobile' if width == 360 else 'windowed'
         window = MessagesWindow(app); window.set_default_size(width, 760); window.present(); pump(.3)
         assert [s.label for s in window.services] == ['This device'], window.services
 

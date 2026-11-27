@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 // The TV home's pure rules: opt-in, search, the tile grid, spatial focus, keys.
 import assert from 'node:assert/strict';
-import {tv} from '../../src/luma-shell-presentation/tvTokens.js';
+import {tv} from '../../src/Suno-shell-presentation/tvTokens.js';
 import {edgeColour, nearest, remoteAction, repeatAllowed, searchTvApps, tileGrid, tvApps, tvEntry, tvUnit, weatherGlyph, greetingPart}
-    from '../../src/luma-shell-presentation/tvModel.js';
+    from '../../src/Suno-shell-presentation/tvModel.js';
 
 // One unit is a pixel of 1920x1080, whatever the screen.
 assert.equal(tvUnit(1920, 1080, tv.layout), 1);
@@ -17,16 +17,16 @@ assert.equal(tvUnit(0, 1080, tv.layout), 0);
 assert.deepEqual([tv.layout.safe_x, tv.bar.top, tv.bar.height], [96, 56, 74]);
 assert.ok(/^rgba\(/.test(tv.materials.well));
 
-// Only apps that declare X-Luma-TV=true appear.
+// Only apps that declare X-Suno-TV=true appear.
 const keys = values => key => values[key] ?? null;
 assert.equal(tvEntry('a.desktop', 'A', keys({})), null);
-assert.equal(tvEntry('a.desktop', 'A', keys({'X-Luma-TV': 'false'})), null);
-assert.deepEqual(tvEntry('a.desktop', 'A', keys({'X-Luma-TV': 'true', 'X-Luma-TV-Tile': 'org.a.A-tv'})),
+assert.equal(tvEntry('a.desktop', 'A', keys({'X-Suno-TV': 'false'})), null);
+assert.deepEqual(tvEntry('a.desktop', 'A', keys({'X-Suno-TV': 'true', 'X-Suno-TV-Tile': 'org.a.A-tv'})),
     {id: 'a.desktop', name: 'A', tile: 'org.a.A-tv', presentation: 'fullscreen'});
-assert.equal(tvEntry('a.desktop', 'A', keys({'X-Luma-TV': 'true', 'X-Luma-TV-Tile': '../x'})).tile, '');
-const apps = tvApps([tvEntry('t.desktop', 'Tide', keys({'X-Luma-TV': 'true'})), null,
-    tvEntry('w.desktop', 'Weather', keys({'X-Luma-TV': 'true'})),
-    tvEntry('t.desktop', 'Tide', keys({'X-Luma-TV': 'true'}))]);
+assert.equal(tvEntry('a.desktop', 'A', keys({'X-Suno-TV': 'true', 'X-Suno-TV-Tile': '../x'})).tile, '');
+const apps = tvApps([tvEntry('t.desktop', 'Tide', keys({'X-Suno-TV': 'true'})), null,
+    tvEntry('w.desktop', 'Weather', keys({'X-Suno-TV': 'true'})),
+    tvEntry('t.desktop', 'Tide', keys({'X-Suno-TV': 'true'}))]);
 assert.deepEqual(apps.map(app => app.name), ['Tide', 'Weather']);
 assert.deepEqual(searchTvApps(apps, 'wea').map(app => app.name), ['Weather']);
 assert.deepEqual(searchTvApps(apps, '  ').map(app => app.name), []);
@@ -66,7 +66,7 @@ assert.equal(remoteAction('Left'), 'left');
 assert.equal(remoteAction('a'), null);
 
 assert.equal(weatherGlyph('Clear', 13).tint, 'sun');
-assert.equal(weatherGlyph('Clear', 23).icon, 'lumaui-moon-symbolic');
+assert.equal(weatherGlyph('Clear', 23).icon, 'SunoUI-moon-symbolic');
 assert.equal(weatherGlyph('Rain', 13).tint, null);
 assert.equal(greetingPart(9), 'morning');
 assert.equal(greetingPart(15), 'afternoon');

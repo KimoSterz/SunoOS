@@ -52,7 +52,7 @@ class WindowAddressFocus(unittest.TestCase):
 
     def test_unchanged_state_leaves_address_and_pin_untouched(self):
         entry=Gtk.Entry();field=Gtk.Box();field.append(entry)
-        bookmark=Gtk.Button(child=Gtk.Image(icon_name='lumaui-pin-symbolic'),tooltip_text='Pin to top')
+        bookmark=Gtk.Button(child=Gtk.Image(icon_name='SunoUI-pin-symbolic'),tooltip_text='Pin to top')
         host=SimpleNamespace(state=None,open_popover=None,phone=False,mini=False,new_tab_pending=False,
             address=entry,address_field=field,toolbar=Gtk.Box(),back=Gtk.Button(),forward=Gtk.Button(),bookmark=bookmark,
             present_selected_frame=lambda:None,sidebar=SimpleNamespace(render=lambda _:None),
@@ -69,10 +69,10 @@ class WindowAddressFocus(unittest.TestCase):
         self.assertEqual(tooltips,[])
         IntegratedWindow.render_state(host,dict(state,favorites=[{'id':'t'}]))
         self.assertEqual(bookmark.get_tooltip_text(),'Unpin from top')
-        self.assertTrue(bookmark.has_css_class('lumaui-selected'))
+        self.assertTrue(bookmark.has_css_class('SunoUI-selected'))
         IntegratedWindow.render_state(host,dict(state,nativePrettyUrl='b.test'))
         self.assertEqual(entry.get_text(),'b.test')
-        self.assertFalse(bookmark.has_css_class('lumaui-selected'))
+        self.assertFalse(bookmark.has_css_class('SunoUI-selected'))
 
 
 if __name__=='__main__':unittest.main()

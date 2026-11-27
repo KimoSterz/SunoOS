@@ -15,11 +15,11 @@ for tool in cpio curl mktemp podman rpm2cpio sha256sum; do
 done
 
 if [ "$(uname -s)" != Linux ]; then
-  printf 'error: build the Luma GTK RPM on a Linux builder\n' >&2
+  printf 'error: build the Suno GTK RPM on a Linux builder\n' >&2
   exit 1
 fi
 
-architecture=${LUMA_TARGET_ARCHITECTURE:-$(uname -m)}
+architecture=${SUNO_TARGET_ARCHITECTURE:-$(uname -m)}
 case "$architecture" in
   x86_64)
     builder_container=$FEDORA_RPM_BUILD_CONTAINER
@@ -34,7 +34,7 @@ case "$architecture" in
     exit 1
     ;;
 esac
-export LUMA_RPM_BUILDER_ARCHITECTURE=$architecture
+export SUNO_RPM_BUILDER_ARCHITECTURE=$architecture
 
 cache_dir="$repo_root/build/cache/srpm"
 output_dir="$repo_root/build/packages/gtk4"
@@ -66,37 +66,37 @@ mkdir -p "$rpmbuild_dir/BUILD" "$rpmbuild_dir/BUILDROOT" \
 mv "$work_dir/gtk4.spec" "$rpmbuild_dir/SPECS/"
 find "$work_dir" -maxdepth 1 -type f -exec mv -t "$rpmbuild_dir/SOURCES" {} +
 install -m 0644 \
-  "$repo_root/patches/gtk4/0001-luma-calm-window-shadow.patch" \
+  "$repo_root/patches/gtk4/0001-Suno-calm-window-shadow.patch" \
   "$rpmbuild_dir/SOURCES/"
 install -m 0644 \
-  "$repo_root/patches/gtk4/0002-luma-native-window-elevation.patch" \
+  "$repo_root/patches/gtk4/0002-Suno-native-window-elevation.patch" \
   "$rpmbuild_dir/SOURCES/"
 install -m 0644 \
-  "$repo_root/patches/gtk4/0003-luma-native-headerbar-chrome.patch" \
+  "$repo_root/patches/gtk4/0003-Suno-native-headerbar-chrome.patch" \
   "$rpmbuild_dir/SOURCES/"
 install -m 0644 \
-  "$repo_root/patches/gtk4/0004-luma-generic-application-identity.patch" \
+  "$repo_root/patches/gtk4/0004-Suno-generic-application-identity.patch" \
   "$rpmbuild_dir/SOURCES/"
 install -m 0644 \
-  "$repo_root/patches/gtk4/0005-luma-application-identity-presentation.patch" \
+  "$repo_root/patches/gtk4/0005-Suno-application-identity-presentation.patch" \
   "$rpmbuild_dir/SOURCES/"
 install -m 0644 \
-  "$repo_root/patches/gtk4/0006-luma-native-application-surfaces.patch" \
+  "$repo_root/patches/gtk4/0006-Suno-native-application-surfaces.patch" \
   "$rpmbuild_dir/SOURCES/"
 install -m 0644 \
-  "$repo_root/patches/gtk4/0007-luma-generic-application-frame.patch" \
-  "$repo_root/patches/gtk4/0008-luma-title-slot-and-paned-islands.patch" \
-  "$repo_root/patches/gtk4/0009-luma-split-island-shadows.patch" \
-  "$repo_root/patches/gtk4/0010-luma-native-menu-presentation.patch" \
-  "$repo_root/patches/gtk4/0011-luma-grab-a-corner-where-it-is-drawn.patch" \
-  "$repo_root/patches/gtk4/0012-luma-forget-unbound-input-method-context.patch" \
+  "$repo_root/patches/gtk4/0007-Suno-generic-application-frame.patch" \
+  "$repo_root/patches/gtk4/0008-Suno-title-slot-and-paned-islands.patch" \
+  "$repo_root/patches/gtk4/0009-Suno-split-island-shadows.patch" \
+  "$repo_root/patches/gtk4/0010-Suno-native-menu-presentation.patch" \
+  "$repo_root/patches/gtk4/0011-Suno-grab-a-corner-where-it-is-drawn.patch" \
+  "$repo_root/patches/gtk4/0012-Suno-forget-unbound-input-method-context.patch" \
   "$repo_root/patches/gtk4/0013-gsk-restore-the-clip-when-a-first-node-is-rejected.patch" \
   "$repo_root/patches/gtk4/0014-gsk-cover-hinted-glyph-outlines.patch" \
   "$rpmbuild_dir/SOURCES/"
 
-install -m 0644 "$repo_root/patches/gtk4/0015-luma-preserve-generic-client-layout.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gtk4/0016-luma-precompiled-native-menu-css.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gtk4/0017-luma-maximized-shadow-extents.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gtk4/0015-Suno-preserve-generic-client-layout.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gtk4/0016-Suno-precompiled-native-menu-css.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gtk4/0017-Suno-maximized-shadow-extents.patch" "$rpmbuild_dir/SOURCES/"
 install -m 0644 "$repo_root/tests/toolkit-native/generic-client.py" "$rpmbuild_dir/SOURCES/"
 install -m 0644 "$repo_root/tests/toolkit-native/maximized-shadow.py" "$rpmbuild_dir/SOURCES/"
 
@@ -104,16 +104,16 @@ install -m 0644 "$repo_root/tests/toolkit-native/maximized-shadow.py" "$rpmbuild
   cd "$rpmbuild_dir/SPECS"
   # Image-based hosts ship git but not patch.
   if command -v patch >/dev/null 2>&1; then
-    patch --batch --forward -p1 <"$repo_root/patches/gtk4/0000-luma-fedora-spec.patch"
+    patch --batch --forward -p1 <"$repo_root/patches/gtk4/0000-Suno-fedora-spec.patch"
   else
-    GIT_CEILING_DIRECTORIES="$rpmbuild_dir" git apply -p1 --whitespace=nowarn "$repo_root/patches/gtk4/0000-luma-fedora-spec.patch"
+    GIT_CEILING_DIRECTORIES="$rpmbuild_dir" git apply -p1 --whitespace=nowarn "$repo_root/patches/gtk4/0000-Suno-fedora-spec.patch"
   fi
 )
 # A spec patch that applied as a no-op builds the stock package; the Release
 # says whether it applied (scripts/packages/spec-release.sh).
 . "$repo_root/scripts/packages/spec-release.sh"
-luma_assert_spec_release "$rpmbuild_dir/SPECS/gtk4.spec" \
-  "$GTK4_LUMA_RELEASE" || exit 1
+Suno_assert_spec_release "$rpmbuild_dir/SPECS/gtk4.spec" \
+  "$GTK4_SUNO_RELEASE" || exit 1
 
 "$repo_root/scripts/packages/run-in-rpm-builder.sh" \
   "$rpmbuild_dir" \
@@ -146,36 +146,36 @@ luma_assert_spec_release "$rpmbuild_dir/SPECS/gtk4.spec" \
       Default-dark.css
     grep -Fq "windowcontrols { min-height: 20px; padding: 2px; border-spacing: 0; border-radius: 9999px" \
       Default-light.css
-    grep -Fq "luma-menu-keycap" Default-light.css
-    grep -Fq "luma-menu-keycap" Default-dark.css
-    grep -aFq "luma-menu-keycap" ./usr/lib64/libgtk-4.so.1
+    grep -Fq "Suno-menu-keycap" Default-light.css
+    grep -Fq "Suno-menu-keycap" Default-dark.css
+    grep -aFq "Suno-menu-keycap" ./usr/lib64/libgtk-4.so.1
     ! grep -Fq "overflow: hidden" Default-light.css
     ! grep -Fq "overflow: hidden" Default-dark.css
     grep -Fq ".titlebar:not(headerbar), headerbar { padding: 0 6px; min-height: 42px; border-width: 0;" \
       Default-light.css
     grep -Fq "font-family: \"Figtree\", sans-serif" Default-light.css
-    grep -Fq "headerbar menubutton.luma-identity-button" Default-light.css
+    grep -Fq "headerbar menubutton.Suno-identity-button" Default-light.css
     grep -Fq "0 10px 20px -14px rgba(25, 27, 31, 0.40)" Default-light.css
     grep -Fq "0 10px 22px -14px rgba(0, 0, 0, 0.70)" Default-dark.css
-    grep -aFq "gtk-header-bar-luma-identity-owner" ./usr/lib64/libgtk-4.so.1
-    grep -aFq "luma-no-automatic-identity" ./usr/lib64/libgtk-4.so.1
-    grep -aFq "luma-identity-display" ./usr/lib64/libgtk-4.so.1
+    grep -aFq "gtk-header-bar-Suno-identity-owner" ./usr/lib64/libgtk-4.so.1
+    grep -aFq "Suno-no-automatic-identity" ./usr/lib64/libgtk-4.so.1
+    grep -aFq "Suno-identity-display" ./usr/lib64/libgtk-4.so.1
     grep -aFq "notify::application" ./usr/lib64/libgtk-4.so.1
-    grep -aFq "luma-native-window" ./usr/lib64/libgtk-4.so.1
-    grep -aFq "luma-native-work-surface" ./usr/lib64/libgtk-4.so.1
-    grep -aFq "luma-split-surface" ./usr/lib64/libgtk-4.so.1
-    grep -aFq "luma-pane-island" ./usr/lib64/libgtk-4.so.1
-    grep -Fq "window.luma-native-window:not(.luma-adw-native-window):not(.luma-no-native-surfaces) > .luma-native-work-surface" Default-light.css
-    grep -aFq "luma-command-host" ./usr/lib64/libgtk-4.so.1
-    grep -aFq "luma-no-command-row" ./usr/lib64/libgtk-4.so.1
-    grep -aFq "luma-has-command-row" ./usr/lib64/libgtk-4.so.1
-    grep -aFq "gtk-luma-work-surface-overflow" ./usr/lib64/libgtk-4.so.1
+    grep -aFq "Suno-native-window" ./usr/lib64/libgtk-4.so.1
+    grep -aFq "Suno-native-work-surface" ./usr/lib64/libgtk-4.so.1
+    grep -aFq "Suno-split-surface" ./usr/lib64/libgtk-4.so.1
+    grep -aFq "Suno-pane-island" ./usr/lib64/libgtk-4.so.1
+    grep -Fq "window.Suno-native-window:not(.Suno-adw-native-window):not(.Suno-no-native-surfaces) > .Suno-native-work-surface" Default-light.css
+    grep -aFq "Suno-command-host" ./usr/lib64/libgtk-4.so.1
+    grep -aFq "Suno-no-command-row" ./usr/lib64/libgtk-4.so.1
+    grep -aFq "Suno-has-command-row" ./usr/lib64/libgtk-4.so.1
+    grep -aFq "gtk-Suno-work-surface-overflow" ./usr/lib64/libgtk-4.so.1
     grep -aFq "application-x-executable" ./usr/lib64/libgtk-4.so.1
-    grep -Fq "headerbar.luma-command-host > windowhandle { min-height: 42px; padding: 0 8px 0 12px; }" Default-light.css
-    grep -Fq "headerbar.luma-command-host > .luma-command-bar { min-height: 40px; margin: 0 9px 8px;" Default-light.css
-    grep -Fq "headerbar.luma-command-host > .luma-command-bar { min-height: 40px; margin: 0 9px 8px;" Default-dark.css
+    grep -Fq "headerbar.Suno-command-host > windowhandle { min-height: 42px; padding: 0 8px 0 12px; }" Default-light.css
+    grep -Fq "headerbar.Suno-command-host > .Suno-command-bar { min-height: 40px; margin: 0 9px 8px;" Default-light.css
+    grep -Fq "headerbar.Suno-command-host > .Suno-command-bar { min-height: 40px; margin: 0 9px 8px;" Default-dark.css
     grep -Fq "headerbar windowcontrols { margin-top: 9px; margin-bottom: 9px; padding: 2px; }" Default-light.css
-    grep -Fq ".luma-has-command-row > .luma-native-work-surface { margin-top: 0; }" Default-light.css
+    grep -Fq ".Suno-has-command-row > .Suno-native-work-surface { margin-top: 0; }" Default-light.css
   '
 
 stable_rpms="$output_dir/RPMS/$architecture"
@@ -192,7 +192,7 @@ for built in "$rpmbuild_dir/RPMS/$architecture"/gtk4-*.rpm; do
   install -m 0644 "$built" "$stable_rpms/"
 done
 install -m 0644 \
-  "$rpmbuild_dir/SRPMS/gtk4-4.22.4-${GTK4_LUMA_RELEASE}.fc44.src.rpm" \
+  "$rpmbuild_dir/SRPMS/gtk4-4.22.4-${GTK4_SUNO_RELEASE}.fc44.src.rpm" \
   "$stable_srpms/"
 
 (
@@ -200,4 +200,4 @@ install -m 0644 \
   find RPMS SRPMS -type f -name '*.rpm' -exec sha256sum {} + | sort >SHA256SUMS
 )
 
-printf 'Luma GTK packages: %s\n' "$output_dir"
+printf 'Suno GTK packages: %s\n' "$output_dir"

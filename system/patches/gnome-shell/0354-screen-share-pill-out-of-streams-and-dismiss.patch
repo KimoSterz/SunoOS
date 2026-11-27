@@ -1,5 +1,5 @@
-From: Project Luma <builds@project-luma.local>
-Subject: [PATCH] lumaShare, lumaCapture: the pill stays out of streams; Dismiss
+From: Project Suno <builds@project-suno.local>
+Subject: [PATCH] SunoShare, SunoCapture: the pill stays out of streams; Dismiss
 
 The sharing pill, the edges and Capture's own overlays are CaptureHidden:
 they skip a paint whose framebuffer is not a stage view's. A monitor
@@ -24,16 +24,16 @@ away, the status cluster's sharing mark is shown, and clicking it brings
 the pill back (otherwise it stops sharing, as before). A new share brings
 the pill back.
 
-diff --git a/data/theme/luma-share.css b/data/theme/luma-share.css
+diff --git a/data/theme/Suno-share.css b/data/theme/Suno-share.css
 index b521a24..08ff7e3 100644
---- a/data/theme/luma-share.css
-+++ b/data/theme/luma-share.css
+--- a/data/theme/Suno-share.css
++++ b/data/theme/Suno-share.css
 @@ -333,6 +333,23 @@
  
- .luma-surface-dark .luma-share-pill-stop:focus { box-shadow: inset 0 0 0 2px rgba(33, 37, 43, 0.8) !important; }
+ .Suno-surface-dark .Suno-share-pill-stop:focus { box-shadow: inset 0 0 0 2px rgba(33, 37, 43, 0.8) !important; }
  
 +/* Dismiss: the quiet key beside Stop. */
-+.luma-share-pill-dismiss {
++.Suno-share-pill-dismiss {
 +  height: 28px;
 +  padding: 0 12px;
 +  border-radius: 14px;
@@ -43,19 +43,19 @@ index b521a24..08ff7e3 100644
 +  background-color: rgba(35, 44, 52, 0.072);
 +  color: #30343a;
 +  transition-duration: 140ms; }
-+.luma-share-pill-dismiss:hover { background-color: rgba(35, 44, 52, 0.12); }
-+.luma-share-pill-dismiss:focus { box-shadow: inset 0 0 0 2px rgba(48, 52, 58, 0.6) !important; }
-+.luma-surface-dark .luma-share-pill-dismiss { background-color: rgba(255, 255, 255, 0.072); color: #e9ebec; }
-+.luma-surface-dark .luma-share-pill-dismiss:hover { background-color: rgba(255, 255, 255, 0.12); }
-+.luma-surface-dark .luma-share-pill-dismiss:focus { box-shadow: inset 0 0 0 2px rgba(233, 235, 236, 0.6) !important; }
++.Suno-share-pill-dismiss:hover { background-color: rgba(35, 44, 52, 0.12); }
++.Suno-share-pill-dismiss:focus { box-shadow: inset 0 0 0 2px rgba(48, 52, 58, 0.6) !important; }
++.Suno-surface-dark .Suno-share-pill-dismiss { background-color: rgba(255, 255, 255, 0.072); color: #e9ebec; }
++.Suno-surface-dark .Suno-share-pill-dismiss:hover { background-color: rgba(255, 255, 255, 0.12); }
++.Suno-surface-dark .Suno-share-pill-dismiss:focus { box-shadow: inset 0 0 0 2px rgba(233, 235, 236, 0.6) !important; }
 +
  /* Frost and glass are one light material (0170): a light veil over the
   * blurred wallpaper, carrying the light family's dark ink. Frost is the
   * denser, strongly blurred veil; glass lets more wallpaper through, with less
-diff --git a/js/ui/lumaCapture.js b/js/ui/lumaCapture.js
+diff --git a/js/ui/SunoCapture.js b/js/ui/SunoCapture.js
 index ae8e12e..5a71d7e 100644
---- a/js/ui/lumaCapture.js
-+++ b/js/ui/lumaCapture.js
+--- a/js/ui/SunoCapture.js
++++ b/js/ui/SunoCapture.js
 @@ -100,11 +100,21 @@ export function setPaintInCaptures(paint) {
  }
  
@@ -91,9 +91,9 @@ index ae8e12e..5a71d7e 100644
 +// instead (clutter_stage_inhibit_capture_copy, Mutter 0036), and the paint
 +// carries the capture flag they skip.
 +function holdCaptureCopies(actor, hold) {
-+    if (!global.stage.inhibit_capture_copy || actor._lumaHoldsCaptureCopies === hold)
++    if (!global.stage.inhibit_capture_copy || actor._SunoHoldsCaptureCopies === hold)
 +        return;
-+    actor._lumaHoldsCaptureCopies = hold;
++    actor._SunoHoldsCaptureCopies = hold;
 +    if (hold)
 +        global.stage.inhibit_capture_copy();
 +    else
@@ -133,10 +133,10 @@ index ae8e12e..5a71d7e 100644
      vfunc_paint(paintContext) {
          if (!this._onScreenOnly || paintsOnScreen(paintContext))
              super.vfunc_paint(paintContext);
-diff --git a/js/ui/lumaShare.js b/js/ui/lumaShare.js
+diff --git a/js/ui/SunoShare.js b/js/ui/SunoShare.js
 index 8d4d664..2a84f44 100644
---- a/js/ui/lumaShare.js
-+++ b/js/ui/lumaShare.js
+--- a/js/ui/SunoShare.js
++++ b/js/ui/SunoShare.js
 @@ -1382,7 +1382,7 @@ class ScreenEdge extends CaptureHidden {
  // ── The Stop pill ──────────────────────────────────────────────────────────
  
@@ -153,7 +153,7 @@ index 8d4d664..2a84f44 100644
 +        // Dismiss puts the pill away for this share; the sharing mark in the
 +        // status cluster stays, and brings the pill back.
 +        this.dismissButton = new St.Button({
-+            style_class: 'luma-share-pill-dismiss',
++            style_class: 'Suno-share-pill-dismiss',
 +            can_focus: true,
 +            label: _('Dismiss'),
 +            y_align: Clutter.ActorAlign.CENTER,
@@ -244,7 +244,7 @@ index 3ef1085..dc76863 100644
          this._sync();
      }
  
-+    // With Luma Share's pill dismissed this mark stands for it: a click brings
++    // With Suno Share's pill dismissed this mark stands for it: a click brings
 +    // the pill (and its Stop) back. Otherwise it stops sharing, as upstream.
 +    _activate() {
 +        const share = peekShare();

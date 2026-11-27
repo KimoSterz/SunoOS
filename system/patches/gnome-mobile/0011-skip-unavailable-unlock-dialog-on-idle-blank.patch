@@ -1,4 +1,4 @@
-From: Project Luma <luma@local>
+From: Project Suno <Suno@local>
 Subject: [PATCH] Skip unavailable unlock dialog on greetd idle blank
 
 The mobile idle-blank action creates ScreenShield's unlock dialog before it

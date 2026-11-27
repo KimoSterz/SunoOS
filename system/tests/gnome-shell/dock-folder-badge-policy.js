@@ -3,8 +3,8 @@
 // mark, badge, bar in that order, and the desktop folder stack swaps its mark
 // in (and the original back) below the badge, never on top of it. The stack
 // sizes the badge from the dock badge model, so one digit is a circle.
-// Run: gjs -m dock-folder-badge-policy.js js/ui/lumaDockFolders.js \
-//        js/ui/lumaPresentation/launcherFolders.js
+// Run: gjs -m dock-folder-badge-policy.js js/ui/SunoDockFolders.js \
+//        js/ui/SunoPresentation/launcherFolders.js
 // (node dock-folder-badge-policy.js ... works too).
 const gjs = typeof globalThis.ARGV !== 'undefined';
 const args = gjs ? globalThis.ARGV : process.argv.slice(2);

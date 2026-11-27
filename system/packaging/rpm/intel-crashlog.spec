@@ -7,7 +7,7 @@
 
 Name:           intel-crashlog
 Version:        1.2.0
-Release:        1.luma.1%{?dist}
+Release:        1.Suno.1%{?dist}
 Summary:        Extract, decode and triage Intel Crash Log records
 
 SourceLicense:  MIT
@@ -74,5 +74,5 @@ printf '%s\n' "$triage" | grep -q '^CORE_TIMEOUT\.'
 %{_bindir}/iclg
 
 %changelog
-* Tue Sep 15 2026 Project Luma <maintainers@projectluma.org> - 1.2.0-1.luma.1
-- Package Intel's Crash Log tool 1.2.0 for Luma Vitals crash evidence
+* Tue Sep 15 2026 Project Suno <maintainers@projectSuno.org> - 1.2.0-1.Suno.1
+- Package Intel's Crash Log tool 1.2.0 for Suno Vitals crash evidence

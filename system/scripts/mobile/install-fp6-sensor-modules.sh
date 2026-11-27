@@ -9,8 +9,8 @@ set -euo pipefail
 umask 022
 
 expected_kernel=7.1.2
-install_root=/usr/lib/modules/$expected_kernel/updates/luma-fp6-sensors
-state_root=/var/lib/luma/fp6-sensors
+install_root=/usr/lib/modules/$expected_kernel/updates/Suno-fp6-sensors
+state_root=/var/lib/Suno/fp6-sensors
 
 die() { printf 'error: %s\n' "$*" >&2; exit 1; }
 hash() { sha256sum "$1" | cut -d ' ' -f 1; }
@@ -31,7 +31,7 @@ if grep -Evq '^[A-Z0-9_]+=[A-Za-z0-9._,-]+$' "$manifest"; then
 fi
 # shellcheck disable=SC1090
 . "$manifest"
-[ "${LUMA_FP6_SENSORS_BUILD_VERSION:-}" = 2 ] || die 'bundle version differs'
+[ "${SUNO_FP6_SENSORS_BUILD_VERSION:-}" = 2 ] || die 'bundle version differs'
 [ "${UPSTREAM_COMMIT:-}" = af49850e65bdf5dc6f4a14fb9e8e5c5814522d33 ] || die 'upstream commit differs'
 [ "${KERNEL_RELEASE:-}" = "$expected_kernel" ] || die 'bundle kernel differs'
 [ "${BASE_KERNEL_SHA256:-}" = 760eb683f88ced7f869bc169ba123c52f0df6163c6cc2812b6676d812a3efb68 ] || die 'base kernel differs'
@@ -106,7 +106,7 @@ depmod "$expected_kernel"
 for index in "${!files[@]}"; do
   selected=$(modinfo -n "${module_ids[$index]}")
   [ "$(readlink -f "$selected")" = "$(readlink -f "$install_root/modules/${files[$index]}.ko")" ] ||
-    die "modprobe did not select the Luma overlay for ${files[$index]}: $selected"
+    die "modprobe did not select the Suno overlay for ${files[$index]}: $selected"
 done
 
 rollback_install=false

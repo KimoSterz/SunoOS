@@ -1,7 +1,7 @@
 Subject: [PATCH] Dismiss notifications on clicks outside, including client windows
 
---- a/js/ui/lumaNotificationBeacon.js
-+++ b/js/ui/lumaNotificationBeacon.js
+--- a/js/ui/SunoNotificationBeacon.js
++++ b/js/ui/SunoNotificationBeacon.js
 @@ -502,10 +502,10 @@
          this._setContent(column);
          this._cards.clear();

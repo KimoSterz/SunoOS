@@ -49,10 +49,10 @@ Messages' glyphs (attachment, send, call, video, microphone, compose, search,
 refresh, favourite, warning, ok, next, phone, new message, and the person,
 group and business avatar glyphs) came from Lucide on 16 September under their
 standard names, vendored in `upstream/lucide/messages/` and digested the same
-way; `luma-business-symbolic` is building-2 from lucide-react 1.31.0, which the
+way; `Suno-business-symbolic` is building-2 from lucide-react 1.31.0, which the
 supplied snapshot lacks. `tools/adapt-lucide-symbolic.py` performs the
 adaptation and reproduces the transport row byte for byte.
-Standard names that Luma code uses and Adwaita 50 no longer ships
+Standard names that Suno code uses and Adwaita 50 no longer ships
 (`cursor-default`, `draw-freehand`, `edit-rename`, `emblem-default`,
 `emblem-shared`, `emblem-synchronizing`, `notifications`,
 `utilities-system-monitor`, `application-x-apk`, all `-symbolic`) came from
@@ -64,20 +64,20 @@ sources and the upstream LICENSE are in `upstream/lucide/fills/`, digested in
 the navigation manifest. The OS image build fails when first-party code names
 an icon that no installed theme, resource or app data provides
 (`scripts/os/lib/icon_references.py`).
-LumaUI's glyphs (25 September) are every Lucide name the LumaUI spec,
-luma-next-70, draws, plus the few the kit itself needs. Each is vendored
-verbatim in `upstream/lucide/lumaui/` with the supplied ISC licence and
+SunoUI's glyphs (25 September) are every Lucide name the SunoUI spec,
+Suno-next-70, draws, plus the few the kit itself needs. Each is vendored
+verbatim in `upstream/lucide/SunoUI/` with the supplied ISC licence and
 adapted by `tools/adapt-lucide-symbolic.py` at the mockup's 1.6 stroke to
-`symbolic/actions/lumaui-<lucide-name>-symbolic.svg`. The `lumaui-` names are
+`symbolic/actions/SunoUI-<lucide-name>-symbolic.svg`. The `SunoUI-` names are
 stable and never reused, and they stay apart from standard names, so adding
 one never restyles a third-party application. Share is `share-2`, Export is
-`share`, Upload is `upload`. `tools/import-lumaui-icons.py` adds names and
-digests them in `upstream/lucide/lumaui-manifest.json`; its `--check` mode
+`share`, Upload is `upload`. `tools/import-SunoUI-icons.py` adds names and
+digests them in `upstream/lucide/SunoUI-manifest.json`; its `--check` mode
 rebuilds every glyph from its source and fails on drift.
 The six Weather condition glyphs (cloud-rain, cloud-sun, cloud-moon,
 cloud-fog, cloud-lightning, snowflake) are exact `lucide-static` 1.48.0 SVGs,
 with per-icon pinned source URLs and hashes in that manifest. The ISC/MIT
-license is retained in `upstream/lucide/lumaui/LICENSE.txt`; the Prairie SRPM
+license is retained in `upstream/lucide/SunoUI/LICENSE.txt`; the Prairie SRPM
 includes the manifest and vendored originals alongside adapted symbolics.
 They use GTK's symbolic recoloring rather than a baked system accent. Window
 controls and status icons retain their separate native 16px fill-only contract.
@@ -87,10 +87,10 @@ The disabled Wi-Fi status glyph derives from Prairie’s excellent-signal artwor
 with a separated diagonal slash. It uses the same fill-only foreground geometry
 to keep the off state consistent with connected states.
 
-Luma-owned application artwork, including the owner's selected icon family,
+Suno-owned application artwork, including the owner's selected icon family,
 is CC-BY-SA-4.0. The owner confirmed distribution rights for revision 40 on
 2026-09-28. Attributed Lucide geometry retains ISC/MIT notices. Theme metadata, generator, framing, status glyphs and
-packaging are Apache-2.0. The current browser tile is Luma's authored globe;
+packaging are Apache-2.0. The current browser tile is Suno's authored globe;
 no Mozilla artwork enters the package. Historical upstream reference files and
 prior credit remain in repository history.
 

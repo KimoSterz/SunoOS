@@ -11,11 +11,11 @@ import unittest
 
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[1]
-HELPER = Path(os.environ.get('LUMA_BROWSER_POLICY_HELPER', REPO / 'scripts/os/lib/viola_desktop_policy.py'))
+HELPER = Path(os.environ.get('SUNO_BROWSER_POLICY_HELPER', REPO / 'scripts/os/lib/viola_desktop_policy.py'))
 spec = importlib.util.spec_from_file_location('viola_policy', HELPER)
 policy = importlib.util.module_from_spec(spec); spec.loader.exec_module(policy)
-NATIVE = Path(os.environ.get('LUMA_BROWSER_NATIVE_DESKTOPS', REPO / 'src/external/viola/chromium-linux/luma-package'))
-EXPORT = Path(os.environ.get('LUMA_BROWSER_SIGNED_DESKTOP', REPO / 'tests/fixtures/viola-signed-export.desktop'))
+NATIVE = Path(os.environ.get('SUNO_BROWSER_NATIVE_DESKTOPS', REPO / 'src/external/viola/chromium-linux/Suno-package'))
+EXPORT = Path(os.environ.get('SUNO_BROWSER_SIGNED_DESKTOP', REPO / 'tests/fixtures/viola-signed-export.desktop'))
 PROBE = '''import json,sys
 from gi.repository import Gio
 rows=[]
@@ -44,9 +44,9 @@ class DesktopPolicy(unittest.TestCase):
         native = self.root / 'usr/share/applications'; native.mkdir(parents=True)
         for name in ('com.rhyme.viola.desktop', 'viola-browser.desktop'):
             (native / name).write_bytes((NATIVE / name).read_bytes())
-        self.dock = self.root / 'etc/dconf/db/luma.d/00-luma-desktop'
+        self.dock = self.root / 'etc/dconf/db/Suno.d/00-Suno-desktop'
         self.dock.parent.mkdir(parents=True)
-        self.before = "[org/gnome/shell]\nfavorite-apps=['org.gnome.Nautilus.desktop', 'viola-browser.desktop', 'org.projectluma.Ari.desktop']\n"
+        self.before = "[org/gnome/shell]\nfavorite-apps=['org.gnome.Nautilus.desktop', 'viola-browser.desktop', 'org.projectSuno.Ari.desktop']\n"
         self.dock.write_text(self.before)
         self.personal = self.root / 'home/qa/.config/dconf/user'
         self.personal.parent.mkdir(parents=True); self.personal.write_bytes(b'owned personal preference')
@@ -55,7 +55,7 @@ class DesktopPolicy(unittest.TestCase):
         (self.exports / 'com.rhyme.viola.desktop').write_bytes(EXPORT.read_bytes())
 
     def probe(self, signed, exports_first=False):
-        dirs = [self.root / 'usr/share/luma/desktop-overrides', self.root / 'usr/share']
+        dirs = [self.root / 'usr/share/Suno/desktop-overrides', self.root / 'usr/share']
         if signed:
             dirs.insert(0 if exports_first else 1, self.exports.parent)
         staged = []
@@ -85,12 +85,12 @@ class DesktopPolicy(unittest.TestCase):
         policy.compose(self.root, False)
         rows = {row['id']:row for row in self.probe(False)}
         self.assertEqual([r['id'] for r in rows.values() if r['visible']], ['viola-browser.desktop'])
-        self.assertEqual(rows['viola-browser.desktop']['wmclass'], 'org.projectluma.Viola.NativeIntegration')
+        self.assertEqual(rows['viola-browser.desktop']['wmclass'], 'org.projectSuno.Viola.NativeIntegration')
         self.assertIsNone(rows['com.rhyme.viola.desktop']['wmclass'])
         self.assertEqual(self.dock.read_text(), self.before)
         legacy = self.root / 'usr/share/applications/viola-browser.desktop'
         self.assertEqual(legacy.read_bytes(), (NATIVE / legacy.name).read_bytes())
-        canonical = self.root / 'usr/share/luma/desktop-overrides/applications/com.rhyme.viola.desktop'
+        canonical = self.root / 'usr/share/Suno/desktop-overrides/applications/com.rhyme.viola.desktop'
         self.assertIn('Exec=/usr/bin/viola-browser %U', canonical.read_text().splitlines())
 
     def test_signed_both_priorities_use_one_canonical_identity_and_legacy_dispatch(self):
@@ -100,7 +100,7 @@ class DesktopPolicy(unittest.TestCase):
                 rows = {row['id']:row for row in self.probe(True, first)}
                 self.assertEqual([r['id'] for r in rows.values() if r['visible']], ['com.rhyme.viola.desktop'])
                 canonical = rows['com.rhyme.viola.desktop']
-                expected = self.exports if first else self.root / 'usr/share/luma/desktop-overrides/applications'
+                expected = self.exports if first else self.root / 'usr/share/Suno/desktop-overrides/applications'
                 self.assertEqual(Path(canonical['filename']), self.discovery / expected.relative_to(self.root) / 'com.rhyme.viola.desktop')
                 self.assertEqual(canonical['executable'], '/usr/bin/flatpak' if first else str(self.executable))
                 self.assertIn('com.rhyme.viola', canonical['commandline'] if first else canonical['wmclass'])
@@ -108,9 +108,9 @@ class DesktopPolicy(unittest.TestCase):
                 legacy = rows['viola-browser.desktop']
                 self.assertFalse(legacy['visible']); self.assertIsNone(legacy['wmclass'])
                 self.assertEqual(legacy['commandline'], str(self.executable) + ' %U')
-                original = self.root / 'usr/share/luma/desktop-overrides/applications/viola-browser.desktop'
+                original = self.root / 'usr/share/Suno/desktop-overrides/applications/viola-browser.desktop'
                 self.assertIn('Exec=/usr/bin/viola-browser %U', original.read_text().splitlines())
-                canonical_original = self.root / 'usr/share/luma/desktop-overrides/applications/com.rhyme.viola.desktop'
+                canonical_original = self.root / 'usr/share/Suno/desktop-overrides/applications/com.rhyme.viola.desktop'
                 self.assertIn('Exec=/usr/bin/viola-browser %U', canonical_original.read_text().splitlines())
         self.assertIn("'com.rhyme.viola.desktop'", self.dock.read_text())
         self.assertNotIn("'viola-browser.desktop'", self.dock.read_text())
@@ -121,7 +121,7 @@ class DesktopPolicy(unittest.TestCase):
         original = native.read_text().replace('Icon=com.rhyme.viola.browser', 'Icon=viola-browser')
         native.write_text(original)
         policy.compose(self.root, True)
-        canonical = self.root / 'usr/share/luma/desktop-overrides/applications/com.rhyme.viola.desktop'
+        canonical = self.root / 'usr/share/Suno/desktop-overrides/applications/com.rhyme.viola.desktop'
         icons = [line for line in canonical.read_text().splitlines() if line.startswith('Icon=')]
         self.assertEqual(icons, ['Icon=com.rhyme.viola.browser'])
         self.assertEqual(native.read_text(), original)
@@ -137,7 +137,7 @@ class DesktopPolicy(unittest.TestCase):
 
     def test_hidden_legacy_without_signed_role_is_detected_as_no_launcher(self):
         policy.compose(self.root, True)
-        canonical = self.root / 'usr/share/luma/desktop-overrides/applications/com.rhyme.viola.desktop'
+        canonical = self.root / 'usr/share/Suno/desktop-overrides/applications/com.rhyme.viola.desktop'
         canonical.write_text(canonical.read_text()+'NoDisplay=true\n')
         self.assertFalse(any(r['visible'] for r in self.probe(False)))
 
@@ -146,12 +146,12 @@ class DesktopPolicy(unittest.TestCase):
         canonical.write_text(canonical.read_text().replace('/usr/bin/viola-browser %U', '/usr/bin/other %U'))
         with self.assertRaisesRegex(ValueError, 'managed dispatcher'): policy.compose(self.root, True)
         self.assertEqual(self.dock.read_text(), self.before)
-        self.assertFalse((self.root/'usr/share/luma/desktop-overrides/applications/com.rhyme.viola.desktop').exists())
+        self.assertFalse((self.root/'usr/share/Suno/desktop-overrides/applications/com.rhyme.viola.desktop').exists())
 
     def test_changed_favorite_refused_before_desktop_writes(self):
         self.dock.write_text(self.before.replace('viola-browser.desktop','other.desktop'))
         with self.assertRaisesRegex(ValueError, 'native Viola policy'): policy.compose(self.root, True)
-        self.assertFalse((self.root/'usr/share/luma/desktop-overrides/applications/com.rhyme.viola.desktop').exists())
+        self.assertFalse((self.root/'usr/share/Suno/desktop-overrides/applications/com.rhyme.viola.desktop').exists())
 
 
 if __name__ == '__main__': unittest.main()

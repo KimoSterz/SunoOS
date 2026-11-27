@@ -21,7 +21,7 @@ index 9b3bf48..d289e8e 100644
 -		drv_bo_from_format(bo, alloc_args.out_stride, alloc_args.height, (format == DRM_FORMAT_YVU420_ANDROID) ? DRM_FORMAT_R8 : format);
 +	/*
 +	 * YV12 is allocated as a GR88 surface of width/2 and 3/2 height. Describe
-+	 * it as the three planes it holds: luma at the surface stride, then Cr and
++	 * it as the three planes it holds: Suno at the surface stride, then Cr and
 +	 * Cb at half that stride, which fills the allocation exactly. Describing it
 +	 * as one R8 plane left consumers without chroma planes.
 +	 */

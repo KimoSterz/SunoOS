@@ -265,11 +265,11 @@ fi
 
 diagnostic_ecm_init="$repo_root/config/mobile/pixel9-physical/$PIXEL9_DIAGNOSTIC_ECM_INIT"
 for boundary in \
-  'LUMA_PIXEL9_DIAGNOSTIC_REPORT_VERSION=2' \
+  'SUNO_PIXEL9_DIAGNOSTIC_REPORT_VERSION=2' \
   'PERSISTENT_FILESYSTEMS_MOUNTED=false' \
   'INTERACTIVE_SHELL_EXPOSED=false' \
   'REPORT_TRANSPORTS=usb-acm,usb-ecm-http' \
-  'luma-pixel9-volatile-v2' \
+  'Suno-pixel9-volatile-v2' \
   'Pixel 9 volatile diagnostic v2' \
   "device_address=192.168.77.1" \
   "host_address=192.168.77.2" \
@@ -313,13 +313,13 @@ fi
 diagnostic_ufs_init="$repo_root/config/mobile/pixel9-physical/$PIXEL9_DIAGNOSTIC_UFS_INIT"
 for boundary in \
   'snapshot_delay=15' \
-  'LUMA_PIXEL9_DIAGNOSTIC_REPORT_VERSION=3' \
+  'SUNO_PIXEL9_DIAGNOSTIC_REPORT_VERSION=3' \
   'SNAPSHOT_DELAY_SECONDS=$snapshot_delay' \
   'UFS_PLATFORM_DEVICES_BEGIN' \
   'UFS_DEFERRED_PROBES_BEGIN' \
   'UFS_KERNEL_LOG_BEGIN' \
   'REPORT_TRANSPORTS=usb-ecm-http' \
-  'luma-pixel9-ufs-v3' \
+  'Suno-pixel9-ufs-v3' \
   'PERSISTENT_FILESYSTEMS_MOUNTED=false' \
   'INTERACTIVE_SHELL_EXPOSED=false'; do
   rg -Fq "$boundary" "$diagnostic_ufs_init" ||
@@ -352,10 +352,10 @@ fi
 
 diagnostic_fedora_init="$repo_root/config/mobile/pixel9-physical/$PIXEL9_DIAGNOSTIC_FEDORA_INIT"
 for boundary in \
-  'LUMA_PIXEL9_DIAGNOSTIC_REPORT_VERSION=4' \
-  'FEDORA_BASH_EXECUTION_TOKEN=LUMA_PIXEL9_FEDORA44_AARCH64_OK' \
+  'SUNO_PIXEL9_DIAGNOSTIC_REPORT_VERSION=4' \
+  'FEDORA_BASH_EXECUTION_TOKEN=SUNO_PIXEL9_FEDORA44_AARCH64_OK' \
   'REPORT_TRANSPORTS=usb-ecm-http' \
-  'luma-pixel9-fedora-v4' \
+  'Suno-pixel9-fedora-v4' \
   'PERSISTENT_FILESYSTEMS_MOUNTED=false' \
   'PERSISTENT_BLOCK_DEVICES_WRITTEN=false' \
   'INTERACTIVE_SHELL_EXPOSED=false' \
@@ -576,9 +576,9 @@ if rg -n '(^|[[:space:]])(adb|fastboot)([[:space:]]|$)' "$direct_candidate"; the
 fi
 
 direct_boot="$repo_root/scripts/mobile/boot-pixel9-direct-kernel-diagnostic.sh"
-rg -Fq 'LUMA_PIXEL9_DIRECT_KERNEL_BOOT_AUTHORIZED:-0' "$direct_boot" ||
+rg -Fq 'SUNO_PIXEL9_DIRECT_KERNEL_BOOT_AUTHORIZED:-0' "$direct_boot" ||
   fail 'the direct-kernel boot helper lacks one-shot authorization'
-rg -Fq 'LUMA_PIXEL9_AUTHORIZED_SHA256' "$direct_boot" ||
+rg -Fq 'SUNO_PIXEL9_AUTHORIZED_SHA256' "$direct_boot" ||
   fail 'the direct-kernel boot helper lacks exact-digest authorization'
 rg -Fq '"$fastboot_bin" boot "$candidate"' "$direct_boot" ||
   fail 'the direct-kernel temporary-boot transaction is absent'
@@ -713,7 +713,7 @@ fi
 copy_dtb_patch="$repo_root/$PIXEL9_DIRECT_KERNEL_COPY_DTB_PATCH"
 rg -Fq 'unflatten_and_copy_device_tree();' "$copy_dtb_patch" ||
   fail 'the copy-DTB patch does not use Linux built-in-FDT copy support'
-rg -Fq 'CONFIG_LUMA_TOKAY_EMBEDDED_DIAGNOSTIC' "$copy_dtb_patch" ||
+rg -Fq 'CONFIG_SUNO_TOKAY_EMBEDDED_DIAGNOSTIC' "$copy_dtb_patch" ||
   fail 'the copy-DTB patch is not gated to the explicit Tokay diagnostic'
 rg -Fq 'Keep the physically accepted init-section placement' "$copy_dtb_patch" ||
   fail 'the copy-DTB patch does not preserve the accepted section boundary'
@@ -765,7 +765,7 @@ fi
 
 fedora_candidate="$repo_root/scripts/mobile/prepare-pixel9-direct-kernel-avb-fedora-candidate.sh"
 for boundary in \
-  'LUMA_PIXEL9_DIRECT_KERNEL_AVB_FEDORA_CANDIDATE_VERSION=1' \
+  'SUNO_PIXEL9_DIRECT_KERNEL_AVB_FEDORA_CANDIDATE_VERSION=1' \
   'CANDIDATE_KIND=direct-kernel-embedded-copied-dtb-fedora44-userspace-stock-size-avb-ecm-v6' \
   'DIAGNOSTIC_VARIANT=fedora-userspace-copy-dtb-v6' \
   'REPORT_VERSION=4' \
@@ -794,7 +794,7 @@ fi
 
 fedora_zstd_candidate="$repo_root/scripts/mobile/prepare-pixel9-direct-kernel-avb-fedora-zstd-candidate.sh"
 for boundary in \
-  'LUMA_PIXEL9_DIRECT_KERNEL_AVB_FEDORA_ZSTD_CANDIDATE_VERSION=1' \
+  'SUNO_PIXEL9_DIRECT_KERNEL_AVB_FEDORA_ZSTD_CANDIDATE_VERSION=1' \
   'CANDIDATE_KIND=direct-kernel-embedded-copied-dtb-fedora44-zstd-userspace-stock-size-avb-ecm-v7' \
   'DIAGNOSTIC_VARIANT=fedora-zstd-userspace-copy-dtb-v7' \
   'INITRAMFS_KERNEL_COMPRESSION=zstd' \
@@ -829,28 +829,28 @@ for evidence in \
   '430272399b2c45e7bacdded43adad23aa8f4b09b60e080e79b11cf006350f164' \
   '34,122,240' \
   '42,441,216' \
-  'LUMA_PIXEL9_DIRECT_KERNEL_AVB_FEDORA_ZSTD_BOOT_AUTHORIZED=1' \
+  'SUNO_PIXEL9_DIRECT_KERNEL_AVB_FEDORA_ZSTD_BOOT_AUTHORIZED=1' \
   'It remains unauthorized'; do
   rg -Fq "$evidence" "$fedora_record" ||
     fail "the Fedora/Zstandard record lacks: $evidence"
 done
 
 direct_avb_boot="$repo_root/scripts/mobile/boot-pixel9-direct-kernel-avb-diagnostic.sh"
-rg -Fq 'LUMA_PIXEL9_DIRECT_KERNEL_AVB_BOOT_AUTHORIZED:-0' "$direct_avb_boot" ||
+rg -Fq 'SUNO_PIXEL9_DIRECT_KERNEL_AVB_BOOT_AUTHORIZED:-0' "$direct_avb_boot" ||
   fail 'the stock-size AVB boot helper lacks one-shot authorization'
-rg -Fq 'LUMA_PIXEL9_DIRECT_KERNEL_AVB_ECM_BOOT_AUTHORIZED:-0' "$direct_avb_boot" ||
+rg -Fq 'SUNO_PIXEL9_DIRECT_KERNEL_AVB_ECM_BOOT_AUTHORIZED:-0' "$direct_avb_boot" ||
   fail 'the ACM+ECM stock-size AVB boot helper lacks distinct one-shot authorization'
-rg -Fq 'LUMA_PIXEL9_DIRECT_KERNEL_AVB_PERSISTENT_DTB_BOOT_AUTHORIZED:-0' "$direct_avb_boot" ||
+rg -Fq 'SUNO_PIXEL9_DIRECT_KERNEL_AVB_PERSISTENT_DTB_BOOT_AUTHORIZED:-0' "$direct_avb_boot" ||
   fail 'the persistent-DTB AVB boot helper lacks distinct one-shot authorization'
-rg -Fq 'LUMA_PIXEL9_DIRECT_KERNEL_AVB_COPY_DTB_BOOT_AUTHORIZED:-0' "$direct_avb_boot" ||
+rg -Fq 'SUNO_PIXEL9_DIRECT_KERNEL_AVB_COPY_DTB_BOOT_AUTHORIZED:-0' "$direct_avb_boot" ||
   fail 'the copy-DTB AVB boot helper lacks distinct one-shot authorization'
-rg -Fq 'LUMA_PIXEL9_DIRECT_KERNEL_AVB_UFS_BOOT_AUTHORIZED:-0' "$direct_avb_boot" ||
+rg -Fq 'SUNO_PIXEL9_DIRECT_KERNEL_AVB_UFS_BOOT_AUTHORIZED:-0' "$direct_avb_boot" ||
   fail 'the delayed-UFS AVB boot helper lacks distinct one-shot authorization'
-rg -Fq 'LUMA_PIXEL9_DIRECT_KERNEL_AVB_FEDORA_BOOT_AUTHORIZED:-0' "$direct_avb_boot" ||
+rg -Fq 'SUNO_PIXEL9_DIRECT_KERNEL_AVB_FEDORA_BOOT_AUTHORIZED:-0' "$direct_avb_boot" ||
   fail 'the Fedora-userspace AVB boot helper lacks distinct one-shot authorization'
-rg -Fq 'LUMA_PIXEL9_DIRECT_KERNEL_AVB_FEDORA_ZSTD_BOOT_AUTHORIZED:-0' "$direct_avb_boot" ||
+rg -Fq 'SUNO_PIXEL9_DIRECT_KERNEL_AVB_FEDORA_ZSTD_BOOT_AUTHORIZED:-0' "$direct_avb_boot" ||
   fail 'the Fedora/Zstandard AVB boot helper lacks distinct one-shot authorization'
-rg -Fq 'LUMA_PIXEL9_AUTHORIZED_SHA256' "$direct_avb_boot" ||
+rg -Fq 'SUNO_PIXEL9_AUTHORIZED_SHA256' "$direct_avb_boot" ||
   fail 'the stock-size AVB boot helper lacks exact-digest authorization'
 rg -Fq '"$fastboot_bin" boot "$candidate"' "$direct_avb_boot" ||
   fail 'the stock-size AVB temporary-boot transaction is absent'
@@ -891,8 +891,8 @@ if "$direct_avb_boot" "$direct_avb_boot_test_root/candidate" \
 fi
 [ ! -e "$direct_avb_boot_test_root/evidence" ] ||
   fail 'the stock-size AVB boot helper wrote evidence before authorization'
-if LUMA_PIXEL9_DIRECT_KERNEL_AVB_ECM_BOOT_AUTHORIZED=1 \
-    LUMA_PIXEL9_AUTHORIZED_SHA256=a506914286c7cc34658673cecd9e4f301cab00ec25d1c70dc5f1a01c29a55ec8 \
+if SUNO_PIXEL9_DIRECT_KERNEL_AVB_ECM_BOOT_AUTHORIZED=1 \
+    SUNO_PIXEL9_AUTHORIZED_SHA256=a506914286c7cc34658673cecd9e4f301cab00ec25d1c70dc5f1a01c29a55ec8 \
     "$direct_avb_boot" "$direct_avb_boot_test_root/candidate" \
     "$direct_avb_boot_test_root/recovery" "$direct_avb_boot_test_root/evidence" \
     >/dev/null 2>&1; then
@@ -900,8 +900,8 @@ if LUMA_PIXEL9_DIRECT_KERNEL_AVB_ECM_BOOT_AUTHORIZED=1 \
 fi
 [ ! -e "$direct_avb_boot_test_root/evidence" ] ||
   fail 'the ACM+ECM boot helper wrote evidence before prerequisite validation'
-if LUMA_PIXEL9_DIRECT_KERNEL_AVB_PERSISTENT_DTB_BOOT_AUTHORIZED=1 \
-    LUMA_PIXEL9_AUTHORIZED_SHA256=11fa667047127efc426cd273ac8aa39f9b04f1025ca35b9f0f2f965893b71164 \
+if SUNO_PIXEL9_DIRECT_KERNEL_AVB_PERSISTENT_DTB_BOOT_AUTHORIZED=1 \
+    SUNO_PIXEL9_AUTHORIZED_SHA256=11fa667047127efc426cd273ac8aa39f9b04f1025ca35b9f0f2f965893b71164 \
     "$direct_avb_boot" "$direct_avb_boot_test_root/candidate" \
     "$direct_avb_boot_test_root/recovery" "$direct_avb_boot_test_root/evidence" \
     >/dev/null 2>&1; then
@@ -909,8 +909,8 @@ if LUMA_PIXEL9_DIRECT_KERNEL_AVB_PERSISTENT_DTB_BOOT_AUTHORIZED=1 \
 fi
 [ ! -e "$direct_avb_boot_test_root/evidence" ] ||
   fail 'the persistent-DTB boot helper wrote evidence before prerequisite validation'
-if LUMA_PIXEL9_DIRECT_KERNEL_AVB_COPY_DTB_BOOT_AUTHORIZED=1 \
-    LUMA_PIXEL9_AUTHORIZED_SHA256=0000000000000000000000000000000000000000000000000000000000000000 \
+if SUNO_PIXEL9_DIRECT_KERNEL_AVB_COPY_DTB_BOOT_AUTHORIZED=1 \
+    SUNO_PIXEL9_AUTHORIZED_SHA256=0000000000000000000000000000000000000000000000000000000000000000 \
     "$direct_avb_boot" "$direct_avb_boot_test_root/candidate" \
     "$direct_avb_boot_test_root/recovery" "$direct_avb_boot_test_root/evidence" \
     >/dev/null 2>&1; then
@@ -918,8 +918,8 @@ if LUMA_PIXEL9_DIRECT_KERNEL_AVB_COPY_DTB_BOOT_AUTHORIZED=1 \
 fi
 [ ! -e "$direct_avb_boot_test_root/evidence" ] ||
   fail 'the copy-DTB boot helper wrote evidence before prerequisite validation'
-if LUMA_PIXEL9_DIRECT_KERNEL_AVB_UFS_BOOT_AUTHORIZED=1 \
-    LUMA_PIXEL9_AUTHORIZED_SHA256=0000000000000000000000000000000000000000000000000000000000000000 \
+if SUNO_PIXEL9_DIRECT_KERNEL_AVB_UFS_BOOT_AUTHORIZED=1 \
+    SUNO_PIXEL9_AUTHORIZED_SHA256=0000000000000000000000000000000000000000000000000000000000000000 \
     "$direct_avb_boot" "$direct_avb_boot_test_root/candidate" \
     "$direct_avb_boot_test_root/recovery" "$direct_avb_boot_test_root/evidence" \
     >/dev/null 2>&1; then
@@ -927,8 +927,8 @@ if LUMA_PIXEL9_DIRECT_KERNEL_AVB_UFS_BOOT_AUTHORIZED=1 \
 fi
 [ ! -e "$direct_avb_boot_test_root/evidence" ] ||
   fail 'the delayed-UFS boot helper wrote evidence before prerequisite validation'
-if LUMA_PIXEL9_DIRECT_KERNEL_AVB_FEDORA_BOOT_AUTHORIZED=1 \
-    LUMA_PIXEL9_AUTHORIZED_SHA256=0000000000000000000000000000000000000000000000000000000000000000 \
+if SUNO_PIXEL9_DIRECT_KERNEL_AVB_FEDORA_BOOT_AUTHORIZED=1 \
+    SUNO_PIXEL9_AUTHORIZED_SHA256=0000000000000000000000000000000000000000000000000000000000000000 \
     "$direct_avb_boot" "$direct_avb_boot_test_root/candidate" \
     "$direct_avb_boot_test_root/recovery" "$direct_avb_boot_test_root/evidence" \
     >/dev/null 2>&1; then
@@ -936,8 +936,8 @@ if LUMA_PIXEL9_DIRECT_KERNEL_AVB_FEDORA_BOOT_AUTHORIZED=1 \
 fi
 [ ! -e "$direct_avb_boot_test_root/evidence" ] ||
   fail 'the Fedora-userspace boot helper wrote evidence before prerequisite validation'
-if LUMA_PIXEL9_DIRECT_KERNEL_AVB_FEDORA_ZSTD_BOOT_AUTHORIZED=1 \
-    LUMA_PIXEL9_AUTHORIZED_SHA256=0000000000000000000000000000000000000000000000000000000000000000 \
+if SUNO_PIXEL9_DIRECT_KERNEL_AVB_FEDORA_ZSTD_BOOT_AUTHORIZED=1 \
+    SUNO_PIXEL9_AUTHORIZED_SHA256=0000000000000000000000000000000000000000000000000000000000000000 \
     "$direct_avb_boot" "$direct_avb_boot_test_root/candidate" \
     "$direct_avb_boot_test_root/recovery" "$direct_avb_boot_test_root/evidence" \
     >/dev/null 2>&1; then
@@ -950,10 +950,10 @@ diagnostic_observer="$repo_root/scripts/mobile/observe-pixel9-diagnostic.sh"
 for boundary in \
   'SCOPE=host-only-read-only-diagnostic-observation' \
   'http://192.168.77.1/luma-pixel9-report.txt' \
-  'LUMA_PIXEL9_OBSERVER_REPORT_VERSION:-2' \
-  'LUMA_PIXEL9_OBSERVER_USB_SERIAL:-luma-pixel9-volatile-v2' \
+  'SUNO_PIXEL9_OBSERVER_REPORT_VERSION:-2' \
+  'SUNO_PIXEL9_OBSERVER_USB_SERIAL:-Suno-pixel9-volatile-v2' \
   '2|3|4)' \
-  'LUMA_PIXEL9_DIAGNOSTIC_REPORT_VERSION=$report_version' \
+  'SUNO_PIXEL9_DIAGNOSTIC_REPORT_VERSION=$report_version' \
   'REPORT_END=true' \
   'USB_ECM_HTTP_REPORT_RECEIVED=%s' \
   'PHONE_MUTATION_COMMANDS_ISSUED=false' \
@@ -1060,7 +1060,7 @@ for evidence in \
 done
 
 unlock="$repo_root/scripts/mobile/unlock-pixel9-bootloader.sh"
-rg -Fq 'LUMA_PIXEL9_UNLOCK_AUTHORIZED:-0' "$unlock" || \
+rg -Fq 'SUNO_PIXEL9_UNLOCK_AUTHORIZED:-0' "$unlock" || \
   fail 'Pixel 9 unlock lacks one-shot authorization'
 rg -Fq 'flashing unlock' "$unlock" || fail 'Pixel 9 unlock transaction is absent'
 for boundary in \
@@ -1115,7 +1115,7 @@ fi
   fail 'Pixel 9 temporary boot wrote evidence before authorization'
 
 stock_control="$repo_root/scripts/mobile/boot-pixel9-stock-control.sh"
-rg -Fq 'LUMA_PIXEL9_STOCK_BOOT_CONTROL_AUTHORIZED:-0' "$stock_control" || \
+rg -Fq 'SUNO_PIXEL9_STOCK_BOOT_CONTROL_AUTHORIZED:-0' "$stock_control" || \
   fail 'Pixel 9 stock control lacks one-shot authorization'
 rg -Fq '"$fastboot_bin" boot "$stock_boot"' "$stock_control" || \
   fail 'Pixel 9 stock-control temporary-boot transaction is absent'
@@ -1148,7 +1148,7 @@ rm -rf -- "$stock_control_test_root"
 
 fetch_test_root=$(mktemp -d)
 trap 'rm -rf -- "$fetch_test_root"' EXIT
-if LUMA_PIXEL9_RECOVERY_DIR="$fetch_test_root/recovery" \
+if SUNO_PIXEL9_RECOVERY_DIR="$fetch_test_root/recovery" \
   "$repo_root/scripts/mobile/fetch-pixel9-recovery.sh" >/dev/null 2>&1; then
   fail 'the recovery fetcher ran without explicit terms acceptance'
 fi
@@ -1163,7 +1163,7 @@ rg -Fq "printf 'FLASH_AUTHORIZED=false" \
   fail 'the recovery manifest does not close the flash gate'
 
 repair_test_root=$(mktemp -d)
-if LUMA_PIXEL9_REPAIR_EVIDENCE_DIR="$repair_test_root/evidence" \
+if SUNO_PIXEL9_REPAIR_EVIDENCE_DIR="$repair_test_root/evidence" \
   "$repo_root/scripts/mobile/repair-pixel9-inactive-slot.sh" >/dev/null 2>&1; then
   fail 'the inactive-slot repair ran without one-shot authorization'
 fi

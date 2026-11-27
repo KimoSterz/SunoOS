@@ -3,14 +3,14 @@
 
 set -euo pipefail
 
-build_root=${LUMA_BUILD_ROOT:-/srv/luma-build}
-build_user=${LUMA_BUILD_USER:-luma-build}
-protected_vm=${LUMA_PROTECTED_VM:-viola-windows-builder}
-storage_uuid=${LUMA_SECONDARY_STORAGE_UUID:-1136b935-7013-4f46-971b-0f0c876b83a7}
-mount_root=${LUMA_SECONDARY_MOUNT_ROOT:-/mnt/luma-secondary}
-offload_root=${LUMA_OFFLOAD_ROOT:-$mount_root/luma-offload}
-fstab_path=${LUMA_FSTAB_PATH:-/etc/fstab}
-fstab_options=${LUMA_SECONDARY_MOUNT_OPTIONS:-nofail,nodev,nosuid,noexec}
+build_root=${SUNO_BUILD_ROOT:-/srv/Suno-build}
+build_user=${SUNO_BUILD_USER:-Suno-build}
+protected_vm=${SUNO_PROTECTED_VM:-viola-windows-builder}
+storage_uuid=${SUNO_SECONDARY_STORAGE_UUID:-1136b935-7013-4f46-971b-0f0c876b83a7}
+mount_root=${SUNO_SECONDARY_MOUNT_ROOT:-/mnt/Suno-secondary}
+offload_root=${SUNO_OFFLOAD_ROOT:-$mount_root/Suno-offload}
+fstab_path=${SUNO_FSTAB_PATH:-/etc/fstab}
+fstab_options=${SUNO_SECONDARY_MOUNT_OPTIONS:-nofail,nodev,nosuid,noexec}
 change_log="$build_root/bootstrap/system-changes.log"
 bootstrap_copy="$build_root/bootstrap/bootstrap-secondary-offload-storage.sh"
 environment_copy="$build_root/bootstrap/secondary-offload-storage.env"
@@ -35,15 +35,15 @@ getent passwd "$build_user" >/dev/null || {
   printf 'error: dedicated build user is unavailable: %s\n' "$build_user" >&2
   exit 1
 }
-[ "$build_root" = /srv/luma-build ] || {
-  printf 'error: this reviewed bootstrap is bound to /srv/luma-build\n' >&2
+[ "$build_root" = /srv/Suno-build ] || {
+  printf 'error: this reviewed bootstrap is bound to /srv/Suno-build\n' >&2
   exit 1
 }
-[ "$mount_root" = /mnt/luma-secondary ] || {
-  printf 'error: this reviewed bootstrap is bound to /mnt/luma-secondary\n' >&2
+[ "$mount_root" = /mnt/Suno-secondary ] || {
+  printf 'error: this reviewed bootstrap is bound to /mnt/Suno-secondary\n' >&2
   exit 1
 }
-[ "$offload_root" = "$mount_root/luma-offload" ] || {
+[ "$offload_root" = "$mount_root/Suno-offload" ] || {
   printf 'error: offload storage must remain below the reviewed mount root\n' >&2
   exit 1
 }
@@ -107,7 +107,7 @@ fi
 if ! grep -Fqx "$fstab_line" "$fstab_path"; then
   fstab_backup="$build_root/bootstrap/fstab.before-secondary-offload.$(date -u +%Y%m%dT%H%M%SZ)"
   install -o root -g root -m 0644 "$fstab_path" "$fstab_backup"
-  printf '\n# Project Luma isolated secondary build archive\n%s\n' \
+  printf '\n# Project Suno isolated secondary build archive\n%s\n' \
     "$fstab_line" >>"$fstab_path"
   systemctl daemon-reload
   log_change "added isolated secondary storage mount to $fstab_path; prior file retained at $fstab_backup"
@@ -139,7 +139,7 @@ done
 
 if [ ! -d "$offload_root" ]; then
   install -d -o "$build_user" -g "$build_user" -m 0750 "$offload_root"
-  log_change "created isolated Luma offload root $offload_root"
+  log_change "created isolated Suno offload root $offload_root"
 else
   [ "$(stat -c %U "$offload_root")" = "$build_user" ] && \
   [ "$(stat -c %G "$offload_root")" = "$build_user" ] || {
@@ -160,10 +160,10 @@ fi
 environment_temp=$(mktemp)
 trap 'rm -f "$environment_temp"' EXIT
 {
-  printf 'LUMA_SECONDARY_STORAGE_UUID=%q\n' "$storage_uuid"
-  printf 'LUMA_SECONDARY_MOUNT_ROOT=%q\n' "$mount_root"
-  printf 'LUMA_OFFLOAD_ROOT=%q\n' "$offload_root"
-  printf 'LUMA_SECONDARY_MOUNT_OPTIONS=%q\n' "$fstab_options"
+  printf 'SUNO_SECONDARY_STORAGE_UUID=%q\n' "$storage_uuid"
+  printf 'SUNO_SECONDARY_MOUNT_ROOT=%q\n' "$mount_root"
+  printf 'SUNO_OFFLOAD_ROOT=%q\n' "$offload_root"
+  printf 'SUNO_SECONDARY_MOUNT_OPTIONS=%q\n' "$fstab_options"
 } >"$environment_temp"
 install -o root -g root -m 0644 "$environment_temp" "$environment_copy"
 

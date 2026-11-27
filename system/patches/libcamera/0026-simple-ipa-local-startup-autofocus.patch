@@ -1,4 +1,4 @@
-From: Project Luma <project-luma@local>
+From: Project Suno <project-suno@local>
 Subject: [PATCH] simple: ipa: start phone autofocus near a tuned position
 
 Sweeping the entire actuator range whenever a camera pipeline starts is slow,

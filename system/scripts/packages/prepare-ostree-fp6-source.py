@@ -41,7 +41,7 @@ def prepare(cache, output):
         with patch.open('rb') as stream:
             subprocess.run(['patch', '--batch', '--forward', '-p1'], cwd=output,
                            stdin=stream, check=True)
-    for name in ('luma-aboot-overlay-native-control.c', 'luma-test-aboot-overlay-native.py'):
+    for name in ('Suno-aboot-overlay-native-control.c', 'Suno-test-aboot-overlay-native.py'):
         shutil.copy2(patches / name, output / 'tests' / name)
     rows = []
     for path in sorted(output.rglob('*')):

@@ -11,7 +11,7 @@ window (25/50/100/200 ms, the window is an input):
 A contact's role at any moment is the vote of every window evaluated so far
 (Schwarz et al. CHI'14: windows grow from birth and votes accumulate).
 
-The libinput-style baseline below is what Luma has today (thresholds,
+The libinput-style baseline below is what Suno has today (thresholds,
 edge zones, disable-while-typing, a thumb zone) scored on the same rows.
 """
 
@@ -347,7 +347,7 @@ def personalise(models: dict, scenes: list[Scene], rounds: int = 6, log=None) ->
 # ── Files ───────────────────────────────────────────────────────────────────
 
 def save(models: dict, path: str, extra: dict | None = None) -> None:
-    doc = {"format": "luma-touch-roles/1", "roles": list(ROLES), "windows_ms": list(WINDOWS_MS),
+    doc = {"format": "Suno-touch-roles/1", "roles": list(ROLES), "windows_ms": list(WINDOWS_MS),
            "vote_weight": {str(k): v for k, v in VOTE_WEIGHT.items()}, "features": NAMES,
            "stage1": models["stage1"].to_json(), "stage2": models["stage2"].to_json(), **(extra or {})}
     tmp = path + ".tmp"

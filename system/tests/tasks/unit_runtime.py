@@ -7,9 +7,9 @@ import subprocess
 import sys
 import tempfile
 
-assert os.environ.get("LUMA_TASKS_ISOLATED_TEST") == "1"
+assert os.environ.get("SUNO_TASKS_ISOLATED_TEST") == "1"
 temporary = Path(os.environ["XDG_DATA_HOME"]).parent
-assert temporary.name.startswith("luma-tasks-test-")
+assert temporary.name.startswith("Suno-tasks-test-")
 assert os.environ["DBUS_SESSION_BUS_ADDRESS"] == "unix:path=" + str(temporary / "bus")
 root = Path(__file__).resolve().parents[2]
 

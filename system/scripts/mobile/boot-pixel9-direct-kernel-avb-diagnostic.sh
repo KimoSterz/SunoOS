@@ -37,7 +37,7 @@ die() {
   exit 1
 }
 
-case "${LUMA_PIXEL9_DIRECT_KERNEL_AVB_BOOT_AUTHORIZED:-0}:${LUMA_PIXEL9_DIRECT_KERNEL_AVB_ECM_BOOT_AUTHORIZED:-0}:${LUMA_PIXEL9_DIRECT_KERNEL_AVB_PERSISTENT_DTB_BOOT_AUTHORIZED:-0}:${LUMA_PIXEL9_DIRECT_KERNEL_AVB_COPY_DTB_BOOT_AUTHORIZED:-0}:${LUMA_PIXEL9_DIRECT_KERNEL_AVB_UFS_BOOT_AUTHORIZED:-0}:${LUMA_PIXEL9_DIRECT_KERNEL_AVB_FEDORA_BOOT_AUTHORIZED:-0}:${LUMA_PIXEL9_DIRECT_KERNEL_AVB_FEDORA_ZSTD_BOOT_AUTHORIZED:-0}" in
+case "${SUNO_PIXEL9_DIRECT_KERNEL_AVB_BOOT_AUTHORIZED:-0}:${SUNO_PIXEL9_DIRECT_KERNEL_AVB_ECM_BOOT_AUTHORIZED:-0}:${SUNO_PIXEL9_DIRECT_KERNEL_AVB_PERSISTENT_DTB_BOOT_AUTHORIZED:-0}:${SUNO_PIXEL9_DIRECT_KERNEL_AVB_COPY_DTB_BOOT_AUTHORIZED:-0}:${SUNO_PIXEL9_DIRECT_KERNEL_AVB_UFS_BOOT_AUTHORIZED:-0}:${SUNO_PIXEL9_DIRECT_KERNEL_AVB_FEDORA_BOOT_AUTHORIZED:-0}:${SUNO_PIXEL9_DIRECT_KERNEL_AVB_FEDORA_ZSTD_BOOT_AUTHORIZED:-0}" in
   1:0:0:0:0:0:0) authorization_mode=acm-v1 ;;
   0:1:0:0:0:0:0) authorization_mode=acm-ecm-v2 ;;
   0:0:1:0:0:0:0) authorization_mode=acm-ecm-persistent-dtb-v3 ;;
@@ -48,7 +48,7 @@ case "${LUMA_PIXEL9_DIRECT_KERNEL_AVB_BOOT_AUTHORIZED:-0}:${LUMA_PIXEL9_DIRECT_K
   0:0:0:0:0:0:0) die 'one-shot stock-size AVB diagnostic boot authorization is absent' ;;
   *) die 'exactly one stock-size AVB diagnostic authorization mode is required' ;;
 esac
-authorized_sha=${LUMA_PIXEL9_AUTHORIZED_SHA256:-}
+authorized_sha=${SUNO_PIXEL9_AUTHORIZED_SHA256:-}
 case "$authorized_sha" in
   ''|*[!0-9a-f]*) die 'exact authorized SHA-256 is absent or malformed' ;;
 esac
@@ -96,7 +96,7 @@ case "$authorization_mode" in
     ;;
   acm-ecm-v2)
     for boundary in \
-      'LUMA_PIXEL9_DIRECT_KERNEL_AVB_ECM_CANDIDATE_VERSION=1' \
+      'SUNO_PIXEL9_DIRECT_KERNEL_AVB_ECM_CANDIDATE_VERSION=1' \
       'DIAGNOSTIC_VARIANT=acm-ecm-v2' \
       'REPORT_TRANSPORTS=usb-acm,usb-ecm-http' \
       'PRIOR_PHYSICAL_ACCEPTANCE_BOUND=true' \
@@ -132,7 +132,7 @@ case "$authorization_mode" in
     ;;
   acm-ecm-persistent-dtb-v3)
     for boundary in \
-      'LUMA_PIXEL9_DIRECT_KERNEL_AVB_PERSISTENT_DTB_CANDIDATE_VERSION=1' \
+      'SUNO_PIXEL9_DIRECT_KERNEL_AVB_PERSISTENT_DTB_CANDIDATE_VERSION=1' \
       'DIAGNOSTIC_VARIANT=acm-ecm-persistent-dtb-v3' \
       'REPORT_TRANSPORTS=usb-acm,usb-ecm-http' \
       'EMBEDDED_DTB_LIFETIME=persistent-rodata' \
@@ -145,7 +145,7 @@ case "$authorization_mode" in
     [ -f "$prior_acceptance" ] || die 'persistent-DTB predecessor acceptance is absent'
     prior_sha=$(sed -n 's/^PRIOR_CANDIDATE_SHA256=//p' "$reproducibility")
     [ -n "$prior_sha" ] || die 'persistent-DTB predecessor digest is absent'
-    grep -Fqx 'LUMA_PIXEL9_DIRECT_KERNEL_AVB_ECM_ACCEPTANCE_VERSION=1' "$prior_acceptance" ||
+    grep -Fqx 'SUNO_PIXEL9_DIRECT_KERNEL_AVB_ECM_ACCEPTANCE_VERSION=1' "$prior_acceptance" ||
       die 'persistent-DTB predecessor acceptance version differs'
     grep -Fqx "CANDIDATE_SHA256=$prior_sha" "$prior_acceptance" ||
       die 'persistent-DTB predecessor digest differs from its acceptance record'
@@ -174,7 +174,7 @@ case "$authorization_mode" in
     ;;
   acm-ecm-copy-dtb-v4)
     for boundary in \
-      'LUMA_PIXEL9_DIRECT_KERNEL_AVB_COPY_DTB_CANDIDATE_VERSION=1' \
+      'SUNO_PIXEL9_DIRECT_KERNEL_AVB_COPY_DTB_CANDIDATE_VERSION=1' \
       'DIAGNOSTIC_VARIANT=acm-ecm-copy-dtb-v4' \
       'REPORT_TRANSPORTS=usb-acm,usb-ecm-http' \
       'EMBEDDED_DTB_LIFETIME=copied-from-init-rodata' \
@@ -234,7 +234,7 @@ case "$authorization_mode" in
     ;;
   ufs-delay-copy-dtb-v5)
     for boundary in \
-      'LUMA_PIXEL9_DIRECT_KERNEL_AVB_UFS_CANDIDATE_VERSION=1' \
+      'SUNO_PIXEL9_DIRECT_KERNEL_AVB_UFS_CANDIDATE_VERSION=1' \
       'DIAGNOSTIC_VARIANT=ufs-delay-copy-dtb-v5' \
       'REPORT_VERSION=3' \
       'SNAPSHOT_DELAY_SECONDS=15' \
@@ -252,7 +252,7 @@ case "$authorization_mode" in
     accepted_v4_result_sha=$(sed -n 's/^PRIOR_ACCEPTANCE_SHA256=//p' "$reproducibility")
     [ -n "$accepted_v4_sha" ] || die 'delayed-UFS accepted-v4 digest is absent'
     [ -n "$accepted_v4_result_sha" ] || die 'delayed-UFS accepted-v4 result digest is absent'
-    grep -Fqx 'LUMA_PIXEL9_DIRECT_KERNEL_AVB_COPY_DTB_ACCEPTANCE_VERSION=2' "$accepted_v4_acceptance" ||
+    grep -Fqx 'SUNO_PIXEL9_DIRECT_KERNEL_AVB_COPY_DTB_ACCEPTANCE_VERSION=2' "$accepted_v4_acceptance" ||
       die 'delayed-UFS predecessor acceptance version differs'
     grep -Fqx "CANDIDATE_SHA256=$accepted_v4_sha" "$accepted_v4_acceptance" ||
       die 'delayed-UFS predecessor digest differs from its acceptance record'
@@ -288,7 +288,7 @@ case "$authorization_mode" in
     ;;
   fedora-userspace-copy-dtb-v6)
     for boundary in \
-      'LUMA_PIXEL9_DIRECT_KERNEL_AVB_FEDORA_CANDIDATE_VERSION=1' \
+      'SUNO_PIXEL9_DIRECT_KERNEL_AVB_FEDORA_CANDIDATE_VERSION=1' \
       'DIAGNOSTIC_VARIANT=fedora-userspace-copy-dtb-v6' \
       'REPORT_VERSION=4' \
       'REPORT_TRANSPORTS=usb-ecm-http' \
@@ -316,7 +316,7 @@ case "$authorization_mode" in
     accepted_v5_result_sha=$(sed -n 's/^PRIOR_ACCEPTANCE_SHA256=//p' "$reproducibility")
     [ -n "$accepted_v5_sha" ] || die 'Fedora-userspace accepted-v5 digest is absent'
     [ -n "$accepted_v5_result_sha" ] || die 'Fedora-userspace accepted-v5 result digest is absent'
-    grep -Fqx 'LUMA_PIXEL9_DIRECT_KERNEL_AVB_UFS_ACCEPTANCE_VERSION=1' "$accepted_v5_acceptance" ||
+    grep -Fqx 'SUNO_PIXEL9_DIRECT_KERNEL_AVB_UFS_ACCEPTANCE_VERSION=1' "$accepted_v5_acceptance" ||
       die 'Fedora-userspace predecessor acceptance version differs'
     grep -Fqx "CANDIDATE_SHA256=$accepted_v5_sha" "$accepted_v5_acceptance" ||
       die 'Fedora-userspace predecessor digest differs from its acceptance record'
@@ -354,7 +354,7 @@ case "$authorization_mode" in
     ;;
   fedora-zstd-userspace-copy-dtb-v7)
     for boundary in \
-      'LUMA_PIXEL9_DIRECT_KERNEL_AVB_FEDORA_ZSTD_CANDIDATE_VERSION=1' \
+      'SUNO_PIXEL9_DIRECT_KERNEL_AVB_FEDORA_ZSTD_CANDIDATE_VERSION=1' \
       'DIAGNOSTIC_VARIANT=fedora-zstd-userspace-copy-dtb-v7' \
       'REPORT_VERSION=4' \
       'REPORT_TRANSPORTS=usb-ecm-http' \
@@ -403,7 +403,7 @@ case "$authorization_mode" in
       "$rejected_v6_result_sha" "$rejected_v6_revocation_sha" "$rejected_v6_proof_sha"; do
       [ -n "$value" ] || die 'Fedora/Zstandard provenance digest is absent'
     done
-    grep -Fqx 'LUMA_PIXEL9_DIRECT_KERNEL_AVB_UFS_ACCEPTANCE_VERSION=1' "$accepted_v5_acceptance" ||
+    grep -Fqx 'SUNO_PIXEL9_DIRECT_KERNEL_AVB_UFS_ACCEPTANCE_VERSION=1' "$accepted_v5_acceptance" ||
       die 'Fedora/Zstandard accepted-v5 version differs'
     grep -Fqx "CANDIDATE_SHA256=$accepted_v5_sha" "$accepted_v5_acceptance" ||
       die 'Fedora/Zstandard accepted-v5 digest differs'
@@ -536,7 +536,7 @@ max_download=$((max_download_raw))
 
 mkdir -p "$evidence_dir"
 {
-  printf 'LUMA_PIXEL9_DIRECT_KERNEL_AVB_BOOT_ATTEMPT_VERSION=1\n'
+  printf 'SUNO_PIXEL9_DIRECT_KERNEL_AVB_BOOT_ATTEMPT_VERSION=1\n'
   printf 'DEVICE=tokay\n'
   printf 'CANDIDATE_KIND=%s\n' "$candidate_kind"
   printf 'AUTHORIZATION_MODE=%s\n' "$authorization_mode"
@@ -554,7 +554,7 @@ printf 'Requesting RAM-only Tokay boot of authorized SHA-256 %s\n' "$candidate_s
 "$fastboot_bin" boot "$candidate"
 
 {
-  printf 'LUMA_PIXEL9_DIRECT_KERNEL_AVB_BOOT_COMMAND_VERSION=1\n'
+  printf 'SUNO_PIXEL9_DIRECT_KERNEL_AVB_BOOT_COMMAND_VERSION=1\n'
   printf 'DEVICE=tokay\n'
   printf 'CANDIDATE_KIND=%s\n' "$candidate_kind"
   printf 'AUTHORIZATION_MODE=%s\n' "$authorization_mode"

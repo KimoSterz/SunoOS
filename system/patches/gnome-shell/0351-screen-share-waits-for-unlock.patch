@@ -1,8 +1,8 @@
-From: Project Luma <builds@project-luma.local>
-Subject: [PATCH] lumaShare, screenShield: no share picker while the session is locked
+From: Project Suno <builds@project-suno.local>
+Subject: [PATCH] SunoShare, screenShield: no share picker while the session is locked
 
 A share request that reached the Shell while the session was locked opened
-Luma Share's picker over the lock screen: the modal dialog layer sits above
+Suno Share's picker over the lock screen: the modal dialog layer sits above
 the screen shield, so the picker and its blurred scrim covered the unlock
 prompt. It also took the grab, and the lock screen shows its pointer only on
 motion it receives itself, so the pointer stayed hidden. An app that lost
@@ -22,10 +22,10 @@ The lock screen's pointer now shows on any pointer motion
 lock dialog: a dialog over the lock screen, such as an authentication
 request, takes the grab and must not leave the pointer hidden.
 
-diff --git a/js/ui/lumaShare.js b/js/ui/lumaShare.js
+diff --git a/js/ui/SunoShare.js b/js/ui/SunoShare.js
 index 0791c42..9669a21 100644
---- a/js/ui/lumaShare.js
-+++ b/js/ui/lumaShare.js
+--- a/js/ui/SunoShare.js
++++ b/js/ui/SunoShare.js
 @@ -469,10 +469,9 @@ export const SharePicker = GObject.registerClass({
          this._cursorModes = request.cursorModes || CursorMode.HIDDEN;
          this._wantsControl = Boolean(request.control);
@@ -113,14 +113,14 @@ index 0791c42..9669a21 100644
 +            return;
 +        const {options, invocation} = this._waiting;
 +        this._waiting = null;
-+        log('Luma Share: the session is unlocked; showing the picker that waited');
++        log('Suno Share: the session is unlocked; showing the picker that waited');
 +        this._present(options, invocation);
 +    }
 +
      async ChooseAsync([options], invocation) {
          if (!await this._callerIsPortal(invocation)) {
              invocation.return_error_literal(Gio.dbus_error_quark(),
-                 Gio.DBusError.ACCESS_DENIED, 'not the Luma portal backend');
+                 Gio.DBusError.ACCESS_DENIED, 'not the Suno portal backend');
              return;
          }
 -        if (this._picker) {
@@ -130,7 +130,7 @@ index 0791c42..9669a21 100644
          }
 +        this._watchLock();
 +        if (!this._sessionOpen) {
-+            log('Luma Share: the session is locked; the picker waits for unlock');
++            log('Suno Share: the session is locked; the picker waits for unlock');
 +            this._waiting = {options, invocation};
 +            return;
 +        }

@@ -13,7 +13,7 @@ class BrowserProcessProof(unittest.TestCase):
         self.commit='a'*64
         self.url='https://gate.invalid/unique-gate-url'
         self.record={'name':'com.rhyme.viola','flatpak_id':'com.rhyme.viola',
-          'exe':'/usr/bin/python3.14','argv':['/usr/bin/python3','/app/share/viola-browser/luma-host/integrated_window.py','--interactive',self.url],
+          'exe':'/usr/bin/python3.14','argv':['/usr/bin/python3','/app/share/viola-browser/Suno-host/integrated_window.py','--interactive',self.url],
           'app_path':'/var/lib/flatpak/app/com.rhyme.viola/x86_64/beta/'+self.commit+'/files'}
     def test_complete_observed_browser_record(self):
         proof.verify(self.record,self.ref,self.commit,self.url)
@@ -22,7 +22,7 @@ class BrowserProcessProof(unittest.TestCase):
         self.record['argv']=['flatpak','run',self.ref,self.url]
         with self.assertRaises(ValueError):proof.verify(self.record,self.ref,self.commit,self.url)
     def test_wrong_owner_ref_rejected(self):
-        self.record['name']='org.projectluma.Viewer'
+        self.record['name']='org.projectSuno.Viewer'
         with self.assertRaises(ValueError):proof.verify(self.record,self.ref,self.commit,self.url)
     def test_wrong_commit_rejected(self):
         self.record['app_path']=self.record['app_path'].replace(self.commit,'b'*64)

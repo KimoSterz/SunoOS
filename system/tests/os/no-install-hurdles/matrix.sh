@@ -1,7 +1,7 @@
 #!/bin/bash
 # SPDX-License-Identifier: MPL-2.0
-# ADR-038 checks, run as root inside a disposable Luma VM that has
-# luma-install-commands and a wheel account "tester" (sudo without a password,
+# ADR-038 checks, run as root inside a disposable Suno VM that has
+# Suno-install-commands and a wheel account "tester" (sudo without a password,
 # test VM only). Never run on a real computer: it installs, removes and
 # overrides packages.
 #   matrix.sh STEP     one step; prints PASS/FAIL lines, exits non-zero on FAIL
@@ -16,8 +16,8 @@ exec > >(tee "$log") 2>&1
 
 case $1 in
   links)
-    check "dnf leads to the Luma front end" test "$(readlink -f /usr/bin/dnf)" = /usr/libexec/luma-install-commands/dnf
-    check "yum leads to the Luma front end" test "$(readlink -f /usr/bin/yum)" = /usr/libexec/luma-install-commands/dnf
+    check "dnf leads to the Suno front end" test "$(readlink -f /usr/bin/dnf)" = /usr/libexec/Suno-install-commands/dnf
+    check "yum leads to the Suno front end" test "$(readlink -f /usr/bin/yum)" = /usr/libexec/Suno-install-commands/dnf
     check "dnf5 is still dnf5" test "$(readlink -f /usr/bin/dnf5)" = /usr/bin/dnf5
     check "SELinux enforcing" test "$(getenforce)" = Enforcing
     check "gpgcheck on for fedora" grep -qx 'gpgcheck=1' /etc/yum.repos.d/fedora.repo
@@ -30,8 +30,8 @@ case $1 in
     check "journal entry for Vitals" sh -c 'journalctl -b MESSAGE_ID=a08437fa35fc4db9a55f26f08c3e9847 -o cat | grep -q "install for htop: live"'
     ;;
   no-restart-nag)
-    check "luma-update does not ask for a restart after a live install" \
-      sh -c '[ "$(luma-update status --json | python3 -c "import json,sys; print(json.load(sys.stdin)[\"state\"])")" != restart-required ]'
+    check "Suno-update does not ask for a restart after a live install" \
+      sh -c '[ "$(Suno-update status --json | python3 -c "import json,sys; print(json.load(sys.stdin)[\"state\"])")" != restart-required ]'
     ;;
   htop-present)
     check "htop present" as_tester htop --version
@@ -53,21 +53,21 @@ case $1 in
     ;;
   upgrade-prompt)
     out=$(cd /tmp && { sleep 20; printf 'n\n'; } | python3 -c 'import pty; pty.spawn(["runuser", "-u", "tester", "--", "sudo", "dnf", "upgrade"])' 2>&1); echo "$out"
-    check "dnf upgrade shows the available Luma version" grep -q 'is available' <<<"$out"
+    check "dnf upgrade shows the available Suno version" grep -q 'is available' <<<"$out"
     check "dnf upgrade asks" grep -q 'Download and prepare it now' <<<"$out"
-    check "no answer yes: nothing staged" sh -c '[ -z "$(luma-update status --json | python3 -c "import json,sys; print(json.load(sys.stdin)[\"staged_version\"])")" ]'
+    check "no answer yes: nothing staged" sh -c '[ -z "$(Suno-update status --json | python3 -c "import json,sys; print(json.load(sys.stdin)[\"staged_version\"])")" ]'
     ;;
   upgrade-yes)
     out=$(cd /tmp && as_tester sudo dnf upgrade -y 2>&1); echo "$out"
     check "dnf upgrade -y prepares the update" grep -q 'installed when you restart' <<<"$out"
-    check "update staged, not applied" sh -c '[ "$(luma-update status --json | python3 -c "import json,sys; print(json.load(sys.stdin)[\"state\"])")" = staged ]'
+    check "update staged, not applied" sh -c '[ "$(Suno-update status --json | python3 -c "import json,sys; print(json.load(sys.stdin)[\"state\"])")" = staged ]'
     check "the computer did not restart" test "$(cat /proc/sys/kernel/random/boot_id)" = "$(cat /var/tmp/nohurdles-boot-id)"
     ;;
   apt)
     out=$(cd /tmp && as_tester sudo apt install -y htop 2>&1); echo "$out"
-    check "apt install htop announces dnf" grep -q 'Luma uses dnf; running: sudo dnf install -y htop' <<<"$out"
+    check "apt install htop announces dnf" grep -q 'Suno uses dnf; running: sudo dnf install -y htop' <<<"$out"
     out=$(cd /tmp && as_tester sudo apt-get install -y firefox 2>&1); code=$?; echo "$out"
-    check "apt-get install firefox announces dnf" grep -q 'Luma uses dnf; running: sudo dnf install -y firefox' <<<"$out"
+    check "apt-get install firefox announces dnf" grep -q 'Suno uses dnf; running: sudo dnf install -y firefox' <<<"$out"
     check "apt-get install firefox exit 0" test "$code" = 0
     out=$(cd /tmp && as_tester sudo apt install -y libssl-dev 2>&1); echo "$out" | tail -3
     check "apt maps libssl-dev" grep -q 'libssl-dev is called openssl-devel on Fedora' <<<"$out"
@@ -91,7 +91,7 @@ case $1 in
     ;;
   firefox-remove)
     out=$(cd /tmp && as_tester sudo dnf remove -y firefox 2>&1); echo "$out"
-    check "dnf remove firefox explains" grep -q "part of Luma's system image" <<<"$out"
+    check "dnf remove firefox explains" grep -q "part of Suno's system image" <<<"$out"
     check "dnf remove firefox completes" grep -q 'Complete!' <<<"$out"
     ;;
   firefox-install)

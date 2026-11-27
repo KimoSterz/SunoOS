@@ -5,7 +5,7 @@ Softmax boosting with histogram splits, L2-regularised leaves and a learned
 default direction for missing values (NaN), which is how one model serves
 every surface: a signal a surface lacks is NaN and takes the branch that
 training found best for "absent". Pure Python (numpy is used for the
-histograms when it is installed), so it trains on any Luma machine; the
+histograms when it is installed), so it trains on any Suno machine; the
 model is plain arrays that the Lua plugin walks with a dozen lines.
 
 fit(..., init=model) keeps boosting from an existing model: the app's
@@ -95,7 +95,7 @@ class Model:
         return softmax(self.raw(x))
 
     def to_json(self) -> dict:
-        return {"format": "luma-touch-gbdt/1", "classes": self.classes, "features": self.features,
+        return {"format": "Suno-touch-gbdt/1", "classes": self.classes, "features": self.features,
                 "base": self.base, "trees": [t.to_json() for t in self.trees], "meta": self.meta}
 
     @classmethod

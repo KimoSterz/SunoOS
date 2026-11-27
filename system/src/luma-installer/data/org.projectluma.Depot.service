@@ -1,3 +1,0 @@
-[D-BUS Service]
-Name=org.projectluma.Depot
-Exec=/usr/bin/luma-depot --gapplication-service

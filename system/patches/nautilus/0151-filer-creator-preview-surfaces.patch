@@ -1,4 +1,4 @@
-From: Project Luma <devnull@projectluma.local>
+From: Project Suno <devnull@projectSuno.local>
 Subject: [PATCH] Filer: responsive Applications and shared preview surfaces
 
 --- a/src/nautilus-applications-directory.c
@@ -566,7 +566,7 @@ Subject: [PATCH] Filer: responsive Applications and shared preview surfaces
 +        else
 +            gtk_widget_remove_css_class (GTK_WIDGET (view), "applications");
 +    }
-     const char *fixture_root = g_getenv ("LUMA_FILER_FIXTURE_ROOT");
+     const char *fixture_root = g_getenv ("SUNO_FILER_FIXTURE_ROOT");
      g_autofree char *fixture_home = fixture_root != NULL
                                      ? g_build_filename (fixture_root, "Home", NULL) : NULL;
 @@ -581,8 +588,13 @@
@@ -605,7 +605,7 @@ Subject: [PATCH] Filer: responsive Applications and shared preview surfaces
 +            ? g_strdup (fixture_kind != NULL ? fixture_kind : kind)
 +            : g_strdup_printf ("%s · %s", fixture_kind != NULL ? fixture_kind : kind,
 +                               fixture_size != NULL ? fixture_size : size);
-         luma_details_pane_add_subject (pane, nautilus_file_get_display_name (file), subtitle, icon);
+         Suno_details_pane_add_subject (pane, nautilus_file_get_display_name (file), subtitle, icon);
      }
      else
 @@ -1386,8 +1400,10 @@
@@ -619,14 +619,14 @@ Subject: [PATCH] Filer: responsive Applications and shared preview surfaces
 +                   : g_strdup_printf ("%s  %s", nautilus_file_get_display_name (file),
 +                                      size != NULL ? size : ""))
                  : g_strdup_printf (ngettext ("%u item", "%u items", n), n);
-             LumaBarItem *chip = luma_bar_item_new_chip (description, filer_file_glyph (file), TRUE);
+             SunoBarItem *chip = Suno_bar_item_new_chip (description, filer_file_glyph (file), TRUE);
              /* The chip wears the file's own face (v71 .who .th). */
 @@ -2603,7 +2619,7 @@
      /* v71: no sidebar toggle in the desktop title bar (F9 still toggles the
       * sidebar); on a phone the title island's ☰ opens the places. The toggle
       * stays as the one owner of the sidebar's open state, unshown. */
 -    gtk_widget_set_visible (GTK_WIDGET (window->sidebar_toggle), FALSE);
-+    luma_sidebar_toggle_set_control_visible (window->sidebar_toggle, FALSE);
++    Suno_sidebar_toggle_set_control_visible (window->sidebar_toggle, FALSE);
      gtk_widget_set_visible (window->sidebar_toggle_phone_host, FALSE);
      GMenuModel *main_menu = NULL;
      g_object_get (window->toolbar, "main-menu", &main_menu, NULL);
@@ -635,27 +635,27 @@ Subject: [PATCH] Filer: responsive Applications and shared preview surfaces
 @@ -48,8 +48,6 @@
    background-image: none;
  }
- .luma-files-window #filer-location-scope image { -gtk-icon-size: 0px; }
--.luma-files-window box.lumaui-bar-chip { min-width: 243px; }
--.luma-files-window .lumaui-action-center.phone box.lumaui-bar-chip { min-width: 0; }
- .luma-files-window row.luma-live-rail-row { padding-left: 3px; padding-right: 3px; }
+ .Suno-files-window #filer-location-scope image { -gtk-icon-size: 0px; }
+-.Suno-files-window box.SunoUI-bar-chip { min-width: 243px; }
+-.Suno-files-window .SunoUI-action-center.phone box.SunoUI-bar-chip { min-width: 0; }
+ .Suno-files-window row.Suno-live-rail-row { padding-left: 3px; padding-right: 3px; }
  
  /* Filer uses a deliberate two-row native title composition. */
 @@ -415,6 +413,14 @@
  
- .luma-files-window .nautilus-grid-view .nautilus-view-cell {
+ .Suno-files-window .nautilus-grid-view .nautilus-view-cell {
    padding: 0;
 +}
 +
 +/* Application faces need breathing room inside the hovered card. Keep the
 + * horizontal tile measure unchanged so a phone still fits three columns. */
-+.luma-files-window .applications.nautilus-grid-view .nautilus-view-cell,
-+.luma-files-window .applications .nautilus-grid-view .nautilus-view-cell {
++.Suno-files-window .applications.nautilus-grid-view .nautilus-view-cell,
++.Suno-files-window .applications .nautilus-grid-view .nautilus-view-cell {
 +  padding-top: 8px;
 +  padding-bottom: 8px;
  }
  
- .luma-files-window .nautilus-grid-view gridview > child.activatable:hover {
+ .Suno-files-window .nautilus-grid-view gridview > child.activatable:hover {
 --- a/src/resources/ui/nautilus-file-chooser.blp
 +++ b/src/resources/ui/nautilus-file-chooser.blp
 @@ -29,7 +29,7 @@
@@ -664,15 +664,15 @@ Subject: [PATCH] Filer: responsive Applications and shared preview surfaces
            orientation: vertical;
 -          spacing: 8;
 +          spacing: 12;
-           styles ["luma-window-body", "luma-chooser-body"]
+           styles ["Suno-window-body", "Suno-chooser-body"]
  
            Box {
 @@ -137,7 +137,7 @@
            }
  
            Adw.MultiLayoutView bottom_toolbar {
--            styles ["luma-island", "luma-island-quiet", "luma-chooser-actions", "luma-controls-quiet"]
-+            styles ["luma-chooser-actions"]
+-            styles ["Suno-island", "Suno-island-quiet", "Suno-chooser-actions", "Suno-controls-quiet"]
++            styles ["Suno-chooser-actions"]
              Adw.Layout {
                name: "wide";
                content: Box {
@@ -680,16 +680,16 @@ Subject: [PATCH] Filer: responsive Applications and shared preview surfaces
                label: _("_Cancel");
                use-underline: true;
                action-name: "window.close";
--              styles ["luma-button", "small"]
-+              styles ["lumaui-text-button", "raised"]
+-              styles ["Suno-button", "small"]
++              styles ["SunoUI-text-button", "raised"]
              }
              [accept-button]
              Button accept_button {
                label: "_Select";
                use-underline: true;
                action-name: "chooser.accept";
--              styles ["suggested-action", "luma-button", "small", "primary"]
-+              styles ["lumaui-text-button", "key"]
+-              styles ["suggested-action", "Suno-button", "small", "primary"]
++              styles ["SunoUI-text-button", "key"]
              }
              [filter-dropdown]
              DropDown filters_dropdown {
@@ -699,7 +699,7 @@ Subject: [PATCH] Filer: responsive Applications and shared preview surfaces
          label: _("_Cancel");
          use-underline: true;
          clicked => $on_cancel_clicked() swapped;
-+        styles ["lumaui-text-button", "raised"]
++        styles ["SunoUI-text-button", "raised"]
        }
  
        Button {
@@ -708,7 +708,7 @@ Subject: [PATCH] Filer: responsive Applications and shared preview surfaces
          sensitive: bind validator.passed;
          clicked => $nautilus_filename_validator_try_accept(validator);
 -        styles ["suggested-action"]
-+        styles ["lumaui-text-button", "raised"]
++        styles ["SunoUI-text-button", "raised"]
        }
      }
    };
@@ -722,7 +722,7 @@ Subject: [PATCH] Filer: responsive Applications and shared preview surfaces
 +#include "nautilus-image.h"
  #include "nautilus-tag-manager.h"
  #include "nautilus-resources.h"
- #include <luma-ui.h>
+ #include <Suno-ui.h>
 @@ -194,6 +196,27 @@
      {GtkWidget *r=find_css(c,css);if(r)return r;}
      return NULL;
@@ -754,20 +754,20 @@ Subject: [PATCH] Filer: responsive Applications and shared preview surfaces
 @@ -299,8 +322,179 @@
      g_assert_cmpfloat(files_box.origin.y,>=,pane_box.origin.y+pane_box.size.height);
      g_signal_emit_by_name(details,"clicked");spin(300);
-     g_assert_null(luma_action_center_get_grown(center));
+     g_assert_null(Suno_action_center_get_grown(center));
 +
 +    /* Applications are launch identities, not zero-byte disk files. Exercise
 +     * the real provider and resulting action bar in the isolated test home. */
 +    g_autofree char *app_dir=g_build_filename(g_get_user_data_dir(),"applications",NULL);
 +    g_assert_cmpint(g_mkdir_with_parents(app_dir,0700),==,0);
-+    g_autofree char *desktop=g_build_filename(app_dir,"org.projectluma.PreviewCamera.desktop",NULL);
++    g_autofree char *desktop=g_build_filename(app_dir,"org.projectSuno.PreviewCamera.desktop",NULL);
 +    g_assert_true(g_file_set_contents(desktop,
 +        "[Desktop Entry]\nType=Application\nName=Creator preview camera\nExec=/bin/true\nIcon=camera-photo-symbolic\n",-1,NULL));
 +    /* Distinct absolute icons exercise cold GtkGridView binds while scrolling,
 +     * not just enumeration of already-cached themed icons. */
 +    for(guint i=0;i<120;i++)
 +    {
-+        g_autofree char *id=g_strdup_printf("org.projectluma.ScrollFixture%03u.desktop",i);
++        g_autofree char *id=g_strdup_printf("org.projectSuno.ScrollFixture%03u.desktop",i);
 +        g_autofree char *entry=g_build_filename(app_dir,id,NULL);
 +        g_autofree char *face=g_strdup_printf("%s/scroll-icon-%03u.svg",app_dir,i);
 +        g_autofree char *art=g_strdup_printf("<svg xmlns='http://www.w3.org/2000/svg' width='96' height='96'><rect width='96' height='96' fill='#%06x'/></svg>",0x208040+i*100);
@@ -804,40 +804,40 @@ Subject: [PATCH] Filer: responsive Applications and shared preview surfaces
 +    g_test_message("Application icon inside hover card: y%.0f; cell CSS padding top%d bottom%d",face_bounds.origin.y,cell_padding.top,cell_padding.bottom);
 +    g_assert_cmpfloat(face_bounds.origin.y,>=,8);
 +
-+    g_autoptr(GFile) app_location=g_file_get_child(apps,"org.projectluma.PreviewCamera.desktop");
++    g_autoptr(GFile) app_location=g_file_get_child(apps,"org.projectSuno.PreviewCamera.desktop");
 +    NautilusFile *app_file=nautilus_file_get(app_location);
 +    g_assert_true(nautilus_file_is_in_applications(app_file));
 +    selection=g_list_append(NULL,app_file);
 +    gtk_window_set_default_size(GTK_WINDOW(window),1180,740);
 +    nautilus_window_open_location_full(window,apps,0,selection);spin(600);
 +    g_list_free_full(selection,g_object_unref);
-+    GtkWidget *chip=luma_action_center_get_bar_control(center,0);
++    GtkWidget *chip=Suno_action_center_get_bar_control(center,0);
 +    g_assert_nonnull(chip);
-+    GtkWidget *preview=find_css(chip,"lumaui-bar-chip-preview");
++    GtkWidget *preview=find_css(chip,"SunoUI-bar-chip-preview");
 +    g_assert_nonnull(preview);
 +    g_assert_cmpint(gtk_widget_get_width(preview),==,28);
 +    g_assert_cmpint(gtk_widget_get_height(preview),==,28);
 +    GtkWidget *name=gtk_widget_get_next_sibling(preview);
 +    g_assert_true(GTK_IS_LABEL(name));
 +    g_assert_cmpstr(gtk_label_get_label(GTK_LABEL(name)),==,"Creator preview camera");
-+    GtkWidget *dismiss=find_css(chip,"lumaui-bar-chip-close");
++    GtkWidget *dismiss=find_css(chip,"SunoUI-bar-chip-close");
 +    g_assert_nonnull(dismiss);
 +    graphene_rect_t close_bounds, chip_bounds, open_bounds;
 +    g_assert_true(gtk_widget_compute_bounds(dismiss,chip,&close_bounds));
 +    g_assert_cmpfloat(gtk_widget_get_width(chip)-close_bounds.origin.x-close_bounds.size.width,<=,14);
-+    GtkWidget *open=luma_action_center_get_bar_control(center,2);
++    GtkWidget *open=Suno_action_center_get_bar_control(center,2);
 +    g_assert_nonnull(open);
 +    g_assert_true(gtk_widget_compute_bounds(chip,GTK_WIDGET(center),&chip_bounds));
 +    g_assert_true(gtk_widget_compute_bounds(open,GTK_WIDGET(center),&open_bounds));
 +    g_assert_cmpfloat(open_bounds.origin.x-chip_bounds.origin.x-chip_bounds.size.width,<=,24);
-+    g_assert_true(luma_details_pane_show(info,TRUE));spin(300);
++    g_assert_true(Suno_details_pane_show(info,TRUE));spin(300);
 +    g_assert_false(contains_label(GTK_WIDGET(info),"Size"));
      gtk_window_destroy(GTK_WINDOW(window));spin(100);
      g_remove(path);
 +    g_remove(desktop);
 +    for(guint i=0;i<120;i++)
 +    {
-+        g_autofree char *entry=g_strdup_printf("%s/org.projectluma.ScrollFixture%03u.desktop",app_dir,i);
++        g_autofree char *entry=g_strdup_printf("%s/org.projectSuno.ScrollFixture%03u.desktop",app_dir,i);
 +        g_autofree char *icon_path=g_strdup_printf("%s/scroll-icon-%03u.svg",app_dir,i);
 +        g_remove(entry);g_remove(icon_path);
 +    }
@@ -935,19 +935,19 @@ Subject: [PATCH] Filer: responsive Applications and shared preview surfaces
      g_autoptr(NautilusApplication) app=nautilus_application_new();
      g_application_set_flags(G_APPLICATION(app),G_APPLICATION_NON_UNIQUE);
      g_autoptr(GError) error=NULL;g_assert_true(g_application_register(G_APPLICATION(app),NULL,&error));
-+    g_test_add_func("/luma/icons/responsiveness",icon_responsiveness);
-     g_test_add_func("/luma/review/navigation",review_navigation);
-     g_test_add_func("/luma/about/native-mutations",fixture);
-     g_test_add_func("/luma/navigation/system-warning",system_warning);
---- a/test/automated/display/test-luma-empty-picker.c
-+++ b/test/automated/display/test-luma-empty-picker.c
++    g_test_add_func("/Suno/icons/responsiveness",icon_responsiveness);
+     g_test_add_func("/Suno/review/navigation",review_navigation);
+     g_test_add_func("/Suno/about/native-mutations",fixture);
+     g_test_add_func("/Suno/navigation/system-warning",system_warning);
+--- a/test/automated/display/test-Suno-empty-picker.c
++++ b/test/automated/display/test-Suno-empty-picker.c
 @@ -75,9 +75,13 @@
          g_assert_true(g_file_set_contents(path, "fixture", -1, NULL));
      }
      const int widths[] = {360, 500, 1024, 1440};
 +    /* The canonical Shell policy owns native appearance. Direct Adw force flags
 +     * are overridden by that policy and can produce mislabeled Light captures. */
-+    g_autoptr(GSettings) appearance = g_settings_new("org.project_luma.shell-state");
++    g_autoptr(GSettings) appearance = g_settings_new("org.projectSuno.shell-state");
      for (int dark = 0; dark < 2; dark++) {
 -        adw_style_manager_set_color_scheme(adw_style_manager_get_default(),
 -            dark ? ADW_COLOR_SCHEME_FORCE_DARK : ADW_COLOR_SCHEME_FORCE_LIGHT);
@@ -960,15 +960,15 @@ Subject: [PATCH] Filer: responsive Applications and shared preview surfaces
 @@ -111,8 +115,12 @@
                  g_assert_nonnull(header);
                  g_assert_cmpstr(adw_header_bar_get_decoration_layout(ADW_HEADER_BAR(header)), ==, ":close");
-                 g_assert_false(gtk_widget_has_css_class(header, "luma-no-automatic-identity"));
--                g_assert_true(gtk_widget_has_css_class(accept, "luma-button"));
+                 g_assert_false(gtk_widget_has_css_class(header, "Suno-no-automatic-identity"));
+-                g_assert_true(gtk_widget_has_css_class(accept, "Suno-button"));
 -                g_assert_true(gtk_widget_has_css_class(accept, "small"));
 +                /* The primary action uses the actual shared native key-button
 +                 * contract, rather than the retired blue compatibility style. */
-+                g_assert_true(gtk_widget_has_css_class(accept, "lumaui-text-button"));
++                g_assert_true(gtk_widget_has_css_class(accept, "SunoUI-text-button"));
 +                g_assert_true(gtk_widget_has_css_class(accept, "key"));
 +                g_assert_false(gtk_widget_has_css_class(accept, "suggested-action"));
-+                g_assert_false(gtk_widget_has_css_class(accept, "luma-button"));
++                g_assert_false(gtk_widget_has_css_class(accept, "Suno-button"));
                  g_assert_cmpstr(gtk_window_get_title(GTK_WINDOW(window)), ==, save ? "Save image" : "Open image");
                  /* Exercise resize after native initial geometry restoration. */
                  gtk_window_set_default_size(GTK_WINDOW(window), widths[n], 560);

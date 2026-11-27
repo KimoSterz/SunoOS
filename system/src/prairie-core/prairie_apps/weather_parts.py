@@ -6,7 +6,7 @@ import gi
 gi.require_version('Gtk', '4.0')
 from gi.repository import Gtk  # noqa: E402
 
-from luma_appkit import ScrollView, TypeLabel, WeatherGlyph, icons  # noqa: E402
+from Suno_appkit import ScrollView, TypeLabel, WeatherGlyph, icons  # noqa: E402
 from .weather_charts import ForecastDay, ForecastGraphic, WeatherHours, WeatherPrecipitationSpace  # noqa: E402
 from .weather_data import weather_icon  # noqa: E402
 

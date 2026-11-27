@@ -1,0 +1,3 @@
+[D-BUS Service]
+Name=org.projectSuno.DepotHost1
+Exec=/usr/bin/python3 -P -m Suno_installer.depot_host

@@ -16,7 +16,7 @@ import * as NetworkAgent from 'resource:///org/gnome/shell/ui/components/network
 import * as PrairieLogin from 'resource:///org/gnome/shell/ui/prairieLogin.js';
 import * as QuickSettings from 'resource:///org/gnome/shell/ui/quickSettings.js';
 import * as Scripting from 'resource:///org/gnome/shell/ui/scripting.js';
-import {BaselineClockRow} from 'resource:///org/gnome/shell/ui/lumaClockLayout.js';
+import {BaselineClockRow} from 'resource:///org/gnome/shell/ui/SunoClockLayout.js';
 
 const PosterLayout = GObject.registerClass(class PosterFixtureLayout extends Clutter.LayoutManager {
     vfunc_allocate(container, box) {
@@ -36,14 +36,14 @@ function baseline(label) {
 }
 async function capture(name) {
     const width = global.stage.width;
-    const file = Gio.File.new_for_path(`/var/tmp/luma-shell100-native/captures/${width}-${name}.png`);
+    const file = Gio.File.new_for_path(`/var/tmp/Suno-shell100-native/captures/${width}-${name}.png`);
     const stream = file.replace(null, false, Gio.FileCreateFlags.NONE, null);
     try { await new Shell.Screenshot().screenshot(false, stream); }
     finally { stream.close(null); }
 }
 export async function run() {
     const iface = new Gio.Settings({schema_id: 'org.gnome.desktop.interface'});
-    const appearance = new Gio.Settings({schema_id: 'org.project_luma.shell-state'});
+    const appearance = new Gio.Settings({schema_id: 'org.projectSuno.shell-state'});
     const shell = new Gio.Settings({schema_id: 'org.gnome.shell'});
     const a11y = new Gio.Settings({schema_id: 'org.gnome.desktop.a11y.interface'});
     iface.set_boolean('enable-animations', false);
@@ -103,7 +103,7 @@ export async function run() {
 
     // Populate only this disposable profile. Existing installed app metadata
     // supplies icons; absent fixtures model geometry, never bundled-app claims.
-    const favorites = JSON.parse(GLib.getenv('LUMA_FOLLOWUP_FAVORITES'));
+    const favorites = JSON.parse(GLib.getenv('SUNO_FOLLOWUP_FAVORITES'));
     check(favorites.length === 22, 'factory-layout fixture has exactly 22 identities');
     for (const [index, id] of favorites.entries()) {
         if (!Shell.AppSystem.get_default().lookup_app(id)) {
@@ -139,7 +139,7 @@ export async function run() {
     await capture('dock-22');
     const launcher = new Gio.SubprocessLauncher({flags: Gio.SubprocessFlags.NONE});
     launcher.setenv('WAYLAND_DISPLAY', 'wayland-shell100', true);
-    const child = launcher.spawnv(['/usr/bin/python3', '/var/tmp/luma-shell100-native/window-fixture.py']);
+    const child = launcher.spawnv(['/usr/bin/python3', '/var/tmp/Suno-shell100-native/window-fixture.py']);
     let window;
     for (let retry = 0; retry < 30 && !window; retry++) {
         await pause();
@@ -160,7 +160,7 @@ export async function run() {
         check(buffer.x < frame.x && buffer.y < frame.y &&
             buffer.x + buffer.width > frame.x + frame.width &&
             buffer.y + buffer.height > frame.y + frame.height,
-            'actual maximized LumaUI shadow buffer extends every frame edge');
+            'actual maximized SunoUI shadow buffer extends every frame edge');
         await capture('maximized');
         window.make_fullscreen(); await pause();
         const full = window.get_frame_rect();
@@ -177,7 +177,7 @@ export async function run() {
         x: 30, y: 140});
     Main.uiGroup.add_child(iconRow);
     const theme = new St.IconTheme();
-    for (const id of ['org.gnome.Nautilus.desktop','org.projectluma.Disks.Preview.desktop','viola-browser.desktop','org.projectluma.Camera.desktop']) {
+    for (const id of ['org.gnome.Nautilus.desktop','org.projectSuno.Disks.Preview.desktop','viola-browser.desktop','org.projectSuno.Camera.desktop']) {
         const app = Shell.AppSystem.get_default().lookup_app(id);
         check(!!app, `native drawer identity exists: ${id}`);
         const gicon = app.get_app_info().get_icon();
@@ -197,7 +197,7 @@ export async function run() {
     // This renders battery state artwork; it does not invent hardware telemetry.
     const glyphs = new St.BoxLayout({style: 'padding:16px; spacing:20px; background-color:#f1f3f5; color:#30353c;', x:40, y:80});
     Main.uiGroup.add_child(glyphs);
-    for (const name of ['lumaui-corner-down-left-symbolic','lumaui-cog-symbolic','network-wireless-symbolic','battery-full-symbolic','system-shutdown-symbolic']) {
+    for (const name of ['SunoUI-corner-down-left-symbolic','SunoUI-cog-symbolic','network-wireless-symbolic','battery-full-symbolic','system-shutdown-symbolic']) {
         const glyph = new St.Icon({icon_name:name, icon_size:24});
         glyphs.add_child(glyph); await pause();
         check(glyph.width === 24 && glyph.height === 24, `native glyph has matching24px optical canvas: ${name}`);
@@ -211,12 +211,12 @@ export async function run() {
     toggle.menu._studioRadio = toggle;
     menu.addItem(toggle);
     const radioRow = menu._mainPage.get_children().find(actor =>
-        actor.has_style_class_name('luma-options-radios'));
+        actor.has_style_class_name('Suno-options-radios'));
     toggle.get_parent().remove_child(toggle);
     radioRow.add_child(toggle);
-    toggle._menuButton.child.child.icon_name = 'lumaui-chevron-right-symbolic';
+    toggle._menuButton.child.child.icon_name = 'SunoUI-chevron-right-symbolic';
     toggle._menuButton.child.child.icon_size = 18;
-    toggle.add_style_class_name('luma-options-radio');
+    toggle.add_style_class_name('Suno-options-radio');
     const rows = [];
     for (let index = 0; index < 30; index++) {
         const row = new QuickSettings.QuickSheetRow();
@@ -230,7 +230,7 @@ export async function run() {
         'native Quick Options frame has no duplicate stock BoxPointer stroke');
     const descendants = actor => [actor, ...actor.get_children().flatMap(descendants)];
     const keys = descendants(menu._mainPage).filter(actor =>
-        actor instanceof St.Widget && actor.has_style_class_name('luma-options-level-key'));
+        actor instanceof St.Widget && actor.has_style_class_name('Suno-options-level-key'));
     check(keys.length >= 2, 'actual output/Auto controls retain shared native material identity');
     // The VM has no ambient-light or physical output device. Map the real
     // provider-owned controls for this paint fixture without faking telemetry.
@@ -312,7 +312,7 @@ export async function run() {
         component._handleRequest(treatment, connection, '802-11-wireless-security', [], 0);
         const dialog = component._dialogs[treatment]; await pause();
         const surface = dialog.dialogLayout._dialog;
-        check(surface.has_style_class_name('luma-system-prompt'), `${treatment}: shared native prompt`);
+        check(surface.has_style_class_name('Suno-system-prompt'), `${treatment}: shared native prompt`);
         const colour = surface.get_theme_node().get_background_color();
         print(`ACTUAL prompt ${treatment} background ${`RGBA ${colour.get_red()},${colour.get_green()},${colour.get_blue()},${colour.get_alpha()}`}`);
         check(colour.get_alpha() === 1, `${treatment}: opaque authentication surface`);
@@ -322,7 +322,7 @@ export async function run() {
         secret.entry.set_text('synthetic-fixture-only'); await pause();
         check(dialog._okButton.button.reactive, `${treatment}: valid fixture enables Connect`);
         a11y.set_boolean('high-contrast', true); await pause();
-        check(surface.has_style_class_name('luma-prompt-high-contrast'), `${treatment}: native high contrast`);
+        check(surface.has_style_class_name('Suno-prompt-high-contrast'), `${treatment}: native high contrast`);
         a11y.set_boolean('high-contrast', false); await pause();
         await capture(`prompt-${treatment}`);
         dialog.cancel(); await pause();

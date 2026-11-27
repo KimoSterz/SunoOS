@@ -13,7 +13,7 @@ import os
 from pathlib import Path
 import tempfile
 
-with tempfile.TemporaryDirectory(prefix="luma-connect-sync-test-") as directory:
+with tempfile.TemporaryDirectory(prefix="Suno-connect-sync-test-") as directory:
     root = Path(directory)
     os.environ["XDG_DATA_HOME"] = str(root / "data")
     os.environ["PRAIRIE_EDS_MODE"] = "disabled"
@@ -225,7 +225,7 @@ with tempfile.TemporaryDirectory(prefix="luma-connect-sync-test-") as directory:
         push(transport=refuse, notes_path=notes_path, contacts_loader=lambda: stub_contacts,
              out=io.StringIO())
     except ConnectError as error:
-        assert "not enrolled" in str(error) and "luma-connect-sync enrol" in str(error), error
+        assert "not enrolled" in str(error) and "Suno-connect-sync enrol" in str(error), error
     else:
         raise AssertionError("push ran without a registration")
 

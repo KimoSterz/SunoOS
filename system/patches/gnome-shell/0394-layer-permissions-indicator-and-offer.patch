@@ -1,16 +1,16 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Project Luma <engineering@projectluma.org>
+From: Project Suno <engineering@projectSuno.org>
 Date: Sat, 21 Nov 2026 17:00:00 -0500
 Subject: [PATCH] Layer permissions: status cell, popover and offer
 
 The status cell is the first column of the shelf's status slots and spans
-both rows: one or two overlaying apps' icons ringed in the LumaUI overlay
+both rows: one or two overlaying apps' icons ringed in the SunoUI overlay
 violet, or the most recent icon and "+N". It shows while an overlay
 surface is on screen and leaves 2 s after the last one goes; while an app
 holds the keyboard through a layer surface it shows that app with a
 keyboard badge. Hovering shows the shelf tooltip. A click opens a 312 px
 shell pop listing each app with what it shows, for how long, and Stop
-(org.projectluma.LayerShell1.Stop: unmapped for the session, the grant
+(org.projectSuno.LayerShell1.Stop: unmapped for the session, the grant
 kept), and Overlay settings (Settings, Apps, Display over other apps). A
 click never stops anything by itself. On a phone the cell sits in the
 status bar's right group and the list is a bottom drawer; on a TV the cell
@@ -36,183 +36,183 @@ and badge, the offer's Settings badge) is drawn through syncAppIconPlate
 
 Design: design-center 4933aaa, mockups/overlay-perms.
 ---
- data/theme/luma-shelf.css             | 127 +++++-
+ data/theme/Suno-shelf.css             | 127 +++++-
  js/js-resources.gresource.xml         |   2 +
- js/ui/lumaLayerShell.js               | 191 +++------
- js/ui/lumaLayerShellIndicator.js      | 575 ++++++++++++++++++++++++++
- js/ui/lumaLayerShellIndicatorModel.js | 134 ++++++
+ js/ui/SunoLayerShell.js               | 191 +++------
+ js/ui/SunoLayerShellIndicator.js      | 575 ++++++++++++++++++++++++++
+ js/ui/SunoLayerShellIndicatorModel.js | 134 ++++++
  js/ui/messageList.js                  |  19 +-
  js/ui/panel.js                        |  64 ++-
  7 files changed, 972 insertions(+), 140 deletions(-)
- create mode 100644 js/ui/lumaLayerShellIndicator.js
- create mode 100644 js/ui/lumaLayerShellIndicatorModel.js
+ create mode 100644 js/ui/SunoLayerShellIndicator.js
+ create mode 100644 js/ui/SunoLayerShellIndicatorModel.js
 
-diff --git a/data/theme/luma-shelf.css b/data/theme/luma-shelf.css
+diff --git a/data/theme/Suno-shelf.css b/data/theme/Suno-shelf.css
 index 0ee675c..9f9390d 100644
---- a/data/theme/luma-shelf.css
-+++ b/data/theme/luma-shelf.css
-@@ -2705,7 +2705,10 @@ StBoxLayout.luma-notification-tray.luma-surface-dark .luma-notification-tray-cou
+--- a/data/theme/Suno-shelf.css
++++ b/data/theme/Suno-shelf.css
+@@ -2705,7 +2705,10 @@ StBoxLayout.Suno-notification-tray.Suno-surface-dark .Suno-notification-tray-cou
    border: none; border-radius: 0; box-shadow: none; color: inherit; }
- .luma-notification-lip .notification-banner.luma-lip-card .luma-notification-grid { spacing: 12px; }
- .luma-notification-lip .notification-banner.luma-lip-card .luma-notification-tile {
+ .Suno-notification-lip .notification-banner.Suno-lip-card .Suno-notification-grid { spacing: 12px; }
+ .Suno-notification-lip .notification-banner.Suno-lip-card .Suno-notification-tile {
 -  width: 34px; height: 34px; border-radius: 10px; }
 +  width: 34px; height: 34px; border-radius: 9px; }
 +/* The standard banner's tile is the app's art alone, clipped at the icon
 + * corner: no drop shadow under it. */
-+.luma-notification-lip .notification-banner.luma-lip-card .luma-notification-tile.luma-notification-tile-art { box-shadow: none; }
- .luma-notification-lip .notification-banner.luma-lip-card .luma-notification-tile .message-source-icon,
- .luma-notification-lip .notification-banner.luma-lip-card .luma-notification-tile .luma-notification-tile-image { icon-size: 34px; }
- .luma-notification-lip .notification-banner.luma-lip-card .luma-notification-tile-glyph {
-@@ -3314,3 +3317,125 @@ StBoxLayout.luma-notification-tray.luma-surface-dark .luma-notification-tray-cou
- .luma-dockf-applications .luma-dockf-cell-name { height: 34px; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .Suno-notification-tile.Suno-notification-tile-art { box-shadow: none; }
+ .Suno-notification-lip .notification-banner.Suno-lip-card .Suno-notification-tile .message-source-icon,
+ .Suno-notification-lip .notification-banner.Suno-lip-card .Suno-notification-tile .Suno-notification-tile-image { icon-size: 34px; }
+ .Suno-notification-lip .notification-banner.Suno-lip-card .Suno-notification-tile-glyph {
+@@ -3314,3 +3317,125 @@ StBoxLayout.Suno-notification-tray.Suno-surface-dark .Suno-notification-tray-cou
+ .Suno-dockf-applications .Suno-dockf-cell-name { height: 34px; }
  
- .luma-dockf-applications .luma-dockf-grid { padding: 12px; spacing: 8px; }
+ .Suno-dockf-applications .Suno-dockf-grid { padding: 12px; spacing: 8px; }
 +
 +/* ── Layer permissions (design-center 858103d, mockups/overlay-perms) ───── */
-+/* Violet is the LumaUI overlay token (config/shared/design-tokens.json,
-+ * oklch(0.72 0.14 300) = #b28fef): an app drawing over Luma, nothing else. */
++/* Violet is the SunoUI overlay token (config/shared/design-tokens.json,
++ * oklch(0.72 0.14 300) = #b28fef): an app drawing over Suno, nothing else. */
 +
 +/* The status cell: first column of the status slots, spanning both rows. */
-+.luma-ov-cell { padding: 0; border-radius: 9px; }
-+.luma-ov-cell:hover { background-color: rgba(255,255,255,.08); }
-+.luma-ov-stack { spacing: 0; }
++.Suno-ov-cell { padding: 0; border-radius: 9px; }
++.Suno-ov-cell:hover { background-color: rgba(255,255,255,.08); }
++.Suno-ov-stack { spacing: 0; }
 +/* The rings are borders of clear frames: St paints a spread shadow square
 + * and under the icon, and draws borders in whole pixels. */
-+.luma-ov-ic-sep { border: 1px solid rgba(0,0,0,.35); border-radius: 8px; }
-+.luma-ov-ic { border: 2px solid #b28fef; border-radius: 7px; }
-+.luma-ov-more { width: 16px; height: 16px; margin: 3px; border-radius: 5px; background-color: #b28fef;
++.Suno-ov-ic-sep { border: 1px solid rgba(0,0,0,.35); border-radius: 8px; }
++.Suno-ov-ic { border: 2px solid #b28fef; border-radius: 7px; }
++.Suno-ov-more { width: 16px; height: 16px; margin: 3px; border-radius: 5px; background-color: #b28fef;
 +  color: #ffffff; font-family: Figtree; font-size: 9px; font-weight: 700; text-align: center; }
-+.luma-ov-kbd { color: #ffffff; background-color: #b28fef; border-radius: 3px; }
-+.luma-ov-tip { font-family: Figtree; font-size: 12px; font-weight: 600; padding: 5px 10px 6px;
++.Suno-ov-kbd { color: #ffffff; background-color: #b28fef; border-radius: 3px; }
++.Suno-ov-tip { font-family: Figtree; font-size: 12px; font-weight: 600; padding: 5px 10px 6px;
 +  border-radius: 9px; color: #ffffff; background-color: rgba(20,21,24,.92); border: none;
 +  box-shadow: 0 8px 20px rgba(0,0,0,.4); }
 +/* Phone: in the status bar's right-hand group. TV: in the top bar's status group. */
-+.luma-ov-cell-phone { margin: 0 6px; }
-+.luma-ov-cell-tv { margin: 0 18px 0 0; }
++.Suno-ov-cell-phone { margin: 0 6px; }
++.Suno-ov-cell-tv { margin: 0 18px 0 0; }
 +
 +/* The popover (perms.js pop(): .pop.k-qs .q2), the standard shell pop: 312 px. */
-+.luma-ov-popover .popup-menu-content.luma-ov-pop,
-+.luma-ov-pop.luma-ov-sheet {
++.Suno-ov-popover .popup-menu-content.Suno-ov-pop,
++.Suno-ov-pop.Suno-ov-sheet {
 +  width: 286px; padding: 14px 16px 12px 10px; spacing: 0; border-radius: 26px; border: none;
 +  background-color: rgba(32,33,36,.86); color: #e7e9e8; font-family: Figtree;
 +  box-shadow: inset 0 0 0 1px rgba(255,255,255,.16); }
-+/* BoxPointer's elevation carrier (luma-popup-shadow) is opaque in Dark and
++/* BoxPointer's elevation carrier (Suno-popup-shadow) is opaque in Dark and
 + * keeps the menus' 15 px corners; under this 26 px pop it showed past them. */
-+.popup-menu.luma-ov-popover .luma-popup-shadow { border-radius: 26px; }
-+.luma-ov-pop-title { font-size: 14.5px; font-weight: 650; }
++.popup-menu.Suno-ov-popover .Suno-popup-shadow { border-radius: 26px; }
++.Suno-ov-pop-title { font-size: 14.5px; font-weight: 650; }
 +/* The kit's well: its fill, a 1 px edge line and a soft inset shadow 1 px
 + * down (--well-edge). St draws one shadow, so the line is the border and
 + * the padding gives that pixel back. */
-+.luma-ov-list { margin: 18px 0 0 6px; padding: 3px; spacing: 1px; border-radius: 16px; background-color: rgba(0,0,0,.2);
++.Suno-ov-list { margin: 18px 0 0 6px; padding: 3px; spacing: 1px; border-radius: 16px; background-color: rgba(0,0,0,.2);
 +  border: 1px solid rgba(255,255,255,.035); box-shadow: inset 0 1px 2px rgba(0,0,0,.35); }
-+.luma-ov-row { min-height: 34px; padding: 5px 10px 5px 5px; spacing: 10px; border-radius: 12px; }
-+.luma-ov-row-icon { icon-size: 32px; }
-+.luma-ov-row-words { spacing: 1px; }
-+.luma-ov-row-name { font-size: 13px; font-weight: 650; height: 15px; }
-+.luma-ov-row-detail { spacing: 6px; height: 14px; }
-+.luma-ov-row-what { font-size: 11.5px; color: rgba(231,233,232,.62); }
-+.luma-ov-dot { width: 6px; height: 6px; border-radius: 3px; background-color: #b28fef; }
-+.luma-ov-stop { height: 28px; padding: 0 12px; border-radius: 9px; font-size: 12px; font-weight: 650;
++.Suno-ov-row { min-height: 34px; padding: 5px 10px 5px 5px; spacing: 10px; border-radius: 12px; }
++.Suno-ov-row-icon { icon-size: 32px; }
++.Suno-ov-row-words { spacing: 1px; }
++.Suno-ov-row-name { font-size: 13px; font-weight: 650; height: 15px; }
++.Suno-ov-row-detail { spacing: 6px; height: 14px; }
++.Suno-ov-row-what { font-size: 11.5px; color: rgba(231,233,232,.62); }
++.Suno-ov-dot { width: 6px; height: 6px; border-radius: 3px; background-color: #b28fef; }
++.Suno-ov-stop { height: 28px; padding: 0 12px; border-radius: 9px; font-size: 12px; font-weight: 650;
 +  color: #e7e9e8; background-color: rgba(255,255,255,.12); }
-+.luma-ov-stop:hover, .luma-ov-stop:focus { background-color: rgba(255,255,255,.17); }
-+.luma-ov-more-link { height: 28px; margin: 14px 0 0 4px; padding: 0 8px; border-radius: 8px;
++.Suno-ov-stop:hover, .Suno-ov-stop:focus { background-color: rgba(255,255,255,.17); }
++.Suno-ov-more-link { height: 28px; margin: 14px 0 0 4px; padding: 0 8px; border-radius: 8px;
 +  font-size: 12px; font-weight: 600; color: #e7e9e8; }
-+.luma-ov-more-link:hover, .luma-ov-more-link:focus { background-color: rgba(255,255,255,.08); }
++.Suno-ov-more-link:hover, .Suno-ov-more-link:focus { background-color: rgba(255,255,255,.08); }
 +/* Light surfaces. */
 +/* St scores a selector group by the last selector that matches, so the desktop
 + * pop's light rule stands alone to outrank its dark rule. */
-+.luma-ov-popover .popup-menu-content.luma-ov-pop.luma-surface-light {
++.Suno-ov-popover .popup-menu-content.Suno-ov-pop.Suno-surface-light {
 +  background-color: #eceef1; color: #16191d; border-color: rgba(255,255,255,.9);
 +  box-shadow: 0 4px 12px rgba(0,0,0,.2); }
-+.luma-ov-pop.luma-surface-light, .luma-ov-toast-tv.luma-surface-light {
++.Suno-ov-pop.Suno-surface-light, .Suno-ov-toast-tv.Suno-surface-light {
 +  background-color: #eceef1; color: #16191d; border-color: rgba(255,255,255,.9);
 +  box-shadow: 0 4px 12px rgba(0,0,0,.2); }
-+.luma-surface-light .luma-ov-list { background-color: rgba(25,27,31,.055); border-color: rgba(25,27,31,.04);
++.Suno-surface-light .Suno-ov-list { background-color: rgba(25,27,31,.055); border-color: rgba(25,27,31,.04);
 +  box-shadow: inset 0 1px 2px rgba(25,27,31,.1); }
-+.luma-surface-light .luma-ov-row-what { color: rgba(22,25,29,.76); }
-+.luma-surface-light .luma-ov-stop { color: #16191d; background-color: rgba(20,22,26,.09); }
-+.luma-surface-light .luma-ov-stop:hover, .luma-surface-light .luma-ov-stop:focus { background-color: rgba(20,22,26,.14); }
-+.luma-surface-light .luma-ov-more-link { color: #16191d; }
-+.luma-surface-light .luma-ov-more-link:hover { background-color: rgba(25,27,31,.06); }
++.Suno-surface-light .Suno-ov-row-what { color: rgba(22,25,29,.76); }
++.Suno-surface-light .Suno-ov-stop { color: #16191d; background-color: rgba(20,22,26,.09); }
++.Suno-surface-light .Suno-ov-stop:hover, .Suno-surface-light .Suno-ov-stop:focus { background-color: rgba(20,22,26,.14); }
++.Suno-surface-light .Suno-ov-more-link { color: #16191d; }
++.Suno-surface-light .Suno-ov-more-link:hover { background-color: rgba(25,27,31,.06); }
 +/* Phone: a bottom drawer, full width, 28 px top radius, 60 px rows, 40 px Stop. */
-+.luma-ov-sheet-shade { background-color: rgba(0,0,0,.32); }
++.Suno-ov-sheet-shade { background-color: rgba(0,0,0,.32); }
 +/* The drawer's 22/30 px padding less the pop header's 4 px lift and the
 + * link's 2 px: the title at 18, the link's foot 28 above the bottom. */
-+.luma-ov-sheet.luma-ov-phone { width: auto; border-radius: 28px 28px 0 0; padding: 18px 18px 28px 12px; }
-+.luma-ov-sheet.luma-ov-phone .luma-ov-row { min-height: 50px; }
-+.luma-ov-sheet.luma-ov-phone .luma-ov-stop { height: 40px; padding: 0 18px; font-size: 14px; }
++.Suno-ov-sheet.Suno-ov-phone { width: auto; border-radius: 28px 28px 0 0; padding: 18px 18px 28px 12px; }
++.Suno-ov-sheet.Suno-ov-phone .Suno-ov-row { min-height: 50px; }
++.Suno-ov-sheet.Suno-ov-phone .Suno-ov-stop { height: 40px; padding: 0 18px; font-size: 14px; }
 +/* TV: the quick panel's page at TV scale (x1.5), top right; focus is a white ring. */
-+.luma-ov-sheet.luma-ov-tv { width: 801px; margin: 72px 72px 0 0; padding: 21px 24px 18px 15px; spacing: 0;
++.Suno-ov-sheet.Suno-ov-tv { width: 801px; margin: 72px 72px 0 0; padding: 21px 24px 18px 15px; spacing: 0;
 +  border-radius: 39px; }
-+.luma-ov-tv .luma-ov-list { margin: 27px 0 0 9px; }
-+.luma-ov-tv .luma-ov-more-link { margin: 21px 0 0 6px; }
-+.luma-ov-tv .luma-ov-pop-title { font-size: 21.75px; }
++.Suno-ov-tv .Suno-ov-list { margin: 27px 0 0 9px; }
++.Suno-ov-tv .Suno-ov-more-link { margin: 21px 0 0 6px; }
++.Suno-ov-tv .Suno-ov-pop-title { font-size: 21.75px; }
 +/* St rounds lengths to whole pixels, so the x1.5 halves (1.5 px between
 + * rows, 7.5 px row padding) are split to keep the list's total height. */
-+.luma-ov-tv .luma-ov-list { padding: 5px 5px 4px; spacing: 2px; border-radius: 24px; box-shadow: inset 0 2px 3px rgba(0,0,0,.35); }
-+.luma-ov-tv .luma-ov-row { min-height: 51px; padding: 7px 15px 8px 8px; spacing: 15px; border-radius: 18px; }
-+.luma-ov-tv .luma-ov-row-name { font-size: 18.75px; height: 23px; }
-+.luma-ov-tv .luma-ov-row-what { font-size: 16.5px; }
-+.luma-ov-tv .luma-ov-row-detail { height: 21px; }
-+.luma-ov-tv .luma-ov-dot { width: 9px; height: 9px; border-radius: 4.5px; }
-+.luma-ov-tv .luma-ov-row-detail { spacing: 9px; }
-+.luma-ov-tv .luma-ov-stop { height: 42px; padding: 0 18px; border-radius: 13.5px; font-size: 18px; }
-+.luma-ov-sheet.luma-ov-tv .luma-ov-row .luma-ov-stop,
-+.luma-ov-sheet.luma-ov-tv .luma-ov-row .luma-ov-stop:focus { background-color: #3a3c40; color: #e7e9e8; }
-+.luma-ov-sheet.luma-ov-tv .luma-ov-row .luma-ov-stop:focus { box-shadow: 0 0 0 4.5px #ffffff; }
-+.luma-ov-tv .luma-ov-more-link { height: 42px; padding: 0 12px; border-radius: 12px; font-size: 18px; }
++.Suno-ov-tv .Suno-ov-list { padding: 5px 5px 4px; spacing: 2px; border-radius: 24px; box-shadow: inset 0 2px 3px rgba(0,0,0,.35); }
++.Suno-ov-tv .Suno-ov-row { min-height: 51px; padding: 7px 15px 8px 8px; spacing: 15px; border-radius: 18px; }
++.Suno-ov-tv .Suno-ov-row-name { font-size: 18.75px; height: 23px; }
++.Suno-ov-tv .Suno-ov-row-what { font-size: 16.5px; }
++.Suno-ov-tv .Suno-ov-row-detail { height: 21px; }
++.Suno-ov-tv .Suno-ov-dot { width: 9px; height: 9px; border-radius: 4.5px; }
++.Suno-ov-tv .Suno-ov-row-detail { spacing: 9px; }
++.Suno-ov-tv .Suno-ov-stop { height: 42px; padding: 0 18px; border-radius: 13.5px; font-size: 18px; }
++.Suno-ov-sheet.Suno-ov-tv .Suno-ov-row .Suno-ov-stop,
++.Suno-ov-sheet.Suno-ov-tv .Suno-ov-row .Suno-ov-stop:focus { background-color: #3a3c40; color: #e7e9e8; }
++.Suno-ov-sheet.Suno-ov-tv .Suno-ov-row .Suno-ov-stop:focus { box-shadow: 0 0 0 4.5px #ffffff; }
++.Suno-ov-tv .Suno-ov-more-link { height: 42px; padding: 0 12px; border-radius: 12px; font-size: 18px; }
 +
 +/* TV: the standard banner at TV scale (x1.5): 588 px, 51 px tile at 21,21
 + * with the 24 px badge 3 px inside its corner,
 + * text from x=90 to 27 px from the right (the time to 24), source / title /
 + * body, content-width actions 45 px tall; 180 px with a one-line body. */
-+.luma-ov-toast-tv { width: 543px; padding: 21px 24px 21px 21px; spacing: 18px; border-radius: 30px;
++.Suno-ov-toast-tv { width: 543px; padding: 21px 24px 21px 21px; spacing: 18px; border-radius: 30px;
 +  background-color: #21252b; color: #eceef1; font-family: Figtree;
 +  box-shadow: 0 27px 60px -27px rgba(0,0,0,.35); }
-+.luma-ov-toast-tv.luma-surface-light { background-color: #eceef1; color: #1f2328; }
-+.luma-ov-toast-tile { width: 51px; height: 51px; }
-+.luma-ov-toast-badge { border: 3px solid rgba(10,12,16,.85); border-radius: 10.5px; background-color: rgba(10,12,16,.85); }
-+.luma-ov-toast-column { spacing: 0; padding-top: 1px; }
-+.luma-ov-toast-top { height: 18px; }
-+.luma-ov-toast-source { font-size: 15px; font-weight: 700; letter-spacing: 1.2px; color: rgba(231,233,232,.42); }
-+.luma-ov-toast-time { font-size: 16.5px; color: rgba(231,233,232,.42); }
-+.luma-surface-light .luma-ov-toast-source, .luma-surface-light .luma-ov-toast-time { color: rgba(31,35,40,.5); }
-+.luma-ov-toast-title { margin-top: 5px; height: 24px; font-size: 20.4px; font-weight: 600; }
-+.luma-ov-toast-body { margin-top: 4px; margin-right: 3px; font-size: 18.75px; color: rgba(231,233,232,.62); }
-+.luma-surface-light .luma-ov-toast-body { color: rgba(31,35,40,.78); }
-+.luma-ov-toast-actions { spacing: 9px; padding-top: 15px; }
++.Suno-ov-toast-tv.Suno-surface-light { background-color: #eceef1; color: #1f2328; }
++.Suno-ov-toast-tile { width: 51px; height: 51px; }
++.Suno-ov-toast-badge { border: 3px solid rgba(10,12,16,.85); border-radius: 10.5px; background-color: rgba(10,12,16,.85); }
++.Suno-ov-toast-column { spacing: 0; padding-top: 1px; }
++.Suno-ov-toast-top { height: 18px; }
++.Suno-ov-toast-source { font-size: 15px; font-weight: 700; letter-spacing: 1.2px; color: rgba(231,233,232,.42); }
++.Suno-ov-toast-time { font-size: 16.5px; color: rgba(231,233,232,.42); }
++.Suno-surface-light .Suno-ov-toast-source, .Suno-surface-light .Suno-ov-toast-time { color: rgba(31,35,40,.5); }
++.Suno-ov-toast-title { margin-top: 5px; height: 24px; font-size: 20.4px; font-weight: 600; }
++.Suno-ov-toast-body { margin-top: 4px; margin-right: 3px; font-size: 18.75px; color: rgba(231,233,232,.62); }
++.Suno-surface-light .Suno-ov-toast-body { color: rgba(31,35,40,.78); }
++.Suno-ov-toast-actions { spacing: 9px; padding-top: 15px; }
 +/* Content-width actions, the standard banner's (#32363c dark, #dfe1e4 light,
 + * Review 4) at x1.5 (19.5 px each side, split into whole pixels). Opaque fills: St paints the focus ring, a spread
 + * shadow, under a translucent fill. */
-+.luma-ov-toast-button { height: 45px; padding: 0 19px 0 20px; border-radius: 15px;
++.Suno-ov-toast-button { height: 45px; padding: 0 19px 0 20px; border-radius: 15px;
 +  font-size: 18px; font-weight: 650; color: #eceef1; background-color: #32363c; }
-+.luma-surface-light .luma-ov-toast-button { color: #1f2328; background-color: #dfe1e4; }
++.Suno-surface-light .Suno-ov-toast-button { color: #1f2328; background-color: #dfe1e4; }
 +/* The remote's focus is a white ring; the fill and ink stay as they are. */
-+.luma-ov-toast-tv .luma-ov-toast-actions .luma-ov-toast-button:focus { box-shadow: 0 0 0 4.5px #ffffff; }
++.Suno-ov-toast-tv .Suno-ov-toast-actions .Suno-ov-toast-button:focus { box-shadow: 0 0 0 4.5px #ffffff; }
 diff --git a/js/js-resources.gresource.xml b/js/js-resources.gresource.xml
 index dd70305..77d1f25 100644
 --- a/js/js-resources.gresource.xml
 +++ b/js/js-resources.gresource.xml
 @@ -101,6 +101,8 @@
-     <file>ui/lumaLayerShell.js</file>
-     <file>ui/lumaLayerShellModel.js</file>
-     <file>ui/lumaLayerShellTokens.js</file>
-+    <file>ui/lumaLayerShellIndicator.js</file>
-+    <file>ui/lumaLayerShellIndicatorModel.js</file>
-     <file>ui/lumaDockBadgeModel.js</file>
-     <file>ui/lumaDockBadges.js</file>
-     <file>ui/lumaDockFolders.js</file>
-diff --git a/js/ui/lumaLayerShell.js b/js/ui/lumaLayerShell.js
+     <file>ui/SunoLayerShell.js</file>
+     <file>ui/SunoLayerShellModel.js</file>
+     <file>ui/SunoLayerShellTokens.js</file>
++    <file>ui/SunoLayerShellIndicator.js</file>
++    <file>ui/SunoLayerShellIndicatorModel.js</file>
+     <file>ui/SunoDockBadgeModel.js</file>
+     <file>ui/SunoDockBadges.js</file>
+     <file>ui/SunoDockFolders.js</file>
+diff --git a/js/ui/SunoLayerShell.js b/js/ui/SunoLayerShell.js
 index 5e779d6..059a0aa 100644
---- a/js/ui/lumaLayerShell.js
-+++ b/js/ui/lumaLayerShell.js
+--- a/js/ui/SunoLayerShell.js
++++ b/js/ui/SunoLayerShell.js
 @@ -13,8 +13,7 @@
  //   top-left corner (design-center 858103d, mockups/overlay-perms/faded.html).
- // - org.projectluma.LayerShell1 (IFACE) on the Shell's session bus name,
- //   object /org/projectluma/LayerShell, carries the rest for the status
+ // - org.projectSuno.LayerShell1 (IFACE) on the Shell's session bus name,
+ //   object /org/projectSuno/LayerShell, carries the rest for the status
 -//   indicator, the offer and Settings. The indicator and the offer here are
 -//   unstyled placeholders built on it, for tests until their design lands.
-+//   indicator, the offer (lumaLayerShellIndicator.js) and Settings.
++//   indicator, the offer (SunoLayerShellIndicator.js) and Settings.
  import Clutter from 'gi://Clutter';
  import GLib from 'gi://GLib';
  import GObject from 'gi://GObject';
@@ -221,10 +221,10 @@ index 5e779d6..059a0aa 100644
  
  import * as Main from './main.js';
 -import * as MessageTray from './messageTray.js';
-+import * as Indicator from './lumaLayerShellIndicator.js';
- import * as Model from './lumaLayerShellModel.js';
-+import * as View from './lumaLayerShellIndicatorModel.js';
- import {OVERLAY} from './lumaLayerShellTokens.js';
++import * as Indicator from './SunoLayerShellIndicator.js';
+ import * as Model from './SunoLayerShellModel.js';
++import * as View from './SunoLayerShellIndicatorModel.js';
+ import {OVERLAY} from './SunoLayerShellTokens.js';
  
  const IFACE = `<node>
 @@ -83,112 +83,44 @@ const TAG_GAP = 6;
@@ -265,7 +265,7 @@ index 5e779d6..059a0aa 100644
 -        const {name, gicon} = appInfo(appId);
 +        const {name, gicon} = Indicator.appInfo(appId);
          super._init({
-             name: 'lumaLayerNameTag',
+             name: 'SunoLayerNameTag',
 +            style: `border: ${RING}px solid ${OVERLAY}; border-radius: ${13 + RING}px;`,
 +        });
 +        const pill = new St.BoxLayout({
@@ -311,7 +311,7 @@ index 5e779d6..059a0aa 100644
 -class OverlayIndicator extends St.BoxLayout {
 -    _init(onStop) {
 -        super._init({
--            name: 'lumaLayerOverlayIndicator',
+-            name: 'SunoLayerOverlayIndicator',
 -            reactive: true,
 -            style: 'spacing: 6px; padding: 6px; background-color: rgba(0, 0, 0, 0.6);',
 -        });
@@ -474,24 +474,24 @@ index 5e779d6..059a0aa 100644
      }
  }
  
-diff --git a/js/ui/lumaLayerShellIndicator.js b/js/ui/lumaLayerShellIndicator.js
+diff --git a/js/ui/SunoLayerShellIndicator.js b/js/ui/SunoLayerShellIndicator.js
 new file mode 100644
 index 0000000..7cbe375
 --- /dev/null
-+++ b/js/ui/lumaLayerShellIndicator.js
++++ b/js/ui/SunoLayerShellIndicator.js
 @@ -0,0 +1,575 @@
 +// SPDX-License-Identifier: GPL-2.0-or-later
 +// The overlay status cell, its popover and the offer (design-center 858103d,
 +// mockups/overlay-perms: indicator.html, offer.html; perms.css, perms.js).
 +//
 +// - The cell is the first column of the shelf's status grid and spans both
-+//   rows: one or two app icons ringed in the LumaUI overlay violet, or the
++//   rows: one or two app icons ringed in the SunoUI overlay violet, or the
 +//   most recent icon and "+N". It shows while an overlay surface is on screen
 +//   and leaves GRACE_MS after the last one goes. While an app holds the
 +//   keyboard through a layer surface it shows that app with a keyboard badge.
 +// - Hovering shows the shelf tooltip; a click opens the popover and never
 +//   stops anything by itself. Stop unmaps the app's overlays for the session
-+//   (org.projectluma.LayerShell1.Stop); the grant stays.
++//   (org.projectSuno.LayerShell1.Stop); the grant stays.
 +// - Phone: the cell sits first in the status bar's right-hand group and the
 +//   popover is a bottom drawer. TV: the cell sits in the top bar's status
 +//   group and the popover is a TV quick-panel page at TV scale, the remote's
@@ -509,10 +509,10 @@ index 0000000..7cbe375
 +import * as Main from './main.js';
 +import * as MessageTray from './messageTray.js';
 +import * as PopupMenu from './popupMenu.js';
-+import * as SurfaceMaterials from './lumaSurfaceMaterials.js';
-+import {LumaIconMask, syncAppIconPlate} from './iconMask.js';
-+import * as Model from './lumaLayerShellModel.js';
-+import * as View from './lumaLayerShellIndicatorModel.js';
++import * as SurfaceMaterials from './SunoSurfaceMaterials.js';
++import {SunoIconMask, syncAppIconPlate} from './iconMask.js';
++import * as Model from './SunoLayerShellModel.js';
++import * as View from './SunoLayerShellIndicatorModel.js';
 +
 +const SETTINGS_ICON = 'org.gnome.Settings';
 +const ICON_RADIUS = 5 / 16;
@@ -542,9 +542,9 @@ index 0000000..7cbe375
 +    const clip = new St.Bin({style_class: styleClass, style: `width: ${size}px; height: ${size}px;`,
 +        clip_to_allocation: true, child: icon});
 +    try {
-+        const mask = new LumaIconMask();
++        const mask = new SunoIconMask();
 +        mask.set_uniform_float(mask.get_uniform_location('radius'), 1, [radius]);
-+        clip.add_effect_with_name('luma-ov-mask', mask);
++        clip.add_effect_with_name('Suno-ov-mask', mask);
 +    } catch (e) {
 +        logError(e, 'Overlay icon mask unavailable');
 +    }
@@ -555,9 +555,9 @@ index 0000000..7cbe375
 +// One ringed app icon: 16 px, 5 px radius, a 1.5 px violet ring and a 3 px
 +// dark separation ring outside it (perms.css .ov-ic).
 +function ringedIcon(appId) {
-+    const outer = new St.Bin({style_class: 'luma-ov-ic-sep'});
-+    const ring = new St.Bin({style_class: 'luma-ov-ic'});
-+    ring.set_child(maskedIcon(appInfo(appId).gicon, 16, 'luma-ov-ic-glyph'));
++    const outer = new St.Bin({style_class: 'Suno-ov-ic-sep'});
++    const ring = new St.Bin({style_class: 'Suno-ov-ic'});
++    ring.set_child(maskedIcon(appInfo(appId).gicon, 16, 'Suno-ov-ic-glyph'));
 +    outer.set_child(ring);
 +    return outer;
 +}
@@ -565,10 +565,10 @@ index 0000000..7cbe375
 +// The status cell.
 +export const OverlayCell = GObject.registerClass({
 +    Signals: {'activate': {}},
-+}, class LumaOverlayCell extends St.Button {
++}, class SunoOverlayCell extends St.Button {
 +    _init() {
 +        super._init({
-+            style_class: 'luma-ov-cell',
++            style_class: 'Suno-ov-cell',
 +            reactive: true,
 +            can_focus: true,
 +            track_hover: true,
@@ -576,15 +576,15 @@ index 0000000..7cbe375
 +            y_align: Clutter.ActorAlign.FILL,
 +            visible: false,
 +        });
-+        this._lumaOverlayCell = true;
++        this._SunoOverlayCell = true;
 +        this._stack = new St.BoxLayout({
-+            style_class: 'luma-ov-stack',
++            style_class: 'Suno-ov-stack',
 +            orientation: Clutter.Orientation.VERTICAL,
 +            x_align: Clutter.ActorAlign.CENTER,
 +            y_align: Clutter.ActorAlign.CENTER,
 +        });
 +        this.set_child(this._stack);
-+        this._tip = new St.Label({style_class: 'dash-label luma-ov-tip', visible: false});
++        this._tip = new St.Label({style_class: 'dash-label Suno-ov-tip', visible: false});
 +        Main.layoutManager.addTopChrome(this._tip);
 +        this.connect('notify::hover', () => this._syncTip());
 +        this.connect('clicked', () => {
@@ -600,8 +600,8 @@ index 0000000..7cbe375
 +        const names = appIds.map(id => appInfo(id).name);
 +        if (appIds.length === 0 && keyboard) {
 +            const icon = ringedIcon(keyboard);
-+            const badge = new St.Icon({icon_name: 'lumaui-keyboard-symbolic', icon_size: 10,
-+                style_class: 'luma-ov-kbd', x_align: Clutter.ActorAlign.END, y_align: Clutter.ActorAlign.END});
++            const badge = new St.Icon({icon_name: 'SunoUI-keyboard-symbolic', icon_size: 10,
++                style_class: 'Suno-ov-kbd', x_align: Clutter.ActorAlign.END, y_align: Clutter.ActorAlign.END});
 +            const box = new St.Widget({layout_manager: new Clutter.BinLayout()});
 +            badge.set({x_expand: true, y_expand: true});
 +            box.add_child(icon);
@@ -614,7 +614,7 @@ index 0000000..7cbe375
 +                this._stack.add_child(ringedIcon(id));
 +            if (more) {
 +                this._stack.add_child(new St.Label({
-+                    style_class: 'luma-ov-more', text: `+${more}`,
++                    style_class: 'Suno-ov-more', text: `+${more}`,
 +                    x_align: Clutter.ActorAlign.CENTER, y_align: Clutter.ActorAlign.CENTER,
 +                }));
 +            }
@@ -648,27 +648,27 @@ index 0000000..7cbe375
 +function fillList(box, entries, onStop, onSettings) {
 +    box.destroy_all_children();
 +    const now = Math.floor(GLib.get_real_time() / GLib.USEC_PER_SEC);
-+    box.add_child(new St.Label({style_class: 'luma-ov-pop-title', text: _('Over other apps')}));
-+    const list = new St.BoxLayout({style_class: 'luma-ov-list', orientation: Clutter.Orientation.VERTICAL});
++    box.add_child(new St.Label({style_class: 'Suno-ov-pop-title', text: _('Over other apps')}));
++    const list = new St.BoxLayout({style_class: 'Suno-ov-list', orientation: Clutter.Orientation.VERTICAL});
 +    const stops = [];
 +    // Rows by name, so they keep their places as overlays come and go.
 +    const named = entries.map(entry => ({entry, ...appInfo(entry.app)}))
 +        .sort((a, b) => a.name.localeCompare(b.name));
 +    for (const {entry, name, gicon} of named) {
-+        const row = new St.BoxLayout({style_class: 'luma-ov-row', x_expand: true});
-+        const icon = maskedIcon(gicon, View.ROW_ICON[posture()] ?? 32, 'luma-ov-row-icon', ROW_ICON_RADIUS);
++        const row = new St.BoxLayout({style_class: 'Suno-ov-row', x_expand: true});
++        const icon = maskedIcon(gicon, View.ROW_ICON[posture()] ?? 32, 'Suno-ov-row-icon', ROW_ICON_RADIUS);
 +        icon.y_align = Clutter.ActorAlign.CENTER;
 +        row.add_child(icon);
 +        const words = new St.BoxLayout({orientation: Clutter.Orientation.VERTICAL,
-+            style_class: 'luma-ov-row-words', x_expand: true, y_align: Clutter.ActorAlign.CENTER});
-+        words.add_child(new St.Label({style_class: 'luma-ov-row-name', text: name}));
-+        const detail = new St.BoxLayout({style_class: 'luma-ov-row-detail'});
-+        detail.add_child(new St.Widget({style_class: 'luma-ov-dot', y_align: Clutter.ActorAlign.CENTER}));
-+        detail.add_child(new St.Label({style_class: 'luma-ov-row-what', text: View.detail(entry, now),
++            style_class: 'Suno-ov-row-words', x_expand: true, y_align: Clutter.ActorAlign.CENTER});
++        words.add_child(new St.Label({style_class: 'Suno-ov-row-name', text: name}));
++        const detail = new St.BoxLayout({style_class: 'Suno-ov-row-detail'});
++        detail.add_child(new St.Widget({style_class: 'Suno-ov-dot', y_align: Clutter.ActorAlign.CENTER}));
++        detail.add_child(new St.Label({style_class: 'Suno-ov-row-what', text: View.detail(entry, now),
 +            y_align: Clutter.ActorAlign.CENTER}));
 +        words.add_child(detail);
 +        row.add_child(words);
-+        const stop = new St.Button({style_class: 'luma-ov-stop', label: _('Stop'), can_focus: true,
++        const stop = new St.Button({style_class: 'Suno-ov-stop', label: _('Stop'), can_focus: true,
 +            y_align: Clutter.ActorAlign.CENTER, accessible_name: _('Stop %s').format(name)});
 +        stop.connect('clicked', () => onStop(entry.app));
 +        row.add_child(stop);
@@ -676,7 +676,7 @@ index 0000000..7cbe375
 +        list.add_child(row);
 +    }
 +    box.add_child(list);
-+    const more = new St.Button({style_class: 'luma-ov-more-link', label: _('Overlay settings'),
++    const more = new St.Button({style_class: 'Suno-ov-more-link', label: _('Overlay settings'),
 +        can_focus: true, x_align: Clutter.ActorAlign.START});
 +    more.connect('clicked', () => onSettings());
 +    box.add_child(more);
@@ -691,7 +691,7 @@ index 0000000..7cbe375
 +        log(`Failed to open overlay settings: ${e.message}`));
 +}
 +
-+// Desktop: a shelf surface from the status island (lumaShelfSurface.js
++// Desktop: a shelf surface from the status island (SunoShelfSurface.js
 +// places it); phone: a bottom drawer; TV: a quick-panel page at TV scale.
 +class OverlayPopover {
 +    constructor(onStop) {
@@ -735,8 +735,8 @@ index 0000000..7cbe375
 +        if (this._menu?.sourceActor !== source) {
 +            this._menu?.destroy();
 +            this._menu = new PopupMenu.PopupMenu(source, 0.5, St.Side.BOTTOM);
-+            this._menu.actor.add_style_class_name('luma-ov-popover');
-+            this._menu.box.add_style_class_name('luma-ov-pop');
++            this._menu.actor.add_style_class_name('Suno-ov-popover');
++            this._menu.box.add_style_class_name('Suno-ov-pop');
 +            // The appearance mode's material is PopupMenu's own binding; its
 +            // backdrop follows this pop's 26 px corners, not the menus' 15.
 +            this._menu._materialBinding.setCornerRadii(
@@ -751,9 +751,9 @@ index 0000000..7cbe375
 +
 +    _openSheet(where) {
 +        if (!this._sheet) {
-+            this._sheet = new St.Widget({style_class: 'luma-ov-sheet-shade', reactive: true,
++            this._sheet = new St.Widget({style_class: 'Suno-ov-sheet-shade', reactive: true,
 +                layout_manager: new Clutter.BinLayout(), visible: false});
-+            this._sheetBox = new St.BoxLayout({style_class: 'luma-ov-pop luma-ov-sheet',
++            this._sheetBox = new St.BoxLayout({style_class: 'Suno-ov-pop Suno-ov-sheet',
 +                orientation: Clutter.Orientation.VERTICAL, reactive: true});
 +            this._sheet.add_child(this._sheetBox);
 +            this._sheetMaterial = SurfaceMaterials.bindSurface(this._sheetBox, {classActors: [this._sheetBox]});
@@ -776,9 +776,9 @@ index 0000000..7cbe375
 +        const monitor = Main.layoutManager.primaryMonitor;
 +        this._sheet.set_position(monitor.x, monitor.y);
 +        this._sheet.set_size(monitor.width, monitor.height);
-+        this._sheetBox.remove_style_class_name('luma-ov-phone');
-+        this._sheetBox.remove_style_class_name('luma-ov-tv');
-+        this._sheetBox.add_style_class_name(where === 'tv' ? 'luma-ov-tv' : 'luma-ov-phone');
++        this._sheetBox.remove_style_class_name('Suno-ov-phone');
++        this._sheetBox.remove_style_class_name('Suno-ov-tv');
++        this._sheetBox.add_style_class_name(where === 'tv' ? 'Suno-ov-tv' : 'Suno-ov-phone');
 +        // The backdrop follows the sheet's corners: 39 px on TV, a 28 px top on a phone.
 +        const scale = St.ThemeContext.get_for_stage(global.stage).scale_factor;
 +        this._sheetMaterial.setCornerRadii(where === 'tv' ? 39 * scale : [28 * scale, 28 * scale, 0, 0]);
@@ -867,7 +867,7 @@ index 0000000..7cbe375
 +        if (!parent && quick?.setOverlayCell) {
 +            if (this._cell.get_parent() !== quick._statusSlots)
 +                quick.setOverlayCell(this._cell);
-+            this._cell.set_style_class_name('luma-ov-cell');
++            this._cell.set_style_class_name('Suno-ov-cell');
 +            return;
 +        }
 +        if (!parent)
@@ -876,10 +876,10 @@ index 0000000..7cbe375
 +            this._cell.get_parent()?.remove_child(this._cell);
 +            parent.insert_child_at_index(this._cell, 0);
 +        }
-+        this._cell.set_style_class_name(`luma-ov-cell luma-ov-cell-${where}`);
++        this._cell.set_style_class_name(`Suno-ov-cell Suno-ov-cell-${where}`);
 +    }
 +
-+    // surfaces: org.projectluma.LayerShell1.Surfaces.
++    // surfaces: org.projectSuno.LayerShell1.Surfaces.
 +    update(surfaces) {
 +        this._surfaces = surfaces;
 +        const entries = View.overlayApps(surfaces);
@@ -927,31 +927,31 @@ index 0000000..7cbe375
 +// inside the tile's corner), the remote's focus on Not now
 +// so a stray OK press never grants anything. It answers the same notification.
 +const TvOfferToast = GObject.registerClass(
-+class LumaOverlayTvOfferToast extends St.BoxLayout {
++class SunoOverlayTvOfferToast extends St.BoxLayout {
 +    _init(appName, gicon, title, body, answer) {
-+        super._init({style_class: 'luma-ov-toast-tv', reactive: true,
++        super._init({style_class: 'Suno-ov-toast-tv', reactive: true,
 +            orientation: Clutter.Orientation.HORIZONTAL});
-+        const tile = new St.Widget({style_class: 'luma-ov-toast-tile', layout_manager: new Clutter.BinLayout(),
++        const tile = new St.Widget({style_class: 'Suno-ov-toast-tile', layout_manager: new Clutter.BinLayout(),
 +            y_align: Clutter.ActorAlign.START});
 +        // The standard banner's tile: 34 px with a 9 px corner (x1.5: 51, 13.5).
-+        tile.add_child(maskedIcon(gicon, 51, 'luma-ov-toast-icon', 9 / 34));
++        tile.add_child(maskedIcon(gicon, 51, 'Suno-ov-toast-icon', 9 / 34));
 +        // The badge's ring is its frame's border, outside the icon's clip
 +        // (a 7.5 px corner inside the ring's 10.5).
-+        const badge = new St.Bin({style_class: 'luma-ov-toast-badge',
++        const badge = new St.Bin({style_class: 'Suno-ov-toast-badge',
 +            child: maskedIcon(new Gio.ThemedIcon({name: SETTINGS_ICON}), 24, null, 7.5 / 24)});
 +        badge.set({x_align: Clutter.ActorAlign.END, y_align: Clutter.ActorAlign.END,
 +            x_expand: true, y_expand: true});
 +        tile.add_child(badge);
 +        this.add_child(tile);
 +        const column = new St.BoxLayout({orientation: Clutter.Orientation.VERTICAL, x_expand: true,
-+            style_class: 'luma-ov-toast-column'});
-+        const top = new St.BoxLayout({style_class: 'luma-ov-toast-top'});
-+        top.add_child(new St.Label({style_class: 'luma-ov-toast-source', text: appName.toLocaleUpperCase(),
++            style_class: 'Suno-ov-toast-column'});
++        const top = new St.BoxLayout({style_class: 'Suno-ov-toast-top'});
++        top.add_child(new St.Label({style_class: 'Suno-ov-toast-source', text: appName.toLocaleUpperCase(),
 +            x_expand: true}));
-+        top.add_child(new St.Label({style_class: 'luma-ov-toast-time', text: _('now')}));
++        top.add_child(new St.Label({style_class: 'Suno-ov-toast-time', text: _('now')}));
 +        column.add_child(top);
-+        column.add_child(new St.Label({style_class: 'luma-ov-toast-title', text: title}));
-+        const text = new St.Label({style_class: 'luma-ov-toast-body', text: body});
++        column.add_child(new St.Label({style_class: 'Suno-ov-toast-title', text: title}));
++        const text = new St.Label({style_class: 'Suno-ov-toast-body', text: body});
 +        // The banner sizes to its content: the question wraps, never ellipsizes.
 +        text.clutter_text.set({line_wrap: true, line_wrap_mode: Pango.WrapMode.WORD_CHAR,
 +            ellipsize: Pango.EllipsizeMode.NONE});
@@ -962,9 +962,9 @@ index 0000000..7cbe375
 +        text.clutter_text.set_markup(
 +            `<span line_height="${lineHeight}">${GLib.markup_escape_text(body, -1)}</span>`);
 +        column.add_child(text);
-+        const actions = new St.BoxLayout({style_class: 'luma-ov-toast-actions'});
++        const actions = new St.BoxLayout({style_class: 'Suno-ov-toast-actions'});
 +        this._buttons = [_('Allow'), _('Not now')].map((label, index) => {
-+            const button = new St.Button({style_class: 'luma-ov-toast-button', label, can_focus: true});
++            const button = new St.Button({style_class: 'Suno-ov-toast-button', label, can_focus: true});
 +            button.connect('clicked', () => answer(index === 0));
 +            actions.add_child(button);
 +            return button;
@@ -1003,7 +1003,7 @@ index 0000000..7cbe375
 +
 +// The offer: the shell's standard notification banner, from the app's own
 +// source (its name the source line, its icon the tile), with the Settings
-+// icon as a badge only the Shell can set (lumaShellBadge), the capability's
++// icon as a badge only the Shell can set (SunoShellBadge), the capability's
 +// name as the title, the question as the body, and Allow and
 +// Not now as ordinary actions with neither a default. Dismissing it counts as
 +// Not now. On a TV, where the banner is hidden, it is the TV toast.
@@ -1022,8 +1022,8 @@ index 0000000..7cbe375
 +        isTransient: false,
 +        urgency: MessageTray.Urgency.HIGH,
 +    });
-+    notification.lumaShellBadge = new Gio.ThemedIcon({name: SETTINGS_ICON});
-+    notification.lumaPosture = posture();
++    notification.SunoShellBadge = new Gio.ThemedIcon({name: SETTINGS_ICON});
++    notification.SunoPosture = posture();
 +    let answered = false;
 +    notification.addAction(_('Allow'), () => {
 +        answered = true;
@@ -1038,7 +1038,7 @@ index 0000000..7cbe375
 +            decide(false);
 +    });
 +    source.addNotification(notification);
-+    if (notification.lumaPosture === 'tv') {
++    if (notification.SunoPosture === 'tv') {
 +        const toast = new TvOfferToast(name, gicon, notification.title, notification.body, allowed => {
 +            answered = true;
 +            toast.dismiss();
@@ -1055,20 +1055,20 @@ index 0000000..7cbe375
 +    return notification;
 +}
 +
-diff --git a/js/ui/lumaLayerShellIndicatorModel.js b/js/ui/lumaLayerShellIndicatorModel.js
+diff --git a/js/ui/SunoLayerShellIndicatorModel.js b/js/ui/SunoLayerShellIndicatorModel.js
 new file mode 100644
 index 0000000..d9ca0e1
 --- /dev/null
-+++ b/js/ui/lumaLayerShellIndicatorModel.js
++++ b/js/ui/SunoLayerShellIndicatorModel.js
 @@ -0,0 +1,134 @@
 +// SPDX-License-Identifier: GPL-2.0-or-later
 +// What the overlay status cell, its popover and the offer show, without a
 +// Shell. No gi imports, so %check runs it under plain gjs.
 +// Design: design-center 858103d, mockups/overlay-perms (perms.js).
 +
-+import {Capability} from './lumaLayerShellModel.js';
++import {Capability} from './SunoLayerShellModel.js';
 +
-+// org.projectluma.LayerShell1.Surfaces rows: (app, namespace, layer,
++// org.projectSuno.LayerShell1.Surfaces rows: (app, namespace, layer,
 +// capabilities in use, faded, held, mapped since).
 +export const Layer = Object.freeze({BACKGROUND: 0, BOTTOM: 1, TOP: 2, OVERLAY: 3});
 +
@@ -1200,10 +1200,10 @@ index 4c3c3f6..98ccd28 100644
 --- a/js/ui/messageList.js
 +++ b/js/ui/messageList.js
 @@ -22,8 +22,11 @@ const MAX_NOTIFICATION_BUTTONS = 3;
- // Luma notification card anatomy. The app tile and its corner are the
+ // Suno notification card anatomy. The app tile and its corner are the
  // design contract's desktop values (30 px tile, 9 px radius); the dismiss
  // control fades in over the hover-transition range.
-+// The tile clips the app's art at the LumaUI application icon corner
++// The tile clips the app's art at the SunoUI application icon corner
 +// (design-tokens.json icon.application_corner_ratio, 0.25) in whole pixels
 +// at the tile's 34 px (9 px), so an app's own corner never shows instead.
  const CARD_TILE_SIZE = 34;
@@ -1214,30 +1214,30 @@ index 4c3c3f6..98ccd28 100644
  
 @@ -760,7 +763,7 @@ export const Message = GObject.registerClass({
              try {
-                 const mask = new LumaIconMask();
+                 const mask = new SunoIconMask();
                  mask.set_uniform_float(mask.get_uniform_location('radius'), 1,
 -                    [clip === this._appBadgeClip ? 0.5 : CARD_TILE_RADIUS / CARD_TILE_SIZE]);
 +                    [clip === this._appBadgeClip ? 0.5 : CARD_TILE_CORNER_RATIO]);
-                 clip.add_effect_with_name('luma-tile-mask', mask);
+                 clip.add_effect_with_name('Suno-tile-mask', mask);
              } catch (error) {
                  // Without a shader path the tile still clips its own fill.
 @@ -845,10 +848,20 @@ export const Message = GObject.registerClass({
-         this._appBadgeIcon.gicon = this._lumaShellBadge ?? sourceIcon.gicon;
-         this._appBadge.visible = showImage || !!this._lumaShellBadge;
+         this._appBadgeIcon.gicon = this._SunoShellBadge ?? sourceIcon.gicon;
+         this._appBadge.visible = showImage || !!this._SunoShellBadge;
          syncAppIconPlate(this._appBadgeIcon, this._appBadgeClip, 16);
 +        // The Shell's badge sits 2 px inside the tile's corner (its ring
 +        // flush with the tile), as the standard banner's; an app's own badge
 +        // on a picture keeps its place.
-+        this._appBadge.translation_x = this._appBadge.translation_y = this._lumaShellBadge ? 7 : 6;
++        this._appBadge.translation_x = this._appBadge.translation_y = this._SunoShellBadge ? 7 : 6;
 +        // An app's badge on a picture is round; the Shell's is the standard
 +        // banner's rounded square (5 px on 16, its 2 px ring 7 on 20).
-+        this._appBadge.set_style(this._lumaShellBadge ? 'border-radius: 7px;' : null);
-+        this._appBadgeClip.get_effect('luma-tile-mask')?.set_uniform_float(
-+            this._appBadgeClip.get_effect('luma-tile-mask').get_uniform_location('radius'), 1,
-+            [this._lumaShellBadge ? 5 / 16 : 0.5]);
++        this._appBadge.set_style(this._SunoShellBadge ? 'border-radius: 7px;' : null);
++        this._appBadgeClip.get_effect('Suno-tile-mask')?.set_uniform_float(
++            this._appBadgeClip.get_effect('Suno-tile-mask').get_uniform_location('radius'), 1,
++            [this._SunoShellBadge ? 5 / 16 : 0.5]);
          // A picture is round; an app's art takes the tile's corner.
-         this._tileArt.get_effect('luma-tile-mask')?.set_uniform_float(
-             this._tileArt.get_effect('luma-tile-mask').get_uniform_location('radius'), 1,
+         this._tileArt.get_effect('Suno-tile-mask')?.set_uniform_float(
+             this._tileArt.get_effect('Suno-tile-mask').get_uniform_location('radius'), 1,
 -            [showImage ? 0.5 : CARD_TILE_RADIUS / CARD_TILE_SIZE]);
 +            [showImage ? 0.5 : CARD_TILE_CORNER_RATIO]);
          const glyph = !showImage && isGlyphIcon(sourceIcon.gicon);
@@ -1251,20 +1251,20 @@ index 6f4052a..7dfb0f1 100644
      }
  
      _visibleChildren(container) {
--        const children = container.get_children().filter(child => child.visible && !child._lumaMore);
+-        const children = container.get_children().filter(child => child.visible && !child._SunoMore);
 +        const children = container.get_children().filter(child =>
-+            child.visible && !child._lumaMore && !child._lumaOverlayCell);
-         if (container.has_style_class_name('luma-status-slots') && children.length > 8)
-             return [...children.slice(0, 7), container._lumaMore];
++            child.visible && !child._SunoMore && !child._SunoOverlayCell);
+         if (container.has_style_class_name('Suno-status-slots') && children.length > 8)
+             return [...children.slice(0, 7), container._SunoMore];
          return children;
 @@ -1225,6 +1226,12 @@ class ShelfStatusLayout extends Clutter.LayoutManager {
          return St.ThemeContext.get_for_stage(global.stage).scale_factor;
      }
  
-+    // The overlay cell (lumaLayerShellIndicator.js): the first column of the
++    // The overlay cell (SunoLayerShellIndicator.js): the first column of the
 +    // slots, spanning both rows, so the rest stays a neat grid.
 +    _overlayCell(container) {
-+        return container.get_children().find(child => child._lumaOverlayCell && child.visible) ?? null;
++        return container.get_children().find(child => child._SunoOverlayCell && child.visible) ?? null;
 +    }
 +
      // Text such as a battery percentage must participate in measurement.
@@ -1273,7 +1273,7 @@ index 6f4052a..7dfb0f1 100644
 @@ -1242,7 +1249,8 @@ class ShelfStatusLayout extends Clutter.LayoutManager {
  
      vfunc_get_preferred_width(container, forHeight) {
-         if (container.has_style_class_name('luma-status-slots')) {
+         if (container.has_style_class_name('Suno-status-slots')) {
 -            const size = this._columns(container) * 26 * this._scale();
 +            const extra = this._overlayCell(container) ? 1 : 0;
 +            const size = (this._columns(container) + extra) * 26 * this._scale();
@@ -1281,7 +1281,7 @@ index 6f4052a..7dfb0f1 100644
          }
          if (!this._shelfPresentation) {
 @@ -1294,11 +1302,24 @@ class ShelfStatusLayout extends Clutter.LayoutManager {
-         if (container.has_style_class_name('luma-status-slots')) {
+         if (container.has_style_class_name('Suno-status-slots')) {
              const scale = this._scale();
              const grid = statusGrid(children.length, this._vertical ? 2 : 4);
 -            const x = (box.get_width() - grid.columns * 26 * scale) / 2;
@@ -1312,9 +1312,9 @@ index 6f4052a..7dfb0f1 100644
          this._slots.mic.icon.set_style('color: #efbc67;');
          for (const slot of this._statusSlots.get_children())
              if (slot.icon) slot.icon.icon_size = this._statusVertical ? 16 : STATUS_GLYPH;
--        const visible = this._statusSlots.get_children().filter(child => child.visible && !child._lumaMore).length;
+-        const visible = this._statusSlots.get_children().filter(child => child.visible && !child._SunoMore).length;
 +        const visible = this._statusSlots.get_children().filter(child =>
-+            child.visible && !child._lumaMore && !child._lumaOverlayCell).length;
++            child.visible && !child._SunoMore && !child._SunoOverlayCell).length;
          this._statusMore.visible = visible > 8;
          this._statusMore.text = visible > 8 ? `+${visible - 7}` : '';
          this._statusMore.accessible_name = visible > 8 ? _('%d more indicators').format(visible - 7) : '';
@@ -1322,7 +1322,7 @@ index 6f4052a..7dfb0f1 100644
              this._styleStatusCluster();
      }
  
-+    // The overlay cell (lumaLayerShellIndicator.js) goes first in the status
++    // The overlay cell (SunoLayerShellIndicator.js) goes first in the status
 +    // slots and answers its own clicks: a press on it never opens Quick
 +    // Settings. False while the island has no slots.
 +    setOverlayCell(cell) {

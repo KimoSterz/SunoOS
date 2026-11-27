@@ -1,7 +1,7 @@
 {
-  "schema": "org.projectluma.kernel-source/v1",
+  "schema": "org.projectSuno.kernel-source/v1",
   "version": "7.3",
-  "release": "7.3.0-3.luma.surface12.fc44.aarch64",
+  "release": "7.3.0-3.Suno.surface12.fc44.aarch64",
   "architecture": "aarch64",
   "device_tree": "qcom/x1p42100-microsoft-sp12in.dtb",
   "sources": {

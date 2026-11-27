@@ -1,0 +1,5 @@
+[D-BUS Service]
+Name=org.projectSuno.AudioRoute1
+Exec=/usr/libexec/Suno-fp6-audio-route-service
+User=root
+SystemdService=Suno-fp6-audio-route.service

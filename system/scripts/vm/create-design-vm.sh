@@ -10,9 +10,9 @@ fi
 
 artifact=$1
 repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
-vm_name=${LUMA_DESIGN_VM_NAME:-luma-design}
-delivery_track=${LUMA_DELIVERY_TRACK:-A}
-vm_dir=${LUMA_VM_DIR:-/var/lib/libvirt/images/luma}
+vm_name=${SUNO_DESIGN_VM_NAME:-Suno-design}
+delivery_track=${SUNO_DELIVERY_TRACK:-A}
+vm_dir=${SUNO_VM_DIR:-/var/lib/libvirt/images/Suno}
 base_disk="$vm_dir/baseline.qcow2"
 design_disk="$vm_dir/design.qcow2"
 
@@ -40,7 +40,7 @@ sudo qemu-img create -q -f qcow2 -F qcow2 -b "$base_disk" "$design_disk"
 case "$delivery_track" in
   A) "$repo_root/scripts/vm/enable-track-a-lab-ssh.sh" "$design_disk" ;;
   B) : ;;
-  *) printf 'error: LUMA_DELIVERY_TRACK must be A or B\n' >&2; exit 2 ;;
+  *) printf 'error: SUNO_DELIVERY_TRACK must be A or B\n' >&2; exit 2 ;;
 esac
 # Relabel only the two files created above. Other VMs in this shared directory
 # may be running with dynamic sVirt categories that must remain untouched.
@@ -49,7 +49,7 @@ sudo restorecon -F "$base_disk" "$design_disk" >/dev/null 2>&1 || true
 sudo virt-install \
   --connect qemu:///system \
   --name "$vm_name" \
-  --description 'Project Luma persistent design lane; live edits are never canonical' \
+  --description 'Project Suno persistent design lane; live edits are never canonical' \
   --machine q35 \
   --cpu host-passthrough \
   --vcpus 4,sockets=1,cores=4,threads=1 \
@@ -60,7 +60,7 @@ sudo virt-install \
   --boot uefi \
   --tpm backend.type=emulator,backend.version=2.0,model=tpm-crb \
   --rng /dev/urandom \
-  --graphics type=spice,listens0.type=socket,listens0.socket=/run/libvirt/qemu/luma-viewer/spice.sock,gl.enable=yes,gl.rendernode=/dev/dri/renderD128 \
+  --graphics type=spice,listens0.type=socket,listens0.socket=/run/libvirt/qemu/Suno-viewer/spice.sock,gl.enable=yes,gl.rendernode=/dev/dri/renderD128 \
   --video model.type=virtio,model.acceleration.accel3d=yes \
   --channel unix,target.type=virtio,target.name=org.qemu.guest_agent.0 \
   --console pty,target.type=serial \

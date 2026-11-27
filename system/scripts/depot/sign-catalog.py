@@ -5,7 +5,7 @@
 ADR-028 section 4.1: Hub renders the catalog but never holds the catalog key.
 The Hub is the only source of Depot listings (admin.simplyluma.com, Depot >
 Apps); nothing in this repository authors one. This job runs on the build host
-(luma-depot-catalog.timer, scripts/depot/run-catalog-signer.sh). Each run:
+(Suno-depot-catalog.timer, scripts/depot/run-catalog-signer.sh). Each run:
 
 1. GET <hub>/api/depot/catalog/snapshot?schema=4 and ?schema=3 with the Hub
    service token (Authorization: Bearer, read from a 0600 file). Listing
@@ -16,7 +16,7 @@ Apps); nothing in this repository authors one. This job runs on the build host
    For schema 4 that includes: only public and unlisted entries, known tiers,
    repositories and permission keys, https URLs, and the 5,000-entry / 8 MiB
    bound, then the validator installed Depot clients run
-   (luma_installer.depot_catalog). For schema 3 it is that validator too, so
+   (Suno_installer.depot_catalog). For schema 3 it is that validator too, so
    no client can be handed a document it would reject.
 3. Sign the exact bytes Hub served with minisign, verify the signature with the
    public key, and write catalog-4.json(.minisig) and catalog-3.json(.minisig)
@@ -44,10 +44,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 MAX_BYTES_4 = 8 * 1024 * 1024
 MAX_APPLICATIONS_4 = 5000
-TIERS = {"luma", "verified", "listed"}
+TIERS = {"Suno", "verified", "listed"}
 PUBLISHED_VISIBILITY = {"public", "unlisted"}
-REPOSITORIES = {"luma", "flathub"}
-SIGN_IN = {"none", "luma", "third-party", "required-third-party"}
+REPOSITORIES = {"Suno", "flathub"}
+SIGN_IN = {"none", "Suno", "third-party", "required-third-party"}
 QUALIFICATION = {"admitted", "pending", "unsupported"}
 APP_ID = re.compile(r"^[A-Za-z_][A-Za-z0-9_-]*(\.[A-Za-z_][A-Za-z0-9_-]*){2,}$")
 SLUG = re.compile(r"^[a-z0-9][a-z0-9-]{0,63}$")
@@ -126,12 +126,12 @@ def validate_schema4(content: bytes) -> dict:
             if not APP_ID.match(str(app.get("app_id", ""))):
                 raise CatalogRefused(f"{where}: flatpak entries need a valid app_id")
             if app.get("repository") not in REPOSITORIES:
-                raise CatalogRefused(f"{where}: flatpak repository must be luma or flathub")
+                raise CatalogRefused(f"{where}: flatpak repository must be Suno or flathub")
             if app.get("branch", "stable") not in ("stable", "beta", "nightly"):
                 raise CatalogRefused(f"{where}: branch must be stable, beta or nightly")
-        if app["tier"] in ("luma", "verified") and app["backend"] == "flatpak" \
-                and app.get("repository") != "luma":
-            raise CatalogRefused(f"{where}: {app['tier']} apps are hosted on the Luma remote")
+        if app["tier"] in ("Suno", "verified") and app["backend"] == "flatpak" \
+                and app.get("repository") != "Suno":
+            raise CatalogRefused(f"{where}: {app['tier']} apps are hosted on the Suno remote")
         for field in ("homepage", "support_url", "privacy_url", "source_url", "reference_url"):
             _https(app.get(field), f"{where}.{field}")
         icon = app.get("icon")
@@ -171,9 +171,9 @@ def validate_schema4(content: bytes) -> dict:
 def validate_with_client(content: bytes) -> None:
     """Schema 4 through the validator installed Depots run: a document they
     would refuse as a whole must never be signed."""
-    sys.path.insert(0, str(ROOT / "src/luma-installer"))
+    sys.path.insert(0, str(ROOT / "src/Suno-installer"))
     try:
-        from luma_installer.depot_catalog import CatalogError, validate_catalog
+        from Suno_installer.depot_catalog import CatalogError, validate_catalog
     finally:
         sys.path.pop(0)
     try:
@@ -208,7 +208,7 @@ def fetch_media(document: dict, site: Path, hub: str) -> list[str]:
             if extension not in ("png", "webp", "svg"):
                 raise CatalogRefused(f"{app.get('id')}: picture {url} is not png, webp or svg")
             request = urllib.request.Request(f"{hub}/api/depot/media/{digest}.{extension}",
-                                             headers={"User-Agent": "luma-depot-catalog-signer"})
+                                             headers={"User-Agent": "Suno-depot-catalog-signer"})
             with urllib.request.urlopen(request, timeout=60) as response:  # noqa: S310 (https only)
                 content = response.read(20 * 1024 * 1024 + 1)
             if hashlib.sha256(content).hexdigest() != digest:
@@ -284,12 +284,12 @@ def install_path(app: dict) -> str:
     """How Depot installs a listing, or "" when it has no automated channel."""
     backend, repository = app.get("backend"), app.get("repository")
     sources = app.get("sources") if isinstance(app.get("sources"), dict) else {}
-    if backend == "flatpak" and repository in ("luma", "flathub"):
+    if backend == "flatpak" and repository in ("Suno", "flathub"):
         return f"flatpak:{repository}"
     if backend == "snap" and repository == "snap-store" and isinstance(sources.get("snap"), dict):
         return "snap"
-    if backend == "rpm" and repository == "luma" and isinstance(sources.get("luma_system"), dict):
-        return "luma-image"
+    if backend == "rpm" and repository == "Suno" and isinstance(sources.get("Suno_system"), dict):
+        return "Suno-image"
     if backend == "deb" and isinstance(sources.get("deb_repository"), dict):
         return "deb:publisher-repository"
     if backend == "rpm" and isinstance(sources.get("rpm_repository"), dict):
@@ -305,7 +305,7 @@ def quality_gate(document: dict, media_root: Path | None = None) -> tuple[list[s
     screenshots (system tools excepted), or an automated install path; the
     only listing allowed no install path is a documented publisher-only
     exception (``channel.kind == "publisher"`` with its reason). When the
-    site's media directory is given, every image Luma serves must be there
+    site's media directory is given, every image Suno serves must be there
     with the digest the listing names, so a catalogue is never published
     ahead of its pictures.
     """
@@ -327,8 +327,8 @@ def quality_gate(document: dict, media_root: Path | None = None) -> tuple[list[s
         shots = app.get("screenshots") or []
         pending = (app.get("screenshots_pending") or "").strip()
         if not shots and not app.get("system_tool"):
-            if pending and app.get("tier") == "luma":
-                # Only Luma's own apps, only with the reason written down:
+            if pending and app.get("tier") == "Suno":
+                # Only Suno's own apps, only with the reason written down:
                 # reported on every run until the screenshots exist.
                 exceptions.append(f"{where}: screenshots pending: {pending}")
             else:
@@ -365,9 +365,9 @@ def refuse_below_quality(document: dict, media_root: Path | None) -> None:
 
 
 def validate_schema3(content: bytes) -> None:
-    sys.path.insert(0, str(ROOT / "src/luma-installer"))
+    sys.path.insert(0, str(ROOT / "src/Suno-installer"))
     try:
-        from luma_installer.depot_catalog import CatalogError, MAX_BYTES, validate_catalog
+        from Suno_installer.depot_catalog import CatalogError, MAX_BYTES, validate_catalog
     finally:
         sys.path.pop(0)
     if len(content) > MAX_BYTES:
@@ -385,7 +385,7 @@ def fetch(url: str, token: str, limit: int, timeout: int = 30) -> bytes:
     request = urllib.request.Request(url, headers={
         "Authorization": f"Bearer {token}",
         "Accept": "application/json",
-        "User-Agent": "luma-depot-catalog-signer",
+        "User-Agent": "Suno-depot-catalog-signer",
     })
     with urllib.request.urlopen(request, timeout=timeout) as response:  # noqa: S310 (https only)
         if response.status != 200:

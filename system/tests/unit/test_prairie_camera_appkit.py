@@ -37,14 +37,14 @@ class CameraAppKitContractTests(unittest.TestCase):
         scope = {'Adw': SimpleNamespace(Application=Application), 'os': os}
         exec(compile(ast.fix_missing_locations(ast.Module(body=[*declarations, application],
                                                          type_ignores=[])), str(SOURCE), 'exec'), scope)
-        production = 'org.projectluma.Camera'
+        production = 'org.projectSuno.Camera'
         for preview in (False, True):
-            scope['APP_ID'] = production + ('.LumaUIPreview' if preview else '')
+            scope['APP_ID'] = production + ('.SunoUIPreview' if preview else '')
             for fixture in (False, True):
                 with self.subTest(preview=preview, fixture=fixture), patch.dict(os.environ):
-                    os.environ.pop('LUMA_CAMERA_FIXTURE', None)
+                    os.environ.pop('SUNO_CAMERA_FIXTURE', None)
                     if fixture:
-                        os.environ['LUMA_CAMERA_FIXTURE'] = 'fixture.json'
+                        os.environ['SUNO_CAMERA_FIXTURE'] = 'fixture.json'
                     app = scope['CameraApplication']()
                     self.assertEqual(app.application_id, scope['APP_ID'] + ('.Fixture' if fixture else ''))
                     self.assertEqual(scope['APPLICATION_ID'], production)

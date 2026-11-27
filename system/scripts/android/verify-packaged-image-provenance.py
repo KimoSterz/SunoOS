@@ -21,7 +21,7 @@ def source_manifest(producer):
  return values[0]
 
 def verify(root,producer_path,members_path,materials,system_notice,vendor_notice,font):
- producer=json.loads(regular(producer_path).read_text());members=json.loads(regular(members_path).read_text());manifest=json.loads(regular(root/'luma-images.json').read_text())
+ producer=json.loads(regular(producer_path).read_text());members=json.loads(regular(members_path).read_text());manifest=json.loads(regular(root/'Suno-images.json').read_text())
  if (producer['result']!='CANONICAL-PAIR-RETAINED' or type(producer['actual_container_exit_code']) is not int
      or producer['actual_container_exit_code']!=0 or producer['actual_systemd_terminal_success'] is not True):
   raise ValueError('No genuine terminal matching producer')
@@ -31,7 +31,7 @@ def verify(root,producer_path,members_path,materials,system_notice,vendor_notice
   raise ValueError('Authoritative task-removal Java/native/HIDL13/VINTF pair not proven')
  if manifest['architecture']!=producer.get('architecture','x86_64'):raise ValueError('Image producer architecture differs from packaged images')
  origin=manifest['origin']
- if origin['kind']!='luma-native-builder' or origin['source_manifest_sha256']!=source_manifest(producer) or origin['compiler_invocation_id']!=producer['compiler_invocation_id']:
+ if origin['kind']!='Suno-native-builder' or origin['source_manifest_sha256']!=source_manifest(producer) or origin['compiler_invocation_id']!=producer['compiler_invocation_id']:
   raise ValueError('Packaged image identity differs from its actual producer')
  if set(producer['images'])!={'system.img','vendor.img'} or set(manifest['images'])!={'system.img','vendor.img'}:
   raise ValueError('Incomplete producer pair')
@@ -52,7 +52,7 @@ def verify(root,producer_path,members_path,materials,system_notice,vendor_notice
   ET.fromstring(data)
  found=[r for r in members['members'] if r.get('role')=='vendor' and r.get('image_path','').endswith('/licenses/prairie-figtree/OFL.txt')]
  if len(found)!=1 or found[0]['sha256']!=sha(regular(font)):raise ValueError('Font redistribution license differs from image')
- print('Actual terminal pair, exact image membership, aggregate NOTICE and Luma material source correspondence PASS')
+ print('Actual terminal pair, exact image membership, aggregate NOTICE and Suno material source correspondence PASS')
 if __name__=='__main__':
  if len(sys.argv)!=9:raise SystemExit('usage: ROOT PRODUCER MEMBERS MATERIALS SYSTEM-NOTICE VENDOR-NOTICE FONT ARCH')
  if sys.argv[8] not in ('x86_64','aarch64'):raise ValueError('Unsupported Android image architecture')

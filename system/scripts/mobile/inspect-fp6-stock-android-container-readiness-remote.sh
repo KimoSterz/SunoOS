@@ -10,17 +10,17 @@ set -euo pipefail
 umask 077
 
 expected_model='The Fairphone (Gen. 6)'
-expected_kernel_current='7.1.2-luma-fp-ims1'
+expected_kernel_current='7.1.2-Suno-fp-ims1'
 
-stock_system=/var/tmp/luma-stock-qrel1695-system
-stock_vendor=/var/tmp/luma-stock-qrel1695-vendor
-stock_system_ext=/var/tmp/luma-stock-qrel1695-system_ext
-stock_product=/var/tmp/luma-stock-qrel1695-product
-stock_odm=/var/tmp/luma-stock-qrel1695-odm
-stock_runtime=/var/tmp/luma-stock-qrel1695-runtime-apex
-stock_apex_runtime=/var/tmp/luma-stock-qrel1695-apex-runtime1
-stock_odm_image=/var/tmp/luma-stock-qrel1695-images/odm_a.img
-manager_boundary=/var/tmp/luma-stock-qrel1695-manager-boundary1
+stock_system=/var/tmp/Suno-stock-qrel1695-system
+stock_vendor=/var/tmp/Suno-stock-qrel1695-vendor
+stock_system_ext=/var/tmp/Suno-stock-qrel1695-system_ext
+stock_product=/var/tmp/Suno-stock-qrel1695-product
+stock_odm=/var/tmp/Suno-stock-qrel1695-odm
+stock_runtime=/var/tmp/Suno-stock-qrel1695-runtime-apex
+stock_apex_runtime=/var/tmp/Suno-stock-qrel1695-apex-runtime1
+stock_odm_image=/var/tmp/Suno-stock-qrel1695-images/odm_a.img
+manager_boundary=/var/tmp/Suno-stock-qrel1695-manager-boundary1
 expected_odm_sha=3d31463d172b485f866e25340887e36b96986bb5c2255bff9a6b7777277bb831
 expected_manager_sha=69d4beaf4fb0cdd93ec9efd86ecc2fa3a06786024c6b6e475dc87434318e8552
 expected_hwmanager_sha=03728b6e2d1b5de38aa281b4485767c677dd7eb5a623adfb326ca41cac5f8f91
@@ -192,9 +192,9 @@ else
   fail apex "source_compressed_$compressed_apex_count inventory_$inventory_count mounted_$mounted_apex_count"
 fi
 
-for service in ModemManager luma-fp6-cellular-link luma-fp6-imsd; do
+for service in ModemManager Suno-fp6-cellular-link Suno-fp6-imsd; do
   if systemctl is-active --quiet "$service"; then
-    pass "owner_$service" luma_active
+    pass "owner_$service" Suno_active
   else
     fail "owner_$service" unexpected_inactive
   fi

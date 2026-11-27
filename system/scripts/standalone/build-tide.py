@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """Assemble Tide and its selected dependencies into a relocatable Linux directory.
 
-Inputs are a qualified Luma Platform, a GdkPixbuf build with builtin PNG/JPEG/GIF
+Inputs are a qualified Suno Platform, a GdkPixbuf build with builtin PNG/JPEG/GIF
 loaders, and the pinned Mutagen wheel. No application code is forked or patched.
 """
 import argparse
@@ -26,7 +26,7 @@ root = args.runtime_files.resolve()
 pixbuf = args.pixbuf_prefix.resolve()
 dest = args.output.resolve()
 assert hashlib.sha256(args.mutagen_wheel.read_bytes()).hexdigest() == MUTAGEN_SHA256
-assert (root / 'lib/python3.14/site-packages/luma_appkit').is_dir()
+assert (root / 'lib/python3.14/site-packages/Suno_appkit').is_dir()
 dest.mkdir(parents=True, exist_ok=False)
 
 def copy(source, relative):
@@ -41,7 +41,7 @@ def copy(source, relative):
 libraries = {p.name: p for p in (root / 'lib64').rglob('*.so*')}
 libraries.update({p.name: p for p in (pixbuf / 'lib64').glob('*.so*')})
 seeds = [root / 'bin/python3']
-for pattern in ('libgtk-4.so.*', 'libadwaita-1.so.*', 'libluma*.so.*',
+for pattern in ('libgtk-4.so.*', 'libadwaita-1.so.*', 'libSuno*.so.*',
                 'libgirepository*.so.*', 'libcairo*.so.*', 'librsvg*.so.*',
                 'libsecret-1.so.*', 'libgstreamer-1.0.so.*', 'libgstapp-1.0.so.*',
                 'libgstaudio-1.0.so.*', 'libgstpbutils-1.0.so.*', 'libgsttag-1.0.so.*',
@@ -102,36 +102,36 @@ site = dest / 'usr/lib64/python3.14/site-packages'
 for path in list(site.iterdir()):
     if path.name not in ('gi', 'cairo') and not path.name.startswith(('PyGObject-', 'pycairo-')):
         shutil.rmtree(path) if path.is_dir() else path.unlink()
-copy(root / 'lib/python3.14/site-packages/luma_appkit',
-     'usr/lib64/python3.14/site-packages/luma_appkit')
-copy(REPO / 'src/luma-tide/luma_tide', 'usr/lib64/python3.14/site-packages/luma_tide')
+copy(root / 'lib/python3.14/site-packages/Suno_appkit',
+     'usr/lib64/python3.14/site-packages/Suno_appkit')
+copy(REPO / 'src/Suno-tide/Suno_tide', 'usr/lib64/python3.14/site-packages/Suno_tide')
 copy(REPO / 'packaging/standalone/tide/sitecustomize.py',
      'usr/lib64/python3.14/site-packages/sitecustomize.py')
 with zipfile.ZipFile(args.mutagen_wheel) as wheel:
     wheel.extractall(site)
-for path in (root / 'share/luma-appkit').glob('*.css'):
+for path in (root / 'share/Suno-appkit').glob('*.css'):
     shutil.copy2(path, site / path.name)
 for relative in ('share/glib-2.0/schemas', 'share/icons/Prairie', 'share/icons/Adwaita',
                  'share/icons/hicolor', 'share/fonts/google-figtree-fonts', 'share/licenses'):
     copy(root / relative, Path('usr') / relative)
-copy(REPO / 'src/luma-tide/data/tide.css', 'usr/share/luma-tide/tide.css')
-for name in ('tide.css', 'org.projectluma.Tide.svg'):
-    copy(REPO / 'src/luma-tide/data' / name, 'usr/lib64/python3.14/site-packages/data/' + name)
-copy(REPO / 'src/luma-tide/data/org.projectluma.Tide.svg',
-     'usr/share/icons/hicolor/scalable/apps/org.projectluma.Tide.svg')
-desktop = (REPO / 'src/luma-tide/data/org.projectluma.Tide.desktop').read_text()
+copy(REPO / 'src/Suno-tide/data/tide.css', 'usr/share/Suno-tide/tide.css')
+for name in ('tide.css', 'org.projectSuno.Tide.svg'):
+    copy(REPO / 'src/Suno-tide/data' / name, 'usr/lib64/python3.14/site-packages/data/' + name)
+copy(REPO / 'src/Suno-tide/data/org.projectSuno.Tide.svg',
+     'usr/share/icons/hicolor/scalable/apps/org.projectSuno.Tide.svg')
+desktop = (REPO / 'src/Suno-tide/data/org.projectSuno.Tide.desktop').read_text()
 desktop = desktop.replace('DBusActivatable=true', 'DBusActivatable=false')
 (dest / 'usr/share/applications').mkdir(parents=True, exist_ok=True)
-(dest / 'usr/share/applications/org.projectluma.Tide.desktop').write_text(desktop)
-copy(REPO / 'packaging/flatpak/apps/org.projectluma.Tide/org.projectluma.Tide.metainfo.xml',
-     'usr/share/metainfo/org.projectluma.Tide.metainfo.xml')
-copy(REPO / 'LICENSES', 'usr/share/licenses/luma-source')
-copy(REPO / 'src/luma-tide/LUMA-PROVENANCE.md', 'usr/share/licenses/tide/LUMA-PROVENANCE.md')
+(dest / 'usr/share/applications/org.projectSuno.Tide.desktop').write_text(desktop)
+copy(REPO / 'packaging/flatpak/apps/org.projectSuno.Tide/org.projectSuno.Tide.metainfo.xml',
+     'usr/share/metainfo/org.projectSuno.Tide.metainfo.xml')
+copy(REPO / 'LICENSES', 'usr/share/licenses/Suno-source')
+copy(REPO / 'src/Suno-tide/SUNO-PROVENANCE.md', 'usr/share/licenses/tide/SUNO-PROVENANCE.md')
 copy(REPO / 'packaging/standalone/tide/DEPENDENCIES.md', 'usr/share/licenses/tide/DEPENDENCIES.md')
 subprocess.run(['glib-compile-schemas', str(dest / 'usr/share/glib-2.0/schemas')], check=True)
 (dest / 'usr/share/icons/hicolor/icon-theme.cache').unlink(missing_ok=True)
-namespaces = ('Gtk-4.0', 'Gdk-4.0', 'Gsk-4.0', 'Adw-1', 'LumaUI-1', 'LumaSemantics-1',
-              'LumaAppearance-1', 'GLib-2.0', 'GObject-2.0', 'Gio-2.0', 'GModule-2.0',
+namespaces = ('Gtk-4.0', 'Gdk-4.0', 'Gsk-4.0', 'Adw-1', 'SunoUI-1', 'SunoSemantics-1',
+              'SunoAppearance-1', 'GLib-2.0', 'GObject-2.0', 'Gio-2.0', 'GModule-2.0',
               'GLibUnix-2.0', 'GioUnix-2.0', 'GdkPixbuf-2.0', 'Pango-1.0', 'PangoCairo-1.0',
               'PangoFT2-1.0', 'Graphene-1.0', 'cairo-1.0', 'freetype2-2.0', 'HarfBuzz-0.0',
               'GdkX11-4.0', 'GdkWayland-4.0', 'xlib-2.0', 'Gst-1.0', 'GstBase-1.0',
@@ -156,7 +156,7 @@ exec "$tide_dir/usr/lib64/ld-linux-x86-64.so.2" --inhibit-cache --library-path "
 (dest / 'Tide').write_text('''#!/bin/sh
 set -eu
 tide_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
-exec "$tide_dir/python" -m luma_tide "$@"
+exec "$tide_dir/python" -m Suno_tide "$@"
 ''')
 for name in ('python', 'Tide'):
     (dest / name).chmod(0o755)

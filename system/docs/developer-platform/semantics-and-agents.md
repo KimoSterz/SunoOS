@@ -3,7 +3,7 @@
 ## Model
 
 GTK/AT-SPI remains the canonical accessible representation of visible
-controls. Luma Semantics adds stable domain objects and operations that are not
+controls. Suno Semantics adds stable domain objects and operations that are not
 reliably derivable from pixels or labels. A Filer selection, calendar event,
 conversation, or document is a semantic object; open, move, join, send, and
 export are semantic actions.
@@ -13,7 +13,7 @@ Live Extensions, automation, and agents reference the same stable action ID.
 
 ## Access boundary
 
-The per-user Luma Semantic Broker is the only supported external discovery and
+The per-user Suno Semantic Broker is the only supported external discovery and
 invocation boundary. Applications publish structured surfaces to it over the
 session bus; agents never connect directly to an application's provider
 endpoint. The broker mediates:
@@ -53,12 +53,12 @@ supplied by the caller is never accepted as identity evidence.
   unreadable identity fails closed.
 
 Flatpak packaging must explicitly allow access to
-`org.projectluma.SemanticBroker1`. That bus permission permits contact with the
+`org.projectSuno.SemanticBroker1`. That bus permission permits contact with the
 broker; it does not grant access to any application surface.
 
 The broker does not claim to create a kernel security boundary between two
 unsandboxed processes running as the same Unix user. Such processes already
-share a broad host trust domain. Luma therefore keeps all native grants
+share a broad host trust domain. Suno therefore keeps all native grants
 session-only and recommends a sandbox for third-party agents that need a
 durable identity or remembered permission.
 
@@ -93,10 +93,10 @@ own records. Revocation applies immediately.
 
 ### Wire contract
 
-The installed session service is `org.projectluma.SemanticBroker1`. Access and
+The installed session service is `org.projectSuno.SemanticBroker1`. Access and
 action requests use caller-owned request objects and asynchronous responses so
 the trusted confirmation UI never blocks D-Bus dispatch. Providers expose only
-`org.projectluma.SemanticProvider1` and verify that every invocation comes from
+`org.projectSuno.SemanticProvider1` and verify that every invocation comes from
 the current unique owner of the broker name.
 
 The initial action parameter vocabulary is deliberately small: boolean,
@@ -118,7 +118,7 @@ not published as object fields.
 
 ## Developer inspection
 
-The optional SDK package exposes the broker through `luma semantic`. It can
+The optional SDK package exposes the broker through `Suno semantic`. It can
 request an expiring session grant through the same broker-owned consent UI as
 any other native client, list or read only the surfaces visible to that grant,
 invoke an action through the normal confirmation path, revoke access, and read
@@ -126,10 +126,10 @@ its own payload-free audit entries. It has no privileged bypass and is not
 installed by the base desktop or mobile application package.
 
 ```text
-luma semantic request org.projectluma.Notes \
+Suno semantic request org.projectSuno.Notes \
   --scope observe-public --scope observe-private --scope invoke-low-risk
-luma semantic list
-luma semantic invoke PUBLICATION notes notes.create --parameter '{}'
-luma semantic audit
-luma semantic revoke org.projectluma.Notes
+Suno semantic list
+Suno semantic invoke PUBLICATION notes notes.create --parameter '{}'
+Suno semantic audit
+Suno semantic revoke org.projectSuno.Notes
 ```

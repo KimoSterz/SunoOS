@@ -40,7 +40,7 @@ args = parser.parse_args()
 
 os.makedirs(args.workdir, exist_ok=True)
 runtime = os.environ["XDG_RUNTIME_DIR"]
-display_name = "luma-pointer-modifiers"
+display_name = "Suno-pointer-modifiers"
 children = []
 results = []
 

@@ -62,8 +62,8 @@ def hyphens_only(source: Path, destination: Path) -> None:
     """The package build's step: the pinned faces with only the hyphen variants mapped."""
     font = TTFont(source, recalcBBoxes=False, recalcTimestamp=False)
     map_hyphen_variants(font, source)
-    append_name(font, 3, "Luma hyphen variants")
-    append_name(font, 5, "Luma hyphen variants")
+    append_name(font, 3, "Suno hyphen variants")
+    append_name(font, 5, "Suno hyphen variants")
     destination.parent.mkdir(parents=True, exist_ok=True)
     font.save(destination, reorderTables=False)
     verify_hyphen_variants(destination)

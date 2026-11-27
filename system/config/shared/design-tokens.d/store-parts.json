@@ -1,12 +1,12 @@
 {
-  "_source": "Depot redesign 7 Nov 2026 (mockups/apps/depot, measured): the inset and two-column inset, checkbox, disclosure, tooltip, edge-fade scroller, permissions list, changelog, framed picture and the list/bar button sizes. Generic LumaUI parts; Depot is the first user.",
-  "lumaui": {
+  "_source": "Depot redesign 7 Nov 2026 (mockups/apps/depot, measured): the inset and two-column inset, checkbox, disclosure, tooltip, edge-fade scroller, permissions list, changelog, framed picture and the list/bar button sizes. Generic SunoUI parts; Depot is the first user.",
+  "SunoUI": {
     "colors": {
       "light": {
         "tooltip_surface": "#f4f4f6",
         "tooltip_ink": "#16171a",
         "tooltip_shadow": "rgba(0, 0, 0, 0.5)",
-        "checkbox_on": "oklch(from @luma_accent 0.62 0.14 h)",
+        "checkbox_on": "oklch(from @Suno_accent 0.62 0.14 h)",
         "checkbox_on_ink": "#ffffff",
         "list_button_fill": "oklch(0.2 0.01 265 / 0.05)"
       },
@@ -14,7 +14,7 @@
         "tooltip_surface": "#f4f4f6",
         "tooltip_ink": "#16171a",
         "tooltip_shadow": "rgba(0, 0, 0, 0.5)",
-        "checkbox_on": "oklch(from @luma_accent 0.62 0.14 h)",
+        "checkbox_on": "oklch(from @Suno_accent 0.62 0.14 h)",
         "checkbox_on_ink": "#ffffff",
         "list_button_fill": "rgba(255, 255, 255, 0.07)"
       },

@@ -4,13 +4,13 @@
 
 /*
  * Restore the exact bootloader-facing QSEECom contract from the FP6's QREL
- * 16.95.0 vendor DT without changing Luma's accepted dedicated allocators.
+ * 16.95.0 vendor DT without changing Suno's accepted dedicated allocators.
  *
  * The v10 dedicated-heaps overlay intentionally moved ownership below SCM,
  * but also omitted the inert stock qcom,qseecom node and aliases. AppsBL uses
  * that contract to register the application region before Linux starts. The
  * Linux transport then deliberately skips APP_REGION_NOTIFICATION when the
- * AppsBL marker is present. Keep the accepted Luma pool nodes and add only the
+ * AppsBL marker is present. Keep the accepted Suno pool nodes and add only the
  * references and properties observed in the stock DT.
  */
 

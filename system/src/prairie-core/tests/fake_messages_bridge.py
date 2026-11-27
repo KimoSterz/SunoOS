@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""A luma-messages-bridge/1 helper with a fake network, for tests only.
+"""A Suno-messages-bridge/1 helper with a fake network, for tests only.
 
 Sign-in: ``qr`` shows a code and finishes when Messages submits ``confirm``
 (the test plays the phone); ``cookies`` asks for a browser, then shows an emoji
@@ -84,7 +84,7 @@ def handle(command, args):
     with (data_dir / "commands.jsonl").open("a") as stream:
         stream.write(json.dumps({"cmd": command, "user_token": bool(args.get("user_token"))}) + "\n")
     if command == "hello":
-        return {"protocol": "luma-messages-bridge/1", "network": "fake", "helper_version": "test",
+        return {"protocol": "Suno-messages-bridge/1", "network": "fake", "helper_version": "test",
                 "capabilities": {"login": ["qr", "cookies"], "media": True, "max_media_bytes": 1048576, "reactions": True, "reaction_emoji": ["😍", "😂", "👍"],
                                  "replies": True, "typing": True, "read_receipts": True, "groups": True,
                                  "create_conversations": True, "unofficial": True, "media_fetch": True}}

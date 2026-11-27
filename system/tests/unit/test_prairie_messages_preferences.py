@@ -19,19 +19,19 @@ class ConversationPreferencesTest(unittest.TestCase):
     def test_first_write_backed_up_and_scoped(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "conversation-settings.json"
-            original = {"luma|alice": {"muted": True, "future": "keep"},
-                        "luma|bob": {"pinned": True}}
+            original = {"Suno|alice": {"muted": True, "future": "keep"},
+                        "Suno|bob": {"pinned": True}}
             path.write_text(json.dumps(original), encoding="utf-8")
             prefs = ConversationPreferences(path)
-            prefs.set_flag("luma|alice", "pinned", True)
+            prefs.set_flag("Suno|alice", "pinned", True)
             backup = path.with_name(path.name + ".before-pin-mute")
             self.assertEqual(json.loads(backup.read_text()), original)
             current = json.loads(path.read_text())
-            self.assertEqual(current["luma|alice"], {"muted": True, "future": "keep", "pinned": True})
-            self.assertEqual(current["luma|bob"], original["luma|bob"])
-            prefs.set_flag("luma|alice", "muted", False)
+            self.assertEqual(current["Suno|alice"], {"muted": True, "future": "keep", "pinned": True})
+            self.assertEqual(current["Suno|bob"], original["Suno|bob"])
+            prefs.set_flag("Suno|alice", "muted", False)
             self.assertEqual(json.loads(backup.read_text()), original)
-            self.assertEqual(prefs.flags("luma|alice"), {"pinned": True, "muted": False})
+            self.assertEqual(prefs.flags("Suno|alice"), {"pinned": True, "muted": False})
 
     def test_new_store_has_empty_backup_before_write(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

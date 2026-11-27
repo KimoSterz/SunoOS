@@ -5,7 +5,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
-const source=fs.readFileSync(new URL('../../../src/luma-shell-presentation/presentation.js',import.meta.url),'utf8');
+const source=fs.readFileSync(new URL('../../../src/Suno-shell-presentation/presentation.js',import.meta.url),'utf8');
 const start=source.indexOf('    _queueInkSample() {'), end=source.indexOf('\n    }\n',start)+7;
 assert.ok(start>0&&end>start,'presentation.js keeps _queueInkSample()');
 let now=0, next=1, timerAdds=0, timerRemoves=0;

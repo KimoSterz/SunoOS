@@ -15,11 +15,11 @@ for tool in cpio dnf5 mktemp patch podman rpm2cpio sha256sum; do
 done
 
 if [ "$(uname -s)" != Linux ]; then
-  printf 'error: build the Luma libhandy RPM on a Linux builder\n' >&2
+  printf 'error: build the Suno libhandy RPM on a Linux builder\n' >&2
   exit 1
 fi
 
-architecture=${LUMA_TARGET_ARCHITECTURE:-$(uname -m)}
+architecture=${SUNO_TARGET_ARCHITECTURE:-$(uname -m)}
 case "$architecture" in
   x86_64)
     builder_container=$FEDORA_RPM_BUILD_CONTAINER
@@ -34,7 +34,7 @@ case "$architecture" in
     exit 1
     ;;
 esac
-export LUMA_RPM_BUILDER_ARCHITECTURE=$architecture
+export SUNO_RPM_BUILDER_ARCHITECTURE=$architecture
 
 cache_dir="$repo_root/build/cache/srpm"
 output_dir="$repo_root/build/packages/libhandy"
@@ -67,17 +67,17 @@ mkdir -p "$rpmbuild_dir/BUILD" "$rpmbuild_dir/BUILDROOT" \
 mv "$work_dir/libhandy.spec" "$rpmbuild_dir/SPECS/"
 find "$work_dir" -maxdepth 1 -type f -exec mv -t "$rpmbuild_dir/SOURCES" {} +
 install -m 0644 \
-  "$repo_root/patches/libhandy/0001-luma-generic-application-identity.patch" \
-  "$repo_root/patches/libhandy/0002-luma-generic-command-row.patch" \
-  "$repo_root/patches/libhandy/0003-luma-title-slot-and-leaflet-islands.patch" \
-  "$repo_root/patches/libhandy/0004-luma-identity-title-repeat.patch" \
-  "$repo_root/patches/libhandy/0005-luma-one-title-row-per-window.patch" \
+  "$repo_root/patches/libhandy/0001-Suno-generic-application-identity.patch" \
+  "$repo_root/patches/libhandy/0002-Suno-generic-command-row.patch" \
+  "$repo_root/patches/libhandy/0003-Suno-title-slot-and-leaflet-islands.patch" \
+  "$repo_root/patches/libhandy/0004-Suno-identity-title-repeat.patch" \
+  "$repo_root/patches/libhandy/0005-Suno-one-title-row-per-window.patch" \
   "$rpmbuild_dir/SOURCES/"
 
 (
   cd "$rpmbuild_dir/SPECS"
   patch --batch --forward --fuzz=0 -p1 \
-    <"$repo_root/patches/libhandy/0000-luma-fedora-spec.patch"
+    <"$repo_root/patches/libhandy/0000-Suno-fedora-spec.patch"
 )
 
 "$repo_root/scripts/packages/run-in-rpm-builder.sh" \
@@ -98,21 +98,21 @@ install -m 0644 \
     rpm2cpio "$OLDPWD/$main_rpm" >payload.cpio
     cpio -idm --quiet <payload.cpio
     rm -f payload.cpio
-    grep -aFq "hdy-header-bar-luma-identity-owner" usr/lib64/libhandy-1.so.0
-    grep -aFq "luma-no-automatic-identity" usr/lib64/libhandy-1.so.0
-    grep -aFq "luma-identity-display" usr/lib64/libhandy-1.so.0
-    grep -aFq "luma-automatic-identity" usr/lib64/libhandy-1.so.0
+    grep -aFq "hdy-header-bar-Suno-identity-owner" usr/lib64/libhandy-1.so.0
+    grep -aFq "Suno-no-automatic-identity" usr/lib64/libhandy-1.so.0
+    grep -aFq "Suno-identity-display" usr/lib64/libhandy-1.so.0
+    grep -aFq "Suno-automatic-identity" usr/lib64/libhandy-1.so.0
     grep -aFq "notify::application" usr/lib64/libhandy-1.so.0
-    grep -aFq "luma-native-window" usr/lib64/libhandy-1.so.0
-    grep -aFq "luma-hdy-native-window" usr/lib64/libhandy-1.so.0
-    grep -aFq "luma-native-work-surface" usr/lib64/libhandy-1.so.0
-    grep -aFq "luma-command-host" usr/lib64/libhandy-1.so.0
-    grep -aFq "luma-no-command-row" usr/lib64/libhandy-1.so.0
-    grep -aFq "luma-split-leaflet" usr/lib64/libhandy-1.so.0
-    grep -aFq "luma-command-title" usr/lib64/libhandy-1.so.0
-    grep -aFq "luma-repeats-identity" usr/lib64/libhandy-1.so.0
-    grep -aFq "luma-window-title-row" usr/lib64/libhandy-1.so.0
-    grep -aFq "luma-pane-toolbar" usr/lib64/libhandy-1.so.0
+    grep -aFq "Suno-native-window" usr/lib64/libhandy-1.so.0
+    grep -aFq "Suno-hdy-native-window" usr/lib64/libhandy-1.so.0
+    grep -aFq "Suno-native-work-surface" usr/lib64/libhandy-1.so.0
+    grep -aFq "Suno-command-host" usr/lib64/libhandy-1.so.0
+    grep -aFq "Suno-no-command-row" usr/lib64/libhandy-1.so.0
+    grep -aFq "Suno-split-leaflet" usr/lib64/libhandy-1.so.0
+    grep -aFq "Suno-command-title" usr/lib64/libhandy-1.so.0
+    grep -aFq "Suno-repeats-identity" usr/lib64/libhandy-1.so.0
+    grep -aFq "Suno-window-title-row" usr/lib64/libhandy-1.so.0
+    grep -aFq "Suno-pane-toolbar" usr/lib64/libhandy-1.so.0
   '
 
 stable_rpms="$output_dir/RPMS/$architecture"
@@ -121,7 +121,7 @@ rm -rf "$stable_rpms" "$stable_srpms" "$output_dir/SHA256SUMS"
 install -d -m 0755 "$stable_rpms" "$stable_srpms"
 install -m 0644 "$rpmbuild_dir/RPMS/$architecture/$package_nevra.rpm" "$stable_rpms/"
 install -m 0644 \
-  "$rpmbuild_dir/SRPMS/libhandy-1.8.3-${LIBHANDY_LUMA_RELEASE}.fc44.src.rpm" \
+  "$rpmbuild_dir/SRPMS/libhandy-1.8.3-${LIBHANDY_SUNO_RELEASE}.fc44.src.rpm" \
   "$stable_srpms/"
 
 (
@@ -129,4 +129,4 @@ install -m 0644 \
   find RPMS SRPMS -type f -name '*.rpm' -exec sha256sum {} + | sort >SHA256SUMS
 )
 
-printf 'Luma libhandy packages: %s\n' "$output_dir"
+printf 'Suno libhandy packages: %s\n' "$output_dir"

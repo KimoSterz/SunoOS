@@ -1,1 +1,1 @@
-"""Project Luma's source-owned Prairie core applications."""
+"""Project Suno's source-owned Prairie core applications."""

@@ -11,9 +11,9 @@ _backed_up = set()
 
 
 def ensure_backup(source_uid, kind, export, *, root=None):
-    if os.environ.get("LUMA_CALENDAR_FIXTURE"):
+    if os.environ.get("SUNO_CALENDAR_FIXTURE"):
         raise RuntimeError("Fixture mode cannot back up or access real calendars.")
-    root = Path(root) if root is not None else Path(os.environ.get("XDG_STATE_HOME", str(Path.home()/".local/state"))) / "luma/calendar-backups"
+    root = Path(root) if root is not None else Path(os.environ.get("XDG_STATE_HOME", str(Path.home()/".local/state"))) / "Suno/calendar-backups"
     key = (str(root), source_uid, kind)
     with _lock:
         if key in _backed_up:

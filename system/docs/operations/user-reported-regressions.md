@@ -26,7 +26,7 @@ available. Add coverage at the boundary the user actually encountered.
   client delivery and update-graph verification.
 - First shipped version: `1.0.0-nightly.20261009.5`, Settings51. Published
   2026-10-09; physical display confirmation remains a user acceptance check.
-- Temporary workaround: use `org.projectluma.Displays` and Keep Arrangement.
+- Temporary workaround: use `org.projectSuno.Displays` and Keep Arrangement.
 
 ## UPD-001 — Successive updates have unclear date labels
 
@@ -105,7 +105,7 @@ available. Add coverage at the boundary the user actually encountered.
 
 - Reported: 2026-10-09, Connect `0.65.0`.
 - Reproduction: signed-in Connect shows XPS devices; click Sync Now and receive
-  “This computer needs to be connected to Luma Connect again.”
+  “This computer needs to be connected to Suno Connect again.”
 - Status: client isolation correction shipped; the Hub maintainer confirmed
   the sharing service is absent. The user subsequently reports 27 Notes and
   Contacts synced on the XPS. This confirms personal progress, not shared
@@ -268,7 +268,7 @@ available. Add coverage at the boundary the user actually encountered.
   version the reporter installed or prove a working speaker path.
 - Exact-image audit: the linked UCM HiFi and BootSequence match upstream;
   the actual ES8336 kernel module contains the expected delayed speaker-GPIO
-  path. Shipped module settings contain no Luma SOF override, and output policy
+  path. Shipped module settings contain no Suno SOF override, and output policy
   only sets default-route metadata. No applicable Alliwava/H90 upstream DMI
   quirk or safe correction is established by this audit.
 - Follow-up: the user declined further reporter diagnostics. Keep the report
@@ -277,14 +277,14 @@ available. Add coverage at the boundary the user actually encountered.
   global DSP-driver override or another machine's GPIO quirk.
 - First shipped correction: not established.
 
-## AUDIO-002 — Microphone selection replaces Luma's Sound panel
+## AUDIO-002 — Microphone selection replaces Suno's Sound panel
 
 - Reported: 2026-10-10, Dell XPS DA14260. Selecting the input dropdown opens
   the older native Sound panel. The user subsequently confirmed that the
   microphone works, with low volume; no capture failure is claimed.
 - Cause: the live Gvc adapter owns microphone selection and volume, but the
   verified-write gate does not approve those keys. A picker write returns
-  `CC_LUMA_WRITE_DELEGATED`, which deliberately replaces the Luma view.
+  `CC_SUNO_WRITE_DELEGATED`, which deliberately replaces the Suno view.
   Input labels also use only the port description, such as “Microphones”,
   although the adapter already reads the hardware origin.
 - Source correction: qualify only input selection and volume in the existing
@@ -302,7 +302,7 @@ available. Add coverage at the boundary the user actually encountered.
 - First shipped correction: Nightly `20261010.3`, with Settings53. The signed
   update was verified through the canonical download address on 2026-10-10.
 
-## SET-001 — Settings actions replace Luma panes with older native panels
+## SET-001 — Settings actions replace Suno panes with older native panels
 
 - Reported: 2026-10-10 after the Sound input-picker report; earlier reports
   included Mouse/Touchpad and Displays.
@@ -313,7 +313,7 @@ available. Add coverage at the boundary the user actually encountered.
   controls and hidden/unowned controls excluded.
 - Scope of evidence: maintained Settings51 source plus the Settings52 input
   correction; not a physical-device click-through of every pane.
-- Source correction: Settings53 retains the Luma pane on refused writes and
+- Source correction: Settings53 retains the Suno pane on refused writes and
   asynchronous errors, qualifies reviewed native bindings and replaces explicit
   action delegation with native handlers. Shell110 supplies restricted input
   source selection; Settings requires that matching package.

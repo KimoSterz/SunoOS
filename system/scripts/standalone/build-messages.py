@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """Assemble Messages and its selected dependencies into a relocatable Linux directory.
 
-Inputs are a qualified Luma Platform, a GdkPixbuf build with builtin PNG/JPEG/GIF
+Inputs are a qualified Suno Platform, a GdkPixbuf build with builtin PNG/JPEG/GIF
 loaders, and an SVG loader. No application code is forked or patched.
 """
 import argparse
@@ -26,7 +26,7 @@ args = parser.parse_args()
 root = args.runtime_files.resolve()
 pixbuf = args.pixbuf_prefix.resolve()
 dest = args.output.resolve()
-assert (root / 'lib/python3.14/site-packages/luma_appkit').is_dir()
+assert (root / 'lib/python3.14/site-packages/Suno_appkit').is_dir()
 dest.mkdir(parents=True, exist_ok=False)
 
 def copy(source, relative):
@@ -41,7 +41,7 @@ def copy(source, relative):
 libraries = {p.name: p for p in (root / 'lib64').rglob('*.so*')}
 libraries.update({p.name: p for p in (pixbuf / 'lib64').glob('*.so*')})
 seeds = [root / 'bin/python3']
-for pattern in ('libgtk-4.so.*', 'libadwaita-1.so.*', 'libluma*.so.*',
+for pattern in ('libgtk-4.so.*', 'libadwaita-1.so.*', 'libSuno*.so.*',
                 'libgirepository*.so.*', 'libcairo*.so.*', 'librsvg*.so.*',
                 'libsecret-1.so.*', 'libgstreamer-1.0.so.*', 'libgstbase-1.0.so.*', 'libgstaudio-1.0.so.*', 'libgstapp-1.0.so.*'):
     seeds.extend((root / 'lib64').glob(pattern))
@@ -97,8 +97,8 @@ site = dest / 'usr/lib64/python3.14/site-packages'
 for path in list(site.iterdir()):
     if path.name not in ('gi', 'cairo') and not path.name.startswith(('PyGObject-', 'pycairo-')):
         shutil.rmtree(path) if path.is_dir() else path.unlink()
-copy(root / 'lib/python3.14/site-packages/luma_appkit',
-     'usr/lib64/python3.14/site-packages/luma_appkit')
+copy(root / 'lib/python3.14/site-packages/Suno_appkit',
+     'usr/lib64/python3.14/site-packages/Suno_appkit')
 import ast
 source_package=REPO/'src/prairie-core/prairie_apps'
 pending=['messages','messages_standalone','messages_app_port'];modules=set()
@@ -114,27 +114,27 @@ for name in sorted(modules|{'__init__'}):
     copy(source_package/(name+'.py'),'usr/lib64/python3.14/site-packages/prairie_apps/'+name+'.py')
 copy(REPO / 'packaging/standalone/messages/sitecustomize.py',
      'usr/lib64/python3.14/site-packages/sitecustomize.py')
-for path in (root / 'share/luma-appkit').glob('*.css'):
+for path in (root / 'share/Suno-appkit').glob('*.css'):
     shutil.copy2(path, site / path.name)
 for relative in ('share/glib-2.0/schemas', 'share/icons/Prairie', 'share/icons/Adwaita',
                  'share/icons/hicolor', 'share/fonts/google-figtree-fonts', 'share/licenses'):
     copy(root / relative, Path('usr') / relative)
 copy(REPO/'src/prairie-core/style/messages.css','usr/share/prairie-core/messages.css')
-copy(REPO / 'src/prairie-core/data/org.projectluma.Messages.svg',
-     'usr/share/icons/hicolor/scalable/apps/org.projectluma.Messages.svg')
-desktop = (REPO / 'src/prairie-core/data/org.projectluma.Messages.desktop').read_text().replace('Exec=prairie-messages', 'Exec=Messages').replace('DBusActivatable=true', 'DBusActivatable=false')
-desktop = desktop.replace('[Desktop Entry]\n', '[Desktop Entry]\nStartupWMClass=org.projectluma.Messages\n', 1)
+copy(REPO / 'src/prairie-core/data/org.projectSuno.Messages.svg',
+     'usr/share/icons/hicolor/scalable/apps/org.projectSuno.Messages.svg')
+desktop = (REPO / 'src/prairie-core/data/org.projectSuno.Messages.desktop').read_text().replace('Exec=prairie-messages', 'Exec=Messages').replace('DBusActivatable=true', 'DBusActivatable=false')
+desktop = desktop.replace('[Desktop Entry]\n', '[Desktop Entry]\nStartupWMClass=org.projectSuno.Messages\n', 1)
 (dest / 'usr/share/applications').mkdir(parents=True, exist_ok=True)
-(dest / 'usr/share/applications/org.projectluma.Messages.desktop').write_text(desktop)
-subprocess.run(['desktop-file-validate', str(dest / 'usr/share/applications/org.projectluma.Messages.desktop')], check=True)
-copy(REPO / 'packaging/standalone/messages/org.projectluma.Messages.metainfo.xml',
-     'usr/share/metainfo/org.projectluma.Messages.metainfo.xml')
-copy(REPO / 'LICENSES', 'usr/share/licenses/luma-source')
+(dest / 'usr/share/applications/org.projectSuno.Messages.desktop').write_text(desktop)
+subprocess.run(['desktop-file-validate', str(dest / 'usr/share/applications/org.projectSuno.Messages.desktop')], check=True)
+copy(REPO / 'packaging/standalone/messages/org.projectSuno.Messages.metainfo.xml',
+     'usr/share/metainfo/org.projectSuno.Messages.metainfo.xml')
+copy(REPO / 'LICENSES', 'usr/share/licenses/Suno-source')
 
 subprocess.run(['glib-compile-schemas', str(dest / 'usr/share/glib-2.0/schemas')], check=True)
 (dest / 'usr/share/icons/hicolor/icon-theme.cache').unlink(missing_ok=True)
-namespaces = ('Gtk-4.0', 'Gdk-4.0', 'Gsk-4.0', 'Adw-1', 'LumaUI-1', 'LumaSemantics-1',
-              'LumaAppearance-1', 'GLib-2.0', 'GObject-2.0', 'Gio-2.0', 'GModule-2.0',
+namespaces = ('Gtk-4.0', 'Gdk-4.0', 'Gsk-4.0', 'Adw-1', 'SunoUI-1', 'SunoSemantics-1',
+              'SunoAppearance-1', 'GLib-2.0', 'GObject-2.0', 'Gio-2.0', 'GModule-2.0',
               'GLibUnix-2.0', 'GioUnix-2.0', 'GdkPixbuf-2.0', 'Pango-1.0', 'PangoCairo-1.0',
               'PangoFT2-1.0', 'Graphene-1.0', 'cairo-1.0', 'freetype2-2.0', 'HarfBuzz-0.0',
               'GdkX11-4.0', 'GdkWayland-4.0', 'xlib-2.0', 'Secret-1', 'Gst-1.0', 'GstBase-1.0', 'GstAudio-1.0', 'GstApp-1.0')
@@ -145,13 +145,13 @@ for name in namespaces:
 (dest / 'fonts.conf').write_text('<fontconfig><include ignore_missing="yes">/etc/fonts/fonts.conf</include><dir prefix="relative">usr/share/fonts</dir><cachedir prefix="xdg">fontconfig</cachedir></fontconfig>')
 copy(REPO / 'packaging/standalone/messages/bootstrap.py', 'bootstrap.py')
 copy(REPO/'src/prairie-core/prairie_ui','usr/lib64/python3.14/site-packages/prairie_ui')
-helper=REPO/'src/luma-messages-e2ee'
-copy(args.helper_binary,'usr/libexec/luma-messages/luma-bin')
+helper=REPO/'src/Suno-messages-e2ee'
+copy(args.helper_binary,'usr/libexec/Suno-messages/Suno-bin')
 for network in ('gmessages','whatsapp'):
-    copy(args.linked_helper_directory/network,'usr/libexec/luma-messages/'+network)
+    copy(args.linked_helper_directory/network,'usr/libexec/Suno-messages/'+network)
 copy(args.qr_package,'usr/lib64/python3.14/site-packages/qrcode')
 copy(args.qr_license,'usr/share/licenses/python-qrcode/LICENSE')
-launcher=dest/'usr/libexec/luma-messages/luma'
+launcher=dest/'usr/libexec/Suno-messages/Suno'
 launcher.write_text('''#!/bin/sh
 set -eu
 messages_root=$(CDPATH= cd -- "$(dirname -- "$0")/../../.." && pwd)
@@ -160,7 +160,7 @@ if [ -z "${SSL_CERT_FILE:-}" ]; then
         if [ -f "$trust" ]; then export SSL_CERT_FILE="$trust"; break; fi
     done
 fi
-exec "$messages_root/usr/lib64/ld-linux-x86-64.so.2" --inhibit-cache --library-path "$messages_root/usr/lib64:/usr/lib/x86_64-linux-gnu" "$messages_root/usr/libexec/luma-messages/luma-bin" "$@"
+exec "$messages_root/usr/lib64/ld-linux-x86-64.so.2" --inhibit-cache --library-path "$messages_root/usr/lib64:/usr/lib/x86_64-linux-gnu" "$messages_root/usr/libexec/Suno-messages/Suno-bin" "$@"
 ''')
 launcher.chmod(0o755)
 # Theme modules are shared presentation dependencies.

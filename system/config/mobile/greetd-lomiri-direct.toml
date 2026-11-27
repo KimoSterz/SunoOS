@@ -6,11 +6,11 @@ switch = true
 source_profile = true
 
 # One-shot physical-compositor Lomiri Keyboard comparison. The live config is
-# restored to Luma immediately after greetd starts this authenticated session.
+# restored to Suno immediately after greetd starts this authenticated session.
 [initial_session]
-command = "/usr/local/bin/luma-lomiri-direct-session"
-user = "luma"
+command = "/usr/local/bin/Suno-lomiri-direct-session"
+user = "Suno"
 
 [default_session]
-command = "agreety --cmd /usr/local/bin/luma-shell-session"
+command = "agreety --cmd /usr/local/bin/Suno-shell-session"
 user = "greetd"

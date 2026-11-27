@@ -9,17 +9,17 @@ repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 # shellcheck disable=SC1091
 . "$repo_root/config/android/weston-fp6-source.env"
 # shellcheck disable=SC1091
-. "$repo_root/config/mobile/luma-greeter.env"
+. "$repo_root/config/mobile/Suno-greeter.env"
 # shellcheck disable=SC1091
 . "$repo_root/config/mobile/greetd-source.env"
 output_dir=${1:-$repo_root/build/mobile/fp6-rootfs}
 rootfs="$output_dir/rootfs"
-include_ui=${LUMA_FP6_INCLUDE_UI:-1}
+include_ui=${SUNO_FP6_INCLUDE_UI:-1}
 source_date_epoch=${SOURCE_DATE_EPOCH:-1786406400}
-zstd_level=${LUMA_FP6_ZSTD_LEVEL:-10}
-zstd_threads=${LUMA_FP6_ZSTD_THREADS:-4}
-finalize_only=${LUMA_FP6_FINALIZE_ONLY:-0}
-resume_after_dnf=${LUMA_FP6_RESUME_AFTER_DNF:-0}
+zstd_level=${SUNO_FP6_ZSTD_LEVEL:-10}
+zstd_threads=${SUNO_FP6_ZSTD_THREADS:-4}
+finalize_only=${SUNO_FP6_FINALIZE_ONLY:-0}
+resume_after_dnf=${SUNO_FP6_RESUME_AFTER_DNF:-0}
 
 die() {
   printf 'error: %s\n' "$*" >&2
@@ -36,77 +36,77 @@ die() {
 
 case "$include_ui" in
   0|1) ;;
-  *) die 'LUMA_FP6_INCLUDE_UI must be 0 or 1' ;;
+  *) die 'SUNO_FP6_INCLUDE_UI must be 0 or 1' ;;
 esac
 case "$finalize_only" in
   0|1) ;;
-  *) die 'LUMA_FP6_FINALIZE_ONLY must be 0 or 1' ;;
+  *) die 'SUNO_FP6_FINALIZE_ONLY must be 0 or 1' ;;
 esac
 case "$resume_after_dnf" in
   0|1) ;;
-  *) die 'LUMA_FP6_RESUME_AFTER_DNF must be 0 or 1' ;;
+  *) die 'SUNO_FP6_RESUME_AFTER_DNF must be 0 or 1' ;;
 esac
 [ "$finalize_only:$resume_after_dnf" != 1:1 ] || \
   die 'finalize-only and post-DNF resume are mutually exclusive'
 case "$zstd_level" in
-  ''|*[!0-9]*) die 'LUMA_FP6_ZSTD_LEVEL must be an integer from 1 through 19' ;;
+  ''|*[!0-9]*) die 'SUNO_FP6_ZSTD_LEVEL must be an integer from 1 through 19' ;;
 esac
 [ "$zstd_level" -ge 1 ] && [ "$zstd_level" -le 19 ] || \
-  die 'LUMA_FP6_ZSTD_LEVEL must be an integer from 1 through 19'
+  die 'SUNO_FP6_ZSTD_LEVEL must be an integer from 1 through 19'
 case "$zstd_threads" in
-  ''|*[!0-9]*) die 'LUMA_FP6_ZSTD_THREADS must be an integer from 1 through 8' ;;
+  ''|*[!0-9]*) die 'SUNO_FP6_ZSTD_THREADS must be an integer from 1 through 8' ;;
 esac
 [ "$zstd_threads" -ge 1 ] && [ "$zstd_threads" -le 8 ] || \
-  die 'LUMA_FP6_ZSTD_THREADS must be an integer from 1 through 8'
+  die 'SUNO_FP6_ZSTD_THREADS must be an integer from 1 through 8'
 
 for command in dconf dnf groupadd journalctl rpm systemctl systemd-hwdb tar useradd usermod zstd sha256sum; do
   command -v "$command" >/dev/null || die "missing required command: $command"
 done
 
-artifact="$output_dir/luma-fp6-fedora44-rootfs.tar.zst"
+artifact="$output_dir/Suno-fp6-fedora44-rootfs.tar.zst"
 local_rpm_manifest="$output_dir/local-rpm-manifest.txt"
-filer_bundle=${LUMA_FP6_FILER_BUNDLE_DIR:-$repo_root/build/mobile/fp6-physical/luma-apps-aarch64/filer/bundle}
-android_runtime_bundle=${LUMA_FP6_ANDROID_RUNTIME_BUNDLE_DIR:-$repo_root/build/mobile/fp6-physical/luma-apps-aarch64/android-runtime/bundle}
-weston_bundle=${LUMA_FP6_WESTON_BUNDLE_DIR:-$repo_root/build/mobile/fp6-physical/luma-apps-aarch64/weston-rdp-native-touch/bundle}
+filer_bundle=${SUNO_FP6_FILER_BUNDLE_DIR:-$repo_root/build/mobile/fp6-physical/Suno-apps-aarch64/filer/bundle}
+android_runtime_bundle=${SUNO_FP6_ANDROID_RUNTIME_BUNDLE_DIR:-$repo_root/build/mobile/fp6-physical/Suno-apps-aarch64/android-runtime/bundle}
+weston_bundle=${SUNO_FP6_WESTON_BUNDLE_DIR:-$repo_root/build/mobile/fp6-physical/Suno-apps-aarch64/weston-rdp-native-touch/bundle}
 local_rpms=(
-  "$repo_root/build/packages/luma-messages-e2ee/RPMS/aarch64/$LUMA_MESSAGES_E2EE_AARCH64_NEVRA.rpm"
-  "$repo_root/build/packages/luma-apk-metadata/aarch64/$LUMA_APK_METADATA_AARCH64_NEVRA.rpm"
-  "$repo_root/build/packages/luma-terminal/RPMS/noarch/$LUMA_TERMINAL_NEVRA.rpm"
-  "$repo_root/build/packages/luma-monitor/RPMS/noarch/$LUMA_MONITOR_NEVRA.rpm"
-  "$repo_root/build/packages/luma-calculator/RPMS/noarch/$LUMA_CALCULATOR_NEVRA.rpm"
+  "$repo_root/build/packages/Suno-messages-e2ee/RPMS/aarch64/$SUNO_MESSAGES_E2EE_AARCH64_NEVRA.rpm"
+  "$repo_root/build/packages/Suno-apk-metadata/aarch64/$SUNO_APK_METADATA_AARCH64_NEVRA.rpm"
+  "$repo_root/build/packages/Suno-terminal/RPMS/noarch/$SUNO_TERMINAL_NEVRA.rpm"
+  "$repo_root/build/packages/Suno-monitor/RPMS/noarch/$SUNO_MONITOR_NEVRA.rpm"
+  "$repo_root/build/packages/Suno-calculator/RPMS/noarch/$SUNO_CALCULATOR_NEVRA.rpm"
   "$repo_root/build/packages/gtk4/RPMS/aarch64/$GTK4_AARCH64_NEVRA.rpm"
   "$repo_root/build/packages/gtk3/RPMS/aarch64/$GTK3_AARCH64_NEVRA.rpm"
   "$repo_root/build/packages/libhandy/RPMS/aarch64/$LIBHANDY_AARCH64_NEVRA.rpm"
   "$repo_root/build/packages/libadwaita/RPMS/aarch64/$LIBADWAITA_AARCH64_NEVRA.rpm"
-  "$repo_root/build/packages/gnome-control-center/RPMS/aarch64/gnome-control-center-50.4-${GNOME_CONTROL_CENTER_LUMA_RELEASE}.fc44.aarch64.rpm"
-  "$repo_root/build/packages/gnome-control-center/RPMS/noarch/gnome-control-center-filesystem-50.4-${GNOME_CONTROL_CENTER_LUMA_RELEASE}.fc44.noarch.rpm"
-  "$repo_root/build/packages/boot-theme/RPMS/noarch/$LUMA_BOOT_THEME_NEVRA.rpm"
-  "$repo_root/build/packages/backgrounds/RPMS/noarch/$LUMA_BACKGROUNDS_NEVRA.rpm"
-  "$repo_root/build/packages/greetd-session/aarch64/$LUMA_GREETD_SESSION_NEVRA.rpm"
-  "$repo_root/build/packages/luma-greeter/aarch64/$LUMA_GREETER_NEVRA.rpm"
-  "$repo_root/build/packages/luma-shell-state/RPMS/noarch/$LUMA_SHELL_STATE_NEVRA.rpm"
-  "$repo_root/build/packages/luma-search/RPMS/noarch/$LUMA_SEARCH_NEVRA.rpm"
-  "$repo_root/build/packages/phoc/aarch64/RPMS/$LUMA_PHOC_AARCH64_NEVRA.rpm"
-  "$repo_root/build/packages/luma-phosh/aarch64/RPMS/$LUMA_PHOSH_AARCH64_NEVRA.rpm"
+  "$repo_root/build/packages/gnome-control-center/RPMS/aarch64/gnome-control-center-50.4-${GNOME_CONTROL_CENTER_SUNO_RELEASE}.fc44.aarch64.rpm"
+  "$repo_root/build/packages/gnome-control-center/RPMS/noarch/gnome-control-center-filesystem-50.4-${GNOME_CONTROL_CENTER_SUNO_RELEASE}.fc44.noarch.rpm"
+  "$repo_root/build/packages/boot-theme/RPMS/noarch/$SUNO_BOOT_THEME_NEVRA.rpm"
+  "$repo_root/build/packages/backgrounds/RPMS/noarch/$SUNO_BACKGROUNDS_NEVRA.rpm"
+  "$repo_root/build/packages/greetd-session/aarch64/$SUNO_GREETD_SESSION_NEVRA.rpm"
+  "$repo_root/build/packages/Suno-greeter/aarch64/$SUNO_GREETER_NEVRA.rpm"
+  "$repo_root/build/packages/Suno-shell-state/RPMS/noarch/$SUNO_SHELL_STATE_NEVRA.rpm"
+  "$repo_root/build/packages/Suno-search/RPMS/noarch/$SUNO_SEARCH_NEVRA.rpm"
+  "$repo_root/build/packages/phoc/aarch64/RPMS/$SUNO_PHOC_AARCH64_NEVRA.rpm"
+  "$repo_root/build/packages/Suno-phosh/aarch64/RPMS/$SUNO_PHOSH_AARCH64_NEVRA.rpm"
   "$repo_root/build/packages/prairie-icon-theme/RPMS/noarch/$PRAIRIE_ICON_THEME_NEVRA.rpm"
-  "$repo_root/build/packages/luma-mods/RPMS/noarch/$LUMA_MODS_NEVRA.rpm"
+  "$repo_root/build/packages/Suno-mods/RPMS/noarch/$SUNO_MODS_NEVRA.rpm"
   "$repo_root/build/packages/figtree-fonts/RPMS/noarch/$FIGTREE_NEVRA.rpm"
   "$repo_root/build/packages/prairie-core-apps/RPMS/noarch/$PRAIRIE_CORE_APPS_NEVRA.rpm"
-  "$repo_root/build/packages/luma-developer-platform/aarch64/RPMS/$LUMA_DEVELOPER_PLATFORM_AARCH64_NEVRA.rpm"
-  "$repo_root/build/packages/luma-tide/RPMS/noarch/$LUMA_TIDE_NEVRA.rpm"
-  "$repo_root/build/packages/luma-imsd/aarch64/RPMS/$LUMA_IMSD_AARCH64_NEVRA.rpm"
-  "$android_runtime_bundle/$LUMA_ANDROID_RUNTIME_NEVRA.rpm"
+  "$repo_root/build/packages/Suno-developer-platform/aarch64/RPMS/$SUNO_DEVELOPER_PLATFORM_AARCH64_NEVRA.rpm"
+  "$repo_root/build/packages/Suno-tide/RPMS/noarch/$SUNO_TIDE_NEVRA.rpm"
+  "$repo_root/build/packages/Suno-imsd/aarch64/RPMS/$SUNO_IMSD_AARCH64_NEVRA.rpm"
+  "$android_runtime_bundle/$SUNO_ANDROID_RUNTIME_NEVRA.rpm"
   "$filer_bundle/$NAUTILUS_AARCH64_NEVRA.rpm"
   "$filer_bundle/$NAUTILUS_EXTENSIONS_AARCH64_NEVRA.rpm"
-  "$weston_bundle/$LUMA_WESTON_NEVRA.rpm"
-  "$weston_bundle/$LUMA_WESTON_LIBS_NEVRA.rpm"
-  "$weston_bundle/$LUMA_WESTON_RDP_NEVRA.rpm"
-  "$weston_bundle/$LUMA_WESTON_VNC_NEVRA.rpm"
+  "$weston_bundle/$SUNO_WESTON_NEVRA.rpm"
+  "$weston_bundle/$SUNO_WESTON_LIBS_NEVRA.rpm"
+  "$weston_bundle/$SUNO_WESTON_RDP_NEVRA.rpm"
+  "$weston_bundle/$SUNO_WESTON_VNC_NEVRA.rpm"
 )
 
 for local_rpm in "${local_rpms[@]}"; do
-  [ -f "$local_rpm" ] || die "missing shared Luma RPM: $local_rpm"
-  rpm -Kv "$local_rpm" >/dev/null || die "invalid shared Luma RPM: $local_rpm"
+  [ -f "$local_rpm" ] || die "missing shared Suno RPM: $local_rpm"
+  rpm -Kv "$local_rpm" >/dev/null || die "invalid shared Suno RPM: $local_rpm"
 done
 
 install -d -m 0755 "$output_dir"
@@ -170,24 +170,24 @@ elif [ "$resume_after_dnf" -eq 1 ]; then
 fi
 
 if [ "$finalize_only" -eq 0 ]; then
-  if ! grep -q '^luma:' "$rootfs/etc/group"; then
-    groupadd --root "$rootfs" --gid 1000 luma
+  if ! grep -q '^Suno:' "$rootfs/etc/group"; then
+    groupadd --root "$rootfs" --gid 1000 Suno
   fi
-  if ! grep -q '^luma:' "$rootfs/etc/passwd"; then
-    useradd --root "$rootfs" --uid 1000 --gid luma --groups wheel,luma-display,audio \
-      --create-home --shell /bin/bash --comment 'Project Luma diagnostic user' luma
+  if ! grep -q '^Suno:' "$rootfs/etc/passwd"; then
+    useradd --root "$rootfs" --uid 1000 --gid Suno --groups wheel,Suno-display,audio \
+      --create-home --shell /bin/bash --comment 'Project Suno diagnostic user' Suno
   fi
   # The handheld's authenticated compositor can coexist briefly with the
   # root-owned presence greeter. In that overlap logind cannot grant seat0's
   # dynamic sound ACL to the user session, so the single local handset owner
   # needs stable access to the native ALSA card. This is also what keeps call
   # audio available to the always-on native telephony service while locked.
-  usermod --root "$rootfs" --append --groups luma-display,audio luma
-  usermod --root "$rootfs" --lock luma
+  usermod --root "$rootfs" --append --groups Suno-display,audio Suno
+  usermod --root "$rootfs" --lock Suno
 
-  install -d -m 0700 -o 1000 -g 1000 "$rootfs/home/luma/.ssh"
+  install -d -m 0700 -o 1000 -g 1000 "$rootfs/home/Suno/.ssh"
   install -d -m 0755 "$rootfs/etc/ssh/sshd_config.d"
-  cat >"$rootfs/etc/ssh/sshd_config.d/40-luma-diagnostic.conf" <<'EOF'
+  cat >"$rootfs/etc/ssh/sshd_config.d/40-Suno-diagnostic.conf" <<'EOF'
 PasswordAuthentication no
 KbdInteractiveAuthentication no
 PermitRootLogin no
@@ -195,41 +195,41 @@ AuthenticationMethods publickey
 EOF
 
   install -d -m 0755 "$rootfs/etc"
-  printf 'handheld\n' >"$rootfs/etc/luma-device-class"
+  printf 'handheld\n' >"$rootfs/etc/Suno-device-class"
   install -D -m 0644 "$repo_root/config/mobile/plymouthd.conf" \
     "$rootfs/etc/plymouth/plymouthd.conf"
-  install -D -m 0644 "$repo_root/config/mobile/environment.d/90-luma-handheld.conf" \
-    "$rootfs/etc/environment.d/90-luma-handheld.conf"
-  install -D -m 0755 "$repo_root/scripts/mobile/luma-phosh-session" \
-    "$rootfs/usr/local/bin/luma-phosh-session"
-  cat >"$rootfs/etc/luma-mobile-release" <<EOF
-LUMA_ROOTFS_CONTRACT=mobile-v1
-LUMA_ROOTFS_BASE=fedora-44-aarch64
-LUMA_HARDWARE_BACKEND=physical-candidate
-LUMA_KERNEL_CONTRACT=milos-external
-LUMA_UI_INCLUDED=$include_ui
-LUMA_PHYSICAL_DEVICE=false
+  install -D -m 0644 "$repo_root/config/mobile/environment.d/90-Suno-handheld.conf" \
+    "$rootfs/etc/environment.d/90-Suno-handheld.conf"
+  install -D -m 0755 "$repo_root/scripts/mobile/Suno-phosh-session" \
+    "$rootfs/usr/local/bin/Suno-phosh-session"
+  cat >"$rootfs/etc/Suno-mobile-release" <<EOF
+SUNO_ROOTFS_CONTRACT=mobile-v1
+SUNO_ROOTFS_BASE=fedora-44-aarch64
+SUNO_HARDWARE_BACKEND=physical-candidate
+SUNO_KERNEL_CONTRACT=milos-external
+SUNO_UI_INCLUDED=$include_ui
+SUNO_PHYSICAL_DEVICE=false
 INSTALL_AUTHORIZED=false
 EOF
 
   install -D -m 0644 "$repo_root/config/desktop/dconf/profile/user" \
     "$rootfs/etc/dconf/profile/user"
-  install -D -m 0644 "$repo_root/config/desktop/dconf/db/luma.d/00-luma-desktop" \
-    "$rootfs/etc/dconf/db/luma.d/00-luma-desktop"
-  install -D -m 0644 "$repo_root/config/mobile/luma-shell-handheld.dconf" \
-    "$rootfs/etc/dconf/db/luma.d/90-luma-handheld"
-  dconf compile "$rootfs/etc/dconf/db/luma" "$rootfs/etc/dconf/db/luma.d"
+  install -D -m 0644 "$repo_root/config/desktop/dconf/db/Suno.d/00-Suno-desktop" \
+    "$rootfs/etc/dconf/db/Suno.d/00-Suno-desktop"
+  install -D -m 0644 "$repo_root/config/mobile/Suno-shell-handheld.dconf" \
+    "$rootfs/etc/dconf/db/Suno.d/90-Suno-handheld"
+  dconf compile "$rootfs/etc/dconf/db/Suno" "$rootfs/etc/dconf/db/Suno.d"
 
   : >"$rootfs/etc/machine-id"
   install -d -m 0755 "$rootfs/var/lib/dbus"
   ln -sfn /etc/machine-id "$rootfs/var/lib/dbus/machine-id"
 else
   [ -d "$rootfs" ] || die "missing existing rootfs: $rootfs"
-  grep -qx 'LUMA_ROOTFS_CONTRACT=mobile-v1' "$rootfs/etc/luma-mobile-release" || \
+  grep -qx 'SUNO_ROOTFS_CONTRACT=mobile-v1' "$rootfs/etc/Suno-mobile-release" || \
     die 'existing rootfs does not carry the mobile-v1 marker'
-  grep -qx 'LUMA_PHYSICAL_DEVICE=false' "$rootfs/etc/luma-mobile-release" || \
+  grep -qx 'SUNO_PHYSICAL_DEVICE=false' "$rootfs/etc/Suno-mobile-release" || \
     die 'existing rootfs does not carry the negative physical-device marker'
-  grep -qx 'INSTALL_AUTHORIZED=false' "$rootfs/etc/luma-mobile-release" || \
+  grep -qx 'INSTALL_AUTHORIZED=false' "$rootfs/etc/Suno-mobile-release" || \
     die 'existing rootfs does not carry the negative installation marker'
 fi
 

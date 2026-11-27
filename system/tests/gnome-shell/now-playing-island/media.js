@@ -49,14 +49,14 @@ export default async function ({Main, shot}) {
     }
     let module = null;
     for (let i = 0; i < 40 && !module; i++) {
-        module = find(Main.layoutManager.uiGroup, a => a.has_style_class_name?.('luma-media-module') && a.visible && a.get_stage());
+        module = find(Main.layoutManager.uiGroup, a => a.has_style_class_name?.('Suno-media-module') && a.visible && a.get_stage());
         if (!module) await sleep(500);
     }
     if (!module) { log('no media module'); return; }
     await sleep(wait);
     {
         let isl = module;
-        for (let p = module.get_parent(); p; p = p.get_parent()) if (p.has_style_class_name?.('luma-shelf-island')) { isl = p; break; }
+        for (let p = module.get_parent(); p; p = p.get_parent()) if (p.has_style_class_name?.('Suno-shelf-island')) { isl = p; break; }
         const samples = [];
         const until = Number(GLib.getenv('M_WATCH') || 0);
         for (let t = 0; t < until; t += 250) {
@@ -66,7 +66,7 @@ export default async function ({Main, shot}) {
         const [, natural] = isl.get_preferred_width(-1);
         log('island', {visible: isl.visible, opacity: isl.opacity, width: isl.width, natural, samples: samples.filter((s, i) => i === 0 || JSON.stringify(s.slice(1)) !== JSON.stringify(samples[i - 1].slice(1)))});
     }
-    const isl0 = (() => { for (let p = module.get_parent(); p; p = p.get_parent()) if (p.has_style_class_name?.('luma-shelf-island')) return p; return module; })();
+    const isl0 = (() => { for (let p = module.get_parent(); p; p = p.get_parent()) if (p.has_style_class_name?.('Suno-shelf-island')) return p; return module; })();
     const snap = label => {
         const [, natural] = isl0.get_preferred_width(-1);
         const op = [];
@@ -83,7 +83,7 @@ export default async function ({Main, shot}) {
             else if (step === 'overview') { Main.overview.show(); await sleep(1500); Main.overview.hide(); await sleep(1500); }
             else if (step === 'lock') { Main.screenShield?.lock?.(false); await sleep(2500); snap('locked'); Main.screenShield?.deactivate?.(false); await sleep(2500); }
             else if (step.startsWith('hid')) {
-                const shelfActor = Main.layoutManager.uiGroup.get_children().find(a => a.name === 'lumaShelf') ?? module.get_parent();
+                const shelfActor = Main.layoutManager.uiGroup.get_children().find(a => a.name === 'SunoShelf') ?? module.get_parent();
                 let root = isl0; while (root.get_parent() && root.get_parent() !== Main.layoutManager.uiGroup) root = root.get_parent();
                 const flip = v => { module.eligible = v; module.emit('eligibility-changed'); };
                 const seq = {hidA: [['hide'], ['off'], [100], ['on'], [500], ['show'], [1000]],
@@ -107,11 +107,11 @@ export default async function ({Main, shot}) {
     const chain = [];
     for (let p = module.get_parent(); p && p !== Main.layoutManager.uiGroup; p = p.get_parent()) chain.push(describe(p));
     const clock = find(Main.layoutManager.uiGroup, a => a instanceof St.Label && a.get_stage() && /\d:\d\d/.test(a.text ?? '') && a.visible);
-    const title = find(module, a => a.has_style_class_name?.('luma-media-title') && a.visible);
+    const title = find(module, a => a.has_style_class_name?.('Suno-media-title') && a.visible);
     log('module', {self: describe(module), chain, tree: walk(module), clock: clock ? describe(clock) : null,
         titleRect: title ? rect(title) : null});
     let island = module;
-    for (let p = module.get_parent(); p; p = p.get_parent()) if (p.has_style_class_name?.('luma-shelf-island')) { island = p; break; }
+    for (let p = module.get_parent(); p; p = p.get_parent()) if (p.has_style_class_name?.('Suno-shelf-island')) { island = p; break; }
     const r = rect(island), k = St.ThemeContext.get_for_stage(global.stage).scale_factor * (Main.layoutManager.primaryMonitor.geometry_scale ?? 1);
     await shot(`media-${GLib.getenv('B_TAG')}`, (r.x - 12) * k, (r.y - 12) * k, (r.w + 24) * k, (r.h + 24) * k);
     const mon = Main.layoutManager.primaryMonitor;

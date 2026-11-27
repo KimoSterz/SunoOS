@@ -81,7 +81,7 @@ async function run() {
         verifyFrames('swipe-exit');
         check('Bottom swipe restores Home without another app animation', exit._destroyed && p._home.visible &&
             p._home.opacity === 255 && !tasks._switcherPopup && !tasks._navigationLift);
-        const leaked = () => Main.uiGroup.get_children().some(a => a.name === 'luma-mobile-switcher-backdrop');
+        const leaked = () => Main.uiGroup.get_children().some(a => a.name === 'Suno-mobile-switcher-backdrop');
         check('Backdrop released after dismissal', !leaked());
         phase = 'home-entry'; tasks.openSwitcher(); await sleep(450); verifyFrames('home-entry');
         const selected = tasks._switcherPopup, card = selected._cards.find(c => c.window === window);

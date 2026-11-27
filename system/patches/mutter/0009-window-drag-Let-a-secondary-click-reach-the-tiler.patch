@@ -1,10 +1,10 @@
-From: Project Luma <engineering@projectluma.org>
+From: Project Suno <engineering@projectSuno.org>
 Date: Mon, 14 Sep 2026 12:00:00 -0500
 Subject: [PATCH] window-drag: Let a secondary click reach the tiling manager
 
 Pressing any extra mouse button during a window drag ended the drag, so
 a right-click while holding a window dropped it where it was -- and a
-tiling manager then tiled it. Luma uses that right-click as the gesture
+tiling manager then tiled it. Suno uses that right-click as the gesture
 for "don't tile this one". While a window
 being moved by the pointer, a secondary press or release no longer ends the drag; the
 tiling manager sees the button in the pointer state and acts on it.

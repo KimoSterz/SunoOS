@@ -1,5 +1,5 @@
 From bb5de7a91ea5e560b36a1af58aae140a1b378c62 Mon Sep 17 00:00:00 2001
-From: Luma <noreply@projectluma.org>
+From: Suno <noreply@projectSuno.org>
 Date: Fri, 18 Sep 2026 21:45:13 -0500
 Subject: [PATCH] modem-manager: parse the firmware before detaching MHI
  firehose modems

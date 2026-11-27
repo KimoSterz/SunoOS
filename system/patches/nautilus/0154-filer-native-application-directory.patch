@@ -1,4 +1,4 @@
-From: Project Luma <devnull@projectluma.local>
+From: Project Suno <devnull@projectSuno.local>
 Subject: [PATCH] Filer: authenticated native application discovery and launch
 
 --- a/src/nautilus-applications-directory.c
@@ -24,8 +24,8 @@ Subject: [PATCH] Filer: authenticated native application discovery and launch
 +    g_autoptr (GDBusConnection) bus = g_bus_get_sync (G_BUS_TYPE_SESSION, cancellable, error);
 +    if (bus == NULL) return NULL;
 +    g_autoptr (GVariant) result = g_dbus_connection_call_sync (bus,
-+        "org.projectluma.ApplicationDirectory1", "/org/projectluma/ApplicationDirectory1",
-+        "org.projectluma.ApplicationDirectory1", "List", g_variant_new ("(s)", ""),
++        "org.projectSuno.ApplicationDirectory1", "/org/projectSuno/ApplicationDirectory1",
++        "org.projectSuno.ApplicationDirectory1", "List", g_variant_new ("(s)", ""),
 +        G_VARIANT_TYPE ("(a(sssbbb))"), G_DBUS_CALL_FLAGS_NONE, 15000, cancellable, error);
 +    if (result == NULL) return NULL;
 +    g_autoptr (GVariant) rows = g_variant_get_child_value (result, 0);
@@ -117,8 +117,8 @@ Subject: [PATCH] Filer: authenticated native application discovery and launch
 +    self->host_bus = g_bus_get_finish (result, NULL);
 +    if (self->host_bus != NULL)
 +        self->host_subscription = g_dbus_connection_signal_subscribe (self->host_bus,
-+            "org.projectluma.ApplicationDirectory1", "org.projectluma.ApplicationDirectory1", "Changed",
-+            "/org/projectluma/ApplicationDirectory1", NULL, G_DBUS_SIGNAL_FLAGS_NONE,
++            "org.projectSuno.ApplicationDirectory1", "org.projectSuno.ApplicationDirectory1", "Changed",
++            "/org/projectSuno/ApplicationDirectory1", NULL, G_DBUS_SIGNAL_FLAGS_NONE,
 +            on_host_applications_changed, self, NULL);
 +    g_object_unref (self);
 +}
@@ -186,8 +186,8 @@ Subject: [PATCH] Filer: authenticated native application discovery and launch
 +        adw_dialog_present (dialog, GTK_WIDGET (window));
 +        }
 +    else
-+        g_dbus_connection_call (bus, "org.projectluma.ApplicationDirectory1",
-+            "/org/projectluma/ApplicationDirectory1", "org.projectluma.ApplicationDirectory1", "Launch",
++        g_dbus_connection_call (bus, "org.projectSuno.ApplicationDirectory1",
++            "/org/projectSuno/ApplicationDirectory1", "org.projectSuno.ApplicationDirectory1", "Launch",
 +            g_variant_new ("(s@as)", (const char *) g_task_get_task_data (task), g_variant_new_strv (NULL, 0)),
 +            G_VARIANT_TYPE ("(b)"), G_DBUS_CALL_FLAGS_NONE, 15000, NULL,
 +            host_application_launched, g_object_ref (window));

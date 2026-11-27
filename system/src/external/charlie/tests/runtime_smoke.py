@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 # SPDX-License-Identifier: Apache-2.0
-"""Construct and map the real Luma window for package/runtime qualification."""
+"""Construct and map the real Suno window for package/runtime qualification."""
 from __future__ import annotations
 
 import os
@@ -11,7 +11,7 @@ import gi
 gi.require_version("Gtk", "4.0")
 from gi.repository import GLib
 
-from charlie_luma.application import CharlieApplication
+from charlie_Suno.application import CharlieApplication
 
 
 def main() -> int:
@@ -47,7 +47,7 @@ def main() -> int:
             return GLib.SOURCE_REMOVE
 
         GLib.timeout_add(900, inspect)
-        return application.run(["org.projectluma.Charlie"])
+        return application.run(["org.projectSuno.Charlie"])
 
 
 if __name__ == "__main__":

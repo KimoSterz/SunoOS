@@ -7,12 +7,12 @@ import GLib from 'gi://GLib';
 import Shell from 'gi://Shell';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as MessageTray from 'resource:///org/gnome/shell/ui/messageTray.js';
-import {getNotificationTray} from 'resource:///org/gnome/shell/ui/lumaNotificationBeacon.js';
+import {getNotificationTray} from 'resource:///org/gnome/shell/ui/SunoNotificationBeacon.js';
 
 const sleep = ms => new Promise(resolve => GLib.timeout_add(GLib.PRIORITY_DEFAULT, ms, () => {
     resolve(); return GLib.SOURCE_REMOVE;
 }));
-const appId = 'waydroid.org.projectluma.androidtest';
+const appId = 'waydroid.org.projectSuno.androidtest';
 const report = {scope: 'installed native notification reply entry and virtual input only',
     status: 'starting', production_qualified: false, android_delivery_qualified: false,
     first_frame_measured: false};
@@ -34,14 +34,14 @@ function findCard(actor, notification) {
     return null;
 }
 export async function run(options = {}) {
-    const out = options.out ?? GLib.getenv('LUMA_ANDROID_REPLY_EVIDENCE');
-    const text = options.text ?? GLib.getenv('LUMA_ANDROID_REPLY_TEXT');
-    const runtimePrefix = `${GLib.get_user_runtime_dir()}/luma-android-reply-ui-`;
+    const out = options.out ?? GLib.getenv('SUNO_ANDROID_REPLY_EVIDENCE');
+    const text = options.text ?? GLib.getenv('SUNO_ANDROID_REPLY_TEXT');
+    const runtimePrefix = `${GLib.get_user_runtime_dir()}/Suno-android-reply-ui-`;
     const runtimeOutput = typeof out === 'string' && out.startsWith(runtimePrefix) &&
         /^[A-Za-z0-9_-]+$/.test(out.slice(runtimePrefix.length));
-    check(runtimeOutput || /^\/var\/tmp\/luma-android-reply-ui-[A-Za-z0-9_-]+$/.test(out ?? ''),
+    check(runtimeOutput || /^\/var\/tmp\/Suno-android-reply-ui-[A-Za-z0-9_-]+$/.test(out ?? ''),
         'Private test output required');
-    check(/^LumaAndroidReply-[0-9a-f]{8}$/.test(text ?? ''), 'Fixed synthetic reply text required');
+    check(/^SunoAndroidReply-[0-9a-f]{8}$/.test(text ?? ''), 'Fixed synthetic reply text required');
     const save = () => GLib.file_set_contents(`${out}/native-ui.json`, JSON.stringify(report, null, 2));
     Gio._promisify(Shell.Screenshot.prototype, 'screenshot_stage_to_content');
     Gio._promisify(Shell.Screenshot, 'composite_to_stream');
@@ -96,12 +96,12 @@ export async function run(options = {}) {
             check(notification.inlineReply === generation,
                 'Notification reply generation changed during input');
             check(tray._current === notification && tray.state === 'card',
-                'The actual Luma notification owner no longer presents this notification');
+                'The actual Suno notification owner no longer presents this notification');
             // Return only values: never keep a native actor across an await.
             // A replacement can destroy its editor while this probe yields.
             const card = findCard(tray, notification);
             check(card && tray._card === card && tray.contains(card),
-                'Actual native reply controls are not mapped under their Luma owner');
+                'Actual native reply controls are not mapped under their Suno owner');
             return {entry: bounds(card._replyEntry), button: bounds(card._replyButton),
                 focused: global.stage.key_focus !== null && card._replyEntry.contains(global.stage.key_focus),
                 text: card._replyEntry.get_text()};

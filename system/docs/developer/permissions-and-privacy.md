@@ -1,6 +1,6 @@
 ---
 title: Permissions and privacy
-summary: How Depot computes and shows an app’s permissions from its Flatpak metadata, the full permission vocabulary, the portal to use for each need, what triggers extra review, sign-in disclosure, and the data handling Luma expects.
+summary: How Depot computes and shows an app’s permissions from its Flatpak metadata, the full permission vocabulary, the portal to use for each need, what triggers extra review, sign-in disclosure, and the data handling Suno expects.
 order: 1
 section: Permissions and privacy
 ---
@@ -14,11 +14,11 @@ permission list is a short one.
 
 ## How permissions are shown
 
-You never type permissions into Depot. Luma reads the Flatpak `metadata` of
+You never type permissions into Depot. Suno reads the Flatpak `metadata` of
 the built app (its `[Context]`, `[Session Bus Policy]` and
 `[System Bus Policy]` sections) and maps each grant to a key in the vocabulary
 below. Listed apps from Flathub go through the same mapping, run on Flathub’s
-published metadata, and Depot on Luma shows the result.
+published metadata, and Depot on Suno shows the result.
 
 Each key has a level:
 
@@ -73,9 +73,9 @@ A few details:
 - Portals ask for consent themselves, so talking to
   `org.freedesktop.portal.*` adds nothing. Owning your own app ID’s bus names,
   or an `org.mpris.MediaPlayer2.*` name, adds nothing either.
-- If your app has a `luma-app.toml`, `luma lint` rejects every `--filesystem=`
-  grant and the broadest grants above, so a Luma tier app reaches files only
-  through portals. See [`luma-app.toml`](getting-started/luma-app-toml.md).
+- If your app has a `Suno-app.toml`, `Suno lint` rejects every `--filesystem=`
+  grant and the broadest grants above, so a Suno tier app reaches files only
+  through portals. See [`Suno-app.toml`](getting-started/Suno-app-toml.md).
 
 ## Portals first
 
@@ -98,11 +98,11 @@ granted up front, and your permission list stays short.
 | Print | `Gtk.PrintOperation` (print portal) | `--socket=cups` |
 | Store a password or token | libsecret (secret portal) | Writing it to a file |
 | Know the location | The location portal | Network geolocation of your own |
-| Read the light or dark preference | LumaUI, or `Adw.StyleManager` (settings portal) | Reading `~/.config` |
+| Read the light or dark preference | SunoUI, or `Adw.StyleManager` (settings portal) | Reading `~/.config` |
 | Move a file to Trash | `Gio.File.trash()` (trash portal) | Deleting it |
 
-List the portals your app uses in `luma-app.toml` under
-`distribution.portals`. See [`luma-app.toml`](getting-started/luma-app-toml.md#distribution).
+List the portals your app uses in `Suno-app.toml` under
+`distribution.portals`. See [`Suno-app.toml`](getting-started/Suno-app-toml.md#distribution).
 
 Using a portal keeps a permission off your list entirely: the camera,
 location and notification portals add nothing. Using `--device=all` instead of
@@ -112,10 +112,10 @@ device”.
 ## What triggers extra review
 
 The [developer program](publishing/developer-program.md) is not open yet, so
-today these rules apply to Luma’s own releases. A release is held for a person
+today these rules apply to Suno’s own releases. A release is held for a person
 when any of these is true:
 
-1. It is your app’s first release in the Verified or Luma tier.
+1. It is your app’s first release in the Verified or Suno tier.
 2. Its computed permissions **grow** compared with the release published on
    the same branch: a new key, a higher level, read-only access becoming read
    and write, or a new named folder or bus name. The release is not signed
@@ -123,7 +123,7 @@ when any of these is true:
    `permission_changes` and shown in Depot and on the web listing.
 3. It requests any `high` permission for the first time. You must give a
    justification that review accepts.
-4. It is in the Luma tier. Every Luma tier release gets a human design and
+4. It is in the Suno tier. Every Suno tier release gets a human design and
    privacy review.
 
 Every other release still runs the automated checks. Removing a permission
@@ -143,7 +143,7 @@ listing says “Not declared yet”.
 | Value | Means | Example |
 | --- | --- | --- |
 | `none` | The app never asks anyone to sign in | A calculator, a local photo editor |
-| `luma` | Signing in uses a Luma Connect account | An app that syncs with Luma Sync |
+| `Suno` | Signing in uses a Suno Connect account | An app that syncs with Suno Sync |
 | `third-party` | Optional sign-in to another service; the core app works without it | A notes app that can sync to a third-party cloud |
 | `required-third-party` | The app is not usable without an account on another service | A client for a chat service |
 
@@ -152,7 +152,7 @@ If you ask for sign-in anywhere, including for optional features, the value is n
 
 ## Data handling expectations
 
-These apply to Verified and Luma apps and are enforced through the
+These apply to Verified and Suno apps and are enforced through the
 [review guidelines](publishing/review-guidelines.md).
 
 **Collect less.** Collect only the data a feature needs, and only when the person
@@ -177,7 +177,7 @@ analytics that follow people across apps or websites.
 put them in a semantic object, or send them anywhere but their service.
 
 **Respect removal.** Keep app data, cache and user documents in their proper
-places so Luma can offer truthful “keep data” and “remove app data” choices,
+places so Suno can offer truthful “keep data” and “remove app data” choices,
 and so a reset really resets. Never delete documents a person made when your app
 is uninstalled.
 
@@ -195,7 +195,7 @@ An app that must keep working with its windows closed ships a small
 running.
 
 - **Ask at a moment people understand.** Call `request_background()` after the
-  person does something that needs it, such as adding an account. Luma asks
+  person does something that needs it, such as adding an account. Suno asks
   “Let *App* work in the background?” with your category’s sentence. Asking at
   launch is rejected at review, and an app that was declined must not ask
   again.
@@ -206,14 +206,14 @@ running.
   sandbox and gets no permission your app does not have. Its memory use is
   limited by its category.
 - **Decisions are the person’s.** A person can turn background activity off at
-  any time in **Settings › Apps › Background Activity**, including for Luma’s
+  any time in **Settings › Apps › Background Activity**, including for Suno’s
   own apps. When your agent is not running, your app must still work when it is
   opened.
 
 ## Semantics and agents
 
 If your app publishes to the Semantic Broker, classify objects honestly (`public`,
-`private`, `sensitive`, `secret`) and give every action a truthful risk. Luma
+`private`, `sensitive`, `secret`) and give every action a truthful risk. Suno
 never gives an agent ambient access to your app, and consequential, destructive
 and security-sensitive actions always get a fresh confirmation. See
 [semantics and actions](kit/semantics-and-actions.md).

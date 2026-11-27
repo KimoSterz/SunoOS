@@ -1,7 +1,7 @@
 ---
 type: fix
 component: Raspberry Pi
-packages: [luma-streamy]
+packages: [Suno-streamy]
 highlight: false
 ---
 Summary: Raspberry Pi updates install again

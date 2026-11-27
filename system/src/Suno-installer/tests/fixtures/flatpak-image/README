@@ -1,0 +1,5 @@
+Read-only copy of a nightly's system Flatpak installation (x86_64, Nov 2026):
+/var/lib/flatpak/repo/config, repo/Suno.trustedkeys.gpg, and the deploy and
+metadata files of all 23 of Suno's own applications on that image. The Suno remote comes from
+/usr/share/flatpak/remotes.d/Suno.flatpakrepo (configure-system.sh), the same
+file as data/Suno.flatpakrepo.

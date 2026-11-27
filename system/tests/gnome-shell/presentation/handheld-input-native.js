@@ -32,7 +32,7 @@ const frame = window => {
 
 async function work() {
     const presentation = Main.presentation;
-    const settings = new Gio.Settings({schema_id: 'org.project_luma.shell-state'});
+    const settings = new Gio.Settings({schema_id: 'org.projectSuno.shell-state'});
     settings.set_string('presentation-mode', 'mobile');
     await until(() => presentation?.mode === 'mobile');
     check('Mobile presentation', presentation?.mode === 'mobile');
@@ -40,7 +40,7 @@ async function work() {
     const full = `${monitor.width}x${monitor.height}+${monitor.x}+${monitor.y} fullscreen`;
 
     // Start without words learned by an earlier run.
-    GLib.unlink(GLib.build_filenamev([GLib.get_user_data_dir(), 'luma', 'keycap-words.json']));
+    GLib.unlink(GLib.build_filenamev([GLib.get_user_data_dir(), 'Suno', 'keycap-words.json']));
     const typed = `${out}/typed.txt`;
     const context = global.create_app_launch_context(0, -1);
     Gio.AppInfo.create_from_commandline(

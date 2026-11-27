@@ -39,13 +39,13 @@ import xml.etree.ElementTree as ET
 REPO = Path(__file__).resolve().parents[2]
 LOCK = 'config/os/app-baseline-lock.json'
 SHIPPING = 'config/os/first-party-app-baseline.json'
-SCHEMA = 'org.projectluma.os-app-baseline-lock/v1'
+SCHEMA = 'org.projectSuno.os-app-baseline-lock/v1'
 ARCHES = ('aarch64', 'x86_64')
 
 
 def _sealer(repo):
     path = repo / 'scripts/depot/seal-first-party-source.py'
-    spec = importlib.util.spec_from_file_location('luma_seal_first_party_source', path)
+    spec = importlib.util.spec_from_file_location('Suno_seal_first_party_source', path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module

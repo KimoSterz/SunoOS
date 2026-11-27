@@ -1,7 +1,7 @@
 ---
 type: fix
 component: Setup
-packages: [luma-setup]
+packages: [Suno-setup]
 highlight: false
 ---
 Summary: Fixed first-boot setup skipping a page on a double click

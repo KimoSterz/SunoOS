@@ -1,90 +1,90 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Project Luma <engineering@projectluma.org>
+From: Project Suno <engineering@projectSuno.org>
 Date: Sun, 22 Nov 2026 01:00:00 -0600
 Subject: [PATCH] App permissions: the folder offer and the command-line review
 
 ADR-052 step 3 (design-center 8bd4ccf, mockups/app-perms/offer.html).
-org.projectluma.AppPermissions1 emits Refused(app, folder) once per app and
+org.projectSuno.AppPermissions1 emits Refused(app, folder) once per app and
 folder when an app was refused one of the person's folders. The Shell offers
-it with its standard notification banner (lumaPermissionOffer.js), never a
+it with its standard notification banner (SunoPermissionOffer.js), never a
 dialog and never pausing the app: the app's own source (its name the source
 line, its icon the tile), the Settings icon as a badge only the Shell can
-set (lumaShellBadge), "Music folder", "Let Tide use your Music folder?",
+set (SunoShellBadge), "Music folder", "Let Tide use your Music folder?",
 Allow and Not now of equal weight. The answer goes back with AnswerOffer;
 dismissing counts as Not now. On a TV, where the lip is hidden, the same
 banner at x1.5 at the top right with the remote's focus on Not now.
 
 ReviewRequested(app, name), raised after a command-line install that went
 ahead at the suggested level, becomes a standard notification from Valet,
-"Kiln installed", whose Review runs `luma-install --review APP`.
+"Kiln installed", whose Review runs `Suno-install --review APP`.
 
-lumaPermissionOffer.showOffer() is the one offer surface; the layer
+SunoPermissionOffer.showOffer() is the one offer surface; the layer
 permission offer can draw through it too.
 ---
-diff --git a/data/theme/luma-shelf.css b/data/theme/luma-shelf.css
+diff --git a/data/theme/Suno-shelf.css b/data/theme/Suno-shelf.css
 index 889936a..f128e0f 100644
---- a/data/theme/luma-shelf.css
-+++ b/data/theme/luma-shelf.css
-@@ -2713,6 +2713,33 @@ StBoxLayout.luma-notification-tray.luma-surface-dark .luma-notification-tray-cou
- .luma-notification-lip .notification-banner.luma-lip-card .luma-notification-tile-glyph .message-source-icon { icon-size: 20px; }
- .luma-notification-lip .luma-lip-app-badge { border-radius: 5px; border: 2px solid #21252b; margin: 0 -4px -4px 0; }
- .luma-notification-lip.luma-surface-light .luma-lip-app-badge { border-color: #eceef1; }
+--- a/data/theme/Suno-shelf.css
++++ b/data/theme/Suno-shelf.css
+@@ -2713,6 +2713,33 @@ StBoxLayout.Suno-notification-tray.Suno-surface-dark .Suno-notification-tray-cou
+ .Suno-notification-lip .notification-banner.Suno-lip-card .Suno-notification-tile-glyph .message-source-icon { icon-size: 20px; }
+ .Suno-notification-lip .Suno-lip-app-badge { border-radius: 5px; border: 2px solid #21252b; margin: 0 -4px -4px 0; }
+ .Suno-notification-lip.Suno-surface-light .Suno-lip-app-badge { border-color: #eceef1; }
 +
-+/* Permission offers (lumaPermissionOffer.js, ADR-052 step 3): the standard
++/* Permission offers (SunoPermissionOffer.js, ADR-052 step 3): the standard
 + * banner carries them; on a TV, where the lip is hidden, the same banner at TV
 + * scale (x1.5) at the top right: 51 px icon at 21,21, text from x=90, source,
 + * title, body, content-width actions 45 px tall, the remote's focus a white ring. */
-+.luma-perm-toast-tv { width: 543px; padding: 21px 24px 21px 22.5px; spacing: 16.5px; border-radius: 30px;
++.Suno-perm-toast-tv { width: 543px; padding: 21px 24px 21px 22.5px; spacing: 16.5px; border-radius: 30px;
 +  background-color: #21252b; color: #f2f3f5; font-family: Figtree;
 +  box-shadow: 0 27px 60px -27px rgba(0,0,0,.35); }
-+.luma-perm-toast-tv.luma-surface-light { background-color: #eceef1; color: #1f2328; }
-+.luma-perm-toast-tile { width: 51px; height: 51px; }
-+.luma-perm-toast-badge { border: 3px solid #21252b; border-radius: 7.5px; }
-+.luma-surface-light .luma-perm-toast-badge { border-color: #eceef1; }
-+.luma-perm-toast-column { spacing: 0; padding-top: 1.5px; }
-+.luma-perm-toast-top { height: 18px; }
-+.luma-perm-toast-source { font-size: 15px; font-weight: 700; letter-spacing: 1.8px; color: rgba(242,243,245,.5); }
-+.luma-perm-toast-time { font-size: 16.5px; color: rgba(242,243,245,.5); }
-+.luma-surface-light .luma-perm-toast-source, .luma-surface-light .luma-perm-toast-time { color: rgba(31,35,40,.5); }
-+.luma-perm-toast-title { margin-top: 3px; height: 24px; font-size: 20.25px; font-weight: 650; }
-+.luma-perm-toast-body { margin-top: 4.5px; font-size: 18.75px; font-weight: 400; color: rgba(242,243,245,.78); }
-+.luma-surface-light .luma-perm-toast-body { color: rgba(31,35,40,.78); }
-+.luma-perm-toast-actions { spacing: 9px; padding-top: 15px; }
++.Suno-perm-toast-tv.Suno-surface-light { background-color: #eceef1; color: #1f2328; }
++.Suno-perm-toast-tile { width: 51px; height: 51px; }
++.Suno-perm-toast-badge { border: 3px solid #21252b; border-radius: 7.5px; }
++.Suno-surface-light .Suno-perm-toast-badge { border-color: #eceef1; }
++.Suno-perm-toast-column { spacing: 0; padding-top: 1.5px; }
++.Suno-perm-toast-top { height: 18px; }
++.Suno-perm-toast-source { font-size: 15px; font-weight: 700; letter-spacing: 1.8px; color: rgba(242,243,245,.5); }
++.Suno-perm-toast-time { font-size: 16.5px; color: rgba(242,243,245,.5); }
++.Suno-surface-light .Suno-perm-toast-source, .Suno-surface-light .Suno-perm-toast-time { color: rgba(31,35,40,.5); }
++.Suno-perm-toast-title { margin-top: 3px; height: 24px; font-size: 20.25px; font-weight: 650; }
++.Suno-perm-toast-body { margin-top: 4.5px; font-size: 18.75px; font-weight: 400; color: rgba(242,243,245,.78); }
++.Suno-surface-light .Suno-perm-toast-body { color: rgba(31,35,40,.78); }
++.Suno-perm-toast-actions { spacing: 9px; padding-top: 15px; }
 +/* Opaque fills (the .1 white over the banner): St paints the focus ring, a
 + * spread shadow, under a translucent fill. */
-+.luma-perm-toast-button { height: 45px; padding: 0 19.5px; border-radius: 15px;
++.Suno-perm-toast-button { height: 45px; padding: 0 19.5px; border-radius: 15px;
 +  font-size: 18px; font-weight: 650; color: #f2f3f5; background-color: #32363c; }
-+.luma-surface-light .luma-perm-toast-button { color: #1f2328; background-color: #dfe1e4; }
-+.luma-perm-toast-tv .luma-perm-toast-actions .luma-perm-toast-button:focus { box-shadow: 0 0 0 4.5px #ffffff; }
- .luma-notification-lip .notification-banner.luma-lip-card .message-header { min-height: 12px; spacing: 0; }
- .luma-notification-lip .notification-banner.luma-lip-card .message-header .message-header-content { spacing: 8px; }
- .luma-notification-lip .notification-banner.luma-lip-card .message-header .message-source-title {
++.Suno-surface-light .Suno-perm-toast-button { color: #1f2328; background-color: #dfe1e4; }
++.Suno-perm-toast-tv .Suno-perm-toast-actions .Suno-perm-toast-button:focus { box-shadow: 0 0 0 4.5px #ffffff; }
+ .Suno-notification-lip .notification-banner.Suno-lip-card .message-header { min-height: 12px; spacing: 0; }
+ .Suno-notification-lip .notification-banner.Suno-lip-card .message-header .message-header-content { spacing: 8px; }
+ .Suno-notification-lip .notification-banner.Suno-lip-card .message-header .message-source-title {
 diff --git a/js/js-resources.gresource.xml b/js/js-resources.gresource.xml
 index 03e1a30..dd0e7c3 100644
 --- a/js/js-resources.gresource.xml
 +++ b/js/js-resources.gresource.xml
 @@ -123,6 +123,9 @@
-     <file>ui/lumaSealCopy.js</file>
-     <file>ui/lumaSealGlyph.js</file>
-     <file>ui/lumaShare.js</file>
-+    <file>ui/lumaPermissionOffer.js</file>
-+    <file>ui/lumaAppPermissions.js</file>
-+    <file>ui/lumaAppPermissionsModel.js</file>
-     <file>ui/lumaShelfSurface.js</file>
-     <file>ui/lumaWindowMotion.js</file>
-     <file>ui/lumaWindowPath.js</file>
-diff --git a/js/ui/lumaAppPermissions.js b/js/ui/lumaAppPermissions.js
+     <file>ui/SunoSealCopy.js</file>
+     <file>ui/SunoSealGlyph.js</file>
+     <file>ui/SunoShare.js</file>
++    <file>ui/SunoPermissionOffer.js</file>
++    <file>ui/SunoAppPermissions.js</file>
++    <file>ui/SunoAppPermissionsModel.js</file>
+     <file>ui/SunoShelfSurface.js</file>
+     <file>ui/SunoWindowMotion.js</file>
+     <file>ui/SunoWindowPath.js</file>
+diff --git a/js/ui/SunoAppPermissions.js b/js/ui/SunoAppPermissions.js
 new file mode 100644
 index 0000000..be0f491
 --- /dev/null
-+++ b/js/ui/lumaAppPermissions.js
++++ b/js/ui/SunoAppPermissions.js
 @@ -0,0 +1,124 @@
 +// SPDX-License-Identifier: GPL-2.0-or-later
 +// App permissions for every format (ADR-052 step 3), the Shell's part:
-+// - the folder offer. org.projectluma.AppPermissions1 emits Refused(app,
++// - the folder offer. org.projectSuno.AppPermissions1 emits Refused(app,
 +//   folder) once per app and folder, ever, when the app was refused one of the
 +//   person's folders; the Shell offers it with the standard banner
-+//   (lumaPermissionOffer.js): "Music folder", "Let Tide use your Music
++//   (SunoPermissionOffer.js): "Music folder", "Let Tide use your Music
 +//   folder?", Allow / Not now. The answer goes back with AnswerOffer, which
 +//   remembers it (Not now and dismiss too) and on Allow makes the folder
 +//   appear for the running app at once.
@@ -97,12 +97,12 @@ index 0000000..be0f491
 +
 +import * as Main from './main.js';
 +import * as MessageTray from './messageTray.js';
-+import * as Model from './lumaAppPermissionsModel.js';
-+import {appInfo, showOffer} from './lumaPermissionOffer.js';
++import * as Model from './SunoAppPermissionsModel.js';
++import {appInfo, showOffer} from './SunoPermissionOffer.js';
 +
-+const BUS_NAME = 'org.projectluma.AppPermissions1';
-+const OBJECT_PATH = '/org/projectluma/AppPermissions';
-+const VALET = 'io.luma.Valet';
++const BUS_NAME = 'org.projectSuno.AppPermissions1';
++const OBJECT_PATH = '/org/projectSuno/AppPermissions';
++const VALET = 'io.Suno.Valet';
 +
 +class AppPermissions {
 +    constructor() {
@@ -179,7 +179,7 @@ index 0000000..be0f491
 +        const notification = new MessageTray.Notification({source, title: words.title, isTransient: false});
 +        const open = () => {
 +            try {
-+                Gio.Subprocess.new(['luma-install', '--review', app], Gio.SubprocessFlags.NONE);
++                Gio.Subprocess.new(['Suno-install', '--review', app], Gio.SubprocessFlags.NONE);
 +            } catch (e) {
 +                logError(e, 'Opening the review');
 +            }
@@ -203,11 +203,11 @@ index 0000000..be0f491
 +        _instance = new AppPermissions();
 +    return _instance;
 +}
-diff --git a/js/ui/lumaAppPermissionsModel.js b/js/ui/lumaAppPermissionsModel.js
+diff --git a/js/ui/SunoAppPermissionsModel.js b/js/ui/SunoAppPermissionsModel.js
 new file mode 100644
 index 0000000..6e1770f
 --- /dev/null
-+++ b/js/ui/lumaAppPermissionsModel.js
++++ b/js/ui/SunoAppPermissionsModel.js
 @@ -0,0 +1,30 @@
 +// SPDX-License-Identifier: GPL-2.0-or-later
 +// What the folder offer and the command-line review say (ADR-052 step 3,
@@ -239,16 +239,16 @@ index 0000000..6e1770f
 +export function offerKey(app, folder) {
 +    return `${app}\u0000${folder}`;
 +}
-diff --git a/js/ui/lumaPermissionOffer.js b/js/ui/lumaPermissionOffer.js
+diff --git a/js/ui/SunoPermissionOffer.js b/js/ui/SunoPermissionOffer.js
 new file mode 100644
 index 0000000..6ac846f
 --- /dev/null
-+++ b/js/ui/lumaPermissionOffer.js
++++ b/js/ui/SunoPermissionOffer.js
 @@ -0,0 +1,158 @@
 +// SPDX-License-Identifier: GPL-2.0-or-later
 +// A permission offer: the shell's standard notification banner from the app's
 +// own source (its name the source line, its icon the tile), with the Settings
-+// icon as a badge only the Shell can set (lumaShellBadge), a title, one
++// icon as a badge only the Shell can set (SunoShellBadge), a title, one
 +// question, and Allow and Not now of equal weight, neither a default.
 +// Dismissing it counts as Not now. The app keeps running: nothing waits on it.
 +// On a TV, where the notification lip is hidden, it is the same banner at TV
@@ -262,8 +262,8 @@ index 0000000..6ac846f
 +
 +import * as Main from './main.js';
 +import * as MessageTray from './messageTray.js';
-+import * as SurfaceMaterials from './lumaSurfaceMaterials.js';
-+import {LumaIconMask} from './iconMask.js';
++import * as SurfaceMaterials from './SunoSurfaceMaterials.js';
++import {SunoIconMask} from './iconMask.js';
 +
 +export const SETTINGS_ICON = 'org.gnome.Settings';
 +const ICON_RADIUS = 5 / 16;
@@ -286,9 +286,9 @@ index 0000000..6ac846f
 +function maskedIcon(gicon, size, styleClass) {
 +    const icon = new St.Icon({gicon, icon_size: size, style_class: styleClass});
 +    try {
-+        const mask = new LumaIconMask();
++        const mask = new SunoIconMask();
 +        mask.set_uniform_float(mask.get_uniform_location('radius'), 1, [ICON_RADIUS]);
-+        icon.add_effect_with_name('luma-perm-mask', mask);
++        icon.add_effect_with_name('Suno-perm-mask', mask);
 +    } catch (e) {
 +        logError(e, 'Permission offer icon mask unavailable');
 +    }
@@ -296,17 +296,17 @@ index 0000000..6ac846f
 +}
 +
 +const TvOfferToast = GObject.registerClass(
-+class LumaPermissionTvOfferToast extends St.BoxLayout {
++class SunoPermissionTvOfferToast extends St.BoxLayout {
 +    _init(appName, gicon, title, body, labels, answer) {
-+        super._init({style_class: 'luma-perm-toast-tv', reactive: true,
++        super._init({style_class: 'Suno-perm-toast-tv', reactive: true,
 +            orientation: Clutter.Orientation.HORIZONTAL});
-+        const tile = new St.Widget({style_class: 'luma-perm-toast-tile', layout_manager: new Clutter.BinLayout(),
++        const tile = new St.Widget({style_class: 'Suno-perm-toast-tile', layout_manager: new Clutter.BinLayout(),
 +            y_align: Clutter.ActorAlign.START});
-+        tile.add_child(maskedIcon(gicon, 51, 'luma-perm-toast-icon'));
++        tile.add_child(maskedIcon(gicon, 51, 'Suno-perm-toast-icon'));
 +        // The art sits 1.5 px above the column's top, as the standard banner's (St has no negative margin).
 +        tile.translation_x = 0.5;
 +        tile.translation_y = -1.5;
-+        const badge = maskedIcon(new Gio.ThemedIcon({name: SETTINGS_ICON}), 26, 'luma-perm-toast-badge');
++        const badge = maskedIcon(new Gio.ThemedIcon({name: SETTINGS_ICON}), 26, 'Suno-perm-toast-badge');
 +        badge.set({x_align: Clutter.ActorAlign.END, y_align: Clutter.ActorAlign.END, x_expand: true, y_expand: true});
 +        // The standard banner's tile and badge x1.5 (app art fills 15/16 of its icon box): a 48 px
 +        // tile at 22.5, the 24 px badge inside its corner as the desktop's x1.5 (measured: 7.5 px
@@ -315,18 +315,18 @@ index 0000000..6ac846f
 +        tile.add_child(badge);
 +        this.add_child(tile);
 +        const column = new St.BoxLayout({orientation: Clutter.Orientation.VERTICAL, x_expand: true,
-+            style_class: 'luma-perm-toast-column'});
-+        const top = new St.BoxLayout({style_class: 'luma-perm-toast-top'});
-+        top.add_child(new St.Label({style_class: 'luma-perm-toast-source', text: appName.toLocaleUpperCase(), x_expand: true}));
-+        top.add_child(new St.Label({style_class: 'luma-perm-toast-time', text: _('now')}));
++            style_class: 'Suno-perm-toast-column'});
++        const top = new St.BoxLayout({style_class: 'Suno-perm-toast-top'});
++        top.add_child(new St.Label({style_class: 'Suno-perm-toast-source', text: appName.toLocaleUpperCase(), x_expand: true}));
++        top.add_child(new St.Label({style_class: 'Suno-perm-toast-time', text: _('now')}));
 +        column.add_child(top);
-+        column.add_child(new St.Label({style_class: 'luma-perm-toast-title', text: title}));
-+        const text = new St.Label({style_class: 'luma-perm-toast-body', text: body});
++        column.add_child(new St.Label({style_class: 'Suno-perm-toast-title', text: title}));
++        const text = new St.Label({style_class: 'Suno-perm-toast-body', text: body});
 +        text.clutter_text.line_wrap = true;
 +        column.add_child(text);
-+        const actions = new St.BoxLayout({style_class: 'luma-perm-toast-actions'});
++        const actions = new St.BoxLayout({style_class: 'Suno-perm-toast-actions'});
 +        this._buttons = labels.map((label, index) => {
-+            const button = new St.Button({style_class: 'luma-perm-toast-button', label, can_focus: true});
++            const button = new St.Button({style_class: 'Suno-perm-toast-button', label, can_focus: true});
 +            button.connect('clicked', () => answer(index === 0));
 +            actions.add_child(button);
 +            return button;
@@ -373,8 +373,8 @@ index 0000000..6ac846f
 +        isTransient: false,
 +        urgency: MessageTray.Urgency.HIGH,
 +    });
-+    notification.lumaShellBadge = new Gio.ThemedIcon({name: SETTINGS_ICON});
-+    notification.lumaPosture = posture();
++    notification.SunoShellBadge = new Gio.ThemedIcon({name: SETTINGS_ICON});
++    notification.SunoPosture = posture();
 +    let answered = false;
 +    const answer = allowed => {
 +        if (answered)
@@ -389,7 +389,7 @@ index 0000000..6ac846f
 +            answer(false);
 +    });
 +    source.addNotification(notification);
-+    if (notification.lumaPosture === 'tv') {
++    if (notification.SunoPosture === 'tv') {
 +        const toast = new TvOfferToast(name, gicon, title, body, [allow, notNow], allowed => {
 +            toast.dismiss();
 +            answer(allowed);
@@ -407,11 +407,11 @@ diff --git a/js/ui/main.js b/js/ui/main.js
 index e74fd28..9cccec0 100644
 --- a/js/ui/main.js
 +++ b/js/ui/main.js
-@@ -38,6 +38,7 @@ import * as LumaSearch from './lumaSearch.js';
- import * as LumaWindowCorners from './lumaWindowCorners.js';
- import * as LumaWindowWatch from './lumaWindowWatch.js';
- import * as LumaShare from './lumaShare.js';
-+import * as LumaAppPermissions from './lumaAppPermissions.js';
+@@ -38,6 +38,7 @@ import * as SunoSearch from './SunoSearch.js';
+ import * as SunoWindowCorners from './SunoWindowCorners.js';
+ import * as SunoWindowWatch from './SunoWindowWatch.js';
+ import * as SunoShare from './SunoShare.js';
++import * as SunoAppPermissions from './SunoAppPermissions.js';
  import * as NotificationDaemon from './notificationDaemon.js';
  import * as WindowAttentionHandler from './windowAttentionHandler.js';
  import * as Screenshot from './screenshot.js';
@@ -422,7 +422,7 @@ index e74fd28..9cccec0 100644
 +    // App permissions (ADR-052 step 3): the folder offer and the command-line review.
 +    if (!sessionMode.isGreeter) {
 +        try {
-+            LumaAppPermissions.init();
++            SunoAppPermissions.init();
 +        } catch (error) {
 +            logError(error, 'Failed to start the app permission offers');
 +        }
@@ -439,7 +439,7 @@ index a9c30e6..ed694cb 100644
          // drawn at tile size is what made a mail notification's icon look
          // tiny on its card.
 -        const showImage = !!image && isPicture(image);
-+        const showImage = !!image && isPicture(image) && !this._lumaShellBadge;
++        const showImage = !!image && isPicture(image) && !this._SunoShellBadge;
          this._tileImage.gicon = showImage ? image : null;
          this._tileImage.visible = showImage;
          sourceIcon.visible = !showImage;
@@ -448,16 +448,16 @@ index a9c30e6..ed694cb 100644
 +        // The Shell's own badge on an app's tile (the Settings icon on a
 +        // permission offer). Only the Shell sets it: no notification an app
 +        // sends can carry it.
-+        this._appBadge.gicon = this._lumaShellBadge ?? sourceIcon.gicon;
-+        this._appBadge.visible = showImage || !!this._lumaShellBadge;
-         this._tileImage.get_effect('luma-tile-mask')?.set_uniform_float(
-             this._tileImage.get_effect('luma-tile-mask').get_uniform_location('radius'), 1, [0.5]);
++        this._appBadge.gicon = this._SunoShellBadge ?? sourceIcon.gicon;
++        this._appBadge.visible = showImage || !!this._SunoShellBadge;
+         this._tileImage.get_effect('Suno-tile-mask')?.set_uniform_float(
+             this._tileImage.get_effect('Suno-tile-mask').get_uniform_location('radius'), 1, [0.5]);
          const glyph = !showImage && isGlyphIcon(sourceIcon.gicon);
 @@ -982,6 +985,7 @@ class NotificationMessage extends Message {
          super(notification.source);
  
          this.notification = notification;
-+        this._lumaShellBadge = notification.lumaShellBadge ?? null;
++        this._SunoShellBadge = notification.SunoShellBadge ?? null;
  
          notification.connectObject(
              'action-added', (_, action) => this._addAction(action),
@@ -465,7 +465,7 @@ index a9c30e6..ed694cb 100644
  
      useCardLayout() {
          super.useCardLayout();
-+        if (this._lumaShellBadge)
++        if (this._SunoShellBadge)
 +            this._syncTile();
          this._syncActionButtons();
          this._syncInlineReplyStyle();

@@ -1,4 +1,4 @@
-#include "luma-rgb-copy-bounds.h"
+#include "Suno-rgb-copy-bounds.h"
 #include <cassert>
 #include <cstring>
 #include <sys/mman.h>
@@ -17,13 +17,13 @@ int main() {
   std::memset(destination, 0x11, page);
   // Ordinary padded source preserves exactly the requested pixels and leaves
   // destination padding untouched. This is the production conversion body.
-  assert(luma::copy_rgb(source, destination, 5, 3, 8, 3, 96, 0, 96, 60));
+  assert(Suno::copy_rgb(source, destination, 5, 3, 8, 3, 96, 0, 96, 60));
   for (int i = 0; i < 15; ++i) assert(destination[i] == 0x7fc3b2a1);
   assert(destination[15] == 0x11111111);
   auto reject = [&](uint64_t w, uint64_t h, uint64_t stride, uint64_t physical_h,
                     uint64_t allocation, uint64_t offset, uint64_t capacity, uint64_t output) {
     std::memset(destination, 0x11, page);
-    assert(!luma::copy_rgb(source, destination, w, h, stride, physical_h,
+    assert(!Suno::copy_rgb(source, destination, w, h, stride, physical_h,
                            allocation, offset, capacity, output));
     for (size_t i = 0; i < page / 4; ++i) assert(destination[i] == 0x11111111);
   };

@@ -11,7 +11,7 @@ umask 022
 
 inputs=${1:?usage: build-fp6-camera-all-sensors.sh INPUT_DIR WORK_DIR}
 work=${2:?usage: build-fp6-camera-all-sensors.sh INPUT_DIR WORK_DIR}
-jobs=${LUMA_KERNEL_BUILD_JOBS:-2}
+jobs=${SUNO_KERNEL_BUILD_JOBS:-2}
 
 case "$jobs" in
   ''|*[!0-9]*) printf 'error: invalid job count: %s\n' "$jobs" >&2; exit 1 ;;
@@ -115,7 +115,7 @@ done
   grep -qx 'CONFIG_VIDEO_S5KKD1SP=m' .config
   grep -qx 'CONFIG_VIDEO_IMX896=m' .config
   # This Milos tree has no standalone vmlinux.symvers target. Reuse the
-  # complete symbol-version table from Luma's exact-source 7.1.2 control
+  # complete symbol-version table from Suno's exact-source 7.1.2 control
   # build, whose configuration is byte-identical to this build. The pinned
   # table includes modular videobuf2 and media exports, allowing camera-only
   # compilation without a resource-heavy full vmlinux/BTF relink.
@@ -148,7 +148,7 @@ for module in v4l2-cci qcom-camss ov13b10 dw9714 dw9784 s5kkd1sp imx896; do
 done
 
 {
-  printf 'LUMA_FP6_CAMERA_ALL_SENSOR_BUILD_VERSION=6\n'
+  printf 'SUNO_FP6_CAMERA_ALL_SENSOR_BUILD_VERSION=6\n'
   printf 'KERNEL_RELEASE=7.1.2\n'
   printf 'RAM_LOAD_ONLY=true\n'
   printf 'PARTITION_WRITTEN=false\n'

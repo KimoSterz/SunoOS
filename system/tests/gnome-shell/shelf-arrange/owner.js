@@ -183,7 +183,7 @@ async function work() {
         L.check('one zone per anchor', anchors.size === zones.length);
         // Nothing else drawn along an edge but the zones, the groups and one line.
         const marks = shelf._arrange._decorations.get_children().filter(a => a.visible &&
-            !a._zone && !a.has_style_class_name?.('luma-arrange-outline') && !a.has_style_class_name?.('luma-arrange-grip') &&
+            !a._zone && !a.has_style_class_name?.('Suno-arrange-outline') && !a.has_style_class_name?.('Suno-arrange-grip') &&
             a.constructor.name !== 'EdgeLine' && a !== shelf._arrange._card);
         L.check('no other marks along the edges', marks.length === 0, marks.map(a => a.style_class ?? a.constructor.name).join());
         L.check('free placement off: no edge lines, zones only', (shelf._arrange._edgeLines ?? []).length === 0);

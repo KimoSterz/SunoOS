@@ -1,10 +1,10 @@
-From: Project Luma <luma@local>
+From: Project Suno <Suno@local>
 Subject: [PATCH] Skip GDM locking in the greetd bake-off session
 
 The rollback-safe candidate is deliberately launched by greetd and no GDM
 service is present to open a reauthentication channel. Preserve all mobile
 dim, blank, suspend, and wake behavior, but do not enter the GDM unlock dialog
-for the explicitly marked candidate session. Ordinary Luma and GNOME sessions
+for the explicitly marked candidate session. Ordinary Suno and GNOME sessions
 continue to honor the shared lock-enabled setting.
 ---
  js/misc/powerManager.js | 18 +++++++++++++-----
@@ -22,7 +22,7 @@ index 187c119..1fd4df8 100644
 +        // The rollback-safe bake-off runs under greetd, so GDM cannot open a
 +        // reauthentication channel. Keep dim/blank/suspend behavior, but do
 +        // not enter an unlock dialog that can never authenticate.
-+        return !this._isLumaGreetdSession &&
++        return !this._isSunoGreetdSession &&
 +            this._screensaverSettings.get_boolean(LOCK_ENABLED_KEY);
 +    }
 +

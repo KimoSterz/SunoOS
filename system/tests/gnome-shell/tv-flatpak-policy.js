@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 // The TV home and Flatpaks: Flatpak's export keeps only allowlisted desktop keys, so an app's
-// X-Luma-TV* keys are read from its own deployed desktop file, inside the system's or the user's
-// installation only, and its wide tile from the deploy's share/luma-tv. Checked on a fake deploy
+// X-Suno-TV* keys are read from its own deployed desktop file, inside the system's or the user's
+// installation only, and its wide tile from the deploy's share/Suno-tv. Checked on a fake deploy
 // tree in a temporary folder.
-// Run: gjs -m tv-flatpak-policy.js js/ui/lumaPresentation/tvModel.js js/ui/lumaPresentation/tv.js
+// Run: gjs -m tv-flatpak-policy.js js/ui/SunoPresentation/tvModel.js js/ui/SunoPresentation/tv.js
 // (node tv-flatpak-policy.js ... works too).
 const gjs = typeof globalThis.ARGV !== 'undefined';
 const args = gjs ? globalThis.ARGV : process.argv.slice(2);
@@ -40,7 +40,7 @@ const M = await import(`file://${absolute(args[0])}`);
 const home = read(absolute(args[1]));
 
 // A fake system installation and a fake user one.
-const top = gjs ? GLib.dir_make_tmp('luma-tv-flatpak-XXXXXX') : fs.mkdtempSync(`${os.tmpdir()}/luma-tv-flatpak-`);
+const top = gjs ? GLib.dir_make_tmp('Suno-tv-flatpak-XXXXXX') : fs.mkdtempSync(`${os.tmpdir()}/Suno-tv-flatpak-`);
 const system = `${top}/var/lib/flatpak`, user = `${top}/home/.local/share/flatpak`;
 const roots = [{exports: `${system}/exports/share/applications/`, deploy: `${system}/app`},
     {exports: `${user}/exports/share/applications/`, deploy: `${user}/app`}];
@@ -48,61 +48,61 @@ const inApp = `[Desktop Entry]
 Type=Application
 Name=Tide
 # TV home opt-in
-X-Luma-TV=true
-X-Luma-TV-Tile=org.projectluma.Tide-tv
-X-Luma-TV-Presentation=tv
-X-Luma-TV[de]=false
+X-Suno-TV=true
+X-Suno-TV-Tile=org.projectSuno.Tide-tv
+X-Suno-TV-Presentation=tv
+X-Suno-TV[de]=false
 
 [Desktop Action play]
-X-Luma-TV-Tile=elsewhere
+X-Suno-TV-Tile=elsewhere
 `;
-const exported = '[Desktop Entry]\nType=Application\nName=Tide\nX-Flatpak=org.projectluma.Tide\n';
-const files = `${system}/app/org.projectluma.Tide/current/active/files`;
-write(`${files}/share/applications/org.projectluma.Tide.desktop`, inApp);
-write(`${files}/share/luma-tv/org.projectluma.Tide-tv.svg`, '<svg xmlns="http://www.w3.org/2000/svg"/>');
-write(`${system}/exports/share/applications/org.projectluma.Tide.desktop`, exported);
-write(`${user}/app/org.projectluma.Weather/current/active/files/share/applications/org.projectluma.Weather.desktop`,
-    '[Desktop Entry]\nName=Weather\nX-Luma-TV=true\nX-Luma-TV-Tile=org.projectluma.Weather-tv\n');
+const exported = '[Desktop Entry]\nType=Application\nName=Tide\nX-Flatpak=org.projectSuno.Tide\n';
+const files = `${system}/app/org.projectSuno.Tide/current/active/files`;
+write(`${files}/share/applications/org.projectSuno.Tide.desktop`, inApp);
+write(`${files}/share/Suno-tv/org.projectSuno.Tide-tv.svg`, '<svg xmlns="http://www.w3.org/2000/svg"/>');
+write(`${system}/exports/share/applications/org.projectSuno.Tide.desktop`, exported);
+write(`${user}/app/org.projectSuno.Weather/current/active/files/share/applications/org.projectSuno.Weather.desktop`,
+    '[Desktop Entry]\nName=Weather\nX-Suno-TV=true\nX-Suno-TV-Tile=org.projectSuno.Weather-tv\n');
 write(`${user}/app/org.example.Plain/current/active/files/share/applications/org.example.Plain.desktop`,
     '[Desktop Entry]\nName=Plain\n');
 
 // The keys come from the deploy, and only from [Desktop Entry].
-const tide = M.flatpakTv('org.projectluma.Tide.desktop', 'org.projectluma.Tide',
-    `${roots[0].exports}org.projectluma.Tide.desktop`, roots, read);
+const tide = M.flatpakTv('org.projectSuno.Tide.desktop', 'org.projectSuno.Tide',
+    `${roots[0].exports}org.projectSuno.Tide.desktop`, roots, read);
 assert(tide && tide.files === files, "a system Flatpak's deploy is found from its export");
-assert(tide.keys['X-Luma-TV'] === 'true' && tide.keys['X-Luma-TV-Tile'] === 'org.projectluma.Tide-tv' &&
-    tide.keys['X-Luma-TV-Presentation'] === 'tv', 'its TV keys are read');
-assert(!('X-Luma-TV[de]' in tide.keys), 'localised and other groups are ignored');
-const entry = M.tvEntry('org.projectluma.Tide.desktop', 'Tide', key => tide.keys[key] ?? null);
-assert(entry && entry.tile === 'org.projectluma.Tide-tv' && entry.presentation === 'tv', 'it opts in like a native app');
-assert(M.flatpakTile(tide.files, entry.tile) === `${files}/share/luma-tv/org.projectluma.Tide-tv.svg` &&
-    read(M.flatpakTile(tide.files, entry.tile)) !== null, "the tile is the deploy's share/luma-tv/<tile>.svg");
+assert(tide.keys['X-Suno-TV'] === 'true' && tide.keys['X-Suno-TV-Tile'] === 'org.projectSuno.Tide-tv' &&
+    tide.keys['X-Suno-TV-Presentation'] === 'tv', 'its TV keys are read');
+assert(!('X-Suno-TV[de]' in tide.keys), 'localised and other groups are ignored');
+const entry = M.tvEntry('org.projectSuno.Tide.desktop', 'Tide', key => tide.keys[key] ?? null);
+assert(entry && entry.tile === 'org.projectSuno.Tide-tv' && entry.presentation === 'tv', 'it opts in like a native app');
+assert(M.flatpakTile(tide.files, entry.tile) === `${files}/share/Suno-tv/org.projectSuno.Tide-tv.svg` &&
+    read(M.flatpakTile(tide.files, entry.tile)) !== null, "the tile is the deploy's share/Suno-tv/<tile>.svg");
 
-const weather = M.flatpakTv('org.projectluma.Weather.desktop', 'org.projectluma.Weather',
-    `${roots[1].exports}org.projectluma.Weather.desktop`, roots, read);
-assert(weather?.keys['X-Luma-TV-Tile'] === 'org.projectluma.Weather-tv', "a user installation's Flatpak too");
+const weather = M.flatpakTv('org.projectSuno.Weather.desktop', 'org.projectSuno.Weather',
+    `${roots[1].exports}org.projectSuno.Weather.desktop`, roots, read);
+assert(weather?.keys['X-Suno-TV-Tile'] === 'org.projectSuno.Weather-tv', "a user installation's Flatpak too");
 
 // Fail closed: no keys, another installation, another folder, a hostile name.
 assert(M.flatpakTv('org.example.Plain.desktop', 'org.example.Plain',
     `${roots[1].exports}org.example.Plain.desktop`, roots, read) === null, 'an app without TV keys stays off the TV home');
-assert(M.flatpakTv('org.projectluma.Tide.desktop', 'org.projectluma.Tide',
-    `${top}/opt/flatpak/exports/share/applications/org.projectluma.Tide.desktop`, roots, read) === null,
+assert(M.flatpakTv('org.projectSuno.Tide.desktop', 'org.projectSuno.Tide',
+    `${top}/opt/flatpak/exports/share/applications/org.projectSuno.Tide.desktop`, roots, read) === null,
 'an export outside the two installations is not followed');
-assert(M.flatpakTv('org.projectluma.Tide.desktop', 'org.projectluma.Tide',
-    `${roots[0].exports}sub/org.projectluma.Tide.desktop`, roots, read) === null, 'only the export folder itself');
-assert(M.flatpakTv('org.projectluma.Tide.desktop', 'org.projectluma.Weather',
-    `${roots[0].exports}org.projectluma.Tide.desktop`, roots, read) === null, "another app's deploy has no such file");
-for (const bad of ['../../etc', 'org/projectluma/Tide', 'Tide', 'org.projectluma.Tide/..', '.hidden.app.id', ''])
-    assert(M.flatpakTv('org.projectluma.Tide.desktop', bad, `${roots[0].exports}org.projectluma.Tide.desktop`, roots, read) === null,
+assert(M.flatpakTv('org.projectSuno.Tide.desktop', 'org.projectSuno.Tide',
+    `${roots[0].exports}sub/org.projectSuno.Tide.desktop`, roots, read) === null, 'only the export folder itself');
+assert(M.flatpakTv('org.projectSuno.Tide.desktop', 'org.projectSuno.Weather',
+    `${roots[0].exports}org.projectSuno.Tide.desktop`, roots, read) === null, "another app's deploy has no such file");
+for (const bad of ['../../etc', 'org/projectSuno/Tide', 'Tide', 'org.projectSuno.Tide/..', '.hidden.app.id', ''])
+    assert(M.flatpakTv('org.projectSuno.Tide.desktop', bad, `${roots[0].exports}org.projectSuno.Tide.desktop`, roots, read) === null,
         `a Flatpak ID ${JSON.stringify(bad)} is refused`);
-for (const bad of ['../org.projectluma.Tide.desktop', 'a/b.desktop', 'org..projectluma.desktop', 'org.projectluma.Tide'])
-    assert(M.flatpakTv(bad, 'org.projectluma.Tide', `${roots[0].exports}${bad}`, roots, read) === null,
+for (const bad of ['../org.projectSuno.Tide.desktop', 'a/b.desktop', 'org..projectSuno.desktop', 'org.projectSuno.Tide'])
+    assert(M.flatpakTv(bad, 'org.projectSuno.Tide', `${roots[0].exports}${bad}`, roots, read) === null,
         `a desktop ID ${JSON.stringify(bad)} is refused`);
-assert(M.flatpakTv('org.projectluma.Tide.desktop', 'org.projectluma.Tide', `${roots[0].exports}org.projectluma.Tide.desktop`,
+assert(M.flatpakTv('org.projectSuno.Tide.desktop', 'org.projectSuno.Tide', `${roots[0].exports}org.projectSuno.Tide.desktop`,
     roots, () => 'x'.repeat(70000)) === null, 'an oversized file is not parsed');
 for (const bad of ['../x', 'a/b', '..', ''])
     assert(M.flatpakTile(files, bad) === null, `a tile name ${JSON.stringify(bad)} is refused`);
-assert(M.flatpakTile(undefined, 'org.projectluma.Tide-tv') === null, 'a native app has no deploy tile');
+assert(M.flatpakTile(undefined, 'org.projectSuno.Tide-tv') === null, 'a native app has no deploy tile');
 
 // The TV home: export first, deploy when the export lost the keys; cached per app until the
 // installed apps change; the deploy's tile before the icon theme.

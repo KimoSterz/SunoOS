@@ -1,0 +1,9 @@
+/* Generated from shared design tokens; do not edit. */
+.Suno-today-card { border-radius: 26px; padding: 14px 16px; color: @theme_fg_color; }
+.Suno-today-weather { color: white; background-image: linear-gradient(to bottom, rgba(46,136,205,0.92), rgba(34,74,162,0.94)); }
+.Suno-today-kicker { font-size: 0.82143em; font-weight: 600; }
+.Suno-today-calendar .Suno-today-kicker { color: #ef8c83; }
+.Suno-today-weather .Suno-today-value { font-size: 3.14286em; font-weight: 300; color: white; }
+.Suno-today-calendar .Suno-today-value { font-size: 2.14286em; font-weight: 600; }
+.Suno-today-condition { font-size: 0.92857em; font-weight: 600; }
+.Suno-today-detail, .Suno-today-event { font-size: 0.85714em; }

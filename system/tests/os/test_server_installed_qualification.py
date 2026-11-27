@@ -35,12 +35,12 @@ class ExactBaselineHeads(unittest.TestCase):
         self.heads = {'app/' + app + '/aarch64/beta': sha(app.encode())
                       for app in self.baseline['applications']}
         for app in ('Platform', 'Platform.Locale', 'Platform.GL.default'):
-            self.heads['runtime/org.projectluma.' + app + '/aarch64/44'] = sha(app.encode())
+            self.heads['runtime/org.projectSuno.' + app + '/aarch64/44'] = sha(app.encode())
 
     def test_current_23_app_26_head_source_inventory_is_accepted(self):
         self.assertEqual(len(self.baseline['applications']), 23)
         self.assertEqual(len(self.heads), 26)
-        self.assertNotIn('org.projectluma.Displays', self.baseline['applications'])
+        self.assertNotIn('org.projectSuno.Displays', self.baseline['applications'])
         m.validate_heads(self.heads, self.baseline)
 
     def test_schema_empty_duplicate_and_invalid_app_ids_are_refused(self):
@@ -49,16 +49,16 @@ class ExactBaselineHeads(unittest.TestCase):
         for apps in ([], 'org.example.App', ['org.example.App', 'org.example.App'],
                      [None], ['invalid'], ['org.example..App'], ['org.1example.App'],
                      ['org.example/App'], ['org.example.App/aarch64/beta'], ['a' * 256]):
-            invalid.append({'schema': 'org.projectluma.os-app-baseline/v1', 'applications': apps})
+            invalid.append({'schema': 'org.projectSuno.os-app-baseline/v1', 'applications': apps})
         for baseline in invalid:
             with self.subTest(baseline=baseline), self.assertRaises(m.QualificationError):
                 m.validate_app_baseline(baseline)
 
     def test_exact_keyset_refuses_missing_extra_retired_wrong_arch_and_runtime(self):
-        app = 'app/org.projectluma.Notes/aarch64/beta'
-        runtime = 'runtime/org.projectluma.Platform/aarch64/44'
+        app = 'app/org.projectSuno.Notes/aarch64/beta'
+        runtime = 'runtime/org.projectSuno.Platform/aarch64/44'
         for missing, added in ((app, None), (None, 'app/org.example.Unexpected/aarch64/beta'),
-                               (None, 'app/org.projectluma.Displays/aarch64/beta'),
+                               (None, 'app/org.projectSuno.Displays/aarch64/beta'),
                                (app, app.replace('/aarch64/', '/x86_64/')),
                                (app, app.replace('/beta', '/stable')),
                                (runtime, None), (runtime, runtime.replace('/44', '/45')),
@@ -71,8 +71,8 @@ class ExactBaselineHeads(unittest.TestCase):
 
     def test_baseline_cannot_remove_a_required_behavioral_app(self):
         baseline = copy.deepcopy(self.baseline)
-        baseline['applications'].remove('org.projectluma.Tide')
-        heads = dict(self.heads); heads.pop('app/org.projectluma.Tide/aarch64/beta')
+        baseline['applications'].remove('org.projectSuno.Tide')
+        heads = dict(self.heads); heads.pop('app/org.projectSuno.Tide/aarch64/beta')
         with self.assertRaisesRegex(m.QualificationError, 'Missing behavioral app'):
             m.validate_heads(heads, baseline)
 
@@ -110,17 +110,17 @@ class ServerQualification(unittest.TestCase):
         self.heads = {'app/' + app + '/aarch64/beta': sha(app.encode())
                       for app in self.baseline['applications']}
         for app in ('Platform', 'Platform.Locale', 'Platform.GL.default'):
-            self.heads['runtime/org.projectluma.' + app + '/aarch64/44'] = sha(app.encode())
+            self.heads['runtime/org.projectSuno.' + app + '/aarch64/44'] = sha(app.encode())
         self.headers = {name: {'nevra': name + '-0.1-1.aarch64', 'header_sha256': sha(name.encode())}
-                        for name in ('luma-terminal', 'luma-application-installer')}
+                        for name in ('Suno-terminal', 'Suno-application-installer')}
         self.expected = dict(build_id='20261024.1', source_revision='1' * 40,
                              profile='arm-preview', candidate='2' * 64,
                              iso_sha256=sha(self.iso.read_bytes()), iso_bytes=self.iso.stat().st_size,
                              fixture_token='unit-fixture-never-booted',qmp_transport='direct-unix-qmp/v1', producer_binding={
-                                 'root_units': {'luma-arm-desktop-unit-test.service': '/luma.slice/luma-arm.slice/luma-arm-desktop.slice/luma-arm-desktop-unit-test.service'},
+                                 'root_units': {'Suno-arm-desktop-unit-test.service': '/Suno.slice/Suno-arm.slice/Suno-arm-desktop.slice/Suno-arm-desktop-unit-test.service'},
                                  'normal_unit': 'dev-arm-server-unit-test.service',
                                  'normal_cgroup': '/user.slice/user-1003.slice/user@1003.service/app.slice/dev-arm-server-unit-test.service',
-                                 'domain_name': 'luma-arm-desktop-unit-test',
+                                 'domain_name': 'Suno-arm-desktop-unit-test',
                                  'domain_uuid': '00000000-1111-2222-3333-444444444444', 'qemu_uid':107, 'qemu_gid':107})
         source_inputs = {'static_proof': {'result': 'UNIT_TEST_ONLY'},
                          'checks_preparation': {'result': 'UNIT_TEST_ONLY'},
@@ -162,7 +162,7 @@ class ServerQualification(unittest.TestCase):
             'installer.log': b'Anaconda unit transcript\nInstallation complete\n',
             'installed-rpm-ostree-status.json': {'deployments': [{'booted': True, 'checksum': self.expected['candidate']}]},
             'installed-boot.json': {'uname_machine': 'aarch64', 'graphical_target': 'active', 'efi_boot': True},
-        }, disk_identity=self.live_identity, active_launch_sha256=self.launch_sha, installation_origin='fresh-final-luma-iso', unsigned_modifications=[])
+        }, disk_identity=self.live_identity, active_launch_sha256=self.launch_sha, installation_origin='fresh-final-Suno-iso', unsigned_modifications=[])
         log = b'unit test checker log, no actual guest assertions executed\n'
         rows = [dict(app_id=app, check=check, ref='app/' + app + '/aarch64/beta',
                      commit=self.heads['app/' + app + '/aarch64/beta'], exit_status=0,
@@ -292,7 +292,7 @@ class ServerQualification(unittest.TestCase):
 
     def test_prepared_baseline_cannot_replace_independent_caller_policy(self):
         self.proof_mutation('app-baseline.json', 'PREPARED',
-                            lambda value: value['applications'].append('org.projectluma.Displays'))
+                            lambda value: value['applications'].append('org.projectSuno.Displays'))
         digest = sha((self.fixture / 'app-baseline.json').read_bytes())
         self.mutate('PREPARED.json', lambda value: value.update(app_baseline_sha256=digest))
         with self.assertRaises(m.QualificationError):
@@ -406,7 +406,7 @@ class ServerQualification(unittest.TestCase):
         self.mutate('INSTALLED.json', lambda r: r.update(unsigned_modifications=['debug engine']))
         with self.assertRaises(m.QualificationError): self.validate()
 
-    def test_fedora_fixture_is_not_final_luma_iso(self):
+    def test_fedora_fixture_is_not_final_Suno_iso(self):
         self.mutate('INSTALLED.json', lambda r: r.update(installation_origin='borrowed-fedora-iso'))
         with self.assertRaises(m.QualificationError): self.validate()
 
@@ -460,7 +460,7 @@ class ServerQualification(unittest.TestCase):
         with self.assertRaises(m.QualificationError): self.validate()
 
     def test_unrelated_successful_unit_refused(self):
-        self.proof_mutation('closed-consumers.json', 'CLOSED', lambda r: r['units'][0].update(Id='luma-arm-desktop-another.service'))
+        self.proof_mutation('closed-consumers.json', 'CLOSED', lambda r: r['units'][0].update(Id='Suno-arm-desktop-another.service'))
         with self.assertRaises(m.QualificationError): self.validate()
 
     def test_absent_cgroup_with_live_reference_refused(self):
@@ -631,7 +631,7 @@ class ModernLibvirtCompatibility(unittest.TestCase):
         inputs.update(libvirt_cli=str(cli),firmware_variables=str(variables))
         b=expected['producer_binding']
         definition=f"""<domain type='qemu'><name>{b['domain_name']}</name><uuid>{b['domain_uuid']}</uuid>
-<memtune><hard_limit unit='GiB'>8</hard_limit></memtune><resource><partition>/luma/arm/desktop</partition></resource>
+<memtune><hard_limit unit='GiB'>8</hard_limit></memtune><resource><partition>/Suno/arm/desktop</partition></resource>
 <os><type arch='aarch64' machine='virt-10.2'>hvm</type><loader type='pflash' readonly='yes'>{self.firmware}</loader>
 <nvram template='{variables}'>{self.root/'NVRAM.qcow2'}</nvram></os><devices><emulator>{self.qemu}</emulator>
 <disk device='disk'><driver type='qcow2'/><source file='{inputs['target_disk_path']}'/></disk>
@@ -693,7 +693,7 @@ class ModernLibvirtCompatibility(unittest.TestCase):
         with self.assertRaises(m.QualificationError):self.prepare_modern(lambda text:text.replace(self.inputs['target_disk_path'],'/wrong/disk'))
 
     def test_unowned_partition_refused(self):
-        with self.assertRaises(m.QualificationError):self.prepare_modern(lambda text:text.replace('/luma/arm/desktop','/other-owner'))
+        with self.assertRaises(m.QualificationError):self.prepare_modern(lambda text:text.replace('/Suno/arm/desktop','/other-owner'))
 
     def test_changed_blockdev_iso_readonly_refused(self):
         p=self.prepare_modern();argv=self.observed_argv(p)
@@ -718,9 +718,9 @@ class ModernLibvirtCompatibility(unittest.TestCase):
     def direct_boot(self):
         p=self.prepare_modern()
         p['installer_boot_inputs']={name:{'path':'/retained/'+name} for name in ('kernel','initrd','kickstart')}
-        p['installer_boot_inputs']['kickstart']['initrd_path']='/luma-final.ks'
-        p['installer_stage2']='inst.stage2=hd:LABEL=LUMA_FINAL'
-        p['installer_cmdline']='inst.ks=file:/luma-final.ks inst.stage2=hd:LABEL=LUMA_FINAL console=ttyAMA0'
+        p['installer_boot_inputs']['kickstart']['initrd_path']='/Suno-final.ks'
+        p['installer_stage2']='inst.stage2=hd:LABEL=SUNO_FINAL'
+        p['installer_cmdline']='inst.ks=file:/Suno-final.ks inst.stage2=hd:LABEL=SUNO_FINAL console=ttyAMA0'
         return p
 
     def test_exact_direct_installer_intent_and_observed_arguments(self):
@@ -729,12 +729,12 @@ class ModernLibvirtCompatibility(unittest.TestCase):
         m.validate_observed_qemu_argv(argv,p)
 
     def test_other_kickstart_even_if_cmdline_rebound_refused(self):
-        p=self.direct_boot();p['installer_cmdline']=p['installer_cmdline'].replace('/luma-final.ks','/other.ks')
+        p=self.direct_boot();p['installer_cmdline']=p['installer_cmdline'].replace('/Suno-final.ks','/other.ks')
         with self.assertRaises(m.QualificationError):
             m.validate_installer_boot_intent('/retained/kernel','/retained/initrd',p['installer_cmdline'],p)
 
     def test_other_final_iso_label_refused(self):
-        p=self.direct_boot();p['installer_cmdline']=p['installer_cmdline'].replace('LUMA_FINAL','FEDORA')
+        p=self.direct_boot();p['installer_cmdline']=p['installer_cmdline'].replace('SUNO_FINAL','FEDORA')
         with self.assertRaises(m.QualificationError):
             m.validate_installer_boot_intent('/retained/kernel','/retained/initrd',p['installer_cmdline'],p)
 
@@ -759,7 +759,7 @@ class ModernLibvirtCompatibility(unittest.TestCase):
 class ActualArchivedLibvirtArgv(unittest.TestCase):
     """Read-only parser fixtures from real retained launches, not a guest PASS."""
     def setUp(self):
-        path=os.environ.get('LUMA_SERVER_ARCHIVED_ARGV_FIXTURE')
+        path=os.environ.get('SUNO_SERVER_ARCHIVED_ARGV_FIXTURE')
         if path is None:self.skipTest('Actual private archived-argv fixture not supplied')
         self.fixture=json.loads(Path(path).read_text())
         self.assertEqual(self.fixture['scope'],'HISTORICAL_ARGV_SHAPES_ONLY_NOT_FINAL_INSTALL_OR_APP_QUALIFICATION')
@@ -840,7 +840,7 @@ class ActualQcowPreparation(unittest.TestCase):
 class QMPBridge(unittest.TestCase):
     def test_actual_unix_qmp_protocol_and_original_input_translation(self):
         # A real local protocol socket, not a real QEMU/guest qualification.
-        with tempfile.TemporaryDirectory(prefix='luma-qmp-', dir='/tmp') as directory:
+        with tempfile.TemporaryDirectory(prefix='Suno-qmp-', dir='/tmp') as directory:
             path = Path(directory) / 'qmp.sock'
             server = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
             server.bind(str(path)); server.listen(4)
@@ -880,7 +880,7 @@ class QMPBridge(unittest.TestCase):
             self.assertFalse(observed[2]['arguments']['events'][0]['data']['down'])
 
     def test_qmp_socket_rejects_wrong_peer_pid(self):
-        with tempfile.TemporaryDirectory(prefix='luma-qmp-', dir='/tmp') as directory:
+        with tempfile.TemporaryDirectory(prefix='Suno-qmp-', dir='/tmp') as directory:
             path = Path(directory) / 'qmp.sock'
             server = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
             self.addCleanup(server.close)
@@ -890,7 +890,7 @@ class QMPBridge(unittest.TestCase):
                 with self.assertRaises(m.QualificationError): bridge.execute('query-status')
 
     def test_qmp_socket_rejects_wrong_peer_uid(self):
-        with tempfile.TemporaryDirectory(prefix='luma-qmp-', dir='/tmp') as directory:
+        with tempfile.TemporaryDirectory(prefix='Suno-qmp-', dir='/tmp') as directory:
             path = Path(directory) / 'qmp.sock'
             server = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
             self.addCleanup(server.close)
@@ -900,7 +900,7 @@ class QMPBridge(unittest.TestCase):
                 with self.assertRaises(m.QualificationError): bridge.execute('query-status')
 
     def test_snapshot_copies_full_frame_to_private_evidence(self):
-        with tempfile.TemporaryDirectory(prefix='luma-qmp-', dir='/tmp') as directory:
+        with tempfile.TemporaryDirectory(prefix='Suno-qmp-', dir='/tmp') as directory:
             root=Path(directory);capture=root/'capture';capture.mkdir(mode=0o700)
             target=root/'evidence.png'
             bridge=m.ServerInputBridge.__new__(m.ServerInputBridge)
@@ -917,7 +917,7 @@ class QMPBridge(unittest.TestCase):
             self.assertEqual(capture.stat().st_mode&0o777,0o700)
 
     def test_snapshot_refuses_shared_capture_directory(self):
-        with tempfile.TemporaryDirectory(prefix='luma-qmp-', dir='/tmp') as directory:
+        with tempfile.TemporaryDirectory(prefix='Suno-qmp-', dir='/tmp') as directory:
             root=Path(directory);capture=root/'capture';capture.mkdir();capture.chmod(0o755)
             bridge=m.ServerInputBridge.__new__(m.ServerInputBridge)
             bridge.peer_uid=os.getuid();bridge.capture_directory=capture
@@ -929,18 +929,18 @@ class QMPBridge(unittest.TestCase):
 
     def test_libvirt_bridge_rejects_changed_process_birth(self):
         with self.assertRaises(m.QualificationError):
-            m.ServerLibvirtInputBridge('luma-arm-desktop-unit-test','00000000-1111-2222-3333-444444444444',os.getpid(),1,['unit'],peer_uid=107)
+            m.ServerLibvirtInputBridge('Suno-arm-desktop-unit-test','00000000-1111-2222-3333-444444444444',os.getpid(),1,['unit'],peer_uid=107)
 
     def test_libvirt_domain_runtime_pid_must_match_actual_process(self):
         bridge=m.ServerLibvirtInputBridge.__new__(m.ServerLibvirtInputBridge)
-        bridge.domain_name='luma-arm-desktop-unit-test';bridge.pid=123;bridge.runtime_pid_identity=None
+        bridge.domain_name='Suno-arm-desktop-unit-test';bridge.pid=123;bridge.runtime_pid_identity=None
         metadata=dict(uid=0,mode=0o600,device=1,inode=1,gid=0,xattrs={})
         with patch.object(m,'identity',return_value=metadata),patch.object(m,'regular_bytes',return_value=b'124\n'):
             with self.assertRaises(m.QualificationError):bridge.bind_runtime_pid()
 
     def test_libvirt_runtime_pid_inode_replacement_refused(self):
         bridge=m.ServerLibvirtInputBridge.__new__(m.ServerLibvirtInputBridge)
-        bridge.domain_name='luma-arm-desktop-unit-test';bridge.pid=123
+        bridge.domain_name='Suno-arm-desktop-unit-test';bridge.pid=123
         bridge.runtime_pid_identity=dict(uid=0,mode=0o600,device=1,inode=1,gid=0,xattrs={})
         changed=dict(bridge.runtime_pid_identity,inode=2)
         with patch.object(m,'identity',return_value=changed),patch.object(m,'regular_bytes',return_value=b'123\n'):

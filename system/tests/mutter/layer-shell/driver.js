@@ -12,9 +12,9 @@ import Meta from 'gi://Meta';
 import Shell from 'gi://Shell';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
-const out = GLib.getenv('LUMA_LAYER_OUT');
-const client = GLib.getenv('LUMA_LAYER_CLIENT');
-const normalWindow = GLib.getenv('LUMA_LAYER_NORMAL');
+const out = GLib.getenv('SUNO_LAYER_OUT');
+const client = GLib.getenv('SUNO_LAYER_CLIENT');
+const normalWindow = GLib.getenv('SUNO_LAYER_NORMAL');
 const APP = 'layer-test-client';
 const Cap = {BACKGROUND: 1, PANEL: 2, OVERLAY: 4, KEYBOARD: 8};
 const results = [];
@@ -281,7 +281,7 @@ async function run() {
         big.lines().join('|'));
     check('big overlay faded to 0.35 while another app has the focus', bigActor?.opacity === 89,
         bigActor?.opacity);
-    check('faded overlay is desaturated', !!bigActor?.get_effect('luma-layer-fade'));
+    check('faded overlay is desaturated', !!bigActor?.get_effect('Suno-layer-fade'));
     check('faded overlay lets input through', bigActor && !anyReactive(bigActor));
     check('faded app reported', compositor.get_layer_shell_dimmed_apps().includes(APP));
     await screenshot('overlay-dimmed');

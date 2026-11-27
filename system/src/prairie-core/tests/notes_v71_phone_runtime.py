@@ -11,7 +11,7 @@ gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
 from gi.repository import Gio, GLib, Gtk
 from prairie_apps.notes import NotesApplication
-from prairie_apps.notes_lumaui import NotesLumaWindow, _children
+from prairie_apps.notes_SunoUI import NotesSunoWindow, _children
 
 ROOT = Path(__file__).resolve().parents[3]
 
@@ -34,13 +34,13 @@ class PhoneTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.env = mock.patch.dict(os.environ, {
-            'LUMA_NOTES_FIXTURE': str(ROOT / 'tests/fixtures/notes-v70.json'),
-            'LUMA_NOTES_STYLE_PATH': str(ROOT / 'src/prairie-core/style/notes.css'),
-            'LUMA_NOTES_LIVE_SETTLED': '1',
+            'SUNO_NOTES_FIXTURE': str(ROOT / 'tests/fixtures/notes-v70.json'),
+            'SUNO_NOTES_STYLE_PATH': str(ROOT / 'src/prairie-core/style/notes.css'),
+            'SUNO_NOTES_LIVE_SETTLED': '1',
         })
         cls.env.start()
         cls.app = NotesApplication()
-        cls.app.set_application_id('org.projectluma.Notes.Runtime.' + cls.__name__)
+        cls.app.set_application_id('org.projectSuno.Notes.Runtime.' + cls.__name__)
         cls.app.set_flags(Gio.ApplicationFlags.NON_UNIQUE)
         cls.app.register(None)
 
@@ -50,8 +50,8 @@ class PhoneTests(unittest.TestCase):
         cls.env.stop()
 
     def setUp(self):
-        with mock.patch.object(NotesLumaWindow, '_watch_store', side_effect=AssertionError('real store watcher')):
-            self.window = NotesLumaWindow(self.app)
+        with mock.patch.object(NotesSunoWindow, '_watch_store', side_effect=AssertionError('real store watcher')):
+            self.window = NotesSunoWindow(self.app)
         self.window.set_default_size(self.width, self.height)
         self.window.present()
         pump(.8)

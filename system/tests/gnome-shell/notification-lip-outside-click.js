@@ -2,7 +2,7 @@
 // Exercise the callback shipped in the built Shell source, including a modal
 // grab that reports the tray as the event source for an outside click.
 // Native client-window routing is tested separately by notification-outside-native.js.
-// Run: gjs -m notification-lip-outside-click.js path/to/lumaNotificationBeacon.js
+// Run: gjs -m notification-lip-outside-click.js path/to/SunoNotificationBeacon.js
 import Gio from 'gi://Gio';
 
 const [loaded, bytes] = Gio.File.new_for_path(ARGV[0]).load_contents(null);

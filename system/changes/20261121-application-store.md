@@ -1,7 +1,7 @@
 ---
 type: improvement
 component: Valet
-packages: [luma-application-installer]
+packages: [Suno-application-installer]
 highlight: true
 ---
 Summary: Apps from a file install smaller and start faster

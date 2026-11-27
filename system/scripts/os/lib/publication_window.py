@@ -18,16 +18,16 @@ import stat
 import subprocess
 import sys
 
-WINDOW_LOCK = Path('/run/lock/luma-os-publication-window.lock')
+WINDOW_LOCK = Path('/run/lock/Suno-os-publication-window.lock')
 
-CONFIG_ENV = ('LUMA_OS_ROOT', 'LUMA_OS_PROFILE', 'LUMA_TARGET_ARCHITECTURE',
-              'LUMA_OS_KEYS', 'LUMA_OS_SECRETS', 'LUMA_OS_SLICE',
-              'CONTAINERS_STORAGE_CONF', 'LUMA_OS_GRAPH_TOOLS_IMAGE', 'LUMA_OS_TOOLS_IMAGE_NAME')
+CONFIG_ENV = ('SUNO_OS_ROOT', 'SUNO_OS_PROFILE', 'SUNO_TARGET_ARCHITECTURE',
+              'SUNO_OS_KEYS', 'SUNO_OS_SECRETS', 'SUNO_OS_SLICE',
+              'CONTAINERS_STORAGE_CONF', 'SUNO_OS_GRAPH_TOOLS_IMAGE', 'SUNO_OS_TOOLS_IMAGE_NAME')
 
 
 def worker_command(unit, command, environment, memory_mib, seconds, extra_env=()):
-    if not re.fullmatch(r'luma-os-publication-[A-Za-z0-9_.-]+\.service', unit):
-        raise ValueError('a unique luma-os-publication-*.service unit is required')
+    if not re.fullmatch(r'Suno-os-publication-[A-Za-z0-9_.-]+\.service', unit):
+        raise ValueError('a unique Suno-os-publication-*.service unit is required')
     if not command or not 512 <= memory_mib <= 32768 or not 10 <= seconds <= 21600:
         raise ValueError('invalid worker command or admitted memory/runtime budget')
     names = set(CONFIG_ENV) | set(extra_env)
@@ -40,7 +40,7 @@ def worker_command(unit, command, environment, memory_mib, seconds, extra_env=()
     # Explicit values are passed to the service manager: shell inheritance does
     # not carry caller variables across systemd-run's new service boundary.
     return ['systemd-run', '--system', '--wait', '--collect', '--service-type=exec',
-            '--unit=' + unit, '--slice=' + environment.get('LUMA_OS_SLICE', 'luma-os.slice'),
+            '--unit=' + unit, '--slice=' + environment.get('SUNO_OS_SLICE', 'Suno-os.slice'),
             '--property=PrivateMounts=yes', '--property=KillMode=control-group',
             f'--property=MemoryMax={memory_mib}M', '--property=MemorySwapMax=256M',
             '--property=CPUQuota=200%', f'--property=RuntimeMaxSec={seconds}',
@@ -154,8 +154,8 @@ def _start_supervision(control, unit, timers, command, directory, preflight=None
         raise ValueError('state directory must be absolute')
     if not control.worker_absent(unit):
         raise ValueError('worker unit already exists; use a fresh attempt name')
-    if len(set(timers)) != len(timers) or any(not re.fullmatch(r'luma-[A-Za-z0-9_.@-]+\.timer', t) for t in timers):
-        raise ValueError('explicit distinct Luma timer units required')
+    if len(set(timers)) != len(timers) or any(not re.fullmatch(r'Suno-[A-Za-z0-9_.@-]+\.timer', t) for t in timers):
+        raise ValueError('explicit distinct Suno timer units required')
     before = {timer: control.state(timer) for timer in timers}
     if any(state not in ('active', 'inactive') for state in before.values()):
         raise ValueError('timer state is transitional or failed; no timer changed')
@@ -228,12 +228,12 @@ def _recover(control, directory):
         raise ValueError('supervision already closed; recovery is not needed')
     record = json.loads((directory / 'STARTED.json').read_text())
     unit = record['worker_unit']
-    if not re.fullmatch(r'luma-os-publication-[A-Za-z0-9_.-]+\.service', unit):
+    if not re.fullmatch(r'Suno-os-publication-[A-Za-z0-9_.-]+\.service', unit):
         raise ValueError('invalid recorded worker unit')
     if control.state(unit) not in ('inactive', 'failed'):
         raise ValueError('recorded worker is active; recovery cannot resume timers')
     for timer, state in record['timer_states'].items():
-        if not re.fullmatch(r'luma-[A-Za-z0-9_.@-]+\.timer', timer) or state not in ('active', 'inactive'):
+        if not re.fullmatch(r'Suno-[A-Za-z0-9_.@-]+\.timer', timer) or state not in ('active', 'inactive'):
             raise ValueError('invalid recorded timer state')
     restored = {}
     for timer, state in record['timer_states'].items():

@@ -1,0 +1,70 @@
+{
+ "app": "app-perms-install-tv",
+ "title": "App permissions: the install sheet on a TV",
+ "about": "The install sheet (Valet, Suno-application-installer) against design-center 8bd4ccf mockups/app-perms/install.html?posture=tv. Pixel mode: the app PNGs are crops of the VM (2x) from the Valet fixture tests/fixtures/valet-app-perms.json (SUNO_VALET_STATE=kiln|polychrome|cli). The reference's inline actions are left out: Valet keeps Install and Cancel at the window's foot. TV: Valet's phone column in TV posture (SUNO_POSTURE=tv), remote focus on the chosen level. Glyphs: the reference's Lucide SVGs at SunoUI's 1.6 stroke (Prairie's adaptation of every Lucide glyph), not Lucide's 2. The reference is captured at 2x (spec.scale) to match.",
+ "spec": {
+  "root": "design-center",
+  "url": "mockups/app-perms/install.html?app=polychrome&posture=tv",
+  "window": "#stage",
+  "ready": "html[data-ready]",
+  "viewport": {
+   "width": 1000,
+   "height": 1500
+  },
+  "init_script": "if (matchMedia('(prefers-color-scheme: light)').matches && !/[?&]mode=/.test(location.search)) history.replaceState(null, '', location.pathname + (location.search ? location.search + '&' : '?') + 'mode=light');",
+  "scale": 2
+ },
+ "states": [
+  {
+   "name": "polychrome",
+   "about": "Polychrome .deb with device rules",
+   "window": "#stage",
+   "spec": [
+    {
+     "eval": "(() => { const k='polychrome', cli=false, x=APX.APPS[k], w=document.getElementById('w-valet'), st=document.getElementById('stage'); w.style.setProperty('--a', x.a); w.style.setProperty('--b', x.b); if (document.documentElement.dataset.posture === 'desktop') st.innerHTML = `<header class=\"vthd\">${APX.head(k)}</header><div class=\"vtmid\">${APX.sheet(k, cli)}</div>`; else { st.innerHTML = APX.sheetPhone(k, document.documentElement.dataset.posture === 'tv' ? 72 : 88); if (document.documentElement.dataset.posture === 'tv') st.querySelector('.vlp-list .vlp-row.on')?.classList.add('tvf'); } })()",
+     "wait": 600
+    },
+    {
+     "eval": "(() => { document.querySelectorAll('#stage svg.i').forEach(s => s.setAttribute('stroke-width', '1.6')); })()",
+     "wait": 100
+    }
+   ]
+  }
+ ],
+ "phone_states": [],
+ "groups": [
+  {
+   "name": "fills",
+   "spec": "#stage .ap-opt, #stage .ap-tick, #stage .ap-sug, #stage .vtcan, #stage .ap-req, #stage .ap-cli, #stage .vlhero .vlic, #stage .vlp-list, #stage .cfsw, #stage .cfrd"
+  },
+  {
+   "name": "content",
+   "spec": "#stage .vthd, #stage .vlp-hd, #stage .vlp-facts, #stage .ap-sec, #stage .ap-cli, #stage .ap-never, #stage .vlp-h, #stage .vlp-list"
+  },
+  {
+   "name": "body",
+   "spec": "#stage .ap-sec > h6, #stage .ap-opt, #stage .vtcan, #stage .ap-req, #stage .ap-cli, #stage .ap-never, #stage .vlp-facts > div, #stage .vlp-h, #stage .vlp-list, #stage .vlp-hd"
+  },
+  {
+   "name": "art",
+   "spec": "#stage .vlic"
+  },
+  {
+   "name": "controls",
+   "spec": "#stage .cfsw, #stage .cfrd, #stage .vtcan, #stage .bt"
+  }
+ ],
+ "pairs": [],
+ "text_aliases": {},
+ "pixel": {
+  "max_mean": 4.0,
+  "max_over10": 1.0,
+  "fills": "fills",
+  "max_fill_over10": 0.005,
+  "glyphs_as_text": true,
+  "mean_without_text": true,
+  "exclude_groups": [
+   "art"
+  ]
+ }
+}

@@ -1,7 +1,7 @@
 # Task: native-ci-assist
 
 - Status: targeted fixes and focused checks complete; ready for source integration
-- Owner: luma-dev-2 / arm_server_qualification delegated agent
+- Owner: Suno-dev-2 / arm_server_qualification delegated agent
 - Worktree: /srv/dev/accounts/second/experiments/arm-desktop/task-hdd/arm-server-qualification-admission/native-ci-assist
 - Base: 31696869f
 

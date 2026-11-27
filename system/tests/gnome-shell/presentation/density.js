@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 // Home density from the panel's physical size; runs under gjs -m or node.
-import {displayDensity, homeLayout, inkFor} from '../../../src/luma-shell-presentation/layout.js';
+import {displayDensity, homeLayout, inkFor} from '../../../src/Suno-shell-presentation/layout.js';
 function assert(value, message) { if (!value) throw Error(message); }
 
 const SCALES = [1, 1.25, 1.3333333, 1.5, 1.75, 2, 2.25, 2.5, 2.6666667, 3, 4];
@@ -48,9 +48,9 @@ async function readText(relative) {
     const file = Gio.File.new_for_uri(import.meta.url).get_parent().resolve_relative_path(relative);
     return new TextDecoder().decode(file.load_contents(null)[1]);
 }
-const tokens = JSON.parse(await readText('../../../config/shared/design-tokens.d/home-widgets.json')).lumaui.home_widget;
-const sheet = await readText('../../../src/luma-shell-presentation/presentation.css');
-const roomy = role => Number(sheet.match(new RegExp(`\\.roomy-home \\.luma-converged-widget-${role} \\{ font-size: ([0-9.]+)px;`))?.[1]);
+const tokens = JSON.parse(await readText('../../../config/shared/design-tokens.d/home-widgets.json')).SunoUI.home_widget;
+const sheet = await readText('../../../src/Suno-shell-presentation/presentation.css');
+const roomy = role => Number(sheet.match(new RegExp(`\\.roomy-home \\.Suno-converged-widget-${role} \\{ font-size: ([0-9.]+)px;`))?.[1]);
 assert(roomy('heading') === tokens.heading && roomy('caption') === tokens.detail,
     'a roomy phone keeps widget heading and details at their token sizes');
 for (const phone of [pixel, fp6])

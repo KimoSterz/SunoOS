@@ -18,8 +18,8 @@ from unittest.mock import patch
 # Load the canonical shell contract before GTK/kit initialization. RPM checks
 # receive the exact schema as Source3; source runs resolve the same owned file.
 _schema_fixture = tempfile.TemporaryDirectory(prefix='creator-appearance-schema-')
-_schema = Path(os.environ.get('LUMA_CREATOR_SCHEMA_FILE',
-    str(Path(__file__).resolve().parents[3] / 'src/luma-shell-state/org.project_luma.shell-state.gschema.xml')))
+_schema = Path(os.environ.get('SUNO_CREATOR_SCHEMA_FILE',
+    str(Path(__file__).resolve().parents[3] / 'src/Suno-shell-state/org.projectSuno.shell-state.gschema.xml')))
 assert _schema.is_file(), 'Canonical appearance schema is required for genuine theme tests'
 shutil.copyfile(_schema, Path(_schema_fixture.name) / _schema.name)
 subprocess.run(['glib-compile-schemas', '--strict', _schema_fixture.name], check=True)
@@ -30,11 +30,11 @@ import gi
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
 from gi.repository import Adw, Gdk, Gio, GLib, Gtk
-from luma_appkit import EmptyState, ListEmptyState, add_style_sheet
+from Suno_appkit import EmptyState, ListEmptyState, add_style_sheet
 from prairie_apps import messages, notes, phone
 from prairie_apps.clock import ClockWindow
 from prairie_apps.calendar_window import CalendarWindow
-from prairie_apps.notes_lumaui import NotesLumaWindow
+from prairie_apps.notes_SunoUI import NotesSunoWindow
 from prairie_apps.photos import PhotosWindow
 from prairie_apps.photos_backend import PhotoLibrary
 
@@ -58,7 +58,7 @@ def settle(predicate=lambda: True, timeout=5):
 
 
 def screenshot(window, name):
-    directory = os.environ.get('LUMA_CREATOR_REVIEW_CAPTURE')
+    directory = os.environ.get('SUNO_CREATOR_REVIEW_CAPTURE')
     if not directory:
         return
     from gi.repository import Gsk
@@ -103,21 +103,21 @@ def main():
         os.environ['TZ'] = 'Europe/Paris'
         core = Path(__file__).resolve().parents[1]
         for app_name in ('NOTES', 'PHOTOS', 'CLOCK', 'PHONE', 'MESSAGES', 'CALENDAR', 'CAMERA', 'TASKS'):
-            os.environ.setdefault(f'LUMA_{app_name}_STYLE_PATH', str(core / 'style' / f'{app_name.lower()}.css'))
+            os.environ.setdefault(f'SUNO_{app_name}_STYLE_PATH', str(core / 'style' / f'{app_name.lower()}.css'))
         app = notes.NotesApplication()
         app.set_flags(Gio.ApplicationFlags.NON_UNIQUE | Gio.ApplicationFlags.HANDLES_OPEN)
         assert app.register(None)
         for name in ('photos', 'clock', 'phone', 'calendar'):
-            add_style_sheet(os.environ[f'LUMA_{name.upper()}_STYLE_PATH'])
+            add_style_sheet(os.environ[f'SUNO_{name.upper()}_STYLE_PATH'])
         messages.install_messages_theme()
         style = Adw.StyleManager.get_default()
-        appearance = Gio.Settings.new('org.project_luma.shell-state')
+        appearance = Gio.Settings.new('org.projectSuno.shell-state')
         def theme(dark):
             assert appearance.set_string('surface-treatment', 'dark' if dark else 'light')
             try:
                 settle(lambda: style.get_dark() is dark)
             except AssertionError:
-                from luma_appkit import widgets
+                from Suno_appkit import widgets
                 print('THEME', dark, style.get_dark(), style.get_color_scheme(),
                       appearance.get_string('surface-treatment'), widgets.appearance,
                       [(p.get_requested(), p.get_surface(), p.get_has_selection())
@@ -127,9 +127,9 @@ def main():
 
         # The store is real and private; unrelated semantic publication and
         # physical call providers are not the subject of this UI check.
-        with patch.object(NotesLumaWindow, '_create_semantic_publisher', return_value=None), \
-             patch.object(NotesLumaWindow, '_watch_store', return_value=None):
-            window = NotesLumaWindow(app)
+        with patch.object(NotesSunoWindow, '_create_semantic_publisher', return_value=None), \
+             patch.object(NotesSunoWindow, '_watch_store', return_value=None):
+            window = NotesSunoWindow(app)
             for dark in (False, True):
                 theme(dark)
                 for width in (360, 500, 1024, 1440):
@@ -156,7 +156,7 @@ def main():
             with patch.object(Gio.DesktopAppInfo, 'new', return_value=None), \
                  patch.object(Gio.AppInfo, 'launch_default_for_uri', return_value=True) as launch:
                 window._open_in_write()
-                assert launch.call_args.args[0] == 'luma-depot://install/org.projectluma.Write'
+                assert launch.call_args.args[0] == 'Suno-depot://install/org.projectSuno.Write'
             assert window.current is not None and window.store.get_note(window.current.id)
             screenshot(window, 'notes-document-1024')
             window.close()
@@ -229,10 +229,10 @@ def main():
                 Gdk.MemoryFormat.R8G8B8, GLib.Bytes.new(bytes((30, 130, 190)) * 512 * 512), 512 * 3))
             window._status.set_visible(False)
             assert window._source_label.get_text() == 'Built-in Camera'
-            assert window._source_picker.has_css_class('lumaui-text-button')
+            assert window._source_picker.has_css_class('SunoUI-text-button')
             assert window._source_picker.has_css_class('raised')
-            assert window._surface.bar.has_css_class('lumaui-ac-bar')
-            assert not window._surface.overlay.has_css_class('lumaui-media')
+            assert window._surface.bar.has_css_class('SunoUI-ac-bar')
+            assert not window._surface.overlay.has_css_class('SunoUI-media')
             for dark in (False, True):
                 theme(dark)
                 settle()
@@ -250,7 +250,7 @@ def main():
             settle(lambda: not window._surface.phone)
             assert window._surface.bar.get_visible()
             assert window._capture_button.get_parent() is window._surface.fixed
-            assert not window._surface.overlay.has_css_class('lumaui-media')
+            assert not window._surface.overlay.has_css_class('SunoUI-media')
             screenshot(window, 'camera-desktop-return')
             window.close()
             settle()
@@ -274,8 +274,8 @@ def main():
         tasks_fixture.write_text(json.dumps({'today': '2026-10-05', 'tasks': [],
             'people': {'me': {'n': 'You', 'u': 'you'}},
             'lists': [{'id': 'personal', 'n': 'Personal', 'ppl': [], 'secs': [], 'h': 200}]}))
-        add_style_sheet(os.environ['LUMA_TASKS_STYLE_PATH'])
-        with patch.dict(os.environ, {'LUMA_TASKS_FIXTURE': str(tasks_fixture)}):
+        add_style_sheet(os.environ['SUNO_TASKS_STYLE_PATH'])
+        with patch.dict(os.environ, {'SUNO_TASKS_FIXTURE': str(tasks_fixture)}):
             # A compact cold launch reaches details before any wide render.
             for width in (360, 500):
                 compact = tasks.TasksWindow(app)
@@ -408,7 +408,7 @@ def main():
             settle()
 
         from prairie_apps import voice_memos
-        add_style_sheet(os.environ.get('LUMA_MEMO_STYLE_PATH', str(core / 'style/memo.css')))
+        add_style_sheet(os.environ.get('SUNO_MEMO_STYLE_PATH', str(core / 'style/memo.css')))
         with patch.dict(os.environ, {'XDG_MUSIC_DIR': str(root / 'music')}), \
              patch.object(voice_memos.audio, 'inspect_recording_capability') as inspect_microphone:
             window = voice_memos.VoiceMemosWindow(app)
@@ -458,7 +458,7 @@ def main():
 
         fixture = root / 'messages.json'
         fixture.write_text(json.dumps({'people': {}, 'conversations': []}))
-        with patch.dict(os.environ, {'LUMA_MESSAGES_FIXTURE': str(fixture)}):
+        with patch.dict(os.environ, {'SUNO_MESSAGES_FIXTURE': str(fixture)}):
             window = messages.MessagesWindow(app)
             window.present()
             settle()
@@ -481,18 +481,18 @@ def main():
             screenshot(window, 'messages-two-empty-states')
             pending = []
             service = SimpleNamespace()
-            with patch.object(window, '_luma_service', return_value=service), \
-                 patch.object(window, 'luma_call', side_effect=lambda *args: pending.append(args)):
+            with patch.object(window, '_Suno_service', return_value=service), \
+                 patch.object(window, 'Suno_call', side_effect=lambda *args: pending.append(args)):
                 window.recipient_search.set_text('alice')
                 window._reload_recipients()
-                assert pending[-1][1:3] == ('luma.people', {'handle': 'alice'})
+                assert pending[-1][1:3] == ('Suno.people', {'handle': 'alice'})
                 first = pending[-1][-1]
                 window.recipient_search.set_text('bob')
                 window._reload_recipients()
                 first({'account': 'test-alice', 'display_name': 'Alice'}, None)
-                assert not getattr(window.recipient_list.get_row_at_index(0), 'luma_handle', None)
+                assert not getattr(window.recipient_list.get_row_at_index(0), 'Suno_handle', None)
                 pending[-1][-1]({'account': 'test-bob', 'display_name': 'Bob'}, None)
-                assert window.recipient_list.get_row_at_index(0).luma_handle == 'bob'
+                assert window.recipient_list.get_row_at_index(0).Suno_handle == 'bob'
                 window.recipient_search.set_text('missing')
                 window._reload_recipients()
                 pending[-1][-1](None, SimpleNamespace(message='No member found'))

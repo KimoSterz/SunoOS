@@ -1,5 +1,5 @@
 {
-  "schema": "org.projectluma.desktop-targets/v1",
+  "schema": "org.projectSuno.desktop-targets/v1",
   "architectures": {
     "x86_64": {
       "oci_architecture": "amd64",
@@ -20,13 +20,13 @@
     "intel-crashlog": [
       "x86_64"
     ],
-    "kernel-luma-rpi": [
+    "kernel-Suno-rpi": [
       "aarch64"
     ],
-    "luma-rpi5-platform": [
+    "Suno-rpi5-platform": [
       "aarch64"
     ],
-    "luma-rpi-bluetooth-firmware": [
+    "Suno-rpi-bluetooth-firmware": [
       "aarch64"
     ],
     "gstreamer1-plugins-bad-free": [
@@ -41,11 +41,11 @@
   },
   "hardware_targets": {
     "raspberrypi,rpi5": {
-      "kernel": "kernel-luma-rpi",
+      "kernel": "kernel-Suno-rpi",
       "packages": [
-        "kernel-luma-rpi",
-        "luma-rpi5-platform",
-        "luma-rpi-bluetooth-firmware",
+        "kernel-Suno-rpi",
+        "Suno-rpi5-platform",
+        "Suno-rpi-bluetooth-firmware",
         "gstreamer1-plugins-bad-free",
         "gstreamer1-plugins-bad-free-libs"
       ]

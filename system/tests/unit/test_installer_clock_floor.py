@@ -22,7 +22,7 @@ def initializer(patched=True, wall=FLOOR, rtc=OLD, floor=FLOOR,
                 setter_error=None, ineffective=False, rtc_error=None, utc=True):
     functions = ast.parse(PATCH.patched_source(UPSTREAM).decode() if patched else UPSTREAM.decode())
     functions.body = [n for n in functions.body if isinstance(n, ast.FunctionDef)
-                      and n.name in ("time_initialize", "_luma_restore_clock_floor")]
+                      and n.name in ("time_initialize", "_Suno_restore_clock_floor")]
     state = {"wall": wall, "calls": [], "sets": []}
     def stat(path):
         assert path == "/usr/lib/clock-epoch"
@@ -142,10 +142,10 @@ class InstallerClockFloor(unittest.TestCase):
                 Gio=SimpleNamespace(File=SimpleNamespace(new_for_path=lambda path: path)),
                 conf=SimpleNamespace(target=SimpleNamespace(physical_root="/mnt/sysroot")),
                 Variant=lambda kind, data: (kind, data), GError=OSError, PayloadInstallationError=ValueError,
-                log=logging.getLogger("pull-test"), _luma_restore_clock_floor=restore)
+                log=logging.getLogger("pull-test"), _Suno_restore_clock_floor=restore)
             exec(compile(module, "native-anaconda-signed-pull", "exec"), namespace)
             task = namespace["PullRemoteAndDeleteTask"]()
-            task._data = SimpleNamespace(ref="luma/ref", remote="luma")
+            task._data = SimpleNamespace(ref="Suno/ref", remote="Suno")
             task.report_progress = lambda _: None
             task._pull_progress_cb = lambda _: None
             return task.run, state
@@ -156,7 +156,7 @@ class InstallerClockFloor(unittest.TestCase):
         run, fixed = pull(True)
         run()
         self.assertEqual(fixed["floor_checks"], 1)
-        self.assertEqual(fixed["pulls"], [("luma", ("a{sv}", {"refs": ("as", ["luma/ref"]),
+        self.assertEqual(fixed["pulls"], [("Suno", ("a{sv}", {"refs": ("as", ["Suno/ref"]),
                                           "flags": ("i", 99)}), FLOOR)])
 
     def test_final_stage_proof_requires_both_complete_native_modules(self):

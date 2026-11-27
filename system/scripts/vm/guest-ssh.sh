@@ -4,10 +4,10 @@
 set -euo pipefail
 
 repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
-vm_name=${LUMA_VM_NAME:-luma-design}
-guest_user=${LUMA_GUEST_USER:-luma}
-guest_key=${LUMA_GUEST_KEY:-"$repo_root/build/provisioning/luma-m0-guest"}
-timeout_seconds=${LUMA_GUEST_TIMEOUT:-300}
+vm_name=${SUNO_VM_NAME:-Suno-design}
+guest_user=${SUNO_GUEST_USER:-Suno}
+guest_key=${SUNO_GUEST_KEY:-"$repo_root/build/provisioning/Suno-m0-guest"}
+timeout_seconds=${SUNO_GUEST_TIMEOUT:-300}
 
 if [ ! -f "$guest_key" ]; then
   printf 'error: guest key is missing; run scripts/prepare-test-provisioning.sh\n' >&2

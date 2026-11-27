@@ -1,0 +1,3 @@
+# SPDX-License-Identifier: Apache-2.0
+enable Suno-app-host.service
+enable Suno-native-app-prewarm.timer

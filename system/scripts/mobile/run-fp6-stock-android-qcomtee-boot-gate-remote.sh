@@ -9,17 +9,17 @@ set -Eeuo pipefail
 umask 077
 
 module=${1:?usage: run-fp6-stock-android-qcomtee-boot-gate-remote.sh QCOMTEE_MODULE}
-expected_kernel=7.1.2-luma-fp-ims1
+expected_kernel=7.1.2-Suno-fp-ims1
 expected_module_sha=54b336ee9c420173ef2419c5bd2d1d4192c72c485d3a2e3ba7f85c32e2019ab7
-run_dir=/var/lib/luma/stock-android-container1/state/logs/qcomtee-boot-$(date -u +%Y%m%dT%H%M%SZ)
+run_dir=/var/lib/Suno/stock-android-container1/state/logs/qcomtee-boot-$(date -u +%Y%m%dT%H%M%SZ)
 kernel_follow_pid=
 module_loaded=false
 result=fail
 
 die() { printf 'error: %s\n' "$*" >&2; exit 1; }
-check_luma_owners() {
+check_Suno_owners() {
   local service
-  for service in ModemManager luma-fp6-cellular-link luma-fp6-imsd; do
+  for service in ModemManager Suno-fp6-cellular-link Suno-fp6-imsd; do
     systemctl is-active --quiet "$service" || return 1
   done
 }
@@ -34,8 +34,8 @@ cleanup() {
     wait "$kernel_follow_pid" 2>/dev/null || true
   fi
   if [[ -d $run_dir ]]; then
-    systemctl is-active ModemManager luma-fp6-cellular-link luma-fp6-imsd \
-      >"$run_dir/luma-owners-after.log" 2>&1 || true
+    systemctl is-active ModemManager Suno-fp6-cellular-link Suno-fp6-imsd \
+      >"$run_dir/Suno-owners-after.log" 2>&1 || true
     printf 'result=%s\nmodule_loaded=%s\n' "$result" "$module_loaded" \
       >"$run_dir/result.env"
     chmod 0600 "$run_dir"/* 2>/dev/null || true
@@ -49,7 +49,7 @@ trap cleanup EXIT INT TERM HUP
   die 'device identity mismatch'
 [[ $(uname -r) == "$expected_kernel" ]] || die 'unexpected kernel release'
 grep -qw 'androidboot.slot_suffix=_b' /proc/cmdline || die 'device is not on slot b'
-check_luma_owners || die 'a Luma modem owner is unexpectedly inactive'
+check_Suno_owners || die 'a Suno modem owner is unexpectedly inactive'
 [[ -f $module && ! -L $module ]] || die 'module is absent or linked'
 [[ $(sha256sum "$module" | cut -d' ' -f1) == "$expected_module_sha" ]] ||
   die 'module hash mismatch'
@@ -63,8 +63,8 @@ check_luma_owners || die 'a Luma modem owner is unexpectedly inactive'
 
 install -d -o root -g root -m 0700 "$run_dir"
 sha256sum "$module" >"$run_dir/input-hashes.log"
-systemctl is-active ModemManager luma-fp6-cellular-link luma-fp6-imsd \
-  >"$run_dir/luma-owners-before.log"
+systemctl is-active ModemManager Suno-fp6-cellular-link Suno-fp6-imsd \
+  >"$run_dir/Suno-owners-before.log"
 stdbuf -oL dmesg --follow-new --raw >"$run_dir/kernel-new.log" &
 kernel_follow_pid=$!
 
@@ -89,7 +89,7 @@ if grep -Eiq 'kernel panic|Oops:|(^|[[:space:]<])BUG:|hangcheck|GMU.*(timeout|[[
   "$run_dir/kernel-new.log"; then
   die 'kernel/TEE/GPU/GMU fault observed'
 fi
-check_luma_owners || die 'a Luma modem owner did not survive the gate'
+check_Suno_owners || die 'a Suno modem owner did not survive the gate'
 result=pass
 printf 'QCOMTEE_BOOT_GATE=true\n'
 printf 'QCOMTEE_CLIENT=/dev/tee0\n'

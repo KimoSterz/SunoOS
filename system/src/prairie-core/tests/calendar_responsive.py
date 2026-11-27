@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """Current Calendar routes on a private bus and Xvfb, using only v70 fixtures.
 
-LUMA_CALENDAR_PRIVATE_BUS=1 must accompany dbus-run-session. Arguments:
+SUNO_CALENDAR_PRIVATE_BUS=1 must accompany dbus-run-session. Arguments:
 output-directory width. Captures are test-display images, never Nick's desktop.
 """
 import json
@@ -36,8 +36,8 @@ def main():
     require_private_bus()
     require_test_display()
     root = Path(__file__).resolve().parents[3]
-    os.environ["LUMA_CALENDAR_FIXTURE"] = str(root / "tests/fixtures/calendar-v70.json")
-    os.environ["LUMA_CALENDAR_STYLE_PATH"] = str(root / "src/prairie-core/style/calendar.css")
+    os.environ["SUNO_CALENDAR_FIXTURE"] = str(root / "tests/fixtures/calendar-v70.json")
+    os.environ["SUNO_CALENDAR_STYLE_PATH"] = str(root / "src/prairie-core/style/calendar.css")
     from prairie_apps import calendar as app
     from gi.repository import GLib, Gtk
 

@@ -1,0 +1,14 @@
+#!/bin/sh
+# Copy to ~/.local/share/Suno-dev/SunoUI-monitor/bin/run after gate PASS.
+# The preview contains python/ (kit) and src/Suno-monitor/ (app and data).
+set -eu
+preview_root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+if [ ! -f "$preview_root/src/Suno-monitor/Suno_monitor/preview.py" ] ||
+   [ ! -d "$preview_root/python/Suno_appkit" ]; then
+    printf '%s\n' 'Monitor preview is incomplete; re-sync its app and kit.' >&2
+    exit 1
+fi
+unset SUNO_MONITOR_FIXTURE SUNO_MONITOR_QUERY SUNO_MONITOR_STYLE_PATH
+export PYTHONPATH="$preview_root/python:$preview_root/src/Suno-monitor"
+export SUNO_APPKIT_ICON_PATH="$preview_root/python/icons"
+exec python3 -B -m Suno_monitor.preview "$@"

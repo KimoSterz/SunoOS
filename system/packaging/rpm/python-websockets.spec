@@ -12,7 +12,7 @@
 
 Name:           python-%{pypi_name}
 Version:        15.0.1
-Release:        10.luma.1%{?dist}
+Release:        10.Suno.1%{?dist}
 Summary:        Implementation of the WebSocket Protocol for Python
 
 License:        BSD-3-Clause

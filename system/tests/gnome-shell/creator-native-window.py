@@ -4,7 +4,7 @@ import gi
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
 from gi.repository import Adw, Gtk, Gio
-from luma_appkit import AppWindow, CommandRegistry
+from Suno_appkit import AppWindow, CommandRegistry
 app = Adw.Application(application_id='org.example.CreatorPin.Integration',
                       flags=Gio.ApplicationFlags.NON_UNIQUE)
 def activated(application):
@@ -14,7 +14,7 @@ def activated(application):
                        icon_name='org.gnome.Contacts',
                        commands=CommandRegistry(()),
                        default_width=540, default_height=380)
-    window.set_body(Gtk.Label(label='Actual LumaUI/Wayland geometry fixture'))
+    window.set_body(Gtk.Label(label='Actual SunoUI/Wayland geometry fixture'))
     window.present()
 app.connect('activate', activated)
 app.run([])

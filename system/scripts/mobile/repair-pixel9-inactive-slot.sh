@@ -12,11 +12,11 @@ repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 # shellcheck disable=SC1091
 . "$repo_root/config/mobile/pixel9-physical/inputs.env"
 
-adb_bin=${LUMA_ADB:-adb}
-authorized=${LUMA_PIXEL9_INACTIVE_SLOT_REPAIR_AUTHORIZED:-0}
-ota_path=${LUMA_PIXEL9_OTA_PATH:-$repo_root/build/cache/recovery/pixel9/$PIXEL9_OBSERVED_BUILD_ID/$PIXEL9_FULL_OTA_FILENAME}
-timestamp=${LUMA_PIXEL9_REPAIR_TIMESTAMP:-$(date -u +%Y%m%dT%H%M%SZ)}
-evidence_root=${LUMA_PIXEL9_REPAIR_EVIDENCE_DIR:-$repo_root/build/mobile/pixel9-physical/inactive-slot-repair/$timestamp}
+adb_bin=${SUNO_ADB:-adb}
+authorized=${SUNO_PIXEL9_INACTIVE_SLOT_REPAIR_AUTHORIZED:-0}
+ota_path=${SUNO_PIXEL9_OTA_PATH:-$repo_root/build/cache/recovery/pixel9/$PIXEL9_OBSERVED_BUILD_ID/$PIXEL9_FULL_OTA_FILENAME}
+timestamp=${SUNO_PIXEL9_REPAIR_TIMESTAMP:-$(date -u +%Y%m%dT%H%M%SZ)}
+evidence_root=${SUNO_PIXEL9_REPAIR_EVIDENCE_DIR:-$repo_root/build/mobile/pixel9-physical/inactive-slot-repair/$timestamp}
 
 die() {
   printf 'error: %s\n' "$*" >&2
@@ -36,7 +36,7 @@ verify_sha256() {
 }
 
 [ "$authorized" = 1 ] || \
-  die 'inactive-slot repair is not authorized; set LUMA_PIXEL9_INACTIVE_SLOT_REPAIR_AUTHORIZED=1 for the explicitly approved invocation only'
+  die 'inactive-slot repair is not authorized; set SUNO_PIXEL9_INACTIVE_SLOT_REPAIR_AUTHORIZED=1 for the explicitly approved invocation only'
 [ "$PIXEL9_INACTIVE_SLOT_REPAIR_COMPLETED" = false ] || \
   die 'inactive-slot repair is already complete; refusing to consume another authorization'
 command -v "$adb_bin" >/dev/null 2>&1 || die 'adb is not installed'
@@ -77,7 +77,7 @@ level=$(printf '%s\n' "$battery" | awk -F': ' '/^  level:/ {print $2; exit}')
 mkdir -p "$evidence_root"
 control="$evidence_root/control.env"
 {
-  printf 'LUMA_PIXEL9_INACTIVE_SLOT_REPAIR_VERSION=1\n'
+  printf 'SUNO_PIXEL9_INACTIVE_SLOT_REPAIR_VERSION=1\n'
   printf 'DEVICE=tokay\n'
   printf 'PRE_REPAIR_BUILD=%s\n' "$PIXEL9_OBSERVED_BUILD_ID"
   printf 'PRE_REPAIR_SLOT=_b\n'

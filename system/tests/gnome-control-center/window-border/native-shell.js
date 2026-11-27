@@ -3,7 +3,7 @@ import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import Shell from 'gi://Shell';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
-const out = GLib.getenv('LUMA_BORDER_SHELL_OUT');
+const out = GLib.getenv('SUNO_BORDER_SHELL_OUT');
 const results = [];
 const sleep = ms => new Promise(resolve => GLib.timeout_add(GLib.PRIORITY_DEFAULT, ms, () => {
     resolve(); return GLib.SOURCE_REMOVE;
@@ -31,7 +31,7 @@ async function work() {
         const window = actor.meta_window;
         window.maximize();
         await sleep(1500);
-        const state = new Gio.Settings({schema_id: 'org.project_luma.shell-state'});
+        const state = new Gio.Settings({schema_id: 'org.projectSuno.shell-state'});
         const monitor = Main.layoutManager.primaryMonitor;
         const gap = () => {
             const frame = window.get_frame_rect();

@@ -1,16 +1,16 @@
-# ADR-054: Luma Connect Sync (whole-device sync and the Connect Sync API)
+# ADR-054: Suno Connect Sync (whole-device sync and the Connect Sync API)
 
 - **Status:** Accepted
 - **Date:** 2026-11-22
-- **Owner:** Project Luma
-- **Review basis:** `luma-connect-sync` and `prairie_apps/connect_*` on main (72e450e3); `src/luma-continuity`; the live Hub at `/opt/luma-hub/server/local-hub` (read-only, 2026-11-22); ADR-051 (Luma Messages), ADR-052 (one application model); prior art in `PRIOR-ART.md` beside this draft
-- **Revisit trigger:** more than 5,000 accounts with Sync on; OpenMLS used by every Luma client (the device-key join could then move into an account MLS group); a request to let a Luma server read synced content; relay or transit egress above 10 TB a month; a second implementation of the sync core (wire spec and test vectors first)
+- **Owner:** Project Suno
+- **Review basis:** `Suno-connect-sync` and `prairie_apps/connect_*` on main (72e450e3); `src/Suno-continuity`; the live Hub at `/opt/Suno-hub/server/local-hub` (read-only, 2026-11-22); ADR-051 (Suno Messages), ADR-052 (one application model); prior art in `PRIOR-ART.md` beside this draft
+- **Revisit trigger:** more than 5,000 accounts with Sync on; OpenMLS used by every Suno client (the device-key join could then move into an account MLS group); a request to let a Suno server read synced content; relay or transit egress above 10 TB a month; a second implementation of the sync core (wire spec and test vectors first)
 - **Extends:** ADR-051 (account ID, device identity, recovery key), ADR-052 (app record, data folder, systemd scope, portal identity). **Replaces for new data:** the snapshot and collection services in `connect_sync.py`, which move onto this model service by service.
 - **Amended:** 2026-11-22: transport (peer lane, relay), placement of bytes, isolation of apps and network modes, catalogue additions, Phase 1 hardening, order of work.
 
 ## User problem
 
-Someone signs a desktop and a laptop into Luma Connect and turns on Sync. They expect the laptop to have the same apps, with the same state, settings and sign-ins. Today Connect syncs ten Luma apps by hand-written adapters and nothing else:
+Someone signs a desktop and a laptop into Suno Connect and turns on Sync. They expect the laptop to have the same apps, with the same state, settings and sign-ins. Today Connect syncs ten Suno apps by hand-written adapters and nothing else:
 
 | Area | Today | How | Verified on hardware |
 | --- | --- | --- | --- |
@@ -20,15 +20,15 @@ Someone signs a desktop and a laptop into Luma Connect and turns on Sync. They e
 | Clocks, Weather, Books (Leaf), Music servers (Tide) | Works | Account-wide collections with base-merge on the Hub; Tide passwords as sealed secrets | 4 devices this week; Tide's second-device convergence not recorded |
 | Messages and call logs | Built, off | Logs sealed at rest with the Hub's own key | Last use September/October |
 | Shared Notes and Tasks | Half-built | Cross-account documents sealed with the Hub key; `collaboration_broker.py` gives sandboxes token-free access | Unit and integration tests only |
-| Phone link (luma-continuity, Android app) | Half-built | Peer-to-peer mutual TLS and an opaque relay; notifications, calls, texts | Phone-side; not a sync engine |
+| Phone link (Suno-continuity, Android app) | Half-built | Peer-to-peer mutual TLS and an opaque relay; notifications, calls, texts | Phone-side; not a sync engine |
 | Installed apps, app state, settings, wallpaper, shell, keyboard, Wi-Fi, keychain, browser, third-party API | Missing | None | None |
 
-Everything is Hub-mediated over TLS and **nothing is end-to-end encrypted**. Notes, contacts, collections and photos are plaintext in `hub.sqlite` and on disk. Secrets, messages and shared documents are sealed with `session.key`, which sits on the same disk. About sixty `hub.sqlite.pre-*` copies since September keep old plaintext beyond account deletion. Each new app needs its own adapter, its own path in `luma-connect-sync.path` and its own Hub table. A third-party app has no way in at all.
+Everything is Hub-mediated over TLS and **nothing is end-to-end encrypted**. Notes, contacts, collections and photos are plaintext in `hub.sqlite` and on disk. Secrets, messages and shared documents are sealed with `session.key`, which sits on the same disk. About sixty `hub.sqlite.pre-*` copies since September keep old plaintext beyond account deletion. Each new app needs its own adapter, its own path in `Suno-connect-sync.path` and its own Hub table. A third-party app has no way in at all.
 
 ## Constraints
 
-- The Hub stores ciphertext. It may know account, device, zone, size and time. It may not know content, file names, record names, setting names or which Luma app a system zone belongs to.
-- Most apps know nothing about Luma. Their state must sync without code changes, and without corrupting a database that is open.
+- The Hub stores ciphertext. It may know account, device, zone, size and time. It may not know content, file names, record names, setting names or which Suno app a system zone belongs to.
+- Most apps know nothing about Suno. Their state must sync without code changes, and without corrupting a database that is open.
 - Devices differ (desktop, laptop, phone, tablet, TV; x86_64 and aarch64). A setting that is right on a laptop can be wrong on a TV.
 - The Dell has no root; Phase 1 must run entirely as a user service.
 - Turning Sync off never deletes anything on any device (the rule in `connect_services.py`).
@@ -39,15 +39,15 @@ Everything is Hub-mediated over TLS and **nothing is end-to-end encrypted**. Not
 
 ### 1. Keys and encryption
 
-1. **Device keys.** Each device has one Ed25519 identity key and one X25519 key in its Secret Service, named in the Hub `devices` table. The identity key is the same one ADR-051 registers for Messages; the credential is `luma1:<account id>:<device id>`. One device has one identity. Each device also has an Ed25519 *transport key* for the peer lane (section 6a), certified by its identity key and listed in the account bundle (bundle version 2). The identity key never signs transport handshakes.
+1. **Device keys.** Each device has one Ed25519 identity key and one X25519 key in its Secret Service, named in the Hub `devices` table. The identity key is the same one ADR-051 registers for Messages; the credential is `Suno1:<account id>:<device id>`. One device has one identity. Each device also has an Ed25519 *transport key* for the peer lane (section 6a), certified by its identity key and listed in the account bundle (bundle version 2). The identity key never signs transport handshakes.
 2. **Account sync key (ASK).** A random 256-bit key, made by the first device that turns Sync on. The Hub never holds it in the clear.
 3. **Zone keys.** Every zone has its own random key, wrapped by the ASK and stored beside the zone. Records and blobs use XChaCha20-Poly1305 with a fresh nonce. The associated data binds zone, record and version, so the Hub can't move ciphertext between them. Record and file names are HMAC-SHA256 under the zone key.
 4. **Envelopes.** The ASK is wrapped to each device's X25519 key with HPKE (RFC 9180; X25519, HKDF-SHA256, ChaCha20-Poly1305, the primitives of ADR-051's suite 0x0003). The Hub stores one envelope per device and one recovery envelope.
-5. **Joining.** A new device signs in (Keycloak device grant, as today), registers its keys and asks to join. Any device that already syncs shows "ThinkPad wants to sync" with a six-digit code computed from both public keys. The new device shows the same code. Approve asks for the approving device's password (its PIN on a phone) and then wraps the ASK to the new device. If no other device is available, the recovery key decrypts the recovery envelope instead. Every member device then shows "ThinkPad joined with your recovery key" with **Remove**. Account sign-in alone never grants keys. The management interface (`org.projectluma.ConnectSync1`) refuses every sandboxed caller, so only Settings, the shell and the command line can approve, deny, remove or delete.
-6. **Recovery key.** 24 words (Argon2id, never sent to Luma), shown once when Sync is first turned on and stored wherever the person chooses. It is the same key ADR-051 promises for Messages backups, so an account has one recovery key. If every device and the recovery key are lost, synced data can't be recovered. The Luma account survives and Sync starts again empty.
+5. **Joining.** A new device signs in (Keycloak device grant, as today), registers its keys and asks to join. Any device that already syncs shows "ThinkPad wants to sync" with a six-digit code computed from both public keys. The new device shows the same code. Approve asks for the approving device's password (its PIN on a phone) and then wraps the ASK to the new device. If no other device is available, the recovery key decrypts the recovery envelope instead. Every member device then shows "ThinkPad joined with your recovery key" with **Remove**. Account sign-in alone never grants keys. The management interface (`org.projectSuno.ConnectSync1`) refuses every sandboxed caller, so only Settings, the shell and the command line can approve, deny, remove or delete.
+6. **Recovery key.** 24 words (Argon2id, never sent to Suno), shown once when Sync is first turned on and stored wherever the person chooses. It is the same key ADR-051 promises for Messages backups, so an account has one recovery key. If every device and the recovery key are lost, synced data can't be recovered. The Suno account survives and Sync starts again empty.
 7. **Revocation.** Revoking a device (the existing `devices/{id}/revoke`) deletes its envelope. The next device online makes a new ASK and re-wraps every zone key. New writes use new zone keys; old ciphertext stays as it is, since the revoked device had already read it. If the removed device ever held the recovery words, the confirm offers **Make a new recovery key**, which replaces the recovery envelope.
 8. **What the Hub sees:** account ID, device IDs and names, opaque zone IDs, the owning app ID of third-party zones (needed for quotas and revocation), record counts, sizes, change times, the writing device and IP addresses as the existing rate limits need them. **What it can't see:** any content, any name, which system category a zone is, settings and their values, app folder contents, passwords.
-9. **One device list.** The member bundle, approved by code and signed by member devices, is the account's device list. Luma Messages adopts it as the list of devices it trusts (ADR-051 §6), so the Hub cannot add a device to either service.
+9. **One device list.** The member bundle, approved by code and signed by member devices, is the account's device list. Suno Messages adopts it as the list of devices it trusts (ADR-051 §6), so the Hub cannot add a device to either service.
 
 ### 2. Data model
 
@@ -61,7 +61,7 @@ Everything is Hub-mediated over TLS and **nothing is end-to-end encrypted**. Not
 4. **Where bytes live.** Records, manifests, the change feed, envelopes and presence are always on the Hub. Each asset's bytes have one placement:
    - **Resident:** closed-app snapshots, wallpaper, photo previews, game saves and API inline assets. Kept on the Hub and counted against the account's free storage.
    - **Transit:** a large new item no other device holds yet (phone photo and video originals, a new on-demand asset). Kept on the Hub until another member device lists it in its inventory, at most 14 days and 10 GB per account.
-   - **Kept in Luma Cloud:** an item or library the person pins to the cloud. Counted against paid storage.
+   - **Kept in Suno Cloud:** an item or library the person pins to the cloud. Counted against paid storage.
    - **Device-held:** everything else in a library. Only on devices; moved over the peer lane.
 5. **One chunk, any source.** A chunk is the same ciphertext on the Hub, on a device on the LAN, across the internet or through the relay. A device fetches each chunk from the fastest source that has it, in the order the LAN, direct, the Hub, then the relay, and checks it the same way. Each device keeps an encrypted inventory record per zone listing the assets it holds in full. A device never fetches from or serves a device of another account.
 6. **Pointers, not bytes, when an origin exists.** Apps, Flatpak runtimes, store-bought books, podcast episodes, browser extensions and streaming items sync as references and are fetched again from their origin.
@@ -85,22 +85,22 @@ The form-factor classes are **Computer** (desktop and laptop), **Handheld** (pho
 | Files (Documents, Desktop, chosen folders) | Opt-in, device to device | Opt-in, device to device | No | Opt-in (pending the owner, see Defaults) |
 | Libraries (large on-demand items from apps: media, game files, book files, photo originals) | Metadata everywhere; bytes on demand | Same | Same | Same |
 | Clipboard and Handoff (live, never stored) | Yes | Yes | No | Computer and Handheld |
-| Call and SMS history (Luma phones) | Yes | Yes | No | Handheld to Computer |
+| Call and SMS history (Suno phones) | Yes | Yes | No | Handheld to Computer |
 | Developer settings (`.gitconfig`, shell and editor config) | Opt-in | No | No | No |
 
 - **Apps installed.** The record carries app ID, origin (Depot, Flathub, a distribution userland and its repositories, as ADR-052 records them), channel and hold state, never a version. A receiving device installs the newest release from the same origin for its architecture. A hold travels with the record. If the origin has no build for the receiving device, the app is listed as not available there. System modules and workspaces are not synced.
-- **Settings.** Only allow-listed schemas and keys sync, each tagged with its classes. The list ships in the OS image (`/usr/share/luma/sync/settings.d/*.toml`). Anything machine-specific stays local: displays, power, touchpad calibration, audio devices, hostnames and per-device paths.
-- **Keychain.** Items synced are those in the Luma collection that apps mark syncable, the Flatpak secret-portal app secrets (section 4), Wi-Fi secrets and online-account tokens that can be refreshed. Connect device tokens, SSH and GPG keys, and device identity keys never sync. Passkeys follow once the FIDO Credential Exchange format is settled.
+- **Settings.** Only allow-listed schemas and keys sync, each tagged with its classes. The list ships in the OS image (`/usr/share/Suno/sync/settings.d/*.toml`). Anything machine-specific stays local: displays, power, touchpad calibration, audio devices, hostnames and per-device paths.
+- **Keychain.** Items synced are those in the Suno collection that apps mark syncable, the Flatpak secret-portal app secrets (section 4), Wi-Fi secrets and online-account tokens that can be refreshed. Connect device tokens, SSH and GPG keys, and device identity keys never sync. Passkeys follow once the FIDO Credential Exchange format is settled.
 - **Viola** is the first client of the Connect Sync API. Its profile is never copied as a folder.
-- **Files** sync only device to device, as **Folders**: opt-in per folder, keep-both per file, 30-day versions on devices, no Hub storage except transit and *Keep in Luma Cloud*. Photos remain their own service.
+- **Files** sync only device to device, as **Folders**: opt-in per folder, keep-both per file, 30-day versions on devices, no Hub storage except transit and *Keep in Suno Cloud*. Photos remain their own service.
 - **Never synced:** browser cookies and sessions (sign-ins travel as passwords and passkeys), extension local data, SSH and GPG keys, cloud command-line credentials, device identity and transport keys, Connect device tokens, and display, audio, power and input calibration.
 - **Secrets never reach a TV.** TVs get Wi-Fi and their own apps' sign-ins, never the password vault.
 - **An app that uses the Connect Sync API is not also folder-snapshotted** unless its store record asks for both.
 
-### 4. App state for apps that know nothing about Luma
+### 4. App state for apps that know nothing about Suno
 
 1. **What is synced.** The app's ADR-052 data folder (for a Flatpak, `~/.var/app/<id>`). For apps that write host dconf, also their dconf path. For Flatpak apps using the secret portal, also their per-app portal secret, so that `data/keyrings/` opens on the other device.
-2. **Always excluded:** `cache/` and `.cache/`, `tmp/`, sockets, FIFOs, device nodes, `*.lock`, `lock`, `Singleton*`, `*.pid`, `.flatpak-info`, shader caches, and any file over 1 GB. The app's record may add exclusions (`sync.exclude`) or opt out entirely (`sync.folder = false`). Luma keeps a signed deny-list for apps that sync themselves (mail clients, browsers, Steam, cloud-drive clients). Android apps on Luma follow their own `android:allowBackup` and `dataExtractionRules`: an app that excludes device transfer doesn't sync.
+2. **Always excluded:** `cache/` and `.cache/`, `tmp/`, sockets, FIFOs, device nodes, `*.lock`, `lock`, `Singleton*`, `*.pid`, `.flatpak-info`, shader caches, and any file over 1 GB. The app's record may add exclusions (`sync.exclude`) or opt out entirely (`sync.folder = false`). Suno keeps a signed deny-list for apps that sync themselves (mail clients, browsers, Steam, cloud-drive clients). Android apps on Suno follow their own `android:allowBackup` and `dataExtractionRules`: an app that excludes device transfer doesn't sync.
 3. **Quiet points.** A snapshot is taken only when the app's systemd scope has ended and 20 seconds have passed with no new launch. Reads are checked as stable (size and mtime before and after); a file that changes during the read aborts the snapshot. SQLite files and their `-wal` and `-shm` files are taken as one unit. An app that never exits (chat clients, tray apps) is marked "syncs when closed". Later it can call `ConnectSync1.Quiesce` to ask for a snapshot.
 4. **Apply.** An incoming snapshot is staged beside the folder and swapped in by rename while the app isn't running. The ADR-052 launcher applies a staged snapshot before it starts the app, so a launch always opens the newest state. A running app is never touched. Its update applies at the next launch.
 5. **Conflicts.** Each snapshot names its parent.
@@ -111,13 +111,13 @@ The form-factor classes are **Computer** (desktop and laptop), **Handheld** (pho
 7. **The snapshot path is the system's, never the app's.**
    - **Reading.** The daemon walks the folder only while the app's scope is gone, reads with `O_NOFOLLOW` beneath the folder, and records symlinks as text, never following them.
    - **Applying.** Every path is relative and normalised, with no `..` and nothing below a symlink. Symlinks whose target is absolute or leaves the folder are dropped.
-   - **dconf.** Limited to the app's own exact path, and checked again on apply. App IDs whose path is or contains a system prefix (`/org/gnome/desktop/`, `/org/gnome/shell/`, `/org/gnome/mutter/`, `/org/gnome/settings-daemon/`, `/org/freedesktop/`, `/org/projectluma/`, `/ca/desrt/`, `/system/`) have no dconf sync.
+   - **dconf.** Limited to the app's own exact path, and checked again on apply. App IDs whose path is or contains a system prefix (`/org/gnome/desktop/`, `/org/gnome/shell/`, `/org/gnome/mutter/`, `/org/gnome/settings-daemon/`, `/org/freedesktop/`, `/org/projectSuno/`, `/ca/desrt/`, `/system/`) have no dconf sync.
    - **State directory.** The daemon's state directory is on ADR-052's protected-path list.
 
 ### 5. The Connect Sync API (third-party)
 
-1. **Surface.** The D-Bus interface `org.projectluma.ConnectSync1`, served by the host sync daemon. Apps reach it through Luma's portal, which identifies them by Flatpak instance or by ADR-052 SELinux category and scope, the verifier `collaboration_broker.py` already uses. A caller names zones and records only. It never sees a token, key, URL or path. Client libraries:
-   - `LumaSync` in the LumaUI SDK: GObject introspection for C, Python, Rust and JS.
+1. **Surface.** The D-Bus interface `org.projectSuno.ConnectSync1`, served by the host sync daemon. Apps reach it through Suno's portal, which identifies them by Flatpak instance or by ADR-052 SELinux category and scope, the verifier `collaboration_broker.py` already uses. A caller names zones and records only. It never sees a token, key, URL or path. Client libraries:
+   - `SunoSync` in the SunoUI SDK: GObject introspection for C, Python, Rust and JS.
    - A Kotlin library for Android.
    - A TypeScript/WASM library for the web.
 2. **Model.** CloudKit-style zones and records, with a CKSyncEngine-style engine in the daemon. The engine owns scheduling, batching, retries, the offline queue (durable, so an app can write offline and quit), change tokens and push. Calls:
@@ -141,12 +141,12 @@ The form-factor classes are **Computer** (desktop and laptop), **Handheld** (pho
    - **System zones.** Their owner is `system`, which no caller maps to. The API has no path to them.
    - **What apps see.** Apps see records and asset file descriptors only, never keys, tokens, URLs or the Hub address.
 4. **Quotas.** 100 MB of records and 1 GB of assets per app per account, both within the account's storage. Writes are capped at 60 a minute per app per device. Abuse limits are set per publisher.
-5. **Permission UX.** No prompt. The install sheet says "Syncs its data with your devices". Settings > Connect > Sync lists every app with its usage, a switch, and "Delete synced data". Turning an app off stops sync and keeps local data. Removing an app keeps its zones for 30 days. Each app has one Sync line on its own Settings page, whichever way it syncs ("Syncs its data", or "Luma copies its data when closed"), with the same switch and **Delete synced data**.
+5. **Permission UX.** No prompt. The install sheet says "Syncs its data with your devices". Settings > Connect > Sync lists every app with its usage, a switch, and "Delete synced data". Turning an app off stops sync and keeps local data. Removing an app keeps its zones for 30 days. Each app has one Sync line on its own Settings page, whichever way it syncs ("Syncs its data", or "Suno copies its data when closed"), with the same switch and **Delete synced data**.
 6. **Companions.**
-   - *Android:* the Luma Connect Android app is a device with its own keys. It exposes a bound service to Android apps whose package name and signing certificate the store record lists.
-   - *Web:* a web companion becomes a device only after approval on a Luma device, with a per-origin key and its own envelope, revocable like any device. Each is a later phase.
+   - *Android:* the Suno Connect Android app is a device with its own keys. It exposes a bound service to Android apps whose package name and signing certificate the store record lists.
+   - *Web:* a web companion becomes a device only after approval on a Suno device, with a per-origin key and its own envelope, revocable like any device. Each is a later phase.
 7. **Developer docs:**
-   - What syncs and what Luma can see.
+   - What syncs and what Suno can see.
    - Quick start (the recipe app).
    - Zones, records and assets.
    - Documents (Automerge).
@@ -158,8 +158,8 @@ The form-factor classes are **Computer** (desktop and laptop), **Handheld** (pho
    - Deleting and exporting data.
 
 ```python
-from gi.repository import LumaSync
-store = LumaSync.Store.open("recipes")             # zone owned by this app's store record
+from gi.repository import SunoSync
+store = SunoSync.Store.open("recipes")             # zone owned by this app's store record
 store.put(recipe.id, {"title": recipe.title, "steps": recipe.steps}, assets={"photo": recipe.photo_path})
 store.connect("changed", lambda s, ids: reload(ids))   # fires for edits from other devices
 ```
@@ -170,7 +170,7 @@ Amended 2026-11-22 for apps such as emulators and games.
 
 1. **App zones are not bound to a device class.** The Computer, Handheld and TV boundary in section 3 applies only to whole-device sync of settings and layout. A zone created through the Connect Sync API reaches every approved device on the account by default. An app may limit a zone to classes it names.
 2. **Large assets on demand.** Besides inline assets, a zone may hold *on-demand assets*:
-   - **Storage.** Assets are chunked as in section 2.1 and are device-held: the bytes move over the peer lane (section 6a). The Hub holds an on-demand asset only in transit, until another device has it, or when the person turns on *Keep in Luma Cloud* for the item or the library, which counts against paid storage.
+   - **Storage.** Assets are chunked as in section 2.1 and are device-held: the bytes move over the peer lane (section 6a). The Hub holds an on-demand asset only in transit, until another device has it, or when the person turns on *Keep in Suno Cloud* for the item or the library, which counts against paid storage.
    - **Limits.** Each asset may be up to 16 GB.
    - **What every device gets.** Metadata syncs to every device. The bytes download only when the app asks on that device, or when the person pins the item. A device with "Keep everything here" on holds every asset. An item whose only copies are on offline devices shows where it is ("On Dell XPS 14 · offline") and downloads when that device is next online.
    - **Storage pressure.** A device that is short of space keeps metadata and evicts unpinned bytes, oldest first.
@@ -183,14 +183,14 @@ Amended 2026-11-22 for apps such as emulators and games.
 
 ### 5b. Network modes and data that leaves the device
 
-An app with network access can send anything it can read to any server, and Sync cannot change that. Luma limits and shows it:
+An app with network access can send anything it can read to any server, and Sync cannot change that. Suno limits and shows it:
 
-1. **Network mode per app** (ADR-052 §2.7): **On** (the default), **Only through Luma Connect**, or **Off**, under Settings › Apps › *App* › Network.
-   - *Only through Luma Connect* leaves the app no sockets except `AF_UNIX`. LumaSync still works through the portal.
+1. **Network mode per app** (ADR-052 §2.7): **On** (the default), **Only through Suno Connect**, or **Off**, under Settings › Apps › *App* › Network.
+   - *Only through Suno Connect* leaves the app no sockets except `AF_UNIX`. SunoSync still works through the portal.
    - A store record may declare `network = "sync-only"`, and Depot then shows "Data stays on your devices".
    - URLs the app opens and things it shares go through the broker, which shows the destination.
-2. **Allow-list.** A store record may declare the domains an app needs (`network.domains`). Luma limits the app to them per cgroup and shows "Talks only to example.com". This is a description, not a guarantee.
-3. **App activity.** Settings › Privacy › App activity lists, for 7 days, the domains each app contacted and the bytes it sent. One quiet notice appears when an app sends more than 500 MB in a day in the background. Luma never inspects content.
+2. **Allow-list.** A store record may declare the domains an app needs (`network.domains`). Suno limits the app to them per cgroup and shows "Talks only to example.com". This is a description, not a guarantee.
+3. **App activity.** Settings › Privacy › App activity lists, for 7 days, the domains each app contacted and the bytes it sent. One quiet notice appears when an app sends more than 500 MB in a day in the background. Suno never inspects content.
 4. **Depot review checks labels.** The review VM records every domain an app contacts during its run and compares them with the privacy label and network mode. A sync-only app that opens a socket, or an undeclared domain, fails review.
 
 ### 6. Server (Hub)
@@ -222,29 +222,29 @@ An app with network access can send anything it can read to any server, and Sync
    - Records never travel only over the peer lane.
 2. **Stack.**
    - iroh 1.x: QUIC dialled by Ed25519 key, NAT traversal, multipath.
-   - It runs in a Rust helper, `luma-sync-net`, that `luma-connect-syncd` starts.
+   - It runs in a Rust helper, `Suno-sync-net`, that `Suno-connect-syncd` starts.
    - Peers authenticate with TLS 1.3 raw public keys. A connection is accepted only from a transport key in the member bundle of a non-revoked device.
 3. **Discovery.**
    - *Presence:* an encrypted record per device (endpoint ID, home relay, addresses), with a 10-minute lifetime.
-   - *LAN:* `_luma-sync._udp` through Avahi on Luma OS, iroh's mDNS elsewhere. The instance name is random. The TXT tag is an hourly keyed hash that only the account's devices can match.
+   - *LAN:* `_Suno-sync._udp` through Avahi on Suno OS, iroh's mDNS elsewhere. The instance name is random. The TXT tag is an hourly keyed hash that only the account's devices can match.
 4. **Relay.**
-   - `iroh-relay`, run by Luma, never a public relay. It admits an endpoint only after the Hub confirms it is a member device of an account with Sync on.
+   - `iroh-relay`, run by Suno, never a public relay. It admits an endpoint only after the Hub confirms it is a member device of an account with Sync on.
    - It sees endpoint IDs, IP addresses and byte counts, and nothing inside.
    - Limits: 50 GB a month relayed per account; 4 MB/s per connection.
    - It never runs on the Hub droplet.
-5. **No other device online.** Records and resident blobs work as usual, and new large items are available from transit. Device-held items wait for a device that holds them, unless they are kept in Luma Cloud.
+5. **No other device online.** Records and resident blobs work as usual, and new large items are available from transit. Device-held items wait for a device that holds them, unless they are kept in Suno Cloud.
 
 ## Alternatives rejected
 
 - **Keep Hub-readable sync and add E2EE later.** Every record would have to be migrated, and the promise would not be real at launch. Retrofitting costs more than starting right.
 - **One MLS group of the account's own devices for keys (ADR-051).** It gives better revocation, but OpenMLS is not yet in the Python clients. HPKE envelopes do the job now; the revisit trigger covers the move.
-- **Escrowed keys (Luma can recover).** No HSM exists on a droplet, and escrow makes the Hub able to read everything.
+- **Escrowed keys (Suno can recover).** No HSM exists on a droplet, and escrow makes the Hub able to read everything.
 - **Syncing app folders live (Syncthing or Dropbox style).** It corrupts open databases. Quiet points are what Steam Cloud proved.
 - **Requiring every app to adopt an API.** No third-party app would sync on day one.
 - **Syncing whole home folders, or Documents through the Hub.** That is a cloud drive, with its own cost and conflict model. Folders sync device to device instead (section 3).
 - **Electric, Replicache or a server CRDT relay as the engine.** They need a server that reads the data.
-- **Holding every library on the Hub (iCloud's model) for free.** That puts the person's whole media and photo library into Luma's storage bill, when a device the person owns usually holds it already. It is offered as paid *Keep in Luma Cloud* instead.
-- **Syncthing's protocol, libp2p, or WebRTC data channels for the peer lane.** Syncthing's protocol is shaped around folders. libp2p adds a DHT and a surface Luma does not need, since the Hub signals. WebRTC data channels have weak bulk throughput. They stay for the web companion only.
+- **Holding every library on the Hub (iCloud's model) for free.** That puts the person's whole media and photo library into Suno's storage bill, when a device the person owns usually holds it already. It is offered as paid *Keep in Suno Cloud* instead.
+- **Syncthing's protocol, libp2p, or WebRTC data channels for the peer lane.** Syncthing's protocol is shaped around folders. libp2p adds a DHT and a surface Suno does not need, since the Hub signals. WebRTC data channels have weak bulk throughput. They stay for the web companion only.
 - **Syncing browser cookies.** It copies live sessions between devices, which sites treat as hijacking. Passwords and passkeys carry sign-ins instead.
 - **Fetching chunks from other accounts' devices.** It leaks what people hold and turns devices into a public swarm.
 
@@ -255,8 +255,8 @@ An app with network access can send anything it can read to any server, and Sync
 - Folder sync assumes one device uses an app at a time. Two open copies of the same app produce versions, not merges. Apps that need merging use the API.
 - Third-party zone owners are visible to the Hub, which then knows which apps use sync. Depot already knows which apps someone installed.
 - CalDAV/CardDAV and E2EE pull against each other. Standard clients (Thunderbird, DAVx5, iPhone) need a server that reads cards and events. Calendar and contacts stay labelled "not end-to-end encrypted" until that is decided.
-- A device-held library is available only while a device holding it is online, or once it is kept in Luma Cloud. The owning app says where an item is rather than failing.
-- An app's network mode is a real guarantee only when it is *Only through Luma Connect* or *Off*. *On* relies on review, labels and the activity report, as on every other platform.
+- A device-held library is available only while a device holding it is online, or once it is kept in Suno Cloud. The owning app says where an item is rather than failing.
+- An app's network mode is a real guarantee only when it is *Only through Suno Connect* or *Off*. *On* relies on review, labels and the activity report, as on every other platform.
 - The relay sees endpoint IDs and IP addresses of devices that can't connect directly.
 
 ## Order of work
@@ -265,15 +265,15 @@ An app with network access can send anything it can read to any server, and Sync
    - Ships:
      - the key hierarchy, device join by code, and the recovery key;
      - the Hub sync module, as a patch;
-     - a user-level `luma-connect-syncd` that syncs installed Flatpak apps (user and system installs, Depot and Flathub; receivers install with `--user`);
+     - a user-level `Suno-connect-syncd` that syncs installed Flatpak apps (user and system installs, Depot and Flathub; receivers install with `--user`);
      - Flatpak app folders, with the dconf paths and portal secrets from section 4, at quiet points;
      - the deny-list and the 2 GB budget;
-     - apply at launch for Luma's launcher and `flatpak run`;
+     - apply at launch for Suno's launcher and `flatpak run`;
      - Settings > Connect > Sync rows for Apps and App data, with a per-app switch.
    - Not in Phase 1: settings, Wi-Fi, keychain, Viola, the API.
    - Test:
      1. Unit and fault tests with a fake Hub.
-     2. Two nightly VMs on luma-build, scripted: install, edit while closed, edit while the receiver is running, conflict, revoke, recovery-key join. A canary string must never appear in `sync.sqlite`.
+     2. Two nightly VMs on Suno-build, scripted: install, edit while closed, edit while the receiver is running, conflict, revoke, recovery-key join. A canary string must never appear in `sync.sqlite`.
      3. The Dell XPS (a user-level preview through drop-ins, as for auto-sync in October) and the ThinkPad (or a VM if it is busy), with eight chosen Flathub apps covering keyfile settings, SQLite, many small files and secret-portal sign-ins.
    - Passing:
      - an app installed on one appears on the other within 2 minutes;
@@ -281,9 +281,9 @@ An app with network access can send anything it can read to any server, and Sync
      - zero mismatches by hash over a week of daily use;
      - idle requests no higher than today's (about 15 an hour on mains).
    - Hardening before anyone but the owner uses it: see the Phase 1 note.
-2. **Phase 2: every Luma device.**
+2. **Phase 2: every Suno device.**
    - Settings, appearance, wallpaper, shell layout and keyboard.
-   - Wi-Fi through a system helper; passwords and app sign-ins through `luma-keyring`.
+   - Wi-Fi through a system helper; passwords and app sign-ins through `Suno-keyring`.
    - Handheld and TV rows.
    - Restore through Valet.
    - Clocks, Weather, Leaf and Tide move onto zones, their plaintext tables are retired, and Hub backups expire.
@@ -296,7 +296,7 @@ An app with network access can send anything it can read to any server, and Sync
    - A sample recipe app; OpenEmu saves.
    - *Shown:* a recipe made on a phone appears on the Dell, and a save from the TV resumes on the laptop.
 4. **Phase 4: the peer lane and libraries.**
-   - `luma-sync-net`, LAN discovery, the relay with Hub admission, fetching from any device, inventories and transit.
+   - `Suno-sync-net`, LAN discovery, the relay with Hub admission, fetching from any device, inventories and transit.
    - On-demand assets up to 16 GB, Libraries in Settings, "Keep everything here".
    - Photos on encrypted zones (previews resident, originals in transit and then device to device), with the plaintext photos deleted from the Hub.
    - Setting up a new device from another over the LAN.
@@ -314,12 +314,12 @@ An app with network access can send anything it can read to any server, and Sync
 
 Decided 2026-11-22; the owner delegated these calls. None of them blocks Phase 1.
 
-1. **Calendar and contacts** move to end-to-end encrypted zones for Luma devices. A per-account CalDAV/CardDAV bridge stays available for other clients (Thunderbird, iPhone) as an explicit opt-in. Turning it on tells the person that the Hub can then read calendars and contacts.
+1. **Calendar and contacts** move to end-to-end encrypted zones for Suno devices. A per-account CalDAV/CardDAV bridge stays available for other clients (Thunderbird, iPhone) as an explicit opt-in. Turning it on tells the person that the Hub can then read calendars and contacts.
 2. **No escrow.** Losing every device and the recovery key loses synced data. Setup makes saving the recovery key a required step.
 
 
-3. **Free storage and a paid tier.** Decided: 10 GB of resident data per account (the Phase 1 Hub default); peer-lane transfers unlimited; transit 10 GB for 14 days; relaying 50 GB a month; no paid tier at launch. A later paid tier (sizes and price set when it ships) would add *Keep in Luma Cloud* storage, larger transit and relay allowances, a year of versions and phone device backups.
-4. **Documents device to device.** Decided: Documents, Desktop and chosen folders sync device to device only, opt-in per folder (Folders, Phase 5), with no Hub storage except transit and paid *Keep in Luma Cloud*.
+3. **Free storage and a paid tier.** Decided: 10 GB of resident data per account (the Phase 1 Hub default); peer-lane transfers unlimited; transit 10 GB for 14 days; relaying 50 GB a month; no paid tier at launch. A later paid tier (sizes and price set when it ships) would add *Keep in Suno Cloud* storage, larger transit and relay allowances, a year of versions and phone device backups.
+4. **Documents device to device.** Decided: Documents, Desktop and chosen folders sync device to device only, opt-in per folder (Folders, Phase 5), with no Hub storage except transit and paid *Keep in Suno Cloud*.
 5. **Showing the recovery key again, or only making a new one.** Decided: the device that holds the words can show them again (polkit). Removing such a device offers a new key. The alternative is Apple's: no Show, only "Make a new recovery key…", which invalidates the old one.
 6. **Where photo originals live.** Decided: device-held after transit, with previews kept on the Hub. The alternative is iCloud's: originals on the Hub within the free amount.
 
@@ -329,7 +329,7 @@ Decided 2026-11-22; the owner delegated these calls. None of them blocks Phase 1
 
 **Hardening before anyone but the owner uses it:**
 
-1. `org.projectluma.ConnectSync1` refuses sandboxed callers on every method (today any session-bus client can list a pending join's code and approve it). `ApproveJoin`, `RemoveDevice`, `DeleteAppData` and turning Sync off need polkit `auth_self_keep`.
+1. `org.projectSuno.ConnectSync1` refuses sandboxed callers on every method (today any session-bus client can list a pending join's code and approve it). `ApproveJoin`, `RemoveDevice`, `DeleteAppData` and turning Sync off need polkit `auth_self_keep`.
 2. dconf sync is limited to the app's own exact path and checked again on apply. Reserved prefixes are refused (section 4.7).
 3. The chunker is keyed per zone and chunks are padded (section 2.1). This changes chunk IDs, so it lands before the Hub holds real data.
 4. Apply validates every manifest path and symlink (section 4.7).

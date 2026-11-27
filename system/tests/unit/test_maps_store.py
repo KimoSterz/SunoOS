@@ -10,9 +10,9 @@ from unittest.mock import patch
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT / "src/luma-maps"))
+sys.path.insert(0, str(ROOT / "src/Suno-maps"))
 
-from luma_maps.store import Place, PlaceStore  # noqa: E402
+from Suno_maps.store import Place, PlaceStore  # noqa: E402
 
 
 class MapsStoreTests(unittest.TestCase):
@@ -22,7 +22,7 @@ class MapsStoreTests(unittest.TestCase):
         env = patch.dict(os.environ, {"XDG_DATA_HOME": self.temp.name})
         env.start()
         self.addCleanup(env.stop)
-        self.path = pathlib.Path(self.temp.name) / "luma-maps/places.json"
+        self.path = pathlib.Path(self.temp.name) / "Suno-maps/places.json"
         self.path.parent.mkdir()
         self.place = Place("Duende", "Restaurant", "468 19th St", 37.8, -122.27)
 
@@ -36,7 +36,7 @@ class MapsStoreTests(unittest.TestCase):
         self.assertEqual(payload["future"], {"keep": True})
         self.assertEqual(payload["recents"][0]["extra"], "preserve")
         self.assertEqual(payload["saved"][0]["name"], "Duende")
-        self.assertTrue(self.path.with_name("places.json.bak-before-lumaui").exists())
+        self.assertTrue(self.path.with_name("places.json.bak-before-SunoUI").exists())
 
     def test_corrupt_store_is_never_replaced(self):
         self.path.write_text("{broken")

@@ -41,8 +41,8 @@
 
 /* GCC's glibc headers lower errno to __errno_location; Bionic exports __errno. */
 extern int *__errno(void);
-int *luma_errno_location(void) __asm__("__errno_location");
-int *luma_errno_location(void) { return __errno(); }
+int *Suno_errno_location(void) __asm__("__errno_location");
+int *Suno_errno_location(void) { return __errno(); }
 
 union object_arg;
 typedef int32_t (*object_invoke_fn)(void *, uint32_t, union object_arg *,
@@ -116,7 +116,7 @@ static struct qcomtee_object *latest_root;
 static struct allocation_record *allocations;
 static atomic_uint diagnostic_sequence;
 
-#define ADAPTER_DIAGNOSTIC_PATH "/data/luma-qcomtee-adapter.log"
+#define ADAPTER_DIAGNOSTIC_PATH "/data/Suno-qcomtee-adapter.log"
 
 static void diagnostic_event(const char *event, uint32_t operation,
                              uint32_t counts, int transport_result,
@@ -132,7 +132,7 @@ static void diagnostic_event(const char *event, uint32_t operation,
     if (diagnostic_fd >= 0) {
       diagnostic_length = snprintf(
           diagnostic_line, sizeof(diagnostic_line),
-          "event=luma_qcomtee_adapter sequence=%u stage=%s "
+          "event=Suno_qcomtee_adapter sequence=%u stage=%s "
           "operation=0x%x counts=0x%x transport=%d secure=%d\n",
           sequence, event, operation, counts, transport_result, secure_result);
       if (diagnostic_length > 0) {
@@ -226,7 +226,7 @@ static int32_t timed_retry_invoke(void *context, uint32_t operation,
                                       arguments, counts);
     if (result == OBJECT_ERROR_BUSY && !forwarder->busy_reported) {
       dprintf(STDERR_FILENO,
-              "luma_qcomtee event=secure_object_busy op=0x%x counts=0x%x "
+              "Suno_qcomtee event=secure_object_busy op=0x%x counts=0x%x "
               "timeout_ms=%zu interval_ms=%zu\n",
               operation, counts, forwarder->timeout_ms,
               forwarder->interval_ms);
@@ -723,7 +723,7 @@ static struct qcomtee_object *register_dma_buffer(int fd,
 }
 
 /* Used only by the companion BufferAllocator ABI shim. */
-int luma_qcomtee_allocate(size_t size) {
+int Suno_qcomtee_allocate(size_t size) {
   struct tee_ioctl_shm_alloc_data data = {
       .size = size,
       .flags = 0,

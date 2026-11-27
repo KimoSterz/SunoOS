@@ -67,7 +67,7 @@ from gi.repository import Gdk, GdkX11, GLib, Gtk
 Gtk.init()
 assert Gdk.Display.get_default().is_composited(), 'composited display required'
 window = Gtk.Window(title='Native maximized shadow allocation')
-window.add_css_class('luma-no-native-surfaces')
+window.add_css_class('Suno-no-native-surfaces')
 window.set_titlebar(Gtk.HeaderBar())
 window.set_child(Gtk.Label(label='Native maximized shadow allocation'))
 window.set_default_size(360, 240)

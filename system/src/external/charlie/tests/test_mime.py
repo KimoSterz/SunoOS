@@ -3,13 +3,13 @@ from email.message import EmailMessage
 from datetime import datetime, timezone
 import unittest
 
-from charlie_luma.mime import (
+from charlie_Suno.mime import (
     html_to_text,
     message_presentation,
     parse_message,
     strip_quoted_text,
 )
-from charlie_luma.model import Attachment, Message
+from charlie_Suno.model import Attachment, Message
 
 
 class MimeTests(unittest.TestCase):

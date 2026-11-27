@@ -2,7 +2,7 @@
 """Shared native recipient/permission composition for Notes and Tasks."""
 from threading import Thread
 from gi.repository import GLib
-from luma_appkit import Collaborator, Person, ShareSheet, ShareSubject, ShareResult, Toast
+from Suno_appkit import Collaborator, Person, ShareSheet, ShareSubject, ShareResult, Toast
 from .collaboration import CollaborationCache, CollaborationClient, PeopleDirectory, public_name
 
 
@@ -25,7 +25,7 @@ class NativeCollaborationShare:
             except Exception as caught:
                 result, error = None, caught
             GLib.idle_add(self._finished, result, error, success)
-        Thread(target=worker, daemon=True, name='luma-collaboration').start()
+        Thread(target=worker, daemon=True, name='Suno-collaboration').start()
 
     def _finished(self, result, error, success):
         try:
@@ -45,7 +45,7 @@ class NativeCollaborationShare:
         directory = PeopleDirectory()
         cache = CollaborationCache()
         try:
-            existing = next((item for item in cache.mappings(self.client, self.kind) if item['local_id'] == self.local_id or item['id'] == self.local_id.removeprefix('luma-shared:')), None)
+            existing = next((item for item in cache.mappings(self.client, self.kind) if item['local_id'] == self.local_id or item['id'] == self.local_id.removeprefix('Suno-shared:')), None)
             snapshot = self.client.read(existing['id']) if existing else self.client.create(self.kind, self.content)
             if existing is None:
                 cache.remember(self.client, snapshot, self.local_id)
@@ -105,7 +105,7 @@ class NativeCollaborationShare:
         people = [self._person(person) for person in friends]
         self.sheet = ShareSheet.present(self.anchor,
             document=ShareSubject(self.title, 'Notes' if self.kind == 'note' else 'Tasks', kind='doc',
-                                  icon='org.projectluma.Notes' if self.kind == 'note' else 'org.projectluma.Tasks',
+                                  icon='org.projectSuno.Notes' if self.kind == 'note' else 'org.projectSuno.Tasks',
                                   mime_type='text/markdown' if self.kind == 'note' else 'text/calendar',
                                   share_link_available=False),
             choices=('work-together', 'send-copy'), owner=self._person(owner), people=people,
@@ -128,7 +128,7 @@ class NativeCollaborationShare:
                     return generation, query, None, str(error)
             self._run(lookup, self._lookup_done)
             if self.sheet:
-                GLib.idle_add(self.sheet.set_suggestions, query, matches, "Looking up this Luma username…")
+                GLib.idle_add(self.sheet.set_suggestions, query, matches, "Looking up this Suno username…")
         return matches
 
     def _lookup_done(self, result):
@@ -143,13 +143,13 @@ class NativeCollaborationShare:
         if choice not in ('invite', 'role', 'remove'):
             return self.copy_choice(choice, value)
         if self.busy:
-            return ShareResult(False, 'Waiting for Luma Hub…')
+            return ShareResult(False, 'Waiting for Suno Hub…')
         if self.snapshot['role'] != 'owner':
             return ShareResult(False, 'Only the owner can change sharing access.')
         collaborator, role = value if choice == 'role' else (value, value.role)
         raw = self.people.get(collaborator.person.username.casefold())
         if not raw or not raw.get('account'):
-            return ShareResult(False, 'Choose a verified Luma account.')
+            return ShareResult(False, 'Choose a verified Suno account.')
         action = 'revoke' if choice == 'remove' else 'invite'
         data = {'account': raw['account']}
         if action == 'invite':

@@ -1,4 +1,4 @@
-From: Project Luma <engineering@projectluma.org>
+From: Project Suno <engineering@projectSuno.org>
 Date: Sun, 20 Sep 2026 15:00:00 -0500
 Subject: [PATCH] display: A maximized window is the shell's largest tile
 
@@ -32,7 +32,7 @@ diff --git a/src/core/constraints.c b/src/core/constraints.c
                                                  active_workspace_struts);
     }
  
-+  /* Luma: a maximized window is the shell's largest tile, so it keeps the
++  /* Suno: a maximized window is the shell's largest tile, so it keeps the
 +   * same gap from each edge that a tile does. Only a window maximized in
 +   * both directions, and never a fullscreen one, which does not reach here.
 +   */

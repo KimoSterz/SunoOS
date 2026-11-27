@@ -1,4 +1,4 @@
-From: Luma Developers
+From: Suno Developers
 Subject: [PATCH] Honor dock battery percentage and simplify login surfaces
 
 diff --git a/js/ui/panel.js b/js/ui/panel.js
@@ -101,20 +101,20 @@ diff --git a/js/ui/panel.js b/js/ui/panel.js
              layout_manager: layout});
          this._slots = {};
          for (const name of ['mic', 'wifi', 'bluetooth', 'volume', 'power', 'battery']) {
--            const slot = new St.Widget({layout_manager: new Clutter.BinLayout(), style_class: 'luma-status-slot'});
-+            const slot = new St.BoxLayout({style_class: 'luma-status-slot',
+-            const slot = new St.Widget({layout_manager: new Clutter.BinLayout(), style_class: 'Suno-status-slot'});
++            const slot = new St.BoxLayout({style_class: 'Suno-status-slot',
 +                y_align: Clutter.ActorAlign.CENTER});
              slot.icon = new St.Icon({style_class: 'system-status-icon', icon_size: STATUS_GLYPH,
                  x_align: Clutter.ActorAlign.CENTER, y_align: Clutter.ActorAlign.CENTER});
              slot.add_child(slot.icon);
 +            if (name === 'battery') {
-+                slot.percentage = new St.Label({style_class: 'luma-secondary-status-text',
++                slot.percentage = new St.Label({style_class: 'Suno-secondary-status-text',
 +                    y_align: Clutter.ActorAlign.CENTER, visible: false});
 +                slot.percentage.clutter_text.ellipsize = Pango.EllipsizeMode.NONE;
 +                slot.add_child(slot.percentage);
 +            }
              if (name === 'mic') {
-                 slot.dot = new St.Widget({style_class: 'luma-status-recording', visible: false,
+                 slot.dot = new St.Widget({style_class: 'Suno-status-recording', visible: false,
                      x_expand: true, y_expand: true,
                      x_align: Clutter.ActorAlign.END, y_align: Clutter.ActorAlign.START});
 -                slot.add_child(slot.dot);
@@ -137,8 +137,8 @@ diff --git a/js/ui/panel.js b/js/ui/panel.js
          this._volumeInput?._control?.connectObject('stream-added', sync, 'stream-removed', sync, this);
      }
 @@ -1542,6 +1569,12 @@
-         set('volume', 'luma-volume-2-symbolic', !volume.includes('muted'));
-         set('power', 'luma-gauge-symbolic', Boolean(this._powerProfiles?._indicator));
+         set('volume', 'Suno-volume-2-symbolic', !volume.includes('muted'));
+         set('power', 'Suno-gauge-symbolic', Boolean(this._powerProfiles?._indicator));
          const battery = this._system?._indicator;
 +        const batterySlot = this._slots.battery;
 +        const percentage = this._system?._percentageLabel;
@@ -146,7 +146,7 @@ diff --git a/js/ui/panel.js b/js/ui/panel.js
 +        batterySlot.percentage.text = percentage?.text ?? '';
 +        batterySlot.percentage.visible = batterySlot.visible && Boolean(percentage?.visible);
 +        batterySlot.set_style(batterySlot.percentage.visible ? 'spacing: 4px;' : null);
-         set('battery', 'luma-battery-medium-symbolic', Boolean(battery?.visible));
+         set('battery', 'Suno-battery-medium-symbolic', Boolean(battery?.visible));
          const stream = this._volumeInput?._input?.stream;
          const muted = Boolean(stream?.is_muted);
 diff --git a/js/ui/prairieLogin.js b/js/ui/prairieLogin.js
@@ -232,9 +232,9 @@ diff --git a/data/theme/gnome-shell-dark.css b/data/theme/gnome-shell-dark.css
 --- a/data/theme/gnome-shell-dark.css
 +++ b/data/theme/gnome-shell-dark.css
 @@ -5085,6 +5085,37 @@
- .quick-settings.luma-studio-options .luma-options-utility .quick-toggle-icon { box-shadow: none; icon-shadow: none; }
+ .quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle-icon { box-shadow: none; icon-shadow: none; }
  
- .quick-settings.luma-studio-options .luma-options-pages { padding: 0 10px; }
+ .quick-settings.Suno-studio-options .Suno-options-pages { padding: 0 10px; }
 +
 +
 +/* The login card is a single, solid surface. */
@@ -267,15 +267,15 @@ diff --git a/data/theme/gnome-shell-dark.css b/data/theme/gnome-shell-dark.css
 +  border-radius: 10px;
 +}
  
- /* Luma notification-owned rules; safe to compile without the global Shell SCSS. */
- .notification-banner.luma-notification-card {
+ /* Suno notification-owned rules; safe to compile without the global Shell SCSS. */
+ .notification-banner.Suno-notification-card {
 diff --git a/data/theme/gnome-shell-light.css b/data/theme/gnome-shell-light.css
 --- a/data/theme/gnome-shell-light.css
 +++ b/data/theme/gnome-shell-light.css
 @@ -5309,6 +5309,37 @@
- .quick-settings.luma-studio-options .luma-options-utility .quick-toggle-icon { box-shadow: none; icon-shadow: none; }
+ .quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle-icon { box-shadow: none; icon-shadow: none; }
  
- .quick-settings.luma-studio-options .luma-options-pages { padding: 0 10px; }
+ .quick-settings.Suno-studio-options .Suno-options-pages { padding: 0 10px; }
 +
 +
 +/* The login card is a single, solid surface. */
@@ -308,15 +308,15 @@ diff --git a/data/theme/gnome-shell-light.css b/data/theme/gnome-shell-light.css
 +  border-radius: 10px;
 +}
  
- /* Luma notification-owned rules; safe to compile without the global Shell SCSS. */
- .notification-banner.luma-notification-card {
+ /* Suno notification-owned rules; safe to compile without the global Shell SCSS. */
+ .notification-banner.Suno-notification-card {
 diff --git a/data/theme/gnome-shell-high-contrast.css b/data/theme/gnome-shell-high-contrast.css
 --- a/data/theme/gnome-shell-high-contrast.css
 +++ b/data/theme/gnome-shell-high-contrast.css
 @@ -5284,6 +5284,37 @@
- .quick-settings.luma-studio-options .luma-options-utility .quick-toggle-icon { box-shadow: none; icon-shadow: none; }
+ .quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle-icon { box-shadow: none; icon-shadow: none; }
  
- .quick-settings.luma-studio-options .luma-options-pages { padding: 0 10px; }
+ .quick-settings.Suno-studio-options .Suno-options-pages { padding: 0 10px; }
 +
 +
 +/* The login card is a single, solid surface. */
@@ -349,5 +349,5 @@ diff --git a/data/theme/gnome-shell-high-contrast.css b/data/theme/gnome-shell-h
 +  border-radius: 10px;
 +}
  
- /* Luma notification-owned rules; safe to compile without the global Shell SCSS. */
- .notification-banner.luma-notification-card {
+ /* Suno notification-owned rules; safe to compile without the global Shell SCSS. */
+ .notification-banner.Suno-notification-card {

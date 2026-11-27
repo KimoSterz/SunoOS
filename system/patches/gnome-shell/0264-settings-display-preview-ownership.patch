@@ -1,7 +1,7 @@
 Subject: [PATCH] Keep Settings display previews in Settings
 
---- a/js/ui/lumaDisplayArrival.js
-+++ b/js/ui/lumaDisplayArrival.js
+--- a/js/ui/SunoDisplayArrival.js
++++ b/js/ui/SunoDisplayArrival.js
 @@ -24,6 +24,9 @@
      }
  

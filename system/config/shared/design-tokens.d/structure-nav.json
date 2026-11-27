@@ -1,6 +1,6 @@
 {
-  "_doc": "LumaUI v71 navigation and structure (K-NAV): tiers, the title island (lNavTtl, .fisl/.nisl/.misl/.crisl), the phone drawer, the tab bar and the phone page header. Deep-merged into design-tokens.json's lumaui object. Every number is read off luma-next-71.html and desktop/phone.css; px unless the key says otherwise.",
-  "lumaui": {
+  "_doc": "SunoUI v71 navigation and structure (K-NAV): tiers, the title island (lNavTtl, .fisl/.nisl/.misl/.crisl), the phone drawer, the tab bar and the phone page header. Deep-merged into design-tokens.json's SunoUI object. Every number is read off Suno-next-71.html and desktop/phone.css; px unless the key says otherwise.",
+  "SunoUI": {
     "tiers": {
       "_doc": "v71 2026-09-29 mobile layer: phone under 560 (layout.phone_max_width 559), compact 560 to 900, regular over 900.",
       "phone_below": 560,
@@ -107,7 +107,7 @@
       "meta_gap": 7
     },
     "gutter": {
-      "_doc": "Changelog LumaUI rule 17: one side gutter on phones, 16; tile grids 8 (each tile carries 8 of its own).",
+      "_doc": "Changelog SunoUI rule 17: one side gutter on phones, 16; tile grids 8 (each tile carries 8 of its own).",
       "phone": 16,
       "phone_tiles": 8
     },

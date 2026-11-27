@@ -9,14 +9,14 @@
 %global fontdescription %{expand:
 Caveat is a handwriting family drawn by Impallari Type. This package contains
 the variable font with a continuous weight axis from 400 through 700, and it
-is the note body face used by Luma's Sticky Notes.
+is the note body face used by Suno's Sticky Notes.
 
 This package deliberately ships no generic font alias. Applications ask for
 the Caveat family by name; it never becomes the default sans-serif, interface
 or cursive family for the desktop.}
 
 Version: 2.000
-Release: 1.luma.1%{?dist}
+Release: 1.Suno.1%{?dist}
 URL:     https://github.com/googlefonts/caveat
 
 # Bytes are pinned from Google Fonts commit
@@ -43,5 +43,5 @@ install -p -m 0644 %{SOURCE1} .
 %fontfiles
 
 %changelog
-* Fri Sep 11 2026 Project Luma <project-luma@localhost> - 2.000-1.luma.1
+* Fri Sep 11 2026 Project Suno <project-suno@localhost> - 2.000-1.Suno.1
 - Package the pinned Caveat variable family as the Sticky Notes note body face

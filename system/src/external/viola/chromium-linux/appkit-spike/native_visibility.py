@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: GPL-3.0-only
 """Forward native mapping/suspension, not keyboard focus, to page capture."""
 from gi.repository import Gdk, GLib
-from luma_appkit.session_activity import observe_session_activity
+from Suno_appkit.session_activity import observe_session_activity
 
 
 class NativeVisibility:

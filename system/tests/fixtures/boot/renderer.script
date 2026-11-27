@@ -18,7 +18,7 @@ Window.GetX = fun() { if (Window.second_width) return (Window.width - Window.sec
 Window.GetY = fun() { if (Window.second_height) return (Window.height - Window.second_height) / 2; return 0; };
 Window.SetBackgroundTopColor = fun(r,g,b) {};
 Window.SetBackgroundBottomColor = fun(r,g,b) {};
-// Luma's plymouth: the firmware logo is present and starts fully shown.
+// Suno's plymouth: the firmware logo is present and starts fully shown.
 global.firmware_logo = 1;
 Window.firmware_opacity = 0;
 Window.HasFirmwareBackground = fun() { return global.firmware_logo; };
@@ -26,7 +26,7 @@ Window.SetFirmwareBackgroundOpacity = fun(value) { Window.firmware_opacity = val
 global.test_mode = "boot";
 global.capslock = 0;
 Plymouth.GetMode = fun() { return global.test_mode; };
-// Luma's plymouth clock: 50 Hz unless a test stalls it.
+// Suno's plymouth clock: 50 Hz unless a test stalls it.
 global.test_clock = 100.0;
 global.test_step = 0.02;
 Plymouth.GetTime = fun() { global.test_clock += global.test_step; return global.test_clock; };

@@ -7,14 +7,14 @@ variants, never separate components. A menu that is two pixels different
 somewhere is a defect.
 
 The menu is the toolkit's. Every `GtkPopoverMenu` takes the numbers below from
-the libadwaita stylesheet (`patches/libadwaita/0024-luma-menu-contract.patch`,
-with `luma_menu*` colours in both design systems), so an application gets them
+the libadwaita stylesheet (`patches/libadwaita/0024-Suno-menu-contract.patch`,
+with `Suno_menu*` colours in both design systems), so an application gets them
 by using GTK's own menus and never by styling anything. The shell's own popup
-menus take the same numbers through `patches/gnome-shell/0022-luma-context-menu.patch`
+menus take the same numbers through `patches/gnome-shell/0022-Suno-context-menu.patch`
 in the subset of CSS St understands.
 
 The application kit's part is the bridge from its command model
-(`src/luma-platform/appkit/luma_appkit/menus.py`): a `CommandRegistry` becomes
+(`src/Suno-platform/appkit/Suno_appkit/menus.py`): a `CommandRegistry` becomes
 a `GMenuModel` with named sections, shortcuts as accelerators, checked and
 disabled states, nested submenus, and — for the two things the model cannot
 say, a destructive command and a choice that explains itself — a custom row
@@ -22,8 +22,8 @@ inside the toolkit's menu. `command_popover` hands back a `GtkPopoverMenu` to
 parent, point and pop up; `attach_context_menu` wires a widget's right-click
 and Menu key to one; and a widget that already has GTK's menu (a text view, an
 entry) is given an extra menu with `command_menu`, never a second popover over
-the same click. `tests/unit/test_luma_menu_contract.py` holds the bridge to
-this on any display and the drawn numbers where Luma's toolkit is installed.
+the same click. `tests/unit/test_Suno_menu_contract.py` holds the bridge to
+this on any display and the drawn numbers where Suno's toolkit is installed.
 
 ## Container
 
@@ -31,7 +31,7 @@ this on any display and the drawn numbers where Luma's toolkit is installed.
 | --- | --- |
 | Padding | 8px — 6px for a dock tile's menu and a submenu |
 | Radius | 15px |
-| Ring | inset, 1px, `@luma_menu_border` |
+| Ring | inset, 1px, `@Suno_menu_border` |
 | Shadow | `0 4px 12px rgba(12,16,21,.20)`, then `0 24px 56px -18px rgba(12,16,21,.68)` |
 
 Two shadows deliberately: the tight one seats the menu on the surface, the wide
@@ -94,7 +94,7 @@ wrong. A shortcut is shown, never actioned from the menu: the binding lives in
 the command registry.
 
 Submenu chevron and checkmark are 15px at 0.5 opacity. Each shortcut key is
-drawn as the key it names — an 18px-wide cap on `@luma_passive` at a 6px
+drawn as the key it names — an 18px-wide cap on `@Suno_passive` at a 6px
 radius — rather than as loose text.
 
 ## Rows that explain themselves

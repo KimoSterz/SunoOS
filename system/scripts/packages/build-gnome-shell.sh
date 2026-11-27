@@ -10,7 +10,7 @@ repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 # Surface Treatments remains a non-release candidate until ADR-020 and the
 # native graphical gates are accepted. Keep its artifact identity local to
 # this builder rather than advancing the accepted tuple in inputs.env.
-surface_candidate_release=$GNOME_SHELL_LUMA_RELEASE
+surface_candidate_release=$GNOME_SHELL_SUNO_RELEASE
 
 # The packaged verification below is one single-quoted argument. A single
 # quote inside it ends that quoting and mangles the command it sits in, which
@@ -32,17 +32,17 @@ for tool in cpio curl git mktemp podman rpm2cpio sha256sum; do
 done
 
 [ "$(uname -s)" = Linux ] || {
-  printf 'error: build the Luma GNOME Shell RPM on a Fedora Linux builder\n' >&2
+  printf 'error: build the Suno GNOME Shell RPM on a Fedora Linux builder\n' >&2
   exit 1
 }
 
-architecture=${LUMA_TARGET_ARCHITECTURE:-$(uname -m)}
+architecture=${SUNO_TARGET_ARCHITECTURE:-$(uname -m)}
 case "$architecture" in
   x86_64) builder_container=$FEDORA_RPM_BUILD_CONTAINER ;;
   aarch64) builder_container=$FEDORA_RPM_BUILD_CONTAINER_AARCH64 ;;
   *) printf 'error: unsupported Shell architecture: %s\n' "$architecture" >&2; exit 1 ;;
 esac
-export LUMA_RPM_BUILDER_ARCHITECTURE=$architecture
+export SUNO_RPM_BUILDER_ARCHITECTURE=$architecture
 
 cache_dir="$repo_root/build/cache/srpm"
 output_dir="$repo_root/build/packages/gnome-shell"
@@ -77,246 +77,246 @@ rm -f "$srpm_cpio"
 mv "$extract_dir/gnome-shell.spec" "$rpmbuild_dir/SPECS/"
 find "$extract_dir" -maxdepth 1 -type f \
   -exec mv -t "$rpmbuild_dir/SOURCES" {} +
-install -m 0644 "$repo_root/patches/gnome-shell/0001-luma-panel-layout.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0001-Suno-panel-layout.patch" "$rpmbuild_dir/SOURCES/"
 install -m 0644 "$repo_root/patches/gnome-shell/0002-prairie-login-lock.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0003-luma-desktop-first-session.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0003-Suno-desktop-first-session.patch" "$rpmbuild_dir/SOURCES/"
 install -m 0644 "$repo_root/patches/gnome-shell/0004-prairie-login-spinner-row.patch" "$rpmbuild_dir/SOURCES/"
 install -m 0644 "$repo_root/patches/gnome-shell/0005-prairie-application-shortcuts.patch" "$rpmbuild_dir/SOURCES/"
 install -m 0644 "$repo_root/patches/gnome-shell/0006-prairie-auth-entry-and-progress.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0007-luma-handheld-posture.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0008-luma-live-extensions.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0009-luma-handheld-activity-view.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0010-luma-shelf.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0011-luma-presence-login.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0012-luma-login-detail-polish.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0013-luma-login-and-single-dash.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0014-luma-notification-system.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0015-luma-notification-lifecycle-stack.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0016-luma-search-window-view.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0017-luma-search-beam-native-providers.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0018-luma-search-beam-layout-polish.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0019-luma-shelf-polish.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0020-luma-dock-icon-normalisation.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0021-luma-shelf-dock-width-follows-content.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0022-luma-context-menu.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0023-luma-quick-options-final-menu.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0024-luma-box-shadow-support.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0025-luma-beacon-notification-follow-up.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0026-luma-native-file-dock-open.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0027-luma-dash-layout-settings.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0028-luma-dash-attached-shadow-policy.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0029-luma-dash-empty-offscreen-minimum.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0030-luma-date-menu-notification-lifecycle-import.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0031-luma-dash-uniform-island-edges.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0032-luma-dash-material-thickness.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0033-luma-dash-painted-surface-allocation.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0034-luma-dash-unified-padding.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0035-luma-dash-device-pixel-insets.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0036-luma-dash-scaled-tile-margin.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0037-luma-unified-status-cluster.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0038-luma-status-clock-foreground.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0039-luma-status-clock-balanced-inset.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0040-luma-preserve-clock-text-paint.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0041-luma-boot-greeter-ink-fallback.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0042-luma-status-divider-spacing.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0043-luma-compact-menu-width.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0044-luma-dock-tile-geometry.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0045-luma-surface-materials.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0046-luma-surface-simulator-parity.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0047-luma-shelf-settle-and-artwork-background.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0048-luma-shelf-artwork-only.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0049-luma-shelf-direct-paint-damage.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0050-luma-status-island-material-owner.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0051-luma-desktop-edge-gutters.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0052-luma-dock-hover-viewport-padding.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0053-luma-dock-inner-clip.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0054-luma-minimize-dock-target.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0055-luma-managed-window-class.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0056-luma-hover-padding-inside-scroll-clip.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0057-luma-search-outside-dismissal.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0058-luma-unlock-initialization-order.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0059-luma-media-live-island.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0060-luma-grid-layout.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0061-luma-wallpaper-clock-spacing.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0062-luma-dock-menu-clearance.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0063-luma-monitor-introspection.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0064-luma-native-grid.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0065-luma-session-application-lifecycle.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0066-luma-grid-presentation.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0067-luma-grid-windows-and-rows.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0068-luma-grid-single-row-scroll.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0069-luma-shelf-clock-gap.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0070-luma-grid-span-titles-dismiss.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0071-luma-grid-centred-scroll.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0072-luma-grid-stable-order.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0073-luma-desktop-swipe-direction.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0074-luma-live-extension-actions.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0075-luma-shelf-clock-gap-spacing.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0076-luma-sticky-dock-placement.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0077-luma-shelf-clock-gap-ceiling.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0078-luma-sticky-dock-chrome.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0079-luma-sticky-dock-guard.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0080-luma-live-extension-shelf-presentation.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0081-luma-live-island-instrumentation.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0082-luma-unlock-clock-dispose-order.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0083-luma-live-island-event-presentation.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0084-luma-shelf-gap-right-anchor.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0085-luma-unlock-not-gated-on-a-message.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0086-luma-live-island-keeps-its-indicator.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0087-luma-search-result-activation.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0088-luma-shelf-clock-group.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0089-luma-login-typing-reaches-password.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0090-luma-password-not-held-behind-a-message.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0091-luma-capsule-window-belongs-to-its-launcher.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0092-luma-quick-options-rows-fit-their-content.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0093-luma-status-icons-live-on-the-shelf.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0094-luma-menu-rows-grow-and-quick-options-centres.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0095-luma-screenshot-from-search-opens.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0096-luma-shelf-type-scale-and-activation.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0097-luma-login-wallpaper-every-display.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0098-luma-grid-windows-travel.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0100-luma-ask-about-new-display-arrangements.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0101-luma-login-wallpaper-origin-and-clean-screenshots.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0102-luma-every-window-gets-luma-corners.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0103-luma-log-windows-that-flash.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0104-luma-keep-every-dock-icon-rounded.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0105-luma-chromium-windows-get-luma-corners.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0106-luma-sharp-dock-icons-and-masked-windows.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0107-luma-monitor-margins-and-centred-shelf.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0108-luma-grid-sharp-steady-draggable-and-centred-shelf.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0109-luma-shelf-well-and-spec-polish.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0110-luma-shelf-status-slots-dock-and-menus.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0111-luma-grid-full-resolution-previews.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0112-luma-shelf-spec-parity.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0113-luma-shelf-only-with-an-overview.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0114-luma-chrome-stays-off-the-lock-screen.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0115-luma-well-overflow-hover-and-drag.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0116-luma-notification-placement-anatomy-and-beacon.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0117-luma-dock-window-indicators-and-previews.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0118-luma-quiet-shell-log-noise.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0119-luma-audio-output-picker.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0120-luma-dock-menu-background-activity.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0121-luma-cast-quick-settings.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0122-luma-shelf-edge-insets-at-shutdown.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0123-luma-grid-own-wallpaper-drag-and-steady-travel.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0124-luma-grid-uniform-card-height-and-edge-scale.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0125-luma-dock-lists-only-apps-with-windows.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0126-luma-live-island-call-style-and-one-tile-family.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0127-luma-notifications-top-centre-and-anchored-tray.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0128-luma-workspace-overview-replaces-app-grid.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0129-luma-shelf-keeps-work-area-while-locked.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0130-luma-live-island-call-controls-and-tray-count.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0131-luma-shelf-surface-placement.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0132-luma-beam-level-indicator.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0133-luma-silent-volume-change.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0134-luma-well-glyphs-survive-indicator-restarts.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0135-luma-dock-items-settle-when-views-change.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0136-luma-dock-previews-resize-and-context-menu.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0137-luma-dock-menu-title-in-app-case.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0138-luma-system-indicators-in-the-well.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0139-luma-screenshot-shortcuts.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0140-luma-search-files-and-folders.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0141-luma-beam-island-corners-and-slider.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0142-luma-capture-screenshot-tool.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0143-luma-window-motion-to-dock-icon.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0144-luma-capture-thumbnail-drag.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0145-luma-now-playing-island-stays-whole.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0146-luma-seal-administrator-prompt.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0147-luma-dock-unread-badges.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0148-luma-dock-badge-deeper-ember.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0149-luma-screen-sharing-picker.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0150-luma-one-ink-and-shadow-per-appearance.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0151-luma-well-glyphs-and-hover-rhythm.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0152-luma-shell-overlays-follow-the-treatment.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0153-luma-search-kind-labels-and-mail.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0154-luma-screenshots-match-blurred-surfaces.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0155-luma-quiet-filled-controls.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0156-luma-capture-hidden-backgrounds.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0157-luma-frost-and-glass-menus-follow-the-ink.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0158-luma-live-islands-survive-appearance-changes.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0159-luma-detail-header-glyph-in-light.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0160-luma-notifications-live-in-the-shelf.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0161-luma-quick-options-highlights-as-one.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0162-luma-capture-thumbnail-throw-menu-keys.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0163-luma-sticky-dock-only-with-sticky-notes.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0164-luma-quick-options-match-the-design.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0167-luma-movable-shelf-islands.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0170-luma-frost-and-glass-are-one-light-material.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0171-luma-dash-islands-on-every-edge-and-every-setting.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0172-luma-dash-islands-as-arranged.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0007-Suno-handheld-posture.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0008-Suno-live-extensions.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0009-Suno-handheld-activity-view.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0010-Suno-shelf.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0011-Suno-presence-login.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0012-Suno-login-detail-polish.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0013-Suno-login-and-single-dash.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0014-Suno-notification-system.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0015-Suno-notification-lifecycle-stack.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0016-Suno-search-window-view.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0017-Suno-search-beam-native-providers.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0018-Suno-search-beam-layout-polish.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0019-Suno-shelf-polish.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0020-Suno-dock-icon-normalisation.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0021-Suno-shelf-dock-width-follows-content.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0022-Suno-context-menu.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0023-Suno-quick-options-final-menu.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0024-Suno-box-shadow-support.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0025-Suno-beacon-notification-follow-up.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0026-Suno-native-file-dock-open.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0027-Suno-dash-layout-settings.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0028-Suno-dash-attached-shadow-policy.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0029-Suno-dash-empty-offscreen-minimum.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0030-Suno-date-menu-notification-lifecycle-import.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0031-Suno-dash-uniform-island-edges.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0032-Suno-dash-material-thickness.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0033-Suno-dash-painted-surface-allocation.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0034-Suno-dash-unified-padding.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0035-Suno-dash-device-pixel-insets.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0036-Suno-dash-scaled-tile-margin.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0037-Suno-unified-status-cluster.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0038-Suno-status-clock-foreground.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0039-Suno-status-clock-balanced-inset.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0040-Suno-preserve-clock-text-paint.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0041-Suno-boot-greeter-ink-fallback.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0042-Suno-status-divider-spacing.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0043-Suno-compact-menu-width.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0044-Suno-dock-tile-geometry.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0045-Suno-surface-materials.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0046-Suno-surface-simulator-parity.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0047-Suno-shelf-settle-and-artwork-background.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0048-Suno-shelf-artwork-only.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0049-Suno-shelf-direct-paint-damage.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0050-Suno-status-island-material-owner.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0051-Suno-desktop-edge-gutters.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0052-Suno-dock-hover-viewport-padding.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0053-Suno-dock-inner-clip.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0054-Suno-minimize-dock-target.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0055-Suno-managed-window-class.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0056-Suno-hover-padding-inside-scroll-clip.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0057-Suno-search-outside-dismissal.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0058-Suno-unlock-initialization-order.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0059-Suno-media-live-island.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0060-Suno-grid-layout.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0061-Suno-wallpaper-clock-spacing.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0062-Suno-dock-menu-clearance.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0063-Suno-monitor-introspection.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0064-Suno-native-grid.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0065-Suno-session-application-lifecycle.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0066-Suno-grid-presentation.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0067-Suno-grid-windows-and-rows.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0068-Suno-grid-single-row-scroll.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0069-Suno-shelf-clock-gap.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0070-Suno-grid-span-titles-dismiss.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0071-Suno-grid-centred-scroll.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0072-Suno-grid-stable-order.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0073-Suno-desktop-swipe-direction.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0074-Suno-live-extension-actions.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0075-Suno-shelf-clock-gap-spacing.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0076-Suno-sticky-dock-placement.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0077-Suno-shelf-clock-gap-ceiling.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0078-Suno-sticky-dock-chrome.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0079-Suno-sticky-dock-guard.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0080-Suno-live-extension-shelf-presentation.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0081-Suno-live-island-instrumentation.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0082-Suno-unlock-clock-dispose-order.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0083-Suno-live-island-event-presentation.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0084-Suno-shelf-gap-right-anchor.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0085-Suno-unlock-not-gated-on-a-message.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0086-Suno-live-island-keeps-its-indicator.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0087-Suno-search-result-activation.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0088-Suno-shelf-clock-group.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0089-Suno-login-typing-reaches-password.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0090-Suno-password-not-held-behind-a-message.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0091-Suno-capsule-window-belongs-to-its-launcher.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0092-Suno-quick-options-rows-fit-their-content.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0093-Suno-status-icons-live-on-the-shelf.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0094-Suno-menu-rows-grow-and-quick-options-centres.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0095-Suno-screenshot-from-search-opens.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0096-Suno-shelf-type-scale-and-activation.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0097-Suno-login-wallpaper-every-display.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0098-Suno-grid-windows-travel.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0100-Suno-ask-about-new-display-arrangements.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0101-Suno-login-wallpaper-origin-and-clean-screenshots.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0102-Suno-every-window-gets-Suno-corners.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0103-Suno-log-windows-that-flash.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0104-Suno-keep-every-dock-icon-rounded.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0105-Suno-chromium-windows-get-Suno-corners.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0106-Suno-sharp-dock-icons-and-masked-windows.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0107-Suno-monitor-margins-and-centred-shelf.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0108-Suno-grid-sharp-steady-draggable-and-centred-shelf.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0109-Suno-shelf-well-and-spec-polish.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0110-Suno-shelf-status-slots-dock-and-menus.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0111-Suno-grid-full-resolution-previews.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0112-Suno-shelf-spec-parity.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0113-Suno-shelf-only-with-an-overview.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0114-Suno-chrome-stays-off-the-lock-screen.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0115-Suno-well-overflow-hover-and-drag.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0116-Suno-notification-placement-anatomy-and-beacon.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0117-Suno-dock-window-indicators-and-previews.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0118-Suno-quiet-shell-log-noise.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0119-Suno-audio-output-picker.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0120-Suno-dock-menu-background-activity.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0121-Suno-cast-quick-settings.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0122-Suno-shelf-edge-insets-at-shutdown.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0123-Suno-grid-own-wallpaper-drag-and-steady-travel.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0124-Suno-grid-uniform-card-height-and-edge-scale.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0125-Suno-dock-lists-only-apps-with-windows.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0126-Suno-live-island-call-style-and-one-tile-family.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0127-Suno-notifications-top-centre-and-anchored-tray.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0128-Suno-workspace-overview-replaces-app-grid.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0129-Suno-shelf-keeps-work-area-while-locked.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0130-Suno-live-island-call-controls-and-tray-count.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0131-Suno-shelf-surface-placement.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0132-Suno-beam-level-indicator.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0133-Suno-silent-volume-change.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0134-Suno-well-glyphs-survive-indicator-restarts.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0135-Suno-dock-items-settle-when-views-change.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0136-Suno-dock-previews-resize-and-context-menu.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0137-Suno-dock-menu-title-in-app-case.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0138-Suno-system-indicators-in-the-well.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0139-Suno-screenshot-shortcuts.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0140-Suno-search-files-and-folders.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0141-Suno-beam-island-corners-and-slider.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0142-Suno-capture-screenshot-tool.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0143-Suno-window-motion-to-dock-icon.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0144-Suno-capture-thumbnail-drag.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0145-Suno-now-playing-island-stays-whole.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0146-Suno-seal-administrator-prompt.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0147-Suno-dock-unread-badges.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0148-Suno-dock-badge-deeper-ember.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0149-Suno-screen-sharing-picker.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0150-Suno-one-ink-and-shadow-per-appearance.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0151-Suno-well-glyphs-and-hover-rhythm.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0152-Suno-shell-overlays-follow-the-treatment.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0153-Suno-search-kind-labels-and-mail.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0154-Suno-screenshots-match-blurred-surfaces.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0155-Suno-quiet-filled-controls.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0156-Suno-capture-hidden-backgrounds.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0157-Suno-frost-and-glass-menus-follow-the-ink.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0158-Suno-live-islands-survive-appearance-changes.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0159-Suno-detail-header-glyph-in-light.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0160-Suno-notifications-live-in-the-shelf.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0161-Suno-quick-options-highlights-as-one.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0162-Suno-capture-thumbnail-throw-menu-keys.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0163-Suno-sticky-dock-only-with-sticky-notes.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0164-Suno-quick-options-match-the-design.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0167-Suno-movable-shelf-islands.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0170-Suno-frost-and-glass-are-one-light-material.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0171-Suno-dash-islands-on-every-edge-and-every-setting.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0172-Suno-dash-islands-as-arranged.patch" "$rpmbuild_dir/SOURCES/"
 install -m 0644 "$repo_root/patches/gnome-shell/0173-inputMethod-A-key-the-input-method-cannot-answer-for-still-reaches-the-window.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0174-luma-three-fingers-switch-app-four-switch-workspace.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0175-luma-a-tap-is-a-tap.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0180-luma-dock-folders.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0176-luma-dock-folders-glyph.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0181-luma-captures-keep-every-pixel-and-each-shortcut-its-mode.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0182-luma-notification-island-folds-into-its-edge.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0183-luma-no-is-ready-notifications.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0184-luma-glass-surfaces-never-blur-their-own-output.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0185-luma-the-shell-wears-the-glass-veil.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0186-luma-notifications-show-the-app-icon.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0187-luma-search-finds-filer-places.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0188-luma-dock-icons-can-be-rearranged.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0189-luma-studio-shelf-layout.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0190-luma-studio-upcoming-event.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0191-luma-studio-dock-apps.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0192-luma-studio-notification-lip.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0193-luma-studio-quick-options.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0202-luma-studio-card-reflow.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0203-luma-studio-measured-metrics.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0204-luma-studio-output-rows.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0205-luma-lip-allocation-boundary.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0206-luma-power-title-unavailable.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0207-luma-hotspot-native-capability.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0208-luma-studio-native-controls.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0209-luma-light-notification-ink.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0210-luma-studio-native-state-controls.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0194-luma-status-joins-the-centred-row.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0195-luma-two-live-tiles.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0196-luma-smoked-frost.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0197-luma-live-tile-family.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0198-luma-status-row-and-apps-target.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0199-luma-frost-controls-follow-the-smoke.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0213-luma-notification-sheet-suffix.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0221-luma-keep-short-lived-app-notifications.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0224-luma-dock-without-apps-button.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0232-luma-hotspot-radio-tower-glyph.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0233-luma-dock-viewport-fits-monitor.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0234-luma-notification-pill-capped-width.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0235-luma-notification-outside-click.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0227-luma-poster-login.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0228-luma-poster-security-follow-up.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0229-luma-poster-vm-layout-and-avatar.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0230-luma-poster-pam-message-wrap.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0231-luma-poster-pam-avatar-count.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0236-luma-poster-ultrawide-and-monitor-backgrounds.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0237-luma-lock-wake-respects-dnd.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0238-luma-refused-power-action-notice.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0239-luma-notification-sheet-suffix-after-poster.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0240-luma-poster-fingerprint-glyph.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0241-luma-poster-monitor-clip-and-battery-scale.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0242-luma-poster-status-icon-and-input-proportions.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0243-luma-shelf-arrange-precision.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0244-luma-preview-quick-options-interaction.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0245-luma-preview-network-scroll-and-prompts.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0246-luma-window-corners-first-commit.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0247-luma-wayland-visible-launcher-identity.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0248-luma-native-symbolic-and-workarea-layout.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0249-luma-native-raised-shadow.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0250-luma-dash-direct-arrangement.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0251-luma-studio-native-paint-owner.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0252-luma-clock-natural-line-metrics.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0253-luma-status-and-lock-clock-measured-layout.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0254-luma-lock-osd-monitor-placement.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0255-luma-connectivity-picker-touch-and-discovery.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0256-luma-live-budget-scroll-dock-first.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0257-luma-notification-nub-native-touch.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0258-luma-unresponsive-dialog-material.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0259-luma-android-existing-window-activation.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0260-luma-android-native-caller-admission.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0261-luma-clock-fractional-baselines.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0262-luma-visible-tiling-and-bounded-battery-status.patch" "$rpmbuild_dir/SOURCES/"
-install -m 0644 "$repo_root/patches/gnome-shell/0263-luma-quiet-dock-pinning.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0174-Suno-three-fingers-switch-app-four-switch-workspace.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0175-Suno-a-tap-is-a-tap.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0180-Suno-dock-folders.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0176-Suno-dock-folders-glyph.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0181-Suno-captures-keep-every-pixel-and-each-shortcut-its-mode.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0182-Suno-notification-island-folds-into-its-edge.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0183-Suno-no-is-ready-notifications.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0184-Suno-glass-surfaces-never-blur-their-own-output.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0185-Suno-the-shell-wears-the-glass-veil.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0186-Suno-notifications-show-the-app-icon.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0187-Suno-search-finds-filer-places.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0188-Suno-dock-icons-can-be-rearranged.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0189-Suno-studio-shelf-layout.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0190-Suno-studio-upcoming-event.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0191-Suno-studio-dock-apps.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0192-Suno-studio-notification-lip.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0193-Suno-studio-quick-options.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0202-Suno-studio-card-reflow.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0203-Suno-studio-measured-metrics.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0204-Suno-studio-output-rows.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0205-Suno-lip-allocation-boundary.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0206-Suno-power-title-unavailable.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0207-Suno-hotspot-native-capability.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0208-Suno-studio-native-controls.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0209-Suno-light-notification-ink.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0210-Suno-studio-native-state-controls.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0194-Suno-status-joins-the-centred-row.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0195-Suno-two-live-tiles.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0196-Suno-smoked-frost.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0197-Suno-live-tile-family.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0198-Suno-status-row-and-apps-target.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0199-Suno-frost-controls-follow-the-smoke.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0213-Suno-notification-sheet-suffix.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0221-Suno-keep-short-lived-app-notifications.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0224-Suno-dock-without-apps-button.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0232-Suno-hotspot-radio-tower-glyph.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0233-Suno-dock-viewport-fits-monitor.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0234-Suno-notification-pill-capped-width.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0235-Suno-notification-outside-click.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0227-Suno-poster-login.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0228-Suno-poster-security-follow-up.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0229-Suno-poster-vm-layout-and-avatar.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0230-Suno-poster-pam-message-wrap.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0231-Suno-poster-pam-avatar-count.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0236-Suno-poster-ultrawide-and-monitor-backgrounds.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0237-Suno-lock-wake-respects-dnd.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0238-Suno-refused-power-action-notice.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0239-Suno-notification-sheet-suffix-after-poster.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0240-Suno-poster-fingerprint-glyph.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0241-Suno-poster-monitor-clip-and-battery-scale.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0242-Suno-poster-status-icon-and-input-proportions.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0243-Suno-shelf-arrange-precision.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0244-Suno-preview-quick-options-interaction.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0245-Suno-preview-network-scroll-and-prompts.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0246-Suno-window-corners-first-commit.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0247-Suno-wayland-visible-launcher-identity.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0248-Suno-native-symbolic-and-workarea-layout.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0249-Suno-native-raised-shadow.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0250-Suno-dash-direct-arrangement.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0251-Suno-studio-native-paint-owner.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0252-Suno-clock-natural-line-metrics.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0253-Suno-status-and-lock-clock-measured-layout.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0254-Suno-lock-osd-monitor-placement.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0255-Suno-connectivity-picker-touch-and-discovery.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0256-Suno-live-budget-scroll-dock-first.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0257-Suno-notification-nub-native-touch.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0258-Suno-unresponsive-dialog-material.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0259-Suno-android-existing-window-activation.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0260-Suno-android-native-caller-admission.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0261-Suno-clock-fractional-baselines.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0262-Suno-visible-tiling-and-bounded-battery-status.patch" "$rpmbuild_dir/SOURCES/"
+install -m 0644 "$repo_root/patches/gnome-shell/0263-Suno-quiet-dock-pinning.patch" "$rpmbuild_dir/SOURCES/"
 install -m 0644 "$repo_root/patches/gnome-shell/0264-settings-display-preview-ownership.patch" "$rpmbuild_dir/SOURCES/"
 install -m 0644 "$repo_root/patches/gnome-shell/0265-settings-native-keyboard-selection.patch" "$rpmbuild_dir/SOURCES/"
 install -m 0644 "$repo_root/patches/gnome-shell/0266-notifications-dismiss-on-client-click.patch" "$rpmbuild_dir/SOURCES/"
@@ -371,7 +371,7 @@ install -m 0644 "$repo_root/patches/gnome-shell/0327-tv-quick-panel.patch" "$rpm
 install -m 0644 "$repo_root/patches/gnome-shell/0328-tv-app-switcher.patch" "$rpmbuild_dir/SOURCES/"
 install -m 0644 "$repo_root/tools/check-shell-shadows.py" "$rpmbuild_dir/SOURCES/"
 for source in safeAreas.js powerButton.js incomingCall.js presentation.js layout.js grid.js homeEditor.js widgets.js tabletTasks.js handheldOptions.js frameTokens.js switcherDrag.js statusGrid.js fillSlider.js optionsSurface.js optionsSurface.css presentation.css appDrawer.js launcherFolders.js fileFaces.js launcherModel.js launcherFolders.css launcher.svg keycap.js keycapTokens.js keycap.css tv.js tvModel.js tvTokens.js tv-backdrop.jpg tvKeyboard.js tvInput.js tvInputModel.js tvDialogs.js tvDialogsModel.js tvScreenEdges.js tvQuickPanel.js tvQuickPanelModel.js tvAppSwitcher.js tvAppSwitcherModel.js tvPointer.js cellularStatus.js mediaRow.js mediaRowTokens.js soundPage.js soundPageModel.js callerWindow.js; do
-  install -m 0644 "$repo_root/src/luma-shell-presentation/$source" "$rpmbuild_dir/SOURCES/"
+  install -m 0644 "$repo_root/src/Suno-shell-presentation/$source" "$rpmbuild_dir/SOURCES/"
 done
 install -m 0644 "$repo_root/LICENSES/CC-BY-SA-4.0.txt" "$rpmbuild_dir/SOURCES/"
 install -m 0644 "$repo_root/scripts/packages/check-rpm-directory-modes.py" "$rpmbuild_dir/SOURCES/"
@@ -419,17 +419,17 @@ install -m 0644 "$repo_root/tests/gnome-shell/connect-sync-policy.js" "$rpmbuild
 # Keycap icons are derived from Stevia's outlines; refuse stale copies.
 python3 "$repo_root/scripts/developer/generate-keycap-shell-icons.py" --check
 (
-  cd "$repo_root/src/luma-shell-presentation/keycap-icons"
+  cd "$repo_root/src/Suno-shell-presentation/keycap-icons"
   tar --sort=name --owner=0 --group=0 --numeric-owner --mtime=@0 \
-    -cf "$rpmbuild_dir/SOURCES/keycap-icons.tar" LICENSE luma-keycap-*-symbolic.svg
+    -cf "$rpmbuild_dir/SOURCES/keycap-icons.tar" LICENSE Suno-keycap-*-symbolic.svg
 )
 install -m 0644 "$repo_root/tests/gnome-shell/screen-sharing.js" "$rpmbuild_dir/SOURCES/"
 install -m 0644 "$repo_root/tests/search/ranking-gjs.js" "$rpmbuild_dir/SOURCES/search-ranking-gjs.js"
 install -m 0644 "$repo_root/tests/search/ranking-vectors.json" "$rpmbuild_dir/SOURCES/search-ranking-vectors.json"
 install -m 0644 "$repo_root/tests/search/settings-cases.json" "$rpmbuild_dir/SOURCES/search-settings-cases.json"
-install -m 0644 "$repo_root/src/luma-search/settings-pages.json" "$rpmbuild_dir/SOURCES/search-settings-pages.json"
+install -m 0644 "$repo_root/src/Suno-search/settings-pages.json" "$rpmbuild_dir/SOURCES/search-settings-pages.json"
 install -m 0644 "$repo_root/tests/search/places-gjs.js" "$rpmbuild_dir/SOURCES/search-places-gjs.js"
-install -m 0644 "$repo_root/src/luma-search/filer-places.json" "$rpmbuild_dir/SOURCES/search-filer-places.json"
+install -m 0644 "$repo_root/src/Suno-search/filer-places.json" "$rpmbuild_dir/SOURCES/search-filer-places.json"
 install -m 0644 "$repo_root/tests/gnome-shell/session-application-lifecycle.js" "$rpmbuild_dir/SOURCES/"
 install -m 0644 "$repo_root/scripts/packages/verify-shell-unlock.py" "$rpmbuild_dir/SOURCES/"
 install -m 0644 "$repo_root/scripts/packages/verify-shell-unlock.js" "$rpmbuild_dir/SOURCES/"
@@ -454,7 +454,7 @@ install -m 0644 "$figtree_rpm" "$rpmbuild_dir/SOURCES/"
 # declared patch even when its legacy filename differs from its sequence ID.
 while IFS= read -r patch_name; do
   install -m0644 "$repo_root/patches/gnome-shell/$patch_name" "$rpmbuild_dir/SOURCES/"
-done < <(sed -n 's/^+Patch[0-9][0-9]*:[[:space:]]*\([^[:space:]]*\.patch\)$/\1/p' "$repo_root/patches/gnome-shell/0000-luma-fedora-spec.patch")
+done < <(sed -n 's/^+Patch[0-9][0-9]*:[[:space:]]*\([^[:space:]]*\.patch\)$/\1/p' "$repo_root/patches/gnome-shell/0000-Suno-fedora-spec.patch")
 
 (
   cd "$rpmbuild_dir/SPECS"
@@ -462,10 +462,10 @@ done < <(sed -n 's/^+Patch[0-9][0-9]*:[[:space:]]*\([^[:space:]]*\.patch\)$/\1/p
   # apply resolves the patch path from the top of that tree, finds
   # gnome-shell.spec outside the current directory, skips it as excluded and
   # exits 0: the build then produces stock Fedora gnome-shell-50.3-1.fc44
-  # with no Luma patch at all. The ceiling stops Git looking above rpmbuild,
+  # with no Suno patch at all. The ceiling stops Git looking above rpmbuild,
   # and the Release check below fails loudly if the spec was still not patched.
   GIT_CEILING_DIRECTORIES="$rpmbuild_dir" \
-    git apply "$repo_root/patches/gnome-shell/0000-luma-fedora-spec.patch"
+    git apply "$repo_root/patches/gnome-shell/0000-Suno-fedora-spec.patch"
   grep -Fxq "Release:        ${surface_candidate_release}%{?dist}" gnome-shell.spec || {
     printf "error: gnome-shell.spec is not at Release %s after the spec patch\n" \
       "$surface_candidate_release" >&2
@@ -484,10 +484,10 @@ done < <(sed -n 's/^+Patch[0-9][0-9]*:[[:space:]]*\([^[:space:]]*\.patch\)$/\1/p
     # printed and the build ends without packaging, which reads exactly like
     # success to anyone grepping for FAIL. Name the command and the line.
     set -E
-    luma_verify_failed() {
+    Suno_verify_failed() {
       printf "VERIFY FAILED at line %s: %s\n" "$1" "$2" >&2
     }
-    trap "luma_verify_failed \$LINENO \"\$BASH_COMMAND\"" ERR
+    trap "Suno_verify_failed \$LINENO \"\$BASH_COMMAND\"" ERR
     dnf5 -y install rpm-build dnf5-plugins SOURCES/google-figtree-fonts-*.rpm
     dnf5 -y builddep SPECS/gnome-shell.spec
     rpmbuild -ba --noclean --define "_lto_cflags -flto=2" --define "_topdir $PWD" SPECS/gnome-shell.spec
@@ -499,7 +499,7 @@ done < <(sed -n 's/^+Patch[0-9][0-9]*:[[:space:]]*\([^[:space:]]*\.patch\)$/\1/p
       python3 SOURCES/check-rpm-directory-modes.py payload-modes.txt
     done < <(find RPMS -type f -name "*.rpm" -print)
 
-    architecture=${LUMA_RPM_BUILDER_ARCHITECTURE:-$(rpm --eval "%{_arch}")}
+    architecture=${SUNO_RPM_BUILDER_ARCHITECTURE:-$(rpm --eval "%{_arch}")}
     shell_rpm=$(find "RPMS/$architecture" -type f -name "gnome-shell-*.rpm" \
       ! -name "*-debuginfo-*" ! -name "*-debugsource-*" -print -quit)
     verify_dir=$(mktemp -d "$PWD/verify.XXXXXX")
@@ -511,49 +511,49 @@ done < <(sed -n 's/^+Patch[0-9][0-9]*:[[:space:]]*\([^[:space:]]*\.patch\)$/\1/p
       gresource extract usr/share/gnome-shell/gnome-shell-theme.gresource \
         /org/gnome/shell/theme/gnome-shell-light.css >gnome-shell-light.css
       gresource extract usr/lib64/gnome-shell/libshell-18.so \
-        /org/gnome/shell/ui/shelf.js >luma-dash.js
+        /org/gnome/shell/ui/shelf.js >Suno-dash.js
       gresource extract usr/lib64/gnome-shell/libshell-18.so \
         /org/gnome/shell/ui/panel.js >panel-clock-metrics.js
       gjs -m "$OLDPWD/SOURCES/clock-line-metrics.js" panel-clock-metrics.js
       gresource extract usr/lib64/gnome-shell/libshell-18.so \
         /org/gnome/shell/ui/mediaSelection.js >mediaSelection.js
       gjs -m "$OLDPWD/SOURCES/media-selection.js" mediaSelection.js
-      grep -Fq "lumaShelfWorkArea" luma-dash.js
-      grep -Fq "affectsStruts: enabled" luma-dash.js
+      grep -Fq "SunoShelfWorkArea" Suno-dash.js
+      grep -Fq "affectsStruts: enabled" Suno-dash.js
       # Tablet and Mobile borrow Quick Settings without the Shelf backdrop.
-      grep -Fq "this._actionsIsland?.setSurfaceVisible(false, false);" luma-dash.js
+      grep -Fq "this._actionsIsland?.setSurfaceVisible(false, false);" Suno-dash.js
       # The Shelf stops waiting for its first layout outside Desktop.
-      grep -Fq "INITIAL_PRESENTATION_LIMIT_US" luma-dash.js
-      grep -Fq "Arrangement.reservations(this._monitors, reserve ? occupied : new Map(), metrics," luma-dash.js
+      grep -Fq "INITIAL_PRESENTATION_LIMIT_US" Suno-dash.js
+      grep -Fq "Arrangement.reservations(this._monitors, reserve ? occupied : new Map(), metrics," Suno-dash.js
       gresource extract usr/lib64/gnome-shell/libshell-18.so \
         /org/gnome/shell/ui/shelfMetrics.js >shelfMetrics.js
       gresource extract usr/lib64/gnome-shell/libshell-18.so \
-        /org/gnome/shell/ui/lumaSurfaceMaterials.js >lumaSurfaceMaterials.js
-      grep -Fq "export function resolveTreatment" lumaSurfaceMaterials.js
-      grep -Fq "set_background_blur_params" lumaSurfaceMaterials.js
-      grep -Fq "hardwareAccelerated" lumaSurfaceMaterials.js
-      grep -Fq "LUMA_MUTTER_ALLOW_SOFTWARE_BLUR" lumaSurfaceMaterials.js
-      grep -Fq "corner_radius_top_left" lumaSurfaceMaterials.js
+        /org/gnome/shell/ui/SunoSurfaceMaterials.js >SunoSurfaceMaterials.js
+      grep -Fq "export function resolveTreatment" SunoSurfaceMaterials.js
+      grep -Fq "set_background_blur_params" SunoSurfaceMaterials.js
+      grep -Fq "hardwareAccelerated" SunoSurfaceMaterials.js
+      grep -Fq "SUNO_MUTTER_ALLOW_SOFTWARE_BLUR" SunoSurfaceMaterials.js
+      grep -Fq "corner_radius_top_left" SunoSurfaceMaterials.js
       gresource extract usr/share/gnome-shell/gnome-shell-theme.gresource \
-        /org/gnome/shell/theme/luma-shelf.css >luma-shelf.css
+        /org/gnome/shell/theme/Suno-shelf.css >Suno-shelf.css
       # One veil for every Frost and Glass Shell surface, equal to the
       # platform tokens, painted by no other rule, no text shadow (0185).
       python3 "$OLDPWD/SOURCES/check-shell-veil.py" \
         --tokens "$OLDPWD/SOURCES/design-tokens.json" \
-        luma-shelf.css gnome-shell-light.css
+        Suno-shelf.css gnome-shell-light.css
       python3 "$OLDPWD/SOURCES/check-shell-veil.py" --self-test >/dev/null
-      grep -Fq "background-gradient-start: transparent" luma-shelf.css
-      grep -Fq "luma-shelf-artwork" luma-shelf.css
-      grep -Fq "box-shadow: none !important" luma-shelf.css
+      grep -Fq "background-gradient-start: transparent" Suno-shelf.css
+      grep -Fq "Suno-shelf-artwork" Suno-shelf.css
+      grep -Fq "box-shadow: none !important" Suno-shelf.css
       # Filled controls (0155, ADR-043): the sheet, its ledger, and its load.
       gresource extract usr/share/gnome-shell/gnome-shell-theme.gresource \
-        /org/gnome/shell/theme/luma-controls.css >luma-controls.css
-      grep -Fq "luma-surface-light .quick-toggle:checked .quick-toggle-icon" \
-        luma-controls.css
-      grep -Fq "luma-surface-glass .luma-status-routes .button" luma-controls.css
+        /org/gnome/shell/theme/Suno-controls.css >Suno-controls.css
+      grep -Fq "Suno-surface-light .quick-toggle:checked .quick-toggle-icon" \
+        Suno-controls.css
+      grep -Fq "Suno-surface-glass .Suno-status-routes .button" Suno-controls.css
       gresource extract usr/lib64/gnome-shell/libshell-18.so \
-        /org/gnome/shell/ui/lumaControlInk.js >lumaControlInk.js
-      grep -Fq "export const CONTROL_INK" lumaControlInk.js
+        /org/gnome/shell/ui/SunoControlInk.js >SunoControlInk.js
+      grep -Fq "export const CONTROL_INK" SunoControlInk.js
       grep -Fq "CONTROLS_STYLESHEET_URI" usr/lib64/gnome-shell/libshell-18.so
       # Backdrop blurs bound the pass after their copy (0317); St matches
       # theme nodes through its selector index (0318).
@@ -562,15 +562,15 @@ done < <(sed -n 's/^+Patch[0-9][0-9]*:[[:space:]]*\([^[:space:]]*\.patch\)$/\1/p
       grep -aFq "ShellBlurEffect (vertical)" usr/lib64/gnome-shell/libshell-18.so
       # Modal dialogs hold the blurred backgrounds beneath them (0320).
       grep -aFq "shell_blur_effect_hold_backgrounds" usr/lib64/gnome-shell/libshell-18.so
-      grep -aFq "LUMA_ST_NO_SELECTOR_INDEX" usr/lib64/gnome-shell/libst-18.so
+      grep -aFq "SUNO_ST_NO_SELECTOR_INDEX" usr/lib64/gnome-shell/libst-18.so
       grep -Fq "artwork.remove_all_transitions()" \
         usr/lib64/gnome-shell/libshell-18.so
       grep -Fq "Clutter.OffscreenRedirect.NEVER" \
         usr/lib64/gnome-shell/libshell-18.so
-      grep -Fq ".luma-shelf-material.luma-surface-dark" \
-        luma-shelf.css
-      grep -Fq ".luma-shelf-material.luma-surface-glass" \
-        luma-shelf.css
+      grep -Fq ".Suno-shelf-material.Suno-surface-dark" \
+        Suno-shelf.css
+      grep -Fq ".Suno-shelf-material.Suno-surface-glass" \
+        Suno-shelf.css
       # The Quick Options island is one surface: its controls are never
       # marked on their own; the shelf washes the whole island (0161).
       grep -q "controls\.remove_style_pseudo_class(.checked.)" \
@@ -578,9 +578,9 @@ done < <(sed -n 's/^+Patch[0-9][0-9]*:[[:space:]]*\([^[:space:]]*\.patch\)$/\1/p
       grep -Fq "export const DASH_TILE_SIZE = 40;" shelfMetrics.js
       grep -Fq "export const DASH_TILE_GAP = 8;" shelfMetrics.js
       grep -Fq "runningIndicatorGeometry" shelfMetrics.js
-      grep -Fq "shelf-span-full" luma-dash.js
-      grep -Fq "shelf-float-ends" luma-dash.js
-      grep -Fq ".luma-secondary-status-text" gnome-shell-light.css
+      grep -Fq "shelf-span-full" Suno-dash.js
+      grep -Fq "shelf-float-ends" Suno-dash.js
+      grep -Fq ".Suno-secondary-status-text" gnome-shell-light.css
       grep -Fq "color: #6b7280" gnome-shell-light.css
       grep -Fq "font-size: 11.5px" gnome-shell-light.css
       grep -Fq "font-weight: 500" gnome-shell-light.css
@@ -594,24 +594,24 @@ done < <(sed -n 's/^+Patch[0-9][0-9]*:[[:space:]]*\([^[:space:]]*\.patch\)$/\1/p
       grep -Fq -- "-minimum-hpadding: 6px" gnome-shell-light.css
       grep -Fq "rgba(120, 130, 145, 0.14)" gnome-shell-light.css
       grep -Fq "rgba(120, 130, 145, 0.22)" gnome-shell-light.css
-      grep -Fq "#panel.luma-handheld" gnome-shell-light.css
+      grep -Fq "#panel.Suno-handheld" gnome-shell-light.css
       grep -Fq "height: 42px" gnome-shell-light.css
       grep -Fq "min-height: 38px" gnome-shell-light.css
       grep -Fq "icon-size: 17px" gnome-shell-light.css
       grep -Fq "background-color: #ffffff" gnome-shell-light.css
-      grep -Fq ".luma-handheld .keyboard-key:active" gnome-shell-light.css
-      grep -Fxq ".luma-handheld .keyboard-key:active {" gnome-shell-light.css
-      ! grep -Fq "  .luma-handheld .keyboard-key:active" gnome-shell-light.css
+      grep -Fq ".Suno-handheld .keyboard-key:active" gnome-shell-light.css
+      grep -Fxq ".Suno-handheld .keyboard-key:active {" gnome-shell-light.css
+      ! grep -Fq "  .Suno-handheld .keyboard-key:active" gnome-shell-light.css
       # Keycap: the keyboard loads the token-generated sheet, and the icons
       # carry St symbolic classes (derived from Stevia by the builder check).
       gresource extract usr/lib64/gnome-shell/libshell-18.so \
         /org/gnome/shell/ui/keyboard.js >keycap-keyboard.js
-      grep -Fq "lumaPresentation/keycap.js" keycap-keyboard.js
+      grep -Fq "SunoPresentation/keycap.js" keycap-keyboard.js
       grep -Fq "commitPreeditText" keycap-keyboard.js
       gresource extract usr/lib64/gnome-shell/libshell-18.so \
-        /org/gnome/shell/ui/lumaPresentation/keycap.css >keycap.css
-      grep -Fq "#keyboard.luma-keycap-light .keyboard-key" keycap.css
-      grep -Fq "#keyboard.luma-keycap-dark .keyboard-key" keycap.css
+        /org/gnome/shell/ui/SunoPresentation/keycap.css >keycap.css
+      grep -Fq "#keyboard.Suno-keycap-light .keyboard-key" keycap.css
+      grep -Fq "#keyboard.Suno-keycap-dark .keyboard-key" keycap.css
       # Key path (0297): nothing St blurs or rasterises on the CPU per key, no
       # hover restyle of the keyboard box, commits never wait at idle
       # priority, and every tracked touch end is seen.
@@ -641,7 +641,7 @@ done < <(sed -n 's/^+Patch[0-9][0-9]*:[[:space:]]*\([^[:space:]]*\.patch\)$/\1/p
         /org/gnome/shell/ui/layout.js >keycap-layout.js
       ! grep -A3 "name: .keyboardBox.," keycap-layout.js | grep -Fq "track_hover"
       gresource extract usr/share/gnome-shell/gnome-shell-icons.gresource \
-        /org/gnome/shell/icons/scalable/status/luma-keycap-delete-symbolic.svg >keycap-delete.svg
+        /org/gnome/shell/icons/scalable/status/Suno-keycap-delete-symbolic.svg >keycap-delete.svg
       grep -Fq "foreground-stroke" keycap-delete.svg
       grep -Fq "transition-duration: 0ms" gnome-shell-light.css
       grep -Fq "background-color: #4d78b8" gnome-shell-light.css
@@ -668,7 +668,7 @@ done < <(sed -n 's/^+Patch[0-9][0-9]*:[[:space:]]*\([^[:space:]]*\.patch\)$/\1/p
         grep -Fx /org/gnome/shell/theme/prairie-login-avatar.svg >/dev/null
       grep -aFq "const edgeInset = 14 * scaleFactor" \
         usr/lib64/gnome-shell/libshell-18.so
-      grep -aFq "LUMA_DEVICE_CLASS" \
+      grep -aFq "SUNO_DEVICE_CLASS" \
         usr/lib64/gnome-shell/libshell-18.so
       grep -aFq "HANDHELD_CARD_STEP_RATIO" \
         usr/lib64/gnome-shell/libshell-18.so
@@ -719,7 +719,7 @@ done < <(sed -n 's/^+Patch[0-9][0-9]*:[[:space:]]*\([^[:space:]]*\.patch\)$/\1/p
         usr/lib64/gnome-shell/libshell-18.so
       grep -aFq "NotificationLifecycleState" \
         usr/lib64/gnome-shell/libshell-18.so
-      grep -aFq "luma-notification-stack" \
+      grep -aFq "Suno-notification-stack" \
         usr/lib64/gnome-shell/libshell-18.so
       grep -aFq "Everything on this machine, in one place." \
         usr/lib64/gnome-shell/libshell-18.so
@@ -729,12 +729,12 @@ done < <(sed -n 's/^+Patch[0-9][0-9]*:[[:space:]]*\([^[:space:]]*\.patch\)$/\1/p
         usr/lib64/gnome-shell/libshell-18.so
       grep -aFq "this._compact = params.compact" \
         usr/lib64/gnome-shell/libshell-18.so
-      grep -Fq ".luma-search-field" gnome-shell-light.css
-      grep -Fq ".luma-search-result-kind" gnome-shell-light.css
+      grep -Fq ".Suno-search-field" gnome-shell-light.css
+      grep -Fq ".Suno-search-result-kind" gnome-shell-light.css
       grep -Fq "height: 64px" gnome-shell-light.css
       gresource extract usr/lib64/gnome-shell/libshell-18.so \
-        /org/gnome/shell/ui/lumaSearch.js >lumaSearch.js
-      gjs "$OLDPWD/SOURCES/verify-shell-search.js" lumaSearch.js
+        /org/gnome/shell/ui/SunoSearch.js >SunoSearch.js
+      gjs "$OLDPWD/SOURCES/verify-shell-search.js" SunoSearch.js
       for variant in light dark high-contrast; do
         gresource extract usr/share/gnome-shell/gnome-shell-theme.gresource \
           /org/gnome/shell/theme/gnome-shell-$variant.css >gnome-shell-$variant.css
@@ -743,23 +743,23 @@ done < <(sed -n 's/^+Patch[0-9][0-9]*:[[:space:]]*\([^[:space:]]*\.patch\)$/\1/p
       # St paints one shadow per actor (0299): no stylesheet may list more.
       for sheet in optionsSurface.css presentation.css launcherFolders.css keycap.css; do
         gresource extract usr/lib64/gnome-shell/libshell-18.so \
-          /org/gnome/shell/ui/lumaPresentation/$sheet >shadow-$sheet
+          /org/gnome/shell/ui/SunoPresentation/$sheet >shadow-$sheet
       done
       gresource extract usr/share/gnome-shell/gnome-shell-theme.gresource \
-        /org/gnome/shell/theme/luma-shelf.css >shadow-luma-shelf.css
+        /org/gnome/shell/theme/Suno-shelf.css >shadow-Suno-shelf.css
       python3 "$OLDPWD/SOURCES/check-shell-shadows.py" gnome-shell-{light,dark,high-contrast}.css \
-        shadow-luma-shelf.css shadow-optionsSurface.css shadow-presentation.css \
+        shadow-Suno-shelf.css shadow-optionsSurface.css shadow-presentation.css \
         shadow-launcherFolders.css shadow-keycap.css
-      gjs -m lumaSearch.js >lumaSearch-parse.log 2>&1 || true
-      ! grep -Fq "SyntaxError" lumaSearch-parse.log
+      gjs -m SunoSearch.js >SunoSearch-parse.log 2>&1 || true
+      ! grep -Fq "SyntaxError" SunoSearch-parse.log
       grep -aFq "addProvider(provider)" \
         usr/lib64/gnome-shell/libshell-18.so
-      ! grep -Fq "org.projectluma.Search1" lumaSearch.js
-      ! grep -Fq "GioUnix.DesktopAppInfo.new(" lumaSearch.js
-      ! grep -q "get_id: () => .org\.projectluma\.Search\.desktop." lumaSearch.js
+      ! grep -Fq "org.projectSuno.Search1" SunoSearch.js
+      ! grep -Fq "GioUnix.DesktopAppInfo.new(" SunoSearch.js
+      ! grep -q "get_id: () => .org\.projectSuno\.Search\.desktop." SunoSearch.js
       grep -aFq "if (sessionMode.hasOverview)" \
         usr/lib64/gnome-shell/libshell-18.so
-      grep -aFq "Failed to initialize Luma Search" \
+      grep -aFq "Failed to initialize Suno Search" \
         usr/lib64/gnome-shell/libshell-18.so
       grep -aFq "Window View" \
         usr/lib64/gnome-shell/libshell-18.so
@@ -790,12 +790,12 @@ done < <(sed -n 's/^+Patch[0-9][0-9]*:[[:space:]]*\([^[:space:]]*\.patch\)$/\1/p
       grep -aFq "pointerInsidePreviousTarget" \
         usr/lib64/gnome-shell/libshell-18.so
       gresource extract usr/lib64/gnome-shell/libshell-18.so \
-        /org/gnome/shell/ui/lumaDockWindows.js >lumaDockWindows.js
+        /org/gnome/shell/ui/SunoDockWindows.js >SunoDockWindows.js
       grep -Fq "windowMarkKinds" shelfMetrics.js
       grep -aFq "_sizeChangesInProgress" usr/lib64/gnome-shell/libshell-18.so
-      grep -aFq "org.projectluma.AudioDevices1" usr/lib64/gnome-shell/libshell-18.so
-      grep -Fq ".luma-airplay-status" gnome-shell-light.css
-      grep -aFq "org.projectluma.Background1" usr/lib64/gnome-shell/libshell-18.so
+      grep -aFq "org.projectSuno.AudioDevices1" usr/lib64/gnome-shell/libshell-18.so
+      grep -Fq ".Suno-airplay-status" gnome-shell-light.css
+      grep -aFq "org.projectSuno.Background1" usr/lib64/gnome-shell/libshell-18.so
       grep -aFq "_syncWallpaper" usr/lib64/gnome-shell/libshell-18.so
       grep -aFq "gridCardHeight" usr/lib64/gnome-shell/libshell-18.so
       grep -aFq "_renderedScale" usr/lib64/gnome-shell/libshell-18.so
@@ -803,35 +803,35 @@ done < <(sed -n 's/^+Patch[0-9][0-9]*:[[:space:]]*\([^[:space:]]*\.patch\)$/\1/p
         /org/gnome/shell/ui/liveActivity.js >liveActivity.js
       gjs -m "$OLDPWD/SOURCES/live-activity.js" liveActivity.js
       gresource extract usr/lib64/gnome-shell/libshell-18.so \
-        /org/gnome/shell/ui/lumaPopoverPlacement.js >lumaPopoverPlacement.js
-      gjs -m "$OLDPWD/SOURCES/popover-placement.js" lumaPopoverPlacement.js
-      grep -aFq "lumaLiveCallClock" usr/lib64/gnome-shell/libshell-18.so
+        /org/gnome/shell/ui/SunoPopoverPlacement.js >SunoPopoverPlacement.js
+      gjs -m "$OLDPWD/SOURCES/popover-placement.js" SunoPopoverPlacement.js
+      grep -aFq "SunoLiveCallClock" usr/lib64/gnome-shell/libshell-18.so
       grep -aFq "TrayCard" usr/lib64/gnome-shell/libshell-18.so
       grep -aFq "top-center" usr/lib64/gnome-shell/libshell-18.so
-      grep -Fq "luma-live-extension-leading-glyph" luma-shelf.css
+      grep -Fq "Suno-live-extension-leading-glyph" Suno-shelf.css
       grep -aFq "handle_token" usr/lib64/gnome-shell/libshell-18.so
-      grep -Fq "luma-live-extension-action-engaged" luma-shelf.css
-      test -f usr/share/icons/hicolor/scalable/status/luma-headphones-off-symbolic.svg
-      grep -Fq "luma-notification-beacon-count" luma-shelf.css
+      grep -Fq "Suno-live-extension-action-engaged" Suno-shelf.css
+      test -f usr/share/icons/hicolor/scalable/status/Suno-headphones-off-symbolic.svg
+      grep -Fq "Suno-notification-beacon-count" Suno-shelf.css
       grep -aFq "Only apps with a real window join the dock" usr/lib64/gnome-shell/libshell-18.so
       grep -aFq "_keepsWorkArea" usr/lib64/gnome-shell/libshell-18.so
       grep -aFq "class WorkspaceOverview extends St.Widget" usr/lib64/gnome-shell/libshell-18.so
       grep -aFq "toggle-workspace-overview-backward" usr/lib64/gnome-shell/libshell-18.so
-      grep -aFq "Luma has no app grid (ADR-037)" usr/lib64/gnome-shell/libshell-18.so
-      grep -Fq ".luma-workspace-root.light .luma-workspace-overview" gnome-shell-light.css
+      grep -aFq "Suno has no app grid (ADR-037)" usr/lib64/gnome-shell/libshell-18.so
+      grep -Fq ".Suno-workspace-root.light .Suno-workspace-overview" gnome-shell-light.css
       grep -xq "switch-applications=\[.<Alt>Tab.\]" \
         usr/share/glib-2.0/schemas/00_org.gnome.shell.gschema.override
       # One placement rule for shelf surfaces (0131).
       gjs -m "$OLDPWD/SOURCES/shelf-surface-placement.js" shelfMetrics.js
       gresource extract usr/lib64/gnome-shell/libshell-18.so \
-        /org/gnome/shell/ui/lumaShelfSurface.js >lumaShelfSurface.js
-      grep -Fq "export function placeShelfSurface" lumaShelfSurface.js
+        /org/gnome/shell/ui/SunoShelfSurface.js >SunoShelfSurface.js
+      grep -Fq "export function placeShelfSurface" SunoShelfSurface.js
       grep -aFq "_repositionOnShelf" usr/lib64/gnome-shell/libshell-18.so
       ! grep -aFq "gap = Math.max(gap, 8 * scale)" usr/lib64/gnome-shell/libshell-18.so
       grep -aFq "sni.signalHandlerIsConnected" usr/lib64/gnome-shell/libshell-18.so
-      ! grep -Fq -- "-y-offset: 16px" luma-shelf.css
-      ! grep -Fq -- "-boxpointer-gap: 8px" luma-shelf.css
-      grep -Fq ".popup-menu-boxpointer.luma-shelf-surface { -arrow-rise: 0; -arrow-base: 0; }" luma-shelf.css
+      ! grep -Fq -- "-y-offset: 16px" Suno-shelf.css
+      ! grep -Fq -- "-boxpointer-gap: 8px" Suno-shelf.css
+      grep -Fq ".popup-menu-boxpointer.Suno-shelf-surface { -arrow-rise: 0; -arrow-base: 0; }" Suno-shelf.css
       # Beam presents the on-screen display (0132).
       gresource extract usr/lib64/gnome-shell/libshell-18.so \
         /org/gnome/shell/ui/osdWindow.js >osdWindow.js
@@ -844,8 +844,8 @@ done < <(sed -n 's/^+Patch[0-9][0-9]*:[[:space:]]*\([^[:space:]]*\.patch\)$/\1/p
           "/org/gnome/shell/theme/$css" >"$css"
         grep -Fq "width: 236px;" "$css"
         case $css in
-          *dark*) grep -Fq ".luma-beam.luma-surface-dark {" "$css" ;;
-          *) grep -Fq ".luma-beam.luma-surface-glass {" "$css" ;;
+          *dark*) grep -Fq ".Suno-beam.Suno-surface-dark {" "$css" ;;
+          *) grep -Fq ".Suno-beam.Suno-surface-glass {" "$css" ;;
         esac
       done
       # No volume change sound from the slider (0133).
@@ -860,8 +860,8 @@ done < <(sed -n 's/^+Patch[0-9][0-9]*:[[:space:]]*\([^[:space:]]*\.patch\)$/\1/p
       grep -Fq "_settleShown()" dash.js
       grep -Fq "onStopped: () => this.destroy()," dash.js
       # Dock previews resize on close; the dock menu is grouped, titled and has Open at Login (0136).
-      grep -Fq "_resizeTimeline" lumaDockWindows.js
-      grep -Fq "holdSize()" lumaDockWindows.js
+      grep -Fq "_resizeTimeline" SunoDockWindows.js
+      grep -Fq "holdSize()" SunoDockWindows.js
       gresource extract usr/lib64/gnome-shell/libshell-18.so \
         /org/gnome/shell/ui/appMenu.js >appMenu.js
       grep -Fq "GetLoginItem" appMenu.js
@@ -869,12 +869,12 @@ done < <(sed -n 's/^+Patch[0-9][0-9]*:[[:space:]]*\([^[:space:]]*\.patch\)$/\1/p
       grep -Fq "class GroupRule" appMenu.js
       ! grep -Fq "_openWindowsHeader" appMenu.js
       # The dock menu title is the app name in its own case (0137).
-      grep -Fq "luma-menu-title" appMenu.js
+      grep -Fq "Suno-menu-title" appMenu.js
       ! grep -Fq "toLocaleUpperCase" appMenu.js
-      grep -Fq ".popup-menu-item.luma-menu-title > StLabel { font-size: 13px; font-weight: 700; }" luma-shelf.css
+      grep -Fq ".popup-menu-item.Suno-menu-title > StLabel { font-size: 13px; font-weight: 700; }" Suno-shelf.css
       # System indicators join the Well instead of an island of their own (0138).
-      grep -Fq "_adoptRecordingIndicator" luma-dash.js
-      grep -Fq "luma-screen-recorded-indicator" luma-shelf.css
+      grep -Fq "_adoptRecordingIndicator" Suno-dash.js
+      grep -Fq "Suno-screen-recorded-indicator" Suno-shelf.css
       # Ctrl+Shift+1 to 4 are the only screenshot shortcuts (0139), each
       # opening its own mode (0181): the tool on its own has none.
       override=usr/share/glib-2.0/schemas/00_org.gnome.shell.gschema.override
@@ -887,13 +887,13 @@ done < <(sed -n 's/^+Patch[0-9][0-9]*:[[:space:]]*\([^[:space:]]*\.patch\)$/\1/p
       grep -Fq "name=\"show-screenshot-ui-screen\"" usr/share/gnome-control-center/keybindings/50-gnome-shell-screenshots.xml
       ! grep -Fq "name=\"show-screenshot-ui\"" usr/share/gnome-control-center/keybindings/50-gnome-shell-screenshots.xml
       grep -aFq "showScreenshotUIScreen" usr/lib64/gnome-shell/libshell-18.so
-      grep -Fq "ConditionPathExists=!%S/luma/migrations/screenshot-shortcuts-2" \
-        usr/lib/systemd/user/luma-screenshot-shortcuts-migrate.service
+      grep -Fq "ConditionPathExists=!%S/Suno/migrations/screenshot-shortcuts-2" \
+        usr/lib/systemd/user/Suno-screenshot-shortcuts-migrate.service
       ! grep -Fq "name=\"screenshot\"" usr/share/gnome-control-center/keybindings/50-gnome-shell-screenshots.xml
       grep -aFq "showScreenshotUIArea" usr/lib64/gnome-shell/libshell-18.so
-      test -L usr/lib/systemd/user/graphical-session.target.wants/luma-screenshot-shortcuts-migrate.service
-      grep -Fq "ExecStart=/usr/bin/gjs -m /usr/lib64/gnome-shell/luma-screenshot-shortcuts-migrate.js" \
-        usr/lib/systemd/user/luma-screenshot-shortcuts-migrate.service
+      test -L usr/lib/systemd/user/graphical-session.target.wants/Suno-screenshot-shortcuts-migrate.service
+      grep -Fq "ExecStart=/usr/bin/gjs -m /usr/lib64/gnome-shell/Suno-screenshot-shortcuts-migrate.js" \
+        usr/lib/systemd/user/Suno-screenshot-shortcuts-migrate.service
       schemas=$(mktemp -d)
       # cpio stops reading once its member is out, which would end rpm2cpio
       # with SIGPIPE under pipefail: unpack from a file.
@@ -901,47 +901,47 @@ done < <(sed -n 's/^+Patch[0-9][0-9]*:[[:space:]]*\([^[:space:]]*\.patch\)$/\1/p
       cpio -idm --quiet ./usr/share/glib-2.0/schemas/org.gnome.shell.gschema.xml <common.cpio
       cp usr/share/glib-2.0/schemas/org.gnome.shell.gschema.xml "$override" "$schemas/"
       glib-compile-schemas --strict "$schemas"
-      GSETTINGS_SCHEMA_DIR="$schemas" GSETTINGS_BACKEND=memory LUMA_MIGRATE_TEST=1 \
+      GSETTINGS_SCHEMA_DIR="$schemas" GSETTINGS_BACKEND=memory SUNO_MIGRATE_TEST=1 \
         gjs -m "$OLDPWD/SOURCES/screenshot-shortcuts-migrate.js" \
-        "$PWD/usr/lib64/gnome-shell/luma-screenshot-shortcuts-migrate.js" | tee migrate.log
+        "$PWD/usr/lib64/gnome-shell/Suno-screenshot-shortcuts-migrate.js" | tee migrate.log
       grep -Fxq "migration: PASS" migrate.log
       rm -rf "$schemas"
       # Beam finds files and folders and ranks every result in one list (0140).
-      for module in lumaSearchRanking lumaFileIndex lumaFileSearch lumaSettingsSearch lumaFilerPlaces lumaPlacesSearch lumaSearch search; do
+      for module in SunoSearchRanking SunoFileIndex SunoFileSearch SunoSettingsSearch SunoFilerPlaces SunoPlacesSearch SunoSearch search; do
         gresource extract usr/lib64/gnome-shell/libshell-18.so \
           /org/gnome/shell/ui/$module.js >$module.js
       done
-      gjs -m "$OLDPWD/SOURCES/search-ranking-gjs.js" "$PWD/lumaSearchRanking.js" \
+      gjs -m "$OLDPWD/SOURCES/search-ranking-gjs.js" "$PWD/SunoSearchRanking.js" \
         "$OLDPWD/SOURCES/search-ranking-vectors.json" "$OLDPWD/SOURCES/search-settings-cases.json" \
         "$OLDPWD/SOURCES/search-settings-pages.json" | tee search-ranking.log
       grep -Fxq "ranking (gjs): PASS" search-ranking.log
-      grep -Fq "org.freedesktop.LocalSearch3" lumaFileIndex.js
-      grep -Fq "remember-recent-files" lumaFileIndex.js
-      grep -Fq "replacesProviderIds = [FILER_DESKTOP_ID]" lumaFileSearch.js
-      grep -Fq "org.freedesktop.FileManager1" lumaFileSearch.js
-      grep -Fq "new LumaFileSearch.LumaFileSearchProvider()" lumaSearch.js
-      grep -Fq "this._results.revealDefault()" lumaSearch.js
-      grep -Fq "new LumaSettingsSearch.LumaSettingsSearchProvider()" lumaSearch.js
-      grep -Fq "launch-panel" lumaSettingsSearch.js
-      grep -Fq "LUMA_MAX_SETTING_ROWS = 4" search.js
+      grep -Fq "org.freedesktop.LocalSearch3" SunoFileIndex.js
+      grep -Fq "remember-recent-files" SunoFileIndex.js
+      grep -Fq "replacesProviderIds = [FILER_DESKTOP_ID]" SunoFileSearch.js
+      grep -Fq "org.freedesktop.FileManager1" SunoFileSearch.js
+      grep -Fq "new SunoFileSearch.SunoFileSearchProvider()" SunoSearch.js
+      grep -Fq "this._results.revealDefault()" SunoSearch.js
+      grep -Fq "new SunoSettingsSearch.SunoSettingsSearchProvider()" SunoSearch.js
+      grep -Fq "launch-panel" SunoSettingsSearch.js
+      grep -Fq "SUNO_MAX_SETTING_ROWS = 4" search.js
       # Beam finds the Filer places: Applications, apps, trash, bin (0187).
-      gjs -m "$OLDPWD/SOURCES/search-places-gjs.js" "$PWD/lumaFilerPlaces.js" \
+      gjs -m "$OLDPWD/SOURCES/search-places-gjs.js" "$PWD/SunoFilerPlaces.js" \
         "$OLDPWD/SOURCES/search-filer-places.json" | tee search-places.log
       grep -Eq "^filer places: [0-9]+ checks, 0 failures$" search-places.log
-      grep -Fq "new LumaPlacesSearch.LumaPlacesSearchProvider()" lumaSearch.js
-      grep -Fq "launch_uris_async([uri]" lumaPlacesSearch.js
+      grep -Fq "new SunoPlacesSearch.SunoPlacesSearchProvider()" SunoSearch.js
+      grep -Fq "launch_uris_async([uri]" SunoPlacesSearch.js
       grep -Fq "seenLocations" search.js
       grep -Fq "addMergedRow(providerDisplay, display)" search.js
-      grep -Fq ".luma-search-dialog .luma-search-result-reveal" gnome-shell-light.css
+      grep -Fq ".Suno-search-dialog .Suno-search-result-reveal" gnome-shell-light.css
       rpm -qp --requires "$OLDPWD/$shell_rpm" >search-requires.txt
       grep -Fq libtinysparql search-requires.txt
       printf "Packaged Beam files and folders: PASS\n"
       # Beam keeps the kind label whole and ranks mail by its kind (0153).
       grep -Fq "overlay_scrollbars: !this._compact" search.js
       grep -Fq "this._kindLabel.clutter_text.ellipsize = Pango.EllipsizeMode.NONE" search.js
-      grep -Fq "LUMA_MAX_CONTENT_ROWS = 3" search.js
+      grep -Fq "SUNO_MAX_CONTENT_ROWS = 3" search.js
       grep -q "\[.mail., _(.Mail.), \[.Email.\]\]" search.js
-      grep -Fq "CONTENT_KINDS.has(kind)" lumaSearchRanking.js
+      grep -Fq "CONTENT_KINDS.has(kind)" SunoSearchRanking.js
       # Beam takes the island radius and is a slider (0141).
       gresource extract usr/lib64/gnome-shell/libshell-18.so \
         /org/gnome/shell/ui/osdWindow.js >osdWindow-0141.js
@@ -950,34 +950,34 @@ done < <(sed -n 's/^+Patch[0-9][0-9]*:[[:space:]]*\([^[:space:]]*\.patch\)$/\1/p
       grep -Fq "Atk.Role.SLIDER" osdWindow-0141.js
       grep -Fq "_syncHold()" osdWindow-0141.js
       ! grep -Fq "Shell.util_set_hidden_from_pick(this, true)" osdWindow-0141.js
-      ! grep -Fq "border-radius: 24px;" <(sed -n "/Beam: Luma/,/Luma notification-owned/p" gnome-shell-light.css)
+      ! grep -Fq "border-radius: 24px;" <(sed -n "/Beam: Suno/,/Suno notification-owned/p" gnome-shell-light.css)
       printf "Packaged Beam slider: PASS\n"
       # Capture replaces the GNOME screenshot panel (0142).
-      for module in lumaCapture screenshot status/remoteAccess lumaShelfSurface; do
+      for module in SunoCapture screenshot status/remoteAccess SunoShelfSurface; do
         gresource extract usr/lib64/gnome-shell/libshell-18.so \
           /org/gnome/shell/ui/$module.js >"capture-${module##*/}.js"
       done
-      grep -Fq "export const CaptureBar" capture-lumaCapture.js
-      grep -Fq "view.get_framebuffer() === framebuffer" capture-lumaCapture.js
-      grep -Fq "export function placeShelfBar" capture-lumaShelfSurface.js
+      grep -Fq "export const CaptureBar" capture-SunoCapture.js
+      grep -Fq "view.get_framebuffer() === framebuffer" capture-SunoCapture.js
+      grep -Fq "export function placeShelfBar" capture-SunoShelfSurface.js
       grep -Fq "Capture.placeShelfBar({width, height})" capture-screenshot.js
       grep -Fq "this._primaryMonitorBin.hide();" capture-screenshot.js
       grep -Fq "export function showScreenshotUIWindow" capture-screenshot.js
       ! grep -Fq "Meta.KeyBindingFlags.PER_WINDOW" capture-screenshot.js
       grep -Fq "!Main.screenshotUI.hasRecordingPill" capture-remoteAccess.js
       gresource extract usr/share/gnome-shell/gnome-shell-theme.gresource \
-        /org/gnome/shell/theme/luma-capture.css >luma-capture.css
-      grep -Fq ".luma-capture-bar { height: 58px; }" luma-capture.css
+        /org/gnome/shell/theme/Suno-capture.css >Suno-capture.css
+      grep -Fq ".Suno-capture-bar { height: 58px; }" Suno-capture.css
       for glyph in screen window selection record-screen record-selection close chevron check; do
         grep -Fq "strokes outlined for symbolic recolouring" \
-          "usr/share/icons/hicolor/scalable/status/luma-capture-$glyph-symbolic.svg"
+          "usr/share/icons/hicolor/scalable/status/Suno-capture-$glyph-symbolic.svg"
       done
       schemas=$(mktemp -d)
-      cpio -idm --quiet ./usr/share/glib-2.0/schemas/org.project_luma.capture.gschema.xml <common.cpio
-      cp usr/share/glib-2.0/schemas/org.project_luma.capture.gschema.xml "$schemas/"
+      cpio -idm --quiet ./usr/share/glib-2.0/schemas/org.projectSuno.capture.gschema.xml <common.cpio
+      cp usr/share/glib-2.0/schemas/org.projectSuno.capture.gschema.xml "$schemas/"
       glib-compile-schemas --strict "$schemas"
       GSETTINGS_SCHEMA_DIR="$schemas" GSETTINGS_BACKEND=memory \
-        gsettings get org.project_luma.capture save-to >capture-save-to.txt
+        gsettings get org.projectSuno.capture save-to >capture-save-to.txt
       grep -Fxq pictures <(tr -d "\047" <capture-save-to.txt)
       rm -rf "$schemas"
       printf "Packaged Capture: PASS\n"
@@ -989,14 +989,14 @@ done < <(sed -n 's/^+Patch[0-9][0-9]*:[[:space:]]*\([^[:space:]]*\.patch\)$/\1/p
       grep -Fq "showScreenshotUIScreen" capture-screenshot.js
       grep -Fq "this._areaSelector.syncCursor();" capture-screenshot.js
       grep -Fq "if (symbol === Clutter.KEY_Escape) {" capture-screenshot.js
-      grep -Fq "new PopupMenu.PopupMenu(sourceActor, 0.5, St.Side.BOTTOM)" capture-lumaCapture.js
-      grep -Fq "[Mode.SELECTION, Mode.WINDOW, Mode.SCREEN]" capture-lumaCapture.js
-      grep -Fq "[Mode.SCREEN]: \"show-screenshot-ui-screen\"" <(tr "\047" "\042" <capture-lumaCapture.js)
-      ! grep -Fq ".luma-capture-menu {" luma-capture.css
+      grep -Fq "new PopupMenu.PopupMenu(sourceActor, 0.5, St.Side.BOTTOM)" capture-SunoCapture.js
+      grep -Fq "[Mode.SELECTION, Mode.WINDOW, Mode.SCREEN]" capture-SunoCapture.js
+      grep -Fq "[Mode.SCREEN]: \"show-screenshot-ui-screen\"" <(tr "\047" "\042" <capture-SunoCapture.js)
+      ! grep -Fq ".Suno-capture-menu {" Suno-capture.css
       printf "Packaged sharp captures and shortcut modes: PASS\n"
       # The notification island folds into its edge; nothing announces a
       # window asking for attention (0182, 0183).
-      for module in shelf lumaNotificationBeacon windowAttentionHandler lumaDockBadgeModel; do
+      for module in shelf SunoNotificationBeacon windowAttentionHandler SunoDockBadgeModel; do
         gresource extract usr/lib64/gnome-shell/libshell-18.so \
           /org/gnome/shell/ui/$module.js >"quiet-$module.js"
       done
@@ -1004,14 +1004,14 @@ done < <(sed -n 's/^+Patch[0-9][0-9]*:[[:space:]]*\([^[:space:]]*\.patch\)$/\1/p
       grep -Fq "this._beacon.release();" quiet-shelf.js
       grep -Fq "const BEACON_LEAVE_TIME = 150;" quiet-shelf.js
       grep -Fq "const show = this._beacon.visible && !this._beacon.held;" quiet-shelf.js
-      grep -Fq "    release() {" quiet-lumaNotificationBeacon.js
+      grep -Fq "    release() {" quiet-SunoNotificationBeacon.js
       grep -Fq "Main.activateWindow(window);" quiet-windowAttentionHandler.js
       ! grep -Fq "MessageTray" quiet-windowAttentionHandler.js
       ! grep -Fq "addNotification" quiet-windowAttentionHandler.js
-      grep -Fxq "export const URGENT_WINDOWS_DOT = true;" quiet-lumaDockBadgeModel.js
+      grep -Fxq "export const URGENT_WINDOWS_DOT = true;" quiet-SunoDockBadgeModel.js
       printf "Packaged island fold and quiet attention: PASS\n"
       # A glass surface never blurs its own last output (0184).
-      grep -aFq "LUMA_SHELL_BLUR_KEEP_STALE_BACKGROUND" usr/lib64/gnome-shell/libshell-18.so
+      grep -aFq "SUNO_SHELL_BLUR_KEEP_STALE_BACKGROUND" usr/lib64/gnome-shell/libshell-18.so
       grep -aFq "shell_blur_effect_get_background_paint_counts" usr/lib64/gnome-shell/libshell-18.so
       grep -aFq "get_background_paint_counts" usr/lib64/gnome-shell/Shell-18.typelib
       printf "Packaged glass backdrop: PASS\n"
@@ -1021,47 +1021,47 @@ done < <(sed -n 's/^+Patch[0-9][0-9]*:[[:space:]]*\([^[:space:]]*\.patch\)$/\1/p
       gresource extract usr/lib64/gnome-shell/libshell-18.so \
         /org/gnome/shell/ui/notificationDaemon.js >notificationDaemon-0186.js
       gresource extract usr/lib64/gnome-shell/libshell-18.so \
-        /org/gnome/shell/ui/lumaNotificationBeacon.js >lumaNotificationBeacon-0186.js
+        /org/gnome/shell/ui/SunoNotificationBeacon.js >SunoNotificationBeacon-0186.js
       grep -Fq "export function isGlyphIcon(gicon)" messageList-0186.js
       grep -Fq "isGlyphIcon(sourceIcon.gicon)" messageList-0186.js
       ! grep -Fq "sourceIcon.is_symbolic" messageList-0186.js
       # The Studio lip (0192) replaced the beacon tiles: its pill stack leads
       # with the application icon, and only falls back to a glyph.
-      grep -Fq "gicon: source.app?.get_icon() ?? source.icon" lumaNotificationBeacon-0186.js
-      ! grep -Fq "some(name => name.endsWith(" lumaNotificationBeacon-0186.js
+      grep -Fq "gicon: source.app?.get_icon() ?? source.icon" SunoNotificationBeacon-0186.js
+      ! grep -Fq "some(name => name.endsWith(" SunoNotificationBeacon-0186.js
       grep -Fq "export function lookupNotifyingApp(name" notificationDaemon-0186.js
       grep -Fq "return lookupNotifyingApp(appId) ??" notificationDaemon-0186.js
       printf "Packaged notification app icons: PASS\n"
       gresource extract usr/lib64/gnome-shell/libshell-18.so \
-        /org/gnome/shell/ui/lumaAndroidActivation.js >android-existing-activation.js
+        /org/gnome/shell/ui/SunoAndroidActivation.js >android-existing-activation.js
       gjs -m "$OLDPWD/SOURCES/android-existing-activation.js" android-existing-activation.js
       # Windows travel to and from their dock icon (0143).
-      for module in lumaWindowPath lumaWindowMotion windowManager appDisplay; do
+      for module in SunoWindowPath SunoWindowMotion windowManager appDisplay; do
         gresource extract usr/lib64/gnome-shell/libshell-18.so \
           /org/gnome/shell/ui/$module.js >"motion-$module.js"
       done
-      gjs -m "$OLDPWD/SOURCES/window-motion.js" motion-lumaWindowPath.js
-      grep -Fq "export const MINIMIZE_TIME = 320;" motion-lumaWindowMotion.js
-      grep -Fq "!settings.enable_animations" motion-lumaWindowMotion.js
-      grep -Fq "_lumaDockTarget(window)" motion-windowManager.js
+      gjs -m "$OLDPWD/SOURCES/window-motion.js" motion-SunoWindowPath.js
+      grep -Fq "export const MINIMIZE_TIME = 320;" motion-SunoWindowMotion.js
+      grep -Fq "!settings.enable_animations" motion-SunoWindowMotion.js
+      grep -Fq "_SunoDockTarget(window)" motion-windowManager.js
       grep -Fq "getShelfIconGeometry?.(window)" motion-windowManager.js
       grep -Fq "revealWindow(actor)" motion-windowManager.js
-      grep -Fq "LumaWindowMotion.noteLaunch(this.app" motion-appDisplay.js
+      grep -Fq "SunoWindowMotion.noteLaunch(this.app" motion-appDisplay.js
       printf "Packaged window motion: PASS\n"
       # The Capture thumbnail can be dragged into apps (0144).
-      test -x usr/libexec/luma-capture-drag
-      head -1 usr/libexec/luma-capture-drag | grep -Fxq "#!/usr/bin/gjs -m"
-      grep -Fq "Gdk.FileList.new_from_array" usr/libexec/luma-capture-drag
-      grep -Fq "x-special/gnome-copied-files" usr/libexec/luma-capture-drag
+      test -x usr/libexec/Suno-capture-drag
+      head -1 usr/libexec/Suno-capture-drag | grep -Fxq "#!/usr/bin/gjs -m"
+      grep -Fq "Gdk.FileList.new_from_array" usr/libexec/Suno-capture-drag
+      grep -Fq "x-special/gnome-copied-files" usr/libexec/Suno-capture-drag
       gresource extract usr/lib64/gnome-shell/libshell-18.so \
-        /org/gnome/shell/ui/lumaCapture.js >capture-drag-lumaCapture.js
-      grep -Fq "export class ThumbnailDragBridge" capture-drag-lumaCapture.js
-      grep -Fq "Meta.WaylandClient.new_subprocess" capture-drag-lumaCapture.js
-      grep -Fq "window.hide_from_window_list()" capture-drag-lumaCapture.js
-      grep -Fq "Config.LIBEXECDIR, DRAG_HELPER" capture-drag-lumaCapture.js
+        /org/gnome/shell/ui/SunoCapture.js >capture-drag-SunoCapture.js
+      grep -Fq "export class ThumbnailDragBridge" capture-drag-SunoCapture.js
+      grep -Fq "Meta.WaylandClient.new_subprocess" capture-drag-SunoCapture.js
+      grep -Fq "window.hide_from_window_list()" capture-drag-SunoCapture.js
+      grep -Fq "Config.LIBEXECDIR, DRAG_HELPER" capture-drag-SunoCapture.js
       printf "Packaged Capture thumbnail drag: PASS\n"
       # The now-playing island always ends whole, and reports when it did not (0145).
-      for module in shelf shelfMedia lumaMediaIslandGuard; do
+      for module in shelf shelfMedia SunoMediaIslandGuard; do
         gresource extract usr/lib64/gnome-shell/libshell-18.so \
           /org/gnome/shell/ui/$module.js >"island-$module.js"
       done
@@ -1069,92 +1069,92 @@ done < <(sed -n 's/^+Patch[0-9][0-9]*:[[:space:]]*\([^[:space:]]*\.patch\)$/\1/p
       grep -Fq "this._mediaGuard.stopped(motion, finished) ===" island-shelf.js
       ! grep -Fq "onComplete: () => { this._mediaIsland[property] = -1; this._sync(); }" island-shelf.js
       grep -Fq "this._crossfade(this._copy," island-shelfMedia.js
-      grep -Fq "Luma shelf: the now-playing island was left" island-lumaMediaIslandGuard.js
-      grep -Fq "const LOG_INTERVAL_MS = 60 * 1000;" island-lumaMediaIslandGuard.js
+      grep -Fq "Suno shelf: the now-playing island was left" island-SunoMediaIslandGuard.js
+      grep -Fq "const LOG_INTERVAL_MS = 60 * 1000;" island-SunoMediaIslandGuard.js
       printf "Packaged now-playing island guard: PASS\n"
       # Seal replaces the polkit dialog; a password is always offered (0146).
-      for module in lumaSealAuth lumaSealCopy lumaSealGlyph components/polkitAgent; do
+      for module in SunoSealAuth SunoSealCopy SunoSealGlyph components/polkitAgent; do
         gresource extract usr/lib64/gnome-shell/libshell-18.so \
           /org/gnome/shell/ui/$module.js >"seal-${module##*/}.js"
       done
-      gjs -m "$OLDPWD/SOURCES/seal-conversations.js" seal-lumaSealAuth.js seal-lumaSealCopy.js
+      gjs -m "$OLDPWD/SOURCES/seal-conversations.js" seal-SunoSealAuth.js seal-SunoSealCopy.js
       grep -Fq "class AuthenticationDialog extends ModalDialog.ModalDialog" seal-polkitAgent.js
       grep -Fq "new Conversations({" seal-polkitAgent.js
       grep -Fq "nativeAgent.get_request_detail(key)" seal-polkitAgent.js
       grep -Fq "this.setInitialKeyFocus(this._entry);" seal-polkitAgent.js
       grep -Fq "this.complete(dismissed);" seal-polkitAgent.js
       if grep -Fq "prompt-dialog-password-entry" seal-polkitAgent.js; then exit 1; fi
-      grep -Fq "Disconnect before cancelling" seal-lumaSealAuth.js
+      grep -Fq "Disconnect before cancelling" seal-SunoSealAuth.js
       gresource extract usr/share/gnome-shell/gnome-shell-theme.gresource \
-        /org/gnome/shell/theme/luma-seal.css >seal-theme.css
-      grep -Fq ".luma-seal-card.luma-surface-dark" seal-theme.css
+        /org/gnome/shell/theme/Suno-seal.css >seal-theme.css
+      grep -Fq ".Suno-seal-card.Suno-surface-dark" seal-theme.css
       grep -aFq "shell_polkit_authentication_agent_get_request_detail" usr/lib64/gnome-shell/libshell-18.so
       grep -aFq "get_request_detail" usr/lib64/gnome-shell/Shell-18.typelib
       printf "Packaged Seal administrator prompt: PASS\n"
       # Unread badges on dock icons (0147).
-      for module in lumaDockBadgeModel lumaDockBadges dash shelf; do
+      for module in SunoDockBadgeModel SunoDockBadges dash shelf; do
         gresource extract usr/lib64/gnome-shell/libshell-18.so \
           /org/gnome/shell/ui/$module.js >"badges-$module.js"
       done
-      gjs -m "$OLDPWD/SOURCES/dock-badges.js" badges-lumaDockBadgeModel.js
-      grep -Fq "#c24a0b" badges-lumaDockBadgeModel.js
-      grep -Fq "com.canonical.Unity.LauncherEntry" badges-lumaDockBadges.js
-      grep -Fq "publishes.includes(AGENT_BADGE_VALUE)" badges-lumaDockBadges.js
-      grep -Fq "Gio.DBusCallFlags.NO_AUTO_START" badges-lumaDockBadges.js
+      gjs -m "$OLDPWD/SOURCES/dock-badges.js" badges-SunoDockBadgeModel.js
+      grep -Fq "#c24a0b" badges-SunoDockBadgeModel.js
+      grep -Fq "com.canonical.Unity.LauncherEntry" badges-SunoDockBadges.js
+      grep -Fq "publishes.includes(AGENT_BADGE_VALUE)" badges-SunoDockBadges.js
+      grep -Fq "Gio.DBusCallFlags.NO_AUTO_START" badges-SunoDockBadges.js
       grep -Fq "this._badge = this._attachBadge();" badges-dash.js
       grep -Fq "this.child.badgeAccessibleName?.(text) ?? text" badges-dash.js
       grep -Fq "this._dockContent.clip_to_view = clip;" badges-shelf.js
       grep -Fq "this._setDockLength(dockLength, true);" badges-shelf.js
       gresource extract usr/share/gnome-shell/gnome-shell-theme.gresource \
-        /org/gnome/shell/theme/luma-shelf.css >badges-luma-shelf.css
-      grep -Fq ".luma-dock-badge {" badges-luma-shelf.css
-      grep -Fq -- "-luma-badge-ring: #e9ebed;" badges-luma-shelf.css
+        /org/gnome/shell/theme/Suno-shelf.css >badges-Suno-shelf.css
+      grep -Fq ".Suno-dock-badge {" badges-Suno-shelf.css
+      grep -Fq -- "-Suno-badge-ring: #e9ebed;" badges-Suno-shelf.css
       grep -Fq "<key name=\"dock-badges-disabled-apps\" type=\"as\">" usr/share/glib-2.0/schemas/org.gnome.shell.gschema.xml
       printf "Packaged dock badges: PASS\n"
       # The screen sharing picker, the violet edge and the Stop pill (0149).
-      for module in lumaShare lumaCapture lumaDockWindows lumaCast messageTray \
+      for module in SunoShare SunoCapture SunoDockWindows SunoCast messageTray \
                     status/remoteAccess main; do
         gresource extract usr/lib64/gnome-shell/libshell-18.so \
           /org/gnome/shell/ui/$module.js >"share-${module##*/}.js"
       done
       gresource extract usr/share/gnome-shell/gnome-shell-theme.gresource \
-        /org/gnome/shell/theme/luma-share.css >share-theme.css
-      gjs -m "$OLDPWD/SOURCES/screen-sharing.js" share-lumaShare.js share-theme.css
+        /org/gnome/shell/theme/Suno-share.css >share-theme.css
+      gjs -m "$OLDPWD/SOURCES/screen-sharing.js" share-SunoShare.js share-theme.css
       # The reuse the coordinator asked for has to be real in the built
       # bundle, not only in the tree: one renderer, one shelf surface, one
       # reading of the monitors, one notification setting.
-      grep -Fq "export const PreviewThumbnail" share-lumaDockWindows.js
-      grep -Fq "export const ShelfSurface" share-lumaCapture.js
-      grep -Fq "export async function listDisplays" share-lumaCast.js
+      grep -Fq "export const PreviewThumbnail" share-SunoDockWindows.js
+      grep -Fq "export const ShelfSurface" share-SunoCapture.js
+      grep -Fq "export async function listDisplays" share-SunoCast.js
       grep -Fq "peekShare()?.silencing" share-messageTray.js
       grep -Fq "showHeldNotification" share-messageTray.js
       # The Well mark stands down while the pill is up.
       grep -Fq "pillReplacesWellMark" share-remoteAccess.js
       # The picker owns its bus name from startup, not on the first request.
-      grep -Fq "LumaShare.getShare()" share-main.js
+      grep -Fq "SunoShare.getShare()" share-main.js
       printf "Packaged screen sharing picker: PASS\n"
       # One glyph size and one inset hover box along the shelf (0151).
       gresource extract usr/share/gnome-shell/gnome-shell-theme.gresource \
-        /org/gnome/shell/theme/luma-shelf.css >luma-shelf-0151.css
+        /org/gnome/shell/theme/Suno-shelf.css >Suno-shelf-0151.css
       gresource extract usr/lib64/gnome-shell/libshell-18.so \
-        /org/gnome/shell/ui/lumaWell.js >lumaWell-0151.js
-      grep -Fq ".luma-well-glyph { width: 14px; height: 14px; }" luma-shelf-0151.css
-      grep -Fq ".luma-well .luma-well-extension .panel-button StIcon { icon-size: 14px; }" luma-shelf-0151.css
-      grep -Fq ".luma-well-item { min-width: 28px; height: 28px; padding: 0 7px; border-radius: 8px; }" luma-shelf-0151.css
-      grep -Fq ".luma-status-cluster .luma-status-clock { padding: 0 8px; min-width: 56px; }" luma-shelf-0151.css
-      grep -Fq "const GLYPH_SIZE = 14;" lumaWell-0151.js
-      grep -Fq "_normaliseExtensionIcons(container, indicator)" lumaWell-0151.js
-      grep -Fq "luma-well-silhouette" lumaWell-0151.js
-      grep -Fq "An icon drawn as an opaque square has no" lumaWell-0151.js
+        /org/gnome/shell/ui/SunoWell.js >SunoWell-0151.js
+      grep -Fq ".Suno-well-glyph { width: 14px; height: 14px; }" Suno-shelf-0151.css
+      grep -Fq ".Suno-well .Suno-well-extension .panel-button StIcon { icon-size: 14px; }" Suno-shelf-0151.css
+      grep -Fq ".Suno-well-item { min-width: 28px; height: 28px; padding: 0 7px; border-radius: 8px; }" Suno-shelf-0151.css
+      grep -Fq ".Suno-status-cluster .Suno-status-clock { padding: 0 8px; min-width: 56px; }" Suno-shelf-0151.css
+      grep -Fq "const GLYPH_SIZE = 14;" SunoWell-0151.js
+      grep -Fq "_normaliseExtensionIcons(container, indicator)" SunoWell-0151.js
+      grep -Fq "Suno-well-silhouette" SunoWell-0151.js
+      grep -Fq "An icon drawn as an opaque square has no" SunoWell-0151.js
       gresource extract usr/lib64/gnome-shell/libshell-18.so \
-        /org/gnome/shell/ui/lumaFocusVisible.js >lumaFocusVisible-0151.js
-      grep -Fq "remove_style_pseudo_class(\"focus\")" lumaFocusVisible-0151.js || grep -Fq "remove_style_pseudo_class" lumaFocusVisible-0151.js
+        /org/gnome/shell/ui/SunoFocusVisible.js >SunoFocusVisible-0151.js
+      grep -Fq "remove_style_pseudo_class(\"focus\")" SunoFocusVisible-0151.js || grep -Fq "remove_style_pseudo_class" SunoFocusVisible-0151.js
       gresource extract usr/lib64/gnome-shell/libshell-18.so /org/gnome/shell/ui/shelf.js >shelf-0151.js
       grep -Fq "new FocusVisible(this)" shelf-0151.js
-      ! grep -Fq "box-shadow: 0 0 0 2px #91b6d2" luma-shelf-0151.css
-      ! grep -Fq "rgba(127,127,127,0.2)" luma-shelf-0151.css
-      grep -Fq ".luma-shelf-media-island.luma-surface-glass .luma-media-control:active { background-color: rgba(25, 27, 31, 0.09); }" luma-shelf-0151.css
-      grep -Fq ".luma-shelf-material.luma-surface-glass.luma-island-press { box-shadow: inset 0 0 0 200px rgba(25, 27, 31, 0.09); }" luma-shelf-0151.css
+      ! grep -Fq "box-shadow: 0 0 0 2px #91b6d2" Suno-shelf-0151.css
+      ! grep -Fq "rgba(127,127,127,0.2)" Suno-shelf-0151.css
+      grep -Fq ".Suno-shelf-media-island.Suno-surface-glass .Suno-media-control:active { background-color: rgba(25, 27, 31, 0.09); }" Suno-shelf-0151.css
+      grep -Fq ".Suno-shelf-material.Suno-surface-glass.Suno-island-press { box-shadow: inset 0 0 0 200px rgba(25, 27, 31, 0.09); }" Suno-shelf-0151.css
       grep -Fq "this._beaconIsland.setBody(this._beacon);" shelf-0151.js
       grep -Fq "this._liveIsland.setBody(liveIndicator);" shelf-0151.js
       printf "Packaged shelf glyph size and hover rhythm: PASS\n"
@@ -1163,9 +1163,9 @@ done < <(sed -n 's/^+Patch[0-9][0-9]*:[[:space:]]*\([^[:space:]]*\.patch\)$/\1/p
       printf "Packaged screenshot backdrop blur: PASS\n"
       # The countdown disc, its blur and the white of the flash are children of
       # their CaptureHidden, so no recording or screen share carries them (0156).
-      grep -Fq "this._disc.add_effect_with_name(" capture-lumaCapture.js
-      grep -Fq "this._disc.add_child(this._label);" capture-lumaCapture.js
-      grep -Fq "never styled on itself" capture-lumaCapture.js
+      grep -Fq "this._disc.add_effect_with_name(" capture-SunoCapture.js
+      grep -Fq "this._disc.add_child(this._label);" capture-SunoCapture.js
+      grep -Fq "never styled on itself" capture-SunoCapture.js
       printf "Packaged Capture countdown privacy: PASS\n"
       # Frost and glass menus are the light sheet menus on a veil (0157,
       # made light by 0170); the dark sheet carries no frost or glass rule.
@@ -1173,32 +1173,32 @@ done < <(sed -n 's/^+Patch[0-9][0-9]*:[[:space:]]*\([^[:space:]]*\.patch\)$/\1/p
         /org/gnome/shell/theme/gnome-shell-dark.css >menus-0157-dark.css
       gresource extract usr/share/gnome-shell/gnome-shell-theme.gresource \
         /org/gnome/shell/theme/gnome-shell-light.css >menus-0157-light.css
-      grep -A1 -F ".popup-menu.luma-surface-glass .popup-menu-content {" menus-0157-light.css |
+      grep -A1 -F ".popup-menu.Suno-surface-glass .popup-menu-content {" menus-0157-light.css |
         grep -Fq "border-color: rgba(255, 255, 255, 0.62)"
-      ! grep -Fq ".popup-menu.luma-surface-glass .popup-menu-content" menus-0157-dark.css
+      ! grep -Fq ".popup-menu.Suno-surface-glass .popup-menu-content" menus-0157-dark.css
       printf "Packaged frost and glass menus: PASS\n"
       # A plain tray actor takes its ink from its St parent, and one indicator
       # the Well cannot adopt never drops the live islands (0158).
       gresource extract usr/lib64/gnome-shell/libshell-18.so \
-        /org/gnome/shell/ui/lumaWell.js >lumaWell-0158.js
-      grep -Fq "while (styled && !(styled instanceof St.Widget))" lumaWell-0158.js
-      ! grep -Fq "actor.connectObject(\"style-changed\"" lumaWell-0158.js
-      grep -aFq "Luma Well could not adopt" usr/lib64/gnome-shell/libshell-18.so
+        /org/gnome/shell/ui/SunoWell.js >SunoWell-0158.js
+      grep -Fq "while (styled && !(styled instanceof St.Widget))" SunoWell-0158.js
+      ! grep -Fq "actor.connectObject(\"style-changed\"" SunoWell-0158.js
+      grep -aFq "Suno Well could not adopt" usr/lib64/gnome-shell/libshell-18.so
       printf "Packaged live islands across appearance changes: PASS\n"
       # A detail header glyph is the detail ink, on or off, in light (0159).
-      grep -A2 -F ".quick-toggle-menu.luma-quick-detail .header .icon.active {" gnome-shell-light.css |
+      grep -A2 -F ".quick-toggle-menu.Suno-quick-detail .header .icon.active {" gnome-shell-light.css |
         grep -Fq "color: #30343a;"
       printf "Packaged detail header glyph: PASS\n"
       # Notifications live in the shelf: the notifications island ends the
       # row, and ordinary notifications skip the banner (0160).
-      grep -q "_registerIsland(.live., this._liveIsland)" luma-dash.js
-      grep -Fq "lumaShelfIsland-" luma-dash.js
-      grep -Fq "animationRequired: true" luma-dash.js
+      grep -q "_registerIsland(.live., this._liveIsland)" Suno-dash.js
+      grep -Fq "SunoShelfIsland-" Suno-dash.js
+      grep -Fq "animationRequired: true" Suno-dash.js
       gresource extract usr/lib64/gnome-shell/libshell-18.so \
         /org/gnome/shell/ui/messageTray.js >messageTray-0160.js
       grep -Fq "export const NOTIFICATIONS_LIVE_IN_SHELF = true" messageTray-0160.js
       gresource extract usr/lib64/gnome-shell/libshell-18.so \
-        /org/gnome/shell/ui/lumaNotificationBeacon.js >beacon-0160.js
+        /org/gnome/shell/ui/SunoNotificationBeacon.js >beacon-0160.js
       # The Studio lip (0192) replaced the swipe-to-dismiss island and its
       # drawer; the notifications come from the lip.
       grep -Fq "export const NotificationLip = " beacon-0160.js
@@ -1210,37 +1210,37 @@ done < <(sed -n 's/^+Patch[0-9][0-9]*:[[:space:]]*\([^[:space:]]*\.patch\)$/\1/p
       grep -aFq "The system did not allow it." usr/lib64/gnome-shell/libshell-18.so
       grep -aFq "this._refused(" usr/lib64/gnome-shell/libshell-18.so
       # The sign-in fingerprint hint draws a glyph the image provides (0240).
-      grep -aFq "lumaui-fingerprint-symbolic" usr/lib64/gnome-shell/libshell-18.so
+      grep -aFq "SunoUI-fingerprint-symbolic" usr/lib64/gnome-shell/libshell-18.so
       ! grep -aEq "icon_name: .fingerprint-symbolic" usr/lib64/gnome-shell/libshell-18.so
-      grep -Fq "luma-notification-beacon-dismiss" luma-shelf.css
+      grep -Fq "Suno-notification-beacon-dismiss" Suno-shelf.css
       # A sync asked for inside a sync waits; the row is emptied from a copy.
-      grep -Fq "this._syncAgain = true;" luma-dash.js
-      ! grep -Fq "this._group.remove_all_children()" luma-dash.js
+      grep -Fq "this._syncAgain = true;" Suno-dash.js
+      ! grep -Fq "this._group.remove_all_children()" Suno-dash.js
       printf "Packaged notifications island: PASS\n"
       # One wash and one focus ring for the whole Quick Options island (0161).
-      grep -Fq "_syncActionsWash()" luma-dash.js
-      grep -Fq ".luma-status-cluster.luma-shelf-material .luma-well-item:hover," luma-shelf.css
+      grep -Fq "_syncActionsWash()" Suno-dash.js
+      grep -Fq ".Suno-status-cluster.Suno-shelf-material .Suno-well-item:hover," Suno-shelf.css
       gresource extract usr/lib64/gnome-shell/libshell-18.so \
-        /org/gnome/shell/ui/lumaWell.js >lumaWell-0161.js
-      grep -B1 -F "actor.icon_name = symbolic;" lumaWell-0161.js | grep -Fq "actor.gicon = null;"
+        /org/gnome/shell/ui/SunoWell.js >SunoWell-0161.js
+      grep -B1 -F "actor.icon_name = symbolic;" SunoWell-0161.js | grep -Fq "actor.gicon = null;"
       printf "Packaged one-surface Quick Options island: PASS\n"
       # The screenshot thumbnail throws away, has a menu and keys (0162).
       gresource extract usr/lib64/gnome-shell/libshell-18.so \
-        /org/gnome/shell/ui/lumaCapture.js >capture-0162.js
+        /org/gnome/shell/ui/SunoCapture.js >capture-0162.js
       grep -Fq "export function flingVerdict" capture-0162.js
       grep -Fq "export async function restoreFromTrash" capture-0162.js
       grep -Fq "_openWithOther()" capture-0162.js
-      grep -q "event: .menu., serial" usr/libexec/luma-capture-drag
+      grep -q "event: .menu., serial" usr/libexec/Suno-capture-drag
       printf "Packaged capture thumbnail throw and menu: PASS\n"
       # The sticky note stack only while Sticky Notes is installed (0163).
       gresource extract usr/lib64/gnome-shell/libshell-18.so \
-        /org/gnome/shell/ui/lumaStickyDock.js >lumaStickyDock-0163.js
-      grep -Fq "export class StickyDockManager" lumaStickyDock-0163.js
-      grep -Fq "ListActivatableNames" lumaStickyDock-0163.js
+        /org/gnome/shell/ui/SunoStickyDock.js >SunoStickyDock-0163.js
+      grep -Fq "export class StickyDockManager" SunoStickyDock-0163.js
+      grep -Fq "ListActivatableNames" SunoStickyDock-0163.js
       gresource extract usr/lib64/gnome-shell/libshell-18.so \
         /org/gnome/shell/ui/main.js >main-0163.js
-      grep -Fq "new LumaStickyDock.StickyDockManager(" main-0163.js
-      ! grep -Fq "new LumaStickyDock.LumaStickyDock()" main-0163.js
+      grep -Fq "new SunoStickyDock.StickyDockManager(" main-0163.js
+      ! grep -Fq "new SunoStickyDock.SunoStickyDock()" main-0163.js
       printf "Packaged sticky note stack only with Sticky Notes: PASS\n"
       # Quick Options matches the design: two shapes, a hole-free pill grid,
       # one disclosure, sheets in flow and attached, no extra rows (0164).
@@ -1253,29 +1253,29 @@ done < <(sed -n 's/^+Patch[0-9][0-9]*:[[:space:]]*\([^[:space:]]*\.patch\)$/\1/p
       ! grep -Fq "QuickUtilityRow" quickSettings-0164.js
       gresource extract usr/lib64/gnome-shell/libshell-18.so \
         /org/gnome/shell/ui/panel.js >panel-0164.js
-      grep -Fq "luma-quick-pill" panel-0164.js
+      grep -Fq "Suno-quick-pill" panel-0164.js
       ! grep -q "label: _(.Calendar.)" panel-0164.js
       ! grep -Fq "_backgroundApps.quickSettingsItems.forEach" panel-0164.js
-      grep -Fq ".luma-sheet-frame {" gnome-shell-light.css
-      grep -Fq ".luma-quick-options.luma-surface-glass .luma-sheet-frame" luma-shelf.css
-      ! grep -Fq "luma-quick-pill:checked" luma-controls.css
+      grep -Fq ".Suno-sheet-frame {" gnome-shell-light.css
+      grep -Fq ".Suno-quick-options.Suno-surface-glass .Suno-sheet-frame" Suno-shelf.css
+      ! grep -Fq "Suno-quick-pill:checked" Suno-controls.css
       for glyph in down up; do
-        test -f "usr/share/icons/hicolor/scalable/status/luma-disclosure-$glyph-symbolic.svg"
-        ! grep -Fq "stroke=" "usr/share/icons/hicolor/scalable/status/luma-disclosure-$glyph-symbolic.svg"
+        test -f "usr/share/icons/hicolor/scalable/status/Suno-disclosure-$glyph-symbolic.svg"
+        ! grep -Fq "stroke=" "usr/share/icons/hicolor/scalable/status/Suno-disclosure-$glyph-symbolic.svg"
       done
       printf "Packaged Quick Options polish: PASS\n"
       # Glass is the light material (0170); Frost is the approved smoked
-      # glass (0196): it wears the dark classes plus luma-surface-smoke.
+      # glass (0196): it wears the dark classes plus Suno-surface-smoke.
       gresource extract usr/lib64/gnome-shell/libshell-18.so \
-        /org/gnome/shell/ui/lumaSurfaceMaterials.js >lumaSurfaceMaterials-0170.js
-      grep -Fq "export const LIGHT_FAMILY = new Set(" lumaSurfaceMaterials-0170.js
-      grep -Fq "rgba(250,250,251,0.85)" lumaSurfaceMaterials-0170.js
-      ! grep -Fq "rgba(28,33,40,0.86)" lumaSurfaceMaterials-0170.js
-      ! grep -Fq "rgba(14, 19, 26, 0.78)" luma-shelf.css
-      grep -Fq ".popup-menu.luma-surface-glass .popup-menu-content" gnome-shell-light.css
-      grep -Fq "luma-surface-smoke" lumaSurfaceMaterials-0170.js
-      grep -Fq ".luma-shelf-material.luma-surface-smoke," luma-shelf.css
-      grep -Fq "background-gradient-end: rgba(26,26,30,0.84);" luma-shelf.css
+        /org/gnome/shell/ui/SunoSurfaceMaterials.js >SunoSurfaceMaterials-0170.js
+      grep -Fq "export const LIGHT_FAMILY = new Set(" SunoSurfaceMaterials-0170.js
+      grep -Fq "rgba(250,250,251,0.85)" SunoSurfaceMaterials-0170.js
+      ! grep -Fq "rgba(28,33,40,0.86)" SunoSurfaceMaterials-0170.js
+      ! grep -Fq "rgba(14, 19, 26, 0.78)" Suno-shelf.css
+      grep -Fq ".popup-menu.Suno-surface-glass .popup-menu-content" gnome-shell-light.css
+      grep -Fq "Suno-surface-smoke" SunoSurfaceMaterials-0170.js
+      grep -Fq ".Suno-shelf-material.Suno-surface-smoke," Suno-shelf.css
+      grep -Fq "background-gradient-end: rgba(26,26,30,0.84);" Suno-shelf.css
       printf "Packaged frost and glass light material: PASS\n"
       # Movable shelf islands (0167, ADR-044): the model and its tests, the
       # group controller, arrange mode, and surfaces that follow each
@@ -1288,18 +1288,18 @@ done < <(sed -n 's/^+Patch[0-9][0-9]*:[[:space:]]*\([^[:space:]]*\.patch\)$/\1/p
       grep -Fq "export class ShelfArrange" shelfArrange-0167.js
       grep -Fq "Arrange Islands…" shelfArrange-0167.js
       grep -Fq "Atk.Live.POLITE" shelfArrange-0167.js
-      grep -Fq "class ShelfGroupActor extends St.Widget" luma-dash.js
-      grep -Fq "moveFocusedIsland(bindingName, event)" luma-dash.js
-      grep -Fq "shelf-arrangement" luma-dash.js
-      ! grep -Fq "this._group.remove_all_children()" luma-dash.js
-      grep -Fq ".luma-arrange-card" luma-shelf.css
-      for f in panel windowManager lumaShelfSurface; do
+      grep -Fq "class ShelfGroupActor extends St.Widget" Suno-dash.js
+      grep -Fq "moveFocusedIsland(bindingName, event)" Suno-dash.js
+      grep -Fq "shelf-arrangement" Suno-dash.js
+      ! grep -Fq "this._group.remove_all_children()" Suno-dash.js
+      grep -Fq ".Suno-arrange-card" Suno-shelf.css
+      for f in panel windowManager SunoShelfSurface; do
         gresource extract usr/lib64/gnome-shell/libshell-18.so \
           /org/gnome/shell/ui/$f.js >$f-0167.js
       done
       grep -Fq "setStatusParts(order, clockVertical = null)" panel-0167.js
       grep -Fq "Main.shelf?.moveFocusedIsland?.(binding.get_name(), event)" windowManager-0167.js
-      grep -Fq "Main.shelf?.edgeForActor?.(island)" lumaShelfSurface-0167.js
+      grep -Fq "Main.shelf?.edgeForActor?.(island)" SunoShelfSurface-0167.js
       printf "Packaged movable shelf islands: PASS\n"
       # Dock folders (0180): the module surface, named method by method.
       # Not decoration. An edit that removes a method by accident -- a range
@@ -1308,7 +1308,7 @@ done < <(sed -n 's/^+Patch[0-9][0-9]*:[[:space:]]*\([^[:space:]]*\.patch\)$/\1/p
       # dock. A method deliberately removed should leave this list in the
       # same commit.
       gresource extract usr/lib64/gnome-shell/libshell-18.so \
-        /org/gnome/shell/ui/lumaDockFolders.js >lumaDockFolders-0180.js
+        /org/gnome/shell/ui/SunoDockFolders.js >SunoDockFolders-0180.js
       # Anchored on the declaration, leading indent and opening brace and
       # all: a bare name matches a renamed method as a substring and would
       # pass while the method it names is gone.
@@ -1322,14 +1322,14 @@ done < <(sed -n 's/^+Patch[0-9][0-9]*:[[:space:]]*\([^[:space:]]*\.patch\)$/\1/p
         "    _resolveThumbnails() {" "    openItemMenu(actor, item) {" \
         "    openTileMenu(tile) {" "    pin(uri) {" "    unpin(uri) {" \
         "    onKey(event) {"; do
-        grep -Fq "$symbol" lumaDockFolders-0180.js || {
+        grep -Fq "$symbol" SunoDockFolders-0180.js || {
           printf "Dock folders: %s missing from the packaged module\n" "$symbol" >&2
           exit 1
         }
       done
-      ! grep -Fq "global.stage.grab" lumaDockFolders-0180.js
-      ! grep -Fq "view-pin-symbolic" lumaDockFolders-0180.js
-      ! grep -Fq "marriedIn" lumaDockFolders-0180.js
+      ! grep -Fq "global.stage.grab" SunoDockFolders-0180.js
+      ! grep -Fq "view-pin-symbolic" SunoDockFolders-0180.js
+      ! grep -Fq "marriedIn" SunoDockFolders-0180.js
       printf "Packaged dock folders: PASS\n"
       # The input method must not swallow a key (0173). A key it cannot
       # answer for -- a context re-targeted while windows changed, a
@@ -1343,13 +1343,13 @@ done < <(sed -n 's/^+Patch[0-9][0-9]*:[[:space:]]*\([^[:space:]]*\.patch\)$/\1/p
       # ships, the counts are exact, and the workspace gesture reads the
       # setting rather than assuming.
       gresource extract usr/lib64/gnome-shell/libshell-18.so \
-        /org/gnome/shell/ui/lumaAppSwitch.js >lumaAppSwitch-0174.js
-      grep -Fq "export class LumaAppSwitchGesture" lumaAppSwitch-0174.js
-      grep -Fq "fingerCount: 3" lumaAppSwitch-0174.js
-      grep -Fq "exactFingerCount: true" lumaAppSwitch-0174.js
+        /org/gnome/shell/ui/SunoAppSwitch.js >SunoAppSwitch-0174.js
+      grep -Fq "export class SunoAppSwitchGesture" SunoAppSwitch-0174.js
+      grep -Fq "fingerCount: 3" SunoAppSwitch-0174.js
+      grep -Fq "exactFingerCount: true" SunoAppSwitch-0174.js
       gresource extract usr/lib64/gnome-shell/libshell-18.so \
         /org/gnome/shell/ui/workspaceAnimation.js >workspaceAnimation-0174.js
-      grep -Fq "fingerCount: lumaWorkspaceFingers()" workspaceAnimation-0174.js
+      grep -Fq "fingerCount: SunoWorkspaceFingers()" workspaceAnimation-0174.js
       grep -Fq "touchpad-workspace-fingers" workspaceAnimation-0174.js
       gresource extract usr/lib64/gnome-shell/libshell-18.so \
         /org/gnome/shell/ui/swipeTracker.js >swipeTracker-0174.js
@@ -1361,21 +1361,21 @@ done < <(sed -n 's/^+Patch[0-9][0-9]*:[[:space:]]*\([^[:space:]]*\.patch\)$/\1/p
       grep -Fq "_watchPresses()" shelfArrange-0167.js
       grep -Fq "LongPressGesture" shelfArrange-0167.js
       gresource extract usr/lib64/gnome-shell/libshell-18.so \
-        /org/gnome/shell/ui/lumaWell.js >lumaWell-0175.js
-      grep -Fq "rest.length > 0 ||" lumaWell-0175.js
+        /org/gnome/shell/ui/SunoWell.js >SunoWell-0175.js
+      grep -Fq "rest.length > 0 ||" SunoWell-0175.js
       gresource extract usr/lib64/gnome-shell/libshell-18.so \
-        /org/gnome/shell/ui/lumaDockWindows.js >lumaDockWindows-0175.js
-      grep -Fq "if (this.box)" lumaDockWindows-0175.js
+        /org/gnome/shell/ui/SunoDockWindows.js >SunoDockWindows-0175.js
+      grep -Fq "if (this.box)" SunoDockWindows-0175.js
       printf "Packaged tap, tray and marks: PASS\n"
       # Islands on every edge and every Dash setting (0171): shared-edge bands
       # through Mutter, pointer-aimed zones, weighted zones and the edge line,
       # the live slot, free placement, the spanning bar, float ends, the
       # protruding gap, and the Dash menu as a kit menu.
-      grep -Fq "set_monitor_edge_reservation(r.monitor" luma-dash.js
-      grep -Fq "_mergeBands(resolved)" luma-dash.js
-      grep -Fq "_ghostIsland(id)" luma-dash.js
-      grep -Fq "shelf-free-placement" luma-dash.js
-      grep -Fq "margin: this._windowBorderSize() * scale," luma-dash.js
+      grep -Fq "set_monitor_edge_reservation(r.monitor" Suno-dash.js
+      grep -Fq "_mergeBands(resolved)" Suno-dash.js
+      grep -Fq "_ghostIsland(id)" Suno-dash.js
+      grep -Fq "shelf-free-placement" Suno-dash.js
+      grep -Fq "margin: this._windowBorderSize() * scale," Suno-dash.js
       grep -Fq "export function zoneWeight" shelfArrangement.js
       grep -Fq "export function bandSegments" shelfArrangement.js
       grep -Fq "EdgeLine" shelfArrange-0167.js
@@ -1385,88 +1385,88 @@ done < <(sed -n 's/^+Patch[0-9][0-9]*:[[:space:]]*\([^[:space:]]*\.patch\)$/\1/p
       # direct-grab and saved folder-membership owners, not deleted UI copy.
       ! grep -Fq "_buildCard(" shelfArrange-0167.js
       grep -Fq "this._startDrag({ids: Arrangement.familyOf(grab)" shelfArrange-0167.js
-      grep -Fq "shelf._preview?.groups ?? shelf.arrangement" lumaDockFolders-0180.js
-      grep -Fq ".luma-live-ghost-outline" luma-shelf.css
+      grep -Fq "shelf._preview?.groups ?? shelf.arrangement" SunoDockFolders-0180.js
+      grep -Fq ".Suno-live-ghost-outline" Suno-shelf.css
       grep -Fq "_syncShort()" panel-0167.js
       printf "Packaged Dash islands on every edge and every setting: PASS\n"
       # Dash islands as arranged (0172): the live extensions glyph ships,
       # centred groups stay centred, hidden islands hold no edge, one bar
       # per edge without islands, the live family, hysteresis, free
       # placement soft snaps, the divider token.
-      test -f usr/share/icons/hicolor/scalable/status/luma-live-extensions-symbolic.svg
+      test -f usr/share/icons/hicolor/scalable/status/Suno-live-extensions-symbolic.svg
       # A symbolic glyph is filled, never stroked -- the attribute, not the
       # word: a glyph whose description says "two strokes" is not a stroked
       # glyph, and this check, spelled crudely, quietly ended the build here
       # from .121 onwards, so nothing after it ran and nothing was copied.
       ! grep -Eq "stroke[a-z-]*=" \
-        usr/share/icons/hicolor/scalable/status/luma-live-extensions-symbolic.svg
+        usr/share/icons/hicolor/scalable/status/Suno-live-extensions-symbolic.svg
       # The old grid glyph is not the Dash mark any more. One place may name
-      # it: what the system tray placeholder falls back to when the Luma
+      # it: what the system tray placeholder falls back to when the Suno
       # glyph is missing from the icon theme.
-      test "$(grep -c view-grid-symbolic luma-dash.js)" = 1
-      grep -n view-grid-symbolic luma-dash.js | grep -q fallback
-      grep -Fq "_islandPresent(id)" luma-dash.js
-      grep -Fq "_allocateSegments(container" luma-dash.js
-      grep -Fq "LUMA_SHELF_RESERVATIONS" luma-dash.js
-      grep -Fq "setDivider(on, vertical)" luma-dash.js
+      test "$(grep -c view-grid-symbolic Suno-dash.js)" = 1
+      grep -n view-grid-symbolic Suno-dash.js | grep -q fallback
+      grep -Fq "_islandPresent(id)" Suno-dash.js
+      grep -Fq "_allocateSegments(container" Suno-dash.js
+      grep -Fq "SUNO_SHELF_RESERVATIONS" Suno-dash.js
+      grep -Fq "setDivider(on, vertical)" Suno-dash.js
       grep -Fq "export function joinLiveFamily" shelfArrangement.js
       grep -Fq "export const HYSTERESIS" shelfArrangement.js
       grep -Fq "export const SOFT_SNAP" shelfArrangement.js
-      grep -Fq "divider: " lumaSurfaceMaterials-0170.js
+      grep -Fq "divider: " SunoSurfaceMaterials-0170.js
       # Empty edges reserve nothing; notifications come from their island.
-      grep -Fq "keepMargin" luma-dash.js
+      grep -Fq "keepMargin" Suno-dash.js
       grep -Fq "function notificationIslandPlace" messageTray-0160.js
       grep -Fq "export function getNotificationTray()" beacon-0160.js
       # .121: corners, one L without islands, the group handle, placeholders
       # only in arrange mode, the drop index, Tiling Shell never adopted,
       # windows glide with the Dash.
-      grep -Fq "_cornerOwners(monitorIndex, edges)" luma-dash.js
-      grep -Fq "setJoins(joins)" luma-dash.js
-      grep -Fq "NEVER_ADOPTED" luma-dash.js
-      grep -Fq "work-area-changing" luma-dash.js
-      grep -Fq "_growIsland(island, id)" luma-dash.js
-      grep -Fq "reservedMargins(monitorIndex)" luma-dash.js
+      grep -Fq "_cornerOwners(monitorIndex, edges)" Suno-dash.js
+      grep -Fq "setJoins(joins)" Suno-dash.js
+      grep -Fq "NEVER_ADOPTED" Suno-dash.js
+      grep -Fq "work-area-changing" Suno-dash.js
+      grep -Fq "_growIsland(island, id)" Suno-dash.js
+      grep -Fq "reservedMargins(monitorIndex)" Suno-dash.js
       # .121: the system tray is a placeholder while arranging, and a drop
       # beside a group either joins it or becomes its own island.
-      test -f usr/share/icons/hicolor/scalable/status/luma-system-tray-symbolic.svg
+      test -f usr/share/icons/hicolor/scalable/status/Suno-system-tray-symbolic.svg
       ! grep -Eq "stroke[a-z-]*=" \
-        usr/share/icons/hicolor/scalable/status/luma-system-tray-symbolic.svg
-      # .141 (0176): the folders island names luma-dock-folders-symbolic;
+        usr/share/icons/hicolor/scalable/status/Suno-system-tray-symbolic.svg
+      # .141 (0176): the folders island names Suno-dock-folders-symbolic;
       # the glyph ships, filled, and is the one the name asks for.
-      test -f usr/share/icons/hicolor/scalable/status/luma-dock-folders-symbolic.svg
+      test -f usr/share/icons/hicolor/scalable/status/Suno-dock-folders-symbolic.svg
       ! grep -Eq "stroke[a-z-]*=" \
-        usr/share/icons/hicolor/scalable/status/luma-dock-folders-symbolic.svg
-      grep -Fq "luma-dock-folders-symbolic" luma-dash.js
-      grep -Fq "System tray" luma-dash.js
+        usr/share/icons/hicolor/scalable/status/Suno-dock-folders-symbolic.svg
+      grep -Fq "Suno-dock-folders-symbolic" Suno-dash.js
+      grep -Fq "System tray" Suno-dash.js
       grep -Fq "export const SEPARATE_BAND" shelfArrangement.js
       # \x27 is an apostrophe. A literal one cannot appear in this block:
       # it is one single-quoted argument, so a raw apostrophe closes it and
       # the shell concatenates the pieces into a pattern that cannot match.
       grep -Pq "kind: \x27apart\x27" shelfArrangement.js
       grep -Fq "New island before %s" shelfArrange-0167.js
-      grep -Fq "luma-arrange-grip-pill" luma-shelf.css
+      grep -Fq "Suno-arrange-grip-pill" Suno-shelf.css
       gresource extract usr/lib64/gnome-shell/libshell-18.so \
         /org/gnome/shell/ui/windowManager.js >windowManager-0172.js
-      grep -Fq "lumaGlideFrame(window, rect" windowManager-0172.js
+      grep -Fq "SunoGlideFrame(window, rect" windowManager-0172.js
       grep -Fq "(from + to) / 2 < tip" shelfArrangement.js
-      grep -Fq "luma-arrange-grip-pill" shelfArrange-0167.js
+      grep -Fq "Suno-arrange-grip-pill" shelfArrange-0167.js
       printf "Packaged Dash islands as arranged: PASS\n"
       # .147 (0188): a work-area reservation is hidden from pick, so a drag
       # over the dock reaches the Dash instead of an actor that takes no
       # drop; the icon a drag leaves behind is the dimmed source.
-      grep -Fq "Shell.util_set_hidden_from_pick(actor, true);" luma-dash.js
+      grep -Fq "Shell.util_set_hidden_from_pick(actor, true);" Suno-dash.js
       grep -Fq "opacity: this._dragging ? DRAG_SOURCE_OPACITY : 255," dash.js
       printf "Packaged dock reorder: PASS\n"
       # The adopted Dash hides its Apps tile and has no separator for it (0224).
-      grep -Fq "this._dash._showAppsIcon.hide();" luma-dash.js
-      ! grep -Fq "this._dash.showAppsButton?.show();" luma-dash.js
-      ! grep -Fq "this._appsDivider = new St.Widget" luma-dash.js
+      grep -Fq "this._dash._showAppsIcon.hide();" Suno-dash.js
+      ! grep -Fq "this._dash.showAppsButton?.show();" Suno-dash.js
+      ! grep -Fq "this._appsDivider = new St.Widget" Suno-dash.js
       printf "Packaged dock without Apps button: PASS\n"
       # Quick Options names only glyphs the system icon set provides (0232).
       gresource extract usr/lib64/gnome-shell/libshell-18.so \
         /org/gnome/shell/ui/quickSettings.js >quickSettings-0232.js
-      grep -Fq "lumaui-radio-tower-symbolic" quickSettings-0232.js
-      ! grep -Fq "lumaui-hotspot-symbolic" quickSettings-0232.js
+      grep -Fq "SunoUI-radio-tower-symbolic" quickSettings-0232.js
+      ! grep -Fq "SunoUI-hotspot-symbolic" quickSettings-0232.js
     )
   '
 
@@ -1521,5 +1521,5 @@ test "$placed_count" = 3 || {
   find RPMS SRPMS -type f -name '*.rpm' -exec sha256sum {} + | sort >SHA256SUMS
 )
 
-printf 'Luma GNOME Shell packages: %s (%s files for %s)\n' \
+printf 'Suno GNOME Shell packages: %s (%s files for %s)\n' \
   "$output_dir" "$placed_count" "$surface_candidate_release"

@@ -4,13 +4,13 @@
 set -eu
 
 repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
-source_file="$repo_root/src/luma-greeter/luma-greeter.c"
-session_source="$repo_root/src/luma-greeter/luma-greeter-session.c"
-css="$repo_root/src/luma-greeter/luma-greeter.css"
-fake_greetd="$repo_root/tests/mobile/luma-greeter-fake-greetd.py"
+source_file="$repo_root/src/Suno-greeter/Suno-greeter.c"
+session_source="$repo_root/src/Suno-greeter/Suno-greeter-session.c"
+css="$repo_root/src/Suno-greeter/Suno-greeter.css"
+fake_greetd="$repo_root/tests/mobile/Suno-greeter-fake-greetd.py"
 greetd="$repo_root/config/mobile/fp6-physical/overlay/etc/greetd/config.toml"
-spec="$repo_root/packaging/rpm/luma-greeter.spec"
-brightness_rule="$repo_root/packaging/polkit/60-luma-greeter-brightness.rules"
+spec="$repo_root/packaging/rpm/Suno-greeter.spec"
+brightness_rule="$repo_root/packaging/polkit/60-Suno-greeter-brightness.rules"
 
 check() {
   label=$1
@@ -30,7 +30,7 @@ check 'no browser or user service dependency' sh -c \
 check 'greetd PAM IPC is the sole credential path' grep -Fq 'create_session' "$source_file"
 check 'credential worker wipes its bounded buffer' grep -Fq \
   'secure_clear(request->pin, sizeof(request->pin))' "$source_file"
-check 'exact four-digit transient storage' grep -Fq '#define LUMA_PIN_DIGITS 4' "$source_file"
+check 'exact four-digit transient storage' grep -Fq '#define SUNO_PIN_DIGITS 4' "$source_file"
 check 'actual account name source' grep -Fq 'getpwnam(username)' "$source_file"
 check 'actual AccountsService avatar source' grep -Fq \
   '/var/lib/AccountsService/icons/%s' "$source_file"
@@ -62,17 +62,17 @@ check 'no password field or software keyboard' sh -c \
 check 'Figtree and reference keypad geometry' sh -c \
   'grep -Fq "font-family: \"Figtree\"" "$1" && grep -Fq "min-width: 288px" "$1" && grep -Fq "min-height: 64px" "$1"' _ "$css"
 check 'production handheld boots into its native locked Phosh session' sh -c \
-  'grep -Fq "[initial_session]" "$1" && grep -Fq "command = \"/usr/local/bin/luma-phosh-session\"" "$1" && grep -Fq "user = \"luma\"" "$1"' _ "$greetd"
+  'grep -Fq "[initial_session]" "$1" && grep -Fq "command = \"/usr/local/bin/Suno-phosh-session\"" "$1" && grep -Fq "user = \"Suno\"" "$1"' _ "$greetd"
 check 'production greetd retains Presence only as recovery' grep -Fq \
-  'command = "/usr/libexec/luma-presence-compositor"' "$greetd"
+  'command = "/usr/libexec/Suno-presence-compositor"' "$greetd"
 check 'successful authentication paints a wallpaper-only handoff frame' sh -c \
   'grep -Fq "begin_graphical_handoff" "$1" && grep -Fq "_exit(EXIT_SUCCESS)" "$1"' _ "$source_file"
 check 'physical FP6 recovery greeter retains one compositor across authentication' sh -c \
-  'grep -Fq "persistent_compositor = true" "$1" && grep -Fq "/usr/libexec/luma-presence-compositor" "$1"' _ "$greetd"
+  'grep -Fq "persistent_compositor = true" "$1" && grep -Fq "/usr/libexec/Suno-presence-compositor" "$1"' _ "$greetd"
 check 'native compositor initializer uses no shell or user setting' sh -c \
-  'grep -Fq "execl(WLR_RANDR" "$1" && grep -Fq "execl(LUMA_GREETER" "$1" && ! grep -Eq "system\\(|/bin/(ba)?sh|gsettings|dconf" "$1"' _ "$session_source"
+  'grep -Fq "execl(WLR_RANDR" "$1" && grep -Fq "execl(SUNO_GREETER" "$1" && ! grep -Eq "system\\(|/bin/(ba)?sh|gsettings|dconf" "$1"' _ "$session_source"
 check 'pre-session Presence blanks after bounded inactivity' sh -c \
-  'grep -Fq "LUMA_IDLE_SECONDS 30" "$1" && grep -Fq "blank_idle_display" "$1" && grep -Fq "activity_event" "$1"' _ "$source_file"
+  'grep -Fq "SUNO_IDLE_SECONDS 30" "$1" && grep -Fq "blank_idle_display" "$1" && grep -Fq "activity_event" "$1"' _ "$source_file"
 check 'first contact only wakes the idle display' grep -Fq \
   'The first contact wakes the display' "$source_file"
 check 'greetd receives only the logind brightness action' sh -c \
@@ -80,4 +80,4 @@ check 'greetd receives only the logind brightness action' sh -c \
 check 'behavioral peer records only message-type events' grep -Fq \
   'args.result.write_text("\n".join(events)' "$fake_greetd"
 check 'behavioral peer validates the authenticated session command' grep -Fq \
-  '/opt/luma/phosh/bin/phosh-session' "$fake_greetd"
+  '/opt/Suno/phosh/bin/phosh-session' "$fake_greetd"

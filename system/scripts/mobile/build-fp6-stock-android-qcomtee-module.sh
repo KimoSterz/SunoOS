@@ -14,9 +14,9 @@ source_archive=$repo_root/build/mobile/fp6-physical/fp6-camera-source-archives/l
 symvers=$repo_root/build/mobile/fp6-physical/fp6-camera-source-archives/Module.symvers
 runtime_config=$repo_root/build/mobile/fp6-physical/fp6-stock-android-container-kernel-compat1/bundle/config
 output_dir=${1:?usage: build-fp6-stock-android-qcomtee-module.sh OUTPUT_DIR}
-kernel_release=7.1.2-luma-fp-ims1
-localversion=-luma-fp-ims1
-jobs=${LUMA_KERNEL_BUILD_JOBS:-8}
+kernel_release=7.1.2-Suno-fp-ims1
+localversion=-Suno-fp-ims1
+jobs=${SUNO_KERNEL_BUILD_JOBS:-8}
 
 expected_source_archive_sha=6043a062d595e1b4913512c3414387d9a016c4690d8832720651df07276dc78b
 expected_symvers_sha=0136080d85bcb215aad56324ed61259c1581400d0159489c664b75b476de04e0
@@ -25,8 +25,8 @@ expected_config_sha=7eb084e3a201a11e69676aad4c93b9588e72f15dc9ef86d5d5c56ee13fc0
 die() { printf 'error: %s\n' "$*" >&2; exit 1; }
 hash() { sha256sum "$1" | cut -d ' ' -f 1; }
 
-case $jobs in ''|*[!0-9]*) die 'LUMA_KERNEL_BUILD_JOBS must be numeric' ;; esac
-[[ $jobs -ge 1 ]] || die 'LUMA_KERNEL_BUILD_JOBS must be positive'
+case $jobs in ''|*[!0-9]*) die 'SUNO_KERNEL_BUILD_JOBS must be numeric' ;; esac
+[[ $jobs -ge 1 ]] || die 'SUNO_KERNEL_BUILD_JOBS must be positive'
 [[ $(id -u) -eq 0 ]] || die 'run as root in the isolated builder'
 [[ $(uname -s) == Linux && $(uname -m) == aarch64 ]] ||
   die 'builder must be Linux/aarch64'
@@ -38,7 +38,7 @@ clang --version | head -n 1 | grep -Fx 'Ubuntu clang version 21.1.8 (6ubuntu1)' 
 [[ $(hash "$symvers") == "$expected_symvers_sha" ]] || die 'symbol table differs'
 [[ $(hash "$runtime_config") == "$expected_config_sha" ]] || die 'runtime config differs'
 
-work_dir=$(mktemp -d /tmp/luma-fp6-stock-qcomtee.XXXXXX)
+work_dir=$(mktemp -d /tmp/Suno-fp6-stock-qcomtee.XXXXXX)
 cleanup() { find "$work_dir" -depth -delete 2>/dev/null || true; }
 trap cleanup EXIT INT TERM
 
@@ -91,7 +91,7 @@ install -m 0644 "$tree/drivers/tee/qcomtee/qcomtee.ko" "$output_dir/qcomtee.ko"
 [[ -z $(modinfo -F signer "$output_dir/qcomtee.ko") ]] || die 'module unexpectedly signed'
 
 {
-  printf 'LUMA_FP6_STOCK_ANDROID_QCOMTEE_BUILD_VERSION=1\n'
+  printf 'SUNO_FP6_STOCK_ANDROID_QCOMTEE_BUILD_VERSION=1\n'
   printf 'KERNEL_RELEASE=%s\n' "$kernel_release"
   printf 'RUNTIME_CONFIG_SHA256=%s\n' "$expected_config_sha"
   printf 'SOURCE_ARCHIVE_SHA256=%s\n' "$expected_source_archive_sha"

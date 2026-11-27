@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
 
-# Install the exact Luma-configured FP6 speaker fixes with recoverable backups.
+# Install the exact Suno-configured FP6 speaker fixes with recoverable backups.
 # This script does not load modules, restart services, reboot, or access the
 # bootloader/partitions. A normal reboot is required before they take effect.
 
@@ -9,7 +9,7 @@ set -euo pipefail
 umask 022
 
 bundle=${1:?usage: install-fp6-audio-modules.sh BUNDLE_DIR}
-backup_dir=/var/lib/luma/fp6-audio-lab/original-audio-modules-7.1.2
+backup_dir=/var/lib/Suno/fp6-audio-lab/original-audio-modules-7.1.2
 kernel_release=7.1.2
 
 [ "$(id -u)" -eq 0 ] || { printf 'error: run as root\n' >&2; exit 1; }

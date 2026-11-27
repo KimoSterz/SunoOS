@@ -31,18 +31,18 @@ diff --git a/src/resources/style.css b/src/resources/style.css
 index 7573c83..c2d1e22 100644
 --- a/src/resources/style.css
 +++ b/src/resources/style.css
-@@ -1083,6 +1083,11 @@ window.luma-files-window .nautilus-list-view columnview > listview > row {
+@@ -1083,6 +1083,11 @@ window.Suno-files-window .nautilus-list-view columnview > listview > row {
    border-radius: 10px;
  }
  
 +/* Search results carry a name, path and optional excerpt in one row. */
-+window.luma-files-window .nautilus-list-view.search-results columnview > listview > row {
-+  min-height: var(--lumaui-sidebar-row-height);
++window.Suno-files-window .nautilus-list-view.search-results columnview > listview > row {
++  min-height: var(--SunoUI-sidebar-row-height);
 +}
 +
- /* Hover and focus render identically, as everywhere else in Luma. An accent
+ /* Hover and focus render identically, as everywhere else in Suno. An accent
   * ring on top of the fill is a second visual language for one state. */
- window.luma-files-window .nautilus-column-view listview > row:focus-visible,
+ window.Suno-files-window .nautilus-column-view listview > row:focus-visible,
 -- 
 2.55.0
 

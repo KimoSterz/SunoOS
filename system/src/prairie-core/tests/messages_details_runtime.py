@@ -7,7 +7,7 @@ from unittest.mock import patch
 import gi
 gi.require_version('Gtk','4.0');gi.require_version('Adw','1')
 from gi.repository import Adw,Gio,GLib,Gtk
-from luma_appkit import install_appkit,install_lumaui
+from Suno_appkit import install_appkit,install_SunoUI
 from prairie_apps.messages import install_messages_theme
 from prairie_apps.messages_port import FixtureMessagesWindow
 
@@ -27,15 +27,15 @@ def children(widget):
 
 
 def main():
-    app=Adw.Application(application_id='org.projectluma.Messages.DetailReview',flags=Gio.ApplicationFlags.NON_UNIQUE)
-    assert app.register(None);install_appkit();install_lumaui();install_messages_theme()
+    app=Adw.Application(application_id='org.projectSuno.Messages.DetailReview',flags=Gio.ApplicationFlags.NON_UNIQUE)
+    assert app.register(None);install_appkit();install_SunoUI();install_messages_theme()
     with tempfile.TemporaryDirectory(prefix='messages-details-') as directory:
         fixture=Path(directory)/'fixture.json'
         message=lambda i:{'id':i,'from':'alice','text':'Private fixture','at':'9:00 AM'}
         fixture.write_text(json.dumps({'selected':'group','people':{'alice':{'name':'Alice Example','handle':'alice'},'bob':{'name':'Bob Example','handle':'bob'}},'conversations':[
             {'id':'group','address':'+15105550101','name':'Group','group':['alice','bob'],'messages':[message(1)]},
             {'id':'alice','address':'+15105550102','person':'alice','messages':[message(2)]}]}))
-        with patch.dict(os.environ,{'LUMA_MESSAGES_FIXTURE':str(fixture)}):
+        with patch.dict(os.environ,{'SUNO_MESSAGES_FIXTURE':str(fixture)}):
             for scheme in (Adw.ColorScheme.FORCE_LIGHT,Adw.ColorScheme.FORCE_DARK):
                 Adw.StyleManager.get_default().set_color_scheme(scheme)
                 for width,height in ((1180,740),(800,540),(400,700)):

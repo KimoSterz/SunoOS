@@ -11,7 +11,7 @@ import unittest
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[2]
-HELPER = ROOT / 'packaging/flatpak/apps/org.projectluma.Session/prepare-engine-inputs.py'
+HELPER = ROOT / 'packaging/flatpak/apps/org.projectSuno.Session/prepare-engine-inputs.py'
 if not HELPER.is_file():
     raise unittest.SkipTest("Session engine sources belong to the separate Creative product")
 spec = importlib.util.spec_from_file_location('session_engine_inputs', HELPER)
@@ -98,7 +98,7 @@ class EngineInputControls(unittest.TestCase):
             (cache / digest).write_bytes(content if index else b'corrupted')
             sources.append({'module': 'session-fluidsynth', 'dest': str(index), 'sha256': digest})
         lock = self.root / 'lock.json'
-        lock.write_text(json.dumps({'schema': 'org.projectluma.session-engine-inputs/v1', 'sources': sources}))
+        lock.write_text(json.dumps({'schema': 'org.projectSuno.session-engine-inputs/v1', 'sources': sources}))
         output = self.root / 'output'
         with self.assertRaisesRegex(ValueError, 'digest mismatch'):
             engine.prepare(lock, cache, output)

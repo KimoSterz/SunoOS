@@ -1,10 +1,10 @@
 # GNOME Shell downstream
 
-Project Luma builds the Fedora 44 `gnome-shell-50.3-1.fc44` source package
+Project Suno builds the Fedora 44 `gnome-shell-50.3-1.fc44` source package
 with isolated, ordered downstream patches. GNOME Shell remains GPL-2.0-or-later and
 retains its upstream name, source history, and About/diagnostic identity.
 
-`0001-luma-panel-layout.patch` changes the normal user session only:
+`0001-Suno-panel-layout.patch` changes the normal user session only:
 
 - the date menu is the first actor in the left panel box;
 - the Activities actor is absent from the panel while the Super key and native
@@ -12,7 +12,7 @@ retains its upstream name, source history, and About/diagnostic identity.
 - the label renders locale-aware time first, followed by the optional weekday
   and date, and continues to honor 12/24-hour, seconds, weekday, and date keys.
 - the time and date are separate semantic labels with an explicit 9px spacer;
-- the normal light-session panel uses Luma's 34px translucent material,
+- the normal light-session panel uses Suno's 34px translucent material,
   hairline, typography, tray pill states, and compositor background blur;
 - unread notifications use a numeric gold badge instead of a symbolic dot.
 
@@ -32,7 +32,7 @@ named user's focused password prompt; Enter and the inline submit button retain
 the same authentication action, password reveal remains native, and failures
 remain inline without field motion.
 
-`0003-luma-desktop-first-session.patch` separates overview availability from
+`0003-Suno-desktop-first-session.patch` separates overview availability from
 the initial session presentation. A normal login completes Shell's required
 startup preparation at final desktop geometry and opacity, without invoking
 either the overview animation or the scale-and-fade path reserved for modes
@@ -84,25 +84,25 @@ The stored drop destination uses the same live bounds fallback when Clutter
 repicks a stationary pointer onto the dock background. Visual insertion and
 the target later committed by `acceptDrop()` therefore cannot diverge.
 
-`0007-luma-handheld-posture.patch` adds a runtime presentation posture without
-forking Shell. Only a device image that declares `LUMA_DEVICE_CLASS=handheld`
+`0007-Suno-handheld-posture.patch` adds a runtime presentation posture without
+forking Shell. Only a device image that declares `SUNO_DEVICE_CLASS=handheld`
 and is currently using a portrait primary monitor receives a 64px top safe
 area, 60px panel touch targets, 24px status glyphs, a center exclusion band for
 the camera cutout, and zero-delay high-contrast OSK pressed feedback. Rotating
 to a landscape primary display or docking to a landscape external display
 returns the same running Shell to the existing 34px desktop panel geometry.
 
-`0009-luma-notification-system.patch` moves the native notification presenter
+`0009-Suno-notification-system.patch` moves the native notification presenter
 from the superseded clock-relative center rule to a focused-monitor,
 work-area-aware bottom-right surface with a 14px inset, seven-second ordinary
-timeout, horizontal edge motion, Figtree, and Luma light/dark/high-contrast
+timeout, horizontal edge motion, Figtree, and Suno light/dark/high-contrast
 materials. The existing Shell source and message list remain the one desktop
 record/action/close-reason authority. The date-menu indicator is the compact
 waiting beacon and remains visible during Do Not Disturb because DND suppresses
 interruption, not history. This intentionally supersedes the
 `Clutter.ActorAlign.CENTER` line in `0001`; no runtime override competes.
 
-`0010-luma-notification-lifecycle-stack.patch` completes the desktop delivery
+`0010-Suno-notification-lifecycle-stack.patch` completes the desktop delivery
 contract in the same native presenter. It retains up to twenty queued records,
 renders no more than three simultaneous interactive banners, pauses each
 secondary timeout for hover or keyboard focus, and records the shared
@@ -113,8 +113,8 @@ native message list is the point that marks them Seen. Replacement IDs,
 actions, close reasons, DND, fullscreen policy, and source ownership remain
 GNOME Shell's existing paths.
 
-`0011-luma-search-window-view.patch` lifts Search out of Overview into a native
-modal Beam that consumes the shared `org.projectluma.Search1` service. Bare
+`0011-Suno-search-window-view.patch` lifts Search out of Overview into a native
+modal Beam that consumes the shared `org.projectSuno.Search1` service. Bare
 Super toggles Search using Mutter's solo-overlay-key signal, Escape and the
 scrim dismiss it, and the upstream results presentation retains keyboard and
 assistive-technology behavior. The same patch presents Overview as **Window
@@ -125,7 +125,7 @@ The normal Applications binding opens the retained upstream app grid as a
 separately named **Applications** surface. Window View gestures stop at the
 window-picker state, so the app grid is not a hidden second page of Window View.
 
-`0012-luma-search-beam-native-providers.patch` is the desktop correctness and
+`0012-Suno-search-beam-native-providers.patch` is the desktop correctness and
 presentation follow-up. It keeps the standalone Beam and Window View split, but
 routes the desktop presenter through GNOME Shell's existing
 `SearchResultsView`, application catalog, SearchProvider2 discovery,
@@ -137,7 +137,7 @@ Figtree result-row, semantic kind, focus, hover, selected, empty, and no-result
 states from the approved Beam study. Desktop/mobile broker parity remains an
 explicit convergence gate rather than a completed claim.
 
-`0013-luma-search-beam-layout-polish.patch` fixes the physical desktop review
+`0013-Suno-search-beam-layout-polish.patch` fixes the physical desktop review
 findings without forking the search engine. It establishes the Beam field's
 stable work-area anchor before its first allocation, keeps that anchor fixed
 while provider content changes height, sizes the compact viewport in whole
@@ -150,38 +150,38 @@ clipped island shadows. Search runs in the shell's Overview action mode so a
 second Super press closes it, while the visible `esc` affordance is also an
 accessible close button. Activity View keeps its upstream grid presentation.
 
-`0000-luma-fedora-spec.patch` gives the package a Luma release and registers
+`0000-Suno-fedora-spec.patch` gives the package a Suno release and registers
 the source patches. The build script verifies the archived Fedora source RPM
 before applying them.
 
-`0050-luma-status-island-material-owner.patch` corrects the separate Shelf
+`0050-Suno-status-island-material-owner.patch` corrects the separate Shelf
 status island at its real actor boundary. The Quick Settings/status actor is
-the `luma-shelf-material` itself, not an inner status child, so the patch names
+the `Suno-shelf-material` itself, not an inner status child, so the patch names
 its co-located material, status, and effective-treatment roles explicitly for
 Light, Dark, Frost, and Glass. Connected mode continues to clear that actor and
 paint only the one outer Shelf material.
 
-`0022-luma-context-menu.patch` — applied on the shell train
+`0022-Suno-context-menu.patch` — applied on the shell train
 (`work/shell-menu-contract`, after 0021, the shelf dock-width fix), where it is
-declared as Patch1021 at release 1.luma.80. It is kept here so the one-kit
+declared as Patch1021 at release 1.Suno.80. It is kept here so the one-kit
 line carries the whole contract; this line's shell series does not apply it.
 
-`0131-luma-shelf-surface-placement.patch` gives every surface opened from the
+`0131-Suno-shelf-surface-placement.patch` gives every surface opened from the
 shelf one placement rule: Quick Options (from the status controls or the
 clock), dock tooltips, dock menus, window previews, the Well's popover and item
 menus, the live island's options, and Beam. `SHELF_SURFACE_GAP` (8 logical
 pixels, `shelfMetrics.js`) is the only gap; `shelfSurfacePlacement()` puts the
 surface that far beyond the desktop-facing edge of the painted island holding
 the control that opened it, centred on the control, or aligned with the
-island's edge when centring would cross the 14px inset. `lumaShelfSurface.js`
+island's edge when centring would cross the 14px inset. `SunoShelfSurface.js`
 finds the island and is the one entry point. BoxPointer menus from an island
-carry `luma-shelf-surface` (no beak) and are placed from their allocated size;
+carry `Suno-shelf-surface` (no beak) and are placed from their allocated size;
 the 0062 `Math.max` override, the tooltip `-y-offset: 16px` and the menus'
 `-boxpointer-gap: 8px` are removed. `tests/gnome-shell/shelf-surface-placement.js`
 checks the rule at package build.
 
-`0132-luma-beam-level-indicator.patch` presents GNOME's on-screen display as
-Beam, Luma's volume and brightness level indicator. `OsdWindowManager` and its
+`0132-Suno-beam-level-indicator.patch` presents GNOME's on-screen display as
+Beam, Suno's volume and brightness level indicator. `OsdWindowManager` and its
 `show`/`showOne`/`showAll` callers are unchanged. The 236 x 48 capsule uses the
 Quick Options surface tokens for Light, Dark, Frost and Glass, fills to the
 level (stopping at full width when over-amplified while the number shows the
@@ -191,11 +191,11 @@ shows over Quick Options, honours reduced motion, and announces its value
 politely to screen readers. Glyph geometry is Lucide (ISC, `LUCIDE-ICONS` in
 the source register).
 
-`0133-luma-silent-volume-change.patch` removes the `audio-volume-change`
+`0133-Suno-silent-volume-change.patch` removes the `audio-volume-change`
 sound the volume slider played. gnome-settings-daemon patch 0001 removes the
-volume keys' sound and `luma-sound-theme` disables the event as a backstop.
+volume keys' sound and `Suno-sound-theme` disables the event as a backstop.
 
-`0135-luma-dock-items-settle-when-views-change.patch` fixes dock icons left a
+`0135-Suno-dock-items-settle-when-views-change.patch` fixes dock icons left a
 few pixels wide after login on a multi-display, mixed-scale machine. A dock
 item eases in from scale 0; the Shelf's monitors-changed sync removes and
 re-adds its islands, which stops that ease unfinished, and the item kept the
@@ -203,110 +203,110 @@ partial scale. A stopped entrance now settles at full size and opacity, and a
 stopped exit still destroys the item. `tests/gnome-shell/dock-entrance/`
 reproduces it.
 
-`0136-luma-dock-previews-resize-and-context-menu.patch`:
+`0136-Suno-dock-previews-resize-and-context-menu.patch`:
 - Closing a window from the dock preview eases the preview to the remaining cards on one timeline, centred on its icon and `SHELF_SURFACE_GAP` from the island on every frame; with reduced motion the change is instant. Closing the last window closes the preview.
 - The dock's context menu is titled with the app's name as a heading. It is grouped as `docs/design/context-menu-contract.md` groups: windows (two or more), app actions, how it starts, system actions. Rules appear only between groups.
-- The menu gains an **Open at Login** switch backed by luma-background's login items (interface version 2). When an app's login start is its background agent, that switch is the agent's decision and "Run in the Background" is not shown twice.
+- The menu gains an **Open at Login** switch backed by Suno-background's login items (interface version 2). When an app's login start is its background agent, that switch is the agent's decision and "Run in the Background" is not shown twice.
 - Evidence harness: `tests/gnome-shell/beam-shelf/dock94.js`.
 
-`0137-luma-dock-menu-title-in-app-case.patch` titles the dock menu with the app's name in its own case ("Discord"), 13px at weight 700 — a step above the rows — in the rows' own ink for the surface it is drawn on, instead of the uppercase section heading. The menu contract has no separate title style.
+`0137-Suno-dock-menu-title-in-app-case.patch` titles the dock menu with the app's name in its own case ("Discord"), 13px at weight 700 — a step above the rows — in the rows' own ink for the surface it is drawn on, instead of the uppercase section heading. The menu contract has no separate title style.
 
-`0138-luma-system-indicators-in-the-well.patch` moves GNOME's screen sharing, screencast, casting, dwell click, accessibility and keyboard indicators from the secondary island into the Well. Their own actors move, so clicks and menus still work. It also shows GNOME's recording mark (a recording remote-access handle) there, named for screen readers. `tests/gnome-shell/beam-shelf/share.js` exercises it with a PipeWire session.
+`0138-Suno-system-indicators-in-the-well.patch` moves GNOME's screen sharing, screencast, casting, dwell click, accessibility and keyboard indicators from the secondary island into the Well. Their own actors move, so clicks and menus still work. It also shows GNOME's recording mark (a recording remote-access handle) there, named for screen readers. `tests/gnome-shell/beam-shelf/share.js` exercises it with a PipeWire session.
 
-`0139-luma-screenshot-shortcuts.patch` makes Ctrl+Shift+1 to 4 the only screenshot shortcuts:
+`0139-Suno-screenshot-shortcuts.patch` makes Ctrl+Shift+1 to 4 the only screenshot shortcuts:
 - Ctrl+Shift+1: the tool as last used.
 - Ctrl+Shift+2: the focused window.
 - Ctrl+Shift+3: the new `show-screenshot-ui-area`, which opens straight in Selection mode.
 - Ctrl+Shift+4: screen recording.
 
-The Print-key defaults are removed. `luma-screenshot-shortcuts-migrate.service` (user, once) resets a person's keys that still hold GNOME's old defaults or the staging values; any other shortcut is kept. `tests/gnome-shell/screenshot-shortcuts-migrate.js` tests the migration at package build.
+The Print-key defaults are removed. `Suno-screenshot-shortcuts-migrate.service` (user, once) resets a person's keys that still hold GNOME's old defaults or the staging values; any other shortcut is kept. `tests/gnome-shell/screenshot-shortcuts-migrate.js` tests the migration at package build.
 
-`0141-luma-beam-island-corners-and-slider.patch`:
+`0141-Suno-beam-island-corners-and-slider.patch`:
 - Beam uses the shelf islands' radius, `SHELF_ISLAND_RADIUS` (15, new in `shelfMetrics.js` and now also used by the islands).
 - Beam is a slider. A press sets the level, a drag follows the pointer, scrolling steps it by 2%, and the volume glyph toggles mute. The level is written through Quick Options' own objects: the output stream slider, with its over-amplification limit, and the brightness manager's scale.
 - Hover and dragging hold the 1.5 s hide timer.
 - Beam never takes keyboard focus. It is exposed as an ATK slider.
 - Evidence harness: `tests/gnome-shell/beam-shelf/beamslider.js`.
 
-`0142-luma-capture-screenshot-tool.patch` replaces GNOME's screenshot panel with Capture (`js/ui/lumaCapture.js`, `data/theme/luma-capture.css`):
-- One bar with Close, three screenshot modes (entire screen, a window, a selection), two recording modes (entire screen, a selection), Options and a labelled Capture/Record button, on the Quick Options surface in every appearance mode. `placeShelfBar` and `placeFromShelfBar` in `lumaShelfSurface.js` place the bar `SHELF_SURFACE_GAP` beyond the dock island (or `SHELF_INSET` above the work area with the dock at a side), and the Options menu, tooltips, recording pill and thumbnail from it.
+`0142-Suno-capture-screenshot-tool.patch` replaces GNOME's screenshot panel with Capture (`js/ui/SunoCapture.js`, `data/theme/Suno-capture.css`):
+- One bar with Close, three screenshot modes (entire screen, a window, a selection), two recording modes (entire screen, a selection), Options and a labelled Capture/Record button, on the Quick Options surface in every appearance mode. `placeShelfBar` and `placeFromShelfBar` in `SunoShelfSurface.js` place the bar `SHELF_SURFACE_GAP` beyond the dock island (or `SHELF_INSET` above the work area with the dock at a side), and the Options menu, tooltips, recording pill and thumbnail from it.
 - The selection opens empty and is drawn by dragging; choosing a selection mode draws the last selection (Remember Last Selection) or a default box. It has a dashed outline, eight handles, a size label in physical pixels, a 24 × 24 minimum, and a double click takes it. Windows stay in place: the one under the pointer gets an accent outline and wash, and a click takes it.
 - Ctrl+Shift+1 opens the tool in its last mode with nothing selected, Ctrl+Shift+2 (`screenshot-window`) opens window mode waiting for a pick instead of capturing the focused window, Ctrl+Shift+3 opens selection mode, Ctrl+Shift+4 opens recording mode or stops a recording.
-- Options: Save to (Pictures and Videos keep their Screenshots and Screencasts folders; Desktop; Clipboard for screenshots; another folder through the portal's file chooser), a 5 or 10 second timer with a countdown over the live screen, Show Floating Thumbnail, Remember Last Selection, Show Pointer. Every choice is in `org.project_luma.capture` (gnome-shell-common). Messages and Record Sound are not offered: GNOME 50.3's recorder captures video only.
+- Options: Save to (Pictures and Videos keep their Screenshots and Screencasts folders; Desktop; Clipboard for screenshots; another folder through the portal's file chooser), a 5 or 10 second timer with a countdown over the live screen, Show Floating Thumbnail, Remember Last Selection, Show Pointer. Every choice is in `org.projectSuno.capture` (gnome-shell-common). Messages and Record Sound are not offered: GNOME 50.3's recorder captures video only.
 - Files are "Screenshot YYYY-MM-DD at HH.MM.SS.png" and "Recording YYYY-MM-DD at HH.MM.SS.webm". A floating thumbnail replaces the screenshot and screencast notifications, and clicking it opens the file; failures still notify. A recording shows a pill with the time and Stop where the bar was, and GNOME's screen recording indicator no longer appears. Escape, the pill's Stop and Ctrl+Shift+4 stop it.
 - The bar, menu, pill, countdown, flash, thumbnail and a recording's outline are drawn only in the screen's own paint, never in a screenshot or recording: those paint the stage without a redraw clip.
 - Evidence harness: `tests/gnome-shell/capture/`.
 
-`0143-luma-window-motion-to-dock-icon.patch` (`js/ui/lumaWindowMotion.js`, `js/ui/lumaWindowPath.js`):
+`0143-Suno-window-motion-to-dock-icon.patch` (`js/ui/SunoWindowMotion.js`, `js/ui/SunoWindowPath.js`):
 - Minimize draws a window into its app's dock icon in 320 ms, and restore draws it back out. The icon is the dash's `getShelfIconGeometry`, then the dock island's centre, then the middle of the shelf edge on the window's monitor. The path follows the dock's edge: the window narrows along the shelf first and then pours into the icon.
 - An app launched from an icon (dock or search results, through `AppIcon.activate`) grows its first normal window out of that icon in 280 ms. The launch is kept for 8 s and used once. Other windows grow from 94%. Close settles to 95% and fades in place in 180 ms.
 - Only the window actor's scale, translation and opacity change, on one Clutter timeline. A restore that interrupts a minimize (or the reverse) turns around from where it was. Reduced motion completes at once, and the slow-down factor applies.
 - `WindowManager.revealWindow(actor)` plays the opening for a window that was held hidden until placed.
 - Unit test at package build: `tests/gnome-shell/window-motion.js`. Evidence harness: `tests/gnome-shell/beam-shelf/motion.js`, `matrix101.sh`.
 
-`0144-luma-capture-thumbnail-drag.patch` lets the Capture thumbnail be dragged into apps. The Shell starts `luma-capture-drag` (GTK 4, libexecdir) as its own Wayland client (`Meta.WaylandClient`, hidden from the window list, above, on every workspace, never keeping focus) and lays its transparent window over the thumbnail. A drag offers text/uri-list (plus the portal file transfer) and x-special/gnome-copied-files; not image/png, which Files and other GTK apps would prefer and save as "Dropped Image.png". A drop dismisses the thumbnail and keeps the file; a click still opens it. Evidence harness: the `drag` case in `tests/gnome-shell/capture/` (GTK 4 on Wayland and Xwayland, Chromium on Wayland and X11, Files).
+`0144-Suno-capture-thumbnail-drag.patch` lets the Capture thumbnail be dragged into apps. The Shell starts `Suno-capture-drag` (GTK 4, libexecdir) as its own Wayland client (`Meta.WaylandClient`, hidden from the window list, above, on every workspace, never keeping focus) and lays its transparent window over the thumbnail. A drag offers text/uri-list (plus the portal file transfer) and x-special/gnome-copied-files; not image/png, which Files and other GTK apps would prefer and save as "Dropped Image.png". A drop dismisses the thumbnail and keeps the file; a click still opens it. Evidence harness: the `drag` case in `tests/gnome-shell/capture/` (GTK 4 on Wayland and Xwayland, Chromium on Wayland and X11, Files).
 
-`0145-luma-now-playing-island-stays-whole.patch` (`js/ui/lumaMediaIslandGuard.js`):
+`0145-Suno-now-playing-island-stays-whole.patch` (`js/ui/SunoMediaIslandGuard.js`):
 - The now-playing island's show and hide end in a known state however they stop: a show cut short by anything but a hide still leaves the island opaque at its natural size, and a hide cut short by anything but a show still hides it. A stopped title or artwork fade leaves it opaque.
-- A guard checks the island about a second after it last changed with nothing animating. If it is still translucent, held narrower than its content, has its controls hidden or squeezed out, or its title button is insensitive, the guard restores it. It logs one journal line starting "Luma shelf: the now-playing island was left" with each part's opacity, size against natural size, style classes, pseudo-classes, the title font, and the last show/hide and fade with what stopped them. The line is written at most once a minute; the times in between are counted.
+- A guard checks the island about a second after it last changed with nothing animating. If it is still translucent, held narrower than its content, has its controls hidden or squeezed out, or its title button is insensitive, the guard restores it. It logs one journal line starting "Suno shelf: the now-playing island was left" with each part's opacity, size against natural size, style classes, pseudo-classes, the title font, and the last show/hide and fade with what stopped them. The line is written at most once a minute; the times in between are counted.
 - Evidence harness: `tests/gnome-shell/now-playing-island/` (`guard.js`, `beforeafter.js`, `media.js`, `chrome-mpris.py`).
 
-`0147-luma-dock-unread-badges.patch` (`js/ui/lumaDockBadges.js`, `js/ui/lumaDockBadgeModel.js`):
+`0147-Suno-dock-unread-badges.patch` (`js/ui/SunoDockBadges.js`, `js/ui/SunoDockBadgeModel.js`):
 - Ember unread badges on dock icons: a 15px count pill (99+ past 99) or a 9px dot, ringed in the shelf's own surface colour, top right of the icon at every dock edge. It lives inside the icon beside the masked artwork, so it rides hover, press, drag and the launch zoom and never changes the dock's layout; the dock viewport clips along the shelf only when the dock scrolls.
 - Counts come from the standard `badge` value of an app's background agent (only agents that declare it; never started to read it), then from `com.canonical.Unity.LauncherEntry` (a Flatpak sender may badge only itself). `org.gnome.shell dock-badges-disabled-apps` turns an app's badge off.
-- Owner questions are one-line switches in `lumaDockBadgeModel.js`: `BADGE_FILL`, `NOTIFICATION_COUNT_FALLBACK` (off), `URGENT_WINDOWS_DOT` (off).
+- Owner questions are one-line switches in `SunoDockBadgeModel.js`: `BADGE_FILL`, `NOTIFICATION_COUNT_FALLBACK` (off), `URGENT_WINDOWS_DOT` (off).
 - Tests: `tests/gnome-shell/dock-badges.js` in the verify block; evidence harness `tests/gnome-shell/dock-badges/`.
 
-`0148-luma-dock-badge-deeper-ember.patch`: the badge fill becomes `#c24a0b` (owner, 2026-09-17), 4.91:1 with white against `#f26a1b`'s 3.06:1, which failed WCAG AA at 9.5px. Nothing else changes, and `tests/gnome-shell/dock-badges.js` now fails if white on the fill drops below 4.5:1. `tests/gnome-shell/dock-badges/flatpak-proxy.sh` records what a Flatpak app may do with `com.canonical.Unity.LauncherEntry`: with no extra D-Bus permissions it may emit `Update` through its proxy (which is all a badge needs) and may not own `com.canonical.Unity`, so no Flatpak permission is widened for badges.
+`0148-Suno-dock-badge-deeper-ember.patch`: the badge fill becomes `#c24a0b` (owner, 2026-09-17), 4.91:1 with white against `#f26a1b`'s 3.06:1, which failed WCAG AA at 9.5px. Nothing else changes, and `tests/gnome-shell/dock-badges.js` now fails if white on the fill drops below 4.5:1. `tests/gnome-shell/dock-badges/flatpak-proxy.sh` records what a Flatpak app may do with `com.canonical.Unity.LauncherEntry`: with no extra D-Bus permissions it may emit `Update` through its proxy (which is all a badge needs) and may not own `com.canonical.Unity`, so no Flatpak permission is widened for badges.
 
-`0149-luma-screen-sharing-picker.patch`: Share, the screen sharing picker, with the violet sharing edge and the Stop pill. `lumaShare.js` and `luma-share.css` draw the card in the authentication prompt's language (0146) over live previews of every window and screen; `luma-portal` answers `org.freedesktop.impl.portal.ScreenCast` and asks the Shell for the choice over `org.projectluma.Shell.ScreenShare`, then creates the stream through Mutter itself. ADR-041 records the decision. Window previews are the dock's own renderer (0117), now exported instead of copied; a screen preview clones `global.window_group`, so no preview can contain the picker. The edge and the pill are `CaptureHidden` actors (0142), so they never appear in the stream, and the pill sits in the shelf surface slot through `placeShelfBar` (0131). `messageTray` holds banners while sharing and shows them after Stop; the Well's sharing mark (0138) stands down while the pill is up. Owner questions are one-line switches at the top of `lumaShare.js`: `KEEP_WELL_MARK_WHILE_SHARING` (false), `PILL_VISIBLE_MS` (0, always), `OFFER_CHOOSE_ON_SCREEN` (false). The card carries the ink ledger (0150) for its own stylesheet: frost and glass are smoked veils with white ink, and the Share button and Stop pill keep a light plate on hover; `data/theme/verify-treatment-ink.py` passes on it, and 0149 and 0150 touch no file in common. A second pointer click on the chosen preview shares (no button-press handler); Space only selects and Enter shares. Tested end to end in a headless session through the real portal stack by `tests/gnome-shell/screen-sharing/` (54 checks, light and dark, 100% and 200%), which caught four bugs now fixed here: the screen edge's violet was drawn by the CaptureHidden actor itself and so reached every screen stream (it is now a child), `addTopChrome` threw on an input-region parameter this Shell rejects so a shared screen had no edge or pill, the title was not balanced, and tiles were sized before they were on the stage. Tests: `tests/gnome-shell/screen-sharing.js` in the verify block (52 assertions against the packaged module and stylesheet, including that no button-press override returns), and `tests/luma-portal/test_screencast.py` in the portal's `%check`.
+`0149-Suno-screen-sharing-picker.patch`: Share, the screen sharing picker, with the violet sharing edge and the Stop pill. `SunoShare.js` and `Suno-share.css` draw the card in the authentication prompt's language (0146) over live previews of every window and screen; `Suno-portal` answers `org.freedesktop.impl.portal.ScreenCast` and asks the Shell for the choice over `org.projectSuno.Shell.ScreenShare`, then creates the stream through Mutter itself. ADR-041 records the decision. Window previews are the dock's own renderer (0117), now exported instead of copied; a screen preview clones `global.window_group`, so no preview can contain the picker. The edge and the pill are `CaptureHidden` actors (0142), so they never appear in the stream, and the pill sits in the shelf surface slot through `placeShelfBar` (0131). `messageTray` holds banners while sharing and shows them after Stop; the Well's sharing mark (0138) stands down while the pill is up. Owner questions are one-line switches at the top of `SunoShare.js`: `KEEP_WELL_MARK_WHILE_SHARING` (false), `PILL_VISIBLE_MS` (0, always), `OFFER_CHOOSE_ON_SCREEN` (false). The card carries the ink ledger (0150) for its own stylesheet: frost and glass are smoked veils with white ink, and the Share button and Stop pill keep a light plate on hover; `data/theme/verify-treatment-ink.py` passes on it, and 0149 and 0150 touch no file in common. A second pointer click on the chosen preview shares (no button-press handler); Space only selects and Enter shares. Tested end to end in a headless session through the real portal stack by `tests/gnome-shell/screen-sharing/` (54 checks, light and dark, 100% and 200%), which caught four bugs now fixed here: the screen edge's violet was drawn by the CaptureHidden actor itself and so reached every screen stream (it is now a child), `addTopChrome` threw on an input-region parameter this Shell rejects so a shared screen had no edge or pill, the title was not balanced, and tiles were sized before they were on the stage. Tests: `tests/gnome-shell/screen-sharing.js` in the verify block (52 assertions against the packaged module and stylesheet, including that no button-press override returns), and `tests/Suno-portal/test_screencast.py` in the portal's `%check`.
 
-`0151-luma-well-glyphs-and-hover-rhythm.patch`:
-- Every glyph in the status row is drawn at the system indicators' 14px and in the surface's ink: Luma's own Well items, an application's tray icon and an extension's indicator. No full-colour logos in this row (owner, 2026-09-17).
-- `Well._normaliseExtensionIcons` takes the theme's symbolic variant of an adopted icon where there is one; otherwise the icon keeps its own shape, holes included, through the `luma-well-silhouette` shader the Well's own items already use, inked from the actor's own foreground colour. It runs again on every Well rebuild, so an icon the application swaps is caught.
+`0151-Suno-well-glyphs-and-hover-rhythm.patch`:
+- Every glyph in the status row is drawn at the system indicators' 14px and in the surface's ink: Suno's own Well items, an application's tray icon and an extension's indicator. No full-colour logos in this row (owner, 2026-09-17).
+- `Well._normaliseExtensionIcons` takes the theme's symbolic variant of an adopted icon where there is one; otherwise the icon keeps its own shape, holes included, through the `Suno-well-silhouette` shader the Well's own items already use, inked from the actor's own foreground colour. It runs again on every Well rebuild, so an icon the application swaps is caught.
 - An icon with no transparency has no shape, so its silhouette is a filled block. It is inked all the same: a third party's colour is outside the ink ledger's guarantee and can land on the surface's own luminance, where an icon shadow cannot save it — measured at 1.00:1 on light and dark, which carry no icon shadow, and 1.03:1 to 1.24:1 on the smoked treatments (ink agent, 2026-09-17). `_hasShape` measures the icon file's transparent fraction (a shape needs more than 4% clear) only so the Shell can say once in the journal which application sends one.
-- A silhouetted glyph is inside the ledger's guarantee: `.luma-well-glyph` carries geometry only, so the shader inks it from `.luma-well-item`, which is the ledger's `ink` in all four modes.
+- A silhouetted glyph is inside the ledger's guarantee: `.Suno-well-glyph` carries geometry only, so the shader inks it from `.Suno-well-item`, which is the ledger's `ink` in all four modes.
 - Measured for the worst case, a filled block of ink on veil plus recess, at 100%, 125% and 200% over six backdrops with the shadow discounted: 9.53:1 on light, 10.88:1 on dark, 8.93:1 on frost and 8.09:1 on glass, against a 3:1 threshold for a glyph (ink agent, 2026-09-17). The gate discounts the shadow entirely, so a block and a stroke of the same ink on the same surface measure the same; shape only changes how much the shadow would have added. That is also why the shadow could not rescue a colour block whose raw number was 1.00:1.
 - The Well's items, an extension's indicator, the clock and Quick Options share one highlight box: 28 high, radius 8, 7px of air around a lone glyph and 8px beside text, inset 3px inside the Well's recess and 4px inside the island. The hit target keeps its full height. Pressed is the same box in the pressed fill. The dock's tiles keep their own language, where the artwork lifts and nothing is drawn behind it.
-- Hover and pressed fills are the ink ledger's `hover` and `press`, per appearance mode (light and dark 0.06 and 0.09, frost and glass 0.07 and 0.11), replacing the older per-widget fills. The Well's recess keeps no pair of its own: the veil under it carries the headroom. No ink, shadow, veil or recess value changes here, and `tests/unit/lumaSurfaceInk.js` gates every state stack at %check.
+- Hover and pressed fills are the ink ledger's `hover` and `press`, per appearance mode (light and dark 0.06 and 0.09, frost and glass 0.07 and 0.11), replacing the older per-widget fills. The Well's recess keeps no pair of its own: the veil under it carries the headroom. No ink, shadow, veil or recess value changes here, and `tests/unit/SunoSurfaceInk.js` gates every state stack at %check.
 - A dock tile still has no fill in any state: its artwork lifts instead, which is the dock's own language.
-- The status cluster's hover wash is an actor, so it composites over a button that already carries a fill. `['press', 'hover']` is added to `STACKS` in `tests/unit/lumaSurfaceInk.js` so the gate measures that combination; every other target presents one fill at a time, because a rule replaces a fill rather than stacking it.
+- The status cluster's hover wash is an actor, so it composites over a button that already carries a fill. `['press', 'hover']` is added to `STACKS` in `tests/unit/SunoSurfaceInk.js` so the gate measures that combination; every other target presents one fill at a time, because a rule replaces a fill rather than stacking it.
 - A 1px ink rim around a full-colour logo was measured as the alternative and rejected (ink agent, 2026-09-17): a logical 1px rim fails light mode at 100% (2.53:1 to 2.69:1 against 3.0) because one device pixel dilutes to half coverage on a half-pixel boundary, and a physical 1px rim fails at every scale for the same reason. A 2px logical rim passes with room (worst 6.69:1) but leaves a 10px core inside the 14px box, which no brand logo survives. If brand colour in this row is ever wanted, the answer is a larger glyph box, which is row geometry and a spec question, not an ink one.
-- Focus on the shelf is drawn only during keyboard navigation (`js/ui/lumaFocusVisible.js`), as :focus-visible works on the web. St marks a widget :focus whenever it holds key focus, and a menu returns key focus to its button when it closes, so after a click on Quick Options, the calendar or a menu the status island stayed ringed (`.luma-status-cluster:focus`, a 2px #91b6d2 ring) and a dock icon kept a blue glow around its artwork. Key focus is unchanged; inside the shelf the :focus pseudo-class is added after a navigation key (Tab, arrows, Home, End, Page keys, F10) and removed by the next click or touch. The status grid mirrors the drawn :focus rather than held key focus (`panel.js`). What is drawn is a 2px ring in the treatment's ink; the old pale blue ring measured 1.9:1 on light paper. After a keyboard close (Escape), focus returns to its button and is ringed on purpose, so a keyboard user can see where they are.
+- Focus on the shelf is drawn only during keyboard navigation (`js/ui/SunoFocusVisible.js`), as :focus-visible works on the web. St marks a widget :focus whenever it holds key focus, and a menu returns key focus to its button when it closes, so after a click on Quick Options, the calendar or a menu the status island stayed ringed (`.Suno-status-cluster:focus`, a 2px #91b6d2 ring) and a dock icon kept a blue glow around its artwork. Key focus is unchanged; inside the shelf the :focus pseudo-class is added after a navigation key (Tab, arrows, Home, End, Page keys, F10) and removed by the next click or touch. The status grid mirrors the drawn :focus rather than held key focus (`panel.js`). What is drawn is a 2px ring in the treatment's ink; the old pale blue ring measured 1.9:1 on light paper. After a keyboard close (Escape), focus returns to its button and is ringed on purpose, so a keyboard user can see where they are.
 - The now-playing island never highlights as a whole: its artwork and title raise the player and paint nothing on hover or press. Only its controls, and a Live Extension's actions on the live island, take a hover and a press, now in the ledger's fills. Before, they carried per-widget values from before the ledger (0.14 white on glass, 0.10 on frost, 0.07 dark on light), with a generic `rgba(127,127,127,0.2)` grey wash underneath. An engaged call control keeps its red.
 - An island that is one action highlights edge to edge (`ShelfIsland.setBody`): the beacon (a notification) and the live island (a Live Extension) wash the whole material at its radius, as an inset shadow over the veil, in the ledger's hover and press, and show keyboard focus as a ring on the same edge; buttons inside highlight on top. The body button itself paints nothing on the shelf. Before, only that inner button painted, inset by the island's padding, and the light stylesheet (light, frost, glass) gave a Live Extension a `rgba(255,255,255,0.92)` hover and a blue `rgba(72,120,184,0.14)` press that the shelf never overrode. The now-playing island is several controls and takes no island wash. `['hover','hover']` and `['hover','press']` join the ledger gate's stacks; a press on an inner button does not press the island, so two presses never stack.
 - Evidence harness: `tests/gnome-shell/well-rhythm/` (`well.js`, `focus.js`, `islands.js`, `matrix.sh`).
 
-`0155-luma-quiet-filled-controls.patch` (`js/ui/lumaControlInk.js`, `data/theme/luma-controls.css`): Quick Options' filled controls follow ADR-043. Every on state (an on tile's icon plate, a checked pill, a keyboard-brightness step) takes the one `state` slate with `stateInk` on it; slider handles are a `knob` disc ringed in `knobRing`; chevrons take no plate, only a hairline; Notifications and Calendar are quiet buttons from the ledger. `CONTROL_INK` carries the app kit's values. `data/theme/verify-treatment-ink.py` reads both ledgers and fails the build if `luma-controls.css` spends a colour its mode does not name, if a fill or ring drops below 3:1 or a glyph below 4.5:1, or if the notification island's hover and press leave the ledger or its ink drops below 4.5:1 in any hover or press stack.
+`0155-Suno-quiet-filled-controls.patch` (`js/ui/SunoControlInk.js`, `data/theme/Suno-controls.css`): Quick Options' filled controls follow ADR-043. Every on state (an on tile's icon plate, a checked pill, a keyboard-brightness step) takes the one `state` slate with `stateInk` on it; slider handles are a `knob` disc ringed in `knobRing`; chevrons take no plate, only a hairline; Notifications and Calendar are quiet buttons from the ledger. `CONTROL_INK` carries the app kit's values. `data/theme/verify-treatment-ink.py` reads both ledgers and fails the build if `Suno-controls.css` spends a colour its mode does not name, if a fill or ring drops below 3:1 or a glyph below 4.5:1, or if the notification island's hover and press leave the ledger or its ink drops below 4.5:1 in any hover or press stack.
 
-`0154-luma-screenshots-match-blurred-surfaces.patch` makes screenshots show frost and glass surfaces as the screen does. `ShellBlurEffect`'s background mode, painting off stage (a screenshot or recording), assumed scale 1 at the stage origin; it now reads the scale and origin from the capture framebuffer's viewport and never copies from outside that framebuffer. Area screenshots through D-Bus (and the colour picker) paint the whole stage and keep the rectangle, so a blurred surface on the edge has its whole backdrop. Evidence harness: the `blur` case and `blurcheck.sh` in `tests/gnome-shell/capture/`.
+`0154-Suno-screenshots-match-blurred-surfaces.patch` makes screenshots show frost and glass surfaces as the screen does. `ShellBlurEffect`'s background mode, painting off stage (a screenshot or recording), assumed scale 1 at the stage origin; it now reads the scale and origin from the capture framebuffer's viewport and never copies from outside that framebuffer. Area screenshots through D-Bus (and the colour picker) paint the whole stage and keep the rectangle, so a blurred surface on the edge has its whole backdrop. Evidence harness: the `blur` case and `blurcheck.sh` in `tests/gnome-shell/capture/`.
 
-`0156-luma-capture-hidden-backgrounds.patch`: a privacy fix for Capture. `CaptureHidden` (0142) keeps an actor's children and content out of screenshots, recordings and screen shares, but Clutter paints an actor's own background, border and effects around `paint()`, so the countdown's dark disc and backdrop blur and the flash's white went into every recording or share running during a timed screenshot (76 of 178 frames carried the disc, 12 the flash). The disc, its blur and the flash's white are now children of their `CaptureHidden`, and a comment on `CaptureHidden` states the rule for anything added later. Nothing changes on screen. Evidence: `tests/gnome-shell/capture/eval.js` and `hiddencheck.py`; the verify block checks the packaged module.
+`0156-Suno-capture-hidden-backgrounds.patch`: a privacy fix for Capture. `CaptureHidden` (0142) keeps an actor's children and content out of screenshots, recordings and screen shares, but Clutter paints an actor's own background, border and effects around `paint()`, so the countdown's dark disc and backdrop blur and the flash's white went into every recording or share running during a timed screenshot (76 of 178 frames carried the disc, 12 the flash). The disc, its blur and the flash's white are now children of their `CaptureHidden`, and a comment on `CaptureHidden` states the rule for anything added later. Nothing changes on screen. Evidence: `tests/gnome-shell/capture/eval.js` and `hiddencheck.py`; the verify block checks the packaged module.
 
-`0157-luma-frost-and-glass-menus-follow-the-ink.patch`: popup menus under frost and glass (the desktop menu, the dock and Well menus, the calendar) take the same smoked veils as Quick Options, with 0150's white ink and shadow, the ledger's smoked hover and pressed fills, and white separators, headings and sub-menus, in both variant sheets. They had kept 0045's light frosted veils with dark ink, so the inherited ink shadow smeared their text and white-inked labels vanished. Found by the .112 integration renders.
+`0157-Suno-frost-and-glass-menus-follow-the-ink.patch`: popup menus under frost and glass (the desktop menu, the dock and Well menus, the calendar) take the same smoked veils as Quick Options, with 0150's white ink and shadow, the ledger's smoked hover and pressed fills, and white separators, headings and sub-menus, in both variant sheets. They had kept 0045's light frosted veils with dark ink, so the inherited ink shadow smeared their text and white-inked labels vanished. Found by the .112 integration renders.
 
-`0158-luma-live-islands-survive-appearance-changes.patch`: 0151 inked a Well glyph by connecting `style-changed` on it, which a plain Clutter tray actor (a pixmap or XEmbed icon) does not have; a tray icon recreated on a theme change threw on every shelf rebuild, before `_adoptPanelActors` put the live and now-playing islands back, so they vanished on Dark to Light. A plain actor now inks from its nearest St ancestor, a failing adoption is logged and skipped, and the light live-island subtitle ink goes to 66% (5.2:1). `tests/gnome-shell/live-modes/` switches Dark, Light, Frost, Glass, Dark with a Live Extension, a playing tab and a self-replacing pixmap tray icon, and asserts both islands are on the stage, sized and readable in each mode.
+`0158-Suno-live-islands-survive-appearance-changes.patch`: 0151 inked a Well glyph by connecting `style-changed` on it, which a plain Clutter tray actor (a pixmap or XEmbed icon) does not have; a tray icon recreated on a theme change threw on every shelf rebuild, before `_adoptPanelActors` put the live and now-playing islands back, so they vanished on Dark to Light. A plain actor now inks from its nearest St ancestor, a failing adoption is logged and skipped, and the light live-island subtitle ink goes to 66% (5.2:1). `tests/gnome-shell/live-modes/` switches Dark, Light, Frost, Glass, Dark with a Live Extension, a playing tab and a self-replacing pixmap tray icon, and asserts both islands are on the stage, sized and readable in each mode.
 
-`0159-luma-detail-header-glyph-in-light.patch`: a Quick Options detail's header glyph is the detail's ink whether its toggle is on or off; upstream's `.active` rule painted it white for an accent disc Luma does not draw, so in light it vanished on the white detail (Wi-Fi, Bluetooth, Tiling and every other detail with its toggle on). The light detail subtitle ink moves to #6b7076 (5.0:1). `tests/gnome-shell/quick-details/` opens every detail in all four modes, toggle off and on, and asserts the header glyph (>= 3:1) and header text (>= 4.5:1).
+`0159-Suno-detail-header-glyph-in-light.patch`: a Quick Options detail's header glyph is the detail's ink whether its toggle is on or off; upstream's `.active` rule painted it white for an accent disc Suno does not draw, so in light it vanished on the white detail (Wi-Fi, Bluetooth, Tiling and every other detail with its toggle on). The light detail subtitle ink moves to #6b7076 (5.0:1). `tests/gnome-shell/quick-details/` opens every detail in all four modes, toggle off and on, and asserts the header glyph (>= 3:1) and header text (>= 4.5:1).
 
-`0160-luma-notifications-live-in-the-shelf.patch`: notifications live in the shelf (owner, 2026-09-18). The resting-notification beacon becomes the notifications island, the last island of the row after Quick Options, which it pushes towards the dock; ordinary notifications no longer show a banner. It shows the newest (mark, title, first body line, count pill), opens it on click, opens the 0116 stack from the count, offers up to two actions and a dismiss button on hover or focus, dismisses on a swipe (72 px) or fling (24 px at 0.5 px/ms) to the right or Delete, and leaves with the last one. It grows in from the row's end in 200 ms while the other islands slide aside, and only fades with reduced motion. Urgent notifications and calls keep a card, above the island. The shelf keeps its islands by ADR-044 id (`Shelf.getIsland(id)`, `island.islandId`, actor name `lumaShelfIsland-<id>`). It also makes a shelf sync requested inside a sync wait for the running one and empties the row from a copy: a nested sync had aborted the Shell in `clutter_actor_remove_all_children` (reproduced with a player playing at startup). `tests/gnome-shell/notification-island/` renders 0, 1 and 3 notifications in all four modes and the arrival frames, and exercises hover, dismiss, count, swipe, fling, click, urgent and reduced motion.
+`0160-Suno-notifications-live-in-the-shelf.patch`: notifications live in the shelf (owner, 2026-09-18). The resting-notification beacon becomes the notifications island, the last island of the row after Quick Options, which it pushes towards the dock; ordinary notifications no longer show a banner. It shows the newest (mark, title, first body line, count pill), opens it on click, opens the 0116 stack from the count, offers up to two actions and a dismiss button on hover or focus, dismisses on a swipe (72 px) or fling (24 px at 0.5 px/ms) to the right or Delete, and leaves with the last one. It grows in from the row's end in 200 ms while the other islands slide aside, and only fades with reduced motion. Urgent notifications and calls keep a card, above the island. The shelf keeps its islands by ADR-044 id (`Shelf.getIsland(id)`, `island.islandId`, actor name `SunoShelfIsland-<id>`). It also makes a shelf sync requested inside a sync wait for the running one and empties the row from a copy: a nested sync had aborted the Shell in `clutter_actor_remove_all_children` (reproduced with a player playing at startup). `tests/gnome-shell/notification-island/` renders 0, 1 and 3 notifications in all four modes and the arrival frames, and exercises hover, dismiss, count, swipe, fling, click, urgent and reduced motion.
 
-`0161-luma-quick-options-highlights-as-one.patch`: no segment of the Quick Options island (Well items and extension indicators, status icons, clock) paints a fill or ring of its own; the shelf washes the whole island on hover, presses it while one of its menus is open and rings the whole island for keyboard focus. Also fixes a blank symbolic extension glyph in the Well (its gicon was cleared after its name was set). `tests/gnome-shell/island-segments/` checks every segment at rest, hovered and focused in all four modes.
+`0161-Suno-quick-options-highlights-as-one.patch`: no segment of the Quick Options island (Well items and extension indicators, status icons, clock) paints a fill or ring of its own; the shelf washes the whole island on hover, presses it while one of its menus is open and rings the whole island for keyboard focus. Also fixes a blank symbolic extension glyph in the Well (its gicon was cleared after its name was set). `tests/gnome-shell/island-segments/` checks every segment at rest, hovered and focused in all four modes.
 
-`0162-luma-capture-thumbnail-throw-menu-keys.patch`: the screenshot thumbnail is dismissed by a throw toward the right edge (at least 40 px, mostly level, peak 0.6 px/ms, not resting before release); short or slow drags spring back and drops still deliver the file. A right-click, Shift+F10 or Menu opens Open, Open With (default first, Other Application… via the portal), Copy, Copy File, Show in Filer, Rename… (in place) and Move to Trash (with an Undo pill for six seconds); the thumbnail stays while its menu is open. Delete trashes, Escape dismisses, Enter opens. `tests/gnome-shell/capture-thumbnail/` drives each of these with a virtual pointer and keyboard.
+`0162-Suno-capture-thumbnail-throw-menu-keys.patch`: the screenshot thumbnail is dismissed by a throw toward the right edge (at least 40 px, mostly level, peak 0.6 px/ms, not resting before release); short or slow drags spring back and drops still deliver the file. A right-click, Shift+F10 or Menu opens Open, Open With (default first, Other Application… via the portal), Copy, Copy File, Show in Filer, Rename… (in place) and Move to Trash (with an Undo pill for six seconds); the thumbnail stays while its menu is open. Delete trashes, Escape dismisses, Enter opens. `tests/gnome-shell/capture-thumbnail/` drives each of these with a virtual pointer and keyboard.
 
-`0163-luma-sticky-dock-only-with-sticky-notes.patch`: the sticky note stack (0078, 0079) is built only while Sticky Notes is installed (its desktop entry is known, or `org.projectluma.StickyNotes` is activatable), rechecked on `installed-changed` and added or removed live; without it there is no dead "+" rail and nothing is logged as an error. `tests/gnome-shell/sticky-dock/` starts without the app, installs and removes its desktop entry, then a D-Bus service file alone.
+`0163-Suno-sticky-dock-only-with-sticky-notes.patch`: the sticky note stack (0078, 0079) is built only while Sticky Notes is installed (its desktop entry is known, or `org.projectSuno.StickyNotes` is activatable), rechecked on `installed-changed` and added or removed live; without it there is no dead "+" rail and nothing is logged as an error. `tests/gnome-shell/sticky-dock/` starts without the app, installs and removes its desktop entry, then a D-Bus service file alone.
 
-`0164-luma-quick-options-match-the-design.patch`: Quick Options matches the Design Center again. Two shapes: Wi-Fi, Bluetooth and any other connection are 64px cards; every other switch is a 44px pill (icon and one word, no status line) in a three-column grid ordered Tiling, Location, Warm light, Airplane mode ("Airplane"), Keyboard, Cast, then GNOME's other switches. `QuickSettingsLayout` counts six units (card 3, pill 2, level 6) and never leaves a hole: two pills on a last row take half the width each, one pill or a lone card the whole width. An on pill takes the design's tinted wash (no longer 0155's filled slab); a pill with a menu toggles and opens its menu from a boxless chevron inside its trailing edge (26px of layout, 32px hit area through `QuickDisclosureButton`'s pick overhang). Cards and levels share one 30px raised disclosure with a filled chevron (`luma-disclosure-{down,up}-symbolic`). Volume reads "48% · <output>", every level keeps the disclosure's slot, and the microphone row (GNOME's rule: only while an app records) sits under it. Detail sheets move from the overlay into the grid: in flow under their owner's row, one at a time, drawn with their owner as one shape by `QuickSheetFrame` (`-luma-sheet-fill`, `-luma-sheet-line`, `-luma-sheet-radius`), titled in sentence case with a muted count and no icon, listing `QuickSheetRow` choices (two lines, whole-row button, raised fill and dot for the current one) and ending in plain settings links. The Notifications and Calendar buttons and the background-apps row are no longer shown; the background-apps indicator still runs. Cast shows only with a network or a known screen. `tests/gnome-shell/quick-details/` asserts every sheet is in flow, joins its owner, repeats no icon and keeps its title and count at 4.5:1 in all four modes.
-`0167-luma-movable-shelf-islands.patch`: movable shelf islands (ADR-044). Any island (dock, live, media, notifications, Well, Quick Options, clock) is held still for 400 ms, or chosen from the Shelf menu (right-click: Arrange Islands…, Reset Island Layout, Shelf Settings…), or moved with Ctrl+Alt(+Shift)+arrow, and dropped on any edge or corner, free or attached to another group. The shelf becomes a controller over groups of attached islands, one tracked chrome actor per group, placed by the pure model `shelfArrangement.js` (zones, band solver, status fusion, drop targets, keyboard steps, announcements, struts, displays); arrange mode lives in `shelfArrange.js`. The arrangement is the shell-state key `shelf-arrangement` (luma-shell-state 1.luma.27); empty is today's layout, and a spanning shelf of separate islands is drawn as two groups (dock at the start, the rest at the end), exactly as before. One strut per occupied edge per monitor; bands stay reserved while their island is hidden; struts never move during a drag. Surfaces, the notification tray and banners follow each island's own edge. `tests/gnome-shell/shelf-arrangement.js` (gjs, run in %check verification) covers the model; `tests/gnome-shell/shelf-arrange/` drives the owner's scenarios, every island to every zone, attach and detach, struts and Tiling Shell, keyboard, the menu, the tray, a restart, two monitors, four modes and drag cost in the headless oracle.
+`0164-Suno-quick-options-match-the-design.patch`: Quick Options matches the Design Center again. Two shapes: Wi-Fi, Bluetooth and any other connection are 64px cards; every other switch is a 44px pill (icon and one word, no status line) in a three-column grid ordered Tiling, Location, Warm light, Airplane mode ("Airplane"), Keyboard, Cast, then GNOME's other switches. `QuickSettingsLayout` counts six units (card 3, pill 2, level 6) and never leaves a hole: two pills on a last row take half the width each, one pill or a lone card the whole width. An on pill takes the design's tinted wash (no longer 0155's filled slab); a pill with a menu toggles and opens its menu from a boxless chevron inside its trailing edge (26px of layout, 32px hit area through `QuickDisclosureButton`'s pick overhang). Cards and levels share one 30px raised disclosure with a filled chevron (`Suno-disclosure-{down,up}-symbolic`). Volume reads "48% · <output>", every level keeps the disclosure's slot, and the microphone row (GNOME's rule: only while an app records) sits under it. Detail sheets move from the overlay into the grid: in flow under their owner's row, one at a time, drawn with their owner as one shape by `QuickSheetFrame` (`-Suno-sheet-fill`, `-Suno-sheet-line`, `-Suno-sheet-radius`), titled in sentence case with a muted count and no icon, listing `QuickSheetRow` choices (two lines, whole-row button, raised fill and dot for the current one) and ending in plain settings links. The Notifications and Calendar buttons and the background-apps row are no longer shown; the background-apps indicator still runs. Cast shows only with a network or a known screen. `tests/gnome-shell/quick-details/` asserts every sheet is in flow, joins its owner, repeats no icon and keeps its title and count at 4.5:1 in all four modes.
+`0167-Suno-movable-shelf-islands.patch`: movable shelf islands (ADR-044). Any island (dock, live, media, notifications, Well, Quick Options, clock) is held still for 400 ms, or chosen from the Shelf menu (right-click: Arrange Islands…, Reset Island Layout, Shelf Settings…), or moved with Ctrl+Alt(+Shift)+arrow, and dropped on any edge or corner, free or attached to another group. The shelf becomes a controller over groups of attached islands, one tracked chrome actor per group, placed by the pure model `shelfArrangement.js` (zones, band solver, status fusion, drop targets, keyboard steps, announcements, struts, displays); arrange mode lives in `shelfArrange.js`. The arrangement is the shell-state key `shelf-arrangement` (Suno-shell-state 1.Suno.27); empty is today's layout, and a spanning shelf of separate islands is drawn as two groups (dock at the start, the rest at the end), exactly as before. One strut per occupied edge per monitor; bands stay reserved while their island is hidden; struts never move during a drag. Surfaces, the notification tray and banners follow each island's own edge. `tests/gnome-shell/shelf-arrangement.js` (gjs, run in %check verification) covers the model; `tests/gnome-shell/shelf-arrange/` drives the owner's scenarios, every island to every zone, attach and detach, struts and Tiling Shell, keyboard, the menu, the tray, a restart, two monitors, four modes and drag cost in the headless oracle.
 
-`0170-luma-frost-and-glass-are-one-light-material.patch`: frost and glass are one light material, with application windows (owner, 2026-09-18: "dash is dark? and titlebars are not frost"). SURFACE_INK's frost and glass entries are light veils (frost islands rgba(246,247,249,.80), menus and sheets .88; glass .62 and .80) with ink one step deeper than paper's, and `LIGHT_FAMILY` names light, frost and glass. Every stylesheet rule for `luma-surface-light` also names frost and glass with the translucent veils swapped in, the smoked frost/glass colours of 0150, 0157, 0164 and 0167 are gone, menus, the beam and the prompt/share/capture cards take the veils, the notification Sass maps are regenerated, the status cluster and Well take the light recess, and the Shell loads its light variant sheet for frost and glass. Blur: frost radius 38 saturation 1.6, glass 18 and 1.35. `tests/unit/lumaSurfaceInk.js` measures every veil, ink and state stack over black, mid grey and white; `verify-treatment-ink.py` refuses near-white ink on the light family.
+`0170-Suno-frost-and-glass-are-one-light-material.patch`: frost and glass are one light material, with application windows (owner, 2026-09-18: "dash is dark? and titlebars are not frost"). SURFACE_INK's frost and glass entries are light veils (frost islands rgba(246,247,249,.80), menus and sheets .88; glass .62 and .80) with ink one step deeper than paper's, and `LIGHT_FAMILY` names light, frost and glass. Every stylesheet rule for `Suno-surface-light` also names frost and glass with the translucent veils swapped in, the smoked frost/glass colours of 0150, 0157, 0164 and 0167 are gone, menus, the beam and the prompt/share/capture cards take the veils, the notification Sass maps are regenerated, the status cluster and Well take the light recess, and the Shell loads its light variant sheet for frost and glass. Blur: frost radius 38 saturation 1.6, glass 18 and 1.35. `tests/unit/SunoSurfaceInk.js` measures every veil, ink and state stack over black, mid grey and white; `verify-treatment-ink.py` refuses near-white ink on the light family.
 
-`0171-luma-dash-islands-on-every-edge-and-every-setting.patch`: the owner's feedback on movable islands. Shared monitor edges take islands, reserved through Mutter 0016's `meta_display_set_monitor_edge_reservation()` (closed as before without it). A drop goes to the zone the pointer is in, else the zone nearest the island's centre, and the ghost is a preview group of the island's real length in its target form. Islands attach or sit at start/centre/end unless `shelf-free-placement` (shell-state 1.luma.28) is on. Zones are drawn at a distance weight (22% at rest) and each edge has a faint line that steps aside around placeholders, groups and the ghost. Arranging shows a ghost live-extensions slot. Use islands off + span draws one bar, Float outer edges moves and squares the band ends, Protrude keeps the windows' padding, `shelf-reserve-work-area` and Position are honoured. Side-edge forms for media, live and the clock. The Dash menu is a kit menu reading "Dash Settings…". `tests/gnome-shell/shelf-arrange/` adds edges3, tiling3, targeting, weights, ghostlive, settings, menus and look.
+`0171-Suno-dash-islands-on-every-edge-and-every-setting.patch`: the owner's feedback on movable islands. Shared monitor edges take islands, reserved through Mutter 0016's `meta_display_set_monitor_edge_reservation()` (closed as before without it). A drop goes to the zone the pointer is in, else the zone nearest the island's centre, and the ghost is a preview group of the island's real length in its target form. Islands attach or sit at start/centre/end unless `shelf-free-placement` (shell-state 1.Suno.28) is on. Zones are drawn at a distance weight (22% at rest) and each edge has a faint line that steps aside around placeholders, groups and the ghost. Arranging shows a ghost live-extensions slot. Use islands off + span draws one bar, Float outer edges moves and squares the band ends, Protrude keeps the windows' padding, `shelf-reserve-work-area` and Position are honoured. Side-edge forms for media, live and the clock. The Dash menu is a kit menu reading "Dash Settings…". `tests/gnome-shell/shelf-arrange/` adds edges3, tiling3, targeting, weights, ghostlive, settings, menus and look.
 
-`0172-luma-dash-islands-as-arranged.patch`: the owner's findings on .118 (ADR-044). Ships the `luma-live-extensions-symbolic` glyph 0171 named. Centred groups stay on the centre line (the dock shrinks both sides first); start/end reach the true ends (side bands stop at a corner only when a top/bottom band is there); hidden islands take no length and hold no edge, with arrange-mode ghosts for hidden live extensions and notifications and a `LUMA_SHELF_RESERVATIONS` journal field per change; the live and media islands are one family in one slot; attach/apart with a dead zone and hysteresis, measured against the layout at drag start; free placement exact with 12 px soft snaps and no zone grid; Use islands off draws one full-length bar per edge laid out by the band solver (all four edges alike); one 2 px full-height divider token. .120: empty edges reserve nothing (no margin strut or work-area inset unless Reserve work area is off); a click on the notifications island toggles the drawer, and the drawer and urgent cards open beside the island on any edge, moving in from it. Tests: owner, matrix, family, retile, notifplace, asarranged. .121: every edge's ends reach the corner unless a top or bottom group sits at that end (or a bar, which runs its edge); without islands adjacent bars meet as one L with no rim across the joint; the group handle is a 48 by 22 target that says what it does, and Quick Options, the clock and the status icons move together (Shift takes one out); arrange mode shows only the Live extensions and Notifications placeholders, always in their slot; empty items take no length, spacing or divider and grow in when they show; hovering the notifications island only changes its look; the drop index follows the pointer against the islands' midpoints; Tiling Shell's panel button never joins the Dash; the Dash announces work-area changes (`work-area-changing`, `Main.shelf.workAreaMotion`) and `Main.wm.lumaGlideFrame` moves a window in one glide. `Main.shelf.reservedMargins(monitor)` says how much of each edge's reservation is the margin a window keeps from an island, so Tiling Shell can make every gap the same. Tests: round121, livetile, tiles, gaps.
+`0172-Suno-dash-islands-as-arranged.patch`: the owner's findings on .118 (ADR-044). Ships the `Suno-live-extensions-symbolic` glyph 0171 named. Centred groups stay on the centre line (the dock shrinks both sides first); start/end reach the true ends (side bands stop at a corner only when a top/bottom band is there); hidden islands take no length and hold no edge, with arrange-mode ghosts for hidden live extensions and notifications and a `SUNO_SHELF_RESERVATIONS` journal field per change; the live and media islands are one family in one slot; attach/apart with a dead zone and hysteresis, measured against the layout at drag start; free placement exact with 12 px soft snaps and no zone grid; Use islands off draws one full-length bar per edge laid out by the band solver (all four edges alike); one 2 px full-height divider token. .120: empty edges reserve nothing (no margin strut or work-area inset unless Reserve work area is off); a click on the notifications island toggles the drawer, and the drawer and urgent cards open beside the island on any edge, moving in from it. Tests: owner, matrix, family, retile, notifplace, asarranged. .121: every edge's ends reach the corner unless a top or bottom group sits at that end (or a bar, which runs its edge); without islands adjacent bars meet as one L with no rim across the joint; the group handle is a 48 by 22 target that says what it does, and Quick Options, the clock and the status icons move together (Shift takes one out); arrange mode shows only the Live extensions and Notifications placeholders, always in their slot; empty items take no length, spacing or divider and grow in when they show; hovering the notifications island only changes its look; the drop index follows the pointer against the islands' midpoints; Tiling Shell's panel button never joins the Dash; the Dash announces work-area changes (`work-area-changing`, `Main.shelf.workAreaMotion`) and `Main.wm.SunoGlideFrame` moves a window in one glide. `Main.shelf.reservedMargins(monitor)` says how much of each edge's reservation is the margin a window keeps from an island, so Tiling Shell can make every gap the same. Tests: round121, livetile, tiles, gaps.
 
-`0176-luma-dock-folders-glyph.patch`: ships `luma-dock-folders-symbolic`, the glyph arrange mode names for the folders island (0172). A folder with its tab and flap line, same 24-unit grid and outlined 2-unit strokes as the other island glyphs. Shell .141.
+`0176-Suno-dock-folders-glyph.patch`: ships `Suno-dock-folders-symbolic`, the glyph arrange mode names for the folders island (0172). A folder with its tab and flap line, same 24-unit grid and outlined 2-unit strokes as the other island glyphs. Shell .141.
 
 `0277-login-surfaces-and-dock-battery-percentage.patch` connects the custom dock status cells to the existing battery percentage presentation and measures their text in all dock orientations. Removes the login power separator gap and uses one solid login card surface.
 
@@ -363,7 +363,7 @@ change or its layout is rebuilt, and drawn again one per frame while it
 slides in or sits idle, never in a frame that handles a touch. Shell .137.
 
 `0303-mobile-data-quick-toggle.patch`: a Mobile Data Quick Settings toggle
-bound to `org.projectluma.MobileMode1` for modems that carry either IMS or
+bound to `org.projectSuno.MobileMode1` for modems that carry either IMS or
 mobile data at a time; hidden where that service does not run. Quick Options
 gives it a fifth utility slot. Shell .140.
 
@@ -395,7 +395,7 @@ stylesheet under their last compound selector's ID, first class or element
 type, and a node is tested only against the selectors filed under its ID,
 classes and type ancestry plus the few with none of those, in stylesheet order,
 so the matched declarations are unchanged (checked on 30000 nodes across the
-presentations). `LUMA_ST_NO_SELECTOR_INDEX=1` restores the full scan. Shell
+presentations). `SUNO_ST_NO_SELECTOR_INDEX=1` restores the full scan. Shell
 .156.
 `0319-blur-keep-pass-textures.patch`: a background blur repaints every frame,
 and each paint built a ClutterBlurNode with three new textures and two
@@ -421,16 +421,16 @@ not closed. Headless at 3840x2160 with full redraws: 45% fewer GPU jobs across
 overview open and close; the open overview's screenshot is unchanged (SSIM
 0.99999). Shell .157.
 
-`0321-luma-setup-welcome-cover.patch`: the first session after Luma's
-first-boot setup (`/var/lib/luma-setup/welcome/<user>`, until
-`~/.local/state/luma-setup/welcome-done`) opens on the setup's last frame.
-`luma-setup-cover.service` starts with the Shell and draws that frame again
+`0321-Suno-setup-welcome-cover.patch`: the first session after Suno's
+first-boot setup (`/var/lib/Suno-setup/welcome/<user>`, until
+`~/.local/state/Suno-setup/welcome-done`) opens on the setup's last frame.
+`Suno-setup-cover.service` starts with the Shell and draws that frame again
 from the same data, code, wallpaper, softening and text settings. At the top
 of the startup animation the Shell waits (15 s at most) for that window's
 title to say its first frame is drawn, then shows the stage: a clone of the
-window above everything, `uiGroup` at opacity 0. With Luma's gdm (patches/gdm)
+window above everything, `uiGroup` at opacity 0. With Suno's gdm (patches/gdm)
 the setup keeps the screen while this session starts paused; at
-`startup-complete` the Shell writes `/run/luma-setup/session/cover-ready`,
+`startup-complete` the Shell writes `/run/Suno-setup/session/cover-ready`,
 the setup holds its frame and gdm switches here, and `registerDisplayWithGDM`
 waits for the first frame on screen, since registering ends the setup's
 session. The cover lifts (1.1 s fade) and the window closes. Without the
@@ -438,15 +438,15 @@ setup's frame, the cover is a blurred wallpaper of the Shell's own. The
 cover window never animates in. Shell .158.
 
 `0322-tv-home.patch`: registers the TV posture's sources in the JS resource
-(`lumaPresentation/tv.js`, `tvModel.js`, the generated `tvTokens.js` and the
+(`SunoPresentation/tv.js`, `tvModel.js`, the generated `tvTokens.js` and the
 pre-blurred `tv-backdrop.jpg`) and lists `tv.js` for translation. The sources
-live in `src/luma-shell-presentation/` and are copied in `%prep` like the rest
+live in `src/Suno-shell-presentation/` and are copied in `%prep` like the rest
 of the presentation. `presentation.js` hands the screen to `TvPresentation`
 when the shell-state snapshot's `posture.effective` is `tv`; its handheld
 machinery stays on Desktop underneath, and a snapshot without a posture (an
 older shell-state) behaves exactly as before. In TV posture the TV home
 (Home, Apps, Search) replaces the Dash, panel, overview and sticky stack;
-applications run full screen, and minimising the last one returns to Apps. Flatpak's export keeps only allowlisted desktop keys, so for an entry with `X-Flatpak` and no TV keys the TV home reads `X-Luma-TV*` from the app's own deployed desktop file (system or user installation only, `tvModel.js` `flatpakTv`; cached until the installed apps change) and its tile from the deploy's `share/luma-tv/`. Test: `tv-flatpak-policy.js` in %check. Shell .160.
+applications run full screen, and minimising the last one returns to Apps. Flatpak's export keeps only allowlisted desktop keys, so for an entry with `X-Flatpak` and no TV keys the TV home reads `X-Suno-TV*` from the app's own deployed desktop file (system or user installation only, `tvModel.js` `flatpakTv`; cached until the installed apps change) and its tile from the deploy's `share/Suno-tv/`. Test: `tv-flatpak-policy.js` in %check. Shell .160.
 
 `0323-tv-keyboard.patch`: the TV posture of the Keycap keyboard. While
 `TvPresentation` holds TV posture (`Main.keyboard.setTvPosture()`) every field
@@ -465,11 +465,11 @@ Back arrives as Escape, see 0324), OK on an
 Enter key acts on release, Back or Up from the top row closes and arms OK to
 reopen. `InputMethod` reports printable keys from real devices
 (`reportPhysicalKeys`, TV only), which close the keyboard. The keyboard
-exports `org.projectluma.Shell.Keyboard1` (`SetActionLabel`, `Visible`,
+exports `org.projectSuno.Shell.Keyboard1` (`SetActionLabel`, `Visible`,
 `Height` in TV units); docs/developer-platform/tv-mode.md "Typing". Test:
 `tv-keyboard-policy.js` in %check. Outside TV posture nothing changes.
 
-`0324-tv-input.patch`: registers `lumaPresentation/tvInput.js` and its pure
+`0324-tv-input.patch`: registers `SunoPresentation/tvInput.js` and its pure
 rules `tvInputModel.js` in the JS resource. `TvPresentation` runs `TvInput`
 only while it holds TV posture: gamepads read through libmanette
 (`gi://Manette?version=0.2`, optional; Recommends libmanette) become TV keys
@@ -479,12 +479,12 @@ the quick panel (0329), Guide or Select+Start = the TV home), and remote keys th
 keys (XF86Back, XF86Close, XF86OK, XF86Select, XF86HomePage, XF86RootMenu,
 XF86MenuKB, XF86ContextMenu; CEC keys through rc-cec) are Mutter accelerators
 re-sent as TV keys. A pad reaches only the Shell, the TV keyboard and
-`X-Luma-TV-Presentation=tv` apps, never a window whose process claimed the
-pads (`org.projectluma.Shell.Remote1.ClaimGamepads`); other applications read
+`X-Suno-TV-Presentation=tv` apps, never a window whose process claimed the
+pads (`org.projectSuno.Shell.Remote1.ClaimGamepads`); other applications read
 the pad untouched. The pad is never grabbed. docs/developer-platform/tv-mode.md
 "Remotes and gamepads". Test: `tv-input-policy.js` in %check.
 
-`0325-tv-dialogs.patch`: registers `lumaPresentation/tvDialogs.js` and its
+`0325-tv-dialogs.patch`: registers `SunoPresentation/tvDialogs.js` and its
 pure rules `tvDialogsModel.js` in the JS resource. While `TvPresentation`
 holds TV posture, `TvDialogs` adapts every `ModalDialog` as it opens (Wi-Fi,
 VPN and keyring secrets, the administrator prompt, end session, mounts, run,
@@ -494,19 +494,19 @@ named after the default button, buttons become TV actions with the focus as
 the one key, and the card rises above the keyboard. The focus is kept inside
 the dialog that holds the grab (the TV home no longer takes it from under a
 grab), and Back acts in the capture phase on the Escape button or a lone
-button even if the focus was lost. Dialogs without buttons (Luma Search) and
+button even if the focus was lost. Dialogs without buttons (Suno Search) and
 every dialog outside TV posture are unchanged; `polkitAgent.js`,
 `dialog.js` and `modalDialog.js` are not patched. docs/developer-platform/
 tv-mode.md "System dialogs". Test: `tv-dialogs-policy.js` in %check. The sheet width is whole pixels and a card its dialog placed itself is restyled once per width of its own, so restyle and placement converge at a unit that is not whole (1280x800). Shell .161.
 
-`0326-tv-screen-edges.patch`: registers `lumaPresentation/tvScreenEdges.js`.
+`0326-tv-screen-edges.patch`: registers `SunoPresentation/tvScreenEdges.js`.
 In TV posture `TvPresentation` scales `Main.uiGroup` (the TV home and every
 window) about the centre by `1 - tv-screen-edges/100` (shell-state key,
 0–10 %), live, for a TV that overscans; leaving TV posture restores scale 1.
 Settings › Display › Fit › Screen edges writes the key. Without the key (an
 older shell-state) nothing changes. Applies after 0325.
 
-`0327-tv-quick-panel.patch`: registers `lumaPresentation/tvQuickPanel.js` and
+`0327-tv-quick-panel.patch`: registers `SunoPresentation/tvQuickPanel.js` and
 its pure rules `tvQuickPanelModel.js` in the JS resource. In TV posture, OK on
 the TV home bar's weather | time cluster (Right past Search) or a long press
 of Home (`tv.quick_panel.home_hold_ms`; a remote's Home or CEC Root Menu, a
@@ -524,7 +524,7 @@ a backend are not drawn. Back or Left off the island closes it and the focus
 returns to the cluster. docs/developer-platform/tv-mode.md "The quick panel".
 Test: `tv-quick-panel-policy.js` in %check. Leave TV Mode (a row of its own right under the toggles, shown while TV was chosen in Quick Options) closes the panel and calls the shell state's `SetPosture('automatic')`, as Quick Options' mode picker does, so the saved presentation returns. Shell .160.
 
-`0328-tv-app-switcher.patch`: registers `lumaPresentation/tvAppSwitcher.js`
+`0328-tv-app-switcher.patch`: registers `SunoPresentation/tvAppSwitcher.js`
 and its pure rules `tvAppSwitcherModel.js` in the JS resource. In TV posture,
 Home pressed twice (`tv.app_switcher.double_ms`) opens the app switcher: the
 running apps (`Shell.AppSystem` and `sessionApplications.js`, newest first in
@@ -537,7 +537,7 @@ tiles get a running dot and a held-OK menu with Open and Close. A single Home
 now goes home after the double-press window. docs/developer-platform/
 tv-mode.md "Closing apps". Test: `tv-app-switcher-policy.js` in %check.
 
-`0329-tv-pointer.patch`: registers `lumaPresentation/tvPointer.js` in the JS
+`0329-tv-pointer.patch`: registers `SunoPresentation/tvPointer.js` in the JS
 resource. In TV posture the pointer hides the moment a remote, pad or keyboard
 key arrives and after `POINTER_IDLE_MS` (3 s) of rest, through Mutter's
 cursor tracker (`inhibit_cursor_visibility`); motion, a click or a scroll
@@ -558,18 +558,18 @@ dock badge model's `badgeBox`, so a single digit is a circle and longer counts
 a pill, the same as every other dock badge. Test: `dock-folder-badge-policy.js`
 in %check. Shell .163.
 
-`0330-luma-date-menu-calendar-only.patch`: the date menu (the clock in Quick
+`0330-Suno-date-menu-calendar-only.patch`: the date menu (the clock in Quick
 Options) is the calendar column alone: today, the calendar, and events with
 world clocks and weather. It builds no notification list; notifications live
 in the notification tray, Do Not Disturb in Quick Options, and media in the
 shelf. `optionsSurface.css` drops the column's side margin. Test:
 `date-menu-calendar-only-policy.js` in %check. Shell .164.
 
-`0331-luma-date-menu-calendar-panel.patch`: the date menu's events list shows
+`0331-Suno-date-menu-calendar-panel.patch`: the date menu's events list shows
 what is coming up from now into next month, grouped by day, at most four rows
 and then "N more this week"; a chosen day lists that day ("Nothing on
 Thursday." when empty), and choosing it again goes back to today. Rows open
-the event in Luma Calendar (`--event-uid` and `--event-day`, as its reminders
+the event in Suno Calendar (`--event-uid` and `--event-day`, as its reminders
 do); "N more" and Open Calendar open Calendar on that day (`--event-day`).
 The month header (with Today when another month is on show) replaces the date
 header; the month on show pages without choosing a day, arrow keys walk the
@@ -594,10 +594,10 @@ state whenever the device has one. The network indicator draws a modem only
 while mobile data is the primary connection, so a phone that was registered
 without data, searching, or without a SIM showed nothing. `status/cellular.js`
 reads ModemManager's modems over its object manager (never starting it) and
-`lumaPresentation/cellularStatus.js` maps state, failed reason, SIM, 3GPP
+`SunoPresentation/cellularStatus.js` maps state, failed reason, SIM, 3GPP
 registration and signal quality to one icon: GNOME's signal names while
 registered (the handheld status bar redraws them as the Lucide signal glyphs),
-`luma-cellular-no-service-symbolic` otherwise, `luma-cellular-no-sim-symbolic`
+`Suno-cellular-no-service-symbolic` otherwise, `Suno-cellular-no-sim-symbolic`
 for a missing SIM. A searching modem still reports its last signal, so the
 signal is drawn only once registered. While mobile data is the primary
 connection the network indicator leaves the signal to this one. The two new
@@ -637,7 +637,7 @@ nothing there. main.js builds a `HandheldPowerButton` of its own in greeter
 mode, and the button (powerButton.js) skips the screen-shield lock when there
 is no session to secure. Handheld device class only. The greeter's dconf (GDM
 profile) also sets media-keys `power-static=@as []`
-(config/mobile/luma-greeter-handheld.dconf), as luma-shell-handheld.dconf
+(config/mobile/Suno-greeter-handheld.dconf), as Suno-shell-handheld.dconf
 does for the session, or gsd-media-keys takes the key first at boot.
 Shell .175.
 
@@ -730,7 +730,7 @@ clock) and typed keys went to the hidden list. activate() now focuses the
 list only when it is shown. Test: `keycap-policy.js` in %check. Shell .185.
 
 `0348-file-drag-out-of-shell.patch`: files shown by the Shell can be dragged
-into applications, as if from Filer. `lumaFileDrag.js` is the primitive any
+into applications, as if from Filer. `SunoFileDrag.js` is the primitive any
 surface uses: `attach(actor, {files, kinds, preview, began, ended})` makes an
 actor a drag source, and the drag is Mutter's `MetaDataDrag` (mutter 0031),
 so Wayland, Xwayland and Flatpak clients all see an ordinary drag. It offers
@@ -769,30 +769,30 @@ connection PID: window tracker app, else `/proc/<pid>/exe`), and the tooltip
 is read over D-Bus because the AppIndicator host does not keep it. Its name,
 face and pin key come from that app. A browser
 notification whose origin line is an installed web app's site goes to that
-web app. Rules: `js/ui/lumaWellModel.js` (no gi imports). Test:
+web app. Rules: `js/ui/SunoWellModel.js` (no gi imports). Test:
 `well-overflow-policy.js` in %check. Shell .187.
 
 `0350-app-mixer.patch`: the Sound output page lists System sounds and every
 app with a sound stream under the outputs, from
-`org.projectluma.AudioDevices1` version 2. Each app is the shared filled
+`org.projectSuno.AudioDevices1` version 2. Each app is the shared filled
 level (`FillSlider`, which gains a `meter` drawn along its foot) with the
 app's icon and name, then a mute key and an output key that opens the
 outputs under the row. Meters are watched only while the page is on screen.
 The model (`AppMixer`, the output slider's `appMixer`) also feeds the TV
 quick panel, which lists each app's volume under the outputs. On a compact
 (phone) drawer the detail page is no longer capped at 420 px.
-The service's level probes (`org.projectluma.AudioDevices`) are skipped by
+The service's level probes (`org.projectSuno.AudioDevices`) are skipped by
 the microphone indicator, strip and status well, as pavucontrol is. Without
 the service or before version 2 the page is unchanged. Test:
 `app-mixer-policy.js` in %check. Shell .188.
 
 `0360-sound-page.patch`: Quick Options' sound sheet is the Sound page. The
 master volume is the main page's filled level; the outputs are a two-column
-grid of chips named and drawn by `org.projectluma.AudioDevices1` version 3
+grid of chips named and drawn by `org.projectSuno.AudioDevices1` version 3
 (`label`, `kind`; more than four show the three used last and "More…", which
 opens the device list of 0119 with the AirPlay picker); "Playing" is one
-LumaUI media row per app with a stream (`mediaRow.js`, the St row drawn from
-the LumaMediaRow tokens in `mediaRowTokens.js`): artwork badged with the
+SunoUI media row per app with a stream (`mediaRow.js`, the St row drawn from
+the SunoMediaRow tokens in `mediaRowTokens.js`): artwork badged with the
 app, the player's title, where it plays or that it is paused, its volume
 and a play key, three rows before the list scrolls in its well; "Volume
 mixer" opens Settings. The page (`soundPage.js`, rules in
@@ -825,7 +825,7 @@ card while it is open, so the scrim keeps the blur it opened with. Live
 clones redrew every tile, and re-blurred the scrim over the whole desktop,
 on every frame a window under it changed. Shell .190.
 
-`0351-screen-share-waits-for-unlock.patch`: Luma Share's picker is never
+`0351-screen-share-waits-for-unlock.patch`: Suno Share's picker is never
 shown over, under or during the lock screen. `Choose` while the session is
 locked, or while the screen shield is up or going away, is held unanswered
 and shown after unlock, where the person can still deny it; a picker on
@@ -834,11 +834,11 @@ comes back after unlock; `Cancel` answers a held request. The lock screen
 shows its pointer on any pointer motion (`position-invalidated`), so a dialog
 over the lock screen that takes the grab no longer leaves the pointer
 hidden. With Mutter 0035 (shares pause instead of ending at the lock) and
-luma-portal 1.luma.13 (requests wait for unlock, one picker at a time).
+Suno-portal 1.Suno.13 (requests wait for unlock, one picker at a time).
 Test: `tests/gnome-shell/lock-screen-sharing/run.sh OUT lock`. Shell .191.
 
 `0352-screen-share-ring-follows-the-window.patch`: the shared window's ring
-follows the window's outline: `windowCornerRadius()` (lumaWindowCorners: 15
+follows the window's outline: `windowCornerRadius()` (SunoWindowCorners: 15
 for application windows, maximized and tiled included; 0 for fullscreen,
 Android and Mutter-framed X11 windows), a 2.5 violet line from the window's
 edge out and a halo that falls to zero 11 beyond it, inside the actor. Drawn
@@ -869,7 +869,7 @@ cluster's sharing mark stays and brings it back. Shell .191.
 
 `0355-screen-share-ends-with-the-share.patch`: a share's ring and pill end
 when its Mutter screen cast session closes (`mutter-session` from
-luma-portal 1.luma.13) or when the portal backend's bus name vanishes or
+Suno-portal 1.Suno.13) or when the portal backend's bus name vanishes or
 changes owner, not only on `SessionClosed`. Test:
 `tests/gnome-shell/lock-screen-sharing` MODE=lifecycle (application killed,
 backend killed, backend stopped, Mutter session stopped). Shell .191.
@@ -886,9 +886,9 @@ interrupted series finishes the breaths left. Tests:
 `tests/gnome-shell/notification-breaths-policy.js` (in `%check`),
 `tests/gnome-shell/idle-cost`. Shell .193.
 
-`0393-layer-shell-surfaces.patch`: layer-shell surfaces (Mutter 0043-0045) in the Shell, `js/ui/lumaLayerShell.js` and its pure model `js/ui/lumaLayerShellModel.js`. The compositor's layer overlay group goes right above `global.window_group` in `uiGroup`: overlay surfaces cover every window, full-screen ones included, and stay under everything the Shell draws (panel and shelf, notifications, Quick Options, on-screen displays, the screen-share picker, portal and polkit dialogs, the end-session dialog, the lock screen); it is hidden with the windows in the overview. While the screen shield is up `set_layer_surfaces_hidden(true)`: no layer surface is shown, gets input or holds the keyboard. Grants are read from the permission store (table `luma`, entry `display-over-apps`; row tokens `overlay` granted, `-overlay` refused, `used-overlay@T` last used, `asked-overlay@T` offered, likewise `background`, `panel`, `keyboard`) before any app connects, pushed with `set_layer_shell_grants()` and followed through the store's `Changed` signal. A surface Mutter fades gets a name tag the Shell draws (design-center 858103d, `mockups/overlay-perms/faded.html`): a 26 px pill 6 px above the surface's top-left corner, or inside it inset 6 px with no room above, with the app's 16 px icon and name (Figtree 12/650), on rgba(18, 19, 22, 0.86) with a 12 px background blur and a 1.5 px ring in the LumaUI `overlay` colour (`config/shared/design-tokens.json`, written into `lumaLayerShellTokens.js` in `%prep`), stacked right above the overlays. `org.projectluma.LayerShell1` at `/org/projectluma/LayerShell` on the Shell's bus name: properties `Surfaces` `a(ssuubbt)`, `OverlayApps` `as`, `FadedApps` `as`, `Apps` `a{sa{sv}}` (granted, refused, used, last_used, asked); methods `SetCapability(s app, u capability, b allowed)` and `Stop(s app)` (unmaps the app's overlays for the session, grants unchanged); signals `Clamped(s app, u capability, b offer)` and `Used(s app, u capability)`. The status indicator and the offer here are unstyled placeholders on that interface (Allow, Not now, dismissing counts as Not now, offered once per app and capability); their design is built on top. Test: `tests/gnome-shell/layer-shell-policy.js` (in `%check`). Shell .203.
+`0393-layer-shell-surfaces.patch`: layer-shell surfaces (Mutter 0043-0045) in the Shell, `js/ui/SunoLayerShell.js` and its pure model `js/ui/SunoLayerShellModel.js`. The compositor's layer overlay group goes right above `global.window_group` in `uiGroup`: overlay surfaces cover every window, full-screen ones included, and stay under everything the Shell draws (panel and shelf, notifications, Quick Options, on-screen displays, the screen-share picker, portal and polkit dialogs, the end-session dialog, the lock screen); it is hidden with the windows in the overview. While the screen shield is up `set_layer_surfaces_hidden(true)`: no layer surface is shown, gets input or holds the keyboard. Grants are read from the permission store (table `Suno`, entry `display-over-apps`; row tokens `overlay` granted, `-overlay` refused, `used-overlay@T` last used, `asked-overlay@T` offered, likewise `background`, `panel`, `keyboard`) before any app connects, pushed with `set_layer_shell_grants()` and followed through the store's `Changed` signal. A surface Mutter fades gets a name tag the Shell draws (design-center 858103d, `mockups/overlay-perms/faded.html`): a 26 px pill 6 px above the surface's top-left corner, or inside it inset 6 px with no room above, with the app's 16 px icon and name (Figtree 12/650), on rgba(18, 19, 22, 0.86) with a 12 px background blur and a 1.5 px ring in the SunoUI `overlay` colour (`config/shared/design-tokens.json`, written into `SunoLayerShellTokens.js` in `%prep`), stacked right above the overlays. `org.projectSuno.LayerShell1` at `/org/projectSuno/LayerShell` on the Shell's bus name: properties `Surfaces` `a(ssuubbt)`, `OverlayApps` `as`, `FadedApps` `as`, `Apps` `a{sa{sv}}` (granted, refused, used, last_used, asked); methods `SetCapability(s app, u capability, b allowed)` and `Stop(s app)` (unmaps the app's overlays for the session, grants unchanged); signals `Clamped(s app, u capability, b offer)` and `Used(s app, u capability)`. The status indicator and the offer here are unstyled placeholders on that interface (Allow, Not now, dismissing counts as Not now, offered once per app and capability); their design is built on top. Test: `tests/gnome-shell/layer-shell-policy.js` (in `%check`). Shell .203.
 
-`0394-layer-permissions-indicator-and-offer.patch`: the design of 0393's status indicator and offer (design-center 858103d, `mockups/overlay-perms/`), `js/ui/lumaLayerShellIndicator.js` and its pure model `js/ui/lumaLayerShellIndicatorModel.js`. The status cell is the first column of the shelf's status slots (`panel.js` `setOverlayCell`), spanning both rows: one or two overlaying apps' 16 px icons ringed in the LumaUI `overlay` violet (1.5 px, and a 3 px dark separation ring), or the most recent icon and a violet "+N"; it shows while an overlay surface is mapped and leaves 2 s after the last one goes, and shows an app holding the keyboard through a layer surface with a keyboard badge. Hover: the shelf tooltip ("Diskord is displaying over other apps", "3 apps are displaying over other apps", "Diskord has the keyboard"). A click opens a 312 px shell pop (placed by `lumaShelfSurface.js`): "Over other apps", a well list with each app's 32 px icon, name, a violet dot and "what · how long" (the surface namespace as Voice overlay, Call bubble, Game stats or Overlay), Stop (`Stop`: unmapped for the session, the grant kept) and Overlay settings (`launch-panel` `applications` `overlay-apps`); a click never stops anything. Phone: the cell first in the status bar's right group, the list a bottom drawer (28 px top radius, 60 px rows, 40 px Stop). TV: the cell in the top bar's status group, the list a quick-panel page at TV scale with the focus on the first Stop. The offer is the shell's standard notification banner from the app's own source, with the Settings icon as a badge only the Shell sets (`messageList.js` `lumaShellBadge`), the capability's name as the title (as Settings names it) and the question as the body, and Allow and Not now as ordinary actions with neither a default; dismissing it counts as Not now. On TV, where the lip is hidden, it is a toast at the top right at TV scale with the focus on Not now. The name tag on a faded overlay draws its ring outside the 26 px pill. Every app icon here (the cell, the rows, the name tag, the TV toast's tile and badge, the offer's Settings badge) is drawn through 0389's `syncAppIconPlate`, its plate filling a masked clip; numbered after 0393 so it builds on 0389 and 0393. Tests: `tests/gnome-shell/layer-shell-indicator-policy.js` (in `%check`); conform scenarios `overlay-indicator`, `overlay-indicator-tv`, `overlay-offer`, `overlay-offer-tv`, `overlay-faded` (pixel mode). Shell .204.
+`0394-layer-permissions-indicator-and-offer.patch`: the design of 0393's status indicator and offer (design-center 858103d, `mockups/overlay-perms/`), `js/ui/SunoLayerShellIndicator.js` and its pure model `js/ui/SunoLayerShellIndicatorModel.js`. The status cell is the first column of the shelf's status slots (`panel.js` `setOverlayCell`), spanning both rows: one or two overlaying apps' 16 px icons ringed in the SunoUI `overlay` violet (1.5 px, and a 3 px dark separation ring), or the most recent icon and a violet "+N"; it shows while an overlay surface is mapped and leaves 2 s after the last one goes, and shows an app holding the keyboard through a layer surface with a keyboard badge. Hover: the shelf tooltip ("Diskord is displaying over other apps", "3 apps are displaying over other apps", "Diskord has the keyboard"). A click opens a 312 px shell pop (placed by `SunoShelfSurface.js`): "Over other apps", a well list with each app's 32 px icon, name, a violet dot and "what · how long" (the surface namespace as Voice overlay, Call bubble, Game stats or Overlay), Stop (`Stop`: unmapped for the session, the grant kept) and Overlay settings (`launch-panel` `applications` `overlay-apps`); a click never stops anything. Phone: the cell first in the status bar's right group, the list a bottom drawer (28 px top radius, 60 px rows, 40 px Stop). TV: the cell in the top bar's status group, the list a quick-panel page at TV scale with the focus on the first Stop. The offer is the shell's standard notification banner from the app's own source, with the Settings icon as a badge only the Shell sets (`messageList.js` `SunoShellBadge`), the capability's name as the title (as Settings names it) and the question as the body, and Allow and Not now as ordinary actions with neither a default; dismissing it counts as Not now. On TV, where the lip is hidden, it is a toast at the top right at TV scale with the focus on Not now. The name tag on a faded overlay draws its ring outside the 26 px pill. Every app icon here (the cell, the rows, the name tag, the TV toast's tile and badge, the offer's Settings badge) is drawn through 0389's `syncAppIconPlate`, its plate filling a masked clip; numbered after 0393 so it builds on 0389 and 0393. Tests: `tests/gnome-shell/layer-shell-indicator-policy.js` (in `%check`); conform scenarios `overlay-indicator`, `overlay-indicator-tv`, `overlay-offer`, `overlay-offer-tv`, `overlay-faded` (pixel mode). Shell .204.
 
 `0382-share-picker-marks-windows-hidden-from-capture.patch`: a window that
 keeps itself out of screen captures (`Meta.Window:hidden-from-capture`,
@@ -899,19 +899,19 @@ leave such windows out of their clones, so a screen preview shows what the
 screen share will. Tests: `tests/mutter/window-capture`. Shell .197.
 
 `0383-app-permissions-folder-offer-and-review.patch` (ADR-052 step 3): a
-`Refused(app, folder)` from `org.projectluma.AppPermissions1` becomes the
+`Refused(app, folder)` from `org.projectSuno.AppPermissions1` becomes the
 standard notification banner from the app's source, the Settings icon as the
-Shell's badge (`lumaShellBadge`), "Music folder" / "Let Tide use your Music
+Shell's badge (`SunoShellBadge`), "Music folder" / "Let Tide use your Music
 folder?", Allow and Not now (`AnswerOffer`; dismiss is Not now). On a TV the
 same banner at x1.5, top right, focus on Not now. `ReviewRequested` becomes
-Valet's "Kiln installed" notification whose Review runs `luma-install
---review`. `lumaPermissionOffer.showOffer()` is the offer surface the layer
+Valet's "Kiln installed" notification whose Review runs `Suno-install
+--review`. `SunoPermissionOffer.showOffer()` is the offer surface the layer
 permission offer (0381) can share. Tests: `tests/gnome-shell/app-permissions-policy.js`.
 Shell .208.
 
 `0404-connect-sync-approval-card-status-and-restoring-tiles.patch` (ADR-054,
 design-center 38858a5 `mockups/connect-sync`) reads
-`org.projectluma.ConnectSync1`. Another device asking to join raises a
+`org.projectSuno.ConnectSync1`. Another device asking to join raises a
 Shell-owned card at the top centre on every member ("Approve ThinkPad?", the
 six digits, Not me and Approve at equal width; ApproveJoin / DenyJoin) that
 stays until the request is answered anywhere. A status cell joins the
@@ -919,7 +919,7 @@ island's slots (`QuickSettings.setStatusCell`) only while syncing, paused or
 needing attention; its pop gives the state, one sentence, one action and
 Sync settings. Storage full and Removed from Sync post one banner each. An
 app still restoring has a dimmed tile with an accent ring and opens its row in
-Valet (`luma-installer --restore APP`). Phone: status bar cell, drawers; TV:
+Valet (`Suno-installer --restore APP`). Phone: status bar cell, drawers; TV:
 x1.5, focus on Not me; its notices are the shared TV toast (tv.js) with their
 actions in the quick panel's list. A TV notice that informs is the toast;
 one that asks for a decision is an offer card (0383). Re-review B3/S1/B2 (design-center f10cf9b): the card comes as soon as a
@@ -931,9 +931,9 @@ in a session: `tests/gnome-shell/connect-sync-session-probe.py`.
 
 `0385-notification-lip-ink-on-the-phone.patch`: the phone presentation
 paints the notification lip in the Dock's dark palette in every appearance
-mode (`src/luma-shell-presentation/presentation.css`) and turns the lip's
+mode (`src/Suno-shell-presentation/presentation.css`) and turns the lip's
 material off, but the binding kept the appearance mode's classes on it: in
-Light the lip carried `luma-surface-light` and its text, source line, time
+Light the lip carried `Suno-surface-light` and its text, source line, time
 and buttons took dark ink on the dark surface.
 `SurfaceMaterialBinding.setClassTreatment()` lets a host that paints a
 surface's fill itself name the treatment of that fill (null follows the
@@ -947,12 +947,12 @@ body that fit one line at the measured width wrapped in the card, the lip
 kept the one-line height, and its clipped surface cut off the actions. The
 card is measured at the surface's content box. Shell .199.
 
-`0387-icon-mask-cuts-in-actor-pixels.patch`: LumaIconMask measured its
+`0387-icon-mask-cuts-in-actor-pixels.patch`: SunoIconMask measured its
 corner in the offscreen texture's coordinates, and that texture is the
 actor's enlarged paint volume (37 px for a 34 px notification tile), so
 the corner was cut 1.5 px outside the icon around a larger circle and
 the art's own corner showed instead. The mask maps texture coordinates
-back to the actor's pixels, the mapping LumaRoundedClip already used
+back to the actor's pixels, the mapping SunoRoundedClip already used
 (now shared), with the radius a fraction of the actor's shorter side.
 Notification tiles, dock icons and the shelf's media and status icons
 take the corner they ask for. Shell .200.
@@ -964,27 +964,27 @@ pixel from its actions (a 120 px card in 119, 30 px buttons in 29). The
 card and tray take the surface's own measure, rim included; the pill
 keeps its height. Shell .200.
 
-`0389-app-icon-plate-fills-the-tile.patch`: the LumaUI app-icon plate.
+`0389-app-icon-plate-fills-the-tile.patch`: the SunoUI app-icon plate.
 A v4 app icon draws its plate as a rounded square, 860 on its 1024
-canvas; at a tile's size that plate was 84% of the tile. `js/ui/lumaAppIconPlate.js`
+canvas; at a tile's size that plate was 84% of the tile. `js/ui/SunoAppIconPlate.js`
 reads an icon's SVG once per path and modification time: when its first
 drawn element is a rounded square centred on a square canvas, the icon's
 texture is rendered at least that large and the icon is scaled about its
 centre so the square meets the tile's edges exactly; the tile's clip takes
 the margin. A raster, legacy,
 third-party or unreadable icon is drawn at the tile's size on a plate the
-Shell draws behind it (`.luma-app-icon-plate`), never cropped. Used through
+Shell draws behind it (`.Suno-app-icon-plate`), never cropped. Used through
 `iconMask.js` `syncAppIconPlate` by the notification tile (its art now one
 clipped, masked actor) and the app badge (a ring around a 16 px clip).
 Test: `tests/gnome-shell/app-icon-plate.js` (in `%check`). Shell .201.
 
-`0392-session-snapshots-and-restore.patch`: the session survives log-out, restarts and crashes (ADR-055). `lumaSession.js` snapshots every application window in stacking order (app, key, monitor with vendor/product/serial, workspace, frame and floating rectangles absolute and as a share of the work area, state, minimized, above, focus, LumaUI app state) on lock, suspend (sleep delay inhibitor, 2 s), lid close, log-out (the end-session dialog, after which nothing more is written), shutdown (logind `PrepareForShutdown`) and at most once a minute while windows change, into `$XDG_STATE_HOME/luma/session/current.json` (0600). At login the last snapshot is restored once (`org.projectluma.session` `reopen-windows`, `excluded-apps`): apps start, each window is placed in its first configure (Mutter 0048) by its LumaUI key, toplevel tag, title or order, apps that don't reopen their own windows get `open_new_window` until their count is reached, and once every window has drawn the stack is ordered bottom-up, the workspace switched and the saved window focused. Another monitor layout maps windows by monitor identity, then built-in, then position relative to the primary, keeping each window's share of the work area. `org.projectluma.Session1` (`org.projectluma.Session`): `TakeRestore`, `SetWindowKey`, `SaveState`/`SaveRequested` for apps (a caller's Flatpak or app scope must match the app it names), `Snapshot`, `GetSnapshot`, `Restore` for unsandboxed callers (Connect Sync's Continue). Tested by `tests/gnome-shell/session-restore/run.sh` (three headless Shell runs over one home: save, restore at login, remap to another monitor). Shell .202.
+`0392-session-snapshots-and-restore.patch`: the session survives log-out, restarts and crashes (ADR-055). `SunoSession.js` snapshots every application window in stacking order (app, key, monitor with vendor/product/serial, workspace, frame and floating rectangles absolute and as a share of the work area, state, minimized, above, focus, SunoUI app state) on lock, suspend (sleep delay inhibitor, 2 s), lid close, log-out (the end-session dialog, after which nothing more is written), shutdown (logind `PrepareForShutdown`) and at most once a minute while windows change, into `$XDG_STATE_HOME/Suno/session/current.json` (0600). At login the last snapshot is restored once (`org.projectSuno.session` `reopen-windows`, `excluded-apps`): apps start, each window is placed in its first configure (Mutter 0048) by its SunoUI key, toplevel tag, title or order, apps that don't reopen their own windows get `open_new_window` until their count is reached, and once every window has drawn the stack is ordered bottom-up, the workspace switched and the saved window focused. Another monitor layout maps windows by monitor identity, then built-in, then position relative to the primary, keeping each window's share of the work area. `org.projectSuno.Session1` (`org.projectSuno.Session`): `TakeRestore`, `SetWindowKey`, `SaveState`/`SaveRequested` for apps (a caller's Flatpak or app scope must match the app it names), `Snapshot`, `GetSnapshot`, `Restore` for unsandboxed callers (Connect Sync's Continue). Tested by `tests/gnome-shell/session-restore/run.sh` (three headless Shell runs over one home: save, restore at login, remap to another monitor). Shell .202.
 
-`0395-continue-banner.patch`: Continue's banner (ADR-055; design-center `mockups/continue`). `lumaContinue.js` `ContinueBanner` is one standard notification that changes in place: the offer (app strip of 24 px icons, +N chip, Continue / Not now at equal width, the new-desktop line when windows are open here), restoring (apps not open yet at 32 %, a 4 px progress bar over the 20 s budget, Stop), the result (one summary line; Show grows the list in place: installing with a 3 px bar, not available, didn't open in time with Open, opened without a document, windows moved off a missing display; Done), the local result from Desktop (Open <app>, Show), and "Your windows continued on …". `messageList.js`: `notification.lumaContent` draws content under the body, built per message and rebuilt in place, and can ask for equal-width actions. `lumaSession.js` asks Connect Sync for an offer after unlock, resume and login (`GetContinueOffer`), takes it on Continue (`TakeContinue`), declines on Not now, records `continuedFrom`, and drives the banner from the restore (placed windows, Stop). Styles in `luma-continue.css`; Lucide `layers` as `luma-continue-layers-symbolic`. Captured by `tests/gnome-shell/continue-banner/run.sh`. Shell .205.
+`0395-continue-banner.patch`: Continue's banner (ADR-055; design-center `mockups/continue`). `SunoContinue.js` `ContinueBanner` is one standard notification that changes in place: the offer (app strip of 24 px icons, +N chip, Continue / Not now at equal width, the new-desktop line when windows are open here), restoring (apps not open yet at 32 %, a 4 px progress bar over the 20 s budget, Stop), the result (one summary line; Show grows the list in place: installing with a 3 px bar, not available, didn't open in time with Open, opened without a document, windows moved off a missing display; Done), the local result from Desktop (Open <app>, Show), and "Your windows continued on …". `messageList.js`: `notification.SunoContent` draws content under the body, built per message and rebuilt in place, and can ask for equal-width actions. `SunoSession.js` asks Connect Sync for an offer after unlock, resume and login (`GetContinueOffer`), takes it on Continue (`TakeContinue`), declines on Not now, records `continuedFrom`, and drives the banner from the restore (placed windows, Stop). Styles in `Suno-continue.css`; Lucide `layers` as `Suno-continue-layers-symbolic`. Captured by `tests/gnome-shell/continue-banner/run.sh`. Shell .205.
 
 `0396-banner-lead-icon-draws-the-file.patch`: a banner's lead icon is the app icon's file drawn 1:1 in its 34 px slot (whole canvas: plate, margin and ambient shadow), as the banner designs draw it. `Message.setDrawsIconCanvas(true)` on every lip card skips the 0389 plate scale and tile mask for an icon with a plate. Shell .205.
 
-`0397-banner-cards-cast-their-drop-shadow.patch`: a banner card (the notification lip's surface grown into a card) casts the banner designs' drop shadow, `0 18px 40px -18px rgba(0,0,0,.35)`. The surface clips its own painting, shadow included, so the shadow is a sibling widget (`luma-lip-drop-shadow`) behind it with the same box and corners; the island and pill states have none. Shell .205.
+`0397-banner-cards-cast-their-drop-shadow.patch`: a banner card (the notification lip's surface grown into a card) casts the banner designs' drop shadow, `0 18px 40px -18px rgba(0,0,0,.35)`. The surface clips its own painting, shadow included, so the shadow is a sibling widget (`Suno-lip-drop-shadow`) behind it with the same box and corners; the island and pill states have none. Shell .205.
 
 `0398-dock-icon-tiles-as-shelf-2.patch`: the dock's icon tiles as the
 approved shelf-2: a 40 px tile (`DASH_TILE_SIZE`) with an 8 px gap
@@ -994,7 +994,7 @@ squircle (30%, CSS corner-shape: squircle) and lit as its
 `data-icon="lit"` (top sheen, bottom shade, 1 px white top rim, 0.5 px
 white ring, 1 px dark bottom rim, each following the corner). An icon
 without a plate sits on the dock's own gradient plate; the show-apps
-glyph keeps its mask. `LumaIconMask` gains `squircle` and `lit` uniforms,
+glyph keeps its mask. `SunoIconMask` gains `squircle` and `lit` uniforms,
 set on every paint from the effect's `squircle`/`lit` fields (off unless the
 dock sets them; the GL program is shared, so an unset uniform would leak). For the dock's tiles only (`syncAppIconPlate(..., dock)`)
 the plate helper follows group transforms (Prairie r42 draws the r40 art
@@ -1011,7 +1011,7 @@ becomes "Opening …" in place (the badge drops; the card isn't replaced), the
 result list is a bottom drawer, and the source device's other apps wait in
 the app switcher as pending cards until chosen. TV: no prompt; the home's
 hero carries the item (app and device chips, minutes left, Continue and Start
-over) over its artwork, which lumaSession sends as a JPEG of at most 96 KB
+over) over its artwork, which SunoSession sends as a JPEG of at most 96 KB
 from the player's local cover art. Apps not installed here take their name
 and icon from Depot's catalogue and media cache (host Depot or the Depot
 Flatpak). Tablet: the phone's lip card (340) and drawer (400, centred, 16
@@ -1020,12 +1020,12 @@ phone's width. Captures: tests/gnome-shell/continue-banner
 (POSTURE=phone|tablet|tv, TABLET=portrait, ART=file.jpg); the Depot lookup:
 DRIVER=depot. Shell .209.
 
-`0401-session-callers-held-by-pidfd.patch`: lumaSession's D-Bus callers
+`0401-session-callers-held-by-pidfd.patch`: SunoSession's D-Bus callers
 (TakeRestore, Snapshot, GetSnapshot, Restore) are identified through
 GetConnectionCredentials' ProcessFD: another user is refused, and the pidfd
 must still refer to the caller's pid (not a zombie) before and after its
 namespace, Flatpak info and app scope are read, so a pid reused mid-check is
-refused instead of read as the caller (as luma-shell-state does). A caller
+refused instead of read as the caller (as Suno-shell-state does). A caller
 whose details can't be read (a non-dumpable process) is refused by every
 method; a broker naming a ProcessFD it didn't send is refused; .flatpak-info
 must be a regular file. Refusals are ACCESS_DENIED and logged once.
@@ -1048,9 +1048,9 @@ fake-logind) checks each route locks with LockedHint, that activity keeps it
 locked, and that a click asks for the password or, without one, enters.
 The number is assigned at merge.
 
-`0403-tv-services-answer-the-focused-app.patch` with `src/luma-shell-presentation/callerWindow.js`: the TV services apps talk to act for the focused application only. `callerWindow.js` takes the caller's process from `GetConnectionCredentials`, held by its pidfd and checked again after the lookups, and names it: a Flatpak by the `.flatpak-info` of its xdg-dbus-proxy, a Luma sandbox by AppPermissions1 `Identify` (asked by the unique name of the verified `luma-app-permissions.service` owner), a host program by its process or app scope. A sandboxed caller is matched only against the window's `get_sandboxed_app_id()`, exactly (case and all, only `.desktop` stripped); the window tracker's app and the window's process count for host callers only. Host callers are same-user trust, not a boundary: a host process can spawn into or move itself into another app's `app-gnome-*.scope`. `org.projectluma.Shell.Remote1.ShowQuickPanel` and `org.projectluma.Shell.Keyboard1.SetActionLabel` answer AccessDenied unless the caller owns the focused window and no Shell modal or Shell actor has the keys; `ClaimGamepads` keeps the claimant's identity, not its bus PID (a Flatpak's is the proxy's, so its claim never matched its window). Tests: `tv-input-policy.js` in %check; `tests/gnome-shell/tv-remote-callers/` (headless Shell). Shell .209.
+`0403-tv-services-answer-the-focused-app.patch` with `src/Suno-shell-presentation/callerWindow.js`: the TV services apps talk to act for the focused application only. `callerWindow.js` takes the caller's process from `GetConnectionCredentials`, held by its pidfd and checked again after the lookups, and names it: a Flatpak by the `.flatpak-info` of its xdg-dbus-proxy, a Suno sandbox by AppPermissions1 `Identify` (asked by the unique name of the verified `Suno-app-permissions.service` owner), a host program by its process or app scope. A sandboxed caller is matched only against the window's `get_sandboxed_app_id()`, exactly (case and all, only `.desktop` stripped); the window tracker's app and the window's process count for host callers only. Host callers are same-user trust, not a boundary: a host process can spawn into or move itself into another app's `app-gnome-*.scope`. `org.projectSuno.Shell.Remote1.ShowQuickPanel` and `org.projectSuno.Shell.Keyboard1.SetActionLabel` answer AccessDenied unless the caller owns the focused window and no Shell modal or Shell actor has the keys; `ClaimGamepads` keeps the claimant's identity, not its bus PID (a Flatpak's is the proxy's, so its claim never matched its window). Tests: `tv-input-policy.js` in %check; `tests/gnome-shell/tv-remote-callers/` (headless Shell). Shell .209.
 
-`src/luma-shell-presentation/presentation.js`, `tabletTasks.js`, `handheldOptions.js`: in Tablet and Mobile a window whose application asked for fullscreen itself (Mutter 0049, `MetaWindow:client-fullscreen`; the Shell already places every window fullscreen, so the request changed nothing it could see) hides the status bar and the home gesture bar while it has the focus and Home is closed, and the status bar's compositing hold goes with it, so the game or video can scan out. A pull down from a 20 px band at the top edge (`peekPull()` in `layout.js`, through `StatusPulls`) shows both bars while it lasts and 3 s after, longer while a pull from them, Quick Options, the calendar or the notification lip is open. A request from a window in a side-by-side pair fills the screen with it. Leaving Tablet or Mobile keeps such a window fullscreen. On a Mutter without the property nothing changes. Test: `tests/gnome-shell/presentation/client-fullscreen-bars.js` (node).
+`src/Suno-shell-presentation/presentation.js`, `tabletTasks.js`, `handheldOptions.js`: in Tablet and Mobile a window whose application asked for fullscreen itself (Mutter 0049, `MetaWindow:client-fullscreen`; the Shell already places every window fullscreen, so the request changed nothing it could see) hides the status bar and the home gesture bar while it has the focus and Home is closed, and the status bar's compositing hold goes with it, so the game or video can scan out. A pull down from a 20 px band at the top edge (`peekPull()` in `layout.js`, through `StatusPulls`) shows both bars while it lasts and 3 s after, longer while a pull from them, Quick Options, the calendar or the notification lip is open. A request from a window in a side-by-side pair fills the screen with it. Leaving Tablet or Mobile keeps such a window fullscreen. On a Mutter without the property nothing changes. Test: `tests/gnome-shell/presentation/client-fullscreen-bars.js` (node).
 
 `0405-continue-offer-asked-again-when-a-session-arrives.patch` (ADR-055):
 for a minute after unlock or resume, Connect Sync's `ContinueOfferChanged`

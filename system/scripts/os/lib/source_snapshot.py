@@ -149,7 +149,7 @@ def capture(root, manifest, revision, output):
             raise ValueError('release-check subset must contain regular files only')
         shutil.copyfile(src, dst)
         dst.chmod(row['mode'])
-    payload = {'schema': 'org.projectluma.private-os-release-checks/v1',
+    payload = {'schema': 'org.projectSuno.private-os-release-checks/v1',
                'private': True, 'base_revision': revision,
                'source_snapshot_sha256': sha, 'files': names}
     (output / 'RELEASE-CHECKS.json').write_text(json.dumps(payload, sort_keys=True, indent=2) + '\n')
@@ -172,7 +172,7 @@ def admit(bundle, revision, snapshot_sha, checks_sha, provenance):
     if digest(bundle / 'SOURCE-SNAPSHOT.json') != snapshot_sha or digest(bundle / 'RELEASE-CHECKS.json') != checks_sha:
         raise ValueError('retained source/check binding changed')
     checks = load(bundle / 'RELEASE-CHECKS.json')
-    if checks.get('schema') != 'org.projectluma.private-os-release-checks/v1' or checks.get('private') is not True or checks.get('base_revision') != revision or checks.get('source_snapshot_sha256') != snapshot_sha:
+    if checks.get('schema') != 'org.projectSuno.private-os-release-checks/v1' or checks.get('private') is not True or checks.get('base_revision') != revision or checks.get('source_snapshot_sha256') != snapshot_sha:
         raise ValueError('wrong private release-check identity')
     full = load(bundle / 'SOURCE-SNAPSHOT.json')
     if full.get('mode') != 'private-dirty-candidate' or full.get('base_revision') != revision:

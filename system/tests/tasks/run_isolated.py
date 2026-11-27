@@ -8,9 +8,9 @@ import sys
 import time
 from gi.repository import Gio, GLib
 
-with tempfile.TemporaryDirectory(prefix="luma-tasks-test-") as temporary:
+with tempfile.TemporaryDirectory(prefix="Suno-tasks-test-") as temporary:
     root = Path(temporary)
-    env = dict(os.environ, LUMA_TASKS_ISOLATED_TEST="1", XDG_DATA_HOME=str(root / "data"),
+    env = dict(os.environ, SUNO_TASKS_ISOLATED_TEST="1", XDG_DATA_HOME=str(root / "data"),
                XDG_STATE_HOME=str(root / "state"),
                XDG_CONFIG_HOME=str(root / "config"), XDG_CACHE_HOME=str(root / "cache"),
                DBUS_SESSION_BUS_ADDRESS="unix:path=" + str(root / "bus"))
@@ -19,7 +19,7 @@ with tempfile.TemporaryDirectory(prefix="luma-tasks-test-") as temporary:
     bus_pid = None
     xvfb_pattern = None
     try:
-        bus_pid = subprocess.check_output(["toolbox", "run", "-c", "luma-dev-f44", "dbus-daemon", "--fork", "--print-pid=1", "--config-file=" + str(root / "bus.conf")], text=True).strip()
+        bus_pid = subprocess.check_output(["toolbox", "run", "-c", "Suno-dev-f44", "dbus-daemon", "--fork", "--print-pid=1", "--config-file=" + str(root / "bus.conf")], text=True).strip()
         assert bus_pid.isdigit(), "No private bus PID"
         bus_connection = Gio.DBusConnection.new_for_address_sync(env["DBUS_SESSION_BUS_ADDRESS"], Gio.DBusConnectionFlags.AUTHENTICATION_CLIENT | Gio.DBusConnectionFlags.MESSAGE_BUS_CONNECTION, None, None)
         services = () if any(option in sys.argv for option in ("--identity", "--unit")) else (("evolution-source-registry", "org.gnome.evolution.dataserver.Sources5"), ("evolution-calendar-factory", "org.gnome.evolution.dataserver.Calendar8"))
@@ -36,7 +36,7 @@ with tempfile.TemporaryDirectory(prefix="luma-tasks-test-") as temporary:
             authority = root / "Xauthority"
             authority.touch(mode=0o600)
             xvfb_pattern = "^Xvfb -displayfd 1 -screen 0 1280x900x24 -ac -nolisten tcp -auth " + str(authority) + "$"
-            display = subprocess.Popen(["toolbox", "run", "-c", "luma-dev-f44", "Xvfb", "-displayfd", "1", "-screen", "0", "1280x900x24", "-ac", "-nolisten", "tcp", "-auth", str(authority)], stdout=subprocess.PIPE, text=True)
+            display = subprocess.Popen(["toolbox", "run", "-c", "Suno-dev-f44", "Xvfb", "-displayfd", "1", "-screen", "0", "1280x900x24", "-ac", "-nolisten", "tcp", "-auth", str(authority)], stdout=subprocess.PIPE, text=True)
             processes.append(display)
             number = display.stdout.readline().strip()
             assert number.isdigit(), "No isolated display"
@@ -47,9 +47,9 @@ with tempfile.TemporaryDirectory(prefix="luma-tasks-test-") as temporary:
             subprocess.run(["/usr/bin/python3", str(Path(__file__).with_name("eds_runtime.py"))], env=env, check=True)
     finally:
         if xvfb_pattern:
-            stopped = subprocess.run(["toolbox", "run", "-c", "luma-dev-f44", "pkill", "-f", xvfb_pattern])
+            stopped = subprocess.run(["toolbox", "run", "-c", "Suno-dev-f44", "pkill", "-f", xvfb_pattern])
             assert stopped.returncode in (0, 1), "Could not stop isolated X server"
-        if bus_pid: subprocess.run(["toolbox", "run", "-c", "luma-dev-f44", "kill", "-TERM", bus_pid], check=True)
+        if bus_pid: subprocess.run(["toolbox", "run", "-c", "Suno-dev-f44", "kill", "-TERM", bus_pid], check=True)
         for process in reversed(processes):
             process.terminate()
         for process in reversed(processes):

@@ -1,9 +1,9 @@
-# Screen sharing evidence harness (Shell patch 0149, luma-portal)
+# Screen sharing evidence harness (Shell patch 0149, Suno-portal)
 
-A headless Luma session with the real portal stack: PipeWire, WirePlumber,
-xdg-desktop-portal, luma-portal and the Shell. `client.py` is a host
+A headless Suno session with the real portal stack: PipeWire, WirePlumber,
+xdg-desktop-portal, Suno-portal and the Shell. `client.py` is a host
 application asking `org.freedesktop.portal.ScreenCast` to share, exactly as a
-browser does, so every request goes frontend -> luma-portal -> the Shell's
+browser does, so every request goes frontend -> Suno-portal -> the Shell's
 picker -> Mutter. `probe.js` drives the Shell with a virtual keyboard and
 pointer and records what a person and a screen reader see; `measure.py` turns
 the screenshots and the frames the application received into checks.
@@ -25,7 +25,7 @@ What it shows (evidence items in the handoff):
   edge and no pill in a shared screen or window. A click through the screen
   edge reaches the window beneath it.
 
-Run inside a Fedora container with the Shell and luma-portal RPMs, Figtree,
+Run inside a Fedora container with the Shell and Suno-portal RPMs, Figtree,
 pipewire, wireplumber, xdg-desktop-portal, pipewire-gstreamer,
 gstreamer1-plugins-base/-good, python3-gobject and python3-pillow, with this
 directory at `/oracle/t`:

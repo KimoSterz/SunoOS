@@ -1,0 +1,14 @@
+[Unit]
+Description=Project Suno shared shell state
+PartOf=graphical-session.target
+After=graphical-session-pre.target dbus.service
+
+[Service]
+Type=dbus
+BusName=org.projectSuno.ShellState1
+ExecStart=/usr/libexec/Suno-shell-state-service
+Restart=on-failure
+RestartSec=1s
+
+[Install]
+WantedBy=graphical-session.target

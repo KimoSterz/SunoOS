@@ -6,12 +6,12 @@ import subprocess
 import sys
 import time
 
-assert os.environ.get("LUMA_TASKS_ISOLATED_TEST") == "1"
+assert os.environ.get("SUNO_TASKS_ISOLATED_TEST") == "1"
 temporary = Path(os.environ["XDG_DATA_HOME"]).parent
 assert os.environ["DBUS_SESSION_BUS_ADDRESS"] == "unix:path=" + str(temporary / "bus")
-assert temporary.name.startswith("luma-tasks-test-")
-production_id = "org.projectluma.Tasks"
-preview_id = production_id + ".LumaUIPreview"
+assert temporary.name.startswith("Suno-tasks-test-")
+production_id = "org.projectSuno.Tasks"
+preview_id = production_id + ".SunoUIPreview"
 ready = temporary / "identity-owner-ready"
 activated = temporary / "identity-production-activated"
 from gi.repository import Gio, GLib
@@ -39,20 +39,20 @@ if "--sentinel" in sys.argv:
     raise SystemExit(0)
 
 root = Path(__file__).resolve().parents[2]
-sys.path[:0] = [str(root / "src/prairie-core"), str(root / "src/luma-platform/appkit")]
-os.environ["LUMA_TASKS_FIXTURE"] = str(root / "tests/fixtures/tasks-v70.json")
-fixture = Path(os.environ["LUMA_TASKS_FIXTURE"])
+sys.path[:0] = [str(root / "src/prairie-core"), str(root / "src/Suno-platform/appkit")]
+os.environ["SUNO_TASKS_FIXTURE"] = str(root / "tests/fixtures/tasks-v70.json")
+fixture = Path(os.environ["SUNO_TASKS_FIXTURE"])
 fixture_before = fixture.read_bytes()
 from prairie_apps import tasks
 
 assert tasks.APP_ID == production_id
 assert tasks.APP_ICON_ID == production_id
 if "--preview" in sys.argv:
-    # This is the exact module mutation used by sync-lumaui-preview.sh's bin/run.
+    # This is the exact module mutation used by sync-SunoUI-preview.sh's bin/run.
     if "--wrong-hook" in sys.argv:
         tasks.APPLICATION_ID = preview_id  # Negative control for the Photos mismatch.
     else:
-        tasks.APP_ID = getattr(tasks, "APP_ID", production_id) + ".LumaUIPreview"
+        tasks.APP_ID = getattr(tasks, "APP_ID", production_id) + ".SunoUIPreview"
     application = tasks.TasksApplication()
     window = None
     try:

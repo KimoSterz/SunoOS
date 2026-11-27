@@ -96,7 +96,7 @@
   "acc": 250,
   "wall": "prism",
   "tint": true,
-  "preset": "luma",
+  "preset": "Suno",
   "edge": "bottom",
   "spread": "spread",
   "joined": "separate",
@@ -316,42 +316,42 @@
   "apperm_dev_usb_com_2ekilnlabs_2eKiln": false,
   "apperm_dev_controller_com_2ekilnlabs_2eKiln": false,
   "apperm_dev_serial_com_2ekilnlabs_2eKiln": false,
-  "apperm_level_org_2eprojectluma_2eFiler": "all",
-  "apperm_net_org_2eprojectluma_2eFiler": true,
-  "apperm_bg_org_2eprojectluma_2eFiler": false,
-  "apperm_auto_org_2eprojectluma_2eFiler": false,
-  "apperm_files_org_2eprojectluma_2eFiler": true,
-  "apperm_dev_camera_org_2eprojectluma_2eFiler": false,
-  "apperm_dev_microphone_org_2eprojectluma_2eFiler": false,
-  "apperm_dev_location_org_2eprojectluma_2eFiler": false,
-  "apperm_dev_screen_org_2eprojectluma_2eFiler": false,
-  "apperm_dev_usb_org_2eprojectluma_2eFiler": false,
-  "apperm_dev_controller_org_2eprojectluma_2eFiler": false,
-  "apperm_dev_serial_org_2eprojectluma_2eFiler": false,
-  "apperm_level_org_2eprojectluma_2eConnect": "all",
-  "apperm_net_org_2eprojectluma_2eConnect": true,
-  "apperm_bg_org_2eprojectluma_2eConnect": false,
-  "apperm_auto_org_2eprojectluma_2eConnect": false,
-  "apperm_files_org_2eprojectluma_2eConnect": true,
-  "apperm_dev_camera_org_2eprojectluma_2eConnect": false,
-  "apperm_dev_microphone_org_2eprojectluma_2eConnect": false,
-  "apperm_dev_location_org_2eprojectluma_2eConnect": false,
-  "apperm_dev_screen_org_2eprojectluma_2eConnect": false,
-  "apperm_dev_usb_org_2eprojectluma_2eConnect": false,
-  "apperm_dev_controller_org_2eprojectluma_2eConnect": false,
-  "apperm_dev_serial_org_2eprojectluma_2eConnect": false,
-  "apperm_level_org_2eprojectluma_2eInstalled_2edeb_2dvault_2dbackup": "all",
-  "apperm_net_org_2eprojectluma_2eInstalled_2edeb_2dvault_2dbackup": true,
-  "apperm_bg_org_2eprojectluma_2eInstalled_2edeb_2dvault_2dbackup": false,
-  "apperm_auto_org_2eprojectluma_2eInstalled_2edeb_2dvault_2dbackup": false,
-  "apperm_files_org_2eprojectluma_2eInstalled_2edeb_2dvault_2dbackup": true,
-  "apperm_dev_camera_org_2eprojectluma_2eInstalled_2edeb_2dvault_2dbackup": false,
-  "apperm_dev_microphone_org_2eprojectluma_2eInstalled_2edeb_2dvault_2dbackup": false,
-  "apperm_dev_location_org_2eprojectluma_2eInstalled_2edeb_2dvault_2dbackup": false,
-  "apperm_dev_screen_org_2eprojectluma_2eInstalled_2edeb_2dvault_2dbackup": false,
-  "apperm_dev_usb_org_2eprojectluma_2eInstalled_2edeb_2dvault_2dbackup": false,
-  "apperm_dev_controller_org_2eprojectluma_2eInstalled_2edeb_2dvault_2dbackup": false,
-  "apperm_dev_serial_org_2eprojectluma_2eInstalled_2edeb_2dvault_2dbackup": false
+  "apperm_level_org_2eprojectSuno_2eFiler": "all",
+  "apperm_net_org_2eprojectSuno_2eFiler": true,
+  "apperm_bg_org_2eprojectSuno_2eFiler": false,
+  "apperm_auto_org_2eprojectSuno_2eFiler": false,
+  "apperm_files_org_2eprojectSuno_2eFiler": true,
+  "apperm_dev_camera_org_2eprojectSuno_2eFiler": false,
+  "apperm_dev_microphone_org_2eprojectSuno_2eFiler": false,
+  "apperm_dev_location_org_2eprojectSuno_2eFiler": false,
+  "apperm_dev_screen_org_2eprojectSuno_2eFiler": false,
+  "apperm_dev_usb_org_2eprojectSuno_2eFiler": false,
+  "apperm_dev_controller_org_2eprojectSuno_2eFiler": false,
+  "apperm_dev_serial_org_2eprojectSuno_2eFiler": false,
+  "apperm_level_org_2eprojectSuno_2eConnect": "all",
+  "apperm_net_org_2eprojectSuno_2eConnect": true,
+  "apperm_bg_org_2eprojectSuno_2eConnect": false,
+  "apperm_auto_org_2eprojectSuno_2eConnect": false,
+  "apperm_files_org_2eprojectSuno_2eConnect": true,
+  "apperm_dev_camera_org_2eprojectSuno_2eConnect": false,
+  "apperm_dev_microphone_org_2eprojectSuno_2eConnect": false,
+  "apperm_dev_location_org_2eprojectSuno_2eConnect": false,
+  "apperm_dev_screen_org_2eprojectSuno_2eConnect": false,
+  "apperm_dev_usb_org_2eprojectSuno_2eConnect": false,
+  "apperm_dev_controller_org_2eprojectSuno_2eConnect": false,
+  "apperm_dev_serial_org_2eprojectSuno_2eConnect": false,
+  "apperm_level_org_2eprojectSuno_2eInstalled_2edeb_2dvault_2dbackup": "all",
+  "apperm_net_org_2eprojectSuno_2eInstalled_2edeb_2dvault_2dbackup": true,
+  "apperm_bg_org_2eprojectSuno_2eInstalled_2edeb_2dvault_2dbackup": false,
+  "apperm_auto_org_2eprojectSuno_2eInstalled_2edeb_2dvault_2dbackup": false,
+  "apperm_files_org_2eprojectSuno_2eInstalled_2edeb_2dvault_2dbackup": true,
+  "apperm_dev_camera_org_2eprojectSuno_2eInstalled_2edeb_2dvault_2dbackup": false,
+  "apperm_dev_microphone_org_2eprojectSuno_2eInstalled_2edeb_2dvault_2dbackup": false,
+  "apperm_dev_location_org_2eprojectSuno_2eInstalled_2edeb_2dvault_2dbackup": false,
+  "apperm_dev_screen_org_2eprojectSuno_2eInstalled_2edeb_2dvault_2dbackup": false,
+  "apperm_dev_usb_org_2eprojectSuno_2eInstalled_2edeb_2dvault_2dbackup": false,
+  "apperm_dev_controller_org_2eprojectSuno_2eInstalled_2edeb_2dvault_2dbackup": false,
+  "apperm_dev_serial_org_2eprojectSuno_2eInstalled_2edeb_2dvault_2dbackup": false
  },
  "data": {
   "CFNETS": [
@@ -399,7 +399,7 @@
    "Studio North Guest",
    "Coastline Rail",
    "Harbor Café",
-   "Luma Office",
+   "Suno Office",
    "Home"
   ],
   "CFBT": [
@@ -553,14 +553,14 @@
     "Ember"
    ],
    [
-    "luma-creatives",
+    "Suno-creatives",
     "Creatives"
    ]
   ],
   "CFPRE": [
    [
-    "luma",
-    "Luma",
+    "Suno",
+    "Suno",
     {
      "edge": "bottom",
      "spread": "spread",
@@ -1349,64 +1349,64 @@
   "CFAPPINFO": {
    "filer": {
     "name": "Filer",
-    "spec_artwork": "luma-v4-files.svg",
-    "permKey": "org.projectluma.Filer"
+    "spec_artwork": "Suno-v4-files.svg",
+    "permKey": "org.projectSuno.Filer"
    },
    "photos": {
     "name": "Photos",
-    "spec_artwork": "luma-v3-photos.svg"
+    "spec_artwork": "Suno-v3-photos.svg"
    },
    "viola": {
     "name": "Viola",
-    "spec_artwork": "luma-v3-browser.svg"
+    "spec_artwork": "Suno-v3-browser.svg"
    },
    "write": {
     "name": "Write",
-    "spec_artwork": "luma-v3-documents.svg"
+    "spec_artwork": "Suno-v3-documents.svg"
    },
    "tide": {
     "name": "Tide",
-    "spec_artwork": "luma-v3-music.svg"
+    "spec_artwork": "Suno-v3-music.svg"
    },
    "messages": {
     "name": "Messages",
-    "spec_artwork": "luma-v3-messages.svg"
+    "spec_artwork": "Suno-v3-messages.svg"
    },
    "notes": {
     "name": "Notes",
-    "spec_artwork": "luma-v3-notes.svg"
+    "spec_artwork": "Suno-v3-notes.svg"
    },
    "contacts": {
     "name": "Contacts",
-    "spec_artwork": "luma-v3-contacts.svg"
+    "spec_artwork": "Suno-v3-contacts.svg"
    },
    "term": {
     "name": "Terminal",
-    "spec_artwork": "luma-v3-terminal.svg"
+    "spec_artwork": "Suno-v3-terminal.svg"
    },
    "calendar": {
     "name": "Calendar",
-    "spec_artwork": "luma-v3-calendar.svg"
+    "spec_artwork": "Suno-v3-calendar.svg"
    },
    "depot": {
     "name": "Depot",
-    "spec_artwork": "luma-v3-app-store.svg"
+    "spec_artwork": "Suno-v3-app-store.svg"
    },
    "weather": {
     "name": "Weather",
-    "spec_artwork": "luma-v3-weather.svg"
+    "spec_artwork": "Suno-v3-weather.svg"
    },
    "clock": {
     "name": "Clock",
-    "spec_artwork": "luma-v3-clock.svg"
+    "spec_artwork": "Suno-v3-clock.svg"
    },
    "charlie": {
     "name": "Charlie",
-    "spec_artwork": "luma-v3-mail.svg"
+    "spec_artwork": "Suno-v3-mail.svg"
    },
    "monitor": {
     "name": "Monitor",
-    "spec_artwork": "luma-v3-monitor.svg"
+    "spec_artwork": "Suno-v3-monitor.svg"
    },
    "leaf": {
     "name": "Leaf",
@@ -1414,19 +1414,19 @@
    },
    "viewer": {
     "name": "Viewer",
-    "spec_artwork": "luma-v3-viewer.svg"
+    "spec_artwork": "Suno-v3-viewer.svg"
    },
    "valet": {
     "name": "Valet",
-    "spec_artwork": "luma-v3-valet.svg"
+    "spec_artwork": "Suno-v3-valet.svg"
    },
    "settings": {
     "name": "Settings",
-    "spec_artwork": "luma-v3-settings.svg"
+    "spec_artwork": "Suno-v3-settings.svg"
    },
    "memos": {
     "name": "Memos",
-    "spec_artwork": "luma-v3-memo.svg"
+    "spec_artwork": "Suno-v3-memo.svg"
    },
    "tasks": {
     "name": "Tasks",
@@ -1438,62 +1438,62 @@
    },
    "camera": {
     "name": "Camera",
-    "spec_artwork": "luma-v3-camera.svg"
+    "spec_artwork": "Suno-v3-camera.svg"
    },
    "maps": {
     "name": "Maps",
-    "spec_artwork": "luma-v3-maps.svg"
+    "spec_artwork": "Suno-v3-maps.svg"
    },
    "phone": {
     "name": "Phone",
-    "spec_artwork": "luma-v3-phone.svg"
+    "spec_artwork": "Suno-v3-phone.svg"
    },
    "calc": {
     "name": "Calculator",
-    "spec_artwork": "luma-v3-calculator.svg"
+    "spec_artwork": "Suno-v3-calculator.svg"
    },
    "ari": {
     "name": "Ari",
-    "spec_artwork": "luma-v3-ari.svg"
+    "spec_artwork": "Suno-v3-ari.svg"
    },
    "canvas": {
     "name": "Canvas",
-    "spec_artwork": "luma-v3-designer.svg"
+    "spec_artwork": "Suno-v3-designer.svg"
    },
    "grid": {
     "name": "Grid",
-    "spec_artwork": "luma-v3-spreadsheets.svg"
+    "spec_artwork": "Suno-v3-spreadsheets.svg"
    },
    "stage": {
     "name": "Stage",
-    "spec_artwork": "luma-v3-presentations.svg"
+    "spec_artwork": "Suno-v3-presentations.svg"
    },
    "session": {
     "name": "Session",
-    "spec_artwork": "luma-v3-daw.svg"
+    "spec_artwork": "Suno-v3-daw.svg"
    },
    "darkroom": {
     "name": "Darkroom",
-    "spec_artwork": "luma-v3-photo-editor.svg"
+    "spec_artwork": "Suno-v3-photo-editor.svg"
    },
    "reel": {
     "name": "Reel",
-    "spec_artwork": "luma-v3-video-editor.svg"
+    "spec_artwork": "Suno-v3-video-editor.svg"
    },
    "kiln": {
     "name": "Kiln",
     "permKey": "com.kilnlabs.Kiln",
-    "spec_artwork": "luma-v4-kiln.svg"
+    "spec_artwork": "Suno-v4-kiln.svg"
    },
    "connect": {
-    "name": "Luma Connect",
-    "permKey": "org.projectluma.Connect",
-    "spec_artwork": "luma-v4-connect.svg"
+    "name": "Suno Connect",
+    "permKey": "org.projectSuno.Connect",
+    "spec_artwork": "Suno-v4-connect.svg"
    },
    "vault": {
     "name": "Vault Backup",
-    "permKey": "org.projectluma.Installed.deb-vault-backup",
-    "spec_artwork": "luma-v4-vault.svg"
+    "permKey": "org.projectSuno.Installed.deb-vault-backup",
+    "spec_artwork": "Suno-v4-vault.svg"
    }
   },
   "CFAPPCATS": {
@@ -1592,7 +1592,7 @@
      "installation": "user",
      "recorded": true
     },
-    "org.projectluma.Filer": {
+    "org.projectSuno.Filer": {
      "name": "Filer",
      "format": "flatpak",
      "origin": "Built in",
@@ -1601,8 +1601,8 @@
      "reason": "file-manager",
      "network": true
     },
-    "org.projectluma.Connect": {
-     "name": "Luma Connect",
+    "org.projectSuno.Connect": {
+     "name": "Suno Connect",
      "format": "flatpak",
      "origin": "Built in",
      "level": "all",
@@ -1610,7 +1610,7 @@
      "reason": "sync",
      "network": true
     },
-    "org.projectluma.Installed.deb-vault-backup": {
+    "org.projectSuno.Installed.deb-vault-backup": {
      "name": "Vault Backup",
      "format": "deb",
      "origin": "Debian 12",
@@ -1665,16 +1665,16 @@
     }
    },
    "all": [
-    "org.projectluma.Filer",
-    "org.projectluma.Connect",
-    "org.projectluma.Installed.deb-vault-backup"
+    "org.projectSuno.Filer",
+    "org.projectSuno.Connect",
+    "org.projectSuno.Installed.deb-vault-backup"
    ]
   }
  },
  "pages": [
   {
    "id": "me",
-   "title": "Luma account",
+   "title": "Suno account",
    "parent": null
   },
   {
@@ -1944,7 +1944,7 @@
   },
   {
    "id": "app:connect",
-   "title": "Luma Connect",
+   "title": "Suno Connect",
    "parent": "apps"
   },
   {

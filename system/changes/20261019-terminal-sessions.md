@@ -1,7 +1,7 @@
 ---
 type: fix
 component: Terminal
-packages: [luma-terminal]
+packages: [Suno-terminal]
 highlight: true
 ---
 Summary: Fixed terminal sessions staying open after exit

@@ -178,7 +178,7 @@ def main() -> int:
     path, fd = find_device()
     try:
         rumble = has_rumble(fd)
-        print("LUMA_FP6_HAPTIC_TEST_VERSION=1")
+        print("SUNO_FP6_HAPTIC_TEST_VERSION=1")
         print(f"DEVICE={path}")
         print(f"INPUT_NAME={EXPECTED_INPUT}")
         print(f"FF_RUMBLE={'true' if rumble else 'false'}")

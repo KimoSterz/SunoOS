@@ -1,19 +1,19 @@
 # CI and merge queue for gitlab.com/simplyluma/luma.
 #
-# Every merge request runs `checks` on luma-build: the branch is merged onto main,
+# Every merge request runs `checks` on Suno-build: the branch is merged onto main,
 # releases are assigned (docs/decisions/056-release-at-merge.md), the release rules
 # and source checks run, and every package the change touches is built on x86_64 in
 # the pinned Fedora builder container, so its %check suite runs
 # (tools/interim/merge-branch.sh --checks-only). A red test fails the merge request.
 # `merge` (manual) is the merge button: package builds on the release commit (reusing
 # the checks builds when the branch has not moved and main's changes do not touch them), then
-# main moves on luma-build and is pushed here, which marks the merge request merged.
+# main moves on Suno-build and is pushed here, which marks the merge request merged.
 # aarch64 package jobs are owed to tools/interim/ci-arm.sh on the Mac.
 # GitLab's own merge button is disabled (main: merge = no one) so every merge
 # carries its release commit.
 #
-# Both jobs call one fixed root script on luma-build
-# (/srv/dev-storage/projects/luma-interim/gitlab-ci-job.sh); the runner user can run
+# Both jobs call one fixed root script on Suno-build
+# (/srv/dev-storage/projects/Suno-interim/gitlab-ci-job.sh); the runner user can run
 # nothing else as root. Merge requests from forks run no pipeline here until a
 # maintainer has read the diff and pushed the branch to this project.
 workflow:
@@ -21,7 +21,7 @@ workflow:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"
 
 default:
-  tags: [luma-build]
+  tags: [Suno-build]
 
 variables:
   GIT_STRATEGY: none
@@ -32,7 +32,7 @@ checks:
   stage: checks
   timeout: 12h
   script:
-    - sudo -n /srv/dev-storage/projects/luma-interim/gitlab-ci-job.sh checks "$CI_MERGE_REQUEST_IID" "$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME" "$CI_COMMIT_SHA"
+    - sudo -n /srv/dev-storage/projects/Suno-interim/gitlab-ci-job.sh checks "$CI_MERGE_REQUEST_IID" "$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME" "$CI_COMMIT_SHA"
 
 merge:
   stage: merge
@@ -42,4 +42,4 @@ merge:
       when: manual
       allow_failure: true
   script:
-    - sudo -n /srv/dev-storage/projects/luma-interim/gitlab-ci-job.sh merge "$CI_MERGE_REQUEST_IID" "$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME" "$CI_COMMIT_SHA"
+    - sudo -n /srv/dev-storage/projects/Suno-interim/gitlab-ci-job.sh merge "$CI_MERGE_REQUEST_IID" "$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME" "$CI_COMMIT_SHA"

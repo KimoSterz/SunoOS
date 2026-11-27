@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Phone: simulator v71 on LumaUI, with one native voice state model.
+"""Phone: simulator v71 on SunoUI, with one native voice state model.
 
 The shared frame, islands, contact actions, menus, dialogs, toasts and bars
 belong to the kit. Phone owns its dial pad, call media and call controls,
@@ -26,22 +26,22 @@ import gi
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 from gi.repository import Adw, Gdk, Gio, GLib, Graphene, Gsk, Gtk, Pango
-from luma_appkit import lumaui_tokens as visual_tokens
+from Suno_appkit import SunoUI_tokens as visual_tokens
 
-from luma_appkit import (AZIndex, ActionCenter, AppWindow, BarAction, BarModes, BarSearch, Card, ListFirst, SwipeAction, SwipeRow, Command, CommandGroup,
+from Suno_appkit import (AZIndex, ActionCenter, AppWindow, BarAction, BarModes, BarSearch, Card, ListFirst, SwipeAction, SwipeRow, Command, CommandGroup,
     CommandRegistry, ContactActions, ContentLitHeader, DestructiveDialog, DetailsItem, Island,
     EmptyState, ListEmptyState, ModeSwitch, NavigationSidebar, Person,
     NavigationRow, SidebarRow, RowLead, Favourite, FavouritesStrip, AvatarStack, PersonAvatar, ScrollView, SidebarFoot, StackedButton, StackedButtons, Toast,
-    ToastHost, VoiceClip, DialKey, add_style_sheet, bar_menu, apply_type, icons, install_lumaui, media_context)
-from luma_appkit.action_bubble import MenuItem
-from luma_appkit.action_center import BarChip, SEPARATOR, make_control
-from luma_appkit.structure_adapt import window_tier
+    ToastHost, VoiceClip, DialKey, add_style_sheet, bar_menu, apply_type, icons, install_SunoUI, media_context)
+from Suno_appkit.action_bubble import MenuItem
+from Suno_appkit.action_center import BarChip, SEPARATOR, make_control
+from Suno_appkit.structure_adapt import window_tier
 from .phone_backend import CallPhase, CallSession, PhoneCapability
 from .phone_fixture import FixtureSource, PhonePerson, dial_display, digits, matching_person, search_people, source_from_environment, visible_people
 
 
 # The contained preview supplies its own ID so Gio cannot activate the installed Phone.
-APPLICATION_ID = os.environ.get("LUMA_PHONE_APPLICATION_ID", "org.projectluma.Phone")
+APPLICATION_ID = os.environ.get("SUNO_PHONE_APPLICATION_ID", "org.projectSuno.Phone")
 # The standard contained-preview launcher overrides this public module constant.
 APP_ID = APPLICATION_ID
 PLACES = (("pad", "Keypad", "grid-3x3"), ("recents", "Recents", "history"),
@@ -192,12 +192,12 @@ class PhoneWindow(AppWindow):
         self.vm_clip = self.call_duration = self.call_timer_label = None
         self.call_chrome = ()
         self.az_index = None
-        self.pending_search = os.environ.get("LUMA_PHONE_FIXTURE_SEARCH", "") if self.fixture else ""
+        self.pending_search = os.environ.get("SUNO_PHONE_FIXTURE_SEARCH", "") if self.fixture else ""
         self.capability_ready = bool(self.fixture)
         self.requested_address = ""
         self.capability = PhoneCapability(bool(self.fixture), "Connecting to phone…")
         self.executor = ThreadPoolExecutor(max_workers=2, thread_name_prefix="phone-read")
-        super().__init__(application=application, app_id=APP_ID, title="Phone", icon_name="org.projectluma.Phone",
+        super().__init__(application=application, app_id=APP_ID, title="Phone", icon_name="org.projectSuno.Phone",
                          commands=CommandRegistry((CommandGroup("", (
                              Command("phone.find", "Search people", self._focus_search, "search", shortcut=("Ctrl", "F")),
                              Command("phone.quit", "Quit Phone", self.close, "log-out", shortcut=("Ctrl", "Q")),)),)),
@@ -282,7 +282,7 @@ class PhoneWindow(AppWindow):
             self.person, self.number = initial["person"], initial["number"]
             self.places.set_current(self.tab)
             self._all()
-            if os.environ.get("LUMA_PHONE_PREVIEW_CONTACTS") == "1":
+            if os.environ.get("SUNO_PHONE_PREVIEW_CONTACTS") == "1":
                 from .phone_data import PreviewContactsSource
                 self._read(lambda: PreviewContactsSource.load(self.fixture), self._preview_contacts_loaded)
         else:
@@ -537,7 +537,7 @@ class PhoneWindow(AppWindow):
                                lambda uid=vm.uid: self._select(uid, "vm"), "pn-vm-" + vm.uid,
                                trail=f"0:{vm.duration:02d}")
         else:
-            # One address book: telephone and verified Luma contacts, A–Z with a count.
+            # One address book: telephone and verified Suno contacts, A–Z with a count.
             people = visible_people(self._contacts(), "")
             current = ""
             for person in people:
@@ -545,7 +545,7 @@ class PhoneWindow(AppWindow):
                 if letter != current:
                     current = letter
                     self.sidebar.append_section(letter)
-                row = self._side_row(person.uid, person.name, person.phone or ("@" + person.handle if person.luma_account else ""), (person.uid,), "", "",
+                row = self._side_row(person.uid, person.name, person.phone or ("@" + person.handle if person.Suno_account else ""), (person.uid,), "", "",
                                      mark and self.person == person.uid,
                                      lambda uid=person.uid: self._select_person(uid), "pn-person-" + person.uid)
                 row.pn_letter = letter
@@ -564,9 +564,9 @@ class PhoneWindow(AppWindow):
                      else "No contacts yet" if self.tab == "contacts" else "No calls yet")
             detail = ("Try another name or number." if query else
                       "Your voicemail will appear here." if self.tab == "vm" else
-                      "People with a phone number or verified Luma username appear here." if self.tab == "contacts" else
+                      "People with a phone number or verified Suno username appear here." if self.tab == "contacts" else
                       "Your recent calls will appear here.")
-            empty = EmptyState(title, detail, "lumaui-phone-symbolic", compact=True)
+            empty = EmptyState(title, detail, "SunoUI-phone-symbolic", compact=True)
             empty.set_name("pn-sidebar-empty")
             self.sidebar.list.append(Gtk.ListBoxRow(child=empty, selectable=False, activatable=False))
 
@@ -893,10 +893,10 @@ class PhoneWindow(AppWindow):
         if not self.fixture and not self.capability.available and self.capability.no_modem:
             readiness = named(label("", "caption", muted=True, wrap=True, justify=Gtk.Justification.CENTER),
                               "pn-call-readiness")
-            readiness.set_markup('To make calls, <a href="luma-connect:">pair your phone in Connect</a>.')
+            readiness.set_markup('To make calls, <a href="Suno-connect:">pair your phone in Connect</a>.')
             readiness.set_margin_top(14)
             def open_connect(_label, uri):
-                if uri == "luma-connect:":
+                if uri == "Suno-connect:":
                     self._open_connect()
                 return True
             readiness.connect("activate-link", open_connect)
@@ -904,7 +904,7 @@ class PhoneWindow(AppWindow):
         self._put(ScrollView(page))
 
     def _open_connect(self):
-        Gio.AppInfo.launch_default_for_uri("luma-connect:", None)
+        Gio.AppInfo.launch_default_for_uri("Suno-connect:", None)
 
     def _selection(self):
         if not self.source:
@@ -936,7 +936,7 @@ class PhoneWindow(AppWindow):
         page.append(heading)
         subtitle = (", ".join(self._person(uid).name for uid in people) + " and you" if group else
                     "mobile · " + person.phone if person and person.phone else
-                    "@" + person.handle if person and person.luma_account else "")
+                    "@" + person.handle if person and person.Suno_account else "")
         if person is None and recent.spam and self.fixture:
             subtitle = f'Reported as spam by {self.source.spam[recent.uid]["reports"]} people'
         subline = box(spacing=6, halign=Gtk.Align.CENTER)
@@ -951,7 +951,7 @@ class PhoneWindow(AppWindow):
             for action, control in actions.buttons.items():
                 control.set_name({"call":"pn-call-voice", "video":"pn-call-video"}.get(action, "pn-" + action))
             if self.fixture:
-                # v70 lContactActs enables Mail for an on-Luma username;
+                # v70 lContactActs enables Mail for an on-Suno username;
                 # the fixture handler handles it in memory without a URI.
                 actions.buttons["email"].set_sensitive(bool(person.handle or person.email))
                 if not person.phone:
@@ -960,7 +960,7 @@ class PhoneWindow(AppWindow):
             else:
                 actions.buttons["video"].set_sensitive(False)
                 actions.buttons["call"].set_sensitive(bool(person.phone) and self.capability.available)
-                actions.buttons["message"].set_sensitive(bool(person.phone or (person.luma_account and person.handle)))
+                actions.buttons["message"].set_sensitive(bool(person.phone or (person.Suno_account and person.handle)))
         else:
             if group:
                 controls = [StackedButton("message-square", "Message", on_click=lambda: self._toast("Opening Launch crew in Messages"))]
@@ -1027,13 +1027,13 @@ class PhoneWindow(AppWindow):
             self._toast("Opening " + person.name + (" in Messages" if action == "message" else " in Mail"))
             return True
         selected = self._person(self.person)
-        if action == "message" and selected and selected.luma_account and selected.handle:
+        if action == "message" and selected and selected.Suno_account and selected.handle:
             # The installed Messages owner resolves the normal username link;
             # no device token or new network authority enters Phone.
             try:
-                Gio.AppInfo.launch_default_for_uri("luma-messages://u/" + quote(selected.handle, safe=""), None)
+                Gio.AppInfo.launch_default_for_uri("Suno-messages://u/" + quote(selected.handle, safe=""), None)
             except GLib.Error:
-                self._toast("Messages could not open this Luma contact", error=True)
+                self._toast("Messages could not open this Suno contact", error=True)
             return True
         return False
 
@@ -1568,7 +1568,7 @@ class PhoneWindow(AppWindow):
             self.call_timer_label.set_label(f"{elapsed // 60}:{elapsed % 60:02d}" if self.call.connected or self.fixture else "Calling…")
         child = self.call_duration.get_first_child() if self.call_duration is not None and not self.is_phone else None
         while child:
-            if not self.call.sharing and isinstance(child, Gtk.Label) and child.has_css_class("lumaui-bar-subject-meta"):
+            if not self.call.sharing and isinstance(child, Gtk.Label) and child.has_css_class("SunoUI-bar-subject-meta"):
                 child.set_label(f"{elapsed // 60}:{elapsed % 60:02d}" if self.call.connected or self.fixture else "Calling…")
                 break
             child = child.get_next_sibling()
@@ -1761,7 +1761,7 @@ class PhoneWindow(AppWindow):
 
 def install_phone_theme() -> None:
     """Install the shared Phone stylesheet for its window and call presenter."""
-    path = os.environ.get("LUMA_PHONE_STYLE_PATH", str(Path(__file__).parents[1] / "style/phone.css"))
+    path = os.environ.get("SUNO_PHONE_STYLE_PATH", str(Path(__file__).parents[1] / "style/phone.css"))
     if not Path(path).is_file():
         path = "/usr/share/prairie-core/phone.css"
     add_style_sheet(path)
@@ -1776,7 +1776,7 @@ class PhoneApplication(Adw.Application):
 
     def do_startup(self):
         Adw.Application.do_startup(self)
-        install_lumaui()
+        install_SunoUI()
         install_phone_theme()
 
     def do_activate(self):

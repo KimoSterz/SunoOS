@@ -1,0 +1,3 @@
+[D-BUS Service]
+Name=io.Suno.Valet
+Exec=/usr/bin/Suno-install --gapplication-service

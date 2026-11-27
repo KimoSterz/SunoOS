@@ -1,5 +1,5 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Project Luma <engineering@projectluma.org>
+From: Project Suno <engineering@projectSuno.org>
 Date: Thu, 26 Nov 2026 13:00:00 -0600
 Subject: [PATCH] Continue: offer asked again when a session arrives
 
@@ -12,13 +12,13 @@ This device's own snapshot is read before the question, not after the
 answer: a snapshot written while the answer waits for the network no
 longer hides the offer.
 ---
- js/ui/lumaSession.js | 21 +++++++++++++++++++--
+ js/ui/SunoSession.js | 21 +++++++++++++++++++--
  1 file changed, 19 insertions(+), 2 deletions(-)
 
-diff --git a/js/ui/lumaSession.js b/js/ui/lumaSession.js
+diff --git a/js/ui/SunoSession.js b/js/ui/SunoSession.js
 index befecce..00dcbf6 100644
---- a/js/ui/lumaSession.js
-+++ b/js/ui/lumaSession.js
+--- a/js/ui/SunoSession.js
++++ b/js/ui/SunoSession.js
 @@ -39,6 +39,7 @@ const LATE_WINDOW_MS = 15 * 60 * 1000;
  const SAVE_TIMEOUT_MS = 500;
  const MORE_WINDOWS_MS = 3000;
@@ -27,7 +27,7 @@ index befecce..00dcbf6 100644
  const CONTINUE_TTL_S = 72 * 3600;
  const ART_EDGE = 960;           // the artwork's longest side, in pixels
  const ART_MAX = 96 * 1024;       // Connect Sync's limit (sessions.ART_MAX)
-@@ -796,6 +797,17 @@ export class LumaSession extends Signals.EventEmitter {
+@@ -796,6 +797,17 @@ export class SunoSession extends Signals.EventEmitter {
          };
          Main.screenShield?.connectObject('locked-changed', shield, 'active-changed', shield, this);
  
@@ -35,8 +35,8 @@ index befecce..00dcbf6 100644
 +        // already held; Connect Sync says when another device's session
 +        // arrives, and for a minute after unlock or resume the offer is asked
 +        // again then.
-+        this._offerSignal = Gio.DBus.session.signal_subscribe('org.projectluma.ConnectSync1',
-+            'org.projectluma.ConnectSync1', 'ContinueOfferChanged', '/org/projectluma/ConnectSync1', null,
++        this._offerSignal = Gio.DBus.session.signal_subscribe('org.projectSuno.ConnectSync1',
++            'org.projectSuno.ConnectSync1', 'ContinueOfferChanged', '/org/projectSuno/ConnectSync1', null,
 +            Gio.DBusSignalFlags.NONE, () => {
 +                if (GLib.get_monotonic_time() < (this._offerWatchUntil ?? 0) && !this._shieldUp)
 +                    this._checkOffer({watch: false}).catch(logError);
@@ -45,7 +45,7 @@ index befecce..00dcbf6 100644
          const loginManager = LoginManager.getLoginManager();
          this._takeSleepInhibitor();
          loginManager.connectObject('prepare-for-sleep', (_lm, aboutToSuspend) => {
-@@ -1407,11 +1419,17 @@ export class LumaSession extends Signals.EventEmitter {
+@@ -1407,11 +1419,17 @@ export class SunoSession extends Signals.EventEmitter {
      // The offer (ADR-055 §5.3): after unlock, resume or login, the newest
      // session of another device that is newer than this one's own last
      // use. Nothing opens without Continue, and nothing shows while locked.
@@ -63,8 +63,8 @@ index befecce..00dcbf6 100644
 +        const own = readJson(GLib.build_filenamev([this._dir, 'current.json']));
          let offer;
          try {
-             const [json] = (await Gio.DBus.session.call('org.projectluma.ConnectSync1',
-@@ -1429,7 +1447,6 @@ export class LumaSession extends Signals.EventEmitter {
+             const [json] = (await Gio.DBus.session.call('org.projectSuno.ConnectSync1',
+@@ -1429,7 +1447,6 @@ export class SunoSession extends Signals.EventEmitter {
                  (fromStart, chosen) => this._playOnTv(chosen, fromStart));
              return;
          }

@@ -1,6 +1,6 @@
 #!/bin/bash
 # SPDX-License-Identifier: Apache-2.0
-# Run inside the qualified Luma SDK; the output is a DESTDIR prefix.
+# Run inside the qualified Suno SDK; the output is a DESTDIR prefix.
 set -euo pipefail
 if [ "$#" != 2 ]; then
     echo "Usage: $0 INPUT_DIRECTORY OUTPUT_DIRECTORY" >&2

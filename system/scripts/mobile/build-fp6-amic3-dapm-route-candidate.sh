@@ -85,7 +85,7 @@ runuser -u "$builder_user" -- mkdir -p "$output_dir"
 runuser -u "$builder_user" -- install -m 0644 "$dtb" "$output_dir/milos-fairphone-fp6.dtb"
 manifest_tmp=$(mktemp)
 {
-  printf 'LUMA_FP6_AMIC3_DAPM_BUILD_VERSION=1\n'
+  printf 'SUNO_FP6_AMIC3_DAPM_BUILD_VERSION=1\n'
   printf 'KERNEL_RELEASE=7.1.2\n'
   printf 'BASE_KERNEL_SHA256=%s\n' "$image_sha"
   printf 'BASE_DTB_SHA256=%s\n' "$input_dtb_sha"

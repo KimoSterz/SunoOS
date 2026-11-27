@@ -181,7 +181,7 @@ PY
 done
 
 {
-  printf 'LUMA_PIXEL9_STOCK_BOOT_AUDIT_VERSION=2\n'
+  printf 'SUNO_PIXEL9_STOCK_BOOT_AUDIT_VERSION=2\n'
   printf 'SCOPE=offline-stock-layout-read-only\n'
   printf 'FACTORY_FILENAME=%s\n' "$(basename -- "$factory_zip")"
   printf 'FACTORY_BYTES=%s\n' "$factory_bytes"

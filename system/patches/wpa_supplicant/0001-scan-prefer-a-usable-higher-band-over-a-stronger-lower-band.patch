@@ -1,5 +1,5 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Project Luma <maintainers@projectluma.org>
+From: Project Suno <maintainers@projectSuno.org>
 Date: Sun, 22 Nov 2026 23:30:00 +0000
 Subject: [PATCH] scan: Prefer a usable higher band over a stronger lower band
 

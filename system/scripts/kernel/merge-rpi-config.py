@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""Merge the Luma Raspberry Pi kernel configuration, then audit the result.
+"""Merge the Suno Raspberry Pi kernel configuration, then audit the result.
 
 merge: start from Fedora's configuration for the same kernel series, add every
 option Raspberry Pi's defconfig enables (y beats m; Fedora never loses an
-option to the Pi side), then apply the Luma fragment, which has the last word.
+option to the Pi side), then apply the Suno fragment, which has the last word.
 
 check: after `make olddefconfig`, list every Fedora or Raspberry Pi option the
 final configuration lost. Each loss must be named in the exceptions file with
@@ -51,7 +51,7 @@ def exceptions(path):
 
 
 def merge(args):
-    fedora, pi, luma = parse(args.fedora), parse(args.pi), parse(args.fragment)
+    fedora, pi, Suno = parse(args.fedora), parse(args.pi), parse(args.fragment)
     result = dict(fedora)
     for sym, val in pi.items():
         have = fedora.get(sym)
@@ -62,18 +62,18 @@ def merge(args):
             # Strings and numbers only for options Fedora's tree lacks
             # (Raspberry Pi drivers); Fedora's values stand otherwise.
             result[sym] = val
-    result.update(luma)
+    result.update(Suno)
     write(result, args.output)
 
 
 def check(args):
-    fedora, pi, luma = parse(args.fedora), parse(args.pi), parse(args.fragment)
+    fedora, pi, Suno = parse(args.fedora), parse(args.pi), parse(args.fragment)
     final = parse(args.final)
     allowed = exceptions(args.exceptions)
     lost, unused = [], set(allowed)
     for origin, values in (('fedora', fedora), ('raspberrypi', pi)):
         for sym, val in values.items():
-            if val not in ('y', 'm') or sym in luma:
+            if val not in ('y', 'm') or sym in Suno:
                 continue
             got = final.get(sym, 'n')
             if got in ('y', 'm'):
@@ -83,18 +83,18 @@ def check(args):
             unused.discard(hit)
             if hit is None:
                 lost.append(f'{origin}: {sym}={val} -> {got}')
-    bad_luma = [f'luma: {s}={v} -> {final.get(s, "n")}' for s, v in luma.items()
+    bad_Suno = [f'Suno: {s}={v} -> {final.get(s, "n")}' for s, v in Suno.items()
                 if final.get(s, 'n') != v]
     if args.report:
         with open(args.report, 'w') as out:
             for sym in sorted(set(allowed) - unused):
                 out.write(f'dropped {sym}: {allowed[sym]}\n')
-    for line in lost + bad_luma:
+    for line in lost + bad_Suno:
         print(line, file=sys.stderr)
     for sym in sorted(unused):
         print(f'note: exception {sym} is not needed any more', file=sys.stderr)
-    if lost or bad_luma:
-        raise SystemExit(f'{len(lost)} options lost, {len(bad_luma)} Luma settings not applied')
+    if lost or bad_Suno:
+        raise SystemExit(f'{len(lost)} options lost, {len(bad_Suno)} Suno settings not applied')
     print(f'config check: fedora {sum(v in "ym" for v in fedora.values())}, '
           f'raspberrypi {sum(v in "ym" for v in pi.values())} options kept; '
           f'{len(allowed) - len(unused)} documented exceptions')

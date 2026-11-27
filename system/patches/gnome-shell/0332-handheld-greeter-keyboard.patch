@@ -1,4 +1,4 @@
-From: Project Luma <builds@project-luma.local>
+From: Project Suno <builds@project-suno.local>
 Subject: [PATCH] keyboard: fit the handheld greeter
 
 On a handheld's greeter the keyboard's bottom row was below the screen and
@@ -68,7 +68,7 @@ as the unlock dialog does.
 +        const inset = Main.presentation
 +            ? Main.presentation.keyboardInset?.() ?? 0
 +            : Keycap.standaloneInset({width: monitor.width / scale, height: monitor.height / scale},
-+                GLib.getenv('LUMA_DEVICE_CLASS') === 'handheld');
++                GLib.getenv('SUNO_DEVICE_CLASS') === 'handheld');
          const height = Keycap.keyboardHeight({width: monitor.width / scale, height: monitor.height / scale},
              rows || 4, columns || 10, inset) * scale;
          // Writes only what changed: a new style or size re-renders the

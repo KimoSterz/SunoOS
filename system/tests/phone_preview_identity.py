@@ -4,7 +4,7 @@
 
 Run on the host after process-cap recovery, before any real-data preview launch:
     python3 tests/phone_preview_identity.py
-Set LUMA_PHONE_IDENTITY_PYTHON to the installed preview/python directory to
+Set SUNO_PHONE_IDENTITY_PYTHON to the installed preview/python directory to
 check that copy too. No windows are created. XDG and sentinel state are temporary.
 Missing GTK/kit dependencies or an identity mismatch are failures, never skips.
 """
@@ -21,8 +21,8 @@ import tempfile
 import time
 
 ROOT = Path(__file__).resolve().parents[1]
-PRODUCTION = "org.projectluma.Phone"
-PREVIEW = PRODUCTION + ".LumaUIPreview"
+PRODUCTION = "org.projectSuno.Phone"
+PREVIEW = PRODUCTION + ".SunoUIPreview"
 
 
 def require(condition, message):
@@ -73,9 +73,9 @@ def sentinel(state):
 
 def private_check(state):
     require_private_bus()
-    installed_python = os.environ.get("LUMA_PHONE_IDENTITY_PYTHON")
+    installed_python = os.environ.get("SUNO_PHONE_IDENTITY_PYTHON")
     paths = ((Path(installed_python),) if installed_python else
-             (ROOT / "src/prairie-core", ROOT / "src/luma-platform/appkit"))
+             (ROOT / "src/prairie-core", ROOT / "src/Suno-platform/appkit"))
     for path in reversed(paths):
         require(path.is_dir(), f"Phone runtime path is missing: {path}")
         sys.path.insert(0, str(path))
@@ -123,8 +123,8 @@ def private_check(state):
         del normal
         gc.collect()
 
-        # This is the override used verbatim by sync-lumaui-preview.sh.
-        phone.APP_ID = getattr(phone, "APP_ID", PRODUCTION) + ".LumaUIPreview"
+        # This is the override used verbatim by sync-SunoUI-preview.sh.
+        phone.APP_ID = getattr(phone, "APP_ID", PRODUCTION) + ".SunoUIPreview"
         require(phone.APPLICATION_ID == PRODUCTION, "Preview changed the production constant")
         from unittest.mock import patch
         from prairie_apps.phone_system import ActiveCallIndicator
@@ -313,9 +313,9 @@ def main():
     with tempfile.TemporaryDirectory(prefix="phone-preview-identity-") as folder:
         environment = os.environ.copy()
         environment["PHONE_IDENTITY_ORIGINAL_BUS"] = environment.get("DBUS_SESSION_BUS_ADDRESS", "")
-        environment.pop("LUMA_PHONE_APPLICATION_ID", None)
-        environment["LUMA_PHONE_FIXTURE"] = str(ROOT / "tests/fixtures/phone-v70.json")
-        environment["LUMA_PHONE_STYLE_PATH"] = str(ROOT / "src/prairie-core/style/phone.css")
+        environment.pop("SUNO_PHONE_APPLICATION_ID", None)
+        environment["SUNO_PHONE_FIXTURE"] = str(ROOT / "tests/fixtures/phone-v70.json")
+        environment["SUNO_PHONE_STYLE_PATH"] = str(ROOT / "src/prairie-core/style/phone.css")
         environment["GSETTINGS_BACKEND"] = "memory"
         environment["GTK_A11Y"] = "none"
         environment["NO_AT_BRIDGE"] = "1"

@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Viewer
+Icon=org.projectSuno.Viewer
+Exec=true %f
+MimeType=application/pdf;
+NoDisplay=true

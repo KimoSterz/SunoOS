@@ -1,0 +1,2293 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Project Suno <builds@project-suno.local>
+Date: Sat, 26 Sep 2026 00:00:00 +0000
+Subject: [PATCH] Suno: keep the notification rules last in the sheets and drop
+ stale icon resources
+
+The Studio Quick Options rules were appended after the notification-owned
+suffix of gnome-shell-dark, -light and -high-contrast.css, so the build's
+verify-generated.sh check failed; they now sit in front of the suffix,
+unchanged. The Studio glyphs moved to the installed hicolor theme, but the
+icon resource still listed them, so glib-compile-resources failed; the
+stale resource entries are dropped (the glyphs load from the theme).
+
+diff --git a/data/gnome-shell-icons.gresource.xml b/data/gnome-shell-icons.gresource.xml
+index d98f396..31bef1a 100644
+--- a/data/gnome-shell-icons.gresource.xml
++++ b/data/gnome-shell-icons.gresource.xml
+@@ -70,25 +70,6 @@
+     <file preprocess="xml-stripblanks">scalable/status/switch-off-symbolic.svg</file>
+     <file preprocess="xml-stripblanks">scalable/status/switch-on-symbolic.svg</file>
+     <file preprocess="xml-stripblanks">scalable/status/wellbeing-symbolic.svg</file>
+-    <file preprocess="xml-stripblanks">scalable/status/Suno-sun-symbolic.svg</file>
+-    <file preprocess="xml-stripblanks">scalable/status/Suno-sun-moon-symbolic.svg</file>
+-    <file preprocess="xml-stripblanks">scalable/status/Suno-sunset-symbolic.svg</file>
+-    <file preprocess="xml-stripblanks">scalable/status/Suno-leaf-symbolic.svg</file>
+-    <file preprocess="xml-stripblanks">scalable/status/Suno-moon-symbolic.svg</file>
+-    <file preprocess="xml-stripblanks">scalable/status/Suno-lock-symbolic.svg</file>
+-    <file preprocess="xml-stripblanks">scalable/status/Suno-power-symbolic.svg</file>
+-    <file preprocess="xml-stripblanks">scalable/status/Suno-settings-2-symbolic.svg</file>
+-    <file preprocess="xml-stripblanks">scalable/status/Suno-speaker-symbolic.svg</file>
+-    <file preprocess="xml-stripblanks">scalable/status/Suno-monitor-symbolic.svg</file>
+-    <file preprocess="xml-stripblanks">scalable/status/Suno-battery-symbolic.svg</file>
+-    <file preprocess="xml-stripblanks">scalable/status/Suno-chevron-left-symbolic.svg</file>
+-    <file preprocess="xml-stripblanks">scalable/status/Suno-chevron-right-symbolic.svg</file>
+-    <file preprocess="xml-stripblanks">scalable/status/Suno-phone-symbolic.svg</file>
+-    <file preprocess="xml-stripblanks">scalable/status/Suno-phone-off-symbolic.svg</file>
+-    <file preprocess="xml-stripblanks">scalable/status/Suno-x-symbolic.svg</file>
+-    <file preprocess="xml-stripblanks">scalable/status/Suno-wifi-off-symbolic.svg</file>
+-    <file preprocess="xml-stripblanks">scalable/status/Suno-volume-x-symbolic.svg</file>
+-    <file>SUNO-STUDIO-ICONS-LICENSE.txt</file>
+   </gresource>
+ </gresources>
+ 
+diff --git a/data/theme/gnome-shell-dark.css b/data/theme/gnome-shell-dark.css
+index 297c18e..05b335e 100644
+--- a/data/theme/gnome-shell-dark.css
++++ b/data/theme/gnome-shell-dark.css
+@@ -4399,6 +4399,288 @@ StScrollBar {
+  * measured 3.98:1 on the menu. 62% holds 5.7:1 on the menu and its hover row. */
+ .popup-menu-item.Suno-menu-heading { color: rgba(242, 244, 246, 0.62); }
+ 
++/* Studio shelf-2 notification lip and v70 Quick Options. Logical pixels. */
++.Suno-notification-lip { font-family: Figtree; color: #f2f3f5; }
++.Suno-notification-lip .Suno-lip-surface {
++  background-color: #21252b; border: 1px solid rgba(255,255,255,.075);
++  border-top-width: 0; border-radius: 0 0 22px 22px;
++  box-shadow: 0 12px 30px -14px rgba(0,0,0,.6); }
++.Suno-notification-lip.idle .Suno-lip-surface { border-radius: 0 0 5px 5px; }
++.Suno-notification-lip.pill .Suno-lip-surface { border-radius: 0 0 11px 11px; }
++.Suno-notification-lip.Suno-surface-light { color: #1d1f23; }
++.Suno-notification-lip.Suno-surface-light .Suno-lip-surface {
++  background-color: #eceef1; border-color: rgba(255,255,255,.9); }
++.Suno-notification-lip.Suno-surface-frost .Suno-lip-surface {
++  background-color: rgba(38,38,43,.8); border-color: rgba(255,255,255,.1); }
++.Suno-notification-lip .Suno-lip-pill { height: 21px; padding: 0 10px 1px; spacing: 7px; }
++.Suno-notification-lip .Suno-lip-pill.big { height: 31px; padding: 0 14px 1px; spacing: 8px; }
++.Suno-notification-lip .Suno-lip-icon-stack { spacing: -5px; }
++.Suno-notification-lip .Suno-lip-pill-title { font-size: 12px; font-weight: 650; font-feature-settings: "tnum"; max-width: 240px; }
++.Suno-notification-lip .Suno-lip-pill-more { font-size: 12px; color: rgba(242,243,245,.7); }
++.Suno-notification-lip .Suno-lip-glow { background-color: -st-accent-color; border-radius: 1px; }
++.Suno-notification-lip .notification-banner.Suno-lip-card {
++  min-width: 0; width: auto; min-height: 0; margin: 0; padding: 14px 16px 14px 14px;
++  background-color: transparent; background-gradient-direction: none;
++  border: none; border-radius: 0; box-shadow: none; color: inherit; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .Suno-notification-grid { spacing: 12px; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .Suno-notification-tile {
++  width: 34px; height: 34px; border-radius: 10px; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .Suno-notification-tile .message-source-icon,
++.Suno-notification-lip .notification-banner.Suno-lip-card .Suno-notification-tile .Suno-notification-tile-image { icon-size: 34px; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .Suno-notification-tile-glyph {
++  width: 32px; height: 32px; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .Suno-notification-tile-glyph .message-source-icon { icon-size: 20px; }
++.Suno-notification-lip .Suno-lip-app-badge { border-radius: 5px; border: 2px solid #21252b; margin: 0 -4px -4px 0; }
++.Suno-notification-lip.Suno-surface-light .Suno-lip-app-badge { border-color: #eceef1; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-header { min-height: 12px; spacing: 0; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-header .message-header-content { spacing: 8px; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-header .message-source-title {
++  font-size: 10px; font-weight: 700; letter-spacing: .9px; color: rgba(242,243,245,.5); }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-header .event-time {
++  font-size: 10.5px; font-weight: 600; color: rgba(242,243,245,.5); }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-header .message-close-button {
++  width: 22px; height: 22px; min-width: 22px; min-height: 22px; margin-top: -5px;
++  border-radius: 7px; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-header .message-close-button StIcon { icon-size: 12px; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-box .message-content { spacing: 1px; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-box .message-title { font-size: 13.5px; font-weight: 650; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-box .message-body {
++  font-size: 12.5px; font-weight: 400; color: rgba(242,243,245,.7); }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin { padding: 10px 0 0; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .notification-buttons-bin { spacing: 6px; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .notification-button {
++  height: 30px; min-height: 0; padding: 0 13px; border-radius: 10px; font-size: 12px; font-weight: 650;
++  background-color: rgba(255,255,255,.08); color: inherit; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .notification-button:hover { background-color: rgba(255,255,255,.14); }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .notification-button.Suno-notification-action-ok {
++  background-color: #65b58c; color: #f2f3f5; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .notification-button.Suno-notification-action-danger { color: #db6b72; }
++.Suno-notification-lip .Suno-lip-call-action { spacing: 6px; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .Suno-inline-reply-row {
++  height: 34px; min-height: 0; padding: 0 4px 0 12px; spacing: 6px; border-radius: 17px;
++  background-color: rgba(0,0,0,.22); }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .Suno-inline-reply-entry {
++  min-height: 0; height: 34px; padding: 0; border: none; box-shadow: none;
++  background-color: transparent; color: inherit; font-size: 12.5px; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .Suno-inline-reply-button {
++  width: 26px; height: 26px; min-height: 0; padding: 0; border-radius: 13px;
++  background-color: -st-accent-color; color: #f2f3f5; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .Suno-inline-reply-glyph { icon-size: 13px; }
++.Suno-notification-lip .Suno-lip-sent { color: #65b58c; font-size: 12px; font-weight: 600; }
++.Suno-notification-lip .Suno-lip-tray-header { padding: 14px 14px 6px 18px; spacing: 8px; }
++.Suno-notification-lip .Suno-lip-heading { font-size: 15px; font-weight: 650; }
++.Suno-notification-lip .Suno-lip-count { font-size: 13px; font-weight: 600; color: rgba(242,243,245,.5); }
++.Suno-notification-lip .Suno-lip-key { width: 28px; height: 28px; border-radius: 9px; }
++.Suno-notification-lip .Suno-lip-key:checked { color: -st-accent-color; }
++.Suno-notification-lip .Suno-lip-clear { height: 28px; padding: 0 10px; font-size: 12px; font-weight: 600; border-radius: 9px; }
++.Suno-notification-lip .Suno-lip-scroll { max-height: 520px; }
++.Suno-notification-lip .Suno-lip-list { padding: 4px 10px 12px; spacing: 6px; }
++.Suno-notification-lip .Suno-lip-list .notification-banner.Suno-lip-card {
++  padding: 12px 14px 12px 12px; border-radius: 16px; background-color: rgba(255,255,255,.08);
++  border: 1px solid rgba(255,255,255,.1); }
++.Suno-notification-lip .Suno-lip-empty { padding: 18px 18px 22px; font-size: 12.5px; color: rgba(242,243,245,.7); }
++.Suno-notification-lip.Suno-surface-light .notification-banner.Suno-lip-card .message-body,
++.Suno-notification-lip.Suno-surface-light .Suno-lip-empty,
++.Suno-notification-lip.Suno-surface-light .Suno-lip-pill-more { color: rgba(29,31,35,.65); }
++.Suno-notification-lip.Suno-surface-light .notification-banner.Suno-lip-card .message-source-title,
++.Suno-notification-lip.Suno-surface-light .notification-banner.Suno-lip-card .event-time,
++.Suno-notification-lip.Suno-surface-light .Suno-lip-count { color: rgba(29,31,35,.45); }
++.Suno-notification-lip.Suno-surface-light .notification-banner.Suno-lip-card .notification-button,
++.Suno-notification-lip.Suno-surface-light .notification-banner.Suno-lip-card .Suno-inline-reply-row { background-color: rgba(20,22,26,.06); }
++.Suno-notification-lip.Suno-surface-light .Suno-lip-list .notification-banner.Suno-lip-card {
++  background-color: #f7f8fa; border-color: rgba(20,22,26,.1); }
++
++/* One 340px popup, one stable source actor, one page visible at a time. */
++.quick-settings.Suno-studio-options {
++  width: 316px; min-width: 316px; max-width: 316px; padding: 12px; spacing: 0;
++  background-color: #262a31; color: #f2f3f5; border-radius: 22px;
++  border: 1px solid rgba(255,255,255,.075); font-family: Figtree; }
++.quick-settings.Suno-studio-options.Suno-surface-light { background-color: #eceef1; color: #1d1f23; border-color: rgba(255,255,255,.9); }
++.quick-settings.Suno-studio-options.Suno-surface-frost {
++  background-color: rgba(32,32,36,.86); background-gradient-direction: vertical;
++  background-gradient-start: rgba(50,50,56,.8); background-gradient-end: rgba(32,32,36,.86);
++  color: #f2f3f5; border-color: rgba(255,255,255,.1); }
++.quick-settings.Suno-studio-options .Suno-options-main, .quick-settings.Suno-studio-options .Suno-options-page { spacing: 12px; }
++.quick-settings.Suno-studio-options .Suno-options-levels { spacing: 4px; }
++.quick-settings.Suno-studio-options .quick-slider.Suno-options-slider { margin: 0; padding: 0; height: 36px; min-height: 0; spacing: 11px; }
++.quick-settings.Suno-studio-options .Suno-options-slider > StBoxLayout { spacing: 11px; }
++.quick-settings.Suno-studio-options .Suno-options-slider .icon-button { width: 16px; height: 36px; min-width: 0; min-height: 0; padding: 0 0 0 8px; }
++.quick-settings.Suno-studio-options .Suno-options-slider StIcon { icon-size: 16px; }
++.quick-settings.Suno-studio-options .Suno-options-slider .slider-bin { padding: 0; }
++.quick-settings.Suno-studio-options .Suno-options-slider .slider {
++  height: 24px; -slider-height: 5px; -slider-handle-radius: 7px;
++  -barlevel-height: 5px; -barlevel-background-color: rgba(0,0,0,.22);
++  -barlevel-active-background-color: -st-accent-color; }
++.quick-settings.Suno-studio-options .Suno-options-slider .Suno-quick-level-value { width: 34px; font-size: 11.5px; font-feature-settings: "tnum"; color: rgba(242,243,245,.5); }
++.quick-settings.Suno-studio-options .Suno-options-slider .Suno-quick-disclosure-slot { width: 36px; height: 36px; }
++.quick-settings.Suno-studio-options .Suno-options-level-key, .quick-settings.Suno-studio-options .Suno-options-slider .Suno-options-level-key {
++  width: 36px; height: 36px; min-width: 0; min-height: 0; padding: 0; border-radius: 11px;
++  background-color: rgba(0,0,0,.22); border: none; box-shadow: none; font-size: 10.5px; font-weight: 650; }
++.quick-settings.Suno-studio-options .Suno-options-level-key:checked { color: -st-accent-color; background-color: rgba(255,255,255,.14); }
++.quick-settings.Suno-studio-options .Suno-options-radios { spacing: 8px; }
++.quick-settings.Suno-studio-options .quick-toggle-has-menu.Suno-options-radio {
++  width: 154px; min-width: 0; min-height: 0; padding: 0; border-radius: 15px;
++  background-color: rgba(0,0,0,.22); border: none; box-shadow: none; }
++.quick-settings.Suno-studio-options .quick-toggle-has-menu.Suno-options-radio:checked { background-color: rgba(255,255,255,.14); }
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle { padding: 9px 2px 9px 9px; min-width: 0; min-height: 0; border: none; border-radius: 15px 0 0 15px; background-color: transparent; spacing: 10px; }
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle StBoxLayout { spacing: 10px; }
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle .quick-toggle-icon { icon-size: 16px; width: 32px; height: 32px; padding: 0; border-radius: 10px; }
++.quick-settings.Suno-studio-options .Suno-options-radio:checked .quick-toggle-icon { background-color: -st-accent-color; color: #f2f3f5; }
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-title { font-size: 12.5px; font-weight: 650; }
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-subtitle { font-size: 11px; }
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-menu-button { width: 30px; min-width: 0; padding: 0; border: none; background-color: transparent; }
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-separator { width: 0; background-color: transparent; }
++.quick-settings.Suno-studio-options .Suno-options-toggles { spacing: 2px; }
++.quick-settings.Suno-studio-options .Suno-options-toggle-row { spacing: 8px; }
++.quick-settings.Suno-studio-options .Suno-options-utility, .quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle {
++  padding: 5px 9px 5px 5px; min-height: 0; min-width: 0; border-radius: 14px; border: none;
++  background-color: transparent; box-shadow: none; font-size: 12.5px; font-weight: 600; }
++.quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle { padding: 0; }
++.quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle-icon { width: 32px; height: 32px; icon-size: 16px; border-radius: 10px; background-color: rgba(255,255,255,.08); }
++.quick-settings.Suno-studio-options .Suno-options-utility:checked .quick-toggle-icon { background-color: -st-accent-color; color: #f2f3f5; }
++.quick-settings.Suno-studio-options .Suno-options-utility:checked, .quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle:checked { background-color: transparent; }
++.quick-settings.Suno-studio-options .Suno-options-mic { padding: 8px 10px 8px 8px; spacing: 10px; border-radius: 15px; background-color: rgba(232,150,55,.16); }
++.quick-settings.Suno-studio-options .Suno-options-mic-title { font-size: 12.5px; font-weight: 650; }
++.quick-settings.Suno-studio-options .Suno-options-mic-app { font-size: 11px; color: rgba(242,243,245,.7); }
++.quick-settings.Suno-studio-options .Suno-options-mute { height: 28px; padding: 0 11px; border-radius: 9px; font-size: 12px; font-weight: 600; background-color: rgba(255,255,255,.14); }
++.quick-settings.Suno-studio-options .Suno-options-system { padding-top: 10px; border-top: 1px solid rgba(255,255,255,.1); background-color: transparent; }
++.quick-settings.Suno-studio-options .Suno-options-system .Suno-quick-footer { padding: 0; spacing: 2px; }
++.quick-settings.Suno-studio-options .Suno-options-system .Suno-quick-action { width: 28px; height: 30px; padding: 0; min-width: 0; min-height: 0; border-radius: 9px; background-color: transparent; }
++.quick-settings.Suno-studio-options .Suno-options-system .Suno-quick-action StIcon { icon-size: 16px; }
++.quick-settings.Suno-studio-options .Suno-options-battery { spacing: 8px; padding: 0 8px 0 6px; height: 30px; }
++.quick-settings.Suno-studio-options .Suno-options-battery-text { font-size: 12px; }
++.quick-settings.Suno-studio-options .Suno-options-page-header { spacing: 6px; }
++.quick-settings.Suno-studio-options .Suno-options-page-title { font-size: 14.5px; font-weight: 650; }
++.quick-settings.Suno-studio-options .Suno-options-back { width: 28px; height: 28px; border-radius: 9px; }
++.quick-settings.Suno-studio-options .Suno-options-page-switch { padding: 4px; border-radius: 9px; }
++.quick-settings.Suno-studio-options .quick-toggle-menu.Suno-options-detail { margin: 0; padding: 0; border: none; border-radius: 0; background-color: transparent; box-shadow: none; spacing: 1px; }
++.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-row { min-height: 34px; padding: 5px 10px 5px 5px; border-radius: 12px; spacing: 10px; }
++.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-row-title { font-size: 12.5px; font-weight: 650; }
++.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-row-state { font-size: 11px; }
++.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-row-icon { width: 32px; icon-size: 16px; }
++.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-row-dot { icon-size: 15px; color: -st-accent-color; }
++.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-link { font-size: 12px; font-weight: 600; color: -st-accent-color; padding: 0 8px; height: 28px; }
++.quick-settings.Suno-studio-options .Suno-options-switch-row { padding: 6px 10px; border-radius: 12px; }
++.Suno-studio-options.Suno-surface-light .Suno-options-radio,
++.Suno-studio-options.Suno-surface-light .Suno-options-level-key,
++.Suno-studio-options.Suno-surface-light .Suno-options-slider .slider { background-color: rgba(20,22,26,.05); }
++.Suno-studio-options.Suno-surface-light .Suno-options-slider .Suno-quick-level-value { color: rgba(29,31,35,.45); }
++
++.Suno-notification-lip .Suno-lip-call-ring { width: 34px; height: 34px; border: 2px solid #65b58c; border-radius: 17px; }
++.quick-settings.Suno-studio-options .Suno-options-pair-code { spacing: 8px; padding: 8px 0; }
++.quick-settings.Suno-studio-options .Suno-options-pair-instruction { font-size: 12px; }
++.quick-settings.Suno-studio-options .Suno-options-passkey { spacing: 6px; }
++.quick-settings.Suno-studio-options .Suno-options-passkey-digit { width: 28px; padding: 7px 0; text-align: center; border-radius: 8px; background-color: rgba(255,255,255,.1); font-size: 20px; font-weight: 650; }
++.quick-settings.Suno-studio-options .Suno-options-passkey-digit.entered { color: #65b58c; }
++.quick-settings.Suno-studio-options .Suno-options-pair-actions { spacing: 8px; }
++.quick-settings.Suno-studio-options .Suno-options-pair-actions StButton { padding: 6px 12px; border-radius: 8px; background-color: rgba(255,255,255,.12); }
++.Suno-notification-lip StButton:focus, .quick-settings.Suno-studio-options StButton:focus { box-shadow: inset 0 0 0 2px -st-accent-color; }
++
++/* Reset the earlier 62px card geometry after moving controls out of its grid. */
++.quick-settings.Suno-studio-options { width: 310px; min-width: 310px; max-width: 310px; padding: 14px; }
++.quick-settings.Suno-studio-options .Suno-options-utility, .quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle { height: 32px; margin: 0; }
++.quick-settings.Suno-studio-options .Suno-options-utility { padding: 5px; }
++.quick-settings.Suno-studio-options .Suno-options-utility > StBoxLayout, .quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle > StBoxLayout { padding: 0; spacing: 10px; }
++.quick-settings.Suno-studio-options .Suno-options-radio { width: 151px; height: 52px; margin: 0; }
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle { height: 32px; margin: 0; }
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle > StBoxLayout { padding: 0; }
++
++.quick-settings.Suno-studio-options .Suno-options-slider .icon-button { width: 16px; padding: 0; background-color: transparent; border: none; box-shadow: none; }
++.quick-settings.Suno-studio-options .Suno-options-slider .slider { color: #f2f3f5; -barlevel-active-background-color: #e8eaed; -slider-handle-border-width: 0; -slider-handle-border-color: transparent; }
++.quick-settings.Suno-studio-options .Suno-options-slider .Suno-quick-disclosure-disc { background-color: transparent; border: none; box-shadow: none; }
++.quick-settings.Suno-studio-options .Suno-options-slider .Suno-quick-disclosure-icon { icon-size: 14px; }
++.quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle-title { font-size: 12.5px; font-weight: 600; }
++
++.quick-settings.Suno-studio-options .quick-slider.Suno-options-slider { border: none; }
++.quick-settings.Suno-studio-options .Suno-options-system { min-height: 0; height: auto; margin: 2px 0 0; border-radius: 0; }
++.quick-settings.Suno-studio-options .Suno-options-system .Suno-quick-action { border: none; box-shadow: none; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .Suno-inline-reply-row { min-height: 34px; }
++
++/* Measured against current Studio: remove old account-footer/subtitle geometry. */
++.quick-settings.Suno-studio-options .Suno-options-system .Suno-quick-footer { height: 30px; }
++.quick-settings.Suno-studio-options .Suno-options-system .Suno-quick-actions { spacing: 2px; }
++.quick-settings.Suno-studio-options .Suno-options-main { spacing: 0; }
++.quick-settings.Suno-studio-options .Suno-options-levels { margin-bottom: 12px; }
++.quick-settings.Suno-studio-options .Suno-options-radios { margin-bottom: 8px; }
++.quick-settings.Suno-studio-options .Suno-options-toggles { margin-bottom: 12px; }
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-subtitle { padding-top: 0; }
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle StBoxLayout { spacing: 1px; }
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle > StBoxLayout { spacing: 10px; }
++.quick-settings.Suno-studio-options .Suno-options-radio { border: 1px solid rgba(0,0,0,.25); }
++
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-header .message-close-button { margin: 0; }
++
++/* Studio's lip rim is an inset shadow, so it consumes no text-column width. */
++.Suno-notification-lip .Suno-lip-surface { border-width: 0; box-shadow: inset 0 -1px 0 rgba(255,255,255,.075); }
++
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-header { min-height: 15px; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-box .message-title { min-height: 18px; }
++.Suno-notification-lip { color: #e7e9e8; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-box .message-body { color: rgba(231,233,232,.62); }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-header .message-source-title,
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-header .event-time { color: rgba(231,233,232,.42); }
++.quick-settings.Suno-studio-options { color: #e7e9e8; }
++
++.quick-settings.Suno-studio-options .Suno-options-slider .icon-button { padding-left: 8px; }
++.quick-settings.Suno-studio-options .Suno-options-slider .Suno-quick-disclosure-icon { icon-size: 16px; }
++
++.popup-menu-content.quick-settings.Suno-studio-options { width: 308px; min-width: 308px; max-width: 308px; padding: 16px; border: none; }
++.quick-settings.Suno-studio-options .Suno-options-radio { width: 150px; border: none; }
++.quick-settings.Suno-studio-options .Suno-options-radio:checked { background-color: #353a42; }
++.quick-settings.Suno-studio-options .Suno-options-radio:checked .quick-toggle-icon,
++.quick-settings.Suno-studio-options .Suno-options-utility:checked .quick-toggle-icon { background-color: #3a84ca; }
++.quick-settings.Suno-studio-options .Suno-options-system { border-top: none; box-shadow: inset 0 1px 0 rgba(255,255,255,.09); }
++.quick-settings.Suno-studio-options .Suno-options-toggle-row > .Suno-options-utility { width: 140px; }
++
++.Suno-notification-lip .Suno-lip-app-badge { margin: 0; }
++
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-menu-button { margin: 0; }
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle > StBoxLayout { padding: 0; }
++
++.Suno-notification-lip .Suno-lip-icon-stack { spacing: 0; }
++/* Resolve inherited radio wrapper spacing and checked-state specificity. */
++.quick-settings.Suno-studio-options .Suno-options-radio > StBoxLayout { spacing: 0; padding: 0; }
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-separator { width: 0; min-width: 0; padding: 0; margin: 0; border: none; }
++.quick-settings.Suno-studio-options .quick-toggle-has-menu.Suno-options-radio:checked { background-color: #353a42; box-shadow: 0 0 0 1px rgba(0,0,0,.25); }
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-subtitle,
++.quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle-icon,
++.quick-settings.Suno-studio-options .Suno-options-slider .icon-button,
++.quick-settings.Suno-studio-options .Suno-options-system { color: rgba(231,233,232,.62); }
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-menu-button { color: rgba(231,233,232,.42); }
++.quick-settings.Suno-studio-options .Suno-options-system .Suno-options-battery StIcon { icon-size: 18px; }
++.quick-settings.Suno-studio-options .Suno-options-slider .slider { color: #fff; -barlevel-active-background-color: #e7e9e8; }
++.quick-settings.Suno-studio-options.Suno-surface-light .quick-toggle-has-menu.Suno-options-radio:checked { background-color: #fff; box-shadow: 0 0 0 1px rgba(25,27,31,.08); }
++.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-radio .quick-toggle-subtitle,
++.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-utility .quick-toggle-icon,
++.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-slider .icon-button,
++.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-system { color: rgba(22,25,29,.76); }
++.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-radio .quick-toggle-menu-button { color: rgba(22,25,29,.56); }
++/* Studio detail lists and native Switch actors retain their service bindings. */
++.quick-settings.Suno-studio-options .Suno-options-detail { spacing: 12px; }
++.quick-settings.Suno-studio-options .Suno-options-detail > .popup-menu-section,
++.quick-settings.Suno-studio-options .Suno-options-detail .Suno-options-list { padding: 4px; spacing: 1px; border-radius: 16px; background-color: rgba(0,0,0,.22); box-shadow: inset 0 1px 2px rgba(0,0,0,.22); }
++.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-row-copy { spacing: 1px; }
++.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-row-state { color: rgba(231,233,232,.62); }
++.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-row-dot { width: 15px; height: 15px; icon-size: 15px; background-color: transparent; border: none; border-radius: 0; color: #71b5f4; }
++.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-link { min-height: 0; height: 28px; padding: 0 8px; margin: 0; border: none; background-color: transparent; }
++.quick-settings.Suno-studio-options .Suno-options-page .toggle-switch { width: 34px; height: 20px; margin: 0; padding: 0; border: none; border-radius: 10px; background-color: rgba(0,0,0,.22); }
++.quick-settings.Suno-studio-options .Suno-options-page .toggle-switch:checked { background-color: #3a84ca; }
++.quick-settings.Suno-studio-options .Suno-options-page .toggle-switch StIcon { color: transparent; }
++.quick-settings.Suno-studio-options .Suno-options-page .toggle-switch .handle { width: 14px; height: 14px; margin: 3px; padding: 0; border: none; border-radius: 7px; background-color: #353a42; }
++.quick-settings.Suno-studio-options .Suno-options-page .toggle-switch:checked .handle { background-color: #fff; }
++.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-detail > .popup-menu-section,
++.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-detail .Suno-options-list,
++.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-page .toggle-switch { background-color: rgba(25,27,31,.055); }
++.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-detail .Suno-sheet-row-state { color: rgba(22,25,29,.76); }
++.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-page .toggle-switch:checked { background-color: #3a84ca; }
++.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-page .toggle-switch .handle { background-color: #fff; }
++.quick-settings.Suno-studio-options .Suno-options-fixture-groups { spacing: 12px; }
++.quick-settings.Suno-studio-options .Suno-options-detail .Suno-options-nearby { min-height: 0; padding: 2px 4px 0 6px; margin: 0; font-size: 12px; font-weight: 650; color: rgba(231,233,232,.62); }
++.quick-settings.Suno-studio-options .Suno-options-detail .Suno-options-nearby StButton { padding: 0; min-height: 0; font-size: 12px; font-weight: 600; background-color: transparent; color: #71b5f4; }
++.quick-settings.Suno-studio-options .Suno-options-detail .Suno-options-off { padding: 2px 6px; margin: 0; font-size: 12.5px; color: rgba(231,233,232,.42); }
++.quick-settings.Suno-studio-options .Suno-options-detail > .popup-menu-section.Suno-options-near-empty { padding: 0; background-color: transparent; box-shadow: none; }
++.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-detail .Suno-options-nearby { color: rgba(22,25,29,.76); }
++.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-detail .Suno-options-off { color: rgba(22,25,29,.56); }
+ /* Suno notification-owned rules; safe to compile without the global Shell SCSS. */
+ .notification-banner.Suno-notification-card {
+   min-height: 0;
+@@ -4985,378 +5267,95 @@ StScrollBar {
+     background-gradient-end: #434e5b; }
+     .Suno-notification-beacon .Suno-notification-beacon-mark.Suno-notification-beacon-mark-glyph .Suno-notification-beacon-mark-icon {
+       icon-size: 16px;
+-      color: #ffffff;
+-      -st-icon-style: symbolic; }
+-  .Suno-notification-beacon .Suno-notification-beacon-copy {
+-    width: 132px;
+-    spacing: 2px; }
+-  .Suno-notification-beacon .Suno-notification-beacon-title {
+-    font-size: 13px;
+-    font-weight: 650; }
+-  .Suno-notification-beacon .Suno-notification-beacon-summary {
+-    font-size: 11px;
+-    font-weight: 550; }
+-  .Suno-notification-beacon .Suno-notification-beacon-count {
+-    min-width: 8px;
+-    height: 20px;
+-    padding: 0 6px;
+-    border-radius: 999px;
+-    color: #ffffff;
+-    font-size: 11px;
+-    font-weight: 750;
+-    font-feature-settings: "tnum";
+-    text-align: center; }
+-  .Suno-notification-beacon:focus {
+-    box-shadow: inset 0 0 0 2px st-transparentize(-st-accent-color, 0.3); }
+-  .Suno-notification-beacon.Suno-notification-tone-messages .Suno-notification-beacon-count {
+-    background-color: #3f8f6c;
+-    color: #ffffff; }
+-  .Suno-notification-beacon.Suno-notification-tone-phone .Suno-notification-beacon-count {
+-    background-color: #3f8f6c;
+-    color: #ffffff; }
+-  .Suno-notification-beacon.Suno-notification-tone-mail .Suno-notification-beacon-count {
+-    background-color: #5585b8;
+-    color: #ffffff; }
+-  .Suno-notification-beacon.Suno-notification-tone-files .Suno-notification-beacon-count {
+-    background-color: #5585b8;
+-    color: #ffffff; }
+-  .Suno-notification-beacon.Suno-notification-tone-calendar .Suno-notification-beacon-count {
+-    background-color: #8a63a4;
+-    color: #ffffff; }
+-  .Suno-notification-beacon.Suno-notification-tone-depot .Suno-notification-beacon-count {
+-    background-color: #b57f3f;
+-    color: #ffffff; }
+-  .Suno-notification-beacon.Suno-notification-tone-neutral .Suno-notification-beacon-count {
+-    background-color: #b57f3f;
+-    color: #ffffff; }
+-
+-.Suno-surface-light .Suno-notification-beacon .Suno-notification-beacon-title {
+-  color: #34383d; }
+-
+-.Suno-surface-light .Suno-notification-beacon .Suno-notification-beacon-summary {
+-  color: rgba(52, 56, 61, 0.78); }
+-
+-.Suno-surface-light .Suno-notification-beacon:hover {
+-  background-color: rgba(25, 27, 31, 0.06); }
+-
+-.Suno-surface-light .Suno-notification-beacon:active, .Suno-surface-light .Suno-notification-beacon:checked {
+-  background-color: rgba(25, 27, 31, 0.09); }
+-
+-.Suno-surface-dark .Suno-notification-beacon .Suno-notification-beacon-title {
+-  color: #e7e9e8; }
+-
+-.Suno-surface-dark .Suno-notification-beacon .Suno-notification-beacon-summary {
+-  color: rgba(231, 233, 232, 0.8); }
+-
+-.Suno-surface-dark .Suno-notification-beacon:hover {
+-  background-color: rgba(255, 255, 255, 0.06); }
+-
+-.Suno-surface-dark .Suno-notification-beacon:active, .Suno-surface-dark .Suno-notification-beacon:checked {
+-  background-color: rgba(255, 255, 255, 0.09); }
+-
+-.Suno-surface-frost .Suno-notification-beacon .Suno-notification-beacon-title {
+-  color: #1f262d; }
+-
+-.Suno-surface-frost .Suno-notification-beacon .Suno-notification-beacon-summary {
+-  color: #394047; }
+-
+-.Suno-surface-frost .Suno-notification-beacon:hover {
+-  background-color: rgba(37, 46, 54, 0.06); }
+-
+-.Suno-surface-frost .Suno-notification-beacon:active, .Suno-surface-frost .Suno-notification-beacon:checked {
+-  background-color: rgba(37, 46, 54, 0.1); }
+-
+-.Suno-surface-glass .Suno-notification-beacon .Suno-notification-beacon-title {
+-  color: #161b20; }
+-
+-.Suno-surface-glass .Suno-notification-beacon .Suno-notification-beacon-summary {
+-  color: #1f242a; }
+-
+-.Suno-surface-glass .Suno-notification-beacon:hover {
+-  background-color: rgba(37, 46, 54, 0.05); }
+-
+-.Suno-surface-glass .Suno-notification-beacon:active, .Suno-surface-glass .Suno-notification-beacon:checked {
+-  background-color: rgba(37, 46, 54, 0.08); }
+-
+-/* Studio shelf-2 notification lip and v70 Quick Options. Logical pixels. */
+-.Suno-notification-lip { font-family: Figtree; color: #f2f3f5; }
+-.Suno-notification-lip .Suno-lip-surface {
+-  background-color: #21252b; border: 1px solid rgba(255,255,255,.075);
+-  border-top-width: 0; border-radius: 0 0 22px 22px;
+-  box-shadow: 0 12px 30px -14px rgba(0,0,0,.6); }
+-.Suno-notification-lip.idle .Suno-lip-surface { border-radius: 0 0 5px 5px; }
+-.Suno-notification-lip.pill .Suno-lip-surface { border-radius: 0 0 11px 11px; }
+-.Suno-notification-lip.Suno-surface-light { color: #1d1f23; }
+-.Suno-notification-lip.Suno-surface-light .Suno-lip-surface {
+-  background-color: #eceef1; border-color: rgba(255,255,255,.9); }
+-.Suno-notification-lip.Suno-surface-frost .Suno-lip-surface {
+-  background-color: rgba(38,38,43,.8); border-color: rgba(255,255,255,.1); }
+-.Suno-notification-lip .Suno-lip-pill { height: 21px; padding: 0 10px 1px; spacing: 7px; }
+-.Suno-notification-lip .Suno-lip-pill.big { height: 31px; padding: 0 14px 1px; spacing: 8px; }
+-.Suno-notification-lip .Suno-lip-icon-stack { spacing: -5px; }
+-.Suno-notification-lip .Suno-lip-pill-title { font-size: 12px; font-weight: 650; font-feature-settings: "tnum"; max-width: 240px; }
+-.Suno-notification-lip .Suno-lip-pill-more { font-size: 12px; color: rgba(242,243,245,.7); }
+-.Suno-notification-lip .Suno-lip-glow { background-color: -st-accent-color; border-radius: 1px; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card {
+-  min-width: 0; width: auto; min-height: 0; margin: 0; padding: 14px 16px 14px 14px;
+-  background-color: transparent; background-gradient-direction: none;
+-  border: none; border-radius: 0; box-shadow: none; color: inherit; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .Suno-notification-grid { spacing: 12px; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .Suno-notification-tile {
+-  width: 34px; height: 34px; border-radius: 10px; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .Suno-notification-tile .message-source-icon,
+-.Suno-notification-lip .notification-banner.Suno-lip-card .Suno-notification-tile .Suno-notification-tile-image { icon-size: 34px; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .Suno-notification-tile-glyph {
+-  width: 32px; height: 32px; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .Suno-notification-tile-glyph .message-source-icon { icon-size: 20px; }
+-.Suno-notification-lip .Suno-lip-app-badge { border-radius: 5px; border: 2px solid #21252b; margin: 0 -4px -4px 0; }
+-.Suno-notification-lip.Suno-surface-light .Suno-lip-app-badge { border-color: #eceef1; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-header { min-height: 12px; spacing: 0; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-header .message-header-content { spacing: 8px; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-header .message-source-title {
+-  font-size: 10px; font-weight: 700; letter-spacing: .9px; color: rgba(242,243,245,.5); }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-header .event-time {
+-  font-size: 10.5px; font-weight: 600; color: rgba(242,243,245,.5); }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-header .message-close-button {
+-  width: 22px; height: 22px; min-width: 22px; min-height: 22px; margin-top: -5px;
+-  border-radius: 7px; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-header .message-close-button StIcon { icon-size: 12px; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-box .message-content { spacing: 1px; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-box .message-title { font-size: 13.5px; font-weight: 650; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-box .message-body {
+-  font-size: 12.5px; font-weight: 400; color: rgba(242,243,245,.7); }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin { padding: 10px 0 0; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .notification-buttons-bin { spacing: 6px; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .notification-button {
+-  height: 30px; min-height: 0; padding: 0 13px; border-radius: 10px; font-size: 12px; font-weight: 650;
+-  background-color: rgba(255,255,255,.08); color: inherit; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .notification-button:hover { background-color: rgba(255,255,255,.14); }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .notification-button.Suno-notification-action-ok {
+-  background-color: #65b58c; color: #f2f3f5; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .notification-button.Suno-notification-action-danger { color: #db6b72; }
+-.Suno-notification-lip .Suno-lip-call-action { spacing: 6px; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .Suno-inline-reply-row {
+-  height: 34px; min-height: 0; padding: 0 4px 0 12px; spacing: 6px; border-radius: 17px;
+-  background-color: rgba(0,0,0,.22); }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .Suno-inline-reply-entry {
+-  min-height: 0; height: 34px; padding: 0; border: none; box-shadow: none;
+-  background-color: transparent; color: inherit; font-size: 12.5px; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .Suno-inline-reply-button {
+-  width: 26px; height: 26px; min-height: 0; padding: 0; border-radius: 13px;
+-  background-color: -st-accent-color; color: #f2f3f5; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .Suno-inline-reply-glyph { icon-size: 13px; }
+-.Suno-notification-lip .Suno-lip-sent { color: #65b58c; font-size: 12px; font-weight: 600; }
+-.Suno-notification-lip .Suno-lip-tray-header { padding: 14px 14px 6px 18px; spacing: 8px; }
+-.Suno-notification-lip .Suno-lip-heading { font-size: 15px; font-weight: 650; }
+-.Suno-notification-lip .Suno-lip-count { font-size: 13px; font-weight: 600; color: rgba(242,243,245,.5); }
+-.Suno-notification-lip .Suno-lip-key { width: 28px; height: 28px; border-radius: 9px; }
+-.Suno-notification-lip .Suno-lip-key:checked { color: -st-accent-color; }
+-.Suno-notification-lip .Suno-lip-clear { height: 28px; padding: 0 10px; font-size: 12px; font-weight: 600; border-radius: 9px; }
+-.Suno-notification-lip .Suno-lip-scroll { max-height: 520px; }
+-.Suno-notification-lip .Suno-lip-list { padding: 4px 10px 12px; spacing: 6px; }
+-.Suno-notification-lip .Suno-lip-list .notification-banner.Suno-lip-card {
+-  padding: 12px 14px 12px 12px; border-radius: 16px; background-color: rgba(255,255,255,.08);
+-  border: 1px solid rgba(255,255,255,.1); }
+-.Suno-notification-lip .Suno-lip-empty { padding: 18px 18px 22px; font-size: 12.5px; color: rgba(242,243,245,.7); }
+-.Suno-notification-lip.Suno-surface-light .notification-banner.Suno-lip-card .message-body,
+-.Suno-notification-lip.Suno-surface-light .Suno-lip-empty,
+-.Suno-notification-lip.Suno-surface-light .Suno-lip-pill-more { color: rgba(29,31,35,.65); }
+-.Suno-notification-lip.Suno-surface-light .notification-banner.Suno-lip-card .message-source-title,
+-.Suno-notification-lip.Suno-surface-light .notification-banner.Suno-lip-card .event-time,
+-.Suno-notification-lip.Suno-surface-light .Suno-lip-count { color: rgba(29,31,35,.45); }
+-.Suno-notification-lip.Suno-surface-light .notification-banner.Suno-lip-card .notification-button,
+-.Suno-notification-lip.Suno-surface-light .notification-banner.Suno-lip-card .Suno-inline-reply-row { background-color: rgba(20,22,26,.06); }
+-.Suno-notification-lip.Suno-surface-light .Suno-lip-list .notification-banner.Suno-lip-card {
+-  background-color: #f7f8fa; border-color: rgba(20,22,26,.1); }
++      color: #ffffff;
++      -st-icon-style: symbolic; }
++  .Suno-notification-beacon .Suno-notification-beacon-copy {
++    width: 132px;
++    spacing: 2px; }
++  .Suno-notification-beacon .Suno-notification-beacon-title {
++    font-size: 13px;
++    font-weight: 650; }
++  .Suno-notification-beacon .Suno-notification-beacon-summary {
++    font-size: 11px;
++    font-weight: 550; }
++  .Suno-notification-beacon .Suno-notification-beacon-count {
++    min-width: 8px;
++    height: 20px;
++    padding: 0 6px;
++    border-radius: 999px;
++    color: #ffffff;
++    font-size: 11px;
++    font-weight: 750;
++    font-feature-settings: "tnum";
++    text-align: center; }
++  .Suno-notification-beacon:focus {
++    box-shadow: inset 0 0 0 2px st-transparentize(-st-accent-color, 0.3); }
++  .Suno-notification-beacon.Suno-notification-tone-messages .Suno-notification-beacon-count {
++    background-color: #3f8f6c;
++    color: #ffffff; }
++  .Suno-notification-beacon.Suno-notification-tone-phone .Suno-notification-beacon-count {
++    background-color: #3f8f6c;
++    color: #ffffff; }
++  .Suno-notification-beacon.Suno-notification-tone-mail .Suno-notification-beacon-count {
++    background-color: #5585b8;
++    color: #ffffff; }
++  .Suno-notification-beacon.Suno-notification-tone-files .Suno-notification-beacon-count {
++    background-color: #5585b8;
++    color: #ffffff; }
++  .Suno-notification-beacon.Suno-notification-tone-calendar .Suno-notification-beacon-count {
++    background-color: #8a63a4;
++    color: #ffffff; }
++  .Suno-notification-beacon.Suno-notification-tone-depot .Suno-notification-beacon-count {
++    background-color: #b57f3f;
++    color: #ffffff; }
++  .Suno-notification-beacon.Suno-notification-tone-neutral .Suno-notification-beacon-count {
++    background-color: #b57f3f;
++    color: #ffffff; }
+ 
+-/* One 340px popup, one stable source actor, one page visible at a time. */
+-.quick-settings.Suno-studio-options {
+-  width: 316px; min-width: 316px; max-width: 316px; padding: 12px; spacing: 0;
+-  background-color: #262a31; color: #f2f3f5; border-radius: 22px;
+-  border: 1px solid rgba(255,255,255,.075); font-family: Figtree; }
+-.quick-settings.Suno-studio-options.Suno-surface-light { background-color: #eceef1; color: #1d1f23; border-color: rgba(255,255,255,.9); }
+-.quick-settings.Suno-studio-options.Suno-surface-frost {
+-  background-color: rgba(32,32,36,.86); background-gradient-direction: vertical;
+-  background-gradient-start: rgba(50,50,56,.8); background-gradient-end: rgba(32,32,36,.86);
+-  color: #f2f3f5; border-color: rgba(255,255,255,.1); }
+-.quick-settings.Suno-studio-options .Suno-options-main, .quick-settings.Suno-studio-options .Suno-options-page { spacing: 12px; }
+-.quick-settings.Suno-studio-options .Suno-options-levels { spacing: 4px; }
+-.quick-settings.Suno-studio-options .quick-slider.Suno-options-slider { margin: 0; padding: 0; height: 36px; min-height: 0; spacing: 11px; }
+-.quick-settings.Suno-studio-options .Suno-options-slider > StBoxLayout { spacing: 11px; }
+-.quick-settings.Suno-studio-options .Suno-options-slider .icon-button { width: 16px; height: 36px; min-width: 0; min-height: 0; padding: 0 0 0 8px; }
+-.quick-settings.Suno-studio-options .Suno-options-slider StIcon { icon-size: 16px; }
+-.quick-settings.Suno-studio-options .Suno-options-slider .slider-bin { padding: 0; }
+-.quick-settings.Suno-studio-options .Suno-options-slider .slider {
+-  height: 24px; -slider-height: 5px; -slider-handle-radius: 7px;
+-  -barlevel-height: 5px; -barlevel-background-color: rgba(0,0,0,.22);
+-  -barlevel-active-background-color: -st-accent-color; }
+-.quick-settings.Suno-studio-options .Suno-options-slider .Suno-quick-level-value { width: 34px; font-size: 11.5px; font-feature-settings: "tnum"; color: rgba(242,243,245,.5); }
+-.quick-settings.Suno-studio-options .Suno-options-slider .Suno-quick-disclosure-slot { width: 36px; height: 36px; }
+-.quick-settings.Suno-studio-options .Suno-options-level-key, .quick-settings.Suno-studio-options .Suno-options-slider .Suno-options-level-key {
+-  width: 36px; height: 36px; min-width: 0; min-height: 0; padding: 0; border-radius: 11px;
+-  background-color: rgba(0,0,0,.22); border: none; box-shadow: none; font-size: 10.5px; font-weight: 650; }
+-.quick-settings.Suno-studio-options .Suno-options-level-key:checked { color: -st-accent-color; background-color: rgba(255,255,255,.14); }
+-.quick-settings.Suno-studio-options .Suno-options-radios { spacing: 8px; }
+-.quick-settings.Suno-studio-options .quick-toggle-has-menu.Suno-options-radio {
+-  width: 154px; min-width: 0; min-height: 0; padding: 0; border-radius: 15px;
+-  background-color: rgba(0,0,0,.22); border: none; box-shadow: none; }
+-.quick-settings.Suno-studio-options .quick-toggle-has-menu.Suno-options-radio:checked { background-color: rgba(255,255,255,.14); }
+-.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle { padding: 9px 2px 9px 9px; min-width: 0; min-height: 0; border: none; border-radius: 15px 0 0 15px; background-color: transparent; spacing: 10px; }
+-.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle StBoxLayout { spacing: 10px; }
+-.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle .quick-toggle-icon { icon-size: 16px; width: 32px; height: 32px; padding: 0; border-radius: 10px; }
+-.quick-settings.Suno-studio-options .Suno-options-radio:checked .quick-toggle-icon { background-color: -st-accent-color; color: #f2f3f5; }
+-.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-title { font-size: 12.5px; font-weight: 650; }
+-.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-subtitle { font-size: 11px; }
+-.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-menu-button { width: 30px; min-width: 0; padding: 0; border: none; background-color: transparent; }
+-.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-separator { width: 0; background-color: transparent; }
+-.quick-settings.Suno-studio-options .Suno-options-toggles { spacing: 2px; }
+-.quick-settings.Suno-studio-options .Suno-options-toggle-row { spacing: 8px; }
+-.quick-settings.Suno-studio-options .Suno-options-utility, .quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle {
+-  padding: 5px 9px 5px 5px; min-height: 0; min-width: 0; border-radius: 14px; border: none;
+-  background-color: transparent; box-shadow: none; font-size: 12.5px; font-weight: 600; }
+-.quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle { padding: 0; }
+-.quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle-icon { width: 32px; height: 32px; icon-size: 16px; border-radius: 10px; background-color: rgba(255,255,255,.08); }
+-.quick-settings.Suno-studio-options .Suno-options-utility:checked .quick-toggle-icon { background-color: -st-accent-color; color: #f2f3f5; }
+-.quick-settings.Suno-studio-options .Suno-options-utility:checked, .quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle:checked { background-color: transparent; }
+-.quick-settings.Suno-studio-options .Suno-options-mic { padding: 8px 10px 8px 8px; spacing: 10px; border-radius: 15px; background-color: rgba(232,150,55,.16); }
+-.quick-settings.Suno-studio-options .Suno-options-mic-title { font-size: 12.5px; font-weight: 650; }
+-.quick-settings.Suno-studio-options .Suno-options-mic-app { font-size: 11px; color: rgba(242,243,245,.7); }
+-.quick-settings.Suno-studio-options .Suno-options-mute { height: 28px; padding: 0 11px; border-radius: 9px; font-size: 12px; font-weight: 600; background-color: rgba(255,255,255,.14); }
+-.quick-settings.Suno-studio-options .Suno-options-system { padding-top: 10px; border-top: 1px solid rgba(255,255,255,.1); background-color: transparent; }
+-.quick-settings.Suno-studio-options .Suno-options-system .Suno-quick-footer { padding: 0; spacing: 2px; }
+-.quick-settings.Suno-studio-options .Suno-options-system .Suno-quick-action { width: 28px; height: 30px; padding: 0; min-width: 0; min-height: 0; border-radius: 9px; background-color: transparent; }
+-.quick-settings.Suno-studio-options .Suno-options-system .Suno-quick-action StIcon { icon-size: 16px; }
+-.quick-settings.Suno-studio-options .Suno-options-battery { spacing: 8px; padding: 0 8px 0 6px; height: 30px; }
+-.quick-settings.Suno-studio-options .Suno-options-battery-text { font-size: 12px; }
+-.quick-settings.Suno-studio-options .Suno-options-page-header { spacing: 6px; }
+-.quick-settings.Suno-studio-options .Suno-options-page-title { font-size: 14.5px; font-weight: 650; }
+-.quick-settings.Suno-studio-options .Suno-options-back { width: 28px; height: 28px; border-radius: 9px; }
+-.quick-settings.Suno-studio-options .Suno-options-page-switch { padding: 4px; border-radius: 9px; }
+-.quick-settings.Suno-studio-options .quick-toggle-menu.Suno-options-detail { margin: 0; padding: 0; border: none; border-radius: 0; background-color: transparent; box-shadow: none; spacing: 1px; }
+-.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-row { min-height: 34px; padding: 5px 10px 5px 5px; border-radius: 12px; spacing: 10px; }
+-.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-row-title { font-size: 12.5px; font-weight: 650; }
+-.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-row-state { font-size: 11px; }
+-.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-row-icon { width: 32px; icon-size: 16px; }
+-.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-row-dot { icon-size: 15px; color: -st-accent-color; }
+-.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-link { font-size: 12px; font-weight: 600; color: -st-accent-color; padding: 0 8px; height: 28px; }
+-.quick-settings.Suno-studio-options .Suno-options-switch-row { padding: 6px 10px; border-radius: 12px; }
+-.Suno-studio-options.Suno-surface-light .Suno-options-radio,
+-.Suno-studio-options.Suno-surface-light .Suno-options-level-key,
+-.Suno-studio-options.Suno-surface-light .Suno-options-slider .slider { background-color: rgba(20,22,26,.05); }
+-.Suno-studio-options.Suno-surface-light .Suno-options-slider .Suno-quick-level-value { color: rgba(29,31,35,.45); }
++.Suno-surface-light .Suno-notification-beacon .Suno-notification-beacon-title {
++  color: #34383d; }
+ 
+-.Suno-notification-lip .Suno-lip-call-ring { width: 34px; height: 34px; border: 2px solid #65b58c; border-radius: 17px; }
+-.quick-settings.Suno-studio-options .Suno-options-pair-code { spacing: 8px; padding: 8px 0; }
+-.quick-settings.Suno-studio-options .Suno-options-pair-instruction { font-size: 12px; }
+-.quick-settings.Suno-studio-options .Suno-options-passkey { spacing: 6px; }
+-.quick-settings.Suno-studio-options .Suno-options-passkey-digit { width: 28px; padding: 7px 0; text-align: center; border-radius: 8px; background-color: rgba(255,255,255,.1); font-size: 20px; font-weight: 650; }
+-.quick-settings.Suno-studio-options .Suno-options-passkey-digit.entered { color: #65b58c; }
+-.quick-settings.Suno-studio-options .Suno-options-pair-actions { spacing: 8px; }
+-.quick-settings.Suno-studio-options .Suno-options-pair-actions StButton { padding: 6px 12px; border-radius: 8px; background-color: rgba(255,255,255,.12); }
+-.Suno-notification-lip StButton:focus, .quick-settings.Suno-studio-options StButton:focus { box-shadow: inset 0 0 0 2px -st-accent-color; }
++.Suno-surface-light .Suno-notification-beacon .Suno-notification-beacon-summary {
++  color: rgba(52, 56, 61, 0.78); }
+ 
+-/* Reset the earlier 62px card geometry after moving controls out of its grid. */
+-.quick-settings.Suno-studio-options { width: 310px; min-width: 310px; max-width: 310px; padding: 14px; }
+-.quick-settings.Suno-studio-options .Suno-options-utility, .quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle { height: 32px; margin: 0; }
+-.quick-settings.Suno-studio-options .Suno-options-utility { padding: 5px; }
+-.quick-settings.Suno-studio-options .Suno-options-utility > StBoxLayout, .quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle > StBoxLayout { padding: 0; spacing: 10px; }
+-.quick-settings.Suno-studio-options .Suno-options-radio { width: 151px; height: 52px; margin: 0; }
+-.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle { height: 32px; margin: 0; }
+-.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle > StBoxLayout { padding: 0; }
++.Suno-surface-light .Suno-notification-beacon:hover {
++  background-color: rgba(25, 27, 31, 0.06); }
+ 
+-.quick-settings.Suno-studio-options .Suno-options-slider .icon-button { width: 16px; padding: 0; background-color: transparent; border: none; box-shadow: none; }
+-.quick-settings.Suno-studio-options .Suno-options-slider .slider { color: #f2f3f5; -barlevel-active-background-color: #e8eaed; -slider-handle-border-width: 0; -slider-handle-border-color: transparent; }
+-.quick-settings.Suno-studio-options .Suno-options-slider .Suno-quick-disclosure-disc { background-color: transparent; border: none; box-shadow: none; }
+-.quick-settings.Suno-studio-options .Suno-options-slider .Suno-quick-disclosure-icon { icon-size: 14px; }
+-.quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle-title { font-size: 12.5px; font-weight: 600; }
++.Suno-surface-light .Suno-notification-beacon:active, .Suno-surface-light .Suno-notification-beacon:checked {
++  background-color: rgba(25, 27, 31, 0.09); }
+ 
+-.quick-settings.Suno-studio-options .quick-slider.Suno-options-slider { border: none; }
+-.quick-settings.Suno-studio-options .Suno-options-system { min-height: 0; height: auto; margin: 2px 0 0; border-radius: 0; }
+-.quick-settings.Suno-studio-options .Suno-options-system .Suno-quick-action { border: none; box-shadow: none; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .Suno-inline-reply-row { min-height: 34px; }
++.Suno-surface-dark .Suno-notification-beacon .Suno-notification-beacon-title {
++  color: #e7e9e8; }
+ 
+-/* Measured against current Studio: remove old account-footer/subtitle geometry. */
+-.quick-settings.Suno-studio-options .Suno-options-system .Suno-quick-footer { height: 30px; }
+-.quick-settings.Suno-studio-options .Suno-options-system .Suno-quick-actions { spacing: 2px; }
+-.quick-settings.Suno-studio-options .Suno-options-main { spacing: 0; }
+-.quick-settings.Suno-studio-options .Suno-options-levels { margin-bottom: 12px; }
+-.quick-settings.Suno-studio-options .Suno-options-radios { margin-bottom: 8px; }
+-.quick-settings.Suno-studio-options .Suno-options-toggles { margin-bottom: 12px; }
+-.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-subtitle { padding-top: 0; }
+-.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle StBoxLayout { spacing: 1px; }
+-.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle > StBoxLayout { spacing: 10px; }
+-.quick-settings.Suno-studio-options .Suno-options-radio { border: 1px solid rgba(0,0,0,.25); }
++.Suno-surface-dark .Suno-notification-beacon .Suno-notification-beacon-summary {
++  color: rgba(231, 233, 232, 0.8); }
+ 
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-header .message-close-button { margin: 0; }
++.Suno-surface-dark .Suno-notification-beacon:hover {
++  background-color: rgba(255, 255, 255, 0.06); }
+ 
+-/* Studio's lip rim is an inset shadow, so it consumes no text-column width. */
+-.Suno-notification-lip .Suno-lip-surface { border-width: 0; box-shadow: inset 0 -1px 0 rgba(255,255,255,.075); }
++.Suno-surface-dark .Suno-notification-beacon:active, .Suno-surface-dark .Suno-notification-beacon:checked {
++  background-color: rgba(255, 255, 255, 0.09); }
+ 
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-header { min-height: 15px; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-box .message-title { min-height: 18px; }
+-.Suno-notification-lip { color: #e7e9e8; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-box .message-body { color: rgba(231,233,232,.62); }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-header .message-source-title,
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-header .event-time { color: rgba(231,233,232,.42); }
+-.quick-settings.Suno-studio-options { color: #e7e9e8; }
++.Suno-surface-frost .Suno-notification-beacon .Suno-notification-beacon-title {
++  color: #1f262d; }
+ 
+-.quick-settings.Suno-studio-options .Suno-options-slider .icon-button { padding-left: 8px; }
+-.quick-settings.Suno-studio-options .Suno-options-slider .Suno-quick-disclosure-icon { icon-size: 16px; }
++.Suno-surface-frost .Suno-notification-beacon .Suno-notification-beacon-summary {
++  color: #394047; }
+ 
+-.popup-menu-content.quick-settings.Suno-studio-options { width: 308px; min-width: 308px; max-width: 308px; padding: 16px; border: none; }
+-.quick-settings.Suno-studio-options .Suno-options-radio { width: 150px; border: none; }
+-.quick-settings.Suno-studio-options .Suno-options-radio:checked { background-color: #353a42; }
+-.quick-settings.Suno-studio-options .Suno-options-radio:checked .quick-toggle-icon,
+-.quick-settings.Suno-studio-options .Suno-options-utility:checked .quick-toggle-icon { background-color: #3a84ca; }
+-.quick-settings.Suno-studio-options .Suno-options-system { border-top: none; box-shadow: inset 0 1px 0 rgba(255,255,255,.09); }
+-.quick-settings.Suno-studio-options .Suno-options-toggle-row > .Suno-options-utility { width: 140px; }
++.Suno-surface-frost .Suno-notification-beacon:hover {
++  background-color: rgba(37, 46, 54, 0.06); }
+ 
+-.Suno-notification-lip .Suno-lip-app-badge { margin: 0; }
++.Suno-surface-frost .Suno-notification-beacon:active, .Suno-surface-frost .Suno-notification-beacon:checked {
++  background-color: rgba(37, 46, 54, 0.1); }
+ 
+-.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-menu-button { margin: 0; }
+-.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle > StBoxLayout { padding: 0; }
++.Suno-surface-glass .Suno-notification-beacon .Suno-notification-beacon-title {
++  color: #161b20; }
+ 
+-.Suno-notification-lip .Suno-lip-icon-stack { spacing: 0; }
+-/* Resolve inherited radio wrapper spacing and checked-state specificity. */
+-.quick-settings.Suno-studio-options .Suno-options-radio > StBoxLayout { spacing: 0; padding: 0; }
+-.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-separator { width: 0; min-width: 0; padding: 0; margin: 0; border: none; }
+-.quick-settings.Suno-studio-options .quick-toggle-has-menu.Suno-options-radio:checked { background-color: #353a42; box-shadow: 0 0 0 1px rgba(0,0,0,.25); }
+-.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-subtitle,
+-.quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle-icon,
+-.quick-settings.Suno-studio-options .Suno-options-slider .icon-button,
+-.quick-settings.Suno-studio-options .Suno-options-system { color: rgba(231,233,232,.62); }
+-.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-menu-button { color: rgba(231,233,232,.42); }
+-.quick-settings.Suno-studio-options .Suno-options-system .Suno-options-battery StIcon { icon-size: 18px; }
+-.quick-settings.Suno-studio-options .Suno-options-slider .slider { color: #fff; -barlevel-active-background-color: #e7e9e8; }
+-.quick-settings.Suno-studio-options.Suno-surface-light .quick-toggle-has-menu.Suno-options-radio:checked { background-color: #fff; box-shadow: 0 0 0 1px rgba(25,27,31,.08); }
+-.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-radio .quick-toggle-subtitle,
+-.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-utility .quick-toggle-icon,
+-.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-slider .icon-button,
+-.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-system { color: rgba(22,25,29,.76); }
+-.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-radio .quick-toggle-menu-button { color: rgba(22,25,29,.56); }
+-/* Studio detail lists and native Switch actors retain their service bindings. */
+-.quick-settings.Suno-studio-options .Suno-options-detail { spacing: 12px; }
+-.quick-settings.Suno-studio-options .Suno-options-detail > .popup-menu-section,
+-.quick-settings.Suno-studio-options .Suno-options-detail .Suno-options-list { padding: 4px; spacing: 1px; border-radius: 16px; background-color: rgba(0,0,0,.22); box-shadow: inset 0 1px 2px rgba(0,0,0,.22); }
+-.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-row-copy { spacing: 1px; }
+-.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-row-state { color: rgba(231,233,232,.62); }
+-.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-row-dot { width: 15px; height: 15px; icon-size: 15px; background-color: transparent; border: none; border-radius: 0; color: #71b5f4; }
+-.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-link { min-height: 0; height: 28px; padding: 0 8px; margin: 0; border: none; background-color: transparent; }
+-.quick-settings.Suno-studio-options .Suno-options-page .toggle-switch { width: 34px; height: 20px; margin: 0; padding: 0; border: none; border-radius: 10px; background-color: rgba(0,0,0,.22); }
+-.quick-settings.Suno-studio-options .Suno-options-page .toggle-switch:checked { background-color: #3a84ca; }
+-.quick-settings.Suno-studio-options .Suno-options-page .toggle-switch StIcon { color: transparent; }
+-.quick-settings.Suno-studio-options .Suno-options-page .toggle-switch .handle { width: 14px; height: 14px; margin: 3px; padding: 0; border: none; border-radius: 7px; background-color: #353a42; }
+-.quick-settings.Suno-studio-options .Suno-options-page .toggle-switch:checked .handle { background-color: #fff; }
+-.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-detail > .popup-menu-section,
+-.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-detail .Suno-options-list,
+-.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-page .toggle-switch { background-color: rgba(25,27,31,.055); }
+-.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-detail .Suno-sheet-row-state { color: rgba(22,25,29,.76); }
+-.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-page .toggle-switch:checked { background-color: #3a84ca; }
+-.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-page .toggle-switch .handle { background-color: #fff; }
+-.quick-settings.Suno-studio-options .Suno-options-fixture-groups { spacing: 12px; }
+-.quick-settings.Suno-studio-options .Suno-options-detail .Suno-options-nearby { min-height: 0; padding: 2px 4px 0 6px; margin: 0; font-size: 12px; font-weight: 650; color: rgba(231,233,232,.62); }
+-.quick-settings.Suno-studio-options .Suno-options-detail .Suno-options-nearby StButton { padding: 0; min-height: 0; font-size: 12px; font-weight: 600; background-color: transparent; color: #71b5f4; }
+-.quick-settings.Suno-studio-options .Suno-options-detail .Suno-options-off { padding: 2px 6px; margin: 0; font-size: 12.5px; color: rgba(231,233,232,.42); }
+-.quick-settings.Suno-studio-options .Suno-options-detail > .popup-menu-section.Suno-options-near-empty { padding: 0; background-color: transparent; box-shadow: none; }
+-.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-detail .Suno-options-nearby { color: rgba(22,25,29,.76); }
+-.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-detail .Suno-options-off { color: rgba(22,25,29,.56); }
++.Suno-surface-glass .Suno-notification-beacon .Suno-notification-beacon-summary {
++  color: #1f242a; }
++
++.Suno-surface-glass .Suno-notification-beacon:hover {
++  background-color: rgba(37, 46, 54, 0.05); }
++
++.Suno-surface-glass .Suno-notification-beacon:active, .Suno-surface-glass .Suno-notification-beacon:checked {
++  background-color: rgba(37, 46, 54, 0.08); }
+diff --git a/data/theme/gnome-shell-high-contrast.css b/data/theme/gnome-shell-high-contrast.css
+index c072771..8ffe04e 100644
+--- a/data/theme/gnome-shell-high-contrast.css
++++ b/data/theme/gnome-shell-high-contrast.css
+@@ -4657,6 +4657,288 @@ StScrollBar {
+   background-color: rgba(22, 29, 40, 0.01);
+   box-shadow: 0 42px 100px -26px rgba(9, 15, 25, 0.76); }
+ 
++/* Studio shelf-2 notification lip and v70 Quick Options. Logical pixels. */
++.Suno-notification-lip { font-family: Figtree; color: #f2f3f5; }
++.Suno-notification-lip .Suno-lip-surface {
++  background-color: #21252b; border: 1px solid rgba(255,255,255,.075);
++  border-top-width: 0; border-radius: 0 0 22px 22px;
++  box-shadow: 0 12px 30px -14px rgba(0,0,0,.6); }
++.Suno-notification-lip.idle .Suno-lip-surface { border-radius: 0 0 5px 5px; }
++.Suno-notification-lip.pill .Suno-lip-surface { border-radius: 0 0 11px 11px; }
++.Suno-notification-lip.Suno-surface-light { color: #1d1f23; }
++.Suno-notification-lip.Suno-surface-light .Suno-lip-surface {
++  background-color: #eceef1; border-color: rgba(255,255,255,.9); }
++.Suno-notification-lip.Suno-surface-frost .Suno-lip-surface {
++  background-color: rgba(38,38,43,.8); border-color: rgba(255,255,255,.1); }
++.Suno-notification-lip .Suno-lip-pill { height: 21px; padding: 0 10px 1px; spacing: 7px; }
++.Suno-notification-lip .Suno-lip-pill.big { height: 31px; padding: 0 14px 1px; spacing: 8px; }
++.Suno-notification-lip .Suno-lip-icon-stack { spacing: -5px; }
++.Suno-notification-lip .Suno-lip-pill-title { font-size: 12px; font-weight: 650; font-feature-settings: "tnum"; max-width: 240px; }
++.Suno-notification-lip .Suno-lip-pill-more { font-size: 12px; color: rgba(242,243,245,.7); }
++.Suno-notification-lip .Suno-lip-glow { background-color: -st-accent-color; border-radius: 1px; }
++.Suno-notification-lip .notification-banner.Suno-lip-card {
++  min-width: 0; width: auto; min-height: 0; margin: 0; padding: 14px 16px 14px 14px;
++  background-color: transparent; background-gradient-direction: none;
++  border: none; border-radius: 0; box-shadow: none; color: inherit; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .Suno-notification-grid { spacing: 12px; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .Suno-notification-tile {
++  width: 34px; height: 34px; border-radius: 10px; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .Suno-notification-tile .message-source-icon,
++.Suno-notification-lip .notification-banner.Suno-lip-card .Suno-notification-tile .Suno-notification-tile-image { icon-size: 34px; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .Suno-notification-tile-glyph {
++  width: 32px; height: 32px; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .Suno-notification-tile-glyph .message-source-icon { icon-size: 20px; }
++.Suno-notification-lip .Suno-lip-app-badge { border-radius: 5px; border: 2px solid #21252b; margin: 0 -4px -4px 0; }
++.Suno-notification-lip.Suno-surface-light .Suno-lip-app-badge { border-color: #eceef1; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-header { min-height: 12px; spacing: 0; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-header .message-header-content { spacing: 8px; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-header .message-source-title {
++  font-size: 10px; font-weight: 700; letter-spacing: .9px; color: rgba(242,243,245,.5); }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-header .event-time {
++  font-size: 10.5px; font-weight: 600; color: rgba(242,243,245,.5); }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-header .message-close-button {
++  width: 22px; height: 22px; min-width: 22px; min-height: 22px; margin-top: -5px;
++  border-radius: 7px; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-header .message-close-button StIcon { icon-size: 12px; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-box .message-content { spacing: 1px; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-box .message-title { font-size: 13.5px; font-weight: 650; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-box .message-body {
++  font-size: 12.5px; font-weight: 400; color: rgba(242,243,245,.7); }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin { padding: 10px 0 0; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .notification-buttons-bin { spacing: 6px; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .notification-button {
++  height: 30px; min-height: 0; padding: 0 13px; border-radius: 10px; font-size: 12px; font-weight: 650;
++  background-color: rgba(255,255,255,.08); color: inherit; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .notification-button:hover { background-color: rgba(255,255,255,.14); }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .notification-button.Suno-notification-action-ok {
++  background-color: #65b58c; color: #f2f3f5; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .notification-button.Suno-notification-action-danger { color: #db6b72; }
++.Suno-notification-lip .Suno-lip-call-action { spacing: 6px; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .Suno-inline-reply-row {
++  height: 34px; min-height: 0; padding: 0 4px 0 12px; spacing: 6px; border-radius: 17px;
++  background-color: rgba(0,0,0,.22); }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .Suno-inline-reply-entry {
++  min-height: 0; height: 34px; padding: 0; border: none; box-shadow: none;
++  background-color: transparent; color: inherit; font-size: 12.5px; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .Suno-inline-reply-button {
++  width: 26px; height: 26px; min-height: 0; padding: 0; border-radius: 13px;
++  background-color: -st-accent-color; color: #f2f3f5; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .Suno-inline-reply-glyph { icon-size: 13px; }
++.Suno-notification-lip .Suno-lip-sent { color: #65b58c; font-size: 12px; font-weight: 600; }
++.Suno-notification-lip .Suno-lip-tray-header { padding: 14px 14px 6px 18px; spacing: 8px; }
++.Suno-notification-lip .Suno-lip-heading { font-size: 15px; font-weight: 650; }
++.Suno-notification-lip .Suno-lip-count { font-size: 13px; font-weight: 600; color: rgba(242,243,245,.5); }
++.Suno-notification-lip .Suno-lip-key { width: 28px; height: 28px; border-radius: 9px; }
++.Suno-notification-lip .Suno-lip-key:checked { color: -st-accent-color; }
++.Suno-notification-lip .Suno-lip-clear { height: 28px; padding: 0 10px; font-size: 12px; font-weight: 600; border-radius: 9px; }
++.Suno-notification-lip .Suno-lip-scroll { max-height: 520px; }
++.Suno-notification-lip .Suno-lip-list { padding: 4px 10px 12px; spacing: 6px; }
++.Suno-notification-lip .Suno-lip-list .notification-banner.Suno-lip-card {
++  padding: 12px 14px 12px 12px; border-radius: 16px; background-color: rgba(255,255,255,.08);
++  border: 1px solid rgba(255,255,255,.1); }
++.Suno-notification-lip .Suno-lip-empty { padding: 18px 18px 22px; font-size: 12.5px; color: rgba(242,243,245,.7); }
++.Suno-notification-lip.Suno-surface-light .notification-banner.Suno-lip-card .message-body,
++.Suno-notification-lip.Suno-surface-light .Suno-lip-empty,
++.Suno-notification-lip.Suno-surface-light .Suno-lip-pill-more { color: rgba(29,31,35,.65); }
++.Suno-notification-lip.Suno-surface-light .notification-banner.Suno-lip-card .message-source-title,
++.Suno-notification-lip.Suno-surface-light .notification-banner.Suno-lip-card .event-time,
++.Suno-notification-lip.Suno-surface-light .Suno-lip-count { color: rgba(29,31,35,.45); }
++.Suno-notification-lip.Suno-surface-light .notification-banner.Suno-lip-card .notification-button,
++.Suno-notification-lip.Suno-surface-light .notification-banner.Suno-lip-card .Suno-inline-reply-row { background-color: rgba(20,22,26,.06); }
++.Suno-notification-lip.Suno-surface-light .Suno-lip-list .notification-banner.Suno-lip-card {
++  background-color: #f7f8fa; border-color: rgba(20,22,26,.1); }
++
++/* One 340px popup, one stable source actor, one page visible at a time. */
++.quick-settings.Suno-studio-options {
++  width: 316px; min-width: 316px; max-width: 316px; padding: 12px; spacing: 0;
++  background-color: #262a31; color: #f2f3f5; border-radius: 22px;
++  border: 1px solid rgba(255,255,255,.075); font-family: Figtree; }
++.quick-settings.Suno-studio-options.Suno-surface-light { background-color: #eceef1; color: #1d1f23; border-color: rgba(255,255,255,.9); }
++.quick-settings.Suno-studio-options.Suno-surface-frost {
++  background-color: rgba(32,32,36,.86); background-gradient-direction: vertical;
++  background-gradient-start: rgba(50,50,56,.8); background-gradient-end: rgba(32,32,36,.86);
++  color: #f2f3f5; border-color: rgba(255,255,255,.1); }
++.quick-settings.Suno-studio-options .Suno-options-main, .quick-settings.Suno-studio-options .Suno-options-page { spacing: 12px; }
++.quick-settings.Suno-studio-options .Suno-options-levels { spacing: 4px; }
++.quick-settings.Suno-studio-options .quick-slider.Suno-options-slider { margin: 0; padding: 0; height: 36px; min-height: 0; spacing: 11px; }
++.quick-settings.Suno-studio-options .Suno-options-slider > StBoxLayout { spacing: 11px; }
++.quick-settings.Suno-studio-options .Suno-options-slider .icon-button { width: 16px; height: 36px; min-width: 0; min-height: 0; padding: 0 0 0 8px; }
++.quick-settings.Suno-studio-options .Suno-options-slider StIcon { icon-size: 16px; }
++.quick-settings.Suno-studio-options .Suno-options-slider .slider-bin { padding: 0; }
++.quick-settings.Suno-studio-options .Suno-options-slider .slider {
++  height: 24px; -slider-height: 5px; -slider-handle-radius: 7px;
++  -barlevel-height: 5px; -barlevel-background-color: rgba(0,0,0,.22);
++  -barlevel-active-background-color: -st-accent-color; }
++.quick-settings.Suno-studio-options .Suno-options-slider .Suno-quick-level-value { width: 34px; font-size: 11.5px; font-feature-settings: "tnum"; color: rgba(242,243,245,.5); }
++.quick-settings.Suno-studio-options .Suno-options-slider .Suno-quick-disclosure-slot { width: 36px; height: 36px; }
++.quick-settings.Suno-studio-options .Suno-options-level-key, .quick-settings.Suno-studio-options .Suno-options-slider .Suno-options-level-key {
++  width: 36px; height: 36px; min-width: 0; min-height: 0; padding: 0; border-radius: 11px;
++  background-color: rgba(0,0,0,.22); border: none; box-shadow: none; font-size: 10.5px; font-weight: 650; }
++.quick-settings.Suno-studio-options .Suno-options-level-key:checked { color: -st-accent-color; background-color: rgba(255,255,255,.14); }
++.quick-settings.Suno-studio-options .Suno-options-radios { spacing: 8px; }
++.quick-settings.Suno-studio-options .quick-toggle-has-menu.Suno-options-radio {
++  width: 154px; min-width: 0; min-height: 0; padding: 0; border-radius: 15px;
++  background-color: rgba(0,0,0,.22); border: none; box-shadow: none; }
++.quick-settings.Suno-studio-options .quick-toggle-has-menu.Suno-options-radio:checked { background-color: rgba(255,255,255,.14); }
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle { padding: 9px 2px 9px 9px; min-width: 0; min-height: 0; border: none; border-radius: 15px 0 0 15px; background-color: transparent; spacing: 10px; }
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle StBoxLayout { spacing: 10px; }
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle .quick-toggle-icon { icon-size: 16px; width: 32px; height: 32px; padding: 0; border-radius: 10px; }
++.quick-settings.Suno-studio-options .Suno-options-radio:checked .quick-toggle-icon { background-color: -st-accent-color; color: #f2f3f5; }
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-title { font-size: 12.5px; font-weight: 650; }
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-subtitle { font-size: 11px; }
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-menu-button { width: 30px; min-width: 0; padding: 0; border: none; background-color: transparent; }
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-separator { width: 0; background-color: transparent; }
++.quick-settings.Suno-studio-options .Suno-options-toggles { spacing: 2px; }
++.quick-settings.Suno-studio-options .Suno-options-toggle-row { spacing: 8px; }
++.quick-settings.Suno-studio-options .Suno-options-utility, .quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle {
++  padding: 5px 9px 5px 5px; min-height: 0; min-width: 0; border-radius: 14px; border: none;
++  background-color: transparent; box-shadow: none; font-size: 12.5px; font-weight: 600; }
++.quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle { padding: 0; }
++.quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle-icon { width: 32px; height: 32px; icon-size: 16px; border-radius: 10px; background-color: rgba(255,255,255,.08); }
++.quick-settings.Suno-studio-options .Suno-options-utility:checked .quick-toggle-icon { background-color: -st-accent-color; color: #f2f3f5; }
++.quick-settings.Suno-studio-options .Suno-options-utility:checked, .quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle:checked { background-color: transparent; }
++.quick-settings.Suno-studio-options .Suno-options-mic { padding: 8px 10px 8px 8px; spacing: 10px; border-radius: 15px; background-color: rgba(232,150,55,.16); }
++.quick-settings.Suno-studio-options .Suno-options-mic-title { font-size: 12.5px; font-weight: 650; }
++.quick-settings.Suno-studio-options .Suno-options-mic-app { font-size: 11px; color: rgba(242,243,245,.7); }
++.quick-settings.Suno-studio-options .Suno-options-mute { height: 28px; padding: 0 11px; border-radius: 9px; font-size: 12px; font-weight: 600; background-color: rgba(255,255,255,.14); }
++.quick-settings.Suno-studio-options .Suno-options-system { padding-top: 10px; border-top: 1px solid rgba(255,255,255,.1); background-color: transparent; }
++.quick-settings.Suno-studio-options .Suno-options-system .Suno-quick-footer { padding: 0; spacing: 2px; }
++.quick-settings.Suno-studio-options .Suno-options-system .Suno-quick-action { width: 28px; height: 30px; padding: 0; min-width: 0; min-height: 0; border-radius: 9px; background-color: transparent; }
++.quick-settings.Suno-studio-options .Suno-options-system .Suno-quick-action StIcon { icon-size: 16px; }
++.quick-settings.Suno-studio-options .Suno-options-battery { spacing: 8px; padding: 0 8px 0 6px; height: 30px; }
++.quick-settings.Suno-studio-options .Suno-options-battery-text { font-size: 12px; }
++.quick-settings.Suno-studio-options .Suno-options-page-header { spacing: 6px; }
++.quick-settings.Suno-studio-options .Suno-options-page-title { font-size: 14.5px; font-weight: 650; }
++.quick-settings.Suno-studio-options .Suno-options-back { width: 28px; height: 28px; border-radius: 9px; }
++.quick-settings.Suno-studio-options .Suno-options-page-switch { padding: 4px; border-radius: 9px; }
++.quick-settings.Suno-studio-options .quick-toggle-menu.Suno-options-detail { margin: 0; padding: 0; border: none; border-radius: 0; background-color: transparent; box-shadow: none; spacing: 1px; }
++.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-row { min-height: 34px; padding: 5px 10px 5px 5px; border-radius: 12px; spacing: 10px; }
++.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-row-title { font-size: 12.5px; font-weight: 650; }
++.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-row-state { font-size: 11px; }
++.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-row-icon { width: 32px; icon-size: 16px; }
++.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-row-dot { icon-size: 15px; color: -st-accent-color; }
++.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-link { font-size: 12px; font-weight: 600; color: -st-accent-color; padding: 0 8px; height: 28px; }
++.quick-settings.Suno-studio-options .Suno-options-switch-row { padding: 6px 10px; border-radius: 12px; }
++.Suno-studio-options.Suno-surface-light .Suno-options-radio,
++.Suno-studio-options.Suno-surface-light .Suno-options-level-key,
++.Suno-studio-options.Suno-surface-light .Suno-options-slider .slider { background-color: rgba(20,22,26,.05); }
++.Suno-studio-options.Suno-surface-light .Suno-options-slider .Suno-quick-level-value { color: rgba(29,31,35,.45); }
++
++.Suno-notification-lip .Suno-lip-call-ring { width: 34px; height: 34px; border: 2px solid #65b58c; border-radius: 17px; }
++.quick-settings.Suno-studio-options .Suno-options-pair-code { spacing: 8px; padding: 8px 0; }
++.quick-settings.Suno-studio-options .Suno-options-pair-instruction { font-size: 12px; }
++.quick-settings.Suno-studio-options .Suno-options-passkey { spacing: 6px; }
++.quick-settings.Suno-studio-options .Suno-options-passkey-digit { width: 28px; padding: 7px 0; text-align: center; border-radius: 8px; background-color: rgba(255,255,255,.1); font-size: 20px; font-weight: 650; }
++.quick-settings.Suno-studio-options .Suno-options-passkey-digit.entered { color: #65b58c; }
++.quick-settings.Suno-studio-options .Suno-options-pair-actions { spacing: 8px; }
++.quick-settings.Suno-studio-options .Suno-options-pair-actions StButton { padding: 6px 12px; border-radius: 8px; background-color: rgba(255,255,255,.12); }
++.Suno-notification-lip StButton:focus, .quick-settings.Suno-studio-options StButton:focus { box-shadow: inset 0 0 0 2px -st-accent-color; }
++
++/* Reset the earlier 62px card geometry after moving controls out of its grid. */
++.quick-settings.Suno-studio-options { width: 310px; min-width: 310px; max-width: 310px; padding: 14px; }
++.quick-settings.Suno-studio-options .Suno-options-utility, .quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle { height: 32px; margin: 0; }
++.quick-settings.Suno-studio-options .Suno-options-utility { padding: 5px; }
++.quick-settings.Suno-studio-options .Suno-options-utility > StBoxLayout, .quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle > StBoxLayout { padding: 0; spacing: 10px; }
++.quick-settings.Suno-studio-options .Suno-options-radio { width: 151px; height: 52px; margin: 0; }
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle { height: 32px; margin: 0; }
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle > StBoxLayout { padding: 0; }
++
++.quick-settings.Suno-studio-options .Suno-options-slider .icon-button { width: 16px; padding: 0; background-color: transparent; border: none; box-shadow: none; }
++.quick-settings.Suno-studio-options .Suno-options-slider .slider { color: #f2f3f5; -barlevel-active-background-color: #e8eaed; -slider-handle-border-width: 0; -slider-handle-border-color: transparent; }
++.quick-settings.Suno-studio-options .Suno-options-slider .Suno-quick-disclosure-disc { background-color: transparent; border: none; box-shadow: none; }
++.quick-settings.Suno-studio-options .Suno-options-slider .Suno-quick-disclosure-icon { icon-size: 14px; }
++.quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle-title { font-size: 12.5px; font-weight: 600; }
++
++.quick-settings.Suno-studio-options .quick-slider.Suno-options-slider { border: none; }
++.quick-settings.Suno-studio-options .Suno-options-system { min-height: 0; height: auto; margin: 2px 0 0; border-radius: 0; }
++.quick-settings.Suno-studio-options .Suno-options-system .Suno-quick-action { border: none; box-shadow: none; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .Suno-inline-reply-row { min-height: 34px; }
++
++/* Measured against current Studio: remove old account-footer/subtitle geometry. */
++.quick-settings.Suno-studio-options .Suno-options-system .Suno-quick-footer { height: 30px; }
++.quick-settings.Suno-studio-options .Suno-options-system .Suno-quick-actions { spacing: 2px; }
++.quick-settings.Suno-studio-options .Suno-options-main { spacing: 0; }
++.quick-settings.Suno-studio-options .Suno-options-levels { margin-bottom: 12px; }
++.quick-settings.Suno-studio-options .Suno-options-radios { margin-bottom: 8px; }
++.quick-settings.Suno-studio-options .Suno-options-toggles { margin-bottom: 12px; }
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-subtitle { padding-top: 0; }
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle StBoxLayout { spacing: 1px; }
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle > StBoxLayout { spacing: 10px; }
++.quick-settings.Suno-studio-options .Suno-options-radio { border: 1px solid rgba(0,0,0,.25); }
++
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-header .message-close-button { margin: 0; }
++
++/* Studio's lip rim is an inset shadow, so it consumes no text-column width. */
++.Suno-notification-lip .Suno-lip-surface { border-width: 0; box-shadow: inset 0 -1px 0 rgba(255,255,255,.075); }
++
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-header { min-height: 15px; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-box .message-title { min-height: 18px; }
++.Suno-notification-lip { color: #e7e9e8; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-box .message-body { color: rgba(231,233,232,.62); }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-header .message-source-title,
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-header .event-time { color: rgba(231,233,232,.42); }
++.quick-settings.Suno-studio-options { color: #e7e9e8; }
++
++.quick-settings.Suno-studio-options .Suno-options-slider .icon-button { padding-left: 8px; }
++.quick-settings.Suno-studio-options .Suno-options-slider .Suno-quick-disclosure-icon { icon-size: 16px; }
++
++.popup-menu-content.quick-settings.Suno-studio-options { width: 308px; min-width: 308px; max-width: 308px; padding: 16px; border: none; }
++.quick-settings.Suno-studio-options .Suno-options-radio { width: 150px; border: none; }
++.quick-settings.Suno-studio-options .Suno-options-radio:checked { background-color: #353a42; }
++.quick-settings.Suno-studio-options .Suno-options-radio:checked .quick-toggle-icon,
++.quick-settings.Suno-studio-options .Suno-options-utility:checked .quick-toggle-icon { background-color: #3a84ca; }
++.quick-settings.Suno-studio-options .Suno-options-system { border-top: none; box-shadow: inset 0 1px 0 rgba(255,255,255,.09); }
++.quick-settings.Suno-studio-options .Suno-options-toggle-row > .Suno-options-utility { width: 140px; }
++
++.Suno-notification-lip .Suno-lip-app-badge { margin: 0; }
++
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-menu-button { margin: 0; }
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle > StBoxLayout { padding: 0; }
++
++.Suno-notification-lip .Suno-lip-icon-stack { spacing: 0; }
++/* Resolve inherited radio wrapper spacing and checked-state specificity. */
++.quick-settings.Suno-studio-options .Suno-options-radio > StBoxLayout { spacing: 0; padding: 0; }
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-separator { width: 0; min-width: 0; padding: 0; margin: 0; border: none; }
++.quick-settings.Suno-studio-options .quick-toggle-has-menu.Suno-options-radio:checked { background-color: #353a42; box-shadow: 0 0 0 1px rgba(0,0,0,.25); }
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-subtitle,
++.quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle-icon,
++.quick-settings.Suno-studio-options .Suno-options-slider .icon-button,
++.quick-settings.Suno-studio-options .Suno-options-system { color: rgba(231,233,232,.62); }
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-menu-button { color: rgba(231,233,232,.42); }
++.quick-settings.Suno-studio-options .Suno-options-system .Suno-options-battery StIcon { icon-size: 18px; }
++.quick-settings.Suno-studio-options .Suno-options-slider .slider { color: #fff; -barlevel-active-background-color: #e7e9e8; }
++.quick-settings.Suno-studio-options.Suno-surface-light .quick-toggle-has-menu.Suno-options-radio:checked { background-color: #fff; box-shadow: 0 0 0 1px rgba(25,27,31,.08); }
++.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-radio .quick-toggle-subtitle,
++.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-utility .quick-toggle-icon,
++.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-slider .icon-button,
++.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-system { color: rgba(22,25,29,.76); }
++.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-radio .quick-toggle-menu-button { color: rgba(22,25,29,.56); }
++/* Studio detail lists and native Switch actors retain their service bindings. */
++.quick-settings.Suno-studio-options .Suno-options-detail { spacing: 12px; }
++.quick-settings.Suno-studio-options .Suno-options-detail > .popup-menu-section,
++.quick-settings.Suno-studio-options .Suno-options-detail .Suno-options-list { padding: 4px; spacing: 1px; border-radius: 16px; background-color: rgba(0,0,0,.22); box-shadow: inset 0 1px 2px rgba(0,0,0,.22); }
++.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-row-copy { spacing: 1px; }
++.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-row-state { color: rgba(231,233,232,.62); }
++.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-row-dot { width: 15px; height: 15px; icon-size: 15px; background-color: transparent; border: none; border-radius: 0; color: #71b5f4; }
++.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-link { min-height: 0; height: 28px; padding: 0 8px; margin: 0; border: none; background-color: transparent; }
++.quick-settings.Suno-studio-options .Suno-options-page .toggle-switch { width: 34px; height: 20px; margin: 0; padding: 0; border: none; border-radius: 10px; background-color: rgba(0,0,0,.22); }
++.quick-settings.Suno-studio-options .Suno-options-page .toggle-switch:checked { background-color: #3a84ca; }
++.quick-settings.Suno-studio-options .Suno-options-page .toggle-switch StIcon { color: transparent; }
++.quick-settings.Suno-studio-options .Suno-options-page .toggle-switch .handle { width: 14px; height: 14px; margin: 3px; padding: 0; border: none; border-radius: 7px; background-color: #353a42; }
++.quick-settings.Suno-studio-options .Suno-options-page .toggle-switch:checked .handle { background-color: #fff; }
++.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-detail > .popup-menu-section,
++.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-detail .Suno-options-list,
++.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-page .toggle-switch { background-color: rgba(25,27,31,.055); }
++.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-detail .Suno-sheet-row-state { color: rgba(22,25,29,.76); }
++.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-page .toggle-switch:checked { background-color: #3a84ca; }
++.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-page .toggle-switch .handle { background-color: #fff; }
++.quick-settings.Suno-studio-options .Suno-options-fixture-groups { spacing: 12px; }
++.quick-settings.Suno-studio-options .Suno-options-detail .Suno-options-nearby { min-height: 0; padding: 2px 4px 0 6px; margin: 0; font-size: 12px; font-weight: 650; color: rgba(231,233,232,.62); }
++.quick-settings.Suno-studio-options .Suno-options-detail .Suno-options-nearby StButton { padding: 0; min-height: 0; font-size: 12px; font-weight: 600; background-color: transparent; color: #71b5f4; }
++.quick-settings.Suno-studio-options .Suno-options-detail .Suno-options-off { padding: 2px 6px; margin: 0; font-size: 12.5px; color: rgba(231,233,232,.42); }
++.quick-settings.Suno-studio-options .Suno-options-detail > .popup-menu-section.Suno-options-near-empty { padding: 0; background-color: transparent; box-shadow: none; }
++.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-detail .Suno-options-nearby { color: rgba(22,25,29,.76); }
++.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-detail .Suno-options-off { color: rgba(22,25,29,.56); }
+ /* Suno notification-owned rules; safe to compile without the global Shell SCSS. */
+ .notification-banner.Suno-notification-card {
+   min-height: 0;
+@@ -5159,378 +5441,95 @@ StScrollBar {
+     background-gradient-end: #434e5b; }
+     .Suno-notification-beacon .Suno-notification-beacon-mark.Suno-notification-beacon-mark-glyph .Suno-notification-beacon-mark-icon {
+       icon-size: 16px;
+-      color: #ffffff;
+-      -st-icon-style: symbolic; }
+-  .Suno-notification-beacon .Suno-notification-beacon-copy {
+-    width: 132px;
+-    spacing: 2px; }
+-  .Suno-notification-beacon .Suno-notification-beacon-title {
+-    font-size: 13px;
+-    font-weight: 650; }
+-  .Suno-notification-beacon .Suno-notification-beacon-summary {
+-    font-size: 11px;
+-    font-weight: 550; }
+-  .Suno-notification-beacon .Suno-notification-beacon-count {
+-    min-width: 8px;
+-    height: 20px;
+-    padding: 0 6px;
+-    border-radius: 999px;
+-    color: #ffffff;
+-    font-size: 11px;
+-    font-weight: 750;
+-    font-feature-settings: "tnum";
+-    text-align: center; }
+-  .Suno-notification-beacon:focus {
+-    box-shadow: inset 0 0 0 2px st-transparentize(-st-accent-color, 0.3); }
+-  .Suno-notification-beacon.Suno-notification-tone-messages .Suno-notification-beacon-count {
+-    background-color: #ffffff;
+-    color: #000000; }
+-  .Suno-notification-beacon.Suno-notification-tone-phone .Suno-notification-beacon-count {
+-    background-color: #ffffff;
+-    color: #000000; }
+-  .Suno-notification-beacon.Suno-notification-tone-mail .Suno-notification-beacon-count {
+-    background-color: #ffffff;
+-    color: #000000; }
+-  .Suno-notification-beacon.Suno-notification-tone-files .Suno-notification-beacon-count {
+-    background-color: #ffffff;
+-    color: #000000; }
+-  .Suno-notification-beacon.Suno-notification-tone-calendar .Suno-notification-beacon-count {
+-    background-color: #ffffff;
+-    color: #000000; }
+-  .Suno-notification-beacon.Suno-notification-tone-depot .Suno-notification-beacon-count {
+-    background-color: #ffffff;
+-    color: #000000; }
+-  .Suno-notification-beacon.Suno-notification-tone-neutral .Suno-notification-beacon-count {
+-    background-color: #ffffff;
+-    color: #000000; }
+-
+-.Suno-surface-light .Suno-notification-beacon .Suno-notification-beacon-title {
+-  color: #34383d; }
+-
+-.Suno-surface-light .Suno-notification-beacon .Suno-notification-beacon-summary {
+-  color: rgba(52, 56, 61, 0.78); }
+-
+-.Suno-surface-light .Suno-notification-beacon:hover {
+-  background-color: rgba(25, 27, 31, 0.06); }
+-
+-.Suno-surface-light .Suno-notification-beacon:active, .Suno-surface-light .Suno-notification-beacon:checked {
+-  background-color: rgba(25, 27, 31, 0.09); }
+-
+-.Suno-surface-dark .Suno-notification-beacon .Suno-notification-beacon-title {
+-  color: #e7e9e8; }
+-
+-.Suno-surface-dark .Suno-notification-beacon .Suno-notification-beacon-summary {
+-  color: rgba(231, 233, 232, 0.8); }
+-
+-.Suno-surface-dark .Suno-notification-beacon:hover {
+-  background-color: rgba(255, 255, 255, 0.06); }
+-
+-.Suno-surface-dark .Suno-notification-beacon:active, .Suno-surface-dark .Suno-notification-beacon:checked {
+-  background-color: rgba(255, 255, 255, 0.09); }
+-
+-.Suno-surface-frost .Suno-notification-beacon .Suno-notification-beacon-title {
+-  color: #1f262d; }
+-
+-.Suno-surface-frost .Suno-notification-beacon .Suno-notification-beacon-summary {
+-  color: #394047; }
+-
+-.Suno-surface-frost .Suno-notification-beacon:hover {
+-  background-color: rgba(37, 46, 54, 0.06); }
+-
+-.Suno-surface-frost .Suno-notification-beacon:active, .Suno-surface-frost .Suno-notification-beacon:checked {
+-  background-color: rgba(37, 46, 54, 0.1); }
+-
+-.Suno-surface-glass .Suno-notification-beacon .Suno-notification-beacon-title {
+-  color: #161b20; }
+-
+-.Suno-surface-glass .Suno-notification-beacon .Suno-notification-beacon-summary {
+-  color: #1f242a; }
+-
+-.Suno-surface-glass .Suno-notification-beacon:hover {
+-  background-color: rgba(37, 46, 54, 0.05); }
+-
+-.Suno-surface-glass .Suno-notification-beacon:active, .Suno-surface-glass .Suno-notification-beacon:checked {
+-  background-color: rgba(37, 46, 54, 0.08); }
+-
+-/* Studio shelf-2 notification lip and v70 Quick Options. Logical pixels. */
+-.Suno-notification-lip { font-family: Figtree; color: #f2f3f5; }
+-.Suno-notification-lip .Suno-lip-surface {
+-  background-color: #21252b; border: 1px solid rgba(255,255,255,.075);
+-  border-top-width: 0; border-radius: 0 0 22px 22px;
+-  box-shadow: 0 12px 30px -14px rgba(0,0,0,.6); }
+-.Suno-notification-lip.idle .Suno-lip-surface { border-radius: 0 0 5px 5px; }
+-.Suno-notification-lip.pill .Suno-lip-surface { border-radius: 0 0 11px 11px; }
+-.Suno-notification-lip.Suno-surface-light { color: #1d1f23; }
+-.Suno-notification-lip.Suno-surface-light .Suno-lip-surface {
+-  background-color: #eceef1; border-color: rgba(255,255,255,.9); }
+-.Suno-notification-lip.Suno-surface-frost .Suno-lip-surface {
+-  background-color: rgba(38,38,43,.8); border-color: rgba(255,255,255,.1); }
+-.Suno-notification-lip .Suno-lip-pill { height: 21px; padding: 0 10px 1px; spacing: 7px; }
+-.Suno-notification-lip .Suno-lip-pill.big { height: 31px; padding: 0 14px 1px; spacing: 8px; }
+-.Suno-notification-lip .Suno-lip-icon-stack { spacing: -5px; }
+-.Suno-notification-lip .Suno-lip-pill-title { font-size: 12px; font-weight: 650; font-feature-settings: "tnum"; max-width: 240px; }
+-.Suno-notification-lip .Suno-lip-pill-more { font-size: 12px; color: rgba(242,243,245,.7); }
+-.Suno-notification-lip .Suno-lip-glow { background-color: -st-accent-color; border-radius: 1px; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card {
+-  min-width: 0; width: auto; min-height: 0; margin: 0; padding: 14px 16px 14px 14px;
+-  background-color: transparent; background-gradient-direction: none;
+-  border: none; border-radius: 0; box-shadow: none; color: inherit; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .Suno-notification-grid { spacing: 12px; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .Suno-notification-tile {
+-  width: 34px; height: 34px; border-radius: 10px; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .Suno-notification-tile .message-source-icon,
+-.Suno-notification-lip .notification-banner.Suno-lip-card .Suno-notification-tile .Suno-notification-tile-image { icon-size: 34px; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .Suno-notification-tile-glyph {
+-  width: 32px; height: 32px; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .Suno-notification-tile-glyph .message-source-icon { icon-size: 20px; }
+-.Suno-notification-lip .Suno-lip-app-badge { border-radius: 5px; border: 2px solid #21252b; margin: 0 -4px -4px 0; }
+-.Suno-notification-lip.Suno-surface-light .Suno-lip-app-badge { border-color: #eceef1; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-header { min-height: 12px; spacing: 0; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-header .message-header-content { spacing: 8px; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-header .message-source-title {
+-  font-size: 10px; font-weight: 700; letter-spacing: .9px; color: rgba(242,243,245,.5); }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-header .event-time {
+-  font-size: 10.5px; font-weight: 600; color: rgba(242,243,245,.5); }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-header .message-close-button {
+-  width: 22px; height: 22px; min-width: 22px; min-height: 22px; margin-top: -5px;
+-  border-radius: 7px; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-header .message-close-button StIcon { icon-size: 12px; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-box .message-content { spacing: 1px; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-box .message-title { font-size: 13.5px; font-weight: 650; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-box .message-body {
+-  font-size: 12.5px; font-weight: 400; color: rgba(242,243,245,.7); }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin { padding: 10px 0 0; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .notification-buttons-bin { spacing: 6px; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .notification-button {
+-  height: 30px; min-height: 0; padding: 0 13px; border-radius: 10px; font-size: 12px; font-weight: 650;
+-  background-color: rgba(255,255,255,.08); color: inherit; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .notification-button:hover { background-color: rgba(255,255,255,.14); }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .notification-button.Suno-notification-action-ok {
+-  background-color: #65b58c; color: #f2f3f5; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .notification-button.Suno-notification-action-danger { color: #db6b72; }
+-.Suno-notification-lip .Suno-lip-call-action { spacing: 6px; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .Suno-inline-reply-row {
+-  height: 34px; min-height: 0; padding: 0 4px 0 12px; spacing: 6px; border-radius: 17px;
+-  background-color: rgba(0,0,0,.22); }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .Suno-inline-reply-entry {
+-  min-height: 0; height: 34px; padding: 0; border: none; box-shadow: none;
+-  background-color: transparent; color: inherit; font-size: 12.5px; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .Suno-inline-reply-button {
+-  width: 26px; height: 26px; min-height: 0; padding: 0; border-radius: 13px;
+-  background-color: -st-accent-color; color: #f2f3f5; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .Suno-inline-reply-glyph { icon-size: 13px; }
+-.Suno-notification-lip .Suno-lip-sent { color: #65b58c; font-size: 12px; font-weight: 600; }
+-.Suno-notification-lip .Suno-lip-tray-header { padding: 14px 14px 6px 18px; spacing: 8px; }
+-.Suno-notification-lip .Suno-lip-heading { font-size: 15px; font-weight: 650; }
+-.Suno-notification-lip .Suno-lip-count { font-size: 13px; font-weight: 600; color: rgba(242,243,245,.5); }
+-.Suno-notification-lip .Suno-lip-key { width: 28px; height: 28px; border-radius: 9px; }
+-.Suno-notification-lip .Suno-lip-key:checked { color: -st-accent-color; }
+-.Suno-notification-lip .Suno-lip-clear { height: 28px; padding: 0 10px; font-size: 12px; font-weight: 600; border-radius: 9px; }
+-.Suno-notification-lip .Suno-lip-scroll { max-height: 520px; }
+-.Suno-notification-lip .Suno-lip-list { padding: 4px 10px 12px; spacing: 6px; }
+-.Suno-notification-lip .Suno-lip-list .notification-banner.Suno-lip-card {
+-  padding: 12px 14px 12px 12px; border-radius: 16px; background-color: rgba(255,255,255,.08);
+-  border: 1px solid rgba(255,255,255,.1); }
+-.Suno-notification-lip .Suno-lip-empty { padding: 18px 18px 22px; font-size: 12.5px; color: rgba(242,243,245,.7); }
+-.Suno-notification-lip.Suno-surface-light .notification-banner.Suno-lip-card .message-body,
+-.Suno-notification-lip.Suno-surface-light .Suno-lip-empty,
+-.Suno-notification-lip.Suno-surface-light .Suno-lip-pill-more { color: rgba(29,31,35,.65); }
+-.Suno-notification-lip.Suno-surface-light .notification-banner.Suno-lip-card .message-source-title,
+-.Suno-notification-lip.Suno-surface-light .notification-banner.Suno-lip-card .event-time,
+-.Suno-notification-lip.Suno-surface-light .Suno-lip-count { color: rgba(29,31,35,.45); }
+-.Suno-notification-lip.Suno-surface-light .notification-banner.Suno-lip-card .notification-button,
+-.Suno-notification-lip.Suno-surface-light .notification-banner.Suno-lip-card .Suno-inline-reply-row { background-color: rgba(20,22,26,.06); }
+-.Suno-notification-lip.Suno-surface-light .Suno-lip-list .notification-banner.Suno-lip-card {
+-  background-color: #f7f8fa; border-color: rgba(20,22,26,.1); }
++      color: #ffffff;
++      -st-icon-style: symbolic; }
++  .Suno-notification-beacon .Suno-notification-beacon-copy {
++    width: 132px;
++    spacing: 2px; }
++  .Suno-notification-beacon .Suno-notification-beacon-title {
++    font-size: 13px;
++    font-weight: 650; }
++  .Suno-notification-beacon .Suno-notification-beacon-summary {
++    font-size: 11px;
++    font-weight: 550; }
++  .Suno-notification-beacon .Suno-notification-beacon-count {
++    min-width: 8px;
++    height: 20px;
++    padding: 0 6px;
++    border-radius: 999px;
++    color: #ffffff;
++    font-size: 11px;
++    font-weight: 750;
++    font-feature-settings: "tnum";
++    text-align: center; }
++  .Suno-notification-beacon:focus {
++    box-shadow: inset 0 0 0 2px st-transparentize(-st-accent-color, 0.3); }
++  .Suno-notification-beacon.Suno-notification-tone-messages .Suno-notification-beacon-count {
++    background-color: #ffffff;
++    color: #000000; }
++  .Suno-notification-beacon.Suno-notification-tone-phone .Suno-notification-beacon-count {
++    background-color: #ffffff;
++    color: #000000; }
++  .Suno-notification-beacon.Suno-notification-tone-mail .Suno-notification-beacon-count {
++    background-color: #ffffff;
++    color: #000000; }
++  .Suno-notification-beacon.Suno-notification-tone-files .Suno-notification-beacon-count {
++    background-color: #ffffff;
++    color: #000000; }
++  .Suno-notification-beacon.Suno-notification-tone-calendar .Suno-notification-beacon-count {
++    background-color: #ffffff;
++    color: #000000; }
++  .Suno-notification-beacon.Suno-notification-tone-depot .Suno-notification-beacon-count {
++    background-color: #ffffff;
++    color: #000000; }
++  .Suno-notification-beacon.Suno-notification-tone-neutral .Suno-notification-beacon-count {
++    background-color: #ffffff;
++    color: #000000; }
+ 
+-/* One 340px popup, one stable source actor, one page visible at a time. */
+-.quick-settings.Suno-studio-options {
+-  width: 316px; min-width: 316px; max-width: 316px; padding: 12px; spacing: 0;
+-  background-color: #262a31; color: #f2f3f5; border-radius: 22px;
+-  border: 1px solid rgba(255,255,255,.075); font-family: Figtree; }
+-.quick-settings.Suno-studio-options.Suno-surface-light { background-color: #eceef1; color: #1d1f23; border-color: rgba(255,255,255,.9); }
+-.quick-settings.Suno-studio-options.Suno-surface-frost {
+-  background-color: rgba(32,32,36,.86); background-gradient-direction: vertical;
+-  background-gradient-start: rgba(50,50,56,.8); background-gradient-end: rgba(32,32,36,.86);
+-  color: #f2f3f5; border-color: rgba(255,255,255,.1); }
+-.quick-settings.Suno-studio-options .Suno-options-main, .quick-settings.Suno-studio-options .Suno-options-page { spacing: 12px; }
+-.quick-settings.Suno-studio-options .Suno-options-levels { spacing: 4px; }
+-.quick-settings.Suno-studio-options .quick-slider.Suno-options-slider { margin: 0; padding: 0; height: 36px; min-height: 0; spacing: 11px; }
+-.quick-settings.Suno-studio-options .Suno-options-slider > StBoxLayout { spacing: 11px; }
+-.quick-settings.Suno-studio-options .Suno-options-slider .icon-button { width: 16px; height: 36px; min-width: 0; min-height: 0; padding: 0 0 0 8px; }
+-.quick-settings.Suno-studio-options .Suno-options-slider StIcon { icon-size: 16px; }
+-.quick-settings.Suno-studio-options .Suno-options-slider .slider-bin { padding: 0; }
+-.quick-settings.Suno-studio-options .Suno-options-slider .slider {
+-  height: 24px; -slider-height: 5px; -slider-handle-radius: 7px;
+-  -barlevel-height: 5px; -barlevel-background-color: rgba(0,0,0,.22);
+-  -barlevel-active-background-color: -st-accent-color; }
+-.quick-settings.Suno-studio-options .Suno-options-slider .Suno-quick-level-value { width: 34px; font-size: 11.5px; font-feature-settings: "tnum"; color: rgba(242,243,245,.5); }
+-.quick-settings.Suno-studio-options .Suno-options-slider .Suno-quick-disclosure-slot { width: 36px; height: 36px; }
+-.quick-settings.Suno-studio-options .Suno-options-level-key, .quick-settings.Suno-studio-options .Suno-options-slider .Suno-options-level-key {
+-  width: 36px; height: 36px; min-width: 0; min-height: 0; padding: 0; border-radius: 11px;
+-  background-color: rgba(0,0,0,.22); border: none; box-shadow: none; font-size: 10.5px; font-weight: 650; }
+-.quick-settings.Suno-studio-options .Suno-options-level-key:checked { color: -st-accent-color; background-color: rgba(255,255,255,.14); }
+-.quick-settings.Suno-studio-options .Suno-options-radios { spacing: 8px; }
+-.quick-settings.Suno-studio-options .quick-toggle-has-menu.Suno-options-radio {
+-  width: 154px; min-width: 0; min-height: 0; padding: 0; border-radius: 15px;
+-  background-color: rgba(0,0,0,.22); border: none; box-shadow: none; }
+-.quick-settings.Suno-studio-options .quick-toggle-has-menu.Suno-options-radio:checked { background-color: rgba(255,255,255,.14); }
+-.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle { padding: 9px 2px 9px 9px; min-width: 0; min-height: 0; border: none; border-radius: 15px 0 0 15px; background-color: transparent; spacing: 10px; }
+-.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle StBoxLayout { spacing: 10px; }
+-.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle .quick-toggle-icon { icon-size: 16px; width: 32px; height: 32px; padding: 0; border-radius: 10px; }
+-.quick-settings.Suno-studio-options .Suno-options-radio:checked .quick-toggle-icon { background-color: -st-accent-color; color: #f2f3f5; }
+-.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-title { font-size: 12.5px; font-weight: 650; }
+-.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-subtitle { font-size: 11px; }
+-.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-menu-button { width: 30px; min-width: 0; padding: 0; border: none; background-color: transparent; }
+-.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-separator { width: 0; background-color: transparent; }
+-.quick-settings.Suno-studio-options .Suno-options-toggles { spacing: 2px; }
+-.quick-settings.Suno-studio-options .Suno-options-toggle-row { spacing: 8px; }
+-.quick-settings.Suno-studio-options .Suno-options-utility, .quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle {
+-  padding: 5px 9px 5px 5px; min-height: 0; min-width: 0; border-radius: 14px; border: none;
+-  background-color: transparent; box-shadow: none; font-size: 12.5px; font-weight: 600; }
+-.quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle { padding: 0; }
+-.quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle-icon { width: 32px; height: 32px; icon-size: 16px; border-radius: 10px; background-color: rgba(255,255,255,.08); }
+-.quick-settings.Suno-studio-options .Suno-options-utility:checked .quick-toggle-icon { background-color: -st-accent-color; color: #f2f3f5; }
+-.quick-settings.Suno-studio-options .Suno-options-utility:checked, .quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle:checked { background-color: transparent; }
+-.quick-settings.Suno-studio-options .Suno-options-mic { padding: 8px 10px 8px 8px; spacing: 10px; border-radius: 15px; background-color: rgba(232,150,55,.16); }
+-.quick-settings.Suno-studio-options .Suno-options-mic-title { font-size: 12.5px; font-weight: 650; }
+-.quick-settings.Suno-studio-options .Suno-options-mic-app { font-size: 11px; color: rgba(242,243,245,.7); }
+-.quick-settings.Suno-studio-options .Suno-options-mute { height: 28px; padding: 0 11px; border-radius: 9px; font-size: 12px; font-weight: 600; background-color: rgba(255,255,255,.14); }
+-.quick-settings.Suno-studio-options .Suno-options-system { padding-top: 10px; border-top: 1px solid rgba(255,255,255,.1); background-color: transparent; }
+-.quick-settings.Suno-studio-options .Suno-options-system .Suno-quick-footer { padding: 0; spacing: 2px; }
+-.quick-settings.Suno-studio-options .Suno-options-system .Suno-quick-action { width: 28px; height: 30px; padding: 0; min-width: 0; min-height: 0; border-radius: 9px; background-color: transparent; }
+-.quick-settings.Suno-studio-options .Suno-options-system .Suno-quick-action StIcon { icon-size: 16px; }
+-.quick-settings.Suno-studio-options .Suno-options-battery { spacing: 8px; padding: 0 8px 0 6px; height: 30px; }
+-.quick-settings.Suno-studio-options .Suno-options-battery-text { font-size: 12px; }
+-.quick-settings.Suno-studio-options .Suno-options-page-header { spacing: 6px; }
+-.quick-settings.Suno-studio-options .Suno-options-page-title { font-size: 14.5px; font-weight: 650; }
+-.quick-settings.Suno-studio-options .Suno-options-back { width: 28px; height: 28px; border-radius: 9px; }
+-.quick-settings.Suno-studio-options .Suno-options-page-switch { padding: 4px; border-radius: 9px; }
+-.quick-settings.Suno-studio-options .quick-toggle-menu.Suno-options-detail { margin: 0; padding: 0; border: none; border-radius: 0; background-color: transparent; box-shadow: none; spacing: 1px; }
+-.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-row { min-height: 34px; padding: 5px 10px 5px 5px; border-radius: 12px; spacing: 10px; }
+-.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-row-title { font-size: 12.5px; font-weight: 650; }
+-.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-row-state { font-size: 11px; }
+-.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-row-icon { width: 32px; icon-size: 16px; }
+-.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-row-dot { icon-size: 15px; color: -st-accent-color; }
+-.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-link { font-size: 12px; font-weight: 600; color: -st-accent-color; padding: 0 8px; height: 28px; }
+-.quick-settings.Suno-studio-options .Suno-options-switch-row { padding: 6px 10px; border-radius: 12px; }
+-.Suno-studio-options.Suno-surface-light .Suno-options-radio,
+-.Suno-studio-options.Suno-surface-light .Suno-options-level-key,
+-.Suno-studio-options.Suno-surface-light .Suno-options-slider .slider { background-color: rgba(20,22,26,.05); }
+-.Suno-studio-options.Suno-surface-light .Suno-options-slider .Suno-quick-level-value { color: rgba(29,31,35,.45); }
++.Suno-surface-light .Suno-notification-beacon .Suno-notification-beacon-title {
++  color: #34383d; }
+ 
+-.Suno-notification-lip .Suno-lip-call-ring { width: 34px; height: 34px; border: 2px solid #65b58c; border-radius: 17px; }
+-.quick-settings.Suno-studio-options .Suno-options-pair-code { spacing: 8px; padding: 8px 0; }
+-.quick-settings.Suno-studio-options .Suno-options-pair-instruction { font-size: 12px; }
+-.quick-settings.Suno-studio-options .Suno-options-passkey { spacing: 6px; }
+-.quick-settings.Suno-studio-options .Suno-options-passkey-digit { width: 28px; padding: 7px 0; text-align: center; border-radius: 8px; background-color: rgba(255,255,255,.1); font-size: 20px; font-weight: 650; }
+-.quick-settings.Suno-studio-options .Suno-options-passkey-digit.entered { color: #65b58c; }
+-.quick-settings.Suno-studio-options .Suno-options-pair-actions { spacing: 8px; }
+-.quick-settings.Suno-studio-options .Suno-options-pair-actions StButton { padding: 6px 12px; border-radius: 8px; background-color: rgba(255,255,255,.12); }
+-.Suno-notification-lip StButton:focus, .quick-settings.Suno-studio-options StButton:focus { box-shadow: inset 0 0 0 2px -st-accent-color; }
++.Suno-surface-light .Suno-notification-beacon .Suno-notification-beacon-summary {
++  color: rgba(52, 56, 61, 0.78); }
+ 
+-/* Reset the earlier 62px card geometry after moving controls out of its grid. */
+-.quick-settings.Suno-studio-options { width: 310px; min-width: 310px; max-width: 310px; padding: 14px; }
+-.quick-settings.Suno-studio-options .Suno-options-utility, .quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle { height: 32px; margin: 0; }
+-.quick-settings.Suno-studio-options .Suno-options-utility { padding: 5px; }
+-.quick-settings.Suno-studio-options .Suno-options-utility > StBoxLayout, .quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle > StBoxLayout { padding: 0; spacing: 10px; }
+-.quick-settings.Suno-studio-options .Suno-options-radio { width: 151px; height: 52px; margin: 0; }
+-.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle { height: 32px; margin: 0; }
+-.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle > StBoxLayout { padding: 0; }
++.Suno-surface-light .Suno-notification-beacon:hover {
++  background-color: rgba(25, 27, 31, 0.06); }
+ 
+-.quick-settings.Suno-studio-options .Suno-options-slider .icon-button { width: 16px; padding: 0; background-color: transparent; border: none; box-shadow: none; }
+-.quick-settings.Suno-studio-options .Suno-options-slider .slider { color: #f2f3f5; -barlevel-active-background-color: #e8eaed; -slider-handle-border-width: 0; -slider-handle-border-color: transparent; }
+-.quick-settings.Suno-studio-options .Suno-options-slider .Suno-quick-disclosure-disc { background-color: transparent; border: none; box-shadow: none; }
+-.quick-settings.Suno-studio-options .Suno-options-slider .Suno-quick-disclosure-icon { icon-size: 14px; }
+-.quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle-title { font-size: 12.5px; font-weight: 600; }
++.Suno-surface-light .Suno-notification-beacon:active, .Suno-surface-light .Suno-notification-beacon:checked {
++  background-color: rgba(25, 27, 31, 0.09); }
+ 
+-.quick-settings.Suno-studio-options .quick-slider.Suno-options-slider { border: none; }
+-.quick-settings.Suno-studio-options .Suno-options-system { min-height: 0; height: auto; margin: 2px 0 0; border-radius: 0; }
+-.quick-settings.Suno-studio-options .Suno-options-system .Suno-quick-action { border: none; box-shadow: none; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .Suno-inline-reply-row { min-height: 34px; }
++.Suno-surface-dark .Suno-notification-beacon .Suno-notification-beacon-title {
++  color: #e7e9e8; }
+ 
+-/* Measured against current Studio: remove old account-footer/subtitle geometry. */
+-.quick-settings.Suno-studio-options .Suno-options-system .Suno-quick-footer { height: 30px; }
+-.quick-settings.Suno-studio-options .Suno-options-system .Suno-quick-actions { spacing: 2px; }
+-.quick-settings.Suno-studio-options .Suno-options-main { spacing: 0; }
+-.quick-settings.Suno-studio-options .Suno-options-levels { margin-bottom: 12px; }
+-.quick-settings.Suno-studio-options .Suno-options-radios { margin-bottom: 8px; }
+-.quick-settings.Suno-studio-options .Suno-options-toggles { margin-bottom: 12px; }
+-.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-subtitle { padding-top: 0; }
+-.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle StBoxLayout { spacing: 1px; }
+-.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle > StBoxLayout { spacing: 10px; }
+-.quick-settings.Suno-studio-options .Suno-options-radio { border: 1px solid rgba(0,0,0,.25); }
++.Suno-surface-dark .Suno-notification-beacon .Suno-notification-beacon-summary {
++  color: rgba(231, 233, 232, 0.8); }
+ 
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-header .message-close-button { margin: 0; }
++.Suno-surface-dark .Suno-notification-beacon:hover {
++  background-color: rgba(255, 255, 255, 0.06); }
+ 
+-/* Studio's lip rim is an inset shadow, so it consumes no text-column width. */
+-.Suno-notification-lip .Suno-lip-surface { border-width: 0; box-shadow: inset 0 -1px 0 rgba(255,255,255,.075); }
++.Suno-surface-dark .Suno-notification-beacon:active, .Suno-surface-dark .Suno-notification-beacon:checked {
++  background-color: rgba(255, 255, 255, 0.09); }
+ 
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-header { min-height: 15px; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-box .message-title { min-height: 18px; }
+-.Suno-notification-lip { color: #e7e9e8; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-box .message-body { color: rgba(231,233,232,.62); }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-header .message-source-title,
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-header .event-time { color: rgba(231,233,232,.42); }
+-.quick-settings.Suno-studio-options { color: #e7e9e8; }
++.Suno-surface-frost .Suno-notification-beacon .Suno-notification-beacon-title {
++  color: #1f262d; }
+ 
+-.quick-settings.Suno-studio-options .Suno-options-slider .icon-button { padding-left: 8px; }
+-.quick-settings.Suno-studio-options .Suno-options-slider .Suno-quick-disclosure-icon { icon-size: 16px; }
++.Suno-surface-frost .Suno-notification-beacon .Suno-notification-beacon-summary {
++  color: #394047; }
+ 
+-.popup-menu-content.quick-settings.Suno-studio-options { width: 308px; min-width: 308px; max-width: 308px; padding: 16px; border: none; }
+-.quick-settings.Suno-studio-options .Suno-options-radio { width: 150px; border: none; }
+-.quick-settings.Suno-studio-options .Suno-options-radio:checked { background-color: #353a42; }
+-.quick-settings.Suno-studio-options .Suno-options-radio:checked .quick-toggle-icon,
+-.quick-settings.Suno-studio-options .Suno-options-utility:checked .quick-toggle-icon { background-color: #3a84ca; }
+-.quick-settings.Suno-studio-options .Suno-options-system { border-top: none; box-shadow: inset 0 1px 0 rgba(255,255,255,.09); }
+-.quick-settings.Suno-studio-options .Suno-options-toggle-row > .Suno-options-utility { width: 140px; }
++.Suno-surface-frost .Suno-notification-beacon:hover {
++  background-color: rgba(37, 46, 54, 0.06); }
+ 
+-.Suno-notification-lip .Suno-lip-app-badge { margin: 0; }
++.Suno-surface-frost .Suno-notification-beacon:active, .Suno-surface-frost .Suno-notification-beacon:checked {
++  background-color: rgba(37, 46, 54, 0.1); }
+ 
+-.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-menu-button { margin: 0; }
+-.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle > StBoxLayout { padding: 0; }
++.Suno-surface-glass .Suno-notification-beacon .Suno-notification-beacon-title {
++  color: #161b20; }
+ 
+-.Suno-notification-lip .Suno-lip-icon-stack { spacing: 0; }
+-/* Resolve inherited radio wrapper spacing and checked-state specificity. */
+-.quick-settings.Suno-studio-options .Suno-options-radio > StBoxLayout { spacing: 0; padding: 0; }
+-.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-separator { width: 0; min-width: 0; padding: 0; margin: 0; border: none; }
+-.quick-settings.Suno-studio-options .quick-toggle-has-menu.Suno-options-radio:checked { background-color: #353a42; box-shadow: 0 0 0 1px rgba(0,0,0,.25); }
+-.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-subtitle,
+-.quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle-icon,
+-.quick-settings.Suno-studio-options .Suno-options-slider .icon-button,
+-.quick-settings.Suno-studio-options .Suno-options-system { color: rgba(231,233,232,.62); }
+-.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-menu-button { color: rgba(231,233,232,.42); }
+-.quick-settings.Suno-studio-options .Suno-options-system .Suno-options-battery StIcon { icon-size: 18px; }
+-.quick-settings.Suno-studio-options .Suno-options-slider .slider { color: #fff; -barlevel-active-background-color: #e7e9e8; }
+-.quick-settings.Suno-studio-options.Suno-surface-light .quick-toggle-has-menu.Suno-options-radio:checked { background-color: #fff; box-shadow: 0 0 0 1px rgba(25,27,31,.08); }
+-.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-radio .quick-toggle-subtitle,
+-.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-utility .quick-toggle-icon,
+-.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-slider .icon-button,
+-.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-system { color: rgba(22,25,29,.76); }
+-.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-radio .quick-toggle-menu-button { color: rgba(22,25,29,.56); }
+-/* Studio detail lists and native Switch actors retain their service bindings. */
+-.quick-settings.Suno-studio-options .Suno-options-detail { spacing: 12px; }
+-.quick-settings.Suno-studio-options .Suno-options-detail > .popup-menu-section,
+-.quick-settings.Suno-studio-options .Suno-options-detail .Suno-options-list { padding: 4px; spacing: 1px; border-radius: 16px; background-color: rgba(0,0,0,.22); box-shadow: inset 0 1px 2px rgba(0,0,0,.22); }
+-.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-row-copy { spacing: 1px; }
+-.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-row-state { color: rgba(231,233,232,.62); }
+-.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-row-dot { width: 15px; height: 15px; icon-size: 15px; background-color: transparent; border: none; border-radius: 0; color: #71b5f4; }
+-.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-link { min-height: 0; height: 28px; padding: 0 8px; margin: 0; border: none; background-color: transparent; }
+-.quick-settings.Suno-studio-options .Suno-options-page .toggle-switch { width: 34px; height: 20px; margin: 0; padding: 0; border: none; border-radius: 10px; background-color: rgba(0,0,0,.22); }
+-.quick-settings.Suno-studio-options .Suno-options-page .toggle-switch:checked { background-color: #3a84ca; }
+-.quick-settings.Suno-studio-options .Suno-options-page .toggle-switch StIcon { color: transparent; }
+-.quick-settings.Suno-studio-options .Suno-options-page .toggle-switch .handle { width: 14px; height: 14px; margin: 3px; padding: 0; border: none; border-radius: 7px; background-color: #353a42; }
+-.quick-settings.Suno-studio-options .Suno-options-page .toggle-switch:checked .handle { background-color: #fff; }
+-.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-detail > .popup-menu-section,
+-.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-detail .Suno-options-list,
+-.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-page .toggle-switch { background-color: rgba(25,27,31,.055); }
+-.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-detail .Suno-sheet-row-state { color: rgba(22,25,29,.76); }
+-.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-page .toggle-switch:checked { background-color: #3a84ca; }
+-.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-page .toggle-switch .handle { background-color: #fff; }
+-.quick-settings.Suno-studio-options .Suno-options-fixture-groups { spacing: 12px; }
+-.quick-settings.Suno-studio-options .Suno-options-detail .Suno-options-nearby { min-height: 0; padding: 2px 4px 0 6px; margin: 0; font-size: 12px; font-weight: 650; color: rgba(231,233,232,.62); }
+-.quick-settings.Suno-studio-options .Suno-options-detail .Suno-options-nearby StButton { padding: 0; min-height: 0; font-size: 12px; font-weight: 600; background-color: transparent; color: #71b5f4; }
+-.quick-settings.Suno-studio-options .Suno-options-detail .Suno-options-off { padding: 2px 6px; margin: 0; font-size: 12.5px; color: rgba(231,233,232,.42); }
+-.quick-settings.Suno-studio-options .Suno-options-detail > .popup-menu-section.Suno-options-near-empty { padding: 0; background-color: transparent; box-shadow: none; }
+-.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-detail .Suno-options-nearby { color: rgba(22,25,29,.76); }
+-.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-detail .Suno-options-off { color: rgba(22,25,29,.56); }
++.Suno-surface-glass .Suno-notification-beacon .Suno-notification-beacon-summary {
++  color: #1f242a; }
++
++.Suno-surface-glass .Suno-notification-beacon:hover {
++  background-color: rgba(37, 46, 54, 0.05); }
++
++.Suno-surface-glass .Suno-notification-beacon:active, .Suno-surface-glass .Suno-notification-beacon:checked {
++  background-color: rgba(37, 46, 54, 0.08); }
+diff --git a/data/theme/gnome-shell-light.css b/data/theme/gnome-shell-light.css
+index a853fb1..8b00493 100644
+--- a/data/theme/gnome-shell-light.css
++++ b/data/theme/gnome-shell-light.css
+@@ -4623,6 +4623,288 @@ StScrollBar {
+ .Suno-beam-shadow.Suno-surface-frost,
+ .Suno-beam-shadow.Suno-surface-glass { background-color: rgba(241, 242, 243, 0.01); }
+ 
++/* Studio shelf-2 notification lip and v70 Quick Options. Logical pixels. */
++.Suno-notification-lip { font-family: Figtree; color: #f2f3f5; }
++.Suno-notification-lip .Suno-lip-surface {
++  background-color: #21252b; border: 1px solid rgba(255,255,255,.075);
++  border-top-width: 0; border-radius: 0 0 22px 22px;
++  box-shadow: 0 12px 30px -14px rgba(0,0,0,.6); }
++.Suno-notification-lip.idle .Suno-lip-surface { border-radius: 0 0 5px 5px; }
++.Suno-notification-lip.pill .Suno-lip-surface { border-radius: 0 0 11px 11px; }
++.Suno-notification-lip.Suno-surface-light { color: #1d1f23; }
++.Suno-notification-lip.Suno-surface-light .Suno-lip-surface {
++  background-color: #eceef1; border-color: rgba(255,255,255,.9); }
++.Suno-notification-lip.Suno-surface-frost .Suno-lip-surface {
++  background-color: rgba(38,38,43,.8); border-color: rgba(255,255,255,.1); }
++.Suno-notification-lip .Suno-lip-pill { height: 21px; padding: 0 10px 1px; spacing: 7px; }
++.Suno-notification-lip .Suno-lip-pill.big { height: 31px; padding: 0 14px 1px; spacing: 8px; }
++.Suno-notification-lip .Suno-lip-icon-stack { spacing: -5px; }
++.Suno-notification-lip .Suno-lip-pill-title { font-size: 12px; font-weight: 650; font-feature-settings: "tnum"; max-width: 240px; }
++.Suno-notification-lip .Suno-lip-pill-more { font-size: 12px; color: rgba(242,243,245,.7); }
++.Suno-notification-lip .Suno-lip-glow { background-color: -st-accent-color; border-radius: 1px; }
++.Suno-notification-lip .notification-banner.Suno-lip-card {
++  min-width: 0; width: auto; min-height: 0; margin: 0; padding: 14px 16px 14px 14px;
++  background-color: transparent; background-gradient-direction: none;
++  border: none; border-radius: 0; box-shadow: none; color: inherit; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .Suno-notification-grid { spacing: 12px; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .Suno-notification-tile {
++  width: 34px; height: 34px; border-radius: 10px; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .Suno-notification-tile .message-source-icon,
++.Suno-notification-lip .notification-banner.Suno-lip-card .Suno-notification-tile .Suno-notification-tile-image { icon-size: 34px; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .Suno-notification-tile-glyph {
++  width: 32px; height: 32px; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .Suno-notification-tile-glyph .message-source-icon { icon-size: 20px; }
++.Suno-notification-lip .Suno-lip-app-badge { border-radius: 5px; border: 2px solid #21252b; margin: 0 -4px -4px 0; }
++.Suno-notification-lip.Suno-surface-light .Suno-lip-app-badge { border-color: #eceef1; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-header { min-height: 12px; spacing: 0; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-header .message-header-content { spacing: 8px; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-header .message-source-title {
++  font-size: 10px; font-weight: 700; letter-spacing: .9px; color: rgba(242,243,245,.5); }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-header .event-time {
++  font-size: 10.5px; font-weight: 600; color: rgba(242,243,245,.5); }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-header .message-close-button {
++  width: 22px; height: 22px; min-width: 22px; min-height: 22px; margin-top: -5px;
++  border-radius: 7px; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-header .message-close-button StIcon { icon-size: 12px; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-box .message-content { spacing: 1px; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-box .message-title { font-size: 13.5px; font-weight: 650; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-box .message-body {
++  font-size: 12.5px; font-weight: 400; color: rgba(242,243,245,.7); }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin { padding: 10px 0 0; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .notification-buttons-bin { spacing: 6px; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .notification-button {
++  height: 30px; min-height: 0; padding: 0 13px; border-radius: 10px; font-size: 12px; font-weight: 650;
++  background-color: rgba(255,255,255,.08); color: inherit; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .notification-button:hover { background-color: rgba(255,255,255,.14); }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .notification-button.Suno-notification-action-ok {
++  background-color: #65b58c; color: #f2f3f5; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .notification-button.Suno-notification-action-danger { color: #db6b72; }
++.Suno-notification-lip .Suno-lip-call-action { spacing: 6px; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .Suno-inline-reply-row {
++  height: 34px; min-height: 0; padding: 0 4px 0 12px; spacing: 6px; border-radius: 17px;
++  background-color: rgba(0,0,0,.22); }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .Suno-inline-reply-entry {
++  min-height: 0; height: 34px; padding: 0; border: none; box-shadow: none;
++  background-color: transparent; color: inherit; font-size: 12.5px; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .Suno-inline-reply-button {
++  width: 26px; height: 26px; min-height: 0; padding: 0; border-radius: 13px;
++  background-color: -st-accent-color; color: #f2f3f5; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .Suno-inline-reply-glyph { icon-size: 13px; }
++.Suno-notification-lip .Suno-lip-sent { color: #65b58c; font-size: 12px; font-weight: 600; }
++.Suno-notification-lip .Suno-lip-tray-header { padding: 14px 14px 6px 18px; spacing: 8px; }
++.Suno-notification-lip .Suno-lip-heading { font-size: 15px; font-weight: 650; }
++.Suno-notification-lip .Suno-lip-count { font-size: 13px; font-weight: 600; color: rgba(242,243,245,.5); }
++.Suno-notification-lip .Suno-lip-key { width: 28px; height: 28px; border-radius: 9px; }
++.Suno-notification-lip .Suno-lip-key:checked { color: -st-accent-color; }
++.Suno-notification-lip .Suno-lip-clear { height: 28px; padding: 0 10px; font-size: 12px; font-weight: 600; border-radius: 9px; }
++.Suno-notification-lip .Suno-lip-scroll { max-height: 520px; }
++.Suno-notification-lip .Suno-lip-list { padding: 4px 10px 12px; spacing: 6px; }
++.Suno-notification-lip .Suno-lip-list .notification-banner.Suno-lip-card {
++  padding: 12px 14px 12px 12px; border-radius: 16px; background-color: rgba(255,255,255,.08);
++  border: 1px solid rgba(255,255,255,.1); }
++.Suno-notification-lip .Suno-lip-empty { padding: 18px 18px 22px; font-size: 12.5px; color: rgba(242,243,245,.7); }
++.Suno-notification-lip.Suno-surface-light .notification-banner.Suno-lip-card .message-body,
++.Suno-notification-lip.Suno-surface-light .Suno-lip-empty,
++.Suno-notification-lip.Suno-surface-light .Suno-lip-pill-more { color: rgba(29,31,35,.65); }
++.Suno-notification-lip.Suno-surface-light .notification-banner.Suno-lip-card .message-source-title,
++.Suno-notification-lip.Suno-surface-light .notification-banner.Suno-lip-card .event-time,
++.Suno-notification-lip.Suno-surface-light .Suno-lip-count { color: rgba(29,31,35,.45); }
++.Suno-notification-lip.Suno-surface-light .notification-banner.Suno-lip-card .notification-button,
++.Suno-notification-lip.Suno-surface-light .notification-banner.Suno-lip-card .Suno-inline-reply-row { background-color: rgba(20,22,26,.06); }
++.Suno-notification-lip.Suno-surface-light .Suno-lip-list .notification-banner.Suno-lip-card {
++  background-color: #f7f8fa; border-color: rgba(20,22,26,.1); }
++
++/* One 340px popup, one stable source actor, one page visible at a time. */
++.quick-settings.Suno-studio-options {
++  width: 316px; min-width: 316px; max-width: 316px; padding: 12px; spacing: 0;
++  background-color: #262a31; color: #f2f3f5; border-radius: 22px;
++  border: 1px solid rgba(255,255,255,.075); font-family: Figtree; }
++.quick-settings.Suno-studio-options.Suno-surface-light { background-color: #eceef1; color: #1d1f23; border-color: rgba(255,255,255,.9); }
++.quick-settings.Suno-studio-options.Suno-surface-frost {
++  background-color: rgba(32,32,36,.86); background-gradient-direction: vertical;
++  background-gradient-start: rgba(50,50,56,.8); background-gradient-end: rgba(32,32,36,.86);
++  color: #f2f3f5; border-color: rgba(255,255,255,.1); }
++.quick-settings.Suno-studio-options .Suno-options-main, .quick-settings.Suno-studio-options .Suno-options-page { spacing: 12px; }
++.quick-settings.Suno-studio-options .Suno-options-levels { spacing: 4px; }
++.quick-settings.Suno-studio-options .quick-slider.Suno-options-slider { margin: 0; padding: 0; height: 36px; min-height: 0; spacing: 11px; }
++.quick-settings.Suno-studio-options .Suno-options-slider > StBoxLayout { spacing: 11px; }
++.quick-settings.Suno-studio-options .Suno-options-slider .icon-button { width: 16px; height: 36px; min-width: 0; min-height: 0; padding: 0 0 0 8px; }
++.quick-settings.Suno-studio-options .Suno-options-slider StIcon { icon-size: 16px; }
++.quick-settings.Suno-studio-options .Suno-options-slider .slider-bin { padding: 0; }
++.quick-settings.Suno-studio-options .Suno-options-slider .slider {
++  height: 24px; -slider-height: 5px; -slider-handle-radius: 7px;
++  -barlevel-height: 5px; -barlevel-background-color: rgba(0,0,0,.22);
++  -barlevel-active-background-color: -st-accent-color; }
++.quick-settings.Suno-studio-options .Suno-options-slider .Suno-quick-level-value { width: 34px; font-size: 11.5px; font-feature-settings: "tnum"; color: rgba(242,243,245,.5); }
++.quick-settings.Suno-studio-options .Suno-options-slider .Suno-quick-disclosure-slot { width: 36px; height: 36px; }
++.quick-settings.Suno-studio-options .Suno-options-level-key, .quick-settings.Suno-studio-options .Suno-options-slider .Suno-options-level-key {
++  width: 36px; height: 36px; min-width: 0; min-height: 0; padding: 0; border-radius: 11px;
++  background-color: rgba(0,0,0,.22); border: none; box-shadow: none; font-size: 10.5px; font-weight: 650; }
++.quick-settings.Suno-studio-options .Suno-options-level-key:checked { color: -st-accent-color; background-color: rgba(255,255,255,.14); }
++.quick-settings.Suno-studio-options .Suno-options-radios { spacing: 8px; }
++.quick-settings.Suno-studio-options .quick-toggle-has-menu.Suno-options-radio {
++  width: 154px; min-width: 0; min-height: 0; padding: 0; border-radius: 15px;
++  background-color: rgba(0,0,0,.22); border: none; box-shadow: none; }
++.quick-settings.Suno-studio-options .quick-toggle-has-menu.Suno-options-radio:checked { background-color: rgba(255,255,255,.14); }
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle { padding: 9px 2px 9px 9px; min-width: 0; min-height: 0; border: none; border-radius: 15px 0 0 15px; background-color: transparent; spacing: 10px; }
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle StBoxLayout { spacing: 10px; }
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle .quick-toggle-icon { icon-size: 16px; width: 32px; height: 32px; padding: 0; border-radius: 10px; }
++.quick-settings.Suno-studio-options .Suno-options-radio:checked .quick-toggle-icon { background-color: -st-accent-color; color: #f2f3f5; }
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-title { font-size: 12.5px; font-weight: 650; }
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-subtitle { font-size: 11px; }
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-menu-button { width: 30px; min-width: 0; padding: 0; border: none; background-color: transparent; }
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-separator { width: 0; background-color: transparent; }
++.quick-settings.Suno-studio-options .Suno-options-toggles { spacing: 2px; }
++.quick-settings.Suno-studio-options .Suno-options-toggle-row { spacing: 8px; }
++.quick-settings.Suno-studio-options .Suno-options-utility, .quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle {
++  padding: 5px 9px 5px 5px; min-height: 0; min-width: 0; border-radius: 14px; border: none;
++  background-color: transparent; box-shadow: none; font-size: 12.5px; font-weight: 600; }
++.quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle { padding: 0; }
++.quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle-icon { width: 32px; height: 32px; icon-size: 16px; border-radius: 10px; background-color: rgba(255,255,255,.08); }
++.quick-settings.Suno-studio-options .Suno-options-utility:checked .quick-toggle-icon { background-color: -st-accent-color; color: #f2f3f5; }
++.quick-settings.Suno-studio-options .Suno-options-utility:checked, .quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle:checked { background-color: transparent; }
++.quick-settings.Suno-studio-options .Suno-options-mic { padding: 8px 10px 8px 8px; spacing: 10px; border-radius: 15px; background-color: rgba(232,150,55,.16); }
++.quick-settings.Suno-studio-options .Suno-options-mic-title { font-size: 12.5px; font-weight: 650; }
++.quick-settings.Suno-studio-options .Suno-options-mic-app { font-size: 11px; color: rgba(242,243,245,.7); }
++.quick-settings.Suno-studio-options .Suno-options-mute { height: 28px; padding: 0 11px; border-radius: 9px; font-size: 12px; font-weight: 600; background-color: rgba(255,255,255,.14); }
++.quick-settings.Suno-studio-options .Suno-options-system { padding-top: 10px; border-top: 1px solid rgba(255,255,255,.1); background-color: transparent; }
++.quick-settings.Suno-studio-options .Suno-options-system .Suno-quick-footer { padding: 0; spacing: 2px; }
++.quick-settings.Suno-studio-options .Suno-options-system .Suno-quick-action { width: 28px; height: 30px; padding: 0; min-width: 0; min-height: 0; border-radius: 9px; background-color: transparent; }
++.quick-settings.Suno-studio-options .Suno-options-system .Suno-quick-action StIcon { icon-size: 16px; }
++.quick-settings.Suno-studio-options .Suno-options-battery { spacing: 8px; padding: 0 8px 0 6px; height: 30px; }
++.quick-settings.Suno-studio-options .Suno-options-battery-text { font-size: 12px; }
++.quick-settings.Suno-studio-options .Suno-options-page-header { spacing: 6px; }
++.quick-settings.Suno-studio-options .Suno-options-page-title { font-size: 14.5px; font-weight: 650; }
++.quick-settings.Suno-studio-options .Suno-options-back { width: 28px; height: 28px; border-radius: 9px; }
++.quick-settings.Suno-studio-options .Suno-options-page-switch { padding: 4px; border-radius: 9px; }
++.quick-settings.Suno-studio-options .quick-toggle-menu.Suno-options-detail { margin: 0; padding: 0; border: none; border-radius: 0; background-color: transparent; box-shadow: none; spacing: 1px; }
++.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-row { min-height: 34px; padding: 5px 10px 5px 5px; border-radius: 12px; spacing: 10px; }
++.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-row-title { font-size: 12.5px; font-weight: 650; }
++.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-row-state { font-size: 11px; }
++.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-row-icon { width: 32px; icon-size: 16px; }
++.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-row-dot { icon-size: 15px; color: -st-accent-color; }
++.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-link { font-size: 12px; font-weight: 600; color: -st-accent-color; padding: 0 8px; height: 28px; }
++.quick-settings.Suno-studio-options .Suno-options-switch-row { padding: 6px 10px; border-radius: 12px; }
++.Suno-studio-options.Suno-surface-light .Suno-options-radio,
++.Suno-studio-options.Suno-surface-light .Suno-options-level-key,
++.Suno-studio-options.Suno-surface-light .Suno-options-slider .slider { background-color: rgba(20,22,26,.05); }
++.Suno-studio-options.Suno-surface-light .Suno-options-slider .Suno-quick-level-value { color: rgba(29,31,35,.45); }
++
++.Suno-notification-lip .Suno-lip-call-ring { width: 34px; height: 34px; border: 2px solid #65b58c; border-radius: 17px; }
++.quick-settings.Suno-studio-options .Suno-options-pair-code { spacing: 8px; padding: 8px 0; }
++.quick-settings.Suno-studio-options .Suno-options-pair-instruction { font-size: 12px; }
++.quick-settings.Suno-studio-options .Suno-options-passkey { spacing: 6px; }
++.quick-settings.Suno-studio-options .Suno-options-passkey-digit { width: 28px; padding: 7px 0; text-align: center; border-radius: 8px; background-color: rgba(255,255,255,.1); font-size: 20px; font-weight: 650; }
++.quick-settings.Suno-studio-options .Suno-options-passkey-digit.entered { color: #65b58c; }
++.quick-settings.Suno-studio-options .Suno-options-pair-actions { spacing: 8px; }
++.quick-settings.Suno-studio-options .Suno-options-pair-actions StButton { padding: 6px 12px; border-radius: 8px; background-color: rgba(255,255,255,.12); }
++.Suno-notification-lip StButton:focus, .quick-settings.Suno-studio-options StButton:focus { box-shadow: inset 0 0 0 2px -st-accent-color; }
++
++/* Reset the earlier 62px card geometry after moving controls out of its grid. */
++.quick-settings.Suno-studio-options { width: 310px; min-width: 310px; max-width: 310px; padding: 14px; }
++.quick-settings.Suno-studio-options .Suno-options-utility, .quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle { height: 32px; margin: 0; }
++.quick-settings.Suno-studio-options .Suno-options-utility { padding: 5px; }
++.quick-settings.Suno-studio-options .Suno-options-utility > StBoxLayout, .quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle > StBoxLayout { padding: 0; spacing: 10px; }
++.quick-settings.Suno-studio-options .Suno-options-radio { width: 151px; height: 52px; margin: 0; }
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle { height: 32px; margin: 0; }
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle > StBoxLayout { padding: 0; }
++
++.quick-settings.Suno-studio-options .Suno-options-slider .icon-button { width: 16px; padding: 0; background-color: transparent; border: none; box-shadow: none; }
++.quick-settings.Suno-studio-options .Suno-options-slider .slider { color: #f2f3f5; -barlevel-active-background-color: #e8eaed; -slider-handle-border-width: 0; -slider-handle-border-color: transparent; }
++.quick-settings.Suno-studio-options .Suno-options-slider .Suno-quick-disclosure-disc { background-color: transparent; border: none; box-shadow: none; }
++.quick-settings.Suno-studio-options .Suno-options-slider .Suno-quick-disclosure-icon { icon-size: 14px; }
++.quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle-title { font-size: 12.5px; font-weight: 600; }
++
++.quick-settings.Suno-studio-options .quick-slider.Suno-options-slider { border: none; }
++.quick-settings.Suno-studio-options .Suno-options-system { min-height: 0; height: auto; margin: 2px 0 0; border-radius: 0; }
++.quick-settings.Suno-studio-options .Suno-options-system .Suno-quick-action { border: none; box-shadow: none; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .Suno-inline-reply-row { min-height: 34px; }
++
++/* Measured against current Studio: remove old account-footer/subtitle geometry. */
++.quick-settings.Suno-studio-options .Suno-options-system .Suno-quick-footer { height: 30px; }
++.quick-settings.Suno-studio-options .Suno-options-system .Suno-quick-actions { spacing: 2px; }
++.quick-settings.Suno-studio-options .Suno-options-main { spacing: 0; }
++.quick-settings.Suno-studio-options .Suno-options-levels { margin-bottom: 12px; }
++.quick-settings.Suno-studio-options .Suno-options-radios { margin-bottom: 8px; }
++.quick-settings.Suno-studio-options .Suno-options-toggles { margin-bottom: 12px; }
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-subtitle { padding-top: 0; }
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle StBoxLayout { spacing: 1px; }
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle > StBoxLayout { spacing: 10px; }
++.quick-settings.Suno-studio-options .Suno-options-radio { border: 1px solid rgba(0,0,0,.25); }
++
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-header .message-close-button { margin: 0; }
++
++/* Studio's lip rim is an inset shadow, so it consumes no text-column width. */
++.Suno-notification-lip .Suno-lip-surface { border-width: 0; box-shadow: inset 0 -1px 0 rgba(255,255,255,.075); }
++
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-header { min-height: 15px; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-box .message-title { min-height: 18px; }
++.Suno-notification-lip { color: #e7e9e8; }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-box .message-body { color: rgba(231,233,232,.62); }
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-header .message-source-title,
++.Suno-notification-lip .notification-banner.Suno-lip-card .message-header .event-time { color: rgba(231,233,232,.42); }
++.quick-settings.Suno-studio-options { color: #e7e9e8; }
++
++.quick-settings.Suno-studio-options .Suno-options-slider .icon-button { padding-left: 8px; }
++.quick-settings.Suno-studio-options .Suno-options-slider .Suno-quick-disclosure-icon { icon-size: 16px; }
++
++.popup-menu-content.quick-settings.Suno-studio-options { width: 308px; min-width: 308px; max-width: 308px; padding: 16px; border: none; }
++.quick-settings.Suno-studio-options .Suno-options-radio { width: 150px; border: none; }
++.quick-settings.Suno-studio-options .Suno-options-radio:checked { background-color: #353a42; }
++.quick-settings.Suno-studio-options .Suno-options-radio:checked .quick-toggle-icon,
++.quick-settings.Suno-studio-options .Suno-options-utility:checked .quick-toggle-icon { background-color: #3a84ca; }
++.quick-settings.Suno-studio-options .Suno-options-system { border-top: none; box-shadow: inset 0 1px 0 rgba(255,255,255,.09); }
++.quick-settings.Suno-studio-options .Suno-options-toggle-row > .Suno-options-utility { width: 140px; }
++
++.Suno-notification-lip .Suno-lip-app-badge { margin: 0; }
++
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-menu-button { margin: 0; }
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle > StBoxLayout { padding: 0; }
++
++.Suno-notification-lip .Suno-lip-icon-stack { spacing: 0; }
++/* Resolve inherited radio wrapper spacing and checked-state specificity. */
++.quick-settings.Suno-studio-options .Suno-options-radio > StBoxLayout { spacing: 0; padding: 0; }
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-separator { width: 0; min-width: 0; padding: 0; margin: 0; border: none; }
++.quick-settings.Suno-studio-options .quick-toggle-has-menu.Suno-options-radio:checked { background-color: #353a42; box-shadow: 0 0 0 1px rgba(0,0,0,.25); }
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-subtitle,
++.quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle-icon,
++.quick-settings.Suno-studio-options .Suno-options-slider .icon-button,
++.quick-settings.Suno-studio-options .Suno-options-system { color: rgba(231,233,232,.62); }
++.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-menu-button { color: rgba(231,233,232,.42); }
++.quick-settings.Suno-studio-options .Suno-options-system .Suno-options-battery StIcon { icon-size: 18px; }
++.quick-settings.Suno-studio-options .Suno-options-slider .slider { color: #fff; -barlevel-active-background-color: #e7e9e8; }
++.quick-settings.Suno-studio-options.Suno-surface-light .quick-toggle-has-menu.Suno-options-radio:checked { background-color: #fff; box-shadow: 0 0 0 1px rgba(25,27,31,.08); }
++.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-radio .quick-toggle-subtitle,
++.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-utility .quick-toggle-icon,
++.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-slider .icon-button,
++.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-system { color: rgba(22,25,29,.76); }
++.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-radio .quick-toggle-menu-button { color: rgba(22,25,29,.56); }
++/* Studio detail lists and native Switch actors retain their service bindings. */
++.quick-settings.Suno-studio-options .Suno-options-detail { spacing: 12px; }
++.quick-settings.Suno-studio-options .Suno-options-detail > .popup-menu-section,
++.quick-settings.Suno-studio-options .Suno-options-detail .Suno-options-list { padding: 4px; spacing: 1px; border-radius: 16px; background-color: rgba(0,0,0,.22); box-shadow: inset 0 1px 2px rgba(0,0,0,.22); }
++.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-row-copy { spacing: 1px; }
++.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-row-state { color: rgba(231,233,232,.62); }
++.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-row-dot { width: 15px; height: 15px; icon-size: 15px; background-color: transparent; border: none; border-radius: 0; color: #71b5f4; }
++.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-link { min-height: 0; height: 28px; padding: 0 8px; margin: 0; border: none; background-color: transparent; }
++.quick-settings.Suno-studio-options .Suno-options-page .toggle-switch { width: 34px; height: 20px; margin: 0; padding: 0; border: none; border-radius: 10px; background-color: rgba(0,0,0,.22); }
++.quick-settings.Suno-studio-options .Suno-options-page .toggle-switch:checked { background-color: #3a84ca; }
++.quick-settings.Suno-studio-options .Suno-options-page .toggle-switch StIcon { color: transparent; }
++.quick-settings.Suno-studio-options .Suno-options-page .toggle-switch .handle { width: 14px; height: 14px; margin: 3px; padding: 0; border: none; border-radius: 7px; background-color: #353a42; }
++.quick-settings.Suno-studio-options .Suno-options-page .toggle-switch:checked .handle { background-color: #fff; }
++.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-detail > .popup-menu-section,
++.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-detail .Suno-options-list,
++.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-page .toggle-switch { background-color: rgba(25,27,31,.055); }
++.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-detail .Suno-sheet-row-state { color: rgba(22,25,29,.76); }
++.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-page .toggle-switch:checked { background-color: #3a84ca; }
++.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-page .toggle-switch .handle { background-color: #fff; }
++.quick-settings.Suno-studio-options .Suno-options-fixture-groups { spacing: 12px; }
++.quick-settings.Suno-studio-options .Suno-options-detail .Suno-options-nearby { min-height: 0; padding: 2px 4px 0 6px; margin: 0; font-size: 12px; font-weight: 650; color: rgba(231,233,232,.62); }
++.quick-settings.Suno-studio-options .Suno-options-detail .Suno-options-nearby StButton { padding: 0; min-height: 0; font-size: 12px; font-weight: 600; background-color: transparent; color: #71b5f4; }
++.quick-settings.Suno-studio-options .Suno-options-detail .Suno-options-off { padding: 2px 6px; margin: 0; font-size: 12.5px; color: rgba(231,233,232,.42); }
++.quick-settings.Suno-studio-options .Suno-options-detail > .popup-menu-section.Suno-options-near-empty { padding: 0; background-color: transparent; box-shadow: none; }
++.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-detail .Suno-options-nearby { color: rgba(22,25,29,.76); }
++.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-detail .Suno-options-off { color: rgba(22,25,29,.56); }
+ /* Suno notification-owned rules; safe to compile without the global Shell SCSS. */
+ .notification-banner.Suno-notification-card {
+   min-height: 0;
+@@ -5209,378 +5491,95 @@ StScrollBar {
+     background-gradient-end: #434e5b; }
+     .Suno-notification-beacon .Suno-notification-beacon-mark.Suno-notification-beacon-mark-glyph .Suno-notification-beacon-mark-icon {
+       icon-size: 16px;
+-      color: #ffffff;
+-      -st-icon-style: symbolic; }
+-  .Suno-notification-beacon .Suno-notification-beacon-copy {
+-    width: 132px;
+-    spacing: 2px; }
+-  .Suno-notification-beacon .Suno-notification-beacon-title {
+-    font-size: 13px;
+-    font-weight: 650; }
+-  .Suno-notification-beacon .Suno-notification-beacon-summary {
+-    font-size: 11px;
+-    font-weight: 550; }
+-  .Suno-notification-beacon .Suno-notification-beacon-count {
+-    min-width: 8px;
+-    height: 20px;
+-    padding: 0 6px;
+-    border-radius: 999px;
+-    color: #ffffff;
+-    font-size: 11px;
+-    font-weight: 750;
+-    font-feature-settings: "tnum";
+-    text-align: center; }
+-  .Suno-notification-beacon:focus {
+-    box-shadow: inset 0 0 0 2px st-transparentize(-st-accent-color, 0.3); }
+-  .Suno-notification-beacon.Suno-notification-tone-messages .Suno-notification-beacon-count {
+-    background-color: #3f8f6c;
+-    color: #ffffff; }
+-  .Suno-notification-beacon.Suno-notification-tone-phone .Suno-notification-beacon-count {
+-    background-color: #3f8f6c;
+-    color: #ffffff; }
+-  .Suno-notification-beacon.Suno-notification-tone-mail .Suno-notification-beacon-count {
+-    background-color: #5585b8;
+-    color: #ffffff; }
+-  .Suno-notification-beacon.Suno-notification-tone-files .Suno-notification-beacon-count {
+-    background-color: #5585b8;
+-    color: #ffffff; }
+-  .Suno-notification-beacon.Suno-notification-tone-calendar .Suno-notification-beacon-count {
+-    background-color: #8a63a4;
+-    color: #ffffff; }
+-  .Suno-notification-beacon.Suno-notification-tone-depot .Suno-notification-beacon-count {
+-    background-color: #b57f3f;
+-    color: #ffffff; }
+-  .Suno-notification-beacon.Suno-notification-tone-neutral .Suno-notification-beacon-count {
+-    background-color: #b57f3f;
+-    color: #ffffff; }
+-
+-.Suno-surface-light .Suno-notification-beacon .Suno-notification-beacon-title {
+-  color: #34383d; }
+-
+-.Suno-surface-light .Suno-notification-beacon .Suno-notification-beacon-summary {
+-  color: rgba(52, 56, 61, 0.78); }
+-
+-.Suno-surface-light .Suno-notification-beacon:hover {
+-  background-color: rgba(25, 27, 31, 0.06); }
+-
+-.Suno-surface-light .Suno-notification-beacon:active, .Suno-surface-light .Suno-notification-beacon:checked {
+-  background-color: rgba(25, 27, 31, 0.09); }
+-
+-.Suno-surface-dark .Suno-notification-beacon .Suno-notification-beacon-title {
+-  color: #e7e9e8; }
+-
+-.Suno-surface-dark .Suno-notification-beacon .Suno-notification-beacon-summary {
+-  color: rgba(231, 233, 232, 0.8); }
+-
+-.Suno-surface-dark .Suno-notification-beacon:hover {
+-  background-color: rgba(255, 255, 255, 0.06); }
+-
+-.Suno-surface-dark .Suno-notification-beacon:active, .Suno-surface-dark .Suno-notification-beacon:checked {
+-  background-color: rgba(255, 255, 255, 0.09); }
+-
+-.Suno-surface-frost .Suno-notification-beacon .Suno-notification-beacon-title {
+-  color: #1f262d; }
+-
+-.Suno-surface-frost .Suno-notification-beacon .Suno-notification-beacon-summary {
+-  color: #394047; }
+-
+-.Suno-surface-frost .Suno-notification-beacon:hover {
+-  background-color: rgba(37, 46, 54, 0.06); }
+-
+-.Suno-surface-frost .Suno-notification-beacon:active, .Suno-surface-frost .Suno-notification-beacon:checked {
+-  background-color: rgba(37, 46, 54, 0.1); }
+-
+-.Suno-surface-glass .Suno-notification-beacon .Suno-notification-beacon-title {
+-  color: #161b20; }
+-
+-.Suno-surface-glass .Suno-notification-beacon .Suno-notification-beacon-summary {
+-  color: #1f242a; }
+-
+-.Suno-surface-glass .Suno-notification-beacon:hover {
+-  background-color: rgba(37, 46, 54, 0.05); }
+-
+-.Suno-surface-glass .Suno-notification-beacon:active, .Suno-surface-glass .Suno-notification-beacon:checked {
+-  background-color: rgba(37, 46, 54, 0.08); }
+-
+-/* Studio shelf-2 notification lip and v70 Quick Options. Logical pixels. */
+-.Suno-notification-lip { font-family: Figtree; color: #f2f3f5; }
+-.Suno-notification-lip .Suno-lip-surface {
+-  background-color: #21252b; border: 1px solid rgba(255,255,255,.075);
+-  border-top-width: 0; border-radius: 0 0 22px 22px;
+-  box-shadow: 0 12px 30px -14px rgba(0,0,0,.6); }
+-.Suno-notification-lip.idle .Suno-lip-surface { border-radius: 0 0 5px 5px; }
+-.Suno-notification-lip.pill .Suno-lip-surface { border-radius: 0 0 11px 11px; }
+-.Suno-notification-lip.Suno-surface-light { color: #1d1f23; }
+-.Suno-notification-lip.Suno-surface-light .Suno-lip-surface {
+-  background-color: #eceef1; border-color: rgba(255,255,255,.9); }
+-.Suno-notification-lip.Suno-surface-frost .Suno-lip-surface {
+-  background-color: rgba(38,38,43,.8); border-color: rgba(255,255,255,.1); }
+-.Suno-notification-lip .Suno-lip-pill { height: 21px; padding: 0 10px 1px; spacing: 7px; }
+-.Suno-notification-lip .Suno-lip-pill.big { height: 31px; padding: 0 14px 1px; spacing: 8px; }
+-.Suno-notification-lip .Suno-lip-icon-stack { spacing: -5px; }
+-.Suno-notification-lip .Suno-lip-pill-title { font-size: 12px; font-weight: 650; font-feature-settings: "tnum"; max-width: 240px; }
+-.Suno-notification-lip .Suno-lip-pill-more { font-size: 12px; color: rgba(242,243,245,.7); }
+-.Suno-notification-lip .Suno-lip-glow { background-color: -st-accent-color; border-radius: 1px; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card {
+-  min-width: 0; width: auto; min-height: 0; margin: 0; padding: 14px 16px 14px 14px;
+-  background-color: transparent; background-gradient-direction: none;
+-  border: none; border-radius: 0; box-shadow: none; color: inherit; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .Suno-notification-grid { spacing: 12px; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .Suno-notification-tile {
+-  width: 34px; height: 34px; border-radius: 10px; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .Suno-notification-tile .message-source-icon,
+-.Suno-notification-lip .notification-banner.Suno-lip-card .Suno-notification-tile .Suno-notification-tile-image { icon-size: 34px; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .Suno-notification-tile-glyph {
+-  width: 32px; height: 32px; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .Suno-notification-tile-glyph .message-source-icon { icon-size: 20px; }
+-.Suno-notification-lip .Suno-lip-app-badge { border-radius: 5px; border: 2px solid #21252b; margin: 0 -4px -4px 0; }
+-.Suno-notification-lip.Suno-surface-light .Suno-lip-app-badge { border-color: #eceef1; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-header { min-height: 12px; spacing: 0; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-header .message-header-content { spacing: 8px; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-header .message-source-title {
+-  font-size: 10px; font-weight: 700; letter-spacing: .9px; color: rgba(242,243,245,.5); }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-header .event-time {
+-  font-size: 10.5px; font-weight: 600; color: rgba(242,243,245,.5); }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-header .message-close-button {
+-  width: 22px; height: 22px; min-width: 22px; min-height: 22px; margin-top: -5px;
+-  border-radius: 7px; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-header .message-close-button StIcon { icon-size: 12px; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-box .message-content { spacing: 1px; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-box .message-title { font-size: 13.5px; font-weight: 650; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-box .message-body {
+-  font-size: 12.5px; font-weight: 400; color: rgba(242,243,245,.7); }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin { padding: 10px 0 0; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .notification-buttons-bin { spacing: 6px; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .notification-button {
+-  height: 30px; min-height: 0; padding: 0 13px; border-radius: 10px; font-size: 12px; font-weight: 650;
+-  background-color: rgba(255,255,255,.08); color: inherit; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .notification-button:hover { background-color: rgba(255,255,255,.14); }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .notification-button.Suno-notification-action-ok {
+-  background-color: #65b58c; color: #f2f3f5; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .notification-button.Suno-notification-action-danger { color: #db6b72; }
+-.Suno-notification-lip .Suno-lip-call-action { spacing: 6px; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .Suno-inline-reply-row {
+-  height: 34px; min-height: 0; padding: 0 4px 0 12px; spacing: 6px; border-radius: 17px;
+-  background-color: rgba(0,0,0,.22); }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .Suno-inline-reply-entry {
+-  min-height: 0; height: 34px; padding: 0; border: none; box-shadow: none;
+-  background-color: transparent; color: inherit; font-size: 12.5px; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .Suno-inline-reply-button {
+-  width: 26px; height: 26px; min-height: 0; padding: 0; border-radius: 13px;
+-  background-color: -st-accent-color; color: #f2f3f5; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .Suno-inline-reply-glyph { icon-size: 13px; }
+-.Suno-notification-lip .Suno-lip-sent { color: #65b58c; font-size: 12px; font-weight: 600; }
+-.Suno-notification-lip .Suno-lip-tray-header { padding: 14px 14px 6px 18px; spacing: 8px; }
+-.Suno-notification-lip .Suno-lip-heading { font-size: 15px; font-weight: 650; }
+-.Suno-notification-lip .Suno-lip-count { font-size: 13px; font-weight: 600; color: rgba(242,243,245,.5); }
+-.Suno-notification-lip .Suno-lip-key { width: 28px; height: 28px; border-radius: 9px; }
+-.Suno-notification-lip .Suno-lip-key:checked { color: -st-accent-color; }
+-.Suno-notification-lip .Suno-lip-clear { height: 28px; padding: 0 10px; font-size: 12px; font-weight: 600; border-radius: 9px; }
+-.Suno-notification-lip .Suno-lip-scroll { max-height: 520px; }
+-.Suno-notification-lip .Suno-lip-list { padding: 4px 10px 12px; spacing: 6px; }
+-.Suno-notification-lip .Suno-lip-list .notification-banner.Suno-lip-card {
+-  padding: 12px 14px 12px 12px; border-radius: 16px; background-color: rgba(255,255,255,.08);
+-  border: 1px solid rgba(255,255,255,.1); }
+-.Suno-notification-lip .Suno-lip-empty { padding: 18px 18px 22px; font-size: 12.5px; color: rgba(242,243,245,.7); }
+-.Suno-notification-lip.Suno-surface-light .notification-banner.Suno-lip-card .message-body,
+-.Suno-notification-lip.Suno-surface-light .Suno-lip-empty,
+-.Suno-notification-lip.Suno-surface-light .Suno-lip-pill-more { color: rgba(29,31,35,.65); }
+-.Suno-notification-lip.Suno-surface-light .notification-banner.Suno-lip-card .message-source-title,
+-.Suno-notification-lip.Suno-surface-light .notification-banner.Suno-lip-card .event-time,
+-.Suno-notification-lip.Suno-surface-light .Suno-lip-count { color: rgba(29,31,35,.45); }
+-.Suno-notification-lip.Suno-surface-light .notification-banner.Suno-lip-card .notification-button,
+-.Suno-notification-lip.Suno-surface-light .notification-banner.Suno-lip-card .Suno-inline-reply-row { background-color: rgba(20,22,26,.06); }
+-.Suno-notification-lip.Suno-surface-light .Suno-lip-list .notification-banner.Suno-lip-card {
+-  background-color: #f7f8fa; border-color: rgba(20,22,26,.1); }
++      color: #ffffff;
++      -st-icon-style: symbolic; }
++  .Suno-notification-beacon .Suno-notification-beacon-copy {
++    width: 132px;
++    spacing: 2px; }
++  .Suno-notification-beacon .Suno-notification-beacon-title {
++    font-size: 13px;
++    font-weight: 650; }
++  .Suno-notification-beacon .Suno-notification-beacon-summary {
++    font-size: 11px;
++    font-weight: 550; }
++  .Suno-notification-beacon .Suno-notification-beacon-count {
++    min-width: 8px;
++    height: 20px;
++    padding: 0 6px;
++    border-radius: 999px;
++    color: #ffffff;
++    font-size: 11px;
++    font-weight: 750;
++    font-feature-settings: "tnum";
++    text-align: center; }
++  .Suno-notification-beacon:focus {
++    box-shadow: inset 0 0 0 2px st-transparentize(-st-accent-color, 0.3); }
++  .Suno-notification-beacon.Suno-notification-tone-messages .Suno-notification-beacon-count {
++    background-color: #3f8f6c;
++    color: #ffffff; }
++  .Suno-notification-beacon.Suno-notification-tone-phone .Suno-notification-beacon-count {
++    background-color: #3f8f6c;
++    color: #ffffff; }
++  .Suno-notification-beacon.Suno-notification-tone-mail .Suno-notification-beacon-count {
++    background-color: #5585b8;
++    color: #ffffff; }
++  .Suno-notification-beacon.Suno-notification-tone-files .Suno-notification-beacon-count {
++    background-color: #5585b8;
++    color: #ffffff; }
++  .Suno-notification-beacon.Suno-notification-tone-calendar .Suno-notification-beacon-count {
++    background-color: #8a63a4;
++    color: #ffffff; }
++  .Suno-notification-beacon.Suno-notification-tone-depot .Suno-notification-beacon-count {
++    background-color: #b57f3f;
++    color: #ffffff; }
++  .Suno-notification-beacon.Suno-notification-tone-neutral .Suno-notification-beacon-count {
++    background-color: #b57f3f;
++    color: #ffffff; }
+ 
+-/* One 340px popup, one stable source actor, one page visible at a time. */
+-.quick-settings.Suno-studio-options {
+-  width: 316px; min-width: 316px; max-width: 316px; padding: 12px; spacing: 0;
+-  background-color: #262a31; color: #f2f3f5; border-radius: 22px;
+-  border: 1px solid rgba(255,255,255,.075); font-family: Figtree; }
+-.quick-settings.Suno-studio-options.Suno-surface-light { background-color: #eceef1; color: #1d1f23; border-color: rgba(255,255,255,.9); }
+-.quick-settings.Suno-studio-options.Suno-surface-frost {
+-  background-color: rgba(32,32,36,.86); background-gradient-direction: vertical;
+-  background-gradient-start: rgba(50,50,56,.8); background-gradient-end: rgba(32,32,36,.86);
+-  color: #f2f3f5; border-color: rgba(255,255,255,.1); }
+-.quick-settings.Suno-studio-options .Suno-options-main, .quick-settings.Suno-studio-options .Suno-options-page { spacing: 12px; }
+-.quick-settings.Suno-studio-options .Suno-options-levels { spacing: 4px; }
+-.quick-settings.Suno-studio-options .quick-slider.Suno-options-slider { margin: 0; padding: 0; height: 36px; min-height: 0; spacing: 11px; }
+-.quick-settings.Suno-studio-options .Suno-options-slider > StBoxLayout { spacing: 11px; }
+-.quick-settings.Suno-studio-options .Suno-options-slider .icon-button { width: 16px; height: 36px; min-width: 0; min-height: 0; padding: 0 0 0 8px; }
+-.quick-settings.Suno-studio-options .Suno-options-slider StIcon { icon-size: 16px; }
+-.quick-settings.Suno-studio-options .Suno-options-slider .slider-bin { padding: 0; }
+-.quick-settings.Suno-studio-options .Suno-options-slider .slider {
+-  height: 24px; -slider-height: 5px; -slider-handle-radius: 7px;
+-  -barlevel-height: 5px; -barlevel-background-color: rgba(0,0,0,.22);
+-  -barlevel-active-background-color: -st-accent-color; }
+-.quick-settings.Suno-studio-options .Suno-options-slider .Suno-quick-level-value { width: 34px; font-size: 11.5px; font-feature-settings: "tnum"; color: rgba(242,243,245,.5); }
+-.quick-settings.Suno-studio-options .Suno-options-slider .Suno-quick-disclosure-slot { width: 36px; height: 36px; }
+-.quick-settings.Suno-studio-options .Suno-options-level-key, .quick-settings.Suno-studio-options .Suno-options-slider .Suno-options-level-key {
+-  width: 36px; height: 36px; min-width: 0; min-height: 0; padding: 0; border-radius: 11px;
+-  background-color: rgba(0,0,0,.22); border: none; box-shadow: none; font-size: 10.5px; font-weight: 650; }
+-.quick-settings.Suno-studio-options .Suno-options-level-key:checked { color: -st-accent-color; background-color: rgba(255,255,255,.14); }
+-.quick-settings.Suno-studio-options .Suno-options-radios { spacing: 8px; }
+-.quick-settings.Suno-studio-options .quick-toggle-has-menu.Suno-options-radio {
+-  width: 154px; min-width: 0; min-height: 0; padding: 0; border-radius: 15px;
+-  background-color: rgba(0,0,0,.22); border: none; box-shadow: none; }
+-.quick-settings.Suno-studio-options .quick-toggle-has-menu.Suno-options-radio:checked { background-color: rgba(255,255,255,.14); }
+-.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle { padding: 9px 2px 9px 9px; min-width: 0; min-height: 0; border: none; border-radius: 15px 0 0 15px; background-color: transparent; spacing: 10px; }
+-.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle StBoxLayout { spacing: 10px; }
+-.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle .quick-toggle-icon { icon-size: 16px; width: 32px; height: 32px; padding: 0; border-radius: 10px; }
+-.quick-settings.Suno-studio-options .Suno-options-radio:checked .quick-toggle-icon { background-color: -st-accent-color; color: #f2f3f5; }
+-.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-title { font-size: 12.5px; font-weight: 650; }
+-.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-subtitle { font-size: 11px; }
+-.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-menu-button { width: 30px; min-width: 0; padding: 0; border: none; background-color: transparent; }
+-.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-separator { width: 0; background-color: transparent; }
+-.quick-settings.Suno-studio-options .Suno-options-toggles { spacing: 2px; }
+-.quick-settings.Suno-studio-options .Suno-options-toggle-row { spacing: 8px; }
+-.quick-settings.Suno-studio-options .Suno-options-utility, .quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle {
+-  padding: 5px 9px 5px 5px; min-height: 0; min-width: 0; border-radius: 14px; border: none;
+-  background-color: transparent; box-shadow: none; font-size: 12.5px; font-weight: 600; }
+-.quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle { padding: 0; }
+-.quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle-icon { width: 32px; height: 32px; icon-size: 16px; border-radius: 10px; background-color: rgba(255,255,255,.08); }
+-.quick-settings.Suno-studio-options .Suno-options-utility:checked .quick-toggle-icon { background-color: -st-accent-color; color: #f2f3f5; }
+-.quick-settings.Suno-studio-options .Suno-options-utility:checked, .quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle:checked { background-color: transparent; }
+-.quick-settings.Suno-studio-options .Suno-options-mic { padding: 8px 10px 8px 8px; spacing: 10px; border-radius: 15px; background-color: rgba(232,150,55,.16); }
+-.quick-settings.Suno-studio-options .Suno-options-mic-title { font-size: 12.5px; font-weight: 650; }
+-.quick-settings.Suno-studio-options .Suno-options-mic-app { font-size: 11px; color: rgba(242,243,245,.7); }
+-.quick-settings.Suno-studio-options .Suno-options-mute { height: 28px; padding: 0 11px; border-radius: 9px; font-size: 12px; font-weight: 600; background-color: rgba(255,255,255,.14); }
+-.quick-settings.Suno-studio-options .Suno-options-system { padding-top: 10px; border-top: 1px solid rgba(255,255,255,.1); background-color: transparent; }
+-.quick-settings.Suno-studio-options .Suno-options-system .Suno-quick-footer { padding: 0; spacing: 2px; }
+-.quick-settings.Suno-studio-options .Suno-options-system .Suno-quick-action { width: 28px; height: 30px; padding: 0; min-width: 0; min-height: 0; border-radius: 9px; background-color: transparent; }
+-.quick-settings.Suno-studio-options .Suno-options-system .Suno-quick-action StIcon { icon-size: 16px; }
+-.quick-settings.Suno-studio-options .Suno-options-battery { spacing: 8px; padding: 0 8px 0 6px; height: 30px; }
+-.quick-settings.Suno-studio-options .Suno-options-battery-text { font-size: 12px; }
+-.quick-settings.Suno-studio-options .Suno-options-page-header { spacing: 6px; }
+-.quick-settings.Suno-studio-options .Suno-options-page-title { font-size: 14.5px; font-weight: 650; }
+-.quick-settings.Suno-studio-options .Suno-options-back { width: 28px; height: 28px; border-radius: 9px; }
+-.quick-settings.Suno-studio-options .Suno-options-page-switch { padding: 4px; border-radius: 9px; }
+-.quick-settings.Suno-studio-options .quick-toggle-menu.Suno-options-detail { margin: 0; padding: 0; border: none; border-radius: 0; background-color: transparent; box-shadow: none; spacing: 1px; }
+-.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-row { min-height: 34px; padding: 5px 10px 5px 5px; border-radius: 12px; spacing: 10px; }
+-.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-row-title { font-size: 12.5px; font-weight: 650; }
+-.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-row-state { font-size: 11px; }
+-.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-row-icon { width: 32px; icon-size: 16px; }
+-.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-row-dot { icon-size: 15px; color: -st-accent-color; }
+-.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-link { font-size: 12px; font-weight: 600; color: -st-accent-color; padding: 0 8px; height: 28px; }
+-.quick-settings.Suno-studio-options .Suno-options-switch-row { padding: 6px 10px; border-radius: 12px; }
+-.Suno-studio-options.Suno-surface-light .Suno-options-radio,
+-.Suno-studio-options.Suno-surface-light .Suno-options-level-key,
+-.Suno-studio-options.Suno-surface-light .Suno-options-slider .slider { background-color: rgba(20,22,26,.05); }
+-.Suno-studio-options.Suno-surface-light .Suno-options-slider .Suno-quick-level-value { color: rgba(29,31,35,.45); }
++.Suno-surface-light .Suno-notification-beacon .Suno-notification-beacon-title {
++  color: #34383d; }
+ 
+-.Suno-notification-lip .Suno-lip-call-ring { width: 34px; height: 34px; border: 2px solid #65b58c; border-radius: 17px; }
+-.quick-settings.Suno-studio-options .Suno-options-pair-code { spacing: 8px; padding: 8px 0; }
+-.quick-settings.Suno-studio-options .Suno-options-pair-instruction { font-size: 12px; }
+-.quick-settings.Suno-studio-options .Suno-options-passkey { spacing: 6px; }
+-.quick-settings.Suno-studio-options .Suno-options-passkey-digit { width: 28px; padding: 7px 0; text-align: center; border-radius: 8px; background-color: rgba(255,255,255,.1); font-size: 20px; font-weight: 650; }
+-.quick-settings.Suno-studio-options .Suno-options-passkey-digit.entered { color: #65b58c; }
+-.quick-settings.Suno-studio-options .Suno-options-pair-actions { spacing: 8px; }
+-.quick-settings.Suno-studio-options .Suno-options-pair-actions StButton { padding: 6px 12px; border-radius: 8px; background-color: rgba(255,255,255,.12); }
+-.Suno-notification-lip StButton:focus, .quick-settings.Suno-studio-options StButton:focus { box-shadow: inset 0 0 0 2px -st-accent-color; }
++.Suno-surface-light .Suno-notification-beacon .Suno-notification-beacon-summary {
++  color: rgba(52, 56, 61, 0.78); }
+ 
+-/* Reset the earlier 62px card geometry after moving controls out of its grid. */
+-.quick-settings.Suno-studio-options { width: 310px; min-width: 310px; max-width: 310px; padding: 14px; }
+-.quick-settings.Suno-studio-options .Suno-options-utility, .quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle { height: 32px; margin: 0; }
+-.quick-settings.Suno-studio-options .Suno-options-utility { padding: 5px; }
+-.quick-settings.Suno-studio-options .Suno-options-utility > StBoxLayout, .quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle > StBoxLayout { padding: 0; spacing: 10px; }
+-.quick-settings.Suno-studio-options .Suno-options-radio { width: 151px; height: 52px; margin: 0; }
+-.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle { height: 32px; margin: 0; }
+-.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle > StBoxLayout { padding: 0; }
++.Suno-surface-light .Suno-notification-beacon:hover {
++  background-color: rgba(25, 27, 31, 0.06); }
+ 
+-.quick-settings.Suno-studio-options .Suno-options-slider .icon-button { width: 16px; padding: 0; background-color: transparent; border: none; box-shadow: none; }
+-.quick-settings.Suno-studio-options .Suno-options-slider .slider { color: #f2f3f5; -barlevel-active-background-color: #e8eaed; -slider-handle-border-width: 0; -slider-handle-border-color: transparent; }
+-.quick-settings.Suno-studio-options .Suno-options-slider .Suno-quick-disclosure-disc { background-color: transparent; border: none; box-shadow: none; }
+-.quick-settings.Suno-studio-options .Suno-options-slider .Suno-quick-disclosure-icon { icon-size: 14px; }
+-.quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle-title { font-size: 12.5px; font-weight: 600; }
++.Suno-surface-light .Suno-notification-beacon:active, .Suno-surface-light .Suno-notification-beacon:checked {
++  background-color: rgba(25, 27, 31, 0.09); }
+ 
+-.quick-settings.Suno-studio-options .quick-slider.Suno-options-slider { border: none; }
+-.quick-settings.Suno-studio-options .Suno-options-system { min-height: 0; height: auto; margin: 2px 0 0; border-radius: 0; }
+-.quick-settings.Suno-studio-options .Suno-options-system .Suno-quick-action { border: none; box-shadow: none; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-action-bin .Suno-inline-reply-row { min-height: 34px; }
++.Suno-surface-dark .Suno-notification-beacon .Suno-notification-beacon-title {
++  color: #e7e9e8; }
+ 
+-/* Measured against current Studio: remove old account-footer/subtitle geometry. */
+-.quick-settings.Suno-studio-options .Suno-options-system .Suno-quick-footer { height: 30px; }
+-.quick-settings.Suno-studio-options .Suno-options-system .Suno-quick-actions { spacing: 2px; }
+-.quick-settings.Suno-studio-options .Suno-options-main { spacing: 0; }
+-.quick-settings.Suno-studio-options .Suno-options-levels { margin-bottom: 12px; }
+-.quick-settings.Suno-studio-options .Suno-options-radios { margin-bottom: 8px; }
+-.quick-settings.Suno-studio-options .Suno-options-toggles { margin-bottom: 12px; }
+-.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-subtitle { padding-top: 0; }
+-.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle StBoxLayout { spacing: 1px; }
+-.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle > StBoxLayout { spacing: 10px; }
+-.quick-settings.Suno-studio-options .Suno-options-radio { border: 1px solid rgba(0,0,0,.25); }
++.Suno-surface-dark .Suno-notification-beacon .Suno-notification-beacon-summary {
++  color: rgba(231, 233, 232, 0.8); }
+ 
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-header .message-close-button { margin: 0; }
++.Suno-surface-dark .Suno-notification-beacon:hover {
++  background-color: rgba(255, 255, 255, 0.06); }
+ 
+-/* Studio's lip rim is an inset shadow, so it consumes no text-column width. */
+-.Suno-notification-lip .Suno-lip-surface { border-width: 0; box-shadow: inset 0 -1px 0 rgba(255,255,255,.075); }
++.Suno-surface-dark .Suno-notification-beacon:active, .Suno-surface-dark .Suno-notification-beacon:checked {
++  background-color: rgba(255, 255, 255, 0.09); }
+ 
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-header { min-height: 15px; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-box .message-title { min-height: 18px; }
+-.Suno-notification-lip { color: #e7e9e8; }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-box .message-body { color: rgba(231,233,232,.62); }
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-header .message-source-title,
+-.Suno-notification-lip .notification-banner.Suno-lip-card .message-header .event-time { color: rgba(231,233,232,.42); }
+-.quick-settings.Suno-studio-options { color: #e7e9e8; }
++.Suno-surface-frost .Suno-notification-beacon .Suno-notification-beacon-title {
++  color: #1f262d; }
+ 
+-.quick-settings.Suno-studio-options .Suno-options-slider .icon-button { padding-left: 8px; }
+-.quick-settings.Suno-studio-options .Suno-options-slider .Suno-quick-disclosure-icon { icon-size: 16px; }
++.Suno-surface-frost .Suno-notification-beacon .Suno-notification-beacon-summary {
++  color: #394047; }
+ 
+-.popup-menu-content.quick-settings.Suno-studio-options { width: 308px; min-width: 308px; max-width: 308px; padding: 16px; border: none; }
+-.quick-settings.Suno-studio-options .Suno-options-radio { width: 150px; border: none; }
+-.quick-settings.Suno-studio-options .Suno-options-radio:checked { background-color: #353a42; }
+-.quick-settings.Suno-studio-options .Suno-options-radio:checked .quick-toggle-icon,
+-.quick-settings.Suno-studio-options .Suno-options-utility:checked .quick-toggle-icon { background-color: #3a84ca; }
+-.quick-settings.Suno-studio-options .Suno-options-system { border-top: none; box-shadow: inset 0 1px 0 rgba(255,255,255,.09); }
+-.quick-settings.Suno-studio-options .Suno-options-toggle-row > .Suno-options-utility { width: 140px; }
++.Suno-surface-frost .Suno-notification-beacon:hover {
++  background-color: rgba(37, 46, 54, 0.06); }
+ 
+-.Suno-notification-lip .Suno-lip-app-badge { margin: 0; }
++.Suno-surface-frost .Suno-notification-beacon:active, .Suno-surface-frost .Suno-notification-beacon:checked {
++  background-color: rgba(37, 46, 54, 0.1); }
+ 
+-.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-menu-button { margin: 0; }
+-.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle > StBoxLayout { padding: 0; }
++.Suno-surface-glass .Suno-notification-beacon .Suno-notification-beacon-title {
++  color: #161b20; }
+ 
+-.Suno-notification-lip .Suno-lip-icon-stack { spacing: 0; }
+-/* Resolve inherited radio wrapper spacing and checked-state specificity. */
+-.quick-settings.Suno-studio-options .Suno-options-radio > StBoxLayout { spacing: 0; padding: 0; }
+-.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-separator { width: 0; min-width: 0; padding: 0; margin: 0; border: none; }
+-.quick-settings.Suno-studio-options .quick-toggle-has-menu.Suno-options-radio:checked { background-color: #353a42; box-shadow: 0 0 0 1px rgba(0,0,0,.25); }
+-.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-subtitle,
+-.quick-settings.Suno-studio-options .Suno-options-utility .quick-toggle-icon,
+-.quick-settings.Suno-studio-options .Suno-options-slider .icon-button,
+-.quick-settings.Suno-studio-options .Suno-options-system { color: rgba(231,233,232,.62); }
+-.quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-menu-button { color: rgba(231,233,232,.42); }
+-.quick-settings.Suno-studio-options .Suno-options-system .Suno-options-battery StIcon { icon-size: 18px; }
+-.quick-settings.Suno-studio-options .Suno-options-slider .slider { color: #fff; -barlevel-active-background-color: #e7e9e8; }
+-.quick-settings.Suno-studio-options.Suno-surface-light .quick-toggle-has-menu.Suno-options-radio:checked { background-color: #fff; box-shadow: 0 0 0 1px rgba(25,27,31,.08); }
+-.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-radio .quick-toggle-subtitle,
+-.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-utility .quick-toggle-icon,
+-.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-slider .icon-button,
+-.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-system { color: rgba(22,25,29,.76); }
+-.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-radio .quick-toggle-menu-button { color: rgba(22,25,29,.56); }
+-/* Studio detail lists and native Switch actors retain their service bindings. */
+-.quick-settings.Suno-studio-options .Suno-options-detail { spacing: 12px; }
+-.quick-settings.Suno-studio-options .Suno-options-detail > .popup-menu-section,
+-.quick-settings.Suno-studio-options .Suno-options-detail .Suno-options-list { padding: 4px; spacing: 1px; border-radius: 16px; background-color: rgba(0,0,0,.22); box-shadow: inset 0 1px 2px rgba(0,0,0,.22); }
+-.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-row-copy { spacing: 1px; }
+-.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-row-state { color: rgba(231,233,232,.62); }
+-.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-row-dot { width: 15px; height: 15px; icon-size: 15px; background-color: transparent; border: none; border-radius: 0; color: #71b5f4; }
+-.quick-settings.Suno-studio-options .Suno-options-detail .Suno-sheet-link { min-height: 0; height: 28px; padding: 0 8px; margin: 0; border: none; background-color: transparent; }
+-.quick-settings.Suno-studio-options .Suno-options-page .toggle-switch { width: 34px; height: 20px; margin: 0; padding: 0; border: none; border-radius: 10px; background-color: rgba(0,0,0,.22); }
+-.quick-settings.Suno-studio-options .Suno-options-page .toggle-switch:checked { background-color: #3a84ca; }
+-.quick-settings.Suno-studio-options .Suno-options-page .toggle-switch StIcon { color: transparent; }
+-.quick-settings.Suno-studio-options .Suno-options-page .toggle-switch .handle { width: 14px; height: 14px; margin: 3px; padding: 0; border: none; border-radius: 7px; background-color: #353a42; }
+-.quick-settings.Suno-studio-options .Suno-options-page .toggle-switch:checked .handle { background-color: #fff; }
+-.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-detail > .popup-menu-section,
+-.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-detail .Suno-options-list,
+-.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-page .toggle-switch { background-color: rgba(25,27,31,.055); }
+-.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-detail .Suno-sheet-row-state { color: rgba(22,25,29,.76); }
+-.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-page .toggle-switch:checked { background-color: #3a84ca; }
+-.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-page .toggle-switch .handle { background-color: #fff; }
+-.quick-settings.Suno-studio-options .Suno-options-fixture-groups { spacing: 12px; }
+-.quick-settings.Suno-studio-options .Suno-options-detail .Suno-options-nearby { min-height: 0; padding: 2px 4px 0 6px; margin: 0; font-size: 12px; font-weight: 650; color: rgba(231,233,232,.62); }
+-.quick-settings.Suno-studio-options .Suno-options-detail .Suno-options-nearby StButton { padding: 0; min-height: 0; font-size: 12px; font-weight: 600; background-color: transparent; color: #71b5f4; }
+-.quick-settings.Suno-studio-options .Suno-options-detail .Suno-options-off { padding: 2px 6px; margin: 0; font-size: 12.5px; color: rgba(231,233,232,.42); }
+-.quick-settings.Suno-studio-options .Suno-options-detail > .popup-menu-section.Suno-options-near-empty { padding: 0; background-color: transparent; box-shadow: none; }
+-.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-detail .Suno-options-nearby { color: rgba(22,25,29,.76); }
+-.quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-detail .Suno-options-off { color: rgba(22,25,29,.56); }
++.Suno-surface-glass .Suno-notification-beacon .Suno-notification-beacon-summary {
++  color: #1f242a; }
++
++.Suno-surface-glass .Suno-notification-beacon:hover {
++  background-color: rgba(37, 46, 54, 0.05); }
++
++.Suno-surface-glass .Suno-notification-beacon:active, .Suno-surface-glass .Suno-notification-beacon:checked {
++  background-color: rgba(37, 46, 54, 0.08); }

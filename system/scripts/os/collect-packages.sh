@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
 #
-# Fill the verified Luma package pool with the RPMs pinned in
+# Fill the verified Suno package pool with the RPMs pinned in
 # config/desktop/packages.txt.
 #
-# The pool ($LUMA_OS_ROOT/rpms/pool) holds exactly one file per pinned NEVRA,
+# The pool ($SUNO_OS_ROOT/rpms/pool) holds exactly one file per pinned NEVRA,
 # recorded in pool.manifest as "NEVRA sha256 header-sha256". A pin is admitted
 # from the search directories only when every candidate file with that name has
 # the same header digest, or when --reference names the header digest a
@@ -27,8 +27,8 @@ verify_drops=1
 dirs=()
 while [ "$#" -gt 0 ]; do
   case "$1" in
-    --profile) export LUMA_OS_PROFILE=${2:?}; shift 2 ;;
-    --arch) luma_os_select_architecture "${2:?}"; shift 2 ;;
+    --profile) export SUNO_OS_PROFILE=${2:?}; shift 2 ;;
+    --arch) Suno_os_select_architecture "${2:?}"; shift 2 ;;
     --reference) reference=${2:?}; shift 2 ;;
     --dry-run) dry_run=1; shift ;;
     --allow-unverified-drop) verify_drops=0; shift ;;
@@ -37,8 +37,8 @@ while [ "$#" -gt 0 ]; do
   esac
 done
 
-luma_os_select_architecture "$LUMA_OS_ARCH"
-luma_os_require_tools rpm sha256sum find
+Suno_os_select_architecture "$SUNO_OS_ARCH"
+Suno_os_require_tools rpm sha256sum find
 # A drop is checked before anything is taken from it: every NEVRA it claims
 # must be carried by a file whose RPM header says so. File names and
 # packages.txt are both text, and a build script with a stale release variable
@@ -48,12 +48,12 @@ luma_os_require_tools rpm sha256sum find
 # in the log.
 if [ "$verify_drops" -eq 1 ] && [ "${#dirs[@]}" -gt 0 ]; then
   if ! "$(dirname -- "$0")/verify-drop.sh" "${dirs[@]}"; then
-    luma_os_die 'a drop does not deliver what it claims; fix the drop, or pass --allow-unverified-drop to collect from it anyway'
+    Suno_os_die 'a drop does not deliver what it claims; fix the drop, or pass --allow-unverified-drop to collect from it anyway'
   fi
 elif [ "${#dirs[@]}" -gt 0 ]; then
-  luma_os_log 'collecting without the drop check (--allow-unverified-drop)'
+  Suno_os_log 'collecting without the drop check (--allow-unverified-drop)'
 fi
-pool="$LUMA_OS_ROOT/rpms/pool"
+pool="$SUNO_OS_ROOT/rpms/pool"
 manifest="$pool/pool.manifest"
 install -d -m 0755 "$pool"
 touch "$manifest"
@@ -65,15 +65,15 @@ if [ -n "$reference" ]; then
   done <"$reference"
 fi
 
-mapfile -t pins < <(luma_os_desktop_packages)
-mapfile -t -O "${#pins[@]}" pins < <(luma_os_desktop_packages "$luma_os_repo_root" fedora | grep -E '\.(x86_64|aarch64|noarch)$' || true)
+mapfile -t pins < <(Suno_os_desktop_packages)
+mapfile -t -O "${#pins[@]}" pins < <(Suno_os_desktop_packages "$Suno_os_repo_root" fedora | grep -E '\.(x86_64|aarch64|noarch)$' || true)
 
 missing=0
 for nevra in "${pins[@]}"; do
   admitted=$(awk -v n="$nevra" '$1 == n { print $3 }' "$manifest")
   if [ -n "$admitted" ] && [ -f "$pool/$nevra.rpm" ]; then
     actual=$(rpm -qp --nosignature --qf '%{SHA256HEADER}' "$pool/$nevra.rpm")
-    [ "$actual" = "$admitted" ] || luma_os_die "pool file for $nevra no longer matches its manifest"
+    [ "$actual" = "$admitted" ] || Suno_os_die "pool file for $nevra no longer matches its manifest"
     continue
   fi
   mapfile -t candidates < <(
@@ -106,8 +106,8 @@ for nevra in "${pins[@]}"; do
   fi
   install -m 0644 "$chosen" "$pool/$nevra.rpm.partial"
   mv "$pool/$nevra.rpm.partial" "$pool/$nevra.rpm"
-  printf '%s %s %s\n' "$nevra" "$(luma_os_sha256 "$pool/$nevra.rpm")" "$header" >>"$manifest"
+  printf '%s %s %s\n' "$nevra" "$(Suno_os_sha256 "$pool/$nevra.rpm")" "$header" >>"$manifest"
   printf 'admitted %s\n' "$nevra"
 done
-[ "$missing" -eq 0 ] || luma_os_die 'the package pool is incomplete for the current pins'
+[ "$missing" -eq 0 ] || Suno_os_die 'the package pool is incomplete for the current pins'
 printf 'package pool complete: %d pins\n' "${#pins[@]}"

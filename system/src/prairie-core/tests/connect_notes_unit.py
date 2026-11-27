@@ -132,7 +132,7 @@ class DeltaCase(unittest.TestCase):
         self.env = {"HOME": str(self.home), "XDG_DATA_HOME": str(self.home / "data")}
         self.patch = mock.patch.dict(os.environ, self.env)
         self.patch.start()
-        self.store_path = self.home / "data" / "luma" / "notes" / "notes.sqlite3"
+        self.store_path = self.home / "data" / "Suno" / "notes" / "notes.sqlite3"
         self.store = NotesStore(self.store_path)
         self.host = FakeHost()
         self.state: dict = {}
@@ -289,7 +289,7 @@ class OwnedElsewhereTests(DeltaCase):
         self.assertEqual(self.posts(), posts, "a refused page is not resent until it changes here")
 
     def test_the_state_the_laptop_was_left_in_makes_no_more_copies(self) -> None:
-        # What luma-connect-sync had recorded on the laptop: the host's version,
+        # What Suno-connect-sync had recorded on the laptop: the host's version,
         # nothing acknowledged as sent.
         note = self.owned_elsewhere("Tide", "edited here", "as the other device left it")
         self.state.setdefault("https://host.example|dev-1|notes-delta", {
@@ -563,7 +563,7 @@ class AccountHub(FakeHost):
         Path(destination).write_bytes(self.blobs[sha])
 
     def web_delete(self, note_id: str) -> None:
-        """Deleted on the Luma Connect web page (or any other device)."""
+        """Deleted on the Suno Connect web page (or any other device)."""
         self.notes[note_id]["deleted"] = True
         self.revision += 1
 
@@ -572,7 +572,7 @@ class AccountHub(FakeHost):
 
 
 class Device:
-    """One Luma device: its own library, pictures and sync state."""
+    """One Suno device: its own library, pictures and sync state."""
 
     def __init__(self, root: Path, name: str, hub: AccountHub) -> None:
         self.name, self.hub, self.state = name, hub, {}

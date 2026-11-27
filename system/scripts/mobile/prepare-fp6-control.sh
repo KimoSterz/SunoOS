@@ -10,7 +10,7 @@ repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 # shellcheck disable=SC1091
 . "$repo_root/config/mobile/fp6-control/inputs.env"
 
-build_dir=${LUMA_FP6_PHYSICAL_BUILD_DIR:-$repo_root/build/mobile/fp6-physical}
+build_dir=${SUNO_FP6_PHYSICAL_BUILD_DIR:-$repo_root/build/mobile/fp6-physical}
 downloads_dir="$build_dir/downloads/postmarketos-$FP6_CONTROL_BUILD"
 manifest="$build_dir/control-manifest.txt"
 
@@ -63,7 +63,7 @@ fetch_and_verify "$FP6_CONTROL_BOOT_IMAGE" "$FP6_CONTROL_BOOT_SHA256"
 fetch_and_verify "$FP6_CONTROL_ROOTFS_IMAGE" "$FP6_CONTROL_ROOTFS_SHA256"
 
 {
-  printf 'LUMA_FP6_CONTROL_MANIFEST_VERSION=1\n'
+  printf 'SUNO_FP6_CONTROL_MANIFEST_VERSION=1\n'
   printf 'SOURCE=official-postmarketos-images\n'
   printf 'CHANNEL=%s\n' "$FP6_CONTROL_CHANNEL"
   printf 'UI=%s\n' "$FP6_CONTROL_UI"

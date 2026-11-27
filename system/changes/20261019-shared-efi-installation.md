@@ -1,7 +1,7 @@
 ---
 type: fix
 component: Installer
-packages: [luma-installer-atlas]
+packages: [Suno-installer-atlas]
 highlight: true
 ---
 Summary: Fixed installation beside Ubuntu

@@ -82,7 +82,7 @@ def stage(pair, member_path, output, repo, arch):
     if shutil.disk_usage(output.parent).free < budget + floor:
         raise ValueError('Insufficient real canonical packaging scratch plus 10 GiB reserve')
     controls = {
-        'SPECS/luma-android-images.spec': repo / 'packaging/rpm/luma-android-images.spec',
+        'SPECS/Suno-android-images.spec': repo / 'packaging/rpm/Suno-android-images.spec',
         'SOURCES/package-images.py': repo / 'scripts/android/package-images.py',
         'SOURCES/verify-packaged-image-provenance.py': repo / 'scripts/android/verify-packaged-image-provenance.py',
         'SOURCES/test_image_pair_admission.py': repo / 'tests/android/test_image_pair_admission.py',
@@ -94,9 +94,9 @@ def stage(pair, member_path, output, repo, arch):
         for name in ('BUILD', 'BUILDROOT', 'RPMS', 'SOURCES', 'SPECS', 'SRPMS'):
             (output / name).mkdir()
         records = {name: copy(source, output / name) for name, source in controls.items()}
-        pins = {'LUMA_ANDROID_IMAGE_ORIGIN': 'luma-native-builder',
-                'LUMA_ANDROID_SOURCE_MANIFEST_SHA256': manifest,
-                'LUMA_ANDROID_COMPILER_INVOCATION_ID': invocation}
+        pins = {'SUNO_ANDROID_IMAGE_ORIGIN': 'Suno-native-builder',
+                'SUNO_ANDROID_SOURCE_MANIFEST_SHA256': manifest,
+                'SUNO_ANDROID_COMPILER_INVOCATION_ID': invocation}
         for kind in ('system', 'vendor'):
             name = kind + '.img'
             archive = producer['archives'][name]
@@ -105,7 +105,7 @@ def stage(pair, member_path, output, repo, arch):
                     or sha(source) != archive['sha256'] or source.stat().st_size != archive['bytes']):
                 raise ValueError('Changed actual terminal archive')
             records['SOURCES/android-' + kind + '.zip'] = copy(source, output / 'SOURCES' / ('android-' + kind + '.zip'))
-            prefix = 'LUMA_ANDROID_' + kind.upper() + '_'
+            prefix = 'SUNO_ANDROID_' + kind.upper() + '_'
             pins.update({prefix + 'FILENAME': source.name,
                          prefix + 'URL': 'private://native-pair/' + source.name,
                          prefix + 'SHA256': archive['sha256'], prefix + 'SIZE': str(archive['bytes']),

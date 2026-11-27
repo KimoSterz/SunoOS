@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=FP6 Audio Test
+Comment=Test the Fairphone 6 speaker and earpiece
+Exec=/home/Suno/.local/libexec/Suno-fp6-audio-tester.py /home/Suno/.local/share/Suno-audio-test/Money.mp3
+Icon=audio-speakers-symbolic
+Terminal=false
+Categories=AudioVideo;Audio;
+StartupNotify=true

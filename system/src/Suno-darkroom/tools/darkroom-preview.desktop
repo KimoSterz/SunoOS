@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Darkroom (SunoUI preview)
+Comment=Darkroom v70 from the isolated worktree
+Exec=/var/home/nick/.local/share/Suno-dev/SunoUI-darkroom/bin/run-darkroom
+Icon=org.projectSuno.Darkroom
+Terminal=false
+Categories=Graphics;
+StartupNotify=true
+StartupWMClass=org.projectSuno.Darkroom.SunoUIPreview

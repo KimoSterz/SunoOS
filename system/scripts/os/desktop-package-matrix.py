@@ -51,7 +51,7 @@ def selection_base_only_workflow_change(previous, current):
 def matrix(root, changed=None, previous_registry=None, previous_workflow=None,
            previous_inputs=None):
     registry = json.loads((root / REGISTRY).read_text())
-    if registry.get('schema') != 'org.projectluma.desktop-build-groups/v1':
+    if registry.get('schema') != 'org.projectSuno.desktop-build-groups/v1':
         raise ValueError('Unknown native build group schema')
     values = dict(line.split('=', 1) for line in (root / 'config/desktop/inputs.env').read_text().splitlines()
                   if line and not line.startswith('#') and '=' in line)
@@ -71,12 +71,12 @@ def matrix(root, changed=None, previous_registry=None, previous_workflow=None,
             'IIO_SENSOR_PROXY_': {'iio-sensor-proxy'},
             'MESA_': {'mesa'},
             'XDG_DESKTOP_PORTAL_': {'xdg-desktop-portal'},
-            'LUMA_DESKTOP_LAUNCHER_POLICY_': {'desktop-launcher-policy'},
+            'SUNO_DESKTOP_LAUNCHER_POLICY_': {'desktop-launcher-policy'},
             'NETWORKMANAGER_': {'networkmanager'},
             'TILING_SHELL_': {'tiling'},
             'WPA_SUPPLICANT_': {'wpa-supplicant'},
-            'LUMA_APPLICATION_INSTALLER_': {'application-installer', 'ari'},
-            'LUMA_DEVELOPER_PLATFORM_': {group for group, row in registry['groups'].items()
+            'SUNO_APPLICATION_INSTALLER_': {'application-installer', 'ari'},
+            'SUNO_DEVELOPER_PLATFORM_': {group for group, row in registry['groups'].items()
                                         if row.get('toolkit', False)},
         }
         if all(any(key.startswith(prefix) for prefix in scopes) for key in keys):
@@ -140,7 +140,7 @@ def main():
                                  text=True, capture_output=True)
             if old.returncode == 0:
                 previous_registry = json.loads(old.stdout)
-                if previous_registry.get('schema') != 'org.projectluma.desktop-build-groups/v1':
+                if previous_registry.get('schema') != 'org.projectSuno.desktop-build-groups/v1':
                     raise ValueError('Unknown previous native build group schema')
     print(json.dumps(matrix(ROOT, changed, previous_registry, previous_workflow, previous_inputs), separators=(',', ':')))
 

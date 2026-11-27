@@ -1,12 +1,12 @@
 # SPDX-License-Identifier: GPL-3.0-only
-"""Luma kit candidate: inline browser zoom, composed from installed widgets.
+"""Suno kit candidate: inline browser zoom, composed from installed widgets.
 
 This structural composition awaits upstream AppKit adoption; menu surfaces,
 colors, typography, focus and button rendering remain toolkit-owned.
 """
 from pathlib import Path
 from gi.repository import Gdk, Gtk
-from luma_appkit import IconButton, add_style_sheet
+from Suno_appkit import IconButton, add_style_sheet
 
 
 class NativeZoomRow(Gtk.Box):
@@ -18,8 +18,8 @@ class NativeZoomRow(Gtk.Box):
                 str(Path(__file__).parent / 'kit_candidates/inline_zoom.css'),
                 priority=Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
         super().__init__(spacing=4, height_request=34)
-        self.add_css_class('luma-menu-row')
-        self.add_css_class('luma-inline-zoom')
+        self.add_css_class('Suno-menu-row')
+        self.add_css_class('Suno-inline-zoom')
         self.append(Gtk.Label(label='Zoom', xalign=0, hexpand=True))
         children = [child for child in row['children'] if child['kind'] != 'separator']
         expected = ['Zoom out', 'Reset to 100%', 'Zoom in', 'Full screen']
@@ -31,7 +31,7 @@ class NativeZoomRow(Gtk.Box):
             if index == 1:
                 button = Gtk.Button(label=str(row['value']) + '%', width_request=44, height_request=26)
                 button.add_css_class('flat')
-                button.add_css_class('luma-zoom-value')
+                button.add_css_class('Suno-zoom-value')
                 button.set_tooltip_text(child['label'])
             else:
                 if index == 3:

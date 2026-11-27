@@ -1,12 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 /* Reuse the production view suite's widget helpers and isolated artwork. */
 #define main upstream_view_main
-#include "test-luma-view.c"
+#include "test-Suno-view.c"
 #undef main
 
 static void capture (GtkWidget *window, const char *name)
 {
-  const char *out = g_getenv ("LUMA_BORDER_TEST_OUT");
+  const char *out = g_getenv ("SUNO_BORDER_TEST_OUT");
   if (!out) return;
   g_autoptr (GdkPaintable) paintable = gtk_widget_paintable_new (window);
   GtkSnapshot *snapshot = gtk_snapshot_new ();
@@ -24,10 +24,10 @@ static void border_controls (void)
 {
   g_autofree char *dir = asset_fixture ();
   g_autofree char *json = g_build_filename (dir, "settings.json", NULL);
-  g_autoptr (CcLumaFixture) assets = cc_luma_fixture_load (json, NULL);
-  JsonObject *wifi = json_object_get_object_member (cc_luma_fixture_get_data (assets), "CFWIFI");
+  g_autoptr (CcSunoFixture) assets = cc_Suno_fixture_load (json, NULL);
+  JsonObject *wifi = json_object_get_object_member (cc_Suno_fixture_get_data (assets), "CFWIFI");
   const char *art = json_object_get_string_member (json_object_get_object_member (wifi, "share_codes"), "Studio North");
-  const char *files[] = {"prism.png", "luma-v3-documents.svg", "luma-v3-browser.svg", "luma-v3-messages.svg"};
+  const char *files[] = {"prism.png", "Suno-v3-documents.svg", "Suno-v3-browser.svg", "Suno-v3-messages.svg"};
   for (guint i = 0; i < G_N_ELEMENTS (files); i++)
     {
       g_autofree char *path = g_build_filename (dir, files[i], NULL);
@@ -36,17 +36,17 @@ static void border_controls (void)
   const int widths[] = {1180, 390};
   for (guint i = 0; i < G_N_ELEMENTS (widths); i++)
     {
-      g_autoptr (CcLumaFixture) model = cc_luma_fixture_load (json, NULL);
-      JsonObject *settings = cc_luma_fixture_get_settings (model);
+      g_autoptr (CcSunoFixture) model = cc_Suno_fixture_load (json, NULL);
+      JsonObject *settings = cc_Suno_fixture_get_settings (model);
       json_object_set_boolean_member (settings, "windowBorder", TRUE);
       json_object_set_int_member (settings, "windowBorderSize", 14);
-      cc_luma_fixture_publish_boolean (model, "tile", TRUE);
+      cc_Suno_fixture_publish_boolean (model, "tile", TRUE);
       json_object_set_boolean_member (settings, "resizeTogether", FALSE);
       GtkWidget *window = gtk_window_new ();
-      GtkWidget *view = cc_luma_view_new (model, "windows", NULL);
+      GtkWidget *view = cc_Suno_view_new (model, "windows", NULL);
       g_assert_nonnull (view);
       gtk_window_set_child (GTK_WINDOW (window), view);
-      luma_layer_host_install (GTK_WINDOW (window));
+      Suno_layer_host_install (GTK_WINDOW (window));
       gtk_window_set_default_size (GTK_WINDOW (window), widths[i], 900);
       gtk_window_present (GTK_WINDOW (window));
       wait_ms (200);
@@ -69,13 +69,13 @@ static void border_controls (void)
       g_signal_emit_by_name (gap_range, "change-value", GTK_SCROLL_JUMP, 4.6, &handled);
       g_assert_cmpfloat (gtk_range_get_value (GTK_RANGE (gap_range)), ==, 5);
       drain ();
-      g_assert_cmpint (json_node_get_int (cc_luma_fixture_get (model, "gap")), ==, 5);
+      g_assert_cmpint (json_node_get_int (cc_Suno_fixture_get (model, "gap")), ==, 5);
       for (int gap = 0; gap <= 24; gap++)
         {
           gtk_range_set_value (GTK_RANGE (gap_range), gap);
           wait_ms (20);
           g_assert_true (gap_range == find_name (view, "cf-gap"));
-          g_assert_cmpint (json_node_get_int (cc_luma_fixture_get (model, "gap")), ==, gap);
+          g_assert_cmpint (json_node_get_int (cc_Suno_fixture_get (model, "gap")), ==, gap);
           g_assert_cmpfloat (gtk_range_get_value (GTK_RANGE (gap_range)), ==, gap);
         }
       g_assert_true (has_text (view, "Resize neighboring tiles together"));
@@ -90,7 +90,7 @@ static void border_controls (void)
       g_assert_true (gtk_widget_is_sensitive (range));
       g_assert_cmpfloat (gtk_range_get_value (GTK_RANGE (range)), ==, 32);
       g_assert_cmpfloat (gtk_widget_get_width (window), ==, widths[i]);
-      g_assert_null (cc_luma_view_get_error (view));
+      g_assert_null (cc_Suno_view_get_error (view));
       capture (window, i ? "border-phone.png" : "border-desktop.png");
       gpointer weak_view = view;
       g_object_add_weak_pointer (G_OBJECT (view), &weak_view);
@@ -118,21 +118,21 @@ static void add_device (JsonArray *devices, const char *id, const char *name)
 
 static void bluetooth_discovery (void)
 {
-  g_autoptr (CcLumaFixture) model = load ();
-  cc_luma_fixture_publish_boolean (model, "bt", TRUE);
+  g_autoptr (CcSunoFixture) model = load ();
+  cc_Suno_fixture_publish_boolean (model, "bt", TRUE);
   JsonArray *devices = json_array_new ();
   add_device (devices, "hash", "AA:BB:CC:DD:EE:FF");
   add_device (devices, "device-airpods", "AirPods");
   add_device (devices, "device-keyboard", "Keyboard");
-  json_object_set_array_member (cc_luma_fixture_get_data (model), "CFNEAR", devices);
-  g_setenv ("LUMA_SETTINGS_NEAR", "30", TRUE);
+  json_object_set_array_member (cc_Suno_fixture_get_data (model), "CFNEAR", devices);
+  g_setenv ("SUNO_SETTINGS_NEAR", "30", TRUE);
   GtkWidget *window = gtk_window_new ();
-  GtkWidget *view = cc_luma_view_new (model, "bluetooth", NULL);
+  GtkWidget *view = cc_Suno_view_new (model, "bluetooth", NULL);
   View *v = g_object_get_data (G_OBJECT (view), "cf-view");
   v->near_count = 30;
-  cc_luma_view_queue_refresh (v);
+  cc_Suno_view_queue_refresh (v);
   gtk_window_set_child (GTK_WINDOW (window), view);
-  luma_layer_host_install (GTK_WINDOW (window));
+  Suno_layer_host_install (GTK_WINDOW (window));
   gtk_window_set_default_size (GTK_WINDOW (window), 1180, 900);
   gtk_window_present (GTK_WINDOW (window));
   wait_ms (150);
@@ -155,7 +155,7 @@ static void bluetooth_discovery (void)
   g_assert_false (gtk_widget_get_visible (keyboard));
   gtk_widget_grab_focus (search);
   add_device (devices, "device-speaker", "Speaker");
-  cc_luma_view_queue_refresh (v);
+  cc_Suno_view_queue_refresh (v);
   wait_ms (150);
   g_assert_true (search == find_name (view, "cf-bt-search"));
   g_assert_cmpstr (gtk_editable_get_text (GTK_EDITABLE (search)), ==, "airp");
@@ -168,7 +168,7 @@ static void bluetooth_discovery (void)
   capture (window, "bluetooth-desktop.png");
   gtk_window_destroy (GTK_WINDOW (window));
   wait_ms (100);
-  g_unsetenv ("LUMA_SETTINGS_NEAR");
+  g_unsetenv ("SUNO_SETTINGS_NEAR");
 }
 
 int main (int argc, char **argv)

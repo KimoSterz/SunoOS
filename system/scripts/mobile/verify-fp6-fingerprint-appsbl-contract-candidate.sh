@@ -52,8 +52,8 @@ ta_phandle=$(fdtget -t x "$dtb" "$ta" phandle)
 [ "$(fdtget -t x "$dtb" "$qsee" qseecom_ta_mem)" = "$ta_phandle" ] || die 'TA phandle differs'
 fdtget "$dtb" "$qsee" qcom,appsbl-qseecom-support >/dev/null || die 'AppsBL marker absent'
 fdtget "$dtb" "$qsee" qcom,commonlib64-loaded-by-uefi >/dev/null || die 'commonlib marker absent'
-fdtget "$dtb" /firmware/scm/qseecom-tee-heaps luma,dedicated-heaps >/dev/null || die 'dedicated heaps absent'
-fdtget "$dtb" /firmware/scm luma,qsee-log-diagnostic >/dev/null || die 'QSEE log absent'
+fdtget "$dtb" /firmware/scm/qseecom-tee-heaps Suno,dedicated-heaps >/dev/null || die 'dedicated heaps absent'
+fdtget "$dtb" /firmware/scm Suno,qsee-log-diagnostic >/dev/null || die 'QSEE log absent'
 ! fdtget "$dtb" /firmware/scm memory-region >/dev/null 2>&1 || die 'global SCM pool reintroduced'
 
 printf 'FP6 fingerprint AppsBL-contract candidate: PASS\n'

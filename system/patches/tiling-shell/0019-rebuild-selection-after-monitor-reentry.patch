@@ -1,4 +1,4 @@
-From: Luma Developers
+From: Suno Developers
 Subject: [PATCH] Rebuild the drag selection when returning to a monitor
 
 --- a/components/tilingsystem/tilingManager.js

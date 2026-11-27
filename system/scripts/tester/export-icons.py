@@ -33,25 +33,25 @@ def export(source,output):
     render(source,output/'master.png')
     master=Image.open(output/'master.png').convert('RGBA')
     images={size:master.resize((size,size),Image.Resampling.LANCZOS) for size in SIZES}
-    iconset=output/'macos/Try Luma.iconset';iconset.mkdir(parents=True)
+    iconset=output/'macos/Try Suno.iconset';iconset.mkdir(parents=True)
     for size in (16,32,128,256,512):
         for scale in (1,2):
             images[size*scale].save(iconset/('icon_'+str(size)+'x'+str(size)+('@2x' if scale==2 else '')+'.png'))
     iconutil=shutil.which('iconutil')
-    icns=output/'macos/Try Luma.icns'
+    icns=output/'macos/Try Suno.icns'
     if iconutil:
         subprocess.run([iconutil,'-c','icns','-o',str(icns),str(iconset)],check=True)
     else:
         # Portable ICNS export for design review; the native Mac packager uses iconutil.
         master.save(icns,format='ICNS')
     windows=output/'windows';windows.mkdir()
-    master.save(windows/'Try Luma.ico',format='ICO',sizes=[(x,x) for x in WINDOWS_SIZES])
-    with Image.open(windows/'Try Luma.ico') as result:
+    master.save(windows/'Try Suno.ico',format='ICO',sizes=[(x,x) for x in WINDOWS_SIZES])
+    with Image.open(windows/'Try Suno.ico') as result:
         assert result.ico.sizes()=={(x,x) for x in WINDOWS_SIZES}
-    svg=output/'linux/hicolor/scalable/apps/io.luma.Tester.svg'
+    svg=output/'linux/hicolor/scalable/apps/io.Suno.Tester.svg'
     svg.parent.mkdir(parents=True);shutil.copy2(source,svg)
     for size,image in images.items():
-        target=output/('linux/hicolor/'+str(size)+'x'+str(size)+'/apps/io.luma.Tester.png')
+        target=output/('linux/hicolor/'+str(size)+'x'+str(size)+'/apps/io.Suno.Tester.png')
         target.parent.mkdir(parents=True);image.save(target)
     assert Image.open(icns).size==(1024,1024)
     return output

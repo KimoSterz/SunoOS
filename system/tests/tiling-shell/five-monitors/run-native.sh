@@ -2,12 +2,12 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Run only in an owned disposable native Shell container.
 set -euo pipefail
-[[ ${LUMA_NATIVE_SHELL_DISPOSABLE:-0} == 1 && $(id -u) == 0 ]]
-[[ $(id -u luma-media-test) == 1000 ]]
+[[ ${SUNO_NATIVE_SHELL_DISPOSABLE:-0} == 1 && $(id -u) == 0 ]]
+[[ $(id -u Suno-media-test) == 1000 ]]
 repo=$(cd "$(dirname "$0")/../../.." && pwd)
 out=${DEV_ARTIFACT_DIR:?}/five-monitors
-case ${LUMA_FIVE_SCALE:-1} in 1|1.25) ;; *) exit 2 ;; esac
-case ${LUMA_FIVE_LAYOUT:-stacked} in
+case ${SUNO_FIVE_SCALE:-1} in 1|1.25) ;; *) exit 2 ;; esac
+case ${SUNO_FIVE_LAYOUT:-stacked} in
  stacked) side=1280x720; centre=2560x1440 ;;
  wide) side=1920x1080; centre=5120x1440 ;;
  *) exit 2 ;;
@@ -22,7 +22,7 @@ welcome-dialog-last-shown-version='999'
 favorite-apps=[]
 [org/gnome/mutter]
 experimental-features=['scale-monitor-framebuffer']
-[org/project-luma/shell-state]
+[org/project-suno/shell-state]
 surface-treatment='dark'
 EOF
 cp "$repo/tests/tiling-shell/five-monitors/native.js" "$out/native.js"
@@ -33,10 +33,10 @@ bus_pid=$(dbus-daemon --system --nopidfile --fork --print-pid)
 trap 'kill "$bus_pid" 2>/dev/null || true' EXIT
 chown -R 1000:1000 "$out"
 ulimit -c 0
-runuser -u luma-media-test -- env XDG_RUNTIME_DIR="$out/runtime" XDG_CONFIG_HOME="$out/config" \
+runuser -u Suno-media-test -- env XDG_RUNTIME_DIR="$out/runtime" XDG_CONFIG_HOME="$out/config" \
  XDG_DATA_HOME="$out/data" GSETTINGS_BACKEND=keyfile LIBGL_ALWAYS_SOFTWARE=1 \
- LUMA_MUTTER_ALLOW_SOFTWARE_BLUR=1 LUMA_FIVE_OUT="$out" LUMA_FIVE_SCALE="${LUMA_FIVE_SCALE:-1}" \
- LUMA_FIVE_APP="$repo/tests/gnome-shell/shelf-presentation/app.py" dbus-run-session -- \
+ SUNO_MUTTER_ALLOW_SOFTWARE_BLUR=1 SUNO_FIVE_OUT="$out" SUNO_FIVE_SCALE="${SUNO_FIVE_SCALE:-1}" \
+ SUNO_FIVE_APP="$repo/tests/gnome-shell/shelf-presentation/app.py" dbus-run-session -- \
  timeout 180 gnome-shell --headless --no-x11 --virtual-monitor="$side" --virtual-monitor="$side" \
  --virtual-monitor="$side" --virtual-monitor="$side" --virtual-monitor="$centre" \
  --automation-script="$out/native.js" > "$out/shell.log" 2>&1

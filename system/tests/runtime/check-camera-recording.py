@@ -55,7 +55,7 @@ def message(_bus, msg, recorder):
         ended.append(True)
         loop.quit()
 
-with tempfile.TemporaryDirectory(prefix="luma-camera-video-test-") as directory:
+with tempfile.TemporaryDirectory(prefix="Suno-camera-video-test-") as directory:
     output = Path(directory) / "take.webm"
     device = CameraDevice("synthetic", "Test", "external", preview_width=320, preview_height=240, desktop_uvc=True)
     with patch.object(Gst.ElementFactory, "make", side_effect=synthetic):
@@ -96,9 +96,9 @@ device = replace(device, stream_format="image/jpeg", still_width=320, still_heig
 camera.CameraWindow._on_window_activity_changed = lambda *args: None
 camera.CameraWindow._save_state = lambda *args: None
 app = camera.CameraApplication()
-app.set_application_id("org.projectluma.Camera.RecordingCheck")
+app.set_application_id("org.projectSuno.Camera.RecordingCheck")
 window_errors = []
-with tempfile.TemporaryDirectory(prefix="luma-camera-window-test-") as directory, patch.dict(os.environ):
+with tempfile.TemporaryDirectory(prefix="Suno-camera-window-test-") as directory, patch.dict(os.environ):
     root = Path(directory)
     os.environ.update({"XDG_PICTURES_DIR": str(root),
                        **{f"XDG_{kind}_HOME": str(root / kind.lower())
@@ -222,5 +222,5 @@ with tempfile.TemporaryDirectory(prefix="luma-camera-window-test-") as directory
         assert info.get_result() == GstPbutils.DiscovererResult.OK
         assert info.get_video_streams() and info.get_audio_streams()
     assert all(photo.read_bytes().startswith(b"\xff\xd8") and photo.read_bytes().endswith(b"\xff\xd9") for photo in photos)
-    assert not list(root.glob(".luma-*")), "successful finalization must not leave partial takes"
+    assert not list(root.glob(".Suno-*")), "successful finalization must not leave partial takes"
     print("PASS: MJPEG photo + zoom, window still grab, session tray, close keeps second take; all4 colliding files preserved, both clips playable; disposable catalog favorite/old fields/one-time pre-write backup preserved")

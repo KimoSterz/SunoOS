@@ -1,4 +1,4 @@
-From: Project Luma <luma@local>
+From: Project Suno <Suno@local>
 Subject: [PATCH] Skip stale GDM lock restore in the greetd bake-off
 
 GNOME Shell persists whether the previous session was locked and restores that
@@ -6,8 +6,8 @@ state after startup. The rollback-safe mobile candidate is deliberately run by
 greetd, where no GDM reauthentication service exists, so restoring a stale GDM
 lock creates an unlock dialog that can never authenticate.
 
-Skip only that persisted-lock restoration path when the explicit Luma greetd
-bake-off marker is present. Ordinary GNOME and Luma sessions retain the normal
+Skip only that persisted-lock restoration path when the explicit Suno greetd
+bake-off marker is present. Ordinary GNOME and Suno sessions retain the normal
 lock restore behavior, and the candidate's dim, blank, suspend, and wake paths
 remain active.
 ---
@@ -23,7 +23,7 @@ diff --git a/js/ui/main.js b/js/ui/main.js
  
 -        if (screenShield)
 +        if (screenShield &&
-+            GLib.getenv('LUMA_GREETD_SESSION') !== '1')
++            GLib.getenv('SUNO_GREETD_SESSION') !== '1')
              screenShield.lockIfWasLocked();
  
          if (sessionMode.currentMode !== 'gdm' &&

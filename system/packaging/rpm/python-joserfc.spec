@@ -2,8 +2,8 @@
 # Private qualification only; no shared repository publication.
 Name:           python-joserfc
 Version:        1.7.5
-Release:        0.1.luma.experiment%{?dist}
-Summary:        Maintained JOSE implementation for Luma Connect validation
+Release:        0.1.Suno.experiment%{?dist}
+Summary:        Maintained JOSE implementation for Suno Connect validation
 License:        BSD-3-Clause
 URL:            https://github.com/authlib/joserfc
 Source0:        https://files.pythonhosted.org/packages/source/j/joserfc/joserfc-%{version}.tar.gz
@@ -22,7 +22,7 @@ Connect dependency qualification. No algorithms or cryptography are patched.
 %package -n python3-joserfc
 Summary:        %{summary}
 %description -n python3-joserfc
-Maintained upstream Python implementation for private Luma Connect qualification.
+Maintained upstream Python implementation for private Suno Connect qualification.
 
 %prep
 %autosetup -n joserfc-%{version}

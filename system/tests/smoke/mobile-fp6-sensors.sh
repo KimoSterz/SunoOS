@@ -93,7 +93,7 @@ if grep -Eiq '^[[:space:]]*(insmod|modprobe|rmmod|systemctl[[:space:]]+(start|st
 fi
 
 test "$(sha256sum "$bundle/milos-fairphone-fp6.dtb" | cut -d ' ' -f 1)" = "$FP6_SENSORS_DTB_SHA256"
-grep -Fxq 'LUMA_FP6_SENSORS_BUILD_VERSION=2' "$bundle/manifest.env"
+grep -Fxq 'SUNO_FP6_SENSORS_BUILD_VERSION=2' "$bundle/manifest.env"
 grep -Fxq "ICM42630_PATCH_SHA256=$FP6_SENSORS_ICM42630_PATCH_SHA256" "$bundle/manifest.env"
 files=(i2c-algo-bit i2c-gpio spi-bitbang spi-gpio kfifo_buf inv_sensors_timestamp inv-icm42600 inv-icm42600-spi stk3310 qmc6308 dps310)
 hashes=(
@@ -106,7 +106,7 @@ hashes=(
 for index in "${!files[@]}"; do
   test "$(sha256sum "$bundle/modules/${files[$index]}.ko" | cut -d ' ' -f 1)" = "${hashes[$index]}"
 done
-test "$(sha256sum "$boot_bundle/boot-fp6-luma-sensors-v1.img" | cut -d ' ' -f 1)" = "$FP6_SENSORS_V1_BOOT_SHA256"
+test "$(sha256sum "$boot_bundle/boot-fp6-Suno-sensors-v1.img" | cut -d ' ' -f 1)" = "$FP6_SENSORS_V1_BOOT_SHA256"
 grep -Fxq 'CANDIDATE_HASH_PINNED=true' "$boot_bundle/boot-manifest.env"
 grep -Fxq 'KERNEL_UNCHANGED=true' "$boot_bundle/boot-manifest.env"
 grep -Fxq 'RAMDISK_UNCHANGED=true' "$boot_bundle/boot-manifest.env"

@@ -22,7 +22,7 @@ real xdg-desktop-portal against portal_test_backend.py, then:
 
 Two ways to launch, the same steps:
 
-  --launch flatpak --app-id org.projectluma.Clock   (sandboxed: Notification
+  --launch flatpak --app-id org.projectSuno.Clock   (sandboxed: Notification
       and Background portals; data in ~/.var/app/<id>/data)
   --launch native   (prairie-clock on PATH: GNotification goes to
       org.gtk.Notifications, which the backend also provides the way GNOME
@@ -33,7 +33,7 @@ Two ways to launch, the same steps:
       disk and no Clock running; at its minute the unit's command,
       `prairie-clock-alarm alarm <uid>`, runs; Clock must start by D-Bus
       activation, withdraw the unit files, ring and answer Stop. Needs
-      org.projectluma.Clock.service on the session bus's service path.)
+      org.projectSuno.Clock.service on the session bus's service path.)
 
 Evidence (portal calls, app output, autostart entry, summary) goes to --evidence.
 """
@@ -53,7 +53,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-APP_ID = "org.projectluma.Clock"
+APP_ID = "org.projectSuno.Clock"
 
 
 class Failure(AssertionError):
@@ -132,19 +132,19 @@ class Session:
     def start_portals(self) -> None:
         portal_dir = self.evidence / "portals"
         portal_dir.mkdir(exist_ok=True)
-        (portal_dir / "lumatest.portal").write_text(
-            "[portal]\nDBusName=org.freedesktop.impl.portal.desktop.lumatest\n"
+        (portal_dir / "Sunotest.portal").write_text(
+            "[portal]\nDBusName=org.freedesktop.impl.portal.desktop.Sunotest\n"
             "Interfaces=org.freedesktop.impl.portal.Access;org.freedesktop.impl.portal.Background;"
             "org.freedesktop.impl.portal.Notification;\n"
         )
         # With XDG_DESKTOP_PORTAL_DIR set, xdg-desktop-portal reads its
         # configuration from that directory and nowhere else.
-        (portal_dir / "portals.conf").write_text("[preferred]\ndefault=lumatest\n")
+        (portal_dir / "portals.conf").write_text("[preferred]\ndefault=Sunotest\n")
         env = {"PORTAL_TEST_LOG": str(self.portal_log)}
         if self.args.launch == "native":
             env["PORTAL_TEST_GTK_NOTIFICATIONS"] = "1"
         self.spawn("portal-backend", [sys.executable, str(HERE / "portal_test_backend.py")], env)
-        wait_for("the test portal backend", lambda: name_owned("org.freedesktop.impl.portal.desktop.lumatest"), 20)
+        wait_for("the test portal backend", lambda: name_owned("org.freedesktop.impl.portal.desktop.Sunotest"), 20)
         self.spawn("xdg-desktop-portal", [self.args.portal, "--replace", "--verbose"],
                    {"XDG_DESKTOP_PORTAL_DIR": str(portal_dir)})
         wait_for("xdg-desktop-portal", lambda: name_owned("org.freedesktop.portal.Desktop"), 30)
@@ -254,8 +254,8 @@ class Session:
             raise Failure(f"the alarm notification lacks Stop and Snooze: {actions}")
 
         time.sleep(3)
-        gdbus("--dest", "org.freedesktop.impl.portal.desktop.lumatest", "--object-path", "/org/projectluma/PortalTest",
-              "--method", "org.projectluma.PortalTest.InvokeAction", self.args.app_id, f"alarm-{alarm_uid}",
+        gdbus("--dest", "org.freedesktop.impl.portal.desktop.Sunotest", "--object-path", "/org/projectSuno/PortalTest",
+              "--method", "org.projectSuno.PortalTest.InvokeAction", self.args.app_id, f"alarm-{alarm_uid}",
               "app.clock-stop", f"[<'{alarm_uid}'>]")
         wait_for("the alarm notification to be withdrawn",
                  lambda: find_call(self.portal_log, "RemoveNotification", f"alarm-{alarm_uid}"), 20)
@@ -282,7 +282,7 @@ class Session:
         units = self.config_home / "systemd/user"
         units.mkdir(parents=True, exist_ok=True)
         for suffix in (".timer", ".service"):
-            (units / f"prairie-alarm-{uid}{suffix}").write_text("[Unit]\nDescription=Project Luma alarm\n")
+            (units / f"prairie-alarm-{uid}{suffix}").write_text("[Unit]\nDescription=Project Suno alarm\n")
         self.note(f"an older Clock's alarm for {ring:%H:%M}: record plus prairie-alarm-{uid[:8]}… unit files, Clock not running")
         if name_owned(self.args.app_id):
             raise Failure("Clock is already running")
@@ -301,8 +301,8 @@ class Session:
             raise Failure(f"old unit files were not withdrawn: {left}")
         self.note("the old unit files are gone; the alarm record is kept")
         time.sleep(2)
-        gdbus("--dest", "org.freedesktop.impl.portal.desktop.lumatest", "--object-path", "/org/projectluma/PortalTest",
-              "--method", "org.projectluma.PortalTest.InvokeAction", self.args.app_id, f"alarm-{uid}",
+        gdbus("--dest", "org.freedesktop.impl.portal.desktop.Sunotest", "--object-path", "/org/projectSuno/PortalTest",
+              "--method", "org.projectSuno.PortalTest.InvokeAction", self.args.app_id, f"alarm-{uid}",
               "app.clock-stop", f"[<'{uid}'>]")
         wait_for("the notification to be withdrawn", lambda: find_call(self.portal_log, "RemoveNotification", f"alarm-{uid}"), 20)
         state = json.loads((self.data_dir / "state.json").read_text())

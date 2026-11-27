@@ -15,19 +15,19 @@ import gi
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 from gi.repository import Adw, Gdk, GLib, Gtk, Pango
-from luma_appkit import (
+from Suno_appkit import (
     ActionCenter, AddRow, AppWindow, BarAction, BarChip, BarEntry, Command,
     CommandGroup, CommandRegistry, CountBadge, DestructiveDialog, DetailsPane, EmptyState,
     HeroTitleField, Island, Menu, MenuSection, ModeSwitch, SidebarRow, RowLead, AvatarStack, NavigationSidebar, ParagraphField,
     ScrollView, SidebarFoot, SidebarToggle, TextField, TextButton, Toast, ToastHost, Selection, StackedButton, StackedButtons,
-    add_style_sheet, apply_type, icons, install_appkit, install_lumaui,
+    add_style_sheet, apply_type, icons, install_appkit, install_SunoUI,
 )
-from luma_appkit.action_center import make_control, SEPARATOR, SPACER
-from luma_appkit.action_bubble import FloatingMenu, MenuItem
-from luma_appkit import lumaui, ProgressLine
-from luma_appkit.bar_panel import BarTile, BarTiles, PanelRow, panel_list
-from luma_appkit.menus import bar_menu
-from luma_appkit.rows_swipe import SwipeAction, SwipeRow
+from Suno_appkit.action_center import make_control, SEPARATOR, SPACER
+from Suno_appkit.action_bubble import FloatingMenu, MenuItem
+from Suno_appkit import SunoUI, ProgressLine
+from Suno_appkit.bar_panel import BarTile, BarTiles, PanelRow, panel_list
+from Suno_appkit.menus import bar_menu
+from Suno_appkit.rows_swipe import SwipeAction, SwipeRow
 from .tasks_data import TasksData, VIEWS, PRIORITIES, day_label, in_view, task_groups, suggested_tasks, quick_chips, plan_tasks
 from .tasks_backend import day
 from .tasks_parse import Choice, parse_task
@@ -35,7 +35,7 @@ from .tasks_repeat import CHOICES as REPEAT_CHOICES, UNITS as REPEAT_UNITS, cust
 from .tasks_plan import PlanDeck, PlanButton
 from .tasks_widgets import check, column, face, faces, line, list_dot, named, task_row, text
 
-APP_ID = "org.projectluma.Tasks"
+APP_ID = "org.projectSuno.Tasks"
 APP_ICON_ID = APP_ID  # The preview launcher changes the instance ID only.
 
 
@@ -55,8 +55,8 @@ class TasksWindow(AppWindow):
         self.view = "today"
         self.selected = None
         self.details_wanted = True
-        self.query = os.environ.get("LUMA_TASKS_QUERY", "") if self.source.fixture else ""
-        self.draft = os.environ.get("LUMA_TASKS_DRAFT", "") if self.source.fixture else ""
+        self.query = os.environ.get("SUNO_TASKS_QUERY", "") if self.source.fixture else ""
+        self.draft = os.environ.get("SUNO_TASKS_DRAFT", "") if self.source.fixture else ""
         self.show_done = False
         self.adding = False
         self.suggestions = True
@@ -72,14 +72,14 @@ class TasksWindow(AppWindow):
         self._detail_restore_callback = None
         self._comment_reveal_handlers = []
         self._comment_reveal_source = None
-        self.fixture_dir = str(Path(os.environ["LUMA_TASKS_FIXTURE"]).with_suffix("")) if self.source.fixture else None
+        self.fixture_dir = str(Path(os.environ["SUNO_TASKS_FIXTURE"]).with_suffix("")) if self.source.fixture else None
         super().__init__(application=application, app_id=APP_ID, title="Tasks", icon_name=APP_ICON_ID,
                          commands=CommandRegistry((CommandGroup("", (
                              Command("tasks.new", "New task", self._new, "plus", shortcut=("Ctrl", "N")),
                              Command("tasks.find", "Search tasks", self._find, "search", shortcut=("Ctrl", "F")),
                              Command("tasks.sidebar", "Show or hide sidebar", lambda:self.sidebar_toggle.toggle(), "panel-left"),
                              *([Command("tasks.accounts", "Accounts…", self._accounts, "user")]
-                               if os.environ.get("LUMA_AGENDA_STANDALONE") else []),
+                               if os.environ.get("SUNO_AGENDA_STANDALONE") else []),
                              Command("tasks.quit", "Quit Tasks", self.close, "log-out", shortcut=("Ctrl", "Q")),
                          )),)), default_width=1180, default_height=740, minimum_width=360)
         self.sidebar = named(NavigationSidebar(variant="destinations"), "tk-sidebar")
@@ -1009,7 +1009,7 @@ class TasksWindow(AppWindow):
             if load_identity() is not None:
                 from .tasks_collaboration import SOURCE_PREFIX, task_content
                 from .collaboration_ui import NativeCollaborationShare
-                from luma_appkit import ShareResult
+                from Suno_appkit import ShareResult
                 kind = 'list' if list_id is not None else 'task'
                 local_id = list_id if list_id is not None else tasks[0]['id']
                 content = {'title': title, 'tasks': [task_content(record) for record in records]} if kind == 'list' else {'title': title, 'task': task_content(records[0]), 'steps': [task_content(record) for record in records[1:]]}
@@ -1043,7 +1043,7 @@ class TasksWindow(AppWindow):
                              on_decide=self._plan_decide, on_close=self._plan_close)
         self.plan.set_compact(self.phone)
         self.cover.add_overlay(self.plan)
-        if self.source.fixture and os.environ.get("LUMA_TASKS_PLAN_END"):
+        if self.source.fixture and os.environ.get("SUNO_TASKS_PLAN_END"):
             self.plan.skip_to_end()  # fixture-only start-up mode: the deck's ending, nothing written
 
     def _plan_decide(self, task, decision):
@@ -1087,7 +1087,7 @@ class TasksWindow(AppWindow):
         if not task: return
         changed = {field: value for field, value in changes.items() if task.get(field) != value or (field == 'repeat' and not value and task.get('recurring'))}
         if changed:
-            if not self.source.fixture and set(changed) <= {"flag", "who"} and ("who" not in changed or not task['l'].startswith('luma-shared:')):
+            if not self.source.fixture and set(changed) <= {"flag", "who"} and ("who" not in changed or not task['l'].startswith('Suno-shared:')):
                 message = "Saved on this computer"
             self._mutate(lambda: self.source.edit(key, changed), message)
 
@@ -1347,9 +1347,9 @@ class TasksWindow(AppWindow):
 class TasksApplication(Adw.Application):
     def __init__(self): super().__init__(application_id=APP_ID)
     def do_startup(self):
-        Adw.Application.do_startup(self); install_appkit(); install_lumaui()
+        Adw.Application.do_startup(self); install_appkit(); install_SunoUI()
         path = Path(__file__).resolve().parent.parent / "style/tasks.css"
-        add_style_sheet(os.environ.get("LUMA_TASKS_STYLE_PATH", str(path if path.exists() else Path("/usr/share/prairie-core/tasks.css"))))
+        add_style_sheet(os.environ.get("SUNO_TASKS_STYLE_PATH", str(path if path.exists() else Path("/usr/share/prairie-core/tasks.css"))))
     def do_activate(self): (self.props.active_window or TasksWindow(self)).present()
 
 

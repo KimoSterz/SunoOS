@@ -8,7 +8,7 @@ import tempfile
 import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
-APP = 'org.projectluma.Clock'
+APP = 'org.projectSuno.Clock'
 
 
 def load(repo):
@@ -31,7 +31,7 @@ class Lock(unittest.TestCase):
             shutil.copytree(ROOT / name, self.repo / name, ignore=shutil.ignore_patterns('__pycache__'))
         (self.repo / 'config/os').mkdir(parents=True)
         (self.repo / 'config/os/first-party-app-baseline.json').write_text(json.dumps(
-            {'schema': 'org.projectluma.os-app-baseline/v1', 'applications': [APP]}))
+            {'schema': 'org.projectSuno.os-app-baseline/v1', 'applications': [APP]}))
         self.lock = load(self.repo)
         self.row = {'version': self.lock.metainfo_version(self.repo, APP),
                     'source_sha256': self.lock.fingerprint(self.repo, APP),
@@ -43,7 +43,7 @@ class Lock(unittest.TestCase):
 
     def write_lock(self):
         (self.repo / 'config/os/app-baseline-lock.json').write_text(json.dumps({
-            'schema': 'org.projectluma.os-app-baseline-lock/v1',
+            'schema': 'org.projectSuno.os-app-baseline-lock/v1',
             'baselines': {'aarch64': {'manifest_sha256': 'c' * 64}, 'x86_64': {'manifest_sha256': 'd' * 64}},
             'applications': {APP: self.row}}))
 

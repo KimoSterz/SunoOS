@@ -4,7 +4,7 @@
 
   vm-proof.py --work DIR --hub-tree TREE --shell-root DIR --mutter-root DIR
 
-Builds on src/luma-connect-sync/tests/two-vm (the Phase 1 proof): VMs with a
+Builds on src/Suno-connect-sync/tests/two-vm (the Phase 1 proof): VMs with a
 signed-in GDM session and Connect Sync as a user-level preview. Both VMs get
 the Shell and Mutter under test (DESTDIR installs, as an ostree hotfix).
 
@@ -28,7 +28,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[2]
-sys.path.insert(0, str(REPO / "src/luma-connect-sync/tests/two-vm"))
+sys.path.insert(0, str(REPO / "src/Suno-connect-sync/tests/two-vm"))
 import proof as phase1  # noqa: E402
 
 HUB_PORT = 3292
@@ -36,10 +36,10 @@ phase1.HUB_PORT = HUB_PORT
 phase1.PORTS.update({"ca": 41611, "cb": 41612})
 phase1.NAMES.update({"ca": "ThinkPad", "cb": "Surface"})
 USER, HOME = phase1.USER, phase1.HOME
-APPS = {"docs": "org.projectluma.ContinueDocs", "counter": "org.projectluma.ContinueCounter",
-        "keyed": "org.projectluma.ContinueKeyed"}
+APPS = {"docs": "org.projectSuno.ContinueDocs", "counter": "org.projectSuno.ContinueCounter",
+        "keyed": "org.projectSuno.ContinueKeyed"}
 # The disposable test keyring's unlock prompt is the VM's, not the session's.
-NOT_OURS = {"org.projectluma.Keyring.desktop"}
+NOT_OURS = {"org.projectSuno.Keyring.desktop"}
 
 
 class ContinueProof(phase1.Proof):
@@ -53,7 +53,7 @@ class ContinueProof(phase1.Proof):
         subprocess.run(["systemctl", "stop", "continue-devhub"], capture_output=True)
         subprocess.run(["rm", "-rf", state_dir], check=True)
         subprocess.run(["systemd-run", "--unit=continue-devhub", "--collect", "-p", f"WorkingDirectory={self.tree}",
-                        "-E", f"LUMA_HUB_STATE={state_dir}", "nice", "node", "tests/dev-hub.mjs", "--port", str(HUB_PORT)],
+                        "-E", f"SUNO_HUB_STATE={state_dir}", "nice", "node", "tests/dev-hub.mjs", "--port", str(HUB_PORT)],
                        check=True, capture_output=True)
 
         def answers() -> bool:
@@ -90,13 +90,13 @@ class ContinueProof(phase1.Proof):
         """The build under test in the session: built RPMs deployed as an image update
         (deploy), or DESTDIR installs over the image's /usr (an overlay mount, as
         `ostree admin unlock` makes), then the test apps."""
-        # Connect Sync admits only the Shell, phosh and Settings (1.luma.6); this
+        # Connect Sync admits only the Shell, phosh and Settings (1.Suno.6); this
         # proof calls it through gdbus, so a test VM lets gdbus in. Nothing ships
         # in callers.d.
-        self.ssh(name, "install -d -m 0755 /etc/luma/connect-sync/callers.d && "
-                       "printf '/usr/bin/gdbus\\n' > /etc/luma/connect-sync/callers.d/test.conf && "
-                       "chown root:root /etc/luma/connect-sync/callers.d/test.conf && "
-                       "chmod 0644 /etc/luma/connect-sync/callers.d/test.conf", check=False)
+        self.ssh(name, "install -d -m 0755 /etc/Suno/connect-sync/callers.d && "
+                       "printf '/usr/bin/gdbus\\n' > /etc/Suno/connect-sync/callers.d/test.conf && "
+                       "chown root:root /etc/Suno/connect-sync/callers.d/test.conf && "
+                       "chmod 0644 /etc/Suno/connect-sync/callers.d/test.conf", check=False)
         stage = "/var/tmp/continue-root"
         if self.rpms:
             if copy:
@@ -128,7 +128,7 @@ class ContinueProof(phase1.Proof):
                            f"mount -t overlay continue -o lowerdir={stage}/usr:/usr /usr; systemctl start gdm",
                      check=False, timeout=300)
         ok, seconds = self.wait("session", lambda: self.user(
-            name, "gdbus introspect --session -d org.projectluma.Session -o /org/projectluma/Session", check=False)
+            name, "gdbus introspect --session -d org.projectSuno.Session -o /org/projectSuno/Session", check=False)
             .count("SaveState") == 1, 300, 5)
         self.emit(f"{name}: Shell and Mutter under test running in the session", ok, f"{seconds:.0f} s")
         if not copy:
@@ -140,7 +140,7 @@ class ContinueProof(phase1.Proof):
                            shell=True, check=True)
         for key, app in APPS.items():
             entry = (f"[Desktop Entry]\nType=Application\nName=Continue {key}\n"
-                     f"Exec=env LUMA_SESSION_OUT={HOME}/continue python3 {HOME}/continue/{key}.py\n")
+                     f"Exec=env SUNO_SESSION_OUT={HOME}/continue python3 {HOME}/continue/{key}.py\n")
             self.ssh(name, f"cat > {apps}/{app}.desktop", input=entry)
         self.ssh(name, f"chown -R {USER}:{USER} {HOME}/continue {apps}")
 
@@ -152,12 +152,12 @@ class ContinueProof(phase1.Proof):
         self.vm("stop", name, check=False)
 
     def session_call(self, name: str, method: str, args: str = "") -> str:
-        return self.user(name, f"gdbus call --session -d org.projectluma.Session -o /org/projectluma/Session "
-                               f"-m org.projectluma.Session1.{method} {args}", timeout=120)
+        return self.user(name, f"gdbus call --session -d org.projectSuno.Session -o /org/projectSuno/Session "
+                               f"-m org.projectSuno.Session1.{method} {args}", timeout=120)
 
     def sync_call(self, name: str, method: str, args: str = "") -> str:
-        return self.user(name, f"gdbus call --session -d org.projectluma.ConnectSync1 -o /org/projectluma/ConnectSync1 "
-                               f"-m org.projectluma.ConnectSync1.{method} {args}", timeout=600)
+        return self.user(name, f"gdbus call --session -d org.projectSuno.ConnectSync1 -o /org/projectSuno/ConnectSync1 "
+                               f"-m org.projectSuno.ConnectSync1.{method} {args}", timeout=600)
 
     @staticmethod
     def unwrap(answer: str) -> dict:
@@ -178,7 +178,7 @@ class ContinueProof(phase1.Proof):
         self.user("ca", f"env CONTINUE_DOCS='Doc A,Doc B,Doc C' CONTINUE_STATES='Doc B=maximized,Doc C=minimized' "
                         f"setsid python3 {HOME}/continue/docs.py >/dev/null 2>&1 &")
         self.user("ca", f"setsid python3 {HOME}/continue/counter.py >/dev/null 2>&1 &")
-        self.user("ca", f"env LUMA_SESSION_OUT={HOME}/continue setsid python3 {HOME}/continue/keyed.py >/dev/null 2>&1 &")
+        self.user("ca", f"env SUNO_SESSION_OUT={HOME}/continue setsid python3 {HOME}/continue/keyed.py >/dev/null 2>&1 &")
         ok, _ = self.wait("windows", lambda: len(self.windows("ca")) >= 6, 120, 3)
         time.sleep(3)
         # The lock snapshot, as when the lid closes; then Sync publishes it.
@@ -203,7 +203,7 @@ class ContinueProof(phase1.Proof):
         self.start("cb")
         self.overlay("cb")
         self.enrol("cb")
-        self.vm("ssh", "cb", "/root/as-user.sh luma-connect-sync recover", input=self.words, check=False, timeout=600)
+        self.vm("ssh", "cb", "/root/as-user.sh Suno-connect-sync recover", input=self.words, check=False, timeout=600)
         standing = self.status("cb")["account"]["standing"]
         self.emit("cb: joined with the recovery key (no other device online)", standing == "member", standing)
         # A's record was sealed before B existed: A publishes again when it is next online. Until
@@ -223,7 +223,7 @@ class ContinueProof(phase1.Proof):
                        w["minimized"] == s["minimized"] for w in back) for s in a["windows"])
         self.emit("ca: after a reboot every window is back exactly (frame, state, minimized)", ok and same,
                   json.dumps([(w["title"], w["frame"], w["state"], w["minimized"]) for w in back]))
-        self.user("ca", "luma-connect-sync sync", check=False, timeout=600)
+        self.user("ca", "Suno-connect-sync sync", check=False, timeout=600)
         published = self.unwrap(self.sync_call("ca", "PublishContinue"))
         # The sync cycle publishes it too; either way B now holds a key for it (checked by B's offer).
         self.emit("ca: published again for the new member", published.get("result") in ("published", "current"), json.dumps(published))
@@ -232,7 +232,7 @@ class ContinueProof(phase1.Proof):
     def s_continue(self) -> None:
         self.start("cb")
         self.overlay("cb", copy=False)
-        self.user("cb", "systemctl --user restart luma-connect-syncd", check=False)
+        self.user("cb", "systemctl --user restart Suno-connect-syncd", check=False)
         self.user("cb", f"setsid python3 {HOME}/continue/counter.py >/dev/null 2>&1 &")
         self.wait("own window", lambda: len(self.windows("cb")) >= 1, 120, 3)
         mine = self.windows("cb")[0]
@@ -247,9 +247,9 @@ class ContinueProof(phase1.Proof):
                   "bus = Gio.bus_get_sync(Gio.BusType.SESSION)\n"
                   "def call(dest, path, iface, method, args):\n"
                   "    return bus.call_sync(dest, path, iface, method, args, None, 0, 600000, None).unpack()[0]\n"
-                  "snap = call('org.projectluma.ConnectSync1', '/org/projectluma/ConnectSync1', 'org.projectluma.ConnectSync1', "
+                  "snap = call('org.projectSuno.ConnectSync1', '/org/projectSuno/ConnectSync1', 'org.projectSuno.ConnectSync1', "
                   "'TakeContinue', GLib.Variant('(s)', (sys.argv[1],)))\n"
-                  "print(call('org.projectluma.Session', '/org/projectluma/Session', 'org.projectluma.Session1', "
+                  "print(call('org.projectSuno.Session', '/org/projectSuno/Session', 'org.projectSuno.Session1', "
                   "'Restore', GLib.Variant('(ss)', (snap, 'continue'))))\n")
         self.ssh("cb", f"cat > {HOME}/continue/take.py && chown {USER}:{USER} {HOME}/continue/take.py", input=script)
         result = self.user("cb", f"python3 {HOME}/continue/take.py {shlex.quote(offer['id'])}", timeout=600)
@@ -276,15 +276,15 @@ class ContinueProof(phase1.Proof):
                 g[:2] == w[:2] and abs(g[2] - w[2]) < 0.02 and abs(g[3] - w[3]) < 0.02 for g, w in zip(got, want))
             self.emit(f"{app}: every window continued with its state and share of the work area", near,
                       json.dumps({"ThinkPad": want, "here": got}))
-        # A LumaUI app (luma_appkit.restore) gets each window's own state back, by its key.
+        # A SunoUI app (Suno_appkit.restore) gets each window's own state back, by its key.
         keyed = json.loads(self.user("cb", f"cat {HOME}/continue/keyed-restored.json", check=False) or "{}")
         texts = {key: state.get("text") for key, state in keyed.get("windows", [])}
-        self.emit("org.projectluma.ContinueKeyed: each window's own state came back by its key",
+        self.emit("org.projectSuno.ContinueKeyed: each window's own state came back by its key",
                   texts == {"note:1": "first note", "note:2": "second note"}, json.dumps(keyed))
         focus_a = next(((w["app"], w.get("key")) for w in a["windows"] if w["focus"]), None)
         focus_b = next(((w["app"], w.get("key")) for w in after if w["focus"]), None)
         self.emit("cb: the focused window is the one focused on ThinkPad", focus_a == focus_b, f"{focus_b} vs {focus_a}")
-        stored = subprocess.run(["grep", "-rlaE", "Doc A|Doc B|Counter 1|first note|second note|org.projectluma.Continue", self.state["hub_state"]],
+        stored = subprocess.run(["grep", "-rlaE", "Doc A|Doc B|Counter 1|first note|second note|org.projectSuno.Continue", self.state["hub_state"]],
                                 capture_output=True, text=True).stdout.strip()
         self.emit("Hub storage holds no window title or app ID", stored == "", stored)
         self.poweroff("cb")

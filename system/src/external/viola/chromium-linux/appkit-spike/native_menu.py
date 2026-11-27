@@ -12,8 +12,8 @@ import gi
 gi.require_version('Gtk', '4.0')
 from gi.repository import Gdk, Gio, GLib, Gtk
 from native_zoom_row import NativeZoomRow
-from luma_appkit import Command
-from luma_appkit.menus import Menu as AppKitMenu, accelerator, _descendants, VARIANTS
+from Suno_appkit import Command
+from Suno_appkit.menus import Menu as AppKitMenu, accelerator, _descendants, VARIANTS
 
 
 def native_label(label, mnemonic=False):
@@ -54,8 +54,8 @@ class NativeMenu(AppKitMenu):
         self.prefer_submenu_left = prefer_submenu_left
         self._placed = []
         self.set_has_arrow(False)
-        self.add_css_class('luma-menu-popover')
-        self.add_css_class('luma-menu-app')
+        self.add_css_class('Suno-menu-popover')
+        self.add_css_class('Suno-menu-app')
         self.connect('map', lambda popup: GLib.idle_add(self._settle_layout, popup))
         self.reset(description)
         if description.get('role') == 'select':

@@ -1,10 +1,10 @@
-From: Project Luma <builds@project-luma.local>
+From: Project Suno <builds@project-suno.local>
 Subject: [PATCH] Settings: let native service adapters run across session identities
 
-The Luma-native application owns its service adapters and must start in Phosh
+The Suno-native application owns its service adapters and must start in Phosh
 or a session without XDG_CURRENT_DESKTOP. Preserve GNOME's historical gate
 only for the explicitly selected legacy UI, and use one mode selector before
-startup and during startup. The main Luma Settings launcher has the same scope;
+startup and during startup. The main Suno Settings launcher has the same scope;
 GNOME panel launchers and all service/policy permissions stay unchanged.
 
 diff --git a/shell/cc-application.c b/shell/cc-application.c
@@ -14,13 +14,13 @@ diff --git a/shell/cc-application.c b/shell/cc-application.c
    launch_panel_activated (action, parameter, user_data);
  }
  
-+/* Native Luma Settings binds services through its own adapters. The historical
++/* Native Suno Settings binds services through its own adapters. The historical
 + * GNOME session restriction belongs only to the explicitly selected legacy UI.
 + * Local options run before startup, so both paths must use the same selector. */
 +static gboolean
-+use_luma_ui (void)
++use_Suno_ui (void)
 +{
-+  return g_strcmp0 (g_getenv ("LUMA_SETTINGS_LEGACY"), "1") != 0;
++  return g_strcmp0 (g_getenv ("SUNO_SETTINGS_LEGACY"), "1") != 0;
 +}
 +
  static char **
@@ -31,7 +31,7 @@ diff --git a/shell/cc-application.c b/shell/cc-application.c
      }
  
 -  if (!is_supported_desktop ())
-+  if (!use_luma_ui () && !is_supported_desktop ())
++  if (!use_Suno_ui () && !is_supported_desktop ())
      {
        g_printerr ("Running gnome-control-center is only supported under GNOME and Unity, exiting\n");
        return 1;
@@ -39,11 +39,11 @@ diff --git a/shell/cc-application.c b/shell/cc-application.c
    gtk_application_set_accels_for_action (GTK_APPLICATION (application),
                                           "app.help", help_accels);
  
--  self->luma_ui = g_strcmp0 (g_getenv ("LUMA_SETTINGS_LEGACY"), "1") != 0;
-+  self->luma_ui = use_luma_ui ();
-   if (self->fixture_mode || self->luma_ui)
+-  self->Suno_ui = g_strcmp0 (g_getenv ("SUNO_SETTINGS_LEGACY"), "1") != 0;
++  self->Suno_ui = use_Suno_ui ();
+   if (self->fixture_mode || self->Suno_ui)
      {
-       luma_init ();
+       Suno_init ();
 diff --git a/shell/org.gnome.Settings.desktop.in b/shell/org.gnome.Settings.desktop.in
 --- a/shell/org.gnome.Settings.desktop.in
 +++ b/shell/org.gnome.Settings.desktop.in

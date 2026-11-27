@@ -90,7 +90,7 @@ def stage(repo, commit, app_id, site, base):
         if not url.startswith(prefix): raise ValueError('Vendor screenshot has no maintained immutable media path')
         digest = url[len(prefix):]
         if not re.fullmatch(r'[0-9a-f]{64}\.png', digest): raise ValueError('Media path must contain only its full SHA256')
-        data = object_bytes(repo, commit, '/files/share/luma-app-media/'+digest, 10485760)
+        data = object_bytes(repo, commit, '/files/share/Suno-app-media/'+digest, 10485760)
         if hashlib.sha256(data).hexdigest()!=digest[:-4] or not data.startswith(b'\x89PNG\r\n\x1a\n'):
             raise ValueError('Screenshot bytes differ from the exact declared image')
         width,height = png_structure(data)
@@ -107,7 +107,7 @@ def stage(repo, commit, app_id, site, base):
             fd=os.open(target,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o644)
             with os.fdopen(fd,'wb') as stream: stream.write(data); stream.flush(); os.fsync(stream.fileno())
         staged.append({'url':url,'path':str(target),'sha256':digest[:-4],'bytes':len(data),'width':width,'height':height})
-    return {'schema':'org.projectluma.app-media-stage/v1','app_id':app_id,
+    return {'schema':'org.projectSuno.app-media-stage/v1','app_id':app_id,
             'source_commit':commit,'result':'PASS','public_sync_executed':False,'images':staged}
 
 if __name__=='__main__':

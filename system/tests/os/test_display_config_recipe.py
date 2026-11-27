@@ -15,7 +15,7 @@ class DisplayConfigRecipe(unittest.TestCase):
         (self.repo/'file').write_text('private timestamp fixture\n')
         subprocess.run(['git','-C',str(self.repo),'add','file'],check=True)
         subprocess.run(['git','-C',str(self.repo),'-c','user.name=CI fixture','-c','user.email=ci@example.invalid','commit','--quiet','-m','timestamp fixture'],check=True)
-        self.line=next(line for line in (ROOT/'scripts/packages/build-luma-display-config.sh').read_text().splitlines() if line.startswith('source_date_epoch='))
+        self.line=next(line for line in (ROOT/'scripts/packages/build-Suno-display-config.sh').read_text().splitlines() if line.startswith('source_date_epoch='))
     def execute(self,**extra):
         environment=dict(os.environ);environment.pop('SOURCE_DATE_EPOCH',None)
         environment.update(GIT_TEST_ASSUME_DIFFERENT_OWNER='1',**extra)

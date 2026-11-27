@@ -1,0 +1,19 @@
+/* SPDX-License-Identifier: Apache-2.0 */
+
+/* Suno-appkit.css remains a useful standalone Light sheet and therefore
+ * imports the Light token set. Reassert Frost after that import in the same
+ * provider so its definitions win at GTK's actual cascade priority. */
+@import url("Suno-appkit.css");
+@import url("Suno-appkit-frost-tokens.css");
+
+/* Ink-filled controls (play, the primary button) print their label in the
+ * surface colour. On frost and glass the surface roles are translucent layers,
+ * so a label in one would let the dark plate through; it takes the paper the
+ * layers stand for instead. */
+.Suno-play,
+.Suno-app-window button.Suno-play,
+.Suno-application-window button.Suno-play,
+.Suno-button.primary,
+button.Suno-media-play {
+  color: #fbfbfa;
+}

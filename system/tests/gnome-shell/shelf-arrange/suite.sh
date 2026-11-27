@@ -15,11 +15,11 @@ run() {
   local name=$1 script=$2; shift 2
   local envs=()
   for e in "$@"; do envs+=(-e "$e"); done
-  podman exec "${EXTRA[@]}" "${envs[@]}" luma-shell-oracle python3 /oracle/dock-parity/reaper.py \
-    bash $T/run.sh /oracle/shelf-arrange/out/$P-$name $script > /root/luma-shell-oracle/shelf-arrange/out/$P-$name.txt 2>&1
+  podman exec "${EXTRA[@]}" "${envs[@]}" Suno-shell-oracle python3 /oracle/dock-parity/reaper.py \
+    bash $T/run.sh /oracle/shelf-arrange/out/$P-$name $script > /root/Suno-shell-oracle/shelf-arrange/out/$P-$name.txt 2>&1
   printf '%-12s %s | JS errors %s\n' "$name" \
-    "$(grep -o 'DONE [0-9]*/[0-9]* passed' /root/luma-shell-oracle/shelf-arrange/out/$P-$name.txt | tail -2 | paste -sd' ')" \
-    "$(grep -o 'JS ERRORS: [0-9]*' /root/luma-shell-oracle/shelf-arrange/out/$P-$name.txt | tail -1)"
+    "$(grep -o 'DONE [0-9]*/[0-9]* passed' /root/Suno-shell-oracle/shelf-arrange/out/$P-$name.txt | tail -2 | paste -sd' ')" \
+    "$(grep -o 'JS ERRORS: [0-9]*' /root/Suno-shell-oracle/shelf-arrange/out/$P-$name.txt | tail -1)"
 }
 run scenes scenes.js
 run zones zones.js SA_TIMEOUT=900

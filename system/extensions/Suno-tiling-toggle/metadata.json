@@ -1,0 +1,7 @@
+{
+  "uuid": "tiling-toggle@project-suno.local",
+  "name": "Suno Tiling Quick Toggle",
+  "description": "Adds live Tiling, visual layout selection, and layout tools to Quick Settings for the separately packaged Tiling Shell extension.",
+  "shell-version": ["50"],
+  "version": 1
+}

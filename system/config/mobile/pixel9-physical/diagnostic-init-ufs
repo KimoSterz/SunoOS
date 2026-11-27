@@ -11,8 +11,8 @@ export PATH
 umask 077
 
 bb=/bin/busybox
-report=/run/luma-pixel9-ufs-report.txt
-gadget=/sys/kernel/config/usb_gadget/luma_pixel9_diagnostic
+report=/run/Suno-pixel9-ufs-report.txt
+gadget=/sys/kernel/config/usb_gadget/Suno_pixel9_diagnostic
 device_address=192.168.77.1
 host_address=192.168.77.2
 snapshot_delay=15
@@ -42,8 +42,8 @@ setup_composite_gadget() {
 	echo 0x02 >"$gadget/bDeviceSubClass" || return 1
 	echo 0x01 >"$gadget/bDeviceProtocol" || return 1
 	$bb mkdir -p "$gadget/strings/0x409" "$gadget/configs/c.1/strings/0x409" || return 1
-	echo 'luma-pixel9-ufs-v3' >"$gadget/strings/0x409/serialnumber" || return 1
-	echo 'Luma Project' >"$gadget/strings/0x409/manufacturer" || return 1
+	echo 'Suno-pixel9-ufs-v3' >"$gadget/strings/0x409/serialnumber" || return 1
+	echo 'Suno Project' >"$gadget/strings/0x409/manufacturer" || return 1
 	echo 'Pixel 9 volatile UFS diagnostic v3' >"$gadget/strings/0x409/product" || return 1
 	echo 'Delayed read-only UFS report over ECM' >"$gadget/configs/c.1/strings/0x409/configuration" || return 1
 	echo 250 >"$gadget/configs/c.1/MaxPower" || return 1
@@ -62,7 +62,7 @@ setup_composite_gadget() {
 
 make_report() {
 	{
-		echo 'LUMA_PIXEL9_DIAGNOSTIC_REPORT_VERSION=3'
+		echo 'SUNO_PIXEL9_DIAGNOSTIC_REPORT_VERSION=3'
 		echo 'SCOPE=volatile-allowlisted-native-linux-ufs-diagnostic'
 		echo 'PERSISTENT_FILESYSTEMS_MOUNTED=false'
 		echo 'MODULES_AUTOLOADED=false'
@@ -151,9 +151,9 @@ setup_report_network() {
 	[ -n "$interface" ] || return 1
 	$bb ifconfig "$interface" "$device_address" netmask 255.255.255.0 up || return 1
 	$bb mkdir -p /run/www
-	$bb cp "$report" /run/www/luma-pixel9-report.txt || return 1
+	$bb cp "$report" /run/www/Suno-pixel9-report.txt || return 1
 	$bb chmod 0555 /run/www
-	$bb chmod 0444 /run/www/luma-pixel9-report.txt
+	$bb chmod 0444 /run/www/Suno-pixel9-report.txt
 	{
 		echo "start $host_address"
 		echo "end $host_address"
@@ -175,7 +175,7 @@ else
 	echo 'USB_COMPOSITE_GADGET_READY=false'
 fi
 
-echo "Luma Pixel 9 UFS diagnostic waiting $snapshot_delay seconds for asynchronous scan."
+echo "Suno Pixel 9 UFS diagnostic waiting $snapshot_delay seconds for asynchronous scan."
 $bb sleep "$snapshot_delay"
 make_report
 $bb cat "$report"
@@ -192,7 +192,7 @@ while [ "$iteration" -lt 36 ]; do
 	$bb sleep 5
 done
 
-echo 'Luma Pixel 9 UFS diagnostic timeout; rebooting to the bootloader-selected stock path.'
+echo 'Suno Pixel 9 UFS diagnostic timeout; rebooting to the bootloader-selected stock path.'
 $bb reboot -f
 $bb sleep 10
 echo o >/proc/sysrq-trigger 2>/dev/null || true

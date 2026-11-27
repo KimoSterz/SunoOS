@@ -1,8 +1,8 @@
-# Contributing to Luma
+# Contributing to Suno
 
 Changes to OS services, bundled apps, shared UI and hardware profiles belong in this repository. Separate Creative, Office and Imager products have their own scope.
 
-Before opening an issue, search existing reports. Include the app or component, Luma build, CPU architecture, device, steps to reproduce, expected behavior and observed behavior. Remove personal data from logs and screenshots. A device profile is not a promise of hardware support.
+Before opening an issue, search existing reports. Include the app or component, Suno build, CPU architecture, device, steps to reproduce, expected behavior and observed behavior. Remove personal data from logs and screenshots. A device profile is not a promise of hardware support.
 
 For code changes, keep the scope focused, explain the resulting behavior, and run the relevant component tests. Include the commands and results in your merge request. UI changes should cover desktop and narrow layouts, keyboard and touch input, and light and dark appearance where applicable. Do not replace working integrations with cosmetic placeholders.
 

@@ -1,13 +1,13 @@
 # Messages standalone
 
 The standalone profile runs the shared Messages interface and native account
-helpers without requiring the Luma OS background agent. Luma sign-in requires
+helpers without requiring the Suno OS background agent. Suno sign-in requires
 Hub support for a Messages-scoped device token. Device credentials use Secret
 Service; the native MLS helper receives enrolment through a sealed memory
 descriptor. Google Messages and WhatsApp use their existing helper protocols.
 
-Build the MLS helper from `src/luma-messages-e2ee` with its locked Cargo inputs,
-and the linked-account helpers from `src/luma-messages-bridges`. Then use
+Build the MLS helper from `src/Suno-messages-e2ee` with its locked Cargo inputs,
+and the linked-account helpers from `src/Suno-messages-bridges`. Then use
 `scripts/standalone/build-messages.py` with the helper binaries, QR encoder,
 runtime files and GdkPixbuf inputs. `build-messages-flatpak.sh` packages the
 result against GNOME Platform 50.

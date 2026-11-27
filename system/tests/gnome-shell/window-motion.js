@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-// Geometry of the window travel to and from the dock (js/ui/lumaWindowPath.js).
-// Run: gjs -m window-motion.js path/to/lumaWindowPath.js
+// Geometry of the window travel to and from the dock (js/ui/SunoWindowPath.js).
+// Run: gjs -m window-motion.js path/to/SunoWindowPath.js
 import GLib from 'gi://GLib';
 import System from 'system';
 const M = await import(GLib.filename_to_uri(GLib.canonicalize_filename(ARGV[0], GLib.get_current_dir()), null));

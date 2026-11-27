@@ -1,0 +1,189 @@
+From: Project Suno <devnull@projectSuno.local>
+Subject: [PATCH] Carry native menu CSS in release archive resources
+
+The upstream release archive embeds precompiled CSS. Keep the menu SCSS
+from0010 and its generated Light/Dark CSS in the same maintained resource.
+These blocks were generated using sassc -t compact from _Suno-menu.scss.
+
+--- a/gtk/theme/Default/Default-light.css
++++ b/gtk/theme/Default/Default-light.css
+@@ -2033,3 +2033,88 @@
+ window.Suno-native-window:not(.Suno-adw-native-window):not(.Suno-no-native-surfaces) > .Suno-native-work-surface { margin-top: 9px; }
+ 
+ window.Suno-native-window:not(.Suno-adw-native-window):not(.Suno-no-native-surfaces).Suno-has-command-row > .Suno-native-work-surface { margin-top: 0; }
++
++/* Generated native Suno menu contract from _Suno-menu.scss. */
++@define-color Suno_menu #f6f7f8;
++@define-color Suno_menu_ink #252b31;
++@define-color Suno_menu_raised #ffffff;
++@define-color Suno_menu_border rgba(35, 44, 52, 0.09);
++@define-color Suno_menu_shadow #0c1015;
++@define-color Suno_menu_passive rgba(35, 44, 52, 0.07);
++@define-color Suno_menu_pressed rgba(35, 44, 52, 0.11);
++@define-color Suno_menu_destructive #a44449;
++popover.menu > contents { min-width: 276px; padding: 8px; border: none; border-radius: 15px; background-color: @Suno_menu; color: @Suno_menu_ink; box-shadow: inset 0 0 0 1px @Suno_menu_border, 0 4px 12px alpha(@Suno_menu_shadow, 0.20), 0 24px 56px -18px alpha(@Suno_menu_shadow, 0.68); }
++
++popover.menu > contents > stack > box, popover.menu > contents > scrolledwindow > viewport > stack > box { padding: 0; }
++
++popover.menu > arrow { background-color: @Suno_menu; border-color: @Suno_menu_border; }
++
++popover.menu.Suno-menu-desktop > contents { min-width: 284px; }
++
++popover.menu.Suno-menu-dock > contents { min-width: 174px; padding: 6px; }
++
++popover.menu.Suno-menu-submenu > contents { min-width: 212px; padding: 6px; }
++
++popover.menu separator { min-height: 1px; margin: 5px 4px; background-color: @Suno_menu_border; }
++
++popover.menu label.title { min-height: 14px; padding: 4px 8px 0; margin: 0; text-transform: uppercase; font-size: 11px; font-weight: 700; letter-spacing: 0.11em; opacity: 0.46; }
++
++popover.menu modelbutton, popover.menu button.Suno-menu-row { min-height: 32px; padding: 0 8px; border: none; border-radius: 10px; background-color: transparent; color: @Suno_menu_ink; font-family: Figtree; font-size: 13px; font-weight: 600; box-shadow: none; outline: none; }
++
++popover.menu modelbutton:hover, popover.menu modelbutton:selected, popover.menu modelbutton:focus, popover.menu modelbutton:focus-visible, popover.menu button.Suno-menu-row:hover, popover.menu button.Suno-menu-row:selected, popover.menu button.Suno-menu-row:focus, popover.menu button.Suno-menu-row:focus-visible { background-color: @Suno_menu_raised; outline: 0; }
++
++popover.menu modelbutton:active, popover.menu button.Suno-menu-row:active { background-color: @Suno_menu_pressed; }
++
++popover.menu modelbutton:disabled, popover.menu button.Suno-menu-row:disabled { opacity: 0.38; background-color: transparent; }
++
++popover.menu modelbutton image, popover.menu button.Suno-menu-row image { -gtk-icon-size: 16px; opacity: 0.88; }
++
++popover.menu modelbutton arrow, popover.menu button.Suno-menu-row arrow { opacity: 0.58; }
++
++popover.menu modelbutton check, popover.menu modelbutton radio, popover.menu button.Suno-menu-row check, popover.menu button.Suno-menu-row radio { min-width: 14px; min-height: 14px; padding: 0; border: none; background: transparent; box-shadow: none; color: inherit; -gtk-icon-size: 14px; opacity: 0.72; }
++
++popover.menu button.Suno-menu-row.two-line { min-height: 36px; padding: 5px 8px; font-weight: 650; }
++
++popover.menu .Suno-menu-description { font-size: 11px; font-weight: 500; opacity: 0.5; }
++
++popover.menu button.Suno-menu-row.Suno-menu-destructive { color: @Suno_menu_ink; }
++
++popover.menu button.Suno-menu-row.Suno-menu-destructive:hover, popover.menu button.Suno-menu-row.Suno-menu-destructive:focus, popover.menu button.Suno-menu-row.Suno-menu-destructive:focus-visible { background-color: rgba(170, 64, 70, 0.12); color: @Suno_menu_destructive; }
++
++popover.menu accelerator { min-width: 18px; margin-left: 10px; padding: 1px 5px; border-radius: 6px; background-color: @Suno_menu_passive; color: @Suno_menu_ink; font-size: 11px; font-weight: 600; opacity: 0.68; }
++
++popover.menu .Suno-menu-submenu-heading { min-height: 31px; padding: 0 8px; font-size: 13px; font-weight: 700; }
++
++popover.menu .Suno-menu-count { min-width: 10px; min-height: 18px; padding: 0 5px; border-radius: 99px; background-color: @Suno_menu_passive; font-size: 11px; opacity: 0.68; }
++
++popover.menu .Suno-menu-check { opacity: 0.72; }
++
++popover.menu modelbutton > .Suno-menu-shortcut { margin: 0 0 0 10px; }
++
++popover.menu modelbutton > .Suno-menu-shortcut:dir(rtl) { margin: 0 10px 0 0; }
++
++popover.menu .Suno-menu-keycap { min-width: 10px; min-height: 18px; padding: 0 4px; border-radius: 4px; background-color: @Suno_menu_passive; box-shadow: inset 0 0 0 1px @Suno_menu_border; font-size: 11px; font-weight: 600; opacity: 0.68; }
++
++popover.menu.Suno-menu-with-actions > contents { min-width: 292px; padding: 0 0 8px; }
++
++popover.menu.Suno-menu-with-actions > contents > scrolledwindow > viewport > stack > box > box > box { margin: 0 8px; }
++
++popover.menu.Suno-menu-with-actions > contents > scrolledwindow > viewport > stack > box > box > widget:first-child + box > box:first-child > separator { min-height: 0; margin: 0; background: transparent; }
++
++popover.menu.Suno-menu-with-actions.Suno-menu-desktop > contents { min-width: 300px; }
++
++popover.menu .Suno-menu-actions { margin: 0 0 5px; border-bottom: 1px solid @Suno_menu_border; }
++
++popover.menu button.Suno-menu-action { min-height: 76px; padding: 0 4px; border: none; border-radius: 0; box-shadow: none; background: transparent; color: @Suno_menu_ink; font-family: Figtree; font-size: 13px; font-weight: 600; outline: none; }
++
++popover.menu button.Suno-menu-action:first-child { border-top-left-radius: 15px; }
++
++popover.menu button.Suno-menu-action:last-child { border-top-right-radius: 15px; }
++
++popover.menu button.Suno-menu-action:not(:last-child) { border-right: 1px solid @Suno_menu_border; }
++
++popover.menu button.Suno-menu-action:hover, popover.menu button.Suno-menu-action:focus-visible { background-color: @Suno_menu_passive; }
++
++popover.menu button.Suno-menu-action:disabled { opacity: 0.38; }
++
++popover.menu button.Suno-menu-action image { -gtk-icon-size: 24px; opacity: 0.88; }
+--- a/gtk/theme/Default/Default-dark.css
++++ b/gtk/theme/Default/Default-dark.css
+@@ -2021,3 +2021,88 @@
+ window.Suno-native-window:not(.Suno-adw-native-window):not(.Suno-no-native-surfaces) > .Suno-native-work-surface { margin-top: 9px; }
+ 
+ window.Suno-native-window:not(.Suno-adw-native-window):not(.Suno-no-native-surfaces).Suno-has-command-row > .Suno-native-work-surface { margin-top: 0; }
++
++/* Generated native Suno menu contract from _Suno-menu.scss. */
++@define-color Suno_menu #252a30;
++@define-color Suno_menu_ink #f2f4f6;
++@define-color Suno_menu_raised #30363d;
++@define-color Suno_menu_border rgba(255, 255, 255, 0.075);
++@define-color Suno_menu_shadow #0c1015;
++@define-color Suno_menu_passive rgba(255, 255, 255, 0.065);
++@define-color Suno_menu_pressed rgba(255, 255, 255, 0.105);
++@define-color Suno_menu_destructive #a44449;
++popover.menu > contents { min-width: 276px; padding: 8px; border: none; border-radius: 15px; background-color: @Suno_menu; color: @Suno_menu_ink; box-shadow: inset 0 0 0 1px @Suno_menu_border, 0 4px 12px alpha(@Suno_menu_shadow, 0.20), 0 24px 56px -18px alpha(@Suno_menu_shadow, 0.68); }
++
++popover.menu > contents > stack > box, popover.menu > contents > scrolledwindow > viewport > stack > box { padding: 0; }
++
++popover.menu > arrow { background-color: @Suno_menu; border-color: @Suno_menu_border; }
++
++popover.menu.Suno-menu-desktop > contents { min-width: 284px; }
++
++popover.menu.Suno-menu-dock > contents { min-width: 174px; padding: 6px; }
++
++popover.menu.Suno-menu-submenu > contents { min-width: 212px; padding: 6px; }
++
++popover.menu separator { min-height: 1px; margin: 5px 4px; background-color: @Suno_menu_border; }
++
++popover.menu label.title { min-height: 14px; padding: 4px 8px 0; margin: 0; text-transform: uppercase; font-size: 11px; font-weight: 700; letter-spacing: 0.11em; opacity: 0.46; }
++
++popover.menu modelbutton, popover.menu button.Suno-menu-row { min-height: 32px; padding: 0 8px; border: none; border-radius: 10px; background-color: transparent; color: @Suno_menu_ink; font-family: Figtree; font-size: 13px; font-weight: 600; box-shadow: none; outline: none; }
++
++popover.menu modelbutton:hover, popover.menu modelbutton:selected, popover.menu modelbutton:focus, popover.menu modelbutton:focus-visible, popover.menu button.Suno-menu-row:hover, popover.menu button.Suno-menu-row:selected, popover.menu button.Suno-menu-row:focus, popover.menu button.Suno-menu-row:focus-visible { background-color: @Suno_menu_raised; outline: 0; }
++
++popover.menu modelbutton:active, popover.menu button.Suno-menu-row:active { background-color: @Suno_menu_pressed; }
++
++popover.menu modelbutton:disabled, popover.menu button.Suno-menu-row:disabled { opacity: 0.38; background-color: transparent; }
++
++popover.menu modelbutton image, popover.menu button.Suno-menu-row image { -gtk-icon-size: 16px; opacity: 0.88; }
++
++popover.menu modelbutton arrow, popover.menu button.Suno-menu-row arrow { opacity: 0.58; }
++
++popover.menu modelbutton check, popover.menu modelbutton radio, popover.menu button.Suno-menu-row check, popover.menu button.Suno-menu-row radio { min-width: 14px; min-height: 14px; padding: 0; border: none; background: transparent; box-shadow: none; color: inherit; -gtk-icon-size: 14px; opacity: 0.72; }
++
++popover.menu button.Suno-menu-row.two-line { min-height: 36px; padding: 5px 8px; font-weight: 650; }
++
++popover.menu .Suno-menu-description { font-size: 11px; font-weight: 500; opacity: 0.5; }
++
++popover.menu button.Suno-menu-row.Suno-menu-destructive { color: @Suno_menu_ink; }
++
++popover.menu button.Suno-menu-row.Suno-menu-destructive:hover, popover.menu button.Suno-menu-row.Suno-menu-destructive:focus, popover.menu button.Suno-menu-row.Suno-menu-destructive:focus-visible { background-color: rgba(170, 64, 70, 0.12); color: @Suno_menu_destructive; }
++
++popover.menu accelerator { min-width: 18px; margin-left: 10px; padding: 1px 5px; border-radius: 6px; background-color: @Suno_menu_passive; color: @Suno_menu_ink; font-size: 11px; font-weight: 600; opacity: 0.68; }
++
++popover.menu .Suno-menu-submenu-heading { min-height: 31px; padding: 0 8px; font-size: 13px; font-weight: 700; }
++
++popover.menu .Suno-menu-count { min-width: 10px; min-height: 18px; padding: 0 5px; border-radius: 99px; background-color: @Suno_menu_passive; font-size: 11px; opacity: 0.68; }
++
++popover.menu .Suno-menu-check { opacity: 0.72; }
++
++popover.menu modelbutton > .Suno-menu-shortcut { margin: 0 0 0 10px; }
++
++popover.menu modelbutton > .Suno-menu-shortcut:dir(rtl) { margin: 0 10px 0 0; }
++
++popover.menu .Suno-menu-keycap { min-width: 10px; min-height: 18px; padding: 0 4px; border-radius: 4px; background-color: @Suno_menu_passive; box-shadow: inset 0 0 0 1px @Suno_menu_border; font-size: 11px; font-weight: 600; opacity: 0.68; }
++
++popover.menu.Suno-menu-with-actions > contents { min-width: 292px; padding: 0 0 8px; }
++
++popover.menu.Suno-menu-with-actions > contents > scrolledwindow > viewport > stack > box > box > box { margin: 0 8px; }
++
++popover.menu.Suno-menu-with-actions > contents > scrolledwindow > viewport > stack > box > box > widget:first-child + box > box:first-child > separator { min-height: 0; margin: 0; background: transparent; }
++
++popover.menu.Suno-menu-with-actions.Suno-menu-desktop > contents { min-width: 300px; }
++
++popover.menu .Suno-menu-actions { margin: 0 0 5px; border-bottom: 1px solid @Suno_menu_border; }
++
++popover.menu button.Suno-menu-action { min-height: 76px; padding: 0 4px; border: none; border-radius: 0; box-shadow: none; background: transparent; color: @Suno_menu_ink; font-family: Figtree; font-size: 13px; font-weight: 600; outline: none; }
++
++popover.menu button.Suno-menu-action:first-child { border-top-left-radius: 15px; }
++
++popover.menu button.Suno-menu-action:last-child { border-top-right-radius: 15px; }
++
++popover.menu button.Suno-menu-action:not(:last-child) { border-right: 1px solid @Suno_menu_border; }
++
++popover.menu button.Suno-menu-action:hover, popover.menu button.Suno-menu-action:focus-visible { background-color: @Suno_menu_passive; }
++
++popover.menu button.Suno-menu-action:disabled { opacity: 0.38; }
++
++popover.menu button.Suno-menu-action image { -gtk-icon-size: 24px; opacity: 0.88; }

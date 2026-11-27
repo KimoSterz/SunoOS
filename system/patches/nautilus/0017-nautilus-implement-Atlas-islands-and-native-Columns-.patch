@@ -1,5 +1,5 @@
 From 135018e847e20fe18e565b0d1e17647a909bbce5 Mon Sep 17 00:00:00 2001
-From: Project Luma <devnull@projectluma.local>
+From: Project Suno <devnull@projectSuno.local>
 Date: Sun, 30 Aug 2026 13:14:09 -0500
 Subject: [PATCH] nautilus: implement Atlas islands and native Columns view
 
@@ -51,7 +51,7 @@ index 0000000..9cc3059
 +++ b/src/nautilus-column-view.c
 @@ -0,0 +1,851 @@
 +/*
-+ * Copyright (C) 2026 Project Luma contributors
++ * Copyright (C) 2026 Project Suno contributors
 + *
 + * SPDX-License-Identifier: GPL-3.0-or-later
 + */
@@ -459,18 +459,18 @@ index 0000000..9cc3059
 +    GtkWidget *label = gtk_label_new (NULL);
 +    GtkWidget *chevron = gtk_image_new_from_icon_name ("go-next-symbolic");
 +
-+    gtk_widget_add_css_class (row, "luma-column-row");
-+    gtk_widget_add_css_class (icon, "luma-column-row-icon");
-+    gtk_widget_add_css_class (chevron, "luma-column-row-chevron");
++    gtk_widget_add_css_class (row, "Suno-column-row");
++    gtk_widget_add_css_class (icon, "Suno-column-row-icon");
++    gtk_widget_add_css_class (chevron, "Suno-column-row-chevron");
 +    gtk_label_set_ellipsize (GTK_LABEL (label), PANGO_ELLIPSIZE_END);
 +    gtk_label_set_xalign (GTK_LABEL (label), 0.0f);
 +    gtk_widget_set_hexpand (label, TRUE);
 +    gtk_box_append (GTK_BOX (row), icon);
 +    gtk_box_append (GTK_BOX (row), label);
 +    gtk_box_append (GTK_BOX (row), chevron);
-+    g_object_set_data (G_OBJECT (row), "luma-icon", icon);
-+    g_object_set_data (G_OBJECT (row), "luma-label", label);
-+    g_object_set_data (G_OBJECT (row), "luma-chevron", chevron);
++    g_object_set_data (G_OBJECT (row), "Suno-icon", icon);
++    g_object_set_data (G_OBJECT (row), "Suno-label", label);
++    g_object_set_data (G_OBJECT (row), "Suno-chevron", chevron);
 +    gtk_list_item_set_child (list_item, row);
 +}
 +
@@ -481,9 +481,9 @@ index 0000000..9cc3059
 +{
 +    NautilusFile *file = gtk_list_item_get_item (list_item);
 +    GtkWidget *row = gtk_list_item_get_child (list_item);
-+    GtkWidget *icon = g_object_get_data (G_OBJECT (row), "luma-icon");
-+    GtkWidget *label = g_object_get_data (G_OBJECT (row), "luma-label");
-+    GtkWidget *chevron = g_object_get_data (G_OBJECT (row), "luma-chevron");
++    GtkWidget *icon = g_object_get_data (G_OBJECT (row), "Suno-icon");
++    GtkWidget *label = g_object_get_data (G_OBJECT (row), "Suno-label");
++    GtkWidget *chevron = g_object_get_data (G_OBJECT (row), "Suno-chevron");
 +    g_autoptr (GdkPaintable) paintable = NULL;
 +
 +    paintable = nautilus_file_get_icon_paintable (file,
@@ -601,9 +601,9 @@ index 0000000..9cc3059
 +    GtkWidget *title = gtk_label_new (NULL);
 +    GtkWidget *count = gtk_label_new (NULL);
 +
-+    gtk_widget_add_css_class (header, "luma-column-header");
-+    gtk_widget_add_css_class (title, "luma-column-title");
-+    gtk_widget_add_css_class (count, "luma-column-count");
++    gtk_widget_add_css_class (header, "Suno-column-header");
++    gtk_widget_add_css_class (title, "Suno-column-title");
++    gtk_widget_add_css_class (count, "Suno-column-count");
 +    gtk_label_set_xalign (GTK_LABEL (title), 0.0f);
 +    gtk_label_set_ellipsize (GTK_LABEL (title), PANGO_ELLIPSIZE_END);
 +    gtk_widget_set_hexpand (title, TRUE);
@@ -622,8 +622,8 @@ index 0000000..9cc3059
 +    GtkWidget *island = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
 +    GtkWidget *scroller = gtk_scrolled_window_new ();
 +
-+    gtk_widget_add_css_class (island, "luma-column-island");
-+    gtk_widget_add_css_class (island, "luma-island");
++    gtk_widget_add_css_class (island, "Suno-column-island");
++    gtk_widget_add_css_class (island, "Suno-island");
 +    gtk_widget_set_hexpand (island, TRUE);
 +    gtk_widget_set_vexpand (island, TRUE);
 +    gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scroller),
@@ -651,19 +651,19 @@ index 0000000..9cc3059
 +    GtkLabel **values[] = { &self->details_kind, &self->details_size,
 +                           &self->details_modified, &self->details_where };
 +
-+    gtk_widget_add_css_class (island, "luma-column-island");
-+    gtk_widget_add_css_class (island, "luma-island");
-+    gtk_widget_add_css_class (island, "luma-details-island");
++    gtk_widget_add_css_class (island, "Suno-column-island");
++    gtk_widget_add_css_class (island, "Suno-island");
++    gtk_widget_add_css_class (island, "Suno-details-island");
 +    gtk_widget_set_size_request (island, 190, -1);
 +    gtk_widget_set_vexpand (island, TRUE);
 +
-+    gtk_widget_add_css_class (header, "luma-column-header");
-+    gtk_widget_add_css_class (heading, "luma-details-heading");
++    gtk_widget_add_css_class (header, "Suno-column-header");
++    gtk_widget_add_css_class (heading, "Suno-details-heading");
 +    gtk_label_set_xalign (GTK_LABEL (heading), 0.0f);
 +    gtk_box_append (GTK_BOX (header), heading);
 +
-+    gtk_widget_add_css_class (content, "luma-details-content");
-+    gtk_widget_add_css_class (icon_frame, "luma-details-icon-frame");
++    gtk_widget_add_css_class (content, "Suno-details-content");
++    gtk_widget_add_css_class (icon_frame, "Suno-details-icon-frame");
 +    gtk_widget_set_halign (icon_frame, GTK_ALIGN_CENTER);
 +    self->details_icon = GTK_IMAGE (gtk_image_new ());
 +    gtk_image_set_pixel_size (self->details_icon, 48);
@@ -671,15 +671,15 @@ index 0000000..9cc3059
 +
 +    self->details_name = GTK_LABEL (gtk_label_new (NULL));
 +    self->details_summary = GTK_LABEL (gtk_label_new (NULL));
-+    gtk_widget_add_css_class (GTK_WIDGET (self->details_name), "luma-details-name");
-+    gtk_widget_add_css_class (GTK_WIDGET (self->details_summary), "luma-details-summary");
++    gtk_widget_add_css_class (GTK_WIDGET (self->details_name), "Suno-details-name");
++    gtk_widget_add_css_class (GTK_WIDGET (self->details_summary), "Suno-details-summary");
 +    gtk_label_set_ellipsize (self->details_name, PANGO_ELLIPSIZE_END);
 +    gtk_label_set_wrap (self->details_summary, TRUE);
 +    gtk_label_set_justify (self->details_summary, GTK_JUSTIFY_CENTER);
 +
 +    gtk_grid_set_row_spacing (GTK_GRID (metadata), 4);
 +    gtk_grid_set_column_spacing (GTK_GRID (metadata), 8);
-+    gtk_widget_add_css_class (metadata, "luma-details-metadata");
++    gtk_widget_add_css_class (metadata, "Suno-details-metadata");
 +    for (guint i = 0; i < G_N_ELEMENTS (labels); i++)
 +    {
 +        GtkWidget *label = gtk_label_new (_(labels[i]));
@@ -688,8 +688,8 @@ index 0000000..9cc3059
 +        gtk_label_set_xalign (GTK_LABEL (label), 0.0f);
 +        gtk_label_set_xalign (GTK_LABEL (value), 1.0f);
 +        gtk_label_set_ellipsize (GTK_LABEL (value), PANGO_ELLIPSIZE_MIDDLE);
-+        gtk_widget_add_css_class (label, "luma-details-key");
-+        gtk_widget_add_css_class (value, "luma-details-value");
++        gtk_widget_add_css_class (label, "Suno-details-key");
++        gtk_widget_add_css_class (value, "Suno-details-value");
 +        gtk_grid_attach (GTK_GRID (metadata), label, 0, i, 1, 1);
 +        gtk_grid_attach (GTK_GRID (metadata), value, 1, i, 1, 1);
 +        *values[i] = GTK_LABEL (value);
@@ -699,7 +699,7 @@ index 0000000..9cc3059
 +    gtk_box_append (GTK_BOX (content), GTK_WIDGET (self->details_name));
 +    gtk_box_append (GTK_BOX (content), GTK_WIDGET (self->details_summary));
 +    gtk_box_append (GTK_BOX (content), metadata);
-+    gtk_widget_add_css_class (actions, "luma-details-actions");
++    gtk_widget_add_css_class (actions, "Suno-details-actions");
 +    self->details_open_button = gtk_button_new_with_label (_("Open"));
 +    self->details_properties_button = gtk_button_new_with_label (_("Properties"));
 +    gtk_widget_set_hexpand (self->details_open_button, TRUE);
@@ -865,7 +865,7 @@ index 0000000..9cc3059
 +    self->details_island = create_details_island (self);
 +
 +    self->workspace = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 9);
-+    gtk_widget_add_css_class (self->workspace, "luma-columns-workspace");
++    gtk_widget_add_css_class (self->workspace, "Suno-columns-workspace");
 +    gtk_box_append (GTK_BOX (self->workspace), self->parent_island);
 +    gtk_box_append (GTK_BOX (self->workspace), self->current_island);
 +    gtk_box_append (GTK_BOX (self->workspace), self->details_island);
@@ -908,7 +908,7 @@ index 0000000..51699a0
 +++ b/src/nautilus-column-view.h
 @@ -0,0 +1,19 @@
 +/*
-+ * Copyright (C) 2026 Project Luma contributors
++ * Copyright (C) 2026 Project Suno contributors
 + *
 + * SPDX-License-Identifier: GPL-3.0-or-later
 + */
@@ -1060,22 +1060,22 @@ index 5cbfc85..c15e121 100644
      padding-bottom: 2px;
    }
  
--  .luma-files-window .luma-sidebar-action-surface {
--    background-color: @luma_window;
+-  .Suno-files-window .Suno-sidebar-action-surface {
+-    background-color: @Suno_window;
 -  }
 -
--  .luma-files-window .luma-content-action-surface {
+-  .Suno-files-window .Suno-content-action-surface {
 -    min-height: 46px;
--    background-color: @luma_window;
+-    background-color: @Suno_window;
 -  }
 -
-   .luma-files-window .luma-action-toolbar-overlay headerbar.luma-secondary-toolbar {
+   .Suno-files-window .Suno-action-toolbar-overlay headerbar.Suno-secondary-toolbar {
 -    background-color: transparent;
 +    min-height: 40px;
-+    background-color: @luma_content;
++    background-color: @Suno_content;
 +    border-radius: 10px 10px 0 0;
    }
-   .luma-files-window headerbar.luma-secondary-toolbar .nautilus-pathbar {
+   .Suno-files-window headerbar.Suno-secondary-toolbar .nautilus-pathbar {
      min-height: 30px;
 @@ -303,16 +296,21 @@
      color: var(--accent-color);
@@ -1084,20 +1084,20 @@ index 5cbfc85..c15e121 100644
 -  /* Sidebar and content are explicit sibling surfaces below the toolbars. */
 +  /* The desktop workspace is two real sibling islands: navigation and file
 +   * content. Their separation is structural, not a user stylesheet overlay. */
-+  .luma-files-window .luma-files-workspace {
-+    background-color: @luma_window;
++  .Suno-files-window .Suno-files-workspace {
++    background-color: @Suno_window;
 +  }
 +
-   .luma-files-window .luma-sidebar-surface,
-   .luma-files-window .luma-sidebar-surface viewport,
-   .luma-files-window .luma-sidebar-surface .navigation-sidebar {
--    background-color: @luma_window;
-+    background-color: @luma_content;
-     color: @luma_ink;
+   .Suno-files-window .Suno-sidebar-surface,
+   .Suno-files-window .Suno-sidebar-surface viewport,
+   .Suno-files-window .Suno-sidebar-surface .navigation-sidebar {
+-    background-color: @Suno_window;
++    background-color: @Suno_content;
+     color: @Suno_ink;
    }
  
-   .luma-files-window .luma-sidebar-surface {
--    border-right: 1px solid @luma_line;
+   .Suno-files-window .Suno-sidebar-surface {
+-    border-right: 1px solid @Suno_line;
 +    border: none;
    }
  
@@ -1105,159 +1105,159 @@ index 5cbfc85..c15e121 100644
 @@ -323,15 +321,24 @@
    }
  
-   .luma-files-window .luma-sidebar-surface:dir(rtl) {
+   .Suno-files-window .Suno-sidebar-surface:dir(rtl) {
 -    border-right: none;
--    border-left: 1px solid @luma_line;
+-    border-left: 1px solid @Suno_line;
 +    border: none;
    }
  
-   .luma-files-window .navigation-sidebar > row {
-+    color: @luma_ink;
+   .Suno-files-window .navigation-sidebar > row {
++    color: @Suno_ink;
      font-size: 13px;
      font-weight: 400;
    }
  
-+  .luma-files-window .navigation-sidebar > row:not(:selected) label {
-+    color: @luma_ink;
++  .Suno-files-window .navigation-sidebar > row:not(:selected) label {
++    color: @Suno_ink;
 +    opacity: 1;
 +  }
 +
-+  .luma-files-window .navigation-sidebar > row:disabled label {
-+    color: @luma_muted;
++  .Suno-files-window .navigation-sidebar > row:disabled label {
++    color: @Suno_muted;
 +  }
 +
-   .luma-files-window .navigation-sidebar:not(.luma-trash-list) {
+   .Suno-files-window .navigation-sidebar:not(.Suno-trash-list) {
      padding-top: 11px;
      padding-bottom: 7px;
 @@ -493,6 +500,133 @@
-   color: @luma_ink;
+   color: @Suno_ink;
  }
  
 +/* Columns is a first-class NautilusListBase presentation over the same live
 + * NautilusViewModel. The three panes are spatial work islands; rows remain
 + * ordinary native list items with the shared hover/selection/focus states. */
-+.luma-files-window .nautilus-column-view .luma-columns-workspace {
++.Suno-files-window .nautilus-column-view .Suno-columns-workspace {
 +  padding: 9px;
-+  background-color: @luma_content;
++  background-color: @Suno_content;
 +}
 +
-+.luma-files-window .nautilus-column-view .luma-column-island {
++.Suno-files-window .nautilus-column-view .Suno-column-island {
 +  min-width: 150px;
 +}
 +
-+.luma-files-window .nautilus-column-view .luma-column-header {
++.Suno-files-window .nautilus-column-view .Suno-column-header {
 +  min-height: 40px;
 +  padding: 0 8px 0 12px;
-+  border-bottom: 1px solid @luma_line;
++  border-bottom: 1px solid @Suno_line;
 +}
 +
-+.luma-files-window .nautilus-column-view .luma-column-title {
-+  color: @luma_ink;
++.Suno-files-window .nautilus-column-view .Suno-column-title {
++  color: @Suno_ink;
 +  font-size: 13px;
 +  font-weight: 700;
 +}
 +
-+.luma-files-window .nautilus-column-view .luma-column-count {
-+  color: @luma_muted;
++.Suno-files-window .nautilus-column-view .Suno-column-count {
++  color: @Suno_muted;
 +  font-size: 11px;
 +  font-weight: 600;
 +  font-feature-settings: "tnum";
 +}
 +
-+.luma-files-window .nautilus-column-view listview {
++.Suno-files-window .nautilus-column-view listview {
 +  padding: 4px;
 +  background-color: transparent;
 +}
 +
-+.luma-files-window .nautilus-column-view listview > row {
++.Suno-files-window .nautilus-column-view listview > row {
 +  min-height: 32px;
 +  padding: 0 8px;
 +  border-radius: 8px;
-+  color: @luma_ink;
++  color: @Suno_ink;
 +  font-size: 13px;
 +  font-weight: 525;
 +}
 +
-+.luma-files-window .nautilus-column-view listview > row:hover {
-+  background-color: @luma_hover;
++.Suno-files-window .nautilus-column-view listview > row:hover {
++  background-color: @Suno_hover;
 +}
 +
-+.luma-files-window .nautilus-column-view listview > row:selected {
-+  background-color: @luma_selected;
-+  color: @luma_ink;
++.Suno-files-window .nautilus-column-view listview > row:selected {
++  background-color: @Suno_selected;
++  color: @Suno_ink;
 +  font-weight: 650;
 +}
 +
-+.luma-files-window .nautilus-column-view listview > row:focus-visible {
++.Suno-files-window .nautilus-column-view listview > row:focus-visible {
 +  outline: 2px solid var(--accent-color);
 +  outline-offset: -2px;
 +}
 +
-+.luma-files-window .nautilus-column-view .luma-column-row {
++.Suno-files-window .nautilus-column-view .Suno-column-row {
 +  min-height: 32px;
 +}
 +
-+.luma-files-window .nautilus-column-view .luma-column-row-icon {
++.Suno-files-window .nautilus-column-view .Suno-column-row-icon {
 +  -gtk-icon-size: 15px;
 +}
 +
-+.luma-files-window .nautilus-column-view .luma-column-row-chevron {
++.Suno-files-window .nautilus-column-view .Suno-column-row-chevron {
 +  -gtk-icon-size: 8px;
-+  color: @luma_muted;
++  color: @Suno_muted;
 +}
 +
-+.luma-files-window .nautilus-column-view .luma-details-heading {
-+  color: @luma_muted;
++.Suno-files-window .nautilus-column-view .Suno-details-heading {
++  color: @Suno_muted;
 +  font-size: 11px;
 +  font-weight: 700;
 +  letter-spacing: 0.08em;
 +}
 +
-+.luma-files-window .nautilus-column-view .luma-details-content {
++.Suno-files-window .nautilus-column-view .Suno-details-content {
 +  padding: 16px 12px;
 +}
 +
-+.luma-files-window .nautilus-column-view .luma-details-icon-frame {
++.Suno-files-window .nautilus-column-view .Suno-details-icon-frame {
 +  min-width: 64px;
 +  min-height: 64px;
 +  border-radius: 10px;
-+  background-color: @luma_hover;
-+  box-shadow: inset 0 0 0 1px @luma_line;
++  background-color: @Suno_hover;
++  box-shadow: inset 0 0 0 1px @Suno_line;
 +}
 +
-+.luma-files-window .nautilus-column-view .luma-details-name {
-+  color: @luma_ink;
++.Suno-files-window .nautilus-column-view .Suno-details-name {
++  color: @Suno_ink;
 +  font-size: 13px;
 +  font-weight: 700;
 +}
 +
-+.luma-files-window .nautilus-column-view .luma-details-summary,
-+.luma-files-window .nautilus-column-view .luma-details-key {
-+  color: @luma_muted;
++.Suno-files-window .nautilus-column-view .Suno-details-summary,
++.Suno-files-window .nautilus-column-view .Suno-details-key {
++  color: @Suno_muted;
 +  font-size: 11px;
 +  font-weight: 500;
 +}
 +
-+.luma-files-window .nautilus-column-view .luma-details-value {
-+  color: @luma_ink;
++.Suno-files-window .nautilus-column-view .Suno-details-value {
++  color: @Suno_ink;
 +  font-size: 11px;
 +  font-weight: 550;
 +  font-feature-settings: "tnum";
 +}
 +
-+.luma-files-window .nautilus-column-view .luma-details-actions {
++.Suno-files-window .nautilus-column-view .Suno-details-actions {
 +  margin-top: 4px;
 +}
 +
-+.luma-files-window .nautilus-column-view .luma-details-actions button {
++.Suno-files-window .nautilus-column-view .Suno-details-actions button {
 +  min-height: 34px;
 +  padding: 0 10px;
 +  border-radius: 9px;
 +}
 +
-+.luma-files-window .nautilus-column-view .luma-details-actions button:first-child {
-+  background-color: @luma_ink;
-+  color: @luma_content;
++.Suno-files-window .nautilus-column-view .Suno-details-actions button:first-child {
++  background-color: @Suno_ink;
++  color: @Suno_content;
 +}
 +
  /* Toolbar */
@@ -1391,8 +1391,8 @@ index e433e39..542c707 100644
 -              width-request: 232;
 -
 -              styles [
--                "luma-sidebar-action-surface",
--                "luma-content-action-surface",
+-                "Suno-sidebar-action-surface",
+-                "Suno-content-action-surface",
 -              ]
 -            }
 -
@@ -1400,7 +1400,7 @@ index e433e39..542c707 100644
 -              hexpand: true;
 -
 -              styles [
--                "luma-content-action-surface",
+-                "Suno-content-action-surface",
 -              ]
 -            }
 -          }
@@ -1415,7 +1415,7 @@ index e433e39..542c707 100644
 -            window-slot: bind template.active-slot;
 -
 -            styles [
--              "luma-action-toolbar-overlay",
+-              "Suno-action-toolbar-overlay",
 -            ]
 -          }
 -        }
@@ -1431,7 +1431,7 @@ index e433e39..542c707 100644
  
 -          sidebar: Adw.ToolbarView {
 +          styles [
-+            "luma-files-workspace",
++            "Suno-files-workspace",
 +          ]
 +
 +          sidebar: Adw.ToolbarView sidebar_action_surface {
@@ -1441,8 +1441,8 @@ index e433e39..542c707 100644
 +            margin-start: 9;
  
              styles [
-               "luma-sidebar-surface",
-+              "luma-island",
+               "Suno-sidebar-surface",
++              "Suno-island",
              ]
  
              [bottom]
@@ -1456,8 +1456,8 @@ index e433e39..542c707 100644
 +            margin-end: 9;
 +
              styles [
-               "luma-content-surface",
-+              "luma-island",
+               "Suno-content-surface",
++              "Suno-island",
              ]
  
 +            [top]
@@ -1470,7 +1470,7 @@ index e433e39..542c707 100644
 +              window-slot: bind template.active-slot;
 +
 +              styles [
-+                "luma-action-toolbar-overlay",
++                "Suno-action-toolbar-overlay",
 +              ]
 +            }
 +

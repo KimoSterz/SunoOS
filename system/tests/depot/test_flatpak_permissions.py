@@ -24,7 +24,7 @@ def keyed(entries):
     return {entry["key"]: entry for entry in entries}
 
 
-HEADER = "[Application]\nname=org.example.App\nruntime=org.projectluma.Platform/x86_64/44\n"
+HEADER = "[Application]\nname=org.example.App\nruntime=org.projectSuno.Platform/x86_64/44\n"
 
 
 class ComputeTests(unittest.TestCase):
@@ -191,7 +191,7 @@ if __name__ == "__main__":
 
 class ClientScopeParity(unittest.TestCase):
     def test_publisher_and_client_hold_the_same_actual_scope_changes(self):
-        from luma_installer.depot_permissions import from_metadata, diff, widens
+        from Suno_installer.depot_permissions import from_metadata, diff, widens
         for before, after in (('xdg-download/project:ro', 'xdg-download:ro'),
                               ('xdg-documents/a:ro;xdg-documents/b', 'xdg-documents/a;xdg-documents/b'),
                               ('/media/drive-a:ro', '/media:ro'),

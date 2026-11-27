@@ -1,0 +1,36 @@
+## lorax runtime template: Suno installer defaults for the Atlas web UI.
+## Added with --add-template by build-installer-iso.sh, which passes:
+##   Suno_atlas_ks            the installer kickstart (interactive-defaults.ks)
+##   Suno_atlas_media         media.env: channel, remote, refs, test payload
+##   Suno_atlas_release_key   the Suno OS Release public key, for the target
+##   Suno_atlas_pull_key      the key the payload pull trusts (the release key,
+##                            or a stand-in payload's key on test media)
+##   Suno_atlas_preview_credential  a staff medium's per-batch preview
+##                            credential file, or "none"; installed root-only
+## The runtime's global OSTree keyring holds only the pull key: Anaconda adds
+## its remote without a keyring of its own, so libostree verifies the pull
+## against /usr/share/ostree/trusted.gpg.d and nothing else.
+<%page args="root, Suno_atlas_ks, Suno_atlas_media, Suno_atlas_release_key, Suno_atlas_pull_key, Suno_atlas_preview_credential, Suno_atlas_clock_epoch, Suno_atlas_runtime_kernel"/>
+runcmd python3 /s/check-runtime-kernel.py '${root}' '${Suno_atlas_runtime_kernel}'
+runcmd sh -c "install -m 0644 '${Suno_atlas_ks}' '${root}/usr/share/anaconda/interactive-defaults.ks'"
+runcmd sh -c "install -D -m 0644 '${Suno_atlas_media}' '${root}/usr/share/Suno-installer-atlas/media.env'"
+runcmd sh -c "install -D -m 0644 '${Suno_atlas_release_key}' '${root}/usr/share/Suno-installer-atlas/Suno-release.gpg'"
+runcmd sh -c "rm -rf '${root}/usr/share/ostree/trusted.gpg.d' && install -D -m 0644 '${Suno_atlas_pull_key}' '${root}/usr/share/ostree/trusted.gpg.d/Suno-release.gpg'"
+## systemd advances an old RTC to this mtime before signature verification.
+## Dracut does not include clock-epoch automatically; carry it explicitly.
+runcmd sh -c "install -D -m 0644 /dev/null '${root}/usr/lib/clock-epoch' && touch -m -d '@${Suno_atlas_clock_epoch}' '${root}/usr/lib/clock-epoch'"
+runcmd sh -c "mkdir -p '${root}/etc/dracut.conf.d' && printf '%s\n' 'install_items+=\" /usr/lib/clock-epoch \"' > '${root}/etc/dracut.conf.d/55-Suno-atlas-clock-epoch.conf'"
+%if Suno_atlas_preview_credential != "none":
+runcmd sh -c "install -D -m 0600 -o root -g root '${Suno_atlas_preview_credential}' '${root}/usr/share/Suno-installer-atlas/preview-credential'"
+%endif
+## The installer environment names Suno (ADR-040) wherever its own identity
+## shows: the console's "Welcome to" line and the installer initramfs, which
+## lorax builds from this tree afterwards. Only NAME and PRETTY_NAME change:
+## Anaconda chooses its kickstart version and configuration profile by ID,
+## ID_LIKE, VARIANT_ID and VERSION_ID, which stay Fedora's.
+runcmd sh -c "sed -i --follow-symlinks -e 's/^NAME=.*/NAME=\"Suno\"/' -e 's/^PRETTY_NAME=.*/PRETTY_NAME=\"Suno Installer\"/' '${root}/usr/lib/os-release' && grep -qx 'PRETTY_NAME=\"Suno Installer\"' '${root}/usr/lib/os-release'"
+
+## The installer must use the same verified Suno boot renderer as its payload.
+runcmd python3 /s/verify-runtime-boot.py '${root}' /w/boot-packages.manifest
+runcmd python3 /s/prepare-runtime-presentation.py '${root}'
+runcmd python3 /s/prepare-runtime-anaconda.py '${root}'

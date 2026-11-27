@@ -22,10 +22,10 @@ import tempfile
 import time
 
 RUNTIME_PATHS = (
-    'src/luma-installer-atlas', 'config/install/atlas',
-    'packaging/rpm/luma-installer-atlas.spec',
+    'src/Suno-installer-atlas', 'config/install/atlas',
+    'packaging/rpm/Suno-installer-atlas.spec',
     'scripts/install/atlas-iso/templates',
-    'scripts/install/atlas-iso/luma-atlas-runtime.tmpl',
+    'scripts/install/atlas-iso/Suno-atlas-runtime.tmpl',
 )
 UNCHANGED_FILES = ('/images/install.img', '/images/pxeboot/vmlinuz',
                    '/images/pxeboot/initrd.img')
@@ -71,7 +71,7 @@ def verify_at_clock(repo, commit, key, epoch, directory):
     # GnuPG creates Unix sockets beneath its home. Release work paths can
     # exceed sockaddr_un even though all ordinary file accesses succeed.
     # This fresh, private public-key-only home has a bounded path length.
-    with tempfile.TemporaryDirectory(prefix='luma-clock-gpg-', dir='/tmp') as temporary:
+    with tempfile.TemporaryDirectory(prefix='Suno-clock-gpg-', dir='/tmp') as temporary:
         home = Path(temporary)
         run('gpg', '--batch', '--homedir', home, '--no-autostart', '--import', key,
             stdout=subprocess.DEVNULL)
@@ -139,8 +139,8 @@ CLOCK_CHECKPOINT = 'clock-refresh.checkpoint.json'
 CLOCK_FILES = ('install-clock.img', 'initrd-clock.img', 'CLOCK-ONLY-DELTA.json',
                'donor.discinfo', 'donor-runtime/install.img',
                'donor-runtime/vmlinuz', 'donor-runtime/initrd.img',
-               'stage2/usr/share/luma-installer-atlas/media.env',
-               'stage2/usr/share/luma-installer-atlas/luma-release.gpg')
+               'stage2/usr/share/Suno-installer-atlas/media.env',
+               'stage2/usr/share/Suno-installer-atlas/Suno-release.gpg')
 
 
 def checksum(value):
@@ -281,7 +281,7 @@ def refresh_clock(old, work, epoch, processors=2, cache_mib=512):
         '-d', root, old / 'install.img', stdout=subprocess.DEVNULL)
     before = inventory(root)
     clock = root / 'usr/lib/clock-epoch'
-    env = root / 'usr/share/luma-installer-atlas/media.env'
+    env = root / 'usr/share/Suno-installer-atlas/media.env'
     original = env.read_text()
     updated = '\n'.join(f'clock_epoch={epoch}' if line.startswith('clock_epoch=') else line
                         for line in original.splitlines()) + '\n'
@@ -294,7 +294,7 @@ def refresh_clock(old, work, epoch, processors=2, cache_mib=512):
         left, right = before[path][:], after[path][:]
         if path == 'usr/lib/clock-epoch':
             left[-1] = right[-1]
-        elif path == 'usr/share/luma-installer-atlas/media.env':
+        elif path == 'usr/share/Suno-installer-atlas/media.env':
             left[-2:] = right[-2:]
         if left != right:
             raise ValueError(f'clock refresh changed unrelated runtime metadata/content: {path}')
@@ -322,7 +322,7 @@ def refresh_clock(old, work, epoch, processors=2, cache_mib=512):
         appended_initramfs_sha256=hashlib.sha256(archive).hexdigest(),
         original_stage2_sha256=sha(old / 'install.img'),
         exact_stage2_tree_changes=['usr/lib/clock-epoch:mtime',
-                                  'usr/share/luma-installer-atlas/media.env:clock_epoch'],
+                                  'usr/share/Suno-installer-atlas/media.env:clock_epoch'],
         clock_epoch=epoch), indent=2) + '\n')
     return {'/images/install.img': stage2, '/images/pxeboot/initrd.img': initrd}
 
@@ -399,10 +399,10 @@ def main():
             run('xorriso', '-osirrox', 'on', '-indev', donor,
                 '-extract', item, old / Path(item).name, stdout=subprocess.DEVNULL)
         run('unsquashfs', '-no-progress', '-d', runtime, old / 'install.img',
-            'usr/share/luma-installer-atlas/media.env',
-            'usr/share/luma-installer-atlas/luma-release.gpg', stdout=subprocess.DEVNULL)
+            'usr/share/Suno-installer-atlas/media.env',
+            'usr/share/Suno-installer-atlas/Suno-release.gpg', stdout=subprocess.DEVNULL)
     settings = dict(line.split('=', 1) for line in
-                    (runtime / 'usr/share/luma-installer-atlas/media.env').read_text().splitlines()
+                    (runtime / 'usr/share/Suno-installer-atlas/media.env').read_text().splitlines()
                     if '=' in line and not line.startswith('#'))
     if settings.get('volid') != volid or settings.get('ref') != args.ref:
         raise ValueError('retained label/ref differs from embedded runtime binding')
@@ -411,7 +411,7 @@ def main():
     actual = subprocess.check_output(['ostree', f'--repo={repo}', 'rev-parse', args.ref], text=True).strip()
     if actual != args.commit:
         raise ValueError('payload ref does not resolve to exact candidate')
-    if sha(runtime / 'usr/share/luma-installer-atlas/luma-release.gpg') != sha(args.key):
+    if sha(runtime / 'usr/share/Suno-installer-atlas/Suno-release.gpg') != sha(args.key):
         raise ValueError('payload key differs from embedded installer release key')
     epoch = (args.clock_epoch or (retained['inputs']['clock_epoch'] if retained
                                   else int(settings['clock_epoch'])))
@@ -445,7 +445,7 @@ def main():
                                                           for destination, path in overrides.items()}))
         overrides['/.treeinfo'] = treeinfo
 
-    payload = attempt / 'luma'
+    payload = attempt / 'Suno'
     payload.mkdir()
     # A read-only symlink avoids copying a signed object corpus. mkksiso maps
     # this directory into the NEW image; its replacement hook removes old repo.
@@ -502,7 +502,7 @@ def main():
         run('xorriso', '-osirrox', 'on', '-indev', output, '-extract', item, boot / name,
             stdout=subprocess.DEVNULL)
     run('python3', here / 'prepare-lorax-boot.py', '--verify-iso', boot, args.arch)
-    run('python3', source / 'scripts/boot/check-grub-fonts.py', boot / 'grub2/themes/luma')
+    run('python3', source / 'scripts/boot/check-grub-fonts.py', boot / 'grub2/themes/Suno')
     run('python3', here / 'extract-iso-efi.py', output, boot / 'efiboot.img')
     run('mcopy', '-i', boot / 'efiboot.img', '::/EFI/BOOT/grub.cfg', boot / 'embedded-grub.cfg')
     if (boot / 'efi-grub.cfg').read_bytes() != (boot / 'embedded-grub.cfg').read_bytes():

@@ -1,4 +1,4 @@
-From: Project Luma <maintainers@projectluma.org>
+From: Project Suno <maintainers@projectSuno.org>
 Subject: [PATCH] libcamera: software_isp: Bound the CPU debayer lookup index
 
 DebayerCpu indexes its 256-entry colour lookup tables with the sample

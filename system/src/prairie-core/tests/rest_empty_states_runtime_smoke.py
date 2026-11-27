@@ -9,7 +9,7 @@ from unittest.mock import patch
 import gi
 gi.require_version('Gtk', '4.0'); gi.require_version('Adw', '1')
 from gi.repository import Adw, Gio, GLib, Gtk
-from luma_appkit import EmptyState, install_appkit
+from Suno_appkit import EmptyState, install_appkit
 from prairie_apps import clock, weather, camera
 
 def descendants(w):
@@ -30,7 +30,7 @@ with tempfile.TemporaryDirectory() as root:
         for key,sub in [('XDG_DATA_HOME','data'),('XDG_STATE_HOME','state'),('XDG_CONFIG_HOME','config')]:
             os.environ[key]=str(Path(root)/run/sub)
     isolate('shared')
-    app=Adw.Application(application_id='org.projectluma.EmptyStatesTest',flags=Gio.ApplicationFlags.NON_UNIQUE)
+    app=Adw.Application(application_id='org.projectSuno.EmptyStatesTest',flags=Gio.ApplicationFlags.NON_UNIQUE)
     assert app.register(None)
     install_appkit()
     compact=EmptyState('Nothing selected','Choose something to see its details.','image-x-generic-symbolic',compact=True)

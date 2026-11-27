@@ -3,7 +3,7 @@
 
 Each contact is evaluated when each window ends (or at lift), stage 1 then
 stage 2 with the others' stage-1 opinions, and the votes accumulate, exactly
-as plugins/luma-touch-roles.lua does inside libinput.
+as plugins/Suno-touch-roles.lua does inside libinput.
 """
 
 from __future__ import annotations

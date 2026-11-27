@@ -1,0 +1,3 @@
+[D-BUS Service]
+Name=org.projectSuno.AppData1
+Exec=/usr/libexec/Suno-app-data-broker

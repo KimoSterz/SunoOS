@@ -29,7 +29,7 @@ case "$*" in
   'getprop '*) printf 'fixture-value\n' ;;
   'uname -a') printf 'Linux milos 6.18 fixture\n' ;;
   'cat /proc/partitions')
-    if [ "${LUMA_MOCK_PARTITIONS_DENIED:-false}" = true ]; then
+    if [ "${SUNO_MOCK_PARTITIONS_DENIED:-false}" = true ]; then
       printf 'cat: /proc/partitions: Permission denied\n' >&2
       exit 1
     fi
@@ -70,11 +70,11 @@ esac
 MOCK_FASTBOOT
 chmod +x "$test_root/bin/adb" "$test_root/bin/fastboot"
 
-LUMA_ADB="$test_root/bin/adb" \
-LUMA_FASTBOOT="$test_root/bin/fastboot" \
-LUMA_FP6_TRANSPORT=adb \
-LUMA_FP6_INVENTORY_DIR="$test_root/adb-output" \
-LUMA_FP6_INVENTORY_TIMESTAMP=fixture \
+SUNO_ADB="$test_root/bin/adb" \
+SUNO_FASTBOOT="$test_root/bin/fastboot" \
+SUNO_FP6_TRANSPORT=adb \
+SUNO_FP6_INVENTORY_DIR="$test_root/adb-output" \
+SUNO_FP6_INVENTORY_TIMESTAMP=fixture \
   "$repo_root/scripts/mobile/inventory-fp6.sh" >/dev/null
 
 grep -qx 'TRANSPORT=adb' "$test_root/adb-output/summary.env"
@@ -87,22 +87,22 @@ grep -qx 'Physical size: 1116x2484' "$test_root/adb-output/display-size.txt"
 mkdir -p "$test_root/platform tools" "$test_root/adb-denied-output"
 cp "$test_root/bin/adb" "$test_root/platform tools/adb"
 cp "$test_root/bin/fastboot" "$test_root/platform tools/fastboot"
-LUMA_ADB="$test_root/platform tools/adb" \
-LUMA_FASTBOOT="$test_root/platform tools/fastboot" \
-LUMA_MOCK_PARTITIONS_DENIED=true \
-LUMA_FP6_TRANSPORT=adb \
-LUMA_FP6_INVENTORY_DIR="$test_root/adb-denied-output" \
-LUMA_FP6_INVENTORY_TIMESTAMP=fixture \
+SUNO_ADB="$test_root/platform tools/adb" \
+SUNO_FASTBOOT="$test_root/platform tools/fastboot" \
+SUNO_MOCK_PARTITIONS_DENIED=true \
+SUNO_FP6_TRANSPORT=adb \
+SUNO_FP6_INVENTORY_DIR="$test_root/adb-denied-output" \
+SUNO_FP6_INVENTORY_TIMESTAMP=fixture \
   "$repo_root/scripts/mobile/inventory-fp6.sh" >/dev/null
 grep -qx 'IDENTITY=fp6-confirmed' "$test_root/adb-denied-output/summary.env"
 grep -qx 'UNAVAILABLE: stock Android denied read access to /proc/partitions' \
   "$test_root/adb-denied-output/partitions.txt"
 
-LUMA_ADB="$test_root/bin/adb" \
-LUMA_FASTBOOT="$test_root/bin/fastboot" \
-LUMA_FP6_TRANSPORT=fastboot \
-LUMA_FP6_INVENTORY_DIR="$test_root/fastboot-output" \
-LUMA_FP6_INVENTORY_TIMESTAMP=fixture \
+SUNO_ADB="$test_root/bin/adb" \
+SUNO_FASTBOOT="$test_root/bin/fastboot" \
+SUNO_FP6_TRANSPORT=fastboot \
+SUNO_FP6_INVENTORY_DIR="$test_root/fastboot-output" \
+SUNO_FP6_INVENTORY_TIMESTAMP=fixture \
   "$repo_root/scripts/mobile/inventory-fp6.sh" >/dev/null
 
 grep -qx 'TRANSPORT=fastboot' "$test_root/fastboot-output/summary.env"
@@ -114,19 +114,19 @@ grep -qx 'Device critical unlocked: true' "$test_root/fastboot-output/fastboot-d
 mkdir -p "$test_root/readiness"
 cp -R "$test_root/adb-output" "$test_root/readiness/inventory"
 cat >"$test_root/readiness/recovery-manifest.txt" <<'RECOVERY'
-LUMA_FP6_RECOVERY_MANIFEST_VERSION=1
+SUNO_FP6_RECOVERY_MANIFEST_VERSION=1
 SECURITY_PATCH=2026-07-05
 CHECKSUM_VERIFIED=true
 FLASH_AUTHORIZED=false
 RECOVERY
 cat >"$test_root/readiness/control-manifest.txt" <<'CONTROL'
-LUMA_FP6_CONTROL_MANIFEST_VERSION=1
+SUNO_FP6_CONTROL_MANIFEST_VERSION=1
 CHECKSUMS_VERIFIED=true
 INSTALL_MUTATES_PHONE=true
 INSTALL_AUTHORIZED=false
 CONTROL
 
-LUMA_FP6_PHYSICAL_BUILD_DIR="$test_root/readiness" \
+SUNO_FP6_PHYSICAL_BUILD_DIR="$test_root/readiness" \
   "$repo_root/scripts/mobile/check-fp6-readiness.sh" \
   "$test_root/readiness/inventory" >"$test_root/readiness/pass.txt"
 grep -qx 'UNLOCK_AUTHORIZED=false' "$test_root/readiness/pass.txt"
@@ -137,7 +137,7 @@ grep -qx 'DEVICE_UPDATE_REQUIRED=false' "$test_root/readiness/pass.txt"
 sed 's/SECURITY_PATCH=2026-07-05/SECURITY_PATCH=2026-06-05/' \
   "$test_root/readiness/recovery-manifest.txt" >"$test_root/readiness/recovery-old.txt"
 mv "$test_root/readiness/recovery-old.txt" "$test_root/readiness/recovery-manifest.txt"
-if LUMA_FP6_PHYSICAL_BUILD_DIR="$test_root/readiness" \
+if SUNO_FP6_PHYSICAL_BUILD_DIR="$test_root/readiness" \
   "$repo_root/scripts/mobile/check-fp6-readiness.sh" \
   "$test_root/readiness/inventory" >/dev/null 2>&1; then
   printf 'error: readiness accepted recovery older than the device patch\n' >&2

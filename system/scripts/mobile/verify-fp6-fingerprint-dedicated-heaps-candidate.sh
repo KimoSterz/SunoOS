@@ -77,9 +77,9 @@ child=/firmware/scm/qseecom-tee-heaps
   die 'global SCM unexpectedly owns the apps pool'
 ! fdtget "$dtb" /firmware/scm qcom,tzmem-whole-pool-shmbridge >/dev/null 2>&1 ||
   die 'global whole-pool SHM mode is unexpectedly enabled'
-[ "$(fdtget "$dtb" "$child" compatible)" = 'luma,qseecom-tee-heaps' ] ||
+[ "$(fdtget "$dtb" "$child" compatible)" = 'Suno,qseecom-tee-heaps' ] ||
   die 'QSEECom heap child compatible differs'
-fdtget "$dtb" "$child" luma,dedicated-heaps >/dev/null ||
+fdtget "$dtb" "$child" Suno,dedicated-heaps >/dev/null ||
   die 'dedicated-heaps opt-in is absent'
 [ "$(fdtget -t x "$dtb" "$child" memory-region)" = \
   "$ta_phandle $apps_phandle" ] || die 'QSEECom child pool ownership differs'

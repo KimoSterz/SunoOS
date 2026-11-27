@@ -5,8 +5,8 @@ CFLAGS ?= -O2 -g
 CPPFLAGS ?=
 WARNINGS := -Wall -Wextra -Werror -Wformat=2 -Wshadow -Wconversion
 REPRO_FLAGS := \
-	"-ffile-prefix-map=$(CURDIR)=/usr/src/luma/fp6-fingerprint-qsee-bridge" \
-	"-fdebug-prefix-map=$(CURDIR)=/usr/src/luma/fp6-fingerprint-qsee-bridge"
+	"-ffile-prefix-map=$(CURDIR)=/usr/src/Suno/fp6-fingerprint-qsee-bridge" \
+	"-fdebug-prefix-map=$(CURDIR)=/usr/src/Suno/fp6-fingerprint-qsee-bridge"
 
 .PHONY: all android check clean
 
@@ -28,7 +28,7 @@ libQSEEComAPI.android.so: qseecom_bridge.c QSEEComAPI.h qseecom_bridge_internal.
 		-Wl,--version-script=qseecom_bridge.map
 
 test-qseecom-bridge: test_qseecom_bridge.c qseecom_bridge.c QSEEComAPI.h qseecom_bridge_internal.h
-	$(CC) $(CPPFLAGS) $(CFLAGS) $(WARNINGS) $(REPRO_FLAGS) -DLUMA_QSEE_TEST \
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(WARNINGS) $(REPRO_FLAGS) -DSuno_QSEE_TEST \
 		-o $@ test_qseecom_bridge.c qseecom_bridge.c -pthread
 
 check: test-qseecom-bridge

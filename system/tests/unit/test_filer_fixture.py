@@ -34,7 +34,7 @@ class FilerFixtureTest(unittest.TestCase):
             webp = (launch / "hero-writing.webp").read_bytes()
             self.assertTrue(webp.startswith(b"RIFF"))
             self.assertEqual(struct.unpack_from("<I", webp, 4)[0], len(webp) - 8)
-            self.assertEqual(list((root / "Fable SSD/Luma/Apps").iterdir()), [])
+            self.assertEqual(list((root / "Fable SSD/Suno/Apps").iterdir()), [])
             self.assertEqual(len(list((root / "Recent").iterdir())), 5)
             self.assertEqual(stat.S_IMODE(launch.stat().st_mode), 0o755)
             self.assertEqual(stat.S_IMODE((launch / "launch-plan.md").stat().st_mode), 0o444)

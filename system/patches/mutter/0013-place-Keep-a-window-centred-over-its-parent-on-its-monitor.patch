@@ -1,4 +1,4 @@
-From: Project Luma <engineering@projectluma.org>
+From: Project Suno <engineering@projectSuno.org>
 Date: Thu, 17 Sep 2026 00:30:00 -0500
 Subject: [PATCH] place: Keep a window centred over its parent on the parent's
  monitor

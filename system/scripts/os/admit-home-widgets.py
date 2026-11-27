@@ -42,9 +42,9 @@ assert record['head_sha'] == source and record['path'] == '.github/workflows/des
 jobs = api(f'actions/runs/{run}/jobs?per_page=100')['jobs']
 assert any('home-widgets' in job['name'] and a.architecture in job['name'] and job['conclusion'] == 'success' for job in jobs)
 # Other failed jobs in this matrix do not invalidate this completed native producer.
-paths = ['src/luma-home-widgets', 'scripts/packages/build-luma-home-widgets.sh',
+paths = ['src/Suno-home-widgets', 'scripts/packages/build-Suno-home-widgets.sh',
          'scripts/packages/run-in-rpm-builder.sh', 'scripts/developer/generate-home-widget-styles.py',
-         'config/shared/design-tokens.d/home-widgets.json', 'packaging/rpm/luma-home-widgets.spec']
+         'config/shared/design-tokens.d/home-widgets.json', 'packaging/rpm/Suno-home-widgets.spec']
 subprocess.run(['git', '-c', f'safe.directory={Path.cwd()}', 'diff', '--exit-code', source, 'HEAD', '--', *paths], check=True)
 if a.run_id:
     artifacts = api(f'actions/runs/{run}/artifacts?per_page=100')['artifacts']
@@ -82,16 +82,16 @@ with tempfile.TemporaryDirectory() as temporary:
     assert len(receipts) == 1 and receipts[0].read_text().strip() == source
     if a.run_id:
         pins = dict(line.split('=', 1) for line in Path('config/desktop/inputs.env').read_text().splitlines() if line and not line.startswith('#') and '=' in line)
-        expected = pins[f'LUMA_HOME_WIDGETS_{a.architecture.upper()}_NEVRA']
+        expected = pins[f'SUNO_HOME_WIDGETS_{a.architecture.upper()}_NEVRA']
     else:
-        expected = f'luma-home-widgets-0.1.0-1.luma.1.fc44.{a.architecture}'
-    native = list(extracted.glob(f'packages/luma-home-widgets/RPMS/{a.architecture}/{expected}.rpm'))
+        expected = f'Suno-home-widgets-0.1.0-1.Suno.1.fc44.{a.architecture}'
+    native = list(extracted.glob(f'packages/Suno-home-widgets/RPMS/{a.architecture}/{expected}.rpm'))
     assert len(native) == 1
     identity = subprocess.check_output(['rpm', '-qp', '--nosignature', '--qf', '%{NEVRA}', str(native[0])], text=True)
     assert identity == expected
-    output = Path('build/packages/luma-home-widgets')
+    output = Path('build/packages/Suno-home-widgets')
     assert not output.exists(), 'refuse to overwrite another provider'
     output.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copytree(extracted / 'packages/luma-home-widgets', output)
+    shutil.copytree(extracted / 'packages/Suno-home-widgets', output)
     Path('build/HOME-WIDGETS-PROVIDER.json').write_text(json.dumps({'run': run, 'source': source, 'artifact_id': artifact, 'archive_sha256': digest, 'architecture': a.architecture}, indent=2) + '\n')
 print(f'Admitted checked {a.architecture} Home widgets from native job in run {run}')

@@ -3,12 +3,12 @@ import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import St from 'gi://St';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
-const out = GLib.getenv('LUMA_SHELF_TEST_OUT');
+const out = GLib.getenv('SUNO_SHELF_TEST_OUT');
 const results = [];
 const sleep = ms => new Promise(resolve => GLib.timeout_add(GLib.PRIORITY_DEFAULT, ms, () => {resolve(); return GLib.SOURCE_REMOVE;}));
 const check = (name, ok, detail = '') => {results.push({name, ok: Boolean(ok), detail}); console.log(`${ok ? 'PASS' : 'FAIL'} ${name} ${detail}`);};
 class Provider {
-    constructor(id, kind, name) {this.id = id; this.lumaKind = kind; this.name = name; this.isRemoteProvider = false; this.maxResults = 30; this.activated = 0;}
+    constructor(id, kind, name) {this.id = id; this.SunoKind = kind; this.name = name; this.isRemoteProvider = false; this.maxResults = 30; this.activated = 0;}
     async getInitialResultSet(terms) {return terms.join(' ').startsWith('probe') ? Array.from({length: 30}, (_, i) => `${this.id}-${i}`) : [];}
     async getSubsearchResultSet(previous, terms) {return this.getInitialResultSet(terms);}
     filterResults(ids, max) {return ids.slice(0, max);}
@@ -17,23 +17,23 @@ class Provider {
     activateResult() {this.activated++;}
 }
 async function work() {
-    const search = Main.lumaSearch, dialog = search._dialog;
+    const search = Main.SunoSearch, dialog = search._dialog;
     const providers = [new Provider('probe-app', 'app', 'app'), new Provider('probe-setting', 'setting', 'settings'),
-        new Provider('probe-file', 'file', 'file'), new Provider('org.projectluma.Depot.desktop', 'app', 'available app')];
+        new Provider('probe-file', 'file', 'file'), new Provider('org.projectSuno.Depot.desktop', 'app', 'available app')];
     for (const provider of providers) dialog._results.addProvider(provider);
     search.open(); await sleep(500); dialog._entry.text = 'probe'; await sleep(700);
     const children = dialog._results._merged.get_children();
-    const headings = children.filter(row => row._lumaSection && row.visible).map(row => row.text);
+    const headings = children.filter(row => row._SunoSection && row.visible).map(row => row.text);
     check('results have Apps Settings Files Depot sections', JSON.stringify(headings.slice(0, 4)) === JSON.stringify(['Apps', 'Settings', 'Files', 'Depot']), JSON.stringify(headings));
-    const rows = children.filter(row => row._lumaRank && row.visible);
-    check('section limits retain all categories', ['Apps', 'Settings', 'Files', 'Depot'].every(section => rows.some(row => row._lumaSectionName === section)));
-    check('default result is an actionable application row', dialog._results._defaultResult?._lumaRank?.kind === 'app');
-    check('headings do not take keyboard focus', children.filter(row => row._lumaSection).every(row => !row.can_focus));
+    const rows = children.filter(row => row._SunoRank && row.visible);
+    check('section limits retain all categories', ['Apps', 'Settings', 'Files', 'Depot'].every(section => rows.some(row => row._SunoSectionName === section)));
+    check('default result is an actionable application row', dialog._results._defaultResult?._SunoRank?.kind === 'app');
+    check('headings do not take keyboard focus', children.filter(row => row._SunoSection).every(row => !row.can_focus));
     const selected = dialog._results._defaultResult;
     selected?.activate();
     check('default result activates its owning provider', providers.some(provider => provider.activated === 1));
     search.open(); await sleep(350); dialog._entry.text = 'no-match-for-providers'; await sleep(500);
-    check('empty categories are removed', !dialog._results._merged.get_children().some(row => row._lumaSection && row.visible));
+    check('empty categories are removed', !dialog._results._merged.get_children().some(row => row._SunoSection && row.visible));
     search.close();
 }
 export function init() {

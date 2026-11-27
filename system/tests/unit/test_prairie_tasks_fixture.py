@@ -30,7 +30,7 @@ class FixtureTests(unittest.TestCase):
         self.assertTrue(all(not source.writable for source in sources))
 
     def test_fixture_never_constructs_real_repository(self):
-        with patch.dict(os.environ, {"LUMA_TASKS_FIXTURE": str(self.path)}), \
+        with patch.dict(os.environ, {"SUNO_TASKS_FIXTURE": str(self.path)}), \
              patch("prairie_apps.tasks_backend.TasksRepository", side_effect=AssertionError("Real store touched")):
             source = source_from_environment()
             self.assertIsInstance(source, FixtureRepository)
@@ -38,7 +38,7 @@ class FixtureTests(unittest.TestCase):
             source.close()
 
     def test_missing_fixture_fails_closed(self):
-        with patch.dict(os.environ, {"LUMA_TASKS_FIXTURE": str(self.path) + ".missing"}), \
+        with patch.dict(os.environ, {"SUNO_TASKS_FIXTURE": str(self.path) + ".missing"}), \
              patch("prairie_apps.tasks_backend.TasksRepository", side_effect=AssertionError("Real store touched")):
             with self.assertRaises(FileNotFoundError):
                 source_from_environment()

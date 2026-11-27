@@ -1,0 +1,3 @@
+#!/usr/bin/python3 -s
+from Suno_continuity.__main__ import main
+main()

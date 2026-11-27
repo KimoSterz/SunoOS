@@ -9,7 +9,7 @@ import sys
 import tempfile
 
 REPO = Path(__file__).resolve().parents[2]
-sys.path[:0] = [str(REPO / "src/luma-platform/appkit"), str(REPO / "src/prairie-core")]
+sys.path[:0] = [str(REPO / "src/Suno-platform/appkit"), str(REPO / "src/prairie-core")]
 temporary = tempfile.TemporaryDirectory(prefix="memos-v70-runtime-")
 root = Path(temporary.name)
 os.environ.update({
@@ -17,8 +17,8 @@ os.environ.update({
     "XDG_STATE_HOME": str(root / "state"),
     "XDG_DATA_HOME": str(root / "data"),
     "GSETTINGS_BACKEND": "memory",
-    "LUMA_MEMOS_FIXTURE": str(REPO / "tests/fixtures/memos-v70.json"),
-    "LUMA_MEMO_STYLE_PATH": str(REPO / "src/prairie-core/style/memo.css"),
+    "SUNO_MEMOS_FIXTURE": str(REPO / "tests/fixtures/memos-v70.json"),
+    "SUNO_MEMO_STYLE_PATH": str(REPO / "src/prairie-core/style/memo.css"),
 })
 
 import gi  # noqa: E402

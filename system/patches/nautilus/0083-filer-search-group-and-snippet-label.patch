@@ -19,8 +19,8 @@ index fda2e57..ba09a7f 100644
  
      GtkColumnView *view_ui;
 +    GtkWidget *search_heading;
-+    LumaTypeLabel *search_heading_title;
-+    LumaCountBadge *search_heading_count;
++    SunoTypeLabel *search_heading_title;
++    SunoCountBadge *search_heading_count;
 +    NautilusViewModel *observed_model;
 +    gulong items_changed_id;
  
@@ -36,7 +36,7 @@ index fda2e57..ba09a7f 100644
 +        g_autofree char *basename = location != NULL ? g_file_get_basename (location) : NULL;
 +        g_autofree char *heading = g_strdup_printf (_("In %s"), basename != NULL ? basename : _("this folder"));
 +
-+        luma_type_label_set_text (self->search_heading_title, heading);
++        Suno_type_label_set_text (self->search_heading_title, heading);
 +    }
 +    gtk_widget_set_visible (self->search_heading, self->search_directory != NULL);
 +
@@ -54,7 +54,7 @@ index fda2e57..ba09a7f 100644
 +                         guint              added,
 +                         NautilusListView  *self)
 +{
-+    luma_count_badge_set_count (self->search_heading_count,
++    Suno_count_badge_set_count (self->search_heading_count,
 +                                g_list_model_get_n_items (G_LIST_MODEL (model)));
 +}
 +
@@ -105,8 +105,8 @@ index fda2e57..ba09a7f 100644
 +    gtk_widget_set_margin_end (self->search_heading, 28);
 +    gtk_widget_set_margin_top (self->search_heading, 6);
 +    gtk_widget_set_margin_bottom (self->search_heading, 6);
-+    self->search_heading_title = LUMA_TYPE_LABEL (luma_type_label_new (NULL, "caption"));
-+    self->search_heading_count = LUMA_COUNT_BADGE (luma_count_badge_new (0, FALSE));
++    self->search_heading_title = SUNO_TYPE_LABEL (Suno_type_label_new (NULL, "caption"));
++    self->search_heading_count = SUNO_COUNT_BADGE (Suno_count_badge_new (0, FALSE));
 +    gtk_box_append (GTK_BOX (self->search_heading), GTK_WIDGET (self->search_heading_title));
 +    gtk_box_append (GTK_BOX (self->search_heading), GTK_WIDGET (self->search_heading_count));
 +    gtk_widget_set_visible (self->search_heading, FALSE);

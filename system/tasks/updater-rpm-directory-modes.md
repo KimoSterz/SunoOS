@@ -1,13 +1,13 @@
 # Task: updater-rpm-directory-modes
 
-- Owner: luma-dev-2, Codex /root/native_browser_environment
+- Owner: Suno-dev-2, Codex /root/native_browser_environment
 - Status: active; root owns integration and compose lifecycle.
-- Worktree: /srv/dev/worktrees/luma-os/updater-rpm-directory-modes
+- Worktree: /srv/dev/worktrees/Suno-os/updater-rpm-directory-modes
 - Branch: agent/1003/updater-rpm-directory-modes, based on fd68bd1c7.
 - Scope: fix updater and remote RPM directory metadata only; release24 and pins.
 
 Actual release23 updater headers contain unintended 042750 shared greenboot,
-/etc/luma and /usr/lib/luma directories, plus restrictive generated directories.
+/etc/Suno and /usr/lib/Suno directories, plus restrictive generated directories.
 The source spec did not define directory metadata. The private shared build
 volume has inherited default ACLs and setgid; production source is unchanged.
 
@@ -46,7 +46,7 @@ all90 Source0 files match maintained source; all27 installed Python modules,
 update.conf, remote configuration, mirrorlist, graph key and dearmored OS key
 match source. Shipping updater code is unchanged against fd68bd1c7.
 
-Final packages: build/packages/luma-update under this worktree's private HDD
+Final packages: build/packages/Suno-update under this worktree's private HDD
 build symlink. Detailed proof: second-account artifacts for the two successful
 units above; source/payload details in INSPECTED.json. Root owns collection,
 integration and the next compose. No canonical package pool was modified.

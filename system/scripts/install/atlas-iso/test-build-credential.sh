@@ -51,11 +51,11 @@ for i, a in enumerate(args):
     if a == "--add-template":
         templates.append(args[i + 1])
 root = "/tmp/stage2-root"
-os.makedirs(root + "/usr/share/luma-installer-atlas", exist_ok=True)
+os.makedirs(root + "/usr/share/Suno-installer-atlas", exist_ok=True)
 os.makedirs(root + "/usr/share/anaconda", exist_ok=True)
 os.makedirs(root + "/usr/share/ostree/trusted.gpg.d", exist_ok=True)
 open(root + "/usr/share/ostree/trusted.gpg.d/README-gpg", "w").write("fedora\n")
-open(root + "/usr/share/luma-installer-atlas/app-collections.json", "w").write("{}\n")
+open(root + "/usr/share/Suno-installer-atlas/app-collections.json", "w").write("{}\n")
 for template in templates:
     text = Template(filename=template).render(root=root, **variables)
     for line in text.splitlines():
@@ -63,7 +63,7 @@ for template in templates:
         if line.startswith("runcmd "):
             subprocess.run(shlex.split(line[len("runcmd "):]), check=True)
 leak = os.environ.get("LEAK", "")
-secret = variables.get("luma_atlas_preview_credential", "none")
+secret = variables.get("Suno_atlas_preview_credential", "none")
 if leak == "stage2" and secret != "none":
     os.makedirs(root + "/usr/share/doc", exist_ok=True)
     subprocess.run(["cp", secret, root + "/usr/share/doc/leak.txt"], check=True)
@@ -97,7 +97,7 @@ EOF
 chmod +x "$t/bin/podman" "$t/stubs/"*
 # Never let the real lorax run if the stand-ins are not found first.
 /usr/bin/podman run --rm --security-opt label=disable --volume "$t/stubs:/stubs:ro" \
-    --env PATH=/stubs:/usr/local/bin:/usr/bin:/usr/sbin localhost/luma-atlas-iso-tools:44 \
+    --env PATH=/stubs:/usr/local/bin:/usr/bin:/usr/sbin localhost/Suno-atlas-iso-tools:44 \
     bash -c '[ "$(command -v lorax)" = /stubs/lorax ] && [ "$(command -v mkksiso)" = /stubs/mkksiso ]' ||
   { echo 'the stand-ins are not first on PATH in the tools container; stopping' >&2; exit 1; }
 
@@ -110,7 +110,7 @@ build() {
   PATH="$t/bin:$PATH" bash "$here/build-installer-iso.sh" --rpms "$rpms" --work "$t/$name" \
       --output "$t/$name.iso" --channel nightly --release-key "$release_key" \
       --test-payload-url https://mirror.example/fedora --test-payload-ref fedora/44/x86_64/silverblue \
-      --test-payload-key "$release_key" --volid Luma-Stub-Test "$@" > "$t/$name.out" 2>&1
+      --test-payload-key "$release_key" --volid Suno-Stub-Test "$@" > "$t/$name.out" 2>&1
 }
 leaks() { grep -rlF -f "$t/credential" "$@" 2>/dev/null | grep -q .; }
 
@@ -122,10 +122,10 @@ grep -q 'no copy of the secret in the sidecars, templates or build logs' "$t/cle
 grep -qx 'preview_credential=carried' "$t/clean.iso.media" && ok '.media says carried' || bad '.media says carried'
 ! leaks "$t/clean.out" "$t/clean.iso.media" "$t/clean.iso.sha256" "$t/clean/logs" "$t/clean/templates" && ok 'no copy in output, sidecars or logs' || bad 'no copy in output, sidecars or logs'
 [ ! -e "$t/clean/secret" ] && ok 'work copy of the credential removed' || bad 'work copy of the credential removed'
-/usr/bin/podman run --rm --privileged --security-opt label=disable --volume "$t:/t" localhost/luma-atlas-iso-tools:44 bash -c '
+/usr/bin/podman run --rm --privileged --security-opt label=disable --volume "$t:/t" localhost/Suno-atlas-iso-tools:44 bash -c '
   mkdir /iso && mount -o ro,loop /t/clean.iso /iso && unsquashfs -no-xattrs -d /s2 /iso/images/install.img >/dev/null &&
-  stat -c "%a %u %g" /s2/usr/share/luma-installer-atlas/preview-credential &&
-  cmp /t/credential /s2/usr/share/luma-installer-atlas/preview-credential >/dev/null 2>&1 || cmp <(tr -d "\n" < /t/credential) /s2/usr/share/luma-installer-atlas/preview-credential' > "$t/inspect.out" 2>&1 &&
+  stat -c "%a %u %g" /s2/usr/share/Suno-installer-atlas/preview-credential &&
+  cmp /t/credential /s2/usr/share/Suno-installer-atlas/preview-credential >/dev/null 2>&1 || cmp <(tr -d "\n" < /t/credential) /s2/usr/share/Suno-installer-atlas/preview-credential' > "$t/inspect.out" 2>&1 &&
   grep -qx '600 0 0' "$t/inspect.out" && ok 'installer copy is root:root 0600 and matches' || { bad 'installer copy is root:root 0600 and matches'; cat "$t/inspect.out"; }
 
 # 2. Without the credential: no copy in stage 2, .media says none.

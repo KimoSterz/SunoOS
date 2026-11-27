@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2026 Project Luma
+ * Copyright (C) 2026 Project Suno
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -25,8 +25,8 @@
 #include FT_MULTIPLE_MASTERS_H
 
 namespace prairie {
-LumaWindowFrame frame(const window& window) {
-    auto geometry = luma_window_frame(window.content_width, window.content_height,
+SunoWindowFrame frame(const window& window) {
+    auto geometry = Suno_window_frame(window.content_width, window.content_height,
                                      kTitlebarHeight, window.has_prairie_titlebar);
     return geometry;
 }
@@ -35,7 +35,7 @@ enum class SurfaceTreatment { Light, Dark, Frost, Glass };
 
 SurfaceTreatment read_surface_treatment() {
     char value[PROPERTY_VALUE_MAX] {};
-    property_get("persist.luma.surface_treatment", value, "light");
+    property_get("persist.Suno.surface_treatment", value, "light");
     if (std::strcmp(value, "dark") == 0) return SurfaceTreatment::Dark;
     if (std::strcmp(value, "frost") == 0) return SurfaceTreatment::Frost;
     if (std::strcmp(value, "glass") == 0) return SurfaceTreatment::Glass;
@@ -73,12 +73,12 @@ uint32_t control_opacity(SurfaceTreatment treatment) {
 
 int outer_width(const window& window) { return frame(window).outer.width; }
 bool dark_frame(const window& window) { return window.surface_treatment == "dark"; }
-uint32_t frame_ink(const window& window) { return dark_frame(window) ? LUMA_FRAME_DARK_INK : LUMA_FRAME_LIGHT_INK; }
+uint32_t frame_ink(const window& window) { return dark_frame(window) ? SUNO_FRAME_DARK_INK : SUNO_FRAME_LIGHT_INK; }
 int control_left(const window& window, int kind) {
     // Match the native order at the right: minimize, maximize, close.
     const int position = kind == 0 ? 0 : kind == 1 ? 2 : 1;
-    return luma_frame_controls(frame(window)).x + LUMA_FRAME_CONTROL_PADDING +
-        (2 - position) * LUMA_FRAME_CONTROL_SIZE;
+    return Suno_frame_controls(frame(window)).x + SUNO_FRAME_CONTROL_PADDING +
+        (2 - position) * SUNO_FRAME_CONTROL_SIZE;
 }
 
 
@@ -90,7 +90,7 @@ constexpr uint32_t kCloseGlyphHover = 0xffbd5a4e;
 constexpr uint32_t kMinimizeGlyphHover = 0xffb0782b;
 constexpr uint32_t kMaximizeGlyphHover = 0xff4f8a52;
 constexpr int kIconSize = 11;
-// Luma's own windows carry a three-layer elevation rather than one blur: a
+// Suno's own windows carry a three-layer elevation rather than one blur: a
 // tight contact shadow, a mid lift, and a broad ambient pool. The values are
 // the window elevation rule in the patched libadwaita — on dark
 //   0 3px 8px          rgba(9,11,14,.38)
@@ -221,16 +221,16 @@ void draw_control(window& window, int button_left, int kind) {
     const uint32_t glyph = hovered ?
         (kind == 0 ? kCloseGlyphHover :
          (kind == 1 ? kMinimizeGlyphHover : kMaximizeGlyphHover)) : frame_ink(window);
-    const uint8_t* mask = kind == 0 ? luma_frame_close_glyph :
-        (kind == 1 ? luma_frame_minimize_glyph :
-         (window.maximized ? luma_frame_restore_glyph : luma_frame_maximize_glyph));
+    const uint8_t* mask = kind == 0 ? Suno_frame_close_glyph :
+        (kind == 1 ? Suno_frame_minimize_glyph :
+         (window.maximized ? Suno_frame_restore_glyph : Suno_frame_maximize_glyph));
     const int icon_left = button_left + (kControlAllocation - kIconSize) / 2;
     constexpr int icon_top = (kTitlebarHeight - kIconSize) / 2;
     draw_mask(window, icon_left, icon_top, mask, glyph);
 }
 
 void draw_back(window& window) {
-    const int left = luma_frame_back(frame(window)).x;
+    const int left = Suno_frame_back(frame(window)).x;
     constexpr int center_y = kTitlebarHeight / 2;
     if (window.hovered_chrome_target ==
             static_cast<int>(TitlebarTarget::Back)) {
@@ -245,7 +245,7 @@ void draw_back(window& window) {
                 const int dx = x - nearest_x;
                 const int dy = y - nearest_y;
                 if (dx * dx + dy * dy <= radius * radius)
-                    pixel(window, x, y, dark_frame(window) ? LUMA_FRAME_DARK_CONTENT : kHeaderHover);
+                    pixel(window, x, y, dark_frame(window) ? SUNO_FRAME_DARK_CONTENT : kHeaderHover);
             }
         }
     }
@@ -254,7 +254,7 @@ void draw_back(window& window) {
     uint8_t back_mask[kIconSize * kIconSize];
     for (int y = 0; y < kIconSize; ++y)
         for (int x = 0; x < kIconSize; ++x)
-            back_mask[y * kIconSize + x] = luma_frame_minimize_glyph[(kIconSize - 1 - x) * kIconSize + y];
+            back_mask[y * kIconSize + x] = Suno_frame_minimize_glyph[(kIconSize - 1 - x) * kIconSize + y];
     draw_mask(window, left + (kBackButtonSize - kIconSize) / 2,
               (kTitlebarHeight - kIconSize) / 2, back_mask, frame_ink(window));
 }
@@ -312,7 +312,7 @@ std::string ellipsize(FT_Face face, const std::string& title, int max_width) {
 }
 
 void draw_app_icon(window& window) {
-    constexpr int size = LUMA_FRAME_IDENTITY_ICON_SIZE;
+    constexpr int size = SUNO_FRAME_IDENTITY_ICON_SIZE;
     if (!window.prairie_icon_loaded && !window.appID.empty()) {
         window.prairie_icon_loaded = true;
         // Reuse WaydroidService's exported icons. Treat the file as untrusted:
@@ -353,11 +353,11 @@ void draw_app_icon(window& window) {
         }
     }
     if (window.prairie_icon.size() != size*size) return;
-    LumaFrameRect rect = {0,0,size,size};
+    SunoFrameRect rect = {0,0,size,size};
     for (int y=0; y<size; ++y) for(int x=0; x<size; ++x) {
         uint32_t c=window.prairie_icon[y*size+x];
-        double coverage=luma_frame_coverage(luma_frame_distance(x+0.5,y+0.5,rect,size*0.25));
-        premultiplied_pixel(window, LUMA_FRAME_IDENTITY_INSET+x,
+        double coverage=Suno_frame_coverage(Suno_frame_distance(x+0.5,y+0.5,rect,size*0.25));
+        premultiplied_pixel(window, SUNO_FRAME_IDENTITY_INSET+x,
             (kTitlebarHeight-size)/2+y,
             scale_premultiplied(c, (uint32_t)lround(255 * coverage)));
     }
@@ -373,11 +373,11 @@ void draw_title(window& window) {
         return;
     }
     // Match the shared App Kit Figtree title size and semibold weight.
-    FT_Set_Char_Size(face, 0, LUMA_FRAME_TITLE_SIZE * 64, 72, 72);
-    FT_Fixed weight = LUMA_FRAME_TITLE_WEIGHT << 16;
+    FT_Set_Char_Size(face, 0, SUNO_FRAME_TITLE_SIZE * 64, 72, 72);
+    FT_Fixed weight = SUNO_FRAME_TITLE_WEIGHT << 16;
     FT_Set_Var_Design_Coordinates(face, 1, &weight);
-    const int title_left = LUMA_FRAME_IDENTITY_INSET + LUMA_FRAME_IDENTITY_ICON_SIZE + LUMA_FRAME_IDENTITY_GAP;
-    const int max_width = std::max(0, luma_frame_back(frame(window)).x - LUMA_FRAME_IDENTITY_GAP - title_left);
+    const int title_left = SUNO_FRAME_IDENTITY_INSET + SUNO_FRAME_IDENTITY_ICON_SIZE + SUNO_FRAME_IDENTITY_GAP;
+    const int max_width = std::max(0, Suno_frame_back(frame(window)).x - SUNO_FRAME_IDENTITY_GAP - title_left);
     const std::string text = ellipsize(face, window.title, max_width);
     int pen_x = title_left;
     const uint32_t ink = frame_ink(window);
@@ -407,7 +407,7 @@ void draw_title(window& window) {
 
 bool desktop_chrome_enabled() {
     char value[PROPERTY_VALUE_MAX] {};
-    property_get("persist.luma.device_class", value, "desktop");
+    property_get("persist.Suno.device_class", value, "desktop");
     return std::strcmp(value, "handheld") != 0;
 }
 
@@ -549,7 +549,7 @@ TitlebarTarget hit_test(const window& window, int x, int y) {
             return TitlebarTarget::Maximize;
         }
     }
-    const int back_left = luma_frame_back(frame(window)).x;
+    const int back_left = Suno_frame_back(frame(window)).x;
     if (x >= back_left && x < back_left + kBackButtonSize)
         return TitlebarTarget::Back;
     return TitlebarTarget::Drag;
@@ -641,7 +641,7 @@ void redraw_titlebar(window& window) {
     // Avoid unbounded allocations from invalid compositor configurations.
     if (width > 4096 || height > 4096) return;
     const size_t size = static_cast<size_t>(width) * height * sizeof(uint32_t);
-    const int fd = syscall(SYS_memfd_create, "luma-window-frame", MFD_CLOEXEC);
+    const int fd = syscall(SYS_memfd_create, "Suno-window-frame", MFD_CLOEXEC);
     if (fd < 0) return;
     if (ftruncate(fd, size) != 0) { close(fd); return; }
     void *data = mmap(nullptr, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
@@ -657,26 +657,26 @@ void redraw_titlebar(window& window) {
     window.dark_appearance = dark;
     auto* pixels = static_cast<uint32_t*>(data);
     for (int y = 0; y < height; ++y) {
-        const bool interior = y >= geometry.content.y + LUMA_FRAME_ISLAND_RADIUS &&
-            y < geometry.content.y + geometry.content.height - LUMA_FRAME_ISLAND_RADIUS;
-        const int left = interior ? geometry.content.x + LUMA_FRAME_ISLAND_RADIUS : width;
-        const int right = interior ? geometry.content.x + geometry.content.width - LUMA_FRAME_ISLAND_RADIUS : width;
+        const bool interior = y >= geometry.content.y + SUNO_FRAME_ISLAND_RADIUS &&
+            y < geometry.content.y + geometry.content.height - SUNO_FRAME_ISLAND_RADIUS;
+        const int left = interior ? geometry.content.x + SUNO_FRAME_ISLAND_RADIUS : width;
+        const int right = interior ? geometry.content.x + geometry.content.width - SUNO_FRAME_ISLAND_RADIUS : width;
         for (int x = 0; x < left; ++x)
             pixels[y * width + x] = scale_premultiplied(
-                luma_frame_pixel(geometry, x, y, dark, window.fullscreen),
+                Suno_frame_pixel(geometry, x, y, dark, window.fullscreen),
                 frame_opacity(treatment));
         for (int x = right; x < width; ++x)
             pixels[y * width + x] = scale_premultiplied(
-                luma_frame_pixel(geometry, x, y, dark, window.fullscreen),
+                Suno_frame_pixel(geometry, x, y, dark, window.fullscreen),
                 frame_opacity(treatment));
     }
-    const auto back = luma_frame_back(geometry);
+    const auto back = Suno_frame_back(geometry);
     for (int y = 0; y < kTitlebarHeight; ++y)
         for (int x = std::max(0, back.x - 16); x < width; ++x) {
             composite_premultiplied(pixels[y * width + x], scale_premultiplied(
-                luma_frame_controls_pixel(geometry, x, y, dark), control_opacity(treatment)));
+                Suno_frame_controls_pixel(geometry, x, y, dark), control_opacity(treatment)));
             composite_premultiplied(pixels[y * width + x], scale_premultiplied(
-                luma_frame_control_surface(back, x, y, dark), control_opacity(treatment)));
+                Suno_frame_control_surface(back, x, y, dark), control_opacity(treatment)));
         }
     for (int index = 0; index < 3; ++index)
         draw_control(window, control_left(window, index), index);

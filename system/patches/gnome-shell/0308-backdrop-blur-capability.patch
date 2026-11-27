@@ -1,4 +1,4 @@
-From: Project Luma <builds@project-luma.local>
+From: Project Suno <builds@project-suno.local>
 Subject: [PATCH] shell: separate backdrop blur from reduce transparency
 
 Backdrop blur samples the framebuffer behind each blurred surface on
@@ -14,32 +14,32 @@ translucent fill. reduce-transparency still makes surfaces opaque.
          }));
 -        if (blurAllowed()) {
 +        if (blurAllowed() && SurfaceMaterials.backdropBlurEnabled()) {
-             this._scrim.add_effect_with_name('luma-seal-blur', new Shell.BlurEffect({
+             this._scrim.add_effect_with_name('Suno-seal-blur', new Shell.BlurEffect({
                  mode: Shell.BlurMode.BACKGROUND,
                  radius: SCRIM_BLUR * scale,
---- a/js/ui/lumaCapture.js
-+++ b/js/ui/lumaCapture.js
+--- a/js/ui/SunoCapture.js
++++ b/js/ui/SunoCapture.js
 @@ -954,6 +954,7 @@
          });
          this.add_child(this._disc);
          this._blur = new Shell.BlurEffect({mode: Shell.BlurMode.BACKGROUND, radius: 16, brightness: 1});
 +        this._blur.enabled = SurfaceMaterials.backdropBlurEnabled();
-         this._disc.add_effect_with_name('luma-capture-countdown-blur', this._blur);
+         this._disc.add_effect_with_name('Suno-capture-countdown-blur', this._blur);
          this._label = new St.Label({
-             style_class: 'luma-capture-countdown-label',
---- a/js/ui/lumaShare.js
-+++ b/js/ui/lumaShare.js
+             style_class: 'Suno-capture-countdown-label',
+--- a/js/ui/SunoShare.js
++++ b/js/ui/SunoShare.js
 @@ -489,7 +489,7 @@
              source: this,
              coordinate: Clutter.BindCoordinate.SIZE,
          }));
 -        if (blurAllowed()) {
 +        if (blurAllowed() && SurfaceMaterials.backdropBlurEnabled()) {
-             this._scrim.add_effect_with_name('luma-share-blur', new Shell.BlurEffect({
+             this._scrim.add_effect_with_name('Suno-share-blur', new Shell.BlurEffect({
                  mode: Shell.BlurMode.BACKGROUND,
                  radius: SCRIM_BLUR * scale,
---- a/js/ui/lumaSurfaceMaterials.js
-+++ b/js/ui/lumaSurfaceMaterials.js
+--- a/js/ui/SunoSurfaceMaterials.js
++++ b/js/ui/SunoSurfaceMaterials.js
 @@ -145,6 +145,25 @@
      return new Gio.Settings({settings_schema: schema});
  }
@@ -59,7 +59,7 @@ translucent fill. reduce-transparency still makes surfaces opaque.
 + */
 +export function backdropBlurEnabled() {
 +    blurSettings ??= optionalSettings(
-+        'org.project_luma.shell-state', 'backdrop-blur') ?? false;
++        'org.projectSuno.shell-state', 'backdrop-blur') ?? false;
 +    return blurSettings ? blurSettings.get_boolean('backdrop-blur') : true;
 +}
 +

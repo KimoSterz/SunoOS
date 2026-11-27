@@ -130,7 +130,7 @@ class ListSource(ContactsSource):
 
 class Application(Adw.Application):
     def __init__(self) -> None:
-        super().__init__(application_id="org.projectluma.Test.ContactsPhoneFixes")
+        super().__init__(application_id="org.projectSuno.Test.ContactsPhoneFixes")
 
 
 APP = Application()
@@ -167,10 +167,10 @@ class AddressBookNameTests(unittest.TestCase):
         self.assertEqual(name, LOCAL_ADDRESS_BOOK)
         self.assertEqual(name.label, "On this computer")
 
-    def test_luma_account(self):
-        name = address_book_name("luma-connect-contacts-abc123", "carddav", "carddav-stub", "", "Luma")
-        self.assertEqual(name.label, "Luma account")
-        self.assertEqual(name.place, "your Luma account")
+    def test_Suno_account(self):
+        name = address_book_name("Suno-connect-contacts-abc123", "carddav", "carddav-stub", "", "Suno")
+        self.assertEqual(name.label, "Suno account")
+        self.assertEqual(name.place, "your Suno account")
 
     def test_online_account_uses_the_account_name(self):
         name = address_book_name("7f3c", "google", "4a1b", "sam@example.com", "Contacts")
@@ -253,7 +253,7 @@ class ContactsWindowTests(unittest.TestCase):
     def test_resolved_person_prefills_native_title_and_keeps_entered_email(self):
         window = self.window
         window._add_current_query = "ben.hartley@example.com"
-        window._resolved_luma_person = {"account": "owned-test-account", "handle": "ben",
+        window._resolved_Suno_person = {"account": "owned-test-account", "handle": "ben",
                                         "display_name": "Ben Hartley"}
         window._add_submit(window._add_current_query)
         pump()
@@ -263,14 +263,14 @@ class ContactsWindowTests(unittest.TestCase):
         self.assertEqual(window._fields["email"].text, "ben.hartley@example.com")
 
     def test_changed_identity_never_keeps_previous_verified_badge(self):
-        original = replace(PEOPLE[1], handle="ben", luma_account="owned-test-account", on_luma=True)
+        original = replace(PEOPLE[1], handle="ben", Suno_account="owned-test-account", on_Suno=True)
         for handle in ("", "different-user"):
             updated = contacts_module.with_fields(original, original.uid, {"handle": handle}, original.book)
-            self.assertEqual(updated.luma_account, "")
-            self.assertIsNone(updated.on_luma)
+            self.assertEqual(updated.Suno_account, "")
+            self.assertIsNone(updated.on_Suno)
         untouched = contacts_module.with_fields(original, original.uid, {"company": "Changed"}, original.book)
-        self.assertEqual(untouched.luma_account, original.luma_account)
-        self.assertTrue(untouched.on_luma)
+        self.assertEqual(untouched.Suno_account, original.Suno_account)
+        self.assertTrue(untouched.on_Suno)
 
     def test_sidebar_offers_lists_only_when_there_are_lists(self):
         # v71 (2026-09-30) brings Lists back to the foot: All contacts, Favorites and each list.
@@ -282,7 +282,7 @@ class ContactsWindowTests(unittest.TestCase):
 
     def test_sharing_card_has_independent_mobile_and_email_controls(self):
         self.source.owner = Me("My card", handle="me", phone="555-0100", email="me@example.org")
-        self.window._show_contact(replace(PEOPLE[0], on_luma=True))
+        self.window._show_contact(replace(PEOPLE[0], on_Suno=True))
         shown = labels(self.window.sees_card)
         self.assertIn("What Ada sees", shown)
         self.assertIn("Share my mobile number", shown)
@@ -304,7 +304,7 @@ class ContactsWindowTests(unittest.TestCase):
         person = contacts_module.Person("Ada Okafor", phone="5550100142", email="ada@example.org", username="ada")
         with mock.patch.object(self.window, "_launch_core_app", return_value=True) as launch:
             self.assertTrue(self.window._contact_action("message", person))
-            launch.assert_called_with("prairie-messages", "luma-messages://u/ada")
+            launch.assert_called_with("prairie-messages", "Suno-messages://u/ada")
             self.assertTrue(self.window._contact_action("call", person))
             launch.assert_called_with("prairie-phone", "--call", "tel:5550100142")
         with mock.patch.object(self.window, "_launch_uri") as launch_uri:
@@ -373,7 +373,7 @@ class ContactsWindowTests(unittest.TestCase):
 
 
 class FakePairedPhone:
-    """A phone paired through Luma Connect, as Phone's call provider sees it."""
+    """A phone paired through Suno Connect, as Phone's call provider sees it."""
 
     closed = False
 
@@ -464,10 +464,10 @@ class PhoneWithoutModemTests(unittest.TestCase):
         self.assertIsNone(window._find(window.sidebar, "pn-call-readiness"), "the sidebar notice must be gone")
         self.assertTrue(readiness.get_mapped())
         self.assertEqual(readiness.get_text(), "To make calls, pair your phone in Connect.")
-        self.assertIn('<a href="luma-connect:">', readiness.get_label())
+        self.assertIn('<a href="Suno-connect:">', readiness.get_label())
         opened = []
         window._open_connect = lambda: opened.append(True)
-        readiness.emit("activate-link", "luma-connect:")
+        readiness.emit("activate-link", "Suno-connect:")
         self.assertEqual(opened, [True])
         visible = shown_text(window).casefold()
         for name in INTERNAL_NAMES:

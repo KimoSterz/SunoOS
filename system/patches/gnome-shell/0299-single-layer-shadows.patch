@@ -1,4 +1,4 @@
-From: Luma Developers
+From: Suno Developers
 Subject: [PATCH] One shadow per rule, as St paints
 
 St paints one box-shadow per actor and parses only one layer: every value
@@ -58,13 +58,13 @@ index a6a7fab..72b1e3b 100644
    spacing: 12px;
 @@ -5011,7 +5011,7 @@ StScrollBar {
    box-shadow: 0 0 0 1px rgba(255,255,255,.12); }
- .quick-settings.luma-studio-options.luma-surface-light .luma-options-radio.luma-radio-hover {
+ .quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-radio.Suno-radio-hover {
    background-color: #fff;
 -  box-shadow: 0 0 0 1px rgba(25,27,31,.14), 0 2px 4px rgba(25,27,31,.08); }
 +  box-shadow: 0 0 0 1px rgba(25,27,31,.14); }
- .quick-settings.luma-studio-options .luma-options-radio .quick-toggle-menu-button {
+ .quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-menu-button {
    width: 24px; margin-right: 6px; }
- .quick-settings.luma-studio-options .luma-options-radio .quick-toggle-menu-button:rtl {
+ .quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-menu-button:rtl {
 diff --git a/data/theme/gnome-shell-high-contrast.css b/data/theme/gnome-shell-high-contrast.css
 index 9e859ae..22e4bed 100644
 --- a/data/theme/gnome-shell-high-contrast.css
@@ -155,13 +155,13 @@ index d94d1a5..dd33866 100644
    spacing: 12px;
 @@ -5235,7 +5235,7 @@ StScrollBar {
    box-shadow: 0 0 0 1px rgba(255,255,255,.12); }
- .quick-settings.luma-studio-options.luma-surface-light .luma-options-radio.luma-radio-hover {
+ .quick-settings.Suno-studio-options.Suno-surface-light .Suno-options-radio.Suno-radio-hover {
    background-color: #fff;
 -  box-shadow: 0 0 0 1px rgba(25,27,31,.14), 0 2px 4px rgba(25,27,31,.08); }
 +  box-shadow: 0 0 0 1px rgba(25,27,31,.14); }
- .quick-settings.luma-studio-options .luma-options-radio .quick-toggle-menu-button {
+ .quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-menu-button {
    width: 24px; margin-right: 6px; }
- .quick-settings.luma-studio-options .luma-options-radio .quick-toggle-menu-button:rtl {
+ .quick-settings.Suno-studio-options .Suno-options-radio .quick-toggle-menu-button:rtl {
 diff --git a/data/theme/gnome-shell-sass/widgets/_login-lock.scss b/data/theme/gnome-shell-sass/widgets/_login-lock.scss
 index 1914337..b2fbab9 100644
 --- a/data/theme/gnome-shell-sass/widgets/_login-lock.scss
@@ -202,13 +202,13 @@ index 1914337..b2fbab9 100644
  .poster-away-row { spacing: 12px; padding: 10px; }
  .poster-away-row + .poster-away-row { border-top: 1px solid rgba(255, 255, 255, 0.1); }
  .poster-away-icon { icon-size: 32px; }
-diff --git a/data/theme/luma-shelf.css b/data/theme/luma-shelf.css
+diff --git a/data/theme/Suno-shelf.css b/data/theme/Suno-shelf.css
 index 91dd5b8..07ac5d9 100644
---- a/data/theme/luma-shelf.css
-+++ b/data/theme/luma-shelf.css
+--- a/data/theme/Suno-shelf.css
++++ b/data/theme/Suno-shelf.css
 @@ -399,17 +399,9 @@
    box-shadow: none; }
- .luma-shelf-dock-island #dash .dash-item-container .overview-tile .overview-icon {
+ .Suno-shelf-dock-island #dash .dash-item-container .overview-tile .overview-icon {
    border-radius: 9px;
 -  box-shadow: inset 0 1px 0 rgba(255,255,255,0.36),
 -              inset 0 0 0 1px rgba(255,255,255,0.09),
@@ -216,7 +216,7 @@ index 91dd5b8..07ac5d9 100644
 -              0 1px 2px rgba(12,17,24,0.30),
 -              0 4px 9px -3px rgba(12,17,24,0.42); }
 +  box-shadow: 0 4px 9px -3px rgba(12,17,24,0.42); }
- .luma-shelf-dock-island #dash .dash-item-container .overview-tile:hover .overview-icon {
+ .Suno-shelf-dock-island #dash .dash-item-container .overview-tile:hover .overview-icon {
 -  box-shadow: inset 0 1px 0 rgba(255,255,255,0.42),
 -              inset 0 0 0 1px rgba(255,255,255,0.12),
 -              inset 0 -9px 15px rgba(10,14,20,0.13),
@@ -224,12 +224,12 @@ index 91dd5b8..07ac5d9 100644
 -              0 6px 12px -3px rgba(12,17,24,0.46); }
 +  box-shadow: 0 6px 12px -3px rgba(12,17,24,0.46); }
  
- .dash-label.luma-surface-light {
+ .dash-label.Suno-surface-light {
    border-color: rgba(39,48,56,0.10);
 @@ -870,11 +862,7 @@
- .luma-shelf-dock-island #dash .dash-item-container .overview-tile:focus .overview-icon,
- .luma-shelf-dock-island #dash .dash-item-container .overview-tile:focus:hover .overview-icon,
- .luma-shelf-dock-island #dash .dash-item-container .overview-tile:active:focus .overview-icon {
+ .Suno-shelf-dock-island #dash .dash-item-container .overview-tile:focus .overview-icon,
+ .Suno-shelf-dock-island #dash .dash-item-container .overview-tile:focus:hover .overview-icon,
+ .Suno-shelf-dock-island #dash .dash-item-container .overview-tile:active:focus .overview-icon {
 -  box-shadow: inset 0 1px 0 rgba(255,255,255,0.42),
 -              inset 0 0 0 1px rgba(255,255,255,0.12),
 -              inset 0 -9px 15px rgba(10,14,20,0.13),
@@ -239,13 +239,13 @@ index 91dd5b8..07ac5d9 100644
  
  /* The hover overlay is the only transient status fill. It must not inherit a
   * transition of its own after the JS actor has returned to zero opacity. */
-@@ -2452,8 +2440,7 @@ StBoxLayout.luma-notification-tray.luma-surface-dark .luma-notification-tray-cou
+@@ -2452,8 +2440,7 @@ StBoxLayout.Suno-notification-tray.Suno-surface-dark .Suno-notification-tray-cou
  /* Detached it is a thing sitting on the desktop rather than a thing hanging
   * off the dock, so the shadow deepens to the desktop's window shadow. */
- .luma-dockf-detached .luma-dockf-shadow {
+ .Suno-dockf-detached .Suno-dockf-shadow {
 -  box-shadow: 0 18px 42px -14px rgba(25, 27, 31, 0.42),
 -              0 54px 110px -28px rgba(25, 27, 31, 0.56); }
 +  box-shadow: 0 54px 110px -28px rgba(25, 27, 31, 0.56); }
- .luma-dockf-surface.luma-surface-light {
+ .Suno-dockf-surface.Suno-surface-light {
    border-color: rgba(255, 255, 255, 0.82); background-color: #fbfbfa; color: #283038; }
- .luma-dockf-surface.luma-surface-frost {
+ .Suno-dockf-surface.Suno-surface-frost {

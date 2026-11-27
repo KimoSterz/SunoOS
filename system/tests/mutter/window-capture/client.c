@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: Apache-2.0 */
-/* Test client for luma_window_capture_v1: an undecorated GTK window painted
+/* Test client for Suno_window_capture_v1: an undecorated GTK window painted
  * one solid colour, so a capture can count its pixels exactly. Built against
- * the kit's own luma-window-capture.c (see run.sh), so it exercises
- * luma_window_set_hidden_from_capture() end to end.
+ * the kit's own Suno-window-capture.c (see run.sh), so it exercises
+ * Suno_window_set_hidden_from_capture() end to end.
  *
  *   client --title TITLE --rgb RRGGBB [--hidden] [--size WxH] [--animate]
  *
@@ -15,7 +15,7 @@
 #include <gtk/gtk.h>
 #include <stdio.h>
 
-#include "luma-window-capture.h"
+#include "Suno-window-capture.h"
 
 static GtkWindow *window;
 static GtkWindow *dialog;
@@ -64,7 +64,7 @@ report (const char *event)
 {
   printf ("{\"event\": \"%s\", \"hidden\": %s, \"supported\": %s, \"dialog\": %s}\n",
           event, hidden ? "true" : "false",
-          luma_window_get_capture_hiding_supported (window) ? "true" : "false",
+          Suno_window_get_capture_hiding_supported (window) ? "true" : "false",
           dialog ? "true" : "false");
 }
 
@@ -79,7 +79,7 @@ static gboolean
 toggle_hidden (gpointer data)
 {
   hidden = !hidden;
-  luma_window_set_hidden_from_capture (window, hidden);
+  Suno_window_set_hidden_from_capture (window, hidden);
   report ("toggled");
   return G_SOURCE_CONTINUE;
 }
@@ -125,7 +125,7 @@ main (int argc, char **argv)
 
   window = solid_window (title, rgb, width, height);
   /* Before the window exists on screen, as an app would at start-up. */
-  luma_window_set_hidden_from_capture (window, hidden);
+  Suno_window_set_hidden_from_capture (window, hidden);
   if (animate)
     gtk_widget_add_tick_callback (gtk_window_get_child (window), tick, NULL, NULL);
   gtk_window_present (window);

@@ -85,11 +85,11 @@ def main():
     args=parser.parse_args()
     repo=Path(__file__).resolve().parents[2]
     relative=Path('interfaces/task/1.0/default/service.cpp')
-    with tempfile.TemporaryDirectory(prefix='luma-task-channel-') as directory:
+    with tempfile.TemporaryDirectory(prefix='Suno-task-channel-') as directory:
         work=Path(directory);target=work/relative;target.parent.mkdir(parents=True)
         shutil.copyfile(args.hardware_source/relative,target)
         original=target.read_text()
-        subprocess.run(['patch','--batch','--fuzz=0','-p1','-d',str(work),'-i',str(repo/'patches/android-hardware-waydroid/0018-luma-bound-task-channel-io.patch')],check=True)
+        subprocess.run(['patch','--batch','--fuzz=0','-p1','-d',str(work),'-i',str(repo/'patches/android-hardware-waydroid/0018-Suno-bound-task-channel-io.patch')],check=True)
         source=target.read_text()
         start=source.index('constexpr uint32_t kPrairieResizeMagic')
         end=source.index('void servePrairieResizeRequests(')

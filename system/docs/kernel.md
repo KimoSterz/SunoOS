@@ -1,29 +1,29 @@
 # Kernel
 
-Luma builds one kernel for every ARM device, from one tree:
+Suno builds one kernel for every ARM device, from one tree:
 [SimplyLuma/linux](https://gitlab.com/simplyluma/linux). There is no
 per-device kernel and no device on another project's tree once it is on the
-Luma base.
+Suno base.
 
 ## Branches
 
 | Branch | What it is | Commit |
 |---|---|---|
-| `luma-7.2` | The base: upstream stable 7.2.y (now v7.2.15). | `497791a0a96b` |
+| `Suno-7.2` | The base: upstream stable 7.2.y (now v7.2.15). | `497791a0a96b` |
 | `sm7250` | Qualcomm SM7250 family patches. Empty. | `497791a0a96b` |
 | `sdm845` | Qualcomm SDM845 family patches. Empty. | `497791a0a96b` |
 | `sc7280` | Qualcomm SC7280/QCM6490 family patches. Empty. | `497791a0a96b` |
 | `zuma` | Google Tensor G3 (zuma) family patches. Empty. | `497791a0a96b` |
 | `msm8953` | Qualcomm MSM8953 (Snapdragon 625/450/632) family patches. Empty. | `497791a0a96b` |
-| `milos` | Qualcomm SM7635, on milos-mainline 7.1.2. Moves to `luma-7.2` first (see Transition). | `c098393e36c0` |
+| `milos` | Qualcomm SM7635, on milos-mainline 7.1.2. Moves to `Suno-7.2` first (see Transition). | `c098393e36c0` |
 | `intel-ipu` | Intel IPU6/IPU7 laptop cameras (sensor, ISYS and ipu-bridge fixes) for x86. Not built until x86 leaves the Fedora kernel (see below); every patch is written for upstream. | `9cd56a3b5e8f` |
 
 `497791a0a96b866d90add64041c47acdff49cae6` is the upstream `v7.2.15` commit.
 `main` is the repository's fork point and is not used for builds.
 
-- **Base** (`luma-<major>.<minor>`): the current upstream stable series,
-  nothing else on it except the shared Luma config fragment
-  (`luma/config/luma.fragment`: SELinux, binder, DMA heaps and the rest every
+- **Base** (`Suno-<major>.<minor>`): the current upstream stable series,
+  nothing else on it except the shared Suno config fragment
+  (`Suno/config/Suno.fragment`: SELinux, binder, DMA heaps and the rest every
   device needs). That includes the ALSA sequencer, `CONFIG_SND_SEQUENCER=m`:
   arm64 `defconfig` builds sound as modules without it, and Fedora's
   `alsa-lib` (`/usr/lib/modprobe.d/dist-alsa.conf`) loads `snd-seq` with every
@@ -32,7 +32,7 @@ Luma base.
 - **Family branches**, one per SoC family, named as the upstream kernel names
   the chip, lower case (`milos`, `sm7250`, `sdm845`, `sc7280`, `zuma`, `msm8953`, …).
   They carry only patches on top of the current base, plus the family's
-  config fragment (`luma/config/<family>.fragment`) and its device trees.
+  config fragment (`Suno/config/<family>.fragment`) and its device trees.
   A family branch is never another project's tree and never an Android
   vendor kernel.
 
@@ -49,19 +49,19 @@ Luma base.
 
 ## Release build
 
-Each Luma kernel release merges every family branch onto the base, tags the
-result `luma-kernel-<kernel release>` and builds from it:
+Each Suno kernel release merges every family branch onto the base, tags the
+result `Suno-kernel-<kernel release>` and builds from it:
 
 - one arm64 kernel and one set of modules for every ARM device;
-- `.config` = the base defconfig + `luma/config/luma.fragment` + every
-  `luma/config/<family>.fragment`;
+- `.config` = the base defconfig + `Suno/config/Suno.fragment` + every
+  `Suno/config/<family>.fragment`;
 - one DTB per device, from that tree.
 
 `device.toml` `[kernel] tag` names the release tag. Long term the kernel
 moves into the one ARM OS image, and a device repository shrinks to firmware
 plus its platform package.
 
-**x86** stays on the Fedora kernel until Luma has its own shim signed through
+**x86** stays on the Fedora kernel until Suno has its own shim signed through
 the shim-review process; until then a custom x86 kernel would break Secure
 Boot out of the box. The source tree can be shared with x86 before that.
 
@@ -75,36 +75,36 @@ Boot out of the box. The source tree can be shared with x86 before that.
 ## Contributing kernel work
 
 Open a pull request against your family's branch in SimplyLuma/linux. If the
-family has no branch yet, ask in an issue and Luma creates it at the current
+family has no branch yet, ask in an issue and Suno creates it at the current
 base.
 
-- Base it on the current Luma base, not on another tree.
+- Base it on the current Suno base, not on another tree.
 - Patches are real commits: original authorship, `Signed-off-by` and licence
   and SPDX lines intact. Credit the source of anything taken from a vendor
   kernel (`Link:`, origin in the message).
 - Device trees come from mainline or are written to be upstreamable: source
   `.dts` with an SPDX line, on the family `.dtsi`. No decompiled DTBs.
 - Send patches upstream to mainline where possible.
-- No kernel patches in SimplyLuma/luma. `device.toml` points at a Luma tag;
+- No kernel patches in SimplyLuma/luma. `device.toml` points at a Suno tag;
   `tools/check-devices.py` refuses source locks, `[kernel] patches` and new
   `patches/linux-*` directories for devices outside the transition list.
 
 ## Vendor kernels
 
 A device that boots a vendor or Android kernel, or any tree other than the
-Luma base, stays `experimental` until it is on the Luma base. Luma's own
+Suno base, stays `experimental` until it is on the Suno base. Suno's own
 Titan 2 Elite, HiBreak Pro, Pixel 9 and Pixel 9 Pro Fold ports are no
 exception.
 
 ## Adopted devices
 
-A device is adopted ("brought upstream") when Luma takes over its build:
+A device is adopted ("brought upstream") when Suno takes over its build:
 
-- Luma builds the kernel and the device kit in its own pipeline and signs
-  them with the Luma OS Release key.
-- Luma publishes the device repository for hardware updates and ships boot
-  images through `luma-device-boot` ([#392](https://gitlab.com/simplyluma/luma/-/merge_requests/392)).
-- Luma owns both A/B boot slots on an adopted phone.
+- Suno builds the kernel and the device kit in its own pipeline and signs
+  them with the Suno OS Release key.
+- Suno publishes the device repository for hardware updates and ships boot
+  images through `Suno-device-boot` ([#392](https://gitlab.com/simplyluma/luma/-/merge_requests/392)).
+- Suno owns both A/B boot slots on an adopted phone.
 - Firmware that may not be redistributed is extracted from the phone at
   install and never shipped.
 - The contributor stays the named maintainer.
@@ -123,7 +123,7 @@ Experimental devices get the OS and apps only.
 
 A device kernel reaches devices only through the package named in its
 device.toml `[kernel] package`: a phone's kernel-modules package, which carries
-the boot image `luma-device-boot` writes to the inactive slot, or a board
+the boot image `Suno-device-boot` writes to the inactive slot, or a board
 kernel the OS image pins.
 
 - **Pull requests.** When a device's kernel inputs change (the `[kernel]`
@@ -138,13 +138,13 @@ kernel the OS image pins.
   image-pinned kernel ships with the image as usual.
 - **Gate.** The build waits there until the phone gate passed for that exact
   build. The gate has two parts:
-  - `fastboot boot` the image (RAM only, `luma.device_boot=0`) and run
+  - `fastboot boot` the image (RAM only, `Suno.device_boot=0`) and run
     `scripts/devices/device-kernels.py gate`. Its automated checks
     (`scripts/devices/kernel-gate-checks.py`) are: the kernel notes match the
     package's declaration; the battery's `power_now` is nonzero and within 2×
     of voltage × current while at least 100 mA flows; UPower shows a rate.
     Then a person checks one suspend and resume, with touch working.
-  - Install the package through an OS update, and see luma-device-boot write
+  - Install the package through an OS update, and see Suno-device-boot write
     the spare slot, restart once and confirm it, with the old slot kept as
     the fallback.
 
@@ -168,7 +168,7 @@ real hardware:
 - a known-issues list and a maintainer who answers.
 
 Calls and mobile data are listed, not required. `supported` additionally
-means Luma has the device and tests it every release.
+means Suno has the device and tests it every release.
 
 ## Transition
 
@@ -180,6 +180,6 @@ Existing devices keep their current kernels until they move:
 | Raspberry Pi 5 | Raspberry Pi tree, source lock |
 | Surface Pro 12-inch | upstream 7.3 plus a patch overlay, source lock and `patches/linux-surface-pro12` |
 
-The Fairphone 6 moves to `luma-7.2` first, as the reference family. Each
+The Fairphone 6 moves to `Suno-7.2` first, as the reference family. Each
 device leaves `TRANSITIONAL_KERNELS` in `tools/check-devices.py` when it
 moves.

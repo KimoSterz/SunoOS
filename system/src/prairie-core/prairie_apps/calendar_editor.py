@@ -11,7 +11,7 @@ What a person expects from any calendar editor, and what this one does:
 * All-day hides the times, and its end date is inclusive on screen (the
   exclusive iCalendar end is the backend's business).
 * A timed event carries a time zone, defaulting to the system's.
-* Repeat and alert choices are the common ones; a rule or alert set Luma did
+* Repeat and alert choices are the common ones; a rule or alert set Suno did
   not write is shown as kept, never silently simplified.
 * A repeating event asks "only this event, this and following, or all".
 """
@@ -509,7 +509,7 @@ def probe_ics(url: str, timeout: float = 15.0) -> str:
         address = "https://" + address[len("webcal://"):]
     if not re.match(r"^https?://", address, re.I):
         raise ValueError("Enter a web address that starts with https:// or webcal://.")
-    request = urllib.request.Request(address, headers={"User-Agent": "ProjectLuma-Calendar/1", "Accept": "text/calendar"})
+    request = urllib.request.Request(address, headers={"User-Agent": "projectSuno-Calendar/1", "Accept": "text/calendar"})
     with urllib.request.urlopen(request, timeout=timeout) as response:
         head = response.read(65536).decode("utf-8", "replace")
     if "BEGIN:VCALENDAR" not in head:
@@ -530,7 +530,7 @@ def run_in_thread(work, done) -> None:
 
 def open_online_accounts(on_error=None) -> bool:
     """GNOME Online Accounts: where Google, Microsoft and Nextcloud accounts live."""
-    if os.environ.get("LUMA_AGENDA_STANDALONE"):
+    if os.environ.get("SUNO_AGENDA_STANDALONE"):
         from .agenda_accounts import open_settings
         return open_settings(on_error or (lambda _message: None))
     for command in (["gnome-control-center", "online-accounts"], ["gnome-online-accounts-gtk"]):

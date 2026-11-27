@@ -1,4 +1,4 @@
-From: Project Luma <luma@project-luma.org>
+From: Project Suno <Suno@project-suno.org>
 Date: Sun, 16 Aug 2026 20:30:00 +0000
 Subject: [PATCH] drm/msm/a810: use the Gen8.3 GMU AHB fence range
 

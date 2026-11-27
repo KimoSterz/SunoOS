@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
 #
-# Withdraw an app's current release from the Luma remote.
+# Withdraw an app's current release from the Suno remote.
 #
 #   withdraw-app.sh
 #

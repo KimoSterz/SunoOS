@@ -1,0 +1,181 @@
+# SPDX-License-Identifier: Apache-2.0
+# Settings that Connect Sync carries between a person's devices (ADR-054 §3).
+# Only keys listed here ever sync. Each [[keys]] table names one schema and its
+# keys ("*" is every key of the schema). Fields:
+#   category  settings | appearance | wallpaper | keyboard (a Sync switch each)
+#   across    true: between every device class (Computer, Handheld, TV);
+#             false: only between devices of the same class
+#   classes   the classes that take part at all (default: every class)
+# Never listed: displays, power, audio devices, touchpad and pointer
+# calibration, hostnames, per-device paths, anything per-monitor.
+# A schema or key this device doesn't have is skipped.
+
+# ---- Settings: language, region, clock, accessibility everywhere ----------
+[[keys]]
+category = "settings"
+across = true
+schema = "org.gnome.system.locale"
+keys = ["region"]
+
+[[keys]]
+category = "settings"
+across = true
+schema = "org.gnome.desktop.interface"
+keys = ["clock-format", "toolkit-accessibility", "cursor-blink"]
+
+[[keys]]
+category = "settings"
+across = true
+schema = "org.gnome.desktop.a11y"
+keys = ["always-show-universal-access-status", "always-show-text-caret"]
+
+[[keys]]
+category = "settings"
+across = true
+schema = "org.gnome.desktop.a11y.interface"
+keys = ["high-contrast", "show-status-shapes"]
+
+[[keys]]
+category = "settings"
+across = true
+schema = "org.gnome.desktop.a11y.applications"
+keys = ["screen-reader-enabled", "screen-magnifier-enabled"]
+
+[[keys]]
+category = "settings"
+across = true
+schema = "org.gnome.desktop.a11y.keyboard"
+keys = ["stickykeys-enable", "slowkeys-enable", "bouncekeys-enable", "togglekeys-enable"]
+
+[[keys]]
+category = "settings"
+across = true
+schema = "org.projectSuno.shell-state"
+keys = ["reduce-transparency"]
+
+# ---- Settings: the rest, between computers ------------------------------
+[[keys]]
+category = "settings"
+classes = ["computer"]
+schema = "org.gnome.desktop.interface"
+keys = ["clock-show-date", "clock-show-seconds", "clock-show-weekday", "show-battery-percentage",
+        "enable-hot-corners", "gtk-enable-primary-paste", "locate-pointer"]
+
+[[keys]]
+category = "settings"
+classes = ["computer"]
+schema = "org.gnome.desktop.calendar"
+keys = ["show-weekdate"]
+
+[[keys]]
+category = "settings"
+classes = ["computer"]
+schema = "org.gnome.desktop.wm.preferences"
+keys = ["button-layout", "focus-mode", "action-double-click-titlebar", "action-middle-click-titlebar",
+        "action-right-click-titlebar", "num-workspaces", "resize-with-right-button", "mouse-button-modifier"]
+
+[[keys]]
+category = "settings"
+classes = ["computer"]
+schema = "org.gnome.mutter"
+keys = ["edge-tiling", "dynamic-workspaces", "center-new-windows", "attach-modal-dialogs"]
+
+[[keys]]
+category = "settings"
+classes = ["computer"]
+schema = "org.gnome.desktop.privacy"
+keys = ["remember-recent-files", "recent-files-max-age", "remove-old-trash-files", "remove-old-temp-files", "old-files-age"]
+
+[[keys]]
+category = "settings"
+classes = ["computer"]
+schema = "org.gnome.shell"
+keys = ["favorite-apps"]
+
+# Shell layout: the dock and the status bar's look (not which monitor, not positions on a screen).
+[[keys]]
+category = "settings"
+classes = ["computer"]
+schema = "org.projectSuno.shell-state"
+keys = ["shelf-edge", "shelf-dock-anchor", "shelf-actions-anchor", "shelf-group-layout", "shelf-surface-mode",
+        "shelf-edge-mode", "shelf-span-full", "shelf-float-ends", "shelf-auto-hide", "shelf-islands", "shelf-material",
+        "shelf-dock-visible", "shelf-actions-visible", "shelf-padding", "shelf-overflow-mode",
+        "dock-folders", "dock-folders-visible", "dock-folders-separate", "dock-folders-views",
+        "window-border-enabled", "window-border-size", "status-frame", "status-frame-scope", "status-divider",
+        "status-glyph-tiles", "status-controls-right", "status-fill-strength", "status-clock-fill",
+        "status-controls-fill", "status-time-size", "status-date-size"]
+
+# ---- Appearance: dark mode and accent everywhere ------------------------
+[[keys]]
+category = "appearance"
+across = true
+schema = "org.gnome.desktop.interface"
+keys = ["color-scheme", "accent-color"]
+
+[[keys]]
+category = "appearance"
+schema = "org.gnome.desktop.interface"
+keys = ["text-scaling-factor"]
+
+[[keys]]
+category = "appearance"
+schema = "org.projectSuno.shell-state"
+keys = ["surface-treatment"]
+
+# ---- Same wallpaper everywhere (off by default; never on a TV) ------------
+[[keys]]
+category = "wallpaper"
+across = true
+classes = ["computer", "handheld"]
+schema = "org.gnome.desktop.background"
+keys = ["picture-uri", "picture-uri-dark", "picture-options", "primary-color", "secondary-color", "color-shading-type"]
+
+[[keys]]
+category = "wallpaper"
+across = true
+classes = ["computer", "handheld"]
+schema = "org.gnome.desktop.screensaver"
+keys = ["picture-uri", "picture-options", "primary-color", "secondary-color", "color-shading-type"]
+
+# ---- Keyboard: layouts everywhere; options and shortcuts between computers --
+[[keys]]
+category = "keyboard"
+across = true
+schema = "org.gnome.desktop.input-sources"
+keys = ["sources"]
+
+[[keys]]
+category = "keyboard"
+classes = ["computer", "handheld"]
+schema = "org.gnome.desktop.input-sources"
+keys = ["xkb-options", "per-window", "show-all-sources"]
+
+[[keys]]
+category = "keyboard"
+classes = ["computer"]
+schema = "org.gnome.desktop.peripherals.keyboard"
+keys = ["repeat", "delay", "repeat-interval"]
+
+[[keys]]
+category = "keyboard"
+classes = ["computer"]
+schema = "org.gnome.desktop.wm.keybindings"
+keys = ["*"]
+
+[[keys]]
+category = "keyboard"
+classes = ["computer"]
+schema = "org.gnome.shell.keybindings"
+keys = ["*"]
+
+[[keys]]
+category = "keyboard"
+classes = ["computer"]
+schema = "org.gnome.mutter.keybindings"
+keys = ["*"]
+
+[[keys]]
+category = "keyboard"
+classes = ["computer"]
+schema = "org.gnome.mutter.wayland.keybindings"
+keys = ["*"]

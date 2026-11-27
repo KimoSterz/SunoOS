@@ -45,13 +45,13 @@ hash_input() {
 
 mkdir -p "$(dirname -- "$report")"
 {
-  printf 'image=luma-desktop\n'
+  printf 'image=Suno-desktop\n'
   printf 'started_utc=%s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
   printf 'source_revision=%s\n' "$source_revision"
   printf 'source_state=%s\n' "$source_state"
   hash_input base_sha256 "$base_image"
   hash_input settings_rpm_sha256 \
-    "$repo_root/build/packages/gnome-control-center/RPMS/x86_64/gnome-control-center-50.4-${GNOME_CONTROL_CENTER_LUMA_RELEASE}.fc44.x86_64.rpm"
+    "$repo_root/build/packages/gnome-control-center/RPMS/x86_64/gnome-control-center-50.4-${GNOME_CONTROL_CENTER_SUNO_RELEASE}.fc44.x86_64.rpm"
   hash_input shell_rpm_sha256 \
     "$repo_root/build/packages/gnome-shell/RPMS/x86_64/$GNOME_SHELL_NEVRA.rpm"
   hash_input shell_common_rpm_sha256 \
@@ -69,11 +69,11 @@ mkdir -p "$(dirname -- "$report")"
   hash_input files_extensions_rpm_sha256 \
     "$repo_root/build/packages/nautilus/RPMS/x86_64/$NAUTILUS_EXTENSIONS_NEVRA.rpm"
   hash_input android_runtime_rpm_sha256 \
-    "$repo_root/build/packages/luma-android-runtime/RPMS/noarch/$LUMA_ANDROID_RUNTIME_NEVRA.rpm"
+    "$repo_root/build/packages/Suno-android-runtime/RPMS/noarch/$SUNO_ANDROID_RUNTIME_NEVRA.rpm"
   hash_input relay_rpm_sha256 \
-    "$repo_root/build/packages/luma-relay/RPMS/noarch/$LUMA_RELAY_NEVRA.rpm"
+    "$repo_root/build/packages/Suno-relay/RPMS/noarch/$SUNO_RELAY_NEVRA.rpm"
   hash_input application_installer_rpm_sha256 \
-    "$repo_root/build/packages/luma-application-installer/RPMS/noarch/$LUMA_APPLICATION_INSTALLER_NEVRA.rpm"
+    "$repo_root/build/packages/Suno-application-installer/RPMS/noarch/$SUNO_APPLICATION_INSTALLER_NEVRA.rpm"
   hash_input wine_relay_explorer_rpm_sha256 \
     "$repo_root/build/packages/wine-relay-integration/RPMS/x86_64/$WINE_RELAY_EXPLORER_NEVRA.rpm"
   hash_input calculator_rpm_sha256 \
@@ -81,15 +81,15 @@ mkdir -p "$(dirname -- "$report")"
   hash_input tiling_shell_rpm_sha256 \
     "$repo_root/build/packages/tiling/RPMS/noarch/$TILING_SHELL_NEVRA.rpm"
   hash_input tiling_toggle_rpm_sha256 \
-    "$repo_root/build/packages/tiling/RPMS/noarch/$LUMA_TILING_TOGGLE_NEVRA.rpm"
+    "$repo_root/build/packages/tiling/RPMS/noarch/$SUNO_TILING_TOGGLE_NEVRA.rpm"
   hash_input handheld_extension_rpm_sha256 \
-    "$repo_root/build/packages/luma-handheld/RPMS/noarch/$LUMA_HANDHELD_NEVRA.rpm"
-  hash_input luma_mods_rpm_sha256 \
-    "$repo_root/build/packages/luma-mods/RPMS/noarch/$LUMA_MODS_NEVRA.rpm"
-  hash_input luma_update_rpm_sha256 \
-    "$repo_root/build/packages/luma-update/RPMS/noarch/$LUMA_UPDATE_NEVRA.rpm"
+    "$repo_root/build/packages/Suno-handheld/RPMS/noarch/$SUNO_HANDHELD_NEVRA.rpm"
+  hash_input Suno_mods_rpm_sha256 \
+    "$repo_root/build/packages/Suno-mods/RPMS/noarch/$SUNO_MODS_NEVRA.rpm"
+  hash_input Suno_update_rpm_sha256 \
+    "$repo_root/build/packages/Suno-update/RPMS/noarch/$SUNO_UPDATE_NEVRA.rpm"
   hash_input backgrounds_rpm_sha256 \
-    "$repo_root/build/packages/backgrounds/RPMS/noarch/$LUMA_BACKGROUNDS_NEVRA.rpm"
+    "$repo_root/build/packages/backgrounds/RPMS/noarch/$SUNO_BACKGROUNDS_NEVRA.rpm"
   hash_input figtree_fonts_rpm_sha256 \
     "$repo_root/build/packages/figtree-fonts/RPMS/noarch/$FIGTREE_NEVRA.rpm"
   hash_input plymouth_rpm_sha256 \
@@ -111,15 +111,15 @@ mkdir -p "$(dirname -- "$report")"
   hash_input plymouth_theme_spinner_rpm_sha256 \
     "$repo_root/build/packages/plymouth/RPMS/x86_64/$PLYMOUTH_THEME_SPINNER_NEVRA.rpm"
   hash_input boot_theme_rpm_sha256 \
-    "$repo_root/build/packages/boot-theme/RPMS/noarch/$LUMA_BOOT_THEME_NEVRA.rpm"
+    "$repo_root/build/packages/boot-theme/RPMS/noarch/$SUNO_BOOT_THEME_NEVRA.rpm"
   hash_input prairie_icon_theme_rpm_sha256 \
     "$repo_root/build/packages/prairie-icon-theme/RPMS/noarch/$PRAIRIE_ICON_THEME_NEVRA.rpm"
-  hash_input luma_developer_platform_rpm_sha256 \
-    "$repo_root/build/packages/luma-developer-platform/x86_64/RPMS/$LUMA_DEVELOPER_PLATFORM_X86_64_NEVRA.rpm"
+  hash_input Suno_developer_platform_rpm_sha256 \
+    "$repo_root/build/packages/Suno-developer-platform/x86_64/RPMS/$SUNO_DEVELOPER_PLATFORM_X86_64_NEVRA.rpm"
   hash_input prairie_core_apps_rpm_sha256 \
     "$repo_root/build/packages/prairie-core-apps/RPMS/noarch/$PRAIRIE_CORE_APPS_NEVRA.rpm"
   hash_input shell_state_rpm_sha256 \
-    "$repo_root/build/packages/luma-shell-state/RPMS/noarch/$LUMA_SHELL_STATE_NEVRA.rpm"
+    "$repo_root/build/packages/Suno-shell-state/RPMS/noarch/$SUNO_SHELL_STATE_NEVRA.rpm"
 } >"$report"
 
 printf 'Desktop build report inputs recorded: %s\n' "$report"

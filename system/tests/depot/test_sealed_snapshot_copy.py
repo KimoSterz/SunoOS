@@ -14,7 +14,7 @@ import tempfile
 import unittest
 from unittest import mock
 
-SOURCE = Path(os.environ.get('LUMA_SEAL_TEST_SOURCE',
+SOURCE = Path(os.environ.get('SUNO_SEAL_TEST_SOURCE',
     str(Path(__file__).resolve().parents[2] / 'scripts/depot/seal-signing-control.py')))
 spec = importlib.util.spec_from_file_location('snapshot_sealer', SOURCE)
 sealer = importlib.util.module_from_spec(spec)
@@ -25,7 +25,7 @@ class SnapshotCopyControls(unittest.TestCase):
     def setUp(self):
         self.assertEqual(os.geteuid(), 0, 'Exercise actual root-owned publisher boundary.')
         self.temp = tempfile.TemporaryDirectory(prefix='seal-copy-controls-',
-            dir=os.environ.get('LUMA_SEAL_TEST_PARENT'))
+            dir=os.environ.get('SUNO_SEAL_TEST_PARENT'))
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
         self.source = self.root / 'source'
@@ -58,7 +58,7 @@ class SnapshotCopyControls(unittest.TestCase):
         self.assertEqual(dest.stat().st_uid, 0)
         self.assertEqual(stat.S_IMODE(dest.stat().st_mode), 0o400)
         self.assertEqual(dest.read_bytes(), original)
-        sealer.verify(self.target, digest, 'org.projectluma.signing-inputs/v1')
+        sealer.verify(self.target, digest, 'org.projectSuno.signing-inputs/v1')
         dest.chmod(0o600)
         with dest.open('r+b') as stream:
             stream.write(b'DESTINATION MUTATION')
@@ -77,7 +77,7 @@ class SnapshotCopyControls(unittest.TestCase):
                 dest = self.target / 'payload'
                 self.assertNotEqual(dest.stat().st_ino, self.file.stat().st_ino)
                 self.assertEqual(dest.read_bytes(), self.file.read_bytes())
-                sealer.verify(self.target, digest, 'org.projectluma.signing-inputs/v1')
+                sealer.verify(self.target, digest, 'org.projectSuno.signing-inputs/v1')
 
     def test_unexpected_ioctl_errors_never_fall_back_or_admit(self):
         for code in (errno.EPERM, errno.EIO, errno.ENOSPC):
@@ -148,7 +148,7 @@ class SnapshotCopyControls(unittest.TestCase):
         with mock.patch.object(sealer.os, 'fsync', side_effect=observe):
             digest = self.seal()
         self.assertTrue({'payload', 'second', sealer.MANIFEST, '.'} <= synced)
-        sealer.verify(self.target, digest, 'org.projectluma.signing-inputs/v1')
+        sealer.verify(self.target, digest, 'org.projectSuno.signing-inputs/v1')
 
     def test_payload_sync_failure_never_publishes_manifest(self):
         with mock.patch.object(sealer.os, 'fsync', side_effect=OSError(errno.EIO, 'sync failed')):
@@ -170,7 +170,7 @@ class SnapshotCopyControls(unittest.TestCase):
             stream.write(b'changed')
         dest.chmod(0o400)
         with self.assertRaisesRegex(ValueError, 'publisher control member changed'):
-            sealer.verify(self.target, digest, 'org.projectluma.signing-inputs/v1')
+            sealer.verify(self.target, digest, 'org.projectSuno.signing-inputs/v1')
 
     def test_zero_length_and_executable_members_have_exact_sealed_modes(self):
         (self.source / 'empty').write_bytes(b'')
@@ -181,7 +181,7 @@ class SnapshotCopyControls(unittest.TestCase):
         self.assertEqual((self.target / 'empty').read_bytes(), b'')
         self.assertEqual(stat.S_IMODE((self.target / 'executable').stat().st_mode), 0o500)
         self.assertEqual(executable.read_bytes(), (self.target / 'executable').read_bytes())
-        sealer.verify(self.target, digest, 'org.projectluma.signing-inputs/v1')
+        sealer.verify(self.target, digest, 'org.projectSuno.signing-inputs/v1')
 
 
 if __name__ == '__main__':

@@ -13,7 +13,7 @@ gi.require_version('Adw', '1')
 from gi.repository import Adw, Gio, GLib, Gtk
 Gtk.init()
 Adw.init()
-if os.environ.get('LUMA_CAMERA_TEST_HIGH_CONTRAST') == '1':
+if os.environ.get('SUNO_CAMERA_TEST_HIGH_CONTRAST') == '1':
     assert os.environ.get('GSETTINGS_BACKEND') == 'memory', 'contrast test needs a private settings backend'
     Gio.Settings.new('org.gnome.desktop.a11y.interface').set_boolean('high-contrast', True)
     Gtk.Settings.get_default().set_property('gtk-theme-name', 'HighContrast')
@@ -21,8 +21,8 @@ from prairie_apps import camera
 
 ROOT = Path(__file__).resolve().parents[2]
 fixture = ROOT / 'tests/fixtures/camera-v70.json'
-os.environ['LUMA_CAMERA_FIXTURE'] = str(fixture)
-os.environ['LUMA_CAMERA_STYLE_PATH'] = str(ROOT / 'src/prairie-core/style/camera.css')
+os.environ['SUNO_CAMERA_FIXTURE'] = str(fixture)
+os.environ['SUNO_CAMERA_STYLE_PATH'] = str(ROOT / 'src/prairie-core/style/camera.css')
 
 
 def settle(milliseconds=350):
@@ -41,7 +41,7 @@ def node(widget):
 
 
 before = {p: hashlib.sha256(p.read_bytes()).hexdigest() for p in fixture.parent.joinpath('camera-v70').iterdir()}
-if os.environ.get('LUMA_CAMERA_TEST_HIGH_CONTRAST') == '1':
+if os.environ.get('SUNO_CAMERA_TEST_HIGH_CONTRAST') == '1':
     settle()
     assert Adw.StyleManager.get_default().get_high_contrast(), 'high contrast was not applied'
 with patch.object(camera, 'list_camera_devices', side_effect=AssertionError('fixture acquired a camera')), \
@@ -323,7 +323,7 @@ with patch.object(camera, 'list_camera_devices', side_effect=AssertionError('fix
     # The package empty-state smoke also exercises this native discovery path.
     # Keep the same assertions isolated from other apps' package checks.
     with patch.dict(os.environ), patch.object(camera, 'list_camera_devices', return_value=[]) as discovery:
-        os.environ.pop('LUMA_CAMERA_FIXTURE', None)
+        os.environ.pop('SUNO_CAMERA_FIXTURE', None)
         empty_window = camera.CameraWindow(app)
         empty_window.present()
         settle()

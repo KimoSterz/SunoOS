@@ -1,7 +1,7 @@
 ---
 type: improvement
 component: Shared platform
-packages: [luma-home-widgets]
+packages: [Suno-home-widgets]
 highlight: false
 ---
 Summary: Added shared Weather and Calendar widget support

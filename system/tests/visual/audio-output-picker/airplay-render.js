@@ -23,8 +23,8 @@ function dump(actor) {
 }
 
 function scenario(name) {
-    Gio.DBus.session.call_sync('org.projectluma.AudioDevices', '/org/projectluma/RenderTest',
-        'org.projectluma.RenderTest', 'SetScenario', new GLib.Variant('(s)', [name]), null,
+    Gio.DBus.session.call_sync('org.projectSuno.AudioDevices', '/org/projectSuno/RenderTest',
+        'org.projectSuno.RenderTest', 'SetScenario', new GLib.Variant('(s)', [name]), null,
         Gio.DBusCallFlags.NONE, 2000, null);
 }
 

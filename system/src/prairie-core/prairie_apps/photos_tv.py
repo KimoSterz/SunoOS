@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """Photos on a television: the same app, browsed from the sofa with a remote.
 
-Design: the tv-luma/ Photos board and its handoff (9 Nov 2026). Terminal keeps
+Design: the tv-Suno/ Photos board and its handoff (9 Nov 2026). Terminal keeps
 its subject on screen and hides its rail; Photos hides everything, because the
 television is where photographs want to be.
 
@@ -28,19 +28,19 @@ gi.require_version("Gtk", "4.0")
 gi.require_version("Graphene", "1.0")
 from gi.repository import Gdk, GLib, Graphene, Gtk, Pango  # noqa: E402
 
-from luma_appkit import lumaui_tokens  # noqa: E402
-from luma_appkit.tv_focus import TvFocus  # noqa: E402
-from luma_appkit.tv_media import TvSlide  # noqa: E402
-from luma_appkit.tv_parts import TvTopBar  # noqa: E402
-from luma_appkit.tv_stage import TvStage, add_tv_style  # noqa: E402
+from Suno_appkit import SunoUI_tokens  # noqa: E402
+from Suno_appkit.tv_focus import TvFocus  # noqa: E402
+from Suno_appkit.tv_media import TvSlide  # noqa: E402
+from Suno_appkit.tv_parts import TvTopBar  # noqa: E402
+from Suno_appkit.tv_stage import TvStage, add_tv_style  # noqa: E402
 
 from .photos_content import decode_photo  # noqa: E402
 from .photos_state import source_from_environment  # noqa: E402
 
 # Ten-foot measures and colours (TV units on a 1920x1080 stage): tv.photos in
 # config/shared/design-tokens.json.
-T = lumaui_tokens.TV["photos"]
-SAFE_X, CONTENT_TOP = lumaui_tokens.TV["layout"]["safe_x"], T["content_top"]
+T = SunoUI_tokens.TV["photos"]
+SAFE_X, CONTENT_TOP = SunoUI_tokens.TV["layout"]["safe_x"], T["content_top"]
 DAY_TILE, QUIET_TILE, GAP = tuple(T["day_tile"]), tuple(T["quiet_tile"]), T["gap"]
 GRID_COLUMNS, GRID_TILE, GRID_GAP = T["grid_columns"], tuple(T["grid_tile"]), T["grid_gap"]
 RAIL_H, CHROME_SECONDS, SLIDE_SECONDS, INFO_PANEL = T["rail_height"], T["chrome_seconds"], T["slide_seconds"], T["info_panel"]
@@ -661,7 +661,7 @@ class PhotosTV:
         self.days = [(m, [fresh if p.id == photo.id else p for p in items]) for m, items in self.days]
         v["chrome"] = True
         self._draw_viewer()
-        from luma_appkit.tv_toast import TvToast
+        from Suno_appkit.tv_toast import TvToast
         TvToast.show(self.stage, "Added to Favourites" if fresh.favorite else "Removed from Favourites", lead="star")
 
     # ── the slideshow ───────────────────────────────────────────────────
@@ -669,7 +669,7 @@ class PhotosTV:
     def start_slides(self, items, index) -> None:
         live = [p for p in items if self.reachable(p)]
         if not live:
-            from luma_appkit.tv_toast import TvToast
+            from Suno_appkit.tv_toast import TvToast
             TvToast.show(self.stage, "None of these can be opened right now", lead="image")
             return
         # From here: this photograph, or the next one that can be opened.

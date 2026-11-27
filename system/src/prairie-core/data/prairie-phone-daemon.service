@@ -1,5 +1,5 @@
 [Unit]
-Description=Project Luma incoming call service
+Description=Project Suno incoming call service
 After=dbus.service
 PartOf=graphical-session.target
 # Give up rather than respawn forever. The daemon cannot start without

@@ -16,7 +16,7 @@ Under 560 px Notes is list first, like Memos and Messages:
 - The bar is for writing: Aa (formatting grows from it), Checklist, Add a
   photo, a hairline, then New note as the primary.
 
-Structure belongs to LumaUI: ListFirst (the push and Back), TitleIsland, the
+Structure belongs to SunoUI: ListFirst (the push and Back), TitleIsland, the
 action center's grown panels and search, the tier watch. The large title stays
 the app's own row because the folder dropdown sits beside it.
 Nothing here writes data of its own; every action is one Notes already had.
@@ -27,12 +27,12 @@ import os
 
 from gi.repository import GLib, Gtk, Pango
 
-from luma_appkit import (
+from Suno_appkit import (
     ActionCenter, AvatarStack, BarAction, BarSearch, BarTile, BarTiles, CountBadge, Mark, MarkValue, PanelHeading, PanelRow,
     PersonAvatar, ScrollView, SEPARATOR, RULE, TitleIsland, Toast, ToastHost, apply_type, icons, panel_list,
 )
-from luma_appkit.action_bubble import MenuItem
-from luma_appkit.structure_adapt import WidthWatch, window_tier, window_width
+from Suno_appkit.action_bubble import MenuItem
+from Suno_appkit.structure_adapt import WidthWatch, window_tier, window_width
 
 #: v71 Notes folds its sidebar at 720 (@container win (max-width: 720px) { .nside { display: none } }).
 COMPACT_MAX = 720
@@ -56,7 +56,7 @@ def _when(raw_at, modified_at):
 
 
 class NotesPhone:
-    """Mixed into NotesLumaWindow: the phone shape, and redrawing when a window crosses 560."""
+    """Mixed into NotesSunoWindow: the phone shape, and redrawing when a window crosses 560."""
 
     # ── setup ─────────────────────────────────────────────────────────────
 
@@ -115,11 +115,11 @@ class NotesPhone:
         if getattr(self, '_phone_fixture_done', False) or not self.phone:
             return
         self._phone_fixture_done = True
-        if os.environ.get('LUMA_NOTES_PHONE_OPEN') == '1' and self.current is not None:
+        if os.environ.get('SUNO_NOTES_PHONE_OPEN') == '1' and self.current is not None:
             self.phone_page = 'note'
             self._show_phone_page()
             self.set_focus(None)
-        grow = os.environ.get('LUMA_NOTES_PHONE_GROW', '')
+        grow = os.environ.get('SUNO_NOTES_PHONE_GROW', '')
         if grow == 'folders' and self.phone_page == 'list':
             self._phone_folders()
         elif grow == 'island' and self.phone_page == 'note':
@@ -246,7 +246,7 @@ class NotesPhone:
         box.append(top)
         text = ' '.join(note.plain_text.replace('￼', '').split())[:90] or 'No text yet'
         when = _when(raw.get('at'), note.modified_at)
-        if raw.get('live') and os.environ.get('LUMA_NOTES_LIVE_SETTLED') == '1':
+        if raw.get('live') and os.environ.get('SUNO_NOTES_LIVE_SETTLED') == '1':
             when = 'Just now'
         line = Gtk.Label(xalign=0, wrap=True, wrap_mode=Pango.WrapMode.WORD_CHAR, lines=2,
                          ellipsize=Pango.EllipsizeMode.END)
@@ -310,7 +310,7 @@ class NotesPhone:
         folder = self.store.get_folder(note.folder_id).name if note.folder_id else 'Notes'
         if self.fixture:
             at = raw.get('at', '')
-            settled = raw.get('live') and os.environ.get('LUMA_NOTES_LIVE_SETTLED') == '1'
+            settled = raw.get('live') and os.environ.get('SUNO_NOTES_LIVE_SETTLED') == '1'
             edited = 'Edited just now' if settled or at.startswith(('Today', 'Just now')) else f'Edited {at}'
         else:
             when = _when('', note.modified_at)
@@ -359,7 +359,7 @@ class NotesPhone:
         people = self._fixture_people() if self.fixture else {}
         heading = PanelHeading('People')
         heading.label.set_hexpand(False)
-        from luma_appkit.lumaui_tokens import STRUCTURE
+        from Suno_appkit.SunoUI_tokens import STRUCTURE
         heading.set_spacing(STRUCTURE['details']['count_gap'])
         heading.append(CountBadge(len(shares) + 1))
         heading.append(Gtk.Box(hexpand=True))
@@ -430,13 +430,13 @@ class NotesPhone:
 
     def _phone_format_panel(self):
         """Aa: Heading, Text, Quote; B I S, highlight, link; bulleted and numbered (v71 `.nfmt`)."""
-        from luma_appkit.action_center import make_control
+        from Suno_appkit.action_center import make_control
         panel = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         panel.set_name('nt-format-panel')
         panel.add_css_class('nt-format-panel')
         block = self.page.block_of_line(self.page.cursor_line())
         current = 'heading' if 'heading' in block else 'quote' if 'quote' in block else 'text'
-        from luma_appkit import PanelChoices
+        from Suno_appkit import PanelChoices
         styles = PanelChoices([('heading', 'Heading'), ('text', 'Text'), ('quote', 'Quote')],
                               selected=current, on_choose=self._set_block_style, document_style=True)
         styles.set_name('nt-format-styles')

@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Unit tests for the Luma OS release pipeline helpers (no root, no network).
+"""Unit tests for the Suno OS release pipeline helpers (no root, no network).
 
 Run: python3 -m unittest discover -s tests/os -p 'test_*.py'
 """
@@ -111,8 +111,8 @@ class UpdateGraphTests(unittest.TestCase):
         self.assertTrue(any("drops published releases" in p for p in problems))
 
     def test_display_name_is_optional_and_checked(self):
-        self.assertEqual(self.check(graph(release("1.0.0", A, display_name="Luma (Version 1, Prairie)"))), [])
-        for bad in ("Fedora 44", "Luma\n1", 7, "Luma " + "x" * 200):
+        self.assertEqual(self.check(graph(release("1.0.0", A, display_name="Suno (Version 1, Prairie)"))), [])
+        for bad in ("Fedora 44", "Suno\n1", 7, "Suno " + "x" * 200):
             problems = self.check(graph(release("1.0.0", A, display_name=bad)))
             self.assertTrue(any("display_name" in p for p in problems), bad)
 
@@ -149,23 +149,23 @@ class ReleaseIdentityTests(unittest.TestCase):
 
     def test_contract_advances_installed_prairie_beta_1(self):
         ident = release_identity.load(os.path.join(ROOT, "config", "os", "release.env"))
-        self.assertEqual(release_identity.display_name(ident, "beta"), "Luma (Prairie, Beta 1.1)")
+        self.assertEqual(release_identity.display_name(ident, "beta"), "Suno (Prairie, Beta 1.1)")
         next_version = release_identity.machine_version(ident, "beta", "20261009.1")
         self.assertEqual(next_version, "1.0.0-beta.1.1")
         self.assertGreater(versions.compare(next_version, "1.0.0-beta.1"), 0)
         self.assertEqual(release_identity.display_name(ident, "nightly", "2026-09-16"),
-                         "Luma (Prairie, Beta 1.1, Nightly 20260916)")
+                         "Suno (Prairie, Beta 1.1, Nightly 20260916)")
 
     def test_owner_names(self):
         self.assertEqual(release_identity.display_name(identity(), "nightly", "2026-09-16"),
-                         "Luma (Prairie, Beta 0, Nightly 20260916)")
-        self.assertEqual(release_identity.display_name(identity(stage_number="1"), "beta"), "Luma (Prairie, Beta 1)")
-        self.assertEqual(release_identity.display_name(identity(stage_number="1.1"), "beta"), "Luma (Prairie, Beta 1.1)")
-        self.assertEqual(release_identity.display_name(identity(stage_number="2"), "beta"), "Luma (Prairie, Beta 2)")
+                         "Suno (Prairie, Beta 0, Nightly 20260916)")
+        self.assertEqual(release_identity.display_name(identity(stage_number="1"), "beta"), "Suno (Prairie, Beta 1)")
+        self.assertEqual(release_identity.display_name(identity(stage_number="1.1"), "beta"), "Suno (Prairie, Beta 1.1)")
+        self.assertEqual(release_identity.display_name(identity(stage_number="2"), "beta"), "Suno (Prairie, Beta 2)")
         final = identity(stage="final", stage_number="")
-        self.assertEqual(release_identity.display_name(final, "stable"), "Luma (Version 1, Prairie)")
+        self.assertEqual(release_identity.display_name(final, "stable"), "Suno (Version 1, Prairie)")
         self.assertEqual(release_identity.display_name(final, "nightly", "20261102"),
-                         "Luma (Version 1, Prairie, Nightly 20261102)")
+                         "Suno (Version 1, Prairie, Nightly 20261102)")
 
     def test_impossible_releases_are_refused(self):
         for ident, channel in ((identity(), "beta"), (identity(stage_number="1"), "stable"),
@@ -200,52 +200,52 @@ class ReleaseIdentityTests(unittest.TestCase):
 
     def test_os_release_nightly(self):
         text, fields = self.fields(identity(), "nightly")
-        self.assertEqual(fields["NAME"], "Luma")
-        self.assertEqual(fields["ID"], "luma")
+        self.assertEqual(fields["NAME"], "Suno")
+        self.assertEqual(fields["ID"], "Suno")
         self.assertEqual(fields["ID_LIKE"], "fedora")
         self.assertEqual(fields["VERSION_ID"], "1")
         self.assertEqual(fields["VERSION_CODENAME"], "prairie")
         self.assertEqual(fields["VERSION"], '"Prairie, Beta 0, Nightly 20260930"')
-        self.assertEqual(fields["PRETTY_NAME"], '"Luma (Prairie, Beta 0, Nightly 20260930)"')
+        self.assertEqual(fields["PRETTY_NAME"], '"Suno (Prairie, Beta 0, Nightly 20260930)"')
         self.assertEqual(fields["RELEASE_TYPE"], "development")
         self.assertEqual((fields["BUILD_ID"], fields["IMAGE_VERSION"]), ("20261001.1", "20261001.1"))
         self.assertEqual(fields["PLATFORM_ID"], "platform:f44")
-        self.assertEqual(fields["LOGO"], "luma-logo")
-        self.assertEqual(fields["DEFAULT_HOSTNAME"], "luma")
-        self.assertEqual(fields["CPE_NAME"], "cpe:/o:projectluma:luma:1")
-        self.assertEqual((fields["LUMA_RELEASE_CHANNEL"], fields["LUMA_NIGHTLY_DATE"]), ("nightly", "20260930"))
+        self.assertEqual(fields["LOGO"], "Suno-logo")
+        self.assertEqual(fields["DEFAULT_HOSTNAME"], "Suno")
+        self.assertEqual(fields["CPE_NAME"], "cpe:/o:projectSuno:Suno:1")
+        self.assertEqual((fields["SUNO_RELEASE_CHANNEL"], fields["SUNO_NIGHTLY_DATE"]), ("nightly", "20260930"))
         self.assertNotIn("1.0", fields["PRETTY_NAME"] + fields["VERSION"])
         # Nothing a person sees may name Fedora (ADR-040); ID_LIKE, PLATFORM_ID
-        # and LUMA_FEDORA_RELEASE are the technical exceptions.
-        visible = {k: v for k, v in fields.items() if k not in ("ID_LIKE", "PLATFORM_ID", "LUMA_FEDORA_RELEASE")}
+        # and SUNO_FEDORA_RELEASE are the technical exceptions.
+        visible = {k: v for k, v in fields.items() if k not in ("ID_LIKE", "PLATFORM_ID", "SUNO_FEDORA_RELEASE")}
         self.assertFalse([k for k, v in visible.items() if "fedora" in v.lower() or "silverblue" in v.lower()])
         with self.assertRaises(ValueError):
             release_identity.render_os_release(identity(), "nightly", "x", "2026-09-30", "2026-10-01")
 
     def test_package_os_release_names_the_stage_and_no_build(self):
         fields = dict(release_identity.package_os_release_fields(identity()))
-        self.assertEqual(fields["PRETTY_NAME"], "Luma (Prairie, Beta 0)")
-        self.assertEqual((fields["VERSION_ID"], fields["VERSION_CODENAME"], fields["LOGO"]), ("1", "prairie", "luma-logo"))
-        for key in ("BUILD_ID", "IMAGE_VERSION", "LUMA_RELEASE_CHANNEL", "LUMA_NIGHTLY_DATE"):
+        self.assertEqual(fields["PRETTY_NAME"], "Suno (Prairie, Beta 0)")
+        self.assertEqual((fields["VERSION_ID"], fields["VERSION_CODENAME"], fields["LOGO"]), ("1", "prairie", "Suno-logo"))
+        for key in ("BUILD_ID", "IMAGE_VERSION", "SUNO_RELEASE_CHANNEL", "SUNO_NIGHTLY_DATE"):
             self.assertNotIn(key, fields)
         final = dict(release_identity.package_os_release_fields(identity(stage="final", stage_number="")))
-        self.assertEqual(final["PRETTY_NAME"], "Luma (Version 1, Prairie)")
+        self.assertEqual(final["PRETTY_NAME"], "Suno (Version 1, Prairie)")
 
     def test_os_release_beta_and_final(self):
         text, fields = self.fields(identity(stage_number="1"), "beta")
-        self.assertEqual(fields["PRETTY_NAME"], '"Luma (Prairie, Beta 1)"')
-        self.assertNotIn("LUMA_NIGHTLY_DATE", fields)
+        self.assertEqual(fields["PRETTY_NAME"], '"Suno (Prairie, Beta 1)"')
+        self.assertNotIn("SUNO_NIGHTLY_DATE", fields)
         text, fields = self.fields(identity(stage="final", stage_number=""), "stable")
-        self.assertEqual(fields["PRETTY_NAME"], '"Luma (Version 1, Prairie)"')
+        self.assertEqual(fields["PRETTY_NAME"], '"Suno (Version 1, Prairie)"')
         self.assertEqual(fields["VERSION"], '"Version 1, Prairie"')
         self.assertEqual(fields["RELEASE_TYPE"], "stable")
-        self.assertNotIn("LUMA_RELEASE_STAGE_NUMBER", fields)
+        self.assertNotIn("SUNO_RELEASE_STAGE_NUMBER", fields)
 
 
 class GraphFromReleasesTests(unittest.TestCase):
     def publish(self, repo, version, build_id, os_release=None, nightly_date=None):
         import tempfile  # noqa: F401
-        release_dir = os.path.join(repo, "luma", "releases", version)
+        release_dir = os.path.join(repo, "Suno", "releases", version)
         os.makedirs(release_dir)
         manifest = {"version": version, "build_id": build_id, "channel": "nightly", "commit": A,
                     "published_utc": "2026-09-17T06:00:00Z"}
@@ -266,11 +266,11 @@ class GraphFromReleasesTests(unittest.TestCase):
             new = self.publish(repo, "1.0.0-nightly.20260918.1", "20260918.1", release_identity.render_os_release(
                 identity(), "nightly", "20260918.1", "2026-09-17", "2026-09-18"))
             old = self.publish(repo, "1.0.0-nightly.20260917.3", "20260917.3",
-                               'NAME=Luma\nPRETTY_NAME="Luma 1.0"\n', nightly_date="2026-09-16")
+                               'NAME=Suno\nPRETTY_NAME="Suno 1.0"\n', nightly_date="2026-09-16")
             bare = self.publish(repo, "1.0.0-nightly.20260916.9", "20260916.9")
-            self.assertEqual(graph_from_releases.display_name_of(repo, new), "Luma (Prairie, Beta 0, Nightly 20260917)")
-            self.assertEqual(graph_from_releases.display_name_of(repo, old), "Luma (Prairie, Beta 0, Nightly 20260916)")
-            self.assertEqual(graph_from_releases.display_name_of(repo, bare), "Luma (Prairie, Beta 0, Nightly 20260916)")
+            self.assertEqual(graph_from_releases.display_name_of(repo, new), "Suno (Prairie, Beta 0, Nightly 20260917)")
+            self.assertEqual(graph_from_releases.display_name_of(repo, old), "Suno (Prairie, Beta 0, Nightly 20260916)")
+            self.assertEqual(graph_from_releases.display_name_of(repo, bare), "Suno (Prairie, Beta 0, Nightly 20260916)")
 
 
 class DeltaPathTests(unittest.TestCase):
@@ -287,11 +287,11 @@ class MigrationPlanTests(unittest.TestCase):
         with open(os.path.join(os.path.dirname(__file__), "fixtures", "parity-machine-status.json"), encoding="utf-8") as stream:
             self.status = json.load(stream)
         self.target = {
-            "gnome-shell": ("0", "50.3", "1.luma.99.surfacepreview20260914.78.fc44"),
-            "prairie-core-apps": ("0", "0.1.0", "1.luma.74.connect.28~preview.20260914.1.fc44"),
-            "luma-continuity": ("0", "0.1.0", "0.54.experiment.fc44"),
+            "gnome-shell": ("0", "50.3", "1.Suno.99.surfacepreview20260914.78.fc44"),
+            "prairie-core-apps": ("0", "0.1.0", "1.Suno.74.connect.28~preview.20260914.1.fc44"),
+            "Suno-continuity": ("0", "0.1.0", "0.54.experiment.fc44"),
             "gnome-shell-extension-appindicator": ("0", "60", "1.fc44"),
-            "luma-vitals": ("0", "0.1.0", "1.luma.3.fc44"),
+            "Suno-vitals": ("0", "0.1.0", "1.Suno.3.fc44"),
             "gnome-tour": ("0", "50.0", "2.fc44"),
         }
 
@@ -300,14 +300,14 @@ class MigrationPlanTests(unittest.TestCase):
         self.assertTrue(plan["reset_overrides"])
         self.assertEqual(plan["downgrades"], [])
         self.assertIn("gnome-shell-extension-appindicator", plan["uninstall"])
-        self.assertIn("luma-vitals-0.1.0-1.luma.3.fc44.noarch", plan["uninstall"])
+        self.assertIn("Suno-vitals-0.1.0-1.Suno.3.fc44.noarch", plan["uninstall"])
         self.assertIn("libretro-bsnes-mercury", plan["keep_layers"])
-        self.assertIn("openemu-linux-0.1.0-1.luma.2.fc44.x86_64", plan["keep_layers"])
+        self.assertIn("openemu-linux-0.1.0-1.Suno.2.fc44.x86_64", plan["keep_layers"])
         self.assertEqual(plan["reapply_removals"], ["gnome-tour"])
 
     def test_newer_local_build_is_a_downgrade(self):
         target = copy.deepcopy(self.target)
-        target["prairie-core-apps"] = ("0", "0.1.0", "1.luma.74.connect.27~preview.20260914.1.fc44")
+        target["prairie-core-apps"] = ("0", "0.1.0", "1.Suno.74.connect.27~preview.20260914.1.fc44")
         plan = migration_plan.plan(self.status, target)
         self.assertEqual([d["package"] for d in plan["downgrades"]], ["prairie-core-apps"])
 
@@ -340,7 +340,7 @@ class MigrationPlanTests(unittest.TestCase):
 
     def test_rpmvercmp(self):
         cmp = migration_plan.rpmvercmp
-        self.assertEqual(cmp("1.luma.17.preview1.fc44", "1.fc44"), 1)
+        self.assertEqual(cmp("1.Suno.17.preview1.fc44", "1.fc44"), 1)
         self.assertEqual(cmp("1.0~rc1", "1.0"), -1)
         self.assertEqual(cmp("1.0^git1", "1.0"), 1)
         self.assertEqual(cmp("0.54.experiment.fc44", "0.52.experiment.fc44"), 1)

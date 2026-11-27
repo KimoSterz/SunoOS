@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 # SPDX-License-Identifier: GPL-2.0-or-later
-"""Layer permissions in a running Luma session (GNOME Shell 0380-0381, Mutter 0043-0046).
+"""Layer permissions in a running Suno session (GNOME Shell 0380-0381, Mutter 0043-0046).
 
     layer-shell-session-test.py LAYER_TEST_CLIENT
 
@@ -32,7 +32,7 @@ CLIENT = sys.argv[1]
 # Fresh IDs each run: Mutter reports a clamp once per app and session, and a
 # stopped app stays stopped for the session.
 RUN = f'{int(time.time()) % 1000000}'
-APPS = [f'org.luma.test.Session{x}{RUN}' for x in 'ABCD']
+APPS = [f'org.Suno.test.Session{x}{RUN}' for x in 'ABCD']
 OVERLAY, KEYBOARD = 4, 8
 bus = Gio.bus_get_sync(Gio.BusType.SESSION)
 failures = 0
@@ -50,13 +50,13 @@ def call(dest, path, iface, method, args=None, sig=None):
 
 
 def shell(method, *args):
-    return call('org.gnome.Shell', '/org/projectluma/LayerShell', 'org.projectluma.LayerShell1', method,
+    return call('org.gnome.Shell', '/org/projectSuno/LayerShell', 'org.projectSuno.LayerShell1', method,
                 GLib.Variant(f"({''.join('s' if isinstance(a, str) else 'b' if isinstance(a, bool) else 'u' for a in args)})", args))
 
 
 def prop(name):
-    return call('org.gnome.Shell', '/org/projectluma/LayerShell', 'org.freedesktop.DBus.Properties', 'Get',
-                GLib.Variant('(ss)', ('org.projectluma.LayerShell1', name)), '(v)').unpack()[0]
+    return call('org.gnome.Shell', '/org/projectSuno/LayerShell', 'org.freedesktop.DBus.Properties', 'Get',
+                GLib.Variant('(ss)', ('org.projectSuno.LayerShell1', name)), '(v)').unpack()[0]
 
 
 def evaluate(js):
@@ -69,7 +69,7 @@ def store_row():
     try:
         table = call('org.freedesktop.impl.portal.PermissionStore', '/org/freedesktop/impl/portal/PermissionStore',
                      'org.freedesktop.impl.portal.PermissionStore', 'Lookup',
-                     GLib.Variant('(ss)', ('luma', 'display-over-apps')), '(a{sas}v)').unpack()[0]
+                     GLib.Variant('(ss)', ('Suno', 'display-over-apps')), '(a{sas}v)').unpack()[0]
     except GLib.Error:
         table = {}
     return table
@@ -81,7 +81,7 @@ def reset():
         if app in table:
             call('org.freedesktop.impl.portal.PermissionStore', '/org/freedesktop/impl/portal/PermissionStore',
                  'org.freedesktop.impl.portal.PermissionStore', 'DeletePermission',
-                 GLib.Variant('(sss)', ('luma', 'display-over-apps', app)))
+                 GLib.Variant('(sss)', ('Suno', 'display-over-apps', app)))
 
 
 def spin(seconds, until=lambda: False):
@@ -95,7 +95,7 @@ def spin(seconds, until=lambda: False):
 
 
 clamps = []
-bus.signal_subscribe('org.gnome.Shell', 'org.projectluma.LayerShell1', 'Clamped', '/org/projectluma/LayerShell',
+bus.signal_subscribe('org.gnome.Shell', 'org.projectSuno.LayerShell1', 'Clamped', '/org/projectSuno/LayerShell',
                      None, Gio.DBusSignalFlags.NONE, lambda *a: clamps.append(a[5].unpack()))
 
 apps_dir = os.path.expanduser('~/.local/share/applications')
@@ -231,7 +231,7 @@ try:
           '--margin', '100,0,0,300', '--size', '900x700', '--namespace', 'chat')
     spin(8, lambda: APPS[3] in prop('FadedApps'))
     tags = evaluate("""(() => Main.layoutManager.uiGroup.get_children()
-        .filter(a => a.name === 'lumaLayerNameTag' && a.visible)
+        .filter(a => a.name === 'SunoLayerNameTag' && a.visible)
         .map(a => [Math.round(a.x), Math.round(a.y)]))()""")
     check('an app over 40% is faded', APPS[3] in prop('FadedApps'), prop('FadedApps'))
     check('one name tag for the app', tags is not None and len(tags) == 1, tags)

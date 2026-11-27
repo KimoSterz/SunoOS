@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import assert from 'node:assert/strict';
-import {panelProgress, panelSnap, notificationAccess} from '../../../src/luma-shell-presentation/layout.js';
+import {panelProgress, panelSnap, notificationAccess} from '../../../src/Suno-shell-presentation/layout.js';
 assert.equal(panelProgress(0, 150, 300), .5);
 assert.equal(panelProgress(0, 60, 300), .2, 'reversing the same gesture reverses the panel');
 assert.equal(panelProgress(1, -180, 300), .4);

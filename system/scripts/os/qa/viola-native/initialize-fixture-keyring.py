@@ -9,7 +9,7 @@ import subprocess
 import time
 
 
-HOME = Path('/home/luma-gate-browser-opens')
+HOME = Path('/home/Suno-gate-browser-opens')
 SERVICE = 'org.freedesktop.secrets'
 assert os.getuid() == 1100
 assert os.environ.get('HOME') == str(HOME)

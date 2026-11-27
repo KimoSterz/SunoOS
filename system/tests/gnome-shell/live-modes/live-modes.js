@@ -56,7 +56,7 @@ function inspect(island, mode, label) {
 }
 
 async function setMode(mode) {
-    const state = new Gio.Settings({schema_id: 'org.project_luma.shell-state'});
+    const state = new Gio.Settings({schema_id: 'org.projectSuno.shell-state'});
     const iface = new Gio.Settings({schema_id: 'org.gnome.desktop.interface'});
     iface.set_string('color-scheme', mode === 'dark' ? 'prefer-dark' : 'default');
     state.set_string('surface-treatment', mode);

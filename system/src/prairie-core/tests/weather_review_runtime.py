@@ -2,11 +2,11 @@
 import os,time
 from pathlib import Path
 root=Path(__file__).resolve().parents[3]
-os.environ.update(LUMA_WEATHER_FIXTURE=str(root/'tests/fixtures/weather-v71.json'),
-                  LUMA_WEATHER_STYLE_PATH=str(root/'src/prairie-core/style/weather.css'),
-                  LUMA_WEATHER_VIEW='days', LUMA_FORM_FACTOR='desktop', GSETTINGS_BACKEND='memory')
+os.environ.update(SUNO_WEATHER_FIXTURE=str(root/'tests/fixtures/weather-v71.json'),
+                  SUNO_WEATHER_STYLE_PATH=str(root/'src/prairie-core/style/weather.css'),
+                  SUNO_WEATHER_VIEW='days', SUNO_FORM_FACTOR='desktop', GSETTINGS_BACKEND='memory')
 from gi.repository import Gio,GLib,Gtk
-Gio.Settings.new('org.project_luma.shell-state').set_string('surface-treatment','dark')
+Gio.Settings.new('org.projectSuno.shell-state').set_string('surface-treatment','dark')
 Gio.Settings.new('org.gnome.desktop.interface').set_string('color-scheme','prefer-dark')
 from prairie_apps.weather import WeatherApplication,WeatherWindow
 
@@ -22,7 +22,7 @@ def capture(w,name):
     snap=Gtk.Snapshot();Gtk.WidgetPaintable.new(w).snapshot(snap,w.get_width(),w.get_height())
     assert w.get_renderer().render_texture(snap.to_node(),None).save_to_png(str(Path(out)/name))
 
-app=WeatherApplication();app.set_application_id('org.projectluma.Weather.ReviewTest');assert app.register(None)
+app=WeatherApplication();app.set_application_id('org.projectSuno.Weather.ReviewTest');assert app.register(None)
 for initial in (402,1180):
     w=WeatherWindow(app);w.set_default_size(initial,874);w.present();settle()
     assert w.places and w.snapshots

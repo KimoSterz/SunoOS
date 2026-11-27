@@ -30,8 +30,8 @@ def as_path(kind: str, attributes: list[tuple[str, str]]) -> tuple[str, list[tup
 
 
 def adapt(source: str, icon: str, stroke_width: str = "2") -> str:
-    """stroke_width "2" is Lucide's own and reproduces the transport row; LumaUI's
-    import passes "1.6", the weight luma-next-70 draws every glyph at."""
+    """stroke_width "2" is Lucide's own and reproduces the transport row; SunoUI's
+    import passes "1.6", the weight Suno-next-70 draws every glyph at."""
     lines = ["<!-- Lucide geometry, ISC; adapted to GTK 4.20+ symbolic stroke classes. -->",
              f'<svg xmlns="http://www.w3.org/2000/svg" class="lucide lucide-{icon}"' +
              f' width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="{stroke_width}"'

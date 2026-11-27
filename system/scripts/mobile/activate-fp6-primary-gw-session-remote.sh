@@ -14,11 +14,11 @@ grep -qw androidboot.slot_suffix=_b /proc/cmdline || exit 1
 
 cleanup() {
   unset status aid
-  systemctl start ModemManager.service luma-fp6-cellular-link.service 2>/dev/null || true
+  systemctl start ModemManager.service Suno-fp6-cellular-link.service 2>/dev/null || true
 }
 trap cleanup EXIT INT TERM HUP
 
-systemctl stop luma-fp6-cellular-link.service ModemManager.service
+systemctl stop Suno-fp6-cellular-link.service ModemManager.service
 status=$(qmicli -d qrtr://0 --device-open-qmi --uim-get-card-status)
 aid=$(printf '%s\n' "$status" | awk '
   /Application type:.*usim/ { wanted=1; next }
@@ -35,6 +35,6 @@ qmicli -d qrtr://0 --device-open-qmi \
   --uim-change-provisioning-session="session-type=primary-gw-provisioning,activate=yes,slot=2,aid=$aid" \
   >/dev/null
 unset aid
-systemctl start ModemManager.service luma-fp6-cellular-link.service
+systemctl start ModemManager.service Suno-fp6-cellular-link.service
 trap - EXIT INT TERM HUP
-printf 'event=luma_fp6_primary_gw_session state=active identifiers_logged=0\n'
+printf 'event=Suno_fp6_primary_gw_session state=active identifiers_logged=0\n'

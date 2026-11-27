@@ -170,7 +170,7 @@ def export_open_in_write(note: Note, *, data_directory: Path | None = None) -> P
     """
     root = Path(data_directory) if data_directory is not None else (
         Path(os.environ.get('XDG_DATA_HOME', Path.home() / '.local/share'))
-        / 'luma' / 'notes' / 'open-in-write')
+        / 'Suno' / 'notes' / 'open-in-write')
     root.mkdir(mode=0o700, parents=True, exist_ok=True)
     directory = Path(tempfile.mkdtemp(prefix='note-', dir=root))
     try:

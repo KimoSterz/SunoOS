@@ -7,17 +7,17 @@ repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 # shellcheck disable=SC1091
 . "$repo_root/config/desktop/inputs.env"
 # shellcheck disable=SC1091
-. "$repo_root/config/mobile/luma-greeter.env"
+. "$repo_root/config/mobile/Suno-greeter.env"
 # shellcheck disable=SC1091
 . "$repo_root/config/mobile/cage-source.env"
-rootfs=${LUMA_FP6_ROOTFS:?LUMA_FP6_ROOTFS is required}
-output_dir=${LUMA_FP6_ROOTFS_OUTPUT:?LUMA_FP6_ROOTFS_OUTPUT is required}
-packages_file=${LUMA_FP6_PACKAGES_FILE:?LUMA_FP6_PACKAGES_FILE is required}
-ui_packages_file=${LUMA_FP6_UI_PACKAGES_FILE:?LUMA_FP6_UI_PACKAGES_FILE is required}
-shared_mod_packages_file=${LUMA_FP6_SHARED_MOD_PACKAGES_FILE:-$repo_root/config/shared/mod-packages.txt}
-shared_packages_file=${LUMA_FP6_SHARED_PACKAGES_FILE:-$repo_root/config/shared/application-packages.txt}
-platform_packages_file=${LUMA_FP6_PLATFORM_PACKAGES_FILE:-$repo_root/config/shared/platform-packages.txt}
-capability_packages_file=${LUMA_FP6_CAPABILITY_PACKAGES_FILE:-$repo_root/config/mobile/phone-capability-packages.txt}
+rootfs=${SUNO_FP6_ROOTFS:?SUNO_FP6_ROOTFS is required}
+output_dir=${SUNO_FP6_ROOTFS_OUTPUT:?SUNO_FP6_ROOTFS_OUTPUT is required}
+packages_file=${SUNO_FP6_PACKAGES_FILE:?SUNO_FP6_PACKAGES_FILE is required}
+ui_packages_file=${SUNO_FP6_UI_PACKAGES_FILE:?SUNO_FP6_UI_PACKAGES_FILE is required}
+shared_mod_packages_file=${SUNO_FP6_SHARED_MOD_PACKAGES_FILE:-$repo_root/config/shared/mod-packages.txt}
+shared_packages_file=${SUNO_FP6_SHARED_PACKAGES_FILE:-$repo_root/config/shared/application-packages.txt}
+platform_packages_file=${SUNO_FP6_PLATFORM_PACKAGES_FILE:-$repo_root/config/shared/platform-packages.txt}
+capability_packages_file=${SUNO_FP6_CAPABILITY_PACKAGES_FILE:-$repo_root/config/mobile/phone-capability-packages.txt}
 manifest="$output_dir/manifest.env"
 rpm_manifest="$output_dir/rpm-manifest.txt"
 local_rpm_manifest="$output_dir/local-rpm-manifest.txt"
@@ -36,16 +36,16 @@ check() {
 
 check 'Fedora 44 rootfs' bash -c \
   'source "$1/etc/os-release" && [ "$ID" = fedora ] && [ "$VERSION_ID" = 44 ]' _ "$rootfs"
-check 'mobile-v1 rootfs marker' grep -qx 'LUMA_ROOTFS_CONTRACT=mobile-v1' \
-  "$rootfs/etc/luma-mobile-release"
+check 'mobile-v1 rootfs marker' grep -qx 'SUNO_ROOTFS_CONTRACT=mobile-v1' \
+  "$rootfs/etc/Suno-mobile-release"
 check 'explicit handheld device class' grep -qx 'handheld' \
-  "$rootfs/etc/luma-device-class"
-check 'physical candidate is negative' grep -qx 'LUMA_PHYSICAL_DEVICE=false' \
-  "$rootfs/etc/luma-mobile-release"
+  "$rootfs/etc/Suno-device-class"
+check 'physical candidate is negative' grep -qx 'SUNO_PHYSICAL_DEVICE=false' \
+  "$rootfs/etc/Suno-mobile-release"
 check 'installation remains unauthorized' grep -qx 'INSTALL_AUTHORIZED=false' \
-  "$rootfs/etc/luma-mobile-release"
-check 'external Milos kernel contract' grep -qx 'LUMA_KERNEL_CONTRACT=milos-external' \
-  "$rootfs/etc/luma-mobile-release"
+  "$rootfs/etc/Suno-mobile-release"
+check 'external Milos kernel contract' grep -qx 'SUNO_KERNEL_CONTRACT=milos-external' \
+  "$rootfs/etc/Suno-mobile-release"
 check 'no kernel RPM' bash -c '! rpm --root "$1" -q kernel >/dev/null 2>&1' _ "$rootfs"
 check 'no kernel module payload' bash -c \
   '[ ! -d "$1/usr/lib/modules" ] || ! find "$1/usr/lib/modules" -type f -print -quit | grep -q .' _ "$rootfs"
@@ -58,26 +58,26 @@ check 'root account locked' awk -F: \
   '$1 == "root" { found=1; locked=($2 ~ /^!/) } END { exit(found && locked ? 0 : 1) }' \
   "$rootfs/etc/shadow"
 check 'diagnostic account is fixed and locked' bash -c \
-  'passwd=$(awk -F: '\''$1 == "luma" { print $2 }'\'' "$1/etc/shadow"); [ "$(awk -F: '\''$1 == "luma" { print $3 ":" $4 ":" $6 ":" $7 }'\'' "$1/etc/passwd")" = "1000:1000:/home/luma:/bin/bash" ] && case "$passwd" in !*) true ;; *) false ;; esac' _ "$rootfs"
+  'passwd=$(awk -F: '\''$1 == "Suno" { print $2 }'\'' "$1/etc/shadow"); [ "$(awk -F: '\''$1 == "Suno" { print $3 ":" $4 ":" $6 ":" $7 }'\'' "$1/etc/passwd")" = "1000:1000:/home/Suno:/bin/bash" ] && case "$passwd" in !*) true ;; *) false ;; esac' _ "$rootfs"
 check 'passwd database is readable by services' test "$(stat -c '%a' "$rootfs/etc/passwd")" = 644
 check 'group database is readable by services' test "$(stat -c '%a' "$rootfs/etc/group")" = 644
 check 'shadow database remains root-only' test "$(stat -c '%a' "$rootfs/etc/shadow")" = 600
 check 'gshadow database remains root-only' test "$(stat -c '%a' "$rootfs/etc/gshadow")" = 600
 check 'no diagnostic authorized key in generic rootfs' test ! -e \
-  "$rootfs/home/luma/.ssh/authorized_keys"
+  "$rootfs/home/Suno/.ssh/authorized_keys"
 check 'SSH is public-key only' grep -qx 'AuthenticationMethods publickey' \
-  "$rootfs/etc/ssh/sshd_config.d/40-luma-diagnostic.conf"
+  "$rootfs/etc/ssh/sshd_config.d/40-Suno-diagnostic.conf"
 check 'no GDM in physical rootfs' bash -c '! rpm --root "$1" -q gdm >/dev/null 2>&1' _ "$rootfs"
 check 'Phosh session installed' test -f "$rootfs/usr/share/wayland-sessions/phosh.desktop"
 check 'Phosh session D-Bus launcher installed' test -x "$rootfs/usr/bin/dbus-run-session"
-check 'shared Luma shell-state broker installed' rpm --root "$rootfs" -q \
-  "$LUMA_SHELL_STATE_NEVRA"
-check 'exact native Luma Phosh renderer installed' rpm --root "$rootfs" -q \
-  "$LUMA_PHOSH_AARCH64_NEVRA"
-check 'exact native Luma Phoc compositor installed' rpm --root "$rootfs" -q \
-  "$LUMA_PHOC_AARCH64_NEVRA"
-check 'native Luma Phosh binary installed below rollback-safe prefix' test -x \
-  "$rootfs/opt/luma/phosh/libexec/phosh"
+check 'shared Suno shell-state broker installed' rpm --root "$rootfs" -q \
+  "$SUNO_SHELL_STATE_NEVRA"
+check 'exact native Suno Phosh renderer installed' rpm --root "$rootfs" -q \
+  "$SUNO_PHOSH_AARCH64_NEVRA"
+check 'exact native Suno Phoc compositor installed' rpm --root "$rootfs" -q \
+  "$SUNO_PHOC_AARCH64_NEVRA"
+check 'native Suno Phosh binary installed below rollback-safe prefix' test -x \
+  "$rootfs/opt/Suno/phosh/libexec/phosh"
 check 'exact shared Prairie icon theme installed' rpm --root "$rootfs" -q \
   "$PRAIRIE_ICON_THEME_NEVRA"
 check 'exact shared GTK 4 downstream installed' rpm --root "$rootfs" -q \
@@ -89,60 +89,60 @@ check 'exact shared libhandy downstream installed' rpm --root "$rootfs" -q \
 check 'exact shared libadwaita downstream installed' rpm --root "$rootfs" -q \
   "$LIBADWAITA_AARCH64_NEVRA"
 check 'shared shell-state broker is session-bound' test -L \
-  "$rootfs/usr/lib/systemd/user/graphical-session.target.wants/luma-shell-state.service"
-check 'shared Luma Phosh presentation installed' test -f \
-  "$rootfs/usr/share/themes/Luma/gtk-3.0/gtk.css"
-check 'exact shared Luma boot theme installed' rpm --root "$rootfs" -q \
-  "$LUMA_BOOT_THEME_NEVRA"
-check 'exact shared Luma Prism package installed' rpm --root "$rootfs" -q \
-  "$LUMA_BACKGROUNDS_NEVRA"
+  "$rootfs/usr/lib/systemd/user/graphical-session.target.wants/Suno-shell-state.service"
+check 'shared Suno Phosh presentation installed' test -f \
+  "$rootfs/usr/share/themes/Suno/gtk-3.0/gtk.css"
+check 'exact shared Suno boot theme installed' rpm --root "$rootfs" -q \
+  "$SUNO_BOOT_THEME_NEVRA"
+check 'exact shared Suno Prism package installed' rpm --root "$rootfs" -q \
+  "$SUNO_BACKGROUNDS_NEVRA"
 check 'canonical Prism wallpaper installed byte-for-byte' cmp -s \
-  "$repo_root/assets/wallpapers/luma-prism.png" \
-  "$rootfs/usr/share/backgrounds/luma/luma-prism.png"
+  "$repo_root/assets/wallpapers/Suno-prism.png" \
+  "$rootfs/usr/share/backgrounds/Suno/Suno-prism.png"
 check 'exact native Presence greeter installed' rpm --root "$rootfs" -q \
-  "$LUMA_GREETER_NEVRA"
+  "$SUNO_GREETER_NEVRA"
 check 'exact scanout-safe Cage compositor installed' rpm --root "$rootfs" -q \
-  "$LUMA_CAGE_AARCH64_NEVRA"
+  "$SUNO_CAGE_AARCH64_NEVRA"
 check 'native Presence greeter binary installed' test -x \
-  "$rootfs/usr/bin/luma-greeter"
+  "$rootfs/usr/bin/Suno-greeter"
 check 'native Presence compositor initializer installed' test -x \
-  "$rootfs/usr/libexec/luma-greeter-session"
+  "$rootfs/usr/libexec/Suno-greeter-session"
 check 'isolated Cage compositor installed' test -x "$rootfs/usr/bin/cage"
 check 'greetd has no authenticated initial-session bypass' bash -c \
   '! grep -Fq "[initial_session]" "$1"' _ "$rootfs/etc/greetd/config.toml"
 check 'greetd launches the native Presence greeter' grep -Fxq \
-  'command = "/usr/bin/env LUMA_CAGE_SCANOUT_HANDOFF=1 LUMA_GREETER_OUTPUT=DSI-1 LUMA_GREETER_SCALE=3 /usr/bin/cage -s -- /usr/libexec/luma-greeter-session >/dev/null 2>&1"' \
+  'command = "/usr/bin/env SUNO_CAGE_SCANOUT_HANDOFF=1 SUNO_GREETER_OUTPUT=DSI-1 SUNO_GREETER_SCALE=3 /usr/bin/cage -s -- /usr/libexec/Suno-greeter-session >/dev/null 2>&1"' \
   "$rootfs/etc/greetd/config.toml"
 check 'Presence greeter is in exact local RPM provenance manifest' grep -Eq \
-  "^[0-9a-f]{64}  ${LUMA_GREETER_NEVRA}\\.rpm$" "$local_rpm_manifest"
+  "^[0-9a-f]{64}  ${SUNO_GREETER_NEVRA}\\.rpm$" "$local_rpm_manifest"
 check 'scanout-safe Cage is in exact local RPM provenance manifest' grep -Eq \
-  "^[0-9a-f]{64}  ${LUMA_CAGE_AARCH64_NEVRA}\\.rpm$" "$local_rpm_manifest"
+  "^[0-9a-f]{64}  ${SUNO_CAGE_AARCH64_NEVRA}\\.rpm$" "$local_rpm_manifest"
 check 'Plymouth control client installed' test -x "$rootfs/usr/bin/plymouth"
 check 'Plymouth script renderer installed' rpm --root "$rootfs" -q plymouth-plugin-script
-check 'handheld Plymouth theme selected' grep -Fxq 'Theme=luma-loading-handheld' \
+check 'handheld Plymouth theme selected' grep -Fxq 'Theme=Suno-loading-handheld' \
   "$rootfs/etc/plymouth/plymouthd.conf"
 check 'handheld Plymouth descriptor installed' test -f \
-  "$rootfs/usr/share/plymouth/themes/luma-loading-handheld/luma-loading-handheld.plymouth"
+  "$rootfs/usr/share/plymouth/themes/Suno-loading-handheld/Suno-loading-handheld.plymouth"
 check 'handheld Plymouth script installed' test -f \
-  "$rootfs/usr/share/plymouth/themes/luma-loading-handheld/luma-loading-handheld.script"
+  "$rootfs/usr/share/plymouth/themes/Suno-loading-handheld/Suno-loading-handheld.script"
 check 'canonical boot wordmark source installed' cmp -s \
-  "$repo_root/website/public/brand/luma-wordmark.svg" \
-  "$rootfs/usr/share/luma/boot/brand/luma-wordmark.svg"
+  "$repo_root/website/public/brand/Suno-wordmark.svg" \
+  "$rootfs/usr/share/Suno/boot/brand/Suno-wordmark.svg"
 check 'handheld boot wordmark raster installed' test -s \
-  "$rootfs/usr/share/plymouth/themes/luma-loading-handheld/luma-wordmark.png"
+  "$rootfs/usr/share/plymouth/themes/Suno-loading-handheld/Suno-wordmark.png"
 check 'handheld loader dot raster installed' test -s \
-  "$rootfs/usr/share/plymouth/themes/luma-loading-handheld/luma-loading-dot.png"
+  "$rootfs/usr/share/plymouth/themes/Suno-loading-handheld/Suno-loading-dot.png"
 check 'handheld normal boot has no ordinary status copy' bash -c \
   '! grep -Eqi "Image.Text\\(\"(Loading|Starting|Welcome|Advanced)" "$1"' _ \
-  "$rootfs/usr/share/plymouth/themes/luma-loading-handheld/luma-loading-handheld.script"
+  "$rootfs/usr/share/plymouth/themes/Suno-loading-handheld/Suno-loading-handheld.script"
 check 'handheld boot keeps native password prompt callback' grep -Fq \
   'Plymouth.SetDisplayPasswordFunction(display_password_callback);' \
-  "$rootfs/usr/share/plymouth/themes/luma-loading-handheld/luma-loading-handheld.script"
+  "$rootfs/usr/share/plymouth/themes/Suno-loading-handheld/Suno-loading-handheld.script"
 check 'handheld boot keeps native question prompt callback' grep -Fq \
   'Plymouth.SetDisplayQuestionFunction(display_question_callback);' \
-  "$rootfs/usr/share/plymouth/themes/luma-loading-handheld/luma-loading-handheld.script"
+  "$rootfs/usr/share/plymouth/themes/Suno-loading-handheld/Suno-loading-handheld.script"
 check 'boot theme is in exact local RPM provenance manifest' grep -Eq \
-  "^[0-9a-f]{64}  ${LUMA_BOOT_THEME_NEVRA}\\.rpm$" "$local_rpm_manifest"
+  "^[0-9a-f]{64}  ${SUNO_BOOT_THEME_NEVRA}\\.rpm$" "$local_rpm_manifest"
 check 'Plymouth quit unit installed' test -f \
   "$rootfs/usr/lib/systemd/system/plymouth-quit.service"
 check 'Plymouth quit wired into multi-user startup' test -L \
@@ -156,13 +156,13 @@ check 'SSH enabled' systemctl --root="$rootfs" is-enabled --quiet sshd.service
 check 'greetd enabled' systemctl --root="$rootfs" is-enabled --quiet greetd.service
 check 'systemd PAM module installed' test -f "$rootfs/usr/lib64/security/pam_systemd.so"
 check 'exact shared Android runtime installed' rpm --root "$rootfs" -q \
-  "$LUMA_ANDROID_RUNTIME_NEVRA"
+  "$SUNO_ANDROID_RUNTIME_NEVRA"
 check 'Prairie core has no Android runtime dependency' bash -c \
-  '! rpm --root "$1" -q --requires prairie-core-apps | grep -Eqi "luma-android-runtime|waydroid"' _ "$rootfs"
+  '! rpm --root "$1" -q --requires prairie-core-apps | grep -Eqi "Suno-android-runtime|waydroid"' _ "$rootfs"
 check 'native IMS has no Android service dependency' bash -c \
-  '! grep -Ei "^(Requires|Wants|After|Before)=.*(android|waydroid)" "$1/usr/lib/systemd/system/luma-fp6-imsd.service"' _ "$rootfs"
+  '! grep -Ei "^(Requires|Wants|After|Before)=.*(android|waydroid)" "$1/usr/lib/systemd/system/Suno-fp6-imsd.service"' _ "$rootfs"
 check 'exact native IMS package installed' rpm --root "$rootfs" -q \
-  "$LUMA_IMSD_AARCH64_NEVRA"
+  "$SUNO_IMSD_AARCH64_NEVRA"
 check 'native IMS executable installed' test -x "$rootfs/usr/sbin/imsd"
 check 'pre-session account receives only restricted emergency IMS methods' bash -c '
   policy="$1/usr/share/dbus-1/system.d/net.catcrafts.IMS1.conf"
@@ -181,17 +181,17 @@ check 'Android-aware shared Filer installed' rpm --root "$rootfs" -q \
 check 'Android-aware shared Filer extensions installed' rpm --root "$rootfs" -q \
   "$NAUTILUS_EXTENSIONS_AARCH64_NEVRA"
 check 'retired Layouts app is not installed' test ! -e \
-  "$rootfs/usr/share/applications/org.projectluma.Layouts.desktop"
+  "$rootfs/usr/share/applications/org.projectSuno.Layouts.desktop"
 check 'exact shared Darkroom package installed' rpm --root "$rootfs" -q \
-  "$LUMA_DARKROOM_NEVRA"
+  "$SUNO_DARKROOM_NEVRA"
 check 'Darkroom handheld launcher installed from the shared package' test -f \
-  "$rootfs/usr/share/applications/org.projectluma.Darkroom.desktop"
+  "$rootfs/usr/share/applications/org.projectSuno.Darkroom.desktop"
 check 'handheld Android profile is on-demand' grep -qx 'KEEP_WARM=false' \
-  "$rootfs/usr/share/luma/android/profiles/handheld.conf"
+  "$rootfs/usr/share/Suno/android/profiles/handheld.conf"
 check 'handheld Android CPU ceiling is packaged' grep -qx 'CPU_QUOTA_PERCENT=300' \
-  "$rootfs/usr/share/luma/android/profiles/handheld.conf"
+  "$rootfs/usr/share/Suno/android/profiles/handheld.conf"
 check 'Android broker is session-activated' test -L \
-  "$rootfs/usr/lib/systemd/user/graphical-session.target.wants/luma-android.service"
+  "$rootfs/usr/lib/systemd/user/graphical-session.target.wants/Suno-android.service"
 check 'only AArch64/noarch RPMs' bash -c \
   'rpm --root "$1" -qa --qf "%{NAME} %{ARCH}\n" | while read -r name arch; do case "$name:$arch" in "gpg-pubkey:(none)"|*:aarch64|*:noarch) ;; *) exit 1 ;; esac; done' _ "$rootfs"
 
@@ -220,7 +220,7 @@ check 'artifact SHA-256' bash -c \
 check 'zstd stream integrity' bash -c \
   'source "$1" && zstd -q -t "$2/$ARTIFACT_FILENAME"' _ "$manifest" "$output_dir"
 check 'tar root marker retained' bash -c \
-  'source "$1" && zstd -q -dc "$2/$ARTIFACT_FILENAME" | tar -tf - | grep -qx "./etc/luma-mobile-release"' _ "$manifest" "$output_dir"
+  'source "$1" && zstd -q -dc "$2/$ARTIFACT_FILENAME" | tar -tf - | grep -qx "./etc/Suno-mobile-release"' _ "$manifest" "$output_dir"
 
 if [ "$failures" -ne 0 ]; then
   printf '\nFedora FP6 rootfs smoke test: FAIL (%s checks)\n' "$failures"

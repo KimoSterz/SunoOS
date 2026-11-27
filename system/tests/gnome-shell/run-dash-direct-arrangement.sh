@@ -3,13 +3,13 @@
 # Run only in the owned disposable VM with GDM stopped and user1000 bus alive.
 set -eu
 ulimit -c 0
-[ "${LUMA_NATIVE_SHELL_DISPOSABLE:-0}" = 1 ] || {
+[ "${SUNO_NATIVE_SHELL_DISPOSABLE:-0}" = 1 ] || {
     printf '%s\n' 'Refusing: this fixture requires the disposable Shell VM.' >&2
     exit 2
 }
-[ "$(id -u)" = 0 ] && [ "$(id -u luma-media-test)" = 1000 ]
+[ "$(id -u)" = 0 ] && [ "$(id -u Suno-media-test)" = 1000 ]
 root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
-base=/var/tmp/luma-dash-native
+base=/var/tmp/Suno-dash-native
 width=${1:-1024}
 variant=${2:-baseline}
 case "$variant" in baseline|fixed|packaged) ;; *) exit 2 ;; esac
@@ -20,9 +20,9 @@ mkdir -p "$base/folder"
 if [ "$variant" = fixed ]; then
     cp "$root/tests/gnome-shell/dash-overlay/"*.js "$base/overlay/ui/"
 else
-    rm -f "$base/overlay/ui/shelf.js" "$base/overlay/ui/shelfArrange.js" "$base/overlay/ui/lumaDockFolders.js"
+    rm -f "$base/overlay/ui/shelf.js" "$base/overlay/ui/shelfArrange.js" "$base/overlay/ui/SunoDockFolders.js"
 fi
-favorites=$(python3 - "$root/config/desktop/dconf/db/luma.d/00-luma-desktop" <<'PY'
+favorites=$(python3 - "$root/config/desktop/dconf/db/Suno.d/00-Suno-desktop" <<'PY'
 import ast, json, pathlib, sys
 line = next(x for x in pathlib.Path(sys.argv[1]).read_text().splitlines()
             if x.startswith('favorite-apps='))
@@ -52,7 +52,7 @@ imports._promiseNative.setMainLoopHook(() => {
         }).catch(failed);
     });
     GLib.timeout_add_once(GLib.PRIORITY_DEFAULT, 5000, () => {
-        import('file:///var/tmp/luma-dash-native/native-test.js').then(async test => {
+        import('file:///var/tmp/Suno-dash-native/native-test.js').then(async test => {
             await test.run();
             global.context.terminate();
         }).catch(failed);
@@ -61,7 +61,7 @@ imports._promiseNative.setMainLoopHook(() => {
 });
 JS
 chown -R 1000:1000 "$base"
-runuser -u luma-media-test -- env LUMA_FOLLOWUP_FAVORITES="$favorites" \
+runuser -u Suno-media-test -- env SUNO_FOLLOWUP_FAVORITES="$favorites" \
     XDG_RUNTIME_DIR=/run/user/1000 DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus \
     XDG_CURRENT_DESKTOP=GNOME GSETTINGS_BACKEND=keyfile \
     XDG_CONFIG_HOME="$base/config" XDG_DATA_HOME="$base/data" \

@@ -27,7 +27,7 @@ class BrowserIdentity(unittest.TestCase):
         folder = tempfile.TemporaryDirectory()
         self.addCleanup(folder.cleanup)
         destination = Path(folder.name) / 'com.rhyme.viola.browser.svg'
-        shutil.copyfile(Path(__file__).parent / 'assets/org.projectluma.Viola.NativeIntegration.svg',
+        shutil.copyfile(Path(__file__).parent / 'assets/org.projectSuno.Viola.NativeIntegration.svg',
                         destination)
         theme.add_search_path(folder.name)
         self.assertTrue(theme.has_icon('com.rhyme.viola.browser'))

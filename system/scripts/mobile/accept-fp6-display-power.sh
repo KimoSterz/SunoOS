@@ -58,28 +58,28 @@ done
 display_bus=org.gnome.Mutter.DisplayConfig
 display_path=/org/gnome/Mutter/DisplayConfig
 display_interface=org.gnome.Mutter.DisplayConfig
-handheld_bus=org.project_luma.Handheld
-handheld_path=/org/project_luma/Handheld
-handheld_interface=org.project_luma.Handheld1
+handheld_bus=org.projectSuno.Handheld
+handheld_path=/org/projectSuno/Handheld
+handheld_interface=org.projectSuno.Handheld1
 screensaver_bus=org.gnome.ScreenSaver
 screensaver_path=/org/gnome/ScreenSaver
 screensaver_interface=org.gnome.ScreenSaver
 
-if systemctl --user is-active luma-shell-session.target >/dev/null 2>&1; then
-  renderer=luma-shell
-  [ "$(systemctl --user is-active luma-power-key-broker.service)" = active ] ||
-    die 'Luma power-key broker is not active in the Luma Shell session'
-  session_identity=$(systemctl --user show luma-shell-session.target \
+if systemctl --user is-active Suno-shell-session.target >/dev/null 2>&1; then
+  renderer=Suno-shell
+  [ "$(systemctl --user is-active Suno-power-key-broker.service)" = active ] ||
+    die 'Suno power-key broker is not active in the Suno Shell session'
+  session_identity=$(systemctl --user show Suno-shell-session.target \
     --property=InvocationID --value)
-  inhibitor_pattern='Luma Handheld Shell'
+  inhibitor_pattern='Suno Handheld Shell'
 elif phosh_pid=$(pgrep -xo phosh); then
   renderer=phosh
-  [ "$(systemctl --user is-active luma-power-key-broker.service 2>/dev/null || true)" != active ] ||
-    die 'Luma raw power-key broker must be inactive while Phosh owns the key'
+  [ "$(systemctl --user is-active Suno-power-key-broker.service 2>/dev/null || true)" != active ] ||
+    die 'Suno raw power-key broker must be inactive while Phosh owns the key'
   session_identity=$phosh_pid
   inhibitor_pattern='Phosh handling power key'
 else
-  die 'neither the Luma Shell nor Phosh renderer is active'
+  die 'neither the Suno Shell nor Phosh renderer is active'
 fi
 [ -n "$session_identity" ] || die 'graphical session identity is missing'
 inhibitors=$(systemd-inhibit --list --no-legend | grep -c "$inhibitor_pattern" || true)
@@ -87,7 +87,7 @@ inhibitors=$(systemd-inhibit --list --no-legend | grep -c "$inhibitor_pattern" |
   die "expected one $renderer power-key inhibitor, found $inhibitors"
 
 read_session_state() {
-  if [ "$renderer" = luma-shell ]; then
+  if [ "$renderer" = Suno-shell ]; then
     read_property "$handheld_bus" "$handheld_path" \
       "$handheld_interface" Sleeping | awk '{print $2}'
   else
@@ -103,11 +103,11 @@ initial_session_state=$(read_session_state)
 [ "$initial_mode" -eq 0 ] || die "display does not begin awake: mode $initial_mode"
 [ "$initial_bl_power" -eq 0 ] ||
   die "panel does not begin powered: bl_power $initial_bl_power"
-[ "$renderer" != luma-shell ] || [ "$initial_session_state" = false ] ||
-  die 'Luma Shell begins in sleeping state'
+[ "$renderer" != Suno-shell ] || [ "$initial_session_state" = false ] ||
+  die 'Suno Shell begins in sleeping state'
 
 start_time=$(date -Is)
-printf 'LUMA_FP6_DISPLAY_POWER_ACCEPTANCE_VERSION=2\n'
+printf 'SUNO_FP6_DISPLAY_POWER_ACCEPTANCE_VERSION=2\n'
 printf 'BOOT_ID=%s\n' "$(cat /proc/sys/kernel/random/boot_id)"
 printf 'RENDERER=%s\n' "$renderer"
 printf 'DURATION_SECONDS=%s\n' "$duration"
@@ -162,8 +162,8 @@ final_mode=$(read_property "$display_bus" "$display_path" \
   "$display_interface" PowerSaveMode | awk '{print $2}')
 final_bl_power=$(cat "${backlight_nodes[0]}/bl_power")
 final_session_state=$(read_session_state)
-if [ "$renderer" = luma-shell ]; then
-  final_session_identity=$(systemctl --user show luma-shell-session.target \
+if [ "$renderer" = Suno-shell ]; then
+  final_session_identity=$(systemctl --user show Suno-shell-session.target \
     --property=InvocationID --value)
 else
   final_session_identity=$(pgrep -xo phosh || true)
@@ -184,7 +184,7 @@ failed_system_units=$(sudo -n systemctl --failed --no-legend --no-pager |
 printf 'FAILED_SYSTEM_UNITS=%s\n' "$failed_system_units"
 printf 'NEW_POWER_LOG_BEGIN\n'
 power_log=$(journalctl --user --since "$start_time" --no-pager | grep -E \
-  'Luma Handheld: display (sleep|wake)|Luma power-key broker|phosh.*(lock|blank|wake|power)|Setting backlight.*failed' || true)
+  'Suno Handheld: display (sleep|wake)|Suno power-key broker|phosh.*(lock|blank|wake|power)|Setting backlight.*failed' || true)
 printf '%s\n' "$power_log"
 printf 'NEW_POWER_LOG_END\n'
 backlight_faults=$(printf '%s\n' "$power_log" | grep -E 'Setting backlight.*failed' || true)
@@ -199,8 +199,8 @@ printf 'PERSISTENT_MUTATIONS=none\n'
 [ "$saw_return" = true ] || die 'second physical short press did not wake the panel'
 [ "$final_mode" -eq 0 ] || die 'display did not finish awake'
 [ "$final_bl_power" -eq 0 ] || die 'panel did not finish powered'
-[ "$renderer" != luma-shell ] || [ "$final_session_state" = false ] ||
-  die 'Luma Shell did not finish awake'
+[ "$renderer" != Suno-shell ] || [ "$final_session_state" = false ] ||
+  die 'Suno Shell did not finish awake'
 [ "$session_identity" = "$final_session_identity" ] ||
   die 'graphical session restarted during the test'
 [ "$failed_system_units" -eq 0 ] || die 'system has failed units after display cycle'

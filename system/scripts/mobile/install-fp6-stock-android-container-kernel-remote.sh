@@ -8,21 +8,21 @@
 set -euo pipefail
 umask 077
 
-stage=/var/tmp/luma-fp6-stock-android-container-kernel1
+stage=/var/tmp/Suno-fp6-stock-android-container-kernel1
 bundle=$stage/bundle
-release=7.1.2-luma-fp-ims-container1
+release=7.1.2-Suno-fp-ims-container1
 candidate_efi_sha=c87c25a24041a0541ac87aed3b346d9edb3673b2888e86243c0f2279f472fc8a
 candidate_image_sha=b38f57c13532333f40d0318a20db94e2fff65e0d09e14184c987fa9196e6cb45
 candidate_config_sha=7eb084e3a201a11e69676aad4c93b9588e72f15dc9ef86d5d5c56ee13fc0f448
 candidate_modules_sha=2e8ec46457aa25e39888a89228bcc4d4aaab8bdae542c6f085d6200b8a5ea150
 candidate_manifest_sha=306952c6b0f602394734a931b4c92915c3e215d8c348d67c53d5bdde59b3a4aa
-current_release=7.1.2-luma-fp-ims1
+current_release=7.1.2-Suno-fp-ims1
 current_efi_sha=a69dbc085727ea4244cc0a3fce93553913e37dc6b48896c9969f7392f3346cb9
 current_image_sha=62556c8a87a0b8c345fdfd11770bffad7b112526e17cdb353600bec8648583ef
 current_initramfs_sha=3ed23188d9fb5ae8ed90b8d3b274e8d4d4432c3f60a25b14d718c33d9391a8a4
 current_dtb_sha=9a9d45187ef98874d84e1df9d06044a89e9aedb98d0b79b2b6d8bc32e7a164cf
 current_entry_sha=20efc7d275f0e3784226cd9b43d80a4222240db744d4f2be7d54ee5888563446
-rollback_root=/var/lib/luma/fp6-stock-android-container-kernel/rollback-ims1
+rollback_root=/var/lib/Suno/fp6-stock-android-container-kernel/rollback-ims1
 candidate_entry=/boot/loader/entries/pmos-container1+3.conf
 accepted_entry=/boot/loader/entries/pmos-container1.conf
 
@@ -73,7 +73,7 @@ require_hash "$rollback_root/initramfs" "$current_initramfs_sha"
 require_hash "$rollback_root/milos-fairphone-fp6.dtb" "$current_dtb_sha"
 require_hash "$rollback_root/pmos.conf" "$current_entry_sha"
 
-module_stage=$(mktemp -d /var/tmp/luma-container1-modules.XXXXXXXX)
+module_stage=$(mktemp -d /var/tmp/Suno-container1-modules.XXXXXXXX)
 tar --use-compress-program=unzstd -C "$module_stage" -xf "$bundle/modules-$release.tar.zst"
 [[ -d $module_stage/lib/modules/$release && ! -L $module_stage/lib/modules/$release ]] ||
   die 'module archive did not produce the expected release'
@@ -92,8 +92,8 @@ require_hash /boot/vmlinuz-container1 "$candidate_image_sha"
 require_hash /boot/linux-container1.efi "$candidate_efi_sha"
 
 install -m 0700 /dev/stdin "$candidate_entry" <<'EOF'
-title Luma FP6 BinderFS candidate (three-attempt gate)
-sort-key zz-luma-container1
+title Suno FP6 BinderFS candidate (three-attempt gate)
+sort-key zz-Suno-container1
 linux linux-container1.efi
 
 initrd initramfs

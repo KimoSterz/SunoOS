@@ -19,7 +19,7 @@ class ApprovedRefresh(unittest.TestCase):
         self.manifest={'commit':'a'*64,'version':'1.0.0-beta.1.1','published_utc':self.release['released_at'],
                        'source_dirty':False,'gate':{'result':'pass'},'parent':'b'*64}
         self.gate={'commit':'a'*64,'result':'pass','fresh':'pass','no_account':'pass','update':'pass','rollback':'pass'}
-        self.delivery={'schema':'org.projectluma.os-public-delivery/v1','commit':'a'*64,
+        self.delivery={'schema':'org.projectSuno.os-public-delivery/v1','commit':'a'*64,
                        'complete_closure_readback':True,'commit_signature_verified':True,'summary_signature_verified':True}
 
     def test_qualified_delivered_release_is_admitted(self):

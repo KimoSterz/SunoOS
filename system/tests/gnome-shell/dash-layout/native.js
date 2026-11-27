@@ -5,8 +5,8 @@ import Meta from 'gi://Meta';
 import Clutter from 'gi://Clutter';
 import St from 'gi://St';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
-import {getNotificationTray} from 'resource:///org/gnome/shell/ui/lumaNotificationBeacon.js';
-const out = GLib.getenv('LUMA_SHELF_TEST_OUT');
+import {getNotificationTray} from 'resource:///org/gnome/shell/ui/SunoNotificationBeacon.js';
+const out = GLib.getenv('SUNO_SHELF_TEST_OUT');
 const results = [];
 const sleep = ms => new Promise(resolve => GLib.timeout_add(GLib.PRIORITY_DEFAULT, ms, () => {resolve(); return GLib.SOURCE_REMOVE;}));
 const check = (name, ok, detail = '') => {results.push({name, ok: Boolean(ok), detail}); console.log(`${ok ? 'PASS' : 'FAIL'} ${name} ${detail}`);};
@@ -14,7 +14,7 @@ async function work() {
     const player = Gio.Subprocess.new(['python3', '/source/tests/gnome-shell/dash-layout/player.py'], Gio.SubprocessFlags.NONE);
     await sleep(1800);
     const shelf = Main.shelf;
-    const state = new Gio.Settings({schema_id: 'org.project_luma.shell-state'});
+    const state = new Gio.Settings({schema_id: 'org.projectSuno.shell-state'});
     const lip = getNotificationTray();
     try {
     for (const edge of ['left', 'right', 'top', 'bottom']) {

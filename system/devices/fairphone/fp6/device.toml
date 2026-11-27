@@ -12,9 +12,9 @@ maintainers = ["@nmcmil"]
 fastboot_product = "FP6"
 
 [kernel]
-tag = "luma-fp6-alpha1-7.1.2-luma-fp-ims1.gmu2.selinux1"
-release = "7.1.2-luma-fp-ims1.gmu2.selinux1"
-config = "luma/fp6/alpha1/config-7.1.2-luma-fp-ims1.gmu2.selinux1"
+tag = "Suno-fp6-alpha1-7.1.2-Suno-fp-ims1.gmu2.selinux1"
+release = "7.1.2-Suno-fp-ims1.gmu2.selinux1"
+config = "Suno/fp6/alpha1/config-7.1.2-Suno-fp-ims1.gmu2.selinux1"
 # Merged over config in order (scripts/kernel/build-fp6.sh).
 config_fragments = ["config/kernel/fp6.fragment"]
 # Applied over the tag in order (scripts/kernel/build-fp6.sh).
@@ -29,16 +29,16 @@ patches = [
 ]
 dtb = "qcom/milos-fairphone-fp6.dtb"
 # The boot DTB is the built dtb with these overlays (scripts/kernel/compose-fp6-dtb.sh).
-dtb_overlays = "luma/fp6/alpha1/dtb"
+dtb_overlays = "Suno/fp6/alpha1/dtb"
 # The package that brings this kernel to phones (its boot image and modules;
 # [boot_update]) and how the ARM nightly builds it when its release changes.
-package = "kernel-modules-luma-fp6"
+package = "kernel-modules-Suno-fp6"
 build = "scripts/devices/build-fp6-kernel-package.sh"
 
 [kernel.android_gpu]
 # Android GPU admission (scripts/kernel/fp6-android-gpu-admission.py). The
 # kernel build writes the /sys/kernel/notes sha256 of an admitted kernel into
-# kernel-modules-luma-fp6; luma-android-runtime refuses GPU-rendered Android on
+# kernel-modules-Suno-fp6; Suno-android-runtime refuses GPU-rendered Android on
 # any other FP6 kernel. The A810 GMU fails firmware initialization under
 # Android load (GMU start timeout, GPU_SET OOB timeouts, GPU and DPU
 # hangchecks): the IFPC-off kernel was revoked on 2026-08-15 after that
@@ -66,30 +66,30 @@ config = "boot.toml"
 # The boot image's ramdisk is three concatenated cpio archives; the kernel
 # unpacks them in order and later files replace earlier ones.
 #  1-2: postmarketOS edge initramfs (postmarketos-initramfs 3.12.0-r0), unmodified.
-#  3:   Luma overlay: init_functions.sh, Luma kernel modules, ostree-prepare-root
+#  3:   Suno overlay: init_functions.sh, Suno kernel modules, ostree-prepare-root
 #       with its Fedora 44 libraries, and the boot theme.
 # ramdisk_sha256 is those three, from Alpha 1. Boot images for the shared ARM
 # image add a fourth (scripts/mobile/build-fp6-boot-image.sh): init_functions.sh,
 # the shared OSTree boot resolver (scripts/mobile/common/initramfs) and the
 # modem store seed (scripts/mobile/fp6-initramfs), which copies modemst1/2,
-# fsc, fsg and study into /var/lib/luma/rmtfs on the first `fastboot boot`,
+# fsc, fsg and study into /var/lib/Suno/rmtfs on the first `fastboot boot`,
 # before any normal boot lets the bootloader erase modemst. With an empty
-# /etc/fstab postmarketOS would mount the boot partition (LumaBoot) on /boot;
+# /etc/fstab postmarketOS would mount the boot partition (SunoBoot) on /boot;
 # init_functions.sh leaves /boot on the root filesystem, where ostree writes
 # the boot entries the resolver reads.
 ramdisk_sha256 = "944489269addf33f8cd5e8f305ccc368573396e26df03dc6ea63970242659a82"
 base = "postmarketos-initramfs 3.12.0-r0"
 init_functions = "scripts/mobile/fp6-native-init-functions.sh"
 init_functions_sha256 = "46bdcf79081c76d9619ca2fdb6d94ff9e829090d4817de15e3ad24b50ced00c1"
-ostree_package = "ostree-2026.5-1.luma.2.fc44"
+ostree_package = "ostree-2026.5-1.Suno.2.fc44"
 ostree_source = "config/mobile/fp6-ostree-source.json"
 
 [firmware]
 manifest = "firmware.manifest"
 manifest_sha256 = "79a3c9b336f43dc341953426f1e8fc1ebf6c07d24a997dfe5c04370f31c80d7b"
 files = 267
-# Files no postmarketOS firmware package carries, also in luma-fp6-firmware
-# (listed in packaging/rpm/luma-fp6-firmware-extra.manifest):
+# Files no postmarketOS firmware package carries, also in Suno-fp6-firmware
+# (listed in packaging/rpm/Suno-fp6-firmware-extra.manifest):
 #  - qcom/milos/Fairphone (Gen. 6)-tplg.bin: AudioReach topology, BSD-3-Clause,
 #    built from Catcrafts/audioreach-topology (branch fp6) and shipped as
 #    fp6-tplg.bin by Catcrafts/fp6-img soc-fairphone-fp6-audio (pkgver 3,
@@ -97,13 +97,13 @@ files = 267
 #    it the card does not instantiate.
 #  - qcom/milos/fairphone/fp6/aw88261_acf.bin: AW88261 speaker amplifier profile,
 #    from the same package.
-#  - luma/fp6-carrier-pdc/{dsds-la-milos,att-volte-qrel1695,
+#  - Suno/fp6-carrier-pdc/{dsds-la-milos,att-volte-qrel1695,
 #    tmo-commercial-qrel1695}.mbn: the DSDS platform, AT&T VoLTE and T-Mobile
 #    commercial modem configurations from the Fairphone 6 QREL1695 modem
 #    partition (modem_pr/mcfg/configs/mcfg_hw/generic/common/Milos/STANDALONE/
 #    LA/DSDS/mcfg_hw.mbn, mcfg_sw/generic/NA/ATT/VoLTE/mcfg_sw.mbn,
 #    mcfg_sw/generic/NA/TMO/Commercial/mcfg_sw.mbn), which
-#    luma-fp6-carrier-pdc loads.
+#    Suno-fp6-carrier-pdc loads.
 #  - ath11k/WCN6750/hw1.0/board-2.bin: linux-firmware's WCN6750 board file
 #    (the board-2.bin.zst of the set above) with one entry appended by
 #    scripts/packages/ath11k-board-add.py:
@@ -112,8 +112,8 @@ files = 267
 #    936ff1). The kernel asks for that variant; without the entry ath11k falls
 #    back to the generic board data and cannot transmit on 5 GHz or 6 GHz.
 #    The loader prefers the uncompressed file over board-2.bin.zst.
-# luma-fp6-firmware from the device repository, in the deployment's
-# /usr/lib/firmware. Alpha 1 kept it in shared /var/lib/luma/device-firmware;
+# Suno-fp6-firmware from the device repository, in the deployment's
+# /usr/lib/firmware. Alpha 1 kept it in shared /var/lib/Suno/device-firmware;
 # the initramfs still verifies and uses that store when it exists.
 store = "/usr/lib/firmware"
 
@@ -126,26 +126,26 @@ preserve = ["modemst1", "modemst2", "fsg", "fsc", "persist"]
 
 [updates]
 # The one ARM OS commit; the device repository is a client-side layer.
-ostree_ref = "luma/1/aarch64/nightly"
+ostree_ref = "Suno/1/aarch64/nightly"
 
 [device_repo]
-# Signed rpm-md repository (Luma OS Release key) with the Fairphone 6 platform:
+# Signed rpm-md repository (Suno OS Release key) with the Fairphone 6 platform:
 # kernel modules, firmware, platform services, IMS, eSIM and the modem stack.
-id = "luma-fairphone-fp6"
+id = "Suno-fairphone-fp6"
 url = "https://dl.simplyluma.com/os/devices/aarch64/fairphone-fp6/"
 replace = ["ModemManager", "ModemManager-glib", "libqmi", "libqmi-utils", "libcamera", "libcamera-ipa", "libcamera-gstreamer"]
-install = ["kernel-modules-luma-fp6", "luma-fp6-firmware", "luma-fp6-platform", "luma-fp6-carrier-adapter", "luma-imsd", "luma-esim-broker", "lpac-fp6", "qbootctl", "tqftpserv"]
+install = ["kernel-modules-Suno-fp6", "Suno-fp6-firmware", "Suno-fp6-platform", "Suno-fp6-carrier-adapter", "Suno-imsd", "Suno-esim-broker", "lpac-fp6", "qbootctl", "tqftpserv"]
 
 [boot_update]
-# kernel-modules-luma-fp6 carries the boot image of its own kernel build
-# (scripts/packages/build-kernel-modules-luma-fp6.sh --boot-image) in
-# /usr/lib/luma/device-boot/fairphone-fp6/, so the modules and the kernel that
-# loads them change together. luma-device-boot (luma-update) writes it to the
+# kernel-modules-Suno-fp6 carries the boot image of its own kernel build
+# (scripts/packages/build-kernel-modules-Suno-fp6.sh --boot-image) in
+# /usr/lib/Suno/device-boot/fairphone-fp6/, so the modules and the kernel that
+# loads them change together. Suno-device-boot (Suno-update) writes it to the
 # inactive slot, sets that slot active with qbootctl and restarts once; the
 # bootloader returns to the previous slot when the new kernel does not boot.
 # qbootctl switches every A/B pair, so all the others (dtbo, firmware) must be
 # identical on both slots; dtbo stays blank on both and is never written.
-package = "kernel-modules-luma-fp6"
+package = "kernel-modules-Suno-fp6"
 slots = "qbootctl"
 partitions = ["boot_a", "boot_b"]
 
@@ -183,7 +183,7 @@ dtbo_image = "https://media.simplyluma.com/mobile/fp6/kit-20261109.2-fix3/dtbo-b
 dtbo_image_sha256 = "75c91b29d5522c8a97c779e50bc33f11e07ed37b2baa31c8c727016e92915c1d"
 guide = "https://media.simplyluma.com/mobile/fp6/kit-20261109.2-fix3/FLASHING.md"
 
-# Kernel patches 0041/0042 (system suspend), luma-fp6-platform 16, firmware 4.
+# Kernel patches 0041/0042 (system suspend), Suno-fp6-platform 16, firmware 4.
 [[releases]]
 name = "kit-20261111-1"
 date = "2026-11-11"

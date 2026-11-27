@@ -2,12 +2,12 @@
 Assert(global.refresh && global.normal && global.password && global.question &&
        global.display_message && global.hide_message && global.system_update, "callbacks registered");
 if (global.desktop) {
-    // Boot starts on the firmware's screen with the Luma wordmark coming up at
+    // Boot starts on the firmware's screen with the Suno wordmark coming up at
     // its bottom, holds it for a second, then the vendor logo fades while the
-    // wordmark rises into Luma's surface (ADR-045).
+    // wordmark rises into Suno's surface (ADR-045).
     Assert(Window.firmware_opacity == 1 && global.firmware_active, "desktop boot starts on the firmware logo");
     normal(); refresh();
-    Assert(global.surface_opacity == 0 && global.dot[0].sprite.opacity == 0, "Luma surface waits for the firmware logo");
+    Assert(global.surface_opacity == 0 && global.dot[0].sprite.opacity == 0, "Suno surface waits for the firmware logo");
     Assert(global.logo_sprite.opacity == 0 && global.brand_logo_sprite.opacity < 0.1, "the wordmark eases in rather than popping");
     for (frame=0; frame<20; frame++) refresh();
     Assert(Window.firmware_opacity == 1 && global.brand_logo_sprite.opacity == 1, "wordmark shown under the firmware logo");
@@ -19,7 +19,7 @@ if (global.desktop) {
     for (frame=0; frame<25; frame++) refresh();
     Assert(Window.firmware_opacity > 0 && Window.firmware_opacity < 1, "firmware logo cross-fades");
     Assert(global.brand_logo_sprite.y < global.brand_y && global.brand_logo_sprite.y > global.brand_target_y, "wordmark rises into place");
-    Assert(global.surface_opacity <= 1.001 - Window.firmware_opacity, "Luma surface never outruns the fading logo");
+    Assert(global.surface_opacity <= 1.001 - Window.firmware_opacity, "Suno surface never outruns the fading logo");
     Assert(global.dot[0].sprite.opacity <= global.surface_opacity + 0.001, "loader fades in with the surface");
     for (frame=0; frame<12; frame++) refresh();
     Assert(Window.firmware_opacity == 0 && global.firmware_active && global.brand_logo_sprite.y > global.brand_target_y, "the vendor logo is gone before the wordmark lands");

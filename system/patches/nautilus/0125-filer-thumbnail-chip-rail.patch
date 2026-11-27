@@ -20,7 +20,7 @@ index 8498a65..d7bdd76 100644
 -            NAUTILUS_FILE_ICON_FLAGS_NONE);
 +            NAUTILUS_FILE_ICON_FLAGS_USE_THUMBNAILS);
          if (preview != NULL)
-             luma_bar_item_chip_set_paintable (items[0], preview);
+             Suno_bar_item_chip_set_paintable (items[0], preview);
          g_signal_connect (items[3], "activated", G_CALLBACK (on_bar_share), window);
 @@ -2379,7 +2379,7 @@ set_sidebar_width (NautilusWindow *window,
      AdwOverlaySplitView *split_view = ADW_OVERLAY_SPLIT_VIEW (window->split_view);
@@ -45,13 +45,13 @@ index 35e5960..6262520 100644
 --- a/src/resources/style.css
 +++ b/src/resources/style.css
 @@ -44,6 +44,7 @@
-   background-color: @luma_content;
+   background-color: @Suno_content;
  }
- .luma-files-window #filer-location-scope image { -gtk-icon-size: 0px; }
-+.luma-files-window row.luma-live-rail-row { padding-left: 3px; padding-right: 3px; }
+ .Suno-files-window #filer-location-scope image { -gtk-icon-size: 0px; }
++.Suno-files-window row.Suno-live-rail-row { padding-left: 3px; padding-right: 3px; }
  
  /* Filer uses a deliberate two-row native title composition. */
- .luma-files-window:not(.luma-native-file-chooser) headerbar.luma-titlebar {
+ .Suno-files-window:not(.Suno-native-file-chooser) headerbar.Suno-titlebar {
 diff --git a/src/resources/ui/nautilus-window.blp b/src/resources/ui/nautilus-window.blp
 index 96e6467..00937b1 100644
 --- a/src/resources/ui/nautilus-window.blp

@@ -1,6 +1,6 @@
 Name:           lpac-fp6
 Version:        2.3.0
-Release:        3.luma1%{?dist}
+Release:        3.Suno1%{?dist}
 Summary:        eUICC local profile agent with the FP6 QRTR transport
 License:        AGPL-3.0-only AND LGPL-2.1-only AND MIT AND CC0-1.0
 URL:            https://github.com/estkme-group/lpac
@@ -27,7 +27,7 @@ Conflicts:      lpac
 
 %description
 An exact-source lpac build for Fairphone 6. It contains only the HTTPS and
-QMI-over-QRTR backends required to manage the embedded eUICC. The Luma patch
+QMI-over-QRTR backends required to manage the embedded eUICC. The Suno patch
 adds protected stdin paths so bearer secrets and profile identifiers need not
 appear in the process argument vector.
 
@@ -76,12 +76,12 @@ rm -f \
 %{_libdir}/lpac/driver/driver_http_stdio.so
 
 %changelog
-* Wed Aug 26 2026 Project Luma <codex@project-luma.local> - 2.3.0-3.luma1
+* Wed Aug 26 2026 Project Suno <codex@project-suno.local> - 2.3.0-3.Suno1
 - Accept protected 19-digit ICCID selectors used by operational eSIMs
 
-* Wed Aug 26 2026 Project Luma <codex@project-luma.local> - 2.3.0-2.luma1
+* Wed Aug 26 2026 Project Suno <codex@project-suno.local> - 2.3.0-2.Suno1
 - Add a protected standard-input selector for profile enablement
 
-* Wed Aug 26 2026 Project Luma <codex@project-luma.local> - 2.3.0-1.luma1
+* Wed Aug 26 2026 Project Suno <codex@project-suno.local> - 2.3.0-1.Suno1
 - Pin lpac and enable the Fairphone-authored QMI-over-QRTR backend
 - Add a bounded stdin path for activation-code secrets

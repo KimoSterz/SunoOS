@@ -15,32 +15,32 @@ gi.require_version("Gtk", "4.0")
 from gi.repository import Adw, Gio, GLib, Gtk  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[3]
-sys.path.insert(0, str(ROOT / "src/luma-platform/appkit"))
+sys.path.insert(0, str(ROOT / "src/Suno-platform/appkit"))
 sys.path.insert(0, str(ROOT / "src/prairie-core"))
 
-from luma_appkit import install_appkit, install_lumaui  # noqa: E402
+from Suno_appkit import install_appkit, install_SunoUI  # noqa: E402
 from prairie_apps.messages_port import FixtureMessagesWindow, _unique_participants  # noqa: E402
-from prairie_apps.messages_app_port import LumaUIMessagesWindow  # noqa: E402
+from prairie_apps.messages_app_port import SunoUIMessagesWindow  # noqa: E402
 from prairie_apps.messages import MessagesWindow, install_messages_theme  # noqa: E402
 
 
 def main() -> int:
-    if os.environ.get("LUMA_MESSAGES_SMOKE_PHONE"):
+    if os.environ.get("SUNO_MESSAGES_SMOKE_PHONE"):
         # The v71 phone uses a title island and grown composer panels. Keep
         # this older entry point on that contract, not the retired v70 header.
         from messages_v71_phone_runtime import main as phone_main
         return phone_main()
-    assert os.environ.get("LUMA_MESSAGES_FIXTURE"), "set LUMA_MESSAGES_FIXTURE to the v70 JSON"
-    fixture_path = Path(os.environ["LUMA_MESSAGES_FIXTURE"])
+    assert os.environ.get("SUNO_MESSAGES_FIXTURE"), "set SUNO_MESSAGES_FIXTURE to the v70 JSON"
+    fixture_path = Path(os.environ["SUNO_MESSAGES_FIXTURE"])
     fixture_bytes = fixture_path.read_bytes()
-    app = Adw.Application(application_id="org.projectluma.Messages.PortSmoke",
+    app = Adw.Application(application_id="org.projectSuno.Messages.PortSmoke",
                           flags=Gio.ApplicationFlags.NON_UNIQUE)
     assert app.register(None)
     install_appkit()
-    install_lumaui()
+    install_SunoUI()
     install_messages_theme()
     window = FixtureMessagesWindow(app)
-    phone = bool(os.environ.get("LUMA_MESSAGES_SMOKE_PHONE"))
+    phone = bool(os.environ.get("SUNO_MESSAGES_SMOKE_PHONE"))
     if phone:
         window.set_default_size(360, 820)
     else:
@@ -82,7 +82,7 @@ def main() -> int:
     assert len(day_labels) == 1, f"same day was shown {len(day_labels)} times"
     view.current["meta"]["messages"].pop()
     view.render_thread()
-    assert view._photos and all(photo.get_parent().__gtype_name__ == "LumaMessagesPhotoClip"
+    assert view._photos and all(photo.get_parent().__gtype_name__ == "SunoMessagesPhotoClip"
                                 for photo in view._photos), "photo corners lack a rounded clip"
     # A programmatic adjustment reset can also come from GTK relayout; use the
     # same wheel intent as the reader before moving to an earlier message.
@@ -185,7 +185,7 @@ def main() -> int:
     picker_search = named(view._new_pop, "msg-new-search")
     assert picker_search is not None and picker_search.get_accessible_role() == Gtk.AccessibleRole.SEARCH_BOX, \
         f"picker role: {picker_search.get_accessible_role() if picker_search else 'missing'}"
-    assert picker_search.get_icon_name(Gtk.EntryIconPosition.PRIMARY) == "lumaui-user-symbolic"
+    assert picker_search.get_icon_name(Gtk.EntryIconPosition.PRIMARY) == "SunoUI-user-symbolic"
     assert named(view._new_pop, "msg-own-code") is not None
     chooser = named(view._new_pop, "msg-new-results")
     chooser_scroll = chooser.get_ancestor(Gtk.ScrolledWindow) if chooser is not None else None
@@ -200,7 +200,7 @@ def main() -> int:
     assert view.details.shown
     buttons = view.details.body.get_last_child()
     assert buttons.get_ancestor(Gtk.ScrolledWindow) is not None, "details actions must scroll with the content"
-    assert buttons.has_css_class("lumaui-stacked-buttons")
+    assert buttons.has_css_class("SunoUI-stacked-buttons")
     first_button = buttons.get_first_child()
     second_button = first_button.get_next_sibling()
     assert first_button.get_accessible_role() == second_button.get_accessible_role() == Gtk.AccessibleRole.BUTTON
@@ -392,7 +392,7 @@ def main() -> int:
         GLib.MainContext.default().iteration(False)
     assert completed == [()], "missing modem Messaging interface left the poll worker unfinished"
     window.close()
-    live_shape = LumaUIMessagesWindow(app)
+    live_shape = SunoUIMessagesWindow(app)
     live_shape.present()
     for _ in range(20):
         while GLib.MainContext.default().pending():
@@ -412,12 +412,12 @@ def main() -> int:
         assert draw.call_count == 1, draw.call_count
         assert sidebar.call_count == 1, sidebar.call_count
     assert live_shape.surface.details.body.get_last_child().get_margin_top() == 16
-    assert live_shape.surface.identity.who_button.has_css_class("lumaui-corner-people")
+    assert live_shape.surface.identity.who_button.has_css_class("SunoUI-corner-people")
 
     assert live_shape.surface.current["id"] == "priya"
     assert live_shape.surface.bar_entry.placeholder == "Message Priya"
     live_shape.close()
-    print("Messages LumaUI fixture runtime OK")
+    print("Messages SunoUI fixture runtime OK")
     return 0
 
 

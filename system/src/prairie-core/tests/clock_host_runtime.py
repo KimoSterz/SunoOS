@@ -19,7 +19,7 @@ from clock_alarms_unit import FakeApplication, FakeRinger, FakeInhibitor, FakeWa
 from prairie_apps.clock_backend import ClockStore
 from prairie_apps.clock_alarms import AlarmService
 from prairie_apps.clock_host import HostInterface, BUS, OBJECT
-from luma_installer import app_data_broker
+from Suno_installer import app_data_broker
 
 with tempfile.TemporaryDirectory() as root:
     store=ClockStore(Path(root)/'state.json');store.add_world_clock('London','Europe/London')
@@ -35,7 +35,7 @@ with tempfile.TemporaryDirectory() as root:
         except GLib.Error as error:assert '.Refused' in str(error)
         else:raise AssertionError('Production auth accepted an unsigned native caller')
         assert store.alarms()==() and store.timers()==()
-        with patch.object(app_data_broker,'authenticate',return_value='org.projectluma.Clock'):
+        with patch.object(app_data_broker,'authenticate',return_value='org.projectSuno.Clock'):
             first=json.loads(call('GetPlan',result='(s)')[0]);now=int(time.time())
             plan={'alarms':[dict(uid='a'*32,label='Native',hour=7,minute=30,days=[0,2],enabled=True,sound='Chime',snooze_minutes=9,ring_seconds=60)],'timers':[dict(uid='b'*32,label='Native timer',fires_at=now+3600,total_seconds=3600)]}
             call('SetPlan',GLib.Variant('(ss)',(first['revision'],json.dumps(plan))))
@@ -51,7 +51,7 @@ with tempfile.TemporaryDirectory() as root:
             else:raise AssertionError('Client-selected path accepted')
             call('Snooze',GLib.Variant('(s)',('a'*32,)));assert 'a'*32 in service.state.snoozes
             call('Stop',GLib.Variant('(s)',('a'*32,)));assert 'a'*32 not in service.state.snoozes
-        with patch.object(app_data_broker,'authenticate',return_value='io.luma.Monitor'):
+        with patch.object(app_data_broker,'authenticate',return_value='io.Suno.Monitor'):
             try:call('GetPlan',result='(s)')
             except GLib.Error:pass
             else:raise AssertionError('Wrong installed app role read alarms')

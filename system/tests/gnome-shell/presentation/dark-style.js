@@ -5,14 +5,14 @@ import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import Shell from 'gi://Shell';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
-import * as SurfaceMaterials from 'resource:///org/gnome/shell/ui/lumaSurfaceMaterials.js';
+import * as SurfaceMaterials from 'resource:///org/gnome/shell/ui/SunoSurfaceMaterials.js';
 const sleep = ms => new Promise(r => GLib.timeout_add_once(GLib.PRIORITY_DEFAULT, ms, r));
 const results = [];
 function check(name, ok, detail = null) {results.push({name, ok: Boolean(ok), detail}); if (!ok) throw new Error(name);}
 async function run() {
     const p = Main.presentation, snapshot = p._state, q = p._handheldOptions;
     const button = Main.panel.statusArea.quickSettings._darkMode.quickSettingsItems[0];
-    const settings = new Gio.Settings({schema_id: 'org.project_luma.shell-state'});
+    const settings = new Gio.Settings({schema_id: 'org.projectSuno.shell-state'});
     const desktop = new Gio.Settings({schema_id: 'org.gnome.desktop.interface'});
     const treatment = settings.get_user_value('surface-treatment'), scheme = desktop.get_user_value('color-scheme');
     const touch = global.stage.context.get_backend().get_default_seat().create_virtual_device(Clutter.InputDeviceType.TOUCHSCREEN_DEVICE);
@@ -22,7 +22,7 @@ async function run() {
         touch.notify_touch_up(GLib.get_monotonic_time(), 0);await sleep(450);
     };
     try {
-        Main.lumaSearch.close();q.menu.close(0);await sleep(300);
+        Main.SunoSearch.close();q.menu.close(0);await sleep(300);
         for (const mode of ['mobile', 'desktop']) {
             q.menu.close(0);p._snapshot({...snapshot, presentation: {...snapshot.presentation, effective: mode}});await sleep(300);
             settings.set_string('surface-treatment', 'light');desktop.set_string('color-scheme', 'prefer-dark');await sleep(300);
@@ -32,7 +32,7 @@ async function run() {
             await tap();
             check(`${mode}: touch enables dark treatment and app preference`, settings.get_string('surface-treatment') === 'dark' && desktop.get_string('color-scheme') === 'prefer-dark');
             check(`${mode}: Shell and search follow dark`, SurfaceMaterials.effectiveTreatment() === 'dark' && button.checked &&
-                Main.lumaSearch._dialog._fieldIsland.has_style_class_name('luma-surface-dark'));
+                Main.SunoSearch._dialog._fieldIsland.has_style_class_name('Suno-surface-dark'));
             await tap();
             check(`${mode}: touch restores light treatment and app preference`, settings.get_string('surface-treatment') === 'light' && desktop.get_string('color-scheme') === 'default');
             check(`${mode}: indicator and Shell return light`, !button.checked && SurfaceMaterials.effectiveTreatment() === 'light');

@@ -12,7 +12,7 @@ index 5cdab7b..d9f58e0 100644
 --- a/src/nautilus-application.c
 +++ b/src/nautilus-application.c
 @@ -1044,7 +1044,15 @@ nautilus_application_startup (GApplication *app)
-     const char *theme_root = g_getenv ("LUMA_FILER_ICON_THEME_ROOT");
+     const char *theme_root = g_getenv ("SUNO_FILER_ICON_THEME_ROOT");
      if (theme_root != NULL && g_file_test (theme_root, G_FILE_TEST_IS_DIR))
      {
 -        gtk_icon_theme_add_search_path (file_icon_theme, theme_root);

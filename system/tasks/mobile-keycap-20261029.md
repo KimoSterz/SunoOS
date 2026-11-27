@@ -1,8 +1,8 @@
 # Shared mobile Keycap keyboard
 
-Owner: Codex / luma-dev-2. Ready for source review, 2026-10-29.
+Owner: Codex / Suno-dev-2. Ready for source review, 2026-10-29.
 Branch: agent/1003/mobile-keycap-20261029.
-Worktree: /srv/dev/worktrees/luma-os/mobile-keycap-20261029.
+Worktree: /srv/dev/worktrees/Suno-os/mobile-keycap-20261029.
 Scope: shared Stevia Keycap theme, input tools and privacy policy. No Titan
 hardware policy changes; separate Titan/Twitter work is preserved.
 
@@ -34,5 +34,5 @@ fixed the style manager's GTK settings signal lifetime exposed by that test.
 Reconciled patch0004 with main's corrected67-line patch0002 baseline. All eleven
 native suites passed (dev-keycap-default-native-r2-8777ec96 exit0); clean ordered
 replay matches all70 changed files. New test artifacts live on the shared HDD
-under projects/luma-os/artifacts/mobile-keycap-default-20261030 because SSD
+under projects/Suno-os/artifacts/mobile-keycap-default-20261030 because SSD
 admission reserve was insufficient. Prior hardware/ARM limits remain open.

@@ -1,7 +1,7 @@
 # Task: displays-retirement
 
 - Status: source complete; focused policy, root boundary and actual isolated Flatpak checks passed
-- Owner: luma-dev-2 / arm_server_qualification delegated agent
+- Owner: Suno-dev-2 / arm_server_qualification delegated agent
 - Worktree: /srv/dev/accounts/second/experiments/arm-desktop/task-hdd/arm-server-qualification-admission/displays-retirement
 - Base: c7a22ec8f
 

@@ -1,0 +1,1999 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Project Suno <engineering@projectSuno.org>
+Date: Sun, 22 Nov 2026 01:00:00 -0600
+Subject: [PATCH] SunoUI: Apps › one permission page for every app format
+
+ADR-052 step 3 (design-center 8bd4ccf, mockups/app-perms/settings.html).
+A new adapter, "appperm", reads org.projectSuno.AppPermissions1
+(Suno-application-installer, D-Bus activated) on the session bus: Apps and
+AllFilesApps with GetAll, again on PropertiesChanged, Changed and Used, and an
+app's GetApp when its page opens. It publishes CFAPPPERM and one bound key
+per app and field (apperm_level, _net, _bg, _auto, _files, _dev_<kind>);
+writes call SetFileLevel, SetNetwork, SetBackground, SetAutostart and
+SetDevice. "appPerm" adds or removes a folder (SetFolder), reads a detail,
+or removes the app (MoveStrayDocuments when asked, then Suno-appctl remove
+or flatpak uninstall, a failure reported). Without the service CFAPPPERM is null and an app's
+page keeps its older rows.
+
+An app's page, whatever its format, top to bottom: the name with "Version
+· size with its data"; the hero with the origin ("Flatpak · from Flathub",
+"Debian package · from Debian 12", "Built in"); Files as three radio rows
+(File picker only, These folders with its folders as chips and Add folder,
+All your files "never keys or passwords"; a Flatpak's rows below what its
+package declares are insensitive); Devices, rows only for what it asked for
+or used, the rest one "Other devices" row that opens in place; Network and
+background (Network's "Using it now" in green); On screen, drawn by the
+layer-permissions patch when it is in the build (a weak
+cc_Suno_view_on_screen_render), else nothing; Used recently, refusals
+included; Remove (not for built-in apps), whose sheet (settings.html?page=remove) names the
+documents found in its data folder by name and size in a well, with "Move them
+to Documents" and "Keep its data" checked, Cancel then Remove in danger text: a
+drawer with stacked 44 px actions on a phone, x1.5 with remote focus on Cancel
+on a TV. While a running app takes a change only at its next start (a Flatpak),
+Files ends with "<App> is open" and Restart <App> (settings.html?pending), which
+asks AppPermissions1.RestartApp; the shell quits it the normal way and reopens it.
+
+Apps gains "Apps that can use all your files" with the count, and its page
+lists each app with origin and why and a switch; off is File picker only.
+
+A fixture app may name its artwork beside the fixture (CFAPPINFO
+spec_artwork), as 0109 does; the same hunk.
+
+Settings carries the Lucide file-search and cable glyphs in its resources
+(/org/gnome/Settings/icons) until the platform's icon set has them.
+---
+ shell/cc-Suno-app-permissions.c             | 101 ++
+ shell/cc-Suno-app-permissions.h             |  34 +
+ shell/cc-Suno-live-app-permissions.c        | 544 +++++++++++
+ shell/cc-Suno-live.c                        |   5 +-
+ shell/cc-Suno-rows.c                        |   2 +-
+ shell/cc-Suno-shell.c                       |   1 +
+ shell/cc-Suno-view-app-permissions.c        | 978 ++++++++++++++++++++
+ shell/cc-Suno-view-application-options.c    |   3 +
+ shell/cc-Suno-view-private.h                |   6 +
+ shell/cc-Suno-view.c                        |   6 +-
+ shell/gnome-control-center.gresource.xml.in |   6 +
+ shell/icons/SunoUI-cable-symbolic.svg       |  10 +
+ shell/icons/SunoUI-file-search-symbolic.svg |   7 +
+ shell/Suno-settings-you.css                 |  48 +
+ shell/meson.build                           |   5 +-
+ 15 files changed, 1751 insertions(+), 5 deletions(-)
+ create mode 100644 shell/cc-Suno-app-permissions.c
+ create mode 100644 shell/cc-Suno-app-permissions.h
+ create mode 100644 shell/cc-Suno-live-app-permissions.c
+ create mode 100644 shell/cc-Suno-view-app-permissions.c
+ create mode 100644 shell/icons/SunoUI-cable-symbolic.svg
+ create mode 100644 shell/icons/SunoUI-file-search-symbolic.svg
+
+diff --git a/shell/cc-Suno-app-permissions.c b/shell/cc-Suno-app-permissions.c
+new file mode 100644
+index 0000000..4f58318
+--- /dev/null
++++ b/shell/cc-Suno-app-permissions.c
+@@ -0,0 +1,101 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++#include "cc-Suno-app-permissions.h"
++#include <string.h>
++
++/* A key as a settings name: letters and digits kept, anything else as _XX
++ * (its hex), so two app keys never share a name and none holds a '.'. */
++char *
++cc_Suno_app_perm_munge (const char *key)
++{
++  GString *m = g_string_new (NULL);
++  for (const char *c = key ? key : ""; *c; c++)
++    {
++      if (g_ascii_isalnum (*c)) g_string_append_c (m, *c);
++      else g_string_append_printf (m, "_%02x", (guchar) *c);
++    }
++  return g_string_free (m, FALSE);
++}
++
++char *
++cc_Suno_app_perm_key_name (const char *field, const char *key)
++{
++  g_autofree char *m = cc_Suno_app_perm_munge (key);
++  return g_strconcat ("apperm_", field, "_", m, NULL);
++}
++
++JsonObject *
++cc_Suno_app_perm_data (JsonObject *data)
++{
++  JsonNode *node = data ? json_object_get_member (data, CC_SUNO_APP_PERM_DATA) : NULL;
++  return node && JSON_NODE_HOLDS_OBJECT (node) ? json_node_get_object (node) : NULL;
++}
++
++JsonObject *
++cc_Suno_app_perm_entry (JsonObject *perm, const char *member, const char *key)
++{
++  JsonNode *table = perm && key ? json_object_get_member (perm, member) : NULL;
++  JsonNode *entry = table && JSON_NODE_HOLDS_OBJECT (table) ? json_object_get_member (json_node_get_object (table), key) : NULL;
++  return entry && JSON_NODE_HOLDS_OBJECT (entry) ? json_node_get_object (entry) : NULL;
++}
++
++static JsonObject *
++info_of (JsonObject *data, const char *settings_app)
++{
++  JsonNode *all = data ? json_object_get_member (data, "CFAPPINFO") : NULL;
++  JsonNode *entry = all && JSON_NODE_HOLDS_OBJECT (all) && settings_app ? json_object_get_member (json_node_get_object (all), settings_app) : NULL;
++  return entry && JSON_NODE_HOLDS_OBJECT (entry) ? json_node_get_object (entry) : NULL;
++}
++
++/* The service names a store or capsule app by its launcher's ID (Mutter
++ * 0041's org.projectSuno.Installed.ID) and a Flatpak by its Flatpak ID. */
++const char *
++cc_Suno_app_perm_key_for (JsonObject *data, const char *settings_app)
++{
++  JsonObject *perm = cc_Suno_app_perm_data (data), *info = info_of (data, settings_app);
++  if (!perm || !info) return NULL;
++  const char *candidates[] = {
++    json_object_get_string_member_with_default (info, "permKey", NULL),
++    json_object_get_string_member_with_default (info, "flatpakId", NULL),
++    NULL, NULL,
++  };
++  g_autofree char *desktop = NULL;
++  const char *desktop_id = json_object_get_string_member_with_default (info, "desktopId", NULL);
++  if (desktop_id && g_str_has_suffix (desktop_id, ".desktop"))
++    desktop = g_strndup (desktop_id, strlen (desktop_id) - strlen (".desktop"));
++  candidates[2] = desktop;
++  for (guint i = 0; i < G_N_ELEMENTS (candidates); i++)
++    {
++      if (!candidates[i]) continue;
++      JsonNode *apps = json_object_get_member (perm, "apps");
++      if (apps && JSON_NODE_HOLDS_OBJECT (apps))
++        {
++          /* Return the table's own string, which outlives this call. */
++          GList *members = json_object_get_members (json_node_get_object (apps));
++          for (GList *m = members; m; m = m->next)
++            if (g_str_equal (m->data, candidates[i]))
++              {
++                const char *found = m->data;
++                g_list_free (members);
++                return found;
++              }
++          g_list_free (members);
++        }
++    }
++  return NULL;
++}
++
++const char *
++cc_Suno_app_perm_settings_app (JsonObject *data, const char *key)
++{
++  JsonNode *all = data ? json_object_get_member (data, "CFAPPINFO") : NULL;
++  if (!all || !JSON_NODE_HOLDS_OBJECT (all) || !key) return NULL;
++  GList *members = json_object_get_members (json_node_get_object (all));
++  const char *found = NULL;
++  for (GList *m = members; m && !found; m = m->next)
++    {
++      const char *mapped = cc_Suno_app_perm_key_for (data, m->data);
++      if (mapped && g_str_equal (mapped, key)) found = m->data;
++    }
++  g_list_free (members);
++  return found;
++}
+diff --git a/shell/cc-Suno-app-permissions.h b/shell/cc-Suno-app-permissions.h
+new file mode 100644
+index 0000000..8b7ef9d
+--- /dev/null
++++ b/shell/cc-Suno-app-permissions.h
+@@ -0,0 +1,34 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++/* App permissions for every format (ADR-052 step 3): what the live adapter
++ * (cc-Suno-live-app-permissions.c) reads from org.projectSuno.AppPermissions1
++ * and publishes as CFAPPPERM, and the keys an app's page binds to.
++ *   CFAPPPERM.apps[key]    the service's Apps entry: name, format, origin,
++ *                          level, folders, suggested_level, network,
++ *                          background, autostart, uses, reason, application_id
++ *   CFAPPPERM.detail[key]  GetApp, read when the app's page is shown
++ *   CFAPPPERM.all          AllFilesApps
++ * key is the service's app key: a Flatpak ID or org.projectSuno.Installed.ID.
++ * Bound keys (settings, one per app and field, the key munged):
++ *   apperm_level_<m>  "chooser" | "folders" | "all"
++ *   apperm_net_<m>, apperm_bg_<m>, apperm_auto_<m>, apperm_files_<m> (all files on)
++ *   apperm_dev_<kind>_<m>
++ * "appPerm" takes one change as an object {op, app, ...}: folder (folder, on),
++ * detail, restart, remove (keep, move). */
++#pragma once
++#include "cc-Suno-fixture.h"
++
++G_BEGIN_DECLS
++#define CC_SUNO_APP_PERM_DATA "CFAPPPERM"
++#define CC_SUNO_APP_PERM_WRITE "appPerm"
++
++/* "org.projectSuno.Installed.x" → "org_2eprojectSuno_2eInstalled_2ex": injective, no dots. */
++char *cc_Suno_app_perm_munge (const char *key);
++char *cc_Suno_app_perm_key_name (const char *field, const char *key);
++/* CFAPPPERM, or NULL when no service reports it. */
++JsonObject *cc_Suno_app_perm_data (JsonObject *data);
++/* The service's key for a Settings app (CFAPPINFO permKey, flatpakId or desktopId), or NULL. */
++const char *cc_Suno_app_perm_key_for (JsonObject *data, const char *settings_app);
++/* The Settings app for a service key, or NULL. */
++const char *cc_Suno_app_perm_settings_app (JsonObject *data, const char *key);
++JsonObject *cc_Suno_app_perm_entry (JsonObject *perm, const char *member, const char *key);
++G_END_DECLS
+diff --git a/shell/cc-Suno-live-app-permissions.c b/shell/cc-Suno-live-app-permissions.c
+new file mode 100644
+index 0000000..76fd4f0
+--- /dev/null
++++ b/shell/cc-Suno-live-app-permissions.c
+@@ -0,0 +1,544 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++/* Live app permissions (ADR-052 step 3): org.projectSuno.AppPermissions1 on
++ * the session bus (Suno-application-installer, D-Bus activated), published as
++ * CFAPPPERM (cc-Suno-app-permissions.h).
++ *   Apps, AllFilesApps   read with GetAll, again on PropertiesChanged, Changed
++ *                        and Used
++ *   GetApp               an app's detail, when its page asks ("appPerm" detail)
++ * Writes: the bound per-app keys call SetFileLevel, SetNetwork, SetBackground,
++ * SetAutostart and SetDevice; "appPerm" adds or removes a folder (SetFolder),
++ * reads a detail, or removes the app (MoveStrayDocuments, then Suno-appctl
++ * remove or flatpak uninstall). Without the service CFAPPPERM is null and an
++ * app's page keeps its older rows. */
++#include "cc-Suno-live.h"
++#include "cc-Suno-app-permissions.h"
++#include <string.h>
++
++#define ADAPTER "appperm"
++#define NAME "org.projectSuno.AppPermissions1"
++#define PATH "/org/projectSuno/AppPermissions"
++#define IFACE NAME
++
++/* Kinds a device row stands for: one USB row for the udev kinds that are USB. */
++static const struct { const char *row; const char *kinds[4]; } device_rows[] = {
++  { "camera", { "camera", NULL } }, { "microphone", { "microphone", NULL } },
++  { "location", { "location", NULL } }, { "screen", { "screen", NULL } },
++  { "usb", { "usb", "hid", "lighting", NULL } }, { "controller", { "controller", NULL } },
++  { "serial", { "serial", NULL } },
++};
++
++typedef struct {
++  CcSunoFixture *model;
++  GCancellable *cancel;
++  GDBusConnection *bus;
++  guint watch, props_signal, changed_signal, used_signal;
++  gboolean present, ready, reading, again;
++  JsonObject *apps;      /* key → Apps entry */
++  JsonObject *detail;    /* key → GetApp */
++  JsonArray *all;
++  GHashTable *by_munged; /* munged → key */
++  GHashTable *wanted;    /* keys whose detail a page asked for */
++} Perm;
++
++static void read_apps (Perm *s);
++static void read_detail (Perm *s, const char *key);
++
++static void
++mark_ready (Perm *s)
++{
++  if (s->ready) return;
++  s->ready = TRUE;
++  cc_Suno_live_ready (s->model, ADAPTER);
++}
++
++static gboolean
++member_bool (JsonObject *o, const char *name, gboolean fallback)
++{
++  JsonNode *n = o ? json_object_get_member (o, name) : NULL;
++  return n && JSON_NODE_HOLDS_VALUE (n) && json_node_get_value_type (n) == G_TYPE_BOOLEAN ? json_node_get_boolean (n) : fallback;
++}
++
++static void
++own (Perm *s, const char *field, const char *key)
++{
++  g_autofree char *name = cc_Suno_app_perm_key_name (field, key);
++  cc_Suno_fixture_own_key (s->model, name);
++  /* Proven in the VM with each control clicked (handoffs app-permissions-20261121/vm, run apui-settings). */
++  cc_Suno_fixture_verify_key (s->model, name);
++}
++
++static void
++publish_keys (Perm *s, const char *key, JsonObject *entry)
++{
++  g_autofree char *munged = cc_Suno_app_perm_munge (key);
++  g_hash_table_replace (s->by_munged, g_strdup (munged), g_strdup (key));
++  const char *level = json_object_get_string_member_with_default (entry, "level", "chooser");
++  struct { const char *field; gboolean on; } flags[] = {
++    { "net", member_bool (entry, "network", TRUE) }, { "bg", member_bool (entry, "background", FALSE) },
++    { "auto", member_bool (entry, "autostart", FALSE) }, { "files", g_strcmp0 (level, "all") == 0 },
++  };
++  g_autofree char *level_key = cc_Suno_app_perm_key_name ("level", key);
++  own (s, "level", key);
++  cc_Suno_fixture_publish_string (s->model, level_key, level);
++  for (guint i = 0; i < G_N_ELEMENTS (flags); i++)
++    {
++      g_autofree char *name = cc_Suno_app_perm_key_name (flags[i].field, key);
++      own (s, flags[i].field, key);
++      cc_Suno_fixture_publish_boolean (s->model, name, flags[i].on);
++    }
++  JsonObject *detail = s->detail && json_object_has_member (s->detail, key) ? json_object_get_object_member (s->detail, key) : NULL;
++  JsonArray *devices = detail && json_object_has_member (detail, "devices") ? json_object_get_array_member (detail, "devices") : NULL;
++  for (guint r = 0; r < G_N_ELEMENTS (device_rows); r++)
++    {
++      gboolean granted = FALSE;
++      for (guint i = 0; devices && i < json_array_get_length (devices); i++)
++        {
++          JsonObject *d = json_array_get_object_element (devices, i);
++          const char *kind = json_object_get_string_member_with_default (d, "kind", "");
++          for (guint k = 0; device_rows[r].kinds[k]; k++)
++            if (g_str_equal (kind, device_rows[r].kinds[k]) && member_bool (d, "granted", FALSE)) granted = TRUE;
++        }
++      g_autofree char *field = g_strconcat ("dev_", device_rows[r].row, NULL);
++      g_autofree char *name = cc_Suno_app_perm_key_name (field, key);
++      own (s, field, key);
++      cc_Suno_fixture_publish_boolean (s->model, name, granted);
++    }
++}
++
++static void
++publish (Perm *s)
++{
++  if (!s->present || !s->apps)
++    {
++      g_autoptr (JsonNode) none = json_node_init_null (json_node_alloc ());
++      cc_Suno_fixture_publish_data (s->model, CC_SUNO_APP_PERM_DATA, none);
++      return;
++    }
++  GList *keys = json_object_get_members (s->apps);
++  for (GList *k = keys; k; k = k->next)
++    publish_keys (s, k->data, json_object_get_object_member (s->apps, k->data));
++  g_list_free (keys);
++  g_autoptr (JsonObject) perm = json_object_new ();
++  json_object_set_object_member (perm, "apps", json_object_ref (s->apps));
++  json_object_set_object_member (perm, "detail", json_object_ref (s->detail));
++  json_object_set_array_member (perm, "all", json_array_ref (s->all));
++  json_object_set_boolean_member (perm, "live", TRUE);
++  g_autoptr (JsonNode) node = json_node_init_object (json_node_alloc (), perm);
++  cc_Suno_fixture_publish_data (s->model, CC_SUNO_APP_PERM_DATA, node);
++}
++
++/* A copy that shares nothing with what was published. */
++static JsonObject *
++deep_copy (JsonObject *o)
++{
++  g_autoptr (JsonNode) node = json_node_init_object (json_node_alloc (), o);
++  g_autofree char *text = json_to_string (node, FALSE);
++  g_autoptr (JsonNode) copy = json_from_string (text, NULL);
++  return json_object_ref (json_node_get_object (copy));
++}
++
++static JsonObject *
++object_of (GVariant *value)
++{
++  g_autoptr (JsonNode) node = json_gvariant_serialize (value);
++  return node && JSON_NODE_HOLDS_OBJECT (node) ? json_object_ref (json_node_get_object (node)) : json_object_new ();
++}
++
++static void
++got_all (GObject *source, GAsyncResult *result, gpointer data)
++{
++  g_autoptr (GError) error = NULL;
++  g_autoptr (GVariant) reply = g_dbus_connection_call_finish (G_DBUS_CONNECTION (source), result, &error);
++  if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) return;
++  Perm *s = data;
++  s->reading = FALSE;
++  if (reply)
++    {
++      g_autoptr (GVariant) props = g_variant_get_child_value (reply, 0);
++      g_autoptr (GVariant) apps = g_variant_lookup_value (props, "Apps", G_VARIANT_TYPE ("a{sa{sv}}"));
++      g_autoptr (GVariant) all = g_variant_lookup_value (props, "AllFilesApps", G_VARIANT_TYPE ("as"));
++      g_clear_pointer (&s->apps, json_object_unref);
++      g_clear_pointer (&s->all, json_array_unref);
++      s->apps = apps ? object_of (apps) : json_object_new ();
++      s->all = json_array_new ();
++      for (guint i = 0; all && i < g_variant_n_children (all); i++)
++        {
++          g_autoptr (GVariant) id = g_variant_get_child_value (all, i);
++          json_array_add_string_element (s->all, g_variant_get_string (id, NULL));
++        }
++      s->present = TRUE;
++    }
++  else
++    {
++      g_debug ("Settings live: app permissions: %s", error->message);
++      s->present = FALSE;
++    }
++  publish (s);
++  mark_ready (s);
++  if (s->again)
++    {
++      s->again = FALSE;
++      read_apps (s);
++    }
++}
++
++static void
++read_apps (Perm *s)
++{
++  if (s->reading) { s->again = TRUE; return; }
++  s->reading = TRUE;
++  /* The service is D-Bus activated: reading it starts it. */
++  g_dbus_connection_call (s->bus, NAME, PATH, "org.freedesktop.DBus.Properties", "GetAll",
++                          g_variant_new ("(s)", IFACE), G_VARIANT_TYPE ("(a{sv})"),
++                          G_DBUS_CALL_FLAGS_NONE, 20000, s->cancel, got_all, s);
++}
++
++typedef struct { Perm *s; char *key; } DetailRead;
++
++static void
++got_detail (GObject *source, GAsyncResult *result, gpointer data)
++{
++  DetailRead *read = data;
++  g_autoptr (GError) error = NULL;
++  g_autoptr (GVariant) reply = g_dbus_connection_call_finish (G_DBUS_CONNECTION (source), result, &error);
++  if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
++    {
++      Perm *s = read->s;
++      if (reply)
++        {
++          g_autoptr (GVariant) detail = g_variant_get_child_value (reply, 0);
++          /* Never changed once published: a new table each time. */
++          JsonObject *next = deep_copy (s->detail);
++          json_object_set_object_member (next, read->key, object_of (detail));
++          json_object_unref (s->detail);
++          s->detail = next;
++          publish (s);
++        }
++      else
++        {
++          g_message ("Settings: app permissions for %s: %s", read->key, error->message);
++          g_hash_table_remove (s->wanted, read->key);  /* the next draw asks again */
++        }
++    }
++  g_free (read->key);
++  g_free (read);
++}
++
++static void
++read_detail (Perm *s, const char *key)
++{
++  DetailRead *read = g_new0 (DetailRead, 1);
++  read->s = s;
++  read->key = g_strdup (key);
++  g_dbus_connection_call (s->bus, NAME, PATH, IFACE, "GetApp", g_variant_new ("(s)", key), G_VARIANT_TYPE ("(a{sv})"),
++                          G_DBUS_CALL_FLAGS_NONE, 20000, s->cancel, got_detail, read);
++}
++
++static void
++service_signal (GDBusConnection *bus, const char *sender, const char *path, const char *iface, const char *signal,
++                GVariant *parameters, gpointer data)
++{
++  Perm *s = data;
++  read_apps (s);
++  const char *app = NULL;
++  if (g_variant_is_of_type (parameters, G_VARIANT_TYPE ("(s)")) || g_variant_is_of_type (parameters, G_VARIANT_TYPE ("(ss)")))
++    g_variant_get_child (parameters, 0, "&s", &app);
++  if (app && g_hash_table_contains (s->wanted, app)) read_detail (s, app);
++}
++
++static void
++appeared (GDBusConnection *bus, const char *name, const char *owner, gpointer data)
++{
++  read_apps (data);
++}
++
++static void
++vanished (GDBusConnection *bus, const char *name, gpointer data)
++{
++  /* Activated on demand and leaves when idle: what it said stays shown. */
++  mark_ready (data);
++}
++
++static void
++call_done (GObject *source, GAsyncResult *result, gpointer data)
++{
++  g_autoptr (GError) error = NULL;
++  g_autoptr (GVariant) reply = g_dbus_connection_call_finish (G_DBUS_CONNECTION (source), result, &error);
++  if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) return;
++  Perm *s = data;
++  if (!reply)
++    {
++      cc_Suno_fixture_report_write_error (s->model, error);
++      read_apps (s);
++    }
++}
++
++static void
++call (Perm *s, const char *method, GVariant *args)
++{
++  g_dbus_connection_call (s->bus, NAME, PATH, IFACE, method, args, NULL, G_DBUS_CALL_FLAGS_NONE, 20000, s->cancel, call_done, s);
++}
++
++typedef struct { Perm *s; char *key, *application_id, *format, *installation; gboolean keep; } Removal;
++
++static void
++removal_free (Removal *r)
++{
++  g_free (r->key); g_free (r->application_id); g_free (r->format); g_free (r->installation);
++  g_free (r);
++}
++
++static void
++removed (GObject *source, GAsyncResult *result, gpointer data)
++{
++  g_autoptr (GError) error = NULL;
++  if (g_subprocess_wait_check_finish (G_SUBPROCESS (source), result, &error)) return;
++  if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) return;
++  Perm *s = data;
++  cc_Suno_fixture_report_write_error (s->model, error);
++  read_apps (s);
++}
++
++static void
++uninstall (Removal *r)
++{
++  g_autoptr (GError) error = NULL;
++  g_autoptr (GPtrArray) argv = g_ptr_array_new ();
++  if (g_strcmp0 (r->format, "flatpak") == 0 && (!r->application_id || !*r->application_id))
++    {
++      g_ptr_array_add (argv, "flatpak");
++      g_ptr_array_add (argv, "uninstall");
++      g_ptr_array_add (argv, "--noninteractive");
++      g_ptr_array_add (argv, g_strcmp0 (r->installation, "user") == 0 ? "--user" : "--system");
++      if (!r->keep) g_ptr_array_add (argv, "--delete-data");
++      g_ptr_array_add (argv, r->key);
++    }
++  else
++    {
++      g_ptr_array_add (argv, "Suno-appctl");
++      g_ptr_array_add (argv, "remove");
++      g_ptr_array_add (argv, r->application_id && *r->application_id ? r->application_id : r->key);
++      if (!r->keep) g_ptr_array_add (argv, "--delete-data");
++    }
++  g_ptr_array_add (argv, NULL);
++  g_autoptr (GSubprocess) process = g_subprocess_newv ((const char * const *) argv->pdata, G_SUBPROCESS_FLAGS_NONE, &error);
++  if (!process) { cc_Suno_fixture_report_write_error (r->s->model, error); return; }
++  g_subprocess_wait_check_async (process, r->s->cancel, removed, r->s);
++}
++
++static void
++moved (GObject *source, GAsyncResult *result, gpointer data)
++{
++  Removal *r = data;
++  g_autoptr (GError) error = NULL;
++  g_autoptr (GVariant) reply = g_dbus_connection_call_finish (G_DBUS_CONNECTION (source), result, &error);
++  if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) { removal_free (r); return; }
++  /* Documents that could not be moved stay where they were: the app is kept too. */
++  if (!reply) cc_Suno_fixture_report_write_error (r->s->model, error);
++  else uninstall (r);
++  removal_free (r);
++}
++
++static const char *
++string_member (JsonObject *o, const char *name)
++{
++  JsonNode *n = o ? json_object_get_member (o, name) : NULL;
++  return n && JSON_NODE_HOLDS_VALUE (n) && json_node_get_value_type (n) == G_TYPE_STRING ? json_node_get_string (n) : NULL;
++}
++
++static gboolean
++change (Perm *s, JsonObject *o, GError **error)
++{
++  const char *op = string_member (o, "op"), *key = string_member (o, "app");
++  if (!op || !key || !*key || !s->apps || !json_object_has_member (s->apps, key))
++    {
++      g_set_error_literal (error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT, "An app permission change names a known app");
++      return FALSE;
++    }
++  if (g_str_equal (op, "detail"))
++    {
++      /* Asked for again on every draw until it arrives: read once, then on Changed and Used. */
++      if (!g_hash_table_contains (s->wanted, key))
++        {
++          g_hash_table_add (s->wanted, g_strdup (key));
++          read_detail (s, key);
++        }
++      return TRUE;
++    }
++  if (g_str_equal (op, "folder"))
++    {
++      const char *folder = string_member (o, "folder");
++      if (!folder || !*folder || strchr (folder, '/') || folder[0] == '.')
++        {
++          g_set_error_literal (error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT, "A folder is one of the folders in your home folder");
++          return FALSE;
++        }
++      call (s, "SetFolder", g_variant_new ("(ssb)", key, folder, member_bool (o, "on", TRUE)));
++      return TRUE;
++    }
++  if (g_str_equal (op, "restart"))
++    {
++      /* The shell asks the app to quit the normal way and opens it again (RestartRequested). */
++      call (s, "RestartApp", g_variant_new ("(s)", key));
++      return TRUE;
++    }
++  if (g_str_equal (op, "remove"))
++    {
++      JsonObject *entry = json_object_get_object_member (s->apps, key);
++      Removal *r = g_new0 (Removal, 1);
++      r->s = s;
++      r->key = g_strdup (key);
++      r->keep = member_bool (o, "keep", TRUE);
++      r->application_id = g_strdup (string_member (entry, "application_id"));
++      r->format = g_strdup (string_member (entry, "format"));
++      r->installation = g_strdup (string_member (entry, "installation"));
++      if (member_bool (o, "move", FALSE))
++        g_dbus_connection_call (s->bus, NAME, PATH, IFACE, "MoveStrayDocuments", g_variant_new ("(s)", key),
++                                G_VARIANT_TYPE ("(as)"), G_DBUS_CALL_FLAGS_NONE, 60000, s->cancel, moved, r);
++      else
++        {
++          uninstall (r);
++          removal_free (r);
++        }
++      return TRUE;
++    }
++  g_set_error (error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT, "Unknown app permission change: %s", op);
++  return FALSE;
++}
++
++static gboolean
++perm_write (gpointer state, const char *name, JsonNode *value, GError **error)
++{
++  Perm *s = state;
++  if (!g_str_equal (name, CC_SUNO_APP_PERM_WRITE) && !g_str_has_prefix (name, "apperm_")) return FALSE;
++  if (!s->present)
++    {
++      g_set_error_literal (error, G_IO_ERROR, G_IO_ERROR_NOT_FOUND, "App permissions are not available");
++      return FALSE;
++    }
++  if (g_str_equal (name, CC_SUNO_APP_PERM_WRITE))
++    {
++      JsonObject *o = value && JSON_NODE_HOLDS_OBJECT (value) ? json_node_get_object (value) : NULL;
++      if (!o)
++        {
++          g_set_error_literal (error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT, "An app permission change is an object");
++          return FALSE;
++        }
++      return change (s, o, error);
++    }
++  /* apperm_<field>_<munged>, field one of level, net, bg, auto, files or dev_<row>. */
++  const char *rest = name + strlen ("apperm_");
++  const char *key = NULL;
++  g_autofree char *field = NULL;
++  const char *fields[] = { "level", "net", "bg", "auto", "files" };
++  for (guint i = 0; !field && i < G_N_ELEMENTS (fields); i++)
++    if (g_str_has_prefix (rest, fields[i]) && rest[strlen (fields[i])] == '_')
++      field = g_strdup (fields[i]);
++  for (guint r = 0; !field && r < G_N_ELEMENTS (device_rows); r++)
++    {
++      g_autofree char *f = g_strconcat ("dev_", device_rows[r].row, NULL);
++      if (g_str_has_prefix (rest, f) && rest[strlen (f)] == '_') field = g_steal_pointer (&f);
++    }
++  if (field) key = g_hash_table_lookup (s->by_munged, rest + strlen (field) + 1);
++  if (!key)
++    {
++      g_set_error (error, G_IO_ERROR, G_IO_ERROR_NOT_FOUND, "No such app: %s", name);
++      return FALSE;
++    }
++  gboolean flag = value && JSON_NODE_HOLDS_VALUE (value) && json_node_get_value_type (value) == G_TYPE_BOOLEAN && json_node_get_boolean (value);
++  if (g_str_equal (field, "level"))
++    {
++      const char *level = value && JSON_NODE_HOLDS_VALUE (value) && json_node_get_value_type (value) == G_TYPE_STRING ? json_node_get_string (value) : NULL;
++      if (g_strcmp0 (level, "chooser") && g_strcmp0 (level, "folders") && g_strcmp0 (level, "all"))
++        {
++          g_set_error_literal (error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT, "A file level is chooser, folders or all");
++          return FALSE;
++        }
++      call (s, "SetFileLevel", g_variant_new ("(ss)", key, level));
++    }
++  else if (g_str_equal (field, "files"))
++    call (s, "SetFileLevel", g_variant_new ("(ss)", key, flag ? "all" : "chooser"));
++  else if (g_str_equal (field, "net"))
++    call (s, "SetNetwork", g_variant_new ("(sb)", key, flag));
++  else if (g_str_equal (field, "bg"))
++    call (s, "SetBackground", g_variant_new ("(sb)", key, flag));
++  else if (g_str_equal (field, "auto"))
++    call (s, "SetAutostart", g_variant_new ("(sb)", key, flag));
++  else if (g_str_has_prefix (field, "dev_"))
++    {
++      /* One row may stand for several kinds (USB: usb, hid, lighting): only those the app has. */
++      JsonObject *detail = s->detail && json_object_has_member (s->detail, key) ? json_object_get_object_member (s->detail, key) : NULL;
++      JsonArray *devices = detail && json_object_has_member (detail, "devices") ? json_object_get_array_member (detail, "devices") : NULL;
++      for (guint r = 0; r < G_N_ELEMENTS (device_rows); r++)
++        {
++          if (!g_str_equal (field + 4, device_rows[r].row)) continue;
++          gboolean sent = FALSE;
++          for (guint i = 0; device_rows[r].kinds[i]; i++)
++            for (guint d = 0; devices && d < json_array_get_length (devices); d++)
++              if (!g_strcmp0 (json_object_get_string_member_with_default (json_array_get_object_element (devices, d), "kind", ""),
++                              device_rows[r].kinds[i]))
++                {
++                  call (s, "SetDevice", g_variant_new ("(ssb)", key, device_rows[r].kinds[i], flag));
++                  sent = TRUE;
++                  break;
++                }
++          if (!sent)
++            call (s, "SetDevice", g_variant_new ("(ssb)", key, device_rows[r].kinds[0], flag));
++        }
++    }
++  else
++    return FALSE;
++  return TRUE;
++}
++
++static gpointer
++perm_start (CcSunoFixture *model)
++{
++  Perm *s = g_new0 (Perm, 1);
++  s->model = model;
++  s->cancel = g_cancellable_new ();
++  s->detail = json_object_new ();
++  s->all = json_array_new ();
++  s->by_munged = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
++  s->wanted = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
++  s->bus = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, NULL);
++  if (!s->bus)
++    {
++      publish (s);
++      mark_ready (s);
++      return s;
++    }
++  cc_Suno_fixture_own_key (model, CC_SUNO_APP_PERM_WRITE);
++  cc_Suno_fixture_verify_key (model, CC_SUNO_APP_PERM_WRITE);
++  s->props_signal = g_dbus_connection_signal_subscribe (s->bus, NAME, "org.freedesktop.DBus.Properties", "PropertiesChanged",
++                                                        PATH, IFACE, G_DBUS_SIGNAL_FLAGS_NONE, service_signal, s, NULL);
++  s->changed_signal = g_dbus_connection_signal_subscribe (s->bus, NAME, IFACE, "Changed", PATH, NULL,
++                                                          G_DBUS_SIGNAL_FLAGS_NONE, service_signal, s, NULL);
++  s->used_signal = g_dbus_connection_signal_subscribe (s->bus, NAME, IFACE, "Used", PATH, NULL,
++                                                       G_DBUS_SIGNAL_FLAGS_NONE, service_signal, s, NULL);
++  s->watch = g_bus_watch_name_on_connection (s->bus, NAME, G_BUS_NAME_WATCHER_FLAGS_NONE, appeared, vanished, s, NULL);
++  read_apps (s);
++  return s;
++}
++
++static void
++perm_stop (gpointer state)
++{
++  Perm *s = state;
++  g_cancellable_cancel (s->cancel);
++  if (s->watch) g_bus_unwatch_name (s->watch);
++  for (guint *id = (guint[]) { s->props_signal, s->changed_signal, s->used_signal, 0 }; *id; id++)
++    g_dbus_connection_signal_unsubscribe (s->bus, *id);
++  g_clear_object (&s->bus);
++  g_clear_pointer (&s->apps, json_object_unref);
++  g_clear_pointer (&s->detail, json_object_unref);
++  g_clear_pointer (&s->all, json_array_unref);
++  g_clear_pointer (&s->by_munged, g_hash_table_unref);
++  g_clear_pointer (&s->wanted, g_hash_table_unref);
++  /* Replies in flight hold s: leak the small shell rather than let a late one touch freed memory. */
++  g_clear_object (&s->cancel);
++}
++
++const CcSunoAdapter cc_Suno_adapter_app_permissions = {
++  ADAPTER, (const char * const[]) { "all-files", "app:", NULL }, perm_start, perm_write, perm_stop
++};
+diff --git a/shell/cc-Suno-live.c b/shell/cc-Suno-live.c
+index bf2a987..3483e06 100644
+--- a/shell/cc-Suno-live.c
++++ b/shell/cc-Suno-live.c
+@@ -15,7 +15,8 @@ extern const CcSunoAdapter cc_Suno_adapter_users, cc_Suno_adapter_about, cc_Suno
+   cc_Suno_adapter_sharing, cc_Suno_adapter_region, cc_Suno_adapter_privacy, cc_Suno_adapter_accounts,
+   cc_Suno_adapter_wellbeing, cc_Suno_adapter_security;
+ extern const CcSunoAdapter cc_Suno_adapter_apps, cc_Suno_adapter_appoptions, cc_Suno_adapter_tv, cc_Suno_adapter_tv_account,
+-  cc_Suno_adapter_openh264, cc_Suno_adapter_layer;
++  cc_Suno_adapter_openh264, cc_Suno_adapter_layer,
++  cc_Suno_adapter_app_permissions;
+ static const CcSunoAdapter *adapters[] = {
+   &cc_Suno_adapter_network, &cc_Suno_adapter_airplane, &cc_Suno_adapter_proxy,
+   /* Bluetooth reads BlueZ over D-Bus: no second BluetoothClient beside the panel's. */
+@@ -41,6 +42,8 @@ static const CcSunoAdapter *adapters[] = {
+   &cc_Suno_adapter_openh264,
+   /* What apps may draw outside their windows (Shell 0380, org.projectSuno.LayerShell1). */
+   &cc_Suno_adapter_layer,
++  /* What each app may use, for every format (ADR-052 step 3, org.projectSuno.AppPermissions1). */
++  &cc_Suno_adapter_app_permissions,
+   &cc_Suno_adapter_tv, &cc_Suno_adapter_tv_account,
+   NULL
+ };
+diff --git a/shell/cc-Suno-rows.c b/shell/cc-Suno-rows.c
+index 332b120..46da52f 100644
+--- a/shell/cc-Suno-rows.c
++++ b/shell/cc-Suno-rows.c
+@@ -59,7 +59,7 @@ static const char *parent_of (View *v, const char **parent_title)
+       if (node && json_node_get_value_type (node) == G_TYPE_STRING) parent = json_node_get_string (node);
+       break;
+     }
+-  if (g_str_has_prefix (v->page, "app:")) parent = "apps";
++  if (g_str_has_prefix (v->page, "app:") || g_str_equal (v->page, "all-files")) parent = "apps";
+   if (v->live_lock || v->live_permission) { *parent_title = "Privacy & Security"; return "privacy"; }
+   for (guint i = 0; parent && pages && i < json_array_get_length (pages); i++)
+     {
+diff --git a/shell/cc-Suno-shell.c b/shell/cc-Suno-shell.c
+index b458091..796c0bc 100644
+--- a/shell/cc-Suno-shell.c
++++ b/shell/cc-Suno-shell.c
+@@ -46,6 +46,7 @@ static const struct { const char *page; const char *panel; } routes[] = {
+   { "power", "power" }, { "mouse", "mouse" }, { "keyboard", "keyboard" }, { "shortcuts", "keyboard" },
+   { "printers", "printers" }, { "apps", "applications" }, { "defaults", "applications" }, { "media", "applications" },
+   { "overlay-apps", "applications" },
++  { "all-files", "applications" },
+   { "accounts", "online-accounts" }, { "acct-fm", "online-accounts" }, { "acct-nc", "online-accounts" },
+   { "privacy", "privacy" }, { "p-lock", "privacy" }, { "p-loc", "privacy" }, { "p-cam", "privacy" },
+   { "p-mic", "privacy" }, { "p-files", "privacy" }, { "p-diag", "privacy" }, { "p-dev", "privacy" },
+diff --git a/shell/cc-Suno-view-app-permissions.c b/shell/cc-Suno-view-app-permissions.c
+new file mode 100644
+index 0000000..be49100
+--- /dev/null
++++ b/shell/cc-Suno-view-app-permissions.c
+@@ -0,0 +1,978 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++/* App permissions for every format (ADR-052 step 3; design-center 8bd4ccf,
++ * mockups/app-perms/settings.html): one page per app, whatever its format,
++ * and Apps › Apps that can use all your files. Read from CFAPPPERM
++ * (cc-Suno-app-permissions.h); controls write the bound per-app keys and
++ * "appPerm", which the live adapter hands to org.projectSuno.AppPermissions1.
++ * Top to bottom: header, hero, Files, Devices, Network and background,
++ * On screen, Used recently, Remove. */
++#include "cc-Suno-rows.h"
++#include "cc-Suno-app-permissions.h"
++#include <gio/gdesktopappinfo.h>
++#include <string.h>
++
++/* On screen (layer permissions, gnome-control-center 0109): drawn here when
++ * that patch is in the build, which defines it; until then the slot is empty. */
++gboolean cc_Suno_view_on_screen_render (View *v, const char *settings_app) __attribute__ ((weak));
++
++#define NEVER_KEYS "Everything in your home folder, never keys or passwords"
++#define ALL_NOTE "They can open anything in your home folder. They can never reach your keys, passwords, browser profiles, other apps’ data, or what runs when you sign in. Turn one off to give it only the file picker."
++
++static const struct { const char *row, *title, *icon; } devices[] = {
++  { "camera", "Camera", "camera" }, { "microphone", "Microphone", "mic" }, { "location", "Location", "map-pin" },
++  { "screen", "Screen", "monitor" }, { "usb", "USB", "usb" }, { "controller", "Controllers", "gamepad-2" },
++  { "serial", "Serial", "cable" },
++};
++/* "Other devices": the rest, by the words the reference lists them in. */
++static const char *other_words[] = { "camera", "microphone", "location", "screen", "USB", "controllers", "serial ports" };
++
++static const char *
++row_of_kind (const char *kind)
++{
++  if (!g_strcmp0 (kind, "hid") || !g_strcmp0 (kind, "lighting")) return "usb";
++  return kind;
++}
++
++static gint64
++now_seconds (JsonObject *perm)
++{
++  /* Fixtures pin the clock so their "2 min ago" stays put. */
++  JsonNode *pinned = perm ? json_object_get_member (perm, "now") : NULL;
++  return pinned && JSON_NODE_HOLDS_VALUE (pinned) ? json_node_get_int (pinned) : g_get_real_time () / G_USEC_PER_SEC;
++}
++
++/* "Now", "2 min ago", "Today", "Yesterday", "3 days ago". */
++static char *
++when_text (gint64 when, gint64 now)
++{
++  if (when <= 0) return g_strdup ("");
++  gint64 ago = MAX (0, now - when);
++  if (ago < 60) return g_strdup ("Now");
++  if (ago < 3600) return g_strdup_printf ("%" G_GINT64_FORMAT " min ago", ago / 60);
++  g_autoptr (GDateTime) then = g_date_time_new_from_unix_local (when), today = g_date_time_new_from_unix_local (now);
++  int days = g_date_time_get_day_of_year (today) - g_date_time_get_day_of_year (then) +
++             365 * (g_date_time_get_year (today) - g_date_time_get_year (then));
++  if (days <= 0) return g_strdup ("Today");
++  if (days == 1) return g_strdup ("Yesterday");
++  return g_strdup_printf ("%d days ago", days);
++}
++
++static char *
++lower_first (const char *text)
++{
++  if (!text || !*text) return g_strdup ("");
++  g_autofree char *head = g_utf8_strdown (text, g_utf8_next_char (text) - text);
++  return g_strconcat (head, g_utf8_next_char (text), NULL);
++}
++
++static const char *
++format_word (const char *format)
++{
++  static const struct { const char *format, *word; } words[] = {
++    { "flatpak", "Flatpak" }, { "deb", "Debian package" }, { "rpm", "Fedora package" }, { "appimage", "AppImage" },
++    { "archive", "App archive" }, { "android", "Android app" }, { "windows", "Windows app" }, { "snap", "Snap" },
++  };
++  for (guint i = 0; i < G_N_ELEMENTS (words); i++)
++    if (!g_strcmp0 (format, words[i].format)) return words[i].word;
++  return format && *format ? format : "App";
++}
++
++/* "Flatpak · from Flathub", "Debian package · from Debian 12", "Built in", "Depot". */
++static char *
++origin_line (JsonObject *entry)
++{
++  const char *format = json_object_get_string_member_with_default (entry, "format", "");
++  const char *origin = json_object_get_string_member_with_default (entry, "origin", "");
++  if (!g_strcmp0 (origin, "Built in") || !g_strcmp0 (origin, "Depot")) return g_strdup (origin);
++  if (!*origin) return g_strdup (format_word (format));
++  return g_strdup_printf ("%s · from %s", format_word (format), origin);
++}
++
++static gboolean
++bool_member (JsonObject *o, const char *name, gboolean fallback)
++{
++  JsonNode *n = o ? json_object_get_member (o, name) : NULL;
++  return n && JSON_NODE_HOLDS_VALUE (n) && json_node_get_value_type (n) == G_TYPE_BOOLEAN ? json_node_get_boolean (n) : fallback;
++}
++
++static gint64
++int_member (JsonObject *o, const char *name)
++{
++  JsonNode *n = o ? json_object_get_member (o, name) : NULL;
++  return n && JSON_NODE_HOLDS_VALUE (n) && (json_node_get_value_type (n) == G_TYPE_INT64 || json_node_get_value_type (n) == G_TYPE_DOUBLE)
++    ? json_node_get_int (n) : 0;
++}
++
++static JsonArray *
++array_member (JsonObject *o, const char *name)
++{
++  JsonNode *n = o ? json_object_get_member (o, name) : NULL;
++  return n && JSON_NODE_HOLDS_ARRAY (n) ? json_node_get_array (n) : NULL;
++}
++
++static gboolean
++in_array (JsonArray *a, const char *value)
++{
++  for (guint i = 0; a && i < json_array_get_length (a); i++)
++    if (!g_strcmp0 (json_array_get_string_element (a, i), value)) return TRUE;
++  return FALSE;
++}
++
++/* A write the live adapter carries out; a fixture keeps its own copy. */
++static void
++send (View *v, JsonObject *change)
++{
++  g_autoptr (JsonNode) value = json_node_init_object (json_node_alloc (), json_object_ref (change));
++  g_autoptr (GError) error = NULL;
++  if (!cc_Suno_fixture_write (v->model, CC_SUNO_APP_PERM_WRITE, value, &error))
++    {
++      cc_Suno_view_report_error (v, error);
++      cc_Suno_view_queue_refresh (v);
++    }
++}
++
++/* ── the Files group ───────────────────────────────────────────────── */
++
++static void
++folder_change (View *v, const char *key, const char *folder, gboolean on)
++{
++  JsonObject *perm = cc_Suno_app_perm_data (cc_Suno_fixture_get_data (v->model));
++  if (!cc_Suno_fixture_is_live (v->model))
++    {
++      JsonObject *entry = cc_Suno_app_perm_entry (perm, "apps", key);
++      JsonArray *folders = array_member (entry, "folders");
++      if (!folders) return;
++      if (on && !in_array (folders, folder)) json_array_add_string_element (folders, folder);
++      for (guint i = 0; !on && i < json_array_get_length (folders); i++)
++        if (!g_strcmp0 (json_array_get_string_element (folders, i), folder)) { json_array_remove_element (folders, i); break; }
++      cc_Suno_view_queue_refresh (v);
++      return;
++    }
++  g_autoptr (JsonObject) change = json_object_new ();
++  json_object_set_string_member (change, "op", "folder");
++  json_object_set_string_member (change, "app", key);
++  json_object_set_string_member (change, "folder", folder);
++  json_object_set_boolean_member (change, "on", on);
++  send (v, change);
++}
++
++static void
++folder_removed (GtkButton *button, GtkWidget *root)
++{
++  View *v = g_object_get_data (G_OBJECT (root), "cf-view");
++  if (v) folder_change (v, g_object_get_data (G_OBJECT (button), "ap-key"), g_object_get_data (G_OBJECT (button), "ap-folder"), FALSE);
++}
++
++typedef struct { GtkWidget *root; char *key; } Pick;
++
++static void
++folder_picked (GObject *source, GAsyncResult *result, gpointer data)
++{
++  Pick *pick = data;
++  g_autoptr (GError) error = NULL;
++  g_autoptr (GFile) folder = gtk_file_dialog_select_folder_finish (GTK_FILE_DIALOG (source), result, &error);
++  View *v = pick->root ? g_object_get_data (G_OBJECT (pick->root), "cf-view") : NULL;
++  if (folder && v)
++    {
++      g_autoptr (GFile) home = g_file_new_for_path (g_get_home_dir ());
++      g_autoptr (GFile) parent = g_file_get_parent (folder);
++      g_autofree char *name = g_file_get_basename (folder);
++      if (parent && g_file_equal (parent, home) && name && name[0] != '.')
++        folder_change (v, pick->key, name, TRUE);
++      else
++        {
++          g_autoptr (GError) why = g_error_new_literal (G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT,
++                                                       "Choose one of the folders in your home folder");
++          cc_Suno_view_report_error (v, why);
++        }
++    }
++  g_clear_object (&pick->root);
++  g_free (pick->key);
++  g_free (pick);
++}
++
++static void
++folder_add (GtkButton *button, GtkWidget *root)
++{
++  View *v = g_object_get_data (G_OBJECT (root), "cf-view");
++  if (!v) return;
++  g_autoptr (GtkFileDialog) dialog = gtk_file_dialog_new ();
++  g_autoptr (GFile) home = g_file_new_for_path (g_get_home_dir ());
++  gtk_file_dialog_set_title (dialog, "Add a folder");
++  gtk_file_dialog_set_initial_folder (dialog, home);
++  Pick *pick = g_new0 (Pick, 1);
++  pick->root = g_object_ref (root);
++  pick->key = g_strdup (g_object_get_data (G_OBJECT (button), "ap-key"));
++  gtk_file_dialog_select_folder (dialog, GTK_WINDOW (gtk_widget_get_root (GTK_WIDGET (button))), NULL, folder_picked, pick);
++}
++
++static GtkWidget *
++folder_chip (View *v, const char *key, const char *folder)
++{
++  GtkWidget *chip = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 6);
++  GtkWidget *glyph = Suno_ui_icon_new ("folder"), *name = gtk_label_new (folder);
++  GtkWidget *x = gtk_button_new ();
++  gtk_widget_add_css_class (chip, "ap-fld");
++  gtk_widget_add_css_class (glyph, "ap-fld-glyph");
++  gtk_button_set_child (GTK_BUTTON (x), Suno_ui_icon_new ("x"));
++  gtk_widget_add_css_class (x, "ap-fld-x");
++  g_autofree char *spoken = g_strdup_printf ("Remove %s", folder);
++  gtk_accessible_update_property (GTK_ACCESSIBLE (x), GTK_ACCESSIBLE_PROPERTY_LABEL, spoken, -1);
++  gtk_widget_set_tooltip_text (x, spoken);
++  g_object_set_data_full (G_OBJECT (x), "ap-key", g_strdup (key), g_free);
++  g_object_set_data_full (G_OBJECT (x), "ap-folder", g_strdup (folder), g_free);
++  g_signal_connect_object (x, "clicked", G_CALLBACK (folder_removed), v->root, 0);
++  g_autofree char *name_id = g_strconcat ("ap-fld-", folder, NULL);
++  gtk_widget_set_name (chip, name_id);
++  gtk_box_append (GTK_BOX (chip), glyph);
++  gtk_box_append (GTK_BOX (chip), name);
++  gtk_box_append (GTK_BOX (chip), x);
++  return chip;
++}
++
++static void
++folders_row (View *v, GtkBox *card, const char *key, JsonArray *folders, gboolean editable)
++{
++  GtkWidget *flow = adw_wrap_box_new ();
++  adw_wrap_box_set_child_spacing (ADW_WRAP_BOX (flow), 6);
++  adw_wrap_box_set_line_spacing (ADW_WRAP_BOX (flow), 6);
++  gtk_widget_add_css_class (flow, "ap-flds");
++  gtk_widget_set_name (flow, "ap-folders");
++  for (guint i = 0; folders && i < json_array_get_length (folders); i++)
++    adw_wrap_box_append (ADW_WRAP_BOX (flow), folder_chip (v, key, json_array_get_string_element (folders, i)));
++  GtkWidget *add = gtk_button_new ();
++  GtkWidget *line = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 6);
++  gtk_box_append (GTK_BOX (line), Suno_ui_icon_new ("plus"));
++  gtk_box_append (GTK_BOX (line), gtk_label_new ("Add folder"));
++  gtk_button_set_child (GTK_BUTTON (add), line);
++  gtk_widget_add_css_class (add, "ap-fld");
++  gtk_widget_add_css_class (add, "add");
++  gtk_widget_set_name (add, "ap-fld-add");
++  gtk_widget_set_sensitive (add, editable);
++  g_object_set_data_full (G_OBJECT (add), "ap-key", g_strdup (key), g_free);
++  g_signal_connect_object (add, "clicked", G_CALLBACK (folder_add), v->root, 0);
++  adw_wrap_box_append (ADW_WRAP_BOX (flow), add);
++  gtk_box_append (card, flow);
++}
++
++static GtkWidget *
++level_row (View *v, GtkBox *card, const char *bound, const char *value, const char *icon, const char *title,
++           const char *subtitle, gboolean allowed)
++{
++  GtkWidget *row = cf_rd (v, card, bound, value, title, subtitle);
++  /* The reference's radio rows lead with their glyph (cf_rd draws none). */
++  GtkWidget *line = gtk_button_get_child (GTK_BUTTON (row));
++  if (GTK_IS_BOX (line)) gtk_box_prepend (GTK_BOX (line), cf_lead_icon (icon));
++  g_autofree char *name = g_strconcat ("ap-level-", value, NULL);
++  gtk_widget_set_name (row, name);
++  if (!allowed)
++    {
++      /* A Flatpak can't be given less than its package declares (it would lose its files). */
++      gtk_widget_set_sensitive (row, FALSE);
++      gtk_widget_set_tooltip_text (row, "This app needs more to keep its files");
++    }
++  return row;
++}
++
++static void
++restart_clicked (GtkButton *button, View *v)
++{
++  g_autoptr (JsonObject) change = json_object_new ();
++  json_object_set_string_member (change, "op", "restart");
++  json_object_set_string_member (change, "app", g_object_get_data (G_OBJECT (button), "ap-key"));
++  send (v, change);
++}
++
++/* A running app that takes the change only at its next start (a Flatpak): the last row of
++ * Files says so, with Restart beside it (settings.html?pending). */
++static void
++pending_row (View *v, GtkBox *card, const char *key, const char *name)
++{
++  g_autofree char *title = g_strdup_printf ("%s is open", name);
++  g_autofree char *label = g_strdup_printf ("Restart %s", name);
++  GtkWidget *row = cf_bt (v, card, title, "This change applies the next time it opens", label, FALSE,
++                          G_CALLBACK (restart_clicked));
++  gtk_widget_set_name (row, "ap-pending");
++  gtk_widget_add_css_class (row, "ap-pend");
++  GtkWidget *line = GTK_IS_BUTTON (row) ? gtk_button_get_child (GTK_BUTTON (row)) : row;
++  GtkWidget *lead = cf_lead_icon ("refresh-cw");
++  if (GTK_IS_BOX (line)) gtk_box_prepend (GTK_BOX (line), lead);
++  GtkWidget *c = gtk_widget_get_last_child (row);
++  GtkWidget *button = c ? gtk_widget_get_first_child (c) : NULL;
++  if (button)
++    {
++      gtk_widget_set_name (button, "ap-restart");
++      g_object_set_data_full (G_OBJECT (button), "ap-key", g_strdup (key), g_free);
++    }
++}
++
++static void
++files_group (View *v, const char *key, JsonObject *entry, JsonObject *detail, const char *name)
++{
++  g_autofree char *bound = cc_Suno_app_perm_key_name ("level", key);
++  const char *level = cc_Suno_view_text (v, bound);
++  const char *declared = detail ? json_object_get_string_member_with_default (detail, "declared_level", "") : "";
++  const char *order[] = { "chooser", "folders", "all" };
++  guint floor = 0;
++  for (guint i = 0; i < G_N_ELEMENTS (order); i++)
++    if (!g_strcmp0 (declared, order[i])) floor = i;
++  GtkBox *card = cf_group (v, "Files", NULL);
++  gtk_widget_set_name (gtk_widget_get_parent (GTK_WIDGET (card)), "ap-files");
++  level_row (v, card, bound, "chooser", "file-search", "File picker only", "Only files you choose", floor <= 0);
++  level_row (v, card, bound, "folders", "folder", "These folders", "Folders you pick", floor <= 1);
++  if (!g_strcmp0 (level, "folders"))
++    folders_row (v, card, key, array_member (entry, "folders"), TRUE);
++  level_row (v, card, bound, "all", "hard-drive", "All your files", NEVER_KEYS, TRUE);
++  if (detail && json_object_get_boolean_member_with_default (detail, "pending_restart", FALSE))
++    pending_row (v, card, key, name);
++}
++
++/* ── Devices ───────────────────────────────────────────────────────── */
++
++/* The words under a row: its own, then its usage; green while in use now. */
++static GtkWidget *
++usage_words (const char *words, const char *use, gboolean now)
++{
++  g_autofree char *text = words && *words && use && *use ? g_strconcat (words, " · ", use, NULL)
++                                                         : g_strdup (words && *words ? words : use);
++  GtkWidget *label = cf_text (text, "cf-sub");
++  Suno_ui_apply_type_full (label, "row-subtitle", TRUE);
++  gtk_label_set_wrap (GTK_LABEL (label), TRUE);
++  gtk_label_set_wrap_mode (GTK_LABEL (label), PANGO_WRAP_WORD);
++  gtk_label_set_xalign (GTK_LABEL (label), 0);
++  if (now) gtk_widget_add_css_class (label, "ap-now");
++  return label;
++}
++
++/* A switch row bound to key, with words under the title (v70 rSw with a usage line). */
++static GtkWidget *
++switch_row (View *v, GtkBox *card, const char *key, const char *icon, const char *title, GtkWidget *words)
++{
++  GtkWidget *row = cf_sw (v, card, key, title, NULL, cf_lead_icon (icon));
++  GtkWidget *line = gtk_button_get_child (GTK_BUTTON (row));
++  for (GtkWidget *c = line ? gtk_widget_get_first_child (line) : NULL; c; c = gtk_widget_get_next_sibling (c))
++    if (gtk_widget_has_css_class (c, "cf-t")) gtk_box_append (GTK_BOX (c), words);
++  return row;
++}
++
++static void
++others_toggled (GtkButton *button, GtkWidget *root)
++{
++  View *v = g_object_get_data (G_OBJECT (root), "cf-view");
++  if (!v) return;
++  gboolean open = !GPOINTER_TO_INT (g_object_get_data (G_OBJECT (v->root), "ap-others-open"));
++  g_object_set_data (G_OBJECT (v->root), "ap-others-open", GINT_TO_POINTER (open));
++  cc_Suno_view_queue_refresh (v);
++}
++
++static char *
++device_state (JsonObject *d, gint64 now)
++{
++  if (!d) return g_strdup ("Never asked");
++  const char *state = json_object_get_string_member_with_default (d, "state", "never");
++  gint64 when = int_member (d, "when");
++  g_autofree char *at = when > 0 ? when_text (when, now) : NULL;
++  g_autofree char *at_lower = at ? lower_first (at) : NULL;
++  if (!g_strcmp0 (state, "used"))
++    return at ? (g_str_equal (at, "Now") ? g_strdup ("Using it now") : g_str_equal (at, "Today") ? g_strdup ("Used today")
++                 : g_strdup_printf ("Used %s", at_lower)) : g_strdup ("Used");
++  if (!g_strcmp0 (state, "asked"))
++    {
++      gboolean granted = bool_member (d, "granted", FALSE);
++      g_autofree char *asked = at ? (g_str_equal (at, "Now") || g_str_equal (at, "Today") ? g_strdup ("Asked today") : g_strdup_printf ("Asked %s", at_lower))
++                                  : g_strdup ("Asked");
++      return granted ? g_steal_pointer (&asked) : g_strdup_printf ("%s · not allowed", asked);
++    }
++  return g_strdup ("Never asked");
++}
++
++static void
++devices_group (View *v, const char *key, JsonObject *entry, JsonObject *detail, gint64 now)
++{
++  JsonArray *rows = array_member (detail, "devices"), *uses = array_member (entry, "uses");
++  GtkBox *card = cf_group (v, "Devices", NULL);
++  gtk_widget_set_name (gtk_widget_get_parent (GTK_WIDGET (card)), "ap-devices");
++  gboolean shown[G_N_ELEMENTS (devices)] = { FALSE };
++  /* Rows only for devices it asked for (its package declares them, or it asked) or used. */
++  for (guint r = 0; r < G_N_ELEMENTS (devices); r++)
++    {
++      JsonObject *found = NULL;
++      for (guint i = 0; rows && i < json_array_get_length (rows); i++)
++        {
++          JsonObject *d = json_array_get_object_element (rows, i);
++          if (!g_strcmp0 (row_of_kind (json_object_get_string_member_with_default (d, "kind", "")), devices[r].row)) found = d;
++        }
++      if (!found && !in_array (uses, devices[r].row)) continue;
++      shown[r] = TRUE;
++      g_autofree char *bound = g_strconcat ("dev_", devices[r].row, NULL);
++      g_autofree char *bound_key = cc_Suno_app_perm_key_name (bound, key);
++      g_autofree char *state = device_state (found, now);
++      GtkWidget *row = switch_row (v, card, bound_key, devices[r].icon, devices[r].title, usage_words (NULL, state, FALSE));
++      g_autofree char *name = g_strconcat ("ap-dev-", devices[r].row, NULL);
++      gtk_widget_set_name (row, name);
++    }
++  /* The rest: one row naming them, opening in place. */
++  GString *names = g_string_new (NULL);
++  guint rest = 0;
++  for (guint r = 0; r < G_N_ELEMENTS (devices); r++)
++    if (!shown[r]) rest++;
++  for (guint r = 0, n = 0; r < G_N_ELEMENTS (devices); r++)
++    {
++      if (shown[r]) continue;
++      const char *word = other_words[r];
++      if (n == 0) { g_autofree char *cap = g_strdup (word); cap[0] = g_ascii_toupper (cap[0]); g_string_append (names, cap); }
++      else g_string_append_printf (names, "%s%s", n == rest - 1 ? " and " : ", ", word);
++      n++;
++    }
++  if (!rest) { g_string_free (names, TRUE); return; }
++  g_string_append (names, " · never asked");
++  gboolean open = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (v->root), "ap-others-open"));
++  GtkWidget *chevron = Suno_ui_icon_new (open ? "chevron-down" : "chevron-right");
++  GtkWidget *row = cf_row (card, cf_lead_icon ("usb"), "Other devices", names->str, chevron, TRUE);
++  gtk_widget_set_name (row, "ap-dev-others");
++  g_signal_connect_object (row, "clicked", G_CALLBACK (others_toggled), v->root, 0);
++  g_string_free (names, TRUE);
++  for (guint r = 0; open && r < G_N_ELEMENTS (devices); r++)
++    {
++      if (shown[r]) continue;
++      g_autofree char *bound = g_strconcat ("dev_", devices[r].row, NULL);
++      g_autofree char *bound_key = cc_Suno_app_perm_key_name (bound, key);
++      switch_row (v, card, bound_key, devices[r].icon, devices[r].title, usage_words (NULL, "Never asked", FALSE));
++    }
++}
++
++/* ── Network and background ────────────────────────────────────────── */
++
++static char *
++used_text (JsonObject *detail, const char *what, gint64 now, gboolean *live)
++{
++  JsonArray *recent = array_member (detail, "recent");
++  *live = FALSE;
++  for (guint i = 0; recent && i < json_array_get_length (recent); i++)
++    {
++      JsonObject *r = json_array_get_object_element (recent, i);
++      if (g_strcmp0 (json_object_get_string_member_with_default (r, "what", ""), what)) continue;
++      gint64 when = int_member (r, "when");
++      g_autofree char *at = when_text (when, now);
++      if (now - when < 120) { *live = TRUE; return g_strdup ("Using it now"); }
++      if (g_str_equal (at, "Today") || g_str_has_suffix (at, "min ago")) return g_strdup ("Used today");
++      g_autofree char *lower = lower_first (at);
++      return g_strdup_printf ("Used %s", lower);
++    }
++  return g_strdup ("Never used");
++}
++
++static void
++network_group (View *v, const char *key, JsonObject *detail, gint64 now)
++{
++  GtkBox *card = cf_group (v, "Network and background", NULL);
++  gtk_widget_set_name (gtk_widget_get_parent (GTK_WIDGET (card)), "ap-network");
++  gboolean live = FALSE;
++  g_autofree char *net = used_text (detail, "network", now, &live);
++  g_autofree char *net_key = cc_Suno_app_perm_key_name ("net", key);
++  /* Network shows only its usage: green while traffic is live. */
++  gtk_widget_set_name (switch_row (v, card, net_key, "globe", "Network", usage_words (NULL, live ? net : "", live)), "ap-net");
++  g_autofree char *bg = used_text (detail, "background", now, &live);
++  g_autofree char *bg_key = cc_Suno_app_perm_key_name ("bg", key);
++  gtk_widget_set_name (switch_row (v, card, bg_key, "refresh-cw", "Run in background",
++                                   usage_words ("Keeps working when its window is closed", bg, FALSE)), "ap-bg");
++  g_autofree char *auto_key = cc_Suno_app_perm_key_name ("auto", key);
++  gtk_widget_set_name (switch_row (v, card, auto_key, "power", "Start at sign-in", usage_words ("Opens when you sign in", NULL, FALSE)),
++                       "ap-auto");
++}
++
++/* ── Used recently ─────────────────────────────────────────────────── */
++
++static void
++recent_group (View *v, JsonObject *detail, gint64 now)
++{
++  JsonArray *recent = array_member (detail, "recent");
++  if (!recent || !json_array_get_length (recent)) return;
++  GtkBox *card = cf_group (v, "Used recently", NULL);
++  GtkWidget *group = gtk_widget_get_parent (GTK_WIDGET (card));
++  gtk_widget_set_name (group, "ap-recent");
++  gtk_widget_add_css_class (group, "ap-log");
++  for (guint i = 0; i < MIN (5, json_array_get_length (recent)); i++)
++    {
++      JsonObject *r = json_array_get_object_element (recent, i);
++      const char *what = json_object_get_string_member_with_default (r, "what", "");
++      const char *kind = json_object_get_string_member_with_default (r, "kind", "");
++      const char *note = json_object_get_string_member_with_default (r, "note", "");
++      gboolean folder = !g_strcmp0 (kind, "folder");
++      const char *icon = folder ? "folder" : "usb";
++      const char *title_word = what;
++      for (guint d = 0; !folder && d < G_N_ELEMENTS (devices); d++)
++        if (!g_strcmp0 (row_of_kind (what), devices[d].row)) { icon = devices[d].icon; title_word = devices[d].title; }
++      if (!g_strcmp0 (what, "network")) { icon = "globe"; title_word = "Network"; }
++      if (!g_strcmp0 (what, "background")) { icon = "refresh-cw"; title_word = "Run in background"; }
++      g_autofree char *title = folder ? g_strdup_printf ("%s folder", what) : g_strdup (title_word);
++      /* The service says "refused, offered once"; the page says "Refused · offered once". */
++      g_autofree char *words = NULL;
++      if (*note)
++        {
++          g_auto (GStrv) parts = g_strsplit (note, ", ", 2);
++          g_autofree char *first = g_strdup (parts[0]);
++          first[0] = g_ascii_toupper (first[0]);
++          words = parts[1] ? g_strdup_printf ("%s · %s", first, parts[1]) : g_steal_pointer (&first);
++        }
++      g_autofree char *at = when_text (int_member (r, "when"), now);
++      GtkWidget *value = cf_value (at, FALSE);
++      GtkWidget *row = cf_row (card, cf_lead_icon (icon), title, words, value, FALSE);
++      g_autofree char *name = g_strdup_printf ("ap-recent-%u", i);
++      gtk_widget_set_name (row, name);
++    }
++}
++
++/* ── Remove ────────────────────────────────────────────────────────── */
++
++/* Remove…: Settings' standard sheet (settings.html?page=remove). The documents the app
++ * kept in its own data are named in a well; "Move them to Documents" and "Keep its data"
++ * are checked; Cancel, then Remove in danger text. A drawer on a phone, its actions
++ * stacked full width; remote focus starts on Cancel. */
++static void
++remove_answered (GtkWidget *sheet, gboolean remove)
++{
++  SunoModalHandle *handle = g_object_get_data (G_OBJECT (sheet), "ap-handle");
++  GtkWidget *root = g_object_get_data (G_OBJECT (sheet), "ap-root");
++  View *v = root ? g_object_get_data (G_OBJECT (root), "cf-view") : NULL;
++  const char *key = g_object_get_data (G_OBJECT (sheet), "ap-key");
++  GtkWidget *move = g_object_get_data (G_OBJECT (sheet), "ap-move");
++  GtkWidget *keep = g_object_get_data (G_OBJECT (sheet), "ap-keep");
++  gboolean moving = move && gtk_check_button_get_active (GTK_CHECK_BUTTON (move));
++  gboolean keeping = keep && gtk_check_button_get_active (GTK_CHECK_BUTTON (keep));
++  g_autofree char *app = g_strdup (key);
++  if (handle) Suno_modal_handle_close (handle);
++  if (!remove || !v || !app) return;
++  if (!cc_Suno_fixture_is_live (v->model))
++    {
++      cc_Suno_view_navigate (v, "apps");
++      return;
++    }
++  g_autoptr (JsonObject) change = json_object_new ();
++  json_object_set_string_member (change, "op", "remove");
++  json_object_set_string_member (change, "app", app);
++  json_object_set_boolean_member (change, "keep", keeping);
++  json_object_set_boolean_member (change, "move", moving);
++  send (v, change);
++  cc_Suno_view_navigate (v, "apps");
++}
++
++static void remove_cancel (GtkButton *b, GtkWidget *sheet) { (void) b; remove_answered (sheet, FALSE); }
++static void remove_go (GtkButton *b, GtkWidget *sheet) { (void) b; remove_answered (sheet, TRUE); }
++
++static void
++check_words_pressed (GtkGestureClick *g, int n, double x, double y, GtkCheckButton *check)
++{
++  (void) g; (void) n; (void) x; (void) y;
++  gtk_check_button_set_active (check, !gtk_check_button_get_active (check));
++}
++
++/* The reference's check sits beside the first line of its words (.ap-ck: flex, start). */
++static GtkWidget *
++remove_check (GtkWidget *sheet, GtkWidget *inner, const char *title, const char *line, const char *name, const char *key)
++{
++  GtkWidget *row = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 10);
++  gtk_widget_add_css_class (row, "ap-ck");
++  GtkWidget *check = gtk_check_button_new ();
++  gtk_widget_set_valign (check, GTK_ALIGN_START);
++  gtk_check_button_set_active (GTK_CHECK_BUTTON (check), TRUE);
++  gtk_widget_set_name (check, name);
++  gtk_accessible_update_property (GTK_ACCESSIBLE (check), GTK_ACCESSIBLE_PROPERTY_LABEL, title, -1);
++  gtk_box_append (GTK_BOX (row), check);
++  GtkWidget *words = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
++  gtk_widget_set_hexpand (words, TRUE);
++  GtkWidget *t = gtk_label_new (title);
++  gtk_label_set_xalign (GTK_LABEL (t), 0);
++  gtk_widget_add_css_class (t, "ap-ck-title");
++  gtk_box_append (GTK_BOX (words), t);
++  if (line)
++    {
++      GtkWidget *l = gtk_label_new (line);
++      gtk_label_set_xalign (GTK_LABEL (l), 0);
++      gtk_label_set_wrap (GTK_LABEL (l), TRUE);
++      gtk_label_set_max_width_chars (GTK_LABEL (l), 1);
++      gtk_widget_add_css_class (l, "ap-ck-line");
++      gtk_box_append (GTK_BOX (words), l);
++    }
++  GtkGesture *click = gtk_gesture_click_new ();
++  g_signal_connect (click, "pressed", G_CALLBACK (check_words_pressed), check);
++  gtk_widget_add_controller (words, GTK_EVENT_CONTROLLER (click));
++  gtk_box_append (GTK_BOX (row), words);
++  gtk_box_append (GTK_BOX (inner), row);
++  g_object_set_data (G_OBJECT (sheet), key, check);
++  return check;
++}
++
++static char *
++doc_size (gint64 bytes)
++{
++  return bytes >= 1000 * 1000 ? g_strdup_printf ("%.1f MB", bytes / 1e6)
++       : bytes >= 1000 ? g_strdup_printf ("%" G_GINT64_FORMAT " KB", bytes / 1000)
++       : g_strdup_printf ("%" G_GINT64_FORMAT " bytes", bytes);
++}
++
++/* A TV window's frame styles every SunoUI dialog as its generic TV sheet (Suno-tv-frame.c, at
++ * USER+10: 760tv wide, 40tv padding, its own type and buttons). The Remove sheet is the desktop
++ * sheet at x1.5 (settings.html?page=remove&posture=tv), so it names its own TV metrics above that. */
++static const char REMOVE_TV_CSS[] =
++  "window.SunoUI-tv box.SunoUI-dialog.ap-rm.tv { min-width: 588px; padding: 36px 36px 30px; border-radius: 30px; border-spacing: 0;"
++  "  background-color: #1d2024; background-image: none; box-shadow: 0 36px 90px -30px rgba(0,0,0,.6), inset 0 0 0 1.5px rgba(255,255,255,.09); }\n"
++  "window.SunoUI-tv box.SunoUI-dialog.ap-rm.tv.light { background-color: #fbfbfc; }\n"
++  "window.SunoUI-tv box.SunoUI-dialog.ap-rm.tv label { font-family: Figtree, sans-serif; font-weight: 400; color: inherit; }\n"
++  "window.SunoUI-tv box.SunoUI-dialog.ap-rm.tv label.ap-rm-title { font-size: 25.5px; line-height: 33px; font-weight: 700; }\n"
++  "window.SunoUI-tv .ap-rm.tv label.ap-rm-body { margin-top: 9px; font-size: 18.75px; line-height: 27px; }\n"
++  "window.SunoUI-tv .ap-rm.tv .ap-docs { margin-top: 21px; padding: 6px 0; border-radius: 18px; }\n"
++  "window.SunoUI-tv .ap-rm.tv .ap-doc { min-height: 54px; padding: 0 18px; border-spacing: 15px; }\n"
++  "window.SunoUI-tv .ap-rm.tv .ap-doc label { font-size: 18.75px; }\n"
++  "window.SunoUI-tv .ap-rm.tv .ap-doc image { -gtk-icon-size: 22.5px; }\n"
++  "window.SunoUI-tv .ap-rm.tv label.ap-doc-size { font-size: 18px; }\n"
++  "window.SunoUI-tv .ap-rm.tv .ap-ck { margin-top: 21px; border-spacing: 15px; }\n"
++  "window.SunoUI-tv .ap-rm.tv .ap-ck check { min-width: 27px; min-height: 27px; border-radius: 10.5px; -gtk-icon-size: 16.5px; }\n"
++  "window.SunoUI-tv box.SunoUI-dialog.ap-rm.tv label.ap-ck-title { font-size: 19.5px; line-height: 27px; font-weight: 550; }\n"
++  "window.SunoUI-tv .ap-rm.tv label.ap-ck-line { margin-top: 3px; font-size: 18px; line-height: 25px; }\n"
++  "window.SunoUI-tv .ap-rm.tv .ap-rma { margin-top: 33px; border-spacing: 12px; }\n"
++  "window.SunoUI-tv .ap-rm.tv .ap-rma button { min-height: 54px; padding: 0 18px; border-radius: 15px; background-image: none;"
++  "  background-color: transparent; box-shadow: none; color: #f2f3f5; }\n"
++  "window.SunoUI-tv .ap-rm.tv.light .ap-rma button { color: #1f2328; }\n"
++  "window.SunoUI-tv .ap-rm.tv .ap-rma button label { font-size: 19.5px; font-weight: 500; }\n"
++  "window.SunoUI-tv .ap-rm.tv .ap-rma button.ap-danger { background-color: #34373a; color: oklch(0.7 0.17 25); }\n"
++  "window.SunoUI-tv .ap-rm.tv.light .ap-rma button.ap-danger { background-color: #e7e7e8; }\n"
++  "window.SunoUI-tv .ap-rm.tv .ap-rma button:focus-visible, window.SunoUI-tv .ap-rm.tv .ap-rma button:focus {"
++  "  background-image: none; box-shadow: inset 0 0 0 3px #fff; }\n"
++  "window.SunoUI-tv .ap-rm.tv .ap-rma button:focus-visible label, window.SunoUI-tv .ap-rm.tv .ap-rma button label { color: inherit; }\n";
++
++static void
++remove_tv_style (GtkWidget *widget)
++{
++  static GtkCssProvider *provider;
++  if (provider) return;
++  provider = gtk_css_provider_new ();
++  gtk_css_provider_load_from_string (provider, REMOVE_TV_CSS);
++  gtk_style_context_add_provider_for_display (gtk_widget_get_display (widget), GTK_STYLE_PROVIDER (provider),
++                                              GTK_STYLE_PROVIDER_PRIORITY_USER + 20U);
++}
++
++static void
++remove_clicked (GtkButton *button, View *v)
++{
++  const char *key = g_object_get_data (G_OBJECT (button), "ap-key");
++  const char *name = g_object_get_data (G_OBJECT (button), "ap-name");
++  JsonObject *perm = cc_Suno_app_perm_data (cc_Suno_fixture_get_data (v->model));
++  JsonObject *detail = cc_Suno_app_perm_entry (perm, "detail", key);
++  JsonArray *docs = array_member (detail, "stray_documents");
++  JsonArray *sizes = array_member (detail, "stray_sizes");
++  guint count = docs ? json_array_get_length (docs) : 0;
++  gboolean phone = Suno_ui_mobile_form_factor () || Suno_ui_is_phone_width (v->root);
++  /* The window's own TV frame says whether it is on a TV (its type is already x1.5 there). */
++  GtkRoot *window = gtk_widget_get_root (v->root);
++  gboolean tv = !phone && GTK_IS_WINDOW (window) && Suno_window_get_tv_active (GTK_WINDOW (window));
++
++  GtkWidget *sheet = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
++  gtk_widget_set_name (sheet, "ap-remove-sheet");
++  gtk_widget_add_css_class (sheet, "SunoUI-dialog");
++  gtk_widget_add_css_class (sheet, "ap-rm");
++  if (phone) gtk_widget_add_css_class (sheet, "phone");
++  if (tv)
++    {
++      remove_tv_style (sheet);
++      gtk_widget_add_css_class (sheet, "tv");
++    }
++  /* The sheet's surface and its documents' well are drawn per appearance (settings.html ?mode=light). */
++  if (!adw_style_manager_get_dark (adw_style_manager_get_default ())) gtk_widget_add_css_class (sheet, "light");
++  /* The sheet's column is as wide as the design's (392, x1.5 on a TV): its words wrap to it
++   * rather than widening the sheet. */
++  GtkWidget *inner = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
++  GtkWidget *clamp = adw_clamp_new ();
++  adw_clamp_set_maximum_size (ADW_CLAMP (clamp), tv ? 588 : 392);
++  adw_clamp_set_tightening_threshold (ADW_CLAMP (clamp), tv ? 588 : 392);
++  adw_clamp_set_child (ADW_CLAMP (clamp), inner);
++  gtk_box_append (GTK_BOX (sheet), clamp);
++  g_autofree char *title = g_strdup_printf ("Remove %s?", name);
++  GtkWidget *heading = gtk_label_new (title);
++  gtk_label_set_xalign (GTK_LABEL (heading), 0);
++  gtk_label_set_wrap (GTK_LABEL (heading), TRUE);
++  gtk_widget_add_css_class (heading, "ap-rm-title");
++  gtk_box_append (GTK_BOX (inner), heading);
++  /* ADR §2.4: documents it kept in its own data folder are named, with their sizes. */
++  g_autofree char *said = count ? g_strdup_printf ("These documents are in %s’s own data:", name)
++                                : g_strdup_printf ("%s leaves this computer. You can install it again.", name);
++  GtkWidget *body = gtk_label_new (said);
++  gtk_label_set_xalign (GTK_LABEL (body), 0);
++  gtk_label_set_wrap (GTK_LABEL (body), TRUE);
++  gtk_label_set_max_width_chars (GTK_LABEL (body), 1);
++  gtk_widget_add_css_class (body, "ap-rm-body");
++  gtk_box_append (GTK_BOX (inner), body);
++  if (count)
++    {
++      GtkWidget *well = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
++      gtk_widget_add_css_class (well, "ap-docs");
++      for (guint i = 0; i < MIN (count, 6); i++)
++        {
++          GtkWidget *row = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 10);
++          gtk_widget_add_css_class (row, "ap-doc");
++          gtk_box_append (GTK_BOX (row), Suno_ui_icon_new ("file-text"));
++          g_autofree char *base = g_path_get_basename (json_array_get_string_element (docs, i));
++          GtkWidget *what = gtk_label_new (base);
++          gtk_label_set_xalign (GTK_LABEL (what), 0);
++          gtk_label_set_ellipsize (GTK_LABEL (what), PANGO_ELLIPSIZE_MIDDLE);
++          gtk_widget_set_hexpand (what, TRUE);
++          gtk_box_append (GTK_BOX (row), what);
++          if (sizes && i < json_array_get_length (sizes))
++            {
++              g_autofree char *size = doc_size (json_array_get_int_element (sizes, i));
++              GtkWidget *how = gtk_label_new (size);
++              gtk_widget_add_css_class (how, "ap-doc-size");
++              gtk_box_append (GTK_BOX (row), how);
++            }
++          gtk_box_append (GTK_BOX (well), row);
++        }
++      if (count > 6)
++        {
++          g_autofree char *more = g_strdup_printf ("and %u more", count - 6);
++          GtkWidget *row = gtk_label_new (more);
++          gtk_label_set_xalign (GTK_LABEL (row), 0);
++          gtk_widget_add_css_class (row, "ap-doc");
++          gtk_widget_add_css_class (row, "more");
++          gtk_box_append (GTK_BOX (well), row);
++        }
++      gtk_box_append (GTK_BOX (inner), well);
++      remove_check (sheet, inner, "Move them to Documents", NULL, "ap-remove-move", "ap-move");
++    }
++  g_autofree char *stays = g_strdup_printf ("Its settings and history stay, so %s picks up where it left off if you install it again.", name);
++  remove_check (sheet, inner, "Keep its data", stays, "ap-remove-keep", "ap-keep");
++
++  GtkWidget *actions = gtk_box_new (phone ? GTK_ORIENTATION_VERTICAL : GTK_ORIENTATION_HORIZONTAL, 8);
++  gtk_widget_add_css_class (actions, "ap-rma");
++  if (!phone) gtk_widget_set_halign (actions, GTK_ALIGN_END);
++  GtkWidget *cancel = Suno_text_button_new ("Cancel", NULL, NULL);
++  GtkWidget *go = Suno_text_button_new ("Remove", NULL, "fill");
++  gtk_widget_set_name (cancel, "ap-remove-cancel");
++  gtk_widget_set_name (go, "ap-remove-confirm");
++  gtk_widget_add_css_class (go, "ap-danger");
++  /* A phone stacks them, the action on top (the reference's column-reverse). */
++  gtk_box_append (GTK_BOX (actions), phone ? go : cancel);
++  gtk_box_append (GTK_BOX (actions), phone ? cancel : go);
++  gtk_box_append (GTK_BOX (inner), actions);
++  g_signal_connect (cancel, "clicked", G_CALLBACK (remove_cancel), sheet);
++  g_signal_connect (go, "clicked", G_CALLBACK (remove_go), sheet);
++
++  g_object_set_data_full (G_OBJECT (sheet), "ap-key", g_strdup (key), g_free);
++  g_object_set_data (G_OBJECT (sheet), "ap-root", v->root);
++  SunoLayerHost *host = Suno_layer_host_window_host (v->root);
++  if (!host)
++    {
++      g_object_ref_sink (sheet);
++      g_object_unref (sheet);
++      return;
++    }
++  SunoModalHandle *handle = Suno_layer_host_present_modal (host, sheet, cancel,
++                                                           phone ? SUNO_DRAWER_MODE_ALWAYS : SUNO_DRAWER_MODE_NEVER);
++  g_object_set_data (G_OBJECT (sheet), "ap-handle", handle);
++  if (tv) gtk_widget_grab_focus (cancel);
++}
++
++static void
++remove_group (View *v, const char *key, const char *name)
++{
++  GtkBox *card = cf_group (v, NULL, NULL);
++  gtk_widget_set_name (gtk_widget_get_parent (GTK_WIDGET (card)), "ap-remove");
++  g_autofree char *title = g_strdup_printf ("Remove %s", name);
++  GtkWidget *row = cf_bt (v, card, title, "You choose whether to keep its data", "Remove…", TRUE, G_CALLBACK (remove_clicked));
++  GtkWidget *c = gtk_widget_get_last_child (row);
++  GtkWidget *button = c ? gtk_widget_get_first_child (c) : NULL;
++  if (button)
++    {
++      gtk_widget_set_name (button, "ap-remove-button");
++      g_object_set_data_full (G_OBJECT (button), "ap-key", g_strdup (key), g_free);
++      g_object_set_data_full (G_OBJECT (button), "ap-name", g_strdup (name), g_free);
++    }
++}
++
++/* ── the page ──────────────────────────────────────────────────────── */
++
++static void
++app_open (GtkButton *button, View *v)
++{
++  JsonNode *all = json_object_get_member (cc_Suno_fixture_get_data (v->model), "CFAPPINFO");
++  JsonNode *entry = all && JSON_NODE_HOLDS_OBJECT (all) ? json_object_get_member (json_node_get_object (all), v->page + 4) : NULL;
++  const char *id = entry && JSON_NODE_HOLDS_OBJECT (entry) ? json_object_get_string_member_with_default (json_node_get_object (entry), "desktopId", NULL) : NULL;
++  g_autoptr (GDesktopAppInfo) info = id && cc_Suno_fixture_is_live (v->model) ? g_desktop_app_info_new (id) : NULL;
++  g_autoptr (GError) error = NULL;
++  if (!cc_Suno_fixture_is_live (v->model)) return;
++  if (!info) error = g_error_new_literal (G_IO_ERROR, G_IO_ERROR_NOT_FOUND, "This app is no longer installed");
++  else
++    {
++      g_autoptr (GdkAppLaunchContext) context = gdk_display_get_app_launch_context (gtk_widget_get_display (v->root));
++      g_app_info_launch (G_APP_INFO (info), NULL, G_APP_LAUNCH_CONTEXT (context), &error);
++    }
++  if (error) cc_Suno_view_report_error (v, error);
++}
++
++static GtkWidget *
++hero_icon (View *v, const char *app, int size)
++{
++  GtkWidget *fixed = gtk_fixed_new ();
++  GtkWidget *picture = cc_Suno_view_image (v, app, size, size);
++  gtk_widget_set_size_request (picture, size, size);
++  gtk_widget_add_css_class (picture, "cf-img");
++  gtk_fixed_put (GTK_FIXED (fixed), picture, 0, 0);
++  gtk_widget_set_size_request (fixed, size, size);
++  gtk_widget_set_valign (fixed, GTK_ALIGN_CENTER);
++  return fixed;
++}
++
++/* Settings carries file-search and cable itself (gnome-control-center.gresource.xml.in). */
++static void
++own_glyphs (GtkWidget *widget)
++{
++  static gboolean added;
++  if (added) return;
++  added = TRUE;
++  gtk_icon_theme_add_resource_path (gtk_icon_theme_get_for_display (gtk_widget_get_display (widget)), "/org/gnome/Settings/icons");
++}
++
++gboolean
++cc_Suno_view_app_permissions_render (View *v, const char *app, gint64 app_megabytes)
++{
++  JsonObject *data = cc_Suno_fixture_get_data (v->model);
++  JsonObject *perm = cc_Suno_app_perm_data (data);
++  const char *key = cc_Suno_app_perm_key_for (data, app);
++  JsonObject *entry = cc_Suno_app_perm_entry (perm, "apps", key);
++  if (!entry) return FALSE;
++  JsonObject *detail = cc_Suno_app_perm_entry (perm, "detail", key);
++  own_glyphs (v->root);
++  if (!detail && cc_Suno_fixture_is_live (v->model))
++    {
++      /* Ask once when the page opens; the adapter publishes it and the page draws again. */
++      g_autoptr (JsonObject) change = json_object_new ();
++      json_object_set_string_member (change, "op", "detail");
++      json_object_set_string_member (change, "app", key);
++      send (v, change);
++    }
++  gint64 now = now_seconds (perm);
++  const char *name = cc_Suno_fixture_app_name (v->model, app);
++  const char *version = detail ? json_object_get_string_member_with_default (detail, "version", "") : "";
++  gint64 data_mb = detail ? int_member (detail, "data_bytes") / (1000 * 1000) : 0;
++  gint64 total = app_megabytes >= 0 ? app_megabytes : data_mb;
++  g_autofree char *size = total > 0 || detail ? cc_Suno_fixture_format_size (total) : NULL;
++  g_autofree char *meta = *version && size ? g_strdup_printf ("Version %s · %s with its data", version, size)
++                          : size ? g_strdup_printf ("%s with its data", size) : g_strdup ("");
++  if (!g_object_get_data (G_OBJECT (v->root), "ap-others-page") || g_strcmp0 (v->drawn_page, v->page))
++    {
++      g_object_set_data (G_OBJECT (v->root), "ap-others-open", NULL);
++      g_object_set_data_full (G_OBJECT (v->root), "ap-others-page", g_strdup (v->page), g_free);
++    }
++  cf_header (v, name, meta, NULL);
++  /* Hero: icon, name, origin with the package glyph, Open. */
++  GtkWidget *identity = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 16);
++  GtkWidget *words = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
++  gtk_widget_add_css_class (identity, "cf-id");
++  gtk_box_append (GTK_BOX (identity), hero_icon (v, app, 56));
++  gtk_widget_set_hexpand (words, TRUE);
++  gtk_widget_set_valign (words, GTK_ALIGN_CENTER);
++  GtkWidget *title = cf_text (name, "cf-now-title");
++  Suno_ui_apply_type (title, "hero-title");
++  gtk_box_append (GTK_BOX (words), title);
++  GtkWidget *origin = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 6);
++  gtk_widget_add_css_class (origin, "ap-orig");
++  gtk_widget_add_css_class (origin, "cf-now-sub");
++  gtk_widget_set_name (origin, "ap-origin");
++  g_autofree char *line = origin_line (entry);
++  GtkWidget *glyph = Suno_ui_icon_new ("package");
++  gtk_widget_add_css_class (glyph, "ap-orig-glyph");
++  GtkWidget *where = cf_text (line, NULL);
++  Suno_ui_apply_type_full (where, "meta", TRUE);
++  /* A phone is narrower than the line: it ellipsizes instead of widening the page. */
++  gtk_label_set_ellipsize (GTK_LABEL (where), PANGO_ELLIPSIZE_END);
++  gtk_label_set_ellipsize (GTK_LABEL (title), PANGO_ELLIPSIZE_END);
++  gtk_box_append (GTK_BOX (origin), glyph);
++  gtk_box_append (GTK_BOX (origin), where);
++  gtk_box_append (GTK_BOX (words), origin);
++  gtk_box_append (GTK_BOX (identity), words);
++  GtkWidget *open = cc_Suno_view_command_style (v, "Open", G_CALLBACK (app_open), "fill");
++  Suno_text_button_set_hero (GTK_BUTTON (open), TRUE);
++  gtk_widget_set_name (open, "cf-app-open");
++  gtk_widget_set_valign (open, GTK_ALIGN_CENTER);
++  gtk_box_append (GTK_BOX (identity), open);
++  cf_hero (v, identity, "cf-app-hero");
++
++  files_group (v, key, entry, detail, name);
++  devices_group (v, key, entry, detail, now);
++  network_group (v, key, detail, now);
++  /* On screen: the four rows exactly as the layer-permissions page draws them. */
++  if (cc_Suno_view_on_screen_render)
++    cc_Suno_view_on_screen_render (v, app);
++  recent_group (v, detail, now);
++  /* Built-in apps come with Suno and update with it: nothing to remove here. */
++  if (g_strcmp0 (json_object_get_string_member_with_default (entry, "origin", ""), "Built in") != 0)
++    remove_group (v, key, name);
++  return TRUE;
++}
++
++/* ── Apps › Apps that can use all your files ───────────────────────── */
++
++gboolean
++cc_Suno_view_all_files_row (View *v, GtkBox *card)
++{
++  JsonObject *perm = cc_Suno_app_perm_data (cc_Suno_fixture_get_data (v->model));
++  JsonArray *all = array_member (perm, "all");
++  if (!perm) return FALSE;
++  g_autofree char *count = g_strdup_printf ("%u", all ? json_array_get_length (all) : 0);
++  GtkWidget *row = cf_nv (v, card, "all-files", "Apps that can use all your files", NULL, count, cf_lead_icon ("hard-drive"));
++  gtk_widget_set_name (row, "ap-all-files-row");
++  return TRUE;
++}
++
++static const char *
++reason_words (const char *reason)
++{
++  if (!g_strcmp0 (reason, "file-manager")) return "a file manager";
++  if (!g_strcmp0 (reason, "sync")) return "syncs your folders";
++  return "asked for it at install";
++}
++
++/* Where each app was listed when the page opened: a switch moves no row while the page is shown. */
++static GPtrArray *listed;
++
++void
++cc_Suno_view_all_files_render (View *v)
++{
++  JsonObject *data = cc_Suno_fixture_get_data (v->model);
++  JsonObject *perm = cc_Suno_app_perm_data (data);
++  JsonArray *all = array_member (perm, "all");
++  if (!listed) listed = g_ptr_array_new_with_free_func (g_free);
++  if (g_strcmp0 (v->drawn_page, v->page) != 0) g_ptr_array_set_size (listed, 0);
++  for (guint i = 0; all && i < json_array_get_length (all); i++)
++    if (!g_ptr_array_find_with_equal_func (listed, json_array_get_string_element (all, i), g_str_equal, NULL))
++      g_ptr_array_add (listed, g_strdup (json_array_get_string_element (all, i)));
++  g_autofree char *meta = g_strdup_printf ("%u %s", listed->len, listed->len == 1 ? "app" : "apps");
++  cf_header (v, "Apps that can use all your files", meta, NULL);
++  GtkBox *card = cf_group (v, NULL, NULL);
++  gtk_widget_set_name (gtk_widget_get_parent (GTK_WIDGET (card)), "ap-all");
++  for (guint i = 0; i < listed->len; i++)
++    {
++      const char *key = listed->pdata[i];
++      JsonObject *entry = cc_Suno_app_perm_entry (perm, "apps", key);
++      const char *settings_app = cc_Suno_app_perm_settings_app (data, key);
++      const char *name = entry ? json_object_get_string_member_with_default (entry, "name", key) : key;
++      g_autofree char *where = entry ? origin_line (entry) : g_strdup ("");
++      /* The list says Built in, or the format alone, then why. */
++      const char *format = entry ? json_object_get_string_member_with_default (entry, "format", "") : "";
++      const char *origin = entry ? json_object_get_string_member_with_default (entry, "origin", "") : "";
++      g_autofree char *words = g_strdup_printf ("%s · %s", !g_strcmp0 (origin, "Built in") ? "Built in" : format_word (format),
++                                                reason_words (entry ? json_object_get_string_member_with_default (entry, "reason", "") : ""));
++      g_autofree char *bound = cc_Suno_app_perm_key_name ("files", key);
++      GtkWidget *lead = settings_app ? cf_lead_image (v, settings_app) : cf_lead_icon ("hard-drive");
++      GtkWidget *row = cf_sw (v, card, bound, name, words, lead);
++      g_autofree char *row_name = g_strconcat ("ap-all-", settings_app ? settings_app : key, NULL);
++      gtk_widget_set_name (row, row_name);
++      (void) where;
++    }
++  GtkWidget *note = cf_text (ALL_NOTE, "ap-note");
++  gtk_widget_add_css_class (note, "SunoUI-t-muted");
++  gtk_label_set_wrap (GTK_LABEL (note), TRUE);
++  gtk_label_set_wrap_mode (GTK_LABEL (note), PANGO_WRAP_WORD);
++  gtk_label_set_xalign (GTK_LABEL (note), 0);
++  gtk_widget_set_name (note, "ap-all-note");
++  gtk_box_append (GTK_BOX (gtk_widget_get_parent (GTK_WIDGET (card))), note);
++}
+diff --git a/shell/cc-Suno-view-application-options.c b/shell/cc-Suno-view-application-options.c
+index 56118ac..a9e2ae7 100644
+--- a/shell/cc-Suno-view-application-options.c
++++ b/shell/cc-Suno-view-application-options.c
+@@ -549,6 +549,7 @@ static void apps_render (View *v)
+   cf_nv (v, rows, "defaults", "Default apps", "Which app opens links, mail, music and photos", NULL, cf_lead_icon ("app-window"));
+   cf_nv (v, rows, "media", "Removable media", "What happens when you plug in a drive or phone", NULL, cf_lead_icon ("usb"));
+   cc_Suno_view_overlay_apps_row (v, rows);
++  cc_Suno_view_all_files_row (v, rows);
+   openh264_rows (v);
+   JsonNode *category_node = json_object_get_member (data, "CFAPPCATS");
+   JsonObject *categories = category_node && JSON_NODE_HOLDS_OBJECT (category_node) ? json_node_get_object (category_node) : NULL;
+@@ -759,6 +760,8 @@ void cc_Suno_view_app_render (View *v)
+   JsonObject *data = cc_Suno_fixture_get_data (v->model);
+   gboolean live = cc_Suno_fixture_is_live (v->model);
+   gint64 total = app_total (v, app);
++  /* ADR-052 step 3: one page for every format when the permission service reports the app. */
++  if (cc_Suno_view_app_permissions_render (v, app, total)) return;
+   g_autofree char *size = total >= 0 ? cc_Suno_fixture_format_size (total) : NULL;
+   /* Live: version and source have no owner; the size when it is known. */
+   JsonNode *infos = json_object_get_member (data, "CFAPPINFO");
+diff --git a/shell/cc-Suno-view-private.h b/shell/cc-Suno-view-private.h
+index 4fb271c..1959af5 100644
+--- a/shell/cc-Suno-view-private.h
++++ b/shell/cc-Suno-view-private.h
+@@ -167,6 +167,12 @@ void cc_Suno_view_app_render (View *v);
+ gboolean cc_Suno_view_on_screen_render (View *v, const char *settings_app);
+ gboolean cc_Suno_view_overlay_apps_row (View *v, GtkBox *card);
+ void cc_Suno_view_overlay_apps_render (View *v);
++/* cc-Suno-view-app-permissions.c (ADR-052 step 3): an app's page for every
++ * format (FALSE: the service doesn't report the app; the older page is drawn),
++ * Apps' row to the all-files list, and the list. */
++gboolean cc_Suno_view_app_permissions_render (View *v, const char *app, gint64 app_megabytes);
++gboolean cc_Suno_view_all_files_row (View *v, GtkBox *card);
++void cc_Suno_view_all_files_render (View *v);
+ void cc_Suno_view_navigate (View *v, const char *target);
+ gboolean cc_Suno_view_hardware_page (const char *page);
+ void cc_Suno_view_hardware_render (View *v);
+diff --git a/shell/cc-Suno-view.c b/shell/cc-Suno-view.c
+index 2b1b3fa..4d79c1b 100644
+--- a/shell/cc-Suno-view.c
++++ b/shell/cc-Suno-view.c
+@@ -101,7 +101,7 @@ static gboolean page_supported (const char *page)
+   if (cc_Suno_view_hardware_page (page) || cc_Suno_view_people_page (page) || cc_Suno_view_system_page (page)) return TRUE;
+   if (cc_Suno_view_tv_page (page)) return TRUE;
+   const char *pages[] = { "wifi", "wifi-net", "wifi-known", "hotspot", "network",
+-    "bluetooth", "windows", "shelf", "appearance", "home-screen", "notifications", "search", "search-places", "displays", "nightlight", "sound", "sound-levels", "sound-alert", "sound-mixer", "power", "mouse", "keyboard", "defaults", "media", "apps", "overlay-apps", "a11y", "a-see", "a-hear", "a-type", "a-point", "a-zoom" };
++    "bluetooth", "windows", "shelf", "appearance", "home-screen", "notifications", "search", "search-places", "displays", "nightlight", "sound", "sound-levels", "sound-alert", "sound-mixer", "power", "mouse", "keyboard", "defaults", "media", "apps", "overlay-apps", "all-files", "a11y", "a-see", "a-hear", "a-type", "a-point", "a-zoom" };
+   for (guint i = 0; i < G_N_ELEMENTS (pages); i++)
+     if (g_strcmp0 (page, pages[i]) == 0) return TRUE;
+   return FALSE;
+@@ -1359,6 +1359,7 @@ static void render_page (View *v)
+   else if (g_str_equal (v->page, "keyboard")) cc_Suno_view_keyboard_render (v);
+   else if (g_str_equal (v->page, "defaults")) cc_Suno_view_defaults_render (v);
+   else if (g_str_equal (v->page, "media")) cc_Suno_view_media_render (v);
++  else if (g_str_equal (v->page, "all-files")) cc_Suno_view_all_files_render (v);
+   else if (g_str_equal (v->page, "apps")) cc_Suno_view_apps_render (v);
+   else if (g_str_equal (v->page, "overlay-apps")) cc_Suno_view_overlay_apps_render (v);
+   else if (g_str_has_prefix (v->page, "app:")) cc_Suno_view_app_render (v);
+@@ -1576,6 +1577,7 @@ static gboolean page_valid (CcSunoFixture *model, const char *page)
+   if (cc_Suno_view_tv_page (page)) return TRUE;
+   if (g_str_equal (page, "apps")) return cc_Suno_fixture_apps_validate (model);
+   if (g_str_equal (page, "overlay-apps")) return TRUE; /* drawn from whatever CFLAYER holds, or none */
++  if (g_str_equal (page, "all-files")) return TRUE;
+   if (g_str_has_prefix (page, "app:")) return cc_Suno_fixture_prepare_app (model, page + 4, NULL);
+   if (g_str_equal (page, "power")) return cc_Suno_power_fixture_validate (model);
+   if (cc_Suno_privacy_page (page)) return cc_Suno_privacy_validate (model);
+@@ -1618,7 +1620,7 @@ static int page_hue (View *v)
+     { "ssh", 160 }, { "about", 250 } };
+   const char *root = v->page;
+   JsonArray *pages = v->model ? cc_Suno_fixture_get_pages (v->model) : NULL;
+-  if (g_str_has_prefix (root, "app:")) root = "apps";
++  if (g_str_has_prefix (root, "app:") || g_str_equal (root, "all-files")) root = "apps";
+   for (guint i = 0; pages && i < json_array_get_length (pages); i++)
+     {
+       JsonObject *p = json_array_get_object_element (pages, i);
+diff --git a/shell/gnome-control-center.gresource.xml.in b/shell/gnome-control-center.gresource.xml.in
+index 1f7e85d..7424d0e 100644
+--- a/shell/gnome-control-center.gresource.xml.in
++++ b/shell/gnome-control-center.gresource.xml.in
+@@ -13,6 +13,12 @@
+     <file>Suno-settings-system.css</file>
+   </gresource>
+ 
++  <!-- App permissions (0110): Lucide glyphs the platform's icon set has not taken yet -->
++  <gresource prefix="/org/gnome/Settings/icons/scalable/actions">
++    <file alias="SunoUI-file-search-symbolic.svg">icons/SunoUI-file-search-symbolic.svg</file>
++    <file alias="SunoUI-cable-symbolic.svg">icons/SunoUI-cable-symbolic.svg</file>
++  </gresource>
++
+   <!-- Panel icons -->
+   <gresource prefix="/org/gnome/Settings">
+     <file>style.css</file>
+diff --git a/shell/icons/SunoUI-cable-symbolic.svg b/shell/icons/SunoUI-cable-symbolic.svg
+new file mode 100644
+index 0000000..291419a
+--- /dev/null
++++ b/shell/icons/SunoUI-cable-symbolic.svg
+@@ -0,0 +1,10 @@
++<!-- Lucide geometry, ISC; adapted to GTK 4.20+ symbolic stroke classes. -->
++<svg xmlns="http://www.w3.org/2000/svg" class="lucide lucide-cable" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
++  <path d="M17 19a1 1 0 0 1-1-1v-2a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2a1 1 0 0 1-1 1z" class="transparent-fill foreground-stroke" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
++  <path d="M17 21v-2" class="transparent-fill foreground-stroke" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
++  <path d="M19 14V6.5a1 1 0 0 0-7 0v11a1 1 0 0 1-7 0V10" class="transparent-fill foreground-stroke" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
++  <path d="M21 21v-2" class="transparent-fill foreground-stroke" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
++  <path d="M3 5V3" class="transparent-fill foreground-stroke" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
++  <path d="M4 10a2 2 0 0 1-2-2V6a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2a2 2 0 0 1-2 2z" class="transparent-fill foreground-stroke" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
++  <path d="M7 5V3" class="transparent-fill foreground-stroke" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
++</svg>
+diff --git a/shell/icons/SunoUI-file-search-symbolic.svg b/shell/icons/SunoUI-file-search-symbolic.svg
+new file mode 100644
+index 0000000..c5f5083
+--- /dev/null
++++ b/shell/icons/SunoUI-file-search-symbolic.svg
+@@ -0,0 +1,7 @@
++<!-- Lucide geometry, ISC; adapted to GTK 4.20+ symbolic stroke classes. -->
++<svg xmlns="http://www.w3.org/2000/svg" class="lucide lucide-file-search" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
++  <path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z" class="transparent-fill foreground-stroke" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
++  <path d="M14 2v5a1 1 0 0 0 1 1h5" class="transparent-fill foreground-stroke" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
++  <circle cx="11.5" cy="14.5" r="2.5" class="transparent-fill foreground-stroke" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
++  <path d="M13.3 16.3 15 18" class="transparent-fill foreground-stroke" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
++</svg>
+diff --git a/shell/Suno-settings-you.css b/shell/Suno-settings-you.css
+index 5e548d9..a9d0b09 100644
+--- a/shell/Suno-settings-you.css
++++ b/shell/Suno-settings-you.css
+@@ -1,5 +1,53 @@
+ /* Settings' you pages: page-only surfaces (heroes). Tokens only. */
+ 
++/* App permissions (ADR-052 step 3; design-center 8bd4ccf mockups/app-perms ap.css):
++ * the origin line, the chosen folders as chips, usage in green while in use,
++ * Used recently's quieter rows and the all-files note. */
++/* settings.html .cfpage.ap .cfbt.danger: the Remove button reads red; the sheet says what is lost. */
++#ap-remove-button { color: oklch(0.7 0.17 25); }
++/* settings.html ?pending (.ap-pend): "<App> is open", its title at 600, the glyph in the accent. */
++.ap-pend label.cf-title { font-weight: 600; }
++.ap-pend .cf-ri image { color: @Suno_check_on; }
++/* settings.html ?page=remove (.ap-rm): Settings' standard sheet, 440 wide; a drawer on a phone; x1.5 on a TV. */
++box.SunoUI-dialog.ap-rm { min-width: 392px; padding: 24px 24px 20px; border-radius: 20px; background: #1d2024;
++  box-shadow: 0 24px 60px -20px rgba(0,0,0,.6), inset 0 0 0 1px @Suno_border; }
++box.SunoUI-dialog.ap-rm.light { background: #fbfbfc; }
++box.SunoUI-dialog.ap-rm.phone { min-width: 0; margin: 0; padding: 22px 18px 24px; border-radius: 28px 28px 0 0; }
++.ap-rm .ap-rm-title { font-size: 17px; line-height: 22px; font-weight: 700; letter-spacing: -0.17px; color: @Suno_ink; }
++.ap-rm .ap-rm-body { margin-top: 6px; font-size: 12.5px; line-height: 18px; color: @Suno_muted; }
++.ap-rm .ap-docs { margin-top: 14px; padding: 4px 0; border-radius: 12px; box-shadow: inset 0 0 0 1px @Suno_border; }
++.ap-rm.light .ap-docs { background: @Suno_well; box-shadow: none; }
++.ap-rm .ap-doc { min-height: 36px; padding: 0 12px; font-size: 12.5px; color: @Suno_ink; }
++.ap-rm .ap-doc image { -gtk-icon-size: 15px; color: @Suno_muted; }
++.ap-rm .ap-doc-size, .ap-rm .ap-doc.more { font-size: 12px; color: @Suno_muted; }
++.ap-rm .ap-ck { margin-top: 14px; }
++.ap-rm .ap-ck checkbutton { padding: 0; margin: 0; min-height: 0; background: none; }
++.ap-rm .ap-ck check { min-width: 18px; min-height: 18px; margin: 0; padding: 0; border: none; border-radius: 7px;
++  background: @Suno_check_on; box-shadow: none; color: #fff;
++  -gtk-icon-source: -gtk-icontheme("SunoUI-check-symbolic"); -gtk-icon-size: 11px; }
++.ap-rm .ap-ck check:not(:checked) { background: none; box-shadow: inset 0 0 0 1.5px @Suno_muted; color: transparent; }
++.ap-rm .ap-ck-title { font-size: 13px; line-height: 18px; font-weight: 550; color: @Suno_ink; }
++.ap-rm .ap-ck-line { margin-top: 2px; font-size: 12px; line-height: 17px; color: @Suno_muted; }
++.ap-rm .ap-rma { margin-top: 22px; }
++.ap-rm button.ap-danger { color: oklch(0.7 0.17 25); }
++.ap-rm.phone .ap-rma button { min-height: 44px; }
++/* On a TV the sheet's metrics are set over the TV frame's dialog style (cc-Suno-view-app-permissions.c). */
++.ap-orig { margin-top: 3px; }
++.ap-orig image.ap-orig-glyph { -gtk-icon-size: 13px; color: @Suno_muted; }
++.ap-flds { padding: 2px 16px 14px 58px; }
++.ap-fld { min-height: 28px; padding: 0 6px 0 10px; border-radius: 9px; border-spacing: 6px; font-size: 12px; font-weight: 550;
++  color: @Suno_ink; background: @Suno_chip;
++  box-shadow: inset 0 1px 0 @Suno_chip_highlight, 0 0 0 1px @Suno_chip_ring, 0 1px 2px @Suno_chip_shadow; }
++.ap-fld image { -gtk-icon-size: 13px; color: @Suno_muted; }
++button.ap-fld-x { min-width: 16px; min-height: 16px; padding: 0; margin: 0; border: 0; background: none; box-shadow: none; }
++button.ap-fld.add { padding: 0 10px 0 8px; border: 0; color: @Suno_ink_secondary; background: none; box-shadow: inset 0 0 0 1px @Suno_line; }
++button.ap-fld.add > box { border-spacing: 6px; }
++label.cf-sub.ap-now { color: @Suno_good; }
++.ap-log .cf-row { min-height: 26px; }
++.ap-log .cf-title { font-weight: 500; }
++.ap-log .cf-c label { font-size: 12px; color: @Suno_muted; }
++label.ap-note { margin: 10px 6px 0; font-size: 12px; line-height: 17px; color: @Suno_muted; }
++
+ /* Privacy: v70 .cffacts */
+ .cf-fact { padding: 4px 6px; }
+ .cf-fact > image { -gtk-icon-size: 20px; margin-bottom: 8px; color: @Suno_good; }
+diff --git a/shell/meson.build b/shell/meson.build
+index f1c2f0d..b5a3d44 100644
+--- a/shell/meson.build
++++ b/shell/meson.build
+@@ -115,6 +115,9 @@ common_sources = files(
+   'cc-Suno-live-applications.c',
+   'cc-Suno-live-app-options.c',
+   'cc-Suno-live-openh264.c',
++  'cc-Suno-live-app-permissions.c',
++  'cc-Suno-app-permissions.c',
++  'cc-Suno-view-app-permissions.c',
+   'cc-Suno-rows.c',
+   'cc-Suno-view-hardware.c',
+   'cc-Suno-view-people.c',
+@@ -379,7 +382,7 @@ applications_test = executable('test-Suno-applications',
+   ['test-Suno-applications.c', 'cc-Suno-applications.c'], dependencies: [gio_dep])
+ test('Suno-settings-applications', applications_test, env: ['G_DEBUG=fatal-warnings'])
+ 
+-fixture_view_sources = ['cc-Suno-view.c', 'cc-Suno-rows.c', 'cc-Suno-view-hardware.c', 'cc-Suno-view-people.c', 'cc-Suno-view-system.c', 'cc-Suno-view-image.c', 'cc-Suno-view-bluetooth.c', 'cc-Suno-view-windows.c', 'cc-Suno-view-shelf.c', 'cc-Suno-view-tv.c', 'cc-Suno-view-appearance.c', 'cc-Suno-view-discovery.c', 'cc-Suno-view-displays.c', 'cc-Suno-view-sound.c', 'cc-Suno-view-mixer.c', 'cc-Suno-view-nightlight.c', 'cc-Suno-view-devices.c', 'cc-Suno-view-privacy.c', 'cc-Suno-view-keyboard.c', 'cc-Suno-view-application-options.c', 'cc-Suno-fixture.c', 'cc-Suno-bluetooth.c', 'cc-Suno-desktop.c', 'cc-Suno-discovery.c', 'cc-Suno-displays.c', 'cc-Suno-sound.c', 'cc-Suno-device-options.c', 'cc-Suno-privacy.c', 'cc-Suno-keyboard.c', 'cc-Suno-application-options.c', 'cc-Suno-search-locations.c', 'cc-Suno-backup.c']
++fixture_view_sources = ['cc-Suno-view.c', 'cc-Suno-rows.c', 'cc-Suno-view-hardware.c', 'cc-Suno-view-people.c', 'cc-Suno-view-system.c', 'cc-Suno-view-image.c', 'cc-Suno-view-bluetooth.c', 'cc-Suno-view-windows.c', 'cc-Suno-view-shelf.c', 'cc-Suno-view-tv.c', 'cc-Suno-view-appearance.c', 'cc-Suno-view-discovery.c', 'cc-Suno-view-displays.c', 'cc-Suno-view-sound.c', 'cc-Suno-view-mixer.c', 'cc-Suno-view-nightlight.c', 'cc-Suno-view-devices.c', 'cc-Suno-view-privacy.c', 'cc-Suno-view-keyboard.c', 'cc-Suno-view-application-options.c', 'cc-Suno-view-app-permissions.c', 'cc-Suno-app-permissions.c', 'cc-Suno-fixture.c', 'cc-Suno-bluetooth.c', 'cc-Suno-desktop.c', 'cc-Suno-discovery.c', 'cc-Suno-displays.c', 'cc-Suno-sound.c', 'cc-Suno-device-options.c', 'cc-Suno-privacy.c', 'cc-Suno-keyboard.c', 'cc-Suno-application-options.c', 'cc-Suno-search-locations.c', 'cc-Suno-backup.c']
+ fixture_view_sources += ['cc-Suno-view-layer-shell.c', 'cc-Suno-layer-shell.c']
+ fixture_view_sources += ['cc-Suno-view-live-lock.c', 'cc-Suno-preferences.c']
+ fixture_view_sources += ['cc-Suno-view-live-permission.c', 'cc-Suno-permissions.c', 'cc-Suno-applications.c']

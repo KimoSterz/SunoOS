@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=Ari
+Exec=python3 -m ari_ui.SunoUI_app
+Icon=org.projectSuno.Ari.SunoUIPreview
+Categories=Utility;

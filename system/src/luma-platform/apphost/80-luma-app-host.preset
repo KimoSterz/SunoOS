@@ -1,3 +1,0 @@
-# SPDX-License-Identifier: Apache-2.0
-enable luma-app-host.service
-enable luma-native-app-prewarm.timer

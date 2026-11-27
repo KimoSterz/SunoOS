@@ -1,4 +1,4 @@
-From: Project Luma <project-luma@local>
+From: Project Suno <project-suno@local>
 Subject: [PATCH] simple: respect the sensor's minimum analogue gain step
 
 The S5KKD1SP front sensor exposes integer 1x gain steps. Simple IPA derives a

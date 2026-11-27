@@ -1,4 +1,4 @@
-From: Project Luma <luma@local>
+From: Project Suno <Suno@local>
 Subject: [PATCH] qcomtee: wrap kernel shared memory as a memory object
 
 The QSEEComCompat listener service needs a callback memory object backed by a

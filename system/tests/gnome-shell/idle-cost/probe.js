@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-// What an idle desktop costs, inside a headless Luma Shell.
+// What an idle desktop costs, inside a headless Suno Shell.
 //
 // After the session settles, with two still windows open and the pointer
 // parked, nothing on screen changes, so nothing should be dispatched or
@@ -350,7 +350,7 @@ async function scenarios(pointer) {
     Main.overview.hide();
     await rest('after the overview opened and closed', 1500);
     // A window that repaints every frame on the first monitor.
-    spawn(['python3', `${HERE}/window.py`, 'org.luma.test.Reel', 'Reel', '--live'], 'windows');
+    spawn(['python3', `${HERE}/window.py`, 'org.Suno.test.Reel', 'Reel', '--live'], 'windows');
     await until('window Reel', () => global.get_window_actors().some(a => a.meta_window.get_title() === 'Reel'), 30000);
     const reel = global.get_window_actors().find(a => a.meta_window.get_title() === 'Reel').meta_window;
     reel.move_frame(true, 100, 100);
@@ -369,7 +369,7 @@ async function scenarios(pointer) {
 
 async function work() {
     await applyScales();
-    for (const [id, title] of [['org.luma.test.Photos', 'Library'], ['org.luma.test.Notes', 'Prairie']]) {
+    for (const [id, title] of [['org.Suno.test.Photos', 'Library'], ['org.Suno.test.Notes', 'Prairie']]) {
         spawn(['python3', `${HERE}/window.py`, id, title], 'windows');
         await until(`window ${title}`,
             () => global.get_window_actors().some(a => a.meta_window.get_title() === title), 30000);

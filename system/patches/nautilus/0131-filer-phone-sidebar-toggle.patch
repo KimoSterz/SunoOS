@@ -15,9 +15,9 @@ index 5cfeaf7..6218c65 100644
      GtkWidget *toggle = GTK_WIDGET (window->sidebar_toggle);
      g_object_ref (toggle);
      gtk_box_remove (GTK_BOX (window->sidebar_toggle_desktop_host), toggle);
--    luma_application_window_frame_set_leading (ADW_APPLICATION_WINDOW (window),
+-    Suno_application_window_frame_set_leading (ADW_APPLICATION_WINDOW (window),
 -                                               toggle);
-+    luma_application_window_frame_set_leading_phone_host (ADW_APPLICATION_WINDOW (window),
++    Suno_application_window_frame_set_leading_phone_host (ADW_APPLICATION_WINDOW (window),
 +                                                          toggle,
 +                                                          window->sidebar_toggle_phone_host);
      g_object_unref (toggle);

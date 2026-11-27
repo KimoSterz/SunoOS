@@ -6,13 +6,13 @@ import json
 from dataclasses import dataclass, field
 from pathlib import Path
 
-DEFAULT = "/etc/luma/depot-review.json"
+DEFAULT = "/etc/Suno/depot-review.json"
 
 
 @dataclass
 class Config:
     hub: str = "https://hub.simplyluma.com"
-    token_file: str = "/srv/luma-build/depot-keys/secrets/hub-pipeline.token"
+    token_file: str = "/srv/Suno-build/depot-keys/secrets/hub-pipeline.token"
     paths: dict = field(default_factory=lambda: {
         "claim_check": "/api/depot/pipeline/checks/claim",
         "report_check": "/api/depot/pipeline/checks/{id}/report",
@@ -24,31 +24,31 @@ class Config:
         "catalogue": "/api/depot/catalogue",
     })
     # The deployed checkout of SimplyLuma/luma the service runs from.
-    source: Path = Path("/srv/luma-build/depot-review/source")
+    source: Path = Path("/srv/Suno-build/depot-review/source")
     work: Path = Path("/srv/dev-storage/depot-review/work")
     state: Path = Path("/srv/dev-storage/depot-review/state")
-    publish_root: Path = Path("/srv/luma-build/depot-review")
+    publish_root: Path = Path("/srv/Suno-build/depot-review")
     storage_conf: Path = Path("/srv/dev-storage/depot-review/storage.conf")
-    review_image: str = "localhost/luma-depot-review:1"
+    review_image: str = "localhost/Suno-depot-review:1"
     signer_image: str = ""
     clamav_db: Path = Path("/srv/dev-storage/depot-review/clamav")
     vm_base: Path = Path("/srv/dev-storage/depot-review/vm/base-x86_64.qcow2")
     vm_key: Path = Path("/srv/dev-storage/depot-review/vm/review-key")
-    depot_root: Path = Path("/srv/luma-build/n1105-depot/depot-root")
-    depot_keys: Path = Path("/srv/luma-build/depot-keys")
+    depot_root: Path = Path("/srv/Suno-build/n1105-depot/depot-root")
+    depot_keys: Path = Path("/srv/Suno-build/depot-keys")
     branch: str = "stable"
     # False signs into depot_root but never uploads it (rehearsals on a staging copy).
     sync_remote: bool = True
-    publication_locks: list = field(default_factory=lambda: ["/srv/luma-build/depot-publication.lock"])
-    catalogue_key: Path = Path("/srv/luma-build/depot-keys/minisign/depot-catalogue-v1.key")
-    catalogue_pub: Path = Path("/srv/luma-build/depot-keys/minisign/depot-catalogue-v1.pub")
+    publication_locks: list = field(default_factory=lambda: ["/srv/Suno-build/depot-publication.lock"])
+    catalogue_key: Path = Path("/srv/Suno-build/depot-keys/minisign/depot-catalogue-v1.key")
+    catalogue_pub: Path = Path("/srv/Suno-build/depot-keys/minisign/depot-catalogue-v1.pub")
     catalogue_dest: str = "depot/catalogue/v1/"
     catalogue_url: str = "https://dl.simplyluma.com/depot/catalogue/v1/catalogue.json"
     media_base: str = "https://media.simplyluma.com/depot/"
     media_prefix: str = "depot/"
     r2_account: str = "30f2bc572e1ef22b91d30d096f6ffdfa"
-    r2_bucket: str = "luma-images"
-    r2_credentials: Path = Path("/root/.config/luma-maintainer-publisher")
+    r2_bucket: str = "Suno-images"
+    r2_credentials: Path = Path("/root/.config/Suno-maintainer-publisher")
     poll_seconds: int = 20
     catalogue_seconds: int = 60
     # False skips catalogue publishing (rehearsals against a stand-in Hub).
@@ -57,10 +57,10 @@ class Config:
     publish_catalog4: bool = True
     max_upload_bytes: int = 4 * 1024 ** 3
     vm_arches: list = field(default_factory=lambda: ["x86_64"])
-    # The review VM's lane on the shared build server (the luma-heavy conform-lane
+    # The review VM's lane on the shared build server (the Suno-heavy conform-lane
     # pattern: one review VM beside one build). It boots only with vm_memory_mib
-    # plus vm_reserve_mib available and luma-heavy.slice not frozen.
-    vm_lock: str = "/var/lock/luma-heavy-review.lock"
+    # plus vm_reserve_mib available and Suno-heavy.slice not frozen.
+    vm_lock: str = "/var/lock/Suno-heavy-review.lock"
     vm_memory_mib: int = 6144
     vm_cpus: int = 4
     vm_reserve_mib: int = 4096
@@ -68,7 +68,7 @@ class Config:
     # Seconds between attempts when Depot's own checks couldn't run (VM boot,
     # screen, host capacity); after the last one the report is couldnt_run.
     infra_retry_delays: list = field(default_factory=lambda: [300, 900, 2700])
-    # A known-good app on the Luma runtime (Depot Hello, testapp/build.sh). When a
+    # A known-good app on the Suno runtime (Depot Hello, testapp/build.sh). When a
     # submitted app doesn't launch, it runs on the same VM; if it fails too, the
     # VM is at fault and the result is couldnt_run, not a finding.
     control_bundle: Path = Path("/srv/dev-storage/depot-review/testapp/depot-hello-1.1-x86_64.flatpak")

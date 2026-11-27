@@ -34,7 +34,7 @@ END:VEVENT
 
 class BackupTests(unittest.TestCase):
     def test_private_backup_before_first_write_of_each_kind(self):
-        with tempfile.TemporaryDirectory() as directory, patch.dict(os.environ,{"LUMA_CALENDAR_FIXTURE":""}):
+        with tempfile.TemporaryDirectory() as directory, patch.dict(os.environ,{"SUNO_CALENDAR_FIXTURE":""}):
             export=Mock(return_value="BEGIN:VCALENDAR\nEND:VCALENDAR\n")
             path=ensure_backup("source","rsvp",export,root=directory)
             self.assertEqual(path.stat().st_mode & 0o777,0o600)
@@ -44,14 +44,14 @@ class BackupTests(unittest.TestCase):
             self.assertIsNotNone(ensure_backup("source","invitations",export,root=directory))
 
     def test_missing_or_failed_export_prevents_write(self):
-        with tempfile.TemporaryDirectory() as directory, patch.dict(os.environ,{"LUMA_CALENDAR_FIXTURE":""}):
+        with tempfile.TemporaryDirectory() as directory, patch.dict(os.environ,{"SUNO_CALENDAR_FIXTURE":""}):
             with self.assertRaises(ValueError):
                 ensure_backup("source","edit",lambda _:"",root=directory)
             self.assertEqual(list(Path(directory).iterdir()),[])
 
     def test_fixture_never_exports_or_writes_backups(self):
         export=Mock(side_effect=AssertionError("read a real calendar"))
-        with patch.dict(os.environ,{"LUMA_CALENDAR_FIXTURE":"fixture.json"}),self.assertRaises(RuntimeError):
+        with patch.dict(os.environ,{"SUNO_CALENDAR_FIXTURE":"fixture.json"}),self.assertRaises(RuntimeError):
             ensure_backup("source","edit",export)
         export.assert_not_called()
 
@@ -72,7 +72,7 @@ class MeetingTests(unittest.TestCase):
         self.event=Event("meeting-1","source","Original",self.start,self.end)
 
     def test_fixture_registry_refuses_before_opening_eds(self):
-        with patch.dict(os.environ,{"LUMA_CALENDAR_FIXTURE":"fixture.json"}),patch.object(backend,"_modules") as modules:
+        with patch.dict(os.environ,{"SUNO_CALENDAR_FIXTURE":"fixture.json"}),patch.object(backend,"_modules") as modules:
             with self.assertRaises(backend.CalendarUnavailable):
                 backend._registry()
         modules.assert_not_called()

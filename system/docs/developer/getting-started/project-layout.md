@@ -1,22 +1,22 @@
 ---
 title: Project layout
-summary: Every file a Luma app project contains, how their identities must agree, and complete checked examples of the desktop entry, metainfo, icon and Flatpak manifest.
+summary: Every file a Suno app project contains, how their identities must agree, and complete checked examples of the desktop entry, metainfo, icon and Flatpak manifest.
 order: 4
 section: Getting started
 ---
 
 # Project layout
 
-A Luma app is an ordinary Linux app project plus one Luma file,
-`luma-app.toml`, that ties everything together. This page shows the complete
+A Suno app is an ordinary Linux app project plus one Suno file,
+`Suno-app.toml`, that ties everything together. This page shows the complete
 Notebook project from [your first app in Python](first-app-python.md). The
-files below pass `luma lint`, and the metainfo passes
+files below pass `Suno lint`, and the metainfo passes
 `appstreamcli validate --no-net`. Run `desktop-file-validate` on your desktop
 entry too.
 
 ```text
 notebook/
-├── luma-app.toml                           Luma application contract
+├── Suno-app.toml                           Suno application contract
 ├── src/
 │   └── main.py                             The app
 ├── data/
@@ -26,7 +26,7 @@ notebook/
 ├── flatpak/
 │   └── com.example.Notebook.json           Flatpak manifest: build and sandbox
 └── verification/
-    └── luma-native-evidence.json           Test evidence, false until CI fills it
+    └── Suno-native-evidence.json           Test evidence, false until CI fills it
 ```
 
 Larger apps add what they need: `po/` for translations, a GSettings schema
@@ -36,11 +36,11 @@ service file for activation, `tests/`, and a Meson build.
 ## One identity everywhere
 
 Your reverse-DNS app ID is the name of your app in every system that touches
-it. `luma lint` fails the project if any of these disagree:
+it. `Suno lint` fails the project if any of these disagree:
 
 | Where | Must be |
 | --- | --- |
-| `luma-app.toml` `application.id` | The canonical ID, for example `com.example.Notebook` |
+| `Suno-app.toml` `application.id` | The canonical ID, for example `com.example.Notebook` |
 | Flatpak manifest `id` (or legacy `app-id`) | The same ID |
 | AppStream `<id>` | The same ID |
 | AppStream `<launchable type="desktop-id">` | The ID plus `.desktop` |
@@ -58,7 +58,7 @@ Why this matters: a mismatch produces duplicate launchers, permissions granted
 to the wrong app, orphaned data after uninstall, and a store page that points
 at the wrong thing.
 
-## `luma-app.toml`
+## `Suno-app.toml`
 
 ```toml
 schema_version = "0.2"
@@ -100,10 +100,10 @@ accessibility = true
 keyboard = true
 semantics = true
 reduced_motion = true
-evidence = "verification/luma-native-evidence.json"
+evidence = "verification/Suno-native-evidence.json"
 ```
 
-Every key is explained in [`luma-app.toml`](luma-app-toml.md).
+Every key is explained in [`Suno-app.toml`](Suno-app-toml.md).
 
 ## Desktop entry
 
@@ -119,7 +119,7 @@ Categories=Utility;
 StartupNotify=true
 ```
 
-LumaUI reads `Name` and `Icon` from this file to draw your app’s identity
+SunoUI reads `Name` and `Icon` from this file to draw your app’s identity
 in the top-left corner of every window, so the corner always says what the dock
 says. Add `MimeType=` and `%U` or `%F` to `Exec` if your app opens files.
 
@@ -151,7 +151,7 @@ says. Add `MimeType=` and `%U` or `%F` to `Exec` if your app opens files.
     <control>touch</control>
   </supports>
   <custom>
-    <value key="org.projectluma.ApplicationContract">0.2</value>
+    <value key="org.projectSuno.ApplicationContract">0.2</value>
   </custom>
   <content_rating type="oars-1.1"/>
   <releases>
@@ -160,14 +160,14 @@ says. Add `MimeType=` and `%U` or `%F` to `Exec` if your app opens files.
 </component>
 ```
 
-The `org.projectluma.ApplicationContract` custom value is required by
-`luma lint`. Depot builds your store page from this file; see
+The `org.projectSuno.ApplicationContract` custom value is required by
+`Suno lint`. Depot builds your store page from this file; see
 [metainfo and screenshots](../publishing/metainfo-and-screenshots.md) for
 screenshots, release notes, content rating and what review checks.
 
 ## Icon
 
-Ship a scalable SVG named with your app ID. Luma presents application artwork on
+Ship a scalable SVG named with your app ID. Suno presents application artwork on
 its own rounded tile with a corner radius of a quarter of the icon’s width, so
 draw artwork that reads well inside a rounded square and do not bake in your
 own drop shadow. See [icons](../design/icons.md).
@@ -184,9 +184,9 @@ own drop shadow. See [icons](../design/icons.md).
 ```json
 {
   "id": "com.example.Notebook",
-  "runtime": "org.projectluma.Platform",
+  "runtime": "org.projectSuno.Platform",
   "runtime-version": "44",
-  "sdk": "org.projectluma.Sdk",
+  "sdk": "org.projectSuno.Sdk",
   "command": "com.example.Notebook",
   "finish-args": [
     "--share=ipc",
@@ -215,22 +215,22 @@ own drop shadow. See [icons](../design/icons.md).
 }
 ```
 
-This manifest targets `org.projectluma.Platform//44` from the Luma remote (see
-[install the SDK](install-the-sdk.md)). The runtime already carries LumaUI,
-Figtree and the Prairie icons, so the manifest does not build LumaUI itself.
+This manifest targets `org.projectSuno.Platform//44` from the Suno remote (see
+[install the SDK](install-the-sdk.md)). The runtime already carries SunoUI,
+Figtree and the Prairie icons, so the manifest does not build SunoUI itself.
 Build, install and run it from the project root:
 
 ```sh
-flatpak-builder --user --install --install-deps-from=luma --force-clean build-dir flatpak/com.example.Notebook.json
+flatpak-builder --user --install --install-deps-from=Suno --force-clean build-dir flatpak/com.example.Notebook.json
 flatpak run com.example.Notebook
 ```
 
-What the SDK generates today: `luma new` writes a manifest on
-`org.gnome.Platform//50` whose first module builds `luma-developer-platform`
-from Luma’s source repository. That repository is not public, so the generated
+What the SDK generates today: `Suno new` writes a manifest on
+`org.gnome.Platform//50` whose first module builds `Suno-developer-platform`
+from Suno’s source repository. That repository is not public, so the generated
 manifest does not build as it is. Replace it with a manifest like the one
-above: switch `runtime`, `sdk` and `runtime-version` to the Luma runtime and
-remove that module. Luma’s own Depot apps build on the Luma runtime.
+above: switch `runtime`, `sdk` and `runtime-version` to the Suno runtime and
+remove that module. Suno’s own Depot apps build on the Suno runtime.
 
 Permissions: `--share=ipc`, `--socket=wayland`, `--socket=fallback-x11` and
 `--device=dri` are the normal baseline for a GTK app. Everything else is a
@@ -240,13 +240,13 @@ permission people see before they install. Read
 
 ## Evidence file
 
-`verification/luma-native-evidence.json` records the results of the test lanes
+`verification/Suno-native-evidence.json` records the results of the test lanes
 that make an app a Native candidate: both architectures, desktop and mobile
 presentations, and accessibility, adaptive layout, keyboard, portals, reduced
 motion, sandbox, semantics, uninstall, and update and rollback. Every value
 starts `false`. Only real CI results should change them;
-`luma release-check` also requires a pinned source revision, a timestamp, an
-SBOM and a test report. See [the `luma` command](../kit/sdk-command-line.md#luma-release-check).
+`Suno release-check` also requires a pinned source revision, a timestamp, an
+SBOM and a test report. See [the `Suno` command](../kit/sdk-command-line.md#Suno-release-check).
 
 ```json
 {

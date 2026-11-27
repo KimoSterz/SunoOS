@@ -20,7 +20,7 @@ class GraphicsProvisionTests(unittest.TestCase):
         cfg = root / "var/lib/waydroid/waydroid.cfg"
         cfg.parent.mkdir(parents=True)
         cfg.write_text(f"[waydroid]\narch={arch}\nimages_path=/images\n[properties]\nuser.setting=keep\n")
-        runtime = root / "etc/luma/android.conf"
+        runtime = root / "etc/Suno/android.conf"
         runtime.parent.mkdir(parents=True)
         runtime.write_text("[runtime]\nmulti_window=true\nidle_freeze=false\n")
         def local_path(value):
@@ -53,10 +53,10 @@ class GraphicsProvisionTests(unittest.TestCase):
         self.assertEqual(cfg["properties"]["persist.waydroid.multi_windows"], "false")
         self.assertEqual(cfg["properties"]["persist.waydroid.use_subsurface"], "false")
         self.assertEqual(cfg["properties"]["user.setting"], "keep")
-        runtime = configparser.ConfigParser(); runtime.read(root / "etc/luma/android.conf")
+        runtime = configparser.ConfigParser(); runtime.read(root / "etc/Suno/android.conf")
         self.assertEqual(runtime["runtime"]["multi_window"], "false")
         self.assertEqual(runtime["runtime"]["idle_freeze"], "false")
-        hal = ET.parse(root / "var/lib/waydroid/overlay/vendor/etc/vintf/manifest/luma-codec2.xml").getroot().find("hal")
+        hal = ET.parse(root / "var/lib/waydroid/overlay/vendor/etc/vintf/manifest/Suno-codec2.xml").getroot().find("hal")
         self.assertEqual(hal.attrib["override"], "true")
         self.assertEqual(hal.findtext("transport"), "hwbinder")
         self.assertEqual(hal.findtext("name"), "android.hardware.media.omx")

@@ -7,7 +7,7 @@
 
 set -Eeuo pipefail
 
-stage=/tmp/luma-fingerprint-identity-v9
+stage=/tmp/Suno-fingerprint-identity-v9
 firmware_path=/sys/module/firmware_class/parameters/path
 expected_old_firmware_path=/lib/firmware/postmarketos
 expected_model='The Fairphone (Gen. 6)'
@@ -73,7 +73,7 @@ cleanup() {
       printf 'event=cleanup_error reason=module_still_loaded\n' >&2
       cleanup_status=1
     fi
-    if [[ -d $stage && ! -L $stage && $stage == /tmp/luma-fingerprint-identity-v9 ]]; then
+    if [[ -d $stage && ! -L $stage && $stage == /tmp/Suno-fingerprint-identity-v9 ]]; then
       find "$stage" -depth -delete || cleanup_status=1
     else
       printf 'event=cleanup_error reason=stage_identity\n' >&2
@@ -104,8 +104,8 @@ runtime_config=$(gzip -dc /proc/config.gz)
 [[ $(sha256sum <<<"$runtime_config" | cut -d' ' -f1) == "$expected_config_sha" ]] || fail runtime_config_hash
 grep -qx 'CONFIG_QCOM_TZMEM_MODE_SHMBRIDGE=y' <<<"$runtime_config" || fail shmbridge_config
 grep -qx '# CONFIG_DMA_CMA is not set' <<<"$runtime_config" || fail dma_cma_enabled
-[[ $(sha256sum /lib/modules/7.1.2/extra/luma-fingerprint/focaltech_fp.ko | cut -d' ' -f1) == "$expected_focal_module_sha" ]] || fail focal_module_hash
-[[ $(sha256sum /lib/modules/7.1.2/extra/luma-fingerprint/qseecomtee.ko | cut -d' ' -f1) == "$expected_installed_module_sha" ]] || fail installed_module_hash
+[[ $(sha256sum /lib/modules/7.1.2/extra/Suno-fingerprint/focaltech_fp.ko | cut -d' ' -f1) == "$expected_focal_module_sha" ]] || fail focal_module_hash
+[[ $(sha256sum /lib/modules/7.1.2/extra/Suno-fingerprint/qseecomtee.ko | cut -d' ' -f1) == "$expected_installed_module_sha" ]] || fail installed_module_hash
 [[ $(sha256sum "$stage/qseecomtee.ko" | cut -d' ' -f1) == "$expected_module_sha" ]] || fail staged_module_hash
 [[ $(sha256sum "$stage/qsee-supplicant" | cut -d' ' -f1) == "$expected_supplicant_sha" ]] || fail supplicant_hash
 [[ $(sha256sum "$stage/qsee-app-loader" | cut -d' ' -f1) == "$expected_loader_sha" ]] || fail loader_hash
@@ -119,8 +119,8 @@ scm=/proc/device-tree/firmware/scm
 child=$scm/qseecom-tee-heaps
 [[ -d $ta_pool && -d $apps_pool && -d $child ]] || fail dedicated_dt_nodes
 [[ ! -e $scm/memory-region ]] || fail global_scm_owns_pool
-[[ $(tr -d '\0' <"$child/compatible") == luma,qseecom-tee-heaps ]] || fail child_compatible
-[[ -e $child/luma,dedicated-heaps ]] || fail child_opt_in
+[[ $(tr -d '\0' <"$child/compatible") == Suno,qseecom-tee-heaps ]] || fail child_compatible
+[[ -e $child/Suno,dedicated-heaps ]] || fail child_opt_in
 expected_regions=$(od -An -tx1 -v "$ta_pool/phandle" "$apps_pool/phandle" | tr -d ' \n')
 actual_regions=$(od -An -tx1 -v "$child/memory-region" | tr -d ' \n')
 [[ $actual_regions == "$expected_regions" ]] || fail child_pool_ownership

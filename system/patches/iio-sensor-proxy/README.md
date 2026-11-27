@@ -10,6 +10,6 @@ from the SRPM pinned in `config/desktop/inputs.env` (desktop-components group
   CPU on its I2C bus: 13-17% of a CPU whenever light is claimed. Integration
   times go down to 185 us, which polls in a busy loop. The patch keeps reading
   the integration time but never polls faster than `DEFAULT_POLL_TIME`
-  (0.8 s). Luma-specific for now; drop it if upstream adopts a floor.
-- `0000-luma-fedora-spec.patch`: adds the patch, the `luma.N` release and a
+  (0.8 s). Suno-specific for now; drop it if upstream adopts a floor.
+- `0000-Suno-fedora-spec.patch`: adds the patch, the `Suno.N` release and a
   `%check` running the upstream integration tests (`-Dtests=true`).

@@ -1,12 +1,12 @@
 #!/usr/bin/python3
 # SPDX-License-Identifier: Apache-2.0
-"""Render a Luma runtime container.yaml from Fedora's definition and a Luma overlay.
+"""Render a Suno runtime container.yaml from Fedora's definition and a Suno overlay.
 
 Fedora maintains the package closure, extension points, environment and cleanup
-commands of its Flatpak runtime in flatpaks/flatpak-runtime. Luma builds its
+commands of its Flatpak runtime in flatpaks/flatpak-runtime. Suno builds its
 runtime from the same Fedora 44 packages, so it starts from a pinned copy of
 that file (packaging/flatpak/runtime/fedora-f44/) and applies a small, reviewed
-overlay: Luma ids, Luma's own packages, and the few cleanup changes Luma makes.
+overlay: Suno ids, Suno's own packages, and the few cleanup changes Suno makes.
 Keeping the overlay separate keeps every divergence from Fedora visible and makes
 rebasing onto a newer Fedora definition a copy plus a diff review.
 

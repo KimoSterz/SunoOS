@@ -1,5 +1,5 @@
 {
-  "format": "org.projectluma.reel-studio-fixture",
+  "format": "org.projectSuno.reel-studio-fixture",
   "version": 1,
   "title": "Launch film",
   "fps": 24,
@@ -606,7 +606,7 @@
     "over": [
       {
         "id": "r8",
-        "n": "Luma 1.0",
+        "n": "Suno 1.0",
         "img": "",
         "d": 4,
         "adj": {
@@ -661,7 +661,7 @@
         "fx": [],
         "kind": "title",
         "s": 1,
-        "text": "Luma 1.0",
+        "text": "Suno 1.0",
         "sub": "A better computer",
         "style": "big"
       },
@@ -981,7 +981,7 @@
     [
       "big",
       "Centred",
-      "Luma 1.0"
+      "Suno 1.0"
     ],
     [
       "lower",

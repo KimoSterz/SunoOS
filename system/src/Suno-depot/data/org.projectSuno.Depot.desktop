@@ -1,0 +1,21 @@
+[Desktop Entry]
+Type=Application
+Name=Depot
+Comment=Discover, install and update apps, and keep Suno up to date
+Exec=Suno-depot %U
+Icon=org.projectSuno.Depot
+Categories=System;PackageManager;
+Keywords=Apps;Applications;Software;Store;Install;Uninstall;Update;Updates;Upgrade;Firmware;
+MimeType=x-scheme-handler/Suno-depot;x-scheme-handler/appstream;
+Terminal=false
+StartupNotify=true
+DBusActivatable=true
+Actions=updates;
+X-Purism-FormFactor=Workstation;Mobile;
+X-Suno-TV=true
+X-Suno-TV-Tile=org.projectSuno.Depot-tv
+X-Suno-TV-Presentation=tv
+
+[Desktop Action updates]
+Name=Software Update
+Exec=Suno-depot --view updates

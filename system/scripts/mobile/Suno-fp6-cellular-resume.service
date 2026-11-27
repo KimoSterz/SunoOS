@@ -1,0 +1,10 @@
+[Unit]
+Description=Restore Project Suno FP6 cellular services after sleep
+After=ModemManager.service network.target
+Wants=ModemManager.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/Suno-fp6-cellular-resume
+TimeoutStartSec=180
+

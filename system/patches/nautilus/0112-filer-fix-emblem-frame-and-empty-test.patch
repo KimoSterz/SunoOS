@@ -6,7 +6,7 @@ Subject: [PATCH] Fix grid emblem sizing, frame toggle startup and empty state
 ---
  src/nautilus-grid-cell.c                      | 29 ++++++++++++-------
  src/nautilus-window.c                         |  7 +++--
- .../display/test-luma-empty-picker.c          | 16 +++++++---
+ .../display/test-Suno-empty-picker.c          | 16 +++++++---
  3 files changed, 35 insertions(+), 17 deletions(-)
 
 diff --git a/src/nautilus-grid-cell.c b/src/nautilus-grid-cell.c
@@ -90,8 +90,8 @@ index da45ee2..cc9b9d0 100644
 @@ -1666,8 +1666,11 @@ nautilus_window_constructed (GObject *self)
  
      /* The shared frame keeps NautilusWindow and every template child alive. */
-     luma_application_window_frame_adopt (ADW_APPLICATION_WINDOW (window));
--    luma_application_window_frame_set_leading (ADW_APPLICATION_WINDOW (window),
+     Suno_application_window_frame_adopt (ADW_APPLICATION_WINDOW (window));
+-    Suno_application_window_frame_set_leading (ADW_APPLICATION_WINDOW (window),
 -                                               window->sidebar_toggle_desktop_host);
 +    /* The toggle already belongs to Nautilus' top header. Until the shared
 +     * frame adapter selects that outer header, moving its parented host would
@@ -100,11 +100,11 @@ index da45ee2..cc9b9d0 100644
 +     * existing toggle into the selected native title row. */
      GMenuModel *main_menu = NULL;
      g_object_get (window->toolbar, "main-menu", &main_menu, NULL);
-     luma_application_window_frame_set_menu_model (ADW_APPLICATION_WINDOW (window),
-diff --git a/test/automated/display/test-luma-empty-picker.c b/test/automated/display/test-luma-empty-picker.c
+     Suno_application_window_frame_set_menu_model (ADW_APPLICATION_WINDOW (window),
+diff --git a/test/automated/display/test-Suno-empty-picker.c b/test/automated/display/test-Suno-empty-picker.c
 index 7925cd2..ec2578c 100644
---- a/test/automated/display/test-luma-empty-picker.c
-+++ b/test/automated/display/test-luma-empty-picker.c
+--- a/test/automated/display/test-Suno-empty-picker.c
++++ b/test/automated/display/test-Suno-empty-picker.c
 @@ -95,7 +95,7 @@ int main(int argc, char **argv) {
                  g_menu_append(choices_menu, "Editable", "choices.editable");
                  nautilus_file_chooser_add_choices(chooser, G_ACTION_GROUP(choices), G_MENU_MODEL(choices_menu));

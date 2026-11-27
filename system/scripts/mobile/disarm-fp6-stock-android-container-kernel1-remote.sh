@@ -9,8 +9,8 @@
 set -euo pipefail
 umask 077
 
-proven_release=7.1.2-luma-fp-ims1
-candidate_release=7.1.2-luma-fp-ims-container1
+proven_release=7.1.2-Suno-fp-ims1
+candidate_release=7.1.2-Suno-fp-ims-container1
 proven_efi_sha=a69dbc085727ea4244cc0a3fce93553913e37dc6b48896c9969f7392f3346cb9
 proven_image_sha=62556c8a87a0b8c345fdfd11770bffad7b112526e17cdb353600bec8648583ef
 proven_initramfs_sha=3ed23188d9fb5ae8ed90b8d3b274e8d4d4432c3f60a25b14d718c33d9391a8a4
@@ -18,7 +18,7 @@ proven_dtb_sha=9a9d45187ef98874d84e1df9d06044a89e9aedb98d0b79b2b6d8bc32e7a164cf
 proven_entry_sha=20efc7d275f0e3784226cd9b43d80a4222240db744d4f2be7d54ee5888563446
 candidate_efi_sha=c87c25a24041a0541ac87aed3b346d9edb3673b2888e86243c0f2279f472fc8a
 candidate_image_sha=b38f57c13532333f40d0318a20db94e2fff65e0d09e14184c987fa9196e6cb45
-archive_root=/var/lib/luma/fp6-stock-android-container-kernel/failed-container1
+archive_root=/var/lib/Suno/fp6-stock-android-container-kernel/failed-container1
 
 die() { printf 'error: %s\n' "$*" >&2; exit 1; }
 hash() { sha256sum "$1" | awk '{print $1}'; }

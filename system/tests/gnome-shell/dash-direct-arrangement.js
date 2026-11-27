@@ -24,7 +24,7 @@ export async function run() {
     const iface = new Gio.Settings({schema_id:'org.gnome.desktop.interface'});
     new Gio.Settings({schema_id:'org.gnome.shell'}).set_strv('enabled-extensions', []);
     Main.overview.hide();
-    s.set_strv('dock-folders', ['file:///var/tmp/luma-dash-native/folder']);
+    s.set_strv('dock-folders', ['file:///var/tmp/Suno-dash-native/folder']);
     s.set_boolean('dock-folders-visible', true);
     s.set_boolean('dock-folders-separate', false);
     s.set_string('shelf-surface-mode', 'separate');

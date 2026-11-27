@@ -44,12 +44,12 @@ setup() {
 }
 gate_set() { # gate_set BUILD RUN
   mkdir -p "$root/vm/gate-$1-$2"
-  head -c 4096 /dev/zero >"$root/vm/gate-$1-$2/luma-os-gate-fresh-$2.qcow2"
-  mkdir -p "$keys/luma-os-gate-$2"
+  head -c 4096 /dev/zero >"$root/vm/gate-$1-$2/Suno-os-gate-fresh-$2.qcow2"
+  mkdir -p "$keys/Suno-os-gate-$2"
 }
 domain() { printf '%s %s\n' "$1" "$2" >>"$work/$tc/domains"; }
 run() {
-  LUMA_OS_ROOT=$root LUMA_OS_GATE_KEY_ROOT=$keys LUMA_OS_VIRSH="$work/bin/virsh" \
+  SUNO_OS_ROOT=$root SUNO_OS_GATE_KEY_ROOT=$keys SUNO_OS_VIRSH="$work/bin/virsh" \
     STUB_DOMAINS="$work/$tc/domains" bash "$script" "$@" >"$work/$tc/out" 2>&1 ||
     fail "exit $? $(tail -n 3 "$work/$tc/out")"
 }
@@ -68,8 +68,8 @@ run --apply
 kept gate-20260922.1-20260922T050000Z
 gone gate-20260921.10-20260921T180000Z
 gone gate-20260921.9-20260921T050000Z
-[ -d "$keys/luma-os-gate-20260922T050000Z" ] || fail 'kept set lost its key'
-[ ! -e "$keys/luma-os-gate-20260921T050000Z" ] || fail 'removed set kept its key'
+[ -d "$keys/Suno-os-gate-20260922T050000Z" ] || fail 'kept set lost its key'
+[ ! -e "$keys/Suno-os-gate-20260921T050000Z" ] || fail 'removed set kept its key'
 logged "removed"
 logged "gate-20260921.9-20260921T050000Z"
 
@@ -79,9 +79,9 @@ setup running-domain
 gate_set 20260920.1 20260920T050000Z
 gate_set 20260921.1 20260921T050000Z
 gate_set 20260922.1 20260922T050000Z
-domain luma-os-gate-fresh-20260922T050000Z running
-domain luma-os-gate-update-20260922T050000Z paused
-domain luma-os-gate-fresh-20260921T050000Z 'shut off'
+domain Suno-os-gate-fresh-20260922T050000Z running
+domain Suno-os-gate-update-20260922T050000Z paused
+domain Suno-os-gate-fresh-20260921T050000Z 'shut off'
 run --apply
 kept gate-20260922.1-20260922T050000Z
 kept gate-20260921.1-20260921T050000Z

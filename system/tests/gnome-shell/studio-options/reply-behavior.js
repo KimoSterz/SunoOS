@@ -43,7 +43,7 @@ async function retryTest() {
     const requests = []; let ready = false;
     const actor = card(async (text, request) => {
         requests.push([text, request]);
-        if (!ready) throw {remoteName: 'org.projectluma.Messages.Error.NotReady'};
+        if (!ready) throw {remoteName: 'org.projectSuno.Messages.Error.NotReady'};
         return ['fixture', 'sent'];
     });
     await production._submitInlineReply.call(actor);
@@ -69,7 +69,7 @@ async function replacementTest() {
         actor._replyEntry = editor('New conversation'); actor._replyButton = button();
         const newRequest = production._submitInlineReply.call(actor);
         if (outcome === 'sent') oldPeer.resolve(['fixture', 'sent']);
-        else oldPeer.reject({remoteName: 'org.projectluma.Messages.Error.NotReady'});
+        else oldPeer.reject({remoteName: 'org.projectSuno.Messages.Error.NotReady'});
         await oldRequest;
         assert(actor._replyPending && !actor._replyEntry.reactive && !actor._replyButton.reactive &&
             actor._replyButton.label === 'Send' && timers.length === 0,
@@ -82,7 +82,7 @@ async function editedRetryTest() {
     const requests = [];
     const actor = card(async (text, request) => {
         requests.push([text, request]);
-        throw {remoteName: 'org.projectluma.Messages.Error.NotReady'};
+        throw {remoteName: 'org.projectSuno.Messages.Error.NotReady'};
     });
     await production._submitInlineReply.call(actor);
     actor._replyEntry = editor('Edited reply');

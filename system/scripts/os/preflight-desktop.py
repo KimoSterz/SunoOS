@@ -41,7 +41,7 @@ def inspect(root, architecture, directories, profile_name='full'):
         if len({f['sha256'] for f in files}) > 1:
             raise ValueError(f'Conflicting RPM bodies for {nevra}; select one qualified input directory')
         rows.append({'nevra': nevra, 'status': 'ready' if files else 'missing', 'files': files})
-    return {'schema': 'org.projectluma.desktop-preflight/v1', 'architecture': architecture, 'profile': profile_name,
+    return {'schema': 'org.projectSuno.desktop-preflight/v1', 'architecture': architecture, 'profile': profile_name,
             'kernel_provider': target(root, architecture)[0]['kernel_provider'],
             'ready': all(row['status'] == 'ready' for row in rows), 'packages': rows}
 
@@ -49,7 +49,7 @@ def inspect(root, architecture, directories, profile_name='full'):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--arch', choices=ARCHITECTURES, required=True)
-    parser.add_argument('--profile', default=os.environ.get('LUMA_OS_PROFILE', 'full'))
+    parser.add_argument('--profile', default=os.environ.get('SUNO_OS_PROFILE', 'full'))
     parser.add_argument('--root', type=Path, default=ROOT)
     parser.add_argument('--package-dir', type=Path, action='append', required=True)
     args = parser.parse_args()

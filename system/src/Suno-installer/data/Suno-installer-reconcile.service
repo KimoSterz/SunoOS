@@ -1,0 +1,10 @@
+[Unit]
+Description=Reconcile interrupted and completed Suno application transactions
+After=local-fs.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/Suno-installer-system reconcile
+
+[Install]
+WantedBy=multi-user.target

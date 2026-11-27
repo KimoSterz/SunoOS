@@ -7,22 +7,22 @@ import sys
 from pathlib import Path
 
 THEME = '''
-# Project Luma: the same source-owned fonts and theme as the installed OS.
+# Project Suno: the same source-owned fonts and theme as the installed OS.
 insmod gfxterm
 insmod gfxmenu
-loadfont /boot/grub2/themes/luma/prairie-12.pf2
-loadfont /boot/grub2/themes/luma/prairie-22.pf2
-if loadfont /boot/grub2/themes/luma/prairie.pf2; then
+loadfont /boot/grub2/themes/Suno/prairie-12.pf2
+loadfont /boot/grub2/themes/Suno/prairie-22.pf2
+if loadfont /boot/grub2/themes/Suno/prairie.pf2; then
   if [ "${timeout_style}" != "hidden" ]; then
     terminal_output gfxterm
   fi
 fi
-set theme=/boot/grub2/themes/luma/theme.txt
+set theme=/boot/grub2/themes/Suno/theme.txt
 '''
 SEARCH = "search --no-floppy --set=root -l '@ISOLABEL@'"
 ARCH = '## configure grub2 config file\nmkdir ${GRUB2DIR}\n'
-ASSETS = '''mkdir ${GRUB2DIR}/themes/luma
-install usr/share/luma/boot/grub-theme/* ${GRUB2DIR}/themes/luma/
+ASSETS = '''mkdir ${GRUB2DIR}/themes/Suno
+install usr/share/Suno/boot/grub-theme/* ${GRUB2DIR}/themes/Suno/
 '''
 # Lorax's runtime cleanup removes sound/, drivers/media/ and drivers/usb/host/.
 # On ARM the installer keeps the modules a Raspberry Pi 5 needs for its
@@ -52,7 +52,7 @@ def verify_iso(root, architecture):
         configs.append(root / 'grub2/grub.cfg')
     for path in configs:
         text = path.read_text()
-        if 'set theme=/boot/grub2/themes/luma/theme.txt' not in text:
+        if 'set theme=/boot/grub2/themes/Suno/theme.txt' not in text:
             raise ValueError(f'{path}: installer GRUB theme missing')
         if '@ROOT@' in text:
             raise ValueError(f'{path}: unresolved GRUB boot root')
@@ -109,8 +109,8 @@ def prepare(source, destination, architecture='x86_64'):
         # explicitly, retaining Fedora's shim/GRUB AA64 boot chain.
         if text.count("efiarch64 = 'AA64'") != 1 or '${efigraft} ${filegraft}' not in text:
             raise ValueError('unsupported Lorax aarch64 template layout')
-        text = text.replace('## make boot.iso', '''mkdir boot/grub2/themes/luma
-install usr/share/luma/boot/grub-theme/* boot/grub2/themes/luma/
+        text = text.replace('## make boot.iso', '''mkdir boot/grub2/themes/Suno
+install usr/share/Suno/boot/grub-theme/* boot/grub2/themes/Suno/
 <% filegraft += " boot/grub2={0}/boot/grub2".format(outroot) %>
 ## make boot.iso''')
     changes[path.relative_to(source)] = text

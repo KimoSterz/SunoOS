@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 // The TV posture of the Keycap keyboard: its layout, remote navigation and
 // action label, and the wiring that keeps it to TV posture.
-// Run: gjs -m tv-keyboard-policy.js js/ui/lumaPresentation/tvKeyboard.js \
-//        js/ui/lumaPresentation/tvTokens.js js/ui/keyboard.js
+// Run: gjs -m tv-keyboard-policy.js js/ui/SunoPresentation/tvKeyboard.js \
+//        js/ui/SunoPresentation/tvTokens.js js/ui/keyboard.js
 // (node tv-keyboard-policy.js ... works too).
 const gjs = typeof globalThis.ARGV !== 'undefined';
 const args = gjs ? globalThis.ARGV : process.argv.slice(2);
@@ -129,7 +129,7 @@ assert(/setCursorLocation\([^)]*\) \{[\s\S]*?if \(this\._tv\) \{\s*this\._setFoc
     'TV apps are never slid up');
 assert(/const levels = this\._tv && !pad/.test(keyboard), 'the TV layout only in TV posture; pads stay pads');
 assert(/_completionAllowed\(\) \{\s*\/\/[^\n]*\n\s*return !this\._tv &&/.test(keyboard), 'no suggestion strip on a TV');
-assert(/org\.projectluma\.Shell\.Keyboard1/.test(keyboard) && /SetActionLabel/.test(keyboard) &&
+assert(/org\.projectSuno\.Shell\.Keyboard1/.test(keyboard) && /SetActionLabel/.test(keyboard) &&
     /name="Height" type="u"/.test(keyboard), 'the application contract');
 assert(/SetActionLabelAsync\(\[label\], invocation\) \{[\s\S]*?callerIdentity\(invocation\.get_sender\(\)\)[\s\S]*?if \(!actsForFocusedApp\(caller, window, Main\.modalCount, global\.stage\.key_focus, global\.stage\)\) \{[\s\S]*?ACCESS_DENIED[\s\S]*?this\._labels\.set\(window, String\(label\)\)/.test(keyboard) &&
     !/SetActionLabel\(label\) \{/.test(keyboard),

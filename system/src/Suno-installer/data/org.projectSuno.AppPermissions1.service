@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=org.projectSuno.AppPermissions1
+Exec=/usr/libexec/Suno-app-permissions
+SystemdService=Suno-app-permissions.service

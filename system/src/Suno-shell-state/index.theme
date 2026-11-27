@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=X-GNOME-Metatheme
+Name=Suno
+Comment=Shared Project Suno GTK 3 and Phosh presentation
+Encoding=UTF-8
+
+[X-GNOME-Metatheme]
+GtkTheme=Suno
+IconTheme=Prairie
+CursorTheme=Adwaita
+ButtonLayout=:minimize,maximize,close

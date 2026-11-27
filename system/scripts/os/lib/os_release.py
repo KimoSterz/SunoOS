@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""Render /usr/lib/os-release for a Luma OS build (ADR-030 section 3, ADR-040).
+"""Render /usr/lib/os-release for a Suno OS build (ADR-030 section 3, ADR-040).
 
-The file names the release the way people see it, "Luma (Prairie, Beta 0,
+The file names the release the way people see it, "Suno (Prairie, Beta 0,
 Nightly 20260916)", from the release identity in config/os/release.env and the
 build's channel and nightly date (scripts/os/lib/release_identity.py). Fedora
 compatibility fields that tools read to find the platform (ID_LIKE,

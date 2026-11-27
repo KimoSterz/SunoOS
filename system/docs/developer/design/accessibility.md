@@ -1,29 +1,29 @@
 ---
 title: Accessibility
-summary: The accessibility requirements every Luma app meets, what LumaUI does for you, how to label custom widgets, and a test plan covering keyboard, screen readers, contrast, text size, motion and right-to-left.
+summary: The accessibility requirements every Suno app meets, what SunoUI does for you, how to label custom widgets, and a test plan covering keyboard, screen readers, contrast, text size, motion and right-to-left.
 order: 8
 section: Design
 ---
 
 # Accessibility
 
-Luma apps work for people who use a keyboard only, a screen reader, a switch,
+Suno apps work for people who use a keyboard only, a screen reader, a switch,
 large text, high contrast, reduced motion, touch, or a right-to-left language.
-These are requirements for Luma tier apps in Depot and strongly expected of
+These are requirements for Suno tier apps in Depot and strongly expected of
 every app. The same accessible names and roles are also how assistants and
 automation understand your app.
 
-## What LumaUI does for you
+## What SunoUI does for you
 
-- LumaUI components set accessible names and roles: `IconButton` and `AlignCluster`
+- SunoUI components set accessible names and roles: `IconButton` and `AlignCluster`
   buttons are labeled; `NavigationRow` speaks its title, subtitle and count;
   `FieldRow` speaks “label: value”; `Avatar` speaks “name avatar”; `EmptyState`
   hides its decorative glyph; `NumericField` describes a mixed value;
-  `LumaAudioMeter` updates its description in steps rather than every frame.
+  `SunoAudioMeter` updates its description in steps rather than every frame.
 - Menus built from commands are keyboard complete, expose checked state, and
   open from the **Menu** key and **Shift+F10**.
 - `reduced_motion()` and `motion_duration()` (Python) and
-  `luma_ui_reduced_motion()` (C) report the motion setting, and LumaUI’s own
+  `Suno_ui_reduced_motion()` (C) report the motion setting, and SunoUI’s own
   animations follow it.
 - Tokens switch to high contrast colors automatically.
 - GTK widgets expose themselves to AT-SPI, which Orca and other assistive
@@ -101,8 +101,8 @@ Run this before every release that changes the interface.
 | Reduced motion | Turn on Reduce Animation in Accessibility settings. |
 | Transparency | Choose Frost or Glass in Appearance settings, then turn on reduce transparency. |
 | Right-to-left | Run with `LANGUAGE=ar` or `LANGUAGE=he` and a translation, or GTK Inspector’s text direction switch. |
-| Touch | Run with `LUMA_INPUT_MODE=touch` and on a touch device if you have one. |
+| Touch | Run with `SUNO_INPUT_MODE=touch` and on a touch device if you have one. |
 | Long strings | Use a pseudo-translation that lengthens strings by 40%. |
 
 Record results as the `accessibility`, `keyboard` and `reduced_motion` lanes in
-your [evidence file](../getting-started/luma-app-toml.md#evidence-file).
+your [evidence file](../getting-started/Suno-app-toml.md#evidence-file).

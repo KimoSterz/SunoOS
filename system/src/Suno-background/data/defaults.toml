@@ -1,0 +1,26 @@
+# SPDX-License-Identifier: MPL-2.0
+#
+# Which Suno apps work in the background before anyone decides (ADR-033).
+#
+#   on   essential: runs by default, shown as Always On, can be turned off
+#   off  runs only once the person turns it on
+#   (absent) asks once, the first time the app requests it
+#
+# Only apps the system installed (root-owned desktop entry and declaration,
+# or a system Flatpak installation) can be on by default. An image can
+# override any line in /etc/Suno-background/defaults.toml.
+
+[apps]
+"org.projectSuno.Messages" = "on"
+"org.projectSuno.Phone" = "on"
+"org.projectSuno.Calendar" = "on"
+"org.projectSuno.Clock" = "on"
+"org.projectSuno.Connect" = "on"
+# Charlie, Suno's mail app (its own repository; agent org.projectSuno.Charlie.Agent).
+"org.projectSuno.Charlie" = "on"
+
+"org.projectSuno.Weather" = "off"
+"org.projectSuno.Notes" = "off"
+"org.projectSuno.Tasks" = "off"
+"org.projectSuno.Photos" = "off"
+"org.projectSuno.Tide" = "off"

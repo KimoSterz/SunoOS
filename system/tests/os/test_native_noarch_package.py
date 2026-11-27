@@ -17,10 +17,10 @@ class ActualNoarchPackage(unittest.TestCase):
         self.temporary = tempfile.TemporaryDirectory()
         self.addCleanup(self.temporary.cleanup)
         self.root = Path(self.temporary.name)
-        self.directory = self.root / 'build/packages/luma-desktop-launcher-policy'
+        self.directory = self.root / 'build/packages/Suno-desktop-launcher-policy'
         self.directory.mkdir(parents=True)
         self.spec = self.root / 'fixture.spec'
-        self.spec.write_text('''Name: luma-desktop-launcher-policy
+        self.spec.write_text('''Name: Suno-desktop-launcher-policy
 Version: 0.0.1
 Release: 1
 Summary: Isolated package checker fixture
@@ -29,12 +29,12 @@ BuildArch: noarch
 %description
 Private checker fixture; never installed or executed.
 %install
-mkdir -p %{buildroot}/usr/share/luma %{buildroot}/usr/libexec
-printf 'fixture\\n' > %{buildroot}/usr/share/luma/system-flatpak-replacements.txt
-printf 'fixture\\n' > %{buildroot}/usr/libexec/luma-flatpak-replacements
+mkdir -p %{buildroot}/usr/share/Suno %{buildroot}/usr/libexec
+printf 'fixture\\n' > %{buildroot}/usr/share/Suno/system-flatpak-replacements.txt
+printf 'fixture\\n' > %{buildroot}/usr/libexec/Suno-flatpak-replacements
 %files
-/usr/share/luma/system-flatpak-replacements.txt
-/usr/libexec/luma-flatpak-replacements
+/usr/share/Suno/system-flatpak-replacements.txt
+/usr/libexec/Suno-flatpak-replacements
 ''')
         subprocess.run(['rpmbuild', '-bb', '--nodeps', '--define', f'_topdir {self.directory}',
                         '--define', '_build_id_links none', str(self.spec)],
@@ -65,7 +65,7 @@ printf 'fixture\\n' > %{buildroot}/usr/libexec/luma-flatpak-replacements
 class AdditionalNoarchPayloads(unittest.TestCase):
     def test_real_shell_state_and_icon_packages_require_their_shipped_payload(self):
         import hashlib
-        for name in ('luma-shell-state', 'prairie-icon-theme'):
+        for name in ('Suno-shell-state', 'prairie-icon-theme'):
             with self.subTest(name=name), tempfile.TemporaryDirectory() as temporary:
                 root = Path(temporary)
                 directory = root / 'build/packages' / name

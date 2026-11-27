@@ -10,13 +10,13 @@ import gi
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 from gi.repository import Adw, Gdk, Gio, GLib, Gtk, Pango
-from luma_appkit import (ActionCenter, ActionEditor, AddRow, AppWindow, BarAction, BarEntry, BarPrompt,
+from Suno_appkit import (ActionCenter, ActionEditor, AddRow, AppWindow, BarAction, BarEntry, BarPrompt,
     Command, CommandGroup, CommandRegistry, ContentLitHeader, CornerPill,
     DestructiveDialog, DetailsItem, DetailsPane, DetailsRow, Island, ModeSwitch,
     IconOnlyButton, PersonAvatar, PlaceCard, StackedButton, StackedButtons, TextButton, TextField, TitleIsland, BarTile, BarTiles, PanelRow, panel_list, MenuDrawer, LayerHost, Menu, Mark, ScrollView, Toast, ToastHost, icons)
-from luma_appkit.action_bubble import FloatingMenu, MenuItem
-from luma_appkit.bar_frame import BarFrame
-from luma_appkit.action_center import SPACER, make_control, register_item
+from Suno_appkit.action_bubble import FloatingMenu, MenuItem
+from Suno_appkit.bar_frame import BarFrame
+from Suno_appkit.action_center import SPACER, make_control, register_item
 from .calendar_backend import CalendarUnavailable, list_sources, list_events, save_event, delete_event, local_tzid
 from .calendar_data import CalendarAttendee, Event, EventDraft, sms_uri, participant_rows, contact_for_person
 from .calendar_meeting import save_meeting, reply_to_event, CalendarDeliveryError
@@ -25,9 +25,9 @@ from . import calendar_backend as backend
 from zoneinfo import ZoneInfo
 from .calendar_fixture import CalendarFixture, ParsedEvent, duration_text, events_on, free_gaps, minute_text, parse_event, resolve_calendar
 from .calendar_surface import CalendarSurface, CalendarCanvas, button, event_category, label, avatar
-from luma_appkit import apply_type
+from Suno_appkit import apply_type
 
-APP_ID = "org.projectluma.Calendar"
+APP_ID = "org.projectSuno.Calendar"
 
 
 class TodayKey:
@@ -69,7 +69,7 @@ def _launch_uri(window, uri, failure_message):
 
 class CalendarWindow(AppWindow):
     def __init__(self, application):
-        path = os.environ.get("LUMA_CALENDAR_FIXTURE")
+        path = os.environ.get("SUNO_CALENDAR_FIXTURE")
         self.fixture = CalendarFixture(path) if path else None
         self.today = self.fixture.today if self.fixture else date.today()
         self.anchor = self.selected_day = self.today
@@ -77,9 +77,9 @@ class CalendarWindow(AppWindow):
         self.view = "month"
         if self.fixture:
             # Fixture states (the conform scenario): the view and month a capture opens on.
-            self.view = os.environ.get("LUMA_CALENDAR_VIEW", "") or self.view
-            if os.environ.get("LUMA_CALENDAR_ANCHOR"):
-                self.anchor = date.fromisoformat(os.environ["LUMA_CALENDAR_ANCHOR"])
+            self.view = os.environ.get("SUNO_CALENDAR_VIEW", "") or self.view
+            if os.environ.get("SUNO_CALENDAR_ANCHOR"):
+                self.anchor = date.fromisoformat(os.environ["SUNO_CALENDAR_ANCHOR"])
         self.narrow = False
         self.bar_panel = ""
         self._rebuilding = False
@@ -256,7 +256,7 @@ class CalendarWindow(AppWindow):
         # The head is "cal-head" and its month button "cal-jump" at both tiers (the conform pairs and actions).
         self.heading_island.set_name("cal-head-desktop" if narrow else "cal-head")
         self.heading.set_name("cal-jump-desktop" if narrow else "cal-jump")
-        self.title_island.set_name("cal-head" if narrow else "lumaui-title-island")
+        self.title_island.set_name("cal-head" if narrow else "SunoUI-title-island")
         self.title_island.title_button.set_name("cal-jump" if narrow else "cal-title-island-title")
         self.calendar_control.set_name("cal-calendars-desktop" if narrow else "cal-calendars")
         self.head_calendars.set_name("cal-calendars" if narrow else "cal-head-calendars")
@@ -315,27 +315,27 @@ class CalendarWindow(AppWindow):
             if self.get_width() > 559:
                 self.pane.open(self.selected_day)
             if self.fixture:
-                selected = os.environ.get("LUMA_CALENDAR_SELECTED_EVENT", "")
-                selected_day = os.environ.get("LUMA_CALENDAR_SELECTED_DAY", "")
+                selected = os.environ.get("SUNO_CALENDAR_SELECTED_EVENT", "")
+                selected_day = os.environ.get("SUNO_CALENDAR_SELECTED_DAY", "")
                 if selected_day:
                     self.select_day(date.fromisoformat(selected_day))
                 if selected:
                     event = next((e for e in self.events if e.uid == selected), None)
                     if event:
                         self.open_event(event)
-                quick=os.environ.get("LUMA_CALENDAR_QUICK","")
+                quick=os.environ.get("SUNO_CALENDAR_QUICK","")
                 if quick:
                     self.quick.set_text(quick)
                     self.preview_quick(quick)
-                if os.environ.get("LUMA_CALENDAR_BAR")=="view":
+                if os.environ.get("SUNO_CALENDAR_BAR")=="view":
                     GLib.timeout_add(300,lambda:(self.narrow and self.center.grown!="view" and self.toggle_view_panel(),False)[1])
-                state=os.environ.get("LUMA_CALENDAR_STATE")
+                state=os.environ.get("SUNO_CALENDAR_STATE")
                 if state=="new":
                     self.new_event(start=600)
                 elif state=="parsed":
                     self.new_event(text=quick)
-                if self.draft and os.environ.get("LUMA_CALENDAR_INVITEE_QUERY"):
-                    self.invite_field.set_text(os.environ["LUMA_CALENDAR_INVITEE_QUERY"])
+                if self.draft and os.environ.get("SUNO_CALENDAR_INVITEE_QUERY"):
+                    self.invite_field.set_text(os.environ["SUNO_CALENDAR_INVITEE_QUERY"])
         if self._pending_event:
             uid, day = self._pending_event
             self._pending_event = None
@@ -784,7 +784,7 @@ class CalendarWindow(AppWindow):
             visible = source.uid not in self.hidden_sources
             control = Gtk.Button(accessible_role=Gtk.AccessibleRole.MENU_ITEM)
             control.set_name(f"calendar.filter.{source.uid}")
-            control.add_css_class("lumaui-menu-item")
+            control.add_css_class("SunoUI-menu-item")
             row = Gtk.Box(spacing=10, valign=Gtk.Align.CENTER)
             row.append(Mark(hue=self._source_hue(source)))
             name = label(source.name)
@@ -805,7 +805,7 @@ class CalendarWindow(AppWindow):
             contents.append(control)
         add = Gtk.Button(accessible_role=Gtk.AccessibleRole.MENU_ITEM)
         add.set_name("calendar.add")
-        add.add_css_class("lumaui-menu-item")
+        add.add_css_class("SunoUI-menu-item")
         add_row = Gtk.Box(spacing=10)
         add_row.append(icons.image("plus"))
         add_row.append(label("Add a calendar"))
@@ -1476,8 +1476,8 @@ class CalendarWindow(AppWindow):
         if self.fixture:
             self.toast(f"Opening {name} in Contacts")
             return
-        from luma_appkit.application_directory import launch
-        launch('org.projectluma.Contacts.desktop', callback=lambda ok, error:
+        from Suno_appkit.application_directory import launch
+        launch('org.projectSuno.Contacts.desktop', callback=lambda ok, error:
                self.toast(error or 'Contacts could not open', kind='warning') if not ok else None)
 
     def directions(self,location):

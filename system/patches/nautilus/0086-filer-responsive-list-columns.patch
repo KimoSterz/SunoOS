@@ -41,7 +41,7 @@ index 7887361..1064e14 100644
 --- a/src/nautilus-list-view.c
 +++ b/src/nautilus-list-view.c
 @@ -44,6 +44,7 @@ struct _NautilusListView
-     LumaCountBadge *search_heading_count;
+     SunoCountBadge *search_heading_count;
      NautilusViewModel *observed_model;
      gulong items_changed_id;
 +    gboolean phone_layout;
@@ -49,7 +49,7 @@ index 7887361..1064e14 100644
      NautilusSearchDirectory *search_directory;
  
 @@ -183,6 +184,10 @@ apply_columns_settings (NautilusListView  *self,
-     /* Luma keeps starring in actions, never as a list column.
+     /* Suno keeps starring in actions, never as a list column.
       * Discard stale per-folder column preferences as well. */
      g_hash_table_remove (visible_columns_hash, "starred");
 +    if (self->phone_layout && self->search_directory == NULL)

@@ -4,14 +4,14 @@ import imaplib
 import smtplib
 from unittest.mock import Mock, patch
 
-from charlie_luma.engine import (
+from charlie_Suno.engine import (
     AuthenticationFailure,
     ImapSmtpTransport,
     NetworkFailureKind,
     network_failure_kind,
 )
-from charlie_luma.fixtures import DEMO_ACCOUNT
-from charlie_luma.model import ServerConfig
+from charlie_Suno.fixtures import DEMO_ACCOUNT
+from charlie_Suno.model import ServerConfig
 
 
 class _ListClient:
@@ -55,7 +55,7 @@ class EngineTests(unittest.TestCase):
     def test_imap_login_wraps_rejection_but_not_connection_abort(self):
         transport = ImapSmtpTransport(lambda _account, _kind: "app-password")
         config = ServerConfig("imap.example.test")
-        with patch("charlie_luma.engine.imaplib.IMAP4_SSL") as client_type:
+        with patch("charlie_Suno.engine.imaplib.IMAP4_SSL") as client_type:
             client_type.return_value.login.side_effect = imaplib.IMAP4.error("rejected")
             with self.assertRaises(AuthenticationFailure):
                 transport._imap(DEMO_ACCOUNT, config)
@@ -67,7 +67,7 @@ class EngineTests(unittest.TestCase):
     def test_temporary_login_no_is_not_reported_as_bad_credentials(self):
         transport = ImapSmtpTransport(lambda _account, _kind: "app-password")
         config = ServerConfig("imap.example.test")
-        with patch("charlie_luma.engine.imaplib.IMAP4_SSL") as client_type:
+        with patch("charlie_Suno.engine.imaplib.IMAP4_SSL") as client_type:
             client_type.return_value.login.side_effect = imaplib.IMAP4.error(
                 "[UNAVAILABLE] Temporary System Error"
             )
@@ -88,7 +88,7 @@ class EngineTests(unittest.TestCase):
 
         transport = ImapSmtpTransport(lambda _account, _kind: None, token)
         config = ServerConfig("imap.example.test")
-        with patch("charlie_luma.engine.imaplib.IMAP4_SSL") as client_type:
+        with patch("charlie_Suno.engine.imaplib.IMAP4_SSL") as client_type:
             stale, fresh = client_type.side_effect = (Mock(), Mock())
             stale.authenticate.side_effect = imaplib.IMAP4.error(
                 "[AUTHENTICATIONFAILED] Invalid credentials"

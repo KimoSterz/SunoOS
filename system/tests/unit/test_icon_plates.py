@@ -1,14 +1,14 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Circular application icons get Luma's rounded-square silhouette."""
+"""Circular application icons get Suno's rounded-square silhouette."""
 import math
 import pathlib
 import sys
 import unittest
 
-sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[2] / "src/luma-installer"))
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[2] / "src/Suno-installer"))
 
-from luma_installer import icon_plates  # noqa: E402
-from luma_installer.backends import _best_icon_path  # noqa: E402
+from Suno_installer import icon_plates  # noqa: E402
+from Suno_installer.backends import _best_icon_path  # noqa: E402
 
 
 def disc(size, colour_at, glyph=None):
@@ -41,8 +41,8 @@ class IconPlates(unittest.TestCase):
         noisy = disc(size, lambda y: ((y * 37) % 255, (y * 91) % 255, (y * 13) % 255))
         self.assertIsNone(icon_plates.gradient_rows(noisy, size, size, size * 4, 4))
 
-    def test_luma_applications_are_never_plated(self):
-        self.assertTrue("org.projectluma.Leaf".startswith(icon_plates.LUMA_ICON_PREFIXES))
+    def test_Suno_applications_are_never_plated(self):
+        self.assertTrue("org.projectSuno.Leaf".startswith(icon_plates.SUNO_ICON_PREFIXES))
 
     def test_the_sharpest_copy_of_an_icon_is_chosen(self):
         self.assertEqual(_best_icon_path(["/i/hicolor/64x64/apps/a.png", "/i/hicolor/512x512/apps/a.png"]),

@@ -91,7 +91,7 @@ systemctl --user --failed --no-legend >"$output_dir/user-failures.txt"
 # message payload down to severity/category markers; never persist app text.
 # Shell is a direct greetd child on the physical diagnostic lane, so its
 # records are in the system journal rather than a systemd --user unit journal.
-# The luma account has journal read access on the candidate.
+# The Suno account has journal read access on the candidate.
 journalctl --since "$started" --no-pager -o json \
   | jq -r 'select(._COMM == "gnome-shell" or .SYSLOG_IDENTIFIER == "gnome-shell") |
       [."__REALTIME_TIMESTAMP", (.PRIORITY // ""),

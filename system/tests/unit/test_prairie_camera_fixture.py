@@ -79,10 +79,10 @@ class CameraFixtureTests(unittest.TestCase):
         self.assertEqual(fixture.state.zoom, 1)
 
     def test_invalid_environment_never_falls_back_to_real_devices(self):
-        with patch.dict(os.environ, {"LUMA_CAMERA_FIXTURE": ""}):
+        with patch.dict(os.environ, {"SUNO_CAMERA_FIXTURE": ""}):
             with self.assertRaises(ValueError):
                 fixture_from_environment()
-        with patch.dict(os.environ, {"LUMA_CAMERA_FIXTURE": "/does/not/exist"}):
+        with patch.dict(os.environ, {"SUNO_CAMERA_FIXTURE": "/does/not/exist"}):
             with self.assertRaises(FileNotFoundError):
                 fixture_from_environment()
         for overrides in ({"cam": "unknown"}, {"mode": "unknown"}, {"timer": 5}, {"zoom": 5}, {"ev": 3}, {"iso": "10"}, {"bogus": True}):

@@ -27,7 +27,7 @@ for argument in "$@"; do
   esac
 done
 if [ "$signing" = 1 ]; then
-  [ "$DEPOT_TOOLS_CONTAINER" != luma-depot-tools ] || depot_die "signing requires a distinct DEPOT_TOOLS_CONTAINER"
+  [ "$DEPOT_TOOLS_CONTAINER" != Suno-depot-tools ] || depot_die "signing requires a distinct DEPOT_TOOLS_CONTAINER"
 fi
 depot_validate_build_architectures
 # Signing exports files and metadata without executing the target payload.
@@ -95,8 +95,8 @@ PYGUARD
   key_mount=(--volume "$DEPOT_KEYS:$DEPOT_KEYS")
   isolation=(--cap-drop ALL --network none)
   role=signer
-  custody_labels=(--label "org.projectluma.depot.control=$DEPOT_SIGNING_CONTROL_SHA256"
-                  --label "org.projectluma.depot.inputs=$DEPOT_SIGNING_INPUTS_SHA256")
+  custody_labels=(--label "org.projectSuno.depot.control=$DEPOT_SIGNING_CONTROL_SHA256"
+                  --label "org.projectSuno.depot.inputs=$DEPOT_SIGNING_INPUTS_SHA256")
 fi
 case "$(realpath -m "$DEPOT_KEYS")" in
   "$real_root"|"$real_root"/*) depot_die "signing keys cannot be inside the mounted build tree" ;;
@@ -105,8 +105,8 @@ esac
 podman run --detach --init "${isolation[@]}" --security-opt label=disable \
   --cpus "${DEPOT_TOOLS_CPUS:-2}" --memory "${DEPOT_TOOLS_MEMORY:-4g}" \
   --memory-swap "${DEPOT_TOOLS_MEMORY_SWAP:-5g}" --pids-limit 2048 \
-  --cgroup-parent "${DEPOT_TOOLS_CGROUP_PARENT:-luma-os.slice}" --label "org.projectluma.depot.role=$role" "${custody_labels[@]}" \
-  --name "$DEPOT_TOOLS_CONTAINER" --hostname luma-depot-tools \
+  --cgroup-parent "${DEPOT_TOOLS_CGROUP_PARENT:-Suno-os.slice}" --label "org.projectSuno.depot.role=$role" "${custody_labels[@]}" \
+  --name "$DEPOT_TOOLS_CONTAINER" --hostname Suno-depot-tools \
   "${work_mount[@]}" \
   "${key_mount[@]}" \
   --env HOME=/root --env "TMPDIR=$DEPOT_ROOT/tmp" \

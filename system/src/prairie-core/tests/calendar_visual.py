@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """Capture the current v70 fixture on a private bus and disposable Xvfb display.
 
-Requires LUMA_CALENDAR_PRIVATE_BUS=1 with dbus-run-session. OUTPUT WIDTH HEIGHT
+Requires SUNO_CALENDAR_PRIVATE_BUS=1 with dbus-run-session. OUTPUT WIDTH HEIGHT
     (default1211x874); CALENDAR_VISUAL_STATE: month/week/flow/flow-full/day/event/date-menu/calendars/empty/error.
 No EDS access, real writes or cross-app launches.
 """
@@ -20,8 +20,8 @@ def main():
     require_private_bus()
     require_test_display()
     root = Path(__file__).resolve().parents[3]
-    os.environ["LUMA_CALENDAR_FIXTURE"] = str(root / "tests/fixtures/calendar-v70.json")
-    os.environ["LUMA_CALENDAR_STYLE_PATH"] = str(root / "src/prairie-core/style/calendar.css")
+    os.environ["SUNO_CALENDAR_FIXTURE"] = str(root / "tests/fixtures/calendar-v70.json")
+    os.environ["SUNO_CALENDAR_STYLE_PATH"] = str(root / "src/prairie-core/style/calendar.css")
     from prairie_apps import calendar as app
     from prairie_apps.calendar_data import CalendarSource
     from prairie_apps.calendar_window import CalendarWindow

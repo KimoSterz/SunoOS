@@ -1,0 +1,3 @@
+[D-BUS Service]
+Name=org.projectSuno.Charlie
+Exec=/usr/bin/org.projectSuno.Charlie --gapplication-service

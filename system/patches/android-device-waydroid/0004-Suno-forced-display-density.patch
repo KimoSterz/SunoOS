@@ -1,0 +1,56 @@
+diff --git a/configs/init.Suno.forced-density.rc b/configs/init.Suno.forced-density.rc
+new file mode 100644
+index 0000000..e6be77d
+--- /dev/null
++++ b/configs/init.Suno.forced-density.rc
+@@ -0,0 +1,7 @@
++# The host's presentation (persist.Suno.forced_density) becomes Android's
++# forced display density once the system is up.
++on property:sys.boot_completed=1
++    exec_background - system system -- /system/bin/Suno-forced-density
++
++on property:persist.Suno.forced_density=*
++    exec_background - system system -- /system/bin/Suno-forced-density
+diff --git a/configs/Suno-forced-density.sh b/configs/Suno-forced-density.sh
+new file mode 100755
+index 0000000..c9710ec
+--- /dev/null
++++ b/configs/Suno-forced-density.sh
+@@ -0,0 +1,21 @@
++#!/system/bin/sh
++# Applies persist.Suno.forced_density, which the host publishes for its
++# current presentation, as WindowManager's forced density. Android's boot
++# density (ro.sf.lcd_density) follows the presentation it booted into. Only an
++# override this script applied is replaced, so a display size chosen in
++# Android's own settings is kept.
++[ "$(getprop sys.boot_completed)" = 1 ] || exit 0
++target=$(getprop persist.Suno.forced_density)
++ours=$(getprop persist.Suno.density_override)
++physical=$(getprop ro.sf.lcd_density)
++current=$(wm density | sed -n 's/^Override density: //p')
++if [ -n "$current" ] && [ "$current" != "$ours" ]; then
++    exit 0
++fi
++if [ -z "$target" ] || [ "$target" = 0 ] || [ "$target" = "$physical" ]; then
++    [ -n "$current" ] && wm density reset
++    setprop persist.Suno.density_override 0
++elif [ "$target" != "$current" ]; then
++    wm density "$target"
++    setprop persist.Suno.density_override "$target"
++fi
+diff --git a/device.mk b/device.mk
+index 245d12c..7d225c4 100644
+--- a/device.mk
++++ b/device.mk
+@@ -62,6 +62,11 @@ PRODUCT_PACKAGES += \
+ PRODUCT_COPY_FILES += \
+     $(LOCAL_PATH)/configs/external_camera_config.xml:$(TARGET_COPY_OUT_VENDOR)/etc/external_camera_config.xml
+ 
++# Host presentation changes applied as Android's forced display density
++PRODUCT_COPY_FILES += \
++    $(LOCAL_PATH)/configs/Suno-forced-density.sh:$(TARGET_COPY_OUT_SYSTEM)/bin/Suno-forced-density \
++    $(LOCAL_PATH)/configs/init.Suno.forced-density.rc:$(TARGET_COPY_OUT_SYSTEM)/etc/init/Suno-forced-density.rc
++
+ # Display
+ PRODUCT_PACKAGES += \
+     android.hardware.graphics.allocator@2.0-impl \

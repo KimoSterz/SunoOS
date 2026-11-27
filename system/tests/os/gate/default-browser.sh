@@ -1,7 +1,7 @@
 #!/bin/bash
 # SPDX-License-Identifier: Apache-2.0
 #
-# Release gate checks: Viola (the viola-browser-stable image RPM) is Luma's
+# Release gate checks: Viola (the viola-browser-stable image RPM) is Suno's
 # built-in default web browser. Run as root inside a disposable VM installed
 # from the candidate image or from a nightly medium. Needs no display and no
 # network. Prints one JSON line per check ({"check", "result":
@@ -16,18 +16,18 @@
 # policy's XDG_DATA_DIRS and DCONF_PROFILE).
 #
 # Native-only deployments keep the hidden canonical MIME identity and visible
-# native alias. On Luma OS the immutable signed role instead makes the canonical
+# native alias. On Suno OS the immutable signed role instead makes the canonical
 # desktop the visible launcher, default dock favorite and GTK application ID.
 # Invalid ownership cannot silently fall back to the native profile.
 set -uo pipefail
 default_id=com.rhyme.viola.desktop
 launcher_id=viola-browser.desktop
-# Viola with the Luma native integration presents its windows as the native
+# Viola with the Suno native integration presents its windows as the native
 # host's application ID; the standalone engine window uses com.rhyme.viola.
-native_host=/usr/share/viola-browser/luma-host/integrated_window.py
-if [ -f "$native_host" ]; then wm_class=org.projectluma.Viola.NativeIntegration; else wm_class=com.rhyme.viola; fi
+native_host=/usr/share/viola-browser/Suno-host/integrated_window.py
+if [ -f "$native_host" ]; then wm_class=org.projectSuno.Viola.NativeIntegration; else wm_class=com.rhyme.viola; fi
 # A malformed immutable role is a failure, never a native fallback.
-if ! browser_role=$(python3 -c "from luma_installer.native_app_roles import required; print('signed' if required('com.rhyme.viola') else 'native')"); then
+if ! browser_role=$(python3 -c "from Suno_installer.native_app_roles import required; print('signed' if required('com.rhyme.viola') else 'native')"); then
   printf '%s\n' '{"check":"browser-ownership","result":"fail","detail":"invalid immutable browser role"}'
   exit 1
 fi
@@ -36,10 +36,10 @@ if [ "$browser_role" = signed ]; then
   wm_class=com.rhyme.viola
 fi
 
-user=luma-gate-browser
-chooser=luma-gate-browser-chose
+user=Suno-gate-browser
+chooser=Suno-gate-browser-chose
 failed=0
-work=$(mktemp -d /var/tmp/luma-gate-browser.XXXXXX)
+work=$(mktemp -d /var/tmp/Suno-gate-browser.XXXXXX)
 chmod 0755 "$work"
 
 emit() {
@@ -188,10 +188,10 @@ else emit window-matches-dock-launcher fail "window class $wm_class belongs to $
 # 4. Viola renders a page headless (DevTools: the page title only changes once
 #    the renderer has parsed the document).
 profile="$home/viola-gate-profile"
-token="luma-gate-rendered-$$"
+token="Suno-gate-rendered-$$"
 as_session "$user" timeout 90 viola-browser-stable --headless=new --disable-gpu --no-first-run \
   --user-data-dir="$profile" --remote-debugging-port=0 \
-  "data:text/html,<title>$token</title><p>Luma</p>" >"$work/viola-headless.log" 2>&1 &
+  "data:text/html,<title>$token</title><p>Suno</p>" >"$work/viola-headless.log" 2>&1 &
 viola_pid=$!
 rendered=
 for _ in $(seq 60); do
@@ -225,7 +225,7 @@ import json, os, select, socket, struct, sys, time
 runtime, out, wait_s = sys.argv[1], sys.argv[2], float(sys.argv[3])
 listeners = {}
 w = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-w.bind(os.path.join(runtime, "wayland-luma-gate")); w.listen(16); listeners[w] = "wayland"
+w.bind(os.path.join(runtime, "wayland-Suno-gate")); w.listen(16); listeners[w] = "wayland"
 x = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
 x.bind("\0/tmp/.X11-unix/X77"); x.listen(16); listeners[x] = "x11"
 open(os.path.join(runtime, "trap-ready"), "w").close()
@@ -262,7 +262,7 @@ url="https://gate.invalid/luma-gate-xdg-open-$$"
 (cd /tmp && runuser -u "$user" -- python3 "$work/display-trap.py" "$runtime" "$runtime/trap.jsonl" 60) &
 trap_pid=$!
 for _ in $(seq 50); do [ -e "$runtime/trap-ready" ] && break; sleep 0.1; done
-(cd /tmp && runuser -u "$user" -- env -i "${env_lines[@]}" WAYLAND_DISPLAY=wayland-luma-gate DISPLAY=:77 \
+(cd /tmp && runuser -u "$user" -- env -i "${env_lines[@]}" WAYLAND_DISPLAY=wayland-Suno-gate DISPLAY=:77 \
   timeout 30 xdg-open "$url") >"$work/xdg-open.log" 2>&1
 open_code=$?
 wait "$trap_pid"
@@ -295,12 +295,12 @@ useradd -m "$chooser" || emit personal-choice-kept fail "useradd $chooser failed
 chooser_home=$(getent passwd "$chooser" | cut -d: -f6)
 install -d -o "$chooser" -g "$chooser" "$chooser_home/.config" "$chooser_home/.local/share/applications"
 printf '[Desktop Entry]\nType=Application\nName=Other Browser\nExec=/usr/bin/true %%u\nMimeType=x-scheme-handler/http;x-scheme-handler/https;text/html;\n' \
-  >"$chooser_home/.local/share/applications/luma-gate-other-browser.desktop"
-printf '[Default Applications]\nx-scheme-handler/http=luma-gate-other-browser.desktop\nx-scheme-handler/https=luma-gate-other-browser.desktop\ntext/html=luma-gate-other-browser.desktop\n' \
+  >"$chooser_home/.local/share/applications/Suno-gate-other-browser.desktop"
+printf '[Default Applications]\nx-scheme-handler/http=Suno-gate-other-browser.desktop\nx-scheme-handler/https=Suno-gate-other-browser.desktop\ntext/html=Suno-gate-other-browser.desktop\n' \
   >"$chooser_home/.config/mimeapps.list"
 chown -R "$chooser:$chooser" "$chooser_home/.config" "$chooser_home/.local"
 out=$(as_session "$chooser" xdg-settings get default-web-browser 2>&1)
-if [ "$out" = luma-gate-other-browser.desktop ]; then emit personal-choice-kept pass "an account that chose another browser keeps it"
+if [ "$out" = Suno-gate-other-browser.desktop ]; then emit personal-choice-kept pass "an account that chose another browser keeps it"
 else emit personal-choice-kept fail "an account that chose another browser gets: $out"; fi
 
 exit "$failed"

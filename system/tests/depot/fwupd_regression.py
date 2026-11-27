@@ -7,7 +7,7 @@ itself. Regression for "g_mutex_clear() called on uninitialised or locked mutex"
 (libfwupd 2.1.7 finalizing a FwupdClient from a queued notification while the
 Depot window's main loop was busy drawing).
 
-  PYTHONPATH=src/luma-depot:src/luma-installer python3 tests/depot/fwupd_regression.py
+  PYTHONPATH=src/Suno-depot:src/Suno-installer python3 tests/depot/fwupd_regression.py
 """
 
 from __future__ import annotations
@@ -21,7 +21,7 @@ import time
 
 from gi.repository import Gio, GLib
 
-from luma_depot import system_updates as su
+from Suno_depot import system_updates as su
 
 FWUPD = "/usr/libexec/fwupd/fwupd"
 failures: list[str] = []
@@ -121,13 +121,13 @@ def main() -> int:
     # 2. The probe itself exits cleanly, never by a signal, many times over.
     signalled = []
     for _ in range(15):
-        run = subprocess.run([sys.executable, "-P", "-m", "luma_depot.firmware_probe", "list"],
+        run = subprocess.run([sys.executable, "-P", "-m", "Suno_depot.firmware_probe", "list"],
                              capture_output=True, text=True, timeout=120)
         if run.returncode != 0 or su._probe_result(run.stdout) is None:
             signalled.append(run.returncode)
     check("probe exits cleanly against a running fwupd (15 runs)", not signalled, f"{signalled}")
 
-    run = subprocess.run([sys.executable, "-P", "-m", "luma_depot.firmware_probe", "install", "no-such-device"],
+    run = subprocess.run([sys.executable, "-P", "-m", "Suno_depot.firmware_probe", "install", "no-such-device"],
                          capture_output=True, text=True, timeout=120)
     answer = su._probe_result(run.stdout) or {}
     check("install probe refuses a missing device calmly", run.returncode == 0 and answer.get("code") == "gone",

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
 #
-# Measure the Luma Emulator on this Mac and print a table.
+# Measure the Suno Emulator on this Mac and print a table.
 #
 # Every number this prints is observed here, now. Nothing is estimated, and a
 # step that does not run prints "not measured" rather than a plausible figure.
@@ -9,10 +9,10 @@
 set -uo pipefail
 
 repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
-emulator=${LUMA_EMULATOR_BIN:-$repo_root/build/emulator/luma-emulator}
-machine=${LUMA_EMULATOR_MEASURE_MACHINE:-measure}
-app=${LUMA_EMULATOR_MEASURE_APP:-notes}
-state="${LUMA_EMULATOR_STATE:-$HOME/Library/Application Support/Luma Emulator}"
+emulator=${SUNO_EMULATOR_BIN:-$repo_root/build/emulator/Suno-emulator}
+machine=${SUNO_EMULATOR_MEASURE_MACHINE:-measure}
+app=${SUNO_EMULATOR_MEASURE_APP:-notes}
+state="${SUNO_EMULATOR_STATE:-$HOME/Library/Application Support/Suno Emulator}"
 
 test -x "$emulator" || { printf 'error: build the emulator first\n' >&2; exit 1; }
 
@@ -72,17 +72,17 @@ record "no-change sync" "$(seconds_since "$start" "$finish")"
 # Whichever stylesheet this branch actually carries.
 css=""
 for candidate in \
-  "$repo_root/src/luma-platform/appkit/luma-appkit.css" \
+  "$repo_root/src/Suno-platform/appkit/Suno-appkit.css" \
   "$repo_root/src/prairie-core/style/prairie.css"
 do
   [ -w "$candidate" ] && { css=$candidate; break; }
 done
 if [ -n "$css" ]; then
-  cp "$css" "$css.luma-measure-backup"
-  printf '\n/* luma-emulator measurement */\n' >> "$css"
+  cp "$css" "$css.Suno-measure-backup"
+  printf '\n/* Suno-emulator measurement */\n' >> "$css"
   start=$(now); "$emulator" sync >/dev/null 2>&1; finish=$(now)
   record "sync after one CSS edit" "$(seconds_since "$start" "$finish")"
-  mv "$css.luma-measure-backup" "$css"
+  mv "$css.Suno-measure-backup" "$css"
   "$emulator" sync >/dev/null 2>&1
 else
   record "sync after one CSS edit" "not measured (no writable stylesheet in this checkout)"
@@ -94,7 +94,7 @@ start=$(now); "$emulator" start desktop --machine "$machine" --headless --wait 4
 record "warm start to ready" "$(seconds_since "$start" "$finish")"
 
 printf '\n== idle cost\n'
-pid=$(pgrep -f "LumaEmulatorHost --machine $machine" | head -1)
+pid=$(pgrep -f "SunoEmulatorHost --machine $machine" | head -1)
 if [ -n "$pid" ]; then
   sleep 10
   read -r cpu rss <<<"$(ps -o %cpu=,rss= -p "$pid" | tr -s ' ')"
@@ -115,7 +115,7 @@ else
 fi
 
 printf '\n== screenshot\n'
-shot=$(mktemp /tmp/luma-measure.XXXXXX.png)
+shot=$(mktemp /tmp/Suno-measure.XXXXXX.png)
 start=$(now); "$emulator" screenshot --output "$shot" >/dev/null 2>&1; status=$?; finish=$(now)
 if [ "$status" -eq 0 ]; then
   record "framebuffer screenshot" "$(seconds_since "$start" "$finish") ($(du -h "$shot" | awk '{print $1}'))"

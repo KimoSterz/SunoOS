@@ -2,7 +2,7 @@
 
 /*
  * Android installd normally labels newly-created application data through
- * libselinux.  The FP6 Luma prototype host deliberately boots without an
+ * libselinux.  The FP6 Suno prototype host deliberately boots without an
  * active SELinux filesystem, so no backing filesystem can store those labels
  * and stock installd rejects otherwise valid private container directories.
  *

@@ -15,7 +15,7 @@ spec.loader.exec_module(client)
 BODY = b'actual test ISO body\0'
 EXPECTED = {'bytes': len(BODY), 'sha256': hashlib.sha256(BODY).hexdigest()}
 TARGET = {'url': 'https://media.simplyluma.com/media/aarch64/nightly/luma-nightly-20261025.4.iso',
-          'filename': 'luma-nightly-20261025.4.iso'}
+          'filename': 'Suno-nightly-20261025.4.iso'}
 
 
 def profile():
@@ -23,9 +23,9 @@ def profile():
             'source_revision': 'a'*40, 'candidate': 'b'*64, 'prepared_sha256': 'c'*64,
             'aggregate_sha256': 'd'*64, 'iso': dict(EXPECTED), 'targets': [dict(TARGET),
                 {'url': 'https://media.simplyluma.com/media/nightly/luma-nightly-20261025.4-aarch64.iso',
-                 'filename': 'luma-nightly-20261025.4-aarch64.iso'},
+                 'filename': 'Suno-nightly-20261025.4-aarch64.iso'},
                 {'url': 'https://media.simplyluma.com/media/nightly/luma-nightly-20261025.4.iso',
-                 'filename': 'luma-nightly-20261025.4.iso'}]}
+                 'filename': 'Suno-nightly-20261025.4.iso'}]}
 
 
 class Response(io.BytesIO):
@@ -68,7 +68,7 @@ class Tests(unittest.TestCase):
         spec = importlib.util.spec_from_file_location('aggregate', PATH.parent/'lib/media_aggregate.py')
         aggregate = importlib.util.module_from_spec(spec); spec.loader.exec_module(aggregate)
         old = {'build_id': '20261021.1', 'arch': 'x86_64', 'channel': 'nightly',
-               'file': 'luma-nightly-20261021.1.iso', 'url': client.ORIGIN+'/media/nightly/luma-nightly-20261021.1.iso',
+               'file': 'Suno-nightly-20261021.1.iso', 'url': client.ORIGIN+'/media/nightly/Suno-nightly-20261021.1.iso',
                'date': '2026-10-21T00:00:00Z', 'public': True}
         new = {'build_id': '20261025.4', 'arch': 'aarch64', 'channel': 'nightly',
                'file': TARGET['filename'], 'url': TARGET['url'],

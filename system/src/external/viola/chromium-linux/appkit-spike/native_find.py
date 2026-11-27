@@ -26,9 +26,9 @@ from urllib.parse import urlsplit
 
 from gi.repository import Gdk, GLib, Gtk
 from browser_services import HostChannelUnavailable
-from luma_appkit import BarAction, BarSearch
-from luma_appkit.action_center import make_control
-from luma_appkit import lumaui_tokens
+from Suno_appkit import BarAction, BarSearch
+from Suno_appkit.action_center import make_control
+from Suno_appkit import SunoUI_tokens
 
 # Matches the engine overlay's own find field: one query per pause in typing.
 QUERY_DELAY_MS = 120
@@ -281,7 +281,7 @@ class NativeFind:
 
 
 class BarFindRow:
-    """The find row in Viola's page bar (the LumaUI ActionCenter's entry row).
+    """The find row in Viola's page bar (the SunoUI ActionCenter's entry row).
 
     The bar keeps its size, place and material; its row becomes the field
     (search glyph, query, count at its end), Previous, Next and ✕. On a
@@ -307,7 +307,7 @@ class BarFindRow:
 
     @property
     def tv(self):
-        """TV posture: the bar is LumaUI's bar on demand (TV-HANDOFF.md, "Find on page on TV")."""
+        """TV posture: the bar is SunoUI's bar on demand (TV-HANDOFF.md, "Find on page on TV")."""
         return bool(getattr(self.center, 'tv_demand', False))
 
     # ── the view contract ──────────────────────────────────────────────────
@@ -442,11 +442,11 @@ class BarFindRow:
         close.update_property([Gtk.AccessibleProperty.LABEL], ['Close find'])
         if self.tv:
             # On a TV the bar's divider stands before ✕; the keyboard's action key reads Find.
-            from luma_appkit.action_center import RULE, make_control as control
+            from Suno_appkit.action_center import RULE, make_control as control
             self.rule = control(RULE)
             self.rule.insert_before(row, close)
             if self.field is not None:
-                from luma_appkit.tv_keyboard import set_keyboard_action, watch_tv_keyboard
+                from Suno_appkit.tv_keyboard import set_keyboard_action, watch_tv_keyboard
                 set_keyboard_action(self.field, 'Find')
                 self.stop_keyboard = watch_tv_keyboard(self.keyboard_changed)
             self.center.tv_refresh()
@@ -500,8 +500,8 @@ class BarFindRow:
         width = -1
         if not phone and self.width:
             host = self.center.get_parent()
-            inset = (2 * lumaui_tokens.TV['layout']['safe_x'] * self.center._tv.unit() if self.tv
-                     else lumaui_tokens.ACTION_CENTER['bar_inset'])
+            inset = (2 * SunoUI_tokens.TV['layout']['safe_x'] * self.center._tv.unit() if self.tv
+                     else SunoUI_tokens.ACTION_CENTER['bar_inset'])
             room = host.get_width() - round(inset) if host else 0
             width = min(self.width, room) if room > 0 else self.width
         if self.center.get_size_request()[0] != width:

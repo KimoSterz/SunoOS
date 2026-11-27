@@ -1,8 +1,8 @@
 {
-  "org.projectluma.Write": "Write",
-  "org.projectluma.Grid": "Grid",
-  "org.projectluma.Stage": "Stage",
-  "org.projectluma.Session": "Session",
-  "org.projectluma.Reel": "Reel",
+  "org.projectSuno.Write": "Write",
+  "org.projectSuno.Grid": "Grid",
+  "org.projectSuno.Stage": "Stage",
+  "org.projectSuno.Session": "Session",
+  "org.projectSuno.Reel": "Reel",
   "com.rhyme.viola": "Viola"
 }

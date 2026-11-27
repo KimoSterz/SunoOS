@@ -599,13 +599,13 @@ mount_boot_partition() {
 	local partition
 	local mount_opts
 
-	# Luma OSTree: /boot is the root filesystem's /boot, which the OSTree
+	# Suno OSTree: /boot is the root filesystem's /boot, which the OSTree
 	# system generator bind-mounts after switch_root. ostree writes its boot
 	# entries and greenboot its grubenv there, and the OSTree boot resolver
-	# (/usr/lib/luma/ostree-boot.sh) reads them there. The boot partition
-	# (LumaBoot) holds only the device kit; luma-device-layer mounts it itself.
-	if [ "$1" = /sysroot/boot ] && [ -e /etc/luma-fp6-ostree ]; then
-		echo "Luma OSTree: /boot stays on the root filesystem; not mounting the boot partition"
+	# (/usr/lib/Suno/ostree-boot.sh) reads them there. The boot partition
+	# (SunoBoot) holds only the device kit; Suno-device-layer mounts it itself.
+	if [ "$1" = /sysroot/boot ] && [ -e /etc/Suno-fp6-ostree ]; then
+		echo "Suno OSTree: /boot stays on the root filesystem; not mounting the boot partition"
 		return 0
 	fi
 
@@ -719,16 +719,16 @@ has_unallocated_space() {
 		head -n1 | grep -qi "free space"
 }
 
-# Luma FP6 OSTree mode is declared by the recipient-built initramfs.
+# Suno FP6 OSTree mode is declared by the recipient-built initramfs.
 # Preparation is upstream-owned; a bad deployment must not boot mutable ext4.
 # Manifest hash is supplied by the recipient-built immutable initramfs.
 # The store is shared OSTree /var, never part of the public deployment /usr.
 # The expected set is the device's firmware.manifest (devices/<vendor>/<codename>):
 # its SHA-256 is the anchor, and its header row declares the file count.
-# /etc/luma-firmware-manifest.sha256 is written from device.toml by
+# /etc/Suno-firmware-manifest.sha256 is written from device.toml by
 # scripts/mobile/common/firmware-store-anchor.py; Alpha 1 FP6 ramdisks carry
-# /etc/luma-fp6-firmware-manifest.sha256 instead.
-luma_firmware_directory_safe() {
+# /etc/Suno-fp6-firmware-manifest.sha256 instead.
+Suno_firmware_directory_safe() {
 	local facts owner mode
 	[ -d "$1" ] && [ ! -L "$1" ] || return 1
 	facts="$(stat -c '%u:%g:%a' "$1")" || return 1
@@ -740,28 +740,28 @@ luma_firmware_directory_safe() {
 	[ -x "$1" ] || return 1
 }
 
-luma_verify_firmware_store() {
+Suno_verify_firmware_store() {
 	local dir store manifest expected actual tab kind mode digest relative target rows files header declared root anchor
 	root="${1:-/sysroot}"; anchor="$2"
 	if [ -z "$anchor" ]; then
-		anchor=/etc/luma-fp6-firmware-manifest.sha256
-		if [ -e /etc/luma-firmware-manifest.sha256 ] || [ -L /etc/luma-firmware-manifest.sha256 ]; then
-			anchor=/etc/luma-firmware-manifest.sha256
+		anchor=/etc/Suno-fp6-firmware-manifest.sha256
+		if [ -e /etc/Suno-firmware-manifest.sha256 ] || [ -L /etc/Suno-firmware-manifest.sha256 ]; then
+			anchor=/etc/Suno-firmware-manifest.sha256
 		fi
 	fi
 	case "$root" in /|/sysroot) ;; *) return 1 ;; esac
 	[ "$root" != / ] || root=""
-	for dir in "${root:-/}" "$root/var" "$root/var/lib" "$root/var/lib/luma" "$root/var/lib/luma/device-firmware"; do
-		luma_firmware_directory_safe "$dir" || return 1
+	for dir in "${root:-/}" "$root/var" "$root/var/lib" "$root/var/lib/Suno" "$root/var/lib/Suno/device-firmware"; do
+		Suno_firmware_directory_safe "$dir" || return 1
 	done
 	dir="$(dirname "$anchor")" || return 1
     while :; do
-        luma_firmware_directory_safe "$dir" || return 1
+        Suno_firmware_directory_safe "$dir" || return 1
         [ "$dir" != / ] || break
         dir="$(dirname "$dir")" || return 1
     done
-	store="$root/var/lib/luma/device-firmware"
-	manifest="$store/luma-firmware.manifest"
+	store="$root/var/lib/Suno/device-firmware"
+	manifest="$store/Suno-firmware.manifest"
 	[ -f "$manifest" ] && [ ! -L "$manifest" ] || return 1
 	[ "$(stat -c '%u:%g:%a:%h' "$manifest")" = '0:0:644:1' ] || return 1
 	[ -f "$anchor" ] && [ ! -L "$anchor" ] || return 1
@@ -806,8 +806,8 @@ luma_verify_firmware_store() {
 	[ "$actual" -eq "$((rows + 1))" ] || return 1
 }
 
-luma_prepare_ostree_root() {
-	[ -e /etc/luma-fp6-ostree ] || return 0
+Suno_prepare_ostree_root() {
+	[ -e /etc/Suno-fp6-ostree ] || return 0
 	local cmdline suffix word count
 	cmdline="$(cat /proc/cmdline)" || return 1
 	count=0
@@ -829,15 +829,15 @@ luma_prepare_ostree_root() {
 	: > /run/ostree/initramfs-mount-var || return 1
 	/usr/lib/ostree/ostree-prepare-root /sysroot "$cmdline" || return 1
 	[ -w /sys/module/firmware_class/parameters/path ] || return 1
-	if [ -e /sysroot/var/lib/luma/device-firmware ] || [ -L /sysroot/var/lib/luma/device-firmware ]; then
+	if [ -e /sysroot/var/lib/Suno/device-firmware ] || [ -L /sysroot/var/lib/Suno/device-firmware ]; then
 		# Alpha images: recipient-local firmware outside the deployment tree.
 		# Both namespaces expose the same /var path before and after switch_root.
-		luma_verify_firmware_store || return 1
-		mkdir -p /var/lib/luma/device-firmware || return 1
-		mount --bind /sysroot/var/lib/luma/device-firmware /var/lib/luma/device-firmware || return 1
-		printf '%s' /var/lib/luma/device-firmware > /sys/module/firmware_class/parameters/path || return 1
+		Suno_verify_firmware_store || return 1
+		mkdir -p /var/lib/Suno/device-firmware || return 1
+		mount --bind /sysroot/var/lib/Suno/device-firmware /var/lib/Suno/device-firmware || return 1
+		printf '%s' /var/lib/Suno/device-firmware > /sys/module/firmware_class/parameters/path || return 1
 	else
-		# Shared ARM image: luma-fp6-firmware in the deployment's
+		# Shared ARM image: Suno-fp6-firmware in the deployment's
 		# /usr/lib/firmware. This path serves loads until switch_root; it does
 		# not exist on the real root, so later loads use /usr/lib/firmware.
 		printf '%s' /sysroot/usr/lib/firmware > /sys/module/firmware_class/parameters/path || return 1
@@ -851,8 +851,8 @@ luma_prepare_ostree_root() {
 mount_root_partition() {
 	# Don't mount root if it is already mounted
 	if mountpoint -q /sysroot; then
-		if ! luma_prepare_ostree_root; then
-			splash_set_error "Luma OSTree deployment preparation failed"
+		if ! Suno_prepare_ostree_root; then
+			splash_set_error "Suno OSTree deployment preparation failed"
 			fail_halt_boot
 			return 1
 		fi
@@ -900,8 +900,8 @@ mount_root_partition() {
 		mount --bind /stowaway/.stowaways/pmos/ /sysroot
 	fi
 
-	if ! luma_prepare_ostree_root; then
-		splash_set_error "Luma OSTree deployment preparation failed"
+	if ! Suno_prepare_ostree_root; then
+		splash_set_error "Suno OSTree deployment preparation failed"
 		fail_halt_boot
 		return 1
 	fi

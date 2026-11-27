@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-// LumaIconMask (0387): the corner is cut at the actor's corner, in the actor's
+// SunoIconMask (0387): the corner is cut at the actor's corner, in the actor's
 // pixels, whatever the offscreen texture's enlargement. The texture is the
 // paint volume, which Clutter grows beyond the actor; a mask measured in
 // texture coordinates cut a larger corner outside the icon.
@@ -26,7 +26,7 @@ const declarations = source.match(/const ICON_MASK_DECLARATIONS = `([^`]*)`/)?.[
 for (const line of [
     'vec2 point = cogl_tex_coord_in[0].st * mask_extent + mask_origin;',
     'float r = radius * min(mask_size.x, mask_size.y);',
-    'float cover = luma_icon_cover(point, mask_size, r, squircle);',
+    'float cover = Suno_icon_cover(point, mask_size, r, squircle);',
     'if (lit > 0.5) {',
     'cogl_color_out *= cover;',
 ])
@@ -40,10 +40,10 @@ for (const line of [
     'return (1.0 - smoothstep(r - 0.5, r + 0.5, corner)) * clamp(min(edge.x, edge.y) + 0.5, 0.0, 1.0);',
 ])
     assert(declarations.includes(line), `ICON_MASK_DECLARATIONS has "${line}"`);
-assert(/class LumaIconMask[\s\S]*?vfunc_paint_target[\s\S]*?setActorMapping\(this, 'mask'\)/.test(source),
-    'LumaIconMask maps its texture to actor pixels before painting');
-assert(/class LumaRoundedClip[\s\S]*?setActorMapping\(this, 'clip'\)/.test(source),
-    'LumaRoundedClip shares the mapping');
+assert(/class SunoIconMask[\s\S]*?vfunc_paint_target[\s\S]*?setActorMapping\(this, 'mask'\)/.test(source),
+    'SunoIconMask maps its texture to actor pixels before painting');
+assert(/class SunoRoundedClip[\s\S]*?setActorMapping\(this, 'clip'\)/.test(source),
+    'SunoRoundedClip shares the mapping');
 
 // setActorMapping, run against a stand-in effect.
 const start = source.indexOf('function setActorMapping(effect, prefix) {');
@@ -79,7 +79,7 @@ const smoothstep = (a, b, x) => {
     const t = Math.min(1, Math.max(0, (x - a) / (b - a)));
     return t * t * (3 - 2 * t);
 };
-// The fragment code (luma_icon_cover), one axis pair at a time.
+// The fragment code (Suno_icon_cover), one axis pair at a time.
 function coverage(u, radius, extent, size, origin, squircle = 0) {
     const point = u.map((v, i) => v * extent[i] + origin[i]);
     const r = radius * Math.min(size[0], size[1]);

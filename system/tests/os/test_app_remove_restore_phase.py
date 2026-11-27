@@ -92,7 +92,7 @@ class RemovalReadabilityPhaseTests(unittest.TestCase):
         self.module['os'].chown = lambda *args: calls.append(('chown', args))
         def command(*args):
             calls.append(('command', args))
-            return '{"app/org.projectluma.Leaf/x86_64/beta":{"commit":"real-head","origin":"luma"}}'
+            return '{"app/org.projectSuno.Leaf/x86_64/beta":{"commit":"real-head","origin":"Suno"}}'
         self.module['command'] = command
         result = self.module['ordinary_refs'](self.nobody, True)
         self.assertEqual(calls[0], ('chown', ('/var/tmp/owned-test-home', 65534, 65534)))
@@ -101,7 +101,7 @@ class RemovalReadabilityPhaseTests(unittest.TestCase):
         self.assertIn('HOME=/var/tmp/owned-test-home', argv)
         self.assertIn('assert os.geteuid()==65534 and os.geteuid()!=0', argv[-1])
         self.assertIn('Flatpak.Installation.new_system(None)', argv[-1])
-        self.assertEqual(result['app/org.projectluma.Leaf/x86_64/beta']['origin'], 'luma')
+        self.assertEqual(result['app/org.projectSuno.Leaf/x86_64/beta']['origin'], 'Suno')
 
     def test_query_failure_does_not_fall_back_to_root(self):
         self.module['tempfile'].TemporaryDirectory = lambda **kwargs: __import__('contextlib').nullcontext('/var/tmp/owned-test-home')
@@ -118,7 +118,7 @@ class RemovalReadabilityPhaseTests(unittest.TestCase):
     def test_fresh_caller_explicit_phase_and_exact_ref_equality_remain(self):
         source = SCRIPT.read_text()
         gate = (ROOT / 'scripts/os/gate.sh').read_text()
-        call = 'python3 -B /var/tmp/luma-app-remove-restore.py --pre-account'
+        call = 'python3 -B /var/tmp/Suno-app-remove-restore.py --pre-account'
         self.assertEqual(gate.count(call), 1)
         phase = gate.split('if [ "$stage" = fresh ]; then', 1)[1].split('\n  fi', 1)[0]
         self.assertIn(call, phase)
@@ -138,7 +138,7 @@ class SignedBaselineIdentityTests(unittest.TestCase):
             result = expected_identities({'bundles': rows})
             self.assertEqual(len(result), count)
             self.assertEqual(result[rows[-1]['ref']],
-                             {'commit': rows[-1]['commit'], 'origin': 'luma'})
+                             {'commit': rows[-1]['commit'], 'origin': 'Suno'})
 
     def test_duplicate_signed_refs_are_rejected(self):
         row = {'ref': 'app/org.example.App/aarch64/beta', 'commit': 'a'*64}

@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Charlie
+Comment=Checks mail while Charlie is closed
+Exec=org.projectSuno.Charlie --agent --autostart
+Icon=org.projectSuno.Charlie
+NoDisplay=true
+X-GNOME-Autostart-enabled=true
+X-GNOME-AutoRestart=false
+X-Suno-Background-Agent=org.projectSuno.Charlie.Agent

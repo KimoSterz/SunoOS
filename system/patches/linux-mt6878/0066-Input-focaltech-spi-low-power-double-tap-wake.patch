@@ -309,7 +309,7 @@ System sleep arms the touchscreen IRQ only when wakeup is enabled.
 @@ -0,0 +1,18 @@
 +What:           /sys/bus/spi/devices/.../wake_gesture
 +Date:           October 2026
-+Contact:        Luma device maintainers
++Contact:        Suno device maintainers
 +Description:
 +                Boolean controller low-power gesture mode. Root display-power
 +                policy writes 1 only while the screen is blank, and 0 on unblank
@@ -321,7 +321,7 @@ System sleep arms the touchscreen IRQ only when wakeup is enabled.
 +
 +What:           /sys/bus/spi/devices/.../wake_gesture_count
 +Date:           October 2026
-+Contact:        Luma device maintainers
++Contact:        Suno device maintainers
 +Description:
 +                Read-only count of recognized double-tap wake reports since
 +                driver probe. Reading this does not query the controller.

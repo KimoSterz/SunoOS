@@ -1,13 +1,13 @@
 {
-  "_source": "Simulator v71 luma-next-71.html lines1484,1494-1508,4760: chart primary tracks current accent hue, secondary fixed violet; rounded resource plots and cores; main content retains30px horizontal padding at phone widths.",
-  "lumaui": {
+  "_source": "Simulator v71 Suno-next-71.html lines1484,1494-1508,4760: chart primary tracks current accent hue, secondary fixed violet; rounded resource plots and cores; main content retains30px horizontal padding at phone widths.",
+  "SunoUI": {
     "colors": {
       "light": {
-        "monitor_chart_primary": "oklch(from @luma_accent 0.72 0.13 h)",
+        "monitor_chart_primary": "oklch(from @Suno_accent 0.72 0.13 h)",
         "monitor_chart_secondary": "oklch(0.72 0.11 300)"
       },
       "dark": {
-        "monitor_chart_primary": "oklch(from @luma_accent 0.72 0.13 h)",
+        "monitor_chart_primary": "oklch(from @Suno_accent 0.72 0.13 h)",
         "monitor_chart_secondary": "oklch(0.72 0.11 300)"
       }
     },

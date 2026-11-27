@@ -3,8 +3,8 @@
 #
 # Depot's firmware section against a real fwupd daemon, in a disposable Fedora
 # container: fwupd running, stopped, paused and restarting must never close
-# Depot. With --depot-rpms DIR (the luma-application-installer RPM under test and
-# a luma-developer-platform RPM), the packaged Depot window is also opened on the
+# Depot. With --depot-rpms DIR (the Suno-application-installer RPM under test and
+# a Suno-developer-platform RPM), the packaged Depot window is also opened on the
 # Updates view under Xvfb while fwupd runs, and must still be open 45 seconds later.
 #
 #   tests/depot/fwupd-container.sh [--depot-rpms DIR] [--keep]
@@ -15,7 +15,7 @@ set -euo pipefail
 
 repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 image=${FWUPD_TEST_IMAGE:-registry.fedoraproject.org/fedora:44}
-name=luma-depot-fwupd-test-$$
+name=Suno-depot-fwupd-test-$$
 rpms=""
 keep=0
 while [ $# -gt 0 ]; do
@@ -45,20 +45,20 @@ podman exec "$name" bash -euo pipefail -c '
   dbus-daemon --system --fork
 '
 
-podman exec --workdir /depot --env PYTHONPATH=/depot/src/luma-depot:/depot/src/luma-installer "$name" \
+podman exec --workdir /depot --env PYTHONPATH=/depot/src/Suno-depot:/depot/src/Suno-installer "$name" \
   python3 -W ignore tests/fwupd_regression.py
 
 if [ -n "$rpms" ]; then
   podman exec --workdir /tmp "$name" bash -euo pipefail -c '
-    rpm -i --nodeps --noscripts /depot/rpms/luma-developer-platform-*.rpm \
-      /depot/rpms/luma-application-installer-*.noarch.rpm >/dev/null
-    rpm -q luma-application-installer | sed "s/^/INFO /"
+    rpm -i --nodeps --noscripts /depot/rpms/Suno-developer-platform-*.rpm \
+      /depot/rpms/Suno-application-installer-*.noarch.rpm >/dev/null
+    rpm -q Suno-application-installer | sed "s/^/INFO /"
     /usr/libexec/fwupd/fwupd >/tmp/fwupd.log 2>&1 &
     for _ in $(seq 60); do fwupdmgr get-devices >/dev/null 2>&1 && break; sleep 1; done
     mkdir -p -m 0700 /tmp/runtime
     status=0
     XDG_RUNTIME_DIR=/tmp/runtime timeout 45 xvfb-run -a dbus-run-session -- \
-      luma-depot --view updates \
+      Suno-depot --view updates \
       >/tmp/depot.log 2>&1 || status=$?
     if [ "$status" = 124 ]; then
       echo "PASS Depot window on the Updates view still open after 45 seconds with fwupd running"

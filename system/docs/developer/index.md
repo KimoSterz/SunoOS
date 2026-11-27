@@ -1,42 +1,42 @@
 ---
-title: Build for Luma
-summary: What building a Luma app means, the three Depot tiers, how publishing works, and where to start.
+title: Build for Suno
+summary: What building a Suno app means, the three Depot tiers, how publishing works, and where to start.
 order: 1
 section: Overview
 ---
 
-# Build for Luma
+# Build for Suno
 
-Luma is a free, open-source operating system for desktops, tablets and phones.
+Suno is a free, open-source operating system for desktops, tablets and phones.
 Its apps are ordinary Linux applications: GTK 4 as the engine, Flatpak for
 packaging and sandboxing, portals for access to files and devices, and
-AppStream for store metadata. On that foundation Luma adds **LumaUI**, its own
-app toolkit, which draws the Luma window, islands and every component and gives
+AppStream for store metadata. On that foundation Suno adds **SunoUI**, its own
+app toolkit, which draws the Suno window, islands and every component and gives
 apps commands, design tokens and one adaptive layout from phone to desktop. It
-also adds Depot, Luma’s app store.
+also adds Depot, Suno’s app store.
 
 These docs cover everything from your first window to your first release.
 
-> **Maturity.** Luma is in alpha, and the Luma Developer Platform is a **0.x
+> **Maturity.** Suno is in alpha, and the Suno Developer Platform is a **0.x
 > preview**. APIs can change between releases and are not yet ABI stable.
 > Where something is not available yet, these docs say so and describe what
 > exists today. See the [changelog](CHANGELOG.md) for what changed in the docs.
 
-## What building for Luma means
+## What building for Suno means
 
-A Luma app is:
+A Suno app is:
 
 - **One app for every screen.** The same source and the same binary run on a
   desktop, a tablet and a phone. Width changes the layout; it never identifies
   a device. Nothing is removed on a small screen; it moves into navigation,
   sheets or overflow.
 - **Built on upstream standards.** GTK 4, Flatpak, portals, PipeWire,
-  GStreamer and AppStream do the heavy lifting. Luma metadata is additive, so a
-  Luma app still runs on other Linux distributions.
-- **Composed, not drawn.** LumaUI draws the window frame, the title row, the
+  GStreamer and AppStream do the heavy lifting. Suno metadata is additive, so a
+  Suno app still runs on other Linux distributions.
+- **Composed, not drawn.** SunoUI draws the window frame, the title row, the
   app identity, the window controls, the islands and every component in them.
   Your app says what it needs, arranges those pieces and draws only its own
-  content, so a change to the Luma design reaches your app without a change to
+  content, so a change to the Suno design reaches your app without a change to
   your code.
 - **Private by default.** Apps reach files and devices through portals, declare
   what they need, and show people what they can reach before they install.
@@ -46,33 +46,33 @@ A Luma app is:
 | Layer | What it is | Details |
 | --- | --- | --- |
 | Engine | GTK 4 (rendering, input, accessibility) | [The stack](platform/the-stack.md) |
-| Toolkit | LumaUI: `LumaUI-1` (C, introspectable) and its Python package `luma_appkit`, plus `LumaSemantics-1` | [LumaUI overview](kit/index.md) |
-| SDK tools | The `luma` command: `new`, `lint`, `inspect`, `test`, `release-check` | [The `luma` command](kit/sdk-command-line.md) |
+| Toolkit | SunoUI: `SunoUI-1` (C, introspectable) and its Python package `Suno_appkit`, plus `SunoSemantics-1` | [SunoUI overview](kit/index.md) |
+| SDK tools | The `Suno` command: `new`, `lint`, `inspect`, `test`, `release-check` | [The `Suno` command](kit/sdk-command-line.md) |
 | Languages | Python 3 (PyGObject), C, C++ | [The stack](platform/the-stack.md#languages) |
-| Packaging | Flatpak, on the `org.projectluma.Platform//44` runtime from the Luma remote | [Runtimes and distributions](platform/runtimes-and-distributions.md) |
-| Store | Depot, on Luma | [Publishing](publishing/index.md) |
+| Packaging | Flatpak, on the `org.projectSuno.Platform//44` runtime from the Suno remote | [Runtimes and distributions](platform/runtimes-and-distributions.md) |
+| Store | Depot, on Suno | [Publishing](publishing/index.md) |
 
 ## Tiers in Depot
 
-Every app in Depot carries a tier that tells people how much Luma stands behind
+Every app in Depot carries a tier that tells people how much Suno stands behind
 it.
 
 | Tier | What it tells people | Who publishes | How it is reviewed |
 | --- | --- | --- | --- |
-| **Luma** (“Made for Luma”) | Built with LumaUI and reviewed by Luma for design, accessibility, privacy and quality. It looks and behaves like part of the system. | Luma, or a verified developer Luma has invited to the tier | Automated checks and a human design and privacy review of every release |
-| **Verified** | Published by a developer whose identity Luma has verified, hosted and signed by Luma, with reviewed permissions | Any approved developer | Automated checks on every release; human review of the first release and of any release that widens permissions |
-| **Listed** | A known app Luma lists so you can find it. It installs from its own source, such as Flathub or the publisher, and is not reviewed by Luma for quality. | Chosen by Luma; suggestions from anyone with a Luma account open soon | Provenance check only: the source really is the publisher’s |
+| **Suno** (“Made for Suno”) | Built with SunoUI and reviewed by Suno for design, accessibility, privacy and quality. It looks and behaves like part of the system. | Suno, or a verified developer Suno has invited to the tier | Automated checks and a human design and privacy review of every release |
+| **Verified** | Published by a developer whose identity Suno has verified, hosted and signed by Suno, with reviewed permissions | Any approved developer | Automated checks on every release; human review of the first release and of any release that widens permissions |
+| **Listed** | A known app Suno lists so you can find it. It installs from its own source, such as Flathub or the publisher, and is not reviewed by Suno for quality. | Chosen by Suno; suggestions from anyone with a Suno account open soon | Provenance check only: the source really is the publisher’s |
 
 A Listed app becomes Verified when its publisher joins the developer program
-and publishes to the Luma remote. Verified apps move to the Luma tier by
+and publishes to the Suno remote. Verified apps move to the Suno tier by
 invitation after review. The full rules are in the
 [review guidelines](publishing/review-guidelines.md).
 
 ## How publishing works
 
 > **Not open yet.** The developer program has not opened. Applying, “Your
-> apps” and “Suggest an app” open soon; today Depot carries Luma’s own apps and
-> apps Luma lists. The steps below are how publishing works once it opens.
+> apps” and “Suggest an app” open soon; today Depot carries Suno’s own apps and
+> apps Suno lists. The steps below are how publishing works once it opens.
 
 1. **Join the developer program.** It is free. You apply from the Developer tab
    in Hub and verify your identity.
@@ -82,18 +82,18 @@ invitation after review. The full rules are in the
    [App IDs and namespaces](publishing/app-ids-and-namespaces.md)
 3. **Prepare your store page.** AppStream metainfo, an icon, screenshots and
    release notes. [Metainfo and screenshots](publishing/metainfo-and-screenshots.md)
-4. **Submit a release.** Point Luma at a tagged source commit and your Flatpak
-   manifest, or upload a signed bundle if your app is proprietary. Luma builds,
-   checks, signs and hosts it on the Luma remote.
+4. **Submit a release.** Point Suno at a tagged source commit and your Flatpak
+   manifest, or upload a signed bundle if your app is proprietary. Suno builds,
+   checks, signs and hosts it on the Suno remote.
    [Submitting a release](publishing/submitting-a-release.md)
 5. **Pass review.** Automated checks run on every release. People review your
    first release and any release that asks for more access.
-6. **Ship.** Your app appears in Depot on Luma, and installs on any
+6. **Ship.** Your app appears in Depot on Suno, and installs on any
    distribution with Flatpak.
 
 ## Where to start
 
-- New to Luma: [install the SDK](getting-started/install-the-sdk.md), then
+- New to Suno: [install the SDK](getting-started/install-the-sdk.md), then
   build [your first app in Python](getting-started/first-app-python.md) or
   [in C](getting-started/first-app-c.md).
 - Already have a GTK 4 app: read
@@ -109,12 +109,12 @@ invitation after review. The full rules are in the
 
 | Piece | Status |
 | --- | --- |
-| LumaUI (`LumaUI-1` and `luma_appkit`), `LumaSemantics-1` | Preview, shipping in every Luma image as `luma-developer-platform` |
-| `luma` SDK command | Preview, packaged as `luma-developer-platform-sdk`; not on PyPI |
-| Semantic Broker and `luma semantic` inspector | Preview; the broker comes with `luma-developer-platform`, the inspector with `luma-developer-platform-sdk` |
-| Luma’s own apps on LumaUI | Canvas, Reel, Focus, Tide, Grid, Stage, Session and Write, among others |
-| `org.projectluma.Platform//44` and `org.projectluma.Sdk//44` runtimes | Live on the Luma remote, `x86_64` only |
-| The signed Luma remote at `dl.simplyluma.com/repo` | Live; Viola is on the `stable` branch, Luma’s other apps on `beta` |
+| SunoUI (`SunoUI-1` and `Suno_appkit`), `SunoSemantics-1` | Preview, shipping in every Suno image as `Suno-developer-platform` |
+| `Suno` SDK command | Preview, packaged as `Suno-developer-platform-sdk`; not on PyPI |
+| Semantic Broker and `Suno semantic` inspector | Preview; the broker comes with `Suno-developer-platform`, the inspector with `Suno-developer-platform-sdk` |
+| Suno’s own apps on SunoUI | Canvas, Reel, Focus, Tide, Grid, Stage, Session and Write, among others |
+| `org.projectSuno.Platform//44` and `org.projectSuno.Sdk//44` runtimes | Live on the Suno remote, `x86_64` only |
+| The signed Suno remote at `dl.simplyluma.com/repo` | Live; Viola is on the `stable` branch, Suno’s other apps on `beta` |
 | Developer program, “Your apps” and release submission in Hub | Not open yet; opens soon |
 | “Suggest an app” | Not open yet; opens soon |
-| `luma-depot://` links | Opened by Depot on Luma |
+| `Suno-depot://` links | Opened by Depot on Suno |

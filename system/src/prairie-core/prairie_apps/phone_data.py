@@ -33,7 +33,7 @@ class PreviewContactsSource:
         self.contacts = tuple(PhonePerson("eds:" + record.uid, record.name,
                                           record.phone, getattr(record, "handle", ""),
                                           record.email, hue=getattr(record, "hue", None),
-                                          online=getattr(record, "on_luma", None) is True)
+                                          online=getattr(record, "on_Suno", None) is True)
                               for record in records)
         self.people = (*fixture.people, *self.contacts)
         self._photos = {"eds:" + record.uid: getattr(record, "photo", b"") for record in records}
@@ -63,7 +63,7 @@ def _sync_directory(path: Path) -> None:
 class BlockList:
     """Phone-local call policy; never changes contacts, messages or carrier settings.
 
-    The authorized additive store is luma/phone/blocked.json under XDG_DATA_HOME.
+    The authorized additive store is Suno/phone/blocked.json under XDG_DATA_HOME.
     Reads create nothing. Edits lock, reread, preserve unrelated fields and numbers,
     back up the first existing version once, and replace atomically (mode 0600).
     Carrier voicemail routing and blocking texts are outside this local policy.
@@ -71,7 +71,7 @@ class BlockList:
 
     def __init__(self, path: Path | None = None) -> None:
         from .phone_shared_data import directory
-        self.path = path or directory("luma/phone") / "blocked.json"
+        self.path = path or directory("Suno/phone") / "blocked.json"
 
     def _document(self, path: Path | None = None) -> dict:
         path = self.path if path is None else path
@@ -202,10 +202,10 @@ def back_up_call_log(path: Path) -> None:
 
 
 def phone_contact(record):
-    """Keep carrier numbers and positively verified Luma identities distinct."""
-    account = getattr(record, "luma_account", "")
+    """Keep carrier numbers and positively verified Suno identities distinct."""
+    account = getattr(record, "Suno_account", "")
     handle = getattr(record, "handle", "")
-    verified = (getattr(record, "on_luma", None) is True
+    verified = (getattr(record, "on_Suno", None) is True
                 and isinstance(account, str) and re.fullmatch(r"[A-Za-z0-9_-]{8,200}", account) is not None
                 and isinstance(handle, str) and re.fullmatch(r"[a-z0-9][a-z0-9_.-]{0,63}", handle) is not None)
     if not record.phone and not verified:
@@ -214,7 +214,7 @@ def phone_contact(record):
                  if str(value or "").strip()), "@" + handle if verified else "")
     return PhonePerson(record.uid, name, record.phone, handle if verified else "", record.email,
                        hue=getattr(record, "hue", None), online=verified,
-                       luma_account=account if verified else "")
+                       Suno_account=account if verified else "")
 
 
 class LiveSource:
@@ -238,7 +238,7 @@ class LiveSource:
         self.people = tuple(person for record in records if (person := phone_contact(record)) is not None)
         by_number = {digits(person.phone): person.uid for person in self.people if digits(person.phone)}
         from .phone_shared_data import directory
-        call_path = directory("prairie/phone") / "calls.db" if os.environ.get("FLATPAK_ID") == "org.projectluma.Phone" else self.base / "prairie/phone/calls.db"
+        call_path = directory("prairie/phone") / "calls.db" if os.environ.get("FLATPAK_ID") == "org.projectSuno.Phone" else self.base / "prairie/phone/calls.db"
         rows = read_rows(call_path, "SELECT * FROM calls ORDER BY started DESC, uid")
         from .phone_backend import CallRecord
         records = tuple(CallRecord(row["uid"], row["address"], row["direction"], row["started"],
@@ -248,7 +248,7 @@ class LiveSource:
         try:
             from .connect_messages import cloud_calls
             from .messages_cloud import cloud_call_records, merge_calls
-            if os.environ.get("FLATPAK_ID") == "org.projectluma.Phone":
+            if os.environ.get("FLATPAK_ID") == "org.projectSuno.Phone":
                 from .phone_host import call
                 cloud = call("GetPhoneHistory")["calls"]
             else:
@@ -263,7 +263,7 @@ class LiveSource:
                                        f'{max(1, row.duration // 60)} min' if row.duration else "",
                                        number=row.address) for row in records)
         try:
-            folder = directory("prairie/phone") if os.environ.get("FLATPAK_ID") == "org.projectluma.Phone" else self.base / "prairie/phone"
+            folder = directory("prairie/phone") if os.environ.get("FLATPAK_ID") == "org.projectSuno.Phone" else self.base / "prairie/phone"
             raw = json.loads((folder / "favourites.json").read_text(encoding="utf-8"))
         except FileNotFoundError:
             raw = []
@@ -281,7 +281,7 @@ class LiveSource:
                                   f"Call from {person.name.split()[0]}" if call.direction == "in" else "Call",
                                   call.when, call.duration, call.direction == "missed")
                       for call in self.calls if call.people == (uid,))
-        if os.environ.get("FLATPAK_ID") == "org.projectluma.Phone":
+        if os.environ.get("FLATPAK_ID") == "org.projectSuno.Phone":
             from .phone_host import call
             message = call("GetPhoneTogether", person.phone).get("message")
         else:

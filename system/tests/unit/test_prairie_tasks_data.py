@@ -17,7 +17,7 @@ from prairie_apps.tasks_backend import Task
 class ViewTests(unittest.TestCase):
     def setUp(self):
         self.path = ROOT / 'tests/fixtures/tasks-v70.json'
-        with patch.dict(os.environ, {'LUMA_TASKS_FIXTURE': str(self.path)}):
+        with patch.dict(os.environ, {'SUNO_TASKS_FIXTURE': str(self.path)}):
             self.source = TasksData()
         self.data = self.source.load()
         self.tasks = self.data['tasks']

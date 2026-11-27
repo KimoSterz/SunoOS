@@ -1,6 +1,6 @@
 {
-  "_doc": "K: shared controls Settings asked for (settings-12, 13): the v70 .bt text button, the .ib icon button and the .cfsw switch. Deep-merged into design-tokens.json's lumaui object; px unless the key says otherwise.",
-  "lumaui": {
+  "_doc": "K: shared controls Settings asked for (settings-12, 13): the v70 .bt text button, the .ib icon button and the .cfsw switch. Deep-merged into design-tokens.json's SunoUI object; px unless the key says otherwise.",
+  "SunoUI": {
     "text_button": {
       "_doc": "v70 .bt: 36 tall, padding 0 12 (the key 0 14), 10 round, 7 between a 16 glyph and 13/500 words; .sm 28 tall, padding 0 9, 8 round, 12 at .01em.",
       "height": 36, "padding_x": 12, "key_padding_x": 14, "key_padding_start": 13, "key_padding_end": 15, "key_radius": 12, "radius": 10, "gap": 7, "icon": 16, "font_size": 13,

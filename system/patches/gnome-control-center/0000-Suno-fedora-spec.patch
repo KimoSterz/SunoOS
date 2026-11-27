@@ -1,0 +1,238 @@
+--- a/gnome-control-center.spec
++++ b/gnome-control-center.spec
+@@ -28,14 +28,143 @@
+ 
+ Name:           gnome-control-center
+ Version:        50.4
+-Release:        %autorelease
++Release:        1.Suno.83%{?dist}
+ Summary:        Utilities to configure the GNOME desktop
+ 
+ License:        GPL-2.0-or-later AND CC0-1.0
+ URL:            https://gitlab.gnome.org/GNOME/gnome-control-center/
+ Source0:        https://download.gnome.org/sources/%{name}/50/%{name}-%{tarball_version}.tar.xz
++Source1000:     Suno-settings-session-identity-check.py
++Source1001:     org.projectSuno.shell-state.gschema.xml
++Source1002:     0019-input-Adjustable-scroll-speed-for-mice-and-touchpads.patch
++Source1003:     extract-scroll-schema.py
++Source1004:     settings-v70.json
++Patch1000:      0001-Suno-preferred-choice-order.patch
++Patch1001:      0002-Suno-touchpad-gestures-section.patch
++Patch1002:      0003-Suno-shared-preferences-layout.patch
++Patch1003:      0004-Suno-native-islands-persistent-search.patch
++Patch1004:      0005-Suno-native-identity-centered-navigation.patch
++Patch1005:      0006-Suno-dash-settings-panel.patch
++Patch1006:      0007-Suno-dash-preview-physical-corners.patch
++Patch1007:      0008-Suno-dash-padding-control.patch
++Patch1008:      0009-Suno-dash-status-settings.patch
++Patch1009:      0010-Suno-status-divider-preview.patch
++Patch1010:      0011-appearance-Add-native-Suno-surface-treatments.patch
++Patch1011:      0012-Suno-settings-material-navigation-sections.patch
++Patch1012:      0013-Suno-displays-panel-composition.patch
++Patch1013:      0014-Suno-background-activity-page.patch
++Patch1014:      0015-Suno-sound-new-devices-and-network-outputs.patch
++Patch1015:      0016-Suno-cast-settings-page.patch
++Patch1016:      0017-Suno-about-names-Suno.patch
++Patch1017:      0018-Suno-device-name-static-slug.patch
++Patch1018:      0019-Suno-about-legacy-os-release.patch
++Patch1019:      0020-Suno-notifications-badge-app-icon.patch
++Patch1020:      0021-Suno-mouse-trackpoint-page.patch
++Patch1021:      0022-Suno-dash-allow-free-placement.patch
++Patch1022:      0023-Suno-dash-span-and-float-follow-islands.patch
++Patch1023:      0024-Suno-dash-dock-folders.patch
++Patch1024:      0025-users-Saved-passwords-follow-a-password-change.patch
++Patch1025:      0026-mouse-Scroll-Speed-for-the-mouse-and-the-touchpad.patch
++Patch1026:      0027-SunoUI-sidebar-foot.patch
++Patch1027:      0028-SunoUI-fixture-model.patch
++Patch1028:      0029-SunoUI-fixture-startup-wifi.patch
++Patch1029:      0030-SunoUI-network-actions-draft.patch
++Patch1030:      0031-SunoUI-wifi-join-undo.patch
++Patch1031:      0032-SunoUI-wifi-capture-variants.patch
++Patch1032:      0033-SunoUI-bluetooth-fixture.patch
++Patch1033:      0034-SunoUI-page-modules.patch
++Patch1034:      0035-SunoUI-windows-model.patch
++Patch1035:      0036-SunoUI-network-copy.patch
++Patch1036:      0037-SunoUI-fixture-assets.patch
++Patch1037:      0038-SunoUI-windows-page.patch
++Patch1038:      0039-SunoUI-shelf-model.patch
++Patch1039:      0040-SunoUI-shelf-page.patch
++Patch1040:      0041-SunoUI-appearance-model.patch
++Patch1041:      0042-SunoUI-appearance-page.patch
++Patch1042:      0043-SunoUI-discovery-model.patch
++Patch1043:      0044-SunoUI-discovery-pages.patch
++Patch1044:      0045-SunoUI-adaptive-padding-and-navigation.patch
++Patch1045:      0046-SunoUI-live-network-adapter.patch
++Patch1046:      0047-SunoUI-display-draft-model.patch
++Patch1047:      0048-settings-add-native-read-adapters-and-isolated-fixtu.patch
++Patch1048:      0049-settings-fix-fixture-artwork-and-verify-native-surfa.patch
++Patch1049:      0050-settings-add-Apps-fixture-routes-and-scoped-action-c.patch
++Patch1050:      0051-settings-add-accessibility-routes-and-bounded-native-reader-action.patch
++Patch1051:      0052-settings-add-scoped-native-preference-edits-with-durable-recovery.patch
++Patch1052:      0053-settings-compose-scoped-Privacy-routes-and-native-schema-contracts.patch
++Patch1053:      0054-settings-scoped-native-permission-edits.patch
++Patch1054:      0055-settings-native-screen-lock-view.patch
++Patch1055:      0056-settings-native-permission-views.patch
++Patch1056:      0057-settings-empty-native-permission-list.patch
++Patch1057:      0058-Suno-hide-inapplicable-span-row.patch
++Patch1058:      0059-SunoUI-settings-v70-finish.patch
++Patch1059:      0060-SunoUI-settings-phone-search-bar.patch
++Patch1060:      0061-SunoUI-settings-search-control-names.patch
++Patch1061:      0062-SunoUI-settings-fixture-account-hue.patch
++Patch1062:      0063-SunoUI-shelf-phone-choices.patch
++Patch1063:      0064-SunoUI-phone-first-section-spacing.patch
++Patch1064:      0065-SunoUI-stable-display-drag.patch
++Patch1065:      0066-settings-use-shared-device-identity.patch
++Patch1066:      0067-settings-open-handheld-destination-list.patch
++Patch1067:      0068-settings-native-session-identity.patch
++Patch1068:      0069-settings-retain-decoded-artwork.patch
++Patch1069:      0070-settings-dark-first-appearance.patch
++Patch1070:      0071-settings-native-network-editor-frame.patch
++Patch1071:      0072-settings-native-scroll-speed.patch
++Patch1072:      0073-settings-native-bluetooth-operations.patch
++Patch1073:      0074-settings-native-wifi-lifecycle.patch
++Patch1074:      0075-settings-bluetooth-error-notice.patch
++Patch1075:      0076-settings-retained-bluetooth-and-wifi-drafts.patch
++Patch1076:      0077-settings-native-pointer-write-qualification.patch
++Patch1077:      0078-settings-tiling-controls-native-autotiling.patch
++Patch1078:      0079-settings-display-apply-preview.patch
++Patch1079:      0080-settings-retain-live-display-apply-bar.patch
++Patch1080:      0081-settings-native-microphone-controls.patch
++Patch1081:      0082-settings-retain-native-pane-actions.patch
++Patch1082:      0083-maximized-window-border-settings.patch
++Patch1083:      0084-live-window-spacing-controls.patch
++Patch1084:      0085-night-light-start-end-time-controls.patch
++Patch1085:      0086-applications-dock-folder-settings.patch
++Patch1086:      0087-live-dock-shortcut-controls.patch
++Patch1087:      0088-dash-presets-and-shared-layout.patch
++Patch1088:      0089-home-screen-preferences.patch
++Patch1089:      0090-SunoUI-tv-opt-in-and-panel-set.patch
++Patch1090:      0091-SunoUI-tv-pages.patch
++Patch1091:      0092-SunoUI-tv-saved-network-actions.patch
++Patch1092:      0093-SunoUI-tv-account-appearance-sound.patch
++Patch1093:      0094-SunoUI-tv-about-board-facts.patch
++Patch1094:      0095-SunoUI-tv-wifi-nearby-in-place.patch
++Patch1095:      0096-SunoUI-tv-page-words-and-one-display-fixture.patch
++Patch1096:      0097-SunoUI-one-image-decode-per-file.patch
++Patch1097:      0098-SunoUI-page-wash-300px-and-hidden-on-tv.patch
++Patch1098:      0099-SunoUI-tv-turn-off-tv-mode.patch
++Patch1099:      0100-SunoUI-phone-search-keeps-bar.patch
++Patch1100:      0101-SunoUI-mobile-network-with-a-modem.patch
++Patch1101:      0102-SunoUI-phone-panel-status-inset.patch
++Patch1102:      0103-wwan-mobile-data-on-by-default.patch
++Patch1103:      0104-SunoUI-phone-requested-page-leaves-list.patch
++Patch1104:      0105-global-shortcuts-without-a-dialog.patch
++Patch1105:      0106-SunoUI-sound-volume-mixer.patch
++Patch1106:      0107-SunoUI-apps-openh264-switch.patch
++Patch1108:      0109-SunoUI-apps-display-over-other-apps.patch
++Patch1109:      0110-SunoUI-apps-permissions-every-format.patch
++Patch1107:      0108-SunoUI-sound-volume-mixer-rows.patch
++Patch1110:      0111-SunoUI-Suno-connect-sync.patch
++Patch1111:      0112-SunoUI-settings-list-first-at-phone-width.patch
++Patch1112:      0113-SunoUI-windows-reopen-after-restart.patch
++Patch1113:      0114-SunoUI-settings-reopens-its-page.patch
++Patch1114:      0115-SunoUI-sync-continue-group.patch
++Patch1115:      0116-SunoUI-app-page-windows-group.patch
+ 
+ BuildRequires:  blueprint-compiler >= %{blueprint_compiler_version}
++BuildRequires:  Suno-developer-platform-devel >= 0.1.0-1.Suno.150
++BuildRequires:  pkgconfig(xkbcommon)
++# GTestDBus in the adapter tests spawns a private bus.
++BuildRequires:  dbus-daemon
++BuildRequires:  python3-dbus
++BuildRequires:  python3-gobject
++BuildRequires:  xorg-x11-server-Xvfb
++BuildRequires:  xorg-x11-xauth
+ BuildRequires:  desktop-file-utils
+ BuildRequires:  docbook-style-xsl libxslt
+ BuildRequires:  gcc
+@@ -85,6 +214,14 @@
+ %endif
+ 
+ # Versioned library deps
++Requires:       Suno-shell-state >= 0.2.0-1.Suno.34
++Requires:       gnome-shell >= 50.3-1.Suno.119.creator20261021.1
++# 0109 draws Prairie's SunoUI-layers-2 and SunoUI-panel-top; 0111 its Connect Sync glyphs (cloud-off, loader-circle, …).
++Requires:       Suno-developer-platform >= 0.1.0-1.Suno.158
++Requires:       Suno-developer-platform >= 0.1.0-1.Suno.150
++# Settings › Apps › Background Activity shows and changes what the Suno
++# background service runs; without it the page says so and changes nothing.
++Recommends:     Suno-background
+ Requires: libadwaita%{?_isa} >= %{libadwaita_version}
+ Requires: glib2%{?_isa} >= %{glib2_version}
+ Requires: gnome-desktop4%{?_isa} >= %{gnome_desktop_version}
+@@ -170,16 +307,10 @@
+ 
+ %build
+ %meson \
++  -Dc_link_args="%{build_ldflags} %{build_cflags} -flto=1" \
+   -Ddocumentation=true \
+   -Dlocation-services=enabled \
+-%if 0%{?fedora}
+-  -Ddistributor_logo=%{_datadir}/pixmaps/fedora_logo_med.png \
+-  -Ddark_mode_distributor_logo=%{_datadir}/pixmaps/fedora_whitelogo_med.png \
+-%endif
+-%if 0%{?rhel}
+-  -Ddistributor_logo=%{_datadir}/pixmaps/fedora-logo.png \
+-  -Ddark_mode_distributor_logo=%{_datadir}/pixmaps/system-logo-white.png \
+-%endif
++%dnl Suno (ADR-040): no fixed distributor logo; About shows os-release LOGO.
+ %if %{with malcontent}
+   -Dmalcontent=true \
+ %else
+@@ -200,6 +331,56 @@
+ 
+ %find_lang %{name} --all-name --with-gnome
+ 
++%check
++# Native Settings and its launcher work without a GNOME session identity.
++python3 %{SOURCE1000} %{_vpath_builddir}/shell/gnome-control-center \
++  %{_vpath_builddir}/shell/org.gnome.Settings.desktop
++# Suno: the device-name slug rules (0018) run through upstream's hostname test.
++%meson_test test-hostname
++# Suno's compositor schema is used only on this private package-check backend.
++task_runtime=$(mktemp -d)
++chmod 700 "$task_runtime"
++trap 'rm -rf "$task_runtime"' EXIT
++export XDG_RUNTIME_DIR="$task_runtime"
++mkdir "$task_runtime/schema"
++cp %{SOURCE1001} "$task_runtime/schema/"
++python3 %{SOURCE1003} %{SOURCE1002} "$task_runtime/schema/org.projectSuno.peripherals.gschema.xml"
++glib-compile-schemas --strict "$task_runtime/schema"
++export GSETTINGS_SCHEMA_DIR="$task_runtime/schema"
++# SunoUI Settings model and adapter tests; display-bound tests run below.
++%meson_test Suno-settings-fixture Suno-settings-applications Suno-settings-audio Suno-settings-permissions Suno-settings-power-reads Suno-settings-preferences Suno-settings-properties Suno-settings-scroll-speed Suno-settings-search-locations Suno-settings-live-conn Suno-settings-live-modem Suno-settings-live-gsettings Suno-settings-live-desk Suno-settings-live-you Suno-settings-live-keyboard Suno-settings-display-preview Suno-settings-display-save-view-1180 Suno-settings-display-save-view-320
++# Test the actual native network editor frame and Cancel with accessibility enabled.
++xvfb-run -a --server-args="-screen 0 1600x1200x24" dbus-run-session -- env GSK_RENDERER=cairo GIO_USE_VFS=local GDK_DEBUG=no-portals meson test -C %{_vpath_builddir} --no-rebuild --print-errorlogs Suno-settings-network-editor
++# Native page actions must reach the owned BlueZ/Rfkill service on a private bus.
++xvfb-run -a --server-args="-screen 0 1920x1080x24" env GSK_RENDERER=cairo meson test -C %{_vpath_builddir} --no-rebuild --print-errorlogs Suno-settings-live-bluetooth
++# Native pointer clicks must stay in Suno and read back from their actual owner.
++xvfb-run -a --server-args="-screen 0 1600x1200x24" dbus-run-session -- env GSK_RENDERER=cairo GIO_USE_VFS=local GDK_DEBUG=no-portals meson test -C %{_vpath_builddir} --no-rebuild --print-errorlogs Suno-settings-live-pointer
++# Layer-shell switches reach a stand-in Shell's SetCapability and read back its Apps.
++xvfb-run -a --server-args="-screen 0 1600x1200x24" dbus-run-session -- env GSK_RENDERER=cairo GIO_USE_VFS=local GDK_DEBUG=no-portals meson test -C %{_vpath_builddir} --no-rebuild --print-errorlogs Suno-settings-layer-shell
++# Connect Sync (0111): the key sheet's gates and Cancel against a stand-in Suno-connect-syncd.
++xvfb-run -a --server-args="-screen 0 1600x1200x24" env GSK_RENDERER=cairo GIO_USE_VFS=local GDK_DEBUG=no-portals meson test -C %{_vpath_builddir} --no-rebuild --print-errorlogs Suno-settings-connect-sync
++# Native Wi-Fi confirmation, failure/readback and scan-refresh input preservation.
++xvfb-run -a --server-args="-screen 0 1920x1080x24" env GSK_RENDERER=cairo GIO_USE_VFS=local meson test -C %{_vpath_builddir} --no-rebuild --print-errorlogs Suno-settings-live-network
++xvfb-run -a --server-args="-screen 0 1600x1200x24" dbus-run-session -- env GSK_RENDERER=cairo GSETTINGS_BACKEND=memory SUNO_SETTINGS_TEST_FIXTURE=%{SOURCE1004} %{_vpath_builddir}/shell/test-Suno-view --tap -p /settings/view/live-failure-keeps-pane
++xvfb-run -a --server-args="-screen 0 1600x1200x24" dbus-run-session -- env GSK_RENDERER=cairo GSETTINGS_BACKEND=memory SUNO_SETTINGS_TEST_FIXTURE=%{SOURCE1004} %{_vpath_builddir}/shell/test-Suno-view --tap -p /settings/view/scroll-speed
++xvfb-run -a --server-args="-screen 0 1600x1200x24" dbus-run-session -- env GSK_RENDERER=cairo GSETTINGS_BACKEND=memory SUNO_SETTINGS_TEST_FIXTURE=%{SOURCE1004} %{_vpath_builddir}/shell/test-Suno-view --tap -p /settings/view/nearby-in-place
++xvfb-run -a --server-args="-screen 0 1600x1200x24" dbus-run-session -- env GSK_RENDERER=cairo GSETTINGS_BACKEND=memory SUNO_SETTINGS_TEST_FIXTURE=%{SOURCE1004} %{_vpath_builddir}/shell/test-Suno-view --tap -p /settings/view/tv-leave
++xvfb-run -a --server-args="-screen 0 1600x1200x24" dbus-run-session -- env GSK_RENDERER=cairo GSETTINGS_BACKEND=memory GTK_A11Y=none G_DEBUG=fatal-criticals SUNO_SETTINGS_TEST_FIXTURE=%{SOURCE1004} %{_vpath_builddir}/shell/test-Suno-window --tap
++# Suno: the pointing stick page is called TrackPoint and says what it is (0021).
++grep -Fq '>TrackPoint<' %{_vpath_builddir}/panels/mouse/cc-mouse-panel.ui
++grep -Fq 'translatable="yes">The small pointer control in the middle of your keyboard.<' \
++  %{_vpath_builddir}/panels/mouse/cc-mouse-panel.ui
++if grep -Fq 'Pointing Stick' %{_vpath_builddir}/panels/mouse/cc-mouse-panel.ui; then exit 1; fi
++grep -q '^Keywords=.*;TrackPoint;' %{_vpath_builddir}/panels/mouse/gnome-mouse-panel.desktop
++# Suno: Scroll Speed on the Mouse and Touchpad sections (0026), and its
++# slider mapping; every mapping test must report ok.
++test "$(grep -c 'translatable="yes">Scroll _Speed<' %{_vpath_builddir}/panels/mouse/cc-mouse-panel.ui)" -eq 2
++gcc -o test-scroll-speed panels/mouse/test-scroll-speed.c \
++  $(pkg-config --cflags --libs glib-2.0) -lm
++./test-scroll-speed --tap | tee test-scroll-speed.log
++passed=$(grep -c '^ok ' test-scroll-speed.log)
++test "$passed" -eq 3 || { echo "test-scroll-speed: $passed of 3 passed"; exit 1; }
++
+ %files -f %{name}.lang
+ %license COPYING
+ %doc NEWS README.md

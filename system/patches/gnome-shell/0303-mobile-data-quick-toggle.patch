@@ -1,9 +1,9 @@
-From: Project Luma
+From: Project Suno
 Subject: [PATCH] Mobile Data quick toggle
 
 Phones whose modem carries either calls and texts (IMS) or mobile data at a
 time switch through the system's mobile mode service
-(org.projectluma.MobileMode1, which owns the switch and its authorization).
+(org.projectSuno.MobileMode1, which owns the switch and its authorization).
 A Quick Settings toggle shows that state and asks the service to switch;
 it stays hidden where no such service runs. Quick Options gives it a slot.
 
@@ -27,7 +27,7 @@ diff --git a/js/ui/panel.js b/js/ui/panel.js
 +import * as MobileModeStatus from './status/mobileMode.js';
  
  import {DateMenuButton} from './dateMenu.js';
- import {getNotificationTray} from './lumaNotificationBeacon.js';
+ import {getNotificationTray} from './SunoNotificationBeacon.js';
 @@ -2050,6 +2051,7 @@
          this._unsafeMode = new UnsafeModeIndicator();
          this._backgroundApps = new BackgroundAppsStatus.Indicator();
@@ -51,18 +51,18 @@ new file mode 100644
 @@ -0,0 +1,77 @@
 +// Mobile data on phones whose modem carries either calls and texts (IMS) or
 +// mobile data at a time: a view of the system's mobile mode service
-+// (org.projectluma.MobileMode1), which owns the switch and its authorization.
++// (org.projectSuno.MobileMode1), which owns the switch and its authorization.
 +// Hidden where no such service runs.
 +import Gio from 'gi://Gio';
 +import GObject from 'gi://GObject';
 +
 +import {QuickToggle, SystemIndicator} from '../quickSettings.js';
 +
-+const BUS_NAME = 'org.projectluma.MobileMode1';
-+const OBJECT_PATH = '/org/projectluma/MobileMode1';
++const BUS_NAME = 'org.projectSuno.MobileMode1';
++const OBJECT_PATH = '/org/projectSuno/MobileMode1';
 +
 +const MobileModeIface = `<node>
-+  <interface name="org.projectluma.MobileMode1">
++  <interface name="org.projectSuno.MobileMode1">
 +    <method name="SetMode"><arg type="s" name="mode" direction="in"/></method>
 +    <property name="Mode" type="s" access="read"/>
 +    <property name="State" type="s" access="read"/>

@@ -5,8 +5,8 @@ from __future__ import annotations
 import time
 
 from gi.repository import Adw, Gdk, Gio, GLib, Gtk, Pango
-from luma_appkit import AppWindow, Command, CommandGroup, CommandRegistry, IconButton, Island, Toolbar
-from luma_appkit import SaveChoice, UnsavedDocument, confirm_save
+from Suno_appkit import AppWindow, Command, CommandGroup, CommandRegistry, IconButton, Island, Toolbar
+from Suno_appkit import SaveChoice, UnsavedDocument, confirm_save
 from .notes_document import MAX_TEXT_BYTES, TextDocument
 from .notes_editor import NotesFormattingToolbar
 
@@ -32,12 +32,12 @@ class TextFileWindow(AppWindow):
             Command("file.save-as", "Save As…", self.save_as, "document-save-as-symbolic", shortcut=("Ctrl", "Shift", "S")),
             Command("file.close", "Close File", self.close, shortcut=("Ctrl", "W")),
         )), CommandGroup("NOTES", (
-            Command("notes.library", "Open Notes", application.activate, "org.projectluma.Notes"),
+            Command("notes.library", "Open Notes", application.activate, "org.projectSuno.Notes"),
         ))))
         super().__init__(application=application, app_id=application.get_application_id() + ".FileWindow",
-                         title="Notes", icon_name="org.projectluma.Notes", commands=commands,
+                         title="Notes", icon_name="org.projectSuno.Notes", commands=commands,
                          default_width=760, default_height=560, minimum_width=320, minimum_height=300)
-        self.add_css_class("luma-notes")
+        self.add_css_class("Suno-notes")
         self.add_css_class("notes-file-window")
         island = Island()
         island.add_css_class("notes-editor-island")

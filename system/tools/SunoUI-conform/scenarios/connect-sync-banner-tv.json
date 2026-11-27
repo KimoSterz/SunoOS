@@ -1,0 +1,73 @@
+{
+ "app": "connect-sync-banner-tv",
+ "title": "Connect Sync: notices on a TV as the shared TV toast (design-center fbb3764, mockups/connect-sync/banner.html?posture=tv)",
+ "about": "Banners stay hidden on a TV: tv.js shows a notice as the shared TV toast (tv/toast.js), bottom centre on the 56 line, and it waits in the quick panel's list with its actions. Pixel mode on the whole 1920x1080 screen; the toast material is masked like the other shell material (edges judged by geometry), the lead tile is art, and the mean leaves out text. Storage full and Removed from Sync have no TV reference yet.",
+ "spec": {
+  "root": "design-center",
+  "url": "mockups/connect-sync/banner.html?posture=tv",
+  "window": "#stage",
+  "ready": "html[data-ready]",
+  "viewport": {
+   "width": 1920,
+   "height": 1080
+  },
+  "init_script": "if (matchMedia('(prefers-color-scheme: light)').matches && !/[?&]mode=/.test(location.search)) history.replaceState(null, '', location.pathname + (location.search ? location.search + '&' : '?') + 'mode=light');"
+ },
+ "states": [
+  {
+   "name": "restored",
+   "about": "Valet's finish notice: Your apps are ready, 6 apps",
+   "window": "#stage",
+   "spec": [
+    {
+     "wait": 900
+    }
+   ]
+  },
+  {
+   "name": "keyjoin",
+   "about": "A device joined with the recovery key; Remove… and It was me wait in the quick panel",
+   "window": "#stage",
+   "spec": [
+    {
+     "eval": "CS.load().then(() => SunoTVToast.show({ lead: `<img src=\"${CS.AP('connect')}\" alt=\"\">`, title: 'ThinkPad joined with your recovery key', sub: 'Not you? Remove it from the quick panel.', ms: 1e9 }))",
+     "wait": 900
+    }
+   ]
+  }
+ ],
+ "groups": [
+  {
+   "name": "fills",
+   "spec": "#stage .tv-toast"
+  },
+  {
+   "name": "content",
+   "spec": "#stage .tv-toast .lead, #stage .tv-toast b, #stage .tv-toast em, #stage .tv-toast strong"
+  },
+  {
+   "name": "art",
+   "spec": "#stage .tv-toast .lead"
+  },
+  {
+   "name": "toast",
+   "spec": "#stage .tv-toast"
+  }
+ ],
+ "pairs": [],
+ "text_aliases": {},
+ "pixel": {
+  "max_mean": 4.0,
+  "max_over10": 1.0,
+  "glyphs_as_text": true,
+  "mean_without_text": true,
+  "exclude_groups": [],
+  "material": [
+   {
+    "group": "toast",
+    "edge": 2,
+    "keep": "art"
+   }
+  ]
+ }
+}

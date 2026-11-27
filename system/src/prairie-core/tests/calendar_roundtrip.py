@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 # SPDX-License-Identifier: Apache-2.0
 
-"""An event Luma does not fully understand survives a Luma edit.
+"""An event Suno does not fully understand survives a Suno edit.
 
-A repeating event carrying a property Luma never writes is renamed across the
+A repeating event carrying a property Suno never writes is renamed across the
 whole series. The rename must land on every occurrence and the unknown
 property must still be there, byte for byte.
 
@@ -22,13 +22,13 @@ from prairie_apps.calendar_backend import (
 )
 
 RECURRING = """BEGIN:VEVENT
-UID:luma-roundtrip-test
+UID:Suno-roundtrip-test
 DTSTAMP:20260101T090000Z
 DTSTART:20260105T090000Z
 DTEND:20260105T093000Z
 SUMMARY:Standing meeting
 RRULE:FREQ=WEEKLY;BYDAY=MO;COUNT=8
-X-LUMA-UNKNOWN-FIELD:kept verbatim
+X-SUNO-UNKNOWN-FIELD:kept verbatim
 END:VEVENT"""
 
 
@@ -65,7 +65,7 @@ def main() -> int:
     window = datetime(2026, 1, 1).astimezone()
     occurrences = [event for event in
                    list_events(window, window + timedelta(days=60), (target,))
-                   if event.uid == "luma-roundtrip-test"]
+                   if event.uid == "Suno-roundtrip-test"]
     if not occurrences:
         print("FAIL: the repeating event did not appear at all")
         return 1
@@ -80,10 +80,10 @@ def main() -> int:
     save_event(EventDraft(source_uid=target.uid, summary="Renamed by a test", start=first.start,
                           end=first.end, uid=first.uid, rid=first.rid, instance_start=first.instance_start,
                           repeat=first.repeat, tzid=first.tzid or "UTC"), scope=SCOPE_ALL)
-    after = component_text(target.uid, "luma-roundtrip-test")
+    after = component_text(target.uid, "Suno-roundtrip-test")
     renamed = [event for event in list_events(window, window + timedelta(days=60), (target,))
-               if event.uid == "luma-roundtrip-test"]
-    if "X-LUMA-UNKNOWN-FIELD:kept verbatim" not in after:
+               if event.uid == "Suno-roundtrip-test"]
+    if "X-SUNO-UNKNOWN-FIELD:kept verbatim" not in after:
         print("FAIL: the unknown property was lost")
         return 1
     if len(renamed) != len(occurrences) or any(event.summary != "Renamed by a test" for event in renamed):
@@ -94,7 +94,7 @@ def main() -> int:
         return 1
     print(f"OK: {len(occurrences)} occurrences renamed together, rule and unknown property kept")
     try:
-        delete_event(target.uid, "luma-roundtrip-test")
+        delete_event(target.uid, "Suno-roundtrip-test")
     except Exception:
         pass
     return 0

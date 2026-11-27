@@ -12,9 +12,9 @@ name, anything else is sent back as ActionInvoked.
 
     PORTAL_TEST_LOG=calls.jsonl python3 portal_test_backend.py
 
-Owns org.freedesktop.impl.portal.desktop.lumatest; the test points
+Owns org.freedesktop.impl.portal.desktop.Sunotest; the test points
 xdg-desktop-portal at it with a .portal file and portals.conf (see
-clock_alarm_session.py). Test control: org.projectluma.PortalTest.InvokeAction.
+clock_alarm_session.py). Test control: org.projectSuno.PortalTest.InvokeAction.
 
 With PORTAL_TEST_GTK_NOTIFICATIONS=1 it also owns org.gtk.Notifications, the
 service GNOME Shell provides and GNotification uses outside a sandbox, and
@@ -31,9 +31,9 @@ import time
 
 from gi.repository import Gio, GLib
 
-BUS_NAME = "org.freedesktop.impl.portal.desktop.lumatest"
+BUS_NAME = "org.freedesktop.impl.portal.desktop.Sunotest"
 PATH = "/org/freedesktop/portal/desktop"
-CONTROL_PATH = "/org/projectluma/PortalTest"
+CONTROL_PATH = "/org/projectSuno/PortalTest"
 
 XML = """
 <node>
@@ -89,7 +89,7 @@ GTK_XML = """
 
 CONTROL_XML = """
 <node>
-  <interface name="org.projectluma.PortalTest">
+  <interface name="org.projectSuno.PortalTest">
     <method name="InvokeAction">
       <arg type="s" name="app_id" direction="in"/><arg type="s" name="id" direction="in"/>
       <arg type="s" name="action" direction="in"/><arg type="av" name="parameter" direction="in"/>
@@ -146,7 +146,7 @@ class Backend:
         elif name == "RemoveNotification":
             self.record(call="RemoveNotification", app_id=args[0], id=args[1])
             invocation.return_value(None)
-        elif interface == "org.projectluma.PortalTest" and name == "InvokeAction":
+        elif interface == "org.projectSuno.PortalTest" and name == "InvokeAction":
             app_id, identifier, action = args[0], args[1], args[2]
             self.record(call="InvokeAction", app_id=app_id, id=identifier, action=action)
             if (app_id, identifier) in self.via_gtk or action.startswith("app."):

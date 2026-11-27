@@ -12,7 +12,7 @@ import shutil
 import subprocess
 
 REPO = Path(__file__).resolve().parents[3]
-SPEC = REPO / 'patches/gnome-shell/0000-luma-fedora-spec.patch'
+SPEC = REPO / 'patches/gnome-shell/0000-Suno-fedora-spec.patch'
 BUILD = REPO / 'scripts/packages/build-gnome-shell.sh'
 
 def validate(spec, build):
@@ -33,7 +33,7 @@ def validate(spec, build):
     return names, release[1]
 
 def self_test(spec, build):
-    cases = [(spec, build.replace('0202-luma-studio-card-reflow.patch', 'MISSING-COPY.patch')),
+    cases = [(spec, build.replace('0202-Suno-studio-card-reflow.patch', 'MISSING-COPY.patch')),
              (spec, re.sub(r'^surface_candidate_release=.*', 'surface_candidate_release=stale', build, flags=re.M)),
              ('', build)]
     for index, (broken_spec, broken_build) in enumerate(cases):

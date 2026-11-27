@@ -6,8 +6,8 @@ import gi
 gi.require_version('Adw', '1')
 gi.require_version('Gtk', '4.0')
 from gi.repository import Adw, Gio, GLib, Gtk
-from luma_appkit import Command, CommandGroup, CommandRegistry, Menu, install_appkit
-from luma_appkit.window_frame import WindowIdentity
+from Suno_appkit import Command, CommandGroup, CommandRegistry, Menu, install_appkit
+from Suno_appkit.window_frame import WindowIdentity
 
 
 def descendants(widget):
@@ -62,8 +62,8 @@ for _ in range(2):
     GLib.timeout_add(180, lambda: (loop.quit(), False)[1])
     loop.run()
 assert menu.get_mapped()
-rows = [w for w in descendants(menu) if w.has_css_class('luma-menu-row')]
-marks = [w for w in descendants(menu) if w.has_css_class('luma-menu-check')]
+rows = [w for w in descendants(menu) if w.has_css_class('Suno-menu-row')]
+marks = [w for w in descendants(menu) if w.has_css_class('Suno-menu-check')]
 labels = {w.get_label(): w for w in descendants(menu) if isinstance(w, Gtk.Label)}
 assert len(rows) == 4 and len(marks) == 2
 assert all(mark.get_pixel_size() == 16 for mark in marks)
@@ -82,7 +82,7 @@ for index, label in ((2, 'Copy result'), (3, 'Clear tape')):
 
 # Full menus retain the existing 14px check; the compact styling has no effect.
 ordinary = Menu(registry, variant='app')
-ordinary_marks = [w for w in descendants(ordinary) if w.has_css_class('luma-menu-check')]
+ordinary_marks = [w for w in descendants(ordinary) if w.has_css_class('Suno-menu-check')]
 assert len(ordinary_marks) == 2 and all(mark.get_pixel_size() == 14 for mark in ordinary_marks)
 menu.popdown()
 window.destroy()

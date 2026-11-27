@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Project Luma <engineering@projectluma.org>
+From: Project Suno <engineering@projectSuno.org>
 Date: Tue, 24 Nov 2026 23:00:00 -0600
-Subject: [PATCH] lumaSession: callers are held by the broker's pidfd
+Subject: [PATCH] SunoSession: callers are held by the broker's pidfd
 
 callerIdentity took the caller's pid from GetConnectionUnixProcessID and read
 /proc/<pid>, so a caller that exited mid-check could have its pid taken by
@@ -9,22 +9,22 @@ another process, whose namespace, Flatpak info and app scope were then read
 as the caller's. It now takes GetConnectionCredentials with its ProcessFD,
 refuses another user, and checks that the pidfd still refers to that pid,
 and that the process isn't a zombie, before and after reading the process's
-details (as luma-shell-state does). A caller that is gone is refused.
+details (as Suno-shell-state does). A caller that is gone is refused.
 
 A caller whose details can't be read (in practice a non-dumpable process:
 its mount namespace and root need ptrace-read access) is refused on purpose
 by every method rather than read as sandboxed or as the system. A broker
-without ProcessFD is trusted on the pid alone, as luma-shell-state does; one
+without ProcessFD is trusted on the pid alone, as Suno-shell-state does; one
 that names a ProcessFD it didn't send is refused. .flatpak-info is read only
 if it is a regular file, so a planted FIFO can't block the compositor.
 Restore's refusals are ACCESS_DENIED like the other methods', and each
 refusal is logged once.
 
 ---
-diff --git a/js/ui/lumaSession.js b/js/ui/lumaSession.js
+diff --git a/js/ui/SunoSession.js b/js/ui/SunoSession.js
 index abdcb46..b716db3 100644
---- a/js/ui/lumaSession.js
-+++ b/js/ui/lumaSession.js
+--- a/js/ui/SunoSession.js
++++ b/js/ui/SunoSession.js
 @@ -276,35 +276,151 @@ function decodeScope(text) {
      return text.replace(/\\x([0-9a-f]{2})/gi, (_m, hex) => String.fromCharCode(parseInt(hex, 16)));
  }
@@ -63,7 +63,7 @@ index abdcb46..b716db3 100644
 +
 +// The caller's uid, pid and pidfd as the bus broker took them when it
 +// connected (GetConnectionCredentials). A broker that sends no ProcessFD
-+// leaves the pid alone (as luma-shell-state); one that names a ProcessFD
++// leaves the pid alone (as Suno-shell-state); one that names a ProcessFD
 +// it didn't send is refused.
 +async function callerCredentials(sender) {
 +    const [result, fdList] = await Gio.DBus.session.call_with_unix_fd_list('org.freedesktop.DBus',
@@ -119,7 +119,7 @@ index abdcb46..b716db3 100644
 +    if (loggedRefusals.has(key) || loggedRefusals.size >= 256)
 +        return;
 +    loggedRefusals.add(key);
-+    log(`lumaSession: refused ${sender} (pid ${pid}): ${reason}`);
++    log(`SunoSession: refused ${sender} (pid ${pid}): ${reason}`);
 +}
 +
 +// Who a D-Bus caller is: its process, whether it is sandboxed (another mount
@@ -177,7 +177,7 @@ index abdcb46..b716db3 100644
 +            } catch {
 +                throw unreadable('cgroup');
 +            }
-             const match = text.match(/app-(?:gnome|flatpak|luma)-(.+?)-[0-9a-z]+\.scope/);
+             const match = text.match(/app-(?:gnome|flatpak|Suno)-(.+?)-[0-9a-z]+\.scope/);
              if (match)
                  appId = decodeScope(match[1]).replace(/\.desktop$/, '');
 -        } catch {}
@@ -197,7 +197,7 @@ index abdcb46..b716db3 100644
  }
  
  function sameApp(a, b) {
-@@ -1243,6 +1359,11 @@ export class LumaSession {
+@@ -1243,6 +1359,11 @@ export class SunoSession {
      async RestoreAsync([text, mode], invocation) {
          try {
              await this._requireHost(invocation);

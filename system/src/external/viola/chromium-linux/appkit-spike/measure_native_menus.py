@@ -10,7 +10,7 @@ from http.server import ThreadingHTTPServer
 import gi
 gi.require_version('Gtk', '4.0')
 from gi.repository import Gtk
-from luma_appkit import install_appkit
+from Suno_appkit import install_appkit
 from browser_services import BrowserServices
 from engine_pipe import EnginePipe
 from native_menu import NativeMenu

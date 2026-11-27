@@ -1,0 +1,12 @@
+--- a/gtk3.spec
++++ b/gtk3.spec
+@@ -35 +35 @@
+-Release: %autorelease
++Release: 2.Suno.10%{?dist}
+@@ -43,0 +44,6 @@
++Patch1000: 0001-Suno-generic-application-identity.patch
++Patch1001: 0002-Suno-native-application-surfaces.patch
++Patch1002: 0003-Suno-generic-command-row.patch
++Patch1003: 0004-Suno-title-slot-and-paned-islands.patch
++Patch1004: 0005-Suno-identity-title-and-window-gutter.patch
++Patch1005: 0006-Suno-frame-child-clipping.patch

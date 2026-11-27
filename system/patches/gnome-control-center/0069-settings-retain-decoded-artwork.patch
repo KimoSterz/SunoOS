@@ -1,10 +1,10 @@
 Subject: [PATCH] Settings: retain local artwork through live page refreshes
 
---- a/shell/cc-luma-view-image.c
-+++ b/shell/cc-luma-view-image.c
+--- a/shell/cc-Suno-view-image.c
++++ b/shell/cc-Suno-view-image.c
 @@ -1,10 +1,12 @@
  /* SPDX-License-Identifier: GPL-2.0-or-later */
- #include "cc-luma-view-private.h"
+ #include "cc-Suno-view-private.h"
 +#include <glib/gstdio.h>
  
  typedef struct {
@@ -55,17 +55,17 @@ Subject: [PATCH] Settings: retain local artwork through live page refreshes
 +  if (!root) return;
    View *v = g_object_get_data (G_OBJECT (root), "cf-view");
 -  if (!v || v->generation != job->generation || g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) return;
--  if (!image) { cc_luma_view_report_error (v, error); return; }
+-  if (!image) { cc_Suno_view_report_error (v, error); return; }
 +  if (!v) return;
 +  if (!image)
 +    {
 +      if (picture && v->generation == job->generation &&
 +          !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
-+        cc_luma_view_report_error (v, error);
++        cc_Suno_view_report_error (v, error);
 +      return;
 +    }
    g_autoptr (GdkTexture) texture = gdk_texture_new_for_pixbuf (image);
-   g_autoptr (GdkPaintable) normalized = job->application ? luma_application_icon_new (GDK_PAINTABLE (texture)) : NULL;
+   g_autoptr (GdkPaintable) normalized = job->application ? Suno_application_icon_new (GDK_PAINTABLE (texture)) : NULL;
 -  gtk_picture_set_paintable (GTK_PICTURE (picture), normalized ? normalized : GDK_PAINTABLE (texture));
 +  GdkPaintable *paintable = normalized ? normalized : GDK_PAINTABLE (texture);
 +  if (job->cache_key)
@@ -79,7 +79,7 @@ Subject: [PATCH] Settings: retain local artwork through live page refreshes
 +  if (picture && v->generation == job->generation)
 +    gtk_picture_set_paintable (GTK_PICTURE (picture), paintable);
  }
- GtkWidget *cc_luma_view_image (View *v, const char *asset, int width, int height)
+ GtkWidget *cc_Suno_view_image (View *v, const char *asset, int width, int height)
  {
 @@ -58,7 +100,18 @@
      }
@@ -101,10 +101,10 @@ Subject: [PATCH] Settings: retain local artwork through live page refreshes
    g_task_set_task_data (task, job, (GDestroyNotify) image_job_free);
    g_task_run_in_thread (task, decode_image);
    return picture;
---- a/shell/test-luma-view.c
-+++ b/shell/test-luma-view.c
+--- a/shell/test-Suno-view.c
++++ b/shell/test-Suno-view.c
 @@ -652,6 +652,119 @@
-   g_assert_null (cc_luma_fixture_asset_path (model, "../../private-data", &error));
+   g_assert_null (cc_Suno_fixture_asset_path (model, "../../private-data", &error));
    g_assert_error (error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT);
    g_object_unref (view); drain ();
 +  remove_asset_fixture (dir);
@@ -117,10 +117,10 @@ Subject: [PATCH] Settings: retain local artwork through live page refreshes
 +  g_autoptr (GdkPixbuf) pixels = gdk_pixbuf_new (GDK_COLORSPACE_RGB, TRUE, 8, 32, 32);
 +  gdk_pixbuf_fill (pixels, 0xaa3322ff);
 +  g_assert_true (gdk_pixbuf_save (pixels, path, "png", NULL, NULL));
-+  g_autoptr (CcLumaFixture) model = cc_luma_fixture_load (json, NULL);
-+  GtkWidget *view = g_object_ref_sink (cc_luma_view_new (model, "wifi", NULL));
++  g_autoptr (CcSunoFixture) model = cc_Suno_fixture_load (json, NULL);
++  GtkWidget *view = g_object_ref_sink (cc_Suno_view_new (model, "wifi", NULL));
 +  View *v = g_object_get_data (G_OBJECT (view), "cf-view");
-+  GtkWidget *picture = cc_luma_view_image (v, "prism", 128, 128);
++  GtkWidget *picture = cc_Suno_view_image (v, "prism", 128, 128);
 +  gtk_box_append (v->body, picture);
 +  gint64 deadline = g_get_monotonic_time () + 2 * G_USEC_PER_SEC;
 +  while (!gtk_picture_get_paintable (GTK_PICTURE (picture)) && g_get_monotonic_time () < deadline)
@@ -129,14 +129,14 @@ Subject: [PATCH] Settings: retain local artwork through live page refreshes
 +  g_assert_nonnull (decoded);
 +  for (guint tick = 0; tick < 12; tick++)
 +    {
-+      cc_luma_view_queue_refresh (v);
++      cc_Suno_view_queue_refresh (v);
 +      wait_ms (20);
-+      picture = cc_luma_view_image (v, "prism", 128, 128);
++      picture = cc_Suno_view_image (v, "prism", 128, 128);
 +      gtk_box_append (v->body, picture);
 +      /* No asynchronous blank frame after a warmed page rebuild. */
 +      g_assert_true (gtk_picture_get_paintable (GTK_PICTURE (picture)) == decoded);
 +    }
-+  picture = cc_luma_view_image (v, "prism", 64, 64);
++  picture = cc_Suno_view_image (v, "prism", 64, 64);
 +  gtk_box_append (v->body, picture);
 +  g_assert_null (gtk_picture_get_paintable (GTK_PICTURE (picture)));
 +  wait_ms (100);
@@ -145,7 +145,7 @@ Subject: [PATCH] Settings: retain local artwork through live page refreshes
 +  /* Replacing the same asset invalidates the old cached pixels. */
 +  gdk_pixbuf_fill (pixels, 0x2255ccff);
 +  g_assert_true (gdk_pixbuf_save (pixels, path, "png", NULL, NULL));
-+  picture = cc_luma_view_image (v, "prism", 128, 128);
++  picture = cc_Suno_view_image (v, "prism", 128, 128);
 +  gtk_box_append (v->body, picture);
 +  g_assert_null (gtk_picture_get_paintable (GTK_PICTURE (picture)));
 +  wait_ms (100);
@@ -169,12 +169,12 @@ Subject: [PATCH] Settings: retain local artwork through live page refreshes
 +{
 +  g_autofree char *dir = asset_fixture ();
 +  g_autofree char *json = g_build_filename (dir, "settings.json", NULL);
-+  g_autoptr (CcLumaFixture) model = cc_luma_fixture_load (json, NULL);
-+  JsonObject *wifi = json_object_get_object_member (cc_luma_fixture_get_data (model), "CFWIFI");
++  g_autoptr (CcSunoFixture) model = cc_Suno_fixture_load (json, NULL);
++  JsonObject *wifi = json_object_get_object_member (cc_Suno_fixture_get_data (model), "CFWIFI");
 +  const char *art = json_object_get_string_member (json_object_get_object_member (wifi, "share_codes"), "Studio North");
-+  const char *files[] = { "prism.png", "meadow.png", "blue-fog.png", "ember.png", "luma-creatives.png",
-+                         "luma-v3-documents.svg", "luma-v3-browser.svg", "luma-v3-messages.svg", "luma-v3-files.svg",
-+                         "luma-v3-music.svg", "luma-v3-mail.svg", "luma-v3-photos.svg" };
++  const char *files[] = { "prism.png", "meadow.png", "blue-fog.png", "ember.png", "Suno-creatives.png",
++                         "Suno-v3-documents.svg", "Suno-v3-browser.svg", "Suno-v3-messages.svg", "Suno-v3-files.svg",
++                         "Suno-v3-music.svg", "Suno-v3-mail.svg", "Suno-v3-photos.svg" };
 +  for (guint i = 0; i < G_N_ELEMENTS (files); i++)
 +    {
 +      g_autofree char *path = g_build_filename (dir, files[i], NULL);
@@ -183,11 +183,11 @@ Subject: [PATCH] Settings: retain local artwork through live page refreshes
 +  const char *pages[] = { "appearance", "shelf" };
 +  for (guint page = 0; page < G_N_ELEMENTS (pages); page++)
 +    {
-+      GtkWidget *view = g_object_ref_sink (cc_luma_view_new (model, pages[page], NULL));
++      GtkWidget *view = g_object_ref_sink (cc_Suno_view_new (model, pages[page], NULL));
 +      View *v = g_object_get_data (G_OBJECT (view), "cf-view");
 +      /* Fixtures do not subscribe to live owners. Use the production signal
 +       * binding here and assert every event actually rebuilt the generation. */
-+      v->model_changed = g_signal_connect_swapped (model, "changed", G_CALLBACK (cc_luma_view_queue_refresh), v);
++      v->model_changed = g_signal_connect_swapped (model, "changed", G_CALLBACK (cc_Suno_view_queue_refresh), v);
 +      guint count = 0;
 +      gint64 deadline = g_get_monotonic_time () + 2 * G_USEC_PER_SEC;
 +      while (!all_artwork_ready (view, &count) && g_get_monotonic_time () < deadline)
@@ -212,7 +212,7 @@ Subject: [PATCH] Settings: retain local artwork through live page refreshes
 +          g_assert_true (all_artwork_ready (view, &count));
 +          g_assert_cmpuint (count, >, 0);
 +        }
-+      g_assert_null (cc_luma_view_get_error (view));
++      g_assert_null (cc_Suno_view_get_error (view));
 +      g_object_unref (view); drain ();
 +    }
 +  for (guint i = 1; i < G_N_ELEMENTS (files); i++)

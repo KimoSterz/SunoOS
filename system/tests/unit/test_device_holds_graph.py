@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Per-device update holds: state file -> signed generic graph -> luma-update."""
+"""Per-device update holds: state file -> signed generic graph -> Suno-update."""
 import contextlib
 import io
 import json
@@ -14,15 +14,15 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 LIB = ROOT / "scripts/os/lib"
 sys.path.insert(0, str(LIB))
-sys.path.insert(0, str(ROOT / "src/luma-update"))
-sys.path.insert(0, str(ROOT / "src/luma-update/tests"))
+sys.path.insert(0, str(ROOT / "src/Suno-update"))
+sys.path.insert(0, str(ROOT / "src/Suno-update/tests"))
 
 import device_holds  # noqa: E402
 import graph_from_releases  # noqa: E402
 import update_graph  # noqa: E402
 from fakes import NOW, graph_doc, release  # noqa: E402
-from luma_update import graph as client  # noqa: E402
-from luma_update import versions  # noqa: E402
+from Suno_update import graph as client  # noqa: E402
+from Suno_update import versions  # noqa: E402
 
 FP6 = "fairphone,fp6"
 V = ["1.0.0-nightly.20261117.2", "1.0.0-nightly.20261119.2", "1.0.0-nightly.20261123.2"]
@@ -34,11 +34,11 @@ class Fixture(unittest.TestCase):
         self.repo = self.root / "publish/public-repo"
         for n, version in enumerate(V):
             commit = f"{n + 1:064x}"
-            rel = self.repo / "luma/releases/aarch64" / version
+            rel = self.repo / "Suno/releases/aarch64" / version
             rel.mkdir(parents=True)
             (rel / "manifest.json").write_text(json.dumps({
                 "version": version, "commit": commit, "channel": "nightly", "architecture": "aarch64",
-                "ref": "luma/1/aarch64/nightly", "build_id": version[-10:], "published_utc": f"2026-11-2{n}T00:00:00Z"}))
+                "ref": "Suno/1/aarch64/nightly", "build_id": version[-10:], "published_utc": f"2026-11-2{n}T00:00:00Z"}))
             obj = self.repo / "objects" / commit[:2]
             obj.mkdir(parents=True, exist_ok=True)
             (obj / (commit[2:] + ".commit")).write_text("")

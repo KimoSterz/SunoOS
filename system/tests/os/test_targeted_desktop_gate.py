@@ -34,7 +34,7 @@ class TargetedAdmission(unittest.TestCase):
             self.seal(label+'-packages', body)
             p = dict(source={'revision': 'c'*40, 'dirty': False}, architecture='aarch64',
                      build_id='20261027.2', channel='nightly', recipe={'path': 'Containerfile', 'digest': release},
-                     base_image={'digest': 'fixed'}, luma_packages={'packages': []},
+                     base_image={'digest': 'fixed'}, Suno_packages={'packages': []},
                      installed_packages={'inventory_sha256': hashlib.sha256(body).hexdigest()})
             self.seal(label+'-provenance', p)
         self.seal('prior-gate', dict(commit=self.old, result='pass', fresh='pass', no_account='pass',

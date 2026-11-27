@@ -37,7 +37,7 @@ struct window {
     void* xdg_surface=nullptr;
     void request_task_resize(int, int, bool) {}
 };
-constexpr int LUMA_FRAME_GAP=8;
+constexpr int SUNO_FRAME_GAP=8;
 constexpr uint32_t XDG_TOPLEVEL_STATE_MAXIMIZED=1;
 constexpr uint32_t XDG_TOPLEVEL_STATE_RESIZING=3;
 namespace prairie {

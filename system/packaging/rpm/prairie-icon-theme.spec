@@ -2,9 +2,9 @@
 
 Name:           prairie-icon-theme
 Version:        0.1.0
-Release:        1.luma.50%{?dist}
-Summary:        Prairie application icon theme for Project Luma
-License:        CC-BY-SA-4.0 AND Apache-2.0 AND ISC AND MIT AND LicenseRef-Luma-System-Artwork-Pending
+Release:        1.Suno.50%{?dist}
+Summary:        Prairie application icon theme for Project Suno
+License:        CC-BY-SA-4.0 AND Apache-2.0 AND ISC AND MIT AND LicenseRef-Suno-System-Artwork-Pending
 URL:            https://project-luma.local/
 Source0:        index.theme
 Source1:        org.gnome.Nautilus.svg
@@ -46,7 +46,7 @@ Requires(postun): /usr/bin/gtk-update-icon-cache
 Requires(postun): /usr/bin/glib-compile-schemas
 
 %description
-Installs Project Luma's inheriting Prairie icon theme and its unlocked GNOME
+Installs Project Suno's inheriting Prairie icon theme and its unlocked GNOME
 default. The theme overrides branded application identities while retaining
 Adwaita and hicolor as complete fallbacks.
 
@@ -77,7 +77,7 @@ tar -C %{buildroot}%{_datadir}/icons/Prairie -xf %{SOURCE11}
 #
 # Previously each icon was named individually as its own Source, so artwork
 # added to the theme's asset tree was silently never packaged: twelve
-# org.projectluma.* launcher icons existed in
+# org.projectSuno.* launcher icons existed in
 # assets/icon-theme/Prairie/scalable/apps and none of them reached an installed
 # image, leaving ten core applications rendering as question marks. Shipping the
 # directory means new artwork is included by adding the file, not by remembering
@@ -113,8 +113,8 @@ python3 %{SOURCE28} --check --theme %{buildroot}%{_datadir}/icons/Prairie
 test ! -e %{buildroot}%{_datadir}/icons/Prairie/scalable/apps/firefox.svg
 test ! -e %{buildroot}%{_datadir}/icons/Prairie/scalable/apps/org.mozilla.firefox.svg
 # The actual Disks launcher identity must use the approved rounded family art.
-cmp %{buildroot}%{_datadir}/icons/Prairie/scalable/apps/org.projectluma.Disks.svg \
-    %{buildroot}%{_datadir}/icons/Prairie/scalable/apps/org.projectluma.Disks.Preview.svg
+cmp %{buildroot}%{_datadir}/icons/Prairie/scalable/apps/org.projectSuno.Disks.svg \
+    %{buildroot}%{_datadir}/icons/Prairie/scalable/apps/org.projectSuno.Disks.Preview.svg
 python3 %{SOURCE23} --payload --theme %{buildroot}%{_datadir}/icons/Prairie \
   --manifest %{SOURCE20} --integration %{SOURCE21}
 # The fills-only glyphs are one path of symbolic ink with no stroke, so GTK,
@@ -152,56 +152,56 @@ done
 %{_datadir}/glib-2.0/schemas/90-prairie.gschema.override
 
 %changelog
-* Tue Nov 24 2026 Project Luma <maintainers@projectluma.org> - 0.1.0-1.luma.49
-- Lucide airplay and filled play and pause for the LumaUI media row.
+* Tue Nov 24 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.49
+- Lucide airplay and filled play and pause for the SunoUI media row.
 
-* Mon Nov 23 2026 Project Luma <maintainers@projectluma.org> - 0.1.0-1.luma.48
+* Mon Nov 23 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.48
 - Lucide layers-2 and panel-top for Settings' On screen permissions.
 
-* Sat Nov 07 2026 Project Luma <maintainers@projectluma.org> - 0.1.0-1.luma.47
+* Sat Nov 07 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.47
 - Lucide blocks, tablet, tv, monitor-smartphone and arrow-right for Depot.
 
-* Wed Nov 04 2026 Project Luma <maintainers@projectluma.org> - 0.1.0-1.luma.46
-- Add LumaUI thermometer and tv-minimal glyphs.
+* Wed Nov 04 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.46
+- Add SunoUI thermometer and tv-minimal glyphs.
 
-* Mon Nov 02 2026 Project Luma <maintainers@projectluma.org> - 0.1.0-1.luma.45
+* Mon Nov 02 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.45
 - Add Lucide battery, signal, volume and empty Wi-Fi glyphs for the top bar.
 
-* Sun Nov 01 2026 Project Luma <maintainers@projectluma.org> - 0.1.0-1.luma.44.nightly20261030.2
+* Sun Nov 01 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.44.nightly20261030.2
 - Render application icons during packaging to avoid SVG work during launch.
 
-* Fri Oct 30 2026 Project Luma <maintainers@projectluma.org> - 0.1.0-1.luma.44.nightly20261030.1
+* Fri Oct 30 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.44.nightly20261030.1
 - Keep the shared icon package and image pins ahead of the published baseline.
 
-* Mon Oct 26 2026 Project Luma <maintainers@projectluma.org> - 0.1.0-1.luma.42
+* Mon Oct 26 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.42
 - Center wireless status glyphs within their shared icon slots.
 
-* Mon Oct 26 2026 Project Luma <maintainers@projectluma.org> - 0.1.0-1.luma.41
+* Mon Oct 26 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.41
 - Provide the launcher folder name and kind sorting icons.
 
-* Mon Oct 26 2026 Project Luma <maintainers@projectluma.org> - 0.1.0-1.luma.40
+* Mon Oct 26 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.40
 - Package the October 26 shared source updates.
 
-* Mon Oct 05 2026 Project Luma <maintainers@projectluma.org> - 0.1.0-1.luma.36.creator20261005.1
+* Mon Oct 05 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.36.creator20261005.1
 - Resolve the Disks Preview launcher through the canonical rounded Disks artwork.
 
-* Sat Sep 26 2026 Project Luma <maintainers@projectluma.org> - 0.1.0-1.luma.35.creator20261004.1
+* Sat Sep 26 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.35.creator20261004.1
 - Adds the airplane and hotspot (radio tower) glyphs Quick Options draws.
 
-* Sat Sep 26 2026 Project Luma <maintainers@projectluma.org> - 0.1.0-1.luma.33
+* Sat Sep 26 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.33
 - Approved icon family.
 
-* Sat Sep 26 2026 Project Luma <maintainers@projectluma.org> - 0.1.0-1.luma.32
-- Latest LumaUI glyphs.
+* Sat Sep 26 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.32
+- Latest SunoUI glyphs.
 
-* Sat Sep 26 2026 Project Luma <maintainers@projectluma.org> - 0.1.0-1.luma.31
-- Carries the latest LumaUI glyphs.
+* Sat Sep 26 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.31
+- Carries the latest SunoUI glyphs.
 
-* Sat Sep 26 2026 Project Luma <maintainers@projectluma.org> - 0.1.0-1.luma.30
-- LumaUI glyphs: every Lucide icon the redesigned apps and Shell use, under stable symbolic names.
+* Sat Sep 26 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.30
+- SunoUI glyphs: every Lucide icon the redesigned apps and Shell use, under stable symbolic names.
 
-* Fri Sep 18 2026 Project Luma <maintainers@projectluma.org> - 0.1.0-1.luma.29
-- Add nine standard symbolic names Luma apps and the shell use that Adwaita 50
+* Fri Sep 18 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.29
+- Add nine standard symbolic names Suno apps and the shell use that Adwaita 50
   no longer ships, so they stop drawing broken-image placeholders:
   cursor-default and draw-freehand (Layouts tools), edit-rename (Notes),
   emblem-default (Ari), emblem-shared (Layouts), emblem-synchronizing (live
@@ -214,10 +214,10 @@ done
   in the navigation manifest.
 - Give the Android application installer and its settings panel icons: the
   launcher's application-x-apk and APK files take the approved package
-  artwork, and org.projectluma.AndroidSettings takes the Settings artwork.
+  artwork, and org.projectSuno.AndroidSettings takes the Settings artwork.
   Both launchers had no icon in any installed theme.
 
-* Wed Sep 16 2026 Project Luma <builds@project-luma.local> - 0.1.0-1.luma.28
+* Wed Sep 16 2026 Project Suno <builds@project-suno.local> - 0.1.0-1.Suno.28
 - Add the pan family GTK and the kit name for disclosure and menu chevrons:
   pan-down (chevron-down), pan-up (chevron-up), pan-start (chevron-left) and
   pan-end (chevron-right), plus the pan-start and pan-end -symbolic-rtl mirrors
@@ -227,7 +227,7 @@ done
 - Their exact Lucide sources are vendored in upstream/lucide/pan and digested
   in the navigation manifest.
 
-* Wed Sep 16 2026 Project Luma <builds@project-luma.local> - 0.1.0-1.luma.27
+* Wed Sep 16 2026 Project Suno <builds@project-suno.local> - 0.1.0-1.Suno.27
 - Add the glyphs Messages, Contacts and Phone name, under their standard names,
   from Lucide: mail-attachment (paperclip), mail-send (send-horizontal),
   call-start (phone), camera-video (video), avatar-default (user),
@@ -235,7 +235,7 @@ done
   audio-input-microphone (mic), emblem-favorite (heart), view-refresh
   (rotate-cw), dialog-warning (triangle-alert), emblem-ok (check), go-next
   (chevron-right, with its -rtl mirror from chevron-left), phone (smartphone),
-  mail-message-new (message-square), and luma-business (building-2) for a
+  mail-message-new (message-square), and Suno-business (building-2) for a
   short-code sender's avatar; and edit-clear (x), object-select (check) and
   go-previous (chevron-left, -rtl from chevron-right), which GTK's search
   entry, drop-down and Adwaita's back button name. They fell through to stock
@@ -246,7 +246,7 @@ done
 - assets/icon-theme/tools/adapt-lucide-symbolic.py records the adaptation; it
   reproduces the transport row byte for byte.
 
-* Tue Sep 15 2026 Project Luma <builds@project-luma.local> - 0.1.0-1.luma.26
+* Tue Sep 15 2026 Project Suno <builds@project-suno.local> - 0.1.0-1.Suno.26
 - Add the media transport row under its standard names, from Lucide's shuffle,
   skip-back, play, pause, skip-forward and repeat, with the two -symbolic-rtl
   skip mirrors Adwaita 50 also ships. Every player and the Shell's media island
@@ -255,13 +255,13 @@ done
 - Vendor those upstream Lucide SVGs and digest them in the navigation manifest,
   so the ISC geometry each glyph claims is verifiable from the SRPM alone.
 - Re-sync the eight bundled application identities that had drifted from the
-  6 September canvas. Release 1.luma.25 was pinned but never built; the spec
-  still read 1.luma.25.
-* Mon Sep 07 2026 Project Luma <builds@project-luma.local> - 0.1.0-1.luma.23
+  6 September canvas. Release 1.Suno.25 was pinned but never built; the spec
+  still read 1.Suno.25.
+* Mon Sep 07 2026 Project Suno <builds@project-suno.local> - 0.1.0-1.Suno.23
 - Package 51 approved system icon names with exact-byte provenance and payload checks
 - Preserve current application, symbolic, and full Trash artwork
 
-* Thu Sep 03 2026 Project Luma <maintainers@projectluma.org> - 0.1.0-1.luma.19
+* Thu Sep 03 2026 Project Suno <maintainers@projectSuno.org> - 0.1.0-1.Suno.19
 - Describe and ship what the browser tile actually is. The installed icon is
   original Prairie geometry — the shared tile gradient, the house bloom and an
   authored globe — and embeds no Mozilla artwork. The package nevertheless
@@ -273,55 +273,55 @@ done
   keeps its ISC terms and its licence file. Git history retains the original
   asset and its attribution.
 
-* Thu Sep 03 2026 Project Luma <builds@project-luma.local> - 0.1.0-1.luma.18
+* Thu Sep 03 2026 Project Suno <builds@project-suno.local> - 0.1.0-1.Suno.18
 - Package the complete Prairie application artwork directory and validate the
   current 1024px authoring canvas without rewriting the legacy Filer source.
 
-* Mon Aug 31 2026 Project Luma <builds@project-luma.local> - 0.1.0-1.luma.17
+* Mon Aug 31 2026 Project Suno <builds@project-suno.local> - 0.1.0-1.Suno.17
 - Refine the native window minimize, maximize, and restore glyph geometry
 
-* Mon Aug 31 2026 Project Luma <builds@project-luma.local> - 0.1.0-1.luma.16
+* Mon Aug 31 2026 Project Suno <builds@project-suno.local> - 0.1.0-1.Suno.16
 - Expand window-control strokes to fill-safe GTK symbolic geometry.
 
-* Mon Aug 31 2026 Project Luma <builds@project-luma.local> - 0.1.0-1.luma.14
+* Mon Aug 31 2026 Project Suno <builds@project-suno.local> - 0.1.0-1.Suno.14
 - Add the canonical simulator window-control glyphs under GTK standard names
 
-* Sun Aug 30 2026 Project Luma <builds@project-luma.local> - 0.1.0-1.luma.13
+* Sun Aug 30 2026 Project Suno <builds@project-suno.local> - 0.1.0-1.Suno.13
 - Align the installed Filer application icon with the canonical simulator art
 
-* Sat Aug 15 2026 Project Luma <builds@project-luma.local> - 0.1.0-1.luma.12
+* Sat Aug 15 2026 Project Suno <builds@project-suno.local> - 0.1.0-1.Suno.12
 - Add complete modern and legacy Prairie battery status families
 
-* Mon Aug 10 2026 Project Luma <builds@project-luma.local> - 0.1.0-1.luma.11
+* Mon Aug 10 2026 Project Suno <builds@project-suno.local> - 0.1.0-1.Suno.11
 - Add full-colour and symbolic Prairie Calculator artwork under its upstream ID
 
-* Mon Aug 10 2026 Project Luma <builds@project-luma.local> - 0.1.0-1.luma.10
+* Mon Aug 10 2026 Project Suno <builds@project-suno.local> - 0.1.0-1.Suno.10
 - Add byte-identical Applications-context aliases for the native dock tile
 
-* Mon Aug 10 2026 Project Luma <builds@project-luma.local> - 0.1.0-1.luma.9
+* Mon Aug 10 2026 Project Suno <builds@project-suno.local> - 0.1.0-1.Suno.9
 - Add Prairie empty and full Trash artwork under canonical Places names
 
-* Mon Aug 10 2026 Project Luma <builds@project-luma.local> - 0.1.0-1.luma.8
+* Mon Aug 10 2026 Project Suno <builds@project-suno.local> - 0.1.0-1.Suno.8
 - Use the final native 16px connected-network symbolic artwork
 
-* Mon Aug 10 2026 Project Luma <builds@project-luma.local> - 0.1.0-1.luma.7
+* Mon Aug 10 2026 Project Suno <builds@project-suno.local> - 0.1.0-1.Suno.7
 - Replace status glyphs with native 16px fill-only symbolic artwork
 
-* Mon Aug 10 2026 Project Luma <builds@project-luma.local> - 0.1.0-1.luma.6
+* Mon Aug 10 2026 Project Suno <builds@project-suno.local> - 0.1.0-1.Suno.6
 - Add a Prairie connected-wired glyph for virtual and Ethernet systems
 
-* Mon Aug 10 2026 Project Luma <builds@project-luma.local> - 0.1.0-1.luma.5
+* Mon Aug 10 2026 Project Suno <builds@project-suno.local> - 0.1.0-1.Suno.5
 - Use GNOME's canonical symbolic foreground ink for Shell recoloring
 
-* Mon Aug 10 2026 Project Luma <builds@project-luma.local> - 0.1.0-1.luma.4
+* Mon Aug 10 2026 Project Suno <builds@project-suno.local> - 0.1.0-1.Suno.4
 - Add Prairie Wi-Fi, volume, and power symbolic status glyph families
 
-* Sun Aug 09 2026 Project Luma <builds@project-luma.local> - 0.1.0-1.luma.3
+* Sun Aug 09 2026 Project Suno <builds@project-suno.local> - 0.1.0-1.Suno.3
 - Add Prairie's Firefox tile around unchanged official Mozilla 2019 artwork
 
-* Sun Aug 09 2026 Project Luma <builds@project-luma.local> - 0.1.0-1.luma.2
+* Sun Aug 09 2026 Project Suno <builds@project-suno.local> - 0.1.0-1.Suno.2
 - Replace the exploratory icon with the exact canonical prairie-os.html asset
 
-* Sun Aug 09 2026 Project Luma <builds@project-luma.local> - 0.1.0-1.luma.1
+* Sun Aug 09 2026 Project Suno <builds@project-suno.local> - 0.1.0-1.Suno.1
 - Add the inheriting Prairie theme, Filer full-color and symbolic artwork,
   and the unlocked GNOME icon-theme default

@@ -1,6 +1,6 @@
-diff --git a/js/ui/lumaGrid.js b/js/ui/lumaGrid.js
---- a/js/ui/lumaGrid.js
-+++ b/js/ui/lumaGrid.js
+diff --git a/js/ui/SunoGrid.js b/js/ui/SunoGrid.js
+--- a/js/ui/SunoGrid.js
++++ b/js/ui/SunoGrid.js
 @@ -521,6 +521,7 @@
              this._geometry = null;
              this._wallpaperManagers.forEach(manager => manager.destroy());
@@ -36,7 +36,7 @@ diff --git a/js/ui/lumaGrid.js b/js/ui/lumaGrid.js
 +            // a backdrop together with windows hidden leaves the stage without
 +            // opaque coverage and makes Home show through card textures.
 +            this.remove_child(this._wallpaper);
-+            this._wallpaper.name = 'luma-mobile-switcher-backdrop';
++            this._wallpaper.name = 'Suno-mobile-switcher-backdrop';
 +            this._wallpaper.add_constraint(new Clutter.BindConstraint({
 +                source: global.stage, coordinate: Clutter.BindCoordinate.ALL}));
 +            Main.uiGroup.insert_child_below(this._wallpaper, Main.presentation._home);

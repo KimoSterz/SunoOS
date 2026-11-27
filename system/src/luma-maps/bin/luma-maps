@@ -1,3 +1,0 @@
-#!/usr/bin/python3
-from luma_maps.application import main
-raise SystemExit(main())

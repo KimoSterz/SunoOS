@@ -20,7 +20,7 @@ import time
 
 from gi.repository import Gdk, GLib, Gtk
 
-from luma_appkit.bar_panel import PanelRow, panel_list
+from Suno_appkit.bar_panel import PanelRow, panel_list
 from page_input import KEY_NAMES, PHYSICAL_KEYS, modifiers
 
 EXTENSION_ID_LENGTH = 32
@@ -256,7 +256,7 @@ class NativeExtensions:
         return extension_rows(self.host.state)
 
     def icon_widget(self, row, size=ICON_SIZE):
-        image = Gtk.Image(icon_name='lumaui-blocks-symbolic', pixel_size=size,
+        image = Gtk.Image(icon_name='SunoUI-blocks-symbolic', pixel_size=size,
                           accessible_role=Gtk.AccessibleRole.PRESENTATION)
         image.add_css_class('viola-extension-icon')
         url = row.get('icon')
@@ -292,7 +292,7 @@ class NativeExtensions:
 
     def bar_button(self, row):
         button = Gtk.Button(child=self.icon_widget(row), valign=Gtk.Align.CENTER)
-        button.add_css_class('lumaui-bar-action')
+        button.add_css_class('SunoUI-bar-action')
         button.add_css_class('viola-extension-action')
         button.set_tooltip_text(row['name'])
         button.update_property([Gtk.AccessibleProperty.LABEL], [row['name']])

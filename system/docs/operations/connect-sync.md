@@ -1,7 +1,7 @@
 # Connect Sync: operations (ADR-054 Phase 1)
 
-Device: `src/luma-connect-sync` (user service `luma-connect-syncd`, command
-`luma-connect-sync`). Hub: website repo `deploy/hub/connect-sync/`, the
+Device: `src/Suno-connect-sync` (user service `Suno-connect-syncd`, command
+`Suno-connect-sync`). Hub: website repo `deploy/hub/connect-sync/`, the
 `/api/sync/v1/` module with `sync.sqlite` and `sync-blobs/` in the Hub's
 state folder.
 
@@ -20,11 +20,11 @@ the other Hub backups.
 ## Keys a person holds
 
 - Each device: its keys and the account key bundle as `systemd-creds --user`
-  sealed files in `~/.local/share/luma/sync/keys/` (items from an older
+  sealed files in `~/.local/share/Suno/sync/keys/` (items from an older
   build's login keyring move there on first read). Apps can't read them.
 - The recovery key: 24 words shown once at turn-on, kept sealed only on the
   device that made them (Settings shows them behind a password check).
-  Luma can't recover it. Losing every device and the words loses synced
+  Suno can't recover it. Losing every device and the words loses synced
   data; the account itself is unaffected. Removing the device that kept the
   words makes new ones on the remover.
 
@@ -43,12 +43,12 @@ signed zone heads (ADR-054 Phase 3).
 
 | Case | What to do |
 | --- | --- |
-| A device was lost or sold | Remove it from another device (Settings > Connect > Sync > Devices, or `luma-sync revoke <id>`). The others get a new account key at once. |
+| A device was lost or sold | Remove it from another device (Settings > Connect > Sync > Devices, or `Suno-sync revoke <id>`). The others get a new account key at once. |
 | A device was away while another was removed twice | It can't follow two key changes; it shows "join again". Join with a code or the recovery key. |
 | "That key doesn't match this account" | The words belong to another account or are mistyped; numbering and capitals don't matter. |
 | Storage full | New changes stay on the device; Settings shows the usage. Per-app "Delete synced data" frees space without touching the device. |
-| An app's state conflicted | The newer copy is used; the other is in `~/.local/share/luma/connect-sync/versions/<app>/` for 30 days (`luma-sync conflicts`). |
-| Delete everything synced | Needs the recovery key: `luma-sync delete-account` (or Settings > Delete synced data) signs `DELETE /api/sync/v1/account`; account deletion does the same through the Hub's hook. |
+| An app's state conflicted | The newer copy is used; the other is in `~/.local/share/Suno/connect-sync/versions/<app>/` for 30 days (`Suno-sync conflicts`). |
+| Delete everything synced | Needs the recovery key: `Suno-sync delete-account` (or Settings > Delete synced data) signs `DELETE /api/sync/v1/account`; account deletion does the same through the Hub's hook. |
 
 ## Limits
 

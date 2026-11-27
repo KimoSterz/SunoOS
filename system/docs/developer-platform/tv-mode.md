@@ -1,6 +1,6 @@
 # TV Mode for applications
 
-TV Mode is a posture of the Luma shell, beside desktop, tablet and phone. It
+TV Mode is a posture of the Suno shell, beside desktop, tablet and phone. It
 is not a separate shell, session or application catalogue, and a TV app is
 not a separate app: an application gains a TV presentation and shows it while
 the shell is in TV posture. The same application ID, package and data serve
@@ -8,10 +8,10 @@ every posture.
 
 ## Posture
 
-The shell owns the setting (`luma-shell-state`, key `posture`: `automatic` or
-`tv`). Turn it on with `luma-shell-statectl set posture tv` and off with
-`luma-shell-statectl set posture auto`. The switch is live; nothing logs out.
-A device that declares itself a television (`tv` in `/etc/luma-device-class`)
+The shell owns the setting (`Suno-shell-state`, key `posture`: `automatic` or
+`tv`). Turn it on with `Suno-shell-statectl set posture tv` and off with
+`Suno-shell-statectl set posture auto`. The switch is live; nothing logs out.
+A device that declares itself a television (`tv` in `/etc/Suno-device-class`)
 starts in TV posture while the setting is Automatic.
 
 Posture is independent of presentation. A TV is a desktop presentation
@@ -19,15 +19,15 @@ underneath, so `AppContext.presentation`, `mobile_form_factor()` callers that
 expect a computer, and width breakpoints behave as on a desktop. In TV posture
 `mobile_form_factor()` is always false.
 
-Applications ask LumaUI, never the screen size or aspect:
+Applications ask SunoUI, never the screen size or aspect:
 
 ```python
-from luma_appkit import lumaui
+from Suno_appkit import SunoUI
 
-if lumaui.tv_posture():
+if SunoUI.tv_posture():
     show_tv_presentation()
 
-stop = lumaui.watch_posture(lambda tv: show_tv_presentation() if tv else show_normal())
+stop = SunoUI.watch_posture(lambda tv: show_tv_presentation() if tv else show_normal())
 ```
 
 An `AppWindow` carries the same fact as the `tv-posture` property:
@@ -38,7 +38,7 @@ window.connect("notify::tv-posture", lambda w, _p: switch(w.tv_posture))
 
 `AppContext.posture` is `"tv"` or `""` (`AppContext.tv` is the boolean). The
 live value comes from the shell-state `Posture` D-Bus property through the
-session context every `AppWindow` already follows. `LUMA_POSTURE=tv` forces TV
+session context every `AppWindow` already follows. `SUNO_POSTURE=tv` forces TV
 posture for tests, reviews and capture harnesses. Without the shell-state
 service or schema (another distribution, a sandbox without the bus name) the
 posture is never TV.
@@ -49,12 +49,12 @@ not dim or blank on its own. A delay the person chose is kept.
 
 ## What every window gets in TV posture
 
-- The shell runs the window full screen. LumaUI drops the title row and window
-  controls, and adds the `lumaui-tv` style class to the window.
+- The shell runs the window full screen. SunoUI drops the title row and window
+  controls, and adds the `SunoUI-tv` style class to the window.
 - Back that nothing inside the window handled (Escape or the remote's Back key
   reaching the window itself) minimises it, which returns to the TV home's
   Apps page. A presentation with its own levels handles Back itself until it
-  is at its top level. Any application, LumaUI or not, can return to the TV
+  is at its top level. Any application, SunoUI or not, can return to the TV
   home by minimising; the TV home shows whenever no app window does.
 - No hover-only affordances: TV is driven by a remote or a gamepad (arrows,
   OK, Back); see "Remotes and gamepads".
@@ -66,16 +66,16 @@ not dim or blank on its own. A delay the person chose is kept.
   off the window edge beside the page (Up/Down in the island opens each page,
   Right steps into the page while the island stays open beside it, Back returns).
   A window showing one island and no sidebar (a welcome, an error) is drawn
-  centred in the safe area. `LumaApplicationWindow` (C) and `AppWindow`
-  (luma_appkit: `IslandSplitView` or a box with a `NavigationSidebar` beside an
+  centred in the safe area. `SunoApplicationWindow` (C) and `AppWindow`
+  (Suno_appkit: `IslandSplitView` or a box with a `NavigationSidebar` beside an
   `Island`) do this themselves; other toolkits call
-  `luma_window_set_tv_frame()` and `luma_window_set_tv_active()` (API level 9).
+  `Suno_window_set_tv_frame()` and `Suno_window_set_tv_active()` (API level 9).
   A window showing its own TV presentation (`TvStage`) is left alone.
 
 ## Desktop sidebar apps: the floating island
 
-A `LumaApplicationWindow` whose body is a `LumaNavigationSidebar` beside a
-`LumaIsland` page needs no TV code (C kit, `luma-tv-frame.c`; Settings is the
+A `SunoApplicationWindow` whose body is a `SunoNavigationSidebar` beside a
+`SunoIsland` page needs no TV code (C kit, `Suno-tv-frame.c`; Settings is the
 first user, the `test-tv-island` "Pantry" fixture the second):
 
 - The sidebar lifts into a floating island (bar material, radius 36, rows 68
@@ -88,10 +88,10 @@ first user, the `test-tv-island` "Pantry" fixture the second):
   the plate's top and bottom while more lies past them (`tv.scroll` fade_top
   each way), the plate itself whole; the remote never rests in a fade, as the
   list scrolls on so the row is whole and the next one peeks. The frame does
-  this for any sidebar, a `LumaNavigationSidebar` or an app's own (told by the
-  `lumaui-tv-island` class).
+  this for any sidebar, a `SunoNavigationSidebar` or an app's own (told by the
+  `SunoUI-tv-island` class).
 - The page keeps the desktop's order and draws its parts at TV size. Name them
-  with `luma_ui_set_part`: `header`, `back`, `hero`, `group`, `card`, `row`,
+  with `Suno_ui_set_part`: `header`, `back`, `hero`, `group`, `card`, `row`,
   and for rows of choices drawn as themselves `chips` (the row's container),
   `chip` (a picture: a wallpaper) and `swatch` (a colour). libadwaita's
   preference groups, boxed lists and rows are named automatically. A lead that
@@ -109,19 +109,19 @@ first user, the `test-tv-island` "Pantry" fixture the second):
   keyboard once the page has shrunk.
 - The page fades out at an edge only while content continues past it
   (`tv.scroll`: fade_top at the top, fade_bottom at the bottom, eased; the
-  page's and the island's fades are one implementation, `luma-tv-fade.c`).
+  page's and the island's fades are one implementation, `Suno-tv-fade.c`).
 - A page whose Back is not a visible control (up a level, end a search) gives
-  the page an unfocusable `lumaui-part-back` button, never drawn; the frame
+  the page an unfocusable `SunoUI-part-back` button, never drawn; the frame
   presses it on Back. With none, Back returns to the island.
 - Sandboxed apps get the room too: inside a Flatpak the room reads the
-  person's wallpaper through `/run/host`, and Luma's default wallpaper (set in
+  person's wallpaper through `/run/host`, and Suno's default wallpaper (set in
   the system dconf database, which a sandbox can't read) when the person
   hasn't chosen one.
 
 ### The action bar on a TV
 
-An app's `LumaActionCenter` attached to the page's layer host
-(`luma_action_center_attach`) is the TV's action bar, with no TV code in the
+An app's `SunoActionCenter` attached to the page's layer host
+(`Suno_action_center_attach`) is the TV's action bar, with no TV code in the
 app:
 
 - It is hidden until asked for: the remote's menu key, or OK held 0.5 s on an
@@ -137,59 +137,59 @@ app:
   from, which stays a chip beneath the bar while the bar acts on it; if that
   item has gone, the page takes the remote.
 - It is drawn at TV size (the mockups' `.tv-ab`). A grown row of chips or
-  tiles (`luma_panel_choices`, `luma_bar_tiles`) is one centred line with its
+  tiles (`Suno_panel_choices`, `Suno_bar_tiles`) is one centred line with its
   heading first; a tile is a chip with its words and its quiet second line
-  (`luma_bar_tile_set_subtitle`) side by side, dimmed while insensitive; a
-  `lumaui-panel-note` label can stand in for them. A grown row of
-  `luma_bar_panel_add_row` rows keeps its list.
+  (`Suno_bar_tile_set_subtitle`) side by side, dimmed while insensitive; a
+  `SunoUI-panel-note` label can stand in for them. A grown row of
+  `Suno_bar_panel_add_row` rows keeps its list.
 - The app decides only what the bar holds on a TV: rebuild it with
-  `luma_action_center_show_bar()` while `luma_window_get_tv_active()` is true.
-  `luma_action_center_grow_panel()` called by the app (not by a bar button)
+  `Suno_action_center_show_bar()` while `Suno_window_get_tv_active()` is true.
+  `Suno_action_center_grow_panel()` called by the app (not by a bar button)
   brings the bar up with that row grown, the remote on it.
 
 ### Grids, lists, layers and panels
 
 - A `GtkGridView` or `GtkListView` on a TV page: the focused item is the key,
   the whole item; a chosen item is a chip. The app sizes its items.
-- A widget with the class `lumaui-tv-layer`, added over the window's content,
+- A widget with the class `SunoUI-tv-layer`, added over the window's content,
   is a full-screen layer (a guard, a viewer): it holds the remote, and Back
-  presses its `lumaui-dialog-cancel` button, or reaches the layer's own key
+  presses its `SunoUI-dialog-cancel` button, or reaches the layer's own key
   handler when it has none.
-- `lumaui-tv-transport` is a full-screen activity's two-row transport (the
+- `SunoUI-tv-transport` is a full-screen activity's two-row transport (the
   mockups' `.tv-ab.transport`): a `.top` row (`label.title`, `label.figure`
   such as "3 of 44", `label.note`) over an `.acts` row of
-  `button.lumaui-tv-transport-item` (`.lumaui-tv-transport-round` for ‹ › and
+  `button.SunoUI-tv-transport-item` (`.SunoUI-tv-transport-round` for ‹ › and
   play) with a `.rule` between groups; `.calm` hides it while it rests. It is
   never narrower than 960 units: without a track (a photograph, a file) centre
   it so it is as wide as what it holds; with a track (a film) let it fill.
 - A floating panel over the dimmed screen (Info, a game's page): a
-  `lumaui-tv-layer` that is also `lumaui-tv-scrim`, holding a
-  `lumaui-tv-panel` (the sheet material). Its parts: `.lumaui-tv-meta`,
-  `.lumaui-tv-h1`, a `.lumaui-tv-card` of `.lumaui-tv-fact` rows (a
-  `label.name` and a `label.value`), `.lumaui-tv-note`, and a `.lumaui-tv-acts`
-  row of `button.lumaui-tv-button` (`.go` for what OK does, in the accent).
+  `SunoUI-tv-layer` that is also `SunoUI-tv-scrim`, holding a
+  `SunoUI-tv-panel` (the sheet material). Its parts: `.SunoUI-tv-meta`,
+  `.SunoUI-tv-h1`, a `.SunoUI-tv-card` of `.SunoUI-tv-fact` rows (a
+  `label.name` and a `label.value`), `.SunoUI-tv-note`, and a `.SunoUI-tv-acts`
+  row of `button.SunoUI-tv-button` (`.go` for what OK does, in the accent).
   The app lays the panel out; the kit gives the materials.
 
 ## The TV scale
 
 One unit for every TV length: one pixel of a 1920x1080 layout,
-`lumaui.tv_unit(width, height)` = `min(width/1920, height/1080)`. Everything
+`SunoUI.tv_unit(width, height)` = `min(width/1920, height/1080)`. Everything
 is sized in units and pinned to an edge or the centre, so any screen size or
 aspect ratio works. The values (safe area 96/56, the shared top bar, type,
 covers, buttons, wide tiles and the well/chip/key/bar materials) live in the
 `tv` block of `config/shared/design-tokens.json`. Python reads them as
-`luma_appkit.lumaui_tokens.TV`; the shell as `tvTokens.js`. Use the tokens;
+`Suno_appkit.SunoUI_tokens.TV`; the shell as `tvTokens.js`. Use the tokens;
 do not copy numbers into an application.
 
 ## TV parts
 
-LumaUI gives every TV presentation the same parts (`luma_appkit`, API level 4),
+SunoUI gives every TV presentation the same parts (`Suno_appkit`, API level 4),
 so apps differ in what they show, not in how big a button is or how focus
 moves. Build the TV presentation as a view inside the app and show it while
 `tv_posture()` is true.
 
 ```python
-from luma_appkit import TvStage, TvTopBar, TvTab, TvFocus, TvToast, TvIdle, add_tv_style
+from Suno_appkit import TvStage, TvTopBar, TvTab, TvFocus, TvToast, TvIdle, add_tv_style
 
 stage = TvStage()                                   # the unit, the materials, pinned children
 bar = stage.place(TvTopBar(), **TvTopBar.PIN)       # the shared bar: same place as the TV home
@@ -238,18 +238,18 @@ TvIdle(focus, seconds=20, on_idle=show_glance, on_wake=hide_glance)
   TV keyboard's action key (see "Typing").
 - **TvToast**: lead, kicker, title, value, sub, tint, ms; one at a time.
 - **TvIdle**: an app's idle layer after a delay without input; any key wakes
-  and does nothing else; Shift+I forces it, `LUMA_TV_IDLE_MS` sets the delay;
+  and does nothing else; Shift+I forces it, `SUNO_TV_IDLE_MS` sets the delay;
   `hold()` keeps the app awake.
 
 ### Media parts
 
 Apps that show records, films, games or pictures use the media parts
-(`luma_appkit.tv_media`), so a cover, a play button or the backdrop is the same
+(`Suno_appkit.tv_media`), so a cover, a play button or the backdrop is the same
 in every app. They follow the unit of the `TvStage` they sit on and register
 with `TvFocus` like any other part.
 
 ```python
-from luma_appkit import TvCover, TvTransportButton, TvNowPlayingPill, TvProgress, TvRoom, TvSlide
+from Suno_appkit import TvCover, TvTransportButton, TvNowPlayingPill, TvProgress, TvRoom, TvSlide
 
 room = stage.place(TvRoom(), fill=True)             # first: the item's own art, blurred, as the room
 room.set_artwork(path)                              # cross-fades over 1.1 s; hues=(h1, h2, h3) without art
@@ -297,12 +297,12 @@ Values come from the `tv` block of `config/shared/design-tokens.json`
 ### App surfaces: wide tiles, shelves, grids, pages
 
 Apps that list other apps (Depot, the TV home) or show app-shaped things use
-`luma_appkit.tv_tiles` (API level 10):
+`Suno_appkit.tv_tiles` (API level 10):
 
 ```python
-from luma_appkit import TvWideTile, TvShelf, TvTileGrid, TvPage, TvProgressButton, TvScreenshotViewer, TvEmptyState
+from Suno_appkit import TvWideTile, TvShelf, TvTileGrid, TvPage, TvProgressButton, TvScreenshotViewer, TvEmptyState
 
-tile = TvWideTile("Tide", app_id="org.projectluma.Tide", icon=gicon, meta="Installed")
+tile = TvWideTile("Tide", app_id="org.projectSuno.Tide", icon=gicon, meta="Installed")
 shelf = TvShelf([tile, ...])                 # a row of 400-wide tiles
 grid = TvTileGrid([tile, ...])               # five columns edge to edge, 52 between rows
 page = TvPage(column); page.add_section(s)   # focus_changed: page.reveal(widget)
@@ -314,7 +314,7 @@ TvEmptyState("No results", "Try a different word, or browse a category.", icon="
 - **TvWideTile**: an app's 16:9 tile, from the first of: its own wide tile
   (the `<app-id>-tv` icon); a tile composed at runtime from its v4 icon with
   `tools/wide-tile.py`'s geometry (`compose_wide_tile`, cached under
-  `~/.cache/luma/tv-tiles`); its icon on its brand colour; its name on a plate
+  `~/.cache/Suno/tv-tiles`); its icon on its brand colour; its name on a plate
   in its category's hue. The corner is a share of the tile (11.875% /
   21.111%), so art and frame agree at every size. The art lifts 1.06 with the
   white ring; the caption (name, a quiet line) never does. `tile.room` gives
@@ -334,7 +334,7 @@ TvEmptyState("No results", "Try a different word, or browse a category.", icon="
 
 ### Terminal on a TV
 
-Terminal is the same app on a TV (`luma_terminal/tv.py`): its sessions and
+Terminal is the same app on a TV (`Suno_terminal/tv.py`): its sessions and
 shells, drawn on a `TvStage` whose room is the wallpaper (`set_wallpaper()`)
 under a shade, the shared top bar with only the clock, the shell's text straight
 on the room at `tv.terminal.text_size`, and a `TvActionBar` with the session
@@ -346,7 +346,7 @@ from the bar leaves for the TV home.
 
 ### Depot on a TV
 
-Depot on a TV is the same Depot (`luma_depot.tv_views`, hosted by the redesign's
+Depot on a TV is the same Depot (`Suno_depot.tv_views`, hosted by the redesign's
 `DepotShell` and following the posture live): the desktop's places, in the same
 order (Today, Apps, Looks, Tweaks, Library, Updates, then Search), drawn from
 the same `World`, `Store` and `model.rules`, with this TV as the world's device
@@ -354,11 +354,11 @@ the same `World`, `Store` and `model.rules`, with this TV as the world's device
 a phone. Someone who knows Depot on a computer finds the same places; there are
 no TV-only categories.
 
-Depot lists only apps that run on a TV (`luma_depot.tv_facts`). Two facts per
+Depot lists only apps that run on a TV (`Suno_depot.tv_facts`). Two facts per
 app, from data, never from a list in code:
 
-1. the Luma catalogue's optional `tv` field (schema 4, below);
-2. the app's own TV opt-in (`X-Luma-TV`; a `tv` presentation is driven with
+1. the Suno catalogue's optional `tv` field (schema 4, below);
+2. the app's own TV opt-in (`X-Suno-TV`; a `tv` presentation is driven with
    the remote) and its AppStream `<control>` (`gamepad` required: needs a
    controller; `tv-remote` anywhere: works with the remote; `gamepad` alone:
    needs a controller) and `<display_length>` (a limit below a TV's 1080
@@ -399,7 +399,7 @@ next time an app opens (the readiness stamp includes it).
 
 Every controller drives TV Mode through the same keys, so an application
 reads keys and never a gamepad or a remote. In TV posture one Shell service
-(`src/luma-shell-presentation/tvInput.js`, rules in `tvInputModel.js`) turns
+(`src/Suno-shell-presentation/tvInput.js`, rules in `tvInputModel.js`) turns
 gamepads (USB, 2.4 GHz dongles, Bluetooth), TV remotes (Bluetooth and 2.4 GHz
 HID remotes) and the TV's own remote over HDMI-CEC into the TV's keys before
 they reach any window. `TvFocus`, the TV home and the TV keyboard need nothing
@@ -431,25 +431,25 @@ more.
   bouncing contact is neither a release nor a new press. Repeats of a held key
   carry Clutter's repeat flag and only move the focus (`tvModel.repeatAllowed`);
   the TV home, the quick panel and system dialogs never act on a repeated OK or
-  Back. `LUMA_TV_INPUT_DEBUG=1` in the Shell's environment logs every pad button
+  Back. `SUNO_TV_INPUT_DEBUG=1` in the Shell's environment logs every pad button
   and every key sent, with times.
 - **A and B.** OK is the bottom face button (South: A on Xbox-style pads,
   Cross on PlayStation) or the right one (East: A on Nintendo-style pads),
-  and Back is the other. The luma-shell-state key `tv-confirm-button`
+  and Back is the other. The Suno-shell-state key `tv-confirm-button`
   (`automatic`, `south`, `east`) chooses; `automatic` picks East for
   controllers that identify as Nintendo layout (Nintendo's own and 8BitDo in
   Switch mode by vendor, known SNES-style USB pads by vendor and product, or
   the name) and South for the rest. A pad that misreports itself (an SNES-style
   pad presenting as an Xbox 360 pad) needs the explicit choice:
-  `gsettings set org.project_luma.shell-state tv-confirm-button east`. The
+  `gsettings set org.projectSuno.shell-state tv-confirm-button east`. The
   change applies at once; TV Settings will offer it under Remotes.
 - **Remotes.** Arrows and Enter are already TV keys. Keys that are not
   (`XF86Back`, `XF86Close`, `XF86OK`, `XF86Select`, `XF86HomePage`,
   `XF86RootMenu`, `XF86MenuKB`, `XF86ContextMenu`) are taken by the Shell and
   sent on as the TV key, so an application never sees them in TV posture.
-- **HDMI-CEC.** `luma-tv-cec` (from `luma-shell-state`, started for every
+- **HDMI-CEC.** `Suno-tv-cec` (from `Suno-shell-state`, started for every
   `/dev/cec*` by udev) puts the adapter on the bus as a playback device named
-  Luma, with remote passthrough allowed. The kernel then answers the core CEC
+  Suno, with remote passthrough allowed. The kernel then answers the core CEC
   messages itself and turns the TV remote's buttons into keys on the adapter's
   `rc-cec` input device, and the mapping above applies. The TV's CEC setting
   (Anynet+, SimpLink, Bravia Sync, ...) must be on, and the TV sends its
@@ -472,15 +472,15 @@ windows get no keys from a pad at all, Home included; the TV keyboard still
 takes the pad while it is up:
 
 ```python
-from luma_appkit import claim_gamepads
+from Suno_appkit import claim_gamepads
 
 claim_gamepads(True)    # the game starts: read the pad yourself
 claim_gamepads(False)   # back to the library: TV keys again
 ```
 
 Underneath, for other toolkits: the session-bus service
-`org.projectluma.Shell.Remote` at `/org/projectluma/Shell/Remote`, interface
-`org.projectluma.Shell.Remote1`, method `ClaimGamepads(b claimed)` (the claim
+`org.projectSuno.Shell.Remote` at `/org/projectSuno/Shell/Remote`, interface
+`org.projectSuno.Shell.Remote1`, method `ClaimGamepads(b claimed)` (the claim
 covers the calling process's windows and ends with `false` or when the caller
 leaves the bus; say it again if the name's owner changes) and property
 `Gamepads` (as, the names of connected pads). The service exists only in TV
@@ -550,16 +550,16 @@ widget to embed and nothing to draw.
   visible, height = tv_keyboard_state()
   ```
 
-The contract underneath, for toolkits other than LumaUI, is the session-bus
-service `org.projectluma.Shell.Keyboard` at `/org/projectluma/Shell/Keyboard`,
-interface `org.projectluma.Shell.Keyboard1`: `SetActionLabel(s label)` labels
+The contract underneath, for toolkits other than SunoUI, is the session-bus
+service `org.projectSuno.Shell.Keyboard` at `/org/projectSuno/Shell/Keyboard`,
+interface `org.projectSuno.Shell.Keyboard1`: `SetActionLabel(s label)` labels
 the action key for the window that has the focus (call it as a field takes
 the focus, and with `""` as it leaves), and the properties `Visible` (b) and
 `Height` (u, TV units) change with the keyboard. Outside TV posture the
 keyboard ignores the label and never reports itself visible. The layout and
 look are the `tv.keyboard` tokens; the shell side is
 `patches/gnome-shell/0323-tv-keyboard.patch` with its pure rules in
-`src/luma-shell-presentation/tvKeyboard.js`.
+`src/Suno-shell-presentation/tvKeyboard.js`.
 
 ## Menus and long press
 
@@ -599,7 +599,7 @@ OK button is sent as a press on button-down and a release on button-up.
 The Shell's own dialogs — Wi-Fi and VPN passwords, keyring prompts, the
 administrator prompt, end session, mounts, the run dialog, portal access
 prompts, anything built on `ModalDialog` — work on a TV with no TV copy of any
-of them. In TV posture one adapter (`src/luma-shell-presentation/tvDialogs.js`,
+of them. In TV posture one adapter (`src/Suno-shell-presentation/tvDialogs.js`,
 rules in `tvDialogsModel.js`) takes each one as it opens and gives it back as
 it closes; outside TV posture dialogs are exactly as on the desktop.
 
@@ -638,12 +638,12 @@ it closes; outside TV posture dialogs are exactly as on the desktop.
   Escape to the dialog's own handler.
 
 Nothing here is per dialog: a new `ModalDialog` with buttons gets all of it.
-A dialog without buttons (Luma Search) keeps its own presentation.
+A dialog without buttons (Suno Search) keeps its own presentation.
 
 ## The quick panel
 
 The quick panel is the TV posture of the Shell's Quick Options and
-notification list (`lumaPresentation/tvQuickPanel.js`, rules in
+notification list (`SunoPresentation/tvQuickPanel.js`, rules in
 `tvQuickPanelModel.js`, sizes `tv.quick_panel`). It is not a second control
 centre: every row drives the object the desktop's Quick Options already own,
 and a row whose backend is missing is not drawn.
@@ -663,7 +663,7 @@ posture.
   (in a desktop sidebar app, Up off the page's top row or the island's first
   row), Right past the tabs the clock, OK the panel (`TvTopBar` and the C
   kit's TV frame do this; an app adds nothing). Other toolkits call
-  `org.projectluma.Shell.Remote1.ShowQuickPanel()`. From anywhere, hold Home
+  `org.projectSuno.Shell.Remote1.ShowQuickPanel()`. From anywhere, hold Home
   (a remote's Home or CEC Root Menu, a pad's Guide) for 500 ms; a short press
   still goes home (once no second press has come: "Closing apps").
 - **Over an app.** The panel is drawn over the app, which stays where it is;
@@ -696,7 +696,7 @@ posture.
 
 Apps on a TV are not minimised forever: the app switcher is the TV posture
 of the Shell's running apps and the desktop's Quit
-(`lumaPresentation/tvAppSwitcher.js`, rules in `tvAppSwitcherModel.js`, sizes
+(`SunoPresentation/tvAppSwitcher.js`, rules in `tvAppSwitcherModel.js`, sizes
 `tv.app_switcher`), as tvOS's app switcher and Google TV's recents are. There
 is no second app model: the apps are `Shell.AppSystem`'s (with
 `sessionApplications.js`'s D-Bus apps), newest first in Alt+Tab's order.
@@ -741,12 +741,12 @@ is no second app model: the apps are `Shell.AppSystem`'s (with
 ## Opening at once: prepared TV apps
 
 On a TV, opening an app is a present, not a start. At sign-in in TV posture
-`luma-native-app-prewarm` starts each TV app listed in
-`/usr/share/luma-app-host/tv.json` (in that order, each waiting until the last
+`Suno-native-app-prewarm` starts each TV app listed in
+`/usr/share/Suno-app-host/tv.json` (in that order, each waiting until the last
 owns its bus name, while at least 2 GB is free) as
-`luma-app-prepared@<app id>.service`. The app runs with `LUMA_APP_PREPARE=1`:
-C apps through `libluma-app-prepare.so`, Python apps through
-`luma_appkit.prepare`, which the kit installs when it is imported with that
+`Suno-app-prepared@<app id>.service`. The app runs with `SUNO_APP_PREPARE=1`:
+C apps through `libSuno-app-prepare.so`, Python apps through
+`Suno_appkit.prepare`, which the kit installs when it is imported with that
 variable. The app runs as its D-Bus service (whatever its own argv), holds
 itself and runs its own `activate` once: its window is built, styled and
 realized, never mapped. A launch (D-Bus Activate) then shows that window on a
@@ -754,7 +754,7 @@ new surface laid out for the output it opens on;
 one that arrives while the app is still preparing is kept and shown as soon as
 it is ready. A prepared app that is closed is prepared again; one already
 running, or a session that is no longer a TV, is left alone. A Flatpak's data
-check (`luma_appkit.migration_startup`) that fails while preparing leaves
+check (`Suno_appkit.migration_startup`) that fails while preparing leaves
 quietly (exit 75) and shows its repair screen only to a real launch.
 
 Nothing is needed from an app beyond the TV opt-in below and being a
@@ -764,7 +764,7 @@ to have it prepared.
 ## Appearing on the TV home
 
 Only applications that opt in appear on the TV home. Declare TV support in
-`luma-app.toml`:
+`Suno-app.toml`:
 
 ```toml
 [tv]
@@ -775,12 +775,12 @@ presentation = "tv"                    # the app shows its TV presentation in TV
 
 The shell reads applications from the same catalogue as Home and the shelf
 (installed desktop entries), so the declaration is installed as three
-desktop-entry keys, which `luma lint` checks against the manifest:
+desktop-entry keys, which `Suno lint` checks against the manifest:
 
 ```ini
-X-Luma-TV=true
-X-Luma-TV-Tile=org.example.App-tv
-X-Luma-TV-Presentation=tv
+X-Suno-TV=true
+X-Suno-TV-Tile=org.example.App-tv
+X-Suno-TV-Presentation=tv
 ```
 
 Install the tile as an icon named after the application ID with `-tv`
@@ -791,10 +791,10 @@ rim; art centred at 1.15x); its corner is a share of the tile
 (rx 190 of 1600x900), and it carries its own rim.
 
 Flatpak's export keeps only the desktop keys on its own allowlist, so the
-`X-Luma-TV*` keys never reach `exports/share/applications`. For an entry with
+`X-Suno-TV*` keys never reach `exports/share/applications`. For an entry with
 `X-Flatpak` and no TV keys, the TV home reads them from the app's deployed
 desktop file in the same installation (`/var/lib/flatpak/app/<id>/current/active/files`
-or the user's), and takes the tile from that deploy's `share/luma-tv/<tile>.svg`
+or the user's), and takes the tile from that deploy's `share/Suno-tv/<tile>.svg`
 before the icon theme. Only those two installations and plain app IDs are read.
 
 `presentation` names what the app shows in TV posture. `tv` means the app

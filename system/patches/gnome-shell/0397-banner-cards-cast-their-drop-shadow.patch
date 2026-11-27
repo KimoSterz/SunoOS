@@ -1,5 +1,5 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Project Luma <engineering@projectluma.org>
+From: Project Suno <engineering@projectSuno.org>
 Date: Mon, 23 Nov 2026 10:00:00 -0600
 Subject: [PATCH] Banner cards cast their drop shadow
 
@@ -10,38 +10,38 @@ included, so cards had no drop shadow where every banner design draws
 the surface with the same box and corners; the island and pill states
 have none.
 ---
-diff --git a/data/theme/luma-shelf.css b/data/theme/luma-shelf.css
+diff --git a/data/theme/Suno-shelf.css b/data/theme/Suno-shelf.css
 index df3547f..68bf5b6 100644
---- a/data/theme/luma-shelf.css
-+++ b/data/theme/luma-shelf.css
-@@ -2686,6 +2686,12 @@ StBoxLayout.luma-notification-tray.luma-surface-dark .luma-notification-tray-cou
+--- a/data/theme/Suno-shelf.css
++++ b/data/theme/Suno-shelf.css
+@@ -2686,6 +2686,12 @@ StBoxLayout.Suno-notification-tray.Suno-surface-dark .Suno-notification-tray-cou
    background-color: #21252b; border: 1px solid rgba(255,255,255,.075);
    border-top-width: 0; border-radius: 0 0 22px 22px;
    box-shadow: 0 12px 30px -14px rgba(0,0,0,.6); }
 +/* A card's drop shadow, as every banner design draws it; the island and
 + * pill states have none. */
-+.luma-notification-lip .luma-lip-drop-shadow {
++.Suno-notification-lip .Suno-lip-drop-shadow {
 +  border-radius: 0 0 22px 22px; box-shadow: 0 18px 40px -18px rgba(0,0,0,.35); }
-+.luma-notification-lip.idle .luma-lip-drop-shadow,
-+.luma-notification-lip.pill .luma-lip-drop-shadow { box-shadow: none; }
- .luma-notification-lip.idle .luma-lip-surface { border-radius: 0 0 5px 5px; }
- .luma-notification-lip.pill .luma-lip-surface { border-radius: 0 0 11px 11px; }
- .luma-notification-lip.luma-surface-light { color: #1d1f23; }
-diff --git a/js/ui/lumaNotificationBeacon.js b/js/ui/lumaNotificationBeacon.js
++.Suno-notification-lip.idle .Suno-lip-drop-shadow,
++.Suno-notification-lip.pill .Suno-lip-drop-shadow { box-shadow: none; }
+ .Suno-notification-lip.idle .Suno-lip-surface { border-radius: 0 0 5px 5px; }
+ .Suno-notification-lip.pill .Suno-lip-surface { border-radius: 0 0 11px 11px; }
+ .Suno-notification-lip.Suno-surface-light { color: #1d1f23; }
+diff --git a/js/ui/SunoNotificationBeacon.js b/js/ui/SunoNotificationBeacon.js
 index a75560e..4a6c610 100644
---- a/js/ui/lumaNotificationBeacon.js
-+++ b/js/ui/lumaNotificationBeacon.js
+--- a/js/ui/SunoNotificationBeacon.js
++++ b/js/ui/SunoNotificationBeacon.js
 @@ -79,6 +79,10 @@ export const NotificationLip = GObject.registerClass(class NotificationLip exten
          this._sources = new Map();
          this._notifications = new Set();
          this._cards = new Map();
 +        // The banner's drop shadow: the surface clips everything it paints,
 +        // its own shadow included, so the shadow is a sibling behind it.
-+        this._dropShadow = new St.Widget({style_class: 'luma-lip-drop-shadow'});
++        this._dropShadow = new St.Widget({style_class: 'Suno-lip-drop-shadow'});
 +        this.add_child(this._dropShadow);
-         this._surface = new St.Bin({style_class: 'luma-lip-surface', clip_to_allocation: true});
+         this._surface = new St.Bin({style_class: 'Suno-lip-surface', clip_to_allocation: true});
          this.add_child(this._surface);
-         this._left = new St.DrawingArea({style_class: 'luma-lip-shoulder'});
+         this._left = new St.DrawingArea({style_class: 'Suno-lip-shoulder'});
 @@ -616,6 +620,7 @@ export const NotificationLip = GObject.registerClass(class NotificationLip exten
          const width = box.get_width(), height = box.get_height();
          const scale = St.ThemeContext.get_for_stage(global.stage).scale_factor;

@@ -14,9 +14,9 @@ evidence_dir=${2:?usage: observe-pixel9-diagnostic.sh CANDIDATE_SHA256 EVIDENCE_
 fastboot_bin=${FASTBOOT:-fastboot}
 adb_bin=${ADB:-adb}
 curl_bin=${CURL:-curl}
-timeout_seconds=${LUMA_PIXEL9_OBSERVER_TIMEOUT_SECONDS:-300}
-report_version=${LUMA_PIXEL9_OBSERVER_REPORT_VERSION:-2}
-diagnostic_serial=${LUMA_PIXEL9_OBSERVER_USB_SERIAL:-luma-pixel9-volatile-v2}
+timeout_seconds=${SUNO_PIXEL9_OBSERVER_TIMEOUT_SECONDS:-300}
+report_version=${SUNO_PIXEL9_OBSERVER_REPORT_VERSION:-2}
+diagnostic_serial=${SUNO_PIXEL9_OBSERVER_USB_SERIAL:-Suno-pixel9-volatile-v2}
 host_address=192.168.77.2
 report_url=http://192.168.77.1/luma-pixel9-report.txt
 
@@ -53,7 +53,7 @@ fastboot_serial=$($fastboot_bin devices 2>/dev/null | awk 'NF { print $1; exit }
 
 mkdir -p "$evidence_dir"
 report_tmp=$evidence_dir/report.tmp
-report_path=$evidence_dir/luma-pixel9-report.txt
+report_path=$evidence_dir/Suno-pixel9-report.txt
 observer_path=$evidence_dir/observer.env
 start_epoch=$(date +%s)
 started_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)
@@ -109,7 +109,7 @@ while [ "$(date +%s)" -le "$deadline" ]; do
 			if [ "$report_received" = false ]; then
 				if "$curl_bin" --interface "$host_address" --connect-timeout 1 --max-time 2 \
 					--fail --silent --show-error --output "$report_tmp" "$report_url" 2>/dev/null &&
-					grep -Fqx "LUMA_PIXEL9_DIAGNOSTIC_REPORT_VERSION=$report_version" "$report_tmp" &&
+					grep -Fqx "SUNO_PIXEL9_DIAGNOSTIC_REPORT_VERSION=$report_version" "$report_tmp" &&
 					grep -Fqx 'REPORT_END=true' "$report_tmp"; then
 					mv "$report_tmp" "$report_path"
 					report_received=true
@@ -139,7 +139,7 @@ rm -f -- "$report_tmp"
 finished_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 elapsed_seconds=$(($(date +%s) - start_epoch))
 {
-	printf 'LUMA_PIXEL9_PASSIVE_OBSERVER_VERSION=1\n'
+	printf 'SUNO_PIXEL9_PASSIVE_OBSERVER_VERSION=1\n'
 	printf 'SCOPE=host-only-read-only-diagnostic-observation\n'
 	printf 'CANDIDATE_SHA256=%s\n' "$candidate_sha"
 	printf 'EXPECTED_REPORT_VERSION=%s\n' "$report_version"

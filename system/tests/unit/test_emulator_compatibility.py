@@ -5,26 +5,26 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-exporter = runpy.run_path(str(ROOT / "scripts/emulator/export-luma-bundle"))
+exporter = runpy.run_path(str(ROOT / "scripts/emulator/export-Suno-bundle"))
 
 
 class CompatibilityBundleTests(unittest.TestCase):
     def test_native_default_has_no_compatibility_engine(self):
         names = {role[2] for role in exporter["read_roles"](ROOT)}
-        self.assertFalse(names & {"luma-android-runtime", "waydroid", "wine", "luma-relay"})
+        self.assertFalse(names & {"Suno-android-runtime", "waydroid", "wine", "Suno-relay"})
 
     def test_arm_never_receives_x86_runner(self):
         arm = {role[2] for role in exporter["compatibility_roles"]("aarch64")}
         x86 = {role[2] for role in exporter["compatibility_roles"]("x86_64")}
-        self.assertIn("luma-android-runtime", arm)
-        self.assertIn("luma-relay", arm)
-        self.assertNotIn("wine-luma-relay-explorer", arm)
-        self.assertIn("wine-luma-relay-explorer", x86)
-        self.assertNotIn("luma-relay-fex", arm)
+        self.assertIn("Suno-android-runtime", arm)
+        self.assertIn("Suno-relay", arm)
+        self.assertNotIn("wine-Suno-relay-explorer", arm)
+        self.assertIn("wine-Suno-relay-explorer", x86)
+        self.assertNotIn("Suno-relay-fex", arm)
 
     def test_arm_translation_requires_its_explicit_profile(self):
         arm = {role[2] for role in exporter["compatibility_roles"]("aarch64", arm_windows=True)}
-        self.assertIn("luma-relay-fex", arm)
+        self.assertIn("Suno-relay-fex", arm)
         with self.assertRaises(SystemExit):
             exporter["compatibility_roles"]("x86_64", arm_windows=True)
 
@@ -49,7 +49,7 @@ class CompatibilityBundleTests(unittest.TestCase):
     def test_changed_and_symlinked_archives_refused(self):
         pin = ROOT / "config/android/images-aarch64.env"
         name = next(line.split("=", 1)[1] for line in pin.read_text().splitlines()
-                    if line.startswith("LUMA_ANDROID_SYSTEM_FILENAME="))
+                    if line.startswith("SUNO_ANDROID_SYSTEM_FILENAME="))
         with tempfile.TemporaryDirectory() as directory:
             cache = Path(directory)
             (cache / name).write_bytes(b"incorrect image bytes")

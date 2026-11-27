@@ -1,7 +1,7 @@
 ---
 type: improvement
 component: Valet
-packages: [xdg-desktop-portal, luma-desktop-launcher-policy]
+packages: [xdg-desktop-portal, Suno-desktop-launcher-policy]
 highlight: false
 ---
 Summary: App packages open straight in Valet

@@ -8,7 +8,7 @@ six tiles. The bar picks how you look (Today, Hourly, 10 days, Radar); Alerts
 and Places sit beside it, smaller, because you set them once.
 
 These are Weather's own surfaces. The bar, its menus and the rows inside them
-are LumaUI's: this module only says what goes in them.
+are SunoUI's: this module only says what goes in them.
 """
 from __future__ import annotations
 
@@ -19,7 +19,7 @@ import gi
 gi.require_version('Gtk', '4.0')
 from gi.repository import Gtk  # noqa: E402
 
-from luma_appkit import ContentLitCard, IconOnlyButton, icons  # noqa: E402
+from Suno_appkit import ContentLitCard, IconOnlyButton, icons  # noqa: E402
 from .weather_charts import WeatherRadar  # noqa: E402
 from .weather_data import Snapshot, weather_icon  # noqa: E402
 from .weather_parts import day_rows, glyph, hour_strip, label  # noqa: E402

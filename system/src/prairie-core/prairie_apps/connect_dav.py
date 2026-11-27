@@ -14,7 +14,7 @@ import base64
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
-SCHEMA_NAME = "org.projectluma.Connect.DavPassword"
+SCHEMA_NAME = "org.projectSuno.Connect.DavPassword"
 
 
 class DavError(RuntimeError):
@@ -38,8 +38,8 @@ def stored_password(device_id: str, hub: str) -> str | None:
 def store_password(device_id: str, hub: str, password: str) -> None:
     Secret, schema = _secret()
     if not Secret.password_store_sync(schema, {"device": device_id, "hub": hub}, Secret.COLLECTION_DEFAULT,
-                                      "Luma Connect calendar and contacts", password, None):
-        raise DavError("The keyring would not save the Luma calendar password. Unlock it and sync again.")
+                                      "Suno Connect calendar and contacts", password, None):
+        raise DavError("The keyring would not save the Suno calendar password. Unlock it and sync again.")
 
 
 def clear_password(device_id: str, hub: str) -> None:
@@ -70,7 +70,7 @@ def request(method: str, url: str, username: str, password: str, body: bytes | N
             headers: dict[str, str] | None = None, timeout: float = 20.0) -> tuple[int, bytes]:
     token = base64.b64encode(f"{username}:{password}".encode()).decode()
     outgoing = Request(url, data=body, method=method, headers={
-        "Authorization": f"Basic {token}", "User-Agent": "ProjectLuma-Connect/1",
+        "Authorization": f"Basic {token}", "User-Agent": "projectSuno-Connect/1",
         "Content-Type": "application/xml; charset=utf-8", **(headers or {})})
     try:
         with urlopen(outgoing, timeout=timeout) as response:
@@ -93,7 +93,7 @@ def ensure_collection(url: str, username: str, password: str, body: bytes, metho
             return url
     if status == 401:
         raise DavError("The calendar and contacts server did not accept this device's password.")
-    raise DavError(f"The Luma collection could not be prepared (HTTP {status}).")
+    raise DavError(f"The Suno collection could not be prepared (HTTP {status}).")
 
 
 def count_items(url: str, username: str, password: str, suffix: bytes) -> int:
@@ -102,5 +102,5 @@ def count_items(url: str, username: str, password: str, suffix: bytes) -> int:
              b'<d:getetag/></d:prop></d:propfind>')
     status, body = request("PROPFIND", url, username, password, probe, {"Depth": "1"})
     if status != 207:
-        raise DavError(f"The server could not list the Luma collection (HTTP {status}).")
+        raise DavError(f"The server could not list the Suno collection (HTTP {status}).")
     return len(re.findall(rb"<[A-Za-z]*:?href>[^<]+" + re.escape(suffix) + rb"</[A-Za-z]*:?href>", body))

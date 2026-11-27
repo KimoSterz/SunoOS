@@ -1,4 +1,4 @@
-From: Project Luma <luma@local>
+From: Project Suno <Suno@local>
 Subject: [PATCH] Include GioUnix in the Shell introspection namespace
 
 Fedora 44 exposes GDesktopAppInfo from GioUnix-2.0 rather than Gio-2.0.

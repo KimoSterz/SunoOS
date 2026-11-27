@@ -9,9 +9,9 @@ import subprocess
 
 ROOT = Path(__file__).resolve().parents[2]
 INPUTS = {
-    'webkit': ('scripts/packages/build-webkitgtk-luma.sh',
+    'webkit': ('scripts/packages/build-webkitgtk-Suno.sh',
                'scripts/packages/run-in-rpm-builder.sh', 'config/desktop/inputs.env',
-               'config/shared/webkitgtk-inputs.env', 'packaging/rpm/webkitgtk-luma.spec',
+               'config/shared/webkitgtk-inputs.env', 'packaging/rpm/webkitgtk-Suno.spec',
                'patches/webkitgtk/'),
     'browser': ('scripts/os/build-desktop-browser.sh', 'scripts/packages/build-viola-browser.sh',
                 'scripts/packages/run-in-rpm-builder.sh', 'config/desktop/inputs.env',
@@ -24,7 +24,7 @@ INPUTS = {
 DESKTOP_PIN_PREFIXES = {
     'webkit': ('FEDORA_RPM_BUILD_CONTAINER',),
     'browser': ('FEDORA_RPM_BUILD_CONTAINER', 'GTK4_', 'LIBADWAITA_',
-                'LUMA_DEVELOPER_PLATFORM_'),
+                'SUNO_DEVELOPER_PLATFORM_'),
 }
 
 

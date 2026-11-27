@@ -1,5 +1,5 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Project Luma <engineering@projectluma.org>
+From: Project Suno <engineering@projectSuno.org>
 Date: Sun, 22 Nov 2026 07:00:00 -0600
 Subject: [PATCH] Notification lip: dark ink on the phone's dark surface
 
@@ -7,7 +7,7 @@ The phone presentation paints the notification lip in the Dock's dark
 palette (rgba(30, 25, 43, 0.78), opaque #1e192b) in every appearance mode
 and switches the lip's material off, but the material binding kept
 putting the appearance mode's classes on the lip. In Light that was
-luma-surface-light, so the lip's text, source line, time and buttons took
+Suno-surface-light, so the lip's text, source line, time and buttons took
 the light family's dark ink on the dark surface.
 
 SurfaceMaterialBinding.setClassTreatment() lets a host that paints a
@@ -16,14 +16,14 @@ follows the appearance mode again. The lip names 'dark' while the phone
 presentation is active, so its ink matches the surface it is drawn on.
 Desktop and TV are unchanged.
 ---
- js/ui/lumaNotificationBeacon.js |  3 +++
- js/ui/lumaSurfaceMaterials.js   | 13 ++++++++++++-
+ js/ui/SunoNotificationBeacon.js |  3 +++
+ js/ui/SunoSurfaceMaterials.js   | 13 ++++++++++++-
  2 files changed, 15 insertions(+), 1 deletion(-)
 
-diff --git a/js/ui/lumaNotificationBeacon.js b/js/ui/lumaNotificationBeacon.js
+diff --git a/js/ui/SunoNotificationBeacon.js b/js/ui/SunoNotificationBeacon.js
 index 416ee79..ae79211 100644
---- a/js/ui/lumaNotificationBeacon.js
-+++ b/js/ui/lumaNotificationBeacon.js
+--- a/js/ui/SunoNotificationBeacon.js
++++ b/js/ui/SunoNotificationBeacon.js
 @@ -441,6 +441,9 @@ export const NotificationLip = GObject.registerClass(class NotificationLip exten
              this._onLockScreen = false;
          }
@@ -31,13 +31,13 @@ index 416ee79..ae79211 100644
 +        // The phone presentation paints the lip in the Dock's dark palette in
 +        // every appearance mode, so the lip wears the dark family's ink there.
 +        this._material?.setClassTreatment(Main.presentation?.mode === 'mobile' ? 'dark' : null);
-         if (Main.presentation?.mode === 'mobile') this.add_style_class_name('luma-mobile-notifications');
-         else this.remove_style_class_name('luma-mobile-notifications');
+         if (Main.presentation?.mode === 'mobile') this.add_style_class_name('Suno-mobile-notifications');
+         else this.remove_style_class_name('Suno-mobile-notifications');
          Main.screenShield?._dialog?._notificationsBox?._rebuild();
-diff --git a/js/ui/lumaSurfaceMaterials.js b/js/ui/lumaSurfaceMaterials.js
+diff --git a/js/ui/SunoSurfaceMaterials.js b/js/ui/SunoSurfaceMaterials.js
 index 41686e7..187f0a6 100644
---- a/js/ui/lumaSurfaceMaterials.js
-+++ b/js/ui/lumaSurfaceMaterials.js
+--- a/js/ui/SunoSurfaceMaterials.js
++++ b/js/ui/SunoSurfaceMaterials.js
 @@ -314,6 +314,7 @@ class SurfaceMaterialBinding {
              : [cornerRadii, cornerRadii, cornerRadii, cornerRadii];
          this._onTreatmentChanged = onTreatmentChanged;
@@ -70,8 +70,8 @@ index 41686e7..187f0a6 100644
          for (const actor of this._classActors) {
              for (const name of ALL_SURFACE_CLASSES)
                  actor.remove_style_class_name(name);
--            for (const name of SURFACE_CLASSES[treatment] ?? [`luma-surface-${treatment}`])
-+            for (const name of SURFACE_CLASSES[classTreatment] ?? [`luma-surface-${classTreatment}`])
+-            for (const name of SURFACE_CLASSES[treatment] ?? [`Suno-surface-${treatment}`])
++            for (const name of SURFACE_CLASSES[classTreatment] ?? [`Suno-surface-${classTreatment}`])
                  actor.add_style_class_name(name);
          }
  

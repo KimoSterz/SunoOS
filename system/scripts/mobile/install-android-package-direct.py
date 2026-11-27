@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """Install one validated Android package set into a running diagnostic session.
 
-This deliberately bypasses Luma's interactive-session launcher, not Android's
+This deliberately bypasses Suno's interactive-session launcher, not Android's
 security boundary: Android PackageManager still performs one atomic signature,
 identity, split, and native-library verification transaction.
 """
@@ -17,13 +17,13 @@ import subprocess
 import uuid
 from pathlib import Path
 
-from luma_android.apk import (
+from Suno_android.apk import (
     inspect_android_package,
     stage_android_package,
     staged_package_root,
 )
-from luma_android.engine import AndroidDeviceProfile, select_compatible_splits
-from luma_android.receipts import write_install_receipt
+from Suno_android.engine import AndroidDeviceProfile, select_compatible_splits
+from Suno_android.receipts import write_install_receipt
 
 
 MAX_PACKAGE_BYTES = 2 * 1024 * 1024 * 1024
@@ -106,7 +106,7 @@ def main() -> int:
         transaction_id = uuid.uuid4().hex
         android_paths: list[str] = []
         for index, source in enumerate(selected_payloads):
-            destination = shared / f"luma-{transaction_id}-{index:04d}.apk"
+            destination = shared / f"Suno-{transaction_id}-{index:04d}.apk"
             with source.open("rb") as source_stream, destination.open("xb") as target:
                 os.chmod(destination, 0o600)
                 shutil.copyfileobj(source_stream, target, length=1024 * 1024)

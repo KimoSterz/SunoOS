@@ -8,9 +8,9 @@ set -euo pipefail
 
 repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 preview_root="$repo_root/build/dev/files-preview"
-guest=${LUMA_PREVIEW_GUEST:-luma@192.168.122.250}
-guest_key=${LUMA_PREVIEW_GUEST_KEY:-$repo_root/build/provisioning/luma-m0-guest}
-guest_root=/var/home/luma/.local/share/project-luma/files-preview
+guest=${SUNO_PREVIEW_GUEST:-Suno@192.168.122.250}
+guest_key=${SUNO_PREVIEW_GUEST_KEY:-$repo_root/build/provisioning/Suno-m0-guest}
+guest_root=/var/home/Suno/.local/share/project-suno/files-preview
 
 libadwaita="$preview_root/builds/libadwaita/src/libadwaita-1.so.0"
 nautilus="$preview_root/builds/nautilus/src/nautilus"
@@ -50,7 +50,7 @@ ssh "${ssh_options[@]}" "$guest" "
   export XDG_RUNTIME_DIR=/run/user/1000
   export DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus
   nautilus -q || true
-  systemctl --user stop luma-files-preview.service >/dev/null 2>&1 || true
+  systemctl --user stop Suno-files-preview.service >/dev/null 2>&1 || true
   mv '$guest_root/lib/libadwaita-1.so.0.next' '$guest_root/lib/libadwaita-1.so.0'
   $gtk4_activate
   mv '$guest_root/bin/nautilus.next' '$guest_root/bin/nautilus'
@@ -58,13 +58,13 @@ ssh "${ssh_options[@]}" "$guest" "
   gdbus call --session --dest org.gnome.ScreenSaver \
     --object-path /org/gnome/ScreenSaver \
     --method org.gnome.ScreenSaver.SetActive false >/dev/null
-  systemd-run --user --unit=luma-files-preview --collect --no-block --quiet \
+  systemd-run --user --unit=Suno-files-preview --collect --no-block --quiet \
     --setenv=XDG_RUNTIME_DIR=/run/user/1000 \
     --setenv=DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus \
     --setenv=XDG_SESSION_TYPE=wayland \
     --setenv=WAYLAND_DISPLAY=wayland-0 \
     --setenv=LD_LIBRARY_PATH='$guest_root/lib' \
-    '$guest_root/bin/nautilus' --new-window /var/home/luma/Documents
+    '$guest_root/bin/nautilus' --new-window /var/home/Suno/Documents
 "
 
 printf 'Development-only Files preview launched from %s\n' "$guest_root"

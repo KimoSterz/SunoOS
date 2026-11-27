@@ -8,12 +8,12 @@ set -euo pipefail
 
 repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 preview_root="$repo_root/build/dev/calendar-preview"
-guest=${LUMA_PREVIEW_GUEST:-luma@192.168.122.250}
-guest_key=${LUMA_PREVIEW_GUEST_KEY:-$repo_root/build/provisioning/luma-m0-guest}
-guest_root=/var/home/luma/.local/share/project-luma/calendar-preview
+guest=${SUNO_PREVIEW_GUEST:-Suno@192.168.122.250}
+guest_key=${SUNO_PREVIEW_GUEST_KEY:-$repo_root/build/provisioning/Suno-m0-guest}
+guest_root=/var/home/Suno/.local/share/project-suno/calendar-preview
 runtime_root="$guest_root/runtime"
 stage_runtime="$preview_root/builds/stage$runtime_root"
-shared_lib=/var/home/luma/.local/share/project-luma/files-preview/lib
+shared_lib=/var/home/Suno/.local/share/project-suno/files-preview/lib
 
 test -x "$stage_runtime/bin/gnome-calendar" || {
   printf 'error: Calendar preview has not been built\n' >&2
@@ -29,7 +29,7 @@ ssh_options=(-i "$guest_key" -o BatchMode=yes -o StrictHostKeyChecking=accept-ne
 ssh "${ssh_options[@]}" "$guest" "
   export XDG_RUNTIME_DIR=/run/user/1000
   export DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus
-  systemctl --user stop luma-calendar-preview.service >/dev/null 2>&1 || true
+  systemctl --user stop Suno-calendar-preview.service >/dev/null 2>&1 || true
   pkill -x gnome-calendar >/dev/null 2>&1 || true
   install -d -m 0755 '$runtime_root'
 "
@@ -43,7 +43,7 @@ ssh "${ssh_options[@]}" "$guest" "
   gdbus call --session --dest org.gnome.ScreenSaver \
     --object-path /org/gnome/ScreenSaver \
     --method org.gnome.ScreenSaver.SetActive false >/dev/null
-  systemd-run --user --unit=luma-calendar-preview --collect --no-block --quiet \
+  systemd-run --user --unit=Suno-calendar-preview --collect --no-block --quiet \
     --setenv=XDG_RUNTIME_DIR=/run/user/1000 \
     --setenv=DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus \
     --setenv=XDG_SESSION_TYPE=wayland \

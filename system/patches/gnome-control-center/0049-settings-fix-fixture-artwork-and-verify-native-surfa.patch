@@ -7,8 +7,8 @@ Subject: [PATCH] settings: fix fixture artwork and verify native surface
 Route Reel to existing approved video-editor artwork and use the supported done toast kind for Night Light. Preserve mapped/artwork/closed-window smoke assertions and additionally require actual native surface 1180x740 or 390x740. GtkWidget reports the inner content box; native surface defines window geometry. All six Wi-Fi/Sound Levels/Keyboard desktop and phone smoke runs pass on a private sufficiently sized Xvfb; focused Sound, Night Light and live memory-folder actions pass. Full native suite remains 10/11 due shared text-only display action API, not an accepted exception.
 ---
  shell/cc-application.c          | 17 +++++++++++++++++
- shell/cc-luma-fixture.c         |  4 ++--
- shell/cc-luma-view-nightlight.c |  2 +-
+ shell/cc-Suno-fixture.c         |  4 ++--
+ shell/cc-Suno-view-nightlight.c |  2 +-
  3 files changed, 20 insertions(+), 3 deletions(-)
 
 diff --git a/shell/cc-application.c b/shell/cc-application.c
@@ -20,7 +20,7 @@ index 2a5d88f..305d12f 100644
      g_printerr ("Settings fixture runtime smoke: FAIL (view did not map with loaded artwork)\n");
    }
 +  if (self->fixture_window) {
-+    int expected_width = g_strcmp0 (g_getenv ("LUMA_SETTINGS_SMOKE_PHONE"), "1") == 0 ? 390 : 1180;
++    int expected_width = g_strcmp0 (g_getenv ("SUNO_SETTINGS_SMOKE_PHONE"), "1") == 0 ? 390 : 1180;
 +    /* GtkWidget width is the content box, excluding the window frame.
 +     * Measure the actual native surface for the scenario's window size. */
 +    GdkSurface *surface = gtk_native_get_surface (GTK_NATIVE (self->fixture_window));
@@ -39,11 +39,11 @@ index 2a5d88f..305d12f 100644
    if (self->fixture_window) gtk_window_destroy (self->fixture_window);
    if (gtk_application_get_windows (GTK_APPLICATION (self))) {
      self->fixture_failed = TRUE;
-diff --git a/shell/cc-luma-fixture.c b/shell/cc-luma-fixture.c
+diff --git a/shell/cc-Suno-fixture.c b/shell/cc-Suno-fixture.c
 index 460cb97..949694d 100644
---- a/shell/cc-luma-fixture.c
-+++ b/shell/cc-luma-fixture.c
-@@ -370,8 +370,8 @@ char *cc_luma_fixture_asset_path (CcLumaFixture *self, const char *id, GError **
+--- a/shell/cc-Suno-fixture.c
++++ b/shell/cc-Suno-fixture.c
+@@ -370,8 +370,8 @@ char *cc_Suno_fixture_asset_path (CcSunoFixture *self, const char *id, GError **
            g_autofree char *file = g_strconcat (id, ".png", NULL);
            return g_build_filename (self->resource_dir, file, NULL);
          }
@@ -54,19 +54,19 @@ index 460cb97..949694d 100644
    if (self->resource_dir && id)
      for (guint i = 0; i < G_N_ELEMENTS (apps); i++)
        if (g_str_equal (id, apps[i]))
-diff --git a/shell/cc-luma-view-nightlight.c b/shell/cc-luma-view-nightlight.c
+diff --git a/shell/cc-Suno-view-nightlight.c b/shell/cc-Suno-view-nightlight.c
 index 40a5c96..d9dc253 100644
---- a/shell/cc-luma-view-nightlight.c
-+++ b/shell/cc-luma-view-nightlight.c
+--- a/shell/cc-Suno-view-nightlight.c
++++ b/shell/cc-Suno-view-nightlight.c
 @@ -25,7 +25,7 @@ static void until_tomorrow (GtkButton *button, View *v)
    g_autoptr(GError) error = NULL;
-   if (cc_luma_fixture_set_flag (v->model, "night", FALSE, &error)) {
-     cc_luma_view_queue_refresh (v);
--    luma_toast_show (v->root, "Night Light is off until tomorrow", "moon");
-+    luma_toast_show (v->root, "Night Light is off until tomorrow", "done");
-   } else cc_luma_view_report_error (v, error);
+   if (cc_Suno_fixture_set_flag (v->model, "night", FALSE, &error)) {
+     cc_Suno_view_queue_refresh (v);
+-    Suno_toast_show (v->root, "Night Light is off until tomorrow", "moon");
++    Suno_toast_show (v->root, "Night Light is off until tomorrow", "done");
+   } else cc_Suno_view_report_error (v, error);
  }
- void cc_luma_view_nightlight_render (View *v)
+ void cc_Suno_view_nightlight_render (View *v)
 -- 
 2.55.0
 

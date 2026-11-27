@@ -219,5 +219,5 @@ class PhotosState:
 
 def source_from_environment():
     """Call in a worker. Fixture path bypasses every real catalog/cache path."""
-    fixture = os.environ.get('LUMA_PHOTOS_FIXTURE')
+    fixture = os.environ.get('SUNO_PHOTOS_FIXTURE')
     return FixtureSource(Path(fixture)) if fixture else PhotoLibrary()

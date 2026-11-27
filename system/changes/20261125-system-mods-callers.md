@@ -1,7 +1,7 @@
 ---
 type: security
 component: Mods
-packages: [luma-mods]
+packages: [Suno-mods]
 highlight: false
 ---
 Summary: Only the Mods app can ask for system Mod changes

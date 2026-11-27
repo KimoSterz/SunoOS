@@ -70,7 +70,7 @@
       "b": "oklch(0.55 0.09 60)",
       "desc": "Notes and outlines",
       "have": "1.7.0",
-      "runs": "Runs as a normal Luma app on a shared Debian 12 runtime that Luma keeps patched.",
+      "runs": "Runs as a normal Suno app on a shared Debian 12 runtime that Suno keeps patched.",
       "src": "apt.driftwood.app",
       "sig": "Driftwood Software",
       "perms": [
@@ -105,7 +105,7 @@
         "sync.driftwood.app"
       ],
       "rt": "Debian 12 runtime (shared with 4 other apps)",
-      "scripts": "postinst ran in a recording sandbox. It tried to add a service and a command; both were turned into Luma equivalents."
+      "scripts": "postinst ran in a recording sandbox. It tried to add a service and a command; both were turned into Suno equivalents."
     },
     {
       "id": "labelpress",
@@ -151,7 +151,7 @@
       ],
       "net": [],
       "rt": "Fedora 44 runtime (downloads on first use, 180 MB)",
-      "scripts": "post-install asked to build a kernel module with DKMS. Luma skipped that step."
+      "scripts": "post-install asked to build a kernel module with DKMS. Suno skipped that step."
     },
     {
       "id": "tessera",
@@ -209,7 +209,7 @@
       "a": "oklch(0.8 0.14 130)",
       "b": "oklch(0.55 0.15 150)",
       "desc": "Game",
-      "runs": "Runs in Luma’s Android layer, in its own space, like on a phone.",
+      "runs": "Runs in Suno’s Android layer, in its own space, like on a phone.",
       "src": "Signed APK",
       "sig": "Small Sprout Games",
       "perms": [
@@ -251,7 +251,7 @@
       "a": "oklch(0.7 0.1 160)",
       "b": "oklch(0.45 0.1 180)",
       "desc": "Accounting",
-      "runs": "Runs through Luma’s Windows layer in its own private space.",
+      "runs": "Runs through Suno’s Windows layer in its own private space.",
       "src": "northfield.com",
       "sig": "Northfield Accounting",
       "perms": [

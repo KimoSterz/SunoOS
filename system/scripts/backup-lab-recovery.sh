@@ -8,14 +8,14 @@ if (( EUID != 0 )); then
 fi
 
 stamp="${1:-$(date -u +%Y%m%dT%H%M%SZ)}"
-domain="luma-design"
-backup_root="/var/lib/luma-backups/${stamp}"
+domain="Suno-design"
+backup_root="/var/lib/Suno-backups/${stamp}"
 metadata_dir="${backup_root}/metadata"
 chunks_dir="${backup_root}/release-assets"
-source_tree="/home/nick/src/project-luma"
-vm_archive="${backup_root}/project-luma-vm-state-${stamp}.tar.zst"
-evidence_archive="${backup_root}/project-luma-build-evidence-${stamp}.tar.zst"
-worktree_archive="${backup_root}/project-luma-dell-worktree-${stamp}.tar.zst"
+source_tree="/home/nick/src/project-suno"
+vm_archive="${backup_root}/project-suno-vm-state-${stamp}.tar.zst"
+evidence_archive="${backup_root}/project-suno-build-evidence-${stamp}.tar.zst"
+worktree_archive="${backup_root}/project-suno-dell-worktree-${stamp}.tar.zst"
 
 mkdir -p "${metadata_dir}" "${chunks_dir}"
 chmod 0700 "${backup_root}"
@@ -46,15 +46,15 @@ if [[ "$(virsh --connect qemu:///system domstate "${domain}")" != "shut off" ]];
   exit 1
 fi
 
-virsh --connect qemu:///system dumpxml --inactive "${domain}" >"${metadata_dir}/luma-design.xml"
+virsh --connect qemu:///system dumpxml --inactive "${domain}" >"${metadata_dir}/Suno-design.xml"
 virsh --connect qemu:///system net-dumpxml default >"${metadata_dir}/network-default.xml"
-virsh --connect qemu:///system pool-dumpxml luma >"${metadata_dir}/pool-luma.xml"
-virsh --connect qemu:///system pool-dumpxml luma-desktop >"${metadata_dir}/pool-luma-desktop.xml"
-qemu-img info --backing-chain --output=json /var/lib/libvirt/images/luma/design.qcow2 \
+virsh --connect qemu:///system pool-dumpxml Suno >"${metadata_dir}/pool-Suno.xml"
+virsh --connect qemu:///system pool-dumpxml Suno-desktop >"${metadata_dir}/pool-Suno-desktop.xml"
+qemu-img info --backing-chain --output=json /var/lib/libvirt/images/Suno/design.qcow2 \
   >"${metadata_dir}/design-backing-chain.json"
 
 for image in baseline.qcow2 design.qcow2 acceptance-base.qcow2; do
-  qemu-img check "/var/lib/libvirt/images/luma/${image}" \
+  qemu-img check "/var/lib/libvirt/images/Suno/${image}" \
     >"${metadata_dir}/${image}.check.txt"
 done
 
@@ -74,17 +74,17 @@ semanage export >"${metadata_dir}/selinux-local-customizations.txt"
 virsh --connect qemu:///system list --all >"${metadata_dir}/domains.txt"
 
 sha256sum \
-  /var/lib/libvirt/images/luma/baseline.qcow2 \
-  /var/lib/libvirt/images/luma/design.qcow2 \
-  /var/lib/libvirt/images/luma/acceptance-base.qcow2 \
-  /var/lib/libvirt/images/luma/test-provisioning.ign \
-  /var/lib/libvirt/qemu/nvram/luma-design_VARS.qcow2 \
+  /var/lib/libvirt/images/Suno/baseline.qcow2 \
+  /var/lib/libvirt/images/Suno/design.qcow2 \
+  /var/lib/libvirt/images/Suno/acceptance-base.qcow2 \
+  /var/lib/libvirt/images/Suno/test-provisioning.ign \
+  /var/lib/libvirt/qemu/nvram/Suno-design_VARS.qcow2 \
   >"${metadata_dir}/source-files.sha256"
 
 tar --numeric-owner --xattrs --acls --selinux --sparse \
   -I 'zstd -T0 -10' -C / -cf "${vm_archive}" \
-  var/lib/libvirt/images/luma \
-  var/lib/libvirt/qemu/nvram/luma-design_VARS.qcow2 \
+  var/lib/libvirt/images/Suno \
+  var/lib/libvirt/qemu/nvram/Suno-design_VARS.qcow2 \
   var/lib/libvirt/swtpm \
   etc/libvirt \
   etc/greetd \
@@ -93,7 +93,7 @@ tar --numeric-owner --xattrs --acls --selinux --sparse \
   etc/systemd/logind.conf.d \
   etc/tmpfiles.d \
   etc/ssh/sshd_config.d \
-  "var/lib/luma-backups/${stamp}/metadata"
+  "var/lib/Suno-backups/${stamp}/metadata"
 
 if [[ -d "${source_tree}/build" ]]; then
   (
@@ -128,7 +128,7 @@ done
 )
 
 cat >"${backup_root}/README.txt" <<EOF
-Project Luma migration backup ${stamp}
+Project Suno migration backup ${stamp}
 
 The release-assets directory contains chunks smaller than GitHub's 2 GiB
 release-asset limit. Verify them with SHA256SUMS, concatenate parts in lexical

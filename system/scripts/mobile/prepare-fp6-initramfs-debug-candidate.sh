@@ -59,7 +59,7 @@ grep -Fq 'pmos.debug-shell' "$output_dir/boot-info.txt" || die 'debug-shell cmdl
 [ "$(stat -c %s "$candidate")" -le $((96 * 1024 * 1024)) ] || die 'candidate exceeds boot partition'
 
 {
-	printf 'LUMA_FP6_INITRAMFS_DEBUG_VERSION=1\n'
+	printf 'SUNO_FP6_INITRAMFS_DEBUG_VERSION=1\n'
 	printf 'CONTROL_BOOT_SHA256=%s\n' "$expected_control_sha"
 	printf 'CANDIDATE_SHA256=%s\n' "$(hash "$candidate")"
 	printf 'CANDIDATE_SIZE=%s\n' "$(stat -c %s "$candidate")"

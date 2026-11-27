@@ -7,7 +7,7 @@ import json
 from pathlib import Path
 import re
 
-SCHEMA = "org.projectluma.media-retention/v1"
+SCHEMA = "org.projectSuno.media-retention/v1"
 
 
 def utc(value):
@@ -72,7 +72,7 @@ def main():
     if bool(args.confirm_replaced_build) != bool(args.confirmed_switch_utc):
         parser.error("Actual switch confirmation requires both replaced build and UTC time")
     tree, ledger_path = Path(args.tree), Path(args.ledger)
-    entries = [json.loads(path.read_text()) for path in tree.glob("luma-*.iso.json")]
+    entries = [json.loads(path.read_text()) for path in tree.glob("Suno-*.iso.json")]
     prior_path = tree / "latest.json"
     prior = json.loads(prior_path.read_text())["latest"]["build_id"] if prior_path.exists() else None
     previous = json.loads(ledger_path.read_text()) if ledger_path.exists() else None

@@ -11,8 +11,8 @@ ROOT = Path(__file__).resolve().parents[2]
 spec = importlib.util.spec_from_file_location('publication_window', ROOT / 'scripts/os/lib/publication_window.py')
 window = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(window)
-UNIT = 'luma-os-publication-fixture.service'
-TIMER = 'luma-approved-os-graph-refresh-nightly.timer'
+UNIT = 'Suno-os-publication-fixture.service'
+TIMER = 'Suno-approved-os-graph-refresh-nightly.timer'
 
 
 class Control:
@@ -92,23 +92,23 @@ class PublicationWindow(unittest.TestCase):
         source=(ROOT/'scripts/os/run-capped.sh').read_text()
         block=source[source.index('forwarded=()'):source.index('output=(')]
         command=block+'\nprintf "%s\\0" "${forwarded[@]}"'
-        environment=os.environ|{'LUMA_OS_PROFILE':'arm-preview','LUMA_OS_KEYS':'/keys with spaces','LUMA_OS_SLICE':'selected.slice','UNRELATED_TOKEN':'not forwarded'}
+        environment=os.environ|{'SUNO_OS_PROFILE':'arm-preview','SUNO_OS_KEYS':'/keys with spaces','SUNO_OS_SLICE':'selected.slice','UNRELATED_TOKEN':'not forwarded'}
         args=subprocess.check_output(['bash','-c',command],env=environment).decode().split('\0')
-        self.assertIn('--setenv=LUMA_OS_KEYS=/keys with spaces',args)
-        self.assertIn('--setenv=LUMA_OS_SLICE=selected.slice',args)
-        self.assertIn('--setenv=LUMA_OS_PROFILE=arm-preview',args)
+        self.assertIn('--setenv=SUNO_OS_KEYS=/keys with spaces',args)
+        self.assertIn('--setenv=SUNO_OS_SLICE=selected.slice',args)
+        self.assertIn('--setenv=SUNO_OS_PROFILE=arm-preview',args)
         self.assertFalse(any('UNRELATED_TOKEN' in value for value in args))
 
     def test_worker_native_cap_private_mounts_explicit_environment(self):
-        command = window.worker_command(UNIT, ['true'], {'LUMA_OS_PROFILE':'arm-preview',
-           'LUMA_TARGET_ARCHITECTURE':'aarch64','EXPLICIT_PROOF':'some path', 'UNRELATED_TOKEN':'not forwarded'},4096,7200,['EXPLICIT_PROOF'])
+        command = window.worker_command(UNIT, ['true'], {'SUNO_OS_PROFILE':'arm-preview',
+           'SUNO_TARGET_ARCHITECTURE':'aarch64','EXPLICIT_PROOF':'some path', 'UNRELATED_TOKEN':'not forwarded'},4096,7200,['EXPLICIT_PROOF'])
         self.assertIn('--property=MemoryMax=4096M',command)
         self.assertIn('--property=PrivateMounts=yes',command)
         self.assertIn('--property=KillMode=control-group',command)
         self.assertIn('--setenv=EXPLICIT_PROOF=some path',command)
-        self.assertIn('--setenv=LUMA_TARGET_ARCHITECTURE=aarch64',command)
+        self.assertIn('--setenv=SUNO_TARGET_ARCHITECTURE=aarch64',command)
         self.assertFalse(any('UNRELATED_TOKEN' in arg for arg in command))
-        for env in ['MISSING', 'LUMA_OS_SIGNING_LOCK_FD', 'not-an-env']:
+        for env in ['MISSING', 'SUNO_OS_SIGNING_LOCK_FD', 'not-an-env']:
             with self.subTest(env=env), self.assertRaises(ValueError):
                 window.worker_command(UNIT,['true'],{},4096,7200,[env])
 

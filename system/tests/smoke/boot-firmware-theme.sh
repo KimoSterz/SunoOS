@@ -2,12 +2,12 @@
 # SPDX-License-Identifier: MPL-2.0
 #
 # Source, artwork and migration contract for the desktop boot splash: the
-# luma-loading selection, the luma-firmware presentation that stays packaged,
+# Suno-loading selection, the Suno-firmware presentation that stays packaged,
 # the hidden GRUB menu and the one-shot setting migration.
 # Runs in the Fedora rasterization builder (rsvg-convert, python3, GNU
 # coreutils). It proves what can be proven without booting: the selection, a
 # reproducible and correctly sized render, and that the one-shot moves only
-# settings Luma shipped. Boot, shutdown and prompt rendering are VM evidence.
+# settings Suno shipped. Boot, shutdown and prompt rendering are VM evidence.
 
 set -euo pipefail
 
@@ -17,45 +17,45 @@ trap 'rm -rf -- "$work"' EXIT
 
 desktop_config=$repo_root/config/boot/plymouthd.conf
 previous=$repo_root/config/boot/plymouthd.conf.previous
-theme=$repo_root/assets/boot/luma-firmware.plymouth
-migrate=$repo_root/config/boot/luma-boot-splash-migrate
+theme=$repo_root/assets/boot/Suno-firmware.plymouth
+migrate=$repo_root/config/boot/Suno-boot-splash-migrate
 
-# Selection: desktop luma-loading, which takes over from the firmware logo;
-# handheld unchanged; luma-firmware still complete for anyone who picks it.
-# Luma's plymouth selects the desktop splash in /usr; the /etc file Luma ships
+# Selection: desktop Suno-loading, which takes over from the firmware logo;
+# handheld unchanged; Suno-firmware still complete for anyone who picks it.
+# Suno's plymouth selects the desktop splash in /usr; the /etc file Suno ships
 # is a template with no settings, so nothing in /etc can take the splash away.
 if grep -Evq '^[[:space:]]*(#|$)' "$desktop_config"; then
   printf 'error: %s has settings; the splash is selected in plymouthd.defaults\n' "$desktop_config" >&2
   exit 1
 fi
-grep -Fq "sed -i -e 's/^Theme=.*/Theme=luma-loading/' src/plymouthd.defaults" \
-  "$repo_root/patches/plymouth/0000-luma-fedora-spec.patch"
-grep -Fq 'Plymouth.GetTime' "$repo_root/assets/boot/luma-loading.script"
-grep -Fq 'Window.SetFirmwareBackgroundOpacity' "$repo_root/assets/boot/luma-loading.script"
-grep -Fxq 'global.handheld = 1;' "$repo_root/assets/boot/luma-loading-handheld.script"
-grep -Fxq 'Theme=luma-loading-handheld' "$repo_root/config/mobile/plymouthd.conf"
+grep -Fq "sed -i -e 's/^Theme=.*/Theme=Suno-loading/' src/plymouthd.defaults" \
+  "$repo_root/patches/plymouth/0000-Suno-fedora-spec.patch"
+grep -Fq 'Plymouth.GetTime' "$repo_root/assets/boot/Suno-loading.script"
+grep -Fq 'Window.SetFirmwareBackgroundOpacity' "$repo_root/assets/boot/Suno-loading.script"
+grep -Fxq 'global.handheld = 1;' "$repo_root/assets/boot/Suno-loading-handheld.script"
+grep -Fxq 'Theme=Suno-loading-handheld' "$repo_root/config/mobile/plymouthd.conf"
 grep -Fxq 'ModuleName=two-step' "$theme"
-grep -Fxq 'ImageDir=/usr/share/plymouth/themes/luma-firmware' "$theme"
+grep -Fxq 'ImageDir=/usr/share/plymouth/themes/Suno-firmware' "$theme"
 for mode in boot-up shutdown reboot; do
   awk -v mode="[$mode]" '$0 == mode { section = 1; next } /^\[/ { section = 0 }
     section && $0 == "UseFirmwareBackground=true" { found = 1 } END { exit !found }' "$theme"
 done
 
 # GRUB stays out of sight on bootupd installs: the hidden-menu piece sorts
-# after the preamble's timeout and before 10_blscfg (so before luma.cfg) and
-# 14_menu_show_once, keeps a one-second window for Esc/F8/Shift, and luma.cfg
+# after the preamble's timeout and before 10_blscfg (so before Suno.cfg) and
+# 14_menu_show_once, keeps a one-second window for Esc/F8/Shift, and Suno.cfg
 # only clears the screen for a menu that is actually drawn.
-hidden_menu=$repo_root/config/boot/09_luma_hidden_menu.cfg
+hidden_menu=$repo_root/config/boot/09_Suno_hidden_menu.cfg
 [ "$(grep -Ev '^(#|$)' "$hidden_menu")" = "$(printf 'set timeout_style=hidden\nset timeout=1')" ]
-[ "$(printf '%s\n' 08_greenboot.cfg 10_blscfg.cfg 09_luma_hidden_menu.cfg 14_menu_show_once.cfg | LC_ALL=C sort)" = \
-  "$(printf '%s\n' 08_greenboot.cfg 09_luma_hidden_menu.cfg 10_blscfg.cfg 14_menu_show_once.cfg)" ]
+[ "$(printf '%s\n' 08_greenboot.cfg 10_blscfg.cfg 09_Suno_hidden_menu.cfg 14_menu_show_once.cfg | LC_ALL=C sort)" = \
+  "$(printf '%s\n' 08_greenboot.cfg 09_Suno_hidden_menu.cfg 10_blscfg.cfg 14_menu_show_once.cfg)" ]
 # The helper that brings updated computers' grub.cfg up to date.
-python3 -m unittest -q "$repo_root/tests/unit/test_luma_boot_hidden_menu.py"
+python3 -m unittest -q "$repo_root/tests/unit/test_Suno_boot_hidden_menu.py"
 awk '/timeout_style.*!=.*hidden/ { guard = NR } /terminal_output gfxterm/ { exit !(guard && guard < NR) }' \
-  "$repo_root/config/boot/luma.cfg"
+  "$repo_root/config/boot/Suno.cfg"
 if command -v grub2-script-check >/dev/null 2>&1; then
   grub2-script-check "$hidden_menu"
-  grub2-script-check "$repo_root/config/boot/luma.cfg"
+  grub2-script-check "$repo_root/config/boot/Suno.cfg"
 fi
 
 # The shipped digest list: well formed, unique, and never the current file.
@@ -83,8 +83,8 @@ fi
 # Artwork: two renders are byte-identical and every image has its drawn size.
 render() {
   python3 "$repo_root/scripts/boot/render-firmware-theme.py" \
-    --wordmark "$repo_root/website/public/brand/luma-wordmark.svg" \
-    --dot "$repo_root/assets/boot/luma-loading-dot.svg" --output "$1" >/dev/null
+    --wordmark "$repo_root/website/public/brand/Suno-wordmark.svg" \
+    --dot "$repo_root/assets/boot/Suno-loading-dot.svg" --output "$1" >/dev/null
 }
 render "$work/first"
 render "$work/second"
@@ -114,7 +114,7 @@ assert data[:30] == data[30:]
 assert len(list(directory.glob('*.png'))) == 66
 PYTHON
 
-# Migration: only an exact earlier Luma setting moves, once; nothing else does.
+# Migration: only an exact earlier Suno setting moves, once; nothing else does.
 bash "$repo_root/tests/smoke/boot-splash-migrate.sh" "$migrate" "$desktop_config" "$previous"
 bash -n "$repo_root/config/boot/dracut/module-setup.sh"
 

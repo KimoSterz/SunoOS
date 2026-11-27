@@ -1,4 +1,4 @@
-From: Project Luma <builds@project-luma.local>
+From: Project Suno <builds@project-suno.local>
 Subject: [PATCH] Well: background apps stay in view; one app per status item
 
 The Well showed only kept apps; every other status item went behind a
@@ -15,54 +15,54 @@ its own desktop entry; for a browser's item, the web app its tooltip names
 (desktop entry <browser>-<id>-<profile>.desktop or StartupWMClass crx_<id>),
 else the browser. Name, face and the key a pin keeps all come from that
 app. A browser's notification whose origin is an installed web app's site
-is placed under the web app. The rules live in lumaWellModel.js, without
+is placed under the web app. The rules live in SunoWellModel.js, without
 gi imports, so %check runs them.
 
-diff --git a/data/theme/luma-shelf.css b/data/theme/luma-shelf.css
+diff --git a/data/theme/Suno-shelf.css b/data/theme/Suno-shelf.css
 index fd3ec54..28ad423 100644
---- a/data/theme/luma-shelf.css
-+++ b/data/theme/luma-shelf.css
-@@ -3188,6 +3188,15 @@ StBoxLayout.luma-notification-tray.luma-surface-dark .luma-notification-tray-cou
- .luma-well-popover-title { font-size: 12px; font-weight: 650; letter-spacing: 0; }
- .luma-well-tile-plate { width: 32px; height: 32px; background-color: transparent; }
- .luma-well-tile-plate .luma-well-glyph { width: 24px; height: 24px; }
+--- a/data/theme/Suno-shelf.css
++++ b/data/theme/Suno-shelf.css
+@@ -3188,6 +3188,15 @@ StBoxLayout.Suno-notification-tray.Suno-surface-dark .Suno-notification-tray-cou
+ .Suno-well-popover-title { font-size: 12px; font-weight: 650; letter-spacing: 0; }
+ .Suno-well-tile-plate { width: 32px; height: 32px; background-color: transparent; }
+ .Suno-well-tile-plate .Suno-well-glyph { width: 24px; height: 24px; }
 +/* The Well's overflow (0349): the stacked faces of the apps it holds, and
 +   how many, at the height of a Well item. Each face sits on a rim of the
 +   surface so overlapping icons stay apart. */
-+.luma-well-count { min-width: 28px; height: 28px; padding: 0 7px 0 6px; border-radius: 8px; }
-+.luma-well-stack { spacing: 5px; }
-+.luma-well-stack-face { padding: 1px; border-radius: 5px; background-color: #2a2e34; }
-+.luma-status-light .luma-well-stack-face { background-color: #f1f2f3; }
-+.luma-well-stack-face .luma-well-glyph { width: 14px; height: 14px; }
-+.luma-well-stack-count { font-size: 11px; font-weight: 750; font-feature-settings: "tnum"; }
++.Suno-well-count { min-width: 28px; height: 28px; padding: 0 7px 0 6px; border-radius: 8px; }
++.Suno-well-stack { spacing: 5px; }
++.Suno-well-stack-face { padding: 1px; border-radius: 5px; background-color: #2a2e34; }
++.Suno-status-light .Suno-well-stack-face { background-color: #f1f2f3; }
++.Suno-well-stack-face .Suno-well-glyph { width: 14px; height: 14px; }
++.Suno-well-stack-count { font-size: 11px; font-weight: 750; font-feature-settings: "tnum"; }
  
  /* One native frame per radio tile, with no dark lower-border rim. */
- .quick-settings.luma-studio-options .quick-toggle-has-menu.luma-options-radio,
+ .quick-settings.Suno-studio-options .quick-toggle-has-menu.Suno-options-radio,
 diff --git a/js/js-resources.gresource.xml b/js/js-resources.gresource.xml
 index a2441d4..01b506d 100644
 --- a/js/js-resources.gresource.xml
 +++ b/js/js-resources.gresource.xml
 @@ -96,6 +96,7 @@
-     <file>ui/lumaWindowWatch.js</file>
-     <file>ui/lumaFocusVisible.js</file>
-     <file>ui/lumaWell.js</file>
-+    <file>ui/lumaWellModel.js</file>
-     <file>ui/lumaDockBadgeModel.js</file>
-     <file>ui/lumaDockBadges.js</file>
-     <file>ui/lumaDockFolders.js</file>
-diff --git a/js/ui/lumaWell.js b/js/ui/lumaWell.js
+     <file>ui/SunoWindowWatch.js</file>
+     <file>ui/SunoFocusVisible.js</file>
+     <file>ui/SunoWell.js</file>
++    <file>ui/SunoWellModel.js</file>
+     <file>ui/SunoDockBadgeModel.js</file>
+     <file>ui/SunoDockBadges.js</file>
+     <file>ui/SunoDockFolders.js</file>
+diff --git a/js/ui/SunoWell.js b/js/ui/SunoWell.js
 index 3b82fd0..3936066 100644
---- a/js/ui/lumaWell.js
-+++ b/js/ui/lumaWell.js
+--- a/js/ui/SunoWell.js
++++ b/js/ui/SunoWell.js
 @@ -20,11 +20,17 @@ import St from 'gi://St';
  import * as DND from './dnd.js';
  import * as Main from './main.js';
  import * as PopupMenu from './popupMenu.js';
-+import {formOf} from './lumaPresentation/layout.js';
++import {formOf} from './SunoPresentation/layout.js';
 +import {
 +    ATTENTION_LIMIT, ATTENTION_LINGER_MS, PIN_LIMIT, arrange, capacityFor,
 +    catalogFrom, isChromiumStatusId, statusItemApp,
-+} from './lumaWellModel.js';
++} from './SunoWellModel.js';
  
 -export const PIN_LIMIT = 4;
 -export const ATTENTION_LIMIT = 2;
@@ -72,7 +72,7 @@ index 3b82fd0..3936066 100644
 +// The overflow shows the faces of the first few apps it holds.
 +const STACK_FACES = 3;
 +const STACK_GLYPH = 14;
- // The optical size of every glyph in the Well row, Luma's own and an
+ // The optical size of every glyph in the Well row, Suno's own and an
  // extension's: the system indicators' own 14px, not an icon's native size.
  const GLYPH_SIZE = 14;
 @@ -61,25 +67,6 @@ export class WellStore {
@@ -171,7 +171,7 @@ index 3b82fd0..3936066 100644
 +                        this._program = '';
 +                    }
 +                } catch (e) {
-+                    console.warn(`[luma-well] could not place a browser status icon: ${e.message}`);
++                    console.warn(`[Suno-well] could not place a browser status icon: ${e.message}`);
 +                }
 +                settled();
 +            });
@@ -236,31 +236,31 @@ index 3b82fd0..3936066 100644
                  glyph = new St.Icon({gicon: host.gicon, icon_size: size});
              } else if (host?.content) {
                  glyph = new Clutter.Actor({content: host.content, width: size, height: size,
-@@ -315,6 +389,7 @@ class LumaWellItem extends St.Widget {
+@@ -315,6 +389,7 @@ class SunoWellItem extends St.Widget {
              y_align: Clutter.ActorAlign.CENTER, layout_manager: new Clutter.BinLayout(), accessible_role: Atk.Role.PUSH_BUTTON});
          this.source = source;
          this._well = well;
 +        this.faceKey = source.faceKey;
-         const row = new St.BoxLayout({style_class: 'luma-well-item-row', x_align: Clutter.ActorAlign.CENTER,
+         const row = new St.BoxLayout({style_class: 'Suno-well-item-row', x_align: Clutter.ActorAlign.CENTER,
              y_align: Clutter.ActorAlign.CENTER});
          row.add_child(source.makeGlyph());
 @@ -400,9 +475,18 @@ export const Well = GObject.registerClass({
          this._items = new Map();
          this.arrowSide = St.Side.BOTTOM;
-         this._insertion = new St.Widget({style_class: 'luma-well-insertion', visible: false});
--        this._chip = new St.Button({style_class: 'luma-well-count', can_focus: true,
+         this._insertion = new St.Widget({style_class: 'Suno-well-insertion', visible: false});
+-        this._chip = new St.Button({style_class: 'Suno-well-count', can_focus: true,
 -            child: new St.Icon({icon_name: 'view-app-grid-symbolic', icon_size: 16}),
 +        // The overflow shows what it holds: the faces of the apps behind it,
 +        // stacked, and how many there are.
-+        this._stackFaces = new St.Widget({style_class: 'luma-well-stack-faces',
++        this._stackFaces = new St.Widget({style_class: 'Suno-well-stack-faces',
 +            layout_manager: new Clutter.FixedLayout(), y_align: Clutter.ActorAlign.CENTER});
-+        this._stackCount = new St.Label({style_class: 'luma-well-stack-count',
++        this._stackCount = new St.Label({style_class: 'Suno-well-stack-count',
              y_align: Clutter.ActorAlign.CENTER});
-+        const stack = new St.BoxLayout({style_class: 'luma-well-stack', y_align: Clutter.ActorAlign.CENTER});
++        const stack = new St.BoxLayout({style_class: 'Suno-well-stack', y_align: Clutter.ActorAlign.CENTER});
 +        stack.add_child(this._stackFaces);
 +        stack.add_child(this._stackCount);
 +        this._stackKeys = '';
-+        this._chip = new St.Button({style_class: 'luma-well-count', can_focus: true,
++        this._chip = new St.Button({style_class: 'Suno-well-count', can_focus: true,
 +            child: stack, y_align: Clutter.ActorAlign.CENTER});
          this._chip.connect('clicked', () => this._togglePopover());
          this._delegate = this;
@@ -307,7 +307,7 @@ index 3b82fd0..3936066 100644
 +        const step = Math.round(STACK_GLYPH * 0.65);
 +        // The first app sits on top; each one after it tucks in behind.
 +        faces.forEach((source, index) => {
-+            const face = new St.Bin({style_class: 'luma-well-stack-face',
++            const face = new St.Bin({style_class: 'Suno-well-stack-face',
 +                child: source.makeGlyph(STACK_GLYPH)});
 +            face.set_position(index * step, 0);
 +            this._stackFaces.insert_child_at_index(face, 0);
@@ -354,7 +354,7 @@ index 3b82fd0..3936066 100644
 +        }
          this.add_child(this._insertion);
          this.add_child(this._host);
-         // Luma: a tray with nothing to show holds no width, no spacing and no
+         // Suno: a tray with nothing to show holds no width, no spacing and no
 @@ -769,7 +894,9 @@ export const Well = GObject.registerClass({
                  return GLib.SOURCE_REMOVE;
              });
@@ -366,11 +366,11 @@ index 3b82fd0..3936066 100644
              this._fillPopover();
          this.emit('changed');
      }
-diff --git a/js/ui/lumaWellModel.js b/js/ui/lumaWellModel.js
+diff --git a/js/ui/SunoWellModel.js b/js/ui/SunoWellModel.js
 new file mode 100644
 index 0000000..20b1f4f
 --- /dev/null
-+++ b/js/ui/lumaWellModel.js
++++ b/js/ui/SunoWellModel.js
 @@ -0,0 +1,231 @@
 +// SPDX-License-Identifier: GPL-2.0-or-later
 +// What the Well shows and who each item is, without a Shell: which status
@@ -383,7 +383,7 @@ index 0000000..20b1f4f
 +export const ATTENTION_LINGER_MS = 3000;
 +
 +// How many status items the Well shows before it folds the rest away, by the
-+// form of the screen it is on (lumaPresentation/layout.js formOf). A desktop
++// form of the screen it is on (SunoPresentation/layout.js formOf). A desktop
 +// or a tablet has room for four; a narrower screen holds fewer.
 +export const CAPACITY = {pocket: 1, phone: 2, fold: 3, tablet: 4};
 +
@@ -610,8 +610,8 @@ index 4e7dc6f..4790bf9 100644
 @@ -8,6 +8,7 @@ import * as Config from '../misc/config.js';
  import * as Main from './main.js';
  import * as MessageTray from './messageTray.js';
- import * as AndroidActivation from './lumaAndroidActivation.js';
-+import {catalogFrom, notificationApp} from './lumaWellModel.js';
+ import * as AndroidActivation from './SunoAndroidActivation.js';
++import {catalogFrom, notificationApp} from './SunoWellModel.js';
  
  import {loadInterfaceXML} from '../misc/fileUtils.js';
  import {NotificationErrors, NotificationError} from '../misc/dbusErrors.js';

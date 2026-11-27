@@ -1,18 +1,18 @@
 # Standalone Tide for Linux
 
-These recipes package the current `src/luma-tide` application for x86_64 Linux.
-The application keeps its normal `org.projectluma.Tide` identity. Source,
-changes and issue reports remain in the Luma monorepo.
+These recipes package the current `src/Suno-tide` application for x86_64 Linux.
+The application keeps its normal `org.projectSuno.Tide` identity. Source,
+changes and issue reports remain in the Suno monorepo.
 
-The portable directory contains a selected native dependency closure, LumaUI,
+The portable directory contains a selected native dependency closure, SunoUI,
 AppKit, fonts, icons, the Python interpreter, Mutagen, audio decoders and
-libsecret. It does not require the complete Luma Platform. The AppImage contains
+libsecret. It does not require the complete Suno Platform. The AppImage contains
 this directory. The Flatpak uses the shared `org.freedesktop.Platform/25.08`
 runtime and the `standalone` application branch.
 
 ## Build
 
-Use a qualified Luma Platform and matching SDK. Download the pinned GdkPixbuf
+Use a qualified Suno Platform and matching SDK. Download the pinned GdkPixbuf
 archive, SVG loader source and Mutagen wheel listed in `DEPENDENCIES.md` into
 an input directory. Inside the SDK, run:
 
@@ -46,7 +46,7 @@ With Flatpak installed:
 
 ```sh
 flatpak install --user ./Tide-0.1.0-x86_64.flatpak
-flatpak run org.projectluma.Tide//standalone
+flatpak run org.projectSuno.Tide//standalone
 ```
 
 Flatpak may download the shared Freedesktop runtime from Flathub if it is not

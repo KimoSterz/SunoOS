@@ -1,7 +1,7 @@
 ---
 type: feature
 component: Tide
-packages: [luma-tide]
+packages: [Suno-tide]
 highlight: false
 ---
 Summary: Choose where Tide finds your music

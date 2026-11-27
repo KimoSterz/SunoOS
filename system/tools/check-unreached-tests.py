@@ -9,8 +9,8 @@ a test that is never run looks exactly like a test that is.
 
 This happened for real: five rules about overriding a publisher's command line
 were added to tests/unit/, passed every time they were run by hand, and gated
-nothing, because luma-application-installer's %check discovers tests/ from the
-package source tree and its build script copies src/luma-installer/tests into
+nothing, because Suno-application-installer's %check discovers tests/ from the
+package source tree and its build script copies src/Suno-installer/tests into
 it -- never the repository's own tests/unit. The build said "Ran 536 tests, OK"
 both before and after they were written.
 
@@ -23,8 +23,8 @@ have caught the bug that motivated it is worth nothing.
 
 So a test is reached only when one build script BOTH carries the test's own
 directory AND carries the source module that test imports. A test of
-luma_installer sitting in a directory that only luma-search's build copies is
-not covered by luma-search running it, because luma-search does not ship the
+Suno_installer sitting in a directory that only Suno-search's build copies is
+not covered by Suno-search running it, because Suno-search does not ship the
 code under test.
 
 There are two ways to fail, and they are not equally bad. A test no package
@@ -57,7 +57,7 @@ RUNS_TESTS = re.compile(r"(\b(unittest|pytest|meson test|ninja test|make check)\
                         r"|(?<![\w/])tests?/[\w./-]*(run|check|suite)[\w./-]*"
                         r"|\b(bash|sh|python3?|node|%\{__python3\})\s+\S*tests?/)")
 
-#: The modules a test exercises: "from luma_installer import x", "import
+#: The modules a test exercises: "from Suno_installer import x", "import
 #: prairie_apps", and the sys.path shim that names a source tree directly.
 IMPORTS = re.compile(r"^\s*(?:from|import)\s+([a-z][a-z0-9_]*)", re.M)
 PATH_SHIM = re.compile(r"src[/\"']+([A-Za-z0-9._-]+)")
@@ -131,7 +131,7 @@ def build_scripts_for(spec: Path, scripts: dict[Path, str]) -> list[Path]:
     """Every build script that builds this spec.
 
     Naming the spec file is the clear case. Some packages are linked only by
-    convention -- luma-continuity's builder produces its source tarball and
+    convention -- Suno-continuity's builder produces its source tarball and
     never mentions the spec -- so a script whose own name carries the package
     name counts too. Missing that link made this tool claim 68 tests gated
     nothing when they are in fact carried into the tarball the spec builds
@@ -178,8 +178,8 @@ def subject_of(path: Path) -> set[str]:
     except OSError:
         return set()
     found = {m for m in IMPORTS.findall(text)
-             if m.startswith(("luma_", "prairie_")) or m in ("imsd",)}
-    found |= {m for m in PATH_SHIM.findall(text) if m.startswith(("luma-", "prairie-"))}
+             if m.startswith(("Suno_", "prairie_")) or m in ("imsd",)}
+    found |= {m for m in PATH_SHIM.findall(text) if m.startswith(("Suno-", "prairie-"))}
     return found
 
 
@@ -201,7 +201,7 @@ def main(argv: list[str] | None = None) -> int:
         return self_test()
 
     scripts = {}
-    # Build scripts are not all shell: luma-continuity's is Python, and a glob
+    # Build scripts are not all shell: Suno-continuity's is Python, and a glob
     # that assumed .sh silently attributed none of its 76 tests to it.
     candidates = [p for p in (ROOT / "scripts").rglob("*")
                   if p.is_file() and p.suffix in (".sh", ".py", "")]
@@ -351,20 +351,20 @@ def self_test() -> int:
     """
     failures = []
 
-    # The real case: a test of luma_installer, living in the repository's
+    # The real case: a test of Suno_installer, living in the repository's
     # shared tests/unit, carried only by a build that does not ship
-    # luma_installer. It must be reported.
+    # Suno_installer. It must be reported.
     shared = "tests/unit/test_capsule_runtime.py"
     if not (ROOT / shared).exists():
         print(f"self-test: cannot run, {shared} is gone", file=sys.stderr)
         return 2
     subjects = subject_of(ROOT / shared)
-    if "luma_installer" not in subjects:
+    if "Suno_installer" not in subjects:
         failures.append(f"the subject of {shared} was not recognised: {subjects}")
-    if carries("cp -R $repo_root/src/luma-search/luma_search .", "luma_installer"):
-        failures.append("a build that ships luma_search was credited with luma_installer")
-    if not carries("cp -R $repo_root/src/luma-installer/luma_installer .", "luma_installer"):
-        failures.append("a build that ships luma_installer was not credited with it")
+    if carries("cp -R $repo_root/src/Suno-search/Suno_search .", "Suno_installer"):
+        failures.append("a build that ships Suno_search was credited with Suno_installer")
+    if not carries("cp -R $repo_root/src/Suno-installer/Suno_installer .", "Suno_installer"):
+        failures.append("a build that ships Suno_installer was not credited with it")
 
     # Every directory CI names must be found, not just the last one. A greedy
     # pattern that spanned newlines between two `discover` invocations captured
@@ -383,7 +383,7 @@ def self_test() -> int:
             failures.append(f"CI runs {expected} and the parser did not see it: {found}")
 
     # A package's own tests belong to it, whatever they import.
-    if not covers({"src/luma-energy"}, "src/luma-energy/tests/test_luma_energy.py"):
+    if not covers({"src/Suno-energy"}, "src/Suno-energy/tests/test_Suno_energy.py"):
         failures.append("a package's own tests directory was not recognised as covered")
 
     if failures:

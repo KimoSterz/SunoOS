@@ -1,0 +1,3 @@
+[D-BUS Service]
+Name=org.projectSuno.Tide
+Exec=@bindir@/org.projectSuno.Tide --gapplication-service

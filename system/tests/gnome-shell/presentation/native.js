@@ -7,8 +7,8 @@ import Shell from 'gi://Shell';
 import St from 'gi://St';
 import Pango from 'gi://Pango';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
-import {start} from '../../../src/luma-shell-presentation/preview-adapter.js';
-import {homeLayout, pageRange, formOf} from '../../../src/luma-shell-presentation/layout.js';
+import {start} from '../../../src/Suno-shell-presentation/preview-adapter.js';
+import {homeLayout, pageRange, formOf} from '../../../src/Suno-shell-presentation/layout.js';
 import {testEditor} from './editor.js';
 import {testWidgetResize} from './widget-resize-native.js';
 import {testTabletTasks} from './tablet-tasks.js';
@@ -57,7 +57,7 @@ async function work() {
     const optionsMenu = Main.panel.statusArea.quickSettings.menu;
     const delayedOptionsPage = widgetsOnly ? optionsMenu._mainPage : null;
     if (delayedOptionsPage) delete optionsMenu._mainPage;
-    const adapter = start(`${source}/src/luma-shell-presentation`, {widgets: editorOnly ? [{
+    const adapter = start(`${source}/src/Suno-shell-presentation`, {widgets: editorOnly ? [{
         id: 'org.example.WidgetFixture', columns: 2, rows: 2,
         createActor: () => new St.Button({label: 'Widget fixture', accessible_name: 'Widget fixture',
             reactive: true, can_focus: true, style: 'background: #444; border-radius: 20px;'}),
@@ -75,7 +75,7 @@ async function work() {
             JSON.stringify({installed: presentation._optionsInstalled,
                 parent: presentation._options.get_parent()?.style_class}));
     }
-    const settings = new Gio.Settings({schema_id: 'org.project_luma.shell-state'});
+    const settings = new Gio.Settings({schema_id: 'org.projectSuno.shell-state'});
     const mode = async value => {
         presentation._call('SetPresentation', new GLib.Variant('(s)', [value]));
         await sleep(1800);
@@ -123,8 +123,8 @@ async function work() {
         check('Experience shares the native Tiling utility row', Boolean(nativeRow) &&
             nativeRow.get_parent() === presentation._modeUtilityRow);
         check('Experience uses utility styling without radio tile background',
-            presentation._options.has_style_class_name('luma-options-utility') &&
-            !presentation._options.has_style_class_name('luma-options-radio') &&
+            presentation._options.has_style_class_name('Suno-options-utility') &&
+            !presentation._options.has_style_class_name('Suno-options-radio') &&
             presentation._options.checked);
         for (const choice of ['desktop', 'tablet', 'mobile']) {
             await mode(choice);
@@ -136,18 +136,18 @@ async function work() {
             check(`${choice} Experience title fits`,
                 !presentation._options._contents._title.clutter_text.get_layout().is_ellipsized());
             check(`${choice} experience icon`, presentation._options.iconName === {
-                desktop:'luma-monitor-symbolic', tablet:'luma-tablet-symbolic',
-                mobile:'luma-smartphone-symbolic'}[choice]);
+                desktop:'Suno-monitor-symbolic', tablet:'Suno-tablet-symbolic',
+                mobile:'Suno-smartphone-symbolic'}[choice]);
             presentation._options.menu.open(); await sleep(300);
             check(`${choice} native Experience detail page opens`,
                 optionsMenu._activeMenu === presentation._options.menu);
             presentation._options.menu.close(); optionsMenu.close();
         }
-        Main.extensionManager.disableExtension('tiling-toggle@project-luma.local');
+        Main.extensionManager.disableExtension('tiling-toggle@project-suno.local');
         await sleep(500);
         check('Experience survives Tiling provider removal',
             !presentation._modeTilingRow && presentation._options.get_parent() === presentation._modeUtilityRow);
-        Main.extensionManager.enableExtension('tiling-toggle@project-luma.local');
+        Main.extensionManager.enableExtension('tiling-toggle@project-suno.local');
         for (let i = 0; i < 30 && !presentation._modeTilingRow; i++) await sleep(100);
         nativeRow = presentation._modeTilingRow;
         check('late Tiling provider rejoins the same row', nativeRow &&
@@ -222,9 +222,9 @@ async function work() {
     await shot('tablet-home-large-text');
     theme.set_font(originalFont);
     await sleep(500);
-    const properties = Gio.DBus.session.call_sync('org.project_luma.ShellState1',
-        '/org/project_luma/ShellState1', 'org.freedesktop.DBus.Properties', 'GetAll',
-        new GLib.Variant('(s)', ['org.project_luma.ShellState1']), null,
+    const properties = Gio.DBus.session.call_sync('org.projectSuno.ShellState1',
+        '/org/projectSuno/ShellState1', 'org.freedesktop.DBus.Properties', 'GetAll',
+        new GLib.Variant('(s)', ['org.projectSuno.ShellState1']), null,
         Gio.DBusCallFlags.NONE, 3000, null).deep_unpack()[0];
     check('typed application context reports Tablet', properties.Presentation.deep_unpack() === 'tablet');
     const titles = presentation._apps.map(info => info.get_display_name());
@@ -310,7 +310,7 @@ async function work() {
     const platform = GLib.getenv('PRESENTATION_PLATFORM');
     if (platform) {
         const launcher = Gio.SubprocessLauncher.new(Gio.SubprocessFlags.STDERR_MERGE);
-        launcher.setenv('PYTHONPATH', `${source}/src/luma-platform/appkit`, true);
+        launcher.setenv('PYTHONPATH', `${source}/src/Suno-platform/appkit`, true);
         launcher.setenv('GI_TYPELIB_PATH', `${platform}/ui:${platform}/semantics:${platform}/appearance`, true);
         launcher.setenv('LD_LIBRARY_PATH', `${platform}/ui:${platform}/semantics:${platform}/appearance`, true);
         launcher.set_stdout_file_path(`${out}/appkit-window.log`);
@@ -326,11 +326,11 @@ async function work() {
         }));
         if (GLib.getenv('PRESENTATION_VIEWER_CONTROLS')) {
             await mode('tablet');
-            launcher.setenv('PYTHONPATH', `${source}/src/luma-platform/appkit:${source}/src/luma-viewer`, true);
-            launcher.setenv('LUMA_VIEWER_STYLE_PATH', `${source}/src/luma-viewer/viewer.css`, true);
+            launcher.setenv('PYTHONPATH', `${source}/src/Suno-platform/appkit:${source}/src/Suno-viewer`, true);
+            launcher.setenv('SUNO_VIEWER_STYLE_PATH', `${source}/src/Suno-viewer/viewer.css`, true);
             launcher.setenv('PYTHONWARNINGS', 'ignore::DeprecationWarning', true);
             launcher.set_stdout_file_path(`${out}/viewer-mode.log`);
-            const viewer = launcher.spawnv(['python3', `${source}/src/luma-viewer/tests/tablet_mode_runtime.py`]);
+            const viewer = launcher.spawnv(['python3', `${source}/src/Suno-viewer/tests/tablet_mode_runtime.py`]);
             await new Promise(resolve => viewer.wait_check_async(null, (process, result) => {
                 try { process.wait_check_finish(result); check('Viewer mode controls retain Tablet safe area', true); }
                 catch (error) { check('Viewer mode controls retain Tablet safe area', false, error.message); }
@@ -339,11 +339,11 @@ async function work() {
         }
         if (GLib.getenv('PRESENTATION_EFFICIENCY_LAYOUT')) {
             await mode('desktop');
-            launcher.setenv('PYTHONPATH', `${source}/src/luma-platform/appkit:${source}/src/luma-tide`, true);
+            launcher.setenv('PYTHONPATH', `${source}/src/Suno-platform/appkit:${source}/src/Suno-tide`, true);
             launcher.set_stdout_file_path(`${out}/efficiency-layout.log`);
             const runtime = GLib.getenv('PRESENTATION_EFFICIENCY_WEATHER') ? 'weather_refresh_runtime.py' :
                 GLib.getenv('PRESENTATION_EFFICIENCY_NATIVE') ? 'idle_native_details_runtime.py' : 'idle_layout_runtime.py';
-            const layout = launcher.spawnv(['python3', `${source}/src/luma-platform/tests/${runtime}`]);
+            const layout = launcher.spawnv(['python3', `${source}/src/Suno-platform/tests/${runtime}`]);
             await new Promise(resolve => layout.wait_check_async(null, (process, result) => {
                 try { process.wait_check_finish(result); check('passive layout stays idle and adapts after resizing', true); }
                 catch (error) { check('passive layout stays idle and adapts after resizing', false, error.message); }

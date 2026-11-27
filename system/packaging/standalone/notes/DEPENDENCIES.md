@@ -1,8 +1,8 @@
 # Notes standalone dependencies
 
-Notes uses selected libraries from the Luma Platform. Included components retain
+Notes uses selected libraries from the Suno Platform. Included components retain
 their notices in `usr/share/licenses`: Python, PyGObject, cairo, GTK, libadwaita,
-LumaUI, LumaSemantics, AppKit, GLib, libsecret, fonts, icons and their native
+SunoUI, SunoSemantics, AppKit, GLib, libsecret, fonts, icons and their native
 dependencies, including GStreamer libraries linked by GTK. Consult each
 component's license for its terms. Audio decoder plugins, Mutagen and OS
 account services are not included.

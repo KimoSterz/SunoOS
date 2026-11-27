@@ -1,7 +1,7 @@
 """Actual shared GTK Phone over paired TLS; synthetic calls and feedback only."""
 import json,os,socket,tempfile,threading,time
 from pathlib import Path
-assert "luma-native-check-" in os.environ["XDG_DATA_HOME"]
+assert "Suno-native-check-" in os.environ["XDG_DATA_HOME"]
 os.environ["HOME"]=str(Path(os.environ["XDG_DATA_HOME"]).parent/"call-home")
 Path.home().mkdir(mode=0o700)
 import gi
@@ -9,15 +9,15 @@ gi.require_version('Gtk','4.0');gi.require_version('Adw','1')
 from gi.repository import Gio,GLib,Gtk
 from prairie_apps.phone import PhoneApplication,PhoneWindow
 from prairie_apps.phone_backend import NativeCall,CallPhase
-from luma_continuity.bootstrap import create_identity,approve_peer
-from luma_continuity.local import PairedExchange,bounded_stream
-from luma_continuity.policy import Journal
-from luma_continuity.native import NativeCalls
-from luma_continuity.call_receiver import CallReceiver
-from luma_continuity.call_provider import CallProvider
-from luma_continuity import transport
+from Suno_continuity.bootstrap import create_identity,approve_peer
+from Suno_continuity.local import PairedExchange,bounded_stream
+from Suno_continuity.policy import Journal
+from Suno_continuity.native import NativeCalls
+from Suno_continuity.call_receiver import CallReceiver
+from Suno_continuity.call_provider import CallProvider
+from Suno_continuity import transport
 
-assert 'luma-native-check-' in os.environ['XDG_DATA_HOME']
+assert 'Suno-native-check-' in os.environ['XDG_DATA_HOME']
 context=GLib.MainContext.default()
 def pump(seconds=.1):
     end=time.monotonic()+seconds
@@ -44,13 +44,13 @@ def feedback_server():
     registration=bus.register_object('/org/sigxcpu/Feedback',info.interfaces[0],call,None,None)
     feedback_ready.set();feedback_loop.run();bus.unregister_object(registration);bus.close_sync(None);ctx.pop_thread_default()
 ft=threading.Thread(target=feedback_server);ft.start();assert feedback_ready.wait(5)
-out=Path(os.environ['LUMA_CALLS_UI_OUTPUT']);out.mkdir(parents=True,exist_ok=True)
-from luma_continuity.call_events import CallListener
-from luma_continuity.daemon import Daemon,BUS,PATH as BUS_PATH
-from luma_continuity.account import AccountModel
+out=Path(os.environ['SUNO_CALLS_UI_OUTPUT']);out.mkdir(parents=True,exist_ok=True)
+from Suno_continuity.call_events import CallListener
+from Suno_continuity.daemon import Daemon,BUS,PATH as BUS_PATH
+from Suno_continuity.account import AccountModel
 
 root=Path(tempfile.mkdtemp(prefix='call-session-'))
-client=Path.home()/'.local/share/luma-connect/device';client.parent.mkdir(parents=True,exist_ok=True)
+client=Path.home()/'.local/share/Suno-connect/device';client.parent.mkdir(parents=True,exist_ok=True)
 server=root/'phone'
 cp=create_identity(client);sp=create_identity(server);epoch='e'*32;account='synthetic-account'
 approve_peer(client,server/'device.pem',sp,epoch,['calls.read','calls.control'],account=account)
@@ -111,7 +111,7 @@ try:
     PhoneWindow.__init__=sized_window  # geometry only, before normal activate maps it
     app=PhoneApplication();assert app.register(None);results=[]
     for width in (360,500,1024,1440):
-        os.environ['LUMA_PRESENTATION_MODE']='fullscreen-mobile' if width==360 else 'windowed'
+        os.environ['SUNO_PRESENTATION_MODE']='fullscreen-mobile' if width==360 else 'windowed'
         requested_width[0]=width
         app.activate();window=app.props.active_window
         window.present()

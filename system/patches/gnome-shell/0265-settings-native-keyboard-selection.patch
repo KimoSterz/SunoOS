@@ -1,4 +1,4 @@
-Subject: [PATCH] Select configured keyboard layouts from Luma Settings
+Subject: [PATCH] Select configured keyboard layouts from Suno Settings
 
 --- a/js/ui/shellDBus.js
 +++ b/js/ui/shellDBus.js

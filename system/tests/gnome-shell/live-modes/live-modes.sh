@@ -8,7 +8,7 @@ export LM_OUT=${1:-/tmp/live-modes}
 export XDG_RUNTIME_DIR=/tmp/lm-run; rm -rf $XDG_RUNTIME_DIR; mkdir -m 700 -p $XDG_RUNTIME_DIR
 export HOME=/tmp/lm-home; rm -rf $HOME; mkdir -p $HOME/.config/glib-2.0/settings
 cat > $HOME/.config/glib-2.0/settings/keyfile <<'K'
-[org/project-luma/shell-state]
+[org/project-suno/shell-state]
 surface-treatment='dark'
 shelf-edge='bottom'
 shelf-surface-mode='separate'
@@ -25,7 +25,7 @@ enable-animations=true
 welcome-dialog-last-shown-version='999'
 K
 [ -n "${LM_OVERLAY:-}" ] && export G_RESOURCE_OVERLAYS="/org/gnome/shell/ui=$LM_OVERLAY/js/ui:/org/gnome/shell/theme=$LM_OVERLAY/data/theme"
-export GSETTINGS_BACKEND=keyfile LIBGL_ALWAYS_SOFTWARE=1 LUMA_MUTTER_ALLOW_SOFTWARE_BLUR=1
+export GSETTINGS_BACKEND=keyfile LIBGL_ALWAYS_SOFTWARE=1 SUNO_MUTTER_ALLOW_SOFTWARE_BLUR=1
 rm -rf "$LM_OUT"; mkdir -p "$LM_OUT"
 mkdir -p /run/dbus
 dbus-send --system --print-reply --dest=org.freedesktop.DBus / org.freedesktop.DBus.Peer.Ping >/dev/null 2>&1 ||

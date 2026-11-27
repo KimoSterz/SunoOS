@@ -1,22 +1,22 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: MPL-2.0
 #
-# End-to-end: choosing Official, Beta or Nightly on real Luma installs, in
+# End-to-end: choosing Official, Beta or Nightly on real Suno installs, in
 # disposable VMs on the build host, against a stand-in for the public download
 # server (every channel public, ADR-030 section 4) and, for the compatibility
 # path, a stand-in for Hub's enrollment service. Never the live Hub or dl.
 #
 #   e2e.sh --from-new COMMIT --from-old COMMIT --to COMMIT --rpms DIR [--only new|old] [--keep]
 #
-# new: install --from-new, replace luma-update with the RPM under test (test VM
+# new: install --from-new, replace Suno-update with the RPM under test (test VM
 #      only; the pre-override deployment is cleaned up so rollback means the
 #      update), follow Official, then choose Nightly exactly as Depot does
 #      (SetChannel, then Check): --to is found and staged from the public path,
 #      no credential -> restart -> booted --to -> rollback -> booted
 #      --from-new -> back to Official. Then the compatibility path: EnrollPreview
 #      through the Hub stand-in, a device removed at Hub is refused by the
-#      download server with an error luma-update names, LeavePreview revokes.
-# old: install --from-old (a nightly .9-era install with luma-update .4), run
+#      download server with an error Suno-update names, LeavePreview revokes.
+# old: install --from-old (a nightly .9-era install with Suno-update .4), run
 #      the documented one-time step (rpm-ostree upgrade from the public
 #      repository) -> restart -> booted --to; with the RPM under test in place
 #      (standing in for tonight's nightly), the agent follows Nightly with no
@@ -28,10 +28,10 @@
 set -uo pipefail
 here=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
 repo_root=$(CDPATH='' cd -- "$here/../../.." && pwd)
-luma_os_repo_root=$repo_root
+Suno_os_repo_root=$repo_root
 # shellcheck disable=SC1091
 . "$repo_root/scripts/os/lib/common.sh"
-luma_os_require_root
+Suno_os_require_root
 
 from_new="" from_old="" to="" rpms="" only="" keep=0
 while [ "$#" -gt 0 ]; do
@@ -48,15 +48,15 @@ done
 [ -n "$to" ] && [ -n "$rpms" ] || { printf 'need --to and --rpms\n' >&2; exit 2; }
 
 run_id=$(date -u +%Y%m%dT%H%M%SZ)
-work=${LUMA_E2E_WORK:-$LUMA_OS_ROOT/vm/preview-enroll-$run_id}     # repository view: hard links, same filesystem
-disks=${LUMA_E2E_DISKS:-/mnt/luma-secondary/luma-preview-enroll-e2e/$run_id}
+work=${SUNO_E2E_WORK:-$SUNO_OS_ROOT/vm/preview-enroll-$run_id}     # repository view: hard links, same filesystem
+disks=${SUNO_E2E_DISKS:-/mnt/Suno-secondary/Suno-preview-enroll-e2e/$run_id}
 install -d -m 0755 "$work" "$disks"
 chcon -t virt_image_t "$disks" 2>/dev/null || true
 exec > >(tee -a "$work/e2e.log") 2>&1
 channel=nightly
-ref="luma/1/x86_64/$channel"
-candidate_repo="$LUMA_OS_ROOT/ostree/candidate-repo"
-iso=$LUMA_OS_ROOT/vm/media/Fedora-Silverblue-ostree-x86_64-44-1.7.iso
+ref="Suno/1/x86_64/$channel"
+candidate_repo="$SUNO_OS_ROOT/ostree/candidate-repo"
+iso=$SUNO_OS_ROOT/vm/media/Fedora-Silverblue-ostree-x86_64-44-1.7.iso
 failures=0
 pass() { printf 'PASS %s\n' "$*"; }
 fail() { printf 'FAIL %s\n' "$*"; failures=$((failures + 1)); }
@@ -65,18 +65,18 @@ note() { printf '== %s\n' "$*"; }
 
 # ── Host side ───────────────────────────────────────────────────────────────
 note "repository view in $work/repo"
-ostree init --repo="$work/repo" --mode=archive --collection-id="$LUMA_OS_COLLECTION_ID"
+ostree init --repo="$work/repo" --mode=archive --collection-id="$SUNO_OS_COLLECTION_ID"
 for commit in $from_new $from_old $to; do
   if ! ostree pull-local --repo="$work/repo" --untrusted "$candidate_repo" "$commit" >/dev/null ||
      ! ostree --repo="$work/repo" show "$commit" >/dev/null 2>&1; then
     printf 'FAIL commit %s is not in %s\nE2E FAIL (setup)\n' "$commit" "$candidate_repo"; exit 1
   fi
 done
-luma_os_gpg_unlock   # never luma_os_gpg_lock here: it would stop a gate signing with the same agent
+Suno_os_gpg_unlock   # never Suno_os_gpg_lock here: it would stop a gate signing with the same agent
 point_ref() {
   ostree refs --repo="$work/repo" --create="$ref" --force "$1" >/dev/null
-  ostree summary --repo="$work/repo" --update --gpg-sign="$(luma_os_gpg_fingerprint)" \
-    --gpg-homedir="$(luma_os_gpg_home)" >/dev/null
+  ostree summary --repo="$work/repo" --update --gpg-sign="$(Suno_os_gpg_fingerprint)" \
+    --gpg-homedir="$(Suno_os_gpg_home)" >/dev/null
 }
 version_of() { ostree --repo="$work/repo" show "$1" | sed -n 's/^Version: *//p'; }
 
@@ -103,11 +103,11 @@ db.commit()
 PY
 unset token
 
-python3 "$repo_root/ops/update-preview-credentials/luma-update-preview-hub.py" --listen "127.0.0.1:$hub_port" \
+python3 "$repo_root/ops/update-preview-credentials/Suno-update-preview-hub.py" --listen "127.0.0.1:$hub_port" \
   --hub-database "$work/hub.sqlite" --database "$work/preview.sqlite" --export-dir "$work/export" \
   >"$work/hub.log" 2>&1 &
 hub_pid=$!
-LUMA_DL_PREVIEW_CREDENTIAL_FILES="$work/staff-credentials:$work/export/hub-preview-credentials" \
+SUNO_DL_PREVIEW_CREDENTIAL_FILES="$work/staff-credentials:$work/export/hub-preview-credentials" \
   python3 "$here/dl-test-server.py" "$dl_port" "$work/repo" "$work/graphs" "$work/dl-requests.jsonl" \
   >"$work/dl.log" 2>&1 &
 dl_pid=$!
@@ -120,11 +120,11 @@ cleanup() {
     done
     rm -rf "$disks"
   fi
-  rm -rf "/root/.ssh/luma-preview-enroll-$run_id"
+  rm -rf "/root/.ssh/Suno-preview-enroll-$run_id"
 }
 trap cleanup EXIT
 
-LUMA_OS_TOOLS_MOUNTS="$work/graph-key" luma_os_tools \
+SUNO_OS_TOOLS_MOUNTS="$work/graph-key" Suno_os_tools \
   minisign -G -W -p "$work/graph-key/test.pub" -s "$work/graph-key/test.key" >/dev/null
 sign_graph() { # sign_graph CHANNEL COMMIT...
   local name=$1; shift
@@ -144,7 +144,7 @@ json.dump({"schema_version": 1, "channel": channel, "arch": "x86_64",
            "generated_at": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
            "releases": releases}, open(path, "w"), indent=2)
 PY
-  LUMA_OS_TOOLS_MOUNTS="$work/graph-key $work/graphs" luma_os_tools minisign -S -s "$work/graph-key/test.key" \
+  SUNO_OS_TOOLS_MOUNTS="$work/graph-key $work/graphs" Suno_os_tools minisign -S -s "$work/graph-key/test.key" \
     -m "$work/graphs/$name.json" -t "e2e channel=$name" >/dev/null
   sleep 1
 }
@@ -152,22 +152,22 @@ for _ in $(seq 1 30); do curl -sf "http://127.0.0.1:$hub_port/healthz" >/dev/nul
 check "test Hub enrollment service is up" curl -sf "http://127.0.0.1:$hub_port/healthz" -o /dev/null
 
 # Confined ssh may only read keys below /root/.ssh (ssh_home_t), not the pipeline volume.
-ssh_dir=/root/.ssh/luma-preview-enroll-$run_id
+ssh_dir=/root/.ssh/Suno-preview-enroll-$run_id
 install -d -m 0700 "$ssh_dir"
-ssh-keygen -q -t ed25519 -N '' -C "luma-preview-enroll-$run_id" -f "$ssh_dir/ssh-key"
-release_key_b64=$(base64 -w0 "$LUMA_OS_KEYS/luma-os-release.gpg")
+ssh-keygen -q -t ed25519 -N '' -C "Suno-preview-enroll-$run_id" -f "$ssh_dir/ssh-key"
+release_key_b64=$(base64 -w0 "$SUNO_OS_KEYS/Suno-os-release.gpg")
 
 install_vm() { # install_vm NAME COMMIT
   local name=$1 commit=$2 domain port
-  domain="luma-preview-enroll-$name-$run_id"
+  domain="Suno-preview-enroll-$name-$run_id"
   port=$(free_port)
   printf '%s\n' "$port" >"$work/$domain.ssh-port"
   point_ref "$commit"
   sed -e "s#@SSH_PUBLIC_KEY@#$(cat "$ssh_dir/ssh-key.pub")#" -e "s#@RELEASE_KEY_BASE64@#$release_key_b64#" \
-      -e "s#@STATEROOT@#$LUMA_OS_STATEROOT#g" -e "s#@REMOTE@#$LUMA_OS_REMOTE#g" \
+      -e "s#@STATEROOT@#$SUNO_OS_STATEROOT#g" -e "s#@REMOTE@#$SUNO_OS_REMOTE#g" \
       -e "s#@REPO_URL@#http://$gateway:$dl_port/os/repo#g" -e "s#@REF@#$ref#g" -e "s#@CHANNEL@#$channel#g" \
       -e "s|@FIRSTBOOT@|firstboot --disable|" \
-      "$repo_root/tests/os/gate/luma-gate.ks.in" >"$work/$name.ks"
+      "$repo_root/tests/os/gate/Suno-gate.ks.in" >"$work/$name.ks"
   qemu-img create -q -f qcow2 "$disks/$domain.qcow2" 48G
   chcon -t virt_image_t "$disks/$domain.qcow2" 2>/dev/null || true
   domains+=("$domain")
@@ -196,13 +196,13 @@ wait_ssh() { local deadline=$((SECONDS + ${2:-900})); sleep 20
   while [ "$SECONDS" -lt "$deadline" ]; do guest "$1" true 2>/dev/null && return 0; sleep 5; done; return 1; }
 restart_vm() { guest "$1" 'systemctl reboot' >/dev/null 2>&1 || true; sleep 30; wait_ssh "$1" 900 &&
   guest "$1" 'systemctl is-system-running --wait >/dev/null 2>&1; true'; }
-field() { guest "$1" 'luma-update status --json' 2>/dev/null |
+field() { guest "$1" 'Suno-update status --json' 2>/dev/null |
   python3 -c 'import json,sys; v=json.load(sys.stdin).get(sys.argv[1]); print("" if v is None else v)' "$2"; }
 booted() { guest "$1" 'rpm-ostree status --json' | python3 -c 'import json,sys; print(next(d["checksum"] for d in json.load(sys.stdin)["deployments"] if d["booted"]))'; }
 dl_count() { python3 -c 'import json,sys; print(sum(1 for l in open(sys.argv[1]) if (lambda r: r["kind"]==sys.argv[2] and r["status"]==int(sys.argv[3]))(json.loads(l))))' "$work/dl-requests.jsonl" "$1" "$2" 2>/dev/null || echo 0; }
 hub_events() { grep -c "\"event\": \"$1\"" "$work/hub.log" || true; }
 rig_config() { # the device's update.conf, pointed at this rig (allow_insecure_urls: test VMs only)
-  guest "$1" "install -d -m 0755 /etc/luma/update-graph-keys.d && cat > /etc/luma/update.conf <<EOF
+  guest "$1" "install -d -m 0755 /etc/Suno/update-graph-keys.d && cat > /etc/Suno/update.conf <<EOF
 [update]
 graph_url = http://$gateway:$dl_port/os/graph/{channel}.json
 stable_repo_url = http://$gateway:$dl_port/os/repo
@@ -211,23 +211,23 @@ preview_credentials_url = http://$gateway:$hub_port/api/updates/preview-credenti
 events_url = http://$gateway:$dl_port/events
 allow_insecure_urls = true
 EOF
-systemctl stop luma-updated.timer >/dev/null 2>&1; true"
-  guest_copy "$1" "$work/graph-key/test.pub" /etc/luma/update-graph-keys.d/e2e-test.pub
-  guest "$1" 'systemctl restart luma-updated.service >/dev/null 2>&1; true'
+systemctl stop Suno-updated.timer >/dev/null 2>&1; true"
+  guest_copy "$1" "$work/graph-key/test.pub" /etc/Suno/update-graph-keys.d/e2e-test.pub
+  guest "$1" 'systemctl restart Suno-updated.service >/dev/null 2>&1; true'
 }
 sign_graph stable ${from_new:-$from_old}
 sign_graph nightly $from_new $from_old $to
 to_version=$(version_of "$to")
 
-# ── new: a recent nightly with the luma-update under test ──────────────────
-override_agent() { # replace luma-update with the RPM under test; rollback then means the update, not this
+# ── new: a recent nightly with the Suno-update under test ──────────────────
+override_agent() { # replace Suno-update with the RPM under test; rollback then means the update, not this
   local vm=$1 rpm
-  for rpm in "$rpms"/luma-update-*.noarch.rpm; do guest_copy "$vm" "$rpm" /var/tmp/; done
-  guest "$vm" 'rpm-ostree override replace /var/tmp/luma-update-*.noarch.rpm' >>"$work/override.log" 2>&1
+  for rpm in "$rpms"/Suno-update-*.noarch.rpm; do guest_copy "$vm" "$rpm" /var/tmp/; done
+  guest "$vm" 'rpm-ostree override replace /var/tmp/Suno-update-*.noarch.rpm' >>"$work/override.log" 2>&1
   restart_vm "$vm"
   guest "$vm" 'rpm-ostree cleanup -r' >>"$work/override.log" 2>&1
-  check "luma-update under test is running ($(guest "$vm" 'rpm -q luma-update'))" \
-    guest "$vm" "rpm -q luma-update | grep -Fq \"$(basename "$rpms"/luma-update-*.noarch.rpm .noarch.rpm)\""
+  check "Suno-update under test is running ($(guest "$vm" 'rpm -q Suno-update'))" \
+    guest "$vm" "rpm -q Suno-update | grep -Fq \"$(basename "$rpms"/Suno-update-*.noarch.rpm .noarch.rpm)\""
 }
 wait_staged() { # automatic download may already be running; ask for it if not, then wait (up to 90 minutes)
   local vm=$1 want=$2 deadline=$((SECONDS + 5400)) state
@@ -235,67 +235,67 @@ wait_staged() { # automatic download may already be running; ask for it if not, 
     state=$(field "$vm" state)
     case "$state" in
       checking|downloading|'') sleep 20 ;;
-      available) guest "$vm" 'luma-update download' || sleep 20 ;;
-      *) [ "$(field "$vm" staged_commit)" = "$want" ] && return 0; guest "$vm" 'luma-update download' || sleep 20
+      available) guest "$vm" 'Suno-update download' || sleep 20 ;;
+      *) [ "$(field "$vm" staged_commit)" = "$want" ] && return 0; guest "$vm" 'Suno-update download' || sleep 20
          [ "$(field "$vm" staged_commit)" = "$want" ] && return 0; sleep 20 ;;
     esac
   done
   return 1
 }
-dbus_call() { guest "$1" "busctl --system --timeout=1500 call org.projectluma.Update1 /org/projectluma/Update1 org.projectluma.Update1 $2"; }
+dbus_call() { guest "$1" "busctl --system --timeout=1500 call org.projectSuno.Update1 /org/projectSuno/Update1 org.projectSuno.Update1 $2"; }
 
 if [ -n "$from_new" ] && [ "$only" != old ]; then
-  vm=luma-preview-enroll-new-$run_id
+  vm=Suno-preview-enroll-new-$run_id
   if install_vm new "$from_new"; then
     point_ref "$to"   # the channel's head is the newest release, as on dl
     pass "installed $(version_of "$from_new")"
     override_agent "$vm"
     rig_config "$vm"
-    guest "$vm" 'luma-update channel stable' >"$work/new-official.log" 2>&1
+    guest "$vm" 'Suno-update channel stable' >"$work/new-official.log" 2>&1
     check "follows Official" test "$(field "$vm" channel)" = stable
     check "every channel on offer, no account" test "$(field "$vm" available_channels)" = "['stable', 'beta', 'nightly']"
     before_preview=$(dl_count preview 200); before_public=$(dl_count public 200)
     # Depot's choice: SetChannel, then Check.
     dbus_call "$vm" 'SetChannel s nightly' >"$work/new-pick.log" 2>&1
-    guest "$vm" 'luma-update check' >>"$work/new-pick.log" 2>&1
+    guest "$vm" 'Suno-update check' >>"$work/new-pick.log" 2>&1
     wait_staged "$vm" "$to" >>"$work/new-pick.log" 2>&1
     check "chose Nightly with no credential" test "$(field "$vm" channel)/$(field "$vm" preview_enrolled)" = nightly/False
     check "$to_version found and staged" test "$(field "$vm" staged_version)" = "$to_version"
     check "it came from the public path" test "$(dl_count public 200)" -gt "$before_public"
     check "no credential path was used" test "$(dl_count preview 200)" = "$before_preview"
-    check "no credential on the computer" guest "$vm" '! test -e /etc/luma/update-preview-credential'
+    check "no credential on the computer" guest "$vm" '! test -e /etc/Suno/update-preview-credential'
     restart_vm "$vm"
     check "restarted into $to_version" test "$(booted "$vm")" = "$to"
     check "follows Nightly after the restart" test "$(field "$vm" channel)" = nightly
-    guest "$vm" 'luma-update rollback' >"$work/new-rollback.log" 2>&1
+    guest "$vm" 'Suno-update rollback' >"$work/new-rollback.log" 2>&1
     restart_vm "$vm"
     check "rollback restarted into $(version_of "$from_new")" test "$(booted "$vm")" = "$from_new"
     dbus_call "$vm" 'SetChannel s stable' >"$work/new-back.log" 2>&1
     check "back to Official" test "$(field "$vm" channel)" = stable
-    check "the mirror list still names the public repository" guest "$vm" "grep -Fxq 'http://$gateway:$dl_port/os/repo' /etc/luma/update-mirrorlist"
+    check "the mirror list still names the public repository" guest "$vm" "grep -Fxq 'http://$gateway:$dl_port/os/repo' /etc/Suno/update-mirrorlist"
 
     # Compatibility: a computer enrolled through Hub before channels were public.
     guest_copy "$vm" "$work/secrets/device-token" /root/.e2e-device-token
     dbus_call "$vm" 'EnrollPreview ss nightly "$(cat /root/.e2e-device-token)"' >"$work/new-enroll.log" 2>&1
     check "compat: EnrollPreview through Hub" test "$(field "$vm" preview_enrolled)/$(field "$vm" preview_source)" = True/hub
     check "compat: credential and mirror list root-only" guest "$vm" \
-      'test "$(stat -c %a /etc/luma/update-preview-credential)" = 600 && test "$(stat -c %a /etc/luma/update-mirrorlist)" = 600 && grep -q /os/preview/ /etc/luma/update-mirrorlist'
-    check "compat: the credential path answers" guest "$vm" 'ostree remote summary luma >/dev/null 2>&1'
+      'test "$(stat -c %a /etc/Suno/update-preview-credential)" = 600 && test "$(stat -c %a /etc/Suno/update-mirrorlist)" = 600 && grep -q /os/preview/ /etc/Suno/update-mirrorlist'
+    check "compat: the credential path answers" guest "$vm" 'ostree remote summary Suno >/dev/null 2>&1'
     python3 -c 'import sqlite3,sys; d=sqlite3.connect(sys.argv[1]); d.execute("UPDATE devices SET revoked=1"); d.commit()' "$work/hub.sqlite"
     sleep 6
     check "compat: Hub revoked the removed device's credential" grep -q device-removed "$work/hub.log"
-    guest "$vm" "ostree remote summary luma 2>&1; true" >"$work/new-revoked.log" 2>&1
+    guest "$vm" "ostree remote summary Suno 2>&1; true" >"$work/new-revoked.log" 2>&1
     check "compat: the download server refuses it" test "$(dl_count preview 403)" -ge 1
-    check "compat: the refusal is one luma-update classifies (access-denied)" \
+    check "compat: the refusal is one Suno-update classifies (access-denied)" \
       grep -Eq '\b(HTTP 40[13]|40[13] (Forbidden|Unauthorized))\b|No valid mirrors were found in mirrorlist' "$work/new-revoked.log"
     python3 -c 'import sqlite3,sys; d=sqlite3.connect(sys.argv[1]); d.execute("UPDATE devices SET revoked=0"); d.commit()' "$work/hub.sqlite"
     dbus_call "$vm" 'EnrollPreview ss nightly "$(cat /root/.e2e-device-token)"' >>"$work/new-enroll.log" 2>&1
-    guest "$vm" 'rm -f /root/.e2e-device-token; luma-update leave-preview' >"$work/new-leave.log" 2>&1
+    guest "$vm" 'rm -f /root/.e2e-device-token; Suno-update leave-preview' >"$work/new-leave.log" 2>&1
     check "compat: Leave revoked at Hub" grep -q '"reason": "left"' "$work/hub.log"
     check "compat: Leave is back on Official from the public repository" test "$(field "$vm" preview_enrolled)/$(field "$vm" channel)" = False/stable
-    check "compat: mirror list public again" guest "$vm" "grep -Fxq 'http://$gateway:$dl_port/os/repo' /etc/luma/update-mirrorlist"
-    check "no credential in luma-updated's journal" guest "$vm" \
-      "! journalctl -b --no-pager -o cat -u luma-updated | grep -Eq '/os/preview/[A-Za-z0-9_-]{16,}/'"
+    check "compat: mirror list public again" guest "$vm" "grep -Fxq 'http://$gateway:$dl_port/os/repo' /etc/Suno/update-mirrorlist"
+    check "no credential in Suno-updated's journal" guest "$vm" \
+      "! journalctl -b --no-pager -o cat -u Suno-updated | grep -Eq '/os/preview/[A-Za-z0-9_-]{16,}/'"
   else
     fail "install of $(version_of "$from_new")"
   fi
@@ -303,12 +303,12 @@ fi
 
 # ── old: a nightly .9-era install, brought up once ─────────────────────────
 if [ -n "$from_old" ] && [ "$only" != new ]; then
-  vm=luma-preview-enroll-old-$run_id
+  vm=Suno-preview-enroll-old-$run_id
   if install_vm old "$from_old"; then
     point_ref "$to"
-    pass "installed $(version_of "$from_old") ($(guest "$vm" 'rpm -q luma-update'))"
+    pass "installed $(version_of "$from_old") ($(guest "$vm" 'rpm -q Suno-update'))"
     rig_config "$vm"
-    guest "$vm" 'luma-update check' >"$work/old-check-before.log" 2>&1
+    guest "$vm" 'Suno-update check' >"$work/old-check-before.log" 2>&1
     check "before: the old agent refuses Nightly without a credential (why the one-time step exists)" \
       test "$(field "$vm" last_error_class)" = preview
     before_preview=$(dl_count preview 200)
@@ -319,7 +319,7 @@ if [ -n "$from_old" ] && [ "$only" != new ]; then
     restart_vm "$vm"
     check "restarted into $to_version" test "$(booted "$vm")" = "$to"
     override_agent "$vm"   # stands in for tonight's nightly, which carries this agent
-    guest "$vm" 'luma-update check' >"$work/old-check-after.log" 2>&1
+    guest "$vm" 'Suno-update check' >"$work/old-check-after.log" 2>&1
     check "after: the agent follows Nightly with no credential and no error" \
       test "$(field "$vm" channel)/$(field "$vm" last_error_class)/$(field "$vm" preview_enrolled)" = nightly//False
     dbus_call "$vm" 'SetChannel s stable' >"$work/old-pick.log" 2>&1

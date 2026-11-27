@@ -4,7 +4,7 @@
 
 ``prairie-clock --agent`` runs Clock's AlarmService without GTK: the same
 scheduling, missed and late alarms, snoozes, timers and ringing (GStreamer), in
-a process luma-background starts and limits. It owns org.projectluma.Clock.Agent
+a process Suno-background starts and limits. It owns org.projectSuno.Clock.Agent
 from the start, publishes the next alarm or timer and whether one is ringing,
 notifies through org.freedesktop.Notifications with Snooze and Stop (the lock
 screen sees only that an alarm is ringing unless details are allowed there),
@@ -104,8 +104,8 @@ class AgentNotifications:
             elif action:
                 self.application.activate_action(action, target)
         self.notifier.notify(identifier, spec.title, spec.body, actions=actions, on_action=invoked,
-                             category=spec.category or ("x-luma.clock.timer" if identifier.startswith("timer-")
-                                                        else "x-luma.clock.alarm"),
+                             category=spec.category or ("x-Suno.clock.timer" if identifier.startswith("timer-")
+                                                        else "x-Suno.clock.alarm"),
                              urgency=URGENCY.get(spec.priority, 1), resident=spec.priority == "urgent",
                              timeout=0 if spec.priority == "urgent" else -1,
                              public_summary="Clock", public_body="Timer done" if identifier.startswith("timer-")

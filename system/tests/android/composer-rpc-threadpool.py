@@ -68,7 +68,7 @@ int main(int argc,char** argv) {
  assert(state.mMaxThreads==4);
 }
 '''
-with tempfile.TemporaryDirectory(prefix="luma-composer-rpc-control-") as tmp:
+with tempfile.TemporaryDirectory(prefix="Suno-composer-rpc-control-") as tmp:
     root = Path(tmp)
     cpp = root / "control.cpp"
     cpp.write_text(prefix + body + main)

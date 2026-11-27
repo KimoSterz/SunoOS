@@ -51,7 +51,7 @@ done
 [ "$(sha256sum "$init_source" | awk '{print $1}')" = "$PIXEL9_DIAGNOSTIC_FEDORA_INIT_SHA256" ] ||
 	die 'Fedora diagnostic init SHA-256 differs from the pin'
 
-mkdir -p "$output_dir" "$root/bin" "$root/usr/share/luma"
+mkdir -p "$output_dir" "$root/bin" "$root/usr/share/Suno"
 : >"$validated"
 expected_count=0
 while read -r expected_sha expected_bytes expected_nevra filename extra; do
@@ -96,7 +96,7 @@ done <"$validated"
 
 install -m 0755 "$busybox" "$root/bin/busybox"
 install -m 0755 "$init_source" "$root/init"
-install -m 0644 "$lock" "$root/usr/share/luma/pixel9-fedora44-rpms.lock"
+install -m 0644 "$lock" "$root/usr/share/Suno/pixel9-fedora44-rpms.lock"
 for required in "$root/usr/bin/bash" "$root/usr/lib/ld-linux-aarch64.so.1" "$root/usr/lib64/libc.so.6" "$root/usr/lib/os-release"; do
 	[ -e "$required" ] || die "extracted Fedora runtime input is absent: $required"
 done
@@ -122,8 +122,8 @@ find "$root" -exec touch -h -d "@$PIXEL9_DIAGNOSTIC_SOURCE_DATE_EPOCH" {} +
 ) >"$archive"
 
 for marker in \
-	'LUMA_PIXEL9_DIAGNOSTIC_REPORT_VERSION=4' \
-	'FEDORA_BASH_EXECUTION_TOKEN=LUMA_PIXEL9_FEDORA44_AARCH64_OK' \
+	'SUNO_PIXEL9_DIAGNOSTIC_REPORT_VERSION=4' \
+	'FEDORA_BASH_EXECUTION_TOKEN=SUNO_PIXEL9_FEDORA44_AARCH64_OK' \
 	'PERSISTENT_FILESYSTEMS_MOUNTED=false' \
 	'PERSISTENT_BLOCK_DEVICES_WRITTEN=false' \
 	'INTERACTIVE_SHELL_EXPOSED=false' \
@@ -134,7 +134,7 @@ for marker in \
 done
 
 {
-	printf 'LUMA_PIXEL9_DIAGNOSTIC_FEDORA_INITRAMFS_VERSION=1\n'
+	printf 'SUNO_PIXEL9_DIAGNOSTIC_FEDORA_INITRAMFS_VERSION=1\n'
 	printf 'SCOPE=offline-no-shell-fedora44-aarch64-execution-proof-initramfs\n'
 	printf 'SOURCE_DATE_EPOCH=%s\n' "$PIXEL9_DIAGNOSTIC_SOURCE_DATE_EPOCH"
 	printf 'BUSYBOX_BYTES=%s\n' "$PIXEL9_DIAGNOSTIC_BUSYBOX_BYTES"

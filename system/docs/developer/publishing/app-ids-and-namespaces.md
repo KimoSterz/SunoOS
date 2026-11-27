@@ -1,6 +1,6 @@
 ---
 title: App IDs and namespaces
-summary: Choosing a reverse-DNS app ID, the syntax luma lint enforces, how you will prove you control its namespace by domain or code forge, reserved namespaces, and why IDs never change after publication.
+summary: Choosing a reverse-DNS app ID, the syntax Suno lint enforces, how you will prove you control its namespace by domain or code forge, reserved namespaces, and why IDs never change after publication.
 order: 3
 section: Publishing
 ---
@@ -21,7 +21,7 @@ before your first public release.
 
 ## Syntax
 
-`luma lint` accepts an ID that:
+`Suno lint` accepts an ID that:
 
 - has **at least three** dot-separated components;
 - starts with a letter;
@@ -50,7 +50,7 @@ check used for organization verification, in one of two ways:
 
 ```text
 DNS TXT record on example.com:
-luma-developer-verification=<token>
+Suno-developer-verification=<token>
 ```
 
 or a file at:
@@ -72,7 +72,7 @@ For example, `io.github.alex_doe.Weather` belongs to the GitHub account
 
 ### Reserved namespaces
 
-`org.projectluma.*` is reserved for Luma’s own apps. Luma may also refuse IDs
+`org.projectSuno.*` is reserved for Suno’s own apps. Suno may also refuse IDs
 that impersonate another project or organization, even in a namespace you
 control.
 
@@ -80,14 +80,14 @@ control.
 
 Avoid it. Flatpak can mark an old ID end of life and point installs at a new
 one, but the ratings, install counts and granted permissions described above
-still start again. Ask Luma before you publish anything under a new ID; whether
+still start again. Ask Suno before you publish anything under a new ID; whether
 a move is possible for a public app is decided case by case.
 
 ## Checklist
 
 - [ ] The ID is in a namespace you control and can prove.
-- [ ] It passes `luma lint`.
-- [ ] The same ID is used in `luma-app.toml`, the Flatpak manifest, the desktop
+- [ ] It passes `Suno lint`.
+- [ ] The same ID is used in `Suno-app.toml`, the Flatpak manifest, the desktop
       entry filename and `Icon=`, the icon filename, and AppStream `<id>` and
       `<launchable>`.
 - [ ] `Gtk.Application` or `Adw.Application` is created with the same

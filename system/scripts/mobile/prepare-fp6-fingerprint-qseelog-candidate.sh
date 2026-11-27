@@ -16,7 +16,7 @@ base_boot=${1:?usage: prepare-fp6-fingerprint-qseelog-candidate.sh V10_BOOT QSEE
 bundle=${2:?missing QSEE-log kernel bundle}
 output_dir=${3:?missing output directory}
 overlay=$repo_root/config/mobile/fp6-fingerprint/milos-fairphone-fp6-qsee-log.dtso
-candidate=$output_dir/boot-fp6-luma-fingerprint-qseelog-v11.img
+candidate=$output_dir/boot-fp6-Suno-fingerprint-qseelog-v11.img
 manifest=$bundle/manifest.env
 
 die() { printf 'error: %s\n' "$*" >&2; exit 1; }
@@ -110,15 +110,15 @@ unpack_bootimg --boot_img "$candidate" --out "$work/candidate" \
 cmp "$bundle/Image.gz" "$work/candidate/kernel"
 cmp "$enabled_dtb" "$work/candidate/dtb"
 cmp "$work/base/ramdisk" "$work/candidate/ramdisk"
-fdtget "$work/candidate/dtb" /firmware/scm luma,qsee-log-diagnostic >/dev/null ||
+fdtget "$work/candidate/dtb" /firmware/scm Suno,qsee-log-diagnostic >/dev/null ||
   die 'QSEE-log opt-in property is absent'
-fdtget "$work/candidate/dtb" /firmware/scm/qseecom-tee-heaps luma,dedicated-heaps >/dev/null ||
+fdtget "$work/candidate/dtb" /firmware/scm/qseecom-tee-heaps Suno,dedicated-heaps >/dev/null ||
   die 'dedicated-heaps child is absent'
 [ "$(stat -c %s "$candidate")" -le $((96 * 1024 * 1024)) ] ||
   die 'candidate exceeds the 96 MiB boot partition'
 
 {
-  printf 'LUMA_FP6_FINGERPRINT_BOOT_CANDIDATE_VERSION=11\n'
+  printf 'SUNO_FP6_FINGERPRINT_BOOT_CANDIDATE_VERSION=11\n'
   printf 'SCOPE=fp6-fingerprint-qseelog-diagnostic\n'
   printf 'BASE_BOOT_SHA256=%s\n' "$FP6_FINGERPRINT_DEDICATED_HEAPS_BOOT_SHA256"
   printf 'KERNEL_SHA256=%s\n' "$(hash "$bundle/Image.gz")"

@@ -1,11 +1,11 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
-/* Real mixer writes and mapped Luma view; private PulseAudio sources only. */
-#include "cc-luma-view-private.h"
+/* Real mixer writes and mapped Suno view; private PulseAudio sources only. */
+#include "cc-Suno-view-private.h"
 #include <signal.h>
-#include "cc-luma-live-sound.c"
+#include "cc-Suno-live-sound.c"
 
-void cc_luma_live_ready (CcLumaFixture *model, const char *adapter)
-{ cc_luma_fixture_changed (model); }
+void cc_Suno_live_ready (CcSunoFixture *model, const char *adapter)
+{ cc_Suno_fixture_changed (model); }
 static void spin (guint ms)
 {
   gint64 until = g_get_monotonic_time () + ms * 1000;
@@ -15,21 +15,21 @@ static void spin (guint ms)
 static guint delegated;
 static gboolean delegate (GtkWidget *root, const char *page, gpointer unused)
 { delegated++; return TRUE; }
-static gboolean write_sound (CcLumaFixture *model, const char *key,
+static gboolean write_sound (CcSunoFixture *model, const char *key,
                               JsonNode *value, gpointer data, GError **error)
 { return sound_write (data, key, value, error); }
-static CcLumaFixture *model_new (Sound **owner)
+static CcSunoFixture *model_new (Sound **owner)
 {
   g_autoptr (JsonParser) parser = json_parser_new ();
   g_assert_true (json_parser_load_from_data (parser,
     "{\"settings\":{\"overamp\":false},\"data\":{\"CFAPPINFO\":{\"probe\":{\"name\":\"Probe\"}}},"
     "\"pages\":[{\"id\":\"sound\"},{\"id\":\"sound-levels\"},{\"id\":\"sound-alert\"}]}", -1, NULL));
-  CcLumaFixture *model = cc_luma_fixture_new_live (json_parser_get_root (parser));
+  CcSunoFixture *model = cc_Suno_fixture_new_live (json_parser_get_root (parser));
   *owner = sound_start (model);
-  cc_luma_fixture_set_writer (model, write_sound, *owner);
+  cc_Suno_fixture_set_writer (model, write_sound, *owner);
   for (guint i = 0; i < 100; i++) {
     spin (50);
-    JsonNode *input = cc_luma_fixture_get (model, "inDev");
+    JsonNode *input = cc_Suno_fixture_get (model, "inDev");
     if (input && JSON_NODE_HOLDS_VALUE (input)) return model;
   }
   g_error ("Private microphones were not reported by the live adapter");
@@ -43,21 +43,21 @@ static GtkWidget *named (GtkWidget *widget, const char *name)
   }
   return NULL;
 }
-static GtkWidget *open_view (CcLumaFixture *model, GtkWidget **root)
+static GtkWidget *open_view (CcSunoFixture *model, GtkWidget **root)
 {
   g_autoptr (GError) error = NULL;
-  *root = cc_luma_view_new (model, "sound", &error);
+  *root = cc_Suno_view_new (model, "sound", &error);
   g_assert_no_error (error); g_assert_nonnull (*root);
-  cc_luma_view_set_delegate (*root, delegate, NULL);
+  cc_Suno_view_set_delegate (*root, delegate, NULL);
   GtkWidget *window = gtk_window_new ();
   gtk_window_set_default_size (GTK_WINDOW (window), 1100, 800);
   gtk_window_set_child (GTK_WINDOW (window), *root);
   gtk_window_present (GTK_WINDOW (window)); spin (200);
   return window;
 }
-static char *input_id (CcLumaFixture *model, const char *name)
+static char *input_id (CcSunoFixture *model, const char *name)
 {
-  JsonArray *inputs = json_object_get_array_member (cc_luma_fixture_get_data (model), "CFIN");
+  JsonArray *inputs = json_object_get_array_member (cc_Suno_fixture_get_data (model), "CFIN");
   for (guint i = 0; i < json_array_get_length (inputs); i++) {
     JsonObject *item = json_array_get_object_element (inputs, i);
     if (strstr (json_object_get_string_member (item, "n"), name))
@@ -75,10 +75,10 @@ static char *default_source (void)
 static void selection (void)
 {
   Sound *owner;
-  g_autoptr (CcLumaFixture) model = model_new (&owner);
+  g_autoptr (CcSunoFixture) model = model_new (&owner);
   g_autofree char *id = input_id (model, "Test_microphone_B");
   GtkWidget *root, *window = open_view (model, &root);
-  JsonArray *outputs = json_object_get_array_member (cc_luma_fixture_get_data (model), "CFOUT");
+  JsonArray *outputs = json_object_get_array_member (cc_Suno_fixture_get_data (model), "CFOUT");
   const char *out_id = NULL;
   for (guint i = 0; i < json_array_get_length (outputs); i++) {
     JsonObject *out = json_array_get_object_element (outputs, i);
@@ -94,15 +94,15 @@ static void selection (void)
   g_assert_cmpuint (delegated, ==, 0);
   char *play[] = { "pacat", "--playback", "--raw", "--rate=48000", "--channels=2", "--property=application.id=org.example.Probe", "/dev/zero", NULL };
   GPid child; g_assert_true (g_spawn_async (NULL, play, NULL, G_SPAWN_SEARCH_PATH | G_SPAWN_DO_NOT_REAP_CHILD, NULL, NULL, &child, NULL)); spin (400);
-  g_assert_true (cc_luma_fixture_key_verified (model, "lv.probe"));
+  g_assert_true (cc_Suno_fixture_key_verified (model, "lv.probe"));
   g_autoptr (JsonNode) level = json_node_init_int (json_node_alloc (), 33); g_autoptr (GError) write_error = NULL;
-  g_assert_true (cc_luma_fixture_write (model, "lv.probe", level, &write_error)); spin (400);
-  g_assert_cmpint (json_node_get_int (cc_luma_fixture_get (model, "lv.probe")), ==, 33);
+  g_assert_true (cc_Suno_fixture_write (model, "lv.probe", level, &write_error)); spin (400);
+  g_assert_cmpint (json_node_get_int (cc_Suno_fixture_get (model, "lv.probe")), ==, 33);
   kill (child, SIGTERM); g_spawn_close_pid (child); spin (300);
-  g_assert_false (cc_luma_fixture_write (model, "lv.probe", level, &write_error));
+  g_assert_false (cc_Suno_fixture_write (model, "lv.probe", level, &write_error));
   g_assert_error (write_error, G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED); g_clear_error (&write_error);
   g_autoptr (JsonNode) cfg = json_node_init_string (json_node_alloc (), "not-offered");
-  g_assert_false (cc_luma_fixture_write (model, "cfg", cfg, &write_error));
+  g_assert_false (cc_Suno_fixture_write (model, "cfg", cfg, &write_error));
   g_assert_error (write_error, G_IO_ERROR, G_IO_ERROR_NOT_SUPPORTED); g_clear_error (&write_error);
   GtkWidget *picker = named (root, "cf-inDev");
   g_assert_nonnull (picker); g_assert_true (gtk_widget_get_mapped (picker));
@@ -112,20 +112,20 @@ static void selection (void)
   g_assert_cmpuint (delegated, ==, 0);
   g_autofree char *source = default_source ();
   g_assert_cmpstr (source, ==, "mic_b");
-  g_assert_cmpstr (json_node_get_string (cc_luma_fixture_get (model, "inDev")), ==, id);
+  g_assert_cmpstr (json_node_get_string (cc_Suno_fixture_get (model, "inDev")), ==, id);
   GtkWidget *volume = named (root, "cf-inVol");
   g_assert_true (GTK_IS_RANGE (volume));
   gtk_range_set_value (GTK_RANGE (volume), 42); spin (500);
   g_assert_cmpuint (delegated, ==, 0);
-  g_assert_cmpint (json_node_get_int (cc_luma_fixture_get (model, "inVol")), ==, 42);
+  g_assert_cmpint (json_node_get_int (cc_Suno_fixture_get (model, "inVol")), ==, 42);
   gtk_window_destroy (GTK_WINDOW (window)); sound_stop (owner); g_clear_object (&model); spin (100);
   model = model_new (&owner);
   g_autofree char *reopened = input_id (model, "Test_microphone_B");
-  g_assert_cmpstr (json_node_get_string (cc_luma_fixture_get (model, "inDev")), ==, reopened);
-  g_assert_cmpint (json_node_get_int (cc_luma_fixture_get (model, "inVol")), ==, 42);
+  g_assert_cmpstr (json_node_get_string (cc_Suno_fixture_get (model, "inDev")), ==, reopened);
+  g_assert_cmpint (json_node_get_int (cc_Suno_fixture_get (model, "inVol")), ==, 42);
   window = open_view (model, &root);
   g_assert_true (gtk_widget_activate_action (root, "cf.pick", "(ss)", "inDev", "not-connected")); spin (100);
-  g_assert_nonnull (cc_luma_view_get_error (root));
+  g_assert_nonnull (cc_Suno_view_get_error (root));
   g_assert_cmpuint (delegated, ==, 0);
   g_autofree char *unchanged = default_source ();
   g_assert_cmpstr (unchanged, ==, "mic_b");
@@ -135,7 +135,7 @@ int main (int argc, char **argv)
 {
   const char *server = g_getenv ("PULSE_SERVER");
   g_assert_nonnull (server);
-  g_assert_true (g_str_has_prefix (server, "unix:/tmp/luma-sound-input-test-"));
+  g_assert_true (g_str_has_prefix (server, "unix:/tmp/Suno-sound-input-test-"));
   gtk_test_init (&argc, &argv, NULL);
   /* The
    * virtual-card warning is expected; preserve fatal criticals and other

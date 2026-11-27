@@ -4,7 +4,7 @@
 
 Name:           rmtfs
 Version:        1.1.1
-Release:        3.luma.1%{?dist}
+Release:        3.Suno.1%{?dist}
 Summary:        Qualcomm Remote Filesystem Service Implementation
 
 License:        BSD-3-Clause
@@ -24,7 +24,7 @@ Requires:       qrtr
 %description
 Qualcomm Remote Filesystem Service Implementation.
 
-This Project Luma build carries upstream commit 27b3a6f, maps the Fairphone 6
+This Project Suno build carries upstream commit 27b3a6f, maps the Fairphone 6
 modem's /boot/modem_study request, and adds a bounded recovery mode capable of
 persisting only modemst1/modemst2. The installed service keeps every partition
 on the read-only shadow path.
@@ -62,10 +62,10 @@ grep -Fqx 'ExecStart=/usr/bin/rmtfs -r -P -s' rmtfs.service
 %{_unitdir}/rmtfs-dir.service
 
 %changelog
-* Wed Aug 26 2026 Project Luma <project-luma@localhost> - 1.1.1-3.luma.1
+* Wed Aug 26 2026 Project Suno <project-suno@localhost> - 1.1.1-3.Suno.1
 - Add a bounded mode that persists only guarded modemst1/modemst2 state
 - Keep the normal service read-only; never enable persistence at boot
 - Keep fsg, fsc, study, tuning, and every other partition read-only
 
-* Wed Aug 12 2026 Project Luma <project-luma@localhost> - 1.1.1-2.luma.1
+* Wed Aug 12 2026 Project Suno <project-suno@localhost> - 1.1.1-2.Suno.1
 - Backport upstream FP6 modem_study partition mapping

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
 #
-# Build Luma's intel-media-driver-free (the iHD VA-API driver): Fedora 44's
+# Build Suno's intel-media-driver-free (the iHD VA-API driver): Fedora 44's
 # package (sources from its source RPM, pinned by digest) with packaging/rpm's
 # spec, which enables VDEnc H.264/H.265 encode. x86_64 only, native builds.
 
@@ -16,11 +16,11 @@ fedora_srpm=intel-media-driver-free-$version-1.fc44.src.rpm
 fedora_srpm_url=https://kojipkgs.fedoraproject.org/packages/intel-media-driver-free/$version/1.fc44/src/$fedora_srpm
 fedora_srpm_sha256=e566a6020240f38d5b24c71321d41c7828c5c7d9e37ff6d965bcf0cba72b19f9
 
-architecture=${LUMA_TARGET_ARCHITECTURE:-$(uname -m)}
+architecture=${SUNO_TARGET_ARCHITECTURE:-$(uname -m)}
 [ "$architecture" = x86_64 ] || { printf 'error: the Intel media driver is x86_64 only\n' >&2; exit 1; }
 [ "$architecture" = "$(uname -m)" ] || { printf 'error: build the Intel media driver natively\n' >&2; exit 1; }
 builder_container=$FEDORA_RPM_BUILD_CONTAINER
-export LUMA_RPM_BUILDER_ARCHITECTURE=$architecture
+export SUNO_RPM_BUILDER_ARCHITECTURE=$architecture
 
 output_dir="$repo_root/build/packages/intel-media-driver-free"
 mkdir -p "$(dirname "$output_dir")"

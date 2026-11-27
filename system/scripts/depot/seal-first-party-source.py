@@ -37,31 +37,31 @@ def repo_inputs(repo, app):
                   repo / 'scripts/packages/run-in-rpm-builder.sh',
                   repo / 'scripts/packages/patch-series.sh',
                   repo / 'scripts/packages/spec-release.sh',
-                  repo / 'src/luma-shell-state/org.project_luma.shell-state.gschema.xml']
+                  repo / 'src/Suno-shell-state/org.projectSuno.shell-state.gschema.xml']
     if app_id == 'com.rhyme.viola':
         paths += sorted((repo / 'packaging/viola').rglob('*'))
         paths += [repo / 'scripts/packages/build-viola-browser.sh',
                   repo / 'scripts/packages/run-in-rpm-builder.sh']
-    if app_id == 'org.projectluma.Depot':
+    if app_id == 'org.projectSuno.Depot':
         # Maintained UI view models, rendering and typed client adapters only;
         # source contains no installed trust data, host profiles or signing keys.
-        paths += sorted((repo / 'src/luma-installer/luma_installer').rglob('*'))
-    if app_id in {'org.projectluma.Write', 'org.projectluma.Grid',
-                  'org.projectluma.Stage', 'org.projectluma.Session',
-                  'org.projectluma.Reel'}:
+        paths += sorted((repo / 'src/Suno-installer/Suno_installer').rglob('*'))
+    if app_id in {'org.projectSuno.Write', 'org.projectSuno.Grid',
+                  'org.projectSuno.Stage', 'org.projectSuno.Session',
+                  'org.projectSuno.Reel'}:
         # Only the fixed typed preference importer runs in the application.
         # Native reader schemas and the host migration owner remain installed
         # by Installer; no host trust, credentials or full installer package.
-        paths += [repo / 'src/luma-installer/luma_installer/app_preferences.py']
-    if app_id == 'org.projectluma.Phone':
+        paths += [repo / 'src/Suno-installer/Suno_installer/app_preferences.py']
+    if app_id == 'org.projectSuno.Phone':
         # Only the maintained lightweight sandbox call client; host enrollment,
         # device identity, crypto and daemon code remain native host services.
-        paths += [repo / 'src/luma-continuity/luma_continuity' / name
+        paths += [repo / 'src/Suno-continuity/Suno_continuity' / name
                   for name in ('__init__.py', 'phone_contract.py', 'call_provider.py')]
-    if app_id == 'org.projectluma.Viewer':
+    if app_id == 'org.projectSuno.Viewer':
         # Viewer consumes the same maintained read-only EPUB engine, including
         # its licensed assets; it does not implement a second reader engine.
-        paths += sorted((repo / 'src/luma-leaf').rglob('*'))
+        paths += sorted((repo / 'src/Suno-leaf').rglob('*'))
     metainfo = recipe / f'{app_id}.metainfo.xml'
     files = []
     for path in paths:
@@ -88,23 +88,23 @@ def repo_inputs(repo, app):
     if app not in ('Notes', 'Tide'):
         icon = repo / 'assets/icon-theme/Prairie/scalable/apps' / f'{app_id}.svg'
         creative_icons = {
-            'org.projectluma.Write': 'data/org.projectluma.Write.svg',
-            'org.projectluma.Grid': 'data/io.luma.Grid.svg',
-            'org.projectluma.Stage': 'data/io.luma.Stage.svg',
-            'org.projectluma.Session': 'data/org.projectluma.Session.svg',
-            'org.projectluma.Reel': 'data/org.projectluma.Reel.svg',
+            'org.projectSuno.Write': 'data/org.projectSuno.Write.svg',
+            'org.projectSuno.Grid': 'data/io.Suno.Grid.svg',
+            'org.projectSuno.Stage': 'data/io.Suno.Stage.svg',
+            'org.projectSuno.Session': 'data/org.projectSuno.Session.svg',
+            'org.projectSuno.Reel': 'data/org.projectSuno.Reel.svg',
         }
         if app_id in creative_icons:
             # Seal the same maintained artwork that the app installs, including
             # legacy source filenames whose installed identity is canonical.
             icon = source / creative_icons[app_id]
-        if app_id in {'org.projectluma.Displays', 'org.projectluma.Imager', 'org.projectluma.Ari'}:
+        if app_id in {'org.projectSuno.Displays', 'org.projectSuno.Imager', 'org.projectSuno.Ari'}:
             # These maintained applications ship their own canonical artwork.
             icon = source / 'data' / f'{app_id}.svg'
-        if app_id == 'org.projectluma.Charlie':
+        if app_id == 'org.projectSuno.Charlie':
             icon = source / 'data/icons/hicolor/scalable/apps' / f'{app_id}.svg'
         if app_id == 'com.rhyme.viola':
-            icon = source / 'appkit-spike/assets/org.projectluma.Viola.NativeIntegration.svg'
+            icon = source / 'appkit-spike/assets/org.projectSuno.Viola.NativeIntegration.svg'
         if icon.is_symlink() or not icon.is_file():
             raise ValueError('The maintained application icon is missing or unsafe')
         tail.append(('depot-icon.svg', icon.read_bytes(), 0o644))
@@ -126,13 +126,13 @@ def seal(repo, app, output, filer_srpm=None, viola_engine=None):
     upstream = []
     if app_id == 'org.gnome.Nautilus':
         helper = repo / 'packaging/nautilus/flatpak-source.py'
-        specification = importlib.util.spec_from_file_location('luma_filer_source', helper)
+        specification = importlib.util.spec_from_file_location('Suno_filer_source', helper)
         module = importlib.util.module_from_spec(specification)
         specification.loader.exec_module(module)
         upstream = module.admitted_upstream(filer_srpm)
     if app_id == 'com.rhyme.viola':
         helper = repo / 'packaging/viola/flatpak-source.py'
-        specification = importlib.util.spec_from_file_location('luma_viola_source', helper)
+        specification = importlib.util.spec_from_file_location('Suno_viola_source', helper)
         module = importlib.util.module_from_spec(specification)
         specification.loader.exec_module(module)
         upstream = module.admitted_engine(viola_engine)
@@ -143,7 +143,7 @@ def seal(repo, app, output, filer_srpm=None, viola_engine=None):
     files = files + list(upstream) + tail
     materials = {name: {'sha256': hashlib.sha256(data).hexdigest(), 'mode': mode, 'bytes': len(data)}
                  for name, data, mode in files}
-    manifest_bytes = (json.dumps({'schema': 'org.projectluma.app-source/v1', 'app_id': app_id,
+    manifest_bytes = (json.dumps({'schema': 'org.projectSuno.app-source/v1', 'app_id': app_id,
                                 'source_revision': 'working-snapshot', 'materials': materials}, sort_keys=True, indent=2) + '\n').encode()
     archive = output / 'source.tar'
     with tarfile.open(archive, 'w', format=tarfile.PAX_FORMAT) as tf:

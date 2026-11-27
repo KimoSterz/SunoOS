@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Photos on LumaUI: composition, commands and asynchronous I/O.
+"""Photos on SunoUI: composition, commands and asynchronous I/O.
 
 AppWindow / NavigationSidebar / SidebarToggle / Island / ToastHost form the
 window. ActionCenter grows into ActionEditor for reversible photo edits.
@@ -25,15 +25,15 @@ import gi
 gi.require_version('Gtk','4.0')
 gi.require_version('Adw','1')
 from gi.repository import Adw,Gdk,Gio,GLib,Gtk,Pango
-import luma_appkit as kit
-from luma_appkit import (AppWindow,Island,NavigationSidebar,SidebarToggle,
+import Suno_appkit as kit
+from Suno_appkit import (AppWindow,Island,NavigationSidebar,SidebarToggle,
                         ActionCenter,ActionEditor,BarAction,SEPARATOR,SPACER,CornerPill,
                         DetailsPane,Toast,ToastHost,EmptyState,ListEmptyState,CountBadge,
                         Command,CommandGroup,CommandRegistry,TextField,StatusPill,
-                        ScrollView,apply_type,install_appkit,install_lumaui,bind_navigation_input,
-                        add_style_sheet,icons,lumaui_tokens)
-from luma_appkit.action_center import make_control
-from luma_appkit.action_bubble import FloatingMenu
+                        ScrollView,apply_type,install_appkit,install_SunoUI,bind_navigation_input,
+                        add_style_sheet,icons,SunoUI_tokens)
+from Suno_appkit.action_center import make_control
+from Suno_appkit.action_bubble import FloatingMenu
 from .photos_backend import APPLICATION_ID,IMAGE_SUFFIXES,PhotoLibrary,_walk_files
 from .photos_content import decode_photo,decode_face,decode_square,prepare_print_pdf,decode_export_photo,edited_photo_node
 from .photos_data import NAVIGATION,groups_for,memories_for
@@ -45,9 +45,9 @@ WIDGET_NAMES=('ph-sidebar','ph-island','ph-title','ph-body','ph-action-center','
 
 # The shared preview launcher overrides this module-level application ID.
 APP_ID=APPLICATION_ID
-# LumaUI is mandatory: a successful module import means the platform is present.
+# SunoUI is mandatory: a successful module import means the platform is present.
 # Keep the existing runtime/packaging capability contract for callers.
-LUMA_PLATFORM_AVAILABLE=True
+SUNO_PLATFORM_AVAILABLE=True
 
 
 def _part(name):
@@ -55,13 +55,13 @@ def _part(name):
     try:
         return getattr(kit,name)
     except AttributeError:
-        raise RuntimeError(f'LumaUI part {name} is pending (Photos kit requests 01–04)') from None
+        raise RuntimeError(f'SunoUI part {name} is pending (Photos kit requests 01–04)') from None
 
 
 def _typed(text,role,*,fallback='body',weight=None,**properties):
     # TODO(kit-request photos-01-photo-grid.md, TY1): photo group and year roles.
     label=Gtk.Label(label=text,**properties)
-    roles={key.replace('_','-') for key in lumaui_tokens.TYPE_SCALE}
+    roles={key.replace('_','-') for key in SunoUI_tokens.TYPE_SCALE}
     return apply_type(label,role if role in roles else fallback,weight=weight)
 
 
@@ -72,7 +72,7 @@ def _clear(box):
 
 def _phone_gutter():
     # v71: one side gutter on phones (K-NAV publishes it as GUTTER['phone']).
-    return getattr(lumaui_tokens,'GUTTER',{}).get('phone',16)
+    return getattr(SunoUI_tokens,'GUTTER',{}).get('phone',16)
 
 
 def _viewer_insets(phone,editing):
@@ -213,7 +213,7 @@ class PhotosWindow(AppWindow):
         self._resize_gestures(self.scroll)
         self.page.append(self.header_slot); self.page.append(self.scroll)
         self.library_empty=EmptyState('No photos yet',
-            'Import photos to start your library.', 'lumaui-image-symbolic',
+            'Import photos to start your library.', 'SunoUI-image-symbolic',
             primary=('Import photos',self._import_folder))
         self.library_empty.set_name('ph-library-empty')
         self.library_empty.set_visible(False)
@@ -280,7 +280,7 @@ class PhotosWindow(AppWindow):
     def _breakpoints(self):
         # v71 tiers: a phone under 560 (the kit's PHONE_MAX_WIDTH), compact to
         # 900. Crossing the phone width redraws the bars in the other shape.
-        phone=Adw.Breakpoint.new(Adw.BreakpointCondition.parse(f'max-width: {lumaui_tokens.PHONE_MAX_WIDTH}px'))
+        phone=Adw.Breakpoint.new(Adw.BreakpointCondition.parse(f'max-width: {SunoUI_tokens.PHONE_MAX_WIDTH}px'))
         phone.connect('apply',lambda *_:self._tier_changed(True))
         phone.connect('unapply',lambda *_:self._tier_changed(False))
         gutter=_phone_gutter()
@@ -318,9 +318,9 @@ class PhotosWindow(AppWindow):
                 source=self._supplied_source or source_from_environment()
                 state=PhotosState(source)
                 if state.fixture:
-                    state.view=os.environ.get('LUMA_PHOTOS_VIEW','library')
-                    state.zoom=os.environ.get('LUMA_PHOTOS_ZOOM','days')
-                    state.query=os.environ.get('LUMA_PHOTOS_QUERY','')
+                    state.view=os.environ.get('SUNO_PHOTOS_VIEW','library')
+                    state.zoom=os.environ.get('SUNO_PHOTOS_ZOOM','days')
+                    state.query=os.environ.get('SUNO_PHOTOS_QUERY','')
                 page=state.read_page(cancelled=lambda:self._closed or generation!=self._generation)
                 # Search suggestions come from the library even when the first
                 # page opens with a query or a different collection.
@@ -1189,8 +1189,8 @@ class PhotosWindow(AppWindow):
         if self.state.fixture:
             if choice=='send-to':return f'Sent to {value.name.split()[0]}'
             return {'messages':'Opening Messages','mail':'Opening a new email','nearby':'Looking for devices nearby'}.get(choice,'')
-        app={'messages':'org.projectluma.Messages','mail':'org.projectluma.Charlie'}.get(choice)
-        if choice=='send-to':app='org.projectluma.Messages'
+        app={'messages':'org.projectSuno.Messages','mail':'org.projectSuno.Charlie'}.get(choice)
+        if choice=='send-to':app='org.projectSuno.Messages'
         info=next((a for a in Gio.AppInfo.get_all() if app and a.get_id()==app+'.desktop'),None)
         if info is None:return 'That app is not available'
         try:info.launch([Gio.File.new_for_path(str(record.path))],self.get_display().get_app_launch_context())
@@ -1384,7 +1384,7 @@ class PhotosWindow(AppWindow):
         self._save_copy(record)
 
     def _confirm_delete(self):
-        """Phone: Delete photo confirms in the bar (v71 LumaUI 9)."""
+        """Phone: Delete photo confirms in the bar (v71 SunoUI 9)."""
         kit.DestructiveDialog.in_bar(self.action_center,title='Delete this photo?',
                                      body='It stays in Deleted for 30 days, then it’s gone from every device.',
                                      action='Delete',on_confirm=self._delete,on_cancel=self._more_phone,
@@ -1479,9 +1479,9 @@ class PhotosWindow(AppWindow):
         self._render_editor()
 
     def _render_editor(self):
-        """Edit turns the bar into the editor (LumaUI action center). Desktop:
+        """Edit turns the bar into the editor (SunoUI action center). Desktop:
         Edit · Looks/Light/Color/Crop · Auto over the tools, then Revert to
-        original · Cancel · Done. Phone (the bar grown, LumaUI 15): Cancel ·
+        original · Cancel · Done. Phone (the bar grown, SunoUI 15): Cancel ·
         Edit · Done, the tools, then the four tools and Auto, Revert at the foot."""
         old=getattr(self,'editor',None)
         if old is not None:old.scroller.set_child(None)
@@ -1793,7 +1793,7 @@ class PhotosWindow(AppWindow):
         document=kit.ShareSubject(self.title.get_label(),'Photos',kind='file',image=True,
                                    mime_type=record.mime_type if not self.state.fixture else None,
                                    picture=Gdk.Texture.new_for_pixbuf(photo))
-        from luma_appkit.bar_share import default_targets
+        from Suno_appkit.bar_share import default_targets
         self.share_sheet=kit.ShareSheet.present(button,document=document,people=people,
             targets=default_targets(document) if self.state.fixture else None,
             show_link=self.state.fixture,on_choice=self._share_choice)
@@ -2029,45 +2029,45 @@ class PhotosWindow(AppWindow):
 
     def _apply_fixture_state(self):
         env=os.environ
-        if env.get('LUMA_PHOTOS_SIDEBAR')=='0':self.toggle.toggle()
-        if env.get('LUMA_PHOTOS_NEW_ALBUM'):
-            album=self.state.fixture.create_album(env['LUMA_PHOTOS_NEW_ALBUM'])
+        if env.get('SUNO_PHOTOS_SIDEBAR')=='0':self.toggle.toggle()
+        if env.get('SUNO_PHOTOS_NEW_ALBUM'):
+            album=self.state.fixture.create_album(env['SUNO_PHOTOS_NEW_ALBUM'])
             self.state.switch_view(album.id);self.state.apply_page(self.state.read_page())
             self._render_sidebar();self._render_library()
-        identifier=env.get('LUMA_PHOTOS_VIEWER')
+        identifier=env.get('SUNO_PHOTOS_VIEWER')
         if identifier:
             self.state.open_photo(identifier)
             self.state.load_adjustments(identifier)
-            self.state.info=env.get('LUMA_PHOTOS_INFO')=='1'
-            mode=env.get('LUMA_PHOTOS_EDIT')
+            self.state.info=env.get('SUNO_PHOTOS_INFO')=='1'
+            mode=env.get('SUNO_PHOTOS_EDIT')
             if mode:
                 self.state.edit_mode=mode;self.state.begin_edit()
-                if env.get('LUMA_PHOTOS_AUTO')=='1':self.state.auto_adjust()
-                if env.get('LUMA_PHOTOS_ROTATE')=='1':self.state.draft['rot']=270
-                if env.get('LUMA_PHOTOS_FLIP')=='1':self.state.draft['flip']=True
-                if env.get('LUMA_PHOTOS_REVERT')=='1':self.state.revert_edit()
-                if env.get('LUMA_PHOTOS_PRESET'):self.state.draft['pre']=env['LUMA_PHOTOS_PRESET']
-            action=env.get('LUMA_PHOTOS_FAVOURITE_ACTION')
+                if env.get('SUNO_PHOTOS_AUTO')=='1':self.state.auto_adjust()
+                if env.get('SUNO_PHOTOS_ROTATE')=='1':self.state.draft['rot']=270
+                if env.get('SUNO_PHOTOS_FLIP')=='1':self.state.draft['flip']=True
+                if env.get('SUNO_PHOTOS_REVERT')=='1':self.state.revert_edit()
+                if env.get('SUNO_PHOTOS_PRESET'):self.state.draft['pre']=env['SUNO_PHOTOS_PRESET']
+            action=env.get('SUNO_PHOTOS_FAVOURITE_ACTION')
             if action:self.state.set_favourite(identifier,action=='add')
-            if env.get('LUMA_PHOTOS_SAVE_AUTO')=='1' or env.get('LUMA_PHOTOS_CANCEL_AUTO')=='1':
+            if env.get('SUNO_PHOTOS_SAVE_AUTO')=='1' or env.get('SUNO_PHOTOS_CANCEL_AUTO')=='1':
                 self.state.begin_edit();self.state.auto_adjust()
-                if env.get('LUMA_PHOTOS_SAVE_AUTO')=='1':
+                if env.get('SUNO_PHOTOS_SAVE_AUTO')=='1':
                     self.state.adjustments[identifier]=self.state.save_edit(identifier,self.state.baseline,self.state.draft)
                 self.state.cancel_edit()
-            if env.get('LUMA_PHOTOS_DELETE')=='1':
+            if env.get('SUNO_PHOTOS_DELETE')=='1':
                 self.state.trash(identifier)
                 self.state.apply_page(self.state.read_page())
-                if env.get('LUMA_PHOTOS_UNDO_DELETE')=='1':
+                if env.get('SUNO_PHOTOS_UNDO_DELETE')=='1':
                     restored=self.state.undo_trash();self.state.apply_page(self.state.read_page());self.state.open_photo(restored)
                 elif self.state.records:self.state.open_photo(self.state.records[0].id)
                 self._render_sidebar()
             self._render_viewer()
-            if env.get('LUMA_PHOTOS_SAVE_AUTO')=='1':Toast.show(self.host,'Saved. Revert to the original any time from Edit.',kind='saved')
-            if env.get('LUMA_PHOTOS_DELETE')=='1' and env.get('LUMA_PHOTOS_UNDO_DELETE')!='1':Toast.show(self.host,'Moved to Deleted',kind='deleted',undo=self._undo_delete)
+            if env.get('SUNO_PHOTOS_SAVE_AUTO')=='1':Toast.show(self.host,'Saved. Revert to the original any time from Edit.',kind='saved')
+            if env.get('SUNO_PHOTOS_DELETE')=='1' and env.get('SUNO_PHOTOS_UNDO_DELETE')!='1':Toast.show(self.host,'Moved to Deleted',kind='deleted',undo=self._undo_delete)
             if action:
                 Toast.show(self.host,'Added to Favorites' if action=='add' else 'Removed from Favorites',
                            kind='favourite',undo=None if action=='add' else lambda:self._favourite(identifier,True))
-        menu=env.get('LUMA_PHOTOS_MENU')
+        menu=env.get('SUNO_PHOTOS_MENU')
         later=lambda callback:GLib.timeout_add(300,lambda:(callback(),False)[1])
         if menu=='share':later(lambda:self._share_phone() if self._phone else self._share(self.corner.controls['share']))
         elif menu=='more':later(lambda:self._more_phone() if self._phone else self.corner.controls['more'].activate())
@@ -2079,12 +2079,12 @@ class PhotosWindow(AppWindow):
         elif menu=='import-folder':later(self._import_folder)
         elif menu=='crop-guidance':later(self._toggle_crop_shapes)
         # v71 phone states: a grown panel, the hidden chrome, a Memory playing.
-        panel=env.get('LUMA_PHOTOS_PANEL')
+        panel=env.get('SUNO_PHOTOS_PANEL')
         if panel:
             # A phone state: wait until the window has taken its phone shape.
             self._fixture_pending=panel
             GLib.timeout_add(400,lambda:(self._fixture_panel(),False)[1])
-        memory=env.get('LUMA_PHOTOS_MEMORY')
+        memory=env.get('SUNO_PHOTOS_MEMORY')
         if memory is not None and memory!='':
             GLib.timeout_add(400,lambda:(getattr(self,'_memories',None)
                                          and self.play_memory(self._memories[int(memory)]),False)[1])
@@ -2191,18 +2191,18 @@ class PhotosWindow(AppWindow):
 class PhotosApplication(Adw.Application):
     def __init__(self):
         flags=Gio.ApplicationFlags.HANDLES_OPEN
-        if os.environ.get('LUMA_PHOTOS_FIXTURE') or os.environ.get('LUMA_PHOTOS_NON_UNIQUE')=='1':
+        if os.environ.get('SUNO_PHOTOS_FIXTURE') or os.environ.get('SUNO_PHOTOS_NON_UNIQUE')=='1':
             flags|=Gio.ApplicationFlags.NON_UNIQUE
         default_app_id=APP_ID
-        if flags&Gio.ApplicationFlags.NON_UNIQUE and not default_app_id.endswith('.LumaUIPreview'):
-            default_app_id+='.LumaUIPreview'
-        app_id=os.environ.get('LUMA_PHOTOS_APP_ID',default_app_id)
+        if flags&Gio.ApplicationFlags.NON_UNIQUE and not default_app_id.endswith('.SunoUIPreview'):
+            default_app_id+='.SunoUIPreview'
+        app_id=os.environ.get('SUNO_PHOTOS_APP_ID',default_app_id)
         super().__init__(application_id=app_id,flags=flags)
 
     def do_startup(self):
         Adw.Application.do_startup(self)
-        install_appkit();install_lumaui()
-        add_style_sheet(os.environ.get('LUMA_PHOTOS_STYLE_PATH','/usr/share/prairie-core/photos.css'))
+        install_appkit();install_SunoUI()
+        add_style_sheet(os.environ.get('SUNO_PHOTOS_STYLE_PATH','/usr/share/prairie-core/photos.css'))
 
     def do_activate(self):
         (self.props.active_window or PhotosWindow(self)).present()

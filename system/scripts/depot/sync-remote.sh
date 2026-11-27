@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
 #
-# Upload the Luma remote to where dl.simplyluma.com serves it.
+# Upload the Suno remote to where dl.simplyluma.com serves it.
 #
 #   sync-remote.sh [--catalog] [--media] [--prune]
 #

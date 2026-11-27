@@ -1,7 +1,7 @@
 ---
 type: improvement
 component: Viewer
-packages: [luma-viewer]
+packages: [Suno-viewer]
 highlight: false
 ---
 Summary: Viewer reopens the file you had open

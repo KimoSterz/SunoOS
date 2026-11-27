@@ -1,4 +1,4 @@
-From: Project Luma <luma@local>
+From: Project Suno <Suno@local>
 Subject: [PATCH] Treat the explicit greetd bake-off session as active
 
 The private candidate is launched directly by greetd so that the controller
@@ -18,10 +18,10 @@ index 5b55f6d..187c119 100644
              });
  
          this._session = new GnomeSession.SessionManager();
-+        this._isLumaGreetdSession = GLib.getenv('LUMA_GREETD_SESSION') === '1';
++        this._isSunoGreetdSession = GLib.getenv('SUNO_GREETD_SESSION') === '1';
          this._session.connect('g-properties-changed', () => this._sessionIsActiveChanged());
 -        this._sessionIsActive = this._session.SessionIsActive;
-+        this._sessionIsActive = this._session.SessionIsActive || this._isLumaGreetdSession;
++        this._sessionIsActive = this._session.SessionIsActive || this._isSunoGreetdSession;
  
          Main.screenShield.connect('wake-up-screen', async () => {
              if (this._isInAction !== 'idle-blank' && this._isInAction !== 'blank')
@@ -30,7 +30,7 @@ index 5b55f6d..187c119 100644
      _sessionIsActiveChanged() {
          const sessionWasActive = this._sessionIsActive;
 -        this._sessionIsActive = this._session.SessionIsActive;
-+        this._sessionIsActive = this._session.SessionIsActive || this._isLumaGreetdSession;
++        this._sessionIsActive = this._session.SessionIsActive || this._isSunoGreetdSession;
          if (sessionWasActive === this._sessionIsActive)
              return;
  

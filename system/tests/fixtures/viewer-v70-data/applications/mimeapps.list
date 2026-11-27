@@ -1,5 +1,5 @@
 [Default Applications]
-image/jpeg=org.projectluma.Viewer.desktop
-image/png=org.projectluma.Viewer.desktop
-image/webp=org.projectluma.Viewer.desktop
-application/pdf=org.projectluma.Viewer.desktop
+image/jpeg=org.projectSuno.Viewer.desktop
+image/png=org.projectSuno.Viewer.desktop
+image/webp=org.projectSuno.Viewer.desktop
+application/pdf=org.projectSuno.Viewer.desktop

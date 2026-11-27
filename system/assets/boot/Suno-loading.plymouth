@@ -1,0 +1,12 @@
+[Plymouth Theme]
+Name=Suno Loading
+Description=Project Suno native Hearth / Ink boot surface
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/Suno-loading
+ScriptFile=/usr/share/plymouth/themes/Suno-loading/Suno-loading.script
+
+# The dracut Plymouth module uses these to include the prompt font.
+Font=Figtree Medium
+TitleFont=Figtree Bold

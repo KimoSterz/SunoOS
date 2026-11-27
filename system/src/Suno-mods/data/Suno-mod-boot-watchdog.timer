@@ -1,0 +1,11 @@
+[Unit]
+Description=Watch for an unpromoted Project Suno Mod deployment
+Documentation=https://github.com/SimplyLuma/luma
+
+[Timer]
+OnBootSec=5min
+AccuracySec=5s
+Unit=Suno-mod-boot-watchdog.service
+
+[Install]
+WantedBy=timers.target

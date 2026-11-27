@@ -43,14 +43,14 @@ class ContactRecord:
     note: str = ""
     # Filed under the favourites category ("Favorites", "Favourites", "starred").
     favourite: bool = False
-    # Their Luma @username and whether they are on Luma; unknown (None) until
-    # the Luma directory can say (ADR-051).
+    # Their Suno @username and whether they are on Suno; unknown (None) until
+    # the Suno directory can say (ADR-051).
     handle: str = ""
-    on_luma: bool | None = None
+    on_Suno: bool | None = None
     # The hue their face and light take when there is no photo (0–360), or
     # None to derive one from the name.
     hue: int | None = None
-    luma_account: str = ""
+    Suno_account: str = ""
 
 
 #: Categories that mean "favourite" rather than a list, as other address books write them.
@@ -137,9 +137,9 @@ def load_contacts(search: str = "") -> tuple[ContactRecord, ...]:
                         _photo(record),
                         _attribute_value(record, "NOTE"),
                         any(c.casefold() in FAVOURITE_CATEGORIES for c in _categories(record)),
-                        handle=_attribute_value(record, "X-LUMA-USERNAME"),
-                        luma_account=_attribute_value(record, "X-LUMA-ACCOUNT"),
-                        on_luma=True if _attribute_value(record, "X-LUMA-ACCOUNT") else None,
+                        handle=_attribute_value(record, "X-SUNO-USERNAME"),
+                        Suno_account=_attribute_value(record, "X-SUNO-ACCOUNT"),
+                        on_Suno=True if _attribute_value(record, "X-SUNO-ACCOUNT") else None,
                     )
                 )
         return tuple(sorted(result, key=lambda item: item.name.casefold()))
@@ -167,8 +167,8 @@ def address_book_name(uid: str, backend: str, parent_uid: str = "",
     backend = (backend or "").casefold()
     if backend == "local" or uid == "system-address-book":
         return LOCAL_ADDRESS_BOOK
-    if uid.startswith("luma-connect-") or parent_uid == "luma-connect-stub":
-        return AddressBookName("Luma account", "your Luma account")
+    if uid.startswith("Suno-connect-") or parent_uid == "Suno-connect-stub":
+        return AddressBookName("Suno account", "your Suno account")
     # An online account's books sit under its collection, whose name is the
     # account itself (an address, usually); a lone book has only its own name.
     account = (parent_name or "").strip() if parent_uid and not parent_uid.endswith("-stub") else ""
@@ -304,7 +304,7 @@ def _contact_vcard(name: str, phone: str, email: str, uid: str = "") -> str:
 #: The fields Contacts edits, as they are shown: "name", "phone" (the first
 #: number), "email" (the first address), "birthday" ("March 14"), "address"
 #: (street, town, region), "work" ("Company · Title") and "note".
-EDITABLE_FIELDS = ("name", "phone", "email", "birthday", "address", "work", "note", "handle", "luma_account")
+EDITABLE_FIELDS = ("name", "phone", "email", "birthday", "address", "work", "note", "handle", "Suno_account")
 
 
 def _first(contact, name: str):
@@ -380,26 +380,26 @@ def apply_contact_changes(contact, changes: dict[str, str], contacts_module) -> 
         raise ValueError(f"not an editable field: {sorted(unknown)}")
     values = {key: (value or "").strip() for key, value in changes.items()}
     if values.get("handle"):
-        from .messages_luma import handle_from
+        from .messages_Suno import handle_from
         handle = handle_from(values["handle"])
         if handle is None:
-            raise ValueError("Enter a valid Luma username, such as @alex.")
+            raise ValueError("Enter a valid Suno username, such as @alex.")
         values["handle"] = handle
-    if values.get("luma_account") and not re.fullmatch(r"[A-Za-z0-9_-]{8,200}", values["luma_account"]):
-        raise ValueError("Invalid Luma account identity.")
-    if "handle" in values and "luma_account" not in values:
+    if values.get("Suno_account") and not re.fullmatch(r"[A-Za-z0-9_-]{8,200}", values["Suno_account"]):
+        raise ValueError("Invalid Suno account identity.")
+    if "handle" in values and "Suno_account" not in values:
         # A username is mutable; changing it cannot retain an old identity.
-        _remove_first(contact, "X-LUMA-ACCOUNT")
-    if "luma_account" in values:
-        if values["luma_account"]:
-            _set_values(contact, contacts_module, "X-LUMA-ACCOUNT", [values["luma_account"]])
+        _remove_first(contact, "X-SUNO-ACCOUNT")
+    if "Suno_account" in values:
+        if values["Suno_account"]:
+            _set_values(contact, contacts_module, "X-SUNO-ACCOUNT", [values["Suno_account"]])
         else:
-            _remove_first(contact, "X-LUMA-ACCOUNT")
+            _remove_first(contact, "X-SUNO-ACCOUNT")
     if "handle" in values:
         if values["handle"]:
-            _set_values(contact, contacts_module, "X-LUMA-USERNAME", [values["handle"]])
+            _set_values(contact, contacts_module, "X-SUNO-USERNAME", [values["handle"]])
         else:
-            _remove_first(contact, "X-LUMA-USERNAME")
+            _remove_first(contact, "X-SUNO-USERNAME")
     if "name" in values:
         name = values["name"]
         if not name:

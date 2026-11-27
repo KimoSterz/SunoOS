@@ -112,7 +112,7 @@ class IsoFixture(unittest.TestCase):
 
     def test_copy_over_budget_is_refused(self):
         with patch.object(media.fcntl, 'ioctl', side_effect=NO_REFLINK):
-            with self.assertRaisesRegex(ValueError, 'copy budget; raise LUMA_OS_MEDIA_COPY_BUDGET_GIB'):
+            with self.assertRaisesRegex(ValueError, 'copy budget; raise SUNO_OS_MEDIA_COPY_BUDGET_GIB'):
                 media.fixture(self.source, self.fixture, copy_budget=len(BODY) - 1, reserve=0)
         self.assert_untouched()
 

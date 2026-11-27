@@ -29,7 +29,7 @@ diff --git a/chrome/browser/ui/webui/viola/viola_ui_browsertest.cc b/chrome/brow
 +  EXPECT_TRUE(content::EvalJs(web_contents, R"(
 +    (() => {
 +      try {
-+        vela.send('find:query', {text: 'luma', targetId: 'none', forward: true});
++        vela.send('find:query', {text: 'Suno', targetId: 'none', forward: true});
 +        vela.send('find:close');
 +        return true;
 +      } catch {
@@ -42,11 +42,11 @@ diff --git a/chrome/browser/ui/webui/viola/viola_ui_browsertest.cc b/chrome/brow
 +    new Promise((resolve) => {
 +      const stop = vela.on('find:result', (result) => {
 +        stop();
-+        resolve(result?.text === 'luma' && result?.active === 2 &&
++        resolve(result?.text === 'Suno' && result?.active === 2 &&
 +                result?.matches === 4);
 +      });
 +      __violaHostReceive('find:result',
-+                         {targetId: 'none', text: 'luma', active: 2, matches: 4});
++                         {targetId: 'none', text: 'Suno', active: 2, matches: 4});
 +    })
 +  )")
 +                  .ExtractBool());

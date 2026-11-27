@@ -52,7 +52,7 @@ for avb in "$avb_a" "$avb_b"; do
     [ -f "$avb/$required" ] || die "copy-DTB AVB proof is incomplete: $avb/$required"
   done
   for boundary in \
-    'LUMA_PIXEL9_DIRECT_KERNEL_AVB_WRAPPER_VERSION=1' \
+    'SUNO_PIXEL9_DIRECT_KERNEL_AVB_WRAPPER_VERSION=1' \
     'SCOPE=offline-stock-size-avb-parser-shape-experiment' \
     'DIAGNOSTIC_VARIANT=acm-ecm-copy-dtb-v4' \
     'REPORT_TRANSPORTS=usb-acm,usb-ecm-http' \
@@ -106,7 +106,7 @@ done
 [ "$accepted_bytes" = "$PIXEL9_STOCK_BOOT_IMAGE_BYTES" ] || die 'accepted predecessor size differs from stock'
 grep -Fqx "PARTITION_SHA256=$candidate_sha" "$avb_a/manifest.env" || die 'candidate digest differs from manifest'
 
-grep -Fqx 'LUMA_PIXEL9_DIRECT_KERNEL_AVB_ECM_ACCEPTANCE_VERSION=1' "$accepted_acceptance" ||
+grep -Fqx 'SUNO_PIXEL9_DIRECT_KERNEL_AVB_ECM_ACCEPTANCE_VERSION=1' "$accepted_acceptance" ||
   die 'accepted ECM predecessor version differs'
 grep -Fqx "CANDIDATE_SHA256=$accepted_sha" "$accepted_acceptance" ||
   die 'accepted ECM predecessor bytes differ from acceptance'
@@ -123,7 +123,7 @@ for boundary in \
   grep -Fqx "$boundary" "$accepted_acceptance" || die "accepted ECM predecessor lacks: $boundary"
 done
 
-grep -Fqx 'LUMA_PIXEL9_DIRECT_KERNEL_AVB_PERSISTENT_DTB_ACCEPTANCE_VERSION=1' "$rejected_acceptance" ||
+grep -Fqx 'SUNO_PIXEL9_DIRECT_KERNEL_AVB_PERSISTENT_DTB_ACCEPTANCE_VERSION=1' "$rejected_acceptance" ||
   die 'rejected persistent-DTB result version differs'
 grep -Fqx "CANDIDATE_SHA256=$rejected_sha" "$rejected_acceptance" ||
   die 'rejected persistent-DTB bytes differ from result'
@@ -151,7 +151,7 @@ install -m 0644 "$rejected_acceptance" "$output_dir/rejected-v3-result.env"
 install -m 0644 "$rejected_reproducibility" "$output_dir/rejected-v3-reproducibility.env"
 
 {
-  printf 'LUMA_PIXEL9_DIRECT_KERNEL_AVB_COPY_DTB_CANDIDATE_VERSION=1\n'
+  printf 'SUNO_PIXEL9_DIRECT_KERNEL_AVB_COPY_DTB_CANDIDATE_VERSION=1\n'
   printf 'CANDIDATE_KIND=direct-kernel-embedded-copied-dtb-initramfs-stock-size-avb-acm-ecm-v4\n'
   printf 'DIAGNOSTIC_VARIANT=acm-ecm-copy-dtb-v4\n'
   printf 'REPORT_TRANSPORTS=usb-acm,usb-ecm-http\n'

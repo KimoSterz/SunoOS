@@ -27,7 +27,7 @@ const readText = path => exists(path) ? new TextDecoder().decode(GLib.file_get_c
 const readLines = path => readText(path).split('\n').filter(Boolean);
 
 export default async function ({Main, shot}) {
-    const Capture = await import('resource:///org/gnome/shell/ui/lumaCapture.js');
+    const Capture = await import('resource:///org/gnome/shell/ui/SunoCapture.js');
     await sleep(3000);
     if (Main.actionMode === 0) {
         const dummy = new St.Widget();

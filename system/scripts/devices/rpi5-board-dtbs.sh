@@ -3,7 +3,7 @@
 #
 # Device trees for the Raspberry Pi 5 boot partition, in one of two layouts.
 #
-# --layout firmware  (kernel-luma-rpi; /usr/lib/modules/<release>/dtb)
+# --layout firmware  (kernel-Suno-rpi; /usr/lib/modules/<release>/dtb)
 #   OUT/<name>.dtb      every broadcom/bcm27*.dtb, at the root where the board
 #                       firmware looks; it applies config.txt's dtoverlay= and
 #                       dtparam= lines and its own fixups (MAC, Bluetooth

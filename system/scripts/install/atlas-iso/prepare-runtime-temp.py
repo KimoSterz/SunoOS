@@ -47,7 +47,7 @@ def create_scratch(parent):
     parent = Path(parent)
     if not stat.S_ISDIR(parent.lstat().st_mode):
         raise ValueError(f'Lorax scratch parent must be a directory, not a symlink: {parent}')
-    child = Path(tempfile.mkdtemp(prefix='luma-lorax-', dir=parent))
+    child = Path(tempfile.mkdtemp(prefix='Suno-lorax-', dir=parent))
     try:
         if child.lstat().st_uid != os.geteuid():
             raise ValueError('new Lorax scratch is not owned by its builder')

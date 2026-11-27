@@ -1,0 +1,17 @@
+[org/project-suno/shell-state]
+reduce-transparency=false
+shelf-edge-mode='floating'
+shelf-float-ends=true
+shelf-padding=8
+shelf-edge='bottom'
+shelf-span-full=false
+shelf-surface-mode='separate'
+status-controls-right=true
+surface-treatment='dark'
+
+[org/gnome/desktop/interface]
+color-scheme='prefer-dark'
+
+[org/gnome/shell]
+favorite-apps=['org.projectSuno.Calendar.desktop', 'org.projectSuno.Notes.desktop', 'org.oracle.Slides.desktop', 'org.oracle.Mail.desktop']
+welcome-dialog-last-shown-version='999'

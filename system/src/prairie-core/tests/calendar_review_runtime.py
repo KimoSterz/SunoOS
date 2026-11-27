@@ -2,14 +2,14 @@
 import os,time,tempfile
 from pathlib import Path
 root=Path(__file__).resolve().parents[3]
-os.environ.update(PRAIRIE_EDS_MODE='disabled', LUMA_CALENDAR_FIXTURE=str(root/'tests/fixtures/calendar-v70.json'),
-                  LUMA_CALENDAR_STYLE_PATH=str(root/'src/prairie-core/style/calendar.css'),
-                  LUMA_CALENDAR_SELECTED_EVENT='27', LUMA_CALENDAR_TZID='UTC', LUMA_FORM_FACTOR='desktop')
+os.environ.update(PRAIRIE_EDS_MODE='disabled', SUNO_CALENDAR_FIXTURE=str(root/'tests/fixtures/calendar-v70.json'),
+                  SUNO_CALENDAR_STYLE_PATH=str(root/'src/prairie-core/style/calendar.css'),
+                  SUNO_CALENDAR_SELECTED_EVENT='27', SUNO_CALENDAR_TZID='UTC', SUNO_FORM_FACTOR='desktop')
 from prairie_apps import calendar
 from prairie_apps.calendar_window import CalendarWindow
 from gi.repository import Adw,GLib,Gtk,Gio
 os.environ['GSETTINGS_BACKEND']='memory'
-Gio.Settings.new('org.project_luma.shell-state').set_string('surface-treatment','dark')
+Gio.Settings.new('org.projectSuno.shell-state').set_string('surface-treatment','dark')
 Gio.Settings.new('org.gnome.desktop.interface').set_string('color-scheme','prefer-dark')
 
 def settle():

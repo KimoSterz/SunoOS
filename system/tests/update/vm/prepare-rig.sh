@@ -1,11 +1,11 @@
 #!/bin/bash
 # SPDX-License-Identifier: Apache-2.0
 # Run as root on a disposable Fedora Silverblue 44 VM that already has the
-# luma-update RPM and greenboot layered and booted. Creates a signed local
+# Suno-update RPM and greenboot layered and booted. Creates a signed local
 # OSTree channel from the booted tree, a graph signing key, a loopback
 # CDN/Hub stand-in, and points the agent at them. Never run on a real machine.
 set -euo pipefail
-rig=/var/lib/luma-update-test
+rig=/var/lib/Suno-update-test
 here=$(cd "$(dirname "$0")" && pwd)
 [ -e /run/ostree-booted ] || { echo "not an OSTree system" >&2; exit 1; }
 grep -q '^VARIANT_ID=silverblue' /usr/lib/os-release || { echo "expected a Silverblue test VM" >&2; exit 1; }
@@ -16,30 +16,30 @@ install -m 0755 "$here/test-server.py" "$rig/test-server.py"
 install -m 0755 "$here/make-release.sh" "$rig/make-release.sh"
 install -m 0755 "$here/publish-graph.py" "$rig/publish-graph.py"
 
-# OpenPGP key standing in for the Luma OS Release key.
+# OpenPGP key standing in for the Suno OS Release key.
 export GNUPGHOME=$rig/gnupg
-if ! gpg --list-secret-keys luma-update-rig >/dev/null 2>&1; then
+if ! gpg --list-secret-keys Suno-update-rig >/dev/null 2>&1; then
   gpg --batch --pinentry-mode loopback --passphrase '' \
-      --quick-generate-key 'Luma update rig (test only) <luma-update-rig@invalid>' ed25519 sign never
+      --quick-generate-key 'Suno update rig (test only) <Suno-update-rig@invalid>' ed25519 sign never
 fi
-fpr=$(gpg --with-colons --list-secret-keys luma-update-rig | awk -F: '/^fpr:/{print $10; exit}')
+fpr=$(gpg --with-colons --list-secret-keys Suno-update-rig | awk -F: '/^fpr:/{print $10; exit}')
 echo "$fpr" > "$rig/gpg-fingerprint"
 install -d /etc/pki/ostree
-gpg --export "$fpr" > /etc/pki/ostree/luma-release.gpg
+gpg --export "$fpr" > /etc/pki/ostree/Suno-release.gpg
 
 # Graph signing key (minisign format) standing in for the update-graph key.
 if [ ! -f "$rig/minisign.secret" ]; then
   head -c 32 /dev/urandom > "$rig/minisign.secret"
   chmod 0600 "$rig/minisign.secret"
 fi
-install -d /etc/luma/update-graph-keys.d
+install -d /etc/Suno/update-graph-keys.d
 PYTHONPATH=/usr/lib/python3.14/site-packages python3 - "$rig" <<'PY'
 import sys
 from pathlib import Path
-from luma_update import minisign
+from Suno_update import minisign
 rig = Path(sys.argv[1])
-public, _ = minisign.sign_for_tests(rig.joinpath("minisign.secret").read_bytes(), b"LUMARIG1", b"", "")
-Path("/etc/luma/update-graph-keys.d/luma-update-rig.pub").write_text(public)
+public, _ = minisign.sign_for_tests(rig.joinpath("minisign.secret").read_bytes(), b"SUNORIG1", b"", "")
+Path("/etc/Suno/update-graph-keys.d/Suno-update-rig.pub").write_text(public)
 PY
 
 if [ ! -f "$rig/repo/config" ]; then
@@ -47,9 +47,9 @@ if [ ! -f "$rig/repo/config" ]; then
 fi
 
 # The loopback CDN and Hub.
-cat > /etc/systemd/system/luma-update-test-server.service <<UNIT
+cat > /etc/systemd/system/Suno-update-test-server.service <<UNIT
 [Unit]
-Description=Loopback Luma CDN and Hub stand-in (update agent VM rig only)
+Description=Loopback Suno CDN and Hub stand-in (update agent VM rig only)
 [Service]
 ExecStart=/usr/bin/python3 $rig/test-server.py $rig 8471
 Restart=always
@@ -57,18 +57,18 @@ Restart=always
 WantedBy=multi-user.target
 UNIT
 systemctl daemon-reload
-systemctl enable --now luma-update-test-server.service
-systemctl restart luma-update-test-server.service
+systemctl enable --now Suno-update-test-server.service
+systemctl restart Suno-update-test-server.service
 
-cat > /etc/ostree/remotes.d/luma.conf <<CONF
-[remote "luma"]
+cat > /etc/ostree/remotes.d/Suno.conf <<CONF
+[remote "Suno"]
 url=http://127.0.0.1:8471/os/repo
 gpg-verify=true
 gpg-verify-summary=true
-gpgkeypath=/etc/pki/ostree/luma-release.gpg
+gpgkeypath=/etc/pki/ostree/Suno-release.gpg
 CONF
 
-cat > /etc/luma/update.conf <<CONF
+cat > /etc/Suno/update.conf <<CONF
 # VM rig only: loopback CDN and Hub over plain HTTP. Never in an image.
 [update]
 allow_insecure_urls = true

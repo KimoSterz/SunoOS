@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Tasks-only controls composed from LumaUI type, glyphs and person faces.
+"""Tasks-only controls composed from SunoUI type, glyphs and person faces.
 
 The window, navigation, details, action center, menus and toasts belong to the
 kit. These checks, task rows and activity lines express the Tasks-only model;
@@ -10,7 +10,7 @@ import gi
 
 gi.require_version("Gtk", "4.0")
 from gi.repository import Gdk, Gtk, Pango
-from luma_appkit import PersonAvatar, AvatarStack, RowLead, Selection, apply_type, icons
+from Suno_appkit import PersonAvatar, AvatarStack, RowLead, Selection, apply_type, icons
 from .tasks_data import day_label
 
 
@@ -141,8 +141,8 @@ def task_row(task, source, people, today, view, pick, complete, *, selected=Fals
     target.update_property([Gtk.AccessibleProperty.LABEL], [task["t"]])
     row.append(target)
     if suggested:
-        from luma_appkit import BarAction
-        from luma_appkit.action_center import make_control
+        from Suno_appkit import BarAction
+        from Suno_appkit.action_center import make_control
         today_button = named(make_control(BarAction("plus", "Today", filled=True, on_activate=on_today), size="bubble"), f'tk-today-{task["id"]}')
         row.append(today_button)
     elif task["who"] and (task["who"] != ["me"]):

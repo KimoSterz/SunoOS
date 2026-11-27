@@ -2,16 +2,16 @@
 
 """Events, read from and written to Evolution Data Server.
 
-Luma does not keep a calendar store of its own. EDS owns the data, the accounts
+Suno does not keep a calendar store of its own. EDS owns the data, the accounts
 and the sync; this module is a reading of it in the terms the interface needs.
-Storing through EDS is what makes a Luma event an ordinary iCalendar
+Storing through EDS is what makes a Suno event an ordinary iCalendar
 (RFC 5545) object: the same one CalDAV servers, Google Calendar, Thunderbird,
 iOS and Android exchange.
 
 The rules that hold everywhere below:
 
-* Recurrence is expanded by EDS, never by Luma. `generate_instances_sync` is
-  the code path Evolution uses, so a repeating event occurs in Luma exactly
+* Recurrence is expanded by EDS, never by Suno. `generate_instances_sync` is
+  the code path Evolution uses, so a repeating event occurs in Suno exactly
   where it occurs everywhere else.
 * A timed event is stored in a named IANA time zone (DTSTART;TZID=...), never
   as floating local time and never flattened to UTC, so it keeps its wall-clock
@@ -22,7 +22,7 @@ The rules that hold everywhere below:
   every time zone.
 * Editing starts from the stored component and changes only the fields the
   editor owns, so attendees, organisers, X- properties and anything else a
-  server or another client put there survive a Luma edit.
+  server or another client put there survive a Suno edit.
 * A repeating event is changed only with an explicit scope: this occurrence
   (a RECURRENCE-ID override), this and following (the series is ended the day
   before and a new one begins), or every occurrence.
@@ -138,7 +138,7 @@ def _nearest_tone(colour: str) -> str:
 
 
 def _registry():
-    if os.environ.get("LUMA_CALENDAR_FIXTURE"):
+    if os.environ.get("SUNO_CALENDAR_FIXTURE"):
         raise CalendarUnavailable("Fixture mode cannot access Evolution Data Server.")
     if os.environ.get("PRAIRIE_EDS_MODE") == "disabled":
         raise CalendarUnavailable("Evolution Data Server is disabled for this run.")
@@ -153,7 +153,7 @@ def _registry():
 
 def local_tzid() -> str:
     """The system's IANA zone name, e.g. America/Chicago."""
-    override = os.environ.get("LUMA_CALENDAR_TZID", "").strip()
+    override = os.environ.get("SUNO_CALENDAR_TZID", "").strip()
     if override:
         return override
     try:
@@ -217,7 +217,7 @@ def _source_kind(data_server, source, backend: str) -> tuple[str, str]:
         return "birthdays", account
     if backend == "caldav":
         parent = source.get_parent() or ""
-        return ("luma" if parent == "luma-connect-stub" or source.get_uid().startswith("luma-connect-")
+        return ("Suno" if parent == "Suno-connect-stub" or source.get_uid().startswith("Suno-connect-")
                 else "google" if "google" in parent.lower() else "caldav"), account
     if backend == "microsoft365" or backend == "ews":
         return "microsoft", account
@@ -950,7 +950,7 @@ def component_text(source_uid: str, uid: str, *, allow_missing: bool = False) ->
     components=result[1] if isinstance(result,tuple) else result
     root=ical.Component.new_vcalendar()
     root.add_property(ical.Property.new_version("2.0"))
-    root.add_property(ical.Property.new_prodid("-//Project Luma//Calendar//EN"))
+    root.add_property(ical.Property.new_prodid("-//Project Suno//Calendar//EN"))
     found=False
     for component in components or ():
         if component.get_uid()==uid:
@@ -1093,7 +1093,7 @@ def create_calendar(name: str, *, tone: str = "blue", kind: str = "local", url: 
     if kind == "local":
         source.set_parent("local-stub")
         extension.set_backend_name("local")
-    elif kind in {"subscription", "caldav", "luma"}:
+    elif kind in {"subscription", "caldav", "Suno"}:
         address = url.strip()
         if address.lower().startswith("webcal://"):
             address = "https://" + address[len("webcal://"):]
@@ -1104,7 +1104,7 @@ def create_calendar(name: str, *, tone: str = "blue", kind: str = "local", url: 
         gi.require_version("GLib", "2.0")
         from gi.repository import GLib
         parsed = GLib.Uri.parse(address, GLib.UriFlags.NONE)
-        source.set_parent({"subscription": "webcal-stub", "caldav": "caldav-stub", "luma": "caldav-stub"}[kind])
+        source.set_parent({"subscription": "webcal-stub", "caldav": "caldav-stub", "Suno": "caldav-stub"}[kind])
         extension.set_backend_name("webcal" if kind == "subscription" else "caldav")
         webdav = source.get_extension(data_server.SOURCE_EXTENSION_WEBDAV_BACKEND)
         webdav.set_uri(parsed)
@@ -1221,7 +1221,7 @@ def export_event_ics(source_uid: str, uid: str) -> str:
     whole = ical.Component.new_from_string(export_ics(source_uid))
     root = ical.Component.new_vcalendar()
     root.add_property(ical.Property.new_version('2.0'))
-    root.add_property(ical.Property.new_prodid('-//Project Luma//Calendar//EN'))
+    root.add_property(ical.Property.new_prodid('-//Project Suno//Calendar//EN'))
     found = False
     component = whole.get_first_component(ical.ComponentKind.ANY_COMPONENT)
     while component is not None:
@@ -1242,7 +1242,7 @@ def export_ics(source_uid: str) -> str:
     components = result[1] if isinstance(result, tuple) else result
     root = ical.Component.new_vcalendar()
     root.add_property(ical.Property.new_version("2.0"))
-    root.add_property(ical.Property.new_prodid("-//Project Luma//Calendar//EN"))
+    root.add_property(ical.Property.new_prodid("-//Project Suno//Calendar//EN"))
     root.add_property(ical.Property.new_calscale("GREGORIAN"))
     try:
         name = ical.Property.new_x(source.get_display_name())

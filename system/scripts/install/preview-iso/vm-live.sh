@@ -6,7 +6,7 @@ cp /usr/share/edk2/ovmf/OVMF_VARS.fd live-vars.fd
 qemu-system-x86_64 -machine q35,accel=kvm -cpu host -smp 4 -m 6144 \
   -drive if=pflash,format=raw,readonly=on,file=/usr/share/edk2/ovmf/OVMF_CODE.fd \
   -drive if=pflash,format=raw,file=live-vars.fd \
-  -drive if=none,id=usbstick,file=/w/luma-0.5-preview-x86_64.iso,format=raw,readonly=on -device qemu-xhci -device usb-storage,drive=usbstick,bootindex=1 \
+  -drive if=none,id=usbstick,file=/w/Suno-0.5-preview-x86_64.iso,format=raw,readonly=on -device qemu-xhci -device usb-storage,drive=usbstick,bootindex=1 \
   -vga std -display none -monitor unix:/w/vm/live.sock,server,nowait -serial file:/w/vm/live-serial.log &
 QPID=$!
 python3 <<'PY'

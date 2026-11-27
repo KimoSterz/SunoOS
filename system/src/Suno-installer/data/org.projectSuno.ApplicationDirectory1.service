@@ -1,0 +1,3 @@
+[D-BUS Service]
+Name=org.projectSuno.ApplicationDirectory1
+Exec=/usr/bin/python3 -P -m Suno_installer.application_directory

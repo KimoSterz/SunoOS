@@ -45,7 +45,7 @@ picture('02 Tall screenshot.png', 824, 1866, 'waves')
                                    'with a source toggle.\n\n- Images\n- Documents\n- Archives\n\n'
                                    '```python\nprint("hello")\n```\n')
 (root / '05 script.py').write_text('"""Code preview."""\n\n\ndef greet(name: str) -> str:\n'
-                                   '    return f"Hello, {name}"\n\n\nprint(greet("Luma"))\n')
+                                   '    return f"Hello, {name}"\n\n\nprint(greet("Suno"))\n')
 
 
 def pdf(path):

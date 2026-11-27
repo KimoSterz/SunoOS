@@ -12,7 +12,7 @@ x11.XSetInputFocus.argtypes=[ctypes.c_void_p,ctypes.c_ulong,ctypes.c_int,ctypes.
 x11.XSync.argtypes=[ctypes.c_void_p,ctypes.c_int]
 x11.XCloseDisplay.argtypes=[ctypes.c_void_p]
 xtst.XTestFakeKeyEvent.argtypes=[ctypes.c_void_p,ctypes.c_uint,ctypes.c_int,ctypes.c_ulong]
-assert "luma-native-check-" in os.environ["XDG_DATA_HOME"]
+assert "Suno-native-check-" in os.environ["XDG_DATA_HOME"]
 xdpy=x11.XOpenDisplay(None);assert xdpy
 def key(sym,down):
  code=x11.XKeysymToKeycode(xdpy,sym);assert code
@@ -23,9 +23,9 @@ def enter(modifier=None):
  if modifier:key(modifier,False)
 from prairie_apps.messages import MessagesApplication,MessagesWindow
 from prairie_apps.messages_backend import MessageStore
-from luma_continuity.bootstrap import create_identity
-from luma_continuity.message_provider import MessageProvider,SelectedPhone
-from luma_continuity.policy import Journal
+from Suno_continuity.bootstrap import create_identity
+from Suno_continuity.message_provider import MessageProvider,SelectedPhone
+from Suno_continuity.policy import Journal
 context=GLib.MainContext.default()
 def pump(seconds=.1):
  end=time.monotonic()+seconds
@@ -37,19 +37,19 @@ def wait(predicate):
  while not predicate():
   if time.monotonic()>end:raise AssertionError('Messages GTK state timed out')
   pump(.03)
-out=Path(os.environ['LUMA_MESSAGES_CONNECT_UI_OUTPUT']);out.mkdir(parents=True,exist_ok=True)
+out=Path(os.environ['SUNO_MESSAGES_CONNECT_UI_OUTPUT']);out.mkdir(parents=True,exist_ok=True)
 app=MessagesApplication();assert app.register(None)
 results=[]
 # Private test-session broker: exercise actual GTK action and D-Bus dispatch.
 bus=Gio.bus_get_sync(Gio.BusType.SESSION,None)
-assert bus.call_sync('org.freedesktop.DBus','/org/freedesktop/DBus','org.freedesktop.DBus','RequestName',GLib.Variant('(su)',('org.projectluma.Connect1',0)),None,Gio.DBusCallFlags.NONE,1500,None).unpack()[0]==1
+assert bus.call_sync('org.freedesktop.DBus','/org/freedesktop/DBus','org.freedesktop.DBus','RequestName',GLib.Variant('(su)',('org.projectSuno.Connect1',0)),None,Gio.DBusCallFlags.NONE,1500,None).unpack()[0]==1
 unlock_requests=[]
-info=Gio.DBusNodeInfo.new_for_xml('<node><interface name="org.projectluma.Connect1"><method name="UnlockAccount"/></interface></node>')
+info=Gio.DBusNodeInfo.new_for_xml('<node><interface name="org.projectSuno.Connect1"><method name="UnlockAccount"/></interface></node>')
 def unlock_call(_c,_s,_p,_i,method,_parameters,invocation):
  assert method=='UnlockAccount'
  unlock_requests.append(method)
  invocation.return_value(GLib.Variant('()',()))
-registration=bus.register_object('/org/projectluma/Connect',info.interfaces[0],unlock_call,None,None)
+registration=bus.register_object('/org/projectSuno/Connect',info.interfaces[0],unlock_call,None,None)
 
 for width in (920,360):
  with tempfile.TemporaryDirectory(prefix='messages-connect-ui-') as temporary:
@@ -68,7 +68,7 @@ for width in (920,360):
    return {'state':'complete','result':result}
   provider=MessageProvider(directory,SelectedPhone(peer,epoch,account,'Synthetic phone','127.0.0.1',18444),account_observation=lambda:{'account':account,'signed_in':True,'stale':False},store_factory=MessageStore,dispatch=GLib.idle_add,exchange_factory=lambda *_a,**_k:exchange)
   app.message_provider=provider
-  os.environ['LUMA_PRESENTATION_MODE']='fullscreen-mobile' if width==360 else 'windowed'
+  os.environ['SUNO_PRESENTATION_MODE']='fullscreen-mobile' if width==360 else 'windowed'
   window=MessagesWindow(app);window.set_default_size(width,760);window.present()
   wait(lambda:len(window.store.thread('+12025550123'))==1 and provider.status['state']=='ready')
   window.open_address('+12025550123');pump()

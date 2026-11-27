@@ -2,15 +2,15 @@
 // Explicit Wayland/HIDL dependency fixtures around the complete production
 // clipboard translation unit. Pipes and the transfer worker are real. This is
 // not a Wayland-server or Android HwBinder IPC qualification.
-#include "luma-clipboard-transfer.h"
-#include "luma-window-callbacks.h"
+#include "Suno-clipboard-transfer.h"
+#include "Suno-window-callbacks.h"
 #include <atomic>
 #include <cassert>
 #include <future>
 #include <iostream>
 #include <map>
 
-struct LumaClipboardState;
+struct SunoClipboardState;
 struct wl_display {};
 struct wl_data_device {};
 struct wl_data_device_manager {};
@@ -45,7 +45,7 @@ struct display {
     wl_data_device* data_device{};
     wl_data_device_manager* data_device_manager{};
     std::atomic<uint32_t> keyboard_enter_serial{9};
-    std::shared_ptr<LumaClipboardState> clipboard_state;
+    std::shared_ptr<SunoClipboardState> clipboard_state;
     std::vector<std::string> clipboard_offer_mime_types;
 };
 int sourceCount = 0, flushes = 0;
@@ -80,7 +80,7 @@ namespace vendor::waydroid::clipboard::implementation {
 struct WaydroidClipboard {
     using getClipboardData_cb=std::function<void(const std::string&)>;
     display* mDisplay;
-    std::shared_ptr<LumaClipboardState> mState;
+    std::shared_ptr<SunoClipboardState> mState;
     WaydroidClipboard(display*);
     Return<void> sendClipboardData(const hidl_string&);
     Return<void> getClipboardData(getClipboardData_cb);
@@ -162,7 +162,7 @@ int main() {
     assert(state.clipboard_offer_mime_types.size()==1);
     data_device_handle_selection(&state,&device,nullptr);
     assert(get(hal).empty());
-    luma_clipboard_shutdown(&state);
+    Suno_clipboard_shutdown(&state);
     assert(sourceCount==0);
     // Simulate the display being gone: neither late HAL call may dereference it.
     hal.mDisplay=nullptr;

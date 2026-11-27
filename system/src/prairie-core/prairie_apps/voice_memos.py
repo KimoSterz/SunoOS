@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Memos: LumaUI composition around the user's real recording library.
+"""Memos: SunoUI composition around the user's real recording library.
 
-The in-memory LUMA_MEMOS_FIXTURE route never inspects hardware or user files.
+The in-memory SUNO_MEMOS_FIXTURE route never inspects hardware or user files.
 The ordinary route keeps the established record, rename, trash and export
 operations; v70-only writes remain fixture-only pending Nick's approval.
 """
@@ -22,21 +22,21 @@ gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 from gi.repository import Adw, Gdk, Gio, GLib, Gtk, Pango  # noqa: E402
 
-from luma_appkit import (  # noqa: E402
+from Suno_appkit import (  # noqa: E402
     ActionCenter, AppWindow, BarAction, BarChip, BarWidget, Command, CommandGroup, CommandRegistry,
     CornerPill, DestructiveDialog, EmptyState, HeroTitleField, Island, IslandSplitView,
     Menu, NavigationSidebar, Person, ScrollView, SEPARATOR, ShareSheet, ShareSubject,
     SidebarFoot, SidebarSection, Toast, ToastHost,
-    add_style_sheet, apply_type, install_appkit, install_lumaui,
+    add_style_sheet, apply_type, install_appkit, install_SunoUI,
 )
-from luma_appkit import (  # noqa: E402  v71 parts (KIT-STATUS.md)
+from Suno_appkit import (  # noqa: E402  v71 parts (KIT-STATUS.md)
     BarSearch, PanelChoices, PanelHeading, PanelKey, PanelSwitch, SharePanel, SwipeAction, SwipeRow,
     TitleIsland, panel_list,
 )
-from luma_appkit.action_center import make_control
-from luma_appkit.action_bubble import MenuItem  # noqa: E402
-from luma_appkit.background import LiveExtensionBinding
-from luma_appkit.structure_adapt import WidthWatch  # noqa: E402
+from Suno_appkit.action_center import make_control
+from Suno_appkit.action_bubble import MenuItem  # noqa: E402
+from Suno_appkit.background import LiveExtensionBinding
+from Suno_appkit.structure_adapt import WidthWatch  # noqa: E402
 from . import audio_backend as audio  # noqa: E402
 
 
@@ -48,8 +48,8 @@ _SHARE_TARGETS = (("music", "Audio", "audio"), ("file-text", "Transcript", "tran
 from .memos_data import Memo, Word, filter_memos, format_duration, load_fixture  # noqa: E402
 from .memos_widgets import MemoDeck, MemoRow, TimedTranscript  # noqa: E402
 
-APP_ID = "org.projectluma.VoiceMemos"
-FIXTURE_ENV = "LUMA_MEMOS_FIXTURE"
+APP_ID = "org.projectSuno.VoiceMemos"
+FIXTURE_ENV = "SUNO_MEMOS_FIXTURE"
 _SHARE_PEOPLE = (
     Person("Priya Raman", username="priya", hue=330),
     Person("Nora Feld", username="nora", hue=45),
@@ -137,20 +137,20 @@ class VoiceMemosWindow(AppWindow):
         if self.fixture:
             selected, memos, deleted = load_fixture(self.fixture_path)
             self.memos, self.deleted, self.current_id = list(memos), list(deleted), selected
-            state = os.environ.get("LUMA_MEMOS_STATE", "")
+            state = os.environ.get("SUNO_MEMOS_STATE", "")
             self.view = "fav" if state == "favourites" else "deleted" if state == "deleted-empty" else "all"
             if state == "music":
                 self.current_id = "hum"
             elif state == "deleted-empty":
                 self.current_id = None
-            if query := os.environ.get("LUMA_MEMOS_SEARCH"):
+            if query := os.environ.get("SUNO_MEMOS_SEARCH"):
                 self.foot.entry.set_text(query)
             self.foot.set_filter(self.view)
             if state == "recording":
                 self._start_fixture_recording(static=True)
             # A phone opens on its list; these fixture states (the gate's phone pages) push a memo's page.
             self._fixture_page = state in ("music", "open", "recording")
-            self._fixture_panel = os.environ.get("LUMA_MEMOS_PANEL", "")
+            self._fixture_panel = os.environ.get("SUNO_MEMOS_PANEL", "")
             self._render()
         else:
             self._loading()
@@ -223,9 +223,9 @@ class VoiceMemosWindow(AppWindow):
         self.scroll = ScrollView(clamp)
         self.content_stack = Gtk.Stack(vexpand=True, hexpand=True)
         self.content_stack.add_named(self.scroll, "memo")
-        self.empty = EmptyState("No recording selected", "Choose a recording, or create a new one.", "lumaui-mic-symbolic")
+        self.empty = EmptyState("No recording selected", "Choose a recording, or create a new one.", "SunoUI-mic-symbolic")
         self.content_stack.add_named(self.empty, "empty")
-        self.loading = EmptyState("Loading memos…", "", "lumaui-mic-symbolic")
+        self.loading = EmptyState("Loading memos…", "", "SunoUI-mic-symbolic")
         self.content_stack.add_named(self.loading, "loading")
         overlay = Gtk.Overlay(child=self.content_stack)
         self.corner_slot = Adw.Bin(halign=Gtk.Align.END, valign=Gtk.Align.START)
@@ -794,8 +794,8 @@ class VoiceMemosWindow(AppWindow):
         if self.phone:
             memo=self._find()
             if memo is None or self.recording:return
-            from luma_appkit import Card, LayerHost, TextButton
-            card=Card(padded=True);card.add_css_class("lumaui-dialog")
+            from Suno_appkit import Card, LayerHost, TextButton
+            card=Card(padded=True);card.add_css_class("SunoUI-dialog")
             card.set_margin_start(16);card.set_margin_end(16);card.set_margin_bottom(16)
             card.append(apply_type(Gtk.Label(label="Rename recording",xalign=0),"title-1"))
             entry=Gtk.Entry(text=memo.title,placeholder_text="Recording name",margin_top=12)
@@ -1358,7 +1358,7 @@ class VoiceMemosWindow(AppWindow):
 
     def _about(self) -> None:
         Adw.AboutDialog(application_name="Memos", application_icon=APP_ID,
-                        developer_name="Project Luma").present(self)
+                        developer_name="Project Suno").present(self)
 
     def do_close_request(self) -> bool:
         if self._busy and not self.recording:
@@ -1386,11 +1386,11 @@ class VoiceMemosApplication(Adw.Application):
         Adw.Application.do_startup(self)
         GLib.set_application_name("Memos")
         install_appkit()
-        install_lumaui()
+        install_SunoUI()
         Gtk.IconTheme.get_for_display(Gdk.Display.get_default()).add_search_path(
             str(Path(__file__).resolve().parent))
         local = Path(__file__).resolve().parents[1] / "style/memo.css"
-        sheet = os.environ.get("LUMA_MEMO_STYLE_PATH")
+        sheet = os.environ.get("SUNO_MEMO_STYLE_PATH")
         add_style_sheet(sheet or str(local if local.exists() else Path("/usr/share/prairie-core/memo.css")))
 
     def do_activate(self) -> None:

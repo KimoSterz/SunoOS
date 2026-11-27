@@ -6,7 +6,7 @@ import Clutter from 'gi://Clutter';
 import Shell from 'gi://Shell';
 import St from 'gi://St';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
-const OUT = GLib.getenv('LUMA_TILING_EDITOR_OUT');
+const OUT = GLib.getenv('SUNO_TILING_EDITOR_OUT');
 const results = [];
 const sleep = ms => new Promise(r => GLib.timeout_add(GLib.PRIORITY_DEFAULT, ms, () => {r(); return GLib.SOURCE_REMOVE;}));
 const check = (name, ok, detail = '') => { results.push({name, ok: !!ok, detail}); console.log(`[tiling-editor] ${ok ? 'PASS' : 'FAIL'} ${name} ${detail}`); };
@@ -86,7 +86,7 @@ async function closeLegend(indicator) {
 async function work() {
     let toggle, indicator;
     for (let n = 0; n < 50; n++) {
-        toggle = Main.extensionManager.lookup('tiling-toggle@project-luma.local')?.stateObj?._indicator?.quickSettingsItems[0];
+        toggle = Main.extensionManager.lookup('tiling-toggle@project-suno.local')?.stateObj?._indicator?.quickSettingsItems[0];
         indicator = Main.extensionManager.lookup('tilingshell@ferrarodomenico.com')?.stateObj?._indicator;
         if (toggle && indicator) break;
         await sleep(300);
@@ -112,7 +112,7 @@ async function work() {
     settings.set_value('selected-layouts', new GLib.Variant('aas', selection));
     await sleep(700);
     for (const mode of ['light', 'dark', 'frost', 'glass']) {
-        new Gio.Settings({schema_id: 'org.project_luma.shell-state'}).set_string('surface-treatment', mode);
+        new Gio.Settings({schema_id: 'org.projectSuno.shell-state'}).set_string('surface-treatment', mode);
         new Gio.Settings({schema_id: 'org.gnome.desktop.interface'}).set_string('color-scheme', mode === 'dark' ? 'prefer-dark' : 'default');
         await sleep(700);
         quick.menu.open(); await sleep(300); toggle.menu.open(); await sleep(500);
@@ -123,7 +123,7 @@ async function work() {
         check(`${mode}: New action fits on screen with 30 layouts`, bounds.get_y() >= 0 && bounds.get_y() + bounds.get_height() < Main.layoutManager.primaryMonitor.height);
         let worst = Infinity;
         for (const card of toggle._previewButtons) {
-            const tile = descend(card).find(a => a.has_style_class_name?.('luma-tiling-preview-tile'));
+            const tile = descend(card).find(a => a.has_style_class_name?.('Suno-tiling-preview-tile'));
             const bg = ground(tile.get_parent());
             worst = Math.min(worst, contrast(over(tile.get_theme_node().get_border_color(0), bg), bg));
         }
@@ -135,8 +135,8 @@ async function work() {
             item.get_children().filter(a => a instanceof St.Icon).map(a => contrast(over(a.get_theme_node().get_foreground_color(), ground(a)), ground(a)))));
         check(`${mode}: action glyphs hold 3:1 native contrast`, iconContrast >= 3, iconContrast.toFixed(2));
         check(`${mode}: gallery adds no nested background`, toggle._layoutsBox.get_theme_node().get_background_color().alpha === 0);
-        const title = descend(toggle._layoutsBox).find(a => a.has_style_class_name?.('luma-tiling-display-name'));
-        check(`${mode}: display heading uses Luma typography`, title.get_theme_node().get_font().get_family() === 'Figtree');
+        const title = descend(toggle._layoutsBox).find(a => a.has_style_class_name?.('Suno-tiling-display-name'));
+        check(`${mode}: display heading uses Suno typography`, title.get_theme_node().get_font().get_family() === 'Figtree');
         check(`${mode}: disabled page arrow is visibly muted`, !toggle._pageNext.reactive && toggle._pageNext.opacity < 100);
         await shot(`picker-many-${mode}`);
         await shot(`detail-many-${mode}`, toggle.menu.box);
@@ -169,7 +169,7 @@ async function work() {
     // Tiler normalizes malformed/empty collections back to defaults when
     // enabled. Exercise the chooser's defensive/empty states with it disabled.
     await Main.extensionManager.disableExtension('tilingshell@ferrarodomenico.com'); await sleep(500);
-    toggle = Main.extensionManager.lookup('tiling-toggle@project-luma.local').stateObj._indicator.quickSettingsItems[0];
+    toggle = Main.extensionManager.lookup('tiling-toggle@project-suno.local').stateObj._indicator.quickSettingsItems[0];
     const hundred = Array.from({length: 100}, (_, i) => ({...many[i % many.length], id: `hundred-${i}`}));
     hundred[0].name = 'A deliberately long saved layout name that must not widen the Quick Options menu';
     settings.set_string('layouts-json', JSON.stringify(hundred)); await sleep(300);
@@ -187,13 +187,13 @@ async function work() {
     toggle.menu.close(); quick.menu.close(); await sleep(500);
     await Main.extensionManager.enableExtension('tilingshell@ferrarodomenico.com'); await sleep(700);
     indicator = Main.extensionManager.lookup('tilingshell@ferrarodomenico.com').stateObj._indicator;
-    toggle = Main.extensionManager.lookup('tiling-toggle@project-luma.local').stateObj._indicator.quickSettingsItems[0];
+    toggle = Main.extensionManager.lookup('tiling-toggle@project-suno.local').stateObj._indicator.quickSettingsItems[0];
     for (const mode of ['light', 'dark', 'frost', 'glass']) {
-        new Gio.Settings({schema_id: 'org.project_luma.shell-state'}).set_string('surface-treatment', mode);
+        new Gio.Settings({schema_id: 'org.projectSuno.shell-state'}).set_string('surface-treatment', mode);
         new Gio.Settings({schema_id: 'org.gnome.desktop.interface'}).set_string('color-scheme', mode === 'dark' ? 'prefer-dark' : 'default');
         await sleep(800);
         quick.menu.open(); await sleep(350); toggle.menu.open(); await sleep(800);
-        const previews = descend(toggle._layoutsBox).filter(a => a.has_style_class_name?.('luma-tiling-preview'));
+        const previews = descend(toggle._layoutsBox).filter(a => a.has_style_class_name?.('Suno-tiling-preview'));
         const bottom = Math.max(...previews.map(a => {const e = a.get_transformed_extents(); return e.get_y() + e.get_height();}));
         for (const a of [toggle._editLayoutsItem, toggle._newLayoutItem]) {
             const e = a.get_transformed_extents();
@@ -276,7 +276,7 @@ async function work() {
     // Recreate the extension to check actual persisted settings and owned chrome.
     await Main.extensionManager.disableExtension('tilingshell@ferrarodomenico.com'); await sleep(500);
     check('extension teardown removes all editing actions', !descend(Main.layoutManager.uiGroup).some(a =>
-        a.has_style_class_name?.('luma-tiling-editor-actions')));
+        a.has_style_class_name?.('Suno-tiling-editor-actions')));
     await Main.extensionManager.enableExtension('tilingshell@ferrarodomenico.com'); await sleep(900);
     check('new layout survives extension recreation', JSON.parse(settings.get_string('layouts-json')).some(l => l.id === added?.id && l.tiles.length === 3));
 }

@@ -235,7 +235,7 @@ class PhoneCapabilityTests(unittest.TestCase):
         from prairie_apps.messages_backend import ModemMessagingTransport
         with tempfile.TemporaryDirectory() as root:
             status = Path(root) / "mobile-mode.json"
-            with mock.patch.dict("os.environ", {"LUMA_MOBILE_MODE_STATUS": str(status)}):
+            with mock.patch.dict("os.environ", {"SUNO_MOBILE_MODE_STATUS": str(status)}):
                 status.write_text('{"mode": "data", "state": "ready", "calls": false, "data": true}\n')
                 run.side_effect = ["/Modem/0"]
                 result = inspect_phone_capability()

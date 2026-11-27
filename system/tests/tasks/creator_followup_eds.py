@@ -6,8 +6,8 @@ from pathlib import Path
 import sys
 from datetime import datetime, timedelta, timezone
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'src/prairie-core'))
-assert os.environ.get('LUMA_TASKS_ISOLATED_TEST') == '1'
-assert '/luma-tasks-test-' in os.environ.get('XDG_DATA_HOME', ''), 'private EDS store required'
+assert os.environ.get('SUNO_TASKS_ISOLATED_TEST') == '1'
+assert '/Suno-tasks-test-' in os.environ.get('XDG_DATA_HOME', ''), 'private EDS store required'
 from prairie_apps.tasks_backend import TasksRepository, read_task, _modules, value
 from prairie_apps.tasks_parse import parse_task
 from prairie_apps.sharing_data import tasks_copy

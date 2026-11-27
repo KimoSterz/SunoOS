@@ -68,7 +68,7 @@ grep -Fq 'ignore_loglevel' "$output_dir/boot-info.txt" || die 'verbose log gate 
 [ "$(stat -c %s "$candidate")" -le $((96 * 1024 * 1024)) ] || die 'candidate exceeds boot partition'
 
 {
-	printf 'LUMA_FP6_CONSOLE_HOLD_VERSION=1\n'
+	printf 'SUNO_FP6_CONSOLE_HOLD_VERSION=1\n'
 	printf 'CONTROL_BOOT_SHA256=%s\n' "$expected_control_sha"
 	printf 'KERNEL_SHA256=%s\n' "$(hash "$work/check/kernel")"
 	printf 'RAMDISK_SHA256=%s\n' "$(hash "$work/check/ramdisk")"

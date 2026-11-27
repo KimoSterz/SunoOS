@@ -1,0 +1,18 @@
+[Unit]
+Description=Suno Fairphone 6 fingerprint lock agent
+Requires=Suno-fp6-fingerprint-backend.service Suno-fp6-fingerprint-stock-runtime.service
+After=Suno-fp6-fingerprint-backend.service Suno-fp6-fingerprint-stock-runtime.service greetd.service
+ConditionKernelCommandLine=androidboot.slot_suffix=_b
+
+[Service]
+Type=simple
+ExecStart=/usr/libexec/Suno-fp6-fingerprint-lock-agent
+Restart=on-failure
+RestartSec=2
+TimeoutStopSec=45
+TimeoutStopFailureMode=terminate
+SendSIGKILL=no
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

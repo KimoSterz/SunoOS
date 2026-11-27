@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Monitor (SunoUI preview)
+Comment=Resource activity on SunoUI
+Exec=@PREVIEW_DIR@/bin/run
+Icon=@PREVIEW_DIR@/assets/icon-theme/Prairie/scalable/apps/Suno-v3-monitor.svg
+Terminal=false
+Categories=System;Monitor;Utility;
+StartupNotify=true
+StartupWMClass=io.Suno.Monitor.SunoUIPreview
+DBusActivatable=false

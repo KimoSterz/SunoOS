@@ -1,4 +1,4 @@
-# Additive phone capabilities for the converged Luma application composition.
+# Additive phone capabilities for the converged Suno application composition.
 # These do not replace or subtract from config/shared/application-packages.txt.
 
 calls

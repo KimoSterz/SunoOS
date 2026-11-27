@@ -1,4 +1,4 @@
-From: Luma Developers
+From: Suno Developers
 Subject: [PATCH] Use the shared notification island on Mobile lock screens
 
 --- a/js/ui/unlockDialog.js

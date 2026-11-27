@@ -11,7 +11,7 @@
   system_apps_current.py notes --repo ROOT --from REV --to REV
                          --previous-manifest FILE --manifest FILE
       Fail when a system app's version-release changed between two
-      luma-packages.manifest files and no changes/*.md fragment added in
+      Suno-packages.manifest files and no changes/*.md fragment added in
       (REV, REV] names the package with type improvement and a headline
       "Updated <App> to <version>".
 

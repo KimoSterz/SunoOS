@@ -10,8 +10,8 @@ set -euo pipefail
 umask 022
 
 expected_kernel=7.1.2
-install_root=/usr/lib/modules/$expected_kernel/updates/luma-fp6-microphone
-state_root=/var/lib/luma/fp6-microphone
+install_root=/usr/lib/modules/$expected_kernel/updates/Suno-fp6-microphone
+state_root=/var/lib/Suno/fp6-microphone
 
 die() {
   printf 'error: %s\n' "$*" >&2
@@ -39,7 +39,7 @@ fi
 # shellcheck disable=SC1090
 . "$manifest"
 
-[ "${LUMA_FP6_MICROPHONE_BUILD_VERSION:-}" = 1 ] ||
+[ "${SUNO_FP6_MICROPHONE_BUILD_VERSION:-}" = 1 ] ||
   die 'unsupported microphone bundle version'
 [ "${KERNEL_RELEASE:-}" = "$expected_kernel" ] || die 'bundle kernel differs'
 [ "${RAM_BOOT_ONLY:-}" = true ] || die 'bundle is not marked RAM-boot-only'
@@ -109,7 +109,7 @@ depmod "$expected_kernel"
 for module in "${modules[@]}"; do
   selected=$(modinfo -n "$module")
   [ "$(readlink -f "$selected")" = "$(readlink -f "$install_root/$module.ko")" ] ||
-    die "modprobe did not select the Luma overlay for $module: $selected"
+    die "modprobe did not select the Suno overlay for $module: $selected"
 done
 
 rollback_install=false

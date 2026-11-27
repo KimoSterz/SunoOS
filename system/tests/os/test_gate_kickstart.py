@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parents[2]
 
 class GateKickstart(unittest.TestCase):
     def test_installed_target_selects_common_and_matching_kernel_arguments(self):
-        template = (ROOT / 'tests/os/gate/luma-gate.ks.in').read_text()
+        template = (ROOT / 'tests/os/gate/Suno-gate.ks.in').read_text()
         script = re.search(r'kargs=\$\(python3 .*?<<\'PY\'\n(.*?)\nPY\n\)',
                            template, re.S).group(1)
         with tempfile.TemporaryDirectory() as temporary:

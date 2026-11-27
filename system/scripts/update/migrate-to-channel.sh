@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
 #
-# Move an existing Luma machine from a private ref (the Recent channel of
+# Move an existing Suno machine from a private ref (the Recent channel of
 # ADR-015, a private parity ref, or a locally composed base) onto a public
 # release channel (ADR-030 section 9). Run as root on the machine itself.
 #
@@ -10,16 +10,16 @@
 #                         [--release-key FILE] [--allow-downgrade] [--apply]
 #
 # Without --apply (the default) it changes nothing: it verifies the channel
-# with the Luma OS Release key in a throwaway repository and prints the plan.
+# with the Suno OS Release key in a throwaway repository and prints the plan.
 # With --apply it:
-#   1. installs the release key at /etc/pki/ostree/luma-release.gpg (only when
-#      its fingerprint is the one pinned below) and the `luma` remote in
-#      /etc/ostree/remotes.d/luma.conf (world-readable, reading its URL from
-#      the root-only mirror list /etc/luma/update-mirrorlist, as Luma images
+#   1. installs the release key at /etc/pki/ostree/Suno-release.gpg (only when
+#      its fingerprint is the one pinned below) and the `Suno` remote in
+#      /etc/ostree/remotes.d/Suno.conf (world-readable, reading its URL from
+#      the root-only mirror list /etc/Suno/update-mirrorlist, as Suno images
 #      do), keeping a backup of any previous definition of that remote;
 #   2. resets base-package overrides (the release is a different base) and
 #      re-applies removals of packages the release still contains;
-#   3. rebases to luma:luma/1/x86_64/<channel>, uninstalling layered packages
+#   3. rebases to Suno:Suno/1/x86_64/<channel>, uninstalling layered packages
 #      the release already contains and keeping the others;
 #   4. turns off the other updaters: the Recent timer of the retired update client,
 #      rpm-ostreed's automatic policy, and the Fedora OCI Flatpak remote when
@@ -33,28 +33,28 @@
 #      that cannot be remounted, so systemd-remount-fs.service fails every
 #      boot; the kernel command line already mounts the root), refusing
 #      beforehand when the command line lacks the entry's subvolume;
-#   7. records the channel for luma-update and stops. It never reboots.
-# A preview credential follows luma-update's contract (docs/os/luma-update.md):
-# it lives only in root-only /etc/luma/update-preview-credential and in the
+#   7. records the channel for Suno-update and stops. It never reboots.
+# A preview credential follows Suno-update's contract (docs/os/Suno-update.md):
+# it lives only in root-only /etc/Suno/update-preview-credential and in the
 # mirror list.
 # User data in /var and /home, Flatpaks and their data are untouched. The
 # current deployment stays as the rollback deployment.
 #
 # Refuses when: not an rpm-ostree machine; a transaction is in progress; the
-# machine already follows a luma/1 channel; the channel fails signature
+# machine already follows a Suno/1 channel; the channel fails signature
 # verification; or the plan would downgrade a package and --allow-downgrade
 # was not given.
 
 set -euo pipefail
 
 RELEASE_KEY_FINGERPRINT=7D3DAFCE2BCA13A2B68F2761C8CE1A1B51D96CE2
-COLLECTION_ID=org.projectluma.OS
-REF_PREFIX=luma/1/x86_64
+COLLECTION_ID=org.projectSuno.OS
+REF_PREFIX=Suno/1/x86_64
 STABLE_URL=https://dl.simplyluma.com/os/repo
 PREVIEW_URL_TEMPLATE=https://dl.simplyluma.com/os/preview/%s/repo
 KEY_URL=https://dl.simplyluma.com/os/keys/luma-os-release.gpg
-KEY_PATH=/etc/pki/ostree/luma-release.gpg
-REMOTE=luma
+KEY_PATH=/etc/pki/ostree/Suno-release.gpg
+REMOTE=Suno
 
 channel=
 url=
@@ -128,15 +128,15 @@ if status.get("transaction"):
     sys.exit("error: an rpm-ostree transaction is in progress; try again when it finishes")
 booted = [d for d in status["deployments"] if d.get("booted")][0]
 origin = booted.get("origin") or ""
-if origin.endswith(":" + sys.argv[2]) or ":luma/1/" in origin:
+if origin.endswith(":" + sys.argv[2]) or ":Suno/1/" in origin:
     sys.exit(f"error: this machine already follows {origin}")
 if any(d.get("staged") for d in status["deployments"]):
     print("note: a staged deployment exists; the migration builds on top of it")
 PY
 
-# Trust: the pinned release key, from a file or from Luma's key path.
+# Trust: the pinned release key, from a file or from Suno's key path.
 if [ -z "$release_key" ]; then
-  release_key="$work/luma-os-release.gpg"
+  release_key="$work/Suno-os-release.gpg"
   curl --fail --silent --show-error --proto '=https' --max-time 60 -o "$release_key" "$KEY_URL" ||
     fail "cannot download the release key from $KEY_URL; pass --release-key"
 fi
@@ -144,7 +144,7 @@ install -d -m 0700 "$work/gnupg"
 fingerprint=$(gpg --batch --homedir "$work/gnupg" --with-colons --show-keys "$release_key" 2>/dev/null |
   awk -F: '$1 == "fpr" { print $10; exit }')
 [ "$fingerprint" = "$RELEASE_KEY_FINGERPRINT" ] ||
-  fail "release key fingerprint ${fingerprint:-unknown} is not the pinned Luma OS Release key"
+  fail "release key fingerprint ${fingerprint:-unknown} is not the pinned Suno OS Release key"
 gpg --batch --homedir "$work/gnupg" --dearmor <"$release_key" >"$work/key.gpg" 2>/dev/null ||
   cp "$release_key" "$work/key.gpg"
 
@@ -154,9 +154,9 @@ ostree remote add --repo="$work/repo" --gpg-import="$work/key.gpg" \
   --set=gpg-verify=true --set=gpg-verify-summary=true \
   --collection-id="$COLLECTION_ID" check "$url" "$ref" >/dev/null
 ostree remote summary --repo="$work/repo" check >/dev/null 2>&1 ||
-  fail "the summary at $display_url is missing or not signed by the Luma OS Release key"
+  fail "the summary at $display_url is missing or not signed by the Suno OS Release key"
 ostree pull --repo="$work/repo" --commit-metadata-only check "$ref" >/dev/null 2>&1 ||
-  fail "$ref at $display_url is missing or not signed by the Luma OS Release key"
+  fail "$ref at $display_url is missing or not signed by the Suno OS Release key"
 target=$(ostree rev-parse --repo="$work/repo" "check:$ref")
 target_version=$(ostree show --repo="$work/repo" --print-metadata-key=version "$target" 2>/dev/null | tr -d "'")
 ostree show --repo="$work/repo" --print-metadata-key=rpmostree.rpmdb.pkglist "$target" >"$work/pkglist" 2>/dev/null ||
@@ -194,7 +194,7 @@ if [ -n "$fstab_root" ]; then
 fi
 existing_repo_remote=$(ostree remote list --repo=/ostree/repo 2>/dev/null | grep -Fx "$REMOTE" || true)
 
-say "Luma channel migration plan"
+say "Suno channel migration plan"
 say "  from:     $(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["origin"])' "$work/plan.json")"
 say "  to:       $REMOTE:$ref at $display_url"
 say "  release:  ${target_version:-unknown} ($target), signature verified with $RELEASE_KEY_FINGERPRINT"
@@ -205,7 +205,7 @@ for pkg in "${keep[@]}"; do say "  keep layer: $pkg"; done
 for entry in "${downgrades[@]}"; do say "  DOWNGRADE: $entry"; done
 [ -z "$existing_remote_file" ] || say "  replace remote definition: $existing_remote_file (backup kept)"
 [ -z "$existing_repo_remote" ] || say "  remove remote '$REMOTE' from /ostree/repo/config (backup kept)"
-systemctl is-enabled --quiet luma-recent-update.timer 2>/dev/null && say '  disable: luma-recent-update.timer'
+systemctl is-enabled --quiet Suno-recent-update.timer 2>/dev/null && say '  disable: Suno-recent-update.timer'
 if [ -n "$fedora_flatpak_remote" ]; then
   if [ -n "$fedora_flatpak_refs" ]; then
     say "  keep Fedora Flatpak remote (installed from it: $(printf '%s ' $fedora_flatpak_refs))"
@@ -217,11 +217,11 @@ if ! grep -q boot_counter /boot/grub2/grub.cfg 2>/dev/null; then
   say '  add greenboot boot counting to /boot/grub2/grub.cfg (backup kept)'
 fi
 # bootupd's static preamble shows GRUB's menu for a second on every boot; the
-# release hides it with its own helper (luma-boot-theme), which touches only
+# release hides it with its own helper (Suno-boot-theme), which touches only
 # bootupd's file and leaves an administrator's menu timing alone.
 hidden_menu=
 if grep -q '^# Generated by bootupd' /boot/grub2/grub.cfg 2>/dev/null &&
-   ! grep -q '^### BEGIN 09_luma_hidden_menu.cfg ###$' /boot/grub2/grub.cfg 2>/dev/null; then
+   ! grep -q '^### BEGIN 09_Suno_hidden_menu.cfg ###$' /boot/grub2/grub.cfg 2>/dev/null; then
   hidden_menu=yes
   say '  hide the GRUB menu in /boot/grub2/grub.cfg unless its timing was customised; Esc, F8 or Shift still open it (backup kept)'
 fi
@@ -238,9 +238,9 @@ if [ "$apply" -ne 1 ]; then
   exit 0
 fi
 
-log="/var/log/luma-migrate-to-channel-$(date -u +%Y%m%dT%H%M%SZ).log"
+log="/var/log/Suno-migrate-to-channel-$(date -u +%Y%m%dT%H%M%SZ).log"
 exec > >(tee -a "$log") 2>&1
-backup="/var/lib/luma/migration-backup-$(date -u +%Y%m%dT%H%M%SZ)"
+backup="/var/lib/Suno/migration-backup-$(date -u +%Y%m%dT%H%M%SZ)"
 install -d -m 0700 "$backup"
 cp -a /etc/ostree/remotes.d "$backup/" 2>/dev/null || true
 cp -a /ostree/repo/config "$backup/ostree-repo-config"
@@ -256,15 +256,15 @@ if [ -n "$existing_remote_file" ] && [ "$existing_remote_file" != "/etc/ostree/r
   mv "$existing_remote_file" "$backup/"
 fi
 umask 022
-install -d -m 0755 /etc/luma
-cp -a /etc/luma/update-mirrorlist /etc/luma/update-preview-mirrorlist /etc/luma/update-preview-credential "$backup/" 2>/dev/null || true
+install -d -m 0755 /etc/Suno
+cp -a /etc/Suno/update-mirrorlist /etc/Suno/update-preview-mirrorlist /etc/Suno/update-preview-credential "$backup/" 2>/dev/null || true
 umask 077
-# The remote reads its URL from the root-only mirror list, the layout Luma
-# images ship (docs/os/luma-update.md): the public repository for stable, the
+# The remote reads its URL from the root-only mirror list, the layout Suno
+# images ship (docs/os/Suno-update.md): the public repository for stable, the
 # credential path for a preview channel. The remote file never holds a URL.
-printf '%s\n' "$url" >/etc/luma/update-mirrorlist.new
-mv /etc/luma/update-mirrorlist.new /etc/luma/update-mirrorlist
-rm -f /etc/luma/update-preview-mirrorlist
+printf '%s\n' "$url" >/etc/Suno/update-mirrorlist.new
+mv /etc/Suno/update-mirrorlist.new /etc/Suno/update-mirrorlist
+rm -f /etc/Suno/update-preview-mirrorlist
 if [ "$channel" != stable ]; then
   # A preview URL carries a credential: it goes only into root-only files,
   # whether it came from --preview-credential-file or --url.
@@ -272,15 +272,15 @@ if [ "$channel" != stable ]; then
     credential=$(python3 -c 'import re, sys; m = re.search(r"/preview/([A-Za-z0-9_-]{16,256})/", sys.argv[1]); print(m.group(1) if m else "")' "$url")
   fi
   python3 -c 'import json, sys, time; print(json.dumps({"credential": sys.argv[1], "channel": sys.argv[2], "channels": [sys.argv[2]], "issued_at": int(time.time())}))' \
-    "$credential" "$channel" >/etc/luma/update-preview-credential.new
-  mv /etc/luma/update-preview-credential.new /etc/luma/update-preview-credential
+    "$credential" "$channel" >/etc/Suno/update-preview-credential.new
+  mv /etc/Suno/update-preview-credential.new /etc/Suno/update-preview-credential
 else
-  rm -f /etc/luma/update-preview-credential
+  rm -f /etc/Suno/update-preview-credential
 fi
 umask 022
 {
   printf '[remote "%s"]\n' "$REMOTE"
-  printf 'url=mirrorlist=file:///etc/luma/update-mirrorlist\n' 
+  printf 'url=mirrorlist=file:///etc/Suno/update-mirrorlist\n' 
   printf 'gpg-verify=true\ngpg-verify-summary=true\n'
   printf 'gpgkeypath=%s\ncollection-id=%s\n' "$KEY_PATH" "$COLLECTION_ID"
 } >"/etc/ostree/remotes.d/$REMOTE.conf.new"
@@ -288,7 +288,7 @@ umask 022
 # loaded; the credential, if any, is only in the root-only mirror list.
 chmod 0644 "/etc/ostree/remotes.d/$REMOTE.conf.new"
 mv "/etc/ostree/remotes.d/$REMOTE.conf.new" "/etc/ostree/remotes.d/$REMOTE.conf"
-restorecon -F "$KEY_PATH" "/etc/ostree/remotes.d/$REMOTE.conf" /etc/luma/update-mirrorlist 2>/dev/null || true
+restorecon -F "$KEY_PATH" "/etc/ostree/remotes.d/$REMOTE.conf" /etc/Suno/update-mirrorlist 2>/dev/null || true
 
 if [ "$reset_overrides" = true ]; then
   rpm-ostree override reset --all
@@ -324,8 +324,8 @@ if [ "${#release_kargs[@]}" -gt 0 ]; then
   rpm-ostree kargs "${kargs_args[@]}"
 fi
 
-if systemctl is-enabled --quiet luma-recent-update.timer 2>/dev/null; then
-  systemctl disable --now luma-recent-update.timer
+if systemctl is-enabled --quiet Suno-recent-update.timer 2>/dev/null; then
+  systemctl disable --now Suno-recent-update.timer
 fi
 if grep -Eq '^AutomaticUpdatePolicy=(check|stage|apply)' /etc/rpm-ostreed.conf 2>/dev/null; then
   sed -i 's/^AutomaticUpdatePolicy=.*/AutomaticUpdatePolicy=none/' /etc/rpm-ostreed.conf
@@ -344,11 +344,11 @@ if ! grep -q boot_counter /boot/grub2/grub.cfg 2>/dev/null; then
 import os, re, sys
 path, snippet = sys.argv[1], sys.argv[2]
 text = open(path, encoding="utf-8").read()
-match = re.search(r"(?m)^[ \t]*(blscfg|source \$prefix/luma\.cfg)[ \t]*$", text)
+match = re.search(r"(?m)^[ \t]*(blscfg|source \$prefix/Suno\.cfg)[ \t]*$", text)
 if not match:
     sys.exit("error: /boot/grub2/grub.cfg has no BLS menu line to put the boot counter before")
 new = text[:match.start()] + "# greenboot boot counting (added by migrate-to-channel.sh)\n" + snippet.rstrip("\n") + "\n" + text[match.start():]
-tmp = path + ".luma-migrate"
+tmp = path + ".Suno-migrate"
 open(tmp, "w", encoding="utf-8").write(new)
 os.chmod(tmp, os.stat(path).st_mode & 0o7777)
 os.replace(tmp, path)
@@ -360,10 +360,10 @@ fi
 if [ -n "$hidden_menu" ]; then
   helper_dir="$work/hidden-menu"
   install -d -m 0700 "$helper_dir"
-  if ostree cat --repo=/ostree/repo "$target" /usr/libexec/luma-boot-hidden-menu >"$helper_dir/luma-boot-hidden-menu" 2>/dev/null &&
-     ostree cat --repo=/ostree/repo "$target" /usr/lib/bootupd/grub2-static/configs.d/09_luma_hidden_menu.cfg >"$helper_dir/09_luma_hidden_menu.cfg" 2>/dev/null; then
+  if ostree cat --repo=/ostree/repo "$target" /usr/libexec/Suno-boot-hidden-menu >"$helper_dir/Suno-boot-hidden-menu" 2>/dev/null &&
+     ostree cat --repo=/ostree/repo "$target" /usr/lib/bootupd/grub2-static/configs.d/09_Suno_hidden_menu.cfg >"$helper_dir/09_Suno_hidden_menu.cfg" 2>/dev/null; then
     [ -e "$backup/grub.cfg" ] || cp -a /boot/grub2/grub.cfg "$backup/grub.cfg"
-    python3 -sP "$helper_dir/luma-boot-hidden-menu" --source "$helper_dir/09_luma_hidden_menu.cfg" ||
+    python3 -sP "$helper_dir/Suno-boot-hidden-menu" --source "$helper_dir/09_Suno_hidden_menu.cfg" ||
       fail 'the hidden GRUB menu could not be added to grub.cfg'
   else
     say "note: release $target carries no hidden GRUB menu; grub.cfg keeps its menu"
@@ -385,7 +385,7 @@ for line in open(path, encoding="utf-8").read().splitlines(keepends=True):
         done = True
     else:
         out.append(line)
-tmp = path + ".luma-migrate"
+tmp = path + ".Suno-migrate"
 open(tmp, "w", encoding="utf-8").write("".join(out))
 os.chmod(tmp, os.stat(path).st_mode & 0o7777)
 os.replace(tmp, path)
@@ -394,11 +394,11 @@ PY2
   systemctl daemon-reload
 fi
 
-install -d -m 0755 /etc/luma
-printf 'channel=%s\n' "$channel" >/etc/luma/update-channel.conf
+install -d -m 0755 /etc/Suno
+printf 'channel=%s\n' "$channel" >/etc/Suno/update-channel.conf
 
 rpm-ostree status
-say "Migration staged: restart to boot Luma ${target_version:-} on $channel."
+say "Migration staged: restart to boot Suno ${target_version:-} on $channel."
 say "Backup of the previous remote and plan: $backup"
 say "To undo before restarting: rpm-ostree cleanup -p (and restore $backup/remotes.d)."
 say "To undo after restarting: rpm-ostree rollback, then restart."

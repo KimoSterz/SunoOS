@@ -1,6 +1,6 @@
 ---
 title: Build a new app
-summary: A walkthrough from an empty folder to a LumaUI app that works on desktop, tablet, phone and TV, covering the project, luma-app.toml, the window, the action bar, sidebars and drawers, lists, sheets, light and dark, icons, and testing every size class and posture.
+summary: A walkthrough from an empty folder to a SunoUI app that works on desktop, tablet, phone and TV, covering the project, Suno-app.toml, the window, the action bar, sidebars and drawers, lists, sheets, light and dark, icons, and testing every size class and posture.
 order: 1.5
 section: Kit
 ---
@@ -10,24 +10,24 @@ section: Kit
 This guide builds **Recipes**, a small Python app, from an empty folder. It
 has a sidebar of collections, a list of recipes, a recipe page with a details
 pane, an action bar, a sheet for adding a recipe, and a confirmation before
-deleting. Written with LumaUI's parts, the same code works in a desktop
+deleting. Written with SunoUI's parts, the same code works in a desktop
 window, full screen on a tablet or a phone, and on a TV.
 
-Read [LumaUI](index.md) first for the ideas. This page is the practice. Labels
+Read [SunoUI](index.md) first for the ideas. This page is the practice. Labels
 follow that page:
 
-- **Available**: in the current Luma Developer Platform (LumaUI API level 2).
-- **Preview**: running on Luma test devices; names may change.
-- **Planned**: decided, not in LumaUI yet.
+- **Available**: in the current Suno Developer Platform (SunoUI API level 2).
+- **Preview**: running on Suno test devices; names may change.
+- **Planned**: decided, not in SunoUI yet.
 
 ## 1. Start the project
 
-On Luma the `luma` command is already installed. Elsewhere, build against the
-Luma Platform runtime; see [Install the SDK](../getting-started/install-the-sdk.md).
+On Suno the `Suno` command is already installed. Elsewhere, build against the
+Suno Platform runtime; see [Install the SDK](../getting-started/install-the-sdk.md).
 
 ```sh
 mkdir recipes && cd recipes
-luma new "Recipes" --id com.example.Recipes
+Suno new "Recipes" --id com.example.Recipes
 ```
 
 You get this tree. [Project layout](../getting-started/project-layout.md)
@@ -35,7 +35,7 @@ explains every file.
 
 ```text
 recipes/
-├── luma-app.toml
+├── Suno-app.toml
 ├── src/
 │   └── main.py
 ├── data/
@@ -45,16 +45,16 @@ recipes/
 ├── flatpak/
 │   └── com.example.Recipes.json
 └── verification/
-    └── luma-native-evidence.json
+    └── Suno-native-evidence.json
 ```
 
 The generated `src/main.py` uses the C library through introspection.
 Replace it with the code in this guide. Use a reverse-DNS ID you control; see
 [App IDs and namespaces](../publishing/app-ids-and-namespaces.md).
 
-## 2. Say where it runs: luma-app.toml
+## 2. Say where it runs: Suno-app.toml
 
-`luma-app.toml` is the contract `luma lint` checks. The part that matters for
+`Suno-app.toml` is the contract `Suno lint` checks. The part that matters for
 design is `[responsive]`: the widths, inputs and presentations you promise to
 test.
 
@@ -79,22 +79,22 @@ presentation_modes = ["windowed", "fullscreen-mobile"]
 ```
 
 360, 500 and 1024 are required; add your widest window. Keep the other
-tables `luma new` wrote (`[distribution]`, `[lifecycle]`, `[conformance]`).
-Every key is in [luma-app.toml](../getting-started/luma-app-toml.md).
+tables `Suno new` wrote (`[distribution]`, `[lifecycle]`, `[conformance]`).
+Every key is in [Suno-app.toml](../getting-started/Suno-app-toml.md).
 
 To appear on the TV home, add a `[tv]` table (preview, see
 [step 10](#10-tv)).
 
 ## 3. The window
 
-`AppWindow` is LumaUI's window. LumaUI draws its frame, title row, identity
+`AppWindow` is SunoUI's window. SunoUI draws its frame, title row, identity
 and window controls. Your app gives it commands, which become the identity
 menu, the shortcuts and the actions buttons point at.
 
 ```python
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
-"""Recipes: a LumaUI app for every screen."""
+"""Recipes: a SunoUI app for every screen."""
 
 from __future__ import annotations
 
@@ -106,11 +106,11 @@ gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 from gi.repository import Adw, Gtk
 
-from luma_appkit import (
+from Suno_appkit import (
     ActionCenter, AppWindow, BarAction, Command, CommandGroup, CommandRegistry,
     CornerPill, DestructiveDialog, DetailsPane, EmptyState, Island, ListFirst,
     NavigationRow, NavigationSidebar, SidebarFoot, SidebarToggle, SwipeAction,
-    SwipeRow, TextField, Toast, ToastHost, install_appkit, lumaui_icon,
+    SwipeRow, TextField, Toast, ToastHost, install_appkit, SunoUI_icon,
 )
 
 APP_ID = "com.example.Recipes"
@@ -138,15 +138,15 @@ class RecipesWindow(AppWindow):
 
 - `minimum_width=360, minimum_height=294` lets you shrink the window to phone
   width on a desktop. The defaults are larger.
-- The window opens at Luma's shared size for its shape. Pass
+- The window opens at Suno's shared size for its shape. Pass
   `size_class="compact" | "regular" | "wide"` only if the default guess from
   your default size is wrong.
 - Never draw a title bar, window controls or your own frame. On Tablet and
-  Mobile presentations LumaUI removes the title row and controls for you.
+  Mobile presentations SunoUI removes the title row and controls for you.
 
 ## 4. Sidebar, list and page
 
-Name your structure with LumaUI parts so LumaUI knows what to move at each
+Name your structure with SunoUI parts so SunoUI knows what to move at each
 size.
 
 ```python
@@ -154,8 +154,8 @@ size.
         # The places: a sidebar with search and New at its foot.
         self.sidebar = NavigationSidebar()
         self.sidebar.append_section("Collections")
-        self.sidebar.append_row(NavigationRow("All recipes", icon_name=lumaui_icon("book-open")))
-        self.sidebar.append_row(NavigationRow("Favourites", icon_name=lumaui_icon("star")))
+        self.sidebar.append_row(NavigationRow("All recipes", icon_name=SunoUI_icon("book-open")))
+        self.sidebar.append_row(NavigationRow("Favourites", icon_name=SunoUI_icon("star")))
         self.sidebar.append_footer(SidebarFoot(
             search="Search recipes", on_search=self.search,
             add=("New recipe", "square-pen", self.ask_new),
@@ -170,7 +170,7 @@ size.
         # The page: one recipe, or an empty state.
         self.page = Gtk.Stack(vexpand=True, hexpand=True)
         self.page.add_named(EmptyState(
-            "No recipe open", "Pick a recipe, or add your first one.", lumaui_icon("book-open"),
+            "No recipe open", "Pick a recipe, or add your first one.", SunoUI_icon("book-open"),
             primary=("New recipe", self.ask_new)), "empty")
         self.recipe_view = Gtk.Label(xalign=0, yalign=0, wrap=True)
         self.page.add_named(self.recipe_view, "recipe")
@@ -247,7 +247,7 @@ instead of opening dialogs.
 - Views (grid or list, sort) are not actions. Put them in the corner pill or
   behind ⋯.
 - With a selection, show only that item's actions.
-- On a phone LumaUI makes the keys thumb-sized, shows icons alone, and moves
+- On a phone SunoUI makes the keys thumb-sized, shows icons alone, and moves
   what does not fit into ⋯. On a phone whose screen's long side is under 600
   it attaches the bar to the bottom edge.
 - Give a scroller behind the bar room above it on a phone with
@@ -347,12 +347,12 @@ Maps, Tide and Notes. Never draw a look-alike. See
 
 You write no colours and no fonts.
 
-- Every LumaUI part follows light, dark, Frost, Glass and high contrast by
+- Every SunoUI part follows light, dark, Frost, Glass and high contrast by
   itself. The token sheets reload when the appearance changes.
 - If you need a stylesheet for your own content, load it with
-  `add_style_sheet(path)` and use only `@luma_*` colours. A hex or `rgba()`
-  value, a `@define-color`, or a rule that selects a LumaUI part
-  (`.lumaui-*`, `.luma-island`, `headerbar`, `windowcontrols`) is a defect.
+  `add_style_sheet(path)` and use only `@Suno_*` colours. A hex or `rgba()`
+  value, a `@define-color`, or a rule that selects a SunoUI part
+  (`.SunoUI-*`, `.Suno-island`, `headerbar`, `windowcontrols`) is a defect.
 - Where a screen belongs to something with a colour (a recipe's photo, a
   person's hue), use `ContentLitHeader` or `hue_class()` rather than painting
   it yourself.
@@ -364,14 +364,14 @@ See [Color](../design/color.md) and [Typography](../design/typography.md).
 
 ## 9. Icons
 
-- Symbols are Lucide names: `"book-open"`, `"star"`, `"trash-2"`. LumaUI's
+- Symbols are Lucide names: `"book-open"`, `"star"`, `"trash-2"`. SunoUI's
   parts (`BarAction`, `SidebarFoot`, `SwipeAction`, `CornerPill`) take the
   Lucide name directly. Where a GTK widget wants a theme name (an
-  `icon_name=` argument, `Gtk.Image`), pass `lumaui_icon("book-open")`.
+  `icon_name=` argument, `Gtk.Image`), pass `SunoUI_icon("book-open")`.
 - Never draw inline SVG symbols and never name an icon that has no file.
 - Share is `share-2`, Export is `share`, Upload is `upload`; New is
   `square-pen`; Delete is a red `trash-2`.
-- Your app icon (`data/com.example.Recipes.svg`) follows Luma's icon family:
+- Your app icon (`data/com.example.Recipes.svg`) follows Suno's icon family:
   a plate lit from the upper left, one object, a rim. See
   [Icons](../design/icons.md).
 
@@ -391,12 +391,12 @@ tile = "data/com.example.Recipes-tv.svg"   # the 16:9 wide tile
 presentation = "fullscreen"                # your normal view, full screen; "tv" for your own TV view
 ```
 
-`luma lint` checks that the desktop entry carries the matching keys:
+`Suno lint` checks that the desktop entry carries the matching keys:
 
 ```ini
-X-Luma-TV=true
-X-Luma-TV-Tile=com.example.Recipes-tv
-X-Luma-TV-Presentation=fullscreen
+X-Suno-TV=true
+X-Suno-TV-Tile=com.example.Recipes-tv
+X-Suno-TV-Presentation=fullscreen
 ```
 
 Install the tile as an icon named `com.example.Recipes-tv`, made from your app
@@ -406,12 +406,12 @@ A media, browsing or full-screen app can add its own TV view with the TV
 parts and switch to it live:
 
 ```python
-from luma_appkit import lumaui, TvStage, TvTopBar, TvFocus, TvCover
+from Suno_appkit import SunoUI, TvStage, TvTopBar, TvFocus, TvCover
 
 def show_for_posture(tv: bool) -> None:
     window.set_body(tv_view() if tv else normal_view())
 
-stop = lumaui.watch_posture(show_for_posture)
+stop = SunoUI.watch_posture(show_for_posture)
 
 def tv_view() -> Gtk.Widget:
     stage = TvStage()
@@ -429,15 +429,15 @@ the TV tokens, never your own numbers. See [TV](index.md#tv).
 
 ## 11. Test every size and posture
 
-Run the app on a desktop with the switches LumaUI reads:
+Run the app on a desktop with the switches SunoUI reads:
 
 ```sh
 python3 src/main.py                                                   # desktop
-LUMA_PRESENTATION_MODE=fullscreen-mobile LUMA_INPUT_MODE=touch \
+SUNO_PRESENTATION_MODE=fullscreen-mobile SUNO_INPUT_MODE=touch \
   python3 src/main.py                                                 # phone presentation, touch
-LUMA_DEVICE_CLASS=tablet LUMA_INPUT_MODE=touch python3 src/main.py    # tablet
-LUMA_FORM_FACTOR=phone python3 src/main.py                            # a phone device
-LUMA_POSTURE=tv python3 src/main.py                                   # TV posture (preview)
+SUNO_DEVICE_CLASS=tablet SUNO_INPUT_MODE=touch python3 src/main.py    # tablet
+SUNO_FORM_FACTOR=phone python3 src/main.py                            # a phone device
+SUNO_POSTURE=tv python3 src/main.py                                   # TV posture (preview)
 GTK_DEBUG=interactive python3 src/main.py                             # sizes and accessibility
 ```
 
@@ -462,13 +462,13 @@ Then, for each:
 Check the contract:
 
 ```sh
-luma lint
-luma inspect
-luma test
-luma release-check
+Suno lint
+Suno inspect
+Suno test
+Suno release-check
 ```
 
-See [The `luma` command](sdk-command-line.md).
+See [The `Suno` command](sdk-command-line.md).
 
 ## Rules to check before you publish
 
@@ -480,18 +480,18 @@ See [The `luma` command](sdk-command-line.md).
 6. Panels and popovers work as drawers on a phone.
 7. Another app's things use the owning app's card.
 8. Colours from tokens, icons from Lucide, type in Figtree. No restyled
-   LumaUI parts.
+   SunoUI parts.
 9. Every custom widget has an accessible name and role.
 10. Each operation has one command, shared by its button, menu item and
     shortcut.
 
 ## Next
 
-- [LumaUI](index.md): every part, size class and posture.
+- [SunoUI](index.md): every part, size class and posture.
 - [Windows and islands](windows-and-islands.md),
   [Commands and menus](commands-and-menus.md),
   [Adaptive layouts](adaptive-layouts.md),
-  [LumaUI behaviour](behaviour.md).
+  [SunoUI behaviour](behaviour.md).
 - [Python reference](appkit-reference.md) and
-  [LumaUI-1 reference](lumaui-reference.md) for C.
+  [SunoUI-1 reference](SunoUI-reference.md) for C.
 - [Publishing to Depot](../publishing/index.md) when it is ready.

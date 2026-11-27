@@ -1,11 +1,11 @@
 {
-  "source": "luma-next-70.html const DSK",
+  "source": "Suno-next-70.html const DSK",
   "default_disk": "nvme",
   "default_volume": 2,
   "drives": [
     {
       "id": "nvme",
-      "n": "Luma SSD",
+      "n": "Suno SSD",
       "grp": "In this computer",
       "kind": "ssd",
       "model": "NVMe SSD, 512 GB",
@@ -73,7 +73,7 @@
           "sys": true
         },
         {
-          "n": "Luma",
+          "n": "Suno",
           "c": "blue",
           "size": 509,
           "used": 214,
@@ -81,7 +81,7 @@
           "mount": "/",
           "part": "p3",
           "uuid": "4f7b21c8-9ea3-4d1e-bb70-2c5f9e18a4d2",
-          "role": "Luma, your apps, and everything in your Home folder.",
+          "role": "Suno, your apps, and everything in your Home folder.",
           "sys": true
         }
       ]
@@ -189,7 +189,7 @@
       ],
       "vols": [
         {
-          "n": "LUMA-1.0",
+          "n": "SUNO-1.0",
           "c": "amber",
           "size": 6.2,
           "used": 5.9,
@@ -197,7 +197,7 @@
           "mount": null,
           "part": "1",
           "uuid": "2026-09-22-18-00-00-00",
-          "role": "A Luma installer written to this stick. It can start a computer."
+          "role": "A Suno installer written to this stick. It can start a computer."
         }
       ]
     }

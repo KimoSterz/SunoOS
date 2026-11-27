@@ -1,5 +1,5 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Project Luma <project-luma@localhost>
+From: Project Suno <project-suno@localhost>
 Date: Wed, 26 Aug 2026 23:05:00 -0500
 Subject: [PATCH] rmtfs: persist only FP6 modemst runtime state
 

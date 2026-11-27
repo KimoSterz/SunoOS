@@ -1,4 +1,4 @@
-From: Luma UI maintainers <noreply@projectluma.org>
+From: Suno UI maintainers <noreply@projectSuno.org>
 Subject: [PATCH] Adapt Filer views through the shared width watch
 
 At phone widths, show a headerless file-name and modified-date list.
@@ -32,7 +32,7 @@ Grid uses the same watcher and 560 breakpoint instead of an idle map retry.
 @@ -765,7 +770,7 @@
      }
      g_object_notify (G_OBJECT (self), "icon-size");
-     luma_column_view_header_set_visible (self->luma_header,
+     Suno_column_view_header_set_visible (self->Suno_header,
 -                                         self->search_directory == NULL);
 +                                         self->search_directory == NULL && !self->phone_layout);
  
@@ -43,7 +43,7 @@ Grid uses the same watcher and 560 breakpoint instead of an idle map retry.
  
      gtk_widget_add_css_class (GTK_WIDGET (self), "nautilus-list-view");
 -    g_signal_connect_swapped (self, "notify::width", G_CALLBACK (update_phone_layout), self);
-+    g_signal_connect_object (luma_width_watch_get (GTK_WIDGET (self)), "notify::width",
++    g_signal_connect_object (Suno_width_watch_get (GTK_WIDGET (self)), "notify::width",
 +                             G_CALLBACK (update_phone_layout), self, G_CONNECT_SWAPPED);
      g_signal_connect_swapped (self, "notify::root", G_CALLBACK (update_phone_layout), self);
  
@@ -62,8 +62,8 @@ Grid uses the same watcher and 560 breakpoint instead of an idle map retry.
 +            gtk_widget_add_css_class (GTK_WIDGET (self), "phone-list");
 +        else
 +            gtk_widget_remove_css_class (GTK_WIDGET (self), "phone-list");
-+        if (self->luma_header != NULL)
-+            luma_column_view_header_set_visible (self->luma_header,
++        if (self->Suno_header != NULL)
++            Suno_column_view_header_set_visible (self->Suno_header,
 +                                                  !phone_layout && self->search_directory == NULL);
 +        g_object_notify (G_OBJECT (self), "icon-size");
          if (nautilus_list_base_get_directory_as_file (NAUTILUS_LIST_BASE (self)) != NULL)
@@ -77,13 +77,13 @@ Grid uses the same watcher and 560 breakpoint instead of an idle map retry.
  }
 +
 +/* v71 phone list: headerless name/date rows with 24px file artwork. */
-+window.luma-files-window .nautilus-list-view.phone-list:not(.search-results) columnview > listview {
++window.Suno-files-window .nautilus-list-view.phone-list:not(.search-results) columnview > listview {
 +  border-spacing: 0;
 +}
-+window.luma-files-window .nautilus-list-view.phone-list:not(.search-results) .nautilus-view-cell {
++window.Suno-files-window .nautilus-list-view.phone-list:not(.search-results) .nautilus-view-cell {
 +  min-height: 54px;
 +}
-+window.luma-files-window .nautilus-list-view.phone-list:not(.search-results) columnview > listview > row {
++window.Suno-files-window .nautilus-list-view.phone-list:not(.search-results) columnview > listview > row {
 +  min-height: 54px;
 +  font-size: 15px;
 +  font-weight: 500;
@@ -94,7 +94,7 @@ Grid uses the same watcher and 560 breakpoint instead of an idle map retry.
  #include "nautilus-view-model.h"
  
  #include <glib/gi18n.h>
-+#include <luma-ui.h>
++#include <Suno-ui.h>
  
  struct _NautilusGridView
  {
@@ -136,7 +136,7 @@ Grid uses the same watcher and 560 breakpoint instead of an idle map retry.
  
      gtk_widget_add_css_class (GTK_WIDGET (self), "nautilus-grid-view");
 -    g_signal_connect_swapped (self, "notify::width", G_CALLBACK (update_phone_layout), self);
-+    g_signal_connect_object (luma_width_watch_get (GTK_WIDGET (self)), "notify::width",
++    g_signal_connect_object (Suno_width_watch_get (GTK_WIDGET (self)), "notify::width",
 +                             G_CALLBACK (update_phone_layout), self, G_CONNECT_SWAPPED);
      g_signal_connect_swapped (self, "notify::root", G_CALLBACK (update_phone_layout), self);
 -    g_signal_connect_swapped (self, "map", G_CALLBACK (queue_phone_layout_after_map), self);

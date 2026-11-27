@@ -16,7 +16,7 @@ with tempfile.TemporaryDirectory() as scratch:
     (output/'vendor.img').write_bytes(b'synthetic vendor')
     manifest=output/'SHA256SUMS';manifest.write_text('previous manifest');manifest.chmod(0o444)
     def publish(*files):
-        return subprocess.run(['bash','-c','source "$1"; shift; luma_android_write_checksums "$@"',
+        return subprocess.run(['bash','-c','source "$1"; shift; Suno_android_write_checksums "$@"',
             'checksum-fixture',str(helper),str(output),*files],capture_output=True,text=True)
     result=publish();assert result.returncode==0,result.stderr
     for line in manifest.read_text().splitlines():
@@ -30,6 +30,6 @@ with tempfile.TemporaryDirectory() as scratch:
     previous=manifest.read_bytes()
     (output/'unreadable').write_text('denied');(output/'unreadable').chmod(0)
     result=publish();assert result.returncode!=0
-    assert manifest.read_bytes()==previous and not list(output.glob('.luma-checksums-*'))
+    assert manifest.read_bytes()==previous and not list(output.glob('.Suno-checksums-*'))
     (output/'unreadable').chmod(0o600)
 print('PASS readonly prior manifest, exact hashes, explicit image list, symlink-target preservation and failed-read atomicity')

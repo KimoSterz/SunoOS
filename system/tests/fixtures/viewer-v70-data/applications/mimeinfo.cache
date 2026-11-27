@@ -1,5 +1,5 @@
 [MIME Cache]
-image/jpeg=org.projectluma.Canvas.desktop;org.projectluma.Darkroom.desktop;org.projectluma.Viewer.desktop;org.projectluma.Photos.desktop;
-image/png=org.projectluma.Canvas.desktop;org.projectluma.Darkroom.desktop;org.projectluma.Viewer.desktop;org.projectluma.Photos.desktop;
-image/webp=org.projectluma.Canvas.desktop;org.projectluma.Darkroom.desktop;org.projectluma.Viewer.desktop;org.projectluma.Photos.desktop;
-application/pdf=org.projectluma.Canvas.desktop;org.projectluma.Darkroom.desktop;org.projectluma.Viewer.desktop;org.projectluma.Photos.desktop;
+image/jpeg=org.projectSuno.Canvas.desktop;org.projectSuno.Darkroom.desktop;org.projectSuno.Viewer.desktop;org.projectSuno.Photos.desktop;
+image/png=org.projectSuno.Canvas.desktop;org.projectSuno.Darkroom.desktop;org.projectSuno.Viewer.desktop;org.projectSuno.Photos.desktop;
+image/webp=org.projectSuno.Canvas.desktop;org.projectSuno.Darkroom.desktop;org.projectSuno.Viewer.desktop;org.projectSuno.Photos.desktop;
+application/pdf=org.projectSuno.Canvas.desktop;org.projectSuno.Darkroom.desktop;org.projectSuno.Viewer.desktop;org.projectSuno.Photos.desktop;

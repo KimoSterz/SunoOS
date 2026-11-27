@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: Apache-2.0
+# dl.simplyluma.com origin: report the web root's free space for publishers.
+# The upload key is restricted to rsync (rrsync) and cannot run df, so this
+# writes "<available bytes> <size bytes> <unix time>" to .Suno-origin/space in
+# the web root; scripts/os/lib/sync-origin.sh refuses an upload that does not
+# fit, or when the report is older than 15 minutes.
+# Install on the origin: copy both units to /etc/systemd/system, then
+#   systemctl daemon-reload && systemctl enable --now Suno-dl-space.timer
+[Unit]
+Description=Report dl origin free space for publishers
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c 'd=/srv/Suno-dl/.Suno-origin; install -d -m 0755 $$d && df -B1 --output=avail,size /srv/Suno-dl | tail -n 1 | { read -r a s; printf "%%s %%s %%s\\n" $$a $$s $$(date -u +%%s); } > $$d/space.new && chmod 0644 $$d/space.new && mv -f $$d/space.new $$d/space'

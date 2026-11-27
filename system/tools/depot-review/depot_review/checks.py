@@ -33,30 +33,30 @@ def check(key: str, ok: bool, message: str, detail: str = "", **extra) -> dict:
     return item
 
 
-def reserved(app_id: str, policy: dict, luma_ids: set[str]) -> str | None:
+def reserved(app_id: str, policy: dict, Suno_ids: set[str]) -> str | None:
     lowered = app_id.lower()
     for prefix in policy["reserved_prefixes"]:
         if lowered.startswith(prefix.lower()):
-            return f"App ids starting with {prefix} belong to Luma. Use a reverse-DNS id for a domain you own."
-    if app_id in luma_ids:
-        return "This app id is already used by one of Luma's own apps. Use a reverse-DNS id for a domain you own."
+            return f"App ids starting with {prefix} belong to Suno. Use a reverse-DNS id for a domain you own."
+    if app_id in Suno_ids:
+        return "This app id is already used by one of Suno's own apps. Use a reverse-DNS id for a domain you own."
     if words.reserved_namespace(app_id):
         return ("This app id is inside a namespace the desktop, its portals or its keyring answer to, and an app "
                 "owns every name below its id. Use a reverse-DNS id for a domain you own.")
     return None
 
 
-# Bus names Luma's own services answer to. A Luma app is trusted by origin (published from Luma's
+# Bus names Suno's own services answer to. A Suno app is trusted by origin (published from Suno's
 # own build, never through this pipeline), so every submission here is refused them.
-LUMA_BUS_NAMESPACES = ("org.projectluma", "org.project_luma", "io.luma")
-LUMA_SERVICES = "Your app uses a Luma system service reserved for Luma's own apps"
+SUNO_BUS_NAMESPACES = ("org.projectSuno", "org.projectSuno", "io.Suno")
+SUNO_SERVICES = "Your app uses a Suno system service reserved for Suno's own apps"
 
 
-def _covers_luma(rule: str) -> bool:
-    """Whether a bus policy key reaches one of Luma's names: the name itself or below it, or a
+def _covers_Suno(rule: str) -> bool:
+    """Whether a bus policy key reaches one of Suno's names: the name itself or below it, or a
     wildcard (``x.*``, ``*``) above it. Compared without regard to case."""
     name = rule.strip().lower()
-    for namespace in LUMA_BUS_NAMESPACES:
+    for namespace in SUNO_BUS_NAMESPACES:
         if name == namespace or name.startswith(namespace + "."):
             return True
         if name == "*" or (name.endswith(".*") and (namespace + ".").startswith(name[:-1])):
@@ -64,8 +64,8 @@ def _covers_luma(rule: str) -> bool:
     return False
 
 
-def luma_bus_names(metadata_text: str) -> list[str]:
-    """Luma's own bus names the bundle may talk to, own or see (session or system bus), as
+def Suno_bus_names(metadata_text: str) -> list[str]:
+    """Suno's own bus names the bundle may talk to, own or see (session or system bus), as
     its metadata spells them; an unreadable metadata is refused as a whole."""
     try:
         metadata = words.read_metadata(metadata_text or "")
@@ -76,7 +76,7 @@ def luma_bus_names(metadata_text: str) -> list[str]:
         if section not in ("Session Bus Policy", "System Bus Policy"):
             continue
         for rule, value in metadata.items(section):
-            if value.strip().lower() in ("talk", "own", "see") and _covers_luma(rule):
+            if value.strip().lower() in ("talk", "own", "see") and _covers_Suno(rule):
                 found.append(rule)
     return found
 
@@ -88,7 +88,7 @@ def runtime_allowed(runtime: str, policy: dict) -> bool:
     return allowed is not None and branch in allowed
 
 
-def package_checks(facts: dict, upload: dict, submission: dict, policy: dict, luma_ids: set[str]) -> list[dict]:
+def package_checks(facts: dict, upload: dict, submission: dict, policy: dict, Suno_ids: set[str]) -> list[dict]:
     arch = upload.get("arch", "")
     label = f" ({arch})" if arch else ""
     out: list[dict] = []
@@ -122,7 +122,7 @@ def package_checks(facts: dict, upload: dict, submission: dict, policy: dict, lu
             out.append(check(f"identity{label}", False, f"This bundle is for {app_id}, but the listing is for "
                              f"{expected}. Upload the bundle for {expected}."))
         else:
-            problem = reserved(app_id, policy, luma_ids)
+            problem = reserved(app_id, policy, Suno_ids)
             out.append(check(f"identity{label}", problem is None, problem or f"App id {app_id}."))
     # Architecture
     actual = facts.get("arch", "")
@@ -147,12 +147,12 @@ def package_checks(facts: dict, upload: dict, submission: dict, policy: dict, lu
         if not facts.get("desktop_files"):
             out.append(check(f"launcher{label}", False, "Your app has no launcher. Export a .desktop file "
                              f"named {app_id}.desktop."))
-    # Luma's own services (whatever the bundle was built with ends up in its metadata)
+    # Suno's own services (whatever the bundle was built with ends up in its metadata)
     if fmt == "flatpak":
-        names = luma_bus_names(facts.get("metadata", ""))
-        out.append(check(f"luma-services{label}", not names,
-                         f"{LUMA_SERVICES} ({', '.join(names)}). Remove those names from its permissions."
-                         if names else "Uses none of Luma's own services."))
+        names = Suno_bus_names(facts.get("metadata", ""))
+        out.append(check(f"Suno-services{label}", not names,
+                         f"{SUNO_SERVICES} ({', '.join(names)}). Remove those names from its permissions."
+                         if names else "Uses none of Suno's own services."))
     # Kernel modules and the like
     for refusal in facts.get("reach", {}).get("refusals", []):
         out.append(check(f"contents{label}", False, "Your package " + refusal + "."))
@@ -163,7 +163,7 @@ def package_checks(facts: dict, upload: dict, submission: dict, policy: dict, lu
 def malware_check(facts: dict, label: str) -> dict:
     scan = facts.get("scan") or {}
     if not scan.get("ran"):
-        return check(f"malware{label}", False, "The malware scan couldn't run. Luma will look at this; "
+        return check(f"malware{label}", False, "The malware scan couldn't run. Suno will look at this; "
                      "you don't need to do anything.", detail=scan.get("message", ""), internal=True)
     if scan.get("clean"):
         return check(f"malware{label}", True, "No malware found.", detail=scan.get("version", ""))
@@ -255,7 +255,7 @@ def media_checks(media: dict, listing: dict, kind: str) -> list[dict]:
 # A check Depot itself couldn't run (the VM didn't boot, its screen was off, the
 # host had no room). It says nothing about the app: never a finding against it.
 COULDNT_RUN = "couldnt_run"
-INFRA_MESSAGE = "Depot couldn't run this check on its side. Luma runs it again; you don't need to do anything."
+INFRA_MESSAGE = "Depot couldn't run this check on its side. Suno runs it again; you don't need to do anything."
 
 
 def infrastructure(key: str, reason: str, detail: str = "", message: str = INFRA_MESSAGE) -> dict:
@@ -269,7 +269,7 @@ def infrastructure_failures(checks: list[dict]) -> list[dict]:
 def outcome(checks: list[dict]) -> str:
     """passed; needs_changes (a finding the developer fixes); couldnt_run (Depot's
     own checks didn't run: retried, never shown as a finding); or attention (only
-    internal problems: Luma looks at it)."""
+    internal problems: Suno looks at it)."""
     failed = [c for c in checks if not c["ok"]]
     if not failed:
         return "passed"

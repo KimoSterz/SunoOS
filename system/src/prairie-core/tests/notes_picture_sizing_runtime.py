@@ -44,7 +44,7 @@ from prairie_apps import notes as notes_module  # noqa: E402
 from prairie_apps.notes_attachments import store_picture  # noqa: E402
 from prairie_apps.notes_backend import NotesStore, notes_data_directory  # noqa: E402
 
-mock.patch("luma_appkit.widgets._prefers_dark", lambda: Adw.StyleManager.get_default().get_dark()).start()
+mock.patch("Suno_appkit.widgets._prefers_dark", lambda: Adw.StyleManager.get_default().get_dark()).start()
 context = GLib.MainContext.default()
 
 WIDE = (2560, 1440)

@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 # SPDX-License-Identifier: Apache-2.0
-"""Write the Luma remote's descriptor files: luma.flatpakrepo, .flatpakref files, keys.
+"""Write the Suno remote's descriptor files: Suno.flatpakrepo, .flatpakref files, keys.
 
   generate-remote-files.py --repo REPO --site SITE --gpg-key KEY.gpg
                            [--catalog-key depot-catalog.pub] [--base-url URL]
@@ -8,11 +8,11 @@
 Layout written under SITE (everything but the OSTree repository itself, which
 is synced from REPO to <base-url>/repo/):
 
-  luma.flatpakrepo                     the remote, with its signing key inline
+  Suno.flatpakrepo                     the remote, with its signing key inline
   apps/<app-id>.flatpakref             beta branch (only when a beta ref exists)
   apps/<app-id>.beta.flatpakref        beta branch
-  keys/luma-depot.gpg                  OpenPGP public key, binary
-  keys/luma-depot.asc                  OpenPGP public key, armored
+  keys/Suno-depot.gpg                  OpenPGP public key, binary
+  keys/Suno-depot.asc                  OpenPGP public key, armored
   keys/depot-catalog.pub               minisign public key for catalog snapshots
   apps/index.json                      refs, commits, root dirtrees, sizes and computed
                                        permissions: read by Hub and the CDN counter
@@ -32,15 +32,15 @@ import subprocess
 import sys
 from pathlib import Path
 
-REMOTE_TITLE = "Luma"
-REMOTE_COMMENT = "Apps made for Luma, for every Linux desktop"
+REMOTE_TITLE = "Suno"
+REMOTE_COMMENT = "Apps made for Suno, for every Linux desktop"
 REMOTE_DESCRIPTION = (
-    "The Luma remote carries Project Luma's own apps, apps from verified Luma "
-    "developers, and the Luma Platform runtime they run on. Every commit and "
-    "the summary are signed with the Luma Depot key."
+    "The Suno remote carries Project Suno's own apps, apps from verified Suno "
+    "developers, and the Suno Platform runtime they run on. Every commit and "
+    "the summary are signed with the Suno Depot key."
 )
 HOMEPAGE = "https://simplyluma.com/apps"
-REMOTE_NAME = "luma"
+REMOTE_NAME = "Suno"
 
 
 def ostree(repo: Path, *args: str) -> str:
@@ -102,7 +102,7 @@ def flatpakrepo(key_b64: str, base_url: str) -> str:
         f"Homepage={HOMEPAGE}",
         f"Comment={REMOTE_COMMENT}",
         f"Description={REMOTE_DESCRIPTION}",
-        f"Icon={base_url}/media/luma-remote.svg",
+        f"Icon={base_url}/media/Suno-remote.svg",
         "DefaultBranch=beta",
         f"GPGKey={key_b64}",
     ]
@@ -216,13 +216,13 @@ def main() -> int:
     (site / "media").mkdir(parents=True, exist_ok=True)
 
     (site / f"{REMOTE_NAME}.flatpakrepo").write_text(flatpakrepo(key_b64, base_url))
-    shutil.copyfile(args.gpg_key, site / "keys/luma-depot.gpg")
+    shutil.copyfile(args.gpg_key, site / "keys/Suno-depot.gpg")
     if args.gpg_key_armored:
-        shutil.copyfile(args.gpg_key_armored, site / "keys/luma-depot.asc")
+        shutil.copyfile(args.gpg_key_armored, site / "keys/Suno-depot.asc")
     if args.catalog_key:
         shutil.copyfile(args.catalog_key, site / "keys/depot-catalog.pub")
     if args.remote_icon:
-        shutil.copyfile(args.remote_icon, site / "media/luma-remote.svg")
+        shutil.copyfile(args.remote_icon, site / "media/Suno-remote.svg")
 
     index = {"remote": f"{base_url}/repo/", "apps": []}
     wanted = set()

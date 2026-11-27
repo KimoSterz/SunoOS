@@ -8,7 +8,7 @@ Assisted-by: Claude:claude-opus-4-6
  1 file changed, 12 deletions(-)
 
 
-Luma rebase onto Linux 7.3: context adjusted; original provenance above.
+Suno rebase onto Linux 7.3: context adjusted; original provenance above.
 
 --- a/include/linux/device.h
 +++ b/include/linux/device.h

@@ -26,7 +26,7 @@ function paint(actor) {
     const node = actor.get_theme_node();
     const out = {};
     const bg = node.get_background_color();
-    if (bg.alpha > 0 && !actor.has_style_class_name('luma-shelf-material'))
+    if (bg.alpha > 0 && !actor.has_style_class_name('Suno-shelf-material'))
         out.background = bg.to_string();
     const shadow = node.get_box_shadow();
     if (shadow)

@@ -91,7 +91,7 @@ class ReadOnlySource(ContactsSource):
 
 class Application(Adw.Application):
     def __init__(self) -> None:
-        super().__init__(application_id="org.projectluma.Test.ContactsV71")
+        super().__init__(application_id="org.projectSuno.Test.ContactsV71")
 
 
 APP = Application()
@@ -187,7 +187,7 @@ class ComputerTests(WindowTests):
         self.assertIsNotNone(find(window._panel, "ct-code"))
         window._close_panel()
         window._show_me(edit=True)
-        window._fields["work"].entry.set_text("Luma · CEO")
+        window._fields["work"].entry.set_text("Suno · CEO")
         window._finish_edit()
         pump(0.05)
         self.assertEqual(self.source.me().role, "CEO")

@@ -35,9 +35,9 @@ class PairAdmission(unittest.TestCase):
         self.root = Path(self.tmp.name)
         self.output = self.root / 'output'; self.output.mkdir()
         self.arch='x86_64'
-        self.values = {'LUMA_ANDROID_IMAGE_ORIGIN':'luma-native-builder',
-                      'LUMA_ANDROID_SOURCE_MANIFEST_SHA256':'a'*64,
-                      'LUMA_ANDROID_COMPILER_INVOCATION_ID':'b'*32}
+        self.values = {'SUNO_ANDROID_IMAGE_ORIGIN':'Suno-native-builder',
+                      'SUNO_ANDROID_SOURCE_MANIFEST_SHA256':'a'*64,
+                      'SUNO_ANDROID_COMPILER_INVOCATION_ID':'b'*32}
         self.archives = []
         for kind in ('SYSTEM', 'VENDOR'):
             archive = self.root / ('waydroid_x86_64-' + kind.lower() + '.zip')
@@ -45,7 +45,7 @@ class PairAdmission(unittest.TestCase):
             with zipfile.ZipFile(archive, 'w') as z:
                 z.writestr(kind.lower()+'.img', raw)
             self.archives.append(archive)
-            prefix = 'LUMA_ANDROID_' + kind + '_'
+            prefix = 'SUNO_ANDROID_' + kind + '_'
             self.values.update({prefix+'FILENAME':archive.name, prefix+'URL':'private-fixture',
                 prefix+'SHA256':package.digest(archive), prefix+'SIZE':str(archive.stat().st_size),
                 prefix+'IMAGE_SHA256':__import__('hashlib').sha256(raw).hexdigest(),
@@ -58,7 +58,7 @@ class PairAdmission(unittest.TestCase):
 
     def evidence(self):
         self.prepare()
-        manifest = json.loads((self.output/'luma-images.json').read_text())
+        manifest = json.loads((self.output/'Suno-images.json').read_text())
         self.materials = self.root/'materials.tar.gz'; self.materials.write_bytes(b'synthetic-source')
         self.font = self.root/'OFL.txt'; self.font.write_text('synthetic-license')
         self.notices = []
@@ -93,7 +93,7 @@ class PairAdmission(unittest.TestCase):
         for i,archive in enumerate(self.archives):
             target=archive.with_name(archive.name.replace('waydroid_x86_64','waydroid_arm64_only'))
             archive.rename(target);self.archives[i]=target
-            self.values['LUMA_ANDROID_'+('SYSTEM','VENDOR')[i]+'_FILENAME']=target.name
+            self.values['SUNO_ANDROID_'+('SYSTEM','VENDOR')[i]+'_FILENAME']=target.name
         self.write_pin();self.evidence();self.verify();package.verify(self.output,'aarch64')
         self.producer['architecture']='x86_64';self.save_producer()
         self.members['terminal_pair_receipt_sha256']=provenance.sha(self.producer_path);self.save_members()
@@ -101,19 +101,19 @@ class PairAdmission(unittest.TestCase):
             self.verify()
 
     def test_official_reference_backwards_compatible(self):
-        del self.values['LUMA_ANDROID_IMAGE_ORIGIN']; self.write_pin(); self.prepare()
-        self.assertNotIn('origin',json.loads((self.output/'luma-images.json').read_text()))
+        del self.values['SUNO_ANDROID_IMAGE_ORIGIN']; self.write_pin(); self.prepare()
+        self.assertNotIn('origin',json.loads((self.output/'Suno-images.json').read_text()))
         package.verify(self.output,'x86_64')
 
     def test_swapped_archives_and_raw_hash_refused(self):
         self.archives.reverse()
         with self.assertRaises(ValueError): self.prepare()
         self.archives.reverse()
-        self.values['LUMA_ANDROID_SYSTEM_IMAGE_SHA256']='c'*64; self.write_pin()
+        self.values['SUNO_ANDROID_SYSTEM_IMAGE_SHA256']='c'*64; self.write_pin()
         with self.assertRaises(ValueError): self.prepare()
 
     def test_missing_native_producer_identity_refused(self):
-        self.values['LUMA_ANDROID_COMPILER_INVOCATION_ID']=''; self.write_pin()
+        self.values['SUNO_ANDROID_COMPILER_INVOCATION_ID']=''; self.write_pin()
         with self.assertRaises(ValueError): self.prepare()
 
     def test_positive_correspondence_and_failed_terminal_refused(self):

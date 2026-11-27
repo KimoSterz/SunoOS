@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 # SPDX-License-Identifier: Apache-2.0
-"""A TV app's side of org.projectluma.Shell.Remote1: optionally a window (with
+"""A TV app's side of org.projectSuno.Shell.Remote1: optionally a window (with
 an application ID when given), then the calls, each answer printed as one JSON
 line ("show#0", "claim#1", ...); "sleepN" waits N ms. Stays until killed."""
 import json
@@ -19,8 +19,8 @@ bus = Gio.bus_get_sync(Gio.BusType.SESSION, None)
 
 def call(method, parameters=None):
     try:
-        bus.call_sync("org.projectluma.Shell.Remote", "/org/projectluma/Shell/Remote",
-                      "org.projectluma.Shell.Remote1", method, parameters, None,
+        bus.call_sync("org.projectSuno.Shell.Remote", "/org/projectSuno/Shell/Remote",
+                      "org.projectSuno.Shell.Remote1", method, parameters, None,
                       Gio.DBusCallFlags.NO_AUTO_START, 5000, None)
         return "ok"
     except GLib.Error as error:

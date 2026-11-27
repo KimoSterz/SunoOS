@@ -121,9 +121,9 @@ scripts_config=$work_dir/scripts/config
   --enable INPUT_FINGERPRINT \
   --module FINGER_FOCAL
 
-mkdir -p "$work_dir/luma-evidence"
+mkdir -p "$work_dir/Suno-evidence"
 cp "$repo_root/config/mobile/fp6-fingerprint/milos-fairphone-fp6-fingerprint.dtso" \
-  "$work_dir/luma-evidence/"
+  "$work_dir/Suno-evidence/"
 {
   printf 'FP6_FINGERPRINT_KERNEL_VERSION=%s\n' "$FP6_FINGERPRINT_KERNEL_VERSION"
   printf 'FP6_FINGERPRINT_KERNEL_ARCHIVE_SHA256=%s\n' "$actual_archive_sha"
@@ -135,7 +135,7 @@ cp "$repo_root/config/mobile/fp6-fingerprint/milos-fairphone-fp6-fingerprint.dts
   printf 'FP6_FINGERPRINT_DRIVER_PATCHSET_SHA256=%s\n' "$driver_patchset_sha"
   printf 'FP6_FINGERPRINT_SENSOR_NODE_ENABLED=false\n'
   printf 'FP6_FINGERPRINT_PROPRIETARY_PAYLOADS_INCLUDED=false\n'
-} >"$work_dir/luma-evidence/source-manifest.env"
+} >"$work_dir/Suno-evidence/source-manifest.env"
 
 mv "$work_dir" "$output_dir"
 trap - EXIT INT TERM

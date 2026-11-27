@@ -81,7 +81,7 @@ transfer_bytes() {
 
 # origin_space_check: refuse the upload unless the origin's file system has
 # room for it plus DL_ORIGIN_RESERVE_GIB. The origin's root timer writes
-# "<available bytes> <size bytes> <unix time>" to .luma-origin/space in the web
+# "<available bytes> <size bytes> <unix time>" to .Suno-origin/space in the web
 # root every minute (config/os/origin/); the upload key itself cannot run df.
 # A budget alone (DL_MAX_GIB) does not see what else shares the disk: on
 # 2026-11-26 the budget said 18 of 25 GiB while the disk had 7 MiB left.
@@ -112,8 +112,8 @@ origin_space_check() {
     esac
   done
   rm -f "$work/space"
-  "${fetch[@]}" "$DL_RSYNC_DEST:.luma-origin/space" "$work/space" >/dev/null 2>&1 ||
-    { log "upload refused: the origin reports no free space (.luma-origin/space; install config/os/origin/)"; exit 4; }
+  "${fetch[@]}" "$DL_RSYNC_DEST:.Suno-origin/space" "$work/space" >/dev/null 2>&1 ||
+    { log "upload refused: the origin reports no free space (.Suno-origin/space; install config/os/origin/)"; exit 4; }
   read -r avail size stamp <"$work/space" || true
   [[ "$avail" =~ ^[0-9]+$ && "$size" =~ ^[0-9]+$ && "$stamp" =~ ^[0-9]+$ ]] ||
     { log 'upload refused: unreadable origin space report'; exit 4; }

@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-// The LumaUI app-icon plate (0389; 0398: the dock follows group transforms): a v4 icon's 860/1024 plate is found and
+// The SunoUI app-icon plate (0389; 0398: the dock follows group transforms): a v4 icon's 860/1024 plate is found and
 // scaled to fill its tile, an icon already cropped to its plate is drawn as
 // it is, and a legacy, raster or unreadable icon has no plate (the Shell
 // draws one behind it). Detection is read once per file and modification time.
-// Run: gjs -m app-icon-plate.js js/ui/lumaAppIconPlate.js
+// Run: gjs -m app-icon-plate.js js/ui/SunoAppIconPlate.js
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 
@@ -52,7 +52,7 @@ assert(platedIconSize(40, 1024 / 963.2) === 44, '40 px dock tile at r42: 44');
 for (const size of [16, 30, 32, 34, 48])
     assert(platedIconSize(size, 1024 / 860) * 860 / 1024 >= size, `the plate covers ${size}`);
 
-const dir = GLib.dir_make_tmp('luma-plate-XXXXXX');
+const dir = GLib.dir_make_tmp('Suno-plate-XXXXXX');
 const write = (name, bytes) => {
     const path = GLib.build_filenamev([dir, name]);
     GLib.file_set_contents(path, bytes);

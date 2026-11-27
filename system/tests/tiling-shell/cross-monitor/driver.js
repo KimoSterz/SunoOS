@@ -12,14 +12,14 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
 const UUID = 'tilingshell@ferrarodomenico.com';
 const env = (k, d) => GLib.getenv(k) ?? d;
-const out = env('LUMA_XM_OUT', '/tmp');
-const wantMainScale = Number(env('LUMA_XM_MAIN_SCALE', '1'));
-const wantSideScale = Number(env('LUMA_XM_SIDE_SCALE', '1'));
-const sideLayoutName = env('LUMA_XM_SIDE_LAYOUT', 'rows');
-const trace = env('LUMA_XM_TRACE', '0') === '1';
-const fast = env('LUMA_XM_FAST', '0') === '1';
-const reconfig = env('LUMA_XM_RECONFIG', '0') === '1';
-const wsIndex = Number(env('LUMA_XM_WS', '0'));
+const out = env('SUNO_XM_OUT', '/tmp');
+const wantMainScale = Number(env('SUNO_XM_MAIN_SCALE', '1'));
+const wantSideScale = Number(env('SUNO_XM_SIDE_SCALE', '1'));
+const sideLayoutName = env('SUNO_XM_SIDE_LAYOUT', 'rows');
+const trace = env('SUNO_XM_TRACE', '0') === '1';
+const fast = env('SUNO_XM_FAST', '0') === '1';
+const reconfig = env('SUNO_XM_RECONFIG', '0') === '1';
+const wsIndex = Number(env('SUNO_XM_WS', '0'));
 const results = [];
 const shots = [];
 const r4 = r => r ? { x: r.x, y: r.y, width: r.width, height: r.height } : null;
@@ -136,7 +136,7 @@ function assertState(label, p, monitor, tiles, anchor = null) {
   }
   // The selection is the cell of the zone under the pointer, with the inner
   // gap on every side that meets another zone and rounded corners there.
-  const cell = r4(manager._lumaInCells(under.rect));
+  const cell = r4(manager._SunoInCells(under.rect));
   ok &= check(`${label}: selection is that zone's cell`, sel.showing && same(r4(sel.rect), cell, 1),
     JSON.stringify({ selection: r4(sel.rect), cell }));
   const g = sel.gaps, inner = tl.innerGaps;
@@ -250,7 +250,7 @@ async function drag(name, start, path) {
   const manager = managerOf(monitor);
   const zones = expectedTiles(manager, tiles), pointed = zones.find(w => inside({ x, y }, w.rect));
   const region = anchor ? wholeZones(zones, pointed.rect, zones.find(w => inside(anchor, w.rect)).rect).rect : pointed.rect;
-  const want = r4(manager._lumaWindowRect(manager._lumaCellTile(TileUtils.apply_props({ x: 0, y: 0, width: 1, height: 1 }, region))));
+  const want = r4(manager._SunoWindowRect(manager._SunoCellTile(TileUtils.apply_props({ x: 0, y: 0, width: 1, height: 1 }, region))));
   const got = r4(window.get_frame_rect());
   check(`${name}: drop fills the zone under the pointer on monitor ${monitor.index}`,
     window.get_monitor() === monitor.index && !!window.assignedTile && same(got, want, 2), JSON.stringify({ got, want, monitor: window.get_monitor() }));
@@ -287,7 +287,7 @@ async function work() {
     [0, 0, mainMode.scale, 0, true, [[outs[0].connector, mainMode.id, {}]]],
     [mainW, 0, sideMode.scale, 0, false, [[outs[1].connector, sideMode.id, {}]]],
   ];
-  if (env('LUMA_XM_SIDE_FIRST', '0') === '1') logical.reverse();
+  if (env('SUNO_XM_SIDE_FIRST', '0') === '1') logical.reverse();
   await call('ApplyMonitorsConfig', new GLib.Variant('(uua(iiduba(ssa{sv}))a{sv})', [serial, 1, logical,
     { 'layout-mode': new GLib.Variant('u', 1) }]));
   await pause(2000);
@@ -324,19 +324,19 @@ async function work() {
   settings.set_boolean('show-layout-while-dragging', true);
   settings.set_boolean('enable-span-multiple-tiles', true);
   settings.set_boolean('enable-autotiling', false);
-  if (env('LUMA_XM_SPAN_KEY', '')) settings.set_strv('span-multiple-tiles-activation-key', [env('LUMA_XM_SPAN_KEY', '')]);
+  if (env('SUNO_XM_SPAN_KEY', '')) settings.set_strv('span-multiple-tiles-activation-key', [env('SUNO_XM_SPAN_KEY', '')]);
   let layouts, selected;
   if (sideLayoutName === 'reported') {
     // The reporting setup's own data: three entries per workspace for a
     // laptop that is closed, two workspaces listed for four, the ultrawide
     // second, the other monitor first with top and bottom halves.
-    layouts = [{ id: 'Luma Split', tiles: LAYOUTS.split }, { id: 'Layout 1', tiles: LAYOUTS.rails22 },
+    layouts = [{ id: 'Suno Split', tiles: LAYOUTS.split }, { id: 'Layout 1', tiles: LAYOUTS.rails22 },
       { id: 'Layout 2', tiles: LAYOUTS.thirds }, { id: '1791833165864', tiles: LAYOUTS.full },
       { id: '1791854190171', tiles: LAYOUTS.halves }];
     const row = [];
     row[sideMon.index] = '1791854190171'; row[mainMon.index] = 'Layout 1'; row[2] = '1791833165864';
     const row1 = [];
-    row1[sideMon.index] = 'Luma Split'; row1[mainMon.index] = 'Layout 1'; row1[2] = 'Luma Split';
+    row1[sideMon.index] = 'Suno Split'; row1[mainMon.index] = 'Layout 1'; row1[2] = 'Suno Split';
     selected = [row, row1];
   } else {
     layouts = [{ id: 'xm-rails', tiles: LAYOUTS.rails }];
@@ -368,7 +368,7 @@ async function work() {
   const sideLayout = lookup(sideMon);
   print(`XM layouts main ${JSON.stringify(lookup(mainMon))} side ${JSON.stringify(sideLayout)}`);
 
-  const child = Gio.Subprocess.new(['python3', env('LUMA_XM_APP', ''), 'org.projectluma.CrossMonitorProbe'], Gio.SubprocessFlags.NONE);
+  const child = Gio.Subprocess.new(['python3', env('SUNO_XM_APP', ''), 'org.projectSuno.CrossMonitorProbe'], Gio.SubprocessFlags.NONE);
   try {
     for (let i = 0; i < 80 && !window; i++) {
       window = global.get_window_actors().find(a => a.mapped && a.meta_window.get_title() === 'Shelf test')?.meta_window;
@@ -420,8 +420,8 @@ async function work() {
       pt(zs(0, .5, .5), s, sideLayout, 'side', { alt: 'press' }), pt(zm(4, .5, .5), m, R, 'bottom-right'),
       pt(zm(1, .5, .5), m, R, 'bottom-row')]);
     // A finished drag leaves nothing connected to the stage behind.
-    check('drags release their stage handlers', ext._tilingManagers.every(m => !m._lumaDragSignals),
-      JSON.stringify(ext._tilingManagers.map(m => !!m._lumaDragSignals)));
+    check('drags release their stage handlers', ext._tilingManagers.every(m => !m._SunoDragSignals),
+      JSON.stringify(ext._tilingManagers.map(m => !!m._SunoDragSignals)));
   } finally {
     child.force_exit();
   }

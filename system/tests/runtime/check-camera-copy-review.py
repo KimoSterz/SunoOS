@@ -16,13 +16,13 @@ from prairie_apps.camera_backend import CameraDevice
 from prairie_apps.camera_state import SessionShot
 
 runtime = Path(os.environ['XDG_RUNTIME_DIR'])
-assert str(runtime).startswith('/tmp/lumaui-camera-test.')
+assert str(runtime).startswith('/tmp/SunoUI-camera-test.')
 for kind in ('DATA', 'CONFIG', 'STATE', 'CACHE'):
     assert Path(os.environ[f'XDG_{kind}_HOME']).is_relative_to(runtime)
 assert os.environ['GSETTINGS_BACKEND'] == 'memory'
 assert os.environ['GDK_BACKEND'] == 'x11'
 assert os.environ['DBUS_SESSION_BUS_ADDRESS'].split(',')[0] == f'unix:path={runtime}/bus'
-assert not os.environ.get('LUMA_CAMERA_FIXTURE')
+assert not os.environ.get('SUNO_CAMERA_FIXTURE')
 os.environ['XDG_PICTURES_DIR'] = str(runtime / 'Pictures')
 root = Path(os.environ['XDG_PICTURES_DIR'])
 root.mkdir()
@@ -44,7 +44,7 @@ library.set_metadata(record.id, caption='retain native caption')
 Gtk.init()
 Adw.init()
 app = camera.CameraApplication()
-app.set_application_id('org.projectluma.Camera.CopyReviewCheck')
+app.set_application_id('org.projectSuno.Camera.CopyReviewCheck')
 assert app.register(None) and not app.get_is_remote()
 device = CameraDevice('synthetic', 'Test', 'external', desktop_uvc=True)
 context = GLib.MainContext.default()

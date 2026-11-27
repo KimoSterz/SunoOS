@@ -33,16 +33,16 @@ class PhotosLaunchTests(unittest.TestCase):
         self.window = Window(Path('/tmp/camera-launch-test.jpg'))
         self.application = SimpleNamespace(props=SimpleNamespace(active_window=self.window))
         self.launch = actual_handler('_on_open_photos', self.application)
-        self.owner_patch = patch('luma_appkit.application_directory.launch')
+        self.owner_patch = patch('Suno_appkit.application_directory.launch')
         self.owner = self.owner_patch.start()
         self.addCleanup(self.owner_patch.stop)
-        self.environment_patch = patch.dict('os.environ', {'LUMA_CAMERA_PRIVATE_PREVIEW': '0'})
+        self.environment_patch = patch.dict('os.environ', {'SUNO_CAMERA_PRIVATE_PREVIEW': '0'})
         self.environment_patch.start(); self.addCleanup(self.environment_patch.stop)
     def request(self):
         self.launch(None, None)
         self.owner.assert_called_once()
         args = self.owner.call_args.args
-        self.assertEqual(args[0], 'org.projectluma.Photos.desktop')
+        self.assertEqual(args[0], 'org.projectSuno.Photos.desktop')
         return args[1], self.owner.call_args.kwargs['callback']
     def test_missing_desktop_app_reports_failure(self):
         _, finish = self.request(); finish(False, 'Photos is unavailable.')
@@ -81,9 +81,9 @@ class DarkroomLaunchTests(unittest.TestCase):
         window = Window(Path('/tmp/camera-launch-test.jpg'))
         application = SimpleNamespace(props=SimpleNamespace(active_window=window))
         method = actual_handler('_on_darkroom', application, {'Adw': SimpleNamespace(AlertDialog=Dialog)})
-        with patch.dict('os.environ', {'LUMA_CAMERA_PRIVATE_PREVIEW': '0'}), patch('luma_appkit.application_directory.launch') as owner:
+        with patch.dict('os.environ', {'SUNO_CAMERA_PRIVATE_PREVIEW': '0'}), patch('Suno_appkit.application_directory.launch') as owner:
             method(None, None)
-            self.assertEqual(owner.call_args.args[0], 'org.projectluma.Darkroom.desktop')
+            self.assertEqual(owner.call_args.args[0], 'org.projectSuno.Darkroom.desktop')
             self.assertEqual([f.get_uri() for f in owner.call_args.args[1]], [window._last_capture_path.as_uri()])
             self.assertEqual(dialogs, [], 'No error before the asynchronous owner replies')
             owner.call_args.kwargs['callback'](False, 'The launcher refused the request')

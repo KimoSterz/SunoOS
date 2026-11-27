@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 // The overlay status cell, its popover and the offer (0381,
-// lumaLayerShellIndicatorModel.js): which apps the cell shows and "+N" past
+// SunoLayerShellIndicatorModel.js): which apps the cell shows and "+N" past
 // two, the tooltip, the popover's "what · how long", the 2 s grace, the
 // offer's sentences and that neither answer is a default (on TV the focus
 // starts on Not now), and one name tag per app on its largest surface.
-// Run: gjs -m layer-shell-indicator-policy.js js/ui/lumaLayerShellIndicatorModel.js
+// Run: gjs -m layer-shell-indicator-policy.js js/ui/SunoLayerShellIndicatorModel.js
 const gjs = typeof globalThis.ARGV !== 'undefined';
 const args = gjs ? globalThis.ARGV : process.argv.slice(2);
 const print = gjs ? globalThis.print : console.log;

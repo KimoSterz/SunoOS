@@ -107,7 +107,7 @@ tokay_dtb_sha=$(sed -n 's/^TOKAY_DTB_SHA256=//p' "$proof_manifest")
 initramfs_sha=$(sed -n 's/^INITRAMFS_SHA256=//p' "$proof_manifest")
 initramfs_kernel_compression=$(sed -n 's/^INITRAMFS_KERNEL_COMPRESSION=//p' "$proof_manifest")
 embedded_initramfs_sha=$(sed -n 's/^EMBEDDED_INITRAMFS_SHA256=//p' "$proof_manifest")
-grep -Fqx 'LUMA_PIXEL9_DIRECT_KERNEL_PROOF_VERSION=1' "$proof_manifest" ||
+grep -Fqx 'SUNO_PIXEL9_DIRECT_KERNEL_PROOF_VERSION=1' "$proof_manifest" ||
   die 'direct-kernel manifest version differs'
 [ -n "$diagnostic_variant" ] || die 'direct-kernel diagnostic variant is absent'
 [ -n "$report_transports" ] || die 'direct-kernel report transports are absent'
@@ -217,7 +217,7 @@ cmp -s "$empty_ramdisk" "$roundtrip/ramdisk" ||
   die 'kernel-only wrapper exceeds the stock boot image size'
 
 {
-  printf 'LUMA_PIXEL9_DIRECT_KERNEL_WRAPPER_VERSION=1\n'
+  printf 'SUNO_PIXEL9_DIRECT_KERNEL_WRAPPER_VERSION=1\n'
   printf 'SCOPE=offline-v4-kernel-only-direct-kernel-wrapper\n'
   printf 'DIAGNOSTIC_VARIANT=%s\n' "$diagnostic_variant"
   printf 'REPORT_TRANSPORTS=%s\n' "$report_transports"

@@ -2,7 +2,7 @@ v4l2_subdev_state_get_format should also be called when fmt->which != V4L2_SUBDE
 Rewrite to return early when fmt->which == V4L2_SUBDEV_FORMAT_TRY
 
 
-Luma rebase onto Linux 7.3: context adjusted; original provenance above.
+Suno rebase onto Linux 7.3: context adjusted; original provenance above.
 
 --- a/drivers/media/i2c/ov13858.c
 +++ b/drivers/media/i2c/ov13858.c

@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: Apache-2.0
-"""LUMA_PHOTOS_FIXTURE=<json>: isolated, in-memory Photos sample data.
+"""SUNO_PHOTOS_FIXTURE=<json>: isolated, in-memory Photos sample data.
 
 Only the named JSON is read. Image paths resolve against
-LUMA_PHOTOS_FIXTURE_ASSETS (Studio's root), or the JSON's parent. This class
+SUNO_PHOTOS_FIXTURE_ASSETS (Studio's root), or the JSON's parent. This class
 never instantiates PhotoLibrary, creates caches, scans folders, writes files,
 or opens another app's store. Changes last only for this process.
 """
@@ -25,7 +25,7 @@ class FixtureSource:
     def __init__(self, path: Path, *, assets: Path | None = None) -> None:
         self.path = Path(path)
         self.document = json.loads(self.path.read_text(encoding='utf-8'))
-        root = Path(assets or os.environ.get('LUMA_PHOTOS_FIXTURE_ASSETS') or self.path.parent)
+        root = Path(assets or os.environ.get('SUNO_PHOTOS_FIXTURE_ASSETS') or self.path.parent)
         self.asset_root = root.resolve()
         self.now = datetime.fromisoformat(self.document['now'])
         self._records = {}

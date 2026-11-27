@@ -9,7 +9,7 @@ set -euo pipefail
 root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 out="$root/build/browser-runtime-evidence"
 mkdir -p "$out"
-profile="luma-browser-ci-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+profile="Suno-browser-ci-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
 profile_file=$(mktemp)
 seccomp_file="$out/outer-seccomp-policy.json"
 container=

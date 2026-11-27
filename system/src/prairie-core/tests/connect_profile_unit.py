@@ -3,7 +3,7 @@
 """The account profile commands against a stub hub and a disposable XDG home.
 
 No network: the hub is an object that records what it was asked and answers
-the way the Luma Hub does, including its refusals. The device token must never
+the way the Suno Hub does, including its refusals. The device token must never
 appear in anything printed, and nothing may ever call a typed address or
 number verified.
 """
@@ -16,7 +16,7 @@ import sys
 import tempfile
 from urllib.error import HTTPError
 
-with tempfile.TemporaryDirectory(prefix="luma-connect-profile-test-") as directory:
+with tempfile.TemporaryDirectory(prefix="Suno-connect-profile-test-") as directory:
     root = Path(directory)
     os.environ["XDG_DATA_HOME"] = str(root / "data")
     os.environ["HOME"] = str(root / "home")
@@ -91,23 +91,23 @@ with tempfile.TemporaryDirectory(prefix="luma-connect-profile-test-") as directo
     assert "Email: nick@example.com (verified by GitHub)" in lines, lines
     assert "Phone number: (none)" in lines and "Findable by phone number: off" in lines, lines
     assert lines[-1] == "Sign-in: GitHub; change your password at https://github.com/settings/security", lines
-    typed = profile_lines(hub_profile(name="Nick", name_source="profile", email="n@luma.example", email_source="profile",
+    typed = profile_lines(hub_profile(name="Nick", name_source="profile", email="n@Suno.example", email_source="profile",
                                       email_verified=False, email_verified_by=None, phone="+14155550199",
                                       discoverable_by_phone=True, phone_lookup="waiting_for_verification"))
     assert typed[0] == "Name: Nick", typed
-    assert "Email: n@luma.example (not verified)" in typed, typed
+    assert "Email: n@Suno.example (not verified)" in typed, typed
     assert "Phone number: +1 415-555-0199 (not verified)" in typed, typed
     assert "Findable by phone number: on, once the number is verified" in typed, typed
     assert not any("verified by" in line for line in typed[1:3]), "a typed address must never read as verified"
-    local = profile_lines(hub_profile(sign_in={"provider": "luma-connect", "name": "Luma Connect", "manage_url": None}))
-    assert local[-1] == "Sign-in: Luma Connect", local
+    local = profile_lines(hub_profile(sign_in={"provider": "Suno-connect", "name": "Suno Connect", "manage_url": None}))
+    assert local[-1] == "Sign-in: Suno Connect", local
 
     # --- which fields a `profile set` asks for ---------------------------------
     assert profile_changes(name="Nick") == {"name": "Nick"}
     assert profile_changes(reset_name=True, remove_phone=True, reset_email=True) == {"name": None, "phone": None, "email": None}
     assert profile_changes(phone="+1 415 555 0199", discoverable="on") == {"phone": "+1 415 555 0199", "discoverable_by_phone": True}
     assert profile_changes(discoverable="off") == {"discoverable_by_phone": False}
-    assert profile_changes(stdin_text='{"email": "n@luma.example", "phone": null}') == {"email": "n@luma.example", "phone": None}
+    assert profile_changes(stdin_text='{"email": "n@Suno.example", "phone": null}') == {"email": "n@Suno.example", "phone": None}
     for arguments, words in (
         ({}, "Nothing to change"),
         ({"name": "A", "reset_name": True}, "not both"),
@@ -207,20 +207,20 @@ with tempfile.TemporaryDirectory(prefix="luma-connect-profile-test-") as directo
 
         # The Connect app sends personal details this way so they never sit in argv.
         output, real_stdin = io.StringIO(), sys.stdin
-        sys.stdin = io.StringIO('{"email": "n@luma.example"}')
+        sys.stdin = io.StringIO('{"email": "n@Suno.example"}')
         try:
             with contextlib.redirect_stdout(output):
                 assert main(["profile", "set", "--stdin", "--json"]) == 0
         finally:
             sys.stdin = real_stdin
         saved = json.loads(output.getvalue())
-        assert saved["email"] == "n@luma.example" and saved["email_verified"] is False
-        assert hub.calls[-1][2] == {"email": "n@luma.example"}
+        assert saved["email"] == "n@Suno.example" and saved["email_verified"] is False
+        assert hub.calls[-1][2] == {"email": "n@Suno.example"}
 
         errors = io.StringIO()
         with contextlib.redirect_stderr(errors), contextlib.redirect_stdout(io.StringIO()):
             assert main(["profile", "set", "--phone", "555-0199"]) == connect_sync.EXIT_RETRY
-        assert errors.getvalue().strip() == "luma-connect-sync: Enter a phone number with its country code, like +1 555 010 0199.", errors.getvalue()
+        assert errors.getvalue().strip() == "Suno-connect-sync: Enter a phone number with its country code, like +1 555 010 0199.", errors.getvalue()
 
         errors = io.StringIO()
         with contextlib.redirect_stderr(errors), contextlib.redirect_stdout(io.StringIO()):

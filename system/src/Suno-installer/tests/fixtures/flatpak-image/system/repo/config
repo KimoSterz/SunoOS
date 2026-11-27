@@ -1,0 +1,27 @@
+[core]
+repo_version=1
+mode=bare-user-only
+min-free-space-size=500MB
+xa.applied-remotes=Suno;flathub;
+xa.pinned=runtime/org.projectSuno.Platform.GL.default/x86_64/44;runtime/org.projectSuno.Platform.Locale/x86_64/44;runtime/org.projectSuno.Platform/x86_64/44
+
+[remote "flathub"]
+url=https://dl.flathub.org/repo/
+xa.title=Flathub
+gpg-verify=true
+gpg-verify-summary=true
+xa.comment=Central repository of Flatpak applications
+xa.description=Central repository of Flatpak applications
+xa.icon=https://dl.flathub.org/repo/logo.svg
+xa.homepage=https://flathub.org/
+
+[remote "Suno"]
+url=https://dl.simplyluma.com/repo/
+xa.title=Suno
+xa.default-branch=beta
+gpg-verify=true
+gpg-verify-summary=true
+xa.comment=Apps made for Suno, for every Linux desktop
+xa.description=The Suno remote carries Project Suno's own apps, apps from verified Suno developers, and the Suno Platform runtime they run on. Every commit and the summary are signed with the Suno Depot key.
+xa.icon=https://dl.simplyluma.com/media/luma-remote.svg
+xa.homepage=https://simplyluma.com/apps

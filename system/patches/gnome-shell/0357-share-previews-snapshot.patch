@@ -1,5 +1,5 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Project Luma <engineering@projectluma.org>
+From: Project Suno <engineering@projectSuno.org>
 Date: Fri, 20 Nov 2026 22:00:00 -0600
 Subject: [PATCH] Share: previews redraw once a second; the scrim keeps its blur
 
@@ -13,9 +13,9 @@ scrim under the card copied and blurred the whole desktop again each time.
   the card (shell_blur_effect_hold_backgrounds) while it is open; blurred
   surfaces under the modal keep the blur they had when it opened.
 ---
-diff --git a/js/ui/lumaShare.js b/js/ui/lumaShare.js
---- a/js/ui/lumaShare.js
-+++ b/js/ui/lumaShare.js
+diff --git a/js/ui/SunoShare.js b/js/ui/SunoShare.js
+--- a/js/ui/SunoShare.js
++++ b/js/ui/SunoShare.js
 @@ -167,6 +167,58 @@
  
  // ── One preview tile ───────────────────────────────────────────────────────
@@ -77,12 +77,12 @@ diff --git a/js/ui/lumaShare.js b/js/ui/lumaShare.js
  }, class PreviewTile extends St.Button {
 @@ -203,6 +255,7 @@
              : new ScreenPreview(source.monitor);
-         this._content.add_style_class_name('luma-share-preview');
+         this._content.add_style_class_name('Suno-share-preview');
          this._frame.add_child(this._content);
-+        this._content.add_effect_with_name('luma-share-snapshot', new SnapshotEffect());
++        this._content.add_effect_with_name('Suno-share-snapshot', new SnapshotEffect());
  
          this._check = new St.Bin({
-             style_class: 'luma-share-check',
+             style_class: 'Suno-share-check',
 @@ -968,6 +1021,11 @@
              this._answer(PORTAL_CANCELLED, {});
              return;

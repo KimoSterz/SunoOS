@@ -39,7 +39,7 @@ applications and casting unavailable. Their engine/provider RPMs are excluded;
 Relay, the application installer, APK metadata support and the shared application
 baseline remain selected. This does not create a device-specific kernel profile
 or weaken signed app-bundle admission. The image records its actual profile and
-capabilities under `/usr/share/luma/desktop-capabilities.json`.
+capabilities under `/usr/share/Suno/desktop-capabilities.json`.
 
 The default remains `full` on both architectures. A future device profile may
 need the same capability profile, or a different explicitly declared selection;
@@ -63,7 +63,7 @@ python3 scripts/os/preflight-desktop.py --arch aarch64 --profile arm-preview --p
 ```
 
 The normal package collector, image builder and Atlas media builder accept the
-selected architecture. Use `--profile arm-preview` or `LUMA_OS_PROFILE` where a
+selected architecture. Use `--profile arm-preview` or `SUNO_OS_PROFILE` where a
 capability profile is selected. Package headers, hashes, normal component checks,
 the signed offline application baseline and release gates remain mandatory.
 Native CI can reuse checked toolkit artifacts only when their source closure,
@@ -72,7 +72,7 @@ build. A changed label never turns an x86 binary into ARM.
 
 ## Kernel and installer boot cohort
 
-The generic desktop consumes Fedora's kernel. Luma does not maintain a desktop
+The generic desktop consumes Fedora's kernel. Suno does not maintain a desktop
 kernel fork. The installed payload's kernel provider and the Atlas installer's
 boot/runtime provider are related inputs with different packaging roles.
 
@@ -96,7 +96,7 @@ For hardware requiring another provider, consume that upstream/device project's
 kernel and firmware with its updates, notices and redistribution rules. Extend
 the existing device infrastructure to describe the external provider, compatible
 userspace release, DTBs, firmware acquisition and recovery procedure. Do not
-invent Luma kernel tags for upstream binaries. Existing Fairphone contracts must
+invent Suno kernel tags for upstream binaries. Existing Fairphone contracts must
 remain intact; they do not automatically qualify a desktop Snapdragon device.
 
 ## Qualification host
@@ -109,8 +109,8 @@ saved with the gate evidence.
 
 A provisioned host normally supplies its architecture emulator and firmware.
 An operator can instead select an admitted native-host QEMU executable through
-`LUMA_OS_GATE_EMULATOR` and a matching upstream pflash firmware pair through
-`LUMA_OS_GATE_UEFI_CODE` and `LUMA_OS_GATE_UEFI_VARS`. The gate records their body
+`SUNO_OS_GATE_EMULATOR` and a matching upstream pflash firmware pair through
+`SUNO_OS_GATE_UEFI_CODE` and `SUNO_OS_GATE_UEFI_VARS`. The gate records their body
 hashes; libvirt creates separate writable NVRAM for every VM. The operator must
 retain provider/package provenance and arrange normal libvirt access and SELinux
 labels. These tool selections do not waive release checks or qualify hardware.
@@ -156,7 +156,7 @@ include architecture, not merely a build ID or filename shared by two targets.
 Website redirects and Imager must resolve the selected entry's actual URL.
 
 Both architectures share the canonical signed OSTree repository. Their refs are
-`luma/1/x86_64/<channel>` and `luma/1/aarch64/<channel>`; ARM graph URLs are under
+`Suno/1/x86_64/<channel>` and `Suno/1/aarch64/<channel>`; ARM graph URLs are under
 `/os/graph/aarch64/`, while x86 graph URLs remain under `/os/graph/`. The architecture
 of the graph, its signed trusted comment and the selected update ref must agree.
 Use the release's actual configured host and channel; this document supplies no

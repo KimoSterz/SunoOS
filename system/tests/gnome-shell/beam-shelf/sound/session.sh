@@ -1,5 +1,5 @@
 #!/bin/bash
-# Sound oracle run inside luma-beam-sound. S_TAG S_THEME(freedesktop|luma) S_OVERLAY(dir|"") S_PLAYING(0|1) S_GSD(path)
+# Sound oracle run inside Suno-beam-sound. S_TAG S_THEME(freedesktop|Suno) S_OVERLAY(dir|"") S_PLAYING(0|1) S_GSD(path)
 set -u
 T=beamsnd-${S_TAG}
 export XDG_RUNTIME_DIR=/tmp/$T-run; rm -rf $XDG_RUNTIME_DIR; mkdir -m 700 -p $XDG_RUNTIME_DIR
@@ -10,7 +10,7 @@ cat > $HOME/.config/glib-2.0/settings/keyfile <<KEY
 event-sounds=true
 ${S_THEME:+theme-name='$S_THEME'}
 
-[org/project-luma/shell-state]
+[org/project-suno/shell-state]
 surface-treatment='dark'
 
 [org/gnome/desktop/interface]

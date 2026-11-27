@@ -1,6 +1,6 @@
 {
-  "_source": "Simulator v71 luma-next-71.html .cnow lines886-888: now line/dot and time-label inks remain fixed red, independent of accent. .cdh b uses20px/700, inherited1.45 line-height and-.02em tracking.",
-  "lumaui": {
+  "_source": "Simulator v71 Suno-next-71.html .cnow lines886-888: now line/dot and time-label inks remain fixed red, independent of accent. .cdh b uses20px/700, inherited1.45 line-height and-.02em tracking.",
+  "SunoUI": {
     "colors": {
       "light": {
         "calendar_now": "oklch(0.7 0.18 25)",

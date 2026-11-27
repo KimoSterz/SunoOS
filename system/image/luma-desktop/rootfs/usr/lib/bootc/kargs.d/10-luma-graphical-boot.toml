@@ -1,2 +1,0 @@
-# The Luma boot theme is a graphical, quiet start (config/boot/README.md).
-kargs = ["rhgb", "quiet"]

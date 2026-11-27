@@ -1,4 +1,4 @@
-# Project Luma account defaults.
+# Project Suno account defaults.
 #
 # Fedora Atomic stores user data on the writable /var partition and exposes it
 # through the standard /home path.  Accounts must advertise /home/<name> so

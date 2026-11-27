@@ -294,7 +294,7 @@ def uses_24_hour() -> bool:
     The setting comes first: a process that never called setlocale(LC_TIME), or
     a locale glibc does not have installed, reports C's 24-hour pattern.
     """
-    override = os.environ.get("LUMA_CLOCK_HOUR_FORMAT", "").strip()
+    override = os.environ.get("SUNO_CLOCK_HOUR_FORMAT", "").strip()
     if override in {"12", "24"}:
         return override == "24"
     setting = _clock_format_setting()

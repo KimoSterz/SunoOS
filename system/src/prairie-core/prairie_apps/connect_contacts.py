@@ -1,15 +1,15 @@
 # SPDX-License-Identifier: Apache-2.0
 
-"""Luma Connect contacts, over CardDAV.
+"""Suno Connect contacts, over CardDAV.
 
-Like the calendar, contact sync is a standard, not a Luma protocol: the source
+Like the calendar, contact sync is a standard, not a Suno protocol: the source
 of truth serves CardDAV (RFC 6352) and the device's own address book service
 (Evolution Data Server) is its client, so every app that reads contacts from
 EDS — Contacts, Phone, Messages — sees the same cards on every device, and an
 edit anywhere is an edit everywhere.
 
 What this adds is the setup nobody should do by hand: make sure the account
-has a "Luma" address book, add it to this device and make it the one new
+has a "Suno" address book, add it to this device and make it the one new
 contacts go to, and once move the contacts that were only on this device into
 it — after a backup, and only once the server confirms it holds every one.
 """
@@ -29,7 +29,7 @@ LOCAL_BOOK = "system-address-book"
 MKCOL = ('<?xml version="1.0" encoding="utf-8"?>'
          '<d:mkcol xmlns:d="DAV:" xmlns:card="urn:ietf:params:xml:ns:carddav"><d:set><d:prop>'
          '<d:resourcetype><d:collection/><card:addressbook/></d:resourcetype>'
-         '<d:displayname>Luma</d:displayname></d:prop></d:set></d:mkcol>').encode()
+         '<d:displayname>Suno</d:displayname></d:prop></d:set></d:mkcol>').encode()
 
 
 class ContactsSyncError(RuntimeError):
@@ -47,7 +47,7 @@ def _modules():
 
 
 def source_uid(device_id: str) -> str:
-    return "luma-connect-contacts-" + re.sub(r"[^a-z0-9]", "", device_id.lower())[:12]
+    return "Suno-connect-contacts-" + re.sub(r"[^a-z0-9]", "", device_id.lower())[:12]
 
 
 def _client(registry, uid: str, book):
@@ -73,7 +73,7 @@ def _all_cards(client) -> list:
 
 def add_address_book(registry, data_server, glib, *, uid: str, url: str, username: str, password: str) -> None:
     source = data_server.Source.new_with_uid(uid, None)
-    source.set_display_name("Luma")
+    source.set_display_name("Suno")
     source.set_parent("carddav-stub")
     source.get_extension(data_server.SOURCE_EXTENSION_ADDRESS_BOOK).set_backend_name("carddav")
     webdav = source.get_extension(data_server.SOURCE_EXTENSION_WEBDAV_BACKEND)
@@ -119,7 +119,7 @@ def sync_contacts(*, address: str, token: str, http, state: dict, scope: str,
         if default is None or default.get_uid() == LOCAL_BOOK:
             registry.set_default_address_book(registry.ref_source(uid))
         state[key] = record
-        status = "contacts: Luma address book added"
+        status = "contacts: Suno address book added"
 
     if not record.get("migrated") and registry.ref_source(LOCAL_BOOK) is not None:
         local = _client(registry, LOCAL_BOOK, book)
@@ -137,7 +137,7 @@ def sync_contacts(*, address: str, token: str, http, state: dict, scope: str,
             copies = [contacts.Contact.new_from_vcard_with_uid(_vcard(contacts, card), card.get_property("id")) for card in cards]
             ok, _uids = remote.add_contacts_sync(copies, contacts.BookOperationFlags.NONE, None)
             if not ok:
-                raise ContactsSyncError(f"The Luma address book did not accept the contacts; they stay in Personal (backup: {backup}).")
+                raise ContactsSyncError(f"The Suno address book did not accept the contacts; they stay in Personal (backup: {backup}).")
             deadline = time.monotonic() + 60
             while count_items(record["url"], record["username"], password, b".vcf") < before + len(cards):
                 if time.monotonic() > deadline:
@@ -162,7 +162,7 @@ def sync_contacts(*, address: str, token: str, http, state: dict, scope: str,
 def _legacy_calendar_password(registry, scope: str) -> str | None:
     """Before contacts, the calendar source held the device's only copy."""
     device = re.sub(r"[^a-z0-9]", "", scope.rsplit("|", 1)[-1].lower())[:12]
-    source = registry.ref_source(f"luma-connect-{device}")
+    source = registry.ref_source(f"Suno-connect-{device}")
     if source is None:
         return None
     try:
@@ -173,7 +173,7 @@ def _legacy_calendar_password(registry, scope: str) -> str | None:
 
 
 def disconnect_contacts(state: dict, scope: str) -> str:
-    """Copy Luma contacts into Personal on this device, then remove the address book here."""
+    """Copy Suno contacts into Personal on this device, then remove the address book here."""
     try:
         data_server, book, contacts, _glib = _modules()
         registry = data_server.SourceRegistry.new_sync(None)
@@ -181,7 +181,7 @@ def disconnect_contacts(state: dict, scope: str) -> str:
         return "address book service unavailable; nothing changed on this device"
     uid = state.get(f"{scope}|contacts-dav", {}).get("source_uid")
     if not uid or registry.ref_source(uid) is None:
-        return "no Luma address book on this device"
+        return "no Suno address book on this device"
     cards = _all_cards(_client(registry, uid, book))
     copied = 0
     if cards and registry.ref_source(LOCAL_BOOK) is not None:
@@ -189,8 +189,8 @@ def disconnect_contacts(state: dict, scope: str) -> str:
         copies = [contacts.Contact.new_from_vcard_with_uid(_vcard(contacts, card), card.get_property("id")) for card in cards]
         ok, _uids = local.add_contacts_sync(copies, contacts.BookOperationFlags.NONE, None)
         if not ok:
-            return "Personal did not accept the copies; the Luma address book was kept"
+            return "Personal did not accept the copies; the Suno address book was kept"
         copied = len(copies)
         registry.set_default_address_book(registry.ref_source(LOCAL_BOOK))
     registry.ref_source(uid).remove_sync(None)
-    return f"copied {copied} contact(s) into Personal and disconnected the Luma address book"
+    return f"copied {copied} contact(s) into Personal and disconnected the Suno address book"

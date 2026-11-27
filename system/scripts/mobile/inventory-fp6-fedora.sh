@@ -9,10 +9,10 @@ set -euo pipefail
 umask 077
 
 repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
-ssh_bin=${LUMA_SSH:-ssh}
-ssh_target=${LUMA_FP6_SSH_TARGET:-luma@172.16.42.1}
-timestamp=${LUMA_FP6_FEDORA_TIMESTAMP:-$(date -u +%Y%m%dT%H%M%SZ)}
-output_root=${LUMA_FP6_FEDORA_INVENTORY_DIR:-$repo_root/build/mobile/fp6-physical/fedora-inventory/$timestamp}
+ssh_bin=${SUNO_SSH:-ssh}
+ssh_target=${SUNO_FP6_SSH_TARGET:-Suno@172.16.42.1}
+timestamp=${SUNO_FP6_FEDORA_TIMESTAMP:-$(date -u +%Y%m%dT%H%M%SZ)}
+output_root=${SUNO_FP6_FEDORA_INVENTORY_DIR:-$repo_root/build/mobile/fp6-physical/fedora-inventory/$timestamp}
 tmp_report=$(mktemp)
 trap 'rm -f "$tmp_report"' EXIT
 
@@ -113,7 +113,7 @@ battery_capacity=$(cat "$battery_dir/capacity" 2>/dev/null || true)
 battery_temp=$(cat "$battery_dir/temp" 2>/dev/null || true)
 thermal_range=$(for zone in /sys/class/thermal/thermal_zone*; do cat "$zone/temp" 2>/dev/null; done | awk 'NR == 1 {min=$1; max=$1} $1 < min {min=$1} $1 > max {max=$1} END {if (NR) printf "%s-%s", min, max; else printf "unavailable"}')
 
-printf 'LUMA_FP6_FEDORA_INVENTORY_VERSION=1\n'
+printf 'SUNO_FP6_FEDORA_INVENTORY_VERSION=1\n'
 printf 'PHONE_ACCESSED=true\n'
 printf 'MUTATING_OPERATIONS=none\n'
 printf 'P5_INSTALL_AUTHORIZED=false\n'
@@ -177,8 +177,8 @@ printf 'ERROR_GPU_RECOVERY=%s\n' "$(count_pattern 'a8xx_recover\|GMU OOB set')"
 printf 'ERROR_DPU=%s\n' "$(count_pattern '\[dpu error\]\|no encoder found for crtc')"
 REMOTE
 
-grep -qx 'LUMA_FP6_FEDORA_INVENTORY_VERSION=1' "$tmp_report" || \
-  die 'remote output is not a Luma Fedora inventory report'
+grep -qx 'SUNO_FP6_FEDORA_INVENTORY_VERSION=1' "$tmp_report" || \
+  die 'remote output is not a Suno Fedora inventory report'
 grep -qx 'OS_ID=fedora' "$tmp_report" || die 'remote userspace is not Fedora'
 grep -qx 'OS_VERSION_ID=44' "$tmp_report" || die 'remote Fedora release is not 44'
 grep -Eqi '^DT_MODEL=.*Fairphone.*(Gen[.]? 6|6)' "$tmp_report" || \
@@ -190,7 +190,7 @@ fi
 mkdir -p "$output_root"
 install -m 0600 "$tmp_report" "$output_root/fedora-hardware.env"
 {
-  printf 'LUMA_FP6_FEDORA_INVENTORY_SUMMARY_VERSION=1\n'
+  printf 'SUNO_FP6_FEDORA_INVENTORY_SUMMARY_VERSION=1\n'
   printf 'IDENTITY=fp6-fedora44-confirmed\n'
   printf 'TRANSPORT=ssh\n'
   printf 'PHONE_ACCESSED=true\n'

@@ -1,4 +1,4 @@
-From: Project Luma <builds@project-luma.local>
+From: Project Suno <builds@project-suno.local>
 Subject: [PATCH] keyboard: a tap on a phone's field shows the keyboard
 
 On a phone's greeter and lock screen the password field rarely opened the
@@ -77,7 +77,7 @@ own tap.
 +    _tapAlwaysShows() {
 +        if (Main.presentation)
 +            return ['mobile', 'tablet'].includes(Main.presentation.mode);
-+        return ['handheld', 'tablet'].includes(GLib.getenv('LUMA_DEVICE_CLASS'));
++        return ['handheld', 'tablet'].includes(GLib.getenv('SUNO_DEVICE_CLASS'));
 +    }
 +
      _setActiveLevel(activeLevel) {

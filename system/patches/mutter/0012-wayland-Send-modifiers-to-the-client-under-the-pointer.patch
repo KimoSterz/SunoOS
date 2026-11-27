@@ -1,4 +1,4 @@
-From: Project Luma <engineering@projectluma.org>
+From: Project Suno <engineering@projectSuno.org>
 Date: Tue, 15 Sep 2026 14:30:00 -0500
 Subject: [PATCH] wayland: Send modifiers to the client under the pointer
 
@@ -226,7 +226,7 @@ index 0000000..3e7f6dd
 +++ b/src/tests/wayland-test-clients/pointer-modifiers.c
 @@ -0,0 +1,452 @@
 +/*
-+ * Copyright (C) 2026 Project Luma contributors
++ * Copyright (C) 2026 Project Suno contributors
 + *
 + * This program is free software; you can redistribute it and/or
 + * modify it under the terms of the GNU General Public License as

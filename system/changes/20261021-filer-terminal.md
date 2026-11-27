@@ -1,7 +1,7 @@
 ---
 type: feature
 component: Filer
-packages: [nautilus, nautilus-extensions, luma-terminal, luma-developer-platform]
+packages: [nautilus, nautilus-extensions, Suno-terminal, Suno-developer-platform]
 highlight: false
 ---
 Summary: Added directory-aware Terminal actions and hover Open menus

@@ -25,7 +25,7 @@
       {"id": 8, "from": "PR", "text": "Updated deck with the new milestones", "at": "9:48 AM"},
       {"id": 9, "from": "NF", "kind": "voice", "duration": 23, "at": "9:52 AM"},
       {"id": 10, "from": "me", "text": "Love it. I’ll go through the deck before lunch", "at": "9:58 AM", "status": "read", "reply": 7},
-      {"id": 11, "from": "SK", "text": "simplyluma.com is live on the new server btw", "at": "10:02 AM", "link": {"host": "simplyluma.com", "title": "Luma — A better computer.", "photo": "messages-v70/life-hero-writing.webp"}}
+      {"id": 11, "from": "SK", "text": "simplyluma.com is live on the new server btw", "at": "10:02 AM", "link": {"host": "simplyluma.com", "title": "Suno — A better computer.", "photo": "messages-v70/life-hero-writing.webp"}}
     ]},
     {"id": "priya", "address": "+15105550102", "person": "PR", "pinned": true, "unread": 0, "messages": [
       {"id": 12, "from": "PR", "text": "Are we still on for the walkthrough at 2?", "day": "Today", "at": "8:40 AM"},
@@ -34,7 +34,7 @@
       {"id": 15, "from": "PR", "text": "Will do 👍", "at": "8:43 AM"}
     ]},
     {"id": "mom", "address": "+15105550103", "person": "MO", "sms": true, "unread": 1, "messages": [
-      {"id": 16, "from": "MO", "text": "Saw the article about Luma. Proud of you kid. Call me this weekend", "day": "Today", "at": "11:05 AM"}
+      {"id": 16, "from": "MO", "text": "Saw the article about Suno. Proud of you kid. Call me this weekend", "day": "Today", "at": "11:05 AM"}
     ]},
     {"id": "theo", "address": "+15105550104", "person": "TH", "unread": 0, "messages": [
       {"id": 17, "from": "TH", "kind": "song", "card": {"title": "God Only Knows", "artist": "The Beach Boys", "album": "Pet Sounds", "photo": "messages-v70/pet-sounds.webp"}, "day": "Yesterday", "at": "6:18 PM"},

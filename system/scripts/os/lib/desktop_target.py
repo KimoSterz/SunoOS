@@ -6,7 +6,7 @@ The resulting NEVRAs are build requirements, not claims that artifacts exist.
 Only explicitly scoped hardware packages may differ between architectures.
 A hardware target (config/os/desktop-targets.json hardware_targets, admitted
 in lib/devices.tsv) is the same desktop plus its device packages, optionally
-on its own kernel, published on its own ref luma/<major>/<arch>/<slug>/.
+on its own kernel, published on its own ref Suno/<major>/<arch>/<slug>/.
 """
 import argparse
 import json
@@ -27,7 +27,7 @@ def target(root, architecture):
     if architecture not in ARCHITECTURES:
         raise ValueError(f'Unsupported desktop architecture: {architecture}')
     registry = json.loads((root / 'config/os/desktop-targets.json').read_text())
-    if registry.get('schema') != 'org.projectluma.desktop-targets/v1':
+    if registry.get('schema') != 'org.projectSuno.desktop-targets/v1':
         raise ValueError('Unknown desktop target schema')
     row = registry['architectures'][architecture]
     if not re.fullmatch(r'sha256:[0-9a-f]{64}', row['base_digest']):
@@ -74,7 +74,7 @@ def package_name(nevra):
 def profile(root, architecture, name='full'):
     target(root, architecture)
     registry = json.loads((root / 'config/os/desktop-profiles.json').read_text())
-    if registry.get('schema') != 'org.projectluma.desktop-profiles/v1':
+    if registry.get('schema') != 'org.projectSuno.desktop-profiles/v1':
         raise ValueError('Unknown desktop profile schema')
     if name not in registry['profiles']:
         raise ValueError(f'Unknown desktop profile: {name}')
@@ -90,7 +90,7 @@ def excluded(name, selection):
 
 def capabilities(root, architecture, name='full'):
     selection = profile(root, architecture, name)
-    return {'schema': 'org.projectluma.desktop-capabilities/v1',
+    return {'schema': 'org.projectSuno.desktop-capabilities/v1',
             'architecture': architecture, 'profile': name,
             'capabilities': selection['capabilities'],
             'excluded_packages': selection['excluded_packages'],
@@ -138,20 +138,20 @@ def contract(root, architecture, profile_name='full', hardware_target=''):
     row, _ = target(root, architecture)
     device = hardware(root, architecture, hardware_target)
     values = dict(line.split('=', 1) for line in lines(root / 'config/os/release.env'))
-    values.update(LUMA_OS_ARCH=architecture,
-                  LUMA_OS_REF_PREFIX=f'luma/{values["LUMA_OS_MAJOR"]}/{architecture}',
-                  LUMA_OS_BASE_IMAGE_TAG=row['base_tag'],
-                  LUMA_OS_BASE_IMAGE_DIGEST=row['base_digest'])
+    values.update(SUNO_OS_ARCH=architecture,
+                  SUNO_OS_REF_PREFIX=f'Suno/{values["SUNO_OS_MAJOR"]}/{architecture}',
+                  SUNO_OS_BASE_IMAGE_TAG=row['base_tag'],
+                  SUNO_OS_BASE_IMAGE_DIGEST=row['base_digest'])
     if profile_name != 'full':
-        values['LUMA_OS_PROFILE'] = profile_name
+        values['SUNO_OS_PROFILE'] = profile_name
     if device:
-        values['LUMA_OS_HARDWARE_TARGET'] = hardware_target
-        values['LUMA_OS_KERNEL_PACKAGE'] = device.get('kernel', '')
-        values['LUMA_OS_REF_PREFIX'] += '/' + device['slug']
-    values['LUMA_OS_GRAPH_PREFIX'] += '/' + architecture
-    values['LUMA_OS_HUB_GRAPH_URL_TEMPLATE'] = re.sub(
+        values['SUNO_OS_HARDWARE_TARGET'] = hardware_target
+        values['SUNO_OS_KERNEL_PACKAGE'] = device.get('kernel', '')
+        values['SUNO_OS_REF_PREFIX'] += '/' + device['slug']
+    values['SUNO_OS_GRAPH_PREFIX'] += '/' + architecture
+    values['SUNO_OS_HUB_GRAPH_URL_TEMPLATE'] = re.sub(
         r'arch=(x86_64|aarch64)', 'arch=' + architecture,
-        values['LUMA_OS_HUB_GRAPH_URL_TEMPLATE'])
+        values['SUNO_OS_HUB_GRAPH_URL_TEMPLATE'])
     return values
 
 
@@ -159,8 +159,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--root', type=Path, default=ROOT)
     parser.add_argument('--arch', choices=ARCHITECTURES, required=True)
-    parser.add_argument('--profile', default=os.environ.get('LUMA_OS_PROFILE', 'full'))
-    parser.add_argument('--hardware-target', default=os.environ.get('LUMA_OS_HARDWARE_TARGET', ''))
+    parser.add_argument('--profile', default=os.environ.get('SUNO_OS_PROFILE', 'full'))
+    parser.add_argument('--hardware-target', default=os.environ.get('SUNO_OS_HARDWARE_TARGET', ''))
     parser.add_argument('output', choices=('pins', 'fedora', 'contract', 'plan', 'roles', 'capabilities'))
     args = parser.parse_args()
     if args.output == 'contract':

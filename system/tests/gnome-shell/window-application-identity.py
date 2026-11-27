@@ -103,7 +103,7 @@ int main (int argc, char **argv) {
   return 0;
 }
 '''
-with tempfile.TemporaryDirectory(prefix="luma-tracker-gio-") as temporary:
+with tempfile.TemporaryDirectory(prefix="Suno-tracker-gio-") as temporary:
     directory = Path(temporary)
     code = prefix + "\n".join(function(name) for name in (
         "check_app_id_prefix", "get_app_from_id", "get_app_from_gapplication_id")) + main

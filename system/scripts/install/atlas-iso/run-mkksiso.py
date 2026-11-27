@@ -7,12 +7,12 @@ import sys
 
 
 def replace_payload_command(command, clock_maps=(), payload_options=None):
-    """Remove only the old medium repository before the normal new /luma map."""
+    """Remove only the old medium repository before the normal new /Suno map."""
     if command and command[0] == 'xorriso' and '-outdev' in command:
         maps = [i for i, item in enumerate(command) if item == '-map']
-        payload = [i for i in maps if command[i + 2].strip('/') == 'luma']
+        payload = [i for i in maps if command[i + 2].strip('/') == 'Suno']
         if len(payload) != 1 or '-indev' not in command:
-            raise ValueError('expected exactly one normal mkksiso /luma mapping')
+            raise ValueError('expected exactly one normal mkksiso /Suno mapping')
         index = payload[0]
         repository = (Path(command[index + 1]) / 'repo').resolve(strict=True)
         if not repository.is_dir():
@@ -24,8 +24,8 @@ def replace_payload_command(command, clock_maps=(), payload_options=None):
         # Map the real directory, not a host-only symlink into the new image.
         return (command[:index] + [arg for path, destination in clock_maps
                                   for arg in ('-map', str(path), destination)]
-                + ['-rm_r', '/luma/repo', '--',
-                '-map', str(repository), '/luma/repo'] + command[index + 3:])
+                + ['-rm_r', '/Suno/repo', '--',
+                '-map', str(repository), '/Suno/repo'] + command[index + 3:])
     return command
 
 

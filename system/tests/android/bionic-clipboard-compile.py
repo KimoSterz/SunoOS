@@ -28,14 +28,14 @@ def main():
     resource = Path(subprocess.check_output([str(compiler), "-print-resource-dir"], text=True).strip()) / "include"
     args.output.mkdir(mode=0o700, parents=True, exist_ok=True)
     unit = args.output / "clipboard.cpp"
-    unit.write_text('''#include "luma-clipboard-transfer.h"
+    unit.write_text('''#include "Suno-clipboard-transfer.h"
 void compile_clipboard() {
-    luma::clipboard::Transfers transfers;
+    Suno::clipboard::Transfers transfers;
     transfers.read(-1, [](bool, std::string) {});
     transfers.write(-1, std::make_shared<const std::string>("synthetic"));
     transfers.cancelRead();
     transfers.shutdown();
-    luma::clipboard::Cache cache;
+    Suno::clipboard::Cache cache;
     auto generation = cache.beginRead();
     cache.complete(generation, true, "synthetic");
     cache.set(cache.get());
@@ -68,7 +68,7 @@ void compile_clipboard() {
                         "command": command})
     report = {"qualification": "compile-only production helper; no link/runtime/IPC/hardware claim",
               "compiler": subprocess.check_output([str(compiler), "--version"], text=True),
-              "helper_sha256": hashlib.sha256((repo / "patches/android-hardware-waydroid/native/luma-clipboard-transfer.h").read_bytes()).hexdigest(),
+              "helper_sha256": hashlib.sha256((repo / "patches/android-hardware-waydroid/native/Suno-clipboard-transfer.h").read_bytes()).hexdigest(),
               "results": results}
     (args.output / "bionic-clipboard-compile.json").write_text(json.dumps(report, indent=2) + "\n")
     print("PASS: production clipboard helper compiled with pinned Android Bionic/libc++ for ARM64 and x86_64; no execution claim")

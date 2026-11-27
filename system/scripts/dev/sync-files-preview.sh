@@ -68,16 +68,16 @@ mv "$sync_root/libadwaita-1.9.3" "$sync_root/libadwaita"
 (
   cd "$sync_root/libadwaita"
   export GIT_CEILING_DIRECTORIES="$preview_root"
-  git apply "$repo_root/patches/libadwaita/0001-luma-light-design-system.patch"
-  git apply "$repo_root/patches/libadwaita/0002-luma-title-label-metrics.patch"
-  git apply "$repo_root/patches/libadwaita/0003-luma-title-label-baseline.patch"
+  git apply "$repo_root/patches/libadwaita/0001-Suno-light-design-system.patch"
+  git apply "$repo_root/patches/libadwaita/0002-Suno-title-label-metrics.patch"
+  git apply "$repo_root/patches/libadwaita/0003-Suno-title-label-baseline.patch"
   git apply "$repo_root/patches/libadwaita/0004-prairie-generic-headerbar-contract.patch"
-  git apply "$repo_root/patches/libadwaita/0005-luma-application-components.patch"
-  git apply "$repo_root/patches/libadwaita/0006-stylesheet-add-shared-Luma-work-islands.patch"
-  git apply "$repo_root/patches/libadwaita/0007-luma-application-window-elevation.patch"
-  git apply "$repo_root/patches/libadwaita/0008-luma-connected-window-controls.patch"
-  git apply "$repo_root/patches/libadwaita/0009-luma-appkit-component-boundaries.patch"
-  git apply "$repo_root/patches/libadwaita/0010-luma-native-surface-integrity-and-global-chrome.patch"
+  git apply "$repo_root/patches/libadwaita/0005-Suno-application-components.patch"
+  git apply "$repo_root/patches/libadwaita/0006-stylesheet-add-shared-Suno-work-islands.patch"
+  git apply "$repo_root/patches/libadwaita/0007-Suno-application-window-elevation.patch"
+  git apply "$repo_root/patches/libadwaita/0008-Suno-connected-window-controls.patch"
+  git apply "$repo_root/patches/libadwaita/0009-Suno-appkit-component-boundaries.patch"
+  git apply "$repo_root/patches/libadwaita/0010-Suno-native-surface-integrity-and-global-chrome.patch"
 )
 
 (
@@ -90,28 +90,28 @@ mv "$sync_root/nautilus-50.2.2" "$sync_root/nautilus"
   cd "$sync_root/nautilus"
   export GIT_CEILING_DIRECTORIES="$preview_root"
   git apply "$sync_root/nautilus-srpm/default-terminal.patch"
-  git apply "$repo_root/patches/nautilus/0001-luma-single-global-search-action.patch"
-  git apply "$repo_root/patches/nautilus/0002-luma-blank-sidebar-title.patch"
-  git apply "$repo_root/patches/nautilus/0003-luma-files-aesthetic-v1.patch"
-  git apply "$repo_root/patches/nautilus/0004-luma-filer-identity-and-devices.patch"
-  git apply "$repo_root/patches/nautilus/0005-luma-sidebar-divider-contract.patch"
-  git apply "$repo_root/patches/nautilus/0006-luma-window-template-types.patch"
-  git apply "$repo_root/patches/nautilus/0007-luma-natural-attached-breadcrumb.patch"
-  git apply "$repo_root/patches/nautilus/0008-luma-pathbar-natural-measure.patch"
-  git apply "$repo_root/patches/nautilus/0009-luma-remove-redundant-tooltips.patch"
+  git apply "$repo_root/patches/nautilus/0001-Suno-single-global-search-action.patch"
+  git apply "$repo_root/patches/nautilus/0002-Suno-blank-sidebar-title.patch"
+  git apply "$repo_root/patches/nautilus/0003-Suno-files-aesthetic-v1.patch"
+  git apply "$repo_root/patches/nautilus/0004-Suno-filer-identity-and-devices.patch"
+  git apply "$repo_root/patches/nautilus/0005-Suno-sidebar-divider-contract.patch"
+  git apply "$repo_root/patches/nautilus/0006-Suno-window-template-types.patch"
+  git apply "$repo_root/patches/nautilus/0007-Suno-natural-attached-breadcrumb.patch"
+  git apply "$repo_root/patches/nautilus/0008-Suno-pathbar-natural-measure.patch"
+  git apply "$repo_root/patches/nautilus/0009-Suno-remove-redundant-tooltips.patch"
   git apply "$repo_root/patches/nautilus/0010-prairie-empty-folder-state.patch"
-  git apply "$repo_root/patches/nautilus/0011-luma-title-label-metrics.patch"
-  git apply "$repo_root/patches/nautilus/0012-luma-responsive-filer.patch"
-  git apply "$repo_root/patches/nautilus/0013-luma-applications-location.patch"
-  git apply "$repo_root/patches/nautilus/0014-luma-personal-storage.patch"
-  git apply "$repo_root/patches/nautilus/0015-luma-application-installer-drop.patch"
-  git apply "$repo_root/patches/nautilus/0016-luma-production-filer.patch"
+  git apply "$repo_root/patches/nautilus/0011-Suno-title-label-metrics.patch"
+  git apply "$repo_root/patches/nautilus/0012-Suno-responsive-filer.patch"
+  git apply "$repo_root/patches/nautilus/0013-Suno-applications-location.patch"
+  git apply "$repo_root/patches/nautilus/0014-Suno-personal-storage.patch"
+  git apply "$repo_root/patches/nautilus/0015-Suno-application-installer-drop.patch"
+  git apply "$repo_root/patches/nautilus/0016-Suno-production-filer.patch"
   git apply "$repo_root/patches/nautilus/0017-nautilus-implement-Atlas-islands-and-native-Columns-.patch"
   git apply "$repo_root/patches/nautilus/0018-nautilus-align-Filer-with-the-running-simulator.patch"
-  git apply "$repo_root/patches/nautilus/0019-luma-title-and-native-control-convergence.patch"
-  git apply "$repo_root/patches/nautilus/0020-luma-shared-component-boundaries.patch"
-  git apply "$repo_root/patches/nautilus/0021-luma-remove-duplicate-title-divider.patch"
-  git apply "$repo_root/patches/nautilus/0022-luma-final-island-spacing-and-stroke.patch"
+  git apply "$repo_root/patches/nautilus/0019-Suno-title-and-native-control-convergence.patch"
+  git apply "$repo_root/patches/nautilus/0020-Suno-shared-component-boundaries.patch"
+  git apply "$repo_root/patches/nautilus/0021-Suno-remove-duplicate-title-divider.patch"
+  git apply "$repo_root/patches/nautilus/0022-Suno-final-island-spacing-and-stroke.patch"
 )
 
 # Preserve the stable source directories and their Meson dependency graphs.
@@ -158,7 +158,7 @@ build_nautilus() {
   # and refresh only those source mtimes when its contents actually changed.
   # Unchanged runs skip the Blueprint batch even if Meson refreshes lighter
   # generated resource bookkeeping.
-  blueprint_stamp=builds/nautilus/.luma-blueprint-resources-v3.sha256
+  blueprint_stamp=builds/nautilus/.Suno-blueprint-resources-v3.sha256
   blueprint_checksum=$(
     find sources/nautilus/src/resources/ui -type f -name "*.blp" -print0 |
       sort -z |

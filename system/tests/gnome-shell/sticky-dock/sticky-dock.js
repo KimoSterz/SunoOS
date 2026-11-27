@@ -14,9 +14,9 @@ const sleep = ms => new Promise(r => GLib.timeout_add(GLib.PRIORITY_DEFAULT, ms,
 const log = m => console.log(`[stickydock] ${m}`);
 const check = (name, ok, detail = '') => { results.push({name, ok: !!ok, detail}); log(`${ok ? 'PASS' : 'FAIL'} ${name}${detail ? ` — ${detail}` : ''}`); };
 const home = GLib.get_home_dir();
-const desktop = `${home}/.local/share/applications/org.projectluma.StickyNotes.desktop`;
-const service = `${GLib.get_user_data_dir()}/dbus-1/services/org.projectluma.StickyNotes.service`;
-const onStage = () => Main.uiGroup.get_children().filter(a => a.has_style_class_name?.('luma-sticky-dock'));
+const desktop = `${home}/.local/share/applications/org.projectSuno.StickyNotes.desktop`;
+const service = `${GLib.get_user_data_dir()}/dbus-1/services/org.projectSuno.StickyNotes.service`;
+const onStage = () => Main.uiGroup.get_children().filter(a => a.has_style_class_name?.('Suno-sticky-dock'));
 const waitFor = async (fn, ms = 15000) => { for (let i = 0; i < ms; i += 250) { if (fn()) return true; await sleep(250); } return !!fn(); };
 const write = (path, text) => { GLib.mkdir_with_parents(GLib.path_get_dirname(path), 0o755); GLib.file_set_contents(path, text); };
 
@@ -45,7 +45,7 @@ async function work() {
     how = await changed(gone, 'removing');
     check('removed: the stack goes on installed-changed', !!how, `${how}, ${onStage().length} on stage`);
 
-    write(service, '[D-BUS Service]\nName=org.projectluma.StickyNotes\nExec=/bin/false\n');
+    write(service, '[D-BUS Service]\nName=org.projectSuno.StickyNotes\nExec=/bin/false\n');
     Gio.DBus.session.call_sync('org.freedesktop.DBus', '/org/freedesktop/DBus', 'org.freedesktop.DBus', 'ReloadConfig',
         null, null, Gio.DBusCallFlags.NONE, -1, null);
     await sleep(500);

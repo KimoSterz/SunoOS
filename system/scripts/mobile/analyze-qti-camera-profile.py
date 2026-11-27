@@ -2,7 +2,7 @@
 """Inspect a Qualcomm ParameterParser camera profile without loading its HAL.
 
 The tool intentionally emits only structural metadata and register operations.
-It does not copy tuning payloads into the Luma source tree.
+It does not copy tuning payloads into the Suno source tree.
 """
 
 from __future__ import annotations

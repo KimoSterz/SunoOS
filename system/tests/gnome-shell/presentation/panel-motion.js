@@ -2,8 +2,8 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
-import {panelProgress, panelSnap} from '../../../src/luma-shell-presentation/layout.js';
-const source = fs.readFileSync(new URL('../../../src/luma-shell-presentation/handheldOptions.js', import.meta.url), 'utf8');
+import {panelProgress, panelSnap} from '../../../src/Suno-shell-presentation/layout.js';
+const source = fs.readFileSync(new URL('../../../src/Suno-shell-presentation/handheldOptions.js', import.meta.url), 'utf8');
 let now = 1000000, animations = true, nextId = 1;
 const paints = new Map(), idles = new Map();
 function prepare() {

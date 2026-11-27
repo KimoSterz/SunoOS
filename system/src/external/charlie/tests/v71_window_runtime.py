@@ -19,9 +19,9 @@ gi.require_version("Gdk", "4.0")
 gi.require_version("GdkPixbuf", "2.0")
 from gi.repository import Adw, Gdk, GdkPixbuf, GLib, Gio, Gtk
 
-from charlie_luma.application import CharlieApplication
-from charlie_luma.mime import message_presentation
-from luma_appkit import icons
+from charlie_Suno.application import CharlieApplication
+from charlie_Suno.mime import message_presentation
+from Suno_appkit import icons
 
 
 def pump(seconds=.25):
@@ -65,7 +65,7 @@ def visible_copy(widget):
 
 
 def screenshot(window, name):
-    directory = os.environ.get('LUMA_CREATOR_REVIEW_CAPTURE')
+    directory = os.environ.get('SUNO_CREATOR_REVIEW_CAPTURE')
     if not directory:
         return
     from gi.repository import Gsk
@@ -87,16 +87,16 @@ def screenshot(window, name):
 def main():
     with tempfile.TemporaryDirectory(prefix="charlie-v71-runtime-") as directory:
         os.environ.update(XDG_DATA_HOME=directory, XDG_CONFIG_HOME=directory,
-                          XDG_CACHE_HOME=directory, LUMA_CHARLIE_FIXTURE="v71",
+                          XDG_CACHE_HOME=directory, SUNO_CHARLIE_FIXTURE="v71",
                           CHARLIE_TEST_WIDTH="360", CHARLIE_TEST_HEIGHT="828")
-        schema = Path(os.environ['LUMA_CREATOR_SCHEMA_FILE'])
+        schema = Path(os.environ['SUNO_CREATOR_SCHEMA_FILE'])
         schema_dir = Path(directory) / 'schema'
         schema_dir.mkdir()
         (schema_dir / schema.name).write_bytes(schema.read_bytes())
         subprocess.run(['glib-compile-schemas', str(schema_dir)], check=True)
         os.environ.update(GSETTINGS_SCHEMA_DIR=str(schema_dir), GSETTINGS_BACKEND='memory')
         appearance = os.environ.get('CHARLIE_TEST_COLOR_SCHEME', 'light')
-        Gio.Settings.new('org.project_luma.shell-state').set_string('surface-treatment', appearance)
+        Gio.Settings.new('org.projectSuno.shell-state').set_string('surface-treatment', appearance)
         application = CharlieApplication(data_home=Path(directory))
         application.did_initial_sync = True
         failures = []
@@ -262,7 +262,7 @@ def main():
             return GLib.SOURCE_REMOVE
 
         GLib.timeout_add(700, exercise)
-        result = application.run(["org.projectluma.Charlie"])
+        result = application.run(["org.projectSuno.Charlie"])
         if failures:
             raise failures[0]
         print(f"native v71 installed runtime: {len(passed)} assertions passed")

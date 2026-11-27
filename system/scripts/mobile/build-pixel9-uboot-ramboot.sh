@@ -20,7 +20,7 @@ output_dir=${3:?usage: build-pixel9-uboot-ramboot.sh SOURCE_ROOT FIT OUTPUT_DIR}
 source_dir=$output_dir/source
 build_dir=$output_dir/build
 artifact_dir=$output_dir/artifacts
-jobs=${LUMA_PIXEL9_UBOOT_BUILD_JOBS:-4}
+jobs=${SUNO_PIXEL9_UBOOT_BUILD_JOBS:-4}
 patch_path=$repo_root/$PIXEL9_UBOOT_RAMBOOT_PATCH
 load_window_patch_path=$repo_root/$PIXEL9_UBOOT_LOAD_WINDOW_PATCH
 handoff_patch_path=$repo_root/$PIXEL9_UBOOT_HANDOFF_OBSERVABILITY_PATCH
@@ -32,9 +32,9 @@ die() {
 }
 
 case "$jobs" in
-  ''|*[!0-9]*) die 'LUMA_PIXEL9_UBOOT_BUILD_JOBS must be a positive integer' ;;
+  ''|*[!0-9]*) die 'SUNO_PIXEL9_UBOOT_BUILD_JOBS must be a positive integer' ;;
 esac
-[ "$jobs" -ge 1 ] || die 'LUMA_PIXEL9_UBOOT_BUILD_JOBS must be at least 1'
+[ "$jobs" -ge 1 ] || die 'SUNO_PIXEL9_UBOOT_BUILD_JOBS must be at least 1'
 [ "$(uname -s)" = Linux ] && [ "$(uname -m)" = aarch64 ] || \
   die 'the Pixel 9 ramboot loader must be built off-device on Linux/aarch64'
 
@@ -54,17 +54,17 @@ case "$(gcc -dumpmachine)" in
 esac
 
 uboot=$source_root/u-boot-zumapro
-source_manifest=$source_root/luma-source-manifest.env
+source_manifest=$source_root/Suno-source-manifest.env
 [ -d "$uboot/.git" ] || die "missing full U-Boot checkout: $uboot"
 [ -f "$source_manifest" ] || die "missing full-source manifest: $source_manifest"
 [ -f "$fit" ] || die "missing diagnostic FIT: $fit"
-[ -f "$patch_path" ] || die "missing Luma ramboot patch: $patch_path"
+[ -f "$patch_path" ] || die "missing Suno ramboot patch: $patch_path"
 [ -f "$load_window_patch_path" ] || \
-  die "missing Luma load-window patch: $load_window_patch_path"
+  die "missing Suno load-window patch: $load_window_patch_path"
 [ -f "$handoff_patch_path" ] || \
-  die "missing Luma handoff-observability patch: $handoff_patch_path"
+  die "missing Suno handoff-observability patch: $handoff_patch_path"
 [ -f "$embedded_fit_patch_path" ] || \
-  die "missing Luma embedded-FIT patch: $embedded_fit_patch_path"
+  die "missing Suno embedded-FIT patch: $embedded_fit_patch_path"
 [ ! -e "$output_dir" ] || die "refusing to replace existing output: $output_dir"
 
 [ "$(git -C "$uboot" rev-parse HEAD)" = "$PIXEL9_UBOOT_COMMIT" ] || \
@@ -74,16 +74,16 @@ source_manifest=$source_root/luma-source-manifest.env
 [ "$(sha256sum "$uboot/configs/$PIXEL9_UBOOT_DEFCONFIG" | awk '{print $1}')" = \
   "$PIXEL9_UBOOT_DEFCONFIG_SHA256" ] || die 'Tokay U-Boot defconfig checksum differs'
 [ "$(sha256sum "$patch_path" | awk '{print $1}')" = \
-  "$PIXEL9_UBOOT_RAMBOOT_PATCH_SHA256" ] || die 'Luma ramboot patch checksum differs'
+  "$PIXEL9_UBOOT_RAMBOOT_PATCH_SHA256" ] || die 'Suno ramboot patch checksum differs'
 [ "$(sha256sum "$load_window_patch_path" | awk '{print $1}')" = \
   "$PIXEL9_UBOOT_LOAD_WINDOW_PATCH_SHA256" ] || \
-  die 'Luma load-window patch checksum differs'
+  die 'Suno load-window patch checksum differs'
 [ "$(sha256sum "$handoff_patch_path" | awk '{print $1}')" = \
   "$PIXEL9_UBOOT_HANDOFF_OBSERVABILITY_PATCH_SHA256" ] || \
-  die 'Luma handoff-observability patch checksum differs'
+  die 'Suno handoff-observability patch checksum differs'
 [ "$(sha256sum "$embedded_fit_patch_path" | awk '{print $1}')" = \
   "$PIXEL9_UBOOT_EMBEDDED_FIT_PATCH_SHA256" ] || \
-  die 'Luma embedded-FIT patch checksum differs'
+  die 'Suno embedded-FIT patch checksum differs'
 grep -Fqx "UBOOT_COMMIT=$PIXEL9_UBOOT_COMMIT" "$source_manifest" || \
   die 'full-source manifest does not match the U-Boot pin'
 grep -Fqx 'PHONE_ACCESSED=false' "$source_manifest" || \
@@ -126,25 +126,25 @@ git -C "$source_dir" apply --recount "$handoff_patch_path"
 git -C "$source_dir" apply --recount --check "$embedded_fit_patch_path"
 git -C "$source_dir" apply --recount "$embedded_fit_patch_path"
 install -m 0644 "$fit" \
-  "$source_dir/board/samsung/exynos-mobile/luma-payload.fit"
+  "$source_dir/board/samsung/exynos-mobile/Suno-payload.fit"
 git -C "$source_dir" diff --check
 
 mkdir -p "$build_dir/board/samsung/exynos-mobile" "$artifact_dir"
 install -m 0644 "$fit" \
-  "$build_dir/board/samsung/exynos-mobile/luma-payload.fit"
+  "$build_dir/board/samsung/exynos-mobile/Suno-payload.fit"
 source_date_epoch=$(git -C "$uboot" show -s --format=%ct "$PIXEL9_UBOOT_COMMIT")
 export SOURCE_DATE_EPOCH="$source_date_epoch"
 export KBUILD_BUILD_TIMESTAMP="@$source_date_epoch"
-export KBUILD_BUILD_USER=luma
+export KBUILD_BUILD_USER=Suno
 export KBUILD_BUILD_HOST=pixel9-builder
 export KBUILD_BUILD_VERSION=1
 
 make -C "$source_dir" O="$build_dir" ARCH=arm CROSS_COMPILE= \
   "$PIXEL9_UBOOT_DEFCONFIG"
 config="$source_dir/scripts/config --file $build_dir/.config"
-$config --enable LUMA_RAMBOOT_DIAGNOSTIC
-$config --set-str LUMA_EXPECTED_FIT_SHA256 "$fit_sha256"
-$config --set-val LUMA_EXPECTED_FIT_SIZE "$fit_size"
+$config --enable SUNO_RAMBOOT_DIAGNOSTIC
+$config --set-str SUNO_EXPECTED_FIT_SHA256 "$fit_sha256"
+$config --set-val SUNO_EXPECTED_FIT_SIZE "$fit_size"
 $config --enable CMD_HASH
 $config --enable SHA256
 $config --enable CMD_ECHO
@@ -178,7 +178,7 @@ done
 make -C "$source_dir" O="$build_dir" ARCH=arm CROSS_COMPILE= olddefconfig
 
 for required in \
-  CONFIG_LUMA_RAMBOOT_DIAGNOSTIC=y CONFIG_LUMA_EXPECTED_FIT_SIZE=$fit_size \
+  CONFIG_SUNO_RAMBOOT_DIAGNOSTIC=y CONFIG_SUNO_EXPECTED_FIT_SIZE=$fit_size \
   CONFIG_CMD_HASH=y CONFIG_SHA256=y CONFIG_CMD_ECHO=y CONFIG_CMD_SLEEP=y \
   CONFIG_FIT=y CONFIG_SUPPORT_RAW_INITRD=y CONFIG_ENV_IS_NOWHERE=y \
   CONFIG_SYS_DEVICE_NULLDEV=y; do
@@ -218,17 +218,17 @@ done
 environment=$build_dir/include/generated/environment.h
 grep -Fq 'bootdelay=-2' "$environment" || die 'uninterruptible boot delay is absent'
 grep -Fq 'stdin=nulldev' "$environment" || die 'null input device is absent'
-grep -Fq 'hash sha256 ${luma_fit_addr} ${luma_fit_size}' "$environment" || \
+grep -Fq 'hash sha256 ${Suno_fit_addr} ${Suno_fit_size}' "$environment" || \
   die 'FIT digest check is absent from boot command'
-grep -Fq 'bootm ${luma_fit_addr}' "$environment" || \
+grep -Fq 'bootm ${Suno_fit_addr}' "$environment" || \
   die 'bounded in-memory FIT handoff is absent'
-grep -Fq 'LUMA_STAGE=FIT_BOUNDS_OK' "$environment" || \
+grep -Fq 'SUNO_STAGE=FIT_BOUNDS_OK' "$environment" || \
   die 'FIT-bounds observation marker is absent'
-grep -Fq 'LUMA_STAGE=FIT_EMBEDDED_OK' "$environment" || \
+grep -Fq 'SUNO_STAGE=FIT_EMBEDDED_OK' "$environment" || \
   die 'embedded-FIT observation marker is absent'
-grep -Fq 'LUMA_STAGE=FIT_DIGEST_OK' "$environment" || \
+grep -Fq 'SUNO_STAGE=FIT_DIGEST_OK' "$environment" || \
   die 'FIT-digest observation marker is absent'
-grep -Fq 'LUMA_STAGE=FAILURE_HOLD' "$environment" || \
+grep -Fq 'SUNO_STAGE=FAILURE_HOLD' "$environment" || \
   die 'failure observation marker is absent'
 grep -Fq 'sleep 30' "$environment" || die 'bounded failure hold is absent'
 if grep -Eq 'fastboot=|bootmenu_|bootefi bootmgr|stdin=button' "$environment"; then
@@ -240,7 +240,7 @@ if strings "$build_dir/u-boot.bin" | \
   die 'persistent update command survived in the ramboot binary'
 fi
 
-for symbol in luma_fit_start luma_fit_end; do
+for symbol in Suno_fit_start Suno_fit_end; do
   nm "$build_dir/u-boot" | awk -v symbol="$symbol" '$3 == symbol { found = 1 } END { exit !found }' || \
     die "embedded FIT linker symbol is absent: $symbol"
 done
@@ -265,7 +265,7 @@ uboot_version=$(sed -n 's/^#define PLAIN_VERSION "\(.*\)"/\1/p' \
   "$build_dir/include/generated/version_autogenerated.h")
 compiler_line=$(gcc --version | sed -n '1p' | tr '\n' ' ')
 {
-  printf 'LUMA_PIXEL9_UBOOT_RAMBOOT_VERSION=3\n'
+  printf 'SUNO_PIXEL9_UBOOT_RAMBOOT_VERSION=3\n'
   printf 'SCOPE=offline-read-only-ramboot-candidate\n'
   printf 'UBOOT_COMMIT=%s\n' "$PIXEL9_UBOOT_COMMIT"
   printf 'RAMBOOT_PATCH_SHA256=%s\n' "$PIXEL9_UBOOT_RAMBOOT_PATCH_SHA256"

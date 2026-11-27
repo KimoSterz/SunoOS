@@ -1,12 +1,12 @@
 # Recording and dataset format
 
-Version `luma-touch-lab/1`. All times are CLOCK_MONOTONIC nanoseconds on the
+Version `Suno-touch-lab/1`. All times are CLOCK_MONOTONIC nanoseconds on the
 recording machine; `boot_id` scopes them.
 
 ## Directory
 
 ```
-~/.local/share/luma-touch-lab/
+~/.local/share/Suno-touch-lab/
   sessions/<YYYYMMDD-HHMMSS>-<boot8>/
     session.json                 header (also the first line of every chunk)
     stream-000001.jsonl.gz       records, one JSON array per line

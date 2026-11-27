@@ -15,18 +15,18 @@ ROOT=Path(__file__).resolve().parents[2]
 DRIVER=r'''set -euo pipefail
 . "$1"
 unlocked=1
-luma_os_channel_head() { printf '%s\n' old; }
-luma_os_delta_plan() { :; }
-luma_os_log() { :; }
-luma_os_die() { exit 1; }
-luma_os_gpg_unlock() {
+Suno_os_channel_head() { printf '%s\n' old; }
+Suno_os_delta_plan() { :; }
+Suno_os_log() { :; }
+Suno_os_die() { exit 1; }
+Suno_os_gpg_unlock() {
  printf '%s\n' unlock >> "$EVENTS"
  [[ "$FAIL_UNLOCK" == 0 ]] || return 23
  unlocked=1
 }
-luma_os_gpg_fingerprint() { printf '%s\n' fixture-key; }
-luma_os_gpg_home() { printf '%s\n' /fixture/keyring; }
-luma_os_verify_as_client() { printf '%s\n' client-verified >> "$EVENTS"; }
+Suno_os_gpg_fingerprint() { printf '%s\n' fixture-key; }
+Suno_os_gpg_home() { printf '%s\n' /fixture/keyring; }
+Suno_os_verify_as_client() { printf '%s\n' client-verified >> "$EVENTS"; }
 ostree() {
  case "$1" in
  rev-parse) printf '%s\n' old;;
@@ -39,8 +39,8 @@ ostree() {
  *) return 44;;
  esac
 }
-LUMA_OS_EMPTY_DELTA=0
-luma_os_advance_channel /fixture/repo fixture/ref new
+SUNO_OS_EMPTY_DELTA=0
+Suno_os_advance_channel /fixture/repo fixture/ref new
 '''
 
 class SummarySigning(unittest.TestCase):

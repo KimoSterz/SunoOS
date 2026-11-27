@@ -27,53 +27,53 @@ fi
 # This policy delegates an OSTree-owned dynamic BLS invocation. A mutable
 # Workstation grub.cfg is generated and must remain under Fedora's ownership.
 [[ -e /run/ostree-booted ]] || {
-  printf 'error: Luma advanced GRUB policy requires an OSTree boot\n' >&2
+  printf 'error: Suno advanced GRUB policy requires an OSTree boot\n' >&2
   exit 1
 }
 
 grub_cfg=/boot/grub2/grub.cfg
 grub_dir=${grub_cfg%/*}
-theme_dir=$grub_dir/themes/luma
-custom_cfg=$grub_dir/luma.cfg
+theme_dir=$grub_dir/themes/Suno
+custom_cfg=$grub_dir/Suno.cfg
 
 # Atomic Fedora's OSTree generator owns grub.cfg. Do not rewrite that generated
 # file with grub2-mkconfig: composefs is intentionally not a canonical root for
 # grub2-probe. Its generated header loads GRUB's persistent environment after
 # establishing the fallback timeout, which is the supported policy boundary.
 grep -Fq 'load_env' "$grub_cfg"
-grep -Eq '(^|[[:space:]])blscfg([[:space:]]|$)|source \$prefix/luma.cfg' "$grub_cfg"
+grep -Eq '(^|[[:space:]])blscfg([[:space:]]|$)|source \$prefix/Suno.cfg' "$grub_cfg"
 
 # Older signed deployments may omit supplemental sizes their own boot policy
 # does not reference. The primary font and every referenced size remain required.
 fonts=(prairie.pf2 prairie-12.pf2 prairie-22.pf2)
 for font in "${fonts[@]}"; do
-  if [[ ! -s /usr/share/luma/boot/grub-theme/$font ]] &&
+  if [[ ! -s /usr/share/Suno/boot/grub-theme/$font ]] &&
      { [[ $font == prairie.pf2 ]] || grep -Fq "$font" \
-       /usr/share/luma/boot/luma.cfg /usr/share/luma/boot/grub-theme/theme.txt; }; then
-    printf 'error: installed Luma GRUB policy requires missing font %s\n' "$font" >&2
+       /usr/share/Suno/boot/Suno.cfg /usr/share/Suno/boot/grub-theme/theme.txt; }; then
+    printf 'error: installed Suno GRUB policy requires missing font %s\n' "$font" >&2
     exit 1
   fi
 done
-install -D -m 0644 /usr/share/luma/boot/grub-theme/theme.txt \
+install -D -m 0644 /usr/share/Suno/boot/grub-theme/theme.txt \
   "$theme_dir/theme.txt"
 for font in "${fonts[@]}"; do
-  [[ -s /usr/share/luma/boot/grub-theme/$font ]] || continue
-  install -D -m 0644 "/usr/share/luma/boot/grub-theme/$font" "$theme_dir/$font"
+  [[ -s /usr/share/Suno/boot/grub-theme/$font ]] || continue
+  install -D -m 0644 "/usr/share/Suno/boot/grub-theme/$font" "$theme_dir/$font"
 done
-install -D -m 0644 /usr/share/luma/boot/luma.cfg "$custom_cfg"
+install -D -m 0644 /usr/share/Suno/boot/Suno.cfg "$custom_cfg"
 
 # The Atomic-generated configuration remains the owner of deployment data.
-# Replace only its dynamic `blscfg` invocation with Luma's dynamic wrapper;
+# Replace only its dynamic `blscfg` invocation with Suno's dynamic wrapper;
 # every BLS file is still read live at boot and no deployment entry is copied.
-if ! grep -Fq 'source $prefix/luma.cfg' "$grub_cfg"; then
-  if [[ ! -e $grub_cfg.pre-luma-advanced ]]; then
+if ! grep -Fq 'source $prefix/Suno.cfg' "$grub_cfg"; then
+  if [[ ! -e $grub_cfg.pre-Suno-advanced ]]; then
     cp --reflink=auto --preserve=all "$grub_cfg" \
-      "$grub_cfg.pre-luma-advanced"
+      "$grub_cfg.pre-Suno-advanced"
   fi
-  tmp_cfg=$(mktemp "$grub_dir/grub.cfg.luma.XXXXXX")
+  tmp_cfg=$(mktemp "$grub_dir/grub.cfg.Suno.XXXXXX")
   awk '
     /^[[:space:]]*blscfg([[:space:]].*)?$/ {
-      print "source $prefix/luma.cfg"
+      print "source $prefix/Suno.cfg"
       inserted = 1
       next
     }
@@ -89,4 +89,4 @@ grub2-editenv - set "timeout_style=$timeout_style" "timeout=$choice_timeout"
 
 grub2-editenv list | grep -Fxq "timeout_style=$timeout_style"
 grub2-editenv list | grep -Fxq "timeout=$choice_timeout"
-grep -Fq 'source $prefix/luma.cfg' "$grub_cfg"
+grep -Fq 'source $prefix/Suno.cfg' "$grub_cfg"

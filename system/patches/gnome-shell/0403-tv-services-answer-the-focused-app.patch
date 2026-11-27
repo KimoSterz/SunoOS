@@ -1,12 +1,12 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Project Luma <engineering@projectluma.org>
+From: Project Suno <engineering@projectSuno.org>
 Date: Wed, 25 Nov 2026 02:00:00 -0600
 Subject: [PATCH] TV keyboard: only the focused app labels its action key
 
 SetActionLabel labelled the focused window's action key for any caller.
 The caller is now named by its process (a Flatpak by the .flatpak-info of
-its bus proxy, a Luma sandbox by AppPermissions1 Identify, a host program
-by its process or app scope; lumaPresentation/callerWindow.js) and must own
+its bus proxy, a Suno sandbox by AppPermissions1 Identify, a host program
+by its process or app scope; SunoPresentation/callerWindow.js) and must own
 the focused window, and no Shell modal or Shell actor may hold the keys;
 anything else gets AccessDenied.
 ---
@@ -15,23 +15,23 @@ index 43b493d..fc9afdf 100644
 --- a/js/js-resources.gresource.xml
 +++ b/js/js-resources.gresource.xml
 @@ -202,6 +202,7 @@
-     <file>ui/lumaPresentation/tvAppSwitcher.js</file>
-     <file>ui/lumaPresentation/tvAppSwitcherModel.js</file>
-     <file>ui/lumaPresentation/tvPointer.js</file>
-+    <file>ui/lumaPresentation/callerWindow.js</file>
-     <file>ui/lumaPresentation/cellularStatus.js</file>
-     <file>ui/lumaPresentation/mediaRow.js</file>
-     <file>ui/lumaPresentation/mediaRowTokens.js</file>
+     <file>ui/SunoPresentation/tvAppSwitcher.js</file>
+     <file>ui/SunoPresentation/tvAppSwitcherModel.js</file>
+     <file>ui/SunoPresentation/tvPointer.js</file>
++    <file>ui/SunoPresentation/callerWindow.js</file>
+     <file>ui/SunoPresentation/cellularStatus.js</file>
+     <file>ui/SunoPresentation/mediaRow.js</file>
+     <file>ui/SunoPresentation/mediaRowTokens.js</file>
 diff --git a/js/ui/keyboard.js b/js/ui/keyboard.js
 index ca80e98..85fad9f 100644
 --- a/js/ui/keyboard.js
 +++ b/js/ui/keyboard.js
 @@ -21,6 +21,7 @@ import * as SwipeTracker from './swipeTracker.js';
- import * as Keycap from './lumaPresentation/keycap.js';
- import {bottomCornerClearance, readDisplayProfiles, selectDisplayProfile} from './lumaPresentation/safeAreas.js';
- import * as TvKeyboard from './lumaPresentation/tvKeyboard.js';
-+import {actsForFocusedApp, callerIdentity} from './lumaPresentation/callerWindow.js';
- import {tv as TV_TOKENS} from './lumaPresentation/tvTokens.js';
+ import * as Keycap from './SunoPresentation/keycap.js';
+ import {bottomCornerClearance, readDisplayProfiles, selectDisplayProfile} from './SunoPresentation/safeAreas.js';
+ import * as TvKeyboard from './SunoPresentation/tvKeyboard.js';
++import {actsForFocusedApp, callerIdentity} from './SunoPresentation/callerWindow.js';
+ import {tv as TV_TOKENS} from './SunoPresentation/tvTokens.js';
  
  export const KEYBOARD_ANIMATION_TIME = 150;
 @@ -1518,15 +1519,25 @@ class TvKeyboardService {

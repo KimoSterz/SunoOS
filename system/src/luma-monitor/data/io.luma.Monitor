@@ -1,3 +1,0 @@
-#!/usr/bin/python3
-from luma_monitor.application import main
-raise SystemExit(main())

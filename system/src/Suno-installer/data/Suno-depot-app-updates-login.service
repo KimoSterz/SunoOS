@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: Apache-2.0
+[Unit]
+Description=Update apps at sign-in when updates are waiting
+Documentation=https://simplyluma.com/apps
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=oneshot
+# Starts Suno-depot-app-updates.service at once when an app Depot updates, or
+# a Suno app or runtime of the system installation, has an update waiting;
+# otherwise the timer's six-hour cadence stands. Waits up to ten minutes for
+# the network (a first sign-in sets up Wi-Fi).
+ExecStart=/usr/libexec/Suno-system-app-updates pending
+Nice=10
+IOSchedulingClass=idle
+TimeoutStartSec=12min

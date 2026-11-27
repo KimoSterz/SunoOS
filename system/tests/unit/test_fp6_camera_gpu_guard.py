@@ -12,9 +12,9 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 GUARD_PATH = (
     REPO_ROOT
-    / "config/mobile/fp6-physical/overlay/usr/local/libexec/luma-fp6-camera-gpu-guard"
+    / "config/mobile/fp6-physical/overlay/usr/local/libexec/Suno-fp6-camera-gpu-guard"
 )
-loader = importlib.machinery.SourceFileLoader("luma_fp6_camera_gpu_guard", str(GUARD_PATH))
+loader = importlib.machinery.SourceFileLoader("Suno_fp6_camera_gpu_guard", str(GUARD_PATH))
 spec = importlib.util.spec_from_loader(loader.name, loader)
 assert spec is not None
 guard = importlib.util.module_from_spec(spec)
@@ -37,7 +37,7 @@ class Fp6CameraGpuGuardTests(unittest.TestCase):
                 "101": (1000, b"/usr/bin/python3\0/usr/bin/prairie-camera\0"),
                 "102": (0, b"/usr/bin/prairie-camera\0"),
                 "103": (1000, b"/usr/bin/prairie-notes\0"),
-                "104": (1000, b"/usr/bin/python3\0/home/luma/camera-preview/prairie-camera\0"),
+                "104": (1000, b"/usr/bin/python3\0/home/Suno/camera-preview/prairie-camera\0"),
             }
             for pid, (uid, command) in fixtures.items():
                 process = proc_root / pid

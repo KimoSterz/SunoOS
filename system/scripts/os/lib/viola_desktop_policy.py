@@ -13,7 +13,7 @@ def compose(root, signed):
         raise ValueError('the native canonical Viola alias is no longer hidden')
     if not legacy.is_file():
         raise ValueError('the legacy Viola alias is missing')
-    overrides = root / 'usr/share/luma/desktop-overrides/applications'
+    overrides = root / 'usr/share/Suno/desktop-overrides/applications'
     overrides.mkdir(parents=True, exist_ok=True)
     canonical_output = overrides / canonical.name
     if not signed:
@@ -23,7 +23,7 @@ def compose(root, signed):
         return [canonical_output]
     if 'Exec=/usr/bin/viola-browser %U' not in original.splitlines():
         raise ValueError('the canonical Viola launcher no longer uses the managed dispatcher')
-    dock = root / 'etc/dconf/db/luma.d/00-luma-desktop'
+    dock = root / 'etc/dconf/db/Suno.d/00-Suno-desktop'
     lines = dock.read_text().splitlines(True)
     favorite_rows = [i for i, line in enumerate(lines) if line.startswith('favorite-apps=')]
     if len(favorite_rows) != 1:
@@ -54,7 +54,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--root', type=Path, default=Path('/'))
     args = parser.parse_args()
-    from luma_installer.native_app_roles import required
-    signed = required('com.rhyme.viola', args.root / 'usr/share/luma/first-party-app-roles.json')
+    from Suno_installer.native_app_roles import required
+    signed = required('com.rhyme.viola', args.root / 'usr/share/Suno/first-party-app-roles.json')
     for output in compose(args.root, signed):
         print(output)

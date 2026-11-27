@@ -59,7 +59,7 @@ press=$(find_iio spl07-003) || die 'SPL07-003 is missing'
 accel=$(find_iio icm42630-accel) || die 'ICM-42630 accelerometer is missing'
 gyro=$(find_iio icm42630-gyro) || die 'ICM-42630 gyroscope is missing'
 
-monitor_log=$(mktemp /tmp/luma-fp6-sensor-monitor.XXXXXX)
+monitor_log=$(mktemp /tmp/Suno-fp6-sensor-monitor.XXXXXX)
 monitor_pid=
 cleanup() {
   if [ -n "$monitor_pid" ]; then
@@ -70,7 +70,7 @@ cleanup() {
 trap cleanup EXIT HUP INT TERM
 
 start_time=$(date -Is)
-printf 'LUMA_FP6_DYNAMIC_SENSOR_ACCEPTANCE_VERSION=1\n'
+printf 'SUNO_FP6_DYNAMIC_SENSOR_ACCEPTANCE_VERSION=1\n'
 printf 'BOOT_ID=%s\n' "$(cat /proc/sys/kernel/random/boot_id)"
 printf 'DURATION_SECONDS=%s\n' "$duration"
 printf 'CAPTURE_MODE=%s\n' "$capture_mode"

@@ -1,13 +1,13 @@
 # Task: android-first-class
 
 - Status: active; production/nightly Android release blocked by open acceptance gates
-- Owner: Codex, luma-dev-2; Android first-class implementation chat
+- Owner: Codex, Suno-dev-2; Android first-class implementation chat
 - Updated: 2026-10-31; native settings and desktop-canvas build preparation
-- Project: luma-os
+- Project: Suno-os
 - Branch and last useful commit: codex/android-first-class; 8d4778409 (compiled Shell130 wheel fix), 9db797f4f (evaluation platform revision inventory), 4d7cb12a0 (retained failed VM runs); latest combined x86 install/drawer/dock scope passed8a4fde27; native Dell candidate active; committed hotfixda2364c63 delivered; mount storm repaired, network and same-file reinstall requalified; scaling and Google-dependent flows remain open
-- Worktree: /srv/dev/worktrees/luma-os/android-first-class
+- Worktree: /srv/dev/worktrees/Suno-os/android-first-class
 - Scope and expected result: implement the researched Android subsystem, native install/app identity/window and host-service integration, both CPU architectures and measured qualification. User explicitly authorized downloads, edits and testing without questions. No unsupported performance or hardware claims.
-- Files / interfaces owned by this task: src/luma-android, Android integration patches/build profiles and tests; coordinate any shared installer/platform changes by inspecting existing owners.
+- Files / interfaces owned by this task: src/Suno-android, Android integration patches/build profiles and tests; coordinate any shared installer/platform changes by inspecting existing owners.
 - Related tasks and integration owner: this chat owns Android implementation; preserve active mobile/ARM/device/release tasks and device gates.
 
 ## Acceptance audit
@@ -25,7 +25,7 @@ profile and hardware scope. Failures and unavailable controls stay open. Package
 | A03 Shared runtime/storage cost | Architecture defined; complete measurement OPEN | Prove multiple apps share one platform image; measure allocated blocks/private data/cache growth and idle footprint, not sparse file size or summed RSS. |
 | A04 Lifecycle/windows | PARTIAL: actual SDK4 and SDK5 x86 VM resize/maximize/restore, state restoration and responsive activation passed2ad2f9cc/3ab0ebc6/fd38012d; visual capture unavailable | Repeat resize/maximize/minimize/restore/rotation/activity recreation/close, concurrent apps and runtime/compositor restarts; preserve task identity/state. |
 | A05 Startup/performance | .92 full-RAM VM cold/warm command observations only; earlier failures retained | First-frame and frame-time distributions, warm activation, sustained workloads, native comparison and hardware traces; no UI stalls or hidden resource omissions. |
-| A06 Native notifications | PARTIAL SDK5 x86: real Luma entry + hardware keyboard + Send -> original Android PendingIntent receipt passed818f9e4b once with correct UID/PID; virtual-keyval path remains faulty | Real APK text reply through Luma UI and original PendingIntent; replacement/dismissal/restart/deduplication/uncertain delivery with exact synthetic receipts. |
+| A06 Native notifications | PARTIAL SDK5 x86: real Suno entry + hardware keyboard + Send -> original Android PendingIntent receipt passed818f9e4b once with correct UID/PID; virtual-keyval path remains faulty | Real APK text reply through Suno UI and original PendingIntent; replacement/dismissal/restart/deduplication/uncertain delivery with exact synthetic receipts. |
 | A07 Notification policy/bidirectionality | OPEN implementation/qualification | Group/channel/DND/lock-screen privacy, custom-content semantic fallback and explicitly consented host-notification listener access; no echo loops. |
 | A08 Clipboard | Actual SDK4 and SDK5 ordinary-UID clipboard read/write guards passed with nonempty trusted controls; focus policy remains open | Actual new native-HIDL admission with nonempty trusted controls; compositor-attested logical focus including touch-only profiles; read/write revocation, rich MIME, stalled/large transfers and lifetime/restart tests. |
 | A09 Documents/share/drop | Android picker alone is insufficient; OPEN host broker | Scoped native file handles/URIs, seek/read/write-back, persist/revoke, reconnect, share/drop and denied paths; no whole-home mount. |
@@ -36,7 +36,7 @@ profile and hardware scope. Failures and unavailable controls stay open. Package
 | A14 Other hardware | OPEN arbitration/qualification | USB/Bluetooth/NFC/sensors with native coexistence, real device reconnect/revocation and accurate capability advertisement. |
 | A15 Isolation/origin | BLOCKED for production: Android SELinux Disabled, UID1000 collision/shared namespace baseline | Enforced MAC and separate/remapped identities; attest runtime origin; audit Binder/device/socket/data/profile boundaries and cross-app/profile negatives. Host Enforcing alone does not pass. |
 | A16 Privileged native services | PARTIAL: actual ordinary UID10128 native clipboard read/write and task-name guards passed with nonempty UID1000 before/after controls2ad2f9cc and SDK5 fd38012d; remaining methods/boundaries open | Clipboard read/write and task-name getter passed on SDK4 and SDK5 x86 images. Require actual task focus/remove/remove-all negatives and trusted controls, plus property/platform/host-service boundaries and repeat on final image. |
-| A17 Process/resource integration | OPEN full per-app attribution | Verified process/package/profile identity, CPU/PSS/GPU accounting and scoped app termination across native Luma surfaces; aggregate runtime row insufficient. |
+| A17 Process/resource integration | OPEN full per-app attribution | Verified process/package/profile identity, CPU/PSS/GPU accounting and scoped app termination across native Suno surfaces; aggregate runtime row insufficient. |
 | A18 CPU/page/GPU matrix | PARTIAL: x86 VM baseline and native AArch64 image/export PASS e83d2ad1; ARM runtime/page/GPU/device tests OPEN | Actual native x86_64 and ARM64 builds/corpus; admitted page sizes, acceleration/buffer sharing/synchronization and physical Dell/Surface behavior. |
 | A19 Optional translation | OPEN; no qualified engine | Prefer inspected native ABI; explicit opt-in and separately qualify ARM-to-x86 and x86-to-ARM libraries, performance and licensing. Do not advertise either until it works. |
 | A20 Background/mobile power | Old-image local alarm/no-window observation only | Jobs/alarms/network push, suspend/resume/wakeup, Doze/wakelocks, idle drain and sustained physical energy/thermal measurements; no freeze shortcut. |
@@ -76,7 +76,7 @@ CURRENT — r453 images live on Dell through corrected r463 development updater:
   Actual apply completed; r466/8445471e read phase
   applied-awaiting-window-and-callback-qualification. Live image/component/HIDL
   hashes, active browser APK and settings service match the protected packet.
-  Dell root receipt: /var/lib/luma-android-native-preview/r180/window-controls-r463/receipt.json.
+  Dell root receipt: /var/lib/Suno-android-native-preview/r180/window-controls-r463/receipt.json.
   Rollback pair: /etc/waydroid-extra/images.before-window-r463; use matching
   native launcher rollback action and normal Polkit. Do not alter r180 installer.
 - Actual runtime qualification r467/d38f4d80 launcher, r468/2306193c result:
@@ -131,10 +131,10 @@ CURRENT — r453 images live on Dell through corrected r463 development updater:
 - Earlier build r437/d8b0f57f, guard r437/1afd5d00, monitor
   r437/5f4e232d. Immutable9d0b562d0/input
   SHA7cd03f9ff18aea273e578948f094f8157b757613c58b3a50fde78dfca18c33b1.
-  Root unit luma-android-window-controls-build-r437-controller.service;
+  Root unit Suno-android-window-controls-build-r437-controller.service;
   private window-controls-build-r437/progress.log is bounded observer output.
   r425 failed before compilation:0020 destroy_display context omitted existing
-  luma_clipboard_shutdown. Read-only guestfish r435/dcd6de31 recovered exact
+  Suno_clipboard_shutdown. Read-only guestfish r435/dcd6de31 recovered exact
   prepared C++/header; corrected patch applies to those exact files and preserves
   shutdown. Prior virt-cat r433 failed multi-boot inspection; no disk writes.
   Guarded recovery in r437 must prove ALL partial hardware files equal official
@@ -148,13 +148,13 @@ CURRENT — r453 images live on Dell through corrected r463 development updater:
   window-controls-build-r425 includes required empty build mount directory in
   frozen project input SHA60cb195f086b782b07ae96909c3648287c41335a0ff330a1e9174bc6b040cbf2,
   source remains410a362a7. Root unit
-  luma-android-window-controls-build-r425-controller.service. r406 stopped
+  Suno-android-window-controls-build-r425-controller.service. r406 stopped
   before compilation because that directory was absent from git archive;
   actual failure retained, VM shut down/profile restored, policy restored.
   Checkpoint r426/acf66ac4 refused reuse because source inode metadata changed
   across the VM cycle; no checkpoint published or verification bypassed.
 - r417/32cce29b confirmed actual Dell HANDLES_COMMAND_LINE native panel launch,
-  title Settings—Card Wars,500x260, real LumaUISwitch and saved touch=true.
+  title Settings—Card Wars,500x260, real SunoUISwitch and saved touch=true.
   No preference writes. r420/2c97cc23 repeated socket checks with exact
   negative-control exit42 rather than a generic failure. r421/0802f2ea passed16
   private delivery/cohort guards, including preservation of effective engine,
@@ -162,7 +162,7 @@ CURRENT — r453 images live on Dell through corrected r463 development updater:
   remains unqualified. Source test/helper changes after410 do not alter image.
 - Incremental build is now ACTIVE r406/d889ca79, immutable source410a362a7;
   input SHA3eb6cb6392a5e56c35030b64e00537c26085d3053525bc246939ab31882599b1.
-  Root unit luma-android-window-controls-build-r406-controller.service;
+  Root unit Suno-android-window-controls-build-r406-controller.service;
   normal28GiB admission,24GiB guest/QEMU25GiB/root2GiB. Guard
   r408/e47724bc restores temporary account policy afterward. First guard
   r406/764f3527 failed before mutation: runner now puts owner in /launcher.
@@ -182,7 +182,7 @@ CURRENT — r453 images live on Dell through corrected r463 development updater:
 - Quiet Android media was STREAM_MUSIC5/15 while the host stream was100%.
   r389/5b0ba30f changed only Android media to15; r391/a3dda3fa confirms it.
   Host volume unchanged. Product default now15; no per-window volume slider.
-- Luma-styled cog and native App Kit panel expose only mouse-as-touch input.
+- Suno-styled cog and native App Kit panel expose only mouse-as-touch input.
   Presentation uses a separate bounded system-UID channel/Binder endpoint;
   preference writes remain explicit ordinary-user operations. New images use
   per-package properties; legacy wildcard rules are preserved by fallback.
@@ -194,7 +194,7 @@ CURRENT — r453 images live on Dell through corrected r463 development updater:
   redraw concurrency checks, including the expected failing unlocked control.
   r401/86ad7ce6 passed8 preference/request tests and9 notification tests.
   r400/a017bc27 native Dell panel preview read the actual Card Wars setting with
-  a real Luma switch; no scripted preference mutation. Build/deployment and
+  a real Suno switch; no scripted preference mutation. Build/deployment and
   actual cog activation remain pending. Bash syntax and patch parse passed;
   ViewRoot source reverse/apply preflight passed, not Java compilation.
 - Private workspace: experiments/android-first-class/window-controls-r390,
@@ -225,7 +225,7 @@ CURRENT00:15Z — actual repaired-image component results; OBB import in progres
   hashed source. Native data mount verified from config_session. First frozen
   importer r365 failed before writes because Fedora /home is a symlink.
   Corrected r367/4e5742db uses canonical /var/home; user unit
-  luma-preview-android-cardwars-obb-r367-2bbd58b9.service launched00:14:21Z.
+  Suno-preview-android-cardwars-obb-r367-2bbd58b9.service launched00:14:21Z.
   Copied ONLY pinned193382321-byte OBB, retained original, refused a different
   existing destination. r369/521b1aeb: source/copy bytes match, but bare UID
   lxc-attach read denied in the system storage mount namespace. r371/1f6f4962
@@ -266,15 +266,15 @@ CURRENT23:59Z — native pair applied; game still exits; Dell kept awake:
   mappings, normal-user relaunch/12s observation, app exit history and app-only
   native crash blocks. No APK install/data reset/account actions.
 - r350/89717c30 transferred/launched native user unit
-  luma-preview-android-full-native-checks-r350-a4ef751c.service at23:54:15Z.
+  Suno-preview-android-full-native-checks-r350-a4ef751c.service at23:54:15Z.
   Launcher allows1500s for normal local auth+diagnostics, outer cap1800s.
-  Result ~/Downloads/Luma-Android-Hotfix-r199/full-native-checks-r350/full-result.json;
+  Result ~/Downloads/Suno-Android-Hotfix-r199/full-native-checks-r350/full-result.json;
   r352/5a6a45aa and r354/8bda1024 observed0 bytes (no diagnostic pass). Reader
   dell-hotfix-r199/full_checks_read.sh; next action capture actual result.
 - User explicitly requested preventing Dell sleep during testing. r351/
- 3a475600 verified logind inhibitor: Luma-Android-validation, Nick UID1000,
+ 3a475600 verified logind inhibitor: Suno-Android-validation, Nick UID1000,
   PID96118, sleep:idle BLOCK, held by native user unit
-  luma-preview-android-validation-awake-r351-f373218d.service for28800s/8h
+  Suno-preview-android-validation-awake-r351-f373218d.service for28800s/8h
   from23:56Z. No persistent power settings changed. Stop ONLY that unit on Dell
   when testing ends; renew before expiry if needed. Release inhibitor before
   measuring idle/mobile power; no battery/power qualification while inhibited.
@@ -311,8 +311,8 @@ CURRENT23:43Z — repaired images built/verified/transferred; Dell admin auth pe
   Exact immutable image source remains d7b752da362ade4f153a6a12cda1aa4db6042dc9.
   Export metadata recovery and device_tested=false explicitly retained in packet.
 - Dell reconnected r330/735e87d4 at23:37:08Z. r331/4736bdb7 transferred packet
-  to ~/Downloads/Luma-Android-HIDL-r309/packet and launched native user unit
-  luma-preview-android-hidl-native-repair-r331-b4572175.service at23:38:58.
+  to ~/Downloads/Suno-Android-HIDL-r309/packet and launched native user unit
+  Suno-preview-android-hidl-native-repair-r331-b4572175.service at23:38:58.
   As of23:42, user unit ACTIVE and pkexec PID89207 waiting at standard local
   admin authentication; native-image-apply.log is empty. No image replacement
   yet, no OS reboot or user data reset. Do not bypass authentication or claim
@@ -396,8 +396,8 @@ CURRENT23:07Z — builder resized after actual memory pressure; native retry act
   start interval. Root-owned checkpoint records no fresh full read claim.
 - CURRENT r309/4bad37d9 ACTIVE under normal28GiB admission; guard
   r309/b089e2a6 ACTIVE. Private drivers/receipts hidl-repair-r309; root unit
-  luma-android-hidl-repair-r309-controller.service, guest unit
-  luma-android-hidl-repair-r309.service. Uses proven24GiB guest/QEMU hard25,
+  Suno-android-hidl-repair-r309-controller.service, guest unit
+  Suno-android-hidl-repair-r309.service. Uses proven24GiB guest/QEMU hard25,
   root2GiB,8 compiler jobs and original guest-local4GiB-cap zram/24GiB swap.
   Account-only max32/build28; global32/host reserve8/disk reserve20 unchanged;
   exact original policy/VM profile restore after terminal state. No build pass.
@@ -432,8 +432,8 @@ CURRENT22:49Z — corrected native build active; latest Dell transport unavailab
   with its managed root/qemu ownership; no existing payload was overwritten.
 - CURRENT r301/2ab3776b normal14GiB build ACTIVE; guard r301/5d796c48 ACTIVE.
   Private drivers/receipts: experiments/android-first-class/hidl-repair-r301.
-  Root unit luma-android-hidl-repair-r301-controller.service; guest unit
-  luma-android-hidl-repair-r301.service on owned809f0871 server VM. Booted
+  Root unit Suno-android-hidl-repair-r301-controller.service; guest unit
+  Suno-android-hidl-repair-r301.service on owned809f0871 server VM. Booted
  22:46:38Z at10GiB, root2GiB/QEMU hard11GiB within14GiB reservation. Source
   checks active22:48:17Z; no compile/export pass yet. Child safely polls a
   missing initial log; original VM settings/policy restore at terminal state.
@@ -474,7 +474,7 @@ CURRENT22:28Z — native repair build active, immutable-input read verification:
   not establish its transient service; no VM start. Original policy restored
  22:26:20Z (attempt-r292/policy-restored.json). Removed only --pipe.
 - Current normal build r293/55744732 ACTIVE under14GiB admission; root unit
-  luma-android-hidl-repair-r290-controller.service, root controller2GiB + planned
+  Suno-android-hidl-repair-r290-controller.service, root controller2GiB + planned
   guest10GiB/QEMU hard11GiB. Guard r293/6c3248f4 ACTIVE (1GiB reservation).
   Existing owned builder809f0871 checked shut off, ARM fixture checked shut off,
   host SELinux Enforcing. Reading/verifying all54GiB immutable source before
@@ -524,7 +524,7 @@ CURRENT22:16Z — mislabeled TikTok source proven; media crash isolated:
   warning,4.703s including two full inspections. Payload archive SHA
  ddce708c473f9eb43d767239653ca85914669bbbd1148c7e4656b6accaeeaedb.
 - Fresh native Valet review launched r282/50f94184 as isolated preview identity
-  io.luma.Valet.AndroidPackagePreviewR282; older error window/process not killed.
+  io.Suno.Valet.AndroidPackagePreviewR282; older error window/process not killed.
   Source update is delivered but existing already-imported Python windows need
   reopening. Native input API introspected r283/ff5cce38: inactive session closed
   on client disconnect. No input, clipboard or screen capture was enabled.
@@ -649,9 +649,9 @@ CURRENT21:04Z — native Dell candidate active; user reports and first hotfix:
   archive handling in runtime/Valet/MIME/Filer source. Android MIME definitions
   use suffixes+ZIP inheritance, without identifying unrelated ZIPs by magic.
 - r206/14a2ab6f broad host suite FAILED795/8errors/4skips: trusted deployment
-  fixtures reject shared ancestor ownership and GUI import lacks Luma AppKit.
+  fixtures reject shared ancestor ownership and GUI import lacks Suno AppKit.
   No broad-suite pass claimed. Focusedr208/9e0129bf PASS28 +runtime128/16skips.
-  Initial GUIr209/5c0a5dd1 failed missing host LumaAppearance typelib. Extracted
+  Initial GUIr209/5c0a5dd1 failed missing host SunoAppearance typelib. Extracted
   existing coherent SDK117 read-only for server GUI; r211/6efee6f9 and final
   r217/25546bfa GTK checks PASS. Final focusedr226/bc682e59 PASS30 including
   actual APKX bundle validation, ambiguous base rejection, WebP and reinstall
@@ -689,7 +689,7 @@ CURRENT21:04Z — native Dell candidate active; user reports and first hotfix:
   absent; do not assume that proves the YouTube failure or install proprietary
   Google services as a shortcut.
 - Deeper Ethernet/netd/log/YouTube-exit read-only diagnostic launchedr202/706a0d65:
-  Dell unitluma-preview-android-hotfix-diagnostics-r202-95208246.service,
+  Dell unitSuno-preview-android-hotfix-diagnostics-r202-95208246.service,
   root_diag2_launcher PID27099 ->pkexec PID27101. Latest r224/r227: still
   waiting for normal local administrator authentication; output0bytes.
   Generic SSH sudo requires password. No auth bypass, no new root keys, no
@@ -730,7 +730,7 @@ CURRENT20:32Z — Dell native candidate staged; next normal reboot required:
   Restore launchers to existing private930MB Dell kit. Payload manifest798daa38
   unchanged. Earlier staging-only README superseded by NATIVE-SETUP.txt.
 - r195/a06f1181 PASS20:29:56Z launched actual local user-manager unit
-  luma-preview-android-native-install-r180-eb1b5fca.service, with normal local
+  Suno-preview-android-native-install-r180-eb1b5fca.service, with normal local
   Polkit authentication. No credentials requested in chat or bypassed.
 - r196/12ee8bfd metadata: native installer root process running, OS4320 pinned,
   UpdateDeployment transaction active; frontend stage_succeeded still false,
@@ -757,14 +757,14 @@ CURRENT19:24Z — native Dell files delivered; full scoped server install/drawer
   preview. No VM, emulation wrapper, automated UI test or OS change was delivered
   or run on Dell. Only connection/package/session metadata and received-file/hash
   checks ran there. Existing native OS and active Android runtime are unchanged.
-- Dell reachable as nick, x86_64, Fedora44/Luma20261027.4, hostEnforcing,
+- Dell reachable as nick, x86_64, Fedora44/Suno20261027.4, hostEnforcing,
   kernel7.2.8; active local Wayland session. Existing runtime80/images9,
   Shell125/Installer76/helper1/Filer74. Shared Platform44 commitbc70be60 already
   matches the private Filer requirement. Existing real per-user Android data.
   A separate OS deployment4320c7e9 is staged; bootedf1dfcbc1 and prior rollback
   de4d98d1 preserved. sudo -n requires local password. Do not overwrite pending
   deployment, reset Android data, interrupt desktop or reboot remotely.
-- Native bundle: ~/Downloads/Luma-Android-Native-20261030-r172 on Dell.
+- Native bundle: ~/Downloads/Suno-Android-Native-20261030-r172 on Dell.
   Seven exact130/81/helper2/75/extensions75/Runtime96 RPMs, compressed coherent
   SDK5 x86 image pair, private Filer app, official F-Droid and synthetic probe,
   payload.json, control hashes, read-only checker and READ-ME-FIRST.txt.
@@ -928,7 +928,7 @@ CURRENT17:50Z — matched x86 install/drawer/pin-unpin PASS; dock wheel defect r
 - Actual pointer APK double-click -> Valet directly, correct F-Droid icon/name/
   version2.0.2 -> Install -> Ready in Applications -> Open -> native phone window;
   hash19d51fad... preserved. AndroidPID1677, shared host client3267 (not per-app
-  host attribution). Actual Luma close -> drawer search -> right-click Pin ->
+  host attribution). Actual Suno close -> drawer search -> right-click Pin ->
   real favorite appended -> actual Unpin -> exact previous favorites preserved
   -> primary drawer launch -> actual app window with real loaded repository.
   Android notification PERMISSION prompt remains Android UI, distinct from the
@@ -1082,7 +1082,7 @@ CURRENT15:45Z — preview packages qualified; ARM compile active; drawer actions
 - Installer81 full package90feb429 PASSED15:44:05Z:841tests/9skips, native6+7,
   real GTK main-preview architecture warning/version/eligible-install controls,
   cache/digest/header checks. RPM SHA718a88d8a721518fbc646b09c80f203ad952da0b74bcbf05e9fab6b222b200e4;
-  package-installer-r101/source/build/packages/luma-application-installer.
+  package-installer-r101/source/build/packages/Suno-application-installer.
   Requires now pins helper2 exactly; both-CPU input pins updated. Android ABIs
   no longer accidentally rejected by host RPM architecture-name heuristics.
   Version/signature facts remain separate, publisher not invented. This is
@@ -1106,9 +1106,9 @@ CURRENT15:08Z — actual x86 direct-install GUI PASS; ARM24GiB build active:
 - Real pointer double-click dab8a44a on selected F-Droid APK d998daa0 opened
   native Valet directly8d371fa4, no chooser. Pointer Install d5659605 produced
   Ready in Applications268be02c. Installed APK SHA exactly19d51fad...; generated
-  native desktop file Exec=/usr/bin/luma-android launch org.fdroid.fdroid.
+  native desktop file Exec=/usr/bin/Suno-android launch org.fdroid.fdroid.
   Pointer Open d6e147aa -> real phone window b7b40462; allowed notification
-  permission1126b760; actual window close f7b0d162 removed it. Actual Luma app
+  permission1126b760; actual window close f7b0d162 removed it. Actual Suno app
   drawer1a136a8a, pointer F-Droid3311a4ba -> reopened8d3df299 with loaded real
   repository content. AndroidPID1592, host Waydroid clientPID3658 shared; no
   per-app host process attribution claim. Valet version/signer shown undeclared.
@@ -1207,7 +1207,7 @@ HISTORICAL14:23Z — actual Flatpak delivery fixed; installer79 verified; build 
   was queued but never executed; client timed out, not a UI failure/pass.
   GUI settings restored/fixture removed/VM off/XML/raw mount/policy24cf restored.
 - Read-only5a44bbea established why prior76 boot worked: its composed service
-  ExecStart=/usr/libexec/luma-app-baseline (new handoff); installer77/78 RPM
+  ExecStart=/usr/libexec/Suno-app-baseline (new handoff); installer77/78 RPM
   replaced it with old legacy seeder unit. Old/new Python validators themselves
   identical. Source155516d7a makes package and image units identical to the OS
   handoff, UMask0022/public app files, private StateDirectory0700 and30min bound.
@@ -1219,7 +1219,7 @@ HISTORICAL14:23Z — actual Flatpak delivery fixed; installer79 verified; build 
   Installer79 package9cb2f433 PASSED14:14:50Z,834tests/9skips+6native+7additional,
   actual RPM metadata/digests passed. RPM SHA
  f10b8267e65208b1682e8511a31219c8f0bcdb515789ef80c9de6c02bd347b64;
-  output private package-installer-r75/source/build/packages/luma-application-installer/RPMS/noarch.
+  output private package-installer-r75/source/build/packages/Suno-application-installer/RPMS/noarch.
 - Critical delivery finding: nautilus-main explicitly delegates host launch to
   signed system Flatpak. Host RPM75 alone cannot update visible Filer. Actual
   patched /app Flatpak build is required; no production role/signature bypass.
@@ -1254,7 +1254,7 @@ HISTORICAL14:23Z — actual Flatpak delivery fixed; installer79 verified; build 
 HISTORICAL14:03Z — real boot gate found OS selection mismatch; corrected78 run active:
 - R55 parentf9287404/child3af3503d FAILED13:58:35/39Z. Atomic three-package
   replacement succeeded (candidate93f18d7fae643196f6e1d445e02f7a359d4ceef7e0fe4ffc1b0333d914d04fa7),
-  but fresh boot GDM dependency luma-app-baseline.service rejected incomplete
+  but fresh boot GDM dependency Suno-app-baseline.service rejected incomplete
   inventory before graphical login. NO direct APK UI qualification occurred.
   Original XML/off/raw unmount/policy24cf restoration verified in final receipts.
 - Actual root read-only diagnostics ef2dbd8c/cd1ae6ed captured boot failure,
@@ -1271,7 +1271,7 @@ HISTORICAL14:03Z — real boot gate found OS selection mismatch; corrected78 run
 - Installer78 package4fb50ec3 PASSED14:01:29Z:833tests/9skips,6 native preview,
  7 additional tests, digest/header modes. Exact RPM SHA
  3965043c7ac0f1fefaa9bdde081a5b8aea4a6a8770a04906313c83dfc075e47b;
-  output private package-installer-r68/source/build/packages/luma-application-installer/RPMS/noarch.
+  output private package-installer-r68/source/build/packages/Suno-application-installer/RPMS/noarch.
 - Only completed disposable installer77 builder image431db544 removed normally
   (no force) by83b727a3 after verifying no dependent containers and retaining
   exact RPM/SRPM hashes, full source/build outputs/logs. Root free22GiB; no broad
@@ -1327,7 +1327,7 @@ HISTORICAL13:40Z — installer77 package verified; Filer75 native build active:
   RPM mode verifier was incorrectly given raw RPM bytes. Corrected read-only
   postverification ce46a56c PASSED13:33:37Z: actual header dirs0755 and digest OK.
   Installer77 RPM1214298B SHA6d71c338964a40366d1326685baeb62246b5c9c3c01b5267c3320b84d60f3a25;
-  path private package-installer-r53/source/build/packages/luma-application-installer/RPMS/noarch/.
+  path private package-installer-r53/source/build/packages/Suno-application-installer/RPMS/noarch/.
   Neither wrapper failure nor component success is whole-OS qualification.
 - Filer r53 build8bc06b08 FAILED before compile: complete spec still release74
   and missing patch0159. Source1b0bfc41e corrects release75 and includes0159.
@@ -1371,10 +1371,10 @@ HISTORICAL06:21Z — session cleaned up; source fix and baseline alignment:
 HISTORICAL06:04Z — actual real-app install and native reply milestones:
 - Actual96/127/SDK5 boot3264f49d-e460-43be-b19d-9ad405ee8cca: real Filer APK
   double-click opened chooser (defect still open). Choosing Valet opened actual
-  io.luma.Valet GUI; pointer Install succeeded. Installed F-Droid2.0.2 APK SHA
+  io.Suno.Valet GUI; pointer Install succeeded. Installed F-Droid2.0.2 APK SHA
   exactly19d51fad... matches official signature-verified corpus; native desktop
   entry published. Actual app opened, loaded repository, closed and reopened by
-  pointer from Luma app drawer. Hardware typing F-Droid in native search correct.
+  pointer from Suno app drawer. Hardware typing F-Droid in native search correct.
 - Evidence GUI child2d0de28a: snapshot e3b92286 installation success; state
  5f5bc5c6 exact APK/desktop; dce4dd0d actual running window; c69059de closed;
  a11f85c5/fd79fdef/a4f5456e app-drawer reopen; 9387bf3d actual correct search.
@@ -1382,8 +1382,8 @@ HISTORICAL06:04Z — actual real-app install and native reply milestones:
 - Native reply actual PASS dev-android-gui-reply-verify-818f9e4b EXIT0 05:54:53Z.
   Existing APK16 BackgroundReceiver local30s alarm removes foreground task,
   then posts real notification. Sidecar4a6e84d2 verified96/127/SDK5 native hashes,
-  APK hash, same boot, UID10128/PID1780 and unique textLumaAndroidReply-207d821f.
-  Native pointer focused actual live Luma card; QEMU keys dispatched once per
+  APK hash, same boot, UID10128/PID1780 and unique textSunoAndroidReply-207d821f.
+  Native pointer focused actual live Suno card; QEMU keys dispatched once per
   character; snapshot01f6190a showed exact text; pointer Send66b17b7c. Original
   ActionReceiver action:reply receipt exact text/UID/PID once, unchanged after3s.
   No direct reply API invocation, text setter or clipboard injection. This closes
@@ -1402,8 +1402,8 @@ HISTORICAL06:04Z — actual real-app install and native reply milestones:
   it or change public defaults based on that hypothesis. Actual GIO queried in
   Filer's exact XDG environment had resolved installer default even before change.
 - R50 main child/root/parent0727a2ae still active until bounded06:04-ish deadline;
-  its finish predicate mistakenly requires legacy org.projectluma.AndroidInstaller
-  while actual installed surface is io.luma.Valet. Do not alter frozen helpers or
+  its finish predicate mistakenly requires legacy org.projectSuno.AndroidInstaller
+  while actual installed surface is io.Suno.Valet. Do not alter frozen helpers or
   claim overall pass. Observe final cleanup, VM off/original XML and policy24cf
   restoration, then record independent successful scopes with their limits.
 - Next product fix: inspect Filer's actual default activation/portal path against
@@ -1423,7 +1423,7 @@ HISTORICAL05:33Z — real-app GUI flow in one bounded persistent desktop session
   change this run and failed; earlier SDK5 resize passes remain bounded evidence.
 - LIVE parent0727a2ae normal1GiB/root256MiB; child gui-vm-r50-2d0de28a
   normal14GiB/root1GiB/QEMU12/guest6/2CPU. vm-cache-budget-r50 exact restoration
-  controls retained. New fixture luma-android-gui-r50@test.projectluma is limited
+  controls retained. New fixture Suno-android-gui-r50@test.projectSuno is limited
   to native screenshots/windows and pointer input; host uses actual QEMU keys.
 - Private gui-vm-r50/inbox accepts owned0600 UUID JSON commands, records each
   once, and keeps same VM session for at most1800s. Commands snapshot/click/keys/
@@ -1536,12 +1536,12 @@ HISTORICAL04:38Z — single-boot continuation under larger accounted cache cap a
   certificate matches published43238d51...; minSDK24,target37. Private corpus-
   fdroid-r42/download-proof.json. NOT installed/launched/integration-qualified.
 
-HISTORICAL04:06Z — actual Luma card/input reached; dispatch observation corrected:
+HISTORICAL04:06Z — actual Suno card/input reached; dispatch observation corrected:
 - r40 e6cc8f8e failed at editor text comparison before Send. Actual96 label and
   waydroid_t process under Enforcing passed again; SDK5/APKr16 hashes and app UID/
-  PID matched. Real live Luma card, policy(dndfalse/bannertrue), matching native
+  PID matched. Real live Suno card, policy(dndfalse/bannertrue), matching native
   owner, mapped entry/button and actual pointer focus all passed. Failed-state.png
-  captured real Luma card/editor with synthetic text, not a mock or injected card.
+  captured real Suno card/editor with synthetic text, not a mock or injected card.
 - No Send click and no Android reply receipt. Observer previously compared text
   immediately after queued virtual keyboard events. Source now waits at most2s
   for actual editor contents and records observed text; no direct set_text, input
@@ -1573,7 +1573,7 @@ HISTORICAL03:53Z — actual96 label/domain/SDK5 boot passed; UI probe corrected:
   calls setInlineReplyVisible(false)) and then looked for a mapped editor. Test
   FAILED1 at03:49:23Z, with no input sent and no reply receipt. No UI pass.
   Cleanup restored original settings/removed fixture; XML restored/alias unmounted.
-- Corrected source probe observes the daemon's actual LIVE Luma notification
+- Corrected source probe observes the daemon's actual LIVE Suno notification
   card, its real ownership/policy and mapped controls. No private presentation
   calls, toggling hidden editors, synthetic card or direct transport. Adds failed
   screenshot for diagnosis. Normal syntaxeab65098 PASSED; actual input still open.
@@ -1589,7 +1589,7 @@ HISTORICAL03:42Z — runtime96 packaged; actual atomic label/reply test active:
 - RPM25dc4ccb3e3dd50745c092df2d4d074090bc58ea07227a1802521e9e3b5679f1;
   SRPMdf2d1ad6642b8eade9c926723038b780d4cc0d01eef2c258b9cd17596e88a104.
   Immutable receipt rpm-r38/source-receipt.json; outputs beneath existing
-  rpm-r10/source/build/candidate-96/build/packages/luma-android-runtime.
+  rpm-r10/source/build/candidate-96/build/packages/Suno-android-runtime.
 - LIVE dev-android-reply-vm-r39-183e21f8.service10GiB/root1GiB, frozen
   reply-vm-r39. Same buffered raw6GiB/QEMU8/2CPU. Initial actual user Shell/bus
   running checks passed; currently replacing95->96 with unchangedShell127/SDK5.
@@ -1662,7 +1662,7 @@ HISTORICAL03:04Z — verified copy complete; corrected native QA actor active:
   relaxation. r28 remains FAILED1, not Android qualification. End03:03:14Z;
   original XML restored, diagnostic file bind unmounted, VM gracefully OFF.
 - LIVE dev-android-reply-vm-r31-ec852439.service normal10GiB/disk10GiB;
-  root luma-android-first-class-reply-vm-r31.service1GiB, raw VM6GiB/QEMU8.
+  root Suno-android-first-class-reply-vm-r31.service1GiB, raw VM6GiB/QEMU8.
   Frozen reply-vm-r31 helpers. Readiness checks only readable socket/boot identity
   via guest agent; actual user-manager/GNOME/bus and pressure verified through
   real SSH after readiness. No change to APK authorization or production policy.
@@ -1707,7 +1707,7 @@ HISTORICAL02:42Z — no usable-build or inline-reply qualification claim:
   neither Android causation nor a RAM bottleneck is established. kvm-clock was
   already selected. VM and builder are OFF during disk-copy work.
 - LIVE normal dev-android-runtime-raw-copy-f0197be8.service4GiB/disk60GiB;
-  root luma-android-first-class-runtime-raw-copy-r27.service3GiB. One-shot raw
+  root Suno-android-first-class-runtime-raw-copy-r27.service3GiB. One-shot raw
   diagnostic copy on HDD, source original qcow2 retained/unmodified. Conversion
   followed by full qemu-img guest-byte comparison is required. Domain has NOT
   been switched. IMPORTANT: actual backing-chain inventory contains ONE qcow2,
@@ -1727,11 +1727,11 @@ history, not current jobs.
 Source/worktree isolated; canonical untouched. Current source is on this task branch; older immutable build sources are named below. Historical implementation497a61054
 includes supervised cold-CLI handoff, corrected raw-wire APKr13/native controls,
 page-size admission and native clipboard0016. DO NOT BUILD SNAPSHOT901d5f18c
-OR luma-project-aidl.squashfs: wrong backend.
+OR Suno-project-aidl.squashfs: wrong backend.
 
 LIVE01:42Z — corrected triple staged/booted; current native fixture setup:
 - CURRENT dev-android-reply-vm-r20-ba8fb087.service normal10GiB/10GiB disk;
-  root luma-android-first-class-reply-vm-r20.service1GiB. Frozen reply-vm-r20
+  root Suno-android-first-class-reply-vm-r20.service1GiB. Frozen reply-vm-r20
   helpers, same127/95/SDK5/APKr16. Pipeline installing-local-candidate-triple-
   and-image (setup phase). Builder OFF; original watchdog/health checks intact.
 - r18 08c5ab7c successfully staged ALL3 local candidates: derived checksum
@@ -1755,7 +1755,7 @@ LIVE01:42Z — corrected triple staged/booted; current native fixture setup:
 
 LIVE01:28Z — current matching VM update; prior harness attempts retained:
 - CURRENT normal dev-android-reply-vm-r18-08c5ab7c.service10GiB/10GiB disk;
-  root luma-android-first-class-reply-vm-r18.service1GiB, VM6GiB/QEMU8. Frozen
+  root Suno-android-first-class-reply-vm-r18.service1GiB, VM6GiB/QEMU8. Frozen
   reply-vm-r18 manifest, same verified95/127/imageSDK5/APKr16 candidates. Pipeline
   is installing-local-candidate-triple-and-image. Builder remains OFF. Observe
   this actual child through fresh reboot/tests/cleanup, do not stop at launch.
@@ -1790,7 +1790,7 @@ LIVE01:14Z — corrected Shell127 fully packaged; coherent VM test active:
   SRPM588b7ec03c9af42c1d9e1d7eb15dab0b074920cca3347405ce364a03eb617573.
   Output rpm-r10/source/build/candidate-shell127/build/packages/gnome-shell.
 - CURRENT dev-android-reply-vm-r16-f390d264.service normal10GiB/10GiB disk;
-  root luma-android-first-class-reply-vm-r16.service1GiB, owned6GiB/QEMU8 runtime.
+  root Suno-android-first-class-reply-vm-r16.service1GiB, owned6GiB/QEMU8 runtime.
   Frozen reply-vm-r16/manifest.json pins helpers and exact95/127 RPM triple.
   Original reset watchdog and boot health checks retained. Builder stays off.
 - Bad124 may still boot due trial recovery selection. Bootstrap is explicitly
@@ -1856,7 +1856,7 @@ OBSERVED00:57Z — root cause confirmed; Shell packaging fix/regression passed:
   directory mode42770 (setgid2770), denying ordinary-user traversal. RUNPATH is
   correct and the library is present. Root package checks had not caught this.
 - Added final %install normalization of static system directories to0755 in
- 0000-luma-fedora-spec.patch. Builder now checks directory modes in EVERY main/
+ 0000-Suno-fedora-spec.patch. Builder now checks directory modes in EVERY main/
   common RPM header with source-owned check-rpm-directory-modes.py. Bad workspace
   ACL/setgid modes must never become installed OS permissions.
 - Regression3d28a2b1 PASSED: rejects actual bad124 RPM, applies fixed patch to
@@ -1868,7 +1868,7 @@ OBSERVED00:57Z — root cause confirmed; Shell packaging fix/regression passed:
   RPM34713ac778e81bc6befa0999119cfeea90d93fedda6eec76e6dd21644ce9798c;
   SRPM6e2aeaac10fa24c6c03f786e6f89c5b7bbd66d71a1dd692c56c3c215e370122d.
   Source27371d18bd6cd5dc77773e00b9f4c1c5e306f3bd; rpm-r18 receipt/minimal
-  archive; output rpm-r10/source/build/candidate-95/build/packages/luma-android-runtime.
+  archive; output rpm-r10/source/build/candidate-95/build/packages/Suno-android-runtime.
   Native graphical install still unqualified. Preparing fresh Shell125 build,
   preserve124 artifacts and full native Glycin sandbox-required check.
 
@@ -1886,7 +1886,7 @@ OBSERVED00:44Z — automatic fallback confirmed; diagnostic cleanup complete:
   Automatic fallback occurred. Do not attribute previous resets to watchdog from
   this experiment: the booted deployment also changed. Need failed-boot journals.
 - CURRENT normal dev-android-reply-boot-logs-5b2df417.service10GiB; root
-  luma-android-first-class-reply-boot-logs-r14.service1GiB. Original reset
+  Suno-android-first-class-reply-boot-logs-r14.service1GiB. Original reset
   watchdog retained. Collecting specific failed boot journals and Atomic/boot
   counter status. Observe normal final child and powered-off VM before updates.
 - Source installer delegation passes all128 root checks. Preparing distinct
@@ -1896,7 +1896,7 @@ OBSERVED00:44Z — automatic fallback confirmed; diagnostic cleanup complete:
 OBSERVED00:38Z — combined candidate installed; graphical boot gate FAILED:
 - d4e9f7f8 prepared local Shell124 main/common override alongside existing.94,
   matched SDK5 pair and retained image backup. Exact package dependencies resolved
-  against Mutter50.4/luma14. This proves installation, not an executing Shell UI.
+  against Mutter50.4/Suno14. This proves installation, not an executing Shell UI.
 - New boot never met the300s graphical readiness gate. pipeline.json records
   qualification-failed-or-inconclusive/Graphical session readiness deadline.
   NO native reply or new-image runtime qualification pass. Normal/root actor
@@ -1909,7 +1909,7 @@ OBSERVED00:38Z — combined candidate installed; graphical boot gate FAILED:
 - Finally's extension cleanup failed while SSH unavailable. Owned test extension
   and original settings record must be restored on next reachable boot; do not
   report cleanup completed. Original settings at d4e9f7f8 artifact and guest
-  /var/tmp/luma-android-reply-r12-a65b419f/original-extension-settings.json.
+  /var/tmp/Suno-android-reply-r12-a65b419f/original-extension-settings.json.
 - Independent source root check5750ac25 PASSED128 tests, ZERO skipped in1.794s
   after installer delegation fix7e932221e. .94 installed VM lacks this fix;
   updated runtime package/graphical install remain to build and test.
@@ -1927,12 +1927,12 @@ SOURCE00:31Z — installer activation delegation fixed; VM test unaffected:
   component evidence, not a packaged or actual graphical install pass. Current
   SDK5 reply VM remains pinned to installed host.94, which lacks this new fix.
 - Reply VM installed local Shell124 pair with existing runtime.94 override;
-  exact Mutter50.4/luma14 satisfied dependencies. SDK5 image pair installed,
+  exact Mutter50.4/Suno14 satisfied dependencies. SDK5 image pair installed,
   original image backup retained. Original extension list preserved plus owned
   test instrumentation. Now rebooting into actual new Shell; no reply pass yet.
 
 REVIEW00:26Z — installer D-Bus activation hardening needs an actual check:
-- service.py RequestInstall directly spawns luma-android-installer. That parent
+- service.py RequestInstall directly spawns Suno-android-installer. That parent
   user service has NoNewPrivileges=yes, PrivateTmp=yes and ProtectHome=read-only;
   child GUI inherits those restrictions, while package transactions invoke
   pkexec. The ordinary CLI passed from the user manager, not this D-Bus route.
@@ -1966,7 +1966,7 @@ OBSERVED00:23Z (Oct30 UTC) — SDK5 COMPILED/EXPORTED; NATIVE UI TEST ACTIVE:
   sync, size/checksum rejection, non-overwrite/symlinks and deadline. Actual
   dedicated export used the same frozen helper d53936a4d9c0956712ad632d80af68b7ac460cd7f9c48f9633399d4e6cf8303d.
 - CURRENT dev-android-reply-vm-r12-d4e9f7f8.service normal10GiB/12GiB disk;
-  root luma-android-first-class-reply-vm-r12.service1GiB, owned runtime VM6GiB/
+  root Suno-android-first-class-reply-vm-r12.service1GiB, owned runtime VM6GiB/
   QEMU8. Private reply-vm-r12 helpers frozen by manifest. Streaming transfer,
   local cache-only Shell124 main+common Atomic replacement, matched SDK5 pair,
   reboot, temporary owned test extension and actual virtual pointer/keyboard.
@@ -1985,7 +1985,7 @@ OBSERVED23:58Z — r12 NINJA ACTIVE; PREPARED REAL NATIVE REPLY PROBE:
   PID15330, dependency scanning; no compiler action/error reported yet.
 - Prepared public tests/android/notification-reply-native.js for installed
   Shell124. Actual Android source/app identity and negotiated inline reply
-  required; opens Luma notification tray, locates mapped live entry/button,
+  required; opens Suno notification tray, locates mapped live entry/button,
   uses compositor virtual pointer+keyboard to type/click, attempts internal Shell
   screenshot. Does NOT synthesize a notification or call Reply transport directly.
   JSresult ALWAYS leaves android_delivery_qualified=false; outside wrapper must
@@ -2013,7 +2013,7 @@ OBSERVED23:46Z — r12 COLD TOOL PREFLIGHT PASSED; SOURCE CHECKS ACTIVE:
 
 LIVE23:44Z — REPLY-ENABLED IMAGE BUILD ADMITTED; STAY FOREGROUND:
 - CURRENT normal dev-android-reply-image-r12-e60f41b6.service27GiB/450GiB,
-  admitted23:40:12Z; root luma-android-first-class-build-controller.service1GiB/
+  admitted23:40:12Z; root Suno-android-first-class-build-controller.service1GiB/
  128swap/CPU200/Runtime21600/TimeoutStop360, guest unchanged24GiB/QEMU25/8CPU/jobs8.
   Hashing57,095,458,816B source input BEFORE VM boot; original inputs retained.
   Root controller reported active1GiB cap (file-cache accounting included), not
@@ -2038,7 +2038,7 @@ LIVE23:44Z — REPLY-ENABLED IMAGE BUILD ADMITTED; STAY FOREGROUND:
   of global32GiB/host8GiB/disk20GiB reserve checks passed. Interrupt handler tries
   sync/poweroff; actual compiler checkpoint restore remains unqualified.
 - POLICY GUARD CURRENT dev-android-reply-policy-e184fa82.service normal1GiB,
-  root luma-android-first-class-reply-policy-guard-20261029T234005.service128MiB.
+  root Suno-android-first-class-reply-policy-guard-20261029T234005.service128MiB.
   It raised only shared per-account budget16->32/build10->27 (global32 unchanged),
   waits for registered build e60f41b6 and restores exact original policy in
   finally. Registration/build-admission.json published; policy-ready.json23:40Z.
@@ -2109,7 +2109,7 @@ LIVE23:24Z — INDEPENDENT ACTUAL WINDOW TEST ACTIVE; gated native release repai
   disposable VM administrator touch of fixed private runUUID file; native calls
   still execute in ordinary APK and kernelUID/PID must match. b3d82dcd PASS13.
 - Current independent job dev-android-window-live-431f4ddf.service normal9GiB;
-  root luma-android-first-class-window-qualification.service512MiB/128swap/
+  root Suno-android-first-class-window-qualification.service512MiB/128swap/
   CPU200/runtime1200, same guest6/QEMU8 profile. Helpers+exact image/APKr16/native
   hashes in private window-live/manifest.json. Readiness and UI resize result
   separate. Executes keyboard resize/maximize/restore, screenshots, actual client
@@ -2217,7 +2217,7 @@ OBSERVED22:51Z — new images installed; qualification sequencing repaired:
 OBSERVED22:49Z — f7901d90 native Atomic runtime replacement PASSED:
 - rpm-ostree local cache-only override and apply-live both exit0. Exact .94 RPM
   digest/installed identity verified; before/after package inventory unchanged
-  outside luma-android-runtime. Base .80 retained; pending .94 derived deployment
+  outside Suno-android-runtime. Base .80 retained; pending .94 derived deployment
   62d5d9e5b2e5e0e9a399c0f30e5d473964bc47796eb42f7ffac87718611c419d,
   live-replaced same. Host Enforcing. This establishes package installation ONLY.
 - Child now copying image pair; first staged system.img has full1,829,220,352B.
@@ -2354,7 +2354,7 @@ HOST SHADER TOOL ADD-ON / REAL MESA CONFIGURATION:
   ABI inspection requires GLIBC2.34/GLIBCXX3.4.29, compatible with guest.
 - Normal c120a553 PASSED21:14:15Z. Guest compiler unit frozen briefly BEFORE
   primary image Ninja (asserted against fresh log), binary SHA verified, root
-  /root/luma-glslang-16.6.0 mounted readonly over guest-rootfs/usr/bin/glslangValidator.
+  /root/Suno-glslang-16.6.0 mounted readonly over guest-rootfs/usr/bin/glslangValidator.
   Four input disks unchanged. Empty-environment version16.6.0 and actual
   synthetic Vulkan1.2 vertex->SPIR-V magic check passed. Finally thaw executed;
   FreezerState=running independently observed21:14:31Z. Main build never rebooted.
@@ -2379,7 +2379,7 @@ HOST SHADER TOOL ADD-ON / REAL MESA CONFIGURATION:
   preparer overlay remains the previously recorded4 hashes, plus additive tool
   metadata above. Do not mutate pinned live r11/recovery sources.
 - COLD-BOOT LIMIT: r11 does NOT automatically reapply the new glslang bind.
-  /root/luma-glslang-16.6.0 persists but its mount does not. Before another cold
+  /root/Suno-glslang-16.6.0 persists but its mount does not. Before another cold
   build, prepare a validated next driver/tools input with this pin, or a fresh
   recorded pre-Ninja activation. Existing add-on installer is one-shot and
   refuses an already-existing export receipt. Do not blindly rerun it. A saved
@@ -2411,7 +2411,7 @@ Guest sync d3750127 PASSED20:44:05Z before fdd teardown. It cannot restore
 already invalid prior artifacts.
 
 New r11 guest preserves logged recent outputs since20:06:28Z (120s before the
-first failed compiler result) in out/.luma-quarantine-unflushed-20261029T200849Z,
+first failed compiler result) in out/.Suno-quarantine-unflushed-20261029T200849Z,
 requiring both known invalid ART targets in its plan. Owner/path/scope guards,
 durable plan and one-time completion prevent silently reusing/repeatedly
 invalidating new work. Regenerate selected targets from source. Preparation
@@ -2505,7 +2505,7 @@ REPLY SOURCE CANDIDATE (coherent source, matched runtime NOT qualified):
 -Candidate.93 clean RPM c06af05e PASSED15:05:09Z:124 tests/0 skips/failures/
  errors, imports/desktop/payload/profile755 checks. Binarycb1f98535c45c163cc24b190d524a4a133118ff5c0c7fe4d3fe9ce48c805e306,
  SRPMe0ba8094d11631b6edc757d4a0bcee29eae4d9ad3f6bf3a27df0e76b42ab8fbc,
- under rpm-r10/source/build/candidate-93/build/packages/luma-android-runtime.
+ under rpm-r10/source/build/candidate-93/build/packages/Suno-android-runtime.
  DO NOT use .93 for reply qualification: later wire audit found two bugs hidden
  by inaccurate fixtures. Android Parcel.writeByte writes int32, gbinder.read_byte
  advances1; appended reply_action misaligns. RemoteReply.read_int32 convenience
@@ -2514,7 +2514,7 @@ REPLY SOURCE CANDIDATE (coherent source, matched runtime NOT qualified):
  fe3bccf1,2 assertion failures+1 alignment error at15:10:45Z. Correctedsource
  d07356fa PASSED47 component tests15:11:18Z. Candidate.94 full126-test RPM PASSED f468a1a6 at15:12:50Z; see below.
 -New reply project SFS ed446c6f PASSED15:08:27Z, sourceb22ed165d,
- build-vm/luma-project-native-reply.squashfs70,615,040B,
+ build-vm/Suno-project-native-reply.squashfs70,615,040B,
  SHAe6ed231917685db4321cb91d57ce249e1c333831af0fe370080c472aea7d7b02.
  Android SDK0005 is unchanged by host-only .94 fixes; prefer latest host RPM.
  Snapshot is NOT attached to current builder; never replace its input mid-build.
@@ -2522,7 +2522,7 @@ REPLY SOURCE CANDIDATE (coherent source, matched runtime NOT qualified):
  st/test-symbolic-strokes: icon pixbuf loader/theme warning aborts. All290 native
  build steps reached%check; no Shell RPM pass. Both actual Figtree/widgets
  prerequisites built first. Private candidate-shell124 derivedb22ed165d changes
- only release1.luma.124.android20261029.1 (acceptedpinsunchanged), bounded2jobs,
+ only release1.Suno.124.android20261029.1 (acceptedpinsunchanged), bounded2jobs,
  and two obsolete package assertions40->45 /16->18 matching existing0284 and
  independently confirmed Surface task correction. No checks skipped. Source
  receipt shell-r124/source-receipt.json. Later retry resolved the build environment; see below.
@@ -2535,7 +2535,7 @@ LATEST QUALIFIED CANDIDATE ARTIFACTS / ACTIVE CONTINUATION:
 -.94 f468a1a6 PASSED15:12:50Z, source497a61054:126 tests/0 skips/failures/errors,
  imports/desktop/payload/profile755. Binary3ba654b17f14cbee15f0c15c0acb851a7d024fd8c5a31a1a6f4c41d5aa0e1292,
  SRPM71b10726c6967e46338e94b61193ee33d237cfa228b3cb31c5f77eca921875e7,
- rpm-r10/source/build/candidate-94/build/packages/luma-android-runtime.
+ rpm-r10/source/build/candidate-94/build/packages/Suno-android-runtime.
  .94 NOT installed/live runtime tested; .92 remains last live lifecycle pass.
 -Native Shell124 retry a62273fe PASSED15:22:30Z; full ordinary rpmbuild + all
  packaged checks (no short-circuit or skipped test). The existing symbolic SVG
@@ -2626,7 +2626,7 @@ POST-BUILD GUARD VM HANDOFF ACTIVE:
   fb45a3d4d6f9574cb689cc4a84f33ec8dabbbfff435bea8891cc08359b547a89.
   Do not change pinned scripts/artifacts under a live observer. STOP file
   guard-vm-auto/STOP or build-vm-auto/STOP prevents a NEW qualification job.
-  Once admitted, stop root luma-android-first-class-guard-qualification.service
+  Once admitted, stop root Suno-android-first-class-guard-qualification.service
   before stopping its normal job; stopping its observer alone does not kill it.
 - Policy4780fe1b PASSED7 tests; root export controls243c45ad PASSED6 actual
   root-owned fixture cases plus read-only inactive-VM limits/source/syntax
@@ -2635,9 +2635,9 @@ POST-BUILD GUARD VM HANDOFF ACTIVE:
   has executed; its first actual run waits for a completed compiled image.
 
 FAILED BUILD: normal dev-android-images-build-vm-r8-3a3af2ff.service,
-10GiB/450GiB HDD; root luma-android-first-class-build-controller.service;
+10GiB/450GiB HDD; root Suno-android-first-class-build-controller.service;
 VM809f0871-fd88-4770-83dd-624c90259c06/IP192.168.122.36. Started09:01:21Z,
-startup passed09:06:41Z. Project luma-project-native-io.squashfs70,574,080B,
+startup passed09:06:41Z. Project Suno-project-native-io.squashfs70,574,080B,
 SHA8b8ef91de1bfcb394a2b10b8325155cce958cd18195a4e0db72aad1120b18317,
 source3ff01af63 includes0016. Builder8GiB RAM/QEMU9GiB hard, 24GiB disk swap
 plus4GiB virtual zram with1GiB compressed cap, priority100. Source/out overlay
@@ -2657,7 +2657,7 @@ r7 failed before compilation08:56Z due reading write-only zram mem_limit;
 no result claimed. r8 fixes startup. Immutable input verification remains intact.
 
 COMPLETED RUNTIME (OFF since14:07:08Z): normal dev-android-runtime-full-r9-5706d8ea.service,
-9GiB/10GiB HDD; root luma-android-first-class-runtime-controller.service,
+9GiB/10GiB HDD; root Suno-android-first-class-runtime-controller.service,
 VM3c485515-a910-4f44-80a0-4189ec58cab8/IP192.168.122.35. Guest6GiB RAM/
 QEMU8GiB hard AND combined RAM+swap, root128MiB+128swap, actual guest MemTotal
 5844MiB. Original restored XML had no swap_hard_limit, so first0484888f refused
@@ -2676,7 +2676,7 @@ Initial cold39333e14 failed BEFORE launch because reset-failed named an unloaded
 unit. Retry28da51d2 removed that unnecessary setup command and PASSED14:02:20Z:
 packaged.92 after broker/session stop and root container-service restart,
 CLI launch exited0 in25.2808s, Android boot_completed1, MainPID6155 alive in
-luma-android-session.service cgroup after caller exit. This is full6GiB guest,
+Suno-android-session.service cgroup after caller exit. This is full6GiB guest,
 old Android image, not first-frame/physical performance or proof of the cause
 of earlier3GiB failures. Evidence runtime-cold92-full/result-r2.json.
 Warm fixture14 normal de38a382 PASSED14:03:36Z: normal CLI remove4.660s,
@@ -2693,7 +2693,7 @@ checked inside Android. Evidence native-task-live/result.json. Old-image name
 access is NOT isolated; no actual task mutation tested.0017 must deny ordinary
 reads while preserving trusted labels and normal native window controls.
 
-CURRENT BUILDER INPUT: project luma-project-native-task.squashfs
+CURRENT BUILDER INPUT: project Suno-project-native-task.squashfs
 70,582,272B SHA849a73b0388eb90c5d3297deece9f3e37a2e42d45e47cf0bb9552f679d205bdd,
 commit7c13c192faacdcaa32170fef1e68322c22e4a8d5, snapshot normal3d91c58f PASSED.
 Private build-vm-driver/{controller-r9.py,guest-build-r9.py,run-r9.sh} syntax
@@ -2713,7 +2713,7 @@ KVM save semantics, NOT Android/compiler recovery or the full r9 controller.
 errors, payload/import/desktop/profile755 checks. Source3ff01af63. BinarySHA
 8d22a623638dea6d318ec86a794a97413e999e9fadc821f5ab546a6490207fae,
 SRPM94c22d4acf8083bc10956f1964ec513057e5b9b8345b8c0a89293e6e668187f0,
-rpm-r10/source/build/candidate-92/build/packages/luma-android-runtime.
+rpm-r10/source/build/candidate-92/build/packages/Suno-android-runtime.
 .92 installed/live lifecycle tested as recorded above. Full91 source tests passed08:07:06Z.
 .91 clean RPM cb8f4f4a passed84 tests, installed07:34:04Z in disposable overlay.
 
@@ -2850,7 +2850,7 @@ Keep all arbitrary clipboard contents out of logs; synthetic token classes only.
 
 Historical06:18Z state (superseded by active r6 build above): ALL owned VMs and image jobs were OFF. Stopped r5/09340d25 root controller and
 admission before native-path correction. No completed replacement image exists.
-Own Luma VM original6GiB/8GiB config restored inactive05:54:45Z from intact
+Own Suno VM original6GiB/8GiB config restored inactive05:54:45Z from intact
 vm/domain.xml; actual restored XML SHA
 b3f5031d32bf43a5ed2c0241f1e4dec6a1369be53ea25f36ed8ddbba82c37fe5.
 EMPTY domain-before-lowram-20261029T020943.xml remains unusable. Next full-RAM
@@ -2859,7 +2859,7 @@ Its .90 usr overlay is gone on reboot; APKr11 remains installed on its disk.
 
 Build VM UUID809f0871-fd88-4770-83dd-624c90259c06 remains defined/off,7GiB RAM,
 9GiB hard/4vCPU/24GiB guest swap/280GiB root disk. Private SSH key only
-/root/.ssh/luma-android-builder-20261029/ssh-key. Root controller private path
+/root/.ssh/Suno-android-builder-20261029/ssh-key. Root controller private path
 build-vm-driver/controller.py and run.sh now watch admitted parent PID/start/UID,
 cgroup/memory.max and have EXIT cleanup + own-UUID ExecStopPost. No limits/reserves
 changed. Synthetic forced death/normal stop tests2dbfcc8d/4f675d66 stopped root
@@ -2868,9 +2868,9 @@ actor within1s; normal test exercised watchdog, primary trap alone not proved.
 Prior build attempts preserved, not image passes. r3 did create a startup marker
 and entered the builder; old log must establish how far it got. r4/763bed83 stopped
 on that marker and cleaned own VM. r5 uses explicit prior-boot resume: archives
-started/result/log files under/root/luma-build-attempts only if timestamp predates
+started/result/log files under/root/Suno-build-attempts only if timestamp predates
 current boot. Before next build, pack a new corrected readonly project disk and
-switch away from luma-project-aidl; retain all old inputs/logs. Consider a fresh
+switch away from Suno-project-aidl; retain all old inputs/logs. Consider a fresh
 named overlay for this source correction, preserving old upper/work; original
 compressed source is unchanged and validated. Never weaken Git/LFS/HEAD gates.
 
@@ -2923,37 +2923,37 @@ an intended test into a passed result. Keep long logs in the artifact directory.
 
 - UTC timestamp — concrete change or finding, outcome, and relevant commit/unit.
 
-2026-10-28 baseline: dev-android-baseline-db8fb1f2 ran60 tests, one pre-existing nonroot sysfs-fixture ownership failure and16 root-only skips. No baseline pass claimed. Preparing an independent flattened copy of an inactive synthetic Luma gate VM; original disks and domains remain unchanged. Bulk storage bind established at /srv/dev/accounts/second/experiments/android-first-class -> /srv/dev-storage/projects/luma-os/build/android-first-class, to account actual HDD usage through normal admission. VM preparation291473c6 active; no VM started yet.
+2026-10-28 baseline: dev-android-baseline-db8fb1f2 ran60 tests, one pre-existing nonroot sysfs-fixture ownership failure and16 root-only skips. No baseline pass claimed. Preparing an independent flattened copy of an inactive synthetic Suno gate VM; original disks and domains remain unchanged. Bulk storage bind established at /srv/dev/accounts/second/experiments/android-first-class -> /srv/dev-storage/projects/Suno-os/build/android-first-class, to account actual HDD usage through normal admission. VM preparation291473c6 active; no VM started yet.
 
 
 2026-10-28 implementation evidence (source candidate, not release):
 - `dev-android-component-tests-r2-5a91c9fa`: 71 tests, success, 16 root-only skips.
-- `dev-android-runtime-unit-r3-5bfef57c`: 73 repository Android tests passed with src/luma-platform/appkit on PYTHONPATH. Earlier two invocations lacked that dependency; their failures are retained.
+- `dev-android-runtime-unit-r3-5bfef57c`: 73 repository Android tests passed with src/Suno-platform/appkit on PYTHONPATH. Earlier two invocations lacked that dependency; their failures are retained.
 - `dev-android-notification-dbus-r2-603d425a`: real private D-Bus lifecycle checks passed, Binder listener fixture. First run caught and fixed a signed CloseNotification argument.
 - `dev-android-fixture-build-r2-a882f291`: actual APK compile/signature verification passed. First build exposed missing Java lambda bootstrap stubs; --release 8 compilation plus D8 fixed it. Tools are checked against the committed lock, not a downloaded manifest.
 - `dev-android-caller-policy-6bd5f259`: compiled production Java admission helper passed 100 UID combinations. This is not a framework/APK permission test.
 - `dev-android-tools-fetch-verify-1bea9815`: maintained downloader fetched and verified all three official pinned tool artifacts.
-- Disposable domain luma-android-first-class-x86 has its own flattened HDD disk, 6 GiB RAM/8 GiB hard ceiling, two vCPUs and accelerated virtio graphics. Original source domain/disks are untouched. The synthetic account was granted its normal installer group only inside this VM. Source APK installed through Luma and launched in a native Luma window; one warm command took 2.945 seconds. This is command latency, not first-frame timing or a statistical benchmark.
+- Disposable domain Suno-android-first-class-x86 has its own flattened HDD disk, 6 GiB RAM/8 GiB hard ceiling, two vCPUs and accelerated virtio graphics. Original source domain/disks are untouched. The synthetic account was granted its normal installer group only inside this VM. Source APK installed through Suno and launched in a native Suno window; one warm command took 2.945 seconds. This is command latency, not first-frame timing or a statistical benchmark.
 - Actual mouse resize froze the baseline HWC. Android debuggerd captured a cycle: xdg_toplevel_handle_configure holds chromeMutex and enters HWC2On1Adapter::hwc1Invalidate, while adapter present holds its lock and enters prairie::frame waiting for chromeMutex. Patch 0014 releases window locks before adapter invalidation, including display/legacy paths.
 - `dev-android-windowing-lock-regression-575ae0d9`: exact production callback bodies compiled and passed the three-path lock test; removing the unlock reproduces the deadlock with exit42. Full pinned HWC patch series/header/license checks and actual two-translation-unit cancellation linkage passed, with broken-scope negative control rejected. Full image build and VM resize retest remain open.
 - Archived Android source recovery is isolated in task-owned root-private HDD staging. First 1.5 GiB root driver hit its cgroup limit (7166c5f6); preserved failure, retry 53b804ed admitted with 4 GiB total/3.5 GiB root bound. No existing build tree is reset or overwritten.
 - Current baseline Android image reports internal SELinux Disabled while Fedora host is Enforcing. This is an unresolved production isolation gate, not qualified sandboxing. ARM execution, reverse ABI translation, document/camera/media brokers, inline reply, suspend/push/battery, accessibility and complete integration remain open.
 
 2026-10-28 native notification and packaging evidence:
-- Source commits feb302cf3, 0c6ac15f3 and 765a59e1c preserve the bridge/patches, clean-package fix and source fixture. Runtime RPM .81 was built from clean 0c6ac15f3 by dev-android-runtime-rpm-r2-3fd91682: actual package checks ran 71 tests with zero skips/failures. Binary SHA256 062802d71e88534daad0621b98d400a922cfd50df4cb394523812d7e1abd294e. Package artifacts are in that account job's source/build/packages/luma-android-runtime.
-- Installed .81 only in the disposable VM's reboot-cleared ostree development overlay. Existing release/installer protection was not changed. New Luma-owned session transport is running; the Android image remains the old matched system/vendor pair, without the new SDK/HWC patches.
+- Source commits feb302cf3, 0c6ac15f3 and 765a59e1c preserve the bridge/patches, clean-package fix and source fixture. Runtime RPM .81 was built from clean 0c6ac15f3 by dev-android-runtime-rpm-r2-3fd91682: actual package checks ran 71 tests with zero skips/failures. Binary SHA256 062802d71e88534daad0621b98d400a922cfd50df4cb394523812d7e1abd294e. Package artifacts are in that account job's source/build/packages/Suno-android-runtime.
+- Installed .81 only in the disposable VM's reboot-cleared ostree development overlay. Existing release/installer protection was not changed. New Suno-owned session transport is running; the Android image remains the old matched system/vendor pair, without the new SDK/HWC patches.
 - dev-android-fixture-build-r3-efa332bb built the permission-aware, UID-boundary fixture. APK SHA256 0c32ff3c4af425708ae9b5247e5c5f8d04a774b2c5fc5b46d1f9c032f9508d00; own HDD apk-r3/AndroidIntegrationTest.apk. Source/tool hashes match its build receipt.
-- The real APK posted a notification rendered as a native Luma notification-center card. Actual desktop identity was waydroid.org.projectluma.androidtest. Clicking native Mark read delivered action:read to the APK's private events.jsonl and cleared the card. Screenshot evidence is own HDD vm/fixture-r3-window.png and vm/notification-mark-read.png. This qualifies the tested content/action path only; inline text reply, grouping, privacy/channel controls and new dismissal callbacks remain open.
+- The real APK posted a notification rendered as a native Suno notification-center card. Actual desktop identity was waydroid.org.projectSuno.androidtest. Clicking native Mark read delivered action:read to the APK's private events.jsonl and cleared the card. Screenshot evidence is own HDD vm/fixture-r3-window.png and vm/notification-mark-read.png. This qualifies the tested content/action path only; inline text reply, grouping, privacy/channel controls and new dismissal callbacks remain open.
 - The ordinary APK boundary probe returned allowed against the old image. This confirms why the new platform caller patch is needed, not a security pass. Its compiled policy helper passes; complete-image denial remains to be tested.
 - Found a separate framework freeze path controlled by persist.waydroid.suspend. Default product property and host readiness now follow the existing explicit idle_freeze setting. dev-android-idle-policy-tests-r3-d575e1a7 ran all 74 repository Android tests successfully. First test invocation found a stale expected call ordering; next invocation was refused by the already-held recovery path lock; retained both outcomes, then used the task worktree admission path.
 - Applying the supported property in the VM and closing all app windows left open_windows=0 and cgroup.freeze=0. A 30-second no-window sample retained freeze=0 and used 25,304 microseconds of aggregate Android cgroup CPU. This controlled VM observation is not a physical power, push-delivery or Doze qualification. Sample: own HDD vm/idle-policy-background-sample.json.
-- Product decision recorded explicitly: Android notifications use Luma styling, preserving Android semantics through structured bridges. Android custom RemoteViews must not execute as host UI.
+- Product decision recorded explicitly: Android notifications use Suno styling, preserving Android semantics through structured bridges. Android custom RemoteViews must not execute as host UI.
 
-Active jobs at this update: dev-android-vm-r4-be5a1197 (own VM, automatic finite lifetime) and dev-android-source-recovery-r2-53b804ed (root unit luma-android-first-class-source-recovery-r2-20261028T223745.service). Recovery is running/thawed, capped at 3.5 GiB with low IO weight and 60M/s write limit; files had reached prebuilts/vndk. No complete image rebuild is claimed. Root staging and original retired archive remain private. Next: inspect recovered preparation state, arrange bounded matched-image build, then retest the reproduced resize deadlock and ordinary-APK admission on that image.
+Active jobs at this update: dev-android-vm-r4-be5a1197 (own VM, automatic finite lifetime) and dev-android-source-recovery-r2-53b804ed (root unit Suno-android-first-class-source-recovery-r2-20261028T223745.service). Recovery is running/thawed, capped at 3.5 GiB with low IO weight and 60M/s write limit; files had reached prebuilts/vndk. No complete image rebuild is claimed. Root staging and original retired archive remain private. Next: inspect recovered preparation state, arrange bounded matched-image build, then retest the reproduced resize deadlock and ordinary-APK admission on that image.
 
 2026-10-28T23:23Z follow-up:
-- dev-android-runtime-rpm-r3-b4fb3ebf built .82 from clean a7d895b01007bc1915589af71422f0b11bd6454e successfully. Actual package checks: 71 tests, zero skips/failures; peak 2 GiB. Binary SHA256 8500e1b773849cc7e2b1a4d559052a68f8a06a8596c59e0a247aa6d9b6a087ee; SRPM SHA256 973add20b62566da21ce2852674d5295226a65696615e3d6944051e3f69b7ff9. Output is the corresponding account artifact directory's source/build/packages/luma-android-runtime.
-- Installed .82 successfully only in the existing disposable VM overlay. The RPM transaction completed with exit 0; final query reports .82 only. Reloaded user units and restarted luma-android-session.service and luma-android.service; both report active. A concurrent query during update briefly showed both versions while update-mime-database was still running; that was not the final package state. No other VM/package/update policies changed.
+- dev-android-runtime-rpm-r3-b4fb3ebf built .82 from clean a7d895b01007bc1915589af71422f0b11bd6454e successfully. Actual package checks: 71 tests, zero skips/failures; peak 2 GiB. Binary SHA256 8500e1b773849cc7e2b1a4d559052a68f8a06a8596c59e0a247aa6d9b6a087ee; SRPM SHA256 973add20b62566da21ce2852674d5295226a65696615e3d6944051e3f69b7ff9. Output is the corresponding account artifact directory's source/build/packages/Suno-android-runtime.
+- Installed .82 successfully only in the existing disposable VM overlay. The RPM transaction completed with exit 0; final query reports .82 only. Reloaded user units and restarted Suno-android-session.service and Suno-android.service; both report active. A concurrent query during update briefly showed both versions while update-mime-database was still running; that was not the final package state. No other VM/package/update policies changed.
 - Source recovery completed successfully at 23:20:33Z (42m47s, 3.5 GiB peak). dev-android-source-recovery-r2-53b804ed and its root unit are now inactive/success. The recovered out/ contains directory scaffolding without the prior Ninja graph or images; this is a cold build input, not a restored warm build.
 - Read-only recovered HEADs: hardware/waydroid 18e73d3882d97d909843925419ef25ea60f6a376 (old Prairie chrome commit on pinned 85f31a9); frameworks/base 79d859d0a657dc234241a56fb49279a0f448fe56; device/waydroid/waydroid 5ff343563d2ea187534c9791993137c61d198c0b; lineage-sdk 631dcfbbd15efcd44c970eb25e3c78f8d44b0283 (upstream Waydroid service patches). Vendor is vendor/extra, not vendor/waydroid. Prepared-state metadata is retained intact. Next build setup must verify the complete recorded snapshot before using the normal reset/preparation path; no reset or build has occurred.
 - Only the finite private VM lifetime job remains active. Full image build, resize acceptance and ordinary APK rejection are still open.
@@ -2962,8 +2962,8 @@ Active jobs at this update: dev-android-vm-r4-be5a1197 (own VM, automatic finite
 - Builder preparation dev-android-source-builder-prepare-9b3bc3ef passed. Task-private Ubuntu 22.04 rootfs, official base digest 8a2321a92b438238f93b4346fff61bc4259c99fdd4d9b52ee86f153fee0c344f; built image f91addbcbf3c30955bd1439a73b880700e88e2e30d1b2d2b8a7f0c098ca51964. Exact export/containerfile receipt is own HDD source-builder/receipt.json. No build uses host credentials or network. The normal worker's unprivileged Bubblewrap namespace probe passed (6e5d0cdd).
 - Recovered Android source custody was explicitly assigned to this task owner only (03cdecc8), preserving the original archive. Found an archived unfinished HWC delta. Preserved it and the original recovered tree, then made an independent XFS reflink candidate (c100bd02); selected its recorded HWC commit only in that fork. Original delta is retained and hashed in source-recovery/candidate-provenance.json. Current maintained HWC already has the corresponding logical-to-pixel resize conversion.
 - dev-android-source-build-preflight-1dbcf889 is verifying that candidate's full repo snapshot and file cleanliness inside the offline namespace. It has passed the recorded head-snapshot check and is still hashing copied working files through repo forall. At 23:44Z it had reached prebuilts. No reset or Android compilation has started. Launcher: own HDD source-builder/run.py; source snapshot 79198ee0e; candidate path source-recovery/candidate/lineage-20. Namespace mounts only the build inputs and private scratch.
-- dev-android-fixture-build-r4-4ec59e62 passed actual APK compilation/signature verification. APK SHA256 b865d34e96fa2a82e3d4b5ee47a80e1b8afabbbd2f3bc53edcdb263426b1a276. Its local-alarm receiver is now source owned. Installer correctly rejected a root-only copied APK; assigning that private fixture file to the synthetic VM user allowed normal Luma installation. No installer checks were weakened.
-- Real no-window background delivery passed on runtime .82/old Android image: fixture scheduled at elapsed5107999ms, fired at5138004ms, posted at5138006ms; host observed waydroid.org.projectluma.androidtest and its actions. Android reported zero open windows and cgroup.freeze=0. Native Luma notification-center screenshot confirms the card with no Android app window. Private receipts: own HDD vm/background-notification-r4.txt and vm/background-notification-r4.png. This is a local alarm test, not network push/suspend/battery qualification.
+- dev-android-fixture-build-r4-4ec59e62 passed actual APK compilation/signature verification. APK SHA256 b865d34e96fa2a82e3d4b5ee47a80e1b8afabbbd2f3bc53edcdb263426b1a276. Its local-alarm receiver is now source owned. Installer correctly rejected a root-only copied APK; assigning that private fixture file to the synthetic VM user allowed normal Suno installation. No installer checks were weakened.
+- Real no-window background delivery passed on runtime .82/old Android image: fixture scheduled at elapsed5107999ms, fired at5138004ms, posted at5138006ms; host observed waydroid.org.projectSuno.androidtest and its actions. Android reported zero open windows and cgroup.freeze=0. Native Suno notification-center screenshot confirms the card with no Android app window. Private receipts: own HDD vm/background-notification-r4.txt and vm/background-notification-r4.png. This is a local alarm test, not network push/suspend/battery qualification.
 - A diagnostic Android run-as invocation exited139; its attempted pre-update synthetic event backup was empty. Earlier notification action evidence remains in screenshots, transport logs and this factual record. Subsequent receipt capture uses root cat of only the source fixture's private synthetic events; no user data is involved.
 - Root hardware transport audit used official Waydroid 1.6.3 commit5b7e2e71be3f6bfaaaab3b461251dacaf1ce4991. Initial fetch had an incorrect services/container_manager.py path and failed; corrected actions/container_manager.py fetch passed (02fb891f). Source/hash receipt is private upstream/root-bridge/receipt.json.
 - Added a process-local root Binder constructor adapter and package-owned systemd drop-in. It admits kernel UIDs0/1000 before upstream parcel read/dispatch, fails closed when credentials are missing, and leaves provider files/global gbinder intact. Four dedicated boundary tests passed (bf4a61c0); component run fb682892 ran75 tests successfully with16 root-only skips. Real Binder admission and candidate RPM checks remain next.
@@ -2975,7 +2975,7 @@ Active jobs: private VM lifetime be5a1197; source preflight1dbcf889. Next: packa
 - Early raw Binder probes used obsolete /dev/anbox-binder or generic transport errors: not security passes. Correct endpoint is /dev/binder with aidl3 protocols. R6 APK b865 predecessor was replaced by apk-r6; its root probe incorrectly treated an empty Parcel as allowed. Fixed source to reject empty replies; rebuild pending. Root hardware unknown transaction65536 is read-only and has typed positive-control versus denial replies. Actual live tests exposed python-gbinder append_int32 rejecting negative values; fixed using unsigned wire words and strengthened fake accordingly. Six focused tests passed (bfa211bc); actual typed Binder denial is still being retested. No mutable hardware operation was invoked.
 - Source preflight1dbcf889 canceled after lengthy duplicate cold audit; prepare64ad0adb failed after39m40s without useful stderr. Traced retry8f9172b3 failed cleanliness on WebView/Mesa LFS files: isolated Ubuntu lacked Git LFS/filter, while host LFS-aware status is clean. Original recovered source, binaries and archive were preserved. No reset/Android compile pass claimed.
 - Added private Meson1.9.2 (official PyPI SHA1a284dc1912929098a6462401af58dc49ae3f324e94814a38a8f1020cee07cba) and Git LFS3.0.2 from signature-verified official Ubuntu apt (binary SHA682e3dbfed122987bfd8e73e21852bc92703e53fb2b20d1b34a361e3ce65774a). Own build-home global LFS filter, no account credentials. Tools check ea50c049 passes including exact pinned Android clang14.0.6, Meson, Ninja and LFS config. Maintained prepare retry25ed13ab is active under normal worker6GiB/20GiB HDD reservation, offline Bubblewrap. Source snapshot79198ee0e; independent candidate source-recovery/candidate/lineage-20. Full-image compilation has NOT started.
-- Active units: dev-android-vm-r4-be5a1197 (own VM finite lifetime, expected end about01:11Z), dev-android-source-prepare-r3-25ed13ab. Do not extend VM/root bound or bypass16GiB account reservation. Full build10GiB requires stopping/releasing only this VM9GiB first. Source builder launcher own HDD source-builder/run.py. Source overlays own HDD vm/hardware-guard-source-84b.*, native probe vm guest /var/tmp/luma-hardware-probe-r5.py.
+- Active units: dev-android-vm-r4-be5a1197 (own VM finite lifetime, expected end about01:11Z), dev-android-source-prepare-r3-25ed13ab. Do not extend VM/root bound or bypass16GiB account reservation. Full build10GiB requires stopping/releasing only this VM9GiB first. Source builder launcher own HDD source-builder/run.py. Source overlays own HDD vm/hardware-guard-source-84b.*, native probe vm guest /var/tmp/Suno-hardware-probe-r5.py.
 - Next: finish typed read-only root versus ordinary-UID Binder checks; commit and build/install .84 clean RPM; finish LFS-aware maintained prepare, bounded matched system/vendor build, then actual resize/platform rejection/dismissal acceptance. Source audit also found Android init property permission checks commented out in old Waydroid source and host clipboard/user-monitor Binder endpoints needing review; no actual mitigation/pass yet. Internal Android SELinux, maintained AOSP rebase, ARM/translation, hardware/documents/audio/media, inline reply/privacy, latency and physical suspend/push/power remain open. No complete or shipping claim.
 
 2026-10-29T01:01Z follow-up:
@@ -2985,9 +2985,9 @@ Active jobs: private VM lifetime be5a1197; source preflight1dbcf889. Next: packa
 - Latest fixture build5487068e succeeded: apk-r7 SHA0bcb811bfeeba066cdf533b87b5543c10b07c51b0339c0cc217cfeb6e9517460. Initial848067e7 failed because wrapper referenced r6 output; no original APK overwritten. One retry admission refused while other account jobs held memory. Corrected private wrapper and normal admission succeeded. First remove command used unsupported --confirmed; corrected without weakening installer.
 
 2026-10-29T01:05Z:
-- Source commit0169f2ff5 contains .84 guarded-entrypoint policy and clean-source Git LFS preflight. dev-android-runtime-rpm-r5-bb6c4fc1 passed:77 actual tests, zero skips/failures. Binary SHA5440a3bbac4f54a82e37ab6810c4f7572a92cd495817537016b46233197d43c6, SRPM e3c90df203dfbaac0e2d2c69f7c11ea874d271d20b25e2e2b6a2799a2a05024b, outputs own HDD rpm-r5/source/build/packages/luma-android-runtime. VM installation ongoing in update-mime-database; wait for final transaction before claiming package pass.
+- Source commit0169f2ff5 contains .84 guarded-entrypoint policy and clean-source Git LFS preflight. dev-android-runtime-rpm-r5-bb6c4fc1 passed:77 actual tests, zero skips/failures. Binary SHA5440a3bbac4f54a82e37ab6810c4f7572a92cd495817537016b46233197d43c6, SRPM e3c90df203dfbaac0e2d2c69f7c11ea874d271d20b25e2e2b6a2799a2a05024b, outputs own HDD rpm-r5/source/build/packages/Suno-android-runtime. VM installation ongoing in update-mime-database; wait for final transaction before claiming package pass.
 - Real r7 APK, installed normally and running UID10129, returned root-hardware-boundary=denied. Old framework platform-boundary remains allowed, as expected before rebuilt images. Read-only native positive control(-7)/ordinary UID denial(-1) also pass. Retained exact evidence own HDD vm/fixture-r7-boundary-events.txt. Triggered source-owned probe_boundary activity extra using Android am, not a privileged APK identity.
-- Harmless volatile luma.test.property_boundary was writable by ordinary Android UID10129 in old image; readback confirmed then root cleared it. Added uncommitted Android init property admission patch plus both builder paths/state tracking. It rejects application and isolated app IDs across Android users before global/control writes, retains existing native service identities. No complete SELinux replacement claimed. Compilation/image acceptance pending; do not modify Android candidate tree outside maintained preparation.
+- Harmless volatile Suno.test.property_boundary was writable by ordinary Android UID10129 in old image; readback confirmed then root cleared it. Added uncommitted Android init property admission patch plus both builder paths/state tracking. It rejects application and isolated app IDs across Android users before global/control writes, retains existing native service identities. No complete SELinux replacement claimed. Compilation/image acceptance pending; do not modify Android candidate tree outside maintained preparation.
 
 2026-10-29T01:07Z property policy candidate:
 - dev-android-property-writer-policy-139e36cc compiled the actual patched CheckPermissions function with permissive dependency fixtures.160 UID/user/property combinations passed; compiling the original function failed the same tests with expected42. Uses pinned Android UID constants, includes ordinary/control names as pure strings; no power/control operation executed. Candidate patch applies cleanly to exact recovered Waydroid-prepared system/core. Both clean and incremental builders apply/hash it; full init/image test still pending.
@@ -2995,16 +2995,16 @@ Active jobs: private VM lifetime be5a1197; source preflight1dbcf889. Next: packa
 
 2026-10-29T01:08Z installed-package findings:
 - .84 installed RPM's guarded root entrypoint booted Android and passes native typed root/app denial after starting the supervised session. First automated recheck found a stopped container and correctly failed; starting session explicitly restored the tested endpoint. Installed root service remains waydroid_t/Enforcing.
-- Found a separate real packaging defect in HDD builds: inherited private/setgid directory modes entered the RPM, including /usr/share/luma/android/profiles. Broker could not read its profile. Did not bypass permissions in the VM. Added .85 explicit RPM directory mode0755 and build verification for every packaged directory (including generated cache/license dirs). .84 package tests passed, but its user session integration is not accepted. New .85 build/retest needed.
+- Found a separate real packaging defect in HDD builds: inherited private/setgid directory modes entered the RPM, including /usr/share/Suno/android/profiles. Broker could not read its profile. Did not bypass permissions in the VM. Added .85 explicit RPM directory mode0755 and build verification for every packaged directory (including generated cache/license dirs). .84 package tests passed, but its user session integration is not accepted. New .85 build/retest needed.
 
 2026-10-29T01:10Z active build handoff:
-- .85 clean RPM build dev-android-runtime-rpm-r6-2bc2b668 passed77 tests, zero skips/failures, and header verification of every packaged directory0755. Binary e3d34f570731d11738eb91708b0ab9e8932e91ebefd81c008687e83e3cc24931; SRPM029b2baf9f4455d0537e1ba57edee1748a6b2a20893dd911dc7f5d1b3c6e16f8. Source1273cbaf5, task HDD rpm-r6/source/build/packages/luma-android-runtime. This fixes observed .84 profile traversal; .85 VM installation remains next.
+- .85 clean RPM build dev-android-runtime-rpm-r6-2bc2b668 passed77 tests, zero skips/failures, and header verification of every packaged directory0755. Binary e3d34f570731d11738eb91708b0ab9e8932e91ebefd81c008687e83e3cc24931; SRPM029b2baf9f4455d0537e1ba57edee1748a6b2a20893dd911dc7f5d1b3c6e16f8. Source1273cbaf5, task HDD rpm-r6/source/build/packages/Suno-android-runtime. This fixes observed .84 profile traversal; .85 VM installation remains next.
 - Own VM shut down cleanly before its finite lifetime; dev-android-vm-r4-be5a1197 inactive/success. Original other VMs untouched. No VM should run concurrently with this account's10GiB full image worker without fresh normal admission.
 - Full matched-image builder job dev-android-images-x86-r2-d3916ea0 admitted01:09:38Z with10GiB/200GiB HDD reservation, two build jobs, GOGC20, offline unprivileged Bubblewrap. First attempt refused memory while own VM reservation remained; no override. It uses exact source snapshot948b609305be896cb7c0e78ad058608885aba6ed, tar SHA4d3639e426bdcbb224e1db90986448b8fb20046e5099a9c2a1814ec57b67dc03. This snapshot includes property admission and prior SDK/HWC changes; current runtime .85 packaging does not affect image code. Launcher own HDD source-builder/run.py; original source snapshot retained. Builder begins with maintained preparation/full cleanliness checks before compilation. No image completion claimed.
-- Source audit official Waydroid1.6.3 IClipboard/IUserMonitor shows unguarded host callback entrypoints too. Next independent source work is kernel-UID admission in Luma-owned session adapters before parcel reads, preserving Android clipboard focus policy. Do not read real user clipboards; test only synthetic VM content.
+- Source audit official Waydroid1.6.3 IClipboard/IUserMonitor shows unguarded host callback entrypoints too. Next independent source work is kernel-UID admission in Suno-owned session adapters before parcel reads, preserving Android clipboard focus policy. Do not read real user clipboards; test only synthetic VM content.
 
 2026-10-29T01:14Z independent session admission candidate:
-- Uncommitted .86 uses the same process-local constructor facade with distinct exact policies: root hardware allows0/1000, clipboard/user-monitor only1000. Repeat installation refuses policy drift. Luma session installs both adapters before upstream managers start; no provider file/global gbinder mutation. Android clipboard source still performs focus/lock/permission checks before system_server consults host clipboard.
+- Uncommitted .86 uses the same process-local constructor facade with distinct exact policies: root hardware allows0/1000, clipboard/user-monitor only1000. Repeat installation refuses policy drift. Suno session installs both adapters before upstream managers start; no provider file/global gbinder mutation. Android clipboard source still performs focus/lock/permission checks before system_server consults host clipboard.
 - Actual policy tests a185b02b ran8 focused tests successfully. Component7b3acbdf ran79 tests successfully with16 root-only skips. Package build still required for zero-skip count. New fixture unknown-operation probes do not access clipboard contents or create package events; its shared receipt writer is synchronized for the concurrent probes. Read-only native acceptance script supports service-specific trusted controls; actual clipboard/user-monitor VM checks remain open.
 - Full-image worker d3916ea0 has compiled the Soong build tools and is progressing into graph generation; this is not an image completion percentage. Current source includes property admission. Keep job normal10GiB, two compiler jobs/GOGC20; monitor actual result instead of raising memory/reserve or relaunching other VMs. .85 RPM mode validation passed but .85/.86 installation is deferred to next admitted test-VM lifetime after image build.
 
@@ -3016,7 +3016,7 @@ Active jobs: private VM lifetime be5a1197; source preflight1dbcf889. Next: packa
 
 2026-10-29T01:24Z acceptance accuracy:
 - e83b615e1 commits host-owned image replacement; eight exact adapter tests pass ecd26fff. New .87 package build remains pending (last clean package .86).
-- Updated desktop acceptance script to use only org.projectluma.androidtest and the existing disposable graphical session. Removed nested compositor/user-manager display mutation and misleading notification/SELinux claims. It records functional observations but fails the isolation gate for disabled Android MAC, shared user namespace or sampled UID collisions. Full mapping audit and actual notification/action receipts remain separate. Runtime smoke now checks installation of the actual Luma-owned transport instead of unrelated provider source strings. Shell syntax/diff checks pass; live script execution is pending new-image VM acceptance.
+- Updated desktop acceptance script to use only org.projectSuno.androidtest and the existing disposable graphical session. Removed nested compositor/user-manager display mutation and misleading notification/SELinux claims. It records functional observations but fails the isolation gate for disabled Android MAC, shared user namespace or sampled UID collisions. Full mapping audit and actual notification/action receipts remain separate. Runtime smoke now checks installation of the actual Suno-owned transport instead of unrelated provider source strings. Shell syntax/diff checks pass; live script execution is pending new-image VM acceptance.
 - Full image worker remains active, graph generation IO-bound on HDD (observed IO pressure ~80%, no OOM/max events), MemoryHigh7GiB/MemoryMax10GiB unchanged. Do not report old 399-step bootstrap progress as whole-image completion. Keep original archive/source/VM evidence intact.
 
 2026-10-29T01:31Z image build pressure correction:
@@ -3033,7 +3033,7 @@ Active jobs: private VM lifetime be5a1197; source preflight1dbcf889. Next: packa
 - New additive Blueprint patch honors explicit GOMAXPROCS while retaining upstream default behavior. Both maintained builder paths and incremental-state tracking apply it. Exact source apply-check/shell checks pass. c1196e84 is compiling/executing the actual production concurrency prelude and unpatched negative control with pinned Go1.18. New full-image retry follows the result.
 - Added read-only bounded tests/android/measure-runtime.py for real cgroup CPU, memory.current, proportional memory and synthetic app attribution, with generation/incomplete-read checks and private exclusive output. Python compilation passes; actual VM measurement not yet run. No first-frame/battery claim.
 
-- c1196e84 passed in7.9s/115MiB: actual patched Blueprint prelude respects explicit concurrency2 and retains unset default; original prelude fails the positive test with expected42. Public builder derives Go concurrency from an explicit LUMA_BUILD_JOBS budget unless separately provided, and refuses invalid explicit GOMAXPROCS. New retry will verify the actual compiler environment plus running thread/memory behavior; policy test alone is not a full build.
+- c1196e84 passed in7.9s/115MiB: actual patched Blueprint prelude respects explicit concurrency2 and retains unset default; original prelude fails the positive test with expected42. Public builder derives Go concurrency from an explicit SUNO_BUILD_JOBS budget unless separately provided, and refuses invalid explicit GOMAXPROCS. New retry will verify the actual compiler environment plus running thread/memory behavior; policy test alone is not a full build.
 
 2026-10-29T01:50Z:
 - Full-image worker c3c0c929 uses source9db3a1c96 and actual GOGC5/GOMAXPROCS2. Verified compiler now five threads/~196% CPU, ~3.65GiB RSS (including17MiB file pages) and only4KiB read_bytes at the sampled graph point, rather than the earlier executable-page refault loop. Different cache states/stages make this operational evidence, not a comparative benchmark or completed image.
@@ -3052,24 +3052,24 @@ Active jobs: private VM lifetime be5a1197; source preflight1dbcf889. Next: packa
 - Missing clipboard positive control is endpoint absence, not a failed UID denial: real Waydroid clipboard_manager skips registration when pyclip is absent. VM has wl-clipboard2.2.1 but no python3-pyclip. User-monitor real system-UID control(-7) and ordinary UID10130 denial(-1) pass; root hardware had passed before the missing endpoint. No clipboard data read/written by those unknown-operation probes.
 - Added .89 required python3-pyclip + wl-clipboard and build import check, fixing the observed missing optional provider. New fixture controls copy only fixed synthetic Android text and record only whether a whitelisted synthetic host string matched; arbitrary clipboard contents are never logged. Compilation/package/live text-copy/paste checks pending; no broad MIME clipboard qualification claimed.
 - Low-RAM .88 source APKr9 normal remove/install/launch succeeded after Android completed its slow boot: command runtimes11.9/19.1/4.5s under concurrent HDD load, not benchmarks. Cold120s failures retained. No freeze (persist.waydroid.suspend=false); system_server later reports BOOT_COMPLETED. Earlier auto-warm session had started before the Wayland socket and exhausted its startup burst, another lifecycle issue to address.
-- Build VM cloud-image preparation e67a90c1 passed, inactive domain UUID809f0871-fd88-4770-83dd-624c90259c06. Private SSH key stays under/root/.ssh/luma-android-builder-20261029.9GiB hard/7GiB RAM/4vCPU profile is to run under fresh10GiB normal admission; source disk pending successful squashfs pack. Generic host limits unchanged; guest-only24GiB disk paging. Rootfs285081600B SHAe01d7eb66e4b3bc04b974438dba450435fc45adc73c9cd5dd01dea37b0276e7f; tools6316032B SHA224ab89186bdc083938e1372c6cb29b4a6a0715dced6a1a9a85dea3fc98ed202. Source packf50c7d55 remains active.
+- Build VM cloud-image preparation e67a90c1 passed, inactive domain UUID809f0871-fd88-4770-83dd-624c90259c06. Private SSH key stays under/root/.ssh/Suno-android-builder-20261029.9GiB hard/7GiB RAM/4vCPU profile is to run under fresh10GiB normal admission; source disk pending successful squashfs pack. Generic host limits unchanged; guest-only24GiB disk paging. Rootfs285081600B SHAe01d7eb66e4b3bc04b974438dba450435fc45adc73c9cd5dd01dea37b0276e7f; tools6316032B SHA224ab89186bdc083938e1372c6cb29b4a6a0715dced6a1a9a85dea3fc98ed202. Source packf50c7d55 remains active.
 
 2026-10-29T04:25Z compositor readiness:
 - Source18bbe1d27 supervised session now waits for an actual listening, current-user Unix Wayland socket before invoking Waydroid. Directory monitoring plus bounded startup-only retry covers bind-before-listen/backlog races; every timer/monitor is removed at readiness/deadline. Broker starts warm session from idle callback, replacing blind4s delay. No resident readiness polling. Actual socket tests34936b83 passed three tests (delayed bind/listen, immediate absolute path, missing/stale/regular/symlink deadlines). Full package/live graphical reboot test pending.
 
 2026-10-29T04:36Z continuation:
-- .89 package31a8444c PASSED80 tests/zero skips/failures; binary15dd4a1a950d270949cfe44661e494104fa510ec7ffff654d3f8ab31e9e68692, SRPM79658a955b56e3f588a3b80147aa1aca8b7f20325ee47109ce48dd57de599013. .90 sourcecc15bd5a2 packageff59a12f PASSED83 tests/zero skips/failures plus directory modes. Binarydb6e7408e591d25aa83713eaccf625a38d69052a652618fd9021894d3c570754, SRPMdaa21b8aa950cff398ecc063e0907d879ff542f5979ec98718d3c0da85bce38c; outputs rpm-r10/source/build/candidate-90/build/packages/luma-android-runtime. Private builder luma-android-runtime-89-20261029 preserves damaged earlier cache.
-- Build VM5145f446 verified all4 input hashes and booted, then failed because controller's missing initial log tail returned1 while guest setup was still active. ExecStopPost successfully destroyed ONLY its own UUID. Corrected startup status command and added failed-unit journal capture. Retry dev-android-images-build-vm-r2-ad1c3fe2 active10GiB/450GiB, rootunit luma-android-first-class-build-controller.service; re-verifying inputs, no compilation/image pass yet. Guest swap activation fallback supports clean restart; no host swap change.
-- Runtime VM dev-android-runtime-vm-r6-7ef0192b active6GiB/10GiB, rootunit luma-android-first-class-runtime-controller.service with6,000s cap and own-UUID ExecStopPost. QGA became reachable before normal network/root services; earlier NM-not-running/absent journal were early boot, not a guest network diagnosis. By04:30Z normal SSH/IP192.168.122.35 and synthetic UID1000 Wayland session are ready. Root capped install90/20261029T043113 active, signature verified/ostree disposable unlock done, .90+pyclip installed, RPM waits for update-mime-database. Wait terminal transaction before restart/tests.
+- .89 package31a8444c PASSED80 tests/zero skips/failures; binary15dd4a1a950d270949cfe44661e494104fa510ec7ffff654d3f8ab31e9e68692, SRPM79658a955b56e3f588a3b80147aa1aca8b7f20325ee47109ce48dd57de599013. .90 sourcecc15bd5a2 packageff59a12f PASSED83 tests/zero skips/failures plus directory modes. Binarydb6e7408e591d25aa83713eaccf625a38d69052a652618fd9021894d3c570754, SRPMdaa21b8aa950cff398ecc063e0907d879ff542f5979ec98718d3c0da85bce38c; outputs rpm-r10/source/build/candidate-90/build/packages/Suno-android-runtime. Private builder Suno-android-runtime-89-20261029 preserves damaged earlier cache.
+- Build VM5145f446 verified all4 input hashes and booted, then failed because controller's missing initial log tail returned1 while guest setup was still active. ExecStopPost successfully destroyed ONLY its own UUID. Corrected startup status command and added failed-unit journal capture. Retry dev-android-images-build-vm-r2-ad1c3fe2 active10GiB/450GiB, rootunit Suno-android-first-class-build-controller.service; re-verifying inputs, no compilation/image pass yet. Guest swap activation fallback supports clean restart; no host swap change.
+- Runtime VM dev-android-runtime-vm-r6-7ef0192b active6GiB/10GiB, rootunit Suno-android-first-class-runtime-controller.service with6,000s cap and own-UUID ExecStopPost. QGA became reachable before normal network/root services; earlier NM-not-running/absent journal were early boot, not a guest network diagnosis. By04:30Z normal SSH/IP192.168.122.35 and synthetic UID1000 Wayland session are ready. Root capped install90/20261029T043113 active, signature verified/ostree disposable unlock done, .90+pyclip installed, RPM waits for update-mime-database. Wait terminal transaction before restart/tests.
 - Further clipboard source audit: HWC keyboard_handle_leave only releases keys; Android clipboard read policy trusts mWm.isUidFocused, and writes permit unfocused apps. This suggests stale Android focus after switching to native windows; actual leakage is NOT yet measured. Add native-host-focus background negative control and enforce cross-domain focus before claiming clipboard privacy. Current private bridge test is functional/UID filtering only, never full isolation.
 
 2026-10-29T05:02Z clipboard/cleanup evidence:
 - .90 installation completed04:39:54Z, signature/import/profile755 checks passed. Restarted own services; Android boot_completed1, session NRestarts0. r10 ordinary remove first timed out after17.4s while source checksum saturated disk; preserved root journal fixture10. Paused only checksum unit for120s with automatic thaw (04:45:14..04:47:14); ordinary remove/install/launch then succeeded8.74/8.84/2.77s command times, not frame or speed qualification. Private fixture-r10-install.json now holds the retry; original failure remains root journal and chat evidence.
-- Actual .90 native typed trusted/app controls passed all3 hardware/clipboard/usermonitor endpoints. r10 APK actualUID10131 reports all3 host endpoints denied. Old image still allows platform and test property; root cleared the volatile test key. Rootwaydroid_t and FedoraEnforcing retained, AndroidDisabled. Exact guest result /var/tmp/luma-android-qualification/host-bridge-88-result.json contains actual .90 package; filename is legacy, not a claim .88 passed clipboard.
+- Actual .90 native typed trusted/app controls passed all3 hardware/clipboard/usermonitor endpoints. r10 APK actualUID10131 reports all3 host endpoints denied. Old image still allows platform and test property; root cleared the volatile test key. Rootwaydroid_t and FedoraEnforcing retained, AndroidDisabled. Exact guest result /var/tmp/Suno-android-qualification/host-bridge-88-result.json contains actual .90 package; filename is legacy, not a claim .88 passed clipboard.
 - Real r10 normal UI copied synthetic Android text; native wl-paste comparison matched, no arbitrary clipboard contents logged. Native wl-copy fixed host token then normal APK UI read returned matched-host-fixture. Root private logs clipboard10/20261029T044813 and own VM clipboard-android-to-host-r10.txt, captures clipboard-copy/read-r10.png. Bidirectional plain-text function only; native-focus/background privacy remains unqualified.
 - Recovered SDK Clipboard.java uses vendor HIDL while tested host exposes lineageos.waydroid.IClipboard AIDL. Stopped buildr3 before compilation to align contract. New source0004 adds matching AIDL, reconnects after binder death/errors without replaying failed writes, and preserves a newer connection against late old-proxy failure. Both maintained builders apply it; preparation state includes hash. Pinned AIDL generation+official API compile+production wrapper dependency-fixture tests14e4dee5 PASSED; first28942a04 failed because javac absent from host PATH, corrected to pinned source JDK17. No rebuilt-image IPC pass.
 - Stopping normal build job158f8b65 did NOT initially stop its separate root controller. Found and manually stopped root controller/own UUID04:52:55Z; original/other domains untouched. New private build-vm-driver/run.sh has EXIT cleanup and job_owner.py watches actual admitted parent PID/start/UID/cgroup/memory limit; root actor terminates if owner disappears. Synthetic no-VM watcher tests: forcibly killed owner2dbfcc8d at04:55:58; root stopped04:55:59. Normal devctl stop4f675d66 also stopped root actor via watchdog within1s (primary trap alone not proven). ExecStopPost own-UUID shutdown already observed. No host limits/reserves changed. Future lowram driver run-r3.sh uses same watchdog; CURRENT runtime VM still uses old run-r2.sh, so stop its root unit explicitly before stopping admission.
-- r3 build VM did get past corrected kernel swap parser and into guest mount preparation, then was manually stopped for the protocol fix. No image compiled. All build VMs now INACTIVE. New controller logs every guest mount command; update readonly Luma project disk with source0004 before next full build. Android source/rootfs/tools disks retained unchanged.
+- r3 build VM did get past corrected kernel swap parser and into guest mount preparation, then was manually stopped for the protocol fix. No image compiled. All build VMs now INACTIVE. New controller logs every guest mount command; update readonly Suno project disk with source0004 before next full build. Android source/rootfs/tools disks retained unchanged.
 - New APKr11/17ec82d0 compiled/signed successfully SHA862bf4e6e0d931c7c8e714c34eb3060c4d5410423fd8f442c1a85b9447c090eb, adds10s delayed synthetic clipboard read plus actual Android focus receipt. Live host-focus negative control is next. Current live runtime6GiB admission7ef0192b continues, deadline about06:00Z; own build off.
 
 2026-10-29T06:12Z actual-path correction:

@@ -43,7 +43,7 @@ done
 
 mkdir -p "$(dirname -- "$output")"
 {
-  printf 'LUMA_PIXEL9_UBOOT_REPRODUCIBILITY_VERSION=1\n'
+  printf 'SUNO_PIXEL9_UBOOT_REPRODUCIBILITY_VERSION=1\n'
   printf 'COMPARISON=byte-for-byte\n'
   printf 'UBOOT_BIN_REPRODUCIBLE=true\n'
   printf 'UBOOT_DTB_REPRODUCIBLE=true\n'

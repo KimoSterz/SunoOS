@@ -4,7 +4,7 @@
 Three wheels (hour, minutes in fives, AM/PM) over an inset band, the repeat
 as seven round day toggles, a Snooze switch, Delete alarm when editing, and
 the Label field last, closest to the thumb. The wheels are Clock’s own
-instrument; every row and field around them is a LumaUI part.
+instrument; every row and field around them is a SunoUI part.
 """
 
 from __future__ import annotations
@@ -18,9 +18,9 @@ gi.require_version("Gtk", "4.0")
 gi.require_version("Gdk", "4.0")
 from gi.repository import Gdk, Gtk  # noqa: E402
 
-from luma_appkit import PanelField, PanelHeading, PanelRow, RichMenuItem, TypeLabel  # noqa: E402
+from Suno_appkit import PanelField, PanelHeading, PanelRow, RichMenuItem, TypeLabel  # noqa: E402
 
-from luma_appkit.structure_adapt import WidthWatch  # noqa: E402
+from Suno_appkit.structure_adapt import WidthWatch  # noqa: E402
 
 from .clock_backend import Alarm  # noqa: E402
 
@@ -182,7 +182,7 @@ class AlarmForm(Gtk.Box):
         self._day_width = WidthWatch(self, lambda width: days.set_spacing(4 if width < 368 else 6),
                                      threshold=367)
 
-        # Snooze, then Delete alarm when editing (v71 .fexr2 rows: LumaUI menu rows).
+        # Snooze, then Delete alarm when editing (v71 .fexr2 rows: SunoUI menu rows).
         snooze = RichMenuItem("Snooze", icon="alarm-clock", toggle=self.snooze,
                               on_toggle=lambda on: setattr(self, "snooze", on))
         self.snooze_row = snooze.menu_widget(lambda: None)

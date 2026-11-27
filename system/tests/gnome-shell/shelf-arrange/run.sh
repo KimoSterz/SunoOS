@@ -14,11 +14,11 @@ SCRIPT=${2:?script}
 export XDG_RUNTIME_DIR=/tmp/sa-run-$$; rm -rf $XDG_RUNTIME_DIR; mkdir -m 700 -p $XDG_RUNTIME_DIR
 export HOME=/tmp/sa-home-$$; rm -rf $HOME; mkdir -p $HOME/.config/glib-2.0/settings $HOME/.local/share/fonts \
   $HOME/.local/share/applications $HOME/.local/share/icons/hicolor/scalable/apps
-# Figtree and the Luma app launchers the dock shows (SA_APPS, SA_FONTS).
+# Figtree and the Suno app launchers the dock shows (SA_APPS, SA_FONTS).
 cp ${SA_FONTS:-/oracle/dock-parity/fonts}/*.ttf $HOME/.local/share/fonts/ 2>/dev/null
 for f in ${SA_APPS:-/oracle/apps}/*.desktop; do cp "$f" $HOME/.local/share/applications/; done 2>/dev/null
 cp ${SA_APPS:-/oracle/apps}/*.svg $HOME/.local/share/icons/hicolor/scalable/apps/ 2>/dev/null
-printf '[Desktop Entry]\nType=Application\nName=Files\nExec=python3 %s/win.py org.oracle.Files Files\nIcon=org.projectluma.Notes\n' "$T" > $HOME/.local/share/applications/org.oracle.Files.desktop
+printf '[Desktop Entry]\nType=Application\nName=Files\nExec=python3 %s/win.py org.oracle.Files Files\nIcon=org.projectSuno.Notes\n' "$T" > $HOME/.local/share/applications/org.oracle.Files.desktop
 { cat $T/owner-shell-state.keyfile; printf '%s\n' "${SA_KEYFILE:-}"; cat <<'K'
 
 [org/gnome/desktop/interface]
@@ -26,8 +26,8 @@ color-scheme='prefer-dark'
 enable-animations=true
 
 [org/gnome/shell]
-favorite-apps=['org.oracle.Files.desktop', 'org.projectluma.Messages.desktop', 'org.projectluma.Calendar.desktop', 'org.projectluma.Notes.desktop', 'org.projectluma.Tide.desktop', 'org.projectluma.Photos.desktop', 'org.projectluma.Weather.desktop']
-enabled-extensions=['tilingshell@ferrarodomenico.com', 'tiling-toggle@project-luma.local']
+favorite-apps=['org.oracle.Files.desktop', 'org.projectSuno.Messages.desktop', 'org.projectSuno.Calendar.desktop', 'org.projectSuno.Notes.desktop', 'org.projectSuno.Tide.desktop', 'org.projectSuno.Photos.desktop', 'org.projectSuno.Weather.desktop']
+enabled-extensions=['tilingshell@ferrarodomenico.com', 'tiling-toggle@project-suno.local']
 disable-user-extensions=false
 welcome-dialog-last-shown-version='999'
 K
@@ -38,7 +38,7 @@ if [ -n "${SA_TS_TREE:-}" ]; then
   cp -r "$SA_TS_TREE" $HOME/.local/share/gnome-shell/extensions/tilingshell@ferrarodomenico.com
 fi
 [ -n "${SA_OVERLAY:-}" ] && export G_RESOURCE_OVERLAYS="/org/gnome/shell/ui=$SA_OVERLAY/js/ui:/org/gnome/shell/theme=$SA_OVERLAY/data/theme"
-export GSETTINGS_BACKEND=keyfile LIBGL_ALWAYS_SOFTWARE=1 LUMA_MUTTER_ALLOW_SOFTWARE_BLUR=1
+export GSETTINGS_BACKEND=keyfile LIBGL_ALWAYS_SOFTWARE=1 SUNO_MUTTER_ALLOW_SOFTWARE_BLUR=1
 [ -n "${SA_SCHEMA_DIR:-}" ] && export GSETTINGS_SCHEMA_DIR=$SA_SCHEMA_DIR
 rm -rf "$SA_OUT"; mkdir -p "$SA_OUT"
 mkdir -p /run/dbus

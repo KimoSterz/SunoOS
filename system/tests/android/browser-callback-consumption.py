@@ -43,7 +43,7 @@ class Client(private val handled: Boolean) : WebViewClient() {
 TEST = '''
 }
 fun main() {
- val callback = "luma-fixture://callback?code=SYNTHETIC"
+ val callback = "Suno-fixture://callback?code=SYNTHETIC"
  // A real handler already accepted this top-level redirect. Consuming it is
  // mandatory even without a user gesture; WebView must not load it again.
  for (headers in listOf(false, true)) {
@@ -96,7 +96,7 @@ def main():
     parser.add_argument('--kotlinc', required=True)
     parser.add_argument('--java', required=True)
     args = parser.parse_args()
-    with tempfile.TemporaryDirectory(prefix='luma-browser-callback-') as directory:
+    with tempfile.TemporaryDirectory(prefix='Suno-browser-callback-') as directory:
         root = Path(directory)
         relative = Path('app/src/main/java/org/lineageos/jelly/webview/WebClient.kt')
         copied = root/relative

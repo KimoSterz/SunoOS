@@ -2,7 +2,7 @@
 """Read-only v70 data for the measured Tasks port; never opens EDS.
 
 The original lists, multiple assignees, flags, steps and activity stay in
-``data`` for the LumaUI composition. ``load`` also supplies the existing Tasks
+``data`` for the SunoUI composition. ``load`` also supplies the existing Tasks
 model while that composition is being ported. No fixture operation writes to
 the file or falls back to the real repository.
 """
@@ -65,8 +65,8 @@ class FixtureRepository:
 
 def source_from_environment(changed=None):
     # A bad fixture is an error, never a reason to open Nick's real task lists.
-    if "LUMA_TASKS_FIXTURE" in os.environ:
-        return FixtureRepository(os.environ["LUMA_TASKS_FIXTURE"])
+    if "SUNO_TASKS_FIXTURE" in os.environ:
+        return FixtureRepository(os.environ["SUNO_TASKS_FIXTURE"])
     from .tasks_backend import TasksRepository
     from .tasks_collaboration import CollaborativeTasksRepository
     return CollaborativeTasksRepository(TasksRepository(changed), changed)

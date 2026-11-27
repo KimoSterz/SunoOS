@@ -1,0 +1,28 @@
+From: Project Suno
+Subject: [PATCH] Keep Filer island paint out of descendant popovers
+
+Paint the owned sidebar/content surfaces and file views. Generic viewport
+descendant selectors also match GtkPopoverMenu internals, covering the shared
+menu surface with a second, rectangular background. Leave those containers
+transparent instead of overriding or recreating the toolkit menu contract.
+
+--- a/src/resources/style.css
++++ b/src/resources/style.css
+@@ -300,7 +300,6 @@
+   }
+ 
+   .Suno-files-window .Suno-sidebar-surface,
+-  .Suno-files-window .Suno-sidebar-surface viewport,
+   .Suno-files-window .Suno-sidebar-surface .navigation-sidebar {
+     background-color: @Suno_content;
+     color: @Suno_ink;
+@@ -345,8 +344,7 @@
+ 
+ 
+   .Suno-files-window .Suno-content-surface,
+-  .Suno-files-window .Suno-content-surface .view,
+-  .Suno-files-window .Suno-content-surface viewport {
++  .Suno-files-window .Suno-content-surface .view {
+     background-color: @Suno_content;
+     color: @Suno_ink;
+   }

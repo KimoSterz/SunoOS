@@ -1,13 +1,13 @@
 #!/bin/bash
 # Capture evidence matrix on the build server.
-# matrix.sh RUN [C_CONTAINER=...]: writes /root/luma-shell-oracle/capture/evidence/RUN/<case>/{shell.log,results.json,*.png,*.webm}
-RUN=${1:?run name}; H=/root/luma-shell-oracle/capture/harness; E=/root/luma-shell-oracle/capture/evidence/$RUN
+# matrix.sh RUN [C_CONTAINER=...]: writes /root/Suno-shell-oracle/capture/evidence/RUN/<case>/{shell.log,results.json,*.png,*.webm}
+RUN=${1:?run name}; H=/root/Suno-shell-oracle/capture/harness; E=/root/Suno-shell-oracle/capture/evidence/$RUN
 mkdir -p $E
 one() { # tag theme edge scale env...
   local tag=$1; shift
   timeout 600 bash $H/go.sh "$RUN-$tag" "$@" > $E/$tag.go.log 2>&1
   mkdir -p $E/$tag
-  local O=/root/luma-shell-oracle/capture/out-$RUN-$tag
+  local O=/root/Suno-shell-oracle/capture/out-$RUN-$tag
   cp $O/*.png $O/*.webm $O/results.json $O/opened.log $O/atspi.log $E/$tag/ 2>/dev/null
   grep -v "^GLib-GIO-Message: .*resource overlay" $O/shell.log > $E/$tag/shell.log
   rm -rf $O

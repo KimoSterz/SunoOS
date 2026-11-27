@@ -1,4 +1,4 @@
-From: Project Luma <engineering@projectluma.org>
+From: Project Suno <engineering@projectSuno.org>
 Date: Thu, 17 Sep 2026 12:00:00 -0500
 Subject: [PATCH] constraints: Keep every window inside one monitor's work area
 

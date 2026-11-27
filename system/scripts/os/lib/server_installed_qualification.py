@@ -27,13 +27,13 @@ from pathlib import Path
 PROVIDER = 'server-qemu-tcg-aarch64/v2'
 VIRTUAL_BYTES = 48 * 1024**3
 FLOOR_BYTES = 20 * 1024**3
-LAUNCHERS = ('org.projectluma.Tide', 'org.projectluma.Messages', 'org.projectluma.Ari')
+LAUNCHERS = ('org.projectSuno.Tide', 'org.projectSuno.Messages', 'org.projectSuno.Ari')
 BEHAVIORS = {
-    ('org.projectluma.Tide', 'installed_startup_runtime.py'),
-    ('org.projectluma.Tide', 'search_panel_runtime.py'),
-    ('org.projectluma.Tide', 'artwork_hues_runtime.py'),
-    ('org.projectluma.Messages', 'messages_draft_images_runtime.py'),
-    ('org.projectluma.Ari', 'installed-native-and-signed-catalogue-service'),
+    ('org.projectSuno.Tide', 'installed_startup_runtime.py'),
+    ('org.projectSuno.Tide', 'search_panel_runtime.py'),
+    ('org.projectSuno.Tide', 'artwork_hues_runtime.py'),
+    ('org.projectSuno.Messages', 'messages_draft_images_runtime.py'),
+    ('org.projectSuno.Ari', 'installed-native-and-signed-catalogue-service'),
     ('org.gnome.Nautilus', 'filer-space'),
     ('org.gnome.Nautilus', 'actual-sidebar-Applications-speed-columns-search-retirement'),
     ('org.gnome.Nautilus', 'signed-Filer-to-native-Terminal-real-shell-directory'),
@@ -157,8 +157,8 @@ def validate_producer_binding(binding):
     roots = binding.get('root_units')
     require(isinstance(roots, dict) and roots, 'Exact root unit/cgroup bindings required')
     for unit, cgroup in roots.items():
-        require(re.fullmatch(r'luma-arm-desktop-[a-zA-Z0-9_.@-]+\.service', unit), 'Wrong owned root unit')
-        require(cgroup == '/luma.slice/luma-arm.slice/luma-arm-desktop.slice/' + unit,
+        require(re.fullmatch(r'Suno-arm-desktop-[a-zA-Z0-9_.@-]+\.service', unit), 'Wrong owned root unit')
+        require(cgroup == '/Suno.slice/Suno-arm.slice/Suno-arm-desktop.slice/' + unit,
                 'Root producer cgroup must exactly match owned unit')
     require(re.fullmatch(r'dev-arm-server-[a-zA-Z0-9_.-]+\.service', binding.get('normal_unit', '')),
             'Exact normal admission unit required')
@@ -166,7 +166,7 @@ def validate_producer_binding(binding):
             binding['normal_unit'], 'Wrong normal admission cgroup')
     require(type(binding.get('qemu_uid')) is int and binding['qemu_uid'] > 0 and
             type(binding.get('qemu_gid')) is int and binding['qemu_gid'] > 0, 'Explicit non-root QEMU owner required')
-    require(re.fullmatch(r'luma-arm-desktop-[a-zA-Z0-9_.-]+', binding.get('domain_name', '')),
+    require(re.fullmatch(r'Suno-arm-desktop-[a-zA-Z0-9_.-]+', binding.get('domain_name', '')),
             'Exact owned libvirt domain name required')
     require(re.fullmatch(r'[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}', binding.get('domain_uuid', '')),
             'Exact libvirt UUID required')
@@ -272,7 +272,7 @@ def validate_prepared(fixture, expected, *, owner_uid=0):
     baseline = json.loads(proofs['app-baseline.json'])
     validate_heads(heads, baseline)
     headers = json.loads(proofs['native-headers.json'])
-    require(set(headers) == {'luma-terminal', 'luma-application-installer'}, 'Native headers incomplete')
+    require(set(headers) == {'Suno-terminal', 'Suno-application-installer'}, 'Native headers incomplete')
     for value in headers.values():
         valid_hash(value['header_sha256'])
         require(isinstance(value.get('nevra'), str) and value['nevra'], 'Missing RPM NEVRA')
@@ -310,7 +310,7 @@ def validate_prepared(fixture, expected, *, owner_uid=0):
 def validate_app_baseline(baseline):
     """Validate independently pinned current-source policy, never infer from heads."""
     require(isinstance(baseline, dict) and set(baseline) == {'schema', 'applications'} and
-            baseline['schema'] == 'org.projectluma.os-app-baseline/v1',
+            baseline['schema'] == 'org.projectSuno.os-app-baseline/v1',
             'Wrong current-source app baseline schema')
     apps = baseline['applications']
     require(isinstance(apps, list) and apps, 'Nonempty app baseline required')
@@ -325,9 +325,9 @@ def validate_app_baseline(baseline):
 
 def validate_heads(heads, baseline):
     apps = validate_app_baseline(baseline)
-    runtimes = {'runtime/org.projectluma.Platform/aarch64/44',
-                'runtime/org.projectluma.Platform.Locale/aarch64/44',
-                'runtime/org.projectluma.Platform.GL.default/aarch64/44'}
+    runtimes = {'runtime/org.projectSuno.Platform/aarch64/44',
+                'runtime/org.projectSuno.Platform.Locale/aarch64/44',
+                'runtime/org.projectSuno.Platform.GL.default/aarch64/44'}
     expected_refs = {'app/' + app + '/aarch64/beta' for app in apps} | runtimes
     require(isinstance(heads, dict) and set(heads) == expected_refs,
             'Signed heads differ from exact pinned baseline and runtime refs')
@@ -401,7 +401,7 @@ def validate_libvirt_definition(body,p):
             loader.get('readonly')=='yes' and loader.get('type')=='pflash', 'Changed read-only UEFI code')
     require(nvram is not None and nvram.get('template')==p['executables']['firmware_variables']['path'] and
             Path(nvram.text).parent==Path(p['target_disk_path']).parent, 'NVRAM must be new owned VM state from pinned template')
-    require(root.findtext('resource/partition')=='/luma/arm/desktop', 'Wrong owned libvirt resource partition')
+    require(root.findtext('resource/partition')=='/Suno/arm/desktop', 'Wrong owned libvirt resource partition')
     kernel=root.findtext('os/kernel');initrd=root.findtext('os/initrd')
     if kernel or initrd:
         validate_installer_boot_intent(kernel,initrd,root.findtext('os/cmdline'),p)
@@ -654,7 +654,7 @@ def validate_server_qualification(fixture: Path, expected: dict, *, owner_uid=0)
     installed, ip = chain['INSTALLED']
     live_identity, active_transition = validate_launch_history(p, created['disk_identity'], installed, ip)
     require(installed.get('disk_identity') == live_identity, 'Installed disk differs from actual boot launch')
-    require(installed.get('installation_origin') == 'fresh-final-luma-iso', 'Actual final Luma medium required')
+    require(installed.get('installation_origin') == 'fresh-final-Suno-iso', 'Actual final Suno medium required')
     require(installed.get('unsigned_modifications') == [], 'Unsigned diagnostic overlays not allowed')
     transcript = ip['installer.log'].decode(errors='replace')
     require('Installation complete' in transcript and 'Anaconda' in transcript, 'Missing actual installer completion')
@@ -996,7 +996,7 @@ def observe_disk_consumers(disk: Path, binding: dict, root_outcomes: dict):
     def unit_state(name, user=False):
         command = ['systemctl'] + (['--user'] if user else []) + ['show', name]
         if user:
-            command = ['runuser', '-u', 'luma-dev-2', '--', 'env', 'XDG_RUNTIME_DIR=/run/user/1003',
+            command = ['runuser', '-u', 'Suno-dev-2', '--', 'env', 'XDG_RUNTIME_DIR=/run/user/1003',
                        'DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1003/bus'] + command
         for prop in ('Id', 'MainPID', 'ControlGroup', 'LoadState', 'ActiveState', 'Result', 'ExecMainStatus'):
             command += ['-p', prop]
@@ -1180,7 +1180,7 @@ class ServerLibvirtInputBridge(ServerInputBridge):
     No root-only evidence directory is made writable to QEMU.
     """
     def __init__(self, domain_name, domain_uuid, pid, start_ticks, invocation, *, peer_uid, timeout=30):
-        require(re.fullmatch(r'luma-arm-desktop-[a-zA-Z0-9_.-]+', domain_name), 'Unowned libvirt domain')
+        require(re.fullmatch(r'Suno-arm-desktop-[a-zA-Z0-9_.-]+', domain_name), 'Unowned libvirt domain')
         require(re.fullmatch(r'[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}', domain_uuid), 'Invalid domain UUID')
         require(type(pid) is int and pid>1 and type(start_ticks) is int and start_ticks>0 and
                 type(peer_uid) is int and peer_uid>0, 'Exact non-root QEMU PID/birth/UID required')

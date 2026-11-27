@@ -13,7 +13,7 @@ function deltaId(hex) {
 
 const index = {
   apps: [{
-    app_id: "org.projectluma.Canvas", arch: "x86_64", branch: "beta",
+    app_id: "org.projectSuno.Canvas", arch: "x86_64", branch: "beta",
     commit: HEX_B, root_dirtree: HEX_A, previous_commits: [], previous_root_dirtrees: [],
   }],
 };
@@ -41,9 +41,9 @@ test("classify recognises superblocks and dirtrees only", () => {
 });
 
 test("only app refs are counted", () => {
-  assert.deepEqual(parseRef("app/org.projectluma.Reel/aarch64/stable"),
-    { appId: "org.projectluma.Reel", arch: "aarch64", branch: "stable" });
-  assert.equal(parseRef("runtime/org.projectluma.Platform/x86_64/44"), null);
+  assert.deepEqual(parseRef("app/org.projectSuno.Reel/aarch64/stable"),
+    { appId: "org.projectSuno.Reel", arch: "aarch64", branch: "stable" });
+  assert.equal(parseRef("runtime/org.projectSuno.Platform/x86_64/44"), null);
   assert.equal(parseRef("app/../x86_64/stable"), null);
   assert.equal(parseRef(null), null);
 });
@@ -51,7 +51,7 @@ test("only app refs are counted", () => {
 test("from-scratch delta is an install, from-to delta an update", () => {
   const id = deltaId(HEX_B);
   const install = countEvent({ pathname: `/repo/deltas/${id.slice(0, 2)}/${id.slice(2)}/superblock`, headers: noHeaders, maps, now: day });
-  assert.deepEqual(install, { metric: "depot.install", app_id: "org.projectluma.Canvas", arch: "x86_64", branch: "beta", day: "2026-10-01", count: 1 });
+  assert.deepEqual(install, { metric: "depot.install", app_id: "org.projectSuno.Canvas", arch: "x86_64", branch: "beta", day: "2026-10-01", count: 1 });
   const both = `${deltaId(HEX_A)}-${id}`;
   const update = countEvent({ pathname: `/repo/deltas/${both.slice(0, 2)}/${both.slice(2)}/superblock`, headers: noHeaders, maps, now: day });
   assert.equal(update.metric, "depot.update");
@@ -68,15 +68,15 @@ test("root dirtree counts once, update decided by Flatpak-Upgrade-From", () => {
 
 test("an unindexed delta falls back to the Flatpak-Ref header", () => {
   const id = deltaId("f".repeat(64));
-  const headers = new Headers({ "Flatpak-Ref": "app/org.projectluma.Reel/x86_64/beta" });
+  const headers = new Headers({ "Flatpak-Ref": "app/org.projectSuno.Reel/x86_64/beta" });
   const event = countEvent({ pathname: `/repo/deltas/${id.slice(0, 2)}/${id.slice(2)}/superblock`, headers, maps, now: day });
-  assert.equal(event.app_id, "org.projectluma.Reel");
+  assert.equal(event.app_id, "org.projectSuno.Reel");
   assert.equal(countEvent({ pathname: `/repo/deltas/${id.slice(0, 2)}/${id.slice(2)}/superblock`, headers: noHeaders, maps, now: day }), null);
 });
 
 test("events carry no client identifiers", () => {
   const id = deltaId(HEX_B);
-  const headers = new Headers({ "CF-Connecting-IP": "203.0.113.9", "User-Agent": "libostree/2026.3 flatpak/1.18.2", "Flatpak-Ref": "app/org.projectluma.Canvas/x86_64/beta" });
+  const headers = new Headers({ "CF-Connecting-IP": "203.0.113.9", "User-Agent": "libostree/2026.3 flatpak/1.18.2", "Flatpak-Ref": "app/org.projectSuno.Canvas/x86_64/beta" });
   const event = countEvent({ pathname: `/repo/deltas/${id.slice(0, 2)}/${id.slice(2)}/superblock`, headers, maps, now: day });
   assert.deepEqual(Object.keys(event).sort(), ["app_id", "arch", "branch", "count", "day", "metric"]);
   assert.ok(!JSON.stringify(event).includes("203.0.113.9"));

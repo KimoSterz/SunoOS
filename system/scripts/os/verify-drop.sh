@@ -37,7 +37,7 @@
 # three releases before anyone noticed. A claim with no matching header is a
 # failure here, not a warning.
 #
-# The ledger ($LUMA_OS_DROP_LEDGER, by default .drop-ledger.tsv beside the
+# The ledger ($SUNO_OS_DROP_LEDGER, by default .drop-ledger.tsv beside the
 # drops) records "NEVRA header-sha256 drop first-seen" the first time a package
 # is seen. A later file with the same NEVRA and a different header is refused
 # and both drops are named. Delete a line to re-issue a release deliberately;
@@ -62,7 +62,7 @@ set -euo pipefail
 # the suite everything is cut from has been red with nobody looking. A gate
 # that requires a suite nobody keeps green does not protect the pipeline, it
 # stops it. The date moves again if the triage has not happened.
-SOURCE_CHECKS_FROM=${LUMA_OS_SOURCE_CHECKS_FROM:-2026-09-27}
+SOURCE_CHECKS_FROM=${SUNO_OS_SOURCE_CHECKS_FROM:-2026-09-27}
 
 status=0
 
@@ -197,7 +197,7 @@ verify_drop() {
     # branch: a drop built from an unpushed tree is one nothing can rebuild.
     # The mirror holds only the branches synced to it, so an unknown revision
     # is reported as unknown rather than treated as missing.
-    local mirror=${LUMA_OS_DROP_MIRROR:-${LUMA_OS_ROOT:-/mnt/luma-secondary/luma-build/os-release/fs}/git/ProjectLuma.git}
+    local mirror=${SUNO_OS_DROP_MIRROR:-${SUNO_OS_ROOT:-/mnt/Suno-secondary/Suno-build/os-release/fs}/git/projectSuno.git}
     local provenance="not in this host's mirror, which holds only the branches synced here"
     if [ -d "$mirror" ] && git -C "$mirror" cat-file -e "$checked_revision^{commit}" 2>/dev/null; then
       if [ -n "$(git -C "$mirror" branch --contains "$checked_revision" 2>/dev/null | head -n 1)" ]; then
@@ -249,7 +249,7 @@ verify_drop() {
   done
 }
 
-ledger=${LUMA_OS_DROP_LEDGER-}
+ledger=${SUNO_OS_DROP_LEDGER-}
 args=()
 while [ "$#" -gt 0 ]; do
   case "$1" in

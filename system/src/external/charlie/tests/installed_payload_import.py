@@ -11,8 +11,8 @@ import sys
 def main() -> None:
     root = Path(sys.argv[1]).resolve(strict=True)
     sys.path.insert(0, str(root))
-    modules = ("charlie_luma", "charlie_luma.window", "charlie_luma.application",
-               "charlie_luma.html_reader", "charlie_luma.fixture_v71", "charlie_luma.mail_agent")
+    modules = ("charlie_Suno", "charlie_Suno.window", "charlie_Suno.application",
+               "charlie_Suno.html_reader", "charlie_Suno.fixture_v71", "charlie_Suno.mail_agent")
     for name in modules:
         module = importlib.import_module(name)
         path = Path(module.__file__).resolve(strict=True)

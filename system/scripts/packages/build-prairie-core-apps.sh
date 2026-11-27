@@ -18,27 +18,27 @@ done
   printf 'error: build the noarch Prairie apps RPM on a native Fedora Linux builder\n' >&2
   exit 1
 }
-architecture=${LUMA_TARGET_ARCHITECTURE:-$(uname -m)}
+architecture=${SUNO_TARGET_ARCHITECTURE:-$(uname -m)}
 [ "$architecture" = "$(uname -m)" ] || {
   printf 'error: the Core builder must execute natively for %s\n' "$architecture" >&2
   exit 1
 }
 case "$architecture" in
   x86_64)
-    platform_nevra=$LUMA_DEVELOPER_PLATFORM_X86_64_NEVRA
-    apk_nevra=$LUMA_APK_METADATA_X86_64_NEVRA
+    platform_nevra=$SUNO_DEVELOPER_PLATFORM_X86_64_NEVRA
+    apk_nevra=$SUNO_APK_METADATA_X86_64_NEVRA
     builder_container=$FEDORA_RPM_BUILD_CONTAINER ;;
   aarch64)
-    platform_nevra=$LUMA_DEVELOPER_PLATFORM_AARCH64_NEVRA
-    apk_nevra=$LUMA_APK_METADATA_AARCH64_NEVRA
+    platform_nevra=$SUNO_DEVELOPER_PLATFORM_AARCH64_NEVRA
+    apk_nevra=$SUNO_APK_METADATA_AARCH64_NEVRA
     builder_container=$FEDORA_RPM_BUILD_CONTAINER_AARCH64 ;;
   *) printf 'error: unsupported Core build architecture: %s\n' "$architecture" >&2; exit 1 ;;
 esac
-export LUMA_RPM_BUILDER_ARCHITECTURE=$architecture
+export SUNO_RPM_BUILDER_ARCHITECTURE=$architecture
 output_dir="$repo_root/build/packages/prairie-core-apps"
-platform_rpm="$repo_root/build/packages/luma-developer-platform/$architecture/RPMS/$platform_nevra.rpm"
+platform_rpm="$repo_root/build/packages/Suno-developer-platform/$architecture/RPMS/$platform_nevra.rpm"
 [ -f "$platform_rpm" ] || {
-  printf 'error: build the pinned Luma Developer Platform first: %s\n' "$platform_rpm" >&2
+  printf 'error: build the pinned Suno Developer Platform first: %s\n' "$platform_rpm" >&2
   exit 1
 }
 mkdir -p "$(dirname "$output_dir")"
@@ -46,8 +46,8 @@ work_dir=$(mktemp -d "$output_dir.work.XXXXXX")
 rpmbuild_dir="$work_dir/rpmbuild"
 source_dir="$work_dir/prairie-core-apps"
 cleanup() {
-  if [ -n "${LUMA_RPM_BUILDER_EXISTING:-}" ]; then
-    podman exec --user root "$LUMA_RPM_BUILDER_EXISTING" rm -rf "$work_dir"
+  if [ -n "${SUNO_RPM_BUILDER_EXISTING:-}" ]; then
+    podman exec --user root "$SUNO_RPM_BUILDER_EXISTING" rm -rf "$work_dir"
   else
     rm -rf "$work_dir"
   fi
@@ -59,7 +59,7 @@ mkdir -p "$rpmbuild_dir"/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS} "$source_dir
 install -m 0644 "$platform_rpm" "$rpmbuild_dir/SOURCES/dependencies/"
 # Core's native checks import the installed application service. Keep the
 # existing BuildRequires reproducible outside a pre-populated builder.
-installer_rpm="$repo_root/build/packages/luma-application-installer/RPMS/noarch/$LUMA_APPLICATION_INSTALLER_NEVRA.rpm"
+installer_rpm="$repo_root/build/packages/Suno-application-installer/RPMS/noarch/$SUNO_APPLICATION_INSTALLER_NEVRA.rpm"
 [ -f "$installer_rpm" ] || {
   printf 'error: build the pinned application installer first: %s\n' "$installer_rpm" >&2
   exit 1
@@ -68,14 +68,14 @@ install -m 0644 "$installer_rpm" "$rpmbuild_dir/SOURCES/dependencies/"
 # The installer's two non-Fedora runtime dependencies and the native test
 # font are pinned prerequisites too; admit their complete local closure.
 for prerequisite in \
-  "luma-apk-metadata/RPMS/$architecture/$apk_nevra.rpm" \
-  "luma-appimage-compat/RPMS/$architecture/luma-appimage-compat-0.1.0-1.luma.1.fc44.$architecture.rpm" \
+  "Suno-apk-metadata/RPMS/$architecture/$apk_nevra.rpm" \
+  "Suno-appimage-compat/RPMS/$architecture/Suno-appimage-compat-0.1.0-1.Suno.1.fc44.$architecture.rpm" \
   "figtree-fonts/RPMS/noarch/$FIGTREE_NEVRA.rpm"; do
   path="$repo_root/build/packages/$prerequisite"
   [ -f "$path" ] || { printf 'error: missing Core build prerequisite: %s\n' "$path" >&2; exit 1; }
   install -m 0644 "$path" "$rpmbuild_dir/SOURCES/dependencies/"
 done
-# Luma-built packages Fedora does not ship: the Python modules the Connect
+# Suno-built packages Fedora does not ship: the Python modules the Connect
 # checks import, and the Prairie icon theme the Messages list checks its glyphs
 # against. Each is built from its own spec first.
 for dependency in python-authlib:python3-authlib python-joserfc:python3-joserfc prairie-icon-theme:prairie-icon-theme; do
@@ -102,11 +102,11 @@ tar -C "$work_dir" -czf "$rpmbuild_dir/SOURCES/prairie-core-apps.tar.gz" \
 install -m 0644 "$repo_root/tests/fixtures/messages-v70.json" "$rpmbuild_dir/SOURCES/"
 install -m 0644 "$repo_root/LICENSE.md" "$rpmbuild_dir/SOURCES/LICENSE.md"
 # The runtime theme gate uses the exact production schema on a private backend.
-install -m 0644 "$repo_root/src/luma-shell-state/org.project_luma.shell-state.gschema.xml" \
-  "$rpmbuild_dir/SOURCES/org.project_luma.shell-state.gschema.xml"
-# Source2: Luma Continuity from this same revision, for the Connect checks.
-python3 "$repo_root/scripts/packages/build-luma-continuity-source.py" \
-  "$rpmbuild_dir/SOURCES/luma-continuity.tar.gz" >/dev/null
+install -m 0644 "$repo_root/src/Suno-shell-state/org.projectSuno.shell-state.gschema.xml" \
+  "$rpmbuild_dir/SOURCES/org.projectSuno.shell-state.gschema.xml"
+# Source2: Suno Continuity from this same revision, for the Connect checks.
+python3 "$repo_root/scripts/packages/build-Suno-continuity-source.py" \
+  "$rpmbuild_dir/SOURCES/Suno-continuity.tar.gz" >/dev/null
 install -m 0644 "$repo_root/packaging/rpm/prairie-core-apps.spec" \
   "$rpmbuild_dir/SPECS/"
 # Every Source the spec declares must exist before the builder starts, so a
@@ -128,8 +128,8 @@ sed -n 's/^Source[0-9]*:[[:space:]]*//p' "$rpmbuild_dir/SPECS/prairie-core-apps.
       rm -f "$build_log"
     }
     trap cleanup_log EXIT INT TERM
-    # The Luma-built dependencies first, then whatever else the spec asks for
-    # from Fedora. No Luma package that itself requires this one is installed.
+    # The Suno-built dependencies first, then whatever else the spec asks for
+    # from Fedora. No Suno package that itself requires this one is installed.
     if ! dnf5 -q -y --setopt=exclude= install --allowerasing rpm-build dnf5-plugins SOURCES/dependencies/*.rpm >"$build_log" 2>&1 ||
        ! dnf5 -q -y --setopt=exclude= builddep SPECS/prairie-core-apps.spec >>"$build_log" 2>&1; then
       cat "$build_log" >&2
@@ -162,7 +162,7 @@ sed -n 's/^Source[0-9]*:[[:space:]]*//p' "$rpmbuild_dir/SPECS/prairie-core-apps.
     test -x usr/bin/prairie-phone-daemon
     grep -Fq "WantedBy=graphical-session.target" \
       usr/lib/systemd/user/prairie-phone-daemon.service
-    ! grep -Fq "/run/luma-display" \
+    ! grep -Fq "/run/Suno-display" \
       usr/lib/systemd/user/prairie-phone-daemon.service
     test -f usr/share/prairie-core/phone.css
     test -f usr/share/prairie-core/messages.css
@@ -171,15 +171,15 @@ sed -n 's/^Source[0-9]*:[[:space:]]*//p' "$rpmbuild_dir/SPECS/prairie-core-apps.
     grep -Fq "class PhoneWindow(AppWindow):" \
       usr/lib/python3*/site-packages/prairie_apps/phone.py
     grep -Fq "org.freedesktop.ModemManager1.Messaging" \
-      usr/share/polkit-1/rules.d/60-luma-handheld-telephony.rules
-    desktop-file-validate usr/share/applications/org.projectluma.Messages.desktop
+      usr/share/polkit-1/rules.d/60-Suno-handheld-telephony.rules
+    desktop-file-validate usr/share/applications/org.projectSuno.Messages.desktop
     test -f etc/xdg/mimeapps.list
     test ! -e usr/share/applications/mimeapps.list
-    grep -Fq "application/x-rpm=org.projectluma.ApplicationInstaller.desktop" etc/xdg/mimeapps.list
-    grep -Fq "x-scheme-handler/appstream=org.projectluma.Depot.desktop" etc/xdg/mimeapps.list
-    grep -Fq "x-scheme-handler/luma-depot=org.projectluma.Depot.desktop" etc/xdg/mimeapps.list
+    grep -Fq "application/x-rpm=org.projectSuno.ApplicationInstaller.desktop" etc/xdg/mimeapps.list
+    grep -Fq "x-scheme-handler/appstream=org.projectSuno.Depot.desktop" etc/xdg/mimeapps.list
+    grep -Fq "x-scheme-handler/Suno-depot=org.projectSuno.Depot.desktop" etc/xdg/mimeapps.list
     grep -Fq "max-width: 639px" usr/lib/python3*/site-packages/prairie_apps/messages.py
-    grep -Fq "LUMA_PRESENTATION_MODE" usr/lib/python3*/site-packages/prairie_ui/context.py
+    grep -Fq "SUNO_PRESENTATION_MODE" usr/lib/python3*/site-packages/prairie_ui/context.py
   '
 
 rm -rf "$output_dir"

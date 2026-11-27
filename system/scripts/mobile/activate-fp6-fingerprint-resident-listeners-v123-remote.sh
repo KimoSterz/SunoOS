@@ -8,9 +8,9 @@
 set -Eeuo pipefail
 umask 077
 
-stage=/tmp/luma-fp-listeners-enroll-v123
-state=/var/lib/luma/fingerprint/qsee-state
-expected_kernel=7.1.2-luma-fp-cma1
+stage=/tmp/Suno-fp-listeners-enroll-v123
+state=/var/lib/Suno/fingerprint/qsee-state
+expected_kernel=7.1.2-Suno-fp-cma1
 expected_module_sha=953cf2afecb41b59beec1b507c95590190608240bc483767a58bf97828c8205e
 expected_supplicant_sha=d979286aef1fecb23dd250192c6a062863ef999f38927b2e2ae329627af8154c
 success=false
@@ -33,7 +33,7 @@ trap cleanup EXIT INT TERM HUP
 [[ $(uname -r) == "$expected_kernel" ]] || fail kernel
 grep -qw 'androidboot.slot_suffix=_b' /proc/cmdline || fail slot
 grep -qw qcomtee /proc/modules || fail qcomtee_missing
-[[ -c /dev/luma-fp6-fingerprint ]] || fail enrollment_device_missing
+[[ -c /dev/Suno-fp6-fingerprint ]] || fail enrollment_device_missing
 ! grep -qw qseecomtee /proc/modules || fail qseecomtee_already_loaded
 ! pgrep -x qsee-supplicant >/dev/null || fail supplicant_already_running
 [[ -c /dev/bsg/0:0:0:49476 ]] || fail rpmb_bsg_missing
@@ -44,7 +44,7 @@ grep -qw qcomtee /proc/modules || fail qcomtee_missing
 [[ $(sha256sum "$stage/qsee-supplicant" | cut -d' ' -f1) == "$expected_supplicant_sha" ]] || fail supplicant_hash
 [[ $(modinfo -F vermagic "$stage/qseecomtee.ko" | awk '{print $1}') == "$expected_kernel" ]] || fail module_vermagic
 [[ $(modinfo -F name "$stage/qseecomtee.ko") == qseecomtee ]] || fail module_name
-modinfo -p "$stage/qseecomtee.ko" | grep -Fqx 'luma_adopt_resident_focal:adopt only the independently identity-verified resident focal64 app ID 23 (bool)' || fail adoption_parameter
+modinfo -p "$stage/qseecomtee.ko" | grep -Fqx 'Suno_adopt_resident_focal:adopt only the independently identity-verified resident focal64 app ID 23 (bool)' || fail adoption_parameter
 
 install -d -o root -g root -m 0700 "$state"
 chown root:root "$stage/qseecomtee.ko" "$stage/qsee-supplicant"
@@ -52,9 +52,9 @@ chmod 0600 "$stage/qseecomtee.ko"
 chmod 0700 "$stage/qsee-supplicant"
 
 tee_before=$(find /dev -maxdepth 1 -type c -name 'tee[0-9]*' | wc -l)
-insmod "$stage/qseecomtee.ko" luma_adopt_resident_focal=1
+insmod "$stage/qseecomtee.ko" Suno_adopt_resident_focal=1
 grep -qw qseecomtee /proc/modules || fail module_load
-[[ $(cat /sys/module/qseecomtee/parameters/luma_adopt_resident_focal) == Y ]] || fail adoption_not_enabled
+[[ $(cat /sys/module/qseecomtee/parameters/Suno_adopt_resident_focal) == Y ]] || fail adoption_not_enabled
 tee_after=$(find /dev -maxdepth 1 -type c -name 'tee[0-9]*' | wc -l)
 [[ $tee_after -gt $tee_before ]] || fail tee_node_not_added
 

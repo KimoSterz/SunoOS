@@ -48,7 +48,7 @@ def server_publication_contract(fixture: Path, expected: dict, *, owner_uid=0) -
                      'Guest result must belong to the closed proof inventory')
     guest = json.loads(guest_body)
     return {
-        'schema': 'org.projectluma.installed-publication-contract/v1',
+        'schema': 'org.projectSuno.installed-publication-contract/v1',
         'result': 'PASS',
         'qualification_provider': checked['provider'],
         'execution_backend': 'qemu-tcg',

@@ -12,8 +12,8 @@ srpm_name=mutter-50.4-1.fc44.src.rpm
 srpm_url=https://kojipkgs.fedoraproject.org/packages/mutter/50.4/1.fc44/src/mutter-50.4-1.fc44.src.rpm
 srpm_sha256=e11d5b0cb6d7736b10bbbdc6867037dc2a32783e0576f38a11563f1a47b9d3e2
 protocol_sha256=e463b7863c97d7be05489b52b15cd0b3a5d8290b51340f62023b47d03b4217e3
-# Luma's own protocol; the developer platform builds its client from the same
-# file (src/luma-platform/ui/meson.build).
+# Suno's own protocol; the developer platform builds its client from the same
+# file (src/Suno-platform/ui/meson.build).
 shape_protocol_sha256=a91d4786df709b563614c127ded9e1fe25fa3c515bf06e72836603c46c94eebe
 capture_protocol_sha256=0f8c54615183658ea91b265196f9bec545f235c9f337060e379ac30e5351bdee
 # wlroots' wlr-layer-shell-unstable-v1 (version 5), vendored as published.
@@ -27,17 +27,17 @@ for tool in cpio curl git mktemp podman rpm2cpio sha256sum; do
 done
 
 [ "$(uname -s)" = Linux ] || {
-  printf 'error: build the Luma Mutter candidate on a Fedora Linux builder\n' >&2
+  printf 'error: build the Suno Mutter candidate on a Fedora Linux builder\n' >&2
   exit 1
 }
 
-architecture=${LUMA_TARGET_ARCHITECTURE:-$(uname -m)}
+architecture=${SUNO_TARGET_ARCHITECTURE:-$(uname -m)}
 case "$architecture" in
   x86_64) builder_container=$FEDORA_RPM_BUILD_CONTAINER ;;
   aarch64) builder_container=$FEDORA_RPM_BUILD_CONTAINER_AARCH64 ;;
   *) printf 'error: unsupported Mutter architecture: %s\n' "$architecture" >&2; exit 1 ;;
 esac
-export LUMA_RPM_BUILDER_ARCHITECTURE=$architecture
+export SUNO_RPM_BUILDER_ARCHITECTURE=$architecture
 
 cache_dir="$repo_root/build/cache/srpm"
 output_dir="$repo_root/build/packages/mutter/$architecture"
@@ -50,19 +50,19 @@ printf '%s  %s\n' "$srpm_sha256" "$srpm" | sha256sum --check --status || {
   printf 'error: Mutter source RPM checksum mismatch\n' >&2
   exit 1
 }
-protocol="$repo_root/src/luma-platform/protocols/ext-background-effect-v1.xml"
+protocol="$repo_root/src/Suno-platform/protocols/ext-background-effect-v1.xml"
 printf '%s  %s\n' "$protocol_sha256" "$protocol" | sha256sum --check --status || {
   printf 'error: standardized background-effect protocol checksum mismatch\n' >&2
   exit 1
 }
-shape_protocol="$repo_root/src/luma-platform/protocols/luma-window-shape-v1.xml"
+shape_protocol="$repo_root/src/Suno-platform/protocols/Suno-window-shape-v1.xml"
 printf '%s  %s\n' "$shape_protocol_sha256" "$shape_protocol" | sha256sum --check --status || {
-  printf 'error: luma-window-shape-v1 protocol checksum mismatch\n' >&2
+  printf 'error: Suno-window-shape-v1 protocol checksum mismatch\n' >&2
   exit 1
 }
-capture_protocol="$repo_root/src/luma-platform/protocols/luma-window-capture-v1.xml"
+capture_protocol="$repo_root/src/Suno-platform/protocols/Suno-window-capture-v1.xml"
 printf '%s  %s\n' "$capture_protocol_sha256" "$capture_protocol" | sha256sum --check --status || {
-  printf 'error: luma-window-capture-v1 protocol checksum mismatch\n' >&2
+  printf 'error: Suno-window-capture-v1 protocol checksum mismatch\n' >&2
   exit 1
 }
 
@@ -85,8 +85,8 @@ rpm2cpio "$srpm" >"$work_dir/mutter.srpm.cpio"
 mv "$extract_dir/mutter.spec" "$rpmbuild_dir/SPECS/"
 find "$extract_dir" -maxdepth 1 -type f -exec mv -t "$rpmbuild_dir/SOURCES" {} +
 install -m 0644 "$protocol" "$rpmbuild_dir/SOURCES/ext-background-effect-v1.xml"
-install -m 0644 "$shape_protocol" "$rpmbuild_dir/SOURCES/luma-window-shape-v1.xml"
-install -m 0644 "$capture_protocol" "$rpmbuild_dir/SOURCES/luma-window-capture-v1.xml"
+install -m 0644 "$shape_protocol" "$rpmbuild_dir/SOURCES/Suno-window-shape-v1.xml"
+install -m 0644 "$capture_protocol" "$rpmbuild_dir/SOURCES/Suno-window-capture-v1.xml"
 install -m 0644 "$layer_shell_protocol" "$rpmbuild_dir/SOURCES/wlr-layer-shell-unstable-v1.xml"
 install -m 0644 "$repo_root/tests/mutter/default-monitor-scale.py" "$rpmbuild_dir/SOURCES/"
 for patch in "$repo_root"/patches/mutter/00[0-9][0-9]-*.patch; do
@@ -94,14 +94,14 @@ for patch in "$repo_root"/patches/mutter/00[0-9][0-9]-*.patch; do
 done
 (
   cd "$rpmbuild_dir/SPECS"
-  GIT_CEILING_DIRECTORIES="$rpmbuild_dir" git apply "$repo_root/patches/mutter/0000-luma-fedora-spec.patch"
+  GIT_CEILING_DIRECTORIES="$rpmbuild_dir" git apply "$repo_root/patches/mutter/0000-Suno-fedora-spec.patch"
 )
 # A spec patch that applied as a no-op builds the stock package; the Release
 # says whether it applied (scripts/packages/spec-release.sh).
 . "$repo_root/scripts/packages/spec-release.sh"
 # The spec patch is the only place this release is kept.
-luma_assert_spec_release "$rpmbuild_dir/SPECS/mutter.spec" \
-  "$(luma_patch_release "$repo_root/patches/mutter/0000-luma-fedora-spec.patch")" || exit 1
+Suno_assert_spec_release "$rpmbuild_dir/SPECS/mutter.spec" \
+  "$(Suno_patch_release "$repo_root/patches/mutter/0000-Suno-fedora-spec.patch")" || exit 1
 
 "$repo_root/scripts/packages/run-in-rpm-builder.sh" \
   "$rpmbuild_dir" "$builder_container" '
@@ -110,7 +110,7 @@ luma_assert_spec_release "$rpmbuild_dir/SPECS/mutter.spec" \
     dnf5 -y builddep SPECS/mutter.spec
     rpmbuild -ba --noclean --define "_lto_cflags -flto=2" \
       --define "_topdir $PWD" SPECS/mutter.spec
-    architecture=${LUMA_RPM_BUILDER_ARCHITECTURE:-$(rpm --eval "%{_arch}")}
+    architecture=${SUNO_RPM_BUILDER_ARCHITECTURE:-$(rpm --eval "%{_arch}")}
     release=$(rpmspec -q --srpm --qf "%{release}" SPECS/mutter.spec)
     rpm=$(find "RPMS/$architecture" -type f -name "mutter-50.4-${release}.*.rpm" \
       ! -name "*-devel-*" ! -name "*-tests-*" ! -name "*-debuginfo-*" \
@@ -122,7 +122,7 @@ luma_assert_spec_release "$rpmbuild_dir/SPECS/mutter.spec" \
       cd "$verify_dir"
       rpm2cpio "$OLDPWD/$rpm" |
         cpio -idm --quiet ./usr/lib64/libmutter-18.so.0.0.0
-      grep -aFq "LUMA_MUTTER_ALLOW_SOFTWARE_BLUR" \
+      grep -aFq "SUNO_MUTTER_ALLOW_SOFTWARE_BLUR" \
         ./usr/lib64/libmutter-18.so.0.0.0
       grep -aFq "meta_window_set_externally_tiled" \
         ./usr/lib64/libmutter-18.so.0.0.0
@@ -140,7 +140,7 @@ luma_assert_spec_release "$rpmbuild_dir/SPECS/mutter.spec" \
         ./usr/lib64/libmutter-18.so.0.0.0
       grep -aFq "meta_display_clear_monitor_edge_reservations" \
         ./usr/lib64/libmutter-18.so.0.0.0
-      grep -aFq "org.projectluma.peripherals.touchpad" \
+      grep -aFq "org.projectSuno.peripherals.touchpad" \
         ./usr/lib64/libmutter-18.so.0.0.0
       grep -aFq "scroll speed stays at the default" \
         ./usr/lib64/libmutter-18.so.0.0.0
@@ -154,7 +154,7 @@ luma_assert_spec_release "$rpmbuild_dir/SPECS/mutter.spec" \
         ./usr/lib64/libmutter-18.so.0.0.0
       grep -aFq "meta_data_drag_begin" \
         ./usr/lib64/libmutter-18.so.0.0.0
-      grep -aFq "luma_window_shape_manager_v1" \
+      grep -aFq "Suno_window_shape_manager_v1" \
         ./usr/lib64/libmutter-18.so.0.0.0
       grep -aFq "keeps its content at %d:%d" \
         ./usr/lib64/libmutter-18.so.0.0.0
@@ -166,7 +166,7 @@ luma_assert_spec_release "$rpmbuild_dir/SPECS/mutter.spec" \
         ./usr/lib64/libmutter-18.so.0.0.0
       grep -aFq "capture copies are inhibited" \
         ./usr/lib64/libmutter-18.so.0.0.0
-      grep -aFq "luma_window_capture_manager_v1" \
+      grep -aFq "Suno_window_capture_manager_v1" \
         ./usr/lib64/libmutter-18.so.0.0.0
       grep -aFq "a window hidden from capture is on the monitor" \
         ./usr/lib64/libmutter-18.so.0.0.0

@@ -61,7 +61,7 @@ if "--software-video-candidate" in sys.argv and config.get("waydroid", "arch", f
     }
     if hashlib.sha256(allocator).hexdigest() not in admitted_allocators:
         raise SystemExit("Install the admitted software YUV allocator image before enabling Codec2")
-    fragment = Path("/var/lib/waydroid/overlay/vendor/etc/vintf/manifest/luma-codec2.xml")
+    fragment = Path("/var/lib/waydroid/overlay/vendor/etc/vintf/manifest/Suno-codec2.xml")
     fragment.parent.mkdir(parents=True, exist_ok=True)
     fragment.write_text(
         '<manifest version="1.0" type="device">\n'
@@ -80,8 +80,8 @@ if "--software-video-candidate" in sys.argv and config.get("waydroid", "arch", f
     config["properties"]["persist.waydroid.multi_windows"] = "false"
     config["properties"]["persist.waydroid.use_subsurface"] = "false"
     # All runtime entry points must keep the same composition mode, including
-    # warm launches and session recovery through the Luma broker.
-    runtime_path = Path("/etc/luma/android.conf")
+    # warm launches and session recovery through the Suno broker.
+    runtime_path = Path("/etc/Suno/android.conf")
     runtime = configparser.ConfigParser(interpolation=None)
     runtime.read(runtime_path)
     if not runtime.has_section("runtime"):
@@ -102,7 +102,7 @@ if "--software-video-candidate" in sys.argv and config.get("waydroid", "arch", f
     subprocess.run(["restorecon", str(runtime_path)], check=True)
 
 
-fd, temporary = tempfile.mkstemp(dir=path.parent, prefix=".luma-graphics-")
+fd, temporary = tempfile.mkstemp(dir=path.parent, prefix=".Suno-graphics-")
 try:
     with os.fdopen(fd, "w") as target:
         config.write(target)

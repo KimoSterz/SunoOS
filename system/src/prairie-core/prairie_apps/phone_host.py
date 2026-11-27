@@ -2,8 +2,8 @@
 """Fixed, token-free Phone-only host metadata calls."""
 import json
 from gi.repository import Gio, GLib
-BUS='org.projectluma.Connect1'
-PATH='/org/projectluma/Connect'
+BUS='org.projectSuno.Connect1'
+PATH='/org/projectSuno/Connect'
 METHODS=frozenset({'GetPhoneContext','GetPhoneHistory','GetPhoneTogether','PhoneCompanionRequest','ClosePhoneCompanion'})
 
 def call(method, value=None):
@@ -19,4 +19,4 @@ def call(method, value=None):
         if not isinstance(result,dict):raise ValueError('Invalid Phone response.')
         return result
     except (GLib.Error,ValueError):
-        raise OSError('Phone connection information is unavailable. Open Luma Connect and try again.') from None
+        raise OSError('Phone connection information is unavailable. Open Suno Connect and try again.') from None

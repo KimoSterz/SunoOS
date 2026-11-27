@@ -9,11 +9,11 @@
 set -Eeuo pipefail
 umask 077
 
-stage=/tmp/luma-fingerprint-qcomtee-focal-v39
+stage=/tmp/Suno-fingerprint-qcomtee-focal-v39
 firmware_path=/sys/module/firmware_class/parameters/path
 expected_old_firmware_path=/lib/firmware/postmarketos
 expected_model='The Fairphone (Gen. 6)'
-expected_kernel=7.1.2-luma-fp-cma1
+expected_kernel=7.1.2-Suno-fp-cma1
 expected_boot_sha=c6acad3a30d944d59648258eef383c33a3b51ac1148a98ef24256ee4dee61dd8
 expected_config_sha=5bddfee4390b0f66de5709b99282e79ee3787a01749d5cc8d28ea82d6bbed7fe
 expected_module_sha=2a41cb562af332a71c84bed6a6ea5732ded2b83b8e72a0de9e8f993914061755
@@ -21,7 +21,7 @@ expected_focal_module_sha=be860585db2c68ca80b3ee9e5e4929413c0d7207f9524ba489f974
 expected_bundle_sha=9159f0cead5b6478b4279e0ac85d83b38f62374dad80f0a925f0cb1ad02fbdb7
 expected_keymaster_sha=8acb7eec3333ba720fb7fb95ad6832567b561d41e0125386451e475ec9899198
 expected_keymaster_size=441312
-marker=luma-qcomtee-focal-v39-baseline
+marker=Suno-qcomtee-focal-v39-baseline
 
 qcomtee_loaded=false
 focal_loaded=false
@@ -54,7 +54,7 @@ cleanup() {
     if [[ $focal_loaded == true ]] && grep -qw focaltech_fp /proc/modules; then
       modprobe -r focaltech_fp || cleanup_status=1
     fi
-    if [[ -d $stage && ! -L $stage && $stage == /tmp/luma-fingerprint-qcomtee-focal-v39 ]]; then
+    if [[ -d $stage && ! -L $stage && $stage == /tmp/Suno-fingerprint-qcomtee-focal-v39 ]]; then
       find "$stage" -depth -delete || cleanup_status=1
     else
       cleanup_status=1
@@ -129,35 +129,35 @@ grep -qw focaltech_fp /proc/modules || fail focal_module_did_not_load
 [[ -c /dev/focaltech_fp ]] || fail focal_device_missing
 printf '<6>%s\n' "$marker" >/dev/kmsg
 
-insmod "$stage/qcomtee-control.ko" luma_focal_enumerate=1
+insmod "$stage/qcomtee-control.ko" Suno_focal_enumerate=1
 qcomtee_loaded=true
 grep -qw qcomtee /proc/modules || fail qcomtee_module_did_not_load
 new_dmesg=$(dmesg | sed -n "/$marker/,\$p")
 
 grep -Eq 'qcomtee: QTEE version [0-9]+\.[0-9]+\.[0-9]+' <<<"$new_dmesg" || fail qtee_version
-grep -Fq 'luma-control: service uid=122 accepted' <<<"$new_dmesg" || fail compatibility_service
-grep -Eq 'luma-control: identity accepted app=focal64 distinguished_name=.* elf_bytes=3600472; bounded TA operations requested' <<<"$new_dmesg" || fail identity_acceptance
-grep -Eq 'luma-keymaster: QSEE identity (accepted app=keymaster64 distinguished_name=keymaster elf_bytes=441312 partition_read_only=1|already resident app=keymaster64 arch=2)' <<<"$new_dmesg" || fail keymaster_identity_acceptance
-grep -Fq 'luma-keymaster: Android KeyMint credential accepted uid=1000 contents_logged=0' <<<"$new_dmesg" || fail keymaster_credential_acceptance
-grep -Fq 'luma-keymaster: service uid=151 selector=150 accepted' <<<"$new_dmesg" || fail keymaster_service_acceptance
-grep -Fq 'luma-keymaster: command=0x200 accepted qseecom=' <<<"$new_dmesg" || fail keymaster_version_acceptance
-grep -Fq 'luma-keymaster: command=0x207 accepted client_version=5 contents_logged=0' <<<"$new_dmesg" || fail keymaster_client_version_acceptance
-grep -Fq 'luma-keymaster: command=0x3121 accepted keymint_message_version=300' <<<"$new_dmesg" || fail keymint_message_version_acceptance
-grep -Fq 'luma-keymaster: shared-HMAC negotiation accepted participants=1 secret_material_logged=0' <<<"$new_dmesg" || fail keymaster_shared_hmac_acceptance
-grep -Eq 'luma-keymaster: command=0x205 accepted blob_bytes=[1-9][0-9]* contents_logged=0' <<<"$new_dmesg" || fail keymaster_blob_acceptance
-grep -Eq 'luma-keymaster: QSEE trustlet (unloaded|preserved preexisting=1)' <<<"$new_dmesg" || fail keymaster_lifecycle
-grep -Fq 'luma-focal: command=0x1011 accepted response_payload=0' <<<"$new_dmesg" || fail key_sync_acceptance
-grep -Fq 'luma-focal: command=0x1004 accepted response_payload=192' <<<"$new_dmesg" || fail initialize_acceptance
-grep -Fq 'luma-focal: command=0x2005 accepted response_payload=' <<<"$new_dmesg" || fail enumerate_command_acceptance
-grep -Eq 'luma-focal: enumeration accepted count=[0-9]+ raw_images=0 templates_written=0' <<<"$new_dmesg" || fail enumerate_acceptance
-grep -Fq 'luma-control: control TA unloaded' <<<"$new_dmesg" || fail control_unload
-grep -Fq 'luma-control: complete ta_commands=4 biometric_commands=0' <<<"$new_dmesg" || fail control_complete
-! grep -Eq 'luma-control: (.*failed|.*rejected|app unexpectedly preloaded|lookup transport=|reconstruction failed=|load transport=|unload transport=)|luma-focal: .*failed|luma-focal: command=.*(transport|malformed|trustlet_status)' <<<"$new_dmesg" || fail control_error
-! grep -Eq 'luma-keymaster: .*(rejected|transport=|status=|malformed)' <<<"$new_dmesg" || fail keymaster_error
+grep -Fq 'Suno-control: service uid=122 accepted' <<<"$new_dmesg" || fail compatibility_service
+grep -Eq 'Suno-control: identity accepted app=focal64 distinguished_name=.* elf_bytes=3600472; bounded TA operations requested' <<<"$new_dmesg" || fail identity_acceptance
+grep -Eq 'Suno-keymaster: QSEE identity (accepted app=keymaster64 distinguished_name=keymaster elf_bytes=441312 partition_read_only=1|already resident app=keymaster64 arch=2)' <<<"$new_dmesg" || fail keymaster_identity_acceptance
+grep -Fq 'Suno-keymaster: Android KeyMint credential accepted uid=1000 contents_logged=0' <<<"$new_dmesg" || fail keymaster_credential_acceptance
+grep -Fq 'Suno-keymaster: service uid=151 selector=150 accepted' <<<"$new_dmesg" || fail keymaster_service_acceptance
+grep -Fq 'Suno-keymaster: command=0x200 accepted qseecom=' <<<"$new_dmesg" || fail keymaster_version_acceptance
+grep -Fq 'Suno-keymaster: command=0x207 accepted client_version=5 contents_logged=0' <<<"$new_dmesg" || fail keymaster_client_version_acceptance
+grep -Fq 'Suno-keymaster: command=0x3121 accepted keymint_message_version=300' <<<"$new_dmesg" || fail keymint_message_version_acceptance
+grep -Fq 'Suno-keymaster: shared-HMAC negotiation accepted participants=1 secret_material_logged=0' <<<"$new_dmesg" || fail keymaster_shared_hmac_acceptance
+grep -Eq 'Suno-keymaster: command=0x205 accepted blob_bytes=[1-9][0-9]* contents_logged=0' <<<"$new_dmesg" || fail keymaster_blob_acceptance
+grep -Eq 'Suno-keymaster: QSEE trustlet (unloaded|preserved preexisting=1)' <<<"$new_dmesg" || fail keymaster_lifecycle
+grep -Fq 'Suno-focal: command=0x1011 accepted response_payload=0' <<<"$new_dmesg" || fail key_sync_acceptance
+grep -Fq 'Suno-focal: command=0x1004 accepted response_payload=192' <<<"$new_dmesg" || fail initialize_acceptance
+grep -Fq 'Suno-focal: command=0x2005 accepted response_payload=' <<<"$new_dmesg" || fail enumerate_command_acceptance
+grep -Eq 'Suno-focal: enumeration accepted count=[0-9]+ raw_images=0 templates_written=0' <<<"$new_dmesg" || fail enumerate_acceptance
+grep -Fq 'Suno-control: control TA unloaded' <<<"$new_dmesg" || fail control_unload
+grep -Fq 'Suno-control: complete ta_commands=4 biometric_commands=0' <<<"$new_dmesg" || fail control_complete
+! grep -Eq 'Suno-control: (.*failed|.*rejected|app unexpectedly preloaded|lookup transport=|reconstruction failed=|load transport=|unload transport=)|Suno-focal: .*failed|Suno-focal: command=.*(transport|malformed|trustlet_status)' <<<"$new_dmesg" || fail control_error
+! grep -Eq 'Suno-keymaster: .*(rejected|transport=|status=|malformed)' <<<"$new_dmesg" || fail keymaster_error
 [[ -z $(critical_faults <<<"$new_dmesg") ]] || fail critical_fault
 
 printf '%s\n' '--- qcomtee focal-enumerate-v39 evidence ---'
-grep -E 'qcomtee: QTEE version|luma-control:|luma-keymaster:|luma-focal:' <<<"$new_dmesg"
+grep -E 'qcomtee: QTEE version|Suno-control:|Suno-keymaster:|Suno-focal:' <<<"$new_dmesg"
 printf '%s\n' '--- end qcomtee focal-enumerate-v39 evidence ---'
 
 printf '%s' "$old_firmware_path" >"$firmware_path"

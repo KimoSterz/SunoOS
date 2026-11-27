@@ -3,14 +3,14 @@
 #
 # A device repository ([device_repo] in device.toml) with new packages: the
 # current published repository's packages, every older build of an added
-# package's name dropped, the added ones signed with the Luma OS Release key,
+# package's name dropped, the added ones signed with the Suno OS Release key,
 # createrepo_c, repomd.xml signed and the key exported, then verified with a
 # keyring holding only that key. The result is a complete repository in
 # OUTPUT, ready for the upload to dl (same layout as the published one).
 #
 # usage: publish-device-repo.sh --current DIR --output DIR RPM...
 #
-# Needs LUMA_OS_KEYS and LUMA_OS_SECRETS (scripts/os/lib/common.sh), rpm,
+# Needs SUNO_OS_KEYS and SUNO_OS_SECRETS (scripts/os/lib/common.sh), rpm,
 # rpmsign, gpg and createrepo_c (on PATH, else the release tools container).
 set -euo pipefail
 
@@ -50,28 +50,28 @@ done
 shopt -u nullglob
 cp -a "$@" "$new/Packages/"
 
-fpr=$(luma_os_gpg_fingerprint)
-home=$(luma_os_gpg_home)
-luma_os_gpg_unlock
-trap luma_os_gpg_lock EXIT
+fpr=$(Suno_os_gpg_fingerprint)
+home=$(Suno_os_gpg_home)
+Suno_os_gpg_unlock
+trap Suno_os_gpg_lock EXIT
 for rpm_file in "$@"; do
   rpmsign --define "_gpg_path $home" --define "_gpg_name $fpr" --addsign "$new/Packages/$(basename "$rpm_file")" >/dev/null
 done
 if command -v createrepo_c >/dev/null 2>&1; then
   createrepo_c --quiet "$new"
 else
-  LUMA_OS_TOOLS_MOUNTS=$new luma_os_tools createrepo_c --quiet "$new"
+  SUNO_OS_TOOLS_MOUNTS=$new Suno_os_tools createrepo_c --quiet "$new"
 fi
 gpg --batch --homedir "$home" --local-user "$fpr" --armor --detach-sign \
   --output "$new/repodata/repomd.xml.asc" "$new/repodata/repomd.xml"
-gpg --batch --homedir "$home" --armor --export "$fpr" >"$new/RPM-GPG-KEY-luma-os-release"
+gpg --batch --homedir "$home" --armor --export "$fpr" >"$new/RPM-GPG-KEY-Suno-os-release"
 
 # Verify as a phone would, against only the exported key: the added packages
 # must carry its signature, and nothing in the repository may fail its check.
 verify=$(mktemp -d)
-trap 'rm -rf "$verify"; luma_os_gpg_lock' EXIT
+trap 'rm -rf "$verify"; Suno_os_gpg_lock' EXIT
 keys=(--define '_keyring fs' --define "_keyringpath $verify/keys")
-rpmkeys "${keys[@]}" --import "$new/RPM-GPG-KEY-luma-os-release"
+rpmkeys "${keys[@]}" --import "$new/RPM-GPG-KEY-Suno-os-release"
 for rpm_file in "$@"; do
   rpmkeys "${keys[@]}" -K "$new/Packages/$(basename "$rpm_file")" | grep -q 'signatures OK$' ||
     fail "$(basename "$rpm_file") is not signed by the release key"
@@ -80,7 +80,7 @@ for rpm_file in "$new"/Packages/*.rpm; do
   rpmkeys "${keys[@]}" -K "$rpm_file" | grep -q ' OK$' || fail "$(basename "$rpm_file") fails its check"
 done
 mkdir -m 0700 "$verify/gnupg"
-gpg --batch --homedir "$verify/gnupg" --import "$new/RPM-GPG-KEY-luma-os-release" 2>/dev/null
+gpg --batch --homedir "$verify/gnupg" --import "$new/RPM-GPG-KEY-Suno-os-release" 2>/dev/null
 gpg --batch --homedir "$verify/gnupg" --verify "$new/repodata/repomd.xml.asc" "$new/repodata/repomd.xml" 2>/dev/null ||
   fail 'repomd.xml signature does not verify'
 

@@ -51,16 +51,16 @@ from .messages_preferences import ConversationPreferences
 
 LOG = logging.getLogger("prairie.messages.agent")
 
-APP_ID = "org.projectluma.Messages"
+APP_ID = "org.projectSuno.Messages"
 INFO = AgentInfo(
     APP_ID, "Messages", "communication", ("prairie-messages", "--agent"),
     wake=("login", "network", "resume"),
-    publishes=("unread-count", "unread-conversations", "accounts", "badge", "live-extension:org.projectluma.Messages.Unread"),
+    publishes=("unread-count", "unread-conversations", "accounts", "badge", "live-extension:org.projectSuno.Messages.Unread"),
     purpose="Get messages when Messages is closed",
 )
 AGENT_NAME = INFO.agent_id
-API = "org.projectluma.Messages.Agent1"
-API_PATH = "/org/projectluma/Messages/Agent"
+API = "org.projectSuno.Messages.Agent1"
+API_PATH = "/org/projectSuno/Messages/Agent"
 QUICK_REACTION = "👍"
 # Long bridge calls (a picture upload) outlive D-Bus's 25 s default.
 CALL_TIMEOUT_MS = 330_000
@@ -79,7 +79,7 @@ API_XML = f"""<node><interface name="{API}">
     <arg name="part" type="s" direction="in"/></method>
   <method name="Reconnect"><arg name="account" type="s" direction="in"/></method>
   <method name="Reload"/>
-  <method name="Luma"><arg name="account" type="s" direction="in"/><arg name="command" type="s" direction="in"/>
+  <method name="Suno"><arg name="account" type="s" direction="in"/><arg name="command" type="s" direction="in"/>
     <arg name="args" type="s" direction="in"/><arg name="result" type="s" direction="out"/></method>
   <method name="RemoveAccount"><arg name="account" type="s" direction="in"/><arg name="sign_out" type="b" direction="in"/></method>
   <signal name="AccountChanged"><arg name="account" type="s"/><arg name="state" type="s"/></signal>
@@ -242,10 +242,10 @@ class MessagesAgent:
     def reload(self) -> None:
         """Start a provider for every account on disk and stop the ones removed."""
         try:
-            from .messages_luma import ensure_account
+            from .messages_Suno import ensure_account
             ensure_account(self.accounts, helper_dir=self.helper_dir)
         except (OSError, ValueError) as error:
-            LOG.warning("Luma Messages was not added: %s", type(error).__name__)
+            LOG.warning("Suno Messages was not added: %s", type(error).__name__)
         present = {account.id: account for account in self.accounts.list()}
         for account_id in [key for key in self.services if key not in present]:
             self.services.pop(account_id).close()
@@ -279,7 +279,7 @@ class MessagesAgent:
     def _schedule_idle_exit(self) -> None:
         """No accounts and no modem of its own: nothing to keep, so the agent stops.
 
-        A clean exit is not a crash: luma-background starts it again at its
+        A clean exit is not a crash: Suno-background starts it again at its
         next wake, and the window asks for it (RequestBackground) when an
         account is added. On a handset it stays for the unread count of its
         texts.
@@ -287,7 +287,7 @@ class MessagesAgent:
         if self._idle_source:
             GLib.source_remove(self._idle_source)
             self._idle_source = 0
-        if not self.services and not (self._application_mailbox and self._application_mailbox.phones) and not _has_modem() and os.environ.get("LUMA_MESSAGES_AGENT_STAY") != "1":
+        if not self.services and not (self._application_mailbox and self._application_mailbox.phones) and not _has_modem() and os.environ.get("SUNO_MESSAGES_AGENT_STAY") != "1":
             self._idle_source = GLib.timeout_add_seconds(IDLE_EXIT_SECONDS, self._idle_exit)
 
     def _idle_exit(self) -> bool:
@@ -366,9 +366,9 @@ class MessagesAgent:
             key, name, text, actions=actions, category="im.received", urgency=1,
             public_summary="Messages", public_body=f"New message · {label}",
             on_action=lambda action, account_id=account_id, address=address: self._action(account_id, address, action),
-            hints={"x-luma-inline-reply-path": GLib.Variant("o", ReplyEndpoint.PATH),
-                   "x-luma-inline-reply-token": GLib.Variant("s", token),
-                   "x-luma-conversation": GLib.Variant("s", key)})
+            hints={"x-Suno-inline-reply-path": GLib.Variant("o", ReplyEndpoint.PATH),
+                   "x-Suno-inline-reply-token": GLib.Variant("s", token),
+                   "x-Suno-conversation": GLib.Variant("s", key)})
         self._schedule_count()
 
     def _reply_target(self, notification_id: int, token: str):
@@ -541,12 +541,12 @@ class MessagesAgent:
             elif method == "RetryMedia":
                 self._provider(arguments[0]).retry_media(_uid(arguments[1]), arguments[2])
                 invocation.return_value(None)
-            elif method == "Luma":
+            elif method == "Suno":
                 provider = self._provider(arguments[0])
                 args = json.loads(arguments[2] or "{}")
                 if not isinstance(args, dict):
                     raise ValueError("args")
-                self._luma(invocation, provider, arguments[1], args)
+                self._Suno(invocation, provider, arguments[1], args)
             elif method == "Reconnect":
                 self._provider(arguments[0]).retry()
                 invocation.return_value(None)
@@ -559,17 +559,17 @@ class MessagesAgent:
         except (ValueError, RecursionError):
             invocation.return_dbus_error(f"{API}.Error.InvalidInput", "Invalid input")
 
-    def _luma(self, invocation, provider: AccountProvider, command: str, args: dict) -> None:
-        """A Luma helper command for the window (ADR-051); never a delivery."""
+    def _Suno(self, invocation, provider: AccountProvider, command: str, args: dict) -> None:
+        """A Suno helper command for the window (ADR-051); never a delivery."""
         def run() -> None:
             from .messages_accounts import BridgeError
             try:
-                answer = {"ok": True, "result": provider.luma_call(command, args)}
+                answer = {"ok": True, "result": provider.Suno_call(command, args)}
             except BridgeError as error:
                 answer = {"ok": False, "error": {"code": error.code, "message": str(error), "retryable": error.retryable}}
             except Exception as error:
-                LOG.info("Luma call failed: %s", type(error).__name__)
-                answer = {"ok": False, "error": {"code": "error", "message": "Luma didn't answer.", "retryable": True}}
+                LOG.info("Suno call failed: %s", type(error).__name__)
+                answer = {"ok": False, "error": {"code": "error", "message": "Suno didn't answer.", "retryable": True}}
             GLib.idle_add(lambda: (invocation.return_value(GLib.Variant("(s)", (json.dumps(answer),))), False)[1])
         self._submit_call(invocation, run)
 
@@ -699,10 +699,10 @@ class AgentClient:
     READS = frozenset({"Accounts", "ApplicationAccounts", "ApplicationPhones"})
     # Requests that change no mailbox and no account, not kept either (SetViewing
     # only steers the agent's notifications; other devices' history and the
-    # Luma setup state are not the agent's).
+    # Suno setup state are not the agent's).
     QUIET = frozenset({"SetViewing", "ApplicationCloud", "ApplicationInfo"})
     # Requests about one account, named first, that change only its mailbox.
-    ACCOUNT = frozenset({"Send", "React", "ConversationOpened", "ConversationSeen", "RetryMedia", "Reconnect", "Luma"})
+    ACCOUNT = frozenset({"Send", "React", "ConversationOpened", "ConversationSeen", "RetryMedia", "Reconnect", "Suno"})
     # Modem and phone state reads: never kept, but they change no mailbox.
     TRANSPORT_READS = frozenset({"inspect", "mms_inspect", "snapshot"})
 
@@ -792,7 +792,7 @@ class AgentClient:
                                                Gio.DBusCallFlags.NO_AUTO_START, timeout, None)
         except GLib.Error as error:
             # The agent stopped (no accounts left, or a crash being restarted):
-            # ask luma-background for it once, then try again.
+            # ask Suno-background for it once, then try again.
             if not error.matches(Gio.dbus_error_quark(), Gio.DBusError.NAME_HAS_NO_OWNER) and \
                     not error.matches(Gio.dbus_error_quark(), Gio.DBusError.SERVICE_UNKNOWN):
                 raise
@@ -963,14 +963,14 @@ class RemoteAccountProvider(AccountProvider):
     def retry_media(self, uid: str, part: str) -> None:
         self._ask("RetryMedia", GLib.Variant("(sss)", (self.account.id, uid, part)))
 
-    def luma_call(self, command: str, args: dict, *, timeout: float = 60) -> dict:
+    def Suno_call(self, command: str, args: dict, *, timeout: float = 60) -> dict:
         from .messages_accounts import BridgeError
         try:
-            reply = self.client.call("Luma", GLib.Variant("(sss)", (self.account.id, command, json.dumps(args))),
+            reply = self.client.call("Suno", GLib.Variant("(sss)", (self.account.id, command, json.dumps(args))),
                                      timeout=int(timeout * 1000) + 5000)
             answer = json.loads(reply[0])
         except (GLib.Error, ValueError, IndexError):
-            raise BridgeError("not_connected", "Luma isn't reachable right now.", True) from None
+            raise BridgeError("not_connected", "Suno isn't reachable right now.", True) from None
         if answer.get("ok"):
             return answer.get("result") if isinstance(answer.get("result"), dict) else {}
         error = answer.get("error") if isinstance(answer.get("error"), dict) else {}

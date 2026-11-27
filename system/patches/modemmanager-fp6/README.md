@@ -16,7 +16,7 @@ carry.
 
 Source: <https://gitlab.freedesktop.org/mobile-broadband/ModemManager/-/merge_requests/1463>
 
-The third patch is a Luma-authored correctness fix for the pinned snapshot's
+The third patch is a Suno-authored correctness fix for the pinned snapshot's
 netlink transaction completion. The hash table owns and frees a transaction on
 removal, so the callback must be copied before that removal; the same patch
 also reads `NLMSG_ERROR` from the message currently being iterated. Repeated

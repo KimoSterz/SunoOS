@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
-const source = fs.readFileSync(new URL('../../../src/luma-shell-presentation/presentation.js', import.meta.url), 'utf8');
+const source = fs.readFileSync(new URL('../../../src/Suno-shell-presentation/presentation.js', import.meta.url), 'utf8');
 const hooks = new Map();
 const gesture = {set_begin_threshold(value) {this.threshold = value;}, connect(name, callback) {hooks.set(name, callback);}};
 const stage = {add_action_full(name, phase, action) {this.action = action;}};

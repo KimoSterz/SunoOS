@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
-# Package kernel-luma-rpi from a finished cross build (configure-rpi.sh, then
+# Package kernel-Suno-rpi from a finished cross build (configure-rpi.sh, then
 # `make all` in BUILD) and write the source RPM with the full build path.
 # Run in a Fedora toolroot with the aarch64 cross toolchain, Rust and rpm-build.
 # usage: package-rpi.sh SOURCE BUILD FEDORA_CONFIG CACHE OUTPUT
@@ -27,18 +27,18 @@ tarball=$(field sources.linux.name)
 mkdir -p "$output"/{SOURCES,SPECS,BUILD,BUILDROOT,RPMS,SRPMS,tmp}
 git -C "$repo" archive --format=tar.gz HEAD config/kernel/rpi-7.2.json config/kernel/rpi.config \
   config/kernel/rpi-config-exceptions.txt scripts/kernel/configure-rpi.sh \
-  scripts/kernel/merge-rpi-config.py >"$output/SOURCES/luma-rpi-kernel-sources.tar.gz"
+  scripts/kernel/merge-rpi-config.py >"$output/SOURCES/Suno-rpi-kernel-sources.tar.gz"
 cp "$cache/$tarball" "$output/SOURCES/"
 cp "$base_config" "$output/SOURCES/fedora-base.config"
-cp "$repo/packaging/rpm/kernel-luma-rpi.spec" "$output/SPECS/"
+cp "$repo/packaging/rpm/kernel-Suno-rpi.spec" "$output/SPECS/"
 export SOURCE_DATE_EPOCH=$(git -C "$repo" log -1 --format=%ct)
 cross=
 [ "$(uname -m)" = aarch64 ] || cross=aarch64-linux-gnu-
 rpmbuild -bs --target aarch64 --define "_topdir $output" --define 'dist .fc44' \
-  "$output/SPECS/kernel-luma-rpi.spec" >"$output/source-package.log" 2>&1
+  "$output/SPECS/kernel-Suno-rpi.spec" >"$output/source-package.log" 2>&1
 rpmbuild -bb --target aarch64 --nodeps --define "_topdir $output" --define "_tmppath $output/tmp" \
-  --define 'dist .fc44' --define '_smp_mflags -j16' --define "_luma_cross_compile $cross" \
-  --define "_luma_prepared_source $source_dir" --define "_luma_prepared_output $build_dir" \
-  "$output/SPECS/kernel-luma-rpi.spec" >"$output/binary-package.log" 2>&1
+  --define 'dist .fc44' --define '_smp_mflags -j16' --define "_Suno_cross_compile $cross" \
+  --define "_Suno_prepared_source $source_dir" --define "_Suno_prepared_output $build_dir" \
+  "$output/SPECS/kernel-Suno-rpi.spec" >"$output/binary-package.log" 2>&1
 (cd "$output" && find RPMS SRPMS -name '*.rpm' -exec sha256sum {} + | sort >SHA256SUMS)
 cat "$output/SHA256SUMS"

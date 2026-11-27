@@ -18,24 +18,24 @@ rootfs=$build_root/lab/root
 source_tree=$rootfs/work/linux
 cma_tree=$rootfs/work/linux-fingerprint-matched-cma-v14
 install_tree=$rootfs/work/fingerprint-matched-cma-v14-modules
-kernel_release=7.1.2-luma-fp-cma1
-localversion=-luma-fp-cma1
+kernel_release=7.1.2-Suno-fp-cma1
+localversion=-Suno-fp-cma1
 build_timestamp='2026-08-22 00:00:00 UTC'
-jobs=${LUMA_KERNEL_BUILD_JOBS:-8}
-resume=${LUMA_MATCHED_CMA_RESUME:-false}
-signing_key=${LUMA_MATCHED_CMA_SIGNING_KEY:-}
-module_patch=${LUMA_MATCHED_CMA_MODULE_PATCH:-}
-module_patch_sha=${LUMA_MATCHED_CMA_MODULE_PATCH_SHA256:-}
-enable_qcomtee=${LUMA_MATCHED_CMA_ENABLE_QCOMTEE:-false}
+jobs=${SUNO_KERNEL_BUILD_JOBS:-8}
+resume=${SUNO_MATCHED_CMA_RESUME:-false}
+signing_key=${SUNO_MATCHED_CMA_SIGNING_KEY:-}
+module_patch=${SUNO_MATCHED_CMA_MODULE_PATCH:-}
+module_patch_sha=${SUNO_MATCHED_CMA_MODULE_PATCH_SHA256:-}
+enable_qcomtee=${SUNO_MATCHED_CMA_ENABLE_QCOMTEE:-false}
 signing_key_sha=94f151fcd2cec29112beb22cf226ea9cc2acb5f000de05b518ffab7657e14220
 
 die() { printf 'error: %s\n' "$*" >&2; exit 1; }
 hash() { sha256sum "$1" | awk '{print $1}'; }
 
-case "$jobs" in ''|*[!0-9]*) die 'LUMA_KERNEL_BUILD_JOBS must be numeric' ;; esac
-[ "$jobs" -ge 1 ] || die 'LUMA_KERNEL_BUILD_JOBS must be positive'
-case "$resume" in true|false) ;; *) die 'LUMA_MATCHED_CMA_RESUME must be true or false' ;; esac
-case "$enable_qcomtee" in true|false) ;; *) die 'LUMA_MATCHED_CMA_ENABLE_QCOMTEE must be true or false' ;; esac
+case "$jobs" in ''|*[!0-9]*) die 'SUNO_KERNEL_BUILD_JOBS must be numeric' ;; esac
+[ "$jobs" -ge 1 ] || die 'SUNO_KERNEL_BUILD_JOBS must be positive'
+case "$resume" in true|false) ;; *) die 'SUNO_MATCHED_CMA_RESUME must be true or false' ;; esac
+case "$enable_qcomtee" in true|false) ;; *) die 'SUNO_MATCHED_CMA_ENABLE_QCOMTEE must be true or false' ;; esac
 [ "$(id -u)" -eq 0 ] || die 'run as root in the isolated builder'
 [ "$(uname -s)" = Linux ] && [ "$(uname -m)" = aarch64 ] || die 'builder must be Linux/aarch64'
 clang --version | head -n 1 | grep -Fx 'Ubuntu clang version 21.1.8 (6ubuntu1)' >/dev/null ||
@@ -84,7 +84,7 @@ if [ "$resume" = false ]; then
     # clean build. This pinned PEM is the exact combined private key and X.509
     # certificate from the accepted reproducibility build. It stays private to
     # the isolated builder and is not a production trust root.
-    [ -n "$signing_key" ] || die 'LUMA_MATCHED_CMA_SIGNING_KEY is required'
+    [ -n "$signing_key" ] || die 'SUNO_MATCHED_CMA_SIGNING_KEY is required'
     [ -f "$signing_key" ] && [ ! -L "$signing_key" ] || die 'signing key identity differs'
     [ "$(hash "$signing_key")" = "$signing_key_sha" ] || die 'signing key hash differs'
     scripts/config --enable DMA_CMA
@@ -167,7 +167,7 @@ for module in $modules; do
 done
 
 {
-  printf 'LUMA_FP6_FINGERPRINT_MATCHED_CMA_BUILD_VERSION=14\n'
+  printf 'SUNO_FP6_FINGERPRINT_MATCHED_CMA_BUILD_VERSION=14\n'
   printf 'KERNEL_RELEASE=%s\n' "$kernel_release"
   printf 'BASE_KERNEL_SHA256=%s\n' "$FP6_FINGERPRINT_QSEELOG_KERNEL_SHA256"
   printf 'BASE_CONFIG_SHA256=%s\n' "$FP6_FINGERPRINT_QSEELOG_CONFIG_SHA256"

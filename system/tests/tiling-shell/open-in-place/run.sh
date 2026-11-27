@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Windows open straight into their tile: run open-trace.js in a headless Shell.
 # Expects tests/tiling-shell/window-memory at /wm/test and this directory at
-# /wm/open inside a Fedora 44 container with the Luma Shell and Mutter, gtk4,
+# /wm/open inside a Fedora 44 container with the Suno Shell and Mutter, gtk4,
 # libadwaita, python3-gobject, python3-xlib, Xwayland and chromium installed.
 #   run.sh [extension-source-dir]   (OPEN_TRACE_ONLY=key,key to run some clients)
 # Exits non-zero when any check fails, and when nothing was checked at all.

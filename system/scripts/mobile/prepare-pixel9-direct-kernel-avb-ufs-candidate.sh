@@ -46,7 +46,7 @@ done
 [ "$(sha256sum "$ufs_init" | awk '{print $1}')" = "$PIXEL9_DIAGNOSTIC_UFS_INIT_SHA256" ] ||
 	die 'delayed-UFS init source differs from its pin'
 grep -Fqx 'snapshot_delay=15' "$ufs_init" || die 'delayed-UFS snapshot interval differs'
-grep -Fq "echo 'LUMA_PIXEL9_DIAGNOSTIC_REPORT_VERSION=3'" "$ufs_init" ||
+grep -Fq "echo 'SUNO_PIXEL9_DIAGNOSTIC_REPORT_VERSION=3'" "$ufs_init" ||
 	die 'delayed-UFS report version differs'
 
 for avb in "$avb_a" "$avb_b"; do
@@ -54,7 +54,7 @@ for avb in "$avb_a" "$avb_b"; do
 		[ -f "$avb/$required" ] || die "delayed-UFS AVB proof is incomplete: $avb/$required"
 	done
 	for boundary in \
-		'LUMA_PIXEL9_DIRECT_KERNEL_AVB_WRAPPER_VERSION=1' \
+		'SUNO_PIXEL9_DIRECT_KERNEL_AVB_WRAPPER_VERSION=1' \
 		'SCOPE=offline-stock-size-avb-parser-shape-experiment' \
 		'DIAGNOSTIC_VARIANT=ufs-delay-copy-dtb-v5' \
 		'REPORT_TRANSPORTS=usb-ecm-http' \
@@ -104,7 +104,7 @@ done
 [ "$accepted_bytes" = "$PIXEL9_STOCK_BOOT_IMAGE_BYTES" ] || die 'accepted predecessor size differs from stock'
 grep -Fqx "PARTITION_SHA256=$candidate_sha" "$avb_a/manifest.env" || die 'candidate digest differs from manifest'
 
-grep -Fqx 'LUMA_PIXEL9_DIRECT_KERNEL_AVB_COPY_DTB_ACCEPTANCE_VERSION=2' "$accepted_acceptance" ||
+grep -Fqx 'SUNO_PIXEL9_DIRECT_KERNEL_AVB_COPY_DTB_ACCEPTANCE_VERSION=2' "$accepted_acceptance" ||
 	die 'accepted copy-DTB result version differs'
 grep -Fqx "CANDIDATE_SHA256=$accepted_sha" "$accepted_acceptance" ||
 	die 'accepted copy-DTB bytes differ from acceptance'
@@ -133,7 +133,7 @@ install -m 0644 "$accepted_acceptance" "$output_dir/accepted-v4-acceptance.env"
 install -m 0644 "$accepted_reproducibility" "$output_dir/accepted-v4-reproducibility.env"
 
 {
-	printf 'LUMA_PIXEL9_DIRECT_KERNEL_AVB_UFS_CANDIDATE_VERSION=1\n'
+	printf 'SUNO_PIXEL9_DIRECT_KERNEL_AVB_UFS_CANDIDATE_VERSION=1\n'
 	printf 'CANDIDATE_KIND=direct-kernel-embedded-copied-dtb-delayed-ufs-initramfs-stock-size-avb-ecm-v5\n'
 	printf 'DIAGNOSTIC_VARIANT=ufs-delay-copy-dtb-v5\n'
 	printf 'REPORT_VERSION=3\n'

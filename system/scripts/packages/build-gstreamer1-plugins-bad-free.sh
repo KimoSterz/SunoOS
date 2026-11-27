@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
 #
-# Build Luma's gstreamer1-plugins-bad-free: Fedora 44's package (sources from
+# Build Suno's gstreamer1-plugins-bad-free: Fedora 44's package (sources from
 # its source RPM, pinned by digest) with packaging/rpm's spec and the patches
 # in patches/gstreamer1-plugins-bad. Native builds only (meson, no cross).
 
@@ -16,14 +16,14 @@ fedora_srpm=gstreamer1-plugins-bad-free-$version-1.fc44.src.rpm
 fedora_srpm_url=https://kojipkgs.fedoraproject.org/packages/gstreamer1-plugins-bad-free/$version/1.fc44/src/$fedora_srpm
 fedora_srpm_sha256=af72a065220d07d56b51903576ed6595eb24b6c854008f13eff188deb5a72df4
 
-architecture=${LUMA_TARGET_ARCHITECTURE:-$(uname -m)}
+architecture=${SUNO_TARGET_ARCHITECTURE:-$(uname -m)}
 [ "$architecture" = "$(uname -m)" ] || { printf 'error: build GStreamer natively\n' >&2; exit 1; }
 case "$architecture" in
   x86_64) builder_container=$FEDORA_RPM_BUILD_CONTAINER ;;
   aarch64) builder_container=$FEDORA_RPM_BUILD_CONTAINER_AARCH64 ;;
   *) printf 'error: unsupported build architecture: %s\n' "$architecture" >&2; exit 1 ;;
 esac
-export LUMA_RPM_BUILDER_ARCHITECTURE=$architecture
+export SUNO_RPM_BUILDER_ARCHITECTURE=$architecture
 
 output_dir="$repo_root/build/packages/gstreamer1-plugins-bad-free"
 mkdir -p "$(dirname "$output_dir")"

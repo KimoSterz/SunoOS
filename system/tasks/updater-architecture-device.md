@@ -1,6 +1,6 @@
 # Updater architecture and device admission
 
-- Owner: luma-dev-2 / Codex arm_gate_ssd_r4
+- Owner: Suno-dev-2 / Codex arm_gate_ssd_r4
 - Status: ready for integration; source tests passed; package and device images not built
 - Branch: fix/updater-architecture-device
 - Base: 94f9e9827c2b17e23738c4b442ac42c53c979951
@@ -17,7 +17,7 @@ the older x86 alias, and phone graphs remain in their own architecture/slug
 namespace. The two phone policy files explicitly set target, ref template and
 graph URL; their owning image/package producers must install those exact files.
 
-The shared noarch package source/pin advances to luma-update-1.0.0-1.luma.20.fc44.
+The shared noarch package source/pin advances to Suno-update-1.0.0-1.Suno.20.fc44.
 Its existing builder includes hardware.py through its normal Python module glob.
 No package, signature, image, kernel, device update or publication was produced.
 

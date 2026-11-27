@@ -12,7 +12,7 @@ spec.loader.exec_module(scope)
 class NativeProviderScope(unittest.TestCase):
     def test_architecture_specific_engine_inputs_only_rebuild_their_cpu(self):
         for release, owner in ((30, 'x86_64'), (31, 'aarch64')):
-            path = f'src/external/viola/chromium-linux/luma-package/native-{release}-engine.sha256'
+            path = f'src/external/viola/chromium-linux/Suno-package/native-{release}-engine.sha256'
             for architecture in ('x86_64', 'aarch64'):
                 self.assertEqual(scope.affected('browser', [path], architecture),
                                  architecture == owner)
@@ -47,17 +47,17 @@ class NativeProviderScope(unittest.TestCase):
             self.assertTrue(scope.affected(provider, ['scripts/packages/run-in-rpm-builder.sh']))
 
     def test_unrelated_shell_and_icon_pins_do_not_rebuild_engines(self):
-        before = 'GNOME_SHELL_LUMA_RELEASE=124\nPRAIRIE_ICON_THEME_RELEASE=41\n'
-        after = 'GNOME_SHELL_LUMA_RELEASE=125\nPRAIRIE_ICON_THEME_RELEASE=42\n'
+        before = 'GNOME_SHELL_SUNO_RELEASE=124\nPRAIRIE_ICON_THEME_RELEASE=41\n'
+        after = 'GNOME_SHELL_SUNO_RELEASE=125\nPRAIRIE_ICON_THEME_RELEASE=42\n'
         keys = scope.changed_input_keys(before, after)
-        self.assertEqual(keys, {'GNOME_SHELL_LUMA_RELEASE', 'PRAIRIE_ICON_THEME_RELEASE'})
+        self.assertEqual(keys, {'GNOME_SHELL_SUNO_RELEASE', 'PRAIRIE_ICON_THEME_RELEASE'})
         for provider in ('webkit', 'browser'):
             self.assertFalse(scope.affected(provider, ['config/desktop/inputs.env'], input_keys=keys))
             self.assertTrue(scope.affected(provider, ['scripts/packages/run-in-rpm-builder.sh',
                             'config/desktop/inputs.env'], input_keys=keys))
 
     def test_platform_pin_rechecks_browser_without_recompiling_webkit(self):
-        keys = {'LUMA_DEVELOPER_PLATFORM_X86_64_NEVRA'}
+        keys = {'SUNO_DEVELOPER_PLATFORM_X86_64_NEVRA'}
         self.assertTrue(scope.affected('browser', ['config/desktop/inputs.env'], input_keys=keys))
         self.assertFalse(scope.affected('webkit', ['config/desktop/inputs.env'], input_keys=keys))
 

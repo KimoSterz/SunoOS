@@ -81,9 +81,9 @@ def main():
     if args.source:bucket.validate_graph(pinned_source(args.source,args.source_sha256),channel)
     environment = {'PATH': '/usr/sbin:/usr/bin:/sbin:/bin', 'LANG': 'C.UTF-8',
                    'HOME': '/root', 'PYTHONDONTWRITEBYTECODE': '1',
-                   'LUMA_OS_ROOT': pipeline, 'TMPDIR': pipeline + '/tmp',
-                   'LUMA_OS_GRAPH_TOOLS_IMAGE': image,
-                   'LUMA_TARGET_ARCHITECTURE':bucket.architecture,'LUMA_OS_PROFILE':args.profile}
+                   'SUNO_OS_ROOT': pipeline, 'TMPDIR': pipeline + '/tmp',
+                   'SUNO_OS_GRAPH_TOOLS_IMAGE': image,
+                   'SUNO_TARGET_ARCHITECTURE':bucket.architecture,'SUNO_OS_PROFILE':args.profile}
     command=['bash',str(root/'scripts/os/sign-update-graph.sh'),'--arch',bucket.architecture,
              '--profile',args.profile,'--channel',channel,'--no-sync']
     if bucket.hardware_target:command+=['--hardware-target',bucket.hardware_target]

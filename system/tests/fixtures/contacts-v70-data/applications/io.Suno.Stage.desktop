@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Stage
+Icon=io.Suno.Stage
+Exec=true %f
+MimeType=application/vnd.oasis.opendocument.presentation;
+NoDisplay=true

@@ -1,23 +1,23 @@
---- a/shell/cc-luma-live-windows.c
-+++ b/shell/cc-luma-live-windows.c
+--- a/shell/cc-Suno-live-windows.c
++++ b/shell/cc-Suno-live-windows.c
 @@ -12,6 +12,7 @@
  #define TILING_SCHEMA "org.gnome.shell.extensions.tilingshell"
  
- static const CcLumaGsRow rows[] = {
-+  { "windowBorder", "org.project_luma.shell-state", "window-border-enabled", CC_LUMA_GS_BOOLEAN },
-   { "edges", "org.gnome.mutter", "edge-tiling", CC_LUMA_GS_BOOLEAN },
-   { "hot", "org.gnome.desktop.interface", "enable-hot-corners", CC_LUMA_GS_BOOLEAN },
-   { "ws", "org.gnome.mutter", "dynamic-workspaces", CC_LUMA_GS_CHOICE, (const char * const[]) { "dynamic", "true", "fixed", "false", NULL } },
+ static const CcSunoGsRow rows[] = {
++  { "windowBorder", "org.projectSuno.shell-state", "window-border-enabled", CC_SUNO_GS_BOOLEAN },
+   { "edges", "org.gnome.mutter", "edge-tiling", CC_SUNO_GS_BOOLEAN },
+   { "hot", "org.gnome.desktop.interface", "enable-hot-corners", CC_SUNO_GS_BOOLEAN },
+   { "ws", "org.gnome.mutter", "dynamic-workspaces", CC_SUNO_GS_CHOICE, (const char * const[]) { "dynamic", "true", "fixed", "false", NULL } },
 @@ -25,6 +26,7 @@
-   CcLumaGsTable *table;
-   CcLumaReadyGate *gate;
+   CcSunoGsTable *table;
+   CcSunoReadyGate *gate;
    GSettings *shell;   /* org.gnome.shell: which extensions are on */
 +  GSettings *border;
    GSettings *tiling;  /* the extension's own settings */
    GCancellable *cancel;
  } Windows;
 @@ -79,6 +81,14 @@
-   cc_luma_fixture_publish_boolean (self->model, "edgeTile", g_settings_get_boolean (self->tiling, "active-screen-edges"));
+   cc_Suno_fixture_publish_boolean (self->model, "edgeTile", g_settings_get_boolean (self->tiling, "active-screen-edges"));
  }
  
 +static void
@@ -25,37 +25,37 @@
 +{
 +  g_autoptr (GVariant) chosen = g_settings_get_user_value (self->border, "window-border-size");
 +  gint size = chosen ? g_variant_get_int32 (chosen) : g_settings_get_int (self->border, "shelf-padding");
-+  cc_luma_fixture_publish_int (self->model, "windowBorderSize", size);
++  cc_Suno_fixture_publish_int (self->model, "windowBorderSize", size);
 +}
 +
  static gpointer
- windows_start (CcLumaFixture *model)
+ windows_start (CcSunoFixture *model)
  {
 @@ -88,7 +98,7 @@
    self->model = g_object_ref (model);
    self->cancel = g_cancellable_new ();
-   self->table = cc_luma_gs_table_new (model, rows, G_N_ELEMENTS (rows));
--  cc_luma_gs_table_verify (self->table, (const char * const[]) { "edges", "hot", "ws", "wsN", "wsMon", "swi", NULL });
-+  cc_luma_gs_table_verify (self->table, (const char * const[]) { "windowBorder", "edges", "hot", "ws", "wsN", "wsMon", "swi", NULL });
+   self->table = cc_Suno_gs_table_new (model, rows, G_N_ELEMENTS (rows));
+-  cc_Suno_gs_table_verify (self->table, (const char * const[]) { "edges", "hot", "ws", "wsN", "wsMon", "swi", NULL });
++  cc_Suno_gs_table_verify (self->table, (const char * const[]) { "windowBorder", "edges", "hot", "ws", "wsN", "wsMon", "swi", NULL });
    if (shell && g_settings_schema_has_key (shell, "enabled-extensions") && g_settings_schema_has_key (shell, "disabled-extensions"))
      self->tiling = tiling_settings ();
    if (self->tiling)
 @@ -107,6 +117,15 @@
-       cc_luma_fixture_verify_key (model, "edgeTile");
+       cc_Suno_fixture_verify_key (model, "edgeTile");
        publish_tiling (self);
      }
-+  g_autoptr (GSettingsSchema) border = source ? g_settings_schema_source_lookup (source, "org.project_luma.shell-state", TRUE) : NULL;
++  g_autoptr (GSettingsSchema) border = source ? g_settings_schema_source_lookup (source, "org.projectSuno.shell-state", TRUE) : NULL;
 +  if (border && g_settings_schema_has_key (border, "window-border-size") && g_settings_schema_has_key (border, "shelf-padding"))
 +    {
-+      self->border = g_settings_new ("org.project_luma.shell-state");
++      self->border = g_settings_new ("org.projectSuno.shell-state");
 +      g_signal_connect_swapped (self->border, "changed", G_CALLBACK (publish_border), self);
-+      cc_luma_fixture_own_key (model, "windowBorderSize");
-+      cc_luma_fixture_verify_key (model, "windowBorderSize");
++      cc_Suno_fixture_own_key (model, "windowBorderSize");
++      cc_Suno_fixture_verify_key (model, "windowBorderSize");
 +      publish_border (self);
 +    }
-   cc_luma_live_publish_dock (model);
-   cc_luma_live_desk_dump_watch (model);
-   self->gate = cc_luma_ready_gate_new (model, "windows", cc_luma_windows_validate);
+   cc_Suno_live_publish_dock (model);
+   cc_Suno_live_desk_dump_watch (model);
+   self->gate = cc_Suno_ready_gate_new (model, "windows", cc_Suno_windows_validate);
 @@ -155,6 +174,21 @@
  windows_write (gpointer state, const char *key, JsonNode *value, GError **error)
  {
@@ -75,8 +75,8 @@
 +        }
 +      return g_settings_set_int (self->border, "window-border-size", json_node_get_int (value));
 +    }
-   if (cc_luma_gs_table_covers (self->table, key))
-     return cc_luma_gs_table_write (self->table, key, value, error);
+   if (cc_Suno_gs_table_covers (self->table, key))
+     return cc_Suno_gs_table_write (self->table, key, value, error);
    if (!self->tiling || !(g_str_equal (key, "tile") || g_str_equal (key, "gap") || g_str_equal (key, "edgeTile")))
 @@ -227,6 +261,8 @@
    if (self->tiling) g_signal_handlers_disconnect_by_data (self->tiling, self);
@@ -87,8 +87,8 @@
    g_object_unref (self->model);
    g_free (self);
  }
---- a/shell/cc-luma-desktop.c
-+++ b/shell/cc-luma-desktop.c
+--- a/shell/cc-Suno-desktop.c
++++ b/shell/cc-Suno-desktop.c
 @@ -13,7 +13,8 @@
  static gboolean number_allowed (const char *key, gint64 value)
  {
@@ -98,14 +98,14 @@
 +    (g_str_equal (key, "windowBorderSize") && value >= 1 && value <= 64));
  }
  /* What a real system can report: any gap, GNOME's 1–36 workspaces. */
- static gboolean number_reported (CcLumaFixture *model, const char *key, gint64 value)
+ static gboolean number_reported (CcSunoFixture *model, const char *key, gint64 value)
 @@ -49,6 +50,14 @@
-       JsonNode *n = cc_luma_fixture_get (model, numbers[i]);
+       JsonNode *n = cc_Suno_fixture_get (model, numbers[i]);
        if (!tiling && g_str_equal (numbers[i], "gap") && !n) continue;
        if (!n || !JSON_NODE_HOLDS_VALUE (n) || json_node_get_value_type (n) != G_TYPE_INT64 || !number_reported (model, numbers[i], json_node_get_int (n))) return FALSE;
 +    }
-+  JsonNode *border = cc_luma_fixture_get (model, "windowBorder");
-+  JsonNode *size = cc_luma_fixture_get (model, "windowBorderSize");
++  JsonNode *border = cc_Suno_fixture_get (model, "windowBorder");
++  JsonNode *size = cc_Suno_fixture_get (model, "windowBorderSize");
 +  if (border || size)
 +    {
 +      if (!border || !JSON_NODE_HOLDS_VALUE (border) || json_node_get_value_type (border) != G_TYPE_BOOLEAN ||
@@ -114,10 +114,10 @@
      }
    return TRUE;
  }
---- a/shell/cc-luma-view-windows.c
-+++ b/shell/cc-luma-view-windows.c
+--- a/shell/cc-Suno-view-windows.c
++++ b/shell/cc-Suno-view-windows.c
 @@ -75,7 +75,7 @@
-     { cc_luma_view_report_error (v, error); return; }
+     { cc_Suno_view_report_error (v, error); return; }
    /* Keep the emitting slider alive, including through a continuous drag. */
    GtkLabel *output = g_object_get_data (G_OBJECT (range), "cf-output");
 -  g_autofree char *caption = g_strdup_printf ("%" G_GINT64_FORMAT "%s", value, g_str_equal (key, "gap") ? " px" : "");
@@ -141,15 +141,15 @@
 -  cf_row (card, NULL, title, NULL, box, FALSE);
 +  GtkWidget *row = cf_row (card, NULL, title, NULL, box, FALSE);
 +  if (g_str_equal (key, "windowBorderSize"))
-+    gtk_widget_set_sensitive (row, cc_luma_view_flag (v, "windowBorder"));
++    gtk_widget_set_sensitive (row, cc_Suno_view_flag (v, "windowBorder"));
  }
  /* v70 rSw; the switch keeps its name (tests drive it), the row is the control. */
  static void switch_row (View *v, GtkBox *card, const char *key, const char *title, const char *subtitle)
 @@ -202,6 +206,12 @@
-       if (cc_luma_view_flag (v, "tile")) number_row (v, card, "gap", "Space between windows", 0, 24, 2, " px");
+       if (cc_Suno_view_flag (v, "tile")) number_row (v, card, "gap", "Space between windows", 0, 24, 2, " px");
        switch_row (v, card, "edgeTile", "Drag to an edge to tile", "Drop a window on the left, right or top edge");
      }
-+  if (cc_luma_fixture_get (v->model, "windowBorder") && cc_luma_fixture_get (v->model, "windowBorderSize"))
++  if (cc_Suno_fixture_get (v->model, "windowBorder") && cc_Suno_fixture_get (v->model, "windowBorderSize"))
 +    {
 +      card = cf_group (v, "Desktop border", NULL);
 +      switch_row (v, card, "windowBorder", "Show desktop border", "Leave space around maximized windows");

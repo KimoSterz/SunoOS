@@ -35,7 +35,7 @@ def edited_photo_node(pixbuf, values):
     gi.require_version('Gtk', '4.0')
     gi.require_version('Graphene', '1.0')
     from gi.repository import Gdk, Graphene, Gtk
-    from luma_appkit.media_viewport import normalise_adjustments, _colour_matrix, _cropped_size
+    from Suno_appkit.media_viewport import normalise_adjustments, _colour_matrix, _cropped_size
     values = normalise_adjustments(values)
     width, height = pixbuf.get_width(), pixbuf.get_height()
     if 'crop_rect' in values:

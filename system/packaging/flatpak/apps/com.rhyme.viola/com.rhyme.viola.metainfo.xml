@@ -4,9 +4,9 @@
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0-only AND BSD-3-Clause</project_license>
   <name>Viola</name>
-  <summary>Browse the web with native Luma windows</summary>
+  <summary>Browse the web with native Suno windows</summary>
   <description>
-    <p>Viola combines its Chromium browser engine with native Luma windows, tabs, downloads and page controls. Your existing browser profile stays available across independent application updates.</p>
+    <p>Viola combines its Chromium browser engine with native Suno windows, tabs, downloads and page controls. Your existing browser profile stays available across independent application updates.</p>
   </description>
   <launchable type="desktop-id">com.rhyme.viola.desktop</launchable>
   <developer id="com.rhyme">

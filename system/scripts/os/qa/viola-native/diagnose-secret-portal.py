@@ -8,7 +8,7 @@ import subprocess
 
 
 def main():
-    home = Path('/home/luma-gate-browser-opens')
+    home = Path('/home/Suno-gate-browser-opens')
     assert os.getuid() == 1100 and Path.home() == home
     assert os.environ.get('XDG_RUNTIME_DIR') == '/run/user/1100'
     assert os.environ.get('DBUS_SESSION_BUS_ADDRESS') == 'unix:path=/run/user/1100/bus'

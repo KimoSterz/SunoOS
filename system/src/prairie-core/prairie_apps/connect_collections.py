@@ -7,7 +7,7 @@ belong to the account. Each sync compares the local file with the list as it
 was after the previous sync (the *base*) to work out what this device added,
 edited, removed or reordered, sends only that, and writes back whatever the
 source of truth answers. The source of truth does the merging, so the same
-exchange works whether it is the Luma Hub or, later, a machine of the user's.
+exchange works whether it is the Suno Hub or, later, a machine of the user's.
 
 The app files are only ever replaced atomically, and never when the app wrote
 to them after they were read: that round is abandoned and the next one (the

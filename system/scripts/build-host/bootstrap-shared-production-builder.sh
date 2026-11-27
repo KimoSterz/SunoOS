@@ -5,14 +5,14 @@ set -euo pipefail
 
 script_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 repo_root=$(CDPATH= cd -- "$script_dir/../.." && pwd)
-build_root=${LUMA_BUILD_ROOT:-/srv/luma-build}
-build_user=${LUMA_BUILD_USER:-luma-build}
-protected_vm=${LUMA_PROTECTED_VM:-viola-windows-builder}
-package_manifest=${LUMA_BUILD_PACKAGE_MANIFEST:-$repo_root/config/build-host/fedora44-packages.txt}
-runner_source=${LUMA_BUILD_RUNNER_SOURCE:-$script_dir/luma-build-run}
-preview_source=${LUMA_PREVIEW_PUBLISHER_SOURCE:-$script_dir/publish-preview-vm.sh}
-storage_source=${LUMA_CONTAINER_STORAGE_SOURCE:-$repo_root/config/build-host/containers-storage.conf}
-containers_source=${LUMA_CONTAINERS_SOURCE:-$repo_root/config/build-host/containers.conf}
+build_root=${SUNO_BUILD_ROOT:-/srv/Suno-build}
+build_user=${SUNO_BUILD_USER:-Suno-build}
+protected_vm=${SUNO_PROTECTED_VM:-viola-windows-builder}
+package_manifest=${SUNO_BUILD_PACKAGE_MANIFEST:-$repo_root/config/build-host/fedora44-packages.txt}
+runner_source=${SUNO_BUILD_RUNNER_SOURCE:-$script_dir/Suno-build-run}
+preview_source=${SUNO_PREVIEW_PUBLISHER_SOURCE:-$script_dir/publish-preview-vm.sh}
+storage_source=${SUNO_CONTAINER_STORAGE_SOURCE:-$repo_root/config/build-host/containers-storage.conf}
+containers_source=${SUNO_CONTAINERS_SOURCE:-$repo_root/config/build-host/containers.conf}
 change_log="$build_root/bootstrap/system-changes.log"
 
 if [ "$(id -u)" -ne 0 ]; then
@@ -39,8 +39,8 @@ command -v virsh >/dev/null 2>&1 || {
   printf 'error: reviewed container configuration is unavailable\n' >&2
   exit 1
 }
-[ "$build_root" = /srv/luma-build ] || {
-  printf 'error: reviewed container configuration is bound to /srv/luma-build\n' >&2
+[ "$build_root" = /srv/Suno-build ] || {
+  printf 'error: reviewed container configuration is bound to /srv/Suno-build\n' >&2
   exit 1
 }
 
@@ -134,7 +134,7 @@ install -d -o "$user_uid" -g "$user_gid" -m 0700 \
   "$build_root/containers/storage"
 install -d -o "$user_uid" -g "$user_gid" -m 0750 \
   "$build_root/src" \
-  "$build_root/src/ProjectLuma" \
+  "$build_root/src/projectSuno" \
   "$build_root/packages" \
   "$build_root/artifacts" \
   "$build_root/imports" \
@@ -157,7 +157,7 @@ install -o "$user_uid" -g "$user_gid" -m 0600 "$storage_source" \
 install -o "$user_uid" -g "$user_gid" -m 0600 "$containers_source" \
   "$build_root/config/containers/containers.conf"
 
-install_root_copy "$runner_source" "$build_root/bin/luma-build-run" 0755
+install_root_copy "$runner_source" "$build_root/bin/Suno-build-run" 0755
 install_root_copy "$preview_source" \
   "$build_root/bin/publish-preview-vm.sh" 0755
 install_root_copy "$package_manifest" \
@@ -170,13 +170,13 @@ install_root_copy "$0" \
   "$build_root/bootstrap/bootstrap-shared-production-builder.sh" 0755
 
 {
-  printf 'LUMA_BUILD_ROOT=%q\n' "$build_root"
-  printf 'LUMA_BUILD_USER=%q\n' "$build_user"
-  printf 'LUMA_PROTECTED_VM=%q\n' "$protected_vm"
-  printf 'LUMA_ACTIVE_CPU_QUOTA=%q\n' '800%'
-  printf 'LUMA_IDLE_CPU_QUOTA=%q\n' '1400%'
-  printf 'LUMA_MEMORY_HIGH=%q\n' '16G'
-  printf 'LUMA_MEMORY_MAX=%q\n' '20G'
+  printf 'SUNO_BUILD_ROOT=%q\n' "$build_root"
+  printf 'SUNO_BUILD_USER=%q\n' "$build_user"
+  printf 'SUNO_PROTECTED_VM=%q\n' "$protected_vm"
+  printf 'SUNO_ACTIVE_CPU_QUOTA=%q\n' '800%'
+  printf 'SUNO_IDLE_CPU_QUOTA=%q\n' '1400%'
+  printf 'SUNO_MEMORY_HIGH=%q\n' '16G'
+  printf 'SUNO_MEMORY_MAX=%q\n' '20G'
 } >"$build_root/bootstrap/build-host.env"
 chmod 0644 "$build_root/bootstrap/build-host.env"
 
@@ -187,7 +187,7 @@ sha256sum \
   "$build_root/bootstrap/fedora44-packages.txt" \
   "$build_root/bootstrap/containers-storage.conf" \
   "$build_root/bootstrap/containers.conf" \
-  "$build_root/bin/luma-build-run" \
+  "$build_root/bin/Suno-build-run" \
   "$build_root/bin/publish-preview-vm.sh" \
   >"$build_root/bootstrap/SHA256SUMS"
 
@@ -217,5 +217,5 @@ runuser -u "$build_user" -- env -u DBUS_SESSION_BUS_ADDRESS \
   podman info --format '{{.Store.GraphRoot}}' | grep -Fx "$build_root/containers/storage"
 
 log_change "verified rootless Podman graphroot and protected VM state=$vm_state"
-printf 'Luma build root ready: %s\n' "$build_root"
-printf 'Guarded runner: %s/bin/luma-build-run\n' "$build_root"
+printf 'Suno build root ready: %s\n' "$build_root"
+printf 'Guarded runner: %s/bin/Suno-build-run\n' "$build_root"

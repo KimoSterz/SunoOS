@@ -134,20 +134,20 @@ index b582f04..307d443 100644
    font-feature-settings: "tnum";
  }
  
-+.luma-files-window .nautilus-grid-view .filer-extension-badge {
-+  color: @luma_muted;
-+  font-size: calc(var(--lumaui-t-caption-size) * .74);
-+  font-weight: var(--lumaui-t-label-weight);
++.Suno-files-window .nautilus-grid-view .filer-extension-badge {
++  color: @Suno_muted;
++  font-size: calc(var(--SunoUI-t-caption-size) * .74);
++  font-weight: var(--SunoUI-t-label-weight);
 +}
 +
-+.luma-files-window .nautilus-grid-view .filer-duration-badge {
-+  color: @luma_ink;
-+  font-size: calc(var(--lumaui-t-caption-size) * .83);
-+  font-weight: var(--lumaui-t-label-weight);
++.Suno-files-window .nautilus-grid-view .filer-duration-badge {
++  color: @Suno_ink;
++  font-size: calc(var(--SunoUI-t-caption-size) * .83);
++  font-weight: var(--SunoUI-t-label-weight);
 +}
 +
  /* Native List presentation. GtkColumnView remains the one column/sort model. */
- .luma-files-window .nautilus-list-view columnview {
+ .Suno-files-window .nautilus-list-view columnview {
    padding-left: 12px;
 -- 
 2.55.0

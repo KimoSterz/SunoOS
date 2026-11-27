@@ -25,20 +25,20 @@ static const uid_t aid_system = 1000;
 static const uid_t aid_radio = 1001;
 
 static void die(const char *operation) {
-  dprintf(STDERR_FILENO, "event=luma_ims_socket_launcher_failed operation=%s errno=%d\n",
+  dprintf(STDERR_FILENO, "event=Suno_ims_socket_launcher_failed operation=%s errno=%d\n",
           operation, errno);
   _exit(125);
 }
 
 int main(int argc, char **argv) {
   static const char socket_path[] = "/dev/socket/ims_datad";
-  static const char root_prefix[] = "/var/tmp/luma-stock-ims-root.";
+  static const char root_prefix[] = "/var/tmp/Suno-stock-ims-root.";
   static const char library_path[] =
-      "/luma-adapter:/apex/com.android.runtime/lib64/bionic:/vendor/lib64:"
+      "/Suno-adapter:/apex/com.android.runtime/lib64/bionic:/vendor/lib64:"
       "/vendor/lib64/hw:/system/lib64:/system_ext/lib64:/product/lib64";
   static char *const daemon_argv[] = {
       "/system/bin/sh", "-c",
-      "export LD_PRELOAD=/luma-adapter/libluma-ims-properties.so; exec "
+      "export LD_PRELOAD=/Suno-adapter/libSuno-ims-properties.so; exec "
       "/vendor/bin/imsdaemon",
       NULL};
   struct sockaddr_un address;

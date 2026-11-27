@@ -40,7 +40,7 @@ def capture(window, output):
     for widget in descendants(window):
         if not widget.get_mapped():
             continue
-        if any(name.startswith(("luma-empty", "luma-list-empty", "notes-folder-empty", "messages-intro")) for name in widget.get_css_classes()):
+        if any(name.startswith(("Suno-empty", "Suno-list-empty", "notes-folder-empty", "messages-intro")) for name in widget.get_css_classes()):
             ok, bounds = widget.compute_bounds(window)
             if ok:
                 geometry.append(dict(classes=list(widget.get_css_classes()),
@@ -55,7 +55,7 @@ def main():
     with tempfile.TemporaryDirectory() as directory:
         os.environ.update(XDG_DATA_HOME=directory+"/data", XDG_STATE_HOME=directory+"/state", XDG_CONFIG_HOME=directory+"/config", PRAIRIE_EDS_MODE="disabled")
         # Force each requested appearance independently of the host desktop preference.
-        patch("luma_appkit.widgets._prefers_dark", lambda: Adw.StyleManager.get_default().get_dark()).start()
+        patch("Suno_appkit.widgets._prefers_dark", lambda: Adw.StyleManager.get_default().get_dark()).start()
         app = notes.NotesApplication()
         app.set_flags(Gio.ApplicationFlags.NON_UNIQUE | Gio.ApplicationFlags.HANDLES_OPEN)
         assert app.register(None)
@@ -66,7 +66,7 @@ def main():
             assert instance.register(None)
             apps[name] = instance
         contacts._install_contacts_style(); messages.install_messages_theme()
-        icon_path = Path(__file__).resolve().parents[2] / "luma-platform/appkit/icons"
+        icon_path = Path(__file__).resolve().parents[2] / "Suno-platform/appkit/icons"
         if icon_path.is_dir():
             Gtk.IconTheme.get_for_display(Gdk.Display.get_default()).add_search_path(str(icon_path))
         for dark in (False, True):
@@ -75,7 +75,7 @@ def main():
             # Application-owned styles reparse token references for each treatment.
             notes._install_notes_style(); contacts._install_contacts_style()
             if messages._messages_style_provider:
-                messages._messages_style_provider.load_from_path(os.environ.get("LUMA_MESSAGES_STYLE_PATH", "/usr/share/prairie-core/messages.css"))
+                messages._messages_style_provider.load_from_path(os.environ.get("SUNO_MESSAGES_STYLE_PATH", "/usr/share/prairie-core/messages.css"))
             with patch.object(messages.MessagesWindow,"_start_external_context_load",return_value=False), patch.object(messages.MessagesWindow,"_restore_last_conversation",return_value=False):
                 w = messages.MessagesWindow(apps["messages"]); w.set_default_size(880,620); w.present()
                 for item in w.store.threads(): w.store.delete_thread(item.address)

@@ -13,7 +13,7 @@ def photos_directory(environment: Mapping[str, str] | None = None) -> Path:
     value = env.get("XDG_PICTURES_DIR", "").strip()
     if not value:
         variable = "HOST_XDG_CONFIG_HOME" if env.get("FLATPAK_ID") in {
-            "org.projectluma.Photos", "org.projectluma.Camera"} else "XDG_CONFIG_HOME"
+            "org.projectSuno.Photos", "org.projectSuno.Camera"} else "XDG_CONFIG_HOME"
         config = Path(env.get(variable) or str(home / ".config")) / "user-dirs.dirs"
         try:
             for line in config.read_text().splitlines():

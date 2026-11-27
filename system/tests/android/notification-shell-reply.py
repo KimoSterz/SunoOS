@@ -31,10 +31,10 @@ CONSTANTS
 const object = {METHOD};
 const token = 'a'.repeat(32);
 const source = id => ({app: {get_id: () => id}});
-const hints = path => ({'x-luma-inline-reply-path': path, 'x-luma-inline-reply-token': token});
+const hints = path => ({'x-Suno-inline-reply-path': path, 'x-Suno-inline-reply-token': token});
 async function run() {
     for (const [id, path, iface] of [
-        ['org.projectluma.Messages.desktop', MESSAGES_REPLY_PATH, MESSAGES_REPLY_IFACE],
+        ['org.projectSuno.Messages.desktop', MESSAGES_REPLY_PATH, MESSAGES_REPLY_IFACE],
         ['waydroid.org.example.Fixture.desktop', ANDROID_REPLY_PATH, ANDROID_REPLY_IFACE],
     ]) {
         const reply = object._createInlineReply(source(id), 17, ':1.42', hints(path));
@@ -48,7 +48,7 @@ async function run() {
     }
     for (const [id, path, sender, badToken] of [
         ['waydroid.org.example.Fixture.desktop', MESSAGES_REPLY_PATH, ':1.42'],
-        ['org.projectluma.Messages.desktop', ANDROID_REPLY_PATH, ':1.42'],
+        ['org.projectSuno.Messages.desktop', ANDROID_REPLY_PATH, ':1.42'],
         ['org.example.Fixture.desktop', ANDROID_REPLY_PATH, ':1.42'],
         ['waydroid.org.example.Fixture.desktop', '/arbitrary/object', ':1.42'],
         ['waydroid.org.example.Fixture.desktop', ANDROID_REPLY_PATH, 'org.example.Service'],
@@ -57,7 +57,7 @@ async function run() {
         ['waydroid...desktop', ANDROID_REPLY_PATH, ':1.42'],
         [null, ANDROID_REPLY_PATH, ':1.42'],
     ]) {
-        const h = hints(path); if (badToken) h['x-luma-inline-reply-token'] = badToken;
+        const h = hints(path); if (badToken) h['x-Suno-inline-reply-token'] = badToken;
         assert.equal(object._createInlineReply(source(id), 17, sender, h), null);
     }
     console.log('PASS effective Shell reply method: both routes, fixed endpoints, tokens and caller shape');
@@ -66,6 +66,6 @@ run().catch(error => {console.error(error); process.exitCode = 1;});
 """
 subprocess.run(['node', '-e', script.replace('CONSTANTS', constants).replace('METHOD', method)],
                check=True, timeout=20)
-assert "'x-luma-android-inline-reply-v1'" in source
+assert "'x-Suno-android-inline-reply-v1'" in source
 labels = (root / 'js/ui/messageList.js').read_text()
 assert "_('Open app')" in labels and "_('Open app to check delivery')" in labels

@@ -8,7 +8,7 @@ it does not publish, sign or upload anything.
 
 ## Download flow
 
-`luma-tester catalog --kind os_image --channel nightly` lists catalog artifacts
+`Suno-tester catalog --kind os_image --channel nightly` lists catalog artifacts
 without creating tickets. The native host architecture sorts first. On ARM hosts
 without an ARM image, the catalog and workspace explain that ARM64 is coming and
 offer x86_64 under emulation. ARM entries become preferred when available.
@@ -18,7 +18,7 @@ an architecture never converts a desktop profile into a phone profile.
 Download an exact catalog artifact with:
 
 ```sh
-luma-tester download os/nightly/BUILD_ID/x86_64 --output ./luma.iso \
+Suno-tester download os/nightly/BUILD_ID/x86_64 --output ./Suno.iso \
   --experience desktop --purpose first_download
 ```
 
@@ -69,8 +69,8 @@ The existing offline/sidecar previews remain usable without Hub access.
 Run the component checks under normal resource admission:
 
 ```sh
-PYTHONPATH=src/luma-tester python3 -m unittest discover \
-  -s src/luma-tester/tests -p 'test_*.py'
+PYTHONPATH=src/Suno-tester python3 -m unittest discover \
+  -s src/Suno-tester/tests -p 'test_*.py'
 ```
 
 Live qualification must use `source: test`: create a ticket, actually download

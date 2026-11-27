@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=org.projectSuno.MonitorHost1
+Exec=/usr/bin/Suno-monitor-host
+SystemdService=Suno-monitor-host.service

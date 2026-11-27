@@ -1,4 +1,4 @@
-From: Luma Developers
+From: Suno Developers
 Subject: [PATCH] Drop the Shelf backdrop from Quick Settings outside the Shelf
 
 Tablet and Mobile borrow Quick Settings for their status bar. It kept the

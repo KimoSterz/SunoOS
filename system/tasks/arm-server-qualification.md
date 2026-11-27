@@ -1,9 +1,9 @@
 # Task: arm-server-qualification
 
 - Status: ready for root integration; provider/runner preparation reviewed and tiny real paused transport/custody proved; no final OS/app qualification claimed
-- Owner: luma-dev-2, delegated agent /root/arm_server_qualification; root is release integration owner
+- Owner: Suno-dev-2, delegated agent /root/arm_server_qualification; root is release integration owner
 - Branch: agent/1003/arm-server-qualification, based on 0223ebfef
-- Worktree: /srv/dev/worktrees/luma-os/arm-server-qualification
+- Worktree: /srv/dev/worktrees/Suno-os/arm-server-qualification
 - Scope: source-independent, explicitly TCG server installed-app provider, strict preparation/proof closure guards and negative tests. Historical Mac provider and sibling release artifacts are read-only.
 - Owned files: scripts/os/lib/server_installed_qualification.py, tests/os/test_server_installed_qualification.py.
 - Actual guest/install tests: pending new final signed candidate/ISO and normally admitted VM lifecycle. No VM launched by this task.
@@ -26,7 +26,7 @@
 
 ## Remaining gate
 
-Root and arm_publication_r5 requested to review concrete interface. No actual server installation, app guest behavior, normal wrapper closure or publication has run under this provider. Final signed rebuilt source/candidate/static-qualified ISO does not yet exist. Root must coordinate normal VM10GiB/MAIN SSD lifecycle after compilation closes. Fresh final Luma ISO installation is supported; optional full-OS disk reuse intentionally not implemented absent exact valid provenance. Actual final shared checker capsule must have reviewed source anchors and manifest supplied independently; historical R5 capsule cannot be relabeled as new source.
+Root and arm_publication_r5 requested to review concrete interface. No actual server installation, app guest behavior, normal wrapper closure or publication has run under this provider. Final signed rebuilt source/candidate/static-qualified ISO does not yet exist. Root must coordinate normal VM10GiB/MAIN SSD lifecycle after compilation closes. Fresh final Suno ISO installation is supported; optional full-OS disk reuse intentionally not implemented absent exact valid provenance. Actual final shared checker capsule must have reviewed source anchors and manifest supplied independently; historical R5 capsule cannot be relabeled as new source.
 
 
 ## Final review and current handoff (2026-10-24 21:49 UTC)
@@ -39,13 +39,13 @@ Root and arm_publication_r5 requested to review concrete interface. No actual se
 
 ### Actual tiny paused fixtures, no OS installed
 
-- Root explicitly authorized separate exclusive `luma-arm-serverqual.slice`, Max1GiB/CPU1. All tiny live jobs used normal memory1/disk0, driver256MiB plus paused VM256MiB guest/hard512MiB, no guest NIC/hostdev/firmware/OS. The compiler's desktop slice and all ancestors were untouched. Source/ops are private outside Git.
-- Actual R4 disk-only probe normal `2bda4506` PASS. Root evidence `/srv/dev-storage/projects/luma-os/build/arm-desktop/serverqual-custody-probe-r4/`. Same dev/inode/root0 initial → live107/dynamic MCS/exact libvirt tracking attrs → full original root0/attrs restored; full archive body/metadata/XML match; domain absent/noFD/cgroup empty/private bind detached/underlay restored and removed.
-- Actual R6 transport+custody probe normal `943210bc` PASS at21:48:28UTC. Protected evidence `/srv/dev-storage/projects/luma-os/build/arm-desktop/serverqual-custody-probe-r6/ACTUAL-LIBVIRT-TRANSPORT.json`, `DISK-CLOSED.json`, `LIFECYCLE-CLOSED.json`, `OUTER-CLEANUP.json`. Actual UUID8a74563f-ad56-45ef-a5e8-b493316ab17a, PID1862627/birth33726769; real query-status/query-block and actual640×480 screenshot PNG SHA `d68e3b95269192096952a6c02a32223a327bb214cdf790315c1e2b9fd444e496`, root600 file under root700 evidence. Actual QEMU process/UUID/PIDfile link, all disk custody and final closure assertions passed. It is a paused transport proof, not desktop rendering/app/OS/nightly qualification.
+- Root explicitly authorized separate exclusive `Suno-arm-serverqual.slice`, Max1GiB/CPU1. All tiny live jobs used normal memory1/disk0, driver256MiB plus paused VM256MiB guest/hard512MiB, no guest NIC/hostdev/firmware/OS. The compiler's desktop slice and all ancestors were untouched. Source/ops are private outside Git.
+- Actual R4 disk-only probe normal `2bda4506` PASS. Root evidence `/srv/dev-storage/projects/Suno-os/build/arm-desktop/serverqual-custody-probe-r4/`. Same dev/inode/root0 initial → live107/dynamic MCS/exact libvirt tracking attrs → full original root0/attrs restored; full archive body/metadata/XML match; domain absent/noFD/cgroup empty/private bind detached/underlay restored and removed.
+- Actual R6 transport+custody probe normal `943210bc` PASS at21:48:28UTC. Protected evidence `/srv/dev-storage/projects/Suno-os/build/arm-desktop/serverqual-custody-probe-r6/ACTUAL-LIBVIRT-TRANSPORT.json`, `DISK-CLOSED.json`, `LIFECYCLE-CLOSED.json`, `OUTER-CLEANUP.json`. Actual UUID8a74563f-ad56-45ef-a5e8-b493316ab17a, PID1862627/birth33726769; real query-status/query-block and actual640×480 screenshot PNG SHA `d68e3b95269192096952a6c02a32223a327bb214cdf790315c1e2b9fd444e496`, root600 file under root700 evidence. Actual QEMU process/UUID/PIDfile link, all disk custody and final closure assertions passed. It is a paused transport proof, not desktop rendering/app/OS/nightly qualification.
 - Effective VM memory controller is `.scope/libvirt/memory.max=536870912`; emulator child is threaded and has no memory.max, outer .scope memory.max is max. Probe traverses exact owned PID ancestry and verifies effective512MiB, under the independent1GiB sibling. Actual full observations retained.
 - Earlier actual failures preserved: R2 `5bf2c903` checked .scope instead of libvirt memory controller; R3 `a04348ba` tried reading memory.max on threaded emulator node. Both destroyed/undefined own VM and detached aliases through normal outer cleanup. R3 `0a37ace9` was refused by old-wrapper name guard before changes; corrected launcher retained separately. R5 `a5d82d99` successfully reached real API but expected QMP status paused; actual cold paused QEMU reports prelaunch. R6 records status before guard and requires QMP runningfalse + prelaunch/paused + actual libvirt PAUSED. Original actual installed-app runner runningtrue check remains unchanged.
 - Earlier source suite `bbc436e9` failed a unit fixture missing new transition mixin, fixed fixture only; `f502abf9` PASS70 and later `d6a0cee4` PASS74. All actual result records remain retained.
-- Final probe source `/srv/dev/accounts/second/experiments/arm-server-qualification/probe-libvirt-custody-r6.py` SHA `1e20baccdae6f7faf6ece08bc3980bb0e40e72a8591911b98a9259208f2f6fe2`; frozen root copy `/srv/luma-build/arm-desktop/serverqual-custody-operators-r6/probe.py`. All own domains and bind aliases are gone; evidence/disks retained. The unused sibling slice remains capped1GiB with no live process.
+- Final probe source `/srv/dev/accounts/second/experiments/arm-server-qualification/probe-libvirt-custody-r6.py` SHA `1e20baccdae6f7faf6ece08bc3980bb0e40e72a8591911b98a9259208f2f6fe2`; frozen root copy `/srv/Suno-build/arm-desktop/serverqual-custody-operators-r6/probe.py`. All own domains and bind aliases are gone; evidence/disks retained. The unused sibling slice remains capped1GiB with no live process.
 
 ### Next useful action
 

@@ -1,14 +1,14 @@
 #!/usr/bin/python3
 # SPDX-License-Identifier: GPL-2.0-or-later
 # A translucent GTK 4 window that asks the compositor for a background blur
-# through LumaUI.SurfaceBackdrop, like Luma applications in Frost and Glass.
+# through SunoUI.SurfaceBackdrop, like Suno applications in Frost and Glass.
 # Usage: blurwin.py APP_ID TITLE WIDTH HEIGHT
 import sys
 
 import gi
 gi.require_version('Gtk', '4.0')
-gi.require_version('LumaUI', '1')
-from gi.repository import Gtk, LumaUI  # noqa: E402
+gi.require_version('SunoUI', '1')
+from gi.repository import Gtk, SunoUI  # noqa: E402
 
 app_id, title = sys.argv[1], sys.argv[2]
 width, height = int(sys.argv[3]), int(sys.argv[4])
@@ -30,7 +30,7 @@ def activate(app):
     win.set_default_size(width, height)
     win.set_titlebar(Gtk.HeaderBar())
     win.set_child(Gtk.Label(label=title))
-    win.backdrop = LumaUI.SurfaceBackdrop.new(win)
+    win.backdrop = SunoUI.SurfaceBackdrop.new(win)
 
     def report(*_):
         print(f'{app_id} backdrop available={win.backdrop.get_available()} '

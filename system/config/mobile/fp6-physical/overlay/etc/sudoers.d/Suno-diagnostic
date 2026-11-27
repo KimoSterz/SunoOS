@@ -1,0 +1,3 @@
+# The P5 image is a recoverable engineering appliance. Possession of the
+# build-time injected SSH private key grants administrative access.
+Suno ALL=(ALL) NOPASSWD: ALL

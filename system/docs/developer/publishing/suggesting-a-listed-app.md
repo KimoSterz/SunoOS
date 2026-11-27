@@ -7,8 +7,8 @@ section: Publishing
 
 # Suggesting a Listed app
 
-Listed apps are known apps Luma lists so people can find them in Depot. They
-install from their publisher or from Flathub. Luma does not host, sign or
+Listed apps are known apps Suno lists so people can find them in Depot. They
+install from their publisher or from Flathub. Suno does not host, sign or
 review them for quality. You do not need to be in the developer program to
 suggest one.
 
@@ -18,14 +18,14 @@ suggest one.
 
 ## What a suggestion asks for
 
-You sign in with any Luma Connect account and give:
+You sign in with any Suno Connect account and give:
 
 - the app’s **name**;
 - **where it is published**: a Flathub ID, the publisher’s own repository, or
   its official download page;
 - **why it belongs** in Depot: what it does well and who it helps.
 
-A Luma curator reviews each suggestion. One that is accepted becomes a Listed
+A Suno curator reviews each suggestion. One that is accepted becomes a Listed
 entry **credited to your account**.
 
 ## What makes a good suggestion
@@ -33,7 +33,7 @@ entry **credited to your account**.
 - The app is maintained and works on current Linux systems.
 - It comes from its real publisher. Link the official source, not a mirror or a
   repackaged copy.
-- It is useful to people on Luma, and Depot does not already list it.
+- It is useful to people on Suno, and Depot does not already list it.
 - It follows the **All** rules in the [review guidelines](review-guidelines.md):
   no malware, no impersonation, legal content.
 
@@ -49,14 +49,14 @@ publisher, duplicates an existing listing, or breaks an **All** rule.
 - For Flathub apps, permissions computed from Flathub’s published sandbox
   metadata, with the same
   [vocabulary](../permissions-and-privacy.md#the-permission-vocabulary) as
-  apps on the Luma remote.
-- Whether Luma has checked the app yet. Today every Listed app shows that
-  Luma’s checks are still to come.
+  apps on the Suno remote.
+- Whether Suno has checked the app yet. Today every Listed app shows that
+  Suno’s checks are still to come.
 
 ## From Listed to Verified
 
 If you publish a Listed app, you can move it to the Verified tier once the
 developer program opens: join the [developer program](developer-program.md),
 prove your [app ID namespace](app-ids-and-namespaces.md), and publish it to
-the Luma remote. Luma then hosts and signs it, and its listing shows your
+the Suno remote. Suno then hosts and signs it, and its listing shows your
 verified developer name.

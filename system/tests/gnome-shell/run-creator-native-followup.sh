@@ -3,19 +3,19 @@
 # Run only in the owned disposable VM with GDM stopped and user1000 bus alive.
 set -eu
 ulimit -c 0
-[ "${LUMA_NATIVE_SHELL_DISPOSABLE:-0}" = 1 ] || {
+[ "${SUNO_NATIVE_SHELL_DISPOSABLE:-0}" = 1 ] || {
     printf '%s\n' 'Refusing: this fixture requires the disposable Shell VM.' >&2
     exit 2
 }
-[ "$(id -u)" = 0 ] && [ "$(id -u luma-media-test)" = 1000 ]
+[ "$(id -u)" = 0 ] && [ "$(id -u Suno-media-test)" = 1000 ]
 root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
-base=/var/tmp/luma-shell100-native
+base=/var/tmp/Suno-shell100-native
 width=${1:-1024}
 case "$width" in 1024|1366) ;; *) exit 2 ;; esac
 mkdir -p "$base/overlay/ui" "$base/captures" "$base/config" "$base/data/applications"
 cp "$root/tests/gnome-shell/creator-native-followup.js" "$base/native-test.js"
 cp "$root/tests/gnome-shell/creator-native-window.py" "$base/window-fixture.py"
-favorites=$(python3 - "$root/config/desktop/dconf/db/luma.d/00-luma-desktop" <<'PY'
+favorites=$(python3 - "$root/config/desktop/dconf/db/Suno.d/00-Suno-desktop" <<'PY'
 import ast, json, pathlib, sys
 line = next(x for x in pathlib.Path(sys.argv[1]).read_text().splitlines()
             if x.startswith('favorite-apps='))
@@ -45,7 +45,7 @@ imports._promiseNative.setMainLoopHook(() => {
         }).catch(failed);
     });
     GLib.timeout_add_once(GLib.PRIORITY_DEFAULT, 5000, () => {
-        import('file:///var/tmp/luma-shell100-native/native-test.js').then(async test => {
+        import('file:///var/tmp/Suno-shell100-native/native-test.js').then(async test => {
             await test.run();
             global.context.terminate();
         }).catch(failed);
@@ -54,7 +54,7 @@ imports._promiseNative.setMainLoopHook(() => {
 });
 JS
 chown -R 1000:1000 "$base"
-runuser -u luma-media-test -- env LUMA_FOLLOWUP_FAVORITES="$favorites" \
+runuser -u Suno-media-test -- env SUNO_FOLLOWUP_FAVORITES="$favorites" \
     XDG_RUNTIME_DIR=/run/user/1000 DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus \
     XDG_CURRENT_DESKTOP=GNOME GSETTINGS_BACKEND=keyfile \
     XDG_CONFIG_HOME="$base/config" XDG_DATA_HOME="$base/data" \

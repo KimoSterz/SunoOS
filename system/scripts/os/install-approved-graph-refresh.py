@@ -34,7 +34,7 @@ def main():
     helper=control/'scripts/depot/seal-signing-control.py'
     spec=importlib.util.spec_from_file_location('deploy_seal',helper)
     verifier=importlib.util.module_from_spec(spec);spec.loader.exec_module(verifier)
-    verifier.verify(control,control_sha);verifier.verify(state,state_sha,'org.projectluma.signing-inputs/v1')
+    verifier.verify(control,control_sha);verifier.verify(state,state_sha,'org.projectSuno.signing-inputs/v1')
     cfg=json.loads((state/'approved.json').read_text())
     if channel not in cfg['channels']:raise ValueError('No admitted state for this channel')
     for value in (control,state,Path(cfg['pipeline_root']),Path(cfg['keys_root']),Path(cfg['storage_config'])):
@@ -49,17 +49,17 @@ def main():
     name=bucket.unit_name(channel)
     units=Path('/etc/systemd/system')
     service='\n'.join([
-        '[Unit]','Description=Refresh the approved signed Luma '+channel+' OS graph',
+        '[Unit]','Description=Refresh the approved signed Suno '+channel+' OS graph',
         'Wants=network-online.target','After=network-online.target',
         'RequiresMountsFor='+cfg['pipeline_root']+' '+cfg['keys_root']+' '+cfg['storage_config'],
         '[Service]','Type=oneshot','UMask=0077','ExecStart='+' '.join(command),'TimeoutStartSec=5min',''])
-    timer='\n'.join(['[Unit]','Description=Keep the signed Luma '+channel+' graph fresh',
+    timer='\n'.join(['[Unit]','Description=Keep the signed Suno '+channel+' graph fresh',
         '[Timer]','OnCalendar=*-*-* 00,12:15:00 UTC','RandomizedDelaySec=5min','Persistent=true',
         'Unit='+name+'.service','[Install]','WantedBy=timers.target',''])
     if mode=='--apply':
         if architecture=='x86_64' and not bucket.hardware_target:
-            subprocess.run(['systemctl','disable','--now','luma-beta-os-graph-refresh.timer'],check=True)
-            subprocess.run(['systemctl','stop','luma-beta-os-graph-refresh.service'],check=True)
+            subprocess.run(['systemctl','disable','--now','Suno-beta-os-graph-refresh.timer'],check=True)
+            subprocess.run(['systemctl','stop','Suno-beta-os-graph-refresh.service'],check=True)
         for suffix,text in (('.service',service),('.timer',timer)):
             target=units/(name+suffix);temporary=units/('.'+name+suffix+'.new')
             with temporary.open('w') as stream:

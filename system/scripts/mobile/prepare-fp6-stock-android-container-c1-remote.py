@@ -26,25 +26,25 @@ import xml.etree.ElementTree as ET
 import zipfile
 
 
-NAME = "luma-stock-android-c1"
-STATE = Path("/var/lib/luma/stock-android-container1")
+NAME = "Suno-stock-android-c1"
+STATE = Path("/var/lib/Suno/stock-android-container1")
 LXC_DIR = Path("/var/lib/lxc") / NAME
-HOOK_INPUT = Path("/var/tmp/luma-stock-android-container-build-inputs/fp6-stock-android-binderfs-lxc-hook.py")
+HOOK_INPUT = Path("/var/tmp/Suno-stock-android-container-build-inputs/fp6-stock-android-binderfs-lxc-hook.py")
 HOOK_SHA256 = "0b4b7ba7517a71b5894407e61ca5eaf9385a56b310f37b48c4e721e4fa2ffdca"
-CONTAINER_INIT = Path("/var/tmp/luma-stock-android-container-build-inputs/init.container3")
+CONTAINER_INIT = Path("/var/tmp/Suno-stock-android-container-build-inputs/init.container3")
 CONTAINER_INIT_SHA256 = "270e1cda28deeac8b0619614a900f5f21f3eb7745e28d138d7f7a5835021243d"
 STOCK_INIT_SHA256 = "11111bc72131e1e613ce0504aa0166e13207ff0f25b5767a959eb9baddd99e60"
-APEX_ROOT = Path("/var/tmp/luma-stock-qrel1695-apex-runtime1")
+APEX_ROOT = Path("/var/tmp/Suno-stock-qrel1695-apex-runtime1")
 APEX_INVENTORY = APEX_ROOT / "metadata/activated-apex-inventory.json"
 APEX_INVENTORY_SHA256 = "4c0812666bb23251111a0f23b10db404a489c078e1ac7fdaa8975c1448a74869"
-MANAGER_ROOT = Path("/var/tmp/luma-stock-qrel1695-manager-boundary4")
+MANAGER_ROOT = Path("/var/tmp/Suno-stock-qrel1695-manager-boundary4")
 MANAGERS = {
     "servicemanager": "831e8c6ba29dc06fac2adfed1ac7544594d89951113ba25429268f990202f217",
     "hwservicemanager": "48dda02a0cad50107bb7737aee5b44b5228d789a5b3520fcb499249ac3ecc600",
     "vndservicemanager": "7d6bed816b8206dbf5fee4f269ca1066e328195199677746fdbbebdbdc1bca75",
     "manifest.json": "becc09c4f94c27307ec04beceb254915cb5f4f268fbff65a21f405b5354d8218",
 }
-BINDER_BOUNDARY_ROOT = Path("/var/tmp/luma-stock-qrel1695-binder-boundary3")
+BINDER_BOUNDARY_ROOT = Path("/var/tmp/Suno-stock-qrel1695-binder-boundary3")
 BINDER_BOUNDARY = {
     "libbinder.so": "38ac7e535e386f9e560089ce4ffe4e63e991c8b75f3b3ca441d47ecb8f46d254",
     "libhidlbase.so": "13a0a6eeac07b48b19cd32d2b3a6eecc0714538ac85e8fd391e7e392d513c259",
@@ -52,11 +52,11 @@ BINDER_BOUNDARY = {
     "manifest.json": "7167bc03eeb7dcef6346b094937b4b04ad2f6a8a4bc98d0a8e0664630bfb7dfa",
 }
 PARTITIONS = {
-    "system": Path("/var/tmp/luma-stock-qrel1695-system"),
-    "vendor": Path("/var/tmp/luma-stock-qrel1695-vendor"),
-    "system_ext": Path("/var/tmp/luma-stock-qrel1695-system_ext"),
-    "product": Path("/var/tmp/luma-stock-qrel1695-product"),
-    "odm": Path("/var/tmp/luma-stock-qrel1695-odm"),
+    "system": Path("/var/tmp/Suno-stock-qrel1695-system"),
+    "vendor": Path("/var/tmp/Suno-stock-qrel1695-vendor"),
+    "system_ext": Path("/var/tmp/Suno-stock-qrel1695-system_ext"),
+    "product": Path("/var/tmp/Suno-stock-qrel1695-product"),
+    "odm": Path("/var/tmp/Suno-stock-qrel1695-odm"),
 }
 PARTITION_IMAGE_HASHES = {
     "system": "c817290357023c4831e31aaf26ef2ec9ffc984c43c98ab6902deb19739746122",
@@ -323,20 +323,20 @@ def append_apex_adapter(path: Path) -> None:
 # Exact APEX payloads are already AVB-verified and mounted read-only by the
 # host. These lifecycle adapters prevent stock apexd from requesting forbidden
 # loop and device-mapper control while retaining Android's normal boot gates.
-service apexd-bootstrap /system/bin/luma-apexd-container --bootstrap
+service apexd-bootstrap /system/bin/Suno-apexd-container --bootstrap
     override
     disabled
     oneshot
     user root
     group system
 
-service apexd /system/bin/luma-apexd-container --daemon
+service apexd /system/bin/Suno-apexd-container --daemon
     override
     disabled
     user root
     group system
 
-service apexd-snapshotde /system/bin/luma-apexd-container --snapshotde
+service apexd-snapshotde /system/bin/Suno-apexd-container --snapshotde
     override
     disabled
     oneshot
@@ -393,7 +393,7 @@ def main() -> int:
     model = Path("/sys/firmware/devicetree/base/model").read_bytes().rstrip(b"\0").decode()
     if model != "The Fairphone (Gen. 6)":
         die("device identity mismatch")
-    if os.uname().release != "7.1.2-luma-fp-ims1":
+    if os.uname().release != "7.1.2-Suno-fp-ims1":
         die("the accepted ims1-compatible kernel release is not running")
     if "androidboot.slot_suffix=_b" not in Path("/proc/cmdline").read_text().split():
         die("device is not running slot b")
@@ -409,12 +409,12 @@ def main() -> int:
         die("refuse to overwrite existing container state")
     if subprocess.run(("lxc-info", "-P", "/var/lib/lxc", "-n", NAME), check=False).returncode == 0:
         die("container name is already registered")
-    for service in ("ModemManager", "luma-fp6-cellular-link", "luma-fp6-imsd"):
+    for service in ("ModemManager", "Suno-fp6-cellular-link", "Suno-fp6-imsd"):
         if subprocess.run(("systemctl", "is-active", "--quiet", service), check=False).returncode:
-            die(f"Luma owner is unexpectedly inactive: {service}")
+            die(f"Suno owner is unexpectedly inactive: {service}")
     for partition, lower in PARTITIONS.items():
         assert_read_only_mount(lower)
-        image = Path(f"/var/tmp/luma-stock-qrel1695-images/{partition}_a.img")
+        image = Path(f"/var/tmp/Suno-stock-qrel1695-images/{partition}_a.img")
         require_file(image, PARTITION_IMAGE_HASHES[partition])
     require_file(APEX_INVENTORY, APEX_INVENTORY_SHA256)
     for name, expected in MANAGERS.items():
@@ -492,7 +492,7 @@ def main() -> int:
             overlay_mounts[partition] = target
             services = blocked_service_definitions(lower)
             if services:
-                override = init_directory(partition, target) / "zz-luma-container-c1-disable.rc"
+                override = init_directory(partition, target) / "zz-Suno-container-c1-disable.rc"
                 write_override(override, services)
                 for service, executable, source in services:
                     discovered_execs.add(executable)
@@ -532,7 +532,7 @@ def main() -> int:
         if not stock_init.is_file() or stock_init.is_symlink() or not os.access(stock_init, os.X_OK):
             die("exact stock /system/bin/init is absent or not executable")
         require_file(stock_init, STOCK_INIT_SHA256)
-        apex_adapter = rootfs / "system/bin/luma-apexd-container"
+        apex_adapter = rootfs / "system/bin/Suno-apexd-container"
         apex_adapter.write_text(
             """#!/system/bin/sh
 case "$1" in
@@ -554,7 +554,7 @@ esac
 """
         )
         apex_adapter.chmod(0o755)
-        system_override = init_directory("system", rootfs) / "zz-luma-container-c1-disable.rc"
+        system_override = init_directory("system", rootfs) / "zz-Suno-container-c1-disable.rc"
         append_apex_adapter(system_override)
         append_vold_diagnostic(system_override)
         manifest["apex_lifecycle_adapter_sha256"] = sha256(apex_adapter)
@@ -564,7 +564,7 @@ esac
             "bootstrap-apex",
             "data",
             "dev",
-            "luma-apex-host",
+            "Suno-apex-host",
             "linkerconfig",
             "metadata",
             "mnt",
@@ -586,7 +586,7 @@ esac
             (STATE / "state/linkerconfig" / name).mkdir(mode=0o755)
         apex_links = STATE / "state/apex-links"
         apex_links.mkdir(mode=0o755)
-        hidden_apex_root = rootfs / "luma-apex-host"
+        hidden_apex_root = rootfs / "Suno-apex-host"
         for entry in apex_inventory:
             name = entry["name"]
             version = entry["version"]
@@ -737,7 +737,7 @@ esac
             source = entry["mountpoint"]
             name = entry["name"]
             version = entry["version"]
-            lines.append(mount_entry(source, f"luma-apex-host/{name}@{version}"))
+            lines.append(mount_entry(source, f"Suno-apex-host/{name}@{version}"))
             lines.append(mount_entry(source, f"apex/{name}@{version}"))
             lines.append(mount_entry(source, f"apex/{name}"))
             if name == "com.android.vndk.v34":

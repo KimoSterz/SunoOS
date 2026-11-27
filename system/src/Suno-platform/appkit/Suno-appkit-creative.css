@@ -1,0 +1,353 @@
+/* SPDX-License-Identifier: LGPL-2.1-or-later */
+/*
+ * SunoUI creative family (KB-D): the creative suite's parts (v70 .su*),
+ * shared by Canvas, Grid, Stage, Session and Write.
+ *
+ *   SunoCreativeWorkspace  .suwork     the canvas ground, dot grid and slots
+ *   SunoFloatingPanel      .supanel    floating panel, folds to .supill, a drawer on a phone
+ *   SunoToolBar            .sutools    the 40 px tool strip; the palette variant is #vw-pal
+ *   SunoLayerTree          .sulyr      layers, with caret, eye and the object selection
+ *   SunoPropertySection    .susec      and its fields: .sufld, .suclrrow, .suselect, .seg, .sualign
+ *
+ * One implementation in C (SunoUI-1, Suno-creative-*.c); Python uses it
+ * through gi.repository.SunoUI. Colours are @Suno_* only, metrics are
+ * var(--SunoUI-*). Apps never select .SunoUI-creative-* in their own sheets.
+ */
+
+/* ── SunoUI: CreativeWorkspace (.suwork) ── */
+.SunoUI-creative-workspace { background-color: @Suno_creative_canvas; }
+/* The dot grid is painted by the workspace in this node's colour. */
+.SunoUI-creative-workspace > .SunoUI-creative-grid { color: @Suno_creative_canvas_dot; min-width: 0; min-height: 0; }
+.SunoUI-creative-workspace > .SunoUI-creative-zoom {
+  margin: 0 var(--SunoUI-creative-zoom-right) var(--SunoUI-creative-zoom-bottom) 0;
+  transition: opacity var(--SunoUI-duration-creative-panel-fade) ease;
+}
+.SunoUI-creative-workspace > .SunoUI-creative-zoom.gone { opacity: 0; }
+.SunoUI-creative-workspace > .SunoUI-creative-tools { margin-bottom: var(--SunoUI-creative-tools-bottom); }
+
+/* ── SunoUI: FloatingPanel (.supanel, .supill) ── */
+box.SunoUI-creative-panel {
+  margin: var(--SunoUI-creative-panel-inset);
+  transition: opacity var(--SunoUI-duration-creative-panel-fade) ease,
+              transform var(--SunoUI-duration-creative-panel-move) var(--SunoUI-spring);
+}
+box.SunoUI-creative-panel.gone { opacity: 0; }
+box.SunoUI-creative-panel.left.gone { transform: translateX(calc(-1 * var(--SunoUI-creative-gone-shift))); }
+box.SunoUI-creative-panel.right.gone { transform: translateX(var(--SunoUI-creative-gone-shift)); }
+box.SunoUI-creative-panel-card {
+  border-radius: var(--SunoUI-creative-panel-radius);
+  background: @Suno_creative_panel_surface; color: @Suno_ink;
+  box-shadow: inset 0 1px 0 @Suno_float_highlight, 0 0 0 1px @Suno_float_ring,
+              0 12px 32px -8px @Suno_float_shadow, 0 2px 6px @Suno_float_shadow_near;
+}
+box.SunoUI-creative-panel.left box.SunoUI-creative-panel-card { min-width: var(--SunoUI-creative-panel-left-width); }
+box.SunoUI-creative-panel.right box.SunoUI-creative-panel-card { min-width: var(--SunoUI-creative-panel-right-width); }
+box.SunoUI-creative-panel.bottom.gone { transform: translateY(var(--SunoUI-creative-gone-shift)); }
+box.SunoUI-creative-panel.moving { opacity: 0.4; }
+/* Docks: where a dragged panel lands. */
+box.SunoUI-creative-dock-target {
+  border-radius: var(--SunoUI-creative-panel-radius);
+  background: alpha(@Suno_creative_selection, 0.12);
+  box-shadow: inset 0 0 0 1.5px alpha(@Suno_creative_selection, 0.7);
+}
+/* A phone: the open panel is a bottom drawer (the kit's drawer shape). */
+box.SunoUI-creative-panel.drawer { margin: 0; }
+box.SunoUI-creative-panel.drawer box.SunoUI-creative-panel-card {
+  min-width: 0; padding-top: var(--SunoUI-creative-panel-phone-padding-top);
+  border-radius: var(--SunoUI-creative-panel-phone-radius) var(--SunoUI-creative-panel-phone-radius) 0 0;
+}
+box.SunoUI-creative-handle { min-width: 0; min-height: 0; }
+box.SunoUI-creative-panel.drawer box.SunoUI-creative-handle {
+  min-width: var(--SunoUI-drawer-handle-width); min-height: var(--SunoUI-drawer-handle-height);
+  margin: calc(var(--SunoUI-drawer-handle-top) - var(--SunoUI-creative-panel-phone-padding-top)) 0 4px;
+  border-radius: 3px; background: @Suno_drawer_handle;
+}
+
+/* The header: a page picker (.suph1) or the subject's icon and name (.suinsph). */
+box.SunoUI-creative-panel-header { padding: 8px 8px 0 12px; border-spacing: 6px; }
+box.SunoUI-creative-panel-header.menu { padding: 8px 8px 2px 8px; }
+image.SunoUI-creative-panel-icon { -gtk-icon-size: var(--SunoUI-creative-pill-icon); color: @Suno_creative_selection; }
+label.SunoUI-creative-panel-title,
+button.SunoUI-creative-panel-title label,
+entry.SunoUI-creative-panel-title {
+  font-size: var(--SunoUI-creative-title-size); font-weight: var(--SunoUI-t-title-2-weight); letter-spacing: -0.14px;
+}
+button.SunoUI-creative-panel-title {
+  min-height: var(--SunoUI-creative-header-button); padding: 0 8px; margin: 0; border: none;
+  border-radius: var(--SunoUI-creative-header-radius); background: none; box-shadow: none; color: @Suno_ink;
+  outline: 0 solid transparent; transition: background var(--SunoUI-duration-hover) ease;
+}
+button.SunoUI-creative-panel-title > box { border-spacing: 5px; }
+button.SunoUI-creative-panel-title label { font-weight: 900; }
+button.SunoUI-creative-panel-title image { -gtk-icon-size: 13px; color: @Suno_muted; }
+button.SunoUI-creative-panel-title:hover { background: @Suno_hover; }
+entry.SunoUI-creative-panel-title {
+  min-height: var(--SunoUI-creative-header-button); padding: 0 6px; margin: 0; border: none; border-radius: 8px;
+  background: none; box-shadow: none; color: @Suno_ink; outline: 0 solid transparent;
+}
+entry.SunoUI-creative-panel-title:hover, entry.SunoUI-creative-panel-title:focus-within { background: @Suno_well; }
+button.SunoUI-creative-panel-button {
+  min-width: var(--SunoUI-creative-header-button); min-height: var(--SunoUI-creative-header-button);
+  padding: 0; margin: 0; border: none; border-radius: var(--SunoUI-creative-header-radius);
+  background: none; box-shadow: none; color: @Suno_ink_secondary; outline: 0 solid transparent;
+  transition: background var(--SunoUI-duration-hover) ease, color var(--SunoUI-duration-hover) ease;
+}
+button.SunoUI-creative-panel-button image { -gtk-icon-size: 18px; }
+box.SunoUI-creative-panel-header.menu button.SunoUI-creative-panel-button image { -gtk-icon-size: var(--SunoUI-creative-header-icon); }
+button.SunoUI-creative-panel-button:hover { background: @Suno_hover; color: @Suno_ink; }
+button.SunoUI-creative-panel-title:focus-visible,
+button.SunoUI-creative-panel-button:focus-visible { outline: 2px solid @Suno_focus_ring; outline-offset: -2px; }
+
+/* Tabs (.sutabs) and segments (.seg): a well, the current one on a raised
+ * chip that is its own node (v70 i.ind), never the button's paint. */
+box.SunoUI-creative-tabs, box.SunoUI-creative-segments {
+  padding: 3px; border-radius: 12px; background: @Suno_well;
+  box-shadow: inset 0 0 0 1px @Suno_well_ring, inset 0 1px 2px @Suno_well_shade, 0 1px 0 @Suno_well_lip;
+}
+box.SunoUI-creative-tabs { margin: 6px 10px 8px; }
+box.SunoUI-creative-tabs-row { border-spacing: 0; }
+box.SunoUI-creative-tabs-indicator {
+  border-radius: 9px; background: @Suno_chip;
+  box-shadow: inset 0 1px 0 @Suno_chip_highlight, 0 0 0 1px @Suno_chip_ring, 0 1px 2px @Suno_chip_shadow, 0 3px 8px -3px @Suno_chip_drop;
+}
+button.SunoUI-creative-tab {
+  min-height: var(--SunoUI-creative-tab-height); min-width: 0; padding: 0 8px; margin: 0; border: none;
+  border-radius: 9px; background: none; box-shadow: none; outline: 0 solid transparent;
+  color: @Suno_muted; font-size: var(--SunoUI-creative-tab-size); font-weight: 500; letter-spacing: 0.125px;
+  transition: color var(--SunoUI-duration-hover) ease;
+}
+button.SunoUI-creative-tab:hover, button.SunoUI-creative-tab:checked, button.SunoUI-creative-tab.on { color: @Suno_ink; background: none; box-shadow: none; }
+button.SunoUI-creative-tab:focus-visible { outline: 2px solid @Suno_focus_ring; outline-offset: -2px; }
+button.SunoUI-creative-tab image { -gtk-icon-size: 15px; }
+box.SunoUI-creative-segments button.SunoUI-creative-tab { font-size: 12px; letter-spacing: 0.12px; }
+
+scrolledwindow.SunoUI-creative-panel-scroll > viewport > stack,
+scrolledwindow.SunoUI-creative-panel-scroll > viewport > box { padding: 0 var(--SunoUI-creative-scroll-padding-x) 8px; }
+scrolledwindow.SunoUI-creative-panel-scroll > scrollbar { opacity: 0; }
+label.SunoUI-creative-heading {
+  margin: 12px 6px 6px; font-size: var(--SunoUI-t-label-size); font-weight: var(--SunoUI-t-label-weight);
+  letter-spacing: var(--SunoUI-t-label-tracking); color: @Suno_muted;
+}
+
+/* The folded panel (.supill), in the bar's material. */
+button.SunoUI-creative-pill {
+  min-height: var(--SunoUI-creative-pill-height); padding: 0 var(--SunoUI-creative-pill-padding-x); margin: 0; border: none;
+  border-radius: var(--SunoUI-creative-pill-radius); color: @Suno_ink_secondary; outline: 0 solid transparent;
+  background: @Suno_bar_surface; background-image: linear-gradient(to bottom, @Suno_bar_top, @Suno_bar_end);
+  box-shadow: inset 0 1px 0 @Suno_bar_highlight, 0 0 0 1px @Suno_bar_ring, 0 12px 32px -8px @Suno_bar_shadow, 0 2px 6px @Suno_bar_shadow_near;
+  transition: color var(--SunoUI-duration-hover) ease;
+}
+button.SunoUI-creative-pill:hover { color: @Suno_ink; }
+button.SunoUI-creative-pill:focus-visible { outline: 2px solid @Suno_focus_ring; outline-offset: -2px; }
+button.SunoUI-creative-pill > box { border-spacing: var(--SunoUI-creative-pill-gap); }
+button.SunoUI-creative-pill image { -gtk-icon-size: var(--SunoUI-creative-pill-icon); color: @Suno_muted; }
+/* v70's titles are <b> in a 600 and 650 run: bolder, 900. */
+label.SunoUI-creative-pill-title { font-size: 13px; font-weight: 900; color: @Suno_ink; }
+label.SunoUI-creative-pill-summary { font-size: 13px; font-weight: 400; color: @Suno_muted; }
+
+/* ── SunoUI: ToolBar (.sutools) and ToolPalette (#vw-pal) ── */
+box.SunoUI-creative-tools {
+  padding: var(--SunoUI-creative-tools-padding); border-spacing: var(--SunoUI-creative-tools-gap);
+  border-radius: var(--SunoUI-ac-bar-radius); color: @Suno_bar_ink_secondary;
+  background: @Suno_bar_surface; background-image: linear-gradient(to bottom, @Suno_bar_top, @Suno_bar_end);
+  box-shadow: inset 0 1px 0 @Suno_bar_highlight, 0 0 0 1px @Suno_bar_ring, 0 12px 32px -8px @Suno_bar_shadow, 0 2px 6px @Suno_bar_shadow_near;
+}
+box.SunoUI-creative-tools.palette { padding: 4px; }
+button.SunoUI-creative-tool {
+  min-width: var(--SunoUI-creative-tool); min-height: var(--SunoUI-creative-tool); padding: 0; margin: 0; border: none;
+  border-radius: var(--SunoUI-creative-tool-radius); background: none; box-shadow: none; color: @Suno_bar_ink_secondary;
+  outline: 0 solid transparent; transition: background var(--SunoUI-duration-hover) ease, color var(--SunoUI-duration-hover) ease;
+}
+.SunoUI-creative-workspace.phone button.SunoUI-creative-tool { min-width: var(--SunoUI-creative-tool-phone-min); }
+box.SunoUI-creative-tools.palette button.SunoUI-creative-tool { min-width: var(--SunoUI-creative-palette-tool); min-height: var(--SunoUI-creative-palette-tool); }
+button.SunoUI-creative-tool image { -gtk-icon-size: var(--SunoUI-creative-tool-icon); }
+button.SunoUI-creative-tool:hover { background: @Suno_hover; color: @Suno_ink; }
+/* The chosen tool is a state, so it is raised, never the loud key (v70, 25 Sep). */
+button.SunoUI-creative-tool:checked, button.SunoUI-creative-tool.on {
+  background: @Suno_chip; color: @Suno_ink;
+  box-shadow: inset 0 1px 0 @Suno_chip_highlight, 0 0 0 1px @Suno_chip_ring, 0 1px 2px @Suno_chip_shadow, 0 3px 8px -3px @Suno_chip_drop;
+}
+/* The palette's chosen tool is the key (v70 .vwpal .ib.on). */
+box.SunoUI-creative-tools.palette button.SunoUI-creative-tool:checked,
+box.SunoUI-creative-tools.palette button.SunoUI-creative-tool.on {
+  background: @Suno_key; background-image: linear-gradient(to bottom, @Suno_key, @Suno_key_end); color: @Suno_key_ink;
+  box-shadow: inset 0 1px 0 @Suno_key_highlight, 0 0 0 1px @Suno_key_ring, 0 1px 2px @Suno_key_shadow;
+}
+button.SunoUI-creative-tool:focus-visible { outline: 2px solid @Suno_focus_ring; outline-offset: -2px; }
+/* The flyout's corner mark (.sumore): two borders make the triangle. */
+.SunoUI-creative-tool-more {
+  min-width: 18px; min-height: 18px; opacity: 0.6;
+}
+.SunoUI-creative-tool-more-mark {
+  min-width: 0; min-height: 0; margin: 0 4px 4px 0;
+  border: var(--SunoUI-creative-tool-more) solid transparent;
+  border-right-color: currentColor; border-bottom-color: currentColor;
+}
+/* v70: in the bar the separator is a 6 px pause; in the palette, a hairline. */
+separator.SunoUI-creative-tools-separator { min-width: var(--SunoUI-creative-tools-separator); min-height: 1px; margin: 0; background: @Suno_line; }
+box.SunoUI-creative-tools.palette separator.SunoUI-creative-tools-separator { min-width: 1px; min-height: 22px; margin: 0 5px; }
+
+/* ── SunoUI: LayerTree (.sulyr, .sucar, .sueye) ── */
+list.SunoUI-creative-layers { background: none; color: @Suno_ink_secondary; }
+list.SunoUI-creative-layers > row {
+  min-height: var(--SunoUI-creative-layer-height); padding: 0; margin: 0;
+  border-radius: var(--SunoUI-creative-layer-radius); background: none; outline: 0 solid transparent;
+  transition: background var(--SunoUI-duration-hover) ease;
+}
+list.SunoUI-creative-layers > row:hover { background: @Suno_hover; }
+/* The object selection: one token, shared with the canvas. */
+list.SunoUI-creative-layers > row:selected { background: @Suno_creative_selection_soft; color: @Suno_ink; }
+list.SunoUI-creative-layers > row:focus-visible { outline: 2px solid @Suno_focus_ring; outline-offset: -2px; }
+box.SunoUI-creative-layer {
+  min-height: var(--SunoUI-creative-layer-height); padding: 0 4px; border-spacing: var(--SunoUI-creative-layer-gap);
+  font-size: var(--SunoUI-creative-layer-size);
+}
+.SunoUI-creative-layer-caret { min-width: var(--SunoUI-creative-layer-caret); min-height: var(--SunoUI-creative-layer-caret); }
+button.SunoUI-creative-layer-caret {
+  padding: 0; margin: 0; border: none; border-radius: 4px; background: none; box-shadow: none; color: @Suno_faint; outline: 0 solid transparent;
+}
+button.SunoUI-creative-layer-caret image {
+  -gtk-icon-size: var(--SunoUI-creative-layer-caret-icon); transition: -gtk-icon-transform var(--SunoUI-duration-press) ease;
+}
+button.SunoUI-creative-layer-caret.open image { -gtk-icon-transform: rotate(90deg); }
+image.SunoUI-creative-layer-icon { -gtk-icon-size: var(--SunoUI-creative-layer-icon); color: @Suno_muted; }
+list.SunoUI-creative-layers > row:selected image.SunoUI-creative-layer-icon { color: @Suno_creative_selection; }
+entry.SunoUI-creative-layer-rename {
+  min-height: 24px; padding: 0 4px; margin: 0; border: none; border-radius: 6px; font-size: var(--SunoUI-creative-layer-size);
+  background: @Suno_well; box-shadow: 0 0 0 1.5px @Suno_creative_selection; color: @Suno_ink; outline: 0 solid transparent;
+}
+label.SunoUI-creative-layer-detail {
+  font-size: var(--SunoUI-t-caption-size); letter-spacing: var(--SunoUI-t-caption-tracking); color: @Suno_faint; font-feature-settings: "tnum";
+}
+box.SunoUI-creative-layer.hidden > label.SunoUI-creative-layer-name,
+box.SunoUI-creative-layer.hidden > image.SunoUI-creative-layer-icon { opacity: 0.45; }
+button.SunoUI-creative-layer-eye {
+  min-width: var(--SunoUI-creative-layer-eye); min-height: var(--SunoUI-creative-layer-eye); padding: 0; margin: 0; border: none;
+  border-radius: 6px; background: none; box-shadow: none; color: @Suno_muted; opacity: 0; outline: 0 solid transparent;
+}
+button.SunoUI-creative-layer-eye image { -gtk-icon-size: var(--SunoUI-creative-layer-eye-icon); }
+list.SunoUI-creative-layers > row:hover button.SunoUI-creative-layer-eye,
+box.SunoUI-creative-layer.hidden > button.SunoUI-creative-layer-eye { opacity: 1; }
+button.SunoUI-creative-layer-eye:hover { background: @Suno_hover; color: @Suno_ink; }
+list.SunoUI-creative-layers > row.drop-above { box-shadow: inset 0 2px 0 @Suno_creative_selection; }
+list.SunoUI-creative-layers > row.drop-below { box-shadow: inset 0 -2px 0 @Suno_creative_selection; }
+list.SunoUI-creative-layers > row.drop-into { box-shadow: inset 0 0 0 1.5px @Suno_creative_selection; }
+
+/* ── SunoUI: property fields ── */
+box.SunoUI-creative-section {
+  padding: var(--SunoUI-creative-section-padding-y) var(--SunoUI-creative-section-padding-x);
+  border-top: 1px solid @Suno_line; border-spacing: 6px;
+}
+box.SunoUI-creative-section:first-child { border-top: none; }
+box.SunoUI-creative-section-header { min-height: var(--SunoUI-creative-section-header-height); margin-bottom: 2px; }
+box.SunoUI-creative-section-header:last-child { margin-bottom: 0; }
+label.SunoUI-creative-section-title {
+  font-size: var(--SunoUI-t-label-size); font-weight: var(--SunoUI-t-label-weight);
+  letter-spacing: var(--SunoUI-t-label-tracking); color: @Suno_ink_secondary;
+}
+button.SunoUI-creative-section-action {
+  min-width: var(--SunoUI-creative-section-action); min-height: var(--SunoUI-creative-section-action); padding: 0; margin: 0;
+  border: none; border-radius: 8px; background: none; box-shadow: none; color: @Suno_ink_secondary; outline: 0 solid transparent;
+}
+button.SunoUI-creative-section-action image { -gtk-icon-size: var(--SunoUI-creative-section-action-icon); }
+button.SunoUI-creative-section-action:hover { background: @Suno_hover; color: @Suno_ink; }
+button.SunoUI-creative-section-action:focus-visible { outline: 2px solid @Suno_focus_ring; outline-offset: -2px; }
+grid.SunoUI-creative-pairs { border-spacing: var(--SunoUI-creative-field-gap); }
+
+/* PropertyNumber (.sufld): a well with its label, the number and a unit. */
+entry.SunoUI-creative-number {
+  min-height: var(--SunoUI-creative-field-height); padding: 0 var(--SunoUI-creative-field-padding-x);
+  margin: 0; border: none; outline: 0 solid transparent; color: @Suno_ink; border-spacing: 0;
+  border-radius: var(--SunoUI-creative-field-radius); background: @Suno_well;
+  box-shadow: inset 0 0 0 1px @Suno_well_ring, inset 0 1px 2px @Suno_well_shade, 0 1px 0 @Suno_well_lip;
+}
+entry.SunoUI-creative-number:focus-within {
+  box-shadow: inset 0 0 0 1px @Suno_well_ring, inset 0 1px 2px @Suno_well_shade, 0 0 0 1.5px @Suno_creative_selection;
+}
+entry.SunoUI-creative-number.compact { min-width: var(--SunoUI-creative-field-compact-width); }
+label.SunoUI-creative-number-label {
+  min-width: 14px; margin-right: 6px; font-size: var(--SunoUI-creative-field-label-size); letter-spacing: 0.11px; color: @Suno_muted;
+}
+label.SunoUI-creative-number-unit { font-size: var(--SunoUI-creative-field-label-size); letter-spacing: 0.11px; color: @Suno_muted; }
+entry.SunoUI-creative-number > text {
+  min-height: 0; padding: 0; margin: 0; background: none; color: @Suno_ink;
+  font-size: var(--SunoUI-creative-field-value-size); /* v70's tabular-nums does not take in Figtree: proportional */
+}
+entry.SunoUI-creative-number.mixed > text { color: @Suno_muted; }
+
+/* PropertyColor (.suclrrow, .suclr, .suhex). */
+box.SunoUI-creative-color { border-spacing: 6px; }
+button.SunoUI-creative-swatch {
+  min-width: var(--SunoUI-creative-swatch); min-height: var(--SunoUI-creative-swatch); padding: 0; margin: 0; border: none;
+  border-radius: var(--SunoUI-creative-field-radius); background: none; box-shadow: inset 0 0 0 1px @Suno_line; outline: 0 solid transparent;
+}
+button.SunoUI-creative-swatch:focus-visible { outline: 2px solid @Suno_focus_ring; outline-offset: 1px; }
+entry.SunoUI-creative-hex {
+  min-height: var(--SunoUI-creative-field-height); padding: 0 10px; margin: 0; border: none; outline: 0 solid transparent;
+  border-radius: var(--SunoUI-creative-field-radius); background: @Suno_well; color: @Suno_ink;
+  font-size: var(--SunoUI-creative-hex-size); font-weight: 500; letter-spacing: 0.12px; /* the mono role's family */
+  box-shadow: inset 0 0 0 1px @Suno_well_ring, inset 0 1px 2px @Suno_well_shade, 0 1px 0 @Suno_well_lip;
+}
+entry.SunoUI-creative-hex:focus-within {
+  box-shadow: inset 0 0 0 1px @Suno_well_ring, inset 0 1px 2px @Suno_well_shade, 0 0 0 1.5px @Suno_creative_selection;
+}
+/* ColorPicker: the planes, the swatch rows and the foot (eyedropper, code). */
+box.SunoUI-color-picker { min-width: calc(var(--SunoUI-creative-picker-width) - 2 * var(--SunoUI-creative-picker-padding)); }
+box.SunoUI-color-picker > drawingarea { outline: 0 solid transparent; }
+box.SunoUI-color-picker > drawingarea:focus-visible { outline: 2px solid @Suno_focus_ring; outline-offset: 2px; border-radius: var(--SunoUI-creative-picker-area-radius); }
+box.SunoUI-color-picker > drawingarea.SunoUI-color-picker-hue:focus-visible,
+box.SunoUI-color-picker > drawingarea.SunoUI-color-picker-alpha:focus-visible { border-radius: calc(var(--SunoUI-creative-picker-knob) / 2); }
+label.SunoUI-color-picker-heading { color: @Suno_muted; margin-bottom: calc(var(--SunoUI-creative-picker-swatch-gap) - var(--SunoUI-creative-picker-gap)); }
+flowbox.SunoUI-color-picker-swatches > flowboxchild { padding: 0; min-width: 0; min-height: 0; background: none; outline: 0 solid transparent; }
+button.SunoUI-color-picker-swatch {
+  min-width: var(--SunoUI-creative-picker-swatch); min-height: var(--SunoUI-creative-picker-swatch); padding: 0; margin: 0; border: none;
+  border-radius: var(--SunoUI-creative-picker-swatch-radius); background: none; box-shadow: none; outline: 0 solid transparent;
+}
+button.SunoUI-color-picker-swatch:focus-visible { outline: 2px solid @Suno_focus_ring; outline-offset: 1px; }
+box.SunoUI-color-picker-foot > button.SunoUI-color-picker-eyedropper {
+  min-width: var(--SunoUI-creative-field-height); min-height: var(--SunoUI-creative-field-height); padding: 0;
+  border-radius: var(--SunoUI-creative-field-radius);
+}
+box.SunoUI-color-picker-foot > button.SunoUI-color-picker-eyedropper.unavailable { color: @Suno_faint; }
+/* The picker's popover from a colour field's swatch: an opaque SunoUI surface. */
+popover.SunoUI-color-picker-popover > contents {
+  padding: var(--SunoUI-creative-picker-padding); border-radius: var(--SunoUI-creative-picker-radius); background: @Suno_float_surface;
+}
+
+/* PropertyChoice: a menu well (.suselect) or segments (.seg). */
+button.SunoUI-creative-select {
+  min-height: var(--SunoUI-creative-select-height); padding: 0 var(--SunoUI-creative-select-padding-x); margin: 0; border: none;
+  border-radius: var(--SunoUI-creative-field-radius); background: @Suno_well; color: @Suno_ink; outline: 0 solid transparent;
+  font-size: var(--SunoUI-creative-select-size); font-weight: 400;
+  box-shadow: inset 0 0 0 1px @Suno_well_ring, inset 0 1px 2px @Suno_well_shade, 0 1px 0 @Suno_well_lip;
+}
+button.SunoUI-creative-select image { -gtk-icon-size: 13px; color: @Suno_muted; }
+button.SunoUI-creative-select:focus-visible { box-shadow: inset 0 0 0 1px @Suno_well_ring, 0 0 0 2px @Suno_focus_ring; }
+
+/* AlignmentActions (.sualign). */
+box.SunoUI-creative-align { border-spacing: 0; }
+button.SunoUI-creative-align-button {
+  min-width: var(--SunoUI-creative-align-width); min-height: var(--SunoUI-creative-align-height); padding: 0; margin: 0;
+  border: none; border-radius: 8px; background: none; box-shadow: none; color: @Suno_ink_secondary; outline: 0 solid transparent;
+  transition: background var(--SunoUI-duration-hover) ease, color var(--SunoUI-duration-hover) ease;
+}
+button.SunoUI-creative-align-button image { -gtk-icon-size: var(--SunoUI-creative-align-icon); }
+button.SunoUI-creative-align-button:hover { background: @Suno_hover; color: @Suno_ink; }
+button.SunoUI-creative-align-button:focus-visible { outline: 2px solid @Suno_focus_ring; outline-offset: -2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  box.SunoUI-creative-panel, .SunoUI-creative-workspace > .SunoUI-creative-zoom { transition: opacity var(--SunoUI-duration-reduced-fade) ease; }
+  box.SunoUI-creative-panel.left.gone, box.SunoUI-creative-panel.right.gone { transform: none; }
+}
+
+/* ── SunoUI: ArrangeView (direct manipulation over a picture) ── */
+widget.SunoUI-arrange-view:focus-visible { outline: 0 solid transparent; }
+widget.SunoUI-arrange-view > .SunoUI-arrange-frame { color: @Suno_creative_selection; }
+widget.SunoUI-arrange-view > .SunoUI-arrange-hover { color: alpha(@Suno_creative_selection, 0.55); }
+widget.SunoUI-arrange-view > .SunoUI-arrange-handle { color: @Suno_creative_selection; }
+widget.SunoUI-arrange-view > .SunoUI-arrange-knob { color: @Suno_key; }
+widget.SunoUI-arrange-view > .SunoUI-arrange-guide { color: @Suno_mark_pink; }
+widget.SunoUI-arrange-view > .SunoUI-arrange-locked { color: @Suno_muted; }
+/* What a crop cuts away: the source at this opacity (its alpha), or this scrim without one. */
+widget.SunoUI-arrange-view > .SunoUI-arrange-ghost { color: rgba(0, 0, 0, 0.38); }
+widget.SunoUI-arrange-view > .SunoUI-arrange-marquee { color: @Suno_creative_selection; }

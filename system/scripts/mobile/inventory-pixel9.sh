@@ -11,11 +11,11 @@ repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 # shellcheck disable=SC1091
 . "$repo_root/config/mobile/pixel9-physical/inputs.env"
 
-adb_bin=${LUMA_ADB:-adb}
-fastboot_bin=${LUMA_FASTBOOT:-fastboot}
-requested_transport=${LUMA_PIXEL9_TRANSPORT:-auto}
-timestamp=${LUMA_PIXEL9_INVENTORY_TIMESTAMP:-$(date -u +%Y%m%dT%H%M%SZ)}
-output_root=${LUMA_PIXEL9_INVENTORY_DIR:-$repo_root/build/mobile/pixel9-physical/inventory/$timestamp}
+adb_bin=${SUNO_ADB:-adb}
+fastboot_bin=${SUNO_FASTBOOT:-fastboot}
+requested_transport=${SUNO_PIXEL9_TRANSPORT:-auto}
+timestamp=${SUNO_PIXEL9_INVENTORY_TIMESTAMP:-$(date -u +%Y%m%dT%H%M%SZ)}
+output_root=${SUNO_PIXEL9_INVENTORY_DIR:-$repo_root/build/mobile/pixel9-physical/inventory/$timestamp}
 
 die() {
   printf 'error: %s\n' "$*" >&2
@@ -43,7 +43,7 @@ write_summary() {
   model=$3
   device=$4
   {
-    printf 'LUMA_PIXEL9_INVENTORY_VERSION=1\n'
+    printf 'SUNO_PIXEL9_INVENTORY_VERSION=1\n'
     printf 'TRANSPORT=%s\n' "$transport"
     printf 'MANUFACTURER=%s\n' "$manufacturer"
     printf 'MODEL=%s\n' "$model"
@@ -151,7 +151,7 @@ case "$requested_transport" in
     fi
     ;;
   *)
-    die "LUMA_PIXEL9_TRANSPORT must be auto, adb, or fastboot"
+    die "SUNO_PIXEL9_TRANSPORT must be auto, adb, or fastboot"
     ;;
 esac
 

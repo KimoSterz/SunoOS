@@ -7,7 +7,7 @@
       --good-through 1.0.0-nightly.20261119.2 --reason "Fairphone 6 audio check pending for 20261123.2"
   device-hold.py lift --arch aarch64 --channel nightly --target fairphone,fp6 --passed 1.0.0-nightly.20261123.2
 
-Edits LUMA_OS_ROOT/publish/device-holds/ARCH/CHANNEL.json only. The hold reaches
+Edits SUNO_OS_ROOT/publish/device-holds/ARCH/CHANNEL.json only. The hold reaches
 devices with the next signed graph: run the graph sign and sync steps
 (graph_from_releases.py, sign-update-graph.sh, stage-webroot.sh,
 sync-to-cdn.sh --only graph) after every change. --good-through and --passed
@@ -41,7 +41,7 @@ def main(argv):
     parser.add_argument("action", choices=("show", "hold", "lift"))
     parser.add_argument("--arch", required=True, choices=("x86_64", "aarch64"))
     parser.add_argument("--channel", required=True, choices=("stable", "beta", "nightly"))
-    parser.add_argument("--root", default=os.environ.get("LUMA_OS_ROOT", ""))
+    parser.add_argument("--root", default=os.environ.get("SUNO_OS_ROOT", ""))
     parser.add_argument("--repo", help="channel repository (default: ROOT/publish/public-repo)")
     parser.add_argument("--target")
     parser.add_argument("--good-through")
@@ -49,7 +49,7 @@ def main(argv):
     parser.add_argument("--reason", default="")
     args = parser.parse_args(argv[1:])
     if not args.root:
-        parser.error("--root or LUMA_OS_ROOT is required")
+        parser.error("--root or SUNO_OS_ROOT is required")
     repo = args.repo or os.path.join(args.root, "publish", "public-repo")
     path = device_holds.default_path(repo, args.arch, args.channel)
     state = device_holds.load(path, args.arch, args.channel)

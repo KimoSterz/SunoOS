@@ -1,4 +1,4 @@
-From: Project Luma <engineering@projectluma.org>
+From: Project Suno <engineering@projectSuno.org>
 Subject: [PATCH] Filer: ask the host installer to handle default APK activation
 
 Use the same host package service already permitted for package drops. The host
@@ -133,9 +133,9 @@ SPDX-License-Identifier: GPL-3.0-or-later
 +        request->flags = flags;
 +        request->confirm_multiple = confirm_multiple;
 +        g_dbus_connection_call (connection,
-+                                "org.projectluma.ApplicationInstaller2",
-+                                "/org/projectluma/ApplicationInstaller2",
-+                                "org.projectluma.ApplicationInstaller2",
++                                "org.projectSuno.ApplicationInstaller2",
++                                "/org/projectSuno/ApplicationInstaller2",
++                                "org.projectSuno.ApplicationInstaller2",
 +                                "RequestDefaultInstall", g_variant_new ("(s)", uri),
 +                                G_VARIANT_TYPE ("(b)"), G_DBUS_CALL_FLAGS_NONE, 10000,
 +                                NULL, default_install_requested, request);

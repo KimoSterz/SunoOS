@@ -15,7 +15,7 @@ for tool in cpio curl git mktemp podman rpm2cpio sha256sum; do
 done
 
 if [ "$(uname -s)" != Linux ] || [ "$(uname -m)" != x86_64 ]; then
-  printf 'error: build the Luma Dash to Dock RPM on the canonical Linux/x86_64 builder\n' >&2
+  printf 'error: build the Suno Dash to Dock RPM on the canonical Linux/x86_64 builder\n' >&2
   exit 1
 fi
 
@@ -53,17 +53,17 @@ mv "$extract_dir/gnome-shell-extension-dash-to-dock.spec" \
 find "$extract_dir" -maxdepth 1 -type f \
   -exec mv -t "$rpmbuild_dir/SOURCES" {} +
 install -m 0644 \
-  "$repo_root/patches/dash-to-dock/0001-luma-dock-material.patch" \
+  "$repo_root/patches/dash-to-dock/0001-Suno-dock-material.patch" \
   "$rpmbuild_dir/SOURCES/"
 (
   cd "$rpmbuild_dir/SPECS"
-  GIT_CEILING_DIRECTORIES="$rpmbuild_dir" git apply "$repo_root/patches/dash-to-dock/0000-luma-fedora-spec.patch"
+  GIT_CEILING_DIRECTORIES="$rpmbuild_dir" git apply "$repo_root/patches/dash-to-dock/0000-Suno-fedora-spec.patch"
 )
 # A spec patch that applied as a no-op builds the stock package; the Release
 # says whether it applied (scripts/packages/spec-release.sh).
 . "$repo_root/scripts/packages/spec-release.sh"
-luma_assert_spec_release "$rpmbuild_dir/SPECS/gnome-shell-extension-dash-to-dock.spec" \
-  "$DASH_TO_DOCK_LUMA_RELEASE" || exit 1
+Suno_assert_spec_release "$rpmbuild_dir/SPECS/gnome-shell-extension-dash-to-dock.spec" \
+  "$DASH_TO_DOCK_SUNO_RELEASE" || exit 1
 
 "$repo_root/scripts/packages/run-in-rpm-builder.sh" \
   "$rpmbuild_dir" \
@@ -88,7 +88,7 @@ luma_assert_spec_release "$rpmbuild_dir/SPECS/gnome-shell-extension-dash-to-dock
         "$extension_dir/stylesheet.css"
       test "$(grep -A1 -F "#dashtodockContainer.bottom.dashtodock #dash #dashtodockDashContainer" \
         "$extension_dir/stylesheet.css" | tail -n1 | tr -d " ")" = "spacing:4px;}"
-      test "$(grep -A1 -F "#dashtodockContainer.bottom.dashtodock #dash #lumaDockAppBox" \
+      test "$(grep -A1 -F "#dashtodockContainer.bottom.dashtodock #dash #SunoDockAppBox" \
         "$extension_dir/stylesheet.css" | tail -n1 | tr -d " ")" = "spacing:4px;}"
       grep -Fq "padding: 4px;" "$extension_dir/stylesheet.css"
       ! grep -Fq "box-shadow: 0 4px 10px rgba(30, 41, 59, 0.18)" \
@@ -101,28 +101,28 @@ luma_assert_spec_release "$rpmbuild_dir/SPECS/gnome-shell-extension-dash-to-dock
       grep -Fq "AppFavorites.getAppFavorites().removeFavorite" \
         "$extension_dir/appIcons.js"
       grep -Fq "setTrashDropHover" "$extension_dir/appIcons.js"
-      grep -Fq "source._lumaRemovalPending = true" "$extension_dir/appIcons.js"
-      grep -Fq "source._lumaReorderPending = true" "$extension_dir/dash.js"
+      grep -Fq "source._SunoRemovalPending = true" "$extension_dir/appIcons.js"
+      grep -Fq "source._SunoReorderPending = true" "$extension_dir/dash.js"
       grep -Fq "Commit the favorite model before DND restores" \
         "$extension_dir/dash.js"
-      test -s "$extension_dir/lumaPreferences.js"
-      test "$(wc -l <"$extension_dir/lumaPreferences.js")" -eq 105
-      test "$(tail -n1 "$extension_dir/lumaPreferences.js")" = "}"
+      test -s "$extension_dir/SunoPreferences.js"
+      test "$(wc -l <"$extension_dir/SunoPreferences.js")" -eq 105
+      test "$(tail -n1 "$extension_dir/SunoPreferences.js")" = "}"
       gjs -c "$(sed \
         -e "/^import {$/,/^} from /d" \
         -e "s/^export class /class /" \
-        "$extension_dir/lumaPreferences.js")"
-      grep -Fq "org.luma.shell.dock.appearance" \
-        "$extension_dir/lumaPreferences.js"
-      grep -Fq "ALLOWED_SURFACES" "$extension_dir/lumaPreferences.js"
-      grep -Fq "Gio.FileMonitorFlags.NONE" "$extension_dir/lumaPreferences.js"
-      grep -Fq "LumaPreferences.DockPreferenceMonitor" \
+        "$extension_dir/SunoPreferences.js")"
+      grep -Fq "org.Suno.shell.dock.appearance" \
+        "$extension_dir/SunoPreferences.js"
+      grep -Fq "ALLOWED_SURFACES" "$extension_dir/SunoPreferences.js"
+      grep -Fq "Gio.FileMonitorFlags.NONE" "$extension_dir/SunoPreferences.js"
+      grep -Fq "SunoPreferences.DockPreferenceMonitor" \
         "$extension_dir/docking.js"
-      grep -Fq "luma-dock-surface-green-glow" \
+      grep -Fq "Suno-dock-surface-green-glow" \
         "$extension_dir/stylesheet.css"
-      test -s "$extension_dir/media/luma-apps-grid.svg"
+      test -s "$extension_dir/media/Suno-apps-grid.svg"
       grep -Fq "fill=\"#4878b8\"" \
-        "$extension_dir/media/luma-apps-grid.svg"
+        "$extension_dir/media/Suno-apps-grid.svg"
     )
   '
 
@@ -133,7 +133,7 @@ install -m 0644 \
   "$rpmbuild_dir/RPMS/noarch/$DASH_TO_DOCK_NEVRA.rpm" \
   "$stable_rpms/noarch/"
 install -m 0644 \
-  "$rpmbuild_dir/SRPMS/gnome-shell-extension-dash-to-dock-105-${DASH_TO_DOCK_LUMA_RELEASE}.fc44.src.rpm" \
+  "$rpmbuild_dir/SRPMS/gnome-shell-extension-dash-to-dock-105-${DASH_TO_DOCK_SUNO_RELEASE}.fc44.src.rpm" \
   "$stable_srpms/"
 
 (
@@ -141,4 +141,4 @@ install -m 0644 \
   find RPMS SRPMS -type f -name '*.rpm' -exec sha256sum {} + | sort >SHA256SUMS
 )
 
-printf 'Luma Dash to Dock packages: %s\n' "$output_dir"
+printf 'Suno Dash to Dock packages: %s\n' "$output_dir"

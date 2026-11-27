@@ -1,5 +1,5 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
-From: Project Luma <engineering@projectluma.org>
+From: Project Suno <engineering@projectSuno.org>
 Date: Tue, 3 Nov 2026 04:00:00 -0600
 Subject: [PATCH] clutter/actor: Do not redraw the whole stage for an actor's
  first paint

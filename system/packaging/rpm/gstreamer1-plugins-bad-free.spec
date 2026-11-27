@@ -33,7 +33,7 @@
 
 Name:           gstreamer1-plugins-bad-free
 Version:        1.28.8
-Release:        1.luma.1%{?dist}
+Release:        1.Suno.1%{?dist}
 Summary:        GStreamer streaming media framework "bad" plugins
 
 # main code is LGPL-2.1-or-later AND LGPL-2.0-or-later
@@ -60,7 +60,7 @@ Source:         https://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plugin
 
 # https://gitlab.freedesktop.org/gstreamer/gstreamer/-/merge_requests/5622
 Patch0:          openh264-add-license-file.patch
-# Luma: Raspberry Pi HEVC decoder output (patches/gstreamer1-plugins-bad).
+# Suno: Raspberry Pi HEVC decoder output (patches/gstreamer1-plugins-bad).
 Patch1:          0001-v4l2codecs-h265dec-plain-pool-for-opaque-DMA_DRM-formats.patch
 
 BuildRequires:  meson >= 0.48.0
@@ -937,7 +937,7 @@ EOF
 
 
 %changelog
-* Mon Nov 02 2026 Project Luma <maintainers@projectluma.org> - 1.28.8-1.luma.1
+* Mon Nov 02 2026 Project Suno <maintainers@projectSuno.org> - 1.28.8-1.Suno.1
 - v4l2codecs h265dec: plain pool for opaque DMA_DRM formats (Raspberry Pi
   HEVC decoder, NV12 SAND128).
 

@@ -11,6 +11,6 @@ root=(--ro-bind /usr /usr --ro-bind /etc /etc --symlink usr/lib /lib --symlink u
       --symlink usr/bin /bin --symlink usr/sbin /sbin --proc /proc --dev /dev --bind /tmp /tmp
       --ro-bind "${TVR_SOURCE:-/source}" "${TVR_SOURCE:-/source}" --ro-bind "$dir/info" /.flatpak-info --die-with-parent)
 bwrap "${root[@]}" xdg-dbus-proxy "$DBUS_SESSION_BUS_ADDRESS" "$dir/bus" --filter \
-  --own="$app" --talk=org.projectluma.Shell.Remote &
+  --own="$app" --talk=org.projectSuno.Shell.Remote &
 for _ in $(seq 1 50); do [ -S "$dir/bus" ] && break; sleep 0.1; done
 exec bwrap "${root[@]}" --setenv DBUS_SESSION_BUS_ADDRESS "unix:path=$dir/bus" "$@"

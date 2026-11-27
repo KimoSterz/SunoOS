@@ -53,7 +53,7 @@ def prepare(root, *, desktop_profile=False):
             raise ValueError('Unexpected admitted engine archive membership')
         target.mkdir(mode=0o755)
         archive.extractall(target, members=members, filter='data')
-    manifest = root / f'src/external/viola/chromium-linux/luma-package/native-{engine_release}-engine.sha256'
+    manifest = root / f'src/external/viola/chromium-linux/Suno-package/native-{engine_release}-engine.sha256'
     wanted = {}
     for line in manifest.read_text().splitlines():
         digest, name = line.split('  ', 1)
@@ -70,7 +70,7 @@ def prepare(root, *, desktop_profile=False):
             if hashlib.file_digest(stream, 'sha256').hexdigest() != wanted[name]:
                 raise ValueError('Admitted engine file differs: ' + name)
     if desktop_profile and architecture == 'aarch64':
-        profile = root / 'src/external/viola/chromium-linux/luma-package/desktop-arm-preview-frame-profile.json'
+        profile = root / 'src/external/viola/chromium-linux/Suno-package/desktop-arm-preview-frame-profile.json'
         if profile.is_symlink() or not profile.is_file() or profile.stat().st_size > 4096:
             raise ValueError('The maintained desktop engine profile is unavailable')
         selected = target / 'native-engine-profile.json'

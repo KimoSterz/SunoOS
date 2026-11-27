@@ -12,15 +12,15 @@ export async function run() {
         if (!value) throw new Error(message);
         print(`PASS ${message}`);
     }
-    const app = Shell.AppSystem.get_default().lookup_app('org.projectluma.Disks.Preview.desktop');
+    const app = Shell.AppSystem.get_default().lookup_app('org.projectSuno.Disks.Preview.desktop');
     check(!!app, 'actual Disks Preview launcher exists');
     const gicon = app.get_app_info().get_icon();
     const info = new St.IconTheme().lookup_by_gicon(gicon, 64, St.IconLookupFlags.FORCE_SIZE);
     print(`ACTUAL native Disks icon ${info?.get_filename()}`);
-    check(info?.get_filename() === '/usr/share/icons/Prairie/scalable/apps/org.projectluma.Disks.Preview.svg',
+    check(info?.get_filename() === '/usr/share/icons/Prairie/scalable/apps/org.projectSuno.Disks.Preview.svg',
         'actual launcher resolves approved Prairie artwork before old hicolor');
     const [,alias] = GLib.file_get_contents(info.get_filename());
-    const [,canonical] = GLib.file_get_contents('/usr/share/icons/Prairie/scalable/apps/org.projectluma.Disks.svg');
+    const [,canonical] = GLib.file_get_contents('/usr/share/icons/Prairie/scalable/apps/org.projectSuno.Disks.svg');
     const digest = bytes => GLib.compute_checksum_for_bytes(GLib.ChecksumType.SHA256, GLib.Bytes.new(bytes));
     check(digest(alias) === digest(canonical), 'alias uses exact canonical artwork without another rim or mask');
     const pixbuf = info.load_icon();
@@ -35,7 +35,7 @@ export async function run() {
     await Scripting.sleep(500);
     check(item.icon.icon.width === 64 && item.icon.icon.height === 64,
         'actual drawer renders corrected icon on64px square canvas');
-    const stream = Gio.File.new_for_path('/var/tmp/luma-shell100-native/captures/disks-preview36.png')
+    const stream = Gio.File.new_for_path('/var/tmp/Suno-shell100-native/captures/disks-preview36.png')
         .replace(null, false, Gio.FileCreateFlags.NONE, null);
     try { await new Shell.Screenshot().screenshot(false, stream); }
     finally { stream.close(null); box.destroy(); }

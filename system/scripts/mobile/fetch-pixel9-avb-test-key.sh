@@ -50,7 +50,7 @@ chmod 0644 "$public_key"
   die 'AOSP AVB test public-key SHA-1 differs from the pin'
 
 {
-  printf 'LUMA_PIXEL9_AVB_TEST_INPUT_VERSION=1\n'
+  printf 'SUNO_PIXEL9_AVB_TEST_INPUT_VERSION=1\n'
   printf 'SCOPE=public-aosp-test-key-off-device-only\n'
   printf 'AVB_COMMIT=%s\n' "$PIXEL9_AVB_COMMIT"
   printf 'AVBTOOL_SHA256=%s\n' "$PIXEL9_AVBTOOL_SHA256"

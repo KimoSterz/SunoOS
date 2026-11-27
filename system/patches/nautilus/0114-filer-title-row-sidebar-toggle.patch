@@ -43,7 +43,7 @@ index cc9b9d0..f4329b9 100644
 @@ -1666,11 +1644,15 @@ nautilus_window_constructed (GObject *self)
  
      /* The shared frame keeps NautilusWindow and every template child alive. */
-     luma_application_window_frame_adopt (ADW_APPLICATION_WINDOW (window));
+     Suno_application_window_frame_adopt (ADW_APPLICATION_WINDOW (window));
 -    /* The toggle already belongs to Nautilus' top header. Until the shared
 -     * frame adapter selects that outer header, moving its parented host would
 -     * both abort under GTK's critical checks and place it in the lower toolbar.
@@ -55,12 +55,12 @@ index cc9b9d0..f4329b9 100644
 +    GtkWidget *toggle = GTK_WIDGET (window->sidebar_toggle);
 +    g_object_ref (toggle);
 +    gtk_box_remove (GTK_BOX (window->sidebar_toggle_desktop_host), toggle);
-+    luma_application_window_frame_set_leading (ADW_APPLICATION_WINDOW (window),
++    Suno_application_window_frame_set_leading (ADW_APPLICATION_WINDOW (window),
 +                                               toggle);
 +    g_object_unref (toggle);
      GMenuModel *main_menu = NULL;
      g_object_get (window->toolbar, "main-menu", &main_menu, NULL);
-     luma_application_window_frame_set_menu_model (ADW_APPLICATION_WINDOW (window),
+     Suno_application_window_frame_set_menu_model (ADW_APPLICATION_WINDOW (window),
 @@ -2298,8 +2280,6 @@ nautilus_window_init (NautilusWindow *window)
      gtk_widget_set_name (GTK_WIDGET (window->sidebar_toggle), "filer-sidebar-toggle");
      gtk_box_append (GTK_BOX (window->sidebar_toggle_desktop_host),

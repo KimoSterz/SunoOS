@@ -12,15 +12,15 @@ repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 # shellcheck disable=SC1091
 . "$repo_root/config/mobile/pixel9-physical/inputs.env"
 
-output_root=${LUMA_PIXEL9_RECOVERY_DIR:-$repo_root/build/cache/recovery/pixel9/$PIXEL9_OBSERVED_BUILD_ID}
-terms_accepted=${LUMA_PIXEL9_GOOGLE_DOWNLOAD_TERMS_ACCEPTED:-0}
+output_root=${SUNO_PIXEL9_RECOVERY_DIR:-$repo_root/build/cache/recovery/pixel9/$PIXEL9_OBSERVED_BUILD_ID}
+terms_accepted=${SUNO_PIXEL9_GOOGLE_DOWNLOAD_TERMS_ACCEPTED:-0}
 
 die() {
   printf 'error: %s\n' "$*" >&2
   exit 1
 }
 
-[ "$terms_accepted" = 1 ] || die 'Google download terms have not been explicitly accepted; review the official Pixel factory and full-OTA pages, then set LUMA_PIXEL9_GOOGLE_DOWNLOAD_TERMS_ACCEPTED=1 for this fetch only'
+[ "$terms_accepted" = 1 ] || die 'Google download terms have not been explicitly accepted; review the official Pixel factory and full-OTA pages, then set SUNO_PIXEL9_GOOGLE_DOWNLOAD_TERMS_ACCEPTED=1 for this fetch only'
 [ "$PIXEL9_FACTORY_IMAGE_SELECTED" = true ] || die 'no factory image is selected'
 [ "$PIXEL9_FULL_OTA_SELECTED" = true ] || die 'no full OTA is selected'
 
@@ -84,10 +84,10 @@ fetch_one 'full OTA' "$PIXEL9_FULL_OTA_URL" \
   "$PIXEL9_FULL_OTA_FILENAME" "$PIXEL9_FULL_OTA_BYTES" \
   "$PIXEL9_FULL_OTA_SHA256"
 
-manifest="$output_root/luma-recovery-manifest.env"
+manifest="$output_root/Suno-recovery-manifest.env"
 manifest_partial="$manifest.part"
 {
-  printf 'LUMA_PIXEL9_RECOVERY_MANIFEST_VERSION=1\n'
+  printf 'SUNO_PIXEL9_RECOVERY_MANIFEST_VERSION=1\n'
   printf 'DEVICE=tokay\n'
   printf 'OBSERVED_BUILD_ID=%s\n' "$PIXEL9_OBSERVED_BUILD_ID"
   printf 'OBSERVED_SECURITY_PATCH=%s\n' "$PIXEL9_OBSERVED_SECURITY_PATCH"

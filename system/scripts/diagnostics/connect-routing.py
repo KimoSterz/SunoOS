@@ -15,7 +15,7 @@ class NoRedirect(HTTPRedirectHandler):
 
 
 def main():
-    directory = Path(os.environ.get('XDG_DATA_HOME', str(Path.home()/'.local/share')))/'luma/connect'
+    directory = Path(os.environ.get('XDG_DATA_HOME', str(Path.home()/'.local/share')))/'Suno/connect'
     path = directory/'device.json'
     if not path.is_file():
         print('registration: absent')
@@ -51,7 +51,7 @@ def main():
         try:
             request = Request('https://hub.simplyluma.com/api/hub/sync'+suffix,
                 headers={'Authorization':'Bearer '+token, 'Accept':'application/json',
-                    'User-Agent':'ProjectLuma-Connect/1'})
+                    'User-Agent':'projectSuno-Connect/1'})
             with opener.open(request, timeout=15) as response:
                 print(label+': HTTP '+str(response.status))
         except HTTPError as error:

@@ -1,7 +1,7 @@
 ---
 type: fix
 component: TV Mode
-packages: [luma-shell-state, luma-developer-platform]
+packages: [Suno-shell-state, Suno-developer-platform]
 highlight: false
 ---
 Summary: A TV no longer dims or sleeps, and apps show the weather beside the time

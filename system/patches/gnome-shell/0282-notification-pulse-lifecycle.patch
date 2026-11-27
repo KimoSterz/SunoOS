@@ -1,10 +1,10 @@
-diff --git a/js/ui/lumaNotificationBeacon.js b/js/ui/lumaNotificationBeacon.js
---- a/js/ui/lumaNotificationBeacon.js
-+++ b/js/ui/lumaNotificationBeacon.js
+diff --git a/js/ui/SunoNotificationBeacon.js b/js/ui/SunoNotificationBeacon.js
+--- a/js/ui/SunoNotificationBeacon.js
++++ b/js/ui/SunoNotificationBeacon.js
 @@ -67,6 +67,9 @@
          this._left.connect('repaint', () => this._shoulder(this._left, false));
          this._right.connect('repaint', () => this._shoulder(this._right, true));
-         this._glow = new St.Widget({style_class: 'luma-lip-glow', opacity: 0});
+         this._glow = new St.Widget({style_class: 'Suno-lip-glow', opacity: 0});
 +        this._glow.connectObject('notify::mapped', () => this._breathe(), this);
 +        St.Settings.get().connectObject('notify::enable-animations', () => this._breathe(), this);
 +        Main.sessionMode.connectObject('updated', () => this._breathe(), this);

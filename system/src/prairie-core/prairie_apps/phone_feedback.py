@@ -13,7 +13,7 @@ class Ringer:
     PATH = "/org/sigxcpu/Feedback"
     IFACE = "org.sigxcpu.Feedback"
 
-    def __init__(self, app_id="org.projectluma.PhoneDaemon") -> None:
+    def __init__(self, app_id="org.projectSuno.PhoneDaemon") -> None:
         self.app_id = app_id
         self._proxy = None
         self._event_id = None

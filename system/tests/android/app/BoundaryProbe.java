@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-package org.projectluma.androidtest;
+package org.projectSuno.androidtest;
 
 import android.content.Context;
 import android.os.IBinder;
@@ -29,7 +29,7 @@ final class BoundaryProbe {
             Process operation = null;
             try {
                 operation = new ProcessBuilder("/system/bin/setprop",
-                        "luma.test.property_boundary", "fixture-app").redirectErrorStream(true).start();
+                        "Suno.test.property_boundary", "fixture-app").redirectErrorStream(true).start();
                 if (operation.waitFor(5, java.util.concurrent.TimeUnit.SECONDS)) {
                     outcome = operation.exitValue() == 0 ? "accepted" :
                             "rejected:" + operation.exitValue();

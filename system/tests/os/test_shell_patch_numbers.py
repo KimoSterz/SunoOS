@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[2]
 
 class ShellPatchNumbers(unittest.TestCase):
     def declarations(self):
-        patch = ROOT / 'patches/gnome-shell/0000-luma-fedora-spec.patch'
+        patch = ROOT / 'patches/gnome-shell/0000-Suno-fedora-spec.patch'
         return [line[1:] for line in patch.read_text().splitlines()
                 if line.startswith('+Patch')]
 

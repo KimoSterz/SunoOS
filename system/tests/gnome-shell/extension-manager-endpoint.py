@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """Validate callers against the native packaged Shell extension interface."""
 import pathlib,re,sys
-if len(sys.argv)!=4:raise SystemExit('extension.js prepared-cc-luma-live-windows.c packaged-shellDBus.js required')
+if len(sys.argv)!=4:raise SystemExit('extension.js prepared-cc-Suno-live-windows.c packaged-shellDBus.js required')
 extension,settings,native=(pathlib.Path(p).read_text() for p in sys.argv[1:])
 manager=native.split('class GnomeShellExtensions {',1)[1].split('\nclass ',1)[0]
 export=re.search(r"this\._dbusImpl\.export\(Gio\.DBus\.session, ['\"]([^'\"]+)['\"]\)",manager)

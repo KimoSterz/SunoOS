@@ -1,5 +1,5 @@
 From 2c74ac611432c225d70cd9b7ce8b033670fd8840 Mon Sep 17 00:00:00 2001
-From: Luma <noreply@projectluma.org>
+From: Suno <noreply@projectSuno.org>
 Date: Sat, 14 Nov 2026 13:40:00 -0600
 Subject: [PATCH] poll-light: poll no faster than the default interval
 

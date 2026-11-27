@@ -1036,7 +1036,7 @@ public:
         precond_ = EnvOr("PRECOND", "0") == "1";
         // Diagnostic only: answer a terminating INVITE in the same engine
         // turn, before a carrier voicemail fork can enqueue CANCEL. Normal
-        // Luma sessions leave this off and answer through the D-Bus UI.
+        // Suno sessions leave this off and answer through the D-Bus UI.
         autoAnswer_ = EnvOr("AUTO_ANSWER", "0") == "1";
         ealgOffer_ = EnvOr("EALG", "aes-cbc");
         // SIP_TRANSPORT: the protected leg's transport. auto (default) = TCP,
@@ -1551,7 +1551,7 @@ private:
             // Qualcomm's QRTR DMS may report its IMEI as "unknown" on mainline
             // Linux. RFC 5626 explicitly permits a UUID URN. Derive an
             // app-specific ID instead of exposing raw /etc/machine-id or
-            // fabricating an IMEI. The fixed 128-bit value is Luma IMS's
+            // fabricating an IMEI. The fixed 128-bit value is Suno IMS's
             // application namespace, not a device credential.
             auto uuid = RunCapture({"systemd-id128", "-u", "-a",
                                     "6a756d612d696d732d696e7374616e63",
@@ -2487,7 +2487,7 @@ private:
         // not a registration's to bring forward — nor to start its backoff
         // over: that resets with a subscription that starts afresh here, or
         // is accepted
-        // Luma: the subscription is opt-in (REG_EVENT=1). T-Mobile US answers
+        // Suno: the subscription is opt-in (REG_EVENT=1). T-Mobile US answers
         // it 500 and then closes the otherwise healthy protected TCP flow, so
         // retrying it as part of being registered would cycle the flow.
         if (!RegEventEnabled()) return;

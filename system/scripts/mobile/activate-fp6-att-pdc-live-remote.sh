@@ -15,7 +15,7 @@ software_id=444954dcfbd6d5bf196cd8fecf6770ff3c6b34fc
 qmicli_sha=1b4adcd3d949e8d0f68065ba0022bbc35fe4462717deaaeae0ec244557f76b9c
 software_sha=32e7f3d9059e63323f70cf113b1ecc040dc7e9c82238a1d5bde2b21ca2eb7d6e
 
-event() { printf 'event=luma_fp6_att_pdc_live %s\n' "$*"; }
+event() { printf 'event=Suno_fp6_att_pdc_live %s\n' "$*"; }
 fail() { event "state=failed reason=$1" >&2; exit 1; }
 hash() { sha256sum "$1" | cut -d' ' -f1; }
 compact_id() { tr -d ':' | tr '[:upper:]' '[:lower:]'; }
@@ -23,7 +23,7 @@ compact_id() { tr -d ':' | tr '[:upper:]' '[:lower:]'; }
 cleanup() {
   local result=$?
   set +e
-  systemctl start ModemManager.service luma-fp6-cellular-link.service
+  systemctl start ModemManager.service Suno-fp6-cellular-link.service
   find "$qmicli" "$software" -delete 2>/dev/null
   return "$result"
 }
@@ -32,7 +32,7 @@ trap cleanup EXIT INT TERM HUP
 [[ $(id -u) -eq 0 ]] || fail not_root
 [[ $(tr -d '\0' </sys/firmware/devicetree/base/model) == 'The Fairphone (Gen. 6)' ]] || fail model
 grep -qw androidboot.slot_suffix=_b /proc/cmdline || fail slot
-[[ $(uname -r) == 7.1.2-luma-fp-ims1 ]] || fail kernel
+[[ $(uname -r) == 7.1.2-Suno-fp-ims1 ]] || fail kernel
 [[ $(hash "$qmicli") == "$qmicli_sha" ]] || fail qmicli_hash
 [[ $(hash "$software") == "$software_sha" ]] || fail software_hash
 systemctl is-active --quiet rmtfs.service || fail rmtfs_inactive
@@ -46,7 +46,7 @@ grep -A8 -i "$(sed 's/../&:/g;s/:$//' <<<"$platform_id")" <<<"$platform" >/dev/n
   fail platform_identity
 unset platform
 
-systemctl stop luma-fp6-cellular-link.service ModemManager.service
+systemctl stop Suno-fp6-cellular-link.service ModemManager.service
 $qmicli -d qrtr://0 --device-open-qmi --pdc-load-config="software,$software" >/dev/null
 
 set +e
@@ -66,7 +66,7 @@ active_id=$(awk '
 [[ $active_id == "$software_id" ]] || fail att_not_active
 unset configs active_id
 
-systemctl start ModemManager.service luma-fp6-cellular-link.service
+systemctl start ModemManager.service Suno-fp6-cellular-link.service
 
 trap - EXIT INT TERM HUP
 find "$qmicli" "$software" -delete

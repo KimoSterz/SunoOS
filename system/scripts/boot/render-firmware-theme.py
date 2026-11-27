@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: MPL-2.0
-"""Render the luma-firmware Plymouth theme's artwork from Luma's SVG sources.
+"""Render the Suno-firmware Plymouth theme's artwork from Suno's SVG sources.
 
-luma-firmware keeps the image the firmware published through the ACPI BGRT
-table and draws Luma's own pieces around it with Plymouth's two-step plugin.
+Suno-firmware keeps the image the firmware published through the ACPI BGRT
+table and draws Suno's own pieces around it with Plymouth's two-step plugin.
 That plugin reads fixed file names from the theme's ImageDir and draws each
 image at its natural size, so every piece is rendered here, at build time, to
 the exact pixel size it is shown at:
 
-  watermark.png          the Luma wordmark, bottom centre of every screen
-  throbber-NNNN.png      Luma's four-dot loader, under the firmware logo
+  watermark.png          the Suno wordmark, bottom centre of every screen
+  throbber-NNNN.png      Suno's four-dot loader, under the firmware logo
   lock.png, entry.png,   the disk-unlock (and other) prompt; two-step refuses
   bullet.png             to start at all without these three
   keyboard.png           the layout indicator beside Plymouth's own
@@ -36,7 +36,7 @@ from pathlib import Path
 SVG_NS = 'http://www.w3.org/2000/svg'
 ET.register_namespace('', SVG_NS)
 
-# Luma's dark-surface palette (config/shared/design-tokens.json, the Ink
+# Suno's dark-surface palette (config/shared/design-tokens.json, the Ink
 # boot surface). Firmware boot images are black in practice -- the Windows
 # boot-screen requirements that vendors follow demand it -- so the light mark
 # is the one that reads on them.
@@ -44,13 +44,13 @@ INK = '#f2f3f4'
 SURFACE = '#21252b'
 MUTED = '#bfc3c8'
 
-# Bottom-centre wordmark. Fedora's watermark is 43 px tall; the Luma wordmark
+# Bottom-centre wordmark. Fedora's watermark is 43 px tall; the Suno wordmark
 # is a single word with a tall ascender, so the same optical weight is a
 # little shorter.
 WATERMARK_HEIGHT = 32
 
-# The loader is luma-loading's own: four dots, a raised-cosine opacity pulse
-# from 22 % to 100 %, each dot trailing the one before it. luma-loading pulses
+# The loader is Suno-loading's own: four dots, a raised-cosine opacity pulse
+# from 22 % to 100 %, each dot trailing the one before it. Suno-loading pulses
 # on a 1.15 s cycle with a 0.13 s stagger. Plymouth's throbber plays its
 # frames over a fixed 2.0 s (THROBBER_DURATION) at 30 frames per second, so
 # the loop here is two 1.0 s cycles in 60 frames with the stagger scaled by
@@ -64,7 +64,7 @@ THROBBER_FRAMES = 60
 CYCLES_PER_LOOP = 2
 STAGGER = 0.13 * (THROBBER_SECONDS / CYCLES_PER_LOOP) / 1.15
 
-# Prompt. Luma's standard control is 36 px tall with a 10 px island radius.
+# Prompt. Suno's standard control is 36 px tall with a 10 px island radius.
 # The field is light because Plymouth draws typed question answers in black.
 # Plymouth starts that text at the very left edge of entry.png and puts
 # lock.png flush against it, so the field's rounded left end is drawn as the
@@ -147,7 +147,7 @@ def field(offset: float, fill: str = INK) -> str:
             f'rx="{ENTRY_RADIUS}" fill="{fill}"/>')
 
 
-# The prompt pieces luma-firmware's two-step names; luma-loading draws the
+# The prompt pieces Suno-firmware's two-step names; Suno-loading draws the
 # same pieces from its script under its own names.
 TWO_STEP_PROMPT = {'entry': 'entry.png', 'bullet': 'bullet.png', 'lock': 'lock.png',
                    'keyboard': 'keyboard.png', 'capslock': 'capslock.png'}
@@ -198,9 +198,9 @@ def render(wordmark: Path, dot: Path, directory: Path) -> list[Path]:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.split('\n\n')[0])
     parser.add_argument('--wordmark', type=Path, required=True,
-                        help='canonical luma-wordmark.svg')
+                        help='canonical Suno-wordmark.svg')
     parser.add_argument('--dot', type=Path, required=True,
-                        help='canonical luma-loading-dot.svg')
+                        help='canonical Suno-loading-dot.svg')
     parser.add_argument('--output', type=Path, required=True,
                         help='theme ImageDir to (re)populate')
     args = parser.parse_args()

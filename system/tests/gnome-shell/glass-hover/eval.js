@@ -5,7 +5,7 @@
 //
 // With the fix the effect keeps its last blur for such a frame and asks for a
 // repaint (reused > 0, stale unchanged). With
-// LUMA_SHELL_BLUR_KEEP_STALE_BACKGROUND=1 it takes the copy, which is the bug
+// SUNO_SHELL_BLUR_KEEP_STALE_BACKGROUND=1 it takes the copy, which is the bug
 // (stale > 0) -- run it both ways, or the check proves nothing.
 import Clutter from 'gi://Clutter';
 import Gio from 'gi://Gio';
@@ -27,12 +27,12 @@ export default async function ({Main, shot}) {
             [serial, 1, [[0, 0, scale, 0, true, [[monitors[0][0][0], current, {}]]]], {}]));
         await sleep(5000);
     }
-    const Materials = await import('resource:///org/gnome/shell/ui/lumaSurfaceMaterials.js');
+    const Materials = await import('resource:///org/gnome/shell/ui/SunoSurfaceMaterials.js');
     const treatment = Materials.effectiveTreatment();
     const surfaces = [];
     // The backdrop effect sits on the island's content, not the island.
     const add = (name, island) => {
-        const effect = island?._content?.get_effect?.('luma-surface-backdrop');
+        const effect = island?._content?.get_effect?.('Suno-surface-backdrop');
         if (effect?.get_background_paint_counts)
             surfaces.push({name, actor: island, effect});
     };
@@ -45,7 +45,7 @@ export default async function ({Main, shot}) {
         return [s.name, {stale, reused}];
     }));
     log('setup', {treatment, scale, surfaces: surfaces.map(s => s.name),
-        keepStale: !!GLib.getenv('LUMA_SHELL_BLUR_KEEP_STALE_BACKGROUND')});
+        keepStale: !!GLib.getenv('SUNO_SHELL_BLUR_KEEP_STALE_BACKGROUND')});
     if (!surfaces.length) {
         log('no-surfaces');
         return;
@@ -78,7 +78,7 @@ export default async function ({Main, shot}) {
     await shot('dock-glass', sx, sy,
         Math.min(Math.round(dw + 80), sw - sx), Math.min(Math.round(dh + 80), sh - sy));
     const d = delta[dock.name];
-    const keepStale = !!GLib.getenv('LUMA_SHELL_BLUR_KEEP_STALE_BACKGROUND');
+    const keepStale = !!GLib.getenv('SUNO_SHELL_BLUR_KEEP_STALE_BACKGROUND');
     const pass = keepStale ? d.stale > 0 && d.reused === 0 : d.reused > 0 && d.stale === 0;
     log('result', {treatment, delta, pass});
     GLib.file_set_contents(`${out}/glass-hover.json`, JSON.stringify({treatment, before, after, delta, keepStale, pass}, null, 1));

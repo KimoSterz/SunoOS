@@ -1,7 +1,7 @@
 #!/bin/sh
 # SPDX-License-Identifier: Apache-2.0
 
-# Build the bounded FP6 QSEEComCompat identity client from Luma's narrow
+# Build the bounded FP6 QSEEComCompat identity client from Suno's narrow
 # runner and a pinned Qualcomm object-transport source. This script runs only
 # on the isolated native AArch64 builder and does not contact the phone.
 
@@ -49,7 +49,7 @@ file "$output_dir/fp6-qseecompat-identity" |
   grep -Fq 'ELF 64-bit LSB executable, ARM aarch64' || die 'output ELF identity differs'
 
 {
-  printf 'LUMA_FP6_QCOMTEE_IDENTITY_BUILD_VERSION=1\n'
+  printf 'SUNO_FP6_QCOMTEE_IDENTITY_BUILD_VERSION=1\n'
   printf 'QUIC_TEEC_COMMIT=%s\n' "$commit"
   printf 'RUNNER_SHA256=%s\n' "$(hash "$runner")"
   printf 'BINARY_SHA256=%s\n' "$(hash "$output_dir/fp6-qseecompat-identity")"

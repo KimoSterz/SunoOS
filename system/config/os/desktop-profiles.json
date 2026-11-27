@@ -1,5 +1,5 @@
 {
-  "schema": "org.projectluma.desktop-profiles/v1",
+  "schema": "org.projectSuno.desktop-profiles/v1",
   "profiles": {
     "full": {
       "architectures": [
@@ -31,11 +31,11 @@
         "wine",
         "ntsync-autoload",
         "winetricks",
-        "luma-cast"
+        "Suno-cast"
       ],
       "excluded_package_prefixes": [
         "wine-",
-        "luma-cast-"
+        "Suno-cast-"
       ]
     }
   }

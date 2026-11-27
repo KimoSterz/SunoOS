@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-only
 #
-# Viola for Luma: the signed Viola 0.2.10 engine with the native-integration
+# Viola for Suno: the signed Viola 0.2.10 engine with the native-integration
 # platform patches, driven by the native GTK host (chromium-linux/appkit-spike).
 # Release 30 of the native integration is the build Nick runs on his ThinkPad
 # (20260921-native-30, chromium-linux/releases/native30). Source0 comes from
@@ -42,7 +42,7 @@ URL:            https://github.com/nmcmil/Viola
 ExclusiveArch:  x86_64 aarch64
 
 Source0:        viola-native-engine-%{viola_version}-native%{engine_release}.tar.zst
-Source1:        viola-luma-host-%{viola_version}-native%{native_release}.tar.gz
+Source1:        viola-Suno-host-%{viola_version}-native%{native_release}.tar.gz
 
 BuildRequires:  zstd
 BuildRequires:  desktop-file-utils
@@ -52,8 +52,8 @@ BuildRequires:  systemd-rpm-macros
 BuildRequires:  python3-gobject
 BuildRequires:  gtk4
 BuildRequires:  libadwaita
-BuildRequires:  luma-application-installer >= 0.1.0-1.luma.61
-BuildRequires:  luma-developer-platform
+BuildRequires:  Suno-application-installer >= 0.1.0-1.Suno.61
+BuildRequires:  Suno-developer-platform
 BuildRequires:  gstreamer1-plugins-bad-free-libs
 # The host's widget tests need a display: a headless Weston.
 BuildRequires:  weston
@@ -76,9 +76,9 @@ Requires:       gtk4
 # Chromium hidden native windows use the supported GTK3 backend.
 Requires:       gtk3
 # Menu headings, shortcut chips and disabled rows take solid inks (libadwaita 0039).
-Requires:       libadwaita >= 1.9.3-1.luma.48
-Requires:       luma-developer-platform >= 0.1.0-1.luma.117
-Requires:       luma-application-installer >= 0.1.0-1.luma.61
+Requires:       libadwaita >= 1.9.3-1.Suno.48
+Requires:       Suno-developer-platform >= 0.1.0-1.Suno.117
+Requires:       Suno-application-installer >= 0.1.0-1.Suno.61
 Requires:       mutter
 Requires:       dbus-broker
 Requires:       systemd
@@ -89,7 +89,7 @@ Requires:       liberation-fonts
 Provides:       viola-browser = %{version}-%{release}
 
 %description
-Viola, Luma's web browser. Luma's native window, toolbar, sidebar and menus
+Viola, Suno's web browser. Suno's native window, toolbar, sidebar and menus
 drive Viola's Chromium engine, which keeps browser state, profiles, extensions,
 downloads and sandboxing. This build is Viola %{viola_version} (build
 %{viola_build}) with native integration release %{native_release}.
@@ -100,11 +100,11 @@ zstd -dc %{SOURCE0} | tar -xf -
 mkdir host
 tar -xzf %{SOURCE1} -C host --strip-components=1
 # Every engine and host file must be the approved release's.
-(cd engine && sha256sum -c --quiet ../host/luma-package/native-%{engine_release}-engine.sha256)
-(cd host/appkit-spike && sha256sum -c --quiet ../luma-package/native-%{native_release}-host.sha256)
-if [ -e host/luma-package/native-engine-profile.json ]; then
+(cd engine && sha256sum -c --quiet ../host/Suno-package/native-%{engine_release}-engine.sha256)
+(cd host/appkit-spike && sha256sum -c --quiet ../Suno-package/native-%{native_release}-host.sha256)
+if [ -e host/Suno-package/native-engine-profile.json ]; then
   test '%{_arch}' = aarch64
-  cmp host/luma-package/desktop-arm-preview-frame-profile.json host/luma-package/native-engine-profile.json
+  cmp host/Suno-package/desktop-arm-preview-frame-profile.json host/Suno-package/native-engine-profile.json
 fi
 
 %build
@@ -124,42 +124,42 @@ find "$engine" -type f ! -perm /0111 -exec chmod u=rw,go=r {} +
 mv "$engine/chrome-sandbox.packaged" "$engine/chrome-sandbox"
 chmod 4755 "$engine/chrome-sandbox"
 install -d %{buildroot}%{_bindir}
-install -m 0755 host/luma-package/viola-browser %{buildroot}%{_bindir}/viola-browser
-install -D -m 0644 host/luma-package/org.projectluma.ViolaHost1.service \
-  %{buildroot}%{_datadir}/dbus-1/services/org.projectluma.ViolaHost1.service
+install -m 0755 host/Suno-package/viola-browser %{buildroot}%{_bindir}/viola-browser
+install -D -m 0644 host/Suno-package/org.projectSuno.ViolaHost1.service \
+  %{buildroot}%{_datadir}/dbus-1/services/org.projectSuno.ViolaHost1.service
 ln -s /opt/viola/browser/viola-browser %{buildroot}%{_bindir}/viola-browser-stable
 
-# Flatpak mounts xdg-run/luma-viola read-only only if the parent exists already.
+# Flatpak mounts xdg-run/Suno-viola read-only only if the parent exists already.
 # Normal user tmpfiles creates it before dbus.socket allows first activation.
-install -D -m 0644 host/luma-package/luma-viola-user.conf \
-  %{buildroot}%{_user_tmpfilesdir}/luma-viola.conf
-install -D -m 0644 host/luma-package/luma-viola-dbus-socket.conf \
-  %{buildroot}%{_userunitdir}/dbus.socket.d/50-luma-viola-runtime.conf
+install -D -m 0644 host/Suno-package/Suno-viola-user.conf \
+  %{buildroot}%{_user_tmpfilesdir}/Suno-viola.conf
+install -D -m 0644 host/Suno-package/Suno-viola-dbus-socket.conf \
+  %{buildroot}%{_userunitdir}/dbus.socket.d/50-Suno-viola-runtime.conf
 
 # Exactly the approved host files; menus and toolkit follow the installed
-# Luma libadwaita and GTK (no private resource overlay since release 23).
-install -d %{buildroot}%{_datadir}/viola-browser/luma-host
-(cd host/appkit-spike && cut -c67- ../luma-package/native-%{native_release}-host.sha256 |
-  xargs -d '\n' cp --parents -t %{buildroot}%{_datadir}/viola-browser/luma-host/)
+# Suno libadwaita and GTK (no private resource overlay since release 23).
+install -d %{buildroot}%{_datadir}/viola-browser/Suno-host
+(cd host/appkit-spike && cut -c67- ../Suno-package/native-%{native_release}-host.sha256 |
+  xargs -d '\n' cp --parents -t %{buildroot}%{_datadir}/viola-browser/Suno-host/)
 find %{buildroot}%{_datadir}/viola-browser -type d -exec chmod 0755 {} +
 find %{buildroot}%{_datadir}/viola-browser -type f -exec chmod 0644 {} +
-if [ -f host/luma-package/native-engine-profile.json ]; then
-  install -m 0644 host/luma-package/native-engine-profile.json \
+if [ -f host/Suno-package/native-engine-profile.json ]; then
+  install -m 0644 host/Suno-package/native-engine-profile.json \
     %{buildroot}%{_datadir}/viola-browser/native-engine-profile.json
 fi
 
 install -d %{buildroot}%{_datadir}/applications
-desktop-file-install --dir=%{buildroot}%{_datadir}/applications host/luma-package/viola-browser.desktop
-desktop-file-install --dir=%{buildroot}%{_datadir}/applications host/luma-package/com.rhyme.viola.desktop
+desktop-file-install --dir=%{buildroot}%{_datadir}/applications host/Suno-package/viola-browser.desktop
+desktop-file-install --dir=%{buildroot}%{_datadir}/applications host/Suno-package/com.rhyme.viola.desktop
 for size in 16 24 32 48 64 128 256 512 1024; do
   install -D -m 0644 "host/appkit-spike/assets/viola-icon/viola-$size.png" \
     %{buildroot}%{_datadir}/icons/hicolor/${size}x${size}/apps/viola-browser.png
   ln -s viola-browser.png %{buildroot}%{_datadir}/icons/hicolor/${size}x${size}/apps/com.rhyme.viola.png
   ln -s viola-browser.png %{buildroot}%{_datadir}/icons/hicolor/${size}x${size}/apps/com.rhyme.viola.browser.png
 done
-install -D -m 0644 host/appkit-spike/assets/org.projectluma.Viola.NativeIntegration.svg \
+install -D -m 0644 host/appkit-spike/assets/org.projectSuno.Viola.NativeIntegration.svg \
   %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/viola-browser.svg
-for name in com.rhyme.viola com.rhyme.viola.browser org.projectluma.Viola.NativeIntegration; do
+for name in com.rhyme.viola com.rhyme.viola.browser org.projectSuno.Viola.NativeIntegration; do
   ln -s viola-browser.svg %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/$name.svg
 done
 cp -a system/usr/share/appdata system/usr/share/gnome-control-center system/usr/share/man \
@@ -171,7 +171,7 @@ python3 - %{buildroot} <<'PY'
 import hashlib, json, pathlib, re, sys
 root = pathlib.Path(sys.argv[1])
 chrome = root / 'opt/viola/browser/chrome'
-source_revision = pathlib.Path('host/luma-package/luma-source-revision').read_text().strip()
+source_revision = pathlib.Path('host/Suno-package/Suno-source-revision').read_text().strip()
 assert re.fullmatch('[0-9a-f]{40}', source_revision)
 record = {
     'viola_version': '%{viola_version}', 'viola_build': %{viola_build},
@@ -190,14 +190,14 @@ if profile.exists():
 PY
 
 %check
-engine_manifest=$PWD/host/luma-package/native-%{engine_release}-engine.sha256
-host_manifest=$PWD/host/luma-package/native-%{native_release}-host.sha256
-host=%{buildroot}%{_datadir}/viola-browser/luma-host
+engine_manifest=$PWD/host/Suno-package/native-%{engine_release}-engine.sha256
+host_manifest=$PWD/host/Suno-package/native-%{native_release}-host.sha256
+host=%{buildroot}%{_datadir}/viola-browser/Suno-host
 # The installed host is exactly the approved one: every file and nothing else.
 (cd "$host" && sha256sum -c --quiet "$host_manifest")
 test "$(find "$host" -type f | wc -l)" = "$(wc -l <"$host_manifest")"
-if [ -f host/luma-package/native-engine-profile.json ]; then
-  cmp host/luma-package/native-engine-profile.json "$host/../native-engine-profile.json"
+if [ -f host/Suno-package/native-engine-profile.json ]; then
+  cmp host/Suno-package/native-engine-profile.json "$host/../native-engine-profile.json"
 else
   test ! -e "$host/../native-engine-profile.json"
 fi
@@ -216,11 +216,11 @@ weston --backend=headless --socket=viola-check --idle-time=0 >"$PWD/check-weston
 weston_pid=$!
 for _ in $(seq 100); do [ -S "$XDG_RUNTIME_DIR/viola-check" ] && break; sleep 0.1; done
 [ -S "$XDG_RUNTIME_DIR/viola-check" ] || { tail -n 5 "$PWD/check-weston.log"; exit 1; }
-# Tests corrected after the release was cut (luma-package/check-tests) replace
+# Tests corrected after the release was cut (Suno-package/check-tests) replace
 # their released copies for %%check only; the installed host stays the release's.
 rm -rf check-host
 cp -a host/appkit-spike check-host
-cp host/luma-package/check-tests/test_*.py check-host/
+cp host/Suno-package/check-tests/test_*.py check-host/
 status=0
 (cd check-host && WAYLAND_DISPLAY=viola-check GDK_BACKEND=wayland GSK_RENDERER=cairo PYTHONDONTWRITEBYTECODE=1 \
   dbus-run-session -- python3 -m unittest discover -p 'test_*.py') || status=$?
@@ -233,9 +233,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/com.rhyme.viola.deskt
 grep -qx 'NoDisplay=true' %{buildroot}%{_datadir}/applications/com.rhyme.viola.desktop
 bash -n %{buildroot}%{_bindir}/viola-browser
 # Validate shipped native startup inputs; actual new-UID ordering is a runtime gate.
-cmp host/luma-package/luma-viola-user.conf %{buildroot}%{_user_tmpfilesdir}/luma-viola.conf
-cmp host/luma-package/luma-viola-dbus-socket.conf %{buildroot}%{_userunitdir}/dbus.socket.d/50-luma-viola-runtime.conf
-cmp host/appkit-spike/assets/org.projectluma.Viola.NativeIntegration.svg \
+cmp host/Suno-package/Suno-viola-user.conf %{buildroot}%{_user_tmpfilesdir}/Suno-viola.conf
+cmp host/Suno-package/Suno-viola-dbus-socket.conf %{buildroot}%{_userunitdir}/dbus.socket.d/50-Suno-viola-runtime.conf
+cmp host/appkit-spike/assets/org.projectSuno.Viola.NativeIntegration.svg \
   %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/viola-browser.svg
 for size in 16 24 32 48 64 128 256 512 1024; do
   cmp host/appkit-spike/assets/viola-icon/viola-$size.png \
@@ -260,9 +260,9 @@ python3 -c 'import json,sys; r=json.load(open(sys.argv[1])); assert r["engine_pa
 
 %files
 %dir %{_userunitdir}/dbus.socket.d
-%{_user_tmpfilesdir}/luma-viola.conf
-%{_userunitdir}/dbus.socket.d/50-luma-viola-runtime.conf
-%{_datadir}/dbus-1/services/org.projectluma.ViolaHost1.service
+%{_user_tmpfilesdir}/Suno-viola.conf
+%{_userunitdir}/dbus.socket.d/50-Suno-viola-runtime.conf
+%{_datadir}/dbus-1/services/org.projectSuno.ViolaHost1.service
 %license %{_datadir}/licenses/%{name}
 %dir /opt/viola
 /opt/viola/browser
@@ -277,14 +277,14 @@ python3 -c 'import json,sys; r=json.load(open(sys.argv[1])); assert r["engine_pa
 %{_datadir}/icons/hicolor/scalable/apps/viola-browser.svg
 %{_datadir}/icons/hicolor/scalable/apps/com.rhyme.viola.svg
 %{_datadir}/icons/hicolor/scalable/apps/com.rhyme.viola.browser.svg
-%{_datadir}/icons/hicolor/scalable/apps/org.projectluma.Viola.NativeIntegration.svg
+%{_datadir}/icons/hicolor/scalable/apps/org.projectSuno.Viola.NativeIntegration.svg
 %{_datadir}/appdata/viola-browser.appdata.xml
 %{_datadir}/gnome-control-center/default-apps/viola-browser.xml
 %{_mandir}/man1/viola-browser.1*
 %{_mandir}/man1/viola-browser-stable.1*
 
 %changelog
-* Wed Nov 25 2026 Project Luma <maintainers@projectluma.org> - 151.0.7922.72-15.viola8210.native54.creator20261125.1
+* Wed Nov 25 2026 Project Suno <maintainers@projectSuno.org> - 151.0.7922.72-15.viola8210.native54.creator20261125.1
 - Find on page in the page bar (Ctrl+F): the bar's row becomes the find field with its count, Previous, Next and Close.
 - Engine patch 0010 implements the overlay's find channels in the bridge's contract.
 - A channel the engine's bridge refuses no longer stops the host; that feature reports itself unavailable.
@@ -292,13 +292,13 @@ python3 -c 'import json,sys; r=json.load(open(sys.argv[1])); assert r["engine_pa
 - The active match stays clear of the page bar (engine patch 0011: the match's rect in find:result).
 - Engines native52 (x86) and native53 (ARM): native43 and native44 with 0010 and 0011.
 
-* Sat Nov 21 2026 Project Luma <maintainers@projectluma.org> - 151.0.7922.72-15.viola8210.native48.creator20261121.1
+* Sat Nov 21 2026 Project Suno <maintainers@projectSuno.org> - 151.0.7922.72-15.viola8210.native48.creator20261121.1
 - Two open windows no longer rewrite each other's active tab in the shared workspace at frame rate (engine patch 0009); every pass pushed a new state to each sidebar and the host redrew it.
 - The engine sends a sidebar state only when it differs from the last one sent.
 - The host drops unchanged states, renders the newest state at most once per frame, and leaves unchanged address, pin and connection widgets alone.
 - Engines native43 (x86) and native44 (ARM): native41 and native42 with 0009; only chrome differs.
 
-* Thu Nov 19 2026 Project Luma <maintainers@projectluma.org> - 151.0.7922.72-15.viola8210.native47.creator20261119.1
+* Thu Nov 19 2026 Project Suno <maintainers@projectSuno.org> - 151.0.7922.72-15.viola8210.native47.creator20261119.1
 - Removing an extension asks in the bar (engine patch 0008); the dialog on the undisplayed window never answered.
 - The Web Store's package download is not listed in Downloads or notices.
 - An Extensions key in the bar runs an extension and draws its popup in the bar; pinned extensions keep their icon in the bar; an extension's menu is drawn natively.
@@ -307,18 +307,18 @@ python3 -c 'import json,sys; r=json.load(open(sys.argv[1])); assert r["engine_pa
 - Files dropped on a page reach it as a drag of those files.
 - Engines native41 (x86) and native42 (ARM): native39 and native40 with 0008; only chrome differs.
 
-* Tue Nov 17 2026 Project Luma <maintainers@projectluma.org> - 151.0.7922.72-15.viola8210.native46.creator20261117.1
+* Tue Nov 17 2026 Project Suno <maintainers@projectSuno.org> - 151.0.7922.72-15.viola8210.native46.creator20261117.1
 - Audio streams are named Viola (application.id com.rhyme.viola) from the out-of-process audio service: engine patch 0007.
 - Engines native39 (x86) and native40 (ARM): native37 and native38 with 0007; only chrome differs.
 
-* Mon Nov 16 2026 Project Luma <maintainers@projectluma.org> - 151.0.7922.72-15.viola8210.native46.creator20261116.1
+* Mon Nov 16 2026 Project Suno <maintainers@projectSuno.org> - 151.0.7922.72-15.viola8210.native46.creator20261116.1
 - Tab titles use the whole sidebar row: the close button takes room only on the hovered, focused or current tab.
 
-* Fri Nov 13 2026 Project Luma <maintainers@projectluma.org> - 151.0.7922.72-15.viola8210.native45.creator20261113.2
+* Fri Nov 13 2026 Project Suno <maintainers@projectSuno.org> - 151.0.7922.72-15.viola8210.native45.creator20261113.2
 - Ask in the bar before installing an extension, and when an update asks for new permissions: engine patch 0006 hands Chromium's extension prompts to the host.
 - Engines native37 (x86) and native38 (ARM): native35 and native36 with 0006; only chrome differs.
 
-* Fri Nov 13 2026 Project Luma <maintainers@projectluma.org> - 151.0.7922.72-15.viola8210.native44.creator20261113.1
+* Fri Nov 13 2026 Project Suno <maintainers@projectSuno.org> - 151.0.7922.72-15.viola8210.native44.creator20261113.1
 - Host native44: the engine leaves Wayland color management off on its private display, so shared-memory frames stay sRGB and pages appear on GPU-backed ARM systems.
 
 * Sun Nov 08 2026 Nick McMillen <nmcmil@users.noreply.github.com> - 151.0.7922.72-15.viola8210.native43.creator20261108.3
@@ -389,12 +389,12 @@ python3 -c 'import json,sys; r=json.load(open(sys.argv[1])); assert r["engine_pa
 * Fri Sep 18 2026 Nick McMillen <nmcmil@users.noreply.github.com> - 151.0.7922.72-4.viola8210.native23
 - Native integration release 23 as approved: zoom shortcuts, completed-download
   file actions, native select menus and paste, engine pipe response locking.
-  Menus and toolkit follow the installed Luma appearance (no private overlay).
+  Menus and toolkit follow the installed Suno appearance (no private overlay).
 
 * Thu Sep 17 2026 Nick McMillen <nmcmil@users.noreply.github.com> - 151.0.7922.72-3.viola8210.native22
 - App menus use the system appearance tokens for surface and ink, so they
   are legible in light, frost and glass (native integration release 22).
 
 * Thu Sep 17 2026 Nick McMillen <nmcmil@users.noreply.github.com> - 151.0.7922.72-2.viola8210.native21
-- Viola 0.2.10 with Luma native integration release 21 (native window,
+- Viola 0.2.10 with Suno native integration release 21 (native window,
   independent DevTools window, mouse back/forward, context-menu grab fix).

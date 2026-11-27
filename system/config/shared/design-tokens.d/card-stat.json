@@ -1,6 +1,6 @@
 {
   "_source": "v71 Monitor .mnnarrow .mncells > div: inset statistic wells, 20px radius and12/12/11px padding.",
-  "lumaui": {
+  "SunoUI": {
     "card": {
       "stat_radius": 20,
       "stat_padding_top": 12,

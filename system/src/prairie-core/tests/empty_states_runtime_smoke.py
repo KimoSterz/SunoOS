@@ -16,7 +16,7 @@ import gi
 gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 from gi.repository import Adw, Gdk, Gio, GLib, Gtk
-from luma_appkit import EmptyState, ListEmptyState
+from Suno_appkit import EmptyState, ListEmptyState
 from prairie_apps import contacts, messages, notes
 from prairie_apps.eds_backend import ContactRecord
 from prairie_apps.messages_backend import ThreadRecord
@@ -76,18 +76,18 @@ def main():
         os.environ["XDG_CONFIG_HOME"] = directory + "/config"
         os.environ["PRAIRIE_EDS_MODE"] = "disabled"
         # Force each requested appearance independently of the host desktop preference.
-        patch("luma_appkit.widgets._prefers_dark", lambda: Adw.StyleManager.get_default().get_dark()).start()
+        patch("Suno_appkit.widgets._prefers_dark", lambda: Adw.StyleManager.get_default().get_dark()).start()
         app = notes.NotesApplication()
         app.set_flags(Gio.ApplicationFlags.NON_UNIQUE | Gio.ApplicationFlags.HANDLES_OPEN)
         assert app.register(None)
         contacts._install_contacts_style()
         messages.install_messages_theme()
-        icon_path = Path(__file__).resolve().parents[2] / "luma-platform/appkit/icons"
+        icon_path = Path(__file__).resolve().parents[2] / "Suno-platform/appkit/icons"
         if icon_path.is_dir():
             Gtk.IconTheme.get_for_display(Gdk.Display.get_default()).add_search_path(str(icon_path))
         style = Adw.StyleManager.get_default()
         actions = []
-        shared = EmptyState("Empty", "A long wrapped explanation", "luma-empty-notes-symbolic",
+        shared = EmptyState("Empty", "A long wrapped explanation", "Suno-empty-notes-symbolic",
                             primary=("Create", lambda: actions.append("create")),
                             secondary=("Import", lambda: actions.append("import")))
         shared.primary_button.emit("clicked")
@@ -100,7 +100,7 @@ def main():
         # the same keyboard-operable component at handheld width.
         probe = Gtk.Window(default_width=360, default_height=600)
         long_state = EmptyState("A long translated empty-state heading " * 2,
-            "A long translated description " * 8, "luma-empty-notes-symbolic",
+            "A long translated description " * 8, "Suno-empty-notes-symbolic",
             primary=("Create a new translated document", lambda: None),
             secondary=("Import another translated document", lambda: None))
         long_state.set_direction(Gtk.TextDirection.RTL)

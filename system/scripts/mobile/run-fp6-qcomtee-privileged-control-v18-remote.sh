@@ -10,11 +10,11 @@
 set -Eeuo pipefail
 umask 077
 
-stage=/tmp/luma-fingerprint-qcomtee-control-v18
+stage=/tmp/Suno-fingerprint-qcomtee-control-v18
 firmware_path=/sys/module/firmware_class/parameters/path
 expected_old_firmware_path=/lib/firmware/postmarketos
 expected_model='The Fairphone (Gen. 6)'
-expected_kernel=7.1.2-luma-fp-cma1
+expected_kernel=7.1.2-Suno-fp-cma1
 expected_boot_size=100663296
 expected_boot_sha=c6acad3a30d944d59648258eef383c33a3b51ac1148a98ef24256ee4dee61dd8
 expected_config_sha=5bddfee4390b0f66de5709b99282e79ee3787a01749d5cc8d28ea82d6bbed7fe
@@ -54,7 +54,7 @@ cleanup() {
       printf 'event=qcomtee_privileged_control_v18_cleanup_error reason=module_still_loaded\n' >&2
       cleanup_status=1
     fi
-    if [[ -d $stage && ! -L $stage && $stage == /tmp/luma-fingerprint-qcomtee-control-v18 ]]; then
+    if [[ -d $stage && ! -L $stage && $stage == /tmp/Suno-fingerprint-qcomtee-control-v18 ]]; then
       find "$stage" -depth -delete || cleanup_status=1
     else
       printf 'event=qcomtee_privileged_control_v18_cleanup_error reason=stage_identity\n' >&2
@@ -86,8 +86,8 @@ runtime_config=$(gzip -dc /proc/config.gz)
 grep -qx 'CONFIG_QCOM_TZMEM=y' <<<"$runtime_config" || fail tzmem_config
 grep -qx 'CONFIG_QCOM_TZMEM_MODE_SHMBRIDGE=y' <<<"$runtime_config" || fail shmbridge_config
 grep -qx '# CONFIG_QCOMTEE is not set' <<<"$runtime_config" || fail qcomtee_already_in_kernel
-[[ $(sha256sum /usr/lib/modules/7.1.2-luma-fp-cma1/kernel/drivers/tee/qseecom/qseecomtee.ko.zst | cut -d' ' -f1) == "$expected_installed_qsee_sha" ]] || fail installed_qsee_hash
-[[ $(sha256sum /usr/lib/modules/7.1.2-luma-fp-cma1/kernel/drivers/input/finger/focal_finger/focaltech_fp.ko.zst | cut -d' ' -f1) == "$expected_installed_focal_sha" ]] || fail installed_focal_hash
+[[ $(sha256sum /usr/lib/modules/7.1.2-Suno-fp-cma1/kernel/drivers/tee/qseecom/qseecomtee.ko.zst | cut -d' ' -f1) == "$expected_installed_qsee_sha" ]] || fail installed_qsee_hash
+[[ $(sha256sum /usr/lib/modules/7.1.2-Suno-fp-cma1/kernel/drivers/input/finger/focal_finger/focaltech_fp.ko.zst | cut -d' ' -f1) == "$expected_installed_focal_sha" ]] || fail installed_focal_hash
 [[ $(sha256sum "$stage/qcomtee-control.ko" | cut -d' ' -f1) == "$expected_module_sha" ]] || fail staged_module_hash
 [[ $(modinfo -F vermagic "$stage/qcomtee-control.ko" | awk '{print $1}') == "$expected_kernel" ]] || fail module_vermagic
 [[ $(modinfo -F name "$stage/qcomtee-control.ko") == qcomtee ]] || fail module_name
@@ -131,7 +131,7 @@ old_firmware_path=$(cat "$firmware_path")
 printf '%s' "$stage/firmware" >"$firmware_path"
 [[ $(cat "$firmware_path") == "$stage/firmware" ]] || fail firmware_path_stage
 
-insmod "$stage/qcomtee-control.ko" luma_control_identity=1
+insmod "$stage/qcomtee-control.ko" Suno_control_identity=1
 module_loaded=true
 grep -qw qcomtee /proc/modules || fail module_did_not_load
 [[ -c /dev/tee0 ]] || fail tee_node_missing
@@ -139,23 +139,23 @@ grep -qw qcomtee /proc/modules || fail module_did_not_load
 
 new_dmesg=$(dmesg | tail -n "+$((baseline_dmesg_lines + 1))")
 grep -Eq 'qcomtee: QTEE version [0-9]+\.[0-9]+\.[0-9]+' <<<"$new_dmesg" || fail qtee_version
-grep -Fq 'luma-control: begin app=smplap64 ta_commands=0 biometric_commands=0' <<<"$new_dmesg" || fail control_begin
-grep -Fq 'luma-control: privileged client environment accepted' <<<"$new_dmesg" || fail privileged_environment
-grep -Fq 'luma-control: service uid=122 accepted' <<<"$new_dmesg" || fail compatibility_service
-grep -Fq 'luma-control: lookup result=23 app=smplap64' <<<"$new_dmesg" || fail lookup_result
-grep -Eq 'luma-control: identity accepted app=smplap64 distinguished_name=.* elf_bytes=1978456; no TA operation invoked' <<<"$new_dmesg" || fail identity_acceptance
-grep -Fq 'luma-control: control TA unloaded' <<<"$new_dmesg" || fail control_unload
-grep -Fq 'luma-control: complete ta_commands=0 biometric_commands=0' <<<"$new_dmesg" || fail control_complete
-[[ $(grep -c 'luma-control: begin ' <<<"$new_dmesg") -eq 1 ]] || fail control_begin_count
-[[ $(grep -c 'luma-control: identity accepted ' <<<"$new_dmesg") -eq 1 ]] || fail identity_count
-[[ $(grep -c 'luma-control: control TA unloaded' <<<"$new_dmesg") -eq 1 ]] || fail unload_count
-! grep -Eq 'luma-control: (client environment allocation failed|privileged client environment rejected|service allocation failed|service uid=.*rejected|app unexpectedly preloaded|lookup transport=|reconstruction failed=|load transport=|unload transport=)' <<<"$new_dmesg" || fail control_error
+grep -Fq 'Suno-control: begin app=smplap64 ta_commands=0 biometric_commands=0' <<<"$new_dmesg" || fail control_begin
+grep -Fq 'Suno-control: privileged client environment accepted' <<<"$new_dmesg" || fail privileged_environment
+grep -Fq 'Suno-control: service uid=122 accepted' <<<"$new_dmesg" || fail compatibility_service
+grep -Fq 'Suno-control: lookup result=23 app=smplap64' <<<"$new_dmesg" || fail lookup_result
+grep -Eq 'Suno-control: identity accepted app=smplap64 distinguished_name=.* elf_bytes=1978456; no TA operation invoked' <<<"$new_dmesg" || fail identity_acceptance
+grep -Fq 'Suno-control: control TA unloaded' <<<"$new_dmesg" || fail control_unload
+grep -Fq 'Suno-control: complete ta_commands=0 biometric_commands=0' <<<"$new_dmesg" || fail control_complete
+[[ $(grep -c 'Suno-control: begin ' <<<"$new_dmesg") -eq 1 ]] || fail control_begin_count
+[[ $(grep -c 'Suno-control: identity accepted ' <<<"$new_dmesg") -eq 1 ]] || fail identity_count
+[[ $(grep -c 'Suno-control: control TA unloaded' <<<"$new_dmesg") -eq 1 ]] || fail unload_count
+! grep -Eq 'Suno-control: (client environment allocation failed|privileged client environment rejected|service allocation failed|service uid=.*rejected|app unexpectedly preloaded|lookup transport=|reconstruction failed=|load transport=|unload transport=)' <<<"$new_dmesg" || fail control_error
 [[ -z $(critical_faults <<<"$new_dmesg") ]] || fail critical_kernel_fault
 [[ $(systemctl is-system-running) == running ]] || fail system_not_running_after_probe
 [[ $(systemctl --failed --no-legend --no-pager | sed '/^[[:space:]]*$/d' | wc -l) -eq 0 ]] || fail failed_units_after_probe
 
 printf '%s\n' '--- qcomtee privileged-control-v18 evidence ---'
-grep -E 'qcomtee: QTEE version|luma-control:' <<<"$new_dmesg"
+grep -E 'qcomtee: QTEE version|Suno-control:' <<<"$new_dmesg"
 printf '%s\n' '--- end qcomtee privileged-control-v18 evidence ---'
 
 printf '%s' "$old_firmware_path" >"$firmware_path"

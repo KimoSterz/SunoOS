@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: Apache-2.0
 
-"""Luma Connect calendars, over CalDAV.
+"""Suno Connect calendars, over CalDAV.
 
-Calendar sync is not a Luma protocol. The source of truth serves CalDAV
+Calendar sync is not a Suno protocol. The source of truth serves CalDAV
 (RFC 4791), and the device's own calendar service (Evolution Data Server) is
 an ordinary CalDAV client of it: it keeps an offline copy, syncs with
 sync-tokens and ETags, and sends every change the Calendar app makes. Phones,
@@ -11,7 +11,7 @@ Thunderbird, iOS and DAVx5 connect the same way with an app password.
 What this module adds is only the setup a person should not have to do:
 
 1. ask the source of truth for this device's calendar password,
-2. make sure the account has a "Luma" calendar,
+2. make sure the account has a "Suno" calendar,
 3. add it to the device's calendars and make it the one new events go to,
 4. once, move the events kept only on this device into it — after writing a
    backup, and only once the server confirms it holds every one of them,
@@ -31,14 +31,14 @@ from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 from xml.etree import ElementTree
 
-COLLECTION = "luma"
+COLLECTION = "Suno"
 LOCAL_CALENDAR = "system-calendar"
 PROPFIND_DEPTH1 = (b'<?xml version="1.0" encoding="utf-8"?>'
                    b'<d:propfind xmlns:d="DAV:"><d:prop><d:getetag/></d:prop></d:propfind>')
 MKCALENDAR = ('<?xml version="1.0" encoding="utf-8"?>'
               '<c:mkcalendar xmlns:d="DAV:" xmlns:c="urn:ietf:params:xml:ns:caldav" '
               'xmlns:i="http://apple.com/ns/ical/"><d:set><d:prop>'
-              '<d:displayname>Luma</d:displayname><i:calendar-color>#527FAE</i:calendar-color>'
+              '<d:displayname>Suno</d:displayname><i:calendar-color>#527FAE</i:calendar-color>'
               '<c:supported-calendar-component-set><c:comp name="VEVENT"/></c:supported-calendar-component-set>'
               '</d:prop></d:set></c:mkcalendar>').encode()
 CALENDAR_QUERY = (b'<?xml version="1.0" encoding="utf-8"?>'
@@ -58,7 +58,7 @@ def _dav(method: str, url: str, username: str, password: str, body: bytes | None
          headers: dict[str, str] | None = None, timeout: float = 20.0) -> tuple[int, bytes]:
     token = base64.b64encode(f"{username}:{password}".encode()).decode()
     request = Request(url, data=body, method=method, headers={
-        "Authorization": f"Basic {token}", "User-Agent": "ProjectLuma-Connect/1",
+        "Authorization": f"Basic {token}", "User-Agent": "projectSuno-Connect/1",
         "Content-Type": "application/xml; charset=utf-8", **(headers or {})})
     try:
         with urlopen(request, timeout=timeout) as response:
@@ -80,18 +80,18 @@ def ensure_collection(home: str, username: str, password: str) -> str:
             return url
     if status == 401:
         raise CalendarSyncError("The calendar server did not accept this device's password.")
-    raise CalendarSyncError(f"The Luma calendar could not be prepared (HTTP {status}).")
+    raise CalendarSyncError(f"The Suno calendar could not be prepared (HTTP {status}).")
 
 
 def server_event_uids(url: str, username: str, password: str) -> set[str]:
     """The UID of every event the server holds in the collection (RFC 4791 calendar-query)."""
     status, body = _dav("REPORT", url, username, password, CALENDAR_QUERY, {"Depth": "1"})
     if status != 207:
-        raise CalendarSyncError(f"The calendar server could not list the Luma calendar (HTTP {status}).")
+        raise CalendarSyncError(f"The calendar server could not list the Suno calendar (HTTP {status}).")
     try:
         root = ElementTree.fromstring(body)
     except ElementTree.ParseError:
-        raise CalendarSyncError("The calendar server sent an unreadable list of the Luma calendar.") from None
+        raise CalendarSyncError("The calendar server sent an unreadable list of the Suno calendar.") from None
     held: set[str] = set()
     for data in root.iter("{urn:ietf:params:xml:ns:caldav}calendar-data"):
         held.update(_event_uids(data.text or ""))
@@ -111,7 +111,7 @@ def _backup(directory: Path, text: str) -> Path:
 
 
 def _source_uid(device_id: str) -> str:
-    return "luma-connect-" + re.sub(r"[^a-z0-9]", "", device_id.lower())[:12]
+    return "Suno-connect-" + re.sub(r"[^a-z0-9]", "", device_id.lower())[:12]
 
 
 def _event_uids(text: str) -> list[str]:
@@ -156,7 +156,7 @@ def sync_calendar(*, address: str, token: str, http, state: dict, scope: str,
                                legacy_password=lambda: _source_password(uid))
         username, password = login["username"], login["password"]
         url = ensure_collection(login["home"], username, password)
-        create_calendar("Luma", kind="luma", url=url, user=username, password=password, uid=uid,
+        create_calendar("Suno", kind="Suno", url=url, user=username, password=password, uid=uid,
                         tone="blue", refresh_minutes=15)
         record.update({"source_uid": uid, "url": url, "username": username})
         default = next((source for source in sources.values() if source.is_default), None)
@@ -164,7 +164,7 @@ def sync_calendar(*, address: str, token: str, http, state: dict, scope: str,
             set_default_calendar(uid)
         state[key] = record
         sources = {source.uid: source for source in list_sources()}
-        status = "calendar: Luma calendar added"
+        status = "calendar: Suno calendar added"
     else:
         status = "calendar: connected"
 
@@ -182,7 +182,7 @@ def sync_calendar(*, address: str, token: str, http, state: dict, scope: str,
             from .connect_dav import stored_password
             password = stored_password(device_id, address) or _source_password(uid) or ""
             # Sent again on every pass until confirmed: an event already in the
-            # Luma calendar is updated, not duplicated, so it holds Personal's
+            # Suno calendar is updated, not duplicated, so it holds Personal's
             # current version before Personal's copy is removed.
             import_ics(uid, text)
             deadline = time.monotonic() + CONFIRM_SECONDS
@@ -196,7 +196,7 @@ def sync_calendar(*, address: str, token: str, http, state: dict, scope: str,
                 # Not a failure: nothing was lost, and the next pass tries
                 # again. Failing here failed the whole sync on every pass.
                 status += (f", {len(uids) - len(missing)} of {len(uids)} event(s) from Personal "
-                           f"confirmed by the Luma calendar, waiting for the rest; they stay in "
+                           f"confirmed by the Suno calendar, waiting for the rest; they stay in "
                            f"Personal for now (backup: {backup})")
                 state[key] = record
                 return status

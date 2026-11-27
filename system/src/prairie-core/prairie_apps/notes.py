@@ -14,20 +14,20 @@ gi.require_version("Gtk", "4.0")
 gi.require_version("Adw", "1")
 gi.require_version("Graphene", "1.0")
 from gi.repository import Adw, Gdk, Gio, GLib, GObject, Graphene, Gtk, Pango  # noqa: E402
-from luma_appkit import IslandSplitView
+from Suno_appkit import IslandSplitView
 
 try:
-    gi.require_version("LumaSemantics", "1")
-    from gi.repository import LumaSemantics  # type: ignore[attr-defined]
+    gi.require_version("SunoSemantics", "1")
+    from gi.repository import SunoSemantics  # type: ignore[attr-defined]
 except (ImportError, ValueError):
-    LumaSemantics = None
+    SunoSemantics = None
 
 try:
-    from luma_semantic_broker.client import SemanticPublisher
+    from Suno_semantic_broker.client import SemanticPublisher
 except (ImportError, ValueError):
     SemanticPublisher = None
 
-from luma_appkit import (
+from Suno_appkit import (
     AppWindow, Command, CommandGroup, CommandRegistry, ConnectedButtonGroup, EmptyState, ListEmptyState,
     InlineRenameField, Island, command_actions, command_menu, command_popover,
     install_appkit, command_menu_model, add_style_sheet,
@@ -47,7 +47,7 @@ def _point_rectangle(x: float, y: float) -> Gdk.Rectangle:
     return rectangle
 
 
-APP_ID = "org.projectluma.Notes"
+APP_ID = "org.projectSuno.Notes"
 ICON_NAME = APP_ID
 # Saving is local and cheap, so it follows typing closely: once typing pauses,
 # or at the latest every few seconds while it goes on. Syncing is paced
@@ -63,7 +63,7 @@ STORE_POLL_SECONDS = 2
 SIDEBAR_WIDTH = 178
 PRIMARY_ISLAND_GAP = 9
 UNTITLED = "Untitled page"
-PIN_ICON = "luma-pin-symbolic"
+PIN_ICON = "Suno-pin-symbolic"
 
 
 def _double_click_ms() -> int:
@@ -166,7 +166,7 @@ class FolderRow(Gtk.ListBoxRow):
         self.window = window
         self.add_css_class("notes-folder-row")
         line = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
-        icon = Gtk.Image(icon_name="luma-folder-symbolic", pixel_size=14)
+        icon = Gtk.Image(icon_name="Suno-folder-symbolic", pixel_size=14)
         icon.add_css_class("notes-folder-icon")
         line.append(icon)
         self.label = Gtk.Label(label=folder.name, xalign=0, hexpand=True, ellipsize=Pango.EllipsizeMode.END)
@@ -292,7 +292,7 @@ class NotesWindow(AppWindow):
             minimum_width=360,
             minimum_height=380,
         )
-        self.add_css_class("luma-notes")
+        self.add_css_class("Suno-notes")
         self.add_css_class("notes-window")
         self.toast_overlay = Adw.ToastOverlay()
         self.split = IslandSplitView(collapsed=False, show_content=False)
@@ -304,7 +304,7 @@ class NotesWindow(AppWindow):
         self._build_layout(sidebar, self._build_editor())
         self._install_keys()
         self._reload_sidebar()
-        first = (self.store.get_note(os.environ.get("LUMA_NOTES_SELECTED", self.store.selected))
+        first = (self.store.get_note(os.environ.get("SUNO_NOTES_SELECTED", self.store.selected))
                  if self.fixture else next(iter(self.store.list_notes()), None))
         if first is not None:
             self._open_note(first)
@@ -334,20 +334,20 @@ class NotesWindow(AppWindow):
             super()._save_state()
 
     def _semantic_application(self):
-        if LumaSemantics is None:
+        if SunoSemantics is None:
             return None
-        root = LumaSemantics.SemanticObject.new("notes", "application", "Notes")
-        root.set_privacy(LumaSemantics.Privacy.PUBLIC)
-        root.add_action(LumaSemantics.Action.new("notes.create", "Create note"))
+        root = SunoSemantics.SemanticObject.new("notes", "application", "Notes")
+        root.set_privacy(SunoSemantics.Privacy.PUBLIC)
+        root.add_action(SunoSemantics.Action.new("notes.create", "Create note"))
         for note in self.store.list_notes():
-            semantic_note = LumaSemantics.SemanticObject.new(
+            semantic_note = SunoSemantics.SemanticObject.new(
                 f"note:{note.id}", "document", note.display_title
             )
-            save = LumaSemantics.Action.new("notes.save", "Save note")
+            save = SunoSemantics.Action.new("notes.save", "Save note")
             save.set_parameter_type("s")
             semantic_note.add_action(save)
-            delete = LumaSemantics.Action.new("notes.delete", "Move note to Trash")
-            delete.set_risk(LumaSemantics.ActionRisk.DESTRUCTIVE)
+            delete = SunoSemantics.Action.new("notes.delete", "Move note to Trash")
+            delete.set_risk(SunoSemantics.ActionRisk.DESTRUCTIVE)
             semantic_note.add_action(delete)
             root.add_child(semantic_note)
         return root
@@ -459,7 +459,7 @@ class NotesWindow(AppWindow):
         create.add_css_class("notes-new-button")
         create.update_property([Gtk.AccessibleProperty.LABEL], ["New note"])
         create_line = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=9)
-        create_line.append(Gtk.Image(icon_name="luma-plus-symbolic", pixel_size=14))
+        create_line.append(Gtk.Image(icon_name="Suno-plus-symbolic", pixel_size=14))
         create_line.append(Gtk.Label(label="New note"))
         create.set_child(create_line)
         create.connect("clicked", lambda *_: self.create_note())
@@ -526,7 +526,7 @@ class NotesWindow(AppWindow):
         island.append(canvas)
         self.empty_state = EmptyState("No notes yet",
             "Everything you write is saved as you go. Start with a page.",
-            "luma-empty-notes-symbolic", primary=("New note", self.create_note))
+            "Suno-empty-notes-symbolic", primary=("New note", self.create_note))
         island.append(self.empty_state)
         self.empty_state.set_visible(False)
         return island
@@ -1291,7 +1291,7 @@ class NotesWindow(AppWindow):
         apply.add_css_class("suggested-action")
         box.append(apply)
         popover = Gtk.Popover(child=box)
-        popover.add_css_class("luma-dialog-popover")
+        popover.add_css_class("Suno-dialog-popover")
         popover.set_parent(button)
         popover.connect("closed", lambda p: GLib.idle_add(lambda: (p.unparent(), False)[1]))
         apply.connect(
@@ -1330,7 +1330,7 @@ class NotesWindow(AppWindow):
                 self.buffer.get_iter_at_offset(offset + len(text)),
             )
         tag = self.page.link_tag(href)
-        self._apply_named_color(tag, "luma_blue")
+        self._apply_named_color(tag, "Suno_blue")
         self.buffer.apply_tag(tag, *bounds)
         popover.popdown(); self.page.changed()
 
@@ -1343,13 +1343,13 @@ class NotesWindow(AppWindow):
             tag.set_property("foreground-rgba", color)
 
     def _sync_editor_tag_colors(self) -> bool:
-        self._apply_named_color(self.page.tags["quote"], "luma_ink_secondary")
-        self._apply_named_color(self.page.tags["checked"], "luma_muted")
-        found, color = self.get_style_context().lookup_color("luma_amber")
+        self._apply_named_color(self.page.tags["quote"], "Suno_ink_secondary")
+        self._apply_named_color(self.page.tags["checked"], "Suno_muted")
+        found, color = self.get_style_context().lookup_color("Suno_amber")
         if found:
             self.page.tags["highlight"].set_property("background-rgba", color)
         for tag in self.page.link_tags:
-            self._apply_named_color(tag, "luma_blue")
+            self._apply_named_color(tag, "Suno_blue")
         self.editor.queue_draw()
         return GLib.SOURCE_REMOVE
 
@@ -1551,7 +1551,7 @@ class NotesWindow(AppWindow):
             Command(
                 f"note.move.{folder.id}", folder.name,
                 lambda target=folder.id: self.move_note(note.id, target, None),
-                "luma-folder-symbolic",
+                "Suno-folder-symbolic",
             )
             for folder in self.store.list_folders() if folder.id != note.folder_id
         )
@@ -1568,7 +1568,7 @@ class NotesWindow(AppWindow):
                         lambda: self._favorite_note(note), PIN_ICON),
             )),
             CommandGroup(None, (
-                Command("note.move", "Move to", lambda: None, "luma-folder-symbolic",
+                Command("note.move", "Move to", lambda: None, "Suno-folder-symbolic",
                         children=tuple(destinations)),
                 Command("note.export", "Export as Markdown…", lambda: self._export_note(note),
                         "document-save-as-symbolic"),
@@ -1730,8 +1730,8 @@ class NotesWindow(AppWindow):
 
     def _show_about(self) -> None:
         about = Adw.AboutDialog(application_name="Notes", application_icon=ICON_NAME,
-                                developer_name="Project Luma", version="0.2.0",
-                                comments="A focused, responsive writing space built with the Luma Application Kit.")
+                                developer_name="Project Suno", version="0.2.0",
+                                comments="A focused, responsive writing space built with the Suno Application Kit.")
         about.present(self)
 
     def _install_keys(self) -> None:
@@ -1811,7 +1811,7 @@ class NotesApplication(Adw.Application):
         _install_notes_style()
         # The note shown and the files open come back after a restart and on
         # other devices (ADR-055).
-        from luma_appkit import restore
+        from Suno_appkit import restore
         restore.enable(self, self._restore_window)
 
     def _restore_window(self, key: str, state: dict) -> None:
@@ -1820,26 +1820,26 @@ class NotesApplication(Adw.Application):
             window = TextFileWindow(self, Gio.File.new_for_uri(key[len("file:"):]))
             window.restore_state(state)
         else:
-            from .notes_lumaui import NotesLumaWindow
-            window = NotesLumaWindow(self)
+            from .notes_SunoUI import NotesSunoWindow
+            window = NotesSunoWindow(self)
             if state.get("note"):
                 window._select_row_for(state["note"])
         window.restore_key = key
         window.present()
 
     def do_activate(self) -> None:
-        from luma_appkit import restore
+        from Suno_appkit import restore
         if not self.get_windows() and restore.restore(self):
             return
-        from .notes_lumaui import NotesLumaWindow
+        from .notes_SunoUI import NotesSunoWindow
         window = next((window for window in self.get_windows() if isinstance(window, NotesWindow)), None)
         if window is None:
-            window = NotesLumaWindow(self)
+            window = NotesSunoWindow(self)
             window.restore_key = "main"
         window.present()
 
     def do_open(self, files, _n_files, _hint) -> None:
-        if os.environ.get("LUMA_NOTES_FIXTURE"):
+        if os.environ.get("SUNO_NOTES_FIXTURE"):
             self.do_activate()
             return
         from .notes_file import TextFileWindow
@@ -1898,7 +1898,7 @@ def _install_notes_style() -> None:
     display = Gdk.Display.get_default()
     if display is None:
         return
-    path = os.environ.get("LUMA_NOTES_STYLE_PATH", "/usr/share/prairie-core/notes.css")
+    path = os.environ.get("SUNO_NOTES_STYLE_PATH", "/usr/share/prairie-core/notes.css")
     if _notes_style_provider is not None:
         _notes_style_provider.load_from_path(path)
         return

@@ -10,25 +10,25 @@ const loop = new GLib.MainLoop(null, false);
 const connection = Gio.DBus.session;
 const token = '0123456789abcdef0123456789abcdef';
 const oldToken = 'fedcba9876543210fedcba9876543210';
-const xml = `<node><interface name="org.projectluma.Messages.NotificationReply1"><method name="Reply"><arg type="u" direction="in"/><arg type="s" direction="in"/><arg type="s" direction="in"/><arg type="s" direction="in"/><arg type="s" direction="out"/><arg type="s" direction="out"/></method></interface></node>`;
+const xml = `<node><interface name="org.projectSuno.Messages.NotificationReply1"><method name="Reply"><arg type="u" direction="in"/><arg type="s" direction="in"/><arg type="s" direction="in"/><arg type="s" direction="in"/><arg type="s" direction="out"/><arg type="s" direction="out"/></method></interface></node>`;
 let shellOwner;
 const reply = Gio.DBusExportedObject.wrapJSObject(xml, {
     ReplyAsync([id, suppliedToken, request, text], invocation) {
         if (invocation.get_sender() !== shellOwner || id !== state.id || suppliedToken !== token || text !== 'Fixture reply' || !request) {
-            invocation.return_dbus_error('org.projectluma.Messages.Error.NotReady', 'Fixture rejected invalid request'); return;
+            invocation.return_dbus_error('org.projectSuno.Messages.Error.NotReady', 'Fixture rejected invalid request'); return;
         }
         if (!state.rejectedReplies) {
             state.rejectedReplies++; state.retryRequest = request; save();
-            invocation.return_dbus_error('org.projectluma.Messages.Error.NotReady', 'Fixture deliberately rejects before dispatch'); return;
+            invocation.return_dbus_error('org.projectSuno.Messages.Error.NotReady', 'Fixture deliberately rejects before dispatch'); return;
         }
         if (request !== state.retryRequest) {
-            invocation.return_dbus_error('org.projectluma.Messages.Error.NotReady', 'Retry changed request ID'); return;
+            invocation.return_dbus_error('org.projectSuno.Messages.Error.NotReady', 'Retry changed request ID'); return;
         }
         state.replies++; save();
         invocation.return_value(new GLib.Variant('(ss)', ['fixture-producer', 'sent']));
     },
 });
-reply.export(connection, '/org/projectluma/Messages/Notifications');
+reply.export(connection, '/org/projectSuno/Messages/Notifications');
 for (const [signal, key] of [['ActionInvoked', 'actions'], ['NotificationClosed', 'closed']]) {
     connection.signal_subscribe('org.freedesktop.Notifications', 'org.freedesktop.Notifications', signal,
         '/org/freedesktop/Notifications', null, Gio.DBusSignalFlags.NONE,
@@ -38,15 +38,15 @@ for (const [signal, key] of [['ActionInvoked', 'actions'], ['NotificationClosed'
     const owner = await connection.call('org.freedesktop.DBus', '/org/freedesktop/DBus', 'org.freedesktop.DBus', 'GetNameOwner',
         new GLib.Variant('(s)', ['org.gnome.Shell']), new GLib.VariantType('(s)'), Gio.DBusCallFlags.NONE, 10000, null);
     [shellOwner] = owner.deepUnpack();
-    const hints = {'desktop-entry': new GLib.Variant('s', 'org.projectluma.Messages'),
+    const hints = {'desktop-entry': new GLib.Variant('s', 'org.projectSuno.Messages'),
         'urgency': new GLib.Variant('y', 1), 'resident': new GLib.Variant('b', true),
-        'x-luma-inline-reply-path': new GLib.Variant('s', '/org/projectluma/Messages/Notifications'),
-        'x-luma-inline-reply-token': new GLib.Variant('s', token)};
+        'x-Suno-inline-reply-path': new GLib.Variant('s', '/org/projectSuno/Messages/Notifications'),
+        'x-Suno-inline-reply-token': new GLib.Variant('s', token)};
     const send = async (id, title, replyToken = token) => {
-        const notificationHints = {...hints, 'x-luma-inline-reply-token': new GLib.Variant('s', replyToken)};
+        const notificationHints = {...hints, 'x-Suno-inline-reply-token': new GLib.Variant('s', replyToken)};
         const result = await connection.call('org.freedesktop.Notifications', '/org/freedesktop/Notifications',
             'org.freedesktop.Notifications', 'Notify', new GLib.Variant('(susssasa{sv}i)',
-                ['Luma Wire Fixture', id, 'dialog-information', title, 'Fixture body',
+                ['Suno Wire Fixture', id, 'dialog-information', title, 'Fixture body',
                     ['default', 'Open', 'update', 'Update', 'later', 'Later'], notificationHints, -1]),
             new GLib.VariantType('(u)'), Gio.DBusCallFlags.NONE, 10000, null);
         return result.deepUnpack()[0];

@@ -1,5 +1,5 @@
 From 306f871d5f7acac68ed0525d5900a6834e2cb96b Mon Sep 17 00:00:00 2001
-From: Project Luma <engineering@projectluma.org>
+From: Project Suno <engineering@projectSuno.org>
 Date: Sat, 21 Nov 2026 03:00:00 -0500
 Subject: [PATCH] screen-cast: Pause screen casts while the session is
  locked

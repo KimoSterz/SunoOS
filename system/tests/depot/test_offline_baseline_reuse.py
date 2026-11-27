@@ -31,14 +31,14 @@ class Reuse(unittest.TestCase):
         cls.workspace=tempfile.TemporaryDirectory(prefix='baseline-reuse-test-')
         cls.work=Path(cls.workspace.name);repo=cls.work/'repo';tree=cls.work/'tree';tree.mkdir()
         (tree/'files').mkdir();(tree/'files/payload').write_bytes(b'real tiny payload\n')
-        (tree/'metadata').write_text('[Application]\nname=org.projectluma.Clock\nruntime=org.projectluma.Platform/x86_64/44\n')
-        cls.ref='app/org.projectluma.Clock/x86_64/beta'
+        (tree/'metadata').write_text('[Application]\nname=org.projectSuno.Clock\nruntime=org.projectSuno.Platform/x86_64/44\n')
+        cls.ref='app/org.projectSuno.Clock/x86_64/beta'
         def run(*args):return subprocess.check_output(args,text=True,stderr=subprocess.PIPE,timeout=30).strip()
         run('ostree','init','--mode=archive-z2','--repo='+str(repo))
         cls.commit=run('ostree','commit','--repo='+str(repo),'--branch='+cls.ref,'--tree=dir='+str(tree),'--subject=reuse-test')
         cls.bundle=cls.work/'real.flatpak'
-        run('flatpak','build-bundle','--arch=x86_64',str(repo),str(cls.bundle),'org.projectluma.Clock','beta')
-        config=configparser.ConfigParser();config.read(ROOT/'config/os/flatpak/luma.flatpakrepo')
+        run('flatpak','build-bundle','--arch=x86_64',str(repo),str(cls.bundle),'org.projectSuno.Clock','beta')
+        config=configparser.ConfigParser();config.read(ROOT/'config/os/flatpak/Suno.flatpakrepo')
         cls.public=base64.b64decode(config['Flatpak Repo']['GPGKey'])
 
     @classmethod
@@ -47,22 +47,22 @@ class Reuse(unittest.TestCase):
     def setUp(self):
         self.temporary=tempfile.TemporaryDirectory(dir=self.work)
         self.directory=Path(self.temporary.name);self.cache=self.directory/'old';self.cache.mkdir()
-        shipping={'schema':'org.projectluma.os-app-baseline/v1','applications':['org.projectluma.Clock']}
-        roles={'schema':'org.projectluma.first-party-app-roles/v1','roles':{'org.projectluma.Clock':'signed-system-flatpak'}}
+        shipping={'schema':'org.projectSuno.os-app-baseline/v1','applications':['org.projectSuno.Clock']}
+        roles={'schema':'org.projectSuno.first-party-app-roles/v1','roles':{'org.projectSuno.Clock':'signed-system-flatpak'}}
         (self.cache/'shipping.json').write_text(json.dumps(shipping))
         (self.cache/'roles.json').write_text(json.dumps(roles))
-        (self.cache/'luma-depot.gpg').write_bytes(self.public)
+        (self.cache/'Suno-depot.gpg').write_bytes(self.public)
         self.rows=[]
         for ref in [self.ref]+['runtime/'+name+'/x86_64/44' for name in PRODUCER.RUNTIMES]:
             body=self.bundle.read_bytes() if ref==self.ref else ref.encode()
             sha=hashlib.sha256(body).hexdigest();(self.cache/(sha+'.flatpak')).write_bytes(body)
             self.rows.append({'ref':ref,'commit':self.commit if ref==self.ref else 'a'*64,
                               'sha256':sha,'bytes':len(body),'file':sha+'.flatpak'})
-        self.document={'schema':'org.projectluma.offline-app-baseline/v1','architecture':'x86_64',
+        self.document={'schema':'org.projectSuno.offline-app-baseline/v1','architecture':'x86_64',
                        'selection_scope':'os-shipping','default_channel':'beta',
                        'shipping_contract_sha256':digest(self.cache/'shipping.json'),
                        'role_contract_sha256':digest(self.cache/'roles.json'),
-                       'public_key_sha256':digest(self.cache/'luma-depot.gpg'),'bundles':self.rows}
+                       'public_key_sha256':digest(self.cache/'Suno-depot.gpg'),'bundles':self.rows}
         self.publish()
         self.target=self.directory/'new.flatpak'
 
@@ -110,7 +110,7 @@ class Reuse(unittest.TestCase):
             PRODUCER.copy_reused_bundle(cache,self.ref,'f'*64,self.target)
 
     def test_retired_app_is_historical_cache_only(self):
-        retired='org.projectluma.Displays'
+        retired='org.projectSuno.Displays'
         shipping=json.loads((self.cache/'shipping.json').read_text())
         shipping['applications'].append(retired)
         (self.cache/'shipping.json').write_text(json.dumps(shipping))
@@ -130,12 +130,12 @@ class Reuse(unittest.TestCase):
         PRODUCER.copy_reused_bundle(cache,self.ref,self.commit,self.target)
         self.assertEqual(digest(self.target),self.rows[0]['sha256'])
         loader=PRODUCER.importlib.machinery.SourceFileLoader('test_baseline_normal',
-            str(ROOT/'image/luma-desktop/rootfs/usr/libexec/luma-app-baseline'))
+            str(ROOT/'image/Suno-desktop/rootfs/usr/libexec/Suno-app-baseline'))
         spec=PRODUCER.importlib.util.spec_from_loader(loader.name,loader)
         validator=PRODUCER.importlib.util.module_from_spec(spec);loader.exec_module(validator)
         with self.assertRaisesRegex(ValueError,'unique reviewed shipping selection'):
             validator.validate(self.cache,'x86_64',hash_bundles=False)
-        shipping['applications'][-1]='org.projectluma.Write'
+        shipping['applications'][-1]='org.projectSuno.Write'
         (self.cache/'shipping.json').write_text(json.dumps(shipping))
         with self.assertRaisesRegex(ValueError,'unique reviewed shipping selection'):
             validator.validate(self.cache,'x86_64',hash_bundles=False,historical=True)

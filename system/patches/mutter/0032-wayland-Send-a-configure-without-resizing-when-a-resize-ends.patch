@@ -1,5 +1,5 @@
 From 251d3517fd156867344774255d2321307eaa0093 Mon Sep 17 00:00:00 2001
-From: Project Luma <engineering@projectluma.org>
+From: Project Suno <engineering@projectSuno.org>
 Date: Thu, 19 Nov 2026 22:52:23 -0500
 Subject: [PATCH] wayland: Send a configure without resizing when a resize ends
 

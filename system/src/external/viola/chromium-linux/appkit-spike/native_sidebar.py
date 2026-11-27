@@ -7,9 +7,9 @@ from pathlib import Path
 import gi
 gi.require_version('Gtk', '4.0')
 from gi.repository import Gdk, Gio, GLib, Gtk, Pango
-from luma_appkit import add_style_sheet
+from Suno_appkit import add_style_sheet
 from native_footer import NativeFooter
-from luma_appkit.content_cards import Card
+from Suno_appkit.content_cards import Card
 from workspace_colors import set_theme
 
 
@@ -59,7 +59,7 @@ class NativeSidebar(Gtk.Box):
         self.new_tab_row = Gtk.Button()
         self.new_tab_row.add_css_class('viola-new-tab')
         new_line = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
-        new_line.append(Gtk.Image(icon_name='luma-plus-symbolic', pixel_size=16))
+        new_line.append(Gtk.Image(icon_name='Suno-plus-symbolic', pixel_size=16))
         new_line.append(Gtk.Label(label='New tab', xalign=0))
         self.new_tab_row.set_child(new_line)
         self.new_tab_row.connect('clicked', lambda *_: host._new_tab())
@@ -76,7 +76,7 @@ class NativeSidebar(Gtk.Box):
         switcher_line.append(Gtk.Image(icon_name='viola-layers-symbolic', pixel_size=14))
         self.switcher_label = Gtk.Label(xalign=0, hexpand=True, ellipsize=Pango.EllipsizeMode.END)
         switcher_line.append(self.switcher_label)
-        switcher_line.append(Gtk.Image(icon_name='luma-chevron-down-symbolic', pixel_size=12))
+        switcher_line.append(Gtk.Image(icon_name='Suno-chevron-down-symbolic', pixel_size=12))
         self.switcher.set_child(switcher_line)
         self.switcher.connect('clicked', self.open_workspace_picker)
         self.workspace_well = Card(self.switcher, padded=False, recessed=True)
@@ -128,7 +128,7 @@ class NativeSidebar(Gtk.Box):
             return
         entry = Gtk.Entry(placeholder_text='Workspace name')
         self.workspace_editor = entry
-        entry.add_css_class('luma-inline-rename')
+        entry.add_css_class('Suno-inline-rename')
         self.collections.prepend(entry)
         complete = False
         def finish(save):
@@ -169,7 +169,7 @@ class NativeSidebar(Gtk.Box):
         button.count.add_css_class('viola-group-count')
         button.count.set_visible(not workspace)
         line.append(button.count)
-        button.arrow = Gtk.Image(icon_name='luma-chevron-down-symbolic', pixel_size=12)
+        button.arrow = Gtk.Image(icon_name='Suno-chevron-down-symbolic', pixel_size=12)
         line.append(button.arrow)
         button.set_child(line)
         return button
@@ -282,7 +282,7 @@ class NativeSidebar(Gtk.Box):
             (elsewhere, 'viewing in another window; activate to move here')) if condition)
         widget.activate.update_property([Gtk.AccessibleProperty.LABEL], [', '.join(filter(None, states))])
         selected = key == self.state.get('activeTabId')
-        (widget.add_css_class if selected else widget.remove_css_class)('lumaui-selected')
+        (widget.add_css_class if selected else widget.remove_css_class)('SunoUI-selected')
         for name, enabled in (('active', selected),
                               ('sleeping', tab.get('discarded', False)),
                               ('viewed-elsewhere', elsewhere)):
@@ -361,7 +361,7 @@ class NativeSidebar(Gtk.Box):
         count = group.get('savedTabCount', len(children)) if group.get('saved') else len(children)
         widget.header.name.set_label(group.get('title', 'Tab group'))
         widget.header.count.set_label(str(count))
-        widget.header.arrow.set_from_icon_name('luma-chevron-down-symbolic' if expanded else 'viola-chevron-right-symbolic')
+        widget.header.arrow.set_from_icon_name('Suno-chevron-down-symbolic' if expanded else 'viola-chevron-right-symbolic')
         widget.header.update_state([Gtk.AccessibleState.EXPANDED], [int(bool(expanded))])
         return widget
 
@@ -429,7 +429,7 @@ class NativeSidebar(Gtk.Box):
             section.content.set_margin_end(0 if continuous else geometry['workspaceContentInsetRight'])
             section.elsewhere_content.set_spacing(geometry['tabSpacing'])
             collapsed = not continuous and key in state.get('collapsedWorkspaceSections', [])
-            section.header.arrow.set_from_icon_name('viola-chevron-right-symbolic' if collapsed else 'luma-chevron-down-symbolic')
+            section.header.arrow.set_from_icon_name('viola-chevron-right-symbolic' if collapsed else 'Suno-chevron-down-symbolic')
             section.header.update_state([Gtk.AccessibleState.EXPANDED], [int(not collapsed)])
             section.content.set_visible(not collapsed)
             items = []

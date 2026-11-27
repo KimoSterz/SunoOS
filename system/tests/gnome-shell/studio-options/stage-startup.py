@@ -13,27 +13,27 @@ import shutil
 import subprocess
 
 p = argparse.ArgumentParser(description=__doc__)
-p.add_argument('--scratch', type=Path, default=Path('/var/home/nick/Documents/.luma-dev/notifications-quick-options'))
+p.add_argument('--scratch', type=Path, default=Path('/var/home/nick/Documents/.Suno-dev/notifications-quick-options'))
 p.add_argument('--suffix', default='')
 a = p.parse_args()
 if a.suffix and not all(c.isalnum() or c == '-' for c in a.suffix):
     raise RuntimeError('overlay suffix must contain only letters, digits or hyphens')
 repo = Path(__file__).resolve().parents[3]
 installed = subprocess.check_output(['rpm', '-q', 'gnome-shell'], text=True).strip()
-expected = 'gnome-shell-50.3-1.luma.99.surfacepreview20260914.147.fc44.x86_64'
+expected = 'gnome-shell-50.3-1.Suno.99.surfacepreview20260914.147.fc44.x86_64'
 if installed != expected:
     raise RuntimeError(f'reconcile this test against installed {installed}; expected {expected}')
-files = ['lumaNotificationBeacon.js', 'messageTray.js', 'messageList.js', 'notificationDaemon.js',
-         'lumaSurfaceMaterials.js', 'quickSettings.js', 'panel.js', 'status/system.js',
+files = ['SunoNotificationBeacon.js', 'messageTray.js', 'messageList.js', 'notificationDaemon.js',
+         'SunoSurfaceMaterials.js', 'quickSettings.js', 'panel.js', 'status/system.js',
          'status/doNotDisturb.js', 'status/powerProfiles.js', 'status/bluetooth.js',
          'status/network.js', 'status/volume.js']
 for label in ['before-0205', '0205']:
-    out = Path.home() / '.local/share/luma-shell-live' / f'notifications-startup-{label}{"-" + a.suffix if a.suffix else ""}'
+    out = Path.home() / '.local/share/Suno-shell-live' / f'notifications-startup-{label}{"-" + a.suffix if a.suffix else ""}'
     if out.exists(): raise RuntimeError(f'refusing to overwrite existing {out}')
     out.mkdir(parents=True)
     for name in files:
         source = a.scratch / 'edited/js/ui' / name
-        if name == 'lumaNotificationBeacon.js' and label == 'before-0205':
+        if name == 'SunoNotificationBeacon.js' and label == 'before-0205':
             source = a.scratch / 'base0205/js/ui' / name
         dest = out / 'ui' / name
         dest.parent.mkdir(parents=True, exist_ok=True)
@@ -49,10 +49,10 @@ for label in ['before-0205', '0205']:
     for source in (a.scratch / 'edited/data/icons/hicolor/scalable/status').glob('*.svg'):
         shutil.copyfile(source, icons / source.name)
     for name in ['check', 'moon', 'rotate-cw', 'power', 'log-out', 'headphones', 'speaker', 'monitor', 'keyboard', 'mouse']:
-        filename = f'lumaui-{name}-symbolic.svg'
+        filename = f'SunoUI-{name}-symbolic.svg'
         shutil.copyfile(repo / 'assets/icon-theme/Prairie/symbolic/actions' / filename, icons / filename)
     schemas = out / 'schemas'; schemas.mkdir()
-    for source in (repo / 'src/luma-shell-state').glob('*.xml'):
+    for source in (repo / 'src/Suno-shell-state').glob('*.xml'):
         shutil.copyfile(source, schemas / source.name)
     subprocess.run(['glib-compile-schemas', str(schemas)], check=True)
     (out / 'STAMP').write_text(installed + '\n')

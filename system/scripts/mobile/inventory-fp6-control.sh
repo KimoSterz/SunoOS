@@ -9,10 +9,10 @@ set -euo pipefail
 umask 077
 
 repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
-ssh_bin=${LUMA_SSH:-ssh}
-ssh_target=${LUMA_FP6_SSH_TARGET:-user@172.16.42.1}
-timestamp=${LUMA_FP6_CONTROL_TIMESTAMP:-$(date -u +%Y%m%dT%H%M%SZ)}
-output_root=${LUMA_FP6_CONTROL_INVENTORY_DIR:-$repo_root/build/mobile/fp6-physical/control-inventory/$timestamp}
+ssh_bin=${SUNO_SSH:-ssh}
+ssh_target=${SUNO_FP6_SSH_TARGET:-user@172.16.42.1}
+timestamp=${SUNO_FP6_CONTROL_TIMESTAMP:-$(date -u +%Y%m%dT%H%M%SZ)}
+output_root=${SUNO_FP6_CONTROL_INVENTORY_DIR:-$repo_root/build/mobile/fp6-physical/control-inventory/$timestamp}
 tmp_report=$(mktemp)
 trap 'rm -f "$tmp_report"' EXIT
 
@@ -88,7 +88,7 @@ thermal_range=$(for zone in /sys/class/thermal/thermal_zone*; do cat "$zone/temp
 brightness=$(cat /sys/class/backlight/*/actual_brightness 2>/dev/null | head -n 1 || true)
 max_brightness=$(cat /sys/class/backlight/*/max_brightness 2>/dev/null | head -n 1 || true)
 
-printf 'LUMA_FP6_CONTROL_ACCEPTANCE_VERSION=1\n'
+printf 'SUNO_FP6_CONTROL_ACCEPTANCE_VERSION=1\n'
 printf 'PHONE_ACCESSED=true\n'
 printf 'MUTATING_OPERATIONS=none\n'
 printf 'P5_AUTHORIZED=false\n'
@@ -140,8 +140,8 @@ printf 'ERROR_AUDIO_PROFILE=%s\n' "$(count_pattern 'Failed to find a working pro
 printf 'ERROR_DPU=%s\n' "$(count_pattern '\[dpu error\]\|no encoder found for crtc')"
 REMOTE
 
-grep -qx 'LUMA_FP6_CONTROL_ACCEPTANCE_VERSION=1' "$tmp_report" || \
-  die 'remote output is not a Luma control-acceptance report'
+grep -qx 'SUNO_FP6_CONTROL_ACCEPTANCE_VERSION=1' "$tmp_report" || \
+  die 'remote output is not a Suno control-acceptance report'
 grep -qx 'OS_ID=postmarketos' "$tmp_report" || \
   die 'remote userspace is not the postmarketOS control image'
 grep -Eqi '^DT_MODEL=.*Fairphone.*(Gen[.]? 6|6)' "$tmp_report" || \
@@ -153,7 +153,7 @@ fi
 mkdir -p "$output_root"
 install -m 0600 "$tmp_report" "$output_root/control-acceptance.env"
 {
-  printf 'LUMA_FP6_CONTROL_INVENTORY_VERSION=1\n'
+  printf 'SUNO_FP6_CONTROL_INVENTORY_VERSION=1\n'
   printf 'IDENTITY=fp6-confirmed\n'
   printf 'TRANSPORT=ssh\n'
   printf 'PHONE_ACCESSED=true\n'

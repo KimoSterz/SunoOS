@@ -41,7 +41,7 @@ work=${2:?work directory required}
 mkdir -p "$work/vm"
 cd "$work/vm"
 
-architecture=${ATLAS_ARCH:-${LUMA_TARGET_ARCHITECTURE:-x86_64}}
+architecture=${ATLAS_ARCH:-${SUNO_TARGET_ARCHITECTURE:-x86_64}}
 case "$architecture" in
   x86_64)
     machine=q35
@@ -138,7 +138,7 @@ common_args() {
 
 case "$command" in
 prepare)
-    partitioned_disk target.raw 40G OLD-DATA "This drive held files before Luma was installed."
+    partitioned_disk target.raw 40G OLD-DATA "This drive held files before Suno was installed."
     partitioned_disk other.raw 8G KEEP-ME "Atlas must never touch this drive."
     cp "$ovmf_vars" vars.fd
     ls -ls target.raw other.raw

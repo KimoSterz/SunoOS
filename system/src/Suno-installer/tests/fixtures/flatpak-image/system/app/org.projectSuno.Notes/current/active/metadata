@@ -1,0 +1,25 @@
+[Application]
+name=org.projectSuno.Notes
+runtime=org.projectSuno.Platform/x86_64/44
+sdk=org.projectSuno.Sdk/x86_64/44
+command=prairie-notes
+
+[Context]
+shared=ipc;network;
+sockets=fallback-x11;wayland;
+devices=dri;
+
+[Session Bus Policy]
+org.projectSuno.ShellState1=talk
+org.projectSuno.ApplicationDirectory1=talk
+org.projectSuno.Connect1=talk
+org.projectSuno.AppData1=talk
+
+[Environment]
+SUNO_NOTES_STYLE_PATH=/app/share/prairie-core/notes.css
+
+[X-Suno]
+min-host-continuity=63
+min-host-installer=64
+min-host-core=97
+app-data-schema=notes-v1

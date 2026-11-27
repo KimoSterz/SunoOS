@@ -13,7 +13,7 @@ class SetupLocation:
     place: dict | None
 
 
-def read_setup_location(path: Path = Path('/etc/luma/setup-location.json')) -> SetupLocation | None:
+def read_setup_location(path: Path = Path('/etc/Suno/setup-location.json')) -> SetupLocation | None:
     try:
         if path.stat().st_size > 16384:
             return None

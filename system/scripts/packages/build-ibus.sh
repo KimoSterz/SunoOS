@@ -6,7 +6,7 @@ set -euo pipefail
 repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 # shellcheck disable=SC1091
 . "$repo_root/config/desktop/inputs.env"
-# Fedora's IBus with Luma's patches: the symbol picker (Super+.) finds
+# Fedora's IBus with Suno's patches: the symbol picker (Super+.) finds
 # accented letters by name, "e acute" and "eacute" (patches/ibus/README.md).
 srpm_name=ibus-1.5.34-4.fc44.src.rpm
 srpm_url=https://kojipkgs.fedoraproject.org/packages/ibus/1.5.34/4.fc44/src/ibus-1.5.34-4.fc44.src.rpm
@@ -20,17 +20,17 @@ for tool in cpio curl git mktemp podman rpm2cpio sha256sum; do
 done
 
 [ "$(uname -s)" = Linux ] || {
-  printf 'error: build the Luma IBus on a Fedora Linux builder\n' >&2
+  printf 'error: build the Suno IBus on a Fedora Linux builder\n' >&2
   exit 1
 }
 
-architecture=${LUMA_TARGET_ARCHITECTURE:-$(uname -m)}
+architecture=${SUNO_TARGET_ARCHITECTURE:-$(uname -m)}
 case "$architecture" in
   x86_64) builder_container=$FEDORA_RPM_BUILD_CONTAINER ;;
   aarch64) builder_container=$FEDORA_RPM_BUILD_CONTAINER_AARCH64 ;;
   *) printf 'error: unsupported IBus architecture: %s\n' "$architecture" >&2; exit 1 ;;
 esac
-export LUMA_RPM_BUILDER_ARCHITECTURE=$architecture
+export SUNO_RPM_BUILDER_ARCHITECTURE=$architecture
 
 cache_dir="$repo_root/build/cache/srpm"
 output_dir="$repo_root/build/packages/ibus/$architecture"
@@ -68,7 +68,7 @@ done
 }
 (
   cd "$rpmbuild_dir/SPECS"
-  git apply "$repo_root/patches/ibus/0000-luma-fedora-spec.patch"
+  git apply "$repo_root/patches/ibus/0000-Suno-fedora-spec.patch"
 )
 
 "$repo_root/scripts/packages/run-in-rpm-builder.sh" \
@@ -82,8 +82,8 @@ done
     release=$(rpmspec -q --srpm --qf "%{release}" SPECS/ibus.spec)
     fail() { printf "FAIL: %s\n" "$1" >&2; exit 1; }
     # %check ran the picker test against this build and it passed.
-    grep -Fq "all 11 lookups passed" rpmbuild.log || fail "the Luma picker test did not pass in %check"
-    # Every subpackage a Luma image or machine has installed: ibus requires
+    grep -Fq "all 11 lookups passed" rpmbuild.log || fail "the Suno picker test did not pass in %check"
+    # Every subpackage a Suno image or machine has installed: ibus requires
     # python3-ibus and ibus-libs of the same release, so the set ships whole.
     for name in ibus ibus-libs ibus-gtk3 ibus-gtk4 python3-ibus; do
       rpm="RPMS/$architecture/$name-1.5.34-${release}.${architecture}.rpm"
@@ -115,4 +115,4 @@ rpm_count=$(find "$output_dir/RPMS" -type f -name '*.rpm' | wc -l)
   cd "$output_dir"
   find RPMS SRPMS -type f -name '*.rpm' -exec sha256sum {} + | sort >SHA256SUMS
 )
-printf 'Luma IBus: %s (%s RPMs)\n' "$output_dir" "$rpm_count"
+printf 'Suno IBus: %s (%s RPMs)\n' "$output_dir" "$rpm_count"

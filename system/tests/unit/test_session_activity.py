@@ -6,7 +6,7 @@ import time
 import unittest
 from gi.repository import Gio, GLib
 
-module_path = Path(__file__).resolve().parents[2] / 'src/luma-platform/appkit/luma_appkit/session_activity.py'
+module_path = Path(__file__).resolve().parents[2] / 'src/Suno-platform/appkit/Suno_appkit/session_activity.py'
 spec = importlib.util.spec_from_file_location('session_activity', module_path)
 activity = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(activity)

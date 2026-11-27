@@ -15,7 +15,7 @@ for tool in cpio mktemp patch rpm2cpio sha256sum; do
 done
 
 if [ "$(uname -s)" != Linux ] || [ "$(uname -m)" != x86_64 ]; then
-  printf 'error: build the Luma Text Editor RPM on the canonical Linux/x86_64 builder\n' >&2
+  printf 'error: build the Suno Text Editor RPM on the canonical Linux/x86_64 builder\n' >&2
   exit 1
 fi
 
@@ -55,12 +55,12 @@ mkdir -p "$extract_dir" "$rpmbuild_dir/BUILD" "$rpmbuild_dir/BUILDROOT" \
 mv "$extract_dir/gnome-text-editor.spec" "$rpmbuild_dir/SPECS/"
 find "$extract_dir" -maxdepth 1 -type f -exec mv -t "$rpmbuild_dir/SOURCES" {} +
 install -m 0644 \
-  "$repo_root/patches/gnome-text-editor/0001-luma-native-application-frame.patch" \
+  "$repo_root/patches/gnome-text-editor/0001-Suno-native-application-frame.patch" \
   "$rpmbuild_dir/SOURCES/"
 (
   cd "$rpmbuild_dir/SPECS"
   patch --batch --forward --fuzz=0 -p1 \
-    <"$repo_root/patches/gnome-text-editor/0000-luma-fedora-spec.patch"
+    <"$repo_root/patches/gnome-text-editor/0000-Suno-fedora-spec.patch"
 )
 
 "$repo_root/scripts/packages/run-in-rpm-builder.sh" \
@@ -84,20 +84,20 @@ install -m 0644 \
       /org/gnome/TextEditor/ui/editor-window.ui >editor-window.ui
     gresource extract ./usr/bin/gnome-text-editor \
       /org/gnome/TextEditor/style.css >style.css
-    grep -Fq "luma-text-editor-window" editor-window.ui
-    grep -Fq "luma-app-window" editor-window.ui
-    grep -Fq "luma-identity-button" editor-window.ui
+    grep -Fq "Suno-text-editor-window" editor-window.ui
+    grep -Fq "Suno-app-window" editor-window.ui
+    grep -Fq "Suno-identity-button" editor-window.ui
     grep -Fq "org.gnome.TextEditor" editor-window.ui
-    grep -Fq "luma-command-bar" editor-window.ui
-    grep -Fq "luma-command-group" editor-window.ui
-    grep -Fq "luma-editor-surface" editor-window.ui
-    grep -Fq "luma-island-split" editor-window.ui
-    test "$(grep -Fo \"luma-editor-surface\" editor-window.ui | wc -l)" -eq 2
+    grep -Fq "Suno-command-bar" editor-window.ui
+    grep -Fq "Suno-command-group" editor-window.ui
+    grep -Fq "Suno-editor-surface" editor-window.ui
+    grep -Fq "Suno-island-split" editor-window.ui
+    test "$(grep -Fo \"Suno-editor-surface\" editor-window.ui | wc -l)" -eq 2
     grep -Fq "primary_menu_model" editor-window.ui
     grep -Fq "session.new-draft" editor-window.ui
     grep -Fq "info-outline-symbolic" editor-window.ui
-    grep -Fq "Project Luma native application-frame composition" style.css
-    ! grep -Fq ".luma-command-bar {" style.css
+    grep -Fq "Project Suno native application-frame composition" style.css
+    ! grep -Fq ".Suno-command-bar {" style.css
     ! grep -Fq "!important" style.css
     grep -Fq "Name=Text Editor" ./usr/share/applications/org.gnome.TextEditor.desktop
     glib-compile-schemas ./usr/share/glib-2.0/schemas
@@ -110,7 +110,7 @@ install -m 0644 \
   "$rpmbuild_dir/RPMS/x86_64/$GNOME_TEXT_EDITOR_NEVRA.rpm" \
   "$stable_rpms/"
 install -m 0644 \
-  "$rpmbuild_dir/SRPMS/gnome-text-editor-50.1-${GNOME_TEXT_EDITOR_LUMA_RELEASE}.fc44.src.rpm" \
+  "$rpmbuild_dir/SRPMS/gnome-text-editor-50.1-${GNOME_TEXT_EDITOR_SUNO_RELEASE}.fc44.src.rpm" \
   "$stable_srpms/"
 
 (
@@ -118,4 +118,4 @@ install -m 0644 \
   find RPMS SRPMS -type f -name '*.rpm' -exec sha256sum {} + | sort >SHA256SUMS
 )
 
-printf 'Luma Text Editor packages: %s\n' "$output_dir"
+printf 'Suno Text Editor packages: %s\n' "$output_dir"

@@ -1,5 +1,5 @@
-From: Luma Developers
-Subject: [PATCH] Manage dock shortcuts in the live Luma Settings page
+From: Suno Developers
+Subject: [PATCH] Manage dock shortcuts in the live Suno Settings page
 
 --- /dev/null
 +++ b/shell/cc-dock-folders.h
@@ -59,15 +59,15 @@ Subject: [PATCH] Manage dock shortcuts in the live Luma Settings page
  }
  
  static gboolean
---- a/shell/cc-luma-live-shelf.c
-+++ b/shell/cc-luma-live-shelf.c
+--- a/shell/cc-Suno-live-shelf.c
++++ b/shell/cc-Suno-live-shelf.c
 @@ -15,6 +15,7 @@
- #include "cc-luma-live-gsettings.h"
- #include "cc-luma-live-apps.h"
- #include "cc-luma-desktop.h"
+ #include "cc-Suno-live-gsettings.h"
+ #include "cc-Suno-live-apps.h"
+ #include "cc-Suno-desktop.h"
 +#include "cc-dock-folders.h"
  
- #define SCHEMA "org.project_luma.shell-state"
+ #define SCHEMA "org.projectSuno.shell-state"
  
 @@ -27,7 +28,7 @@
    gboolean arrangement;     /* the schema has shelf-arrangement */
@@ -95,14 +95,14 @@ Subject: [PATCH] Manage dock shortcuts in the live Luma Settings page
 +  if (!has_key (self->schema, "dock-folders")) return;
 +  g_auto(GStrv) uris = cc_dock_folder_uris (self->settings);
 +  g_autofree char *downloads = downloads_uri ();
-+  cc_luma_fixture_publish_boolean (self->model, "dockApplications", g_strv_contains ((const char * const *) uris, "applications:///"));
-+  cc_luma_fixture_publish_boolean (self->model, "dockDownloads", downloads && g_strv_contains ((const char * const *) uris, downloads));
-+  cc_luma_fixture_publish_boolean (self->model, "dockFoldersWritable", g_settings_is_writable (self->settings, "dock-folders"));
-+  cc_luma_fixture_publish_boolean (self->model, "dockDownloadsAvailable", downloads != NULL);
++  cc_Suno_fixture_publish_boolean (self->model, "dockApplications", g_strv_contains ((const char * const *) uris, "applications:///"));
++  cc_Suno_fixture_publish_boolean (self->model, "dockDownloads", downloads && g_strv_contains ((const char * const *) uris, downloads));
++  cc_Suno_fixture_publish_boolean (self->model, "dockFoldersWritable", g_settings_is_writable (self->settings, "dock-folders"));
++  cc_Suno_fixture_publish_boolean (self->model, "dockDownloadsAvailable", downloads != NULL);
 +  if (has_key (self->schema, "dock-folders-visible"))
 +    {
-+      cc_luma_fixture_publish_boolean (self->model, "dockFoldersVisible", g_settings_get_boolean (self->settings, "dock-folders-visible"));
-+      cc_luma_fixture_publish_boolean (self->model, "dockFoldersVisibilityWritable", g_settings_is_writable (self->settings, "dock-folders-visible"));
++      cc_Suno_fixture_publish_boolean (self->model, "dockFoldersVisible", g_settings_get_boolean (self->settings, "dock-folders-visible"));
++      cc_Suno_fixture_publish_boolean (self->model, "dockFoldersVisibilityWritable", g_settings_is_writable (self->settings, "dock-folders-visible"));
 +    }
 +}
 +
@@ -120,7 +120,7 @@ Subject: [PATCH] Manage dock shortcuts in the live Luma Settings page
 +      g_signal_connect_swapped (self->settings, "writable-changed", G_CALLBACK (publish), self);
        for (guint i = 0; owned[i]; i++)
          {
-           cc_luma_fixture_own_key (model, owned[i]);
+           cc_Suno_fixture_own_key (model, owned[i]);
 @@ -174,10 +201,46 @@
  }
  
@@ -168,48 +168,48 @@ Subject: [PATCH] Manage dock shortcuts in the live Luma Settings page
    const char *text = JSON_NODE_HOLDS_VALUE (value) && json_node_get_value_type (value) == G_TYPE_STRING ? json_node_get_string (value) : NULL;
    if (!text)
      {
---- a/shell/cc-luma-view-shelf.c
-+++ b/shell/cc-luma-view-shelf.c
+--- a/shell/cc-Suno-view-shelf.c
++++ b/shell/cc-Suno-view-shelf.c
 @@ -329,6 +329,22 @@
        if (hiding) cf_pk (v, card, "hide", "Hide the dash", NULL, hide_choices);
        if (sizing) size_row (v, card);
      }
-+  if (cc_luma_fixture_get (v->model, "dockApplications"))
++  if (cc_Suno_fixture_get (v->model, "dockApplications"))
 +    {
 +      card = cf_group (v, "Shortcuts", NULL);
-+      if (cc_luma_fixture_get (v->model, "dockFoldersVisible"))
++      if (cc_Suno_fixture_get (v->model, "dockFoldersVisible"))
 +        {
 +          GtkWidget *show = cf_sw (v, card, "dockFoldersVisible", "Show shortcuts", "Keep your folders beside your apps", NULL);
-+          gtk_widget_set_sensitive (show, cc_luma_view_flag (v, "dockFoldersVisibilityWritable"));
++          gtk_widget_set_sensitive (show, cc_Suno_view_flag (v, "dockFoldersVisibilityWritable"));
 +        }
 +      GtkWidget *apps = cf_sw (v, card, "dockApplications", "Applications", "A searchable drawer of your installed apps", NULL);
-+      gtk_widget_set_sensitive (apps, cc_luma_view_flag (v, "dockFoldersWritable"));
-+      if (cc_luma_view_flag (v, "dockDownloadsAvailable"))
++      gtk_widget_set_sensitive (apps, cc_Suno_view_flag (v, "dockFoldersWritable"));
++      if (cc_Suno_view_flag (v, "dockDownloadsAvailable"))
 +        {
 +          GtkWidget *downloads = cf_sw (v, card, "dockDownloads", "Downloads", "Quick access to downloaded files", NULL);
-+          gtk_widget_set_sensitive (downloads, cc_luma_view_flag (v, "dockFoldersWritable"));
++          gtk_widget_set_sensitive (downloads, cc_Suno_view_flag (v, "dockFoldersWritable"));
 +        }
 +    }
    card = cf_group (v, "Status island", NULL);
    cf_nv (v, card, "datetime", "Clock", "Format, weekday and seconds", NULL, NULL);
-   cf_nv (v, card, "power", "Battery percentage", NULL, cc_luma_view_flag (v, "pct") ? "Shown" : "Hidden", NULL);
---- a/shell/test-luma-live-desk.c
-+++ b/shell/test-luma-live-desk.c
+   cf_nv (v, card, "power", "Battery percentage", NULL, cc_Suno_view_flag (v, "pct") ? "Shown" : "Hidden", NULL);
+--- a/shell/test-Suno-live-desk.c
++++ b/shell/test-Suno-live-desk.c
 @@ -115,6 +115,55 @@
  }
  
  static void
 +test_dock_shortcuts (void)
 +{
-+  g_assert_true (has_key ("org.project_luma.shell-state", "dock-folders"));
-+  g_autoptr (GSettings) settings = g_settings_new ("org.project_luma.shell-state");
++  g_assert_true (has_key ("org.projectSuno.shell-state", "dock-folders"));
++  g_autoptr (GSettings) settings = g_settings_new ("org.projectSuno.shell-state");
 +  g_settings_reset (settings, "dock-folders");
 +  Running r;
-+  g_autoptr (CcLumaFixture) model = model_new (&cc_luma_adapter_shelf, &r);
-+  g_assert_true (json_node_get_boolean (cc_luma_fixture_get (model, "dockApplications")));
++  g_autoptr (CcSunoFixture) model = model_new (&cc_Suno_adapter_shelf, &r);
++  g_assert_true (json_node_get_boolean (cc_Suno_fixture_get (model, "dockApplications")));
 +  g_assert_null (g_settings_get_user_value (settings, "dock-folders"));
 +  g_autoptr (GError) error = NULL;
-+  g_assert_true (cc_luma_fixture_set_flag (model, "dockApplications", FALSE, &error));
++  g_assert_true (cc_Suno_fixture_set_flag (model, "dockApplications", FALSE, &error));
 +  g_assert_no_error (error);
 +  spin ();
 +  g_auto (GStrv) remaining = g_settings_get_strv (settings, "dock-folders");
@@ -223,28 +223,28 @@ Subject: [PATCH] Manage dock shortcuts in the live Luma Settings page
 +  const char *empty[] = { NULL };
 +  g_settings_set_strv (settings, "dock-folders", empty);
 +  spin ();
-+  g_assert_false (json_node_get_boolean (cc_luma_fixture_get (model, "dockApplications")));
-+  g_assert_false (json_node_get_boolean (cc_luma_fixture_get (model, "dockDownloads")));
++  g_assert_false (json_node_get_boolean (cc_Suno_fixture_get (model, "dockApplications")));
++  g_assert_false (json_node_get_boolean (cc_Suno_fixture_get (model, "dockDownloads")));
 +  const char *custom[] = { "file:///tmp/my-project", "file:///tmp/my-photos", NULL };
 +  g_settings_set_strv (settings, "dock-folders", custom);
 +  spin ();
-+  g_assert_true (cc_luma_fixture_set_flag (model, "dockApplications", TRUE, &error));
++  g_assert_true (cc_Suno_fixture_set_flag (model, "dockApplications", TRUE, &error));
 +  spin ();
 +  g_auto (GStrv) added = g_settings_get_strv (settings, "dock-folders");
 +  g_assert_cmpuint (g_strv_length (added), ==, 3);
 +  g_assert_cmpstr (added[0], ==, custom[0]);
 +  g_assert_cmpstr (added[1], ==, custom[1]);
 +  g_assert_cmpstr (added[2], ==, "applications:///");
-+  g_assert_true (cc_luma_fixture_set_flag (model, "dockApplications", FALSE, &error));
++  g_assert_true (cc_Suno_fixture_set_flag (model, "dockApplications", FALSE, &error));
 +  spin ();
 +  g_auto (GStrv) removed = g_settings_get_strv (settings, "dock-folders");
 +  g_assert_cmpstrv ((const char * const *) removed, custom);
-+  g_assert_true (cc_luma_fixture_set_flag (model, "dockFoldersVisible", FALSE, &error));
++  g_assert_true (cc_Suno_fixture_set_flag (model, "dockFoldersVisible", FALSE, &error));
 +  g_assert_false (g_settings_get_boolean (settings, "dock-folders-visible"));
-+  g_assert_true (cc_luma_fixture_set_flag (model, "dockFoldersVisible", TRUE, &error));
++  g_assert_true (cc_Suno_fixture_set_flag (model, "dockFoldersVisible", TRUE, &error));
 +  g_assert_true (g_settings_get_boolean (settings, "dock-folders-visible"));
 +  g_assert_no_error (error);
-+  cc_luma_adapter_shelf.stop (r.state);
++  cc_Suno_adapter_shelf.stop (r.state);
 +}
 +
 +static void
@@ -254,13 +254,13 @@ Subject: [PATCH] Manage dock shortcuts in the live Luma Settings page
 @@ -174,6 +223,7 @@
  {
    g_test_init (&argc, &argv, NULL);
-   g_test_add_func ("/luma-live/shelf", test_shelf);
-+  g_test_add_func ("/luma-live/dock-shortcuts", test_dock_shortcuts);
-   g_test_add_func ("/luma-live/windows", test_windows);
-   g_test_add_func ("/luma-live/notifications", test_notifications);
+   g_test_add_func ("/Suno-live/shelf", test_shelf);
++  g_test_add_func ("/Suno-live/dock-shortcuts", test_dock_shortcuts);
+   g_test_add_func ("/Suno-live/windows", test_windows);
+   g_test_add_func ("/Suno-live/notifications", test_notifications);
    return g_test_run ();
---- a/shell/test-fixture-schemas/luma-test.gschema.xml
-+++ b/shell/test-fixture-schemas/luma-test.gschema.xml
+--- a/shell/test-fixture-schemas/Suno-test.gschema.xml
++++ b/shell/test-fixture-schemas/Suno-test.gschema.xml
 @@ -32,4 +32,14 @@
        <default>[]</default>
        <summary>Where each group of Shelf islands is placed</summary>
