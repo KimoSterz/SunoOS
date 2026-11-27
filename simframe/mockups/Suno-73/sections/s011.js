@@ -649,7 +649,7 @@
     if (k === 'large') $('#cf-body').classList.toggle('big', CF.large);
     if (k === 'hc') $('#w-settings').classList.toggle('cfhc', CF.hc);
     if (k === 'dnd') window.lumaShell?.dnd(CF.dnd);
-    if (k === 'anim') document.documentElement.classList.toggle('noanim', CF.anim === false);
+    if (k === 'anim') cfAnim();
     if (k === 'trans' || k === 'frost') cfSurf();
     if (k === 'airplane' && CF.airplane) { CF.wifi = false; CF.bt = false; }
     if ((k === 'wifi' || k === 'bt') && cfG(k)) CF.airplane = false;
@@ -660,8 +660,12 @@
     if (/^d\.|^join$|^arr$/.test(k) && !/bright|prof|primary/.test(k)) cfKeep();
     if (['edge', 'spread', 'joined', 'float'].includes(k)) CF.preset = CFPRE.find(p => Object.entries(p[2]).every(([a, b]) => CF[a] === b) && !['split', 'free'].includes(p[0]))?.[0] || 'custom';
   }
-  function cfSurf() { const h = document.documentElement, lvl = Math.max(0, Math.min(100, CF.frost ?? 100));
-    h.classList.toggle('opaque', CF.trans === false);
-    h.style.setProperty('--fscale', (0.65 + 0.35 * lvl / 100).toFixed(3));
-    h.style.setProperty('--bscale', (0.4 + 0.6 * lvl / 100).toFixed(3)); }
+  /* the shell lives in a shadow root (#lshell): classes and surface vars are mirrored onto the host, because
+     rules and inherited custom properties from the document cannot cross the shadow boundary on their own */
+  const cfHost = () => document.getElementById('lshell');
+  function cfAnim() { const no = CF.anim === false; document.documentElement.classList.toggle('noanim', no); cfHost()?.classList.toggle('noanim', no); }
+  function cfSurf() { const h = document.documentElement, host = cfHost(), lvl = Math.max(0, Math.min(100, CF.frost ?? 100)), fs = (0.65 + 0.35 * lvl / 100).toFixed(3), bs = (0.4 + 0.6 * lvl / 100).toFixed(3), op = CF.trans === false;
+    h.classList.toggle('opaque', op); h.style.setProperty('--fscale', fs); h.style.setProperty('--bscale', bs);
+    if (host) { host.classList.toggle('opaque', op); host.style.setProperty('--fscale', fs); host.style.setProperty('--bscale', bs); } }
+  cfAnim(); cfSurf();
   function cfScan() { CFV.near = 0; clearTimeout(cfScan.t); const next = () => { if (CFV.pg !== 'bluetooth' || !CF.bt || CFV.near >= CFNEAR.length) return; CFV.near++; if (!CFV.q) cfMain(); cfScan.t = setTimeout(next, 2200); }; cfScan.t = setTimeout(next, 1400); }

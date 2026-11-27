@@ -21,3 +21,10 @@ html { --fscale: 1; --bscale: 1; }
 [data-mode="light"] { --float: oklch(0.99 0.002 265 / calc(.8 * var(--fscale))); }
 html.opaque :is(.fbar, .panel, .flo, .mbar) { background: var(--float-solid) !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
 html.noanim *, html.noanim *::before, html.noanim *::after { transition: none !important; animation: none !important; }
+/* SunoOS 0.1: the windows share the surface translucency — frosted at the top stop (15 percent see-through),
+   clear glass at the bottom; html.opaque pins them fully opaque again. Framed windows keep their own fill. */
+[data-mode="dark"] .win { --win: oklch(0.208 0.006 265 / calc(.85 * var(--fscale))); }
+[data-mode="light"] .win { --win: oklch(0.99 0.002 265 / calc(.85 * var(--fscale))); }
+html:not(.opaque) .win { -webkit-backdrop-filter: blur(calc(40px * var(--bscale))) saturate(1.4); backdrop-filter: blur(calc(40px * var(--bscale))) saturate(1.4); }
+html.opaque [data-mode="dark"] .win { --win: oklch(0.208 0.006 265); }
+html.opaque [data-mode="light"] .win { --win: oklch(0.99 0.002 265); }
